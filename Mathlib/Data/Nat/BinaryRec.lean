@@ -22,8 +22,10 @@ universe u
 
 namespace Nat
 
-/-- `bit b` appends the digit `b` to the binary representation of its natural number input. -/
-def bit (b : Bool) : Nat → Nat := cond b (2 * · + 1) (2 * ·)
+/-- `bit b` appends the digit `b` to the little end of the binary representation of
+its natural number input. -/
+def bit (b : Bool) (n : Nat) : Nat :=
+  cond b (2 * n + 1) (2 * n)
 
 theorem shiftRight_one (n) : n >>> 1 = n / 2 := rfl
 
@@ -37,7 +39,7 @@ theorem bit_testBit_zero_shiftRight_one (n : Nat) : bit (n.testBit 0) (n >>> 1) 
 
 @[simp]
 theorem bit_eq_zero_iff {n : Nat} {b : Bool} : bit b n = 0 ↔ n = 0 ∧ b = false := by
-  cases n <;> cases b <;> simp [bit, Nat.shiftLeft_succ, Nat.two_mul, ← Nat.add_assoc]
+  cases n <;> cases b <;> simp [bit, Nat.two_mul, ← Nat.add_assoc]
 
 /-- For a predicate `motive : Nat → Sort u`, if instances can be
   constructed for natural numbers of the form `bit b n`,
@@ -99,7 +101,7 @@ theorem bit_div_two (b n) : bit b n / 2 = n := by
 
 @[simp]
 theorem bit_mod_two (b n) : bit b n % 2 = b.toNat := by
-  cases b <;> simp [bit_val, mul_add_mod]
+  cases b <;> simp [bit_val]
 
 @[simp]
 theorem bit_shiftRight_one (b n) : bit b n >>> 1 = n :=
@@ -146,7 +148,5 @@ theorem binaryRec_eq {z : motive 0} {f : ∀ b n, motive n → motive (bit b n)}
     generalize congrArg motive (bit b n).bit_testBit_zero_shiftRight_one = e; revert e
     rw [testBit_bit_zero, bit_shiftRight_one]
     intros; rfl
-
-@[deprecated (since := "2024-10-21")] alias binaryRec_eq' := binaryRec_eq
 
 end Nat

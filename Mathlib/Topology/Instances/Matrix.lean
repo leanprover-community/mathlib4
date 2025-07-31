@@ -20,6 +20,11 @@ This file is a place to collect topological results about matrices.
 
 ## Main results
 
+* Sets of matrices:
+  * `IsOpen.matrix`: the set of finite matrices with entries in an open set
+    is itself an open set.
+  * `IsCompact.matrix`: the set of matrices with entries in a compact set
+    is itself a compact set.
 * Continuity:
   * `Continuous.matrix_det`: the determinant is continuous over a topological ring.
   * `Continuous.matrix_adjugate`: the adjugate is continuous over a topological ring.
@@ -40,6 +45,21 @@ instance [TopologicalSpace R] : TopologicalSpace (Matrix m n R) :=
 
 instance [TopologicalSpace R] [T2Space R] : T2Space (Matrix m n R) :=
   Pi.t2Space
+
+section Set
+
+theorem IsOpen.matrix [Fintype m] [Fintype n]
+    [TopologicalSpace R] {S : Set R} (hS : IsOpen S) :
+    IsOpen (S.matrix : Set (Matrix m n R)) :=
+  Set.matrix_eq_pi ▸
+    (isOpen_set_pi Set.finite_univ fun _ _ =>
+    isOpen_set_pi Set.finite_univ fun _ _ => hS).preimage continuous_id
+
+theorem IsCompact.matrix [TopologicalSpace R] {S : Set R} (hS : IsCompact S) :
+    IsCompact (S.matrix : Set (Matrix m n R)) :=
+  isCompact_pi_infinite fun _ => isCompact_pi_infinite fun _ => hS
+
+end Set
 
 /-! ### Lemmas about continuity of operations -/
 
@@ -92,14 +112,18 @@ instance [Star R] [ContinuousStar R] : ContinuousStar (Matrix m m R) :=
   ⟨continuous_id.matrix_conjTranspose⟩
 
 @[continuity, fun_prop]
-theorem Continuous.matrix_col {ι : Type*} {A : X → n → R} (hA : Continuous A) :
+theorem Continuous.matrix_replicateCol {ι : Type*} {A : X → n → R} (hA : Continuous A) :
     Continuous fun x => replicateCol ι (A x) :=
   continuous_matrix fun i _ => (continuous_apply i).comp hA
 
+@[deprecated (since := "2025-03-15")] alias Continuous.matrix_col := Continuous.matrix_replicateCol
+
 @[continuity, fun_prop]
-theorem Continuous.matrix_row {ι : Type*} {A : X → n → R} (hA : Continuous A) :
+theorem Continuous.matrix_replicateRow {ι : Type*} {A : X → n → R} (hA : Continuous A) :
     Continuous fun x => replicateRow ι (A x) :=
   continuous_matrix fun _ _ => (continuous_apply _).comp hA
+
+@[deprecated (since := "2025-03-15")] alias Continuous.matrix_row := Continuous.matrix_replicateRow
 
 @[continuity, fun_prop]
 theorem Continuous.matrix_diagonal [Zero R] [DecidableEq n] {A : X → n → R} (hA : Continuous A) :
@@ -107,11 +131,14 @@ theorem Continuous.matrix_diagonal [Zero R] [DecidableEq n] {A : X → n → R} 
   continuous_matrix fun i _ => ((continuous_apply i).comp hA).if_const _ continuous_zero
 
 @[continuity, fun_prop]
-theorem Continuous.matrix_dotProduct [Fintype n] [Mul R] [AddCommMonoid R] [ContinuousAdd R]
+protected theorem Continuous.dotProduct [Fintype n] [Mul R] [AddCommMonoid R] [ContinuousAdd R]
     [ContinuousMul R] {A : X → n → R} {B : X → n → R} (hA : Continuous A) (hB : Continuous B) :
-    Continuous fun x => dotProduct (A x) (B x) :=
-  continuous_finset_sum _ fun i _ =>
-    ((continuous_apply i).comp hA).mul ((continuous_apply i).comp hB)
+    Continuous fun x => A x ⬝ᵥ B x := by
+  dsimp only [dotProduct]
+  fun_prop
+
+@[deprecated (since := "2025-05-09")]
+alias Continuous.matrix_dotProduct := Continuous.dotProduct
 
 /-- For square matrices the usual `continuous_mul` can be used. -/
 @[continuity, fun_prop]
@@ -140,13 +167,13 @@ theorem Continuous.matrix_vecMulVec [Mul R] [ContinuousMul R] {A : X → m → R
 theorem Continuous.matrix_mulVec [NonUnitalNonAssocSemiring R] [ContinuousAdd R] [ContinuousMul R]
     [Fintype n] {A : X → Matrix m n R} {B : X → n → R} (hA : Continuous A) (hB : Continuous B) :
     Continuous fun x => A x *ᵥ B x :=
-  continuous_pi fun i => ((continuous_apply i).comp hA).matrix_dotProduct hB
+  continuous_pi fun i => ((continuous_apply i).comp hA).dotProduct hB
 
 @[continuity, fun_prop]
 theorem Continuous.matrix_vecMul [NonUnitalNonAssocSemiring R] [ContinuousAdd R] [ContinuousMul R]
     [Fintype m] {A : X → m → R} {B : X → Matrix m n R} (hA : Continuous A) (hB : Continuous B) :
     Continuous fun x => A x ᵥ* B x :=
-  continuous_pi fun _i => hA.matrix_dotProduct <| continuous_pi fun _j => hB.matrix_elem _ _
+  continuous_pi fun _i => hA.dotProduct <| continuous_pi fun _j => hB.matrix_elem _ _
 
 @[continuity, fun_prop]
 theorem Continuous.matrix_submatrix {A : X → Matrix l n R} (hA : Continuous A) (e₁ : m → l)

@@ -19,7 +19,7 @@ This file computes the cardinal of the general linear group over finite rings.
 * `Matrix.card_GL_field` gives the cardinal of the general linear group over a finite field.
 -/
 
-open LinearMap
+open LinearMap Module
 
 section LinearIndependent
 
@@ -31,6 +31,7 @@ local notation "n" => Module.finrank K V
 
 attribute [local instance] Fintype.ofFinite in
 open Fintype in
+open Fin.NatCast in -- TODO: should this be refactored to avoid needing the coercion?
 /-- The cardinal of the set of linearly independent vectors over a finite dimensional vector space
 over a finite field. -/
 theorem card_linearIndependent {k : ℕ} (hk : k ≤ n) :
@@ -67,7 +68,7 @@ variable (n : ℕ)
 by sending a matrix to its columns. -/
 noncomputable def equiv_GL_linearindependent :
     GL (Fin n) 𝔽 ≃ { s : Fin n → Fin n → 𝔽 // LinearIndependent 𝔽 s } where
-  toFun M := ⟨transpose M, by
+  toFun M := ⟨M.1.col, by
     apply linearIndependent_iff_card_eq_finrank_span.2
     rw [Set.finrank, ← rank_eq_finrank_span_cols, rank_unit]⟩
   invFun M := GeneralLinearGroup.mk'' (transpose (M.1)) <| by
@@ -77,7 +78,6 @@ noncomputable def equiv_GL_linearindependent :
     rw [← Basis.coePiBasisFun.toMatrix_eq_transpose,
       ← coe_basisOfPiSpaceOfLinearIndependent M.2]
     exact isUnit_det_of_invertible _
-  left_inv := fun _ ↦ Units.ext (ext fun _ _ ↦ rfl)
   right_inv := by exact congrFun rfl
 
 /-- The cardinal of the general linear group over a finite field. -/

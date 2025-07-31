@@ -124,7 +124,7 @@ theorem abs_ediv_le_abs : ∀ a b : ℤ, |a / b| ≤ |a| :=
       | -[m+1], n + 1 => Nat.succ_le_succ (Nat.div_le_self _ _))
 
 theorem abs_sign_of_nonzero {z : ℤ} (hz : z ≠ 0) : |z.sign| = 1 := by
-  rw [abs_eq_natAbs, natAbs_sign_of_nonzero hz, Int.ofNat_one]
+  rw [abs_eq_natAbs, natAbs_sign_of_ne_zero hz, Int.ofNat_one]
 
 protected theorem sign_eq_ediv_abs' (a : ℤ) : sign a = a / |a| :=
   if az : a = 0 then by simp [az]

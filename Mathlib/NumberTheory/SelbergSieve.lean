@@ -39,8 +39,8 @@ The `SelbergSieve.Notation` namespace includes common shorthand for the variable
 
 ## References
 
- * [Heath-Brown, *Lectures on sieves*][heathbrown2002lecturessieves]
- * [Koukoulopoulos, *The Distribution of Prime Numbers*][MR3971232]
+* [Heath-Brown, *Lectures on sieves*][heathbrown2002lecturessieves]
+* [Koukoulopoulos, *The Distribution of Prime Numbers*][MR3971232]
 
 -/
 
@@ -91,6 +91,21 @@ class SelbergSieve extends BoundingSieve where
   one_le_level : 1 ≤ level
 
 attribute [arith_mult] BoundingSieve.nu_mult
+
+namespace Mathlib.Meta.Positivity
+
+open Lean Meta Qq
+
+/-- Extension for the `positivity` tactic: `BoundingSieve.weights`. -/
+@[positivity BoundingSieve.weights _]
+def evalBoundingSieveWeights : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(@BoundingSieve.weights $i $n) =>
+    assertInstancesCommute
+    pure (.nonnegative q(BoundingSieve.weights_nonneg $n))
+  | _, _, _ => throwError "not BoundingSieve.weights"
+
+end Mathlib.Meta.Positivity
 
 namespace SelbergSieve
 open BoundingSieve
@@ -172,7 +187,7 @@ theorem nu_lt_one_of_dvd_prodPrimes {d : ℕ} (hdP : d ∣ P) (hd_ne_one : d ≠
 def multSum (d : ℕ) : ℝ := ∑ n ∈ A, if d ∣ n then a n else 0
 
 @[inherit_doc multSum]
-scoped [SelbergSieve.Notation] notation3 "𝒜" => multSum
+scoped[SelbergSieve.Notation] notation3 "𝒜" => multSum
 
 /-- The remainder term in the approximation A_d = ν (d) X + R_d. This is the degree to which `nu`
   fails to approximate the proportion of the weight that is a multiple of `d`. -/
@@ -180,7 +195,7 @@ scoped [SelbergSieve.Notation] notation3 "𝒜" => multSum
 def rem (d : ℕ) : ℝ := 𝒜 d - ν d * X
 
 @[inherit_doc rem]
-scoped [SelbergSieve.Notation] notation3 "R" => rem
+scoped[SelbergSieve.Notation] notation3 "R" => rem
 
 /-- The weight of all the elements that are not a multiple of any of our finite set of primes. -/
 def siftedSum : ℝ := ∑ d ∈ A, if Coprime P d then a d else 0
@@ -204,7 +219,7 @@ omit s in
 /-- A sequence of coefficients $\mu^{+}$ is upper Moebius if $\mu * \zeta ≤ \mu^{+} * \zeta$. These
   coefficients then yield an upper bound on the sifted sum. -/
 def IsUpperMoebius (muPlus : ℕ → ℝ) : Prop :=
-  ∀ n : ℕ, (if n=1 then 1 else 0) ≤ ∑ d ∈ n.divisors, muPlus d
+  ∀ n : ℕ, (if n = 1 then 1 else 0) ≤ ∑ d ∈ n.divisors, muPlus d
 
 theorem siftedSum_le_sum_of_upperMoebius (muPlus : ℕ → ℝ) (h : IsUpperMoebius muPlus) :
     siftedSum ≤ ∑ d ∈ divisors P, muPlus d * multSum d := by
@@ -215,8 +230,8 @@ theorem siftedSum_le_sum_of_upperMoebius (muPlus : ℕ → ℝ) (h : IsUpperMoeb
     _ = ∑ d ∈ divisors P, muPlus d * multSum d := ?caseC
   case caseA =>
     rw [siftedsum_eq_sum_support_mul_ite]
-    apply Finset.sum_le_sum; intro n _
-    exact mul_le_mul_of_nonneg_left (hμ (Nat.gcd P n)) (weights_nonneg n)
+    gcongr with n
+    exact hμ (Nat.gcd P n)
   case caseB =>
     simp_rw [mul_sum, ← sum_filter]
     congr with n
@@ -228,19 +243,17 @@ theorem siftedSum_le_sum_of_upperMoebius (muPlus : ℕ → ℝ) (h : IsUpperMoeb
     simp_rw [multSum, ← sum_filter, mul_sum, mul_comm]
 
 theorem siftedSum_le_mainSum_errSum_of_upperMoebius (muPlus : ℕ → ℝ) (h : IsUpperMoebius muPlus) :
-    siftedSum ≤ X * mainSum muPlus + errSum muPlus := by
-  calc siftedSum ≤ ∑ d ∈ divisors P, muPlus d * multSum d := siftedSum_le_sum_of_upperMoebius _ h
-   _ ≤ X * ∑ d ∈ divisors P, muPlus d * ν d + ∑ d ∈ divisors P, muPlus d * R d := ?caseA
-   _ ≤ _ := ?caseB
-  case caseA =>
-    apply le_of_eq
-    rw [mul_sum, ←sum_add_distrib]
+    siftedSum ≤ X * mainSum muPlus + errSum muPlus := calc
+  siftedSum ≤ ∑ d ∈ divisors P, muPlus d * multSum d :=
+    siftedSum_le_sum_of_upperMoebius _ h
+  _ = X * mainSum muPlus + ∑ d ∈ divisors P, muPlus d * R d := by
+    rw [mainSum, mul_sum, ← sum_add_distrib]
     congr with d
     dsimp only [rem]; ring
-  case caseB =>
-    apply _root_.add_le_add (le_rfl)
-    apply sum_le_sum; intro d _
-    rw [←abs_mul]
+  _ ≤ X * mainSum muPlus + errSum muPlus := by
+    rw [errSum]
+    gcongr _ + ∑ d ∈ _, ?_ with d
+    rw [← abs_mul]
     exact le_abs_self (muPlus d * R d)
 
 

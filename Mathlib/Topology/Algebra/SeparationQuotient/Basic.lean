@@ -59,7 +59,7 @@ instance instSMulCommClass [ContinuousConstSMul N X] [SMulCommClass M N X] :
     SMulCommClass M N (SeparationQuotient X) :=
   surjective_mk.smulCommClass mk_smul mk_smul
 
-@[to_additive instVAddAssocClass]
+@[to_additive]
 instance instIsScalarTower [SMul M N] [ContinuousConstSMul N X] [IsScalarTower M N X] :
     IsScalarTower M N (SeparationQuotient X) where
   smul_assoc a b := surjective_mk.forall.2 fun x ↦ congr_arg mk <| smul_assoc a b x

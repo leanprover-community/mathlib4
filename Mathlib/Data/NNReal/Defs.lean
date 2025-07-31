@@ -30,7 +30,7 @@ a.k.a. the interval `[0, ∞)`. We also define the following operations and stru
   - `ConditionallyCompleteLinearOrderBot ℝ≥0`.
 
   These instances are derived from corresponding instances about the type `{x : α // 0 ≤ x}` in an
-  appropriate ordered field/ring/group/monoid `α`, see `Mathlib.Algebra.Order.Nonneg.OrderedRing`.
+  appropriate ordered field/ring/group/monoid `α`, see `Mathlib/Algebra/Order/Nonneg/Ring.lean`.
 
 * `Real.toNNReal x` is defined as `⟨max x 0, _⟩`, i.e. `↑(Real.toNNReal x) = x` when `0 ≤ x` and
   `↑(Real.toNNReal x) = 0` otherwise.
@@ -50,11 +50,11 @@ assert_not_exists Star
 open Function
 
 -- to ensure these instances are computable
-/-- Nonnegative real numbers, denoted as `ℝ≥0` withinin the NNReal namespace -/
+/-- Nonnegative real numbers, denoted as `ℝ≥0` within the NNReal namespace -/
 def NNReal := { r : ℝ // 0 ≤ r } deriving
-  Zero, One, Semiring, StrictOrderedSemiring, CommMonoidWithZero, CommSemiring,
-  PartialOrder, SemilatticeInf, SemilatticeSup, DistribLattice, OrderedCommSemiring,
-  OrderedCommMonoid, Nontrivial, Inhabited
+  Zero, One, Semiring, CommMonoidWithZero, CommSemiring,
+  PartialOrder, SemilatticeInf, SemilatticeSup, DistribLattice,
+  Nontrivial, Inhabited
 
 namespace NNReal
 
@@ -63,7 +63,7 @@ namespace NNReal
 instance : CanonicallyOrderedAdd ℝ≥0 := Nonneg.canonicallyOrderedAdd
 instance : NoZeroDivisors ℝ≥0 := Nonneg.noZeroDivisors
 instance instDenselyOrdered : DenselyOrdered ℝ≥0 := Nonneg.instDenselyOrdered
-instance : OrderBot ℝ≥0 := inferInstance
+instance : OrderBot ℝ≥0 := Nonneg.orderBot
 instance instArchimedean : Archimedean ℝ≥0 := Nonneg.instArchimedean
 instance instMulArchimedean : MulArchimedean ℝ≥0 := Nonneg.instMulArchimedean
 instance : Min ℝ≥0 := SemilatticeInf.toMin
@@ -74,11 +74,33 @@ instance : OrderedSub ℝ≥0 := Nonneg.orderedSub
 -- a computable copy of `Nonneg.instNNRatCast`
 instance : NNRatCast ℝ≥0 where nnratCast r := ⟨r, r.cast_nonneg⟩
 
-noncomputable instance : LinearOrderedSemifield ℝ≥0 :=
-  Nonneg.linearOrderedSemifield
+noncomputable instance : LinearOrder ℝ≥0 :=
+  Subtype.instLinearOrder _
 
-noncomputable instance : LinearOrderedCommGroupWithZero ℝ≥0 :=
-  Nonneg.linearOrderedCommGroupWithZero
+noncomputable instance : Semifield ℝ≥0 :=
+  Nonneg.semifield
+
+instance : IsOrderedRing ℝ≥0 :=
+  Nonneg.isOrderedRing
+
+instance : IsStrictOrderedRing ℝ≥0 :=
+  Nonneg.isStrictOrderedRing
+
+noncomputable instance : LinearOrderedCommGroupWithZero ℝ≥0 where
+  /- Both `LinearOrderedCommGroupWithZero` and `Semifield` inherit from `CommGroupWithZero`.
+  However, if we project both of them into a `GroupWithZero` and try to unify them
+  at `reducible_and_instances` transparency, then we unfold `instSemifield` into `Nonneg.semifield`
+  which also causes an unfolding of `NNReal` to `{x // 0 ≤ x}`. Those two are (intentionally!)
+  not defeq at `reducible_and_instances`, even though the instances on them are.
+
+  So we either need to copy all the `Nonneg` instances and redefine them specifically for `NNReal`,
+  or we need to avoid the unfold in the unification. The latter has a smaller impact.
+  -/
+  __ := instSemifield.toCommGroupWithZero.toGroupWithZero
+  __ := Nonneg.linearOrderedCommGroupWithZero
+
+example {p q : ℝ≥0} (h1p : 0 < p) (h2p : p ≤ q) : q⁻¹ ≤ p⁻¹ := by
+  with_reducible_and_instances exact inv_anti₀ h1p h2p
 
 /-- Coercion `ℝ≥0 → ℝ`. -/
 @[coe] def toReal : ℝ≥0 → ℝ := Subtype.val
@@ -334,7 +356,9 @@ example : OrderBot ℝ≥0 := by infer_instance
 
 example : PartialOrder ℝ≥0 := by infer_instance
 
-noncomputable example : LinearOrderedAddCommMonoid ℝ≥0 := by infer_instance
+example : AddCommMonoid ℝ≥0 := by infer_instance
+
+example : IsOrderedAddMonoid ℝ≥0 := by infer_instance
 
 example : DistribLattice ℝ≥0 := by infer_instance
 
@@ -342,11 +366,11 @@ example : SemilatticeInf ℝ≥0 := by infer_instance
 
 example : SemilatticeSup ℝ≥0 := by infer_instance
 
-noncomputable example : LinearOrderedSemiring ℝ≥0 := by infer_instance
+example : Semiring ℝ≥0 := by infer_instance
 
-example : OrderedCommSemiring ℝ≥0 := by infer_instance
+example : CommMonoid ℝ≥0 := by infer_instance
 
-noncomputable example : LinearOrderedCommMonoid ℝ≥0 := by infer_instance
+example : IsOrderedMonoid ℝ≥0 := by infer_instance
 
 noncomputable example : LinearOrderedCommMonoidWithZero ℝ≥0 := by infer_instance
 
@@ -402,7 +426,7 @@ noncomputable instance : ConditionallyCompleteLinearOrderBot ℝ≥0 :=
 
 @[norm_cast]
 theorem coe_sSup (s : Set ℝ≥0) : (↑(sSup s) : ℝ) = sSup (((↑) : ℝ≥0 → ℝ) '' s) := by
-  rcases Set.eq_empty_or_nonempty s with rfl|hs
+  rcases Set.eq_empty_or_nonempty s with rfl | hs
   · simp
   by_cases H : BddAbove s
   · have A : sSup (Subtype.val '' s) ∈ Set.Ici 0 := by
@@ -421,7 +445,7 @@ theorem coe_iSup {ι : Sort*} (s : ι → ℝ≥0) : (↑(⨆ i, s i) : ℝ) = �
 
 @[norm_cast]
 theorem coe_sInf (s : Set ℝ≥0) : (↑(sInf s) : ℝ) = sInf (((↑) : ℝ≥0 → ℝ) '' s) := by
-  rcases Set.eq_empty_or_nonempty s with rfl|hs
+  rcases Set.eq_empty_or_nonempty s with rfl | hs
   · simp only [Set.image_empty, Real.sInf_empty, coe_eq_zero]
     exact @subset_sInf_emptyset ℝ (Set.Ici (0 : ℝ)) _ _ (_)
   have A : sInf (Subtype.val '' s) ∈ Set.Ici 0 := by
@@ -442,10 +466,6 @@ theorem coe_iInf {ι : Sort*} (s : ι → ℝ≥0) : (↑(⨅ i, s i) : ℝ) = �
 instance addLeftMono : AddLeftMono ℝ≥0 := inferInstance
 instance addLeftReflectLT : AddLeftReflectLT ℝ≥0 := inferInstance
 instance mulLeftMono : MulLeftMono ℝ≥0 := inferInstance
-
-@[deprecated le_of_forall_pos_le_add (since := "2024-10-17")]
-protected theorem le_of_forall_pos_le_add {a b : ℝ≥0} (h : ∀ ε, 0 < ε → a ≤ b + ε) : a ≤ b :=
-   le_of_forall_pos_le_add h
 
 theorem lt_iff_exists_rat_btwn (a b : ℝ≥0) :
     a < b ↔ ∃ q : ℚ, 0 ≤ q ∧ a < Real.toNNReal q ∧ Real.toNNReal q < b :=
@@ -477,7 +497,8 @@ theorem coe_min (x y : ℝ≥0) : ((min x y : ℝ≥0) : ℝ) = min (x : ℝ) (y
 theorem zero_le_coe {q : ℝ≥0} : 0 ≤ (q : ℝ) :=
   q.2
 
-instance instOrderedSMul {M : Type*} [OrderedAddCommMonoid M] [Module ℝ M] [OrderedSMul ℝ M] :
+instance instOrderedSMul {M : Type*} [AddCommMonoid M] [PartialOrder M]
+    [Module ℝ M] [OrderedSMul ℝ M] :
     OrderedSMul ℝ≥0 M where
   smul_lt_smul_of_pos hab hc := (smul_lt_smul_of_pos_left hab (NNReal.coe_pos.2 hc) :)
   lt_of_smul_lt_smul_of_pos {_ _ c} hab _ :=
@@ -503,7 +524,7 @@ theorem toNNReal_one : Real.toNNReal 1 = 1 := NNReal.eq <| coe_toNNReal _ zero_l
 
 @[simp]
 theorem toNNReal_pos {r : ℝ} : 0 < Real.toNNReal r ↔ 0 < r := by
-  simp [← NNReal.coe_lt_coe, lt_irrefl]
+  simp [← NNReal.coe_lt_coe]
 
 @[simp]
 theorem toNNReal_eq_zero {r : ℝ} : Real.toNNReal r = 0 ↔ r ≤ 0 := by
@@ -560,7 +581,7 @@ lemma ofNat_lt_toNNReal {r : ℝ} {n : ℕ} [n.AtLeastTwo] :
 
 @[simp]
 theorem toNNReal_eq_toNNReal_iff {r p : ℝ} (hr : 0 ≤ r) (hp : 0 ≤ p) :
-    toNNReal r = toNNReal p ↔ r = p := by simp [← coe_inj, coe_toNNReal, hr, hp]
+    toNNReal r = toNNReal p ↔ r = p := by simp [← coe_inj, hr, hp]
 
 @[simp]
 theorem toNNReal_lt_toNNReal_iff' {r p : ℝ} : Real.toNNReal r < Real.toNNReal p ↔ r < p ∧ 0 < p :=
@@ -581,7 +602,7 @@ lemma toNNReal_le_toNNReal_iff' {r p : ℝ} : r.toNNReal ≤ p.toNNReal ↔ r �
   simp_rw [← not_lt, toNNReal_lt_toNNReal_iff', not_and_or]
 
 lemma toNNReal_le_toNNReal_iff_of_pos {r p : ℝ} (hr : 0 < r) : r.toNNReal ≤ p.toNNReal ↔ r ≤ p := by
-  simp [toNNReal_le_toNNReal_iff', hr.not_le]
+  simp [toNNReal_le_toNNReal_iff', hr.not_ge]
 
 @[simp]
 lemma one_le_toNNReal {r : ℝ} : 1 ≤ r.toNNReal ↔ 1 ≤ r := by
@@ -592,7 +613,7 @@ lemma toNNReal_lt_one {r : ℝ} : r.toNNReal < 1 ↔ r < 1 := by simp only [← 
 
 @[simp]
 lemma natCastle_toNNReal' {n : ℕ} {r : ℝ} : ↑n ≤ r.toNNReal ↔ n ≤ r ∨ n = 0 := by
-  simpa [n.cast_nonneg.le_iff_eq] using toNNReal_le_toNNReal_iff' (r := n)
+  simpa [n.cast_nonneg.ge_iff_eq'] using toNNReal_le_toNNReal_iff' (r := n)
 
 @[simp]
 lemma toNNReal_lt_natCast' {n : ℕ} {r : ℝ} : r.toNNReal < n ↔ r < n ∧ n ≠ 0 := by
@@ -634,8 +655,8 @@ theorem le_toNNReal_iff_coe_le {r : ℝ≥0} {p : ℝ} (hp : 0 ≤ p) : r ≤ Re
   rw [← NNReal.coe_le_coe, Real.coe_toNNReal p hp]
 
 theorem le_toNNReal_iff_coe_le' {r : ℝ≥0} {p : ℝ} (hr : 0 < r) : r ≤ Real.toNNReal p ↔ ↑r ≤ p :=
-  (le_or_lt 0 p).elim le_toNNReal_iff_coe_le fun hp => by
-    simp only [(hp.trans_le r.coe_nonneg).not_le, toNNReal_eq_zero.2 hp.le, hr.not_le]
+  (le_or_gt 0 p).elim le_toNNReal_iff_coe_le fun hp => by
+    simp only [(hp.trans_le r.coe_nonneg).not_ge, toNNReal_eq_zero.2 hp.le, hr.not_ge]
 
 theorem toNNReal_lt_iff_lt_coe {r : ℝ} {p : ℝ≥0} (ha : 0 ≤ r) : Real.toNNReal r < p ↔ r < ↑p := by
   rw [← NNReal.coe_lt_coe, Real.coe_toNNReal r ha]
@@ -681,11 +702,11 @@ nonrec theorem exists_pow_lt_of_lt_one {a b : ℝ≥0} (ha : 0 < a) (hb : b < 1)
 
 nonrec theorem exists_mem_Ico_zpow {x : ℝ≥0} {y : ℝ≥0} (hx : x ≠ 0) (hy : 1 < y) :
     ∃ n : ℤ, x ∈ Set.Ico (y ^ n) (y ^ (n + 1)) :=
-  exists_mem_Ico_zpow (α := ℝ) hx.bot_lt hy
+  exists_mem_Ico_zpow hx.bot_lt hy
 
 nonrec theorem exists_mem_Ioc_zpow {x : ℝ≥0} {y : ℝ≥0} (hx : x ≠ 0) (hy : 1 < y) :
     ∃ n : ℤ, x ∈ Set.Ioc (y ^ n) (y ^ (n + 1)) :=
-  exists_mem_Ioc_zpow (α := ℝ) hx.bot_lt hy
+  exists_mem_Ioc_zpow hx.bot_lt hy
 
 end Pow
 
@@ -696,7 +717,7 @@ section Sub
 
 In this section we provide a few lemmas about subtraction that do not fit well into any other
 typeclass. For lemmas about subtraction and addition see lemmas about `OrderedSub` in the file
-`Mathlib.Algebra.Order.Sub.Basic`. See also `mul_tsub` and `tsub_mul`.
+`Mathlib/Algebra/Order/Sub/Basic.lean`. See also `mul_tsub` and `tsub_mul`.
 -/
 
 theorem sub_def {r p : ℝ≥0} : r - p = Real.toNNReal (r - p) :=
@@ -731,21 +752,6 @@ theorem div_le_of_le_mul {a b c : ℝ≥0} (h : a ≤ b * c) : a / c ≤ b :=
 
 theorem div_le_of_le_mul' {a b c : ℝ≥0} (h : a ≤ b * c) : a / b ≤ c :=
   div_le_of_le_mul <| mul_comm b c ▸ h
-
-@[deprecated le_div_iff₀' (since := "2024-10-02")]
-theorem le_div_iff' {a b r : ℝ≥0} (hr : r ≠ 0) : a ≤ b / r ↔ r * a ≤ b := le_div_iff₀' hr.bot_lt
-
-@[deprecated div_lt_iff₀ (since := "2024-10-02")]
-theorem div_lt_iff {a b r : ℝ≥0} (hr : r ≠ 0) : a / r < b ↔ a < b * r := div_lt_iff₀ hr.bot_lt
-
-@[deprecated div_lt_iff₀' (since := "2024-10-02")]
-theorem div_lt_iff' {a b r : ℝ≥0} (hr : r ≠ 0) : a / r < b ↔ a < r * b := div_lt_iff₀' hr.bot_lt
-
-@[deprecated lt_div_iff₀ (since := "2024-10-02")]
-theorem lt_div_iff {a b r : ℝ≥0} (hr : r ≠ 0) : a < b / r ↔ a * r < b := lt_div_iff₀ hr.bot_lt
-
-@[deprecated lt_div_iff₀' (since := "2024-10-02")]
-theorem lt_div_iff' {a b r : ℝ≥0} (hr : r ≠ 0) : a < b / r ↔ r * a < b := lt_div_iff₀' hr.bot_lt
 
 theorem mul_lt_of_lt_div {a b r : ℝ≥0} (h : a < b / r) : a * r < b :=
   (lt_div_iff₀ <| pos_iff_ne_zero.2 fun hr => False.elim <| by simp [hr] at h).1 h
@@ -793,9 +799,6 @@ theorem _root_.Real.toNNReal_div' {x y : ℝ} (hy : 0 ≤ y) :
 
 theorem inv_lt_one_iff {x : ℝ≥0} (hx : x ≠ 0) : x⁻¹ < 1 ↔ 1 < x := by
   rw [← one_div, div_lt_iff₀ hx.bot_lt, one_mul]
-
-@[deprecated zpow_pos (since := "2024-10-08")]
-protected theorem zpow_pos {x : ℝ≥0} (hx : x ≠ 0) (n : ℤ) : 0 < x ^ n := zpow_pos hx.bot_lt _
 
 theorem inv_lt_inv {x y : ℝ≥0} (hx : x ≠ 0) (h : x < y) : y⁻¹ < x⁻¹ :=
   inv_strictAnti₀ hx.bot_lt h
@@ -942,8 +945,6 @@ end Real
 
 section StrictMono
 
-open NNReal
-
 variable {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
 
 /-- If `Γ₀ˣ` is nontrivial and `f : Γ₀ →*₀ ℝ≥0` is strictly monotone, then for any positive
@@ -981,7 +982,7 @@ unsafe instance : Repr ℝ≥0 where
 
 namespace Mathlib.Meta.Positivity
 
-open Lean Meta Qq Function
+open Lean Meta Qq
 
 private alias ⟨_, nnreal_coe_pos⟩ := coe_pos
 

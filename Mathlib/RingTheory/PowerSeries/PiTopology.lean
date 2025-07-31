@@ -5,6 +5,7 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 import Mathlib.RingTheory.MvPowerSeries.PiTopology
 import Mathlib.RingTheory.PowerSeries.Basic
+import Mathlib.RingTheory.PowerSeries.Trunc
 import Mathlib.LinearAlgebra.Finsupp.Pi
 
 /-! # Product topology on power series
@@ -18,17 +19,18 @@ When `R` has `UniformSpace R`, we define the corresponding uniform structure.
 
 This topology can be included by writing `open scoped PowerSeries.WithPiTopology`.
 
-When the type of coefficients has the discrete topology,
-it corresponds to the topology defined by [bourbaki1981], chapter 4, §4, n°2.
+When the type of coefficients has the discrete topology, it corresponds to the topology defined by
+[N. Bourbaki, *Algebra {II}*, Chapter 4, §4, n°2][bourbaki1981].
 
 It corresponds with the adic topology but this is not proved here.
 
-- `PowerSeries.WithPiTopology.tendsto_pow_zero_of_constantCoeff_nilpotent`,
-`PowerSeries.WithPiTopology.tendsto_pow_zero_of_constantCoeff_zero`: if the constant coefficient
-of `f` is nilpotent, or vanishes, then the powers of `f` converge to zero.
+- `PowerSeries.WithPiTopology.isTopologicallyNilpotent_of_constantCoeff_isNilpotent`,
+`PowerSeries.WithPiTopology.isTopologicallyNilpotent_of_constantCoeff_zero`: if the constant
+coefficient of `f` is nilpotent, or vanishes, then `f` is topologically nilpotent.
 
-- `PowerSeries.WithPiTopology.tendsto_pow_zero_of_constantCoeff_nilpotent_iff` : the powers of `f`
-converge to zero iff the constant coefficient of `f` is nilpotent.
+- `PowerSeries.WithPiTopology.isTopologicallyNilpotent_iff_constantCoeff_isNilpotent` :
+assuming the base ring has the discrete topology, `f` is topologically nilpotent iff the constant
+coefficient of `f` is nilpotent.
 
 - `PowerSeries.WithPiTopology.hasSum_of_monomials_self` : viewed as an infinite sum, a power
 series converges to itself.
@@ -56,6 +58,8 @@ section Topological
 variable [TopologicalSpace R]
 
 namespace WithPiTopology
+
+open scoped Topology
 
 /-- The pointwise topology on `PowerSeries` -/
 scoped instance : TopologicalSpace (PowerSeries R) :=
@@ -93,6 +97,17 @@ theorem tendsto_iff_coeff_tendsto [Semiring R] {ι : Type*}
   congr
   · ext _; congr; ext; simp
   · ext; simp
+
+theorem tendsto_trunc_atTop [CommSemiring R] (f : R⟦X⟧) :
+    Tendsto (fun d ↦ (trunc d f : R⟦X⟧)) atTop (𝓝 f) := by
+  rw [tendsto_iff_coeff_tendsto]
+  intro d
+  exact tendsto_atTop_of_eventually_const fun n (hdn : d < n) ↦ (by simp [coeff_trunc, hdn])
+
+/-- The inclusion of polynomials into power series has dense image -/
+theorem denseRange_toPowerSeries [CommSemiring R] :
+    DenseRange (Polynomial.toPowerSeries (R := R)) := fun f =>
+  mem_closure_of_tendsto (tendsto_trunc_atTop R f) <| .of_forall fun _ ↦ Set.mem_range_self _
 
 /-- The semiring topology on `PowerSeries` of a topological semiring -/
 @[scoped instance]
@@ -156,23 +171,24 @@ open MvPowerSeries.WithPiTopology
 theorem continuous_C [Semiring R] : Continuous (C R) :=
   MvPowerSeries.WithPiTopology.continuous_C
 
-theorem tendsto_pow_zero_of_constantCoeff_nilpotent [CommSemiring R]
+theorem isTopologicallyNilpotent_of_constantCoeff_isNilpotent [CommSemiring R]
     {f : PowerSeries R} (hf : IsNilpotent (constantCoeff R f)) :
     Tendsto (fun n : ℕ => f ^ n) atTop (nhds 0) :=
-  MvPowerSeries.WithPiTopology.tendsto_pow_zero_of_constantCoeff_nilpotent hf
+  MvPowerSeries.WithPiTopology.isTopologicallyNilpotent_of_constantCoeff_isNilpotent hf
 
-theorem tendsto_pow_zero_of_constantCoeff_zero [CommSemiring R]
+theorem isTopologicallyNilpotent_of_constantCoeff_zero [CommSemiring R]
     {f : PowerSeries R} (hf : constantCoeff R f = 0) :
     Tendsto (fun n : ℕ => f ^ n) atTop (nhds 0) :=
-  MvPowerSeries.WithPiTopology.tendsto_pow_zero_of_constantCoeff_zero hf
+  MvPowerSeries.WithPiTopology.isTopologicallyNilpotent_of_constantCoeff_zero hf
 
-/-- The powers of a `PowerSeries` converge to 0 iff its constant coefficient is nilpotent.
-N. Bourbaki, *Algebra II*, [bourbaki1981] (chap. 4, §4, n°2, corollaire de la prop. 3) -/
-theorem tendsto_pow_zero_of_constantCoeff_nilpotent_iff
+/-- Assuming the base ring has a discrete topology, the powers of a `PowerSeries` converge to 0
+iff its constant coefficient is nilpotent.
+[N. Bourbaki, *Algebra {II}*, Chapter 4, §4, n°2, corollary of prop. 3][bourbaki1981] -/
+theorem isTopologicallyNilpotent_iff_constantCoeff_isNilpotent
     [CommRing R] [DiscreteTopology R] (f : PowerSeries R) :
     Tendsto (fun n : ℕ => f ^ n) atTop (nhds 0) ↔
       IsNilpotent (constantCoeff R f) :=
-  MvPowerSeries.WithPiTopology.tendsto_pow_of_constantCoeff_nilpotent_iff f
+  MvPowerSeries.WithPiTopology.isTopologicallyNilpotent_iff_constantCoeff_isNilpotent f
 
 end WithPiTopology
 

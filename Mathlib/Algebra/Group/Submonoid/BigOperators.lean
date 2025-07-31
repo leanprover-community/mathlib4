@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzza
 Amelia Livingston, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Submonoid.Basic
+import Mathlib.Algebra.Group.Support
 import Mathlib.Data.Finset.NoncommProd
 
 /-!
@@ -155,7 +156,7 @@ lemma mem_closure_iff_exists_finset_subset {s : Set M} :
     induction hx using closure_induction with
     | one => exact ⟨0, ∅, by simp⟩
     | mem x hx =>
-      simp only [Finset.mem_coe] at hx
+      simp only at hx
       exact ⟨Pi.single x 1, {x}, by simp [hx, Pi.single_apply]⟩
     | mul x y _ _ hx hy =>
     obtain ⟨f, t, hts, hf, rfl⟩ := hx

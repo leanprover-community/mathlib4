@@ -85,8 +85,10 @@ abbrev Hausdorffification : Type _ :=
 to define `AdicCompletion`. -/
 abbrev AdicCompletion.transitionMap {m n : ℕ} (hmn : m ≤ n) := factorPow I M hmn
 
-/-- The completion of a module with respect to an ideal. This is not necessarily Hausdorff.
-In fact, this is only complete if the ideal is finitely generated. -/
+/-- The completion of a module with respect to an ideal.
+
+This is Hausdorff but not necessarily complete: a classical sufficient condition for
+completeness is that `M` be finitely generated [Stacks, 0G1Q]. -/
 def AdicCompletion : Type _ :=
   { f : ∀ n : ℕ, M ⧸ (I ^ n • ⊤ : Submodule R M) //
     ∀ {m n} (hmn : m ≤ n), AdicCompletion.transitionMap I M hmn (f n) = f m }
@@ -453,7 +455,7 @@ def AdicCauchySequence.mk (f : ℕ → M)
 def mk : AdicCauchySequence I M →ₗ[R] AdicCompletion I M where
   toFun f := ⟨fun n ↦ Submodule.mkQ (I ^ n • ⊤ : Submodule R M) (f n), by
     intro m n hmn
-    simp only [mkQ_apply, factor_mk]
+    simp only [mkQ_apply]
     exact (f.property hmn).symm⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
@@ -477,7 +479,7 @@ theorem mk_surjective : Function.Surjective (mk I M) := by
   · intro m n hmn
     rw [SModEq.def, ha m, ← mkQ_apply,
       ← factor_mk (Submodule.smul_mono_left (Ideal.pow_le_pow_right hmn)) (a n),
-      mkQ_apply,  ha n, x.property hmn]
+      mkQ_apply, ha n, x.property hmn]
   · ext n
     simp [ha n]
 

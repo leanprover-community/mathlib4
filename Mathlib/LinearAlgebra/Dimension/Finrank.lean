@@ -3,7 +3,7 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Anne Baanen
 -/
-import Mathlib.LinearAlgebra.Dimension.Basic
+import Mathlib.LinearAlgebra.Dimension.Subsingleton
 import Mathlib.SetTheory.Cardinal.ToNat
 
 /-!
@@ -44,17 +44,22 @@ section Semiring
 
 /-- The rank of a module as a natural number.
 
-Defined by convention to be `0` if the space has infinite rank.
+For a finite-dimensional vector space `V` over a field `k`, `Module.finrank k V` is equal to
+the dimension of `V` over `k`.
 
-For a vector space `M` over a field `R`, this is the same as the finite dimension
-of `M` over `R`.
+For a general module `M` over a ring `R`, `Module.finrank R M` is defined to be the supremum of the
+cardinalities of the `R`-linearly independent subsets of `M`, if this supremum is finite. It is
+defined by convention to be `0` if this supremum is infinite. See `Module.rank` for a
+cardinal-valued version where infinite rank modules have rank an infinite cardinal.
 
-Note that it is possible to have `M` with `¬(Module.Finite R M)` but `finrank R M ≠ 0`, for example
-`ℤ × ℚ/ℤ` has `finrank` equal to `1`. -/
+Note that if `R` is not a field then there can exist modules `M` with `¬(Module.Finite R M)` but
+`finrank R M ≠ 0`. For example `ℚ` has `finrank` equal to `1` over `ℤ`, because the nonempty
+`ℤ`-linearly independent subsets of `ℚ` are precisely the nonzero singletons. -/
 noncomputable def finrank (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M] : ℕ :=
   Cardinal.toNat (Module.rank R M)
 
-@[deprecated (since := "2024-10-01")] protected alias _root_.FiniteDimensional.finrank := finrank
+@[simp] theorem finrank_subsingleton [Subsingleton R] : finrank R M = 1 := by
+  rw [finrank, rank_subsingleton, map_one]
 
 theorem finrank_eq_of_rank_eq {n : ℕ} (h : Module.rank R M = ↑n) : finrank R M = n := by
   simp [finrank, h]
@@ -127,3 +132,16 @@ variable (R M)
 theorem finrank_top : finrank R (⊤ : Submodule R M) = finrank R M := by
   unfold finrank
   simp
+
+namespace Algebra
+
+/-- If `S₀ / R₀` and `S₁ / R₁` are algebras, `i : R₀ ≃+* R₁` and `j : S₀ ≃+* S₁` are
+ring isomorphisms, such that `R₀ → R₁ → S₁` and `R₀ → S₀ → S₁` commute,
+then the finrank of `S₀ / R₀` is equal to the finrank of `S₁ / R₁`. -/
+theorem finrank_eq_of_equiv_equiv {R₀ S₀ : Type*} [CommSemiring R₀] [Semiring S₀] [Algebra R₀ S₀]
+    {R₁ S₁ : Type*} [CommSemiring R₁] [Semiring S₁] [Algebra R₁ S₁] (i : R₀ ≃+* R₁) (j : S₀ ≃+* S₁)
+    (hc : (algebraMap R₁ S₁).comp i.toRingHom = j.toRingHom.comp (algebraMap R₀ S₀)) :
+    Module.finrank R₀ S₀ = Module.finrank R₁ S₁ := by
+  simpa using (congr_arg Cardinal.toNat (lift_rank_eq_of_equiv_equiv i j hc))
+
+end Algebra

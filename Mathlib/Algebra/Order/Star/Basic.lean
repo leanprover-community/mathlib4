@@ -4,12 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Group.Submonoid.Operations
+import Mathlib.Algebra.GroupWithZero.Regular
 import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.Group.Opposite
 import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.Algebra.Star.StarRingHom
 import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Algebra.Star.StarProjection
 
 /-! # Star ordered rings
 
@@ -31,10 +33,10 @@ It is important to note that while a `StarOrderedRing` is an `OrderedAddCommMono
 ## TODO
 
 * In a Banach star algebra without a well-defined square root, the natural ordering is given by the
-positive cone which is the _closure_ of the sums of elements `star r * r`. A weaker version of
-`StarOrderedRing` could be defined for this case (again, see
-[*The positive cone in Banach algebras*][kelleyVaught1953]). Note that the current definition has
-the advantage of not requiring a topology.
+  positive cone which is the _closure_ of the sums of elements `star r * r`. A weaker version of
+  `StarOrderedRing` could be defined for this case (again, see
+  [*The positive cone in Banach algebras*][kelleyVaught1953]). Note that the current definition has
+  the advantage of not requiring a topology.
 -/
 
 open Set
@@ -58,8 +60,8 @@ class StarOrderedRing (R : Type u) [NonUnitalSemiring R] [PartialOrder R]
 namespace StarOrderedRing
 
 -- see note [lower instance priority]
-instance (priority := 100) toOrderedAddCommMonoid [NonUnitalSemiring R] [PartialOrder R]
-    [StarRing R] [StarOrderedRing R] : OrderedAddCommMonoid R where
+instance (priority := 100) toIsOrderedAddMonoid [NonUnitalSemiring R] [PartialOrder R]
+    [StarRing R] [StarOrderedRing R] : IsOrderedAddMonoid R where
   add_le_add_left := fun x y hle z ↦ by
     rw [StarOrderedRing.le_iff] at hle ⊢
     refine hle.imp fun s hs ↦ ?_
@@ -72,11 +74,6 @@ instance (priority := 100) toExistsAddOfLE [NonUnitalSemiring R] [PartialOrder R
   exists_add_of_le h :=
     match (le_iff _ _).mp h with
     | ⟨p, _, hp⟩ => ⟨p, hp⟩
-
--- see note [lower instance priority]
-instance (priority := 100) toOrderedAddCommGroup [NonUnitalRing R] [PartialOrder R]
-    [StarRing R] [StarOrderedRing R] : OrderedAddCommGroup R where
-  add_le_add_left := @add_le_add_left _ _ _ _
 
 /-- To construct a `StarOrderedRing` instance it suffices to show that `x ≤ y` if and only if
 `y = x + star s * s` for some `s : R`.
@@ -168,6 +165,10 @@ theorem mul_star_self_nonneg (r : R) : 0 ≤ r * star r := by
 @[aesop safe apply (rule_sets := [CStarAlgebra])]
 protected theorem IsSelfAdjoint.mul_self_nonneg {a : R} (ha : IsSelfAdjoint a) : 0 ≤ a * a := by
   simpa [ha.star_eq] using star_mul_self_nonneg a
+
+/-- A star projection is non-negative in a star-ordered ring. -/
+theorem IsStarProjection.nonneg {p : R} (hp : IsStarProjection p) : 0 ≤ p :=
+  hp.isIdempotentElem ▸ hp.isSelfAdjoint.mul_self_nonneg
 
 @[aesop safe apply]
 theorem conjugate_nonneg {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ star c * a * c := by
@@ -345,9 +346,9 @@ lemma StarModule.smul_lt_smul_of_pos {a b : A} {c : R} (hab : a < b) (hc : 0 < c
         apply AddSubmonoid.subset_closure
         refine ⟨z • y, ?_⟩
         simp only [star_smul, smul_mul_smul_comm, hz, hy]
-      case zeroc => simpa only [zero_smul] using zero_mem _
+      case zeroc => simp only [zero_smul, zero_mem]
       case addc => exact fun c' d _ _ ↦ by simpa only [add_smul] using add_mem
-    case zero => simpa only [smul_zero] using zero_mem _
+    case zero => simp only [smul_zero, zero_mem]
     case add => exact fun x y _ _ ↦ by simpa only [smul_add] using add_mem
   case ne =>
     refine (smul_ne_zero ?_ ?_).symm
@@ -396,3 +397,15 @@ instance Nat.instStarOrderedRing : StarOrderedRing ℕ where
         (AddSubmonoid.closure_mono <| singleton_subset_iff.2 <| mem_range.2 ⟨1, one_mul _⟩)
         Nat.addSubmonoid_closure_one
     simp [this, le_iff_exists_add]
+
+namespace IsStarProjection
+variable [Ring R] [PartialOrder R] [StarRing R] [StarOrderedRing R] {p : R}
+
+theorem one_sub_nonneg (hp : IsStarProjection p) : 0 ≤ 1 - p := hp.one_sub.nonneg
+
+theorem le_one (hp : IsStarProjection p) : p ≤ 1 := sub_nonneg.mp hp.one_sub_nonneg
+
+theorem mem_Icc (hp : IsStarProjection p) : p ∈ Set.Icc (0 : R) 1 := by
+  simp only [Set.mem_Icc, hp.nonneg, hp.le_one, and_self]
+
+end IsStarProjection

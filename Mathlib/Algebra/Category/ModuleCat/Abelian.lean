@@ -30,7 +30,7 @@ variable {R : Type u} [Ring R] {M N : ModuleCat.{v} R} (f : M ⟶ N)
 /-- In the category of modules, every monomorphism is normal. -/
 def normalMono (hf : Mono f) : NormalMono f where
   Z := of R (N ⧸ LinearMap.range f.hom)
-  g := ofHom f.hom.range.mkQ
+  g := ofHom (LinearMap.range f.hom).mkQ
   w := hom_ext <| LinearMap.range_mkQ_comp _
   isLimit :=
     /- The following [invalid Lean code](https://github.com/leanprover-community/lean/issues/341)

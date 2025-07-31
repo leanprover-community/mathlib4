@@ -36,8 +36,9 @@ coincide with the existing topology and uniformity on matrices.
 
 -/
 
-
+open WithLp
 open scoped Matrix
+
 variable {𝕜 m n l E : Type*}
 
 section EntrywiseSupNorm
@@ -56,11 +57,11 @@ theorem entry_norm_bound_of_unitary {U : Matrix n n 𝕜} (hU : U ∈ Matrix.uni
       apply sq_nonneg
     · rw [Multiset.mem_map]
       use j
-      simp only [eq_self_iff_true, Finset.mem_univ_val, and_self_iff, sq_eq_sq₀]
+      simp only [Finset.mem_univ_val, and_self_iff]
   -- The L2 norm of a row is a diagonal entry of U * Uᴴ
   have diag_eq_norm_sum : (U * Uᴴ) i i = (∑ x : n, ‖U i x‖ ^ 2 : ℝ) := by
-    simp only [Matrix.mul_apply, Matrix.conjTranspose_apply, ← starRingEnd_apply, RCLike.mul_conj,
-      RCLike.normSq_eq_def', RCLike.ofReal_pow]; norm_cast
+    simp only [Matrix.mul_apply, Matrix.conjTranspose_apply, ← starRingEnd_apply, RCLike.mul_conj]
+    norm_cast
   -- The L2 norm of a row is a diagonal entry of U * Uᴴ, real part
   have re_diag_eq_norm_sum : RCLike.re ((U * Uᴴ) i i) = ∑ x : n, ‖U i x‖ ^ 2 := by
     rw [RCLike.ext_iff] at diag_eq_norm_sum
@@ -69,7 +70,7 @@ theorem entry_norm_bound_of_unitary {U : Matrix n n 𝕜} (hU : U ∈ Matrix.uni
   -- Since U is unitary, the diagonal entries of U * Uᴴ are all 1
   have mul_eq_one : U * Uᴴ = 1 := unitary.mul_star_self_of_mem hU
   have diag_eq_one : RCLike.re ((U * Uᴴ) i i) = 1 := by
-    simp only [mul_eq_one, eq_self_iff_true, Matrix.one_apply_eq, RCLike.one_re]
+    simp only [mul_eq_one, Matrix.one_apply_eq, RCLike.one_re]
   -- Putting it all together
   rw [← sq_le_one_iff₀ (norm_nonneg (U i j)), ← diag_eq_one, re_diag_eq_norm_sum]
   exact norm_sum
@@ -113,15 +114,21 @@ lemma coe_toEuclideanCLM_eq_toEuclideanLin (A : Matrix n n 𝕜) :
   rfl
 
 @[simp]
+lemma toEuclideanCLM_toLp (A : Matrix n n 𝕜) (x : n → 𝕜) :
+    toEuclideanCLM (n := n) (𝕜 := 𝕜) A (toLp _ x) = toLp _ (A *ᵥ x) := rfl
+
+@[deprecated toEuclideanCLM_toLp (since := "2025-05-07")]
 lemma toEuclideanCLM_piLp_equiv_symm (A : Matrix n n 𝕜) (x : n → 𝕜) :
     toEuclideanCLM (n := n) (𝕜 := 𝕜) A ((WithLp.equiv _ _).symm x) =
-      (WithLp.equiv _ _).symm (toLin' A x) :=
-  rfl
+      (WithLp.equiv _ _).symm (A *ᵥ x) := rfl
 
 @[simp]
+lemma ofLp_toEuclideanCLM (A : Matrix n n 𝕜) (x : EuclideanSpace 𝕜 n) :
+    ofLp (toEuclideanCLM (n := n) (𝕜 := 𝕜) A x) = A *ᵥ ofLp x := rfl
+
+@[deprecated ofLp_toEuclideanCLM (since := "2025-05-07")]
 lemma piLp_equiv_toEuclideanCLM (A : Matrix n n 𝕜) (x : EuclideanSpace 𝕜 n) :
-    WithLp.equiv _ _ (toEuclideanCLM (n := n) (𝕜 := 𝕜) A x) =
-      toLin' A (WithLp.equiv _ _ x) :=
+    WithLp.equiv _ _ (toEuclideanCLM (n := n) (𝕜 := 𝕜) A x) = A *ᵥ (WithLp.equiv _ _ x) :=
   rfl
 
 /-- An auxiliary definition used only to construct the true `NormedAddCommGroup` (and `Metric`)

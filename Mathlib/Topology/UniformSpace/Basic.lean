@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
+import Mathlib.Data.Rel
 import Mathlib.Order.Filter.SmallSets
 import Mathlib.Topology.UniformSpace.Defs
 import Mathlib.Topology.ContinuousOn
@@ -35,6 +36,7 @@ But it makes a more systematic use of the filter library.
 -/
 
 open Set Filter Topology
+open scoped Uniformity
 
 universe u v ua ub uc ud
 
@@ -43,7 +45,13 @@ universe u v ua ub uc ud
 -/
 
 variable {α : Type ua} {β : Type ub} {γ : Type uc} {δ : Type ud} {ι : Sort*}
-open Uniformity
+
+open scoped Rel in
+lemma IsOpen.relComp [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ] {s : Rel α β}
+    {t : Rel β γ} (hs : IsOpen s) (ht : IsOpen t) : IsOpen (s ○ t) := by
+  conv =>
+    arg 1; equals ⋃ b, (fun p => (p.1, b)) ⁻¹' s ∩ (fun p => (b, p.2)) ⁻¹' t => ext ⟨_, _⟩; simp
+  exact isOpen_iUnion fun a ↦ hs.preimage (by fun_prop) |>.inter <| ht.preimage (by fun_prop)
 
 section UniformSpace
 
@@ -165,7 +173,7 @@ theorem closure_eq_uniformity (s : Set <| α × α) :
   ext ⟨x, y⟩
   simp +contextual only
     [mem_closure_iff_nhds_basis (UniformSpace.hasBasis_nhds_prod x y), mem_iInter, mem_setOf_eq,
-      and_imp, mem_comp_comp, exists_prop, ← mem_inter_iff, inter_comm, Set.Nonempty]
+      and_imp, mem_comp_comp, ← mem_inter_iff, inter_comm, Set.Nonempty]
 
 theorem uniformity_hasBasis_closed :
     HasBasis (𝓤 α) (fun V : Set (α × α) => V ∈ 𝓤 α ∧ IsClosed V) id := by
@@ -376,7 +384,7 @@ instance [Subsingleton α] : Unique (UniformSpace α) where
 abbrev UniformSpace.comap (f : α → β) (u : UniformSpace β) : UniformSpace α where
   uniformity := 𝓤[u].comap fun p : α × α => (f p.1, f p.2)
   symm := by
-    simp only [tendsto_comap_iff, Prod.swap, (· ∘ ·)]
+    simp only [tendsto_comap_iff]
     exact tendsto_swap_uniformity.comp tendsto_comap
   comp := le_trans
     (by
@@ -585,7 +593,7 @@ theorem uniformity_setCoe {s : Set α} [UniformSpace α] :
 
 theorem map_uniformity_set_coe {s : Set α} [UniformSpace α] :
     map (Prod.map (↑) (↑)) (𝓤 s) = 𝓤 α ⊓ 𝓟 (s ×ˢ s) := by
-  rw [uniformity_setCoe, map_comap, range_prod_map, Subtype.range_val]
+  rw [uniformity_setCoe, map_comap, range_prodMap, Subtype.range_val]
 
 theorem uniformContinuous_subtype_val {p : α → Prop} [UniformSpace α] :
     UniformContinuous (Subtype.val : { a : α // p a } → α) :=
@@ -758,8 +766,6 @@ alias UniformContinuous.prod_mk_right := UniformContinuous.prodMk_right
 theorem UniformContinuous.prodMap [UniformSpace δ] {f : α → γ} {g : β → δ}
     (hf : UniformContinuous f) (hg : UniformContinuous g) : UniformContinuous (Prod.map f g) :=
   (hf.comp uniformContinuous_fst).prodMk (hg.comp uniformContinuous_snd)
-
-@[deprecated (since := "2024-10-06")] alias UniformContinuous.prod_map := UniformContinuous.prodMap
 
 theorem toTopologicalSpace_prod {α} {β} [u : UniformSpace α] [v : UniformSpace β] :
     @UniformSpace.toTopologicalSpace (α × β) instUniformSpaceProd =

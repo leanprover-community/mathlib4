@@ -55,7 +55,7 @@ variable [Group α] (s : Subgroup α)
 /-- The equivalence relation corresponding to the partition of a group by left cosets
 of a subgroup. -/
 @[to_additive "The equivalence relation corresponding to the partition of a group by left cosets
- of a subgroup."]
+of a subgroup."]
 def leftRel : Setoid α :=
   MulAction.orbitRel s.op α
 
@@ -82,8 +82,8 @@ instance leftRelDecidable [DecidablePred (· ∈ s)] : DecidableRel (leftRel s).
 
 /-- `α ⧸ s` is the quotient type representing the left cosets of `s`.
   If `s` is a normal subgroup, `α ⧸ s` is a group -/
-@[to_additive "`α ⧸ s` is the quotient type representing the left cosets of `s`.  If `s` is a normal
- subgroup, `α ⧸ s` is a group"]
+@[to_additive "`α ⧸ s` is the quotient type representing the left cosets of `s`. If `s` is a normal
+subgroup, `α ⧸ s` is a group"]
 instance instHasQuotientSubgroup : HasQuotient α (Subgroup α) :=
   ⟨fun s => Quotient (leftRel s)⟩
 
@@ -94,7 +94,7 @@ instance [DecidablePred (· ∈ s)] : DecidableEq (α ⧸ s) :=
 /-- The equivalence relation corresponding to the partition of a group by right cosets of a
 subgroup. -/
 @[to_additive "The equivalence relation corresponding to the partition of a group by right cosets
- of a subgroup."]
+of a subgroup."]
 def rightRel : Setoid α :=
   MulAction.orbitRel s α
 
@@ -123,12 +123,12 @@ def quotientRightRelEquivQuotientLeftRel : Quotient (QuotientGroup.rightRel s) �
   toFun :=
     Quotient.map' (fun g => g⁻¹) fun a b => by
       rw [leftRel_apply, rightRel_apply]
-      exact fun h => (congr_arg (· ∈ s) (by simp [mul_assoc])).mp (s.inv_mem h)
+      exact fun h => (congr_arg (· ∈ s) (by simp)).mp (s.inv_mem h)
       -- Porting note: replace with `by group`
   invFun :=
     Quotient.map' (fun g => g⁻¹) fun a b => by
       rw [leftRel_apply, rightRel_apply]
-      exact fun h => (congr_arg (· ∈ s) (by simp [mul_assoc])).mp (s.inv_mem h)
+      exact fun h => (congr_arg (· ∈ s) (by simp)).mp (s.inv_mem h)
       -- Porting note: replace with `by group`
   left_inv g :=
     Quotient.inductionOn' g fun g =>
@@ -206,16 +206,6 @@ variable (s)
 theorem mk_out_eq_mul (g : α) : ∃ h : s, (mk g : α ⧸ s).out = g * h :=
   ⟨⟨g⁻¹ * (mk g).out, QuotientGroup.eq.mp (mk g).out_eq'.symm⟩, by rw [mul_inv_cancel_left]⟩
 
-@[to_additive QuotientAddGroup.mk_out'_eq_mul]
-alias mk_out'_eq_mul := mk_out_eq_mul
-
--- `alias` doesn't add the deprecation suggestion to the `to_additive` version
--- see https://github.com/leanprover-community/mathlib4/issues/19424
-attribute [deprecated mk_out_eq_mul (since := "2024-10-19")] mk_out'_eq_mul
-attribute [deprecated QuotientAddGroup.mk_out_eq_mul (since := "2024-10-19")]
-QuotientAddGroup.mk_out'_eq_mul
-
-
 variable {s} {a b : α}
 
 @[to_additive (attr := simp)]
@@ -227,7 +217,7 @@ theorem preimage_image_mk (N : Subgroup α) (s : Set α) :
     mk ⁻¹' ((mk : α → α ⧸ N) '' s) = ⋃ x : N, (· * (x : α)) ⁻¹' s := by
   ext x
   simp only [QuotientGroup.eq, SetLike.exists, exists_prop, Set.mem_preimage, Set.mem_iUnion,
-    Set.mem_image, ← eq_inv_mul_iff_mul_eq]
+    Set.mem_image]
   exact
     ⟨fun ⟨y, hs, hN⟩ => ⟨_, N.inv_mem hN, by simpa using hs⟩, fun ⟨z, hz, hxz⟩ =>
       ⟨x * z, hxz, by simpa using hz⟩⟩

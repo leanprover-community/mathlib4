@@ -8,7 +8,6 @@ import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Data.Complex.Basic
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.Data.Real.Star
-import Mathlib.Data.ZMod.Defs
 
 /-!
 # Complex number as a vector space over `ℝ`
@@ -96,7 +95,7 @@ instance (priority := 95) instAlgebraOfReal [CommSemiring R] [Algebra R ℝ] : A
   algebraMap := Complex.ofRealHom.comp (algebraMap R ℝ)
   smul := (· • ·)
   smul_def' := fun r x => by ext <;> simp [smul_re, smul_im, Algebra.smul_def]
-  commutes' := fun r ⟨xr, xi⟩ => by ext <;> simp [smul_re, smul_im, Algebra.commutes]
+  commutes' := fun r ⟨xr, xi⟩ => by ext <;> simp [Algebra.commutes]
 
 instance : StarModule ℝ ℂ :=
   ⟨fun r x => by simp only [star_def, star_trivial, real_smul, map_mul, conj_ofReal]⟩
@@ -123,11 +122,11 @@ theorem algHom_ext ⦃f g : ℂ →ₐ[ℝ] A⦄ (h : f I = g I) : f = g := by
 
 end
 
-open Submodule
+open Module Submodule
 
 /-- `ℂ` has a basis over `ℝ` given by `1` and `I`. -/
 noncomputable def basisOneI : Basis (Fin 2) ℝ ℂ :=
-  Basis.ofEquivFun
+  .ofEquivFun
     { toFun := fun z => ![z.re, z.im]
       invFun := fun c => c 0 + c 1 • I
       left_inv := fun z => by simp
@@ -259,7 +258,7 @@ theorem real_algHom_eq_id_or_conj (f : ℂ →ₐ[ℝ] ℂ) : f = AlgHom.id ℝ 
   exacts [h, conj_I.symm ▸ h]
 
 /-- The natural `LinearEquiv` from `ℂ` to `ℝ × ℝ`. -/
-@[simps! (config := { simpRhs := true }) apply symm_apply_re symm_apply_im]
+@[simps! +simpRhs apply symm_apply_re symm_apply_im]
 def equivRealProdLm : ℂ ≃ₗ[ℝ] ℝ × ℝ :=
   { equivRealProdAddHom with
     map_smul' := fun r c => by simp }
@@ -295,13 +294,23 @@ theorem liftAux_apply (I' : A) (hI') (z : ℂ) : liftAux I' hI' z = algebraMap �
 
 theorem liftAux_apply_I (I' : A) (hI') : liftAux I' hI' I = I' := by simp
 
+@[simp]
+theorem adjoin_I : Algebra.adjoin ℝ {I} = ⊤ := by
+  refine top_unique fun x hx => ?_; clear hx
+  rw [← x.re_add_im, ← smul_eq_mul, ← Complex.coe_algebraMap]
+  exact add_mem (algebraMap_mem _ _) (Subalgebra.smul_mem _ (Algebra.subset_adjoin <| by simp) _)
+
+@[simp]
+theorem range_liftAux (I' : A) (hI') : (liftAux I' hI').range = Algebra.adjoin ℝ {I'} := by
+  simp_rw [← Algebra.map_top, ← adjoin_I, AlgHom.map_adjoin, Set.image_singleton, liftAux_apply_I]
+
 /-- A universal property of the complex numbers, providing a unique `ℂ →ₐ[ℝ] A` for every element
 of `A` which squares to `-1`.
 
 This can be used to embed the complex numbers in the `Quaternion`s.
 
 This isomorphism is named to match the very similar `Zsqrtd.lift`. -/
-@[simps (config := { simpRhs := true })]
+@[simps +simpRhs]
 def lift : { I' : A // I' * I' = -1 } ≃ (ℂ →ₐ[ℝ] A) where
   toFun I' := liftAux I' I'.prop
   invFun F := ⟨F I, by rw [← map_mul, I_mul_I, map_neg, map_one]⟩
@@ -341,7 +350,7 @@ def skewAdjoint.negISMul : skewAdjoint A →ₗ[ℝ] selfAdjoint A where
     simp only [AddSubgroup.coe_add, smul_add, AddMemClass.mk_add_mk]
   map_smul' a b := by
     ext
-    simp only [neg_smul, skewAdjoint.val_smul, AddSubgroup.coe_mk, RingHom.id_apply,
+    simp only [neg_smul, skewAdjoint.val_smul, RingHom.id_apply,
       selfAdjoint.val_smul, smul_neg, neg_inj]
     rw [smul_comm]
 
@@ -466,7 +475,6 @@ def Complex.selfAdjointEquiv : selfAdjoint ℂ ≃ₗ[ℝ] ℝ where
   toFun := fun z ↦ (z : ℂ).re
   invFun := fun x ↦ ⟨x, conj_ofReal x⟩
   left_inv := fun z ↦ Subtype.ext <| conj_eq_iff_re.mp z.property.star_eq
-  right_inv := fun _ ↦ rfl
   map_add' := by simp
   map_smul' := by simp
 
@@ -488,9 +496,9 @@ lemma Complex.coe_realPart (z : ℂ) : (ℜ z : ℂ) = z.re := calc
   (ℜ z : ℂ) = (↑(ℜ (↑z.re + ↑z.im * I))) := by congrm (ℜ $((re_add_im z).symm))
   _         = z.re                       := by
     rw [map_add, AddSubmonoid.coe_add, mul_comm, ← smul_eq_mul, realPart_I_smul]
-    simp [conj_ofReal, ← two_mul]
+    simp
 
-lemma star_mul_self_add_self_mul_star {A : Type*} [NonUnitalRing A] [StarRing A]
+lemma star_mul_self_add_self_mul_star {A : Type*} [NonUnitalNonAssocRing A] [StarRing A]
     [Module ℂ A] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A] [StarModule ℂ A] (a : A) :
     star a * a + a * star a = 2 • (ℜ a * ℜ a + ℑ a * ℑ a) :=
   have a_eq := (realPart_add_I_smul_imaginaryPart a).symm

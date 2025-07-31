@@ -64,7 +64,7 @@ theorem exists_between_finsets [DenselyOrdered α] [NoMinOrder α]
         fun m ↦ ⟨m, fun x hx ↦ (nlo ⟨x, hx⟩).elim, fun y hy ↦ (nhi ⟨y, hy⟩).elim⟩
 
 lemma exists_orderEmbedding_insert [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β]
-    [nonem : Nonempty β]  (S : Finset α) (f : S ↪o β) (a : α) :
+    [nonem : Nonempty β] (S : Finset α) (f : S ↪o β) (a : α) :
     ∃ (g : (insert a S : Finset α) ↪o β),
       g ∘ (Set.inclusion ((S.subset_insert a) : ↑S ⊆ ↑(insert a S))) = f := by
   let Slt := {x ∈ S.attach | x.val < a}.image f
@@ -82,18 +82,18 @@ lemma exists_orderEmbedding_insert [DenselyOrdered β] [NoMinOrder β] [NoMaxOrd
     then if hyS : y ∈ S
       then simpa only [hxS, hyS, ↓reduceDIte, OrderEmbedding.lt_iff_lt, Subtype.mk_lt_mk]
       else
-        obtain rfl := Finset.eq_of_mem_insert_of_not_mem hy hyS
+        obtain rfl := Finset.eq_of_mem_insert_of_notMem hy hyS
         simp only [hxS, hyS, ↓reduceDIte]
         exact hb _ (Finset.mem_image_of_mem _ (Finset.mem_filter.2 ⟨Finset.mem_attach _ _, hxy⟩))
     else
-      obtain rfl := Finset.eq_of_mem_insert_of_not_mem hx hxS
+      obtain rfl := Finset.eq_of_mem_insert_of_notMem hx hxS
       if hyS : y ∈ S
       then
         simp only [hxS, hyS, ↓reduceDIte]
         exact hb' _ (Finset.mem_image_of_mem _ (Finset.mem_filter.2 ⟨Finset.mem_attach _ _, hxy⟩))
-      else simp only [Finset.eq_of_mem_insert_of_not_mem hy hyS, lt_self_iff_false] at hxy
+      else simp only [Finset.eq_of_mem_insert_of_notMem hy hyS, lt_self_iff_false] at hxy
   · ext x
-    simp only [Finset.coe_sort_coe, OrderEmbedding.coe_ofStrictMono, Finset.insert_val,
+    simp only [OrderEmbedding.coe_ofStrictMono, Finset.insert_val,
       Function.comp_apply, Finset.coe_mem, ↓reduceDIte, Subtype.coe_eta]
 
 variable (α β)
@@ -109,7 +109,7 @@ def PartialIso : Type _ :=
 
 namespace PartialIso
 
-instance : Inhabited (PartialIso α β) := ⟨⟨∅, fun _p h _q ↦ (Finset.not_mem_empty _ h).elim⟩⟩
+instance : Inhabited (PartialIso α β) := ⟨⟨∅, fun _p h _q ↦ (Finset.notMem_empty _ h).elim⟩⟩
 
 instance : Preorder (PartialIso α β) := Subtype.preorder _
 
@@ -239,7 +239,8 @@ theorem embedding_from_countable_to_dense [Countable α] [DenselyOrdered β] [No
   rcases our_ideal.directed _ hf _ hg with ⟨m, _hm, fm, gm⟩
   exact (lt_iff_lt_of_cmp_eq_cmp <| m.prop (a₁, _) (fm ha₁) (a₂, _) (gm ha₂)).mp
 
-/-- Any two countable dense, nonempty linear orders without endpoints are order isomorphic. -/
+/-- Any two countable dense, nonempty linear orders without endpoints are order isomorphic. This is
+also known as **Cantor's isomorphism theorem**. -/
 theorem iso_of_countable_dense [Countable α] [DenselyOrdered α] [NoMinOrder α] [NoMaxOrder α]
     [Nonempty α] [Countable β] [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonempty β] :
     Nonempty (α ≃o β) := by

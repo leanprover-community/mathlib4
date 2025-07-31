@@ -145,10 +145,12 @@ theorem mk_apply_of_mem {s : Finset ι} {f : ∀ i : (↑s : Set ι), β i.val} 
   dsimp only [Finset.coe_sort_coe, mk, AddMonoidHom.coe_mk, ZeroHom.coe_mk, DFinsupp.mk_apply]
   rw [dif_pos hn]
 
-theorem mk_apply_of_not_mem {s : Finset ι} {f : ∀ i : (↑s : Set ι), β i.val} {n : ι} (hn : n ∉ s) :
+theorem mk_apply_of_notMem {s : Finset ι} {f : ∀ i : (↑s : Set ι), β i.val} {n : ι} (hn : n ∉ s) :
     mk β s f n = 0 := by
   dsimp only [Finset.coe_sort_coe, mk, AddMonoidHom.coe_mk, ZeroHom.coe_mk, DFinsupp.mk_apply]
   rw [dif_neg hn]
+
+@[deprecated (since := "2025-05-23")] alias mk_apply_of_not_mem := mk_apply_of_notMem
 
 @[simp]
 theorem support_zero [∀ (i : ι) (x : β i), Decidable (x ≠ 0)] : (0 : ⨁ i, β i).support = ∅ :=
@@ -189,7 +191,7 @@ protected theorem induction_on {motive : (⨁ i, β i) → Prop} (x : ⨁ i, β 
 
 /-- If two additive homomorphisms from `⨁ i, β i` are equal on each `of β i y`,
 then they are equal. -/
-theorem addHom_ext {γ : Type*} [AddMonoid γ] ⦃f g : (⨁ i, β i) →+ γ⦄
+theorem addHom_ext {γ : Type*} [AddZeroClass γ] ⦃f g : (⨁ i, β i) →+ γ⦄
     (H : ∀ (i : ι) (y : β i), f (of _ i y) = g (of _ i y)) : f = g :=
   DFinsupp.addHom_ext H
 
@@ -198,7 +200,7 @@ then they are equal.
 
 See note [partially-applied ext lemmas]. -/
 @[ext high]
-theorem addHom_ext' {γ : Type*} [AddMonoid γ] ⦃f g : (⨁ i, β i) →+ γ⦄
+theorem addHom_ext' {γ : Type*} [AddZeroClass γ] ⦃f g : (⨁ i, β i) →+ γ⦄
     (H : ∀ i : ι, f.comp (of _ i) = g.comp (of _ i)) : f = g :=
   addHom_ext fun i => DFunLike.congr_fun <| H i
 
@@ -353,13 +355,16 @@ protected def coeAddMonoidHom {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [
     [AddSubmonoidClass S M] (A : ι → S) : (⨁ i, A i) →+ M :=
   toAddMonoid fun i => AddSubmonoidClass.subtype (A i)
 
-theorem coeAddMonoidHom_eq_dfinsupp_sum [DecidableEq ι]
+theorem coeAddMonoidHom_eq_dfinsuppSum [DecidableEq ι]
     {M S : Type*} [DecidableEq M] [AddCommMonoid M]
     [SetLike S M] [AddSubmonoidClass S M] (A : ι → S) (x : DirectSum ι fun i => A i) :
     DirectSum.coeAddMonoidHom A x = DFinsupp.sum x fun i => (fun x : A i => ↑x) := by
   simp only [DirectSum.coeAddMonoidHom, toAddMonoid, DFinsupp.liftAddHom, AddEquiv.coe_mk,
     Equiv.coe_fn_mk]
   exact DFinsupp.sumAddHom_apply _ x
+
+@[deprecated (since := "2025-04-06")]
+alias coeAddMonoidHom_eq_dfinsupp_sum := coeAddMonoidHom_eq_dfinsuppSum
 
 @[simp]
 theorem coeAddMonoidHom_of {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S M]
@@ -386,7 +391,7 @@ def IsInternal {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S M]
 
 theorem IsInternal.addSubmonoid_iSup_eq_top {M : Type*} [DecidableEq ι] [AddCommMonoid M]
     (A : ι → AddSubmonoid M) (h : IsInternal A) : iSup A = ⊤ := by
-  rw [AddSubmonoid.iSup_eq_mrange_dfinsupp_sumAddHom, AddMonoidHom.mrange_eq_top]
+  rw [AddSubmonoid.iSup_eq_mrange_dfinsuppSumAddHom, AddMonoidHom.mrange_eq_top]
   exact Function.Bijective.surjective h
 
 variable {M S : Type*} [AddCommMonoid M] [SetLike S M] [AddSubmonoidClass S M]

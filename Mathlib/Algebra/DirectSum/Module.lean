@@ -27,7 +27,7 @@ universe u v w u₁
 
 namespace DirectSum
 
-open DirectSum Finsupp
+open DirectSum Finsupp Module
 
 section General
 
@@ -142,16 +142,9 @@ variable (ι M)
 
 /-- Given `Fintype α`, `linearEquivFunOnFintype R` is the natural `R`-linear equivalence
 between `⨁ i, M i` and `∀ i, M i`. -/
-@[simps apply]
+@[simps! apply]
 def linearEquivFunOnFintype [Fintype ι] : (⨁ i, M i) ≃ₗ[R] ∀ i, M i :=
-  { DFinsupp.equivFunOnFintype with
-    toFun := (↑)
-    map_add' := fun f g ↦ by
-      ext
-      rw [add_apply, Pi.add_apply]
-    map_smul' := fun c f ↦ by
-      simp_rw [RingHom.id_apply]
-      rw [DFinsupp.coe_smul] }
+  DFinsupp.linearEquivFunOnFintype
 
 variable {ι M}
 
@@ -164,17 +157,15 @@ theorem linearEquivFunOnFintype_lof [Fintype ι] (i : ι) (m : M i) :
 
 @[simp]
 theorem linearEquivFunOnFintype_symm_single [Fintype ι] (i : ι) (m : M i) :
-    (linearEquivFunOnFintype R ι M).symm (Pi.single i m) = lof R ι M i m := by
-  change (DFinsupp.equivFunOnFintype.symm (Pi.single i m)) = _
-  rw [DFinsupp.equivFunOnFintype_symm_single i m]
-  rfl
+    (linearEquivFunOnFintype R ι M).symm (Pi.single i m) = lof R ι M i m :=
+  DFinsupp.equivFunOnFintype_symm_single i m
 
 end DecidableEq
 
 @[simp]
 theorem linearEquivFunOnFintype_symm_coe [Fintype ι] (f : ⨁ i, M i) :
-    (linearEquivFunOnFintype R ι M).symm f = f := by
-  simp [linearEquivFunOnFintype]
+    (linearEquivFunOnFintype R ι M).symm f = f :=
+  (linearEquivFunOnFintype R ι M).symm_apply_apply _
 
 /-- The natural linear equivalence between `⨁ _ : ι, M` and `M` when `Unique ι`. -/
 protected def lid (M : Type v) (ι : Type* := PUnit) [AddCommMonoid M] [Module R M] [Unique ι] :
@@ -310,7 +301,7 @@ variable {κ : Type*}
 
 /-- Reindexing terms of a direct sum is linear. -/
 def lequivCongrLeft (h : ι ≃ κ) : (⨁ i, M i) ≃ₗ[R] ⨁ k, M (h.symm k) :=
-  { equivCongrLeft h with map_smul' := DFinsupp.comapDomain'_smul h.invFun h.right_inv }
+  DFinsupp.domLCongr h
 
 @[simp]
 theorem lequivCongrLeft_apply (h : ι ≃ κ) (f : ⨁ i, M i) (k : κ) :
@@ -325,7 +316,7 @@ variable {α : ι → Type*} {δ : ∀ i, α i → Type w}
 variable [DecidableEq ι] [∀ i j, AddCommMonoid (δ i j)] [∀ i j, Module R (δ i j)]
 
 /-- `curry` as a linear map. -/
-def sigmaLcurry : (⨁ i : Σ_, _, δ i.1 i.2) →ₗ[R] ⨁ (i) (j), δ i j :=
+def sigmaLcurry : (⨁ i : Σ _, _, δ i.1 i.2) →ₗ[R] ⨁ (i) (j), δ i j :=
   { sigmaCurry with map_smul' := fun r ↦ by convert DFinsupp.sigmaCurry_smul (δ := δ) r }
 
 @[simp]
@@ -334,7 +325,7 @@ theorem sigmaLcurry_apply (f : ⨁ i : Σ _, _, δ i.1 i.2) (i : ι) (j : α i) 
   sigmaCurry_apply f i j
 
 /-- `uncurry` as a linear map. -/
-def sigmaLuncurry : (⨁ (i) (j), δ i j) →ₗ[R] ⨁ i : Σ_, _, δ i.1 i.2 :=
+def sigmaLuncurry : (⨁ (i) (j), δ i j) →ₗ[R] ⨁ i : Σ _, _, δ i.1 i.2 :=
   { sigmaUncurry with map_smul' := DFinsupp.sigmaUncurry_smul }
 
 @[simp]
@@ -343,8 +334,8 @@ theorem sigmaLuncurry_apply (f : ⨁ (i) (j), δ i j) (i : ι) (j : α i) :
   sigmaUncurry_apply f i j
 
 /-- `curryEquiv` as a linear equiv. -/
-def sigmaLcurryEquiv : (⨁ i : Σ_, _, δ i.1 i.2) ≃ₗ[R] ⨁ (i) (j), δ i j :=
-  { sigmaCurryEquiv, sigmaLcurry R with }
+def sigmaLcurryEquiv : (⨁ i : Σ _, _, δ i.1 i.2) ≃ₗ[R] ⨁ (i) (j), δ i j :=
+  DFinsupp.sigmaCurryLEquiv
 
 end Sigma
 
@@ -376,12 +367,15 @@ indexed by `ι`. This is `DirectSum.coeAddMonoidHom` as a `LinearMap`. -/
 def coeLinearMap : (⨁ i, A i) →ₗ[R] M :=
   toModule R ι M fun i ↦ (A i).subtype
 
-theorem coeLinearMap_eq_dfinsupp_sum [DecidableEq M] (x : DirectSum ι fun i => A i) :
+theorem coeLinearMap_eq_dfinsuppSum [DecidableEq M] (x : DirectSum ι fun i => A i) :
     coeLinearMap A x = DFinsupp.sum x fun i => (fun x : A i => ↑x) := by
   simp only [coeLinearMap, toModule, DFinsupp.lsum, LinearEquiv.coe_mk, LinearMap.coe_mk,
     AddHom.coe_mk]
   rw [DFinsupp.sumAddHom_apply]
   simp only [LinearMap.toAddMonoidHom_coe, Submodule.coe_subtype]
+
+@[deprecated (since := "2025-04-06")]
+alias coeLinearMap_eq_dfinsupp_sum := coeLinearMap_eq_dfinsuppSum
 
 @[simp]
 theorem coeLinearMap_of (i : ι) (x : A i) : DirectSum.coeLinearMap A (of (fun i ↦ A i) i x) = x :=
@@ -556,14 +550,14 @@ alias isInternal_biSup_submodule_of_independent := isInternal_biSup_submodule_of
 
 theorem IsInternal.addSubmonoid_iSupIndep {M : Type*} [AddCommMonoid M] {A : ι → AddSubmonoid M}
     (h : IsInternal A) : iSupIndep A :=
-  iSupIndep_of_dfinsupp_sumAddHom_injective _ h.injective
+  iSupIndep_of_dfinsuppSumAddHom_injective _ h.injective
 
 @[deprecated (since := "2024-11-24")]
 alias IsInternal.addSubmonoid_independent := IsInternal.addSubmonoid_iSupIndep
 
 theorem IsInternal.addSubgroup_iSupIndep {G : Type*} [AddCommGroup G] {A : ι → AddSubgroup G}
     (h : IsInternal A) : iSupIndep A :=
-  iSupIndep_of_dfinsupp_sumAddHom_injective' _ h.injective
+  iSupIndep_of_dfinsuppSumAddHom_injective' _ h.injective
 
 @[deprecated (since := "2024-11-24")]
 alias IsInternal.addSubgroup_independent := IsInternal.addSubgroup_iSupIndep

@@ -29,8 +29,7 @@ In this case the first condition is automatic, and in the second condition we ma
 
 * `HenselianRing`: a typeclass on commutative rings,
   asserting that the ring is Henselian at the ideal `I`.
-* `HenselianLocalRing`: a typeclass on commutative rings,
-   asserting that the ring is local Henselian.
+* `HenselianLocalRing`: a typeclass on commutative rings, asserting that the ring is local Henselian
 * `Field.henselian`: fields are Henselian local rings
 * `Henselian.TFAE`: equivalent ways of expressing the Henselian property for local rings
 * `IsAdicComplete.henselianRing`:
@@ -58,7 +57,7 @@ noncomputable section
 
 universe u v
 
-open Polynomial IsLocalRing Polynomial Function List
+open Polynomial IsLocalRing Function List
 
 theorem isLocalHom_of_le_jacobson_bot {R : Type*} [CommRing R] (I : Ideal R)
     (h : I ≤ Ideal.jacobson ⊥) : IsLocalHom (Ideal.Quotient.mk I) := by
@@ -78,9 +77,6 @@ theorem isLocalHom_of_le_jacobson_bot {R : Type*} [CommRing R] (I : Ideal R)
   specialize h1 1
   simp? at h1 says simp only [mul_one, sub_add_cancel, IsUnit.mul_iff] at h1
   exact h1.1
-
-@[deprecated (since := "2024-10-10")]
-alias isLocalRingHom_of_le_jacobson_bot := isLocalHom_of_le_jacobson_bot
 
 /-- A ring `R` is *Henselian* at an ideal `I` if the following condition holds:
 for every polynomial `f` over `R`, with a *simple* root `a₀` over the quotient ring `R/I`,
@@ -179,7 +175,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
       let c : ℕ → R := fun n => Nat.recOn n a₀ fun _ b => b - f.eval b * Ring.inverse (f'.eval b)
       have hc : ∀ n, c (n + 1) = c n - f.eval (c n) * Ring.inverse (f'.eval (c n)) := by
         intro n
-        simp only [c, Nat.rec_add_one]
+        simp only [c]
       -- we now spend some time determining properties of the sequence `c : ℕ → R`
       -- `hc_mod`: for every `n`, we have `c n ≡ a₀ [SMOD I]`
       -- `hf'c`  : for every `n`, `f'.eval (c n)` is a unit

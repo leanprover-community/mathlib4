@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Topology.Continuous
 import Mathlib.Topology.NhdsSet
 
 /-!
@@ -40,7 +41,7 @@ def SeparatedNhds : Set X → Set X → Prop := fun s t : Set X =>
   ∃ U V : Set X, IsOpen U ∧ IsOpen V ∧ s ⊆ U ∧ t ⊆ V ∧ Disjoint U V
 
 theorem separatedNhds_iff_disjoint {s t : Set X} : SeparatedNhds s t ↔ Disjoint (𝓝ˢ s) (𝓝ˢ t) := by
-  simp only [(hasBasis_nhdsSet s).disjoint_iff (hasBasis_nhdsSet t), SeparatedNhds, exists_prop, ←
+  simp only [(hasBasis_nhdsSet s).disjoint_iff (hasBasis_nhdsSet t), SeparatedNhds, ←
     exists_and_left, and_assoc, and_comm, and_left_comm]
 
 alias ⟨SeparatedNhds.disjoint_nhdsSet, _⟩ := separatedNhds_iff_disjoint
@@ -65,8 +66,8 @@ theorem hasSeparatingCovers_iff_separatedNhds {s t : Set X} :
       rcases h₀_cov xinh with ⟨un , ⟨n, rfl⟩ , xinun⟩
       simp only [mem_iUnion]
       refine ⟨n, xinun, ?_⟩
-      simp_all only [closure_iUnion₂_le_nat, disjoint_right, mem_setOf_eq, mem_iUnion,
-        exists_false, exists_const, not_false_eq_true]
+      simp_all only [closure_iUnion₂_le_nat, disjoint_right, mem_iUnion,
+        exists_false, not_false_eq_true]
     refine
       ⟨⋃ n : ℕ, u n \ (closure (⋃ m ≤ n, v m)),
        ⋃ n : ℕ, v n \ (closure (⋃ m ≤ n, u m)),

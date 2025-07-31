@@ -6,13 +6,13 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 import Mathlib.Data.Nat.Init
 import Mathlib.Logic.Nontrivial.Defs
 import Mathlib.Tactic.Contrapose
-import Mathlib.Tactic.GCongr.CoreAttrs
+import Mathlib.Tactic.GCongr.Core
 import Mathlib.Util.AssertExists
 
 /-!
 # Basic operations on the natural numbers
 
-This file builds on `Mathlib.Data.Nat.Init` by adding basic lemmas on natural numbers
+This file builds on `Mathlib/Data/Nat/Init.lean` by adding basic lemmas on natural numbers
 depending on Mathlib definitions.
 
 See note [foundational algebra order theory].
@@ -34,10 +34,10 @@ instance instLinearOrder : LinearOrder ℕ where
   le_antisymm := @Nat.le_antisymm
   le_total := @Nat.le_total
   lt := Nat.lt
-  lt_iff_le_not_le := @Nat.lt_iff_le_not_le
-  decidableLT := inferInstance
-  decidableLE := inferInstance
-  decidableEq := inferInstance
+  lt_iff_le_not_ge := @Nat.lt_iff_le_not_le
+  toDecidableLT := inferInstance
+  toDecidableLE := inferInstance
+  toDecidableEq := inferInstance
 
 -- Shortcut instances
 instance : Preorder ℕ := inferInstance
@@ -56,23 +56,8 @@ lemma succ_injective : Injective Nat.succ := @succ.inj
 
 /-! ### `div` -/
 
-protected lemma div_mul_div_le (a b c d : ℕ) :
-    (a / b) * (c / d) ≤ (a * c) / (b * d) := by
-  if hb : b = 0 then simp [hb] else
-  if hd : d = 0 then simp [hd] else
-  have hbd : b * d ≠ 0 := Nat.mul_ne_zero hb hd
-  rw [le_div_iff_mul_le (Nat.pos_of_ne_zero hbd)]
-  transitivity ((a / b) * b) * ((c / d) * d)
-  · apply Nat.le_of_eq; simp only [Nat.mul_assoc, Nat.mul_left_comm]
-  · apply Nat.mul_le_mul <;> apply div_mul_le_self
-
 /-!
 ### `pow`
-
-#### TODO
-
-* Rename `Nat.pow_le_pow_of_le_left` to `Nat.pow_le_pow_left`, protect it, remove the alias
-* Rename `Nat.pow_le_pow_of_le_right` to `Nat.pow_le_pow_right`, protect it, remove the alias
 -/
 
 lemma pow_left_injective (hn : n ≠ 0) : Injective (fun a : ℕ ↦ a ^ n) := by
@@ -81,20 +66,6 @@ lemma pow_left_injective (hn : n ≠ 0) : Injective (fun a : ℕ ↦ a ^ n) := b
 protected lemma pow_right_injective (ha : 2 ≤ a) : Injective (a ^ ·) := by
   simp [Injective, le_antisymm_iff, Nat.pow_le_pow_iff_right ha]
 
-protected lemma pow_right_inj (ha : 2 ≤ a) : a ^ m = a ^ n ↔ m = n :=
-  (Nat.pow_right_injective ha).eq_iff
-
-@[simp] protected lemma pow_eq_one : a ^ n = 1 ↔ a = 1 ∨ n = 0 := by
-  obtain rfl | hn := eq_or_ne n 0
-  · simp
-  · simpa [hn] using Nat.pow_left_inj hn (b := 1)
-
-/-- For `a > 1`, `a ^ b = a` iff `b = 1`. -/
-lemma pow_eq_self_iff {a b : ℕ} (ha : 1 < a) : a ^ b = a ↔ b = 1 :=
-  (Nat.pow_right_injective ha).eq_iff' a.pow_one
-
-@[simp] protected lemma pow_le_one_iff (hn : n ≠ 0) : a ^ n ≤ 1 ↔ a ≤ 1 := by
-  rw [← not_lt, one_lt_pow_iff hn, not_lt]
 
 /-!
 ### Recursion and induction principles

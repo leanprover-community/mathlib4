@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
 import Batteries.Data.List.Pairwise
+import Batteries.Data.List.Perm
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.TakeWhile
@@ -109,9 +110,10 @@ protected theorem Sorted.filter {l : List α} (f : α → Bool) (h : Sorted r l)
 
 theorem eq_of_perm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (hp : l₁ ~ l₂) (hs₁ : Sorted r l₁)
     (hs₂ : Sorted r l₂) : l₁ = l₂ := by
-  induction' hs₁ with a l₁ h₁ hs₁ IH generalizing l₂
-  · exact hp.nil_eq
-  · have : a ∈ l₂ := hp.subset mem_cons_self
+  induction hs₁ generalizing l₂ with
+  | nil => exact hp.nil_eq
+  | @cons a l₁ h₁ hs₁ IH =>
+    have : a ∈ l₂ := hp.subset mem_cons_self
     rcases append_of_mem this with ⟨u₂, v₂, rfl⟩
     have hp' := (perm_cons a).1 (hp.trans perm_middle)
     obtain rfl := IH hp' (hs₂.sublist <| by simp)
@@ -124,6 +126,10 @@ theorem eq_of_perm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (hp : l₁ 
         (@eq_replicate_iff _ a (length u₂ + 1) (u₂ ++ [a])).2] <;>
         constructor <;>
       simp [iff_true_intro this, or_comm]
+
+theorem Sorted.eq_of_mem_iff [IsAntisymm α r] [IsIrrefl α r] {l₁ l₂ : List α}
+    (h₁ : Sorted r l₁) (h₂ : Sorted r l₂) (h : ∀ a : α, a ∈ l₁ ↔ a ∈ l₂) : l₁ = l₂ :=
+  eq_of_perm_of_sorted ((perm_ext_iff_of_nodup h₁.nodup h₂.nodup).2 h) h₁ h₂
 
 theorem sublist_of_subperm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (hp : l₁ <+~ l₂)
     (hs₁ : l₁.Sorted r) (hs₂ : l₂.Sorted r) : l₁ <+ l₂ := by
@@ -138,8 +144,31 @@ theorem sorted_lt_range (n : ℕ) : Sorted (· < ·) (range n) := by
   rw [Sorted, pairwise_iff_get]
   simp
 
+theorem sorted_replicate (n : ℕ) (a : α) : Sorted r (replicate n a) ↔ n ≤ 1 ∨ r a a :=
+  pairwise_replicate
+
+theorem sorted_le_replicate (n : ℕ) (a : α) [Preorder α] : Sorted (· ≤ ·) (replicate n a) := by
+  simp [sorted_replicate]
+
 theorem sorted_le_range (n : ℕ) : Sorted (· ≤ ·) (range n) :=
   (sorted_lt_range n).le_of_lt
+
+lemma sorted_lt_range' (a b) {s} (hs : s ≠ 0) :
+    Sorted (· < ·) (range' a b s) := by
+  induction b generalizing a with
+  | zero => simp
+  | succ n ih =>
+    rw [List.range'_succ]
+    refine List.sorted_cons.mpr ⟨fun b hb ↦ ?_, @ih (a + s)⟩
+    exact lt_of_lt_of_le (Nat.lt_add_of_pos_right (Nat.zero_lt_of_ne_zero hs))
+      (List.left_le_of_mem_range' hb)
+
+lemma sorted_le_range' (a b s) :
+    Sorted (· ≤ ·) (range' a b s) := by
+  by_cases hs : s ≠ 0
+  · exact (sorted_lt_range' a b hs).le_of_lt
+  · rw [ne_eq, Decidable.not_not] at hs
+    simpa [hs] using sorted_le_replicate b a
 
 theorem Sorted.rel_get_of_lt {l : List α} (h : l.Sorted r) {a b : Fin l.length} (hab : a < b) :
     r (l.get a) (l.get b) :=
@@ -201,6 +230,23 @@ alias ⟨_, _root_.Monotone.ofFn_sorted⟩ := sorted_le_ofFn_iff
 alias ⟨_, _root_.Antitone.ofFn_sorted⟩ := sorted_ge_ofFn_iff
 
 end Monotone
+
+lemma Sorted.filterMap {α β : Type*} {p : α → Option β} {l : List α}
+    {r : α → α → Prop} {r' : β → β → Prop} (hl : l.Sorted r)
+    (hp : ∀ (a b : α) (c d : β), p a = some c → p b = some d → r a b → r' c d) :
+    (l.filterMap p).Sorted r' := by
+  induction l with
+  | nil => simp
+  | cons a l ih =>
+    rw [List.filterMap_cons]
+    cases ha : p a with
+    | none =>
+      exact ih (List.sorted_cons.mp hl).right
+    | some b =>
+      rw [List.sorted_cons]
+      refine ⟨fun x hx ↦ ?_, ih (List.sorted_cons.mp hl).right⟩
+      obtain ⟨u, hu, hu'⟩ := List.mem_filterMap.mp hx
+      exact hp a u b x ha hu' <| (List.sorted_cons.mp hl).left u hu
 
 end List
 
@@ -382,7 +428,7 @@ theorem mem_orderedInsert {a b : α} {l : List α} :
   | x :: xs => by
     rw [orderedInsert]
     split_ifs
-    · simp [orderedInsert]
+    · simp
     · rw [mem_cons, mem_cons, mem_orderedInsert, or_left_comm]
 
 theorem map_orderedInsert (f : α → β) (l : List α) (x : α)
@@ -392,14 +438,12 @@ theorem map_orderedInsert (f : α → β) (l : List α) (x : α)
   | nil => simp
   | cons x xs ih =>
     rw [List.forall_mem_cons] at hl₁ hl₂
-    simp only [List.map, List.orderedInsert, ← hl₁.1, ← hl₂.1]
+    simp only [List.map, List.orderedInsert, ← hl₂.1]
     split_ifs
     · rw [List.map, List.map]
     · rw [List.map, ih (fun _ ha => hl₁.2 _ ha) (fun _ ha => hl₂.2 _ ha)]
 
 section Correctness
-
-open Perm
 
 theorem perm_orderedInsert (a) : ∀ l : List α, orderedInsert r a l ~ a :: l
   | [] => Perm.refl _
@@ -469,12 +513,15 @@ theorem erase_orderedInsert [DecidableEq α] [IsRefl α r] (x : α) (xs : List �
   simp [refl x] at h
 
 /-- Inserting then erasing an element that is absent is the identity. -/
-theorem erase_orderedInsert_of_not_mem [DecidableEq α]
+theorem erase_orderedInsert_of_notMem [DecidableEq α]
     {x : α} {xs : List α} (hx : x ∉ xs) :
     (xs.orderedInsert r x).erase x = xs := by
   rw [orderedInsert_eq_take_drop, erase_append_right, List.erase_cons_head,
     takeWhile_append_dropWhile]
   exact mt ((takeWhile_prefix _).sublist.subset ·) hx
+
+@[deprecated (since := "2025-05-23")]
+alias erase_orderedInsert_of_not_mem := erase_orderedInsert_of_notMem
 
 /-- For an antisymmetric relation, erasing then inserting is the identity. -/
 theorem orderedInsert_erase [DecidableEq α] [IsAntisymm α r] (x : α) (xs : List α) (hx : x ∈ xs)

@@ -26,7 +26,8 @@ open OrderDual (toDual ofDual)
 nonnegative norm `norm : R → 𝕜`, where `𝕜` is a linear ordered field, and the open balls
 `{ x | norm x < ε }`, `ε > 0`, form a basis of neighborhoods of zero, then `R` is a topological
 ring. -/
-theorem IsTopologicalRing.of_norm {R 𝕜 : Type*} [NonUnitalNonAssocRing R] [LinearOrderedField 𝕜]
+theorem IsTopologicalRing.of_norm {R 𝕜 : Type*} [NonUnitalNonAssocRing R]
+    [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
     [TopologicalSpace R] [IsTopologicalAddGroup R] (norm : R → 𝕜)
     (norm_nonneg : ∀ x, 0 ≤ norm x) (norm_mul_le : ∀ x y, norm (x * y) ≤ norm x * norm y)
     (nhds_basis : (𝓝 (0 : R)).HasBasis ((0 : 𝕜) < ·) (fun ε ↦ { x | norm x < ε })) :
@@ -41,7 +42,7 @@ theorem IsTopologicalRing.of_norm {R 𝕜 : Type*} [NonUnitalNonAssocRing R] [Li
   case hmul =>
     refine ((nhds_basis.prod nhds_basis).tendsto_iff nhds_basis).2 fun ε ε0 ↦ ?_
     refine ⟨(1, ε), ⟨one_pos, ε0⟩, fun (x, y) ⟨hx, hy⟩ => ?_⟩
-    simp only [sub_zero] at *
+    simp only at *
     calc norm (x * y) ≤ norm x * norm y := norm_mul_le _ _
     _ < ε := (mul_le_of_le_one_left (norm_nonneg _) hx.le).trans_lt hy
   case hmul_left => exact fun x => h0 _ (norm x) (norm_nonneg _) (norm_mul_le x)
@@ -49,11 +50,12 @@ theorem IsTopologicalRing.of_norm {R 𝕜 : Type*} [NonUnitalNonAssocRing R] [Li
     exact fun y => h0 (· * y) (norm y) (norm_nonneg y) fun x =>
       (norm_mul_le x y).trans_eq (mul_comm _ _)
 
-variable {𝕜 α : Type*} [LinearOrderedField 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜]
+variable {𝕜 α : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+  [TopologicalSpace 𝕜] [OrderTopology 𝕜]
   {l : Filter α} {f g : α → 𝕜}
 
 -- see Note [lower instance priority]
-instance (priority := 100) LinearOrderedField.topologicalRing : IsTopologicalRing 𝕜 :=
+instance (priority := 100) IsStrictOrderedRing.topologicalRing : IsTopologicalRing 𝕜 :=
   .of_norm abs abs_nonneg (fun _ _ ↦ (abs_mul _ _).le) <| by
     simpa using nhds_basis_abs_sub_lt (0 : 𝕜)
 
@@ -163,15 +165,21 @@ theorem tendsto_inv_atTop_zero : Tendsto (fun r : 𝕜 => r⁻¹) atTop (𝓝 0)
   tendsto_inv_atTop_nhdsGT_zero.mono_right inf_le_left
 
 /-- The function `x ↦ x⁻¹` tends to `-∞` on the left of `0`. -/
-theorem tendsto_inv_zero_atBot : Tendsto (fun x : 𝕜 => x⁻¹) (𝓝[<] (0 : 𝕜)) atBot :=
+theorem tendsto_inv_nhdsLT_zero : Tendsto (fun x : 𝕜 => x⁻¹) (𝓝[<] (0 : 𝕜)) atBot :=
   inv_nhdsLT_zero.le
 
+@[deprecated (since := "2025-04-23")]
+alias tendsto_inv_zero_atBot := tendsto_inv_nhdsLT_zero
+
 /-- The function `r ↦ r⁻¹` tends to `0` on the left as `r → -∞`. -/
-theorem tendsto_inv_atBot_zero' : Tendsto (fun r : 𝕜 => r⁻¹) atBot (𝓝[<] (0 : 𝕜)) :=
+theorem tendsto_inv_atBot_nhdsLT_zero : Tendsto (fun r : 𝕜 => r⁻¹) atBot (𝓝[<] (0 : 𝕜)) :=
   inv_atBot₀.le
 
+@[deprecated (since := "2025-04-23")]
+alias tendsto_inv_atBot_zero' := tendsto_inv_atBot_nhdsLT_zero
+
 theorem tendsto_inv_atBot_zero : Tendsto (fun r : 𝕜 => r⁻¹) atBot (𝓝 0) :=
-  tendsto_inv_atBot_zero'.mono_right inf_le_left
+  tendsto_inv_atBot_nhdsLT_zero.mono_right inf_le_left
 
 theorem Filter.Tendsto.div_atTop {a : 𝕜} (h : Tendsto f l (𝓝 a)) (hg : Tendsto g l atTop) :
     Tendsto (fun x => f x / g x) l (𝓝 0) := by
@@ -183,11 +191,11 @@ theorem Filter.Tendsto.div_atBot {a : 𝕜} (h : Tendsto f l (𝓝 a)) (hg : Ten
   simp only [div_eq_mul_inv]
   exact mul_zero a ▸ h.mul (tendsto_inv_atBot_zero.comp hg)
 
-lemma Filter.Tendsto.const_div_atTop (hg : Tendsto g l atTop) (r : 𝕜)  :
+lemma Filter.Tendsto.const_div_atTop (hg : Tendsto g l atTop) (r : 𝕜) :
     Tendsto (fun n ↦ r / g n) l (𝓝 0) :=
   tendsto_const_nhds.div_atTop hg
 
-lemma Filter.Tendsto.const_div_atBot (hg : Tendsto g l atBot) (r : 𝕜)  :
+lemma Filter.Tendsto.const_div_atBot (hg : Tendsto g l atBot) (r : 𝕜) :
     Tendsto (fun n ↦ r / g n) l (𝓝 0) :=
   tendsto_const_nhds.div_atBot hg
 
@@ -204,7 +212,7 @@ theorem Filter.Tendsto.inv_tendsto_nhdsGT_zero (h : Tendsto f l (𝓝[>] 0)) : T
 alias Filter.Tendsto.inv_tendsto_zero := Filter.Tendsto.inv_tendsto_nhdsGT_zero
 
 theorem Filter.Tendsto.inv_tendsto_nhdsLT_zero (h : Tendsto f l (𝓝[<] 0)) : Tendsto f⁻¹ l atBot :=
-  tendsto_inv_zero_atBot.comp h
+  tendsto_inv_nhdsLT_zero.comp h
 
 /-- If `g` tends to zero and there exists a constant `C : 𝕜` such that eventually `|f x| ≤ C`,
   then the product `f * g` tends to zero. -/
@@ -244,7 +252,7 @@ theorem tendsto_bdd_div_atTop_nhds_zero {f g : α → 𝕜} {b B : 𝕜}
 A version for positive real powers exists as `tendsto_rpow_neg_atTop`. -/
 theorem tendsto_pow_neg_atTop {n : ℕ} (hn : n ≠ 0) :
     Tendsto (fun x : 𝕜 => x ^ (-(n : ℤ))) atTop (𝓝 0) := by
-  simpa only [zpow_neg, zpow_natCast] using (@tendsto_pow_atTop 𝕜 _ _ hn).inv_tendsto_atTop
+  simpa only [zpow_neg, zpow_natCast] using (tendsto_pow_atTop (α := 𝕜) hn).inv_tendsto_atTop
 
 theorem tendsto_zpow_atTop_zero {n : ℤ} (hn : n < 0) :
     Tendsto (fun x : 𝕜 => x ^ n) atTop (𝓝 0) := by
@@ -287,8 +295,9 @@ theorem tendsto_const_mul_zpow_atTop_nhds_iff {n : ℤ} {c d : 𝕜} (hc : c ≠
     · exact h.2.symm ▸ tendsto_const_mul_zpow_atTop_zero h.1
 
 -- see Note [lower instance priority]
-instance (priority := 100) LinearOrderedSemifield.toHasContinuousInv₀ {𝕜}
-    [LinearOrderedSemifield 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜] [ContinuousMul 𝕜] :
+instance (priority := 100) IsStrictOrderedRing.toHasContinuousInv₀ {𝕜}
+    [Semifield 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+    [TopologicalSpace 𝕜] [OrderTopology 𝕜] [ContinuousMul 𝕜] :
     HasContinuousInv₀ 𝕜 := .of_nhds_one <| tendsto_order.2 <| by
   refine ⟨fun x hx => ?_, fun x hx => ?_⟩
   · obtain ⟨x', h₀, hxx', h₁⟩ : ∃ x', 0 < x' ∧ x ≤ x' ∧ x' < 1 :=
@@ -299,11 +308,11 @@ instance (priority := 100) LinearOrderedSemifield.toHasContinuousInv₀ {𝕜}
   · filter_upwards [Ioi_mem_nhds (inv_lt_one_of_one_lt₀ hx)] with y hy
     exact inv_lt_of_inv_lt₀ (by positivity) hy
 
-instance (priority := 100) LinearOrderedField.toIsTopologicalDivisionRing :
+instance (priority := 100) IsStrictOrderedRing.toIsTopologicalDivisionRing :
     IsTopologicalDivisionRing 𝕜 := ⟨⟩
 
 @[deprecated (since := "2025-03-25")] alias LinearOrderedField.toTopologicalDivisionRing :=
-  LinearOrderedField.toIsTopologicalDivisionRing
+  IsStrictOrderedRing.toIsTopologicalDivisionRing
 
 -- TODO: generalize to a `GroupWithZero`
 theorem comap_mulLeft_nhdsGT_zero {x : 𝕜} (hx : 0 < x) : comap (x * ·) (𝓝[>] 0) = 𝓝[>] 0 := by

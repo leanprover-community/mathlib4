@@ -14,10 +14,10 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
 
 ## Main definitions
 
- * `IsLocalization.Away (x : R) S` expresses that `S` is a localization away from `x`, as an
-   abbreviation of `IsLocalization (Submonoid.powers x) S`.
- * `exists_reduced_fraction' (hb : b ≠ 0)` produces a reduced fraction of the form `b = a * x^n` for
-   some `n : ℤ` and some `a : R` that is not divisible by `x`.
+* `IsLocalization.Away (x : R) S` expresses that `S` is a localization away from `x`, as an
+  abbreviation of `IsLocalization (Submonoid.powers x) S`.
+* `exists_reduced_fraction' (hb : b ≠ 0)` produces a reduced fraction of the form `b = a * x^n` for
+  some `n : ℤ` and some `a : R` that is not divisible by `x`.
 
 ## Implementation notes
 
@@ -77,6 +77,9 @@ lemma algebraMap_pow_isUnit (n : ℕ) : IsUnit (algebraMap R S x ^ n) :=
 
 lemma algebraMap_isUnit : IsUnit (algebraMap R S x) :=
   IsLocalization.map_units _ (⟨x, 1, by simp⟩ : Submonoid.powers x)
+
+lemma algebraMap_isUnit_iff {y : R} : IsUnit (algebraMap R S y) ↔ ∃ n, y ∣ x ^ n :=
+  (IsLocalization.algebraMap_isUnit_iff <| .powers x).trans <| by simp [Submonoid.mem_powers_iff]
 
 lemma surj (z : S) : ∃ (n : ℕ) (a : R), z * algebraMap R S x ^ n = algebraMap R S a := by
   obtain ⟨⟨a, ⟨-, n, rfl⟩⟩, h⟩ := IsLocalization.surj (Submonoid.powers x) z
@@ -366,7 +369,7 @@ noncomputable abbrev awayLift (f : R →+* P) (r : R) (hr : IsUnit (f r)) :
     Localization.Away r →+* P :=
   IsLocalization.Away.lift r hr
 
-lemma awayLift_mk {A : Type*} [CommRing A] (f : R →+* A) (r : R)
+lemma awayLift_mk {A : Type*} [CommSemiring A] (f : R →+* A) (r : R)
     (a : R) (v : A) (hv : f r * v = 1) (j : ℕ) :
     Localization.awayLift f r (isUnit_iff_exists_inv.mpr ⟨v, hv⟩)
       (Localization.mk a ⟨r ^ j, j, rfl⟩) = f a * v ^ j := by
@@ -478,7 +481,7 @@ theorem selfZPow_zero : selfZPow x B 0 = 1 := by
 
 theorem selfZPow_of_neg {n : ℤ} (hn : n < 0) :
     selfZPow x B n = mk' _ (1 : R) (Submonoid.pow x n.natAbs) :=
-  dif_neg hn.not_le
+  dif_neg hn.not_ge
 
 theorem selfZPow_of_nonpos {n : ℤ} (hn : n ≤ 0) :
     selfZPow x B n = mk' _ (1 : R) (Submonoid.pow x n.natAbs) := by
@@ -496,13 +499,13 @@ theorem selfZPow_sub_natCast {n m : ℕ} :
   by_cases h : m ≤ n
   · rw [IsLocalization.eq_mk'_iff_mul_eq, Submonoid.pow_apply, Subtype.coe_mk, ← Int.ofNat_sub h,
       selfZPow_natCast, ← map_pow, ← map_mul, ← pow_add, Nat.sub_add_cancel h]
-  · rw [← neg_sub, ← Int.ofNat_sub (le_of_not_le h), selfZPow_neg_natCast,
+  · rw [← neg_sub, ← Int.ofNat_sub (le_of_not_ge h), selfZPow_neg_natCast,
       IsLocalization.mk'_eq_iff_eq]
-    simp [Submonoid.pow_apply, ← pow_add, Nat.sub_add_cancel (le_of_not_le h)]
+    simp [Submonoid.pow_apply, ← pow_add, Nat.sub_add_cancel (le_of_not_ge h)]
 
 @[simp]
 theorem selfZPow_add {n m : ℤ} : selfZPow x B (n + m) = selfZPow x B n * selfZPow x B m := by
-  rcases le_or_lt 0 n with hn | hn <;> rcases le_or_lt 0 m with hm | hm
+  rcases le_or_gt 0 n with hn | hn <;> rcases le_or_gt 0 m with hm | hm
   · rw [selfZPow_of_nonneg _ _ hn, selfZPow_of_nonneg _ _ hm,
       selfZPow_of_nonneg _ _ (add_nonneg hn hm), Int.natAbs_add_of_nonneg hn hm, pow_add]
   · have : n + m = n.natAbs - m.natAbs := by
@@ -525,7 +528,7 @@ theorem selfZPow_mul_neg (d : ℤ) : selfZPow x B d * selfZPow x B (-d) = 1 := b
       Submonoid.pow_apply, IsLocalization.mk'_spec, map_one]
     apply nonneg_of_neg_nonpos
     rwa [neg_neg]
-  · rw [selfZPow_of_nonneg x B (le_of_not_le hd), selfZPow_of_nonpos, ← map_pow, Int.natAbs_neg,
+  · rw [selfZPow_of_nonneg x B (le_of_not_ge hd), selfZPow_of_nonpos, ← map_pow, Int.natAbs_neg,
       Submonoid.pow_apply, IsLocalization.mk'_spec'_mk, map_one]
     refine nonpos_of_neg_nonneg (le_of_lt ?_)
     rwa [neg_neg, ← not_le]
@@ -558,7 +561,7 @@ theorem exists_reduced_fraction' {b : B} (hb : b ≠ 0) (hx : Irreducible x) :
     haveI :=
       @isDomain_of_le_nonZeroDivisors B _ R _ _ _ (Submonoid.powers x) _
         (powers_le_nonZeroDivisors_of_noZeroDivisors hx.ne_zero)
-    simp only [map_zero, ← hy, map_pow] at H
+    simp only [← hy, map_pow] at H
     apply ((injective_iff_map_eq_zero' (algebraMap R B)).mp _ a₀).mpr.mt
     · rw [← H]
       apply mul_ne_zero hb (pow_ne_zero _ _)

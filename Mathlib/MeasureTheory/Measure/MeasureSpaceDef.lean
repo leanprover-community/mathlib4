@@ -52,7 +52,7 @@ This file does not import `MeasureTheory.MeasurableSpace.Basic`, but only `Measu
 measure, almost everywhere, measure space
 -/
 
-assert_not_exists Basis
+assert_not_exists Module.Basis
 
 noncomputable section
 
@@ -66,7 +66,11 @@ namespace MeasureTheory
 
 /-- A measure is defined to be an outer measure that is countably additive on
 measurable sets, with the additional assumption that the outer measure is the canonical
-extension of the restricted measure. -/
+extension of the restricted measure.
+
+The measure of a set `s`, denoted `μ s`, is an extended nonnegative real. The real-valued version
+is written `μ.real s`.
+-/
 structure Measure (α : Type*) [MeasurableSpace α] extends OuterMeasure α where
   m_iUnion ⦃f : ℕ → Set α⦄ : (∀ i, MeasurableSet (f i)) → Pairwise (Disjoint on f) →
     toOuterMeasure (⋃ i, f i) = ∑' i, toOuterMeasure (f i)
@@ -88,6 +92,16 @@ instance Measure.instOuterMeasureClass [MeasurableSpace α] : OuterMeasureClass 
   measure_empty m := measure_empty (μ := m.toOuterMeasure)
   measure_iUnion_nat_le m := m.iUnion_nat
   measure_mono m := m.mono
+
+/-- The real-valued version of a measure. Maps infinite measure sets to zero. Use as `μ.real s`.
+The API is developed in `Mathlib/MeasureTheory/Measure/Real.lean`. -/
+protected def Measure.real {α : Type*} {m : MeasurableSpace α} (μ : Measure α) (s : Set α) : ℝ :=
+  (μ s).toReal
+
+theorem measureReal_def {α : Type*} {m : MeasurableSpace α} (μ : Measure α) (s : Set α) :
+    μ.real s = (μ s).toReal := rfl
+
+alias Measure.real_def := measureReal_def
 
 section
 
@@ -237,6 +251,9 @@ theorem exists_measure_pos_of_not_measure_iUnion_null [Countable ι] {s : ι →
 
 theorem measure_lt_top_of_subset (hst : t ⊆ s) (hs : μ s ≠ ∞) : μ t < ∞ :=
   lt_of_le_of_lt (μ.mono hst) hs.lt_top
+
+theorem measure_ne_top_of_subset (h : t ⊆ s) (ht : μ s ≠ ∞) : μ t ≠ ∞ :=
+  (measure_lt_top_of_subset h ht).ne
 
 theorem measure_inter_lt_top_of_left_ne_top (hs_finite : μ s ≠ ∞) : μ (s ∩ t) < ∞ :=
   measure_lt_top_of_subset inter_subset_left hs_finite

@@ -197,7 +197,7 @@ theorem dist_triangle_right (x y z : α) : dist x y ≤ dist x z + dist y z := b
 theorem dist_triangle4 (x y z w : α) : dist x w ≤ dist x y + dist y z + dist z w :=
   calc
     dist x w ≤ dist x z + dist z w := dist_triangle x z w
-    _ ≤ dist x y + dist y z + dist z w := add_le_add_right (dist_triangle x y z) _
+    _ ≤ dist x y + dist y z + dist z w := by gcongr; apply dist_triangle x y z
 
 theorem dist_triangle4_left (x₁ y₁ x₂ y₂ : α) :
     dist x₂ y₂ ≤ dist x₁ y₁ + (dist x₁ x₂ + dist y₁ y₂) := by
@@ -212,9 +212,9 @@ theorem dist_triangle4_right (x₁ y₁ x₂ y₂ : α) :
 theorem dist_triangle8 (a b c d e f g h : α) : dist a h ≤ dist a b + dist b c + dist c d
     + dist d e + dist e f + dist f g + dist g h := by
   apply le_trans (dist_triangle4 a f g h)
-  apply add_le_add_right (add_le_add_right _ (dist f g)) (dist g h)
+  gcongr
   apply le_trans (dist_triangle4 a d e f)
-  apply add_le_add_right (add_le_add_right _ (dist d e)) (dist e f)
+  gcongr
   exact dist_triangle4 a b c d
 
 theorem swap_dist : Function.swap (@dist α _) = dist := by funext x y; exact dist_comm _ _
@@ -223,7 +223,7 @@ theorem abs_dist_sub_le (x y z : α) : |dist x z - dist y z| ≤ dist x y :=
   abs_sub_le_iff.2
     ⟨sub_le_iff_le_add.2 (dist_triangle _ _ _), sub_le_iff_le_add.2 (dist_triangle_left _ _ _)⟩
 
-@[bound]
+@[simp, bound]
 theorem dist_nonneg {x y : α} : 0 ≤ dist x y :=
   dist_nonneg' dist dist_self dist_comm dist_triangle
 
@@ -290,6 +290,7 @@ theorem edist_lt_top {α : Type*} [PseudoMetricSpace α] (x y : α) : edist x y 
   (edist_dist x y).symm ▸ ENNReal.ofReal_lt_top
 
 /-- In a pseudometric space, the extended distance is always finite -/
+@[aesop (rule_sets := [finiteness]) safe apply]
 theorem edist_ne_top (x y : α) : edist x y ≠ ⊤ :=
   (edist_lt_top x y).ne
 
@@ -413,10 +414,10 @@ theorem nonneg_of_mem_sphere (hy : y ∈ sphere x ε) : 0 ≤ ε :=
 
 @[simp]
 theorem sphere_eq_empty_of_neg (hε : ε < 0) : sphere x ε = ∅ :=
-  Set.eq_empty_iff_forall_not_mem.mpr fun _y hy => (nonneg_of_mem_sphere hy).not_lt hε
+  Set.eq_empty_iff_forall_notMem.mpr fun _y hy => (nonneg_of_mem_sphere hy).not_gt hε
 
 theorem sphere_eq_empty_of_subsingleton [Subsingleton α] (hε : ε ≠ 0) : sphere x ε = ∅ :=
-  Set.eq_empty_iff_forall_not_mem.mpr fun _ h => ne_of_mem_sphere h hε (Subsingleton.elim _ _)
+  Set.eq_empty_iff_forall_notMem.mpr fun _ h => ne_of_mem_sphere h hε (Subsingleton.elim _ _)
 
 instance sphere_isEmpty_of_subsingleton [Subsingleton α] [NeZero ε] : IsEmpty (sphere x ε) := by
   rw [sphere_eq_empty_of_subsingleton (NeZero.ne ε)]; infer_instance
@@ -443,7 +444,7 @@ theorem closedBall_eq_empty : closedBall x ε = ∅ ↔ ε < 0 := by
 
 /-- Closed balls and spheres coincide when the radius is non-positive -/
 theorem closedBall_eq_sphere_of_nonpos (hε : ε ≤ 0) : closedBall x ε = sphere x ε :=
-  Set.ext fun _ => (hε.trans dist_nonneg).le_iff_eq
+  Set.ext fun _ => (hε.trans dist_nonneg).ge_iff_eq'
 
 theorem ball_subset_closedBall : ball x ε ⊆ closedBall x ε := fun _y hy =>
   mem_closedBall.2 (le_of_lt hy)
@@ -455,7 +456,7 @@ lemma sphere_subset_ball {r R : ℝ} (h : r < R) : sphere x r ⊆ ball x R := fu
 
 theorem closedBall_disjoint_ball (h : δ + ε ≤ dist x y) : Disjoint (closedBall x δ) (ball y ε) :=
   Set.disjoint_left.mpr fun _a ha1 ha2 =>
-    (h.trans <| dist_triangle_left _ _ _).not_lt <| add_lt_add_of_le_of_lt ha1 ha2
+    (h.trans <| dist_triangle_left _ _ _).not_gt <| add_lt_add_of_le_of_lt ha1 ha2
 
 theorem ball_disjoint_closedBall (h : δ + ε ≤ dist x y) : Disjoint (ball x δ) (closedBall y ε) :=
   (closedBall_disjoint_ball <| by rwa [add_comm, dist_comm]).symm
@@ -466,7 +467,7 @@ theorem ball_disjoint_ball (h : δ + ε ≤ dist x y) : Disjoint (ball x δ) (ba
 theorem closedBall_disjoint_closedBall (h : δ + ε < dist x y) :
     Disjoint (closedBall x δ) (closedBall y ε) :=
   Set.disjoint_left.mpr fun _a ha1 ha2 =>
-    h.not_le <| (dist_triangle_left _ _ _).trans <| add_le_add ha1 ha2
+    h.not_ge <| (dist_triangle_left _ _ _).trans <| add_le_add ha1 ha2
 
 theorem sphere_disjoint_ball : Disjoint (sphere x ε) (ball x ε) :=
   Set.disjoint_left.mpr fun _y hy₁ hy₂ => absurd hy₁ <| ne_of_lt hy₂
@@ -499,7 +500,7 @@ theorem ball_subset_ball (h : ε₁ ≤ ε₂) : ball x ε₁ ⊆ ball x ε₂ :
   lt_of_lt_of_le (mem_ball.1 yx) h
 
 theorem closedBall_eq_bInter_ball : closedBall x ε = ⋂ δ > ε, ball x δ := by
-  ext y; rw [mem_closedBall, ← forall_lt_iff_le', mem_iInter₂]; rfl
+  ext y; rw [mem_closedBall, ← forall_gt_iff_le, mem_iInter₂]; rfl
 
 theorem ball_subset_ball' (h : ε₁ + dist x y ≤ ε₂) : ball x ε₁ ⊆ ball y ε₂ := fun z hz =>
   calc
@@ -731,7 +732,7 @@ theorem eventually_nhds_prod_iff {f : Filter ι} {x₀ : α} {p : α × ι → P
     (∀ᶠ x in 𝓝 x₀ ×ˢ f, p x) ↔ ∃ ε > (0 : ℝ), ∃ pa : ι → Prop, (∀ᶠ i in f, pa i) ∧
       ∀ ⦃x⦄, dist x x₀ < ε → ∀ ⦃i⦄, pa i → p (x, i) := by
   refine (nhds_basis_ball.prod f.basis_sets).eventually_iff.trans ?_
-  simp only [Prod.exists, forall_prod_set, id, mem_ball, and_assoc, exists_and_left, and_imp]
+  simp only [Prod.exists, forall_prod_set, id, mem_ball, and_assoc, exists_and_left]
   rfl
 
 /-- A version of `Filter.eventually_prod_iff` where the second filter consists of neighborhoods
@@ -1147,7 +1148,7 @@ theorem mem_of_closed' {s : Set α} (hs : IsClosed s) {a : α} :
 
 theorem dense_iff {s : Set α} : Dense s ↔ ∀ x, ∀ r > 0, (ball x r ∩ s).Nonempty :=
   forall_congr' fun x => by
-    simp only [mem_closure_iff, Set.Nonempty, exists_prop, mem_inter_iff, mem_ball', and_comm]
+    simp only [mem_closure_iff, Set.Nonempty, mem_inter_iff, mem_ball', and_comm]
 
 theorem dense_iff_iUnion_ball (s : Set α) : Dense s ↔ ∀ r > 0, ⋃ c ∈ s, ball c r = univ := by
   simp_rw [eq_univ_iff_forall, mem_iUnion, exists_prop, mem_ball, Dense, mem_closure_iff,

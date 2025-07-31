@@ -3,9 +3,9 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.Fintype.Card
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
+import Mathlib.Data.Fintype.Card
 
 /-!
 # Results about pointwise operations on sets and big operators.
@@ -53,7 +53,7 @@ theorem mem_finset_prod (t : Finset ι) (f : ι → Set α) (a : α) :
   classical
     induction' t using Finset.induction_on with i is hi ih generalizing a
     · simp_rw [Finset.prod_empty, Set.mem_one]
-      exact ⟨fun h ↦ ⟨fun _ ↦ a, fun hi ↦ False.elim (Finset.not_mem_empty _ hi), h.symm⟩,
+      exact ⟨fun h ↦ ⟨fun _ ↦ a, fun hi ↦ False.elim (Finset.notMem_empty _ hi), h.symm⟩,
         fun ⟨_, _, hf⟩ ↦ hf.symm⟩
     rw [Finset.prod_insert hi, Set.mem_mul]
     simp_rw [Finset.prod_insert hi]
@@ -66,7 +66,7 @@ theorem mem_finset_prod (t : Finset ι) (f : ι → Set α) (a : α) :
         · rwa [Function.update_self]
         · rw [update_of_ne (ne_of_mem_of_not_mem hj hi)]
           exact hg hj
-      · rw [Finset.prod_update_of_not_mem hi, Function.update_self]
+      · rw [Finset.prod_update_of_notMem hi, Function.update_self]
     · rintro ⟨g, hg, rfl⟩
       exact ⟨g i, hg (is.mem_insert_self _), is.prod g,
         ⟨⟨g, fun hi ↦ hg (Finset.mem_insert_of_mem hi), rfl⟩, rfl⟩⟩

@@ -196,12 +196,18 @@ noncomputable def limitEquivSections : limit F ≃ F.sections :=
 @[simp]
 theorem limitEquivSections_apply (x : limit F) (j : J) :
     ((limitEquivSections F) x : ∀ j, F.obj j) j = limit.π F j x :=
-  isLimitEquivSections_apply _ _ _
+  rfl
 
 @[simp]
 theorem limitEquivSections_symm_apply (x : F.sections) (j : J) :
     limit.π F j ((limitEquivSections F).symm x) = (x : ∀ j, F.obj j) j :=
   isLimitEquivSections_symm_apply _ _ _
+
+/-- The limit of a functor `F : J ⥤ Type _` is naturally isomorphic to `F.sections`. -/
+noncomputable def limNatIsoSectionsFunctor :
+    (lim : (J ⥤ Type max u v) ⥤ _) ≅ Functor.sectionsFunctor _ :=
+  NatIso.ofComponents (fun _ ↦ (limitEquivSections _).toIso)
+    fun f ↦ funext fun x ↦ Subtype.ext <| funext fun _ ↦ congrFun (limMap_π f _) x
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11182): removed @[ext]
 /-- Construct a term of `limit F : Type u` from a family of terms `x : Π j, F.obj j`

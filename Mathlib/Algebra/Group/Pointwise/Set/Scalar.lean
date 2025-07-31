@@ -113,10 +113,10 @@ lemma smul_nonempty : (s • t).Nonempty ↔ s.Nonempty ∧ t.Nonempty := image2
 @[to_additive] lemma Nonempty.of_smul_left : (s • t).Nonempty → s.Nonempty := .of_image2_left
 @[to_additive] lemma Nonempty.of_smul_right : (s • t).Nonempty → t.Nonempty := .of_image2_right
 
-@[to_additive (attr := simp low+1)]
+@[to_additive (attr := simp low + 1)]
 lemma smul_singleton : s • ({b} : Set β) = (· • b) '' s := image2_singleton_right
 
-@[to_additive (attr := simp low+1)]
+@[to_additive (attr := simp low + 1)]
 lemma singleton_smul : ({a} : Set α) • t = a • t := image2_singleton_left
 
 @[to_additive (attr := simp high)]
@@ -203,11 +203,11 @@ variable {M ι : Type*} {π : ι → Type*} [∀ i, SMul M (π i)]
 
 @[to_additive]
 theorem smul_set_pi_of_surjective (c : M) (I : Set ι) (s : ∀ i, Set (π i))
-    (hsurj : ∀ i ∉ I, Function.Surjective (c • · : π i → π i)) : c • I.pi s = I.pi (c • s ·) :=
+    (hsurj : ∀ i ∉ I, Function.Surjective (c • · : π i → π i)) : c • I.pi s = I.pi (c • s) :=
   piMap_image_pi hsurj s
 
 @[to_additive]
-theorem smul_set_univ_pi (c : M) (s : ∀ i, Set (π i)) : c • univ.pi s = univ.pi (c • s ·) :=
+theorem smul_set_univ_pi (c : M) (s : ∀ i, Set (π i)) : c • univ.pi s = univ.pi (c • s) :=
   piMap_image_univ_pi _ s
 
 end Pi
@@ -255,10 +255,10 @@ lemma Nonempty.vsub : s.Nonempty → t.Nonempty → (s -ᵥ t : Set α).Nonempty
 lemma Nonempty.of_vsub_left : (s -ᵥ t : Set α).Nonempty → s.Nonempty := .of_image2_left
 lemma Nonempty.of_vsub_right : (s -ᵥ t : Set α).Nonempty → t.Nonempty := .of_image2_right
 
-@[simp low+1]
+@[simp low + 1]
 lemma vsub_singleton (s : Set β) (b : β) : s -ᵥ {b} = (· -ᵥ b) '' s := image2_singleton_right
 
-@[simp low+1]
+@[simp low + 1]
 lemma singleton_vsub (t : Set β) (b : β) : {b} -ᵥ t = (b -ᵥ ·) '' t := image2_singleton_left
 
 @[simp high] lemma singleton_vsub_singleton : ({b} : Set β) -ᵥ {c} = {b -ᵥ c} := image2_singleton

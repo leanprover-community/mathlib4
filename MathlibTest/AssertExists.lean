@@ -22,7 +22,15 @@ info:
 
 #check_assertions!
 
-/-- warning: the module 'Lean.Elab.Command' is (transitively) imported -/
+/--
+warning: the module 'Lean.Elab.Command' is (transitively) imported via
+Lean.Elab.Command,
+  which is imported by Lean.Linter.Sets,
+  which is imported by Mathlib.Init,
+  which is imported by Mathlib.Util.AssertExistsExt,
+  which is imported by Mathlib.Util.AssertExists,
+  which is imported by this file.
+-/
 #guard_msgs in
 assert_not_imported
   Mathlib.Tactic.Common

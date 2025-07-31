@@ -29,7 +29,7 @@ These instances are provided as `Finset.Nat.instHasAntidiagonal` and `Finsupp.in
 This is why `Finset.antidiagonalOfLocallyFinite` is an `abbrev` and not an `instance`.
 
 This definition does not exactly match with that of `Multiset.antidiagonal`
-defined in `Mathlib.Data.Multiset.Antidiagonal`, because of the multiplicities.
+defined in `Mathlib/Data/Multiset/Antidiagonal.lean`, because of the multiplicities.
 Indeed, by counting multiplicities, `Multiset α` is equivalent to `α →₀ ℕ`,
 but `Finset.antidiagonal` and `Multiset.antidiagonal` will return different objects.
 For example, for `s : Multiset ℕ := {0,0,0}`, `Multiset.antidiagonal s` has 8 elements
@@ -123,7 +123,7 @@ lemma antidiagonal_congr' (hp : p ∈ antidiagonal n) (hq : q ∈ antidiagonal n
 end AddCancelCommMonoid
 
 section CanonicallyOrderedAdd
-variable [OrderedAddCommMonoid A] [CanonicallyOrderedAdd A] [HasAntidiagonal A]
+variable [AddCommMonoid A] [PartialOrder A] [CanonicallyOrderedAdd A] [HasAntidiagonal A]
 
 @[simp]
 theorem antidiagonal_zero : antidiagonal (0 : A) = {(0, 0)} := by
@@ -143,7 +143,7 @@ theorem antidiagonal.snd_le {n : A} {kl : A × A} (hlk : kl ∈ antidiagonal n) 
 end CanonicallyOrderedAdd
 
 section OrderedSub
-variable [OrderedAddCommMonoid A] [CanonicallyOrderedAdd A] [Sub A] [OrderedSub A]
+variable [AddCommMonoid A] [PartialOrder A] [CanonicallyOrderedAdd A] [Sub A] [OrderedSub A]
 variable [AddLeftReflectLE A]
 variable [HasAntidiagonal A]
 
@@ -181,11 +181,10 @@ def sigmaAntidiagonalEquivProd [AddMonoid A] [HasAntidiagonal A] :
     rintro ⟨n, ⟨k, l⟩, h⟩
     rw [mem_antidiagonal] at h
     exact Sigma.subtype_ext h rfl
-  right_inv _ := rfl
 
 variable {A : Type*}
-  [OrderedAddCommMonoid A] [CanonicallyOrderedAdd A]
-  [LocallyFiniteOrder A] [DecidableEq A]
+  [AddCommMonoid A] [PartialOrder A] [CanonicallyOrderedAdd A]
+  [LocallyFiniteOrderBot A] [DecidableEq A]
 
 /-- In a canonically ordered add monoid, the antidiagonal can be construct by filtering.
 

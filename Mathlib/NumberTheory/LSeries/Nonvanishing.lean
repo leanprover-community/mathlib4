@@ -293,7 +293,7 @@ lemma norm_LSeries_product_ge_one {x : ℝ} (hx : 0 < x) (y : ℝ) :
   simp only [← exp_nat_mul, Nat.cast_ofNat, ← exp_add, norm_exp, add_re, mul_re,
     re_ofNat, im_ofNat, zero_mul, sub_zero, Real.one_le_exp_iff]
   rw [re_tsum H₀, re_tsum H₁, re_tsum H₂, ← tsum_mul_left, ← tsum_mul_left,
-    ← tsum_add hsum₀ hsum₁, ← tsum_add (hsum₀.add hsum₁) hsum₂]
+    ← hsum₀.tsum_add hsum₁, ← (hsum₀.add hsum₁).tsum_add hsum₂]
   simpa only [neg_add_rev, neg_re, mul_neg, χ.pow_apply' two_ne_zero, ge_iff_le, add_re, one_re,
     ofReal_re, ofReal_add, ofReal_one] using
       tsum_nonneg fun (p : Nat.Primes) ↦ χ.re_log_comb_nonneg p.prop.two_le h₀ y
@@ -323,7 +323,7 @@ lemma LFunctionTrivChar_isBigO_near_one_horizontal :
 
 omit [NeZero N] in
 private lemma one_add_I_mul_ne_one_or {y : ℝ} (hy : y ≠ 0 ∨ χ ≠ 1) :
-    1 + I * y ≠ 1 ∨ χ ≠ 1:= by
+    1 + I * y ≠ 1 ∨ χ ≠ 1 := by
   simpa only [ne_eq, add_eq_left, _root_.mul_eq_zero, I_ne_zero, ofReal_eq_zero, false_or]
     using hy
 
@@ -373,10 +373,8 @@ private lemma LFunction_ne_zero_of_not_quadratic_or_ne_one {t : ℝ} (h : χ ^ 2
   -- go via absolute value to translate into a statement over `ℝ`
   replace H := (H₀.trans H).norm_right
   simp only [norm_real] at H
-  #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-  we needed to add `(F' := ℝ)` to `H.of_norm_right`. -/
   exact isLittleO_irrefl (.of_forall (fun _ ↦ one_ne_zero)) <|
-    (H.of_norm_right (F' := ℝ)).trans_isLittleO <| isLittleO_id_one.mono nhdsWithin_le_nhds
+    H.of_norm_right.trans_isLittleO <| isLittleO_id_one.mono nhdsWithin_le_nhds
 
 /-- If `χ` is a Dirichlet character, then `L(χ, s)` does not vanish when `s.re = 1`
 except when `χ` is trivial and `s = 1` (then `L(χ, s)` has a simple pole at `s = 1`). -/

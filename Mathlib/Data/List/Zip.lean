@@ -41,7 +41,7 @@ theorem forall_zipWith {f : α → β → γ} {p : γ → Prop} :
       (Forall p (zipWith f l₁ l₂) ↔ Forall₂ (fun x y => p (f x y)) l₁ l₂)
   | [], [], _ => by simp
   | a :: l₁, b :: l₂, h => by
-    simp only [length_cons, succ_inj'] at h
+    simp only [length_cons, succ_inj] at h
     simp [forall_zipWith h]
 
 theorem unzip_swap (l : List (α × β)) : unzip (l.map Prod.swap) = (unzip l).swap := by
@@ -51,9 +51,9 @@ theorem unzip_swap (l : List (α × β)) : unzip (l.map Prod.swap) = (unzip l).s
 @[congr]
 theorem zipWith_congr (f g : α → β → γ) (la : List α) (lb : List β)
     (h : List.Forall₂ (fun a b => f a b = g a b) la lb) : zipWith f la lb = zipWith g la lb := by
-  induction' h with a b as bs hfg _ ih
-  · rfl
-  · exact congr_arg₂ _ hfg ih
+  induction h with
+  | nil => rfl
+  | cons hfg _ ih => exact congr_arg₂ _ hfg ih
 
 theorem zipWith_zipWith_left (f : δ → γ → ε) (g : α → β → δ) :
     ∀ (la : List α) (lb : List β) (lc : List γ),

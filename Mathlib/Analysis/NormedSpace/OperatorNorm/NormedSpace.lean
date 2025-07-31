@@ -80,7 +80,7 @@ theorem antilipschitz_of_comap_nhds_le [h : RingHomIsometric σ₁₂] (f : E �
   calc
     ‖x‖ = ‖c ^ n‖⁻¹ * ‖c ^ n • x‖ := by
       rwa [← norm_inv, ← norm_smul, inv_smul_smul₀ (zpow_ne_zero _ _)]
-    _ ≤ ‖c ^ n‖⁻¹ * 1 := (mul_le_mul_of_nonneg_left (hε _ hlt).le (inv_nonneg.2 (norm_nonneg _)))
+    _ ≤ ‖c ^ n‖⁻¹ * 1 := by gcongr; exact (hε _ hlt).le
     _ ≤ ε⁻¹ * ‖c‖ * ‖f x‖ := by rwa [mul_one]
 
 end LinearMap
@@ -154,6 +154,16 @@ namespace LinearIsometry
 theorem norm_toContinuousLinearMap [Nontrivial E] [RingHomIsometric σ₁₂] (f : E →ₛₗᵢ[σ₁₂] F) :
     ‖f.toContinuousLinearMap‖ = 1 :=
   f.toContinuousLinearMap.homothety_norm <| by simp
+
+@[simp]
+theorem nnnorm_toContinuousLinearMap [Nontrivial E] [RingHomIsometric σ₁₂] (f : E →ₛₗᵢ[σ₁₂] F) :
+    ‖f.toContinuousLinearMap‖₊ = 1 :=
+  Subtype.ext f.norm_toContinuousLinearMap
+
+@[simp]
+theorem enorm_toContinuousLinearMap [Nontrivial E] [RingHomIsometric σ₁₂] (f : E →ₛₗᵢ[σ₁₂] F) :
+    ‖f.toContinuousLinearMap‖ₑ = 1 :=
+  congrArg _ f.nnnorm_toContinuousLinearMap
 
 variable {σ₁₃ : 𝕜 →+* 𝕜₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 

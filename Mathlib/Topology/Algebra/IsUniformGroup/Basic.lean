@@ -52,9 +52,6 @@ theorem isUniformEmbedding_translate_mul (a : α) : IsUniformEmbedding fun x : �
       simp only [Prod.mk.injEq, mul_left_inj, imp_self]
     injective := mul_left_injective a }
 
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_translate_mul := isUniformEmbedding_translate_mul
-
 section Cauchy
 
 namespace IsUniformGroup
@@ -98,10 +95,6 @@ lemma IsUniformInducing.isUniformGroup {γ : Type*} [Group γ] [UniformSpace γ]
     simp_rw [hf.uniformContinuous_iff, Function.comp_def, map_div]
     exact uniformContinuous_div.comp (hf.uniformContinuous.prodMap hf.uniformContinuous)
 
-@[deprecated (since := "2024-10-05")]
-alias UniformInducing.uniformAddGroup := IsUniformInducing.isUniformAddGroup
-@[to_additive existing, deprecated (since := "2024-10-05")]
-alias UniformInducing.uniformGroup := IsUniformInducing.isUniformGroup
 @[deprecated (since := "2025-03-30")]
 alias IsUniformInducing.uniformAddGroup := IsUniformInducing.isUniformAddGroup
 @[to_additive existing, deprecated (since := "2025-03-30")]
@@ -302,10 +295,10 @@ variable {e : β →+ α} (de : IsDenseInducing e)
 variable {f : δ →+ γ} (df : IsDenseInducing f)
 variable {φ : β →+ δ →+ G}
 variable (hφ : Continuous (fun p : β × δ => φ p.1 p.2))
-variable {W' : Set G} (W'_nhd : W' ∈ 𝓝 (0 : G))
+variable {W' : Set G} (W'_nhds : W' ∈ 𝓝 (0 : G))
 include de hφ
 
-include W'_nhd in
+include W'_nhds in
 private theorem extend_Z_bilin_aux (x₀ : α) (y₁ : δ) : ∃ U₂ ∈ comap e (𝓝 x₀), ∀ x ∈ U₂, ∀ x' ∈ U₂,
     (fun p : β × δ => φ p.1 p.2) (x' - x, y₁) ∈ W' := by
   let Nx := 𝓝 x₀
@@ -321,11 +314,11 @@ private theorem extend_Z_bilin_aux (x₀ : α) (y₁ : δ) : ∃ U₂ ∈ comap 
   have lim := lim2.comp lim1
   rw [tendsto_prod_self_iff] at lim
   simp_rw [forall_mem_comm]
-  exact lim W' W'_nhd
+  exact lim W' W'_nhds
 
 variable [IsUniformAddGroup G]
 
-include df W'_nhd in
+include df W'_nhds in
 private theorem extend_Z_bilin_key (x₀ : α) (y₀ : γ) : ∃ U ∈ comap e (𝓝 x₀), ∃ V ∈ comap f (𝓝 y₀),
     ∀ x ∈ U, ∀ x' ∈ U, ∀ (y) (_ : y ∈ V) (y') (_ : y' ∈ V),
     (fun p : β × δ => φ p.1 p.2) (x', y') - (fun p : β × δ => φ p.1 p.2) (x, y) ∈ W' := by
@@ -343,26 +336,26 @@ private theorem extend_Z_bilin_key (x₀ : α) (y₀ : γ) : ∃ U ∈ comap e (
       rwa [prod_map_map_eq] at this
     rw [← nhds_prod_eq] at lim_sub_sub
     exact Tendsto.comp lim_φ lim_sub_sub
-  rcases exists_nhds_zero_quarter W'_nhd with ⟨W, W_nhd, W4⟩
+  rcases exists_nhds_zero_quarter W'_nhds with ⟨W, W_nhds, W4⟩
   have :
     ∃ U₁ ∈ comap e (𝓝 x₀), ∃ V₁ ∈ comap f (𝓝 y₀), ∀ (x) (_ : x ∈ U₁) (x') (_ : x' ∈ U₁),
       ∀ (y) (_ : y ∈ V₁) (y') (_ : y' ∈ V₁), (fun p : β × δ => φ p.1 p.2) (x' - x, y' - y) ∈ W := by
-    rcases tendsto_prod_iff.1 lim_φ_sub_sub W W_nhd with ⟨U, U_in, V, V_in, H⟩
+    rcases tendsto_prod_iff.1 lim_φ_sub_sub W W_nhds with ⟨U, U_in, V, V_in, H⟩
     rw [nhds_prod_eq, ← prod_comap_comap_eq, mem_prod_same_iff] at U_in V_in
     rcases U_in with ⟨U₁, U₁_in, HU₁⟩
     rcases V_in with ⟨V₁, V₁_in, HV₁⟩
     exists U₁, U₁_in, V₁, V₁_in
     intro x x_in x' x'_in y y_in y' y'_in
     exact H _ _ (HU₁ (mk_mem_prod x_in x'_in)) (HV₁ (mk_mem_prod y_in y'_in))
-  rcases this with ⟨U₁, U₁_nhd, V₁, V₁_nhd, H⟩
-  obtain ⟨x₁, x₁_in⟩ : U₁.Nonempty := (de.comap_nhds_neBot _).nonempty_of_mem U₁_nhd
-  obtain ⟨y₁, y₁_in⟩ : V₁.Nonempty := (df.comap_nhds_neBot _).nonempty_of_mem V₁_nhd
+  rcases this with ⟨U₁, U₁_nhds, V₁, V₁_nhds, H⟩
+  obtain ⟨x₁, x₁_in⟩ : U₁.Nonempty := (de.comap_nhds_neBot _).nonempty_of_mem U₁_nhds
+  obtain ⟨y₁, y₁_in⟩ : V₁.Nonempty := (df.comap_nhds_neBot _).nonempty_of_mem V₁_nhds
   have cont_flip : Continuous fun p : δ × β => φ.flip p.1 p.2 := by
-    show Continuous ((fun p : β × δ => φ p.1 p.2) ∘ Prod.swap)
+    change Continuous ((fun p : β × δ => φ p.1 p.2) ∘ Prod.swap)
     exact hφ.comp continuous_swap
-  rcases extend_Z_bilin_aux de hφ W_nhd x₀ y₁ with ⟨U₂, U₂_nhd, HU⟩
-  rcases extend_Z_bilin_aux df cont_flip W_nhd y₀ x₁ with ⟨V₂, V₂_nhd, HV⟩
-  exists U₁ ∩ U₂, inter_mem U₁_nhd U₂_nhd, V₁ ∩ V₂, inter_mem V₁_nhd V₂_nhd
+  rcases extend_Z_bilin_aux de hφ W_nhds x₀ y₁ with ⟨U₂, U₂_nhds, HU⟩
+  rcases extend_Z_bilin_aux df cont_flip W_nhds y₀ x₁ with ⟨V₂, V₂_nhds, HV⟩
+  exists U₁ ∩ U₂, inter_mem U₁_nhds U₂_nhds, V₁ ∩ V₂, inter_mem V₁_nhds V₂_nhds
   rintro x ⟨xU₁, xU₂⟩ x' ⟨x'U₁, x'U₂⟩ y ⟨yV₁, yV₂⟩ y' ⟨y'V₁, y'V₂⟩
   have key_formula : φ x' y' - φ x y
     = φ (x' - x) y₁ + φ (x' - x) (y' - y₁) + φ x₁ (y' - y) + φ (x - x₁) (y' - y) := by simp; abel
@@ -396,19 +389,19 @@ theorem extend_Z_bilin : Continuous (extend (de.prodMap df) (fun p : β × δ =>
         (𝓝 (x₀, y₀) ×ˢ 𝓝 (x₀, y₀))) ≤ 𝓝 0 by
       rwa [uniformity_eq_comap_nhds_zero G, prod_map_map_eq, ← map_le_iff_le_comap, Filter.map_map,
         prod_comap_comap_eq]
-    intro W' W'_nhd
-    have key := extend_Z_bilin_key de df hφ W'_nhd x₀ y₀
-    rcases key with ⟨U, U_nhd, V, V_nhd, h⟩
-    rw [mem_comap] at U_nhd
-    rcases U_nhd with ⟨U', U'_nhd, U'_sub⟩
-    rw [mem_comap] at V_nhd
-    rcases V_nhd with ⟨V', V'_nhd, V'_sub⟩
+    intro W' W'_nhds
+    have key := extend_Z_bilin_key de df hφ W'_nhds x₀ y₀
+    rcases key with ⟨U, U_nhds, V, V_nhds, h⟩
+    rw [mem_comap] at U_nhds
+    rcases U_nhds with ⟨U', U'_nhds, U'_sub⟩
+    rw [mem_comap] at V_nhds
+    rcases V_nhds with ⟨V', V'_nhds, V'_sub⟩
     rw [mem_map, mem_comap, nhds_prod_eq]
     exists (U' ×ˢ V') ×ˢ U' ×ˢ V'
     rw [mem_prod_same_iff]
-    simp only [exists_prop]
+    simp only
     constructor
-    · have := prod_mem_prod U'_nhd V'_nhd
+    · have := prod_mem_prod U'_nhds V'_nhds
       tauto
     · intro p h'
       simp only [Set.mem_preimage, Set.prodMk_mem_set_prod_eq] at h'

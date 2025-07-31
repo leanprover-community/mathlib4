@@ -41,6 +41,7 @@ variable (L M)
 /-- An elementary substructure is one in which every formula applied to a tuple in the substructure
   agrees with its value in the overall structure. -/
 structure ElementarySubstructure where
+  /-- The underlying substructure -/
   toSubstructure : L.Substructure M
   isElementary' : toSubstructure.IsElementary
 
@@ -73,7 +74,7 @@ def subtype (S : L.ElementarySubstructure M) : S ↪ₑ[L] M where
 theorem subtype_apply {S : L.ElementarySubstructure M} {x : S} : subtype S x = x :=
   rfl
 
-theorem subtype_injective (S : L.ElementarySubstructure M): Function.Injective (subtype S) :=
+theorem subtype_injective (S : L.ElementarySubstructure M) : Function.Injective (subtype S) :=
   Subtype.coe_injective
 
 @[simp]

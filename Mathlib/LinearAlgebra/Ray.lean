@@ -22,7 +22,7 @@ This file defines rays in modules.
   coefficient.
 
 * `Module.Ray` is a type for the equivalence class of nonzero vectors in a module with some
-common positive multiple.
+  common positive multiple.
 -/
 
 
@@ -30,18 +30,19 @@ noncomputable section
 
 section StrictOrderedCommSemiring
 
-variable (R : Type*) [StrictOrderedCommSemiring R]
-variable {M : Type*} [AddCommMonoid M] [Module R M]
-variable {N : Type*} [AddCommMonoid N] [Module R N]
-variable (ι : Type*) [DecidableEq ι]
-
+-- TODO: remove `[IsStrictOrderedRing R]` and `@[nolint unusedArguments]`.
 /-- Two vectors are in the same ray if either one of them is zero or some positive multiples of them
 are equal (in the typical case over a field, this means one of them is a nonnegative multiple of
 the other). -/
-def SameRay (v₁ v₂ : M) : Prop :=
+@[nolint unusedArguments]
+def SameRay (R : Type*) [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R]
+    {M : Type*} [AddCommMonoid M] [Module R M] (v₁ v₂ : M) : Prop :=
   v₁ = 0 ∨ v₂ = 0 ∨ ∃ r₁ r₂ : R, 0 < r₁ ∧ 0 < r₂ ∧ r₁ • v₁ = r₂ • v₂
 
-variable {R}
+variable {R : Type*} [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R]
+variable {M : Type*} [AddCommMonoid M] [Module R M]
+variable {N : Type*} [AddCommMonoid N] [Module R N]
+variable (ι : Type*) [DecidableEq ι]
 
 namespace SameRay
 
@@ -101,12 +102,13 @@ theorem trans (hxy : SameRay R x y) (hyz : SameRay R y z) (hy : y = 0 → x = 0 
   refine Or.inr (Or.inr <| ⟨r₃ * r₁, r₂ * r₄, mul_pos hr₃ hr₁, mul_pos hr₂ hr₄, ?_⟩)
   rw [mul_smul, mul_smul, h₁, ← h₂, smul_comm]
 
-variable {S : Type*} [OrderedCommSemiring S] [Algebra S R] [Module S M] [SMulPosMono S R]
+variable {S : Type*} [CommSemiring S] [PartialOrder S]
+  [Algebra S R] [Module S M] [SMulPosMono S R]
   [IsScalarTower S R M] {a : S}
 
 /-- A vector is in the same ray as a nonnegative multiple of itself. -/
 lemma sameRay_nonneg_smul_right (v : M) (h : 0 ≤ a) : SameRay R v (a • v) := by
-  obtain h | h := (algebraMap_nonneg R h).eq_or_gt
+  obtain h | h := (algebraMap_nonneg R h).eq_or_lt'
   · rw [← algebraMap_smul R a v, h, zero_smul]
     exact zero_right _
   · refine Or.inr <| Or.inr ⟨algebraMap S R a, 1, h, by nontriviality R; exact zero_lt_one, ?_⟩
@@ -335,7 +337,7 @@ end StrictOrderedCommSemiring
 
 section StrictOrderedCommRing
 
-variable {R : Type*} [StrictOrderedCommRing R]
+variable {R : Type*} [CommRing R] [PartialOrder R] [IsStrictOrderedRing R]
 variable {M N : Type*} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N] {x y : M}
 
 /-- `SameRay.neg` as an `iff`. -/
@@ -432,7 +434,7 @@ end StrictOrderedCommRing
 
 section LinearOrderedCommRing
 
-variable {R : Type*} [LinearOrderedCommRing R]
+variable {R : Type*} [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
 variable {M : Type*} [AddCommGroup M] [Module R M]
 
 /-- `SameRay` follows from membership of `MulAction.orbit` for the `Units.posSubgroup`. -/
@@ -520,8 +522,8 @@ theorem sameRay_or_sameRay_neg_iff_not_linearIndependent {x y : M} :
       rw [Fin.sum_univ_two, Fin.exists_fin_two]
       simp [h, hr₁.ne.symm]
   · rcases h with ⟨m, hm, hmne⟩
-    rw [Fin.sum_univ_two, add_eq_zero_iff_eq_neg, Matrix.cons_val_zero,
-      Matrix.cons_val_one, Matrix.head_cons] at hm
+    rw [Fin.sum_univ_two, add_eq_zero_iff_eq_neg] at hm
+    dsimp only [Matrix.cons_val] at hm
     rcases lt_trichotomy (m 0) 0 with (hm0 | hm0 | hm0) <;>
       rcases lt_trichotomy (m 1) 0 with (hm1 | hm1 | hm1)
     · refine
@@ -558,7 +560,7 @@ end LinearOrderedCommRing
 
 namespace SameRay
 
-variable {R : Type*} [LinearOrderedField R]
+variable {R : Type*} [Field R] [LinearOrder R] [IsStrictOrderedRing R]
 variable {M : Type*} [AddCommGroup M] [Module R M] {x y v₁ v₂ : M}
 
 theorem exists_pos_left (h : SameRay R x y) (hx : x ≠ 0) (hy : y ≠ 0) :
@@ -608,7 +610,7 @@ end SameRay
 
 section LinearOrderedField
 
-variable {R : Type*} [LinearOrderedField R]
+variable {R : Type*} [Field R] [LinearOrder R] [IsStrictOrderedRing R]
 variable {M : Type*} [AddCommGroup M] [Module R M] {x y : M}
 
 theorem exists_pos_left_iff_sameRay (hx : x ≠ 0) (hy : y ≠ 0) :

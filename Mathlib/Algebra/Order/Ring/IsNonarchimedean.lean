@@ -3,8 +3,6 @@ Copyright (c) 2025 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Fabrizio Barroero
 -/
-
-import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.Order.Hom.Basic
 import Mathlib.Data.Nat.Choose.Sum
 
@@ -18,10 +16,10 @@ nonarchimedean functions.
 
 namespace IsNonarchimedean
 
-variable {R : Type*} [LinearOrderedSemiring R] {a b : R} {m n : ℕ}
+variable {R : Type*} [Semiring R] [LinearOrder R] {a b : R} {m n : ℕ}
 
 /-- A nonnegative nonarchimedean function satisfies the triangle inequality. -/
-theorem add_le {α : Type*} [Add α] {f : α → R} (hf : ∀ x : α, 0 ≤ f x)
+theorem add_le [IsStrictOrderedRing R] {α : Type*} [Add α] {f : α → R} (hf : ∀ x : α, 0 ≤ f x)
     (hna : IsNonarchimedean f) {a b : α} : f (a + b) ≤ f a + f b := by
   apply le_trans (hna _ _)
   rw [max_le_iff, le_add_iff_nonneg_right, le_add_iff_nonneg_left]
@@ -50,12 +48,13 @@ theorem nmul_le {F α : Type*} [NonAssocSemiring α] [FunLike F α R] [ZeroHomCl
 lemma apply_natCast_le_one_of_isNonarchimedean {F α : Type*} [AddMonoidWithOne α] [FunLike F α R]
     [ZeroHomClass F α R] [NonnegHomClass F α R] [OneHomClass F α R] {f : F}
     (hna : IsNonarchimedean f) {n : ℕ} : f n ≤ 1 := by
-  rw [← nsmul_one n]
-  exact le_trans (nsmul_le hna) (le_of_eq (map_one f))
+  rw [← nsmul_one n, ← map_one f]
+  exact nsmul_le hna
 
 /-- If `f` is a nonarchimedean additive group seminorm on `α` with `f 1 = 1`, then for every `n : ℤ`
   we have `f n ≤ 1`. -/
-theorem apply_intCast_le_one_of_isNonarchimedean {F α : Type*} [AddGroupWithOne α] [FunLike F α R]
+theorem apply_intCast_le_one_of_isNonarchimedean [IsStrictOrderedRing R]
+    {F α : Type*} [AddGroupWithOne α] [FunLike F α R]
     [AddGroupSeminormClass F α R] [OneHomClass F α R] {f : F}
     (hna : IsNonarchimedean f) {n : ℤ} : f n ≤ 1 := by
   obtain ⟨a, rfl | rfl⟩ := Int.eq_nat_or_neg n <;>
@@ -65,7 +64,7 @@ lemma add_eq_right_of_lt {F α : Type*} [AddGroup α] [FunLike F α R]
     [AddGroupSeminormClass F α R] {f : F} (hna : IsNonarchimedean f) {x y : α}
     (h_lt : f x < f y) : f (x + y) = f y := by
   by_contra! h
-  have h1 : f (x + y) ≤ f y := le_trans (hna x y) (le_of_eq <| max_eq_right_of_lt h_lt)
+  have h1 : f (x + y) ≤ f y := (hna x y).trans_eq (max_eq_right_of_lt h_lt)
   apply lt_irrefl (f y)
   calc
     f y = f (-x + (x + y)) := by simp
@@ -79,7 +78,7 @@ lemma add_eq_left_of_lt {F α : Type*} [AddGroup α] [FunLike F α R]
     [AddGroupSeminormClass F α R] {f : F} (hna : IsNonarchimedean f) {x y : α}
     (h_lt : f y < f x) : f (x + y) = f x := by
   by_contra! h
-  have h1 : f (x + y) ≤ f x := le_trans (hna x y) (le_of_eq <| max_eq_left_of_lt h_lt)
+  have h1 : f (x + y) ≤ f x := (hna x y).trans_eq (max_eq_left_of_lt h_lt)
   apply lt_irrefl (f x)
   calc
     f x = f (x + y + -y) := by simp
@@ -94,12 +93,13 @@ lemma add_eq_left_of_lt {F α : Type*} [AddGroup α] [FunLike F α R]
 theorem add_eq_max_of_ne {F α : Type*} [AddGroup α] [FunLike F α R]
     [AddGroupSeminormClass F α R] {f : F} (hna : IsNonarchimedean f) {x y : α} (hne : f x ≠ f y) :
     f (x + y) = max (f x) (f y) := by
-  rcases hne.lt_or_lt with h_lt | h_lt
+  rcases hne.lt_or_gt with h_lt | h_lt
   · rw [add_eq_right_of_lt hna h_lt]
     exact (max_eq_right_of_lt h_lt).symm
   · rw [add_eq_left_of_lt hna h_lt]
     exact (max_eq_left_of_lt h_lt).symm
 
+omit [Semiring R] in
 /-- Given a nonarchimedean function `α → R`, a function `g : β → α` and a nonempty multiset
   `s : Multiset β`, we can always find `b : β` belonging to `s` such that
   `f (t.sum g) ≤ f (g b)` . -/
@@ -117,11 +117,12 @@ theorem multiset_image_add_of_nonempty {α β : Type*} [AddCommMonoid α] [Nonem
       · exact .inl h4
       · exact .inr ⟨w, h2, le_trans h4 h3⟩
 
+omit [Semiring R] in
 /-- Given a nonarchimedean function `α → R`, a function `g : β → α` and a nonempty finset
   `t : Finset β`, we can always find `b : β` belonging to `t` such that `f (t.sum g) ≤ f (g b)` . -/
 theorem finset_image_add_of_nonempty {α β : Type*} [AddCommMonoid α] [Nonempty β] {f : α → R}
     (hna : IsNonarchimedean f) (g : β → α) {t : Finset β} (ht : t.Nonempty) :
-    ∃ b : β, (b ∈ t) ∧ f (t.sum g) ≤ f (g b) := by
+    ∃ b ∈ t, f (t.sum g) ≤ f (g b) := by
   apply multiset_image_add_of_nonempty hna
   simp_all [Finset.nonempty_iff_ne_empty]
 
@@ -150,7 +151,8 @@ theorem finset_image_add {F α β : Type*} [AddCommMonoid α] [FunLike F α R]
   exact multiset_image_add hna g t.val
 
 open Multiset in
-theorem multiset_powerset_image_add {F α : Type*} [CommRing α] [FunLike F α R]
+theorem multiset_powerset_image_add [IsStrictOrderedRing R]
+    {F α : Type*} [CommRing α] [FunLike F α R]
     [AddGroupSeminormClass F α R] {f : F} (hf_na : IsNonarchimedean f) (s : Multiset α) (m : ℕ) :
     ∃ t : Multiset α, card t = card s - m ∧ (∀ x : α, x ∈ t → x ∈ s) ∧
       f (map prod (powersetCard (card s - m) s)).sum ≤ f t.prod := by
@@ -163,7 +165,8 @@ theorem multiset_powerset_image_add {F α : Type*} [CommRing α] [FunLike F α R
   exact ⟨b, hb.2, fun x hx ↦ mem_of_le hb.left hx, hb_le⟩
 
 open Finset in
-theorem finset_powerset_image_add {F α β : Type*} [CommRing α] [FunLike F α R]
+theorem finset_powerset_image_add [IsStrictOrderedRing R]
+    {F α β : Type*} [CommRing α] [FunLike F α R]
     [AddGroupSeminormClass F α R] {f : F} (hf_na : IsNonarchimedean f) (s : Finset β)
     (b : β → α) (m : ℕ) :
     ∃ u : powersetCard (s.card - m) s,
@@ -173,8 +176,9 @@ theorem finset_powerset_image_add {F α β : Type*} [CommRing α] [FunLike F α 
   obtain ⟨b, hb_in, hb⟩ := hf_na.finset_image_add g (powersetCard (s.card - m) s)
   exact ⟨⟨b, hb_in (powersetCard_nonempty.mpr (Nat.sub_le s.card m))⟩, hb⟩
 
+omit [Semiring R] in
 open Finset in
-/-- Ultrametric inequality with `Finset.Sum`. -/
+/-- Ultrametric inequality with `Finset.sum`. -/
 lemma apply_sum_le_sup_of_isNonarchimedean {α β : Type*} [AddCommMonoid α] {f : α → R}
     (nonarch : IsNonarchimedean f) {s : Finset β} (hnonempty : s.Nonempty) {l : β → α} :
     f (∑ i ∈ s, l i) ≤ s.sup' hnonempty fun i => f (l i) := by
@@ -196,7 +200,7 @@ theorem add_pow_le {F α : Type*} [CommRing α] [FunLike F α R] [ZeroHomClass F
   obtain ⟨m, hm_lt, hM⟩ := finset_image_add hna
     (fun m => a ^ m * b ^ (n - m) * ↑(n.choose m)) (Finset.range (n + 1))
   simp only [Finset.nonempty_range_iff, ne_eq, Nat.succ_ne_zero, not_false_iff, Finset.mem_range,
-    if_true, forall_true_left] at hm_lt
+    forall_true_left] at hm_lt
   refine ⟨m, hm_lt, ?_⟩
   simp only [← add_pow] at hM
   rw [mul_comm] at hM

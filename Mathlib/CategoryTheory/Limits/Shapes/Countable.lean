@@ -92,6 +92,7 @@ instance (priority := 100) hasCountableColimits_of_hasColimits [HasColimits C] :
     HasCountableColimits C where
   out := inferInstance
 
+-- See note [instance argument order]
 universe v in
 instance [HasCountableColimits C] (J : Type*) [Category.{v} J] [CountableCategory J] :
     HasColimitsOfShape J C :=
@@ -108,6 +109,7 @@ instance (priority := 100) hasCountableCoproducts_of_hasCoproducts [HasCoproduct
     have : HasCoproducts.{0} C := has_smallest_coproducts_of_hasCoproducts
     inferInstance
 
+-- See note [instance argument order]
 instance [HasCountableCoproducts C] (J : Type*) [Countable J] : HasCoproductsOfShape J C :=
   have : Countable (Shrink.{0} J) := Countable.of_equiv _ (equivShrink.{0} J)
   have : HasColimitsOfShape (Discrete (Shrink.{0} J)) C := HasCountableCoproducts.out _
@@ -162,7 +164,7 @@ instance sequentialFunctor_final : (sequentialFunctor J).Final where
     apply isConnected_of_zigzag
     refine fun i j ↦ ⟨[j], ?_⟩
     simp only [List.chain_cons, Zag, List.Chain.nil, and_true, ne_eq, not_false_eq_true,
-      List.getLast_cons, not_true_eq_false, List.getLast_singleton', reduceCtorEq]
+      List.getLast_cons, List.getLast_singleton', reduceCtorEq]
     clear! C
     wlog h : j.right ≤ i.right
     · exact or_comm.1 (this J d n g inferInstance j i (le_of_lt (not_le.mp h)))
@@ -213,7 +215,7 @@ instance sequentialFunctor_initial : (sequentialFunctor J).Initial where
     apply isConnected_of_zigzag
     refine fun i j ↦ ⟨[j], ?_⟩
     simp only [List.chain_cons, Zag, List.Chain.nil, and_true, ne_eq, not_false_eq_true,
-      List.getLast_cons, not_true_eq_false, List.getLast_singleton', reduceCtorEq]
+      List.getLast_cons, List.getLast_singleton', reduceCtorEq]
     clear! C
     wlog h : (unop i.left) ≤ (unop j.left)
     · exact or_comm.1 (this J d n g inferInstance j i (le_of_lt (not_le.mp h)))
