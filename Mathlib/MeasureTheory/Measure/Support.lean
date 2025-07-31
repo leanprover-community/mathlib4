@@ -5,6 +5,8 @@ Authors: Jon Bannon, Jireh Loreaux
 -/
 
 import Mathlib.MeasureTheory.Measure.MeasureSpace
+import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
+import Mathlib.Topology.Defs.Filter
 
 section Support
 
@@ -22,32 +24,6 @@ We provide the definition in terms of the filter-theoretic equivalent
 protected def support (μ : Measure X) : Set X := {x : X | ∃ᶠ u in (𝓝 x).smallSets, 0 < μ u}
 
 variable {μ : Measure X}
-
-/-- A point `x` is in the support of measure `μ` iff any neighborhood of `x` contains a
-subset with positive measure. -/
-lemma mem_support_iff {x : X} : x ∈ μ.support ↔
-    ∃ᶠ u in (𝓝 x).smallSets, 0 < μ u := Iff.rfl
-
-/-- A point `x` is in the support of measure `μ` iff every neighborhood of `x` has positive
-measure. -/
-lemma mem_support_iff_forall (x : X) : x ∈ μ.support ↔ ∀ U ∈ 𝓝 x, 0 < μ U :=
-  mem_support_iff.trans <| frequently_smallSets.trans
-    ⟨fun h _ hU ↦ let ⟨_, ht, μt⟩ := h _ hU; μt.trans_le (measure_mono ht),
-     fun h _ hU ↦ ⟨_, Subset.rfl, h _ hU⟩⟩
-
-/-- A point `x` lies outside the support of `μ` iff all of the subsets of one of its neighborhoods
-have measure zero. -/
-lemma notMem_support_iff {x : X} : x ∉ μ.support ↔ ∀ᶠ u in (𝓝 x).smallSets, μ u = 0 := by
-  simp [mem_support_iff]
-
-/-- A point `x` lies outside the support of `μ` iff some neighborhood of `x` has measure zero. -/
-lemma notMem_support_iff_exists {x : X} : x ∉ μ.support ↔ ∃ U ∈ 𝓝 x, μ U = 0 := by
-  simp [mem_support_iff_forall]
-
-lemma pos_mono {α : Type*} [MeasurableSpace α]
-    (μ : Measure α) ⦃s t : Set α⦄ (h : s ⊆ t) (hs : 0 < μ s) :
-    0 < μ t :=
-  hs.trans_le <| μ.mono h
 
 /- MeasureTheory.measure_mono_null should be renamed to allow for dot notation. -/
 
@@ -71,11 +47,36 @@ theorem eventually_smallSets {α : Type*} {ι : Sort*} {p : ι → Prop} {l : Fi
     (∀ᶠ s in l.smallSets, q s) ↔ ∃ i, p i ∧ q (s i) := by
   rw [l.eventually_smallSets' hq, hl.exists_iff hq]
 
+lemma pos_mono {α : Type*} [MeasurableSpace α]
+    (μ : Measure α) ⦃s t : Set α⦄ (h : s ⊆ t) (hs : 0 < μ s) :
+    0 < μ t :=
+  hs.trans_le <| μ.mono h
+
 theorem _root_.Filter.HasBasis.mem_measureSupport {ι : Sort*} {p : ι → Prop}
     {s : ι → Set X} {x : X} (hl : (𝓝 x).HasBasis p s) :
     x ∈ μ.support ↔ ∀ (i : ι), p i → 0 < μ (s i) :=
   Filter.HasBasis.frequently_smallSets (hl := hl) μ.pos_mono
 
+/-- A point `x` is in the support of measure `μ` iff any neighborhood of `x` contains a
+subset with positive measure. -/
+lemma mem_support_iff {x : X} : x ∈ μ.support ↔
+    ∃ᶠ u in (𝓝 x).smallSets, 0 < μ u := Iff.rfl
+
+/-- A point `x` is in the support of measure `μ` iff every neighborhood of `x` has positive
+measure. -/
+lemma mem_support_iff_forall (x : X) : x ∈ μ.support ↔ ∀ U ∈ 𝓝 x, 0 < μ U :=
+  mem_support_iff.trans <| Filter.frequently_smallSets.trans
+    ⟨fun h _ hU ↦ let ⟨_, ht, μt⟩ := h _ hU; μt.trans_le (measure_mono ht),
+     fun h _ hU ↦ ⟨_, Set.Subset.rfl, h _ hU⟩⟩ --GOLF THIS WITH `Filter.basis_sets`
+
+/-- A point `x` lies outside the support of `μ` iff all of the subsets of one of its neighborhoods
+have measure zero. -/
+lemma notMem_support_iff {x : X} : x ∉ μ.support ↔ ∀ᶠ u in (𝓝 x).smallSets, μ u = 0 := by
+  simp [mem_support_iff]
+
+/-- A point `x` lies outside the support of `μ` iff some neighborhood of `x` has measure zero. -/
+lemma notMem_support_iff_exists {x : X} : x ∉ μ.support ↔ ∃ U ∈ 𝓝 x, μ U = 0 := by
+  simp [mem_support_iff_forall]
 
 /-- The support of a measure equals the set of points whose open neighborhoods
 all have positive measure. -/
@@ -90,10 +91,6 @@ lemma isClosed_support {μ : Measure X} : IsClosed μ.support := by
 
 lemma isOpen_compl_support {μ : Measure X} : IsOpen μ.supportᶜ :=
   isOpen_compl_iff.mpr μ.isClosed_support
-
-lemma subset_compl_support_of_isOpen ⦃t : Set X⦄ (ht : IsOpen t) (h : μ t = 0) :
-    t ⊆ μ.supportᶜ := by
-  sorry
 
 lemma subset_compl_support_of_isOpen ⦃t : Set X⦄ (ht : IsOpen t) (h : μ t = 0) :
     t ⊆ μ.supportᶜ := by
@@ -148,14 +145,11 @@ end MeasureTheory
 
 end Support
 
-
-
-
-
-
-
-
 section SupportAdd
+
+open MeasureTheory
+
+open Measure
 
 variable {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
 
