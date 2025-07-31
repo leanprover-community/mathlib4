@@ -15,8 +15,8 @@ import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 
 This file defines instances for `Module` on bundled `Hom` types.
 
-These are analogous to the instances in `Mathlib/Algebra/Module/Pi.lean`, but for bundled instead of unbundled
-functions.
+These are analogous to the instances in `Mathlib/Algebra/Module/Pi.lean`, but for bundled instead
+of unbundled functions.
 
 We also define bundled versions of `(c • ·)` and `(· • ·)` as `AddMonoidHom.smulLeft` and
 `AddMonoidHom.smul`, respectively.
