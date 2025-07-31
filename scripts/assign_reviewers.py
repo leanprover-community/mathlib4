@@ -10,6 +10,9 @@ import sys
 import subprocess
 
 ASSIGN_REVIEWERS_TOKEN = os.getenv('ASSIGN_REVIEWERS_TOKEN')
+if ASSIGN_REVIEWERS_TOKEN is None:
+    print('Please ensure that the ASSIGN_REVIEWERS_TOKEN environment variable is set.')
+    sys.exit(1)
 
 # Make the github API call to assign mathlib PR |number| to user |handle|.
 # Any existing assignee is kept; specifying a non-existent user does nothing.
