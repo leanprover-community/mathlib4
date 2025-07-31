@@ -126,11 +126,9 @@ theorem union_subset (hs : s ⊆ u) : t ⊆ u → s ∪ t ⊆ u :=
 theorem union_subset_union (hsu : s ⊆ u) (htv : t ⊆ v) : s ∪ t ⊆ u ∪ v :=
   sup_le_sup (le_iff_subset.2 hsu) htv
 
-@[gcongr]
 theorem union_subset_union_left (h : s₁ ⊆ s₂) : s₁ ∪ t ⊆ s₂ ∪ t :=
   union_subset_union h Subset.rfl
 
-@[gcongr]
 theorem union_subset_union_right (h : t₁ ⊆ t₂) : s ∪ t₁ ⊆ s ∪ t₂ :=
   union_subset_union Subset.rfl h
 
@@ -251,11 +249,9 @@ theorem inter_subset_inter {x y s t : Finset α} (h : x ⊆ y) (h' : s ⊆ t) : 
   rw [Finset.mem_inter] at a_in ⊢
   exact ⟨h a_in.1, h' a_in.2⟩
 
-@[gcongr]
 theorem inter_subset_inter_left (h : t ⊆ u) : s ∩ t ⊆ s ∩ u :=
   inter_subset_inter Subset.rfl h
 
-@[gcongr]
 theorem inter_subset_inter_right (h : s ⊆ t) : s ∩ u ⊆ t ∩ u :=
   inter_subset_inter h Subset.rfl
 
