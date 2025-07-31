@@ -296,7 +296,7 @@ variable (G : Type u) (H : Type v) [Mul G] [Mul H]
 private abbrev I : Bool → Type max u v := Bool.rec (ULift.{v} G) (ULift.{u} H)
 @[to_additive] private instance : ∀ b, Mul (I G H b) := Bool.rec ULift.mul ULift.mul
 @[to_additive] private def Prod.upMulHom : G × H →ₙ* ∀ b, I G H b :=
-  ⟨fun x ↦ Bool.rec ⟨x.1⟩ ⟨x.2⟩, fun x y ↦ by ext (_|_) <;> rfl⟩
+  ⟨fun x ↦ Bool.rec ⟨x.1⟩ ⟨x.2⟩, fun x y ↦ by ext (_ | _) <;> rfl⟩
 @[to_additive] private def downMulHom : ULift G →ₙ* G := ⟨ULift.down, fun _ _ ↦ rfl⟩
 
 variable {G H}

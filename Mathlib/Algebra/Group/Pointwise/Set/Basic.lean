@@ -329,11 +329,11 @@ theorem singleton_mul_singleton : ({a} : Set α) * {b} = {a * b} :=
 theorem mul_subset_mul : s₁ ⊆ t₁ → s₂ ⊆ t₂ → s₁ * s₂ ⊆ t₁ * t₂ :=
   image2_subset
 
-@[to_additive (attr := gcongr)]
+@[to_additive]
 theorem mul_subset_mul_left : t₁ ⊆ t₂ → s * t₁ ⊆ s * t₂ :=
   image2_subset_left
 
-@[to_additive (attr := gcongr)]
+@[to_additive]
 theorem mul_subset_mul_right : s₁ ⊆ s₂ → s₁ * t ⊆ s₂ * t :=
   image2_subset_right
 
@@ -390,7 +390,7 @@ theorem image_op_mul : op '' (s * t) = op '' t * op '' s :=
 
 @[to_additive (attr := simp) prod_add_prod_comm]
 lemma prod_mul_prod_comm [Mul β] (s₁ s₂ : Set α) (t₁ t₂ : Set β) :
-   (s₁ ×ˢ t₁) * (s₂ ×ˢ t₂) = (s₁ * s₂) ×ˢ (t₁ * t₂) := by ext; simp [mem_mul]; aesop
+    (s₁ ×ˢ t₁) * (s₂ ×ˢ t₂) = (s₁ * s₂) ×ˢ (t₁ * t₂) := by ext; simp [mem_mul]; aesop
 
 @[deprecated (since := "2025-03-11")]
 alias sum_add_sum_comm := prod_add_prod_comm
@@ -474,11 +474,11 @@ theorem singleton_div_singleton : ({a} : Set α) / {b} = {a / b} :=
 theorem div_subset_div : s₁ ⊆ t₁ → s₂ ⊆ t₂ → s₁ / s₂ ⊆ t₁ / t₂ :=
   image2_subset
 
-@[to_additive (attr := gcongr)]
+@[to_additive]
 theorem div_subset_div_left : t₁ ⊆ t₂ → s / t₁ ⊆ s / t₂ :=
   image2_subset_left
 
-@[to_additive (attr := gcongr)]
+@[to_additive]
 theorem div_subset_div_right : s₁ ⊆ s₂ → s₁ / t ⊆ s₂ / t :=
   image2_subset_right
 
@@ -620,7 +620,7 @@ protected lemma pow_right_monotone (hs : 1 ∈ s) : Monotone (s ^ ·) :=
 @[to_additive (attr := gcongr)]
 lemma pow_subset_pow_left (hst : s ⊆ t) : s ^ n ⊆ t ^ n := pow_left_mono _ hst
 
-@[to_additive (attr := gcongr)]
+@[to_additive]
 lemma pow_subset_pow_right (hs : 1 ∈ s) (hmn : m ≤ n) : s ^ m ⊆ s ^ n :=
   Set.pow_right_monotone hs hmn
 
