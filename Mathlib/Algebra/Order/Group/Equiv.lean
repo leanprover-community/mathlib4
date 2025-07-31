@@ -5,6 +5,8 @@ Authors: Weiyi Wang
 -/
 import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Algebra.Order.Group.Synonym
+import Mathlib.Algebra.Order.Monoid.Lex
+import Mathlib.Data.Prod.Lex
 
 /-!
 # Add/Mul equivalence for order type synonyms
