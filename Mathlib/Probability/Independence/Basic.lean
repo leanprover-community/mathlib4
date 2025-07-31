@@ -664,6 +664,71 @@ theorem IndepFun.congr {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
 
 @[deprecated (since := "2025-03-18")] alias IndepFun.ae_eq := IndepFun.congr
 
+section Prod
+
+variable {Ω Ω' : Type*} {mΩ : MeasurableSpace Ω} {mΩ' : MeasurableSpace Ω'}
+    {μ : Measure Ω} {ν : Measure Ω'} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
+    {𝓧 𝓨 : Type*} [MeasurableSpace 𝓧] [MeasurableSpace 𝓨] {X : Ω → 𝓧} {Y : Ω' → 𝓨}
+
+lemma indepFun_prod (mX : Measurable X) (mY : Measurable Y) :
+    IndepFun (fun ω ↦ X ω.1) (fun ω ↦ Y ω.2) (μ.prod ν) := by
+  refine indepFun_iff_map_prod_eq_prod_map_map (by fun_prop) (by fun_prop) |>.2 ?_
+  convert Measure.map_prod_map μ ν mX mY |>.symm
+  · change Measure.map (X ∘ _) _ = _
+    rw [← Measure.map_map mX measurable_fst, Measure.map_fst_prod, measure_univ, one_smul]
+  · change Measure.map (Y ∘ _) _ = _
+    rw [← Measure.map_map mY measurable_snd, Measure.map_snd_prod, measure_univ, one_smul]
+
+lemma iIndepFun_prod₀ (mX : AEMeasurable X μ) (mY : AEMeasurable Y ν) :
+    IndepFun (fun ω ↦ X ω.1) (fun ω ↦ Y ω.2) (μ.prod ν) := by
+  have : IndepFun (fun ω ↦ mX.mk X ω.1) (fun ω ↦ mY.mk Y ω.2) (μ.prod ν) :=
+    indepFun_prod mX.measurable_mk mY.measurable_mk
+  refine this.congr ?_ ?_
+  · change (mX.mk X) ∘ Prod.fst =ᶠ[_] X ∘ Prod.fst
+    apply ae_eq_comp
+    · exact measurable_fst.aemeasurable
+    · rw [measurePreserving_fst.map_eq]
+      exact (AEMeasurable.ae_eq_mk mX).symm
+  · change (mY.mk Y) ∘ Prod.snd =ᶠ[_] Y ∘ Prod.snd
+    apply ae_eq_comp
+    · exact measurable_snd.aemeasurable
+    · rw [measurePreserving_snd.map_eq]
+      exact (AEMeasurable.ae_eq_mk mY).symm
+
+variable {ι : Type*} [Fintype ι] {Ω : ι → Type*} {mΩ : ∀ i, MeasurableSpace (Ω i)}
+    {μ : (i : ι) → Measure (Ω i)} [∀ i, IsProbabilityMeasure (μ i)]
+    {𝒳 : ι → Type*} [∀ i, MeasurableSpace (𝒳 i)] {X : Π i, Ω i → 𝒳 i}
+
+lemma iIndepFun_pi (mX : ∀ i, Measurable (X i)) :
+    iIndepFun (fun i ω ↦ X i (ω i)) (Measure.pi μ) := by
+  refine @iIndepFun_iff_map_fun_eq_pi_map (Π i, Ω i) ι _ (Measure.pi μ) _ 𝒳 _
+    (fun i x ↦ X i (x i)) _ ?_ |>.2 ?_
+  · exact fun i ↦ Measurable.aemeasurable (by fun_prop)
+  · symm
+    refine Measure.pi_eq fun s hs ↦ ?_
+    rw [Measure.map_apply (by fun_prop) (.univ_pi hs)]
+    have : (fun (ω : Π i, Ω i) i ↦ X i (ω i)) ⁻¹' (Set.univ.pi s) =
+        Set.univ.pi (fun i ↦ (X i) ⁻¹' (s i)) := by ext x; simp
+    rw [this, Measure.pi_pi]
+    congr with i
+    rw [Measure.map_apply (by fun_prop) (hs i)]
+    change _ = (Measure.pi μ) (((X i) ∘ (fun x ↦ x i)) ⁻¹' s i)
+    rw [Set.preimage_comp, ← Measure.map_apply (measurable_pi_apply i) (mX i (hs i)),
+      (measurePreserving_eval _ i).map_eq]
+
+lemma iIndepFun_pi₀ (mX : ∀ i, AEMeasurable (X i) (μ i)) :
+    iIndepFun (fun i ω ↦ X i (ω i)) (Measure.pi μ) := by
+  have : iIndepFun (fun i ω ↦ (mX i).mk (X i) (ω i)) (Measure.pi μ) :=
+    iIndepFun_pi fun i ↦ (mX i).measurable_mk
+  refine this.congr fun i ↦ ?_
+  change ((mX i).mk (X i)) ∘ Function.eval i =ᶠ[_] (X i) ∘ Function.eval i
+  apply ae_eq_comp
+  · exact (measurable_pi_apply i).aemeasurable
+  · rw [(measurePreserving_eval _ i).map_eq]
+    exact (AEMeasurable.ae_eq_mk (mX i)).symm
+
+end Prod
+
 theorem IndepFun.comp {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace β'}
     {_mγ : MeasurableSpace γ} {_mγ' : MeasurableSpace γ'} {φ : β → γ} {ψ : β' → γ'}
     (hfg : IndepFun f g μ) (hφ : Measurable φ) (hψ : Measurable ψ) :
