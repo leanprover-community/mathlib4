@@ -146,12 +146,12 @@ protected theorem sInter (hx : ∀ y ∈ x, IsOrdinal y) : (⋂₀ x).IsOrdinal 
     obtain ⟨c, hc⟩ := hx₀
     exact (hx _ hc).mem_trans' hza hab (hb c hc)
 
-protected theorem union (hx : x.IsTransitive) (hy : y.IsTransitive) : (x ∪ y).IsTransitive := by
-  convert IsTransitive.sUnion' (x := {x, y}) _ using 1
+protected theorem union (hx : x.IsOrdinal) (hy : y.IsOrdinal) : (x ∪ y).IsOrdinal := by
+  convert IsOrdinal.sUnion (x := {x, y}) _ using 1
   simp_all
 
-protected theorem inter (hx : x.IsTransitive) (hy : y.IsTransitive) : (x ∩ y).IsTransitive := by
-  convert IsTransitive.sInter (x := {x, y}) _ using 1 <;>
+protected theorem inter (hx : x.IsOrdinal) (hy : y.IsOrdinal) : (x ∩ y).IsOrdinal := by
+  convert IsOrdinal.sInter (x := {x, y}) _ using 1 <;>
   simp_all
 
 protected theorem isTrans (h : x.IsOrdinal) : IsTrans _ (Subrel (· ∈ ·) (· ∈ x)) :=
