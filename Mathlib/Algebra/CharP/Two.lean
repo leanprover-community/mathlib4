@@ -65,8 +65,6 @@ theorem neg_eq' : Neg.neg = (id : R → R) :=
 @[scoped simp]
 theorem sub_eq_add (x y : R) : x - y = x + y := by rw [sub_eq_add_neg, neg_eq]
 
-
-
 theorem add_eq_iff_eq_add {a b c : R} : a + b = c ↔ a = c + b := by
   rw [← sub_eq_iff_eq_add, sub_eq_add]
 
