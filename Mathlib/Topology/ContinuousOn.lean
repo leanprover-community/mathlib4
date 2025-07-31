@@ -1172,6 +1172,18 @@ theorem isOpenMap_prod_of_discrete_right [DiscreteTopology β] {f : α × β →
   simp_rw [isOpenMap_iff_nhds_le, Prod.forall, forall_swap (α := α) (β := β), nhds_prod_eq,
     nhds_discrete, prod_pure, map_map]; rfl
 
+theorem ContinuousOn.uncurry_left {f : α → β → γ} {sα : Set α} {sβ : Set β} (a : α) (ha : a ∈ sα)
+    (h : ContinuousOn f.uncurry (sα ×ˢ sβ)) : ContinuousOn (f a) sβ := by
+  let g : β → γ := f.uncurry ∘ (fun b => (a, b))
+  refine ContinuousOn.congr (f := g) ?_ (fun y => by simp [g])
+  exact ContinuousOn.comp h (by fun_prop) (by grind [Set.MapsTo, = Set.mem_prod])
+
+theorem ContinuousOn.uncurry_right {f : α → β → γ} {sα : Set α} {sβ : Set β} (b : β) (ha : b ∈ sβ)
+    (h : ContinuousOn f.uncurry (sα ×ˢ sβ)) : ContinuousOn (fun a => f a b) sα := by
+  let g : α → γ := f.uncurry ∘ (fun a => (a, b))
+  refine ContinuousOn.congr (f := g) ?_ (fun y => by simp [g])
+  exact ContinuousOn.comp h (by fun_prop) (by grind [Set.MapsTo, = Set.mem_prod])
+
 /-!
 ### Pi
 -/

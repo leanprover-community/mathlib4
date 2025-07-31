@@ -128,6 +128,18 @@ lemma aestronglyMeasurable_rpowIntegrand₀₁ (hp : p ∈ Ioo 0 1) (hx : 0 ≤ 
     AEStronglyMeasurable (rpowIntegrand₀₁ p · x) (volume.restrict (Ioi 0)) :=
   (continuousOn_rpowIntegrand₀₁ hp hx).aestronglyMeasurable measurableSet_Ioi
 
+lemma monotoneOn_rpowIntegrand₀₁ (hp : p ∈ Ioo 0 1) (ht : 0 ≤ t) :
+    MonotoneOn (rpowIntegrand₀₁ p t) (Ici 0) := by
+  intro x hx y hy hxy
+  by_cases h : x = 0 ∧ t = 0
+  case pos => simp [h, rpowIntegrand₀₁_nonneg hp.1 le_rfl hy]
+  case neg =>
+    simp only [rpowIntegrand₀₁]
+    gcongr
+    by_cases 0 < t
+    · apply add_pos_of_pos_of_nonneg <;> grind
+    · apply add_pos_of_nonneg_of_pos <;> grind [← lt_of_le_of_ne]
+
 lemma rpowIntegrand₀₁_le_rpow_sub_two_mul_self (hp : p ∈ Ioo 0 1) (ht : 0 < t) (hx : 0 ≤ x) :
     rpowIntegrand₀₁ p t x ≤ t ^ (p - 2) * x := calc
   _ = t ^ (p - 1) * x / (t + x) := by rw [rpowIntegrand₀₁_eq_pow_div hp (le_of_lt ht) hx]
@@ -300,3 +312,12 @@ lemma exists_measure_rpow_eq_integral (hp : p ∈ Ioo 0 1) :
     simp [C, NNReal.smul_def]
 
 end Real
+
+lemma continuousOn_left_of_continuousOn_uncurry {X Y Z : Type*} (f : X → Y → Z) [TopologicalSpace X]
+    [TopologicalSpace Y] [TopologicalSpace Z] {sx : Set X} {sy : Set Y}
+    (hf : ContinuousOn f.uncurry (sx ×ˢ sy)) {x : X} (hx : x ∈ sx) : ContinuousOn (f x) sy := by
+  let g : Y → Z := f.uncurry ∘ (fun y => (x, y))
+  refine ContinuousOn.congr (f := g) ?_ (fun y => by simp [g])
+  exact ContinuousOn.comp hf (by fun_prop) (by grind [Set.MapsTo, = Set.mem_prod])
+
+#find_home continuousOn_left_of_continuousOn_uncurry
