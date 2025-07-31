@@ -245,13 +245,13 @@ lemma isLocalization_at_prime_prime_depth_le_depth [IsLocalRing Rₚ] [Module.Fi
     apply Subsingleton.elim
   simp only [IsLocalRing.depth_eq_sSup_length_regular, Ideal.depth]
   have : Module.Finite R (Shrink.{v, u} (R ⧸ p)) :=
-    Module.Finite.equiv (Shrink.linearEquiv (R ⧸ p) R).symm
+    Module.Finite.equiv (Shrink.linearEquiv R (R ⧸ p)).symm
   have smul_lt : p • (⊤ : Submodule R M) < ⊤ :=
     Ne.lt_top' (Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator
       ((IsLocalRing.le_maximalIdeal (Ideal.IsPrime.ne_top')).trans
       (IsLocalRing.maximalIdeal_le_jacobson _)))
   have h_supp : Module.support R (of R (Shrink.{v, u} (R ⧸ p))) = PrimeSpectrum.zeroLocus p := by
-    rw [(Shrink.linearEquiv (R ⧸ p) R).support_eq, Module.support_eq_zeroLocus,
+    rw [(Shrink.linearEquiv R (R ⧸ p)).support_eq, Module.support_eq_zeroLocus,
       Ideal.annihilator_quotient]
   rw [moduleDepth_eq_sSup_length_regular p _ _ smul_lt h_supp]
   apply sSup_le (fun n hn ↦ le_sSup ?_)
@@ -281,7 +281,7 @@ lemma isLocalize_at_prime_dim_eq_prime_depth_of_isCohenMacaulay
     have min : p ∈ (Module.annihilator R M).minimalPrimes := by
       simp only [CharP.cast_eq_zero, Ideal.depth] at hn
       rw [Eq.comm, moduleDepth_eq_zero_of_hom_nontrivial,
-        ((Shrink.linearEquiv (R ⧸ p) R).congrLeft M R).nontrivial_congr] at hn
+        ((Shrink.linearEquiv R (R ⧸ p)).congrLeft M R).nontrivial_congr] at hn
       obtain ⟨g, hg⟩ : ∃ g : R ⧸ p →ₗ[R] M, g ≠ 0 := exists_ne 0
       have : g 1 ≠ 0 := by
         by_contra eq0
@@ -333,7 +333,7 @@ lemma isLocalize_at_prime_dim_eq_prime_depth_of_isCohenMacaulay
       rw [not_subsingleton_iff_nontrivial, ← moduleDepth_eq_zero_of_hom_nontrivial] at ntr
       simp [Ideal.depth, ntr] at hn
     rcases IsSMulRegular.subsingleton_linearMap_iff.mp
-      (((Shrink.linearEquiv (R ⧸ p) R).congrLeft M R).symm.subsingleton) with ⟨a, mem, reg⟩
+      (((Shrink.linearEquiv R (R ⧸ p)).congrLeft M R).symm.subsingleton) with ⟨a, mem, reg⟩
     rw [Ideal.annihilator_quotient] at mem
     let M' := ModuleCat.of R (QuotSMulTop a M)
     have : Nontrivial M' := quotSMulTop_nontrivial (le_maximalIdeal_of_isPrime p mem) M
@@ -424,7 +424,7 @@ instance [IsCohenMacaulayLocalRing R] : (ModuleCat.of R R).IsCohenMacaulay :=
   (isCohenMacaulayLocalRing_iff R).mp ‹_›
 
 lemma isCohenMacaulayLocalRing_localization_atPrime [IsCohenMacaulayLocalRing R]
-    [IsNoetherianRing R](p : Ideal R) [p.IsPrime]
+    [IsNoetherianRing R] (p : Ideal R) [p.IsPrime]
     (Rₚ : Type*) [CommRing Rₚ] [Algebra R Rₚ] [IsLocalization.AtPrime Rₚ p] :
     IsCohenMacaulayLocalRing Rₚ := by
   have := IsLocalization.AtPrime.isLocalRing Rₚ p
