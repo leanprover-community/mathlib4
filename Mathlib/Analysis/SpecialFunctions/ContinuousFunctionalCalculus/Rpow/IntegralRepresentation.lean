@@ -508,16 +508,17 @@ lemma exists_measure_nnrpow_eq_integral_cfcₙ_rpowIntegrand₀₁ [CompleteSpac
     have p_pos : 0 < (p : ℝ) := by exact_mod_cast hp.1
     let f t := rpowIntegrand₀₁ p t
     let maxr := sSup (quasispectrum ℝ a)
-    have maxr_nonneg : 0 ≤ maxr := by sorry
+    have maxr_nonneg : 0 ≤ maxr := by
+      refine le_csSup_of_le (b := 0) ?_ (by simp) (by simp)
+      sorry
     let bound (t : ℝ) := ‖f t maxr‖
     have hf : ContinuousOn (Function.uncurry f) (Ioi (0 : ℝ) ×ˢ quasispectrum ℝ a) := by
       refine continuousOn_rpowIntegrand₀₁_uncurry hp (quasispectrum ℝ a) ?_
-      grind [NonnegSpectrumClass.quasispectrum_nonneg_of_nonneg, Set.subset_def]
+      grind [Set.subset_def]
     have hbound : ∀ᵐ t ∂μ.restrict (Ioi 0), ∀ z ∈ quasispectrum ℝ a, ‖f t z‖ ≤ bound t := by
       filter_upwards [ae_restrict_mem measurableSet_Ioi] with t ht
       intro z hz
-      have hz' : 0 ≤ z := by
-        grind [NonnegSpectrumClass.quasispectrum_nonneg_of_nonneg, Set.subset_def]
+      have hz' : 0 ≤ z := by grind
       unfold bound f
       rw [Real.norm_of_nonneg (rpowIntegrand₀₁_nonneg p_pos (le_of_lt ht) hz'),
           Real.norm_of_nonneg (rpowIntegrand₀₁_nonneg p_pos (le_of_lt ht) maxr_nonneg)]
@@ -538,13 +539,9 @@ lemma exists_measure_nnrpow_eq_integral_cfcₙ_rpowIntegrand₀₁ [CompleteSpac
                   refine cfcₙ_congr ?_
                   intro r hr
                   have hp' : (p : ℝ) ∈ Ioo 0 1 := by exact_mod_cast hp
-                  have hr' : 0 ≤ r := by
-                    sorry
+                  have hr' : 0 ≤ r := by grind
                   simp only [sup_of_le_left hr', NNReal.nnrpow_def, NNReal.coe_rpow, coe_toNNReal']
-                  --simp only [NNReal.nnrpow_def, NNReal.coe_rpow, coe_toNNReal',
-                  --  spectrum_nonneg_of_nonneg ha hr, sup_of_le_left]
-                  refine (hμ r hr').2
-                  --exact spectrum_nonneg_of_nonneg ha hr
+                  exact (hμ r hr').2
         _ = _ := by
                   refine cfcₙ_setIntegral measurableSet_Ioi _ bound a hf hmapzero hbound
                     hbound_finite_integral ha.isSelfAdjoint
