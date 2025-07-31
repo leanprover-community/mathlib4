@@ -250,9 +250,6 @@ protected theorem isOpenMap (surj : Surjective f) : IsOpenMap f := by
 theorem isQuotientMap (surj : Surjective f) : IsQuotientMap f :=
   (f.isOpenMap surj).isQuotientMap f.continuous surj
 
-@[deprecated (since := "2024-10-22")]
-alias quotientMap := isQuotientMap
-
 end
 
 theorem _root_.AffineMap.isOpenMap {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
