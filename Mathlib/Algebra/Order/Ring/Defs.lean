@@ -10,6 +10,7 @@ import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 import Mathlib.Algebra.Order.Monoid.NatCast
 import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 import Mathlib.Algebra.Ring.Defs
+import Mathlib.Algebra.Ring.GrindInstances
 import Mathlib.Tactic.Tauto
 import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 
@@ -137,6 +138,11 @@ class IsStrictOrderedRing (R : Type*) [Semiring R] [PartialOrder R] extends
 
 attribute [instance 100] IsStrictOrderedRing.toZeroLEOneClass
 attribute [instance 100] IsStrictOrderedRing.toNontrivial
+
+instance [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] : Lean.Grind.OrderedRing R where
+  zero_lt_one := zero_lt_one
+  mul_lt_mul_of_pos_left := IsStrictOrderedRing.mul_lt_mul_of_pos_left _ _ _
+  mul_lt_mul_of_pos_right := IsStrictOrderedRing.mul_lt_mul_of_pos_right _ _ _
 
 lemma IsOrderedRing.of_mul_nonneg [Ring R] [PartialOrder R] [IsOrderedAddMonoid R]
     [ZeroLEOneClass R] (mul_nonneg : ∀ a b : R, 0 ≤ a → 0 ≤ b → 0 ≤ a * b) :
