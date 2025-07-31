@@ -703,8 +703,6 @@ theorem ContDiffOn.comp_inter
     (hf : ContDiffOn 𝕜 n f s) : ContDiffOn 𝕜 n (g ∘ f) (s ∩ f ⁻¹' t) :=
   hg.comp (hf.mono inter_subset_left) inter_subset_right
 
-
-
 /-- The composition of a `C^n` function on a domain with a `C^n` function is `C^n`. -/
 theorem ContDiff.comp_contDiffOn {s : Set E} {g : F → G} {f : E → F} (hg : ContDiff 𝕜 n g)
     (hf : ContDiffOn 𝕜 n f s) : ContDiffOn 𝕜 n (g ∘ f) s :=

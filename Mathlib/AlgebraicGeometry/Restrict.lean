@@ -196,8 +196,6 @@ lemma Scheme.map_basicOpen (r : Γ(U, ⊤)) :
   congr
   exact PresheafedSpace.IsOpenImmersion.ofRestrict_invApp _ _ _
 
-
-
 lemma Scheme.Opens.ι_image_basicOpen (r : Γ(U, ⊤)) :
     U.ι ''ᵁ U.toScheme.basicOpen r = X.basicOpen r := by
   rw [Scheme.map_basicOpen, Scheme.basicOpen_res_eq]
