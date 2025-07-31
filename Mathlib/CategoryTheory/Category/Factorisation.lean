@@ -121,16 +121,16 @@ Thus formulating the ≌ relationship. -/
 @[simps]
 def factorisationEquivUnderOverMk : Factorisation f ≌ Under (Over.mk f) where
   functor := {
-    obj := fun α => Under.mk (Over.homMk α.ι : Over.mk f ⟶ Over.mk α.π)
-    map := fun κ => Under.homMk (Over.homMk κ.h κ.h_π) (Over.OverMorphism.ext (by simp))
+    obj α := Under.mk (Over.homMk α.ι : Over.mk f ⟶ Over.mk α.π)
+    map κ := Under.homMk (Over.homMk κ.h κ.h_π) (Over.OverMorphism.ext (by simp))
   }
   inverse := {
-    obj := fun α => {
+    obj α := {
       mid := α.right.left
       ι := α.hom.left
       π := α.right.hom
     }
-    map := fun κ => {
+    map κ := {
       h := κ.right.left
       ι_h := by rw [← Over.comp_left, Under.w]
       h_π := Over.w κ.right
