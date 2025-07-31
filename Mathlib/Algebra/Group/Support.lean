@@ -185,16 +185,21 @@ theorem mulSupport_comp_eq_preimage (g : β → M) (f : α → β) :
     mulSupport (g ∘ f) = f ⁻¹' mulSupport g :=
   rfl
 
-@[to_additive support_prod_mk]
-theorem mulSupport_prod_mk (f : α → M) (g : α → N) :
+@[to_additive support_prodMk]
+theorem mulSupport_prodMk (f : α → M) (g : α → N) :
     (mulSupport fun x => (f x, g x)) = mulSupport f ∪ mulSupport g :=
   Set.ext fun x => by
     simp only [mulSupport, not_and_or, mem_union, mem_setOf_eq, Prod.mk_eq_one, Ne]
 
-@[to_additive support_prod_mk']
-theorem mulSupport_prod_mk' (f : α → M × N) :
+@[to_additive support_prodMk']
+theorem mulSupport_prodMk' (f : α → M × N) :
     mulSupport f = (mulSupport fun x => (f x).1) ∪ mulSupport fun x => (f x).2 := by
-  simp only [← mulSupport_prod_mk]
+  simp only [← mulSupport_prodMk]
+
+@[deprecated (since := "2025-07-31")] alias support_prod_mk := support_prodMk
+@[deprecated (since := "2025-07-31")] alias mulSupport_prod_mk := mulSupport_prodMk
+@[deprecated (since := "2025-07-31")] alias support_prod_mk' := support_prodMk'
+@[deprecated (since := "2025-07-31")] alias mulSupport_prod_mk' := mulSupport_prodMk'
 
 @[to_additive]
 theorem mulSupport_along_fiber_subset (f : α × β → M) (a : α) :
