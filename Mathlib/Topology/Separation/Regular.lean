@@ -11,7 +11,7 @@ import Mathlib.Topology.Connected.Clopen
 /-!
 # Regular, normal, T₃, T₄ and T₅ spaces
 
-This file continues the study of separation properties of topological spaces, focussing
+This file continues the study of separation properties of topological spaces, focusing
 on conditions strictly stronger than T₂.
 
 ## Main definitions

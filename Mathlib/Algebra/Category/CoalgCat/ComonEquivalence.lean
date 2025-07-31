@@ -165,7 +165,7 @@ attribute [local simp] Mon_Class.tensorObj.one_def Mon_Class.tensorObj.mul_def i
 theorem comul_tensorObj_tensorObj_right :
     Coalgebra.comul (R := R) (A := (CoalgCat.of R M ⊗
       (CoalgCat.of R N ⊗ CoalgCat.of R P) : CoalgCat R))
-      = Coalgebra.comul (A := M ⊗[R] N ⊗[R] P) := by
+      = Coalgebra.comul (A := M ⊗[R] (N ⊗[R] P)) := by
   rw [ofComonObjCoalgebraStruct_comul]
   simp only [Comon_.monoidal_tensorObj_comon_comul]
   simp [tensorμ_eq_tensorTensorTensorComm, TensorProduct.comul_def,
@@ -176,7 +176,7 @@ attribute [local simp] Mon_Class.tensorObj.one_def Mon_Class.tensorObj.mul_def i
 theorem comul_tensorObj_tensorObj_left :
     Coalgebra.comul (R := R)
       (A := ((CoalgCat.of R M ⊗ CoalgCat.of R N) ⊗ CoalgCat.of R P : CoalgCat R))
-      = Coalgebra.comul (A := (M ⊗[R] N) ⊗[R] P) := by
+      = Coalgebra.comul (A := M ⊗[R] N ⊗[R] P) := by
   rw [ofComonObjCoalgebraStruct_comul]
   dsimp
   simp only [toComonObj]

@@ -265,7 +265,7 @@ theorem norm_root_le_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
 open Multiset
 
 /-- If `f` is a nonarchimedean, power-multiplicative `K`-algebra norm on `L`, then the spectral
-value of a polynomial `p : K[X]` that decomposes into linear factos in `L` is equal to the
+value of a polynomial `p : K[X]` that decomposes into linear factors in `L` is equal to the
 maximum of the norms of the roots. See [S. Bosch, U. Güntzer, R. Remmert,*Non-Archimedean Analysis*
 (Proposition 3.1.2/1(2))][bosch-guntzer-remmert]. -/
 theorem max_norm_root_eq_spectralValue [DecidableEq L] {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
