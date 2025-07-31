@@ -623,9 +623,6 @@ theorem iSup_sub : (⨆ i, f i) - a = ⨆ i, f i - a :=
 
 @[simp] lemma iSup_zero : ⨆ _ : ι, (0 : ℝ≥0∞) = 0 := by simp
 
-@[deprecated (since := "2024-10-22")]
-alias iSup_zero_eq_zero := iSup_zero
-
 lemma iSup_natCast : ⨆ n : ℕ, (n : ℝ≥0∞) = ∞ :=
   (iSup_eq_top _).2 fun _b hb => ENNReal.exists_nat_gt (lt_top_iff_ne_top.1 hb)
 
