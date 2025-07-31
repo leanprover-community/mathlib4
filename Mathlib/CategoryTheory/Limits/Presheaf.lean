@@ -12,29 +12,34 @@ import Mathlib.CategoryTheory.Limits.Over
 /-!
 # Colimit of representables
 
-This file constructs an adjunction `Presheaf.yonedaAdjunction` between `(Cᵒᵖ ⥤ Type u)` and
-`ℰ` given a functor `A : C ⥤ ℰ`, where the right adjoint `restrictedYoneda`
-sends `(E : ℰ)` to `c ↦ (A.obj c ⟶ E)`, and the left adjoint `(Cᵒᵖ ⥤ Type v₁) ⥤ ℰ`
-is a pointwise left Kan extension of `A` along the Yoneda embedding, which
-exists provided `ℰ` has colimits)
-
-We also show that every presheaf is a colimit of representables. This result
-is also known as the density theorem, the co-Yoneda lemma and
-the Ninja Yoneda lemma. Two formulations are given:
+In this file, We show that every presheaf of types on a category `C` (with `Category.{v₁} C`)
+is a colimit of representables. This result is also known as the density theorem,
+the co-Yoneda lemma and the Ninja Yoneda lemma. Three formulations are given:
 * `colimitOfRepresentable` uses the category of elements of a functor to types;
-* `isColimitTautologicalCocone` uses the category of costructured arrows.
+* `isColimitTautologicalCocone` uses the category of costructured arrows
+for `yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁`;
+* `isColimitTautologicalCocone` uses the category of costructured arrows
+for `uliftYoneda : C ⥤ Cᵒᵖ ⥤ Type max w v₁`, when the presheaf has values
+in `Type (max w v₁)`;
 
-In the lemma `isLeftKanExtension_along_yoneda_iff`, we show that
-if `L : (Cᵒᵖ ⥤ Type v₁) ⥤ ℰ)` and `α : A ⟶ yoneda ⋙ L`, then
+In this file, we also study the left Kan extensions of functors `A : C ⥤ ℰ`
+along the Yoneda embedding `uliftYoneda : C ⥤ Cᵒᵖ ⥤ Type max w v₁ v₂`
+(when `Category.{v₂} ℰ` and `w` is an auxiliary universe). In particular,
+the definition `uliftYonedaAdjunction` shows that such a pointwise left Kan
+extension  (which exists when `ℰ` has colimits) is a left adjoint to the
+functor `restrictedULiftYoneda : ℰ ⥤ Cᵒᵖ ⥤ Type (max w v₁ v₂)`.
+
+In the lemma `isLeftKanExtension_along_uliftYoneda_iff`, we show that
+if `L : (Cᵒᵖ ⥤ Type max w v₁ v₂) ⥤ ℰ` and `α : A ⟶ uliftYoneda ⋙ L`, then
 `α` makes `L` the left Kan extension of `L` along yoneda if and only if
 `α` is an isomorphism (i.e. `L` extends `A`) and `L` preserves colimits.
-`uniqueExtensionAlongYoneda` shows `yoneda.leftKanExtension A` is unique amongst
-functors preserving colimits with this property, establishing the
+`uniqueExtensionAlongULiftYoneda` shows `uliftYoneda.leftKanExtension A` is
+unique amongst functors preserving colimits with this property, establishing the
 presheaf category as the free cocompletion of a category.
 
-Given a functor `F : C ⥤ D`, we also show construct an
-isomorphism `compYonedaIsoYonedaCompLan : F ⋙ yoneda ≅ yoneda ⋙ F.op.lan`, and
-show that it makes `F.op.lan` a left Kan extension of `F ⋙ yoneda`.
+Given a functor `F : C ⥤ D`, we also show construct an isomorphism
+`compULiftYonedaIsoULiftYonedaCompLan : F ⋙ uliftYoneda ≅ uliftYoneda ⋙ F.op.lan`, and
+show that it makes `F.op.lan` a left Kan extension of `F ⋙ uliftYoneda`.
 
 ## Tags
 colimit, representable, presheaf, free cocompletion
@@ -57,10 +62,11 @@ namespace Presheaf
 variable {ℰ : Type u₂} [Category.{v₂} ℰ] (A : C ⥤ ℰ)
 
 /--
-The functor taking `(E : ℰ) (c : Cᵒᵖ)` to the homset `(A.obj C ⟶ E)`. It is shown in `L_adjunction`
-that this functor has a left adjoint (provided `E` has colimits) given by taking colimits over
-categories of elements.
-In the case where `ℰ = Cᵒᵖ ⥤ Type u` and `A = yoneda`, this functor is isomorphic to the identity.
+Given a functor `A : C ⥤ ℰ` (with `Category.{v₂} ℰ`) and a auxiliary universe `w`,
+this is the functor `ℰ ⥤ Cᵒᵖ ⥤ Type (max w v₂)` which sends `(E : ℰ) (c : Cᵒᵖ)`
+to the homset `A.obj C ⟶ E` (considered in the higher universe `max w v₂`).
+Under the existence of a suitable pointwise left Kan extension, it is shown in
+`uliftYonedaAdjunction` that this functor has a left adjoint.
 
 Defined as in [MM92], Chapter I, Section 5, Theorem 2.
 -/
@@ -154,9 +160,9 @@ noncomputable def restrictedULiftYonedaHomEquiv (P : Cᵒᵖ ⥤ Type max w v₁
   (Functor.isPointwiseLeftKanExtensionOfIsLeftKanExtension _ α P).homEquiv.trans
     (restrictedULiftYonedaHomEquiv' A P E)
 
-/-- If `L : (Cᵒᵖ ⥤ Type v₁) ⥤ ℰ` is a pointwise left Kan extension
+/-- If `L : (Cᵒᵖ ⥤ Type max v₁ v₂) ⥤ ℰ` is a pointwise left Kan extension
 of a functor `A : C ⥤ ℰ` along the Yoneda embedding,
-then `L` is a left adjoint of `restrictedYoneda A : ℰ ⥤ Cᵒᵖ ⥤ Type v₁` -/
+then `L` is a left adjoint of `restrictedULiftYoneda A : ℰ ⥤ Cᵒᵖ ⥤ Type max v₁ v₂` -/
 noncomputable def uliftYonedaAdjunction : L ⊣ restrictedULiftYoneda.{max w v₁} A :=
   Adjunction.mkOfHomEquiv
     { homEquiv := restrictedULiftYonedaHomEquiv L α
@@ -208,9 +214,10 @@ noncomputable def isExtensionAlongULiftYoneda :
 
 end
 
-/-- A functor to the presheaf category in which everything in the image is representable (witnessed
-by the fact that it factors through the yoneda embedding).
-`coconeOfRepresentable` gives a cocone for this functor which is a colimit and has point `P`.
+/-- Given `P : Cᵒᵖ ⥤ Type max w v₁`, this is the functor from the opposite category
+of the category of elements of `X` which sends an element in `P.obj (op X)` to the
+presheaf represented by `X`. The definition`coconeOfRepresentable`
+gives a cocone for this functor which is a colimit and has point `P`.
 -/
 @[simps! obj map]
 def functorToRepresentables (P : Cᵒᵖ ⥤ Type max w v₁) :
@@ -322,7 +329,7 @@ lemma isLeftKanExtension_of_preservesColimits
 
 end
 
-/-- Show that `yoneda.leftKanExtension A` is the unique colimit-preserving
+/-- Show that `uliftYoneda.leftKanExtension A` is the unique colimit-preserving
 functor which extends `A` to the presheaf category.
 
 The second part of [MM92], Chapter I, Section 5, Corollary 4.
@@ -471,9 +478,9 @@ lemma coconeApp_naturality {P : Cᵒᵖ ⥤ Type max w v₁ v₂} {x y : P.Eleme
     Functor.op_map, Functor.map_comp, FunctorToTypes.comp,]
   simp [uliftYoneda]
 
-/-- Given functors `F : C ⥤ D` and `G : (Cᵒᵖ ⥤ Type v₁) ⥤ (Dᵒᵖ ⥤ Type v₁)`, and
-a natural transformation `φ : F ⋙ yoneda ⟶ yoneda ⋙ G`, this is the
-(natural) morphism `P ⟶ F.op ⋙ G.obj P` for all `P : Cᵒᵖ ⥤ Type v₁` that is
+/-- Given functors `F : C ⥤ D` and `G : (Cᵒᵖ ⥤ Type max w v₁ v₂) ⥤ (Dᵒᵖ ⥤ Type max w v₁ v₂)`,
+and a natural transformation `φ : F ⋙ uliftYoneda ⟶ uliftYoneda ⋙ G`, this is the
+(natural) morphism `P ⟶ F.op ⋙ G.obj P` for all `P : Cᵒᵖ ⥤ Type max w v₁ v₂` that is
 determined by `φ`. -/
 noncomputable def presheafHom (P : Cᵒᵖ ⥤ Type max w v₁ v₂) : P ⟶ F.op ⋙ G.obj P :=
   (colimitOfRepresentable P).desc
@@ -504,11 +511,12 @@ lemma presheafHom_naturality {P Q : Cᵒᵖ ⥤ Type max w v₁ v₂} (f : P ⟶
 
 variable [∀ (P : Cᵒᵖ ⥤ Type max w v₁ v₂), F.op.HasLeftKanExtension P]
 
-/-- Given functors `F : C ⥤ D` and `G : (Cᵒᵖ ⥤ Type v₁) ⥤ (Dᵒᵖ ⥤ Type v₁)`,
-and a natural transformation `φ : F ⋙ yoneda ⟶ yoneda ⋙ G`, this is
+/-- Given functors `F : C ⥤ D` and `G : (Cᵒᵖ ⥤ Type max w v₁ v₂) ⥤ (Dᵒᵖ ⥤ Type max w v₁ v₂)`,
+and a natural transformation `φ : F ⋙ uliftYoneda ⟶ uliftYoneda ⋙ G`, this is
 the canonical natural transformation `F.op.lan ⟶ G`, which is part of the
-that `F.op.lan : (Cᵒᵖ ⥤ Type v₁) ⥤ Dᵒᵖ ⥤ Type v₁` is the left Kan extension
-of `F ⋙ yoneda : C ⥤ Dᵒᵖ ⥤ Type v₁` along `yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁`. -/
+fact that `F.op.lan : (Cᵒᵖ ⥤ Type max w v₁ v₂) ⥤ Dᵒᵖ ⥤ Type max w v₁ v₂`
+is the left Kan extension of `F ⋙ uliftYoneda : C ⥤ Dᵒᵖ ⥤ Type max w v₁ v₂`
+along `uliftYoneda : C ⥤ Cᵒᵖ ⥤ Type max w v₁ v₂`. -/
 noncomputable def natTrans : F.op.lan ⟶ G where
   app P := (F.op.lan.obj P).descOfIsLeftKanExtension (F.op.lanUnit.app P) _ (presheafHom φ P)
   naturality {P Q} f := by
@@ -533,10 +541,10 @@ end
 variable [∀ (P : Cᵒᵖ ⥤ Type max w v₁ v₂), F.op.HasLeftKanExtension P]
 
 /-- Given a functor `F : C ⥤ D`, this definition is part of the verification that
-`Functor.LeftExtension.mk F.op.lan (compYonedaIsoYonedaCompLan F).hom`
-is universal, i.e. that  `F.op.lan : (Cᵒᵖ ⥤ Type v₁) ⥤ Dᵒᵖ ⥤ Type v₁` is the
-left Kan extension of `F ⋙ yoneda : C ⥤ Dᵒᵖ ⥤ Type v₁`
-along `yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁`. -/
+`Functor.LeftExtension.mk F.op.lan (compULiftYonedaIsoULiftYonedaCompLan F).hom`
+is universal, i.e. that  `F.op.lan : (Cᵒᵖ ⥤ Type max w v₁ v₂) ⥤ Dᵒᵖ ⥤ Type max w v₁ v₂`
+is the left Kan extension of `F ⋙ uliftYoneda : C ⥤ Dᵒᵖ ⥤ Type max w v₁ v₂`
+along `uliftYoneda : C ⥤ Cᵒᵖ ⥤ Type max w v₁ v₂`. -/
 noncomputable def extensionHom
     (Φ : uliftYoneda.{max w v₂}.LeftExtension (F ⋙ uliftYoneda.{max w v₁})) :
     Functor.LeftExtension.mk F.op.lan (compULiftYonedaIsoULiftYonedaCompLan.{w} F).hom ⟶ Φ :=
@@ -589,7 +597,8 @@ end
 /-- For a presheaf `P`, consider the forgetful functor from the category of representable
     presheaves over `P` to the category of presheaves. There is a tautological cocone over this
     functor whose leg for a natural transformation `V ⟶ P` with `V` representable is just that
-    natural transformation. -/
+    natural transformation. (In this version, we allow the presheaf `P` to have values in
+    a larger universe.) -/
 @[simps]
 def tautologicalCocone' (P : Cᵒᵖ ⥤ Type max w v₁) :
     Cocone (CostructuredArrow.proj uliftYoneda.{w} P ⋙ uliftYoneda.{w}) where
@@ -597,7 +606,8 @@ def tautologicalCocone' (P : Cᵒᵖ ⥤ Type max w v₁) :
   ι := { app X := X.hom }
 
 /-- The tautological cocone with point `P` is a colimit cocone, exhibiting `P` as a colimit of
-    representables.
+    representables. (In this version, we allow the presheaf `P` to have values in
+    a larger universe.)
 
     Proposition 2.6.3(i) in [Kashiwara2006] -/
 noncomputable def isColimitTautologicalCocone' (P : Cᵒᵖ ⥤ Type max w v₁) :
