@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
 import Mathlib.Algebra.GroupWithZero.ProdHom
+import Mathlib.Algebra.Order.Group.Equiv
 import Mathlib.Algebra.Order.Hom.MonoidWithZero
 import Mathlib.Algebra.Order.Monoid.Lex
 import Mathlib.Data.Prod.Lex
@@ -25,33 +26,14 @@ Create the "LinOrdCommGrpWithZero" category.
 
 -/
 
--- TODO: find a better place
-/-- `toLex` as a monoid isomorphism. -/
-def toLexMulEquiv (G H : Type*) [MulOneClass G] [MulOneClass H] : G × H ≃* G ×ₗ H where
-  toFun := toLex
-  invFun := ofLex
-  left_inv := ofLex_toLex
-  right_inv := toLex_ofLex
-  map_mul' := toLex_mul
-
-@[simp]
-lemma coe_toLexMulEquiv (G H : Type*) [MulOneClass G] [MulOneClass H] :
-    ⇑(toLexMulEquiv G H) = toLex :=
-  rfl
-
-@[simp]
-lemma coe_symm_toLexMulEquiv (G H : Type*) [MulOneClass G] [MulOneClass H] :
-    ⇑(toLexMulEquiv G H).symm = ofLex :=
-  rfl
-
 @[simp]
 lemma toEquiv_toLexMulEquiv (G H : Type*) [MulOneClass G] [MulOneClass H] :
-    ⇑(toLexMulEquiv G H : G × H ≃ G ×ₗ H) = toLex :=
+    ⇑(toLexMulEquiv (G × H) : G × H ≃ G ×ₗ H) = toLex :=
   rfl
 
 @[simp]
 lemma toEquiv_symm_toLexMulEquiv (G H : Type*) [MulOneClass G] [MulOneClass H] :
-    ⇑((toLexMulEquiv G H).symm : G ×ₗ H ≃ G × H) = ofLex :=
+    ⇑((toLexMulEquiv (G × H)).symm : G ×ₗ H ≃ G × H) = ofLex :=
   rfl
 
 namespace MonoidWithZeroHom
