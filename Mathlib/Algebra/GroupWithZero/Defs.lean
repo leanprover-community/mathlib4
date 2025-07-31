@@ -55,7 +55,7 @@ end IsLeftCancelMulZero
 
 /-- A mixin for right cancellative multiplication by nonzero elements. -/
 class IsRightCancelMulZero (M₀ : Type u) [Mul M₀] [Zero M₀] : Prop where
-  /-- Multiplicatin by a nonzero element is right cancellative. -/
+  /-- Multiplication by a nonzero element is right cancellative. -/
   protected mul_right_cancel_of_ne_zero : ∀ {a b c : M₀}, b ≠ 0 → a * b = c * b → a = c
 
 section IsRightCancelMulZero

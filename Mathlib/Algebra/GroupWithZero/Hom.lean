@@ -117,8 +117,7 @@ instance coeToMonoidHom : Coe (α →*₀ β) (α →* β) :=
 attribute [coe] toZeroHom
 
 /-- `MonoidWithZeroHom` down-cast to a `ZeroHom`, forgetting the monoidal property. -/
-instance coeToZeroHom :
-  Coe (α →*₀ β) (ZeroHom α β) := ⟨toZeroHom⟩
+instance coeToZeroHom : Coe (α →*₀ β) (ZeroHom α β) := ⟨toZeroHom⟩
 
 -- This must come after the coe_toFun definitions
 initialize_simps_projections MonoidWithZeroHom (toFun → apply)

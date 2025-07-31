@@ -32,7 +32,7 @@ namespace MorphismProperty
 
 open Function
 
-/-- Injectiveness (in a concrete category) as a `MorphismProperty` -/
+/-- Injectivity (in a concrete category) as a `MorphismProperty` -/
 protected def injective : MorphismProperty C := fun _ _ f => Injective f
 
 /-- Surjectiveness (in a concrete category) as a `MorphismProperty` -/
