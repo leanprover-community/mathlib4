@@ -282,24 +282,22 @@ defined by `x ↦ ∑ ρ g x` for `g` in `G`. -/
 def norm : V →ₗ[k] V := ∑ g : G, ρ g
 
 @[simp]
-lemma norm_comp_self (g : G) :
-    norm ρ ∘ₗ ρ g = norm ρ := by
+lemma norm_comp_self (g : G) : norm ρ ∘ₗ ρ g = norm ρ := by
   ext
   simpa [norm] using Fintype.sum_bijective (· * g) (Group.mulRight_bijective g) _ _ <| by simp
 
 @[simp]
-lemma norm_self_apply (g : G) (x : V) :
-    norm ρ (ρ g x) = norm ρ x := LinearMap.ext_iff.1 (norm_comp_self _ _) x
+lemma norm_self_apply (g : G) (x : V) : norm ρ (ρ g x) = norm ρ x :=
+  LinearMap.ext_iff.1 (norm_comp_self _ _) x
 
 @[simp]
-lemma self_comp_norm (g : G) :
-    ρ g ∘ₗ norm ρ = norm ρ := by
+lemma self_comp_norm (g : G) : ρ g ∘ₗ norm ρ = norm ρ := by
   ext
   simpa [norm] using Fintype.sum_bijective (g * ·) (Group.mulLeft_bijective g) _ _ <| by simp
 
 @[simp]
-lemma self_norm_apply (g : G) (x : V) :
-    ρ g (norm ρ x) = norm ρ x := LinearMap.ext_iff.1 (self_comp_norm _ _) x
+lemma self_norm_apply (g : G) (x : V) : ρ g (norm ρ x) = norm ρ x :=
+  LinearMap.ext_iff.1 (self_comp_norm _ _) x
 
 end Norm
 

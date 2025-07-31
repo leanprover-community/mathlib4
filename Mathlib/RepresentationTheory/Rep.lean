@@ -683,8 +683,7 @@ def norm : A ⟶ A where
   comm g := by ext; simp
 
 @[reassoc, elementwise]
-lemma norm_comm {A B : Rep k G} (f : A ⟶ B) :
-    f ≫ norm B = norm A ≫ f := by
+lemma norm_comm {A B : Rep k G} (f : A ⟶ B) : f ≫ norm B = norm A ≫ f := by
   ext
   simp [Representation.norm, hom_comm_apply]
 
