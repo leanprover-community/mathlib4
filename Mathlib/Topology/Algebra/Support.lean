@@ -200,13 +200,13 @@ theorem isCompact_range [TopologicalSpace β] (h : HasCompactMulSupport f)
   isCompact_range_of_mulSupport_subset_isCompact hf h (subset_mulTSupport f)
 
 @[to_additive]
-theorem mono' {f' : α → γ} (hf : HasCompactMulSupport f)
-    (hff' : mulSupport f' ⊆ mulTSupport f) : HasCompactMulSupport f' :=
+theorem mono' {f' : α → γ} (hf : HasCompactMulSupport f) (hff' : mulSupport f' ⊆ mulTSupport f) :
+    HasCompactMulSupport f' :=
   IsCompact.of_isClosed_subset hf isClosed_closure <| closure_minimal hff' isClosed_closure
 
 @[to_additive]
-theorem mono {f' : α → γ} (hf : HasCompactMulSupport f)
-    (hff' : mulSupport f' ⊆ mulSupport f) : HasCompactMulSupport f' :=
+theorem mono {f' : α → γ} (hf : HasCompactMulSupport f) (hff' : mulSupport f' ⊆ mulSupport f) :
+    HasCompactMulSupport f' :=
   hf.mono' <| hff'.trans subset_closure
 
 @[to_additive]
