@@ -3,6 +3,7 @@ Copyright (c) 2025 Yongle Hu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan, Yongle Hu, Yijun Yuan
 -/
+import Mathlib.Algebra.Algebra.Shrink
 import Mathlib.Algebra.Category.ModuleCat.Products
 import Mathlib.CategoryTheory.Abelian.Projective.Dimension
 import Mathlib.RingTheory.LocalRing.Module
@@ -119,6 +120,8 @@ noncomputable def coprodIsoDirectSum [HasCoproduct Z] : ∐ Z ≅ AddCommGrp.of 
   colimit.isoColimitCocone ⟨_, coproductCoconeIsColimit Z⟩
 
 end AddCommGrp
+
+open Module
 
 lemma subsingleton_of_pi {α β : Type*} [Nonempty α] (h : Subsingleton (α → β)) :
     Subsingleton β := by
@@ -309,7 +312,7 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
     apply Submodule.smul_mem_smul (h i) (Set.mem_univ _)
   let K := ModuleCat.of R (Shrink.{v} (R ⧸ (maximalIdeal R)))
   have Sf_mem : S.f ∈ (Module.annihilator R K) • (⊤ : Submodule R (S.X₁ ⟶ S.X₂)) := by
-    simp only [K, S, LinearEquiv.annihilator_eq (Shrink.linearEquiv (R ⧸ maximalIdeal R) R),
+    simp only [K, S, LinearEquiv.annihilator_eq (Shrink.linearEquiv R (R ⧸ maximalIdeal R)),
       Ideal.annihilator_quotient]
     rw [← (ModuleCat.homLinearEquiv (S := R)).symm_apply_apply
       (ModuleCat.ofHom (LinearMap.ker f).subtype), ← Submodule.mem_comap]
