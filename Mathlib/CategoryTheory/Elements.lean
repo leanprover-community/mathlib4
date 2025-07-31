@@ -267,6 +267,8 @@ def costructuredArrowYonedaEquivalenceInverseπ (F : Cᵒᵖ ⥤ Type v) :
     (costructuredArrowYonedaEquivalence F).inverse ⋙ (π F).leftOp ≅ CostructuredArrow.proj _ _ :=
   Iso.refl _
 
+/-- The opposite of the category of elements of a presheaf of types
+is equivalent to a category of costructured arrows for the Yoneda embedding functor. -/
 @[simps]
 def costructuredArrowULiftYonedaEquivalence (F : Cᵒᵖ ⥤ Type max w v) :
     F.Elementsᵒᵖ ≌ CostructuredArrow uliftYoneda.{w} F where

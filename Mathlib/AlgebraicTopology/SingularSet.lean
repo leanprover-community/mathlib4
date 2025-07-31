@@ -13,7 +13,7 @@ import Mathlib.Topology.Category.TopCat.ULift
 # The singular simplicial set of a topological space and geometric realization of a simplicial set
 
 The *singular simplicial set* `TopCat.toSSet.obj X` of a topological space `X`
-has as `n`-simplices which identify to ththe continuous maps `⦋n⦌.toTop → X`.
+has `n`-simplices which identify to the continuous maps `⦋n⦌.toTop → X`.
 Here, `⦋n⦌.toTop` is the standard topological `n`-simplex,
 defined as `{ f : Fin (n+1) → ℝ≥0 // ∑ i, f i = 1 }` with its subspace topology.
 
@@ -28,7 +28,7 @@ It is the left Kan extension of `SimplexCategory.toTop` along the Yoneda embeddi
   assigning the geometric realization to a simplicial set.
 * `sSetTopAdj : SSet.toTop ⊣ TopCat.toSSet` is the adjunction between these two functors.
 
-## TODO
+## TODO (@joelriou)
 
 - Show that the singular simplicial set is a Kan complex.
 - Show the adjunction `sSetTopAdj` is a Quillen equivalence.
@@ -48,20 +48,6 @@ Here, `⦋n⦌.toTop` is the standard topological `n`-simplex,
 defined as `{ f : Fin (n+1) → ℝ≥0 // ∑ i, f i = 1 }` with its subspace topology. -/
 noncomputable def TopCat.toSSet : TopCat.{u} ⥤ SSet.{u} :=
   Presheaf.restrictedULiftYoneda.{0} SimplexCategory.toTop.{u}
-
--- to be moved...
-/-- The bijection `C(X₁, Y₁) ≃ C(X₂, Y₂)` induced by homeomorphisms
-`e : X₁ ≃ₜ X₂` and `e' : Y₁ ≃ₜ Y₂`. -/
-@[simps]
-def Homeomorph.continuousMapCongr {X₁ X₂ Y₁ Y₂ : Type*}
-    [TopologicalSpace X₁] [TopologicalSpace X₂]
-    [TopologicalSpace Y₁] [TopologicalSpace Y₂]
-    (e : X₁ ≃ₜ X₂) (e' : Y₁ ≃ₜ Y₂) :
-    C(X₁, Y₁) ≃ C(X₂, Y₂) where
-  toFun f := ContinuousMap.comp ⟨_, e'.continuous⟩ (f.comp ⟨_, e.symm.continuous⟩)
-  invFun g := ContinuousMap.comp ⟨_, e'.symm.continuous⟩ (g.comp ⟨_, e.continuous⟩)
-  left_inv _ := by aesop
-  right_inv _ := by aesop
 
 /-- If `X : TopCat.{u}` and `n : SimplexCategoryᵒᵖ`,
 then `(toSSet.obj X).obj n` identifies to the type of continuous
@@ -93,16 +79,6 @@ noncomputable def SSet.toTopSimplex :
 instance : SSet.toTop.{u}.IsLeftKanExtension SSet.toTopSimplex.inv :=
   inferInstanceAs (Functor.IsLeftKanExtension _
     (SSet.stdSimplex.{u}.leftKanExtensionUnit SimplexCategory.toTop.{u}))
-
--- to be moved...
-noncomputable def TotallyDisconnectedSpace.continuousMapEquivOfConnectedSpace
-    (X Y : Type*) [TopologicalSpace X]
-    [TopologicalSpace Y] [TotallyDisconnectedSpace Y] [ConnectedSpace X] :
-    C(X, Y) ≃ Y where
-  toFun f := f (Classical.arbitrary _)
-  invFun y := ⟨fun _ ↦ y, by continuity⟩
-  left_inv f := ContinuousMap.ext (TotallyDisconnectedSpace.eq_of_continuous _ f.2 _)
-  right_inv _ := rfl
 
 /-- The singular simplicial set of a totally disconnected space is the constant simplicial set. -/
 noncomputable def TopCat.toSSetIsoConst (X : TopCat.{u}) [TotallyDisconnectedSpace X] :

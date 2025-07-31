@@ -211,6 +211,7 @@ theorem uliftFunctor_map {X Y : Type u} (f : X ⟶ Y) (x : ULift.{v} X) :
     uliftFunctor.map f x = ULift.up (f x.down) :=
   rfl
 
+/-- `uliftFunctor : Type u ⥤ Type max u v` is fully faithful. -/
 def fullyFaithfulULiftFunctor : (uliftFunctor.{v, u}).FullyFaithful where
   preimage f := fun x ↦ (f (ULift.up x)).down
 

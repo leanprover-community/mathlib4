@@ -123,6 +123,17 @@ lemma TotallyDisconnectedSpace.eq_of_continuous [TopologicalSpace β]
     (i j : α) : f i = f j :=
   (isPreconnected_univ.image f hf.continuousOn).subsingleton ⟨i, trivial, rfl⟩ ⟨j, trivial, rfl⟩
 
+/-- The bijection `C(X, Y) ≃ Y` when `Y` is totally disconnected and `X` is connected. -/
+@[simps! symm_apply_apply]
+noncomputable def TotallyDisconnectedSpace.continuousMapEquivOfConnectedSpace
+    (X Y : Type*) [TopologicalSpace X]
+    [TopologicalSpace Y] [TotallyDisconnectedSpace Y] [ConnectedSpace X] :
+    C(X, Y) ≃ Y where
+  toFun f := f (Classical.arbitrary _)
+  invFun y := ⟨fun _ ↦ y, by continuity⟩
+  left_inv f := ContinuousMap.ext (TotallyDisconnectedSpace.eq_of_continuous _ f.2 _)
+  right_inv _ := rfl
+
 theorem isTotallyDisconnected_of_image [TopologicalSpace β] {f : α → β} (hf : ContinuousOn f s)
     (hf' : Injective f) (h : IsTotallyDisconnected (f '' s)) : IsTotallyDisconnected s :=
   fun _t hts ht _x x_in _y y_in =>
