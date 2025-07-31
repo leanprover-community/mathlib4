@@ -27,8 +27,6 @@ open Function
 section Miscellany
 
 -- attribute [refl] HEq.refl -- FIXME This is still rejected after https://github.com/leanprover-community/mathlib4/pull/857
-attribute [trans] Iff.trans HEq.trans heq_of_eq_of_heq
-attribute [simp] cast_heq
 
 /-- An identity function with its main argument implicit. This will be printed as `hidden` even
 if it is applied to a large term, so it can be used for elision,
