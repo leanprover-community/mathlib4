@@ -272,4 +272,3 @@ lemma covariance_map_fun {Z : Ω' → Ω} (hX : AEStronglyMeasurable X (μ.map Z
 end Map
 
 end ProbabilityTheory
-#min_imports
