@@ -12,7 +12,7 @@ import Mathlib.Topology.LocallyConstant.Algebra
 # Preliminaries for Nöbeling's theorem
 
 This file constructs basic objects and results concerning them that are needed in the proof of
-Nöbeling's theorem, which is in `Mathlib.Topology.Category.Profinite.Nobeling.Induction`.
+Nöbeling's theorem, which is in `Mathlib/Topology/Category/Profinite/Nobeling/Induction.lean`.
 See the section docstrings for more information.
 
 ## Proof idea
@@ -30,9 +30,11 @@ For `i : I`, let `e C i : LocallyConstant C ℤ` denote the map `fun f ↦ (if f
 The basis will consist of products `e C iᵣ * ⋯ * e C i₁` with `iᵣ > ⋯ > i₁` which cannot be written
 as linear combinations of lexicographically smaller products. We call this set `GoodProducts C`.
 
-What is proved by ordinal induction (in `Mathlib.Topology.Category.Profinite.Nobeling.ZeroLimit` and
-`Mathlib.Topology.Category.Profinite.Nobeling.Successor`) is that this set is linearly independent.
-The fact that it spans is proved directly in `Mathlib.Topology.Category.Profinite.Nobeling.Span`.
+What is proved by ordinal induction (in
+`Mathlib/Topology/Category/Profinite/Nobeling/ZeroLimit.lean` and
+`Mathlib/Topology/Category/Profinite/Nobeling/Successor.lean`) is that this set is linearly
+independent. The fact that it spans is proved directly in
+`Mathlib/Topology/Category/Profinite/Nobeling/Span.lean`.
 
 ## References
 
@@ -84,7 +86,7 @@ def Proj : (I → Bool) → (I → Bool) :=
 @[simp]
 theorem continuous_proj :
     Continuous (Proj J : (I → Bool) → (I → Bool)) := by
-  dsimp (config := { unfoldPartialApp := true }) [Proj]
+  dsimp +unfoldPartialApp [Proj]
   apply continuous_pi
   intro i
   split
@@ -204,7 +206,7 @@ def spanFunctor [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] (hC : IsCompac
   map h := @CompHausLike.ofHom _ _ _ (_) (_) (_) (_) (_) (_) (_) (_)
     ⟨(ProjRestricts C (leOfHom h.unop)), continuous_projRestricts _ _⟩
   map_id J := by simp only [projRestricts_eq_id C (· ∈ (unop J))]; rfl
-  map_comp _ _ := by dsimp; rw [← CompHausLike.ofHom_comp]; congr; dsimp; rw [projRestricts_eq_comp]
+  map_comp _ _ := by rw [← CompHausLike.ofHom_comp]; congr; dsimp; rw [projRestricts_eq_comp]
 
 /-- The limit cone on `spanFunctor` with point `C`. -/
 noncomputable
@@ -215,7 +217,7 @@ def spanCone [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] (hC : IsCompact C
   { app := fun s ↦ TopCat.ofHom ⟨ProjRestrict C (· ∈ unop s), continuous_projRestrict _ _⟩
     naturality := by
       intro X Y h
-      simp only [Functor.const_obj_obj, Homeomorph.setCongr, Homeomorph.homeomorph_mk_coe,
+      simp only [Functor.const_obj_obj,
         Functor.const_obj_map, Category.id_comp, ← projRestricts_comp_projRestrict C
         (leOfHom h.unop)]
       rfl }
@@ -344,12 +346,10 @@ def eval (l : {l : Products I // l.isGood C}) : LocallyConstant C ℤ :=
 theorem injective : Function.Injective (eval C) := by
   intro ⟨a, ha⟩ ⟨b, hb⟩ h
   dsimp [eval] at h
-  rcases lt_trichotomy a b with (h'|rfl|h')
-  · exfalso; apply hb; rw [← h]
-    exact Submodule.subset_span ⟨a, h', rfl⟩
-  · rfl
-  · exfalso; apply ha; rw [h]
-    exact Submodule.subset_span ⟨b, ⟨h',rfl⟩⟩
+  by_contra! hne
+  cases hne.lt_or_gt with
+  | inl h' => apply hb; rw [← h]; exact Submodule.subset_span ⟨a, h', rfl⟩
+  | inr h' => apply ha; rw [h]; exact Submodule.subset_span ⟨b, h', rfl⟩
 
 /-- The image of the good products in the module `LocallyConstant C ℤ`. -/
 def range := Set.range (GoodProducts.eval C)
@@ -392,10 +392,7 @@ theorem evalFacProp {l : Products I} (J : I → Prop)
   ext x
   dsimp [ProjRestrict]
   rw [Products.eval_eq, Products.eval_eq]
-  congr
-  apply forall_congr; intro i
-  apply forall_congr; intro hi
-  simp [h i hi, Proj]
+  simp +contextual [h, Proj]
 
 theorem evalFacProps {l : Products I} (J K : I → Prop)
     (h : ∀ a, a ∈ l.val → J a) [∀ j, Decidable (J j)] [∀ j, Decidable (K j)]
@@ -512,7 +509,7 @@ theorem Products.prop_of_isGood_of_contained {l : Products I} (o : Ordinal) (h :
     (hsC : contained C o) (i : I) (hi : i ∈ l.val) : ord I i < o := by
   by_contra h'
   apply h
-  suffices eval C l = 0 by simp [this, Submodule.zero_mem]
+  suffices eval C l = 0 by simp [this]
   ext x
   simp only [eval_eq, LocallyConstant.coe_zero, Pi.zero_apply, ite_eq_right_iff, one_ne_zero]
   contrapose! h'
@@ -629,7 +626,7 @@ theorem isGood_mono {l : Products I} {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂)
     (hl : l.isGood (π C (ord I · < o₁))) : l.isGood (π C (ord I · < o₂)) := by
   intro hl'
   apply hl
-  rwa [eval_πs_image' C h (prop_of_isGood  C _ hl), ← eval_πs' C h (prop_of_isGood  C _ hl),
+  rwa [eval_πs_image' C h (prop_of_isGood C _ hl), ← eval_πs' C h (prop_of_isGood C _ hl),
     Submodule.apply_mem_span_image_iff_mem_span (injective_πs' C h)] at hl'
 
 end Products

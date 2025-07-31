@@ -99,7 +99,7 @@ lemma isUnit_pow_succ_iff : IsUnit (a ^ (n + 1)) ↔ IsUnit a := isUnit_pow_iff 
 
 lemma isUnit_pow_iff_of_not_isUnit (hx : ¬ IsUnit a) {n : ℕ} :
     IsUnit (a ^ n) ↔ n = 0 := by
-  rcases n with (_|n) <;>
+  rcases n with (_ | n) <;>
   simp [hx]
 
 /-- If `a ^ n = 1`, `n ≠ 0`, then `a` is a unit. -/
@@ -117,15 +117,47 @@ lemma IsUnit.of_pow_eq_one (ha : a ^ n = 1) (hn : n ≠ 0) : IsUnit a :=
 @[deprecated (since := "2025-02-03")] alias isUnit_ofPowEqOne := IsUnit.of_pow_eq_one
 @[deprecated (since := "2025-02-03")] alias isAddUnit_ofNSMulEqZero := IsAddUnit.of_nsmul_eq_zero
 
+@[to_additive]
+lemma _root_.Units.commute_iff_inv_mul_cancel {u : Mˣ} {a : M} :
+    Commute ↑u a ↔ ↑u⁻¹ * a * u = a := by
+  rw [mul_assoc, Units.inv_mul_eq_iff_eq_mul, eq_comm, Commute, SemiconjBy]
+
+@[to_additive]
+lemma _root_.Units.commute_iff_inv_mul_cancel_assoc {u : Mˣ} {a : M} :
+    Commute ↑u a ↔ ↑u⁻¹ * (a * u) = a := by
+  rw [u.commute_iff_inv_mul_cancel, mul_assoc]
+
+@[to_additive]
+lemma _root_.Units.commute_iff_mul_inv_cancel {u : Mˣ} {a : M} :
+    Commute ↑u a ↔ ↑u * a * ↑u⁻¹ = a := by
+  rw [Units.mul_inv_eq_iff_eq_mul, Commute, SemiconjBy]
+
+@[to_additive]
+lemma _root_.Units.commute_iff_mul_inv_cancel_assoc {u : Mˣ} {a : M} :
+    Commute ↑u a ↔ ↑u * (a * ↑u⁻¹) = a := by
+  rw [u.commute_iff_mul_inv_cancel, mul_assoc]
+
 end Monoid
 
-section DivisionMonoid
+namespace Commute
+
 variable [DivisionMonoid M] {a b c d : M}
 
 @[to_additive]
-lemma Commute.div_eq_div_iff_of_isUnit (hbd : Commute b d) (hb : IsUnit b) (hd : IsUnit d) :
+lemma div_eq_div_iff_of_isUnit (hbd : Commute b d) (hb : IsUnit b) (hd : IsUnit d) :
     a / b = c / d ↔ a * d = c * b := by
   rw [← (hb.mul hd).mul_left_inj, ← mul_assoc, hb.div_mul_cancel, ← mul_assoc, hbd.right_comm,
     hd.div_mul_cancel]
 
-end DivisionMonoid
+@[to_additive]
+lemma mul_inv_eq_mul_inv_iff_of_isUnit (hbd : Commute b d) (hb : IsUnit b) (hd : IsUnit d) :
+    a * b⁻¹ = c * d⁻¹ ↔ a * d = c * b := by
+  rw [← div_eq_mul_inv, ← div_eq_mul_inv, hbd.div_eq_div_iff_of_isUnit hb hd]
+
+@[to_additive]
+lemma inv_mul_eq_inv_mul_iff_of_isUnit (hbd : Commute b d) (hb : IsUnit b) (hd : IsUnit d) :
+    b⁻¹ * a = d⁻¹ * c ↔ d * a = b * c := by
+  rw [← (hd.mul hb).mul_right_inj, ← mul_assoc, mul_assoc d, hb.mul_inv_cancel, mul_one,
+    ← mul_assoc, mul_assoc d, hbd.symm.left_comm, hd.mul_inv_cancel, mul_one]
+
+end Commute

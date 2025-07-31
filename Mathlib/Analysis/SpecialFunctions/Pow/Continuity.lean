@@ -191,7 +191,7 @@ theorem continuousAt_rpow_of_ne (p : ℝ × ℝ) (hp : p.1 ≠ 0) :
     rw [continuousAt_congr (rpow_eq_nhds_of_pos hp)]
     refine continuous_exp.continuousAt.comp (ContinuousAt.mul ?_ continuous_snd.continuousAt)
     refine (continuousAt_log ?_).comp continuous_fst.continuousAt
-    exact hp.lt.ne.symm
+    exact hp.ne'
 
 theorem continuousAt_rpow_of_pos (p : ℝ × ℝ) (hp : 0 < p.2) :
     ContinuousAt (fun p : ℝ × ℝ => p.1 ^ p.2) p := by
@@ -217,7 +217,7 @@ theorem continuousAt_rpow (p : ℝ × ℝ) (h : p.1 ≠ 0 ∨ 0 < p.2) :
 @[fun_prop]
 theorem continuousAt_rpow_const (x : ℝ) (q : ℝ) (h : x ≠ 0 ∨ 0 ≤ q) :
     ContinuousAt (fun x : ℝ => x ^ q) x := by
-· rw [le_iff_lt_or_eq, ← or_assoc] at h
+  rw [le_iff_lt_or_eq, ← or_assoc] at h
   obtain h|rfl := h
   · exact (continuousAt_rpow (x, q) h).comp₂ continuousAt_id continuousAt_const
   · simp_rw [rpow_zero]; exact continuousAt_const

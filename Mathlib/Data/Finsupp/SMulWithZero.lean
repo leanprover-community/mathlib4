@@ -67,15 +67,15 @@ instance distribSMul [AddZeroClass M] [DistribSMul R M] : DistribSMul R (α →�
   smul_zero _ := ext fun _ => smul_zero _
 
 instance isScalarTower [Zero M] [SMulZeroClass R M] [SMulZeroClass S M] [SMul R S]
-  [IsScalarTower R S M] : IsScalarTower R S (α →₀ M) where
+    [IsScalarTower R S M] : IsScalarTower R S (α →₀ M) where
   smul_assoc _ _ _ := ext fun _ => smul_assoc _ _ _
 
 instance smulCommClass [Zero M] [SMulZeroClass R M] [SMulZeroClass S M] [SMulCommClass R S M] :
-  SMulCommClass R S (α →₀ M) where
+    SMulCommClass R S (α →₀ M) where
   smul_comm _ _ _ := ext fun _ => smul_comm _ _ _
 
 instance isCentralScalar [Zero M] [SMulZeroClass R M] [SMulZeroClass Rᵐᵒᵖ M] [IsCentralScalar R M] :
-  IsCentralScalar R (α →₀ M) where
+    IsCentralScalar R (α →₀ M) where
   op_smul_eq_smul _ _ := ext fun _ => op_smul_eq_smul _ _
 
 variable {α M}
@@ -90,10 +90,15 @@ theorem smul_single [Zero M] [SMulZeroClass R M] (c : R) (a : α) (b : M) :
     c • Finsupp.single a b = Finsupp.single a (c • b) :=
   mapRange_single
 
-theorem mapRange_smul [Zero M] [SMulZeroClass R M] [Zero N]
-    [SMulZeroClass R N] {f : M → N} {hf : f 0 = 0} (c : R) (v : α →₀ M)
-    (hsmul : ∀ x, f (c • x) = c • f x) : mapRange f hf (c • v) = c • mapRange f hf v := by
+theorem mapRange_smul' [Zero M] [SMulZeroClass R M] [Zero N]
+    [SMulZeroClass S N] {f : M → N} {hf : f 0 = 0} (c : R) (d : S) (v : α →₀ M)
+    (hsmul : ∀ x, f (c • x) = d • f x) : mapRange f hf (c • v) = d • mapRange f hf v := by
   ext
   simp [hsmul]
+
+theorem mapRange_smul [Zero M] [SMulZeroClass R M] [Zero N]
+    [SMulZeroClass R N] {f : M → N} {hf : f 0 = 0} (c : R) (v : α →₀ M)
+    (hsmul : ∀ x, f (c • x) = c • f x) : mapRange f hf (c • v) = c • mapRange f hf v :=
+  mapRange_smul' c c v hsmul
 
 end Finsupp

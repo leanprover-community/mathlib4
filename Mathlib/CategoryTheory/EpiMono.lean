@@ -91,7 +91,7 @@ Every split epimorphism is an epimorphism.
 structure SplitEpi {X Y : C} (f : X ⟶ Y) where
   /-- The map splitting `f` -/
   section_ : Y ⟶ X
-  /--  `section_` composed with `f` is the identity -/
+  /-- `section_` composed with `f` is the identity -/
   id : section_ ≫ f = 𝟙 Y := by aesop_cat
 
 attribute [reassoc (attr := simp)] SplitEpi.id
@@ -264,63 +264,31 @@ end
 
 section
 
-/-- When `f` is an isomorphism, `f ≫ g` is epic iff `g` is.
-TODO: should this and the following lemmas be simp lemmas? might cause slowdowns because it triggers
-instance searches for `IsIso` whenever `simp` is used on a goal containing `Mono (f ≫ g)`. -/
-lemma epi_isIso_comp_iff {X Y Z : C} (f : X ⟶ Y) [IsIso f] (g : Y ⟶ Z) :
-    Epi (f ≫ g) ↔ Epi g := by
-  refine ⟨fun h ↦ ?_, fun h ↦ inferInstance⟩
-  simpa using (inferInstance : Epi (inv f ≫ f ≫ g))
+/-- When `f` is an epimorphism, `f ≫ g` is epic iff `g` is. -/
+@[simp]
+lemma epi_comp_iff_of_epi {X Y Z : C} (f : X ⟶ Y) [Epi f] (g : Y ⟶ Z) :
+    Epi (f ≫ g) ↔ Epi g :=
+  ⟨fun _ ↦ epi_of_epi f _, fun _ ↦ inferInstance⟩
 
 /-- When `g` is an isomorphism, `f ≫ g` is epic iff `f` is. -/
-lemma epi_comp_isIso_iff {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
+@[simp]
+lemma epi_comp_iff_of_isIso {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
     Epi (f ≫ g) ↔ Epi f := by
   refine ⟨fun h ↦ ?_, fun h ↦ inferInstance⟩
   simpa using (inferInstance : Epi ((f ≫ g) ≫ inv g ))
 
 /-- When `f` is an isomorphism, `f ≫ g` is monic iff `g` is. -/
-lemma mono_isIso_comp_iff {X Y Z : C} (f : X ⟶ Y) [IsIso f] (g : Y ⟶ Z) :
+@[simp]
+lemma mono_comp_iff_of_isIso {X Y Z : C} (f : X ⟶ Y) [IsIso f] (g : Y ⟶ Z) :
     Mono (f ≫ g) ↔ Mono g := by
   refine ⟨fun h ↦ ?_, fun h ↦ inferInstance⟩
   simpa using (inferInstance : Mono (inv f ≫ f ≫ g))
 
-/-- When `g` is an isomorphism, `f ≫ g` is monic iff `f` is. -/
-lemma mono_comp_isIso_iff {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
-    Mono (f ≫ g) ↔ Mono f := by
-  refine ⟨fun h ↦ ?_, fun h ↦ inferInstance⟩
-  simpa using (inferInstance : Mono ((f ≫ g) ≫ inv g ))
-
-/-- For any natural transformation `f : F ⟶ G`, if `X` and `Y` are isomorphic, the component of
-`f` at `X` is epic iff the component of `f` at `Y` is. -/
-lemma NatTrans.epi_app_congr_iso {C D : Type*} [Category C] [Category D]
-    {F G : C ⥤ D} {f : F ⟶ G} {X Y : C} (α : X ≅ Y) : Epi (f.app X) ↔ Epi (f.app Y) := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · rw [(IsIso.eq_inv_comp _).2 <| f.naturality α.hom]; infer_instance
-  · rw [(IsIso.eq_inv_comp _).2 <| f.naturality α.inv]; infer_instance
-
-/-- For any natural transformation `f : F ⟶ G`, if `X` and `Y` are isomorphic, the component of
-`f` at `X` is monic iff the component of `f` at `Y` is. -/
-lemma NatTrans.mono_app_congr_iso {C D : Type*} [Category C] [Category D]
-    {F G : C ⥤ D} {f : F ⟶ G} {X Y : C} (α : X ≅ Y) : Mono (f.app X) ↔ Mono (f.app Y) := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · rw [(IsIso.eq_inv_comp _).2 <| f.naturality α.hom]; infer_instance
-  · rw [(IsIso.eq_inv_comp _).2 <| f.naturality α.inv]; infer_instance
-
-/-- For any natural isomorphism `α : F ≅ G` and morphism `f : X ⟶ Y`, `F.map f` is epic
-iff `G.map f` is. -/
-lemma Functor.epi_map_congr_iso {C D : Type*} [Category C] [Category D]
-    {F G : C ⥤ D} {X Y : C} (f : X ⟶ Y) (α : F ≅ G) : Epi (F.map f) ↔ Epi (G.map f) := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · rw [← (IsIso.inv_comp_eq _).2 <| α.hom.naturality f]; infer_instance
-  · rw [← (IsIso.inv_comp_eq _).2 <| α.inv.naturality f]; infer_instance
-
-/-- For any natural isomorphism `α : F ≅ G` and morphism `f : X ⟶ Y`, `F.map f` is monic
-iff `G.map f` is. -/
-lemma Functor.mono_map_congr_iso {C D : Type*} [Category C] [Category D]
-    {F G : C ⥤ D} {X Y : C} (f : X ⟶ Y) (α : F ≅ G) : Mono (F.map f) ↔ Mono (G.map f) := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · rw [← (IsIso.inv_comp_eq _).2 <| α.hom.naturality f]; infer_instance
-  · rw [← (IsIso.inv_comp_eq _).2 <| α.inv.naturality f]; infer_instance
+/-- When `g` is a monomorphism, `f ≫ g` is monic iff `f` is. -/
+@[simp]
+lemma mono_comp_iff_of_mono {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [Mono g] :
+    Mono (f ≫ g) ↔ Mono f :=
+  ⟨fun _ ↦ mono_of_mono _ g, fun _ ↦ inferInstance⟩
 
 end
 

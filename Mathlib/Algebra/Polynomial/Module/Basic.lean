@@ -114,7 +114,7 @@ instance isScalarTower' (M : Type u) [AddCommGroup M] [Module R M] [Module S M]
 @[simp]
 theorem monomial_smul_single (i : ℕ) (r : R) (j : ℕ) (m : M) :
     monomial i r • single R j m = single R (i + j) (r • m) := by
-  simp only [LinearMap.mul_apply, Polynomial.aeval_monomial, LinearMap.pow_apply,
+  simp only [Module.End.mul_apply, Polynomial.aeval_monomial, Module.End.pow_apply,
     Module.algebraMap_end_apply, smul_def]
   induction i generalizing r j m with
   | zero =>
@@ -135,13 +135,7 @@ theorem monomial_smul_apply (i : ℕ) (r : R) (g : PolynomialModule R M) (n : �
     split_ifs
     exacts [rfl, zero_add 0]
   · rw [monomial_smul_single, single_apply, single_apply, smul_ite, smul_zero, ← ite_and]
-    congr
-    rw [eq_iff_iff]
-    constructor
-    · rintro rfl
-      simp
-    · rintro ⟨e, rfl⟩
-      rw [add_comm, tsub_add_cancel_of_le e]
+    grind
 
 @[simp]
 theorem smul_single_apply (i : ℕ) (f : R[X]) (m : M) (n : ℕ) :
@@ -168,11 +162,7 @@ theorem smul_apply (f : R[X]) (g : PolynomialModule R M) (n : ℕ) :
     rw [Finset.Nat.sum_antidiagonal_eq_sum_range_succ fun i j => (monomial f_n f_a).coeff i • g j,
       monomial_smul_apply]
     simp_rw [Polynomial.coeff_monomial, ← Finset.mem_range_succ_iff]
-    rw [← Finset.sum_ite_eq (Finset.range (Nat.succ n)) f_n (fun x => f_a • g (n - x))]
-    congr
-    ext x
-    split_ifs
-    exacts [rfl, (zero_smul R _).symm]
+    simp
 
 /-- `PolynomialModule R R` is isomorphic to `R[X]` as an `R[X]` module. -/
 noncomputable def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] :=
@@ -197,7 +187,7 @@ noncomputable def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] :
               exfalso
               apply hpq2
               rw [← hpq1, H]
-              simp only [add_le_iff_nonpos_left, nonpos_iff_eq_zero, add_tsub_cancel_right]
+              simp only [add_tsub_cancel_right]
             · rfl
           · intro H
             exfalso
@@ -250,7 +240,7 @@ theorem map_smul (f : M →ₗ[R] M') (p : R[X]) (q : PolynomialModule R M) :
 
 /-- Evaluate a polynomial `p : PolynomialModule R M` at `r : R`. -/
 @[simps! -isSimp]
-def eval (r : R) : PolynomialModule R M →ₗ[R] M where
+noncomputable def eval (r : R) : PolynomialModule R M →ₗ[R] M where
   toFun p := p.sum fun i m => r ^ i • m
   map_add' _ _ := Finsupp.sum_add_index' (fun _ => smul_zero _) fun _ _ _ => smul_add _ _ _
   map_smul' s m := by

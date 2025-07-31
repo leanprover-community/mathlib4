@@ -162,11 +162,10 @@ a normal form of characteristic ≠ 2, provided that 2 is invertible in the ring
 @[simps]
 def toCharNeTwoNF : VariableChange R := ⟨1, 0, ⅟2 * -W.a₁, ⅟2 * -W.a₃⟩
 
-instance toCharNeTwoNF_spec : (W.variableChange W.toCharNeTwoNF).IsCharNeTwoNF := by
-  constructor <;> simp
+instance toCharNeTwoNF_spec : (W.toCharNeTwoNF • W).IsCharNeTwoNF := by
+  constructor <;> simp [variableChange_a₁, variableChange_a₃]
 
-theorem exists_variableChange_isCharNeTwoNF :
-    ∃ C : VariableChange R, (W.variableChange C).IsCharNeTwoNF :=
+theorem exists_variableChange_isCharNeTwoNF : ∃ C : VariableChange R, (C • W).IsCharNeTwoNF :=
   ⟨_, W.toCharNeTwoNF_spec⟩
 
 end VariableChange
@@ -262,14 +261,13 @@ variable [Invertible (2 : R)] [Invertible (3 : R)]
 a short normal form, provided that 2 and 3 are invertible in the ring.
 It is the composition of an explicit change of variables with `WeierstrassCurve.toCharNeTwoNF`. -/
 def toShortNF : VariableChange R :=
-  .comp ⟨1, ⅟3 * -(W.variableChange W.toCharNeTwoNF).a₂, 0, 0⟩ W.toCharNeTwoNF
+  ⟨1, ⅟3 * -(W.toCharNeTwoNF • W).a₂, 0, 0⟩ * W.toCharNeTwoNF
 
-instance toShortNF_spec : (W.variableChange W.toShortNF).IsShortNF := by
-  rw [toShortNF, variableChange_comp]
-  constructor <;> simp
+instance toShortNF_spec : (W.toShortNF • W).IsShortNF := by
+  rw [toShortNF, mul_smul]
+  constructor <;> simp [variableChange_a₁, variableChange_a₂, variableChange_a₃]
 
-theorem exists_variableChange_isShortNF :
-    ∃ C : VariableChange R, (W.variableChange C).IsShortNF :=
+theorem exists_variableChange_isShortNF : ∃ C : VariableChange R, (C • W).IsShortNF :=
   ⟨_, W.toShortNF_spec⟩
 
 end VariableChange
@@ -392,12 +390,11 @@ def toShortNFOfCharThree : VariableChange R :=
   letI : Invertible (2 : R) := ⟨2, h, h⟩
   W.toCharNeTwoNF
 
-lemma toShortNFOfCharThree_a₂ : (W.variableChange W.toShortNFOfCharThree).a₂ = W.b₂ := by
+lemma toShortNFOfCharThree_a₂ : (W.toShortNFOfCharThree • W).a₂ = W.b₂ := by
   simp_rw [toShortNFOfCharThree, toCharNeTwoNF, variableChange_a₂, inv_one, Units.val_one, b₂]
   linear_combination (-W.a₂ - W.a₁ ^ 2) * CharP.cast_eq_zero R 3
 
-theorem toShortNFOfCharThree_spec (hb₂ : W.b₂ = 0) :
-    (W.variableChange W.toShortNFOfCharThree).IsShortNF := by
+theorem toShortNFOfCharThree_spec (hb₂ : W.b₂ = 0) : (W.toShortNFOfCharThree • W).IsShortNF := by
   have h : (2 : R) * 2 = 1 := by linear_combination CharP.cast_eq_zero R 3
   letI : Invertible (2 : R) := ⟨2, h, h⟩
   have H := W.toCharNeTwoNF_spec
@@ -412,38 +409,35 @@ there is an explicit change of variables of it to `WeierstrassCurve.IsCharThreeN
 It is the composition of an explicit change of variables with
 `WeierstrassCurve.toShortNFOfCharThree`. -/
 def toCharThreeNF : VariableChange F :=
-  .comp ⟨1, (W.variableChange W.toShortNFOfCharThree).a₄ /
-    (W.variableChange W.toShortNFOfCharThree).a₂, 0, 0⟩ W.toShortNFOfCharThree
+  ⟨1, (W.toShortNFOfCharThree • W).a₄ /
+    (W.toShortNFOfCharThree • W).a₂, 0, 0⟩ * W.toShortNFOfCharThree
 
 theorem toCharThreeNF_spec_of_b₂_ne_zero (hb₂ : W.b₂ ≠ 0) :
-    (W.variableChange W.toCharThreeNF).IsCharThreeJNeZeroNF := by
+    (W.toCharThreeNF • W).IsCharThreeJNeZeroNF := by
   have h : (2 : F) * 2 = 1 := by linear_combination CharP.cast_eq_zero F 3
   letI : Invertible (2 : F) := ⟨2, h, h⟩
-  rw [toCharThreeNF, variableChange_comp]
-  set W' := W.variableChange W.toShortNFOfCharThree
+  rw [toCharThreeNF, mul_smul]
+  set W' := W.toShortNFOfCharThree • W
   haveI : W'.IsCharNeTwoNF := W.toCharNeTwoNF_spec
   constructor
-  · simp
-  · simp
+  · simp [variableChange_a₁]
+  · simp [variableChange_a₃]
   · have ha₂ : W'.a₂ ≠ 0 := W.toShortNFOfCharThree_a₂ ▸ hb₂
-    field_simp [ha₂]
+    field_simp [ha₂, variableChange_a₄]
     linear_combination (W'.a₄ * W'.a₂ ^ 2 + W'.a₄ ^ 2) * CharP.cast_eq_zero F 3
 
-theorem toCharThreeNF_spec_of_b₂_eq_zero (hb₂ : W.b₂ = 0) :
-    (W.variableChange W.toCharThreeNF).IsShortNF := by
-  rw [toCharThreeNF, toShortNFOfCharThree_a₂, hb₂, div_zero, ← VariableChange.id,
-    VariableChange.id_comp]
+theorem toCharThreeNF_spec_of_b₂_eq_zero (hb₂ : W.b₂ = 0) : (W.toCharThreeNF • W).IsShortNF := by
+  rw [toCharThreeNF, toShortNFOfCharThree_a₂, hb₂, div_zero, ← VariableChange.one_def, one_mul]
   exact W.toShortNFOfCharThree_spec hb₂
 
-instance toCharThreeNF_spec : (W.variableChange W.toCharThreeNF).IsCharThreeNF := by
+instance toCharThreeNF_spec : (W.toCharThreeNF • W).IsCharThreeNF := by
   by_cases hb₂ : W.b₂ = 0
   · haveI := W.toCharThreeNF_spec_of_b₂_eq_zero hb₂
     infer_instance
   · haveI := W.toCharThreeNF_spec_of_b₂_ne_zero hb₂
     infer_instance
 
-theorem exists_variableChange_isCharThreeNF :
-    ∃ C : VariableChange F, (W.variableChange C).IsCharThreeNF :=
+theorem exists_variableChange_isCharThreeNF : ∃ C : VariableChange F, (C • W).IsCharThreeNF :=
   ⟨_, W.toCharThreeNF_spec⟩
 
 end VariableChange
@@ -655,9 +649,9 @@ there is an explicit change of variables of it to `Y² + a₃Y = X³ + a₄X + a
 def toCharTwoJEqZeroNF : VariableChange R := ⟨1, W.a₂, 0, 0⟩
 
 theorem toCharTwoJEqZeroNF_spec (ha₁ : W.a₁ = 0) :
-    (W.variableChange W.toCharTwoJEqZeroNF).IsCharTwoJEqZeroNF := by
+    (W.toCharTwoJEqZeroNF • W).IsCharTwoJEqZeroNF := by
   constructor
-  · simp [toCharTwoJEqZeroNF, ha₁]
+  · simp [toCharTwoJEqZeroNF, ha₁, variableChange_a₁]
   · simp_rw [toCharTwoJEqZeroNF, variableChange_a₂, inv_one, Units.val_one]
     linear_combination 2 * W.a₂ * CharP.cast_eq_zero R 2
 
@@ -670,12 +664,12 @@ def toCharTwoJNeZeroNF (W : WeierstrassCurve F) (ha₁ : W.a₁ ≠ 0) : Variabl
   ⟨Units.mk0 _ ha₁, W.a₃ / W.a₁, 0, (W.a₁ ^ 2 * W.a₄ + W.a₃ ^ 2) / W.a₁ ^ 3⟩
 
 theorem toCharTwoJNeZeroNF_spec (ha₁ : W.a₁ ≠ 0) :
-    (W.variableChange (W.toCharTwoJNeZeroNF ha₁)).IsCharTwoJNeZeroNF := by
+    (W.toCharTwoJNeZeroNF ha₁ • W).IsCharTwoJNeZeroNF := by
   constructor
-  · simp [toCharTwoJNeZeroNF, ha₁]
-  · field_simp [toCharTwoJNeZeroNF]
+  · simp [toCharTwoJNeZeroNF, ha₁, variableChange_a₁]
+  · field_simp [toCharTwoJNeZeroNF, variableChange_a₃]
     linear_combination (W.a₃ * W.a₁ ^ 3 + W.a₁ ^ 2 * W.a₄ + W.a₃ ^ 2) * CharP.cast_eq_zero F 2
-  · field_simp [toCharTwoJNeZeroNF]
+  · field_simp [toCharTwoJNeZeroNF, variableChange_a₄]
     linear_combination (W.a₁ ^ 4 * W.a₃ ^ 2 + W.a₁ ^ 5 * W.a₃ * W.a₂) * CharP.cast_eq_zero F 2
 
 /-- For a `WeierstrassCurve` defined over a field of characteristic = 2,
@@ -685,7 +679,7 @@ there is an explicit change of variables of it to `WeierstrassCurve.IsCharTwoNF`
 def toCharTwoNF [DecidableEq F] : VariableChange F :=
   if ha₁ : W.a₁ = 0 then W.toCharTwoJEqZeroNF else W.toCharTwoJNeZeroNF ha₁
 
-instance toCharTwoNF_spec [DecidableEq F] : (W.variableChange W.toCharTwoNF).IsCharTwoNF := by
+instance toCharTwoNF_spec [DecidableEq F] : (W.toCharTwoNF • W).IsCharTwoNF := by
   by_cases ha₁ : W.a₁ = 0
   · rw [toCharTwoNF, dif_pos ha₁]
     haveI := W.toCharTwoJEqZeroNF_spec ha₁
@@ -694,8 +688,7 @@ instance toCharTwoNF_spec [DecidableEq F] : (W.variableChange W.toCharTwoNF).IsC
     haveI := W.toCharTwoJNeZeroNF_spec ha₁
     infer_instance
 
-theorem exists_variableChange_isCharTwoNF :
-    ∃ C : VariableChange F, (W.variableChange C).IsCharTwoNF := by
+theorem exists_variableChange_isCharTwoNF : ∃ C : VariableChange F, (C • W).IsCharTwoNF := by
   classical
   exact ⟨_, W.toCharTwoNF_spec⟩
 

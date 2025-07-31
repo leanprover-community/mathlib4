@@ -195,7 +195,7 @@ alias condexpIndL1_of_measurableSet_of_measure_ne_top :=
   condExpIndL1_of_measurableSet_of_measure_ne_top
 
 theorem condExpIndL1_of_measure_eq_top (hμs : μ s = ∞) (x : G) : condExpIndL1 hm μ s x = 0 := by
-  simp only [condExpIndL1, hμs, eq_self_iff_true, not_true, Ne, dif_neg, not_false_iff,
+  simp only [condExpIndL1, hμs, not_true, Ne, dif_neg, not_false_iff,
     and_false]
 
 @[deprecated (since := "2025-01-21")]
@@ -389,8 +389,9 @@ theorem condExpInd_of_measurable (hs : MeasurableSet[m] s) (hμs : μ s ≠ ∞)
 
 @[deprecated (since := "2025-01-21")] alias condexpInd_of_measurable := condExpInd_of_measurable
 
-theorem condExpInd_nonneg {E} [NormedAddCommGroup E] [Lattice E] [NormedSpace ℝ E] [OrderedSMul ℝ E]
-    (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : E) (hx : 0 ≤ x) : 0 ≤ condExpInd E hm μ s x := by
+theorem condExpInd_nonneg {E} [NormedAddCommGroup E] [PartialOrder E] [NormedSpace ℝ E]
+    [OrderedSMul ℝ E] (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : E) (hx : 0 ≤ x) :
+    0 ≤ condExpInd E hm μ s x := by
   rw [← coeFn_le]
   refine EventuallyLE.trans_eq ?_ (condExpInd_ae_eq_condExpIndSMul hm hs hμs x).symm
   exact (coeFn_zero E 1 μ).trans_le (condExpIndSMul_nonneg hs hμs x hx)
@@ -659,7 +660,7 @@ theorem condExpL1_of_aestronglyMeasurable' (hfm : AEStronglyMeasurable[m] f μ)
 alias condexpL1_of_aestronglyMeasurable' := condExpL1_of_aestronglyMeasurable'
 
 theorem condExpL1_mono {E}
-    [NormedAddCommGroup E] [Lattice E] [HasSolidNorm E] [IsOrderedAddMonoid E]
+    [NormedAddCommGroup E] [PartialOrder E] [OrderClosedTopology E] [IsOrderedAddMonoid E]
     [CompleteSpace E] [NormedSpace ℝ E]
     [OrderedSMul ℝ E] {f g : α → E} (hf : Integrable f μ) (hg : Integrable g μ) (hfg : f ≤ᵐ[μ] g) :
     condExpL1 hm μ f ≤ᵐ[μ] condExpL1 hm μ g := by

@@ -217,7 +217,7 @@ additional properties to `AddMonoid.Coprod M N →+ P`.
 
 Compared to `AddMonoid.Coprod.lift`,
 this definition allows a user to provide a custom computational behavior.
-Also, it only needs `AddZeroclass` assumptions
+Also, it only needs `AddZeroClass` assumptions
 while `AddMonoid.Coprod.lift` needs an `AddMonoid` structure. "]
 def clift (f : FreeMonoid (M ⊕ N) →* P)
     (hM₁ : f (of (.inl 1)) = 1) (hN₁ : f (of (.inr 1)) = 1)
@@ -451,7 +451,6 @@ theorem comp_lift {P' : Type*} [Monoid P'] (f : P →* P') (g₁ : M →* P) (g�
 def liftEquiv : (M →* P) × (N →* P) ≃ (M ∗ N →* P) where
   toFun fg := lift fg.1 fg.2
   invFun f := (f.comp inl, f.comp inr)
-  left_inv _ := rfl
   right_inv _ := Eq.symm <| lift_unique rfl rfl
 
 @[to_additive (attr := simp)]
@@ -614,7 +613,7 @@ theorem con_inv_mul_cancel (x : FreeMonoid (G ⊕ H)) :
   induction x using FreeMonoid.inductionOn' with
   | one => simp
   | mul_of x xs ihx =>
-    simp only [toList_of_mul, map_cons, reverse_cons, ofList_append, map_mul, ihx, ofList_singleton]
+    simp only [toList_of_mul, map_cons, reverse_cons, ofList_append, map_mul, ofList_singleton]
     rwa [mul_assoc, ← mul_assoc (mk (of _)), mk_of_inv_mul, one_mul]
 
 @[to_additive]
@@ -662,9 +661,9 @@ variable {K : Type*} [Group K]
 
 end Group
 
-end Coprod
+end Monoid.Coprod
 
-open Coprod
+open Monoid Coprod
 
 namespace MulEquiv
 
@@ -732,35 +731,15 @@ theorem coprodAssoc_symm_apply_inr_inr (x : P) :
 variable (M)
 
 /-- Isomorphism between `M ∗ PUnit` and `M`. -/
-@[simps! -fullyApplied]
+@[to_additive (attr := simps! -fullyApplied)
+  "Isomorphism between `AddMonoid.Coprod M PUnit` and `M`."]
 def coprodPUnit : M ∗ PUnit ≃* M :=
   MonoidHom.toMulEquiv fst inl (hom_ext rfl <| Subsingleton.elim _ _) fst_comp_inl
 
 /-- Isomorphism between `PUnit ∗ M` and `M`. -/
-@[simps! -fullyApplied]
+@[to_additive (attr := simps! -fullyApplied)
+  "Isomorphism between `AddMonoid.Coprod PUnit M` and `M`."]
 def punitCoprod : PUnit ∗ M ≃* M :=
   MonoidHom.toMulEquiv snd inr (hom_ext (Subsingleton.elim _ _) rfl) snd_comp_inr
 
 end MulEquiv
-
--- TODO: use `to_additive` to generate the next 2 `AddEquiv`s
-
-namespace AddEquiv
-
-variable {M : Type*} [AddMonoid M]
-
-/-- Isomorphism between `M ∗ PUnit` and `M`. -/
-@[simps! -fullyApplied]
-def coprodUnit : AddMonoid.Coprod M PUnit ≃+ M :=
-  AddMonoidHom.toAddEquiv AddMonoid.Coprod.fst AddMonoid.Coprod.inl
-    (AddMonoid.Coprod.hom_ext rfl <| Subsingleton.elim _ _) AddMonoid.Coprod.fst_comp_inl
-
-/-- Isomorphism between `PUnit ∗ M` and `M`. -/
-@[simps! -fullyApplied]
-def punitCoprod : AddMonoid.Coprod PUnit M ≃+ M :=
-  AddMonoidHom.toAddEquiv AddMonoid.Coprod.snd AddMonoid.Coprod.inr
-    (AddMonoid.Coprod.hom_ext (Subsingleton.elim _ _) rfl) AddMonoid.Coprod.snd_comp_inr
-
-end AddEquiv
-
-end Monoid

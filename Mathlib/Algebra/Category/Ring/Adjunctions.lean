@@ -87,14 +87,14 @@ def monoidAlgebra (R : CommRingCat.{max u v}) : CommMonCat.{v} ⥤ Under R where
   map f := Under.homMk (CommRingCat.ofHom <| MonoidAlgebra.mapDomainRingHom R f.hom)
   map_comp f g := by ext : 2; apply MonoidAlgebra.ringHom_ext <;> intro <;> simp
 
-@[simps]
+@[simps (nameStem := "commMon")]
 instance : HasForget₂ CommRingCat CommMonCat where
   forget₂ := { obj M := .of M, map f := CommMonCat.ofHom f.hom }
   forget_comp := rfl
 
 set_option maxHeartbeats 400000 in
 -- `simp` is taking longer after nightly-2025-03-25.
-/-- The adjunction `G ↦ R[G]` and `S ↦ S` between `CommGrp` and `R-Alg`. -/
+/-- The adjunction `G ↦ R[G]` and `S ↦ Sˣ` between `CommGrp` and `R-Alg`. -/
 def monoidAlgebraAdj (R : CommRingCat.{u}) :
     monoidAlgebra R ⊣ Under.forget R ⋙ forget₂ _ _ where
   unit := { app G := CommMonCat.ofHom (MonoidAlgebra.of R G) }

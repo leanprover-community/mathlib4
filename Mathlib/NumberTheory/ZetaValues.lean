@@ -75,7 +75,7 @@ theorem integral_bernoulliFun_eq_zero {k : ℕ} (hk : k ≠ 0) :
       ((Polynomial.continuous _).intervalIntegrable _ _)]
   rw [bernoulliFun_eval_one]
   split_ifs with h
-  · exfalso; exact hk (Nat.succ_inj'.mp h)
+  · exfalso; exact hk (Nat.succ_inj.mp h)
   · simp
 
 end BernoulliFunProps
@@ -103,7 +103,7 @@ theorem bernoulliFourierCoeff_recurrence (k : ℕ) {n : ℤ} (hn : n ≠ 0) :
   rw [QuotientAddGroup.mk_zero, fourier_eval_zero, one_mul, ← ofReal_sub, bernoulliFun_eval_one,
     add_sub_cancel_left]
   congr 2
-  · split_ifs <;> simp only [ofReal_one, ofReal_zero, one_mul]
+  · split_ifs <;> simp only [ofReal_one, ofReal_zero]
   · simp_rw [ofReal_mul, ofReal_natCast, fourierCoeffOn.const_mul]
 
 /-- The Fourier coefficients of `B₀(x) = 1`. -/
@@ -123,8 +123,8 @@ theorem bernoulliFourierCoeff_eq {k : ℕ} (hk : k ≠ 0) (n : ℤ) :
       div_zero]
   refine Nat.le_induction ?_ (fun k hk h'k => ?_) k (Nat.one_le_iff_ne_zero.mpr hk)
   · rw [bernoulliFourierCoeff_recurrence 1 hn]
-    simp only [Nat.cast_one, tsub_self, neg_mul, one_mul, eq_self_iff_true, if_true,
-      Nat.factorial_one, pow_one, inv_I, mul_neg]
+    simp only [Nat.cast_one, tsub_self, neg_mul, one_mul, if_true,
+      Nat.factorial_one, pow_one]
     rw [bernoulli_zero_fourier_coeff hn, sub_zero, mul_one, div_neg, neg_div]
   · rw [bernoulliFourierCoeff_recurrence (k + 1) hn, Nat.add_sub_cancel k 1]
     split_ifs with h

@@ -31,7 +31,7 @@ can be inferred from the type it is faster to use this method than to use type c
 monoid homomorphism
 -/
 
-assert_not_exists DenselyOrdered
+assert_not_exists DenselyOrdered Ring
 
 open Function
 
@@ -117,8 +117,7 @@ instance coeToMonoidHom : Coe (α →*₀ β) (α →* β) :=
 attribute [coe] toZeroHom
 
 /-- `MonoidWithZeroHom` down-cast to a `ZeroHom`, forgetting the monoidal property. -/
-instance coeToZeroHom :
-  Coe (α →*₀ β) (ZeroHom α β) := ⟨toZeroHom⟩
+instance coeToZeroHom : Coe (α →*₀ β) (ZeroHom α β) := ⟨toZeroHom⟩
 
 -- This must come after the coe_toFun definitions
 initialize_simps_projections MonoidWithZeroHom (toFun → apply)
@@ -155,13 +154,13 @@ protected lemma map_mul (f : α →*₀ β) (a b : α) : f (a * b) = f a * f b :
 theorem map_ite_zero_one {F : Type*} [FunLike F α β] [MonoidWithZeroHomClass F α β] (f : F)
     (p : Prop) [Decidable p] :
     f (ite p 0 1) = ite p 0 1 := by
-  split_ifs with h <;> simp [h]
+  split_ifs with h <;> simp
 
 @[simp]
 theorem map_ite_one_zero {F : Type*} [FunLike F α β] [MonoidWithZeroHomClass F α β] (f : F)
     (p : Prop) [Decidable p] :
     f (ite p 1 0) = ite p 1 0 := by
-  split_ifs with h <;> simp [h]
+  split_ifs with h <;> simp
 
 /-- The identity map from a `MonoidWithZero` to itself. -/
 @[simps]
@@ -213,6 +212,26 @@ instance {β} [CommMonoidWithZero β] : Mul (α →*₀ β) where
   mul f g :=
     { (f * g : α →* β) with
       map_zero' := by dsimp; rw [map_zero, zero_mul] }
+
+/-- The trivial homomorphism between monoids with zero, sending everything to 1 other than 0. -/
+protected instance one (M₀ N₀ : Type*) [MulZeroOneClass M₀] [MulZeroOneClass N₀]
+    [DecidablePred fun x : M₀ ↦ x = 0] [Nontrivial M₀] [NoZeroDivisors M₀] :
+    One (M₀ →*₀ N₀) where
+  one.toFun x := if x = 0 then 0 else 1
+  one.map_zero' := by simp
+  one.map_one' := by simp
+  one.map_mul' x y := by split_ifs <;> simp_all
+
+@[simp]
+lemma one_apply_zero {M₀ N₀ : Type*} [MulZeroOneClass M₀] [MulZeroOneClass N₀]
+    [DecidablePred fun x : M₀ ↦ x = 0] [Nontrivial M₀] [NoZeroDivisors M₀] :
+    (1 : M₀ →*₀ N₀) 0 = 0 :=
+  if_pos rfl
+
+lemma one_apply_of_ne_zero {M₀ N₀ : Type*} [MulZeroOneClass M₀] [MulZeroOneClass N₀]
+    [DecidablePred fun x : M₀ ↦ x = 0] [Nontrivial M₀] [NoZeroDivisors M₀] {x : M₀} (hx : x ≠ 0) :
+    (1 : M₀ →*₀ N₀) x = 1 :=
+  if_neg hx
 
 end MonoidWithZeroHom
 

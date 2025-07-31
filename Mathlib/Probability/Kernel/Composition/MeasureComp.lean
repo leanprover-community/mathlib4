@@ -26,7 +26,7 @@ variable {α β γ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β
 lemma comp_assoc {η : Kernel β γ} : η ∘ₘ (κ ∘ₘ μ) = (η ∘ₖ κ) ∘ₘ μ :=
   Measure.bind_bind κ.aemeasurable η.aemeasurable
 
-/-- This lemma allows to rewrite the compostion of a measure and a kernel as the composition
+/-- This lemma allows to rewrite the composition of a measure and a kernel as the composition
 of two kernels, which allows to transfer properties of `∘ₖ` to `∘ₘ`. -/
 lemma comp_eq_comp_const_apply : κ ∘ₘ μ = (κ ∘ₖ (Kernel.const Unit μ)) () := by
   rw [Kernel.comp_apply, Kernel.const_apply]
@@ -49,6 +49,15 @@ lemma ae_ae_of_ae_comp {p : β → Prop} (h : ∀ᵐ ω ∂(κ ∘ₘ μ), p ω)
     ∀ᵐ ω' ∂μ, ∀ᵐ ω ∂(κ ω'), p ω := by
   rw [comp_eq_comp_const_apply] at h
   exact Kernel.ae_ae_of_ae_comp h
+
+lemma ae_comp_of_ae_ae {p : β → Prop} (hp : MeasurableSet {z | p z})
+    (h : ∀ᵐ y ∂μ, ∀ᵐ z ∂κ y, p z) : ∀ᵐ z ∂(κ ∘ₘ μ), p z := by
+  rw [comp_eq_comp_const_apply]
+  exact Kernel.ae_comp_of_ae_ae hp h
+
+lemma ae_comp_iff {p : β → Prop} (hp : MeasurableSet {z | p z}) :
+    (∀ᵐ z ∂(κ ∘ₘ μ), p z) ↔ ∀ᵐ y ∂μ, ∀ᵐ z ∂κ y, p z :=
+  ⟨ae_ae_of_ae_comp, ae_comp_of_ae_ae hp⟩
 
 instance [SFinite μ] [IsSFiniteKernel κ] : SFinite (κ ∘ₘ μ) := by
   rw [← snd_compProd]; infer_instance

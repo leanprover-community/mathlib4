@@ -413,7 +413,7 @@ theorem norm_lt_one_iff_dvd (x : ℤ_[p]) : ‖x‖ < 1 ↔ ↑p ∣ x := by
   have := norm_le_pow_iff_mem_span_pow x 1
   rw [Ideal.mem_span_singleton, pow_one] at this
   rw [← this, norm_le_pow_iff_norm_lt_pow_add_one]
-  simp only [zpow_zero, Int.ofNat_zero, Int.ofNat_succ, neg_add_cancel, zero_add]
+  simp only [zpow_zero, Int.ofNat_zero, Int.natCast_succ, neg_add_cancel, zero_add]
 
 @[simp]
 theorem pow_p_dvd_int_iff (n : ℕ) (a : ℤ) : (p : ℤ_[p]) ^ n ∣ a ↔ (p ^ n : ℤ) ∣ a := by
@@ -429,9 +429,11 @@ section Dvr
 instance : IsLocalRing ℤ_[p] :=
   IsLocalRing.of_nonunits_add <| by simp only [mem_nonunits]; exact fun x y => norm_lt_one_add
 
-theorem p_nonnunit : (p : ℤ_[p]) ∈ nonunits ℤ_[p] := by
+theorem p_nonunit : (p : ℤ_[p]) ∈ nonunits ℤ_[p] := by
   have : (p : ℝ)⁻¹ < 1 := inv_lt_one_of_one_lt₀ <| mod_cast hp.out.one_lt
   rwa [← norm_p, ← mem_nonunits] at this
+
+@[deprecated (since := "2025-07-27")] alias p_nonnunit := p_nonunit
 
 theorem maximalIdeal_eq_span_p : maximalIdeal ℤ_[p] = Ideal.span {(p : ℤ_[p])} := by
   apply le_antisymm
@@ -439,7 +441,7 @@ theorem maximalIdeal_eq_span_p : maximalIdeal ℤ_[p] = Ideal.span {(p : ℤ_[p]
     simp only [IsLocalRing.mem_maximalIdeal, mem_nonunits] at hx
     rwa [Ideal.mem_span_singleton, ← norm_lt_one_iff_dvd]
   · rw [Ideal.span_le, Set.singleton_subset_iff]
-    exact p_nonnunit
+    exact p_nonunit
 
 theorem prime_p : Prime (p : ℤ_[p]) := by
   rw [← Ideal.span_singleton_prime, ← maximalIdeal_eq_span_p]
@@ -518,8 +520,7 @@ instance isFractionRing : IsFractionRing ℤ_[p] ℚ_[p] where
       use
         (⟨a, le_of_eq ha_norm⟩,
           ⟨(p ^ n : ℤ_[p]), mem_nonZeroDivisors_iff_ne_zero.mpr (NeZero.ne _)⟩)
-      simp only [a, map_pow, map_natCast, algebraMap_apply, PadicInt.coe_pow,
-        PadicInt.coe_natCast, Subtype.coe_mk, Nat.cast_pow]
+      simp only [a, map_pow, map_natCast, algebraMap_apply]
   exists_of_eq := by
     simp_rw [algebraMap_apply, Subtype.coe_inj]
     exact fun h => ⟨1, by rw [h]⟩

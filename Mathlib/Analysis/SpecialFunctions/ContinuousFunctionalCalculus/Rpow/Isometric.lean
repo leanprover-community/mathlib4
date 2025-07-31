@@ -43,7 +43,7 @@ lemma nnnorm_sqrt (a : A) (ha : 0 ≤ a := by cfc_tac) : ‖sqrt a‖₊ = NNRea
   rw [sqrt_eq_nnrpow, NNReal.sqrt_eq_rpow]
   exact nnnorm_nnrpow a (by norm_num) ha
 
-lemma norm_sqrt (a : A) (ha : 0 ≤ a := by cfc_tac) : ‖sqrt a‖ = Real.sqrt ‖a‖ := by
+lemma norm_sqrt (a : A) (ha : 0 ≤ a := by cfc_tac) : ‖sqrt a‖ = √‖a‖ := by
   simpa using congr(NNReal.toReal $(nnnorm_sqrt a ha))
 
 end nonunital

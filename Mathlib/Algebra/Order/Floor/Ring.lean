@@ -189,6 +189,32 @@ theorem abs_sub_lt_one_of_floor_eq_floor {R : Type*}
 lemma floor_eq_self_iff_mem (a : R) : ⌊a⌋ = a ↔ a ∈ Set.range Int.cast := by
   aesop
 
+section LinearOrderedField
+variable {k : Type*} [Field k] [LinearOrder k] [IsStrictOrderedRing k] [FloorRing k] {a b : k}
+
+theorem floor_div_cast_of_nonneg {n : ℤ} (hn : 0 ≤ n) (a : k) : ⌊a / n⌋ = ⌊a⌋ / n := by
+  obtain rfl | hn := hn.eq_or_lt
+  · simp
+  refine eq_of_forall_le_iff fun m ↦ ?_
+  rw [Int.le_ediv_iff_mul_le hn, le_floor, le_floor, le_div_iff₀ (by positivity), cast_mul]
+
+theorem floor_div_natCast (a : k) (n : ℕ) : ⌊a / n⌋ = ⌊a⌋ / n := by
+  simpa using floor_div_cast_of_nonneg n.cast_nonneg a
+
+theorem cast_mul_floor_div_cancel_of_pos {n : ℤ} (hn : 0 < n) (a : k) : ⌊n * a⌋ / n = ⌊a⌋ := by
+  simpa [hn.ne'] using (floor_div_cast_of_nonneg hn.le (↑n * a)).symm
+
+lemma mul_cast_floor_div_cancel_of_pos {n : ℤ} (hn : 0 < n) (a : k) : ⌊a * n⌋ / n = ⌊a⌋ := by
+  rw [mul_comm, cast_mul_floor_div_cancel_of_pos hn]
+
+theorem natCast_mul_floor_div_cancel {n : ℕ} (hn : n ≠ 0) (a : k) : ⌊n * a⌋ / n = ⌊a⌋ := by
+  simpa using cast_mul_floor_div_cancel_of_pos (n := n) (by omega) a
+
+theorem mul_natCast_floor_div_cancel {n : ℕ} (hn : n ≠ 0) {a : k} : ⌊a * n⌋ / n = ⌊a⌋ := by
+  rw [mul_comm, natCast_mul_floor_div_cancel hn]
+
+end LinearOrderedField
+
 end floor
 
 /-! #### Fractional part -/
@@ -437,10 +463,7 @@ theorem fract_div_natCast_eq_div_natCast_mod {m n : ℕ} : fract ((m : k) / n) =
   refine fract_eq_iff.mpr ⟨?_, ?_, m / n, ?_⟩
   · positivity
   · simpa only [div_lt_one hn', Nat.cast_lt] using m.mod_lt hn
-  · #adaptation_note
-    /-- `_root_` can be removed again after
-    https://github.com/leanprover/lean4/pull/7359 lands in nightly-2025-03-06. -/
-    rw [_root_.sub_eq_iff_eq_add', ← mul_right_inj' hn'.ne', mul_div_cancel₀ _ hn'.ne', mul_add,
+  · rw [sub_eq_iff_eq_add', ← mul_right_inj' hn'.ne', mul_div_cancel₀ _ hn'.ne', mul_add,
       mul_div_cancel₀ _ hn'.ne']
     norm_cast
     rw [← Nat.cast_add, Nat.mod_add_div m n]
@@ -457,7 +480,7 @@ theorem fract_div_intCast_eq_div_intCast_mod {m : ℤ} {n : ℕ} :
     · rw [Right.nonneg_neg_iff, natCast_nonpos_iff] at hl
       simp [hl]
   obtain ⟨m₀, rfl | rfl⟩ := m.eq_nat_or_neg
-  · exact this (ofNat_nonneg m₀)
+  · exact this (natCast_nonneg m₀)
   let q := ⌈↑m₀ / (n : k)⌉
   let m₁ := q * ↑n - (↑m₀ : ℤ)
   have hm₁ : 0 ≤ m₁ := by
@@ -472,7 +495,7 @@ theorem fract_div_intCast_eq_div_intCast_mod {m : ℤ} {n : ℕ} :
     simp [m₁]
   · congr 2
     simp only [m₁]
-    rw [sub_eq_add_neg, add_comm (q * ↑n), add_mul_emod_self]
+    rw [sub_eq_add_neg, add_comm (q * ↑n), add_mul_emod_self_right]
 
 end LinearOrderedField
 
@@ -618,13 +641,16 @@ theorem floor_le_ceil (a : R) : ⌊a⌋ ≤ ⌈a⌉ :=
 theorem floor_lt_ceil_of_lt {a b : R} (h : a < b) : ⌊a⌋ < ⌈b⌉ :=
   cast_lt.1 <| (floor_le a).trans_lt <| h.trans_le <| le_ceil b
 
-lemma ceil_eq_floor_add_one_iff_not_mem (a : R) : ⌈a⌉ = ⌊a⌋ + 1 ↔ a ∉ Set.range Int.cast := by
+lemma ceil_eq_floor_add_one_iff_notMem (a : R) : ⌈a⌉ = ⌊a⌋ + 1 ↔ a ∉ Set.range Int.cast := by
   refine ⟨fun h ht => ?_, fun h => ?_⟩
   · have := ((floor_eq_self_iff_mem _).mpr ht).trans ((ceil_eq_self_iff_mem _).mpr ht).symm
     linarith [Int.cast_inj.mp this]
   · apply le_antisymm (Int.ceil_le_floor_add_one _)
     rw [Int.add_one_le_ceil_iff]
     exact lt_of_le_of_ne (Int.floor_le a) ((iff_false_right h).mp (floor_eq_self_iff_mem a))
+
+@[deprecated (since := "2025-05-23")]
+alias ceil_eq_floor_add_one_iff_not_mem := ceil_eq_floor_add_one_iff_notMem
 
 theorem fract_eq_zero_or_add_one_sub_ceil (a : R) : fract a = 0 ∨ fract a = a + 1 - (⌈a⌉ : R) := by
   rcases eq_or_ne (fract a) 0 with ha | ha
@@ -654,7 +680,7 @@ variable {k : Type*} [Field k] [LinearOrder k] [IsStrictOrderedRing k] [FloorRin
 
 lemma mul_lt_floor (hb₀ : 0 < b) (hb : b < 1) (hba : ⌈b / (1 - b)⌉ ≤ a) : b * a < ⌊a⌋ := by
   calc
-    b * a < b * (⌊a⌋ + 1) := by gcongr; exacts [hb₀, lt_floor_add_one _]
+    b * a < b * (⌊a⌋ + 1) := by gcongr; apply lt_floor_add_one
     _ ≤ ⌊a⌋ := by
       rwa [_root_.mul_add_one, ← le_sub_iff_add_le', ← one_sub_mul, ← div_le_iff₀' (by linarith),
         ← ceil_le, le_floor]
@@ -678,7 +704,7 @@ lemma ceil_lt_mul (hb : 1 < b) (hba : ⌈(b - 1)⁻¹⌉ / b < a) : ⌈a⌉ < b 
     calc
       ⌈a⌉ < a + 1 := ceil_lt_add_one _
       _ = a + (b - 1) * (b - 1)⁻¹ := by rw [mul_inv_cancel₀]; positivity
-      _ ≤ a + (b - 1) * a := by gcongr; positivity
+      _ ≤ a + (b - 1) * a := by gcongr
       _ = b * a := by rw [sub_one_mul, add_sub_cancel]
 
 lemma ceil_le_mul (hb : 1 < b) (hba : ⌈(b - 1)⁻¹⌉ / b ≤ a) : ⌈a⌉ ≤ b * a := by

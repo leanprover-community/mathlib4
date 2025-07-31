@@ -21,7 +21,7 @@ from magma (`Mul`) to `Field`. To make everything "hom-polymorphic", we work wit
 of `FunLike`s rather than plain unbundled functions, and we use algebraic hom typeclasses
 (e.g. `LinearMapClass`, `RingHomClass`) everywhere.
 
-In `Mathlib.Algebra.Colimit.Module` and `Mathlib.Algebra.Colimit.Ring`,
+In `Mathlib/Algebra/Colimit/Module.lean` and `Mathlib/Algebra/Colimit/Ring.lean`,
 `Module.DirectLimit`, `AddCommGroup.DirectLimit` and `Ring.DirectLimit`
 are defined as quotients of the universal objects (`DirectSum` and `FreeCommRing`).
 These definitions are more general and suitable for arbitrary colimits, but do not

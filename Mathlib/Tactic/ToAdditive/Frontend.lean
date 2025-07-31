@@ -42,8 +42,8 @@ syntax (name := to_additive_ignore_args) "to_additive_ignore_args" (ppSpace num)
 if needed.
 
 This attribute tells which argument is the type where this declaration uses the multiplicative
-structure. If there are multiple argument, we typically tag the first one.
-If this argument contains a fixed type, this declaration will note be additivized.
+structure. If there are multiple arguments, we typically tag the first one.
+If this argument contains a fixed type, this declaration will not be additivized.
 See the Heuristics section of `to_additive.attr` for more details.
 
 If a declaration is not tagged, it is presumed that the first argument is relevant.
@@ -58,11 +58,6 @@ anyway.
 
 Warning: interactions between this and the `(reorder := ...)` argument are not well-tested. -/
 syntax (name := to_additive_relevant_arg) "to_additive_relevant_arg " num : attr
-
-/-- An attribute that stores all the declarations that needs their arguments reordered when
-applying `@[to_additive]`. It is applied automatically by the `(reorder := ...)` syntax of
-`to_additive`, and should not usually be added manually. -/
-syntax (name := to_additive_reorder) "to_additive_reorder " (num+),+ : attr
 
 /-- An attribute that stores all the declarations that deal with numeric literals on variable types.
 
@@ -95,11 +90,12 @@ syntax toAdditiveAttrOption := &"attr" " := " Parser.Term.attrInstance,*
 /-- A `reorder := ...` option for `to_additive`. -/
 syntax toAdditiveReorderOption := &"reorder" " := " (num+),+
 /-- Options to `to_additive`. -/
-syntax toAdditiveParenthesizedOption := "(" toAdditiveAttrOption <|> toAdditiveReorderOption ")"
-/-- Options to `to_additive`. -/
-syntax toAdditiveOption := toAdditiveParenthesizedOption <|> &"existing"
+syntax toAdditiveOption := "(" toAdditiveAttrOption <|> toAdditiveReorderOption ")"
+/-- An `existing` or `self` name hint for `to_additive`. -/
+syntax toAdditiveNameHint := (ppSpace (&"existing" <|> &"self"))?
 /-- Remaining arguments of `to_additive`. -/
-syntax toAdditiveRest := (ppSpace toAdditiveOption)* (ppSpace ident)? (ppSpace str)?
+syntax toAdditiveRest :=
+  toAdditiveNameHint (ppSpace toAdditiveOption)* (ppSpace ident)? (ppSpace str)?
 
 /-- The attribute `to_additive` can be used to automatically transport theorems
 and definitions (but not inductive types and structures) from a multiplicative
@@ -133,6 +129,9 @@ theorem mul_comm' {α} [CommSemigroup α] (x y : α) : x * y = y * x := CommSemi
 The transport tries to do the right thing in most cases using several
 heuristics described below.  However, in some cases it fails, and
 requires manual intervention.
+
+Use the `to_additive existing` syntax to use an existing additive declaration, instead of
+automatically generating it.
 
 Use the `(reorder := ...)` syntax to reorder the arguments in the generated additive declaration.
 This is specified using cycle notation. For example `(reorder := 1 2, 5 6)` swaps the first two
@@ -227,7 +226,7 @@ mismatch error.
   * If the fixed type has an additive counterpart (like `↥Semigroup`), give it the `@[to_additive]`
     attribute.
   * If the fixed type has nothing to do with algebraic operations (like `TopCat`), add the attribute
-    `@[to_additive existing Foo]` to the fixed type `Foo`.
+    `@[to_additive self]` to the fixed type `Foo`.
   * If the fixed type occurs inside the `k`-th argument of a declaration `d`, and the
     `k`-th argument is not connected to the multiplicative structure on `d`, consider adding
     attribute `[to_additive_ignore_args k]` to `d`.
@@ -323,16 +322,16 @@ macro "to_additive?" rest:toAdditiveRest : attr => `(attr| to_additive ? $rest)
 * In this case, the second list should be prefix-free
   (no element can be a prefix of a later element)
 
-Todo: automate the translation from `String` to an element in this `RBMap`
+Todo: automate the translation from `String` to an element in this `TreeMap`
   (but this would require having something similar to the `rb_lmap` from Lean 3). -/
-def endCapitalNames : Lean.RBMap String (List String) compare :=
+def endCapitalNames : TreeMap String (List String) compare :=
   -- todo: we want something like
   -- endCapitalNamesOfList ["LE", "LT", "WF", "CoeTC", "CoeT", "CoeHTCT"]
   .ofList [("LE", [""]), ("LT", [""]), ("WF", [""]), ("Coe", ["TC", "T", "HTCT"])]
 
 open String in
 /-- This function takes a String and splits it into separate parts based on the following
-(naming conventions)[https://github.com/leanprover-community/mathlib4/wiki#naming-convention].
+[naming conventions](https://github.com/leanprover-community/mathlib4/wiki#naming-convention).
 
 E.g. `#eval "InvHMulLEConjugate₂SMul_ne_top".splitCase` yields
 `["Inv", "HMul", "LE", "Conjugate₂", "SMul", "_", "ne", "_", "top"]`. -/
@@ -352,7 +351,7 @@ partial def _root_.String.splitCase (s : String) (i₀ : Pos := 0) (r : List Str
   if s.get i₀ == '_' || s.get i₁ == '_' then
     return splitCase (s.extract i₁ s.endPos) 0 <| (s.extract 0 i₁)::r
   if (s.get i₁).isUpper then
-    if let some strs := endCapitalNames.find? (s.extract 0 i₁) then
+    if let some strs := endCapitalNames[s.extract 0 i₁]? then
       if let some (pref, newS) := strs.findSome?
         fun x : String ↦ (s.extract i₁ s.endPos).dropPrefix? x |>.map (x, ·.toString) then
         return splitCase newS 0 <| (s.extract 0 i₁ ++ pref)::r
@@ -362,11 +361,6 @@ partial def _root_.String.splitCase (s : String) (i₀ : Pos := 0) (r : List Str
 
 initialize registerTraceClass `to_additive
 initialize registerTraceClass `to_additive_detail
-
-/-- Linter to check that the `reorder` attribute is not given manually -/
-register_option linter.toAdditiveReorder : Bool := {
-  defValue := true
-  descr := "Linter to check that the reorder attribute is not given manually." }
 
 /-- Linter, mostly used by `@[to_additive]`, that checks that the source declaration doesn't have
 certain attributes -/
@@ -401,23 +395,10 @@ initialize ignoreArgsAttr : NameMapExtension (List Nat) ←
           | _ => throwUnsupportedSyntax
         return ids.toList }
 
-@[inherit_doc to_additive_reorder]
-initialize reorderAttr : NameMapExtension (List <| List Nat) ←
-  registerNameMapAttribute {
-    name := `to_additive_reorder
-    descr := "\
-      Auxiliary attribute for `to_additive` that stores arguments that need to be reordered. \
-      This should not appear in any file. \
-      We keep it as an attribute for now so that mathport can still use it, and it can generate a \
-      warning."
-    add := fun
-    | _, stx@`(attr| to_additive_reorder $[$[$reorders:num]*],*) => do
-      Linter.logLintIf linter.toAdditiveReorder stx m!"\
-        Using this attribute is deprecated. Use `@[to_additive (reorder := <num>)]` instead.\n\n\
-        That will also generate the additive version with the arguments swapped, \
-        so you are probably able to remove the manually written additive declaration."
-      pure <| reorders.toList.map (·.toList.map (·.raw.isNatLit?.get! - 1))
-    | _, _ => throwUnsupportedSyntax }
+/-- An extension that stores all the declarations that need their arguments reordered when
+applying `@[to_additive]`. It is applied using the `to_additive (reorder := ...)` syntax. -/
+initialize reorderAttr : NameMapExtension (List (List Nat)) ←
+  registerNameMapExtension _
 
 @[inherit_doc to_additive_relevant_arg]
 initialize relevantArgAttr : NameMapExtension Nat ←
@@ -494,6 +475,13 @@ structure Config : Type where
     raise a linter error.
     Note: the linter will never raise an error for inductive types and structures. -/
   existing : Option Bool := none
+  /-- An optional flag stating that the target of the translation is the target itself.
+  This can be used to reorder arguments, such as in
+  `attribute [to_dual self (reorder := 3 4)] LE.le`.
+  It can also be used to give a hint to `additiveTest`, such as in
+  `attribute [to_additive self] Unit`.
+  If `self := true`, we should also have `existing := true`. -/
+  self : Bool := false
   deriving Repr
 
 /-- Implementation function for `additiveTest`.
@@ -651,48 +639,68 @@ where /-- Implementation of `applyReplacementFun`. -/
 def etaExpandN (n : Nat) (e : Expr) : MetaM Expr := do
   forallBoundedTelescope (← inferType e) (some n) fun xs _ ↦ mkLambdaFVars xs (mkAppN e xs)
 
-/-- `e.expand` eta-expands all expressions that have as head a constant `n` in
-`reorder`. They are expanded until they are applied to one more argument than the maximum in
-`reorder.find n`. -/
+/-- `e.expand` eta-expands all expressions that have as head a constant `n` in `reorder`.
+They are expanded until they are applied to one more argument than the maximum in `reorder.find n`.
+It also expands all kernel projections that have as head a constant `n` in `reorder`. -/
 def expand (e : Expr) : MetaM Expr := do
   let env ← getEnv
   let reorderFn : Name → List (List ℕ) := fun nm ↦ (reorderAttr.find? env nm |>.getD [])
-  let e₂ ← Lean.Meta.transform (input := e) (post := fun e => return .done e) fun e ↦ do
-    let e0 := e.getAppFn
-    let es := e.getAppArgs
-    let some e0n := e0.constName? | return .continue
-    let reorder := reorderFn e0n
-    if reorder.isEmpty then
-      -- no need to expand if nothing needs reordering
-      return .continue
-    let needed_n := reorder.flatten.foldr Nat.max 0 + 1
-    -- the second disjunct is a temporary fix to avoid infinite loops.
-    -- We may need to use `replaceRec` or something similar to not change the head of an application
-    if needed_n ≤ es.size || es.size == 0 then
-      return .continue
-    else
-      -- in this case, we need to reorder arguments that are not yet
-      -- applied, so first η-expand the function.
-      let e' ← etaExpandN (needed_n - es.size) e
-      trace[to_additive_detail] "expanded {e} to {e'}"
-      return .continue e'
+  let e₂ ← Lean.Meta.transform (input := e) (post := fun e => return .done e) fun e ↦
+    e.withApp fun f args ↦ do
+    match f with
+    | .proj n i s =>
+      let some info := getStructureInfo? (← getEnv) n | return .continue -- e.g. if `n` is `Exists`
+      let some projName := info.getProjFn? i | unreachable!
+      -- if `projName` is explicitly tagged with `@[to_additive]`,
+      -- replace `f` with the application `projName s` and then visit `projName s args` again.
+      if findTranslation? env projName |>.isNone then
+        return .continue
+      return .visit <| (← whnfD (← inferType s)).withApp fun sf sargs ↦
+        mkAppN (mkApp (mkAppN (.const projName sf.constLevels!) sargs) s) args
+    | .const c _ =>
+      let reorder := reorderFn c
+      if reorder.isEmpty then
+        -- no need to expand if nothing needs reordering
+        return .continue
+      let needed_n := reorder.flatten.foldr Nat.max 0 + 1
+      -- the second disjunct is a temporary fix to avoid infinite loops. We may need to use
+      -- `replaceRec` or something similar to not change the head of an application
+      if needed_n ≤ args.size || args.size == 0 then
+        return .continue
+      else
+        -- in this case, we need to reorder arguments that are not yet
+        -- applied, so first η-expand the function.
+        let e' ← etaExpandN (needed_n - args.size) e
+        trace[to_additive_detail] "expanded {e} to {e'}"
+        return .continue e'
+    | _ => return .continue
   if e != e₂ then
     trace[to_additive_detail] "expand:\nBefore: {e}\nAfter: {e₂}"
   return e₂
 
 /-- Reorder pi-binders. See doc of `reorderAttr` for the interpretation of the argument -/
 def reorderForall (reorder : List (List Nat) := []) (src : Expr) : MetaM Expr := do
-  if reorder == [] then
+  if let some maxReorder := reorder.flatten.max? then
+    forallBoundedTelescope src (some (maxReorder + 1)) fun xs e => do
+      if xs.size = maxReorder + 1 then
+        mkForallFVars (xs.permute! reorder) e
+      else
+        throwError "the permutation\n{reorder}\nprovided by the reorder config option is too \
+          large, the type{indentExpr src}\nhas only {xs.size} arguments"
+  else
     return src
-  forallTelescope src fun xs e => do
-    mkForallFVars (xs.permute! reorder) e
 
 /-- Reorder lambda-binders. See doc of `reorderAttr` for the interpretation of the argument -/
 def reorderLambda (reorder : List (List Nat) := []) (src : Expr) : MetaM Expr := do
-  if reorder == [] then
+  if let some maxReorder := reorder.flatten.max? then
+    lambdaBoundedTelescope src (maxReorder + 1) fun xs e => do
+      if xs.size = maxReorder + 1 then
+        mkLambdaFVars (xs.permute! reorder) e
+      else
+        throwError "the permutation\n{reorder}\nprovided by the reorder config option is too \
+          large, the function{indentExpr src}\nhas only {xs.size} arguments"
+  else
     return src
-  lambdaTelescope src fun xs e => do
-    mkLambdaFVars (xs.permute! reorder) e
 
 /-- Unfold auxlemmas in the type and value. -/
 def declUnfoldAuxLemmas (decl : ConstantInfo) : MetaM ConstantInfo := do
@@ -720,12 +728,13 @@ def updateDecl (tgt : Name) (srcDecl : ConstantInfo) (reorder : List (List Nat) 
       value := ← applyReplacementFun <| ← reorderLambda reorder <| ← expand info.value }
   return decl
 
-/-- Abstracts the nested proofs in the value of `decl` if it's not a theorem. -/
+/-- Abstracts the nested proofs in the value of `decl` if it is a def. -/
 def declAbstractNestedProofs (decl : ConstantInfo) : MetaM ConstantInfo := do
-  if decl.isTheorem || !decl.hasValue then
-    return decl
+  if decl matches .defnInfo _ then
+    return decl.updateValue <| ← withDeclNameForAuxNaming decl.name do
+      Meta.abstractNestedProofs decl.value!
   else
-    return decl.updateValue <| ← Meta.abstractNestedProofs decl.name decl.value!
+    return decl
 
 /-- Find the target name of `pre` and all created auxiliary declarations. -/
 def findTargetName (env : Environment) (src pre tgt_pre : Name) : CoreM Name :=
@@ -842,6 +851,8 @@ partial def transformDeclAux
   addDeclarationRangesFromSyntax tgt (← getRef) cfg.ref
   if isProtected (← getEnv) src then
     setEnv <| addProtected (← getEnv) tgt
+  if defeqAttr.hasTag (← getEnv) src then
+    defeqAttr.setTag tgt
   if let some matcherInfo ← getMatcherInfo? src then
     /-
     Use `Match.addMatcherInfo tgt matcherInfo`
@@ -902,7 +913,7 @@ def additivizeLemmas {m : Type → Type} [Monad m] [MonadError m] [MonadLiftT Co
 /--
 Find the first argument of `nm` that has a multiplicative type-class on it.
 Returns 1 if there are no types with a multiplicative class as arguments.
-E.g. `Prod.Group` returns 1, and `Pi.One` returns 2.
+E.g. `Prod.instGroup` returns 1, and `Pi.instOne` returns 2.
 Note: we only consider the first argument of each type-class.
 E.g. `[Pow A N]` is a multiplicative type-class on `A`, not on `N`.
 -/
@@ -911,19 +922,18 @@ def firstMultiplicativeArg (nm : Name) : MetaM Nat := do
     -- xs are the arguments to the constant
     let xs := xs.toList
     let l ← xs.filterMapM fun x ↦ do
-      -- x is an argument and i is the index
-      -- write `x : (y₀ : α₀) → ... → (yₙ : αₙ) → tgt_fn tgt_args₀ ... tgt_argsₘ`
+      -- write the type of `x` as `(y₀ : α₀) → ... → (yₙ : αₙ) → f a₀ ... aₙ`;
+      -- if `f` can be additivized, mark free variables in `a₀` as multiplicative arguments
       forallTelescopeReducing (← inferType x) fun _ys tgt ↦ do
-        let (_tgt_fn, tgt_args) := tgt.getAppFnArgs
         if let some c := tgt.getAppFn.constName? then
-          if findTranslation? (← getEnv) c |>.isNone then
-            return none
-        return tgt_args[0]?.bind fun tgtArg ↦
-          xs.findIdx? fun x ↦ Expr.containsFVar tgtArg x.fvarId!
+          if findTranslation? (← getEnv) c |>.isSome then
+            if let some arg := tgt.getArg? 0 then
+              return xs.findIdx? (arg.containsFVar ·.fvarId!)
+        return none
     trace[to_additive_detail] "firstMultiplicativeArg: {l}"
     match l with
     | [] => return 0
-    | (head :: tail) => return tail.foldr Nat.min head
+    | (head :: tail) => return tail.foldl Nat.min head
 
 /-- Helper for `capitalizeLike`. -/
 partial def capitalizeLikeAux (s : String) (i : String.Pos := 0) (p : String) : String :=
@@ -957,47 +967,48 @@ capitalization of the input. Input and first element should therefore be lower-c
 2nd element should be capitalized properly.
 -/
 def nameDict : String → List String
-  | "one"         => ["zero"]
-  | "mul"         => ["add"]
-  | "smul"        => ["vadd"]
-  | "inv"         => ["neg"]
-  | "div"         => ["sub"]
-  | "prod"        => ["sum"]
-  | "hmul"        => ["hadd"]
-  | "hsmul"       => ["hvadd"]
-  | "hdiv"        => ["hsub"]
-  | "hpow"        => ["hsmul"]
-  | "finprod"     => ["finsum"]
-  | "tprod"       => ["tsum"]
-  | "pow"         => ["nsmul"]
-  | "npow"        => ["nsmul"]
-  | "zpow"        => ["zsmul"]
-  | "mabs"        => ["abs"]
-  | "monoid"      => ["add", "Monoid"]
-  | "submonoid"   => ["add", "Submonoid"]
-  | "group"       => ["add", "Group"]
-  | "subgroup"    => ["add", "Subgroup"]
-  | "semigroup"   => ["add", "Semigroup"]
-  | "magma"       => ["add", "Magma"]
-  | "haar"        => ["add", "Haar"]
-  | "prehaar"     => ["add", "Prehaar"]
-  | "unit"        => ["add", "Unit"]
-  | "units"       => ["add", "Units"]
-  | "cyclic"      => ["add", "Cyclic"]
-  | "rootable"    => ["divisible"]
-  | "semigrp"     => ["add", "Semigrp"]
-  | "grp"         => ["add", "Grp"]
-  | "commute"     => ["add", "Commute"]
-  | "semiconj"    => ["add", "Semiconj"]
-  | "zpowers"     => ["zmultiples"]
-  | "powers"      => ["multiples"]
-  | "multipliable"=> ["summable"]
-  | "gpfree"      => ["apfree"]
-  | "quantale"    => ["add", "Quantale"]
-  | "square"      => ["even"]
-  | "mconv"       => ["conv"]
-  | "irreducible" => ["add", "Irreducible"]
-  | x             => [x]
+  | "one"           => ["zero"]
+  | "mul"           => ["add"]
+  | "smul"          => ["vadd"]
+  | "inv"           => ["neg"]
+  | "div"           => ["sub"]
+  | "prod"          => ["sum"]
+  | "hmul"          => ["hadd"]
+  | "hsmul"         => ["hvadd"]
+  | "hdiv"          => ["hsub"]
+  | "hpow"          => ["hsmul"]
+  | "finprod"       => ["finsum"]
+  | "tprod"         => ["tsum"]
+  | "pow"           => ["nsmul"]
+  | "npow"          => ["nsmul"]
+  | "zpow"          => ["zsmul"]
+  | "mabs"          => ["abs"]
+  | "monoid"        => ["add", "Monoid"]
+  | "submonoid"     => ["add", "Submonoid"]
+  | "group"         => ["add", "Group"]
+  | "subgroup"      => ["add", "Subgroup"]
+  | "semigroup"     => ["add", "Semigroup"]
+  | "magma"         => ["add", "Magma"]
+  | "haar"          => ["add", "Haar"]
+  | "prehaar"       => ["add", "Prehaar"]
+  | "unit"          => ["add", "Unit"]
+  | "units"         => ["add", "Units"]
+  | "cyclic"        => ["add", "Cyclic"]
+  | "rootable"      => ["divisible"]
+  | "semigrp"       => ["add", "Semigrp"]
+  | "grp"           => ["add", "Grp"]
+  | "commute"       => ["add", "Commute"]
+  | "semiconj"      => ["add", "Semiconj"]
+  | "zpowers"       => ["zmultiples"]
+  | "powers"        => ["multiples"]
+  | "multipliable"  => ["summable"]
+  | "gpfree"        => ["apfree"]
+  | "quantale"      => ["add", "Quantale"]
+  | "square"        => ["even"]
+  | "mconv"         => ["conv"]
+  | "irreducible"   => ["add", "Irreducible"]
+  | "mlconvolution" => ["lconvolution"]
+  | x               => [x]
 
 /--
 Turn each element to lower-case, apply the `nameDict` and
@@ -1113,24 +1124,28 @@ def guessName : String → String :=
 
 /-- Return the provided target name or autogenerate one if one was not provided. -/
 def targetName (cfg : Config) (src : Name) : CoreM Name := do
+  if cfg.self then
+    if cfg.tgt != .anonymous then
+      throwError m!"`to_additive self` ignores the provided name {cfg.tgt}"
+    return src
   let .str pre s := src | throwError "to_additive: can't transport {src}"
   trace[to_additive_detail] "The name {s} splits as {s.splitCase}"
   let tgt_auto := guessName s
   let depth := cfg.tgt.getNumParts
   let pre := pre.mapPrefix <| findTranslation? (← getEnv)
   let (pre1, pre2) := pre.splitAt (depth - 1)
-  if cfg.tgt == pre2.str tgt_auto && !cfg.allowAutoName && cfg.tgt != src then
+  let res := if cfg.tgt == .anonymous then pre.str tgt_auto else pre1 ++ cfg.tgt
+  if res == src then
+    throwError "to_additive: the generated additivised name equals the original name '{src}', \
+    meaning that no part of the name was additivised.\n\
+    If this is intentional, use the `@[to_additive self]` syntax.\n\
+    Otherwise, check that your declaration name is correct \
+    (if your declaration is an instance, try naming it)\n\
+    or provide an additivised name using the `@[to_additive my_add_name]` syntax."
+  if cfg.tgt == pre2.str tgt_auto && !cfg.allowAutoName then
     Linter.logLintIf linter.toAdditiveGenerateName cfg.ref m!"\
       to_additive correctly autogenerated target name for {src}.\n\
       You may remove the explicit argument {cfg.tgt}."
-  let res := if cfg.tgt == .anonymous then pre.str tgt_auto else pre1 ++ cfg.tgt
-  -- we allow translating to itself if `tgt == src`, which is occasionally useful for `additiveTest`
-  if res == src && cfg.tgt != src then
-    throwError "to_additive: the generated additivised name equals the original name '{src}', \
-    meaning that no part of the name was additivised.\n\
-    Check that your declaration name is correct \
-    (if your declaration is an instance, try naming it)\n\
-    or provide an additivised name using the '@[to_additive my_add_name]' syntax."
   if cfg.tgt != .anonymous then
     trace[to_additive_detail] "The automatically generated name would be {pre.str tgt_auto}"
   return res
@@ -1178,29 +1193,34 @@ def proceedFields (src tgt : Name) : CoreM Unit := do
 
 /-- Elaboration of the configuration options for `to_additive`. -/
 def elabToAdditive : Syntax → CoreM Config
-  | `(attr| to_additive%$tk $[?%$trace]? $[$opts:toAdditiveOption]* $[$tgt]? $[$doc]?) => do
+  | `(attr| to_additive%$tk $[?%$trace]? $existing?
+      $[$opts:toAdditiveOption]* $[$tgt]? $[$doc]?) => do
     let mut attrs := #[]
     let mut reorder := []
-    let mut existing := some false
     for stx in opts do
       match stx with
       | `(toAdditiveOption| (attr := $[$stxs],*)) =>
         attrs := attrs ++ stxs
       | `(toAdditiveOption| (reorder := $[$[$reorders:num]*],*)) =>
         reorder := reorder ++ reorders.toList.map (·.toList.map (·.raw.isNatLit?.get! - 1))
-      | `(toAdditiveOption| existing) =>
-        existing := some true
       | _ => throwUnsupportedSyntax
     reorder := reorder.reverse
+    let (existing, self) := match existing? with
+      | `(toAdditiveNameHint| existing) => (true, false)
+      | `(toAdditiveNameHint| self) => (true, true)
+      | _ => (false, false)
+    if self && !attrs.isEmpty then
+      throwError "invalid `(attr := ...)` after `self`, \
+        as there is only one declaration for the attributes.\n\
+        Instead, you can write the attributes in the usual way."
     trace[to_additive_detail] "attributes: {attrs}; reorder arguments: {reorder}"
-    return { trace := trace.isSome
-             tgt := match tgt with | some tgt => tgt.getId | none => Name.anonymous
-             doc := doc.bind (·.raw.isStrLit?)
-             allowAutoName := false
-             attrs
-             reorder
-             existing
-             ref := (tgt.map (·.raw)).getD tk }
+    return {
+      trace := trace.isSome
+      tgt := match tgt with | some tgt => tgt.getId | none => Name.anonymous
+      doc := doc.bind (·.raw.isStrLit?)
+      allowAutoName := false
+      attrs, reorder, existing, self
+      ref := (tgt.map (·.raw)).getD tk }
   | _ => throwUnsupportedSyntax
 
 mutual
@@ -1210,7 +1230,7 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
   -- we only copy the `instance` attribute, since `@[to_additive] instance` is nice to allow
   copyInstanceAttribute src tgt
   -- Warn users if the multiplicative version has an attribute
-  if linter.existingAttributeWarning.get (← getOptions) then
+  if src != tgt && linter.existingAttributeWarning.get (← getOptions) then
     let appliedAttrs ← getAllSimpAttrs src
     if appliedAttrs.size > 0 then
       let appliedAttrs := ", ".intercalate (appliedAttrs.toList.map toString)
@@ -1295,6 +1315,28 @@ partial def transformDecl (cfg : Config) (src tgt : Name) : CoreM (Array Name) :
   transformDeclAux cfg src tgt src
   copyMetaData cfg src tgt
 
+/-- Verify that the type of given `srcDecl` translates to that of `tgtDecl`. -/
+partial def checkExistingType (src tgt : Name) (reorder : List (List Nat)) : MetaM Unit := do
+  let mut srcDecl ← getConstInfo src
+  let tgtDecl ← getConstInfo tgt
+  if 0 ∈ reorder.flatten then
+    srcDecl := srcDecl.updateLevelParams srcDecl.levelParams.swapFirstTwo
+  unless srcDecl.levelParams.length == tgtDecl.levelParams.length do
+    throwError "`to_additive` validation failed:\n  expected {srcDecl.levelParams.length} universe \
+      levels, but '{tgt}' has {tgtDecl.levelParams.length} universe levels"
+  -- instantiate both types with the same universes. `instantiateLevelParams` applies some
+  -- normalization, so we have to apply it to both types.
+  let type := srcDecl.type.instantiateLevelParams
+    srcDecl.levelParams (tgtDecl.levelParams.map mkLevelParam)
+  let tgtType := tgtDecl.type.instantiateLevelParams
+    tgtDecl.levelParams (tgtDecl.levelParams.map mkLevelParam)
+  let type ←
+    applyReplacementFun <| ← reorderForall reorder <| ← expand <| ← unfoldAuxLemmas type
+  -- `instantiateLevelParams` normalizes universes, so we have to normalize both expressions
+  unless ← withReducible <| isDefEq type tgtType do
+    throwError "`to_additive` validation failed: expected{indentExpr type}\nbut '{tgt}' has \
+      type{indentExpr tgtType}"
+
 /-- `addToAdditiveAttr src cfg` adds a `@[to_additive]` attribute to `src` with configuration `cfg`.
 See the attribute implementation for more details.
 It returns an array with names of additive declarations (usually 1, but more if there are nested
@@ -1313,10 +1355,13 @@ partial def addToAdditiveAttr (src : Name) (cfg : Config) (kind := AttributeKind
            `@[to_additive existing]`."
       else
         "The additive declaration doesn't exist. Please remove the option `existing`."
+  if alreadyExists then
+    MetaM.run' <| checkExistingType src tgt cfg.reorder
   if cfg.reorder != [] then
     trace[to_additive] "@[to_additive] will reorder the arguments of {tgt}."
     reorderAttr.add src cfg.reorder
     -- we allow using this attribute if it's only to add the reorder configuration
+    -- for example, this is necessary for `HPow.hPow`
     if findTranslation? (← getEnv) src |>.isSome then
       return #[tgt]
   let firstMultArg ← MetaM.run' <| firstMultiplicativeArg src

@@ -121,7 +121,7 @@ variable (N P : Type*) [AddCommGroup N] [Module R N] [AddCommGroup P] [Module R 
 variable {ι : Type*}
 
 /-- The trace of a linear map correspond to the contraction pairing under the isomorphism
- `End(M) ≃ M* ⊗ M` -/
+`End(M) ≃ M* ⊗ M` -/
 theorem trace_eq_contract_of_basis [Finite ι] (b : Basis ι R M) :
     LinearMap.trace R M ∘ₗ dualTensorHom R M M = contractLeft R M := by
   classical
@@ -130,10 +130,9 @@ theorem trace_eq_contract_of_basis [Finite ι] (b : Basis ι R M) :
     rintro ⟨i, j⟩
     simp only [Function.comp_apply, Basis.tensorProduct_apply, Basis.coe_dualBasis, coe_comp]
     rw [trace_eq_matrix_trace R b, toMatrix_dualTensorHom]
-    by_cases hij : i = j
-    · rw [hij]
-      simp
-    rw [Matrix.StdBasisMatrix.trace_zero j i (1 : R) hij]
+    obtain rfl | hij := eq_or_ne i j
+    · simp
+    rw [Matrix.trace_single_eq_of_ne j i (1 : R) hij.symm]
     simp [Finsupp.single_eq_pi_single, hij]
 
 /-- The trace of a linear map corresponds to the contraction pairing under the isomorphism
@@ -174,7 +173,7 @@ theorem trace_one : trace R M 1 = (finrank R M : R) := by
 
 /-- The trace of the identity endomorphism is the dimension of the free module. -/
 @[simp]
-theorem trace_id : trace R M id = (finrank R M : R) := by rw [← one_eq_id, trace_one]
+theorem trace_id : trace R M id = (finrank R M : R) := by rw [← Module.End.one_eq_id, trace_one]
 
 @[simp]
 theorem trace_transpose : trace R (Module.Dual R M) ∘ₗ Module.Dual.transpose = trace R M := by
@@ -206,7 +205,7 @@ variable {R M N P}
 theorem trace_prodMap' (f : M →ₗ[R] M) (g : N →ₗ[R] N) :
     trace R (M × N) (prodMap f g) = trace R M f + trace R N g := by
   have h := LinearMap.ext_iff.1 (trace_prodMap R M N) (f, g)
-  simp only [coe_comp, Function.comp_apply, prodMap_apply, coprod_apply, id_coe, id,
+  simp only [coe_comp, Function.comp_apply, prodMap_apply, coprod_apply, id,
     prodMapLinear_apply] at h
   exact h
 
@@ -220,7 +219,7 @@ theorem trace_tensorProduct : compr₂ (mapBilinear R M N M N) (trace R (M ⊗ N
     (compl₁₂_inj (show Surjective (dualTensorHom R M M) from (dualTensorHomEquiv R M M).surjective)
         (show Surjective (dualTensorHom R N N) from (dualTensorHomEquiv R N N).surjective)).1
   ext f m g n
-  simp only [AlgebraTensorModule.curry_apply, toFun_eq_coe, TensorProduct.curry_apply,
+  simp only [AlgebraTensorModule.curry_apply, TensorProduct.curry_apply,
     coe_restrictScalars, compl₁₂_apply, compr₂_apply, mapBilinear_apply,
     trace_eq_contract_apply, contractLeft_apply, lsmul_apply, Algebra.id.smul_eq_mul,
     map_dualTensorHom, dualDistrib_apply]
@@ -308,14 +307,15 @@ lemma trace_comp_eq_mul_of_commute_of_isNilpotent [IsReduced R] {f g : Module.En
     trace R M (f ∘ₗ g) = μ * trace R M f := by
   set n := g - algebraMap R _ μ
   replace hg : trace R M (f ∘ₗ n) = 0 := by
-    rw [← isNilpotent_iff_eq_zero, ← mul_eq_comp]
-    refine isNilpotent_trace_of_isNilpotent (Commute.isNilpotent_mul_right ?_ hg)
+    rw [← isNilpotent_iff_eq_zero, ← Module.End.mul_eq_comp]
+    refine isNilpotent_trace_of_isNilpotent (Commute.isNilpotent_mul_left ?_ hg)
     exact h_comm.sub_right (Algebra.commute_algebraMap_right μ f)
   have hμ : g = algebraMap R _ μ + n := eq_add_of_sub_eq' rfl
   have : f ∘ₗ algebraMap R _ μ = μ • f := by ext; simp -- TODO Surely exists?
   rw [hμ, comp_add, map_add, hg, add_zero, this, LinearMap.map_smul, smul_eq_mul]
 
--- This result requires `Mathlib.RingTheory.TensorProduct.Free`. Maybe it should move elsewhere?
+-- This result requires `Mathlib/RingTheory/TensorProduct/Free.lean`.
+-- Maybe it should move elsewhere?
 @[simp]
 lemma trace_baseChange [Module.Free R M] [Module.Finite R M]
     (f : M →ₗ[R] M) (A : Type*) [CommRing A] [Algebra R A] :
