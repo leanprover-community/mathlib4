@@ -347,6 +347,7 @@ theorem totient_super_multiplicative (a b : ℕ) : φ a * φ b ≤ φ (a * b) :=
   rw [← totient_gcd_mul_totient_mul a b, mul_comm]
   apply mul_le_mul_left' (Nat.totient_le d)
 
+@[gcongr]
 theorem totient_dvd_of_dvd {a b : ℕ} (h : a ∣ b) : φ a ∣ φ b := by
   rcases eq_or_ne a 0 with (rfl | ha0)
   · simp [zero_dvd_iff.1 h]

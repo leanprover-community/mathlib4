@@ -117,6 +117,7 @@ theorem dvd_of_eq (h : a = b) : a ∣ b := by rw [h]
 
 alias Eq.dvd := dvd_of_eq
 
+@[gcongr]
 lemma pow_dvd_pow (a : α) (h : m ≤ n) : a ^ m ∣ a ^ n :=
   ⟨a ^ (n - m), by rw [← pow_add, Nat.add_comm, Nat.sub_add_cancel h]⟩
 
@@ -128,6 +129,7 @@ alias Dvd.dvd.pow := dvd_pow
 
 lemma dvd_pow_self (a : α) {n : ℕ} (hn : n ≠ 0) : a ∣ a ^ n := dvd_rfl.pow hn
 
+@[gcongr]
 theorem mul_dvd_mul_left (a : α) (h : b ∣ c) : a * b ∣ a * c := by
   obtain ⟨d, rfl⟩ := h
   use d
@@ -166,6 +168,7 @@ alias Dvd.dvd.mul_left := dvd_mul_of_dvd_right
 
 attribute [local simp] mul_assoc mul_comm mul_left_comm
 
+@[gcongr]
 theorem mul_dvd_mul : ∀ {a b c d : α}, a ∣ b → c ∣ d → a * c ∣ b * d
   | a, _, c, _, ⟨e, rfl⟩, ⟨f, rfl⟩ => ⟨e * f, by simp⟩
 
@@ -176,7 +179,7 @@ theorem dvd_mul [DecompositionMonoid α] {k m n : α} :
     k ∣ m * n ↔ ∃ d₁ d₂, d₁ ∣ m ∧ d₂ ∣ n ∧ k = d₁ * d₂ := by
   refine ⟨exists_dvd_and_dvd_of_dvd_mul, ?_⟩
   rintro ⟨d₁, d₂, hy, hz, rfl⟩
-  exact mul_dvd_mul hy hz
+  gcongr
 
 end CommSemigroup
 
@@ -184,13 +187,20 @@ section CommMonoid
 
 variable [CommMonoid α] {a b : α}
 
+@[gcongr]
 theorem mul_dvd_mul_right (h : a ∣ b) (c : α) : a * c ∣ b * c :=
   mul_dvd_mul h (dvd_refl c)
 
-theorem pow_dvd_pow_of_dvd (h : a ∣ b) : ∀ n : ℕ, a ^ n ∣ b ^ n
-  | 0 => by rw [pow_zero, pow_zero]
-  | n + 1 => by
+@[gcongr]
+theorem pow_dvd_pow_of_dvd (h : a ∣ b) (n : ℕ) : a ^ n ∣ b ^ n := by
+  induction n with
+  | zero => simp
+  | succ =>
     rw [pow_succ, pow_succ]
-    exact mul_dvd_mul (pow_dvd_pow_of_dvd h n) h
+    gcongr
+
+@[gcongr]
+lemma pow_dvd_pow_of_dvd_of_le {m n : ℕ} (hab : a ∣ b) (hmn : m ≤ n) : a ^ m ∣ b ^ n := by
+  trans (a ^ n) <;> gcongr
 
 end CommMonoid
