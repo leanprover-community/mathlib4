@@ -805,17 +805,6 @@ theorem add_apply {_m : MeasurableSpace α} (μ₁ μ₂ : Measure α) (s : Set 
     (μ₁ + μ₂) s = μ₁ s + μ₂ s :=
   rfl
 
-section Support
-
-variable {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
-
-/-- The support of the sum of two measures is the union of the supports. -/
-lemma support_add (μ ν : Measure X) :
-  (μ + ν).support = μ.support ∪ ν.support := by
-  ext; simp [mem_support_iff]
-
-end Support
-
 section SMul
 
 variable [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
