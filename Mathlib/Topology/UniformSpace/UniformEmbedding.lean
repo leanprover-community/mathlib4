@@ -541,4 +541,38 @@ theorem extend_of_ind (hs : Dense s) (hf : UniformContinuous f) (x : s) :
 
 end Dense
 
+lemma IsDenseInducing.isUniformInducing_extend {γ : Type*} [UniformSpace γ]
+    [T2Space β] [CompleteSpace β] [CompleteSpace γ] {i : α → β} {f : α → γ}
+    (hid : IsDenseInducing i) (hi : IsUniformInducing i) (hi' : DenseRange i)
+    (h : IsUniformInducing f) (h' : DenseRange f) :
+    IsUniformInducing (hid.extend f) := by
+  have hgu : IsUniformInducing (SeparationQuotient.mk ∘ f) :=
+    SeparationQuotient.isUniformInducing_mk.comp h
+  have hgd : DenseRange (SeparationQuotient.mk ∘ f) :=
+    SeparationQuotient.surjective_mk.denseRange.comp h' SeparationQuotient.continuous_mk
+  have hg : IsDenseInducing (SeparationQuotient.mk ∘ f) := hgu.isDenseInducing hgd
+  let fwd := hid.extend (SeparationQuotient.mk ∘ f)
+  have hfwd : UniformContinuous fwd :=
+    (uniformContinuous_uniformly_extend hi hi'
+    (SeparationQuotient.uniformContinuous_mk.comp h.uniformContinuous))
+  have hg' : UniformContinuous (hg.extend i) :=
+    uniformContinuous_uniformly_extend hgu hgd hi.uniformContinuous
+  have key : hg.extend i ∘ fwd = id := by
+    ext x
+    induction x using isClosed_property hi'
+    · exact isClosed_eq ((hg'.comp hfwd).continuous) continuous_id
+    · simpa [fwd, hid.extend_eq hgu.uniformContinuous.continuous]
+        using hg.extend_eq_at hi.uniformContinuous.continuous.continuousAt
+  have hfu : IsUniformInducing fwd := by
+    refine IsUniformInducing.of_comp hfwd hg' ?_
+    rw [key]
+    exact IsUniformInducing.id
+  suffices fwd = SeparationQuotient.mk ∘ hid.extend f by
+    rw [← SeparationQuotient.isUniformInducing_mk.isUniformInducing_comp_iff, ← this]
+    exact hfu
+  refine hid.extend_unique ?_ ?_
+  · simp [hid.inseparable_extend h.uniformContinuous.continuous.continuousAt]
+  · exact SeparationQuotient.continuous_mk.comp
+      (uniformContinuous_uniformly_extend hi hi' h.uniformContinuous).continuous
+
 end DenseExtension
