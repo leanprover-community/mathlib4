@@ -41,8 +41,6 @@ lemma ENNReal.add_sub_add_eq_sub_left {a c b : ℝ≥0∞} (hc : c ≠ ∞) :
   simp_rw [add_comm c]
   exact ENNReal.add_sub_add_eq_sub_right hc
 
-lemma ENNReal.mul_min (a b c : ℝ≥0∞) : a * min b c = min (a * b) (a * c) := mul_left_mono.map_min
-
 namespace MeasureTheory
 
 variable {α : Type*} {mα : MeasurableSpace α} {μ ν : Measure α}
@@ -125,8 +123,8 @@ lemma deGrootInfo_of_measure_false_eq_zero (μ ν : Measure 𝓧) (hπ : π {fal
 /-- **Data processing inequality** for the statistical information. -/
 lemma deGrootInfo_comp_le (μ ν : Measure 𝓧) (π : Measure Bool) (η : Kernel 𝓧 𝓨) [IsMarkovKernel η] :
     deGrootInfo (η ∘ₘ μ) (η ∘ₘ ν) π ≤ deGrootInfo μ ν π := by
-  refine tsub_le_tsub ?_ (bayesBinaryRisk_le_bayesBinaryRisk_comp _ _ _ _)
-  simp [Measure.bind_apply .univ (Kernel.aemeasurable _)]
+  simp_rw [deGrootInfo_eq_riskIncrease, ← comp_boolKernel]
+  exact riskIncrease_comp_le binaryLoss (boolKernel μ ν) π η
 
 lemma deGrootInfo_eq_deGrootInfo_one_one :
     deGrootInfo μ ν π = deGrootInfo (π {false} • μ) (π {true} • ν) (Bool.boolMeasure 1 1) := by

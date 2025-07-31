@@ -59,6 +59,21 @@ lemma iInf_le_lintegral {α : Type*} {_ : MeasurableSpace α} (μ : Measure α) 
     ⨅ x, f x ≤ ∫⁻ x, f x ∂μ :=
   le_trans (by simp) (iInf_mul_le_lintegral μ f)
 
+-- from BrownianMotion
+theorem Set.Finite.lt_iInf_iff {α ι : Type*} [CompleteLinearOrder α]
+    {s : Set ι} {f : ι → α} (h : s.Nonempty) (hs : s.Finite) {a : α} :
+    a < ⨅ i ∈ s, f i ↔ ∀ x ∈ s, a < f x := sorry
+
+lemma iInf_eq_bot_iff_of_finite {α ι : Type*} [CompleteLinearOrder α] [Finite ι] [Nonempty ι]
+    {f : ι → α} : (⨅ i, f i) = ⊥ ↔ ∃ i, f i = ⊥ := by
+  refine ⟨fun h ↦ ?_, fun ⟨i, hi⟩ ↦ le_antisymm ((iInf_le _ i).trans_eq hi) bot_le⟩
+  by_contra! h'
+  simp_rw [← bot_lt_iff_ne_bot] at h'
+  have h'' : ∀ i ∈ (Set.univ : Set ι), ⊥ < f i := by simpa
+  rw [← Set.Finite.lt_iInf_iff (by simp) Set.finite_univ] at h''
+  simp only [Set.mem_univ, iInf_pos] at h''
+  exact h''.ne' h
+
 namespace ProbabilityTheory
 
 @[simp]
@@ -115,6 +130,61 @@ end Definitions
 
 @[simp]
 lemma bayesianRisk_of_isEmpty [IsEmpty Θ] : bayesianRisk ℓ P κ π = 0 := by simp [bayesianRisk]
+
+section FintypeCountable
+
+lemma risk_fintype [Fintype 𝓨] [MeasurableSingletonClass 𝓨] {θ : Θ} :
+    risk ℓ P κ θ = ∑ y, ℓ θ y * (κ ∘ₘ P θ) {y} := by
+  simp only [risk, lintegral_fintype]
+  congr
+
+lemma bayesianRisk_fintype [Fintype Θ] [MeasurableSingletonClass Θ] :
+    bayesianRisk ℓ P κ π = ∑ θ, risk ℓ P κ θ * π {θ} := by
+  simp [bayesianRisk, lintegral_fintype]
+
+lemma bayesianRisk_countable [Countable Θ] [MeasurableSingletonClass Θ] :
+    bayesianRisk ℓ P κ π = ∑' θ, risk ℓ P κ θ * π {θ} := by
+  simp [bayesianRisk, lintegral_countable']
+
+lemma bayesianRisk_fintype' [Fintype 𝓨] [MeasurableSingletonClass 𝓨]
+    (hl : Measurable (Function.uncurry ℓ)) :
+    bayesianRisk ℓ P κ π = ∑ y, ∫⁻ θ, ℓ θ y * (κ ∘ₘ P θ) {y} ∂π := by
+  simp only [bayesianRisk, risk_fintype]
+  rw [lintegral_finset_sum]
+  exact fun y _ ↦ Measurable.mul (by fun_prop) ((κ ∘ₖ P).measurable_coe (measurableSet_singleton y))
+
+lemma bayesianRisk_countable' [Countable 𝓨] [MeasurableSingletonClass 𝓨]
+    (hl : Measurable (Function.uncurry ℓ)) :
+    bayesianRisk ℓ P κ π = ∑' y, ∫⁻ θ, ℓ θ y * (κ ∘ₘ P θ) {y} ∂π := by
+  simp only [bayesianRisk, risk, lintegral_countable']
+  rw [lintegral_tsum]
+  · rfl
+  · refine fun y ↦ Measurable.aemeasurable ?_
+    exact Measurable.mul (by fun_prop) ((κ ∘ₖ P).measurable_coe (measurableSet_singleton y))
+
+lemma bayesRiskPrior_fintype [Fintype Θ] [MeasurableSingletonClass Θ] :
+    bayesRiskPrior ℓ P π
+      = ⨅ (κ : Kernel 𝓧 𝓨) (_ : IsMarkovKernel κ), ∑ θ, risk ℓ P κ θ * π {θ} := by
+  simp [bayesRiskPrior, bayesianRisk_fintype]
+
+lemma bayesRiskPrior_countable [Countable Θ] [MeasurableSingletonClass Θ] :
+    bayesRiskPrior ℓ P π
+      = ⨅ (κ : Kernel 𝓧 𝓨) (_ : IsMarkovKernel κ), ∑' θ, risk ℓ P κ θ * π {θ} := by
+  simp [bayesRiskPrior, bayesianRisk_countable]
+
+lemma bayesRiskPrior_fintype' [Fintype 𝓨] [MeasurableSingletonClass 𝓨]
+    (hl : Measurable (Function.uncurry ℓ)) :
+    bayesRiskPrior ℓ P π
+      = ⨅ (κ : Kernel 𝓧 𝓨) (_ : IsMarkovKernel κ), ∑ y, ∫⁻ θ, ℓ θ y * (κ ∘ₘ P θ) {y} ∂π := by
+  simp [bayesRiskPrior, bayesianRisk_fintype' hl]
+
+lemma bayesRiskPrior_countable' [Countable 𝓨] [MeasurableSingletonClass 𝓨]
+    (hl : Measurable (Function.uncurry ℓ)) :
+    bayesRiskPrior ℓ P π
+      = ⨅ (κ : Kernel 𝓧 𝓨) (_ : IsMarkovKernel κ), ∑' y, ∫⁻ θ, ℓ θ y * (κ ∘ₘ P θ) {y} ∂π := by
+  simp [bayesRiskPrior, bayesianRisk_countable' hl]
+
+end FintypeCountable
 
 section Zero
 
@@ -222,6 +292,16 @@ lemma bayesianRisk_const' (hl : Measurable (Function.uncurry ℓ)) (μ : Measure
     bayesianRisk ℓ (Kernel.const Θ μ) κ π = ∫⁻ y, ∫⁻ θ, ℓ θ y ∂π ∂(κ ∘ₘ μ) := by
   rw [bayesianRisk_const, lintegral_lintegral_swap (by fun_prop)]
 
+lemma bayesianRisk_const_of_fintype [Fintype 𝓨] [MeasurableSingletonClass 𝓨]
+    (hℓ : Measurable (Function.uncurry ℓ)) (μ : Measure 𝓧) (κ : Kernel 𝓧 𝓨) (π : Measure Θ) :
+    bayesianRisk ℓ (Kernel.const Θ μ) κ π = ∑ y, ∫⁻ θ, ℓ θ y * (κ ∘ₘ μ) {y} ∂π := by
+  simp [bayesianRisk_fintype' hℓ]
+
+lemma bayesianRisk_const_of_countable [Countable 𝓨] [MeasurableSingletonClass 𝓨]
+    (hℓ : Measurable (Function.uncurry ℓ)) (μ : Measure 𝓧) (κ : Kernel 𝓧 𝓨) (π : Measure Θ) :
+    bayesianRisk ℓ (Kernel.const Θ μ) κ π = ∑' y, ∫⁻ θ, ℓ θ y * (κ ∘ₘ μ) {y} ∂π := by
+  simp [bayesianRisk_countable' hℓ]
+
 lemma bayesianRisk_const_right (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) (ν : Measure 𝓨) (π : Measure Θ) :
     bayesianRisk ℓ P (Kernel.const 𝓧 ν) π = ∫⁻ θ, P θ .univ * ∫⁻ y, ℓ θ y ∂ν ∂π := by
   simp only [bayesianRisk, risk_const_right]
@@ -271,6 +351,25 @@ lemma bayesRiskPrior_const (hl : Measurable (Function.uncurry ℓ))
     (μ : Measure 𝓧) [IsProbabilityMeasure μ] (π : Measure Θ) [SFinite π] :
     bayesRiskPrior ℓ (Kernel.const Θ μ) π = ⨅ y : 𝓨, ∫⁻ θ, ℓ θ y ∂π := by
   simp [bayesRiskPrior_const'' hl μ π]
+
+lemma bayesRiskPrior_const_of_fintype [Nonempty 𝓨] [Fintype 𝓨] [MeasurableSingletonClass 𝓨]
+    (hℓ : Measurable (Function.uncurry ℓ)) (μ : Measure 𝓧) (π : Measure Θ) :
+    bayesRiskPrior ℓ (Kernel.const Θ μ) π = ⨅ y, ∫⁻ θ, ℓ θ y * μ .univ ∂π := by
+  refine le_antisymm ((bayesRiskPrior_le_inf' hℓ _ _).trans_eq (by simp)) ?_
+  simp only [bayesRiskPrior, bayesianRisk_const_of_fintype hℓ, le_iInf_iff]
+  intro κ hκ
+  calc ⨅ y, ∫⁻ θ, ℓ θ y * μ Set.univ ∂π
+  _ = (⨅ y, ∫⁻ θ, ℓ θ y ∂π) * (κ ∘ₘ μ) Set.univ := by
+    simp only [Measure.comp_apply_univ]
+    rw [ENNReal.iInf_mul' (fun _ h ↦ ?_) (fun _ ↦ inferInstance)]
+    · congr with y
+      rw [lintegral_mul_const _ (by fun_prop)]
+    · rwa [← bot_eq_zero, iInf_eq_bot_iff_of_finite, bot_eq_zero] at h
+  _ ≤ ∫⁻ y, ∫⁻ θ, ℓ θ y ∂π ∂(κ ∘ₘ μ) := iInf_mul_le_lintegral (κ ∘ₘ μ) _
+  _ = ∑ y, ∫⁻ θ, ℓ θ y * (κ ∘ₘ μ) {y} ∂π := by
+    simp only [lintegral_fintype]
+    congr with y
+    rw [lintegral_mul_const _ (by fun_prop)]
 
 end Const
 
@@ -391,6 +490,12 @@ lemma bayesianRisk_comap_measurableEquiv (hl : Measurable (Function.uncurry ℓ)
   · ext s hs
     simp [κ.comp_apply' _ _ hs, Kernel.comap_apply]
   · simp
+
+lemma bayesRiskPrior_comap_measurableEquiv (hl : Measurable (Function.uncurry ℓ)) (P : Kernel Θ 𝓧)
+    [IsSFiniteKernel P] (π : Measure Θ) (e : Θ' ≃ᵐ Θ) :
+    bayesRiskPrior (fun θ ↦ ℓ (e θ)) (P.comap e e.measurable) (π.comap e)
+      = bayesRiskPrior ℓ P π := by
+  simp only [bayesRiskPrior, bayesianRisk_comap_measurableEquiv hl P _ π e]
 
 /-- **Data processing inequality** for the Bayes risk: composition of the
 data generating kernel by a Markov kernel increases the risk. -/

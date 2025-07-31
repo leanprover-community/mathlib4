@@ -30,6 +30,8 @@ open scoped ENNReal NNReal
 
 namespace ProbabilityTheory
 
+lemma ENNReal.mul_min (a b c : ℝ≥0∞) : a * min b c = min (a * b) (a * c) := mul_left_mono.map_min
+
 lemma _root_.Measurable.smul_measure {α β : Type*} {_ : MeasurableSpace α} {_ : MeasurableSpace β}
     {f : α → ℝ≥0∞}
     (hf : Measurable f) (μ : Measure β) :
@@ -136,11 +138,7 @@ lemma bayesBinaryRisk_eq (μ ν : Measure 𝓧) (π : Measure Bool) :
     bayesBinaryRisk μ ν π
       = ⨅ (κ : Kernel 𝓧 Bool) (_ : IsMarkovKernel κ),
         π {true} * (κ ∘ₘ ν) {false} + π {false} * (κ ∘ₘ μ) {true} := by
-  rw [bayesBinaryRisk, bayesRiskPrior]
-  congr with κ
-  congr with _
-  rw [bayesianRisk, Bool.lintegral_bool, mul_comm (π {false}), mul_comm (π {true}), add_comm]
-  simp
+  simp [bayesBinaryRisk, bayesRiskPrior_fintype, mul_comm]
 
 variable {π : Measure Bool}
 
@@ -159,26 +157,10 @@ lemma bayesBinaryRisk_le_bayesBinaryRisk_comp (μ ν : Measure 𝓧) (π : Measu
 @[simp]
 lemma bayesBinaryRisk_self (μ : Measure 𝓧) (π : Measure Bool) :
     bayesBinaryRisk μ μ π = min (π {false}) (π {true}) * μ .univ := by
-  rw [bayesBinaryRisk_eq]
-  refine le_antisymm ?_ ?_
-  · let η : Kernel 𝓧 Bool :=
-      if π {true} ≤ π {false} then (Kernel.const 𝓧 (Measure.dirac false))
-        else (Kernel.const 𝓧 (Measure.dirac true))
-    refine iInf_le_of_le η ?_
-    simp_rw [η]
-    convert iInf_le _ ?_ using 1
-    · split_ifs with h <;> simp [le_of_not_ge, h]
-    · split_ifs <;> infer_instance
-  · calc
-      _ ≥ ⨅ κ, ⨅ (_ : IsMarkovKernel κ), min (π {false}) (π {true}) * (κ ∘ₘ μ) {false}
-          + min (π {false}) (π {true}) * (κ ∘ₘ μ) {true} := by
-        gcongr <;> simp
-      _ = ⨅ κ, ⨅ (_ : IsMarkovKernel κ), min (π {false}) (π {true}) * μ .univ := by
-        simp_rw [← mul_add, ← measure_union (show Disjoint {false} {true} from by simp)
-          (by trivial), (set_fintype_card_eq_univ_iff ({false} ∪ {true})).mp rfl,
-          Measure.comp_apply_univ]
-        rfl
-      _ = _ := by simp [iInf_subtype']
+  have : boolKernel μ μ = Kernel.const Bool μ := by ext; simp
+  rw [bayesBinaryRisk, mul_comm, ENNReal.mul_min, this,
+    bayesRiskPrior_const_of_fintype (by fun_prop)]
+  simp [Bool.lintegral_bool, binaryLoss, iInf_bool_eq]
 
 lemma bayesBinaryRisk_dirac (a b : ℝ≥0∞) (x : 𝓧) (π : Measure Bool) :
     bayesBinaryRisk (a • Measure.dirac x) (b • Measure.dirac x) π
@@ -301,6 +283,7 @@ lemma bayesBinaryRisk_eq_iInf_measurableSet (μ ν : Measure 𝓧) [IsFiniteMeas
     rw [bayesianRisk_binary_of_deterministic_indicator _ _ _ hE]
     exact iInf_le_of_le E (iInf_le _ hE)
 
+-- todo: countable (or at least finite) extension of this Bool lemma
 lemma bayesRiskPrior_eq_of_hasGenBayesEstimator_binary {𝓨 : Type*} [MeasurableSpace 𝓨]
     {ℓ : Bool → 𝓨 → ℝ≥0∞} (hl : Measurable (Function.uncurry ℓ))
     (P : Kernel Bool 𝓧) [IsFiniteKernel P] (π : Measure Bool) [IsFiniteMeasure π]

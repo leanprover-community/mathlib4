@@ -43,7 +43,8 @@ lemma Kernel.withDensity_comp {α β γ : Type*} {_ : MeasurableSpace α} {_ : M
   rw [Measure.bind_apply hs (Kernel.aemeasurable _), lintegral_const_mul]
   exact η.measurable_coe hs
 
-variable {Θ 𝓧 𝓨 : Type*} {mΘ : MeasurableSpace Θ} {m𝓧 : MeasurableSpace 𝓧} [MeasurableSpace 𝓨]
+variable {Θ 𝓧 𝓧' 𝓨 : Type*} {mΘ : MeasurableSpace Θ} {m𝓧 : MeasurableSpace 𝓧}
+  {m𝓧' : MeasurableSpace 𝓧'} [MeasurableSpace 𝓨]
   {π : Measure Θ} {P : Kernel Θ 𝓧} {ℓ : Θ → 𝓨 → ℝ≥0∞}
 
 noncomputable
@@ -99,7 +100,8 @@ lemma riskIncrease_lt_top (hl : Measurable (uncurry ℓ)) [IsMarkovKernel P] [Is
   (riskIncrease_le_iInf hl).trans_lt (iInf_lt_top.mpr ⟨y, h_finite.lt_top⟩)
 
 /-- **Data processing inequality** for the risk increase. -/
-lemma riskIncrease_comp_le (P : Kernel Θ 𝓧) (π : Measure Θ) (η : Kernel 𝓧 𝓨) [IsMarkovKernel η] :
+lemma riskIncrease_comp_le (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) (π : Measure Θ)
+    (η : Kernel 𝓧 𝓧') [IsMarkovKernel η] :
     riskIncrease ℓ (η ∘ₖ P) π ≤ riskIncrease ℓ P π := by
   refine tsub_le_tsub ?_ (bayesRiskPrior_le_bayesRiskPrior_comp _ _ _ _)
   rw [← Kernel.comp_assoc]
