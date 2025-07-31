@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
 import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Algebra.Order.Ring.Star
-import Mathlib.Analysis.Normed.Ring.Lemmas
-import Mathlib.Data.Int.Star
+import Mathlib.Data.Int.Interval
 import Mathlib.GroupTheory.Perm.Fin
 
 /-!
@@ -65,21 +63,16 @@ lemma sum_range_modEq_sum_of_contra (hS : ¬∃ a b, a ≠ b ∧ (n ! : ℤ) ∣
   change _ = ((_ : ℕ) : ℤ) / (2 : ℕ)
   rw [Nat.cast_mul, Nat.cast_ofNat, Nat.cast_pred (Nat.factorial_pos n)]
 
-/-- An automorphism of permutations that adds `i` before permuting. -/
-def rotateDomain (i : Fin n) : Perm (Perm (Fin n)) := Equiv.mulRight (finCycle i)
-
 /-- The sum over all permutations of `Icc 1 n` of the entry at any fixed position is
 `(n - 1)! * (n * (n + 1) / 2)`. -/
 lemma sum_perm_add_one {i : Fin n} (hn : 1 ≤ n) :
     ∑ a : Perm (Fin n), ((a i).1 + 1) = (n - 1)! * (n * (n + 1) / 2) := by
-  rw [← (rotateDomain (-i)).sum_comp]; swap
-  · simp_rw [coe_univ, Set.subset_univ]
   rw [le_iff_exists_add'] at hn; obtain ⟨n, rfl⟩ := hn
-  simp_rw [rotateDomain, coe_mulRight, Perm.coe_mul, Function.comp_apply, finCycle_apply,
-    add_neg_cancel, univ_perm_fin_succ, sum_map, coe_toEmbedding, Fintype.sum_prod_type,
-    Perm.decomposeFin_symm_apply_zero, sum_const, smul_eq_mul, add_tsub_cancel_right, ← mul_sum,
-    Finset.card_univ, Fintype.card_perm, Fintype.card_fin]
-  congr 1
+  rw [← sum_comp (Equiv.mulRight (swap i 0))]
+  simp_rw [coe_mulRight, Perm.coe_mul, Function.comp_apply, swap_apply_left, univ_perm_fin_succ,
+    sum_map, coe_toEmbedding, Fintype.sum_prod_type, Perm.decomposeFin_symm_apply_zero, sum_const,
+    smul_eq_mul, ← mul_sum, Finset.card_univ, Fintype.card_perm, Fintype.card_fin]
+  congr
   have es := sum_range_add id 1 (n + 1)
   simp_rw [id_eq, sum_range_one, zero_add, add_comm 1] at es
   rw [Fin.sum_univ_eq_sum_range (· + 1), ← es, sum_range_id, add_tsub_cancel_right, mul_comm]
