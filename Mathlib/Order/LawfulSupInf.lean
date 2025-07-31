@@ -3,9 +3,8 @@ Copyright (c) 2017 Pierre Quinton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pierre Quinton
 -/
+import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.SetNotation
-import Mathlib.Order.Bounds.Defs
-import Mathlib.Order.Defs.PartialOrder
 
 /-!
 # Lawful Suprema and Infima
@@ -95,3 +94,25 @@ noncomputable def Preorder.toLawfulSupInf [Preorder α] [Inhabited α] :
   sSup := Preorder.toLawfulSup.sSup
   isGLB_sInf_of_exists_isGLB := Preorder.toLawfulInf.isGLB_sInf_of_exists_isGLB
   isLUB_sSup_of_exists_isLUB := Preorder.toLawfulSup.isLUB_sSup_of_exists_isLUB
+
+namespace OrderDual
+
+instance supSet (α) [InfSet α] : SupSet αᵒᵈ :=
+  ⟨(sInf : Set α → α)⟩
+
+instance infSet (α) [SupSet α] : InfSet αᵒᵈ :=
+  ⟨(sSup : Set α → α)⟩
+
+instance instLawfulInf (α) [LawfulSup α] : LawfulInf αᵒᵈ where
+  isGLB_sInf_of_exists_isGLB s := by
+    intro ⟨x, hx⟩
+    exact @LawfulSup.isLUB_sSup_of_exists_isLUB α _ s ⟨x, hx.dual⟩
+
+instance instLawfulSup (α) [LawfulInf α] : LawfulSup αᵒᵈ where
+  isLUB_sSup_of_exists_isLUB s := by
+    intro ⟨x, hx⟩
+    exact @LawfulInf.isGLB_sInf_of_exists_isGLB α _ s ⟨x, hx.dual⟩
+
+instance instLawfulSupInf (α) [LawfulSupInf α] : LawfulSupInf αᵒᵈ where
+
+end OrderDual
