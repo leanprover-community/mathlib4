@@ -92,7 +92,8 @@ def leftAdjointsCoyonedaEquiv {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) (a
 /-- Given two adjunctions, if the right adjoints are naturally isomorphic, then so are the left
 adjoints.
 
-Note: it is generally better to use `Adjunction.natIsoEquiv`, see the file `Mathlib/CategoryTheory/Adjunction/Unique.lean`.
+Note: it is generally better to use `Adjunction.natIsoEquiv`, see the file
+`Mathlib/CategoryTheory/Adjunction/Unique.lean`.
 The reason this definition still exists is that apparently `CategoryTheory.extendAlongYonedaYoneda`
 uses its definitional properties (TODO: figure out a way to avoid this).
 -/
@@ -104,7 +105,8 @@ def natIsoOfRightAdjointNatIso {F F' : C ⥤ D} {G G' : D ⥤ C}
 /-- Given two adjunctions, if the left adjoints are naturally isomorphic, then so are the right
 adjoints.
 
-Note: it is generally better to use `Adjunction.natIsoEquiv`, see the file `Mathlib/CategoryTheory/Adjunction/Unique.lean`.
+Note: it is generally better to use `Adjunction.natIsoEquiv`, see the file
+`Mathlib/CategoryTheory/Adjunction/Unique.lean`.
 -/
 def natIsoOfLeftAdjointNatIso {F F' : C ⥤ D} {G G' : D ⥤ C}
     (adj1 : F ⊣ G) (adj2 : F' ⊣ G') (l : F ≅ F') : G ≅ G' :=
