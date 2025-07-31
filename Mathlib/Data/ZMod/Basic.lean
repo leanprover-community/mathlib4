@@ -928,14 +928,16 @@ theorem neg_eq_self_mod_two (a : ZMod 2) : -a = a := by
   fin_cases a <;> apply Fin.ext <;> simp; rfl
 
 @[simp]
+theorem intCast_abs_mod_two (a : ℤ) : (↑|a| : ZMod 2) = a := by
+  cases le_total a 0 <;> simp [abs_of_nonneg, abs_of_nonpos, *]
+
 theorem natAbs_mod_two (a : ℤ) : (a.natAbs : ZMod 2) = a := by
-  cases a
-  · simp only [Int.natAbs_natCast, Int.cast_natCast, Int.ofNat_eq_coe]
-  · simp only [neg_eq_self_mod_two, Nat.cast_succ, Int.natAbs, Int.cast_negSucc]
+  simp
 
 theorem val_ne_zero {n : ℕ} (a : ZMod n) : a.val ≠ 0 ↔ a ≠ 0 :=
   (val_eq_zero a).not
 
+@[simp]
 theorem val_pos {n : ℕ} {a : ZMod n} : 0 < a.val ↔ a ≠ 0 := by
   simp [pos_iff_ne_zero]
 
