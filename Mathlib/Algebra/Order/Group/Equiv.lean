@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Weiyi Wang
 -/
 import Mathlib.Algebra.Group.Equiv.Defs
-import Mathlib.Algebra.Order.Monoid.Lex
+import Mathlib.Algebra.Order.Group.Synonym
 
 /-!
 # Add/Mul equivalence for order type synonyms
