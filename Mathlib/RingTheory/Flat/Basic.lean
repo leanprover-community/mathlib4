@@ -4,16 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Jujian Zhang, Yongle Hu
 -/
 import Mathlib.Algebra.Colimit.TensorProduct
-import Mathlib.Algebra.DirectSum.Finsupp
-import Mathlib.Algebra.DirectSum.Module
-import Mathlib.Algebra.Exact
 import Mathlib.Algebra.Module.CharacterModule
-import Mathlib.Algebra.Module.Injective
 import Mathlib.Algebra.Module.Projective
-import Mathlib.LinearAlgebra.DirectSum.TensorProduct
-import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.RingTheory.Finiteness.Small
+import Mathlib.RingTheory.IsTensorProduct
 import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
@@ -587,3 +582,36 @@ theorem nontrivial_of_algebraMap_injective_of_flat_right (h : Function.Injective
 end Algebra.TensorProduct
 
 end Nontrivial
+
+namespace IsTensorProduct
+
+variable {R M N P : Type*} [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
+  [Module R M] [Module R N] [Module R P]
+
+theorem lTensor_injective_of_flat [Module.Flat R M] {MN MP : Type*} [AddCommMonoid MN]
+    [AddCommMonoid MP] [Module R MN] [Module R MP] {f : M →ₗ[R] N →ₗ[R] MN} {g : M →ₗ[R] P →ₗ[R] MP}
+    (hf : IsTensorProduct f) (hg : IsTensorProduct g) (i : N →ₗ[R] P)
+    (hi : Function.Injective i) : Function.Injective (hf.lTensor hg i) := by
+  have h : hf.lTensor hg i = hg.equiv ∘ ((i.lTensor M) ∘ hf.equiv.symm) :=
+    funext fun x ↦ hf.inductionOn x (by simp) (by simp) (fun _ _ hx hy ↦ by simp [hx, hy])
+  simpa [h] using Module.Flat.lTensor_preserves_injective_linearMap i hi
+
+theorem rTensor_injective_of_flat [Module.Flat R M] {NM PM : Type*} [AddCommMonoid NM]
+    [AddCommMonoid PM] [Module R NM] [Module R PM] {f : N →ₗ[R] M →ₗ[R] NM} {g : P →ₗ[R] M →ₗ[R] PM}
+    (hf : IsTensorProduct f) (hg : IsTensorProduct g) (i : N →ₗ[R] P)
+    (hi : Function.Injective i) : Function.Injective (hf.rTensor hg i) := by
+  have h : hf.rTensor hg i = hg.equiv ∘ ((i.rTensor M) ∘ hf.equiv.symm) :=
+    funext fun x ↦ hf.inductionOn x (by simp) (by simp) (fun _ _ hx hy ↦ by simp [hx, hy])
+  simpa [h] using Module.Flat.rTensor_preserves_injective_linearMap i hi
+
+theorem map_injective_of_flat {M₁ M₂ N₁ N₂ : Type*} [AddCommMonoid M₁] [AddCommMonoid M₂]
+    [Module R M₁] [Module R M₂] [AddCommMonoid N₁] [AddCommMonoid N₂] [Module R N₁] [Module R N₂]
+    [Module.Flat R N₁] [Module.Flat R M₂] {f : M₁ →ₗ[R] M₂ →ₗ[R] M} {g : N₁ →ₗ[R] N₂ →ₗ[R] N}
+    (hf : IsTensorProduct f) (hg : IsTensorProduct g) (i₁ : M₁ →ₗ[R] N₁) (i₂ : M₂ →ₗ[R] N₂)
+    (h₁ : Function.Injective i₁) (h₂ : Function.Injective i₂) :
+    Function.Injective (hf.map hg i₁ i₂) := by
+  have h := TensorProduct.isTensorProduct R N₁ M₂
+  rw [← hf.lTensor_comp_rTensor hg h]
+  exact (h.lTensor_injective_of_flat hg i₂ h₂).comp (hf.rTensor_injective_of_flat h i₁ h₁)
+
+end IsTensorProduct
