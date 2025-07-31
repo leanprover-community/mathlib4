@@ -67,11 +67,7 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
         gcongr with p q
         exact biInter_subset_of_mem q.2
       _ = ∑' (p : s) (_ : ↥(s ∩ Ioi p)), (0 : ℝ≥0∞) := by
-        congr
-        ext1 p
-        congr
-        ext1 q
-        exact (huv p q).2.2.2.2 p.2 q.2.1 q.2.2
+        grind [Set.mem_inter_iff]
       _ = 0 := by simp only [tsum_zero]
   have ff' : ∀ᵐ x ∂μ, f x = f' x := by
     have : ∀ᵐ x ∂μ, x ∉ t := by
