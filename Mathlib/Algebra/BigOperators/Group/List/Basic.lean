@@ -497,8 +497,6 @@ lemma drop_sum_flatten (L : List (List α)) (i : ℕ) :
   · simp
   · cases i <;> simp [*]
 
-
-
 end List
 
 
