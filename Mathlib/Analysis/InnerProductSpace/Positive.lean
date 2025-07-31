@@ -421,7 +421,7 @@ theorem starProjection_le_starProjection_iff (U V : Submodule 𝕜 E)
     ← coe_inj, coe_comp, LinearMap.IsIdempotentElem.comp_eq_right_iff]
   · have {p : E →L[𝕜] E} : LinearMap.range p.toLinearMap = LinearMap.range p := rfl
     simp_rw [this, Submodule.range_starProjection]
-  · exact congr(LinearMapClass.linearMap $(isStarProjection_starProjection.isIdempotentElem.eq))
+  · exact congr(LinearMapClass.linearMap $V.isIdempotentElem_starProjection.eq)
 
 end ContinuousLinearMap
 
