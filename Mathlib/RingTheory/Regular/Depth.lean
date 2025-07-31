@@ -652,7 +652,7 @@ lemma Ideal.depth_quotSMulTop_succ_eq_moduleDepth (I : Ideal R) (M : ModuleCat.{
     (reg : IsSMulRegular M x) (mem : x ∈ I) :
     I.depth (ModuleCat.of R (QuotSMulTop x M)) + 1 = I.depth M := by
   apply moduleDepth_quotSMulTop_succ_eq_moduleDepth _ M x reg
-  simpa [LinearEquiv.annihilator_eq (Shrink.linearEquiv (R ⧸ I) R), Ideal.annihilator_quotient]
+  simpa [LinearEquiv.annihilator_eq (Shrink.linearEquiv R (R ⧸ I)), Ideal.annihilator_quotient]
 
 lemma IsLocalRing.depth_quotSMulTop_succ_eq_moduleDepth [IsLocalRing R] (M : ModuleCat.{v} R)
     (x : R) (reg : IsSMulRegular M x) (mem : x ∈ maximalIdeal R) :
@@ -686,7 +686,7 @@ lemma ideal_depth_quotient_regular_sequence_add_length_eq_ideal_depth (I : Ideal
     I.depth M := by
   apply moduleDepth_quotient_regular_sequence_add_length_eq_moduleDepth _ M rs reg
   convert h
-  rw [LinearEquiv.annihilator_eq (Shrink.linearEquiv (R ⧸ I) R), Ideal.annihilator_quotient]
+  rw [LinearEquiv.annihilator_eq (Shrink.linearEquiv R (R ⧸ I)), Ideal.annihilator_quotient]
 
 lemma depth_quotient_regular_sequence_add_length_eq_depth [IsLocalRing R]
     (M : ModuleCat.{v} R) (rs : List R)
@@ -725,7 +725,7 @@ lemma IsLocalRing.depth_eq_of_ringEquiv {R R' : Type*} [CommRing R] [CommRing R'
     simpa [len]
 
 omit [Small.{v, u} R] in
-lemma IsLocalRing.depth_quotient_regular_succ_eq_depth  [IsLocalRing R] [IsNoetherianRing R] (x : R)
+lemma IsLocalRing.depth_quotient_regular_succ_eq_depth [IsLocalRing R] [IsNoetherianRing R] (x : R)
     (reg : IsSMulRegular R x) (mem : x ∈ maximalIdeal R) :
     letI : IsLocalRing (R ⧸ x • (⊤ : Ideal R)) :=
       have : Nontrivial (R ⧸ x • (⊤ : Ideal R)) :=
@@ -779,7 +779,7 @@ lemma IsLocalRing.depth_quotient_regular_succ_eq_depth  [IsLocalRing R] [IsNoeth
     simpa [← hrs'] using len
 
 omit [Small.{v, u} R] in
-lemma IsLocalRing.depth_quotient_span_regular_succ_eq_depth  [IsLocalRing R] [IsNoetherianRing R]
+lemma IsLocalRing.depth_quotient_span_regular_succ_eq_depth [IsLocalRing R] [IsNoetherianRing R]
     (x : R) (reg : IsSMulRegular R x) (mem : x ∈ maximalIdeal R) :
     letI : IsLocalRing (R ⧸ Ideal.span {x}) :=
       have : Nontrivial (R ⧸ Ideal.span {x}) :=
@@ -807,9 +807,9 @@ lemma IsLocalRing.depth_quotient_span_regular_succ_eq_depth  [IsLocalRing R] [Is
     IsLocalRing.depth_quotient_regular_succ_eq_depth x reg mem]
 
 omit [Small.{v, u} R] in
-lemma IsLocalRing.depth_quotient_regular_sequence_add_length_eq_depth  [IsLocalRing R]
+lemma IsLocalRing.depth_quotient_regular_sequence_add_length_eq_depth [IsLocalRing R]
     [IsNoetherianRing R] (rs : List R) (reg : RingTheory.Sequence.IsWeaklyRegular R rs)
-    (mem : ∀ r ∈ rs, r ∈ maximalIdeal R):
+    (mem : ∀ r ∈ rs, r ∈ maximalIdeal R) :
     letI : IsLocalRing (R ⧸ Ideal.ofList rs) :=
       have : Nontrivial (R ⧸ Ideal.ofList rs) :=
         Submodule.Quotient.nontrivial_of_lt_top _
