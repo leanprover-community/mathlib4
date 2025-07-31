@@ -6,9 +6,7 @@ Authors: David Wärn, Kim Morrison, Matteo Cipollina
 
 import Mathlib.Combinatorics.Quiver.Prefunctor
 import Mathlib.Logic.Lemmas
-import Mathlib.Algebra.Order.Group.Nat
 import Batteries.Data.List.Basic
-import Mathlib.Tactic.Cases
 
 /-!
 # Paths in quivers
