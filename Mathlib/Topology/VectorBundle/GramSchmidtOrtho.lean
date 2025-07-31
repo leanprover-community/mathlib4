@@ -14,7 +14,8 @@ for sections of Riemannian vector bundles: this produces a system of sections wh
 with respect to the bundle metric. If the initial sections were linearly independent (resp.
 formed a basis) at the point, so do the normalized sections.
 
-# TODO
+## TODO
+
 * If the bundle metric is continuous, then the procedure preserves regularity of sections:
   if all sections are continuous, so are their normalized versions.
 * (in the `Geometry/Manifold` folder): if the bundle metric is `C^n`, the procedure preserves
