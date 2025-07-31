@@ -202,7 +202,7 @@ section
 variable (S : Type*) [Semiring S] [Algebra R S]
 
 variable (ι R) in
-/-- If `ι` as a unique element, then `ι → S` is isomorphic to `S` as an `R`-algebra. -/
+/-- If `ι` has a unique element, then `ι → S` is isomorphic to `S` as an `R`-algebra. -/
 def funUnique [Unique ι] : (ι → S) ≃ₐ[R] S :=
   .ofRingEquiv (f := .piUnique (fun i : ι ↦ S)) (by simp)
 

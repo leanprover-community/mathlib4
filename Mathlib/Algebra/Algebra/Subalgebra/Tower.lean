@@ -9,10 +9,10 @@ import Mathlib.Algebra.Algebra.Tower
 /-!
 # Subalgebras in towers of algebras
 
-In this file we prove facts about subalgebras in towers of algebra.
+In this file we prove facts about subalgebras in towers of algebras.
 
 An algebra tower A/S/R is expressed by having instances of `Algebra A S`,
-`Algebra R S`, `Algebra R A` and `IsScalarTower R S A`, the later asserting the
+`Algebra R S`, `Algebra R A` and `IsScalarTower R S A`, the latter asserting the
 compatibility condition `(r • s) • a = r • (s • a)`.
 
 ## Main results
