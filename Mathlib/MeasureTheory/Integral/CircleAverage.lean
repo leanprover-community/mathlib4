@@ -27,7 +27,7 @@ Implementation Note: Like `circleMap`, `circleAverage`s are defined for negative
 `circleAverage_congr_negRadius` shows that the average is independent of the radius' sign.
 -/
 
-open Filter Metric Real
+open Complex Filter Metric Real
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -77,6 +77,34 @@ lemma circleAverage_fun_add :
   simp only [zero_add]
   congr 1
   ring
+
+/--
+Expression of the `circleAverage` in terms of a `circleIntegral`.
+-/
+theorem circleAverage_eq_circleIntegral {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F]
+    {f : ℂ → F} (h : R ≠ 0) :
+    circleAverage f c R = (2 * π * I)⁻¹ • (∮ (z : ℂ) in C(c, R), (z - c)⁻¹ • f z) := by
+  calc circleAverage f c R
+  _ = (↑(2 * π) : ℂ)⁻¹ • ∫ (θ : ℝ) in 0..2 * π, f (circleMap c R θ) := by
+    unfold circleAverage
+    simp [← coe_smul]
+  _ = (2 * π * I)⁻¹ • ∫ (θ : ℝ) in 0..2 * π, I • f (circleMap c R θ) := by
+    rw [intervalIntegral.integral_smul, ← smul_assoc]
+    congr
+    rw [smul_eq_mul]
+    nth_rw 1 [mul_inv_rev]
+    nth_rw 3 [mul_comm]
+    rw [mul_assoc]
+    aesop
+  _ = (2 * π * I)⁻¹ • (∮ (z : ℂ) in C(c, R), (z - c)⁻¹ • f z) := by
+    unfold circleIntegral
+    congr
+    ext θ
+    simp [deriv_circleMap, circleMap_sub_center]
+    rw [← smul_assoc]
+    congr
+    rw [smul_eq_mul, mul_comm, ← mul_assoc, right_eq_mul₀ I_ne_zero]
+    apply inv_mul_cancel₀ (circleMap_ne_center h)
 
 /-!
 ## Congruence Lemmata
