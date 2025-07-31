@@ -388,7 +388,8 @@
   "Mathlib.Logic.Equiv.Prod": ["Mathlib.Data.Prod.PProd"],
   "Mathlib.Logic.Equiv.Defs":
   ["Mathlib.Data.Bool.Basic", "Mathlib.Data.Subtype"],
-  "Mathlib.Logic.Basic": ["Batteries.Tactic.Trans"],
+  "Mathlib.Logic.Basic":
+  ["Batteries.Tactic.Trans", "Mathlib.Tactic.AdaptationNote"],
   "Mathlib.LinearAlgebra.Matrix.Transvection": ["Mathlib.Data.Matrix.DMatrix"],
   "Mathlib.LinearAlgebra.DFinsupp": ["Mathlib.LinearAlgebra.Finsupp.SumProd"],
   "Mathlib.LinearAlgebra.Basic": ["Mathlib.Algebra.BigOperators.Group.Finset"],
