@@ -396,9 +396,7 @@ theorem arrowCongr_comp (e₁ : A₁ ≃ₐ[R] A₁') (e₂ : A₂ ≃ₐ[R] A�
     (e₃ : A₃ ≃ₐ[R] A₃') (f : A₁ →ₐ[R] A₂) (g : A₂ →ₐ[R] A₃) :
     arrowCongr e₁ e₃ (g.comp f) = (arrowCongr e₂ e₃ g).comp (arrowCongr e₁ e₂ f) := by
   ext
-  simp only [arrowCongr, Equiv.coe_fn_mk, AlgHom.comp_apply]
-  congr
-  exact (e₂.symm_apply_apply _).symm
+  simp
 
 @[simp]
 theorem arrowCongr_refl : arrowCongr AlgEquiv.refl AlgEquiv.refl = Equiv.refl (A₁ →ₐ[R] A₂) :=
@@ -416,7 +414,7 @@ theorem arrowCongr_symm (e₁ : A₁ ≃ₐ[R] A₁') (e₂ : A₂ ≃ₐ[R] A�
   rfl
 
 /-- If `A₁` is equivalent to `A₂` and `A₁'` is equivalent to `A₂'`, then the type of maps
-`A₁ ≃ₐ[R] A₁'` is equivalent to the type of maps `A₂ ≃ ₐ[R] A₂'`.
+`A₁ ≃ₐ[R] A₁'` is equivalent to the type of maps `A₂ ≃ₐ[R] A₂'`.
 
 This is the `AlgEquiv` version of `AlgEquiv.arrowCongr`. -/
 @[simps apply]
@@ -467,19 +465,6 @@ theorem ofAlgHom_coe_algHom (f : A₁ ≃ₐ[R] A₂) (g : A₂ →ₐ[R] A₁) 
 
 theorem ofAlgHom_symm (f : A₁ →ₐ[R] A₂) (g : A₂ →ₐ[R] A₁) (h₁ h₂) :
     (ofAlgHom f g h₁ h₂).symm = ofAlgHom g f h₂ h₁ :=
-  rfl
-
-/-- Promotes a bijective algebra homomorphism to an algebra equivalence. -/
-noncomputable def ofBijective (f : A₁ →ₐ[R] A₂) (hf : Function.Bijective f) : A₁ ≃ₐ[R] A₂ :=
-  { RingEquiv.ofBijective (f : A₁ →+* A₂) hf, f with }
-
-@[simp]
-theorem coe_ofBijective {f : A₁ →ₐ[R] A₂} {hf : Function.Bijective f} :
-    (AlgEquiv.ofBijective f hf : A₁ → A₂) = f :=
-  rfl
-
-theorem ofBijective_apply {f : A₁ →ₐ[R] A₂} {hf : Function.Bijective f} (a : A₁) :
-    (AlgEquiv.ofBijective f hf) a = f a :=
   rfl
 
 /-- Forgetting the multiplicative structures, an equivalence of algebras is a linear equivalence. -/
@@ -539,6 +524,21 @@ theorem toLinearMap_injective : Function.Injective (toLinearMap : _ → A₁ →
 theorem trans_toLinearMap (f : A₁ ≃ₐ[R] A₂) (g : A₂ ≃ₐ[R] A₃) :
     (f.trans g).toLinearMap = g.toLinearMap.comp f.toLinearMap :=
   rfl
+
+/-- Promotes a bijective algebra homomorphism to an algebra equivalence. -/
+noncomputable def ofBijective (f : A₁ →ₐ[R] A₂) (hf : Function.Bijective f) : A₁ ≃ₐ[R] A₂ :=
+  { RingEquiv.ofBijective (f : A₁ →+* A₂) hf, f with }
+
+@[simp]
+lemma coe_ofBijective (f : A₁ →ₐ[R] A₂) (hf : Function.Bijective f) :
+    (ofBijective f hf : A₁ → A₂) = f := rfl
+
+lemma ofBijective_apply (f : A₁ →ₐ[R] A₂) (hf : Function.Bijective f) (a : A₁) :
+    (ofBijective f hf) a = f a := rfl
+
+@[simp]
+lemma toLinearMap_ofBijective (f : A₁ →ₐ[R] A₂) (hf : Function.Bijective f) :
+    (ofBijective f hf).toLinearMap = f := rfl
 
 section OfLinearEquiv
 
@@ -759,9 +759,27 @@ end
 
 end MulSemiringAction
 
+section
+
+variable {R S T : Type*} [CommSemiring R] [Semiring S] [Semiring T] [Algebra R S] [Algebra R T]
+
+instance [Subsingleton S] [Subsingleton T] : Unique (S ≃ₐ[R] T) where
+  default := AlgEquiv.ofAlgHom default default
+    (AlgHom.ext fun _ ↦ Subsingleton.elim _ _)
+    (AlgHom.ext fun _ ↦ Subsingleton.elim _ _)
+  uniq _ := AlgEquiv.ext fun _ ↦ Subsingleton.elim _ _
+
+@[simp]
+lemma AlgEquiv.default_apply [Subsingleton S] [Subsingleton T] (x : S) :
+    (default : S ≃ₐ[R] T) x = 0 :=
+  rfl
+
+end
+
 /-- The algebra equivalence between `ULift A` and `A`. -/
 @[simps! -isSimp apply]
 def ULift.algEquiv {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Algebra R A] :
     ULift.{w} A ≃ₐ[R] A where
   __ := ULift.ringEquiv
   commutes' _ := rfl
+

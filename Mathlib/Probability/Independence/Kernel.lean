@@ -137,7 +137,7 @@ variable {β : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)}
     {κ : Kernel α Ω} : Indep m₁ m₂ κ 0 := by simp [Indep]
 
 @[simp] lemma indep_zero_left {m₁ m₂ : MeasurableSpace Ω} {_mΩ : MeasurableSpace Ω} :
-    Indep m₁ m₂ (0 : Kernel α Ω) μ  := by simp [Indep]
+    Indep m₁ m₂ (0 : Kernel α Ω) μ := by simp [Indep]
 
 @[simp] lemma iIndepSet_zero_right : iIndepSet s κ 0 := by simp [iIndepSet]
 
@@ -294,7 +294,7 @@ theorem indep_bot_right (m' : MeasurableSpace Ω) {_mΩ : MeasurableSpace Ω}
     Indep m' ⊥ κ μ := by
   intros s t _ ht
   rw [Set.mem_setOf_eq, MeasurableSpace.measurableSet_bot_iff] at ht
-  rcases eq_zero_or_isMarkovKernel κ with rfl| h
+  rcases eq_zero_or_isMarkovKernel κ with rfl | h
   · simp
   refine Filter.Eventually.of_forall (fun a ↦ ?_)
   rcases ht with ht | ht
@@ -893,18 +893,7 @@ theorem iIndepFun_iff_measure_inter_preimage_eq_mul {ι : Type*} {β : ι → Ty
     intro i hi_mem
     simp_rw [setsβ, dif_pos hi_mem]
     exact (h_meas i hi_mem).choose_spec.2.symm
-  have h_left_eq : ∀ a, κ a (⋂ i ∈ S, setsΩ i) = κ a (⋂ i ∈ S, (f i) ⁻¹' (setsβ i)) := by
-    intro a
-    congr with x
-    simp_rw [Set.mem_iInter]
-    constructor <;> intro h i hi_mem <;> specialize h i hi_mem
-    · rwa [h_preim i hi_mem] at h
-    · rwa [h_preim i hi_mem]
-  have h_right_eq : ∀ a, (∏ i ∈ S, κ a (setsΩ i)) = ∏ i ∈ S, κ a ((f i) ⁻¹' (setsβ i)) := by
-    refine fun a ↦ Finset.prod_congr rfl fun i hi_mem => ?_
-    rw [h_preim i hi_mem]
-  filter_upwards [h S h_measβ] with a ha
-  rw [h_left_eq a, h_right_eq a, ha]
+  simp_all
 
 alias ⟨iIndepFun.measure_inter_preimage_eq_mul, _⟩ := iIndepFun_iff_measure_inter_preimage_eq_mul
 

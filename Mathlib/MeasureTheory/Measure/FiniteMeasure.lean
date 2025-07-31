@@ -291,12 +291,12 @@ lemma measurableSet_isFiniteMeasure : MeasurableSet { μ : Measure Ω | IsFinite
   simp only [mem_setOf_eq, mem_preimage, mem_Ico, zero_le, true_and]
   exact isFiniteMeasure_iff μ
 
-/-- The monoidal product is a measurabule function from the product of finite measures over
+/-- The monoidal product is a measurable function from the product of finite measures over
 `α` and `β` into the type of finite measures over `α × β`. -/
 theorem measurable_prod {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
     Measurable (fun (μ : FiniteMeasure α × FiniteMeasure β)
       ↦ μ.1.toMeasure.prod μ.2.toMeasure) := by
-  have Heval {u v} (Hu : MeasurableSet u) (Hv : MeasurableSet v):
+  have Heval {u v} (Hu : MeasurableSet u) (Hv : MeasurableSet v) :
       Measurable fun a : (FiniteMeasure α × FiniteMeasure β) ↦
       a.1.toMeasure u * a.2.toMeasure v :=
     Measurable.mul
@@ -405,8 +405,8 @@ theorem testAgainstNN_lipschitz_estimate (μ : FiniteMeasure Ω) (f g : Ω →�
   intro ω
   have le' : f ω ≤ g ω + nndist f g := by
     calc f ω
-     _ ≤ g ω + nndist (f ω) (g ω)     := NNReal.le_add_nndist (f ω) (g ω)
-     _ ≤ g ω + nndist f g             := (add_le_add_iff_left (g ω)).mpr (le_dist ω)
+     _ ≤ g ω + nndist (f ω) (g ω) := NNReal.le_add_nndist (f ω) (g ω)
+     _ ≤ g ω + nndist f g := (add_le_add_iff_left (g ω)).mpr (le_dist ω)
   have le : (f ω : ℝ≥0∞) ≤ (g ω : ℝ≥0∞) + nndist f g := by
     simpa only [← ENNReal.coe_add] using (by exact_mod_cast le')
   rwa [coe_nnreal_ennreal_nndist] at le

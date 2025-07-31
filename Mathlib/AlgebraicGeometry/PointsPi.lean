@@ -35,9 +35,9 @@ lemma Ideal.span_eq_top_of_span_image_evalRingHom
   simpa [Finsupp.sum_fintype] using hf i
 
 lemma eq_top_of_sigmaSpec_subset_of_isCompact
-    (U : (Spec (.of (Π i, R i))).Opens) (V : Set (Spec (.of (Π i, R i))))
+    (U : Spec(Π i, R i).Opens) (V : Set Spec(Π i, R i))
     (hV : ↑(sigmaSpec R).opensRange ⊆ V)
-    (hV' : IsCompact (X := Spec (.of (Π i, R i))) V)
+    (hV' : IsCompact (X := Spec(Π i, R i)) V)
     (hVU : V ⊆ U) : U = ⊤ := by
   obtain ⟨s, hs⟩ := (PrimeSpectrum.isOpen_iff _).mp U.2
   obtain ⟨t, hts, ht, ht'⟩ : ∃ t ⊆ s, t.Finite ∧ V ⊆ ⋃ i ∈ t, (basicOpen i).1 := by
@@ -59,7 +59,7 @@ lemma eq_top_of_sigmaSpec_subset_of_isCompact
   simpa [← zeroLocus_span s, zeroLocus_empty_iff_eq_top.mpr this] using hs
 
 lemma eq_bot_of_comp_quotientMk_eq_sigmaSpec (I : Ideal (Π i, R i))
-    (f : (∐ fun i ↦ Spec (R i)) ⟶ Spec (.of ((Π i, R i) ⧸ I)))
+    (f : (∐ fun i ↦ Spec (R i)) ⟶ Spec((Π i, R i) ⧸ I))
     (hf : f ≫ Spec.map (CommRingCat.ofHom (Ideal.Quotient.mk I)) = sigmaSpec R) :
     I = ⊥ := by
   refine le_bot_iff.mp fun x hx ↦ ?_
@@ -70,7 +70,7 @@ lemma eq_bot_of_comp_quotientMk_eq_sigmaSpec (I : Ideal (Π i, R i))
 /-- If `V` is a locally closed subscheme of `Spec (Π Rᵢ)` containing `∐ Spec Rᵢ`, then
 `V = Spec (Π Rᵢ)`. -/
 lemma isIso_of_comp_eq_sigmaSpec {V : Scheme}
-    (f : (∐ fun i ↦ Spec (R i)) ⟶ V) (g : V ⟶ Spec (.of (Π i, R i)))
+    (f : (∐ fun i ↦ Spec (R i)) ⟶ V) (g : V ⟶ Spec(Π i, R i))
     [IsImmersion g] [CompactSpace V]
     (hU' : f ≫ g = sigmaSpec R) : IsIso g := by
   have : g.coborderRange = ⊤ := by
@@ -92,7 +92,7 @@ variable (X : Scheme)
 This is injective if `X` is quasi-separated, surjective if `X` is affine,
 or if `X` is compact and each `Rᵢ` is local. -/
 noncomputable
-def pointsPi : (Spec (.of (Π i, R i)) ⟶ X) → Π i, Spec (R i) ⟶ X :=
+def pointsPi : (Spec(Π i, R i) ⟶ X) → Π i, Spec (R i) ⟶ X :=
   fun f i ↦ Spec.map (CommRingCat.ofHom (Pi.evalRingHom (R ·) i)) ≫ f
 
 lemma pointsPi_injective [QuasiSeparatedSpace X] : Function.Injective (pointsPi R X) := by

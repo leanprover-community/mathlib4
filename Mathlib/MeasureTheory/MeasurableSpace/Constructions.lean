@@ -282,7 +282,7 @@ section Atoms
 
 variable [MeasurableSpace β]
 
-/-- The *measurable atom* of `x` is the intersection of all the measurable sets countaining `x`.
+/-- The *measurable atom* of `x` is the intersection of all the measurable sets containing `x`.
 It is measurable when the space is countable (or more generally when the measurable space is
 countably generated). -/
 def measurableAtom (x : β) : Set β :=

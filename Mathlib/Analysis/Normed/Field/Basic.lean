@@ -130,7 +130,7 @@ lemma norm_eq_one_iff_ne_zero_of_discrete {x : 𝕜} : ‖x‖ = 1 ↔ x ≠ 0 :
 @[simp]
 lemma norm_le_one_of_discrete
     (x : 𝕜) : ‖x‖ ≤ 1 := by
-  rcases eq_or_ne x 0 with rfl|hx
+  rcases eq_or_ne x 0 with rfl | hx
   · simp
   · simp [norm_eq_one_iff_ne_zero_of_discrete.mpr hx]
 
@@ -162,7 +162,7 @@ class NontriviallyNormedField (α : Type*) extends NormedField α where
   non_trivial : ∃ x : α, 1 < ‖x‖
 
 /-- A densely normed field is a normed field for which the image of the norm is dense in `ℝ≥0`,
-which means it is also nontrivially normed. However, not all nontrivally normed fields are densely
+which means it is also nontrivially normed. However, not all nontrivially normed fields are densely
 normed; in particular, the `Padic`s exhibit this fact. -/
 class DenselyNormedField (α : Type*) extends NormedField α where
   /-- The range of the norm is dense in the collection of nonnegative real numbers. -/
