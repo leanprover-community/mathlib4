@@ -25,9 +25,9 @@ Third, if the codomain of `f` is a finite dimensional space, then we can automat
 that the kernel of `f'` is complemented, hence the only assumptions are `HasStrictFDerivAt`
 and `f'.range = ⊤`. This version is named `HasStrictFDerivAt.implicitFunction`.
 
-Finally, if bivariate $f(x,y)$ has $\partial f/\partial y$ invertible at $(x_{0},y_{0})$, then we
-may apply the general theorem to obtain $ψ$ satisfying $f(x,ψ(x))=f(x_{0},y_{0})$ in a neighbourhood
-of $x_{0}$. To many this version of the implicit function theorem will be most familiar.
+Finally, if bivariate $f(y_1,y_2)$ has $\partial f/\partial y_1$ invertible at $(x_1,x_2)$, then we
+may apply the general theorem to obtain $ψ$ satisfying $f(u,ψ(u))=f(x_1,x_2)$ in a neighbourhood of
+$x_1$. To many this version of the implicit function theorem will be most familiar.
 
 ## TODO
 
@@ -463,91 +463,90 @@ section Bivariate
 /-!
 ### Bivariate case
 
-Here we identify `E` with `X × Y`, `G` with `X` and `g : E → G` with the first projection out of
-`X × Y`. For consistency of notation `F` becomes `Z`. Now `f : X × Y → Z` is explicitly bivariate,
-and if its partial derivative with respect to `y` is invertible then the kernels of `f` and `g` are
-complementary. In such circumstances we may construct an instance of the `ImplicitFunctionData` data
-structure provided above and extract implicit function `ψ : X → Y` whose germ is unique. This
-functionality is wrapped by `HasStrictFDerivAt.implicitFunOfBivariate`.
+Here we identify `E` with `E₁ × E₂`, `G` with `E₁` and `g : E → G` with the first projection out of
+`E₁ × E₂`. Now `f : E₁ × E₂ → F` is explicitly bivariate, and if the partial derivative of
+$f(y_1,y_2)$ with respect to $y_2$ is invertible then the kernels of `f` and `g` are complementary.
+In such circumstances we may construct an instance of the `ImplicitFunctionData` data structure
+provided above and extract implicit function `ψ : E₁ → E₂` whose germ is unique. This functionality
+is wrapped by `HasStrictFDerivAt.implicitFunOfBivariate`.
 
 ## TODO
 
-* Provide another version with curried `f : X → Y → Z` and with technical assumptions made on the
+* Provide another version with curried `f : E₁ → E₂ → F` and with technical assumptions made on the
   partial derivatives.
 * Establish results about higher derivatives.
 -/
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {X : Type*} [NormedAddCommGroup X] [NormedSpace 𝕜 X] [CompleteSpace X]
-variable {Y : Type*} [NormedAddCommGroup Y] [NormedSpace 𝕜 Y] [CompleteSpace Y]
-variable {Z : Type*} [NormedAddCommGroup Z] [NormedSpace 𝕜 Z] [CompleteSpace Z]
+variable {𝕜 E₁ E₂ F : Type*} [NontriviallyNormedField 𝕜]
+  [NormedAddCommGroup E₁] [NormedSpace 𝕜 E₁] [CompleteSpace E₁] [NormedAddCommGroup E₂]
+  [NormedSpace 𝕜 E₂] [CompleteSpace E₂] [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F]
 
-/-- Given linear map `fx : X →L[𝕜] Z`, linear equivalence `fy : Y ≃L[𝕜] Z` and that
-`HasStrictFDerivAt f (fx.coprod fy) p₀`, we construct an object of type `ImplicitFunctionData`
+/-- Given linear map `f₁ : E₁ →L[𝕜] F`, linear equivalence `f₂ : E₂ ≃L[𝕜] F` and that
+`HasStrictFDerivAt f (f₁.coprod f₂) x`, we construct an object of type `ImplicitFunctionData`
 thereby enabling use of the general machinery provided above. -/
-def implicitFunDataOfBivariate {f : X × Y → Z} {p₀ : X × Y}
-    {fx : X →L[𝕜] Z} {fy : Y ≃L[𝕜] Z} (hf₀ : HasStrictFDerivAt f (fx.coprod fy) p₀) :
-    ImplicitFunctionData 𝕜 (X × Y) Z X :=
-{ leftFun := f,
-  rightFun := Prod.fst,
-  pt := p₀,
-  leftDeriv := fx.coprod fy,
-  left_has_deriv := hf₀,
-  rightDeriv := ContinuousLinearMap.fst 𝕜 X Y,
-  right_has_deriv := hasStrictFDerivAt_fst,
+def implicitFunDataOfBivariate {f : E₁ × E₂ → F} {x : E₁ × E₂}
+    {f₁ : E₁ →L[𝕜] F} {f₂ : E₂ ≃L[𝕜] F} (dfx : HasStrictFDerivAt f (f₁.coprod f₂) x) :
+    ImplicitFunctionData 𝕜 (E₁ × E₂) F E₁ where
+  leftFun := f
+  rightFun := Prod.fst
+  pt := x
+  leftDeriv := f₁.coprod f₂
+  left_has_deriv := dfx
+  rightDeriv := ContinuousLinearMap.fst 𝕜 E₁ E₂
+  right_has_deriv := hasStrictFDerivAt_fst
   left_range := by
     rw [ContinuousLinearMap.range_coprod]
     convert sup_top_eq _
-    exact LinearEquivClass.range fy,
-  right_range := Submodule.range_fst,
+    exact LinearEquivClass.range f₂
+  right_range := Submodule.range_fst
   isCompl_ker := by
     constructor
     · rw [Submodule.disjoint_def]
       aesop
     · rw [Submodule.codisjoint_iff_exists_add_eq]
-      intro (ξ, η)
-      use (ξ, fy.symm (fx (-ξ))), (0, η - fy.symm (fx (-ξ)))
-      simp }
+      intro (h₁, h₂)
+      use (h₁, f₂.symm (f₁ (-h₁))), (0, h₂ - f₂.symm (f₁ (-h₁)))
+      simp
 
-/-- Implicit function `ψ : X → Y` associated with the (uncurried) bivariate function `f : X × Y → Z`
-at `p₀ : X × Y`. -/
-def implicitFunOfBivariate {f : X × Y → Z} {p₀ : X × Y}
-    {fx : X →L[𝕜] Z} {fy : Y ≃L[𝕜] Z} (hf₀ : HasStrictFDerivAt f (fx.coprod fy) p₀) :
-    X → Y :=
-  fun x => (hf₀.implicitFunDataOfBivariate.implicitFunction (f p₀) x).2
+/-- Implicit function `ψ : E₁ → E₂` associated with the (uncurried) bivariate function
+`f : E₁ × E₂ → F` at `x : E₁ × E₂`. -/
+def implicitFunOfBivariate {f : E₁ × E₂ → F} {x : E₁ × E₂}
+    {f₁ : E₁ →L[𝕜] F} {f₂ : E₂ ≃L[𝕜] F} (dfx : HasStrictFDerivAt f (f₁.coprod f₂) x) :
+    E₁ → E₂ :=
+  fun u => (dfx.implicitFunDataOfBivariate.implicitFunction (f x) u).2
 
-theorem hasStrictFDerivAt_implicitFunOfBivariate {f : X × Y → Z} {x₀ : X} {y₀ : Y}
-    {fx : X →L[𝕜] Z} {fy : Y ≃L[𝕜] Z} (hf₀ : HasStrictFDerivAt f (fx.coprod fy) (x₀, y₀)) :
-    HasStrictFDerivAt hf₀.implicitFunOfBivariate (-fy.symm ∘L fx) x₀ := by
-  set ψ' : X →L[𝕜] Y := -fy.symm ∘L fx
-  apply HasStrictFDerivAt.snd (f₂' := (ContinuousLinearMap.id 𝕜 X).prod ψ')
-  apply hf₀.implicitFunDataOfBivariate.hasStrictFDerivAt_implicitFunction
+theorem hasStrictFDerivAt_implicitFunOfBivariate {f : E₁ × E₂ → F} {x₁ : E₁} {x₂ : E₂}
+    {f₁ : E₁ →L[𝕜] F} {f₂ : E₂ ≃L[𝕜] F} (dfx : HasStrictFDerivAt f (f₁.coprod f₂) (x₁, x₂)) :
+    HasStrictFDerivAt dfx.implicitFunOfBivariate (-f₂.symm ∘L f₁) x₁ := by
+  set ψ' : E₁ →L[𝕜] E₂ := -f₂.symm ∘L f₁
+  apply HasStrictFDerivAt.snd (f₂' := (ContinuousLinearMap.id 𝕜 E₁).prod ψ')
+  apply dfx.implicitFunDataOfBivariate.hasStrictFDerivAt_implicitFunction
   · apply ContinuousLinearMap.fst_comp_prod
-  · change fx + fy ∘L ψ' = 0
+  · change f₁ + f₂ ∘L ψ' = 0
     simp [ψ', ← ContinuousLinearMap.comp_assoc]
 
-theorem image_eq_iff_implicitFunOfBivariate {f : X × Y → Z} {p₀ : X × Y}
-    {fx : X →L[𝕜] Z} {fy : Y ≃L[𝕜] Z} (hf₀ : HasStrictFDerivAt f (fx.coprod fy) p₀) :
-    ∀ᶠ p in 𝓝 p₀, f p = f p₀ ↔ hf₀.implicitFunOfBivariate p.1 = p.2 := by
-  let φ := hf₀.implicitFunDataOfBivariate
-  filter_upwards [φ.leftFun_eq_iff_implicitFun, φ.rightFun_implicitFun_mixed_args] with p h h'
+theorem image_eq_iff_implicitFunOfBivariate {f : E₁ × E₂ → F} {x : E₁ × E₂}
+    {f₁ : E₁ →L[𝕜] F} {f₂ : E₂ ≃L[𝕜] F} (dfx : HasStrictFDerivAt f (f₁.coprod f₂) x) :
+    ∀ᶠ y in 𝓝 x, f y = f x ↔ dfx.implicitFunOfBivariate y.1 = y.2 := by
+  let φ := dfx.implicitFunDataOfBivariate
+  filter_upwards [φ.leftFun_eq_iff_implicitFun, φ.rightFun_implicitFun_mixed_args] with y h h'
   exact Iff.trans h ⟨congrArg _, by aesop⟩
 
-theorem tendsto_implicitFunOfBivariate {f : X × Y → Z} {x₀ : X} {y₀ : Y}
-    {fx : X →L[𝕜] Z} {fy : Y ≃L[𝕜] Z} (hf₀ : HasStrictFDerivAt f (fx.coprod fy) (x₀, y₀)) :
-    Tendsto hf₀.implicitFunOfBivariate (𝓝 x₀) (𝓝 y₀) := by
-  convert hf₀.hasStrictFDerivAt_implicitFunOfBivariate.continuousAt.tendsto
-  rw [hf₀.image_eq_iff_implicitFunOfBivariate.self_of_nhds.mp rfl]
+theorem tendsto_implicitFunOfBivariate {f : E₁ × E₂ → F} {x₁ : E₁} {x₂ : E₂}
+    {f₁ : E₁ →L[𝕜] F} {f₂ : E₂ ≃L[𝕜] F} (dfx : HasStrictFDerivAt f (f₁.coprod f₂) (x₁, x₂)) :
+    Tendsto dfx.implicitFunOfBivariate (𝓝 x₁) (𝓝 x₂) := by
+  have := dfx.hasStrictFDerivAt_implicitFunOfBivariate.continuousAt.tendsto
+  rwa [dfx.image_eq_iff_implicitFunOfBivariate.self_of_nhds.mp rfl] at this
 
-theorem image_implicitFunOfBivariate {f : X × Y → Z} {x₀ : X} {y₀ : Y}
-    {fx : X →L[𝕜] Z} {fy : Y ≃L[𝕜] Z} (hf₀ : HasStrictFDerivAt f (fx.coprod fy) (x₀, y₀)) :
-    ∀ᶠ x in 𝓝 x₀, f (x, hf₀.implicitFunOfBivariate x) = f (x₀, y₀) := by
-  have hψ := hf₀.tendsto_implicitFunOfBivariate
-  set ψ := hf₀.implicitFunOfBivariate
-  suffices ∀ᶠ x in 𝓝 x₀, f (x, ψ x) = f (x₀, y₀) ↔ ψ x = ψ x by simpa
-  apply hψ.eventually_image_of_prod (r := fun x y => f (x, y) = f (x₀, y₀) ↔ ψ x = y)
+theorem image_implicitFunOfBivariate {f : E₁ × E₂ → F} {x₁ : E₁} {x₂ : E₂}
+    {f₁ : E₁ →L[𝕜] F} {f₂ : E₂ ≃L[𝕜] F} (dfx : HasStrictFDerivAt f (f₁.coprod f₂) (x₁, x₂)) :
+    ∀ᶠ u in 𝓝 x₁, f (u, dfx.implicitFunOfBivariate u) = f (x₁, x₂) := by
+  have hψ := dfx.tendsto_implicitFunOfBivariate
+  set ψ := dfx.implicitFunOfBivariate
+  suffices ∀ᶠ u in 𝓝 x₁, f (u, ψ u) = f (x₁, x₂) ↔ ψ u = ψ u by simpa
+  apply hψ.eventually_image_of_prod (r := fun u v => f (u, v) = f (x₁, x₂) ↔ ψ u = v)
   rw [← nhds_prod_eq]
-  exact hf₀.image_eq_iff_implicitFunOfBivariate
+  exact dfx.image_eq_iff_implicitFunOfBivariate
 
 end Bivariate
 
