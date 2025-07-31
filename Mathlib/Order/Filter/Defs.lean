@@ -26,7 +26,7 @@ abstract two related kinds of ideas:
 * `Filter` : filters on a set;
 * `Filter.principal`, `𝓟 s` : filter of all sets containing a given set;
 * `Filter.map`, `Filter.comap` : operations on filters;
-* `Filter.Tendsto` : limit with respect to filters;
+* `Mathlib/Order/Filter/Tendsto.lean` : limit with respect to filters;
 * `Filter.Eventually` : `f.Eventually p` means `{x | p x} ∈ f`;
 * `Filter.Frequently` : `f.Frequently p` means `{x | ¬p x} ∉ f`;
 * `filter_upwards [h₁, ..., hₙ]` :
@@ -284,7 +284,7 @@ def map (m : α → β) (f : Filter α) : Filter β where
   sets_of_superset hs st := mem_of_superset hs fun _x hx ↦ st hx
   inter_sets hs ht := inter_mem hs ht
 
-/-- `Filter.Tendsto` is the generic "limit of a function" predicate.
+/-- `Mathlib/Order/Filter/Tendsto.lean` is the generic "limit of a function" predicate.
   `Tendsto f l₁ l₂` asserts that for every `l₂` neighborhood `a`,
   the `f`-preimage of `a` is an `l₁` neighborhood. -/
 def Tendsto (f : α → β) (l₁ : Filter α) (l₂ : Filter β) :=

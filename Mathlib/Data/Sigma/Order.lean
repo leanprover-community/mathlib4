@@ -30,10 +30,10 @@ type synonym.
 
 Related files are:
 * `Data.Finset.CoLex`: Colexicographic order on finite sets.
-* `Data.List.Lex`: Lexicographic order on lists.
+* `Mathlib/Data/List/Lex.lean`: Lexicographic order on lists.
 * `Data.Pi.Lex`: Lexicographic order on `Πₗ i, α i`.
 * `Data.PSigma.Order`: Lexicographic order on `Σₗ' i, α i`. Basically a twin of this file.
-* `Data.Prod.Lex`: Lexicographic order on `α × β`.
+* `Mathlib/Data/Prod/Lex.lean`: Lexicographic order on `α × β`.
 
 ## TODO
 

@@ -15,7 +15,7 @@ and prepare for defining the corresponding operations on `Finset`.
 
 
 -- Assert that we define `Finset` without the material on the set lattice.
--- Note that we cannot put this in `Data.Finset.Basic` because we proved relevant lemmas there.
+-- Note that we cannot put this in `Mathlib/Data/Finset/Basic.lean` because we proved relevant lemmas there.
 assert_not_exists Set.sInter
 
 namespace Multiset

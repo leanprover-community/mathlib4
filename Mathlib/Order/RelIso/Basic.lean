@@ -22,7 +22,7 @@ isomorphisms.
 * `RelIso`: Relation isomorphism. A `RelIso r s` is an equivalence `f : α ≃ β` such that
   `r a b ↔ s (f a) (f b)`.
 * `sumLexCongr`, `prodLexCongr`: Creates a relation homomorphism between two `Sum.Lex` or two
-  `Prod.Lex` from relation homomorphisms between their arguments.
+  `Mathlib/Data/Prod/Lex.lean` from relation homomorphisms between their arguments.
 
 ## Notation
 

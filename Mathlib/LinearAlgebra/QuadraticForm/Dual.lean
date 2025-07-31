@@ -8,7 +8,7 @@ import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
 import Mathlib.LinearAlgebra.QuadraticForm.Prod
 
 /-!
-# Quadratic form structures related to `Module.Dual`
+# Quadratic form structures related to `Mathlib/Analysis/Normed/Module/Dual.lean`
 
 ## Main definitions
 

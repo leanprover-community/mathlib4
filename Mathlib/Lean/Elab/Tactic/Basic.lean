@@ -5,7 +5,7 @@ Authors: Floris van Doorn, Jon Eugster
 -/
 import Mathlib.Lean.Meta
 /-!
-# Additions to `Lean.Elab.Tactic.Basic`
+# Additions to `Mathlib/Lean/Elab/Tactic/Basic.lean`
 -/
 
 open Lean Elab Tactic

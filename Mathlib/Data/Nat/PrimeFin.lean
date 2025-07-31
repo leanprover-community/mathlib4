@@ -19,7 +19,7 @@ open Finset
 namespace Nat
 variable {a b k m n p : ℕ}
 
-/-- A version of `Nat.exists_infinite_primes` using the `Set.Infinite` predicate. -/
+/-- A version of `Nat.exists_infinite_primes` using the `Mathlib/Order/Interval/Set/Infinite.lean` predicate. -/
 theorem infinite_setOf_prime : { p | Prime p }.Infinite :=
   Set.infinite_of_not_bddAbove not_bddAbove_setOf_prime
 

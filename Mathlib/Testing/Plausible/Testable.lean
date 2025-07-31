@@ -7,7 +7,7 @@ import Plausible.Testable
 import Mathlib.Logic.Basic
 
 /-!
-This module contains `Plausible.Testable` and `Plausible.PrintableProb` instances for mathlib types.
+This module contains `Mathlib/Testing/Plausible/Testable.lean` and `Plausible.PrintableProb` instances for mathlib types.
 -/
 
 namespace Plausible

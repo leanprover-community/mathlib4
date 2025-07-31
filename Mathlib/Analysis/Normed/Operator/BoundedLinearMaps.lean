@@ -43,7 +43,7 @@ already expounds the theory of multilinear maps,
 but the `2`-variables case is sufficiently simpler to currently deserve its own treatment.
 
 `IsBoundedLinearMap` is effectively an unbundled version of `ContinuousLinearMap` (defined
-in `Topology.Algebra.Module.Basic`, theory over normed spaces developed in
+in `Mathlib/Topology/Algebra/Module/Basic.lean`, theory over normed spaces developed in
 `Analysis.NormedSpace.OperatorNorm`), albeit the name disparity. A bundled
 `ContinuousLinearMap` is to be preferred over an `IsBoundedLinearMap` hypothesis. Historical
 artifact, really.

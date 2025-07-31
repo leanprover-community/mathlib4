@@ -26,7 +26,7 @@ This file defines square and even elements in a monoid.
 ## TODO
 
 * Try to generalize `IsSquare/Even` lemmas further. For example, there are still a few lemmas in
-  `Algebra.Ring.Parity` whose `Semiring` assumptions I (DT) am not convinced are necessary.
+  `Mathlib/Algebra/Ring/Parity.lean` whose `Semiring` assumptions I (DT) am not convinced are necessary.
 * The "old" definition of `Even a` asked for the existence of an element `c` such that `a = 2 * c`.
   For this reason, several fixes introduce an extra `two_mul` or `← two_mul`.
   It might be the case that by making a careful choice of `simp` lemma, this can be avoided.
@@ -129,7 +129,7 @@ lemma isSquare_iff_exists_sq (a : α) : IsSquare a ↔ ∃ r, a = r ^ 2 := by si
   "Alias of the forwards direction of `even_iff_exists_two_nsmul`."]
 alias ⟨IsSquare.exists_sq, _⟩ := isSquare_iff_exists_sq
 
--- provable by simp in `Algebra.Ring.Parity`
+-- provable by simp in `Mathlib/Algebra/Ring/Parity.lean`
 @[to_additive (attr := aesop safe) Even.two_nsmul]
 lemma IsSquare.sq (r : α) : IsSquare (r ^ 2) := ⟨r, pow_two _⟩
 

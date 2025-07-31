@@ -9,7 +9,7 @@ import Mathlib.LinearAlgebra.TensorProduct.Basic
 /-!
 # Facts about algebras involving bilinear maps and tensor products
 
-We move a few basic statements about algebras out of `Algebra.Algebra.Basic`,
+We move a few basic statements about algebras out of `Mathlib/Algebra/Algebra/Basic.lean`,
 in order to avoid importing `LinearAlgebra.BilinearMap` and
 `LinearAlgebra.TensorProduct` unnecessarily.
 -/

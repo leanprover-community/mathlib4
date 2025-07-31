@@ -102,7 +102,7 @@ instance finite_biUnion' {ι : Type*} (s : Set ι) [Finite s] (t : ι → Set α
   finite_biUnion s t fun _ _ => inferInstance
 
 /-- Example: `Finite (⋃ (i < n), f i)` where `f : ℕ → Set α` and `[∀ i, Finite (f i)]`
-(when given instances from `Order.Interval.Finset.Nat`).
+(when given instances from `Mathlib/Order/Interval/Finset/Nat.lean`).
 -/
 instance finite_biUnion'' {ι : Type*} (p : ι → Prop) [h : Finite { x | p x }] (t : ι → Set α)
     [∀ i, Finite (t i)] : Finite (⋃ (x) (_ : p x), t x) :=

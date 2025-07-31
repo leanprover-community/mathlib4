@@ -17,7 +17,7 @@ is the function coercing `t : Set s` into a set in the ambient type; i.e. `↑t 
 The second, for `s t : Set α`, is the notation `s ↓∩ t`, which denotes the intersection
 of `s` and `t` as a set in `Set s`.
 
-These notations are developed further in `Data.Set.Functor` and `Data.Set.Subset` respectively.
+These notations are developed further in `Mathlib/Data/Set/Functor.lean` and `Mathlib/Data/Set/Subset.lean` respectively.
 They are defined here separately so that this file can be added as an exception to the shake linter
 and can thus be imported without a linting false positive when only the notation is desired.
 -/
@@ -37,7 +37,7 @@ instance {α : Type*} {s : Set α} : CoeHead (Set s) (Set α) := ⟨fun t => (Su
 
 open Lean PrettyPrinter Delaborator SubExpr in
 /--
-If the `Set.Notation` namespace is open, sets of a subtype coerced to the ambient type are
+If the `Mathlib/Data/Set/Notation.lean` namespace is open, sets of a subtype coerced to the ambient type are
 represented with `↑`.
 -/
 @[scoped delab app.Set.image]

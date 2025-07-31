@@ -10,7 +10,7 @@ import Mathlib.Order.PartialSups
 # Continuity of `partialSups`
 
 In this file we prove that `partialSups` of a sequence of continuous functions is continuous
-as well as versions for `Filter.Tendsto`, `ContinuousAt`, `ContinuousWithinAt`, and `ContinuousOn`.
+as well as versions for `Mathlib/Order/Filter/Tendsto.lean`, `ContinuousAt`, `ContinuousWithinAt`, and `ContinuousOn`.
 -/
 
 open Filter

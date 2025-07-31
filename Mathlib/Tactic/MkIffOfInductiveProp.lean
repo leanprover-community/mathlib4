@@ -13,7 +13,7 @@ import Mathlib.Tactic.TypeStar
 # mk_iff_of_inductive_prop
 
 This file defines a command `mk_iff_of_inductive_prop` that generates `iff` rules for
-inductive `Prop`s. For example, when applied to `List.Chain`, it creates a declaration with
+inductive `Prop`s. For example, when applied to `Mathlib/Data/List/Chain.lean`, it creates a declaration with
 the following type:
 
 ```lean
@@ -388,7 +388,7 @@ The new rule `r` has the shape `∀ ps is, i as ↔ ⋁_j, ∃ cs, is = cs`, whe
 In each case, we remove constructor parameters (i.e. `cs`) when the corresponding equality would
 be just `c = i` for some index `i`.
 
-For example, `mk_iff_of_inductive_prop` on `List.Chain` produces:
+For example, `mk_iff_of_inductive_prop` on `Mathlib/Data/List/Chain.lean` produces:
 
 ```lean
 ∀ { α : Type*} (R : α → α → Prop) (a : α) (l : List α),

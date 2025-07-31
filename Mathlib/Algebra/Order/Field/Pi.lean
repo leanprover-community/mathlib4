@@ -12,7 +12,7 @@ import Mathlib.Data.Fintype.Basic
 /-!
 # Lemmas about (finite domain) functions into fields.
 
-We split this from `Algebra.Order.Field.Basic` to avoid importing the finiteness hierarchy there.
+We split this from `Mathlib/Algebra/Order/Field/Basic.lean` to avoid importing the finiteness hierarchy there.
 -/
 
 variable {α ι : Type*} [AddCommMonoid α] [LinearOrder α] [IsOrderedCancelAddMonoid α]

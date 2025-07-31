@@ -13,7 +13,7 @@ import Mathlib.Order.OmegaCompletePartialOrder
 
 This module defines the laws required of a `Fix` instance, using the theory of
 omega complete partial orders (ωCPO). Proofs of the lawfulness of all `Fix` instances in
-`Control.Fix` are provided.
+`Mathlib/Control/Fix.lean` are provided.
 
 ## Main definition
 

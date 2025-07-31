@@ -13,7 +13,7 @@ import Mathlib.Topology.MetricSpace.CauSeqFilter
 
 In this file, we prove basic properties about the derivative of the exponential map `exp 𝕂`
 in a Banach algebra `𝔸` over a field `𝕂`. We keep them separate from the main file
-`Analysis.Normed.Algebra.Exponential` in order to minimize dependencies.
+`Mathlib/Analysis/Normed/Algebra/Exponential.lean` in order to minimize dependencies.
 
 ## Main results
 

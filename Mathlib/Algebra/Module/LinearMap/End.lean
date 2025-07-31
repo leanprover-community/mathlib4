@@ -10,9 +10,9 @@ import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 /-!
 # Endomorphisms of a module
 
-In this file we define the type of linear endomorphisms of a module over a ring (`Module.End`).
+In this file we define the type of linear endomorphisms of a module over a ring (`Mathlib/Algebra/Module/End.lean`).
 We set up the basic theory,
-including the action of `Module.End` on the module we are considering endomorphisms of.
+including the action of `Mathlib/Algebra/Module/End.lean` on the module we are considering endomorphisms of.
 
 ## Main results
 

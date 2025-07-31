@@ -113,7 +113,7 @@ def orderEmbeddingOfSet [DecidablePred (· ∈ s)] : ℕ ↪o ℕ :=
     (OrderEmbedding.subtype s)
 
 /-- `Nat.Subtype.ofNat` as an order isomorphism between `ℕ` and an infinite subset. See also
-`Nat.Nth` for a version where the subset may be finite. -/
+`Mathlib/Data/Nat/Nth.lean` for a version where the subset may be finite. -/
 noncomputable def Subtype.orderIsoOfNat : ℕ ≃o s := by
   classical
   exact

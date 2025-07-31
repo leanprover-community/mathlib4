@@ -14,7 +14,7 @@ between closure/compactness/continuity etc and their sequential counterparts.
 
 ## Main definitions
 
-The following notions are defined in `Topology/Defs/Sequences`.
+The following notions are defined in `Mathlib/Topology/Defs/Sequences.lean`.
 We build theory about these definitions here, so we remind the definitions.
 
 ### Set operation

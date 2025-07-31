@@ -8,7 +8,7 @@ import Lean.Meta.AppBuilder
 import Lean.Meta.Basic
 
 /-!
-# Additions to `Lean.Meta.Basic`
+# Additions to `Mathlib/Lean/Meta/Basic.lean`
 
 Likely these already exist somewhere. Pointers welcome.
 -/

@@ -85,7 +85,7 @@ Mathlib.Init,
   which is imported by Mathlib.Util.AssertExists,
   which is imported by this file.
 ```
-if `env` is an `Environment` and `idx` is the module index of `Mathlib.Init`.
+if `env` is an `Environment` and `idx` is the module index of `Mathlib/Init.lean`.
 -/
 def importPathMessage (env : Environment) (idx : ModuleIdx) : MessageData :=
   let modNames := env.header.moduleNames

@@ -1148,7 +1148,7 @@ end Subtype
 /-!
 ### Pointwise order on `α × β`
 
-The lexicographic order is defined in `Data.Prod.Lex`, and the instances are available via the
+The lexicographic order is defined in `Mathlib/Data/Prod/Lex.lean`, and the instances are available via the
 type synonym `α ×ₗ β = α × β`.
 -/
 

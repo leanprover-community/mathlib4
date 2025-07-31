@@ -32,7 +32,7 @@ Here are some general guidelines:
 * strong preference for avoiding files that themselves have imports beyond `Lean`, and
   any exception to this rule should be accompanied by a comment explaining the transitive imports.
 
-A linter verifies that every file in Mathlib imports `Mathlib.Init`
+A linter verifies that every file in Mathlib imports `Mathlib/Init.lean`
 (perhaps indirectly) --- except for the imports in this file, of course.
 
 ## Linters

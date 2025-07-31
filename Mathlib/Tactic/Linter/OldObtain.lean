@@ -35,7 +35,7 @@ We allow the first four (since an explicit proof is provided), but lint against 
 
 ## Why is this bad?
 
-This is similar to removing all uses of `Tactic.Replace` and `Tactic.Have`
+This is similar to removing all uses of `Mathlib/Tactic/Replace.lean` and `Mathlib/Tactic/Have.lean`
 from mathlib: in summary,
 - this version is a Lean3-ism, which can be unlearned now
 - the syntax `obtain foo : type := proof` is slightly shorter;

@@ -9,7 +9,7 @@ import Mathlib.Data.Multiset.Defs
 /-!
 # Pairwise relations on a multiset
 
-This file provides basic results about `Multiset.Pairwise` (definitions are in
+This file provides basic results about `Mathlib/Data/Multiset/Pairwise.lean` (definitions are in
 `Mathlib/Data/Multiset/Defs.lean`).
 -/
 

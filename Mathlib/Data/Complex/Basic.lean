@@ -14,7 +14,7 @@ import Mathlib.Tactic.Ring
 
 The complex numbers are modelled as ℝ^2 in the obvious way and it is shown that they form a field
 of characteristic zero. For the result that the complex numbers are algebraically closed, see
-`Complex.isAlgClosed` in `Mathlib.Analysis.Complex.Polynomial.Basic`.
+`Complex.isAlgClosed` in `Mathlib/Analysis/Complex/Polynomial/Basic.lean`.
 -/
 
 assert_not_exists Multiset Algebra
@@ -277,7 +277,7 @@ theorem equivRealProdAddHom_symm_apply (p : ℝ × ℝ) :
 
 /- We use a nonstandard formula for the `ℕ` and `ℤ` actions to make sure there is no
 diamond from the other actions they inherit through the `ℝ`-action on `ℂ` and action transitivity
-defined in `Data.Complex.Module`. -/
+defined in `Mathlib/Data/Complex/Module.lean`. -/
 instance : Nontrivial ℂ :=
   domain_nontrivial re rfl rfl
 

@@ -8,7 +8,7 @@ import Mathlib.Data.List.InsertIdx
 
 /-! # Some lemmas about lists involving sets
 
-Split out from `Data.List.Basic` to reduce its dependencies.
+Split out from `Mathlib/Data/List/Basic.lean` to reduce its dependencies.
 -/
 
 variable {α β γ : Type*}

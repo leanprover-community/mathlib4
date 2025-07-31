@@ -30,7 +30,7 @@ For short,
 * "`*` respects `≤`" means "monotonicity of multiplication by a nonnegative number".
 * "`*` respects `<`" means "strict monotonicity of multiplication by a positive number".
 
-## Typeclasses found in `Algebra.Order.Ring.Defs`
+## Typeclasses found in `Mathlib/Algebra/Order/Ring/Defs.lean`
 
 * `OrderedSemiring`: Semiring with a partial order such that `+` and `*` respect `≤`.
 * `StrictOrderedSemiring`: Nontrivial semiring with a partial order such that `+` and `*` respects

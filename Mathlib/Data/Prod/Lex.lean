@@ -25,10 +25,10 @@ This file defines the lexicographic relation for pairs of orders, partial orders
 
 Related files are:
 * `Data.Finset.CoLex`: Colexicographic order on finite sets.
-* `Data.List.Lex`: Lexicographic order on lists.
+* `Mathlib/Data/List/Lex.lean`: Lexicographic order on lists.
 * `Data.Pi.Lex`: Lexicographic order on `Πₗ i, α i`.
 * `Data.PSigma.Order`: Lexicographic order on `Σ' i, α i`.
-* `Data.Sigma.Order`: Lexicographic order on `Σ i, α i`.
+* `Mathlib/Data/Sigma/Order.lean`: Lexicographic order on `Σ i, α i`.
 -/
 
 

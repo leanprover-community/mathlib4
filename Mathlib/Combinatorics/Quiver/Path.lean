@@ -166,7 +166,7 @@ def toList : ∀ {b : V}, Path a b → List V
   | _, nil => []
   | _, @cons _ _ _ c _ p _ => c :: p.toList
 
-/-- `Quiver.Path.toList` is a contravariant functor. The inversion comes from `Quiver.Path` and
+/-- `Quiver.Path.toList` is a contravariant functor. The inversion comes from `Mathlib/Combinatorics/Quiver/Path.lean` and
 `List` having different preferred directions for adding elements. -/
 @[simp]
 theorem toList_comp (p : Path a b) : ∀ {c} (q : Path b c), (p.comp q).toList = q.toList ++ p.toList

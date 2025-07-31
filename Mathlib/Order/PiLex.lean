@@ -20,10 +20,10 @@ This file defines the lexicographic order for Pi types. `a` is less than `b` if 
 
 Related files are:
 * `Data.Finset.Colex`: Colexicographic order on finite sets.
-* `Data.List.Lex`: Lexicographic order on lists.
-* `Data.Sigma.Order`: Lexicographic order on `Σₗ i, α i`.
+* `Mathlib/Data/List/Lex.lean`: Lexicographic order on lists.
+* `Mathlib/Data/Sigma/Order.lean`: Lexicographic order on `Σₗ i, α i`.
 * `Data.PSigma.Order`: Lexicographic order on `Σₗ' i, α i`.
-* `Data.Prod.Lex`: Lexicographic order on `α × β`.
+* `Mathlib/Data/Prod/Lex.lean`: Lexicographic order on `α × β`.
 -/
 
 assert_not_exists Monoid

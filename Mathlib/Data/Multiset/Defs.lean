@@ -33,7 +33,7 @@ importing `Multiset.Defs`.
 * `Subset (Multiset α)` instance: `s ⊆ t` if every `x ∈ s` also enjoys `x ∈ t`.
 * `PartialOrder (Multiset α)` instance: `s ≤ t` if all `x` have multiplicity in
   `s` less than their multiplicity in `t`.
-* `Multiset.Pairwise`: `Pairwise r s` holds iff there exists a list of elements
+* `Mathlib/Data/Multiset/Pairwise.lean`: `Pairwise r s` holds iff there exists a list of elements
   of `s` such that `r` holds pairwise.
 * `Multiset.Nodup`: `Nodup s` holds if the multiplicity of any element is at most 1.
 

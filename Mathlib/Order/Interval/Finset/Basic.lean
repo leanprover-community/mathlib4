@@ -11,7 +11,7 @@ import Mathlib.Order.Preorder.Finite
 # Intervals as finsets
 
 This file provides basic results about all the `Finset.Ixx`, which are defined in
-`Order.Interval.Finset.Defs`.
+`Mathlib/Order/Interval/Finset/Defs.lean`.
 
 In addition, it shows that in a locally finite order `≤` and `<` are the transitive closures of,
 respectively, `⩿` and `⋖`, which then leads to a characterization of monotone and strictly

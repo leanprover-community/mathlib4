@@ -13,7 +13,7 @@ In this file we prove formulas about derivatives of `f + g`, `-f`, `f - g`, and 
 functions from the base field to a normed space over this field.
 
 For a more detailed overview of one-dimensional derivatives in mathlib, see the module docstring of
-`Analysis/Calculus/Deriv/Basic`.
+`Mathlib/Analysis/Calculus/Deriv/Basic.lean`.
 
 ## Keywords
 

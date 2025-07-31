@@ -53,12 +53,12 @@ A `LocallyFiniteOrder` instance can be built
   `OrderEmbedding.locallyFiniteOrder`.
 
 Instances for concrete types are proved in their respective files:
-* `ℕ` is in `Order.Interval.Finset.Nat`
-* `ℤ` is in `Data.Int.Interval`
+* `ℕ` is in `Mathlib/Order/Interval/Finset/Nat.lean`
+* `ℤ` is in `Mathlib/Data/Int/Interval.lean`
 * `ℕ+` is in `Data.PNat.Interval`
-* `Fin n` is in `Order.Interval.Finset.Fin`
-* `Finset α` is in `Data.Finset.Interval`
-* `Σ i, α i` is in `Data.Sigma.Interval`
+* `Fin n` is in `Mathlib/Order/Interval/Finset/Fin.lean`
+* `Finset α` is in `Mathlib/Data/Finset/Interval.lean`
+* `Σ i, α i` is in `Mathlib/Data/Sigma/Interval.lean`
 Along, you will find lemmas about the cardinality of those finite intervals.
 
 ## TODO
@@ -510,10 +510,10 @@ open Lean Elab Term Meta Batteries.ExtendedBinder
   is `Finset ?α`.
 
 See also
-* `Data.Set.Defs` for the `Set` builder notation elaborator that this elaborator partly overrides.
-* `Data.Finset.Basic` for the `Finset` builder notation elaborator partly overriding this one for
+* `Mathlib/Data/Set/Defs.lean` for the `Set` builder notation elaborator that this elaborator partly overrides.
+* `Mathlib/Data/Finset/Basic.lean` for the `Finset` builder notation elaborator partly overriding this one for
   syntax of the form `{x ∈ s | p x}`.
-* `Data.Fintype.Basic` for the `Finset` builder notation elaborator handling syntax of the form
+* `Mathlib/Data/Fintype/Basic.lean` for the `Finset` builder notation elaborator handling syntax of the form
   `{x | p x}`, `{x : α | p x}`, `{x ∉ s | p x}`, `{x ≠ a | p x}`.
 
 TODO: Write a delaborator

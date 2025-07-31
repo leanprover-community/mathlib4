@@ -171,7 +171,7 @@ def integral (I : Box ι) (l : IntegrationParams) (f : ℝⁿ → E) (vol : ι �
 -- and https://github.com/leanprover/lean4/issues/2257
 variable {l : IntegrationParams} {f g : (ι → ℝ) → E} {vol : ι →ᵇᵃ E →L[ℝ] F} {y y' : F}
 
-/-- Reinterpret `BoxIntegral.HasIntegral` as `Filter.Tendsto`, e.g., dot-notation theorems
+/-- Reinterpret `BoxIntegral.HasIntegral` as `Mathlib/Order/Filter/Tendsto.lean`, e.g., dot-notation theorems
 that are shadowed in the `BoxIntegral.HasIntegral` namespace. -/
 theorem HasIntegral.tendsto (h : HasIntegral I l f vol y) :
     Tendsto (integralSum f vol) (l.toFilteriUnion I ⊤) (𝓝 y) :=

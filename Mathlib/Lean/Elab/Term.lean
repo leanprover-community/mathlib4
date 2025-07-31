@@ -7,7 +7,7 @@ import Mathlib.Init
 import Lean.Elab.SyntheticMVars
 
 /-!
-# Additions to `Lean.Elab.Term`
+# Additions to `Mathlib/Lean/Elab/Term.lean`
 -/
 
 namespace Lean.Elab.Term

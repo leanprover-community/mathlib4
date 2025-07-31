@@ -18,7 +18,7 @@ import Mathlib.Data.Multiset.Fold
 
 ## Implementation notes
 
-TODO: simplify with a tactic and `Data.Multiset.Lattice`
+TODO: simplify with a tactic and `Mathlib/Data/Multiset/Lattice.lean`
 
 ## Tags
 

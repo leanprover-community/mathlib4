@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Products.Associator
 
 In this file, in the context of the localization of categories, we extend the notion
 of lifting of functors to the case of trifunctors
-(see also the file `Localization.Bifunctor` for the case of bifunctors).
+(see also the file `Mathlib/CategoryTheory/Localization/Bifunctor.lean` for the case of bifunctors).
 The main result in this file is that we can localize "associator" isomorphisms
 (see the definition `Localization.associator`).
 

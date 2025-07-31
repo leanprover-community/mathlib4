@@ -9,7 +9,7 @@ import Mathlib.Tactic.Attr.Register
 # Simp tags for core lemmas
 
 In Lean 4, an attribute declared with `register_simp_attr` cannot be used in the same file. So, we
-declare all `simp` attributes used in `Mathlib` in `Mathlib/Tactic/Attr/Register` and tag lemmas
+declare all `simp` attributes used in `Mathlib` in `Mathlib/Tactic/Attr/Register.lean` and tag lemmas
 from the core library and the `Batteries` library with these attributes in this file.
 -/
 

@@ -28,7 +28,7 @@ We define two additive characters onto the circle:
 
 ## Implementation notes
 
-Because later (in `Geometry.Manifold.Instances.Sphere`) one wants to equip the circle with a smooth
+Because later (in `Mathlib/Geometry/Manifold/Instances/Sphere.lean`) one wants to equip the circle with a smooth
 manifold structure borrowed from `Metric.sphere`, the underlying set is
 `{z : ℂ | abs (z - 0) = 1}`.  This prevents certain algebraic facts from working definitionally --
 for example, the circle is not defeq to `{z : ℂ | abs z = 1}`, which is the kernel of `Complex.abs`

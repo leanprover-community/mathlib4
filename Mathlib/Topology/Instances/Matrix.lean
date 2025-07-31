@@ -240,7 +240,7 @@ theorem continuousAt_matrix_inv [Fintype n] [DecidableEq n] [CommRing R] [IsTopo
     (A : Matrix n n R) (h : ContinuousAt Ring.inverse A.det) : ContinuousAt Inv.inv A :=
   (h.comp continuous_id.matrix_det.continuousAt).smul continuous_id.matrix_adjugate.continuousAt
 
--- lemmas about functions in `Data/Matrix/Block.lean`
+-- lemmas about functions in `Mathlib/Data/Matrix/Block.lean`
 section BlockMatrices
 
 @[continuity, fun_prop]

@@ -109,7 +109,7 @@ theorem eqOn_of_isPreconnected_of_isMaxOn_norm [StrictConvexSpace ℝ F] {f : M 
     {c : M} (hd : MDifferentiableOn I 𝓘(ℂ, F) f U) (hc : IsPreconnected U) (ho : IsOpen U)
     (hcU : c ∈ U) (hm : IsMaxOn (norm ∘ f) U c) : EqOn f (const M (f c)) U := fun x hx =>
   have H₁ : ‖f x‖ = ‖f c‖ := hd.norm_eqOn_of_isPreconnected_of_isMaxOn hc ho hcU hm hx
-  -- TODO: Add `MDifferentiableOn.add` etc; does it mean importing `Manifold.Algebra.Monoid`?
+  -- TODO: Add `MDifferentiableOn.add` etc; does it mean importing `Mathlib/Geometry/Manifold/Algebra/Monoid.lean`?
   have hd' : MDifferentiableOn I 𝓘(ℂ, F) (f · + f c) U := fun x hx ↦
     ⟨(hd x hx).1.add continuousWithinAt_const, (hd x hx).2.add_const _⟩
   have H₂ : ‖f x + f c‖ = ‖f c + f c‖ :=

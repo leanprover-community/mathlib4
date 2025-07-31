@@ -14,7 +14,7 @@ This file proves a few facts about ordered groups which satisfy the `Archimedean
 `(arch : ∀ (x : α) {y}, 0 < y → ∃ n : ℕ, x ≤ n • y)`
 
 They are placed here in a separate file (rather than incorporated as a continuation of
-`Algebra.Order.Archimedean`) because they rely on some imports from `GroupTheory` -- bundled
+`Mathlib/Topology/Algebra/Order/Archimedean.lean`) because they rely on some imports from `GroupTheory` -- bundled
 subgroups in particular.
 
 The main result is `AddSubgroup.cyclic_of_min`:  a subgroup of a decidable archimedean abelian

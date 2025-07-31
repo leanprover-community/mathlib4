@@ -16,7 +16,7 @@ of functions.
 
 ## See also
 
-`Mathlib.Algebra.Order.Rearrangement` for the n-ary rearrangement inequality
+`Mathlib/Algebra/Order/Rearrangement.lean` for the n-ary rearrangement inequality
 -/
 
 variable {ι α β : Type*}

@@ -20,7 +20,7 @@ verifies some of the properties of a measure, but in general the fact that the `
 on `s` can prevent us from finding versions of the conditional expectation that combine into a true
 measure. The standard Borel space assumption on `Ω` allows us to do so.
 
-The case `Y = X = id` is developed in more detail in `Probability/Kernel/Condexp.lean`: here `X` is
+The case `Y = X = id` is developed in more detail in `Mathlib/Probability/Kernel/Condexp.lean`: here `X` is
 understood as a map from `Ω` with a sub-σ-algebra `m` to `Ω` with its default σ-algebra and the
 conditional distribution defines a kernel associated with the conditional expectation with respect
 to `m`.

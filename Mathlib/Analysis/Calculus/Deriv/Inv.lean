@@ -13,7 +13,7 @@ In this file we prove `(x⁻¹)' = -1 / x ^ 2`, `((f x)⁻¹)' = -f' x / (f x) ^
 `(f x / g x)' = (f' x * g x - f x * g' x) / (g x) ^ 2` for different notions of derivative.
 
 For a more detailed overview of one-dimensional derivatives in mathlib, see the module docstring of
-`Analysis/Calculus/Deriv/Basic`.
+`Mathlib/Analysis/Calculus/Deriv/Basic.lean`.
 
 ## Keywords
 

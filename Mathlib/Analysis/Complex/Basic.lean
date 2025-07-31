@@ -74,7 +74,7 @@ instance (priority := 900) _root_.NormedAlgebra.complexToReal {A : Type*} [Semin
     [NormedAlgebra ℂ A] : NormedAlgebra ℝ A :=
   NormedAlgebra.restrictScalars ℝ ℂ A
 
--- This result cannot be moved to `Data/Complex/Norm` since `ℤ` gets its norm from its
+-- This result cannot be moved to `Mathlib/Data/Complex/Norm.lean` since `ℤ` gets its norm from its
 -- normed ring structure and that file does not know about rings
 @[simp 1100, norm_cast] lemma nnnorm_intCast (n : ℤ) : ‖(n : ℂ)‖₊ = ‖n‖₊ := by
   ext; exact norm_intCast n

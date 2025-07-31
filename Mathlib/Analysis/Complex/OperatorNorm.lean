@@ -11,7 +11,7 @@ import Mathlib.Data.Complex.Determinant
 
 The continuous linear maps `Complex.reCLM` (real part), `Complex.imCLM` (imaginary part),
 `Complex.conjCLE` (conjugation), and `Complex.ofRealCLM` (inclusion of `ℝ`) were introduced in
-`Analysis.Complex.Basic`. This file contains a few calculations requiring more imports:
+`Mathlib/Analysis/Complex/Basic.lean`. This file contains a few calculations requiring more imports:
 the operator norm and (for `Complex.conjCLE`) the determinant.
 -/
 

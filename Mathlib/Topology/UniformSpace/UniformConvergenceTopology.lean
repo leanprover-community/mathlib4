@@ -794,7 +794,7 @@ def uniformEquivUniformFun (h : univ ∈ 𝔖) : (α →ᵤ[𝔖] β) ≃ᵤ (α
 `(α →ᵤ[𝔗] β) → (α →ᵤ[𝔖] β)` is uniformly continuous if every `s ∈ 𝔖` is contained in a finite
 union of elements of `𝔗`.
 
-With more API around `Order.Ideal`, this could be phrased in that language instead. -/
+With more API around `Mathlib/Order/Ideal.lean`, this could be phrased in that language instead. -/
 lemma uniformContinuous_ofFun_toFun (𝔗 : Set (Set α)) (h : ∀ s ∈ 𝔖, ∃ T ⊆ 𝔗, T.Finite ∧ s ⊆ ⋃₀ T) :
     UniformContinuous (ofFun 𝔗 ∘ toFun 𝔖 : (α →ᵤ[𝔗] β) → α →ᵤ[𝔖] β) := by
   simp only [UniformContinuous, UniformOnFun.uniformity_eq, iInf₂_comm (ι₂ := Set (β × β))]

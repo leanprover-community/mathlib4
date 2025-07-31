@@ -9,8 +9,8 @@ import Mathlib.Data.Vector.Basic
 /-!
 # Instances for `Small (List α)` and `Small (Vector α)`.
 
-These must not be in `Logic.Small.Basic` as this is very low in the import hierarchy,
-and is used by category theory files which do not need everything imported by `Data.Vector.Basic`.
+These must not be in `Mathlib/Logic/Small/Basic.lean` as this is very low in the import hierarchy,
+and is used by category theory files which do not need everything imported by `Mathlib/Data/Vector/Basic.lean`.
 -/
 
 

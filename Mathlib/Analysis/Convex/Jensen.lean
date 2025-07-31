@@ -11,7 +11,7 @@ import Mathlib.Tactic.FieldSimp
 # Jensen's inequality and maximum principle for convex functions
 
 In this file, we prove the finite Jensen inequality and the finite maximum principle for convex
-functions. The integral versions are to be found in `Analysis.Convex.Integral`.
+functions. The integral versions are to be found in `Mathlib/Analysis/Convex/Integral.lean`.
 
 ## Main declarations
 

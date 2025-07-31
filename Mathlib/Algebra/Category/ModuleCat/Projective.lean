@@ -43,7 +43,7 @@ namespace ModuleCat
 
 variable {M : ModuleCat.{v} R}
 
--- We transport the corresponding result from `Module.Projective`.
+-- We transport the corresponding result from `Mathlib/Algebra/Module/Projective.lean`.
 /-- Modules that have a basis are projective. -/
 theorem projective_of_free {ι : Type w} (b : Basis ι R M) : Projective M :=
   have : Module.Projective R M := Module.Projective.of_basis b

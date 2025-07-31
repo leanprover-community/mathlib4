@@ -12,9 +12,9 @@ import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 # Stars and bars
 
 In this file, we prove (in `Sym.card_sym_eq_multichoose`) that the function `multichoose n k`
-defined in `Data/Nat/Choose/Basic` counts the number of multisets of cardinality `k` over an
+defined in `Mathlib/Data/Nat/Choose/Basic.lean` counts the number of multisets of cardinality `k` over an
 alphabet of cardinality `n`. In conjunction with `Nat.multichoose_eq` proved in
-`Data/Nat/Choose/Basic`, which shows that `multichoose n k = choose (n + k - 1) k`,
+`Mathlib/Data/Nat/Choose/Basic.lean`, which shows that `multichoose n k = choose (n + k - 1) k`,
 this is central to the "stars and bars" technique in combinatorics, where we switch between
 counting multisets of size `k` over an alphabet of size `n` to counting strings of `k` elements
 ("stars") separated by `n-1` dividers ("bars").

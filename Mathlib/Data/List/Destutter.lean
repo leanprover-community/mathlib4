@@ -8,7 +8,7 @@ import Mathlib.Data.List.Chain
 /-!
 # Destuttering of Lists
 
-This file proves theorems about `List.destutter` (in `Data.List.Defs`), which greedily removes all
+This file proves theorems about `List.destutter` (in `Mathlib/Data/List/Defs.lean`), which greedily removes all
 non-related items that are adjacent in a list, e.g. `[2, 2, 3, 3, 2].destutter (≠) = [2, 3, 2]`.
 Note that we make no guarantees of being the longest sublist with this property; e.g.,
 `[123, 1, 2, 5, 543, 1000].destutter (<) = [123, 543, 1000]`, but a longer ascending chain could be

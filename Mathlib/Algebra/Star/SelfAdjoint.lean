@@ -24,7 +24,7 @@ We also define `IsStarNormal R`, a `Prop` that states that an element `x` satisf
   `Module (selfAdjoint R₂) (selfAdjoint R)` structure. However, doing this literally would be
   undesirable since in the main case of interest (`R₂ = ℂ`) we want `Module ℝ (selfAdjoint R)`
   and not `Module (selfAdjoint ℂ) (selfAdjoint R)`. We solve this issue by adding the typeclass
-  `[TrivialStar R₃]`, of which `ℝ` is an instance (registered in `Data/Real/Basic`), and then
+  `[TrivialStar R₃]`, of which `ℝ` is an instance (registered in `Mathlib/Data/Real/Basic.lean`), and then
   add a `[Module R₃ (selfAdjoint R)]` instance whenever we have
   `[Module R₃ R] [TrivialStar R₃]`. (Another approach would have been to define
   `[StarInvariantScalars R₃ R]` to express the fact that `star (x • v) = x • star v`, but

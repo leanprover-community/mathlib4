@@ -12,7 +12,7 @@ import Mathlib.Algebra.BigOperators.Fin
 /-!
 # Matrix and vector notation
 
-This file includes `simp` lemmas for applying operations in `Data.Matrix.Basic` to values built out
+This file includes `simp` lemmas for applying operations in `Mathlib/Data/Matrix/Basic.lean` to values built out
 of the matrix notation `![a, b] = vecCons a (vecCons b vecEmpty)` defined in
 `Data.Fin.VecNotation`.
 

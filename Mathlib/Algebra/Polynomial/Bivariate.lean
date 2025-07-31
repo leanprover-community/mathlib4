@@ -9,7 +9,7 @@ import Mathlib.RingTheory.AdjoinRoot
 # Bivariate polynomials
 
 This file introduces the notation `R[X][Y]` for the polynomial ring `R[X][X]` in two variables,
-and the notation `Y` for the second variable, in the `Polynomial.Bivariate` scope.
+and the notation `Y` for the second variable, in the `Mathlib/Algebra/Polynomial/Bivariate.lean` scope.
 
 It also defines `Polynomial.evalEval` for the evaluation of a bivariate polynomial at a point
 on the affine plane, which is a ring homomorphism (`Polynomial.evalEvalRingHom`), as well as

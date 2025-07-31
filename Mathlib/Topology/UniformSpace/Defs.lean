@@ -85,10 +85,10 @@ and `○` for composition of relations, seen as terms with type `Set (X × X)`.
 
 ## Implementation notes
 
-There is already a theory of relations in `Data/Rel.lean` where the main definition is
+There is already a theory of relations in `Mathlib/Data/Rel.lean` where the main definition is
 `def Rel (α β : Type*) := α → β → Prop`.
 The relations used in the current file involve only one type, but this is not the reason why
-we don't reuse `Data/Rel.lean`. We use `Set (α × α)`
+we don't reuse `Mathlib/Data/Rel.lean`. We use `Set (α × α)`
 instead of `Rel α α` because we really need sets to use the filter library, and elements
 of filters on `α × α` have type `Set (α × α)`.
 

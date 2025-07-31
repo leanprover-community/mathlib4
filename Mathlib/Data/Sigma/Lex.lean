@@ -20,11 +20,11 @@ related by the summand's relation.
 
 Related files are:
 * `Combinatorics.CoLex`: Colexicographic order on finite sets.
-* `Data.List.Lex`: Lexicographic order on lists.
-* `Data.Sigma.Order`: Lexicographic order on `Σ i, α i` per say.
+* `Mathlib/Data/List/Lex.lean`: Lexicographic order on lists.
+* `Mathlib/Data/Sigma/Order.lean`: Lexicographic order on `Σ i, α i` per say.
 * `Data.PSigma.Order`: Lexicographic order on `Σ' i, α i`.
-* `Data.Prod.Lex`: Lexicographic order on `α × β`. Can be thought of as the special case of
-  `Sigma.Lex` where all summands are the same
+* `Mathlib/Data/Prod/Lex.lean`: Lexicographic order on `α × β`. Can be thought of as the special case of
+  `Mathlib/Data/Sigma/Lex.lean` where all summands are the same
 -/
 
 

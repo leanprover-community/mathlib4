@@ -51,7 +51,7 @@ Using `CompHausLike`, we can now define
 `LightProfinite := CompHausLike  (fun X ↦ TotallyDisconnectedSpace X ∧ SecondCountableTopology X)`.
 
 These four categories are important building blocks of condensed objects (see the files
-`Condensed.Basic` and `Condensed.Light.Basic`). These categories share many properties and often,
+`Mathlib/Condensed/Basic.lean` and `Mathlib/Condensed/Light/Basic.lean`). These categories share many properties and often,
 one wants to argue about several of them simultaneously. This is the other part of the motivation
 for introducing `CompHausLike`. On paper, one would say "let `C` be on of the categories `CompHaus`
 or `Profinite`, then the following holds: ...". This was not possible in Lean using the old

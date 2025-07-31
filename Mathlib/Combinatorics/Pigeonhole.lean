@@ -22,10 +22,10 @@ have.
 The basic statements of the pigeonhole principle appear in the
 following locations:
 
-* `Data.Finset.Basic` has `Finset.exists_ne_map_eq_of_card_lt_of_maps_to`
-* `Data.Fintype.Basic` has `Fintype.exists_ne_map_eq_of_card_lt`
-* `Data.Fintype.Basic` has `Finite.exists_ne_map_eq_of_infinite`
-* `Data.Fintype.Basic` has `Finite.exists_infinite_fiber`
+* `Mathlib/Data/Finset/Basic.lean` has `Finset.exists_ne_map_eq_of_card_lt_of_maps_to`
+* `Mathlib/Data/Fintype/Basic.lean` has `Fintype.exists_ne_map_eq_of_card_lt`
+* `Mathlib/Data/Fintype/Basic.lean` has `Finite.exists_ne_map_eq_of_infinite`
+* `Mathlib/Data/Fintype/Basic.lean` has `Finite.exists_infinite_fiber`
 * `Data.Set.Finite` has `Set.infinite.exists_ne_map_eq_of_mapsTo`
 
 This module gives access to these pigeonhole principles along with 20 more.

@@ -14,7 +14,7 @@ We define the following operations:
 * `Finsupp.cons` : adding an element at the beginning of an `n`-tuple, to get an `n + 1`-tuple;
 
 In this context, we prove some usual properties of `tail` and `cons`, analogous to those of
-`Data.Fin.Tuple.Basic`.
+`Mathlib/Data/Fin/Tuple/Basic.lean`.
 -/
 
 open Function

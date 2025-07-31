@@ -71,7 +71,7 @@ theorem gameAdd_swap_swap_mk (a₁ a₂ : α) (b₁ b₂ : β) :
     GameAdd rα rβ (a₁, b₁) (a₂, b₂) ↔ GameAdd rβ rα (b₁, a₁) (b₂, a₂) :=
   gameAdd_swap_swap rβ rα (b₁, a₁) (b₂, a₂)
 
-/-- `Prod.GameAdd` is a subrelation of `Prod.Lex`. -/
+/-- `Prod.GameAdd` is a subrelation of `Mathlib/Data/Prod/Lex.lean`. -/
 theorem gameAdd_le_lex : GameAdd rα rβ ≤ Prod.Lex rα rβ := fun _ _ h =>
   h.rec (Prod.Lex.left _ _) (Prod.Lex.right _)
 

@@ -10,7 +10,7 @@ import Mathlib.Data.Rat.Init
 
 As a consequence we also get the instance `Countable ℚ`.
 
-This is kept separate from `Data.Rat.Defs` in order to minimize imports.
+This is kept separate from `Mathlib/Data/Rat/Defs.lean` in order to minimize imports.
 -/
 
 

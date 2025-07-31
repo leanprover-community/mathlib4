@@ -161,7 +161,7 @@ For directories which are low in the import hierarchy, this opt-out approach is 
 (fewer updates needed) and needs less configuration.
 
 We always allow imports of `Init`, `Lean`, `Std`, `Qq` and
-`Mathlib.Init` (as well as their transitive dependencies.)
+`Mathlib/Init.lean` (as well as their transitive dependencies.)
 -/
 def allowedImportDirs : NamePrefixRel := .ofArray #[
   -- This is used to test the linter.

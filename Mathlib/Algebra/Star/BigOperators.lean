@@ -8,7 +8,7 @@ import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-! # Big-operators lemmas about `star` algebraic operations
 
-These results are kept separate from `Algebra.Star.Basic` to avoid it needing to import `Finset`.
+These results are kept separate from `Mathlib/Algebra/Star/Basic.lean` to avoid it needing to import `Finset`.
 -/
 
 

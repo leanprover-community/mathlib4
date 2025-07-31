@@ -10,7 +10,7 @@ import Mathlib.Data.List.Basic
 # Lattice structure of lists
 
 This files prove basic properties about `List.disjoint`, `List.union`, `List.inter` and
-`List.bagInter`, which are defined in core Lean and `Data.List.Defs`.
+`List.bagInter`, which are defined in core Lean and `Mathlib/Data/List/Defs.lean`.
 
 `l₁ ∪ l₂` is the list where all elements of `l₁` have been inserted in `l₂` in order. For example,
 `[0, 0, 1, 2, 2, 3] ∪ [4, 3, 3, 0] = [1, 2, 4, 3, 3, 0]`

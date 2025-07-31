@@ -9,7 +9,7 @@ import Mathlib.CategoryTheory.CatCommSq
 /-!
 # Localization functors are preserved through equivalences
 
-In `Localization/Predicate.lean`, the lemma `Localization.of_equivalence_target` already
+In `Mathlib/CategoryTheory/Localization/Predicate.lean`, the lemma `Localization.of_equivalence_target` already
 showed that the predicate of localized categories is unchanged when we replace the
 target category (i.e. the candidate localized category) by an equivalent category.
 In this file, we show the same for the source category (`Localization.of_equivalence_source`).

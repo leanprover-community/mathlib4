@@ -13,7 +13,7 @@ import Mathlib.RingTheory.Ideal.Defs
 
 ## Main definitions
 
-* `Module.Injective`: an `R`-module `Q` is injective if and only if every injective `R`-linear
+* `Mathlib/Algebra/Module/Injective.lean`: an `R`-module `Q` is injective if and only if every injective `R`-linear
   map descends to a linear map to `Q`, i.e. in the following diagram, if `f` is injective then there
   is an `R`-linear map `h : Y ⟶ Q` such that `g = h ∘ f`
   ```

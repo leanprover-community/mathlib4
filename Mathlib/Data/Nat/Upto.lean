@@ -7,7 +7,7 @@ import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.Sub.Basic
 
 /-!
-# `Nat.Upto`
+# `Mathlib/Data/Nat/Upto.lean`
 
 `Nat.Upto p`, with `p` a predicate on `ℕ`, is a subtype of elements `n : ℕ` such that no value
 (strictly) below `n` satisfies `p`.
@@ -37,7 +37,7 @@ namespace Upto
 
 variable {p : ℕ → Prop}
 
-/-- Lift the "greater than" relation on natural numbers to `Nat.Upto`. -/
+/-- Lift the "greater than" relation on natural numbers to `Mathlib/Data/Nat/Upto.lean`. -/
 protected def GT (p) (x y : Upto p) : Prop :=
   x.1 > y.1
 

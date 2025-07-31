@@ -8,7 +8,7 @@ import Mathlib.Data.List.Basic
 /-!
 # Double universal quantification on a list
 
-This file provides an API for `List.Forall₂` (definition in `Data.List.Defs`).
+This file provides an API for `List.Forall₂` (definition in `Mathlib/Data/List/Defs.lean`).
 `Forall₂ R l₁ l₂` means that `l₁` and `l₂` have the same length, and whenever `a` is the nth element
 of `l₁`, and `b` is the nth element of `l₂`, then `R a b` is satisfied.
 -/

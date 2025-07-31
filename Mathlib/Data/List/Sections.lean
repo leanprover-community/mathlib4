@@ -7,7 +7,7 @@ import Mathlib.Data.List.Forall2
 /-!
 # List sections
 
-This file proves some stuff about `List.sections` (definition in `Data.List.Defs`). A section of a
+This file proves some stuff about `List.sections` (definition in `Mathlib/Data/List/Defs.lean`). A section of a
 list of lists `[l₁, ..., lₙ]` is a list whose `i`-th element comes from the `i`-th list.
 -/
 

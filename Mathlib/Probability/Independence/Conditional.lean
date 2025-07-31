@@ -45,7 +45,7 @@ as for a family, but without the starting `i`, for example `CondIndepFun` is the
 ## Implementation notes
 
 The definitions of conditional independence in this file are a particular case of independence with
-respect to a kernel and a measure, as defined in the file `Probability/Independence/Kernel.lean`.
+respect to a kernel and a measure, as defined in the file `Mathlib/Probability/Independence/Kernel.lean`.
 The kernel used is `ProbabilityTheory.condExpKernel`.
 
 -/

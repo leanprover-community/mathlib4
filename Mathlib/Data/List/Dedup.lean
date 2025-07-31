@@ -10,7 +10,7 @@ import Batteries.Data.List.Pairwise
 /-!
 # Erasure of duplicates in a list
 
-This file proves basic results about `List.dedup` (definition in `Data.List.Defs`).
+This file proves basic results about `List.dedup` (definition in `Mathlib/Data/List/Defs.lean`).
 `dedup l` returns `l` without its duplicates. It keeps the earliest (that is, rightmost)
 occurrence of each.
 

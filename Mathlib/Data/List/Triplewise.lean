@@ -12,7 +12,7 @@ import Mathlib.Tactic.MkIffOfInductiveProp
 
 ## Main definitions
 
-* `List.Triplewise` says that a predicate applies to all ordered triples of elements of a list.
+* `Mathlib/Data/List/Triplewise.lean` says that a predicate applies to all ordered triples of elements of a list.
 
 -/
 

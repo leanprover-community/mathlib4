@@ -467,7 +467,7 @@ theorem prod_pow_prime_padicValNat (n : Nat) (hn : n ≠ 0) (m : Nat) (pr : n < 
 /-! ### Lemmas about factorizations of particular functions -/
 
 
--- TODO: Port lemmas from `Data/Nat/Multiplicity` to here, re-written in terms of `factorization`
+-- TODO: Port lemmas from `Mathlib/Data/Nat/Multiplicity.lean` to here, re-written in terms of `factorization`
 /-- Exactly `n / p` naturals in `[1, n]` are multiples of `p`.
 See `Nat.card_multiples'` for an alternative spelling of the statement. -/
 theorem card_multiples (n p : ℕ) : #{e ∈ range n | p ∣ e + 1} = n / p := by

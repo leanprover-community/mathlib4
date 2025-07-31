@@ -35,7 +35,7 @@ This file defines affine maps.
 
 This file only provides purely algebraic definitions and results. Those depending on analysis or
 topology are defined elsewhere; see `Analysis.Normed.Affine.AddTorsor` and
-`Topology.Algebra.Affine`.
+`Mathlib/Topology/Algebra/Affine.lean`.
 
 ## References
 

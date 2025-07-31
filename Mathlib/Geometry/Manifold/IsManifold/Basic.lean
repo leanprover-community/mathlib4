@@ -45,7 +45,7 @@ We define a few constructions of smooth manifolds:
 * the product of two smooth manifolds
 * the disjoint union of two manifolds (over the same charted space)
 
-As specific examples of models with corners, we define (in `Geometry.Manifold.Instances.Real`)
+As specific examples of models with corners, we define (in `Mathlib/Geometry/Manifold/Instances/Real.lean`)
 * `modelWithCornersEuclideanHalfSpace n :
   ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n)` for the model space used to
   define `n`-dimensional real manifolds without boundary

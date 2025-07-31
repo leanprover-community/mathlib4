@@ -39,7 +39,7 @@ to be provided for every step.
 
 Since every `FinEnum` instance implies a `Fintype` instance and `Prop` is squashed already,
 `Fintype.induction_empty_option` can be used if a `Prop` needs to be constructed.
-Cf. `Data.Fintype.Option`
+Cf. `Mathlib/Data/Fintype/Option.lean`
 -/
 def recEmptyOption {P : Type u → Sort v}
     (finChoice : (n : ℕ) → Fin (n + 1))

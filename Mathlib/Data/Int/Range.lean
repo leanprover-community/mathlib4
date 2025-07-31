@@ -13,7 +13,7 @@ less than `n`.
 
 ## Note
 
-This could be unified with `Data.List.Intervals`. See the TODOs there.
+This could be unified with `Mathlib/Data/List/Intervals.lean`. See the TODOs there.
 -/
 
 namespace Int
