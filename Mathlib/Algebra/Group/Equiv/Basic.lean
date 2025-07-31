@@ -184,4 +184,28 @@ theorem inv_symm : (Equiv.inv G).symm = Equiv.inv G := rfl
 
 end InvolutiveInv
 
+section CommGroup
+
+variable [CommGroup G] (x : G)
+
+/-- The involution in a commutative group given by `fun y ↦ x / y` where `x` is fixed. -/
+@[to_additive (attr := simps)
+"The involution in an additive commutative group given by `fun y ↦ x - y` where `x` is fixed."]
+def constDiv : Perm G where
+  toFun := (x / ·)
+  invFun := (x / ·)
+  left_inv := div_div_self' _
+  right_inv := div_div_self' _
+
+@[to_additive (attr := simp)]
+lemma symm_constDiv : (constDiv x).symm = constDiv x := rfl
+
+@[to_additive (attr := simp)]
+lemma constDiv_involutive : Function.Involutive (constDiv x) := (constDiv x).left_inv
+
+@[to_additive (attr := simp)]
+lemma const_div_involutive : Function.Involutive (x / ·) := constDiv_involutive x
+
+end CommGroup
+
 end Equiv
