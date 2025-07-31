@@ -30,8 +30,7 @@ open RingTheory Sequence IsLocalRing Ideal PrimeSpectrum Pointwise
 theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIdeal R) :
     supportDim R M ≤ supportDim R (QuotSMulTop x M) + 1 := by
   rcases subsingleton_or_nontrivial M with h | _
-  · rw [(supportDim_eq_bot_iff_subsingleton R M).mpr h]
-    rw [(supportDim_eq_bot_iff_subsingleton R (QuotSMulTop x M)).mpr inferInstance, WithBot.bot_add]
+  · simp [Module.supportDim_eq_bot_of_subsingleton]
   refine iSup_le_iff.mpr (fun q ↦ ?_)
   classical let p : LTSeries (support R M) :=
     if h : q.last < closedPoint R then q.snoc ⟨closedPoint R, closedPoint_mem_support R M⟩ h else q
@@ -128,28 +127,24 @@ lemma _root_.ringKrullDim_quotient_span_singleton_succ_eq_ringKrullDim {x : R}
 
 /-- If $M$ is a finite module over a Noetherian local ring $R$, $r_1, \dots, r_n$ is an
   $M$-sequence, then $\dim M/(r_1, \dots, r_n)M + n = \dim M$. -/
-theorem supportDim_regular_sequence_add_length_eq_supportDim (rs : List R) (reg : IsRegular M rs) :
+theorem supportDim_add_length_eq_supportDim_of_isRegular (rs : List R) (reg : IsRegular M rs) :
     supportDim R (M ⧸ ofList rs • (⊤ : Submodule R M)) + rs.length = supportDim R M := by
-  generalize len : rs.length = n
-  induction' n with n hn generalizing M rs
-  · rw [List.length_eq_zero_iff.mp len, ofList_nil, Submodule.bot_smul]
-    simpa using supportDim_eq_of_equiv (Submodule.quotEquivOfEqBot ⊥ rfl)
-  · match rs with
-    | [] => simp at len
-    | x :: rs' =>
-      simp only [Nat.cast_add, Nat.cast_one]
-      simp only [List.length_cons, Nat.add_right_cancel_iff] at len
-      have mem : x ∈ maximalIdeal R := by
-        simpa using fun isu ↦ reg.2 (by simp [span_singleton_eq_top.mpr isu])
-      rw [supportDim_eq_of_equiv (Submodule.quotOfListConsSMulTopEquivQuotSMulTopInner M x _),
-        ← supportDim_quotSMulTop_succ_eq_supportDim ((isRegular_cons_iff M _ _).mp reg).1 mem,
-        ← hn rs' ((isRegular_cons_iff M _ _).mp reg).2 len, add_assoc]
+  induction rs generalizing M with
+  | nil =>
+    rw [ofList_nil, Submodule.bot_smul]
+    simpa  using supportDim_eq_of_equiv (Submodule.quotEquivOfEqBot ⊥ rfl)
+  | cons x rs' ih =>
+    have mem : x ∈ maximalIdeal R := by
+      simpa using fun isu ↦ reg.2 (by simp [span_singleton_eq_top.mpr isu])
+    simp [supportDim_eq_of_equiv (Submodule.quotOfListConsSMulTopEquivQuotSMulTopInner M x _),
+      ← supportDim_quotSMulTop_succ_eq_supportDim ((isRegular_cons_iff M _ _).mp reg).1 mem,
+      ← ih ((isRegular_cons_iff M _ _).mp reg).2, ← add_assoc]
 
-lemma _root_.ringKrullDim_regular_sequence_add_length_eq_ringKrullDim (rs : List R)
+lemma _root_.ringKrullDim_add_length_eq_ringKrullDim_of_isRegular (rs : List R)
     (reg : IsRegular R rs) : ringKrullDim (R ⧸ ofList rs) + rs.length = ringKrullDim R := by
   have eq : ofList rs = ofList rs • (⊤ : Ideal R) := by simp
   rw [ringKrullDim_eq_of_ringEquiv (quotientEquivAlgOfEq R eq).toRingEquiv,
     ← supportDim_quotient_eq_ringKrullDim, ← supportDim_self_eq_ringKrullDim]
-  exact supportDim_regular_sequence_add_length_eq_supportDim rs reg
+  exact supportDim_add_length_eq_supportDim_of_isRegular rs reg
 
 end Module
