@@ -389,6 +389,8 @@ end Prod
 namespace Fin
 variable {k m n : ℕ}
 
+open Fin.CommRing
+
 private lemma aux (hm : m ≠ 0) (hkmn : m * k ≤ n) : k < (n + 1) :=
   Nat.lt_succ_iff.2 <| le_trans (Nat.le_mul_of_pos_left _ hm.bot_lt) hkmn
 

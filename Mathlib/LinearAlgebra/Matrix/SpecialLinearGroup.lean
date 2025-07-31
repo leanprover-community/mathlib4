@@ -272,7 +272,7 @@ def center_equiv_rootsOfUnity' (i : n) :
     simpa [← hr, Submonoid.smul_def, Units.smul_def] using smul_one_eq_diagonal r
   right_inv a := by
     obtain ⟨⟨a, _⟩, ha⟩ := a
-    exact SetCoe.ext <| Units.eq_iff.mp <| by simp
+    exact SetCoe.ext <| Units.ext <| by simp
   map_mul' A B := by
     dsimp
     ext
@@ -468,19 +468,19 @@ theorem coe_T_inv : ↑(T⁻¹) = !![1, -1; 0, 1] := by simp [coe_inv, coe_T, ad
 
 theorem coe_T_zpow (n : ℤ) : (T ^ n).1 = !![1, n; 0, 1] := by
   induction n with
-  | hz => rw [zpow_zero, coe_one, Matrix.one_fin_two]
-  | hp n h =>
+  | zero => rw [zpow_zero, coe_one, Matrix.one_fin_two]
+  | succ n h =>
     simp_rw [zpow_add, zpow_one, coe_mul, h, coe_T, Matrix.mul_fin_two]
     congrm !![_, ?_; _, _]
     rw [mul_one, mul_one, add_comm]
-  | hn n h =>
+  | pred n h =>
     simp_rw [zpow_sub, zpow_one, coe_mul, h, coe_T_inv, Matrix.mul_fin_two]
     congrm !![?_, ?_; _, _] <;> ring
 
 @[simp]
 theorem T_pow_mul_apply_one (n : ℤ) (g : SL(2, ℤ)) : (T ^ n * g) 1 = g 1 := by
   ext j
-  simp [coe_T_zpow, Matrix.vecMul, dotProduct, Fin.sum_univ_succ, vecTail]
+  simp [coe_T_zpow, Matrix.vecMul, dotProduct, Fin.sum_univ_succ]
 
 @[simp]
 theorem T_mul_apply_one (g : SL(2, ℤ)) : (T * g) 1 = g 1 := by
@@ -491,7 +491,7 @@ theorem T_inv_mul_apply_one (g : SL(2, ℤ)) : (T⁻¹ * g) 1 = g 1 := by
   simpa using T_pow_mul_apply_one (-1) g
 
 lemma S_mul_S_eq : (S : Matrix (Fin 2) (Fin 2) ℤ) * S = -1 := by
-  simp only [S, Int.reduceNeg, pow_two, coe_mul, cons_mul, Nat.succ_eq_add_one, Nat.reduceAdd,
+  simp only [S, Int.reduceNeg, cons_mul, Nat.succ_eq_add_one, Nat.reduceAdd,
     vecMul_cons, head_cons, zero_smul, tail_cons, neg_smul, one_smul, neg_cons, neg_zero, neg_empty,
     empty_vecMul, add_zero, zero_add, empty_mul, Equiv.symm_apply_apply]
   exact Eq.symm (eta_fin_two (-1))

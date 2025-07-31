@@ -302,7 +302,7 @@ theorem sum_pow_lt_card_sub_one (i : ℕ) (h : i < q - 1) : ∑ x : K, x ^ i = 0
   · simp only [hi, nsmul_one, sum_const, pow_zero, card_univ, cast_card_eq_zero]
   classical
     have hiq : ¬q - 1 ∣ i := by contrapose! h; exact Nat.le_of_dvd (Nat.pos_of_ne_zero hi) h
-    let φ : Kˣ ↪ K := ⟨fun x ↦ x, Units.ext⟩
+    let φ : Kˣ ↪ K := ⟨fun x ↦ x, Units.val_injective⟩
     have : univ.map φ = univ \ {0} := by
       ext x
       simpa only [mem_map, mem_univ, Function.Embedding.coeFn_mk, true_and, mem_sdiff,
@@ -370,7 +370,7 @@ theorem orderOf_frobeniusAlgHom : orderOf (frobeniusAlgHom K L) = Module.finrank
       rw [AlgHom.coe_pow, coe_frobeniusAlgHom, pow_iterate, AlgHom.one_apply, ← sub_eq_zero] at this
       refine ⟨fun h ↦ ?_, this⟩
       simpa [if_neg (Nat.one_lt_pow pos.ne' Fintype.one_lt_card).ne] using congr_arg (coeff · 1) h
-    refine this.not_lt (((natDegree_sub_le ..).trans_eq ?_).trans_lt <|
+    refine this.not_gt (((natDegree_sub_le ..).trans_eq ?_).trans_lt <|
       (Nat.pow_lt_pow_right Fintype.one_lt_card lt).trans_eq Module.card_eq_pow_finrank.symm)
     simp [Nat.one_le_pow _ _ Fintype.card_pos]
 
@@ -707,7 +707,7 @@ variable [Finite F]
 
 /-- In a finite field of characteristic `2`, all elements are squares. -/
 theorem isSquare_of_char_two (hF : ringChar F = 2) (a : F) : IsSquare a :=
-  haveI hF' : CharP F 2 := ringChar.of_eq hF
+  have : CharP F 2 := ringChar.of_eq hF
   isSquare_of_charTwo' a
 
 /-- In a finite field of odd characteristic, not every element is a square. -/
@@ -752,7 +752,7 @@ theorem unit_isSquare_iff (hF : ringChar F ≠ 2) (a : Fˣ) :
     constructor
     · rintro ⟨y, rfl⟩
       rw [← pow_two, ← pow_mul, hodd]
-      apply_fun Units.val using Units.ext
+      apply_fun Units.val using Units.val_injective
       push_cast
       exact FiniteField.pow_card_sub_one_eq_one (y : F) (Units.ne_zero y)
     · subst a; intro h

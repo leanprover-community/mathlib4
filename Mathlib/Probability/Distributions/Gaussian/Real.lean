@@ -6,6 +6,7 @@ Authors: Lorenzo Luccioli, Rémy Degenne, Alexander Bentkamp
 import Mathlib.Analysis.SpecialFunctions.Gaussian.FourierTransform
 import Mathlib.MeasureTheory.Group.Convolution
 import Mathlib.Probability.Moments.MGFAnalytic
+import Mathlib.Probability.Independence.Basic
 
 /-!
 # Gaussian distributions over ℝ
@@ -87,7 +88,7 @@ lemma integrable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) :
       refine (integrable_exp_neg_mul_sq ?_).const_mul (√(2 * π * v))⁻¹
       simp [lt_of_le_of_ne (zero_le _) (Ne.symm hv)]
     ext x
-    simp only [g, zero_lt_two, mul_nonneg_iff_of_pos_left, NNReal.zero_le_coe, Real.sqrt_mul',
+    simp only [g, NNReal.zero_le_coe, Real.sqrt_mul',
       mul_inv_rev, NNReal.coe_mul, NNReal.coe_inv, NNReal.coe_ofNat, neg_mul, mul_eq_mul_left_iff,
       Real.exp_eq_exp, mul_eq_zero, inv_eq_zero, Real.sqrt_eq_zero, NNReal.coe_eq_zero, hv,
       false_or]
@@ -103,10 +104,10 @@ lemma lintegral_gaussianPDFReal_eq_one (μ : ℝ) {v : ℝ≥0} (h : v ≠ 0) :
   have hfm : AEStronglyMeasurable (gaussianPDFReal μ v) volume := by fun_prop
   have hf : 0 ≤ₐₛ gaussianPDFReal μ v := ae_of_all _ (gaussianPDFReal_nonneg μ v)
   rw [← integral_eq_lintegral_of_nonneg_ae hf hfm]
-  simp only [gaussianPDFReal, zero_lt_two, mul_nonneg_iff_of_pos_right, one_div,
-    Nat.cast_ofNat, integral_const_mul]
+  simp only [gaussianPDFReal,
+    integral_const_mul]
   rw [integral_sub_right_eq_self (μ := volume) (fun a ↦ rexp (-a ^ 2 / ((2 : ℝ) * v))) μ]
-  simp only [zero_lt_two, mul_nonneg_iff_of_pos_right, div_eq_inv_mul, mul_inv_rev,
+  simp only [div_eq_inv_mul, mul_inv_rev,
     mul_neg]
   simp_rw [← neg_mul]
   rw [neg_mul, integral_gaussian, ← Real.sqrt_inv, ← Real.sqrt_mul]
@@ -133,8 +134,8 @@ lemma gaussianPDFReal_add {μ : ℝ} {v : ℝ≥0} (x y : ℝ) :
 
 lemma gaussianPDFReal_inv_mul {μ : ℝ} {v : ℝ≥0} {c : ℝ} (hc : c ≠ 0) (x : ℝ) :
     gaussianPDFReal μ v (c⁻¹ * x) = |c| * gaussianPDFReal (c * μ) (⟨c^2, sq_nonneg _⟩ * v) x := by
-  simp only [gaussianPDFReal.eq_1, zero_lt_two, mul_nonneg_iff_of_pos_left, NNReal.zero_le_coe,
-    Real.sqrt_mul', one_div, mul_inv_rev, NNReal.coe_mul, NNReal.coe_mk, NNReal.coe_pos]
+  simp only [gaussianPDFReal.eq_1, NNReal.zero_le_coe,
+    Real.sqrt_mul', mul_inv_rev, NNReal.coe_mul, NNReal.coe_mk]
   rw [← mul_assoc]
   refine congr_arg₂ _ ?_ ?_
   · field_simp
@@ -183,7 +184,7 @@ lemma gaussianPDF_ne_top {μ : ℝ} {v : ℝ≥0} {x : ℝ} : gaussianPDF μ v x
 lemma support_gaussianPDF {μ : ℝ} {v : ℝ≥0} (hv : v ≠ 0) :
     Function.support (gaussianPDF μ v) = Set.univ := by
   ext x
-  simp only [ne_eq, Set.mem_setOf_eq, Set.mem_univ, iff_true]
+  simp only [Set.mem_univ, iff_true]
   exact (gaussianPDF_pos _ hv x).ne'
 
 @[measurability, fun_prop]
@@ -282,14 +283,14 @@ lemma _root_.MeasurableEquiv.gaussianReal_map_symm_apply (hv : v ≠ 0) (f : ℝ
 lemma gaussianReal_map_add_const (y : ℝ) :
     (gaussianReal μ v).map (· + y) = gaussianReal (μ + y) v := by
   by_cases hv : v = 0
-  · simp only [hv, ne_eq, not_true, gaussianReal_zero_var]
+  · simp only [hv, gaussianReal_zero_var]
     exact Measure.map_dirac (measurable_id'.add_const _) _
   let e : ℝ ≃ᵐ ℝ := (Homeomorph.addRight y).symm.toMeasurableEquiv
   have he' : ∀ x, HasDerivAt e ((fun _ ↦ 1) x) x := fun _ ↦ (hasDerivAt_id _).sub_const y
   change (gaussianReal μ v).map e.symm = gaussianReal (μ + y) v
   ext s' hs'
   rw [MeasurableEquiv.gaussianReal_map_symm_apply hv e he' hs']
-  simp only [abs_neg, abs_one, MeasurableEquiv.coe_mk, Equiv.coe_fn_mk, one_mul, ne_eq]
+  simp only [abs_one, one_mul]
   rw [gaussianReal_apply_eq_integral _ hv s']
   simp [e, gaussianPDFReal_sub _ y, Homeomorph.addRight, ← sub_eq_add_neg]
 
@@ -303,12 +304,12 @@ lemma gaussianReal_map_const_add (y : ℝ) :
 lemma gaussianReal_map_const_mul (c : ℝ) :
     (gaussianReal μ v).map (c * ·) = gaussianReal (c * μ) (⟨c^2, sq_nonneg _⟩ * v) := by
   by_cases hv : v = 0
-  · simp only [hv, mul_zero, ne_eq, not_true, gaussianReal_zero_var]
+  · simp only [hv, mul_zero, gaussianReal_zero_var]
     exact Measure.map_dirac (measurable_id'.const_mul c) μ
   by_cases hc : c = 0
-  · simp only [hc, zero_mul, ne_eq, abs_zero, mul_eq_zero]
+  · simp only [hc, zero_mul]
     rw [Measure.map_const]
-    simp only [ne_eq, measure_univ, one_smul, mul_eq_zero]
+    simp only [measure_univ, one_smul]
     convert (gaussianReal_zero_var 0).symm
     simp only [ne_eq, zero_pow, mul_eq_zero, hv, or_false, not_false_eq_true, reduceCtorEq,
       NNReal.mk_zero]
@@ -324,9 +325,9 @@ lemma gaussianReal_map_const_mul (c : ℝ) :
   · simp only [ne_eq, mul_eq_zero, hv, or_false]
     rw [← NNReal.coe_inj]
     simp [hc]
-  simp only [e, Homeomorph.mulLeft₀, Equiv.toFun_as_coe, Equiv.mulLeft₀_apply, Equiv.invFun_as_coe,
+  simp only [e, Homeomorph.mulLeft₀,
     Equiv.mulLeft₀_symm_apply, Homeomorph.toMeasurableEquiv_coe, Homeomorph.homeomorph_mk_coe_symm,
-    Equiv.coe_fn_symm_mk, gaussianPDFReal_inv_mul hc]
+    gaussianPDFReal_inv_mul hc]
   congr with x
   suffices |c⁻¹| * |c| = 1 by rw [← mul_assoc, this, one_mul]
   rw [abs_inv, inv_mul_cancel₀]
@@ -494,7 +495,7 @@ lemma integral_id_gaussianReal : ∫ x, x ∂gaussianReal μ v = μ := by
   rw [← deriv_mgf_zero (by simp), mgf_fun_id_gaussianReal, _root_.deriv_exp (by fun_prop)]
   simp only [mul_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow, zero_div,
     add_zero, Real.exp_zero, one_mul]
-  rw [deriv_add (by fun_prop) (by fun_prop), deriv_mul (by fun_prop) (by fun_prop)]
+  rw [deriv_fun_add (by fun_prop) (by fun_prop), deriv_fun_mul (by fun_prop) (by fun_prop)]
   simp
 
 /-- The variance of a real Gaussian distribution `gaussianReal μ v` is
@@ -515,11 +516,11 @@ lemma variance_fun_id_gaussianReal : Var[fun x ↦ x; gaussianReal μ v] = v := 
     have : deriv (fun t ↦ rexp (v * t ^ 2 / 2)) = fun t ↦ v * t * rexp (v * t ^ 2 / 2) := by
       ext t
       rw [_root_.deriv_exp (by fun_prop)]
-      simp only [deriv_div_const, differentiableAt_const, differentiableAt_id',
-        DifferentiableAt.pow, deriv_mul, deriv_const', zero_mul, deriv_pow'', Nat.cast_ofNat,
+      simp only [deriv_div_const, differentiableAt_const, differentiableAt_fun_id, Nat.cast_ofNat,
+        DifferentiableAt.fun_pow, deriv_fun_mul, deriv_const', zero_mul, deriv_fun_pow,
         Nat.add_one_sub_one, pow_one, deriv_id'', mul_one, zero_add]
       ring
-    rw [this, deriv_mul (by fun_prop) (by fun_prop), deriv_mul (by fun_prop) (by fun_prop)]
+    rw [this, deriv_fun_mul (by fun_prop) (by fun_prop), deriv_fun_mul (by fun_prop) (by fun_prop)]
     simp
 
 /-- The variance of a real Gaussian distribution `gaussianReal μ v` is
@@ -588,14 +589,25 @@ end LinearMap
 /-- The convolution of two real Gaussian distributions with means `m₁, m₂` and variances `v₁, v₂`
 is a real Gaussian distribution with mean `m₁ + m₂` and variance `v₁ + v₂`. -/
 lemma gaussianReal_conv_gaussianReal {m₁ m₂ : ℝ} {v₁ v₂ : ℝ≥0} :
-    -- `∗` notation not used because of ambiguous notation : `conv` vs `mconv`
-    (gaussianReal m₁ v₁).conv (gaussianReal m₂ v₂) = gaussianReal (m₁ + m₂) (v₁ + v₂) := by
+    (gaussianReal m₁ v₁) ∗ (gaussianReal m₂ v₂) = gaussianReal (m₁ + m₂) (v₁ + v₂) := by
   refine Measure.ext_of_charFun ?_
   ext t
   simp_rw [charFun_conv, charFun_gaussianReal]
   rw [← Complex.exp_add]
   simp only [Complex.ofReal_add, NNReal.coe_add]
   ring_nf
+
+/- The sum of two real Gaussian variables with means `m₁, m₂` and variances `v₁, v₂` is a real
+Gaussian distribution with mean `m₁ + m₂` and variance `v_1 + v_2`. -/
+lemma gaussianReal_add_gaussianReal_of_indepFun {Ω} {mΩ : MeasurableSpace Ω} {P : Measure Ω}
+    {m₁ m₂ : ℝ} {v₁ v₂ : ℝ≥0} {X Y : Ω → ℝ} (hXY : IndepFun X Y P)
+    (hX : P.map X = gaussianReal m₁ v₁) (hY : P.map Y = gaussianReal m₂ v₂) :
+    P.map (X + Y) = gaussianReal (m₁ + m₂) (v₁ + v₂) := by
+  rw [hXY.map_add_eq_map_conv_map₀', hX, hY, gaussianReal_conv_gaussianReal]
+  · apply AEMeasurable.of_map_ne_zero; simp [NeZero.ne, hX]
+  · apply AEMeasurable.of_map_ne_zero; simp [NeZero.ne, hY]
+  · rw [hX]; apply IsFiniteMeasure.toSigmaFinite
+  · rw [hY]; apply IsFiniteMeasure.toSigmaFinite
 
 end GaussianReal
 

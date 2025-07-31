@@ -29,6 +29,7 @@ It keeps the mapping of the existing `α`-inhabitants intact, modulo `Fin.castSu
 instance instFinEnumOptionLast (α : Type u) [FinEnum α] : FinEnum (Option α) :=
   insertNone α (Fin.last _)
 
+open Fin.NatCast in -- TODO: refactor the proof to avoid needing this.
 /-- A recursor principle for finite-and-enumerable types, analogous to `Nat.rec`.
 It effectively says that every `FinEnum` is either `Empty` or `Option α`, up to an `Equiv` mediated
 by `Fin`s of equal cardinality.
@@ -74,6 +75,7 @@ theorem recEmptyOption_of_card_eq_zero {P : Type u → Sort v}
   · congr 1; exact Subsingleton.allEq _ _
   · exact Nat.noConfusion <| h.symm.trans ‹_›
 
+open Fin.NatCast in -- TODO: refactor the proof to avoid needing this.
 /--
 For a type with positive `card`, the recursion principle evaluates to whatever
 `congr` makes of the step result, where `Option.none` has been inserted into the

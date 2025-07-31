@@ -65,7 +65,23 @@ lemma hasProdUniformlyOn_iff_tendstoUniformlyOn : HasProdUniformlyOn f g 𝔖 �
     UniformOnFun.tendsto_iff_tendstoUniformlyOn
 
 @[to_additive]
-lemma HasProdUniformlyOn.tendstoUniformlyOn_finset_range
+lemma HasProdUniformlyOn.congr {f' : ι → β → α}
+    (h : HasProdUniformlyOn f g 𝔖)
+    (hff' : ∀ s ∈ 𝔖, ∀ᶠ (n : Finset ι) in atTop,
+      Set.EqOn (fun b ↦ ∏ i ∈ n, f i b) (fun b ↦ ∏ i ∈ n, f' i b) s) :
+    HasProdUniformlyOn f' g 𝔖 := by
+  rw [hasProdUniformlyOn_iff_tendstoUniformlyOn] at *
+  exact fun s hs ↦ TendstoUniformlyOn.congr (h s hs) (hff' s hs)
+
+@[to_additive]
+lemma HasProdUniformlyOn.congr_right {g' : β → α}
+    (h : HasProdUniformlyOn f g 𝔖) (hgg' : ∀ s ∈ 𝔖, Set.EqOn g g' s) :
+    HasProdUniformlyOn f g' 𝔖 := by
+  rw [hasProdUniformlyOn_iff_tendstoUniformlyOn] at *
+  exact fun s hs ↦ TendstoUniformlyOn.congr_right (h s hs) (hgg' s hs)
+
+@[to_additive]
+lemma HasProdUniformlyOn.tendstoUniformlyOn_finsetRange
     {f : ℕ → β → α} (h : HasProdUniformlyOn f g 𝔖) (hs : s ∈ 𝔖) :
     TendstoUniformlyOn (fun N b ↦ ∏ i ∈ Finset.range N, f i b) g atTop s := by
   rw [hasProdUniformlyOn_iff_tendstoUniformlyOn] at h
@@ -152,7 +168,7 @@ lemma hasProdLocallyUniformlyOn_of_of_forall_exists_nhds
 
 @[to_additive]
 lemma HasProdUniformlyOn.hasProdLocallyUniformlyOn (h : HasProdUniformlyOn f g {s}) :
-  HasProdLocallyUniformlyOn f g s := by
+    HasProdLocallyUniformlyOn f g s := by
   simp [HasProdLocallyUniformlyOn, hasProdUniformlyOn_iff_tendstoUniformlyOn] at *
   exact TendstoUniformlyOn.tendstoLocallyUniformlyOn h
 
@@ -207,5 +223,14 @@ theorem MultipliableLocallyUniformlyOn.hasProdLocallyUniformlyOn [T2Space α]
 theorem HasProdLocallyUniformlyOn.tprod_eqOn [T2Space α]
     (h : HasProdLocallyUniformlyOn f g s) : Set.EqOn (∏' i, f i ·) g s :=
   fun _ hx ↦ (h.hasProd hx).tprod_eq
+
+@[to_additive]
+lemma HasProdLocallyUniformlyOn.tendstoLocallyUniformlyOn_finsetRange
+    {f : ℕ → β → α} (h : HasProdLocallyUniformlyOn f g s) :
+    TendstoLocallyUniformlyOn (fun N b ↦ ∏ i ∈ Finset.range N, f i b) g atTop s := by
+  rw [hasProdLocallyUniformlyOn_iff_tendstoLocallyUniformlyOn] at h
+  intro v hv r hr
+  obtain ⟨t, ht, htr⟩ := h v hv r hr
+  exact ⟨t, ht, Filter.tendsto_finset_range.eventually htr⟩
 
 end LocallyUniformlyOn

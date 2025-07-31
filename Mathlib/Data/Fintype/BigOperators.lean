@@ -227,7 +227,7 @@ nonrec theorem Fintype.prod_dite [Fintype α] {p : α → Prop} [DecidablePred p
     (f : ∀ a, p a → β) (g : ∀ a, ¬p a → β) :
     (∏ a, dite (p a) (f a) (g a)) =
     (∏ a : { a // p a }, f a a.2) * ∏ a : { a // ¬p a }, g a a.2 := by
-  simp only [prod_dite, attach_eq_univ]
+  simp only [prod_dite]
   congr 1
   · exact (Equiv.subtypeEquivRight <| by simp).prod_comp fun x : { x // p x } => f x x.2
   · exact (Equiv.subtypeEquivRight <| by simp).prod_comp fun x : { x // ¬p x } => g x x.2
@@ -239,7 +239,7 @@ variable {α₁ : Type*} {α₂ : Type*} {M : Type*} [Fintype α₁] [Fintype α
 @[to_additive]
 theorem Fintype.prod_sumElim (f : α₁ → M) (g : α₂ → M) :
     ∏ x, Sum.elim f g x = (∏ a₁, f a₁) * ∏ a₂, g a₂ :=
-  prod_disj_sum _ _ _
+  prod_disjSum _ _ _
 
 @[deprecated (since := "2025-02-20")] alias prod_sum_elim := prod_sumElim
 @[deprecated (since := "2025-02-20")] alias sum_sum_elim := sum_sumElim
@@ -247,7 +247,7 @@ theorem Fintype.prod_sumElim (f : α₁ → M) (g : α₂ → M) :
 @[to_additive (attr := simp)]
 theorem Fintype.prod_sum_type (f : α₁ ⊕ α₂ → M) :
     ∏ x, f x = (∏ a₁, f (Sum.inl a₁)) * ∏ a₂, f (Sum.inr a₂) :=
-  prod_disj_sum _ _ _
+  prod_disjSum _ _ _
 
 /-- The product over a product type equals the product of the fiberwise products. For rewriting
 in the reverse direction, use `Fintype.prod_prod_type'`. -/

@@ -78,7 +78,7 @@ lemma preReflection_apply_self (h : f x = 2) :
 
 lemma involutive_preReflection (h : f x = 2) :
     Involutive (preReflection x f) :=
-  fun y ↦ by simp [map_sub, h, smul_sub, two_smul, preReflection_apply]
+  fun y ↦ by simp [map_sub, h, two_smul, preReflection_apply]
 
 lemma preReflection_preReflection (g : Dual R M) (h : f x = 2) :
     preReflection (preReflection x f y) (preReflection f (Dual.eval R M x) g) =
@@ -279,8 +279,8 @@ lemma reflection_mul_reflection_zpow_apply_self (m : ℤ)
       (S R (k - 2)).eval t = (f y * g x - 2) * (S R (k - 1)).eval t - (S R k).eval t := by
     simp [S_sub_two, ht]
   induction m with
-  | hz => simp
-  | hp m ih =>
+  | zero => simp
+  | succ m ih =>
     -- Apply the inductive hypothesis.
     rw [add_comm (m : ℤ) 1, zpow_one_add, LinearEquiv.mul_apply, LinearEquiv.mul_apply, ih]
     -- Expand out all the reflections and use `hf`, `hg`.
@@ -289,7 +289,7 @@ lemma reflection_mul_reflection_zpow_apply_self (m : ℤ)
     match_scalars
     · linear_combination (norm := ring_nf) -S_eval_t_sub_two (m + 1)
     · ring_nf
-  | hn m ih =>
+  | pred m ih =>
     -- Apply the inductive hypothesis.
     rw [sub_eq_add_neg (-m : ℤ) 1, add_comm (-m : ℤ) (-1), zpow_add, zpow_neg_one, mul_inv_rev,
       reflection_inv, reflection_inv, LinearEquiv.mul_apply, LinearEquiv.mul_apply, ih]
@@ -315,7 +315,7 @@ lemma reflection_mul_reflection_mul_reflection_zpow_apply_self (m : ℤ)
       ((S R m).eval t + (S R (m - 1)).eval t) • x + ((S R m).eval t * -g x) • y := by
   rw [LinearEquiv.mul_apply, reflection_mul_reflection_zpow_apply_self hf hg m t ht]
   -- Expand out all the reflections and use `hf`, `hg`.
-  simp only [reflection_apply, map_add, map_sub, map_smul, hf, hg]
+  simp only [reflection_apply, map_add, map_smul, hg]
   -- Equate coefficients of `x` and `y`.
   module
 

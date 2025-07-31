@@ -196,7 +196,7 @@ theorem elemExponent_le_of_pow_mem' (p : ℕ) [ExpChar K p] {a : L} {n : ℕ}
 variable {K} in
 theorem elemExponent_min {a : L} {n : ℕ} (h : n < elemExponent K a) :
     a ^ ringExpChar K ^ n ∉ (algebraMap K L).range :=
-  fun hn ↦ (Nat.not_lt_of_le <| elemExponent_le_of_pow_mem hn) h
+  fun hn ↦ (Nat.not_lt_of_ge <| elemExponent_le_of_pow_mem hn) h
 
 /-- Version of `elemExponent_min` using `ExpChar`. -/
 theorem elemExponent_min' (p : ℕ) [ExpChar K p] {a : L} {n : ℕ} (h : n < elemExponent K a) :

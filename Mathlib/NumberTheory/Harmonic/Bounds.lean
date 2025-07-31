@@ -4,13 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arend Mellendijk
 -/
 
-import Mathlib.Analysis.SpecialFunctions.Integrals
+import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 import Mathlib.Analysis.SumIntegralComparisons
 import Mathlib.NumberTheory.Harmonic.Defs
 
 /-!
 
-This file proves $\log(n+1) \le H_n \le 1 + \log(n)$ for all natural numbers $n$.
+This file proves $\log(n + 1) \le H_n \le 1 + \log(n)$ for all natural numbers $n$.
 
 -/
 
@@ -19,8 +19,8 @@ lemma harmonic_eq_sum_Icc {n : ℕ} : harmonic n = ∑ i ∈ Finset.Icc 1 n, (�
   simp only [Finset.Ico_add_one_right_eq_Icc]
 
 theorem log_add_one_le_harmonic (n : ℕ) :
-    Real.log ↑(n+1) ≤ harmonic n := by
-  calc _ = ∫ x in (1 : ℕ)..↑(n+1), x⁻¹ := ?_
+    Real.log ↑(n + 1) ≤ harmonic n := by
+  calc _ = ∫ x in (1 : ℕ)..↑(n + 1), x⁻¹ := ?_
        _ ≤ ∑ d ∈ Finset.Icc 1 n, (d : ℝ)⁻¹ := ?_
        _ = harmonic n := ?_
   · rw [Nat.cast_one, integral_inv (by simp [(show ¬ (1 : ℝ) ≤ 0 by norm_num)]), div_one]
@@ -36,10 +36,10 @@ theorem harmonic_le_one_add_log (n : ℕ) :
   rw [← Finset.sum_erase_add (Finset.Icc 1 n) _ (Finset.left_mem_Icc.mpr hn), add_comm,
     Nat.cast_one, inv_one]
   refine add_le_add_left ?_ 1
-  simp only [Nat.lt_one_iff, Finset.mem_Icc, Finset.Icc_erase_left]
+  simp only [Finset.Icc_erase_left]
   calc ∑ d ∈ .Ico 2 (n + 1), (d : ℝ)⁻¹
     _ = ∑ d ∈ .Ico 2 (n + 1), (↑(d + 1) - 1)⁻¹ := ?_
-    _ ≤ ∫ x in (2).. ↑(n + 1), (x - 1)⁻¹  := ?_
+    _ ≤ ∫ x in (2)..↑(n + 1), (x - 1)⁻¹ := ?_
     _ = ∫ x in (1)..n, x⁻¹ := ?_
     _ = Real.log ↑n := ?_
   · simp_rw [Nat.cast_add, Nat.cast_one, add_sub_cancel_right]

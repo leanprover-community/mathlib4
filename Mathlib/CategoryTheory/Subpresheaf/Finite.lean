@@ -161,7 +161,7 @@ lemma yoneda_obj_isGeneratedBy (X : C) :
     PresheafIsGeneratedBy (yoneda.obj X) (fun (_ : Unit) ↦ 𝟙 X) := by
   simp only [Subpresheaf.isGeneratedBy_iff]
   ext U u
-  simp only [yoneda_obj_obj, Subpresheaf.iSup_obj, Set.iSup_eq_iUnion, Set.mem_iUnion,
+  simp only [yoneda_obj_obj, Subpresheaf.iSup_obj, Set.mem_iUnion,
     exists_const, Subpresheaf.top_obj, Set.top_eq_univ, Set.mem_univ, iff_true]
   exact ⟨u.op, by simp⟩
 

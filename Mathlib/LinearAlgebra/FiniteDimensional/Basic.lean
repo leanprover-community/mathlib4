@@ -102,7 +102,7 @@ end
 noncomputable def basisSingleton (ι : Type*) [Unique ι] (h : finrank K V = 1) (v : V)
     (hv : v ≠ 0) : Basis ι K V :=
   let b := Module.basisUnique ι h
-  let h : b.repr v default ≠ 0 := mt Module.basisUnique_repr_eq_zero_iff.mp hv
+  have h : b.repr v default ≠ 0 := mt Module.basisUnique_repr_eq_zero_iff.mp hv
   Basis.ofRepr
     { toFun := fun w => Finsupp.single default (b.repr w default / b.repr v default)
       invFun := fun f => f default • v
@@ -393,6 +393,26 @@ theorem ofInjectiveEndo_left_inv (f : V →ₗ[K] V) (h_inj : Injective f) :
     ((ofInjectiveEndo f h_inj).symm : V →ₗ[K] V) * f = 1 :=
   LinearMap.ext <| (ofInjectiveEndo f h_inj).symm_apply_apply
 
+variable {V' : Type*} [AddCommGroup V'] [Module K V'] [FiniteDimensional K V']
+omit [FiniteDimensional K V]
+
+/-- An injective linear map between finite-dimensional modules of equal rank
+is a linear equivalence.
+
+Unlike `LinearEquiv.ofFinrankEq` (which creates an *abstract* linear equivalence from `V` to `V'`),
+this lemma improves a *given* injective linear map to a linear equivalence.
+-/
+noncomputable def ofInjectiveOfFinrankEq (f : V →ₗ[K] V') (hinj : Function.Injective f)
+    (hrank : Module.finrank K V = Module.finrank K V') : V ≃ₗ[K] V' :=
+  haveI : LinearMap.range f = ⊤ :=
+    Submodule.eq_top_of_finrank_eq ((LinearMap.finrank_range_of_inj hinj).trans hrank)
+  (ofInjective f hinj).trans (ofTop (LinearMap.range f) this)
+
+@[simp]
+lemma coe_ofInjectiveOfFinrankEq (f : V →ₗ[K] V') (hinj : Function.Injective f)
+    (hrank : Module.finrank K V = Module.finrank K V') :
+    (ofInjectiveOfFinrankEq f hinj hrank).toLinearMap = f :=
+  rfl
 end LinearEquiv
 
 namespace LinearMap

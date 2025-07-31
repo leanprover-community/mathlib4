@@ -442,7 +442,7 @@ theorem Chain'.cons_of_le [LinearOrder α] {a : α} {as m : List α}
       exact (List.not_lt_nil _ hmas).elim
     | cons a' as =>
       rw [List.chain'_cons] at ha
-      refine gt_of_gt_of_ge ha.1 ?_
+      refine lt_of_le_of_lt ?_ ha.1
       rw [le_iff_lt_or_eq] at hmas
       rcases hmas with hmas | hmas
       · by_contra! hh

@@ -250,9 +250,6 @@ protected theorem isOpenMap (surj : Surjective f) : IsOpenMap f := by
 theorem isQuotientMap (surj : Surjective f) : IsQuotientMap f :=
   (f.isOpenMap surj).isQuotientMap f.continuous surj
 
-@[deprecated (since := "2024-10-22")]
-alias quotientMap := isQuotientMap
-
 end
 
 theorem _root_.AffineMap.isOpenMap {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
@@ -365,9 +362,8 @@ theorem coe_equivRange (hinj : Injective f) (hclo : IsClosed (range f)) :
 
 @[simp]
 lemma equivRange_symm_toLinearEquiv (hinj : Injective f) (hclo : IsClosed (range f)) :
-    (f.equivRange hinj hclo).symm.toLinearEquiv =
-      (LinearEquiv.ofInjective f.toLinearMap hinj).symm := by
-  rfl
+    (f.equivRange hinj hclo).toLinearEquiv.symm =
+      (LinearEquiv.ofInjective f.toLinearMap hinj).symm := rfl
 
 @[simp]
 lemma equivRange_symm_apply (hinj : Injective f) (hclo : IsClosed (range f))
@@ -375,7 +371,7 @@ lemma equivRange_symm_apply (hinj : Injective f) (hclo : IsClosed (range f))
   suffices f ((f.equivRange hinj hclo).symm ⟨f x, by simp⟩) = f x from hinj this
   trans f ((f.equivRange hinj hclo).symm.toLinearEquiv ⟨f x, by simp⟩)
   · rfl -- is there an API lemma for this already?
-  dsimp only [equivRange_symm_toLinearEquiv]
+  simp only [ContinuousLinearEquiv.toLinearEquiv_symm, equivRange_symm_toLinearEquiv]
   set x' : LinearMap.range f := ⟨f x, by simp⟩
   set f' : E →ₛₗ[σ] F := ↑f
   change f' ((LinearEquiv.ofInjective f' hinj).symm x') = _

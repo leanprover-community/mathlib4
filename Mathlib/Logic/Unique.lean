@@ -178,7 +178,7 @@ theorem eq_const_of_unique {β : Sort*} [Unique α] (f : α → β) : f = Functi
   eq_const_of_subsingleton ..
 
 theorem heq_const_of_unique [Unique α] {β : α → Sort v} (f : ∀ a, β a) :
-    HEq f (Function.const α (f default)) :=
+    f ≍ Function.const α (f default) :=
   (Function.hfunext rfl) fun i _ _ ↦ by rw [Subsingleton.elim i default]; rfl
 
 namespace Function

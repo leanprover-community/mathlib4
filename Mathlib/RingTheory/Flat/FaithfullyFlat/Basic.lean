@@ -3,10 +3,8 @@ Copyright (c) 2024 Judith Ludwig, Florent Schaffhauser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Judith Ludwig, Florent Schaffhauser, Yunzhou Xie, Jujian Zhang
 -/
-
 import Mathlib.LinearAlgebra.TensorProduct.Quotient
 import Mathlib.RingTheory.Flat.Stability
-import Mathlib.RingTheory.Ideal.Quotient.Basic
 
 /-!
 # Faithfully flat modules
@@ -446,7 +444,7 @@ section arbitrary_universe
 /--
 If `M` is a faithfully flat module, then for all linear maps `f`, the map `id ⊗ f = 0`, if and only
 if `f = 0`. -/
-lemma zero_iff_lTensor_zero [h: FaithfullyFlat R M]
+lemma zero_iff_lTensor_zero [h : FaithfullyFlat R M]
     {N : Type*} [AddCommGroup N] [Module R N]
     {N' : Type*} [AddCommGroup N'] [Module R N'] (f : N →ₗ[R] N') :
     f = 0 ↔ LinearMap.lTensor M f = 0 :=

@@ -132,8 +132,8 @@ theorem arcsin_le_iff_le_sin' {x y : ℝ} (hy : y ∈ Ico (-(π / 2)) (π / 2)) 
     arcsin x ≤ y ↔ x ≤ sin y := by
   rcases le_total x (-1) with hx₁ | hx₁
   · simp [arcsin_of_le_neg_one hx₁, hy.1, hx₁.trans (neg_one_le_sin _)]
-  rcases lt_or_le 1 x with hx₂ | hx₂
-  · simp [arcsin_of_one_le hx₂.le, hy.2.not_le, (sin_le_one y).trans_lt hx₂]
+  rcases lt_or_ge 1 x with hx₂ | hx₂
+  · simp [arcsin_of_one_le hx₂.le, hy.2.not_ge, (sin_le_one y).trans_lt hx₂]
   exact arcsin_le_iff_le_sin ⟨hx₁, hx₂⟩ (mem_Icc_of_Ico hy)
 
 theorem le_arcsin_iff_sin_le {x y : ℝ} (hx : x ∈ Icc (-(π / 2)) (π / 2)) (hy : y ∈ Icc (-1 : ℝ) 1) :
@@ -212,7 +212,7 @@ theorem pi_div_two_eq_arcsin {x} : π / 2 = arcsin x ↔ 1 ≤ x :=
 
 @[simp]
 theorem pi_div_two_le_arcsin {x} : π / 2 ≤ arcsin x ↔ 1 ≤ x :=
-  (arcsin_le_pi_div_two x).le_iff_eq.trans pi_div_two_eq_arcsin
+  (arcsin_le_pi_div_two x).ge_iff_eq'.trans pi_div_two_eq_arcsin
 
 @[simp]
 theorem arcsin_eq_neg_pi_div_two {x : ℝ} : arcsin x = -(π / 2) ↔ x ≤ -1 :=
@@ -224,7 +224,7 @@ theorem neg_pi_div_two_eq_arcsin {x} : -(π / 2) = arcsin x ↔ x ≤ -1 :=
 
 @[simp]
 theorem arcsin_le_neg_pi_div_two {x} : arcsin x ≤ -(π / 2) ↔ x ≤ -1 :=
-  (neg_pi_div_two_le_arcsin x).le_iff_eq.trans arcsin_eq_neg_pi_div_two
+  (neg_pi_div_two_le_arcsin x).ge_iff_eq'.trans arcsin_eq_neg_pi_div_two
 
 @[simp]
 theorem pi_div_four_le_arcsin {x} : π / 4 ≤ arcsin x ↔ √2 / 2 ≤ x := by

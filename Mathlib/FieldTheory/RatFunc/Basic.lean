@@ -224,8 +224,6 @@ This is an auxiliary definition; `simp`-normal form is `IsLocalization.algEquiv`
 def toFractionRingRingEquiv : RatFunc K ≃+* FractionRing K[X] where
   toFun := toFractionRing
   invFun := ofFractionRing
-  left_inv := fun ⟨_⟩ => rfl
-  right_inv _ := rfl
   map_add' := fun ⟨_⟩ ⟨_⟩ => by simp [← ofFractionRing_add]
   map_mul' := fun ⟨_⟩ ⟨_⟩ => by simp [← ofFractionRing_mul]
 
@@ -660,7 +658,7 @@ instance : IsFractionRing K[X] (RatFunc K) where
   surj' := by
     rintro ⟨z⟩
     convert IsLocalization.surj K[X]⁰ z
-    simp only [← ofFractionRing_algebraMap, Function.comp_apply, ← ofFractionRing_mul,
+    simp only [← ofFractionRing_algebraMap, ← ofFractionRing_mul,
       ofFractionRing.injEq]
 
 variable {K}
@@ -721,7 +719,7 @@ theorem toFractionRing_eq :
 theorem toFractionRingRingEquiv_symm_eq :
     (toFractionRingRingEquiv K).symm = (IsLocalization.algEquiv K[X]⁰ _ _).toRingEquiv := by
   ext x
-  simp [toFractionRingRingEquiv, ofFractionRing_eq, AlgEquiv.coe_ringEquiv']
+  simp [toFractionRingRingEquiv, ofFractionRing_eq]
 
 end IsDomain
 

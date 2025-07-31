@@ -162,8 +162,7 @@ theorem exists_increasing_or_nonincreasing_subseq' (r : α → α → Prop) (f :
   classical
     let bad : Set ℕ := { m | ∀ n, m < n → ¬r (f m) (f n) }
     by_cases hbad : Infinite bad
-    · haveI := hbad
-      refine ⟨Nat.orderEmbeddingOfSet bad, Or.intro_right _ fun m n mn => ?_⟩
+    · refine ⟨Nat.orderEmbeddingOfSet bad, Or.intro_right _ fun m n mn => ?_⟩
       have h := @Set.mem_range_self _ _ ↑(Nat.orderEmbeddingOfSet bad) m
       rw [Nat.orderEmbeddingOfSet_range bad] at h
       exact h _ ((OrderEmbedding.lt_iff_lt _).2 mn)
@@ -262,7 +261,7 @@ noncomputable def monotonicSequenceLimit [Preorder α] (a : ℕ →o α) :=
 
 theorem le_monotonicSequenceLimit [PartialOrder α] [WellFoundedGT α] (a : ℕ →o α) (m : ℕ) :
     a m ≤ monotonicSequenceLimit a := by
-  rcases le_or_lt m (monotonicSequenceLimitIndex a) with hm | hm
+  rcases le_or_gt m (monotonicSequenceLimitIndex a) with hm | hm
   · exact a.monotone hm
   · obtain h := WellFoundedGT.monotone_chain_condition a
     exact (Nat.sInf_mem (s := {n | ∀ m, n ≤ m → a n = a m}) h m hm.le).ge

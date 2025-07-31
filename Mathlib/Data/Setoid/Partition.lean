@@ -85,7 +85,7 @@ theorem rel_iff_exists_classes (r : Setoid α) {x y} : r x y ↔ ∃ c ∈ r.cla
 
 /-- Two equivalence relations are equal iff their equivalence classes are equal. -/
 theorem classes_inj {r₁ r₂ : Setoid α} : r₁ = r₂ ↔ r₁.classes = r₂.classes :=
-  ⟨fun h => h ▸ rfl, fun h => ext fun a b => by simp only [rel_iff_exists_classes, exists_prop, h]⟩
+  ⟨fun h => h ▸ rfl, fun h => ext fun a b => by simp only [rel_iff_exists_classes, h]⟩
 
 /-- The empty set is not an equivalence class. -/
 theorem empty_notMem_classes {r : Setoid α} : ∅ ∉ r.classes := fun ⟨y, hy⟩ =>
@@ -171,7 +171,7 @@ noncomputable def quotientEquivClasses (r : Setoid α) : Quotient r ≃ Setoid.c
     induction' q_b using Quotient.ind with b
     simp only [f, Quotient.lift_mk, Subtype.ext_iff] at h_eq
     apply Quotient.sound
-    show a ∈ { x | r x b }
+    change a ∈ { x | r x b }
     rw [← h_eq]
     exact Setoid.refl a
   · rw [Quot.surjective_lift]
@@ -215,7 +215,7 @@ theorem IsPartition.sUnion_eq_univ {c : Set (Set α)} (hc : IsPartition c) : ⋃
     Set.mem_sUnion.2 <|
       let ⟨t, ht⟩ := hc.2 x
       ⟨t, by
-        simp only [existsUnique_iff_exists] at ht
+        simp only at ht
         tauto⟩
 
 /-- All elements of a partition of α are the equivalence class of some y ∈ α. -/
@@ -246,7 +246,7 @@ instance Partition.partialOrder : PartialOrder (Subtype (@IsPartition α)) where
   lt x y := x ≤ y ∧ ¬y ≤ x
   le_refl _ := @le_refl (Setoid α) _ _
   le_trans _ _ _ := @le_trans (Setoid α) _ _ _ _
-  lt_iff_le_not_le _ _ := Iff.rfl
+  lt_iff_le_not_ge _ _ := Iff.rfl
   le_antisymm x y hx hy := by
     let h := @le_antisymm (Setoid α) _ _ _ hx hy
     rw [Subtype.ext_iff_val, ← classes_mkClasses x.1 x.2, ← classes_mkClasses y.1 y.2, h]

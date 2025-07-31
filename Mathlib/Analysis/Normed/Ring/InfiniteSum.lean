@@ -56,7 +56,7 @@ theorem summable_mul_of_summable_norm' {f : ι → R} {g : ι' → R}
   rw [← nhds_prod_eq] at this
   convert ((continuous_mul (M := R)).continuousAt
       (x := (∑' (i : ι), f i, ∑' (j : ι'), g j))).tendsto.comp this with p
-  simp [s, sum_product, ← mul_sum, ← sum_mul]
+  simp [sum_product, ← mul_sum, ← sum_mul]
 
 /-- Product of two infinite sums indexed by arbitrary types.
     See also `tsum_mul_tsum` if `f` and `g` are *not* absolutely summable, and

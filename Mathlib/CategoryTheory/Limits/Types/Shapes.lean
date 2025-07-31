@@ -90,9 +90,7 @@ def terminalLimitCone : Limits.LimitCone (Functor.empty (Type u)) where
   isLimit :=
     { lift := fun _ _ => PUnit.unit
       fac := fun _ => by rintro ⟨⟨⟩⟩
-      uniq := fun _ _ _ => by
-        funext
-        subsingleton }
+      uniq := fun _ _ _ => by constructor }
 
 /-- The terminal object in `Type u` is `PUnit`. -/
 noncomputable def terminalIso : ⊤_ Type u ≅ PUnit :=
@@ -413,7 +411,7 @@ end Small
 def coproductColimitCocone {J : Type v} (F : J → Type max v u) :
     Limits.ColimitCocone (Discrete.functor F) where
   cocone :=
-    { pt := Σj, F j
+    { pt := Σ j, F j
       ι := Discrete.natTrans (fun ⟨j⟩ x => ⟨j, x⟩)}
   isColimit :=
     { desc := fun s x => s.ι.app ⟨x.1⟩ x.2
@@ -422,18 +420,18 @@ def coproductColimitCocone {J : Type v} (F : J → Type max v u) :
         exact congr_fun (w ⟨j⟩) x }
 
 /-- The categorical coproduct in `Type u` is the type theoretic coproduct `Σ j, F j`. -/
-noncomputable def coproductIso {J : Type v} (F : J → Type max v u) : ∐ F ≅ Σj, F j :=
+noncomputable def coproductIso {J : Type v} (F : J → Type max v u) : ∐ F ≅ Σ j, F j :=
   colimit.isoColimitCocone (coproductColimitCocone F)
 
 @[elementwise (attr := simp)]
 theorem coproductIso_ι_comp_hom {J : Type v} (F : J → Type max v u) (j : J) :
-    Sigma.ι F j ≫ (coproductIso F).hom = fun x : F j => (⟨j, x⟩ : Σj, F j) :=
+    Sigma.ι F j ≫ (coproductIso F).hom = fun x : F j => (⟨j, x⟩ : Σ j, F j) :=
   colimit.isoColimitCocone_ι_hom (coproductColimitCocone F) ⟨j⟩
 
 -- Porting note: was @[elementwise (attr := simp)], but it produces a trivial lemma
 -- removed simp attribute because it seems it never applies
 theorem coproductIso_mk_comp_inv {J : Type v} (F : J → Type max v u) (j : J) :
-    (↾fun x : F j => (⟨j, x⟩ : Σj, F j)) ≫ (coproductIso F).inv = Sigma.ι F j :=
+    (↾fun x : F j => (⟨j, x⟩ : Σ j, F j)) ≫ (coproductIso F).inv = Sigma.ι F j :=
   rfl
 
 section Fork
@@ -668,7 +666,6 @@ noncomputable def isLimitEquivBijective :
   invFun h := IsLimit.ofIsoLimit (Types.pullbackLimitCone f g).isLimit
     (Iso.symm (PullbackCone.ext (Equiv.ofBijective _ h).toIso))
   left_inv _ := Subsingleton.elim _ _
-  right_inv _ := rfl
 
 end PullbackCone
 
@@ -776,7 +773,7 @@ lemma inl_rel'_inl_iff (x₁ y₁ : X₁) :
     Rel' f g (Sum.inl x₁) (Sum.inl y₁) ↔ x₁ = y₁ ∨
       ∃ (x₀ y₀ : S) (_ : g x₀ = g y₀), x₁ = f x₀ ∧ y₁ = f y₀ := by
   constructor
-  · rintro (_|⟨_, _, h⟩)
+  · rintro (_ | ⟨_, _, h⟩)
     · exact Or.inl rfl
     · exact Or.inr ⟨_, _, h, rfl, rfl⟩
   · rintro (rfl | ⟨_,_ , h, rfl, rfl⟩)
@@ -806,7 +803,7 @@ variable {f g}
 
 lemma Rel'.symm {x y : X₁ ⊕ X₂} (h : Rel' f g x y) :
     Rel' f g y x := by
-  obtain _|⟨_, _, h⟩|_|_ := h
+  obtain _ | ⟨_, _, h⟩ | _ | _ := h
   · apply Rel'.refl
   · exact Rel'.inl_inl _ _ h.symm
   · exact Rel'.inr_inl _
@@ -818,11 +815,11 @@ lemma equivalence_rel' [Mono f] : _root_.Equivalence (Rel' f g) where
   refl := Rel'.refl
   symm h := h.symm
   trans := by
-    rintro x y z (_|⟨_, _, h⟩|s|_) hyz
+    rintro x y z (_ | ⟨_, _, h⟩ | s | _) hyz
     · exact hyz
-    · obtain z₁|z₂ := z
+    · obtain z₁ | z₂ := z
       · rw [inl_rel'_inl_iff] at hyz
-        obtain rfl|⟨_, _, h', h'', rfl⟩ := hyz
+        obtain rfl | ⟨_, _, h', h'', rfl⟩ := hyz
         · exact Rel'.inl_inl _ _ h
         · obtain rfl := (mono_iff_injective f).1 inferInstance h''
           exact Rel'.inl_inl _ _ (h.trans h')
@@ -831,7 +828,7 @@ lemma equivalence_rel' [Mono f] : _root_.Equivalence (Rel' f g) where
         obtain rfl := (mono_iff_injective f).1 inferInstance hs
         rw [← h]
         apply Rel'.inl_inr
-    · obtain z₁|z₂ := z
+    · obtain z₁ | z₂ := z
       · replace hyz := hyz.symm
         rw [inl_rel'_inr_iff] at hyz
         obtain ⟨s', rfl, hs'⟩ := hyz
@@ -839,9 +836,9 @@ lemma equivalence_rel' [Mono f] : _root_.Equivalence (Rel' f g) where
       · rw [inr_rel'_inr_iff] at hyz
         subst hyz
         apply Rel'.inl_inr
-    · obtain z₁|z₂ := z
+    · obtain z₁ | z₂ := z
       · rw [inl_rel'_inl_iff] at hyz
-        obtain rfl|⟨_, _, h, h', rfl⟩  := hyz
+        obtain rfl | ⟨_, _, h, h', rfl⟩  := hyz
         · apply Rel'.inr_inl
         · obtain rfl := (mono_iff_injective f).1 inferInstance h'
           rw [h]
@@ -858,7 +855,7 @@ def equivPushout' : Pushout f g ≃ Pushout' f g where
     apply Quot.sound
     apply Rel'.inl_inr)
   invFun := Quot.lift (Quot.mk _) (by
-    rintro a b (_|⟨x₀, y₀, h⟩|_|_)
+    rintro a b (_ | ⟨x₀, y₀, h⟩ | _ | _)
     · rfl
     · have h₀ : Rel f g _ _ := Rel.inl_inr x₀
       rw [Quot.sound h₀, h]
@@ -942,16 +939,15 @@ def MulticospanIndex.sectionsEquiv :
         | .left i => s.val i
         | .right j => I.fst j (s.val _)
       property := by
-        rintro _ _ (_|_|r)
+        rintro _ _ (_ | _ | r)
         · rfl
         · rfl
         · exact (s.property r).symm }
   invFun s :=
     { val := fun i ↦ s.val (.left i)
       property := fun r ↦ (s.property (.fst r)).trans (s.property (.snd r)).symm }
-  left_inv _ := rfl
   right_inv s := by
-    ext (_|r)
+    ext (_ | r)
     · rfl
     · exact s.property (.fst r)
 

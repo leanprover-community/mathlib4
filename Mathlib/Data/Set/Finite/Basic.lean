@@ -332,7 +332,7 @@ instance fintypeLENat (n : ℕ) : Fintype { i | i ≤ n } := by
   simpa [Nat.lt_succ_iff] using Set.fintypeLTNat (n + 1)
 
 /-- This is not an instance so that it does not conflict with the one
-in `Mathlib/Order/LocallyFinite.lean`. -/
+in `Mathlib/Order/Interval/Finset/Defs.lean`. -/
 def Nat.fintypeIio (n : ℕ) : Fintype (Iio n) :=
   Set.fintypeLTNat n
 
@@ -763,7 +763,7 @@ theorem card_image_of_injective (s : Set α) [Fintype s] {f : α → β} [Fintyp
 
 @[simp]
 theorem card_singleton (a : α) : Fintype.card ({a} : Set α) = 1 :=
-  Fintype.card_ofSubsingleton _
+  rfl
 
 theorem card_lt_card {s t : Set α} [Fintype s] [Fintype t] (h : s ⊂ t) :
     Fintype.card s < Fintype.card t :=
@@ -776,7 +776,7 @@ theorem card_le_card {s t : Set α} [Fintype s] [Fintype t] (hsub : s ⊆ t) :
 
 theorem eq_of_subset_of_card_le {s t : Set α} [Fintype s] [Fintype t] (hsub : s ⊆ t)
     (hcard : Fintype.card t ≤ Fintype.card s) : s = t :=
-  (eq_or_ssubset_of_subset hsub).elim id fun h => absurd hcard <| not_le_of_lt <| card_lt_card h
+  (eq_or_ssubset_of_subset hsub).elim id fun h => absurd hcard <| not_le_of_gt <| card_lt_card h
 
 theorem card_range_of_injective [Fintype α] {f : α → β} (hf : Injective f) [Fintype (range f)] :
     Fintype.card (range f) = Fintype.card α :=

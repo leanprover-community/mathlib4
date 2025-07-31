@@ -3,6 +3,7 @@ Copyright (c) 2024 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
+import Mathlib.RingTheory.Invariant.Defs
 import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
 
 /-!
@@ -36,19 +37,6 @@ If `Q` is a prime ideal of `B` lying over a prime ideal `P` of `A`, then
 -/
 
 open scoped Pointwise
-
-namespace Algebra
-
-variable (A B G : Type*) [CommSemiring A] [Semiring B] [Algebra A B]
-  [Group G] [MulSemiringAction G B]
-
-/-- An action of a group `G` on an extension of rings `B/A` is invariant if every fixed point of
-`B` lies in the image of `A`. The converse statement that every point in the image of `A` is fixed
-by `G` is `smul_algebraMap` (assuming `SMulCommClass A B G`). -/
-@[mk_iff] class IsInvariant : Prop where
-  isInvariant : ∀ b : B, (∀ g : G, g • b = b) → ∃ a : A, algebraMap A B a = b
-
-end Algebra
 
 section Galois
 
@@ -201,6 +189,13 @@ theorem exists_smul_of_under_eq [Finite G] [SMulCommClass G A B]
   obtain ⟨g', -, hg'⟩ := this Q (g • P) ((P.under_smul A g).trans hPQ).symm
   exact ⟨g, le_antisymm hg (smul_eq_of_le_smul (hg.trans hg') ▸ hg')⟩
 
+theorem orbit_eq_primesOver [Finite G] [SMulCommClass G A B] (P : Ideal A) (Q : Ideal B)
+    [hP : Q.LiesOver P] [hQ : Q.IsPrime] : MulAction.orbit G Q = P.primesOver B := by
+  refine Set.ext fun R ↦ ⟨fun ⟨g, hg⟩ ↦ hg ▸ ⟨hQ.smul g, hP.smul g⟩, fun h ↦ ?_⟩
+  have : R.IsPrime := h.1
+  obtain ⟨g, hg⟩ := exists_smul_of_under_eq A B G Q R (hP.over.symm.trans h.2.over)
+  exact ⟨g, hg.symm⟩
+
 end Algebra.IsInvariant
 
 end transitivity
@@ -246,7 +241,7 @@ private theorem fixed_of_fixed1_aux1 [DecidableEq (Ideal B)] :
     simp only [Polynomial.coeff_monomial, Finset.sum_ite_eq', Finset.mem_range_succ_iff]
     split_ifs with hn
     · rw [← Polynomial.coeff_map, hq, Polynomial.coeff_X_pow_mul]
-    · rw [map_zero, eq_comm, Polynomial.coeff_eq_zero_of_natDegree_lt (lt_of_not_le hn)]
+    · rw [map_zero, eq_comm, Polynomial.coeff_eq_zero_of_natDegree_lt (lt_of_not_ge hn)]
   have hf : f.eval b = 0 := MulSemiringAction.eval_charpoly G b
   have hr : r.eval b ∈ Q := by
     rw [← Ideal.Quotient.eq_zero_iff_mem, ← Ideal.Quotient.algebraMap_eq] at hbQ ⊢

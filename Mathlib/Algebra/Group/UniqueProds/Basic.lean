@@ -67,6 +67,10 @@ namespace UniqueMul
 
 variable {G H : Type*} [Mul G] [Mul H] {A B : Finset G} {a0 b0 : G}
 
+@[to_additive]
+theorem mono {A' B' : Finset G} (hA : A ⊆ A') (hB : B ⊆ B') (h : UniqueMul A' B' a0 b0) :
+    UniqueMul A B a0 b0 := fun _ _ ha hb he ↦ h (hA ha) (hB hb) he
+
 @[to_additive (attr := nontriviality, simp)]
 theorem of_subsingleton [Subsingleton G] : UniqueMul A B a0 b0 := by
   simp [UniqueMul, eq_iff_true_of_subsingleton]
@@ -292,7 +296,7 @@ variable (G : Type u) (H : Type v) [Mul G] [Mul H]
 private abbrev I : Bool → Type max u v := Bool.rec (ULift.{v} G) (ULift.{u} H)
 @[to_additive] private instance : ∀ b, Mul (I G H b) := Bool.rec ULift.mul ULift.mul
 @[to_additive] private def Prod.upMulHom : G × H →ₙ* ∀ b, I G H b :=
-  ⟨fun x ↦ Bool.rec ⟨x.1⟩ ⟨x.2⟩, fun x y ↦ by ext (_|_) <;> rfl⟩
+  ⟨fun x ↦ Bool.rec ⟨x.1⟩ ⟨x.2⟩, fun x y ↦ by ext (_ | _) <;> rfl⟩
 @[to_additive] private def downMulHom : ULift G →ₙ* G := ⟨ULift.down, fun _ _ ↦ rfl⟩
 
 variable {G H}
@@ -476,7 +480,7 @@ open Finset
     [TwoUniqueProds G] : TwoUniqueProds H where
   uniqueMul_of_one_lt_card {A B} hc := by
     classical
-    obtain hc' | hc' := lt_or_le 1 (#(A.image f) * #(B.image f))
+    obtain hc' | hc' := lt_or_ge 1 (#(A.image f) * #(B.image f))
     · obtain ⟨⟨a1, b1⟩, h1, ⟨a2, b2⟩, h2, hne, hu1, hu2⟩ := uniqueMul_of_one_lt_card hc'
       simp_rw [mem_product, mem_image] at h1 h2 ⊢
       obtain ⟨⟨a1, ha1, rfl⟩, b1, hb1, rfl⟩ := h1
@@ -583,9 +587,9 @@ instance (priority := 100) of_covariant_right [IsRightCancelMul G]
     have : UniqueMul A B a0 b0 := by
       intro a b ha hb he
       obtain hl | rfl | hl := lt_trichotomy b b0
-      · exact ((he0 ▸ he ▸ mul_lt_mul_left' hl a).not_le <| le_max' _ _ <| mul_mem_mul ha hb0).elim
+      · exact ((he0 ▸ he ▸ mul_lt_mul_left' hl a).not_ge <| le_max' _ _ <| mul_mem_mul ha hb0).elim
       · exact ⟨mul_right_cancel he, rfl⟩
-      · exact ((he0 ▸ mul_lt_mul_left' hl a0).not_le <| le_max' _ _ <| mul_mem_mul ha0 hb).elim
+      · exact ((he0 ▸ mul_lt_mul_left' hl a0).not_ge <| le_max' _ _ <| mul_mem_mul ha0 hb).elim
     refine ⟨_, mk_mem_product ha0 hb0, _, mk_mem_product ha1 hb1, fun he ↦ ?_, this, ?_⟩
     · rw [Prod.mk_inj] at he; rw [he.1, he.2, he1] at he0
       obtain ⟨⟨a2, b2⟩, h2, hne⟩ := exists_ne_of_one_lt_card hc (a0, b0)
@@ -594,9 +598,9 @@ instance (priority := 100) of_covariant_right [IsRightCancelMul G]
       exact Prod.ext_iff.mpr (this h2.1 h2.2 he.symm)
     · intro a b ha hb he
       obtain hl | rfl | hl := lt_trichotomy b b1
-      · exact ((he1 ▸ mul_lt_mul_left' hl a1).not_le <| min'_le _ _ <| mul_mem_mul ha1 hb).elim
+      · exact ((he1 ▸ mul_lt_mul_left' hl a1).not_ge <| min'_le _ _ <| mul_mem_mul ha1 hb).elim
       · exact ⟨mul_right_cancel he, rfl⟩
-      · exact ((he1 ▸ he ▸ mul_lt_mul_left' hl a).not_le <| min'_le _ _ <| mul_mem_mul ha hb1).elim
+      · exact ((he1 ▸ he ▸ mul_lt_mul_left' hl a).not_ge <| min'_le _ _ <| mul_mem_mul ha hb1).elim
 
 open MulOpposite in
 -- see Note [lower instance priority]

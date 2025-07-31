@@ -311,9 +311,8 @@ lemma odd_matches_node_outside [Finite V] {u : Set V}
   haveI : Fintype ↑(Subgraph.induce M (Subtype.val '' supp c.val)).verts := Fintype.ofFinite _
   classical
   haveI : Fintype (c.val.supp) := Fintype.ofFinite _
-  simpa [Subgraph.induce_verts, Subgraph.verts_top, Set.toFinset_image, Nat.card_eq_fintype_card,
-    Set.toFinset_image,Finset.card_image_of_injective _ (Subtype.val_injective), Set.toFinset_card,
-    ← Set.Nat.card_coe_set_eq] using hMmatch.even_card
+  simpa [Subgraph.induce_verts, Subgraph.verts_top, Nat.card_eq_fintype_card, Set.toFinset_card,
+    Finset.card_image_of_injective, ← Nat.card_coe_set_eq] using hMmatch.even_card
 
 end Finite
 end ConnectedComponent
@@ -371,14 +370,16 @@ lemma IsCycles.existsUnique_ne_adj (h : G.IsCycles) (hadj : G.Adj v w) :
   simp_rw [← SimpleGraph.mem_neighborSet] at *
   aesop
 
-lemma IsCycles.induce_supp (c : G.ConnectedComponent) (h : G.IsCycles) :
-    (G.induce c.supp).spanningCoe.IsCycles := by
+lemma IsCycles.toSimpleGraph (c : G.ConnectedComponent) (h : G.IsCycles) :
+    c.toSimpleGraph.spanningCoe.IsCycles := by
   intro v ⟨w, hw⟩
-  rw [mem_neighborSet, c.adj_spanningCoe_induce_supp] at hw
+  rw [mem_neighborSet, c.adj_spanningCoe_toSimpleGraph] at hw
   rw [← h ⟨w, hw.2⟩]
   congr
   ext w'
-  simp only [mem_neighborSet, c.adj_spanningCoe_induce_supp, hw, true_and]
+  simp only [mem_neighborSet, c.adj_spanningCoe_toSimpleGraph, hw, true_and]
+
+@[deprecated (since := "2025-06-08")] alias IsCycles.induce_supp := IsCycles.toSimpleGraph
 
 lemma Walk.IsCycle.isCycles_spanningCoe_toSubgraph {u : V} {p : G.Walk u u} (hpc : p.IsCycle) :
     p.toSubgraph.spanningCoe.IsCycles := by
@@ -405,8 +406,8 @@ lemma Walk.IsCycle.adj_toSubgraph_iff_of_isCycles [LocallyFinite G] {u} {p : G.W
   rw [← Cardinal.eq, ← Set.cast_ncard (Set.toFinite _),
       ← Set.cast_ncard (finite_neighborSet_toSubgraph p), hcyc
         (Set.Nonempty.mono (p.toSubgraph.neighborSet_subset v) <|
-          Set.nonempty_of_ncard_ne_zero <| by simp [Set.Nonempty.mono,
-          hp.ncard_neighborSet_toSubgraph_eq_two (by aesop), Set.nonempty_of_ncard_ne_zero]),
+          Set.nonempty_of_ncard_ne_zero <| by simp [
+          hp.ncard_neighborSet_toSubgraph_eq_two (by aesop)]),
       hp.ncard_neighborSet_toSubgraph_eq_two (by aesop)]
 
 open scoped symmDiff
@@ -421,7 +422,7 @@ lemma Subgraph.IsPerfectMatching.symmDiff_isCycles
     Set.eq_empty_iff_forall_notMem, SimpleGraph.mem_neighborSet, SimpleGraph.sup_adj, sdiff_adj,
     spanningCoe_adj, not_or, not_and, not_not]
   by_cases hww' : w = w'
-  · simp_all [← imp_iff_not_or, hww']
+  · simp_all [← imp_iff_not_or]
   · right
     use w, w'
     aesop
@@ -545,7 +546,7 @@ def IsAlternating (G G' : SimpleGraph V) :=
 lemma IsAlternating.mono {G'' : SimpleGraph V} (halt : G.IsAlternating G') (h : G'' ≤ G) :
     G''.IsAlternating G' := fun _ _ _ hww' hvw hvw' ↦ halt hww' (h hvw) (h hvw')
 
-lemma IsAlternating.spanningCoe (halt : G.IsAlternating G') (H : Subgraph G)  :
+lemma IsAlternating.spanningCoe (halt : G.IsAlternating G') (H : Subgraph G) :
     H.spanningCoe.IsAlternating G' := by
   intro v w w' hww' hvw hvv'
   simp only [Subgraph.spanningCoe_adj] at hvw hvv'
@@ -579,7 +580,7 @@ lemma Subgraph.IsPerfectMatching.symmDiff_of_isAlternating (hM : M.IsPerfectMatc
     (⊤ : Subgraph (M.spanningCoe ∆ G')).IsPerfectMatching := by
   rw [Subgraph.isPerfectMatching_iff]
   intro v
-  simp only [toSubgraph_adj, symmDiff_def, SimpleGraph.sup_adj, sdiff_adj, Subgraph.spanningCoe_adj]
+  simp only [symmDiff_def]
   obtain ⟨w, hw⟩ := hM.1 (hM.2 v)
   by_cases h : G'.Adj v w
   · obtain ⟨w', hw'⟩ := hG'cyc.other_adj_of_adj h

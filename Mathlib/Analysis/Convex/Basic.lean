@@ -183,8 +183,8 @@ theorem Convex.linear_preimage {𝕜₁ : Type*} [Semiring 𝕜₁] [Module 𝕜
   exact hs hx hy ha hb hab
 
 theorem Convex.is_linear_preimage {𝕜₁ : Type*} [Semiring 𝕜₁] [Module 𝕜₁ E] [Module 𝕜₁ F] {s : Set F}
-  [SMul 𝕜 𝕜₁] [IsScalarTower 𝕜 𝕜₁ E] [IsScalarTower 𝕜 𝕜₁ F] (hs : Convex 𝕜 s) {f : E → F}
-  (hf : IsLinearMap 𝕜₁ f) :
+    [SMul 𝕜 𝕜₁] [IsScalarTower 𝕜 𝕜₁ E] [IsScalarTower 𝕜 𝕜₁ F] (hs : Convex 𝕜 s) {f : E → F}
+    (hf : IsLinearMap 𝕜₁ f) :
     Convex 𝕜 (f ⁻¹' s) :=
   hs.linear_preimage <| hf.mk' f
 
@@ -678,7 +678,6 @@ def stdSimplexEquivIcc : stdSimplex 𝕜 (Fin 2) ≃ Icc (0 : 𝕜) 1 where
       calc
         (1 : 𝕜) - f.1 0 = f.1 0 + f.1 1 - f.1 0 := by rw [← Fin.sum_univ_two f.1, f.2.2]
         _ = f.1 1 := add_sub_cancel_left _ _
-  right_inv _ := Subtype.eq rfl
 
 end OrderedRing
 

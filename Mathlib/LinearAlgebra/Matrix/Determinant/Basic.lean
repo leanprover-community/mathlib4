@@ -138,7 +138,7 @@ theorem det_mul (M N : Matrix n n R) : det (M * N) = det M * det N :=
       rw [Finset.sum_comm]
     _ = ∑ p : n → n with Bijective p, ∑ σ : Perm n, ε σ * ∏ i, M (σ i) (p i) * N (p i) i := by
       refine (sum_subset (filter_subset _ _) fun f _ hbij ↦ det_mul_aux ?_).symm
-      simpa only [true_and, mem_filter, mem_univ] using hbij
+      simpa only [mem_filter_univ] using hbij
     _ = ∑ τ : Perm n, ∑ σ : Perm n, ε σ * ∏ i, M (σ i) (τ i) * N (τ i) i :=
       sum_bij (fun p h ↦ Equiv.ofBijective p (mem_filter.1 h).2) (fun _ _ ↦ mem_univ _)
         (fun _ _ _ _ h ↦ by injection h)
@@ -237,7 +237,7 @@ theorem abs_det_submatrix_equiv_equiv {R : Type*}
     |(A.submatrix e₁ e₂).det| = |A.det| := by
   have hee : e₂ = e₁.trans (e₁.symm.trans e₂) := by ext; simp
   rw [hee]
-  show |((A.submatrix id (e₁.symm.trans e₂)).submatrix e₁ e₁).det| = |A.det|
+  change |((A.submatrix id (e₁.symm.trans e₂)).submatrix e₁ e₁).det| = |A.det|
   rw [Matrix.det_submatrix_equiv_self, Matrix.det_permute', abs_mul, abs_unit_intCast, one_mul]
 
 /-- Reindexing both indices along the same equivalence preserves the determinant.
@@ -648,12 +648,7 @@ theorem det_blockDiagonal {o : Type*} [Fintype o] [DecidableEq o] (M : o → Mat
         ext
         · simp only
         · simp only [hσ]
-      have mk_inv_apply_eq : ∀ k x, ((σ⁻¹ (x, k)).fst, k) = σ⁻¹ (x, k) := by
-        intro k x
-        conv_lhs => rw [← Perm.apply_inv_self σ (x, k)]
-        ext
-        · simp only [apply_inv_self]
-        · simp only [hσ']
+      have mk_inv_apply_eq : ∀ k x, ((σ⁻¹ (x, k)).fst, k) = σ⁻¹ (x, k) := by grind
       refine ⟨fun k _ => ⟨fun x => (σ (x, k)).fst, fun x => (σ⁻¹ (x, k)).fst, ?_, ?_⟩, ?_, ?_⟩
       · intro x
         simp only [mk_apply_eq, inv_apply_self]
@@ -741,7 +736,7 @@ theorem det_succ_column_zero {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) 
   refine Finset.sum_congr rfl fun i _ => Fin.cases ?_ (fun i => ?_) i
   · simp only [Fin.prod_univ_succ, Matrix.det_apply, Finset.mul_sum,
       Equiv.Perm.decomposeFin_symm_apply_zero, Fin.val_zero, one_mul,
-      Equiv.Perm.decomposeFin.symm_sign, Equiv.swap_self, if_true, id, eq_self_iff_true,
+      Equiv.Perm.decomposeFin.symm_sign, Equiv.swap_self, if_true, id,
       Equiv.Perm.decomposeFin_symm_apply_succ, Fin.succAbove_zero, Equiv.coe_refl, pow_zero,
       mul_smul_comm, of_apply]
   -- `univ_perm_fin_succ` gives a different embedding of `Perm (Fin n)` into
@@ -761,7 +756,7 @@ theorem det_succ_column_zero {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) 
         Equiv.Perm.decomposeFin_symm_apply_zero, Equiv.Perm.decomposeFin_symm_apply_succ]
     _ = -1 * (A (Fin.succ i) 0 * (Perm.sign σ : ℤ) •
         ∏ i', A ((Fin.succ i).succAbove (Fin.cycleRange i (σ i'))) i'.succ) := by
-      simp [mul_assoc, mul_comm, _root_.neg_mul, one_mul, zsmul_eq_mul, neg_inj, neg_smul,
+      simp [_root_.neg_mul, one_mul, zsmul_eq_mul, neg_smul,
         Fin.succAbove_cycleRange, mul_left_comm]
 
 /-- Laplacian expansion of the determinant of an `n+1 × n+1` matrix along row 0. -/

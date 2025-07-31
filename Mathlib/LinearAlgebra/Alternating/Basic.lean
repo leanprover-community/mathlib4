@@ -387,7 +387,6 @@ and `1`-multilinear alternating maps from `M` to `N`. -/
 def ofSubsingleton [Subsingleton ι] (i : ι) : (M →ₗ[R] N) ≃ (M [⋀^ι]→ₗ[R] N) where
   toFun f := ⟨MultilinearMap.ofSubsingleton R M N i f, fun _ _ _ _ ↦ absurd (Subsingleton.elim _ _)⟩
   invFun f := (MultilinearMap.ofSubsingleton R M N i).symm f
-  left_inv _ := rfl
   right_inv _ := coe_multilinearMap_injective <|
     (MultilinearMap.ofSubsingleton R M N i).apply_symm_apply _
 
@@ -889,7 +888,7 @@ variable [Module R' N₁] [Module R' N₂]
 
 /-- Two alternating maps indexed by a `Fintype` are equal if they are equal when all arguments
 are distinct basis vectors. -/
-theorem Basis.ext_alternating {f g : N₁ [⋀^ι]→ₗ[R'] N₂} (e : Basis ι₁ R' N₁)
+theorem Module.Basis.ext_alternating {f g : N₁ [⋀^ι]→ₗ[R'] N₂} (e : Basis ι₁ R' N₁)
     (h : ∀ v : ι → ι₁, Function.Injective v → (f fun i => e (v i)) = g fun i => e (v i)) :
     f = g := by
   refine AlternatingMap.coe_multilinearMap_injective (Basis.ext_multilinear (fun _ ↦ e) fun v => ?_)
@@ -927,5 +926,4 @@ def AlternatingMap.constLinearEquivOfIsEmpty [IsEmpty ι] : N'' ≃ₗ[R'] (M'' 
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
   invFun f := f 0
-  left_inv _ := rfl
   right_inv f := ext fun _ => AlternatingMap.congr_arg f <| Subsingleton.elim _ _

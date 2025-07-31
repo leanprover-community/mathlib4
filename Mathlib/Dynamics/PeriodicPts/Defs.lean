@@ -318,7 +318,7 @@ theorem le_of_lt_minimalPeriod_of_iterate_eq {m n : ℕ} (hm : m < minimalPeriod
     ((IsPeriodicPt.minimalPeriod_le (tsub_pos_of_lt hmn')
               (isPeriodicPt_of_mem_periodicPts_of_isPeriodicPt_iterate
                 (minimalPeriod_pos_iff_mem_periodicPts.1 ((zero_le m).trans_lt hm)) hmn)).trans
-          (Nat.sub_le m n)).not_lt
+          (Nat.sub_le m n)).not_gt
       hm
 
 theorem iterate_injOn_Iio_minimalPeriod : (Iio <| minimalPeriod f x).InjOn (f^[·] x) :=
@@ -465,7 +465,7 @@ theorem periodicOrbit_apply_eq (hx : x ∈ periodicPts f) :
   periodicOrbit_apply_iterate_eq hx 1
 
 theorem periodicOrbit_chain (r : α → α → Prop) {f : α → α} {x : α} :
-    (periodicOrbit f x).Chain r ↔ ∀ n < minimalPeriod f x, r (f^[n] x) (f^[n + 1] x) := by
+    (periodicOrbit f x).Chain r ↔ ∀ n < minimalPeriod f x, r (f^[n] x) (f^[n+1] x) := by
   by_cases hx : x ∈ periodicPts f
   · have hx' := minimalPeriod_pos_of_mem_periodicPts hx
     have hM := Nat.sub_add_cancel (succ_le_iff.2 hx')
@@ -483,7 +483,7 @@ theorem periodicOrbit_chain (r : α → α → Prop) {f : α → α} {x : α} :
     simp
 
 theorem periodicOrbit_chain' (r : α → α → Prop) {f : α → α} {x : α} (hx : x ∈ periodicPts f) :
-    (periodicOrbit f x).Chain r ↔ ∀ n, r (f^[n] x) (f^[n + 1] x) := by
+    (periodicOrbit f x).Chain r ↔ ∀ n, r (f^[n] x) (f^[n+1] x) := by
   rw [periodicOrbit_chain r]
   refine ⟨fun H n => ?_, fun H n _ => H n⟩
   rw [iterate_succ_apply, ← iterate_mod_minimalPeriod_eq, ← iterate_mod_minimalPeriod_eq (n := n),

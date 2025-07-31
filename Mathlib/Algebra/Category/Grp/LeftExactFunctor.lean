@@ -19,7 +19,7 @@ Here, `C ⥤ₗ D` is the category of finite-limits-preserving functors from `C`
 To construct a functor from `C ⥤ₗ Type v` to `C ⥤ₗ AddCommGrp.{v}`, notice that a left-exact
 functor `F : C ⥤ Type v` induces a functor `CommGrp_ C ⥤ CommGrp_ (Type v)`. But `CommGrp_ C` is
 equivalent to `C`, and `CommGrp_ (Type v)` is equivalent to `AddCommGrp.{v}`, so we turn this
-into a functor `C ⥤ AddCommGrp.{v}`. By construction, composing with with the forgetful
+into a functor `C ⥤ AddCommGrp.{v}`. By construction, composing with the forgetful
 functor recovers the functor we started with, so since the forgetful functor reflects finite
 limits and `F` preserves finite limits, our constructed functor also preserves finite limits. It
 can be shown that this construction gives a quasi-inverse to the whiskering operation
@@ -48,9 +48,10 @@ private noncomputable local instance : BraidedCategory C := .ofCartesianMonoidal
 
 /-- Implementation, see `leftExactFunctorForgetEquivalence`. -/
 noncomputable def inverseAux : (C ⥤ₗ Type v) ⥤ C ⥤ AddCommGrp.{v} :=
-  Functor.mapCommGrpFunctor ⋙ (whiskeringLeft _ _ _).obj Preadditive.commGrpEquivalence.functor ⋙
-    (whiskeringRight _ _ _).obj
-      (commGrpTypeEquivalenceCommGrp.functor ⋙ commGroupAddCommGroupEquivalence.functor)
+  Functor.mapCommGrpFunctor ⋙
+    (Functor.whiskeringLeft _ _ _).obj Preadditive.commGrpEquivalence.functor ⋙
+      (Functor.whiskeringRight _ _ _).obj
+        (commGrpTypeEquivalenceCommGrp.functor ⋙ commGroupAddCommGroupEquivalence.functor)
 
 instance (F : C ⥤ₗ Type v) : PreservesFiniteLimits (inverseAux.obj F) where
   preservesFiniteLimits J _ _ :=
@@ -62,6 +63,8 @@ instance (F : C ⥤ₗ Type v) : PreservesFiniteLimits (inverseAux.obj F) where
 noncomputable def inverse : (C ⥤ₗ Type v) ⥤ (C ⥤ₗ AddCommGrp.{v}) :=
   ObjectProperty.lift _ inverseAux inferInstance
 
+open scoped Mon_Class
+
 attribute [-instance] Functor.LaxMonoidal.comp Functor.Monoidal.instComp in
 /-- Implementation, see `leftExactFunctorForgetEquivalence`.
 This is the complicated bit, where we show that forgetting the group structure in the image of
@@ -72,10 +75,14 @@ noncomputable def unitIsoAux (F : C ⥤ AddCommGrp.{v}) [PreservesFiniteLimits F
       (F ⋙ forget AddCommGrp).mapCommGrp.obj (Preadditive.commGrpEquivalence.functor.obj X) := by
   letI : (F ⋙ forget AddCommGrp).Braided := .ofChosenFiniteProducts _
   letI : F.Monoidal := .ofChosenFiniteProducts _
-  refine CommGrp_.mkIso Multiplicative.toAdd.toIso (by aesop_cat) ?_
+  refine CommGrp_.mkIso Multiplicative.toAdd.toIso (by
+    erw [Functor.mapCommGrp_obj_grp_one]
+    aesop_cat) ?_
   dsimp [-Functor.comp_map, -ConcreteCategory.forget_map_eq_coe, -forget_map]
   have : F.Additive := Functor.additive_of_preserves_binary_products _
-  rw [Functor.comp_map, F.map_add, Functor.Monoidal.μ_comp F (forget AddCommGrp) X X,
+  simp only [Category.id_comp]
+  erw [Functor.mapCommGrp_obj_grp_mul]
+  erw [Functor.comp_map, F.map_add, Functor.Monoidal.μ_comp F (forget AddCommGrp) X X,
     Category.assoc, ← Functor.map_comp, Preadditive.comp_add, Functor.Monoidal.μ_fst,
     Functor.Monoidal.μ_snd]
   aesop_cat

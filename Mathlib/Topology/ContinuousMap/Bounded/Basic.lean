@@ -217,6 +217,12 @@ theorem dist_eq_iSup : dist f g = ⨆ x : α, dist (f x) (g x) := by
 theorem nndist_eq_iSup : nndist f g = ⨆ x : α, nndist (f x) (g x) :=
   Subtype.ext <| dist_eq_iSup.trans <| by simp_rw [val_eq_coe, coe_iSup, coe_nndist]
 
+theorem edist_eq_iSup : edist f g = ⨆ x, edist (f x) (g x) := by
+  simp_rw [edist_nndist, nndist_eq_iSup]
+  refine ENNReal.coe_iSup ⟨nndist f g, ?_⟩
+  rintro - ⟨x, hx, rfl⟩
+  exact nndist_coe_le_nndist x
+
 theorem tendsto_iff_tendstoUniformly {ι : Type*} {F : ι → α →ᵇ β} {f : α →ᵇ β} {l : Filter ι} :
     Tendsto F l (𝓝 f) ↔ TendstoUniformly (fun i => F i) f l :=
   Iff.intro
@@ -438,7 +444,7 @@ theorem dist_extend_extend (f : α ↪ δ) (g₁ g₂ : α →ᵇ β) (h₁ h₂
       _ ≤ _ := dist_coe_le_dist _
 
 theorem isometry_extend (f : α ↪ δ) (h : δ →ᵇ β) : Isometry fun g : α →ᵇ β => extend f g h :=
-  Isometry.of_dist_eq fun g₁ g₂ => by simp [dist_nonneg]
+  Isometry.of_dist_eq fun g₁ g₂ => by simp
 
 end Extend
 
@@ -541,8 +547,8 @@ instance instMulOneClass [MulOneClass R] [BoundedMul R] [ContinuousMul R] : MulO
 @[to_additive (attr := simps)
 "Composition on the left by a (lipschitz-continuous) homomorphism of topological `AddMonoid`s, as a
 `AddMonoidHom`. Similar to `AddMonoidHom.compLeftContinuous`."]
-protected def _root_.MonoidHom.compLeftContinuousBounded (α : Type*) [TopologicalSpace α]
-    [PseudoMetricSpace β] [Monoid β] [BoundedMul β] [ContinuousMul β]
+protected def _root_.MonoidHom.compLeftContinuousBounded (α : Type*)
+    [TopologicalSpace α] [PseudoMetricSpace β] [Monoid β] [BoundedMul β] [ContinuousMul β]
     [PseudoMetricSpace γ] [Monoid γ] [BoundedMul γ] [ContinuousMul γ]
     (g : β →* γ) {C : NNReal} (hg : LipschitzWith C g) :
     (α →ᵇ β) →* (α →ᵇ γ) where

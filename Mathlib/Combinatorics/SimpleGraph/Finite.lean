@@ -352,7 +352,7 @@ theorem exists_maximal_degree_vertex [DecidableRel G.Adj] [Nonempty V] :
     ∃ v, G.maxDegree = G.degree v := by
   obtain ⟨t, ht⟩ := max_of_nonempty (univ_nonempty.image fun v => G.degree v)
   have ht₂ := mem_of_max ht
-  simp only [mem_image, mem_univ, exists_prop_of_true] at ht₂
+  simp only [mem_image, mem_univ] at ht₂
   rcases ht₂ with ⟨v, _, rfl⟩
   refine ⟨v, ?_⟩
   rw [maxDegree, ht]
@@ -496,9 +496,8 @@ theorem card_edgeFinset_induce_support :
   card_edgeFinset_induce_of_support_subset subset_rfl
 
 theorem map_neighborFinset_induce [DecidableEq V] (v : s) :
-    ((G.induce s).neighborFinset v).map (.subtype s)
-      = G.neighborFinset v ∩ s.toFinset := by
-  ext; simp [Set.mem_def]
+    ((G.induce s).neighborFinset v).map (.subtype (· ∈ s)) = G.neighborFinset v ∩ s.toFinset := by
+  ext; simp
 
 theorem map_neighborFinset_induce_of_neighborSet_subset {v : s} (h : G.neighborSet v ⊆ s) :
     ((G.induce s).neighborFinset v).map (.subtype s) = G.neighborFinset v := by

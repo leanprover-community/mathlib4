@@ -706,8 +706,6 @@ variable [Max α] [Max β] [Max γ]
 protected def dual : SupHom α β ≃ InfHom αᵒᵈ βᵒᵈ where
   toFun f := ⟨f, f.map_sup'⟩
   invFun f := ⟨f, f.map_inf'⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 @[simp]
 theorem dual_id : SupHom.dual (SupHom.id α) = InfHom.id _ :=
@@ -739,8 +737,6 @@ variable [Min α] [Min β] [Min γ]
 protected def dual : InfHom α β ≃ SupHom αᵒᵈ βᵒᵈ where
   toFun f := ⟨f, f.map_inf'⟩
   invFun f := ⟨f, f.map_sup'⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 @[simp]
 theorem dual_id : InfHom.dual (InfHom.id α) = SupHom.id _ :=
@@ -772,8 +768,6 @@ variable [Lattice α] [Lattice β] [Lattice γ]
 protected def dual : LatticeHom α β ≃ LatticeHom αᵒᵈ βᵒᵈ where
   toFun f := ⟨InfHom.dual f.toInfHom, f.map_sup'⟩
   invFun f := ⟨SupHom.dual.symm f.toInfHom, f.map_sup'⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 @[simp] theorem dual_id : LatticeHom.dual (LatticeHom.id α) = LatticeHom.id _ := rfl
 

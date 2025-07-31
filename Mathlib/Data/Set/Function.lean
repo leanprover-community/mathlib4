@@ -249,6 +249,9 @@ theorem injOn_singleton (f : α → β) (a : α) : InjOn f {a} :=
 
 @[simp] lemma injOn_pair {b : α} : InjOn f {a, b} ↔ f a = f b → a = b := by unfold InjOn; aesop
 
+@[simp low] lemma injOn_of_eq_iff_eq (s : Set α) (h : ∀ x y, f x = f y ↔ x = y) : Set.InjOn f s :=
+  fun x _ y _ => (h x y).mp
+
 theorem InjOn.eq_iff {x y} (h : InjOn f s) (hx : x ∈ s) (hy : y ∈ s) : f x = f y ↔ x = y :=
   ⟨h hx hy, fun h => h ▸ rfl⟩
 
@@ -660,7 +663,7 @@ induces a bijection from the image of `s` to the image of `t`, as long as `g` is
 is injective on the image of `s`.
 -/
 theorem bijOn_image_image {p₁ : α → γ} {p₂ : β → δ} {g : γ → δ} (comm : ∀ a, p₂ (f a) = g (p₁ a))
-    (hbij : BijOn f s t) (hinj: InjOn g (p₁ '' s)) : BijOn g (p₁ '' s) (p₂ '' t) := by
+    (hbij : BijOn f s t) (hinj : InjOn g (p₁ '' s)) : BijOn g (p₁ '' s) (p₂ '' t) := by
   obtain ⟨h1, h2, h3⟩ := hbij
   refine ⟨?_, hinj, ?_⟩
   · rintro _ ⟨a, ha, rfl⟩

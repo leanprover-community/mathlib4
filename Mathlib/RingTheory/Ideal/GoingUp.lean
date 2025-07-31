@@ -55,7 +55,7 @@ theorem exists_coeff_ne_zero_mem_comap_of_non_zero_divisor_root_mem {r : S}
     rw [eval₂_mul, eval₂_X] at hp
     obtain ⟨i, hi, mem⟩ := ih p_nonzero (r_non_zero_divisor hp)
     refine ⟨i + 1, ?_, ?_⟩
-    · simp [hi, mem]
+    · simp [hi]
     · simpa [hi] using mem
 
 /-- Let `P` be an ideal in `R[x]`.  The map

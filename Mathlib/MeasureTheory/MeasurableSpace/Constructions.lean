@@ -220,7 +220,7 @@ alias Measurable.subtype_val := Measurable.subtype_coe
 @[measurability]
 theorem Measurable.subtype_mk {p : β → Prop} {f : α → β} (hf : Measurable f) {h : ∀ x, p (f x)} :
     Measurable fun x => (⟨f x, h x⟩ : Subtype p) := fun t ⟨s, hs⟩ =>
-  hs.2 ▸ by simp only [← preimage_comp, Function.comp_def, Subtype.coe_mk, hf hs.1]
+  hs.2 ▸ by simp only [← preimage_comp, Function.comp_def, hf hs.1]
 
 @[measurability]
 protected theorem Measurable.rangeFactorization {f : α → β} (hf : Measurable f) :
@@ -282,7 +282,7 @@ section Atoms
 
 variable [MeasurableSpace β]
 
-/-- The *measurable atom* of `x` is the intersection of all the measurable sets countaining `x`.
+/-- The *measurable atom* of `x` is the intersection of all the measurable sets containing `x`.
 It is measurable when the space is countable (or more generally when the measurable space is
 countably generated). -/
 def measurableAtom (x : β) : Set β :=

@@ -49,7 +49,7 @@ noncomputable def analyticOrderAt (f : 𝕜 → E) (z₀ : 𝕜) : ℕ∞ :=
 
 The order is defined to be `0` if `f` is identically zero on a neighbourhood of `z₀`,
 and is otherwise the unique `n` such that `f` can locally be written as `f z = (z - z₀) ^ n • g z`,
-where `g` is analyticand does not vanish at `z₀`. See `AnalyticAt.analyticOrderAt_eq_top` and
+where `g` is analytic and does not vanish at `z₀`. See `AnalyticAt.analyticOrderAt_eq_top` and
 `AnalyticAt.analyticOrderAt_eq_natCast` for these equivalences.
 
 If `f` isn't analytic at `z₀`, then `analyticOrderNatAt f z₀` returns a junk value of `0`. -/
@@ -209,7 +209,7 @@ theorem le_analyticOrderAt_add :
     · refine ENat.forall_natCast_le_iff_le.mp fun n ↦ ?_
       simp only [le_min_iff, natCast_le_analyticOrderAt, hf, hg, hf.add hg]
       refine fun ⟨⟨F, hF, hF'⟩, ⟨G, hG, hG'⟩⟩ ↦ ⟨F + G, hF.add hG, ?_⟩
-      filter_upwards [hF', hG'] with z using by simp +contextual [mul_add]
+      filter_upwards [hF', hG'] with z using by simp +contextual
     · simp [*]
   · simp [*]
 
@@ -221,7 +221,7 @@ lemma le_analyticOrderAt_sub :
 
 lemma analyticOrderAt_add_eq_left_of_lt (hfg : analyticOrderAt f z₀ < analyticOrderAt g z₀) :
     analyticOrderAt (f + g) z₀ = analyticOrderAt f z₀ :=
-  le_antisymm (by simpa [hfg.not_le] using le_analyticOrderAt_sub (f := f + g) (g := g) (z₀ := z₀))
+  le_antisymm (by simpa [hfg.not_ge] using le_analyticOrderAt_sub (f := f + g) (g := g) (z₀ := z₀))
     (by simpa [hfg.le] using le_analyticOrderAt_add (f := f) (g := g) (z₀ := z₀))
 
 lemma analyticOrderAt_add_eq_right_of_lt (hgf : analyticOrderAt g z₀ < analyticOrderAt f z₀) :
@@ -234,7 +234,7 @@ lemma analyticOrderAt_add_eq_right_of_lt (hgf : analyticOrderAt g z₀ < analyti
 of the orders of the summands. -/
 lemma analyticOrderAt_add_of_ne (hfg : analyticOrderAt f z₀ ≠ analyticOrderAt g z₀) :
     analyticOrderAt (f + g) z₀ = min (analyticOrderAt f z₀) (analyticOrderAt g z₀) := by
-  obtain hfg | hgf := hfg.lt_or_lt
+  obtain hfg | hgf := hfg.lt_or_gt
   · simpa [hfg.le] using analyticOrderAt_add_eq_left_of_lt hfg
   · simpa [hgf.le] using analyticOrderAt_add_eq_right_of_lt hgf
 
@@ -242,7 +242,7 @@ lemma analyticOrderAt_add_of_ne (hfg : analyticOrderAt f z₀ ≠ analyticOrderA
 alias AnalyticAt.order_add_of_order_ne_order := analyticOrderAt_add_of_ne
 
 lemma analyticOrderAt_smul_eq_top_of_left {f : 𝕜 → 𝕜} (hf : analyticOrderAt f z₀ = ⊤) :
-   analyticOrderAt (f • g) z₀ = ⊤ := by
+     analyticOrderAt (f • g) z₀ = ⊤ := by
   rw [analyticOrderAt_eq_top, eventually_nhds_iff] at *
   obtain ⟨t, h₁t, h₂t, h₃t⟩ := hf
   exact ⟨t, fun y hy ↦ by simp [h₁t y hy], h₂t, h₃t⟩
@@ -336,11 +336,11 @@ end NontriviallyNormedField
 
 namespace AnalyticOnNhd
 
-variable {U : Set 𝕜} {f : 𝕜 → E} (hf : AnalyticOnNhd 𝕜 f U)
-include hf
+variable {U : Set 𝕜} {f : 𝕜 → E}
 
 /-- The set where an analytic function has infinite order is clopen in its domain of analyticity. -/
-theorem isClopen_setOf_analyticOrderAt_eq_top : IsClopen {u : U | analyticOrderAt f u = ⊤} := by
+theorem isClopen_setOf_analyticOrderAt_eq_top (hf : AnalyticOnNhd 𝕜 f U) :
+    IsClopen {u : U | analyticOrderAt f u = ⊤} := by
   constructor
   · rw [← isOpen_compl_iff, isOpen_iff_forall_mem_open]
     intro z hz
@@ -368,22 +368,14 @@ theorem isClopen_setOf_analyticOrderAt_eq_top : IsClopen {u : U | analyticOrderA
     rw [analyticOrderAt_eq_top, eventually_nhds_iff] at hz
     obtain ⟨t', h₁t', h₂t', h₃t'⟩ := hz
     use Subtype.val ⁻¹' t'
-    simp only [mem_compl_iff, mem_singleton_iff, isOpen_induced h₂t', mem_preimage,
-      h₃t', and_self, and_true]
+    simp only [isOpen_induced h₂t', mem_preimage, h₃t', and_self, and_true]
     intro w hw
     simp only [mem_setOf_eq]
-    -- Trivial case: w = z
-    by_cases h₁w : w = z
-    · rw [h₁w]
-      tauto
-    -- Nontrivial case: w ≠ z
-    use t' \ {z.1}, fun y h₁y ↦ h₁t' y h₁y.1, h₂t'.sdiff isClosed_singleton
-    apply (mem_diff w).1
-    exact ⟨hw, mem_singleton_iff.not.1 (Subtype.coe_ne_coe.2 h₁w)⟩
+    grind [Set.mem_preimage, Set.mem_seq_iff]
 
 /-- On a connected set, there exists a point where a meromorphic function `f` has finite order iff
 `f` has finite order at every point. -/
-theorem exists_analyticOrderAt_ne_top_iff_forall (hU : IsConnected U) :
+theorem exists_analyticOrderAt_ne_top_iff_forall (hf : AnalyticOnNhd 𝕜 f U) (hU : IsConnected U) :
     (∃ u : U, analyticOrderAt f u ≠ ⊤) ↔ (∀ u : U, analyticOrderAt f u ≠ ⊤) := by
   have : ConnectedSpace U := Subtype.connectedSpace hU
   obtain ⟨v⟩ : Nonempty U := inferInstance
@@ -393,22 +385,67 @@ theorem exists_analyticOrderAt_ne_top_iff_forall (hU : IsConnected U) :
 
 /-- On a preconnected set, a meromorphic function has finite order at one point if it has finite
 order at another point. -/
-theorem analyticOrderAt_ne_top_of_isPreconnected {x y : 𝕜} (hU : IsPreconnected U) (h₁x : x ∈ U)
-    (hy : y ∈ U) (h₂x : analyticOrderAt f x ≠ ⊤) : analyticOrderAt f y ≠ ⊤ :=
+theorem analyticOrderAt_ne_top_of_isPreconnected {x y : 𝕜} (hf : AnalyticOnNhd 𝕜 f U)
+    (hU : IsPreconnected U) (h₁x : x ∈ U) (hy : y ∈ U) (h₂x : analyticOrderAt f x ≠ ⊤) :
+    analyticOrderAt f y ≠ ⊤ :=
   (hf.exists_analyticOrderAt_ne_top_iff_forall ⟨nonempty_of_mem h₁x, hU⟩).1 (by use ⟨x, h₁x⟩)
     ⟨y, hy⟩
 
 /-- The set where an analytic function has zero or infinite order is discrete within its domain of
 analyticity. -/
-theorem codiscrete_setOf_analyticOrderAt_eq_zero_or_top :
+theorem codiscrete_setOf_analyticOrderAt_eq_zero_or_top (hf : AnalyticOnNhd 𝕜 f U) :
     {u : U | analyticOrderAt f u = 0 ∨ analyticOrderAt f u = ⊤} ∈ Filter.codiscrete U := by
-  rw [mem_codiscrete_subtype_iff_mem_codiscreteWithin, mem_codiscreteWithin]
+  simp_rw [mem_codiscrete_subtype_iff_mem_codiscreteWithin, mem_codiscreteWithin,
+    disjoint_principal_right]
   intro x hx
-  rw [Filter.disjoint_principal_right]
   rcases (hf x hx).eventually_eq_zero_or_eventually_ne_zero with h₁f | h₁f
   · filter_upwards [eventually_nhdsWithin_of_eventually_nhds h₁f.eventually_nhds] with a ha
-    simp +contextual [analyticOrderAt_eq_top, ha]
+    simp [analyticOrderAt_eq_top, ha]
   · filter_upwards [h₁f] with a ha
     simp +contextual [(hf a _).analyticOrderAt_eq_zero, ha]
+
+/--
+The set where an analytic function has zero or infinite order is discrete within its domain of
+analyticity.
+-/
+theorem codiscreteWithin_setOf_analyticOrderAt_eq_zero_or_top (hf : AnalyticOnNhd 𝕜 f U) :
+    {u : 𝕜 | analyticOrderAt f u = 0 ∨ analyticOrderAt f u = ⊤} ∈ codiscreteWithin U := by
+  simp_rw [mem_codiscreteWithin, disjoint_principal_right]
+  intro x hx
+  rcases (hf x hx).eventually_eq_zero_or_eventually_ne_zero with h₁f | h₁f
+  · filter_upwards [eventually_nhdsWithin_of_eventually_nhds h₁f.eventually_nhds] with a ha
+    simp [analyticOrderAt_eq_top, ha]
+  · filter_upwards [h₁f] with a ha
+    simp +contextual [(hf a _).analyticOrderAt_eq_zero, ha]
+
+/--
+If an analytic function `f` is not constantly zero on a connected set `U`, then its set of zeros is
+codiscrete within `U`.
+
+See `AnalyticOnNhd.preimage_mem_codiscreteWithin` for a more general statement in preimages of
+codiscrete sets.
+-/
+theorem preimage_zero_mem_codiscreteWithin {x : 𝕜} (h₁f : AnalyticOnNhd 𝕜 f U) (h₂f : f x ≠ 0)
+    (hx : x ∈ U) (hU : IsConnected U) :
+    f ⁻¹' {0}ᶜ ∈ codiscreteWithin U := by
+  filter_upwards [h₁f.codiscreteWithin_setOf_analyticOrderAt_eq_zero_or_top,
+    self_mem_codiscreteWithin U] with a ha h₂a
+  rw [← (h₁f x hx).analyticOrderAt_eq_zero] at h₂f
+  have {u : U} : analyticOrderAt f u ≠ ⊤ := by
+    apply (h₁f.exists_analyticOrderAt_ne_top_iff_forall hU).1
+    use ⟨x, hx⟩
+    simp_all
+  simp_all [(h₁f a h₂a).analyticOrderAt_eq_zero]
+
+/--
+If an analytic function `f` is not constantly zero on `𝕜`, then its set of zeros is codiscrete.
+
+See `AnalyticOnNhd.preimage_mem_codiscreteWithin` for a more general statement in preimages of
+codiscrete sets.
+-/
+theorem preimage_zero_mem_codiscrete [ConnectedSpace 𝕜] {x : 𝕜} (hf : AnalyticOnNhd 𝕜 f Set.univ)
+    (hx : f x ≠ 0) :
+    f ⁻¹' {0}ᶜ ∈ codiscrete 𝕜 :=
+  hf.preimage_zero_mem_codiscreteWithin hx trivial isConnected_univ
 
 end AnalyticOnNhd

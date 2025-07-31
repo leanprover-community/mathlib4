@@ -512,9 +512,9 @@ variable (𝕜 G G')
 @[simp]
 theorem norm_domDomCongr (σ : ι ≃ ι') (f : ContinuousMultilinearMap 𝕜 (fun _ : ι => G) G') :
     ‖domDomCongr σ f‖ = ‖f‖ := by
-  simp only [norm_def, LinearEquiv.coe_mk, ← σ.prod_comp,
+  simp only [norm_def, ← σ.prod_comp,
     (σ.arrowCongr (Equiv.refl G)).surjective.forall, domDomCongr_apply, Equiv.arrowCongr_apply,
-    Equiv.coe_refl, id_comp, comp_apply, Equiv.symm_apply_apply, id]
+    Equiv.coe_refl, comp_apply, Equiv.symm_apply_apply, id]
 
 /-- An equivalence of the index set defines a linear isometric equivalence between the spaces
 of multilinear maps. -/
@@ -582,10 +582,7 @@ def currySumEquiv : ContinuousMultilinearMap 𝕜 (fun _ : ι ⊕ ι' => G) G' �
         rfl
       left_inv := fun f => by
         ext m
-        exact congr_arg f (Sum.elim_comp_inl_inr m)
-      right_inv := fun f => by
-        ext m₁ m₂
-        rfl }
+        exact congr_arg f (Sum.elim_comp_inl_inr m) }
     (fun f => MultilinearMap.mkContinuousMultilinear_norm_le _ (norm_nonneg f) _) fun f => by
       simp only [LinearEquiv.coe_symm_mk]
       exact MultilinearMap.mkContinuous_norm_le _ (norm_nonneg f) _

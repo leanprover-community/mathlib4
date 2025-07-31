@@ -201,7 +201,7 @@ variable [Semiring α] [PartialOrder α] [ZeroLEOneClass α]
 
 instance semiring : Semiring { x : α // 0 ≤ x } :=
   Subtype.coe_injective.semiring _ Nonneg.coe_zero Nonneg.coe_one
-    (fun _ _ => rfl) (fun _ _=> rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ => rfl
 
 instance monoidWithZero : MonoidWithZero { x : α // 0 ≤ x } := by infer_instance
@@ -269,7 +269,7 @@ variable [Zero α] [LinearOrder α]
 @[simp]
 theorem toNonneg_lt {a : { x : α // 0 ≤ x }} {b : α} : a < toNonneg b ↔ ↑a < b := by
   obtain ⟨a, ha⟩ := a
-  simp [toNonneg, ha.not_lt]
+  simp [toNonneg, ha.not_gt]
 
 end LinearOrder
 

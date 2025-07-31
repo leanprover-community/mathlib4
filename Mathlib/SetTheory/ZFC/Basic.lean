@@ -449,8 +449,8 @@ theorem sUnion_lem {α β : Type u} (A : α → PSet) (B : β → PSet) (αβ : 
     ∀ a, ∃ b, Equiv ((sUnion ⟨α, A⟩).Func a) ((sUnion ⟨β, B⟩).Func b)
   | ⟨a, c⟩ => by
     let ⟨b, hb⟩ := αβ a
-    induction' ea : A a with γ Γ
-    induction' eb : B b with δ Δ
+    induction ea : A a with | _ γ Γ
+    induction eb : B b with | _ δ Δ
     rw [ea, eb] at hb
     obtain ⟨γδ, δγ⟩ := hb
     let c : (A a).Type := c
@@ -680,6 +680,8 @@ theorem toSet_range {α} [Small.{u} α] (f : α → ZFSet.{u}) :
     (range f).toSet = Set.range f := by
   ext
   simp
+
+theorem mem_range_self {α} [Small.{u} α] {f : α → ZFSet.{u}} (a : α) : f a ∈ range f := by simp
 
 /-- Kuratowski ordered pair -/
 def pair (x y : ZFSet.{u}) : ZFSet.{u} :=

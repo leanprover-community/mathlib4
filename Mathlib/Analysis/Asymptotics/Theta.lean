@@ -317,11 +317,11 @@ section
 variable (l' : Filter β)
 
 protected theorem IsTheta.comp_fst : f =Θ[l] g → (f ∘ Prod.fst) =Θ[l ×ˢ l'] (g ∘ Prod.fst) := by
-  simp only [IsTheta, eventually_and]
+  simp only [IsTheta]
   exact fun ⟨h₁, h₂⟩ ↦ ⟨h₁.comp_fst l', h₂.comp_fst l'⟩
 
 protected theorem IsTheta.comp_snd : f =Θ[l] g → (f ∘ Prod.snd) =Θ[l' ×ˢ l] (g ∘ Prod.snd) := by
-  simp only [IsTheta, eventually_and]
+  simp only [IsTheta]
   exact fun ⟨h₁, h₂⟩ ↦ ⟨h₁.comp_snd l', h₂.comp_snd l'⟩
 
 end

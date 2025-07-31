@@ -12,7 +12,7 @@ Main definitions include `Ideal.map`, `Ideal.comap`, `RingHom.ker`, `Module.anni
 and `Submodule.annihilator`.
 -/
 
-assert_not_exists Basis -- See `RingTheory.Ideal.Basis`
+assert_not_exists Module.Basis -- See `RingTheory.Ideal.Basis`
   Submodule.hasQuotient -- See `RingTheory.Ideal.Quotient.Operations`
 
 universe u v w x
@@ -581,7 +581,7 @@ protected theorem map_mul {R} [Semiring R] [FunLike F R S] [RingHomClass F R S]
 def mapHom : Ideal R →+* Ideal S where
   toFun := map f
   map_mul' := Ideal.map_mul f
-  map_one' := by simp only [one_eq_top]; exact Ideal.map_top f
+  map_one' := by simp only [one_eq_top, Ideal.map_top f]
   map_add' I J := Ideal.map_sup f I J
   map_zero' := Ideal.map_bot
 
@@ -617,9 +617,8 @@ theorem le_comap_pow (n : ℕ) : K.comap f ^ n ≤ (K ^ n).comap f := by
 
 lemma disjoint_map_primeCompl_iff_comap_le {S : Type*} [Semiring S] {f : R →+* S}
     {p : Ideal R} {I : Ideal S} [p.IsPrime] :
-    Disjoint (I : Set S) (p.primeCompl.map f) ↔ I.comap f ≤ p := by
-  rw [disjoint_comm]
-  simp [Set.disjoint_iff, Set.ext_iff, Ideal.primeCompl, not_imp_not, SetLike.le_def]
+    Disjoint (I : Set S) (p.primeCompl.map f) ↔ I.comap f ≤ p :=
+  (@Set.disjoint_image_right _ _ f p.primeCompl I).trans disjoint_compl_right_iff
 
 /-- For a prime ideal `p` of `R`, `p` extended to `S` and
 restricted back to `R` is `p` if and only if `p` is the restriction of a prime in `S`. -/
@@ -1053,7 +1052,7 @@ def liftOfRightInverse (hf : Function.RightInverse f_inv f) :
   invFun φ := ⟨φ.comp f, fun x hx => mem_ker.mpr <| by simp [mem_ker.mp hx]⟩
   left_inv g := by
     ext
-    simp only [comp_apply, liftOfRightInverseAux_comp_apply, Subtype.coe_mk]
+    simp only [comp_apply, liftOfRightInverseAux_comp_apply]
   right_inv φ := by
     ext b
     simp [liftOfRightInverseAux, hf b]
