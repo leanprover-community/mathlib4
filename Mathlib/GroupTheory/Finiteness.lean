@@ -349,3 +349,13 @@ instance instMonoidFG [FG M] [FG N] : FG (M × N) where
   fg_top := by rw [← Submonoid.top_prod_top]; exact .prod ‹FG M›.fg_top ‹FG N›.fg_top
 
 end Prod
+
+instance AddMonoid.FG.nat : FG ℕ := by
+  rw [fg_iff, ← Nat.addSubmonoid_closure_one]
+  exact ⟨{1}, rfl, by simp⟩
+
+instance AddGroup.FG.int : FG ℤ := by
+  rw [fg_iff]
+  refine ⟨{1}, ?_, by simp⟩
+  ext x
+  simp [AddSubgroup.mem_closure_singleton]
