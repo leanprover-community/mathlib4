@@ -91,7 +91,7 @@ theorem comp_PInfty_eq_zero_iff {Z : C} {n : ℕ} (f : Z ⟶ X _⦋n⦌) :
     f ≫ PInfty.f n = 0 ↔ f ≫ s.πSummand (IndexSet.id (op ⦋n⦌)) = 0 := by
   constructor
   · intro h
-    rcases n with _|n
+    rcases n with _ | n
     · dsimp at h
       rw [comp_id] at h
       rw [h, zero_comp]

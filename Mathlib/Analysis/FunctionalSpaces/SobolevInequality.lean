@@ -335,10 +335,8 @@ theorem lintegral_pow_le_pow_lintegral_fderiv_aux [Fintype ι]
         · exact hu.comp (by convert contDiff_update 1 x i)
         · exact h2u.comp_isClosedEmbedding (isClosedEmbedding_update x i)
     _ ≤ ∫⁻ xᵢ, ‖fderiv ℝ u (update x i xᵢ)‖ₑ := ?_
-  gcongr
+  gcongr with y
   · exact Measure.restrict_le_self
-  intro y
-  dsimp
   -- bound the derivative which appears
   calc ‖deriv (u ∘ update x i) y‖ₑ = ‖fderiv ℝ u (update x i y) (deriv (update x i) y)‖ₑ := by
         rw [fderiv_comp_deriv _ (hu.differentiable le_rfl).differentiableAt
@@ -489,7 +487,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
   have h1n : 1 ≤ (n : ℝ≥0) := hn.lt.le
   have h2n : (0 : ℝ) < n - 1 := by simp_rw [sub_pos]; exact hn.coe.lt
   have hnp : (0 : ℝ) < n - p := by simp_rw [sub_pos]; exact h2p
-  rcases hp.eq_or_lt with rfl|hp
+  rcases hp.eq_or_lt with rfl | hp
   -- the case `p = 1`
   · convert eLpNorm_le_eLpNorm_fderiv_one μ hu h2u hn using 2
     · suffices (p' : ℝ) = n' by simpa using this

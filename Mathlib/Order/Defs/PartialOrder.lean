@@ -42,6 +42,11 @@ class Preorder (α : Type*) extends LE α, LT α where
   lt := fun a b => a ≤ b ∧ ¬b ≤ a
   lt_iff_le_not_ge : ∀ a b : α, a < b ↔ a ≤ b ∧ ¬b ≤ a := by intros; rfl
 
+instance [Preorder α] : Lean.Grind.Preorder α where
+  le_refl := Preorder.le_refl
+  le_trans := Preorder.le_trans _ _ _
+  lt_iff_le_not_le := Preorder.lt_iff_le_not_ge _ _
+
 @[deprecated (since := "2025-05-11")] alias Preorder.lt_iff_le_not_le := Preorder.lt_iff_le_not_ge
 
 variable [Preorder α] {a b c : α}
@@ -156,6 +161,9 @@ section PartialOrder
 class PartialOrder (α : Type*) extends Preorder α where
   le_antisymm : ∀ a b : α, a ≤ b → b ≤ a → a = b
 
+instance [PartialOrder α] : Lean.Grind.PartialOrder α where
+  le_antisymm := PartialOrder.le_antisymm _ _
+
 variable [PartialOrder α] {a b : α}
 
 lemma le_antisymm : a ≤ b → b ≤ a → a = b := PartialOrder.le_antisymm _ _
@@ -183,7 +191,6 @@ protected lemma Decidable.lt_or_eq_of_le [DecidableLE α] (hab : a ≤ b) : a < 
 
 protected lemma Decidable.le_iff_lt_or_eq [DecidableLE α] : a ≤ b ↔ a < b ∨ a = b :=
   ⟨Decidable.lt_or_eq_of_le, le_of_lt_or_eq⟩
-
 
 lemma lt_or_eq_of_le : a ≤ b → a < b ∨ a = b := open scoped Classical in Decidable.lt_or_eq_of_le
 lemma le_iff_lt_or_eq : a ≤ b ↔ a < b ∨ a = b := open scoped Classical in Decidable.le_iff_lt_or_eq
