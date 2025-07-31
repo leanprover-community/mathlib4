@@ -1121,6 +1121,7 @@ import Mathlib.Algebra.Star.CentroidHom
 import Mathlib.Algebra.Star.Conjneg
 import Mathlib.Algebra.Star.Free
 import Mathlib.Algebra.Star.Module
+import Mathlib.Algebra.Star.MonoidHom
 import Mathlib.Algebra.Star.NonUnitalSubalgebra
 import Mathlib.Algebra.Star.NonUnitalSubsemiring
 import Mathlib.Algebra.Star.Pi
