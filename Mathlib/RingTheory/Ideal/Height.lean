@@ -129,24 +129,6 @@ lemma Ideal.height_le_ringKrullDim_of_ne_top {I : Ideal R} (h : I ≠ ⊤) :
   refine le_trans ?_ (Ideal.primeHeight_le_ringKrullDim (I := P))
   simpa using iInf₂_le _ hP
 
-/-- In a trivial commutative ring, the height of any ideal is `∞`. -/
-lemma Ideal.height_of_subsingleton [Subsingleton R] : I.height = ⊤ := by
-  rw [Subsingleton.elim I ⊤, Ideal.height_top]
-
-/-- In a nontrivial commutative ring, the height of the zero ideal is zero. -/
-lemma Ideal.height_bot_eq_zero [Nontrivial R] : (⊥ : Ideal R).height = 0 := by
-  have : Nonempty (Ideal.minimalPrimes (⊥ : Ideal R)) := Ideal.nonempty_minimalPrimes bot_ne_top
-  let P := this.some
-  simp only [height, primeHeight, Order.height]
-  refine ENat.iInf_eq_zero.mpr ⟨P.val, ?_⟩
-  simp only [Subtype.coe_prop, iInf_pos]
-  refine ENat.iSup_eq_zero.mpr (fun L => ?_)
-  simp only [ENat.iSup_eq_zero, Nat.cast_eq_zero]
-  intro hL; by_contra h
-  have head_last : L.head < L.last := L.strictMono (Nat.pos_of_ne_zero h)
-  have head_P : L.head.asIdeal < P := head_last.trans_le hL
-  exact absurd head_P (not_lt_of_ge (P.property.right ⟨L.head.isPrime, bot_le⟩ (le_of_lt head_P)))
-
 instance (priority := 900) Ideal.finiteHeight_of_finiteRingKrullDim {I : Ideal R}
     [FiniteRingKrullDim R] : I.FiniteHeight := by
   rw [finiteHeight_iff, or_iff_not_imp_left, ← lt_top_iff_ne_top, ← WithBot.coe_lt_coe]
@@ -186,6 +168,15 @@ lemma Ideal.primeHeight_eq_zero_iff {I : Ideal R} [I.IsPrime] :
     exact hP₃ (h (b := ⟨P, hP₁⟩) hP₂)
   · rintro ⟨hI, hI'⟩ b hb
     exact hI' (y := b.asIdeal) b.isPrime hb
+
+/-- In a trivial commutative ring, the height of any ideal is `∞`. -/
+lemma Ideal.height_of_subsingleton [Subsingleton R] : I.height = ⊤ := by
+  rw [Subsingleton.elim I ⊤, Ideal.height_top]
+
+/-- In a nontrivial commutative ring, the height of the zero ideal is zero. -/
+lemma Ideal.height_bot_eq_zero [Nontrivial R] : (⊥ : Ideal R).height = 0 := by
+  obtain ⟨P⟩ := Ideal.nonempty_minimalPrimes (R := R) bot_ne_top
+  refine ENat.iInf_eq_zero.mpr ⟨P.val, by simp [Ideal.primeHeight_eq_zero_iff.mpr]⟩
 
 theorem Ideal.isMaximal_of_primeHeight_eq_ringKrullDim {I : Ideal R} [I.IsPrime]
     [FiniteRingKrullDim R] (e : I.primeHeight = ringKrullDim R) : I.IsMaximal := by
