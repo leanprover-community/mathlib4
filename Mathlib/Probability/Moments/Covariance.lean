@@ -3,10 +3,8 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Etienne Marion
 -/
-import Mathlib.MeasureTheory.Function.L2Space
 import Mathlib.Probability.Independence.Integrable
 import Mathlib.Probability.Independence.Integration
-import Mathlib.Probability.Notation
 
 /-!
 # Covariance
@@ -296,3 +294,4 @@ lemma IndepFun.covariance_eq_zero (h : IndepFun X Y μ) (hX : MemLp X 2 μ) (hY 
   rw [covariance_eq hX hY, h.integral_mul_eq_mul_integral hX.aemeasurable hY.aemeasurable, sub_self]
 
 end ProbabilityTheory
+#min_imports
