@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
 import Mathlib.Algebra.Order.Group.Units
+import Mathlib.Algebra.Order.Monoid.LocallyFiniteOrder
 import Mathlib.Data.Int.Interval
 import Mathlib.GroupTheory.Archimedean
 import Mathlib.GroupTheory.OrderOfElement
@@ -223,6 +224,20 @@ noncomputable def LinearOrderedCommGroup.multiplicative_int_orderMonoidIso_of_is
   have : IsLeast {y : Additive G | 0 < y} (.ofMul x) := h
   let f' := LinearOrderedAddCommGroup.int_orderAddMonoidIso_of_isLeast_pos (G := Additive G) this
   exact ⟨AddEquiv.toMultiplicative' f', by simp⟩
+
+/-- Any locally finite linear additive group is archimedean. -/
+lemma Archimedean.of_locallyFiniteOrder {G : Type*} [AddCommGroup G] [LinearOrder G]
+    [IsOrderedAddMonoid G] [LocallyFiniteOrder G] :
+    Archimedean G :=
+  .comap (LocallyFiniteOrder.addMonoidHom G) LocallyFiniteOrder.orderAddMonoidHom_strictMono
+
+/-- Any locally finite linear group is mul-archimedean. -/
+@[to_additive existing]
+lemma MulArchimedean.of_locallyFiniteOrder {G : Type*} [CommGroup G] [LinearOrder G]
+    [IsOrderedMonoid G] [LocallyFiniteOrder G] :
+    MulArchimedean G :=
+  .comap (LocallyFiniteOrder.orderMonoidHom G).toMonoidHom
+    LocallyFiniteOrder.orderMonoidHom_strictMono
 
 /-- Any linearly ordered archimedean additive group is either isomorphic (and order-isomorphic)
 to the integers, or is densely ordered. -/
