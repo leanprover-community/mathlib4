@@ -106,9 +106,8 @@ theorem span_singleton_le_iff_mem {x : α} : span {x} ≤ I ↔ x ∈ I :=
   Submodule.span_singleton_le_iff_mem _ _
 
 theorem span_singleton_mul_left_unit {a : α} (h2 : IsUnit a) (x : α) :
-    span ({a * x} : Set α) = span {x} := by
-  apply le_antisymm <;> rw [span_singleton_le_iff_mem, mem_span_singleton']
-  exacts [⟨a, rfl⟩, ⟨_, h2.unit.inv_mul_cancel_left x⟩]
+    span ({a * x} : Set α) = span {x} :=
+  Submodule.span_singleton_smul_eq h2 x
 
 theorem span_insert (x) (s : Set α) : span (insert x s) = span ({x} : Set α) ⊔ span s :=
   Submodule.span_insert x s
@@ -210,6 +209,14 @@ theorem span_singleton_eq_span_singleton {α : Type u} [CommSemiring α] [IsDoma
     span ({x} : Set α) = span ({y} : Set α) ↔ Associated x y := by
   rw [← dvd_dvd_iff_associated, le_antisymm_iff, and_comm]
   apply and_congr <;> rw [span_singleton_le_span_singleton]
+
+@[simp]
+theorem span_pair_eq_span_left_iff_dvd : span {a, b} = span {a} ↔ a ∣ b := by
+  rw [Ideal.span_insert, sup_eq_left, span_singleton_le_span_singleton]
+
+@[simp]
+theorem span_pair_eq_span_right_iff_dvd : span {a, b} = span {b} ↔ b ∣ a := by
+  rw [Ideal.span_insert, sup_eq_right, span_singleton_le_span_singleton]
 
 theorem span_singleton_mul_right_unit {a : α} (h2 : IsUnit a) (x : α) :
     span ({x * a} : Set α) = span {x} := by rw [mul_comm, span_singleton_mul_left_unit h2]

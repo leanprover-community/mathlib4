@@ -504,8 +504,10 @@ theorem intCast_zmod_eq_zero_iff_dvd (a : ℤ) (b : ℕ) : (a : ZMod b) = 0 ↔ 
 theorem intCast_eq_intCast_iff_dvd_sub (a b : ℤ) (c : ℕ) : (a : ZMod c) = ↑b ↔ ↑c ∣ b - a := by
   rw [ZMod.intCast_eq_intCast_iff, Int.modEq_iff_dvd]
 
-theorem natCast_zmod_eq_zero_iff_dvd (a b : ℕ) : (a : ZMod b) = 0 ↔ b ∣ a := by
+theorem natCast_eq_zero_iff (a b : ℕ) : (a : ZMod b) = 0 ↔ b ∣ a := by
   rw [← Nat.cast_zero, ZMod.natCast_eq_natCast_iff, Nat.modEq_zero_iff_dvd]
+
+@[deprecated (since := "2025-06-30")] alias natCast_zmod_eq_zero_iff_dvd := natCast_eq_zero_iff
 
 theorem coe_intCast (a : ℤ) : cast (a : ZMod n) = a % n := by
   cases n
@@ -688,7 +690,7 @@ instance nontrivial' : Nontrivial (ZMod 0) := by
   delta ZMod; infer_instance
 
 lemma one_eq_zero_iff {n : ℕ} : (1 : ZMod n) = 0 ↔ n = 1 := by
-  rw [← Nat.cast_one, natCast_zmod_eq_zero_iff_dvd, Nat.dvd_one]
+  rw [← Nat.cast_one, natCast_eq_zero_iff, Nat.dvd_one]
 
 /-- The inversion on `ZMod n`.
 It is setup in such a way that `a * a⁻¹` is equal to `gcd a.val n`.
@@ -950,7 +952,7 @@ theorem neg_eq_self_iff {n : ℕ} (a : ZMod n) : -a = a ↔ a = 0 ∨ 2 * a.val 
       ⟨fun h => h.elim (by simp) Or.inl, fun h =>
         Or.inr (h.elim id fun h => h.elim (by simp) id)⟩
   conv_lhs =>
-    rw [← a.natCast_zmod_val, ← Nat.cast_two, ← Nat.cast_mul, natCast_zmod_eq_zero_iff_dvd]
+    rw [← a.natCast_zmod_val, ← Nat.cast_two, ← Nat.cast_mul, natCast_eq_zero_iff]
   constructor
   · rintro ⟨m, he⟩
     rcases m with - | m
@@ -1232,35 +1234,17 @@ lemma ZModModule.add_add_add_cancel (x y z : G) : (x + y) + (y + z) = x + z := b
 end two
 end Module
 
-section AddGroup
-variable {α : Type*} [AddGroup α] {n : ℕ}
-
-@[simp]
-lemma nsmul_zmod_val_inv_nsmul (hn : (Nat.card α).gcd n = 1) (a : α) :
-    n • (n⁻¹ : ZMod (Nat.card α)).val • a = a := by
-  replace hn : (Nat.card α).Coprime n := hn
-  rw [← mul_nsmul', ← mod_natCard_nsmul, ← ZMod.val_natCast, Nat.cast_mul,
-    ZMod.mul_val_inv hn.symm, ZMod.val_one_eq_one_mod, mod_natCard_nsmul, one_nsmul]
-
-@[simp]
-lemma zmod_val_inv_nsmul_nsmul (hn : (Nat.card α).gcd n = 1) (a : α) :
-    (n⁻¹ : ZMod (Nat.card α)).val • n • a = a := by
-  rw [nsmul_left_comm, nsmul_zmod_val_inv_nsmul hn]
-
-end AddGroup
-
 section Group
 variable {α : Type*} [Group α] {n : ℕ}
 
--- TODO: we can't use `to_additive`, because it tries to translate `n⁻¹` into `-n`
-@[simp]
+@[to_additive (attr := simp) nsmul_zmod_val_inv_nsmul]
 lemma pow_zmod_val_inv_pow (hn : (Nat.card α).gcd n = 1) (a : α) :
     (a ^ (n⁻¹ : ZMod (Nat.card α)).val) ^ n = a := by
   replace hn : (Nat.card α).Coprime n := hn
   rw [← pow_mul', ← pow_mod_natCard, ← ZMod.val_natCast, Nat.cast_mul, ZMod.mul_val_inv hn.symm,
     ZMod.val_one_eq_one_mod, pow_mod_natCard, pow_one]
 
-@[simp]
+@[to_additive (attr := simp) zmod_val_inv_nsmul_nsmul]
 lemma pow_pow_zmod_val_inv (hn : (Nat.card α).gcd n = 1) (a : α) :
     (a ^ n) ^ (n⁻¹ : ZMod (Nat.card α)).val = a := by rw [pow_right_comm, pow_zmod_val_inv_pow hn]
 
@@ -1278,7 +1262,7 @@ lemma Nat.range_mul_add (m k : ℕ) :
   refine ⟨fun ⟨a, ha⟩ ↦ ⟨?_, le_iff_exists_add.mpr ⟨_, ha⟩⟩, fun ⟨H₁, H₂⟩ ↦ ?_⟩
   · simpa using congr_arg ((↑) : ℕ → ZMod m) ha
   · obtain ⟨a, ha⟩ := le_iff_exists_add.mp H₂
-    simp only [ha, Nat.cast_add, add_eq_left, ZMod.natCast_zmod_eq_zero_iff_dvd] at H₁
+    simp only [ha, Nat.cast_add, add_eq_left, ZMod.natCast_eq_zero_iff] at H₁
     obtain ⟨b, rfl⟩ := H₁
     exact ⟨b, ha⟩
 
