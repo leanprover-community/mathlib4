@@ -80,9 +80,11 @@ theorem trinomial_natTrailingDegree (hkm : k < m) (hmn : m < n) (hu : u ≠ 0) :
       ((Finset.le_inf fun i h => ?_).antisymm <|
           trailingDegree_le_of_ne_zero <| by rwa [trinomial_trailing_coeff' hkm hmn]).symm
   replace h := support_trinomial' k m n u v w h
-  simp_all only [ne_eq, mem_insert, mem_singleton, ENat.some_eq_coe, Nat.cast_le,
-    ge_iff_le]
-  grind
+  rw [mem_insert, mem_insert, mem_singleton] at h
+  rcases h with (rfl | rfl | rfl)
+  · exact le_rfl
+  · exact WithTop.coe_le_coe.mpr hkm.le
+  · exact WithTop.coe_le_coe.mpr (hkm.trans hmn).le
 
 theorem trinomial_leadingCoeff (hkm : k < m) (hmn : m < n) (hw : w ≠ 0) :
     (trinomial k m n u v w).leadingCoeff = w := by
