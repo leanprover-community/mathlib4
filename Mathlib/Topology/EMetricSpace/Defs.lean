@@ -75,9 +75,9 @@ to the original one. -/
       (ENNReal.add_lt_add h₁ h₂).trans_eq (ENNReal.add_halves _)⟩) basis
 
 /-- A `WeakPseudoEMetricSpace` is a topological space endowed with a `ℝ≥0∞`-value distance `edist`
-which is *almost* a pseudo-emetricspace: the `edist` is reflexive, commutative and satisfies the
-triangle inequality, but the topology on `α` need not *equal* the topology induced by the `edist`.
-(It must be at least as fine, and agree with it on balls of finite radius.)
+which is *almost* an extended pseudometric space: the `edist` is reflexive, commutative and
+satisfies the triangle inequality, but the topology on `α` need not *equal* the topology induced
+by the `edist`. (It must be at least as fine, and agree with it on balls of finite radius.)
 
 This generalises both pseudo extended metric spaces and `ℝ≥0∞` (which have an extended distance,
 which does not induce the order topology there). -/
@@ -609,6 +609,20 @@ end Compact
 
 end EMetric
 
+/-- A `WeakEMetricSpace` is a topological space endowed with a `ℝ≥0∞`-value distance `edist`
+which is *almost* an extended metric space: the `edist` is reflexive, commutative and satisfies the
+triangle inequality, but the topology on `α` need not *equal* the topology induced by the `edist`.
+(It must be at least as fine, and agree with it on balls of finite radius.)
+
+See weak pseudo extended metric spaces (`WeakPseudoEMetricSpace`) for the similar class with the
+`edist x y = 0 ↔ x = y` assumption weakened to `edist x x = 0`.
+
+This generalises both extended metric spaces and `ℝ≥0∞` (which have an extended distance,
+which does not induce the order topology there). -/
+class WeakEMetricSpace (α : Type u) [τ : TopologicalSpace α] : Type u extends
+    WeakPseudoEMetricSpace α  where
+  eq_of_edist_eq_zero : ∀ {x y : α}, edist x y = 0 → x = y
+
 /-- An extended metric space is a type endowed with a `ℝ≥0∞`-valued distance `edist` satisfying
 `edist x y = 0 ↔ x = y`, commutativity `edist x y = edist y x`, and the triangle inequality
 `edist x z ≤ edist x y + edist y z`.
@@ -627,6 +641,10 @@ See Note [forgetful inheritance]. -/
 class EMetricSpace (α : Type u) : Type u extends PseudoEMetricSpace α where
   eq_of_edist_eq_zero : ∀ {x y : α}, edist x y = 0 → x = y
 
+instance WeakEMetricSpace.toEMetricSpace (α : Type u) [EMetricSpace α] : WeakEMetricSpace α where
+  toWeakPseudoEMetricSpace := PseudoEMetricSpace.toWeakPseudoEMetricSpace α
+  eq_of_edist_eq_zero := EMetricSpace.eq_of_edist_eq_zero
+
 @[ext]
 protected theorem EMetricSpace.ext
     {α : Type*} {m m' : EMetricSpace α} (h : m.toEDist = m'.toEDist) : m = m' := by
@@ -636,9 +654,11 @@ protected theorem EMetricSpace.ext
   ext1
   assumption
 
-variable {γ : Type w} [EMetricSpace γ]
+export WeakEMetricSpace (eq_of_edist_eq_zero)
 
-export EMetricSpace (eq_of_edist_eq_zero)
+section
+
+variable {γ γ' : Type w} [TopologicalSpace γ] [WeakEMetricSpace γ] [EMetricSpace γ']
 
 /-- Characterize the equality of points by the vanishing of their extended distance -/
 @[simp]
@@ -654,11 +674,15 @@ theorem edist_le_zero {x y : γ} : edist x y ≤ 0 ↔ x = y :=
 @[simp]
 theorem edist_pos {x y : γ} : 0 < edist x y ↔ x ≠ y := by simp [← not_le]
 
-@[simp] lemma EMetric.closedBall_zero (x : γ) : closedBall x 0 = {x} := by ext; simp
+@[simp] lemma EMetric.closedBall_zero (x : γ') : closedBall x 0 = {x} := by ext; simp
 
 /-- Two points coincide if their distance is `< ε` for all positive ε -/
 theorem eq_of_forall_edist_le {x y : γ} (h : ∀ ε > 0, edist x y ≤ ε) : x = y :=
   eq_of_edist_eq_zero (eq_of_le_of_forall_lt_imp_le_of_dense bot_le h)
+
+end
+
+variable {γ : Type w} [EMetricSpace γ]
 
 /-- Auxiliary function to replace the uniformity on an emetric space with
 a uniformity which is equal to the original one, but maybe not defeq.
