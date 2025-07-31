@@ -16,18 +16,18 @@ import Mathlib.RingTheory.Finiteness.Basic
 import Mathlib.RingTheory.Localization.Module
 
 /-!
-# Semilinear sets in `ℕ`
+# Semilinear sets in `ℕ ^ k`
 
-This file proves that the semilinear sets in `α → ℕ` (with finite `α`) are closed under intersection
-and complement.
+This file proves that the semilinear sets in `ℕ ^ k` are closed under intersection and complement.
 
 ## Main Results
 
-- `Set.Semilinear.of_linear_equation`: the solution of a linear Diophantine equation
+- `Set.Linear.of_subtractive_addSubmonoid_nat`: any subtractive (additive) submonoid in `ℕ ^ k` is
+  linear.
+- `Set.Semilinear.of_linear_equation_nat`: the solution of a linear Diophantine equation
   `u + A *ᵥ x = v + B *ᵥ x` is a semilinear set.
-- `Set.Semilinear.inter`: semilinear sets in `α → ℕ` (with finite `α`) are closed under
-  intersection.
-- `Set.Semilinear.compl`: semilinear sets in `α → ℕ` (with finite `α`) are closed under complement.
+- `Set.Semilinear.inter_nat`, `Set.Semilinear.compl_nat`: semilinear sets in `ℕ ^ k` are closed
+  under intersection and complement.
 
 ## References
 
@@ -37,55 +37,63 @@ and complement.
 
 universe u v w
 
-variable {α : Type u} {β : Type v} {ι : Type w}
-
 namespace Set
+
+variable {α : Type u} {β : Type v} {ι : Type w} {v : α → ℕ} {s s₁ s₂ : Set (α → ℕ)}
 
 open Pointwise Submodule Matrix
 
-variable {v : α → ℕ} {s s₁ s₂ : Set (α → ℕ)}
-
-/-- A verison of *Gordan's lemma*: the solution of a homogeneous linear Diophantine equation
-  `A *ᵥ x = B *ᵥ x` is a linear set. -/
-theorem Linear.of_homogeneous_equation [Fintype β] (A B : Matrix α β ℕ) :
-    {x | A *ᵥ x = B *ᵥ x}.Linear := by
-  have hpwo := Pi.isPWO {x | A *ᵥ x = B *ᵥ x ∧ x ≠ 0}
-  have hantichain := setOf_minimal_antichain {x | A *ᵥ x = B *ᵥ x ∧ x ≠ 0}
+/-- Any subtractive (additive) submonoid in `ℕ ^ k` is linear. -/
+theorem Linear.of_subtractive_addSubmonoid_nat [Fintype α] (s : AddSubmonoid (α → ℕ))
+    (hs : ∀ x ∈ s, ∀ y, x + y ∈ s → y ∈ s) : (s : Set (α → ℕ)).Linear := by
+  have hpwo := Pi.isPWO { x | x ∈ s ∧ x ≠ 0 }
+  have hantichain := setOf_minimal_antichain { x | x ∈ s ∧ x ≠ 0 }
   have hfinite := hantichain.finite_of_partiallyWellOrderedOn (hpwo.mono (setOf_minimal_subset _))
   convert span_finset hfinite.toFinset
   ext x
-  simp only [Finite.coe_toFinset, mem_setOf_eq, SetLike.mem_coe]
+  simp only [Finite.coe_toFinset]
   constructor
   · intro hx₁
     by_cases hx₂ : x = 0
     · simp [hx₂]
     · refine hpwo.wellFoundedOn.induction ⟨hx₁, hx₂⟩ fun y ⟨hy₁, hy₂⟩ ih => ?_
       simp only [mem_setOf_eq, and_imp] at ih
-      by_cases hy₃ : Minimal {x | A *ᵥ x = B *ᵥ x ∧ x ≠ 0} y
+      by_cases hy₃ : Minimal { x | x ∈ s ∧ x ≠ 0 } y
       · exact mem_span_of_mem hy₃
       · rcases exists_lt_of_not_minimal ⟨hy₁, hy₂⟩ hy₃ with ⟨z, hz₁, hz₂, hz₃⟩
         rw [← tsub_add_cancel_of_le hz₁.le]
         apply add_mem
         · apply ih
-          · rw [← tsub_add_cancel_of_le hz₁.le] at hy₁
-            simp only [mulVec_add, hz₂, add_right_cancel_iff] at hy₁
-            exact hy₁
+          · rw [← add_tsub_cancel_of_le hz₁.le] at hy₁
+            exact hs _ hz₂ _ hy₁
           · exact (tsub_pos_of_lt hz₁).ne'
           · exact tsub_le_self
           · rw [le_tsub_iff_le_tsub (le_refl _) hz₁.le, tsub_self]
             exact (pos_of_ne_zero hz₃).not_ge
         · exact ih _ hz₂ hz₃ hz₁.le hz₁.not_ge
   · intro hx
-    induction hx using span_induction with
-    | mem x hx => exact hx.1.1
-    | zero => simp
-    | add x y _ _ hx hy =>
-      simp only [mulVec_add, hx, hy]
-    | smul n x _ hx =>
-      simp only [mulVec_smul, hx]
+    rw [← s.toNatSubmodule_toAddSubmonoid, coe_toAddSubmonoid,
+      ← span_eq (AddSubmonoid.toNatSubmodule s)]
+    refine span_mono ((setOf_minimal_subset _).trans ?_) hx
+    intro _ ⟨h, _⟩
+    exact h
 
-lemma Linear.iff_eq_setOf_vadd_mulVec :
-    s.Linear ↔ ∃ (v : α → ℕ) (n : ℕ) (A : Matrix α (Fin n) ℕ), s = {v + A *ᵥ x | x} := by
+/-- A verison of *Gordan's lemma*: the solution of a homogeneous linear Diophantine equation
+  `A *ᵥ x = B *ᵥ x` is a linear set. -/
+theorem Linear.of_homogeneous_equation_nat [Fintype β] (A B : Matrix α β ℕ) :
+    { x | A *ᵥ x = B *ᵥ x }.Linear := by
+  refine of_subtractive_addSubmonoid_nat {
+      carrier := setOf _
+      add_mem' h₁ h₂ := ?_
+      zero_mem' := ?_
+    } fun _ h₁ _ h₂ => ?_
+  · simp only [mem_setOf_eq] at h₁ h₂; simp [mulVec_add, h₁, h₂]
+  · simp
+  · simp only [AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, mem_setOf_eq] at *
+    simpa [mulVec_add, h₁] using h₂
+
+lemma Linear.iff_eq_setOf_vadd_mulVec_nat :
+    s.Linear ↔ ∃ (v : α → ℕ) (n : ℕ) (A : Matrix α (Fin n) ℕ), s = { v + A *ᵥ x | x } := by
   classical
   constructor
   · rintro ⟨v, t, rfl⟩
@@ -118,12 +126,12 @@ lemma Linear.iff_eq_setOf_vadd_mulVec :
     simp [mem_vadd_set, ← range_mulVecLin]
 
 /-- The solution of a linear Diophantine equation `u + A *ᵥ x = v + B *ᵥ x` is a semilinear set. -/
-theorem Semilinear.of_linear_equation [Fintype β] (u v : α → ℕ) (A B : Matrix α β ℕ) :
-    {x | u + A *ᵥ x = v + B *ᵥ x}.Semilinear := by
-  have hpwo := Pi.isPWO {x | u + A *ᵥ x = v + B *ᵥ x}
-  have hantichain := setOf_minimal_antichain {x | u + A *ᵥ x = v + B *ᵥ x}
+theorem Semilinear.of_linear_equation_nat [Fintype β] (u v : α → ℕ) (A B : Matrix α β ℕ) :
+    { x | u + A *ᵥ x = v + B *ᵥ x }.Semilinear := by
+  have hpwo := Pi.isPWO { x | u + A *ᵥ x = v + B *ᵥ x }
+  have hantichain := setOf_minimal_antichain { x | u + A *ᵥ x = v + B *ᵥ x }
   have hfinite := hantichain.finite_of_partiallyWellOrderedOn (hpwo.mono (setOf_minimal_subset _))
-  convert hfinite.semilinear.add (Linear.of_homogeneous_equation A B).semilinear using 1
+  convert hfinite.semilinear.add (Linear.of_homogeneous_equation_nat A B).semilinear using 1
   ext x
   simp only [mem_setOf_eq, mem_add]
   constructor
@@ -138,30 +146,30 @@ theorem Semilinear.of_linear_equation [Fintype β] (u v : α → ℕ) (A B : Mat
     simp only [mulVec_add, ← add_assoc]
     congr 1
 
-theorem Linear.preimage [Fintype β] (hs : s.Linear) (f : (β → ℕ) →ₗ[ℕ] (α → ℕ)) :
+theorem Linear.preimage_nat [Fintype β] (hs : s.Linear) (f : (β → ℕ) →ₗ[ℕ] (α → ℕ)) :
     (f ⁻¹' s).Semilinear := by
   classical
-  rw [iff_eq_setOf_vadd_mulVec] at hs
+  rw [iff_eq_setOf_vadd_mulVec_nat] at hs
   rcases hs with ⟨v, n, A, rfl⟩
-  convert (Semilinear.of_linear_equation (α := α) (β := β ⊕ Fin n)
+  convert (Semilinear.of_linear_equation_nat (α := α) (β := β ⊕ Fin n)
     v 0 (Matrix.fromCols 0 A) (Matrix.fromCols f.toMatrix' 0)).proj using 1
   ext x
   refine exists_congr fun y => ?_
   simp
 
-theorem Semilinear.preimage [Fintype β] (hs : s.Semilinear) (f : (β → ℕ) →ₗ[ℕ] (α → ℕ)) :
+theorem Semilinear.preimage_nat [Fintype β] (hs : s.Semilinear) (f : (β → ℕ) →ₗ[ℕ] (α → ℕ)) :
     (f ⁻¹' s).Semilinear := by
   classical
   rcases hs with ⟨S, hS, rfl⟩
   simp_rw [sUnion_eq_biUnion, Finset.mem_coe, preimage_iUnion]
-  exact biUnion_finset fun s hs => (hS s hs).preimage f
+  exact biUnion_finset fun s hs => (hS s hs).preimage_nat f
 
-lemma Linear.inter [Fintype α] (hs₁ : s₁.Linear) (hs₂ : s₂.Linear) : (s₁ ∩ s₂).Semilinear := by
+lemma Linear.inter_nat [Fintype α] (hs₁ : s₁.Linear) (hs₂ : s₂.Linear) : (s₁ ∩ s₂).Semilinear := by
   classical
-  rw [iff_eq_setOf_vadd_mulVec] at hs₁ hs₂
+  rw [iff_eq_setOf_vadd_mulVec_nat] at hs₁ hs₂
   rcases hs₁ with ⟨u, n, A, rfl⟩
   rcases hs₂ with ⟨v, m, B, rfl⟩
-  convert (Semilinear.of_linear_equation (α := α ⊕ α) (β := α ⊕ (Fin n ⊕ Fin m))
+  convert (Semilinear.of_linear_equation_nat (α := α ⊕ α) (β := α ⊕ (Fin n ⊕ Fin m))
     (Sum.elim u v) 0
     (fromRows (fromCols 0 (fromCols A 0)) (fromCols 0 (fromCols 0 B)))
     (fromRows (fromCols 1 0) (fromCols 1 0))).proj using 1
@@ -185,8 +193,8 @@ lemma Linear.inter [Fintype α] (hs₁ : s₁.Linear) (hs₂ : s₂.Linear) : (s
         Sum.elim_inl, Sum.elim_inr] at this
       <;> exact this
 
-/-- Semilinear sets in `α → ℕ` (with finite `α`) are closed under intersection. -/
-theorem Semilinear.inter [Fintype α] (hs₁ : s₁.Semilinear) (hs₂ : s₂.Semilinear) :
+/-- Semilinear sets in `ℕ ^ k` are closed under intersection. -/
+theorem Semilinear.inter_nat [Fintype α] (hs₁ : s₁.Semilinear) (hs₂ : s₂.Semilinear) :
     (s₁ ∩ s₂).Semilinear := by
   classical
   rcases hs₁ with ⟨S₁, hS₁, rfl⟩
@@ -195,31 +203,29 @@ theorem Semilinear.inter [Fintype α] (hs₁ : s₁.Semilinear) (hs₂ : s₂.Se
   apply biUnion_finset
   simp only [Finset.mem_product, and_imp, Prod.forall]
   intro s₁ s₂ hs₁ hs₂
-  exact (hS₁ s₁ hs₁).inter (hS₂ s₂ hs₂)
+  exact (hS₁ s₁ hs₁).inter_nat (hS₂ s₂ hs₂)
 
-theorem Semilinear.sInter_finset [Fintype α] {S : Finset (Set (α → ℕ))}
+theorem Semilinear.sInter_finset_nat [Fintype α] {S : Finset (Set (α → ℕ))}
     (hS : ∀ s ∈ S, s.Semilinear) : (⋂₀ (S : Set (Set (α → ℕ)))).Semilinear := by
   classical
   induction S using Finset.induction with
-  | empty =>
-    have : AddMonoid.FG (α → ℕ) := Module.Finite.iff_addMonoid_fg.1 inferInstance
-    simpa using univ
+  | empty => simpa using univ
   | insert s S _ ih =>
     simp only [Finset.mem_insert, forall_eq_or_imp] at hS
-    simpa using inter hS.1 (ih hS.2)
+    simpa using inter_nat hS.1 (ih hS.2)
 
-theorem Semilinear.iInter_fintype [Fintype α] [Fintype ι] {s : ι → Set (α → ℕ)}
+theorem Semilinear.iInter_fintype_nat [Fintype α] [Fintype ι] {s : ι → Set (α → ℕ)}
     (hs : ∀ i, (s i).Semilinear) : (⋂ i, s i).Semilinear := by
   classical
   rw [← sInter_range, ← image_univ, ← Finset.coe_univ, ← Finset.coe_image]
-  apply sInter_finset
+  apply sInter_finset_nat
   simpa
 
-theorem Semilinear.biInter_finset [Fintype α] {s : Finset ι} {t : ι → Set (α → ℕ)}
+theorem Semilinear.biInter_finset_nat [Fintype α] {s : Finset ι} {t : ι → Set (α → ℕ)}
     (ht : ∀ i ∈ s, (t i).Semilinear) : (⋂ i ∈ s, t i).Semilinear := by
   classical
   simp_rw [← Finset.mem_coe, ← sInter_image, ← Finset.coe_image]
-  apply sInter_finset
+  apply sInter_finset_nat
   simpa
 
 private def toRatVec : (α → ℕ) →ₗ[ℕ] (α → ℚ) :=
@@ -417,7 +423,7 @@ private theorem fract_idem (x) : hs.fract (hs.fract x) = hs.fract x := by
     simp [← hs.basis_apply, Finsupp.single_apply, Int.fract_lt_one]
 
 include hs in
-lemma compl : sᶜ.Semilinear := by
+lemma compl_nat : sᶜ.Semilinear := by
   classical
   have hs' : ∀ x, x ∈ s ↔
       hs.fract x = hs.base ∧ ∀ i, 0 ≤ hs.floor x i ∧ (i.1 ∉ hs.periods → hs.floor x i = 0) := by
@@ -480,13 +486,13 @@ lemma compl : sᶜ.Semilinear := by
     · simp_rw [← hs₁.mem_toFinset]
       refine Semilinear.biUnion_finset fun i _ => Semilinear.proj' ?_
       rw [setOf_and]
-      apply Semilinear.inter
-      · exact (Semilinear.span_finset _).preimage (LinearMap.funLeft ℕ ℕ Sum.inr)
+      apply Semilinear.inter_nat
+      · exact (Semilinear.span_finset _).preimage_nat (LinearMap.funLeft ℕ ℕ Sum.inr)
       · apply Semilinear.proj'
         rw [setOf_and]
-        apply Semilinear.inter
-        · exact (Semilinear.span_finset _).preimage (LinearMap.funLeft ℕ ℕ Sum.inr)
-        · convert Semilinear.of_linear_equation (α := α) (β := (α ⊕ α) ⊕ α) 0 i
+        apply Semilinear.inter_nat
+        · exact (Semilinear.span_finset _).preimage_nat (LinearMap.funLeft ℕ ℕ Sum.inr)
+        · convert Semilinear.of_linear_equation_nat (α := α) (β := (α ⊕ α) ⊕ α) 0 i
             (Matrix.fromCols (Matrix.fromCols 1 0) 1) (Matrix.fromCols (Matrix.fromCols 0 1) 0)
             using 1
           ext x
@@ -592,20 +598,20 @@ lemma compl : sᶜ.Semilinear := by
     · apply Semilinear.union
       · refine Semilinear.iUnion_fintype fun i => Semilinear.proj' ?_
         rw [setOf_and]
-        apply Semilinear.inter
+        apply Semilinear.inter_nat
         · simp_rw [← Finset.coe_singleton]
-          exact (Semilinear.span_finset _).preimage (LinearMap.funLeft ℕ ℕ Sum.inr)
+          exact (Semilinear.span_finset _).preimage_nat (LinearMap.funLeft ℕ ℕ Sum.inr)
         · apply Semilinear.proj'
           rw [setOf_and]
-          apply Semilinear.inter
+          apply Semilinear.inter_nat
           · simp_rw [← Finset.coe_erase]
-            exact (Semilinear.span_finset _).preimage (LinearMap.funLeft ℕ ℕ Sum.inr)
+            exact (Semilinear.span_finset _).preimage_nat (LinearMap.funLeft ℕ ℕ Sum.inr)
           · apply Semilinear.proj'
             rw [setOf_and]
-            apply Semilinear.inter
+            apply Semilinear.inter_nat
             · simp_rw [← Finset.coe_erase]
-              exact (Semilinear.span_finset _).preimage (LinearMap.funLeft ℕ ℕ Sum.inr)
-            · convert Semilinear.of_linear_equation (α := α) (β := ((α ⊕ α) ⊕ α) ⊕ α)
+              exact (Semilinear.span_finset _).preimage_nat (LinearMap.funLeft ℕ ℕ Sum.inr)
+            · convert Semilinear.of_linear_equation_nat (α := α) (β := ((α ⊕ α) ⊕ α) ⊕ α)
                 i.1 hs.base
                 (Matrix.fromCols (Matrix.fromCols (Matrix.fromCols 1 1) 0) 1)
                 (Matrix.fromCols (Matrix.fromCols (Matrix.fromCols 0 0) 1) 0) using 1
@@ -618,20 +624,20 @@ lemma compl : sᶜ.Semilinear := by
               simp [-Sum.elim_comp_inl_inr, add_assoc, add_left_comm _ i.1]
       · refine Semilinear.biUnion_finset fun i _ => Semilinear.proj' ?_
         rw [setOf_and]
-        apply Semilinear.inter
+        apply Semilinear.inter_nat
         · simp_rw [← Finset.coe_singleton]
-          exact (Semilinear.span_finset _).preimage (LinearMap.funLeft ℕ ℕ Sum.inr)
+          exact (Semilinear.span_finset _).preimage_nat (LinearMap.funLeft ℕ ℕ Sum.inr)
         · apply Semilinear.proj'
           rw [setOf_and]
-          apply Semilinear.inter
+          apply Semilinear.inter_nat
           · simp_rw [← Finset.coe_erase]
-            exact (Semilinear.span_finset _).preimage (LinearMap.funLeft ℕ ℕ Sum.inr)
+            exact (Semilinear.span_finset _).preimage_nat (LinearMap.funLeft ℕ ℕ Sum.inr)
           · apply Semilinear.proj'
             rw [setOf_and]
-            apply Semilinear.inter
+            apply Semilinear.inter_nat
             · simp_rw [← Finset.coe_erase]
-              exact (Semilinear.span_finset _).preimage (LinearMap.funLeft ℕ ℕ Sum.inr)
-            · convert Semilinear.of_linear_equation (α := α) (β := ((α ⊕ α) ⊕ α) ⊕ α)
+              exact (Semilinear.span_finset _).preimage_nat (LinearMap.funLeft ℕ ℕ Sum.inr)
+            · convert Semilinear.of_linear_equation_nat (α := α) (β := ((α ⊕ α) ⊕ α) ⊕ α)
                 0 (hs.base + i.1)
                 (Matrix.fromCols (Matrix.fromCols (Matrix.fromCols 1 0) 0) 1)
                 (Matrix.fromCols (Matrix.fromCols (Matrix.fromCols 0 1) 1) 0) using 1
@@ -651,11 +657,11 @@ lemma compl : sᶜ.Semilinear := by
 
 end ProperLinear
 
-/-- Semilinear sets in `α → ℕ` (with finite `α`) are closed under complement. -/
-theorem Semilinear.compl [Fintype α] (hs : s.Semilinear) : sᶜ.Semilinear := by
+/-- Semilinear sets in `ℕ ^ k` are closed under complement. -/
+theorem Semilinear.compl_nat [Fintype α] (hs : s.Semilinear) : sᶜ.Semilinear := by
   classical
   rcases hs.proper_semilinear with ⟨S, hS, rfl⟩
   simp_rw [sUnion_eq_biUnion, Finset.mem_coe, compl_iUnion]
-  exact biInter_finset fun s hs => (hS s hs).compl
+  exact biInter_finset_nat fun s hs => (hS s hs).compl_nat
 
 end Set
