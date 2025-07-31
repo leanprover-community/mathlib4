@@ -5,6 +5,7 @@ Authors: Jon Bannon, Jireh Loreaux
 -/
 
 import Mathlib.MeasureTheory.Measure.MeasureSpace
+import Mathlib.MeasureTheory.Measure.OpenPos
 import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
 import Mathlib.Topology.Defs.Filter
 
@@ -16,6 +17,7 @@ namespace Measure
 
 open scoped Topology
 
+
 variable {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
 
 /-- A point `x` is in the support of `μ` if any open neighborhood of `x` has positive measure.
@@ -24,6 +26,14 @@ We provide the definition in terms of the filter-theoretic equivalent
 protected def support (μ : Measure X) : Set X := {x : X | ∃ᶠ u in (𝓝 x).smallSets, 0 < μ u}
 
 variable {μ : Measure X}
+
+@[simp]
+lemma support_zero : (0 : Measure X).support = ∅ := sorry
+
+lemma support_eq_univ [μ.IsOpenPosMeasure] : μ.support = Set.univ := sorry
+
+lemma support_mono {ν : Measure X} (h : μ ≤ ν) : μ.support ≤ ν.support :=
+  sorry
 
 /- MeasureTheory.measure_mono_null should be renamed to allow for dot notation. -/
 
