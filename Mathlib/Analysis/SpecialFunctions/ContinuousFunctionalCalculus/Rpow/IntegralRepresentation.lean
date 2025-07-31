@@ -455,7 +455,103 @@ lemma exists_measure_nnrpow_eq_integral_cfc_rpowIntegrand₀₁ [CompleteSpace A
 
 end isometricCFC
 
-section CStarAlgebra
+section NonUnitalCFC
+
+variable {A : Type*} [NonUnitalNormedRing A] [StarRing A] [NormedSpace ℝ A] [SMulCommClass ℝ A A]
+  [IsScalarTower ℝ A A]
+  [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A]
+  [NonUnitalIsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
+
+lemma cfcₙ_rpowIntegrand₀₁_eq_cfcₙ_rpowIntegrand₀₁_one' {p t : ℝ} (hp : p ∈ Ioo 0 1) (ht : 0 < t)
+    (a : A) (ha : 0 ≤ a) :
+    cfcₙ (rpowIntegrand₀₁ p t) a = t ^ (p - 1) • cfcₙ (rpowIntegrand₀₁ p 1) (t⁻¹ • a) := by
+  have hspec : quasispectrum ℝ a ⊆ Ici 0 := fun r hr => quasispectrum_nonneg_of_nonneg a ha r hr
+  calc _ = cfcₙ (fun x => t ^ ((p : ℝ) - 1) * (rpowIntegrand₀₁ p 1 (t⁻¹ • x))) a := by
+          refine cfcₙ_congr ?_
+          refine Set.EqOn.mono hspec (rpowIntegrand₀₁_eqOn_mul_rpowIntegrand₀₁_one ht)
+    _ = t ^ ((p : ℝ) - 1) • cfcₙ (fun x => rpowIntegrand₀₁ p 1 (t⁻¹ • x)) a := by
+          refine cfcₙ_smul (R := ℝ) (t ^ ((p : ℝ) - 1)) _ a ?_
+          refine ContinuousOn.mono ?_ hspec
+          refine ContinuousOn.comp (t := Ici 0) (g := fun x => rpowIntegrand₀₁ p 1 x) ?_ ?_ ?_
+          · exact continuousOn_rpowIntegrand₀₁_Ici hp zero_lt_one
+          · fun_prop
+          · intro x (hx : 0 ≤ x)
+            simp only [smul_eq_mul, mem_Ici]
+            positivity
+    _ = t ^ ((p : ℝ) - 1) • cfcₙ (rpowIntegrand₀₁ p 1) (t⁻¹ • a) := by
+          congr 1
+          refine cfcₙ_comp_smul (R := ℝ) t⁻¹ (fun x => rpowIntegrand₀₁ p 1 x) a ?_
+          refine ContinuousOn.mono (s := Ici 0) ?_ ?_
+          · exact continuousOn_rpowIntegrand₀₁_Ici hp zero_lt_one
+          · intro x hx
+            rw [Set.mem_image] at hx
+            obtain ⟨r, hr₁, hr₂⟩ := hx
+            rw [← hr₂]
+            change 0 ≤ t⁻¹ • r
+            have : 0 ≤ r := quasispectrum_nonneg_of_nonneg a ha r hr₁
+            positivity
+
+variable (A) in
+/-- The integral representation of the function `x ↦ x ^ p` (where `p ∈ (0, 1)`). -/
+lemma exists_measure_nnrpow_eq_integral_cfcₙ_rpowIntegrand₀₁ [CompleteSpace A] {p : ℝ≥0}
+    (hp : p ∈ Ioo 0 1) :
+    ∃ μ : Measure ℝ, ∀ a ∈ Ici (0 : A),
+      (IntegrableOn (fun t => cfcₙ (rpowIntegrand₀₁ p t) a) (Ioi 0) μ)
+      ∧ a ^ p = ∫ t in Ioi 0, cfcₙ (rpowIntegrand₀₁ p t) a ∂μ := by
+  obtain ⟨μ, hμ⟩ := exists_measure_rpow_eq_integral hp
+  refine ⟨μ, fun a (ha : 0 ≤ a) => ?_⟩
+  by_cases hnontrivial : Nontrivial A
+  case neg =>
+    rw [not_nontrivial_iff_subsingleton] at hnontrivial
+    simp [Subsingleton.eq_zero a]
+  case pos =>
+    have p_pos : 0 < (p : ℝ) := by exact_mod_cast hp.1
+    let f t := rpowIntegrand₀₁ p t
+    let maxr := sSup (quasispectrum ℝ a)
+    have maxr_nonneg : 0 ≤ maxr := by sorry
+    let bound (t : ℝ) := ‖f t maxr‖
+    have hf : ContinuousOn (Function.uncurry f) (Ioi (0 : ℝ) ×ˢ quasispectrum ℝ a) := by
+      refine continuousOn_rpowIntegrand₀₁_uncurry hp (quasispectrum ℝ a) ?_
+      grind [NonnegSpectrumClass.quasispectrum_nonneg_of_nonneg, Set.subset_def]
+    have hbound : ∀ᵐ t ∂μ.restrict (Ioi 0), ∀ z ∈ quasispectrum ℝ a, ‖f t z‖ ≤ bound t := by
+      filter_upwards [ae_restrict_mem measurableSet_Ioi] with t ht
+      intro z hz
+      have hz' : 0 ≤ z := by
+        grind [NonnegSpectrumClass.quasispectrum_nonneg_of_nonneg, Set.subset_def]
+      unfold bound f
+      rw [Real.norm_of_nonneg (rpowIntegrand₀₁_nonneg p_pos (le_of_lt ht) hz'),
+          Real.norm_of_nonneg (rpowIntegrand₀₁_nonneg p_pos (le_of_lt ht) maxr_nonneg)]
+      refine monotoneOn_rpowIntegrand₀₁ hp (le_of_lt ht) hz' maxr_nonneg ?_
+      exact le_csSup (IsCompact.bddAbove (quasispectrum.isCompact _)) hz
+    have hbound_finite_integral : HasFiniteIntegral bound (μ.restrict (Ioi 0)) := by
+      rw [hasFiniteIntegral_norm_iff]
+      exact (hμ maxr maxr_nonneg).1.2
+    have hmapzero : ∀ᵐ (x : ℝ) ∂μ.restrict (Ioi 0), rpowIntegrand₀₁ p x 0 = 0 := by
+      sorry
+    refine ⟨?integrable, ?integral⟩
+    case integrable =>
+      exact integrableOn_cfcₙ measurableSet_Ioi _ bound a hf hmapzero hbound hbound_finite_integral
+    case integral =>
+      calc a ^ p = cfcₙ (fun r => ∫ t in Ioi 0, rpowIntegrand₀₁ p t r ∂μ) a := by
+                  have hp' : p ≠ 0 := by grind [= lt_iff_le_and_ne]
+                  rw [nnrpow_def, cfcₙ_nnreal_eq_real]
+                  refine cfcₙ_congr ?_
+                  intro r hr
+                  have hp' : (p : ℝ) ∈ Ioo 0 1 := by exact_mod_cast hp
+                  have hr' : 0 ≤ r := by
+                    sorry
+                  simp only [sup_of_le_left hr', NNReal.nnrpow_def, NNReal.coe_rpow, coe_toNNReal']
+                  --simp only [NNReal.nnrpow_def, NNReal.coe_rpow, coe_toNNReal',
+                  --  spectrum_nonneg_of_nonneg ha hr, sup_of_le_left]
+                  refine (hμ r hr').2
+                  --exact spectrum_nonneg_of_nonneg ha hr
+        _ = _ := by
+                  refine cfcₙ_setIntegral measurableSet_Ioi _ bound a hf hmapzero hbound
+                    hbound_finite_integral ha.isSelfAdjoint
+
+end NonUnitalCFC
+
+section Unital
 
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 open Real
@@ -562,6 +658,6 @@ lemma rpow_le_rpow {p : ℝ} (hp : p ∈ Icc 0 1) (a b : A) (hab : a ≤ b) :
 lemma sqrt_le_sqrt (a b : A) (hab : a ≤ b) : sqrt a ≤ sqrt b :=
   monotone_sqrt hab
 
-end CStarAlgebra
+end Unital
 
 end CFC
