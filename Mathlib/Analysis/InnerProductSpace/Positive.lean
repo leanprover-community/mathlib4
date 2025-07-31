@@ -390,7 +390,7 @@ theorem IsIdempotentElem.TFAE {p : E →L[𝕜] E} (hp : IsIdempotentElem p) :
 theorem IsStarProjection.le_iff_comp_eq_right {p q : E →L[𝕜] E}
     (hp : IsStarProjection p) (hq : IsStarProjection q) : p ≤ q ↔ q ∘L p = p := by
   refine ⟨fun ⟨h1, h2⟩ => ?_, fun hpq ↦
-    IsPositive.of_isStarProjection (hp.sub_of_mul_eq_left hq hpq)⟩
+    IsPositive.of_isStarProjection (hp.sub_of_mul_eq_right hq hpq)⟩
   have : q.comp p = p ↔ LinearMap.range p ≤ LinearMap.range q := by
     simpa [coe_comp, ← coe_inj] using LinearMap.IsIdempotentElem.comp_eq_right_iff
       congr(LinearMapClass.linearMap $hq.isIdempotentElem.eq) p.toLinearMap
