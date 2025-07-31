@@ -41,7 +41,7 @@ noncomputable section
 open scoped MeasureTheory ProbabilityTheory ENNReal NNReal
 
 namespace ProbabilityTheory
-variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {X : Ω → ℝ} {μ : Measure Ω}
+variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {X Y : Ω → ℝ} {μ : Measure Ω}
 
 variable (X μ) in
 -- Porting note: Consider if `evariance` or `eVariance` is better. Also,
@@ -75,6 +75,14 @@ scoped notation "Var[" X "; " μ "]" => ProbabilityTheory.variance X μ
 
 It is set to `0` if `X` has infinite variance. -/
 scoped notation "Var[" X "]" => Var[X; MeasureTheory.MeasureSpace.volume]
+
+theorem evariance_congr (h : X =ᵐ[μ] Y) : eVar[X; μ] = eVar[Y; μ] := by
+  simp_rw [evariance, integral_congr_ae h]
+  apply lintegral_congr_ae
+  filter_upwards [h] with ω hω using by simp [hω]
+
+theorem variance_congr (h : X =ᵐ[μ] Y) : Var[X; μ] = Var[Y; μ] := by
+  simp_rw [variance, evariance_congr h]
 
 theorem evariance_lt_top [IsFiniteMeasure μ] (hX : MemLp X 2 μ) : evariance X μ < ∞ := by
   have := ENNReal.pow_lt_top (hX.sub <| memLp_const <| μ[X]).2 (n := 2)
@@ -242,16 +250,23 @@ lemma variance_const_sub [IsProbabilityMeasure μ] (hX : AEStronglyMeasurable X 
   simp_rw [sub_eq_add_neg]
   rw [variance_const_add (by fun_prop) c, variance_fun_neg]
 
-variable {Y : Ω → ℝ}
-
-lemma variance_sub [IsFiniteMeasure μ] (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) :
-    Var[X - Y; μ] = Var[X; μ] - 2 * cov[X, Y; μ] + Var[Y; μ] := by
-  rw [← covariance_self, covariance_sub_left hX hY (hX.sub hY), covariance_sub_right hX hX hY,
-    covariance_sub_right hY hX hY, covariance_self, covariance_self, covariance_comm]
+lemma variance_add [IsFiniteMeasure μ] (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) :
+    Var[X + Y; μ] = Var[X; μ] + 2 * cov[X, Y; μ] + Var[Y; μ] := by
+  rw [← covariance_self, covariance_add_left hX hY (hX.add hY), covariance_add_right hX hX hY,
+    covariance_add_right hY hX hY, covariance_self, covariance_self, covariance_comm]
   · ring
   · exact hY.aemeasurable
   · exact hX.aemeasurable
-  · exact hX.aemeasurable.sub hY.aemeasurable
+  · exact hX.aemeasurable.add hY.aemeasurable
+
+lemma variance_fun_add [IsFiniteMeasure μ] (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) :
+    Var[fun ω ↦ X ω + Y ω; μ] = Var[X; μ] + 2 * cov[X, Y; μ] + Var[Y; μ] :=
+  variance_add hX hY
+
+lemma variance_sub [IsFiniteMeasure μ] (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) :
+     Var[X - Y; μ] = Var[X; μ] - 2 * cov[X, Y; μ] + Var[Y; μ] := by
+   rw [sub_eq_add_neg, variance_add hX hY.neg, variance_neg, covariance_neg_right]
+   ring
 
 lemma variance_fun_sub [IsFiniteMeasure μ] (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) :
     Var[fun ω ↦ X ω - Y ω; μ] = Var[X; μ] - 2 * cov[X, Y; μ] + Var[Y; μ] :=
@@ -378,88 +393,42 @@ theorem meas_ge_le_variance_div_sq [IsFiniteMeasure μ] {X : Ω → ℝ} (hX : M
 
 -- Porting note: supplied `MeasurableSpace Ω` argument of `h` by unification
 /-- The variance of the sum of two independent random variables is the sum of the variances. -/
-theorem IndepFun.variance_add [IsProbabilityMeasure μ] {X Y : Ω → ℝ} (hX : MemLp X 2 μ)
-    (hY : MemLp Y 2 μ) (h : IndepFun X Y μ) : variance (X + Y) μ = variance X μ + variance Y μ :=
-  calc
-    variance (X + Y) μ = μ[fun a => X a ^ 2 + Y a ^ 2 + 2 * X a * Y a] - μ[X + Y] ^ 2 := by
-      simp [variance_def' (hX.add hY), add_sq']
-    _ = μ[X ^ 2] + μ[Y ^ 2] + (2 : ℝ) * μ[X * Y] - (μ[X] + μ[Y]) ^ 2 := by
-      simp only [Pi.add_apply, Pi.pow_apply, Pi.mul_apply, mul_assoc]
-      rw [integral_add, integral_add, integral_add, integral_const_mul]
-      · exact hX.integrable one_le_two
-      · exact hY.integrable one_le_two
-      · exact hX.integrable_sq
-      · exact hY.integrable_sq
-      · exact hX.integrable_sq.add hY.integrable_sq
-      · apply Integrable.const_mul
-        exact h.integrable_mul (hX.integrable one_le_two) (hY.integrable one_le_two)
-    _ = μ[X ^ 2] + μ[Y ^ 2] + 2 * (μ[X] * μ[Y]) - (μ[X] + μ[Y]) ^ 2 := by
-      congr
-      exact h.integral_mul_of_integrable (hX.integrable one_le_two) (hY.integrable one_le_two)
-    _ = variance X μ + variance Y μ := by simp only [variance_def', hX, hY, Pi.pow_apply]; ring
+nonrec theorem IndepFun.variance_add {X Y : Ω → ℝ} (hX : MemLp X 2 μ)
+    (hY : MemLp Y 2 μ) (h : IndepFun X Y μ) : Var[X + Y; μ] = Var[X; μ] + Var[Y; μ] := by
+  by_cases h' : X =ᵐ[μ] 0
+  · rw [variance_congr h', variance_congr h'.add_right]
+    simp
+  have := hX.isProbabilityMeasure_of_indepFun X Y (by simp) (by simp) h' h
+  rw [variance_add hX hY, h.covariance_eq_zero hX hY]
+  simp
 
 -- Porting note: supplied `MeasurableSpace Ω` argument of `hs`, `h` by unification
 /-- The variance of a finite sum of pairwise independent random variables is the sum of the
 variances. -/
-theorem IndepFun.variance_sum [IsProbabilityMeasure μ] {ι : Type*} {X : ι → Ω → ℝ}
+nonrec theorem IndepFun.variance_sum [IsProbabilityMeasure μ] {ι : Type*} {X : ι → Ω → ℝ}
     {s : Finset ι} (hs : ∀ i ∈ s, MemLp (X i) 2 μ)
     (h : Set.Pairwise ↑s fun i j => IndepFun (X i) (X j) μ) :
     variance (∑ i ∈ s, X i) μ = ∑ i ∈ s, variance (X i) μ := by
-  classical
-  induction s using Finset.induction_on with
-  | empty => simp only [Finset.sum_empty, variance_zero]
-  | insert k s ks IH =>
-  rw [variance_def' (memLp_finset_sum' _ hs), sum_insert ks, sum_insert ks]
-  simp only [add_sq']
-  calc
-    μ[(X k ^ 2 + (∑ i ∈ s, X i) ^ 2 + 2 * X k * ∑ i ∈ s, X i : Ω → ℝ)] - μ[X k + ∑ i ∈ s, X i] ^ 2 =
-        μ[X k ^ 2] + μ[(∑ i ∈ s, X i) ^ 2] + μ[2 * X k * ∑ i ∈ s, X i] -
-          (μ[X k] + μ[∑ i ∈ s, X i]) ^ 2 := by
-      rw [integral_add', integral_add', integral_add']
-      · exact MemLp.integrable one_le_two (hs _ (mem_insert_self _ _))
-      · apply integrable_finset_sum' _ fun i hi => ?_
-        exact MemLp.integrable one_le_two (hs _ (mem_insert_of_mem hi))
-      · exact MemLp.integrable_sq (hs _ (mem_insert_self _ _))
-      · apply MemLp.integrable_sq
-        exact memLp_finset_sum' _ fun i hi => hs _ (mem_insert_of_mem hi)
-      · apply Integrable.add
-        · exact MemLp.integrable_sq (hs _ (mem_insert_self _ _))
-        · apply MemLp.integrable_sq
-          exact memLp_finset_sum' _ fun i hi => hs _ (mem_insert_of_mem hi)
-      · rw [mul_assoc]
-        apply Integrable.const_mul _ (2 : ℝ)
-        rw [mul_sum, sum_fn]
-        apply integrable_finset_sum _ fun i hi => ?_
-        apply IndepFun.integrable_mul _ (MemLp.integrable one_le_two (hs _ (mem_insert_self _ _)))
-          (MemLp.integrable one_le_two (hs _ (mem_insert_of_mem hi)))
-        apply h (mem_insert_self _ _) (mem_insert_of_mem hi)
-        exact fun hki => ks (hki.symm ▸ hi)
-    _ = variance (X k) μ + variance (∑ i ∈ s, X i) μ +
-        (μ[2 * X k * ∑ i ∈ s, X i] - 2 * μ[X k] * μ[∑ i ∈ s, X i]) := by
-      rw [variance_def' (hs _ (mem_insert_self _ _)),
-        variance_def' (memLp_finset_sum' _ fun i hi => hs _ (mem_insert_of_mem hi))]
-      ring
-    _ = variance (X k) μ + variance (∑ i ∈ s, X i) μ := by
-      simp_rw [Pi.mul_apply, Pi.ofNat_apply, sum_apply, mul_sum, mul_assoc,
-        add_eq_left]
-      rw [integral_finset_sum s fun i hi => ?_]; swap
-      · apply Integrable.const_mul _ (2 : ℝ)
-        apply IndepFun.integrable_mul _ (MemLp.integrable one_le_two (hs _ (mem_insert_self _ _)))
-          (MemLp.integrable one_le_two (hs _ (mem_insert_of_mem hi)))
-        apply h (mem_insert_self _ _) (mem_insert_of_mem hi)
-        exact fun hki => ks (hki.symm ▸ hi)
-      rw [integral_finset_sum s fun i hi =>
-          MemLp.integrable one_le_two (hs _ (mem_insert_of_mem hi)),
-        mul_sum, mul_sum, ← sum_sub_distrib]
-      apply Finset.sum_eq_zero fun i hi => ?_
-      rw [integral_const_mul, IndepFun.integral_mul', sub_self]
-      · apply h (mem_insert_self _ _) (mem_insert_of_mem hi)
-        exact fun hki => ks (hki.symm ▸ hi)
-      · exact MemLp.aestronglyMeasurable (hs _ (mem_insert_self _ _))
-      · exact MemLp.aestronglyMeasurable (hs _ (mem_insert_of_mem hi))
-    _ = variance (X k) μ + ∑ i ∈ s, variance (X i) μ := by
-      rw [IH (fun i hi => hs i (mem_insert_of_mem hi))
-          (h.mono (by simp only [coe_insert, Set.subset_insert]))]
+  by_cases h'' : ∀ i ∈ s, X i =ᵐ[μ] 0
+  · rw [variance_congr (Y := 0), variance_zero]
+    · symm
+      refine Finset.sum_eq_zero fun i hi ↦ ?_
+      simp [variance_congr (h'' i hi)]
+    · have := fun (i : s) ↦ h'' i.1 i.2
+      filter_upwards [ae_all_iff.2 this] with ω hω
+      simp only [sum_apply, Pi.zero_apply]
+      exact Finset.sum_eq_zero fun i hi ↦ hω ⟨i, hi⟩
+  obtain ⟨j, hj1, hj2⟩ := not_forall₂.1 h''
+  obtain rfl | h' := s.eq_singleton_or_nontrivial hj1
+  · simp
+  obtain ⟨k, hk1, hk2⟩ := h'.exists_ne j
+  have := (hs j hj1).isProbabilityMeasure_of_indepFun (X j) (X k) (by simp) (by simp) hj2
+    (h hj1 hk1 hk2.symm)
+  rw [variance_sum' hs]
+  refine Finset.sum_congr rfl (fun i hi ↦ ?_)
+  rw [← covariance_self (hs i hi).aemeasurable]
+  refine Finset.sum_eq_single_of_mem i hi fun j hj1 hj2 ↦ ?_
+  exact (h hi hj1 hj2.symm).covariance_eq_zero (hs i hi) (hs j hj1)
 
 /-- **The Bhatia-Davis inequality on variance**
 
