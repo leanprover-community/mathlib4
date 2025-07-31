@@ -51,6 +51,12 @@ class EDist (α : Type*) where
 
 export EDist (edist)
 
+/-- `EMetric.ball x ε` is the set of all points `y` with `edist y x < ε` -/
+def ball (x : α) [EDist α] (ε : ℝ≥0∞) : Set α :=
+  { y | edist y x < ε }
+
+@[simp] theorem mem_ball [EDist α] {x y : α} {ε : ℝ≥0∞} : y ∈ ball x ε ↔ edist y x < ε := Iff.rfl
+
 /-- Creating a uniform space from an extended distance. -/
 @[reducible] def uniformSpaceOfEDist (edist : α → α → ℝ≥0∞) (edist_self : ∀ x : α, edist x x = 0)
     (edist_comm : ∀ x y : α, edist x y = edist y x)
@@ -90,11 +96,11 @@ class WeakPseudoEMetricSpace (α : Type u) [τ : TopologicalSpace α] : Type u e
   -- XXX: what's a good name?
   topology_le :
     τ ≤ (uniformSpaceOfEDist edist edist_self edist_comm edist_triangle).toTopologicalSpace
-  -- /-- The ambient topology on `α` matches the `edist` topology on balls of finite radius`. -/
-  -- -- TODO: cannot state the boundedness of O yet!
-  -- topology_eq_on_ball :
-  --   letI τ' := (uniformSpaceOfEDist edist edist_self edist_comm edist_triangle).toTopologicalSpace
-  --   ∀ O : Set α, IsOpen O → /-IsBounded O →-/ (IsOpen[τ'] O)
+  -- XXX: is it better to instead assume `IsBounded O`; how to state this?
+  /-- The ambient topology on `α` matches the `edist` topology on balls of finite radius`. -/
+  topology_eq_on_ball :
+    letI τ' := (uniformSpaceOfEDist edist edist_self edist_comm edist_triangle).toTopologicalSpace
+    ∀ r : ℝ≥0, ∀ x : α, (IsOpen[τ'] (ball x r))
 
 /-- A pseudo extended metric space is a type endowed with a `ℝ≥0∞`-valued distance `edist`
 satisfying reflexivity `edist x x = 0`, commutativity `edist x y = edist y x`, and the triangle
@@ -166,6 +172,9 @@ instance PseudoEMetricSpace.toWeakPseudoEMetricSpace (α : Type u) [PseudoEMetri
   topology_le := by
     apply le_of_eq
     rw [uniformSpace_edist]
+  topology_eq_on_ball := by
+    intro r x
+    sorry
 
 section WeakPseudoEMetricSpace
 
@@ -398,6 +407,7 @@ instance Prod.weakPseudoEMetricSpaceMax : WeakPseudoEMetricSpace (α × β) wher
     max_le (le_trans (edist_triangle _ _ _) (add_le_add (le_max_left _ _) (le_max_left _ _)))
       (le_trans (edist_triangle _ _ _) (add_le_add (le_max_right _ _) (le_max_right _ _)))
   topology_le := sorry
+  topology_eq_on_ball := sorry
 
 theorem Prod.edist_eq (x y : α × β) : edist x y = max (edist x.1 y.1) (edist x.2 y.2) := rfl
 
