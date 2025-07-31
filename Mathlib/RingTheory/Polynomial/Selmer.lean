@@ -61,22 +61,18 @@ theorem card_subgroup_eq_finrank_fixedpoints :
 instance to_intermediateField [Finite G] :
     IsGaloisGroup (fixingSubgroup G (F : Set L)) F L where
   faithful := have := hGKL.faithful; inferInstance
-  commutes := ⟨fun g x y ↦ by
-    simp_rw [Algebra.smul_def, IntermediateField.algebraMap_apply, smul_mul', Subgroup.smul_def, g.2 x]⟩
-  isInvariant := ⟨by
-    intro x h
-    refine ⟨⟨x, ?_⟩, rfl⟩
+  commutes := ⟨fun g x y ↦ by simp [Algebra.smul_def, Subgroup.smul_def, g.2 x]⟩
+  isInvariant := ⟨fun x h ↦ ⟨⟨x, by
     have := hGKL.finiteDimensional
     have := hGKL.isGalois
-    have key := IsGalois.fixedField_fixingSubgroup F
-    rw [← key]
+    rw [← IsGalois.fixedField_fixingSubgroup F]
     intro ⟨g, hg⟩
     rw [Subtype.forall] at h
     simp only [Subgroup.mk_smul, IntermediateField.mem_fixingSubgroup_iff,
       mem_fixingSubgroup_iff] at h hg
     have key := mulEquivCongr_apply_smul (L ≃ₐ[K] L) G K L g x
     refine key.symm.trans (h _ (by simpa only [mulEquivCongr_apply_smul]))
-  ⟩
+  ⟩, rfl⟩⟩
 
 theorem card_fixingSubgroup_eq_finrank [Finite G] :
     Nat.card (fixingSubgroup G (F : Set L)) = Module.finrank F L :=
@@ -210,7 +206,7 @@ theorem Ideal.card_inertiaSubgroup : Nat.card (AddSubgroup.inertia Q.toAddSubgro
     let _ : Field (A ⧸ P) := Quotient.field P
     let _ : Field (B ⧸ Q) := Quotient.field Q
     have : IsGalois (A ⧸ P) (B ⧸ Q) := sorry
-    rw [Nat.card_eq_fintype_card, IsGalois.card_aut_eq_finrank]
+    rw [IsGalois.card_aut_eq_finrank]
   rw [inertiaDegIn_eq_inertiaDeg P Q K L, inertiaDeg_algebraMap] at key
   rw [← h1, ← h2, ← (MulAction.stabilizer G Q).index_mul_card] at key
   rw [mul_right_inj' Subgroup.index_ne_zero_of_finite] at key
