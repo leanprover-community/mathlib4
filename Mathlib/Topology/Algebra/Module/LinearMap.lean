@@ -60,8 +60,10 @@ abbrev ContinuousLinearMapClass (F : Type*) (R : outParam Type*) [Semiring R]
     [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M] [Module R M₂] [FunLike F M M₂] :=
   ContinuousSemilinearMapClass F (RingHom.id R) M M₂
 
-/-- The topological dual of a topological space `M`. -/
-abbrev TopologicalSpace.Dual (R : Type*) [Semiring R] [TopologicalSpace R]
+/-- The *strong dual* of a topological vector space space `M`. This is the space of 
+continuous linear functionals and is equipped with the topology of uniform convergence
+on bounded subsets. -/
+abbrev StrongDual (R : Type*) [Semiring R] [TopologicalSpace R]
   (M : Type*) [TopologicalSpace M] [AddCommMonoid M] [Module R M] : Type _ := M →L[R] R
 
 namespace ContinuousLinearMap
