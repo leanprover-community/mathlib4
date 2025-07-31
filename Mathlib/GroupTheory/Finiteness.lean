@@ -286,6 +286,11 @@ theorem Group.fg_iff_monoid_fg : Group.FG G ↔ Monoid.FG G :=
   ⟨fun h => Monoid.fg_def.2 <| (Subgroup.fg_iff_submonoid_fg ⊤).1 (Group.fg_def.1 h), fun h =>
     Group.fg_def.2 <| (Subgroup.fg_iff_submonoid_fg ⊤).2 (Monoid.fg_def.1 h)⟩
 
+@[to_additive]
+instance Monoid.fg_of_group_fg [Group.FG G] : Monoid.FG G := by
+  rw [← Group.fg_iff_monoid_fg]
+  infer_instance
+
 @[to_additive (attr := simp)]
 theorem Group.fg_iff_subgroup_fg (H : Subgroup G) : Group.FG H ↔ H.FG :=
   (fg_iff_monoid_fg.trans (Monoid.fg_iff_submonoid_fg _)).trans
@@ -349,3 +354,13 @@ instance instMonoidFG [FG M] [FG N] : FG (M × N) where
   fg_top := by rw [← Submonoid.top_prod_top]; exact .prod ‹FG M›.fg_top ‹FG N›.fg_top
 
 end Prod
+
+instance AddMonoid.FG.nat : FG ℕ := by
+  rw [fg_iff, ← Nat.addSubmonoid_closure_one]
+  exact ⟨{1}, rfl, by simp⟩
+
+instance AddGroup.FG.int : FG ℤ := by
+  rw [fg_iff]
+  refine ⟨{1}, ?_, by simp⟩
+  ext x
+  simp [AddSubgroup.mem_closure_singleton]
