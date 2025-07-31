@@ -49,7 +49,7 @@ example (X : TopCat.{u₁}) (F : Presheaf CommRingCat.{u₁} X)
 
 /-- Deprecated: usage of this definition should be replaceable with `TopCat.Presheaf.restrictOpen`.
 
-Before, we had to specialze `restrictOpen` to `CommRingCat` because inferring `C := CommRingCat`
+Before, we had to specialize `restrictOpen` to `CommRingCat` because inferring `C := CommRingCat`
 was not reliable. Unification hints appear to solve that issue.
 
 The following still holds for `restrictOpen`: instead of unfolding the definition, rewrite with
@@ -174,11 +174,12 @@ instance (F : X.Sheaf CommRingCat.{w}) : Mono F.presheaf.toTotalQuotientPresheaf
   set m := _
   change Function.Injective (algebraMap _ (Localization m))
   refine IsLocalization.injective (M := m) (S := Localization m) ?_
+  rw [← nonZeroDivisorsRight_eq_nonZeroDivisors]
   intro s hs t e
   apply section_ext F (unop U)
   intro x hx
   rw [RingHom.map_zero]
-  apply Submonoid.mem_iInf.mp hs ⟨x, hx⟩
+  apply (Submonoid.mem_iInf.mp hs ⟨x, hx⟩).2
   rw [← map_mul, e, map_zero]
 
 end SubmonoidPresheaf

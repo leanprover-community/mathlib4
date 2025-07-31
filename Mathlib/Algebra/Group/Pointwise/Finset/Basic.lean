@@ -374,11 +374,11 @@ theorem singleton_mul_singleton (a b : α) : ({a} : Finset α) * {b} = {a * b} :
 theorem mul_subset_mul : s₁ ⊆ s₂ → t₁ ⊆ t₂ → s₁ * t₁ ⊆ s₂ * t₂ :=
   image₂_subset
 
-@[to_additive (attr := gcongr)]
+@[to_additive]
 theorem mul_subset_mul_left : t₁ ⊆ t₂ → s * t₁ ⊆ s * t₂ :=
   image₂_subset_left
 
-@[to_additive (attr := gcongr)]
+@[to_additive]
 theorem mul_subset_mul_right : s₁ ⊆ s₂ → s₁ * t ⊆ s₂ * t :=
   image₂_subset_right
 
@@ -599,11 +599,11 @@ theorem singleton_div_singleton (a b : α) : ({a} : Finset α) / {b} = {a / b} :
 theorem div_subset_div : s₁ ⊆ s₂ → t₁ ⊆ t₂ → s₁ / t₁ ⊆ s₂ / t₂ :=
   image₂_subset
 
-@[to_additive (attr := gcongr)]
+@[to_additive]
 theorem div_subset_div_left : t₁ ⊆ t₂ → s / t₁ ⊆ s / t₂ :=
   image₂_subset_left
 
-@[to_additive (attr := gcongr)]
+@[to_additive]
 theorem div_subset_div_right : s₁ ⊆ s₂ → s₁ / t ⊆ s₂ / t :=
   image₂_subset_right
 
@@ -816,7 +816,7 @@ protected lemma pow_right_monotone (hs : 1 ∈ s) : Monotone (s ^ ·) :=
 @[to_additive (attr := gcongr)]
 lemma pow_subset_pow_left (hst : s ⊆ t) : s ^ n ⊆ t ^ n := subset_of_le (pow_left_mono n hst)
 
-@[to_additive (attr := gcongr)]
+@[to_additive]
 lemma pow_subset_pow_right (hs : 1 ∈ s) (hmn : m ≤ n) : s ^ m ⊆ s ^ n :=
   Finset.pow_right_monotone hs hmn
 
@@ -991,7 +991,7 @@ lemma univ_div_univ [Fintype α] : (univ / univ : Finset α) = univ := by simp [
   rw [div_eq_mul_inv]; exact subset_mul_right _ hs
 
 @[to_additive (attr := simp) zsmul_empty]
-lemma empty_zpow (hn : n ≠ 0) : (∅ : Finset α) ^ n = ∅ := by cases n <;> aesop
+lemma empty_zpow (hn : n ≠ 0) : (∅ : Finset α) ^ n = ∅ := by cases n <;> simp_all
 
 @[to_additive]
 lemma Nonempty.zpow (hs : s.Nonempty) : ∀ {n : ℤ}, (s ^ n).Nonempty

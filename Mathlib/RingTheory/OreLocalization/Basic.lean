@@ -28,8 +28,6 @@ assert_not_exists RelIso
 
 universe u
 
-open OreLocalization
-
 namespace OreLocalization
 
 section MonoidWithZero

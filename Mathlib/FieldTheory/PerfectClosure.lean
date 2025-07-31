@@ -26,7 +26,7 @@ import Mathlib.FieldTheory.Perfect
 
 ## Main results
 
-- `PerfectClosure.induction_on`: to prove a result for all elements of the prefect closure, one only
+- `PerfectClosure.induction_on`: to prove a result for all elements of the perfect closure, one only
   needs to prove it for all elements of the form `x ^ (p ^ -n)`.
 
 - `PerfectClosure.mk_mul_mk`, `PerfectClosure.one_def`, `PerfectClosure.mk_add_mk`,

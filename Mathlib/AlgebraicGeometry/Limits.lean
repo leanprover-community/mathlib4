@@ -36,12 +36,12 @@ attribute [local instance] Opposite.small
 namespace AlgebraicGeometry
 
 /-- `Spec ℤ` is the terminal object in the category of schemes. -/
-noncomputable def specZIsTerminal : IsTerminal (Spec (CommRingCat.of ℤ)) :=
+noncomputable def specZIsTerminal : IsTerminal Spec(ℤ) :=
   @IsTerminal.isTerminalObj _ _ _ _ Scheme.Spec _ inferInstance
     (terminalOpOfInitial CommRingCat.zIsInitial)
 
 /-- `Spec ℤ` is the terminal object in the category of schemes. -/
-noncomputable def specULiftZIsTerminal : IsTerminal (Spec (.of (ULift.{u} ℤ))) :=
+noncomputable def specULiftZIsTerminal : IsTerminal Spec(ULift.{u} ℤ) :=
   @IsTerminal.isTerminalObj _ _ _ _ Scheme.Spec _ inferInstance
     (terminalOpOfInitial CommRingCat.isInitial)
 
@@ -90,7 +90,7 @@ theorem emptyIsInitial_to : emptyIsInitial.to = Scheme.emptyTo :=
 instance : IsEmpty (∅ : Scheme.{u}) :=
   show IsEmpty PEmpty by infer_instance
 
-instance spec_punit_isEmpty : IsEmpty (Spec (CommRingCat.of PUnit.{u+1})) :=
+instance spec_punit_isEmpty : IsEmpty Spec(PUnit.{u+1}) :=
   inferInstanceAs <| IsEmpty (PrimeSpectrum PUnit)
 
 instance (priority := 100) isOpenImmersion_of_isEmpty {X Y : Scheme} (f : X ⟶ Y)
@@ -112,11 +112,11 @@ noncomputable def isInitialOfIsEmpty {X : Scheme} [IsEmpty X] : IsInitial X :=
   emptyIsInitial.ofIso (asIso <| emptyIsInitial.to _)
 
 /-- `Spec 0` is the initial object in the category of schemes. -/
-noncomputable def specPunitIsInitial : IsInitial (Spec (.of PUnit.{u+1})) :=
+noncomputable def specPunitIsInitial : IsInitial Spec(PUnit.{u+1}) :=
   emptyIsInitial.ofIso (asIso <| emptyIsInitial.to _)
 
 instance (priority := 100) isAffine_of_isEmpty {X : Scheme} [IsEmpty X] : IsAffine X :=
-  .of_isIso (inv (emptyIsInitial.to X) ≫ emptyIsInitial.to (Spec (.of PUnit)))
+  .of_isIso (inv (emptyIsInitial.to X) ≫ emptyIsInitial.to Spec(PUnit))
 
 instance : HasInitial Scheme.{u} :=
   hasInitial_of_unique ∅
@@ -155,7 +155,7 @@ variable {σ : Type v} (g : σ → Scheme.{u})
 
 noncomputable
 instance [Small.{u} σ] :
-  CreatesColimitsOfShape (Discrete σ) Scheme.forgetToLocallyRingedSpace.{u} where
+    CreatesColimitsOfShape (Discrete σ) Scheme.forgetToLocallyRingedSpace.{u} where
 
 instance [Small.{u} σ] : PreservesColimitsOfShape (Discrete σ) Scheme.forgetToTop.{u} :=
   inferInstanceAs (PreservesColimitsOfShape (Discrete σ) (Scheme.forgetToLocallyRingedSpace ⋙
@@ -367,7 +367,7 @@ variable (R S : Type u) [CommRing R] [CommRing S]
 /-- The map `Spec R ⨿ Spec S ⟶ Spec (R × S)`.
 This is an isomorphism as witnessed by an `IsIso` instance provided below. -/
 noncomputable
-def coprodSpec : Spec (.of R) ⨿ Spec (.of S) ⟶ Spec (.of (R × S)) :=
+def coprodSpec : Spec(R) ⨿ Spec(S) ⟶ Spec(R × S) :=
   coprod.desc (Spec.map (CommRingCat.ofHom <| RingHom.fst _ _))
     (Spec.map (CommRingCat.ofHom <| RingHom.snd _ _))
 
@@ -393,8 +393,8 @@ lemma coprodSpec_coprodMk (x) :
     ext; simp [Ideal.prod, CommRingCat.ofHom]
 
 lemma coprodSpec_apply (x) :
-    (coprodSpec R S).base x = (PrimeSpectrum.primeSpectrumProd R S).symm
-      ((coprodMk (Spec (.of R)) (Spec (.of S))).symm x) := by
+    (coprodSpec R S).base x =
+      (PrimeSpectrum.primeSpectrumProd R S).symm ((coprodMk Spec(R) Spec(S)).symm x) := by
   rw [← coprodSpec_coprodMk, Homeomorph.apply_symm_apply]
 
 lemma isIso_stalkMap_coprodSpec (x) :
@@ -420,8 +420,8 @@ lemma isIso_stalkMap_coprodSpec (x) :
 instance : IsIso (coprodSpec R S) := by
   rw [isIso_iff_stalk_iso]
   refine ⟨?_, isIso_stalkMap_coprodSpec R S⟩
-  convert_to IsIso (TopCat.isoOfHomeo (X := Spec (.of (R × S))) <|
-    PrimeSpectrum.primeSpectrumProdHomeo.trans (coprodMk (Spec (.of R)) (Spec (.of S)))).inv
+  convert_to IsIso (TopCat.isoOfHomeo (X := Spec(R × S)) <|
+    PrimeSpectrum.primeSpectrumProdHomeo.trans (coprodMk Spec(R) Spec(S))).inv
   · ext x; exact coprodSpec_apply R S x
   · infer_instance
 
@@ -464,7 +464,7 @@ instance {J : Type*} [Finite J] : PreservesColimitsOfShape (Discrete J) Scheme.S
 /-- The canonical map `∐ Spec Rᵢ ⟶ Spec (Π Rᵢ)`.
 This is an isomorphism when the product is finite. -/
 noncomputable
-def sigmaSpec (R : ι → CommRingCat) : (∐ fun i ↦ Spec (R i)) ⟶ Spec (.of (Π i, R i)) :=
+def sigmaSpec (R : ι → CommRingCat) : (∐ fun i ↦ Spec (R i)) ⟶ Spec(Π i, R i) :=
   Sigma.desc (fun i ↦ Spec.map (CommRingCat.ofHom (Pi.evalRingHom _ i)))
 
 @[reassoc (attr := simp)]

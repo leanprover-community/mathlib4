@@ -54,11 +54,11 @@ lemma NumberField.absNorm_differentIdeal : (differentIdeal ℤ 𝒪).absNorm = (
   · apply AddSubgroup.toIntSubmodule.injective
     rw [AddSubgroup.toIntSubmodule_closure, ← LinearMap.BilinForm.dualSubmodule_span_of_basis, hb]
     simp
-  · simp only [Basis.det_apply, discr, Algebra.discr]
+  · simp only [Module.Basis.det_apply, discr, Algebra.discr]
     rw [← eq_intCast (algebraMap ℤ ℚ), RingHom.map_det]
     congr! 2
     ext i j
-    simp [b', Basis.toMatrix_apply, mul_comm (RingOfIntegers.basis K i),
+    simp [b', Module.Basis.toMatrix_apply, mul_comm (RingOfIntegers.basis K i),
       b, integralBasis_apply, ← map_mul, Algebra.trace_localization ℤ ℤ⁰]
 
 lemma NumberField.discr_mem_differentIdeal : ↑(discr K) ∈ differentIdeal ℤ 𝒪 := by
