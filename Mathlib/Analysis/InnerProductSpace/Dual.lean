@@ -61,7 +61,7 @@ into `Dual 𝕜 E`.
 If `E` is complete, this operation is surjective, hence a conjugate-linear isometric equivalence;
 see `toDual`.
 -/
-def toDualMap : E →ₗᵢ⋆[𝕜] NormedSpace.Dual 𝕜 E :=
+def toDualMap : E →ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
   { innerSL 𝕜 with norm_map' := innerSL_apply_norm _ }
 
 variable {E}
@@ -122,7 +122,7 @@ variable [CompleteSpace E]
 /-- **Fréchet-Riesz representation**: any `ℓ` in the dual of a Hilbert space `E` is of the form
 `fun u => ⟪y, u⟫` for some `y : E`, i.e. `toDualMap` is surjective.
 -/
-def toDual : E ≃ₗᵢ⋆[𝕜] NormedSpace.Dual 𝕜 E :=
+def toDual : E ≃ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
   LinearIsometryEquiv.ofSurjective (toDualMap 𝕜 E)
     (by
       intro ℓ
@@ -169,7 +169,7 @@ theorem toDual_apply {x y : E} : toDual 𝕜 E x y = ⟪x, y⟫ :=
   rfl
 
 @[simp]
-theorem toDual_symm_apply {x : E} {y : NormedSpace.Dual 𝕜 E} : ⟪(toDual 𝕜 E).symm y, x⟫ = y x := by
+theorem toDual_symm_apply {x : E} {y : StrongDual 𝕜 E} : ⟪(toDual 𝕜 E).symm y, x⟫ = y x := by
   rw [← toDual_apply]
   simp only [LinearIsometryEquiv.apply_symm_apply]
 
