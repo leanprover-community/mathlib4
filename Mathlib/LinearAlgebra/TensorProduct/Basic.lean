@@ -126,7 +126,7 @@ def tmul (m : M) (n : N) : M ⊗[R] N :=
 infixl:100 " ⊗ₜ " => tmul _
 
 /-- The canonical function `M → N → M ⊗ N`. -/
-notation:100 x " ⊗ₜ[" R "] " y:100 => tmul R x y
+notation:100 x:100 " ⊗ₜ[" R "] " y:101 => tmul R x y
 
 @[elab_as_elim, induction_eliminator]
 protected theorem induction_on {motive : M ⊗[R] N → Prop} (z : M ⊗[R] N)
