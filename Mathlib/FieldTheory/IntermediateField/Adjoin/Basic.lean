@@ -803,7 +803,7 @@ theorem lift_cardinalMk_adjoin_le {E : Type v} [Field E] [Algebra F E] (s : Set 
   apply (Cardinal.lift_le.mpr (Subfield.cardinalMk_closure_le_max _)).trans
   rw [lift_max, sup_le_iff, lift_aleph0]
   refine ⟨(Cardinal.lift_le.mpr ((mk_union_le _ _).trans <| add_le_max _ _)).trans ?_, le_sup_right⟩
-  simp_rw [lift_max]
+  simp_rw [lift_max, lift_aleph0]
   grw [mk_range_le_lift]
 
 theorem cardinalMk_adjoin_le {E : Type u} [Field E] [Algebra F E] (s : Set E) :

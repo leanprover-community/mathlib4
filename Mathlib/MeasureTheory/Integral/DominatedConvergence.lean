@@ -596,12 +596,11 @@ theorem continuous_parametric_primitive_of_continuous
       · exact ((hf.uncurry_left _).sub (hf.uncurry_left _)).norm.integrableOn_Icc
       · exact uIoc_subset_uIcc.trans (uIcc_subset_Icc ⟨a_lt.1.le, lt_b.1.le⟩ ⟨a_lt.2.le, lt_b.2.le⟩)
   _ ≤ ∫ t in Icc (b₀ - δ) (b₀ + δ), M + 1 ∂μ + ∫ _t in Icc a b, δ ∂μ := by
-      gcongr
+      gcongr with x hx x hx
       · exact (hf.uncurry_left _).norm.integrableOn_Icc
       · exact continuous_const.integrableOn_Icc
       · exact measurableSet_Icc
-      · intro x hx
-        calc ‖f p x‖ = ‖f q x + (f p x - f q x)‖ := by congr; abel
+      · calc ‖f p x‖ = ‖f q x + (f p x - f q x)‖ := by congr; abel
         _ ≤ ‖f q x‖ + ‖f p x - f q x‖ := norm_add_le _ _
         _ ≤ M + δ := by
             gcongr
@@ -615,8 +614,7 @@ theorem continuous_parametric_primitive_of_continuous
       · exact ((hf.uncurry_left _).sub (hf.uncurry_left _)).norm.integrableOn_Icc
       · exact continuous_const.integrableOn_Icc
       · exact measurableSet_Icc
-      · intro x hx
-        exact le_of_lt (hv _ hp _ hx)
+      · exact le_of_lt (hv _ hp _ hx)
   _ = (M + 1) * μ.real (Icc (b₀ - δ) (b₀ + δ)) + δ * μ.real (Icc a b) := by simp [mul_comm]
   _ < ε := h''δ
 
