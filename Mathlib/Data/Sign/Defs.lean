@@ -103,7 +103,6 @@ instance : LinearOrder SignType where
   le_antisymm := le_antisymm
   le_trans := le_trans
   toDecidableLE := LE.decidableRel
-  toDecidableEq := SignType.decidableEq
 
 instance : BoundedOrder SignType where
   top := 1
