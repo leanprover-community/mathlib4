@@ -482,7 +482,6 @@ lemma setOf_riemmanianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
           pathELength_eq_lintegral_mfderivWithin_Icc]
     _ ≤ C * pathELength I γ 0 1 := by
       gcongr
-      exact pathELength_mono le_rfl ht₁1.le
     _ < C * (r / C) := by
       gcongr
       · exact ENNReal.coe_ne_top

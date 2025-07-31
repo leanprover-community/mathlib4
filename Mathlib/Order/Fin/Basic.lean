@@ -266,11 +266,6 @@ lemma predAbove_right_monotone (p : Fin n) : Monotone p.predAbove := fun a b H =
   · exact le_pred_of_lt ((not_lt.mp ha).trans_lt hb)
   · exact H
 
-@[gcongr]
-theorem _root_.GCongr.Fin.predAbove_le_predAbove_right (p : Fin n) {i j : Fin (n + 1)} (h : i ≤ j) :
-    p.predAbove i ≤ p.predAbove j :=
-  predAbove_right_monotone p h
-
 lemma predAbove_left_monotone (i : Fin (n + 1)) : Monotone fun p ↦ predAbove p i := fun a b H ↦ by
   dsimp [predAbove]
   split_ifs with ha hb hb
@@ -281,14 +276,9 @@ lemma predAbove_left_monotone (i : Fin (n + 1)) : Monotone fun p ↦ predAbove p
   · rfl
 
 @[gcongr]
-lemma _root_.GCongr.predAbove_le_predAbove_left {p q : Fin n} (h : p ≤ q) (i : Fin (n + 1)) :
-    p.predAbove i ≤ q.predAbove i :=
-  predAbove_left_monotone i h
-
-@[gcongr]
 lemma predAbove_le_predAbove {p q : Fin n} (hpq : p ≤ q) {i j : Fin (n + 1)} (hij : i ≤ j) :
-    p.predAbove i ≤ q.predAbove j := by
-  trans p.predAbove j <;> gcongr
+    p.predAbove i ≤ q.predAbove j :=
+  (predAbove_right_monotone p hij).trans (predAbove_left_monotone j hpq)
 
 /-- `Fin.predAbove p` as an `OrderHom`. -/
 @[simps!] def predAboveOrderHom (p : Fin n) : Fin (n + 1) →o Fin n :=
