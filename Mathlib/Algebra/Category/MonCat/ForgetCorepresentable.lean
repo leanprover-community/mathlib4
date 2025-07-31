@@ -9,7 +9,7 @@ import Mathlib.Algebra.Group.Nat.Hom
 import Mathlib.CategoryTheory.Yoneda
 
 /-!
-# The forget functor is corepresentable
+# The forgetful functor is corepresentable
 
 The forgetful functor `AddCommMonCat.{u} ⥤ Type u` is corepresentable
 by `ULift ℕ`. Similar results are obtained for the variants `CommMonCat`, `AddMonCat`
@@ -58,7 +58,7 @@ end MonoidHom
 
 namespace AddMonoidHom
 
-/-- The equivalence `(ℤ →+ α) ≃ α` for any additive group `α`. -/
+/-- The equivalence `(ℕ →+ α) ≃ α` for any additive monoid `α`. -/
 @[deprecated multiplesHom (since := "2025-05-11")]
 def fromNatEquiv (α : Type u) [AddMonoid α] : (ℕ →+ α) ≃ α := (multiplesHom _).symm
 

@@ -56,7 +56,7 @@ section kernel_defs
 -/
 
 /-- Even Hurwitz zeta kernel (function whose Mellin transform will be the even part of the
-completed Hurwit zeta function). See `evenKernel_def` for the defining formula, and
+completed Hurwitz zeta function). See `evenKernel_def` for the defining formula, and
 `hasSum_int_evenKernel` for an expression as a sum over `ℤ`. -/
 @[irreducible] def evenKernel (a : UnitAddCircle) (x : ℝ) : ℝ :=
   (show Function.Periodic

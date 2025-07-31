@@ -542,7 +542,7 @@ instance : Preorder (WithPreorder R) where
   le_refl _ := rel_refl _
   le_trans _ _ _ := rel_trans
 
-/-- The valutaive relation on `WithPreorder R` arising from the valuative relation on `R`.
+/-- The valuative relation on `WithPreorder R` arising from the valuative relation on `R`.
 This is defined as the preorder itself. -/
 instance : ValuativeRel (WithPreorder R) where
   rel := (· ≤ ·)
