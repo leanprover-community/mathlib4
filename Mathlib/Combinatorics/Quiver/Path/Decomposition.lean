@@ -1,11 +1,11 @@
 /-
 Copyright (c) 2025 Matteo Cipollina. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Matteo Cipollina
+Authors: Matteo Cipollina
 -/
+import Mathlib.Combinatorics.Quiver.Path
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Tactic.Cases
-import Mathlib.Combinatorics.Quiver.Path
 
 /-!
 # Path Decomposition and Boundary Crossing
