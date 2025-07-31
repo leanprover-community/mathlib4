@@ -221,7 +221,7 @@ instance instStar : Star (E →ₗ.[𝕜] E) where
 
 variable {A : E →ₗ.[𝕜] E}
 
-theorem isSelfAdjoint_def : IsSelfAdjoint A ↔ A† = A := Iff.rfl
+theorem isSelfAdjoint_def : IsSelfAdjoint A ↔ A† = A := isSelfAdjoint_iff _
 
 /-- Every self-adjoint `LinearPMap` has dense domain.
 

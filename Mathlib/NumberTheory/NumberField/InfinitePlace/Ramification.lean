@@ -226,7 +226,7 @@ theorem isRamified_iff : w.IsRamified k ↔ w.IsComplex ∧ (w.comap (algebraMap
 theorem IsRamified.ne_conjugate {w₁ w₂ : InfinitePlace K} (h : w₂.IsRamified k) :
     w₁.embedding ≠ ComplexEmbedding.conjugate w₂.embedding := by
   by_cases h_eq : w₁ = w₂
-  · rw [isRamified_iff, isComplex_iff] at h
+  · rw [isRamified_iff, isComplex_iff, ComplexEmbedding.IsReal, isSelfAdjoint_iff] at h
     exact Ne.symm (h_eq ▸ h.1)
   · contrapose! h_eq
     rw [← mk_embedding w₁, h_eq, mk_conjugate_eq, mk_embedding]
@@ -255,7 +255,9 @@ lemma isUnramified_mk_iff_forall_isConj [IsGalois k K] {φ : K →+* ℂ} :
   letI := (φ.comp (algebraMap k K)).toAlgebra
   letI := φ.toAlgebra
   have : IsScalarTower k K ℂ := IsScalarTower.of_algebraMap_eq' rfl
-  let φ' : K →ₐ[k] ℂ := { star φ with commutes' := fun r ↦ by simpa using RingHom.congr_fun hφ.2 r }
+  let φ' : K →ₐ[k] ℂ :=
+    { star φ with commutes' :=
+        fun r ↦ by simpa using RingHom.congr_fun hφ.2.star_eq r }
   have : ComplexEmbedding.IsConj φ (AlgHom.restrictNormal' φ' K) :=
     (RingHom.ext <| AlgHom.restrictNormal_commutes φ' K).symm
   exact hφ.1 (H _ this ▸ this)

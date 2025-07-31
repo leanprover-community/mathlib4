@@ -288,7 +288,7 @@ lemma spectrum_star_mul_self_nonneg {b : A} : ∀ x ∈ spectrum ℝ (star b * b
   have h_c_spec₁ : SpectrumRestricts (c * star c) ContinuousMap.realToNNReal := by
     rw [eq_sub_iff_add_eq'.mpr <| star_mul_self_add_self_mul_star c, sub_eq_add_neg, ← sq, ← sq]
     refine SpectrumRestricts.nnreal_add ?_ ?_ ?_ h_c_spec₀
-    · exact .smul (star_trivial _) <| ((ℜ c).prop.pow 2).add ((ℑ c).prop.pow 2)
+    · exact .smul ⟨star_trivial _⟩ <| ((ℜ c).prop.pow 2).add ((ℑ c).prop.pow 2)
     · exact .neg <| .star_mul_self c
     · rw [← Nat.cast_smul_eq_nsmul ℝ]
       refine (ℜ c).2.sq_spectrumRestricts.nnreal_add ((ℜ c).2.pow 2) ((ℑ c).2.pow 2)

@@ -219,7 +219,7 @@ theorem linearProjOfIsCompl_idempotent (h : IsCompl p q) (x : E) :
 /-- The linear projection onto a subspace along its complement is an idempotent. -/
 theorem IsCompl.projection_isIdempotentElem (hpq : IsCompl p q) :
     IsIdempotentElem hpq.projection := by
-  simp [projection, IsIdempotentElem, LinearMap.ext_iff]
+  simp [projection, isIdempotentElem_iff, LinearMap.ext_iff]
 
 theorem existsUnique_add_of_isCompl_prod (hc : IsCompl p q) (x : E) :
     ∃! u : p × q, (u.fst : E) + u.snd = x :=
@@ -435,8 +435,8 @@ correspondence with linear maps to the submodule that restrict to the identity o
   toFun f := ⟨f.1.codRestrict _ fun x ↦ by simp_rw [← f.2.2]; exact mem_range_self f.1 x,
     fun ⟨x, hx⟩ ↦ Subtype.ext <| by
       obtain ⟨x, rfl⟩ := f.2.2.symm ▸ hx
-      exact DFunLike.congr_fun f.2.1 x⟩
-  invFun f := ⟨p.subtype ∘ₗ f.1, LinearMap.ext fun x ↦ by simp [f.2], le_antisymm
+      exact DFunLike.congr_fun f.2.1.eq x⟩
+  invFun f := ⟨p.subtype ∘ₗ f.1, ⟨LinearMap.ext fun x ↦ by simp [f.2]⟩, le_antisymm
     ((range_comp_le_range _ _).trans_eq p.range_subtype)
     fun x hx ↦ ⟨x, Subtype.ext_iff.1 <| f.2 ⟨x, hx⟩⟩⟩
 
@@ -460,6 +460,7 @@ theorem isProj_range_iff_isIdempotentElem (f : M →ₗ[S] M) :
     IsProj (range f) f ↔ IsIdempotentElem f := by
   refine ⟨fun ⟨h1, h2⟩ => ?_, fun hf =>
     ⟨fun x => mem_range_self f x, fun x ⟨y, hy⟩ => by rw [← hy, ← Module.End.mul_apply, hf.eq]⟩⟩
+  rw [isIdempotentElem_iff]
   ext x
   exact h2 (f x) (h1 x)
 
@@ -468,6 +469,7 @@ alias ⟨_, IsIdempotentElem.isProj_range⟩ := isProj_range_iff_isIdempotentEle
 theorem isProj_iff_isIdempotentElem (f : M →ₗ[S] M) :
     (∃ p : Submodule S M, IsProj p f) ↔ IsIdempotentElem f := by
   refine ⟨fun ⟨p, hp⟩ => ?_, fun h => ⟨_, IsIdempotentElem.isProj_range _ h⟩⟩
+  rw [isIdempotentElem_iff]
   ext x
   exact hp.map_id (f x) (hp.map_mem x)
 

@@ -47,7 +47,7 @@ lemma mul_eq_zero_add_eq_one_ext_right (eq : a.1.2 = b.1.2) : a = b := by
 
 instance : PartialOrder {a : R × R // a.1 * a.2 = 0 ∧ a.1 + a.2 = 1} where
   le a b := a.1.1 * b.1.1 = a.1.1
-  le_refl a := (IsIdempotentElem.of_mul_add a.2.1 a.2.2).1
+  le_refl a := (IsIdempotentElem.of_mul_add a.2.1 a.2.2).1.eq
   le_trans a b c hab hbc := show _ = _ by rw [← hab, mul_assoc, hbc]
   le_antisymm a b hab hba := mul_eq_zero_add_eq_one_ext_left <| by rw [← hab, mul_comm, hba]
 
@@ -90,20 +90,20 @@ end CommSemiring
 
 instance {S : Type*} [CommSemigroup S] : SemilatticeInf {a : S // IsIdempotentElem a} where
   le a b := a.1 * b = a
-  le_refl a := a.2
+  le_refl a := a.2.eq
   le_trans a b c hab hbc := show _ = _ by rw [← hab, mul_assoc, hbc]
   le_antisymm a b hab hba := Subtype.ext <| by rw [← hab, mul_comm, hba]
   inf a b := ⟨_, a.2.mul b.2⟩
-  inf_le_left a b := show _ = _ by simp_rw [mul_right_comm]; rw [a.2]
-  inf_le_right a b := show _ = _ by simp_rw [mul_assoc]; rw [b.2]
+  inf_le_left a b := show _ = _ by simp_rw [mul_right_comm]; rw [a.2.eq]
+  inf_le_right a b := show _ = _ by simp_rw [mul_assoc]; rw [b.2.eq]
   le_inf a b c hab hac := by simp_rw [← mul_assoc]; rw [hab, hac]
 
 instance {M : Type*} [CommMonoid M] : OrderTop {a : M // IsIdempotentElem a} where
-  top := ⟨1, .one⟩
+  top := ⟨1, .one _⟩
   le_top _ := mul_one _
 
 instance {M₀ : Type*} [CommMonoidWithZero M₀] : OrderBot {a : M₀ // IsIdempotentElem a} where
-  bot := ⟨0, .zero⟩
+  bot := ⟨0, .zero _⟩
   bot_le _ := zero_mul _
 
 section CommRing
@@ -114,23 +114,23 @@ instance : Lattice {a : R // IsIdempotentElem a} where
   __ : SemilatticeInf _ := inferInstance
   sup a b := ⟨_, a.2.add_sub_mul b.2⟩
   le_sup_left a b := show _ = _ by
-    simp_rw [mul_sub, mul_add]; rw [← mul_assoc, a.2, add_sub_cancel_right]
+    simp_rw [mul_sub, mul_add]; rw [← mul_assoc, a.2.eq, add_sub_cancel_right]
   le_sup_right a b := show _ = _ by
-    simp_rw [mul_sub, mul_add]; rw [← mul_assoc, mul_right_comm, b.2, add_sub_cancel_left]
+    simp_rw [mul_sub, mul_add]; rw [← mul_assoc, mul_right_comm, b.2.eq, add_sub_cancel_left]
   sup_le a b c hac hbc := show _ = _ by simp_rw [sub_mul, add_mul, mul_assoc]; rw [hbc, hac]
 
 instance : BooleanAlgebra {a : R // IsIdempotentElem a} where
   __ : DistribLattice _ := .ofInfSupLe fun a b c ↦ Eq.le <| Subtype.ext <| by
     simp_rw [(· ⊔ ·), (· ⊓ ·), SemilatticeSup.sup, SemilatticeInf.inf, Lattice.inf,
       SemilatticeInf.inf, mul_sub, mul_add, mul_mul_mul_comm]
-    rw [a.2]
+    rw [a.2.eq]
   __ : OrderTop _ := inferInstance
   __ : OrderBot _ := inferInstance
   compl a := ⟨_, a.2.one_sub⟩
-  inf_compl_le_bot a := (mul_zero _).trans ((mul_one_sub ..).trans <| by rw [a.2, sub_self]).symm
+  inf_compl_le_bot a := (mul_zero _).trans ((mul_one_sub ..).trans <| by rw [a.2.eq, sub_self]).symm
   top_le_sup_compl a := (one_mul _).trans <| by
     simp_rw [(· ⊔ ·), SemilatticeSup.sup, add_sub_cancel, mul_sub, mul_one]
-    rw [a.2, sub_self, sub_zero]; rfl
+    rw [a.2.eq, sub_self, sub_zero]; rfl
   sdiff_eq _ _ := rfl
   himp a b := ⟨_, (a.2.mul b.2.one_sub).one_sub⟩
   himp_eq a b := Subtype.ext <| by simp_rw [(· ⊔ ·), SemilatticeSup.sup,

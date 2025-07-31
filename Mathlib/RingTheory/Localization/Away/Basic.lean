@@ -323,7 +323,7 @@ lemma away_of_isIdempotentElem_of_mul {R S} [CommSemiring R] [CommSemiring S] [A
     IsLocalization.Away e S where
   map_units' r := by
     obtain ⟨r, n, rfl⟩ := r
-    simp [show algebraMap R S e = 1 by rw [← (algebraMap R S).map_one, H, mul_one, he]]
+    simp [show algebraMap R S e = 1 by rw [← (algebraMap R S).map_one, H, mul_one, he.eq]]
   surj' z := by
     obtain ⟨z, rfl⟩ := H' z
     exact ⟨⟨z, 1⟩, by simp⟩
@@ -343,14 +343,14 @@ instance away_fst {R S} [CommSemiring R] [CommSemiring S] :
     letI := (RingHom.fst R S).toAlgebra
     IsLocalization.Away (R := R × S) (1, 0) R :=
   letI := (RingHom.fst R S).toAlgebra
-  away_of_isIdempotentElem_of_mul (by ext <;> simp)
+  away_of_isIdempotentElem_of_mul ⟨(by ext <;> simp)⟩
     (fun ⟨xR, xS⟩ ⟨yR, yS⟩ ↦ show xR = yR ↔ _ by simp) Prod.fst_surjective
 
 instance away_snd {R S} [CommSemiring R] [CommSemiring S] :
     letI := (RingHom.snd R S).toAlgebra
     IsLocalization.Away (R := R × S) (0, 1) S :=
   letI := (RingHom.snd R S).toAlgebra
-  away_of_isIdempotentElem_of_mul (by ext <;> simp)
+  away_of_isIdempotentElem_of_mul ⟨(by ext <;> simp)⟩
     (fun ⟨xR, xS⟩ ⟨yR, yS⟩ ↦ show xS = yS ↔ _ by simp) Prod.snd_surjective
 
 end Prod

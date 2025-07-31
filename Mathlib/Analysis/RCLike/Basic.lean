@@ -843,7 +843,7 @@ lemma norm_of_nonneg' {x : K} (hx : 0 ≤ x) : ‖x‖ = x := by
   simp [nonneg_iff.mp hx]
 
 lemma re_nonneg_of_nonneg {x : K} (hx : IsSelfAdjoint x) : 0 ≤ re x ↔ 0 ≤ x := by
-  simp [nonneg_iff (K := K), conj_eq_iff_im.mp hx]
+  simp [nonneg_iff (K := K), conj_eq_iff_im.mp hx.star_eq]
 
 @[gcongr]
 lemma re_le_re {x y : K} (h : x ≤ y) : re x ≤ re y := by

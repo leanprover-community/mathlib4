@@ -478,7 +478,7 @@ instance (i) (R : ι → Type _) [∀ i, CommRing (R i)] :
   letI := (Pi.evalRingHom R i).toAlgebra
   have : IsLocalization.Away (Function.update (β := R) 0 i 1) (R i) := by
     apply IsLocalization.away_of_isIdempotentElem_of_mul
-    · ext j; by_cases h : j = i <;> aesop
+    · rw [isIdempotentElem_iff]; ext j; by_cases h : j = i <;> aesop
     · intro x y
       constructor
       · intro e; ext j; by_cases h : j = i <;> aesop

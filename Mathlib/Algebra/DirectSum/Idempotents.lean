@@ -31,7 +31,7 @@ lemma decompose_eq_mul_idempotent (x : R) (i : I) : decompose V x i = x * idempo
     smul_eq_mul, mul_one]
 
 lemma isIdempotentElem_idempotent (i : I) : IsIdempotentElem (idempotent V i : R) := by
-  rw [IsIdempotentElem, ← decompose_eq_mul_idempotent, idempotent, decompose_coe, of_eq_same]
+  rw [isIdempotentElem_iff, ← decompose_eq_mul_idempotent, idempotent, decompose_coe, of_eq_same]
 
 /-- If a semiring can be decomposed into direct sum of finite left ideals `Vᵢ`
   where `1 = e₁ + ... + eₙ` and `eᵢ ∈ Vᵢ`, then `eᵢ` is a family of complete

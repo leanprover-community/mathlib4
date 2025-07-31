@@ -199,7 +199,7 @@ theorem le_def [FaithfulSMul M X] (P Q : { P : M // IsLprojection X P }) :
   Iff.rfl
 
 instance Subtype.zero : Zero { P : M // IsLprojection X P } :=
-  ⟨⟨0, ⟨by rw [IsIdempotentElem, zero_mul], fun x => by
+  ⟨⟨0, ⟨by rw [isIdempotentElem_iff, zero_mul], fun x => by
         simp only [zero_smul, norm_zero, sub_zero, one_smul, zero_add]⟩⟩⟩
 
 @[simp]

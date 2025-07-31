@@ -91,7 +91,7 @@ instance (priority := 900) [IsOpenImmersion (pullback.diagonal f)] : FormallyUnr
   obtain ⟨⟨x, hx⟩, rfl⟩ := Ideal.toCotangent_surjective _ x
   obtain ⟨x, rfl⟩ := Ideal.mem_span_singleton.mp (he'.le hx)
   refine (Ideal.toCotangent_eq_zero _ _).mpr ?_
-  rw [pow_two, Subtype.coe_mk, ← he, mul_assoc]
+  rw [pow_two, Subtype.coe_mk, ← he.eq, mul_assoc]
   exact Ideal.mul_mem_mul (he'.ge (Ideal.mem_span_singleton_self e)) hx
 
 theorem of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)

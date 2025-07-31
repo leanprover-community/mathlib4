@@ -42,7 +42,7 @@ theorem pi_iff :
       rw [← Ideal.Quotient.eq_zero_iff_mem, map_sub, sub_eq_zero]
       exact AlgHom.congr_fun e g
     let e : ∀ i, f i := Pi.single x 1
-    have he : IsIdempotentElem e := by simp [IsIdempotentElem, e, ← Pi.single_mul]
+    have he : IsIdempotentElem e := by simp [isIdempotentElem_iff, e, ← Pi.single_mul]
     have h₁ : (f₁ e) * (1 - f₂ e) = 0 := by
       rw [← Ideal.mem_bot, ← hJ, ← ((he.map f₁).mul (he.map f₂).one_sub).eq, ← pow_two]
       apply Ideal.pow_mem_pow
