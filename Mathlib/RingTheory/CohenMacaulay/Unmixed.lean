@@ -104,15 +104,14 @@ lemma isCohenMacaulayRing_of_unmixed
     IsLocalRing.maximalIdeal (Localization.AtPrime p) := by
     intro a ha
     simpa [← Ideal.mem_comap, Localization.AtPrime.comap_maximalIdeal] using mem a ha
-  refine ⟨⟨isLocaliation_map_is_weakly_regular_of_is_weakly_regular p (Localization.AtPrime p)
-    rs R (Localization.AtPrime p) (Algebra.linearMap R (Localization.AtPrime p)) reg, ?_⟩, this⟩
+  refine ⟨⟨IsWeaklyRegular.of_flat reg, ?_⟩, this⟩
   rw [Ideal.smul_eq_mul, Ideal.mul_top, ne_comm]
   apply ne_top_of_le_ne_top (b := maximalIdeal (Localization.AtPrime p)) Ideal.IsPrime.ne_top'
   simpa only [Ideal.ofList, List.mem_map, Ideal.span_le] using fun b ⟨a, mem, eq⟩ ↦
    (by simpa [← eq] using this a mem)
 
 omit [IsNoetherianRing R] in
-lemma IsLocalization.height_le_height_map (S : Submonoid R) {A : Type* } [CommRing A] [Algebra R A]
+lemma IsLocalization.height_le_height_map (S : Submonoid R) {A : Type*} [CommRing A] [Algebra R A]
     [IsLocalization S A] (J : Ideal R) : J.height ≤ (Ideal.map (algebraMap R A) J).height := by
   apply le_iInf_iff.mpr (fun p ↦ (le_iInf_iff.mpr fun hp ↦ ?_))
   let _ := hp.1.1
