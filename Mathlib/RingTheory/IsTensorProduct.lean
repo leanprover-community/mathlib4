@@ -197,7 +197,7 @@ theorem lTensor_add : hf.lTensor hg (i + j) = hf.lTensor hg i + hf.lTensor hg j 
 theorem lTensor_zero : hf.lTensor hg (0 : M₂ →ₗ[R] N₂) = 0 :=
   (hf.lTensorHom hg).map_zero
 
-theorem lTensor_smul : hf.lTensor hg (r • i)= r • hf.lTensor hg i :=
+theorem lTensor_smul : hf.lTensor hg (r • i) = r • hf.lTensor hg i :=
   (hf.lTensorHom hg).map_smul r i
 
 @[simp]
@@ -245,7 +245,7 @@ theorem rTensor_add : hf.rTensor hg (i + j) = hf.rTensor hg i + hf.rTensor hg j 
 theorem rTensor_zero : hf.rTensor hg (0 : M₁ →ₗ[R] N₁) = 0 :=
   (hf.rTensorHom hg).map_zero
 
-theorem rTensor_smul : hf.rTensor hg (r • i)= r • hf.rTensor hg i :=
+theorem rTensor_smul : hf.rTensor hg (r • i) = r • hf.rTensor hg i :=
   (hf.rTensorHom hg).map_smul r i
 
 @[simp]
