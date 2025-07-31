@@ -42,9 +42,10 @@ if __name__ == '__main__':
     url = "https://leanprover-community.github.io/queueboard/automatic_assignments.json"
     print("trace: about to download the assignments file using curl...")
     out = subprocess.run(["curl", "--output", "assignments.json", url], capture_output=True)
-    print(out.stdout)
+    if out.stdout:
+        print("standard output is: \n" + out.stdout)
     if out.stderr:
-        print(out.stderr)
+        print("standard error is: \n" + out.stderr)
     if out.returncode != 0:
         print(f"error: curl failed to download the assignment file at {url}"
             "Please make sure curl is installed and on your PATH.")
