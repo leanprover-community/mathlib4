@@ -10,7 +10,10 @@ import Mathlib.Probability.Moments.Covariance
 
 We introduce a predicate `HasLaw X μ P` stating that the random variable `X` has law `μ` under
 the measure `P`. This is expressed as `P.map X = μ`. We also require `X` to be `P`-almost-everywhere
-measurable to avoid pathological cases.
+measurable. Indeed, if `X` is not almost-everywhere measurable then `P.map X` is defined to be `0`,
+so that `HasLaw X 0 P` would be true. The measurability hypothesis ensures nice interactions with
+operations on the codomain of `X`.
+See for instance `HasLaw.comp`, `IndepFun.hasLaw_mul` and `IndepFun.hasLaw_add`.
 -/
 
 open MeasureTheory
