@@ -5,7 +5,6 @@ Authors: Dagur Asgeirsson, Ben Eltschig
 -/
 import Mathlib.CategoryTheory.Adjunction.Opposites
 import Mathlib.CategoryTheory.Adjunction.Unique
-import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 import Mathlib.CategoryTheory.Monad.Adjunction
 /-!
 

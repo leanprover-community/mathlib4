@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ben Eltschig
 -/
 import Mathlib.CategoryTheory.Adjunction.Triple
+import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 
 /-!
 # Adjoint quadruples
@@ -70,7 +71,7 @@ variable [F.Full] [F.Faithful]
 /-- For an adjoint quadruple `L ⊣ F ⊣ G ⊣ R` where `F` and `R` are fully faithful, all components
 of the natural transformation `G ⟶ L` are epic iff all components of the natural transformation
 `F ⟶ R` are monic. -/
-lemma leftTriple_rightToLeft_app_epi_iff_rightTriple_leftToRight_app_mono :
+lemma epi_leftTriple_rightToLeft_app_iff_mono_rightTriple_leftToRight_app :
     (∀ X, Epi (q.leftTriple.rightToLeft.app X)) ↔ ∀ X, Mono (q.rightTriple.leftToRight.app X) := by
   simp_rw [mono_leftToRight_app_iff_mono_adj₂_unit_app, rightToLeft_eq_counits]
   dsimp; simp only [NatIso.isIso_inv_app, Functor.comp_obj, Functor.id_obj,
@@ -89,10 +90,10 @@ lemma leftTriple_rightToLeft_app_epi_iff_rightTriple_leftToRight_app_mono :
 /-- For an adjoint quadruple `L ⊣ F ⊣ G ⊣ R` where `F` and `R` are fully faithful, their domain
 has all pushouts and their codomain has all pullbacks, the natural transformation `G ⟶ L` is epic
 iff the natural transformation `F ⟶ R` is monic. -/
-lemma leftTriple_rightToLeft_epi_iff [HasPullbacks C] [HasPushouts D] :
+lemma epi_leftTriple_rightToLeft_iff_mono_rightTriple_leftToRight [HasPullbacks C] [HasPushouts D] :
     Epi q.leftTriple.rightToLeft ↔ Mono q.rightTriple.leftToRight := by
   rw [NatTrans.epi_iff_epi_app, NatTrans.mono_iff_mono_app]
-  exact q.leftTriple_rightToLeft_app_epi_iff_rightTriple_leftToRight_app_mono
+  exact q.epi_leftTriple_rightToLeft_app_iff_mono_rightTriple_leftToRight_app
 
 end RightFullyFaithful
 
@@ -103,9 +104,9 @@ variable [L.Full] [L.Faithful] [G.Full] [G.Faithful]
 /-- For an adjoint quadruple `L ⊣ F ⊣ G ⊣ R` where `L` and `G` are fully faithful, all components
 of the natural transformation `L ⟶ G` are epic iff all components of the natural transformation
 `R ⟶ F` are monic. -/
-lemma leftTriple_leftToRight_app_epi_iff_rightTriple_rightToLeft_app_mono :
+lemma epi_leftTriple_leftToRight_app_iff_mono_rightTriple_rightToLeft_app :
     (∀ X, Epi (q.leftTriple.leftToRight.app X)) ↔ ∀ X, Mono (q.rightTriple.rightToLeft.app X) := by
-  have h := q.op.leftTriple_rightToLeft_app_epi_iff_rightTriple_leftToRight_app_mono
+  have h := q.op.epi_leftTriple_rightToLeft_app_iff_mono_rightTriple_leftToRight_app
   rw [← (Opposite.equivToOpposite (α := C)).forall_congr_right] at h
   rw [← (Opposite.equivToOpposite (α := D)).forall_congr_right] at h
   simpa using h.symm
@@ -113,10 +114,10 @@ lemma leftTriple_leftToRight_app_epi_iff_rightTriple_rightToLeft_app_mono :
 /-- For an adjoint quadruple `L ⊣ F ⊣ G ⊣ R` where `L` and `G` are fully faithful, their domain
 has all pushouts and their codomain has all pullbacks, the natural transformation `L ⟶ G` is epic
 iff the natural transformation `R ⟶ F` is monic. -/
-lemma LToG_epi_iff_RToF_mono [HasPullbacks C] [HasPushouts D] :
+lemma epi_leftTriple_leftToRight_iff_mono_rightTriple_rightToLeft [HasPullbacks C] [HasPushouts D] :
     Epi q.leftTriple.leftToRight ↔ Mono q.rightTriple.rightToLeft := by
   rw [NatTrans.epi_iff_epi_app, NatTrans.mono_iff_mono_app]
-  exact q.leftTriple_leftToRight_app_epi_iff_rightTriple_rightToLeft_app_mono
+  exact q.epi_leftTriple_leftToRight_app_iff_mono_rightTriple_rightToLeft_app
 
 end LeftFullyFaithful
 
