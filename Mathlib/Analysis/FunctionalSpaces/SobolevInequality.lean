@@ -487,7 +487,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
   have h1n : 1 ≤ (n : ℝ≥0) := hn.lt.le
   have h2n : (0 : ℝ) < n - 1 := by simp_rw [sub_pos]; exact hn.coe.lt
   have hnp : (0 : ℝ) < n - p := by simp_rw [sub_pos]; exact h2p
-  rcases hp.eq_or_lt with rfl|hp
+  rcases hp.eq_or_lt with rfl | hp
   -- the case `p = 1`
   · convert eLpNorm_le_eLpNorm_fderiv_one μ hu h2u hn using 2
     · suffices (p' : ℝ) = n' by simpa using this
@@ -502,7 +502,6 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
   have h0p : p ≠ 0 := zero_lt_one.trans hp |>.ne'
   have h1p : (p : ℝ) ≠ 1 := hq.lt.ne'
   have h3p : (p : ℝ) - 1 ≠ 0 := sub_ne_zero_of_ne h1p
-  have h0p' : p' ≠ 0 := by assumption
   have h2q : 1 / n' - 1 / q = 1 / p' := by
     simp_rw -zeta [one_div, hp']
     rw [← hq.one_sub_inv, ← hn.coe.one_sub_inv, sub_sub_sub_cancel_left]
@@ -521,11 +520,11 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
     field_simp [this]; ring
   have h4γ : (γ : ℝ) ≠ 0 := (zero_lt_one.trans h1γ).ne'
   by_cases h3u : ∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ = 0
-  · rw [eLpNorm_nnreal_eq_lintegral h0p', h3u, ENNReal.zero_rpow_of_pos] <;> positivity
+  · rw [eLpNorm_nnreal_eq_lintegral hp'0, h3u, ENNReal.zero_rpow_of_pos] <;> positivity
   have h4u : ∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ ≠ ∞ := by
     refine lintegral_rpow_enorm_lt_top_of_eLpNorm'_lt_top
-      ((NNReal.coe_pos.trans pos_iff_ne_zero).mpr h0p') ?_ |>.ne
-    rw [← eLpNorm_nnreal_eq_eLpNorm' h0p']
+      ((NNReal.coe_pos.trans pos_iff_ne_zero).mpr hp'0) ?_ |>.ne
+    rw [← eLpNorm_nnreal_eq_eLpNorm' hp'0]
     exact hu.continuous.memLp_of_hasCompactSupport (μ := μ) h2u |>.eLpNorm_lt_top
   have h5u : (∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ) ^ (1 / q) ≠ 0 :=
     ENNReal.rpow_pos (pos_iff_ne_zero.mpr h3u) h4u |>.ne'
@@ -561,7 +560,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
       (∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ) ^ (1 / q) := by ring
   calc
     eLpNorm u p' μ
-      = (∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ) ^ (1 / (p' : ℝ)) := eLpNorm_nnreal_eq_lintegral h0p'
+      = (∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ) ^ (1 / (p' : ℝ)) := eLpNorm_nnreal_eq_lintegral hp'0
     _ ≤ C * γ * (∫⁻ x, ‖fderiv ℝ u x‖ₑ ^ (p : ℝ) ∂μ) ^ (1 / (p : ℝ)) := by
       rwa [← h2q, ENNReal.rpow_sub _ _ h3u h4u, ENNReal.div_le_iff h5u h6u]
     _ = eLpNormLESNormFDerivOfEqInnerConst μ p *  eLpNorm (fderiv ℝ u) (↑p) μ := by
@@ -660,10 +659,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_le [FiniteDimensional ℝ F]
   have hp' : p'⁻¹ = p⁻¹ - (finrank ℝ E : ℝ)⁻¹ := by
     rw [inv_inv, NNReal.coe_sub]
     · simp
-    · #adaptation_note /-- nightly-2024-11-20
-      This should just be `gcongr`, but this is not working as of nightly-2024-11-20.
-      Possibly related to #19262 (since this proof fails at `with_reducible_and_instances`). -/
-      exact inv_anti₀ (by positivity) h2p.le
+    · gcongr
   have : (q : ℝ≥0∞) ≤ p' := by
     have H : (p' : ℝ)⁻¹ ≤ (↑q)⁻¹ := trans hp' hpq
     norm_cast at H ⊢
@@ -671,10 +667,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_le [FiniteDimensional ℝ F]
     · dsimp
       have : 0 < p⁻¹ - (finrank ℝ E : ℝ≥0)⁻¹ := by
         simp only [tsub_pos_iff_lt]
-        #adaptation_note /-- nightly-2024-11-20
-        This should just be `gcongr`, but this is not working as of nightly-2024-11-20.
-        Possibly related to #19262 (since this proof fails at `with_reducible_and_instances`). -/
-        exact inv_strictAnti₀ (by positivity) h2p
+        gcongr
       positivity
     · positivity
   set t := (μ s).toNNReal ^ (1 / q - 1 / p' : ℝ)

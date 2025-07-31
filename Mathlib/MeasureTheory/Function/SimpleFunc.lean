@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Algebra.Order.Pi
+import Mathlib.Algebra.Algebra.Pi
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 
 /-!
@@ -511,47 +512,159 @@ theorem zpow_apply [DivInvMonoid β] (z : ℤ) (f : α →ₛ β) (a : α) : (f 
 section Additive
 
 instance instAddMonoid [AddMonoid β] : AddMonoid (α →ₛ β) :=
-  Function.Injective.addMonoid (fun f => show α → β from f) coe_injective coe_zero coe_add
-    fun _ _ => coe_smul _ _
+  fast_instance% Function.Injective.addMonoid (fun f => show α → β from f) coe_injective coe_zero
+    coe_add fun _ _ => coe_smul _ _
 
 instance instAddCommMonoid [AddCommMonoid β] : AddCommMonoid (α →ₛ β) :=
-  Function.Injective.addCommMonoid (fun f => show α → β from f) coe_injective coe_zero coe_add
-    fun _ _ => coe_smul _ _
+  fast_instance% Function.Injective.addCommMonoid (fun f => show α → β from f)
+    coe_injective coe_zero coe_add fun _ _ => coe_smul _ _
 
 instance instAddGroup [AddGroup β] : AddGroup (α →ₛ β) :=
   Function.Injective.addGroup (fun f => show α → β from f) coe_injective coe_zero coe_add coe_neg
     coe_sub (fun _ _ => coe_smul _ _) fun _ _ => coe_smul _ _
 
 instance instAddCommGroup [AddCommGroup β] : AddCommGroup (α →ₛ β) :=
-  Function.Injective.addCommGroup (fun f => show α → β from f) coe_injective coe_zero coe_add
-    coe_neg coe_sub (fun _ _ => coe_smul _ _) fun _ _ => coe_smul _ _
+  fast_instance% Function.Injective.addCommGroup (fun f => show α → β from f) coe_injective
+    coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_smul _ _) fun _ _ => coe_smul _ _
 
 end Additive
 
 @[to_additive existing]
 instance instMonoid [Monoid β] : Monoid (α →ₛ β) :=
-  Function.Injective.monoid (fun f => show α → β from f) coe_injective coe_one coe_mul coe_pow
+  fast_instance% Function.Injective.monoid (fun f => show α → β from f) coe_injective coe_one
+    coe_mul coe_pow
 
 @[to_additive existing]
 instance instCommMonoid [CommMonoid β] : CommMonoid (α →ₛ β) :=
-  Function.Injective.commMonoid (fun f => show α → β from f) coe_injective coe_one coe_mul coe_pow
+  fast_instance% Function.Injective.commMonoid (fun f => show α → β from f) coe_injective coe_one
+    coe_mul coe_pow
 
 @[to_additive existing]
 instance instGroup [Group β] : Group (α →ₛ β) :=
-  Function.Injective.group (fun f => show α → β from f) coe_injective coe_one coe_mul coe_inv
-    coe_div coe_pow coe_zpow
+  fast_instance% Function.Injective.group (fun f => show α → β from f) coe_injective coe_one
+    coe_mul coe_inv coe_div coe_pow coe_zpow
 
 @[to_additive existing]
 instance instCommGroup [CommGroup β] : CommGroup (α →ₛ β) :=
-  Function.Injective.commGroup (fun f => show α → β from f) coe_injective coe_one coe_mul coe_inv
-    coe_div coe_pow coe_zpow
+  fast_instance% Function.Injective.commGroup (fun f => show α → β from f) coe_injective coe_one
+    coe_mul coe_inv coe_div coe_pow coe_zpow
+
+instance [Monoid K] [MulAction K β] : MulAction K (α →ₛ β) :=
+  fast_instance% Function.Injective.mulAction (fun f => show α → β from f) coe_injective coe_smul
 
 instance instModule [Semiring K] [AddCommMonoid β] [Module K β] : Module K (α →ₛ β) :=
-  Function.Injective.module K ⟨⟨fun f => show α → β from f, coe_zero⟩, coe_add⟩
+  fast_instance% Function.Injective.module K ⟨⟨fun f => show α → β from f, coe_zero⟩, coe_add⟩
     coe_injective coe_smul
 
 theorem smul_eq_map [SMul K β] (k : K) (f : α →ₛ β) : k • f = f.map (k • ·) :=
   rfl
+
+lemma smul_const [SMul K β] (k : K) (b : β) :
+    (k • const α b : α →ₛ β) = const α (k • b) := ext fun _ ↦ rfl
+
+instance [NonUnitalNonAssocSemiring β] : NonUnitalNonAssocSemiring (α →ₛ β) :=
+  fast_instance% Function.Injective.nonUnitalNonAssocSemiring (fun f => show α → β from f)
+    coe_injective coe_zero coe_add coe_mul coe_smul
+
+instance [NonUnitalSemiring β] : NonUnitalSemiring (α →ₛ β) :=
+  fast_instance% Function.Injective.nonUnitalSemiring (fun f => show α → β from f)
+    SimpleFunc.coe_injective coe_zero coe_add coe_mul coe_smul
+
+instance [NatCast β] : NatCast (α →ₛ β) where
+  natCast n := const _ (NatCast.natCast n)
+
+@[simp, norm_cast]
+lemma coe_natCast [NatCast β] (n : ℕ) :
+    ⇑(↑n : α →ₛ β) = fun _ ↦ ↑n := rfl
+
+instance [NonAssocSemiring β] : NonAssocSemiring (α →ₛ β) :=
+  fast_instance% Function.Injective.nonAssocSemiring (fun f => show α → β from f)
+    coe_injective coe_zero coe_one coe_add coe_mul coe_smul coe_natCast
+
+instance [IntCast β] : IntCast (α →ₛ β) where
+  intCast n := const _ (IntCast.intCast n)
+
+@[simp, norm_cast]
+lemma coe_intCast [IntCast β] (n : ℤ) :
+    ⇑(↑n : α →ₛ β) = fun _ ↦ ↑n := rfl
+
+instance [NonAssocRing β] : NonAssocRing (α →ₛ β) :=
+  fast_instance% Function.Injective.nonAssocRing (fun f => show α → β from f) coe_injective
+    coe_zero coe_one coe_add coe_mul coe_neg coe_sub coe_smul coe_smul coe_natCast coe_intCast
+
+instance [NonUnitalCommSemiring β] : NonUnitalCommSemiring (α →ₛ β) :=
+  fast_instance% Function.Injective.nonUnitalCommSemiring (fun f => show α → β from f)
+    coe_injective coe_zero coe_add coe_mul coe_smul
+
+instance [CommSemiring β] : CommSemiring (α →ₛ β) :=
+  fast_instance% Function.Injective.commSemiring (fun f => show α → β from f)
+    coe_injective coe_zero coe_one coe_add coe_mul coe_smul coe_pow coe_natCast
+
+instance [NonUnitalCommRing β] : NonUnitalCommRing (α →ₛ β) :=
+  fast_instance% Function.Injective.nonUnitalCommRing (fun f => show α → β from f)
+    coe_injective coe_zero coe_add coe_mul coe_neg coe_sub coe_smul coe_smul
+
+instance [CommRing β] : CommRing (α →ₛ β) :=
+  fast_instance% Function.Injective.commRing (fun f => show α → β from f) coe_injective coe_zero
+    coe_one coe_add coe_mul coe_neg coe_sub coe_smul coe_smul coe_pow coe_natCast coe_intCast
+
+instance [Semiring β] : Semiring (α →ₛ β) :=
+  fast_instance% Function.Injective.semiring (fun f => show α → β from f) coe_injective coe_zero
+    coe_one coe_add coe_mul coe_smul coe_pow coe_natCast
+
+instance [NonUnitalRing β] : NonUnitalRing (α →ₛ β) :=
+  fast_instance% Function.Injective.nonUnitalRing (fun f => show α → β from f) coe_injective
+   coe_zero coe_add coe_mul coe_neg coe_sub coe_smul coe_smul
+
+instance [Ring β] : Ring (α →ₛ β) :=
+  fast_instance% Function.Injective.ring (fun f => show α → β from f) coe_injective coe_zero
+   coe_one coe_add coe_mul coe_neg coe_sub coe_smul coe_smul coe_pow coe_natCast coe_intCast
+
+instance [SMul K γ] [SMul γ β] [SMul K β] [IsScalarTower K γ β] : IsScalarTower K γ (α →ₛ β) where
+  smul_assoc _ _ _ := ext fun _ ↦ smul_assoc ..
+
+instance [SMul γ β] [SMul K β] [SMulCommClass K γ β] : SMulCommClass K γ (α →ₛ β) where
+  smul_comm _ _ _ := ext fun _ ↦  smul_comm ..
+
+instance [CommSemiring K] [Semiring β] [Algebra K β] : Algebra K (α →ₛ β) where
+  algebraMap :={
+    toFun r := const α <| algebraMap K β r
+    map_one' := ext fun _ ↦ algebraMap K β |>.map_one ▸ rfl
+    map_mul' _ _ := ext fun _ ↦ algebraMap K β |>.map_mul ..
+    map_zero' := ext fun _ ↦ algebraMap K β |>.map_zero ▸ rfl
+    map_add' _ _ := ext fun _ ↦ algebraMap K β |>.map_add ..}
+  commutes' _ _ := ext fun _ ↦ Algebra.commutes ..
+  smul_def' _ _ := ext fun _ ↦ Algebra.smul_def ..
+
+@[simp]
+lemma const_algebraMap [CommSemiring K] [Semiring β] [Algebra K β] (k : K) :
+    const α (algebraMap K β k) = algebraMap K (α →ₛ β) k := rfl
+
+@[simp]
+lemma coe_algebraMap [CommSemiring K] [Semiring β] [Algebra K β] (k : K) (x : α) :
+    ⇑(algebraMap K (α →ₛ β)) k x = algebraMap K (α → β) k x := rfl
+
+section Star
+
+instance [Star β] : Star (α →ₛ β) where
+  star f := f.map Star.star
+
+@[simp]
+lemma coe_star [Star β] {f : α →ₛ β} : ⇑(star f) = star ⇑f := rfl
+
+instance [InvolutiveStar β] : InvolutiveStar (α →ₛ β) where
+  star_involutive _ := ext fun _ ↦ star_star _
+
+instance [AddMonoid β] [StarAddMonoid β] : StarAddMonoid (α →ₛ β) where
+  star_add _ _ := ext fun _ ↦ star_add ..
+
+instance [Mul β] [StarMul β] : StarMul (α →ₛ β) where
+  star_mul _ _ := ext fun _ ↦ star_mul ..
+
+instance [NonUnitalNonAssocSemiring β] [StarRing β] : StarRing (α →ₛ β) where
+  star_add _ _ := ext fun _ ↦ star_add ..
+
+end Star
 
 section Preorder
 variable [Preorder β] {s : Set α} {f f₁ f₂ g g₁ g₂ : α →ₛ β} {hs : MeasurableSet s}

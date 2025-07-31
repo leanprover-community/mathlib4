@@ -253,8 +253,11 @@ alias Embedding.to_isometry := IsEmbedding.to_isometry
 theorem PseudoEMetricSpace.isometry_induced (f : α → β) [m : PseudoEMetricSpace β] :
     letI := m.induced f; Isometry f := fun _ _ ↦ rfl
 
-theorem PsuedoMetricSpace.isometry_induced (f : α → β) [m : PseudoMetricSpace β] :
+theorem PseudoMetricSpace.isometry_induced (f : α → β) [m : PseudoMetricSpace β] :
     letI := m.induced f; Isometry f := fun _ _ ↦ rfl
+
+@[deprecated (since := "2025-07-27")]
+alias PsuedoMetricSpace.isometry_induced := PseudoMetricSpace.isometry_induced
 
 theorem EMetricSpace.isometry_induced (f : α → β) (hf : f.Injective) [m : EMetricSpace β] :
     letI := m.induced f hf; Isometry f := fun _ _ ↦ rfl
