@@ -33,9 +33,7 @@ end Set
 
 namespace OrderIso
 
-section LE
-
-variable [LE α] [LE β]
+variable [Preorder α] [Preorder β]
 
 theorem range_eq (e : α ≃o β) : Set.range e = Set.univ :=
   e.surjective.range_eq
@@ -67,11 +65,7 @@ theorem image_preimage (e : α ≃o β) (s : Set β) : e '' (e ⁻¹' s) = s :=
 theorem preimage_image (e : α ≃o β) (s : Set α) : e ⁻¹' (e '' s) = s :=
   e.toEquiv.preimage_image s
 
-end LE
-
 open Set
-
-variable [Preorder α]
 
 /-- Order isomorphism between two equal sets. -/
 @[simps! apply symm_apply]
@@ -89,10 +83,10 @@ end OrderIso
 
 /-- We can regard an order embedding as an order isomorphism to its range. -/
 @[simps! apply]
-noncomputable def OrderEmbedding.orderIso [LE α] [LE β] {f : α ↪o β} :
+noncomputable def OrderEmbedding.orderIso [Preorder α] [Preorder β] {f : α ↪o β} :
     α ≃o Set.range f :=
   { Equiv.ofInjective _ f.injective with
-    map_rel_iff' := f.map_rel_iff }
+    map_rel_iff' := f.le_iff_le }
 
 /-- If a function `f` is strictly monotone on a set `s`, then it defines an order isomorphism
 between `s` and its image. -/

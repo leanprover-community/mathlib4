@@ -794,6 +794,8 @@ theorem self_trans_symm (e : α ≃o β) : e.trans e.symm = OrderIso.refl α :=
 theorem symm_trans_self (e : α ≃o β) : e.symm.trans e = OrderIso.refl β :=
   DFunLike.ext _ _ <| by simp
 
+instance : Inhabited (α ≃o α) := ⟨OrderIso.refl _⟩
+
 /-- Curry/uncurry as an order isomorphism between `α × β →o γ` and `α →o β →o γ`. -/
 def curryIso : (α × β →o γ) ≃o (α →o β →o γ) where
   toFun f := OrderHom.curry f
