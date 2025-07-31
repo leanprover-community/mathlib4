@@ -120,8 +120,8 @@ lemma rpowIntegrand₀₁_apply_mul' (hp : p ∈ Ioo 0 1) (ht : 0 ≤ t) (hx : 0
   simpa using Eq.symm <| Real.rpow_add' hx (by aesop : (p - 1) + 1 ≠ 0)
 
 lemma rpowIntegrand₀₁_apply_mul_eqOn_Ici (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
-    EqOn (fun t => rpowIntegrand₀₁ p (x * t) x * x)
-      (fun t => (rpowIntegrand₀₁ p t 1) * x ^ p) (Ici 0) :=
+    (Ici 0).EqOn (fun t => rpowIntegrand₀₁ p (x * t) x * x)
+      (fun t => (rpowIntegrand₀₁ p t 1) * x ^ p)  :=
   fun _ ht => rpowIntegrand₀₁_apply_mul' hp ht hx
 
 lemma continuousOn_rpowIntegrand₀₁ (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
@@ -161,7 +161,7 @@ lemma continuousOn_rpowIntegrand₀₁_uncurry (hp : p ∈ Ioo 0 1) (s : Set ℝ
       have h₂ : (0 : ℝ) ≤ t.2 := hs ht.2
       linarith
   · intro hq
-    simp only [Function.uncurry, g, rpowIntegrand₀₁_eq_pow_div hp (le_of_lt hq.1) (hs hq.2)]
+    simp [Function.uncurry, g, rpowIntegrand₀₁_eq_pow_div hp (le_of_lt hq.1) (hs hq.2)]
 
 lemma continuousOn_rpowIntegrand₀₁_Ici (hp : p ∈ Ioo 0 1) (ht : 0 < t) :
     ContinuousOn (rpowIntegrand₀₁ p t) (Ici 0) :=
@@ -457,7 +457,7 @@ lemma exists_measure_nnrpow_eq_integral_cfcₙ_rpowIntegrand₀₁ [CompleteSpac
 
 end NonUnitalCFC
 
-section NonUnital
+section NonUnitalCStarAlgebra
 
 variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
@@ -544,9 +544,9 @@ lemma nnrpow_le_nnrpow {p : ℝ≥0} (hp : p ∈ Icc 0 1) {a b : A} (hab : a ≤
 lemma sqrt_le_sqrt (a b : A) (hab : a ≤ b) : sqrt a ≤ sqrt b :=
   monotone_sqrt hab
 
-end NonUnital
+end NonUnitalCStarAlgebra
 
-section Unital
+section UnitalCStarAlgebra
 
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
@@ -570,6 +570,6 @@ lemma monotone_rpow {p : ℝ} (hp : p ∈ Icc 0 1) : Monotone (fun a : A => a ^ 
 lemma rpow_le_rpow {p : ℝ} (hp : p ∈ Icc 0 1) {a b : A} (hab : a ≤ b) :
     a ^ p ≤ b ^ p := monotone_rpow hp hab
 
-end Unital
+end UnitalCStarAlgebra
 
 end CFC
