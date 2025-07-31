@@ -767,8 +767,13 @@ def mapValueGroupWithZero : ValueGroupWithZero A →*₀ ValueGroupWithZero B :=
   ValueGroupWithZero.embed ((valuation B).comap (algebraMap A B))
 
 @[simp]
+lemma mapValueGroupWithZero_mk (r : A) (s : posSubmonoid A) :
+    mapValueGroupWithZero A B (.mk r s) = .mk (algebraMap A B r) (mapPosSubmonoid A B s) := by
+  simp [mapValueGroupWithZero, ValueGroupWithZero.mk_eq_div (R := B)]
+
+@[simp]
 lemma mapValueGroupWithZero_valuation (a : A) :
     mapValueGroupWithZero A B (valuation _ a) = valuation _ (algebraMap _ _ a) := by
-  simp [mapValueGroupWithZero, ValueGroupWithZero.embed]
+  simp [valuation]
 
 end ValuativeExtension
