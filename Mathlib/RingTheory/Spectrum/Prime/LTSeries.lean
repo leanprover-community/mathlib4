@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2025 Yongle Hu. All rights reserved.
+Copyright (c) 2025 Yonele Hu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yongle Hu
+Authors: Yonele Hu
 -/
 import Mathlib.Order.CompletePartialOrder
 import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
@@ -42,10 +42,11 @@ theorem exist_mem_one_of_mem_maximal_ideal [IsLocalRing R] {p₁ p₀ : PrimeSpe
   have h : (e ⟨q, le_sup_left.trans hq.1.2⟩).1.height ≤ 1 :=
     map_height_le_one_of_mem_minimalPrimes hq
   simp_rw [show q = closedPoint R from PrimeSpectrum.ext hqm] at h
-  have hph : (e ⟨p₁, h₀.le⟩).1.height ≤ 0 :=
-    Order.lt_one_iff_nonpos.mp (height_le_iff.mp h _ inferInstance (by simpa using h₁))
+  have hph : (e ⟨p₁, h₀.le⟩).1.height ≤ 0 := by
+    refine Order.lt_one_iff_nonpos.mp (height_le_iff.mp h _ inferInstance ?_)
+    simpa only [asIdeal_lt_asIdeal, OrderIso.lt_iff_lt, Subtype.mk_lt_mk] using h₁
   refine ENat.not_lt_zero (e ⟨p₀, le_refl p₀⟩).1.height (height_le_iff.mp hph _ inferInstance ?_)
-  simpa using h₀
+  simp only [asIdeal_lt_asIdeal, OrderIso.lt_iff_lt, Subtype.mk_lt_mk, h₀]
 
 theorem exist_mem_one_of_mem_two {p₁ p₀ p₂ : PrimeSpectrum R}
     (h₀ : p₀ < p₁) (h₁ : p₁ < p₂) {x : R} (hx : x ∈ p₂.asIdeal) :
@@ -87,13 +88,26 @@ theorem exist_ltSeries_mem_one_of_mem_last (p : LTSeries (PrimeSpectrum R))
       exact Fin.natCast_eq_mk (Nat.one_lt_succ_succ 0)
     simpa [h1, hp] using hx
   obtain ⟨q, hxq, hq2, hq⟩ : ∃ q : (PrimeSpectrum R), x ∈ q.1 ∧
-      p ⟨p.length - 2, p.length.sub_lt_succ 2⟩ < q ∧ q < p.last :=
-    (p ⟨p.length - 1, p.length.sub_lt_succ 1⟩).exist_mem_one_of_mem_two
-      (p.strictMono (Nat.pred_lt (by simp [hp, h0]))) (p.strictMono (Nat.pred_lt (by simp [hp]))) hx
-  obtain ⟨Q, hx, hQ, hh, hl⟩ := hn (p.eraseLast.eraseLast.snoc q hq2) (by simp [hxq]) <| by
-    simpa [hp] using Nat.succ_pred_eq_of_ne_zero h0
-  have h1 : 1 < Q.length + 1 := Nat.lt_of_sub_ne_zero (hQ.symm.trans_ne h0)
-  have h : 1 = (1 : Fin (Q.length + 1)).castSucc := by simp [Fin.one_eq_mk_of_lt h1]
-  exact ⟨Q.snoc p.last (by simp [← hl, hq]), by simp [h, hx], by simp [hQ], by simp [← hh], by simp⟩
+      p ⟨p.length - 2, p.length.sub_lt_succ 2⟩ < q ∧ q < p.last := by
+    refine (p ⟨p.length - 1, p.length.sub_lt_succ 1⟩).exist_mem_one_of_mem_two ?_ ?_ hx
+    · refine p.strictMono (Fin.mk_lt_mk.mpr (Nat.pred_lt ?_))
+      simp only [hp, Nat.sub_eq, add_tsub_cancel_right, ne_eq, h0, not_false_eq_true]
+    · refine p.strictMono (Fin.mk_lt_mk.mpr (Nat.pred_lt ?_))
+      simp only [Nat.sub_eq, tsub_zero, ne_eq, hp, n.add_one_ne_zero, not_false_eq_true]
+  obtain ⟨Q, hxQ, hQ, hh, hl⟩ :=
+    hn (p.eraseLast.eraseLast.snoc q hq2) (by simp only [RelSeries.last_snoc, hxq]) <| by
+      simp only [RelSeries.snoc_length, RelSeries.eraseLast_length, hp]
+      exact Nat.succ_pred_eq_of_ne_zero h0
+  refine ⟨Q.snoc p.last ?_, ?_, ?_, ?_, ?_⟩
+  · simp [← hl, RelSeries.last_snoc, hq]
+  · have h1 : 1 = (1 : Fin (Q.length + 1)).castSucc := by
+      have h : 1 < Q.length + 1 := by
+        rw [← hQ]
+        exact Nat.sub_ne_zero_iff_lt.mp h0
+      simp only [Fin.one_eq_mk_of_lt h, Fin.castSucc_mk, Fin.mk_one]
+    simp only [h1, RelSeries.snoc_castSucc, hxQ]
+  · simp only [hQ, RelSeries.snoc_length]
+  · simp only [RelSeries.head_snoc, ← hh, RelSeries.head_eraseLast]
+  · simp only [RelSeries.last_snoc]
 
 end PrimeSpectrum
