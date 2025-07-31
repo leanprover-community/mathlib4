@@ -3,7 +3,7 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Group.Submonoid.Operations
+import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.Algebra.GroupWithZero.Regular
 import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 import Mathlib.Algebra.Order.Group.Nat
