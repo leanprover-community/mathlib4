@@ -51,13 +51,11 @@ end IsLocalRing
 
 section IsDedekindDomain
 
-variable (p : Ideal R) [p.IsMaximal]
-variable {Rₚ Sₚ : Type*} [CommRing Rₚ] [CommRing Sₚ] [Algebra R Rₚ] [IsLocalization.AtPrime Rₚ p]
+variable (S) (p : Ideal R) [p.IsMaximal]
+variable (Rₚ Sₚ : Type*) [CommRing Rₚ] [CommRing Sₚ] [Algebra R Rₚ] [IsLocalization.AtPrime Rₚ p]
 variable [IsLocalRing Rₚ] [Algebra S Sₚ] [Algebra R Sₚ] [Algebra Rₚ Sₚ]
 variable [IsLocalization (Algebra.algebraMapSubmonoid S p.primeCompl) Sₚ]
 variable [IsScalarTower R S Sₚ] [IsScalarTower R Rₚ Sₚ]
-
-variable (S Sₚ Rₚ)
 
 local notation "pS" => Ideal.map (algebraMap R S) p
 local notation "pSₚ" => Ideal.map (algebraMap Rₚ Sₚ) (maximalIdeal Rₚ)
@@ -66,22 +64,20 @@ open IsLocalization.AtPrime IsLocalRing FiniteDimensional Submodule
 
 lemma trace_quotient_eq_trace_localization_quotient (x) :
     Algebra.trace (R ⧸ p) (S ⧸ pS) (Ideal.Quotient.mk pS x) =
-      (equivQuotMaximalIdealOfIsLocalization p Rₚ).symm
+      (equivQuotMaximalIdeal p Rₚ).symm
         (Algebra.trace (Rₚ ⧸ maximalIdeal Rₚ) (Sₚ ⧸ pSₚ) (algebraMap S _ x)) := by
   have : IsScalarTower R (Rₚ ⧸ maximalIdeal Rₚ) (Sₚ ⧸ pSₚ) := by
     apply IsScalarTower.of_algebraMap_eq'
     rw [IsScalarTower.algebraMap_eq R Rₚ (Rₚ ⧸ _), IsScalarTower.algebraMap_eq R Rₚ (Sₚ ⧸ _),
       ← RingHom.comp_assoc, ← IsScalarTower.algebraMap_eq Rₚ]
-  rw [Algebra.trace_eq_of_equiv_equiv (equivQuotMaximalIdealOfIsLocalization p Rₚ)
-    (quotMapEquivQuotMapMaximalIdealOfIsLocalization S p Rₚ Sₚ)]
-  · congr
+  rw [Algebra.trace_eq_of_equiv_equiv (equivQuotMaximalIdeal p Rₚ)
+    (quotMapEquivQuotMapMaximalIdeal S p Rₚ Sₚ)]
+  · rfl
   · ext x
-    simp only [equivQuotMaximalIdealOfIsLocalization, RingHom.quotientKerEquivOfSurjective,
-      RingEquiv.coe_ringHom_trans, RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply,
-      Ideal.quotEquivOfEq_mk, RingHom.quotientKerEquivOfRightInverse.apply, RingHom.kerLift_mk,
-      quotMapEquivQuotMapMaximalIdealOfIsLocalization,
-      Ideal.Quotient.algebraMap_quotient_map_quotient]
-    rw [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply]
+    simp_rw [RingHom.coe_comp, Function.comp_apply, RingHom.coe_coe,
+      equivQuotMaximalIdeal_apply_mk, Ideal.Quotient.mk_algebraMap,
+      Ideal.Quotient.algebraMap_quotient_map_quotient, quotMapEquivQuotMapMaximalIdeal_apply_mk,
+      ← IsScalarTower.algebraMap_apply, Ideal.Quotient.mk_algebraMap]
 
 open nonZeroDivisors in
 /-- The trace map on `B → A` coincides with the trace map on `B⧸pB → A⧸p`. -/
@@ -119,14 +115,12 @@ lemma Algebra.trace_quotient_eq_of_isDedekindDomain (x) [IsDedekindDomain R] [Is
     · have := (IsDedekindDomain.isDedekindDomainDvr R).2 p hp inferInstance
       infer_instance
   haveI : Module.Free Rₚ Sₚ := Module.free_of_finite_type_torsion_free'
-  apply (equivQuotMaximalIdealOfIsLocalization p Rₚ).injective
+  apply (equivQuotMaximalIdeal p Rₚ).injective
   rw [trace_quotient_eq_trace_localization_quotient S p Rₚ Sₚ, IsScalarTower.algebraMap_eq S Sₚ,
     RingHom.comp_apply, Ideal.Quotient.algebraMap_eq, Algebra.trace_quotient_mk,
     RingEquiv.apply_symm_apply, ← Algebra.intTrace_eq_trace,
     ← Algebra.intTrace_eq_of_isLocalization R S p.primeCompl (Aₘ := Rₚ) (Bₘ := Sₚ) x,
     ← Ideal.Quotient.algebraMap_eq, ← IsScalarTower.algebraMap_apply]
-  simp only [equivQuotMaximalIdealOfIsLocalization, RingHom.quotientKerEquivOfSurjective,
-    RingEquiv.coe_trans, Function.comp_apply, Ideal.quotEquivOfEq_mk,
-    RingHom.quotientKerEquivOfRightInverse.apply, RingHom.kerLift_mk]
+  simp
 
 end IsDedekindDomain
