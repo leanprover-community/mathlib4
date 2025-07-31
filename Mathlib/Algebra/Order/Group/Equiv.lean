@@ -38,10 +38,10 @@ theorem coe_symm_ofLexMulEquiv [Mul α] : ⇑(ofLexMulEquiv α).symm = toLex := 
 
 @[to_additive (attr := simp)]
 lemma toEquiv_toLexMulEquiv [Mul α] :
-    ⇑(toLexMulEquiv α : α ≃ Lex α) = toLex :=
+    (toLexMulEquiv α : α ≃ Lex α) = toLex :=
   rfl
 
 @[to_additive (attr := simp)]
 lemma toEquiv_symm_toLexMulEquiv [Mul α] :
-    ⇑((toLexMulEquiv α).symm : Lex α ≃ α) = ofLex :=
+    ((toLexMulEquiv α).symm : Lex α ≃ α) = ofLex :=
   rfl
