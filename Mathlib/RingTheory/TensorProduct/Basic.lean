@@ -51,12 +51,10 @@ variable [AddCommMonoid N] [Module R M] [Module R N] [Module A N] [IsScalarTower
 If `M` is an `R`-module and `N` is an `A`-module, then `A`-linear maps `A ⊗[R] M →ₗ[A] N`
 correspond to `R` linear maps `M →ₗ[R] N` by composing with `M → A ⊗ M`, `x ↦ 1 ⊗ x`.
 -/
-noncomputable
 def liftBaseChangeEquiv : (M →ₗ[R] N) ≃ₗ[A] (A ⊗[R] M →ₗ[A] N) :=
   (LinearMap.ringLmapEquivSelf _ _ _).symm.trans (AlgebraTensorModule.lift.equiv _ _ _ _ _ _)
 
 /-- If `N` is an `A` module, we may lift a linear map `M →ₗ[R] N` to `A ⊗[R] M →ₗ[A] N` -/
-noncomputable
 abbrev liftBaseChange (l : M →ₗ[R] N) : A ⊗[R] M →ₗ[A] N :=
   LinearMap.liftBaseChangeEquiv A l
 
@@ -591,12 +589,12 @@ variable [Algebra R C]
 /-- Build an algebra equivalence from a linear equivalence out of a triple tensor product,
 and evidence of multiplicativity on pure tensors.
 -/
-def algEquivOfLinearEquivTripleTensorProduct (f : (A ⊗[R] B) ⊗[R] C ≃ₗ[R] D)
+def algEquivOfLinearEquivTripleTensorProduct (f : A ⊗[R] B ⊗[R] C ≃ₗ[R] D)
     (h_mul :
       ∀ (a₁ a₂ : A) (b₁ b₂ : B) (c₁ c₂ : C),
         f ((a₁ * a₂) ⊗ₜ (b₁ * b₂) ⊗ₜ (c₁ * c₂)) = f (a₁ ⊗ₜ b₁ ⊗ₜ c₁) * f (a₂ ⊗ₜ b₂ ⊗ₜ c₂))
     (h_one : f (((1 : A) ⊗ₜ[R] (1 : B)) ⊗ₜ[R] (1 : C)) = 1) :
-    (A ⊗[R] B) ⊗[R] C ≃ₐ[R] D :=
+    A ⊗[R] B ⊗[R] C ≃ₐ[R] D :=
   AlgEquiv.ofLinearEquiv f h_one <| f.map_mul_iff.2 <| by
     ext
     dsimp
@@ -604,7 +602,7 @@ def algEquivOfLinearEquivTripleTensorProduct (f : (A ⊗[R] B) ⊗[R] C ≃ₗ[R
 
 @[simp]
 theorem algEquivOfLinearEquivTripleTensorProduct_apply (f h_mul h_one x) :
-    (algEquivOfLinearEquivTripleTensorProduct f h_mul h_one : (A ⊗[R] B) ⊗[R] C ≃ₐ[R] D) x = f x :=
+    (algEquivOfLinearEquivTripleTensorProduct f h_mul h_one : A ⊗[R] B ⊗[R] C ≃ₐ[R] D) x = f x :=
   rfl
 
 section lift
@@ -828,19 +826,19 @@ variable {R A}
 
 unseal mul in
 theorem assoc_aux_1 (a₁ a₂ : A) (b₁ b₂ : B) (c₁ c₂ : C) :
-    (TensorProduct.assoc R A B C) (((a₁ * a₂) ⊗ₜ[R] (b₁ * b₂)) ⊗ₜ[R] (c₁ * c₂)) =
-      (TensorProduct.assoc R A B C) ((a₁ ⊗ₜ[R] b₁) ⊗ₜ[R] c₁) *
-        (TensorProduct.assoc R A B C) ((a₂ ⊗ₜ[R] b₂) ⊗ₜ[R] c₂) :=
+    (TensorProduct.assoc R A B C) ((a₁ * a₂) ⊗ₜ[R] (b₁ * b₂) ⊗ₜ[R] (c₁ * c₂)) =
+      (TensorProduct.assoc R A B C) (a₁ ⊗ₜ[R] b₁ ⊗ₜ[R] c₁) *
+        (TensorProduct.assoc R A B C) (a₂ ⊗ₜ[R] b₂ ⊗ₜ[R] c₂) :=
   rfl
 
-theorem assoc_aux_2 : (TensorProduct.assoc R A B C) ((1 ⊗ₜ[R] 1) ⊗ₜ[R] 1) = 1 :=
+theorem assoc_aux_2 : (TensorProduct.assoc R A B C) (1 ⊗ₜ[R] 1 ⊗ₜ[R] 1) = 1 :=
   rfl
 
 variable (R A C D)
 
 -- Porting note: much nicer than Lean 3 proof
 /-- The associator for tensor product of R-algebras, as an algebra isomorphism. -/
-protected def assoc : (A ⊗[S] C) ⊗[R] D ≃ₐ[S] A ⊗[S] C ⊗[R] D :=
+protected def assoc : A ⊗[S] C ⊗[R] D ≃ₐ[S] A ⊗[S] (C ⊗[R] D) :=
   AlgEquiv.ofLinearEquiv
     (AlgebraTensorModule.assoc R S S A C D)
     (by simp [Algebra.TensorProduct.one_def])
@@ -986,7 +984,7 @@ variable (R A B C) in
 /-- Tensor product of algebras analogue of `mul_left_comm`.
 
 This is the algebra version of `TensorProduct.leftComm`. -/
-def leftComm : A ⊗[R] B ⊗[R] C ≃ₐ[R] B ⊗[R] A ⊗[R] C :=
+def leftComm : A ⊗[R] (B ⊗[R] C) ≃ₐ[R] B ⊗[R] (A ⊗[R] C) :=
   (Algebra.TensorProduct.assoc R R A B C).symm.trans <|
     (congr (Algebra.TensorProduct.comm R A B) .refl).trans <| TensorProduct.assoc R R B A C
 
@@ -1013,7 +1011,7 @@ variable (R R' S T A B C D) in
 /-- Tensor product of algebras analogue of `mul_mul_mul_comm`.
 
 This is the algebra version of `TensorProduct.AlgebraTensorModule.tensorTensorTensorComm`. -/
-def tensorTensorTensorComm : (A ⊗[R'] B) ⊗[S] C ⊗[R] D ≃ₐ[T] (A ⊗[S] C) ⊗[R'] B ⊗[R] D :=
+def tensorTensorTensorComm : A ⊗[R'] B ⊗[S] (C ⊗[R] D) ≃ₐ[T] A ⊗[S] C ⊗[R'] (B ⊗[R] D) :=
   AlgEquiv.ofLinearEquiv (TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R R' S T A B C D)
     rfl (LinearMap.map_mul_iff _ |>.mpr <| by ext; simp)
 
@@ -1206,7 +1204,6 @@ where $M_A$ and $N_A$ are the respective modules over $A$ obtained by extension 
 See `LinearMap.tensorProductEnd` for this map specialized to endomorphisms,
 and bundled as `A`-algebra homomorphism. -/
 @[simps!]
-noncomputable
 def tensorProduct : A ⊗[R] (M →ₗ[R] N) →ₗ[A] (A ⊗[R] M) →ₗ[A] (A ⊗[R] N) :=
   TensorProduct.AlgebraTensorModule.lift <|
   { toFun := fun a ↦ a • baseChangeHom R A M N
@@ -1216,7 +1213,6 @@ def tensorProduct : A ⊗[R] (M →ₗ[R] N) →ₗ[A] (A ⊗[R] M) →ₗ[A] (A
 /-- The natural `A`-algebra homomorphism $A ⊗ (\text{End}_R M) → \text{End}_A (A ⊗ M)$,
 where `M` is an `R`-module, and `A` an `R`-algebra. -/
 @[simps!]
-noncomputable
 def tensorProductEnd : A ⊗[R] (End R M) →ₐ[A] End A (A ⊗[R] M) :=
   Algebra.TensorProduct.algHomOfLinearMapTensorProduct
     (LinearMap.tensorProduct R A M M)

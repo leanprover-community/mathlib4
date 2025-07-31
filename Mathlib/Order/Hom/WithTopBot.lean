@@ -135,7 +135,7 @@ variable [Preorder α] [Preorder β]
 @[simps -fullyApplied]
 protected def withBotMap (f : α ↪o β) : WithBot α ↪o WithBot β where
   toFun := WithBot.map f
-  inj' := Option.map_injective f.injective
+  inj' := WithBot.map_injective f.injective
   map_rel_iff' := WithBot.map_le_iff f f.map_rel_iff
 
 /-- A version of `WithTop.map` for order embeddings. -/

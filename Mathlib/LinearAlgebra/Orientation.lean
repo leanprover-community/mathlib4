@@ -31,8 +31,9 @@ that index type is a `Fintype` and there exists a basis of the same cardinality.
 
 -/
 
-
 noncomputable section
+
+open Module
 
 section OrderedCommSemiring
 
@@ -135,7 +136,7 @@ protected theorem Orientation.reindex_neg {ι ι' : Type*} (e : ι ≃ ι') (x :
     Orientation.reindex R M e (-x) = -Orientation.reindex R M e x :=
   Module.Ray.map_neg _ x
 
-namespace Basis
+namespace Module.Basis
 
 variable {ι ι' : Type*}
 
@@ -184,7 +185,7 @@ theorem orientation_isEmpty [IsEmpty ι] (b : Basis ι R M) :
   congr
   exact b.det_isEmpty
 
-end Basis
+end Module.Basis
 
 end OrderedCommRing
 
@@ -216,7 +217,7 @@ theorem eq_or_eq_neg_of_isEmpty [IsEmpty ι] (o : Orientation R M ι) :
 
 end Orientation
 
-namespace Basis
+namespace Module.Basis
 
 variable [Fintype ι] [DecidableEq ι]
 
@@ -312,7 +313,7 @@ theorem abs_det_adjustToOrientation [Nonempty ι] (e : Basis ι R M)
     (x : Orientation R M ι) (v : ι → M) : |(e.adjustToOrientation x).det v| = |e.det v| := by
   rcases e.det_adjustToOrientation x with h | h <;> simp [h]
 
-end Basis
+end Module.Basis
 
 end LinearOrderedCommRing
 
