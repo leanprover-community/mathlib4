@@ -40,8 +40,9 @@ def call(number: int, handle: str) -> bool:
 if __name__ == '__main__':
     # Download the assignments file using curl
     url = "https://leanprover-community.github.io/queueboard/automatic_assignments.json"
+    args = ["curl", "--output", "assignments.json", url]
     print("trace: about to download the assignments file using curl...")
-    out = subprocess.run(["curl", "--output", "assignments.json", url], capture_output=True)
+    out = subprocess.run(args, capture_output=True, encoding="utf-8")
     if out.stdout:
         print("standard output is: \n" + out.stdout)
     if out.stderr:
