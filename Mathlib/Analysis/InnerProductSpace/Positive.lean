@@ -411,9 +411,9 @@ theorem IsStarProjection.le_iff_comp_eq_left {p q : E →L[𝕜] E}
   simp_rw [reApplyInnerSelf, sub_apply, inner_sub_left, map_sub,
     ← reApplyInnerSelf_apply, hh hq, hh hp, (this hp).mp ha,
     sub_nonneg, sq_le_sq, abs_norm] at h2
-  obtain ⟨h, hht, rfl⟩ := isStarProjection_iff_eq_starProjection.mp hq
-  exact Submodule.starProjection_mem_range_iff_norm _ _ |>.mpr
-    (le_antisymm (Submodule.norm_starProjection_apply_le _ _) h2)
+  obtain ⟨U, hU, rfl⟩ := isStarProjection_iff_eq_starProjection.mp hq
+  simpa using U.mem_iff_norm_starProjection _ |>.mpr
+    (le_antisymm (U.norm_starProjection_apply_le _) h2)
 
 /-- `U.starProjection ≤ V.starProjection` iff `U ≤ V`. -/
 theorem starProjection_le_starProjection_iff (U V : Submodule 𝕜 E)
