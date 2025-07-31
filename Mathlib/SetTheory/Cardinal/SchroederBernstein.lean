@@ -61,10 +61,7 @@ theorem schroeder_bernstein {f : α → β} {g : β → α} (hf : Function.Injec
   have : Injective h := by
     refine (injective_piecewise_iff _).2 ⟨hf.injOn, ?_, ?_⟩
     · intro x hx y hy hxy
-      obtain ⟨x', _, rfl⟩ : x ∈ g '' (f '' s)ᶜ := by rwa [hns]
-      obtain ⟨y', _, rfl⟩ : y ∈ g '' (f '' s)ᶜ := by rwa [hns]
-      rw [g'g _, g'g _] at hxy
-      rw [hxy]
+      grind [Set.subset_def, Set.mem_image]
     · intro x hx y hy hxy
       obtain ⟨y', hy', rfl⟩ : y ∈ g '' (f '' s)ᶜ := by rwa [hns]
       rw [g'g _] at hxy
