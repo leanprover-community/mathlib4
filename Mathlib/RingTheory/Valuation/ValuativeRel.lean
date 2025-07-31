@@ -511,6 +511,11 @@ lemma valuation_posSubmonoid_ne_zero (x : posSubmonoid R) :
   rw [ne_eq, valuation_eq_zero_iff]
   exact x.prop
 
+lemma ValueGroupWithZero.mk_eq_div (r : R) (s : posSubmonoid R) :
+    ValueGroupWithZero.mk r s = valuation R r / valuation R (s : R) := by
+  rw [eq_div_iff (valuation_posSubmonoid_ne_zero _)]
+  simp [valuation, mk_eq_mk]
+
 /-- Construct a valuative relation on a ring using a valuation. -/
 def ofValuation
     {S Γ : Type*} [CommRing S]
@@ -698,10 +703,15 @@ def ValueGroupWithZero.embed [h : v.Compatible] : ValueGroupWithZero R →*₀ �
     field_simp
 
 @[simp]
+lemma ValueGroupWithZero.embed_mk [v.Compatible] (x : R) (s : posSubmonoid R) :
+    embed v (.mk x s) = v x / v (s : R) :=
+  rfl
+
+@[simp]
 lemma ValueGroupWithZero.embed_valuation (γ : ValueGroupWithZero R) :
     embed (valuation R) γ = γ := by
-  obtain ⟨r, s, rfl⟩ := valuation_surjective γ
-  simp [embed]
+  induction γ using ValueGroupWithZero.ind
+  simp [embed_mk, ← mk_eq_div]
 
 lemma ValueGroupWithZero.embed_strictMono [v.Compatible] : StrictMono (embed v) := by
   intro a b h
