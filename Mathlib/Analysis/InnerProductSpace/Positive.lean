@@ -386,13 +386,11 @@ theorem IsIdempotentElem.TFAE {p : E →L[𝕜] E} (hp : IsIdempotentElem p) :
     (ContinuousLinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range hp)
   tfae_finish
 
-/-- For star projection operators `p,q`, we have `p ≤ q` iff `p ∘ q = p`. -/
-theorem IsStarProjection.le_iff_comp_eq_left {p q : E →L[𝕜] E}
-    (hp : IsStarProjection p) (hq : IsStarProjection q) : p ≤ q ↔ p ∘L q = p := by
+/-- For star projection operators `p,q`, we have `p ≤ q` iff `q ∘ p = p`. -/
+theorem IsStarProjection.le_iff_comp_eq_right {p q : E →L[𝕜] E}
+    (hp : IsStarProjection p) (hq : IsStarProjection q) : p ≤ q ↔ q ∘L p = p := by
   refine ⟨fun ⟨h1, h2⟩ => ?_, fun hpq ↦
     IsPositive.of_isStarProjection (hp.sub_of_mul_eq_left hq hpq)⟩
-  rw [← star_inj]
-  simp_rw [star_eq_adjoint, adjoint_comp, hp.isSelfAdjoint.adjoint_eq, hq.isSelfAdjoint.adjoint_eq]
   have : q.comp p = p ↔ LinearMap.range p ≤ LinearMap.range q := by
     simpa [coe_comp, ← coe_inj] using LinearMap.IsIdempotentElem.comp_eq_right_iff
       congr(LinearMapClass.linearMap $hq.isIdempotentElem.eq) p.toLinearMap
@@ -419,11 +417,8 @@ theorem IsStarProjection.le_iff_comp_eq_left {p q : E →L[𝕜] E}
 theorem starProjection_le_starProjection_iff (U V : Submodule 𝕜 E)
     [U.HasOrthogonalProjection] [V.HasOrthogonalProjection] :
     U.starProjection ≤ V.starProjection ↔ U ≤ V := by
-  rw [isStarProjection_starProjection.le_iff_comp_eq_left
-      isStarProjection_starProjection, ← star_inj,
-    isStarProjection_starProjection.isSelfAdjoint, star_eq_adjoint, adjoint_comp]
-  simp_rw [← star_eq_adjoint, isStarProjection_starProjection.isSelfAdjoint.star_eq]
-  rw [← coe_inj, coe_comp, LinearMap.IsIdempotentElem.comp_eq_right_iff]
+  rw [isStarProjection_starProjection.le_iff_comp_eq_right isStarProjection_starProjection,
+    ← coe_inj, coe_comp, LinearMap.IsIdempotentElem.comp_eq_right_iff]
   · have {p : E →L[𝕜] E} : LinearMap.range p.toLinearMap = LinearMap.range p := rfl
     simp_rw [this, Submodule.range_starProjection]
   · exact congr(LinearMapClass.linearMap $(isStarProjection_starProjection.isIdempotentElem.eq))
