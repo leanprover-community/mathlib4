@@ -9,7 +9,9 @@ import Mathlib.RingTheory.Ideal.NatInt
 # Frobenius Number
 
 In this file we first define a predicate for Frobenius numbers, then solve the 2-variable variant
-of this problem. We also show the Frobenius number exists for any set of coprime natural numbers.
+of this problem. We also show the Frobenius number exists for any set of coprime natural numbers
+that doesn't contain 1. This is closely related to the facts that all ideals of ℕ are finitely
+generated, and that the game of Sylver coinage always ends, which we also prove in this file.
 
 ## Theorem Statement
 
@@ -166,9 +168,9 @@ theorem exists_mem_span_nat_finset_of_ge :
       Int.natCast_natAbs, abs_eq_self.mpr hai]
   · rw [cast_sub, Int.natCast_natAbs, abs_eq_neg_self.mpr (by omega), sub_mul,
       ← Int.eq_natCast_toNat.mpr (by omega), mul_neg (rx : ℤ), sub_neg_eq_add, add_comm]
-    rw [← Nat.mul_le_mul_left_iff (Nat.pos_of_ne_zero h0), ← hrx,
+    rw [← Nat.mul_le_mul_left_iff (pos_of_ne_zero h0), ← hrx,
       Nat.mul_div_cancel' (setGcd_dvd_of_mem hxs)]
-    exact (c.mod_lt (Nat.pos_of_ne_zero hx)).le
+    exact (c.mod_lt (pos_of_ne_zero hx)).le
 
 theorem exists_mem_closure_of_ge : ∃ n, ∀ m ≥ n, setGcd s ∣ m → m ∈ AddSubmonoid.closure s :=
   have ⟨_t, n, hts, hn⟩ := exists_mem_span_nat_finset_of_ge s
@@ -176,7 +178,7 @@ theorem exists_mem_closure_of_ge : ∃ n, ∀ m ≥ n, setGcd s ∣ m → m ∈ 
     (Submodule.span_mono hts (hn m ge dvd))⟩
 
 theorem finite_setOf_setGcd_dvd_and_mem_closure :
-    {n | Nat.setGcd s ∣ n ∧ n ∉ AddSubmonoid.closure s}.Finite :=
+    {n | setGcd s ∣ n ∧ n ∉ AddSubmonoid.closure s}.Finite :=
   have ⟨n, hn⟩ := exists_mem_closure_of_ge s
   (Finset.range n).finite_toSet.subset
     fun m h ↦ Finset.mem_range.mpr <| lt_of_not_ge fun ge ↦ h.2 (hn m ge h.1)
@@ -205,22 +207,22 @@ Issai Schur, but [Schur's theorem](https://en.wikipedia.org/wiki/Schur%27s_theor
 is a more precise statement about asymptotics of the number of ℕ-linear combinations, and the
 existence of the Frobenius number for a set with gcd 1 is probably well known before that. -/
 theorem exists_frobeniusNumber_iff {s : Set ℕ} :
-    (∃ n, FrobeniusNumber n s) ↔ Nat.setGcd s = 1 ∧ 1 ∉ s where
+    (∃ n, FrobeniusNumber n s) ↔ setGcd s = 1 ∧ 1 ∉ s where
   mp := fun ⟨n, hn⟩ ↦ by
     rw [frobeniusNumber_iff] at hn
-    exact ⟨Nat.dvd_one.mp <| Nat.dvd_add_iff_right (Nat.setGcd_dvd_of_mem_closure (hn.2 (n + 1)
-      (by omega))) (n := 1) |>.mpr (Nat.setGcd_dvd_of_mem_closure (hn.2 (n + 2) (by omega))),
+    exact ⟨dvd_one.mp <| Nat.dvd_add_iff_right (setGcd_dvd_of_mem_closure (hn.2 (n + 1)
+      (by omega))) (n := 1) |>.mpr (setGcd_dvd_of_mem_closure (hn.2 (n + 2) (by omega))),
       fun h ↦ hn.1 <| AddSubmonoid.closure_mono (Set.singleton_subset_iff.mpr h)
-        (Nat.addSubmonoid_closure_one.ge ⟨⟩)⟩
+        (addSubmonoid_closure_one.ge ⟨⟩)⟩
   mpr h := by
     have ⟨n, hn⟩ := exists_mem_closure_of_ge s
     let P n := n ∉ AddSubmonoid.closure s
-    have : P 1 := h.2 ∘ Nat.one_mem_closure_iff.mp
+    have : P 1 := h.2 ∘ one_mem_closure_iff.mp
     classical
-    refine ⟨Nat.findGreatest P n, frobeniusNumber_iff.mpr ⟨Nat.findGreatest_spec (P := P) (m := 1)
+    refine ⟨findGreatest P n, frobeniusNumber_iff.mpr ⟨findGreatest_spec (P := P) (m := 1)
       (le_of_not_gt fun lt ↦ this (hn _ lt.le h.1.dvd)) this, fun k gt ↦ ?_⟩⟩
     obtain le | le := le_total k n
-    · exact of_not_not (Nat.findGreatest_is_greatest gt le)
+    · exact of_not_not (findGreatest_is_greatest gt le)
     · exact hn k le (h.1.dvd.trans <| one_dvd k)
 
 namespace SylverCoinage
@@ -238,11 +240,11 @@ protected inductive Rel : Set ℕ → Set ℕ → Prop
 /-- Sylver coinage is a well-founded game, i.e. it always terminates. -/
 theorem wellFounded_rel : WellFounded SylverCoinage.Rel := by
   let f (s : Set ℕ) : ℕ × {t : Set ℕ // t.Finite} :=
-    (Nat.setGcd s, ⟨_, finite_setOf_setGcd_dvd_and_mem_closure s⟩)
+    (setGcd s, ⟨_, finite_setOf_setGcd_dvd_and_mem_closure s⟩)
   refine Subrelation.wf ?_ (InvImage.wf f (wellFounded_dvdNotUnit.prod_lex wellFounded_lt))
   rintro _ s ⟨_, n, hns, _⟩
   apply Prod.lex_def.mpr
-  by_cases dvd : Nat.setGcd s ∣ n
+  by_cases dvd : setGcd s ∣ n
   · exact .inr ⟨setGcd_insert_of_dvd dvd, fun m hm ↦ ⟨(setGcd_insert_of_dvd dvd).symm.dvd.trans
       hm.1, fun mem ↦ hm.2 (AddSubmonoid.closure_mono (Set.subset_insert ..) mem)⟩, Set.not_subset.2
       ⟨n, ⟨dvd, hns⟩, fun mem ↦ mem.2 (AddSubmonoid.subset_closure <| Set.mem_insert ..)⟩⟩
