@@ -12,8 +12,9 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.ArctanDeriv
 ## Main statements
 
 This file contains upper and lower bounds for real trigonometric functions in terms
-of polynomials. See `Mathlib/Analysis/SpecialFunctions/Trigonometric/Basic.lean` for more elementary inequalities, establishing
-the ranges of these functions, and their monotonicity in suitable intervals.
+of polynomials. See `Mathlib/Analysis/SpecialFunctions/Trigonometric/Basic.lean` for more elementary
+inequalities, establishing the ranges of these functions, and their monotonicity in suitable
+intervals.
 
 Here we prove the following:
 
