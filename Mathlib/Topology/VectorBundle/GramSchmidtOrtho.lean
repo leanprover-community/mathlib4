@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Michael Rothgang
 -/
 import Mathlib.Analysis.InnerProductSpace.GramSchmidtOrtho
-import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
+import Mathlib.Topology.VectorBundle.Riemannian
 
 /-!
 # Gram-Schmidt orthonormalization on sections of Riemannian vector bundles
@@ -15,18 +15,21 @@ with respect to the bundle metric. If the initial sections were linearly indepen
 formed a basis) at the point, so do the normalized sections.
 
 # TODO
-If the bundle metric is `C^k`, then the procedure preserves regularity of sections:
-if all sections are `C^k`, so are their normalized versions.
+* If the bundle metric is continuous, then the procedure preserves regularity of sections:
+  if all sections are continuous, so are their normalized versions.
+* (in the `Geometry/Manifold` folder): if the bundle metric is `C^n`, the procedure preserves
+  regularity of sections: if all sections are `C^n`, so are their normalized versions.
 
-This will be used in `OrthonormalFrame.lean` to convert a local frame to a local orthonormal frame.
+This will be used in `Mathlib/Geometry/Manifold/VectorBundle/OrthonormalFrame.lean` to convert a
+local frame to a local orthonormal frame.
 
 ## Tags
 vector bundle, bundle metric, orthonormal frame, Gram-Schmidt
 
 -/
 
-open Manifold Bundle Module
-open scoped ContDiff Topology
+open Bundle Module
+open scoped Topology
 
 -- Let `E` be a topological vector bundle over a topological space `B`,
 -- with a continuous Riemannian structure.
