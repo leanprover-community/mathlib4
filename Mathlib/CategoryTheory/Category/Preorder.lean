@@ -159,7 +159,7 @@ theorem Monotone.functor_obj {f : X → Y} (h : Monotone f) : h.functor.obj = f 
 
 -- Faithfulness is automatic because preorder categories are thin
 instance (f : X ↪o Y) : f.monotone.functor.Full where
-  map_surjective h := ⟨homOfLE (f.map_rel_iff.1 h.le), rfl⟩
+  map_surjective h := ⟨homOfLE (f.le_iff_le.1 h.le), rfl⟩
 
 /-- The equivalence of categories `X ≌ Y` induced by `e : X ≃o Y`. -/
 @[simps]

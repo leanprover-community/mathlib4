@@ -139,7 +139,7 @@ theorem lift_mk_le' {α : Type u} {β : Type v} : lift.{v} #α ≤ lift.{u} #β 
 /-- `Cardinal.lift` as an `InitialSeg`. -/
 @[simps!]
 def liftInitialSeg : Cardinal.{u} ≤i Cardinal.{max u v} := by
-  refine ⟨(OrderEmbedding.ofMapLEIff lift ?_).ltEmbedding, ?_⟩ <;> intro a b
+  refine ⟨(OrderEmbedding.ofMapLEIff lift ?_).toRelEmbeddingLT, ?_⟩ <;> intro a b
   · refine inductionOn₂ a b fun _ _ ↦ ?_
     rw [← lift_umax, lift_mk_le.{v, u, u}, le_def]
   · refine inductionOn₂ a b fun α β h ↦ ?_

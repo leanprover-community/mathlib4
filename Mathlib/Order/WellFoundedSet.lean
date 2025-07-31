@@ -179,7 +179,7 @@ theorem WellFoundedOn.union (hs : s.WellFoundedOn r) (ht : t.WellFoundedOn r) :
   rw [wellFoundedOn_iff_no_descending_seq] at *
   rintro f hf
   rcases Nat.exists_subseq_of_forall_mem_union f hf with ⟨g, hg | hg⟩
-  exacts [hs (g.dual.ltEmbedding.trans f) hg, ht (g.dual.ltEmbedding.trans f) hg]
+  exacts [hs (g.dual.toRelEmbeddingLT.trans f) hg, ht (g.dual.toRelEmbeddingLT.trans f) hg]
 
 @[simp]
 theorem wellFoundedOn_union : (s ∪ t).WellFoundedOn r ↔ s.WellFoundedOn r ∧ t.WellFoundedOn r :=

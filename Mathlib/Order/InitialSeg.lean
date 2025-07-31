@@ -83,7 +83,7 @@ instance : RelHomClass (r ≼i s) r s where
 /-- An initial segment embedding between the `<` relations of two partial orders is an order
 embedding. -/
 def toOrderEmbedding [PartialOrder α] [PartialOrder β] (f : α ≤i β) : α ↪o β :=
-  f.orderEmbeddingOfLTEmbedding
+  f.orderEmbeddingOftoRelEmbeddingLT
 
 @[simp]
 theorem toOrderEmbedding_apply [PartialOrder α] [PartialOrder β] (f : α ≤i β) (x : α) :

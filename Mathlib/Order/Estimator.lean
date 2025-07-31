@@ -77,7 +77,7 @@ instance : WellFoundedGT Unit where
   wf := ⟨fun .unit => ⟨Unit.unit, nofun⟩⟩
 
 instance (a : α) : WellFoundedGT (Estimator.trivial a) :=
-  let f : Estimator.trivial a ≃o Unit := RelIso.ofUniqueOfRefl _ _
+  let f : Estimator.trivial a ≃o Unit := OrderIso.ofUnique _ _
   let f' : Estimator.trivial a ↪o Unit := f.toOrderEmbedding
   f'.wellFoundedGT
 

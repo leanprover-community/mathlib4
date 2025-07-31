@@ -161,7 +161,7 @@ theorem copy_eq (f : α →o β) (f' : α → β) (h : f' = f) : f.copy f' h = f
   DFunLike.ext' h
 
 /-- The identity function as bundled monotone function. -/
-@[simps -fullyApplied]
+@[simps]
 def id : α →o α :=
   ⟨_root_.id, monotone_id⟩
 
@@ -215,7 +215,7 @@ theorem uncurry_curry (f : α × β →o γ) : uncurry (curry f) = f := ext _ _ 
 theorem curry_uncurry (f : α →o β →o γ) : curry (uncurry f) = f := ext _ _ rfl
 
 /-- The composition of two bundled monotone functions. -/
-@[simps -fullyApplied]
+@[simps]
 def comp (g : β →o γ) (f : α →o β) : α →o γ :=
   ⟨g ∘ f, g.mono.comp f.mono⟩
 
@@ -227,7 +227,7 @@ theorem comp_mono ⦃g₁ g₂ : β →o γ⦄ (hg : g₁ ≤ g₂) ⦃f₁ f₂
     comp ⟨g, hg⟩ ⟨f, hf⟩ = ⟨g ∘ f, hg.comp hf⟩ := rfl
 
 /-- The composition of two bundled monotone functions, a fully bundled version. -/
-@[simps! -fullyApplied]
+@[simps!]
 def compₘ : (β →o γ) →o (α →o β) →o α →o γ :=
   curry ⟨fun f : (β →o γ) × (α →o β) => f.1.comp f.2, fun _ _ h => comp_mono h.1 h.2⟩
 
@@ -242,7 +242,7 @@ theorem id_comp (f : α →o β) : comp id f = f := by
   rfl
 
 /-- Constant function bundled as an `OrderHom`. -/
-@[simps -fullyApplied]
+@[simps]
 def const (α : Type*) [Preorder α] {β : Type*} [Preorder β] : β →o α →o β where
   toFun b := ⟨Function.const α b, fun _ _ _ => le_rfl⟩
   monotone' _ _ h _ := h
@@ -317,20 +317,20 @@ def prodMap (f : α →o β) (g : γ →o δ) : α × γ →o β × δ :=
 variable {ι : Type*} {π : ι → Type*} [∀ i, Preorder (π i)]
 
 /-- Evaluation of an unbundled function at a point (`Function.eval`) as an `OrderHom`. -/
-@[simps -fullyApplied]
+@[simps]
 def _root_.Pi.evalOrderHom (i : ι) : (∀ j, π j) →o π i :=
   ⟨Function.eval i, Function.monotone_eval i⟩
 
 /-- The "forgetful functor" from `α →o β` to `α → β` that takes the underlying function,
 is monotone. -/
-@[simps -fullyApplied]
+@[simps]
 def coeFnHom : (α →o β) →o α → β where
   toFun f := f
   monotone' _ _ h := h
 
 /-- Function application `fun f => f a` (for fixed `a`) is a monotone function from the
 monotone function space `α →o β` to `β`. See also `Pi.evalOrderHom`. -/
-@[simps! -fullyApplied]
+@[simps!]
 def apply (x : α) : (α →o β) →o β :=
   (Pi.evalOrderHom x).comp coeFnHom
 
@@ -341,7 +341,7 @@ def pi (f : ∀ i, α →o π i) : α →o ∀ i, π i :=
   ⟨fun x i => f i x, fun _ _ h i => (f i).mono h⟩
 
 /-- `Subtype.val` as a bundled monotone function. -/
-@[simps -fullyApplied]
+@[simps]
 def Subtype.val (p : α → Prop) : Subtype p →o α :=
   ⟨_root_.Subtype.val, fun _ _ h => h⟩
 
@@ -452,6 +452,10 @@ def Simps.apply (h : α ↪o β) : α → β := h
 
 initialize_simps_projections OrderEmbedding (toFun → apply)
 
+-- See note [partially-applied ext lemmas]
+@[ext]
+theorem ext {f g : α ↪o β} (h : (f : α → β) = g) : f = g := DFunLike.ext' h
+
 @[simp]
 theorem le_iff_le {a b} : f a ≤ f b ↔ a ≤ b :=
   f.map_le_map_iff'
@@ -460,13 +464,78 @@ theorem le_iff_le {a b} : f a ≤ f b ↔ a ≤ b :=
 theorem lt_iff_lt {a b} : f a < f b ↔ a < b := by
   simp only [lt_iff_le_not_ge, le_iff_le]
 
-/-- `<` is preserved by order embeddings of preorders. -/
-def ltEmbedding : ((· < ·) : α → α → Prop) ↪r ((· < ·) : β → β → Prop) :=
-  { f with map_le_map_iff' := by intros; simp only [coe_toEmbedding, f.lt_iff_lt] }
+/-- Converts an `OrderIso` into a `RelEmbedding (≤) (≤)`. -/
+def toRelEmbeddingLE (e : α ↪o β) : ((· ≤ ·) : α → α → Prop) ↪r ((· ≤ ·) : β → β → Prop) :=
+  ⟨e.toEmbedding, le_iff_le e⟩
 
 @[simp]
-theorem ltEmbedding_apply (x : α) : f.ltEmbedding x = f x :=
+theorem toRelEmbeddingLE_apply (e : α ↪o β) (x : α) : e.toRelEmbeddingLE x = e x :=
   rfl
+
+@[simp]
+theorem coe_toRelEmbeddingLE (e : α ↪o β) : ⇑e.toRelEmbeddingLE = e := rfl
+
+/-- Converts a `RelEmbedding (<) (<)` into an `OrderIso`. -/
+def ofRelEmbeddingLE
+    (e : ((· ≤ ·) : α → α → Prop) ↪r ((· ≤ ·) : β → β → Prop)) : α ↪o β :=
+  ⟨e.toEmbedding, fun {_ _} => e.map_rel_iff⟩
+
+@[simp]
+theorem ofRelEmbeddingLE_apply (e : ((· ≤ ·) : α → α → Prop) ↪r ((· ≤ ·) : β → β → Prop))
+    (x : α) : ofRelEmbeddingLE e x = e x := rfl
+
+@[simp]
+theorem ofRelEmbeddingLE_toRelEmbeddingLE (e : α ↪o β) :
+    ofRelEmbeddingLE (toRelEmbeddingLE e) = e := by
+  ext
+  simp
+
+@[simp]
+theorem toRelEmbeddingLE_ofRelEmbeddingLE
+    (e : ((· ≤ ·) : α → α → Prop) ↪r ((· ≤ ·) : β → β → Prop)) :
+    toRelEmbeddingLE (ofRelEmbeddingLE e) = e := by
+  ext
+  simp
+
+def equivOrderEmbeddingRelEmbedding : (α ↪o β) ≃
+    (((· ≤ ·) : α → α → Prop) ↪r ((· ≤ ·) : β → β → Prop)) where
+  toFun := toRelEmbeddingLE
+  invFun := ofRelEmbeddingLE
+
+/-- Converts an `OrderIso` into a `RelIso (<) (<)`. -/
+def toRelEmbeddingLT (e : α ↪o β) : ((· < ·) : α → α → Prop) ↪r ((· < ·) : β → β → Prop) :=
+  ⟨e.toEmbedding, lt_iff_lt e⟩
+
+@[simp]
+theorem toRelEmbeddingLT_apply (e : α ↪o β) (x : α) : e.toRelEmbeddingLT x = e x :=
+  rfl
+
+@[simp]
+theorem coe_toRelIsoLT (e : α ↪o β) : ⇑e.toRelEmbeddingLT = e := rfl
+
+/-- Converts a `RelEmbedding (<) (<)` into an `RelEmbedding`. -/
+def ofRelEmbeddingLT {α β} [PartialOrder α] [PartialOrder β]
+    (e : ((· < ·) : α → α → Prop) ↪r ((· < ·) : β → β → Prop)) : α ↪o β :=
+  ⟨e.toEmbedding, by simp [le_iff_lt_or_eq, e.map_rel_iff]⟩
+
+@[simp]
+theorem ofRelEmbeddingLT_apply {α β} [PartialOrder α] [PartialOrder β]
+    (e : ((· < ·) : α → α → Prop) ↪r ((· < ·) : β → β → Prop)) (x : α) :
+    ofRelEmbeddingLT e x = e x :=
+  rfl
+
+@[simp]
+theorem ofRelEmbeddingLT_toRelEmbeddingLT {α β} [PartialOrder α] [PartialOrder β] (e : α ↪o β) :
+    ofRelEmbeddingLT (toRelEmbeddingLT e) = e := by
+  ext
+  simp
+
+@[simp]
+theorem toRelEmbeddingLT_ofRelEmbeddingLT {α β} [PartialOrder α] [PartialOrder β]
+    (e : ((· < ·) : α → α → Prop) ↪r ((· < ·) : β → β → Prop)) :
+    toRelEmbeddingLT (ofRelEmbeddingLT e) = e := by
+  ext
+  simp
 
 theorem eq_iff_eq {a b} : f a = f b ↔ a = b :=
   f.injective.eq_iff
@@ -479,14 +548,14 @@ protected theorem monotone : Monotone f := OrderHomClass.monotone f
 protected theorem strictMono : StrictMono f := fun _ _ => f.lt_iff_lt.2
 
 protected theorem acc (a : α) : Acc (· < ·) (f a) → Acc (· < ·) a :=
-  f.ltEmbedding.acc a
+  f.toRelEmbeddingLT.acc a
 
 protected theorem wellFounded (f : α ↪o β) :
     WellFounded ((· < ·) : β → β → Prop) → WellFounded ((· < ·) : α → α → Prop) :=
-  f.ltEmbedding.wellFounded
+  f.toRelEmbeddingLT.wellFounded
 
 protected theorem isWellOrder [IsWellOrder β (· < ·)] (f : α ↪o β) : IsWellOrder α (· < ·) :=
-  f.ltEmbedding.isWellOrder
+  f.toRelEmbeddingLT.isWellOrder
 
 /-- An order embedding is also an order embedding between dual orders. -/
 protected def dual : αᵒᵈ ↪o βᵒᵈ :=
@@ -547,7 +616,7 @@ def _root_.Subtype.orderEmbedding {p q : α → Prop} (h : ∀ a, p a → q a) :
     map_le_map_iff' := by aesop }
 
 /-- Convert an `OrderEmbedding` to an `OrderHom`. -/
-@[simps -fullyApplied]
+@[simps]
 def toOrderHom {X Y : Type*} [Preorder X] [Preorder Y] (f : X ↪o Y) : X →o Y where
   toFun := f
   monotone' := f.monotone
@@ -853,6 +922,55 @@ theorem lt_symm_apply (e : α ≃o β) {x : α} {y : β} : x < e.symm y ↔ e x 
 theorem symm_apply_lt (e : α ≃o β) {x : α} {y : β} : e.symm y < x ↔ y < e x := by
   rw [← e.lt_iff_lt, e.apply_symm_apply]
 
+/-- Converts an `OrderIso` into a `RelIso (≤) (≤)`. -/
+def toRelIsoLE (e : α ≃o β) : ((· ≤ ·) : α → α → Prop) ≃r ((· ≤ ·) : β → β → Prop) :=
+  ⟨e.toEquiv, le_iff_le e⟩
+
+@[simp]
+theorem toRelIsoLE_apply (e : α ≃o β) (x : α) : e.toRelIsoLE x = e x :=
+  rfl
+
+@[simp]
+theorem toRelIsoLE_symm (e : α ≃o β) : e.symm.toRelIsoLE = e.toRelIsoLE.symm :=
+  rfl
+
+@[simp]
+theorem coe_toRelIsoLE (e : α ≃o β) : ⇑e.toRelIsoLE = e := rfl
+
+@[simp]
+theorem coe_symm_toRelIsoLE (e : α ≃o β) : ⇑e.toRelIsoLE.symm = e.symm := rfl
+
+/-- Converts a `RelIso (<) (<)` into an `OrderIso`. -/
+def ofRelIsoLE
+    (e : ((· ≤ ·) : α → α → Prop) ≃r ((· ≤ ·) : β → β → Prop)) : α ≃o β :=
+  ⟨e.toEquiv, fun {_ _} => e.map_rel_iff⟩
+
+@[simp]
+theorem ofRelIsoLE_apply
+    (e : ((· ≤ ·) : α → α → Prop) ≃r ((· ≤ ·) : β → β → Prop)) (x : α) : ofRelIsoLE e x = e x :=
+  rfl
+
+@[simp]
+theorem ofRelIsoLE_symm (e : ((· ≤ ·) : α → α → Prop) ≃r ((· ≤ ·) : β → β → Prop)) :
+    (ofRelIsoLE e).symm = ofRelIsoLE e.symm :=
+  rfl
+
+@[simp]
+theorem ofRelIsoLE_toRelIsoLE (e : α ≃o β) :
+    ofRelIsoLE (toRelIsoLE e) = e := by
+  ext
+  simp
+
+@[simp]
+theorem toRelIsoLE_ofRelIsoLE
+    (e : ((· ≤ ·) : α → α → Prop) ≃r ((· ≤ ·) : β → β → Prop)) : toRelIsoLE (ofRelIsoLE e) = e := by
+  ext
+  simp
+
+def equivOrderIsoRelIso : (α ≃o β) ≃ (((· ≤ ·) : α → α → Prop) ≃r ((· ≤ ·) : β → β → Prop)) where
+  toFun := toRelIsoLE
+  invFun := ofRelIsoLE
+
 /-- Converts an `OrderIso` into a `RelIso (<) (<)`. -/
 def toRelIsoLT (e : α ≃o β) : ((· < ·) : α → α → Prop) ≃r ((· < ·) : β → β → Prop) :=
   ⟨e.toEquiv, lt_iff_lt e⟩
@@ -1023,7 +1141,7 @@ instance (priority := 90) OrderHomClass.toOrderHomClassOrderDual [Preorder α] [
   monotone f := fun _ _ => (monotone f ).imp
 
 /-- Embeddings of partial orders that preserve `<` also preserve `≤`. -/
-def RelEmbedding.orderEmbeddingOfLTEmbedding [PartialOrder α] [PartialOrder β]
+def RelEmbedding.orderEmbeddingOftoRelEmbeddingLT [PartialOrder α] [PartialOrder β]
     (f : ((· < ·) : α → α → Prop) ↪r ((· < ·) : β → β → Prop)) : α ↪o β :=
   { f with
     map_le_map_iff' := by
@@ -1031,9 +1149,9 @@ def RelEmbedding.orderEmbeddingOfLTEmbedding [PartialOrder α] [PartialOrder β]
       simp [le_iff_lt_or_eq, f.map_rel_iff, f.injective.eq_iff] }
 
 @[simp]
-theorem RelEmbedding.orderEmbeddingOfLTEmbedding_apply [PartialOrder α] [PartialOrder β]
+theorem RelEmbedding.orderEmbeddingOftoRelEmbeddingLT_apply [PartialOrder α] [PartialOrder β]
     {f : ((· < ·) : α → α → Prop) ↪r ((· < ·) : β → β → Prop)} {x : α} :
-    RelEmbedding.orderEmbeddingOfLTEmbedding f x = f x :=
+    RelEmbedding.orderEmbeddingOftoRelEmbeddingLT f x = f x :=
   rfl
 
 section Disjoint
@@ -1066,16 +1184,15 @@ end Disjoint
 
 section RelHom
 
-variable [PartialOrder α] [Preorder β]
+variable [PartialOrder α] [Preorder β] (f : ((· < ·) : α → α → Prop) ↪r ((· < ·) : β → β → Prop))
 
 namespace RelHom
 
-variable (f : ((· < ·) : α → α → Prop) →r ((· < ·) : β → β → Prop))
-
 /-- A bundled expression of the fact that a map between partial orders that is strictly monotone
 is weakly monotone. -/
-@[simps -fullyApplied]
-def toOrderHom : α →o β where
+@[simps]
+def toOrderHom
+    (f : ((· < ·) : α → α → Prop) →r ((· < ·) : β → β → Prop)) : α →o β where
   toFun := f
   monotone' := StrictMono.monotone fun _ _ => f.map_rel
 
@@ -1115,7 +1232,7 @@ variable [LinearOrder α] [Preorder β]
 variable (f : α → β) (h_mono : StrictMono f)
 
 /-- A strictly monotone function with a right inverse is an order isomorphism. -/
-@[simps -fullyApplied]
+@[simps]
 def orderIsoOfRightInverse (g : β → α) (hg : Function.RightInverse g f) : α ≃o β :=
   { OrderEmbedding.ofStrictMono f h_mono with
     toFun := f,

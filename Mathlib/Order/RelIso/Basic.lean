@@ -181,7 +181,7 @@ theorem Function.Surjective.wellFounded_iff {f : α → β} (hf : Surjective f)
 is an embedding `f : α ↪ β` such that `r a b ↔ s (f a) (f b)`. -/
 structure RelEmbedding {α β : Type*} (r : α → α → Prop) (s : β → β → Prop) extends α ↪ β where
   /-- Elements are related iff they are related after apply a `RelEmbedding` -/
-  map_le_map_iff' : ∀ {a b}, s (toEmbedding a) (toEmbedding b) ↔ r a b
+  map_rel_iff' : ∀ {a b}, s (toEmbedding a) (toEmbedding b) ↔ r a b
 
 /-- A relation embedding with respect to a given pair of relations `r` and `s`
 is an embedding `f : α ↪ β` such that `r a b ↔ s (f a) (f b)`. -/
@@ -196,7 +196,7 @@ namespace RelEmbedding
 /-- A relation embedding is also a relation homomorphism -/
 def toRelHom (f : r ↪r s) : r →r s where
   toFun := f.toEmbedding.toFun
-  map_rel' := (map_le_map_iff' f).mpr
+  map_rel' := (map_rel_iff' f).mpr
 
 instance : Coe (r ↪r s) (r →r s) :=
   ⟨toRelHom⟩
@@ -211,7 +211,7 @@ instance : FunLike (r ↪r s) α β where
 
 -- TODO: define and instantiate a `RelEmbeddingClass` when `EmbeddingLike` is defined
 instance : RelHomClass (r ↪r s) r s where
-  map_rel f _ _ := Iff.mpr (map_le_map_iff' f)
+  map_rel f _ _ := Iff.mpr (map_rel_iff' f)
 
 initialize_simps_projections RelEmbedding (toFun → apply)
 
@@ -239,7 +239,7 @@ theorem injective (f : r ↪r s) : Injective f :=
 theorem inj (f : r ↪r s) {a b} : f a = f b ↔ a = b := f.injective.eq_iff
 
 theorem map_rel_iff (f : r ↪r s) {a b} : s (f a) (f b) ↔ r a b :=
-  f.map_le_map_iff'
+  f.map_rel_iff'
 
 @[simp]
 theorem coe_mk {f} {h} : ⇑(⟨f, h⟩ : r ↪r s) = f :=
@@ -423,7 +423,7 @@ def ofMapRelIff (f : α → β) [IsAntisymm α r] [IsRefl β s] (hf : ∀ a b, s
     r ↪r s where
   toFun := f
   inj' _ _ h := antisymm ((hf _ _).1 (h ▸ refl _)) ((hf _ _).1 (h ▸ refl _))
-  map_le_map_iff' := hf _ _
+  map_rel_iff' := hf _ _
 
 @[simp]
 theorem ofMapRelIff_coe (f : α → β) [IsAntisymm α r] [IsRefl β s]
@@ -459,70 +459,70 @@ def ofIsEmpty (r : α → α → Prop) (s : β → β → Prop) [IsEmpty α] : r
 def sumLiftRelInl (r : α → α → Prop) (s : β → β → Prop) : r ↪r Sum.LiftRel r s where
   toFun := Sum.inl
   inj' := Sum.inl_injective
-  map_le_map_iff' := Sum.liftRel_inl_inl
+  map_rel_iff' := Sum.liftRel_inl_inl
 
 /-- `Sum.inr` as a relation embedding into `Sum.LiftRel r s`. -/
 @[simps]
 def sumLiftRelInr (r : α → α → Prop) (s : β → β → Prop) : s ↪r Sum.LiftRel r s where
   toFun := Sum.inr
   inj' := Sum.inr_injective
-  map_le_map_iff' := Sum.liftRel_inr_inr
+  map_rel_iff' := Sum.liftRel_inr_inr
 
 /-- `Sum.map` as a relation embedding between `Sum.LiftRel` relations. -/
 @[simps]
 def sumLiftRelMap (f : r ↪r s) (g : t ↪r u) : Sum.LiftRel r t ↪r Sum.LiftRel s u where
   toFun := Sum.map f g
   inj' := f.injective.sumMap g.injective
-  map_le_map_iff' := by rintro (a | b) (c | d) <;> simp [f.map_rel_iff, g.map_rel_iff]
+  map_rel_iff' := by rintro (a | b) (c | d) <;> simp [f.map_rel_iff, g.map_rel_iff]
 
 /-- `Sum.inl` as a relation embedding into `Sum.Lex r s`. -/
 @[simps]
 def sumLexInl (r : α → α → Prop) (s : β → β → Prop) : r ↪r Sum.Lex r s where
   toFun := Sum.inl
   inj' := Sum.inl_injective
-  map_le_map_iff' := Sum.lex_inl_inl
+  map_rel_iff' := Sum.lex_inl_inl
 
 /-- `Sum.inr` as a relation embedding into `Sum.Lex r s`. -/
 @[simps]
 def sumLexInr (r : α → α → Prop) (s : β → β → Prop) : s ↪r Sum.Lex r s where
   toFun := Sum.inr
   inj' := Sum.inr_injective
-  map_le_map_iff' := Sum.lex_inr_inr
+  map_rel_iff' := Sum.lex_inr_inr
 
 /-- `Sum.map` as a relation embedding between `Sum.Lex` relations. -/
 @[simps]
 def sumLexMap (f : r ↪r s) (g : t ↪r u) : Sum.Lex r t ↪r Sum.Lex s u where
   toFun := Sum.map f g
   inj' := f.injective.sumMap g.injective
-  map_le_map_iff' := by rintro (a | b) (c | d) <;> simp [f.map_rel_iff, g.map_rel_iff]
+  map_rel_iff' := by rintro (a | b) (c | d) <;> simp [f.map_rel_iff, g.map_rel_iff]
 
 /-- `fun b ↦ Prod.mk a b` as a relation embedding. -/
 @[simps]
 def prodLexMkLeft (s : β → β → Prop) {a : α} (h : ¬r a a) : s ↪r Prod.Lex r s where
   toFun := Prod.mk a
   inj' := Prod.mk_right_injective a
-  map_le_map_iff' := by simp [Prod.lex_def, h]
+  map_rel_iff' := by simp [Prod.lex_def, h]
 
 /-- `fun a ↦ Prod.mk a b` as a relation embedding. -/
 @[simps]
 def prodLexMkRight (r : α → α → Prop) {b : β} (h : ¬s b b) : r ↪r Prod.Lex r s where
   toFun a := (a, b)
   inj' := Prod.mk_left_injective b
-  map_le_map_iff' := by simp [Prod.lex_def, h]
+  map_rel_iff' := by simp [Prod.lex_def, h]
 
 /-- `Prod.map` as a relation embedding. -/
 @[simps]
 def prodLexMap (f : r ↪r s) (g : t ↪r u) : Prod.Lex r t ↪r Prod.Lex s u where
   toFun := Prod.map f g
   inj' := f.injective.prodMap g.injective
-  map_le_map_iff' := by simp [Prod.lex_def, f.map_rel_iff, g.map_rel_iff, f.inj]
+  map_rel_iff' := by simp [Prod.lex_def, f.map_rel_iff, g.map_rel_iff, f.inj]
 
 end RelEmbedding
 
 /-- A relation isomorphism is an equivalence that is also a relation embedding. -/
 structure RelIso {α β : Type*} (r : α → α → Prop) (s : β → β → Prop) extends α ≃ β where
   /-- Elements are related iff they are related after apply a `RelIso` -/
-  map_le_map_iff' : ∀ {a b}, s (toEquiv a) (toEquiv b) ↔ r a b
+  map_rel_iff' : ∀ {a b}, s (toEquiv a) (toEquiv b) ↔ r a b
 
 /-- A relation isomorphism is an equivalence that is also a relation embedding. -/
 infixl:25 " ≃r " => RelIso
@@ -533,7 +533,7 @@ namespace RelIso
 but often it is easier to write `f.toRelEmbedding` than to write explicitly `r` and `s`
 in the target type. -/
 def toRelEmbedding (f : r ≃r s) : r ↪r s :=
-  ⟨f.toEquiv.toEmbedding, f.map_le_map_iff'⟩
+  ⟨f.toEquiv.toEmbedding, f.map_rel_iff'⟩
 
 theorem toEquiv_injective : Injective (toEquiv : r ≃r s → α ≃ β)
   | ⟨e₁, o₁⟩, ⟨e₂, _⟩, h => by congr
@@ -548,7 +548,7 @@ instance : FunLike (r ≃r s) α β where
 
 -- TODO: define and instantiate a `RelIsoClass` when `EquivLike` is defined
 instance : RelHomClass (r ≃r s) r s where
-  map_rel f _ _ := Iff.mpr (map_le_map_iff' f)
+  map_rel f _ _ := Iff.mpr (map_rel_iff' f)
 
 instance : EquivLike (r ≃r s) α β where
   coe f := f
@@ -566,7 +566,7 @@ theorem coe_toEmbedding (f : r ≃r s) : (f.toEmbedding : α → β) = f :=
   rfl
 
 theorem map_rel_iff (f : r ≃r s) {a b} : s (f a) (f b) ↔ r a b :=
-  f.map_le_map_iff'
+  f.map_rel_iff'
 
 @[simp]
 theorem coe_fn_mk (f : α ≃ β) (o : ∀ ⦃a b⦄, s (f a) (f b) ↔ r a b) :
@@ -715,7 +715,7 @@ def copy (e : r ≃r s) (f : α → β) (g : β → α) (hf : f = e) (hg : g = e
   invFun := g
   left_inv _ := by simp [hf, hg]
   right_inv _ := by simp [hf, hg]
-  map_le_map_iff' := by simp [hf, e.map_rel_iff]
+  map_rel_iff' := by simp [hf, e.map_rel_iff]
 
 @[simp, norm_cast]
 lemma coe_copy (e : r ≃r s) (f : α → β) (g : β → α) (hf hg) : e.copy f g hf hg = f := rfl

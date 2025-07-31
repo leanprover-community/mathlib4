@@ -162,7 +162,7 @@ into an actual `OrderMonoidIso`. This is declared as the default coercion from `
 def OrderMonoidIsoClass.toOrderMonoidIso [EquivLike F α β] [OrderIsoClass F α β]
     [MulEquivClass F α β] (f : F) :
     α ≃*o β :=
-  { (f : α ≃* β) with map_le_map_iff' := OrderIsoClass.le_iff_le f }
+  { (f : α ≃* β) with map_le_map_iff' := OrderIsoClass.map_le_map_iff f }
 
 /-- Any type satisfying `OrderMonoidHomClass` can be cast into `OrderMonoidHom` via
   `OrderMonoidHomClass.toOrderMonoidHom`. -/
@@ -608,7 +608,7 @@ theorem toOrderIso_eq_coe (f : α ≃*o β) : f.toOrderIso = f :=
 /-- The inverse of an isomorphism is an isomorphism. -/
 @[to_additive (attr := symm) "The inverse of an order isomorphism is an order isomorphism."]
 def symm (f : α ≃*o β) : β ≃*o α :=
-  ⟨f.toMulEquiv.symm, f.toOrderIso.symm.map_rel_iff⟩
+  ⟨f.toMulEquiv.symm, f.toOrderIso.symm.le_iff_le⟩
 
 /-- See Note [custom simps projection]. -/
 @[to_additive "See Note [custom simps projection]."]

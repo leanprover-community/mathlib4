@@ -1167,7 +1167,7 @@ theorem ord_eq_omega0 {a : Cardinal} : a.ord = ω ↔ a = ℵ₀ :=
   whose cardinal is `c`. This is the order-embedding version. For the regular function, see `ord`.
 -/
 def ord.orderEmbedding : Cardinal ↪o Ordinal :=
-  RelEmbedding.orderEmbeddingOfLTEmbedding
+  RelEmbedding.orderEmbeddingOftoRelEmbeddingLT
     (RelEmbedding.ofMonotone Cardinal.ord fun _ _ => Cardinal.ord_lt_ord.2)
 
 @[simp]

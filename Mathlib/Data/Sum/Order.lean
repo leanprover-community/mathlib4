@@ -484,8 +484,9 @@ open OrderDual Sum
 
 namespace OrderIso
 
-variable {α₁ α₂ β₁ β₂ γ₁ γ₂ : Type*} [LE α] [LE β] [LE γ]
-  [LE α₁] [LE α₂] [LE β₁] [LE β₂] [LE γ₁] [LE γ₂] (a : α) (b : β) (c : γ)
+variable {α₁ α₂ β₁ β₂ γ₁ γ₂ : Type*} [Preorder α] [Preorder β] [Preorder γ]
+  [Preorder α₁] [Preorder α₂] [Preorder β₁] [Preorder β₂] [Preorder γ₁] [Preorder γ₂]
+  (a : α) (b : β) (c : γ)
 
 /-- `Equiv.sumCongr` promoted to an order isomorphism. -/
 @[simps! apply]
@@ -509,16 +510,16 @@ theorem sumCongr_refl : sumCongr (.refl α) (.refl β) = .refl _ := by
 
 /-- `Equiv.sumComm` promoted to an order isomorphism. -/
 @[simps! apply]
-def sumComm (α β : Type*) [LE α] [LE β] : α ⊕ β ≃o β ⊕ α :=
+def sumComm (α β : Type*) [Preorder α] [Preorder β] : α ⊕ β ≃o β ⊕ α :=
   { Equiv.sumComm α β with map_le_map_iff' := swap_le_swap_iff }
 
 @[simp]
-theorem sumComm_symm (α β : Type*) [LE α] [LE β] :
+theorem sumComm_symm (α β : Type*) [Preorder α] [Preorder β] :
     (OrderIso.sumComm α β).symm = OrderIso.sumComm β α :=
   rfl
 
 /-- `Equiv.sumAssoc` promoted to an order isomorphism. -/
-def sumAssoc (α β γ : Type*) [LE α] [LE β] [LE γ] : (α ⊕ β) ⊕ γ ≃o α ⊕ (β ⊕ γ) :=
+def sumAssoc (α β γ : Type*) [Preorder α] [Preorder β] [Preorder γ] : (α ⊕ β) ⊕ γ ≃o α ⊕ (β ⊕ γ) :=
   { Equiv.sumAssoc α β γ with
     map_le_map_iff' := fun {a b} => by
       rcases a with ((_ | _) | _) <;> rcases b with ((_ | _) | _) <;>
@@ -549,7 +550,7 @@ theorem sumAssoc_symm_apply_inr_inr : (sumAssoc α β γ).symm (inr (inr c)) = i
   rfl
 
 /-- `orderDual` is distributive over `⊕` up to an order isomorphism. -/
-def sumDualDistrib (α β : Type*) [LE α] [LE β] : (α ⊕ β)ᵒᵈ ≃o αᵒᵈ ⊕ βᵒᵈ :=
+def sumDualDistrib (α β : Type*) [Preorder α] [Preorder β] : (α ⊕ β)ᵒᵈ ≃o αᵒᵈ ⊕ βᵒᵈ :=
   { Equiv.refl _ with
     map_le_map_iff' := by
       rintro (a | a) (b | b)
@@ -597,7 +598,8 @@ theorem sumLexCongr_refl : sumLexCongr (.refl α) (.refl β) = .refl _ := by
   ext; simp
 
 /-- `Equiv.sumAssoc` promoted to an order isomorphism. -/
-def sumLexAssoc (α β γ : Type*) [LE α] [LE β] [LE γ] : (α ⊕ₗ β) ⊕ₗ γ ≃o α ⊕ₗ β ⊕ₗ γ :=
+def sumLexAssoc (α β γ : Type*) [Preorder α] [Preorder β] [Preorder γ] :
+    (α ⊕ₗ β) ⊕ₗ γ ≃o α ⊕ₗ β ⊕ₗ γ :=
   { Equiv.sumAssoc α β γ with
     map_le_map_iff' := fun {a b} =>
       ⟨fun h =>
@@ -645,11 +647,11 @@ theorem sumLexAssoc_symm_apply_inr_inr : (sumLexAssoc α β γ).symm (inr (inr c
   rfl
 
 /-- `OrderDual` is antidistributive over `⊕ₗ` up to an order isomorphism. -/
-def sumLexDualAntidistrib (α β : Type*) [LE α] [LE β] : (α ⊕ₗ β)ᵒᵈ ≃o βᵒᵈ ⊕ₗ αᵒᵈ :=
+def sumLexDualAntidistrib (α β : Type*) [Preorder α] [Preorder β] : (α ⊕ₗ β)ᵒᵈ ≃o βᵒᵈ ⊕ₗ αᵒᵈ :=
   { Equiv.sumComm α β with
     map_le_map_iff' := fun {a b} => by
       rcases a with (a | a) <;> rcases b with (b | b)
-      · simp
+      · unfold Equiv.sumComm
         change
           toLex (inr <| toDual a) ≤ toLex (inr <| toDual b) ↔
             toDual (toLex <| inl a) ≤ toDual (toLex <| inl b)
@@ -685,7 +687,7 @@ theorem sumLexDualAntidistrib_symm_inr :
 
 end OrderIso
 
-variable [LE α]
+variable [Preorder α]
 
 namespace WithBot
 

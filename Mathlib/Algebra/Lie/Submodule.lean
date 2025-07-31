@@ -572,10 +572,10 @@ variable (R L M)
     map_le_map_iff' := Iff.rfl }
 
 instance wellFoundedGT_of_noetherian [IsNoetherian R M] : WellFoundedGT (LieSubmodule R L M) :=
-  RelHomClass.isWellFounded (toSubmodule_orderEmbedding R L M).dual.ltEmbedding
+  RelHomClass.isWellFounded (toSubmodule_orderEmbedding R L M).dual.toRelEmbeddingLT
 
 theorem wellFoundedLT_of_isArtinian [IsArtinian R M] : WellFoundedLT (LieSubmodule R L M) :=
-  RelHomClass.isWellFounded (toSubmodule_orderEmbedding R L M).ltEmbedding
+  RelHomClass.isWellFounded (toSubmodule_orderEmbedding R L M).toRelEmbeddingLT
 
 instance [IsArtinian R M] : IsAtomic (LieSubmodule R L M) :=
   isAtomic_of_orderBot_wellFounded_lt <| (wellFoundedLT_of_isArtinian R L M).wf

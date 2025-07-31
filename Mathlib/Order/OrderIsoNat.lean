@@ -108,7 +108,7 @@ variable (s : Set ℕ) [Infinite s]
 
 /-- An order embedding from `ℕ` to itself with a specified range -/
 def orderEmbeddingOfSet [DecidablePred (· ∈ s)] : ℕ ↪o ℕ :=
-  (RelEmbedding.orderEmbeddingOfLTEmbedding
+  (RelEmbedding.orderEmbeddingOftoRelEmbeddingLT
     (RelEmbedding.natLT (Nat.Subtype.ofNat s) fun _ => Nat.Subtype.lt_succ_self _)).trans
     (OrderEmbedding.subtype s)
 
@@ -118,7 +118,7 @@ noncomputable def Subtype.orderIsoOfNat : ℕ ≃o s := by
   classical
   exact
     RelIso.ofSurjective
-      (RelEmbedding.orderEmbeddingOfLTEmbedding
+      (RelEmbedding.orderEmbeddingOftoRelEmbeddingLT
         (RelEmbedding.natLT (Nat.Subtype.ofNat s) fun n => Nat.Subtype.lt_succ_self _))
       Nat.Subtype.ofNat_surjective
 
@@ -185,7 +185,7 @@ theorem exists_increasing_or_nonincreasing_subseq' (r : α → α → Prop) (f :
       let g' : ℕ → ℕ := @Nat.rec (fun _ => ℕ) m fun n gn => Nat.find (h gn)
       exact
         ⟨(RelEmbedding.natLT (fun n => g' n + m) fun n =>
-              Nat.add_lt_add_right (Nat.find_spec (h (g' n))).1 m).orderEmbeddingOfLTEmbedding,
+              Nat.add_lt_add_right (Nat.find_spec (h (g' n))).1 m).orderEmbeddingOftoRelEmbeddingLT,
           Or.intro_left _ fun n => (Nat.find_spec (h (g' n))).2⟩
 
 /-- This is the infinitary Erdős–Szekeres theorem, and an important lemma in the usual proof of

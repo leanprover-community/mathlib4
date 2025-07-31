@@ -274,12 +274,12 @@ variable {α β : Type*} [Preorder α] [Preorder β]
 @[simp]
 theorem sorted_lt_listMap (e : α ↪o β) {l : List α} :
     (l.map e).Sorted (· < ·) ↔ l.Sorted (· < ·) :=
-  e.ltEmbedding.sorted_listMap
+  e.toRelEmbeddingLT.sorted_listMap
 
 @[simp]
 theorem sorted_gt_listMap (e : α ↪o β) {l : List α} :
     (l.map e).Sorted (· > ·) ↔ l.Sorted (· > ·) :=
-  e.ltEmbedding.sorted_swap_listMap
+  e.toRelEmbeddingLT.sorted_swap_listMap
 
 end OrderEmbedding
 
