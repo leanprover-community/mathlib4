@@ -174,7 +174,7 @@ lemma extend_d_to_eq_zero (i' j' : ι') (j : ι) (hj : e.f j = j') (hj' : ¬ c.R
 
 variable {K L M}
 
-/-- Given an ambedding `e : c.Embedding c'` of complexes shapes, this is the
+/-- Given an embedding `e : c.Embedding c'` of complexes shapes, this is the
 morphism `K.extend e ⟶ L.extend e` induced by a morphism `K ⟶ L` in
 `HomologicalComplex C c`. -/
 noncomputable def extendMap : K.extend e ⟶ L.extend e where
