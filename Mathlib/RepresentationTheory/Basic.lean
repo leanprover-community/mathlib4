@@ -463,6 +463,26 @@ theorem asGroupHom_apply (g : G) : ↑(asGroupHom ρ g) = ρ g := by
 
 end Group
 
+section DirectSum
+
+variable {k G : Type*} [CommSemiring k] [Monoid G]
+variable {ι : Type*} (V : ι → Type*)
+variable [(i : ι) → AddCommMonoid (V i)] [(i : ι) → Module k (V i)]
+variable (ρ : (i : ι) → Representation k G (V i))
+
+open DirectSum
+
+/-- Given representations of `G` on a family `V i` indexed by `i`, there is a
+natural representation of `G` on their direct sum `⨁ i, V i`.
+-/
+@[simps]
+noncomputable def directSum : Representation k G (⨁ i, V i) where
+  toFun g := DirectSum.lmap (fun _ => ρ _ g)
+  map_one' := by ext; simp
+  map_mul' g h := by ext; simp
+
+end DirectSum
+
 section TensorProduct
 
 variable {k G V W : Type*} [CommSemiring k] [Monoid G]
