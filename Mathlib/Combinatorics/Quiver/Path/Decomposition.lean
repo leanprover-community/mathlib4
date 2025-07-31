@@ -3,6 +3,7 @@ Copyright (c) 2025 Matteo Cipollina. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matteo Cipollina
 -/
+
 import Mathlib.Algebra.GroupWithZero.Nat
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Combinatorics.Quiver.Path
@@ -20,17 +21,15 @@ open List
 
 section Decomposition
 
-variable {V R : Type*} [Quiver V] {a b : V} (p : Path a b)
-
-/-- Every non-empty path can be decomposed as an initial path plus a final edge. -/
-lemma length_ne_zero_iff_eq_cons :
-    p.length ≠ 0 ↔ ∃ (c : V) (p' : Path a c) (e : c ⟶ b), p = p'.cons e := by
+lemma length_ne_zero_iff_eq_comp (p : Path a b) :
+    p.length ≠ 0 ↔ ∃ (c : V) (e : a ⟶ c) (p' : Path c b),
+      p = e.toPath.comp p' ∧ p.length = p'.length + 1 := by
   refine ⟨fun h ↦ ?_, ?_⟩
-  · cases p with
-  | nil => simp at h
-  | cons p' e => exact ⟨_, p', e, rfl⟩
-  · rintro ⟨c, p', e, rfl⟩
-    simp
+  · have h_len : p.length = (p.length - 1) + 1 := by omega
+    obtain ⟨c, e, p', hp', rfl⟩ := Path.eq_toPath_comp_of_length_eq_succ p h_len
+    exact ⟨c, e, p', rfl, by omega⟩
+  · rintro ⟨c, p', e, rfl, h⟩
+    simp [h]
 
 end Decomposition
 
@@ -38,12 +37,8 @@ section BoundaryEdges
 
 variable {V : Type*} [Quiver V]
 
-@[simp] lemma comp_toPath_eq_cons {a b c : V} (p : Path a b) (e : b ⟶ c) :
-    p.comp e.toPath = p.cons e :=
-  rfl
-
 /-- A path from a vertex not in `S` to a vertex in `S` must cross the boundary. -/
-theorem exists_boundary_edge {a b : V} (p : Path a b) (S : Set V)
+theorem exists_notMem_mem_hom_path_path_of_notMem_mem {a b : V} (p : Path a b) (S : Set V)  
     (ha_not_in_S : a ∉ S) (hb_in_S : b ∈ S) :
     ∃ᵉ (u ∉ S) (v ∈ S) (e : u ⟶ v) (p₁ : Path a u) (p₂ : Path v b),
       p = p₁.comp (e.toPath.comp p₂) := by
@@ -63,8 +58,7 @@ theorem exists_boundary_edge {a b : V} (p : Path a b) (S : Set V)
     · refine ⟨c, hc_in_S, b, hb_in_S, e, p', Path.nil, ?_⟩
       simp [comp_toPath_eq_cons]
 
-/-- A path from a vertex in `S` to a vertex not in `S` must cross the boundary. -/
-theorem exists_boundary_edge_from_set {a b : V} (p : Path a b) (S : Set V)
+theorem exists_mem_notMem_hom_path_path_of_notMem_mem {a b : V} (p : Path a b) (S : Set V)
     (ha_in_S : a ∈ S) (hb_not_in_S : b ∉ S) :
     ∃ᵉ (u ∈ S) (v ∉ S) (e : u ⟶ v) (p₁ : Path a u) (p₂ : Path v b),
       p = p₁.comp (e.toPath.comp p₂) := by
@@ -72,15 +66,16 @@ theorem exists_boundary_edge_from_set {a b : V} (p : Path a b) (S : Set V)
   have ha_not_in_compl : a ∉ Sᶜ := by simpa
   have hb_in_compl : b ∈ Sᶜ := by simpa
   obtain ⟨u, hu_not_in_compl, v, hv_in_compl, e, p₁, p₂, hp⟩ :=
-    exists_boundary_edge p Sᶜ ha_not_in_compl hb_in_compl
+    exists_notMem_mem_hom_path_path_of_notMem_mem p Sᶜ ha_not_in_compl hb_in_compl
   simp at hu_not_in_compl hv_in_compl
   refine ⟨u, hu_not_in_compl, v, hv_in_compl, e, p₁, p₂, hp⟩
 
 /-- Corollary: there exists an edge crossing the boundary. -/
-theorem exists_crossing_edge {a b : V} (p : Path a b) (S : Set V)
+theorem exists_notMem_mem_hom_of_notMem_mem {a b : V} (p : Path a b) (S : Set V)
     (ha_not_in_S : a ∉ S) (hb_in_S : b ∈ S) :
     ∃ (u v : V) (_ : u ⟶ v), u ∉ S ∧ v ∈ S := by
-  obtain ⟨u, hu_not_S, v, hv_S, e, _, _⟩ := exists_boundary_edge p S ha_not_in_S hb_in_S
+  obtain ⟨u, hu_not_S, v, hv_S, e, _, _⟩ := 
+    exists_notMem_mem_hom_path_path_of_notMem_mem p S ha_not_in_S hb_in_S
   exact ⟨u, v, e, hu_not_S, hv_S⟩
 
 end BoundaryEdges
