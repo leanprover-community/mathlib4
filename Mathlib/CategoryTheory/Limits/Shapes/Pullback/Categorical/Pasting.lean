@@ -25,9 +25,6 @@ assuming the rightmost square is a categorical pullback square,
 then the left square is a categorical pullback square if and only
 if the outer square is a categorical pullback square.
 
-### TODOs
-- Give good (d)simp lemmas when both squares as the default ones, *i.e*
-give good lemmas for the equivalence `V₃ ⊡ (B₁ ⋙ B₂) ≌ (π₁ T₂ V₂) ⊡ B₁`.
 -/
 
 universe v₁ v₂ v₃ v₄ v₅ v₆ u₁ u₂ u₃ u₄ u₅ u₆
@@ -591,5 +588,33 @@ lemma isCatPullbackSquare_vComp_iff
     ⟨⟨CatPullbackSquare.vComp L₁ L₂ H₁ H₂ H₃ R₁ R₂ h⟩⟩
 
 end IsCatPullbackSquare
+
+namespace CategoricalPullback
+
+@[simps!]
+def hCompEquiv (R : C₁ ⥤ C₂) (B₁ : C₄ ⥤ C₃) (B₂ : C₃ ⥤ C₂) :
+    R ⊡ (B₁ ⋙ B₂) ≌ (π₂ R B₂) ⊡ B₁ :=
+  letI : CatCommSq (π₁ (π₂ R B₂) B₁ ⋙ π₁ R B₂) (π₂ (π₂ R B₂) B₁) R (B₁ ⋙ B₂) :=
+    CatCommSq.hComp _ _ _ (π₂ R B₂) _ _ _
+  letI :
+      CatPullbackSquare
+        (π₁ (π₂ R B₂) B₁ ⋙ π₁ R B₂) (π₂ (π₂ R B₂) B₁) R (B₁ ⋙ B₂) :=
+    CatPullbackSquare.hComp _ _ _ _ _ _ _ rfl
+  CatPullbackSquare.equivalence
+    (π₁ (π₂ R B₂) B₁ ⋙ π₁ R B₂) (π₂ (π₂ R B₂) B₁) R (B₁ ⋙ B₂)|>.symm
+
+@[simps!]
+def vCompEquiv (R₁ : C₁ ⥤ C₂) (R₂ : C₂ ⥤ C₃) (B : C₄ ⥤ C₃) :
+    (R₁ ⋙ R₂) ⊡ B ≌ R₁ ⊡ (π₁ R₂ B) :=
+  letI : CatCommSq (π₁ R₁ (π₁ R₂ B)) (π₂ R₁ (π₁ R₂ B) ⋙ π₂ R₂ B) (R₁ ⋙ R₂) B :=
+    CatCommSq.vComp _ _ _ (π₁ R₂ B) _ _ _
+  letI :
+      CatPullbackSquare
+        (π₁ R₁ (π₁ R₂ B)) (π₂ R₁ (π₁ R₂ B) ⋙ π₂ R₂ B) (R₁ ⋙ R₂) B :=
+    CatPullbackSquare.vComp _ _ _ _ _ _ _ rfl
+  CatPullbackSquare.equivalence
+    (π₁ R₁ (π₁ R₂ B)) (π₂ R₁ (π₁ R₂ B) ⋙ π₂ R₂ B) (R₁ ⋙ R₂) B|>.symm
+
+end CategoricalPullback
 
 end CategoryTheory.Limits

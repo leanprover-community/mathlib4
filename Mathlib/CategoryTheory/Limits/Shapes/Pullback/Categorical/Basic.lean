@@ -42,7 +42,6 @@ equivalent to `CatCommSqOver F G X`.
 
 ## TODOs:
 * Define the "categorical fiber" of a functor at an object of the target category.
-* Pasting calculus for categorical pullback squares.
 * Categorical pullback squares attached to Grothendieck constructions of pseudofunctors.
 * Stability of (co)fibered categories under categorical pullbacks.
 
