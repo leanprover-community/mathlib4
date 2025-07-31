@@ -71,7 +71,7 @@ section Ring
 
 variable (R : Type*) [Ring R] [Linear R C]
 
-instance {X Y : C} (n : ℕ): Module R (Ext.{w} X Y n) := sorry
+instance {X Y : C} (n : ℕ) : Module R (Ext.{w} X Y n) := sorry
 
 noncomputable def homEquiv₀_linearHom {X Y : C} : Ext X Y 0 ≃ₗ[R] (X ⟶ Y) where
   __ := addEquiv₀
