@@ -39,7 +39,7 @@ def IsTransitive (x : ZFSet) : Prop :=
   ∀ y ∈ x, y ⊆ x
 
 @[simp]
-theorem IsTransitive.empty : IsTransitive ∅ := fun y hy => (notMem_empty y hy).elim
+theorem IsTransitive.empty : IsTransitive ∅ := fun y hy ↦ (notMem_empty y hy).elim
 
 @[deprecated (since := "2025-07-30")] alias isTransitive_empty := IsTransitive.empty
 
