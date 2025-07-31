@@ -17,13 +17,15 @@ ASSIGN_REVIEWERS_TOKEN = os.getenv('ASSIGN_REVIEWERS_TOKEN')
 # https://docs.github.com/en/rest/issues/assignees?apiVersion=2022-11-28#add-assignees-to-an-issue.
 def call(number: int, handle: str) -> bool:
     print(f"assigning PR {number} to {handle}")
-    headers_DO_NOT_PRINT = f'''"--header Accept: application/vnd.github+json" \\
-        --header "authorization: Bearer {ASSIGN_REVIEWERS_TOKEN}" \\
-        --header "X-GitHub-Api-Version: 2022-11-28"'''
     url = f"https://api.github.com/repos/leanprover-community/mathlib4/issues/{number}/assignees"
-    data = f'''--data \'{{"assignees":["{handle}"]}}\''''
-    out = subprocess.run(["curl", "--fail-with-body", "--location", "--request",
-                          "POST", headers_DO_NOT_PRINT, url, data], capture_output=True)
+    arguments_DO_NOT_PRINT = [
+        "--fail-with-body", "--location", "--request", "POST",
+        '--header', 'Accept: application/vnd.github+json',
+        '--header', "authorization: Bearer {ASSIGN_REVIEWERS_TOKEN}",
+        '--header', "X-GitHub-Api-Version: 2022-11-28",
+        url, '--data', f'{{"assignees":["{handle}"]}}'
+    ]
+    out = subprocess.run(["curl"] + arguments_DO_NOT_PRINT, capture_output=True)
     print(out.stdout)
     if out.stderr:
         print(out.stderr)
