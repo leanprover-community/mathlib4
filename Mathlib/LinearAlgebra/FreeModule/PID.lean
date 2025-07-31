@@ -81,21 +81,11 @@ theorem eq_bot_of_generator_maximal_submoduleImage_eq_zero {N O : Submodule R M}
 
 end Ring
 
-section IsDomain
-
-variable {ι : Type*} {R : Type*} [CommRing R] [IsDomain R]
-variable {M : Type*} [AddCommGroup M] [Module R M] {b : ι → M}
-
-open Submodule.IsPrincipal Set Submodule
-
-theorem dvd_generator_iff {I : Ideal R} [I.IsPrincipal] {x : R} (hx : x ∈ I) :
-    x ∣ generator I ↔ I = Ideal.span {x} := by
-  conv_rhs => rw [← span_singleton_generator I]
-  rw [Ideal.submodule_span_eq, Ideal.span_singleton_eq_span_singleton, ← dvd_dvd_iff_associated,
-    ← mem_iff_generator_dvd]
-  exact ⟨fun h ↦ ⟨hx, h⟩, fun h ↦ h.2⟩
-
-end IsDomain
+open Submodule.IsPrincipal in
+theorem dvd_generator_iff {R : Type*} [CommSemiring R] {I : Ideal R} [I.IsPrincipal] {x : R}
+    (hx : x ∈ I) : x ∣ generator I ↔ I = Ideal.span {x} := by
+  simp_rw [le_antisymm_iff, I.span_singleton_le_iff_mem.2 hx, and_true, ← Ideal.mem_span_singleton]
+  conv_rhs => rw [← span_singleton_generator I, Submodule.span_singleton_le_iff_mem]
 
 section PrincipalIdealDomain
 
