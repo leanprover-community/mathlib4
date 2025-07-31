@@ -16,7 +16,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 We show that `Factorisation f` always has an initial and a terminal object.
 
 We also show that `Factorisation f` is isomorphic to a comma category in two ways,
-both as iterated comma categories. Given `f : X ⟶ Y`, `(X/C)/f ≌ Factorisation f ≌ f/(C/Y)`.
+both as iterated comma categories.
 
 TODO: Make `MonoFactorisation f` a special case of a `Factorisation f`.
 -/
@@ -78,7 +78,7 @@ instance : Category.{max u v} (Factorisation f) where
 
 /- We now aim to show that `Factorisation f` is equivalent to iterated comma categories
 in two different ways.
-Namely, given `f : X ⟶ Y`, we will have `(X/C)/f ≌ Factorisation f ≌ f/(C/Y)`.
+Namely, given `f : X ⟶ Y`, we will have `Over (Under.mk f) ≌ Factorisation f ≌ Under (Over.mk f)`.
 -/
 section IteratedCommaCategories
 
