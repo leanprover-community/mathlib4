@@ -5,7 +5,6 @@ Authors: Dexin Zhang
 -/
 import Mathlib.ModelTheory.Arithmetic.Presburger.Semilinear.Nat
 import Mathlib.RingTheory.Finiteness.Cardinality
-import Mathlib.GroupTheory.GroupAction.Pointwise
 
 /-!
 # Semilinear sets in finitely generated commutative monoids
