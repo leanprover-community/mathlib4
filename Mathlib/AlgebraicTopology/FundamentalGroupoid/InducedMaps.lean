@@ -88,7 +88,7 @@ include hfg
 /-- If `f(p(t) = g(q(t))` for two paths `p` and `q`, then the induced path homotopy classes
 `f(p)` and `g(p)` are the same as well, despite having a priori different types -/
 theorem heq_path_of_eq_image :
-    HEq ((πₘ (TopCat.ofHom f)).map ⟦p⟧) ((πₘ (TopCat.ofHom g)).map ⟦q⟧) := by
+    (πₘ (TopCat.ofHom f)).map ⟦p⟧ ≍ (πₘ (TopCat.ofHom g)).map ⟦q⟧ := by
   simp only [map_eq, ← Path.Homotopic.map_lift]; apply Path.Homotopic.hpath_hext; exact hfg
 
 private theorem start_path : f x₀ = g x₂ := by convert hfg 0 <;> simp only [Path.source]
@@ -136,13 +136,13 @@ many of the paths do not have defeq starting/ending points, so we end up needing
 /-- Interpret a homotopy `H : C(I × X, Y)` as a map `C(ULift I × X, Y)` -/
 def uliftMap : C(TopCat.of (ULift.{u} I × X), Y) :=
   ⟨fun x => H (x.1.down, x.2),
-    H.continuous.comp ((continuous_uliftDown.comp continuous_fst).prod_mk continuous_snd)⟩
+    H.continuous.comp ((continuous_uliftDown.comp continuous_fst).prodMk continuous_snd)⟩
 
 theorem ulift_apply (i : ULift.{u} I) (x : X) : H.uliftMap (i, x) = H (i.down, x) :=
   rfl
 
 /-- An abbreviation for `prodToProdTop`, with some types already in place to help the
- typechecker. In particular, the first path should be on the ulifted unit interval. -/
+typechecker. In particular, the first path should be on the ulifted unit interval. -/
 abbrev prodToProdTopI {a₁ a₂ : TopCat.of (ULift I)} {b₁ b₂ : X} (p₁ : fromTop a₁ ⟶ fromTop a₂)
     (p₂ : fromTop b₁ ⟶ fromTop b₂) :=
   (prodToProdTop (TopCat.of <| ULift I) X).map (X := (⟨a₁⟩, ⟨b₁⟩)) (Y := (⟨a₂⟩, ⟨b₂⟩)) (p₁, p₂)
@@ -184,8 +184,7 @@ theorem evalAt_eq (x : X) : ⟦H.evalAt x⟧ = hcast (H.apply_zero x).symm ≫
   dsimp only [prodToProdTopI, uhpath01, hcast]
   refine (@conj_eqToHom_iff_heq (πₓ Y) _ _ _ _ _ _ _ _
     (FundamentalGroupoid.ext <| H.apply_one x).symm).mpr ?_
-  simp only [id_eq_path_refl, prodToProdTop_map, Path.Homotopic.prod_lift, map_eq, ←
-    Path.Homotopic.map_lift]
+  simp only [map_eq]
   apply Path.Homotopic.hpath_hext; intro; rfl
 
 -- Finally, we show `d = f(p) ≫ H₁ = H₀ ≫ g(p)`
@@ -193,7 +192,7 @@ theorem eq_diag_path : (πₘ (TopCat.ofHom f)).map p ≫ ⟦H.evalAt x₁⟧ = 
     (⟦H.evalAt x₀⟧ ≫ (πₘ (TopCat.ofHom g)).map p :
     fromTop (f x₀) ⟶ fromTop (g x₁)) = H.diagonalPath' p := by
   rw [H.apply_zero_path, H.apply_one_path, H.evalAt_eq]
-  erw [H.evalAt_eq] -- Porting note: `rw` didn't work, so using `erw`
+  erw [H.evalAt_eq]
   dsimp only [prodToProdTopI]
   constructor
   · slice_lhs 2 4 => rw [eqToHom_trans, eqToHom_refl] -- Porting note: this ↓ `simp` didn't do this
@@ -222,7 +221,6 @@ def homotopicMapsNatIso : @Quiver.Hom _ Functor.category.toQuiver
     (πₘ (TopCat.ofHom f))
     (πₘ (TopCat.ofHom g)) where
   app x := ⟦H.evalAt x.as⟧
-  -- Porting note: Turned `rw` into `erw` in the line below
   naturality x y p := by erw [(H.eq_diag_path p).1, (H.eq_diag_path p).2]
 
 instance : IsIso (homotopicMapsNatIso H) := by apply NatIso.isIso_of_isIso_app
@@ -233,7 +231,7 @@ open scoped ContinuousMap
 def equivOfHomotopyEquiv (hequiv : X ≃ₕ Y) : πₓ X ≌ πₓ Y := by
   apply CategoryTheory.Equivalence.mk (πₘ (TopCat.ofHom hequiv.toFun) : πₓ X ⥤ πₓ Y)
     (πₘ (TopCat.ofHom hequiv.invFun) : πₓ Y ⥤ πₓ X) <;>
-    simp only [Grpd.hom_to_functor, Grpd.id_to_functor]
+    simp only [Grpd.id_to_functor]
   · convert (asIso (homotopicMapsNatIso hequiv.left_inv.some)).symm
     exacts [((π).map_id X).symm, ((π).map_comp _ _).symm]
   · convert asIso (homotopicMapsNatIso hequiv.right_inv.some)

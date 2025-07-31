@@ -58,8 +58,6 @@ structure CalcParams extends SelectInsertParams where
   indent : Nat
   deriving SelectInsertParamsClass, RpcEncodable
 
-open Lean Meta
-
 /-- Return the link text and inserted text above and below of the calc widget. -/
 def suggestSteps (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr) (params : CalcParams) :
     MetaM (String × String × Option (String.Pos × String.Pos)) := do
@@ -69,7 +67,7 @@ def suggestSteps (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr) (par
   let relApp := mkApp2 rel
     (← mkFreshExprMVar none)
     (← mkFreshExprMVar none)
-  let some relStr := (← Meta.ppExpr relApp) |> toString |>.splitOn |>.get? 1
+  let some relStr := ((← Meta.ppExpr relApp) |> toString |>.splitOn)[1]?
     | throwError "could not find relation symbol in {relApp}"
   let isSelectedLeft := subexprPos.any (fun L ↦ #[0, 1].isPrefixOf L.toArray)
   let isSelectedRight := subexprPos.any (fun L ↦ #[1].isPrefixOf L.toArray)

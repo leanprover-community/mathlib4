@@ -66,7 +66,7 @@ theorem map_add (n m k : ℕ) : (Ico n m).map (k + ·) = Ico (n + k) (m + k) := 
 
 theorem map_sub (n m k : ℕ) (h₁ : k ≤ n) :
     ((Ico n m).map fun x => x - k) = Ico (n - k) (m - k) := by
-  rw [Ico, Ico, Nat.sub_sub_sub_cancel_right h₁, map_sub_range' _ _ _ h₁]
+  rw [Ico, Ico, Nat.sub_sub_sub_cancel_right h₁, map_sub_range' h₁]
 
 @[simp]
 theorem self_empty {n : ℕ} : Ico n n = [] :=
@@ -79,7 +79,7 @@ theorem eq_empty_iff {n m : ℕ} : Ico n m = [] ↔ m ≤ n :=
 theorem append_consecutive {n m l : ℕ} (hnm : n ≤ m) (hml : m ≤ l) :
     Ico n m ++ Ico m l = Ico n l := by
   dsimp only [Ico]
-  convert range'_append n (m-n) (l-m) 1 using 2
+  convert range'_append using 2
   · rw [Nat.one_mul, Nat.add_sub_cancel' hnm]
   · omega
 
@@ -100,7 +100,7 @@ theorem bagInter_consecutive (n m l : Nat) :
 @[simp]
 theorem succ_singleton {n : ℕ} : Ico n (n + 1) = [n] := by
   dsimp [Ico]
-  simp [range', Nat.add_sub_cancel_left]
+  simp [Nat.add_sub_cancel_left]
 
 theorem succ_top {n m : ℕ} (h : n ≤ m) : Ico n (m + 1) = Ico n m ++ [m] := by
   rwa [← succ_singleton, append_consecutive]
@@ -121,7 +121,9 @@ theorem chain'_succ (n m : ℕ) : Chain' (fun a b => b = succ a) (Ico n m) := by
   · rw [eq_nil_of_le (le_of_not_gt h)]
     trivial
 
-theorem not_mem_top {n m : ℕ} : m ∉ Ico n m := by simp
+theorem notMem_top {n m : ℕ} : m ∉ Ico n m := by simp
+
+@[deprecated (since := "2025-05-23")] alias not_mem_top := notMem_top
 
 theorem filter_lt_of_top_le {n m l : ℕ} (hml : m ≤ l) :
     ((Ico n m).filter fun x => x < l) = Ico n m :=

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
 import Mathlib.Data.Set.Insert
+import Mathlib.Tactic.ByContra
 
 /-!
 # Subsingleton
@@ -15,7 +16,7 @@ elements.
 
 -/
 
-assert_not_exists RelIso
+assert_not_exists HeytingAlgebra RelIso
 
 open Function
 
@@ -112,6 +113,11 @@ instance subsingleton_coe_of_subsingleton [Subsingleton α] {s : Set α} : Subsi
   rw [s.subsingleton_coe]
   exact subsingleton_of_subsingleton
 
+lemma Subsingleton.denselyOrdered {s : Set α} [LT α] (hs : s.Subsingleton) :
+    DenselyOrdered s :=
+  have := (subsingleton_coe _).mpr hs
+  ⟨fun _ _ h ↦ ⟨_, h.trans_eq (Subsingleton.elim _ _), h⟩⟩
+
 end Subsingleton
 
 /-! ### Nontrivial -/
@@ -126,8 +132,6 @@ protected def Nontrivial (s : Set α) : Prop :=
 
 theorem nontrivial_of_mem_mem_ne {x y} (hx : x ∈ s) (hy : y ∈ s) (hxy : x ≠ y) : s.Nontrivial :=
   ⟨x, hx, y, hy, hxy⟩
-
--- Porting note: following the pattern for `Exists`, we have renamed `some` to `choose`.
 
 /-- Extract witnesses from s.nontrivial. This function might be used instead of case analysis on the
 argument. Note that it makes a proof depend on the classical.choice axiom. -/
@@ -230,6 +234,14 @@ theorem nontrivial_of_univ_nontrivial (h : (univ : Set α).Nontrivial) : Nontriv
 @[simp]
 theorem nontrivial_univ_iff : (univ : Set α).Nontrivial ↔ Nontrivial α :=
   ⟨nontrivial_of_univ_nontrivial, fun h => @nontrivial_univ _ h⟩
+
+@[simp]
+theorem singleton_ne_univ [Nontrivial α] (a : α) : {a} ≠ univ :=
+  fun h ↦ nontrivial_univ.not_subset_singleton h.superset
+
+@[simp]
+theorem singleton_ssubset_univ [Nontrivial α] (a : α) : {a} ⊂ univ :=
+  ssubset_univ_iff.mpr <| singleton_ne_univ a
 
 theorem nontrivial_of_nontrivial (hs : s.Nontrivial) : Nontrivial α :=
   let ⟨x, _, y, _, hxy⟩ := hs

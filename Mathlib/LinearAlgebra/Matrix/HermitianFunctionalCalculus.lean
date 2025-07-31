@@ -64,7 +64,8 @@ noncomputable def cfcAux : C(spectrum ℝ A, ℝ) →⋆ₐ[ℝ] (Matrix n n �
   toFun := fun g => (eigenvectorUnitary hA : Matrix n n 𝕜) *
     diagonal (RCLike.ofReal ∘ g ∘ (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalues_mem_spectrum_real i⟩))
     * star (eigenvectorUnitary hA : Matrix n n 𝕜)
-  map_one' := by simp [Pi.one_def (f := fun _ : n ↦ 𝕜)]
+  map_zero' := by simp [Pi.zero_def, Function.comp_def]
+  map_one' := by simp [Pi.one_def, Function.comp_def]
   map_mul' f g := by
     have {a b c d e f : Matrix n n 𝕜} : (a * b * c) * (d * e * f) = a * (b * (c * d) * e) * f := by
       simp only [mul_assoc]
@@ -72,7 +73,6 @@ noncomputable def cfcAux : C(spectrum ℝ A, ℝ) →⋆ₐ[ℝ] (Matrix n n �
       diagonal_mul_diagonal, Function.comp_apply]
     congr! with i
     simp
-  map_zero' := by simp [Pi.zero_def (f := fun _ : n ↦ 𝕜)]
   map_add' f g := by
     simp only [ContinuousMap.coe_add, ← add_mul, ← mul_add, diagonal_add, Function.comp_apply]
     congr! with i
@@ -109,9 +109,6 @@ lemma isClosedEmbedding_cfcAux : IsClosedEmbedding hA.cfcAux := by
   have := (diagonal_eq_diagonal_iff).mp h2
   refine RCLike.ofReal_eq_zero.mp (this i)
 
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_cfcAux := isClosedEmbedding_cfcAux
-
 lemma cfcAux_id : hA.cfcAux (.restrict (spectrum ℝ A) (.id ℝ)) = A := by
   conv_rhs => rw [hA.spectral_theorem]
   congr!
@@ -119,7 +116,7 @@ lemma cfcAux_id : hA.cfcAux (.restrict (spectrum ℝ A) (.id ℝ)) = A := by
 /-- Instance of the continuous functional calculus for a Hermitian matrix over `𝕜` with
 `RCLike 𝕜`. -/
 instance instContinuousFunctionalCalculus :
-    ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : Matrix n n 𝕜 → Prop) where
+    ContinuousFunctionalCalculus ℝ (Matrix n n 𝕜) IsSelfAdjoint where
   exists_cfc_of_predicate a ha := by
     replace ha : IsHermitian a := ha
     refine ⟨ha.cfcAux, ha.isClosedEmbedding_cfcAux, ha.cfcAux_id, fun f ↦ ?map_spec,

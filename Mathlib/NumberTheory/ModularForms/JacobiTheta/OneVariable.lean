@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
 import Mathlib.NumberTheory.ModularForms.JacobiTheta.TwoVariable
-import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
+import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
 
 /-! # Jacobi's theta function
 
@@ -42,10 +42,11 @@ theorem jacobiTheta_S_smul (τ : ℍ) :
   have h1 : (-I * τ) ^ (1 / 2 : ℂ) ≠ 0 := by
     rw [Ne, cpow_eq_zero_iff, not_and_or]
     exact Or.inl <| mul_ne_zero (neg_ne_zero.mpr I_ne_zero) h0
-  simp_rw [UpperHalfPlane.modular_S_smul, jacobiTheta_eq_jacobiTheta₂]
-  conv_rhs => erw [← ofReal_zero, jacobiTheta₂_functional_equation 0 τ]
-  rw [zero_pow two_ne_zero, mul_zero, zero_div, Complex.exp_zero, mul_one, ← mul_assoc, mul_one_div,
-    div_self h1, one_mul, UpperHalfPlane.coe_mk, inv_neg, neg_div, one_div]
+  simp_rw [UpperHalfPlane.modular_S_smul, jacobiTheta_eq_jacobiTheta₂, ← ofReal_zero]
+  norm_cast
+  simp_rw [jacobiTheta₂_functional_equation 0 τ, zero_pow two_ne_zero, mul_zero, zero_div,
+    Complex.exp_zero, mul_one, ← mul_assoc, mul_one_div, div_self h1, one_mul,
+    UpperHalfPlane.coe_mk, inv_neg, neg_div, one_div]
 
 theorem norm_exp_mul_sq_le {τ : ℂ} (hτ : 0 < τ.im) (n : ℤ) :
     ‖cexp (π * I * (n : ℂ) ^ 2 * τ)‖ ≤ rexp (-π * τ.im) ^ n.natAbs := by
@@ -101,7 +102,7 @@ theorem norm_jacobiTheta_sub_one_le {τ : ℂ} (hτ : 0 < im τ) :
       (exp_lt_one_iff.mpr <| mul_neg_of_neg_of_pos (neg_lt_zero.mpr pi_pos) hτ)
   have aux : Summable fun n : ℕ => ‖cexp (π * I * ((n : ℂ) + 1) ^ 2 * τ)‖ :=
     .of_nonneg_of_le (fun n => norm_nonneg _) this s.summable
-  exact (norm_tsum_le_tsum_norm aux).trans ((tsum_mono aux s.summable this).trans_eq s.tsum_eq)
+  exact (norm_tsum_le_tsum_norm aux).trans ((aux.tsum_mono s.summable this).trans_eq s.tsum_eq)
 
 /-- The norm of `jacobiTheta τ - 1` decays exponentially as `im τ → ∞`. -/
 theorem isBigO_at_im_infty_jacobiTheta_sub_one :

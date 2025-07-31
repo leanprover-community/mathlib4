@@ -70,7 +70,7 @@ export ZeroMemClass (zero_mem)
 
 attribute [to_additive] OneMemClass
 
-attribute [aesop safe apply (rule_sets := [SetLike])] one_mem zero_mem
+attribute [simp, aesop safe (rule_sets := [SetLike])] one_mem zero_mem
 
 section
 
@@ -86,8 +86,8 @@ add_decl_doc Submonoid.toSubsemigroup
 
 /-- `SubmonoidClass S M` says `S` is a type of subsets `s ≤ M` that contain `1`
 and are closed under `(*)` -/
-class SubmonoidClass (S : Type*) (M : outParam Type*) [MulOneClass M] [SetLike S M] extends
-  MulMemClass S M, OneMemClass S M : Prop
+class SubmonoidClass (S : Type*) (M : outParam Type*) [MulOneClass M] [SetLike S M] : Prop
+    extends MulMemClass S M, OneMemClass S M
 
 section
 
@@ -105,12 +105,12 @@ add_decl_doc AddSubmonoid.toAddSubsemigroup
 
 /-- `AddSubmonoidClass S M` says `S` is a type of subsets `s ≤ M` that contain `0`
 and are closed under `(+)` -/
-class AddSubmonoidClass (S : Type*) (M : outParam Type*) [AddZeroClass M] [SetLike S M] extends
-  AddMemClass S M, ZeroMemClass S M : Prop
+class AddSubmonoidClass (S : Type*) (M : outParam Type*) [AddZeroClass M] [SetLike S M] : Prop
+  extends AddMemClass S M, ZeroMemClass S M
 
 attribute [to_additive] Submonoid SubmonoidClass
 
-@[to_additive (attr := aesop safe apply (rule_sets := [SetLike]))]
+@[to_additive (attr := aesop 90% (rule_sets := [SetLike]))]
 theorem pow_mem {M A} [Monoid M] [SetLike A M] [SubmonoidClass A M] {S : A} {x : M}
     (hx : x ∈ S) : ∀ n : ℕ, x ^ n ∈ S
   | 0 => by
@@ -127,22 +127,30 @@ instance : SetLike (Submonoid M) M where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
 
+initialize_simps_projections Submonoid (carrier → coe, as_prefix coe)
+initialize_simps_projections AddSubmonoid (carrier → coe, as_prefix coe)
+
+/-- The actual `Submonoid` obtained from an element of a `SubmonoidClass` -/
+@[to_additive (attr := simps) "The actual `AddSubmonoid` obtained from an element of a
+`AddSubmonoidClass`"]
+def ofClass {S M : Type*} [Monoid M] [SetLike S M] [SubmonoidClass S M] (s : S) : Submonoid M :=
+  ⟨⟨s, MulMemClass.mul_mem⟩, OneMemClass.one_mem s⟩
+
+@[to_additive]
+instance (priority := 100) : CanLift (Set M) (Submonoid M) (↑)
+    (fun s ↦ 1 ∈ s ∧ ∀ {x y}, x ∈ s → y ∈ s → x * y ∈ s) where
+  prf s h := ⟨{ carrier := s, one_mem' := h.1, mul_mem' := h.2 }, rfl⟩
+
 @[to_additive]
 instance : SubmonoidClass (Submonoid M) M where
   one_mem := Submonoid.one_mem'
   mul_mem {s} := s.mul_mem'
 
-initialize_simps_projections Submonoid (carrier → coe, as_prefix coe)
-initialize_simps_projections AddSubmonoid (carrier → coe, as_prefix coe)
-
 @[to_additive (attr := simp)]
 theorem mem_toSubsemigroup {s : Submonoid M} {x : M} : x ∈ s.toSubsemigroup ↔ x ∈ s :=
   Iff.rfl
 
--- In Lean 3, `dsimp` would use theorems proved by `Iff.rfl`.
--- If that were still the case, this would useful as a `@[simp]` lemma,
--- despite the fact that it is provable by `simp` (by not `dsimp`).
-@[to_additive (attr := simp, nolint simpNF)] -- See https://github.com/leanprover-community/mathlib4/issues/10675
+@[to_additive]
 theorem mem_carrier {s : Submonoid M} {x : M} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 
@@ -252,7 +260,7 @@ theorem subsingleton_iff : Subsingleton (Submonoid M) ↔ Subsingleton M :=
         mem_bot.mp <| Subsingleton.elim (⊤ : Submonoid M) ⊥ ▸ mem_top i
       (this x).trans (this y).symm⟩,
     fun _ =>
-    ⟨fun x y => Submonoid.ext fun i => Subsingleton.elim 1 i ▸ by simp [Submonoid.one_mem]⟩⟩
+    ⟨fun x y => Submonoid.ext fun i => Subsingleton.elim 1 i ▸ by simp⟩⟩
 
 @[to_additive (attr := simp)]
 theorem nontrivial_iff : Nontrivial (Submonoid M) ↔ Nontrivial M :=
@@ -374,6 +382,16 @@ instance (priority := 75) toCommMonoid {M} [CommMonoid M] {A : Type*} [SetLike A
 def subtype : S' →* M where
   toFun := Subtype.val; map_one' := rfl; map_mul' _ _ := by simp
 
+variable {S'} in
+@[to_additive (attr := simp)]
+lemma subtype_apply (x : S') :
+    SubmonoidClass.subtype S' x = x := rfl
+
+@[to_additive]
+lemma subtype_injective :
+    Function.Injective (SubmonoidClass.subtype S') :=
+  Subtype.coe_injective
+
 @[to_additive (attr := simp)]
 theorem coe_subtype : (SubmonoidClass.subtype S' : S' → M) = Subtype.val :=
   rfl
@@ -444,6 +462,15 @@ instance toCommMonoid {M} [CommMonoid M] (S : Submonoid M) : CommMonoid S := fas
 @[to_additive "The natural monoid hom from an `AddSubmonoid` of `AddMonoid` `M` to `M`."]
 def subtype : S →* M where
   toFun := Subtype.val; map_one' := rfl; map_mul' _ _ := by simp
+
+@[to_additive (attr := simp)]
+lemma subtype_apply {s : Submonoid M} (x : s) :
+    s.subtype x = x := rfl
+
+@[to_additive]
+lemma subtype_injective (s : Submonoid M) :
+    Function.Injective s.subtype :=
+  Subtype.coe_injective
 
 @[to_additive (attr := simp)]
 theorem coe_subtype : ⇑S.subtype = Subtype.val :=

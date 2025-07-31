@@ -84,6 +84,18 @@ theorem range_finsetBasis [IsNoetherian K V] :
 
 variable {K V}
 
+theorem _root_.Module.card_eq_pow_finrank [Fintype K] [Fintype V] :
+    Fintype.card V = Fintype.card K ^ Module.finrank K V := by
+  let b := IsNoetherian.finsetBasis K V
+  rw [Module.card_fintype b, ← Module.finrank_eq_card_basis b]
+
+@[deprecated (since := "2025-03-14")] alias _root_.card_eq_pow_finrank := Module.card_eq_pow_finrank
+
+theorem _root_.Module.natCard_eq_pow_finrank [Module.Finite K V] :
+    Nat.card V = Nat.card K ^ finrank K V := by
+  let b := IsNoetherian.finsetBasis K V
+  rw [Nat.card_congr b.equivFun.toEquiv, Nat.card_fun, finrank_eq_nat_card_basis b]
+
 /-- A module over a division ring is noetherian if and only if it is finitely generated. -/
 theorem iff_fg : IsNoetherian K V ↔ Module.Finite K V := by
   constructor

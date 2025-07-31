@@ -8,7 +8,7 @@ import Mathlib.Algebra.MvPolynomial.Funext
 import Mathlib.Analysis.Analytic.Polynomial
 import Mathlib.Analysis.Analytic.Uniqueness
 import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
-import Mathlib.LinearAlgebra.Dual
+import Mathlib.LinearAlgebra.Dual.Lemmas
 import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.Topology.Algebra.MvPolynomial
 
@@ -89,7 +89,7 @@ def L : MvPolynomial ι ℝ →ₗ[ℝ]
   have int := ContDiffSupportedOn.integrable_eval_mul (ι := ι)
   .mk₂ ℝ (fun p f ↦ ∫ x : EuclideanSpace ℝ ι, eval x p • f x)
     (fun p₁ p₂ f ↦ by simp [add_mul, integral_add (int p₁ f) (int p₂ f)])
-    (fun r p f ↦ by simp [mul_assoc, integral_mul_left])
+    (fun r p f ↦ by simp [mul_assoc, integral_const_mul])
     (fun p f₁ f₂ ↦ by simp_rw [smul_eq_mul, ← integral_add (int p _) (int p _), ← mul_add]; rfl)
     fun r p f ↦ by simp_rw [← integral_smul, smul_comm r]; rfl
 

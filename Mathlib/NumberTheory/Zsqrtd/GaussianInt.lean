@@ -144,7 +144,8 @@ theorem abs_natCast_norm (x : ℤ[i]) : (x.norm.natAbs : ℤ) = x.norm :=
   Int.natAbs_of_nonneg (norm_nonneg _)
 
 @[simp]
-theorem natCast_natAbs_norm {α : Type*} [Ring α] (x : ℤ[i]) : (x.norm.natAbs : α) = x.norm := by
+theorem natCast_natAbs_norm {α : Type*} [AddGroupWithOne α] (x : ℤ[i]) :
+    (x.norm.natAbs : α) = x.norm := by
   rw [← Int.cast_natCast, abs_natCast_norm]
 
 theorem natAbs_norm_eq (x : ℤ[i]) :
@@ -163,11 +164,11 @@ theorem div_def (x y : ℤ[i]) :
 
 theorem toComplex_div_re (x y : ℤ[i]) : ((x / y : ℤ[i]) : ℂ).re = round (x / y : ℂ).re := by
   rw [div_def, ← @Rat.round_cast ℝ _ _]
-  simp [-Rat.round_cast, mul_assoc, div_eq_mul_inv, mul_add, add_mul]
+  simp [-Rat.round_cast, mul_assoc, div_eq_mul_inv, add_mul]
 
 theorem toComplex_div_im (x y : ℤ[i]) : ((x / y : ℤ[i]) : ℂ).im = round (x / y : ℂ).im := by
   rw [div_def, ← @Rat.round_cast ℝ _ _, ← @Rat.round_cast ℝ _ _]
-  simp [-Rat.round_cast, mul_assoc, div_eq_mul_inv, mul_add, add_mul]
+  simp [-Rat.round_cast, mul_assoc, div_eq_mul_inv, add_mul]
 
 theorem normSq_le_normSq_of_re_le_of_im_le {x y : ℂ} (hre : |x.re| ≤ |y.re|)
     (him : |x.im| ≤ |y.im|) : Complex.normSq x ≤ Complex.normSq y := by
@@ -244,10 +245,7 @@ theorem sq_add_sq_of_nat_prime_of_not_irreducible (p : ℕ) [hp : Fact p.Prime]
       rw [norm_natCast, Int.natAbs_mul, mul_eq_one]
       exact fun h => (ne_of_lt hp.1.one_lt).symm h.1
   have hab : ∃ a b, (p : ℤ[i]) = a * b ∧ ¬IsUnit a ∧ ¬IsUnit b := by
-    -- Porting note: was
-    -- simpa [irreducible_iff, hpu, not_forall, not_or] using hpi
-    simpa only [true_and, not_false_iff, exists_prop, irreducible_iff, hpu, not_forall, not_or]
-      using hpi
+    simpa [irreducible_iff, hpu, not_forall, not_or] using hpi
   let ⟨a, b, hpab, hau, hbu⟩ := hab
   have hnap : (norm a).natAbs = p :=
     ((hp.1.mul_eq_prime_sq_iff (mt norm_eq_one_iff.1 hau) (mt norm_eq_one_iff.1 hbu)).1 <| by

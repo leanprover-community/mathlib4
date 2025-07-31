@@ -31,14 +31,14 @@ namespace AlgebraicGeometry
 the preimage of any affine open subset of `Y` is affine and the induced ring
 hom is finite. -/
 @[mk_iff]
-class IsIntegralHom {X Y : Scheme} (f : X ⟶ Y) extends IsAffineHom f : Prop where
+class IsIntegralHom {X Y : Scheme} (f : X ⟶ Y) : Prop extends IsAffineHom f where
   integral_app (U : Y.Opens) (hU : IsAffineOpen U) : (f.app U).hom.IsIntegral
 
 namespace IsIntegralHom
 
 instance hasAffineProperty : HasAffineProperty @IsIntegralHom
     fun X _ f _ ↦ IsAffine X ∧ RingHom.IsIntegral (f.app ⊤).hom := by
-  show HasAffineProperty @IsIntegralHom (affineAnd RingHom.IsIntegral)
+  change HasAffineProperty @IsIntegralHom (affineAnd RingHom.IsIntegral)
   rw [HasAffineProperty.affineAnd_iff _ RingHom.isIntegral_respectsIso
     RingHom.isIntegral_isStableUnderBaseChange.localizationPreserves.away
     RingHom.isIntegral_ofLocalizationSpan]

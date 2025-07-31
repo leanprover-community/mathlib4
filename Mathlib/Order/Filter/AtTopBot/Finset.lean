@@ -41,7 +41,6 @@ theorem tendsto_atTop_finset_of_monotone [Preorder β] {f : β → Finset α} (h
 
 alias _root_.Monotone.tendsto_atTop_finset := tendsto_atTop_finset_of_monotone
 
--- Porting note: add assumption `DecidableEq β` so that the lemma applies to any instance
 theorem tendsto_finset_image_atTop_atTop [DecidableEq β] {i : β → γ} {j : γ → β}
     (h : Function.LeftInverse j i) : Tendsto (Finset.image j) atTop atTop :=
   (Finset.image_mono j).tendsto_atTop_finset fun a =>
@@ -55,14 +54,14 @@ theorem tendsto_finset_preimage_atTop_atTop {f : α → β} (hf : Function.Injec
 lemma tendsto_toLeft_atTop :
     Tendsto (Finset.toLeft (α := α) (β := β)) atTop atTop := by
   intro s hs
-  simp only [mem_atTop_sets, Finset.le_eq_subset, Filter.mem_map, Set.mem_preimage] at hs ⊢
+  simp only [mem_atTop_sets, Filter.mem_map, Set.mem_preimage] at hs ⊢
   obtain ⟨t, H⟩ := hs
   exact ⟨t.disjSum ∅, fun b hb ↦ H _ (by simpa [← Finset.coe_subset, Set.subset_def] using hb)⟩
 
 lemma tendsto_toRight_atTop :
     Tendsto (Finset.toRight (α := α) (β := β)) atTop atTop := by
   intro s hs
-  simp only [mem_atTop_sets, Finset.le_eq_subset, Filter.mem_map, Set.mem_preimage] at hs ⊢
+  simp only [mem_atTop_sets, Filter.mem_map, Set.mem_preimage] at hs ⊢
   obtain ⟨t, H⟩ := hs
   exact ⟨.disjSum ∅ t, fun b hb ↦ H _ (by simpa [← Finset.coe_subset, Set.subset_def] using hb)⟩
 

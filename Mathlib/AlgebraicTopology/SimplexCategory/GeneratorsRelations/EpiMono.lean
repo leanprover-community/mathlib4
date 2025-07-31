@@ -24,13 +24,13 @@ section EpiMono
 def splitMonoδ {n : ℕ} (i : Fin (n + 2)) : SplitMono (δ i) where
   retraction := by
     induction i using Fin.lastCases with
-    | last => exact σ n
+    | last => exact σ (Fin.last n)
     | cast i => exact σ i
   id := by
     cases i using Fin.lastCases
-    · simp only [Fin.natCast_eq_last, Fin.lastCases_last]
+    · simp only [Fin.lastCases_last]
       exact δ_comp_σ_succ
-    · simp only [Fin.natCast_eq_last, Fin.lastCases_castSucc]
+    · simp only [Fin.lastCases_castSucc]
       exact δ_comp_σ_self
 
 instance {n : ℕ} {i : Fin (n + 2)} : IsSplitMono (δ i) := .mk' <| splitMonoδ i

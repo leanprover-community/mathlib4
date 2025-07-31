@@ -45,7 +45,7 @@ section
 variable (J : Type w) [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J]
   {J' : Type w'} [LinearOrder J'] [SuccOrder J'] [OrderBot J'] [WellFoundedLT J']
 
-/-- Structure expressing that a morpshism `f : X ⟶ Y` in a category `C`
+/-- Structure expressing that a morphism `f : X ⟶ Y` in a category `C`
 is a transfinite composition of shape `J` of morphisms in `W : MorphismProperty C`. -/
 structure TransfiniteCompositionOfShape {X Y : C} (f : X ⟶ Y) extends
     CategoryTheory.TransfiniteCompositionOfShape J f where
@@ -103,7 +103,7 @@ noncomputable def map {W : MorphismProperty D} {F : C ⥤ D}
 
 /-- A transfinite composition of shape `J` of morphisms in `W` induces a transfinite
 composition of shape `Set.Iic j` (for any `j : J`). -/
-def iic (j : J) :
+noncomputable def iic (j : J) :
     W.TransfiniteCompositionOfShape (Set.Iic j) (h.F.map (homOfLE bot_le : ⊥ ⟶ j)) where
   __ := h.toTransfiniteCompositionOfShape.iic j
   map_mem i hi := by
@@ -181,15 +181,15 @@ variable {X Y : C} {f : X ⟶ Y} (h : (isomorphisms C).TransfiniteCompositionOfS
 instance {j : J} (g : ⊥ ⟶ j) : IsIso (h.F.map g) := by
   obtain rfl : g = homOfLE bot_le := rfl
   induction j using SuccOrder.limitRecOn with
-  | hm j hj =>
+  | isMin j hj =>
     obtain rfl := hj.eq_bot
     dsimp
     infer_instance
-  | hs j hj hj' =>
+  | succ j hj hj' =>
     have : IsIso _ := h.map_mem j hj
     rw [← homOfLE_comp bot_le (Order.le_succ j), h.F.map_comp]
     infer_instance
-  | hl j hj hj' =>
+  | isSuccLimit j hj hj' =>
     letI : OrderBot (Set.Iio j) :=
       { bot := ⟨⊥, Order.IsSuccLimit.bot_lt hj⟩
         bot_le j := bot_le }

@@ -10,7 +10,7 @@ import Mathlib.Topology.Algebra.Module.WeakBilin
 /-!
 # Weak dual topology
 
-We continue in the setting of `Mathlib.Topology.Algebra.Module.WeakBilin`,
+We continue in the setting of `Mathlib/Topology/Algebra/Module/WeakBilin.lean`,
 which defines the weak topology given two vector spaces `E` and `F` over a commutative semiring
 `𝕜` and a bilinear form `B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜`. The weak topology on `E` is the coarsest topology
 such that for all `y : F` every map `fun x => B x y` is continuous.
@@ -80,7 +80,9 @@ variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
 variable [ContinuousConstSMul 𝕜 𝕜]
 variable [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
 
--- Porting note: the next four instances should be derived from the definition
+-- The following instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
+
 instance instAddCommMonoid : AddCommMonoid (WeakDual 𝕜 E) :=
   WeakBilin.instAddCommMonoid (topDualPairing 𝕜 E)
 
@@ -176,7 +178,9 @@ variable [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
 
 namespace WeakSpace
 
--- Porting note: the next four instances should be derived from the definition
+-- The following instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
+
 instance instAddCommMonoid : AddCommMonoid (WeakSpace 𝕜 E) :=
   WeakBilin.instAddCommMonoid (topDualPairing 𝕜 E).flip
 

@@ -6,11 +6,12 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Tactic.StacksAttribute
 import Mathlib.Topology.Compactness.Lindelof
 import Mathlib.Topology.Separation.Hausdorff
+import Mathlib.Topology.Connected.Clopen
 
 /-!
 # Regular, normal, T₃, T₄ and T₅ spaces
 
-This file continues the study of separation properties of topological spaces, focussing
+This file continues the study of separation properties of topological spaces, focusing
 on conditions strictly stronger than T₂.
 
 ## Main definitions
@@ -30,7 +31,7 @@ on conditions strictly stronger than T₂.
   necessarily Hausdorff or regular, even if it is T₀.
 * `T5Space`: A T₅ space is a completely normal T₁ space. T₅ implies T₄.
 
-See `Mathlib.Topology.Separation.GDelta` for the definitions of `PerfectlyNormalSpace` and
+See `Mathlib/Topology/Separation/GDelta.lean` for the definitions of `PerfectlyNormalSpace` and
 `T6Space`.
 
 Note that `mathlib` adopts the modern convention that `m ≤ n` if and only if `T_m → T_n`, but
@@ -87,7 +88,7 @@ theorem regularSpace_TFAE (X : Type u) [TopologicalSpace X] :
     rw [regularSpace_iff, (@compl_surjective (Set X) _).forall, forall_swap]
     simp only [isClosed_compl_iff, mem_compl_iff, Classical.not_not, @and_comm (_ ∈ _),
       (nhds_basis_opens _).lift'_closure.le_basis_iff (nhds_basis_opens _), and_imp,
-      (nhds_basis_opens _).disjoint_iff_right, exists_prop, ← subset_interior_iff_mem_nhdsSet,
+      (nhds_basis_opens _).disjoint_iff_right, ← subset_interior_iff_mem_nhdsSet,
       interior_compl, compl_subset_compl]
   tfae_have 5 → 6 := fun h a => (h a).antisymm (𝓝 _).le_lift'_closure
   tfae_have 6 → 4
@@ -209,7 +210,7 @@ theorem regularSpace_sInf {X} {T : Set (TopologicalSpace X)} (h : ∀ t ∈ T, @
         If.1.Finite ∧ ∀ i : If.1, If.2 i ∈ @nhds X i a ∧ @IsClosed X i (If.2 i))
       fun If => ⋂ i : If.1, If.snd i := fun a ↦ by
     rw [nhds_sInf, ← iInf_subtype'']
-    exact hasBasis_iInf fun t : T => @closed_nhds_basis X t (h t t.2) a
+    exact .iInf fun t : T => @closed_nhds_basis X t (h t t.2) a
   refine .of_hasBasis this fun a If hIf => isClosed_iInter fun i => ?_
   exact (hIf.2 i).2.mono (sInf_le (i : T).2)
 
@@ -263,9 +264,9 @@ lemma IsClosed.HasSeparatingCover {s t : Set X} [LindelofSpace X] [RegularSpace 
          nsubkc <| (IsClosed.closure_subset_iff ncl).mpr interior_subset ain,
        fun _ ↦ mem_interior_iff_mem_nhds.mpr nna⟩
   -- By Lindelöf, we may obtain a countable subcover witnessing `HasSeparatingCover`
-  choose u u_open u_dis u_nhd using this
+  choose u u_open u_dis u_nhds using this
   obtain ⟨f, f_cov⟩ := s_cl.isLindelof.indexed_countable_subcover
-    u u_open (fun a ainh ↦ mem_iUnion.mpr ⟨a, u_nhd a ainh⟩)
+    u u_open (fun a ainh ↦ mem_iUnion.mpr ⟨a, u_nhds a ainh⟩)
   exact ⟨u ∘ f, f_cov, fun n ↦ ⟨u_open (f n), u_dis (f n)⟩⟩
 
 
@@ -342,6 +343,9 @@ theorem Topology.IsEmbedding.t25Space [TopologicalSpace Y] [T25Space Y] {f : X �
 @[deprecated (since := "2024-10-26")]
 alias Embedding.t25Space := IsEmbedding.t25Space
 
+protected theorem Homeomorph.t25Space [TopologicalSpace Y] [T25Space X] (h : X ≃ₜ Y) : T25Space Y :=
+  h.symm.isEmbedding.t25Space
+
 instance Subtype.instT25Space [T25Space X] {p : X → Prop} : T25Space {x // p x} :=
   IsEmbedding.subtypeVal.t25Space
 
@@ -351,7 +355,7 @@ section T3
 
 /-- A T₃ space is a T₀ space which is a regular space. Any T₃ space is a T₁ space, a T₂ space, and
 a T₂.₅ space. -/
-class T3Space (X : Type u) [TopologicalSpace X] extends T0Space X, RegularSpace X : Prop
+class T3Space (X : Type u) [TopologicalSpace X] : Prop extends T0Space X, RegularSpace X
 
 instance (priority := 90) instT3Space [T0Space X] [RegularSpace X] : T3Space X := ⟨⟩
 
@@ -363,7 +367,7 @@ instance (priority := 100) T3Space.t25Space [T3Space X] : T25Space X := by
   refine ⟨fun x y hne => ?_⟩
   rw [lift'_nhds_closure, lift'_nhds_closure]
   have : x ∉ closure {y} ∨ y ∉ closure {x} :=
-    (t0Space_iff_or_not_mem_closure X).mp inferInstance hne
+    (t0Space_iff_or_notMem_closure X).mp inferInstance hne
   simp only [← disjoint_nhds_nhdsSet, nhdsSet_singleton] at this
   exact this.elim id fun h => h.symm
 
@@ -374,6 +378,9 @@ protected theorem Topology.IsEmbedding.t3Space [TopologicalSpace Y] [T3Space Y] 
 
 @[deprecated (since := "2024-10-26")]
 alias Embedding.t3Space := IsEmbedding.t3Space
+
+protected theorem Homeomorph.t3Space [TopologicalSpace Y] [T3Space X] (h : X ≃ₜ Y) : T3Space Y :=
+  h.symm.isEmbedding.t3Space
 
 instance Subtype.t3Space [T3Space X] {p : X → Prop} : T3Space (Subtype p) :=
   IsEmbedding.subtypeVal.t3Space
@@ -442,14 +449,14 @@ protected theorem Topology.IsClosedEmbedding.normalSpace [TopologicalSpace Y] [N
         (disjoint_image_of_injective hf.injective hst)
     exact (H.preimage hf.continuous).mono (subset_preimage_image _ _) (subset_preimage_image _ _)
 
-@[deprecated (since := "2024-10-20")]
-alias ClosedEmbedding.normalSpace := IsClosedEmbedding.normalSpace
+protected theorem Homeomorph.normalSpace [TopologicalSpace Y] [NormalSpace X] (h : X ≃ₜ Y) :
+    NormalSpace Y :=
+  h.symm.isClosedEmbedding.normalSpace
 
 instance (priority := 100) NormalSpace.of_compactSpace_r1Space [CompactSpace X] [R1Space X] :
     NormalSpace X where
   normal _s _t hs ht := .of_isCompact_isCompact_isClosed hs.isCompact ht.isCompact ht
 
-set_option pp.universes true in
 /-- A regular topological space with a Lindelöf topology is a normal space. A consequence of e.g.
 Corollaries 20.8 and 20.10 of [Willard's *General Topology*][zbMATH02107988] (without the
 assumption of Hausdorff). -/
@@ -468,7 +475,7 @@ end NormalSpace
 section Normality
 
 /-- A T₄ space is a normal T₁ space. -/
-class T4Space (X : Type u) [TopologicalSpace X] extends T1Space X, NormalSpace X : Prop
+class T4Space (X : Type u) [TopologicalSpace X] : Prop extends T1Space X, NormalSpace X
 
 instance (priority := 100) [T1Space X] [NormalSpace X] : T4Space X := ⟨⟩
 
@@ -483,8 +490,8 @@ protected theorem Topology.IsClosedEmbedding.t4Space [TopologicalSpace Y] [T4Spa
   toT1Space := hf.isEmbedding.t1Space
   toNormalSpace := hf.normalSpace
 
-@[deprecated (since := "2024-10-20")]
-alias ClosedEmbedding.t4Space := IsClosedEmbedding.t4Space
+protected theorem Homeomorph.t4Space [TopologicalSpace Y] [T4Space X] (h : X ≃ₜ Y) : T4Space Y :=
+  h.symm.isClosedEmbedding.t4Space
 
 instance ULift.instT4Space [T4Space X] : T4Space (ULift X) := IsClosedEmbedding.uliftDown.t4Space
 
@@ -545,7 +552,7 @@ instance ULift.instCompletelyNormalSpace [CompletelyNormalSpace X] :
   IsEmbedding.uliftDown.completelyNormalSpace
 
 /-- A T₅ space is a completely normal T₁ space. -/
-class T5Space (X : Type u) [TopologicalSpace X] extends T1Space X, CompletelyNormalSpace X : Prop
+class T5Space (X : Type u) [TopologicalSpace X] : Prop extends T1Space X, CompletelyNormalSpace X
 
 theorem Topology.IsEmbedding.t5Space [TopologicalSpace Y] [T5Space Y] {e : X → Y}
     (he : IsEmbedding e) : T5Space X where
@@ -556,6 +563,9 @@ theorem Topology.IsEmbedding.t5Space [TopologicalSpace Y] [T5Space Y] {e : X →
 
 @[deprecated (since := "2024-10-26")]
 alias Embedding.t5Space := IsEmbedding.t5Space
+
+protected theorem Homeomorph.t5Space [TopologicalSpace Y] [T5Space X] (h : X ≃ₜ Y) : T5Space Y :=
+  h.symm.isClosedEmbedding.t5Space
 
 -- see Note [lower instance priority]
 /-- A `T₅` space is a `T₄` space. -/

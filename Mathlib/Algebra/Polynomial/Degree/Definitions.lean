@@ -7,6 +7,8 @@ import Mathlib.Algebra.MonoidAlgebra.Degree
 import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.Data.Nat.Cast.WithTop
+import Mathlib.Data.Nat.SuccPred
+import Mathlib.Order.SuccPred.WithBot
 
 /-!
 # Degree of univariate polynomials
@@ -98,7 +100,7 @@ theorem degree_eq_iff_natDegree_eq {p : R[X]} {n : ℕ} (hp : p ≠ 0) :
 
 theorem degree_eq_iff_natDegree_eq_of_pos {p : R[X]} {n : ℕ} (hn : 0 < n) :
     p.degree = n ↔ p.natDegree = n := by
-  obtain rfl|h := eq_or_ne p 0
+  obtain rfl | h := eq_or_ne p 0
   · simp [hn.ne]
   · exact degree_eq_iff_natDegree_eq h
 
@@ -240,6 +242,10 @@ theorem degree_X_le : degree (X : R[X]) ≤ 1 :=
 theorem natDegree_X_le : (X : R[X]).natDegree ≤ 1 :=
   natDegree_le_of_degree_le degree_X_le
 
+theorem withBotSucc_degree_eq_natDegree_add_one (h : p ≠ 0) : p.degree.succ = p.natDegree + 1 := by
+  rw [degree_eq_natDegree h]
+  exact WithBot.succ_coe p.natDegree
+
 end Semiring
 
 section NonzeroSemiring
@@ -298,7 +304,7 @@ def nextCoeff (p : R[X]) : R :=
 
 lemma nextCoeff_eq_zero :
     p.nextCoeff = 0 ↔ p.natDegree = 0 ∨ 0 < p.natDegree ∧ p.coeff (p.natDegree - 1) = 0 := by
-  simp [nextCoeff, or_iff_not_imp_left, pos_iff_ne_zero]; aesop
+  simp [nextCoeff, or_iff_not_imp_left, pos_iff_ne_zero]; simp_all
 
 lemma nextCoeff_ne_zero : p.nextCoeff ≠ 0 ↔ p.natDegree ≠ 0 ∧ p.coeff (p.natDegree - 1) ≠ 0 := by
   simp [nextCoeff]
@@ -360,7 +366,7 @@ theorem natDegree_C_mul_X_pow_le (a : R) (n : ℕ) : natDegree (C a * X ^ n) ≤
 
 theorem degree_erase_le (p : R[X]) (n : ℕ) : degree (p.erase n) ≤ degree p := by
   rcases p with ⟨p⟩
-  simp only [erase_def, degree, coeff, support]
+  simp only [erase_def, degree, support]
   apply sup_mono
   rw [Finsupp.support_erase]
   apply Finset.erase_subset
@@ -368,7 +374,7 @@ theorem degree_erase_le (p : R[X]) (n : ℕ) : degree (p.erase n) ≤ degree p :
 theorem degree_erase_lt (hp : p ≠ 0) : degree (p.erase (natDegree p)) < degree p := by
   apply lt_of_le_of_ne (degree_erase_le _ _)
   rw [degree_eq_natDegree hp, degree, support_erase]
-  exact fun h => not_mem_erase _ _ (mem_of_max h)
+  exact fun h => notMem_erase _ _ (mem_of_max h)
 
 theorem degree_update_le (p : R[X]) (n : ℕ) (a : R) : degree (p.update n a) ≤ max (degree p) n := by
   classical
@@ -450,7 +456,7 @@ theorem leadingCoeff_one : leadingCoeff (1 : R[X]) = 1 :=
 theorem monic_one : Monic (1 : R[X]) :=
   leadingCoeff_C _
 
-theorem Monic.ne_zero {R : Type*} [Semiring R] [Nontrivial R] {p : R[X]} (hp : p.Monic) :
+theorem Monic.ne_zero [Nontrivial R] {p : R[X]} (hp : p.Monic) :
     p ≠ 0 := by
   rintro rfl
   simp [Monic] at hp
@@ -458,6 +464,10 @@ theorem Monic.ne_zero {R : Type*} [Semiring R] [Nontrivial R] {p : R[X]} (hp : p
 theorem Monic.ne_zero_of_ne (h : (0 : R) ≠ 1) {p : R[X]} (hp : p.Monic) : p ≠ 0 := by
   nontriviality R
   exact hp.ne_zero
+
+lemma Monic.ne_zero_of_C [Nontrivial R] {c : R} (hc : Monic (C c)) : c ≠ 0 := by
+  rintro rfl
+  simp [Monic] at hc
 
 theorem Monic.ne_zero_of_polynomial_ne {r} (hp : Monic p) (hne : q ≠ r) : p ≠ 0 :=
   haveI := Nontrivial.of_polynomial_ne hne

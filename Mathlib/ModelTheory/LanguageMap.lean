@@ -31,24 +31,22 @@ For the Flypitch project:
 
 -/
 
-
 universe u v u' v' w w'
 
 namespace FirstOrder
-
 
 namespace Language
 
 open Structure Cardinal
 
-open Cardinal
-
 variable (L : Language.{u, v}) (L' : Language.{u', v'}) {M : Type w} [L.Structure M]
 
 /-- A language homomorphism maps the symbols of one language to symbols of another. -/
 structure LHom where
+  /-- The mapping of functions -/
   onFunction : ∀ ⦃n⦄, L.Functions n → L'.Functions n := by
     exact fun {n} => isEmptyElim
+  /-- The mapping of relations -/
   onRelation : ∀ ⦃n⦄, L.Relations n → L'.Relations n :=by
     exact fun {n} => isEmptyElim
 
@@ -273,7 +271,9 @@ end LHom
 
 /-- A language equivalence maps the symbols of one language to symbols of another bijectively. -/
 structure LEquiv (L L' : Language) where
+  /-- The forward language homomorphism -/
   toLHom : L →ᴸ L'
+  /-- The inverse language homomorphism -/
   invLHom : L' →ᴸ L
   left_inv : invLHom.comp toLHom = LHom.id L
   right_inv : toLHom.comp invLHom = LHom.id L'
@@ -283,14 +283,11 @@ structure LEquiv (L L' : Language) where
 -- \^L
 namespace LEquiv
 
-variable (L)
-
+variable (L) in
 /-- The identity equivalence from a first-order language to itself. -/
 @[simps]
 protected def refl : L ≃ᴸ L :=
   ⟨LHom.id L, LHom.id L, LHom.comp_id _, LHom.comp_id _⟩
-
-variable {L}
 
 instance : Inhabited (L ≃ᴸ L) :=
   ⟨LEquiv.refl L⟩

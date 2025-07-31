@@ -3,12 +3,14 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
+import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
+import Mathlib.Algebra.BigOperators.Option
 import Mathlib.Data.Fintype.Option
+import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Sigma
 import Mathlib.Data.Fintype.Sum
-import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Vector
-import Mathlib.Algebra.BigOperators.Option
 
 /-!
 Results about "big operations" over a `Fintype`, and consequent
@@ -96,9 +98,13 @@ variable {M : Type*} [Fintype α] [CommMonoid M]
 theorem Fintype.prod_option (f : Option α → M) : ∏ i, f i = f none * ∏ i, f (some i) :=
   Finset.prod_insertNone f univ
 
-end
+@[to_additive]
+theorem Fintype.prod_eq_mul_prod_subtype_ne [DecidableEq α] (f : α → M) (a : α) :
+    ∏ i, f i = f a * ∏ i : {i // i ≠ a}, f i.1 := by
+  simp_rw [← (Equiv.optionSubtypeNe a).prod_comp, prod_option, Equiv.optionSubtypeNe_none,
+    Equiv.optionSubtypeNe_some]
 
-open Finset
+end
 
 section Pi
 variable {ι κ : Type*} {α : ι → Type*} [DecidableEq ι] [DecidableEq κ]
@@ -174,7 +180,7 @@ lemma card_filter_piFinset_eq [∀ i, DecidableEq (α i)] (s : ∀ i, Finset (α
     #{f ∈ piFinset s | f i = a} = if a ∈ s i then ∏ b ∈ univ.erase i, #(s b) else 0 := by
   split_ifs with h
   · rw [card_filter_piFinset_eq_of_mem _ _ h]
-  · rw [filter_piFinset_of_not_mem _ _ _ h, Finset.card_empty]
+  · rw [filter_piFinset_of_notMem _ _ _ h, Finset.card_empty]
 
 lemma card_filter_piFinset_const (s : Finset κ) (i : ι) (j : κ) :
     #{f ∈ piFinset fun _ ↦ s | f i = j} = if j ∈ s then #s ^ (card ι - 1) else 0 :=
@@ -185,7 +191,7 @@ end Fintype
 end Pi
 
 -- TODO: this is a basic theorem about `Fintype.card`,
--- and ideally could be moved to `Mathlib.Data.Fintype.Card`.
+-- and ideally could be moved to `Mathlib/Data/Fintype/Card.lean`.
 theorem Fintype.card_fun [DecidableEq α] [Fintype α] [Fintype β] :
     Fintype.card (α → β) = Fintype.card β ^ Fintype.card α := by
   simp
@@ -221,21 +227,19 @@ nonrec theorem Fintype.prod_dite [Fintype α] {p : α → Prop} [DecidablePred p
     (f : ∀ a, p a → β) (g : ∀ a, ¬p a → β) :
     (∏ a, dite (p a) (f a) (g a)) =
     (∏ a : { a // p a }, f a a.2) * ∏ a : { a // ¬p a }, g a a.2 := by
-  simp only [prod_dite, attach_eq_univ]
+  simp only [prod_dite]
   congr 1
   · exact (Equiv.subtypeEquivRight <| by simp).prod_comp fun x : { x // p x } => f x x.2
   · exact (Equiv.subtypeEquivRight <| by simp).prod_comp fun x : { x // ¬p x } => g x x.2
 
 section
 
-open Finset
-
 variable {α₁ : Type*} {α₂ : Type*} {M : Type*} [Fintype α₁] [Fintype α₂] [CommMonoid M]
 
 @[to_additive]
 theorem Fintype.prod_sumElim (f : α₁ → M) (g : α₂ → M) :
     ∏ x, Sum.elim f g x = (∏ a₁, f a₁) * ∏ a₂, g a₂ :=
-  prod_disj_sum _ _ _
+  prod_disjSum _ _ _
 
 @[deprecated (since := "2025-02-20")] alias prod_sum_elim := prod_sumElim
 @[deprecated (since := "2025-02-20")] alias sum_sum_elim := sum_sumElim
@@ -243,7 +247,7 @@ theorem Fintype.prod_sumElim (f : α₁ → M) (g : α₂ → M) :
 @[to_additive (attr := simp)]
 theorem Fintype.prod_sum_type (f : α₁ ⊕ α₂ → M) :
     ∏ x, f x = (∏ a₁, f (Sum.inl a₁)) * ∏ a₂, f (Sum.inr a₂) :=
-  prod_disj_sum _ _ _
+  prod_disjSum _ _ _
 
 /-- The product over a product type equals the product of the fiberwise products. For rewriting
 in the reverse direction, use `Fintype.prod_prod_type'`. -/

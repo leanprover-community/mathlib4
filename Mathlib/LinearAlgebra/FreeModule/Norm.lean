@@ -3,19 +3,16 @@ Copyright (c) 2023 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
+import Mathlib.LinearAlgebra.Dual.Lemmas
 import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
-import Mathlib.RingTheory.Norm.Defs
 import Mathlib.RingTheory.AdjoinRoot
-import Mathlib.LinearAlgebra.Dual
+import Mathlib.RingTheory.Norm.Defs
 
 /-!
 # Norms on free modules over principal ideal domains
 -/
 
-
-open Ideal Polynomial
-
-open scoped Polynomial
+open Ideal Module Polynomial
 
 variable {R S ι : Type*} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] [CommRing S]
   [IsDomain S] [Algebra R S]

@@ -21,12 +21,15 @@ relation, `functor_map_eq_iff` says that no unnecessary identifications have bee
 /-- A `HomRel` on `C` consists of a relation on every hom-set. -/
 def HomRel (C) [Quiver C] :=
   ∀ ⦃X Y : C⦄, (X ⟶ Y) → (X ⟶ Y) → Prop
+-- The `Inhabited` instance should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
--- Porting Note: `deriving Inhabited` was not able to deduce this typeclass
 instance (C) [Quiver C] : Inhabited (HomRel C) where
   default := fun _ _ _ _ ↦ PUnit
 
 namespace CategoryTheory
+
+open Functor
 
 section
 
@@ -133,6 +136,12 @@ instance essSurj_functor : (functor r).EssSurj where
     ⟨Y.as, ⟨eqToIso (by
             ext
             rfl)⟩⟩
+
+instance [Unique C] : Unique (Quotient r) where
+  uniq a := by ext; subsingleton
+
+instance [∀ (x y : C), Subsingleton (x ⟶ y)] (x y : Quotient r) :
+    Subsingleton (x ⟶ y) := (full_functor r).map_surjective.subsingleton
 
 protected theorem induction {P : ∀ {a b : Quotient r}, (a ⟶ b) → Prop}
     (h : ∀ {x y : C} (f : x ⟶ y), P ((functor r).map f)) :
@@ -261,7 +270,7 @@ def natTransLift {F G : Quotient r ⥤ D} (τ : Quotient.functor r ⋙ F ⟶ Quo
 @[simp]
 lemma natTransLift_app (F G : Quotient r ⥤ D)
     (τ : Quotient.functor r ⋙ F ⟶ Quotient.functor r ⋙ G) (X : C) :
-  (natTransLift r τ).app ((Quotient.functor r).obj X) = τ.app X := rfl
+    (natTransLift r τ).app ((Quotient.functor r).obj X) = τ.app X := rfl
 
 @[reassoc]
 lemma comp_natTransLift {F G H : Quotient r ⥤ D}

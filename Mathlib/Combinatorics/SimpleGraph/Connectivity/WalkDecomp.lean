@@ -38,6 +38,8 @@ def takeUntil {v w : V} : ∀ (p : G.Walk v w) (u : V), u ∈ p.support → G.Wa
         · exact (hx rfl).elim
         · assumption)
 
+@[simp] theorem takeUntil_nil {u : V} {h} : takeUntil (nil : G.Walk u u) u h = nil := rfl
+
 lemma takeUntil_cons {v' : V} {p : G.Walk v' v} (hwp : w ∈ p.support) (h : u ≠ w)
     (hadj : G.Adj u v') :
     (p.cons hadj).takeUntil w (List.mem_of_mem_tail hwp) = (p.takeUntil w hwp).cons hadj := by
@@ -55,8 +57,8 @@ lemma nil_takeUntil (p : G.Walk u v) (hwp : w ∈ p.support) :
   cases p with
   | nil => simp only [takeUntil, eq_mpr_eq_cast] at hnil; exact hnil.eq
   | cons h q =>
-    simp only [support_cons, List.mem_cons, false_or] at hwp
-    cases' hwp with hl hr
+    simp only [support_cons, List.mem_cons] at hwp
+    obtain hl | hr := hwp
     · exact hl.symm
     · by_contra! hc
       simp [takeUntil_cons hr hc] at hnil
@@ -218,12 +220,17 @@ lemma takeUntil_takeUntil {w x : V} (p : G.Walk u v) (hw : w ∈ p.support)
     (hx : x ∈ (p.takeUntil w hw).support) :
     (p.takeUntil w hw).takeUntil x hx = p.takeUntil x (p.support_takeUntil_subset hw hx) := by
   induction p, w, hw using takeUntil.induct with
-  | case1 => aesop
-  | case2 _ _ q _ hadj hu' _ =>
+  | case1 u v h =>
+    #adaptation_note
+    /-- Prior to `nightly-2025-02-24` this was just `aesop`. -/
+    simp at h
+    subst h
+    simp
+  | case2 _ _ q _ hadj hu' =>
     simp only [takeUntil_first, support_nil, List.mem_singleton] at hx
     subst hx
     simp
-  | case3 a w' v' hadj q u' hu' hau' _ ih =>
+  | case3 a w' v' hadj q u' hu' hau' ih =>
     rw [← Ne.eq_def] at hau'
     simp only [support_cons, List.mem_cons, hau'.symm, false_or] at hu'
     simp only [takeUntil_cons hu' hau' hadj, support_cons, List.mem_cons] at hx
@@ -236,9 +243,10 @@ lemma takeUntil_takeUntil {w x : V} (p : G.Walk u v) (hw : w ∈ p.support)
         rw [takeUntil_cons hu' hau' hadj]
       rw [takeUntil_cons hx hx'.symm hadj, ih _, takeUntil_cons _ hx'.symm]
 
-lemma not_mem_support_takeUntil_takeUntil {p : G.Walk u v} {w x : V} (h : x ≠ w)
+lemma notMem_support_takeUntil_support_takeUntil_subset {p : G.Walk u v} {w x : V} (h : x ≠ w)
     (hw : w ∈ p.support) (hx : x ∈ (p.takeUntil w hw).support) :
-    w ∉ ((p.takeUntil w hw).takeUntil x hx).support := by
+    w ∉ (p.takeUntil x (p.support_takeUntil_subset hw hx)).support := by
+  rw [← takeUntil_takeUntil p hw hx]
   intro hw'
   have h1 : (((p.takeUntil w hw).takeUntil x hx).takeUntil w hw').length
       < ((p.takeUntil w hw).takeUntil x hx).length := by
@@ -247,6 +255,10 @@ lemma not_mem_support_takeUntil_takeUntil {p : G.Walk u v} {w x : V} (h : x ≠ 
     exact length_takeUntil_lt _ h
   simp only [takeUntil_takeUntil] at h1 h2
   omega
+
+@[deprecated (since := "2025-05-23")]
+alias not_mem_support_takeUntil_support_takeUntil_subset :=
+  notMem_support_takeUntil_support_takeUntil_subset
 
 /-- Rotate a loop walk such that it is centered at the given vertex. -/
 def rotate {u v : V} (c : G.Walk v v) (h : u ∈ c.support) : G.Walk u u :=

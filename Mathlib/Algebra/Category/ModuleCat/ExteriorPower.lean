@@ -40,7 +40,7 @@ namespace AlternatingMap
 variable {M : ModuleCat.{v} R} {N : ModuleCat.{max u v} R} {n : ℕ}
 
 @[ext]
-lemma ext {φ φ' : M.AlternatingMap N n} (h : ∀ (x : Fin n → M), φ x = φ' x ) :
+lemma ext {φ φ' : M.AlternatingMap N n} (h : ∀ (x : Fin n → M), φ x = φ' x) :
     φ = φ' :=
   _root_.AlternatingMap.ext h
 
@@ -93,16 +93,13 @@ lemma map_mk {M N : ModuleCat.{v} R} (f : M ⟶ N) {n : ℕ} (x : Fin n → M) :
     map f n (mk x) = mk (f ∘ x) := by
   apply exteriorPower.map_apply_ιMulti
 
-variable (R)
-
+variable (R) in
 /-- The functor `ModuleCat R ⥤ ModuleCat R` which sends a module to its
 `n`th exterior power. -/
 @[simps]
 noncomputable def functor (n : ℕ) : ModuleCat.{v} R ⥤ ModuleCat.{max u v} R where
   obj M := M.exteriorPower n
   map f := map f n
-
-variable {R}
 
 /-- The isomorphism `M.exteriorPower 0 ≅ ModuleCat.of R R`. -/
 noncomputable def iso₀ (M : ModuleCat.{u} R) : M.exteriorPower 0 ≅ ModuleCat.of R R :=
@@ -118,7 +115,7 @@ lemma iso₀_hom_naturality {M N : ModuleCat.{u} R} (f : M ⟶ N) :
     map f 0 ≫ (iso₀ N).hom = (iso₀ M).hom :=
   ModuleCat.hom_ext (exteriorPower.zeroEquiv_naturality f.hom)
 
-/-- The isomorphism `M.exteriorPower 0 ≅ M`. -/
+/-- The isomorphism `M.exteriorPower 1 ≅ M`. -/
 noncomputable def iso₁ (M : ModuleCat.{u} R) : M.exteriorPower 1 ≅ M :=
   (exteriorPower.oneEquiv R M).toModuleIso
 

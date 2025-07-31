@@ -63,27 +63,27 @@ namespace CondensedMod.LocallyConstant
 
 open Condensed
 
-variable (R : Type (u+1)) [Ring R]
+variable (R : Type (u + 1)) [Ring R]
 
 /-- `functorToPresheaves` in the case of `CompHaus`. -/
-abbrev functorToPresheaves : ModuleCat.{u+1} R ⥤ (CompHaus.{u}ᵒᵖ ⥤ ModuleCat R) :=
-  CompHausLike.LocallyConstantModule.functorToPresheaves.{u+1, u} R
+abbrev functorToPresheaves : ModuleCat.{u + 1} R ⥤ (CompHaus.{u}ᵒᵖ ⥤ ModuleCat R) :=
+  CompHausLike.LocallyConstantModule.functorToPresheaves.{u + 1, u} R
 
 /-- `functorToPresheaves` as a functor to condensed modules. -/
 abbrev functor : ModuleCat R ⥤ CondensedMod.{u} R :=
-  CompHausLike.LocallyConstantModule.functor.{u+1, u} R
+  CompHausLike.LocallyConstantModule.functor.{u + 1, u} R
     (fun _ _ _ ↦ ((CompHaus.effectiveEpi_tfae _).out 0 2).mp)
 
 /-- Auxiliary definition for `functorIsoDiscrete`. -/
-noncomputable def functorIsoDiscreteAux₁ (M : ModuleCat.{u+1} R) :
-    M ≅ (ModuleCat.of R (LocallyConstant (CompHaus.of PUnit.{u+1}) M)) where
+noncomputable def functorIsoDiscreteAux₁ (M : ModuleCat.{u + 1} R) :
+    M ≅ (ModuleCat.of R (LocallyConstant (CompHaus.of PUnit.{u + 1}) M)) where
   hom := ModuleCat.ofHom (constₗ R)
   inv := ModuleCat.ofHom (evalₗ R PUnit.unit)
 
 /-- Auxiliary definition for `functorIsoDiscrete`. -/
 noncomputable def functorIsoDiscreteAux₂ (M : ModuleCat R) :
     (discrete _).obj M ≅ (discrete _).obj
-      (ModuleCat.of R (LocallyConstant (CompHaus.of PUnit.{u+1}) M)) :=
+      (ModuleCat.of R (LocallyConstant (CompHaus.of PUnit.{u + 1}) M)) :=
   (discrete _).mapIso (functorIsoDiscreteAux₁ R M)
 
 attribute [local instance] Types.instFunLike Types.instConcreteCategory in
@@ -98,7 +98,7 @@ instance (M : ModuleCat R) : IsIso ((forget R).map
     inferInstanceAs (discrete _).Full
   rw [← Sheaf.isConstant_iff_isIso_counit_app]
   constructor
-  change _ ∈ (discrete _).essImage
+  change (discrete _).essImage _
   rw [essImage_eq_of_natIso CondensedSet.LocallyConstant.iso.symm]
   exact obj_mem_essImage CondensedSet.LocallyConstant.functor M
 
@@ -186,14 +186,14 @@ abbrev functor : ModuleCat R ⥤ LightCondMod.{u} R :=
 
 /-- Auxiliary definition for `functorIsoDiscrete`. -/
 noncomputable def functorIsoDiscreteAux₁ (M : ModuleCat.{u} R) :
-    M ≅ (ModuleCat.of R (LocallyConstant (LightProfinite.of PUnit.{u+1}) M)) where
+    M ≅ (ModuleCat.of R (LocallyConstant (LightProfinite.of PUnit.{u + 1}) M)) where
   hom := ModuleCat.ofHom (constₗ R)
   inv := ModuleCat.ofHom (evalₗ R PUnit.unit)
 
 /-- Auxiliary definition for `functorIsoDiscrete`. -/
 noncomputable def functorIsoDiscreteAux₂ (M : ModuleCat.{u} R) :
     (discrete _).obj M ≅ (discrete _).obj
-      (ModuleCat.of R (LocallyConstant (LightProfinite.of PUnit.{u+1}) M)) :=
+      (ModuleCat.of R (LocallyConstant (LightProfinite.of PUnit.{u + 1}) M)) :=
   (discrete _).mapIso (functorIsoDiscreteAux₁ R M)
 
 -- Not stating this explicitly causes timeouts below.
@@ -208,13 +208,13 @@ instance (M : ModuleCat R) :
   dsimp [LightCondensed.forget, discreteUnderlyingAdj]
   rw [← constantSheafAdj_counit_w]
   refine IsIso.comp_isIso' inferInstance ?_
-  have : (constantSheaf (coherentTopology LightProfinite) (Type u)).Faithful :=
+  have : (constantSheaf (coherentTopology LightProfinite.{u}) (Type u)).Faithful :=
     inferInstanceAs (discrete _).Faithful
-  have : (constantSheaf (coherentTopology LightProfinite) (Type u)).Full :=
-    inferInstanceAs (discrete _).Full
+  have : (constantSheaf (coherentTopology LightProfinite.{u}) (Type u)).Full :=
+    inferInstanceAs (discrete (Type u)).Full
   rw [← Sheaf.isConstant_iff_isIso_counit_app]
   constructor
-  change _ ∈ (discrete _).essImage
+  change (discrete _).essImage _
   rw [essImage_eq_of_natIso LightCondSet.LocallyConstant.iso.symm]
   exact obj_mem_essImage LightCondSet.LocallyConstant.functor M
 
@@ -275,11 +275,11 @@ instance : (constantSheaf (coherentTopology LightProfinite.{u}) (ModuleCat.{u} R
   inferInstanceAs (discrete.{u} (ModuleCat.{u} R)).Full
 
 attribute [local instance] Types.instFunLike Types.instConcreteCategory in
-instance : (constantSheaf (coherentTopology LightProfinite) (Type u)).Faithful :=
+instance : (constantSheaf (coherentTopology LightProfinite.{u}) (Type u)).Faithful :=
   inferInstanceAs (discrete (Type u)).Faithful
 
 attribute [local instance] Types.instFunLike Types.instConcreteCategory in
-instance : (constantSheaf (coherentTopology LightProfinite) (Type u)).Full :=
+instance : (constantSheaf (coherentTopology LightProfinite.{u}) (Type u)).Full :=
   inferInstanceAs (discrete (Type u)).Full
 
 end LightCondMod.LocallyConstant

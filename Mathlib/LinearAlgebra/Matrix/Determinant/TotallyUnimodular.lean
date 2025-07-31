@@ -5,7 +5,7 @@ Authors: Martin Dvorak, Vladimir Kolmogorov, Ivan Sergeev, Bhavik Mehta
 -/
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.Data.Matrix.ColumnRowPartitioned
-import Mathlib.Data.Sign
+import Mathlib.Data.Sign.Basic
 
 /-!
 # Totally unimodular matrices
@@ -14,14 +14,14 @@ This file defines totally unimodular matrices and provides basic API for them.
 
 ## Main definitions
 
- - `Matrix.IsTotallyUnimodular`: a matrix is totally unimodular iff every square submatrix
-    (not necessarily contiguous) has determinant `0` or `1` or `-1`.
+- `Matrix.IsTotallyUnimodular`: a matrix is totally unimodular iff every square submatrix
+  (not necessarily contiguous) has determinant `0` or `1` or `-1`.
 
 ## Main results
 
- - `Matrix.isTotallyUnimodular_iff`: a matrix is totally unimodular iff every square submatrix
-    (possibly with repeated rows and/or repeated columns) has determinant `0` or `1` or `-1`.
- - `Matrix.IsTotallyUnimodular.apply`: entry in a totally unimodular matrix is `0` or `1` or `-1`.
+- `Matrix.isTotallyUnimodular_iff`: a matrix is totally unimodular iff every square submatrix
+  (possibly with repeated rows and/or repeated columns) has determinant `0` or `1` or `-1`.
+- `Matrix.IsTotallyUnimodular.apply`: entry in a totally unimodular matrix is `0` or `1` or `-1`.
 
 -/
 
@@ -119,7 +119,7 @@ lemma IsTotallyUnimodular.fromRows_unitlike [DecidableEq n] {A : Matrix m n R} {
     · have hAB := det_succ_row ((fromRows A B).submatrix f g) i
       simp only [submatrix_apply, hfi, fromRows_apply_inr] at hAB
       obtain ⟨j', s, hj'⟩ := hB j
-      · simp only [hj', Function.update_apply] at hAB
+      · simp only [hj'] at hAB
         by_cases hj'' : ∃ x, g x = j'
         · obtain ⟨x, rfl⟩ := hj''
           rw [Fintype.sum_eq_single x fun y hxy => ?_, Pi.single_eq_same] at hAB
@@ -179,8 +179,8 @@ alias ⟨_, IsTotallyUnimodular.one_fromRows⟩ := one_fromRows_isTotallyUnimodu
 alias ⟨_, IsTotallyUnimodular.fromCols_one⟩ := fromCols_one_isTotallyUnimodular_iff
 alias ⟨_, IsTotallyUnimodular.one_fromCols⟩ := one_fromCols_isTotallyUnimodular_iff
 
-lemma fromRows_row0_isTotallyUnimodular_iff (A : Matrix m n R) :
-    (fromRows A (row m' 0)).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
+lemma fromRows_replicateRow0_isTotallyUnimodular_iff (A : Matrix m n R) :
+    (fromRows A (replicateRow m' 0)).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
   classical
   refine fromRows_isTotallyUnimodular_iff_rows <| fun _ _ => ?_
   inhabit n
@@ -188,12 +188,18 @@ lemma fromRows_row0_isTotallyUnimodular_iff (A : Matrix m n R) :
   ext x
   simp [Pi.single_apply]
 
-lemma fromCols_col0_isTotallyUnimodular_iff (A : Matrix m n R) :
-    (fromCols A (col n' 0)).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
-  rw [← transpose_isTotallyUnimodular_iff, transpose_fromCols, transpose_col,
-    fromRows_row0_isTotallyUnimodular_iff, transpose_isTotallyUnimodular_iff]
+@[deprecated (since := "2024-12-11")]
+alias fromRows_row0_isTotallyUnimodular_iff := fromRows_replicateRow0_isTotallyUnimodular_iff
+
+lemma fromCols_replicateCol0_isTotallyUnimodular_iff (A : Matrix m n R) :
+    (fromCols A (replicateCol n' 0)).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
+  rw [← transpose_isTotallyUnimodular_iff, transpose_fromCols, transpose_replicateCol,
+    fromRows_replicateRow0_isTotallyUnimodular_iff, transpose_isTotallyUnimodular_iff]
 
 @[deprecated (since := "2024-12-11")]
-alias fromColumns_col0_isTotallyUnimodular_iff := fromCols_col0_isTotallyUnimodular_iff
+alias fromColumns_col0_isTotallyUnimodular_iff := fromCols_replicateCol0_isTotallyUnimodular_iff
+
+@[deprecated (since := "2024-12-11")]
+alias fromCols_col0_isTotallyUnimodular_iff := fromCols_replicateCol0_isTotallyUnimodular_iff
 
 end Matrix

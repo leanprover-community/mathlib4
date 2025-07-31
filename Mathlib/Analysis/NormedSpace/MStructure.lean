@@ -85,7 +85,7 @@ variable {X}
 
 namespace IsLprojection
 
--- Porting note: The literature always uses uppercase 'L' for L-projections
+-- TODO: The literature always uses uppercase 'L' for L-projections
 theorem Lcomplement {P : M} (h : IsLprojection X P) : IsLprojection X (1 - P) :=
   ⟨h.proj.one_sub, fun x => by
     rw [add_comm, sub_sub_cancel]
@@ -97,7 +97,6 @@ theorem Lcomplement_iff (P : M) : IsLprojection X P ↔ IsLprojection X (1 - P) 
 theorem commute [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : IsLprojection X Q) :
     Commute P Q := by
   have PR_eq_RPR : ∀ R : M, IsLprojection X R → P * R = R * P * R := fun R h₃ => by
-    -- Porting note: Needed to fix function, which changes indent of following lines
     refine @eq_of_smul_eq_smul _ X _ _ _ _ fun x => by
       rw [← norm_sub_eq_zero_iff]
       have e1 : ‖R • x‖ ≥ ‖R • x‖ + 2 • ‖(P * R) • x - (R * P * R) • x‖ :=
@@ -114,13 +113,11 @@ theorem commute [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : 
             rw [sub_mul, h₃.proj.eq, one_mul, sub_self, zero_smul, zero_sub, norm_neg]
           _ = ‖R • P • R • x‖ + ‖R • x - R • P • R • x‖ + 2 • ‖(1 - R) • P • R • x‖ := by abel
           _ ≥ ‖R • x‖ + 2 • ‖(P * R) • x - (R * P * R) • x‖ := by
-            rw [GE.ge]
+            rw [ge_iff_le]
             have :=
               add_le_add_right (norm_le_insert' (R • x) (R • P • R • x)) (2 • ‖(1 - R) • P • R • x‖)
             simpa only [mul_smul, sub_smul, one_smul] using this
-
-      rw [GE.ge] at e1
-      -- Porting note: Bump index in nth_rewrite
+      rw [ge_iff_le] at e1
       nth_rewrite 2 [← add_zero ‖R • x‖] at e1
       rw [add_le_add_iff_left, two_smul, ← two_mul] at e1
       rw [le_antisymm_iff]
@@ -131,8 +128,8 @@ theorem commute [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : 
       calc
         P * (1 - Q) = (1 - Q) * P * (1 - Q) := by rw [PR_eq_RPR (1 - Q) h₂.Lcomplement]
         _ = P * (1 - Q) - (Q * P - Q * P * Q) := by noncomm_ring
-    rwa [eq_sub_iff_add_eq, add_right_eq_self, sub_eq_zero] at e1
-  show P * Q = Q * P
+    rwa [eq_sub_iff_add_eq, add_eq_left, sub_eq_zero] at e1
+  change P * Q = Q * P
   rw [QP_eq_QPQ, PR_eq_RPR Q h₂]
 
 theorem mul [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : IsLprojection X Q) :
@@ -157,8 +154,6 @@ theorem join [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : IsL
   convert (Lcomplement_iff _).mp (h₁.Lcomplement.mul h₂.Lcomplement) using 1
   noncomm_ring
 
--- Porting note: Advice is to explicitly name instances
--- https://github.com/leanprover-community/mathlib4/wiki/Porting-wiki#some-common-fixes
 instance Subtype.hasCompl : HasCompl { f : M // IsLprojection X f } :=
   ⟨fun P => ⟨1 - P, P.prop.Lcomplement⟩⟩
 
@@ -227,13 +222,11 @@ instance Subtype.boundedOrder [FaithfulSMul M X] :
 
 @[simp]
 theorem coe_bot [FaithfulSMul M X] :
-    -- Porting note: Manual correction of name required here
     ↑(BoundedOrder.toOrderBot.toBot.bot : { P : M // IsLprojection X P }) = (0 : M) :=
   rfl
 
 @[simp]
 theorem coe_top [FaithfulSMul M X] :
-    -- Porting note: Manual correction of name required here
     ↑(BoundedOrder.toOrderTop.toTop.top : { P : M // IsLprojection X P }) = (1 : M) :=
   rfl
 
@@ -297,7 +290,6 @@ instance Subtype.distribLattice [FaithfulSMul M X] :
 
 instance Subtype.BooleanAlgebra [FaithfulSMul M X] :
     BooleanAlgebra { P : M // IsLprojection X P } :=
--- Porting note: use explicitly specified instance names
   { IsLprojection.Subtype.hasCompl,
     IsLprojection.Subtype.sdiff,
     IsLprojection.Subtype.boundedOrder with

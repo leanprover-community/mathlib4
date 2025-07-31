@@ -102,7 +102,7 @@ instance : Inhabited Poly := ⟨Poly.const 0⟩
 
 instance : Quote ℤ where quote
   | .ofNat n => quote n
-  | .negSucc n => Unhygienic.run `(-$(quote n))
+  | .negSucc n => Unhygienic.run `(-$(quote (n + 1)))
 
 instance : Quote ℚ where
   quote q :=
@@ -168,7 +168,7 @@ def parseContext (only : Bool) (hyps : Array Expr) (target : Expr) :
   let some v := u.dec | throwError "not a type{indentExpr α}"
   have α : Q(Type v) := α
   have e₁ : Q($α) := e₁; have e₂ : Q($α) := e₂
-  let sα ← synthInstanceQ (q(CommSemiring $α) : Q(Type v))
+  let sα ← synthInstanceQ q(CommSemiring $α)
   let c ← mkCache sα
   let target := (← parse sα c e₁).sub (← parse sα c e₂)
   let rec
@@ -247,7 +247,7 @@ structure SageCoeffAndPower where
   /-- The function call produces an array of polynomials
   parallel to the input list of hypotheses. -/
   coeffs : Array Poly
-  /-- Sage produces an exponent (default 1) in the case where the hypothesess
+  /-- Sage produces an exponent (default 1) in the case where the hypotheses
   sum to a power of the goal. -/
   power  : ℕ
   deriving FromJson, Repr

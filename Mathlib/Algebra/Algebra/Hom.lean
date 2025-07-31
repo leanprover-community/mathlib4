@@ -36,15 +36,23 @@ infixr:25 " →ₐ " => AlgHom _
 @[inherit_doc]
 notation:25 A " →ₐ[" R "] " B => AlgHom R A B
 
+/-- The algebra morphism underlying `algebraMap` -/
+def Algebra.algHom (R A B : Type*)
+    [CommSemiring R] [CommSemiring A] [Semiring B] [Algebra R A] [Algebra R B]
+    [Algebra A B] [IsScalarTower R A B] :
+    A →ₐ[R] B where
+  toRingHom := algebraMap A B
+  commutes' r := by simpa [Algebra.smul_def] using smul_assoc r (1 : A) (1 : B)
+
 /-- `AlgHomClass F R A B` asserts `F` is a type of bundled algebra homomorphisms
 from `A` to `B`. -/
 class AlgHomClass (F : Type*) (R A B : outParam Type*)
-  [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
-  [FunLike F A B] extends RingHomClass F A B : Prop where
+    [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B] [FunLike F A B] : Prop
+    extends RingHomClass F A B where
   commutes : ∀ (f : F) (r : R), f (algebraMap R A r) = algebraMap R B r
 
 -- For now, don't replace `AlgHom.commutes` and `AlgHomClass.commutes` with the more generic lemma.
--- The file `Mathlib.NumberTheory.NumberField.CanonicalEmbedding.FundamentalCone` slows down by
+-- The file `Mathlib/NumberTheory/NumberField/CanonicalEmbedding/FundamentalCone.lean` slows down by
 -- 15% if we would do so (see benchmark on PR https://github.com/leanprover-community/mathlib4/pull/18040).
 -- attribute [simp] AlgHomClass.commutes
 
@@ -94,6 +102,10 @@ instance algHomClass : AlgHomClass (A →ₐ[R] B) R A B where
   map_mul f := f.map_mul'
   map_one f := f.map_one'
   commutes f := f.commutes'
+
+@[simp] lemma _root_.AlgHomClass.toLinearMap_toAlgHom {R A B F : Type*} [CommSemiring R]
+    [Semiring A] [Semiring B] [Algebra R A] [Algebra R B] [FunLike F A B] [AlgHomClass F R A B]
+    (f : F) : (AlgHomClass.toAlgHom f : A →ₗ[R] B) = f := rfl
 
 /-- See Note [custom simps projection] -/
 def Simps.apply {R : Type u} {α : Type v} {β : Type w} [CommSemiring R]
@@ -151,6 +163,14 @@ theorem coe_toMonoidHom (f : A →ₐ[R] B) : ⇑(f : A →* B) = f :=
 theorem coe_toAddMonoidHom (f : A →ₐ[R] B) : ⇑(f : A →+ B) = f :=
   rfl
 
+@[simp]
+theorem toRingHom_toMonoidHom (f : A →ₐ[R] B) : ((f : A →+* B) : A →* B) = f :=
+  rfl
+
+@[simp]
+theorem toRingHom_toAddMonoidHom (f : A →ₐ[R] B) : ((f : A →+* B) : A →+ B) = f :=
+  rfl
+
 variable (φ : A →ₐ[R] B)
 
 theorem coe_fn_injective : @Function.Injective (A →ₐ[R] B) (A → B) (↑) :=
@@ -181,6 +201,8 @@ theorem ext {φ₁ φ₂ : A →ₐ[R] B} (H : ∀ x, φ₁ x = φ₂ x) : φ₁
 @[simp]
 theorem mk_coe {f : A →ₐ[R] B} (h₁ h₂ h₃ h₄ h₅) : (⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩ : A →ₐ[R] B) = f :=
   rfl
+
+@[simp] lemma addHomMk_coe (f : A →ₐ[R] B) : AddHom.mk f (map_add f) = f := rfl
 
 @[simp]
 theorem commutes (r : R) : φ (algebraMap R A r) = algebraMap R B r :=
@@ -220,7 +242,10 @@ end
 theorem id_apply (p : A) : AlgHom.id R A p = p :=
   rfl
 
-/-- Composition of algebra homeomorphisms. -/
+/-- If `φ₁` and `φ₂` are `R`-algebra homomorphisms with the
+domain of `φ₁` equal to the codomain of `φ₂`, then
+`φ₁.comp φ₂` is the algebra homomorphism `x ↦ φ₁ (φ₂ x)`.
+-/
 def comp (φ₁ : B →ₐ[R] C) (φ₂ : A →ₐ[R] B) : A →ₐ[R] C :=
   { φ₁.toRingHom.comp ↑φ₂ with
     commutes' := fun r : R => by rw [← φ₁.commutes, ← φ₂.commutes]; rfl }
@@ -271,6 +296,9 @@ theorem comp_toLinearMap (f : A →ₐ[R] B) (g : B →ₐ[R] C) :
 theorem toLinearMap_id : toLinearMap (AlgHom.id R A) = LinearMap.id :=
   rfl
 
+@[simp] lemma linearMapMk_toAddHom (f : A →ₐ[R] B) : LinearMap.mk f (map_smul f) = f.toLinearMap :=
+  rfl
+
 /-- Promote a `LinearMap` to an `AlgHom` by supplying proofs about the behavior on `1` and `*`. -/
 @[simps]
 def ofLinearMap (f : A →ₗ[R] B) (map_one : f 1 = 1) (map_mul : ∀ x y, f (x * y) = f x * f y) :
@@ -300,7 +328,7 @@ theorem map_smul_of_tower {R'} [SMul R' A] [SMul R' B] [LinearMap.CompatibleSMul
     (x : A) : φ (r • x) = r • φ x :=
   φ.toLinearMap.map_smul_of_tower r x
 
-@[simps (config := .lemmasOnly) toSemigroup_toMul_mul toOne_one]
+@[simps -isSimp toSemigroup_toMul_mul toOne_one]
 instance End : Monoid (A →ₐ[R] A) where
   mul := comp
   mul_assoc _ _ _ := rfl
@@ -316,12 +344,32 @@ theorem one_apply (x : A) : (1 : A →ₐ[R] A) x = x :=
 theorem mul_apply (φ ψ : A →ₐ[R] A) (x : A) : (φ * ψ) x = φ (ψ x) :=
   rfl
 
+@[simp] theorem coe_pow (φ : A →ₐ[R] A) (n : ℕ) : ⇑(φ ^ n) = φ^[n] :=
+   n.rec (by ext; simp) fun _ ih ↦ by ext; simp [pow_succ, ih]
+
 theorem algebraMap_eq_apply (f : A →ₐ[R] B) {y : R} {x : A} (h : algebraMap R A y = x) :
     algebraMap R B y = f x :=
   h ▸ (f.commutes _).symm
 
+lemma cancel_right {g₁ g₂ : B →ₐ[R] C} {f : A →ₐ[R] B} (hf : Function.Surjective f) :
+    g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
+  ⟨fun h => AlgHom.ext <| hf.forall.2 (AlgHom.ext_iff.1 h), fun h => h ▸ rfl⟩
+
+lemma cancel_left {g₁ g₂ : A →ₐ[R] B} {f : B →ₐ[R] C} (hf : Function.Injective f) :
+    f.comp g₁ = f.comp g₂ ↔ g₁ = g₂ :=
+  ⟨fun h => AlgHom.ext <| fun _ ↦ hf.eq_iff.mp <| AlgHom.ext_iff.mp h _, fun h => h ▸ rfl⟩
+
 end Semiring
 end AlgHom
+
+namespace AlgHomClass
+
+@[simp]
+lemma toRingHom_toAlgHom {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
+    [Algebra R B] {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) :
+    RingHomClass.toRingHom (AlgHomClass.toAlgHom f) = RingHomClass.toRingHom f := rfl
+
+end AlgHomClass
 
 namespace RingHom
 
@@ -368,6 +416,8 @@ def ofId : R →ₐ[R] A :=
 
 variable {R}
 
+@[simp] lemma ofId_self : ofId R R = .id R R := rfl
+
 theorem ofId_apply (r) : ofId R A r = algebraMap R A r :=
   rfl
 
@@ -375,7 +425,7 @@ theorem ofId_apply (r) : ofId R A r = algebraMap R A r :=
 instance subsingleton_id : Subsingleton (R →ₐ[R] A) :=
   ⟨fun f g => AlgHom.ext fun _ => (f.commutes _).trans (g.commutes _).symm⟩
 
-/-- This ext lemma closes trivial subgoals create when chaining heterobasic ext lemmas. -/
+/-- This ext lemma closes trivial subgoals created when chaining heterobasic ext lemmas. -/
 @[ext high]
 theorem ext_id (f g : R →ₐ[R] A) : f = g := Subsingleton.elim _ _
 
@@ -439,3 +489,18 @@ theorem toAlgHom_injective [FaithfulSMul M A] :
   eq_of_smul_eq_smul fun r => AlgHom.ext_iff.1 h r
 
 end MulSemiringAction
+
+section
+
+variable {R S T : Type*} [CommSemiring R] [Semiring S] [Semiring T] [Algebra R S] [Algebra R T]
+  [Subsingleton T]
+
+instance uniqueOfRight : Unique (S →ₐ[R] T) where
+  default := AlgHom.ofLinearMap default (Subsingleton.elim _ _) (fun _ _ ↦ (Subsingleton.elim _ _))
+  uniq _ := AlgHom.ext fun _ ↦ Subsingleton.elim _ _
+
+@[simp]
+lemma AlgHom.default_apply (x : S) : (default : S →ₐ[R] T) x = 0 :=
+  rfl
+
+end

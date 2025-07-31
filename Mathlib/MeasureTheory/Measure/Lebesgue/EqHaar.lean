@@ -3,12 +3,12 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Sébastien Gouëzel
 -/
-import Mathlib.LinearAlgebra.FiniteDimensional
-import Mathlib.MeasureTheory.Group.Pointwise
-import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-import Mathlib.MeasureTheory.Measure.Haar.Basic
-import Mathlib.MeasureTheory.Measure.Doubling
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
+import Mathlib.MeasureTheory.Group.Pointwise
+import Mathlib.MeasureTheory.Measure.Doubling
+import Mathlib.MeasureTheory.Measure.Haar.Basic
+import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 
 /-!
 # Relationship between the Haar and Lebesgue measures
@@ -67,8 +67,10 @@ def TopologicalSpace.PositiveCompacts.piIcc01 (ι : Type*) [Finite ι] :
     simp only [interior_pi_set, Set.toFinite, interior_Icc, univ_pi_nonempty_iff, nonempty_Ioo,
       imp_true_iff, zero_lt_one]
 
+namespace Module.Basis
+
 /-- The parallelepiped formed from the standard basis for `ι → ℝ` is `[0,1]^ι` -/
-theorem Basis.parallelepiped_basisFun (ι : Type*) [Fintype ι] :
+theorem parallelepiped_basisFun (ι : Type*) [Fintype ι] :
     (Pi.basisFun ℝ ι).parallelepiped = TopologicalSpace.PositiveCompacts.piIcc01 ι :=
   SetLike.coe_injective <| by
     refine Eq.trans ?_ ((uIcc_of_le ?_).trans (Set.pi_univ_Icc _ _).symm)
@@ -76,7 +78,7 @@ theorem Basis.parallelepiped_basisFun (ι : Type*) [Fintype ι] :
     · exact zero_le_one
 
 /-- A parallelepiped can be expressed on the standard basis. -/
-theorem Basis.parallelepiped_eq_map  {ι E : Type*} [Fintype ι] [NormedAddCommGroup E]
+theorem parallelepiped_eq_map {ι E : Type*} [Fintype ι] [NormedAddCommGroup E]
     [NormedSpace ℝ E] (b : Basis ι ℝ E) :
     b.parallelepiped = (PositiveCompacts.piIcc01 ι).map b.equivFun.symm
       b.equivFunL.symm.continuous b.equivFunL.symm.isOpenMap := by
@@ -87,7 +89,7 @@ theorem Basis.parallelepiped_eq_map  {ι E : Type*} [Fintype ι] [NormedAddCommG
 
 open MeasureTheory MeasureTheory.Measure
 
-theorem Basis.map_addHaar {ι E F : Type*} [Fintype ι] [NormedAddCommGroup E] [NormedAddCommGroup F]
+theorem map_addHaar {ι E F : Type*} [Fintype ι] [NormedAddCommGroup E] [NormedAddCommGroup F]
     [NormedSpace ℝ E] [NormedSpace ℝ F] [MeasurableSpace E] [MeasurableSpace F] [BorelSpace E]
     [BorelSpace F] [SecondCountableTopology F] [SigmaCompactSpace F]
     (b : Basis ι ℝ E) (f : E ≃L[ℝ] F) :
@@ -97,6 +99,8 @@ theorem Basis.map_addHaar {ι E F : Type*} [Fintype ι] [NormedAddCommGroup E] [
   rw [eq_comm, Basis.addHaar_eq_iff, Measure.map_apply f.continuous.measurable
     (PositiveCompacts.isCompact _).measurableSet, Basis.coe_parallelepiped, Basis.coe_map]
   erw [← image_parallelepiped, f.toEquiv.preimage_image, addHaar_self]
+
+end Module.Basis
 
 namespace MeasureTheory
 
@@ -117,8 +121,7 @@ theorem addHaarMeasure_eq_volume_pi (ι : Type*) [Fintype ι] :
   simp only [piIcc01, volume_pi_pi fun _ => Icc (0 : ℝ) 1, PositiveCompacts.coe_mk,
     Compacts.coe_mk, Finset.prod_const_one, ENNReal.ofReal_one, Real.volume_Icc, one_smul, sub_zero]
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: remove this instance?
-instance isAddHaarMeasure_volume_pi (ι : Type*) [Fintype ι] :
+theorem isAddHaarMeasure_volume_pi (ι : Type*) [Fintype ι] :
     IsAddHaarMeasure (volume : Measure (ι → ℝ)) :=
   inferInstance
 
@@ -416,11 +419,21 @@ theorem addHaar_ball_center {E : Type*} [NormedAddCommGroup E] [MeasurableSpace 
   have : ball (0 : E) r = (x + ·) ⁻¹' ball x r := by simp [preimage_add_ball]
   rw [this, measure_preimage_add]
 
+theorem addHaar_real_ball_center {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E]
+    [BorelSpace E] (μ : Measure E) [IsAddHaarMeasure μ] (x : E) (r : ℝ) :
+    μ.real (ball x r) = μ.real (ball (0 : E) r) := by
+  simp [measureReal_def, addHaar_ball_center]
+
 theorem addHaar_closedBall_center {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E]
     [BorelSpace E] (μ : Measure E) [IsAddHaarMeasure μ] (x : E) (r : ℝ) :
     μ (closedBall x r) = μ (closedBall (0 : E) r) := by
   have : closedBall (0 : E) r = (x + ·) ⁻¹' closedBall x r := by simp [preimage_add_closedBall]
   rw [this, measure_preimage_add]
+
+theorem addHaar_real_closedBall_center {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E]
+    [BorelSpace E] (μ : Measure E) [IsAddHaarMeasure μ] (x : E) (r : ℝ) :
+    μ.real (closedBall x r) = μ.real (closedBall (0 : E) r) := by
+  simp [measureReal_def, addHaar_closedBall_center]
 
 theorem addHaar_ball_mul_of_pos (x : E) {r : ℝ} (hr : 0 < r) (s : ℝ) :
     μ (ball x (r * s)) = ENNReal.ofReal (r ^ finrank ℝ E) * μ (ball 0 s) := by
@@ -462,6 +475,13 @@ theorem addHaar_closedBall' (x : E) {r : ℝ} (hr : 0 ≤ r) :
     μ (closedBall x r) = ENNReal.ofReal (r ^ finrank ℝ E) * μ (closedBall 0 1) := by
   rw [← addHaar_closedBall_mul μ x hr zero_le_one, mul_one]
 
+theorem addHaar_real_closedBall' (x : E) {r : ℝ} (hr : 0 ≤ r) :
+    μ.real (closedBall x r) = r ^ finrank ℝ E * μ.real (closedBall 0 1) := by
+  simp only [measureReal_def, addHaar_closedBall' μ x hr, ENNReal.toReal_mul, mul_eq_mul_right_iff,
+    ENNReal.toReal_ofReal_eq_iff]
+  left
+  positivity
+
 theorem addHaar_unitClosedBall_eq_addHaar_unitBall :
     μ (closedBall (0 : E) 1) = μ (ball 0 1) := by
   apply le_antisymm _ (measure_mono ball_subset_closedBall)
@@ -483,6 +503,11 @@ theorem addHaar_closedBall (x : E) {r : ℝ} (hr : 0 ≤ r) :
     μ (closedBall x r) = ENNReal.ofReal (r ^ finrank ℝ E) * μ (ball 0 1) := by
   rw [addHaar_closedBall' μ x hr, addHaar_unitClosedBall_eq_addHaar_unitBall]
 
+theorem addHaar_real_closedBall (x : E) {r : ℝ} (hr : 0 ≤ r) :
+    μ.real (closedBall x r) = r ^ finrank ℝ E * μ.real (ball 0 1) := by
+  simp [addHaar_real_closedBall' μ x hr, measureReal_def,
+    addHaar_unitClosedBall_eq_addHaar_unitBall]
+
 theorem addHaar_closedBall_eq_addHaar_ball [Nontrivial E] (x : E) (r : ℝ) :
     μ (closedBall x r) = μ (ball x r) := by
   by_cases h : r < 0
@@ -490,8 +515,12 @@ theorem addHaar_closedBall_eq_addHaar_ball [Nontrivial E] (x : E) (r : ℝ) :
   push_neg at h
   rw [addHaar_closedBall μ x h, addHaar_ball μ x h]
 
+theorem addHaar_real_closedBall_eq_addHaar_real_ball [Nontrivial E] (x : E) (r : ℝ) :
+    μ.real (closedBall x r) = μ.real (ball x r) := by
+  simp [measureReal_def, addHaar_closedBall_eq_addHaar_ball μ x r]
+
 theorem addHaar_sphere_of_ne_zero (x : E) {r : ℝ} (hr : r ≠ 0) : μ (sphere x r) = 0 := by
-  rcases hr.lt_or_lt with (h | h)
+  rcases hr.lt_or_gt with (h | h)
   · simp only [empty_diff, measure_empty, ← closedBall_diff_ball, closedBall_eq_empty.2 h]
   · rw [← closedBall_diff_ball,
       measure_diff ball_subset_closedBall measurableSet_ball.nullMeasurableSet
@@ -605,8 +634,8 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero_aux1 (s : Set E) (x : E)
         (Eventually.of_forall fun b => zero_le _)
     filter_upwards [self_mem_nhdsWithin]
     rintro r (rpos : 0 < r)
-    rw [← affinity_unitClosedBall rpos.le, singleton_add, ← image_vadd]
-    gcongr
+    grw [t_bound]
+    rw [← vadd_eq_add, singleton_vadd, affinity_unitClosedBall rpos.le]
   have B :
     Tendsto (fun r : ℝ => μ (closedBall x r) / μ ({x} + r • u)) (𝓝[>] 0)
       (𝓝 (μ (closedBall x 1) / μ ({x} + u))) := by
@@ -775,7 +804,7 @@ theorem tendsto_addHaar_inter_smul_one_of_density_one_aux (s : Set E) (hs : Meas
       ENNReal.ofReal_eq_zero, not_le, or_false, Ne, measure_preimage_add, abs_pow,
       singleton_add, mul_eq_zero]
   · simp [h''t, ENNReal.ofReal_ne_top, addHaar_smul, image_add_left, ENNReal.mul_eq_top,
-      Ne, not_false_iff, measure_preimage_add, singleton_add, or_self_iff]
+      Ne, measure_preimage_add, singleton_add]
 
 /-- Consider a point `x` at which a set `s` has density one, with respect to closed balls (i.e.,
 a Lebesgue density point of `s`). Then `s` has also density one at `x` with respect to any

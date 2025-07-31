@@ -32,6 +32,14 @@ namespace NonUnitalSubalgebraClass
 def subtype (s : S) : s →ₙₐ[R] A :=
   { NonUnitalSubsemiringClass.subtype s, SMulMemClass.subtype s with toFun := (↑) }
 
+variable {s} in
+@[simp]
+lemma subtype_apply (x : s) : subtype s x = x := rfl
+
+lemma subtype_injective :
+    Function.Injective (subtype s) :=
+  Subtype.coe_injective
+
 @[simp]
 theorem coe_subtype : (subtype s : s → A) = ((↑) : s → A) :=
   rfl
@@ -45,8 +53,8 @@ end NonUnitalSubalgebraClass
 
 /-- A non-unital subalgebra is a sub(semi)ring that is also a submodule. -/
 structure NonUnitalSubalgebra (R : Type u) (A : Type v) [CommSemiring R]
-    [NonUnitalNonAssocSemiring A] [Module R A]
-    extends NonUnitalSubsemiring A, Submodule R A : Type v
+    [NonUnitalNonAssocSemiring A] [Module R A] : Type v
+    extends NonUnitalSubsemiring A, Submodule R A
 
 /-- Reinterpret a `NonUnitalSubalgebra` as a `NonUnitalSubsemiring`. -/
 add_decl_doc NonUnitalSubalgebra.toNonUnitalSubsemiring
@@ -67,6 +75,29 @@ instance : SetLike (NonUnitalSubalgebra R A) A where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
 
+/-- The actual `NonUnitalSubalgebra` obtained from an element of a type satisfying
+`NonUnitalSubsemiringClass` and `SMulMemClass`. -/
+@[simps]
+def ofClass {S R A : Type*} [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A]
+    [SetLike S A] [NonUnitalSubsemiringClass S A] [SMulMemClass S R A]
+    (s : S) : NonUnitalSubalgebra R A where
+  carrier := s
+  add_mem' := add_mem
+  zero_mem' := zero_mem _
+  mul_mem' := mul_mem
+  smul_mem' := SMulMemClass.smul_mem
+
+instance (priority := 100) : CanLift (Set A) (NonUnitalSubalgebra R A) (↑)
+    (fun s ↦ 0 ∈ s ∧ (∀ {x y}, x ∈ s → y ∈ s → x + y ∈ s) ∧ (∀ {x y}, x ∈ s → y ∈ s → x * y ∈ s) ∧
+      ∀ (r : R) {x}, x ∈ s → r • x ∈ s) where
+  prf s h :=
+    ⟨ { carrier := s
+        zero_mem' := h.1
+        add_mem' := h.2.1
+        mul_mem' := h.2.2.1
+        smul_mem' := h.2.2.2 },
+      rfl ⟩
+
 instance instNonUnitalSubsemiringClass :
     NonUnitalSubsemiringClass (NonUnitalSubalgebra R A) A where
   add_mem {s} := s.add_mem'
@@ -74,7 +105,7 @@ instance instNonUnitalSubsemiringClass :
   zero_mem {s} := s.zero_mem'
 
 instance instSMulMemClass : SMulMemClass (NonUnitalSubalgebra R A) R A where
-  smul_mem := @fun s => s.smul_mem'
+  smul_mem {s} := s.smul_mem'
 
 theorem mem_carrier {s : NonUnitalSubalgebra R A} {x : A} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
@@ -123,7 +154,7 @@ protected def copy (S : NonUnitalSubalgebra R A) (s : Set A) (hs : s = ↑S) :
     NonUnitalSubalgebra R A :=
   { S.toNonUnitalSubsemiring.copy s hs with
     smul_mem' := fun r a (ha : a ∈ s) => by
-      show r • a ∈ s
+      change r • a ∈ s
       rw [hs] at ha ⊢
       exact S.smul_mem' r ha }
 
@@ -147,7 +178,7 @@ variable [Module R A] [Module R B] [Module R C]
 
 instance instNonUnitalSubringClass : NonUnitalSubringClass (NonUnitalSubalgebra R A) A :=
   { NonUnitalSubalgebra.instNonUnitalSubsemiringClass with
-    neg_mem := @fun _ x hx => neg_one_smul R x ▸ SMulMemClass.smul_mem _ hx }
+    neg_mem {_ x} hx := neg_one_smul R x ▸ SMulMemClass.smul_mem _ hx }
 
 /-- A non-unital subalgebra over a ring is also a `Subring`. -/
 def toNonUnitalSubring (S : NonUnitalSubalgebra R A) : NonUnitalSubring A where
@@ -264,7 +295,7 @@ instance instSMulCommClass [SMulCommClass R A A] : SMulCommClass R S S where
 instance noZeroSMulDivisors_bot [NoZeroSMulDivisors R A] : NoZeroSMulDivisors R S :=
   ⟨fun {c x} h =>
     have : c = 0 ∨ (x : A) = 0 := eq_zero_or_eq_zero_of_smul_eq_zero (congr_arg ((↑) : S → A) h)
-    this.imp_right (@Subtype.ext_iff _ _ x 0).mpr⟩
+    this.imp_right Subtype.ext⟩
 
 end
 
@@ -286,7 +317,7 @@ protected theorem coe_sub {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algeb
   rfl
 
 @[simp, norm_cast]
-theorem coe_smul [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] (r : R') (x : S) :
+theorem coe_smul [SMul R' R] [SMul R' A] [IsScalarTower R' R A] (r : R') (x : S) :
     ↑(r • x) = r • (x : A) :=
   rfl
 
@@ -442,8 +473,7 @@ theorem mem_range_self (φ : F) (x : A) :
 theorem coe_range (φ : F) :
     ((NonUnitalAlgHom.range φ : NonUnitalSubalgebra R B) : Set B) = Set.range (φ : A → B) := by
   ext
-  rw [SetLike.mem_coe, mem_range]
-  rfl
+  rw [SetLike.mem_coe, mem_range, Set.mem_range]
 
 theorem range_comp (f : A →ₙₐ[R] B) (g : B →ₙₐ[R] C) :
     NonUnitalAlgHom.range (g.comp f) = (NonUnitalAlgHom.range f).map g :=
@@ -523,7 +553,7 @@ variable [IsScalarTower R A A] [SMulCommClass R A A]
 def adjoin (s : Set A) : NonUnitalSubalgebra R A :=
   { Submodule.span R (NonUnitalSubsemiring.closure s : Set A) with
     mul_mem' :=
-      @fun a b (ha : a ∈ Submodule.span R (NonUnitalSubsemiring.closure s : Set A))
+      fun {a b} (ha : a ∈ Submodule.span R (NonUnitalSubsemiring.closure s : Set A))
         (hb : b ∈ Submodule.span R (NonUnitalSubsemiring.closure s : Set A)) =>
       show a * b ∈ Submodule.span R (NonUnitalSubsemiring.closure s : Set A) by
         refine Submodule.span_induction ?_ ?_ ?_ ?_ ha
@@ -542,9 +572,12 @@ theorem adjoin_toSubmodule (s : Set A) :
     (adjoin R s).toSubmodule = Submodule.span R (NonUnitalSubsemiring.closure s : Set A) :=
   rfl
 
-@[aesop safe 20 apply (rule_sets := [SetLike])]
+@[simp, aesop safe 20 (rule_sets := [SetLike])]
 theorem subset_adjoin {s : Set A} : s ⊆ adjoin R s :=
   NonUnitalSubsemiring.subset_closure.trans Submodule.subset_span
+
+@[aesop 80% (rule_sets := [SetLike])]
+theorem mem_adjoin_of_mem {s : Set A} {x : A} (hx : x ∈ s) : x ∈ adjoin R s := subset_adjoin R hx
 
 theorem self_mem_adjoin_singleton (x : A) : x ∈ adjoin R ({x} : Set A) :=
   NonUnitalAlgebra.subset_adjoin R (Set.mem_singleton x)
@@ -558,7 +591,7 @@ protected theorem gc : GaloisConnection (adjoin R : Set A → NonUnitalSubalgebr
       show NonUnitalSubsemiring.closure s ≤ S.toNonUnitalSubsemiring from
         NonUnitalSubsemiring.closure_le.2 H⟩
 
-/-- Galois insertion between `adjoin` and `Subtype.val`. -/
+/-- Galois insertion between `adjoin` and `SetLike.coe`. -/
 protected def gi : GaloisInsertion (adjoin R : Set A → NonUnitalSubalgebra R A) (↑) where
   choice s hs := (adjoin R s).copy s <| le_antisymm (NonUnitalAlgebra.gc.le_u_l s) hs
   gc := NonUnitalAlgebra.gc
@@ -571,12 +604,18 @@ instance : CompleteLattice (NonUnitalSubalgebra R A) :=
 theorem adjoin_le {S : NonUnitalSubalgebra R A} {s : Set A} (hs : s ⊆ S) : adjoin R s ≤ S :=
   NonUnitalAlgebra.gc.l_le hs
 
+@[simp]
 theorem adjoin_le_iff {S : NonUnitalSubalgebra R A} {s : Set A} : adjoin R s ≤ S ↔ s ⊆ S :=
   NonUnitalAlgebra.gc _ _
+
+@[gcongr]
+theorem adjoin_mono {s t : Set A} (H : s ⊆ t) : adjoin R s ≤ adjoin R t :=
+  NonUnitalAlgebra.gc.monotone_l H
 
 theorem adjoin_union (s t : Set A) : adjoin R (s ∪ t) = adjoin R s ⊔ adjoin R t :=
   (NonUnitalAlgebra.gc : GaloisConnection _ ((↑) : NonUnitalSubalgebra R A → Set A)).l_sup
 
+@[simp]
 lemma adjoin_eq (s : NonUnitalSubalgebra R A) : adjoin R (s : Set A) = s :=
   le_antisymm (adjoin_le le_rfl) (subset_adjoin R)
 
@@ -596,9 +635,6 @@ theorem adjoin_induction {s : Set A} {p : (x : A) → x ∈ adjoin R s → Prop}
       smul_mem' := fun r ↦ (Exists.elim · fun _ hb ↦ ⟨_, smul r _ _ hb⟩)
       zero_mem' := ⟨_, zero⟩ }
   adjoin_le (S := S) (fun y hy ↦ ⟨subset_adjoin R hy, mem y hy⟩) hx |>.elim fun _ ↦ id
-
-@[deprecated adjoin_induction (since := "2024-10-10")]
-alias adjoin_induction' := adjoin_induction
 
 @[elab_as_elim]
 theorem adjoin_induction₂ {s : Set A} {p : ∀ x y, x ∈ adjoin R s → y ∈ adjoin R s → Prop}
@@ -625,20 +661,6 @@ theorem adjoin_induction₂ {s : Set A} {p : ∀ x y, x ∈ adjoin R s → y ∈
   | add _ _ _ _ h₁ h₂ => exact add_right _ _ _ _ _ _ h₁ h₂
   | smul _ _ _ h => exact smul_right _ _ _ _ _ h
 
-/-- The difference with `NonUnitalAlgebra.adjoin_induction` is that this acts on the subtype. -/
-@[elab_as_elim, deprecated adjoin_induction (since := "2024-10-11")]
-lemma adjoin_induction_subtype {s : Set A} {p : adjoin R s → Prop} (a : adjoin R s)
-    (mem : ∀ x (h : x ∈ s), p ⟨x, subset_adjoin R h⟩)
-    (add : ∀ x y, p x → p y → p (x + y)) (zero : p 0)
-    (mul : ∀ x y, p x → p y → p (x * y)) (smul : ∀ (r : R) x, p x → p (r • x)) : p a :=
-  Subtype.recOn a fun b hb => by
-    induction hb using adjoin_induction with
-    | mem _ h => exact mem _ h
-    | zero => exact zero
-    | mul _ _ _ _ h₁ h₂ => exact mul _ _ h₁ h₂
-    | add _ _ _ _ h₁ h₂ => exact add _ _ h₁ h₂
-    | smul _ _ _ h => exact smul _ _ h
-
 open Submodule in
 lemma adjoin_eq_span (s : Set A) : (adjoin R s).toSubmodule = span R (Subsemigroup.closure s) := by
   apply le_antisymm
@@ -656,7 +678,7 @@ lemma adjoin_eq_span (s : Set A) : (adjoin R s).toSubmodule = span R (Subsemigro
       case Hsmul_r => exact fun r x y _ _ hxy ↦ by simpa [mul_smul_comm] using smul_mem _ _ hxy
     | smul r x _ hpx => exact smul_mem _ _ hpx
   · apply span_le.2 _
-    show Subsemigroup.closure s ≤ (adjoin R s).toSubsemigroup
+    change Subsemigroup.closure s ≤ (adjoin R s).toSubsemigroup
     exact Subsemigroup.closure_le.2 (subset_adjoin R)
 
 variable (R A)
@@ -858,7 +880,8 @@ variable [NonUnitalNonAssocSemiring A] [Module R A]
 variable (S : NonUnitalSubalgebra R A)
 
 theorem range_val : NonUnitalAlgHom.range (NonUnitalSubalgebraClass.subtype S) = S :=
-  ext <| Set.ext_iff.1 <| (NonUnitalSubalgebraClass.subtype S).coe_range.trans Subtype.range_val
+  ext <| Set.ext_iff.1 <|
+    (NonUnitalAlgHom.coe_range <| NonUnitalSubalgebraClass.subtype S).trans Subtype.range_val
 
 instance subsingleton_of_subsingleton [Subsingleton A] : Subsingleton (NonUnitalSubalgebra R A) :=
   ⟨fun B C => ext fun x => by simp only [Subsingleton.elim x 0, zero_mem B, zero_mem C]⟩
@@ -916,7 +939,7 @@ instance _root_.NonUnitalAlgHom.subsingleton [Subsingleton (NonUnitalSubalgebra 
 
 /-- The map `S → T` when `S` is a non-unital subalgebra contained in the non-unital subalgebra `T`.
 
-This is the non-unital subalgebra version of `Submodule.inclusion`, or `Subring.inclusion`  -/
+This is the non-unital subalgebra version of `Submodule.inclusion`, or `Subring.inclusion` -/
 def inclusion {S T : NonUnitalSubalgebra R A} (h : S ≤ T) : S →ₙₐ[R] T where
   toFun := Set.inclusion h
   map_add' _ _ := rfl
@@ -1043,10 +1066,8 @@ variable [IsScalarTower R A A] [SMulCommClass R A A]
 
 theorem _root_.Set.smul_mem_center (r : R) {a : A} (ha : a ∈ Set.center A) :
     r • a ∈ Set.center A where
-  comm b := by rw [mul_smul_comm, smul_mul_assoc, ha.comm]
+  comm b := by rw [commute_iff_eq, mul_smul_comm, smul_mul_assoc, ha.comm]
   left_assoc b c := by rw [smul_mul_assoc, smul_mul_assoc, smul_mul_assoc, ha.left_assoc]
-  mid_assoc b c := by
-    rw [mul_smul_comm, smul_mul_assoc, smul_mul_assoc, mul_smul_comm, ha.mid_assoc]
   right_assoc b c := by
     rw [mul_smul_comm, mul_smul_comm, mul_smul_comm, ha.right_assoc]
 
@@ -1072,7 +1093,7 @@ theorem center_toNonUnitalSubsemiring :
     (center R A).toNonUnitalSubsemiring = NonUnitalSubsemiring.center A :=
   rfl
 
-@[simp] lemma center_toNonUnitalSubring (R A : Type*) [CommRing R] [NonUnitalRing A]
+@[simp] lemma center_toNonUnitalSubring (R A : Type*) [CommRing R] [NonUnitalNonAssocRing A]
     [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] :
     (center R A).toNonUnitalSubring = NonUnitalSubring.center A :=
   rfl
@@ -1162,7 +1183,6 @@ lemma commute_of_mem_adjoin_self {a b : A} (hb : b ∈ adjoin R {a}) :
   commute_of_mem_adjoin_singleton_of_commute hb rfl
 
 variable (R) in
-
 /-- If all elements of `s : Set A` commute pairwise, then `adjoin R s` is a non-unital commutative
 semiring.
 

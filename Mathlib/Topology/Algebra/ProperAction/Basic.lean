@@ -23,7 +23,7 @@ ultrafilters and show the transfer of proper action to a closed subgroup.
 
 * `t2Space_quotient_mulAction_of_properSMul`: If a group `G` acts properly
   on a topological space `X`, then the quotient space is Hausdorff (T2).
-* `t2Space_of_properSMul_of_t2Group`: If a T2 group acts properly on a topological space,
+* `t2Space_of_properSMul_of_t1Group`: If a T1 group acts properly on a topological space,
   then this topological space is T2.
 
 ## References
@@ -68,7 +68,7 @@ instance (priority := 100) ProperSMul.toContinuousSMul [ProperSMul G X] : Contin
 /-- A group `G` acts properly on a topological space `X` if and only if for all ultrafilters
 `𝒰` on `X × G`, if `𝒰` converges to `(x₁, x₂)` along the map `(g, x) ↦ (g • x, x)`,
 then there exists `g : G` such that `g • x₂ = x₁` and `𝒰.fst` converges to `g`. -/
-@[to_additive "A group `G` acts properly on a topological space `X` if and only if
+@[to_additive "An additive group `G` acts properly on a topological space `X` if and only if
 for all ultrafilters `𝒰` on `X`, if `𝒰` converges to `(x₁, x₂)`
 along the map `(g, x) ↦ (g • x, x)`, then there exists `g : G` such that `g • x₂ = x₁`
 and `𝒰.fst` converges to `g`."]
@@ -121,17 +121,17 @@ theorem t2Space_quotient_mulAction_of_properSMul [ProperSMul G X] :
     rw [Quotient.eq', MulAction.orbitRel_apply, MulAction.mem_orbit_iff]
   all_goals infer_instance
 
-/-- If a T2 group acts properly on a topological space, then this topological space is T2. -/
-@[to_additive "If a T2 group acts properly on a topological space,
+/-- If a T1 group acts properly on a topological space, then this topological space is T2. -/
+@[to_additive "If a T1 group acts properly on a topological space,
 then this topological space is T2."]
-theorem t2Space_of_properSMul_of_t2Group [h_proper : ProperSMul G X] [T2Space G] : T2Space X := by
+theorem t2Space_of_properSMul_of_t1Group [h_proper : ProperSMul G X] [T1Space G] : T2Space X := by
   let f := fun x : X ↦ ((1 : G), x)
   have proper_f : IsProperMap f := by
     refine IsClosedEmbedding.isProperMap ⟨?_, ?_⟩
     · let g := fun gx : G × X ↦ gx.2
       have : Function.LeftInverse g f := fun x ↦ by simp [f, g]
       exact this.isEmbedding (by fun_prop) (by fun_prop)
-    · have : range f = ({1} ×ˢ univ) := by simp [f]
+    · have : range f = ({1} ×ˢ univ) := by simp [f, Set.singleton_prod]
       rw [this]
       exact isClosed_singleton.prod isClosed_univ
   rw [t2_iff_isClosed_diagonal]
@@ -141,6 +141,9 @@ theorem t2Space_of_properSMul_of_t2Group [h_proper : ProperSMul G X] [T2Space G]
   have range_gf : range (g ∘ f) = diagonal X := by simp [this]
   rw [← range_gf]
   exact (proper_f.comp proper_g).isClosed_range
+
+@[deprecated (since := "2025-03-21")]
+alias t2Space_of_properSMul_of_t2Group := t2Space_of_properSMul_of_t1Group
 
 /-- If two groups `H` and `G` act on a topological space `X` such that `G` acts properly and
 there exists a group homomorphims `H → G` which is a closed embedding compatible with the actions,
@@ -157,9 +160,6 @@ theorem properSMul_of_isClosedEmbedding {H : Type*} [Group H] [MulAction H X] [T
       simp [f_compat]
     rw [this]
     exact h.comp <| ProperSMul.isProperMap_smul_pair
-
-@[deprecated (since := "2024-10-20")]
-alias properSMul_of_closedEmbedding := properSMul_of_isClosedEmbedding
 
 /-- If `H` is a closed subgroup of `G` and `G` acts properly on X then so does `H`. -/
 @[to_additive "If `H` is a closed subgroup of `G` and `G` acts properly on X then so does `H`."]

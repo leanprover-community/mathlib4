@@ -53,9 +53,9 @@ instance preN2 : PartialOrder (ℕ × ZMod 2) where
       · exact Or.inr (xy.trans yz)
   le_antisymm := by
     intro a b ab ba
-    cases' ab with ab ab
+    obtain ab | ab := ab
     · exact ab
-    · cases' ba with ba ba
+    · obtain ba | ba := ba
       · exact ba.symm
       · exact (Nat.lt_asymm ab ba).elim
 
@@ -97,11 +97,8 @@ theorem mul_lt_mul_of_pos_left : ∀ a b c : ℕ × ZMod 2, a < b → 0 < c → 
 theorem mul_lt_mul_of_pos_right : ∀ a b c : ℕ × ZMod 2, a < b → 0 < c → a * c < b * c :=
   fun _ _ _ ab c0 => lt_def.mpr ((mul_lt_mul_right (lt_def.mp c0)).mpr (lt_def.mp ab))
 
-instance socsN2 : StrictOrderedCommSemiring (ℕ × ZMod 2) :=
-  { Nxzmod2.csrN21, (inferInstance : PartialOrder (ℕ × ZMod 2)),
-    (inferInstance : CommSemiring (ℕ × ZMod 2)),
-    domain_nontrivial Prod.fst Prod.fst_zero Prod.fst_one with
-    add_le_add_left := add_le_add_left
+instance isorN2 : IsStrictOrderedRing (ℕ × ZMod 2) :=
+  { add_le_add_left := add_le_add_left
     le_of_add_le_add_left := le_of_add_le_add_left
     zero_le_one := zero_le_one
     mul_lt_mul_of_pos_left := mul_lt_mul_of_pos_left
@@ -126,7 +123,7 @@ theorem add_L {a b : ℕ × ZMod 2} (ha : a ≠ (0, 1)) (hb : b ≠ (0, 1)) : a 
     · simp [ha, -Prod.mk.injEq]
     · cases hb rfl
   | b + 1 =>
-    simp [(a + b).succ_ne_zero]
+    simp
 
 theorem mul_L {a b : ℕ × ZMod 2} (ha : a ≠ (0, 1)) (hb : b ≠ (0, 1)) : a * b ≠ (0, 1) := by
   rcases a with ⟨a, a2⟩
@@ -151,8 +148,14 @@ def lSubsemiring : Subsemiring (ℕ × ZMod 2) where
   add_mem' := add_L
   mul_mem' := mul_L
 
-instance : OrderedCommSemiring L :=
-  lSubsemiring.toOrderedCommSemiring
+instance : CommSemiring L :=
+  lSubsemiring.toCommSemiring
+
+instance : PartialOrder L :=
+  Subtype.partialOrder _
+
+instance : IsOrderedRing L :=
+  lSubsemiring.toIsOrderedRing
 
 instance inhabited : Inhabited L :=
   ⟨1⟩
@@ -174,7 +177,7 @@ theorem exists_add_of_le : ∀ a b : L, a ≤ b → ∃ c, b = a + c := by
   rintro a ⟨b, _⟩ (⟨rfl, rfl⟩ | h)
   · exact ⟨0, (add_zero _).symm⟩
   · exact
-      ⟨⟨b - a.1, fun H => (tsub_pos_of_lt h).ne' (Prod.mk.inj_iff.1 H).1⟩,
+      ⟨⟨b - a.1, fun H => (tsub_pos_of_lt h).ne' (Prod.mk_inj.1 H).1⟩,
         Subtype.ext <| Prod.ext (add_tsub_cancel_of_le h.le).symm (add_sub_cancel _ _).symm⟩
 
 theorem le_self_add : ∀ a b : L, a ≤ a + b := by
@@ -200,7 +203,11 @@ theorem eq_zero_or_eq_zero_of_mul_eq_zero : ∀ a b : L, a * b = 0 → a = 0 ∨
     · rfl
     · exact (hb rfl).elim
 
-instance : OrderedCommSemiring L := inferInstance
+instance : CommSemiring L := inferInstance
+
+instance : PartialOrder L := inferInstance
+
+instance : IsOrderedRing L := inferInstance
 
 instance : CanonicallyOrderedAdd L where
   exists_add_of_le := @(exists_add_of_le)

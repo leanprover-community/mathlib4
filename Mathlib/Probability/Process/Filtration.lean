@@ -5,6 +5,7 @@ Authors: Kexing Ying, Rémy Degenne
 -/
 import Mathlib.MeasureTheory.Constructions.Cylinders
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.Real
+import Mathlib.MeasureTheory.MeasurableSpace.PreorderRestrict
 
 /-!
 # Filtrations
@@ -40,6 +41,7 @@ namespace MeasureTheory
 /-- A `Filtration` on a measurable space `Ω` with σ-algebra `m` is a monotone
 sequence of sub-σ-algebras of `m`. -/
 structure Filtration {Ω : Type*} (ι : Type*) [Preorder ι] (m : MeasurableSpace Ω) where
+  /-- The sequence of sub-σ-algebras of `m` -/
   seq : ι → MeasurableSpace Ω
   mono' : Monotone seq
   le' : ∀ i : ι, seq i ≤ m
@@ -65,13 +67,10 @@ protected theorem le (f : Filtration ι m) (i : ι) : f i ≤ m :=
 protected theorem ext {f g : Filtration ι m} (h : (f : ι → MeasurableSpace Ω) = g) : f = g := by
   cases f; cases g; congr
 
-variable (ι)
-
+variable (ι) in
 /-- The constant filtration which is equal to `m` for all `i : ι`. -/
 def const (m' : MeasurableSpace Ω) (hm' : m' ≤ m) : Filtration ι m :=
   ⟨fun _ => m', monotone_const, fun _ => hm'⟩
-
-variable {ι}
 
 @[simp]
 theorem const_apply {m' : MeasurableSpace Ω} {hm' : m' ≤ m} (i : ι) : const ι m' hm' i = m' :=
@@ -139,7 +138,7 @@ noncomputable instance : InfSet (Filtration ι m) :=
     { seq := fun i => if Set.Nonempty s then sInf ((fun f : Filtration ι m => f i) '' s) else m
       mono' := fun i j hij => by
         by_cases h_nonempty : Set.Nonempty s
-        swap; · simp only [h_nonempty, Set.image_nonempty, if_false, le_refl]
+        swap; · simp only [h_nonempty, if_false, le_refl]
         simp only [h_nonempty, if_true, le_sInf_iff, Set.mem_image, forall_exists_index, and_imp,
           forall_apply_eq_imp_iff₂]
         refine fun f hf_mem => le_trans ?_ (f.mono hij)
@@ -223,6 +222,11 @@ theorem Integrable.uniformIntegrable_condExp_filtration [Preorder ι] {μ : Meas
 alias Integrable.uniformIntegrable_condexp_filtration :=
   Integrable.uniformIntegrable_condExp_filtration
 
+theorem Filtration.condExp_condExp [Preorder ι] {E : Type*} [NormedAddCommGroup E]
+    [NormedSpace ℝ E] [CompleteSpace E] (f : Ω → E) {μ : Measure Ω} (ℱ : Filtration ι m)
+    {i j : ι} (hij : i ≤ j) [SigmaFinite (μ.trim (ℱ.le j))] :
+    μ[μ[f|ℱ j]|ℱ i] =ᵐ[μ] μ[f|ℱ i] := condExp_condExp_of_le (ℱ.mono hij) (ℱ.le j)
+
 section OfSet
 
 variable [Preorder ι]
@@ -276,7 +280,7 @@ theorem filtrationOfSet_eq_natural [MulZeroOneClass β] [Nontrivial β] {s : ι 
     rw [comap_eq_generateFrom]
     refine measurableSet_generateFrom ⟨{1}, measurableSet_singleton 1, ?_⟩
     ext x
-    simp [Set.indicator_const_preimage_eq_union]
+    simp
   · rintro t ⟨n, ht⟩
     suffices MeasurableSpace.generateFrom {t | n ≤ i ∧
       MeasurableSet[MeasurableSpace.comap ((s n).indicator (fun _ => 1 : Ω → β)) mβ] t} ≤
@@ -336,10 +340,67 @@ alias memℒp_limitProcess_of_eLpNorm_bdd := memLp_limitProcess_of_eLpNorm_bdd
 
 end Limit
 
+section piLE
+
+/-! ### Filtration of the first events -/
+
+open MeasurableSpace Preorder
+
+variable {X : ι → Type*} [∀ i, MeasurableSpace (X i)]
+
+/-- The canonical filtration on the product space `Π i, X i`, where `piLE i`
+consists of measurable sets depending only on coordinates `≤ i`. -/
+def piLE : @Filtration (Π i, X i) ι _ pi where
+  seq i := pi.comap (restrictLe i)
+  mono' i j hij := by
+    simp only
+    rw [← restrictLe₂_comp_restrictLe hij, ← comap_comp]
+    exact comap_mono (measurable_restrictLe₂ _).comap_le
+  le' i := (measurable_restrictLe i).comap_le
+
+variable [LocallyFiniteOrderBot ι]
+
+lemma piLE_eq_comap_frestrictLe (i : ι) : piLE (X := X) i = pi.comap (frestrictLe i) := by
+  apply le_antisymm
+  · simp_rw [piLE, ← piCongrLeft_comp_frestrictLe, ← MeasurableEquiv.coe_piCongrLeft, ← comap_comp]
+    exact MeasurableSpace.comap_mono <| Measurable.comap_le (by fun_prop)
+  · rw [← piCongrLeft_comp_restrictLe, ← MeasurableEquiv.coe_piCongrLeft, ← comap_comp]
+    exact MeasurableSpace.comap_mono <| Measurable.comap_le (by fun_prop)
+
+end piLE
+
+section piFinset
+
+open MeasurableSpace Finset
+
+variable {ι : Type*} {X : ι → Type*} [∀ i, MeasurableSpace (X i)]
+
+/-- The filtration of events which only depends on finitely many coordinates
+on the product space `Π i, X i`, `piFinset s` consists of measurable sets depending only on
+coordinates in `s`, where `s : Finset ι`. -/
+def piFinset : @Filtration (Π i, X i) (Finset ι) _ pi where
+  seq s := pi.comap s.restrict
+  mono' s t hst := by
+    simp only
+    rw [← restrict₂_comp_restrict hst, ← comap_comp]
+    exact comap_mono (measurable_restrict₂ hst).comap_le
+  le' s := s.measurable_restrict.comap_le
+
+lemma piFinset_eq_comap_restrict (s : Finset ι) :
+    piFinset (X := X) s = pi.comap s.toSet.restrict := by
+  apply le_antisymm
+  · simp_rw [piFinset, ← Set.piCongrLeft_comp_restrict, ← MeasurableEquiv.coe_piCongrLeft,
+      ← comap_comp]
+    exact MeasurableSpace.comap_mono <| (MeasurableEquiv.measurable _).comap_le
+  · rw [← piCongrLeft_comp_restrict, ← MeasurableEquiv.coe_piCongrLeft, ← comap_comp]
+    exact MeasurableSpace.comap_mono <| (MeasurableEquiv.measurable _).comap_le
+
+end piFinset
+
 variable {α : Type*}
 
 /-- The exterior σ-algebras of finite sets of `α` form a cofiltration indexed by `Finset α`. -/
-def cylinderEventsCompl : Filtration (Finset α)ᵒᵈ (.pi (π := fun _ : α ↦ Ω)) where
+def cylinderEventsCompl : Filtration (Finset α)ᵒᵈ (.pi (X := fun _ : α ↦ Ω)) where
   seq Λ := cylinderEvents (↑(OrderDual.ofDual Λ))ᶜ
   mono' _ _ h := cylinderEvents_mono <| Set.compl_subset_compl_of_subset h
   le' _  := cylinderEvents_le_pi

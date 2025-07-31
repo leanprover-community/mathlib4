@@ -83,7 +83,9 @@ titlesPathsAndRegexes=(
                                             "^[· ]*#adaptation_note"
   "disabled simpNF lints"          "*"      "nolint simpNF"
   "erw"                            "*"      "erw \["
-  "maxHeartBeats modifications"    ":^MathlibTest" "^ *set_option .*maxHeartbeats"
+  "maxHeartBeats modifications"    ":^MathlibTest" "^ *set_option .*maxHeartbeats.* [0-9][0-9]*"
+  "CommRing (Fin n) instances"     "*"      "^open Fin.CommRing "
+  "NatCast (Fin n) instances"      "*"      "^open Fin.NatCast "
 )
 
 for i in ${!titlesPathsAndRegexes[@]}; do
@@ -108,7 +110,7 @@ deprecs="$(git grep -c -- "set_option linter.deprecated false" -- ":^Mathlib/Dep
 
 # count the `linter.deprecated` exceptions that are themselves followed by `deprecated ...(since`
 # we subtract these from `deprecs`
-doubleDeprecs="$(git grep -A1 -- "set_option linter.deprecated false" -- ":^Mathlib/Deprecated" |
+doubleDeprecs="$(git grep -A2 -- "set_option linter.deprecated false" -- ":^Mathlib/Deprecated" |
   grep -c "deprecated .*(since")"
 
 printf '%s|disabled deprecation lints\n' "$(( deprecs - doubleDeprecs ))"
@@ -116,7 +118,6 @@ printf '%s|disabled deprecation lints\n' "$(( deprecs - doubleDeprecs ))"
 printf '%s|%s\n' "$(grep -c 'docBlame' scripts/nolints.json)" "documentation nolint entries"
 # We count the number of large files, making sure to avoid counting the test file `MathlibTest/Lint.lean`.
 printf '%s|%s\n' "$(git grep '^set_option linter.style.longFile [0-9]*' Mathlib | wc -l)" "large files"
-printf '%s|%s\n' "$(git grep "^open .*Classical" | grep -v " in$" -c)" "bare open (scoped) Classical"
 
 printf '%s|%s\n' "$(wc -l < scripts/nolints_prime_decls.txt)" "exceptions for the docPrime linter"
 

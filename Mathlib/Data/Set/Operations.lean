@@ -8,7 +8,6 @@ import Mathlib.Data.Set.CoeSort
 import Mathlib.Data.SProd
 import Mathlib.Data.Subtype
 import Mathlib.Order.Notation
-import Mathlib.Util.CompileInductive
 
 /-!
 # Basic definitions about sets
@@ -58,15 +57,6 @@ More advanced theorems about these definitions are located in other files in `Ma
 set, image, preimage
 -/
 
--- https://github.com/leanprover/lean4/issues/2096
-compile_def% Union.union
-compile_def% Inter.inter
-compile_def% SDiff.sdiff
-compile_def% HasCompl.compl
-compile_def% EmptyCollection.emptyCollection
-compile_def% Insert.insert
-compile_def% Singleton.singleton
-
 attribute [ext] Set.ext
 
 universe u v w
@@ -75,9 +65,31 @@ namespace Set
 
 variable {α : Type u} {β : Type v} {γ : Type w}
 
+/-! ### Lemmas about `mem` and `setOf` -/
+
 @[simp, mfld_simps] theorem mem_setOf_eq {x : α} {p : α → Prop} : (x ∈ {y | p y}) = p x := rfl
 
+/-- This lemma is intended for use with `rw` where a membership predicate is needed,
+hence the explicit argument and the equality in the reverse direction from normal.
+See also `Set.mem_setOf_eq` for the reverse direction applied to an argument. -/
+theorem eq_mem_setOf (p : α → Prop) : p = (· ∈ {a | p a}) := rfl
+
+theorem mem_setOf {a : α} {p : α → Prop} : a ∈ { x | p x } ↔ p a := Iff.rfl
+
+/-- If `h : a ∈ {x | p x}` then `h.out : p x`. These are definitionally equal, but this can
+nevertheless be useful for various reasons, e.g. to apply further projection notation or in an
+argument to `simp`. -/
+alias ⟨_root_.Membership.mem.out, _⟩ := mem_setOf
+
+theorem notMem_setOf_iff {a : α} {p : α → Prop} : a ∉ { x | p x } ↔ ¬p a := Iff.rfl
+
+@[deprecated (since := "2025-05-24")] alias nmem_setOf_iff := notMem_setOf_iff
+
+@[simp] theorem setOf_mem_eq {s : Set α} : { x | x ∈ s } = s := rfl
+
 @[simp, mfld_simps] theorem mem_univ (x : α) : x ∈ @univ α := trivial
+
+/-! ### Operations -/
 
 instance : HasCompl (Set α) := ⟨fun s ↦ {x | x ∉ s}⟩
 
@@ -172,7 +184,11 @@ theorem mem_prod_eq : (p ∈ s ×ˢ t) = (p.1 ∈ s ∧ p.2 ∈ t) := rfl
 theorem mem_prod : p ∈ s ×ˢ t ↔ p.1 ∈ s ∧ p.2 ∈ t := .rfl
 
 @[mfld_simps]
-theorem prod_mk_mem_set_prod_eq : ((a, b) ∈ s ×ˢ t) = (a ∈ s ∧ b ∈ t) := rfl
+theorem prodMk_mem_set_prod_eq : ((a, b) ∈ s ×ˢ t) = (a ∈ s ∧ b ∈ t) :=
+  rfl
+
+@[deprecated (since := "2025-02-21")]
+alias prod_mk_mem_set_prod_eq := prodMk_mem_set_prod_eq
 
 theorem mk_mem_prod (ha : a ∈ s) (hb : b ∈ t) : (a, b) ∈ s ×ˢ t := ⟨ha, hb⟩
 

@@ -19,9 +19,9 @@ namespace Complex
 variable {z : ℂ}
 
 instance instNorm : Norm ℂ where
-  norm z := Real.sqrt (normSq z)
+  norm z := √(normSq z)
 
-theorem norm_def (z : ℂ) : ‖z‖ = Real.sqrt (normSq z) := rfl
+theorem norm_def (z : ℂ) : ‖z‖ = √(normSq z) := rfl
 
 theorem norm_mul_self_eq_normSq (z : ℂ) : ‖z‖ * ‖z‖ = normSq z :=
   Real.mul_self_sqrt (normSq_nonneg _)
@@ -62,7 +62,8 @@ private theorem norm_neg' (z : ℂ) : ‖-z‖ = ‖z‖ := by
 
 instance instNormedAddCommGroup : NormedAddCommGroup ℂ :=
   AddGroupNorm.toNormedAddCommGroup
-  { map_zero' := norm_map_zero'
+  { toFun := norm
+    map_zero' := norm_map_zero'
     add_le' := norm_add_le'
     neg' := norm_neg'
     eq_zero_of_map_eq_zero' := fun _ ↦ norm_eq_zero_iff.mp }
@@ -163,10 +164,6 @@ lemma nnnorm_ratCast (q : ℚ) : ‖(q : ℂ)‖₊ = ‖(q : ℝ)‖₊ := nnno
 @[simp 1100, norm_cast]
 lemma nnnorm_nnratCast (q : ℚ≥0) : ‖(q : ℂ)‖₊ = q := by simp [nnnorm]
 
-@[deprecated (since := "2024-08-25")] alias norm_nat := norm_natCast
-@[deprecated (since := "2024-08-25")] alias norm_int := norm_intCast
-@[deprecated (since := "2024-08-25")] alias norm_rat := norm_ratCast
-@[deprecated (since := "2024-08-25")] alias nnnorm_nat := nnnorm_natCast
 @[deprecated (since := "2025-02-16")] alias abs_intCast := norm_intCast
 
 lemma normSq_eq_norm_sq (z : ℂ) : normSq z = ‖z‖ ^ 2 := by
@@ -176,16 +173,16 @@ protected theorem sq_norm (z : ℂ) : ‖z‖ ^ 2 = normSq z := (normSq_eq_norm_
 
 @[simp]
 theorem sq_norm_sub_sq_re (z : ℂ) : ‖z‖ ^ 2 - z.re ^ 2 = z.im ^ 2 := by
-   rw [Complex.sq_norm, normSq_apply, ← sq, ← sq, add_sub_cancel_left]
+  rw [Complex.sq_norm, normSq_apply, ← sq, ← sq, add_sub_cancel_left]
 
 @[simp]
 theorem sq_norm_sub_sq_im (z : ℂ) : ‖z‖ ^ 2 - z.im ^ 2 = z.re ^ 2 := by
   rw [← sq_norm_sub_sq_re, sub_sub_cancel]
 
-lemma norm_add_mul_I (x y : ℝ) : ‖x + y * I‖ = (x ^ 2 + y ^ 2).sqrt := by
+lemma norm_add_mul_I (x y : ℝ) : ‖x + y * I‖ = √(x ^ 2 + y ^ 2) := by
   rw [← normSq_add_mul_I]; rfl
 
-lemma norm_eq_sqrt_sq_add_sq (z : ℂ) : ‖z‖ = (z.re ^ 2 + z.im ^ 2).sqrt := by
+lemma norm_eq_sqrt_sq_add_sq (z : ℂ) : ‖z‖ = √(z.re ^ 2 + z.im ^ 2) := by
   rw [norm_def, normSq_apply, sq, sq]
 
 @[deprecated (since := "2025-02-16")] alias normSq_eq_abs := normSq_eq_norm_sq
@@ -204,7 +201,7 @@ protected theorem range_norm : range (‖·‖ : ℂ → ℝ) = Set.Ici 0 :=
 @[simp]
 theorem range_normSq : range normSq = Ici 0 :=
   Subset.antisymm (range_subset_iff.2 normSq_nonneg) fun x hx =>
-    ⟨Real.sqrt x, by rw [normSq_ofReal, Real.mul_self_sqrt hx]⟩
+    ⟨√x, by rw [normSq_ofReal, Real.mul_self_sqrt hx]⟩
 
 theorem norm_le_abs_re_add_abs_im (z : ℂ) : ‖z‖ ≤ |z.re| + |z.im| := by
     simpa [re_add_im] using norm_add_le (z.re : ℂ) (z.im * I)
@@ -243,32 +240,27 @@ lemma abs_im_eq_norm {z : ℂ} : |z.im| = ‖z‖ ↔ z.re = 0 :=
 @[deprecated (since := "2025-02-16")] alias abs_re_eq_abs := abs_re_eq_norm
 @[deprecated (since := "2025-02-16")] alias abs_im_eq_abs := abs_im_eq_norm
 
-theorem norm_le_sqrt_two_mul_max (z : ℂ) : ‖z‖ ≤ Real.sqrt 2 * max |z.re| |z.im| := by
+theorem norm_le_sqrt_two_mul_max (z : ℂ) : ‖z‖ ≤ √2 * max |z.re| |z.im| := by
   obtain ⟨x, y⟩ := z
   simp only [norm_def, normSq_mk, norm_def, ← sq]
-  by_cases hle : |x| ≤ |y|
-  · calc
-      Real.sqrt (x ^ 2 + y ^ 2) ≤ Real.sqrt (y ^ 2 + y ^ 2) :=
-        Real.sqrt_le_sqrt (add_le_add_right (sq_le_sq.2 hle) _)
-      _ = Real.sqrt 2 * max |x| |y| := by
-        rw [max_eq_right hle, ← two_mul, Real.sqrt_mul two_pos.le, Real.sqrt_sq_eq_abs]
-  · have hle' := le_of_not_le hle
-    rw [add_comm]
-    calc
-      Real.sqrt (y ^ 2 + x ^ 2) ≤ Real.sqrt (x ^ 2 + x ^ 2) :=
-        Real.sqrt_le_sqrt (add_le_add_right (sq_le_sq.2 hle') _)
-      _ = Real.sqrt 2 * max |x| |y| := by
-        rw [max_eq_left hle', ← two_mul, Real.sqrt_mul two_pos.le, Real.sqrt_sq_eq_abs]
+  set m := max |x| |y|
+  have hm₀ : 0 ≤ m := by positivity
+  calc
+    √(x ^ 2 + y ^ 2) ≤ √(m ^ 2 + m ^ 2) := by
+      gcongr √(?_ + ?_) <;> rw [sq_le_sq, abs_of_nonneg hm₀]
+      exacts [le_max_left _ _, le_max_right _ _]
+    _ = √2 * m := by
+      rw [← two_mul, Real.sqrt_mul, Real.sqrt_sq] <;> positivity
 
 theorem abs_re_div_norm_le_one (z : ℂ) : |z.re / ‖z‖| ≤ 1 :=
- if hz : z = 0 then by simp [hz, zero_le_one]
- else by simp_rw [abs_div, abs_norm,
-   div_le_iff₀ (norm_pos_iff.mpr hz), one_mul, abs_re_le_norm]
+  if hz : z = 0 then by simp [hz, zero_le_one]
+  else by
+    simp_rw [abs_div, abs_norm, div_le_iff₀ (norm_pos_iff.mpr hz), one_mul, abs_re_le_norm]
 
 theorem abs_im_div_norm_le_one (z : ℂ) : |z.im / ‖z‖| ≤ 1 :=
   if hz : z = 0 then by simp [hz, zero_le_one]
-  else by simp_rw [_root_.abs_div, abs_norm,
-    div_le_iff₀ (norm_pos_iff.mpr hz), one_mul, abs_im_le_norm]
+  else by
+    simp_rw [_root_.abs_div, abs_norm, div_le_iff₀ (norm_pos_iff.mpr hz), one_mul, abs_im_le_norm]
 
 @[deprecated (since := "2025-02-16")] alias abs_le_sqrt_two_mul_max := norm_le_sqrt_two_mul_max
 @[deprecated (since := "2025-02-16")] alias abs_re_div_abs_le_one := abs_re_div_norm_le_one

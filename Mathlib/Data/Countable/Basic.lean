@@ -87,11 +87,11 @@ instance [Countable α] [Countable β] : Countable (α × β) := by
 
 instance [Uncountable α] [Nonempty β] : Uncountable (α × β) := by
   inhabit β
-  exact (Prod.mk.inj_right default).uncountable
+  exact (Prod.mk_left_injective default).uncountable
 
 instance [Nonempty α] [Uncountable β] : Uncountable (α × β) := by
   inhabit α
-  exact (Prod.mk.inj_left default).uncountable
+  exact (Prod.mk_right_injective default).uncountable
 
 lemma countable_left_of_prod_of_nonempty [Nonempty β] (h : Countable (α × β)) : Countable α := by
   contrapose h
@@ -137,15 +137,14 @@ instance [Countable α] [Countable β] : Countable (PProd α β) :=
   Countable.of_equiv (PLift α × PLift β) (Equiv.plift.prodPProd Equiv.plift)
 
 instance [Countable α] [∀ a, Countable (π a)] : Countable (PSigma π) :=
-  Countable.of_equiv (Σa : PLift α, PLift (π a.down)) (Equiv.psigmaEquivSigmaPLift π).symm
+  Countable.of_equiv (Σ a : PLift α, PLift (π a.down)) (Equiv.psigmaEquivSigmaPLift π).symm
 
 instance [Finite α] [∀ a, Countable (π a)] : Countable (∀ a, π a) := by
   have : ∀ n, Countable (Fin n → ℕ) := by
     intro n
     induction' n with n ihn
-    · change Countable (Fin 0 → ℕ); infer_instance
-    · haveI := ihn
-      exact Countable.of_equiv (ℕ × (Fin n → ℕ)) (Fin.consEquiv fun _ ↦ ℕ)
+    · infer_instance
+    · exact Countable.of_equiv (ℕ × (Fin n → ℕ)) (Fin.consEquiv fun _ ↦ ℕ)
   rcases Finite.exists_equiv_fin α with ⟨n, ⟨e⟩⟩
   have f := fun a => (nonempty_embedding_nat (π a)).some
   exact ((Embedding.piCongrRight f).trans (Equiv.piCongrLeft' _ e).toEmbedding).countable

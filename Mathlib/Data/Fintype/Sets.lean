@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Finset.BooleanAlgebra
+import Mathlib.Data.Finset.SymmDiff
 import Mathlib.Data.Fintype.OfMap
 
 /-!
@@ -77,6 +78,9 @@ theorem toFinset_inj {s t : Set α} [Fintype s] [Fintype t] : s.toFinset = t.toF
 @[mono]
 theorem toFinset_subset_toFinset [Fintype s] [Fintype t] : s.toFinset ⊆ t.toFinset ↔ s ⊆ t := by
   simp [Finset.subset_iff, Set.subset_def]
+
+@[gcongr]
+alias ⟨_, toFinset_subset_toFinset_of_subset⟩ := toFinset_subset_toFinset
 
 @[simp]
 theorem toFinset_ssubset [Fintype s] {t : Finset α} : s.toFinset ⊂ t ↔ s ⊂ t := by
@@ -187,7 +191,7 @@ theorem toFinset_range [DecidableEq α] [Fintype β] (f : β → α) [Fintype (S
   ext
   simp
 
-@[simp] -- Porting note: new attribute
+@[simp]
 theorem toFinset_singleton (a : α) [Fintype ({a} : Set α)] : ({a} : Set α).toFinset = {a} := by
   ext
   simp
@@ -201,8 +205,7 @@ theorem toFinset_insert [DecidableEq α] {a : α} {s : Set α} [Fintype (insert 
 theorem filter_mem_univ_eq_toFinset [Fintype α] (s : Set α) [Fintype s] [DecidablePred (· ∈ s)] :
     Finset.univ.filter (· ∈ s) = s.toFinset := by
   ext
-  simp only [Finset.mem_univ, decide_eq_true_eq, forall_true_left, mem_filter,
-    true_and, mem_toFinset]
+  rw [mem_filter_univ, mem_toFinset]
 
 end Set
 
@@ -245,7 +248,7 @@ theorem Finset.attach_eq_univ {s : Finset α} : s.attach = Finset.univ :=
   rfl
 
 instance Prop.fintype : Fintype Prop :=
-  ⟨⟨{True, False}, by simp [true_ne_false]⟩, by simpa using em⟩
+  ⟨⟨{True, False}, by simp⟩, by simpa using em⟩
 
 @[simp]
 theorem Fintype.univ_Prop : (Finset.univ : Finset Prop) = {True, False} :=

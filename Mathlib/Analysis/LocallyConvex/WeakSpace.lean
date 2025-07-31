@@ -3,8 +3,8 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.LinearAlgebra.Dual
 import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
+import Mathlib.LinearAlgebra.Dual.Defs
 import Mathlib.Topology.Algebra.Module.WeakDual
 
 /-! # Closures of convex sets in locally convex spaces
@@ -50,7 +50,7 @@ theorem Convex.toWeakSpace_closure {s : Set E} (hs : Convex ℝ s) :
     refine closure_minimal ?_ <| isClosed_le (by fun_prop) (by fun_prop)
     rintro - ⟨y, hy, rfl⟩
     simpa [f'] using (hus y <| subset_closure hy).le
-  exact (hux'.not_le <| hus' ·)
+  exact (hux'.not_ge <| hus' ·)
 
 /-- If `e : E →ₗ[𝕜] F` is a linear map between locally convex spaces, and `f ∘ e` is continuous
 for every continuous linear functional `f : F →L[𝕜] 𝕜`, then `e` commutes with the closure on

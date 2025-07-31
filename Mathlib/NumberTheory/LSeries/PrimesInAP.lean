@@ -57,7 +57,7 @@ The main steps of the proof are as follows.
 
 We give two versions of **Dirichlet's Theorem**:
 * `Nat.setOf_prime_and_eq_mod_infinite` states that the set of primes `p`
-   such that `(p : ZMod q) = a` is infinite (when `a` is invertible in `ZMod q`).
+  such that `(p : ZMod q) = a` is infinite (when `a` is invertible in `ZMod q`).
 * `Nat.forall_exists_prime_gt_and_eq_mod` states that for any natural number `n`
   there is a prime `p > n` such that `(p : ZMod q) = a`.
 
@@ -75,7 +75,7 @@ as an iterated product or sum over primes and natural numbers.
 
 section auxiliary
 
-variable {α β γ : Type*} [CommGroup α] [UniformSpace α] [UniformGroup α] [CompleteSpace α]
+variable {α β γ : Type*} [CommGroup α] [UniformSpace α] [IsUniformGroup α] [CompleteSpace α]
   [T0Space α]
 
 open Nat.Primes in
@@ -88,21 +88,21 @@ lemma tprod_eq_tprod_primes_of_mulSupport_subset_prime_powers {f : ℕ → α}
       simpa only [← coe_prodNatEquiv_apply, Prod.eta, Function.comp_def, Equiv.apply_symm_apply]
         using hfm.subtype _
   simp only [← tprod_subtype_eq_of_mulSupport_subset hf, Set.coe_setOf, ← prodNatEquiv.tprod_eq,
-    ← tprod_prod hfm']
+    ← hfm'.tprod_prod]
   refine tprod_congr fun (p, k) ↦ congrArg f <| coe_prodNatEquiv_apply ..
 
 @[to_additive tsum_eq_tsum_primes_add_tsum_primes_of_support_subset_prime_powers]
 lemma tprod_eq_tprod_primes_mul_tprod_primes_of_mulSupport_subset_prime_powers {f : ℕ → α}
     (hfm : Multipliable f) (hf : Function.mulSupport f ⊆ {n | IsPrimePow n}) :
-    ∏' n : ℕ, f n = (∏' p : Nat.Primes, f p) *  ∏' (p : Nat.Primes) (k : ℕ), f (p ^ (k + 2)) := by
+    ∏' n : ℕ, f n = (∏' p : Nat.Primes, f p) * ∏' (p : Nat.Primes) (k : ℕ), f (p ^ (k + 2)) := by
   rw [tprod_eq_tprod_primes_of_mulSupport_subset_prime_powers hfm hf]
   have hfs' (p : Nat.Primes) : Multipliable fun k : ℕ ↦ f (p ^ (k + 1)) :=
     hfm.comp_injective <| (strictMono_nat_of_lt_succ
       fun k ↦ pow_lt_pow_right₀ p.prop.one_lt <| lt_add_one (k + 1)).injective
   conv_lhs =>
-    enter [1, p]; rw [tprod_eq_zero_mul (hfs' p), zero_add, pow_one]
+    enter [1, p]; rw [(hfs' p).tprod_eq_zero_mul, zero_add, pow_one]
     enter [2, 1, k]; rw [add_assoc, one_add_one_eq_two]
-  exact tprod_mul (Multipliable.subtype hfm _) <|
+  exact (Multipliable.subtype hfm _).tprod_mul <|
     Multipliable.prod (f := fun (pk : Nat.Primes × ℕ) ↦ f (pk.1 ^ (pk.2 + 2))) <|
     hfm.comp_injective <| Subtype.val_injective |>.comp
     Nat.Primes.prodNatEquiv.injective |>.comp <|
@@ -136,7 +136,7 @@ lemma residueClass_le (n : ℕ) : residueClass a n ≤ vonMangoldt n :=
 
 @[simp]
 lemma residueClass_apply_zero : residueClass a 0 = 0 := by
-  simp only [Set.indicator_apply_eq_zero, Set.mem_setOf_eq, Nat.cast_zero, map_zero, ofReal_zero,
+  simp only [Set.indicator_apply_eq_zero, Set.mem_setOf_eq, Nat.cast_zero, map_zero,
     implies_true]
 
 lemma abscissaOfAbsConv_residueClass_le_one :
@@ -149,7 +149,7 @@ lemma abscissaOfAbsConv_residueClass_le_one :
   by_cases hn : (n : ZMod q) = a
   · simp +contextual only [term, Set.indicator, Set.mem_setOf_eq, hn, ↓reduceIte, apply_ite,
       ite_self]
-  · simp +contextual only [term, Set.mem_setOf_eq, hn, not_false_eq_true, Set.indicator_of_not_mem,
+  · simp +contextual only [term, Set.mem_setOf_eq, hn, not_false_eq_true, Set.indicator_of_notMem,
       ofReal_zero, zero_div, ite_self]
 
 /-- The set we are interested in (prime numbers in the residue class `a`) is the same as the support
@@ -178,7 +178,7 @@ private lemma F''_le (p : Nat.Primes) (k : ℕ) : F'' (p, k) ≤ 2 * (p : ℝ)�
         zero_le, Nat.Prime.not_prime_pow, ↓reduceIte, vonMangoldt_apply_prime p.prop,
         vonMangoldt_apply_pow (Nat.zero_ne_add_one _).symm, Nat.cast_pow, div_eq_mul_inv,
         inv_pow (p : ℝ) (k + 2)]
-    _ ≤ (p: ℝ) ^ (1 / 2 : ℝ) / (1 / 2) * (p : ℝ)⁻¹ ^ (k + 2) :=
+    _ ≤ (p : ℝ) ^ (1 / 2 : ℝ) / (1 / 2) * (p : ℝ)⁻¹ ^ (k + 2) :=
         mul_le_mul_of_nonneg_right (Real.log_le_rpow_div p.val.cast_nonneg one_half_pos)
           (pow_nonneg (inv_nonneg_of_nonneg (Nat.cast_nonneg ↑p)) (k + 2))
     _ = 2 * (p : ℝ)⁻¹ ^ (-1 / 2 : ℝ) * (p : ℝ)⁻¹ ^ (k + 2) := by
@@ -250,7 +250,7 @@ lemma summable_residueClass_non_primes_div :
     simp only [Function.comp_apply, Prod.map_fst, id_eq, Prod.map_snd, F'', F']
   refine (Function.Injective.summable_iff ?_ fun u hu ↦ ?_).mp <| hF'₁ ▸ summable_F''
   · exact Function.Injective.prodMap (fun ⦃a₁ a₂⦄ a ↦ a) <| add_left_injective 1
-  · simp only [Set.range_prod_map, Set.range_id, Set.mem_prod, Set.mem_univ, Set.mem_range,
+  · simp only [Set.range_prodMap, Set.range_id, Set.mem_prod, Set.mem_univ, Set.mem_range,
       Nat.exists_add_one_eq, true_and, not_lt, nonpos_iff_eq_zero] at hu
     rw [← hF'₀ u.1, ← hu]
 
@@ -382,7 +382,7 @@ lemma LFunctionResidueClassAux_real (ha : IsUnit a) {x : ℝ} (hx : 1 < x) :
     · simp only [term_zero, zero_re, ofReal_zero]
     · simp only [term_of_ne_zero hn, ← ofReal_natCast n, ← ofReal_cpow n.cast_nonneg, ← ofReal_div,
         ofReal_re]
-  · rw [show (q.totient : ℂ) = (q.totient : ℝ) from rfl, ← ofReal_one, ← ofReal_sub, ← ofReal_inv,
+  · rw [← ofReal_natCast, ← ofReal_one, ← ofReal_sub, ← ofReal_inv,
       ← ofReal_div, ofReal_re]
 
 variable {q : ℕ} [NeZero q] {a : ZMod q}
@@ -428,7 +428,7 @@ lemma not_summable_residueClass_prime_div (ha : IsUnit a) :
     simp only [← add_div, ite_add_ite, zero_add, add_zero, ite_self]
   let C := ∑' n, residueClass a n / n
   have H₁ {x : ℝ} (hx : 1 < x) : ∑' n, residueClass a n / (n : ℝ) ^ x ≤ C := by
-    refine tsum_le_tsum (fun n ↦ ?_) ?_ key
+    refine Summable.tsum_le_tsum (fun n ↦ ?_) ?_ key
     · rcases n.eq_zero_or_pos with rfl | hn
       · simp only [Nat.cast_zero, Real.zero_rpow (zero_lt_one.trans hx).ne', div_zero, le_refl]
       · refine div_le_div_of_nonneg_left (residueClass_nonneg a _) (mod_cast hn) ?_
@@ -441,7 +441,7 @@ lemma not_summable_residueClass_prime_div (ha : IsUnit a) :
     (div_le_iff₀ <| sub_pos.mpr hx.1).mp <|
       sub_le_iff_le_add.mp <| (hC' hx).trans (H₁ hx.1)
   have hq : 0 < (q.totient : ℝ)⁻¹ := inv_pos.mpr (mod_cast q.totient.pos_of_neZero)
-  rcases le_or_lt (C + C') 0 with h₀ | h₀
+  rcases le_or_gt (C + C') 0 with h₀ | h₀
   · have := hq.trans_le (H₁ (Set.right_mem_Ioc.mpr one_lt_two))
     rw [show (2 : ℝ) - 1 = 1 by norm_num, mul_one] at this
     exact (this.trans_le h₀).false

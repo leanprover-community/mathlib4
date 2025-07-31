@@ -3,7 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
+import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 import Mathlib.Algebra.Ring.Subsemiring.Basic
 import Mathlib.RingTheory.Localization.Defs
 
@@ -12,7 +12,7 @@ import Mathlib.RingTheory.Localization.Defs
 
 ## Main definitions
 
- * `IsLocalization.IsInteger` is a predicate stating that `x : S` is in the image of `R`
+* `IsLocalization.IsInteger` is a predicate stating that `x : S` is in the image of `R`
 
 ## Implementation notes
 
@@ -90,7 +90,7 @@ theorem exist_integer_multiples {ι : Type*} (s : Finset ι) (f : ι → S) :
   refine _root_.trans ?_ (map_prod (Submonoid.subtype M) _ _).symm
   rw [mul_comm,Submonoid.coe_finset_prod,
     -- Porting note: explicitly supplied `f`
-    ← Finset.prod_insert (f := fun i => ((sec M (f i)).snd : R)) (s.not_mem_erase i),
+    ← Finset.prod_insert (f := fun i => ((sec M (f i)).snd : R)) (s.notMem_erase i),
     Finset.insert_erase hi]
   rfl
 

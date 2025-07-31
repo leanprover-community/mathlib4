@@ -128,7 +128,6 @@ noncomputable def realContinuousMapOfNNReal (φ : C(X, ℝ≥0) →⋆ₐ[ℝ≥
     convert this using 1
     abel
   commutes' r := by
-    simp only
     obtain (hr | hr) := le_total 0 r
     · lift r to ℝ≥0 using hr
       simpa only [ContinuousMap.toNNReal_algebraMap, ContinuousMap.toNNReal_neg_algebraMap,
@@ -307,7 +306,7 @@ noncomputable def realContinuousMapZeroOfNNReal (φ : C(X, ℝ≥0)₀ →⋆ₙ
     abel
   map_add' f g := by
     have := congr(φ $(f.toNNReal_add_add_neg_add_neg_eq g))
-    simp only [map_add, map_mul, sub_mul, mul_sub] at this ⊢
+    simp only [map_add] at this ⊢
     rw [← sub_eq_zero] at this ⊢
     rw [← this]
     abel
@@ -418,7 +417,7 @@ variable {F R S A B : Type*} {p : A → Prop} {q : B → Prop}
   [NonUnitalRing B] [StarRing B] [TopologicalSpace B] [Module R B]
   [IsScalarTower R B B] [SMulCommClass R B B]
   [Module S A] [Module S B] [IsScalarTower R S A] [IsScalarTower R S B]
-  [NonUnitalContinuousFunctionalCalculus R p] [NonUnitalContinuousFunctionalCalculus R q]
+  [NonUnitalContinuousFunctionalCalculus R A p] [NonUnitalContinuousFunctionalCalculus R B q]
   [ContinuousMapZero.UniqueHom R B] [FunLike F A B] [NonUnitalAlgHomClass F S A B]
   [StarHomClass F A B]
 
@@ -469,7 +468,7 @@ variable {F R S A B : Type*} {p : A → Prop} {q : B → Prop}
   [Ring A] [StarRing A] [TopologicalSpace A] [Algebra R A]
   [Ring B] [StarRing B] [TopologicalSpace B] [Algebra R B]
   [CommSemiring S] [Algebra R S] [Algebra S A] [Algebra S B] [IsScalarTower R S A]
-  [IsScalarTower R S B] [ContinuousFunctionalCalculus R p] [ContinuousFunctionalCalculus R q]
+  [IsScalarTower R S B] [ContinuousFunctionalCalculus R A p] [ContinuousFunctionalCalculus R B q]
   [ContinuousMap.UniqueHom R B] [FunLike F A B] [AlgHomClass F S A B]
   [StarHomClass F A B]
 

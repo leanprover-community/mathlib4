@@ -9,27 +9,30 @@ import Mathlib.RingTheory.IsAdjoinRoot
 /-!
 # Kummer-Dedekind theorem
 
-This file proves the monogenic version of the Kummer-Dedekind theorem on the splitting of prime
-ideals in an extension of the ring of integers. This states that if `I` is a prime ideal of
-Dedekind domain `R` and `S = R[α]` for some `α` that is integral over `R` with minimal polynomial
-`f`, then the prime factorisations of `I * S` and `f mod I` have the same shape, i.e. they have the
-same number of prime factors, and each prime factors of `I * S` can be paired with a prime factor
-of `f mod I` in a way that ensures multiplicities match (in fact, this pairing can be made explicit
+This file proves the Kummer-Dedekind theorem on the splitting of prime ideals in an extension of
+the ring of integers. This states the following: assume we are given
+  - A prime ideal `I` of Dedekind domain `R`
+  - An `R`-algebra `S` that is a Dedekind Domain
+  - An `α : S` such that that is integral over `R` with minimal polynomial `f`
+If the conductor `𝓒` of `x` is such that `𝓒 ∩ R` is coprime to `I` then the prime
+factorisations of `I * S` and `f mod I` have the same shape, i.e. they have the same number of
+prime factors, and each prime factors of `I * S` can be paired with a prime factor of `f mod I` in
+a way that ensures multiplicities match (in fact, this pairing can be made explicit
 with a formula).
 
 ## Main definitions
 
- * `normalizedFactorsMapEquivNormalizedFactorsMinPolyMk` : The bijection in the
-    Kummer-Dedekind theorem. This is the pairing between the prime factors of `I * S` and the prime
-    factors of `f mod I`.
+* `normalizedFactorsMapEquivNormalizedFactorsMinPolyMk` : The bijection in the Kummer-Dedekind
+  theorem. This is the pairing between the prime factors of `I * S` and the prime factors of
+  `f mod I`.
 
 ## Main results
 
- * `normalized_factors_ideal_map_eq_normalized_factors_min_poly_mk_map` : The Kummer-Dedekind
-    theorem.
- * `Ideal.irreducible_map_of_irreducible_minpoly` : `I.map (algebraMap R S)` is irreducible if
-    `(map (Ideal.Quotient.mk I) (minpoly R pb.gen))` is irreducible, where `pb` is a power basis
-    of `S` over `R`.
+* `normalized_factors_ideal_map_eq_normalized_factors_min_poly_mk_map` : The Kummer-Dedekind
+  theorem.
+* `Ideal.irreducible_map_of_irreducible_minpoly` : `I.map (algebraMap R S)` is irreducible if
+  `(map (Ideal.Quotient.mk I) (minpoly R pb.gen))` is irreducible, where `pb` is a power basis
+  of `S` over `R`.
   * `normalizedFactorsMapEquivNormalizedFactorsMinPolyMk_symm_apply_eq_span` : Let `Q` be a lift of
     factor of the minimal polynomial of `x`, a generator of `S` over `R`, taken
     `mod I`. Then (the reduction of) `Q` corresponds via
@@ -38,13 +41,11 @@ with a formula).
 
 ## TODO
 
- * Prove the Kummer-Dedekind theorem in full generality.
-
- * Prove the converse of `Ideal.irreducible_map_of_irreducible_minpoly`.
+* Prove the converse of `Ideal.irreducible_map_of_irreducible_minpoly`.
 
 ## References
 
- * [J. Neukirch, *Algebraic Number Theory*][Neukirch1992]
+* [J. Neukirch, *Algebraic Number Theory*][Neukirch1992]
 
 ## Tags
 
@@ -62,7 +63,7 @@ local notation:max R "<" x:max ">" => adjoin R ({x} : Set S)
     biggest ideal of `S` contained in `R<x>`. -/
 def conductor (x : S) : Ideal S where
   carrier := {a | ∀ b : S, a * b ∈ R<x>}
-  zero_mem' b := by simpa only [zero_mul] using Subalgebra.zero_mem _
+  zero_mem' b := by simp only [zero_mul, zero_mem]
   add_mem' ha hb c := by simpa only [add_mul] using Subalgebra.add_mem _ (ha c) (hb c)
   smul_mem' c a ha b := by simpa only [smul_eq_mul, mul_left_comm, mul_assoc] using ha (c * b)
 
@@ -83,6 +84,15 @@ theorem conductor_eq_top_of_adjoin_eq_top (h : R<x> = ⊤) : conductor R x = ⊤
 theorem conductor_eq_top_of_powerBasis (pb : PowerBasis R S) : conductor R pb.gen = ⊤ :=
   conductor_eq_top_of_adjoin_eq_top pb.adjoin_gen_eq_top
 
+theorem adjoin_eq_top_of_conductor_eq_top {x : S} (h : conductor R x = ⊤) :
+    Algebra.adjoin R {x} = ⊤ :=
+  Algebra.eq_top_iff.mpr fun y ↦
+    one_mul y ▸ (mem_conductor_iff).mp ((Ideal.eq_top_iff_one (conductor R x)).mp h) y
+
+theorem conductor_eq_top_iff_adjoin_eq_top {x : S} :
+    conductor R x = ⊤ ↔ Algebra.adjoin R {x} = ⊤ :=
+  ⟨fun h ↦ adjoin_eq_top_of_conductor_eq_top h, fun h ↦ conductor_eq_top_of_adjoin_eq_top h⟩
+
 open IsLocalization in
 lemma mem_coeSubmodule_conductor {L} [CommRing L] [Algebra S L] [Algebra R L]
     [IsScalarTower R S L] [NoZeroSMulDivisors S L] {x : S} {y : L} :
@@ -100,7 +110,7 @@ lemma mem_coeSubmodule_conductor {L} [CommRing L] [Algebra S L] [Algebra R L]
       obtain ⟨y, _, e⟩ := H 1
       rw [map_one, mul_one] at e
       subst e
-      simp only [← _root_.map_mul, (FaithfulSMul.algebraMap_injective S L).eq_iff,
+      simp only [← map_mul, (FaithfulSMul.algebraMap_injective S L).eq_iff,
         exists_eq_right] at H
       exact ⟨_, H, rfl⟩
   · rw [AlgHom.map_adjoin, Set.image_singleton]; rfl
@@ -161,7 +171,7 @@ theorem comap_map_eq_map_adjoin_of_coprime_conductor
           (show z ∈ I.map (algebraMap R S) by rwa [Ideal.mem_comap] at hy))
       use a + algebraMap R R<x> q * ⟨z, hz⟩
       refine ⟨Ideal.add_mem (I.map (algebraMap R R<x>)) ha.left ?_, by
-          simp only [ha.right, map_add, _root_.map_mul, add_right_inj]; rfl⟩
+          simp only [ha.right, map_add, map_mul, add_right_inj]; rfl⟩
       rw [mul_comm]
       exact Ideal.mul_mem_left (I.map (algebraMap R R<x>)) _ (Ideal.mem_map_of_mem _ hq)
     refine ⟨fun h => ?_,
@@ -230,7 +240,11 @@ variable [NoZeroSMulDivisors R S]
 
 attribute [local instance] Ideal.Quotient.field
 
-private noncomputable def f (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤)
+/--
+The isomorphism of rings between `S / I` and `(R / I)[X] / minpoly x` when `I`
+and `(conductor R x) ∩ R` are coprime.
+-/
+noncomputable def quotMapEquivQuotQuotMap (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤)
     (hx' : IsIntegral R x) :
     S ⧸ I.map (algebraMap R S) ≃+* (R ⧸ I)[X] ⧸ span {(minpoly R x).map (Ideal.Quotient.mk I)} :=
   (quotAdjoinEquivQuotMap hx (FaithfulSMul.algebraMap_injective
@@ -238,12 +252,12 @@ private noncomputable def f (hx : (conductor R x).comap (algebraMap R S) ⊔ I =
     ((Algebra.adjoin.powerBasis' hx').quotientEquivQuotientMinpolyMap I).toRingEquiv.trans <|
     quotEquivOfEq (by rw [Algebra.adjoin.powerBasis'_minpoly_gen hx'])
 
-private lemma f_symm_aux (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤)
+lemma quotMapEquivQuotQuotMap_symm_apply (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤)
     (hx' : IsIntegral R x) (Q : R[X]) :
-    (f hx hx').symm (Q.map (Ideal.Quotient.mk I)) = Q.aeval x := by
-  apply (f hx hx').injective
-  rw [f, AlgEquiv.toRingEquiv_eq_coe, RingEquiv.symm_trans_apply, RingEquiv.symm_symm,
-    RingEquiv.coe_trans, Function.comp_apply, RingEquiv.symm_apply_apply,
+    (quotMapEquivQuotQuotMap hx hx').symm (Q.map (Ideal.Quotient.mk I)) = Q.aeval x := by
+  apply (quotMapEquivQuotQuotMap hx hx').injective
+  rw [quotMapEquivQuotQuotMap, AlgEquiv.toRingEquiv_eq_coe, RingEquiv.symm_trans_apply,
+    RingEquiv.symm_symm, RingEquiv.coe_trans, Function.comp_apply, RingEquiv.symm_apply_apply,
     RingEquiv.symm_trans_apply, quotEquivOfEq_symm, quotEquivOfEq_mk]
   congr
   convert (adjoin.powerBasis' hx').quotientEquivQuotientMinpolyMap_symm_apply_mk I Q
@@ -253,7 +267,7 @@ private lemma f_symm_aux (hx : (conductor R x).comap (algebraMap R S) ⊔ I = �
     coe_aeval_mk_apply]
 
 open Classical in
-/-- The first half of the **Kummer-Dedekind Theorem** in the monogenic case, stating that the prime
+/-- The first half of the **Kummer-Dedekind Theorem**, stating that the prime
     factors of `I*S` are in bijection with those of the minimal polynomial of the generator of `S`
     over `R`, taken `mod I`. -/
 noncomputable def normalizedFactorsMapEquivNormalizedFactorsMinPolyMk (hI : IsMaximal I)
@@ -261,7 +275,7 @@ noncomputable def normalizedFactorsMapEquivNormalizedFactorsMinPolyMk (hI : IsMa
     {J : Ideal S | J ∈ normalizedFactors (I.map (algebraMap R S))} ≃
       {d : (R ⧸ I)[X] |
         d ∈ normalizedFactors (Polynomial.map (Ideal.Quotient.mk I) (minpoly R x))} := by
-  refine (normalizedFactorsEquivOfQuotEquiv (f hx hx') ?_ ?_).trans ?_
+  refine (normalizedFactorsEquivOfQuotEquiv (quotMapEquivQuotQuotMap hx hx') ?_ ?_).trans ?_
   · rwa [Ne, map_eq_bot_iff_of_injective (FaithfulSMul.algebraMap_injective R S), ← Ne]
   · by_contra h
     exact (show Polynomial.map (Ideal.Quotient.mk I) (minpoly R x) ≠ 0 from
@@ -270,7 +284,7 @@ noncomputable def normalizedFactorsMapEquivNormalizedFactorsMinPolyMk (hI : IsMa
     exact Polynomial.map_monic_ne_zero (minpoly.monic hx')
 
 open Classical in
-/-- The second half of the **Kummer-Dedekind Theorem** in the monogenic case, stating that the
+/-- The second half of the **Kummer-Dedekind Theorem**, stating that the
     bijection `FactorsEquiv'` defined in the first half preserves multiplicities. -/
 theorem emultiplicity_factors_map_eq_emultiplicity
     (hI : IsMaximal I) (hI' : I ≠ ⊥)
@@ -361,7 +375,7 @@ open Set Classical in
 /-- Let `Q` be a lift of factor of the minimal polynomial of `x`, a generator of `S` over `R`, taken
 `mod I`. Then (the reduction of) `Q` corresponds via
 `normalizedFactorsMapEquivNormalizedFactorsMinPolyMk` to
-`span (I.map (algebraMap R S) ∪ {Q.aeval x})`.  -/
+`span (I.map (algebraMap R S) ∪ {Q.aeval x})`. -/
 theorem normalizedFactorsMapEquivNormalizedFactorsMinPolyMk_symm_apply_eq_span
     (hI : I.IsMaximal) {Q : R[X]}
     (hQ : Q.map (Ideal.Quotient.mk I) ∈ normalizedFactors ((minpoly R x).map (Ideal.Quotient.mk I)))
@@ -372,13 +386,13 @@ theorem normalizedFactorsMapEquivNormalizedFactorsMinPolyMk_symm_apply_eq_span
     normalizedFactorsEquivSpanNormalizedFactors]
   rw [normalizedFactorsEquivOfQuotEquiv_symm]
   dsimp [normalizedFactorsEquivOfQuotEquiv, idealFactorsEquivOfQuotEquiv, OrderIso.ofHomInv]
-  simp only [map_span, image_singleton, coe_coe,f_symm_aux hx hx' Q]
+  simp only [map_span, image_singleton, coe_coe, quotMapEquivQuotQuotMap_symm_apply hx hx' Q]
   refine le_antisymm (fun a ha ↦ ?_) (span_le.mpr <| union_subset_iff.mpr <|
     ⟨le_comap_of_map_le (by simp), by simp [mem_span_singleton]⟩)
   rw [mem_comap, Ideal.mem_span_singleton] at ha
   obtain ⟨a', ha'⟩ := ha
   obtain ⟨b, hb⟩ := Ideal.Quotient.mk_surjective a'
-  rw [← hb, ← _root_.map_mul, Quotient.mk_eq_mk_iff_sub_mem] at ha'
+  rw [← hb, ← map_mul, Quotient.mk_eq_mk_iff_sub_mem] at ha'
   rw [union_comm, span_union, span_eq, mem_span_singleton_sup]
   exact ⟨b, a - Q.aeval x * b, ha', by ring⟩
 

@@ -3,7 +3,9 @@ Copyright (c) 2020 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
+import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Submonoid.Defs
+import Mathlib.Data.Set.Inclusion
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.FastInstance
 
@@ -72,17 +74,17 @@ class NegMemClass (S : Type*) (G : outParam Type*) [Neg G] [SetLike S G] : Prop 
 export NegMemClass (neg_mem)
 
 /-- `SubgroupClass S G` states `S` is a type of subsets `s ⊆ G` that are subgroups of `G`. -/
-class SubgroupClass (S : Type*) (G : outParam Type*) [DivInvMonoid G] [SetLike S G]
-    extends SubmonoidClass S G, InvMemClass S G : Prop
+class SubgroupClass (S : Type*) (G : outParam Type*) [DivInvMonoid G] [SetLike S G] : Prop
+    extends SubmonoidClass S G, InvMemClass S G
 
 /-- `AddSubgroupClass S G` states `S` is a type of subsets `s ⊆ G` that are
 additive subgroups of `G`. -/
-class AddSubgroupClass (S : Type*) (G : outParam Type*) [SubNegMonoid G] [SetLike S G]
-    extends AddSubmonoidClass S G, NegMemClass S G : Prop
+class AddSubgroupClass (S : Type*) (G : outParam Type*) [SubNegMonoid G] [SetLike S G] : Prop
+    extends AddSubmonoidClass S G, NegMemClass S G
 
 attribute [to_additive] InvMemClass SubgroupClass
 
-attribute [aesop safe apply (rule_sets := [SetLike])] inv_mem neg_mem
+attribute [aesop 90% (rule_sets := [SetLike])] inv_mem neg_mem
 
 @[to_additive (attr := simp)]
 theorem inv_mem_iff {S G} [InvolutiveInv G] {_ : SetLike S G} [InvMemClass S G] {H : S}
@@ -92,12 +94,12 @@ theorem inv_mem_iff {S G} [InvolutiveInv G] {_ : SetLike S G} [InvMemClass S G] 
 variable {M S : Type*} [DivInvMonoid M] [SetLike S M] [hSM : SubgroupClass S M] {H K : S}
 
 /-- A subgroup is closed under division. -/
-@[to_additive (attr := aesop safe apply (rule_sets := [SetLike]))
+@[to_additive (attr := aesop 90% (rule_sets := [SetLike]))
   "An additive subgroup is closed under subtraction."]
 theorem div_mem {x y : M} (hx : x ∈ H) (hy : y ∈ H) : x / y ∈ H := by
   rw [div_eq_mul_inv]; exact mul_mem hx (inv_mem hy)
 
-@[to_additive (attr := aesop safe apply (rule_sets := [SetLike]))]
+@[to_additive (attr := aesop 90% (rule_sets := [SetLike]))]
 theorem zpow_mem {x : M} (hx : x ∈ K) : ∀ n : ℤ, x ^ n ∈ K
   | (n : ℕ) => by
     rw [zpow_natCast]
@@ -127,8 +129,7 @@ namespace InvMemClass
 
 /-- A subgroup of a group inherits an inverse. -/
 @[to_additive "An additive subgroup of an `AddGroup` inherits an inverse."]
-instance inv {G : Type u_1} {S : Type u_2} [Inv G] [SetLike S G]
-  [InvMemClass S G] {H : S} : Inv H :=
+instance inv {G S : Type*} [Inv G] [SetLike S G] [InvMemClass S G] {H : S} : Inv H :=
   ⟨fun a => ⟨a⁻¹, inv_mem a.2⟩⟩
 
 @[to_additive (attr := simp, norm_cast)]
@@ -153,8 +154,7 @@ theorem subset_union {H K L : S} : (H : Set G) ⊆ K ∪ L ↔ H ≤ K ∨ H ≤
 
 /-- A subgroup of a group inherits a division -/
 @[to_additive "An additive subgroup of an `AddGroup` inherits a subtraction."]
-instance div {G : Type u_1} {S : Type u_2} [DivInvMonoid G] [SetLike S G]
-  [SubgroupClass S G] {H : S} : Div H :=
+instance div {G S : Type*} [DivInvMonoid G] [SetLike S G] [SubgroupClass S G] {H : S} : Div H :=
   ⟨fun a b => ⟨a / b, div_mem a.2 b.2⟩⟩
 
 /-- An additive subgroup of an `AddGroup` inherits an integer scaling. -/
@@ -194,6 +194,16 @@ instance (priority := 75) toCommGroup {G : Type*} [CommGroup G] [SetLike S G] [S
 protected def subtype : H →* G where
   toFun := ((↑) : H → G); map_one' := rfl; map_mul' := fun _ _ => rfl
 
+variable {H} in
+@[to_additive (attr := simp)]
+lemma subtype_apply (x : H) :
+    SubgroupClass.subtype H x = x := rfl
+
+@[to_additive]
+lemma subtype_injective :
+    Function.Injective (SubgroupClass.subtype H) :=
+  Subtype.coe_injective
+
 @[to_additive (attr := simp)]
 theorem coe_subtype : (SubgroupClass.subtype H : H → G) = ((↑) : H → G) := by
   rfl
@@ -216,7 +226,7 @@ theorem coe_zpow (x : H) (n : ℤ) : ((x ^ n : H) : G) = (x : G) ^ n :=
 /-- The inclusion homomorphism from a subgroup `H` contained in `K` to `K`. -/
 @[to_additive "The inclusion homomorphism from an additive subgroup `H` contained in `K` to `K`."]
 def inclusion {H K : S} (h : H ≤ K) : H →* K :=
-  MonoidHom.mk' (fun x => ⟨x, h x.prop⟩) fun _ _=> rfl
+  MonoidHom.mk' (fun x => ⟨x, h x.prop⟩) fun _ _ => rfl
 
 @[to_additive (attr := simp)]
 theorem inclusion_self (x : H) : inclusion le_rfl x = x := by
@@ -283,6 +293,21 @@ instance : SetLike (Subgroup G) G where
     obtain ⟨⟨⟨hq,_⟩,_⟩,_⟩ := q
     congr
 
+initialize_simps_projections Subgroup (carrier → coe, as_prefix coe)
+initialize_simps_projections AddSubgroup (carrier → coe, as_prefix coe)
+
+/-- The actual `Subgroup` obtained from an element of a `SubgroupClass` -/
+@[to_additive (attr := simps) "The actual `AddSubgroup` obtained from an element of a
+`AddSubgroupClass`"]
+def ofClass {S G : Type*} [Group G] [SetLike S G] [SubgroupClass S G]
+    (s : S) : Subgroup G :=
+  ⟨⟨⟨s, MulMemClass.mul_mem⟩, OneMemClass.one_mem s⟩, InvMemClass.inv_mem⟩
+
+@[to_additive]
+instance (priority := 100) : CanLift (Set G) (Subgroup G) (↑)
+    (fun s ↦ 1 ∈ s ∧ (∀ {x y}, x ∈ s → y ∈ s → x * y ∈ s) ∧ ∀ {x}, x ∈ s → x⁻¹ ∈ s) where
+  prf s h := ⟨{ carrier := s, one_mem' := h.1, mul_mem' := h.2.1, inv_mem' := h.2.2}, rfl⟩
+
 -- TODO: Below can probably be written more uniformly
 @[to_additive]
 instance : SubgroupClass (Subgroup G) G where
@@ -297,22 +322,19 @@ theorem mem_carrier {s : Subgroup G} {x : G} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 
 @[to_additive (attr := simp)]
-theorem mem_mk {s : Set G} {x : G} (h_one) (h_mul) (h_inv) :
-    x ∈ mk ⟨⟨s, h_one⟩, h_mul⟩ h_inv ↔ x ∈ s :=
+theorem mem_mk {s : Submonoid G} {x : G} (h_inv) :
+    x ∈ mk s h_inv ↔ x ∈ s :=
   Iff.rfl
 
-@[to_additive (attr := simp, norm_cast)]
-theorem coe_set_mk {s : Set G} (h_one) (h_mul) (h_inv) :
-    (mk ⟨⟨s, h_one⟩, h_mul⟩ h_inv : Set G) = s :=
+@[to_additive (attr := simp)]
+theorem coe_set_mk {s : Submonoid G} (h_inv) :
+    (mk s h_inv : Set G) = s :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem mk_le_mk {s t : Set G} (h_one) (h_mul) (h_inv) (h_one') (h_mul') (h_inv') :
-    mk ⟨⟨s, h_one⟩, h_mul⟩ h_inv ≤ mk ⟨⟨t, h_one'⟩, h_mul'⟩ h_inv' ↔ s ⊆ t :=
+theorem mk_le_mk {s t : Submonoid G} (h_inv) (h_inv') :
+    mk s h_inv ≤ mk t h_inv' ↔ s ≤ t :=
   Iff.rfl
-
-initialize_simps_projections Subgroup (carrier → coe, as_prefix coe)
-initialize_simps_projections AddSubgroup (carrier → coe, as_prefix coe)
 
 @[to_additive (attr := simp)]
 theorem coe_toSubmonoid (K : Subgroup G) : (K.toSubmonoid : Set G) = K :=
@@ -324,7 +346,6 @@ theorem mem_toSubmonoid (K : Subgroup G) (x : G) : x ∈ K.toSubmonoid ↔ x ∈
 
 @[to_additive]
 theorem toSubmonoid_injective : Function.Injective (toSubmonoid : Subgroup G → Submonoid G) :=
-  -- fun p q h => SetLike.ext'_iff.2 (show _ from SetLike.ext'_iff.1 h)
   fun p q h => by
     have := SetLike.ext'_iff.1 h
     rw [coe_toSubmonoid, coe_toSubmonoid] at this
@@ -522,17 +543,22 @@ protected def subtype : H →* G where
   toFun := ((↑) : H → G); map_one' := rfl; map_mul' _ _ := rfl
 
 @[to_additive (attr := simp)]
-theorem coe_subtype : ⇑ H.subtype = ((↑) : H → G) :=
+lemma subtype_apply {s : Subgroup G} (x : s) :
+    s.subtype x = x := rfl
+
+@[to_additive]
+lemma subtype_injective (s : Subgroup G) :
+    Function.Injective s.subtype :=
+  Subtype.coe_injective
+
+@[to_additive (attr := simp)]
+theorem coe_subtype : ⇑H.subtype = ((↑) : H → G) :=
   rfl
 
 @[deprecated (since := "2025-02-18")]
 alias coeSubtype := coe_subtype
 @[deprecated (since := "2025-02-18")]
 alias _root_.AddSubgroup.coeSubtype := AddSubgroup.coe_subtype
-
-@[to_additive]
-theorem subtype_injective : Function.Injective (Subgroup.subtype H) :=
-  Subtype.coe_injective
 
 /-- The inclusion homomorphism from a subgroup `H` contained in `K` to `K`. -/
 @[to_additive "The inclusion homomorphism from an additive subgroup `H` contained in `K` to `K`."]
@@ -560,9 +586,9 @@ theorem subtype_comp_inclusion {H K : Subgroup G} (hH : H ≤ K) :
 
 open Set
 
-/-- A subgroup is normal if whenever `n ∈ H`, then `g * n * g⁻¹ ∈ H` for every `g : G` -/
+/-- A subgroup `H` is normal if whenever `n ∈ H`, then `g * n * g⁻¹ ∈ H` for every `g : G` -/
 structure Normal : Prop where
-  /-- `N` is closed under conjugation -/
+  /-- `H` is closed under conjugation -/
   conj_mem : ∀ n, n ∈ H → ∀ g : G, g * n * g⁻¹ ∈ H
 
 attribute [class] Normal
@@ -571,9 +597,9 @@ end Subgroup
 
 namespace AddSubgroup
 
-/-- An AddSubgroup is normal if whenever `n ∈ H`, then `g + n - g ∈ H` for every `g : G` -/
+/-- An AddSubgroup `H` is normal if whenever `n ∈ H`, then `g + n - g ∈ H` for every `g : A` -/
 structure Normal (H : AddSubgroup A) : Prop where
-  /-- `N` is closed under additive conjugation -/
+  /-- `H` is closed under additive conjugation -/
   conj_mem : ∀ n, n ∈ H → ∀ g : A, g + n + -g ∈ H
 
 attribute [to_additive] Subgroup.Normal
@@ -588,7 +614,7 @@ variable {H : Subgroup G}
 
 @[to_additive]
 instance (priority := 100) normal_of_comm {G : Type*} [CommGroup G] (H : Subgroup G) : H.Normal :=
-  ⟨by simp [mul_comm, mul_left_comm]⟩
+  ⟨by simp [mul_comm]⟩
 
 namespace Normal
 
@@ -666,35 +692,27 @@ theorem le_normalizer : H ≤ normalizer H := fun x xH n => by
 
 end Normalizer
 
-/-- Commutativity of a subgroup -/
-structure IsCommutative : Prop where
-  /-- `*` is commutative on `H` -/
-  is_comm : Std.Commutative (α := H) (· * ·)
-
-attribute [class] IsCommutative
-
-/-- Commutativity of an additive subgroup -/
-structure _root_.AddSubgroup.IsCommutative (H : AddSubgroup A) : Prop where
-  /-- `+` is commutative on `H` -/
-  is_comm : Std.Commutative (α := H) (· + ·)
-
-attribute [to_additive] Subgroup.IsCommutative
-
-attribute [class] AddSubgroup.IsCommutative
-
-/-- A commutative subgroup is commutative. -/
-@[to_additive "A commutative subgroup is commutative."]
-instance IsCommutative.commGroup [h : H.IsCommutative] : CommGroup H :=
-  { H.toGroup with mul_comm := h.is_comm.comm }
+@[deprecated (since := "2025-04-09")] alias IsCommutative := IsMulCommutative
+@[deprecated (since := "2025-04-09")] alias _root_.AddSubgroup.IsCommutative := IsAddCommutative
 
 /-- A subgroup of a commutative group is commutative. -/
 @[to_additive "A subgroup of a commutative group is commutative."]
-instance commGroup_isCommutative {G : Type*} [CommGroup G] (H : Subgroup G) : H.IsCommutative :=
+instance commGroup_isMulCommutative {G : Type*} [CommGroup G] (H : Subgroup G) :
+    IsMulCommutative H :=
   ⟨CommMagma.to_isCommutative⟩
 
+@[deprecated (since := "2025-04-09")] alias commGroup_isCommutative := commGroup_isMulCommutative
+@[deprecated (since := "2025-04-09")] alias _root_.AddSubgroup.addCommGroup_isCommutative :=
+  commGroup_isMulCommutative
+
 @[to_additive]
-lemma mul_comm_of_mem_isCommutative [H.IsCommutative] {a b : G} (ha : a ∈ H) (hb : b ∈ H) :
+lemma mul_comm_of_mem_isMulCommutative [IsMulCommutative H] {a b : G} (ha : a ∈ H) (hb : b ∈ H) :
     a * b = b * a := by
   simpa only [MulMemClass.mk_mul_mk, Subtype.mk.injEq] using mul_comm (⟨a, ha⟩ : H) (⟨b, hb⟩ : H)
+
+@[deprecated (since := "2025-04-09")] alias mul_comm_of_mem_isCommutative :=
+  mul_comm_of_mem_isMulCommutative
+@[deprecated (since := "2025-04-09")] alias _root_.AddSubgroup.add_comm_of_mem_isCommutative :=
+  _root_.AddSubgroup.add_comm_of_mem_isAddCommutative
 
 end Subgroup

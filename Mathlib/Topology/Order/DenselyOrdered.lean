@@ -48,7 +48,7 @@ theorem closure_Iio (a : α) [NoMinOrder α] : closure (Iio a) = Iic a :=
 theorem closure_Ioo {a b : α} (hab : a ≠ b) : closure (Ioo a b) = Icc a b := by
   apply Subset.antisymm
   · exact closure_minimal Ioo_subset_Icc_self isClosed_Icc
-  · rcases hab.lt_or_lt with hab | hab
+  · rcases hab.lt_or_gt with hab | hab
     · rw [← diff_subset_closure_iff, Icc_diff_Ioo_same hab.le]
       have hab' : (Ioo a b).Nonempty := nonempty_Ioo.2 hab
       simp only [insert_subset_iff, singleton_subset_iff]
@@ -128,7 +128,8 @@ theorem Ioc_subset_closure_interior (a b : α) : Ioc a b ⊆ closure (interior (
         closure_mono (interior_maximal Ioo_subset_Ioc_self isOpen_Ioo)
 
 theorem Ico_subset_closure_interior (a b : α) : Ico a b ⊆ closure (interior (Ico a b)) := by
-  simpa only [dual_Ioc] using Ioc_subset_closure_interior (OrderDual.toDual b) (OrderDual.toDual a)
+  simpa only [Ioc_toDual] using
+    Ioc_subset_closure_interior (OrderDual.toDual b) (OrderDual.toDual a)
 
 @[simp]
 theorem frontier_Ici' {a : α} (ha : (Iio a).Nonempty) : frontier (Ici a) = {a} := by
@@ -146,14 +147,14 @@ theorem frontier_Iic [NoMaxOrder α] {a : α} : frontier (Iic a) = {a} :=
 
 @[simp]
 theorem frontier_Ioi' {a : α} (ha : (Ioi a).Nonempty) : frontier (Ioi a) = {a} := by
-  simp [frontier, closure_Ioi' ha, Iic_diff_Iio, Icc_self]
+  simp [frontier, closure_Ioi' ha]
 
 theorem frontier_Ioi [NoMaxOrder α] {a : α} : frontier (Ioi a) = {a} :=
   frontier_Ioi' nonempty_Ioi
 
 @[simp]
 theorem frontier_Iio' {a : α} (ha : (Iio a).Nonempty) : frontier (Iio a) = {a} := by
-  simp [frontier, closure_Iio' ha, Iic_diff_Iio, Icc_self]
+  simp [frontier, closure_Iio' ha]
 
 theorem frontier_Iio [NoMinOrder α] {a : α} : frontier (Iio a) = {a} :=
   frontier_Iio' nonempty_Iio
@@ -242,7 +243,7 @@ alias comap_coe_nhdsWithin_Iio_of_Ioo_subset := comap_coe_nhdsLT_of_Ioo_subset
 theorem comap_coe_nhdsGT_of_Ioo_subset (ha : s ⊆ Ioi a) (hs : s.Nonempty → ∃ b > a, Ioo a b ⊆ s) :
     comap ((↑) : s → α) (𝓝[>] a) = atBot := by
   apply comap_coe_nhdsLT_of_Ioo_subset (show ofDual ⁻¹' s ⊆ Iio (toDual a) from ha)
-  simp only [OrderDual.exists, dual_Ioo]
+  simp only [OrderDual.exists, Ioo_toDual]
   exact hs
 
 @[deprecated (since := "2024-12-22")]
@@ -262,7 +263,7 @@ theorem map_coe_atBot_of_Ioo_subset (ha : s ⊆ Ioi a) (hs : ∀ b' > a, ∃ b >
   -- the elaborator gets stuck without `(... :)`
   refine (map_coe_atTop_of_Ioo_subset (show ofDual ⁻¹' s ⊆ Iio (toDual a) from ha)
     fun b' hb' => ?_ :)
-  simpa only [OrderDual.exists, dual_Ioo] using hs b' hb'
+  simpa using hs b' hb'
 
 /-- The `atTop` filter for an open interval `Ioo a b` comes from the left-neighbourhoods filter at
 the right endpoint in the ambient order. -/
@@ -386,7 +387,7 @@ theorem exists_countable_dense_no_bot_top [SeparableSpace α] [Nontrivial α] :
 /-- `Set.Ico a b` is only closed if it is empty. -/
 @[simp]
 theorem isClosed_Ico_iff {a b : α} : IsClosed (Set.Ico a b) ↔ b ≤ a := by
-  refine ⟨fun h => le_of_not_lt fun hab => ?_, by simp_all⟩
+  refine ⟨fun h => le_of_not_gt fun hab => ?_, by simp_all⟩
   have := h.closure_eq
   rw [closure_Ico hab.ne, Icc_eq_Ico_same_iff] at this
   exact this hab.le
@@ -394,7 +395,7 @@ theorem isClosed_Ico_iff {a b : α} : IsClosed (Set.Ico a b) ↔ b ≤ a := by
 /-- `Set.Ioc a b` is only closed if it is empty. -/
 @[simp]
 theorem isClosed_Ioc_iff {a b : α} : IsClosed (Set.Ioc a b) ↔ b ≤ a := by
-  refine ⟨fun h => le_of_not_lt fun hab => ?_, by simp_all⟩
+  refine ⟨fun h => le_of_not_gt fun hab => ?_, by simp_all⟩
   have := h.closure_eq
   rw [closure_Ioc hab.ne, Icc_eq_Ioc_same_iff] at this
   exact this hab.le
@@ -402,7 +403,7 @@ theorem isClosed_Ioc_iff {a b : α} : IsClosed (Set.Ioc a b) ↔ b ≤ a := by
 /-- `Set.Ioo a b` is only closed if it is empty. -/
 @[simp]
 theorem isClosed_Ioo_iff {a b : α} : IsClosed (Set.Ioo a b) ↔ b ≤ a := by
-  refine ⟨fun h => le_of_not_lt fun hab => ?_, by simp_all⟩
+  refine ⟨fun h => le_of_not_gt fun hab => ?_, by simp_all⟩
   have := h.closure_eq
   rw [closure_Ioo hab.ne, Icc_eq_Ioo_same_iff] at this
   exact this hab.le

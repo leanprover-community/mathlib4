@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, Yury Kudryashov, Patrick Massot
 -/
 import Mathlib.Data.Set.Countable
-import Mathlib.Order.Filter.Bases
+import Mathlib.Order.Filter.Bases.Finite
 
 /-!
 # Countably generated filters
@@ -28,15 +28,15 @@ class IsCountablyGenerated (f : Filter α) : Prop where
   out : ∃ s : Set (Set α), s.Countable ∧ f = generate s
 
 /-- `IsCountableBasis p s` means the image of `s` bounded by `p` is a countable filter basis. -/
-structure IsCountableBasis (p : ι → Prop) (s : ι → Set α) extends IsBasis p s : Prop where
+structure IsCountableBasis (p : ι → Prop) (s : ι → Set α) : Prop extends IsBasis p s where
   /-- The set of `i` that satisfy the predicate `p` is countable. -/
   countable : (setOf p).Countable
 
 /-- We say that a filter `l` has a countable basis `s : ι → Set α` bounded by `p : ι → Prop`,
 if `t ∈ l` if and only if `t` includes `s i` for some `i` such that `p i`, and the set
 defined by `p` is countable. -/
-structure HasCountableBasis (l : Filter α) (p : ι → Prop) (s : ι → Set α)
-    extends HasBasis l p s : Prop where
+structure HasCountableBasis (l : Filter α) (p : ι → Prop) (s : ι → Set α) : Prop
+    extends HasBasis l p s where
   /-- The set of `i` that satisfy the predicate `p` is countable. -/
   countable : (setOf p).Countable
 
@@ -91,7 +91,7 @@ section IsCountablyGenerated
 
 protected theorem HasAntitoneBasis.mem_iff [Preorder ι] {l : Filter α} {s : ι → Set α}
     (hs : l.HasAntitoneBasis s) {t : Set α} : t ∈ l ↔ ∃ i, s i ⊆ t :=
-  hs.toHasBasis.mem_iff.trans <| by simp only [exists_prop, true_and]
+  hs.toHasBasis.mem_iff.trans <| by simp only [true_and]
 
 protected theorem HasAntitoneBasis.mem [Preorder ι] {l : Filter α} {s : ι → Set α}
     (hs : l.HasAntitoneBasis s) (i : ι) : s i ∈ l :=
@@ -213,14 +213,11 @@ theorem isCountablyGenerated_bot : IsCountablyGenerated (⊥ : Filter α) :=
 theorem isCountablyGenerated_top : IsCountablyGenerated (⊤ : Filter α) :=
   @principal_univ α ▸ isCountablyGenerated_principal _
 
--- Porting note: without explicit `Sort u` and `Type v`, Lean 4 uses `ι : Prop`
-universe u v
-
-instance iInf.isCountablyGenerated {ι : Sort u} {α : Type v} [Countable ι] (f : ι → Filter α)
+instance iInf.isCountablyGenerated {ι : Sort*} {α : Type*} [Countable ι] (f : ι → Filter α)
     [∀ i, IsCountablyGenerated (f i)] : IsCountablyGenerated (⨅ i, f i) := by
   choose s hs using fun i => exists_antitone_basis (f i)
   rw [← PLift.down_surjective.iInf_comp]
-  refine HasCountableBasis.isCountablyGenerated ⟨hasBasis_iInf fun n => (hs _).1, ?_⟩
+  refine HasCountableBasis.isCountablyGenerated ⟨.iInf fun n => (hs _).1, ?_⟩
   refine (countable_range <| Sigma.map ((↑) : Finset (PLift ι) → Set (PLift ι)) fun _ => id).mono ?_
   rintro ⟨I, f⟩ ⟨hI, -⟩
   lift I to Finset (PLift ι) using hI
