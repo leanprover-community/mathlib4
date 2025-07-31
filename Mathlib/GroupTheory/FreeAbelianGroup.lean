@@ -404,32 +404,47 @@ theorem map_of_apply {f : α → β} (a : α) : map f (of a) = of (f a) :=
 
 variable (α)
 
+section deprecated
+
+/-!
+This section defines a ring structure on `FreeAbelianGroup α` when `α` is a monoid.
+It is deprecated in favor of using `MonoidAlgebra ℤ α`.
+`MonoidAlgebra` is defined in `Mathlib.Algebra.MonoidAlgebra.Defs`.
+-/
+
+set_option linter.deprecated false
+
 section Mul
 
 variable [Mul α]
 
-instance mul : Mul (FreeAbelianGroup α) :=
+@[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2025-07-31"), local instance]
+abbrev mul : Mul (FreeAbelianGroup α) :=
   ⟨fun x ↦ lift fun x₂ ↦ lift (fun x₁ ↦ of (x₁ * x₂)) x⟩
 
 variable {α}
 
+@[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2025-07-31")]
 theorem mul_def (x y : FreeAbelianGroup α) :
     x * y = lift (fun x₂ ↦ lift (fun x₁ ↦ of (x₁ * x₂)) x) y :=
   rfl
 
-@[simp]
+@[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2025-07-31")]
 theorem of_mul_of (x y : α) : of x * of y = of (x * y) := by
   rw [mul_def, lift_apply_of, lift_apply_of]
 
+@[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2025-07-31")]
 theorem of_mul (x y : α) : of (x * y) = of x * of y :=
   Eq.symm <| of_mul_of x y
 
-instance distrib : Distrib (FreeAbelianGroup α) :=
+@[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2025-07-31"), local instance]
+abbrev distrib : Distrib (FreeAbelianGroup α) :=
   { FreeAbelianGroup.mul α, FreeAbelianGroup.addCommGroup α with
     left_distrib := fun _ _ _ ↦ (lift _).map_add _ _
     right_distrib x y z := by simp [mul_def, ← Pi.add_def] }
 
-instance nonUnitalNonAssocRing : NonUnitalNonAssocRing (FreeAbelianGroup α) :=
+@[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2025-07-31")]
+abbrev nonUnitalNonAssocRing : NonUnitalNonAssocRing (FreeAbelianGroup α) :=
   { FreeAbelianGroup.distrib,
     FreeAbelianGroup.addCommGroup _ with
     zero_mul := fun a ↦ by
@@ -442,18 +457,24 @@ end Mul
 section One
 variable [One α]
 
-instance one : One (FreeAbelianGroup α) :=
+@[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2025-07-31"), local instance]
+abbrev one : One (FreeAbelianGroup α) :=
   ⟨of 1⟩
 
+@[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2025-07-31")]
 theorem one_def : (1 : FreeAbelianGroup α) = of 1 :=
   rfl
 
+@[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2025-07-31")]
 theorem of_one : (of 1 : FreeAbelianGroup α) = 1 :=
   rfl
 
 end One
 
-instance nonUnitalRing [Semigroup α] : NonUnitalRing (FreeAbelianGroup α) :=
+attribute [local instance] nonUnitalNonAssocRing
+
+@[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2025-07-31"), local instance]
+abbrev nonUnitalRing [Semigroup α] : NonUnitalRing (FreeAbelianGroup α) :=
   { FreeAbelianGroup.nonUnitalNonAssocRing with
     mul_assoc := fun x y z ↦ by
       refine FreeAbelianGroup.induction_on z (by simp only [mul_zero])
@@ -474,7 +495,8 @@ section Monoid
 
 variable {R : Type*} [Monoid α] [Ring R]
 
-instance ring : Ring (FreeAbelianGroup α) :=
+@[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2025-07-31"), local instance]
+abbrev ring : Ring (FreeAbelianGroup α) :=
   { FreeAbelianGroup.nonUnitalRing _,
     FreeAbelianGroup.one _ with
     mul_one := fun x ↦ by
@@ -496,16 +518,18 @@ instance ring : Ring (FreeAbelianGroup α) :=
 variable {α}
 
 /-- `FreeAbelianGroup.of` is a `MonoidHom` when `α` is a `Monoid`. -/
+@[deprecated "use `MonoidAlgebra.of` instead" (since := "2025-07-31")]
 def ofMulHom : α →* FreeAbelianGroup α where
   toFun := of
   map_one' := of_one _
   map_mul' := of_mul
 
-@[simp]
+@[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2025-07-31")]
 theorem ofMulHom_coe : (ofMulHom : α → FreeAbelianGroup α) = of :=
   rfl
 
 /-- If `f` preserves multiplication, then so does `lift f`. -/
+@[deprecated "use `MonoidAlgebra.lift` instead" (since := "2025-07-31")]
 def liftMonoid : (α →* R) ≃ (FreeAbelianGroup α →+* R) where
   toFun f := { lift f with
     toFun := lift f
@@ -533,15 +557,15 @@ def liftMonoid : (α →* R) ≃ (FreeAbelianGroup α →+* R) where
     rw [← lift.apply_symm_apply (↑F : FreeAbelianGroup α →+ R)]
     rfl
 
-@[simp]
+@[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2025-07-31")]
 theorem liftMonoid_coe_addMonoidHom (f : α →* R) : ↑(liftMonoid f) = lift f :=
   rfl
 
-@[simp]
+@[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2025-07-31")]
 theorem liftMonoid_coe (f : α →* R) : ⇑(liftMonoid f) = lift f :=
   rfl
 
-@[simp]
+@[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2025-07-31")]
 theorem liftMonoid_symm_coe (f : FreeAbelianGroup α →+* R) :
     ⇑(liftMonoid.symm f) = lift.symm f :=
   rfl
@@ -567,6 +591,8 @@ instance [CommMonoid α] : CommRing (FreeAbelianGroup α) :=
         rw [neg_mul, ih, neg_mul_eq_mul_neg]
       · intro x1 x2 ih1 ih2
         rw [add_mul, mul_add, ih1, ih2] }
+
+end deprecated
 
 instance pemptyUnique : Unique (FreeAbelianGroup PEmpty) where
   default := 0
