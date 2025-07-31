@@ -27,14 +27,6 @@ protected def support (μ : Measure X) : Set X := {x : X | ∃ᶠ u in (𝓝 x).
 
 variable {μ : Measure X}
 
-@[simp]
-lemma support_zero : (0 : Measure X).support = ∅ := sorry
-
-lemma support_eq_univ [μ.IsOpenPosMeasure] : μ.support = Set.univ := sorry
-
-lemma support_mono {ν : Measure X} (h : μ ≤ ν) : μ.support ≤ ν.support :=
-  sorry
-
 /- MeasureTheory.measure_mono_null should be renamed to allow for dot notation. -/
 
 /- Move the next three Filter results near the definition of `smallSets` filter. -/
@@ -79,10 +71,28 @@ lemma mem_support_iff_forall (x : X) : x ∈ μ.support ↔ ∀ U ∈ 𝓝 x, 0 
     ⟨fun h _ hU ↦ let ⟨_, ht, μt⟩ := h _ hU; μt.trans_le (measure_mono ht),
      fun h _ hU ↦ ⟨_, Set.Subset.rfl, h _ hU⟩⟩ --GOLF THIS WITH `Filter.basis_sets`
 
+lemma support_eq_univ [μ.IsOpenPosMeasure] : μ.support = Set.univ := by
+  ext
+  simp only [Set.mem_univ, iff_true, mem_support_iff_forall]
+  exact fun _ a ↦ measure_pos_of_mem_nhds μ a
+
+lemma support_mono {ν : Measure X} (h : μ ≤ ν) : μ.support ≤ ν.support := by
+  simp only [Set.le_eq_subset]
+  intro x hx
+  simp only [mem_support_iff_forall] at *
+  intro U hU
+  exact lt_of_lt_of_le (hx U hU) (h U)
+
 /-- A point `x` lies outside the support of `μ` iff all of the subsets of one of its neighborhoods
 have measure zero. -/
 lemma notMem_support_iff {x : X} : x ∉ μ.support ↔ ∀ᶠ u in (𝓝 x).smallSets, μ u = 0 := by
   simp [mem_support_iff]
+
+@[simp]
+lemma support_zero : (0 : Measure X).support = ∅ := by
+  ext
+  simp only [Set.mem_empty_iff_false, iff_false, notMem_support_iff]
+  exact Filter.Eventually.of_forall (congrFun rfl)
 
 /-- A point `x` lies outside the support of `μ` iff some neighborhood of `x` has measure zero. -/
 lemma notMem_support_iff_exists {x : X} : x ∉ μ.support ↔ ∃ U ∈ 𝓝 x, μ U = 0 := by
@@ -103,8 +113,7 @@ lemma isOpen_compl_support {μ : Measure X} : IsOpen μ.supportᶜ :=
   isOpen_compl_iff.mpr μ.isClosed_support
 
 lemma subset_compl_support_of_isOpen ⦃t : Set X⦄ (ht : IsOpen t) (h : μ t = 0) :
-    t ⊆ μ.supportᶜ := by
-  sorry
+    t ⊆ μ.supportᶜ := by sorry
 
 lemma compl_support_eq_sUnion : μ.supportᶜ = ⋃₀ {t : Set X | IsOpen t ∧ μ t = 0} := by
   sorry
