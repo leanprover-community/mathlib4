@@ -238,8 +238,10 @@ lemma isPrimitive_def : IsPrimitive χ ↔ conductor χ = n := Iff.rfl
 lemma isPrimitive_one_level_one : IsPrimitive (1 : DirichletCharacter R 1) :=
   Nat.dvd_one.mp (conductor_dvd_level _)
 
-lemma isPritive_one_level_zero : IsPrimitive (1 : DirichletCharacter R 0) :=
+lemma isPrimitive_one_level_zero : IsPrimitive (1 : DirichletCharacter R 0) :=
   conductor_eq_zero_iff_level_eq_zero.mpr rfl
+
+@[deprecated (since := "2025-07-27")] alias isPritive_one_level_zero := isPrimitive_one_level_zero
 
 lemma conductor_one_dvd (n : ℕ) : conductor (1 : DirichletCharacter R 1) ∣ n := by
   rw [(isPrimitive_def _).mp isPrimitive_one_level_one]

@@ -181,7 +181,7 @@ private lemma F_differentiable (B : BadChar N) : Differentiable ℂ B.F := by
   · exact (B.χ.differentiableAt_LFunction 1 (.inr B.χ_ne)).hasDerivAt.continuousAt_div
 
 /-- The trivial zero at `s = -2` of the zeta function gives that `F (-2) = 0`.
-This is used later to obtain a contradction. -/
+This is used later to obtain a contradiction. -/
 private lemma F_neg_two (B : BadChar N) : B.F (-2 : ℝ) = 0 := by
   have := riemannZeta_neg_two_mul_nat_add_one 0
   rw [Nat.cast_zero, zero_add, mul_one] at this

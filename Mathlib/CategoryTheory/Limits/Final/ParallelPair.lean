@@ -33,7 +33,7 @@ lemma parallelPair_initial_mk' {X Y : C} (f g : X ⟶ Y)
       ⟨mk (Y := zero) (h₁ Z).some⟩
     have : ∀ (x : CostructuredArrow (parallelPair f g) Z), Zigzag x
       (mk (Y := zero) (h₁ Z).some) := by
-        rintro ⟨(_|_), ⟨⟩, φ⟩
+        rintro ⟨(_ | _), ⟨⟩, φ⟩
         · apply h₂
         · refine Zigzag.trans ?_ (h₂ (f ≫ φ) _)
           exact Zigzag.of_inv (homMk left)

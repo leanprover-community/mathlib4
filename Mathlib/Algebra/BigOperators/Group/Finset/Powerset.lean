@@ -44,9 +44,9 @@ lemma prod_powerset_cons (ha : a ∉ s) (f : Finset α → β) :
   rw [prod_powerset_insert ha, prod_attach _ fun t ↦ f (insert a t)]
 
 /-- A product over `powerset s` is equal to the double product over sets of subsets of `s` with
-`#s = k`, for `k = 1, ..., #s`. -/
+`#s = k`, for `k = 0, ..., #s`. -/
 @[to_additive "A sum over `powerset s` is equal to the double sum over sets of subsets of `s` with
-`#s = k`, for `k = 1, ..., #s`"]
+`#s = k`, for `k = 0, ..., #s`"]
 lemma prod_powerset (s : Finset α) (f : Finset α → β) :
     ∏ t ∈ powerset s, f t = ∏ j ∈ range (#s + 1), ∏ t ∈ powersetCard j s, f t := by
   rw [powerset_card_disjiUnion, prod_disjiUnion]

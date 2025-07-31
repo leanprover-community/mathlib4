@@ -5,7 +5,6 @@ Authors: Dexin Zhang
 -/
 import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 import Mathlib.RingTheory.Finiteness.Defs
-import Mathlib.LinearAlgebra.Span.Basic
 import Mathlib.LinearAlgebra.LinearIndependent.Defs
 
 /-!
@@ -52,8 +51,8 @@ open Pointwise Submodule
 def Linear (s : Set α) :=
   ∃ (a : α) (t : Finset α), s = a +ᵥ (span ℕ (t : Set α) : Set α)
 
-theorem Linear.singleton (v) : ({v} : Set α).Linear :=
-  ⟨v, ∅, by simp⟩
+theorem Linear.singleton (a) : ({a} : Set α).Linear :=
+  ⟨a, ∅, by simp⟩
 
 theorem Linear.span_finset (s : Finset α) : (span ℕ (s : Set α) : Set α).Linear :=
   ⟨0, s, by rw [zero_vadd]⟩
@@ -70,15 +69,15 @@ theorem Linear.vadd (hs : s.Linear) : (a +ᵥ s).Linear := by
 
 theorem Linear.add (hs₁ : s₁.Linear) (hs₂ : s₂.Linear) : (s₁ + s₂).Linear := by
   classical
-  rcases hs₁ with ⟨v, t₁, rfl⟩
-  rcases hs₂ with ⟨u, t₂, rfl⟩
+  rcases hs₁ with ⟨a, t₁, rfl⟩
+  rcases hs₂ with ⟨b, t₂, rfl⟩
   rw [vadd_add_vadd, ← coe_sup, ← span_union, ← Finset.coe_union]
-  exact ⟨v + u, t₁ ∪ t₂, rfl⟩
+  exact ⟨a + b, t₁ ∪ t₂, rfl⟩
 
 theorem Linear.image (hs : s.Linear) (f : α →ₗ[ℕ] β) : (f '' s).Linear := by
   classical
-  rcases hs with ⟨v, t, rfl⟩
-  refine ⟨f v, t.image f, ?_⟩
+  rcases hs with ⟨a, t, rfl⟩
+  refine ⟨f a, t.image f, ?_⟩
   simp [image_vadd_distrib, span_image]
 
 /-- A set is semilinear if it is a finite union of linear sets. -/
@@ -91,8 +90,8 @@ theorem Linear.semilinear (h : s.Linear) : s.Semilinear :=
 theorem Semilinear.empty : (∅ : Set α).Semilinear :=
   ⟨∅, by simp, by simp⟩
 
-theorem Semilinear.singleton (v) : ({v} : Set α).Semilinear :=
-  (Linear.singleton v).semilinear
+theorem Semilinear.singleton (a) : ({a} : Set α).Semilinear :=
+  (Linear.singleton a).semilinear
 
 theorem Semilinear.span_finset (s : Finset α) : (span ℕ (s : Set α) : Set α).Semilinear :=
   (Linear.span_finset s).semilinear
@@ -195,7 +194,7 @@ theorem Semilinear.proj' {p : (ι₁ → α) → (ι₂ → α) → Prop} :
     {x | p (x ∘ Sum.inl) (x ∘ Sum.inr)}.Semilinear → {x | ∃ y, p x y}.Semilinear :=
   proj
 
-theorem Linear.span (hs : s.Linear) : (span ℕ s : Set α).Semilinear := by
+lemma Linear.span (hs : s.Linear) : (span ℕ s : Set α).Semilinear := by
   classical
   rcases hs with ⟨a, t, rfl⟩
   convert_to ({0} ∪ (a +ᵥ (span ℕ ({a} ∪ t) : Set α))).Semilinear
@@ -255,8 +254,8 @@ def ProperLinear (s : Set α) :=
     LinearIndepOn ℕ id (t : Set α) ∧ s = a +ᵥ (span ℕ (t : Set α) : Set α)
 
 theorem ProperLinear.linear (hs : s.ProperLinear) : s.Linear := by
-  rcases hs with ⟨v, t, _, rfl⟩
-  exact ⟨v, t, rfl⟩
+  rcases hs with ⟨a, t, _, rfl⟩
+  exact ⟨a, t, rfl⟩
 
 /-- A semilinear set is proper if it is a finite union of proper linear sets. -/
 def ProperSemilinear (s : Set α) :=
@@ -319,8 +318,8 @@ lemma Linear.proper_semilinear [IsCancelAdd α] (hs : s.Linear) : s.ProperSemili
     rcases hindep with ⟨t', ht', f, g, heq, i, hi, hfi⟩
     simp only [Function.id_def] at heq
     convert_to
-      (⋃ b ∈ t', ⋃ k ∈ Finset.range (f b),
-        (a + k • b) +ᵥ (Submodule.span ℕ (t.erase b : Set α) : Set α)).ProperSemilinear
+      (⋃ j ∈ t', ⋃ k ∈ Finset.range (f j),
+        (a + k • j) +ᵥ (Submodule.span ℕ (t.erase j : Set α) : Set α)).ProperSemilinear
     · ext x
       simp only [mem_vadd_set, SetLike.mem_coe]
       constructor
@@ -330,7 +329,7 @@ lemma Linear.proper_semilinear [IsCancelAdd α] (hs : s.Linear) : s.ProperSemili
         clear hh
         induction hn : h i using Nat.strong_induction_on generalizing h with | _ n ih
         subst hn
-        by_cases hh : ∀ w ∈ t', f w ≤ h w
+        by_cases hh : ∀ j ∈ t', f j ≤ h j
         · convert ih (h i - f i) (tsub_lt_self (hfi.trans_le (hh i hi)) hfi)
             (fun j => if hj : j ∈ t' then h j - f j else h j + g j) (by simp [hi]) using 1
           nth_rw 1 [← Finset.union_sdiff_of_subset ht']
@@ -348,13 +347,13 @@ lemma Linear.proper_semilinear [IsCancelAdd α] (hs : s.Linear) : s.ProperSemili
             sum_mem fun x hx => (smul_mem _ _ (mem_span_of_mem hx)), ?_⟩
           rw [← Finset.sum_erase_add _ _ (ht' hj), ← add_assoc, add_right_comm]
       · simp only [mem_iUnion, Finset.mem_range, mem_vadd_set, SetLike.mem_coe, vadd_eq_add]
-        rintro ⟨w, hw, k, hk, y, hy, rfl⟩
-        refine ⟨k • w + y,
-          add_mem (smul_mem _ _ (mem_span_of_mem (ht' hw))) ((span_mono (t.erase_subset w)) hy), ?_⟩
+        rintro ⟨j, hj, k, hk, y, hy, rfl⟩
+        refine ⟨k • j + y,
+          add_mem (smul_mem _ _ (mem_span_of_mem (ht' hj))) ((span_mono (t.erase_subset j)) hy), ?_⟩
         rw [add_assoc]
-    · exact ProperSemilinear.biUnion_finset fun w hw =>
+    · exact ProperSemilinear.biUnion_finset fun j hj =>
         ProperSemilinear.biUnion_finset fun k hk =>
-          ih _ (Finset.card_lt_card (Finset.erase_ssubset (ht' hw))) _ _ rfl
+          ih _ (Finset.card_lt_card (Finset.erase_ssubset (ht' hj))) _ _ rfl
 
 /-- The **proper decomposition** of semilinear sets: every semilinear set is a finite union of
   proper linear sets. -/

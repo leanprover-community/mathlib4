@@ -239,7 +239,7 @@ abbrev cylinderf {i : E.I₀} (k : F.I₁ (f.s₀ i) (g.s₀ i)) : cylinderX f g
 /-- Given two refinement morphisms `f, g : E ⟶ F`, this is a (pre-)`1`-hypercover `W` that
 admits a morphism `h : W ⟶ E` such that `h ≫ f` and `h ≫ g` are homotopic. Hence
 they become equal after quotienting out by homotopy.
-This is a `1`-hypercover, if `E` and `F` are (see `OneHpyercover.cylinder`). -/
+This is a `1`-hypercover, if `E` and `F` are (see `OneHypercover.cylinder`). -/
 @[simps]
 noncomputable def cylinder (f g : E.Hom F) : PreOneHypercover.{max w w'} S where
   I₀ := Σ (i : E.I₀), F.I₁ (f.s₀ i) (g.s₀ i)

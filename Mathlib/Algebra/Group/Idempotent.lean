@@ -106,4 +106,12 @@ lemma map {M N F} [Mul M] [Mul N] [FunLike F M N] [MulHomClass F M N] {e : M}
     (he : IsIdempotentElem e) (f : F) : IsIdempotentElem (f e) := by
   rw [IsIdempotentElem, ← map_mul, he.eq]
 
+lemma mul_mul_self {M : Type*} [Semigroup M] {x : M}
+    (hx : IsIdempotentElem x) (y : M) : y * x * x = y * x :=
+  mul_assoc y x x ▸ congrArg (y * ·) hx.eq
+
+lemma mul_self_mul {M : Type*} [Semigroup M] {x : M}
+    (hx : IsIdempotentElem x) (y : M) : x * (x * y) = x * y :=
+  mul_assoc x x y ▸ congrArg (· * y) hx.eq
+
 end IsIdempotentElem

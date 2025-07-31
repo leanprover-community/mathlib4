@@ -23,7 +23,7 @@ in the file where we declare `@[simps]`. For further documentation, see `Tactic.
 and this notation should be used instead of projections by `@[simps]`.
   * This is only important if the projection is written differently using notation, e.g.
     `+` uses `HAdd.hAdd`, not `Add.add` and `0` uses `OfNat.ofNat` not `Zero.zero`.
-    We also add it to non-heterogenous notation classes, like `Neg`, but it doesn't do much for any
+    We also add it to non-heterogeneous notation classes, like `Neg`, but it doesn't do much for any
     class that extends `Neg`.
   * `@[notation_class* <projName> Simps.findCoercionArgs]` is used to configure the
     `SetLike` and `DFunLike` coercions.

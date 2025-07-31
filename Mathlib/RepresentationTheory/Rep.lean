@@ -874,8 +874,7 @@ def counitIso (M : ModuleCat.{u} (MonoidAlgebra k G)) :
     { counitIsoAddEquiv with
       map_smul' := fun r x => by
         dsimp [counitIsoAddEquiv]
-        erw [@Representation.ofModule_asAlgebraHom_apply_apply k G _ _ _ _ (_)]
-        exact AddEquiv.symm_apply_apply _ _}
+        simp }
 
 theorem unit_iso_comm (V : Rep k G) (g : G) (x : V) :
     unitIsoAddEquiv ((V.ρ g).toFun x) = ((ofModuleMonoidAlgebra.obj

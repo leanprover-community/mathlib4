@@ -66,7 +66,7 @@ theorem prod_univ_succAbove (f : Fin (n + 1) → M) (x : Fin (n + 1)) :
   rw [univ_succAbove n x, prod_cons, Finset.prod_map, coe_succAboveEmb]
 
 /-- A product of a function `f : Fin (n + 1) → M` over all `Fin (n + 1)`
-is the product of `f 0` plus the remaining product -/
+is the product of `f 0` times the remaining product -/
 @[to_additive "A sum of a function `f : Fin (n + 1) → M` over all `Fin (n + 1)` is the sum of
 `f 0` plus the remaining sum"]
 theorem prod_univ_succ (f : Fin (n + 1) → M) :
@@ -74,7 +74,7 @@ theorem prod_univ_succ (f : Fin (n + 1) → M) :
   prod_univ_succAbove f 0
 
 /-- A product of a function `f : Fin (n + 1) → M` over all `Fin (n + 1)`
-is the product of `f (Fin.last n)` plus the remaining product -/
+is the product of `f (Fin.last n)` times the remaining product -/
 @[to_additive "A sum of a function `f : Fin (n + 1) → M` over all `Fin (n + 1)` is the sum of
 `f (Fin.last n)` plus the remaining sum"]
 theorem prod_univ_castSucc (f : Fin (n + 1) → M) :
