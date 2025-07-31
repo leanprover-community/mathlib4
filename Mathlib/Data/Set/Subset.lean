@@ -113,8 +113,6 @@ lemma image_val_union_self_left_eq : ↑D ∪ A = A :=
 @[simp]
 lemma image_val_inter_self_right_eq_coe : A ∩ ↑D = ↑D :=
   inter_eq_right.2 image_val_subset
-@[deprecated (since := "2024-10-25")]
-alias cou_inter_self_right_eq_coe := image_val_inter_self_right_eq_coe
 
 @[simp]
 lemma image_val_inter_self_left_eq_coe : ↑D ∩ A = ↑D :=

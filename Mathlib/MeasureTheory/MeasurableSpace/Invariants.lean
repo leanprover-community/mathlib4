@@ -63,4 +63,10 @@ theorem measurable_invariants_of_semiconj {fa : α → α} {fb : β → β} {g :
     (hfg : Semiconj g fa fb) : @Measurable _ _ (invariants fa) (invariants fb) g := fun s hs ↦
   ⟨hg hs.1, by rw [← preimage_comp, hfg.comp_eq, preimage_comp, hs.2]⟩
 
+theorem comp_eq_of_measurable_invariants {f : α → α} {g : α → β} [MeasurableSingletonClass β]
+    (h : Measurable[invariants f] g) : g ∘ f = g := by
+  funext x
+  suffices x ∈ f⁻¹' (g⁻¹' {g x}) by simpa
+  rw [(h <| measurableSet_singleton (g x)).2, Set.mem_preimage, Set.mem_singleton_iff]
+
 end MeasurableSpace

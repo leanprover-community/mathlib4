@@ -73,10 +73,7 @@ theorem op_geom_sum₂ (x y : R) (n : ℕ) : ∑ i ∈ range n, op y ^ (n - 1 - 
     ∑ i ∈ range n, op y ^ i * op x ^ (n - 1 - i) := by
   rw [← sum_range_reflect]
   refine sum_congr rfl fun j j_in => ?_
-  rw [mem_range, Nat.lt_iff_add_one_le] at j_in
-  congr
-  apply tsub_tsub_cancel_of_le
-  exact le_tsub_of_add_le_right j_in
+  grind [Finset.mem_range]
 
 theorem geom_sum₂_with_one (x : R) (n : ℕ) :
     ∑ i ∈ range n, x ^ i * 1 ^ (n - 1 - i) = ∑ i ∈ range n, x ^ i :=
