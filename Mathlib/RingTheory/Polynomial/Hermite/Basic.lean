@@ -3,7 +3,6 @@ Copyright (c) 2023 Luke Mantle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Luke Mantle
 -/
-import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Algebra.Polynomial.Derivative
 import Mathlib.Data.Nat.Factorial.DoubleFactorial
 
@@ -60,8 +59,6 @@ theorem hermite_eq_iterate (n : ℕ) : hermite n = (fun p => X * p - derivative 
 theorem hermite_zero : hermite 0 = C 1 :=
   rfl
 
--- Porting note (#10618): There was initially @[simp] on this line but it was removed
--- because simp can prove this theorem
 theorem hermite_one : hermite 1 = X := by
   rw [hermite_succ, hermite_zero]
   simp only [map_one, mul_one, derivative_one, sub_zero]
@@ -116,7 +113,7 @@ theorem hermite_monic (n : ℕ) : (hermite n).Monic :=
   leadingCoeff_hermite n
 
 theorem coeff_hermite_of_odd_add {n k : ℕ} (hnk : Odd (n + k)) : coeff (hermite n) k = 0 := by
-  induction n  generalizing k with
+  induction n generalizing k with
   | zero =>
     rw [zero_add k] at hnk
     exact coeff_hermite_of_lt hnk.pos
@@ -184,7 +181,7 @@ theorem coeff_hermite_explicit :
 
 theorem coeff_hermite_of_even_add {n k : ℕ} (hnk : Even (n + k)) :
     coeff (hermite n) k = (-1) ^ ((n - k) / 2) * (n - k - 1)‼ * Nat.choose n k := by
-  rcases le_or_lt k n with h_le | h_lt
+  rcases le_or_gt k n with h_le | h_lt
   · rw [Nat.even_add, ← Nat.even_sub h_le] at hnk
     obtain ⟨m, hm⟩ := hnk
     -- Porting note: linarith failed to find a contradiction by itself
@@ -197,7 +194,7 @@ theorem coeff_hermite (n k : ℕ) :
       if Even (n + k) then (-1 : ℤ) ^ ((n - k) / 2) * (n - k - 1)‼ * Nat.choose n k else 0 := by
   split_ifs with h
   · exact coeff_hermite_of_even_add h
-  · exact coeff_hermite_of_odd_add (Nat.odd_iff_not_even.mpr h)
+  · exact coeff_hermite_of_odd_add (Nat.not_even_iff_odd.1 h)
 
 end CoeffExplicit
 

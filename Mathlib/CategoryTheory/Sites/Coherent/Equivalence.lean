@@ -9,7 +9,7 @@ import Mathlib.CategoryTheory.Sites.Equivalence
 
 # Coherence and equivalence of categories
 
-This file proves that the coherent and regular topologies transfer nicely along equivalences of
+This file proves that the coherent and regular topologies transfer nicely along equivalences of
 categories.
 -/
 
@@ -27,7 +27,7 @@ section Coherent
 
 variable [Precoherent C]
 
-/-- `Precoherent` is preserved by equivalence of categories. -/
+/-- `Precoherent` is preserved by equivalence of categories. -/
 theorem precoherent (e : C ≌ D) : Precoherent D := e.inverse.reflects_precoherent
 
 instance [EssentiallySmall C] :
@@ -58,7 +58,7 @@ theorem precoherent_isSheaf_iff (e : C ≌ D) (F : Cᵒᵖ ⥤ A) : haveI := e.p
   refine ⟨fun hF ↦ ((e.sheafCongrPrecoherent A).functor.obj ⟨F, hF⟩).cond, fun hF ↦ ?_⟩
   rw [isSheaf_of_iso_iff (P' := e.functor.op ⋙ e.inverse.op ⋙ F)]
   · exact (e.sheafCongrPrecoherent A).inverse.obj ⟨e.inverse.op ⋙ F, hF⟩ |>.cond
-  · exact isoWhiskerRight e.op.unitIso F
+  · exact Functor.isoWhiskerRight e.op.unitIso F
 
 /--
 The coherent sheaf condition on an essentially small site can be checked after precomposing with
@@ -75,7 +75,7 @@ section Regular
 
 variable [Preregular C]
 
-/-- `Preregular` is preserved by equivalence of categories. -/
+/-- `Preregular` is preserved by equivalence of categories. -/
 theorem preregular (e : C ≌ D) : Preregular D := e.inverse.reflects_preregular
 
 instance [EssentiallySmall C] :
@@ -106,7 +106,7 @@ theorem preregular_isSheaf_iff (e : C ≌ D) (F : Cᵒᵖ ⥤ A) : haveI := e.pr
   refine ⟨fun hF ↦ ((e.sheafCongrPreregular A).functor.obj ⟨F, hF⟩).cond, fun hF ↦ ?_⟩
   rw [isSheaf_of_iso_iff (P' := e.functor.op ⋙ e.inverse.op ⋙ F)]
   · exact (e.sheafCongrPreregular A).inverse.obj ⟨e.inverse.op ⋙ F, hF⟩ |>.cond
-  · exact isoWhiskerRight e.op.unitIso F
+  · exact Functor.isoWhiskerRight e.op.unitIso F
 
 /--
 The regular sheaf condition on an essentially small site can be checked after precomposing with

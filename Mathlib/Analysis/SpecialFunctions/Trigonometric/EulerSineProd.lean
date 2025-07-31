@@ -3,7 +3,7 @@ Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.SpecialFunctions.Integrals
+import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 import Mathlib.MeasureTheory.Integral.PeakFunction
 
 /-! # Euler's infinite product for the sine function
@@ -37,7 +37,7 @@ variable {z : ℂ} {n : ℕ}
 theorem antideriv_cos_comp_const_mul (hz : z ≠ 0) (x : ℝ) :
     HasDerivAt (fun y : ℝ => Complex.sin (2 * z * y) / (2 * z)) (Complex.cos (2 * z * x)) x := by
   have a : HasDerivAt (fun y : ℂ => y * (2 * z)) _ x := hasDerivAt_mul_const _
-  have b : HasDerivAt (fun y : ℂ => Complex.sin (y * (2 * z))) _ x :=
+  have b : HasDerivAt (Complex.sin ∘ fun y : ℂ => (y * (2 * z))) _ x :=
     HasDerivAt.comp (x : ℂ) (Complex.hasDerivAt_sin (x * (2 * z))) a
   have c := b.comp_ofReal.div_const (2 * z)
   field_simp at c; simp only [fun y => mul_comm y (2 * z)] at c
@@ -46,9 +46,9 @@ theorem antideriv_cos_comp_const_mul (hz : z ≠ 0) (x : ℝ) :
 theorem antideriv_sin_comp_const_mul (hz : z ≠ 0) (x : ℝ) :
     HasDerivAt (fun y : ℝ => -Complex.cos (2 * z * y) / (2 * z)) (Complex.sin (2 * z * x)) x := by
   have a : HasDerivAt (fun y : ℂ => y * (2 * z)) _ x := hasDerivAt_mul_const _
-  have b : HasDerivAt (fun y : ℂ => Complex.cos (y * (2 * z))) _ x :=
+  have b : HasDerivAt (Complex.cos ∘ fun y : ℂ => (y * (2 * z))) _ x :=
     HasDerivAt.comp (x : ℂ) (Complex.hasDerivAt_cos (x * (2 * z))) a
-  have c := (b.comp_ofReal.div_const (2 * z)).neg
+  have c := (b.comp_ofReal.div_const (2 * z)).fun_neg
   field_simp at c; simp only [fun y => mul_comm y (2 * z)] at c
   exact c
 
@@ -92,7 +92,7 @@ theorem integral_sin_mul_sin_mul_cos_pow_eq (hn : 2 ≤ n) (hz : z ≠ 0) :
           ((cos x : ℂ) ^ n - (n - 1) * (sin x : ℂ) ^ 2 * (cos x : ℂ) ^ (n - 2)) x := by
     intro x _
     have c := HasDerivAt.comp (x : ℂ) (hasDerivAt_pow (n - 1) _) (Complex.hasDerivAt_cos x)
-    convert ((Complex.hasDerivAt_sin x).mul c).comp_ofReal using 1
+    convert ((Complex.hasDerivAt_sin x).fun_mul c).comp_ofReal using 1
     · ext1 y; simp only [Complex.ofReal_sin, Complex.ofReal_cos, Function.comp]
     · simp only [Complex.ofReal_cos, Complex.ofReal_sin]
       rw [mul_neg, mul_neg, ← sub_eq_add_neg, Function.comp_apply]
@@ -141,7 +141,7 @@ theorem integral_sin_mul_sin_mul_cos_pow_eq (hn : 2 ≤ n) (hz : z ≠ 0) :
   · apply Continuous.intervalIntegrable
     exact Complex.continuous_sin.comp (continuous_const.mul Complex.continuous_ofReal)
 
-/-- Note this also holds for `z = 0`, but we do not need this case for `sin_pi_mul_eq`.  -/
+/-- Note this also holds for `z = 0`, but we do not need this case for `sin_pi_mul_eq`. -/
 theorem integral_cos_mul_cos_pow (hn : 2 ≤ n) (hz : z ≠ 0) :
     (((1 : ℂ) - (4 : ℂ) * z ^ 2 / (n : ℂ) ^ 2) *
       ∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ n) =
@@ -219,7 +219,7 @@ theorem sin_pi_mul_eq (z : ℂ) (n : ℕ) :
       dsimp only [C]
       rw [integral_cos_pow_eq, aux', integral_sin_pow, sin_zero, sin_pi, pow_succ',
         zero_mul, zero_mul, zero_mul, sub_zero, zero_div,
-        zero_add, ← mul_assoc, ← mul_assoc, mul_comm (1 / 2 : ℝ) _, Nat.cast_mul, Nat.cast_eq_ofNat]
+        zero_add, ← mul_assoc, ← mul_assoc, mul_comm (1 / 2 : ℝ) _, Nat.cast_mul, Nat.cast_ofNat]
     rw [this]
     change
       π * z * A * B / C =

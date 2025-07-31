@@ -4,14 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasily Nesterov
 -/
 import Mathlib.Init
-import Lean.Data.HashMap
 import Batteries.Data.Rat.Basic
+import Std.Data.HashMap.Basic
 
 /-!
 # Datatypes for the Simplex Algorithm implementation
 -/
 
-namespace Linarith.SimplexAlgorithm
+namespace Mathlib.Tactic.Linarith.SimplexAlgorithm
 
 /--
 Specification for matrix types over ℚ which can be used in the Gauss Elimination and the Simplex
@@ -46,8 +46,8 @@ So far it is just a 2d-array carrying dimensions (that are supposed to match wit
 dimensions of `data`), but the plan is to add some `Prop`-data and make the structure strict and
 safe.
 
-Note: we avoid using the `Matrix` from `Mathlib.Data.Matrix` because it is far more efficient to
-store matrix as its entries than as function between `Fin`-s.
+Note: we avoid using `Matrix` because it is far more efficient to store a matrix as its entries than
+as function between `Fin`-s.
 -/
 structure DenseMatrix (n m : Nat) where
   /-- The content of the matrix. -/
@@ -57,22 +57,22 @@ instance : UsableInSimplexAlgorithm DenseMatrix where
   getElem mat i j := mat.data[i]![j]!
   setElem mat i j v := ⟨mat.data.modify i fun row => row.set! j v⟩
   getValues mat :=
-    mat.data.zipWithIndex.foldl (init := []) fun acc (row, i) =>
-      let rowVals := Array.toList <| row.zipWithIndex.filterMap fun (v, j) =>
+    mat.data.zipIdx.foldl (init := []) fun acc (row, i) =>
+      let rowVals := Array.toList <| row.zipIdx.filterMap fun (v, j) =>
         if v != 0 then
           .some (i, j, v)
         else
           .none
       rowVals ++ acc
   ofValues {n m : Nat} vals : DenseMatrix _ _ := Id.run do
-    let mut data : Array (Array Rat) := Array.mkArray n <| Array.mkArray m 0
+    let mut data : Array (Array Rat) := Array.replicate n <| Array.replicate m 0
     for ⟨i, j, v⟩ in vals do
       data := data.modify i fun row => row.set! j v
     return ⟨data⟩
-  swapRows mat i j := ⟨mat.data.swap! i j⟩
+  swapRows mat i j := ⟨mat.data.swapIfInBounds i j⟩
   subtractRow mat i j coef :=
     let newData : Array (Array Rat) := mat.data.modify j fun row =>
-      row.zipWith mat.data[i]! fun x y => x - coef * y
+      Array.zipWith (fun x y => x - coef * y) row mat.data[i]!
     ⟨newData⟩
   divideRow mat i coef := ⟨mat.data.modify i (·.map (· / coef))⟩
 
@@ -82,35 +82,35 @@ values.
 -/
 structure SparseMatrix (n m : Nat) where
   /-- The content of the matrix. -/
-  data : Array <| Lean.HashMap Nat Rat
+  data : Array <| Std.HashMap Nat Rat
 
 instance : UsableInSimplexAlgorithm SparseMatrix where
-  getElem mat i j := mat.data[i]!.findD j 0
+  getElem mat i j := mat.data[i]!.getD j 0
   setElem mat i j v :=
     if v == 0 then
       ⟨mat.data.modify i fun row => row.erase j⟩
     else
       ⟨mat.data.modify i fun row => row.insert j v⟩
   getValues mat :=
-    mat.data.zipWithIndex.foldl (init := []) fun acc (row, i) =>
+    mat.data.zipIdx.foldl (init := []) fun acc (row, i) =>
       let rowVals := row.toList.map fun (j, v) => (i, j, v)
       rowVals ++ acc
   ofValues {n _ : Nat} vals := Id.run do
-    let mut data : Array (Lean.HashMap Nat Rat) := Array.mkArray n .empty
+    let mut data : Array (Std.HashMap Nat Rat) := Array.replicate n ∅
     for ⟨i, j, v⟩ in vals do
       if v != 0 then
         data := data.modify i fun row => row.insert j v
     return ⟨data⟩
-  swapRows mat i j := ⟨mat.data.swap! i j⟩
+  swapRows mat i j := ⟨mat.data.swapIfInBounds i j⟩
   subtractRow mat i j coef :=
     let newData := mat.data.modify j fun row =>
       mat.data[i]!.fold (fun cur k val =>
-        let newVal := (cur.findD k 0) - coef * val
+        let newVal := (cur.getD k 0) - coef * val
         if newVal != 0 then cur.insert k newVal else cur.erase k
       ) row
     ⟨newData⟩
   divideRow mat i coef :=
-    let newData : Array (Lean.HashMap Nat Rat) := mat.data.modify i fun row =>
+    let newData : Array (Std.HashMap Nat Rat) := mat.data.modify i fun row =>
       row.fold (fun cur k v => cur.insert k (v / coef)) row
     ⟨newData⟩
 
@@ -126,4 +126,4 @@ structure Tableau (matType : Nat → Nat → Type) [UsableInSimplexAlgorithm mat
   /-- Matrix of coefficients the basic variables expressed through the free ones. -/
   mat : matType basic.size free.size
 
-end Linarith.SimplexAlgorithm
+end Mathlib.Tactic.Linarith.SimplexAlgorithm

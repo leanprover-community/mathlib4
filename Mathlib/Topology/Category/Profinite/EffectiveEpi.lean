@@ -13,7 +13,7 @@ import Mathlib.Topology.Category.Stonean.Basic
 
 This file proves that `EffectiveEpi`, `Epi` and `Surjective` are all equivalent in `Profinite`.
 As a consequence we deduce from the material in
-`Mathlib.Topology.Category.CompHausLike.EffectiveEpi` that `Profinite` is `Preregular`
+`Mathlib/Topology/Category/CompHausLike/EffectiveEpi.lean` that `Profinite` is `Preregular`
 and `Precoherent`.
 
 We also prove that for a finite family of morphisms in `Profinite` with fixed
@@ -25,8 +25,6 @@ universe u
 
 open CategoryTheory Limits
 
-attribute [local instance] ConcreteCategory.instFunLike
-
 namespace Profinite
 
 open List in
@@ -37,12 +35,9 @@ theorem effectiveEpi_tfae
     , Epi π
     , Function.Surjective π
     ] := by
-  tfae_have 1 → 2
-  · intro; infer_instance
-  tfae_have 2 ↔ 3
-  · exact epi_iff_surjective π
-  tfae_have 3 → 1
-  · exact fun hπ ↦ ⟨⟨CompHausLike.effectiveEpiStruct π hπ⟩⟩
+  tfae_have 1 → 2 := fun _ ↦ inferInstance
+  tfae_have 2 ↔ 3 := epi_iff_surjective π
+  tfae_have 3 → 1 := fun hπ ↦ ⟨⟨CompHausLike.effectiveEpiStruct π hπ⟩⟩
   tfae_finish
 
 instance : profiniteToCompHaus.PreservesEffectiveEpis where
@@ -54,7 +49,7 @@ instance : profiniteToCompHaus.ReflectsEffectiveEpis where
     ((Profinite.effectiveEpi_tfae f).out 0 2).mpr (((CompHaus.effectiveEpi_tfae _).out 0 2).mp h)
 
 /--
-An effective presentation of an `X : Profinite` with respect to the inclusion functor from `Stonean`
+An effective presentation of an `X : Profinite` with respect to the inclusion functor from `Stonean`
 -/
 noncomputable def profiniteToCompHausEffectivePresentation (X : CompHaus) :
     profiniteToCompHaus.EffectivePresentation X where
@@ -80,12 +75,11 @@ theorem effectiveEpiFamily_tfae
     , ∀ b : B, ∃ (a : α) (x : X a), π a x = b
     ] := by
   tfae_have 2 → 1
-  · intro
+  | _ => by
     simpa [← effectiveEpi_desc_iff_effectiveEpiFamily, (effectiveEpi_tfae (Sigma.desc π)).out 0 1]
-  tfae_have 1 → 2
-  · intro; infer_instance
-  tfae_have 3 ↔ 1
-  · erw [((CompHaus.effectiveEpiFamily_tfae
+  tfae_have 1 → 2 := fun _ ↦ inferInstance
+  tfae_have 3 ↔ 1 := by
+    erw [((CompHaus.effectiveEpiFamily_tfae
       (fun a ↦ profiniteToCompHaus.obj (X a)) (fun a ↦ profiniteToCompHaus.map (π a))).out 2 0 : )]
     exact ⟨fun h ↦ profiniteToCompHaus.finite_effectiveEpiFamily_of_map _ _ h,
       fun _ ↦ inferInstance⟩

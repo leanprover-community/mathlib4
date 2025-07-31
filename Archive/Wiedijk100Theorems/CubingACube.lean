@@ -5,7 +5,7 @@ Authors: Floris van Doorn
 -/
 import Mathlib.Algebra.Order.Interval.Set.Group
 import Mathlib.Data.Real.Basic
-import Mathlib.Data.Set.Finite
+import Mathlib.Data.Set.Finite.Lemmas
 import Mathlib.Order.Interval.Set.Disjoint
 
 /-!
@@ -37,8 +37,8 @@ theorem Ico_lemma {α} [LinearOrder α] {x₁ x₂ y₁ y₂ z₁ z₂ w : α} (
     ∃ w, w ∈ Ico x₁ x₂ ∧ w ∉ Ico y₁ y₂ ∧ w ∈ Ico z₁ z₂ := by
   simp only [not_and, not_lt, mem_Ico] at hw
   refine ⟨max x₁ (min w y₂), ?_, ?_, ?_⟩
-  · simp [le_refl, lt_trans h₁ (lt_trans hy h₂), h₂]
-  · simp (config := { contextual := true }) [hw, lt_irrefl, not_le_of_lt h₁]
+  · simp [lt_trans h₁ (lt_trans hy h₂), h₂]
+  · simp +contextual [hw, not_le_of_gt h₁]
   · simp [hw.2.1, hw.2.2, hz₁, lt_of_lt_of_le h₁ hz₂]
 
 /-- A (hyper)-cube (in standard orientation) is a vector `b` consisting of the bottom-left point
@@ -71,7 +71,7 @@ theorem univ_pi_side (c : Cube n) : pi univ (side c) = c.toSet :=
 
 theorem toSet_subset {c c' : Cube n} : c.toSet ⊆ c'.toSet ↔ ∀ j, c.side j ⊆ c'.side j := by
   simp only [← univ_pi_side, univ_pi_subset_univ_pi_iff, (c.side_nonempty _).ne_empty, exists_false,
-    or_false_iff]
+    or_false]
 
 theorem toSet_disjoint {c c' : Cube n} :
     Disjoint c.toSet c'.toSet ↔ ∃ j, Disjoint (c.side j) (c'.side j) := by
@@ -161,7 +161,7 @@ theorem nontrivial_fin : Nontrivial (Fin n) :=
 /-- The width of any cube in the partition cannot be 1. -/
 theorem w_ne_one [Nontrivial ι] (i : ι) : (cs i).w ≠ 1 := by
   intro hi
-  cases' exists_ne i with i' hi'
+  obtain ⟨i', hi'⟩ := exists_ne i
   let p := (cs i').b
   have hp : p ∈ (cs i').toSet := (cs i').b_mem_toSet
   have h2p : p ∈ (cs i).toSet := by
@@ -179,9 +179,9 @@ theorem w_ne_one [Nontrivial ι] (i : ι) : (cs i).w ≠ 1 := by
   bottoms of (other) cubes in the family. -/
 theorem shiftUp_bottom_subset_bottoms (hc : (cs i).xm ≠ 1) :
     (cs i).shiftUp.bottom ⊆ ⋃ i : ι, (cs i).bottom := by
-  intro p hp; cases' hp with hp0 hps; rw [tail_shiftUp] at hps
+  intro p hp; obtain ⟨hp0, hps⟩ := hp; rw [tail_shiftUp] at hps
   have : p ∈ (unitCube : Cube (n + 1)).toSet := by
-    simp only [toSet, forall_fin_succ, hp0, side_unitCube, mem_setOf_eq, mem_Ico, head_shiftUp]
+    simp only [toSet, forall_iff_succ, hp0, side_unitCube, mem_setOf_eq, mem_Ico, head_shiftUp]
     refine ⟨⟨?_, ?_⟩, ?_⟩
     · rw [← zero_add (0 : ℝ)]; apply add_le_add
       · apply zero_le_b h
@@ -190,7 +190,7 @@ theorem shiftUp_bottom_subset_bottoms (hc : (cs i).xm ≠ 1) :
     intro j; exact side_subset h (hps j)
   rw [← h.2, mem_iUnion] at this; rcases this with ⟨i', hi'⟩
   rw [mem_iUnion]; use i'; refine ⟨?_, fun j => hi' j.succ⟩
-  have : i ≠ i' := by rintro rfl; apply not_le_of_lt (hi' 0).2; rw [hp0]; rfl
+  have : i ≠ i' := by rintro rfl; apply not_le_of_gt (hi' 0).2; rw [hp0]; rfl
   have := h.1 this
   rw [onFun, comp_apply, comp_apply, toSet_disjoint, exists_fin_succ] at this
   rcases this with (h0 | ⟨j, hj⟩)
@@ -225,7 +225,7 @@ theorem valley_unitCube [Nontrivial ι] (h : Correct cs) : Valley cs unitCube :=
     intro h0 hv
     have : v ∈ (unitCube : Cube (n + 1)).toSet := by
       dsimp only [toSet, unitCube, mem_setOf_eq]
-      rw [forall_fin_succ, h0]; constructor
+      rw [forall_iff_succ, h0]; constructor
       · norm_num [side, unitCube]
       · exact hv
     rw [← h.2, mem_iUnion] at this; rcases this with ⟨i, hi⟩
@@ -269,7 +269,7 @@ theorem w_lt_w (hi : i ∈ bcubes cs c) : (cs i).w < c.w := by
   apply lt_of_le_of_ne _ (v.2.2 i hi.1)
   have j : Fin n := ⟨1, Nat.le_of_succ_le_succ h.three_le⟩
   rw [← add_le_add_iff_left ((cs i).b j.succ)]
-  apply le_trans (t_le_t hi j); rw [add_le_add_iff_right]; apply b_le_b hi
+  apply le_trans (t_le_t hi j); gcongr; apply b_le_b hi
 
 /-- There are at least two cubes in a valley -/
 theorem nontrivial_bcubes : (bcubes cs c).Nontrivial := by
@@ -277,11 +277,11 @@ theorem nontrivial_bcubes : (bcubes cs c).Nontrivial := by
   have h2i : i ∈ bcubes cs c :=
     ⟨hi.1.symm, v.2.1 i hi.1.symm ⟨tail c.b, hi.2, fun j => c.b_mem_side j.succ⟩⟩
   let j : Fin (n + 1) := ⟨2, h.three_le⟩
-  have hj : 0 ≠ j := by simp only [Fin.ext_iff, Ne]; norm_num
+  have hj : 0 ≠ j := by simp only [j, Fin.ext_iff, Ne]; norm_num
   let p : Fin (n + 1) → ℝ := fun j' => if j' = j then c.b j + (cs i).w else c.b j'
   have hp : p ∈ c.bottom := by
     constructor
-    · simp only [p, bottom, if_neg hj]
+    · simp only [p, if_neg hj]
     intro j'; simp only [tail, side_tail]
     by_cases hj' : j'.succ = j
     · simp [p, if_pos, side, hj', hw', w_lt_w h v h2i]
@@ -290,10 +290,11 @@ theorem nontrivial_bcubes : (bcubes cs c).Nontrivial := by
   have h2i' : i' ∈ bcubes cs c := ⟨hi'.1.symm, v.2.1 i' hi'.1.symm ⟨tail p, hi'.2, hp.2⟩⟩
   refine ⟨i, h2i, i', h2i', ?_⟩
   rintro rfl
-  apply not_le_of_lt (hi'.2 ⟨1, Nat.le_of_succ_le_succ h.three_le⟩).2
+  apply not_le_of_gt (hi'.2 ⟨1, Nat.le_of_succ_le_succ h.three_le⟩).2
   simp only [tail, Cube.tail, p]
-  rw [if_pos, add_le_add_iff_right]
-  · exact (hi.2 _).1
+  rw [if_pos]
+  · gcongr
+    exact (hi.2 _).1
   rfl
 
 /-- There is a cube in the valley -/
@@ -341,15 +342,15 @@ theorem smallest_onBoundary {j} (bi : OnBoundary (mi_mem_bcubes : mi h v ∈ _) 
       ∀ ⦃i'⦄ (_ : i' ∈ bcubes cs c),
         i' ≠ mi h v → (cs <| mi h v).b j.succ ∈ (cs i').side j.succ → x ∈ (cs i').side j.succ := by
   let i := mi h v; have hi : i ∈ bcubes cs c := mi_mem_bcubes
-  cases' bi with bi bi
+  obtain bi | bi := bi
   · refine ⟨(cs i).b j.succ + (cs i).w, ⟨?_, ?_⟩, ?_⟩
-    · simp [side, bi, hw', w_lt_w h v hi]
-    · intro h'; simpa [lt_irrefl] using h'.2
+    · simp [i, side, bi, hw', w_lt_w h v hi]
+    · intro h'; simpa [i, lt_irrefl] using h'.2
     intro i' hi' i'_i h2i'; constructor
     · apply le_trans h2i'.1
-      simp [hw']
+      simp [i, hw']
     apply lt_of_lt_of_le (add_lt_add_left (mi_strict_minimal i'_i.symm hi') _)
-    simp [bi.symm, b_le_b hi']
+    simp [i, bi.symm, b_le_b hi']
   let s := bcubes cs c \ {i}
   have hs : s.Nonempty := by
     rcases (nontrivial_bcubes h v).exists_ne i with ⟨i', hi', h2i'⟩
@@ -361,14 +362,14 @@ theorem smallest_onBoundary {j} (bi : OnBoundary (mi_mem_bcubes : mi h v ∈ _) 
     dsimp only [x]; rw [← bi, add_sub_assoc, add_lt_iff_neg_left, sub_lt_zero]
     apply mi_strict_minimal (Ne.symm h2i') hi'
   refine ⟨x, ⟨?_, ?_⟩, ?_⟩
-  · simp only [side, neg_lt_zero, hw, add_lt_iff_neg_left, and_true_iff, mem_Ico, sub_eq_add_neg, x]
+  · simp only [side, neg_lt_zero, hw, add_lt_iff_neg_left, and_true, mem_Ico, sub_eq_add_neg, x]
     rw [add_assoc, le_add_iff_nonneg_right, ← sub_eq_add_neg, sub_nonneg]
     apply le_of_lt (w_lt_w h v hi')
   · simp only [side, not_and_or, not_lt, not_le, mem_Ico]; left; exact hx
   intro i'' hi'' h2i'' h3i''; constructor; swap; · apply lt_trans hx h3i''.2
   rw [le_sub_iff_add_le]
-  refine le_trans ?_ (t_le_t hi'' j); rw [add_le_add_iff_left]; apply h3i' i'' ⟨hi'', _⟩
-  simp [mem_singleton, h2i'']
+  refine le_trans ?_ (t_le_t hi'' j); gcongr; apply h3i' i'' ⟨hi'', _⟩
+  simp [i, h2i'']
 
 variable (h v)
 
@@ -390,7 +391,7 @@ theorem mi_not_onBoundary (j : Fin n) : ¬OnBoundary (mi_mem_bcubes : mi h v ∈
     simp only [hj₂, if_false]; apply tail_sub hi; apply b_mem_side
   rcases v.1 hp with ⟨_, ⟨i', rfl⟩, hi'⟩
   have h2i' : i' ∈ bcubes cs c := ⟨hi'.1.symm, v.2.1 i' hi'.1.symm ⟨tail p, hi'.2, hp.2⟩⟩
-  have i_i' : i ≠ i' := by rintro rfl; simpa [p, side_tail, h2x] using hi'.2 j
+  have i_i' : i ≠ i' := by rintro rfl; simpa [i, p, side_tail, h2x] using hi'.2 j
   have : Nonempty (↥((cs i').tail.side j' \ (cs i).tail.side j')) := by
     apply nonempty_Ico_sdiff
     · apply mi_strict_minimal i_i' h2i'
@@ -402,26 +403,26 @@ theorem mi_not_onBoundary (j : Fin n) : ¬OnBoundary (mi_mem_bcubes : mi h v ∈
       simpa [p', bottom, toSet, tail, side_tail]
     intro j₂
     by_cases hj₂ : j₂ = j'; · simp [hj₂]; apply tail_sub h2i'; apply hx'.1
-    simp only [if_congr, if_false, hj₂]; apply tail_sub hi; apply b_mem_side
+    simp only [if_false, hj₂]; apply tail_sub hi; apply b_mem_side
   rcases v.1 hp' with ⟨_, ⟨i'', rfl⟩, hi''⟩
   have h2i'' : i'' ∈ bcubes cs c := ⟨hi''.1.symm, v.2.1 i'' hi''.1.symm ⟨tail p', hi''.2, hp'.2⟩⟩
   have i'_i'' : i' ≠ i'' := by
     rintro ⟨⟩
     have : (cs i).b ∈ (cs i').toSet := by
-      simp only [toSet, forall_fin_succ, hi.1, bottom_mem_side h2i', true_and_iff, mem_setOf_eq]
+      simp only [toSet, forall_iff_succ, hi.1, bottom_mem_side h2i', true_and, mem_setOf_eq]
       intro j₂; by_cases hj₂ : j₂ = j
       · simpa [p', side_tail, hj'.symm, hj₂] using hi''.2 j
       · simpa [p, hj₂] using hi'.2 j₂
     apply not_disjoint_iff.mpr ⟨(cs i).b, (cs i).b_mem_toSet, this⟩ (h.1 i_i')
   have i_i'' : i ≠ i'' := by intro h; induction h; simpa [p', hx'.2] using hi''.2 j'
   apply Not.elim _ (h.1 i'_i'')
-  simp_rw [onFun, comp, toSet_disjoint, not_exists, not_disjoint_iff, forall_fin_succ]
+  simp_rw [onFun, comp, toSet_disjoint, not_exists, not_disjoint_iff, forall_iff_succ]
   refine ⟨⟨c.b 0, bottom_mem_side h2i', bottom_mem_side h2i''⟩, ?_⟩
   intro j₂
   by_cases hj₂ : j₂ = j
   · cases hj₂; refine ⟨x, ?_, ?_⟩
-    · convert hi'.2 j using 1; simp [p]
-    apply h3x h2i'' i_i''.symm; convert hi''.2 j using 1; simp [p', hj'.symm]
+    · convert hi'.2 j using 1; simp [i, p]
+    apply h3x h2i'' i_i''.symm; convert hi''.2 j using 1; simp [i, p', hj'.symm]
   by_cases h2j₂ : j₂ = j'
   · cases h2j₂; refine ⟨x', hx'.1, ?_⟩; convert hi''.2 j' using 1; simp [p']
   refine ⟨(cs i).b j₂.succ, ?_, ?_⟩
@@ -435,7 +436,7 @@ theorem mi_not_onBoundary' (j : Fin n) :
     c.tail.b j < (cs (mi h v)).tail.b j ∧
       (cs (mi h v)).tail.b j + (cs (mi h v)).w < c.tail.b j + c.w := by
   have := mi_not_onBoundary h v j
-  simp only [OnBoundary, not_or] at this; cases' this with h1 h2
+  simp only [OnBoundary, not_or] at this; obtain ⟨h1, h2⟩ := this
   constructor
   · apply lt_of_le_of_ne (b_le_b mi_mem_bcubes _) h1
   apply lt_of_le_of_ne _ h2
@@ -455,7 +456,7 @@ theorem valley_mi : Valley cs (cs (mi h v)).shiftUp := by
     simp only [not_subset, tail_shiftUp] at h2i'
     rcases h2i' with ⟨p1, hp1, h2p1⟩
     have : ∃ p3, p3 ∈ (cs i').tail.toSet ∧ p3 ∉ (cs i).tail.toSet ∧ p3 ∈ c.tail.toSet := by
-      simp only [toSet, not_forall, mem_setOf_eq] at h2p1; cases' h2p1 with j hj
+      simp only [toSet, not_forall, mem_setOf_eq] at h2p1; obtain ⟨j, hj⟩ := h2p1
       rcases Ico_lemma (mi_not_onBoundary' j).1 (by simp [hw]) (mi_not_onBoundary' j).2
           (le_trans (hp2 j).1 <| le_of_lt (h2p2 j).2) (le_trans (h2p2 j).1 <| le_of_lt (hp2 j).2)
           ⟨hj, hp1 j⟩ with
@@ -480,9 +481,9 @@ theorem valley_mi : Valley cs (cs (mi h v)).shiftUp := by
     have h3i'' : (cs i).w < (cs i'').w := by
       apply mi_strict_minimal _ h2i''; rintro rfl; apply h2p3; convert hi''.2
     let p' := @cons n (fun _ => ℝ) (cs i).xm p3
-    have hp' : p' ∈ (cs i').toSet := by simpa [p', toSet, forall_fin_succ, hi'.symm] using h1p3
+    have hp' : p' ∈ (cs i').toSet := by simpa [i, p', toSet, forall_iff_succ, hi'.symm] using h1p3
     have h2p' : p' ∈ (cs i'').toSet := by
-      simp only [p', toSet, forall_fin_succ, cons_succ, cons_zero, mem_setOf_eq]
+      simp only [p', toSet, forall_iff_succ, cons_succ, cons_zero, mem_setOf_eq]
       refine ⟨?_, by simpa [toSet] using hi''.2⟩
       have : (cs i).b 0 = (cs i'').b 0 := by rw [hi.1, h2i''.1]
       simp [side, hw', xm, this, h3i'']
@@ -540,7 +541,7 @@ theorem cannot_cube_a_cube :
     InjOn Cube.w s →                           -- such that the widths of all cubes are different
     False := by                                -- then we can derive a contradiction
   intro n hn s hfin h2 hd hU hinj
-  cases' n with n
+  rcases n with - | n
   · cases hn
   exact @not_correct n s (↑) hfin.to_subtype h2.coe_sort
     ⟨hd.subtype _ _, (iUnion_subtype _ _).trans hU, hinj.injective, hn⟩

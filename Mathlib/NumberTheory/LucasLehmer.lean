@@ -1,15 +1,11 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Scott Morrison, Ainsley Pahljina
+Authors: Mario Carneiro, Kim Morrison, Ainsley Pahljina
 -/
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Algebra.Order.Ring.Basic
-import Mathlib.Algebra.Ring.Nat
-import Mathlib.Data.ZMod.Basic
-import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.RingTheory.Fintype
-import Mathlib.Tactic.IntervalCases
+import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Zify
 
 /-!
@@ -31,12 +27,13 @@ primes using `lucas_lehmer_sufficiency`.
 ## History
 
 This development began as a student project by Ainsley Pahljina,
-and was then cleaned up for mathlib by Scott Morrison.
+and was then cleaned up for mathlib by Kim Morrison.
 The tactic for certified computation of Lucas-Lehmer residues was provided by Mario Carneiro.
 This tactic was ported by Thomas Murrills to Lean 4, and then it was converted to a `norm_num`
 extension and made to use kernel reductions by Kyle Miller.
 -/
 
+assert_not_exists TwoSidedIdeal
 
 /-- The Mersenne numbers, 2^p - 1. -/
 def mersenne (p : ℕ) : ℕ :=
@@ -58,6 +55,12 @@ theorem mersenne_le_mersenne {p q : ℕ} : mersenne p ≤ mersenne q ↔ p ≤ q
 @[gcongr] protected alias ⟨_, GCongr.mersenne_le_mersenne⟩ := mersenne_le_mersenne
 
 @[simp] theorem mersenne_zero : mersenne 0 = 0 := rfl
+
+@[simp] lemma mersenne_odd : ∀ {p : ℕ}, Odd (mersenne p) ↔ p ≠ 0
+  | 0 => by simp
+  | p + 1 => by
+    simpa using Nat.Even.sub_odd (one_le_pow₀ one_le_two)
+      (even_two.pow_of_ne_zero p.succ_ne_zero) odd_one
 
 @[simp] theorem mersenne_pos {p : ℕ} : 0 < mersenne p ↔ 0 < p := mersenne_lt_mersenne (p := 0)
 
@@ -88,7 +91,7 @@ theorem one_lt_mersenne {p : ℕ} : 1 < mersenne p ↔ 1 < p :=
 @[simp]
 theorem succ_mersenne (k : ℕ) : mersenne k + 1 = 2 ^ k := by
   rw [mersenne, tsub_add_cancel_of_le]
-  exact one_le_pow_of_one_le (by norm_num) k
+  exact one_le_pow₀ (by norm_num)
 
 namespace LucasLehmer
 
@@ -136,21 +139,18 @@ theorem sMod_mod (p i : ℕ) : sMod p i % (2 ^ p - 1) = sMod p i := by cases i <
 
 theorem sMod_lt (p : ℕ) (hp : p ≠ 0) (i : ℕ) : sMod p i < 2 ^ p - 1 := by
   rw [← sMod_mod]
-  refine (Int.emod_lt _ (mersenne_int_ne_zero p hp)).trans_eq ?_
+  refine (Int.emod_lt_abs _ (mersenne_int_ne_zero p hp)).trans_eq ?_
   exact abs_of_nonneg (mersenne_int_pos hp).le
 
 theorem sZMod_eq_s (p' : ℕ) (i : ℕ) : sZMod (p' + 2) i = (s i : ZMod (2 ^ (p' + 2) - 1)) := by
-  induction' i with i ih
-  · dsimp [s, sZMod]
-    norm_num
-  · push_cast [s, sZMod, ih]; rfl
+  induction i with
+  | zero => dsimp [s, sZMod]; norm_num
+  | succ i ih => push_cast [s, sZMod, ih]; rfl
 
 -- These next two don't make good `norm_cast` lemmas.
 theorem Int.natCast_pow_pred (b p : ℕ) (w : 0 < b) : ((b ^ p - 1 : ℕ) : ℤ) = (b : ℤ) ^ p - 1 := by
   have : 1 ≤ b ^ p := Nat.one_le_pow p b w
   norm_cast
-
-@[deprecated (since := "2024-05-25")] alias Int.coe_nat_pow_pred := Int.natCast_pow_pred
 
 theorem Int.coe_nat_two_pow_pred (p : ℕ) : ((2 ^ p - 1 : ℕ) : ℤ) = (2 ^ p - 1 : ℤ) :=
   Int.natCast_pow_pred 2 p (by decide)
@@ -185,13 +185,6 @@ the Lucas-Lehmer residue `s p (p-2) % (2^p - 1)` is zero.
 -/
 def LucasLehmerTest (p : ℕ) : Prop :=
   lucasLehmerResidue p = 0
-
--- Porting note: We have a fast `norm_num` extension, and we would rather use that than accidentally
--- have `simp` use `decide`!
-/-
-instance : DecidablePred LucasLehmerTest :=
-  inferInstanceAs (DecidablePred (lucasLehmerResidue · = 0))
--/
 
 /-- `q` is defined as the minimum factor of `mersenne p`, bundled as an `ℕ+`. -/
 def q (p : ℕ) : ℕ+ :=
@@ -271,14 +264,12 @@ instance : NatCast (X q) where
 
 @[simp] theorem snd_natCast (n : ℕ) : (n : X q).snd = (0 : ZMod q) := rfl
 
--- See note [no_index around OfNat.ofNat]
 @[simp] theorem ofNat_fst (n : ℕ) [n.AtLeastTwo] :
-    (no_index (OfNat.ofNat n) : X q).fst = OfNat.ofNat n :=
+    (ofNat(n) : X q).fst = OfNat.ofNat n :=
   rfl
 
--- See note [no_index around OfNat.ofNat]
 @[simp] theorem ofNat_snd (n : ℕ) [n.AtLeastTwo] :
-    (no_index (OfNat.ofNat n) : X q).snd = 0 :=
+    (ofNat(n) : X q).snd = 0 :=
   rfl
 
 instance : AddGroupWithOne (X q) :=
@@ -319,18 +310,11 @@ theorem fst_intCast (n : ℤ) : (n : X q).fst = (n : ZMod q) :=
 theorem snd_intCast (n : ℤ) : (n : X q).snd = (0 : ZMod q) :=
   rfl
 
-@[deprecated (since := "2024-05-25")] alias nat_coe_fst := fst_natCast
-@[deprecated (since := "2024-05-25")] alias nat_coe_snd := snd_natCast
-@[deprecated (since := "2024-05-25")] alias int_coe_fst := fst_intCast
-@[deprecated (since := "2024-05-25")] alias int_coe_snd := snd_intCast
-
 @[norm_cast]
 theorem coe_mul (n m : ℤ) : ((n * m : ℤ) : X q) = (n : X q) * (m : X q) := by ext <;> simp
 
 @[norm_cast]
 theorem coe_natCast (n : ℕ) : ((n : ℤ) : X q) = (n : X q) := by ext <;> simp
-
-@[deprecated (since := "2024-04-05")] alias coe_nat := coe_natCast
 
 /-- The cardinality of `X` is `q^2`. -/
 theorem card_eq : Fintype.card (X q) = q ^ 2 := by
@@ -358,10 +342,12 @@ theorem ωb_mul_ω (q : ℕ+) : (ωb : X q) * ω = 1 := by
 
 /-- A closed form for the recurrence relation. -/
 theorem closed_form (i : ℕ) : (s i : X q) = (ω : X q) ^ 2 ^ i + (ωb : X q) ^ 2 ^ i := by
-  induction' i with i ih
-  · dsimp [s, ω, ωb]
+  induction i with
+  | zero =>
+    dsimp [s, ω, ωb]
     ext <;> norm_num
-  · calc
+  | succ i ih =>
+    calc
       (s (i + 1) : X q) = (s i ^ 2 - 2 : ℤ) := rfl
       _ = (s i : X q) ^ 2 - 2 := by push_cast; rfl
       _ = (ω ^ 2 ^ i + ωb ^ 2 ^ i) ^ 2 - 2 := by rw [ih]
@@ -394,7 +380,7 @@ theorem ω_pow_formula (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
   simp? [ZMod.intCast_zmod_eq_zero_iff_dvd] at h says
     simp only [add_tsub_cancel_right, ZMod.intCast_zmod_eq_zero_iff_dvd, ofNat_pos,
       pow_pos, cast_pred, cast_pow, cast_ofNat] at h
-  cases' h with k h
+  obtain ⟨k, h⟩ := h
   use k
   replace h := congr_arg (fun n : ℤ => (n : X (q (p' + 2)))) h
   -- coercion from ℤ to X q
@@ -412,12 +398,12 @@ theorem ω_pow_formula (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
 
 /-- `q` is the minimum factor of `mersenne p`, so `M p = 0` in `X q`. -/
 theorem mersenne_coe_X (p : ℕ) : (mersenne p : X (q p)) = 0 := by
-  ext <;> simp [mersenne, q, ZMod.natCast_zmod_eq_zero_iff_dvd, -pow_pos]
+  ext <;> simp [mersenne, q, ZMod.natCast_eq_zero_iff, -pow_pos]
   apply Nat.minFac_dvd
 
 theorem ω_pow_eq_neg_one (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
     (ω : X (q (p' + 2))) ^ 2 ^ (p' + 1) = -1 := by
-  cases' ω_pow_formula p' h with k w
+  obtain ⟨k, w⟩ := ω_pow_formula p' h
   rw [mersenne_coe_X] at w
   simpa using w
 
@@ -450,7 +436,8 @@ theorem order_ω (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
     have ω_pow := orderOf_dvd_iff_pow_eq_one.1 o
     replace ω_pow :=
       congr_arg (Units.coeHom (X (q (p' + 2))) : Units (X (q (p' + 2))) → X (q (p' + 2))) ω_pow
-    simp? at ω_pow says simp only [map_pow, Units.coeHom_apply, ωUnit_coe, map_one] at ω_pow
+    simp? at ω_pow says
+      simp only [Units.coeHom_apply, Units.val_pow_eq_pow_val, ωUnit_coe, Units.val_one] at ω_pow
     have h : (1 : ZMod (q (p' + 2))) = -1 :=
       congr_arg Prod.fst (ω_pow.symm.trans (ω_pow_eq_neg_one p' h))
     haveI : Fact (2 < (q (p' + 2) : ℕ)) := ⟨two_lt_q _⟩
@@ -506,21 +493,21 @@ open Qq Lean Elab.Tactic Mathlib.Meta.NormNum
 
 /-- Version of `sMod` that is `ℕ`-valued. One should have `q = 2 ^ p - 1`.
 This can be reduced by the kernel. -/
-def sMod' (q : ℕ) : ℕ → ℕ
+def sModNat (q : ℕ) : ℕ → ℕ
   | 0 => 4 % q
-  | i + 1 => (sMod' q i ^ 2 + (q - 2)) % q
+  | i + 1 => (sModNat q i ^ 2 + (q - 2)) % q
 
-theorem sMod'_eq_sMod (p k : ℕ) (hp : 2 ≤ p) : (sMod' (2 ^ p - 1) k : ℤ) = sMod p k := by
+theorem sModNat_eq_sMod (p k : ℕ) (hp : 2 ≤ p) : (sModNat (2 ^ p - 1) k : ℤ) = sMod p k := by
   have h1 := calc
     4 = 2 ^ 2 := by norm_num
-    _ ≤ 2 ^ p := Nat.pow_le_pow_of_le_right (by norm_num) hp
+    _ ≤ 2 ^ p := Nat.pow_le_pow_right (by norm_num) hp
   have h2 : 1 ≤ 2 ^ p := by omega
   induction k with
   | zero =>
-    rw [sMod', sMod, Int.ofNat_emod]
+    rw [sModNat, sMod, Int.natCast_emod]
     simp [h2]
   | succ k ih =>
-    rw [sMod', sMod, ← ih]
+    rw [sModNat, sMod, ← ih]
     have h3 : 2 ≤ 2 ^ p - 1 := by
       zify [h2]
       calc
@@ -528,19 +515,57 @@ theorem sMod'_eq_sMod (p k : ℕ) (hp : 2 ≤ p) : (sMod' (2 ^ p - 1) k : ℤ) =
         _         ≤ 2 ^ p - 1 := by zify at h1; exact Int.sub_le_sub_right h1 _
     zify [h2, h3]
     rw [← add_sub_assoc, sub_eq_add_neg, add_assoc, add_comm _ (-2), ← add_assoc,
-      Int.add_emod_self, ← sub_eq_add_neg]
+      Int.add_emod_right, ← sub_eq_add_neg]
 
-lemma testTrueHelper (p : ℕ) (hp : Nat.blt 1 p = true) (h : sMod' (2 ^ p - 1) (p - 2) = 0) :
+/-- Tail-recursive version of `sModNat`. -/
+def sModNatTR (q : ℕ) (k : Nat) : ℕ :=
+  go k (4 % q)
+where
+  /-- Helper function for `sMod''`. -/
+  go : ℕ → ℕ → ℕ
+  | 0, acc => acc
+  | n + 1, acc => go n ((acc ^ 2 + (q - 2)) % q)
+
+/--
+Generalization of `sModNat` with arbitrary base case,
+useful for proving `sModNatTR` and `sModNat` agree.
+-/
+def sModNat_aux (b : ℕ) (q : ℕ) : ℕ → ℕ
+  | 0 => b
+  | i + 1 => (sModNat_aux b q i ^ 2 + (q - 2)) % q
+
+theorem sModNat_aux_eq (q k : ℕ) : sModNat_aux (4 % q) q k = sModNat q k := by
+  induction k with
+  | zero => rfl
+  | succ k ih => rw [sModNat_aux, ih, sModNat, ← ih]
+
+theorem sModNatTR_eq_sModNat (q : ℕ) (i : ℕ) : sModNatTR q i = sModNat q i := by
+  rw [sModNatTR, helper, sModNat_aux_eq]
+where
+  helper b q k : sModNatTR.go q k b = sModNat_aux b q k := by
+    induction k generalizing b with
+    | zero => rfl
+    | succ k ih =>
+      rw [sModNatTR.go, ih, sModNat_aux]
+      clear ih
+      induction k with
+      | zero => rfl
+      | succ k ih =>
+        rw [sModNat_aux, ih, sModNat_aux]
+
+lemma testTrueHelper (p : ℕ) (hp : Nat.blt 1 p = true) (h : sModNatTR (2 ^ p - 1) (p - 2) = 0) :
     LucasLehmerTest p := by
   rw [Nat.blt_eq] at hp
-  rw [LucasLehmerTest, LucasLehmer.residue_eq_zero_iff_sMod_eq_zero p hp, ← sMod'_eq_sMod p _ hp, h]
+  rw [LucasLehmerTest, LucasLehmer.residue_eq_zero_iff_sMod_eq_zero p hp, ← sModNat_eq_sMod p _ hp,
+    ← sModNatTR_eq_sModNat, h]
   rfl
 
 lemma testFalseHelper (p : ℕ) (hp : Nat.blt 1 p = true)
-    (h : Nat.ble 1 (sMod' (2 ^ p - 1) (p - 2))) : ¬ LucasLehmerTest p := by
+    (h : Nat.ble 1 (sModNatTR (2 ^ p - 1) (p - 2))) : ¬ LucasLehmerTest p := by
   rw [Nat.blt_eq] at hp
   rw [Nat.ble_eq, Nat.succ_le, Nat.pos_iff_ne_zero] at h
-  rw [LucasLehmerTest, LucasLehmer.residue_eq_zero_iff_sMod_eq_zero p hp, ← sMod'_eq_sMod p _ hp]
+  rw [LucasLehmerTest, LucasLehmer.residue_eq_zero_iff_sMod_eq_zero p hp, ← sModNat_eq_sMod p _ hp,
+    ← sModNatTR_eq_sModNat]
   simpa using h
 
 theorem isNat_lucasLehmerTest : {p np : ℕ} →
@@ -554,20 +579,20 @@ theorem isNat_not_lucasLehmerTest : {p np : ℕ} →
 /-- Calculate `LucasLehmer.LucasLehmerTest p` for `2 ≤ p` by using kernel reduction for the
 `sMod'` function. -/
 @[norm_num LucasLehmer.LucasLehmerTest (_ : ℕ)]
-def evalLucasLehmerTest : NormNumExt where eval {u α} e := do
+def evalLucasLehmerTest : NormNumExt where eval {_ _} e := do
   let .app _ (p : Q(ℕ)) ← Meta.whnfR e | failure
   let ⟨ep, hp⟩ ← deriveNat p _
   let np := ep.natLit!
   unless 1 < np do
     failure
   haveI' h1ltp : Nat.blt 1 $ep =Q true := ⟨⟩
-  if sMod' (2 ^ np - 1) (np - 2) = 0 then
-    haveI' hs : sMod' (2 ^ $ep - 1) ($ep - 2) =Q 0 := ⟨⟩
+  if sModNatTR (2 ^ np - 1) (np - 2) = 0 then
+    haveI' hs : sModNatTR (2 ^ $ep - 1) ($ep - 2) =Q 0 := ⟨⟩
     have pf : Q(LucasLehmerTest $ep) := q(testTrueHelper $ep $h1ltp $hs)
     have pf' : Q(LucasLehmerTest $p) := q(isNat_lucasLehmerTest $hp $pf)
     return .isTrue pf'
   else
-    haveI' hs : Nat.ble 1 (sMod' (2 ^ $ep - 1) ($ep - 2)) =Q true := ⟨⟩
+    haveI' hs : Nat.ble 1 (sModNatTR (2 ^ $ep - 1) ($ep - 2)) =Q true := ⟨⟩
     have pf : Q(¬ LucasLehmerTest $ep) := q(testFalseHelper $ep $h1ltp $hs)
     have pf' : Q(¬ LucasLehmerTest $p) := q(isNat_not_lucasLehmerTest $hp $pf)
     return .isFalse pf'

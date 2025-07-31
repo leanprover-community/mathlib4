@@ -12,7 +12,7 @@ import Mathlib.Data.Fin.VecNotation
 -/
 
 namespace Fin
-variable {m n : ℕ} {α : Fin (n + 1) → Type*}
+variable {n : ℕ} {α : Fin (n + 1) → Type*}
 
 @[to_additive (attr := simp)]
 lemma insertNth_one_right [∀ j, One (α j)] (i : Fin (n + 1)) (x : α i) :
@@ -25,7 +25,7 @@ lemma insertNth_mul [∀ j, Mul (α j)] (i : Fin (n + 1)) (x y : α i) (p q : �
   insertNth_binop (fun _ ↦ (· * ·)) i x y p q
 
 @[to_additive (attr := simp)]
-lemma insertNth_div [∀ j, Div (α j)] (i : Fin (n + 1)) (x y : α i)(p q : ∀ j, α (i.succAbove j)) :
+lemma insertNth_div [∀ j, Div (α j)] (i : Fin (n + 1)) (x y : α i) (p q : ∀ j, α (i.succAbove j)) :
     i.insertNth (x / y) (p / q) = i.insertNth x p / i.insertNth y q :=
   insertNth_binop (fun _ ↦ (· / ·)) i x y p q
 

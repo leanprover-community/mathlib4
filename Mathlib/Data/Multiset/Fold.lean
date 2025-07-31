@@ -3,12 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Multiset.Bind
+import Mathlib.Data.Multiset.Dedup
 
 /-!
 # The fold operation for a commutative associative operation over a multiset.
 -/
-
 
 namespace Multiset
 
@@ -26,10 +25,10 @@ local notation a " * " b => op a b
 /-- `fold op b s` folds a commutative associative operation `op` over
   the multiset `s`. -/
 def fold : α → Multiset α → α :=
-  foldr op (left_comm _ hc.comm ha.assoc)
+  foldr op
 
 theorem fold_eq_foldr (b : α) (s : Multiset α) :
-    fold op b s = foldr op (left_comm _ hc.comm ha.assoc) b s :=
+    fold op b s = foldr op b s :=
   rfl
 
 @[simp]
@@ -37,10 +36,10 @@ theorem coe_fold_r (b : α) (l : List α) : fold op b l = l.foldr op b :=
   rfl
 
 theorem coe_fold_l (b : α) (l : List α) : fold op b l = l.foldl op b :=
-  (coe_foldr_swap op _ b l).trans <| by simp [hc.comm]
+  (coe_foldr_swap op b l).trans <| by simp [hc.comm]
 
 theorem fold_eq_foldl (b : α) (s : Multiset α) :
-    fold op b s = foldl op (right_comm _ hc.comm ha.assoc) b s :=
+    fold op b s = foldl op b s :=
   Quot.inductionOn s fun _ => coe_fold_l _ _ _
 
 @[simp]
@@ -49,7 +48,7 @@ theorem fold_zero (b : α) : (0 : Multiset α).fold op b = b :=
 
 @[simp]
 theorem fold_cons_left : ∀ (b a : α) (s : Multiset α), (a ::ₘ s).fold op b = a * s.fold op b :=
-  foldr_cons _ _
+  foldr_cons _
 
 theorem fold_cons_right (b a : α) (s : Multiset α) : (a ::ₘ s).fold op b = s.fold op b * a := by
   simp [hc.comm]
@@ -62,19 +61,13 @@ theorem fold_cons'_left (b a : α) (s : Multiset α) : (a ::ₘ s).fold op b = s
 
 theorem fold_add (b₁ b₂ : α) (s₁ s₂ : Multiset α) :
     (s₁ + s₂).fold op (b₁ * b₂) = s₁.fold op b₁ * s₂.fold op b₂ :=
-  Multiset.induction_on s₂ (by rw [add_zero, fold_zero, ← fold_cons'_right, ← fold_cons_right op])
+  Multiset.induction_on s₂
+    (by rw [Multiset.add_zero, fold_zero, ← fold_cons'_right, ← fold_cons_right op])
     (fun a b h => by rw [fold_cons_left, add_cons, fold_cons_left, h, ← ha.assoc, hc.comm a,
       ha.assoc])
 
-theorem fold_bind {ι : Type*} (s : Multiset ι) (t : ι → Multiset α) (b : ι → α) (b₀ : α) :
-    (s.bind t).fold op ((s.map b).fold op b₀) =
-    (s.map fun i => (t i).fold op (b i)).fold op b₀ := by
-  induction' s using Multiset.induction_on with a ha ih
-  · rw [zero_bind, map_zero, map_zero, fold_zero]
-  · rw [cons_bind, map_cons, map_cons, fold_cons_left, fold_cons_left, fold_add, ih]
-
 theorem fold_singleton (b a : α) : ({a} : Multiset α).fold op b = a * b :=
-  foldr_singleton _ _ _ _
+  foldr_singleton _ _ _
 
 theorem fold_distrib {f g : β → α} (u₁ u₂ : α) (s : Multiset β) :
     (s.map fun x => f x * g x).fold op (u₁ * u₂) = (s.map f).fold op u₁ * (s.map g).fold op u₂ :=
@@ -86,7 +79,7 @@ theorem fold_distrib {f g : β → α} (u₁ u₂ : α) (s : Multiset β) :
 theorem fold_hom {op' : β → β → β} [Std.Commutative op'] [Std.Associative op'] {m : α → β}
     (hm : ∀ x y, m (op x y) = op' (m x) (m y)) (b : α) (s : Multiset α) :
     (s.map m).fold op' (m b) = m (s.fold op b) :=
-  Multiset.induction_on s (by simp) (by simp (config := { contextual := true }) [hm])
+  Multiset.induction_on s (by simp) (by simp +contextual [hm])
 
 theorem fold_union_inter [DecidableEq α] (s₁ s₂ : Multiset α) (b₁ b₂ : α) :
     ((s₁ ∪ s₂).fold op b₁ * (s₁ ∩ s₂).fold op b₂) = s₁.fold op b₁ * s₂.fold op b₂ := by
@@ -101,18 +94,5 @@ theorem fold_dedup_idem [DecidableEq α] [hi : Std.IdempotentOp op] (s : Multise
     rw [← cons_erase h, fold_cons_left, ← ha.assoc, hi.idempotent]
 
 end Fold
-
-open Nat
-
-theorem le_smul_dedup [DecidableEq α] (s : Multiset α) : ∃ n : ℕ, s ≤ n • dedup s :=
-  ⟨(s.map fun a => count a s).fold max 0,
-    le_iff_count.2 fun a => by
-      rw [count_nsmul]; by_cases h : a ∈ s
-      · refine le_trans ?_ (Nat.mul_le_mul_left _ <| count_pos.2 <| mem_dedup.2 h)
-        have : count a s ≤ fold max 0 (map (fun a => count a s) (a ::ₘ erase s a)) := by
-          simp [le_max_left]
-        rw [cons_erase h] at this
-        simpa [mul_succ] using this
-      · simp [count_eq_zero.2 h, Nat.zero_le]⟩
 
 end Multiset

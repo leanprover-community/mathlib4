@@ -17,7 +17,7 @@ import Mathlib.LinearAlgebra.QuadraticForm.Basic
 `Q₁ →qᵢ Q₂` is notation for `Q₁.Isometry Q₂`.
 -/
 
-variable {ι R M M₁ M₂ M₃ M₄ N : Type*}
+variable {R M M₁ M₂ M₃ M₄ N : Type*}
 
 namespace QuadraticMap
 
@@ -51,7 +51,7 @@ instance instLinearMapClass : LinearMapClass (Q₁ →qᵢ Q₂) R M₁ M₂ whe
 
 theorem toLinearMap_injective :
     Function.Injective (Isometry.toLinearMap : (Q₁ →qᵢ Q₂) → M₁ →ₗ[R] M₂) := fun _f _g h =>
-  DFunLike.coe_injective (congr_arg DFunLike.coe h : _)
+  DFunLike.coe_injective (congr_arg DFunLike.coe h :)
 
 @[ext]
 theorem ext ⦃f g : Q₁ →qᵢ Q₂⦄ (h : ∀ x, f x = g x) : f = g :=

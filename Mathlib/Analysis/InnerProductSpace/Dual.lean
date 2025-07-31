@@ -5,6 +5,8 @@ Authors: Frédéric Dupuis
 -/
 import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Analysis.Normed.Module.Dual
+import Mathlib.Analysis.Normed.Group.NullSubmodule
+import Mathlib.Topology.Algebra.Module.PerfectPairing
 
 /-!
 # The Fréchet-Riesz representation theorem
@@ -33,11 +35,9 @@ given by substituting `E →L[𝕜] 𝕜` with `E` using `toDual`.
 dual, Fréchet-Riesz
 -/
 
-
 noncomputable section
 
-open scoped Classical
-open ComplexConjugate
+open ComplexConjugate Module
 
 universe u v
 
@@ -45,10 +45,13 @@ namespace InnerProductSpace
 
 open RCLike ContinuousLinearMap
 
-variable (𝕜 : Type*)
-variable (E : Type*) [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable (𝕜 E : Type*)
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
+section Seminormed
+
+variable [RCLike 𝕜] [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 local postfix:90 "†" => starRingEnd _
 
@@ -67,15 +70,38 @@ variable {E}
 theorem toDualMap_apply {x y : E} : toDualMap 𝕜 E x y = ⟪x, y⟫ :=
   rfl
 
+section NullSubmodule
+
+open LinearMap
+
+/-- For each `x : E`, the kernel of `⟪x, ⬝⟫` includes the null space. -/
+lemma nullSubmodule_le_ker_toDualMap_right (x : E) : nullSubmodule 𝕜 E ≤ ker (toDualMap 𝕜 E x) :=
+  fun _ hx ↦ inner_eq_zero_of_right x ((mem_nullSubmodule_iff).mp hx)
+
+/-- The kernel of the map `x ↦ ⟪·, x⟫` includes the null space. -/
+lemma nullSubmodule_le_ker_toDualMap_left : nullSubmodule 𝕜 E ≤ ker (toDualMap 𝕜 E) :=
+  fun _ hx ↦ ContinuousLinearMap.ext <| fun y ↦ inner_eq_zero_of_left y hx
+
+end NullSubmodule
+
+end Seminormed
+
+section Normed
+variable [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
+
+local postfix:90 "†" => starRingEnd _
+
 theorem innerSL_norm [Nontrivial E] : ‖(innerSL 𝕜 : E →L⋆[𝕜] E →L[𝕜] 𝕜)‖ = 1 :=
   show ‖(toDualMap 𝕜 E).toContinuousLinearMap‖ = 1 from LinearIsometry.norm_toContinuousLinearMap _
 
-variable {𝕜}
+variable {E 𝕜}
 
 theorem ext_inner_left_basis {ι : Type*} {x y : E} (b : Basis ι 𝕜 E)
     (h : ∀ i : ι, ⟪b i, x⟫ = ⟪b i, y⟫) : x = y := by
   apply (toDualMap 𝕜 E).map_eq_iff.mp
-  refine (Function.Injective.eq_iff ContinuousLinearMap.coe_injective).mp (Basis.ext b ?_)
+  refine (Function.Injective.eq_iff ContinuousLinearMap.coe_injective).mp (b.ext ?_)
   intro i
   simp only [ContinuousLinearMap.coe_coe]
   rw [toDualMap_apply, toDualMap_apply]
@@ -93,7 +119,7 @@ theorem ext_inner_right_basis {ι : Type*} {x y : E} (b : Basis ι 𝕜 E)
 variable (𝕜) (E)
 variable [CompleteSpace E]
 
-/-- Fréchet-Riesz representation: any `ℓ` in the dual of a Hilbert space `E` is of the form
+/-- **Fréchet-Riesz representation**: any `ℓ` in the dual of a Hilbert space `E` is of the form
 `fun u => ⟪y, u⟫` for some `y : E`, i.e. `toDualMap` is surjective.
 -/
 def toDual : E ≃ₗᵢ⋆[𝕜] NormedSpace.Dual 𝕜 E :=
@@ -130,7 +156,7 @@ def toDual : E ≃ₗᵢ⋆[𝕜] NormedSpace.Dual 𝕜 E :=
           sub_eq_zero.mp (Eq.symm h₃)
         have h₄ :=
           calc
-            ⟪(ℓ z† / ⟪z, z⟫) • z, x⟫ = ℓ z / ⟪z, z⟫ * ⟪z, x⟫ := by simp [inner_smul_left, conj_conj]
+            ⟪(ℓ z† / ⟪z, z⟫) • z, x⟫ = ℓ z / ⟪z, z⟫ * ⟪z, x⟫ := by simp [inner_smul_left]
             _ = ℓ z * ⟪z, x⟫ / ⟪z, z⟫ := by rw [← div_mul_eq_mul_div]
             _ = ℓ x * ⟪z, z⟫ / ⟪z, z⟫ := by rw [h₂]
             _ = ℓ x := by field_simp [inner_self_ne_zero.2 z_ne_0]
@@ -169,5 +195,16 @@ theorem unique_continuousLinearMapOfBilin {v f : E} (is_lax_milgram : ∀ w, ⟪
   intro w
   rw [continuousLinearMapOfBilin_apply]
   exact is_lax_milgram w
+
+end Normed
+
+instance [NormedAddCommGroup E] [CompleteSpace E] [InnerProductSpace ℝ E] :
+    (innerₗ E).IsContPerfPair where
+  continuous_uncurry := continuous_inner
+  bijective_left := (InnerProductSpace.toDual ℝ E).bijective
+  bijective_right := by
+    convert (InnerProductSpace.toDual ℝ E).bijective
+    ext y
+    simp
 
 end InnerProductSpace

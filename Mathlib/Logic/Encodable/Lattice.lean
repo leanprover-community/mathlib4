@@ -33,18 +33,18 @@ theorem iSup_decode₂ [CompleteLattice α] (f : β → α) :
 theorem iUnion_decode₂ (f : β → Set α) : ⋃ (i : ℕ) (b ∈ decode₂ β i), f b = ⋃ b, f b :=
   iSup_decode₂ f
 
-/- Porting note: `@[elab_as_elim]` gives `unexpected eliminator resulting type`. -/
---@[elab_as_elim]
+@[elab_as_elim]
 theorem iUnion_decode₂_cases {f : β → Set α} {C : Set α → Prop} (H0 : C ∅) (H1 : ∀ b, C (f b)) {n} :
     C (⋃ b ∈ decode₂ β n, f b) :=
   match decode₂ β n with
   | none => by
-    simp only [Option.mem_def, iUnion_of_empty, iUnion_empty]
+    simp only [Option.mem_def, iUnion_of_empty, iUnion_empty, reduceCtorEq]
     apply H0
   | some b => by
     convert H1 b
-    simp [Set.ext_iff]
+    simp
 
+open scoped Function in -- required for scoped `on` notation
 theorem iUnion_decode₂_disjoint_on {f : β → Set α} (hd : Pairwise (Disjoint on f)) :
     Pairwise (Disjoint on fun i => ⋃ b ∈ decode₂ β i, f b) := by
   rintro i j ij

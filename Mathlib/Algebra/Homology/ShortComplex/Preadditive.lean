@@ -168,10 +168,9 @@ lemma cyclesMap_sub : cyclesMap (φ - φ') = cyclesMap φ - cyclesMap φ' :=
 end
 
 instance leftHomologyFunctor_additive [HasKernels C] [HasCokernels C] :
-  (leftHomologyFunctor C).Additive where
+    (leftHomologyFunctor C).Additive where
 
-instance cyclesFunctor_additive [HasKernels C] [HasCokernels C] :
-  (cyclesFunctor C).Additive where
+instance cyclesFunctor_additive [HasKernels C] [HasCokernels C] : (cyclesFunctor C).Additive where
 
 end LeftHomology
 
@@ -279,10 +278,10 @@ lemma opcyclesMap_sub : opcyclesMap (φ - φ') = opcyclesMap φ - opcyclesMap φ
 end
 
 instance rightHomologyFunctor_additive [HasKernels C] [HasCokernels C] :
-  (rightHomologyFunctor C).Additive where
+    (rightHomologyFunctor C).Additive where
 
 instance opcyclesFunctor_additive [HasKernels C] [HasCokernels C] :
-  (opcyclesFunctor C).Additive where
+    (opcyclesFunctor C).Additive where
 
 end RightHomology
 
@@ -347,8 +346,7 @@ lemma homologyMap_sub : homologyMap (φ - φ') = homologyMap φ - homologyMap φ
 
 end
 
-instance homologyFunctor_additive [CategoryWithHomology C] :
-  (homologyFunctor C).Additive where
+instance homologyFunctor_additive [CategoryWithHomology C] : (homologyFunctor C).Additive where
 
 end Homology
 
@@ -451,7 +449,7 @@ def add (h : Homotopy φ₁ φ₂) (h' : Homotopy φ₃ φ₄) : Homotopy (φ₁
   comm₂ := by rw [add_τ₂, add_τ₂, h.comm₂, h'.comm₂, comp_add, add_comp]; abel
   comm₃ := by rw [add_τ₃, add_τ₃, h.comm₃, h'.comm₃, add_comp]; abel
 
-/-- Homotopy between morphisms of short complexes is compatible with substraction. -/
+/-- Homotopy between morphisms of short complexes is compatible with subtraction. -/
 @[simps]
 def sub (h : Homotopy φ₁ φ₂) (h' : Homotopy φ₃ φ₄) : Homotopy (φ₁ - φ₃) (φ₂ - φ₄) where
   h₀ := h.h₀ - h'.h₀
@@ -508,7 +506,7 @@ def op (h : Homotopy φ₁ φ₂) : Homotopy (opMap φ₁) (opMap φ₂) where
 /-- The homotopy between morphisms in `ShortComplex C` that is induced by a homotopy
 between morphisms in `ShortComplex Cᵒᵖ`. -/
 @[simps]
-def unop {S₁ S₂ : ShortComplex Cᵒᵖ} {φ₁ φ₂ : S₁ ⟶ S₂}  (h : Homotopy φ₁ φ₂) :
+def unop {S₁ S₂ : ShortComplex Cᵒᵖ} {φ₁ φ₂ : S₁ ⟶ S₂} (h : Homotopy φ₁ φ₂) :
     Homotopy (unopMap φ₁) (unopMap φ₂) where
   h₀ := h.h₃.unop
   h₁ := h.h₂.unop
@@ -547,7 +545,7 @@ variable (S₁ S₂)
 @[simps]
 def ofNullHomotopic (h₀ : S₁.X₁ ⟶ S₂.X₁) (h₀_f : h₀ ≫ S₂.f = 0)
     (h₁ : S₁.X₂ ⟶ S₂.X₁) (h₂ : S₁.X₃ ⟶ S₂.X₂) (h₃ : S₁.X₃ ⟶ S₂.X₃) (g_h₃ : S₁.g ≫ h₃ = 0) :
-  Homotopy (nullHomotopic _ _ h₀ h₀_f h₁ h₂ h₃ g_h₃) 0 where
+    Homotopy (nullHomotopic _ _ h₀ h₀_f h₁ h₂ h₃ g_h₃) 0 where
   h₀ := h₀
   h₁ := h₁
   h₂ := h₂
@@ -574,7 +572,7 @@ def LeftHomologyMapData.ofNullHomotopic
   commf' := by
     rw [← cancel_mono H₂.i, assoc, LeftHomologyData.liftK_i, LeftHomologyData.f'_i_assoc,
       nullHomotopic_τ₁, add_comp, add_comp, assoc, assoc, assoc, LeftHomologyData.f'_i,
-      self_eq_add_left, h₀_f]
+      right_eq_add, h₀_f]
   commπ := by
     rw [H₂.liftK_π_eq_zero_of_boundary (H₁.i ≫ h₁ ≫ S₂.f) (H₁.i ≫ h₁) (by rw [assoc]), comp_zero]
 

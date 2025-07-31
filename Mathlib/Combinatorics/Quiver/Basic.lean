@@ -1,10 +1,9 @@
 /-
 Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: David Wärn, Scott Morrison
+Authors: David Wärn, Kim Morrison
 -/
 import Mathlib.Data.Opposite
-import Mathlib.Tactic.Cases
 
 /-!
 # Quivers
@@ -48,84 +47,6 @@ in a quiver or category.
 -/
 infixr:10 " ⟶ " => Quiver.Hom
 
-/-- A morphism of quivers. As we will later have categorical functors extend this structure,
-we call it a `Prefunctor`. -/
-structure Prefunctor (V : Type u₁) [Quiver.{v₁} V] (W : Type u₂) [Quiver.{v₂} W] where
-  /-- The action of a (pre)functor on vertices/objects. -/
-  obj : V → W
-  /-- The action of a (pre)functor on edges/arrows/morphisms. -/
-  map : ∀ {X Y : V}, (X ⟶ Y) → (obj X ⟶ obj Y)
-
-namespace Prefunctor
-
--- Porting note: added during port.
--- These lemmas can not be `@[simp]` because after `whnfR` they have a variable on the LHS.
--- Nevertheless they are sometimes useful when building functors.
-lemma mk_obj {V W : Type*} [Quiver V] [Quiver W] {obj : V → W} {map} {X : V} :
-    (Prefunctor.mk obj map).obj X = obj X := rfl
-
-lemma mk_map {V W : Type*} [Quiver V] [Quiver W] {obj : V → W} {map} {X Y : V} {f : X ⟶ Y} :
-    (Prefunctor.mk obj map).map f = map f := rfl
-
-@[ext (iff := false)]
-theorem ext {V : Type u} [Quiver.{v₁} V] {W : Type u₂} [Quiver.{v₂} W] {F G : Prefunctor V W}
-    (h_obj : ∀ X, F.obj X = G.obj X)
-    (h_map : ∀ (X Y : V) (f : X ⟶ Y),
-      F.map f = Eq.recOn (h_obj Y).symm (Eq.recOn (h_obj X).symm (G.map f))) : F = G := by
-  cases' F with F_obj _
-  cases' G with G_obj _
-  obtain rfl : F_obj = G_obj := by
-    ext X
-    apply h_obj
-  congr
-  funext X Y f
-  simpa using h_map X Y f
-
-/-- The identity morphism between quivers. -/
-@[simps]
-def id (V : Type*) [Quiver V] : Prefunctor V V where
-  obj := fun X => X
-  map f := f
-
-instance (V : Type*) [Quiver V] : Inhabited (Prefunctor V V) :=
-  ⟨id V⟩
-
-/-- Composition of morphisms between quivers. -/
-@[simps]
-def comp {U : Type*} [Quiver U] {V : Type*} [Quiver V] {W : Type*} [Quiver W]
-    (F : Prefunctor U V) (G : Prefunctor V W) : Prefunctor U W where
-  obj X := G.obj (F.obj X)
-  map f := G.map (F.map f)
-
-@[simp]
-theorem comp_id {U V : Type*} [Quiver U] [Quiver V] (F : Prefunctor U V) :
-    F.comp (id _) = F := rfl
-
-@[simp]
-theorem id_comp {U V : Type*} [Quiver U] [Quiver V] (F : Prefunctor U V) :
-    (id _).comp F = F := rfl
-
-@[simp]
-theorem comp_assoc {U V W Z : Type*} [Quiver U] [Quiver V] [Quiver W] [Quiver Z]
-    (F : Prefunctor U V) (G : Prefunctor V W) (H : Prefunctor W Z) :
-    (F.comp G).comp H = F.comp (G.comp H) :=
-  rfl
-
-/-- Notation for a prefunctor between quivers. -/
-infixl:50 " ⥤q " => Prefunctor
-
-/-- Notation for composition of prefunctors. -/
-infixl:60 " ⋙q " => Prefunctor.comp
-
-/-- Notation for the identity prefunctor on a quiver. -/
-notation "𝟭q" => id
-
-theorem congr_map {U V : Type*} [Quiver U] [Quiver V] (F : U ⥤q V) {X Y : U} {f g : X ⟶ Y}
-    (h : f = g) : F.map f = F.map g := by
-  rw [h]
-
-end Prefunctor
-
 namespace Quiver
 
 /-- `Vᵒᵖ` reverses the direction of all arrows of `V`. -/
@@ -138,9 +59,14 @@ def Hom.op {V} [Quiver V] {X Y : V} (f : X ⟶ Y) : op Y ⟶ op X := ⟨f⟩
 /-- Given an arrow in `Vᵒᵖ`, we can take the "unopposite" back in `V`. -/
 def Hom.unop {V} [Quiver V] {X Y : Vᵒᵖ} (f : X ⟶ Y) : unop Y ⟶ unop X := Opposite.unop f
 
+/-- The bijection `(X ⟶ Y) ≃ (op Y ⟶ op X)`. -/
+@[simps]
+def Hom.opEquiv {V} [Quiver V] {X Y : V} :
+    (X ⟶ Y) ≃ (Opposite.op Y ⟶ Opposite.op X) where
+  toFun := Opposite.op
+  invFun := Opposite.unop
+
 /-- A type synonym for a quiver with no arrows. -/
--- Porting note(#5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
 def Empty (V : Type u) : Type u := V
 
 instance emptyQuiver (V : Type u) : Quiver.{u} (Empty V) := ⟨fun _ _ => PEmpty⟩
@@ -150,5 +76,64 @@ theorem empty_arrow {V : Type u} (a b : Empty V) : (a ⟶ b) = PEmpty := rfl
 
 /-- A quiver is thin if it has no parallel arrows. -/
 abbrev IsThin (V : Type u) [Quiver V] : Prop := ∀ a b : V, Subsingleton (a ⟶ b)
+
+
+section
+
+variable {V : Type*} [Quiver V]
+
+/-- An arrow in a quiver can be transported across equalities between the source and target
+objects. -/
+def homOfEq {X Y : V} (f : X ⟶ Y) {X' Y' : V} (hX : X = X') (hY : Y = Y') : X' ⟶ Y' := by
+  subst hX hY
+  exact f
+
+@[simp]
+lemma homOfEq_trans {X Y : V} (f : X ⟶ Y) {X' Y' : V} (hX : X = X') (hY : Y = Y')
+    {X'' Y'' : V} (hX' : X' = X'') (hY' : Y' = Y'') :
+    homOfEq (homOfEq f hX hY) hX' hY' = homOfEq f (hX.trans hX') (hY.trans hY') := by
+  subst hX hY hX' hY'
+  rfl
+
+lemma homOfEq_injective {X X' Y Y' : V} (hX : X = X') (hY : Y = Y')
+    {f g : X ⟶ Y} (h : Quiver.homOfEq f hX hY = Quiver.homOfEq g hX hY) : f = g := by
+  subst hX hY
+  exact h
+
+@[simp]
+lemma homOfEq_rfl {X Y : V} (f : X ⟶ Y) : Quiver.homOfEq f rfl rfl = f := rfl
+
+lemma heq_of_homOfEq_ext {X Y X' Y' : V} (hX : X = X') (hY : Y = Y') {f : X ⟶ Y} {f' : X' ⟶ Y'}
+    (e : Quiver.homOfEq f hX hY = f') : f ≍ f' := by
+  subst hX hY
+  rw [Quiver.homOfEq_rfl] at e
+  rw [e]
+
+lemma homOfEq_eq_iff {X X' Y Y' : V} (f : X ⟶ Y) (g : X' ⟶ Y')
+    (hX : X = X') (hY : Y = Y') :
+    Quiver.homOfEq f hX hY = g ↔ f = Quiver.homOfEq g hX.symm hY.symm := by
+  subst hX hY; simp
+
+lemma eq_homOfEq_iff {X X' Y Y' : V} (f : X ⟶ Y) (g : X' ⟶ Y')
+    (hX : X' = X) (hY : Y' = Y) :
+    f = Quiver.homOfEq g hX hY ↔ Quiver.homOfEq f hX.symm hY.symm = g := by
+  subst hX hY; simp
+
+lemma homOfEq_heq {X Y X' Y' : V} (hX : X = X') (hY : Y = Y') (f : X ⟶ Y) :
+    homOfEq f hX hY ≍ f := by
+  cases hX; cases hY; rfl
+
+lemma homOfEq_heq_left_iff {X Y X' Y' : V} (f : X ⟶ Y) (g : X' ⟶ Y')
+    (hX : X = X') (hY : Y = Y') :
+    homOfEq f hX hY ≍ g ↔ f ≍ g := by
+  cases hX; cases hY; rfl
+
+lemma homOfEq_heq_right_iff {X Y X' Y' : V} (f : X ⟶ Y) (g : X' ⟶ Y')
+    (hX : X' = X) (hY : Y' = Y) :
+    f ≍ homOfEq g hX hY ↔ f ≍ g := by
+  cases hX; cases hY; rfl
+
+
+end
 
 end Quiver

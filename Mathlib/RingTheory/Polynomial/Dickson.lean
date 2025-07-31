@@ -3,13 +3,13 @@ Copyright (c) 2021 Julian Kuelshammer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
 -/
+import Mathlib.Algebra.CharP.Algebra
 import Mathlib.Algebra.CharP.Invertible
-import Mathlib.Data.ZMod.Basic
-import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.RingTheory.Polynomial.Chebyshev
-import Mathlib.Algebra.CharP.Basic
+import Mathlib.Algebra.CharP.Lemmas
 import Mathlib.Algebra.EuclideanDomain.Field
+import Mathlib.Algebra.Field.ZMod
 import Mathlib.Algebra.Polynomial.Roots
+import Mathlib.RingTheory.Polynomial.Chebyshev
 
 /-!
 # Dickson polynomials
@@ -51,8 +51,6 @@ When `a=0` they are just the family of monomials `X ^ n`.
 noncomputable section
 
 namespace Polynomial
-
-open Polynomial
 
 variable {R S : Type*} [CommRing R] [CommRing S] (k : ℕ) (a : R)
 
@@ -120,7 +118,7 @@ There is exactly one other Lambda structure on `ℤ[X]` in terms of binomial pol
 theorem dickson_one_one_eval_add_inv (x y : R) (h : x * y = 1) :
     ∀ n, (dickson 1 (1 : R) n).eval (x + y) = x ^ n + y ^ n
   | 0 => by
-    simp only [eval_one, eval_add, pow_zero, dickson_zero]; norm_num
+    simp only [pow_zero, dickson_zero]; norm_num
   | 1 => by simp only [eval_X, dickson_one, pow_one]
   | n + 2 => by
     simp only [eval_sub, eval_mul, dickson_one_one_eval_add_inv x y h _, eval_X, dickson_add_two,
@@ -131,31 +129,51 @@ theorem dickson_one_one_eval_add_inv (x y : R) (h : x * y = 1) :
 variable (R)
 
 -- Porting note: Added 2 new theorems for convenience
-private theorem two_mul_C_half_eq_one [Invertible (2 : R)] : 2 * C (⅟ 2 : R) = 1 := by
+private theorem two_mul_C_half_eq_one [Invertible (2 : R)] : 2 * C (⅟2 : R) = 1 := by
   rw [two_mul, ← C_add, invOf_two_add_invOf_two, C_1]
 
-private theorem C_half_mul_two_eq_one [Invertible (2 : R)] : C (⅟ 2 : R) * 2 = 1 := by
+private theorem C_half_mul_two_eq_one [Invertible (2 : R)] : C (⅟2 : R) * 2 = 1 := by
   rw [mul_comm, two_mul_C_half_eq_one]
 
-theorem dickson_one_one_eq_chebyshev_T [Invertible (2 : R)] :
-    ∀ n, dickson 1 (1 : R) n = 2 * (Chebyshev.T R n).comp (C (⅟ 2) * X)
+theorem dickson_one_one_eq_chebyshev_C : ∀ n, dickson 1 (1 : R) n = Chebyshev.C R n
   | 0 => by
-    simp only [Chebyshev.T_zero, mul_one, one_comp, dickson_zero]
+    simp only [dickson_zero]
     norm_num
   | 1 => by
-    rw [dickson_one, Nat.cast_one, Chebyshev.T_one, X_comp, ← mul_assoc, two_mul_C_half_eq_one,
-      one_mul]
+    rw [dickson_one, Nat.cast_one, Chebyshev.C_one]
   | n + 2 => by
-    rw [dickson_add_two, C_1, Nat.cast_add, Nat.cast_two, Chebyshev.T_add_two,
-      dickson_one_one_eq_chebyshev_T (n + 1), dickson_one_one_eq_chebyshev_T n, sub_comp, mul_comp,
-      mul_comp, X_comp, ofNat_comp]
-    simp_rw [← mul_assoc, Nat.cast_ofNat, two_mul_C_half_eq_one, Nat.cast_add, Nat.cast_one]
+    rw [dickson_add_two, C_1, Nat.cast_add, Nat.cast_two, Chebyshev.C_add_two,
+      dickson_one_one_eq_chebyshev_C (n + 1), dickson_one_one_eq_chebyshev_C n]
+    push_cast
     ring
 
+theorem dickson_one_one_eq_chebyshev_T [Invertible (2 : R)] (n : ℕ) :
+    dickson 1 (1 : R) n = 2 * (Chebyshev.T R n).comp (C (⅟2) * X) :=
+  (dickson_one_one_eq_chebyshev_C R n).trans (Chebyshev.C_eq_two_mul_T_comp_half_mul_X R n)
+
 theorem chebyshev_T_eq_dickson_one_one [Invertible (2 : R)] (n : ℕ) :
-    Chebyshev.T R n = C (⅟ 2) * (dickson 1 1 n).comp (2 * X) := by
-  rw [dickson_one_one_eq_chebyshev_T, mul_comp, ofNat_comp, comp_assoc, mul_comp, C_comp, X_comp]
-  simp_rw [← mul_assoc, Nat.cast_ofNat, C_half_mul_two_eq_one, one_mul, comp_X]
+    Chebyshev.T R n = C (⅟2) * (dickson 1 1 n).comp (2 * X) :=
+  dickson_one_one_eq_chebyshev_C R n ▸ Chebyshev.T_eq_half_mul_C_comp_two_mul_X R n
+
+theorem dickson_two_one_eq_chebyshev_S : ∀ n, dickson 2 (1 : R) n = Chebyshev.S R n
+  | 0 => by
+    simp only [dickson_zero]
+    norm_num
+  | 1 => by
+    rw [dickson_one, Nat.cast_one, Chebyshev.S_one]
+  | n + 2 => by
+    rw [dickson_add_two, C_1, Nat.cast_add, Nat.cast_two, Chebyshev.S_add_two,
+      dickson_two_one_eq_chebyshev_S (n + 1), dickson_two_one_eq_chebyshev_S n]
+    push_cast
+    ring
+
+theorem dickson_two_one_eq_chebyshev_U [Invertible (2 : R)] (n : ℕ) :
+    dickson 2 (1 : R) n = (Chebyshev.U R n).comp (C (⅟2) * X) :=
+  (dickson_two_one_eq_chebyshev_S R n).trans (Chebyshev.S_eq_U_comp_half_mul_X R n)
+
+theorem chebyshev_U_eq_dickson_two_one (n : ℕ) :
+    Chebyshev.U R n = (dickson 2 (1 : R) n).comp (2 * X) :=
+  dickson_two_one_eq_chebyshev_S R n ▸ (Chebyshev.S_comp_two_mul_X R n).symm
 
 /-- The `(m * n)`-th Dickson polynomial of the first kind is the composition of the `m`-th and
 `n`-th. -/
@@ -200,9 +218,8 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
   -- The two polynomials agree on all `x` of the form `x = y + y⁻¹`.
   apply @Set.Infinite.mono _ { x : K | ∃ y, x = y + y⁻¹ ∧ y ≠ 0 }
   · rintro _ ⟨x, rfl, hx⟩
-    simp only [eval_X, eval_pow, Set.mem_setOf_eq, @add_pow_char K _ p,
-      dickson_one_one_eval_add_inv _ _ (mul_inv_cancel₀ hx), inv_pow, ZMod.castHom_apply,
-      ZMod.cast_one']
+    simp only [eval_X, eval_pow, Set.mem_setOf_eq, ZMod.cast_one', add_pow_char,
+      dickson_one_one_eval_add_inv _ _ (mul_inv_cancel₀ hx), ZMod.castHom_apply]
   -- Now we need to show that the set of such `x` is infinite.
   -- If the set is finite, then we will show that `K` is also finite.
   · intro h
@@ -231,7 +248,7 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
           mem_roots hφ, IsRoot, eval_add, eval_sub, eval_pow, eval_mul, eval_X, eval_C, eval_one,
           Multiset.mem_singleton]
         by_cases hy : y = 0
-        · simp only [hy, eq_self_iff_true, or_true_iff]
+        · simp only [hy, or_true]
         apply or_congr _ Iff.rfl
         rw [← mul_left_inj' hy, eq_comm, ← sub_eq_zero, add_mul, inv_mul_cancel₀ hy]
         apply eq_iff_eq_cancel_right.mpr
@@ -239,11 +256,11 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
     -- Finally, we prove the claim that our finite union of finite sets covers all of `K`.
     apply (Set.eq_univ_of_forall _).symm
     intro x
-    simp only [exists_prop, Set.mem_iUnion, Set.bind_def, Ne, Set.mem_setOf_eq]
+    simp only [exists_prop, Set.mem_iUnion, Ne, Set.mem_setOf_eq]
     by_cases hx : x = 0
-    · simp only [hx, and_true_iff, eq_self_iff_true, inv_zero, or_true_iff]
+    · simp only [hx, and_true, inv_zero, or_true]
       exact ⟨_, 1, rfl, one_ne_zero⟩
-    · simp only [hx, or_false_iff, exists_eq_right]
+    · simp only [hx, or_false, exists_eq_right]
       exact ⟨_, rfl, hx⟩
 
 theorem dickson_one_one_charP (p : ℕ) [Fact p.Prime] [CharP R p] : dickson 1 (1 : R) p = X ^ p := by

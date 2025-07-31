@@ -43,7 +43,7 @@ variable (f₁ : Q₁ →qᵢ Qₙ) (f₂ : Q₂ →qᵢ Qₙ) (hf : ∀ x y, Q�
 variable (m₁ : CliffordAlgebra Q₁) (m₂ : CliffordAlgebra Q₂)
 include hf
 
-/-- If `m₁` and `m₂` are both homogenous,
+/-- If `m₁` and `m₂` are both homogeneous,
 and the quadratic spaces `Q₁` and `Q₂` map into
 orthogonal subspaces of `Qₙ` (for instance, when `Qₙ = Q₁.prod Q₂`),
 then the product of the embedding in `CliffordAlgebra Q` commutes up to a sign factor. -/
@@ -116,7 +116,7 @@ def ofProd : CliffordAlgebra (Q₁.prod Q₂) →ₐ[R] (evenOdd Q₁ ᵍ⊗[R] 
           ∘ₗ (evenOdd Q₂ 1).subtype ∘ₗ (ι Q₂).codRestrict _ (ι_mem_evenOdd_one Q₂)),
     fun m => by
       simp_rw [LinearMap.coprod_apply, LinearMap.coe_comp, Function.comp_apply,
-        AlgHom.toLinearMap_apply, QuadraticMap.prod_apply, Submodule.coeSubtype,
+        AlgHom.toLinearMap_apply, QuadraticMap.prod_apply, Submodule.coe_subtype,
         GradedTensorProduct.includeLeft_apply, GradedTensorProduct.includeRight_apply, map_add,
         add_mul, mul_add, GradedTensorProduct.algebraMap_def,
         GradedTensorProduct.tmul_one_mul_one_tmul, GradedTensorProduct.tmul_one_mul_coe_tmul,
@@ -151,13 +151,13 @@ lemma toProd_one_tmul_ι (m₂ : M₂) : toProd Q₁ Q₂ (1 ᵍ⊗ₜ ι _ m₂
 
 lemma toProd_comp_ofProd : (toProd Q₁ Q₂).comp (ofProd Q₁ Q₂) = AlgHom.id _ _ := by
   ext m <;> dsimp
-  · rw [ofProd_ι_mk, map_add, toProd_one_tmul_ι, toProd_ι_tmul_one, ← Prod.zero_eq_mk,
+  · rw [ofProd_ι_mk, map_add, toProd_one_tmul_ι, toProd_ι_tmul_one, Prod.mk_zero_zero,
       LinearMap.map_zero, add_zero]
-  · rw [ofProd_ι_mk, map_add, toProd_one_tmul_ι, toProd_ι_tmul_one, ← Prod.zero_eq_mk,
+  · rw [ofProd_ι_mk, map_add, toProd_one_tmul_ι, toProd_ι_tmul_one, Prod.mk_zero_zero,
       LinearMap.map_zero, zero_add]
 
 lemma ofProd_comp_toProd : (ofProd Q₁ Q₂).comp (toProd Q₁ Q₂) = AlgHom.id _ _ := by
-  ext <;> (dsimp; simp)
+  ext <;> simp
 
 /-- The Clifford algebra over an orthogonal direct sum of quadratic vector spaces is isomorphic
 as an algebra to the graded tensor product of the Clifford algebras of each space.

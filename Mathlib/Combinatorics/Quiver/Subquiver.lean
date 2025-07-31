@@ -25,7 +25,6 @@ def WideSubquiver (V) [Quiver.{v + 1} V] :=
 
 /-- A type synonym for `V`, when thought of as a quiver having only the arrows from
 some `WideSubquiver`. -/
--- Porting note: no hasNonemptyInstance linter yet
 @[nolint unusedArguments]
 def WideSubquiver.toType (V) [Quiver V] (_ : WideSubquiver V) : Type u :=
   V
@@ -50,7 +49,7 @@ noncomputable instance {V} [Quiver V] : Inhabited (WideSubquiver V) :=
 
 -- TODO Unify with `CategoryTheory.Arrow`? (The fields have been named to match.)
 /-- `Total V` is the type of _all_ arrows of `V`. -/
--- Porting note: no hasNonemptyInstance linter yet
+-- Porting note: no hasNonemptyInstance linter yet https://github.com/leanprover-community/mathlib4/issues/5171
 @[ext]
 structure Total (V : Type u) [Quiver.{v} V] : Sort max (u + 1) v where
   /-- the source vertex of an arrow -/
@@ -66,8 +65,6 @@ def wideSubquiverEquivSetTotal {V} [Quiver V] :
       Set (Total V) where
   toFun H := { e | e.hom ∈ H e.left e.right }
   invFun S a b := { e | Total.mk a b e ∈ S }
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- An `L`-labelling of a quiver assigns to every arrow an element of `L`. -/
 def Labelling (V : Type u) [Quiver V] (L : Sort*) :=

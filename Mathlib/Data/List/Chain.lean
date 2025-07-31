@@ -3,10 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Logic.Relation
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.List.Lex
-import Mathlib.Data.List.Infix
+import Mathlib.Logic.Function.Iterate
+import Mathlib.Logic.Relation
 
 /-!
 # Relation chain
@@ -37,18 +37,21 @@ theorem Chain.iff {S : α → α → Prop} (H : ∀ a b, R a b ↔ S a b) {a : �
 theorem Chain.iff_mem {a : α} {l : List α} :
     Chain R a l ↔ Chain (fun x y => x ∈ a :: l ∧ y ∈ l ∧ R x y) a l :=
   ⟨fun p => by
-    induction' p with _ a b l r _ IH <;> constructor <;>
-      [exact ⟨mem_cons_self _ _, mem_cons_self _ _, r⟩;
-      exact IH.imp fun a b ⟨am, bm, h⟩ => ⟨mem_cons_of_mem _ am, mem_cons_of_mem _ bm, h⟩],
-    Chain.imp fun a b h => h.2.2⟩
+    induction p with
+    | nil => exact nil
+    | @cons _ _ _ r _ IH =>
+      constructor
+      · exact ⟨mem_cons_self, mem_cons_self, r⟩
+      · exact IH.imp fun a b ⟨am, bm, h⟩ => ⟨mem_cons_of_mem _ am, mem_cons_of_mem _ bm, h⟩,
+    Chain.imp fun _ _ h => h.2.2⟩
 
 theorem chain_singleton {a b : α} : Chain R a [b] ↔ R a b := by
-  simp only [chain_cons, Chain.nil, and_true_iff]
+  simp only [chain_cons, Chain.nil, and_true]
 
 theorem chain_split {a b : α} {l₁ l₂ : List α} :
     Chain R a (l₁ ++ b :: l₂) ↔ Chain R a (l₁ ++ [b]) ∧ Chain R b l₂ := by
   induction' l₁ with x l₁ IH generalizing a <;>
-    simp only [*, nil_append, cons_append, Chain.nil, chain_cons, and_true_iff, and_assoc]
+    simp only [*, nil_append, cons_append, Chain.nil, chain_cons, and_true, and_assoc]
 
 @[simp]
 theorem chain_append_cons_cons {a b c : α} {l₁ l₂ : List α} :
@@ -93,11 +96,11 @@ theorem chain_of_chain_pmap {S : β → β → Prop} {p : α → Prop} (f : ∀ 
 
 protected theorem Chain.pairwise [IsTrans α R] :
     ∀ {a : α} {l : List α}, Chain R a l → Pairwise R (a :: l)
-  | a, [], Chain.nil => pairwise_singleton _ _
+  | _, [], Chain.nil => pairwise_singleton _ _
   | a, _, @Chain.cons _ _ _ b l h hb =>
     hb.pairwise.cons
       (by
-        simp only [mem_cons, forall_eq_or_imp, h, true_and_iff]
+        simp only [mem_cons, forall_eq_or_imp, h, true_and]
         exact fun c hc => _root_.trans h (rel_of_pairwise_cons hb.pairwise hc))
 
 theorem chain_iff_pairwise [IsTrans α R] {a : α} {l : List α} : Chain R a l ↔ Pairwise R (a :: l) :=
@@ -125,7 +128,7 @@ theorem chain_iff_get {R} : ∀ {a : α} {l : List α}, Chain R a l ↔
       · intro _
         exact R
       intro i w
-      cases' i with i
+      rcases i with - | i
       · apply h0
       · exact h i (by simp only [length_cons] at w; omega)
     rintro ⟨h0, h⟩; constructor
@@ -135,6 +138,19 @@ theorem chain_iff_get {R} : ∀ {a : α} {l : List α}, Chain R a l ↔
     · apply h 0
     intro i w
     exact h (i+1) (by simp only [length_cons]; omega)
+
+theorem chain_replicate_of_rel (n : ℕ) {a : α} (h : r a a) : Chain r a (replicate n a) :=
+  match n with
+  | 0 => Chain.nil
+  | n + 1 => Chain.cons h (chain_replicate_of_rel n h)
+
+theorem chain_eq_iff_eq_replicate {a : α} {l : List α} :
+    Chain (· = ·) a l ↔ l = replicate l.length a :=
+  match l with
+  | [] => by simp
+  | b :: l => by
+    rw [chain_cons]
+    simp +contextual [eq_comm, replicate_succ, chain_eq_iff_eq_replicate]
 
 theorem Chain'.imp {S : α → α → Prop} (H : ∀ a b, R a b → S a b) {l : List α} (p : Chain' R l) :
     Chain' S l := by cases l <;> [trivial; exact Chain.imp H p]
@@ -163,10 +179,10 @@ theorem chain'_cons {x y l} : Chain' R (x :: y :: l) ↔ R x y ∧ Chain' R (y :
 
 theorem chain'_isInfix : ∀ l : List α, Chain' (fun x y => [x, y] <:+: l) l
   | [] => chain'_nil
-  | [a] => chain'_singleton _
+  | [_] => chain'_singleton _
   | a :: b :: l =>
     chain'_cons.2
-      ⟨⟨[], l, by simp⟩, (chain'_isInfix (b :: l)).imp fun x y h => h.trans ⟨[a], [], by simp⟩⟩
+      ⟨⟨[], l, by simp⟩, (chain'_isInfix (b :: l)).imp fun _ _ h => h.trans ⟨[a], [], by simp⟩⟩
 
 theorem chain'_split {a : α} :
     ∀ {l₁ l₂ : List α}, Chain' R (l₁ ++ a :: l₂) ↔ Chain' R (l₁ ++ [a]) ∧ Chain' R (a :: l₂)
@@ -177,6 +193,19 @@ theorem chain'_split {a : α} :
 theorem chain'_append_cons_cons {b c : α} {l₁ l₂ : List α} :
     Chain' R (l₁ ++ b :: c :: l₂) ↔ Chain' R (l₁ ++ [b]) ∧ R b c ∧ Chain' R (c :: l₂) := by
   rw [chain'_split, chain'_cons]
+
+theorem chain'_iff_forall_rel_of_append_cons_cons {l : List α} :
+    Chain' R l ↔ ∀ ⦃a b l₁ l₂⦄, l = l₁ ++ a :: b :: l₂ → R a b := by
+  refine ⟨fun h _ _ _ _ eq => (chain'_append_cons_cons.mp (eq ▸ h)).2.1, ?_⟩
+  induction l with
+  | nil => exact fun _ ↦ chain'_nil
+  | cons head tail ih =>
+    match tail with
+    | nil => exact fun _ ↦ chain'_singleton head
+    | cons head' tail =>
+      refine fun h ↦ chain'_cons.mpr ⟨h (nil_append _).symm, ih fun ⦃a b l₁ l₂⦄ eq => ?_⟩
+      apply h
+      rw [eq, cons_append]
 
 theorem chain'_map (f : β → α) {l : List β} :
     Chain' R (map f l) ↔ Chain' (fun a b : β => R (f a) (f b)) l := by
@@ -221,6 +250,12 @@ theorem Chain'.cons' {x} : ∀ {l : List α}, Chain' R l → (∀ y ∈ l.head?,
   | [], _, _ => chain'_singleton x
   | _ :: _, hl, H => hl.cons <| H _ rfl
 
+lemma Chain'.cons_of_ne_nil {x : α} {l : List α} (l_ne_nil : l ≠ [])
+    (hl : Chain' R l) (h : R x (l.head l_ne_nil)) : Chain' R (x :: l) := by
+  refine hl.cons' fun y hy ↦ ?_
+  convert h
+  simpa [l.head?_eq_head l_ne_nil] using hy.symm
+
 theorem chain'_cons' {x l} : Chain' R (x :: l) ↔ (∀ y ∈ head? l, R x y) ∧ Chain' R l :=
   ⟨fun h => ⟨h.rel_head?, h.tail⟩, fun ⟨h₁, h₂⟩ => h₂.cons' h₁⟩
 
@@ -230,8 +265,7 @@ theorem chain'_append :
   | [], l => by simp
   | [a], l => by simp [chain'_cons', and_comm]
   | a :: b :: l₁, l₂ => by
-    rw [cons_append, cons_append, chain'_cons, chain'_cons, ← cons_append, chain'_append,
-      and_assoc]
+    rw [cons_append, cons_append, chain'_cons, chain'_cons, ← cons_append, chain'_append, and_assoc]
     simp
 
 theorem Chain'.append (h₁ : Chain' R l₁) (h₂ : Chain' R l₂)
@@ -264,7 +298,7 @@ theorem Chain'.take (h : Chain' R l) (n : ℕ) : Chain' R (take n l) :=
   h.prefix (take_prefix _ _)
 
 theorem chain'_pair {x y} : Chain' R [x, y] ↔ R x y := by
-  simp only [chain'_singleton, chain'_cons, and_true_iff]
+  simp only [chain'_singleton, chain'_cons, and_true]
 
 theorem Chain'.imp_head {x y} (h : ∀ {z}, R x z → R y z) {l} (hl : Chain' R (x :: l)) :
     Chain' R (y :: l) :=
@@ -293,17 +327,37 @@ theorem Chain'.append_overlap {l₁ l₂ l₃ : List α} (h₁ : Chain' R (l₁ 
   h₁.append h₂.right_of_append <| by
     simpa only [getLast?_append_of_ne_nil _ hn] using (chain'_append.1 h₂).2.2
 
-lemma chain'_join : ∀ {L : List (List α)}, [] ∉ L →
-    (Chain' R L.join ↔ (∀ l ∈ L, Chain' R l) ∧
+lemma chain'_flatten : ∀ {L : List (List α)}, [] ∉ L →
+    (Chain' R L.flatten ↔ (∀ l ∈ L, Chain' R l) ∧
     L.Chain' (fun l₁ l₂ => ∀ᵉ (x ∈ l₁.getLast?) (y ∈ l₂.head?), R x y))
 | [], _ => by simp
-| [l], _ => by simp [join]
+| [l], _ => by simp [flatten]
 | (l₁ :: l₂ :: L), hL => by
     rw [mem_cons, not_or, ← Ne] at hL
-    rw [join, chain'_append, chain'_join hL.2, forall_mem_cons, chain'_cons]
+    rw [flatten, chain'_append, chain'_flatten hL.2, forall_mem_cons, chain'_cons]
     rw [mem_cons, not_or, ← Ne] at hL
-    simp only [forall_mem_cons, and_assoc, join, head?_append_of_ne_nil _ hL.2.1.symm]
+    simp only [forall_mem_cons, and_assoc, flatten, head?_append_of_ne_nil _ hL.2.1.symm]
     exact Iff.rfl.and (Iff.rfl.and <| Iff.rfl.and and_comm)
+
+theorem chain'_attachWith {l : List α} {p : α → Prop} (h : ∀ x ∈ l, p x)
+    {r : {a // p a} → {a // p a} → Prop} :
+    (l.attachWith p h).Chain' r ↔ l.Chain' fun a b ↦ ∃ ha hb, r ⟨a, ha⟩ ⟨b, hb⟩ := by
+  induction l with
+  | nil => rfl
+  | cons a l IH =>
+    rw [attachWith_cons, chain'_cons', chain'_cons', IH, and_congr_left]
+    simp_rw [head?_attachWith]
+    intros
+    constructor <;>
+    intro hc b (hb : _ = _)
+    · simp_rw [hb, Option.pbind_some] at hc
+      have hb' := h b (mem_cons_of_mem a (mem_of_mem_head? hb))
+      exact ⟨h a mem_cons_self, hb', hc ⟨b, hb'⟩ rfl⟩
+    · cases l <;> aesop
+
+theorem chain'_attach {l : List α} {r : {a // a ∈ l} → {a // a ∈ l} → Prop} :
+    l.attach.Chain' r ↔ l.Chain' fun a b ↦ ∃ ha hb, r ⟨a, ha⟩ ⟨b, hb⟩ :=
+  chain'_attachWith fun _ ↦ id
 
 /-- If `a` and `b` are related by the reflexive transitive closure of `r`, then there is an
 `r`-chain starting from `a` and ending on `b`.
@@ -318,31 +372,53 @@ theorem exists_chain_of_relationReflTransGen (h : Relation.ReflTransGen r a b) :
     refine ⟨d :: l, Chain.cons e hl₁, ?_⟩
     rwa [getLast_cons_cons]
 
+/-- Given a chain from `a` to `b`, and a predicate true at `a`, if `r x y → p x → p y` then
+the predicate is true everywhere in the chain.
+That is, we can propagate the predicate down the chain.
+-/
+theorem Chain.induction (p : α → Prop) (l : List α) (h : Chain r a l)
+    (carries : ∀ ⦃x y : α⦄, r x y → p x → p y) (initial : p a) : ∀ i ∈ l, p i := by
+  induction h with
+  | nil => simp
+  | @cons a b t hab _ h_ind =>
+    simp only [mem_cons, forall_eq_or_imp]
+    exact ⟨carries hab initial, h_ind (carries hab initial)⟩
+
+/-- A version of `List.Chain.induction` for `List.Chain'`
+-/
+theorem Chain'.induction (p : α → Prop) (l : List α) (h : Chain' r l)
+    (carries : ∀ ⦃x y : α⦄, r x y → p x → p y) (initial : (lne : l ≠ []) → p (l.head lne)) :
+    ∀ i ∈ l, p i := by
+  unfold Chain' at h
+  split at h
+  · simp
+  · simp_all only [ne_eq, not_false_eq_true, head_cons, true_implies, mem_cons, forall_eq_or_imp,
+      true_and, reduceCtorEq]
+    exact h.induction p _ carries initial
+
 /-- Given a chain from `a` to `b`, and a predicate true at `b`, if `r x y → p y → p x` then
 the predicate is true everywhere in the chain and at `a`.
 That is, we can propagate the predicate up the chain.
 -/
-theorem Chain.induction (p : α → Prop) (l : List α) (h : Chain r a l)
+theorem Chain.backwards_induction (p : α → Prop) (l : List α) (h : Chain r a l)
     (hb : getLast (a :: l) (cons_ne_nil _ _) = b) (carries : ∀ ⦃x y : α⦄, r x y → p y → p x)
     (final : p b) : ∀ i ∈ a :: l, p i := by
-  induction' l with _ _ l_ih generalizing a
-  · cases hb
-    simpa using final
-  · rw [chain_cons] at h
-    simp only [mem_cons]
-    rintro _ (rfl | H)
-    · apply carries h.1 (l_ih h.2 hb _ (mem_cons.2 (Or.inl rfl)))
-    · apply l_ih h.2 hb _ (mem_cons.2 H)
+  have : Chain' (flip (flip r)) (a :: l) := by simpa [Chain']
+  replace this := chain'_reverse.mpr this
+  simp_rw +singlePass [← List.mem_reverse]
+  apply this.induction _ _ (fun _ _ h ↦ carries h)
+  simpa only [ne_eq, reverse_eq_nil_iff, not_false_eq_true, head_reverse, forall_true_left, hb,
+    reduceCtorEq]
 
 /-- Given a chain from `a` to `b`, and a predicate true at `b`, if `r x y → p y → p x` then
 the predicate is true at `a`.
 That is, we can propagate the predicate all the way up the chain.
 -/
 @[elab_as_elim]
-theorem Chain.induction_head (p : α → Prop) (l : List α) (h : Chain r a l)
+theorem Chain.backwards_induction_head (p : α → Prop) (l : List α) (h : Chain r a l)
     (hb : getLast (a :: l) (cons_ne_nil _ _) = b) (carries : ∀ ⦃x y : α⦄, r x y → p y → p x)
     (final : p b) : p a :=
-  (Chain.induction p l h hb carries final) _ (mem_cons_self _ _)
+  (Chain.backwards_induction p l h hb carries final) _ mem_cons_self
 
 /--
 If there is an `r`-chain starting from `a` and ending at `b`, then `a` and `b` are related by the
@@ -350,7 +426,7 @@ reflexive transitive closure of `r`. The converse of `exists_chain_of_relationRe
 -/
 theorem relationReflTransGen_of_exists_chain (l : List α) (hl₁ : Chain r a l)
     (hl₂ : getLast (a :: l) (cons_ne_nil _ _) = b) : Relation.ReflTransGen r a b :=
-  Chain.induction_head _ l hl₁ hl₂ (fun _ _ => Relation.ReflTransGen.head)
+  Chain.backwards_induction_head _ l hl₁ hl₂ (fun _ _ => Relation.ReflTransGen.head)
     Relation.ReflTransGen.refl
 
 theorem Chain'.cons_of_le [LinearOrder α] {a : α} {as m : List α}
@@ -362,19 +438,49 @@ theorem Chain'.cons_of_le [LinearOrder α] {a : α} {as m : List α}
     apply hm.cons
     cases as with
     | nil =>
-      simp only [le_iff_lt_or_eq, or_false] at hmas
-      exact (List.Lex.not_nil_right (·<·) _ hmas).elim
+      simp only [le_iff_lt_or_eq, reduceCtorEq, or_false] at hmas
+      exact (List.not_lt_nil _ hmas).elim
     | cons a' as =>
       rw [List.chain'_cons] at ha
-      refine gt_of_gt_of_ge ha.1 ?_
+      refine lt_of_le_of_lt ?_ ha.1
       rw [le_iff_lt_or_eq] at hmas
-      cases' hmas with hmas hmas
+      rcases hmas with hmas | hmas
       · by_contra! hh
         rw [← not_le] at hmas
         apply hmas
         apply le_of_lt
-        exact (List.lt_iff_lex_lt _ _).mp (List.lt.head _ _ hh)
+        exact (List.lt_iff_lex_lt _ _).mp (List.Lex.rel hh)
       · simp_all only [List.cons.injEq, le_refl]
+
+lemma Chain'.chain {α : Type*} {R : α → α → Prop} {l : List α} {v : α}
+    (hl : l.Chain' R) (hv : (lne : l ≠ []) → R v (l.head lne)) : l.Chain R v := by
+  rw [List.chain_iff_get]
+  constructor
+  · intro h
+    rw [List.get_mk_zero]
+    apply hv
+  · exact List.chain'_iff_get.mp hl
+
+lemma Chain'.iterate_eq_of_apply_eq {α : Type*} {f : α → α} {l : List α}
+    (hl : l.Chain' (fun x y ↦ f x = y)) (i : ℕ) (hi : i < l.length) :
+    f^[i] l[0] = l[i] := by
+  induction' i with i h
+  · rfl
+  · rw [Function.iterate_succ', Function.comp_apply, h (by omega)]
+    rw [List.chain'_iff_get] at hl
+    apply hl
+    omega
+
+theorem chain'_replicate_of_rel (n : ℕ) {a : α} (h : r a a) : Chain' r (replicate n a) :=
+  match n with
+  | 0 => chain'_nil
+  | n + 1 => chain_replicate_of_rel n h
+
+theorem chain'_eq_iff_eq_replicate {l : List α} :
+    Chain' (· = ·) l ↔ ∀ a ∈ l.head?, l = replicate l.length a :=
+  match l with
+  | [] => by simp
+  | a :: l => by simp [Chain', chain_eq_iff_eq_replicate, replicate_succ]
 
 end List
 
@@ -407,7 +513,7 @@ theorem Acc.list_chain' {l : List.chains r} (acc : ∀ a ∈ l.val.head?, Acc r 
     have hl' := (List.chain'_cons'.1 hl).2
     let l' : List.chains r := ⟨l, hl'⟩
     have : Acc (List.lex_chains r) l' := by
-      cases' l with b l
+      rcases l with - | ⟨b, l⟩
       · apply Acc.intro; rintro ⟨_⟩ ⟨_⟩
       /- l' is accessible by induction hypothesis -/
       · apply ih b (List.chain'_cons.1 hl).1
@@ -421,8 +527,8 @@ theorem Acc.list_chain' {l : List.chains r} (acc : ∀ a ∈ l.val.head?, Acc r 
       apply Acc.intro
       rintro ⟨_ | ⟨b, m⟩, hm⟩ (_ | hr | hr)
       · apply Acc.intro; rintro ⟨_⟩ ⟨_⟩
-      · apply ihl ⟨m, (List.chain'_cons'.1 hm).2⟩ hr
       · apply ih b hr
+      · apply ihl ⟨m, (List.chain'_cons'.1 hm).2⟩ hr
 
 /-- If `r` is well-founded, the lexicographic order on `r`-decreasing chains is also. -/
 theorem WellFounded.list_chain' (hwf : WellFounded r) :

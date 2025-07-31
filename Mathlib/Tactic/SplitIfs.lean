@@ -3,7 +3,9 @@ Copyright (c) 2018 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, David Renshaw
 -/
-import Lean
+import Lean.Elab.Tactic.Location
+import Lean.Meta.Tactic.SplitIf
+import Lean.Elab.Tactic.Simp
 import Mathlib.Tactic.Core
 
 /-!
@@ -73,8 +75,8 @@ private def discharge? (e : Expr) : SimpM (Option Expr) := do
 -/
 private def reduceIfsAt (loc : Location) : TacticM Unit := do
   let ctx ← SplitIf.getSimpContext
-  let ctx := { ctx with config := { ctx.config with failIfUnchanged := false } }
-  let _ ← simpLocation ctx {} discharge? loc
+  let ctx := ctx.setFailIfUnchanged false
+  let _ ← simpLocation ctx (← ({} : Simp.SimprocsArray).add `reduceCtorEq false) discharge? loc
   pure ()
 
 /-- Splits a single if-then-else expression and then reduces the resulting goals.

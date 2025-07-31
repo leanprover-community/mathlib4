@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Data.Set.Image
-import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.BooleanAlgebra
 
 /-!
 # Sets in sigma types
@@ -14,7 +14,7 @@ This file defines `Set.sigma`, the indexed sum of sets.
 
 namespace Set
 
-variable {ι ι' : Type*} {α β : ι → Type*} {s s₁ s₂ : Set ι} {t t₁ t₂ : ∀ i, Set (α i)}
+variable {ι ι' : Type*} {α : ι → Type*} {s s₁ s₂ : Set ι} {t t₁ t₂ : ∀ i, Set (α i)}
   {u : Set (Σ i, α i)} {x : Σ i, α i} {i j : ι} {a : α i}
 
 @[simp]
@@ -64,19 +64,21 @@ theorem sigma_subset_iff :
 theorem forall_sigma_iff {p : (Σ i, α i) → Prop} :
     (∀ x ∈ s.sigma t, p x) ↔ ∀ ⦃i⦄, i ∈ s → ∀ ⦃a⦄, a ∈ t i → p ⟨i, a⟩ := sigma_subset_iff
 
-theorem exists_sigma_iff {p : (Σi, α i) → Prop} :
+theorem exists_sigma_iff {p : (Σ i, α i) → Prop} :
     (∃ x ∈ s.sigma t, p x) ↔ ∃ i ∈ s, ∃ a ∈ t i, p ⟨i, a⟩ :=
   ⟨fun ⟨⟨i, a⟩, ha, h⟩ ↦ ⟨i, ha.1, a, ha.2, h⟩, fun ⟨i, hi, a, ha, h⟩ ↦ ⟨⟨i, a⟩, ⟨hi, ha⟩, h⟩⟩
 
-@[simp] theorem sigma_empty : s.sigma (fun i ↦ (∅ : Set (α i))) = ∅ := ext fun _ ↦ and_false_iff _
+@[simp] theorem sigma_empty : s.sigma (fun i ↦ (∅ : Set (α i))) = ∅ :=
+  ext fun _ ↦ iff_of_eq (and_false _)
 
-@[simp] theorem empty_sigma : (∅ : Set ι).sigma t = ∅ := ext fun _ ↦ false_and_iff _
+@[simp] theorem empty_sigma : (∅ : Set ι).sigma t = ∅ := ext fun _ ↦ iff_of_eq (false_and _)
 
-theorem univ_sigma_univ : (@univ ι).sigma (fun _ ↦ @univ (α i)) = univ := ext fun _ ↦ true_and_iff _
+theorem univ_sigma_univ : (@univ ι).sigma (fun _ ↦ @univ (α i)) = univ :=
+  ext fun _ ↦ iff_of_eq (true_and _)
 
 @[simp]
 theorem sigma_univ : s.sigma (fun _ ↦ univ : ∀ i, Set (α i)) = Sigma.fst ⁻¹' s :=
-  ext fun _ ↦ and_true_iff _
+  ext fun _ ↦ iff_of_eq (and_true _)
 
 @[simp] theorem univ_sigma_preimage_mk (s : Set (Σ i, α i)) :
     (univ : Set ι).sigma (fun i ↦ Sigma.mk i ⁻¹' s) = s :=
@@ -191,7 +193,7 @@ theorem mk_preimage_sigma_fn_eq_if {β : Type*} [DecidablePred (· ∈ s)] (g : 
 
 theorem sigma_univ_range_eq {f : ∀ i, α i → β i} :
     (univ : Set ι).sigma (fun i ↦ range (f i)) = range fun x : Σ i, α i ↦ ⟨x.1, f _ x.2⟩ :=
-  ext <| by simp [range]
+  ext <| by simp [range, Sigma.forall]
 
 protected theorem Nonempty.sigma :
     s.Nonempty → (∀ i, (t i).Nonempty) → (s.sigma t).Nonempty := fun ⟨i, hi⟩ h ↦
@@ -224,6 +226,10 @@ theorem sigma_subset_preimage_fst (s : Set ι) (t : ∀ i, Set (α i)) : s.sigma
 theorem fst_image_sigma_subset (s : Set ι) (t : ∀ i, Set (α i)) : Sigma.fst '' s.sigma t ⊆ s :=
   image_subset_iff.2 fun _ ↦ And.left
 
+lemma image_sigma_eq_iUnion {γ : Type*} (f : (Σ i, α i) → γ) :
+    f '' (s.sigma t) = ⋃ i ∈ s, (f ∘ Sigma.mk i) '' t i := by
+  aesop
+
 theorem fst_image_sigma (s : Set ι) (ht : ∀ i, (t i).Nonempty) : Sigma.fst '' s.sigma t = s :=
   (fst_image_sigma_subset _ _).antisymm fun i hi ↦
     let ⟨a, ha⟩ := ht i
@@ -232,5 +238,8 @@ theorem fst_image_sigma (s : Set ι) (ht : ∀ i, (t i).Nonempty) : Sigma.fst ''
 theorem sigma_diff_sigma : s₁.sigma t₁ \ s₂.sigma t₂ = s₁.sigma (t₁ \ t₂) ∪ (s₁ \ s₂).sigma t₁ :=
   ext fun x ↦ by
     by_cases h₁ : x.1 ∈ s₁ <;> by_cases h₂ : x.2 ∈ t₁ x.1 <;> simp [*, ← imp_iff_or_not]
+
+lemma sigma_eq_biUnion : s.sigma t = ⋃ i ∈ s, Sigma.mk i '' t i := by
+  aesop
 
 end Set

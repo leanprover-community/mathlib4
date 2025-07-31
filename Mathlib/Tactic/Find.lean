@@ -23,10 +23,10 @@ or the `find` tactic which looks for lemmas which are `apply`able against the cu
 
 -/
 
-open Lean
+open Lean Std
 open Lean.Meta
 open Lean.Elab
-open Lean.Elab
+
 open Batteries.Tactic
 
 namespace Mathlib.Tactic.Find
@@ -51,7 +51,7 @@ private def isBlackListed (declName : Name) : MetaM Bool := do
   <||> isRec declName
   <||> isMatcher declName
 
-initialize findDeclsPerHead : DeclCache (Lean.HashMap HeadIndex (Array Name)) ←
+initialize findDeclsPerHead : DeclCache (Std.HashMap HeadIndex (Array Name)) ←
   DeclCache.mk "#find: init cache" failure {} fun _ c headMap ↦ do
     if (← isBlackListed c.name) then
       return headMap
@@ -59,7 +59,7 @@ initialize findDeclsPerHead : DeclCache (Lean.HashMap HeadIndex (Array Name)) �
     -- to avoid leaking metavariables.
     let (_, _, ty) ← forallMetaTelescopeReducing c.type
     let head := ty.toHeadIndex
-    pure <| headMap.insert head (headMap.findD head #[] |>.push c.name)
+    pure <| headMap.insert head (headMap.getD head #[] |>.push c.name)
 
 def findType (t : Expr) : TermElabM Unit := withReducible do
   let t ← instantiateMVars t
@@ -68,7 +68,7 @@ def findType (t : Expr) : TermElabM Unit := withReducible do
 
   let env ← getEnv
   let mut numFound := 0
-  for n in (← findDeclsPerHead.get).findD head #[] do
+  for n in (← findDeclsPerHead.get).getD head #[] do
     let c := env.find? n |>.get!
     let cTy := c.instantiateTypeLevelParams (← mkFreshLevelMVars c.numLevelParams)
     let found ← forallTelescopeReducing cTy fun cParams cTy' ↦ do

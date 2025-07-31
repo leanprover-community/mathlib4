@@ -5,9 +5,8 @@ Authors: Artur Szafarczyk, Suraj Krishna M S, Jean-Baptiste Stiegler, Isabelle D
 Tomáš Jakl, Lorenzo Zanichelli, Alina Yan, Emilie Uthaiwat, Jana Göken,
 Filippo A. E. Nuccio
 -/
-import Mathlib.Topology.Metrizable.Basic
 import Mathlib.Topology.Algebra.GroupWithZero
-import Mathlib.Topology.Instances.Real
+import Mathlib.Topology.Algebra.Ring.Real
 
 /-!
 # Ternary Cantor Set
@@ -46,10 +45,10 @@ def cantorSet : Set ℝ := ⋂ n, preCantorSet n
 ## Simple Properties
 -/
 
-lemma quarters_mem_preCantorSet (n : ℕ) : 1/4 ∈ preCantorSet n ∧ 3/4 ∈ preCantorSet n := by
+lemma quarters_mem_preCantorSet (n : ℕ) : 1 / 4 ∈ preCantorSet n ∧ 3 / 4 ∈ preCantorSet n := by
   induction n with
   | zero =>
-    simp only [preCantorSet_zero, inv_nonneg]
+    simp only [preCantorSet_zero]
     refine ⟨⟨ ?_, ?_⟩, ?_, ?_⟩ <;> norm_num
   | succ n ih =>
     apply And.intro
@@ -60,9 +59,9 @@ lemma quarters_mem_preCantorSet (n : ℕ) : 1/4 ∈ preCantorSet n ∧ 3/4 ∈ p
       -- follows by the inductive hyphothesis, since 1 / 4 ∈ preCantorSet n
       exact Or.inr ⟨1 / 4, ih.1, by norm_num⟩
 
-lemma quarter_mem_preCantorSet (n : ℕ) : 1/4 ∈ preCantorSet n := (quarters_mem_preCantorSet n).1
+lemma quarter_mem_preCantorSet (n : ℕ) : 1 / 4 ∈ preCantorSet n := (quarters_mem_preCantorSet n).1
 
-theorem quarter_mem_cantorSet : 1/4 ∈ cantorSet :=
+theorem quarter_mem_cantorSet : 1 / 4 ∈ cantorSet :=
   Set.mem_iInter.mpr quarter_mem_preCantorSet
 
 lemma zero_mem_preCantorSet (n : ℕ) : 0 ∈ preCantorSet n := by
@@ -74,9 +73,46 @@ lemma zero_mem_preCantorSet (n : ℕ) : 0 ∈ preCantorSet n := by
 
 theorem zero_mem_cantorSet : 0 ∈ cantorSet := by simp [cantorSet, zero_mem_preCantorSet]
 
+theorem preCantorSet_antitone : Antitone preCantorSet := by
+  apply antitone_nat_of_succ_le
+  intro m
+  simp only [Set.le_eq_subset, preCantorSet_succ, Set.union_subset_iff]
+  induction m with
+  | zero =>
+    simp only [preCantorSet_zero]
+    constructor <;> intro x <;>
+      simp only [Set.mem_image, Set.mem_Icc, forall_exists_index, and_imp] <;>
+      intro y _ _ _ <;> constructor <;> linarith
+  | succ m ih =>
+    simp only [preCantorSet_succ, Set.union_subset_iff, Set.image_union]
+    constructor
+    · constructor <;> apply Set.subset_union_of_subset_left
+      exacts [Set.image_mono ih.left, Set.image_mono ih.right]
+    · constructor <;> apply Set.subset_union_of_subset_right
+      exacts [Set.image_mono ih.left, Set.image_mono ih.right]
+
+lemma preCantorSet_subset_unitInterval {n : ℕ} : preCantorSet n ⊆ Set.Icc 0 1 := by
+  rw [← preCantorSet_zero]
+  exact preCantorSet_antitone (by simp)
+
 /-- The ternary Cantor set is a subset of [0,1]. -/
 lemma cantorSet_subset_unitInterval : cantorSet ⊆ Set.Icc 0 1 :=
   Set.iInter_subset _ 0
+
+/-- The ternary Cantor set satisfies the equation `C = C / 3 ∪ (2 / 3 + C / 3)`. -/
+theorem cantorSet_eq_union_halves :
+    cantorSet = (· / 3) '' cantorSet ∪ (fun x ↦ (2 + x) / 3) '' cantorSet := by
+  simp only [cantorSet]
+  rw [Set.image_iInter, Set.image_iInter]
+  rotate_left
+  · exact (mulRight_bijective₀ 3⁻¹ (by norm_num)).comp (AddGroup.addLeft_bijective 2)
+  · exact mulRight_bijective₀ 3⁻¹ (by norm_num)
+  simp_rw [← Function.comp_def,
+    ← Set.iInter_union_of_antitone
+      (Set.monotone_image.comp_antitone preCantorSet_antitone)
+      (Set.monotone_image.comp_antitone preCantorSet_antitone),
+    Function.comp_def, ← preCantorSet_succ]
+  exact (preCantorSet_antitone.iInter_nat_add _).symm
 
 /-- The preCantor sets are closed. -/
 lemma isClosed_preCantorSet (n : ℕ) : IsClosed (preCantorSet n) := by
@@ -86,8 +122,8 @@ lemma isClosed_preCantorSet (n : ℕ) : IsClosed (preCantorSet n) := by
   | zero => exact isClosed_Icc
   | succ n ih =>
     refine IsClosed.union ?_ ?_
-    · simpa [f, div_eq_inv_mul] using f.closedEmbedding.closed_iff_image_closed.mp ih
-    · simpa [g, f, div_eq_inv_mul] using g.closedEmbedding.closed_iff_image_closed.mp ih
+    · simpa [f, div_eq_inv_mul] using f.isClosedEmbedding.isClosed_iff_image_isClosed.mp ih
+    · simpa [g, f, div_eq_inv_mul] using g.isClosedEmbedding.isClosed_iff_image_isClosed.mp ih
 
 /-- The ternary Cantor set is closed. -/
 lemma isClosed_cantorSet : IsClosed cantorSet :=

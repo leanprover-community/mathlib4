@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
 import Mathlib.Topology.Connected.Basic
-import Mathlib.Topology.Separation
+import Mathlib.Topology.Separation.Hausdorff
+import Mathlib.Topology.Connected.Clopen
 /-!
 # Separated maps and locally injective maps out of a topological space.
 
@@ -34,14 +35,17 @@ separated morphisms and unramified morphisms, respectively.
 https://stacks.math.columbia.edu/tag/0CY0
 -/
 
-open scoped Topology
+open Topology
 
 variable {X Y A} [TopologicalSpace X] [TopologicalSpace A]
 
-theorem embedding_toPullbackDiag (f : X → Y) : Embedding (toPullbackDiag f) :=
-  Embedding.mk' _ (injective_toPullbackDiag f) fun x ↦ by
-    rw [toPullbackDiag, nhds_induced, Filter.comap_comap, nhds_prod_eq, Filter.comap_prod]
-    erw [Filter.comap_id, inf_idem]
+protected lemma Topology.IsEmbedding.toPullbackDiag (f : X → Y) : IsEmbedding (toPullbackDiag f) :=
+  .mk' _ (injective_toPullbackDiag f) fun x ↦ by
+    simp [nhds_induced, Filter.comap_comap, nhds_prod_eq, Filter.comap_prod, Function.comp_def,
+      Filter.comap_id']
+
+@[deprecated (since := "2024-10-26")]
+alias embedding_toPullbackDiag := IsEmbedding.toPullbackDiag
 
 lemma Continuous.mapPullback {X₁ X₂ Y₁ Y₂ Z₁ Z₂}
     [TopologicalSpace X₁] [TopologicalSpace X₂] [TopologicalSpace Z₁] [TopologicalSpace Z₂]
@@ -50,8 +54,8 @@ lemma Continuous.mapPullback {X₁ X₂ Y₁ Y₂ Z₁ Z₂}
     {mapZ : Z₁ → Z₂} (contZ : Continuous mapZ)
     {commX : f₂ ∘ mapX = mapY ∘ f₁} {commZ : g₂ ∘ mapZ = mapY ∘ g₁} :
     Continuous (Function.mapPullback mapX mapY mapZ commX commZ) := by
-  refine continuous_induced_rng.mpr (continuous_prod_mk.mpr ⟨?_, ?_⟩) <;>
-  apply_rules [continuous_fst, continuous_snd, continuous_subtype_val, Continuous.comp]
+  refine continuous_induced_rng.mpr (.prodMk ?_ ?_) <;>
+    apply_rules [continuous_fst, continuous_snd, continuous_subtype_val, Continuous.comp]
 
 /-- A function from a topological space `X` to a type `Y` is a separated map if any two distinct
   points in `X` with the same image in `Y` can be separated by open neighborhoods. -/
@@ -69,7 +73,7 @@ lemma Function.Injective.isSeparatedMap {f : X → Y} (inj : f.Injective) : IsSe
 lemma isSeparatedMap_iff_disjoint_nhds {f : X → Y} : IsSeparatedMap f ↔
     ∀ x₁ x₂, f x₁ = f x₂ → x₁ ≠ x₂ → Disjoint (𝓝 x₁) (𝓝 x₂) :=
   forall₃_congr fun x x' _ ↦ by simp only [(nhds_basis_opens x).disjoint_iff (nhds_basis_opens x'),
-    exists_prop, ← exists_and_left, and_assoc, and_comm, and_left_comm]
+    ← exists_and_left, and_assoc, and_comm, and_left_comm]
 
 lemma isSeparatedMap_iff_nhds {f : X → Y} : IsSeparatedMap f ↔
     ∀ x₁ x₂, f x₁ = f x₂ → x₁ ≠ x₂ → ∃ s₁ ∈ 𝓝 x₁, ∃ s₂ ∈ 𝓝 x₂, Disjoint s₁ s₂ := by
@@ -86,16 +90,16 @@ theorem isSeparatedMap_iff_isClosed_diagonal {f : X → Y} :
   · obtain ⟨s₁, h₁, s₂, h₂, s_sub⟩ := mem_prod_iff.mp ht
     exact ⟨s₁, h₁, s₂, h₂, disjoint_left.2 fun x h₁ h₂ ↦ @t_sub ⟨(x, x), rfl⟩ (s_sub ⟨h₁, h₂⟩) rfl⟩
 
-theorem isSeparatedMap_iff_closedEmbedding {f : X → Y} :
-    IsSeparatedMap f ↔ ClosedEmbedding (toPullbackDiag f) := by
+theorem isSeparatedMap_iff_isClosedEmbedding {f : X → Y} :
+    IsSeparatedMap f ↔ IsClosedEmbedding (toPullbackDiag f) := by
   rw [isSeparatedMap_iff_isClosed_diagonal, ← range_toPullbackDiag]
-  exact ⟨fun h ↦ ⟨embedding_toPullbackDiag f, h⟩, fun h ↦ h.isClosed_range⟩
+  exact ⟨fun h ↦ ⟨.toPullbackDiag f, h⟩, fun h ↦ h.isClosed_range⟩
 
 theorem isSeparatedMap_iff_isClosedMap {f : X → Y} :
     IsSeparatedMap f ↔ IsClosedMap (toPullbackDiag f) :=
-  isSeparatedMap_iff_closedEmbedding.trans
-    ⟨ClosedEmbedding.isClosedMap, closedEmbedding_of_continuous_injective_closed
-      (embedding_toPullbackDiag f).continuous (injective_toPullbackDiag f)⟩
+  isSeparatedMap_iff_isClosedEmbedding.trans
+    ⟨IsClosedEmbedding.isClosedMap, .of_continuous_injective_isClosedMap
+      (IsEmbedding.toPullbackDiag f).continuous (injective_toPullbackDiag f)⟩
 
 open Function.Pullback in
 theorem IsSeparatedMap.pullback {f : X → Y} (sep : IsSeparatedMap f) (g : A → Y) :
@@ -141,16 +145,16 @@ theorem isLocallyInjective_iff_isOpen_diagonal {f : X → Y} :
     exact ⟨t₁ ∩ t₂, Filter.inter_mem h₁ h₂,
       fun x₁ h₁ x₂ h₂ he ↦ @t_sub ⟨(x₁, x₂), he⟩ (prod_sub ⟨h₁.1, h₂.2⟩)⟩
 
-theorem IsLocallyInjective_iff_openEmbedding {f : X → Y} :
-    IsLocallyInjective f ↔ OpenEmbedding (toPullbackDiag f) := by
+theorem IsLocallyInjective_iff_isOpenEmbedding {f : X → Y} :
+    IsLocallyInjective f ↔ IsOpenEmbedding (toPullbackDiag f) := by
   rw [isLocallyInjective_iff_isOpen_diagonal, ← range_toPullbackDiag]
-  exact ⟨fun h ↦ ⟨embedding_toPullbackDiag f, h⟩, fun h ↦ h.isOpen_range⟩
+  exact ⟨fun h ↦ ⟨.toPullbackDiag f, h⟩, fun h ↦ h.isOpen_range⟩
 
 theorem isLocallyInjective_iff_isOpenMap {f : X → Y} :
     IsLocallyInjective f ↔ IsOpenMap (toPullbackDiag f) :=
-  IsLocallyInjective_iff_openEmbedding.trans
-    ⟨OpenEmbedding.isOpenMap, openEmbedding_of_continuous_injective_open
-      (embedding_toPullbackDiag f).continuous (injective_toPullbackDiag f)⟩
+  IsLocallyInjective_iff_isOpenEmbedding.trans
+    ⟨IsOpenEmbedding.isOpenMap, .of_continuous_injective_isOpenMap
+      (IsEmbedding.toPullbackDiag f).continuous (injective_toPullbackDiag f)⟩
 
 theorem discreteTopology_iff_locallyInjective (y : Y) :
     DiscreteTopology X ↔ IsLocallyInjective fun _ : X ↦ y := by

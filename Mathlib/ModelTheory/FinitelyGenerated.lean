@@ -3,6 +3,7 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
+import Mathlib.Data.Set.Finite.Lemmas
 import Mathlib.ModelTheory.Substructures
 
 /-!
@@ -92,6 +93,18 @@ theorem FG.of_map_embedding {N : Type*} [L.Structure N] (f : M ↪[L] N) {s : L.
   rw [h] at h'
   exact Hom.map_le_range h'
 
+theorem FG.of_finite {s : L.Substructure M} [h : Finite s] : s.FG :=
+  ⟨Set.Finite.toFinset h, by simp only [Finite.coe_toFinset, closure_eq]⟩
+
+theorem FG.finite [L.IsRelational] {S : L.Substructure M} (h : S.FG) : Finite S := by
+  obtain ⟨s, rfl⟩ := h
+  have hs := s.finite_toSet
+  rw [← closure_eq_of_isRelational L (s : Set M)] at hs
+  exact hs
+
+theorem fg_iff_finite [L.IsRelational] {S : L.Substructure M} : S.FG ↔ Finite S :=
+  ⟨FG.finite, fun _ => FG.of_finite⟩
+
 /-- A substructure of `M` is countably generated if it is the closure of a countable subset of `M`.
 -/
 def CG (N : L.Substructure M) : Prop :=
@@ -118,7 +131,7 @@ theorem cg_iff_empty_or_exists_nat_generating_family {N : L.Substructure M} :
     rw [← h', closure_union, hS, sup_eq_left, closure_le]
     exact singleton_subset_iff.2 h.some_mem
   · intro h
-    cases' h with h h
+    rcases h with h | h
     · refine ⟨∅, countable_empty, closure_eq_of_le (empty_subset _) ?_⟩
       rw [← SetLike.coe_subset_coe, h]
       exact empty_subset _
@@ -157,7 +170,7 @@ theorem CG.of_map_embedding {N : Type*} [L.Structure N] (f : M ↪[L] N) {s : L.
   rw [h2] at h'
   exact Hom.map_le_range h'
 
-theorem cg_iff_countable [Countable (Σl, L.Functions l)] {s : L.Substructure M} :
+theorem cg_iff_countable [Countable (Σ l, L.Functions l)] {s : L.Substructure M} :
     s.CG ↔ Countable s := by
   refine ⟨?_, fun h => ⟨s, h.to_set, s.closure_eq⟩⟩
   rintro ⟨s, h, rfl⟩
@@ -171,7 +184,6 @@ end Substructure
 open Substructure
 
 namespace Structure
-
 
 variable (L) (M)
 
@@ -227,6 +239,15 @@ instance Fg.instCountable_embedding (N : Type*) [L.Structure N]
     [Countable N] [h : FG L M] : Countable (M ↪[L] N) :=
   FG.countable_embedding N h
 
+theorem FG.of_finite [Finite M] : FG L M := by
+  simp only [fg_def, Substructure.FG.of_finite]
+
+theorem FG.finite [L.IsRelational] (h : FG L M) : Finite M :=
+  Finite.of_finite_univ (Substructure.FG.finite (fg_def.1 h))
+
+theorem fg_iff_finite [L.IsRelational] : FG L M ↔ Finite M :=
+  ⟨FG.finite, fun _ => FG.of_finite⟩
+
 theorem cg_def : CG L M ↔ (⊤ : L.Substructure M).CG :=
   ⟨fun h => h.1, fun h => ⟨h⟩⟩
 
@@ -244,11 +265,11 @@ theorem CG.map_of_surjective {N : Type*} [L.Structure N] (h : CG L M) (f : M →
   rw [cg_def, ← hs]
   exact h.range f
 
-theorem cg_iff_countable [Countable (Σl, L.Functions l)] : CG L M ↔ Countable M := by
+theorem cg_iff_countable [Countable (Σ l, L.Functions l)] : CG L M ↔ Countable M := by
   rw [cg_def, Substructure.cg_iff_countable, topEquiv.toEquiv.countable_iff]
 
 theorem cg_of_countable [Countable M] : CG L M := by
-  simp only [cg_def, Substructure.cg_of_countable, topEquiv.toEquiv.countable_iff]
+  simp only [cg_def, Substructure.cg_of_countable]
 
 theorem FG.cg (h : FG L M) : CG L M :=
   cg_def.2 (fg_def.1 h).cg

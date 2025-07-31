@@ -14,7 +14,7 @@ This typeclass is primarily for use by isomorphisms like `MonoidEquiv` and `Line
 
 A typical type of isomorphisms should be declared as:
 ```
-structure MyIso (A B : Type*) [MyClass A] [MyClass B] extends Equiv A B :=
+structure MyIso (A B : Type*) [MyClass A] [MyClass B] extends Equiv A B where
   (map_op' : ∀ (x y : A), toFun (MyClass.op x y) = MyClass.op (toFun x) (toFun y))
 
 namespace MyIso
@@ -77,12 +77,12 @@ The second step is to add instances of your new `MyIsoClass` for all types exten
 Typically, you can just declare a new class analogous to `MyIsoClass`:
 
 ```
-structure CoolerIso (A B : Type*) [CoolClass A] [CoolClass B] extends MyIso A B :=
+structure CoolerIso (A B : Type*) [CoolClass A] [CoolClass B] extends MyIso A B where
   (map_cool' : toFun CoolClass.cool = CoolClass.cool)
 
 class CoolerIsoClass (F : Type*) (A B : outParam Type*) [CoolClass A] [CoolClass B]
     [EquivLike F A B]
-    extends MyIsoClass F A B :=
+    extends MyIsoClass F A B where
   (map_cool : ∀ (f : F), f CoolClass.cool = CoolClass.cool)
 
 @[simp] lemma map_cool {F A B : Type*} [CoolClass A] [CoolClass B]
@@ -159,6 +159,12 @@ instance (priority := 100) toFunLike : FunLike E α β where
   coe_injective' e g h :=
     coe_injective' e g h ((left_inv e).eq_rightInverse (h.symm ▸ right_inv g))
 
+@[simp] theorem coe_apply {e : E} {a : α} : coe e a = e a := rfl
+
+theorem inv_apply_eq {e : E} {b : β} {a : α} : inv e b = a ↔ b = e a := by
+  constructor <;> rintro ⟨_, rfl⟩
+  exacts [(right_inv e b).symm, left_inv e a]
+
 instance (priority := 100) toEmbeddingLike : EmbeddingLike E α β where
   injective' e := (left_inv e).injective
 
@@ -193,8 +199,7 @@ or its equivalent.
 
 TODO: define a generic form of `Equiv.symm`. -/
 @[simp]
-theorem inv_apply_apply (e : E) (a : α) : EquivLike.inv e (e a) = a :=
-  left_inv _ _
+theorem inv_apply_apply (e : E) (a : α) : inv e (e a) = a := left_inv _ _
 
 /-- This lemma is only supposed to be used in the generic context, when working with instances
 of classes extending `EquivLike`.
@@ -203,8 +208,10 @@ or its equivalent.
 
 TODO: define a generic form of `Equiv.symm`. -/
 @[simp]
-theorem apply_inv_apply (e : E) (b : β) : e (EquivLike.inv e b) = b :=
-  right_inv _ _
+theorem apply_inv_apply (e : E) (b : β) : e (inv e b) = b := right_inv _ _
+
+@[deprecated inv_apply_eq (since := "2025-06-20")]
+lemma inv_apply_eq_iff_eq_apply {e : E} {b : β} {a : α} : inv e b = a ↔ b = e a := inv_apply_eq
 
 theorem comp_injective (f : α → β) (e : F) : Function.Injective (e ∘ f) ↔ Function.Injective f :=
   EmbeddingLike.comp_injective f e

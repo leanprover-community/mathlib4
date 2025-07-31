@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.LinearAlgebra.TensorAlgebra.Basic
-import Mathlib.LinearAlgebra.TensorPower
+import Mathlib.LinearAlgebra.TensorPower.Basic
 
 /-!
 # Tensor algebras as direct sums of tensor powers
@@ -12,8 +12,6 @@ import Mathlib.LinearAlgebra.TensorPower
 In this file we show that `TensorAlgebra R M` is isomorphic to a direct sum of tensor powers, as
 `TensorAlgebra.equivDirectSum`.
 -/
-
-suppress_compilation
 
 open scoped DirectSum TensorProduct
 
@@ -32,8 +30,8 @@ theorem toTensorAlgebra_tprod {n} (x : Fin n → M) :
 
 @[simp]
 theorem toTensorAlgebra_gOne :
-    TensorPower.toTensorAlgebra (@GradedMonoid.GOne.one _ (fun n => ⨂[R]^n M) _ _) = 1 :=
-  TensorPower.toTensorAlgebra_tprod _
+    TensorPower.toTensorAlgebra (@GradedMonoid.GOne.one _ (fun n => ⨂[R]^n M) _ _) = 1 := by
+  simp [GradedMonoid.GOne.one, TensorPower.toTensorAlgebra_tprod]
 
 @[simp]
 theorem toTensorAlgebra_gMul {i j} (a : (⨂[R]^i) M) (b : (⨂[R]^j) M) :
@@ -48,10 +46,8 @@ theorem toTensorAlgebra_gMul {i j} (a : (⨂[R]^i) M) (b : (⨂[R]^j) M) :
   -- Porting note: pulled the next two lines out of the long `simp only` below.
   simp only [LinearMap.compMultilinearMap_apply]
   rw [LinearMap.compr₂_apply, ← gMul_eq_coe_linearMap]
-  simp only [LinearMap.compr₂_apply, LinearMap.mul_apply', LinearMap.compl₂_apply,
-    LinearMap.comp_apply, LinearMap.compMultilinearMap_apply, PiTensorProduct.lift.tprod,
-    TensorPower.tprod_mul_tprod, TensorPower.toTensorAlgebra_tprod, TensorAlgebra.tprod_apply, ←
-    gMul_eq_coe_linearMap]
+  simp only [tprod_mul_tprod, toTensorAlgebra_tprod, TensorAlgebra.tprod_apply,
+    LinearMap.comp_apply, LinearMap.compl₂_apply, LinearMap.mul_apply']
   refine Eq.trans ?_ List.prod_append
   congr
   -- Porting note: `erw` for `Function.comp`
@@ -96,14 +92,14 @@ theorem toDirectSum_ι (x : M) :
 theorem ofDirectSum_comp_toDirectSum :
     ofDirectSum.comp toDirectSum = AlgHom.id R (TensorAlgebra R M) := by
   ext
-  simp [DirectSum.lof_eq_of, tprod_apply]
+  simp [tprod_apply]
 
 @[simp]
 theorem ofDirectSum_toDirectSum (x : TensorAlgebra R M) :
     ofDirectSum (TensorAlgebra.toDirectSum x) = x :=
   AlgHom.congr_fun ofDirectSum_comp_toDirectSum x
 
-@[simp, nolint simpNF] -- see std4#365 for the simpNF issue
+@[simp]
 theorem mk_reindex_cast {n m : ℕ} (h : n = m) (x : ⨂[R]^n M) :
     GradedMonoid.mk (A := fun i => (⨂[R]^i) M) m
     (PiTensorProduct.reindex R (fun _ ↦ M) (Equiv.cast <| congr_arg Fin h) x) =
@@ -128,18 +124,18 @@ theorem _root_.TensorPower.list_prod_gradedMonoid_mk_single (n : ℕ) (x : Fin n
     rfl
   · intro n x₀ x ih
     rw [List.finRange_succ_eq_map, List.map_cons, List.prod_cons, List.map_map]
-    simp_rw [Function.comp, Fin.cons_zero, Fin.cons_succ]
+    simp_rw [Function.comp_def, Fin.cons_zero, Fin.cons_succ]
     rw [ih, GradedMonoid.mk_mul_mk, TensorPower.tprod_mul_tprod]
     refine TensorPower.gradedMonoid_eq_of_cast (add_comm _ _) ?_
     dsimp only [GradedMonoid.mk]
     rw [TensorPower.cast_tprod]
-    simp_rw [Fin.append_left_eq_cons, Function.comp]
+    simp_rw [Fin.append_left_eq_cons, Function.comp_def]
     congr 1 with i
 
 theorem toDirectSum_tensorPower_tprod {n} (x : Fin n → M) :
     toDirectSum (tprod R M n x) = DirectSum.of _ n (PiTensorProduct.tprod R x) := by
   rw [tprod_apply, map_list_prod, List.map_ofFn]
-  simp_rw [Function.comp, toDirectSum_ι]
+  simp_rw [Function.comp_def, toDirectSum_ι]
   rw [DirectSum.list_prod_ofFn_of_eq_dProd]
   apply DirectSum.of_eq_of_gradedMonoid_eq
   rw [GradedMonoid.mk_list_dProd]

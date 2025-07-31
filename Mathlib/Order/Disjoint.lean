@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Aesop
-import Mathlib.Order.BoundedOrder
+import Mathlib.Order.BoundedOrder.Lattice
 
 /-!
 # Disjointness and complements
@@ -60,7 +60,7 @@ theorem disjoint_bot_left : Disjoint ⊥ a := fun _ hbot _ ↦ hbot
 @[simp]
 theorem disjoint_bot_right : Disjoint a ⊥ := fun _ _ hbot ↦ hbot
 
-theorem Disjoint.mono (h₁ : a ≤ b) (h₂ : c ≤ d) : Disjoint b d → Disjoint a c :=
+@[gcongr] theorem Disjoint.mono (h₁ : a ≤ b) (h₂ : c ≤ d) : Disjoint b d → Disjoint a c :=
   fun h _ ha hc ↦ h (ha.trans h₁) (hc.trans h₂)
 
 theorem Disjoint.mono_left (h : a ≤ b) : Disjoint b c → Disjoint a c :=
@@ -90,6 +90,10 @@ lemma Disjoint.eq_iff (hab : Disjoint a b) : a = b ↔ a = ⊥ ∧ b = ⊥ := by
 lemma Disjoint.ne_iff (hab : Disjoint a b) : a ≠ b ↔ a ≠ ⊥ ∨ b ≠ ⊥ :=
   hab.eq_iff.not.trans not_and_or
 
+theorem disjoint_of_le_iff_left_eq_bot (h : a ≤ b) :
+    Disjoint a b ↔ a = ⊥ :=
+  ⟨fun hd ↦ hd.eq_bot_of_le h, fun h ↦ h ▸ disjoint_bot_left⟩
+
 end PartialOrderBot
 
 section PartialBoundedOrder
@@ -108,7 +112,7 @@ end PartialBoundedOrder
 
 section SemilatticeInfBot
 
-variable [SemilatticeInf α] [OrderBot α] {a b c d : α}
+variable [SemilatticeInf α] [OrderBot α] {a b c : α}
 
 theorem disjoint_iff_inf_le : Disjoint a b ↔ a ⊓ b ≤ ⊥ :=
   ⟨fun hd ↦ hd inf_le_left inf_le_right, fun h _ ha hb ↦ (le_inf ha hb).trans h⟩
@@ -155,6 +159,10 @@ theorem Disjoint.of_disjoint_inf_of_le' (h : Disjoint (a ⊓ b) c) (hle : b ≤ 
 
 end SemilatticeInfBot
 
+theorem Disjoint.right_lt_sup_of_left_ne_bot [SemilatticeSup α] [OrderBot α] {a b : α}
+    (h : Disjoint a b) (ha : a ≠ ⊥) : b < a ⊔ b :=
+  le_sup_right.lt_of_ne fun eq ↦ ha (le_bot_iff.mp <| h le_rfl <| sup_eq_right.mp eq.symm)
+
 section DistribLatticeBot
 
 variable [DistribLattice α] [OrderBot α] {a b c : α}
@@ -197,12 +205,14 @@ arguments. -/
 def Codisjoint (a b : α) : Prop :=
   ∀ ⦃x⦄, a ≤ x → b ≤ x → ⊤ ≤ x
 
-theorem Codisjoint_comm : Codisjoint a b ↔ Codisjoint b a :=
+theorem codisjoint_comm : Codisjoint a b ↔ Codisjoint b a :=
   forall_congr' fun _ ↦ forall_swap
+
+@[deprecated (since := "2024-11-23")] alias Codisjoint_comm := codisjoint_comm
 
 @[symm]
 theorem Codisjoint.symm ⦃a b : α⦄ : Codisjoint a b → Codisjoint b a :=
-  Codisjoint_comm.1
+  codisjoint_comm.1
 
 theorem symmetric_codisjoint : Symmetric (Codisjoint : α → α → Prop) :=
   Codisjoint.symm
@@ -213,7 +223,7 @@ theorem codisjoint_top_left : Codisjoint ⊤ a := fun _ htop _ ↦ htop
 @[simp]
 theorem codisjoint_top_right : Codisjoint a ⊤ := fun _ _ htop ↦ htop
 
-theorem Codisjoint.mono (h₁ : a ≤ b) (h₂ : c ≤ d) : Codisjoint a c → Codisjoint b d :=
+@[gcongr] theorem Codisjoint.mono (h₁ : a ≤ b) (h₂ : c ≤ d) : Codisjoint a c → Codisjoint b d :=
   fun h _ ha hc ↦ h (h₁.trans ha) (h₂.trans hc)
 
 theorem Codisjoint.mono_left (h : a ≤ b) : Codisjoint a c → Codisjoint b c :=
@@ -267,7 +277,7 @@ end PartialBoundedOrder
 
 section SemilatticeSupTop
 
-variable [SemilatticeSup α] [OrderTop α] {a b c d : α}
+variable [SemilatticeSup α] [OrderTop α] {a b c : α}
 
 theorem codisjoint_iff_le_sup : Codisjoint a b ↔ ⊤ ≤ a ⊔ b :=
   @disjoint_iff_inf_le αᵒᵈ _ _ _ _
@@ -346,31 +356,31 @@ end Codisjoint
 
 open OrderDual
 
-theorem Disjoint.dual [SemilatticeInf α] [OrderBot α] {a b : α} :
+theorem Disjoint.dual [PartialOrder α] [OrderBot α] {a b : α} :
     Disjoint a b → Codisjoint (toDual a) (toDual b) :=
   id
 
-theorem Codisjoint.dual [SemilatticeSup α] [OrderTop α] {a b : α} :
+theorem Codisjoint.dual [PartialOrder α] [OrderTop α] {a b : α} :
     Codisjoint a b → Disjoint (toDual a) (toDual b) :=
   id
 
 @[simp]
-theorem disjoint_toDual_iff [SemilatticeSup α] [OrderTop α] {a b : α} :
+theorem disjoint_toDual_iff [PartialOrder α] [OrderTop α] {a b : α} :
     Disjoint (toDual a) (toDual b) ↔ Codisjoint a b :=
   Iff.rfl
 
 @[simp]
-theorem disjoint_ofDual_iff [SemilatticeInf α] [OrderBot α] {a b : αᵒᵈ} :
+theorem disjoint_ofDual_iff [PartialOrder α] [OrderBot α] {a b : αᵒᵈ} :
     Disjoint (ofDual a) (ofDual b) ↔ Codisjoint a b :=
   Iff.rfl
 
 @[simp]
-theorem codisjoint_toDual_iff [SemilatticeInf α] [OrderBot α] {a b : α} :
+theorem codisjoint_toDual_iff [PartialOrder α] [OrderBot α] {a b : α} :
     Codisjoint (toDual a) (toDual b) ↔ Disjoint a b :=
   Iff.rfl
 
 @[simp]
-theorem codisjoint_ofDual_iff [SemilatticeSup α] [OrderTop α] {a b : αᵒᵈ} :
+theorem codisjoint_ofDual_iff [PartialOrder α] [OrderTop α] {a b : αᵒᵈ} :
     Codisjoint (ofDual a) (ofDual b) ↔ Disjoint a b :=
   Iff.rfl
 
@@ -401,7 +411,7 @@ namespace IsCompl
 
 section BoundedPartialOrder
 
-variable [PartialOrder α] [BoundedOrder α] {x y z : α}
+variable [PartialOrder α] [BoundedOrder α] {x y : α}
 
 @[symm]
 protected theorem symm (h : IsCompl x y) : IsCompl y x :=
@@ -419,7 +429,7 @@ end BoundedPartialOrder
 
 section BoundedLattice
 
-variable [Lattice α] [BoundedOrder α] {x y z : α}
+variable [Lattice α] [BoundedOrder α] {x y : α}
 
 theorem of_le (h₁ : x ⊓ y ≤ ⊥) (h₂ : ⊤ ≤ x ⊔ y) : IsCompl x y :=
   ⟨disjoint_iff_inf_le.mpr h₁, codisjoint_iff_le_sup.mpr h₂⟩
@@ -582,6 +592,10 @@ class ComplementedLattice (α) [Lattice α] [BoundedOrder α] : Prop where
   /-- In a `ComplementedLattice`, every element admits a complement. -/
   exists_isCompl : ∀ a : α, ∃ b : α, IsCompl a b
 
+lemma complementedLattice_iff (α) [Lattice α] [BoundedOrder α] :
+    ComplementedLattice α ↔ ∀ a : α, ∃ b : α, IsCompl a b :=
+  ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
+
 export ComplementedLattice (exists_isCompl)
 
 instance Subsingleton.instComplementedLattice
@@ -619,13 +633,11 @@ theorem coe_injective : Injective ((↑) : Complementeds α → α) := Subtype.c
 @[simp, norm_cast]
 theorem coe_inj : (a : α) = b ↔ a = b := Subtype.coe_inj
 
--- Porting note: removing `simp` because `Subtype.coe_le_coe` already proves it
 @[norm_cast]
 theorem coe_le_coe : (a : α) ≤ b ↔ a ≤ b := by simp
 
--- Porting note: removing `simp` because `Subtype.coe_lt_coe` already proves it
 @[norm_cast]
-theorem coe_lt_coe : (a : α) < b ↔ a < b := Iff.rfl
+theorem coe_lt_coe : (a : α) < b ↔ a < b := by simp
 
 instance : BoundedOrder (Complementeds α) :=
   Subtype.boundedOrder isComplemented_bot isComplemented_top
@@ -636,11 +648,9 @@ theorem coe_bot : ((⊥ : Complementeds α) : α) = ⊥ := rfl
 @[simp, norm_cast]
 theorem coe_top : ((⊤ : Complementeds α) : α) = ⊤ := rfl
 
--- Porting note: removing `simp` because `Subtype.mk_bot` already proves it
-theorem mk_bot : (⟨⊥, isComplemented_bot⟩ : Complementeds α) = ⊥ := rfl
+theorem mk_bot : (⟨⊥, isComplemented_bot⟩ : Complementeds α) = ⊥ := by simp
 
--- Porting note: removing `simp` because `Subtype.mk_top` already proves it
-theorem mk_top : (⟨⊤, isComplemented_top⟩ : Complementeds α) = ⊤ := rfl
+theorem mk_top : (⟨⊤, isComplemented_top⟩ : Complementeds α) = ⊤ := by simp
 
 instance : Inhabited (Complementeds α) := ⟨⊥⟩
 
@@ -648,10 +658,10 @@ end Lattice
 
 variable [DistribLattice α] [BoundedOrder α] {a b : Complementeds α}
 
-instance : Sup (Complementeds α) :=
+instance : Max (Complementeds α) :=
   ⟨fun a b => ⟨a ⊔ b, a.2.sup b.2⟩⟩
 
-instance : Inf (Complementeds α) :=
+instance : Min (Complementeds α) :=
   ⟨fun a b => ⟨a ⊓ b, a.2.inf b.2⟩⟩
 
 @[simp, norm_cast]

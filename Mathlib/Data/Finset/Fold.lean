@@ -3,8 +3,7 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
-import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
+import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Finset.Image
 import Mathlib.Data.Multiset.Fold
 
@@ -12,8 +11,7 @@ import Mathlib.Data.Multiset.Fold
 # The fold operation for a commutative associative operation over a finset.
 -/
 
-assert_not_exists OrderedCommMonoid
-assert_not_exists MonoidWithZero
+assert_not_exists Monoid
 
 namespace Finset
 
@@ -50,7 +48,7 @@ theorem fold_cons (h : a ∉ s) : (cons a s h).fold op b f = f a * s.fold op b f
 theorem fold_insert [DecidableEq α] (h : a ∉ s) :
     (insert a s).fold op b f = f a * s.fold op b f := by
   unfold fold
-  rw [insert_val, ndinsert_of_not_mem h, Multiset.map_cons, fold_cons_left]
+  rw [insert_val, ndinsert_of_notMem h, Multiset.map_cons, fold_cons_left]
 
 @[simp]
 theorem fold_singleton : ({a} : Finset α).fold op b f = f a * b :=
@@ -62,7 +60,7 @@ theorem fold_map {g : γ ↪ α} {s : Finset γ} : (s.map g).fold op b f = s.fol
 
 @[simp]
 theorem fold_image [DecidableEq α] {g : γ → α} {s : Finset γ}
-    (H : ∀ x ∈ s, ∀ y ∈ s, g x = g y → x = y) : (s.image g).fold op b f = s.fold op b (f ∘ g) := by
+    (H : Set.InjOn g s) : (s.image g).fold op b f = s.fold op b (f ∘ g) := by
   simp only [fold, image_val_of_injOn H, Multiset.map_map]
 
 @[congr]
@@ -92,10 +90,6 @@ theorem fold_hom {op' : γ → γ → γ} [Std.Commutative op'] [Std.Associative
 theorem fold_disjUnion {s₁ s₂ : Finset α} {b₁ b₂ : β} (h) :
     (s₁.disjUnion s₂ h).fold op (b₁ * b₂) f = s₁.fold op b₁ f * s₂.fold op b₂ f :=
   (congr_arg _ <| Multiset.map_add _ _ _).trans (Multiset.fold_add _ _ _ _ _)
-
-theorem fold_disjiUnion {ι : Type*} {s : Finset ι} {t : ι → Finset α} {b : ι → β} {b₀ : β} (h) :
-    (s.disjiUnion t h).fold op (s.fold op b₀ b) f = s.fold op b₀ fun i => (t i).fold op (b i) f :=
-  (congr_arg _ <| Multiset.map_bind _ _ _).trans (Multiset.fold_bind _ _ _ _ _)
 
 theorem fold_union_inter [DecidableEq α] {s₁ s₂ : Finset α} {b₁ b₂ : β} :
     ((s₁ ∪ s₂).fold op b₁ f * (s₁ ∩ s₂).fold op b₂ f) = s₁.fold op b₂ f * s₂.fold op b₁ f := by
@@ -150,16 +144,7 @@ theorem fold_op_rel_iff_and {r : β → β → Prop} (hr : ∀ {x y z}, r x (op 
     induction' s using Finset.induction_on with a s ha IH
     · simp
     rw [Finset.fold_insert ha, hr, IH, ← and_assoc, @and_comm (r c (f a)), and_assoc]
-    apply and_congr Iff.rfl
-    constructor
-    · rintro ⟨h₁, h₂⟩
-      intro b hb
-      rw [Finset.mem_insert] at hb
-      rcases hb with (rfl | hb) <;> solve_by_elim
-    · intro h
-      constructor
-      · exact h a (Finset.mem_insert_self _ _)
-      · exact fun b hb => h b <| Finset.mem_insert_of_mem hb
+    simp
 
 theorem fold_op_rel_iff_or {r : β → β → Prop} (hr : ∀ {x y z}, r x (op y z) ↔ r x y ∨ r x z)
     {c : β} : r c (s.fold op b f) ↔ r c b ∨ ∃ x ∈ s, r c (f x) := by
@@ -167,14 +152,7 @@ theorem fold_op_rel_iff_or {r : β → β → Prop} (hr : ∀ {x y z}, r x (op y
     induction' s using Finset.induction_on with a s ha IH
     · simp
     rw [Finset.fold_insert ha, hr, IH, ← or_assoc, @or_comm (r c (f a)), or_assoc]
-    apply or_congr Iff.rfl
-    constructor
-    · rintro (h₁ | ⟨x, hx, h₂⟩)
-      · use a
-        simp [h₁]
-      · refine ⟨x, by simp [hx], h₂⟩
-    · rintro ⟨x, hx, h⟩
-      exact (mem_insert.mp hx).imp (fun hx => by rwa [hx] at h) (fun hx => ⟨x, hx, h⟩)
+    simp
 
 @[simp]
 theorem fold_union_empty_singleton [DecidableEq α] (s : Finset α) :
@@ -195,46 +173,41 @@ theorem le_fold_min : c ≤ s.fold min b f ↔ c ≤ b ∧ ∀ x ∈ s, c ≤ f 
   fold_op_rel_iff_and le_min_iff
 
 theorem fold_min_le : s.fold min b f ≤ c ↔ b ≤ c ∨ ∃ x ∈ s, f x ≤ c := by
-  show _ ≥ _ ↔ _
+  change _ ≥ _ ↔ _
   apply fold_op_rel_iff_or
   intro x y z
-  show _ ≤ _ ↔ _
+  change _ ≤ _ ↔ _
   exact min_le_iff
 
 theorem lt_fold_min : c < s.fold min b f ↔ c < b ∧ ∀ x ∈ s, c < f x :=
   fold_op_rel_iff_and lt_min_iff
 
 theorem fold_min_lt : s.fold min b f < c ↔ b < c ∨ ∃ x ∈ s, f x < c := by
-  show _ > _ ↔ _
+  change _ > _ ↔ _
   apply fold_op_rel_iff_or
   intro x y z
-  show _ < _ ↔ _
+  change _ < _ ↔ _
   exact min_lt_iff
 
 theorem fold_max_le : s.fold max b f ≤ c ↔ b ≤ c ∧ ∀ x ∈ s, f x ≤ c := by
-  show _ ≥ _ ↔ _
+  change _ ≥ _ ↔ _
   apply fold_op_rel_iff_and
   intro x y z
-  show _ ≤ _ ↔ _
+  change _ ≤ _ ↔ _
   exact max_le_iff
 
 theorem le_fold_max : c ≤ s.fold max b f ↔ c ≤ b ∨ ∃ x ∈ s, c ≤ f x :=
   fold_op_rel_iff_or le_max_iff
 
 theorem fold_max_lt : s.fold max b f < c ↔ b < c ∧ ∀ x ∈ s, f x < c := by
-  show _ > _ ↔ _
+  change _ > _ ↔ _
   apply fold_op_rel_iff_and
   intro x y z
-  show _ < _ ↔ _
+  change _ < _ ↔ _
   exact max_lt_iff
 
 theorem lt_fold_max : c < s.fold max b f ↔ c < b ∨ ∃ x ∈ s, c < f x :=
   fold_op_rel_iff_or lt_max_iff
-
-theorem fold_max_add [Add β] [CovariantClass β β (Function.swap (· + ·)) (· ≤ ·)] (n : WithBot β)
-    (s : Finset α) : (s.fold max ⊥ fun x : α => ↑(f x) + n) = s.fold max ⊥ ((↑) ∘ f) + n := by
-  classical
-    induction' s using Finset.induction_on with a s _ ih <;> simp [*, max_add_add_right]
 
 end Order
 

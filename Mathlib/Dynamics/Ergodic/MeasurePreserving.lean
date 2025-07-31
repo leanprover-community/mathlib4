@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Measure.AEMeasurable
+import Mathlib.Order.Filter.EventuallyConst
 
 /-!
 # Measure preserving maps
@@ -25,13 +26,13 @@ Isabelle formalization.
 measure preserving map, measure
 -/
 
+open MeasureTheory.Measure Function Set
+open scoped ENNReal
 
 variable {α β γ δ : Type*} [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
   [MeasurableSpace δ]
 
 namespace MeasureTheory
-
-open Measure Function Set
 
 variable {μa : Measure α} {μb : Measure β} {μc : Measure γ} {μd : Measure δ}
 
@@ -101,22 +102,31 @@ protected theorem comp_left_iff {g : α → β} {e : β ≃ᵐ γ} (h : MeasureP
     MeasurePreserving (e ∘ g) μa μc ↔ MeasurePreserving g μa μb := by
   refine ⟨fun hg => ?_, fun hg => h.comp hg⟩
   convert (MeasurePreserving.symm e h).comp hg
-  simp [← Function.comp.assoc e.symm e g]
+  simp [← Function.comp_assoc e.symm e g]
 
 protected theorem comp_right_iff {g : α → β} {e : γ ≃ᵐ α} (h : MeasurePreserving e μc μa) :
     MeasurePreserving (g ∘ e) μc μb ↔ MeasurePreserving g μa μb := by
   refine ⟨fun hg => ?_, fun hg => hg.comp h⟩
   convert hg.comp (MeasurePreserving.symm e h)
-  simp [Function.comp.assoc g e e.symm]
+  simp [Function.comp_assoc g e e.symm]
 
 protected theorem sigmaFinite {f : α → β} (hf : MeasurePreserving f μa μb) [SigmaFinite μb] :
     SigmaFinite μa :=
   SigmaFinite.of_map μa hf.aemeasurable (by rwa [hf.map_eq])
 
+protected theorem sfinite {f : α → β} (hf : MeasurePreserving f μa μb) [SFinite μa] :
+    SFinite μb := by
+  rw [← hf.map_eq]
+  infer_instance
+
 theorem measure_preimage {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
     (hs : NullMeasurableSet s μb) : μa (f ⁻¹' s) = μb s := by
   rw [← hf.map_eq] at hs ⊢
   rw [map_apply₀ hf.1.aemeasurable hs]
+
+theorem measureReal_preimage {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
+    (hs : NullMeasurableSet s μb) : μa.real (f ⁻¹' s) = μb.real s := by
+  simp [measureReal_def, measure_preimage hf hs]
 
 theorem measure_preimage_emb {f : α → β} (hf : MeasurePreserving f μa μb)
     (hfe : MeasurableEmbedding f) (s : Set β) : μa (f ⁻¹' s) = μb s := by
@@ -126,19 +136,50 @@ theorem measure_preimage_equiv {f : α ≃ᵐ β} (hf : MeasurePreserving f μa 
     μa (f ⁻¹' s) = μb s :=
   measure_preimage_emb hf f.measurableEmbedding s
 
-protected theorem iterate {f : α → α} (hf : MeasurePreserving f μa μa) :
-    ∀ n, MeasurePreserving f^[n] μa μa
-  | 0 => MeasurePreserving.id μa
-  | n + 1 => (MeasurePreserving.iterate hf n).comp hf
+theorem measure_preimage_le {f : α → β} (hf : MeasurePreserving f μa μb) (s : Set β) :
+    μa (f ⁻¹' s) ≤ μb s := by
+  rw [← hf.map_eq]
+  exact le_map_apply hf.aemeasurable _
+
+theorem preimage_null {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
+    (hs : μb s = 0) : μa (f ⁻¹' s) = 0 :=
+  hf.quasiMeasurePreserving.preimage_null hs
+
+theorem aeconst_comp [MeasurableSingletonClass γ] {f : α → β} (hf : MeasurePreserving f μa μb)
+    {g : β → γ} (hg : NullMeasurable g μb) :
+    Filter.EventuallyConst (g ∘ f) (ae μa) ↔ Filter.EventuallyConst g (ae μb) :=
+  exists_congr fun s ↦ and_congr_left fun hs ↦ by
+    simp only [Filter.mem_map, mem_ae_iff, ← hf.measure_preimage (hg hs.measurableSet).compl,
+      preimage_comp, preimage_compl]
+
+theorem aeconst_preimage {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
+    (hs : NullMeasurableSet s μb) :
+    Filter.EventuallyConst (f ⁻¹' s) (ae μa) ↔ Filter.EventuallyConst s (ae μb) :=
+  aeconst_comp hf hs.mem
+
+theorem add_measure {f μa' μb'} (hf : MeasurePreserving f μa μb)
+    (hf' : MeasurePreserving f μa' μb') : MeasurePreserving f (μa + μa') (μb + μb') where
+  measurable := hf.measurable
+  map_eq := by rw [Measure.map_add _ _ hf.measurable, hf.map_eq, hf'.map_eq]
+
+theorem smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] {f : α → β}
+    (hf : MeasurePreserving f μa μb) (c : R) : MeasurePreserving f (c • μa) (c • μb) where
+  measurable := hf.measurable
+  map_eq := by rw [Measure.map_smul, hf.map_eq]
 
 variable {μ : Measure α} {f : α → α} {s : Set α}
+
+protected theorem iterate (hf : MeasurePreserving f μ μ) :
+    ∀ n, MeasurePreserving f^[n] μ μ
+  | 0 => .id μ
+  | n + 1 => (MeasurePreserving.iterate hf n).comp hf
 
 open scoped symmDiff in
 lemma measure_symmDiff_preimage_iterate_le
     (hf : MeasurePreserving f μ μ) (hs : NullMeasurableSet s μ) (n : ℕ) :
     μ (s ∆ (f^[n] ⁻¹' s)) ≤ n • μ (s ∆ (f ⁻¹' s)) := by
   induction' n with n ih; · simp
-  simp only [add_smul, one_smul, ← n.add_one]
+  simp only [add_smul, one_smul]
   refine le_trans (measure_symmDiff_le s (f^[n] ⁻¹' s) (f^[n+1] ⁻¹' s)) (add_le_add ih ?_)
   replace hs : NullMeasurableSet (s ∆ (f ⁻¹' s)) μ :=
     hs.symmDiff <| hs.preimage hf.quasiMeasurePreserving
@@ -157,13 +198,9 @@ theorem exists_mem_iterate_mem_of_measure_univ_lt_mul_measure (hf : MeasurePrese
       ∃ i < n, ∃ j < n, i ≠ j ∧ (f^[i] ⁻¹' s ∩ f^[j] ⁻¹' s).Nonempty := by
     simpa using exists_nonempty_inter_of_measure_univ_lt_sum_measure μ (fun m _ ↦ A m) this
   wlog hlt : i < j generalizing i j
-  · exact this j hj i hi hij.symm hxj hxi (hij.lt_or_lt.resolve_left hlt)
+  · exact this j hj i hi hij.symm hxj hxi (hij.lt_or_gt.resolve_left hlt)
   refine ⟨f^[i] x, hxi, j - i, ⟨tsub_pos_of_lt hlt, lt_of_le_of_lt (j.sub_le i) hj⟩, ?_⟩
   rwa [← iterate_add_apply, tsub_add_cancel_of_le hlt.le]
-
-@[deprecated (since := "2024-08-12")]
-alias exists_mem_iterate_mem_of_volume_lt_mul_volume :=
-  exists_mem_iterate_mem_of_measure_univ_lt_mul_measure
 
 /-- A self-map preserving a finite measure is conservative: if `μ s ≠ 0`, then at least one point
 `x ∈ s` comes back to `s` under iterations of `f`. Actually, a.e. point of `s` comes back to `s`
@@ -176,6 +213,11 @@ theorem exists_mem_iterate_mem [IsFiniteMeasure μ] (hf : MeasurePreserving f μ
   exact ⟨x, hx, m, hm.1.ne', hmx⟩
 
 end MeasurePreserving
+
+lemma measurePreserving_subtype_coe {s : Set α} (hs : MeasurableSet s) :
+    MeasurePreserving (Subtype.val : s → α) (μa.comap Subtype.val) (μa.restrict s) where
+  measurable := measurable_subtype_coe
+  map_eq := map_comap_subtype_coe hs _
 
 namespace MeasurableEquiv
 

@@ -5,7 +5,7 @@ Authors: Floris van Doorn
 -/
 import Mathlib.Data.Nat.Factorial.BigOperators
 import Mathlib.Data.Nat.Multiplicity
-import Mathlib.Data.Nat.Prime.Basic
+import Mathlib.Data.Nat.Prime.Int
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.GCongr
 
@@ -30,21 +30,21 @@ open scoped Nat
 
 open Nat hiding zero_le Prime
 
-open Finset multiplicity
+open Finset
 
 namespace Imo2019Q4
 
 theorem upper_bound {k n : ℕ} (hk : k > 0)
-    (h : (k ! : ℤ) = ∏ i ∈ range n, ((2:ℤ) ^ n - (2:ℤ) ^ i)) : n < 6 := by
+    (h : (k ! : ℤ) = ∏ i ∈ range n, ((2 : ℤ) ^ n - (2 : ℤ) ^ i)) : n < 6 := by
   have h2 : ∑ i ∈ range n, i < k := by
-    suffices multiplicity 2 (k ! : ℤ) = ↑(∑ i ∈ range n, i : ℕ) by
-      rw [← PartENat.coe_lt_coe, ← this]; change multiplicity ((2 : ℕ) : ℤ) _ < _
-      simp_rw [Int.natCast_multiplicity, multiplicity_two_factorial_lt hk.lt.ne.symm]
-    rw [h, multiplicity.Finset.prod Int.prime_two, Nat.cast_sum]
+    suffices emultiplicity 2 (k ! : ℤ) = ↑(∑ i ∈ range n, i : ℕ) by
+      rw [← Nat.cast_lt (α := ℕ∞), ← this]; change emultiplicity ((2 : ℕ) : ℤ) _ < _
+      simp_rw [Int.natCast_emultiplicity, emultiplicity_two_factorial_lt hk.lt.ne.symm]
+    rw [h, Finset.emultiplicity_prod Int.prime_two, Nat.cast_sum]
     apply sum_congr rfl; intro i hi
-    rw [multiplicity_sub_of_gt, multiplicity_pow_self_of_prime Int.prime_two]
-    rwa [multiplicity_pow_self_of_prime Int.prime_two, multiplicity_pow_self_of_prime Int.prime_two,
-      PartENat.coe_lt_coe, ← mem_range]
+    rw [emultiplicity_sub_of_gt, emultiplicity_pow_self_of_prime Int.prime_two]
+    rwa [emultiplicity_pow_self_of_prime Int.prime_two,
+      emultiplicity_pow_self_of_prime Int.prime_two, Nat.cast_lt, ← mem_range]
   rw [← not_le]; intro hn
   apply _root_.ne_of_gt _ h
   calc ∏ i ∈ range n, ((2:ℤ) ^ n - (2:ℤ) ^ i) ≤ ∏ __ ∈ range n, (2:ℤ) ^ n := ?_
@@ -61,20 +61,21 @@ theorem upper_bound {k n : ℕ} (hk : k > 0)
     _ < (∑ i ∈ range n, i)! := ?_
     _ ≤ k ! := by gcongr
   clear h h2
-  induction' n, hn using Nat.le_induction with n' hn' IH
-  · decide
-  let A := ∑ i ∈ range n', i
-  have le_sum : ∑ i ∈ range 6, i ≤ A := by
-    apply sum_le_sum_of_subset
-    simpa using hn'
-  calc 2 ^ ((n' + 1) * (n' + 1))
-      ≤ 2 ^ (n' * n' + 4 * n') := by gcongr <;> linarith
-    _ = 2 ^ (n' * n') * (2 ^ 4) ^ n' := by rw [← pow_mul, ← pow_add]
-    _ < A ! * (2 ^ 4) ^ n' := by gcongr
-    _ = A ! * (15 + 1) ^ n' := rfl
-    _ ≤ A ! * (A + 1) ^ n' := by gcongr; exact le_sum
-    _ ≤ (A + n')! := factorial_mul_pow_le_factorial
-    _ = (∑ i ∈ range (n' + 1), i)! := by rw [sum_range_succ]
+  induction n, hn using Nat.le_induction with
+  | base => decide
+  | succ n' hn' IH =>
+    let A := ∑ i ∈ range n', i
+    have le_sum : ∑ i ∈ range 6, i ≤ A := by
+      apply sum_le_sum_of_subset
+      simpa using hn'
+    calc 2 ^ ((n' + 1) * (n' + 1))
+        ≤ 2 ^ (n' * n' + 4 * n') := by gcongr <;> linarith
+      _ = 2 ^ (n' * n') * (2 ^ 4) ^ n' := by rw [← pow_mul, ← pow_add]
+      _ < A ! * (2 ^ 4) ^ n' := by gcongr
+      _ = A ! * (15 + 1) ^ n' := rfl
+      _ ≤ A ! * (A + 1) ^ n' := by gcongr; exact le_sum
+      _ ≤ (A + n')! := factorial_mul_pow_le_factorial
+      _ = (∑ i ∈ range (n' + 1), i)! := by rw [sum_range_succ]
 
 end Imo2019Q4
 

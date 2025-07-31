@@ -4,18 +4,34 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fox Thomson, Chris Wong
 -/
 import Mathlib.Computability.Language
-import Mathlib.Data.Fintype.Card
-import Mathlib.Data.List.Indexes
+import Mathlib.Data.Countable.Small
+import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.Tactic.NormNum
 
 /-!
 # Deterministic Finite Automata
 
-This file contains the definition of a Deterministic Finite Automaton (DFA), a state machine which
-determines whether a string (implemented as a list over an arbitrary alphabet) is in a regular set
-in linear time.
-Note that this definition allows for Automaton with infinite states, a `Fintype` instance must be
-supplied for true DFA's.
+A Deterministic Finite Automaton (DFA) is a state machine which
+decides membership in a particular `Language`, by following a path
+uniquely determined by an input string.
+
+We define regular languages to be ones for which a DFA exists, other formulations
+are later proved equivalent.
+
+Note that this definition allows for automata with infinite states,
+a `Fintype` instance must be supplied for true DFAs.
+
+## Main definitions
+
+- `DFA α σ`: automaton over alphabet `α` and set of states `σ`
+- `M.accepts`: the language accepted by the DFA `M`
+- `Language.IsRegular L`: a predicate stating that `L` is a regular language, i.e. there exists
+  a DFA that recognizes the language
+
+## Main theorems
+
+- `DFA.pumping_lemma` : every sufficiently long string accepted by the DFA has a substring that can
+  be repeated arbitrarily many times (and have the overall string still be accepted)
 
 ## Implementation notes
 
@@ -28,11 +44,9 @@ Currently, there are two disjoint sets of simp lemmas: one for `DFA.eval`, and a
 - Should `mem_accepts` and `mem_acceptsFrom` be marked `@[simp]`?
 -/
 
-
-open Computability
-
 universe u v
 
+open Computability
 
 /-- A DFA is a set of states (`σ`), a transition function from state to state labelled by the
   alphabet (`step`), a starting state (`start`) and a set of acceptance states (`accept`). -/
@@ -86,7 +100,7 @@ theorem eval_append_singleton (x : List α) (a : α) : M.eval (x ++ [a]) = M.ste
 
 theorem evalFrom_of_append (start : σ) (x y : List α) :
     M.evalFrom start (x ++ y) = M.evalFrom (M.evalFrom start x) y :=
-  x.foldl_append _ _ y
+  List.foldl_append
 
 /--
 `M.acceptsFrom s` is the language of `x` such that `M.evalFrom s x` is an accept state.
@@ -111,15 +125,14 @@ theorem evalFrom_split [Fintype σ] {x : List α} {s t : σ} (hlen : Fintype.car
     Fintype.exists_ne_map_eq_of_card_lt
       (fun n : Fin (Fintype.card σ + 1) => M.evalFrom s (x.take n)) (by norm_num)
   wlog hle : (n : ℕ) ≤ m generalizing n m
-  · exact this m n hneq.symm heq.symm (le_of_not_le hle)
+  · exact this m n hneq.symm heq.symm (le_of_not_ge hle)
   have hm : (m : ℕ) ≤ Fintype.card σ := Fin.is_le m
   refine
     ⟨M.evalFrom s ((x.take m).take n), (x.take m).take n, (x.take m).drop n,
                     x.drop m, ?_, ?_, ?_, by rfl, ?_⟩
   · rw [List.take_append_drop, List.take_append_drop]
   · simp only [List.length_drop, List.length_take]
-    rw [min_eq_left (hm.trans hlen), min_eq_left hle, add_tsub_cancel_of_le hle]
-    exact hm
+    omega
   · intro h
     have hlen' := congr_arg List.length h
     simp only [List.length_drop, List.length, List.length_take] at hlen'
@@ -140,11 +153,12 @@ theorem evalFrom_of_pow {x y : List α} {s : σ} (hx : M.evalFrom s x = s)
     (hy : y ∈ ({x} : Language α)∗) : M.evalFrom s y = s := by
   rw [Language.mem_kstar] at hy
   rcases hy with ⟨S, rfl, hS⟩
-  induction' S with a S ih
-  · rfl
-  · have ha := hS a (List.mem_cons_self _ _)
+  induction S with
+  | nil => rfl
+  | cons a S ih =>
+    have ha := hS a List.mem_cons_self
     rw [Set.mem_singleton_iff] at ha
-    rw [List.join, evalFrom_of_append, ha, hx]
+    rw [List.flatten, evalFrom_of_append, ha, hx]
     apply ih
     intro z hz
     exact hS z (List.mem_cons_of_mem a hz)
@@ -186,9 +200,9 @@ theorem comap_id : M.comap id = M := rfl
 @[simp]
 theorem evalFrom_comap (f : α' → α) (s : σ) (x : List α') :
     (M.comap f).evalFrom s x = M.evalFrom s (x.map f) := by
-  induction x using List.list_reverse_induction with
-  | base => simp
-  | ind x a ih => simp [ih]
+  induction x using List.reverseRecOn with
+  | nil => simp
+  | append_singleton x a ih => simp [ih]
 
 @[simp]
 theorem eval_comap (f : α' → α) (x : List α') : (M.comap f).eval x = M.eval (x.map f) := by
@@ -227,9 +241,9 @@ theorem symm_reindex (g : σ ≃ σ') : (reindex (α := α) g).symm = reindex g.
 @[simp]
 theorem evalFrom_reindex (g : σ ≃ σ') (s : σ') (x : List α) :
     (reindex g M).evalFrom s x = g (M.evalFrom (g.symm s) x) := by
-  induction x using List.list_reverse_induction with
-  | base => simp
-  | ind x a ih => simp [ih]
+  induction x using List.reverseRecOn with
+  | nil => simp
+  | append_singleton x a ih => simp [ih]
 
 @[simp]
 theorem eval_reindex (g : σ ≃ σ') (x : List α) : (reindex g M).eval x = g (M.eval x) := by
@@ -247,3 +261,25 @@ theorem comap_reindex (f : α' → α) (g : σ ≃ σ') :
 end Maps
 
 end DFA
+
+/-- A regular language is a language that is defined by a DFA with finite states. -/
+def Language.IsRegular {T : Type u} (L : Language T) : Prop :=
+  ∃ σ : Type, ∃ _ : Fintype σ, ∃ M : DFA T σ, M.accepts = L
+
+/-- Lifts the state type `σ` inside `Language.IsRegular` to a different universe. -/
+private lemma Language.isRegular_iff.helper.{v'} {T : Type u} {L : Language T}
+    (hL : ∃ σ : Type v, ∃ _ : Fintype σ, ∃ M : DFA T σ, M.accepts = L) :
+    ∃ σ' : Type v', ∃ _ : Fintype σ', ∃ M : DFA T σ', M.accepts = L :=
+  have ⟨σ, _, M, hM⟩ := hL
+  have ⟨σ', ⟨f⟩⟩ := Small.equiv_small.{v', v} (α := σ)
+  ⟨σ', Fintype.ofEquiv σ f, M.reindex f, hM ▸ DFA.accepts_reindex M f⟩
+
+/--
+A language is regular if and only if it is defined by a DFA with finite states.
+
+This is more general than using the definition of `Language.IsRegular` directly, as the state type
+`σ` is universe-polymorphic.
+-/
+theorem Language.isRegular_iff {T : Type u} {L : Language T} :
+    L.IsRegular ↔ ∃ σ : Type v, ∃ _ : Fintype σ, ∃ M : DFA T σ, M.accepts = L :=
+  ⟨Language.isRegular_iff.helper, Language.isRegular_iff.helper⟩

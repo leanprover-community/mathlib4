@@ -58,7 +58,7 @@ theorem finitePresentation_holdsForLocalizationAway :
   introv R _
   suffices Algebra.FinitePresentation R S by
     rw [RingHom.FinitePresentation]
-    convert this; ext;
+    convert this; ext
     rw [Algebra.smul_def]; rfl
   exact IsLocalization.Away.finitePresentation r
 
@@ -96,7 +96,7 @@ theorem finitePresentation_ofLocalizationSpanTarget :
   classical
   letI := f.toAlgebra
   replace H : ∀ r : s, Algebra.FinitePresentation R (Localization.Away (r : S)) := by
-    intro r; simp_rw [RingHom.FinitePresentation] at H;
+    intro r; simp_rw [RingHom.FinitePresentation] at H
     convert H r; ext; simp_rw [Algebra.smul_def]; rfl
   /-
   We already know that `S` is of finite type over `R`, so we have a surjection
@@ -113,7 +113,7 @@ theorem finitePresentation_ofLocalizationSpanTarget :
     · infer_instance
   rw [RingHom.FinitePresentation]
   obtain ⟨n, f, hf⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial''.mp hfintype
-  obtain ⟨l, hl⟩ := (Finsupp.mem_span_iff_total S (s : Set S) 1).mp
+  obtain ⟨l, hl⟩ := (Finsupp.mem_span_iff_linearCombination S (s : Set S) 1).mp
       (show (1 : S) ∈ Ideal.span (s : Set S) by rw [hs]; trivial)
   choose g' hg' using (fun g : s ↦ hf g)
   choose h' hh' using (fun g : s ↦ hf (l g))
@@ -124,9 +124,9 @@ theorem finitePresentation_ofLocalizationSpanTarget :
     simp only [Finset.univ_eq_attach, I, Ideal.mem_span_singleton] at hp
     obtain ⟨q, rfl⟩ := hp
     simp only [map_mul, map_sub, map_sum, map_one, hg', hh']
-    erw [Finsupp.total_apply_of_mem_supported S (s := s.attach)] at hl
+    rw [Finsupp.linearCombination_apply_of_mem_supported (α := (s : Set S)) S (s := s.attach)] at hl
     · rw [← hl]
-      simp only [Finset.coe_sort_coe, smul_eq_mul, mul_comm, sub_self, mul_zero, zero_mul]
+      simp only [Finset.coe_sort_coe, smul_eq_mul, mul_comm, sub_self, zero_mul]
     · rintro a -
       simp
   let f' : A →ₐ[R] S := Ideal.Quotient.liftₐ I f hfI
@@ -149,7 +149,9 @@ theorem finitePresentation_ofLocalizationSpanTarget :
     exact ⟨{∑ g ∈ s.attach, g' g * h' g - 1}, by simp⟩
   have Ht (g : t) : Algebra.FinitePresentation R (Localization.Away (f' g)) := by
     have : ∃ (a : S) (hb : a ∈ s), (Ideal.Quotient.mk I) (g' ⟨a, hb⟩) = g.val := by
-      simpa [t] using g.property
+      obtain ⟨g, hg⟩ := g
+      convert hg
+      simp [A, t]
     obtain ⟨r, hr, hrr⟩ := this
     simp only [f']
     rw [← hrr, Ideal.Quotient.liftₐ_apply, Ideal.Quotient.lift_mk]
@@ -160,17 +162,22 @@ theorem finitePresentation_ofLocalizationSpanTarget :
 
 /-- Being finitely-presented is a local property of rings. -/
 theorem finitePresentation_isLocal : PropertyIsLocal @FinitePresentation :=
-  ⟨finitePresentation_localizationPreserves,
-    finitePresentation_ofLocalizationSpanTarget, finitePresentation_stableUnderComposition,
-    finitePresentation_holdsForLocalizationAway⟩
+  ⟨finitePresentation_localizationPreserves.away,
+    finitePresentation_ofLocalizationSpanTarget,
+    finitePresentation_ofLocalizationSpanTarget.ofLocalizationSpan
+      (finitePresentation_stableUnderComposition.stableUnderCompositionWithLocalizationAway
+        finitePresentation_holdsForLocalizationAway).left,
+    (finitePresentation_stableUnderComposition.stableUnderCompositionWithLocalizationAway
+      finitePresentation_holdsForLocalizationAway).right⟩
 
 /-- Being finitely-presented respects isomorphisms. -/
 theorem finitePresentation_respectsIso : RingHom.RespectsIso @RingHom.FinitePresentation :=
   RingHom.finitePresentation_isLocal.respectsIso
 
 /-- Being finitely-presented is stable under base change. -/
-theorem finitePresentation_stableUnderBaseChange : StableUnderBaseChange @FinitePresentation := by
-  apply StableUnderBaseChange.mk
+theorem finitePresentation_isStableUnderBaseChange :
+    IsStableUnderBaseChange @FinitePresentation := by
+  apply IsStableUnderBaseChange.mk
   · exact finitePresentation_respectsIso
   · introv h
     replace h : Algebra.FinitePresentation R T := by

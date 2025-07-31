@@ -13,7 +13,8 @@ A rudimentary export format, adapted from
 with support for lean 4 kernel primitives.
 -/
 
-open Lean (HashMap HashSet)
+open Lean
+open Std (HashMap HashSet)
 
 namespace Lean
 
@@ -36,15 +37,15 @@ instance : Coe Level Entry := ⟨Entry.level⟩
 instance : Coe Expr Entry := ⟨Entry.expr⟩
 
 structure Alloc (α) [BEq α] [Hashable α] where
-  map : HashMap α Nat
+  map : Std.HashMap α Nat
   next : Nat
 deriving Inhabited
 
 structure State where
-  names : Alloc Name := ⟨HashMap.empty.insert Name.anonymous 0, 1⟩
-  levels : Alloc Level := ⟨HashMap.empty.insert levelZero 0, 1⟩
+  names : Alloc Name := ⟨(∅ : Std.HashMap Name Nat).insert Name.anonymous 0, 1⟩
+  levels : Alloc Level := ⟨(∅ : Std.HashMap Level Nat).insert levelZero 0, 1⟩
   exprs : Alloc Expr
-  defs : HashSet Name
+  defs : Std.HashSet Name
   stk : Array (Bool × Entry)
 deriving Inhabited
 
@@ -72,11 +73,11 @@ namespace Export
 
 def alloc {α} [BEq α] [Hashable α] [OfState α] (a : α) : ExportM Nat := do
   let n := (OfState.get (α := α) (← get)).next
-  modify <| OfState.modify (α := α) fun s ↦ {map := s.map.insert a n, next := n+1}
+  modify <| OfState.modify (α := α) fun s ↦ {map := s.map.insert a n, next := n + 1}
   pure n
 
 def exportName (n : Name) : ExportM Nat := do
-  match (← get).names.map.find? n with
+  match (← get).names.map[n]? with
   | some i => pure i
   | none => match n with
     | .anonymous => pure 0
@@ -84,7 +85,7 @@ def exportName (n : Name) : ExportM Nat := do
     | .str p s => let i ← alloc n; IO.println s!"{i} #NS {← exportName p} {s}"; pure i
 
 def exportLevel (L : Level) : ExportM Nat := do
-  match (← get).levels.map.find? L with
+  match (← get).levels.map[L]? with
   | some i => pure i
   | none => match L with
     | .zero => pure 0
@@ -108,7 +109,7 @@ open ConstantInfo in
 mutual
 
 partial def exportExpr (E : Expr) : ExportM Nat := do
-  match (← get).exprs.map.find? E with
+  match (← get).exprs.map[E]? with
   | some i => pure i
   | none => match E with
     | .bvar n => let i ← alloc E; IO.println s!"{i} #EV {n}"; pure i

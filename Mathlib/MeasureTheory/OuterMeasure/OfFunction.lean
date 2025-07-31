@@ -34,6 +34,8 @@ outer measure, Carathéodory-measurable, Carathéodory's criterion
 
 -/
 
+assert_not_exists Module.Basis
+
 noncomputable section
 
 open Set Function Filter
@@ -44,11 +46,9 @@ namespace OuterMeasure
 
 section OfFunction
 
--- Porting note: "set_option eqn_compiler.zeta true" removed
-
 variable {α : Type*}
 
-/-- Given any function `m` assigning measures to sets satisying `m ∅ = 0`, there is
+/-- Given any function `m` assigning measures to sets satisfying `m ∅ = 0`, there is
   a unique maximal outer measure `μ` satisfying `μ s ≤ m s` for all `s : Set α`. -/
 protected def ofFunction (m : Set α → ℝ≥0∞) (m_empty : m ∅ = 0) : OuterMeasure α :=
   let μ s := ⨅ (f : ℕ → Set α) (_ : s ⊆ ⋃ i, f i), ∑' i, m (f i)
@@ -57,7 +57,7 @@ protected def ofFunction (m : Set α → ℝ≥0∞) (m_empty : m ∅ = 0) : Out
       le_antisymm
         ((iInf_le_of_le fun _ => ∅) <| iInf_le_of_le (empty_subset _) <| by simp [m_empty])
         (zero_le _)
-    mono := fun {s₁ s₂} hs => iInf_mono fun f => iInf_mono' fun hb => ⟨hs.trans hb, le_rfl⟩
+    mono := fun {_ _} hs => iInf_mono fun _ => iInf_mono' fun hb => ⟨hs.trans hb, le_rfl⟩
     iUnion_nat := fun s _ =>
       ENNReal.le_of_forall_pos_le_add <| by
         intro ε hε (hb : (∑' i, μ (s i)) < ∞)
@@ -88,9 +88,32 @@ protected def ofFunction (m : Set α → ℝ≥0∞) (m_empty : m ∅ = 0) : Out
 
 variable (m : Set α → ℝ≥0∞) (m_empty : m ∅ = 0)
 
+/-- `ofFunction` of a set `s` is the infimum of `∑ᵢ, m (tᵢ)` for all collections of sets
+`tᵢ` that cover `s`. -/
 theorem ofFunction_apply (s : Set α) :
     OuterMeasure.ofFunction m m_empty s = ⨅ (t : ℕ → Set α) (_ : s ⊆ iUnion t), ∑' n, m (t n) :=
   rfl
+
+/-- `ofFunction` of a set `s` is the infimum of `∑ᵢ, m (tᵢ)` for all collections of sets
+`tᵢ` that cover `s`, with all `tᵢ` satisfying a predicate `P` such that `m` is infinite for sets
+that don't satisfy `P`.
+This is similar to `ofFunction_apply`, except that the sets `tᵢ` satisfy `P`.
+The hypothesis `m_top` applies in particular to a function of the form `extend m'`. -/
+theorem ofFunction_eq_iInf_mem {P : Set α → Prop} (m_top : ∀ s, ¬ P s → m s = ∞) (s : Set α) :
+    OuterMeasure.ofFunction m m_empty s =
+      ⨅ (t : ℕ → Set α) (_ : ∀ i, P (t i)) (_ : s ⊆ ⋃ i, t i), ∑' i, m (t i) := by
+  rw [OuterMeasure.ofFunction_apply]
+  apply le_antisymm
+  · exact le_iInf fun t ↦ le_iInf fun _ ↦ le_iInf fun h ↦ iInf₂_le _ (by exact h)
+  · simp_rw [le_iInf_iff]
+    refine fun t ht_subset ↦ iInf_le_of_le t ?_
+    by_cases ht : ∀ i, P (t i)
+    · exact iInf_le_of_le ht (iInf_le_of_le ht_subset le_rfl)
+    · simp only [ht, not_false_eq_true, iInf_neg, top_le_iff]
+      push_neg at ht
+      obtain ⟨i, hti_notMem⟩ := ht
+      have hfi_top : m (t i) = ∞ := m_top _ hti_notMem
+      exact ENNReal.tsum_eq_top_of_eq_top ⟨i, hfi_top⟩
 
 variable {m m_empty}
 
@@ -101,7 +124,7 @@ theorem ofFunction_le (s : Set α) : OuterMeasure.ofFunction m m_empty s ≤ m s
       le_of_eq <| tsum_eq_single 0 <| by
         rintro (_ | i)
         · simp
-        · simp [m_empty]
+        · simp [f, m_empty]
 
 theorem ofFunction_eq (s : Set α) (m_mono : ∀ ⦃t : Set α⦄, s ⊆ t → m s ≤ m t)
     (m_subadd : ∀ s : ℕ → Set α, m (⋃ i, s i) ≤ ∑' i, m (s i)) :
@@ -128,7 +151,7 @@ theorem ofFunction_eq_sSup : OuterMeasure.ofFunction m m_empty = sSup { μ | ∀
 
 E.g., if `α` is an (e)metric space and `m u = ∞` on any set of diameter `≥ r`, then this lemma
 implies that `μ (s ∪ t) = μ s + μ t` on any two sets such that `r ≤ edist x y` for all `x ∈ s`
-and `y ∈ t`.  -/
+and `y ∈ t`. -/
 theorem ofFunction_union_of_top_of_nonempty_inter {s t : Set α}
     (h : ∀ u, (s ∩ u).Nonempty → (t ∩ u).Nonempty → m u = ∞) :
     OuterMeasure.ofFunction m m_empty (s ∪ t) =
@@ -140,7 +163,6 @@ theorem ofFunction_union_of_top_of_nonempty_inter {s t : Set α}
       μ s + μ t ≤ ∞ := le_top
       _ = m (f i) := (h (f i) hs ht).symm
       _ ≤ ∑' i, m (f i) := ENNReal.le_tsum i
-
   set I := fun s => { i : ℕ | (s ∩ f i).Nonempty }
   have hd : Disjoint (I s) (I t) := disjoint_iff_inf_le.mpr fun i hi => he ⟨i, hi⟩
   have hI : ∀ u ⊆ s ∪ t, μ u ≤ ∑' i : I u, μ (f i) := fun u hu =>
@@ -150,15 +172,14 @@ theorem ofFunction_union_of_top_of_nonempty_inter {s t : Set α}
           let ⟨i, hi⟩ := mem_iUnion.1 (hf (hu hx))
           mem_iUnion.2 ⟨⟨i, ⟨x, hx, hi⟩⟩, hi⟩
       _ ≤ ∑' i : I u, μ (f i) := measure_iUnion_le _
-
   calc
     μ s + μ t ≤ (∑' i : I s, μ (f i)) + ∑' i : I t, μ (f i) :=
       add_le_add (hI _ subset_union_left) (hI _ subset_union_right)
     _ = ∑' i : ↑(I s ∪ I t), μ (f i) :=
-      (tsum_union_disjoint (f := fun i => μ (f i)) hd ENNReal.summable ENNReal.summable).symm
+      (ENNReal.summable.tsum_union_disjoint (f := fun i => μ (f i)) hd ENNReal.summable).symm
     _ ≤ ∑' i, μ (f i) :=
-      (tsum_le_tsum_of_inj (↑) Subtype.coe_injective (fun _ _ => zero_le _) (fun _ => le_rfl)
-        ENNReal.summable ENNReal.summable)
+      (ENNReal.summable.tsum_le_tsum_of_inj (↑) Subtype.coe_injective (fun _ _ => zero_le _)
+        (fun _ => le_rfl) ENNReal.summable)
     _ ≤ ∑' i, m (f i) := ENNReal.tsum_le_tsum fun i => ofFunction_le _
 
 theorem comap_ofFunction {β} (f : β → α) (h : Monotone m ∨ Surjective f) :
@@ -172,7 +193,7 @@ theorem comap_ofFunction {β} (f : β → α) (h : Monotone m ∨ Surjective f) 
     refine iInf_mono' fun ht => ?_
     rw [Set.image_subset_iff, preimage_iUnion] at ht
     refine ⟨ht, ENNReal.tsum_le_tsum fun n => ?_⟩
-    cases' h with hl hr
+    rcases h with hl | hr
     exacts [hl (image_preimage_subset _ _), (congr_arg m (hr.image_preimage (t n))).le]
 
 theorem map_ofFunction_le {β} (f : α → β) :
@@ -209,7 +230,7 @@ theorem smul_ofFunction {c : ℝ≥0∞} (hc : c ≠ ∞) : c • OuterMeasure.o
   haveI : Nonempty { t : ℕ → Set α // s ⊆ ⋃ i, t i } := ⟨⟨fun _ => s, subset_iUnion (fun _ => s) 0⟩⟩
   simp only [smul_apply, ofFunction_apply, ENNReal.tsum_mul_left, Pi.smul_apply, smul_eq_mul,
   iInf_subtype']
-  rw [ENNReal.iInf_mul_left fun h => (hc h).elim]
+  rw [ENNReal.mul_iInf fun h => (hc h).elim]
 
 end OfFunction
 
@@ -291,7 +312,7 @@ theorem comap_boundedBy {β} (f : β → α)
 
 E.g., if `α` is an (e)metric space and `m u = ∞` on any set of diameter `≥ r`, then this lemma
 implies that `μ (s ∪ t) = μ s + μ t` on any two sets such that `r ≤ edist x y` for all `x ∈ s`
-and `y ∈ t`.  -/
+and `y ∈ t`. -/
 theorem boundedBy_union_of_top_of_nonempty_inter {s t : Set α}
     (h : ∀ u, (s ∩ u).Nonempty → (t ∩ u).Nonempty → m u = ∞) :
     boundedBy m (s ∪ t) = boundedBy m s + boundedBy m t :=

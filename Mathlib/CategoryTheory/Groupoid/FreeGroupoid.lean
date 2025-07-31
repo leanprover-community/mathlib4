@@ -3,13 +3,8 @@ Copyright (c) 2022 Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémi Bottinelli
 -/
-import Mathlib.CategoryTheory.Category.Basic
-import Mathlib.CategoryTheory.Functor.Basic
 import Mathlib.CategoryTheory.Groupoid
-import Mathlib.Tactic.NthRewrite
-import Mathlib.CategoryTheory.PathCategory
-import Mathlib.CategoryTheory.Quotient
-import Mathlib.Combinatorics.Quiver.Symmetric
+import Mathlib.CategoryTheory.PathCategory.Basic
 
 /-!
 # Free groupoid on a quiver
@@ -60,7 +55,7 @@ abbrev _root_.Quiver.Hom.toNegPath {X Y : V} (f : X ⟶ Y) :
 /-- The "reduction" relation -/
 inductive redStep : HomRel (Paths (Quiver.Symmetrify V))
   | step (X Z : Quiver.Symmetrify V) (f : X ⟶ Z) :
-    redStep (𝟙 (Paths.of.obj X)) (f.toPath ≫ (Quiver.reverse f).toPath)
+    redStep (𝟙 ((Paths.of (Quiver.Symmetrify V)).obj X)) (f.toPath ≫ (Quiver.reverse f).toPath)
 
 /-- The underlying vertices of the free groupoid -/
 def _root_.CategoryTheory.FreeGroupoid (V) [Q : Quiver V] :=
@@ -80,13 +75,15 @@ theorem congr_reverse {X Y : Paths <| Quiver.Symmetrify V} (p q : X ⟶ Y) :
     Quiver.Path.reverse_comp, Quiver.reverse_reverse, Quiver.Path.reverse_toPath,
     Quiver.Path.comp_assoc] using this
 
+open Relation in
 theorem congr_comp_reverse {X Y : Paths <| Quiver.Symmetrify V} (p : X ⟶ Y) :
     Quot.mk (@Quotient.CompClosure _ _ redStep _ _) (p ≫ p.reverse) =
       Quot.mk (@Quotient.CompClosure _ _ redStep _ _) (𝟙 X) := by
-  apply Quot.EqvGen_sound
-  induction' p with a b q f ih
-  · apply EqvGen.refl
-  · simp only [Quiver.Path.reverse]
+  apply Quot.eqvGen_sound
+  induction p with
+  | nil => apply EqvGen.refl
+  | cons q f ih =>
+    simp only [Quiver.Path.reverse]
     fapply EqvGen.trans
     -- Porting note: `Quiver.Path.*` and `Quiver.Hom.*` notation not working
     · exact q ≫ Quiver.Path.reverse q
@@ -125,18 +122,18 @@ instance _root_.CategoryTheory.FreeGroupoid.instGroupoid : Groupoid (FreeGroupoi
   inv_comp p := Quot.inductionOn p fun pp => congr_reverse_comp pp
   comp_inv p := Quot.inductionOn p fun pp => congr_comp_reverse pp
 
-/-- The inclusion of the quiver on `V` to the underlying quiver on `FreeGroupoid V`-/
+/-- The inclusion of the quiver on `V` to the underlying quiver on `FreeGroupoid V` -/
 def of (V) [Quiver V] : V ⥤q FreeGroupoid V where
   obj X := ⟨X⟩
   map f := Quot.mk _ f.toPosPath
 
 theorem of_eq :
-    of V = (Quiver.Symmetrify.of ⋙q Paths.of).comp
+    of V = (Quiver.Symmetrify.of ⋙q (Paths.of (Quiver.Symmetrify V))).comp
       (Quotient.functor <| @redStep V _).toPrefunctor := rfl
 
 section UniversalProperty
 
-variable {V' : Type u'} [Groupoid V'] (φ : V ⥤q V')
+variable {V' : Type u'} [Groupoid V']
 
 /-- The lift of a prefunctor to a groupoid, to a functor from `FreeGroupoid V` -/
 def lift (φ : V ⥤q V') : FreeGroupoid V ⥤ V' :=
@@ -161,7 +158,7 @@ theorem lift_unique (φ : V ⥤q V') (Φ : FreeGroupoid V ⥤ V') (hΦ : of V �
   · rw [← Functor.toPrefunctor_comp]
     exact hΦ
   · rintro X Y f
-    simp only [← Functor.toPrefunctor_comp, Prefunctor.comp_map, Paths.of_map, inv_eq_inv]
+    simp only [← Functor.toPrefunctor_comp, Prefunctor.comp_map, Paths.of_map]
     change Φ.map (inv ((Quotient.functor redStep).toPrefunctor.map f.toPath)) =
       inv (Φ.map ((Quotient.functor redStep).toPrefunctor.map f.toPath))
     have := Functor.map_inv Φ ((Quotient.functor redStep).toPrefunctor.map f.toPath)

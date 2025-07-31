@@ -33,6 +33,7 @@ open Structure
 /-- A prestructure is a first-order structure with a `Setoid` equivalence relation on it,
   such that quotienting by that equivalence relation is still a structure. -/
 class Prestructure (s : Setoid M) where
+  /-- The underlying first-order structure -/
   toStructure : L.Structure M
   fun_equiv : ∀ {n} {f : L.Functions n} (x y : Fin n → M), x ≈ y → funMap f x ≈ funMap f y
   rel_equiv : ∀ {n} {r : L.Relations n} (x y : Fin n → M) (_ : x ≈ y), RelMap r x = RelMap r y
@@ -64,9 +65,9 @@ theorem relMap_quotient_mk' {n : ℕ} (r : L.Relations n) (x : Fin n → M) :
 
 theorem Term.realize_quotient_mk' {β : Type*} (t : L.Term β) (x : β → M) :
     (t.realize fun i => (⟦x i⟧ : Quotient s)) = ⟦@Term.realize _ _ ps.toStructure _ x t⟧ := by
-  induction' t with _ _ _ _ ih
-  · rfl
-  · simp only [ih, funMap_quotient_mk', Term.realize]
+  induction t with
+  | var => rfl
+  | func _ _ ih => simp only [ih, funMap_quotient_mk', Term.realize]
 
 end Language
 

@@ -10,7 +10,6 @@ import Mathlib.Combinatorics.SimpleGraph.Clique
 import Mathlib.Data.Finset.Sym
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.Positivity.Finset
 
 /-!
 # Triangles in graphs
@@ -35,8 +34,8 @@ open Fintype (card)
 
 namespace SimpleGraph
 
-variable {α β 𝕜 : Type*} [LinearOrderedField 𝕜] {G H : SimpleGraph α} {ε δ : 𝕜} {n : ℕ}
-  {s : Finset α}
+variable {α β 𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+  {G H : SimpleGraph α} {ε δ : 𝕜}
 
 section LocallyLinear
 
@@ -90,25 +89,25 @@ lemma edgeDisjointTriangles_iff_mem_sym2_subsingleton :
   have (a b) (hab : a ≠ b) : {s ∈ (G.cliqueSet 3 : Set (Finset α)) | s(a, b) ∈ (s : Finset α).sym2}
     = {s | G.Adj a b ∧ ∃ c, G.Adj a c ∧ G.Adj b c ∧ s = {a, b, c}} := by
     ext s
-    simp only [mem_sym2_iff, Sym2.mem_iff, forall_eq_or_imp, forall_eq, Set.sep_and,
-      Set.mem_inter_iff, Set.mem_sep_iff, mem_cliqueSet_iff, Set.mem_setOf_eq,
-      and_and_and_comm (b := _ ∈ _), and_self, is3Clique_iff]
+    simp only [mem_sym2_iff, Sym2.mem_iff, forall_eq_or_imp, forall_eq,
+      mem_cliqueSet_iff, Set.mem_setOf_eq,
+      is3Clique_iff]
     constructor
     · rintro ⟨⟨c, d, e, hcd, hce, hde, rfl⟩, hab⟩
       simp only [mem_insert, mem_singleton] at hab
       obtain ⟨rfl | rfl | rfl, rfl | rfl | rfl⟩ := hab
       any_goals
-        simp only [*, adj_comm, true_and, Ne, eq_self_iff_true, not_true] at *
+        simp only [*, adj_comm, true_and, Ne, not_true] at *
       any_goals
         first
         | exact ⟨c, by aesop⟩
         | exact ⟨d, by aesop⟩
         | exact ⟨e, by aesop⟩
-        | simp only [*, adj_comm, true_and, Ne, eq_self_iff_true, not_true] at *
+        | simp only [*, true_and] at *
           exact ⟨c, by aesop⟩
-        | simp only [*, adj_comm, true_and, Ne, eq_self_iff_true, not_true] at *
+        | simp only [*, true_and] at *
           exact ⟨d, by aesop⟩
-        | simp only [*, adj_comm, true_and, Ne, eq_self_iff_true, not_true] at *
+        | simp only [*, true_and] at *
           exact ⟨e, by aesop⟩
     · rintro ⟨hab, c, hac, hbc, rfl⟩
       refine ⟨⟨a, b, c, ?_⟩, ?_⟩ <;> simp [*]
@@ -125,7 +124,7 @@ lemma edgeDisjointTriangles_iff_mem_sym2_subsingleton :
       Set.Nontrivial, Set.mem_inter_iff, mem_coe]
     rintro hG _ a b c hab hac hbc rfl _ d e f hde hdf hef rfl g hg₁ hg₂ h hh₁ hh₂ hgh
     refine hG (Sym2.mk_isDiag_iff.not.2 hgh) ⟨⟨a, b, c, ?_⟩, by simpa using And.intro hg₁ hh₁⟩
-      ⟨⟨d, e, f, ?_⟩, by simpa using And.intro hg₂ hh₂⟩ <;> simp [is3Clique_triple_iff, *]
+      ⟨⟨d, e, f, ?_⟩, by simpa using And.intro hg₂ hh₂⟩ <;> simp [*]
 
 alias ⟨EdgeDisjointTriangles.mem_sym2_subsingleton, _⟩ :=
   edgeDisjointTriangles_iff_mem_sym2_subsingleton
@@ -133,18 +132,19 @@ alias ⟨EdgeDisjointTriangles.mem_sym2_subsingleton, _⟩ :=
 variable [DecidableEq α] [Fintype α] [DecidableRel G.Adj]
 
 instance EdgeDisjointTriangles.instDecidable : Decidable G.EdgeDisjointTriangles :=
-  decidable_of_iff ((G.cliqueFinset 3 : Set (Finset α)).Pairwise fun x y ↦ ((x ∩ y).card ≤ 1)) <| by
+  decidable_of_iff ((G.cliqueFinset 3 : Set (Finset α)).Pairwise fun x y ↦ (#(x ∩ y) ≤ 1)) <| by
     simp only [coe_cliqueFinset, EdgeDisjointTriangles, Finset.card_le_one, ← coe_inter]; rfl
 
-instance LocallyLinear.instDecidable : Decidable G.LocallyLinear := And.decidable
+instance LocallyLinear.instDecidable : Decidable G.LocallyLinear :=
+  inferInstanceAs (Decidable (_ ∧ _))
 
 lemma EdgeDisjointTriangles.card_edgeFinset_le (hG : G.EdgeDisjointTriangles) :
-    3 * (G.cliqueFinset 3).card ≤ G.edgeFinset.card := by
-  rw [mul_comm, ← mul_one G.edgeFinset.card]
+    3 * #(G.cliqueFinset 3) ≤ #G.edgeFinset := by
+  rw [mul_comm, ← mul_one #G.edgeFinset]
   refine card_mul_le_card_mul (fun s e ↦ e ∈ s.sym2) ?_ (fun e he ↦ ?_)
   · simp only [is3Clique_iff, mem_cliqueFinset_iff, mem_sym2_iff, forall_exists_index, and_imp]
     rintro _ a b c hab hac hbc rfl
-    have : Finset.card ({s(a, b), s(a, c), s(b, c)} : Finset (Sym2 α)) = 3 := by
+    have : #{s(a, b), s(a, c), s(b, c)} = 3 := by
       refine card_eq_three.2 ⟨_, _, _, ?_, ?_, ?_, rfl⟩ <;> simp [hab.ne, hac.ne, hbc.ne]
     rw [← this]
     refine card_mono ?_
@@ -154,9 +154,9 @@ lemma EdgeDisjointTriangles.card_edgeFinset_le (hG : G.EdgeDisjointTriangles) :
       using hG.mem_sym2_subsingleton (G.not_isDiag_of_mem_edgeSet <| mem_edgeFinset.1 he)
 
 lemma LocallyLinear.card_edgeFinset (hG : G.LocallyLinear) :
-    G.edgeFinset.card = 3 * (G.cliqueFinset 3).card := by
+    #G.edgeFinset = 3 * #(G.cliqueFinset 3) := by
   refine hG.edgeDisjointTriangles.card_edgeFinset_le.antisymm' ?_
-  rw [← mul_comm, ← mul_one (Finset.card _)]
+  rw [← mul_comm, ← mul_one #_]
   refine card_mul_le_card_mul (fun e s ↦ e ∈ s.sym2) ?_ ?_
   · simpa [Sym2.forall, Nat.one_le_iff_ne_zero, -Finset.card_eq_zero, Finset.card_ne_zero,
         Finset.Nonempty]
@@ -164,12 +164,12 @@ lemma LocallyLinear.card_edgeFinset (hG : G.LocallyLinear) :
   simp only [mem_cliqueFinset_iff, is3Clique_iff, forall_exists_index, and_imp]
   rintro _ a b c hab hac hbc rfl
   calc
-    _ ≤ ({s(a, b), s(a, c), s(b, c)} : Finset _).card := card_le_card ?_
+    _ ≤ #{s(a, b), s(a, c), s(b, c)} := card_le_card ?_
     _ ≤ 3 := (card_insert_le _ _).trans (succ_le_succ <| (card_insert_le _ _).trans_eq <| by
       rw [card_singleton])
-  simp only [subset_iff, Sym2.forall, mem_sym2_iff, le_eq_subset, mem_bipartiteBelow, mem_insert,
+  simp only [subset_iff, Sym2.forall, mem_sym2_iff, mem_bipartiteBelow, mem_insert,
     mem_edgeFinset, mem_singleton, and_imp, mem_edgeSet, Sym2.mem_iff, forall_eq_or_imp,
-    forall_eq, Quotient.eq, Sym2.rel_iff]
+    forall_eq]
   rintro d e hde (rfl | rfl | rfl) (rfl | rfl | rfl) <;> simp [*] at *
 
 end LocallyLinear
@@ -183,9 +183,10 @@ def FarFromTriangleFree : Prop := G.DeleteFar (fun H ↦ H.CliqueFree 3) <| ε *
 
 variable {G ε}
 
+omit [IsStrictOrderedRing 𝕜] in
 theorem farFromTriangleFree_iff :
     G.FarFromTriangleFree ε ↔ ∀ ⦃H : SimpleGraph α⦄, [DecidableRel H.Adj] → H ≤ G → H.CliqueFree 3 →
-      ε * (card α ^ 2 : ℕ) ≤ G.edgeFinset.card - H.edgeFinset.card := deleteFar_iff
+      ε * (card α ^ 2 : ℕ) ≤ #G.edgeFinset - #H.edgeFinset := deleteFar_iff
 
 alias ⟨farFromTriangleFree.le_card_sub_card, _⟩ := farFromTriangleFree_iff
 
@@ -196,16 +197,17 @@ section DecidableEq
 
 variable [DecidableEq α]
 
+omit [IsStrictOrderedRing 𝕜] in
 theorem FarFromTriangleFree.cliqueFinset_nonempty' (hH : H ≤ G) (hG : G.FarFromTriangleFree ε)
-    (hcard : G.edgeFinset.card - H.edgeFinset.card < ε * (card α ^ 2 : ℕ)) :
+    (hcard : #G.edgeFinset - #H.edgeFinset < ε * (card α ^ 2 : ℕ)) :
     (H.cliqueFinset 3).Nonempty :=
   nonempty_of_ne_empty <|
-    cliqueFinset_eq_empty_iff.not.2 fun hH' => (hG.le_card_sub_card hH hH').not_lt hcard
+    cliqueFinset_eq_empty_iff.not.2 fun hH' => (hG.le_card_sub_card hH hH').not_gt hcard
 
 private lemma farFromTriangleFree_of_disjoint_triangles_aux {tris : Finset (Finset α)}
     (htris : tris ⊆ G.cliqueFinset 3)
     (pd : (tris : Set (Finset α)).Pairwise fun x y ↦ (x ∩ y : Set α).Subsingleton) (hHG : H ≤ G)
-    (hH : H.CliqueFree 3) : tris.card ≤ G.edgeFinset.card - H.edgeFinset.card := by
+    (hH : H.CliqueFree 3) : #tris ≤ #G.edgeFinset - #H.edgeFinset := by
   rw [← card_sdiff (edgeFinset_mono hHG), ← card_attach]
   by_contra! hG
   have ⦃t⦄ (ht : t ∈ tris) :
@@ -233,7 +235,7 @@ triangle-free. -/
 lemma farFromTriangleFree_of_disjoint_triangles (tris : Finset (Finset α))
     (htris : tris ⊆ G.cliqueFinset 3)
     (pd : (tris : Set (Finset α)).Pairwise fun x y ↦ (x ∩ y : Set α).Subsingleton)
-    (tris_big : ε * (card α ^ 2 : ℕ) ≤ tris.card) :
+    (tris_big : ε * (card α ^ 2 : ℕ) ≤ #tris) :
     G.FarFromTriangleFree ε := by
   rw [farFromTriangleFree_iff]
   intros H _ hG hH
@@ -242,7 +244,7 @@ lemma farFromTriangleFree_of_disjoint_triangles (tris : Finset (Finset α))
     (Nat.cast_le.2 <| farFromTriangleFree_of_disjoint_triangles_aux htris pd hG hH)
 
 protected lemma EdgeDisjointTriangles.farFromTriangleFree (hG : G.EdgeDisjointTriangles)
-    (tris_big : ε * (card α ^ 2 : ℕ) ≤ (G.cliqueFinset 3).card) :
+    (tris_big : ε * (card α ^ 2 : ℕ) ≤ #(G.cliqueFinset 3)) :
     G.FarFromTriangleFree ε :=
   farFromTriangleFree_of_disjoint_triangles _ Subset.rfl (by simpa using hG) tris_big
 
@@ -255,27 +257,27 @@ lemma FarFromTriangleFree.lt_half (hG : G.FarFromTriangleFree ε) : ε < 2⁻¹ 
   by_contra! hε
   refine lt_irrefl (ε * card α ^ 2) ?_
   have hε₀ : 0 < ε := hε.trans_lt' (by norm_num)
-  rw [inv_pos_le_iff_one_le_mul (zero_lt_two' 𝕜)] at hε
+  rw [inv_le_iff_one_le_mul₀ (zero_lt_two' 𝕜)] at hε
   calc
-    _ ≤ (G.edgeFinset.card : 𝕜) := by
+    _ ≤ (#G.edgeFinset : 𝕜) := by
       simpa using hG.le_card_sub_card bot_le (cliqueFree_bot (le_succ _))
-    _ ≤ ε * 2 * (edgeFinset G).card := le_mul_of_one_le_left (by positivity) (by assumption)
+    _ ≤ ε * 2 * #G.edgeFinset := le_mul_of_one_le_left (by positivity) (by assumption)
     _ < ε * card α ^ 2 := ?_
   rw [mul_assoc, mul_lt_mul_left hε₀]
   norm_cast
   calc
-    _ ≤ 2 * (⊤ : SimpleGraph α).edgeFinset.card := by gcongr; exact le_top
+    _ ≤ 2 * (completeGraph α).edgeFinset.card := by gcongr; exact le_top
     _ < card α ^ 2 := ?_
-  rw [edgeFinset_top, filter_not, card_sdiff (subset_univ _), card_univ, Sym2.card,]
+  rw [edgeFinset_top, filter_not, card_sdiff (subset_univ _), Finset.card_univ, Sym2.card]
   simp_rw [choose_two_right, Nat.add_sub_cancel, Nat.mul_comm _ (card α),
     funext (propext <| Sym2.isDiag_iff_mem_range_diag ·), univ_filter_mem_range, mul_tsub,
     Nat.mul_div_cancel' (card α).even_mul_succ_self.two_dvd]
-  rw [card_image_of_injective _ Sym2.diag_injective, card_univ, mul_add_one (α := ℕ), two_mul, sq,
-    add_tsub_add_eq_tsub_right]
+  rw [card_image_of_injective _ Sym2.diag_injective, Finset.card_univ, mul_add_one (α := ℕ),
+    two_mul, sq, add_tsub_add_eq_tsub_right]
   apply tsub_lt_self <;> positivity
 
 lemma FarFromTriangleFree.lt_one (hG : G.FarFromTriangleFree ε) : ε < 1 :=
-  hG.lt_half.trans <| inv_lt_one one_lt_two
+  hG.lt_half.trans two_inv_lt_one
 
 theorem FarFromTriangleFree.nonpos (h₀ : G.FarFromTriangleFree ε) (h₁ : G.CliqueFree 3) :
     ε ≤ 0 := by
@@ -284,10 +286,10 @@ theorem FarFromTriangleFree.nonpos (h₀ : G.FarFromTriangleFree ε) (h₁ : G.C
   exact nonpos_of_mul_nonpos_left (this h₁) (cast_pos.2 <| sq_pos_of_pos Fintype.card_pos)
 
 theorem CliqueFree.not_farFromTriangleFree (hG : G.CliqueFree 3) (hε : 0 < ε) :
-    ¬G.FarFromTriangleFree ε := fun h => (h.nonpos hG).not_lt hε
+    ¬G.FarFromTriangleFree ε := fun h => (h.nonpos hG).not_gt hε
 
 theorem FarFromTriangleFree.not_cliqueFree (hG : G.FarFromTriangleFree ε) (hε : 0 < ε) :
-    ¬G.CliqueFree 3 := fun h => (hG.nonpos h).not_lt hε
+    ¬G.CliqueFree 3 := fun h => (hG.nonpos h).not_gt hε
 
 theorem FarFromTriangleFree.cliqueFinset_nonempty [DecidableEq α]
     (hG : G.FarFromTriangleFree ε) (hε : 0 < ε) : (G.cliqueFinset 3).Nonempty :=

@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.CategoryTheory.Limits.HasLimits
@@ -46,8 +46,9 @@ Monoid.mk : {M : Type u} →
 ```
 -/
 
+assert_not_exists MonoidWithZero
 
-universe v
+universe v u
 
 open CategoryTheory
 
@@ -63,7 +64,7 @@ and the identifications given by the morphisms in the diagram.
 -/
 
 
-variable {J : Type v} [SmallCategory J] (F : J ⥤ MonCat.{v})
+variable {J : Type v} [Category.{u} J] (F : J ⥤ MonCat.{v})
 
 /-- An inductive type representing all monoid expressions (without relations)
 on a collection of types indexed by the objects of `J`.
@@ -122,7 +123,7 @@ instance : Inhabited (ColimitType F) := by
 
 instance monoidColimitType : Monoid (ColimitType F) where
   one := Quotient.mk _ one
-  mul := Quotient.map₂ mul fun x x' rx y y' ry =>
+  mul := Quotient.map₂ mul fun _ x' rx y _ ry =>
     Setoid.trans (Relation.mul_1 _ _ y rx) (Relation.mul_2 x' _ _ ry)
   one_mul := Quotient.ind fun _ => Quotient.sound <| Relation.one_mul _
   mul_one := Quotient.ind fun _ => Quotient.sound <| Relation.mul_one _
@@ -141,17 +142,18 @@ theorem quot_mul (x y : Prequotient F) : Quot.mk Setoid.r (mul x y) =
 
 /-- The bundled monoid giving the colimit of a diagram. -/
 def colimit : MonCat :=
-  ⟨ColimitType F, by infer_instance⟩
+  of (ColimitType F)
 
 /-- The function from a given monoid in the diagram to the colimit monoid. -/
 def coconeFun (j : J) (x : F.obj j) : ColimitType F :=
   Quot.mk _ (Prequotient.of j x)
 
 /-- The monoid homomorphism from a given monoid in the diagram to the colimit monoid. -/
-def coconeMorphism (j : J) : F.obj j ⟶ colimit F where
-  toFun := coconeFun F j
-  map_one' := Quot.sound (Relation.one _)
-  map_mul' _ _ := Quot.sound (Relation.mul _ _ _)
+def coconeMorphism (j : J) : F.obj j ⟶ colimit F :=
+  ofHom
+  { toFun := coconeFun F j
+    map_one' := Quot.sound (Relation.one _)
+    map_mul' _ _ := Quot.sound (Relation.mul _ _ _) }
 
 @[simp]
 theorem cocone_naturality {j j' : J} (f : j ⟶ j') :
@@ -188,8 +190,8 @@ def descFun (s : Cocone F) : ColimitType F → s.pt := by
     | symm x y _ h => exact h.symm
     | trans x y z _ _ h₁ h₂ => exact h₁.trans h₂
     | map j j' f x => exact s.w_apply f x
-    | mul j x y => exact map_mul (s.ι.app j) x y
-    | one j => exact map_one (s.ι.app j)
+    | mul j x y => exact map_mul (s.ι.app j).hom x y
+    | one j => exact map_one (s.ι.app j).hom
     | mul_1 x x' y _ h => exact congr_arg (· * _) h
     | mul_2 x y y' _ h => exact congr_arg (_ * ·) h
     | mul_assoc x y z => exact mul_assoc _ _ _
@@ -197,31 +199,32 @@ def descFun (s : Cocone F) : ColimitType F → s.pt := by
     | mul_one x => exact mul_one _
 
 /-- The monoid homomorphism from the colimit monoid to the cone point of any other cocone. -/
-def descMorphism (s : Cocone F) : colimit F ⟶ s.pt where
-  toFun := descFun F s
-  map_one' := rfl
-  map_mul' x y := by
-    induction x using Quot.inductionOn
-    induction y using Quot.inductionOn
-    dsimp [descFun]
-    rw [← quot_mul]
-    simp only [descFunLift]
+def descMorphism (s : Cocone F) : colimit F ⟶ s.pt :=
+  ofHom
+  { toFun := descFun F s
+    map_one' := rfl
+    map_mul' x y := by
+      induction x using Quot.inductionOn
+      induction y using Quot.inductionOn
+      solve_by_elim }
 
 /-- Evidence that the proposed colimit is the colimit. -/
 def colimitIsColimit : IsColimit (colimitCocone F) where
   desc s := descMorphism F s
   uniq s m w := by
     ext x
-    induction' x using Quot.inductionOn with x
-    induction' x with j x x y hx hy
-    · change _ = s.ι.app j _
+    induction x using Quot.inductionOn with | h x => ?_
+    induction x with
+    | of j =>
+      change _ = s.ι.app j _
       rw [← w j]
       rfl
-    · rw [quot_one, map_one]
+    | one =>
+      rw [quot_one, map_one]
       rfl
-    · rw [quot_mul, map_mul, hx, hy]
-      dsimp [descMorphism, DFunLike.coe, descFun]
-      simp only [← quot_mul, descFunLift]
+    | mul x y hx hy =>
+      rw [quot_mul, map_mul, hx, hy]
+      solve_by_elim
 
 instance hasColimits_monCat : HasColimits MonCat where
   has_colimits_of_shape _ _ :=

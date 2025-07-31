@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Category.Grp.Abelian
 import Mathlib.Algebra.Category.Grp.Adjunctions
-import Mathlib.Algebra.Homology.DerivedCategory.Ext
+import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
 import Mathlib.CategoryTheory.Sites.Abelian
 import Mathlib.CategoryTheory.Sites.ConstantSheaf
 
@@ -30,6 +30,8 @@ of sets `yoneda.obj U` to `F`.
 `(F.cohomologyPresheaf n).obj (Opposite.op U) ≃+ Sheaf.H (F.over U) n`.
 
 -/
+
+assert_not_exists TwoSidedIdeal
 
 universe w' w v u
 
@@ -67,7 +69,7 @@ presheaf of sets `yoneda.obj U` to `F`. -/
 noncomputable def cohomologyPresheafFunctor (n : ℕ) :
     Sheaf J AddCommGrp.{v} ⥤ Cᵒᵖ ⥤ AddCommGrp.{w'} :=
   Functor.flip
-    (Functor.op (yoneda ⋙ (whiskeringRight _ _ _).obj
+    (Functor.op (yoneda ⋙ (Functor.whiskeringRight _ _ _).obj
       AddCommGrp.free ⋙ presheafToSheaf _ _) ⋙ extFunctor n)
 
 /-- Given an abelian sheaf `F`, this is the presheaf which sends `U`

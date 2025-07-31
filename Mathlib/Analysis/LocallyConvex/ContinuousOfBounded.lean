@@ -28,12 +28,12 @@ continuous linear maps will require importing `Analysis/LocallyConvex/Bounded` i
 open TopologicalSpace Bornology Filter Topology Pointwise
 
 variable {𝕜 𝕜' E F : Type*}
-variable [AddCommGroup E] [UniformSpace E] [UniformAddGroup E]
+variable [AddCommGroup E] [UniformSpace E] [IsUniformAddGroup E]
 variable [AddCommGroup F] [UniformSpace F]
 
 section NontriviallyNormedField
 
-variable [UniformAddGroup F]
+variable [IsUniformAddGroup F]
 variable [NontriviallyNormedField 𝕜] [Module 𝕜 E] [Module 𝕜 F] [ContinuousSMul 𝕜 E]
 
 /-- Construct a continuous linear map from a linear map `f : E →ₗ[𝕜] F` and the existence of a
@@ -99,7 +99,7 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
     refine bE.1.to_hasBasis ?_ ?_
     · intro n _
       use n + 1
-      simp only [Ne, Nat.succ_ne_zero, not_false_iff, Nat.cast_add, Nat.cast_one, true_and_iff]
+      simp only [Ne, Nat.succ_ne_zero, not_false_iff, Nat.cast_add, Nat.cast_one, true_and]
       -- `b (n + 1) ⊆ b n` follows from `Antitone`.
       have h : b (n + 1) ⊆ b n := bE.2 (by simp)
       refine _root_.trans ?_ h
@@ -109,13 +109,13 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
       refine (bE1 (n + 1)).2.smul_mem ?_ hx
       have h' : 0 < (n : ℝ) + 1 := n.cast_add_one_pos
       rw [norm_inv, ← Nat.cast_one, ← Nat.cast_add, RCLike.norm_natCast, Nat.cast_add,
-        Nat.cast_one, inv_le h' zero_lt_one]
+        Nat.cast_one, inv_le_comm₀ h' zero_lt_one]
       simp
     intro n hn
     -- The converse direction follows from continuity of the scalar multiplication
     have hcont : ContinuousAt (fun x : E => (n : 𝕜) • x) 0 :=
       (continuous_const_smul (n : 𝕜)).continuousAt
-    simp only [ContinuousAt, map_zero, smul_zero] at hcont
+    simp only [ContinuousAt, smul_zero] at hcont
     rw [bE.1.tendsto_left_iff] at hcont
     rcases hcont (b n) (bE1 n).1 with ⟨i, _, hi⟩
     refine ⟨i, trivial, fun x hx => ⟨(n : 𝕜) • x, hi hx, ?_⟩⟩
@@ -123,7 +123,7 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
   rw [ContinuousAt, map_zero, bE'.tendsto_iff (nhds_basis_balanced 𝕜' F)] at h
   push_neg at h
   rcases h with ⟨V, ⟨hV, -⟩, h⟩
-  simp only [_root_.id, forall_true_left] at h
+  simp only [_root_.id] at h
   -- There exists `u : ℕ → E` such that for all `n : ℕ` we have `u n ∈ n⁻¹ • b n` and `f (u n) ∉ V`
   choose! u hu hu' using h
   -- The sequence `(fun n ↦ n • u n)` converges to `0`
@@ -142,7 +142,7 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
     h_tendsto.cauchySeq.totallyBounded_range.isVonNBounded 𝕜
   -- Since `range u` is bounded, `V` absorbs it
   rcases (hf _ h_bounded hV).exists_pos with ⟨r, hr, h'⟩
-  cases' exists_nat_gt r with n hn
+  obtain ⟨n, hn⟩ := exists_nat_gt r
   -- We now find a contradiction between `f (u n) ∉ V` and the absorbing property
   have h1 : r ≤ ‖(n : 𝕜')‖ := by
     rw [RCLike.norm_natCast]
@@ -160,7 +160,7 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
   exact hu' n hn' h''
 
 /-- If `E` is first countable, then every locally bounded linear map `E →ₛₗ[σ] F` is continuous. -/
-theorem LinearMap.continuous_of_locally_bounded [UniformAddGroup F] (f : E →ₛₗ[σ] F)
+theorem LinearMap.continuous_of_locally_bounded [IsUniformAddGroup F] (f : E →ₛₗ[σ] F)
     (hf : ∀ s, IsVonNBounded 𝕜 s → IsVonNBounded 𝕜' (f '' s)) : Continuous f :=
   (uniformContinuous_of_continuousAt_zero f <| f.continuousAt_zero_of_locally_bounded hf).continuous
 

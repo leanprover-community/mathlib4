@@ -17,7 +17,7 @@ for all `a : A`), then the quotient category `Quotient r` is equipped with
 a shift.
 
 The condition `r.IsCompatibleWithShift A` on the relation `r` is a class so that
-the shift can be automatically infered on the quotient category.
+the shift can be automatically inferred on the quotient category.
 
 -/
 
@@ -32,7 +32,7 @@ namespace HomRel
 
 /-- A relation on morphisms is compatible with the shift by a monoid `A` when the
 relation if preserved by the shift. -/
-class IsCompatibleWithShift : Prop :=
+class IsCompatibleWithShift : Prop where
   /-- the condition that the relation is preserved by the shift -/
   condition : ∀ (a : A) ⦃X Y : C⦄ (f g : X ⟶ Y), r f g → r (f⟦a⟧') (g⟦a⟧')
 
@@ -70,9 +70,9 @@ variable {A}
 noncomputable def iso (a : A) :
     shiftFunctor (Quotient r) a ⋙ lift r F hF ≅ lift r F hF ⋙ shiftFunctor D a :=
   natIsoLift r ((Functor.associator _ _ _).symm ≪≫
-    isoWhiskerRight ((functor r).commShiftIso a).symm _ ≪≫
-    Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ (lift.isLift r F hF) ≪≫ F.commShiftIso a ≪≫
-    isoWhiskerRight (lift.isLift r F hF).symm _ ≪≫ Functor.associator _ _ _)
+    Functor.isoWhiskerRight ((functor r).commShiftIso a).symm _ ≪≫
+    Functor.associator _ _ _ ≪≫ Functor.isoWhiskerLeft _ (lift.isLift r F hF) ≪≫ F.commShiftIso a ≪≫
+    Functor.isoWhiskerRight (lift.isLift r F hF).symm _ ≪≫ Functor.associator _ _ _)
 
 @[simp]
 lemma iso_hom_app (a : A) (X : C) :
@@ -136,7 +136,7 @@ noncomputable instance liftCommShift :
 
 instance liftCommShift_compatibility :
     NatTrans.CommShift (Quotient.lift.isLift r F hF).hom A where
-  comm' a := by
+  shift_comm a := by
     ext X
     dsimp
     erw [Functor.map_id, id_comp, comp_id]

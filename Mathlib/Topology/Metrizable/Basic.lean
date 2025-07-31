@@ -12,14 +12,12 @@ In this file we define metrizable topological spaces, i.e., topological spaces f
 exists a metric space structure that generates the same topology.
 -/
 
-
-open Set Filter Metric
-open scoped Filter Topology
+open Filter Set Metric Topology
 
 namespace TopologicalSpace
 
-variable {ι X Y : Type*} {π : ι → Type*} [TopologicalSpace X] [TopologicalSpace Y] [Finite ι]
-  [∀ i, TopologicalSpace (π i)]
+variable {ι X Y : Type*} {A : ι → Type*} [TopologicalSpace X] [TopologicalSpace Y] [Finite ι]
+  [∀ i, TopologicalSpace (A i)]
 
 /-- A topological space is *pseudo metrizable* if there exists a pseudo metric space structure
 compatible with the topology. To endow such a space with a compatible distance, use
@@ -44,10 +42,13 @@ instance pseudoMetrizableSpace_prod [PseudoMetrizableSpace X] [PseudoMetrizableS
 
 /-- Given an inducing map of a topological space into a pseudo metrizable space, the source space
 is also pseudo metrizable. -/
-theorem _root_.Inducing.pseudoMetrizableSpace [PseudoMetrizableSpace Y] {f : X → Y}
-    (hf : Inducing f) : PseudoMetrizableSpace X :=
+theorem _root_.Topology.IsInducing.pseudoMetrizableSpace [PseudoMetrizableSpace Y] {f : X → Y}
+    (hf : IsInducing f) : PseudoMetrizableSpace X :=
   letI : PseudoMetricSpace Y := pseudoMetrizableSpacePseudoMetric Y
   ⟨⟨hf.comapPseudoMetricSpace, rfl⟩⟩
+
+@[deprecated (since := "2024-10-28")]
+alias _root_.Inducing.pseudoMetrizableSpace := IsInducing.pseudoMetrizableSpace
 
 /-- Every pseudo-metrizable space is first countable. -/
 instance (priority := 100) PseudoMetrizableSpace.firstCountableTopology
@@ -59,12 +60,12 @@ instance (priority := 100) PseudoMetrizableSpace.firstCountableTopology
 
 instance PseudoMetrizableSpace.subtype [PseudoMetrizableSpace X] (s : Set X) :
     PseudoMetrizableSpace s :=
-  inducing_subtype_val.pseudoMetrizableSpace
+  IsInducing.subtypeVal.pseudoMetrizableSpace
 
-instance pseudoMetrizableSpace_pi [∀ i, PseudoMetrizableSpace (π i)] :
-    PseudoMetrizableSpace (∀ i, π i) := by
+instance pseudoMetrizableSpace_pi [∀ i, PseudoMetrizableSpace (A i)] :
+    PseudoMetrizableSpace (∀ i, A i) := by
   cases nonempty_fintype ι
-  letI := fun i => pseudoMetrizableSpacePseudoMetric (π i)
+  letI := fun i => pseudoMetrizableSpacePseudoMetric (A i)
   infer_instance
 
 /-- A topological space is metrizable if there exists a metric space structure compatible with the
@@ -82,6 +83,11 @@ instance (priority := 100) MetrizableSpace.toPseudoMetrizableSpace [h : Metrizab
   let ⟨m, hm⟩ := h.1
   ⟨⟨m.toPseudoMetricSpace, hm⟩⟩
 
+instance (priority := 100) PseudoMetrizableSpace.toMetrizableSpace
+    [T0Space X] [h : PseudoMetrizableSpace X] : MetrizableSpace X :=
+  letI := pseudoMetrizableSpacePseudoMetric X
+  ⟨.ofT0PseudoMetricSpace X, rfl⟩
+
 /-- Construct on a metrizable space a metric compatible with the topology. -/
 noncomputable def metrizableSpaceMetric (X : Type*) [TopologicalSpace X] [h : MetrizableSpace X] :
     MetricSpace X :=
@@ -98,17 +104,20 @@ instance metrizableSpace_prod [MetrizableSpace X] [MetrizableSpace Y] : Metrizab
 
 /-- Given an embedding of a topological space into a metrizable space, the source space is also
 metrizable. -/
-theorem _root_.Embedding.metrizableSpace [MetrizableSpace Y] {f : X → Y} (hf : Embedding f) :
-    MetrizableSpace X :=
+theorem _root_.Topology.IsEmbedding.metrizableSpace [MetrizableSpace Y] {f : X → Y}
+    (hf : IsEmbedding f) : MetrizableSpace X :=
   letI : MetricSpace Y := metrizableSpaceMetric Y
   ⟨⟨hf.comapMetricSpace f, rfl⟩⟩
 
-instance MetrizableSpace.subtype [MetrizableSpace X] (s : Set X) : MetrizableSpace s :=
-  embedding_subtype_val.metrizableSpace
+@[deprecated (since := "2024-10-26")]
+alias _root_.Embedding.metrizableSpace := IsEmbedding.metrizableSpace
 
-instance metrizableSpace_pi [∀ i, MetrizableSpace (π i)] : MetrizableSpace (∀ i, π i) := by
+instance MetrizableSpace.subtype [MetrizableSpace X] (s : Set X) : MetrizableSpace s :=
+  IsEmbedding.subtypeVal.metrizableSpace
+
+instance metrizableSpace_pi [∀ i, MetrizableSpace (A i)] : MetrizableSpace (∀ i, A i) := by
   cases nonempty_fintype ι
-  letI := fun i => metrizableSpaceMetric (π i)
+  letI := fun i => metrizableSpaceMetric (A i)
   infer_instance
 
 theorem IsSeparable.secondCountableTopology [PseudoMetrizableSpace X] {s : Set X}

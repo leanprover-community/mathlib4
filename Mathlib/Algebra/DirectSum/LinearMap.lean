@@ -16,7 +16,7 @@ domain and codomain.
 
 -/
 
-open Set DirectSum
+open DirectSum Module Set
 
 namespace LinearMap
 
@@ -82,8 +82,8 @@ lemma trace_eq_zero_of_mapsTo_ne (h : IsInternal N) [IsNoetherian R M]
     (σ : ι → ι) (hσ : ∀ i, σ i ≠ i) {f : Module.End R M}
     (hf : ∀ i, MapsTo f (N i) (N <| σ i)) :
     trace R M f = 0 := by
-  have hN : {i | N i ≠ ⊥}.Finite := CompleteLattice.WellFounded.finite_ne_bot_of_independent
-    (wellFounded_submodule_gt R M) h.submodule_independent
+  have hN : {i | N i ≠ ⊥}.Finite := WellFoundedGT.finite_ne_bot_of_iSupIndep
+    h.submodule_iSupIndep
   let s := hN.toFinset
   let κ := fun i ↦ Module.Free.ChooseBasisIndex R (N i)
   let b : (i : s) → Basis (κ i) R (N i) := fun i ↦ Module.Free.chooseBasis R (N i)
@@ -100,27 +100,26 @@ lemma trace_comp_eq_zero_of_commute_of_trace_restrict_eq_zero
     [IsDomain R] [IsPrincipalIdealRing R] [Module.Free R M] [Module.Finite R M]
     {f g : Module.End R M}
     (h_comm : Commute f g)
-    (hf : ⨆ μ, ⨆ k, f.genEigenspace μ k = ⊤)
-    (hg : ∀ μ, trace R _ (g.restrict (f.mapsTo_iSup_genEigenspace_of_comm h_comm μ)) = 0) :
+    (hf : ⨆ μ, f.maxGenEigenspace μ = ⊤)
+    (hg : ∀ μ, trace R _ (g.restrict (f.mapsTo_maxGenEigenspace_of_comm h_comm μ)) = 0) :
     trace R _ (g ∘ₗ f) = 0 := by
   have hfg : ∀ μ,
-      MapsTo (g ∘ₗ f) ↑(⨆ k, f.genEigenspace μ k) ↑(⨆ k, f.genEigenspace μ k) :=
-    fun μ ↦ (f.mapsTo_iSup_genEigenspace_of_comm h_comm μ).comp
-      (f.mapsTo_iSup_genEigenspace_of_comm rfl μ)
+      MapsTo (g ∘ₗ f) ↑(f.maxGenEigenspace μ) ↑(f.maxGenEigenspace μ) :=
+    fun μ ↦ (f.mapsTo_maxGenEigenspace_of_comm h_comm μ).comp
+      (f.mapsTo_maxGenEigenspace_of_comm rfl μ)
   suffices ∀ μ, trace R _ ((g ∘ₗ f).restrict (hfg μ)) = 0 by
     classical
-    have hds := DirectSum.isInternal_submodule_of_independent_of_iSup_eq_top
-      f.independent_genEigenspace hf
-    have h_fin : {μ | ⨆ k, f.genEigenspace μ k ≠ ⊥}.Finite :=
-      CompleteLattice.WellFounded.finite_ne_bot_of_independent
-        (isNoetherian_iff_wellFounded.mp inferInstance) f.independent_genEigenspace
+    have hds := DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top
+      f.independent_maxGenEigenspace hf
+    have h_fin : {μ | f.maxGenEigenspace μ ≠ ⊥}.Finite :=
+      WellFoundedGT.finite_ne_bot_of_iSupIndep f.independent_maxGenEigenspace
     simp [trace_eq_sum_trace_restrict' hds h_fin hfg, this]
   intro μ
-  replace h_comm : Commute (g.restrict (f.mapsTo_iSup_genEigenspace_of_comm h_comm μ))
-      (f.restrict (f.mapsTo_iSup_genEigenspace_of_comm rfl μ)) :=
+  replace h_comm : Commute (g.restrict (f.mapsTo_maxGenEigenspace_of_comm h_comm μ))
+      (f.restrict (f.mapsTo_maxGenEigenspace_of_comm rfl μ)) :=
     restrict_commute h_comm.symm _ _
   rw [restrict_comp, trace_comp_eq_mul_of_commute_of_isNilpotent μ h_comm
-    (f.isNilpotent_restrict_iSup_sub_algebraMap μ), hg, mul_zero]
+    (f.isNilpotent_restrict_maxGenEigenspace_sub_algebraMap μ), hg, mul_zero]
 
 lemma mapsTo_biSup_of_mapsTo {ι : Type*} {N : ι → Submodule R M}
     (s : Set ι) {f : Module.End R M} (hf : ∀ i, MapsTo f (N i) (N i)) :
@@ -137,14 +136,14 @@ Note that it is important the statement gives the user definitional control over
 _type_ of the term `trace R p (f.restrict hp')` depends on `p`. -/
 lemma trace_eq_sum_trace_restrict_of_eq_biSup
     [∀ i, Module.Finite R (N i)] [∀ i, Module.Free R (N i)]
-    (s : Finset ι) (h : CompleteLattice.Independent <| fun i : s ↦ N i)
+    (s : Finset ι) (h : iSupIndep <| fun i : s ↦ N i)
     {f : Module.End R M} (hf : ∀ i, MapsTo f (N i) (N i))
     (p : Submodule R M) (hp : p = ⨆ i ∈ s, N i)
     (hp' : MapsTo f p p := hp ▸ mapsTo_biSup_of_mapsTo (s : Set ι) hf) :
     trace R p (f.restrict hp') = ∑ i ∈ s, trace R (N i) (f.restrict (hf i)) := by
   classical
   let N' : s → Submodule R p := fun i ↦ (N i).comap p.subtype
-  replace h : IsInternal N' := hp ▸ isInternal_biSup_submodule_of_independent (s : Set ι) h
+  replace h : IsInternal N' := hp ▸ isInternal_biSup_submodule_of_iSupIndep (s : Set ι) h
   have hf' : ∀ i, MapsTo (restrict f hp') (N' i) (N' i) := fun i x hx' ↦ by simpa using hf i hx'
   let e : (i : s) → N' i ≃ₗ[R] N i := fun ⟨i, hi⟩ ↦ (N i).comapSubtypeEquivOfLe (hp ▸ le_biSup N hi)
   have _i1 : ∀ i, Module.Finite R (N' i) := fun i ↦ Module.Finite.equiv (e i).symm

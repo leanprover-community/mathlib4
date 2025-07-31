@@ -3,8 +3,9 @@ Copyright (c) 2021 Yourong Zang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yourong Zang
 -/
-import Mathlib.Analysis.NormedSpace.ConformalLinearMap
 import Mathlib.Analysis.Calculus.FDeriv.Add
+import Mathlib.Analysis.Calculus.FDeriv.Const
+import Mathlib.Analysis.NormedSpace.ConformalLinearMap
 
 /-!
 # Conformal Maps
@@ -63,7 +64,7 @@ theorem conformalAt_const_smul {c : ℝ} (h : c ≠ 0) (x : X) : ConformalAt (fu
 theorem Subsingleton.conformalAt [Subsingleton X] (f : X → Y) (x : X) : ConformalAt f x :=
   ⟨0, hasFDerivAt_of_subsingleton _ _, isConformalMap_of_subsingleton _⟩
 
-/-- A function is a conformal map if and only if its differential is a conformal linear map-/
+/-- A function is a conformal map if and only if its differential is a conformal linear map -/
 theorem conformalAt_iff_isConformalMap_fderiv {f : X → Y} {x : X} :
     ConformalAt f x ↔ IsConformalMap (fderiv ℝ f x) := by
   constructor

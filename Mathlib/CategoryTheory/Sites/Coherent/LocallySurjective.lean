@@ -16,14 +16,14 @@ and extensive topologies.
 ## Main results
 
 * `regularTopology.isLocallySurjective_iff` A morphism of presheaves `f : F ⟶ G` is locally
-  surjective for the regular topology iff for every object `X` of `C`, and every `y : G(X)`, there
-  is an effective epimorphism `φ : X' ⟶ X` and an `x : F(X)` such that `f_{X'}(x) = G(φ)(y)`.
+  surjective for the regular topology iff for every object `X` of `C`, and every `y : G(X)`, there
+  is an effective epimorphism `φ : X' ⟶ X` and an `x : F(X)` such that `f_{X'}(x) = G(φ)(y)`.
 
 * `coherentTopology.isLocallySurjective_iff` a morphism of sheaves for the coherent topology on a
   preregular finitary extensive category is locally surjective if and only if it is
   locally surjective for the regular topology.
 
-* `extensiveTopology.isLocallySurjective_iff` a morphism of sheaves for the extensive topology on a
+* `extensiveTopology.isLocallySurjective_iff` a morphism of sheaves for the extensive topology on a
   finitary extensive category is locally surjective iff it is objectwise surjective.
 -/
 
@@ -31,15 +31,15 @@ universe w
 
 open CategoryTheory Sheaf Limits Opposite
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
-
 namespace CategoryTheory
 
-variable {C : Type*} (D : Type*) [Category C] [Category D] [ConcreteCategory.{w} D]
+variable {C : Type*} (D : Type*) [Category C] [Category D] {FD : D → D → Type*} {CD : D → Type w}
+  [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)] [ConcreteCategory.{w} D FD]
 
 lemma regularTopology.isLocallySurjective_iff [Preregular C] {F G : Cᵒᵖ ⥤ D} (f : F ⟶ G) :
     Presheaf.IsLocallySurjective (regularTopology C) f ↔
-      ∀ (X : C) (y : G.obj ⟨X⟩), (∃ (X' : C) (φ : X' ⟶ X) (_ : EffectiveEpi φ) (x : F.obj ⟨X'⟩),
+      ∀ (X : C) (y : ToType (G.obj ⟨X⟩)), (∃ (X' : C) (φ : X' ⟶ X) (_ : EffectiveEpi φ)
+        (x : ToType (F.obj ⟨X'⟩)),
         f.app ⟨X'⟩ x = G.map ⟨φ⟩ y) := by
   constructor
   · intro ⟨h⟩ X y
@@ -53,7 +53,8 @@ lemma regularTopology.isLocallySurjective_iff [Preregular C] {F G : Cᵒᵖ ⥤ 
     rw [regularTopology.mem_sieves_iff_hasEffectiveEpi]
     exact ⟨X', π, h, h'⟩
 
-lemma extensiveTopology.surjective_of_isLocallySurjective_sheafOfTypes [FinitaryPreExtensive C]
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
+lemma extensiveTopology.surjective_of_isLocallySurjective_sheaf_of_types [FinitaryPreExtensive C]
     {F G : Cᵒᵖ ⥤ Type w} (f : F ⟶ G) [PreservesFiniteProducts F] [PreservesFiniteProducts G]
       (h : Presheaf.IsLocallySurjective (extensiveTopology C) f) {X : C} :
         Function.Surjective (f.app (op X)) := by
@@ -74,15 +75,17 @@ lemma extensiveTopology.surjective_of_isLocallySurjective_sheafOfTypes [Finitary
   intro ⟨a⟩
   simp only [Functor.comp_obj, Discrete.opposite_inverse_obj, Functor.op_obj, Discrete.functor_obj,
     Functor.mapCone_pt, Cone.whisker_pt, Cocone.op_pt, Cofan.mk_pt, Functor.const_obj_obj,
-    Functor.mapCone_π_app, Cone.whisker_π, Cocone.op_π, whiskerLeft_app, NatTrans.op_app,
+    Functor.mapCone_π_app, Cone.whisker_π, Cocone.op_π, Functor.whiskerLeft_app, NatTrans.op_app,
     Cofan.mk_ι_app]
-  have : f.app ⟨Y a⟩ (y a) = G.map (π a).op x := (h' a).choose_spec
-  change _ = G.map (π a).op x
-  erw [← this, ← NatTrans.naturality_apply (φ := f)]
-  apply congrArg
-  change (i.hom ≫ F.map (π a).op) y = _
+  rw [← (h' a).choose_spec]
+  erw [← NatTrans.naturality_apply (φ := f)]
+  change f.app _ ((i.hom ≫ F.map (π a).op) y) = _
   erw [IsLimit.map_π]
   rfl
+
+@[deprecated (since := "2024-11-26")]
+alias extensiveTopology.surjective_of_isLocallySurjective_sheafOfTypes :=
+  extensiveTopology.surjective_of_isLocallySurjective_sheaf_of_types
 
 lemma extensiveTopology.presheafIsLocallySurjective_iff [FinitaryPreExtensive C] {F G : Cᵒᵖ ⥤ D}
     (f : F ⟶ G) [PreservesFiniteProducts F] [PreservesFiniteProducts G]
@@ -90,7 +93,8 @@ lemma extensiveTopology.presheafIsLocallySurjective_iff [FinitaryPreExtensive C]
         ∀ (X : C), Function.Surjective (f.app (op X)) := by
   constructor
   · rw [Presheaf.isLocallySurjective_iff_whisker_forget (J := extensiveTopology C)]
-    exact fun h _ ↦ surjective_of_isLocallySurjective_sheafOfTypes (whiskerRight f (forget D)) h
+    exact fun h _ ↦
+      surjective_of_isLocallySurjective_sheaf_of_types (Functor.whiskerRight f (forget D)) h
   · intro h
     refine ⟨fun {X} y ↦ ?_⟩
     obtain ⟨x, hx⟩ := h X y
@@ -104,7 +108,8 @@ lemma extensiveTopology.isLocallySurjective_iff [FinitaryExtensive C]
         ∀ (X : C), Function.Surjective (f.val.app (op X)) :=
   extensiveTopology.presheafIsLocallySurjective_iff _ f.val
 
-lemma regularTopology.isLocallySurjective_sheafOfTypes [Preregular C] [FinitaryPreExtensive C]
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
+lemma regularTopology.isLocallySurjective_sheaf_of_types [Preregular C] [FinitaryPreExtensive C]
     {F G : Cᵒᵖ ⥤ Type w} (f : F ⟶ G) [PreservesFiniteProducts F] [PreservesFiniteProducts G]
       (h : Presheaf.IsLocallySurjective (coherentTopology C) f) :
         Presheaf.IsLocallySurjective (regularTopology C) f where
@@ -118,13 +123,13 @@ lemma regularTopology.isLocallySurjective_sheafOfTypes [Preregular C] [FinitaryP
     let i' : ((a : α) → (F.obj ⟨Z a⟩)) ≅ (F.obj ⟨∐ Z⟩) := (Types.productIso _).symm ≪≫
       (PreservesProduct.iso F _).symm ≪≫ F.mapIso (opCoproductIsoProduct _).symm
     refine ⟨∐ Z, Sigma.desc π, inferInstance, i'.hom x, ?_⟩
-    have := preservesLimitsOfShapeOfEquiv (Discrete.opposite α).symm G
+    have := preservesLimitsOfShape_of_equiv (Discrete.opposite α).symm G
     apply Concrete.isLimit_ext _ (isLimitOfPreserves G (coproductIsCoproduct Z).op)
     intro ⟨⟨a⟩⟩
     simp only [Functor.comp_obj, Functor.op_obj, Discrete.functor_obj, Functor.mapCone_pt,
       Cocone.op_pt, Cofan.mk_pt, Functor.const_obj_obj, Functor.mapCone_π_app, Cocone.op_π,
       NatTrans.op_app, Cofan.mk_ι_app, Functor.mapIso_symm, Iso.symm_hom, Iso.trans_hom,
-      Functor.mapIso_inv, types_comp_apply, i', ← NatTrans.naturality_apply]
+      Functor.mapIso_inv, types_comp_apply, i', ← NatTrans.naturality_apply f (Sigma.ι Z a).op]
     have : f.app ⟨Z a⟩ (x a) = G.map (π a).op y := (h' a).choose_spec
     convert this
     · change F.map _ (F.map _ _) = _
@@ -136,6 +141,9 @@ lemma regularTopology.isLocallySurjective_sheafOfTypes [Preregular C] [FinitaryP
     · change G.map _ (G.map _ _) = _
       simp only [← FunctorToTypes.map_comp_apply, ← op_comp, Sigma.ι_desc]
 
+@[deprecated (since := "2024-11-26")] alias regularTopology.isLocallySurjective_sheafOfTypes :=
+regularTopology.isLocallySurjective_sheaf_of_types
+
 lemma coherentTopology.presheafIsLocallySurjective_iff {F G : Cᵒᵖ ⥤ D} (f : F ⟶ G)
     [Preregular C] [FinitaryPreExtensive C] [PreservesFiniteProducts F] [PreservesFiniteProducts G]
       [PreservesFiniteProducts (forget D)] :
@@ -144,7 +152,7 @@ lemma coherentTopology.presheafIsLocallySurjective_iff {F G : Cᵒᵖ ⥤ D} (f 
   constructor
   · rw [Presheaf.isLocallySurjective_iff_whisker_forget,
       Presheaf.isLocallySurjective_iff_whisker_forget (J := regularTopology C)]
-    exact regularTopology.isLocallySurjective_sheafOfTypes _
+    exact regularTopology.isLocallySurjective_sheaf_of_types _
   · refine Presheaf.isLocallySurjective_of_le (J := regularTopology C) ?_ _
     rw [← extensive_regular_generate_coherent]
     exact (Coverage.gi _).gc.monotone_l le_sup_right

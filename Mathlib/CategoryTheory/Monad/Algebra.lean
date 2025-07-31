@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Bhavik Mehta
+Authors: Kim Morrison, Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Monad.Basic
 import Mathlib.CategoryTheory.Adjunction.Basic
@@ -82,7 +82,7 @@ instance : CategoryStruct (Algebra T) where
   id := Hom.id
   comp := @Hom.comp _ _ _
 
--- Porting note (#11041): Adding this `ext` lemma to help automation below.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Adding this `ext` lemma to help automation below.
 @[ext]
 lemma Hom.ext' (X Y : Algebra T) (f g : X ⟶ Y) (h : f.f = g.f) : f = g := Hom.ext h
 
@@ -156,12 +156,9 @@ def adj : T.free ⊣ T.forget :=
         { toFun := fun f => T.η.app X ≫ f.f
           invFun := fun f =>
             { f := T.map f ≫ Y.a
-              h := by
-                dsimp
-                simp [← Y.assoc, ← T.μ.naturality_assoc] }
+              h := by simp [← Y.assoc, ← T.μ.naturality_assoc] }
           left_inv := fun f => by
             ext
-            dsimp
             simp
           right_inv := fun f => by
             dsimp only [forget_obj]
@@ -205,25 +202,21 @@ def algebraFunctorOfMonadHom {T₁ T₂ : Monad C} (h : T₂ ⟶ T₁) : Algebra
   obj A :=
     { A := A.A
       a := h.app A.A ≫ A.a
-      unit := by
-        dsimp
-        simp [A.unit]
-      assoc := by
-        dsimp
-        simp [A.assoc] }
+      unit := by simp [A.unit]
+      assoc := by simp [A.assoc] }
   map f := { f := f.f }
 
 /--
 The identity monad morphism induces the identity functor from the category of algebras to itself.
 -/
 -- Porting note: `semireducible -> default`
-@[simps (config := { rhsMd := .default })]
+@[simps (rhsMd := .default)]
 def algebraFunctorOfMonadHomId {T₁ : Monad C} : algebraFunctorOfMonadHom (𝟙 T₁) ≅ 𝟭 _ :=
   NatIso.ofComponents fun X => Algebra.isoMk (Iso.refl _)
 
 /-- A composition of monad morphisms gives the composition of corresponding functors.
 -/
-@[simps (config := { rhsMd := .default })]
+@[simps (rhsMd := .default)]
 def algebraFunctorOfMonadHomComp {T₁ T₂ T₃ : Monad C} (f : T₁ ⟶ T₂) (g : T₂ ⟶ T₃) :
     algebraFunctorOfMonadHom (f ≫ g) ≅ algebraFunctorOfMonadHom g ⋙ algebraFunctorOfMonadHom f :=
   NatIso.ofComponents fun X => Algebra.isoMk (Iso.refl _)
@@ -233,7 +226,7 @@ are isomorphic.
 We define it like this as opposed to using `eqToIso` so that the components are nicer to prove
 lemmas about.
 -/
-@[simps (config := { rhsMd := .default })]
+@[simps (rhsMd := .default)]
 def algebraFunctorOfMonadHomEq {T₁ T₂ : Monad C} {f g : T₁ ⟶ T₂} (h : f = g) :
     algebraFunctorOfMonadHom f ≅ algebraFunctorOfMonadHom g :=
   NatIso.ofComponents fun X => Algebra.isoMk (Iso.refl _)
@@ -262,8 +255,6 @@ end Monad
 namespace Comonad
 
 /-- An Eilenberg-Moore coalgebra for a comonad `T`. -/
--- Porting note(#5171): linter not ported yet
--- @[nolint has_nonempty_instance]
 structure Coalgebra (G : Comonad C) : Type max u₁ v₁ where
   /-- The underlying object associated to a coalgebra. -/
   A : C
@@ -288,8 +279,6 @@ namespace Coalgebra
 variable {G : Comonad C}
 
 /-- A morphism of Eilenberg-Moore coalgebras for the comonad `G`. -/
--- Porting note(#5171): linter not ported yet
---@[ext, nolint has_nonempty_instance]
 @[ext]
 structure Hom (A B : Coalgebra G) where
   /-- The underlying morphism associated to a morphism of coalgebras. -/
@@ -318,7 +307,7 @@ instance : CategoryStruct (Coalgebra G) where
   id := Hom.id
   comp := @Hom.comp _ _ _
 
--- Porting note (#11041): Adding `ext` lemma to help automation below.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Adding `ext` lemma to help automation below.
 @[ext]
 lemma Hom.ext' (X Y : Coalgebra G) (f g : X ⟶ Y) (h : f.f = g.f) : f = g := Hom.ext h
 
@@ -390,9 +379,7 @@ def adj : G.forget ⊣ G.cofree :=
     { homEquiv := fun X Y =>
         { toFun := fun f =>
             { f := X.a ≫ G.map f
-              h := by
-                dsimp
-                simp [← Coalgebra.coassoc_assoc] }
+              h := by simp [← Coalgebra.coassoc_assoc] }
           invFun := fun g => g.f ≫ G.ε.app Y
           left_inv := fun f => by
             dsimp

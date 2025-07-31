@@ -37,7 +37,7 @@ theorem norm_sub (h : SameRay ℝ x y) : ‖x - y‖ = |‖x‖ - ‖y‖| := by
   wlog hab : b ≤ a generalizing a b with H
   · rw [SameRay.sameRay_comm] at h
     rw [norm_sub_rev, abs_sub_comm]
-    exact H b a hb ha h (le_of_not_le hab)
+    exact H b a hb ha h (le_of_not_ge hab)
   rw [← sub_nonneg] at hab
   rw [← sub_smul, norm_smul_of_nonneg hab, norm_smul_of_nonneg ha, norm_smul_of_nonneg hb, ←
     sub_mul, abs_of_nonneg (mul_nonneg hab (norm_nonneg _))]
@@ -81,7 +81,7 @@ the unit vectors `‖x‖⁻¹ • x` and `‖y‖⁻¹ • y` are equal. -/
 theorem sameRay_iff_inv_norm_smul_eq : SameRay ℝ x y ↔ x = 0 ∨ y = 0 ∨ ‖x‖⁻¹ • x = ‖y‖⁻¹ • y := by
   rcases eq_or_ne x 0 with (rfl | hx); · simp [SameRay.zero_left]
   rcases eq_or_ne y 0 with (rfl | hy); · simp [SameRay.zero_right]
-  simp only [sameRay_iff_inv_norm_smul_eq_of_ne hx hy, *, false_or_iff]
+  simp only [sameRay_iff_inv_norm_smul_eq_of_ne hx hy, *, false_or]
 
 /-- Two vectors of the same norm are on the same ray if and only if they are equal. -/
 theorem sameRay_iff_of_norm_eq (h : ‖x‖ = ‖y‖) : SameRay ℝ x y ↔ x = y := by

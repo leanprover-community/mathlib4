@@ -3,9 +3,9 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.Set.Basic
 import Mathlib.Tactic.Monotonicity.Attr
 import Mathlib.Tactic.SetLike
+import Mathlib.Data.Set.Basic
 
 /-!
 # Typeclass for types with a set-like extensionality property
@@ -28,7 +28,7 @@ boilerplate for every `SetLike`: a `coe_sort`, a `coe` to set, a
 
 A typical subobject should be declared as:
 ```
-structure MySubobject (X : Type*) [ObjectTypeclass X] :=
+structure MySubobject (X : Type*) [ObjectTypeclass X] where
   (carrier : Set X)
   (op_mem' : ∀ {x : X}, x ∈ carrier → sorry ∈ carrier)
 
@@ -60,7 +60,7 @@ end MySubobject
 
 An alternative to `SetLike` could have been an extensional `Membership` typeclass:
 ```
-class ExtMembership (α : out_param <| Type u) (β : Type v) extends Membership α β :=
+class ExtMembership (α : out_param <| Type u) (β : Type v) extends Membership α β where
   (ext_iff : ∀ {s t : β}, s = t ↔ ∀ (x : α), x ∈ s ↔ x ∈ t)
 ```
 While this is equivalent, `SetLike` conveniently uses a carrier set projection directly.
@@ -70,6 +70,7 @@ While this is equivalent, `SetLike` conveniently uses a carrier set projection d
 subobjects
 -/
 
+assert_not_exists RelIso
 
 /-- A class to indicate that there is a canonical injection between `A` and `Set B`.
 
@@ -91,7 +92,7 @@ Then you should *not* repeat the `outParam` declaration so `SetLike` will supply
 This ensures your subclass will not have issues with synthesis of the `[Mul M]` parameter starting
 before the value of `M` is known.
 -/
-@[notation_class * carrier Simps.findCoercionArgs]
+@[notation_class* carrier Simps.findCoercionArgs]
 class SetLike (A : Type*) (B : outParam Type*) where
   /-- The coercion from a term of a `SetLike` to its corresponding `Set`. -/
   protected coe : A → Set B
@@ -106,7 +107,7 @@ variable {A : Type*} {B : Type*} [i : SetLike A B]
 instance : CoeTC A (Set B) where coe := SetLike.coe
 
 instance (priority := 100) instMembership : Membership B A :=
-  ⟨fun x p => x ∈ (p : Set B)⟩
+  ⟨fun p x => x ∈ (p : Set B)⟩
 
 instance (priority := 100) : CoeSort A (Type _) :=
   ⟨fun p => { x : B // x ∈ p }⟩
@@ -117,13 +118,13 @@ open Lean PrettyPrinter.Delaborator SubExpr
 /-- For terms that match the `CoeSort` instance's body, pretty print as `↥S`
 rather than as `{ x // x ∈ S }`. The discriminating feature is that membership
 uses the `SetLike.instMembership` instance. -/
-@[delab app.Subtype]
+@[app_delab Subtype]
 def delabSubtypeSetLike : Delab := whenPPOption getPPNotation do
   let #[_, .lam n _ body _] := (← getExpr).getAppArgs | failure
   guard <| body.isAppOf ``Membership.mem
-  let #[_, _, inst, .bvar 0, _] := body.getAppArgs | failure
+  let #[_, _, inst, _, .bvar 0] := body.getAppArgs | failure
   guard <| inst.isAppOfArity ``instMembership 3
-  let S ← withAppArg <| withBindingBody n <| withNaryArg 4 delab
+  let S ← withAppArg <| withBindingBody n <| withNaryArg 3 delab
   `(↥$S)
 
 end Delab
@@ -172,17 +173,17 @@ theorem mem_coe {x : B} : x ∈ (p : Set B) ↔ x ∈ p :=
 theorem coe_eq_coe {x y : p} : (x : B) = y ↔ x = y :=
   Subtype.ext_iff_val.symm
 
--- Porting note: this is not necessary anymore due to the way coercions work
-
 @[simp]
 theorem coe_mem (x : p) : (x : B) ∈ p :=
   x.2
 
-@[aesop 5% apply (rule_sets := [SetLike])]
+@[aesop 5% (rule_sets := [SetLike!])]
 lemma mem_of_subset {s : Set B} (hp : s ⊆ p) {x : B} (hx : x ∈ s) : x ∈ p := hp hx
 
--- Porting note: removed `@[simp]` because `simpNF` linter complained
+@[simp]
 protected theorem eta (x : p) (hx : (x : B) ∈ p) : (⟨x, hx⟩ : p) = x := rfl
+
+@[simp] lemma setOf_mem_eq (a : A) : {b | b ∈ a} = a := rfl
 
 instance (priority := 100) instPartialOrder : PartialOrder A :=
   { PartialOrder.lift (SetLike.coe : A → Set B) coe_injective with
@@ -191,16 +192,16 @@ instance (priority := 100) instPartialOrder : PartialOrder A :=
 theorem le_def {S T : A} : S ≤ T ↔ ∀ ⦃x : B⦄, x ∈ S → x ∈ T :=
   Iff.rfl
 
-@[simp, norm_cast]
-theorem coe_subset_coe {S T : A} : (S : Set B) ⊆ T ↔ S ≤ T :=
-  Iff.rfl
+@[simp, norm_cast] lemma coe_subset_coe {S T : A} : (S : Set B) ⊆ T ↔ S ≤ T := .rfl
+@[simp, norm_cast] lemma coe_ssubset_coe {S T : A} : (S : Set B) ⊂ T ↔ S < T := .rfl
+
+@[gcongr low] -- lower priority than `Set.mem_of_subset_of_mem`
+protected alias ⟨GCongr.mem_of_le_of_mem, _⟩ := le_def
+@[gcongr] protected alias ⟨_, GCongr.coe_subset_coe⟩ := coe_subset_coe
+@[gcongr] protected alias ⟨_, GCongr.coe_ssubset_coe⟩ := coe_ssubset_coe
 
 @[mono]
 theorem coe_mono : Monotone (SetLike.coe : A → Set B) := fun _ _ => coe_subset_coe.mpr
-
-@[simp, norm_cast]
-theorem coe_ssubset_coe {S T : A} : (S : Set B) ⊂ T ↔ S < T :=
-  Iff.rfl
 
 @[mono]
 theorem coe_strictMono : StrictMono (SetLike.coe : A → Set B) := fun _ _ => coe_ssubset_coe.mpr
@@ -212,6 +213,28 @@ theorem exists_of_lt : p < q → ∃ x ∈ q, x ∉ p :=
   Set.exists_of_ssubset
 
 theorem lt_iff_le_and_exists : p < q ↔ p ≤ q ∧ ∃ x ∈ q, x ∉ p := by
-  rw [lt_iff_le_not_le, not_le_iff_exists]
+  rw [lt_iff_le_not_ge, not_le_iff_exists]
+
+/-- membership is inherited from `Set X` -/
+abbrev instSubtypeSet {X} {p : Set X → Prop} : SetLike {s // p s} X where
+  coe := (↑)
+  coe_injective' := Subtype.val_injective
+
+/-- membership is inherited from `S` -/
+abbrev instSubtype {X S} [SetLike S X] {p : S → Prop} : SetLike {s // p s} X where
+  coe := (↑)
+  coe_injective' := SetLike.coe_injective.comp Subtype.val_injective
+
+section
+
+attribute [local instance] instSubtypeSet instSubtype
+
+@[simp] lemma mem_mk_set {X} {p : Set X → Prop} {U : Set X} {h : p U} {x : X} :
+    x ∈ Subtype.mk U h ↔ x ∈ U := Iff.rfl
+
+@[simp] lemma mem_mk {X S} [SetLike S X] {p : S → Prop} {U : S} {h : p U} {x : X} :
+    x ∈ Subtype.mk U h ↔ x ∈ U := Iff.rfl
+
+end
 
 end SetLike

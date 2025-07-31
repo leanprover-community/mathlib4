@@ -3,11 +3,8 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Edward Ayers
 -/
-import Mathlib.CategoryTheory.Comma.Over
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
-import Mathlib.CategoryTheory.Yoneda
-import Mathlib.Data.Set.Lattice
-import Mathlib.Order.CompleteLattice
+import Mathlib.Data.Set.BooleanAlgebra
 
 /-!
 # Theory of sieves
@@ -50,7 +47,7 @@ noncomputable instance : Inhabited (Presieve X) :=
 /-- The full subcategory of the over category `C/X` consisting of arrows which belong to a
     presieve on `X`. -/
 abbrev category {X : C} (P : Presieve X) :=
-  FullSubcategory fun f : Over X => P f.hom
+  ObjectProperty.FullSubcategory fun f : Over X => P f.hom
 
 /-- Construct an object of `P.category`. -/
 abbrev categoryMk {X : C} (P : Presieve X) {Y : C} (f : Y ⟶ X) (hf : P f) : P.category :=
@@ -60,12 +57,12 @@ abbrev categoryMk {X : C} (P : Presieve X) {Y : C} (f : Y ⟶ X) (hf : P f) : P.
     the natural functor from the full subcategory of the over category `C/X` consisting
     of arrows in `S` to `C`. -/
 abbrev diagram (S : Presieve X) : S.category ⥤ C :=
-  fullSubcategoryInclusion _ ⋙ Over.forget X
+  ObjectProperty.ι _ ⋙ Over.forget X
 
 /-- Given a sieve `S` on `X : C`, its associated cocone `S.cocone` is defined to be
     the natural cocone over the diagram defined above with cocone point `X`. -/
 abbrev cocone (S : Presieve X) : Cocone S.diagram :=
-  (Over.forgetCocone X).whisker (fullSubcategoryInclusion _)
+  (Over.forgetCocone X).whisker (ObjectProperty.ι _)
 
 /-- Given a set of arrows `S` all with codomain `X`, and a set of arrows with codomain `Y` for each
 `f : Y ⟶ X` in `S`, produce a set of arrows with codomain `X`:
@@ -73,6 +70,34 @@ abbrev cocone (S : Presieve X) : Cocone S.diagram :=
 -/
 def bind (S : Presieve X) (R : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄, S f → Presieve Y) : Presieve X := fun Z h =>
   ∃ (Y : C) (g : Z ⟶ Y) (f : Y ⟶ X) (H : S f), R H g ∧ g ≫ f = h
+
+/-- Structure which contains the data and properties for a morphism `h` satisfying
+`Presieve.bind S R h`. -/
+structure BindStruct (S : Presieve X) (R : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄, S f → Presieve Y)
+    {Z : C} (h : Z ⟶ X) where
+  /-- the intermediate object -/
+  Y : C
+  /-- a morphism in the family of presieves `R` -/
+  g : Z ⟶ Y
+  /-- a morphism in the presieve `S` -/
+  f : Y ⟶ X
+  hf : S f
+  hg : R hf g
+  fac : g ≫ f = h
+
+attribute [reassoc (attr := simp)] BindStruct.fac
+
+/-- If a morphism `h` satisfies `Presieve.bind S R h`, this is a choice of a structure
+in `BindStruct S R h`. -/
+noncomputable def bind.bindStruct {S : Presieve X} {R : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄, S f → Presieve Y}
+    {Z : C} {h : Z ⟶ X} (H : bind S R h) : BindStruct S R h :=
+  Nonempty.some (by
+    obtain ⟨Y, g, f, hf, hg, fac⟩ := H
+    exact ⟨{ hf := hf, hg := hg, fac := fac, .. }⟩)
+
+lemma BindStruct.bind {S : Presieve X} {R : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄, S f → Presieve Y}
+    {Z : C} {h : Z ⟶ X} (b : BindStruct S R h) : bind S R h :=
+  ⟨b.Y, b.g, b.f, b.hf, b.hg, b.fac⟩
 
 @[simp]
 theorem bind_comp {S : Presieve X} {R : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, S f → Presieve Y} {g : Z ⟶ Y}
@@ -82,11 +107,11 @@ theorem bind_comp {S : Presieve X} {R : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, S f �
 -- Porting note: it seems the definition of `Presieve` must be unfolded in order to define
 --   this inductive type, it was thus renamed `singleton'`
 -- Note we can't make this into `HasSingleton` because of the out-param.
-/-- The singleton presieve.  -/
+/-- The singleton presieve. -/
 inductive singleton' : ⦃Y : C⦄ → (Y ⟶ X) → Prop
   | mk : singleton' f
 
-/-- The singleton presieve.  -/
+/-- The singleton presieve. -/
 def singleton : Presieve X := singleton' f
 
 lemma singleton.mk {f : Y ⟶ X} : singleton f f := singleton'.mk
@@ -134,22 +159,21 @@ theorem ofArrows_pUnit : (ofArrows _ fun _ : PUnit => f) = singleton f := by
     exact ofArrows.mk PUnit.unit
 
 theorem ofArrows_pullback [HasPullbacks C] {ι : Type*} (Z : ι → C) (g : ∀ i : ι, Z i ⟶ X) :
-    (ofArrows (fun i => pullback (g i) f) fun i => pullback.snd _ _) =
+    (ofArrows (fun i => pullback (g i) f) fun _ => pullback.snd _ _) =
       pullbackArrows f (ofArrows Z g) := by
   funext T
   ext h
   constructor
   · rintro ⟨hk⟩
     exact pullbackArrows.mk _ _ (ofArrows.mk hk)
-  · rintro ⟨W, k, hk₁⟩
-    cases' hk₁ with i hi
+  · rintro ⟨W, k, ⟨_⟩⟩
     apply ofArrows.mk
 
 theorem ofArrows_bind {ι : Type*} (Z : ι → C) (g : ∀ i : ι, Z i ⟶ X)
     (j : ∀ ⦃Y⦄ (f : Y ⟶ X), ofArrows Z g f → Type*) (W : ∀ ⦃Y⦄ (f : Y ⟶ X) (H), j f H → C)
     (k : ∀ ⦃Y⦄ (f : Y ⟶ X) (H i), W f H i ⟶ Y) :
-    ((ofArrows Z g).bind fun Y f H => ofArrows (W f H) (k f H)) =
-      ofArrows (fun i : Σi, j _ (ofArrows.mk i) => W (g i.1) _ i.2) fun ij =>
+    ((ofArrows Z g).bind fun _ f H => ofArrows (W f H) (k f H)) =
+      ofArrows (fun i : Σ i, j _ (ofArrows.mk i) => W (g i.1) _ i.2) fun ij =>
         k (g ij.1) _ ij.2 ≫ g ij.1 := by
   funext Y
   ext f
@@ -162,8 +186,15 @@ theorem ofArrows_bind {ι : Type*} (Z : ι → C) (g : ∀ i : ι, Z i ⟶ X)
 theorem ofArrows_surj {ι : Type*} {Y : ι → C} (f : ∀ i, Y i ⟶ X) {Z : C} (g : Z ⟶ X)
     (hg : ofArrows Y f g) : ∃ (i : ι) (h : Y i = Z),
     g = eqToHom h.symm ≫ f i := by
-  cases' hg with i
+  obtain ⟨i⟩ := hg
   exact ⟨i, rfl, by simp only [eqToHom_refl, id_comp]⟩
+
+/-- A convenient constructor for a refinement of a presieve of the form `Presieve.ofArrows`.
+This contains a sieve obtained by `Sieve.bind` and `Sieve.ofArrows`, see
+`Presieve.bind_ofArrows_le_bindOfArrows`, but has better definitional properties. -/
+inductive bindOfArrows {ι : Type*} {X : C} (Y : ι → C)
+    (f : ∀ i, Y i ⟶ X) (R : ∀ i, Presieve (Y i)) : Presieve X
+  | mk (i : ι) {Z : C} (g : Z ⟶ Y i) (hg : R i g) : bindOfArrows Y f R (g ≫ f i)
 
 /-- Given a presieve on `F(X)`, we can define a presieve on `X` by taking the preimage via `F`. -/
 def functorPullback (R : Presieve (F.obj X)) : Presieve X := fun _ f => R (F.map f)
@@ -199,7 +230,6 @@ by taking the sieve generated by the image via `F`.
 def functorPushforward (S : Presieve X) : Presieve (F.obj X) := fun Y f =>
   ∃ (Z : C) (g : Z ⟶ X) (h : Y ⟶ F.obj Z), S g ∧ f = h ≫ F.map g
 
--- Porting note: removed @[nolint hasNonemptyInstance]
 /-- An auxiliary definition in order to fix the choice of the preimages between various definitions.
 -/
 structure FunctorPushforwardStructure (S : Presieve X) {Y} (f : Y ⟶ F.obj X) where
@@ -271,7 +301,7 @@ open Lattice
 
 /-- The supremum of a collection of sieves: the union of them all. -/
 protected def sup (𝒮 : Set (Sieve X)) : Sieve X where
-  arrows Y := { f | ∃ S ∈ 𝒮, Sieve.arrows S f }
+  arrows _ := { f | ∃ S ∈ 𝒮, Sieve.arrows S f }
   downward_closed {_ _ f} hf _ := by
     obtain ⟨S, hS, hf⟩ := hf
     exact ⟨S, hS, S.downward_closed hf _⟩
@@ -283,12 +313,12 @@ protected def inf (𝒮 : Set (Sieve X)) : Sieve X where
 
 /-- The union of two sieves is a sieve. -/
 protected def union (S R : Sieve X) : Sieve X where
-  arrows Y f := S f ∨ R f
+  arrows _ f := S f ∨ R f
   downward_closed := by rintro _ _ _ (h | h) g <;> simp [h]
 
 /-- The intersection of two sieves is a sieve. -/
 protected def inter (S R : Sieve X) : Sieve X where
-  arrows Y f := S f ∧ R f
+  arrows _ f := S f ∧ R f
   downward_closed := by
     rintro _ _ _ ⟨h₁, h₂⟩ g
     simp [h₁, h₂]
@@ -298,9 +328,9 @@ We generate this directly rather than using the galois insertion for nicer defin
 -/
 instance : CompleteLattice (Sieve X) where
   le S R := ∀ ⦃Y⦄ (f : Y ⟶ X), S f → R f
-  le_refl S f q := id
-  le_trans S₁ S₂ S₃ S₁₂ S₂₃ Y f h := S₂₃ _ (S₁₂ _ h)
-  le_antisymm S R p q := Sieve.ext fun Y f => ⟨p _, q _⟩
+  le_refl _ _ _ := id
+  le_trans _ _ _ S₁₂ S₂₃ _ _ h := S₂₃ _ (S₁₂ _ h)
+  le_antisymm _ _ p q := Sieve.ext fun _ _ => ⟨p _, q _⟩
   top :=
     { arrows := fun _ => Set.univ
       downward_closed := fun _ _ => ⟨⟩ }
@@ -311,8 +341,8 @@ instance : CompleteLattice (Sieve X) where
   inf := Sieve.inter
   sSup := Sieve.sup
   sInf := Sieve.inf
-  le_sSup 𝒮 S hS Y f hf := ⟨S, hS, hf⟩
-  sSup_le := fun s a ha Y f ⟨b, hb, hf⟩ => (ha b hb) _ hf
+  le_sSup _ S hS _ _ hf := ⟨S, hS, hf⟩
+  sSup_le := fun _ _ ha _ _ ⟨b, hb, hf⟩ => (ha b hb) _ hf
   sInf_le _ _ hS _ _ h := h _ hS
   le_sInf _ _ hS _ _ hf _ hR := hS _ hR _ hf
   le_sup_left _ _ _ _ := Or.inl
@@ -366,19 +396,23 @@ produce a sieve on `X`.
 -/
 @[simps]
 def bind (S : Presieve X) (R : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄, S f → Sieve Y) : Sieve X where
-  arrows := S.bind fun Y f h => R h
+  arrows := S.bind fun _ _ h => R h
   downward_closed := by
     rintro Y Z f ⟨W, f, h, hh, hf, rfl⟩ g
     exact ⟨_, g ≫ f, _, hh, by simp [hf]⟩
 
+/-- Structure which contains the data and properties for a morphism `h` satisfying
+`Sieve.bind S R h`. -/
+abbrev BindStruct (S : Presieve X) (R : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄, S f → Sieve Y)
+    {Z : C} (h : Z ⟶ X) :=
+  Presieve.BindStruct S (fun _ _ hf ↦ R hf) h
+
 open Order Lattice
 
 theorem generate_le_iff (R : Presieve X) (S : Sieve X) : generate R ≤ S ↔ R ≤ S :=
-  ⟨fun H Y g hg => H _ ⟨_, 𝟙 _, _, hg, id_comp _⟩, fun ss Y f => by
+  ⟨fun H _ _ hg => H _ ⟨_, 𝟙 _, _, hg, id_comp _⟩, fun ss Y f => by
     rintro ⟨Z, f, g, hg, rfl⟩
     exact S.downward_closed (ss Z hg) f⟩
-
-@[deprecated (since := "2024-07-13")] alias sets_iff_generate := generate_le_iff
 
 /-- Show that there is a galois insertion (generate, set_over). -/
 def giGenerate : GaloisInsertion (generate : Presieve X → Sieve X) arrows where
@@ -420,17 +454,17 @@ lemma comp_mem_iff (i : X ⟶ Y) (f : Y ⟶ Z) [IsIso i] (S : Sieve Z) :
   convert S.downward_closed H (inv i)
   simp
 
-/-- The sieve of `X` generated by family of morphisms `Y i ⟶ X`. -/
-abbrev ofArrows {I : Type*} {X : C} (Y : I → C) (f : ∀ i, Y i ⟶ X) :
-    Sieve X :=
-  generate (Presieve.ofArrows Y f)
+section
 
-lemma ofArrows_mk {I : Type*} {X : C} (Y : I → C) (f : ∀ i, Y i ⟶ X) (i : I) :
-    ofArrows Y f (f i) :=
+variable {I : Type*} {X : C} (Y : I → C) (f : ∀ i, Y i ⟶ X)
+
+/-- The sieve of `X` generated by family of morphisms `Y i ⟶ X`. -/
+abbrev ofArrows : Sieve X := generate (Presieve.ofArrows Y f)
+
+lemma ofArrows_mk (i : I) : ofArrows Y f (f i) :=
   ⟨_, 𝟙 _, _, ⟨i⟩, by simp⟩
 
-lemma mem_ofArrows_iff {I : Type*} {X : C} (Y : I → C) (f : ∀ i, Y i ⟶ X)
-    {W : C} (g : W ⟶ X) :
+lemma mem_ofArrows_iff {W : C} (g : W ⟶ X) :
     ofArrows Y f g ↔ ∃ (i : I) (a : W ⟶ Y i), g = a ≫ f i := by
   constructor
   · rintro ⟨T, a, b, ⟨i⟩, rfl⟩
@@ -438,6 +472,30 @@ lemma mem_ofArrows_iff {I : Type*} {X : C} (Y : I → C) (f : ∀ i, Y i ⟶ X)
   · rintro ⟨i, a, rfl⟩
     apply downward_closed _ (ofArrows_mk Y f i)
 
+variable {Y f} {W : C} {g : W ⟶ X} (hg : ofArrows Y f g)
+
+include hg in
+lemma ofArrows.exists : ∃ (i : I) (h : W ⟶ Y i), g = h ≫ f i := by
+  obtain ⟨_, h, _, ⟨i⟩, rfl⟩ := hg
+  exact ⟨i, h, rfl⟩
+
+/-- When `hg : Sieve.ofArrows Y f g`, this is a choice of `i` such that `g`
+factors through `f i`. -/
+noncomputable def ofArrows.i : I := (ofArrows.exists hg).choose
+
+/-- When `hg : Sieve.ofArrows Y f g`, this is a morphism `h : W ⟶ Y (i hg)` such
+that `h ≫ f (i hg) = g`. -/
+noncomputable def ofArrows.h : W ⟶ Y (i hg) := (ofArrows.exists hg).choose_spec.choose
+
+@[reassoc (attr := simp)]
+lemma ofArrows.fac : h hg ≫ f (i hg) = g :=
+  (ofArrows.exists hg).choose_spec.choose_spec.symm
+
+end
+
+/-- The sieve generated by two morphisms. -/
+abbrev ofTwoArrows {U V X : C} (i : U ⟶ X) (j : V ⟶ X) : Sieve X :=
+  Sieve.ofArrows (Y := pairFunction U V) (fun k ↦ WalkingPair.casesOn k i j)
 
 /-- The sieve of `X : C` that is generated by a family of objects `Y : I → C`:
 it consists of morphisms to `X` which factor through at least one of the `Y i`. -/
@@ -471,7 +529,7 @@ lemma ofArrows_eq_ofObjects {X : C} (hX : IsTerminal X)
     That is, `Sieve.pullback S h := (≫ h) '⁻¹ S`. -/
 @[simps]
 def pullback (h : Y ⟶ X) (S : Sieve X) : Sieve Y where
-  arrows Y sl := S (sl ≫ h)
+  arrows _ sl := S (sl ≫ h)
   downward_closed g := by simp [g]
 
 @[simp]
@@ -488,11 +546,14 @@ theorem pullback_comp {f : Y ⟶ X} {g : Z ⟶ Y} (S : Sieve X) :
 theorem pullback_inter {f : Y ⟶ X} (S R : Sieve X) :
     (S ⊓ R).pullback f = S.pullback f ⊓ R.pullback f := by simp [Sieve.ext_iff]
 
-theorem pullback_eq_top_iff_mem (f : Y ⟶ X) : S f ↔ S.pullback f = ⊤ := by
+theorem mem_iff_pullback_eq_top (f : Y ⟶ X) : S f ↔ S.pullback f = ⊤ := by
   rw [← id_mem_iff_eq_top, pullback_apply, id_comp]
 
+@[deprecated (since := "2025-02-28")]
+alias pullback_eq_top_iff_mem := mem_iff_pullback_eq_top
+
 theorem pullback_eq_top_of_mem (S : Sieve X) {f : Y ⟶ X} : S f → S.pullback f = ⊤ :=
-  (pullback_eq_top_iff_mem f).1
+  (mem_iff_pullback_eq_top f).1
 
 lemma pullback_ofObjects_eq_top
     {I : Type*} (Y : I → C) {X : C} {i : I} (g : X ⟶ Y i) :
@@ -507,7 +568,7 @@ factors through some `g : Z ⟶ Y` which is in `R`.
 -/
 @[simps]
 def pushforward (f : Y ⟶ X) (R : Sieve Y) : Sieve X where
-  arrows Z gf := ∃ g, g ≫ f = gf ∧ R g
+  arrows _ gf := ∃ g, g ≫ f = gf ∧ R g
   downward_closed := fun ⟨j, k, z⟩ h => ⟨h ≫ j, by simp [k], by simp [z]⟩
 
 theorem pushforward_apply_comp {R : Sieve Y} {Z : C} {g : Z ⟶ Y} (hg : R g) (f : Y ⟶ X) :
@@ -568,9 +629,7 @@ theorem pullbackArrows_comm [HasPullbacks C] {X Y : C} (f : Y ⟶ X) (R : Presie
     Sieve.generate (R.pullbackArrows f) = (Sieve.generate R).pullback f := by
   ext W g
   constructor
-  · rintro ⟨_, h, k, hk, rfl⟩
-    cases' hk with W g hg
-    change (Sieve.generate R).pullback f (h ≫ pullback.snd g f)
+  · rintro ⟨_, h, k, ⟨W, g, hg⟩, rfl⟩
     rw [Sieve.pullback_apply, assoc, ← pullback.condition, ← assoc]
     exact Sieve.downward_closed _ (by exact Sieve.le_generate R W hg) (h ≫ pullback.fst g f)
   · rintro ⟨W, h, k, hk, comm⟩
@@ -756,6 +815,23 @@ lemma pullback_functorPushforward_equivalence_eq {X : C} (S : Sieve X) :
     Sieve.pullback (e.unit.app X) (Sieve.functorPushforward e.inverse
       (Sieve.functorPushforward e.functor S)) = S := by ext; simp
 
+lemma mem_functorPushforward_iff_of_full [F.Full] {X Y : C} (R : Sieve X) (f : F.obj Y ⟶ F.obj X) :
+    (R.arrows.functorPushforward F) f ↔ ∃ (g : Y ⟶ X), F.map g = f ∧ R g := by
+  refine ⟨fun ⟨Z, g, h, hg, hcomp⟩ ↦ ?_, fun ⟨g, hcomp, hg⟩ ↦ ?_⟩
+  · obtain ⟨h', hh'⟩ := F.map_surjective h
+    use h' ≫ g
+    simp only [Functor.map_comp, hh', hcomp, true_and]
+    apply R.downward_closed hg
+  · use Y, g, 𝟙 _, hg
+    simp [hcomp]
+
+lemma mem_functorPushforward_iff_of_full_of_faithful [F.Full] [F.Faithful]
+    {X Y : C} (R : Sieve X) (f : Y ⟶ X) :
+    (R.arrows.functorPushforward F) (F.map f) ↔ R f := by
+  rw [Sieve.mem_functorPushforward_iff_of_full]
+  refine ⟨fun ⟨g, hcomp, hg⟩ ↦ ?_, fun hf ↦ ⟨f, rfl, hf⟩⟩
+  rwa [← F.map_injective hcomp]
+
 end Functor
 
 /-- A sieve induces a presheaf. -/
@@ -768,11 +844,11 @@ def functor (S : Sieve X) : Cᵒᵖ ⥤ Type v₁ where
 presheaves.
 -/
 @[simps]
-def natTransOfLe {S T : Sieve X} (h : S ≤ T) : S.functor ⟶ T.functor where app Y f := ⟨f.1, h _ f.2⟩
+def natTransOfLe {S T : Sieve X} (h : S ≤ T) : S.functor ⟶ T.functor where app _ f := ⟨f.1, h _ f.2⟩
 
 /-- The natural inclusion from the functor induced by a sieve to the yoneda embedding. -/
 @[simps]
-def functorInclusion (S : Sieve X) : S.functor ⟶ yoneda.obj X where app Y f := f.1
+def functorInclusion (S : Sieve X) : S.functor ⟶ yoneda.obj X where app _ f := f.1
 
 theorem natTransOfLe_comm {S T : Sieve X} (h : S ≤ T) :
     natTransOfLe h ≫ functorInclusion _ = functorInclusion _ :=
@@ -807,8 +883,18 @@ theorem sieveOfSubfunctor_functorInclusion : sieveOfSubfunctor S.functorInclusio
     exact ⟨⟨_, hf⟩, rfl⟩
 
 instance functorInclusion_top_isIso : IsIso (⊤ : Sieve X).functorInclusion :=
-  ⟨⟨{ app := fun Y a => ⟨a, ⟨⟩⟩ }, rfl, rfl⟩⟩
+  ⟨⟨{ app := fun _ a => ⟨a, ⟨⟩⟩ }, rfl, rfl⟩⟩
 
 end Sieve
+
+lemma Presieve.bind_ofArrows_le_bindOfArrows {ι : Type*} {X : C} (Z : ι → C)
+    (f : ∀ i, Z i ⟶ X) (R : ∀ i, Presieve (Z i)) :
+    Sieve.bind (Sieve.ofArrows Z f)
+      (fun _ _ hg ↦ Sieve.pullback
+        (Sieve.ofArrows.h hg) (.generate <| R (Sieve.ofArrows.i hg))) ≤
+    Sieve.generate (Presieve.bindOfArrows Z f R) := by
+  rintro T g ⟨W, v, v', hv', ⟨S, u, u', h, hu⟩, rfl⟩
+  rw [← Sieve.ofArrows.fac hv', ← reassoc_of% hu]
+  exact ⟨S, u, u' ≫ f _, ⟨_, _, h⟩, rfl⟩
 
 end CategoryTheory

@@ -3,9 +3,9 @@ Copyright (c) 2023 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.Group.Action.Prod
-import Mathlib.Algebra.Ring.Int
+import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Algebra.Group.Prod
 
 /-!
 # Typeclasses for power-associative structures
@@ -116,13 +116,13 @@ instance Monoid.PowAssoc : NatPowAssoc M where
 @[simp, norm_cast]
 theorem Nat.cast_npow (R : Type*) [NonAssocSemiring R] [Pow R ℕ] [NatPowAssoc R] (n m : ℕ) :
     (↑(n ^ m) : R) = (↑n : R) ^ m := by
-  induction' m with m ih
-  · simp only [pow_zero, Nat.cast_one, npow_zero]
-  · rw [npow_add, npow_add, Nat.cast_mul, ih, npow_one, npow_one]
+  induction m with
+  | zero => simp only [pow_zero, Nat.cast_one, npow_zero]
+  | succ m ih => rw [npow_add, npow_add, Nat.cast_mul, ih, npow_one, npow_one]
 
 @[simp, norm_cast]
 theorem Int.cast_npow (R : Type*) [NonAssocRing R] [Pow R ℕ] [NatPowAssoc R]
-    (n : ℤ) : ∀(m : ℕ), @Int.cast R NonAssocRing.toIntCast (n ^ m) = (n : R) ^ m
+    (n : ℤ) : ∀ (m : ℕ), @Int.cast R NonAssocRing.toIntCast (n ^ m) = (n : R) ^ m
   | 0 => by
     rw [pow_zero, npow_zero, Int.cast_one]
   | m + 1 => by

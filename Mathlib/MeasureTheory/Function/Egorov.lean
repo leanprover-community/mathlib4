@@ -15,22 +15,21 @@ convergence in measure.
 
 ## Main results
 
-* `MeasureTheory.Egorov`: Egorov's theorem which shows that a sequence of almost everywhere
-  convergent functions converges uniformly except on an arbitrarily small set.
+* `MeasureTheory.tendstoUniformlyOn_of_ae_tendsto`: Egorov's theorem which shows that a sequence of
+  almost everywhere convergent functions converges uniformly except on an arbitrarily small set.
 
 -/
 
 
 noncomputable section
 
-open scoped Classical
 open MeasureTheory NNReal ENNReal Topology
 
 namespace MeasureTheory
 
 open Set Filter TopologicalSpace
 
-variable {α β ι : Type*} {m : MeasurableSpace α} [MetricSpace β] {μ : Measure α}
+variable {α β ι : Type*} {m : MeasurableSpace α} [PseudoEMetricSpace β] {μ : Measure α}
 
 namespace Egorov
 
@@ -40,12 +39,12 @@ set of elements such that `f k x` and `g x` are separated by at least `1 / (n + 
 
 This definition is useful for Egorov's theorem. -/
 def notConvergentSeq [Preorder ι] (f : ι → α → β) (g : α → β) (n : ℕ) (j : ι) : Set α :=
-  ⋃ (k) (_ : j ≤ k), { x | 1 / (n + 1 : ℝ) < dist (f k x) (g x) }
+  ⋃ (k) (_ : j ≤ k), { x | (n : ℝ≥0∞)⁻¹ < edist (f k x) (g x) }
 
-variable {n : ℕ} {i j : ι} {s : Set α} {ε : ℝ} {f : ι → α → β} {g : α → β}
+variable {n : ℕ} {j : ι} {s : Set α} {ε : ℝ} {f : ι → α → β} {g : α → β}
 
 theorem mem_notConvergentSeq_iff [Preorder ι] {x : α} :
-    x ∈ notConvergentSeq f g n j ↔ ∃ k ≥ j, 1 / (n + 1 : ℝ) < dist (f k x) (g x) := by
+    x ∈ notConvergentSeq f g n j ↔ ∃ k ≥ j, (n : ℝ≥0∞)⁻¹ < edist (f k x) (g x) := by
   simp_rw [notConvergentSeq, Set.mem_iUnion, exists_prop, mem_setOf]
 
 theorem notConvergentSeq_antitone [Preorder ι] : Antitone (notConvergentSeq f g n) :=
@@ -54,13 +53,13 @@ theorem notConvergentSeq_antitone [Preorder ι] : Antitone (notConvergentSeq f g
 theorem measure_inter_notConvergentSeq_eq_zero [SemilatticeSup ι] [Nonempty ι]
     (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) (n : ℕ) :
     μ (s ∩ ⋂ j, notConvergentSeq f g n j) = 0 := by
-  simp_rw [Metric.tendsto_atTop, ae_iff] at hfg
+  simp_rw [EMetric.tendsto_atTop, ae_iff] at hfg
   rw [← nonpos_iff_eq_zero, ← hfg]
   refine measure_mono fun x => ?_
   simp only [Set.mem_inter_iff, Set.mem_iInter, mem_notConvergentSeq_iff]
   push_neg
   rintro ⟨hmem, hx⟩
-  refine ⟨hmem, 1 / (n + 1 : ℝ), Nat.one_div_pos_of_nat, fun N => ?_⟩
+  refine ⟨hmem, (n : ℝ≥0∞)⁻¹, by simp, fun N => ?_⟩
   obtain ⟨n, hn₁, hn₂⟩ := hx N
   exact ⟨n, hn₁, hn₂.le⟩
 
@@ -69,19 +68,20 @@ theorem notConvergentSeq_measurableSet [Preorder ι] [Countable ι]
     MeasurableSet (notConvergentSeq f g n j) :=
   MeasurableSet.iUnion fun k =>
     MeasurableSet.iUnion fun _ =>
-      StronglyMeasurable.measurableSet_lt stronglyMeasurable_const <| (hf k).dist hg
+      StronglyMeasurable.measurableSet_lt stronglyMeasurable_const <| (hf k).edist hg
 
 theorem measure_notConvergentSeq_tendsto_zero [SemilatticeSup ι] [Countable ι]
     (hf : ∀ n, StronglyMeasurable (f n)) (hg : StronglyMeasurable g) (hsm : MeasurableSet s)
     (hs : μ s ≠ ∞) (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) (n : ℕ) :
     Tendsto (fun j => μ (s ∩ notConvergentSeq f g n j)) atTop (𝓝 0) := by
-  cases' isEmpty_or_nonempty ι with h h
+  rcases isEmpty_or_nonempty ι with h | h
   · have : (fun j => μ (s ∩ notConvergentSeq f g n j)) = fun j => 0 := by
       simp only [eq_iff_true_of_subsingleton]
     rw [this]
     exact tendsto_const_nhds
   rw [← measure_inter_notConvergentSeq_eq_zero hfg n, Set.inter_iInter]
-  refine tendsto_measure_iInter (fun n => hsm.inter <| notConvergentSeq_measurableSet hf hg)
+  refine tendsto_measure_iInter_atTop
+    (fun n ↦ (hsm.inter <| notConvergentSeq_measurableSet hf hg).nullMeasurableSet)
     (fun k l hkl => Set.inter_subset_inter_right _ <| notConvergentSeq_antitone hkl)
     ⟨h.some, ne_top_of_le_ne_top hs (measure_mono Set.inter_subset_left)⟩
 
@@ -154,9 +154,9 @@ theorem tendstoUniformlyOn_diff_iUnionNotConvergentSeq (hε : 0 < ε)
     (hf : ∀ n, StronglyMeasurable (f n)) (hg : StronglyMeasurable g) (hsm : MeasurableSet s)
     (hs : μ s ≠ ∞) (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) :
     TendstoUniformlyOn f g atTop (s \ Egorov.iUnionNotConvergentSeq hε hf hg hsm hs hfg) := by
-  rw [Metric.tendstoUniformlyOn_iff]
+  rw [EMetric.tendstoUniformlyOn_iff]
   intro δ hδ
-  obtain ⟨N, hN⟩ := exists_nat_one_div_lt hδ
+  obtain ⟨N, hN⟩ := ENNReal.exists_inv_nat_lt hδ.ne'
   rw [eventually_atTop]
   refine ⟨Egorov.notConvergentSeqLTIndex (half_pos hε) hf hg hsm hs hfg N, fun n hn x hx => ?_⟩
   simp only [Set.mem_diff, Egorov.iUnionNotConvergentSeq, not_exists, Set.mem_iUnion,
@@ -165,12 +165,12 @@ theorem tendstoUniformlyOn_diff_iUnionNotConvergentSeq (hε : 0 < ε)
   specialize hx hxs N
   rw [Egorov.mem_notConvergentSeq_iff] at hx
   push_neg at hx
-  rw [dist_comm]
+  rw [edist_comm]
   exact lt_of_le_of_lt (hx n hn) hN
 
 end Egorov
 
-variable [SemilatticeSup ι] [Nonempty ι] [Countable ι] {γ : Type*} [TopologicalSpace γ]
+variable [SemilatticeSup ι] [Nonempty ι] [Countable ι]
   {f : ι → α → β} {g : α → β} {s : Set α}
 
 /-- **Egorov's theorem**: If `f : ι → α → β` is a sequence of strongly measurable functions that

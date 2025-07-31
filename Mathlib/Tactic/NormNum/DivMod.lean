@@ -14,7 +14,7 @@ to the `norm_num` tactic.
 -/
 
 namespace Mathlib
-open Lean hiding Rat mkRat
+open Lean
 open Meta
 
 namespace Meta.NormNum
@@ -38,6 +38,7 @@ lemma isInt_ediv_neg {a b q q' : ℤ} (h : IsInt (a / -b) q) (hq : -q = q') : Is
 lemma isNat_neg_of_isNegNat {a : ℤ} {b : ℕ} (h : IsInt a (.negOfNat b)) : IsNat (-a) b :=
   ⟨by simp [h.out]⟩
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `Int.ediv a b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num (_ : ℤ) / _, Int.ediv _ _]
@@ -90,12 +91,13 @@ lemma isInt_emod {a b q m a' : ℤ} {b' r : ℕ}
     (hm : q * b' = m) (h : r + m = a') (h₂ : Nat.blt r b' = true) :
     IsNat (a % b) r := ⟨by
   obtain ⟨⟨rfl⟩, ⟨rfl⟩⟩ := ha, hb
-  simp only [← h, ← hm, Int.add_mul_emod_self]
+  simp only [← h, ← hm, Int.add_mul_emod_self_right]
   rw [Int.emod_eq_of_lt] <;> [simp; simpa using h₂]⟩
 
 lemma isInt_emod_neg {a b : ℤ} {r : ℕ} (h : IsNat (a % -b) r) : IsNat (a % b) r :=
   ⟨by rw [← Int.emod_neg, h.out]⟩
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `Int.emod a b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num (_ : ℤ) % _, Int.emod _ _]
@@ -147,9 +149,10 @@ theorem isInt_dvd_true : {a b : ℤ} → {a' b' c : ℤ} →
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨_, rfl⟩
 
 theorem isInt_dvd_false : {a b : ℤ} → {a' b' : ℤ} →
-    IsInt a a' → IsInt b b' → Int.mod b' a' != 0 → ¬a ∣ b
-  | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, e => mt Int.mod_eq_zero_of_dvd (by simpa using e)
+    IsInt a a' → IsInt b b' → Int.emod b' a' != 0 → ¬a ∣ b
+  | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, e => mt Int.emod_eq_zero_of_dvd (by simpa using e)
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `(a : ℤ) ∣ b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num (_ : ℤ) ∣ _] def evalIntDvd : NormNumExt where eval {u α} e := do
@@ -167,7 +170,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
     haveI' : Int.mul $na $c =Q $nb := ⟨⟩
     return .isTrue q(isInt_dvd_true $pa $pb (.refl $nb))
   else
-    have : Q(Int.mod $nb $na != 0) := (q(Eq.refl true) : Expr)
+    have : Q(Int.emod $nb $na != 0) := (q(Eq.refl true) : Expr)
     return .isFalse q(isInt_dvd_false $pa $pb $this)
 
 end Mathlib.Meta.NormNum

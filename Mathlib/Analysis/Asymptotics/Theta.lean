@@ -3,7 +3,7 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Asymptotics.Asymptotics
+import Mathlib.Analysis.Asymptotics.Lemmas
 import Mathlib.Analysis.Normed.Module.Basic
 
 /-!
@@ -70,7 +70,6 @@ theorem IsTheta.trans {f : α → E} {g : α → F'} {k : α → G} (h₁ : f =�
     f =Θ[l] k :=
   ⟨h₁.1.trans h₂.1, h₂.2.trans h₁.2⟩
 
--- Porting note (#10754): added instance
 instance : Trans (α := α → E) (β := α → F') (γ := α → G) (IsTheta l) (IsTheta l) (IsTheta l) :=
   ⟨IsTheta.trans⟩
 
@@ -79,7 +78,6 @@ theorem IsBigO.trans_isTheta {f : α → E} {g : α → F'} {k : α → G} (h₁
     (h₂ : g =Θ[l] k) : f =O[l] k :=
   h₁.trans h₂.1
 
--- Porting note (#10754): added instance
 instance : Trans (α := α → E) (β := α → F') (γ := α → G) (IsBigO l) (IsTheta l) (IsBigO l) :=
   ⟨IsBigO.trans_isTheta⟩
 
@@ -88,7 +86,6 @@ theorem IsTheta.trans_isBigO {f : α → E} {g : α → F'} {k : α → G} (h₁
     (h₂ : g =O[l] k) : f =O[l] k :=
   h₁.1.trans h₂
 
--- Porting note (#10754): added instance
 instance : Trans (α := α → E) (β := α → F') (γ := α → G) (IsTheta l) (IsBigO l) (IsBigO l) :=
   ⟨IsTheta.trans_isBigO⟩
 
@@ -97,7 +94,6 @@ theorem IsLittleO.trans_isTheta {f : α → E} {g : α → F} {k : α → G'} (h
     (h₂ : g =Θ[l] k) : f =o[l] k :=
   h₁.trans_isBigO h₂.1
 
--- Porting note (#10754): added instance
 instance : Trans (α := α → E) (β := α → F') (γ := α → G') (IsLittleO l) (IsTheta l) (IsLittleO l) :=
   ⟨IsLittleO.trans_isTheta⟩
 
@@ -106,7 +102,6 @@ theorem IsTheta.trans_isLittleO {f : α → E} {g : α → F'} {k : α → G} (h
     (h₂ : g =o[l] k) : f =o[l] k :=
   h₁.1.trans_isLittleO h₂
 
--- Porting note (#10754): added instance
 instance : Trans (α := α → E) (β := α → F') (γ := α → G) (IsTheta l) (IsLittleO l) (IsLittleO l) :=
   ⟨IsTheta.trans_isLittleO⟩
 
@@ -115,7 +110,6 @@ theorem IsTheta.trans_eventuallyEq {f : α → E} {g₁ g₂ : α → F} (h : f 
     f =Θ[l] g₂ :=
   ⟨h.1.trans_eventuallyEq hg, hg.symm.trans_isBigO h.2⟩
 
--- Porting note (#10754): added instance
 instance : Trans (α := α → E) (β := α → F) (γ := α → F) (IsTheta l) (EventuallyEq l) (IsTheta l) :=
   ⟨IsTheta.trans_eventuallyEq⟩
 
@@ -124,12 +118,14 @@ theorem _root_.Filter.EventuallyEq.trans_isTheta {f₁ f₂ : α → E} {g : α 
     (h : f₂ =Θ[l] g) : f₁ =Θ[l] g :=
   ⟨hf.trans_isBigO h.1, h.2.trans_eventuallyEq hf.symm⟩
 
--- Porting note (#10754): added instance
 instance : Trans (α := α → E) (β := α → E) (γ := α → F) (EventuallyEq l) (IsTheta l) (IsTheta l) :=
   ⟨EventuallyEq.trans_isTheta⟩
 
 lemma _root_.Filter.EventuallyEq.isTheta {f g : α → E} (h : f =ᶠ[l] g) : f =Θ[l] g :=
   h.trans_isTheta isTheta_rfl
+
+@[simp]
+theorem isTheta_bot : f =Θ[⊥] g := by simp [IsTheta]
 
 @[simp]
 theorem isTheta_norm_left : (fun x ↦ ‖f' x‖) =Θ[l] g ↔ f' =Θ[l] g := by simp [IsTheta]
@@ -141,12 +137,17 @@ alias ⟨IsTheta.of_norm_left, IsTheta.norm_left⟩ := isTheta_norm_left
 
 alias ⟨IsTheta.of_norm_right, IsTheta.norm_right⟩ := isTheta_norm_right
 
-theorem isTheta_of_norm_eventuallyEq (h : (fun x ↦ ‖f x‖) =ᶠ[l] fun x ↦ ‖g x‖) : f =Θ[l] g :=
-  ⟨IsBigO.of_bound 1 <| by simpa only [one_mul] using h.le,
-    IsBigO.of_bound 1 <| by simpa only [one_mul] using h.symm.le⟩
+theorem IsTheta.of_norm_eventuallyEq_norm (h : (fun x ↦ ‖f x‖) =ᶠ[l] fun x ↦ ‖g x‖) : f =Θ[l] g :=
+  ⟨.of_bound' h.le, .of_bound' h.symm.le⟩
 
-theorem isTheta_of_norm_eventuallyEq' {g : α → ℝ} (h : (fun x ↦ ‖f' x‖) =ᶠ[l] g) : f' =Θ[l] g :=
-  isTheta_of_norm_eventuallyEq <| h.mono fun x hx ↦ by simp only [← hx, norm_norm]
+@[deprecated (since := "2025-01-03")]
+alias isTheta_of_norm_eventuallyEq := IsTheta.of_norm_eventuallyEq_norm
+
+theorem IsTheta.of_norm_eventuallyEq {g : α → ℝ} (h : (fun x ↦ ‖f' x‖) =ᶠ[l] g) : f' =Θ[l] g :=
+  of_norm_eventuallyEq_norm <| h.mono fun x hx ↦ by simp only [← hx, norm_norm]
+
+@[deprecated (since := "2025-01-03")]
+alias isTheta_of_norm_eventuallyEq' := IsTheta.of_norm_eventuallyEq
 
 theorem IsTheta.isLittleO_congr_left (h : f' =Θ[l] g') : f' =o[l] k ↔ g' =o[l] k :=
   ⟨h.symm.trans_isLittleO, h.trans_isLittleO⟩
@@ -185,7 +186,8 @@ theorem IsTheta.tendsto_zero_iff (h : f'' =Θ[l] g'') :
 
 theorem IsTheta.tendsto_norm_atTop_iff (h : f' =Θ[l] g') :
     Tendsto (norm ∘ f') l atTop ↔ Tendsto (norm ∘ g') l atTop := by
-  simp only [Function.comp, ← isLittleO_const_left_of_ne (one_ne_zero' ℝ), h.isLittleO_congr_right]
+  simp only [Function.comp_def, ← isLittleO_const_left_of_ne (one_ne_zero' ℝ),
+    h.isLittleO_congr_right]
 
 theorem IsTheta.isBoundedUnder_le_iff (h : f' =Θ[l] g') :
     IsBoundedUnder (· ≤ ·) l (norm ∘ f') ↔ IsBoundedUnder (· ≤ ·) l (norm ∘ g') := by
@@ -199,6 +201,20 @@ theorem IsTheta.smul [NormedSpace 𝕜 E'] [NormedSpace 𝕜' F'] {f₁ : α →
 theorem IsTheta.mul {f₁ f₂ : α → 𝕜} {g₁ g₂ : α → 𝕜'} (h₁ : f₁ =Θ[l] g₁) (h₂ : f₂ =Θ[l] g₂) :
     (fun x ↦ f₁ x * f₂ x) =Θ[l] fun x ↦ g₁ x * g₂ x :=
   h₁.smul h₂
+
+theorem IsTheta.listProd {ι : Type*} {L : List ι} {f : ι → α → 𝕜} {g : ι → α → 𝕜'}
+    (h : ∀ i ∈ L, f i =Θ[l] g i) :
+    (fun x ↦ (L.map (f · x)).prod) =Θ[l] (fun x ↦ (L.map (g · x)).prod) :=
+  ⟨.listProd fun i hi ↦ (h i hi).isBigO, .listProd fun i hi ↦ (h i hi).symm.isBigO⟩
+
+theorem IsTheta.multisetProd {ι : Type*} {s : Multiset ι} {f : ι → α → 𝕜} {g : ι → α → 𝕜'}
+    (h : ∀ i ∈ s, f i =Θ[l] g i) :
+    (fun x ↦ (s.map (f · x)).prod) =Θ[l] (fun x ↦ (s.map (g · x)).prod) :=
+  ⟨.multisetProd fun i hi ↦ (h i hi).isBigO, .multisetProd fun i hi ↦ (h i hi).symm.isBigO⟩
+
+theorem IsTheta.finsetProd {ι : Type*} {s : Finset ι} {f : ι → α → 𝕜} {g : ι → α → 𝕜'}
+    (h : ∀ i ∈ s, f i =Θ[l] g i) : (∏ i ∈ s, f i ·) =Θ[l] (∏ i ∈ s, g i ·) :=
+  ⟨.finsetProd fun i hi ↦ (h i hi).isBigO, .finsetProd fun i hi ↦ (h i hi).symm.isBigO⟩
 
 theorem IsTheta.inv {f : α → 𝕜} {g : α → 𝕜'} (h : f =Θ[l] g) :
     (fun x ↦ (f x)⁻¹) =Θ[l] fun x ↦ (g x)⁻¹ :=
@@ -234,7 +250,7 @@ theorem isTheta_const_const_iff [NeBot l] {c₁ : E''} {c₂ : F''} :
 
 @[simp]
 theorem isTheta_zero_left : (fun _ ↦ (0 : E')) =Θ[l] g'' ↔ g'' =ᶠ[l] 0 := by
-  simp only [IsTheta, isBigO_zero, isBigO_zero_right_iff, true_and_iff]
+  simp only [IsTheta, isBigO_zero, isBigO_zero_right_iff, true_and]
 
 @[simp]
 theorem isTheta_zero_right : (f'' =Θ[l] fun _ ↦ (0 : F')) ↔ f'' =ᶠ[l] 0 :=
@@ -280,4 +296,46 @@ lemma IsLittleO.add_isTheta {f₁ f₂ : α → E'} {g : α → F}
     (ho : f₁ =o[l] g) (hΘ : f₂ =Θ[l] g) : (f₁ + f₂) =Θ[l] g :=
   add_comm f₁ f₂ ▸ hΘ.add_isLittleO ho
 
+section
+
+variable {f : α × β → E} {g : α × β → F} {l' : Filter β}
+
+protected theorem IsTheta.fiberwise_right :
+    f =Θ[l ×ˢ l'] g → ∀ᶠ x in l, (f ⟨x, ·⟩) =Θ[l'] (g ⟨x, ·⟩) := by
+  simp only [IsTheta, eventually_and]
+  exact fun ⟨h₁, h₂⟩ ↦ ⟨h₁.fiberwise_right, h₂.fiberwise_right⟩
+
+protected theorem IsTheta.fiberwise_left :
+    f =Θ[l ×ˢ l'] g → ∀ᶠ y in l', (f ⟨·, y⟩) =Θ[l] (g ⟨·, y⟩) := by
+  simp only [IsTheta, eventually_and]
+  exact fun ⟨h₁, h₂⟩ ↦ ⟨h₁.fiberwise_left, h₂.fiberwise_left⟩
+
+end
+
+section
+
+variable (l' : Filter β)
+
+protected theorem IsTheta.comp_fst : f =Θ[l] g → (f ∘ Prod.fst) =Θ[l ×ˢ l'] (g ∘ Prod.fst) := by
+  simp only [IsTheta]
+  exact fun ⟨h₁, h₂⟩ ↦ ⟨h₁.comp_fst l', h₂.comp_fst l'⟩
+
+protected theorem IsTheta.comp_snd : f =Θ[l] g → (f ∘ Prod.snd) =Θ[l' ×ˢ l] (g ∘ Prod.snd) := by
+  simp only [IsTheta]
+  exact fun ⟨h₁, h₂⟩ ↦ ⟨h₁.comp_snd l', h₂.comp_snd l'⟩
+
+end
+
 end Asymptotics
+
+namespace ContinuousOn
+
+variable {α E F : Type*} [NormedAddGroup E] [SeminormedAddGroup F] [TopologicalSpace α]
+  {s : Set α} {f : α → E} {c : F}
+
+protected theorem isTheta_principal
+    (hf : ContinuousOn f s) (hs : IsCompact s) (hc : ‖c‖ ≠ 0) (hC : ∀ i ∈ s, f i ≠ 0) :
+    f =Θ[𝓟 s] fun _ => c :=
+  ⟨hf.isBigO_principal hs hc, hf.isBigO_rev_principal hs hC c⟩
+
+end ContinuousOn

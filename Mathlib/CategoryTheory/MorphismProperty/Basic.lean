@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.CategoryTheory.Comma.Arrow
-import Mathlib.CategoryTheory.Pi.Basic
 import Mathlib.Order.CompleteBooleanAlgebra
 
 /-!
@@ -13,8 +12,11 @@ import Mathlib.Order.CompleteBooleanAlgebra
 We provide the basic framework for talking about properties of morphisms.
 The following meta-property is defined
 
-* `RespectsIso`: `P` respects isomorphisms if `P f → P (e ≫ f)` and `P f → P (f ≫ e)`, where
-  `e` is an isomorphism.
+* `RespectsLeft P Q`: `P` respects the property `Q` on the left if `P f → P (i ≫ f)` where
+  `i` satisfies `Q`.
+* `RespectsRight P Q`: `P` respects the property `Q` on the right if `P f → P (f ≫ i)` where
+  `i` satisfies `Q`.
+* `Respects`: `P` respects `Q` if `P` respects `Q` both on the left and on the right.
 
 -/
 
@@ -59,6 +61,29 @@ lemma ext (W W' : MorphismProperty C) (h : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), W f 
 lemma top_apply {X Y : C} (f : X ⟶ Y) : (⊤ : MorphismProperty C) f := by
   simp only [top_eq]
 
+lemma of_eq_top {P : MorphismProperty C} (h : P = ⊤) {X Y : C} (f : X ⟶ Y) : P f := by
+  simp [h]
+
+@[simp]
+lemma sSup_iff (S : Set (MorphismProperty C)) {X Y : C} (f : X ⟶ Y) :
+    sSup S f ↔ ∃ (W : S), W.1 f := by
+  dsimp [sSup, iSup]
+  constructor
+  · rintro ⟨_, ⟨⟨_, ⟨⟨_, ⟨_, h⟩, rfl⟩, rfl⟩⟩, rfl⟩, hf⟩
+    exact ⟨⟨_, h⟩, hf⟩
+  · rintro ⟨⟨W, hW⟩, hf⟩
+    exact ⟨_, ⟨⟨_, ⟨_, ⟨⟨W, hW⟩, rfl⟩⟩, rfl⟩, rfl⟩, hf⟩
+
+@[simp]
+lemma iSup_iff {ι : Sort*} (W : ι → MorphismProperty C) {X Y : C} (f : X ⟶ Y) :
+    iSup W f ↔ ∃ i, W i f := by
+  apply (sSup_iff (Set.range W) f).trans
+  constructor
+  · rintro ⟨⟨_, i, rfl⟩, hf⟩
+    exact ⟨i, hf⟩
+  · rintro ⟨i, hf⟩
+    exact ⟨⟨_, i, rfl⟩, hf⟩
+
 /-- The morphism property in `Cᵒᵖ` associated to a morphism property in `C` -/
 @[simp]
 def op (P : MorphismProperty C) : MorphismProperty Cᵒᵖ := fun _ _ f => P f.unop
@@ -83,7 +108,7 @@ lemma inverseImage_iff (P : MorphismProperty D) (F : C ⥤ D) {X Y : C} (f : X �
 
 /-- The image (up to isomorphisms) of a `MorphismProperty C` by a functor `C ⥤ D` -/
 def map (P : MorphismProperty C) (F : C ⥤ D) : MorphismProperty D := fun _ _ f =>
-  ∃ (X' Y' : C)  (f' : X' ⟶ Y') (_ : P f'), Nonempty (Arrow.mk (F.map f') ≅ Arrow.mk f)
+  ∃ (X' Y' : C) (f' : X' ⟶ Y') (_ : P f'), Nonempty (Arrow.mk (F.map f') ≅ Arrow.mk f)
 
 lemma map_mem_map (P : MorphismProperty C) (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) (hf : P f) :
     (P.map F) (F.map f) := ⟨X, Y, f, hf, ⟨Iso.refl _⟩⟩
@@ -93,22 +118,136 @@ lemma monotone_map (F : C ⥤ D) :
   intro P Q h X Y f ⟨X', Y', f', hf', ⟨e⟩⟩
   exact ⟨X', Y', f', h _ hf', ⟨e⟩⟩
 
-/-- A morphism property `RespectsIso` if it still holds when composed with an isomorphism -/
-class RespectsIso (P : MorphismProperty C) : Prop where
-  precomp {X Y Z} (e : X ≅ Y) (f : Y ⟶ Z) (hf : P f) : P (e.hom ≫ f)
-  postcomp {X Y Z} (e : Y ≅ Z) (f : X ⟶ Y) (hf : P f) : P (f ≫ e.hom)
+section
 
-instance RespectsIso.op (P : MorphismProperty C) [h : RespectsIso P] : RespectsIso P.op :=
-  ⟨fun e f hf => h.2 e.unop f.unop hf, fun e f hf => h.1 e.unop f.unop hf⟩
+variable (P : MorphismProperty C)
 
-instance RespectsIso.unop (P : MorphismProperty Cᵒᵖ) [h : RespectsIso P] : RespectsIso P.unop :=
-  ⟨fun e f hf => h.2 e.op f.op hf, fun e f hf => h.1 e.op f.op hf⟩
+/-- The set in `Set (Arrow C)` which corresponds to `P : MorphismProperty C`. -/
+def toSet : Set (Arrow C) := setOf (fun f ↦ P f.hom)
 
-/-- The intersection of two isomorphism respecting morphism properties respects isomorphisms. -/
-instance RespectsIso.inf (P Q : MorphismProperty C) [RespectsIso P] [RespectsIso Q] :
-    RespectsIso (P ⊓ Q) where
-  precomp e f hf := ⟨RespectsIso.precomp e f hf.left, RespectsIso.precomp e f hf.right⟩
-  postcomp e f hf := ⟨RespectsIso.postcomp e f hf.left, RespectsIso.postcomp e f hf.right⟩
+/-- The family of morphisms indexed by `P.toSet` which corresponds
+to `P : MorphismProperty C`, see `MorphismProperty.ofHoms_homFamily`. -/
+def homFamily (f : P.toSet) : f.1.left ⟶ f.1.right := f.1.hom
+
+lemma homFamily_apply (f : P.toSet) : P.homFamily f = f.1.hom := rfl
+
+@[simp]
+lemma homFamily_arrow_mk {X Y : C} (f : X ⟶ Y) (hf : P f) :
+    P.homFamily ⟨Arrow.mk f, hf⟩ = f := rfl
+
+@[simp]
+lemma arrow_mk_mem_toSet_iff {X Y : C} (f : X ⟶ Y) : Arrow.mk f ∈ P.toSet ↔ P f := Iff.rfl
+
+lemma of_eq {X Y : C} {f : X ⟶ Y} (hf : P f)
+    {X' Y' : C} {f' : X' ⟶ Y'}
+    (hX : X = X') (hY : Y = Y') (h : f' = eqToHom hX.symm ≫ f ≫ eqToHom hY) :
+    P f' := by
+  rw [← P.arrow_mk_mem_toSet_iff] at hf ⊢
+  rwa [(Arrow.mk_eq_mk_iff f' f).2 ⟨hX.symm, hY.symm, h⟩]
+
+end
+
+/-- The class of morphisms given by a family of morphisms `f i : X i ⟶ Y i`. -/
+inductive ofHoms {ι : Type*} {X Y : ι → C} (f : ∀ i, X i ⟶ Y i) : MorphismProperty C
+  | mk (i : ι) : ofHoms f (f i)
+
+lemma ofHoms_iff {ι : Type*} {X Y : ι → C} (f : ∀ i, X i ⟶ Y i) {A B : C} (g : A ⟶ B) :
+    ofHoms f g ↔ ∃ i, Arrow.mk g = Arrow.mk (f i) := by
+  constructor
+  · rintro ⟨i⟩
+    exact ⟨i, rfl⟩
+  · rintro ⟨i, h⟩
+    rw [← (ofHoms f).arrow_mk_mem_toSet_iff, h, arrow_mk_mem_toSet_iff]
+    constructor
+
+@[simp]
+lemma ofHoms_homFamily (P : MorphismProperty C) : ofHoms P.homFamily = P := by
+  ext _ _ f
+  constructor
+  · intro hf
+    rw [ofHoms_iff] at hf
+    obtain ⟨⟨f, hf⟩, ⟨_, _⟩⟩ := hf
+    exact hf
+  · intro hf
+    exact ⟨(⟨f, hf⟩ : P.toSet)⟩
+
+/-- A morphism property `P` satisfies `P.RespectsRight Q` if it is stable under post-composition
+with morphisms satisfying `Q`, i.e. whenever `P` holds for `f` and `Q` holds for `i` then `P`
+holds for `f ≫ i`. -/
+class RespectsRight (P Q : MorphismProperty C) : Prop where
+  postcomp {X Y Z : C} (i : Y ⟶ Z) (hi : Q i) (f : X ⟶ Y) (hf : P f) : P (f ≫ i)
+
+/-- A morphism property `P` satisfies `P.RespectsLeft Q` if it is stable under
+pre-composition with morphisms satisfying `Q`, i.e. whenever `P` holds for `f`
+and `Q` holds for `i` then `P` holds for `i ≫ f`. -/
+class RespectsLeft (P Q : MorphismProperty C) : Prop where
+  precomp {X Y Z : C} (i : X ⟶ Y) (hi : Q i) (f : Y ⟶ Z) (hf : P f) : P (i ≫ f)
+
+/-- A morphism property `P` satisfies `P.Respects Q` if it is stable under composition on the
+left and right by morphisms satisfying `Q`. -/
+class Respects (P Q : MorphismProperty C) : Prop extends P.RespectsLeft Q, P.RespectsRight Q where
+
+instance (P Q : MorphismProperty C) [P.RespectsLeft Q] [P.RespectsRight Q] : P.Respects Q where
+
+instance (P Q : MorphismProperty C) [P.RespectsLeft Q] : P.op.RespectsRight Q.op where
+  postcomp i hi f hf := RespectsLeft.precomp (Q := Q) i.unop hi f.unop hf
+
+instance (P Q : MorphismProperty C) [P.RespectsRight Q] : P.op.RespectsLeft Q.op where
+  precomp i hi f hf := RespectsRight.postcomp (Q := Q) i.unop hi f.unop hf
+
+instance RespectsLeft.inf (P₁ P₂ Q : MorphismProperty C) [P₁.RespectsLeft Q]
+    [P₂.RespectsLeft Q] : (P₁ ⊓ P₂).RespectsLeft Q where
+  precomp i hi f hf := ⟨precomp i hi f hf.left, precomp i hi f hf.right⟩
+
+instance RespectsRight.inf (P₁ P₂ Q : MorphismProperty C) [P₁.RespectsRight Q]
+    [P₂.RespectsRight Q] : (P₁ ⊓ P₂).RespectsRight Q where
+  postcomp i hi f hf := ⟨postcomp i hi f hf.left, postcomp i hi f hf.right⟩
+
+variable (C)
+
+/-- The `MorphismProperty C` satisfied by isomorphisms in `C`. -/
+def isomorphisms : MorphismProperty C := fun _ _ f => IsIso f
+
+/-- The `MorphismProperty C` satisfied by monomorphisms in `C`. -/
+def monomorphisms : MorphismProperty C := fun _ _ f => Mono f
+
+/-- The `MorphismProperty C` satisfied by epimorphisms in `C`. -/
+def epimorphisms : MorphismProperty C := fun _ _ f => Epi f
+
+section
+
+variable {C}
+
+/-- `P` respects isomorphisms, if it respects the morphism property `isomorphisms C`, i.e.
+it is stable under pre- and postcomposition with isomorphisms. -/
+abbrev RespectsIso (P : MorphismProperty C) : Prop := P.Respects (isomorphisms C)
+
+lemma RespectsIso.mk (P : MorphismProperty C)
+    (hprecomp : ∀ {X Y Z : C} (e : X ≅ Y) (f : Y ⟶ Z) (_ : P f), P (e.hom ≫ f))
+    (hpostcomp : ∀ {X Y Z : C} (e : Y ≅ Z) (f : X ⟶ Y) (_ : P f), P (f ≫ e.hom)) :
+    P.RespectsIso where
+  precomp e (_ : IsIso e) f hf := hprecomp (asIso e) f hf
+  postcomp e (_ : IsIso e) f hf := hpostcomp (asIso e) f hf
+
+lemma RespectsIso.precomp (P : MorphismProperty C) [P.RespectsIso] {X Y Z : C} (e : X ⟶ Y)
+    [IsIso e] (f : Y ⟶ Z) (hf : P f) : P (e ≫ f) :=
+  RespectsLeft.precomp (Q := isomorphisms C) e ‹IsIso e› f hf
+
+instance : RespectsIso (⊤ : MorphismProperty C) where
+  precomp _ _ _ _ := trivial
+  postcomp _ _ _ _ := trivial
+
+lemma RespectsIso.postcomp (P : MorphismProperty C) [P.RespectsIso] {X Y Z : C} (e : Y ⟶ Z)
+    [IsIso e] (f : X ⟶ Y) (hf : P f) : P (f ≫ e) :=
+  RespectsRight.postcomp (Q := isomorphisms C) e ‹IsIso e› f hf
+
+instance RespectsIso.op (P : MorphismProperty C) [RespectsIso P] : RespectsIso P.op where
+  precomp e (_ : IsIso e) f hf := postcomp P e.unop f.unop hf
+  postcomp e (_ : IsIso e) f hf := precomp P e.unop f.unop hf
+
+instance RespectsIso.unop (P : MorphismProperty Cᵒᵖ) [RespectsIso P] : RespectsIso P.unop where
+  precomp e (_ : IsIso e) f hf := postcomp P e.op f.op hf
+  postcomp e (_ : IsIso e) f hf := precomp P e.op f.op hf
 
 /-- The closure by isomorphisms of a `MorphismProperty` -/
 def isoClosure (P : MorphismProperty C) : MorphismProperty C :=
@@ -119,10 +258,10 @@ lemma le_isoClosure (P : MorphismProperty C) : P ≤ P.isoClosure :=
 
 instance isoClosure_respectsIso (P : MorphismProperty C) :
     RespectsIso P.isoClosure where
-  precomp := fun e f ⟨_, _, f', hf', ⟨iso⟩⟩ => ⟨_, _, f', hf',
-      ⟨Arrow.isoMk (asIso iso.hom.left ≪≫ e.symm) (asIso iso.hom.right) (by simp)⟩⟩
-  postcomp := fun e f ⟨_, _, f', hf', ⟨iso⟩⟩ => ⟨_, _, f', hf',
-      ⟨Arrow.isoMk (asIso iso.hom.left) (asIso iso.hom.right ≪≫ e) (by simp)⟩⟩
+  precomp := fun e (he : IsIso e) f ⟨_, _, f', hf', ⟨iso⟩⟩ => ⟨_, _, f', hf',
+      ⟨Arrow.isoMk (asIso iso.hom.left ≪≫ asIso (inv e)) (asIso iso.hom.right) (by simp)⟩⟩
+  postcomp := fun e (he : IsIso e) f ⟨_, _, f', hf', ⟨iso⟩⟩ => ⟨_, _, f', hf',
+      ⟨Arrow.isoMk (asIso iso.hom.left) (asIso iso.hom.right ≪≫ asIso e) (by simp)⟩⟩
 
 lemma monotone_isoClosure : Monotone (isoClosure (C := C)) := by
   intro P Q h X Y f ⟨X', Y', f', hf', ⟨e⟩⟩
@@ -130,32 +269,33 @@ lemma monotone_isoClosure : Monotone (isoClosure (C := C)) := by
 
 theorem cancel_left_of_respectsIso (P : MorphismProperty C) [hP : RespectsIso P] {X Y Z : C}
     (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] : P (f ≫ g) ↔ P g :=
-  ⟨fun h => by simpa using hP.1 (asIso f).symm (f ≫ g) h, hP.1 (asIso f) g⟩
+  ⟨fun h => by simpa using RespectsIso.precomp P (inv f) (f ≫ g) h, RespectsIso.precomp P f g⟩
 
 theorem cancel_right_of_respectsIso (P : MorphismProperty C) [hP : RespectsIso P] {X Y Z : C}
     (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] : P (f ≫ g) ↔ P f :=
-  ⟨fun h => by simpa using hP.2 (asIso g).symm (f ≫ g) h, hP.2 (asIso g) f⟩
+  ⟨fun h => by simpa using RespectsIso.postcomp P (inv g) (f ≫ g) h, RespectsIso.postcomp P g f⟩
+
+lemma comma_iso_iff (P : MorphismProperty C) [P.RespectsIso] {A B : Type*} [Category A] [Category B]
+    {L : A ⥤ C} {R : B ⥤ C} {f g : Comma L R} (e : f ≅ g) :
+    P f.hom ↔ P g.hom := by
+  simp [← Comma.inv_left_hom_right e.hom, cancel_left_of_respectsIso, cancel_right_of_respectsIso]
 
 theorem arrow_iso_iff (P : MorphismProperty C) [RespectsIso P] {f g : Arrow C}
-    (e : f ≅ g) : P f.hom ↔ P g.hom := by
-  simp [← Arrow.inv_left_hom_right e.hom, cancel_left_of_respectsIso,
-    cancel_right_of_respectsIso]
+    (e : f ≅ g) : P f.hom ↔ P g.hom :=
+  P.comma_iso_iff e
 
 theorem arrow_mk_iso_iff (P : MorphismProperty C) [RespectsIso P] {W X Y Z : C}
     {f : W ⟶ X} {g : Y ⟶ Z} (e : Arrow.mk f ≅ Arrow.mk g) : P f ↔ P g :=
   P.arrow_iso_iff e
 
 theorem RespectsIso.of_respects_arrow_iso (P : MorphismProperty C)
-    (hP : ∀ (f g : Arrow C) (_ : f ≅ g) (_ : P f.hom), P g.hom) : RespectsIso P := by
-  constructor
-  · intro X Y Z e f hf
-    refine hP (Arrow.mk f) (Arrow.mk (e.hom ≫ f)) (Arrow.isoMk e.symm (Iso.refl _) ?_) hf
-    dsimp
-    simp only [Iso.inv_hom_id_assoc, Category.comp_id]
-  · intro X Y Z e f hf
-    refine hP (Arrow.mk f) (Arrow.mk (f ≫ e.hom)) (Arrow.isoMk (Iso.refl _) e ?_) hf
-    dsimp
-    simp only [Category.id_comp]
+    (hP : ∀ (f g : Arrow C) (_ : f ≅ g) (_ : P f.hom), P g.hom) : RespectsIso P where
+  precomp {X Y Z} e (he : IsIso e) f hf := by
+    refine hP (Arrow.mk f) (Arrow.mk (e ≫ f)) (Arrow.isoMk (asIso (inv e)) (Iso.refl _) ?_) hf
+    simp
+  postcomp {X Y Z} e (he : IsIso e) f hf := by
+    refine hP (Arrow.mk f) (Arrow.mk (f ≫ e)) (Arrow.isoMk (Iso.refl _) (asIso e) ?_) hf
+    simp
 
 lemma isoClosure_eq_iff (P : MorphismProperty C) :
     P.isoClosure = P ↔ P.RespectsIso := by
@@ -227,12 +367,11 @@ lemma map_map (P : MorphismProperty C) (F : C ⥤ D) {E : Type*} [Category E] (G
     exact map_mem_map _ _ _ (map_mem_map _ _ _ hf)
 
 instance RespectsIso.inverseImage (P : MorphismProperty D) [RespectsIso P] (F : C ⥤ D) :
-    RespectsIso (P.inverseImage F) := by
-  constructor
-  all_goals
-    intro X Y Z e f hf
-    simpa [MorphismProperty.inverseImage, cancel_left_of_respectsIso,
-      cancel_right_of_respectsIso] using hf
+    RespectsIso (P.inverseImage F) where
+  precomp {X Y Z} e (he : IsIso e) f hf := by
+    simpa [MorphismProperty.inverseImage, cancel_left_of_respectsIso] using hf
+  postcomp {X Y Z} e (he : IsIso e) f hf := by
+    simpa [MorphismProperty.inverseImage, cancel_right_of_respectsIso] using hf
 
 lemma map_eq_of_iso (P : MorphismProperty C) {F G : C ⥤ D} (e : F ≅ G) :
     P.map F = P.map G := by
@@ -275,17 +414,7 @@ lemma inverseImage_map_eq_of_isEquivalence
   erw [((P.map F).inverseImage_equivalence_inverse_eq_map_functor (F.asEquivalence)), map_map,
     P.map_eq_of_iso F.asEquivalence.unitIso.symm, map_id]
 
-
-variable (C)
-
-/-- The `MorphismProperty C` satisfied by isomorphisms in `C`. -/
-def isomorphisms : MorphismProperty C := fun _ _ f => IsIso f
-
-/-- The `MorphismProperty C` satisfied by monomorphisms in `C`. -/
-def monomorphisms : MorphismProperty C := fun _ _ f => Mono f
-
-/-- The `MorphismProperty C` satisfied by epimorphisms in `C`. -/
-def epimorphisms : MorphismProperty C := fun _ _ f => Epi f
+end
 
 section
 
@@ -312,34 +441,31 @@ theorem epimorphisms.infer_property [hf : Epi f] : (epimorphisms C) f :=
 
 end
 
+lemma isomorphisms_op : (isomorphisms C).op = isomorphisms Cᵒᵖ := by
+  ext X Y f
+  simp only [op, isomorphisms.iff]
+  exact ⟨fun _ ↦ inferInstanceAs (IsIso f.unop.op), fun _ ↦ inferInstance⟩
+
 instance RespectsIso.monomorphisms : RespectsIso (monomorphisms C) := by
-  constructor <;>
+  apply RespectsIso.mk <;>
     · intro X Y Z e f
       simp only [monomorphisms.iff]
       intro
       apply mono_comp
 
 instance RespectsIso.epimorphisms : RespectsIso (epimorphisms C) := by
-  constructor <;>
+  apply RespectsIso.mk <;>
     · intro X Y Z e f
       simp only [epimorphisms.iff]
       intro
       apply epi_comp
 
 instance RespectsIso.isomorphisms : RespectsIso (isomorphisms C) := by
-  constructor <;>
+  apply RespectsIso.mk <;>
     · intro X Y Z e f
       simp only [isomorphisms.iff]
       intro
-      infer_instance
-
-@[deprecated (since := "2024-07-02")] alias RespectsIso.cancel_left_isIso :=
-  cancel_left_of_respectsIso
-@[deprecated (since := "2024-07-02")] alias RespectsIso.cancel_right_isIso :=
-  cancel_right_of_respectsIso
-@[deprecated (since := "2024-07-02")] alias RespectsIso.arrow_iso_iff := arrow_iso_iff
-@[deprecated (since := "2024-07-02")] alias RespectsIso.arrow_mk_iso_iff := arrow_mk_iso_iff
-@[deprecated (since := "2024-07-02")] alias RespectsIso.isoClosure_eq := isoClosure_eq_self
+      exact IsIso.comp_isIso
 
 /-- If `W₁` and `W₂` are morphism properties on two categories `C₁` and `C₂`,
 this is the induced morphism property on `C₁ × C₂`. -/

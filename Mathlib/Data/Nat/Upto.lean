@@ -3,7 +3,8 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Sub.Basic
 
 /-!
 # `Nat.Upto`
@@ -28,7 +29,7 @@ no `j` less than `i` satisfies `p`. This is an initial segment of the
 natural numbers, up to and including the first value satisfying `p`.
 
 We will be particularly interested in the case where there exists a value
-satisfying `p`, because in this case the `>` relation is well-founded.  -/
+satisfying `p`, because in this case the `>` relation is well-founded. -/
 abbrev Upto (p : ℕ → Prop) : Type :=
   { i : ℕ // ∀ j < i, ¬p j }
 
@@ -52,7 +53,7 @@ protected theorem wf : (∃ x, p x) → WellFounded (Upto.GT p)
       exact (measure _).wf
     ext ⟨a, ha⟩ ⟨b, _⟩
     dsimp [InvImage, Upto.GT]
-    rw [tsub_lt_tsub_iff_left_of_le (le_of_not_lt fun h' => ha _ h' h)]
+    rw [tsub_lt_tsub_iff_left_of_le (le_of_not_gt fun h' => ha _ h' h)]
 
 /-- Zero is always a member of `Nat.Upto p` because it has no predecessors. -/
 def zero : Nat.Upto p :=

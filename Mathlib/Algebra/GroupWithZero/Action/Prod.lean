@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot, Eric Wieser
 -/
 import Mathlib.Algebra.Group.Action.Prod
-import Mathlib.Algebra.GroupWithZero.Action.Defs
+import Mathlib.Algebra.GroupWithZero.Action.End
 
 /-!
 # Prod instances for multiplicative actions with zero
@@ -26,7 +26,7 @@ namespace Prod
 
 section
 
-variable [SMul M α] [SMul M β] [SMul N α] [SMul N β] (a : M) (x : α × β)
+variable [SMul M α] [SMul M β]
 
 theorem smul_zero_mk {α : Type*} [Monoid M] [AddMonoid α] [DistribMulAction M α] (a : M) (c : β) :
     a • ((0 : α), c) = (0, a • c) := by rw [Prod.smul_mk, smul_zero]
@@ -37,11 +37,11 @@ theorem smul_mk_zero {β : Type*} [Monoid M] [AddMonoid β] [DistribMulAction M 
 end
 
 instance smulZeroClass {R M N : Type*} [Zero M] [Zero N] [SMulZeroClass R M] [SMulZeroClass R N] :
-    SMulZeroClass R (M × N) where smul_zero _ := mk.inj_iff.mpr ⟨smul_zero _, smul_zero _⟩
+    SMulZeroClass R (M × N) where smul_zero _ := by ext <;> exact smul_zero _
 
 instance distribSMul {R M N : Type*} [AddZeroClass M] [AddZeroClass N] [DistribSMul R M]
     [DistribSMul R N] : DistribSMul R (M × N) where
-  smul_add _ _ _ := mk.inj_iff.mpr ⟨smul_add _ _ _, smul_add _ _ _⟩
+  smul_add _ _ _ := by ext <;> exact smul_add ..
 
 instance distribMulAction {R : Type*} [Monoid R] [AddMonoid M] [AddMonoid N]
     [DistribMulAction R M] [DistribMulAction R N] : DistribMulAction R (M × N) :=
@@ -49,8 +49,16 @@ instance distribMulAction {R : Type*} [Monoid R] [AddMonoid M] [AddMonoid N]
 
 instance mulDistribMulAction {R : Type*} [Monoid R] [Monoid M] [Monoid N]
     [MulDistribMulAction R M] [MulDistribMulAction R N] : MulDistribMulAction R (M × N) where
-  smul_mul _ _ _ := mk.inj_iff.mpr ⟨smul_mul' _ _ _, smul_mul' _ _ _⟩
-  smul_one _ := mk.inj_iff.mpr ⟨smul_one _, smul_one _⟩
+  smul_mul _ _ _ := by ext <;> exact smul_mul' ..
+  smul_one _ := by ext <;> exact smul_one _
+
+instance smulWithZero {R : Type*} [Zero R] [Zero M] [Zero N] [SMulWithZero R M] [SMulWithZero R N] :
+    SMulWithZero R (M × N) where
+  zero_smul _ := by ext <;> exact zero_smul ..
+
+instance mulActionWithZero {R : Type*} [MonoidWithZero R] [Zero M] [Zero N] [MulActionWithZero R M]
+    [MulActionWithZero R N] : MulActionWithZero R (M × N) :=
+  { Prod.mulAction, Prod.smulWithZero with }
 
 end Prod
 
@@ -89,6 +97,6 @@ def DistribMulAction.prodEquiv : DistribMulAction (M × N) α ≃
     congr 1
     · funext i; congr; ext m a; clear i; (conv_rhs => rw [← one_smul N a]); rfl
     · ext n a; (conv_rhs => rw [← one_smul M (SMul.smul n a)]); rfl
-    · apply heq_prop
+    · exact proof_irrel_heq ..
 
 end Action_by_Prod

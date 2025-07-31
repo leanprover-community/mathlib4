@@ -6,6 +6,7 @@ Authors: Alex J. Best, Kyle Miller
 import Lean.Elab.Tactic.Config
 import Lean.Elab.Tactic.Location
 import Mathlib.Lean.Expr.Basic
+import Batteries.Lean.Expr
 
 /-!
 # The `generalize_proofs` tactic
@@ -18,6 +19,7 @@ It is also useful to eliminate proof terms to handle issues with dependent types
 
 For example:
 ```lean
+def List.nthLe {α} (l : List α) (n : ℕ) (_h : n < l.length) : α := sorry
 example : List.nthLe [1, 2] 1 (by simp) = 2 := by
   -- ⊢ [1, 2].nthLe 1 ⋯ = 2
   generalize_proofs h
@@ -92,8 +94,8 @@ structure AState where
 /--
 Monad used to abstract proofs, to prepare for generalization.
 Has a cache (of expr/type? pairs),
-and it also has a reader context `Mathlib.Tactic.GeneralizeProofs.AContext`
-and a state `Mathlib.Tactic.GeneralizeProofs.AState`.
+and it also has a reader context `Mathlib/Tactic/GeneralizeProofs/AContext.lean`
+and a state `Mathlib/Tactic/GeneralizeProofs/AState.lean`.
 -/
 abbrev MAbs := ReaderT AContext <| MonadCacheT (Expr × Option Expr) Expr <| StateRefT AState MetaM
 
@@ -109,10 +111,10 @@ def MGen.runMAbs {α : Type} (mx : MAbs α) : MGen (α × Array (Expr × Expr)) 
 Finds a proof of `prop` by looking at `propToFVar` and `propToProof`.
 -/
 def MAbs.findProof? (prop : Expr) : MAbs (Option Expr) := do
-  if let some pf := (← read).propToFVar.find? prop then
+  if let some pf := (← read).propToFVar[prop]? then
     return pf
   else
-    return (← get).propToProof.find? prop
+    return (← get).propToProof[prop]?
 
 /--
 Generalize `prop`, where `proof` is its proof.
@@ -152,7 +154,7 @@ def appArgExpectedTypes (f : Expr) (args : Array Expr) (ty? : Option Expr) :
     -- Try using the expected type, but (*) below might find a bad solution
     (guard ty?.isSome *> go f args ty?) <|> go f args none
 where
-  /-- Core implementation for `appArgExpectedTypes`.  -/
+  /-- Core implementation for `appArgExpectedTypes`. -/
   go (f : Expr) (args : Array Expr) (ty? : Option Expr) : MetaM (Array (Option Expr)) := do
     -- Metavariables for each argument to `f`:
     let mut margs := #[]
@@ -160,13 +162,13 @@ where
     let mut fty ← inferType f
     -- Whether we have already unified the type `ty?` with `fty` (once `margs` is filled)
     let mut unifiedFTy := false
-    for i in [0 : args.size] do
+    for h : i in [0 : args.size] do
       unless i < margs.size do
         let (margs', _, fty') ← forallMetaBoundedTelescope fty (args.size - i)
         if margs'.isEmpty then throwError "could not make progress at argument {i}"
         fty := fty'
         margs := margs ++ margs'
-      let arg := args[i]!
+      let arg := args[i]
       let marg := margs[i]!
       if !unifiedFTy && margs.size == args.size then
         if let some ty := ty? then
@@ -255,10 +257,10 @@ where
                 else
                   pure none
               mkLambdaFVars #[x] (← visit (b.instantiate1 x) ty'?)
-          | .letE n t v b _ =>
+          | .letE n t v b nondep =>
             let t' ← visit t none
-            withLetDecl n t' (← visit v t') fun x ↦ MAbs.withLocal x do
-              mkLetFVars #[x] (← visit (b.instantiate1 x) ty?)
+            mapLetDecl n t' (← visit v t') (nondep := nondep) fun x ↦ MAbs.withLocal x do
+              visit (b.instantiate1 x) ty?
           | .app .. =>
             e.withApp fun f args ↦ do
               let f' ← visit f none
@@ -341,7 +343,7 @@ This continuation `k` is passed
 
 The `propToFVar` map is updated with the new proposition fvars.
 -/
-partial def withGeneralizedProofs {α : Type} [Inhabited α] (e : Expr) (ty? : Option Expr)
+partial def withGeneralizedProofs {α : Type} [Nonempty α] (e : Expr) (ty? : Option Expr)
     (k : Array Expr → Array Expr → Expr → MGen α) :
     MGen α := do
   let propToFVar := (← get).propToFVar
@@ -351,18 +353,18 @@ partial def withGeneralizedProofs {α : Type} [Inhabited α] (e : Expr) (ty? : O
     post-abstracted{indentD e}\nnew generalizations: {generalizations}"
   let rec
     /-- Core loop for `withGeneralizedProofs`, adds generalizations one at a time. -/
-    go [Inhabited α] (i : Nat) (fvars pfs : Array Expr)
+    go [Nonempty α] (i : Nat) (fvars pfs : Array Expr)
         (proofToFVar propToFVar : ExprMap Expr) : MGen α := do
       if h : i < generalizations.size then
         let (ty, pf) := generalizations[i]
-        let ty := (← instantiateMVars (ty.replace proofToFVar.find?)).cleanupAnnotations
+        let ty := (← instantiateMVars (ty.replace proofToFVar.get?)).cleanupAnnotations
         withLocalDeclD (← mkFreshUserName `pf) ty fun fvar => do
           go (i + 1) (fvars := fvars.push fvar) (pfs := pfs.push pf)
             (proofToFVar := proofToFVar.insert pf fvar)
             (propToFVar := propToFVar.insert ty fvar)
       else
         withNewLocalInstances fvars 0 do
-          let e' := e.replace proofToFVar.find?
+          let e' := e.replace proofToFVar.get?
           trace[Tactic.generalize_proofs] "after: e' = {e}"
           modify fun s => { s with propToFVar }
           k fvars pfs e'
@@ -388,14 +390,14 @@ where
       if fvars.contains fvar then
         -- This is one of the hypotheses that was intentionally reverted.
         let tgt ← instantiateMVars <| ← g.getType
-        let ty := tgt.bindingDomain!.cleanupAnnotations
+        let ty := (if tgt.isLet then tgt.letType! else tgt.bindingDomain!).cleanupAnnotations
         if ← pure tgt.isLet <&&> Meta.isProp ty then
           -- Clear the proof value (using proof irrelevance) and `go` again
-          let tgt' := Expr.forallE tgt.bindingName! ty tgt.bindingBody! .default
+          let tgt' := Expr.forallE tgt.letName! ty tgt.letBody! .default
           let g' ← mkFreshExprSyntheticOpaqueMVar tgt' tag
           g.assign <| .app g' tgt.letValue!
           return ← go g'.mvarId! i hs
-        if let some pf := (← get).propToFVar.find? ty then
+        if let some pf := (← get).propToFVar[ty]? then
           -- Eliminate this local hypothesis using the pre-existing proof, using proof irrelevance
           let tgt' := tgt.bindingBody!.instantiate1 pf
           let g' ← mkFreshExprSyntheticOpaqueMVar tgt' tag
@@ -417,10 +419,10 @@ where
               -- Make this prop available as a proof
               MGen.insertFVar t' (.fvar fvar')
             go g' (i + 1) (hs ++ hs')
-        | .letE n t v b _ =>
+        | .letE n t v b nondep =>
           withGeneralizedProofs t none fun hs' pfs' t' => do
             withGeneralizedProofs v t' fun hs'' pfs'' v' => do
-              let tgt' := Expr.letE n t' v' b false
+              let tgt' := Expr.letE n t' v' b nondep
               let g' ← mkFreshExprSyntheticOpaqueMVar tgt' tag
               g.assign <| mkAppN (← mkLambdaFVars (hs' ++ hs'') g') (pfs' ++ pfs'')
               let (fvar', g') ← g'.mvarId!.intro1P
@@ -486,13 +488,14 @@ and furthermore if `h` duplicates a preceding local hypothesis then it is elimin
 
 The tactic is able to abstract proofs from under binders, creating universally quantified
 proofs in the local context.
-To disable this, use `generalize_proofs (config := { abstract := false })`.
+To disable this, use `generalize_proofs -abstract`.
 The tactic is also set to recursively abstract proofs from the types of the generalized proofs.
 This can be controlled with the `maxDepth` configuration option,
 with `generalize_proofs (config := { maxDepth := 0 })` turning this feature off.
 
 For example:
 ```lean
+def List.nthLe {α} (l : List α) (n : ℕ) (_h : n < l.length) : α := sorry
 example : List.nthLe [1, 2] 1 (by simp) = 2 := by
   -- ⊢ [1, 2].nthLe 1 ⋯ = 2
   generalize_proofs h
@@ -500,9 +503,9 @@ example : List.nthLe [1, 2] 1 (by simp) = 2 := by
   -- ⊢ [1, 2].nthLe 1 h = 2
 ```
 -/
-elab (name := generalizeProofsElab) "generalize_proofs" config?:(Parser.Tactic.config)?
+elab (name := generalizeProofsElab) "generalize_proofs" config:Parser.Tactic.optConfig
     hs:(ppSpace colGt binderIdent)* loc?:(location)? : tactic => withMainContext do
-  let config ← GeneralizeProofs.elabConfig (mkOptionalNode config?)
+  let config ← GeneralizeProofs.elabConfig config
   let (fvars, target) ←
     match expandOptLocation (Lean.mkOptionalNode loc?) with
     | .wildcard => pure ((← getLCtx).getFVarIds, true)

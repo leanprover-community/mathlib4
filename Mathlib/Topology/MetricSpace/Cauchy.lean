@@ -12,7 +12,7 @@ import Mathlib.Topology.EMetricSpace.Basic
 Various results on Cauchy sequences in (pseudo-)metric spaces, including
 
 * `Metric.complete_of_cauchySeq_tendsto` A pseudo-metric space is complete iff each Cauchy sequences
-converges to some limit point.
+  converges to some limit point.
 * `cauchySeq_bdd`: a Cauchy sequence on the natural numbers is bounded
 * various characterisation of Cauchy and uniformly Cauchy sequences
 
@@ -52,7 +52,6 @@ variable [Nonempty β] [SemilatticeSup β]
 
 /-- In a pseudometric space, Cauchy sequences are characterized by the fact that, eventually,
 the distance between its elements is arbitrarily small -/
--- Porting note: @[nolint ge_or_gt] doesn't exist
 theorem Metric.cauchySeq_iff {u : β → α} :
     CauchySeq u ↔ ∀ ε > 0, ∃ N, ∀ m ≥ N, ∀ n ≥ N, dist (u m) (u n) < ε :=
   uniformity_basis_dist.cauchySeq_iff
@@ -65,7 +64,6 @@ theorem Metric.cauchySeq_iff' {u : β → α} :
 -- see Note [nolint_ge]
 /-- In a pseudometric space, uniform Cauchy sequences are characterized by the fact that,
 eventually, the distance between all its elements is uniformly, arbitrarily small. -/
--- Porting note: no attr @[nolint ge_or_gt]
 theorem Metric.uniformCauchySeqOn_iff {γ : Type*} {F : β → γ → α} {s : Set γ} :
     UniformCauchySeqOn F atTop s ↔ ∀ ε > (0 : ℝ),
       ∃ N : β, ∀ m ≥ N, ∀ n ≥ N, ∀ x ∈ s, dist (F m x) (F n x) < ε := by
@@ -88,7 +86,7 @@ theorem Metric.uniformCauchySeqOn_iff {γ : Type*} {F : β → γ → α} {s : S
     exact hab (hN b.fst hbl.ge b.snd hbr.ge x hx)
 
 /-- If the distance between `s n` and `s m`, `n ≤ m` is bounded above by `b n`
-and `b` converges to zero, then `s` is a Cauchy sequence.  -/
+and `b` converges to zero, then `s` is a Cauchy sequence. -/
 theorem cauchySeq_of_le_tendsto_0' {s : β → α} (b : β → ℝ)
     (h : ∀ n m : β, n ≤ m → dist (s n) (s m) ≤ b n) (h₀ : Tendsto b atTop (𝓝 0)) : CauchySeq s :=
   Metric.cauchySeq_iff'.2 fun ε ε0 => (h₀.eventually (gt_mem_nhds ε0)).exists.imp fun N hN n hn =>
@@ -97,7 +95,7 @@ theorem cauchySeq_of_le_tendsto_0' {s : β → α} (b : β → ℝ)
     _ < ε := hN
 
 /-- If the distance between `s n` and `s m`, `n, m ≥ N` is bounded above by `b N`
-and `b` converges to zero, then `s` is a Cauchy sequence.  -/
+and `b` converges to zero, then `s` is a Cauchy sequence. -/
 theorem cauchySeq_of_le_tendsto_0 {s : β → α} (b : β → ℝ)
     (h : ∀ n m N : β, N ≤ n → N ≤ m → dist (s n) (s m) ≤ b N) (h₀ : Tendsto b atTop (𝓝 0)) :
     CauchySeq s :=
@@ -111,7 +109,7 @@ theorem cauchySeq_bdd {u : ℕ → α} (hu : CauchySeq u) : ∃ R > 0, ∀ m n, 
       lt_of_le_of_lt (dist_triangle_right _ _ _) (add_lt_add (H m) (H n))⟩
   let R := Finset.sup (Finset.range N) fun n => nndist (u n) (u N)
   refine ⟨↑R + 1, add_pos_of_nonneg_of_pos R.2 zero_lt_one, fun n => ?_⟩
-  rcases le_or_lt N n with h | h
+  rcases le_or_gt N n with h | h
   · exact lt_of_lt_of_le (hN _ h) (le_add_of_nonneg_left R.2)
   · have : _ ≤ R := Finset.le_sup (Finset.mem_range.2 h)
     exact lt_of_le_of_lt this (lt_add_of_pos_right _ zero_lt_one)

@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Order.Hom.Basic
 import Mathlib.Order.MinMax
-import Mathlib.Algebra.Group.Units
+import Mathlib.Algebra.Group.Units.Defs
 
 /-!
 # Units in ordered monoids
@@ -29,17 +29,17 @@ theorem val_lt_val [Monoid α] [Preorder α] {a b : αˣ} : (a : α) < b ↔ a <
 
 @[to_additive]
 instance instPartialOrderUnits [Monoid α] [PartialOrder α] : PartialOrder αˣ :=
-  PartialOrder.lift val Units.ext
+  PartialOrder.lift val val_injective
 
 @[to_additive]
 instance [Monoid α] [LinearOrder α] : LinearOrder αˣ :=
-  LinearOrder.lift' val Units.ext
+  LinearOrder.lift' val val_injective
 
 /-- `val : αˣ → α` as an order embedding. -/
-@[to_additive (attr := simps (config := .asFn))
+@[to_additive (attr := simps -fullyApplied)
   "`val : add_units α → α` as an order embedding."]
 def orderEmbeddingVal [Monoid α] [LinearOrder α] : αˣ ↪o α :=
-  ⟨⟨val, ext⟩, Iff.rfl⟩
+  ⟨⟨val, val_injective⟩, .rfl⟩
 
 @[to_additive (attr := simp, norm_cast)]
 theorem max_val [Monoid α] [LinearOrder α] {a b : αˣ} : (max a b).val = max a.val b.val :=

@@ -20,7 +20,7 @@ See `traceForm_dualBasis_powerBasis_eq`.
 - `span_coeff_minpolyDiv`: The coefficients of `minpolyDiv` spans `R<x>`.
 -/
 
-open Polynomial FiniteDimensional
+open Polynomial Module
 
 variable (R K) {L S} [CommRing R] [Field K] [Field L] [CommRing S] [Algebra R S] [Algebra K L]
 variable (x : S)
@@ -91,9 +91,7 @@ lemma coeff_minpolyDiv_mem_adjoin (x : S) (i) :
   apply this (natDegree (minpolyDiv R x) + 1)
   rw [coeff_eq_zero_of_natDegree_lt]
   · exact zero_mem _
-  · refine (Nat.le_add_left _ i).trans_lt ?_
-    rw [← add_assoc]
-    exact Nat.lt_succ_self _
+  · omega
 
 section IsIntegral
 variable (hx : IsIntegral R x)
@@ -164,8 +162,8 @@ lemma span_coeff_minpolyDiv :
       Submodule.span_le]
     simp only [Finset.coe_image, Finset.coe_range, Set.image_subset_iff]
     intro i
-    apply Nat.strongInductionOn i
-    intro i hi hi'
+    induction i using Nat.strongRecOn with | ind i hi => ?_
+    intro hi'
     have : coeff (minpolyDiv R x) (natDegree (minpolyDiv R x) - i) ∈
         Submodule.span R (Set.range (coeff (minpolyDiv R x))) :=
       Submodule.subset_span (Set.mem_range_self _)
@@ -209,12 +207,12 @@ lemma sum_smul_minpolyDiv_eq_X_pow (E) [Field E] [Algebra K E] [IsAlgClosed E]
     exact (Algebra.IsSeparable.isSeparable _ _).aeval_derivative_ne_zero (minpoly.aeval _ _)
   · refine (Polynomial.natDegree_sub_le _ _).trans_lt
       (max_lt ((Polynomial.natDegree_sum_le _ _).trans_lt ?_) ?_)
-    · simp only [AlgEquiv.toAlgHom_eq_coe, Polynomial.map_smul,
-        map_div₀, map_pow, RingHom.coe_coe, AlgHom.coe_coe, Function.comp_apply,
-        Finset.mem_univ, forall_true_left, true_and, Finset.fold_max_lt, AlgHom.card]
+    · simp only [Polynomial.map_smul,
+        map_div₀, map_pow, RingHom.coe_coe, Function.comp_apply,
+        Finset.mem_univ, forall_true_left, Finset.fold_max_lt, AlgHom.card]
       refine ⟨finrank_pos, ?_⟩
       intro σ
-      exact ((Polynomial.natDegree_smul_le _ _).trans (natDegree_map_le _ _)).trans_lt
+      exact ((Polynomial.natDegree_smul_le _ _).trans natDegree_map_le).trans_lt
         ((natDegree_minpolyDiv_lt (Algebra.IsIntegral.isIntegral x)).trans_le
           (minpoly.natDegree_le _))
     · rwa [natDegree_pow, natDegree_X, mul_one, AlgHom.card]

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.RingTheory.Adjoin.Field
-import Mathlib.FieldTheory.IntermediateField.Basic
+import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
 
 /-!
 # Splitting fields
@@ -38,6 +38,7 @@ namespace Polynomial
 variable [Field K] [Field L] [Field F] [Algebra K L]
 
 /-- Typeclass characterising splitting fields. -/
+@[stacks 09HV "Predicate version"]
 class IsSplittingField (f : K[X]) : Prop where
   splits' : Splits (algebraMap K L) f
   adjoin_rootSet' : Algebra.adjoin K (f.rootSet L : Set L) = ⊤
@@ -46,13 +47,9 @@ namespace IsSplittingField
 
 variable {K}
 
--- Porting note: infer kinds are unsupported
--- so we provide a version of `splits'` with `f` explicit.
 theorem splits (f : K[X]) [IsSplittingField K L f] : Splits (algebraMap K L) f :=
   splits'
 
--- Porting note: infer kinds are unsupported
--- so we provide a version of `adjoin_rootSet'` with `f` explicit.
 theorem adjoin_rootSet (f : K[X]) [IsSplittingField K L f] :
     Algebra.adjoin K (f.rootSet L : Set L) = ⊤ :=
   adjoin_rootSet'
@@ -70,7 +67,7 @@ instance map (f : F[X]) [IsSplittingField F L f] : IsSplittingField K L (f.map <
 
 theorem splits_iff (f : K[X]) [IsSplittingField K L f] :
     Splits (RingHom.id K) f ↔ (⊤ : Subalgebra K L) = ⊥ :=
-  ⟨fun h => by -- Porting note: replaced term-mode proof
+  ⟨fun h => by
     rw [eq_bot_iff, ← adjoin_rootSet L f, rootSet, aroots, roots_map (algebraMap K L) h,
       Algebra.adjoin_le_iff]
     intro y hy
@@ -129,7 +126,7 @@ theorem of_algEquiv [Algebra K F] (p : K[X]) (f : F ≃ₐ[K] L) [IsSplittingFie
   constructor
   · rw [← f.toAlgHom.comp_algebraMap]
     exact splits_comp_of_splits _ _ (splits F p)
-  · rw [← (Algebra.range_top_iff_surjective f.toAlgHom).mpr f.surjective,
+  · rw [← (AlgHom.range_eq_top f.toAlgHom).mpr f.surjective,
       adjoin_rootSet_eq_range (splits F p), adjoin_rootSet F p]
 
 theorem adjoin_rootSet_eq_range [Algebra K F] (f : K[X]) [IsSplittingField K L f] (i : L →ₐ[K] F) :
@@ -150,6 +147,34 @@ theorem IntermediateField.splits_of_splits (h : p.Splits (algebraMap K L))
   simp_rw [← F.fieldRange_val, rootSet_def, Finset.mem_coe, Multiset.mem_toFinset] at hF
   exact splits_of_comp _ F.val.toRingHom h hF
 
+theorem IntermediateField.splits_iff_mem (h : p.Splits (algebraMap K L)) :
+    p.Splits (algebraMap K F) ↔ ∀ x ∈ p.rootSet L, x ∈ F := by
+  refine ⟨?_, IntermediateField.splits_of_splits h⟩
+  intro hF
+  rw [← Polynomial.image_rootSet hF F.val, Set.forall_mem_image]
+  exact fun x _ ↦ x.2
+
 theorem IsIntegral.mem_intermediateField_of_minpoly_splits {x : L} (int : IsIntegral K x)
     {F : IntermediateField K L} (h : Splits (algebraMap K F) (minpoly K x)) : x ∈ F := by
   rw [← F.fieldRange_val]; exact int.mem_range_algebraMap_of_minpoly_splits h
+
+/-- Characterize `IsSplittingField` with `IntermediateField.adjoin` instead of `Algebra.adjoin`. -/
+theorem isSplittingField_iff_intermediateField : p.IsSplittingField K L ↔
+    p.Splits (algebraMap K L) ∧ IntermediateField.adjoin K (p.rootSet L) = ⊤ := by
+  rw [← IntermediateField.toSubalgebra_injective.eq_iff,
+      IntermediateField.adjoin_algebraic_toSubalgebra fun _ ↦ isAlgebraic_of_mem_rootSet]
+  exact ⟨fun ⟨spl, adj⟩ ↦ ⟨spl, adj⟩, fun ⟨spl, adj⟩ ↦ ⟨spl, adj⟩⟩
+
+-- Note: p.Splits (algebraMap F E) also works
+theorem IntermediateField.isSplittingField_iff :
+    p.IsSplittingField K F ↔ p.Splits (algebraMap K F) ∧ F = adjoin K (p.rootSet L) := by
+  suffices _ → (Algebra.adjoin K (p.rootSet F) = ⊤ ↔ F = adjoin K (p.rootSet L)) by
+    exact ⟨fun h ↦ ⟨h.1, (this h.1).mp h.2⟩, fun h ↦ ⟨h.1, (this h.1).mpr h.2⟩⟩
+  rw [← toSubalgebra_injective.eq_iff,
+      adjoin_algebraic_toSubalgebra fun x ↦ isAlgebraic_of_mem_rootSet]
+  refine fun hp ↦ (adjoin_rootSet_eq_range hp F.val).symm.trans ?_
+  rw [← F.range_val, eq_comm]
+
+theorem IntermediateField.adjoin_rootSet_isSplittingField (hp : p.Splits (algebraMap K L)) :
+    p.IsSplittingField K (adjoin K (p.rootSet L)) :=
+  isSplittingField_iff.mpr ⟨splits_of_splits hp fun _ hx ↦ subset_adjoin K (p.rootSet L) hx, rfl⟩

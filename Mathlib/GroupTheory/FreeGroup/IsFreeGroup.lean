@@ -33,7 +33,7 @@ For the explicit construction of free groups, see `GroupTheory/FreeGroup`.
 * `IsFreeGroup.toFreeGroup`: any free group with generators `A` is equivalent to `FreeGroup A`.
 * `IsFreeGroup.unique_lift`: the universal property of a free group.
 * `FreeGroupBasis.ofUniqueLift`: a group satisfying the universal property of a free group admits
- a free group basis.
+  a free group basis.
 
 -/
 
@@ -138,18 +138,18 @@ def ofLift {G : Type u} [Group G] (X : Type u) (of : X → G)
   repr := MulEquiv.symm <| MonoidHom.toMulEquiv (FreeGroup.lift of) (lift FreeGroup.of)
       (by
         apply FreeGroup.ext_hom; intro x
-        simp only [MonoidHom.coe_comp, Function.comp_apply, MonoidHom.id_apply, FreeGroup.lift.of,
-          lift_of])
+        simp only [MonoidHom.coe_comp, Function.comp_apply, MonoidHom.id_apply,
+          FreeGroup.lift_apply_of, lift_of])
       (by
         let lift_symm_of : ∀ {H : Type u} [Group H], ∀ (f : G →* H) (a), lift.symm f a = f (of a) :=
           by intro H _ f a; simp [← lift_of (lift.symm f)]
         apply lift.symm.injective; ext x
-        simp only [MonoidHom.coe_comp, Function.comp_apply, MonoidHom.id_apply, FreeGroup.lift.of,
-          lift_of, lift_symm_of])
+        simp only [MonoidHom.coe_comp, Function.comp_apply, MonoidHom.id_apply,
+          FreeGroup.lift_apply_of, lift_of, lift_symm_of])
 
 /-- If a group satisfies the universal property of a free group with respect to a given type, then
 it admits a free group basis based on this type. Here
-the universal property is expressed as in `IsFreeGroup.unique_lift`.  -/
+the universal property is expressed as in `IsFreeGroup.unique_lift`. -/
 def ofUniqueLift {G : Type u} [Group G] (X : Type u) (of : X → G)
     (h : ∀ {H : Type u} [Group H] (f : X → H), ∃! F : G →* H, ∀ a, F (of a) = f a) :
     FreeGroupBasis X G :=
@@ -212,9 +212,9 @@ theorem ext_hom ⦃f g : G →* H⦄ (h : ∀ a : Generators G, f (of a) = g (of
 group extends in a unique way to a homomorphism from `G`.
 
 Note that since `IsFreeGroup.lift` is expressed as a bijection, it already
-expresses the universal property.  -/
+expresses the universal property. -/
 theorem unique_lift (f : Generators G → H) : ∃! F : G →* H, ∀ a, F (of a) = f a := by
-  simpa only [Function.funext_iff] using lift.symm.bijective.existsUnique f
+  simpa only [funext_iff] using lift.symm.bijective.existsUnique f
 
 /-- If a group satisfies the universal property of a free group with respect to a given type, then
 it is free. Here, the universal property is expressed as in `IsFreeGroup.lift` and its
@@ -226,7 +226,7 @@ lemma ofLift {G : Type u} [Group G] (X : Type u) (of : X → G)
   (FreeGroupBasis.ofLift X of lift lift_of).isFreeGroup
 
 /-- If a group satisfies the universal property of a free group with respect to a given type, then
-it is free. Here the universal property is expressed as in `IsFreeGroup.unique_lift`.  -/
+it is free. Here the universal property is expressed as in `IsFreeGroup.unique_lift`. -/
 lemma ofUniqueLift {G : Type u} [Group G] (X : Type u) (of : X → G)
     (h : ∀ {H : Type u} [Group H] (f : X → H), ∃! F : G →* H, ∀ a, F (of a) = f a) :
     IsFreeGroup G :=

@@ -82,12 +82,12 @@ class IsJordan [Mul A] : Prop where
   lmul_comm_rmul_rmul : ∀ a b : A, a * b * (a * a) = a * (b * (a * a))
   rmul_comm_rmul_rmul : ∀ a b : A, b * a * (a * a) = b * (a * a) * a
 
-/-- A commutative Jordan multipication -/
+/-- A commutative Jordan multiplication -/
 class IsCommJordan [CommMagma A] : Prop where
   lmul_comm_rmul_rmul : ∀ a b : A, a * b * (a * a) = a * (b * (a * a))
 
 -- see Note [lower instance priority]
-/-- A (commutative) Jordan multiplication is also a Jordan multipication -/
+/-- A (commutative) Jordan multiplication is also a Jordan multiplication -/
 instance (priority := 100) IsCommJordan.toIsJordan [CommMagma A] [IsCommJordan A] : IsJordan A where
   lmul_comm_rmul a b := by rw [mul_comm, mul_comm a b]
   lmul_lmul_comm_lmul a b := by
@@ -101,7 +101,7 @@ instance (priority := 100) IsCommJordan.toIsJordan [CommMagma A] [IsCommJordan A
     rw [mul_comm b a, IsCommJordan.lmul_comm_rmul_rmul, mul_comm]
 
 -- see Note [lower instance priority]
-/-- Semigroup multiplication satisfies the (non-commutative) Jordan axioms-/
+/-- Semigroup multiplication satisfies the (non-commutative) Jordan axioms -/
 instance (priority := 100) Semigroup.isJordan [Semigroup A] : IsJordan A where
   lmul_comm_rmul a b := by rw [mul_assoc]
   lmul_lmul_comm_lmul a b := by rw [mul_assoc, mul_assoc]
@@ -174,7 +174,7 @@ private theorem aux0 {a b c : A} : ⁅L (a + b + c), L ((a + b + c) * (a + b + c
   iterate 10 rw [map_add]
   rw [mul_comm b a, mul_comm c a, mul_comm c b]
   iterate 3 rw [two_smul]
-  simp only [lie_add, add_lie, commute_lmul_lmul_sq, zero_add, add_zero]
+  simp only [lie_add, add_lie]
   abel
 
 private theorem aux1 {a b c : A} :
@@ -216,7 +216,7 @@ private theorem aux3 {a b c : A} :
     (2 • ⁅L a, L (b * c)⁆ + 2 • ⁅L b, L (c * a)⁆ + 2 • ⁅L c, L (a * b)⁆)
     =
     2 • ⁅L a, L (b * c)⁆ + 2 • ⁅L b, L (c * a)⁆ + 2 • ⁅L c, L (a * b)⁆ := by
-  rw [add_left_eq_self]
+  rw [add_eq_right]
   -- Porting note: was `nth_rw` instead of `conv_lhs`
   conv_lhs => enter [1, 1, 2, 2, 2]; rw [mul_comm a b]
   conv_lhs => enter [1, 2, 2, 2, 1]; rw [mul_comm c a]

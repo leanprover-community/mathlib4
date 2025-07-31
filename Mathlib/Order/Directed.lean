@@ -17,8 +17,6 @@ directed iff each pair of elements has a shared upper bound.
 * `DirectedOn r s`: Predicate stating that the set `s` is `r`-directed.
 * `IsDirected α r`: Prop-valued mixin stating that `α` is `r`-directed. Follows the style of the
   unbundled relation classes such as `IsTotal`.
-* `ScottContinuous`: Predicate stating that a function between preorders preserves `IsLUB` on
-  directed sets.
 
 ## TODO
 
@@ -40,7 +38,7 @@ variable {α : Type u} {β : Type v} {ι : Sort w} (r r' s : α → α → Prop)
 local infixl:50 " ≼ " => r
 
 /-- A family of elements of α is directed (with respect to a relation `≼` on α)
-  if there is a member of the family `≼`-above any pair in the family.  -/
+  if there is a member of the family `≼`-above any pair in the family. -/
 def Directed (f : ι → α) :=
   ∀ x y, ∃ z, f x ≼ f z ∧ f y ≼ f z
 
@@ -60,11 +58,7 @@ alias ⟨DirectedOn.directed_val, _⟩ := directedOn_iff_directed
 theorem directedOn_range {f : ι → α} : Directed r f ↔ DirectedOn r (Set.range f) := by
   simp_rw [Directed, DirectedOn, Set.forall_mem_range, Set.exists_range_iff]
 
--- Porting note: This alias was misplaced in `order/compactly_generated.lean` in mathlib3
-alias ⟨Directed.directedOn_range, _⟩ := directedOn_range
-
--- Porting note: `attribute [protected]` doesn't work
--- attribute [protected] Directed.directedOn_range
+protected alias ⟨Directed.directedOn_range, _⟩ := directedOn_range
 
 theorem directedOn_image {s : Set β} {f : β → α} :
     DirectedOn r (f '' s) ↔ DirectedOn (f ⁻¹'o r) s := by
@@ -88,10 +82,13 @@ theorem Directed.mono {s : α → α → Prop} {ι} {f : ι → α} (H : ∀ a b
   let ⟨c, h₁, h₂⟩ := h a b
   ⟨c, H _ _ h₁, H _ _ h₂⟩
 
--- Porting note: due to some interaction with the local notation, `r` became explicit here in lean3
 theorem Directed.mono_comp (r : α → α → Prop) {ι} {rb : β → β → Prop} {g : α → β} {f : ι → α}
     (hg : ∀ ⦃x y⦄, r x y → rb (g x) (g y)) (hf : Directed r f) : Directed rb (g ∘ f) :=
   directed_comp.2 <| hf.mono hg
+
+theorem DirectedOn.mono_comp {r : α → α → Prop} {rb : β → β → Prop} {g : α → β} {s : Set α}
+    (hg : ∀ ⦃x y⦄, r x y → rb (g x) (g y)) (hf : DirectedOn r s) : DirectedOn rb (g '' s) :=
+  directedOn_image.mpr (hf.mono hg)
 
 /-- A set stable by supremum is `≤`-directed. -/
 theorem directedOn_of_sup_mem [SemilatticeSup α] {S : Set α}
@@ -110,7 +107,7 @@ theorem Directed.extend_bot [Preorder α] [OrderBot α] {e : ι → β} {f : ι 
     simp [Function.extend_apply' _ _ _ hb]
   rcases hf i j with ⟨k, hi, hj⟩
   use e k
-  simp only [he.extend_apply, *, true_and_iff]
+  simp only [he.extend_apply, *, true_and]
 
 /-- A set stable by infimum is `≥`-directed. -/
 theorem directedOn_of_inf_mem [SemilatticeInf α] {S : Set α}
@@ -128,6 +125,12 @@ class IsDirected (α : Type*) (r : α → α → Prop) : Prop where
 
 theorem directed_of (r : α → α → Prop) [IsDirected α r] (a b : α) : ∃ c, r a c ∧ r b c :=
   IsDirected.directed _ _
+
+theorem directed_of₃ (r : α → α → Prop) [IsDirected α r] [IsTrans α r] (a b c : α) :
+    ∃ d, r a d ∧ r b d ∧ r c d :=
+  have ⟨e, hae, hbe⟩ := directed_of r a b
+  have ⟨f, hef, hcf⟩ := directed_of r e c
+  ⟨f, Trans.trans hae hef, Trans.trans hbe hef, hcf⟩
 
 theorem directed_id [IsDirected α r] : Directed r id := directed_of r
 
@@ -169,7 +172,7 @@ instance OrderDual.isDirected_le [LE α] [IsDirected α (· ≥ ·)] : IsDirecte
 /-- A monotone function on an upwards-directed type is directed. -/
 theorem directed_of_isDirected_le [LE α] [IsDirected α (· ≤ ·)] {f : α → β} {r : β → β → Prop}
     (H : ∀ ⦃i j⦄, i ≤ j → r (f i) (f j)) : Directed r f :=
-  directed_id.mono_comp H
+  directed_id.mono_comp _ H
 
 theorem Monotone.directed_le [Preorder α] [IsDirected α (· ≤ ·)] [Preorder β] {f : α → β} :
     Monotone f → Directed (· ≤ ·) f :=
@@ -250,18 +253,48 @@ theorem isBot_iff_isMin [IsDirected α (· ≥ ·)] : IsBot a ↔ IsMin a :=
 theorem isTop_iff_isMax [IsDirected α (· ≤ ·)] : IsTop a ↔ IsMax a :=
   ⟨IsTop.isMax, IsMax.isTop⟩
 
-variable (β) [PartialOrder β]
+end Preorder
 
-theorem exists_lt_of_directed_ge [IsDirected β (· ≥ ·)] [Nontrivial β] : ∃ a b : β, a < b := by
+section PartialOrder
+
+variable [PartialOrder β]
+
+section Nontrivial
+
+variable [Nontrivial β]
+
+variable (β) in
+theorem exists_lt_of_directed_ge [IsDirected β (· ≥ ·)] :
+    ∃ a b : β, a < b := by
   rcases exists_pair_ne β with ⟨a, b, hne⟩
   rcases isBot_or_exists_lt a with (ha | ⟨c, hc⟩)
   exacts [⟨a, b, (ha b).lt_of_ne hne⟩, ⟨_, _, hc⟩]
 
-theorem exists_lt_of_directed_le [IsDirected β (· ≤ ·)] [Nontrivial β] : ∃ a b : β, a < b :=
+variable (β) in
+theorem exists_lt_of_directed_le [IsDirected β (· ≤ ·)] :
+    ∃ a b : β, a < b :=
   let ⟨a, b, h⟩ := exists_lt_of_directed_ge βᵒᵈ
   ⟨b, a, h⟩
 
-variable {f : α → β} {s : Set α}
+protected theorem IsMin.not_isMax [IsDirected β (· ≥ ·)] {b : β} (hb : IsMin b) : ¬ IsMax b := by
+  intro hb'
+  obtain ⟨a, c, hac⟩ := exists_lt_of_directed_ge β
+  have := hb.isBot a
+  obtain rfl := (hb' <| this).antisymm this
+  exact hb'.not_lt hac
+
+protected theorem IsMin.not_isMax' [IsDirected β (· ≤ ·)] {b : β} (hb : IsMin b) : ¬ IsMax b :=
+  fun hb' ↦ hb'.toDual.not_isMax hb.toDual
+
+protected theorem IsMax.not_isMin [IsDirected β (· ≤ ·)] {b : β} (hb : IsMax b) : ¬ IsMin b :=
+  fun hb' ↦ hb.toDual.not_isMax hb'.toDual
+
+protected theorem IsMax.not_isMin' [IsDirected β (· ≥ ·)] {b : β} (hb : IsMax b) : ¬ IsMin b :=
+  fun hb' ↦ hb'.toDual.not_isMin hb.toDual
+
+end Nontrivial
+
+variable [Preorder α] {f : α → β} {s : Set α}
 
 -- TODO: Generalise the following two lemmas to connected orders
 
@@ -278,7 +311,7 @@ lemma constant_of_monotoneOn_antitoneOn (hf : MonotoneOn f s) (hf' : AntitoneOn 
   obtain ⟨c, hc, hac, hbc⟩ := hs _ ha _ hb
   exact le_antisymm ((hf ha hc hac).trans <| hf' hb hc hbc) ((hf hb hc hbc).trans <| hf' ha hc hac)
 
-end Preorder
+end PartialOrder
 
 -- see Note [lower instance priority]
 instance (priority := 100) SemilatticeSup.to_isDirected_le [SemilatticeSup α] :
@@ -297,3 +330,48 @@ instance (priority := 100) OrderTop.to_isDirected_le [LE α] [OrderTop α] : IsD
 -- see Note [lower instance priority]
 instance (priority := 100) OrderBot.to_isDirected_ge [LE α] [OrderBot α] : IsDirected α (· ≥ ·) :=
   ⟨fun _ _ => ⟨⊥, bot_le _, bot_le _⟩⟩
+
+namespace DirectedOn
+
+section Pi
+
+variable {ι : Type*} {α : ι → Type*} {r : (i : ι) → α i → α i → Prop}
+
+lemma proj {d : Set (Π i, α i)} (hd : DirectedOn (fun x y => ∀ i, r i (x i) (y i)) d) (i : ι) :
+    DirectedOn (r i) ((fun a => a i) '' d) :=
+  DirectedOn.mono_comp (fun _ _ h => h) (mono hd fun ⦃_ _⦄ h ↦ h i)
+
+lemma pi {d : (i : ι) → Set (α i)} (hd : ∀ (i : ι), DirectedOn (r i) (d i)) :
+    DirectedOn (fun x y => ∀ i, r i (x i) (y i)) (Set.pi Set.univ d) := by
+  intro a ha b hb
+  choose f hfd haf hbf using fun i => hd i (a i) (ha i trivial) (b i) (hb i trivial)
+  exact ⟨f, fun i _ => hfd i, haf, hbf⟩
+
+end Pi
+
+section Prod
+
+variable {r₂ : β → β → Prop}
+
+/-- Local notation for a relation -/
+local infixl:50 " ≼₁ " => r
+/-- Local notation for a relation -/
+local infixl:50 " ≼₂ " => r₂
+
+lemma fst {d : Set (α × β)} (hd : DirectedOn (fun p q ↦ p.1 ≼₁ q.1 ∧ p.2 ≼₂ q.2) d) :
+    DirectedOn (· ≼₁ ·) (Prod.fst '' d) :=
+  DirectedOn.mono_comp (fun ⦃_ _⦄ h ↦ h) (mono hd fun ⦃_ _⦄ h ↦ h.1)
+
+lemma snd {d : Set (α × β)} (hd : DirectedOn (fun p q ↦ p.1 ≼₁ q.1 ∧ p.2 ≼₂ q.2) d) :
+    DirectedOn (· ≼₂ ·) (Prod.snd '' d) :=
+  DirectedOn.mono_comp (fun ⦃_ _⦄ h ↦ h) (mono hd fun ⦃_ _⦄ h ↦ h.2)
+
+lemma prod {d₁ : Set α} {d₂ : Set β} (h₁ : DirectedOn (· ≼₁ ·) d₁) (h₂ : DirectedOn (· ≼₂ ·) d₂) :
+    DirectedOn (fun p q ↦ p.1 ≼₁ q.1 ∧ p.2 ≼₂ q.2) (d₁ ×ˢ d₂) := fun _ hpd _ hqd => by
+  obtain ⟨r₁, hdr₁, hpr₁, hqr₁⟩ := h₁ _ hpd.1 _ hqd.1
+  obtain ⟨r₂, hdr₂, hpr₂, hqr₂⟩ := h₂ _ hpd.2 _ hqd.2
+  exact ⟨⟨r₁, r₂⟩, ⟨hdr₁, hdr₂⟩, ⟨hpr₁, hpr₂⟩, ⟨hqr₁, hqr₂⟩⟩
+
+end Prod
+
+end DirectedOn

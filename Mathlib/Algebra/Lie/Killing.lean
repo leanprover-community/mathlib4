@@ -25,20 +25,20 @@ This file contains basic definitions and results for such Lie algebras.
 
 ## Main declarations
 
- * `LieAlgebra.IsKilling`: a typeclass encoding the fact that a Lie algebra has a non-singular
-   Killing form.
- * `LieAlgebra.IsKilling.instSemisimple`: if a finite-dimensional Lie algebra over a field
-   has non-singular Killing form then it is semisimple.
- * `LieAlgebra.IsKilling.instHasTrivialRadical`: if a Lie algebra over a PID
-   has non-singular Killing form then it has trivial radical.
+* `LieAlgebra.IsKilling`: a typeclass encoding the fact that a Lie algebra has a non-singular
+  Killing form.
+* `LieAlgebra.IsKilling.instSemisimple`: if a finite-dimensional Lie algebra over a field
+  has non-singular Killing form then it is semisimple.
+* `LieAlgebra.IsKilling.instHasTrivialRadical`: if a Lie algebra over a PID
+  has non-singular Killing form then it has trivial radical.
 
 ## TODO
 
- * Prove that in characteristic zero, a semisimple Lie algebra has non-singular Killing form.
+* Prove that in characteristic zero, a semisimple Lie algebra has non-singular Killing form.
 
 -/
 
-variable (R K L M : Type*) [CommRing R] [Field K] [LieRing L] [LieAlgebra R L] [LieAlgebra K L]
+variable (R K L : Type*) [CommRing R] [Field K] [LieRing L] [LieAlgebra R L] [LieAlgebra K L]
 
 namespace LieAlgebra
 
@@ -46,7 +46,7 @@ namespace LieAlgebra
 
 NB: This is not standard terminology (the literature does not seem to name Lie algebras with this
 property). -/
-class IsKilling : Prop :=
+class IsKilling : Prop where
   /-- We say a Lie algebra is Killing if its Killing form is non-singular. -/
   killingCompl_top_eq_bot : LieIdeal.killingCompl R L ⊤ = ⊥
 
@@ -111,7 +111,7 @@ lemma isKilling_of_equiv [IsKilling R L] (e : L ≃ₗ⁅R⁆ L') : IsKilling R 
   refine ⟨fun hx' ↦ ?_, fun hx y _ ↦ hx ▸ LinearMap.map_zero₂ (killingForm R L') y⟩
   suffices e.symm x' ∈ LinearMap.ker (killingForm R L) by
     rw [IsKilling.ker_killingForm_eq_bot] at this
-    simpa using (e : L ≃ₗ[R] L').congr_arg this
+    simpa [map_zero] using (e : L ≃ₗ[R] L').congr_arg this
   ext y
   replace hx' : ∀ y', killingForm R L' x' y' = 0 := by simpa using hx'
   specialize hx' (e y)

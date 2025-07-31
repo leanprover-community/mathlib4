@@ -17,7 +17,7 @@ open List
 
 variable {α : Type u} {β : α → Type v}
 
-/-! ### Multisets of sigma types-/
+/-! ### Multisets of sigma types -/
 
 namespace Multiset
 
@@ -29,7 +29,17 @@ def keys (s : Multiset (Sigma β)) : Multiset α :=
 theorem coe_keys {l : List (Sigma β)} : keys (l : Multiset (Sigma β)) = (l.keys : Multiset α) :=
   rfl
 
--- Porting note: Fixed Nodupkeys -> NodupKeys
+@[simp]
+theorem keys_zero : keys (0 : Multiset (Sigma β)) = 0 := rfl
+
+@[simp]
+theorem keys_cons {a : α} {b : β a} {s : Multiset (Sigma β)} :
+    keys (⟨a, b⟩ ::ₘ s) = a ::ₘ keys s := by
+  simp [keys]
+
+@[simp]
+theorem keys_singleton {a : α} {b : β a} : keys ({⟨a, b⟩} : Multiset (Sigma β)) = {a} := rfl
+
 /-- `NodupKeys s` means that `s` has no duplicate keys. -/
 def NodupKeys (s : Multiset (Sigma β)) : Prop :=
   Quot.liftOn s List.NodupKeys fun _ _ p => propext <| perm_nodupKeys p
@@ -88,7 +98,6 @@ lemma nodup_entries (f : Finmap β) : f.entries.Nodup := f.nodupKeys.nodup
 /-! ### Lifting from AList -/
 
 /-- Lift a permutation-respecting function on `AList` to `Finmap`. -/
--- @[elab_as_elim] Porting note: we can't add `elab_as_elim` attr in this type
 def liftOn {γ} (s : Finmap β) (f : AList β → γ)
     (H : ∀ a b : AList β, a.entries ~ b.entries → f a = f b) : γ := by
   refine
@@ -97,7 +106,6 @@ def liftOn {γ} (s : Finmap β) (f : AList β → γ)
       (fun l₁ l₂ p => Part.ext' (perm_nodupKeys p) ?_) : Part γ).get ?_
   · exact fun h1 h2 => H _ _ p
   · have := s.nodupKeys
-    -- Porting note: `revert` required because `rcases` behaves differently
     revert this
     rcases s.entries with ⟨l⟩
     exact id
@@ -108,11 +116,10 @@ theorem liftOn_toFinmap {γ} (s : AList β) (f : AList β → γ) (H) : liftOn �
   rfl
 
 /-- Lift a permutation-respecting function on 2 `AList`s to 2 `Finmap`s. -/
--- @[elab_as_elim] Porting note: we can't add `elab_as_elim` attr in this type
 def liftOn₂ {γ} (s₁ s₂ : Finmap β) (f : AList β → AList β → γ)
     (H : ∀ a₁ b₁ a₂ b₂ : AList β,
       a₁.entries ~ a₂.entries → b₁.entries ~ b₂.entries → f a₁ b₁ = f a₂ b₂) : γ :=
-  liftOn s₁ (fun l₁ => liftOn s₂ (f l₁) fun b₁ b₂ p => H _ _ _ _ (Perm.refl _) p) fun a₁ a₂ p => by
+  liftOn s₁ (fun l₁ => liftOn s₂ (f l₁) fun _ _ p => H _ _ _ _ (Perm.refl _) p) fun a₁ a₂ p => by
     have H' : f a₁ = f a₂ := funext fun _ => H _ _ _ _ p (Perm.refl _)
     simp only [H']
 
@@ -151,7 +158,7 @@ theorem ext_iff' {s t : Finmap β} : s.entries = t.entries ↔ s = t :=
 
 /-- The predicate `a ∈ s` means that `s` has a value associated to the key `a`. -/
 instance : Membership α (Finmap β) :=
-  ⟨fun a s => a ∈ s.entries.keys⟩
+  ⟨fun s a => a ∈ s.entries.keys⟩
 
 theorem mem_def {a : α} {s : Finmap β} : a ∈ s ↔ a ∈ s.entries.keys :=
   Iff.rfl
@@ -194,8 +201,10 @@ theorem empty_toFinmap : (⟦∅⟧ : Finmap β) = ∅ :=
 theorem toFinmap_nil [DecidableEq α] : ([].toFinmap : Finmap β) = ∅ :=
   rfl
 
-theorem not_mem_empty {a : α} : a ∉ (∅ : Finmap β) :=
-  Multiset.not_mem_zero a
+theorem notMem_empty {a : α} : a ∉ (∅ : Finmap β) :=
+  Multiset.notMem_zero a
+
+@[deprecated (since := "2025-05-23")] alias not_mem_empty := notMem_empty
 
 @[simp]
 theorem keys_empty : (∅ : Finmap β).keys = ∅ :=
@@ -213,7 +222,7 @@ theorem keys_singleton (a : α) (b : β a) : (singleton a b).keys = {a} :=
 
 @[simp]
 theorem mem_singleton (x y : α) (b : β y) : x ∈ singleton y b ↔ x = y := by
-  simp only [singleton]; erw [mem_cons, mem_nil_iff, or_false_iff]
+  simp [singleton, mem_def]
 
 section
 
@@ -232,7 +241,6 @@ def lookup (a : α) (s : Finmap β) : Option (β a) :=
 theorem lookup_toFinmap (a : α) (s : AList β) : lookup a ⟦s⟧ = s.lookup a :=
   rfl
 
--- Porting note: renaming to `List.dlookup` since `List.lookup` already exists
 @[simp]
 theorem dlookup_list_toFinmap (a : α) (s : List (Sigma β)) : lookup a s.toFinmap = s.dlookup a := by
   rw [List.toFinmap, lookup_toFinmap, lookup_to_alist]
@@ -298,7 +306,7 @@ def keysLookupEquiv :
     dsimp only at hf
     ext
     · simp [keys, Multiset.keys, ← hf, Option.isSome_iff_exists]
-    · simp (config := { contextual := true }) [lookup_eq_some_iff, ← hf]
+    · simp +contextual [lookup_eq_some_iff, ← hf]
 
 @[simp] lemma keysLookupEquiv_symm_apply_keys :
     ∀ f : {f : Finset α × (∀ a, Option (β a)) // ∀ i, (f.2 i).isSome ↔ i ∈ f.1},
@@ -320,7 +328,6 @@ def replace (a : α) (b : β a) (s : Finmap β) : Finmap β :=
   (liftOn s fun t => AList.toFinmap (AList.replace a b t))
     fun _ _ p => toFinmap_eq.2 <| perm_replace p
 
--- Porting note: explicit type required because of the ambiguity
 @[simp]
 theorem replace_toFinmap (a : α) (b : β a) (s : AList β) :
     replace a b ⟦s⟧ = (⟦s.replace a b⟧ : Finmap β) := by
@@ -341,7 +348,8 @@ end
 /-- Fold a commutative function over the key-value pairs in the map -/
 def foldl {δ : Type w} (f : δ → ∀ a, β a → δ)
     (H : ∀ d a₁ b₁ a₂ b₂, f (f d a₁ b₁) a₂ b₂ = f (f d a₂ b₂) a₁ b₁) (d : δ) (m : Finmap β) : δ :=
-  m.entries.foldl (fun d s => f d s.1 s.2) (fun _ _ _ => H _ _ _ _ _) d
+  letI : RightCommutative fun d (s : Sigma β) ↦ f d s.1 s.2 := ⟨fun _ _ _ ↦ H _ _ _ _ _⟩
+  m.entries.foldl (fun d s => f d s.1 s.2) d
 
 /-- `any f s` returns `true` iff there exists a value `v` in `s` such that `f v = true`. -/
 def any (f : ∀ x, β x → Bool) (s : Finmap β) : Bool :=
@@ -379,10 +387,12 @@ theorem keys_erase (a : α) (s : Finmap β) : (erase a s).keys = s.keys.erase a 
 theorem mem_erase {a a' : α} {s : Finmap β} : a' ∈ erase a s ↔ a' ≠ a ∧ a' ∈ s :=
   induction_on s fun s => by simp
 
-theorem not_mem_erase_self {a : α} {s : Finmap β} : ¬a ∈ erase a s := by
+theorem notMem_erase_self {a : α} {s : Finmap β} : a ∉ erase a s := by
   rw [mem_erase, not_and_or, not_not]
   left
   rfl
+
+@[deprecated (since := "2025-05-23")] alias not_mem_erase_self := notMem_erase_self
 
 @[simp]
 theorem lookup_erase (a) (s : Finmap β) : lookup a (erase a s) = none :=
@@ -418,11 +428,14 @@ theorem insert_toFinmap (a : α) (b : β a) (s : AList β) :
     insert a b (AList.toFinmap s) = AList.toFinmap (s.insert a b) := by
   simp [insert]
 
-theorem insert_entries_of_neg {a : α} {b : β a} {s : Finmap β} :
+theorem entries_insert_of_notMem {a : α} {b : β a} {s : Finmap β} :
     a ∉ s → (insert a b s).entries = ⟨a, b⟩ ::ₘ s.entries :=
   induction_on s fun s h => by
-    -- Porting note: `-insert_entries` required
-    simp [AList.insert_entries_of_neg (mt mem_toFinmap.1 h), -insert_entries]
+    simp [AList.entries_insert_of_notMem (mt mem_toFinmap.1 h), -entries_insert]
+
+@[deprecated (since := "2025-05-23")] alias entries_insert_of_not_mem := entries_insert_of_notMem
+
+@[deprecated (since := "2024-12-14")] alias insert_entries_of_neg := entries_insert_of_not_mem
 
 @[simp]
 theorem mem_insert {a a' : α} {b' : β a'} {s : Finmap β} : a ∈ insert a' b' s ↔ a = a' ∨ a ∈ s :=
@@ -453,11 +466,9 @@ theorem toFinmap_cons (a : α) (b : β a) (xs : List (Sigma β)) :
 
 theorem mem_list_toFinmap (a : α) (xs : List (Sigma β)) :
     a ∈ xs.toFinmap ↔ ∃ b : β a, Sigma.mk a b ∈ xs := by
-  -- Porting note: golfed
   induction' xs with x xs
-  · simp only [toFinmap_nil, not_mem_empty, find?, not_mem_nil, exists_false]
-  cases' x with fst_i snd_i
-  -- Porting note: `Sigma.mk.inj_iff` required because `simp` behaves differently
+  · simp only [toFinmap_nil, notMem_empty, not_mem_nil, exists_false]
+  obtain ⟨fst_i, snd_i⟩ := x
   simp only [toFinmap_cons, *, exists_or, mem_cons, mem_insert, exists_and_left, Sigma.mk.inj_iff]
   refine (or_congr_left <| and_iff_left_of_imp ?_).symm
   rintro rfl
@@ -514,7 +525,12 @@ theorem lookup_union_left_of_not_in {a} {s₁ s₂ : Finmap β} (h : a ∉ s₂)
   · rw [lookup_union_left h']
   · rw [lookup_union_right h', lookup_eq_none.mpr h, lookup_eq_none.mpr h']
 
--- @[simp] -- Porting note (#10618): simp can prove this
+/-- `simp`-normal form of `mem_lookup_union` -/
+@[simp]
+theorem mem_lookup_union' {a} {b : β a} {s₁ s₂ : Finmap β} :
+    lookup a (s₁ ∪ s₂) = some b ↔ b ∈ lookup a s₁ ∨ a ∉ s₁ ∧ b ∈ lookup a s₂ :=
+  induction_on₂ s₁ s₂ fun _ _ => AList.mem_lookup_union
+
 theorem mem_lookup_union {a} {b : β a} {s₁ s₂ : Finmap β} :
     b ∈ lookup a (s₁ ∪ s₂) ↔ b ∈ lookup a s₁ ∨ a ∉ s₁ ∧ b ∈ lookup a s₂ :=
   induction_on₂ s₁ s₂ fun _ _ => AList.mem_lookup_union
@@ -534,20 +550,20 @@ theorem union_assoc {s₁ s₂ s₃ : Finmap β} : s₁ ∪ s₂ ∪ s₃ = s₁
 theorem empty_union {s₁ : Finmap β} : ∅ ∪ s₁ = s₁ :=
   induction_on s₁ fun s₁ => by
     rw [← empty_toFinmap]
-    simp [-empty_toFinmap, AList.toFinmap_eq, union_toFinmap, AList.union_assoc]
+    simp [-empty_toFinmap, union_toFinmap]
 
 @[simp]
 theorem union_empty {s₁ : Finmap β} : s₁ ∪ ∅ = s₁ :=
   induction_on s₁ fun s₁ => by
     rw [← empty_toFinmap]
-    simp [-empty_toFinmap, AList.toFinmap_eq, union_toFinmap, AList.union_assoc]
+    simp [-empty_toFinmap, union_toFinmap]
 
 theorem erase_union_singleton (a : α) (b : β a) (s : Finmap β) (h : s.lookup a = some b) :
     s.erase a ∪ singleton a b = s :=
   ext_lookup fun x => by
     by_cases h' : x = a
     · subst a
-      rw [lookup_union_right not_mem_erase_self, lookup_singleton_eq, h]
+      rw [lookup_union_right notMem_erase_self, lookup_singleton_eq, h]
     · have : x ∉ singleton a b := by rwa [mem_singleton]
       rw [lookup_union_left_of_not_in this, lookup_erase_ne h']
 
@@ -557,7 +573,7 @@ end
 
 /-- `Disjoint s₁ s₂` holds if `s₁` and `s₂` have no keys in common. -/
 def Disjoint (s₁ s₂ : Finmap β) : Prop :=
-  ∀ x ∈ s₁, ¬x ∈ s₂
+  ∀ x ∈ s₁, x ∉ s₂
 
 theorem disjoint_empty (x : Finmap β) : Disjoint ∅ x :=
   nofun

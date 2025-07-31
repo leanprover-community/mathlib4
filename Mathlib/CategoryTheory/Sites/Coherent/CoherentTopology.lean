@@ -29,7 +29,7 @@ Note: This is one direction of `mem_sieves_iff_hasEffectiveEpiFamily`, but is ne
 theorem coherentTopology.mem_sieves_of_hasEffectiveEpiFamily (S : Sieve X) :
     (∃ (α : Type) (_ : Finite α) (Y : α → C) (π : (a : α) → (Y a ⟶ X)),
       EffectiveEpiFamily Y π ∧ (∀ a : α, (S.arrows) (π a)) ) →
-        (S ∈ GrothendieckTopology.sieves (coherentTopology C) X) := by
+        (S ∈ (coherentTopology C) X) := by
   intro ⟨α, _, Y, π, hπ⟩
   apply (coherentCoverage C).mem_toGrothendieck_sieves_of_superset (R := Presieve.ofArrows Y π)
   · exact fun _ _ h ↦ by cases h; exact hπ.2 _
@@ -49,7 +49,7 @@ theorem EffectiveEpiFamily.transitive_of_finite {α : Type} [Finite α] {Y : α 
       (fun (c : Σ a, β a) => Y_n c.fst c.snd) (fun c => π_n c.fst c.snd ≫ π c.fst) := by
   rw [← Sieve.effectiveEpimorphic_family]
   suffices h₂ : (Sieve.generate (Presieve.ofArrows (fun (⟨a, b⟩ : Σ _, β _) => Y_n a b)
-        (fun ⟨a,b⟩ => π_n a b ≫ π a))) ∈ GrothendieckTopology.sieves (coherentTopology C) X by
+        (fun ⟨a,b⟩ => π_n a b ≫ π a))) ∈ (coherentTopology C) X by
     change Nonempty _
     rw [← Sieve.forallYonedaIsSheaf_iff_colimit]
     exact fun W => coherentTopology.isSheaf_yoneda_obj W _ h₂
@@ -80,18 +80,21 @@ A sieve belongs to the coherent topology if and only if it contains a finite
 `EffectiveEpiFamily`.
 -/
 theorem coherentTopology.mem_sieves_iff_hasEffectiveEpiFamily (S : Sieve X) :
-    (S ∈ GrothendieckTopology.sieves (coherentTopology C) X) ↔
+    (S ∈ (coherentTopology C) X) ↔
     (∃ (α : Type) (_ : Finite α) (Y : α → C) (π : (a : α) → (Y a ⟶ X)),
         EffectiveEpiFamily Y π ∧ (∀ a : α, (S.arrows) (π a)) )  := by
   constructor
   · intro h
-    induction' h with Y T hS Y Y R S _ _ a b
-    · obtain ⟨a, h, Y', π, h', _⟩ := hS
+    induction h with
+    | of Y T hS =>
+      obtain ⟨a, h, Y', π, h', _⟩ := hS
       refine ⟨a, h, Y', π, inferInstance, fun a' ↦ ?_⟩
       obtain ⟨rfl, _⟩ := h'
       exact ⟨Y' a', 𝟙 Y' a', π a', Presieve.ofArrows.mk a', by simp⟩
-    · exact ⟨Unit, inferInstance, fun _ => Y, fun _ => (𝟙 Y), inferInstance, by simp⟩
-    · obtain ⟨α, w, Y₁, π, ⟨h₁,h₂⟩⟩ := a
+    | top Y =>
+      exact ⟨Unit, inferInstance, fun _ => Y, fun _ => (𝟙 Y), inferInstance, by simp⟩
+    | transitive Y R S _ _ a b =>
+      obtain ⟨α, w, Y₁, π, ⟨h₁,h₂⟩⟩ := a
       choose β _ Y_n π_n H using fun a => b (h₂ a)
       exact ⟨(Σ a, β a), inferInstance, fun ⟨a,b⟩ => Y_n a b, fun ⟨a, b⟩ => (π_n a b) ≫ (π a),
         EffectiveEpiFamily.transitive_of_finite _ h₁ _ (fun a => (H a).1),

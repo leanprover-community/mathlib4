@@ -33,7 +33,7 @@ The function `findPositiveVector` solves this problem.
 
 -/
 
-namespace Linarith.SimplexAlgorithm
+namespace Mathlib.Tactic.Linarith.SimplexAlgorithm
 
 variable {matType : Nat → Nat → Type} [UsableInSimplexAlgorithm matType]
 
@@ -70,11 +70,11 @@ def stateLP {n m : Nat} (A : matType n m) (strictIndexes : List Nat) : matType (
 
   ofValues (objectiveRow ++ constraintRow ++ valuesA)
 
-/-- Extracts target vector from the tableau, putting auxilary variables aside (see `stateLP`). -/
+/-- Extracts target vector from the tableau, putting auxiliary variables aside (see `stateLP`). -/
 def extractSolution (tableau : Tableau matType) : Array Rat := Id.run do
-  let mut ans : Array Rat := Array.mkArray (tableau.basic.size + tableau.free.size - 3) 0
-  for i in [1:tableau.basic.size] do
-    ans := ans.set! (tableau.basic[i]! - 2) <| tableau.mat[(i, tableau.free.size - 1)]!
+  let mut ans : Array Rat := Array.replicate (tableau.basic.size + tableau.free.size - 3) 0
+  for h : i in [1:tableau.basic.size] do
+    ans := ans.set! (tableau.basic[i] - 2) <| tableau.mat[(i, tableau.free.size - 1)]!
   return ans
 
 /--
@@ -90,15 +90,13 @@ def findPositiveVector {n m : Nat} {matType : Nat → Nat → Type} [UsableInSim
 
   /- Using Gaussian elimination split variable into free and basic forming the tableau that will be
   operated by the Simplex Algorithm. -/
-  let initTableau := Gauss.getTableau B
+  let initTableau ← Gauss.getTableau B
 
   /- Run the Simplex Algorithm and extract the solution. -/
-  let res := runSimplexAlgorithm.run initTableau
+  let res ← runSimplexAlgorithm.run initTableau
   if res.fst.isOk then
     return extractSolution res.snd
   else
     throwError "Simplex Algorithm failed"
 
-end SimplexAlgorithm
-
-end Linarith
+end Mathlib.Tactic.Linarith.SimplexAlgorithm

@@ -5,7 +5,6 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Perm
-import Mathlib.Data.Fintype.Prod
 import Mathlib.Dynamics.FixedPoints.Basic
 
 /-!
@@ -41,13 +40,15 @@ def fixedPointsEquiv : { σx : α × Perm α // σx.2 σx.1 = σx.1 } ≃ Σ x :
     { σx : α × Perm α // σx.2 σx.1 = σx.1 } ≃ Σ x : α, { σ : Perm α // σ x = x } :=
       setProdEquivSigma _
     _ ≃ Σ x : α, { σ : Perm α // ∀ y : ({x} : Set α), σ y = Equiv.refl (↥({x} : Set α)) y } :=
-      (sigmaCongrRight fun x => Equiv.Set.ofEq <| by simp only [SetCoe.forall]; dsimp; simp)
+      (sigmaCongrRight fun x => Equiv.setCongr <| by simp only [SetCoe.forall]; simp)
     _ ≃ Σ x : α, Perm ({x}ᶜ : Set α) := sigmaCongrRight fun x => by apply Equiv.Set.compl
 
 theorem card_fixed_points :
     card { σx : α × Perm α // σx.2 σx.1 = σx.1 } = card α * (card α - 1)! := by
-  simp [card_congr (fixedPointsEquiv α), card_perm, Finset.filter_not, Finset.card_sdiff,
-    Finset.filter_eq', Finset.card_univ]
+  simp only [card_congr (fixedPointsEquiv α), card_sigma, card_perm]
+  have (x : _) : ({x}ᶜ : Set α) = Finset.filter (· ≠ x) Finset.univ := by
+    ext; simp
+  simp [this]
 
 /-- Given `α : Type*` and `k : ℕ`, `fiber α k` is the set of permutations of `α` with exactly `k`
 fixed points. -/
@@ -78,7 +79,7 @@ def fixedPointsEquiv' :
     ⟨⟨card (fixedPoints p.1.2), (card_subtype_le _).trans_lt (Nat.lt_succ_self _)⟩, ⟨p.1.2, rfl⟩,
       ⟨p.1.1, p.2⟩⟩
   left_inv := fun ⟨⟨k, hk⟩, ⟨σ, hσ⟩, ⟨x, hx⟩⟩ => by
-    simp only [mem_fiber, Fin.val_mk] at hσ
+    simp only [mem_fiber] at hσ
     subst k; rfl
   right_inv := fun ⟨⟨x, σ⟩, h⟩ => rfl
 
@@ -94,6 +95,6 @@ theorem main₀ (n : ℕ) : ∑ k ∈ range (n + 1), k * p (Fin n) k = n * (n - 
 
 /-- Main statement for permutations of `Fin n`. -/
 theorem main {n : ℕ} (hn : 1 ≤ n) : ∑ k ∈ range (n + 1), k * p (Fin n) k = n ! := by
-  rw [main₀, Nat.mul_factorial_pred (zero_lt_one.trans_le hn)]
+  rw [main₀, Nat.mul_factorial_pred (Nat.one_le_iff_ne_zero.mp hn)]
 
 end Imo1987Q1

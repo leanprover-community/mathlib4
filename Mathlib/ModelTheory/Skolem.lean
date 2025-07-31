@@ -33,8 +33,6 @@ namespace Language
 
 open Structure Cardinal
 
-open Cardinal
-
 variable (L : Language.{u, v}) {M : Type w} [Nonempty M] [L.Structure M]
 
 /-- A language consisting of Skolem functions for another language.
@@ -82,11 +80,11 @@ theorem skolem₁_reduct_isElementary (S : (L.sum L.skolem₁).Substructure M) :
   apply (LHom.sumInl.substructureReduct S).isElementary_of_exists
   intro n φ x a h
   let φ' : (L.sum L.skolem₁).Functions n := LHom.sumInr.onFunction φ
-  exact
-    ⟨⟨funMap φ' ((↑) ∘ x), S.fun_mem (LHom.sumInr.onFunction φ) ((↑) ∘ x) (by
-      exact fun i => (x i).2)⟩,
-      by exact Classical.epsilon_spec (p := fun a => BoundedFormula.Realize φ default
-          (Fin.snoc (Subtype.val ∘ x) a)) ⟨a, h⟩⟩
+  use ⟨funMap φ' ((↑) ∘ x), ?_⟩
+  · exact Classical.epsilon_spec (p := fun a => BoundedFormula.Realize φ default
+          (Fin.snoc (Subtype.val ∘ x) a)) ⟨a, h⟩
+  · exact S.fun_mem (LHom.sumInr.onFunction φ) ((↑) ∘ x) (by
+      exact fun i => (x i).2)
 
 /-- Any `L.sum L.skolem₁`-substructure is an elementary `L`-substructure. -/
 noncomputable def elementarySkolem₁Reduct (S : (L.sum L.skolem₁).Substructure M) :
@@ -116,7 +114,7 @@ variable {M}
 /-- The **Downward Löwenheim–Skolem theorem** :
   If `s` is a set in an `L`-structure `M` and `κ` an infinite cardinal such that
   `max (#s, L.card) ≤ κ` and `κ ≤ # M`, then `M` has an elementary substructure containing `s` of
-  cardinality `κ`.  -/
+  cardinality `κ`. -/
 theorem exists_elementarySubstructure_card_eq (s : Set M) (κ : Cardinal.{w'}) (h1 : ℵ₀ ≤ κ)
     (h2 : Cardinal.lift.{w'} #s ≤ Cardinal.lift.{w} κ)
     (h3 : Cardinal.lift.{w'} L.card ≤ Cardinal.lift.{max u v} κ)

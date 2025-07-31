@@ -3,15 +3,15 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
-import Mathlib.MeasureTheory.Integral.DivergenceTheorem
-import Mathlib.MeasureTheory.Integral.CircleIntegral
-import Mathlib.Analysis.Calculus.Dslope
-import Mathlib.Analysis.Analytic.Basic
-import Mathlib.Analysis.Complex.ReImTopology
+import Mathlib.Analysis.Analytic.Uniqueness
 import Mathlib.Analysis.Calculus.DiffContOnCl
+import Mathlib.Analysis.Calculus.DSlope
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
+import Mathlib.Analysis.Complex.ReImTopology
 import Mathlib.Data.Real.Cardinality
+import Mathlib.MeasureTheory.Integral.CircleIntegral
+import Mathlib.MeasureTheory.Integral.DivergenceTheorem
+import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
 
 /-!
 # Cauchy integral formula
@@ -151,7 +151,7 @@ noncomputable section
 
 universe u
 
-variable {E : Type u} [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace E]
+variable {E : Type u} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 namespace Complex
 
@@ -193,7 +193,7 @@ theorem integral_boundary_rect_of_hasFDerivAt_real_off_countable (f : ℂ → E)
     fun p hp => (Hd (e p) hp).comp p e.hasFDerivAt
   simp_rw [← intervalIntegral.integral_smul, intervalIntegral.integral_symm w.im z.im, ←
     intervalIntegral.integral_neg, ← hF']
-  refine (integral2_divergence_prod_of_hasFDerivWithinAt_off_countable (fun p => -(I • F p)) F
+  refine (integral2_divergence_prod_of_hasFDerivAt_off_countable (fun p => -(I • F p)) F
     (fun p => -(I • F' p)) F' z.re w.im w.re z.im t (hs.preimage e.injective)
     (htc.const_smul _).neg htc (fun p hp => ((htd p hp).const_smul I).neg) htd ?_).symm
   rw [← (volume_preserving_equiv_real_prod.symm _).integrableOn_comp_preimage
@@ -252,7 +252,7 @@ theorem integral_boundary_rect_eq_zero_of_differentiable_on_off_countable (f : �
   refine (integral_boundary_rect_of_hasFDerivAt_real_off_countable f
     (fun z => (fderiv ℂ f z).restrictScalars ℝ) z w s hs Hc
     (fun x hx => (Hd x hx).hasFDerivAt.restrictScalars ℝ) ?_).trans ?_ <;>
-      simp [← ContinuousLinearMap.map_smul]
+      simp
 
 /-- **Cauchy-Goursat theorem for a rectangle**: the integral of a complex differentiable function
 over the boundary of a rectangle equals zero. More precisely, if `f` is continuous on a closed
@@ -306,12 +306,13 @@ theorem circleIntegral_sub_center_inv_smul_eq_of_differentiable_on_annulus_off_c
   set g : ℂ → ℂ := (c + exp ·)
   have hdg : Differentiable ℂ g := differentiable_exp.const_add _
   replace hs : (g ⁻¹' s).Countable := (hs.preimage (add_right_injective c)).preimage_cexp
-  have h_maps : MapsTo g R A := by rintro z ⟨h, -⟩; simpa [g, A, dist_eq, abs_exp, hle] using h.symm
+  have h_maps : MapsTo g R A := by
+    rintro z ⟨h, -⟩; simpa [g, A, dist_eq, norm_exp, hle] using h.symm
   replace hc : ContinuousOn (f ∘ g) R := hc.comp hdg.continuous.continuousOn h_maps
   replace hd : ∀ z ∈ Ioo (min a b) (max a b) ×ℂ Ioo (min 0 (2 * π)) (max 0 (2 * π)) \ g ⁻¹' s,
       DifferentiableAt ℂ (f ∘ g) z := by
     refine fun z hz => (hd (g z) ⟨?_, hz.2⟩).comp z (hdg _)
-    simpa [g, dist_eq, abs_exp, hle, and_comm] using hz.1.1
+    simpa [g, dist_eq, norm_exp, hle, and_comm] using hz.1.1
   simpa [g, circleMap, exp_periodic _, sub_eq_zero, ← exp_add] using
     integral_boundary_rect_eq_zero_of_differentiable_on_off_countable _ ⟨a, 0⟩ ⟨b, 2 * π⟩ _ hs hc hd
 
@@ -333,6 +334,8 @@ theorem circleIntegral_eq_of_differentiable_on_annulus_off_countable {c : ℂ} {
         (differentiableAt_id.sub_const _).smul (hd z hz))
     _ = ∮ z in C(c, r), f z := circleIntegral.integral_sub_inv_smul_sub_smul _ _ _ _
 
+variable [CompleteSpace E]
+
 /-- **Cauchy integral formula** for the value at the center of a disc. If `f` is continuous on a
 punctured closed disc of radius `R`, is differentiable at all but countably many points of the
 interior of this disc, and has a limit `y` at the center of the disc, then the integral
@@ -343,7 +346,7 @@ theorem circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable_of
     (hd : ∀ z ∈ (ball c R \ {c}) \ s, DifferentiableAt ℂ f z) (hy : Tendsto f (𝓝[{c}ᶜ] c) (𝓝 y)) :
     (∮ z in C(c, R), (z - c)⁻¹ • f z) = (2 * π * I : ℂ) • y := by
   rw [← sub_eq_zero, ← norm_le_zero_iff]
-  refine le_of_forall_le_of_dense fun ε ε0 => ?_
+  refine le_of_forall_gt_imp_ge_of_dense fun ε ε0 => ?_
   obtain ⟨δ, δ0, hδ⟩ : ∃ δ > (0 : ℝ), ∀ z ∈ closedBall c δ \ {c}, dist (f z) y < ε / (2 * π) :=
     ((nhdsWithin_hasBasis nhds_basis_closedBall _).tendsto_iff nhds_basis_ball).1 hy _
       (div_pos ε0 Real.two_pi_pos)
@@ -392,12 +395,15 @@ theorem circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable {R
     (hc.mono diff_subset) (fun z hz => hd z ⟨hz.1.1, hz.2⟩)
     (hc.continuousAt <| closedBall_mem_nhds _ h0).continuousWithinAt
 
+omit [CompleteSpace E] in
 /-- **Cauchy-Goursat theorem** for a disk: if `f : ℂ → E` is continuous on a closed disk
 `{z | ‖z - c‖ ≤ R}` and is complex differentiable at all but countably many points of its interior,
 then the integral $\oint_{|z-c|=R}f(z)\,dz$ equals zero. -/
 theorem circleIntegral_eq_zero_of_differentiable_on_off_countable {R : ℝ} (h0 : 0 ≤ R) {f : ℂ → E}
     {c : ℂ} {s : Set ℂ} (hs : s.Countable) (hc : ContinuousOn f (closedBall c R))
     (hd : ∀ z ∈ ball c R \ s, DifferentiableAt ℂ f z) : (∮ z in C(c, R), f z) = 0 := by
+  wlog hE : CompleteSpace E generalizing
+  · simp [circleIntegral, intervalIntegral, integral, hE]
   rcases h0.eq_or_lt with (rfl | h0); · apply circleIntegral.integral_radius_zero
   calc
     (∮ z in C(c, R), f z) = ∮ z in C(c, R), (z - c)⁻¹ • (z - c) • f z :=
@@ -427,7 +433,7 @@ theorem circleIntegral_sub_inv_smul_of_differentiable_on_off_countable_aux {R : 
   have hne : ∀ z ∈ sphere c R, z ≠ w := fun z hz => ne_of_mem_of_not_mem hz (ne_of_lt hw.1)
   have hFeq : EqOn F (fun z => (z - w)⁻¹ • f z - (z - w)⁻¹ • f w) (sphere c R) := fun z hz ↦
     calc
-      F z = (z - w)⁻¹ • (f z - f w) := update_noteq (hne z hz) _ _
+      F z = (z - w)⁻¹ • (f z - f w) := update_of_ne (hne z hz) ..
       _ = (z - w)⁻¹ • f z - (z - w)⁻¹ • f w := smul_sub _ _ _
   have hc' : ContinuousOn (fun z => (z - w)⁻¹) (sphere c R) :=
     (continuousOn_id.sub continuousOn_const).inv₀ fun z hz => sub_ne_zero.2 <| hne z hz
@@ -466,11 +472,11 @@ theorem two_pi_I_inv_smul_circleIntegral_sub_inv_smul_of_differentiable_on_off_c
   rcases mem_nhds_iff_exists_Ioo_subset.1 (this <| inter_mem ht <| isOpen_ball.mem_nhds hw) with
     ⟨l, u, hlu₀, hlu_sub⟩
   obtain ⟨x, hx⟩ : (Ioo l u \ g ⁻¹' s).Nonempty := by
-    refine nonempty_diff.2 fun hsub => ?_
+    refine diff_nonempty.2 fun hsub => ?_
     have : (Ioo l u).Countable :=
       (hs.preimage ((add_right_injective w).comp ofReal_injective)).mono hsub
     rw [← Cardinal.le_aleph0_iff_set_countable, Cardinal.mk_Ioo_real (hlu₀.1.trans hlu₀.2)] at this
-    exact this.not_lt Cardinal.aleph0_lt_continuum
+    exact this.not_gt Cardinal.aleph0_lt_continuum
   exact ⟨g x, (hlu_sub hx.1).1, (hlu_sub hx.1).2, hx.2⟩
 
 /-- **Cauchy integral formula**: if `f : ℂ → E` is continuous on a closed disc of radius `R` and is
@@ -536,7 +542,7 @@ theorem hasFPowerSeriesOnBall_of_differentiable_off_countable {R : ℝ≥0} {c :
   hasSum := fun {w} hw => by
     have hw' : c + w ∈ ball c R := by
       simpa only [add_mem_ball_iff_norm, ← coe_nnnorm, mem_emetric_ball_zero_iff,
-        NNReal.coe_lt_coe, ENNReal.coe_lt_coe] using hw
+        NNReal.coe_lt_coe, enorm_lt_coe] using hw
     rw [← two_pi_I_inv_smul_circleIntegral_sub_inv_smul_of_differentiable_on_off_countable
       hs hw' hc hd]
     exact (hasFPowerSeriesOn_cauchy_integral
@@ -569,14 +575,22 @@ protected theorem _root_.DifferentiableOn.analyticAt {s : Set ℂ} {f : ℂ → 
   lift R to ℝ≥0 using hR0.le
   exact ((hd.mono hRs).hasFPowerSeriesOnBall hR0).analyticAt
 
+theorem _root_.DifferentiableOn.analyticOnNhd {s : Set ℂ} {f : ℂ → E} (hd : DifferentiableOn ℂ f s)
+    (hs : IsOpen s) : AnalyticOnNhd ℂ f s := fun _z hz => hd.analyticAt (hs.mem_nhds hz)
+
 theorem _root_.DifferentiableOn.analyticOn {s : Set ℂ} {f : ℂ → E} (hd : DifferentiableOn ℂ f s)
-    (hs : IsOpen s) : AnalyticOn ℂ f s := fun _z hz => hd.analyticAt (hs.mem_nhds hz)
+    (hs : IsOpen s) : AnalyticOn ℂ f s :=
+  (hd.analyticOnNhd hs).analyticOn
 
 /-- If `f : ℂ → E` is complex differentiable on some open set `s`, then it is continuously
 differentiable on `s`. -/
-protected theorem _root_.DifferentiableOn.contDiffOn {s : Set ℂ} {f : ℂ → E} {n : ℕ}
+protected theorem _root_.DifferentiableOn.contDiffOn {s : Set ℂ} {f : ℂ → E} {n : WithTop ℕ∞}
     (hd : DifferentiableOn ℂ f s) (hs : IsOpen s) : ContDiffOn ℂ n f s :=
-  (hd.analyticOn hs).contDiffOn
+  (hd.analyticOnNhd hs).contDiffOn_of_completeSpace
+
+theorem _root_.DifferentiableOn.deriv {s : Set ℂ} {f : ℂ → E} (hd : DifferentiableOn ℂ f s)
+    (hs : IsOpen s) : DifferentiableOn ℂ (deriv f) s :=
+  (hd.analyticOnNhd hs).deriv.differentiableOn
 
 /-- A complex differentiable function `f : ℂ → E` is analytic at every point. -/
 protected theorem _root_.Differentiable.analyticAt {f : ℂ → E} (hf : Differentiable ℂ f) (z : ℂ) :
@@ -584,7 +598,8 @@ protected theorem _root_.Differentiable.analyticAt {f : ℂ → E} (hf : Differe
   hf.differentiableOn.analyticAt univ_mem
 
 /-- A complex differentiable function `f : ℂ → E` is continuously differentiable at every point. -/
-protected theorem _root_.Differentiable.contDiff {f : ℂ → E} (hf : Differentiable ℂ f) {n : ℕ∞} :
+protected theorem _root_.Differentiable.contDiff
+    {f : ℂ → E} (hf : Differentiable ℂ f) {n : WithTop ℕ∞} :
     ContDiff ℂ n f :=
   contDiff_iff_contDiffAt.mpr fun z ↦ (hf.analyticAt z).contDiffAt
 
@@ -596,15 +611,26 @@ protected theorem _root_.Differentiable.hasFPowerSeriesOnBall {f : ℂ → E} (h
     ⟨_, h.differentiableOn.hasFPowerSeriesOnBall hr⟩
 
 /-- On an open set, `f : ℂ → E` is analytic iff it is differentiable -/
+theorem analyticOnNhd_iff_differentiableOn {f : ℂ → E} {s : Set ℂ} (o : IsOpen s) :
+    AnalyticOnNhd ℂ f s ↔ DifferentiableOn ℂ f s :=
+  ⟨AnalyticOnNhd.differentiableOn, fun d _ zs ↦ d.analyticAt (o.mem_nhds zs)⟩
+
+/-- On an open set, `f : ℂ → E` is analytic iff it is differentiable -/
 theorem analyticOn_iff_differentiableOn {f : ℂ → E} {s : Set ℂ} (o : IsOpen s) :
-    AnalyticOn ℂ f s ↔ DifferentiableOn ℂ f s :=
-  ⟨AnalyticOn.differentiableOn, fun d _ zs ↦ d.analyticAt (o.mem_nhds zs)⟩
+    AnalyticOn ℂ f s ↔ DifferentiableOn ℂ f s := by
+  rw [o.analyticOn_iff_analyticOnNhd]
+  exact analyticOnNhd_iff_differentiableOn o
 
 /-- `f : ℂ → E` is entire iff it's differentiable -/
+theorem analyticOnNhd_univ_iff_differentiable {f : ℂ → E} :
+    AnalyticOnNhd ℂ f univ ↔ Differentiable ℂ f := by
+  simp only [← differentiableOn_univ]
+  exact analyticOnNhd_iff_differentiableOn isOpen_univ
+
 theorem analyticOn_univ_iff_differentiable {f : ℂ → E} :
     AnalyticOn ℂ f univ ↔ Differentiable ℂ f := by
-  simp only [← differentiableOn_univ]
-  exact analyticOn_iff_differentiableOn isOpen_univ
+  rw [analyticOn_univ]
+  exact analyticOnNhd_univ_iff_differentiable
 
 /-- `f : ℂ → E` is analytic at `z` iff it's differentiable near `z` -/
 theorem analyticAt_iff_eventually_differentiableAt {f : ℂ → E} {c : ℂ} :
@@ -615,8 +641,8 @@ theorem analyticAt_iff_eventually_differentiableAt {f : ℂ → E} {c : ℂ} :
     apply AnalyticAt.differentiableAt
   · intro d
     rcases _root_.eventually_nhds_iff.mp d with ⟨s, d, o, m⟩
-    have h : AnalyticOn ℂ f s := by
-      refine DifferentiableOn.analyticOn ?_ o
+    have h : AnalyticOnNhd ℂ f s := by
+      refine DifferentiableOn.analyticOnNhd ?_ o
       intro z m
       exact (d z m).differentiableWithinAt
     exact h _ m

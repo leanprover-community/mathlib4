@@ -3,7 +3,9 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Topology.ContinuousFunction.Basic
+import Mathlib.Tactic.StacksAttribute
+import Mathlib.Topology.ContinuousMap.Basic
+import Mathlib.Topology.Maps.Proper.Basic
 
 /-!
 # Spectral maps
@@ -19,7 +21,7 @@ compact open set is compact open.
 
 ## TODO
 
-Once we have `SpectralSpace`, `IsSpectralMap` should move to `Mathlib.Topology.Spectral.Basic`.
+Once we have `SpectralSpace`, `IsSpectralMap` should move to `Mathlib/Topology/Spectral/Basic.lean`.
 -/
 
 
@@ -33,7 +35,8 @@ variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ] {f : 
 
 /-- A function between topological spaces is spectral if it is continuous and the preimage of every
 compact open set is compact open. -/
-structure IsSpectralMap (f : α → β) extends Continuous f : Prop where
+@[stacks 005A, stacks 08YG]
+structure IsSpectralMap (f : α → β) : Prop extends Continuous f where
   /-- A function between topological spaces is spectral if it is continuous and the preimage of
    every compact open set is compact open. -/
   isCompact_preimage_of_isOpen ⦃s : Set β⦄ : IsOpen s → IsCompact s → IsCompact (f ⁻¹' s)
@@ -48,18 +51,22 @@ theorem IsSpectralMap.continuous {f : α → β} (hf : IsSpectralMap f) : Contin
 theorem isSpectralMap_id : IsSpectralMap (@id α) :=
   ⟨continuous_id, fun _s _ => id⟩
 
+@[stacks 005B]
 theorem IsSpectralMap.comp {f : β → γ} {g : α → β} (hf : IsSpectralMap f) (hg : IsSpectralMap g) :
     IsSpectralMap (f ∘ g) :=
   ⟨hf.continuous.comp hg.continuous, fun _s hs₀ hs₁ =>
     ((hs₁.preimage_of_isOpen hf hs₀).preimage_of_isOpen hg) (hs₀.preimage hf.continuous)⟩
 
+theorem IsProperMap.isSpectralMap {f : α → β} (hf : IsProperMap f) : IsSpectralMap f :=
+  ⟨hf.toContinuous, fun _ _ ↦ hf.isCompact_preimage⟩
+
 end Unbundled
 
 /-- The type of spectral maps from `α` to `β`. -/
 structure SpectralMap (α β : Type*) [TopologicalSpace α] [TopologicalSpace β] where
-  /-- function between topological spaces-/
+  /-- function between topological spaces -/
   toFun : α → β
-  /-- proof that `toFun` is a spectral map-/
+  /-- proof that `toFun` is a spectral map -/
   spectral' : IsSpectralMap toFun
 
 section
@@ -69,7 +76,7 @@ section
 You should extend this class when you extend `SpectralMap`. -/
 class SpectralMapClass (F α β : Type*) [TopologicalSpace α] [TopologicalSpace β]
     [FunLike F α β] : Prop where
-  /-- statement that `F` is a type of spectral maps-/
+  /-- statement that `F` is a type of spectral maps -/
   map_spectral (f : F) : IsSpectralMap f
 
 end
@@ -134,7 +141,7 @@ protected def id : SpectralMap α α :=
 instance : Inhabited (SpectralMap α α) :=
   ⟨SpectralMap.id α⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(SpectralMap.id α) = id :=
   rfl
 

@@ -15,7 +15,7 @@ An automorphism `φ` of a group `G` is fixed-point-free if `1 : G` is the only f
 
 namespace MonoidHom
 
-variable {G : Type*}
+variable {F G : Type*}
 
 section Definitions
 
@@ -33,9 +33,7 @@ def commutatorMap [Div G] (g : G) := g / φ g
 end Definitions
 
 namespace FixedPointFree
-
--- todo: refactor Mathlib/Algebra/GroupPower/IterateHom to generalize φ to MonoidHomClass
-variable [Group G] {φ : G →* G}
+variable [Group G] [FunLike F G G] [MonoidHomClass F G G] {φ : F}
 
 theorem commutatorMap_injective (hφ : FixedPointFree φ) : Function.Injective (commutatorMap φ) := by
   refine fun x y h ↦ inv_mul_eq_one.mp <| hφ _ ?_
@@ -54,8 +52,8 @@ theorem prod_pow_eq_one (hφ : FixedPointFree φ) {n : ℕ} (hn : φ^[n] = _root
 
 theorem coe_eq_inv_of_sq_eq_one (hφ : FixedPointFree φ) (h2 : φ^[2] = _root_.id) : ⇑φ = (·⁻¹) := by
   ext g
-  have key : 1 * g * φ g = 1 := hφ.prod_pow_eq_one h2 g
-  rwa [one_mul, ← inv_eq_iff_mul_eq_one, eq_comm] at key
+  have key : g * φ g = 1 := by simpa [List.range_succ] using hφ.prod_pow_eq_one h2 g
+  rwa [← inv_eq_iff_mul_eq_one, eq_comm] at key
 
 section Involutive
 
@@ -69,7 +67,7 @@ theorem commute_all_of_involutive (hφ : FixedPointFree φ) (h2 : Function.Invol
   rwa [hφ.coe_eq_inv_of_involutive h2, inv_eq_iff_eq_inv, mul_inv_rev, inv_inv, inv_inv] at key
 
 /-- If a finite group admits a fixed-point-free involution, then it is commutative. -/
-def commGroupOfInvolutive (hφ : FixedPointFree φ) (h2 : Function.Involutive φ):
+def commGroupOfInvolutive (hφ : FixedPointFree φ) (h2 : Function.Involutive φ) :
     CommGroup G := .mk (hφ.commute_all_of_involutive h2)
 
 theorem orderOf_ne_two_of_involutive (hφ : FixedPointFree φ) (h2 : Function.Involutive φ) (g : G) :
@@ -84,7 +82,7 @@ theorem odd_card_of_involutive (hφ : FixedPointFree φ) (h2 : Function.Involuti
     Odd (Nat.card G) := by
   have := Fintype.ofFinite G
   by_contra h
-  rw [← Nat.even_iff_not_odd, even_iff_two_dvd, Nat.card_eq_fintype_card] at h
+  rw [Nat.not_odd_iff_even, even_iff_two_dvd, Nat.card_eq_fintype_card] at h
   obtain ⟨g, hg⟩ := exists_prime_orderOf_dvd_card 2 h
   exact hφ.orderOf_ne_two_of_involutive h2 g hg
 
