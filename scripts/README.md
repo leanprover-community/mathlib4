@@ -92,9 +92,9 @@ to learn about it as well!
   `*-pr-testing-NNNN` branch.
 - `update_nolints_CI.sh`
   Update the `nolints.json` file to remove unneeded entries. Automatically run once a week.
-- `write_assignments.py` is used to automatically assign a reviewer to each stale github PR.
-  This script downloads a .json file with proposed assignments and generates a shell script with the
-  corresponding github API calls (which is then executed by CI).
+- `assign_reviewers.py` is used to automatically assign a reviewer to each stale github PR.
+  This script downloads a .json file with proposed assignments and makes the
+  corresponding github API calls.
 - `bench_summary.lean`
   Convert data retrieved from the speed center into a shorter, more accessible format,
   and post a comment with this summary on github.
