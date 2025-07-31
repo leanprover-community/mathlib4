@@ -239,7 +239,7 @@ section DivisionMonoid
 variable [DivisionMonoid G] (f g : α → G)
 
 @[to_additive (attr := simp)]
-theorem mulSupport_fun_inv : (mulSupport (fun x ↦ f x)⁻¹) = mulSupport f :=
+theorem mulSupport_fun_inv : (mulSupport fun x => (f x)⁻¹) = mulSupport f :=
   ext fun _ => inv_ne_one
 
 @[to_additive (attr := simp)]

@@ -545,7 +545,7 @@ equals the product of `f i` divided by the product of `g i`. -/
       equals the sum of `f i` minus the sum of `g i`."]
 theorem finprod_div_distrib [DivisionCommMonoid G] {f g : α → G} (hf : (mulSupport f).Finite)
     (hg : (mulSupport g).Finite) : ∏ᶠ i, f i / g i = (∏ᶠ i, f i) / ∏ᶠ i, g i := by
-  simp only [div_eq_mul_inv, finprod_mul_distrib hf ((mulSupport_inv g).symm.rec hg),
+  simp only [div_eq_mul_inv, finprod_mul_distrib hf ((mulSupport_fun_inv g).symm.rec hg),
     finprod_inv_distrib]
 
 /-- A more general version of `finprod_mem_mul_distrib` that only requires `s ∩ mulSupport f` and
