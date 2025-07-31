@@ -76,7 +76,7 @@ universe uα vα vα' uβ vβ uγ vγ
 
 variable {α : Type uα} [UniformSpace α] (pkg : AbstractCompletion.{vα} α)
 
-local notation "α̂" => pkg.space
+local notation "hatα" => pkg.space
 
 local notation "ι" => pkg.coe
 
@@ -97,13 +97,13 @@ theorem continuous_coe : Continuous ι :=
   pkg.uniformContinuous_coe.continuous
 
 @[elab_as_elim]
-theorem induction_on {p : α̂ → Prop} (a : α̂) (hp : IsClosed { a | p a }) (ih : ∀ a, p (ι a)) :
+theorem induction_on {p : hatα → Prop} (a : hatα) (hp : IsClosed { a | p a }) (ih : ∀ a, p (ι a)) :
     p a :=
   isClosed_property pkg.dense hp ih a
 
 variable {β : Type uβ}
 
-protected theorem funext [TopologicalSpace β] [T2Space β] {f g : α̂ → β} (hf : Continuous f)
+protected theorem funext [TopologicalSpace β] [T2Space β] {f g : hatα → β} (hf : Continuous f)
     (hg : Continuous g) (h : ∀ a, f (ι a) = g (ι a)) : f = g :=
   funext fun a => pkg.induction_on a (isClosed_eq hf hg) h
 
@@ -112,7 +112,7 @@ variable [UniformSpace β]
 section Extend
 
 /-- Extension of maps to completions -/
-protected def extend (f : α → β) : α̂ → β :=
+protected def extend (f : α → β) : hatα → β :=
   open scoped Classical in
   if UniformContinuous f then pkg.isDenseInducing.extend f else fun x => f (pkg.dense.some x)
 
@@ -140,13 +140,13 @@ theorem continuous_extend : Continuous (pkg.extend f) :=
 
 variable [T0Space β]
 
-theorem extend_unique (hf : UniformContinuous f) {g : α̂ → β} (hg : UniformContinuous g)
+theorem extend_unique (hf : UniformContinuous f) {g : hatα → β} (hg : UniformContinuous g)
     (h : ∀ a : α, f a = g (ι a)) : pkg.extend f = g := by
   apply pkg.funext pkg.continuous_extend hg.continuous
   simpa only [pkg.extend_coe hf] using h
 
 @[simp]
-theorem extend_comp_coe {f : α̂ → β} (hf : UniformContinuous f) : pkg.extend (f ∘ ι) = f :=
+theorem extend_comp_coe {f : hatα → β} (hf : UniformContinuous f) : pkg.extend (f ∘ ι) = f :=
   funext fun x =>
     pkg.induction_on x (isClosed_eq pkg.continuous_extend hf.continuous) fun y =>
       pkg.extend_coe (hf.comp <| pkg.uniformContinuous_coe) y
@@ -157,12 +157,12 @@ section MapSec
 
 variable (pkg' : AbstractCompletion.{vβ} β)
 
-local notation "β̂" => pkg'.space
+local notation "hatβ" => pkg'.space
 
 local notation "ι'" => pkg'.coe
 
 /-- Lifting maps to completions -/
-protected def map (f : α → β) : α̂ → β̂ :=
+protected def map (f : α → β) : hatα → hatβ :=
   pkg.extend (ι' ∘ f)
 
 local notation "map" => pkg.map pkg'
@@ -182,7 +182,7 @@ variable {f}
 theorem map_coe (hf : UniformContinuous f) (a : α) : map f (ι a) = ι' (f a) :=
   pkg.extend_coe (pkg'.uniformContinuous_coe.comp hf) a
 
-theorem map_unique {f : α → β} {g : α̂ → β̂} (hg : UniformContinuous g)
+theorem map_unique {f : α → β} {g : hatα → hatβ} (hg : UniformContinuous g)
     (h : ∀ a, ι' (f a) = g (ι a)) : map f = g :=
   pkg.funext (pkg.continuous_map _ _) hg.continuous <| by
     intro a
@@ -294,13 +294,13 @@ section Prod
 
 variable (pkg' : AbstractCompletion.{vβ} β)
 
-local notation "β̂" => pkg'.space
+local notation "hatβ" => pkg'.space
 
 local notation "ι'" => pkg'.coe
 
 /-- Products of completions -/
 protected def prod : AbstractCompletion (α × β) where
-  space := α̂ × β̂
+  space := hatα × hatβ
   coe p := ⟨ι p.1, ι' p.2⟩
   uniformStruct := inferInstance
   complete := inferInstance
@@ -314,7 +314,7 @@ section Extension₂
 
 variable (pkg' : AbstractCompletion.{vβ} β)
 
-local notation "β̂" => pkg'.space
+local notation "hatβ" => pkg'.space
 
 local notation "ι'" => pkg'.coe
 
@@ -323,7 +323,7 @@ variable {γ : Type uγ} [UniformSpace γ]
 open Function
 
 /-- Extend two variable map to completions. -/
-protected def extend₂ (f : α → β → γ) : α̂ → β̂ → γ :=
+protected def extend₂ (f : α → β → γ) : hatα → hatβ → γ :=
   curry <| (pkg.prod pkg').extend (uncurry f)
 
 section T0Space
@@ -350,26 +350,26 @@ section Map₂
 
 variable (pkg' : AbstractCompletion β)
 
-local notation "β̂" => pkg'.space
+local notation "hatβ" => pkg'.space
 
 local notation "ι'" => pkg'.coe
 
 variable {γ : Type uγ} [UniformSpace γ] (pkg'' : AbstractCompletion.{vγ} γ)
 
-local notation "γ̂" => pkg''.space
+local notation "hatγ" => pkg''.space
 
 local notation "ι''" => pkg''.coe
 
 local notation f " ∘₂ " g => bicompr f g
 
 /-- Lift two variable maps to completions. -/
-protected def map₂ (f : α → β → γ) : α̂ → β̂ → γ̂ :=
+protected def map₂ (f : α → β → γ) : hatα → hatβ → hatγ :=
   pkg.extend₂ pkg' (pkg''.coe ∘₂ f)
 
 theorem uniformContinuous_map₂ (f : α → β → γ) : UniformContinuous₂ (pkg.map₂ pkg' pkg'' f) :=
   AbstractCompletion.uniformContinuous_extension₂ pkg pkg' _
 
-theorem continuous_map₂ {δ} [TopologicalSpace δ] {f : α → β → γ} {a : δ → α̂} {b : δ → β̂}
+theorem continuous_map₂ {δ} [TopologicalSpace δ] {f : α → β → γ} {a : δ → hatα} {b : δ → hatβ}
     (ha : Continuous a) (hb : Continuous b) :
     Continuous fun d : δ => pkg.map₂ pkg' pkg'' f (a d) (b d) :=
   (pkg.uniformContinuous_map₂ pkg' pkg'' f).continuous.comp₂ ha hb
