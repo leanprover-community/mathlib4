@@ -6,6 +6,14 @@ import Mathlib.Tactic.CC
 
 set_option linter.unusedVariables false
 
+/-- warning: The tactic `cc` is deprecated since 2025-07-31, please use `grind` instead. -/
+#guard_msgs in
+example (a b : Nat) : a = b → a = b := by
+  cc
+
+-- Turn off the warning for the rest of the file
+set_option mathlib.tactic.cc.warning false
+
 section CC1
 
 open List (Vector)
