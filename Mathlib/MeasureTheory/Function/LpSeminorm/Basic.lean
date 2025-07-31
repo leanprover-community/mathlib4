@@ -647,7 +647,6 @@ theorem eLpNorm'_mono_measure (f : α → ε) (hμν : ν ≤ μ) (hq : 0 ≤ q)
     eLpNorm' f q ν ≤ eLpNorm' f q μ := by
   simp_rw [eLpNorm']
   gcongr
-  exact lintegral_mono' hμν le_rfl
 
 @[gcongr, mono]
 theorem eLpNormEssSup_mono_measure (f : α → ε) (hμν : ν ≪ μ) :
