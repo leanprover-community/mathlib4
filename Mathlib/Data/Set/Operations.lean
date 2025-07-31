@@ -8,7 +8,6 @@ import Mathlib.Data.Set.CoeSort
 import Mathlib.Data.SProd
 import Mathlib.Data.Subtype
 import Mathlib.Order.Notation
-import Mathlib.Util.CompileInductive
 
 /-!
 # Basic definitions about sets
@@ -57,15 +56,6 @@ More advanced theorems about these definitions are located in other files in `Ma
 
 set, image, preimage
 -/
-
--- https://github.com/leanprover/lean4/issues/2096
-compile_def% Union.union
-compile_def% Inter.inter
-compile_def% SDiff.sdiff
-compile_def% HasCompl.compl
-compile_def% EmptyCollection.emptyCollection
-compile_def% Insert.insert
-compile_def% Singleton.singleton
 
 attribute [ext] Set.ext
 

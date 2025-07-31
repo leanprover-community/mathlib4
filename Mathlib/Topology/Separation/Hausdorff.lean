@@ -189,7 +189,7 @@ theorem IsCompact.nhdsSet_inter_eq [T2Space X] {s t : Set X} (hs : IsCompact s) 
   refine le_antisymm (nhdsSet_inter_le _ _) ?_
   simp_rw [hs.nhdsSet_inf_eq_biSup, ht.inf_nhdsSet_eq_biSup, nhdsSet, sSup_image]
   refine iSup₂_le fun x hxs ↦ iSup₂_le fun y hyt ↦ ?_
-  rcases eq_or_ne x y with (rfl|hne)
+  rcases eq_or_ne x y with (rfl | hne)
   · exact le_iSup₂_of_le x ⟨hxs, hyt⟩ (inf_idem _).le
   · exact (disjoint_nhds_nhds.mpr hne).eq_bot ▸ bot_le
 

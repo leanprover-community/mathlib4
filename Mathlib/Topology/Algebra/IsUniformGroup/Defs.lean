@@ -3,7 +3,7 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Topology.UniformSpace.Basic
+import Mathlib.Topology.UniformSpace.DiscreteUniformity
 import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
@@ -187,6 +187,11 @@ theorem uniformity_translate_mul (a : α) : ((𝓤 α).map fun x : α × α => (
       _ ≤ (𝓤 α).map fun x : α × α => (x.1 * a, x.2 * a) :=
         Filter.map_mono (uniformContinuous_id.mul uniformContinuous_const)
       )
+
+/-- The discrete uniformity makes a group a `IsUniformGroup. -/
+@[to_additive "The discrete uniformity makes an additive group a `IsUniformAddGroup`."]
+instance [UniformSpace β] [Group β] [DiscreteUniformity β] : IsUniformGroup β where
+  uniformContinuous_div := DiscreteUniformity.uniformContinuous (β × β) fun p ↦ p.1 / p.2
 
 namespace MulOpposite
 
