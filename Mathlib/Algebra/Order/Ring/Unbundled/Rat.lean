@@ -123,29 +123,39 @@ protected lemma divInt_le_divInt {a b c d : ℤ} (b0 : 0 < b) (d0 : 0 < d) :
   rw [Rat.le_iff_sub_nonneg, ← Int.sub_nonneg]
   simp [sub_eq_add_neg, ne_of_gt b0, ne_of_gt d0, Int.mul_pos d0 b0]
 
-protected lemma le_total : a ≤ b ∨ b ≤ a := by
+protected lemma le_total {a b : ℚ} : a ≤ b ∨ b ≤ a := by
   simpa only [← Rat.le_iff_sub_nonneg, neg_sub] using Rat.nonneg_total (b - a)
 
+protected lemma le_refl {a : ℚ} : a ≤ a := by
+  rw [Rat.le_iff_sub_nonneg, ← num_nonneg]; simp
+
+protected lemma le_trans {a b c : ℚ} (hab : a ≤ b) (hbc : b ≤ c) : a ≤ c := by
+  rw [Rat.le_iff_sub_nonneg] at hab hbc
+  have := Rat.add_nonneg hab hbc
+  simp_rw [sub_eq_add_neg, add_left_comm (b + -a) c (-b), add_comm (b + -a) (-b),
+    add_left_comm (-b) b (-a), add_comm (-b) (-a), add_neg_cancel_comm_assoc,
+    ← sub_eq_add_neg] at this
+  rwa [Rat.le_iff_sub_nonneg]
+
+protected lemma le_antisymm {a b : ℚ} (hab : a ≤ b) (hba : b ≤ a) : a = b := by
+  rw [Rat.le_iff_sub_nonneg] at hab hba
+  rw [sub_eq_add_neg] at hba
+  rw [← neg_sub, sub_eq_add_neg] at hab
+  have := eq_neg_of_add_eq_zero_left (Rat.nonneg_antisymm hba hab)
+  rwa [neg_neg] at this
+
+protected lemma lt_iff_le_not_ge (a b : ℚ) : a < b ↔ a ≤ b ∧ ¬b ≤ a := by
+  rw [← Rat.not_le, and_iff_right_of_imp Rat.le_total.resolve_left]
+
 instance linearOrder : LinearOrder ℚ where
-  le_refl a := by rw [Rat.le_iff_sub_nonneg, ← num_nonneg]; simp
-  le_trans a b c hab hbc := by
-    rw [Rat.le_iff_sub_nonneg] at hab hbc
-    have := Rat.add_nonneg hab hbc
-    simp_rw [sub_eq_add_neg, add_left_comm (b + -a) c (-b), add_comm (b + -a) (-b),
-      add_left_comm (-b) b (-a), add_comm (-b) (-a), add_neg_cancel_comm_assoc,
-      ← sub_eq_add_neg] at this
-    rwa [Rat.le_iff_sub_nonneg]
-  le_antisymm a b hab hba := by
-    rw [Rat.le_iff_sub_nonneg] at hab hba
-    rw [sub_eq_add_neg] at hba
-    rw [← neg_sub, sub_eq_add_neg] at hab
-    have := eq_neg_of_add_eq_zero_left (Rat.nonneg_antisymm hba hab)
-    rwa [neg_neg] at this
+  le_refl _ := Rat.le_refl
+  le_trans _ _ _ := Rat.le_trans
+  le_antisymm _ _ := Rat.le_antisymm
   le_total _ _ := Rat.le_total
   toDecidableEq := inferInstance
   toDecidableLE := inferInstance
   toDecidableLT := inferInstance
-  lt_iff_le_not_ge _ _ := by rw [← Rat.not_le, and_iff_right_of_imp Rat.le_total.resolve_left]
+  lt_iff_le_not_ge := Rat.lt_iff_le_not_ge
 
 theorem mkRat_nonneg_iff (a : ℤ) {b : ℕ} (hb : b ≠ 0) : 0 ≤ mkRat a b ↔ 0 ≤ a :=
   divInt_nonneg_iff_of_pos_right (show 0 < (b : ℤ) by simpa using Nat.pos_of_ne_zero hb)
