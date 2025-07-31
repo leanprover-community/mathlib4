@@ -348,9 +348,6 @@ instance existsAddOfLE [LE α] [Add α] [ExistsAddOfLE α] : ExistsAddOfLE (With
 @[to_additive (attr := simp) top_pos]
 theorem one_lt_top [One α] [LT α] : (1 : WithTop α) < ⊤ := coe_lt_top _
 
-@[deprecated top_pos (since := "2024-10-22")]
-alias zero_lt_top := top_pos
-
 @[norm_cast, deprecated coe_pos (since := "2024-10-22")]
 theorem zero_lt_coe [Zero α] [LT α] (a : α) : (0 : WithTop α) < a ↔ 0 < a :=
   coe_lt_coe
@@ -683,5 +680,3 @@ protected def _root_.AddMonoidHom.withBotMap {M N : Type*} [AddZeroClass M] [Add
 -- instance linearOrderedAddCommMonoid [LinearOrderedAddCommMonoid α] :
 --     LinearOrderedAddCommMonoid (WithBot α) :=
 --   { WithBot.linearOrder, WithBot.orderedAddCommMonoid with }
-
-end WithBot

@@ -196,7 +196,7 @@ lemma Scheme.map_basicOpen (r : Γ(U, ⊤)) :
   congr
   exact PresheafedSpace.IsOpenImmersion.ofRestrict_invApp _ _ _
 
-@[deprecated (since := "2024-10-23")] alias Scheme.map_basicOpen' := Scheme.map_basicOpen
+
 
 lemma Scheme.Opens.ι_image_basicOpen (r : Γ(U, ⊤)) :
     U.ι ''ᵁ U.toScheme.basicOpen r = X.basicOpen r := by

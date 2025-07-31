@@ -244,8 +244,7 @@ theorem HasLineDerivWithinAt.mono_of_mem_nhdsWithin
   apply ContinuousWithinAt.preimage_mem_nhdsWithin'' _ hst (by simp)
   apply Continuous.continuousWithinAt; fun_prop
 
-@[deprecated (since := "2024-10-31")]
-alias HasLineDerivWithinAt.mono_of_mem := HasLineDerivWithinAt.mono_of_mem_nhdsWithin
+
 
 theorem HasLineDerivWithinAt.hasLineDerivAt
     (h : HasLineDerivWithinAt 𝕜 f f' s x v) (hs : s ∈ 𝓝 x) :
@@ -278,8 +277,7 @@ theorem LineDifferentiableWithinAt.mono_of_mem_nhdsWithin (h : LineDifferentiabl
     (hst : s ∈ 𝓝[t] x) : LineDifferentiableWithinAt 𝕜 f t x v :=
   (h.hasLineDerivWithinAt.mono_of_mem_nhdsWithin hst).lineDifferentiableWithinAt
 
-@[deprecated (since := "2024-10-31")]
-alias LineDifferentiableWithinAt.mono_of_mem := LineDifferentiableWithinAt.mono_of_mem_nhdsWithin
+
 
 theorem lineDerivWithin_of_mem_nhds (h : s ∈ 𝓝 x) :
     lineDerivWithin 𝕜 f s x v = lineDeriv 𝕜 f x v := by

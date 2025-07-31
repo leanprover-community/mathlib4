@@ -219,8 +219,7 @@ theorem HasFDerivWithinAt.mono_of_mem_nhdsWithin
     HasFDerivWithinAt f f' s x :=
   h.mono <| nhdsWithin_le_iff.mpr hst
 
-@[deprecated (since := "2024-10-31")]
-alias HasFDerivWithinAt.mono_of_mem := HasFDerivWithinAt.mono_of_mem_nhdsWithin
+
 
 nonrec theorem HasFDerivWithinAt.mono (h : HasFDerivWithinAt f f' t x) (hst : s ⊆ t) :
     HasFDerivWithinAt f f' s x :=
@@ -473,8 +472,7 @@ theorem DifferentiableWithinAt.mono_of_mem_nhdsWithin
     DifferentiableWithinAt 𝕜 f t x :=
   (h.hasFDerivWithinAt.mono_of_mem_nhdsWithin hst).differentiableWithinAt
 
-@[deprecated (since := "2024-10-31")]
-alias DifferentiableWithinAt.mono_of_mem := DifferentiableWithinAt.mono_of_mem_nhdsWithin
+
 
 theorem DifferentiableWithinAt.congr_nhds (h : DifferentiableWithinAt 𝕜 f s x) {t : Set E}
     (hst : 𝓝[s] x = 𝓝[t] x) : DifferentiableWithinAt 𝕜 f t x :=
@@ -544,8 +542,7 @@ theorem fderivWithin_of_mem_nhdsWithin (st : t ∈ 𝓝[s] x) (ht : UniqueDiffWi
     (h : DifferentiableWithinAt 𝕜 f t x) : fderivWithin 𝕜 f s x = fderivWithin 𝕜 f t x :=
   ((DifferentiableWithinAt.hasFDerivWithinAt h).mono_of_mem_nhdsWithin st).fderivWithin ht
 
-@[deprecated (since := "2024-10-31")]
-alias fderivWithin_of_mem := fderivWithin_of_mem_nhdsWithin
+
 
 theorem fderivWithin_subset (st : s ⊆ t) (ht : UniqueDiffWithinAt 𝕜 s x)
     (h : DifferentiableWithinAt 𝕜 f t x) : fderivWithin 𝕜 f s x = fderivWithin 𝕜 f t x :=

@@ -806,8 +806,7 @@ theorem HasFPowerSeriesWithinAt.mono_of_mem_nhdsWithin
     add_sub_cancel_left, hy, and_true] at h'y ⊢
   exact h'y.2
 
-@[deprecated (since := "2024-10-31")]
-alias HasFPowerSeriesWithinAt.mono_of_mem := HasFPowerSeriesWithinAt.mono_of_mem_nhdsWithin
+
 
 @[simp] lemma hasFPowerSeriesWithinOnBall_insert_self :
     HasFPowerSeriesWithinOnBall f p (insert x s) x r ↔ HasFPowerSeriesWithinOnBall f p s x r := by
@@ -930,8 +929,7 @@ theorem AnalyticWithinAt.mono_of_mem_nhdsWithin
   rcases h with ⟨p, hp⟩
   exact ⟨p, hp.mono_of_mem_nhdsWithin hst⟩
 
-@[deprecated (since := "2024-10-31")]
-alias AnalyticWithinAt.mono_of_mem := AnalyticWithinAt.mono_of_mem_nhdsWithin
+
 
 lemma AnalyticOn.mono {f : E → F} {s t : Set E} (h : AnalyticOn 𝕜 f t)
     (hs : s ⊆ t) : AnalyticOn 𝕜 f s :=
