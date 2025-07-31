@@ -54,10 +54,7 @@ seal functorEquiv.inverse functorEquiv.counitIsoAppFst
 variable (T₁ : C₁ ⥤ C₂) (T₂ : C₂ ⥤ C₃)
     (V₁ : C₁ ⥤ C₄) (V₂ : C₂ ⥤ C₅) (V₃ : C₃ ⥤ C₆)
     (B₁ : C₄ ⥤ C₅) (B₂ : C₅ ⥤ C₆)
-
-section
-
-variable [CatCommSq T₁ V₁ V₂ B₁] [CatCommSq T₂ V₂ V₃ B₂]
+    [CatCommSq T₁ V₁ V₂ B₁] [CatCommSq T₂ V₂ V₃ B₂]
     [CatCommSq (T₁ ⋙ T₂) V₁ V₃ (B₁ ⋙ B₂)]
     (h : CatCommSq.iso (T₁ ⋙ T₂) V₁ V₃ (B₁ ⋙ B₂) =
       (CatCommSq.hComp T₁ T₂ V₁ V₂ V₃ B₁ B₂).iso)
@@ -287,8 +284,6 @@ def ofHComp :
         · simp [← Functor.comp_map]
         · simp [← Functor.map_comp_assoc]
       · simp }
-
-end
 
 end
 
