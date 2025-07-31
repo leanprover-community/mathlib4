@@ -572,7 +572,8 @@ theorem liftMonoid_symm_coe (f : FreeAbelianGroup α →+* R) :
 
 end Monoid
 
-instance [CommMonoid α] : CommRing (FreeAbelianGroup α) :=
+@[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2025-07-31")]
+abbrev commRing [CommMonoid α] : CommRing (FreeAbelianGroup α) :=
   { FreeAbelianGroup.ring α with
     mul_comm := fun x y ↦ by
       refine FreeAbelianGroup.induction_on x (zero_mul y) ?_ ?_ ?_
