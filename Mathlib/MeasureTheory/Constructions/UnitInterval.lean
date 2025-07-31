@@ -41,20 +41,6 @@ theorem measurable_symm : Measurable symm := continuous_symm.measurable
 
 open Set
 
-lemma measure_preserving_symm : volume = volume.map symm := by
-  refine (volume : Measure I).ext_of_Ici ?_ ?_
-  intro a
-  rw [volume.map_apply measurable_symm measurableSet_Ici]
-  have : σ ⁻¹' Ici a = Iic ⟨1 - a, mem_iff_one_sub_mem.mp a.2⟩ := by
-    ext x
-    constructor
-    · intro (h : a.1 ≤ 1 - x)
-      exact le_sub_comm.mp h
-    · intro (h : x.1 ≤ 1 - a.1)
-      exact le_sub_comm.mp h
-  simp only [this, ← volume_image_subtype_coe measurableSet_Icc, image_subtype_val_Icc_Ici,
-  image_subtype_val_Icc_Iic, Real.volume_Icc, sub_zero]
-
 variable (x : I)
 
 @[simp]
