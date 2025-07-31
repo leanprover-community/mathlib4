@@ -591,6 +591,9 @@ end IsCatPullbackSquare
 
 namespace CategoricalPullback
 
+/-- The "horizontal composition" equivalence for `CategoricalPullback`,
+that realizes an equivalence between categorical pullbacks on a composition
+and iterated categorical pullbacks. -/
 @[simps!]
 def hCompEquiv (R : C₁ ⥤ C₂) (B₁ : C₄ ⥤ C₃) (B₂ : C₃ ⥤ C₂) :
     R ⊡ (B₁ ⋙ B₂) ≌ (π₂ R B₂) ⊡ B₁ :=
@@ -603,6 +606,9 @@ def hCompEquiv (R : C₁ ⥤ C₂) (B₁ : C₄ ⥤ C₃) (B₂ : C₃ ⥤ C₂)
   CatPullbackSquare.equivalence
     (π₁ (π₂ R B₂) B₁ ⋙ π₁ R B₂) (π₂ (π₂ R B₂) B₁) R (B₁ ⋙ B₂)|>.symm
 
+/-- The "vertical composition" equivalence for `CategoricalPullback`,
+that realizes an equivalence between categorical pullbacks on a composition
+and iterated categorical pullbacks. -/
 @[simps!]
 def vCompEquiv (R₁ : C₁ ⥤ C₂) (R₂ : C₂ ⥤ C₃) (B : C₄ ⥤ C₃) :
     (R₁ ⋙ R₂) ⊡ B ≌ R₁ ⊡ (π₁ R₂ B) :=
