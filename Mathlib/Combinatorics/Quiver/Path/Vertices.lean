@@ -76,10 +76,6 @@ lemma vertices_nonempty' {V : Type*} [Quiver V] {a b : V} (p : Path a b) :
     simp only [List.concat_eq_append, List.length_append, List.length_cons, List.length_nil,
       zero_add, gt_iff_lt, lt_add_iff_pos_left, add_pos_iff, ih, Nat.lt_one_iff, pos_of_gt, or_self]
 
-/-- The set of vertices in a path. -/
-def vertices_finset' {a b : V} (p : Path a b) : Set V :=
-  {v | v ∈ p.vertices}
-
 lemma mem_vertices_set {a b : V} (p : Path a b) (v : V) :
     v ∈ p.vertices_finset' ↔ v ∈ p.vertices := Iff.rfl
 
