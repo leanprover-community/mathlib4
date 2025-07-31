@@ -300,15 +300,15 @@ lemma lemma222 [IsNoetherianRing R] (I : Ideal R) [Small.{v} (R ⧸ I)] (n : ℕ
   tfae_have 1 → 2 := by
     intro h1 i hi
     apply h1 (ModuleCat.of R (Shrink.{v} (R ⧸ I))) _ i hi
-    simp_rw [instNontrivialShrink, Module.Finite.equiv (Shrink.linearEquiv (R ⧸ I) R).symm]
-    rw [true_and, true_and, (Shrink.linearEquiv _ R).support_eq, suppQ]
+    simp_rw [instNontrivialShrink, Module.Finite.equiv (Shrink.linearEquiv R (R ⧸ I)).symm]
+    rw [true_and, true_and, (Shrink.linearEquiv R _).support_eq, suppQ]
   tfae_have 2 → 3 := by
     intro h2
     use (ModuleCat.of R (Shrink.{v} (R ⧸ I)))
-    simp only [instNontrivialShrink, Module.Finite.equiv (Shrink.linearEquiv (R ⧸ I) R).symm,
+    simp only [instNontrivialShrink, Module.Finite.equiv (Shrink.linearEquiv R (R ⧸ I)).symm,
       true_and]
     refine ⟨?_, h2⟩
-    rw [(Shrink.linearEquiv _ R).support_eq, suppQ]
+    rw [(Shrink.linearEquiv R _).support_eq, suppQ]
   tfae_have 3 → 4 := lemma222_3_to_4 I n M Mntr Mfin smul_lt
   tfae_have 4 → 1 := fun h4 N ⟨Nntr, Nfin, Nsupp⟩ i hi ↦
     lemma222_4_to_1 I n N Nntr Nfin Nsupp M Mntr Mfin smul_lt h4 i hi
