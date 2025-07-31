@@ -6,13 +6,11 @@ Authors: Paul Lezeau, Lawrence Wu
 import Mathlib.Algebra.Group.Fin.Basic
 import Mathlib.Logic.Equiv.Fin.Basic
 
-/-!
-# Cyclic permutations on `Fin n`
+/-! # Maximum order cyclic permutations on `Fin n`
 
-This file defines
-* `finRotate`, which corresponds to the cycle `(1, ..., n)` on `Fin n`
-* `finCycle`, the permutation that adds a fixed number to each element of `Fin n`
-and proves various lemmas about them.
+This file defines `finRotate`, which corresponds to the cycle `(1, ..., n)` on `Fin n`, and proves
+various lemmas about it.
+
 -/
 
 open Nat
@@ -110,22 +108,3 @@ theorem finRotate_symm_lt_iff_ne_zero [NeZero n] (i : Fin n) :
   · simp only [hc, Fin.not_lt_zero] at hi
   · rw [Fin.lt_iff_val_lt_val, coe_finRotate_symm_of_ne_zero hi]
     apply sub_lt (zero_lt_of_ne_zero <| Fin.val_ne_zero_iff.mpr hi) Nat.zero_lt_one
-
-/-- The permutation on `Fin n` that adds `k` to each number. -/
-@[simps]
-def finCycle (k : Fin n) : Equiv.Perm (Fin n) where
-  toFun i := i + k
-  invFun i := i - k
-  left_inv i := by haveI := NeZero.of_pos k.pos; simp
-  right_inv i := by haveI := NeZero.of_pos k.pos; simp
-
-lemma finCycle_eq_finRotate_iterate {k : Fin n} : finCycle k = (finRotate n)^[k.1] := by
-  match n with
-  | 0 => exact k.elim0
-  | n + 1 =>
-    ext i; induction k using Fin.induction with
-    | zero => simp
-    | succ k ih =>
-      rw [Fin.val_eq_val, Fin.coe_castSucc] at ih
-      rw [Fin.val_succ, Function.iterate_succ', Function.comp_apply, ← ih, finRotate_succ_apply,
-        finCycle_apply, finCycle_apply, add_assoc, Fin.coeSucc_eq_succ]
