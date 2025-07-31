@@ -286,4 +286,13 @@ lemma covariance_map_fun {Z : Ω' → Ω} (hX : AEStronglyMeasurable X (μ.map Z
 
 end Map
 
+lemma IndepFun.covariance_eq_zero (h : IndepFun X Y μ) (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) :
+    cov[X, Y; μ] = 0 := by
+  by_cases h' : ∀ᵐ ω ∂μ, X ω = 0
+  · refine integral_eq_zero_of_ae ?_
+    filter_upwards [h'] with ω hω
+    simp [hω, integral_eq_zero_of_ae h']
+  have := hX.isProbabilityMeasure_of_indepFun X Y (by simp) (by simp) h' h
+  rw [covariance_eq hX hY, h.integral_mul_eq_mul_integral hX.aemeasurable hY.aemeasurable, sub_self]
+
 end ProbabilityTheory
