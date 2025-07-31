@@ -338,7 +338,8 @@ end OfEquiv
 
 -- A closed monoidal category C is always enriched over itself.
 -- This section contains the necessary definitions and equalities to endow C with
--- the structure of a C-category, while the instance itself is defined in `Mathlib/CategoryTheory/Closed/Enrichment.lean`.
+-- the structure of a C-category, while the instance itself is defined in
+-- `Mathlib/CategoryTheory/Closed/Enrichment.lean`.
 -- In particular, we only assume the necessary instances of `Closed x`, rather than assuming
 -- C comes with an instance of `MonoidalClosed`
 section Enriched
