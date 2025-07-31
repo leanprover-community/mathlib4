@@ -134,9 +134,9 @@ end
 
 /-! ## Functions with compact support -/
 section CompactSupport
-variable [TopologicalSpace α] [TopologicalSpace α']
-variable [One β] [One γ] [One δ]
-variable {g : β → γ} {f : α → β} {f₂ : α → γ} {m : β → γ → δ}
+
+variable [TopologicalSpace α] [TopologicalSpace α'] [One β] [One γ] [One δ]
+  {g : β → γ} {f : α → β} {f₂ : α → γ} {m : β → γ → δ}
 
 /-- A function `f` *has compact multiplicative support* or is *compactly supported* if the closure
 of the multiplicative support of `f` is compact. In a T₂ space this is equivalent to `f` being equal
@@ -158,27 +158,27 @@ theorem exists_compact_iff_hasCompactMulSupport [R1Space α] :
     hasCompactMulSupport_def, exists_isCompact_superset_iff]
 
 namespace HasCompactMulSupport
+
 @[to_additive]
-theorem intro [R1Space α] {K : Set α} (hK : IsCompact K)
-    (hfK : ∀ x, x ∉ K → f x = 1) : HasCompactMulSupport f :=
+theorem intro [R1Space α] {K : Set α} (hK : IsCompact K) (hfK : ∀ x, x ∉ K → f x = 1) :
+    HasCompactMulSupport f :=
   exists_compact_iff_hasCompactMulSupport.mp ⟨K, hK, hfK⟩
 
 @[to_additive]
-theorem intro' {K : Set α} (hK : IsCompact K) (h'K : IsClosed K)
-    (hfK : ∀ x, x ∉ K → f x = 1) : HasCompactMulSupport f := by
+theorem intro' {K : Set α} (hK : IsCompact K) (h'K : IsClosed K) (hfK : ∀ x, x ∉ K → f x = 1) :
+    HasCompactMulSupport f := by
   have : mulTSupport f ⊆ K := by
     rw [← h'K.closure_eq]
     apply closure_mono (mulSupport_subset_iff'.2 hfK)
   exact IsCompact.of_isClosed_subset hK ( isClosed_mulTSupport f) this
 
 @[to_additive]
-theorem of_mulSupport_subset_isCompact [R1Space α] {K : Set α}
-    (hK : IsCompact K) (h : mulSupport f ⊆ K) : HasCompactMulSupport f :=
+theorem of_mulSupport_subset_isCompact [R1Space α] {K : Set α} (hK : IsCompact K) (h : mulSupport f ⊆ K) :
+    HasCompactMulSupport f :=
   hK.closure_of_subset h
 
 @[to_additive]
-theorem isCompact (hf : HasCompactMulSupport f) : IsCompact (mulTSupport f) :=
-  hf
+theorem isCompact (hf : HasCompactMulSupport f) : IsCompact (mulTSupport f) := hf
 
 @[to_additive]
 theorem _root_.hasCompactMulSupport_iff_eventuallyEq :
@@ -244,6 +244,7 @@ lemma isCompact_preimage [TopologicalSpace β]
 variable [T2Space α']
 
 section
+
 variable (hf : HasCompactMulSupport f) {g : α → α'} (cont : Continuous g)
 include hf cont
 
