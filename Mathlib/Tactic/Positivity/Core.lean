@@ -122,9 +122,6 @@ initialize registerBuiltinAttribute {
 
 variable {A : Type*} {e : A}
 
-lemma lt_of_le_of_ne' {a b : A} [PartialOrder A] :
-    (a : A) ≤ b → b ≠ a → a < b := fun h₁ h₂ => lt_of_le_of_ne h₁ h₂.symm
-
 lemma pos_of_isNat {n : ℕ} [Semiring A] [PartialOrder A] [IsOrderedRing A] [Nontrivial A]
     (h : NormNum.IsNat e n) (w : Nat.ble 1 n = true) : 0 < (e : A) := by
   rw [NormNum.IsNat.to_eq h rfl]
