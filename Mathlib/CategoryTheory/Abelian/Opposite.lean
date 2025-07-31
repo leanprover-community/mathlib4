@@ -21,8 +21,8 @@ open CategoryTheory.Limits
 variable (C : Type*) [Category C] [Abelian C]
 
 instance : Abelian Cᵒᵖ := by
-  -- Porting note: priorities of `Abelian.has_kernels` and `Abelian.has_cokernels` have
-  -- been set to 90 in `Mathlib/CategoryTheory/Abelian/Basic.lean` in order to prevent a timeout here
+  -- Porting note: priorities of `Abelian.has_kernels` and `Abelian.has_cokernels` have been set to
+  -- 90 in `Mathlib/CategoryTheory/Abelian/Basic.lean` in order to prevent a timeout here
   exact {
     normalMonoOfMono := fun f => ⟨normalMonoOfNormalEpiUnop _ (normalEpiOfEpi f.unop)⟩
     normalEpiOfEpi := fun f => ⟨normalEpiOfNormalMonoUnop _ (normalMonoOfMono f.unop)⟩ }
