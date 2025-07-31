@@ -25,10 +25,10 @@ def call(number: int, handle: str) -> bool:
         '--header', "X-GitHub-Api-Version: 2022-11-28",
         url, '--data', f'{{"assignees":["{handle}"]}}'
     ]
-    out = subprocess.run(["curl"] + arguments_DO_NOT_PRINT, capture_output=True)
-    print(out.stdout)
+    out = subprocess.run(["curl"] + arguments_DO_NOT_PRINT, capture_output=True, encoding="utf-8")
+    print("output from calling CURL:\n" + out.stdout)
     if out.stderr:
-        print(out.stderr)
+        print("standard error output is:\n" + out.stderr)
     if out.returncode != 0:
         print(f"error: curl failed to assign reviewer {handle} to PR {number}")
         return False
