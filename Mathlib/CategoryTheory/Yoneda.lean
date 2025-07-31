@@ -115,7 +115,6 @@ the functor `uliftYoneda.{w} : C ⥤ Cᵒᵖ ⥤ Type max w v₁` is fully faith
 def fullyFaithful : (uliftYoneda.{w} (C := C)).FullyFaithful :=
   Yoneda.fullyFaithful.comp (fullyFaithfulULiftFunctor.whiskeringRight _)
 
-#check (uliftYoneda.{w} (C := C))
 instance : (uliftYoneda.{w} (C := C)).Full :=
   (fullyFaithful C).full
 
