@@ -936,6 +936,20 @@ lemma vecMul_injective_of_isUnit [Fintype m] [DecidableEq m] {A : Matrix m m R}
   intro x y hxy
   simpa [hBl] using congrArg B.vecMul hxy
 
+lemma pow_row_eq_zero_of_le [Fintype n] [DecidableEq n] {M : Matrix n n R} {k l : ℕ} {i : n}
+    (h : (M ^ k).row i = 0) (h' : k ≤ l) :
+    (M ^ l).row i = 0 := by
+  replace h' : l = k + (l - k) := by omega
+  rw [← single_one_vecMul] at h ⊢
+  rw [h', pow_add, ← vecMul_vecMul, h, zero_vecMul]
+
+lemma pow_col_eq_zero_of_le [Fintype n] [DecidableEq n] {M : Matrix n n R} {k l : ℕ} {i : n}
+    (h : (M ^ k).col i = 0) (h' : k ≤ l) :
+    (M ^ l).col i = 0 := by
+  replace h' : l = (l - k) + k := by omega
+  rw [← mulVec_single_one] at h ⊢
+  rw [h', pow_add, ← mulVec_mulVec, h, mulVec_zero]
+
 end Semiring
 
 section CommSemiring
