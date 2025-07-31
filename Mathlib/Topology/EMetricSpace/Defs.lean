@@ -373,6 +373,7 @@ end MulOpposite
 
 section ULift
 
+-- TODO: is there an analogue for weak pseudo-emetric spaces?
 instance : PseudoEMetricSpace (ULift α) := PseudoEMetricSpace.induced ULift.down ‹_›
 
 theorem ULift.edist_eq (x y : ULift α) : edist x y = edist x.down y.down := rfl
@@ -382,8 +383,28 @@ theorem ULift.edist_up_up (x y : α) : edist (ULift.up x) (ULift.up y) = edist x
 
 end ULift
 
+section
+
+variable {α β : Type*} [TopologicalSpace α] [WeakPseudoEMetricSpace α]
+  [TopologicalSpace β] [WeakPseudoEMetricSpace β]
+
+/-- The product of two weak pseudoemetric spaces, with the max distance, is an weak extended
+pseudometric space. -/
+instance Prod.weakPseudoEMetricSpaceMax : WeakPseudoEMetricSpace (α × β) where
+  edist x y := edist x.1 y.1 ⊔ edist x.2 y.2
+  edist_self x := by simp [WeakPseudoEMetricSpace.edist_self]
+  edist_comm x y := by simp [edist_comm]
+  edist_triangle _ _ _ :=
+    max_le (le_trans (edist_triangle _ _ _) (add_le_add (le_max_left _ _) (le_max_left _ _)))
+      (le_trans (edist_triangle _ _ _) (add_le_add (le_max_right _ _) (le_max_right _ _)))
+  topology_le := sorry
+
+theorem Prod.edist_eq (x y : α × β) : edist x y = max (edist x.1 y.1) (edist x.2 y.2) := rfl
+
+end
+
 /-- The product of two pseudoemetric spaces, with the max distance, is an extended
-pseudometric spaces. We make sure that the uniform structure thus constructed is the one
+pseudometric space. We make sure that the uniform structure thus constructed is the one
 corresponding to the product of uniform spaces, to avoid diamond problems. -/
 instance Prod.pseudoEMetricSpaceMax [PseudoEMetricSpace β] :
     PseudoEMetricSpace (α × β) where
@@ -397,9 +418,7 @@ instance Prod.pseudoEMetricSpaceMax [PseudoEMetricSpace β] :
     simp [PseudoEMetricSpace.uniformity_edist, ← iInf_inf_eq, setOf_and]
   toUniformSpace := inferInstance
 
-theorem Prod.edist_eq [PseudoEMetricSpace β] (x y : α × β) :
-    edist x y = max (edist x.1 y.1) (edist x.2 y.2) :=
-  rfl
+-- compatibility lemma between these product constructions? is everything kosher?
 
 namespace EMetric
 
