@@ -32,6 +32,19 @@ def answer : (Set.Ici 3) → Set ℕ := fun _ => { 0, 1, 3 }
 
 /- Preliminaries -/
 
+/-- The counting argument that we need, is there a similar version already in mathlib? -/
+lemma _root_.Finset.right_unique_of_left_total_of_left_unique {α β : Type*}
+    (A : Finset α) (B : Finset β) (hcard : #B ≤ #A)
+    (R : α → β → Prop)
+    (htotal : ∀ a ∈ A, ∃ b ∈ B, R a b)
+    (hunique : ∀ a₁ ∈ A, ∀ a₂ ∈ A, ∀ b ∈ B, R a₁ b → R a₂ b → a₁ = a₂) :
+    ∀ a ∈ A, ∀ b₁ ∈ B, ∀ b₂ ∈ B, R a b₁ → R a b₂ → b₁ = b₂ := by
+  by_contra! h
+  rcases h with ⟨a, ha, b₁, hb₁, b₂, hb₂, hab₁, hab₂, hb₁b₂⟩
+  have : ¬ #A < #B := sorry
+  apply this
+  sorry
+
 lemma mem_line_iff {p} {x₀ x₁ y₀ y₁ : ℝ} (hx : x₀ ≠ x₁ ∨ y₀ ≠ y₁ := by grind) :
     p ∈ line[ℝ, !₂[x₀, y₀], !₂[x₁, y₁]] ↔ (p 0 - x₀) * (y₁ - y₀) = (p 1 - y₀) * (x₁ - x₀) := by
   have : {!₂[x₀, y₀], !₂[x₁, y₁]} = Set.range ![!₂[x₀, y₀], !₂[x₁, y₁]] :=
@@ -338,6 +351,11 @@ structure Config (n k : Nat) where
     ∃ l ∈ ls, !₂[↑a, ↑b] ∈ l
   sunny : #{l ∈ ls | Sunny l} = k
 
+lemma Config.not_rank_2 {n k} (c : Config n k) {l} (hl : l ∈ c.ls)
+    (hrank : finrank ℝ ↥l.direction = 2) : False := by
+  have := c.rank l hl
+  omega
+
 /-- Reflect a valid configuration along the diagonal. -/
 noncomputable def Config.symm {n k : ℕ} (c : Config n k) : Config n k where
   ls := c.ls.map ⟨fun l => _, reflection_inj⟩
@@ -514,10 +532,7 @@ lemma no_config_3_2_no_vert (c : Config 3 2) (h_no_vert : ∀ l ∈ c.ls, ¬ l �
     have hl₄ : ¬ Sunny l₄ := notSunny_of_horiz meml₁ meml₄
     rcases hl₅ with (rfl | rfl | rfl)
     · -- l₅ = l₄, finrank violated
-      suffices h : finrank ℝ l₅.direction = 2
-      · have := c.rank l₅ hl₁
-        omega
-      apply l₅.finrank_eq_two_of_ne meml₅ meml₄ meml₁ (by norm_num)
+      apply c.not_rank_2 hl₁ <| l₅.finrank_eq_two_of_ne meml₅ meml₄ meml₁ (by norm_num)
     · -- l₅ = l₂, only one sunny line
       have hl₅ : ¬ Sunny l₅ := notSunny_of_horiz meml₂ meml₅
       split_ifs at hsunny <;> simp at hsunny
@@ -533,18 +548,12 @@ lemma no_config_3_2_no_vert (c : Config 3 2) (h_no_vert : ∀ l ∈ c.ls, ¬ l �
         have hl₆ : ¬ Sunny l₆ := notSunny_of_diag meml₅ meml₆ (by norm_num)
         split_ifs at hsunny <;> simp at hsunny
       · -- l₆ = l₄, finrank violated
-        suffices h : finrank ℝ l₆.direction = 2
-        · have := c.rank l₆ hl₂
-          omega
-        apply l₆.finrank_eq_two_of_ne meml₆ meml₂ meml₄ (by norm_num)
+        apply c.not_rank_2 hl₂ <|  l₆.finrank_eq_two_of_ne meml₆ meml₂ meml₄ (by norm_num)
       · -- l₆ = l₃
         have hl₆ : ¬ Sunny l₆ := notSunny_of_diag meml₃ meml₆ (by simp)
         split_ifs at hsunny <;> simp at hsunny
     · -- l₅ = l₄, finrank violated
-      suffices h : finrank ℝ l₅.direction = 2
-      · have := c.rank l₅ hl₂
-        omega
-      apply l₅.finrank_eq_two_of_ne meml₅ meml₂ meml₄ (by norm_num)
+      apply c.not_rank_2 hl₂ <| l₅.finrank_eq_two_of_ne meml₅ meml₂ meml₄ (by norm_num)
     · -- l₅ = l₃
       have hl₅ : ¬ Sunny l₅ := notSunny_of_diag meml₃ meml₅ (by norm_num)
       split_ifs at hsunny <;> simp at hsunny
@@ -555,19 +564,13 @@ lemma no_config_3_2_no_vert (c : Config 3 2) (h_no_vert : ∀ l ∈ c.ls, ¬ l �
       have hl₅ : Sunny l₅ := sunny_of_ne meml₁ meml₅ (by simp; norm_num)
       rcases hl₆ with (rfl | rfl | rfl)
       · -- l₆ = l₅, finrank violated
-        suffices h : finrank ℝ l₆.direction = 2
-        · have := c.rank l₆ hl₁
-          omega
-        apply l₆.finrank_eq_two_of_ne meml₅ meml₁ meml₆ (by norm_num)
+        apply c.not_rank_2 hl₁ <| l₆.finrank_eq_two_of_ne meml₅ meml₁ meml₆ (by norm_num)
       · -- l₆ = l₂, three sunny lines
         have hl₆ : Sunny l₆ := sunny_of_ne meml₆ meml₂ (by norm_num)
         split_ifs at hsunny
         omega
       · -- l₆ = l₄, finrank violated
-        suffices h : finrank ℝ l₆.direction = 2
-        · have := c.rank l₆ hl₃
-          omega
-        apply l₆.finrank_eq_two_of_ne meml₄ meml₃ meml₆ (by norm_num)
+        apply c.not_rank_2 hl₃ <| l₆.finrank_eq_two_of_ne meml₄ meml₃ meml₆ (by norm_num)
     · -- l₅ = l₂
       have hl₅ : ¬ Sunny l₅ := notSunny_of_horiz meml₅ meml₂ (by norm_num)
       rcases hl₆ with (rfl | rfl | rfl)
@@ -575,20 +578,11 @@ lemma no_config_3_2_no_vert (c : Config 3 2) (h_no_vert : ∀ l ∈ c.ls, ¬ l �
         have : ¬ Sunny l₆ := notSunny_of_horiz meml₁ meml₆ (by norm_num)
         split_ifs at hsunny; simp at hsunny
       · -- l₆ = l₅, finrank violated
-        suffices h : finrank ℝ l₆.direction = 2
-        · have := c.rank l₆ hl₂
-          omega
-        apply l₆.finrank_eq_two_of_ne meml₂ meml₅ meml₆ (by norm_num)
+        apply c.not_rank_2 hl₂ <| l₆.finrank_eq_two_of_ne meml₂ meml₅ meml₆ (by norm_num)
       · -- l₆ = l₄, finrank violated
-        suffices h : finrank ℝ l₆.direction = 2
-        · have := c.rank l₆ hl₃
-          omega
-        apply l₆.finrank_eq_two_of_ne meml₄ meml₃ meml₆ (by norm_num)
+        apply c.not_rank_2 hl₃ <| l₆.finrank_eq_two_of_ne meml₄ meml₃ meml₆ (by norm_num)
     · -- l₅ = l₄, finrank violated
-      suffices h : finrank ℝ l₅.direction = 2
-      · have := c.rank l₅ hl₃
-        omega
-      apply l₅.finrank_eq_two_of_ne meml₅ meml₃ meml₄ (by norm_num)
+      apply c.not_rank_2 hl₃ <| l₅.finrank_eq_two_of_ne meml₅ meml₃ meml₄ (by norm_num)
 
 lemma no_config_3_2 (c : Config 3 2) : False := by
   by_cases h : ∀ l ∈ c.ls, ¬ l ∥ yAxis
@@ -634,7 +628,7 @@ lemma no_config_3_2 (c : Config 3 2) : False := by
         _ = 1 := by rw [c.card]
       omega
 
-lemma no_config_without_vert_horiz_diag_contr_line {n k} (hn : 3 ≤ n) (c : Config (n + 1) k)
+lemma no_config_without_vert_horiz_diag_contr_line {n k} (hn : 3 < n) (c : Config (n + 1) k)
     (hvert : line[ℝ, !₂[1, 0], !₂[1, 1]] ∉ c.ls)
     (hhoriz : line[ℝ, !₂[0, 1], !₂[1, 1]] ∉ c.ls)
     (hdiag : line[ℝ, !₂[(n : ℝ) + 1, 1], !₂[1, (n : ℝ) + 1]] ∉ c.ls)
@@ -654,9 +648,10 @@ lemma no_config_without_vert_horiz_diag_contr_line {n k} (hn : 3 ≤ n) (c : Con
   have : m₃ < n := sorry
   apply l.finrank_eq_two_of_ne hm₂ meml hm₃
   simp
+  -- This should be solvable by `grind` or so, probably we still miss preconditions
   sorry
 
-lemma no_config_without_vert_horiz_diag {n k} (hn : 3 ≤ n) (c : Config (n + 1) k)
+lemma no_config_without_vert_horiz_diag {n k} (hn : 3 < n) (c : Config (n + 1) k)
     (hvert : line[ℝ, !₂[1, 0], !₂[1, 1]] ∉ c.ls)
     (hhoriz : line[ℝ, !₂[0, 1], !₂[1, 1]] ∉ c.ls)
     (hdiag : line[ℝ, !₂[(n : ℝ) + 1, 1], !₂[1, (n : ℝ) + 1]] ∉ c.ls) : False := by
@@ -667,9 +662,27 @@ lemma no_config_without_vert_horiz_diag {n k} (hn : 3 ≤ n) (c : Config (n + 1)
     apply no_config_without_vert_horiz_diag_contr_line hn c hvert hhoriz hdiag
       (by grind) (by grind) hl₂ meml₂
     intro h
-    -- TODO bring to contradiction by counting argument
-    have : l₁ ≠ l₂ := sorry
-    sorry
+    obtain rfl := Finset.right_unique_of_left_total_of_left_unique
+      (Finset.Icc 1 (n + 1)) c.ls
+      (by simp [c.card]) (fun m l => !₂[(m : ℝ), 1] ∈ l)
+      (fun m₁ hm₁ => by
+        rw [Finset.mem_Icc] at hm₁
+        have := c.cover m₁ 1 (Nat.lt_of_add_one_le hm₁.1) Nat.one_pos (Nat.succ_le_succ hm₁.2)
+        simpa using this)
+      (fun m₁ hm₁ m₂ hm₂ l hl hm₁l hm₂l => by
+        dsimp at *
+        by_contra! h
+        apply hhoriz
+        convert hl
+        sorry)
+      n (by simp; omega) l₁ hl₁ l₂ hl₂ hQ h
+    apply c.not_rank_2 hl₁
+    apply l₁.finrank_eq_two_of_ne h meml₁ meml₂
+    simp only [Fin.isValue, PiLp.toLp_apply, Matrix.cons_val_zero, Matrix.cons_val_one,
+      Matrix.cons_val_fin_one, sub_self, mul_zero, ne_eq, mul_eq_zero, sub_eq_zero, Nat.cast_eq_one,
+      not_or]
+    norm_cast
+    omega
   · norm_cast at meml₁
     exact no_config_without_vert_horiz_diag_contr_line hn c hvert hhoriz hdiag
       (by grind) (by grind) hl₁ meml₁ hQ
