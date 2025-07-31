@@ -691,7 +691,7 @@ theorem absdiscr_prime [IsCyclotomicExtension {p} ℚ K] :
     rw [zero_add, pow_one]
     infer_instance
   rw [absdiscr_prime_pow_succ p 0 K]
-  simp only [Int.reduceNeg, pow_zero, one_mul, zero_add, mul_one, Nat.sub_sub]
+  simp [Nat.sub_sub]
 
 end IsCyclotomicExtension.Rat
 
