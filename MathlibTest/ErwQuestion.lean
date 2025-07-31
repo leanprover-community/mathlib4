@@ -12,8 +12,10 @@ example : f 37 = 38 := by
   erw? [f]
 
 /--
-error: Tactic `rewrite` failed: did not find instance of the pattern in the target expression
+error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
   f a
+in the target expression
+  f b = 38
 
 ⊢ f b = 38
 -/

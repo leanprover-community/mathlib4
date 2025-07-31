@@ -48,7 +48,7 @@ Other example tests
 recall id (x : α) : α := x
 
 /--
-error: type mismatch
+error: Type mismatch
   @id
 has type
   {α : Sort u_1} → α → α → ℕ

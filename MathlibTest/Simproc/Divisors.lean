@@ -25,7 +25,7 @@ example : (Nat.divisors <| 2^13).card = 14 := by
 example : 2 ≤ Finset.card (Nat.divisors 3) := by
   simp [Nat.divisors_ofNat]
 
-/-- error: simp made no progress -/
+/-- error: `simp` made no progress -/
 #guard_msgs in
 example (n : ℕ) (hn : n ≠ 0) : 1 ≤ Finset.card (Nat.divisors n) := by
   simp only [Nat.divisors_ofNat]

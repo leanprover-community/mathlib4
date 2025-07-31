@@ -199,7 +199,7 @@ local notation3 (prettyPrint := false) "#" n => Fin.mk n (by decide)
 example : Fin 5 := #1
 
 /--
-error: tactic 'decide' proved that the proposition
+error: Tactic `decide` proved that the proposition
   6 < 5
 is false
 -/

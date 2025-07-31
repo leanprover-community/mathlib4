@@ -11,7 +11,7 @@ set_option pp.mvars false
 -- Such a coercion would frequently introduce unexpected modular arithmetic.
 
 /--
-error: type mismatch
+error: Type mismatch
   n
 has type
   ℕ
