@@ -682,7 +682,8 @@ lemma inv_counitInv : inv (𝔈.counitInv) = 𝔈.counit :=
 lemma inv_unitInv : inv (𝔈.unitInv) = 𝔈.unit :=
   IsIso.inv_eq_of_hom_inv_id <| by simp
 
-@[simps!]
+/-- The symmetric of a `CatCospanEquivalence`. -/
+@[simps]
 def symm (e : CatCospanEquivalence F G F' G') : CatCospanEquivalence F' G' F G where
   leftAdjoint := e.rightAdjoint
   rightAdjoint := e.leftAdjoint
