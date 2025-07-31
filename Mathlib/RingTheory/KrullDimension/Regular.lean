@@ -27,6 +27,7 @@ open RingTheory Sequence IsLocalRing Ideal PrimeSpectrum Pointwise
 
 /-- If $M$ is a finite module over a Noetherian local ring $R$, then $\dim M \le \dim M/xM + 1$
   for all $x$ in the maximal ideal of the local ring $R$. -/
+@[stacks 0B52 "the second inequality"]
 theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIdeal R) :
     supportDim R M ≤ supportDim R (QuotSMulTop x M) + 1 := by
   rcases subsingleton_or_nontrivial M with h | _
@@ -101,6 +102,7 @@ theorem supportDim_quotSMulTop_succ_le_of_notMem_minimalPrimes {x : R}
   have hr : r < q.head := lt_of_le_of_ne hr (fun h ↦ hn q.head.1.1 (by rwa [← h]) hp.2)
   exact le_of_eq_of_le (by simp [q]) (le_iSup _ (q.cons r hr))
 
+@[stacks 0B52 "the equality case"]
 theorem supportDim_quotSMulTop_succ_eq_of_notMem_minimalPrimes_of_mem_maximalIdeal {x : R}
     (hn : ∀ p ∈ (annihilator R M).minimalPrimes, x ∉ p) (hx : x ∈ maximalIdeal R) :
     supportDim R (QuotSMulTop x M) + 1 = supportDim R M :=
@@ -112,6 +114,7 @@ theorem supportDim_quotSMulTop_succ_eq_supportDim {x : R} (reg : IsSMulRegular M
   supportDim_quotSMulTop_succ_eq_of_notMem_minimalPrimes_of_mem_maximalIdeal
     (fun _ ↦ notMem_minimalPrimes_of_isSMulRegular reg) hx
 
+@[stacks 00KW]
 lemma _root_.ringKrullDim_quotSMulTop_succ_eq_ringKrullDim {x : R} (reg : IsSMulRegular R x)
     (hx : x ∈ maximalIdeal R) : ringKrullDim (R ⧸ x • (⊤ : Ideal R)) + 1 = ringKrullDim R := by
   rw [← supportDim_quotient_eq_ringKrullDim, ← supportDim_self_eq_ringKrullDim]
