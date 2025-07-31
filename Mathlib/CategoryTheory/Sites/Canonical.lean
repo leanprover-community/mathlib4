@@ -265,16 +265,4 @@ instance : (J.yoneda).Faithful := (J.yonedaFullyFaithful).faithful
 
 end GrothendieckTopology
 
-@[deprecated (since := "2024-10-29")] alias Sheaf.Subcanonical := GrothendieckTopology.Subcanonical
-@[deprecated (since := "2024-10-29")] alias Sheaf.Subcanonical.of_isSheaf_yoneda_obj :=
-  GrothendieckTopology.Subcanonical.of_isSheaf_yoneda_obj
-@[deprecated (since := "2024-10-29")] alias Sheaf.Subcanonical.isSheaf_of_isRepresentable :=
-  GrothendieckTopology.Subcanonical.isSheaf_of_isRepresentable
-@[deprecated (since := "2024-10-29")] alias Sheaf.Subcanonical.yoneda :=
-  GrothendieckTopology.yoneda
-@[deprecated (since := "2024-10-29")] alias Sheaf.Subcanonical.yonedaCompSheafToPresheaf :=
-  GrothendieckTopology.yonedaCompSheafToPresheaf
-@[deprecated (since := "2024-10-29")] alias Sheaf.Subcanonical.yonedaFullyFaithful :=
-  GrothendieckTopology.yonedaFullyFaithful
-
 end CategoryTheory

@@ -14,15 +14,11 @@ This file defines the canonical power basis on `Algebra.adjoin R {x}`,
 where `x` is an integral element over `R`.
 -/
 
+open Module Polynomial PowerBasis
 
 variable {K S : Type*} [Field K] [CommRing S] [Algebra K S]
 
 namespace Algebra
-
-
-open Polynomial
-open PowerBasis
-
 
 /-- The elements `1, x, ..., x ^ (d - 1)` for a basis for the `K`-module `K[x]`,
 where `d` is the degree of the minimal polynomial of `x`. -/

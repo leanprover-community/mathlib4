@@ -190,7 +190,7 @@ def opEquiv (sq : CommSq f i p g) : LiftStruct sq ≃ LiftStruct sq.op where
   left_inv := by aesop_cat
   right_inv := by aesop_cat
 
-/-- Equivalences of `LiftStruct` for a square in the oppositive category and
+/-- Equivalences of `LiftStruct` for a square in the opposite category and
 the corresponding square in the original category. -/
 def unopEquiv {A B X Y : Cᵒᵖ} {f : A ⟶ X} {i : A ⟶ B} {p : X ⟶ Y} {g : B ⟶ Y}
     (sq : CommSq f i p g) : LiftStruct sq ≃ LiftStruct sq.unop where

@@ -16,8 +16,8 @@ import Mathlib.RingTheory.IsTensorProduct
 
 In this file we provide the explicit (co)cones for various (co)limits in `CommRingCat`, including
 * tensor product is the pushout
-* tensor product over `Z` is the binary coproduct
-* `Z` is the initial object
+* tensor product over `ℤ` is the binary coproduct
+* `ℤ` is the initial object
 * `0` is the strict terminal object
 * cartesian product is the product
 * arbitrary direct product of a family of rings is the product object (Pi object)
@@ -153,12 +153,12 @@ def coproductCocone : BinaryCofan A B :=
     (ofHom (Algebra.TensorProduct.includeRight (R := ℤ)).toRingHom : B ⟶  of (A ⊗[ℤ] B))
 
 @[simp]
-theorem coproductCocone_inl : (coproductCocone A B).inl =
-  ofHom (Algebra.TensorProduct.includeLeft (S := ℤ)).toRingHom := rfl
+theorem coproductCocone_inl :
+    (coproductCocone A B).inl = ofHom (Algebra.TensorProduct.includeLeft (S := ℤ)).toRingHom := rfl
 
 @[simp]
-theorem coproductCocone_inr : (coproductCocone A B).inr =
-  ofHom (Algebra.TensorProduct.includeRight (R := ℤ)).toRingHom := rfl
+theorem coproductCocone_inr :
+    (coproductCocone A B).inr = ofHom (Algebra.TensorProduct.includeRight (R := ℤ)).toRingHom := rfl
 
 /-- The tensor product `A ⊗[ℤ] B` is a coproduct for `A` and `B`. -/
 @[simps]
@@ -277,13 +277,13 @@ def piFanIsLimit : IsLimit (piFan R) where
     DFunLike.congr_fun (congrArg Hom.hom <| h ⟨i⟩) x
 
 /--
-The categorical product and the usual product agrees
+The categorical product and the usual product agree
 -/
 def piIsoPi : ∏ᶜ R ≅ CommRingCat.of ((i : ι) → R i) :=
   limit.isoLimitCone ⟨_, piFanIsLimit R⟩
 
 /--
-The categorical product and the usual product agrees
+The categorical product and the usual product agree
 -/
 def _root_.RingEquiv.piEquivPi (R : ι → Type u) [∀ i, CommRing (R i)] :
     (∏ᶜ (fun i : ι ↦ CommRingCat.of (R i)) : CommRingCat.{u}) ≃+* ((i : ι) → R i) :=

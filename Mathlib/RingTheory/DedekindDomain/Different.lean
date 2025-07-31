@@ -31,6 +31,8 @@ import Mathlib.RingTheory.Trace.Quotient
 - Show properties of the different ideal
 -/
 
+open Module
+
 universe u
 
 attribute [local instance] FractionRing.liftAlgebra FractionRing.isScalarTower_liftAlgebra
@@ -84,7 +86,7 @@ lemma le_traceDual_traceDual {I : Submodule B L} :
 
 @[simp]
 lemma restrictScalars_traceDual {I : Submodule B L} :
-  Iᵛ.restrictScalars A = (Algebra.traceForm K L).dualSubmodule (I.restrictScalars A) := rfl
+    Iᵛ.restrictScalars A = (Algebra.traceForm K L).dualSubmodule (I.restrictScalars A) := rfl
 
 @[simp]
 lemma traceDual_bot :

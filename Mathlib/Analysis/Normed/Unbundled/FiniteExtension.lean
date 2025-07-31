@@ -40,13 +40,13 @@ Basis.norm, nonarchimedean
 
 noncomputable section
 
-open Finset
+open Finset Module
 
 section Ring
 
 variable {K L : Type*} [NormedField K] [Ring L] [Algebra K L]
 
-namespace Basis
+namespace Module.Basis
 
 variable {ι : Type*} [Fintype ι] [Nonempty ι] (B : Basis ι K L)
 
@@ -166,7 +166,7 @@ theorem norm_smul {ι : Type*} [Fintype ι] [Nonempty ι] {B : Basis ι K L} {i 
     simp only [norm, hj]
     rw [repr_smul', norm_mul, hi, hij]
 
-end Basis
+end Module.Basis
 
 end Ring
 

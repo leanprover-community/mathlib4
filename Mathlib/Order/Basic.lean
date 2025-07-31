@@ -180,38 +180,30 @@ theorem le_of_forall_ge (H : ∀ c, a ≤ c → b ≤ c) : b ≤ a := H _ le_rfl
 theorem forall_le_iff_le : (∀ ⦃c⦄, c ≤ a → c ≤ b) ↔ a ≤ b :=
   ⟨le_of_forall_le, fun h _ hca ↦ le_trans hca h⟩
 
-theorem forall_le_iff_ge : (∀ ⦃c⦄, a ≤ c → b ≤ c) ↔ b ≤ a :=
+theorem forall_ge_iff_le : (∀ ⦃c⦄, a ≤ c → b ≤ c) ↔ b ≤ a :=
   ⟨le_of_forall_ge, fun h _ hca ↦ le_trans h hca⟩
 
+@[deprecated (since := "2025-07-27")] alias forall_le_iff_ge := forall_ge_iff_le
+
 /-- monotonicity of `≤` with respect to `→` -/
-theorem le_implies_le_of_le_of_le (hca : c ≤ a) (hbd : b ≤ d) : a ≤ b → c ≤ d :=
-  fun hab ↦ (hca.trans hab).trans hbd
+@[gcongr] theorem le_imp_le_of_le_of_le (h₁ : c ≤ a) (h₂ : b ≤ d) : a ≤ b → c ≤ d :=
+  fun hab ↦ (h₁.trans hab).trans h₂
 
-namespace GCongr
+@[deprecated (since := "2025-07-31")] alias le_implies_le_of_le_of_le := le_imp_le_of_le_of_le
 
--- The `≤`-transitivity lemmas aren't strictly needed
--- but it is a very common case, so we tag them anyways
-@[gcongr] theorem le_imp_le (h₁ : c ≤ a) (h₂ : b ≤ d) : a ≤ b → c ≤ d :=
-  fun h => le_trans (le_trans h₁ h) h₂
+/-- monotonicity of `<` with respect to `→` -/
+@[gcongr] theorem lt_imp_lt_of_le_of_le (h₁ : c ≤ a) (h₂ : b ≤ d) : a < b → c < d :=
+  fun hab ↦ (h₁.trans_lt hab).trans_le h₂
 
-attribute [gcongr] le_trans ge_trans
+namespace Mathlib.Tactic.GCongr
 
-@[gcongr] theorem lt_imp_lt (h₁ : c ≤ a) (h₂ : b ≤ d) : a < b → c < d :=
-  fun h => lt_of_lt_of_le (lt_of_le_of_lt h₁ h) h₂
-
-attribute [gcongr] lt_of_le_of_lt lt_of_le_of_lt'
-
-@[gcongr] theorem gt_imp_gt (h₁ : a ≤ c) (h₂ : d ≤ b) : a > b → c > d := lt_imp_lt h₂ h₁
-
-@[gcongr] theorem gt_imp_gt_left (h : a ≤ b) : c > b → c > a := lt_of_le_of_lt h
-
-@[gcongr] theorem gt_imp_gt_right (h : b ≤ a) : b > c → a > c := lt_of_le_of_lt' h
+@[gcongr] theorem gt_imp_gt (h₁ : a ≤ c) (h₂ : d ≤ b) : a > b → c > d := lt_imp_lt_of_le_of_le h₂ h₁
 
 /-- See if the term is `a < b` and the goal is `a ≤ b`. -/
-@[gcongr_forward] def exactLeOfLt : Mathlib.Tactic.GCongr.ForwardExt where
+@[gcongr_forward] def exactLeOfLt : ForwardExt where
   eval h goal := do goal.assignIfDefEq (← Lean.Meta.mkAppM ``le_of_lt #[h])
 
-end GCongr
+end Mathlib.Tactic.GCongr
 
 end Preorder
 

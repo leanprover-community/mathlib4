@@ -81,6 +81,12 @@ lemma map_single (i : m) (j : n) (a : α) {β : Type*} [Zero β]
 
 @[deprecated (since := "2025-05-05")] alias map_stdBasisMatrix := map_single
 
+theorem single_mem_matrix {S : Set α} (hS : 0 ∈ S) {i : m} {j : n} {a : α} :
+    Matrix.single i j a ∈ S.matrix ↔ a ∈ S := by
+  simp only [Set.mem_matrix, single, of_apply]
+  conv_lhs => intro _ _; rw[ite_mem]
+  simp [hS]
+
 end Zero
 
 theorem single_add [AddZeroClass α] (i : m) (j : n) (a b : α) :
@@ -96,7 +102,7 @@ theorem single_mulVec [NonUnitalNonAssocSemiring α] [Fintype m]
     mulVec (single i j c) x = Function.update (0 : n → α) i (c * x j) := by
   ext i'
   simp [single, mulVec, dotProduct]
-  rcases eq_or_ne i i' with rfl|h
+  rcases eq_or_ne i i' with rfl | h
   · simp
   simp [h, h.symm]
 

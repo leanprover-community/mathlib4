@@ -625,15 +625,15 @@ def lift : (α → β) ≃ (FreeGroup α →* β) where
 variable {f}
 
 @[to_additive (attr := simp)]
-theorem lift.mk : lift f (mk L) = List.prod (L.map fun x => cond x.2 (f x.1) (f x.1)⁻¹) :=
+theorem lift_mk : lift f (mk L) = List.prod (L.map fun x => cond x.2 (f x.1) (f x.1)⁻¹) :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem lift.of {x} : lift f (of x) = f x :=
+theorem lift_apply_of {x} : lift f (of x) = f x :=
   List.prod_singleton
 
 @[to_additive]
-theorem lift.unique (g : FreeGroup α →* β) (hg : ∀ x, g (FreeGroup.of x) = f x) {x} :
+theorem lift_unique (g : FreeGroup α →* β) (hg : ∀ x, g (FreeGroup.of x) = f x) {x} :
     g x = FreeGroup.lift f x :=
   DFunLike.congr_fun (lift.symm_apply_eq.mp (funext hg : g ∘ FreeGroup.of = f)) x
 
@@ -642,29 +642,29 @@ theorem lift_of_eq_id (α) : lift of = MonoidHom.id (FreeGroup α) :=
   lift.apply_symm_apply (MonoidHom.id _)
 
 @[to_additive]
-theorem lift.of_eq (x : FreeGroup α) : lift FreeGroup.of x = x :=
+theorem lift_of_apply (x : FreeGroup α) : lift FreeGroup.of x = x :=
   DFunLike.congr_fun (lift_of_eq_id α) x
 
 @[to_additive]
-theorem lift.range_le {s : Subgroup β} (H : Set.range f ⊆ s) : (lift f).range ≤ s := by
+theorem range_lift_le {s : Subgroup β} (H : Set.range f ⊆ s) : (lift f).range ≤ s := by
   rintro _ ⟨⟨L⟩, rfl⟩
   exact List.recOn L s.one_mem fun ⟨x, b⟩ tl ih ↦
     Bool.recOn b (by simpa using s.mul_mem (s.inv_mem <| H ⟨x, rfl⟩) ih)
       (by simpa using s.mul_mem (H ⟨x, rfl⟩) ih)
 
 @[to_additive]
-theorem lift.range_eq_closure : (lift f).range = Subgroup.closure (Set.range f) := by
-  apply le_antisymm (lift.range_le Subgroup.subset_closure)
+theorem range_lift_eq_closure : (lift f).range = Subgroup.closure (Set.range f) := by
+  apply le_antisymm (range_lift_le Subgroup.subset_closure)
   rw [Subgroup.closure_le]
   rintro _ ⟨a, rfl⟩
-  exact ⟨FreeGroup.of a, by simp only [lift.of]⟩
+  exact ⟨FreeGroup.of a, by simp only [lift_apply_of]⟩
 
 /-- The generators of `FreeGroup α` generate `FreeGroup α`. That is, the subgroup closure of the
 set of generators equals `⊤`. -/
 @[to_additive (attr := simp)]
 theorem closure_range_of (α) :
     Subgroup.closure (Set.range (FreeGroup.of : α → FreeGroup α)) = ⊤ := by
-  rw [← lift.range_eq_closure, lift_of_eq_id]
+  rw [← range_lift_eq_closure, lift_of_eq_id]
   exact MonoidHom.range_eq_top.2 Function.surjective_id
 
 end lift
@@ -768,17 +768,17 @@ theorem prod_mk : prod (mk L) = List.prod (L.map fun x => cond x.2 x.1 x.1⁻¹)
 
 @[to_additive (attr := simp)]
 theorem prod.of {x : α} : prod (of x) = x :=
-  lift.of
+  lift_apply_of
 
 @[to_additive]
 theorem prod.unique (g : FreeGroup α →* α) (hg : ∀ x, g (FreeGroup.of x) = x) {x} : g x = prod x :=
-  lift.unique g hg
+  lift_unique g hg
 
 end Prod
 
 @[to_additive]
 theorem lift_eq_prod_map {β : Type v} [Group β] {f : α → β} {x} : lift f x = prod (map f x) := by
-  rw [← lift.unique (prod.comp (map f)) (by simp), MonoidHom.coe_comp, Function.comp_apply]
+  rw [← lift_unique (prod.comp (map f)) (by simp), MonoidHom.coe_comp, Function.comp_apply]
 
 section Sum
 
@@ -873,7 +873,7 @@ theorem map_inv (f : α → β) (x : FreeGroup α) : f <$> x⁻¹ = (f <$> x)⁻
 
 @[to_additive]
 theorem pure_bind (f : α → FreeGroup β) (x) : pure x >>= f = f x :=
-  lift.of
+  lift_apply_of
 
 @[to_additive (attr := simp)]
 theorem one_bind (f : α → FreeGroup β) : 1 >>= f = 1 :=

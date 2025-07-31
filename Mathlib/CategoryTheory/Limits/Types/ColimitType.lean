@@ -140,7 +140,7 @@ variable {F} (c : CoconeTypes.{w₁} F)
 
 /-- Given `F : J ⥤ Type w₀` and `c : F.CoconeTypes`, this is the property
 that `c` is a colimit. It is defined by saying the canonical map
-`F.descColimitType c : F.ColimiType → c.pt` is a bijection. -/
+`F.descColimitType c : F.ColimitType → c.pt` is a bijection. -/
 structure IsColimit : Prop where
   bijective : Function.Bijective (F.descColimitType c)
 

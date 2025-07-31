@@ -20,7 +20,7 @@ namespace ModuleCat
 variable {R : Type u} [CommRing R]
 
 /-- Auxiliary definition for the `MonoidalClosed` instance on `Module R`.
-(This is only a separate definition in order to speed up typechecking. )
+(This is only a separate definition in order to speed up typechecking.)
 -/
 def monoidalClosedHomEquiv (M N P : ModuleCat.{u} R) :
     ((MonoidalCategory.tensorLeft M).obj N ⟶ P) ≃

@@ -35,7 +35,7 @@ section
 
 variable {R S ι σ : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
-open Extension MvPolynomial
+open Extension Module MvPolynomial
 
 namespace PreSubmersivePresentation
 
@@ -200,7 +200,7 @@ See `SubmersivePresentation.basisKaehler` for the special case `κ = (Set.range 
 -/
 noncomputable def basisKaehlerOfIsCompl {κ : Type*} {f : κ → ι}
     (hf : Function.Injective f) (hcompl : IsCompl (Set.range f) (Set.range P.map)) :
-    Basis κ S (Ω[S⁄R]) := by
+    Basis κ S Ω[S⁄R] := by
   apply P.cotangentSpaceBasis.ofSplitExact (sectionCotangent_comp P)
     Extension.exact_cotangentComplex_toKaehler Extension.toKaehler_surjective hf (b := P.map)
   · intro i
@@ -220,7 +220,7 @@ noncomputable def basisKaehlerOfIsCompl {κ : Type*} {f : κ → ι}
 for `i` in the complement of `σ` in `ι` form a basis of `Ω[S⁄R]`. -/
 @[stacks 00T7 "(2)"]
 noncomputable def basisKaehler :
-    Basis ((Set.range P.map)ᶜ : Set _) S (Ω[S⁄R]) :=
+    Basis ((Set.range P.map)ᶜ : Set _) S Ω[S⁄R] :=
   P.basisKaehlerOfIsCompl Subtype.val_injective <| by
     rw [Subtype.range_coe_subtype]
     exact IsCompl.symm isCompl_compl
@@ -228,7 +228,7 @@ noncomputable def basisKaehler :
 /-- If `P` is a submersive presentation of `S` as an `R`-algebra, `Ω[S⁄R]` is free. -/
 @[stacks 00T7 "(2)"]
 theorem free_kaehlerDifferential (P : SubmersivePresentation R S ι σ) :
-    Module.Free S (Ω[S⁄R]) :=
+    Module.Free S Ω[S⁄R] :=
   Module.Free.of_basis P.basisKaehler
 
 attribute [local instance] Fintype.ofFinite in
@@ -236,7 +236,7 @@ attribute [local instance] Fintype.ofFinite in
 `Ω[S⁄R]` is free of rank the dimension of `P`, i.e. the number of generators minus the number
 of relations. -/
 theorem rank_kaehlerDifferential [Nontrivial S] [Finite ι]
-    (P : SubmersivePresentation R S ι σ) : Module.rank S (Ω[S⁄R]) = P.dimension := by
+    (P : SubmersivePresentation R S ι σ) : Module.rank S Ω[S⁄R] = P.dimension := by
   simp only [rank_eq_card_basis P.basisKaehler, Fintype.card_compl_set,
     Presentation.dimension, Nat.card_eq_fintype_card, Set.card_range_of_injective P.map_inj]
 
@@ -244,7 +244,7 @@ end SubmersivePresentation
 
 /-- If `S` is `R`-standard smooth, `Ω[S⁄R]` is a free `S`-module. -/
 instance IsStandardSmooth.free_kaehlerDifferential [IsStandardSmooth R S] :
-    Module.Free S (Ω[S⁄R]) := by
+    Module.Free S Ω[S⁄R] := by
   obtain ⟨_, _, _, _, ⟨P⟩⟩ := ‹IsStandardSmooth R S›
   exact P.free_kaehlerDifferential
 
@@ -257,12 +257,12 @@ instance IsStandardSmooth.subsingleton_h1Cotangent [IsStandardSmooth R S] :
 `S`-module of rank `n`. -/
 theorem IsStandardSmoothOfRelativeDimension.rank_kaehlerDifferential [Nontrivial S] (n : ℕ)
     [IsStandardSmoothOfRelativeDimension n R S] :
-    Module.rank S (Ω[S⁄R]) = n := by
+    Module.rank S Ω[S⁄R] = n := by
   obtain ⟨_, _, _, _, ⟨P, hP⟩⟩ := ‹IsStandardSmoothOfRelativeDimension n R S›
   rw [P.rank_kaehlerDifferential, hP]
 
 instance IsStandardSmoothOfRelationDimension.subsingleton_kaehlerDifferential
-    [IsStandardSmoothOfRelativeDimension 0 R S] : Subsingleton (Ω[S⁄R]) := by
+    [IsStandardSmoothOfRelativeDimension 0 R S] : Subsingleton Ω[S⁄R] := by
   cases subsingleton_or_nontrivial S
   · exact Module.subsingleton S _
   haveI : IsStandardSmooth R S := IsStandardSmoothOfRelativeDimension.isStandardSmooth 0

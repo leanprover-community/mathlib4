@@ -97,7 +97,7 @@ theorem coeffList_monomial {x : R} (hx : x ≠ 0) (n : ℕ) :
     (monomial n x).coeffList = x :: List.replicate n 0 := by
   have h := mt (Polynomial.monomial_eq_zero_iff x n).mp hx
   apply List.ext_get (by classical simp [hx])
-  rintro (_|k) _ h₁
+  rintro (_ | k) _ h₁
   · exact (coeffList_eq_cons_leadingCoeff h).rec (by simp_all)
   · rw [List.length_cons, List.length_replicate] at h₁
     have : ((monomial n) x).natDegree.succ = n + 1 := by
@@ -128,7 +128,7 @@ theorem coeffList_eraseLead (h : P ≠ 0) :
     omega
   rw [← hn2]; clear hn2
   apply List.ext_getElem?
-  rintro (_|k)
+  rintro (_ | k)
   · obtain ⟨w,h⟩ := (coeffList_eq_cons_leadingCoeff h)
     simp_all
   simp only [coeffList, List.map_reverse]

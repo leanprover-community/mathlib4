@@ -40,16 +40,16 @@ theorem subgroups_basis : RingSubgroupsBasis fun γ : Γ₀ˣ => (v.ltAddSubgrou
   { inter := by
       rintro γ₀ γ₁
       use min γ₀ γ₁
-      simp only [ltAddSubgroup, Units.min_val, lt_min_iff,
-        AddSubgroup.mk_le_mk, setOf_subset_setOf, le_inf_iff, and_imp, imp_self, implies_true,
-        and_true]
+      simp only [ltAddSubgroup, Units.min_val, lt_inf_iff, le_inf_iff, AddSubgroup.mk_le_mk,
+        AddSubmonoid.mk_le_mk, AddSubsemigroup.mk_le_mk, setOf_subset_setOf]
       tauto
     mul := by
       rintro γ
       obtain ⟨γ₀, h⟩ := exists_square_le γ
       use γ₀
       rintro - ⟨r, r_in, s, s_in, rfl⟩
-      simp only [ltAddSubgroup, AddSubgroup.coe_set_mk, mem_setOf_eq] at r_in s_in
+      simp only [ltAddSubgroup, AddSubgroup.coe_set_mk, AddSubmonoid.coe_set_mk,
+        AddSubsemigroup.coe_set_mk, mem_setOf_eq] at r_in s_in
       calc
         (v (r * s) : Γ₀) = v r * v s := Valuation.map_mul _ _ _
         _ < γ₀ * γ₀ := by gcongr <;> exact zero_le'
@@ -163,7 +163,7 @@ variable (R)
 /-- An open ball centred at the origin in a valued ring is open. -/
 theorem isOpen_ball (r : Γ₀) : IsOpen (X := R) {x | v x < r} := by
   rw [isOpen_iff_mem_nhds]
-  rcases eq_or_ne r 0 with rfl|hr
+  rcases eq_or_ne r 0 with rfl | hr
   · simp
   intro x hx
   rw [mem_nhds]
@@ -173,7 +173,7 @@ theorem isOpen_ball (r : Γ₀) : IsOpen (X := R) {x | v x < r} := by
 
 /-- An open ball centred at the origin in a valued ring is closed. -/
 theorem isClosed_ball (r : Γ₀) : IsClosed (X := R) {x | v x < r} := by
-  rcases eq_or_ne r 0 with rfl|hr
+  rcases eq_or_ne r 0 with rfl | hr
   · simp
   exact AddSubgroup.isClosed_of_isOpen
     (Valuation.ltAddSubgroup v (Units.mk0 r hr))
@@ -219,7 +219,7 @@ theorem isOpen_sphere {r : Γ₀} (hr : r ≠ 0) : IsOpen (X := R) {x | v x = r}
 
 /-- A sphere centred at the origin in a valued ring is closed. -/
 theorem isClosed_sphere (r : Γ₀) : IsClosed (X := R) {x | v x = r} := by
-  rcases eq_or_ne r 0 with rfl|hr
+  rcases eq_or_ne r 0 with rfl | hr
   · simpa using isClosed_closedBall R 0
   exact isClopen_sphere _ hr |>.isClosed
 

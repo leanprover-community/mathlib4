@@ -82,6 +82,20 @@ instance : TopologicalSpace (Multiplicative X) := ‹TopologicalSpace X›
 instance [DiscreteTopology X] : DiscreteTopology (Additive X) := ‹DiscreteTopology X›
 instance [DiscreteTopology X] : DiscreteTopology (Multiplicative X) := ‹DiscreteTopology X›
 
+instance [CompactSpace X] : CompactSpace (Additive X) := ‹CompactSpace X›
+instance [CompactSpace X] : CompactSpace (Multiplicative X) := ‹CompactSpace X›
+
+instance [NoncompactSpace X] : NoncompactSpace (Additive X) := ‹NoncompactSpace X›
+instance [NoncompactSpace X] : NoncompactSpace (Multiplicative X) := ‹NoncompactSpace X›
+
+instance [WeaklyLocallyCompactSpace X] : WeaklyLocallyCompactSpace (Additive X) :=
+  ‹WeaklyLocallyCompactSpace X›
+instance [WeaklyLocallyCompactSpace X] : WeaklyLocallyCompactSpace (Multiplicative X) :=
+  ‹WeaklyLocallyCompactSpace X›
+
+instance [LocallyCompactSpace X] : LocallyCompactSpace (Additive X) := ‹LocallyCompactSpace X›
+instance [LocallyCompactSpace X] : LocallyCompactSpace (Multiplicative X) := ‹LocallyCompactSpace X›
+
 theorem continuous_ofMul : Continuous (ofMul : X → Additive X) := continuous_id
 
 theorem continuous_toMul : Continuous (toMul : Additive X → X) := continuous_id

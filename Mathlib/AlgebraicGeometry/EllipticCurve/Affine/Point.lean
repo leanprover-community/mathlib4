@@ -66,7 +66,7 @@ open FractionalIdeal (coeIdeal_mul)
 
 open Ideal hiding map_mul
 
-open Polynomial
+open Module Polynomial
 
 open scoped nonZeroDivisors Polynomial.Bivariate
 

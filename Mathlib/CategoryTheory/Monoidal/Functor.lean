@@ -957,7 +957,7 @@ instance : (Adjunction.id (C := C)).IsMonoidal where
   leftAdjoint_μ := by simp [id, homEquiv]
 
 instance isMonoidal_comp {F' : D ⥤ E} {G' : E ⥤ D} (adj' : F' ⊣ G')
-  [F'.OplaxMonoidal] [G'.LaxMonoidal] [adj'.IsMonoidal] : (adj.comp adj').IsMonoidal where
+    [F'.OplaxMonoidal] [G'.LaxMonoidal] [adj'.IsMonoidal] : (adj.comp adj').IsMonoidal where
   leftAdjoint_ε := by
     dsimp [homEquiv]
     rw [← adj.unit_app_unit_comp_map_η, ← adj'.unit_app_unit_comp_map_η,

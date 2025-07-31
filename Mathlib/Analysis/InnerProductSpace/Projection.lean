@@ -28,7 +28,8 @@ Basic API for `orthogonalProjection` and `reflection` is developed.
 Next, the orthogonal projection is used to prove a series of more subtle lemmas about the
 orthogonal complement of complete subspaces of `E` (the orthogonal complement itself was
 defined in `Analysis.InnerProductSpace.Orthogonal`); the lemma
-`Submodule.sup_orthogonal_of_completeSpace`, stating that for a complete subspace `K` of `E` we have
+`Submodule.sup_orthogonal_of_hasOrthogonalProjection`,
+stating that for a subspace `K` of `E` such that `K` admits an orthogonal projection we have
 `K ⊔ Kᗮ = ⊤`, is a typical example.
 
 ## References
@@ -588,6 +589,10 @@ theorem orthogonalProjection_mem_subspace_eq_self (v : K) : K.orthogonalProjecti
   ext
   apply eq_starProjection_of_mem_of_inner_eq_zero <;> simp
 
+@[simp]
+theorem starProjection_mem_subspace_eq_self (v : K) :
+    K.starProjection v = v := by simp [starProjection_apply]
+
 /-- A point equals its orthogonal projection if and only if it lies in the subspace. -/
 theorem starProjection_eq_self_iff {v : E} : K.starProjection v = v ↔ v ∈ K := by
   refine ⟨fun h => ?_, fun h => eq_starProjection_of_mem_of_inner_eq_zero h ?_⟩
@@ -684,9 +689,16 @@ variable (K)
 theorem orthogonalProjection_norm_le : ‖K.orthogonalProjection‖ ≤ 1 :=
   LinearMap.mkContinuous_norm_le _ (by norm_num) _
 
+theorem starProjection_norm_le : ‖K.starProjection‖ ≤ 1 :=
+  K.orthogonalProjection_norm_le
+
 theorem norm_orthogonalProjection_apply {v : E} (hv : v ∈ K) :
     ‖orthogonalProjection K v‖ = ‖v‖ :=
   congr(‖$(K.starProjection_eq_self_iff.mpr hv)‖)
+
+theorem norm_starProjection_apply {v : E} (hv : v ∈ K) :
+    ‖K.starProjection v‖ = ‖v‖ :=
+  norm_orthogonalProjection_apply _ hv
 
 /-- The orthogonal projection onto a closed subspace is norm non-increasing. -/
 theorem norm_orthogonalProjection_apply_le (v : E) :
@@ -695,10 +707,17 @@ theorem norm_orthogonalProjection_apply_le (v : E) :
   _ ≤ 1 * ‖v‖ := by gcongr; exact orthogonalProjection_norm_le K
   _ = _ := by simp
 
+theorem norm_starProjection_apply_le (v : E) :
+    ‖K.starProjection v‖ ≤ ‖v‖ := K.norm_orthogonalProjection_apply_le v
+
 /-- The orthogonal projection onto a closed subspace is a `1`-Lipschitz map. -/
 theorem lipschitzWith_orthogonalProjection :
     LipschitzWith 1 (orthogonalProjection K) :=
   ContinuousLinearMap.lipschitzWith_of_opNorm_le (orthogonalProjection_norm_le K)
+
+theorem lipschitzWith_starProjection :
+    LipschitzWith 1 K.starProjection :=
+  ContinuousLinearMap.lipschitzWith_of_opNorm_le (starProjection_norm_le K)
 
 /-- The operator norm of the orthogonal projection onto a nontrivial subspace is `1`. -/
 theorem norm_orthogonalProjection (hK : K ≠ ⊥) :
@@ -707,6 +726,10 @@ theorem norm_orthogonalProjection (hK : K ≠ ⊥) :
   obtain ⟨x, hxK, hx_ne_zero⟩ := Submodule.exists_mem_ne_zero_of_ne_bot hK
   simpa [K.norm_orthogonalProjection_apply hxK, norm_eq_zero, hx_ne_zero]
     using K.orthogonalProjection.ratio_le_opNorm x
+
+theorem norm_starProjection (hK : K ≠ ⊥) :
+    ‖K.starProjection‖ = 1 :=
+  K.norm_orthogonalProjection hK
 
 variable (𝕜)
 
@@ -863,8 +886,9 @@ section Orthogonal
 
 namespace Submodule
 
-/-- If `K₁` is complete and contained in `K₂`, `K₁` and `K₁ᗮ ⊓ K₂` span `K₂`. -/
-theorem sup_orthogonal_inf_of_completeSpace {K₁ K₂ : Submodule 𝕜 E} (h : K₁ ≤ K₂)
+/-- If `K₁` admits an orthogonal projection and is contained in `K₂`,
+then `K₁` and `K₁ᗮ ⊓ K₂` span `K₂`. -/
+theorem sup_orthogonal_inf_of_hasOrthogonalProjection {K₁ K₂ : Submodule 𝕜 E} (h : K₁ ≤ K₂)
     [K₁.HasOrthogonalProjection] : K₁ ⊔ K₁ᗮ ⊓ K₂ = K₂ := by
   ext x
   rw [Submodule.mem_sup]
@@ -875,11 +899,17 @@ theorem sup_orthogonal_inf_of_completeSpace {K₁ K₂ : Submodule 𝕜 E} (h : 
     exact K₂.add_mem (h hy) hz.2
   · exact fun hx => ⟨v, v.prop, x - v, ⟨hvm, K₂.sub_mem hx (h v.prop)⟩, add_sub_cancel _ _⟩
 
+@[deprecated (since := "2025-07-27")] alias sup_orthogonal_inf_of_completeSpace :=
+  sup_orthogonal_inf_of_hasOrthogonalProjection
+
 variable {K} in
-/-- If `K` is complete, `K` and `Kᗮ` span the whole space. -/
-theorem sup_orthogonal_of_completeSpace [K.HasOrthogonalProjection] : K ⊔ Kᗮ = ⊤ := by
-  convert Submodule.sup_orthogonal_inf_of_completeSpace (le_top : K ≤ ⊤) using 2
+/-- If `K` admits an orthogonal projection, then `K` and `Kᗮ` span the whole space. -/
+theorem sup_orthogonal_of_hasOrthogonalProjection [K.HasOrthogonalProjection] : K ⊔ Kᗮ = ⊤ := by
+  convert Submodule.sup_orthogonal_inf_of_hasOrthogonalProjection (le_top : K ≤ ⊤) using 2
   simp
+
+@[deprecated (since := "2025-07-27")] alias sup_orthogonal_of_completeSpace :=
+  sup_orthogonal_of_hasOrthogonalProjection
 
 /-- If `K` is complete, any `v` in `E` can be expressed as a sum of elements of `K` and `Kᗮ`. -/
 theorem exists_add_mem_mem_orthogonal [K.HasOrthogonalProjection] (v : E) :
@@ -931,8 +961,11 @@ theorem orthogonal_orthogonal_eq_closure [CompleteSpace E] :
 variable {K}
 
 /-- If `K` admits an orthogonal projection, `K` and `Kᗮ` are complements of each other. -/
-theorem isCompl_orthogonal_of_completeSpace [K.HasOrthogonalProjection] : IsCompl K Kᗮ :=
-  ⟨K.orthogonal_disjoint, codisjoint_iff.2 Submodule.sup_orthogonal_of_completeSpace⟩
+theorem isCompl_orthogonal_of_hasOrthogonalProjection [K.HasOrthogonalProjection] : IsCompl K Kᗮ :=
+  ⟨K.orthogonal_disjoint, codisjoint_iff.2 Submodule.sup_orthogonal_of_hasOrthogonalProjection⟩
+
+@[deprecated (since := "2025-07-27")] alias isCompl_orthogonal_of_completeSpace :=
+  isCompl_orthogonal_of_hasOrthogonalProjection
 
 @[simp]
 theorem orthogonalComplement_eq_orthogonalComplement {L : Submodule 𝕜 E} [K.HasOrthogonalProjection]
@@ -944,7 +977,7 @@ theorem orthogonalComplement_eq_orthogonalComplement {L : Submodule 𝕜 E} [K.H
 theorem orthogonal_eq_bot_iff [K.HasOrthogonalProjection] : Kᗮ = ⊥ ↔ K = ⊤ := by
   refine ⟨?_, fun h => by rw [h, Submodule.top_orthogonal_eq_bot]⟩
   intro h
-  have : K ⊔ Kᗮ = ⊤ := Submodule.sup_orthogonal_of_completeSpace
+  have : K ⊔ Kᗮ = ⊤ := Submodule.sup_orthogonal_of_hasOrthogonalProjection
   rwa [h, sup_comm, bot_sup_eq] at this
 
 /-- The orthogonal projection onto `K` of an element of `Kᗮ` is zero. -/
@@ -959,6 +992,13 @@ theorem IsOrtho.orthogonalProjection_comp_subtypeL {U V : Submodule 𝕜 E}
   ContinuousLinearMap.ext fun v =>
     orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero <| h.symm v.prop
 
+theorem IsOrtho.starProjection_comp_starProjection {U V : Submodule 𝕜 E}
+    [U.HasOrthogonalProjection] [V.HasOrthogonalProjection] (h : U ⟂ V) :
+    U.starProjection ∘L V.starProjection = 0 :=
+  calc _ = U.subtypeL ∘L (U.orthogonalProjection ∘L V.subtypeL) ∘L V.orthogonalProjection := by
+        simp only [starProjection, ContinuousLinearMap.comp_assoc]
+    _ = 0 := by simp [h.orthogonalProjection_comp_subtypeL]
+
 /-- The projection into `U` from `V` is the zero map if and only if `U` and `V` are orthogonal. -/
 theorem orthogonalProjection_comp_subtypeL_eq_zero_iff {U V : Submodule 𝕜 E}
     [U.HasOrthogonalProjection] : U.orthogonalProjection ∘L V.subtypeL = 0 ↔ U ⟂ V :=
@@ -968,18 +1008,40 @@ theorem orthogonalProjection_comp_subtypeL_eq_zero_iff {U V : Submodule 𝕜 E}
     rw [starProjection_apply, this, Submodule.coe_zero, sub_zero],
     Submodule.IsOrtho.orthogonalProjection_comp_subtypeL⟩
 
-theorem orthogonalProjection_eq_linear_proj [K.HasOrthogonalProjection] (x : E) :
+/-- `U.starProjection ∘ V.starProjection = 0` iff `U` and `V` are pairwise orthogonal. -/
+theorem starProjection_comp_starProjection_eq_zero_iff {U V : Submodule 𝕜 E}
+    [U.HasOrthogonalProjection] [V.HasOrthogonalProjection] :
+    U.starProjection ∘L V.starProjection = 0 ↔ U ⟂ V := by
+  refine ⟨fun h => ?_, fun h => h.starProjection_comp_starProjection⟩
+  rw [← orthogonalProjection_comp_subtypeL_eq_zero_iff]
+  simp only [ContinuousLinearMap.ext_iff, ContinuousLinearMap.comp_apply, subtypeL_apply,
+    starProjection_apply, ContinuousLinearMap.zero_apply, coe_eq_zero] at h ⊢
+  intro x
+  simpa using h (x : E)
+
+theorem orthogonalProjection_eq_linearProjOfIsCompl [K.HasOrthogonalProjection] (x : E) :
     K.orthogonalProjection x =
-      K.linearProjOfIsCompl _ Submodule.isCompl_orthogonal_of_completeSpace x := by
-  have : IsCompl K Kᗮ := Submodule.isCompl_orthogonal_of_completeSpace
-  conv_lhs => rw [← Submodule.linear_proj_add_linearProjOfIsCompl_eq_self this x]
+      K.linearProjOfIsCompl _ Submodule.isCompl_orthogonal_of_hasOrthogonalProjection x := by
+  have : IsCompl K Kᗮ := Submodule.isCompl_orthogonal_of_hasOrthogonalProjection
+  conv_lhs => rw [← Submodule.linearProjOfIsCompl_add_linearProjOfIsCompl_eq_self this x]
   rw [map_add, orthogonalProjection_mem_subspace_eq_self,
     orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero (Submodule.coe_mem _), add_zero]
 
-theorem orthogonalProjection_coe_linearMap_eq_linearProj [K.HasOrthogonalProjection] :
+@[deprecated (since := "2025-07-11")] alias orthogonalProjection_eq_linear_proj :=
+  orthogonalProjection_eq_linearProjOfIsCompl
+
+theorem orthogonalProjection_coe_eq_linearProjOfIsCompl [K.HasOrthogonalProjection] :
     (K.orthogonalProjection : E →ₗ[𝕜] K) =
-      K.linearProjOfIsCompl _ Submodule.isCompl_orthogonal_of_completeSpace :=
-  LinearMap.ext <| orthogonalProjection_eq_linear_proj
+      K.linearProjOfIsCompl _ Submodule.isCompl_orthogonal_of_hasOrthogonalProjection :=
+  LinearMap.ext <| orthogonalProjection_eq_linearProjOfIsCompl
+
+@[deprecated (since := "2025-07-11")] alias orthogonalProjection_coe_linearMap_eq_linearProj :=
+  orthogonalProjection_coe_eq_linearProjOfIsCompl
+
+open Submodule in
+theorem starProjection_coe_eq_isCompl_projection [K.HasOrthogonalProjection] :
+    K.starProjection.toLinearMap = K.isCompl_orthogonal_of_hasOrthogonalProjection.projection := by
+  simp [starProjection, orthogonalProjection_coe_eq_linearProjOfIsCompl, IsCompl.projection]
 
 /-- The reflection in `K` of an element of `Kᗮ` is its negation. -/
 theorem reflection_mem_subspace_orthogonalComplement_eq_neg [K.HasOrthogonalProjection] {v : E}
@@ -988,9 +1050,19 @@ theorem reflection_mem_subspace_orthogonalComplement_eq_neg [K.HasOrthogonalProj
     orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero hv]
 
 /-- The orthogonal projection onto `Kᗮ` of an element of `K` is zero. -/
-theorem orthogonalProjection_mem_subspace_orthogonal_precomplement_eq_zero
+theorem orthogonalProjection_orthogonal_apply_eq_zero
     [Kᗮ.HasOrthogonalProjection] {v : E} (hv : v ∈ K) : Kᗮ.orthogonalProjection v = 0 :=
   orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero (K.le_orthogonal_orthogonal hv)
+
+@[deprecated (since := "22-07-2025")] alias
+  orthogonalProjection_mem_subspace_orthogonal_precomplement_eq_zero :=
+  orthogonalProjection_orthogonal_apply_eq_zero
+
+theorem starProjection_orthogonal_apply_eq_zero
+    [Kᗮ.HasOrthogonalProjection] {v : E} (hv : v ∈ K) :
+    Kᗮ.starProjection v = 0 := by
+  rw [starProjection_apply, coe_eq_zero]
+  exact orthogonalProjection_orthogonal_apply_eq_zero hv
 
 /-- If `U ≤ V`, then projecting on `V` and then on `U` is the same as projecting on `U`. -/
 theorem orthogonalProjection_starProjection_of_le {U V : Submodule 𝕜 E}
@@ -1003,6 +1075,12 @@ theorem orthogonalProjection_starProjection_of_le {U V : Submodule 𝕜 E}
 
 @[deprecated (since := "2025-07-07")] alias orthogonalProjection_orthogonalProjection_of_le :=
   orthogonalProjection_starProjection_of_le
+
+theorem starProjection_comp_starProjection_of_le {U V : Submodule 𝕜 E}
+    [U.HasOrthogonalProjection] [V.HasOrthogonalProjection] (h : U ≤ V) :
+    U.starProjection ∘L V.starProjection = U.starProjection := ContinuousLinearMap.ext fun _ => by
+  nth_rw 1 [starProjection]
+  simp [orthogonalProjection_starProjection_of_le h]
 
 /-- Given a monotone family `U` of complete submodules of `E` and a fixed `x : E`,
 the orthogonal projection of `x` on `U i` tends to the orthogonal projection of `x` on
@@ -1116,8 +1194,13 @@ theorem reflection_mem_subspace_orthogonal_precomplement_eq_neg [K.HasOrthogonal
 /-- The orthogonal projection onto `(𝕜 ∙ v)ᗮ` of `v` is zero. -/
 theorem orthogonalProjection_orthogonalComplement_singleton_eq_zero (v : E) :
     (𝕜 ∙ v)ᗮ.orthogonalProjection v = 0 :=
-  orthogonalProjection_mem_subspace_orthogonal_precomplement_eq_zero
+  orthogonalProjection_orthogonal_apply_eq_zero
     (Submodule.mem_span_singleton_self v)
+
+theorem starProjection_orthogonalComplement_singleton_eq_zero (v : E) :
+    (𝕜 ∙ v)ᗮ.starProjection v = 0 := by
+  rw [starProjection_apply, coe_eq_zero]
+  exact orthogonalProjection_orthogonalComplement_singleton_eq_zero v
 
 /-- The reflection in `(𝕜 ∙ v)ᗮ` of `v` is `-v`. -/
 theorem reflection_orthogonalComplement_singleton_eq_neg (v : E) : reflection (𝕜 ∙ v)ᗮ v = -v :=
@@ -1156,7 +1239,7 @@ theorem det_reflection : LinearMap.det K.reflection.toLinearMap = (-1) ^ finrank
   swap
   · rw [finrank_of_infinite_dimensional hK, pow_zero, LinearMap.det_eq_one_of_finrank_eq_zero]
     exact finrank_of_infinite_dimensional fun h ↦ hK (h.finiteDimensional_submodule _)
-  let e := K.prodEquivOfIsCompl _ K.isCompl_orthogonal_of_completeSpace
+  let e := K.prodEquivOfIsCompl _ K.isCompl_orthogonal_of_hasOrthogonalProjection
   let b := (finBasis 𝕜 K).prod (finBasis 𝕜 Kᗮ)
   have : LinearMap.toMatrix b b (e.symm ∘ₗ K.reflection.toLinearMap ∘ₗ e.symm.symm) =
       Matrix.fromBlocks 1 0 0 (-1) := by
@@ -1194,6 +1277,18 @@ theorem norm_sq_eq_add_norm_sq_projection (x : E) (S : Submodule 𝕜 E) [S.HasO
       simp only [sq]
       exact norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero _ _ <|
         (S.mem_orthogonal _).1 (Sᗮ.orthogonalProjection x).2 _ (S.orthogonalProjection x).2
+
+theorem norm_sq_eq_add_norm_sq_starProjection (x : E) (S : Submodule 𝕜 E)
+    [S.HasOrthogonalProjection] :
+    ‖x‖ ^ 2 = ‖S.starProjection x‖ ^ 2 + ‖Sᗮ.starProjection x‖ ^ 2 :=
+  norm_sq_eq_add_norm_sq_projection x S
+
+theorem mem_iff_norm_starProjection (U : Submodule 𝕜 E)
+    [U.HasOrthogonalProjection] (v : E) :
+    v ∈ U ↔ ‖U.starProjection v‖ = ‖v‖ := by
+  refine ⟨fun h => norm_starProjection_apply _ h, fun h => ?_⟩
+  simpa [h, sub_eq_zero, eq_comm (a := v), starProjection_eq_self_iff] using
+    U.norm_sq_eq_add_norm_sq_starProjection v
 
 /-- In a complete space `E`, the projection maps onto a complete subspace `K` and its orthogonal
 complement sum to the identity. -/
@@ -1240,6 +1335,13 @@ theorem starProjection_isSymmetric [K.HasOrthogonalProjection] :
 @[deprecated (since := "2025-07-07")] alias
   orthogonalProjection_isSymmetric := starProjection_isSymmetric
 
+theorem starProjection_apply_eq_zero_iff [K.HasOrthogonalProjection] {v : E} :
+    K.starProjection v = 0 ↔ v ∈ Kᗮ := by
+  refine ⟨fun h w hw => ?_, fun hv => ?_⟩
+  · rw [← starProjection_eq_self_iff.mpr hw, inner_starProjection_left_eq_right, h,
+      inner_zero_right]
+  · simp [starProjection_apply, orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero hv]
+
 lemma re_inner_starProjection_eq_normSq [K.HasOrthogonalProjection] (v : E) :
     re ⟪K.starProjection v, v⟫ = ‖K.orthogonalProjection v‖^2 := by
   rw [starProjection_apply,
@@ -1271,7 +1373,7 @@ theorem finrank_add_inf_finrank_orthogonal {K₁ K₂ : Submodule 𝕜 E}
   haveI := FiniteDimensional.proper_rclike 𝕜 K₁
   have hd := Submodule.finrank_sup_add_finrank_inf_eq K₁ (K₁ᗮ ⊓ K₂)
   rw [← inf_assoc, (Submodule.orthogonal_disjoint K₁).eq_bot, bot_inf_eq, finrank_bot,
-    Submodule.sup_orthogonal_inf_of_completeSpace h] at hd
+    Submodule.sup_orthogonal_inf_of_hasOrthogonalProjection h] at hd
   rw [add_zero] at hd
   exact hd.symm
 
@@ -1543,11 +1645,7 @@ theorem maximal_orthonormal_iff_orthogonalComplement_eq_bot (hv : Orthonormal �
       rintro ⟨a, ha'⟩
       rcases eq_or_mem_of_mem_insert ha' with ha | ha
       · rintro ⟨b, hb'⟩ hab'
-        have hb : b ∈ v := by
-          refine mem_of_mem_insert_of_ne hb' ?_
-          intro hbe'
-          apply hab'
-          simp [ha, hbe']
+        have hb : b ∈ v := by grind [Set.mem_of_mem_insert_of_ne]
         rw [inner_eq_zero_symm]
         simpa [ha] using h_end b hb
       rintro ⟨b, hb'⟩ hab'

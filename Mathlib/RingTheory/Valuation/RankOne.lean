@@ -3,6 +3,10 @@ Copyright (c) 2024 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
+import Mathlib.Algebra.Order.Group.Units
+import Mathlib.Algebra.Order.GroupWithZero.WithZero
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Data.Real.Embedding
 import Mathlib.RingTheory.Valuation.ValuativeRel
 
 /-!
@@ -35,6 +39,40 @@ class RankOne (v : Valuation R Γ₀) extends Valuation.IsNontrivial v where
   /-- The inclusion morphism from `Γ₀` to `ℝ≥0`. -/
   hom : Γ₀ →*₀ ℝ≥0
   strictMono' : StrictMono hom
+
+open WithZero
+
+lemma nonempty_rankOne_iff_mulArchimedean {v : Valuation R Γ₀} [v.IsNontrivial] :
+    Nonempty v.RankOne ↔ MulArchimedean Γ₀ := by
+  constructor
+  · rintro ⟨⟨f, hf⟩⟩
+    exact .comap f.toMonoidHom hf
+  · intro _
+    obtain ⟨f, hf⟩ := Archimedean.exists_orderAddMonoidHom_real_injective (Additive Γ₀ˣ)
+    let e := AddMonoidHom.toMultiplicative' (α := Γ₀ˣ) (β := ℝ) f
+    have he : StrictMono e := by
+      simp only [AddMonoidHom.coe_toMultiplicative', AddMonoidHom.coe_coe, e]
+      -- toAdd_strictMono is already in an applied form, do defeq abuse instead
+      exact StrictMono.comp strictMono_id (f.monotone'.strictMono_of_injective hf)
+    let rf : Multiplicative ℝ →* ℝ≥0ˣ := {
+      toFun x := Units.mk0 ⟨(2 : ℝ) ^ (log (M := ℝ) x), by positivity⟩ <| by
+        rw [ne_eq, Subtype.ext_iff]
+        positivity
+      map_one' := by simp
+      map_mul' _ _ := by
+        rw [Units.ext_iff, Subtype.ext_iff]
+        simp [log_mul, Real.rpow_add]
+      }
+    have H : StrictMono (map' (rf.comp e)) := by
+      refine map'_strictMono ?_
+      intro a b h
+      simpa [← Units.val_lt_val, ← NNReal.coe_lt_coe, rf] using he h
+    exact ⟨{
+      hom := withZeroUnitsEquiv.toMonoidWithZeroHom.comp <| (map' (rf.comp e)).comp
+        withZeroUnitsEquiv.symm.toMonoidWithZeroHom
+      strictMono' := withZeroUnitsEquiv_strictMono.comp <| H.comp
+        withZeroUnitsEquiv_symm_strictMono
+    }⟩
 
 namespace RankOne
 
@@ -104,5 +142,28 @@ lemma ValuativeRel.isRankLeOne_of_rankOne [h : (valuation R).RankOne] :
 lemma ValuativeRel.isNontrivial_of_rankOne [h : (valuation R).RankOne] :
     ValuativeRel.IsNontrivial R :=
   isNontrivial_iff_isNontrivial.mpr h.toIsNontrivial
+
+open WithZero
+
+lemma ValuativeRel.isRankLeOne_iff_mulArchimedean :
+    IsRankLeOne R ↔ MulArchimedean (ValueGroupWithZero R) := by
+  constructor
+  · rintro ⟨⟨f, hf⟩⟩
+    exact .comap f.toMonoidHom hf
+  · intro h
+    by_cases H : IsNontrivial R
+    · rw [isNontrivial_iff_isNontrivial] at H
+      rw [← (valuation R).nonempty_rankOne_iff_mulArchimedean] at h
+      obtain ⟨f⟩ := h
+      exact isRankLeOne_of_rankOne
+    · refine ⟨⟨{ emb := 1, strictMono := ?_ }⟩⟩
+      intro a b
+      contrapose! H
+      obtain ⟨H, H'⟩ := H
+      rcases eq_or_ne a 0 with rfl | ha
+      · simp_all
+      rcases eq_or_ne a 1 with rfl | ha'
+      · exact ⟨⟨b, (H.trans' zero_lt_one).ne', H.ne'⟩⟩
+      · exact ⟨⟨a, ha, ha'⟩⟩
 
 end ValuativeRel

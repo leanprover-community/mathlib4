@@ -146,7 +146,7 @@ theorem lift_rank_eq_of_equiv_equiv (i : R → R') (j : M ≃+ M')
     lift.{v'} (Module.rank R M) = lift.{v} (Module.rank R' M') :=
   (lift_rank_le_of_surjective_injective i j hi.2 j.injective hc).antisymm <|
     lift_rank_le_of_injective_injectiveₛ i j.symm hi.1
-      j.symm.injective fun _ _ ↦ j.symm_apply_eq.2 <| by erw [hc, j.apply_symm_apply]
+      j.symm.injective fun _ _ ↦ j.symm_apply_eq.2 <| by simp_all
 end
 
 section

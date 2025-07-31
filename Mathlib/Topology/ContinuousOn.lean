@@ -284,6 +284,10 @@ alias nhdsWithin_compl_singleton_sup_pure := nhdsNE_sup_pure
 @[simp]
 theorem pure_sup_nhdsNE (a : α) : pure a ⊔ 𝓝[≠] a = 𝓝 a := by rw [← sup_comm, nhdsNE_sup_pure]
 
+lemma continuousAt_iff_punctured_nhds [TopologicalSpace β] {f : α → β} {a : α} :
+    ContinuousAt f a ↔ Tendsto f (𝓝[≠] a) (𝓝 (f a)) := by
+  simp [ContinuousAt, - pure_sup_nhdsNE, ← pure_sup_nhdsNE a, tendsto_pure_nhds]
+
 theorem nhdsWithin_prod [TopologicalSpace β]
     {s u : Set α} {t v : Set β} {a : α} {b : β} (hu : u ∈ 𝓝[s] a) (hv : v ∈ 𝓝[t] b) :
     u ×ˢ v ∈ 𝓝[s ×ˢ t] (a, b) := by

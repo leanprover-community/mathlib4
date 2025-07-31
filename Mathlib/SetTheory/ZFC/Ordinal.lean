@@ -21,7 +21,6 @@ under `∈`.
 
 ## TODO
 
-- Define the von Neumann hierarchy.
 - Build correspondences between these set notions and those of the standard `Ordinal` type.
 -/
 

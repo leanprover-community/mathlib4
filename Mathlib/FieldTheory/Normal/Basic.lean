@@ -32,7 +32,7 @@ variable (F K : Type*) [Field F] [Field K] [Algebra F K]
 theorem Normal.exists_isSplittingField [h : Normal F K] [FiniteDimensional F K] :
     ∃ p : F[X], IsSplittingField F K p := by
   classical
-  let s := Basis.ofVectorSpace F K
+  let s := Module.Basis.ofVectorSpace F K
   refine
     ⟨∏ x, minpoly F (s x), splits_prod _ fun x _ => h.splits (s x),
       Subalgebra.toSubmodule.injective ?_⟩
@@ -126,7 +126,7 @@ theorem splits_of_mem_adjoin {L} [Field L] [Algebra F L] {S : Set K}
 instance normal_sup
     (E E' : IntermediateField F K) [Normal F E] [Normal F E'] :
     Normal F (E ⊔ E' : IntermediateField F K) :=
-  iSup_bool_eq (f := Bool.rec E' E) ▸ normal_iSup (h := by rintro (_|_) <;> infer_instance)
+  iSup_bool_eq (f := Bool.rec E' E) ▸ normal_iSup (h := by rintro (_ | _) <;> infer_instance)
 
 /-- An intersection of normal extensions is normal. -/
 @[stacks 09HP]
@@ -148,7 +148,7 @@ instance normal_iInf {ι : Type*} [hι : Nonempty ι]
 instance normal_inf
     (E E' : IntermediateField F K) [Normal F E] [Normal F E'] :
     Normal F (E ⊓ E' : IntermediateField F K) :=
-  iInf_bool_eq (f := Bool.rec E' E) ▸ normal_iInf (h := by rintro (_|_) <;> infer_instance)
+  iInf_bool_eq (f := Bool.rec E' E) ▸ normal_iInf (h := by rintro (_ | _) <;> infer_instance)
 
 end IntermediateField
 

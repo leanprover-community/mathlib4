@@ -196,8 +196,6 @@ lemma Scheme.map_basicOpen (r : Γ(U, ⊤)) :
   congr
   exact PresheafedSpace.IsOpenImmersion.ofRestrict_invApp _ _ _
 
-@[deprecated (since := "2024-10-23")] alias Scheme.map_basicOpen' := Scheme.map_basicOpen
-
 lemma Scheme.Opens.ι_image_basicOpen (r : Γ(U, ⊤)) :
     U.ι ''ᵁ U.toScheme.basicOpen r = X.basicOpen r := by
   rw [Scheme.map_basicOpen, Scheme.basicOpen_res_eq]
@@ -379,10 +377,10 @@ lemma Scheme.isoOfEq_inv_ι (X : Scheme.{u}) {U V : X.Opens} (e : U = V) :
   IsOpenImmersion.isoOfRangeEq_inv_fac _ _ _
 
 lemma Scheme.isoOfEq_hom (X : Scheme.{u}) {U V : X.Opens} (e : U = V) :
-  (X.isoOfEq e).hom = X.homOfLE e.le := rfl
+    (X.isoOfEq e).hom = X.homOfLE e.le := rfl
 
 lemma Scheme.isoOfEq_inv (X : Scheme.{u}) {U V : X.Opens} (e : U = V) :
-  (X.isoOfEq e).inv = X.homOfLE e.ge := rfl
+    (X.isoOfEq e).inv = X.homOfLE e.ge := rfl
 
 @[simp]
 lemma Scheme.isoOfEq_rfl (X : Scheme.{u}) (U : X.Opens) : X.isoOfEq (refl U) = Iso.refl _ := by

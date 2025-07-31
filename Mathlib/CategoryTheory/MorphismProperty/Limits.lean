@@ -88,7 +88,7 @@ instance : P.pullbacks.RespectsIso :=
     exact ⟨X, Y, p, e.inv.left ≫ f, e.inv.right ≫ g, hp,
       IsPullback.paste_horiz (IsPullback.of_horiz_isIso ⟨e.inv.w⟩) h⟩)
 
-/-- If `P : MorphismPropety C` is such that any object in `C` maps to the
+/-- If `P : MorphismProperty C` is such that any object in `C` maps to the
 target of some morphism in `P`, then `P.pushouts` contains the isomorphisms. -/
 lemma isomorphisms_le_pushouts
     (h : ∀ (X : C), ∃ (A B : C) (p : A ⟶ B) (_ : P p) (_ : B ⟶ X), IsIso p) :

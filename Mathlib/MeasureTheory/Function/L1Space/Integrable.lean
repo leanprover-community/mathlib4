@@ -69,6 +69,7 @@ theorem Integrable.aemeasurable [MeasurableSpace ε] [BorelSpace ε] [PseudoMetr
     {f : α → ε} (hf : Integrable f μ) : AEMeasurable f μ :=
   hf.aestronglyMeasurable.aemeasurable
 
+@[fun_prop]
 theorem Integrable.hasFiniteIntegral {f : α → ε} (hf : Integrable f μ) : HasFiniteIntegral f μ :=
   hf.2
 
@@ -150,7 +151,7 @@ theorem integrable_const [IsFiniteMeasure μ] (c : β) : Integrable (fun _ : α 
   integrable_const_iff.2 <| .inr ‹_›
 
 -- TODO: an `ENorm`-version of this lemma requires `HasFiniteIntegral.of_finite`
-@[simp]
+@[fun_prop, simp]
 lemma Integrable.of_finite [Finite α] [MeasurableSingletonClass α] [IsFiniteMeasure μ] {f : α → β} :
     Integrable f μ := ⟨.of_discrete, .of_finite⟩
 
@@ -247,9 +248,8 @@ theorem integrable_add_measure [PseudoMetrizableSpace ε] {f : α → ε} :
   ⟨fun h => ⟨h.left_of_add_measure, h.right_of_add_measure⟩, fun h => h.1.add_measure h.2⟩
 
 @[simp]
-theorem integrable_zero_measure {f : α → ε} :
-    Integrable f (0 : Measure α) :=
-  ⟨aestronglyMeasurable_zero_measure f, hasFiniteIntegral_zero_measure f⟩
+theorem integrable_zero_measure {f : α → ε} : Integrable f (0 : Measure α) := by
+  constructor <;> fun_prop
 
 /-- In a measurable space with measurable singletons, every function is integrable with respect to
 a Dirac measure.
@@ -278,6 +278,7 @@ section
 
 variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
 
+@[fun_prop]
 theorem Integrable.smul_measure {f : α → ε} (h : Integrable f μ) {c : ℝ≥0∞} (hc : c ≠ ∞) :
     Integrable f (c • μ) := by
   rw [← memLp_one_iff_integrable] at h ⊢
@@ -417,7 +418,7 @@ end ENormedAddCommMonoid
 See `Integrable.neg'` for the same statement, but formulated with `x ↦ - f x` instead of `-f`. -/
 @[fun_prop]
 theorem Integrable.neg {f : α → β} (hf : Integrable f μ) : Integrable (-f) μ :=
-  ⟨hf.aestronglyMeasurable.neg, hf.hasFiniteIntegral.neg⟩
+  ⟨hf.aestronglyMeasurable.neg, by fun_prop⟩
 
 /-- If `f` is integrable, then so is `fun x ↦ - f x`.
 See `Integrable.neg` for the same statement, but formulated with `-f` instead of `fun x ↦ - f x`. -/
@@ -507,12 +508,12 @@ theorem Integrable.sub' {f g : α → β} (hf : Integrable f μ) (hg : Integrabl
     Integrable (fun a ↦ f a - g a) μ := by simpa only [sub_eq_add_neg] using hf.add hg.neg
 
 @[fun_prop]
-theorem Integrable.enorm {f : α → ε} (hf : Integrable f μ) : Integrable (‖f ·‖ₑ) μ :=
-  ⟨hf.aestronglyMeasurable.enorm.aestronglyMeasurable, hf.hasFiniteIntegral.enorm⟩
+theorem Integrable.enorm {f : α → ε} (hf : Integrable f μ) : Integrable (‖f ·‖ₑ) μ := by
+  constructor <;> fun_prop
 
 @[fun_prop]
-theorem Integrable.norm {f : α → β} (hf : Integrable f μ) : Integrable (fun a => ‖f a‖) μ :=
-  ⟨hf.aestronglyMeasurable.norm, hf.hasFiniteIntegral.norm⟩
+theorem Integrable.norm {f : α → β} (hf : Integrable f μ) : Integrable (fun a => ‖f a‖) μ := by
+  constructor <;> fun_prop
 
 @[fun_prop]
 theorem Integrable.inf {β}
@@ -937,9 +938,8 @@ section PosPart
 
 @[fun_prop]
 theorem Integrable.pos_part {f : α → ℝ} (hf : Integrable f μ) :
-    Integrable (fun a => max (f a) 0) μ :=
-  ⟨(hf.aestronglyMeasurable.aemeasurable.max aemeasurable_const).aestronglyMeasurable,
-    hf.hasFiniteIntegral.max_zero⟩
+    Integrable (fun a => max (f a) 0) μ := by
+  constructor <;> fun_prop
 
 @[fun_prop]
 theorem Integrable.neg_part {f : α → ℝ} (hf : Integrable f μ) :
@@ -951,16 +951,28 @@ end PosPart
 section IsBoundedSMul
 
 variable {𝕜 : Type*}
+  {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
 
 @[fun_prop]
 theorem Integrable.smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β] [IsBoundedSMul 𝕜 β] (c : 𝕜)
-    {f : α → β} (hf : Integrable f μ) : Integrable (c • f) μ :=
-  ⟨by fun_prop, hf.hasFiniteIntegral.smul c⟩
+    {f : α → β} (hf : Integrable f μ) : Integrable (c • f) μ := by
+  constructor <;> fun_prop
 
 @[fun_prop]
 theorem Integrable.fun_smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β] [IsBoundedSMul 𝕜 β] (c : 𝕜)
     {f : α → β} (hf : Integrable f μ) : Integrable (fun x ↦ c • f x) μ :=
   hf.smul c
+
+@[fun_prop]
+theorem Integrable.smul_enorm
+    [NormedAddCommGroup 𝕜] [SMul 𝕜 ε] [ContinuousConstSMul 𝕜 ε] [ENormSMulClass 𝕜 ε] (c : 𝕜)
+    {f : α → ε} (hf : Integrable f μ) : Integrable (c • f) μ := by
+  constructor <;> fun_prop
+
+theorem Integrable.fun_smul_enorm
+    [NormedAddCommGroup 𝕜] [SMul 𝕜 ε] [ContinuousConstSMul 𝕜 ε] [ENormSMulClass 𝕜 ε] (c : 𝕜)
+    {f : α → ε} (hf : Integrable f μ) : Integrable (fun x ↦ c • f x) μ :=
+  hf.smul_enorm c
 
 theorem _root_.IsUnit.integrable_smul_iff [NormedRing 𝕜] [MulActionWithZero 𝕜 β]
     [IsBoundedSMul 𝕜 β] {c : 𝕜} (hc : IsUnit c) (f : α → β) :
