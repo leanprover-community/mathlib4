@@ -295,16 +295,13 @@ seal functorEquiv.inverse functorEquiv.counitIsoAppFst
   functorEquiv.counitIsoAppSnd
 
 variable (L₁ : C₁ ⥤ C₂) (L₂ : C₂ ⥤ C₃)
-    (H₁ : C₁ ⥤ C₄) (H₂ : C₂ ⥤ C₅) (H₃ : C₃ ⥤ C₆)
-    (R₁ : C₄ ⥤ C₅) (R₂ : C₅ ⥤ C₆)
-
-section
-
-variable [CatCommSq H₁ L₁ R₁ H₂] [CatCommSq H₂ L₂ R₂ H₃]
-    [CatCommSq H₁ (L₁ ⋙ L₂) (R₁ ⋙ R₂) H₃]
-    (h : CatCommSq.iso H₁ (L₁ ⋙ L₂) (R₁ ⋙ R₂) H₃ =
-      (CatCommSq.vComp L₁ L₂ H₁ H₂ H₃ R₁ R₂).iso)
-    [CatPullbackSquare H₂ L₂ R₂ H₃]
+  (H₁ : C₁ ⥤ C₄) (H₂ : C₂ ⥤ C₅) (H₃ : C₃ ⥤ C₆)
+  (R₁ : C₄ ⥤ C₅) (R₂ : C₅ ⥤ C₆)
+  [CatCommSq H₁ L₁ R₁ H₂] [CatCommSq H₂ L₂ R₂ H₃]
+  [CatCommSq H₁ (L₁ ⋙ L₂) (R₁ ⋙ R₂) H₃]
+  (h : CatCommSq.iso H₁ (L₁ ⋙ L₂) (R₁ ⋙ R₂) H₃ =
+    (CatCommSq.vComp L₁ L₂ H₁ H₂ H₃ R₁ R₂).iso)
+  [CatPullbackSquare H₂ L₂ R₂ H₃]
 
 section
 
@@ -548,8 +545,6 @@ def ofVComp :
       · apply IsCatPullbackSquare.hom_ext H₂ L₂ R₂ H₃
         · simp [← Functor.map_comp_assoc]
         · simp [← Functor.comp_map] }
-
-end
 
 end
 
