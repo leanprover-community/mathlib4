@@ -423,7 +423,7 @@ theorem map_iInf_comap {ι β} [Nonempty ι] {f : α → β} (m : ι → OuterMe
   refine fun t ht => iInf_le_of_le (fun n => f '' t n ∪ (range f)ᶜ) (iInf_le_of_le ?_ ?_)
   · rw [← iUnion_union, Set.union_comm, ← inter_subset, ← image_iUnion, ←
       image_preimage_eq_inter_range]
-    exact Set.image_mono _ ht
+    exact image_mono ht
   · refine ENNReal.tsum_le_tsum fun n => iInf_mono fun i => (m i).mono ?_
     simp only [preimage_union, preimage_compl, preimage_range, compl_univ, union_empty,
       image_subset_iff]
