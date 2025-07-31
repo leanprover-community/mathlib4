@@ -829,13 +829,7 @@ theorem mem_range_iff {f : E →ₗ.[R] F} {y : F} : y ∈ Set.range f ↔ ∃ x
     use x
     rw [← h]
     exact f.mem_graph ⟨x, hx⟩
-  obtain ⟨x, h⟩ := h
-  rw [mem_graph_iff] at h
-  obtain ⟨x, h⟩ := h
-  rw [Set.mem_range]
-  use x
-  simp only at h
-  rw [h.2]
+  grind [mem_graph_iff, Set.mem_range]
 
 theorem mem_domain_iff_of_eq_graph {f g : E →ₗ.[R] F} (h : f.graph = g.graph) {x : E} :
     x ∈ f.domain ↔ x ∈ g.domain := by simp_rw [mem_domain_iff, h]
