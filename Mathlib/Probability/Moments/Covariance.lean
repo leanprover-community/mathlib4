@@ -294,4 +294,3 @@ lemma IndepFun.covariance_eq_zero (h : IndepFun X Y μ) (hX : MemLp X 2 μ) (hY 
   rw [covariance_eq hX hY, h.integral_mul_eq_mul_integral hX.aemeasurable hY.aemeasurable, sub_self]
 
 end ProbabilityTheory
-#min_imports
