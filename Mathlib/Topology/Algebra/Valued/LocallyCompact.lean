@@ -172,6 +172,8 @@ open Valued
 
 lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X := K) 𝒪[K]) :
     Nonempty (LocallyFiniteOrder (MonoidHom.mrange (Valued.v : Valuation K Γ₀))ˣ):= by
+  -- TODO: generalize to `Valuation.Integer`, which will require showing that `IsCompact`
+  -- pulls back across `TopologicalSpace.induced` from a `LocallyCompactSpace`.
   constructor
   refine LocallyFiniteOrder.ofFiniteIcc ?_
   -- We only need to show that we can construct a finite set for some set between
@@ -267,20 +269,18 @@ lemma mulArchimedean_mrange_of_isCompact_integer (hc : IsCompact (X := K) 𝒪[K
 
 lemma isPrincipalIdealRing_of_compactSpace [hc : CompactSpace 𝒪[K]] :
     IsPrincipalIdealRing 𝒪[K] := by
-  -- TODO: generalize to `Valuation.Integer`, which will require showing that `IsCompact`
-  -- pulls back across `TopologicalSpace.induced` from a `LocallyCompactSpace`.
   -- The strategy to show that we have a PIR is by contradiction,
   -- assuming that the range of the valuation is densely ordered.
-  -- We can also construct that it has a locally finite ordered, by compactness
-  -- which leads to a contradiction.
-  -- the key result is that a valuation ring that maps into a `MulArchimedean` value group
-  -- is a PIR iff the value group is not densely ordered.
   have hi : Valuation.Integers (R := K) Valued.v 𝒪[K] := Valuation.integer.integers v
   have hc : IsCompact (X := K) 𝒪[K] := by
     simpa [← isCompact_univ_iff, Subtype.isCompact_iff, Set.image_univ,
       Subtype.range_coe_subtype] using hc
+  -- We can also construct that it has a locally finite order, by compactness
+  -- which leads to a contradiction.
   obtain ⟨_⟩ := locallyFiniteOrder_units_mrange_of_isCompact_integer hc
   have hm := mulArchimedean_mrange_of_isCompact_integer hc
+  -- The key result is that a valuation ring that maps into a `MulArchimedean` value group
+  -- is a PIR iff the value group is not densely ordered.
   rw [hi.isPrincipalIdealRing_iff_not_denselyOrdered]
   intro H
   -- since we are densely ordered, we necessarily are nontrivial
