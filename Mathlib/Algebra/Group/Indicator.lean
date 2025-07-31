@@ -184,7 +184,7 @@ variable (M)
 
 @[to_additive (attr := simp)]
 theorem mulIndicator_one (s : Set α) : (mulIndicator s fun _ => (1 : M)) = fun _ => (1 : M) :=
-  mulIndicator_eq_one.2 <| by simp only [mulSupport_one, empty_disjoint]
+  mulIndicator_eq_one.2 <| by simp only [mulSupport_fun_one, empty_disjoint]
 
 @[to_additive (attr := simp)]
 theorem mulIndicator_one' {s : Set α} : s.mulIndicator (1 : α → M) = 1 :=
