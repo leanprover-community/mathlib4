@@ -422,6 +422,9 @@ instance Prod.pseudoEMetricSpaceMax [PseudoEMetricSpace β] :
 
 namespace EMetric
 
+section
+
+variable {α : Type*} [TopologicalSpace α] [WeakPseudoEMetricSpace α]
 variable {x y z : α} {ε ε₁ ε₂ : ℝ≥0∞} {s t : Set α}
 
 /-- `EMetric.ball x ε` is the set of all points `y` with `edist y x < ε` -/
@@ -508,6 +511,11 @@ def edistLtTopSetoid : Setoid α where
 @[simp]
 theorem ball_zero : ball x 0 = ∅ := by rw [EMetric.ball_eq_empty_iff]
 
+end
+
+variable {x y z : α} {ε ε₁ ε₂ : ℝ≥0∞} {s t : Set α}
+
+-- TODO: does this lemma also hold in the weak case?
 theorem nhds_basis_eball : (𝓝 x).HasBasis (fun ε : ℝ≥0∞ => 0 < ε) (ball x) :=
   nhds_basis_uniformity uniformity_basis_edist
 
@@ -552,6 +560,8 @@ theorem tendsto_nhds_nhds {a b} :
   nhds_basis_eball.tendsto_iff nhds_basis_eball
 
 end
+
+-- TODO: do the following lemmas also hold in the weak case?
 
 theorem isOpen_iff : IsOpen s ↔ ∀ x ∈ s, ∃ ε > 0, ball x ε ⊆ s := by
   simp [isOpen_iff_nhds, mem_nhds_iff]
@@ -693,7 +703,7 @@ theorem edist_le_zero {x y : γ} : edist x y ≤ 0 ↔ x = y :=
 @[simp]
 theorem edist_pos {x y : γ} : 0 < edist x y ↔ x ≠ y := by simp [← not_le]
 
-@[simp] lemma EMetric.closedBall_zero (x : γ') : closedBall x 0 = {x} := by ext; simp
+@[simp] lemma EMetric.closedBall_zero (x : γ) : closedBall x 0 = {x} := by ext; simp
 
 /-- Two points coincide if their distance is `< ε` for all positive ε -/
 theorem eq_of_forall_edist_le {x y : γ} (h : ∀ ε > 0, edist x y ≤ ε) : x = y :=
