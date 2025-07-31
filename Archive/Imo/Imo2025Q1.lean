@@ -636,16 +636,12 @@ lemma no_config_without_vert_horiz_diag_contr_line {n k} (hn : 3 ≤ n) (c : Con
     {l} (hl : l ∈ c.ls) (meml : !₂[1, (m : ℝ)] ∈ l) (hQ : !₂[(n : ℝ) + 1, 1] ∉ l) :
     False := by
   -- find point `∈ l` on bottom line
-  obtain ⟨m₂, hm₂⟩ : ∃ m₂ : ℕ, !₂[(m₂ : ℝ), 1] ∈ l := sorry
-  have : 1 < m₂ := sorry
+  obtain ⟨m₂, ltm₂, m₂lt, hm₂⟩ : ∃ m₂ : ℕ, 1 < m₂ ∧ m₂ < n ∧ !₂[(m₂ : ℝ), 1] ∈ l := sorry
   -- find point `∈ l` on main diag
-  obtain ⟨m₃, hm₃⟩ : ∃ m₃ : ℕ, !₂[(m₃ : ℝ), n + 2 - m₃] ∈ l := sorry
+  obtain ⟨m₃, ltm₃, m₃lt, hm₃⟩ : ∃ m₃ : ℕ, 1 < m₃ ∧ m₃ < n ∧ !₂[(m₃ : ℝ), n + 2 - m₃] ∈ l := sorry
   suffices h : finrank ℝ l.direction = 2
   · have := c.rank l hl
     omega
-  have : 1 < m₃ := sorry
-  have : m₂ < n := sorry
-  have : m₃ < n := sorry
   -- This should be solvable by `grind` or so
   apply l.finrank_eq_two_of_ne hm₃ meml hm₂
   simp
@@ -663,8 +659,13 @@ lemma no_config_without_vert_horiz_diag_contr_line {n k} (hn : 3 ≤ n) (c : Con
     omega
   · -- the line from `!₂[1, ↑m]` to `!₂[↑m₃, ↑n + 2 - ↑m₃]` lies above the line `!₂[1, ↑m]`
     -- to `!₂[↑n + 1, 1]`
-    rw [le_div_iff₀ (by simp; assumption)]
-    sorry
+    rw [div_le_div_iff₀ (by simp; omega) (by simp; omega)]
+    ring_nf
+    apply le_of_sub_nonneg
+    ring_nf
+    calc 0 ≤ (((n : ℝ) + 1) - m) * (((n : ℝ) + 1) - m₃) := by
+          apply mul_nonneg <;> { norm_cast; rw [Int.subNatNat_of_le (by omega)]; simp }
+         _ = _ := by ring
 
 lemma no_config_without_vert_horiz_diag {n k} (hn : 3 ≤ n) (c : Config (n + 1) k)
     (hvert : line[ℝ, !₂[1, 0], !₂[1, 1]] ∉ c.ls)
