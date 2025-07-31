@@ -17,7 +17,7 @@ normed (semi)field has this property. Currently the only example of `HasContinuo
 numbers.
 
 Then we prove lemmas about continuity of `x ↦ x⁻¹` and `f / g` providing dot-style `*.inv₀` and
-`*.div` operations on `Mathlib/Order/Filter/Tendsto.lean`, `ContinuousAt`, `ContinuousWithinAt`, `ContinuousOn`,
+`*.div` operations on `Filter.Tendsto`, `ContinuousAt`, `ContinuousWithinAt`, `ContinuousOn`,
 and `Continuous`. As a special case, we provide `*.div_const` operations that require only
 `DivInvMonoid` and `ContinuousMul` instances.
 
@@ -35,7 +35,7 @@ open Topology Filter Function
 
 If `G₀` is a `DivInvMonoid` with continuous `(*)`, then `(/y)` is continuous for any `y`. In this
 section we prove lemmas that immediately follow from this fact providing `*.div_const` dot-style
-operations on `Mathlib/Order/Filter/Tendsto.lean`, `ContinuousAt`, `ContinuousWithinAt`, `ContinuousOn`, and
+operations on `Filter.Tendsto`, `ContinuousAt`, `ContinuousWithinAt`, `ContinuousOn`, and
 `Continuous`.
 -/
 
@@ -89,7 +89,7 @@ variable [Zero G₀] [Inv G₀] [TopologicalSpace G₀] [HasContinuousInv₀ G�
 
 We define `HasContinuousInv₀` to be a `GroupWithZero` such that the operation `x ↦ x⁻¹`
 is continuous at all nonzero points. In this section we prove dot-style `*.inv₀` lemmas for
-`Mathlib/Order/Filter/Tendsto.lean`, `ContinuousAt`, `ContinuousWithinAt`, `ContinuousOn`, and `Continuous`.
+`Filter.Tendsto`, `ContinuousAt`, `ContinuousWithinAt`, `ContinuousOn`, and `Continuous`.
 -/
 
 theorem tendsto_inv₀ {x : G₀} (hx : x ≠ 0) : Tendsto Inv.inv (𝓝 x) (𝓝 x⁻¹) :=

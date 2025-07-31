@@ -12,7 +12,7 @@ import Mathlib.Control.Traversable.Lemmas
 This file provides `Bitraversable` instances for concrete bifunctors:
 * `Prod`
 * `Sum`
-* `Mathlib/CategoryTheory/Functor/Const.lean`
+* `Functor.Const`
 * `flip`
 * `Function.bicompl`
 * `Function.bicompr`

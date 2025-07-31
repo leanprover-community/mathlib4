@@ -129,7 +129,7 @@ protected def Equiv : RelSeries r ≃ {x : List α | x ≠ [] ∧ x.Chain' (· ~
 lemma toList_injective : Function.Injective (RelSeries.toList (r := r)) :=
   fun _ _ h ↦ (RelSeries.Equiv).injective <| Subtype.ext h
 
--- TODO : build a similar bijection between `RelSeries α` and `Mathlib/Combinatorics/Quiver/Path.lean`
+-- TODO : build a similar bijection between `RelSeries α` and `Quiver.Path`
 
 end RelSeries
 

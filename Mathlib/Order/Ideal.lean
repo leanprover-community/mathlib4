@@ -79,7 +79,7 @@ structure IsIdeal {P} [LE P] (I : Set P) : Prop where
   /-- The ideal is upward directed. -/
   Directed : DirectedOn (· ≤ ·) I
 
-/-- Create an element of type `Mathlib/Order/Ideal.lean` from a set satisfying the predicate
+/-- Create an element of type `Order.Ideal` from a set satisfying the predicate
 `Order.IsIdeal`. -/
 def IsIdeal.toIdeal [LE P] {I : Set P} (h : IsIdeal I) : Ideal P :=
   ⟨⟨I, h.IsLowerSet⟩, h.Nonempty, h.Directed⟩

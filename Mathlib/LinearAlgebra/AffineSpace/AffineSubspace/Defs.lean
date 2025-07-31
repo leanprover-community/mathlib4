@@ -36,7 +36,7 @@ from `P`) in most cases. As for modules, `k` is an explicit argument rather than
 `V`.
 
 This file only provides purely algebraic definitions and results. Those depending on analysis or
-topology are defined elsewhere; see `Analysis.Normed.Affine.AddTorsor` and
+topology are defined elsewhere; see `Mathlib/Analysis/Normed/Affine/AddTorsor.lean` and
 `Mathlib/Topology/Algebra/Affine.lean`.
 
 ## References

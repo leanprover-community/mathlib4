@@ -21,7 +21,7 @@ This file defines rays in modules.
 * `SameRay`: two vectors belong to the same ray if they are proportional with a nonnegative
   coefficient.
 
-* `Mathlib/Analysis/Normed/Module/Ray.lean` is a type for the equivalence class of nonzero vectors in a module with some
+* `Module.Ray` is a type for the equivalence class of nonzero vectors in a module with some
   common positive multiple.
 -/
 
@@ -224,7 +224,7 @@ variable (R)
 def rayOfNeZero (v : M) (h : v ≠ 0) : Module.Ray R M :=
   ⟦⟨v, h⟩⟧
 
-/-- An induction principle for `Mathlib/Analysis/Normed/Module/Ray.lean`, used as `induction x using Module.Ray.ind`. -/
+/-- An induction principle for `Module.Ray`, used as `induction x using Module.Ray.ind`. -/
 theorem Module.Ray.ind {C : Module.Ray R M → Prop} (h : ∀ (v) (hv : v ≠ 0), C (rayOfNeZero R v hv))
     (x : Module.Ray R M) : C x :=
   Quotient.ind (Subtype.rec <| h) x

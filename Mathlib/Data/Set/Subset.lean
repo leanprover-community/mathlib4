@@ -24,7 +24,7 @@ Let `α` be a `Type`, `A B : Set α` two sets in `α`, and `C : Set A` a set in 
 - `↑C` denotes `Subtype.val '' C` (that is, `{x : α | ∃ y ∈ C, ↑y = x}`).
 
 This notation, (together with the `↑` notation for `Set.CoeHead`)
-is defined in `Mathlib/Data/Set/Notation.lean` and is scoped to the `Mathlib/Data/Set/Notation.lean` namespace.
+is defined in `Mathlib/Data/Set/Notation.lean` and is scoped to the `Set.Notation` namespace.
 To enable it, use `open Set.Notation`.
 
 

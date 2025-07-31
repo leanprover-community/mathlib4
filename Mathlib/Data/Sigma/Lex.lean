@@ -22,7 +22,7 @@ Related files are:
 * `Combinatorics.CoLex`: Colexicographic order on finite sets.
 * `Mathlib/Data/List/Lex.lean`: Lexicographic order on lists.
 * `Mathlib/Data/Sigma/Order.lean`: Lexicographic order on `Σ i, α i` per say.
-* `Data.PSigma.Order`: Lexicographic order on `Σ' i, α i`.
+* `Mathlib/Data/PSigma/Order.lean`: Lexicographic order on `Σ' i, α i`.
 * `Mathlib/Data/Prod/Lex.lean`: Lexicographic order on `α × β`. Can be thought of as the special case of
   `Mathlib/Data/Sigma/Lex.lean` where all summands are the same
 -/

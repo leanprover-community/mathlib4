@@ -107,7 +107,7 @@ end Const
 /-- `AddConst α` is a synonym for constant functor `Const α`, mapping
 every type to `α`. When `α` has an additive monoid structure,
 `AddConst α` has an `Applicative` instance. (If `α` has a
-multiplicative monoid structure, see `Mathlib/CategoryTheory/Functor/Const.lean`.) -/
+multiplicative monoid structure, see `Functor.Const`.) -/
 def AddConst (α : Type*) :=
   Const α
 

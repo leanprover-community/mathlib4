@@ -190,7 +190,7 @@ theorem IsClosed.not : IsClosed { a | p a } → IsOpen { a | ¬p a } :=
 
 In this section we define functions that return a limit of a filter (or of a function along a
 filter), if it exists, and a random point otherwise. These functions are rarely used in Mathlib,
-most of the theorems are written using `Mathlib/Order/Filter/Tendsto.lean`. One of the reasons is that
+most of the theorems are written using `Filter.Tendsto`. One of the reasons is that
 `Filter.limUnder f g = x` is not equivalent to `Filter.Tendsto g f (𝓝 x)` unless the codomain is a
 Hausdorff space and `g` has a limit along `f`.
 -/

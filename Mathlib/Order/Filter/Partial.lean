@@ -32,7 +32,7 @@ functions and relations.
 `Set.preimage` can be generalized to relations in two ways:
 * `Rel.preimage` returns the image of the set under the inverse relation.
 * `Rel.core` returns the set of elements that are only related to those in the set.
-Both generalizations are sensible in the context of filters, so `Filter.comap` and `Mathlib/Order/Filter/Tendsto.lean`
+Both generalizations are sensible in the context of filters, so `Filter.comap` and `Filter.Tendsto`
 get two generalizations each.
 
 We first take care of relations. Then the definitions for partial functions are taken as special
@@ -80,7 +80,7 @@ theorem rmap_compose (r : Rel α β) (s : Rel β γ) : rmap s ∘ rmap r = rmap 
 
 /-- Generic "limit of a relation" predicate. `RTendsto r l₁ l₂` asserts that for every
 `l₂`-neighborhood `a`, the `r`-core of `a` is an `l₁`-neighborhood. One generalization of
-`Mathlib/Order/Filter/Tendsto.lean` to relations. -/
+`Filter.Tendsto` to relations. -/
 def RTendsto (r : Rel α β) (l₁ : Filter α) (l₂ : Filter β) :=
   l₁.rmap r ≤ l₂
 
@@ -161,7 +161,7 @@ theorem rcomap'_compose (r : Rel α β) (s : Rel β γ) : rcomap' r ∘ rcomap' 
 
 /-- Generic "limit of a relation" predicate. `RTendsto' r l₁ l₂` asserts that for every
 `l₂`-neighborhood `a`, the `r`-preimage of `a` is an `l₁`-neighborhood. One generalization of
-`Mathlib/Order/Filter/Tendsto.lean` to relations. -/
+`Filter.Tendsto` to relations. -/
 def RTendsto' (r : Rel α β) (l₁ : Filter α) (l₂ : Filter β) :=
   l₁ ≤ l₂.rcomap' r
 
@@ -193,7 +193,7 @@ theorem mem_pmap (f : α →. β) (l : Filter α) (s : Set β) : s ∈ l.pmap f 
 
 /-- Generic "limit of a partial function" predicate. `PTendsto r l₁ l₂` asserts that for every
 `l₂`-neighborhood `a`, the `p`-core of `a` is an `l₁`-neighborhood. One generalization of
-`Mathlib/Order/Filter/Tendsto.lean` to partial function. -/
+`Filter.Tendsto` to partial function. -/
 def PTendsto (f : α →. β) (l₁ : Filter α) (l₂ : Filter β) :=
   l₁.pmap f ≤ l₂
 
@@ -227,7 +227,7 @@ def pcomap' (f : α →. β) (l : Filter β) : Filter α :=
 
 /-- Generic "limit of a partial function" predicate. `PTendsto' r l₁ l₂` asserts that for every
 `l₂`-neighborhood `a`, the `p`-preimage of `a` is an `l₁`-neighborhood. One generalization of
-`Mathlib/Order/Filter/Tendsto.lean` to partial functions. -/
+`Filter.Tendsto` to partial functions. -/
 def PTendsto' (f : α →. β) (l₁ : Filter α) (l₂ : Filter β) :=
   l₁ ≤ l₂.rcomap' f.graph'
 

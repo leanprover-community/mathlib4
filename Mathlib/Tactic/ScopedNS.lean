@@ -26,7 +26,7 @@ namespace Nat
 
 scoped[Nat.Count] attribute [instance] CountSet.fintype
 -- make the definition Nat.CountSet.fintype an instance,
--- but only if `Mathlib/Data/Nat/Count.lean` is open
+-- but only if `Nat.Count` is open
 ```
 -/
 syntax (name := scopedNS) (docComment)? (Parser.Term.attributes)?

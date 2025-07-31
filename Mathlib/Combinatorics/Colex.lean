@@ -39,8 +39,8 @@ fixed size. For example, for size 3, the colex order on ℕ starts
 
 Related files are:
 * `Mathlib/Data/List/Lex.lean`: Lexicographic order on lists.
-* `Data.Pi.Lex`: Lexicographic order on `Πₗ i, α i`.
-* `Data.PSigma.Order`: Lexicographic order on `Σ' i, α i`.
+* `Mathlib/Order/PiLex.lean`: Lexicographic order on `Πₗ i, α i`.
+* `Mathlib/Data/PSigma/Order.lean`: Lexicographic order on `Σ' i, α i`.
 * `Mathlib/Data/Sigma/Order.lean`: Lexicographic order on `Σ i, α i`.
 * `Mathlib/Data/Prod/Lex.lean`: Lexicographic order on `α × β`.
 

@@ -280,7 +280,7 @@ instance [SigmaCompactSpace Y] : SigmaCompactSpace (ULift.{u} Y) :=
   IsClosedEmbedding.uliftDown.sigmaCompactSpace
 
 /-- If `X` is a `σ`-compact space, then a locally finite family of nonempty sets of `X` can have
-only countably many elements, `Mathlib/Data/Set/Countable.lean` version. -/
+only countably many elements, `Set.Countable` version. -/
 protected theorem LocallyFinite.countable_univ {f : ι → Set X} (hf : LocallyFinite f)
     (hne : ∀ i, (f i).Nonempty) : (univ : Set ι).Countable := by
   have := fun n => hf.finite_nonempty_inter_compact (isCompact_compactCovering X n)

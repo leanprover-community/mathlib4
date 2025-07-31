@@ -8,7 +8,7 @@ import Mathlib.Analysis.Meromorphic.Basic
 /-!
 # Principles of Isolated Zeros and Identity Principles for Meromorphic Functions
 
-In line with results in `Mathlib.Analysis.Analytic.IsolatedZeros` and
+In line with results in `Mathlib/Analysis/Analytic/IsolatedZeros.lean` and
 `Mathlib/Analysis/Analytic/Uniqueness.lean`, this file establishes principles of isolated zeros and
 identity principles for meromorphic functions.
 

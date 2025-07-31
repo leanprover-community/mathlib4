@@ -9,7 +9,7 @@ import Lean.Meta.Tactic.Delta
 import Std.Data.HashMap.Basic
 
 /-!
-# Additional functions on `Mathlib/Lean/Name.lean`.
+# Additional functions on `Lean.Name`.
 
 We provide `allNames` and `allNamesByModule`.
 -/

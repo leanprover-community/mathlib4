@@ -6,7 +6,7 @@ This folder contains algebra in a broad sense.
 
 The basic algebraic hierarchy is split across a series of subfolders that each depend on the
 previous:
-* `Mathlib/Algebra/Notation.lean` for basic algebraic notation
+* `Algebra.Notation` for basic algebraic notation
 * `Algebra.Group` for semigroups, monoids, groups
 * `Algebra.GroupWithZero` for monoids with a zero adjoined, groups with a zero adjoined
 * `Algebra.Ring` for additive monoids and groups with one, semirings, rings

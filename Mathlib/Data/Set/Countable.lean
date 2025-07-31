@@ -47,10 +47,10 @@ protected def Countable (s : Set α) : Prop := Countable s
 @[simp]
 theorem countable_coe_iff {s : Set α} : Countable s ↔ s.Countable := .rfl
 
-/-- Prove `Mathlib/Data/Set/Countable.lean` from a `Countable` instance on the subtype. -/
+/-- Prove `Set.Countable` from a `Countable` instance on the subtype. -/
 theorem to_countable (s : Set α) [Countable s] : s.Countable := ‹_›
 
-/-- Restate `Mathlib/Data/Set/Countable.lean` as a `Countable` instance. -/
+/-- Restate `Set.Countable` as a `Countable` instance. -/
 alias ⟨_root_.Countable.to_set, Countable.to_subtype⟩ := countable_coe_iff
 
 protected theorem countable_iff_exists_injective {s : Set α} :

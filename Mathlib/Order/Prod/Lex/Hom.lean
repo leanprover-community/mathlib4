@@ -7,7 +7,7 @@ import Mathlib.Data.Prod.Lex
 import Mathlib.Order.Hom.Basic
 
 /-!
-# Order homomorphism for `Mathlib/Data/Prod/Lex.lean`
+# Order homomorphism for `Prod.Lex`
 -/
 
 /-- `toLex` as an `OrderHom`. -/

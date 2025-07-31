@@ -9,7 +9,7 @@ import Mathlib.Data.Set.Pairwise.Basic
 /-!
 # Translating pairwise relations on sets to lists
 
-On a list with no duplicates, the condition of `Set.Pairwise` and `Mathlib/Data/List/Pairwise.lean` are equivalent.
+On a list with no duplicates, the condition of `Set.Pairwise` and `List.Pairwise` are equivalent.
 -/
 
 

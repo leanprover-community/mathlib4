@@ -86,7 +86,7 @@ curve `W` over a ring `R` in affine coordinates.
 
 For ease of polynomial manipulation, this is represented as a term of type `R[X][X]`, where the
 inner variable represents `X` and the outer variable represents `Y`. For clarity, the alternative
-notations `Y` and `R[X][Y]` are provided in the `Mathlib/Algebra/Polynomial/Bivariate.lean` scope to represent the outer
+notations `Y` and `R[X][Y]` are provided in the `Polynomial.Bivariate` scope to represent the outer
 variable and the bivariate polynomial ring `R[X][X]` respectively. -/
 noncomputable def polynomial : R[X][Y] :=
   Y ^ 2 + C (C W.a₁ * X + C W.a₃) * Y - C (X ^ 3 + C W.a₂ * X ^ 2 + C W.a₄ * X + C W.a₆)

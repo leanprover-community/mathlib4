@@ -90,7 +90,7 @@ The elaborators for this syntax are located in:
   `{x ∈ s | p x}`.
 * `Mathlib/Data/Fintype/Basic.lean` for the `Finset` builder notation elaborator for syntax of the form
   `{x | p x}`, `{x : α | p x}`, `{x ∉ s | p x}`, `{x ≠ a | p x}`.
-* `Order.LocallyFinite.Basic` for the `Finset` builder notation elaborator for syntax of the form
+* `Mathlib/Order/Interval/Finset/Defs.lean` for the `Finset` builder notation elaborator for syntax of the form
   `{x ≤ a | p x}`, `{x ≥ a | p x}`, `{x < a | p x}`, `{x > a | p x}`.
 -/
 syntax (name := setBuilder) "{" extBinder " | " term "}" : term
@@ -114,7 +114,7 @@ See also
   syntax of the form `{x ∈ s | p x}`.
 * `Mathlib/Data/Fintype/Basic.lean` for the `Finset` builder notation elaborator partly overriding this one for
   syntax of the form `{x | p x}`, `{x : α | p x}`, `{x ∉ s | p x}`, `{x ≠ a | p x}`.
-* `Order.LocallyFinite.Basic` for the `Finset` builder notation elaborator partly overriding this
+* `Mathlib/Order/Interval/Finset/Defs.lean` for the `Finset` builder notation elaborator partly overriding this
   one for syntax of the form `{x ≤ a | p x}`, `{x ≥ a | p x}`, `{x < a | p x}`, `{x > a | p x}`.
 -/
 @[term_elab setBuilder]

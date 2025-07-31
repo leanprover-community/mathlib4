@@ -11,7 +11,7 @@ import Mathlib.Data.Prod.Basic
 
 This file proves basic properties of `List.product` and `List.sigma`, which are list constructions
 living in `Prod` and `Sigma` types respectively. Their definitions can be found in
-[`Mathlib/Data/List/Defs.lean`](./defs). Beware, this is not about `List.prod`, the multiplicative product.
+`Mathlib/Data/List/Defs.lean`. Beware, this is not about `List.prod`, the multiplicative product.
 -/
 
 

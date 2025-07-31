@@ -55,7 +55,7 @@ A `LocallyFiniteOrder` instance can be built
 Instances for concrete types are proved in their respective files:
 * `ℕ` is in `Mathlib/Order/Interval/Finset/Nat.lean`
 * `ℤ` is in `Mathlib/Data/Int/Interval.lean`
-* `ℕ+` is in `Data.PNat.Interval`
+* `ℕ+` is in `Mathlib/Data/PNat/Interval.lean`
 * `Fin n` is in `Mathlib/Order/Interval/Finset/Fin.lean`
 * `Finset α` is in `Mathlib/Data/Finset/Interval.lean`
 * `Σ i, α i` is in `Mathlib/Data/Sigma/Interval.lean`

@@ -37,7 +37,8 @@ Ring norms
 ## Notes
 
 Typeclasses for seminorms are defined here while types of seminorms are defined in
-`Mathlib/Analysis/Normed/Group/Seminorm.lean` and `Analysis.Normed.Ring.Seminorm` because absolute values are
+`Mathlib/Analysis/Normed/Group/Seminorm.lean` and
+`Mathlib/Analysis/Normed/Unbundled/RingSeminorm.lean` because absolute values are
 multiplicative ring norms but outside of this use we only consider real-valued seminorms.
 
 ## TODO
