@@ -698,12 +698,12 @@ def ValueGroupWithZero.embed [h : v.Compatible] : ValueGroupWithZero R →*₀ �
     field_simp
 
 @[simp]
-lemma ValueGroupWithZero.embed_valuation_apply (γ : ValueGroupWithZero R) :
+lemma ValueGroupWithZero.embed_valuation (γ : ValueGroupWithZero R) :
     embed (valuation R) γ = γ := by
   obtain ⟨r, s, rfl⟩ := valuation_surjective γ
   simp [embed]
 
-lemma ValueGroupWithZero.embed_strictMono [h : v.Compatible] : StrictMono (embed v) := by
+lemma ValueGroupWithZero.embed_strictMono [v.Compatible] : StrictMono (embed v) := by
   intro a b h
   obtain ⟨a, r, rfl⟩ := valuation_surjective a
   obtain ⟨b, s, rfl⟩ := valuation_surjective b
@@ -744,7 +744,7 @@ def mapPosSubmonoid : posSubmonoid A →* posSubmonoid B where
   map_mul' := by simp
 
 variable (A) in
-instance compatible_comap_of_extension {Γ : Type*}
+instance compatible_comap {Γ : Type*}
     [LinearOrderedCommMonoidWithZero Γ] (w : Valuation B Γ) [w.Compatible] :
     (w.comap (algebraMap A B)).Compatible := by
   constructor
@@ -753,7 +753,7 @@ instance compatible_comap_of_extension {Γ : Type*}
 variable (A B) in
 /-- The map on value groups-with-zero associated to the structure morphism of an algebra. -/
 def mapValueGroupWithZero : ValueGroupWithZero A →*₀ ValueGroupWithZero B :=
-  have := compatible_comap_of_extension A (valuation B)
+  have := compatible_comap A (valuation B)
   ValueGroupWithZero.embed ((valuation B).comap (algebraMap A B))
 
 @[simp]
