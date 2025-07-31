@@ -143,14 +143,15 @@ theorem norm_pos {x : ℤ[i]} : 0 < norm x ↔ x ≠ 0 := by
 theorem abs_natCast_norm (x : ℤ[i]) : (x.norm.natAbs : ℤ) = x.norm :=
   Int.natAbs_of_nonneg (norm_nonneg _)
 
-@[simp]
 theorem natCast_natAbs_norm {α : Type*} [AddGroupWithOne α] (x : ℤ[i]) :
     (x.norm.natAbs : α) = x.norm := by
-  rw [← Int.cast_natCast, abs_natCast_norm]
+  simp
 
 theorem natAbs_norm_eq (x : ℤ[i]) :
-    x.norm.natAbs = x.re.natAbs * x.re.natAbs + x.im.natAbs * x.im.natAbs :=
-  Int.ofNat.inj <| by simp; simp [Zsqrtd.norm]
+    x.norm.natAbs = x.re.natAbs * x.re.natAbs + x.im.natAbs * x.im.natAbs := by
+  zify
+  rw [abs_norm (by simp)]
+  simp [Zsqrtd.norm]
 
 instance : Div ℤ[i] :=
   ⟨fun x y =>
@@ -175,8 +176,7 @@ theorem normSq_le_normSq_of_re_le_of_im_le {x y : ℂ} (hre : |x.re| ≤ |y.re|)
   rw [normSq_apply, normSq_apply, ← _root_.abs_mul_self, _root_.abs_mul, ←
       _root_.abs_mul_self y.re, _root_.abs_mul y.re, ← _root_.abs_mul_self x.im,
       _root_.abs_mul x.im, ← _root_.abs_mul_self y.im, _root_.abs_mul y.im]
-  exact
-      add_le_add (mul_self_le_mul_self (abs_nonneg _) hre) (mul_self_le_mul_self (abs_nonneg _) him)
+  gcongr
 
 theorem normSq_div_sub_div_lt_one (x y : ℤ[i]) :
     Complex.normSq ((x / y : ℂ) - ((x / y : ℤ[i]) : ℂ)) < 1 :=
@@ -212,7 +212,7 @@ theorem norm_mod_lt (x : ℤ[i]) {y : ℤ[i]} (hy : y ≠ 0) : (x % y).norm < y.
 
 theorem natAbs_norm_mod_lt (x : ℤ[i]) {y : ℤ[i]} (hy : y ≠ 0) :
     (x % y).norm.natAbs < y.norm.natAbs :=
-  Int.ofNat_lt.1 (by simp [-Int.ofNat_lt, norm_mod_lt x hy])
+  Int.ofNat_lt.1 <| by simp [norm_mod_lt x hy]
 
 theorem norm_le_norm_mul_left (x : ℤ[i]) {y : ℤ[i]} (hy : y ≠ 0) :
     (norm x).natAbs ≤ (norm (x * y)).natAbs := by

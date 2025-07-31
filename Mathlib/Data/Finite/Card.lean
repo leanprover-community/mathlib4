@@ -188,7 +188,6 @@ namespace Finite
 
 variable {s t : Set α}
 
-@[gcongr]
 theorem card_lt_card (ht : t.Finite) (hsub : s ⊂ t) : Nat.card s < Nat.card t := by
   have : Fintype t := Finite.fintype ht
   have : Fintype s := Finite.fintype (subset ht (subset_of_ssubset hsub))
