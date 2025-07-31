@@ -433,7 +433,7 @@ variable {F₁ : A ⥤ C} {U₁ : C ⥤ A} {F₂ : B ⥤ D} {U₂ : D ⥤ B}
 variable {L₁ : A ⥤ B} {R₁ : B ⥤ A} {L₂ : C ⥤ D} {R₂ : D ⥤ C}
 variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : F₁ ⊣ U₁) (adj₄ : F₂ ⊣ U₂)
 
-/-- When all four functors in a sequare are left adjoints, the mates operation can be iterated:
+/-- When all four functors in a square are left adjoints, the mates operation can be iterated:
 
 ```
          L₁                  R₁                  R₁
