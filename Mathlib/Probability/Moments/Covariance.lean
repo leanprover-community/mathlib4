@@ -5,7 +5,7 @@ Authors: Rémy Degenne, Etienne Marion
 -/
 import Mathlib.MeasureTheory.Function.L2Space
 import Mathlib.Probability.Independence.Integrable
-import Mathlib.Probability.Independence.Integration
+import Mathlib.Probability.Integration
 import Mathlib.Probability.Notation
 
 /-!
