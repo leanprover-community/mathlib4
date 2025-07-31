@@ -102,7 +102,7 @@ theorem star_mul_self_mul_eq_diagonal :
     (star (eigenvectorUnitary hA : Matrix n n 𝕜)) * A * (eigenvectorUnitary hA : Matrix n n 𝕜)
       = diagonal (RCLike.ofReal ∘ hA.eigenvalues) := by
   apply Matrix.toEuclideanLin.injective
-  apply Basis.ext (EuclideanSpace.basisFun n 𝕜).toBasis
+  apply (EuclideanSpace.basisFun n 𝕜).toBasis.ext
   intro i
   simp only [toEuclideanLin_apply, OrthonormalBasis.coe_toBasis, EuclideanSpace.basisFun_apply,
     EuclideanSpace.ofLp_single, ← mulVec_mulVec, eigenvectorUnitary_mulVec, ← mulVec_mulVec,

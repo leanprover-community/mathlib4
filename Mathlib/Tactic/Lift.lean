@@ -56,7 +56,7 @@ instance Subtype.canLift {α : Sort*} (p : α → Prop) :
 
 namespace Mathlib.Tactic
 
-open Lean Parser Tactic Elab Tactic Meta
+open Lean Parser Elab Tactic Meta
 
 /-- Lift an expression to another type.
 * Usage: `'lift' expr 'to' expr ('using' expr)? ('with' id (id id?)?)?`.

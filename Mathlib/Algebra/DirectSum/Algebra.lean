@@ -104,7 +104,7 @@ theorem algebraMap_toAddMonoid_hom :
 /-- A family of `LinearMap`s preserving `DirectSum.GOne.one` and `DirectSum.GMul.mul`
 describes an `AlgHom` on `⨁ i, A i`. This is a stronger version of `DirectSum.toSemiring`.
 
-Of particular interest is the case when `A i` are bundled subojects, `f` is the family of
+Of particular interest is the case when `A i` are bundled subobjects, `f` is the family of
 coercions such as `Submodule.subtype (A i)`, and the `[GMonoid A]` structure originates from
 `DirectSum.GMonoid.ofAddSubmodules`, in which case the proofs about `GOne` and `GMul`
 can be discharged by `rfl`. -/
@@ -159,3 +159,4 @@ instance Algebra.directSumGAlgebra {R A : Type*} [AddMonoid ι] [CommSemiring R]
   commutes := fun _ ⟨_, _⟩ =>
     Sigma.ext ((zero_add _).trans (add_zero _).symm) (heq_of_eq <| Algebra.commutes _ _)
   smul_def := fun _ ⟨_, _⟩ => Sigma.ext (zero_add _).symm (heq_of_eq <| Algebra.smul_def _ _)
+

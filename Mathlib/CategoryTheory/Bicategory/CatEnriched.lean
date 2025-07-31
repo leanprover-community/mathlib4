@@ -64,7 +64,7 @@ instance {X Y : CatEnriched C} : Category (X ⟶ Y) := inferInstanceAs (Category
 /-- The horizonal composition on 2-morphisms is defined using the action on arrows of the
 composition bifunctor from the enriched category structure. -/
 def hComp {a b c : CatEnriched C} {f f' : a ⟶ b} {g g' : b ⟶ c}
-  (η : f ⟶ f') (θ : g ⟶ g') : f ≫ g ⟶ f' ≫ g' := (eComp Cat a b c).map (η, θ)
+    (η : f ⟶ f') (θ : g ⟶ g') : f ≫ g ⟶ f' ≫ g' := (eComp Cat a b c).map (η, θ)
 
 @[simp]
 theorem id_hComp_id {a b c : CatEnriched C} (f : a ⟶ b) (g : b ⟶ c) :
