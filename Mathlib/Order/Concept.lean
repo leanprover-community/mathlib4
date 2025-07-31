@@ -472,6 +472,6 @@ def swapEquiv : (Concept α β r)ᵒᵈ ≃o Concept β α (Function.swap r) whe
   invFun := toDual ∘ swap
   left_inv := swap_swap
   right_inv := swap_swap
-  map_le_map_iff' := swap_le_swap_iff
+  map_rel_iff' := swap_le_swap_iff
 
 end Concept

@@ -123,7 +123,7 @@ embedded in the ordering of ideals of `R`. -/
 def orderEmbedding : Ideal S ↪o Ideal R where
   toFun J := Ideal.comap (algebraMap R S) J
   inj' := Function.LeftInverse.injective (map_comap M S)
-  map_le_map_iff' := by
+  map_rel_iff' := by
     rintro J₁ J₂
     constructor
     · exact fun hJ => (map_comap M S) J₁ ▸ (map_comap M S) J₂ ▸ Ideal.map_mono hJ
@@ -185,7 +185,7 @@ correspond to prime ideals in the original ring `R` that are disjoint from `M` -
   invFun p := ⟨Ideal.map (algebraMap R S) p.1, isPrime_of_isPrime_disjoint M S p.1 p.2.1 p.2.2⟩
   left_inv J := Subtype.eq (map_comap M S J)
   right_inv I := Subtype.eq (comap_map_of_isPrime_disjoint M S I.1 I.2.1 I.2.2)
-  map_le_map_iff' {I I'} := by
+  map_rel_iff' {I I'} := by
     constructor
     · exact fun h => show I.val ≤ I'.val from map_comap M S I.val ▸
         map_comap M S I'.val ▸ Ideal.map_mono h

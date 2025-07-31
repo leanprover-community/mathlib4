@@ -965,7 +965,7 @@ def orderIsoFiniteCodimDim :
     finiteDimensional_quot_dualCoannihilator_iff.mpr (ofDual W).2⟩
   left_inv _ := Subtype.ext dualAnnihilator_dualCoannihilator_eq
   right_inv W := have := (ofDual W).2; Subtype.ext dualCoannihilator_dualAnnihilator_eq
-  map_le_map_iff' := dualAnnihilator_le_dualAnnihilator_iff
+  map_rel_iff' := dualAnnihilator_le_dualAnnihilator_iff
 
 open OrderDual in
 /-- For any finite-dimensional vector space, `dualAnnihilator` and `dualCoannihilator` give
@@ -977,7 +977,7 @@ def orderIsoFiniteDimensional [FiniteDimensional K V] :
   invFun W := (ofDual W).dualCoannihilator
   left_inv _ := dualAnnihilator_dualCoannihilator_eq
   right_inv _ := dualCoannihilator_dualAnnihilator_eq
-  map_le_map_iff' := dualAnnihilator_le_dualAnnihilator_iff
+  map_rel_iff' := dualAnnihilator_le_dualAnnihilator_iff
 
 open Submodule in
 theorem dualAnnihilator_dualAnnihilator_eq_map (W : Subspace K V) [FiniteDimensional K W] :

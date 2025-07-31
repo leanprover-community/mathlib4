@@ -59,14 +59,14 @@ def Iso.sumAssoc {I : SimpleGraph γ} : (G ⊕g H) ⊕g I ≃g G ⊕g (H ⊕g I)
 def Embedding.sumInl : G ↪g G ⊕g H where
   toFun u := _root_.Sum.inl u
   inj' u v := by simp
-  map_le_map_iff' := by simp
+  map_rel_iff' := by simp
 
 /-- The embedding of `H` into `G ⊕g H`. -/
 @[simps]
 def Embedding.sumInr : H ↪g G ⊕g H where
   toFun u := _root_.Sum.inr u
   inj' u v := by simp
-  map_le_map_iff' := by simp
+  map_rel_iff' := by simp
 
 /-- Color `G ⊕g H` with colorings of `G` and `H` -/
 def Coloring.sum (cG : G.Coloring γ) (cH : H.Coloring γ) : (G ⊕g H).Coloring γ where

@@ -479,7 +479,7 @@ def upperSetIsoLowerSet : UpperSet α ≃o LowerSet α where
   invFun := LowerSet.compl
   left_inv := UpperSet.compl_compl
   right_inv := LowerSet.compl_compl
-  map_le_map_iff' := UpperSet.compl_le_compl
+  map_rel_iff' := UpperSet.compl_le_compl
 
 end LE
 
@@ -518,7 +518,7 @@ def map (f : α ≃o β) : UpperSet α ≃o UpperSet β where
   invFun t := ⟨f ⁻¹' t, t.upper.preimage f.monotone⟩
   left_inv _ := ext <| f.preimage_image _
   right_inv _ := ext <| f.image_preimage _
-  map_le_map_iff' := image_subset_image_iff f.injective
+  map_rel_iff' := image_subset_image_iff f.injective
 
 @[simp]
 theorem symm_map (f : α ≃o β) : (map f).symm = map f.symm :=
@@ -557,7 +557,7 @@ def map (f : α ≃o β) : LowerSet α ≃o LowerSet β where
   invFun t := ⟨f ⁻¹' t, t.lower.preimage f.monotone⟩
   left_inv _ := SetLike.coe_injective <| f.preimage_image _
   right_inv _ := SetLike.coe_injective <| f.image_preimage _
-  map_le_map_iff' := image_subset_image_iff f.injective
+  map_rel_iff' := image_subset_image_iff f.injective
 
 @[simp]
 theorem symm_map (f : α ≃o β) : (map f).symm = map f.symm :=

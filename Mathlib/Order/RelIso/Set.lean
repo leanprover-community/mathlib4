@@ -78,7 +78,7 @@ protected def inclusionEmbedding (r : α → α → Prop) {s t : Set α} (h : s 
     Subrel r (· ∈ s) ↪r Subrel r (· ∈ t) where
   toFun := Set.inclusion h
   inj' _ _ h := (Set.inclusion_inj _).mp h
-  map_le_map_iff' := Iff.rfl
+  map_rel_iff' := Iff.rfl
 
 @[simp]
 theorem coe_inclusionEmbedding (r : α → α → Prop) {s t : Set α} (h : s ⊆ t) :
@@ -114,7 +114,7 @@ end Subrel
 
 /-- Restrict the codomain of a relation embedding. -/
 def RelEmbedding.codRestrict (p : Set β) (f : r ↪r s) (H : ∀ a, f a ∈ p) : r ↪r Subrel s (· ∈ p) :=
-  ⟨f.toEmbedding.codRestrict p H, f.map_le_map_iff'⟩
+  ⟨f.toEmbedding.codRestrict p H, f.map_rel_iff'⟩
 
 @[simp]
 theorem RelEmbedding.codRestrict_apply (p) (f : r ↪r s) (H a) :

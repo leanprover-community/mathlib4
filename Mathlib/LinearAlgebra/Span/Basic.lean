@@ -659,11 +659,11 @@ variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F τ₁₂ M M₂]
 protected theorem map_le_map_iff (f : F) {p p'} : map f p ≤ map f p' ↔ p ≤ p' ⊔ ker f := by
   rw [map_le_iff_le_comap, Submodule.comap_map_eq]
 
-theorem map_le_map_iff' {f : F} (hf : ker f = ⊥) {p p'} : map f p ≤ map f p' ↔ p ≤ p' := by
+theorem map_rel_iff' {f : F} (hf : ker f = ⊥) {p p'} : map f p ≤ map f p' ↔ p ≤ p' := by
   rw [LinearMap.map_le_map_iff, hf, sup_bot_eq]
 
 theorem map_injective {f : F} (hf : ker f = ⊥) : Injective (map f) := fun _ _ h =>
-  le_antisymm ((map_le_map_iff' hf).1 (le_of_eq h)) ((map_le_map_iff' hf).1 (ge_of_eq h))
+  le_antisymm ((map_rel_iff' hf).1 (le_of_eq h)) ((map_rel_iff' hf).1 (ge_of_eq h))
 
 theorem map_eq_top_iff {f : F} (hf : range f = ⊤) {p : Submodule R M} :
     p.map f = ⊤ ↔ p ⊔ LinearMap.ker f = ⊤ := by

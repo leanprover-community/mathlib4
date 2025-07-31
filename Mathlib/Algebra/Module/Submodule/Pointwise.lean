@@ -100,7 +100,7 @@ theorem neg_le (S T : Submodule R M) : -S ≤ T ↔ S ≤ -T :=
 /-- `Submodule.pointwiseNeg` as an order isomorphism. -/
 def negOrderIso : Submodule R M ≃o Submodule R M where
   toEquiv := Equiv.neg _
-  map_le_map_iff' := @neg_le_neg _ _ _ _ _
+  map_rel_iff' := @neg_le_neg _ _ _ _ _
 
 theorem span_neg_eq_neg (s : Set M) : span R (-s) = -span R s := by
   apply le_antisymm

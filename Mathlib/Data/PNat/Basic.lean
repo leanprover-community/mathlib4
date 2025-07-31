@@ -134,7 +134,7 @@ instance addLeftReflectLT : AddLeftReflectLT ℕ+ :=
 @[simps! -fullyApplied apply]
 def _root_.OrderIso.pnatIsoNat : ℕ+ ≃o ℕ where
   toEquiv := Equiv.pnatEquivNat
-  map_le_map_iff' := natPred_le_natPred
+  map_rel_iff' := natPred_le_natPred
 
 @[simp]
 theorem _root_.OrderIso.pnatIsoNat_symm_apply : OrderIso.pnatIsoNat.symm = Nat.succPNat :=

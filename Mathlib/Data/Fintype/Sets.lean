@@ -284,7 +284,7 @@ noncomputable def finsetEquivSet : Finset α ≃ Set α where
 @[simps toEquiv]
 noncomputable def finsetOrderIsoSet : Finset α ≃o Set α where
   toEquiv := finsetEquivSet
-  map_le_map_iff' := Finset.coe_subset
+  map_rel_iff' := Finset.coe_subset
 
 @[simp, norm_cast]
 lemma coe_finsetOrderIsoSet : ⇑finsetOrderIsoSet = ((↑) : Finset α → Set α) := rfl

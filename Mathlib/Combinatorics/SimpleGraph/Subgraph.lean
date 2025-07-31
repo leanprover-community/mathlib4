@@ -190,7 +190,7 @@ def spanningCoeEquivCoeOfSpanning (G' : Subgraph G) (h : G'.IsSpanning) :
     G'.spanningCoe ≃g G'.coe where
   toFun v := ⟨v, h v⟩
   invFun v := v
-  map_le_map_iff' := Iff.rfl
+  map_rel_iff' := Iff.rfl
 
 /-- A subgraph is called an *induced subgraph* if vertices of `G'` are adjacent if
 they are adjacent in `G`. -/
@@ -421,7 +421,7 @@ def topIso : (⊤ : G.Subgraph).coe ≃g G where
   toFun := (↑)
   invFun a := ⟨a, Set.mem_univ _⟩
   left_inv _ := Subtype.eta ..
-  map_le_map_iff' := .rfl
+  map_rel_iff' := .rfl
 
 theorem verts_spanningCoe_injective :
     (fun G' : Subgraph G => (G'.verts, G'.spanningCoe)).Injective := by
@@ -581,7 +581,7 @@ lemma sup_spanningCoe (H H' : Subgraph G) :
 def topEquiv : (⊤ : Subgraph G).coe ≃g G where
   toFun v := ↑v
   invFun v := ⟨v, trivial⟩
-  map_le_map_iff' := Iff.rfl
+  map_rel_iff' := Iff.rfl
 
 /-- The bottom of the `Subgraph G` lattice is equivalent to the empty graph on the empty
 vertex type. -/
@@ -590,7 +590,7 @@ def botEquiv : (⊥ : Subgraph G).coe ≃g emptyGraph Empty where
   invFun v := v.elim
   left_inv := fun ⟨_, h⟩ ↦ h.elim
   right_inv v := v.elim
-  map_le_map_iff' := Iff.rfl
+  map_rel_iff' := Iff.rfl
 
 theorem edgeSet_mono {H₁ H₂ : Subgraph G} (h : H₁ ≤ H₂) : H₁.edgeSet ≤ H₂.edgeSet :=
   Sym2.ind h.2

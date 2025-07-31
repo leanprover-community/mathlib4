@@ -149,7 +149,7 @@ def LocallyFiniteOrder.orderAddMonoidEquiv [Nontrivial G] :
     G ≃+o ℤ where
   __ := orderAddMonoidHom G
   __ := AddEquiv.ofBijective (orderAddMonoidHom G) orderAddMonoidHom_bijective
-  map_le_map_iff' {a b} := by
+  map_rel_iff' {a b} := by
     obtain ⟨b, rfl⟩ := add_left_surjective a b
     suffices 0 ≤ orderAddMonoidHom G b ↔ 0 ≤ b by simpa
     obtain hb | hb := le_total 0 b

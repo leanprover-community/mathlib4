@@ -66,7 +66,7 @@ theorem TFAE [IsBezout R] [IsDomain R] :
       exact
         { toFun := f
           inj' := fun x y e => by ext1; rw [hf, hf, e]
-          map_le_map_iff' := by
+          map_rel_iff' := by
             dsimp
             intro a b
             rw [← Ideal.span_singleton_lt_span_singleton, ← hf, ← hf]

@@ -93,7 +93,7 @@ def isInitialIso : {x // IsInitial x} ≃o Cardinal where
   invFun x := ⟨x.ord, isInitial_ord _⟩
   left_inv x := Subtype.ext x.2.ord_card
   right_inv x := card_ord x
-  map_le_map_iff' {a _} := a.2.card_le_card
+  map_rel_iff' {a _} := a.2.card_le_card
 
 /-- The "pre-omega" function gives the initial ordinals listed by their ordinal index.
 `preOmega n = n`, `preOmega ω = ω`, `preOmega (ω + 1) = ω₁`, etc.
@@ -102,7 +102,7 @@ For the more common omega function skipping over finite ordinals, see `Ordinal.o
 def preOmega : Ordinal.{u} ↪o Ordinal.{u} where
   toFun := enumOrd {x | IsInitial x}
   inj' _ _ h := enumOrd_injective not_bddAbove_isInitial h
-  map_le_map_iff' := enumOrd_le_enumOrd not_bddAbove_isInitial
+  map_rel_iff' := enumOrd_le_enumOrd not_bddAbove_isInitial
 
 theorem coe_preOmega : preOmega = enumOrd {x | IsInitial x} :=
   rfl

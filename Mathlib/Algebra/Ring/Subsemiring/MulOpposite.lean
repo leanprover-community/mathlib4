@@ -73,7 +73,7 @@ def opEquiv : Subsemiring R ≃o Subsemiring Rᵐᵒᵖ where
   invFun := Subsemiring.unop
   left_inv := unop_op
   right_inv := op_unop
-  map_le_map_iff' := op_le_op_iff
+  map_rel_iff' := op_le_op_iff
 
 theorem op_injective : (@Subsemiring.op R _).Injective := opEquiv.injective
 theorem unop_injective : (@Subsemiring.unop R _).Injective := opEquiv.symm.injective

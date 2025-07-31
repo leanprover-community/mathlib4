@@ -401,7 +401,7 @@ def _root_.Homeomorph.opensCongr (f : α ≃ₜ β) : Opens α ≃o Opens β whe
   invFun := Opens.comap (f : C(α, β))
   left_inv _ := ext <| f.toEquiv.preimage_symm_preimage _
   right_inv _ := ext <| f.toEquiv.symm_preimage_preimage _
-  map_le_map_iff' := by
+  map_rel_iff' := by
     simp only [← SetLike.coe_subset_coe]; exact f.symm.surjective.preimage_subset_preimage_iff
 
 @[simp]

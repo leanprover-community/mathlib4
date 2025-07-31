@@ -106,14 +106,14 @@ lattice of lower sets. -/
 def supIrredLowerSet : α ↪o {s : LowerSet α // SupIrred s} where
   toFun a := ⟨Iic a, supIrred_Iic _⟩
   inj' _ := by simp
-  map_le_map_iff' := by simp
+  map_rel_iff' := by simp
 
 /-- The **Birkhoff Embedding** of a finite partial order as inf-irreducible elements in its
 lattice of lower sets. -/
 def infIrredUpperSet : α ↪o {s : UpperSet α // InfIrred s} where
   toFun a := ⟨Ici a, infIrred_Ici _⟩
   inj' _ := by simp
-  map_le_map_iff' := by simp
+  map_rel_iff' := by simp
 
 @[simp] lemma supIrredLowerSet_apply (a : α) : supIrredLowerSet a = ⟨Iic a, supIrred_Iic _⟩ := rfl
 @[simp] lemma infIrredUpperSet_apply (a : α) : infIrredUpperSet a = ⟨Ici a, infIrred_Ici _⟩ := rfl

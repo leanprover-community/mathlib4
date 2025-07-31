@@ -346,7 +346,7 @@ See also `equivMatrix`.
 @[simps!]
 def orderIsoMatrix : TwoSidedIdeal R ≃o TwoSidedIdeal (Matrix n n R) where
   __ := equivMatrix
-  map_le_map_iff' {I J} := by
+  map_rel_iff' {I J} := by
     simp only [equivMatrix_apply]
     constructor
     · intro le x xI

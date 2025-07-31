@@ -84,7 +84,7 @@ def Subsemigroup.toAddSubsemigroup : Subsemigroup M ≃o AddSubsemigroup (Additi
   invFun S :=
     { carrier := Additive.ofMul ⁻¹' S
       mul_mem' := S.add_mem' }
-  map_le_map_iff' := Iff.rfl
+  map_rel_iff' := Iff.rfl
 
 /-- Additive subsemigroups of an additive semigroup `Additive M` are isomorphic to subsemigroups
 of `M`. -/
@@ -123,7 +123,7 @@ def AddSubsemigroup.toSubsemigroup : AddSubsemigroup A ≃o Subsemigroup (Multip
   invFun S :=
     { carrier := Multiplicative.ofAdd ⁻¹' S
       add_mem' := S.mul_mem' }
-  map_le_map_iff' := Iff.rfl
+  map_rel_iff' := Iff.rfl
 
 /-- Subsemigroups of a semigroup `Multiplicative A` are isomorphic to additive subsemigroups
 of `A`. -/

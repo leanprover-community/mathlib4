@@ -90,7 +90,7 @@ you should parametrize over
 structure OrderAddMonoidIso (α β : Type*) [Preorder α] [Preorder β] [Add α] [Add β]
   extends α ≃+ β where
   /-- An `OrderAddMonoidIso` respects `≤`. -/
-  map_le_map_iff' {a b : α} : toFun a ≤ toFun b ↔ a ≤ b
+  map_rel_iff' {a b : α} : toFun a ≤ toFun b ↔ a ≤ b
 
 /-- Infix notation for `OrderAddMonoidIso`. -/
 infixr:25 " ≃+o " => OrderAddMonoidIso
@@ -146,7 +146,7 @@ you should parametrize over
 structure OrderMonoidIso (α β : Type*) [Preorder α] [Preorder β] [Mul α] [Mul β]
   extends α ≃* β where
   /-- An `OrderMonoidIso` respects `≤`. -/
-  map_le_map_iff' {a b : α} : toFun a ≤ toFun b ↔ a ≤ b
+  map_rel_iff' {a b : α} : toFun a ≤ toFun b ↔ a ≤ b
 
 /-- Infix notation for `OrderMonoidIso`. -/
 infixr:25 " ≃*o " => OrderMonoidIso
@@ -162,7 +162,7 @@ into an actual `OrderMonoidIso`. This is declared as the default coercion from `
 def OrderMonoidIsoClass.toOrderMonoidIso [EquivLike F α β] [OrderIsoClass F α β]
     [MulEquivClass F α β] (f : F) :
     α ≃*o β :=
-  { (f : α ≃* β) with map_le_map_iff' := OrderIsoClass.map_le_map_iff f }
+  { (f : α ≃* β) with map_rel_iff' := OrderIsoClass.map_le_map_iff f }
 
 /-- Any type satisfying `OrderMonoidHomClass` can be cast into `OrderMonoidHom` via
   `OrderMonoidHomClass.toOrderMonoidHom`. -/
@@ -490,7 +490,7 @@ instance : EquivLike (α ≃*o β) α β where
 
 @[to_additive]
 instance : OrderIsoClass (α ≃*o β) α β where
-  map_le_map_iff f := f.map_le_map_iff'
+  map_le_map_iff f := f.map_rel_iff'
 
 @[to_additive]
 instance : MulEquivClass (α ≃*o β) α β where
@@ -516,7 +516,7 @@ theorem mk_coe (f : α ≃*o β) (h) : OrderMonoidIso.mk (f : α ≃* β) h = f 
 @[to_additive "Reinterpret an ordered additive monoid isomomorphism as an order isomomorphism."]
 def toOrderIso (f : α ≃*o β) : α ≃o β :=
   { f with
-    map_le_map_iff' := map_le_map_iff f }
+    map_rel_iff' := map_le_map_iff f }
 
 @[to_additive (attr := simp)]
 theorem coe_mulEquiv (f : α ≃*o β) : ((f : α ≃* β) : α → β) = f :=
@@ -539,7 +539,7 @@ variable (α)
 /-- The identity map as an ordered monoid isomorphism. -/
 @[to_additive "The identity map as an ordered additive monoid isomorphism."]
 protected def refl : α ≃*o α :=
-  { MulEquiv.refl α with map_le_map_iff' := by simp }
+  { MulEquiv.refl α with map_rel_iff' := by simp }
 
 @[to_additive (attr := simp)]
 theorem coe_refl : ⇑(OrderMonoidIso.refl α) = id :=
@@ -554,7 +554,7 @@ variable {α}
 /-- Transitivity of multiplication-preserving order isomorphisms -/
 @[to_additive (attr := trans) "Transitivity of addition-preserving order isomorphisms"]
 def trans (f : α ≃*o β) (g : β ≃*o γ) : α ≃*o γ :=
-  { (f : α ≃* β).trans g with map_le_map_iff' := by simp }
+  { (f : α ≃* β).trans g with map_rel_iff' := by simp }
 
 @[to_additive (attr := simp)]
 theorem coe_trans (f : α ≃*o β) (g : β ≃*o γ) : (f.trans g : α → γ) = g ∘ f :=
@@ -721,7 +721,7 @@ variable {_ : CommGroup α} {_ : PartialOrder α} {_ : CommGroup β} {_ : Partia
       addition."]
 def mk' (f : α ≃ β) (hf : ∀ {a b}, f a ≤ f b ↔ a ≤ b) (map_mul : ∀ a b : α, f (a * b) = f a * f b) :
     α ≃*o β :=
-  { MulEquiv.mk' f map_mul with map_le_map_iff' := hf }
+  { MulEquiv.mk' f map_mul with map_rel_iff' := hf }
 
 end OrderedCommGroup
 

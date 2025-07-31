@@ -90,7 +90,7 @@ def Submonoid.toAddSubmonoid : Submonoid M ≃o AddSubmonoid (Additive M) where
       mul_mem' := fun ha hb => S.add_mem' ha hb}
   left_inv x := by cases x; rfl
   right_inv x := by cases x; rfl
-  map_le_map_iff' := Iff.rfl
+  map_rel_iff' := Iff.rfl
 
 /-- Additive submonoids of an additive monoid `Additive M` are isomorphic to submonoids of `M`. -/
 abbrev AddSubmonoid.toSubmonoid' : AddSubmonoid (Additive M) ≃o Submonoid M :=
@@ -132,7 +132,7 @@ def AddSubmonoid.toSubmonoid : AddSubmonoid A ≃o Submonoid (Multiplicative A) 
       add_mem' := fun ha hb => S.mul_mem' ha hb}
   left_inv x := by cases x; rfl
   right_inv x := by cases x; rfl
-  map_le_map_iff' := Iff.rfl
+  map_rel_iff' := Iff.rfl
 
 /-- Submonoids of a monoid `Multiplicative A` are isomorphic to additive submonoids of `A`. -/
 abbrev Submonoid.toAddSubmonoid' : Submonoid (Multiplicative A) ≃o AddSubmonoid A :=

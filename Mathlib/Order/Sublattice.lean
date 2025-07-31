@@ -161,7 +161,7 @@ instance instInhabited : Inhabited (Sublattice α) := ⟨⊥⟩
 This is the sublattice version of `Equiv.Set.univ α`. -/
 def topEquiv : (⊤ : Sublattice α) ≃o α where
   toEquiv := Equiv.Set.univ _
-  map_le_map_iff' := Iff.rfl
+  map_rel_iff' := Iff.rfl
 
 @[simp, norm_cast] lemma coe_top : (⊤ : Sublattice α) = (univ : Set α) := rfl
 @[simp, norm_cast] lemma coe_bot : (⊥ : Sublattice α) = (∅ : Set α) := rfl
@@ -355,7 +355,7 @@ lemma le_prod_iff {M : Sublattice β} {N : Sublattice (α × β)} :
 @[simps! toEquiv apply symm_apply]
 def prodEquiv (L : Sublattice α) (M : Sublattice β) : L.prod M ≃o L × M where
   toEquiv := Equiv.Set.prod _ _
-  map_le_map_iff' := Iff.rfl
+  map_rel_iff' := Iff.rfl
 
 section Pi
 variable {κ : Type*} {π : κ → Type*} [∀ i, Lattice (π i)]

@@ -51,6 +51,6 @@ on `Mᵃᵒᵖ`"]
 def orderIsoOp : Con M ≃o Con Mᵐᵒᵖ where
   toFun := op
   invFun := unop
-  map_le_map_iff' {c d} := by rw [le_def, le_def]; constructor <;> intro h _ _ h' <;> exact h h'
+  map_rel_iff' {c d} := by rw [le_def, le_def]; constructor <;> intro h _ _ h' <;> exact h h'
 
 end Con

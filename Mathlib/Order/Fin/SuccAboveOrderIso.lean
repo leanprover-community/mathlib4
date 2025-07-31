@@ -32,5 +32,5 @@ noncomputable def Fin.succAboveOrderIso {n : ℕ} (i : Fin (n + 2)) :
         obtain rfl | ⟨i, rfl⟩ := Fin.eq_zero_or_eq_succ i
         · exact ⟨j.pred hj, by simp⟩
         · exact ⟨i.predAbove j, by aesop⟩)
-  map_le_map_iff' {a b} := by
+  map_rel_iff' {a b} := by
     simp only [Equiv.ofBijective_apply, Subtype.mk_le_mk, OrderEmbedding.le_iff_le]

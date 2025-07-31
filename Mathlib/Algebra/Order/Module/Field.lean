@@ -51,7 +51,7 @@ variable (G)
 @[simps!]
 def OrderIso.smulRightDual (ha : a < 0) : G ≃o Gᵒᵈ where
   toEquiv := (Equiv.smulRight ha.ne).trans toDual
-  map_le_map_iff' := (@OrderDual.toDual_le_toDual G).trans <| smul_le_smul_iff_of_neg_left ha
+  map_rel_iff' := (@OrderDual.toDual_le_toDual G).trans <| smul_le_smul_iff_of_neg_left ha
 
 end PosSMulMono
 

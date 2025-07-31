@@ -82,14 +82,14 @@ def boxProdAssoc (I : SimpleGraph γ) : G □ H □ I ≃g G □ (H □ I) :=
 def boxProdLeft (b : β) : G ↪g G □ H where
   toFun a := (a, b)
   inj' _ _ := congr_arg Prod.fst
-  map_le_map_iff' {_ _} := boxProd_adj_left
+  map_rel_iff' {_ _} := boxProd_adj_left
 
 /-- The embedding of `H` into `G □ H` given by `a`. -/
 @[simps]
 def boxProdRight (a : α) : H ↪g G □ H where
   toFun := Prod.mk a
   inj' _ _ := congr_arg Prod.snd
-  map_le_map_iff' {_ _} := boxProd_adj_right
+  map_rel_iff' {_ _} := boxProd_adj_right
 
 namespace Walk
 

@@ -34,7 +34,7 @@ variable (r x) in
 less than `x`. -/
 def sumLexComplLeft : Sum.Lex (Subrel r (r · x)) (Subrel r (¬ r · x)) ≃r r where
   toEquiv := .sumCompl (r · x)
-  map_le_map_iff' := by
+  map_rel_iff' := by
     rintro (⟨a, ha⟩ | ⟨a, ha⟩) (⟨b, hb⟩ | ⟨b, hb⟩)
     · simp
     · simpa using trans_trichotomous_right ha hb
@@ -54,7 +54,7 @@ variable (r x) in
 greater than `x`. -/
 def sumLexComplRight : Sum.Lex (Subrel r (¬ r x ·)) (Subrel r (r x)) ≃r r where
   toEquiv := (Equiv.sumComm _ _).trans <| .sumCompl (r x)
-  map_le_map_iff' := by
+  map_rel_iff' := by
     rintro (⟨a, ha⟩ | ⟨a, ha⟩) (⟨b, hb⟩ | ⟨b, hb⟩)
     · simp
     · simpa using trans_trichotomous_left ha hb
@@ -152,7 +152,7 @@ def prodUnique [PartialOrder α] [Preorder β] [Unique β] : α ×ₗ β ≃o α
   invFun x := toLex (x, default)
   left_inv x := x.rec fun (a, b) ↦ by simpa using Unique.default_eq b
   right_inv x := by simp
-  map_le_map_iff' {a b} := a.rec fun a ↦ b.rec fun b ↦ by
+  map_rel_iff' {a b} := a.rec fun a ↦ b.rec fun b ↦ by
     simpa [Prod.Lex.toLex_le_toLex] using le_iff_lt_or_eq
 
 variable {α β} in
@@ -166,7 +166,7 @@ def uniqueProd [Preorder α] [Unique α] [LE β] : α ×ₗ β ≃o β where
   invFun x := toLex (default, x)
   left_inv x := x.rec fun (a, b) ↦ by simpa using Unique.default_eq a
   right_inv x := by simp
-  map_le_map_iff' {a b} := a.rec fun a ↦ b.rec fun b ↦ by
+  map_rel_iff' {a b} := a.rec fun a ↦ b.rec fun b ↦ by
     have heq : a.1 = b.1 := Subsingleton.allEq _ _
     simp [Prod.Lex.toLex_le_toLex, heq]
 

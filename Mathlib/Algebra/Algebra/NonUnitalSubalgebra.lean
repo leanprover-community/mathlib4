@@ -243,7 +243,7 @@ def toSubmodule' [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A] :
   toEmbedding :=
     { toFun := fun S => S.toSubmodule
       inj' := fun S T h => ext <| by apply SetLike.ext_iff.1 h }
-  map_le_map_iff' := SetLike.coe_subset_coe.symm.trans SetLike.coe_subset_coe
+  map_rel_iff' := SetLike.coe_subset_coe.symm.trans SetLike.coe_subset_coe
 
 /-- The forgetful map from `NonUnitalSubalgebra` to `NonUnitalSubsemiring` as an
 `OrderEmbedding` -/
@@ -252,7 +252,7 @@ def toNonUnitalSubsemiring' [CommSemiring R] [NonUnitalNonAssocSemiring A] [Modu
   toEmbedding :=
     { toFun := fun S => S.toNonUnitalSubsemiring
       inj' := fun S T h => ext <| by apply SetLike.ext_iff.1 h }
-  map_le_map_iff' := SetLike.coe_subset_coe.symm.trans SetLike.coe_subset_coe
+  map_rel_iff' := SetLike.coe_subset_coe.symm.trans SetLike.coe_subset_coe
 
 /-- The forgetful map from `NonUnitalSubalgebra` to `NonUnitalSubsemiring` as an
 `OrderEmbedding` -/
@@ -261,7 +261,7 @@ def toNonUnitalSubring' [CommRing R] [NonUnitalNonAssocRing A] [Module R A] :
   toEmbedding :=
     { toFun := fun S => S.toNonUnitalSubring
       inj' := fun S T h => ext <| by apply SetLike.ext_iff.1 h }
-  map_le_map_iff' := SetLike.coe_subset_coe.symm.trans SetLike.coe_subset_coe
+  map_rel_iff' := SetLike.coe_subset_coe.symm.trans SetLike.coe_subset_coe
 
 variable [CommSemiring R]
 variable [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B] [NonUnitalNonAssocSemiring C]

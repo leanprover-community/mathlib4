@@ -98,7 +98,7 @@ def subobjectEquiv [HasFiniteLimits C] [PreservesFiniteLimits T] (A : Structured
   left_inv _ := lift_projectSubobject _ _
   right_inv P := Subtype.ext (by simp only [liftSubobject, homMk_right, projectSubobject_mk,
       Subobject.mk_arrow])
-  map_le_map_iff' := by
+  map_rel_iff' := by
     apply Subobject.ind₂
     intro P Q f g hf hg
     refine ⟨fun h => Subobject.mk_le_mk_of_comm ?_ ?_, fun h => ?_⟩
@@ -203,7 +203,7 @@ def quotientEquiv [HasFiniteColimits C] [PreservesFiniteColimits S] (A : Costruc
   left_inv _ := lift_projectQuotient _ _
   right_inv P := Subtype.ext (by simp only [liftQuotient, Quiver.Hom.unop_op, homMk_left,
       Quiver.Hom.op_unop, projectQuotient_mk, Subobject.mk_arrow])
-  map_le_map_iff' := by
+  map_rel_iff' := by
     apply Subobject.ind₂
     intro P Q f g hf hg
     refine ⟨fun h => Subobject.mk_le_mk_of_comm ?_ ?_, fun h => ?_⟩

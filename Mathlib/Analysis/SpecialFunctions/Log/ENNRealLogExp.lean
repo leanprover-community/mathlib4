@@ -75,7 +75,7 @@ def logOrderIso : ℝ≥0∞ ≃o EReal where
   invFun := exp
   left_inv x := exp_log x
   right_inv x := log_exp x
-  map_le_map_iff' := by simp only [Equiv.coe_fn_mk, log_le_log_iff, forall_const]
+  map_rel_iff' := by simp only [Equiv.coe_fn_mk, log_le_log_iff, forall_const]
 
 @[simp] lemma logOrderIso_apply (x : ℝ≥0∞) : logOrderIso x = log x := rfl
 

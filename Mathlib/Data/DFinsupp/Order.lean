@@ -45,7 +45,7 @@ lemma le_def : f ≤ g ↔ ∀ i, f i ≤ g i := Iff.rfl
 def orderEmbeddingToFun : (Π₀ i, α i) ↪o ∀ i, α i where
   toFun := DFunLike.coe
   inj' := DFunLike.coe_injective
-  map_le_map_iff' := Iff.rfl
+  map_rel_iff' := Iff.rfl
 
 @[simp, norm_cast]
 lemma coe_orderEmbeddingToFun : ⇑(orderEmbeddingToFun (α := α)) = DFunLike.coe := rfl

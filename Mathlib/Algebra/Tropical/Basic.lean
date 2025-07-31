@@ -171,7 +171,7 @@ instance instPreorderTropical [Preorder R] : Preorder (Tropical R) :=
 
 /-- Reinterpret `x : R` as an element of `Tropical R`, preserving the order. -/
 def tropOrderIso [Preorder R] : R ≃o Tropical R :=
-  { tropEquiv with map_le_map_iff' := untrop_le_iff }
+  { tropEquiv with map_rel_iff' := untrop_le_iff }
 
 @[simp]
 theorem tropOrderIso_coe_fn [Preorder R] : (tropOrderIso : R → Tropical R) = trop :=

@@ -454,13 +454,13 @@ theorem map_le_map_iff {f : G →* N} {H K : Subgroup G} : H.map f ≤ K.map f �
   rw [map_le_iff_le_comap, comap_map_eq]
 
 @[to_additive]
-theorem map_le_map_iff' {f : G →* N} {H K : Subgroup G} :
+theorem map_rel_iff' {f : G →* N} {H K : Subgroup G} :
     H.map f ≤ K.map f ↔ H ⊔ f.ker ≤ K ⊔ f.ker := by
   simp only [map_le_map_iff, sup_le_iff, le_sup_right, and_true]
 
 @[to_additive]
 theorem map_eq_map_iff {f : G →* N} {H K : Subgroup G} :
-    H.map f = K.map f ↔ H ⊔ f.ker = K ⊔ f.ker := by simp only [le_antisymm_iff, map_le_map_iff']
+    H.map f = K.map f ↔ H ⊔ f.ker = K ⊔ f.ker := by simp only [le_antisymm_iff, map_rel_iff']
 
 @[to_additive]
 theorem map_eq_range_iff {f : G →* N} {H : Subgroup G} :
@@ -485,7 +485,7 @@ def MapSubtype.orderIso (H : Subgroup G) : Subgroup ↥H ≃o { H' : Subgroup G 
   invFun sH' := sH'.1.subgroupOf H
   left_inv H' := comap_map_eq_self_of_injective H.subtype_injective H'
   right_inv sH' := Subtype.ext (map_subgroupOf_eq_of_le sH'.2)
-  map_le_map_iff' := by simp
+  map_rel_iff' := by simp
 
 @[to_additive (attr := simp)]
 lemma MapSubtype.orderIso_symm_apply (H : Subgroup G) (sH' : { H' : Subgroup G // H' ≤ H }) :

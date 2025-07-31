@@ -350,7 +350,7 @@ protected lemma Subgraph.IsInduced.isIndContained {G' : G.Subgraph} (hG' : G'.Is
     G'.coe ⊴ G :=
   ⟨{ toFun := (↑)
      inj' := Subtype.coe_injective
-     map_le_map_iff' := hG'.adj.symm }⟩
+     map_rel_iff' := hG'.adj.symm }⟩
 
 @[refl] lemma IsIndContained.refl (G : SimpleGraph V) : G ⊴ G := ⟨Embedding.refl⟩
 lemma IsIndContained.rfl : G ⊴ G := .refl _
@@ -359,7 +359,7 @@ lemma IsIndContained.rfl : G ⊴ G := .refl _
 lemma IsIndContained.of_isEmpty [IsEmpty V] : G ⊴ H :=
   ⟨{ toFun := isEmptyElim
      inj' := isEmptyElim
-     map_le_map_iff' := fun {a} ↦ isEmptyElim a }⟩
+     map_rel_iff' := fun {a} ↦ isEmptyElim a }⟩
 
 lemma isIndContained_iff_exists_iso_subgraph :
     G ⊴ H ↔ ∃ (H' : H.Subgraph) (_e : G ≃g H'.coe), H'.IsInduced := by

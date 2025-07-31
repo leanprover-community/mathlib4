@@ -666,7 +666,7 @@ theorem withTopEquiv_symm_lt {x y : ℕ∞} : withTopEquiv.symm x < withTopEquiv
 
 /-- `toWithTop` induces an order isomorphism between `PartENat` and `ℕ∞`. -/
 noncomputable def withTopOrderIso : PartENat ≃o ℕ∞ :=
-  { withTopEquiv with map_le_map_iff' := @fun _ _ => withTopEquiv_le }
+  { withTopEquiv with map_rel_iff' := @fun _ _ => withTopEquiv_le }
 
 /-- `toWithTop` induces an additive monoid isomorphism between `PartENat` and `ℕ∞`. -/
 noncomputable def withTopAddEquiv : PartENat ≃+ ℕ∞ :=

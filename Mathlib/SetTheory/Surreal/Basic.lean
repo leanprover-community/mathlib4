@@ -446,6 +446,6 @@ namespace Ordinal
 noncomputable def toSurreal : Ordinal ↪o Surreal where
   toFun o := mk _ (numeric_toPGame o)
   inj' a b h := toPGame_equiv_iff.1 (by apply Quotient.exact h) -- Porting note: Added `by apply`
-  map_le_map_iff' := @toPGame_le_iff
+  map_rel_iff' := @toPGame_le_iff
 
 end Ordinal

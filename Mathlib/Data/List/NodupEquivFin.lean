@@ -83,7 +83,7 @@ variable [DecidableEq α]
 `Fin (length l)` and the set of elements of `l`. -/
 def getIso (l : List α) (H : Sorted (· < ·) l) : Fin (length l) ≃o { x // x ∈ l } where
   toEquiv := H.nodup.getEquiv l
-  map_le_map_iff' := H.get_strictMono.le_iff_le
+  map_rel_iff' := H.get_strictMono.le_iff_le
 
 variable (H : Sorted (· < ·) l) {x : { x // x ∈ l }} {i : Fin l.length}
 

@@ -697,7 +697,7 @@ def substructureReduct (φ : L →ᴸ L') [φ.IsExpansionOn M] :
   inj' S T h := by
     simp only [SetLike.coe_set_eq, Substructure.mk.injEq] at h
     exact h
-  map_le_map_iff' {_ _} := Iff.rfl
+  map_rel_iff' {_ _} := Iff.rfl
 
 variable (φ : L →ᴸ L') [φ.IsExpansionOn M]
 

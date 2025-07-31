@@ -72,7 +72,7 @@ def opEquiv : Subalgebra R A ≃o Subalgebra R Aᵐᵒᵖ where
   invFun := Subalgebra.unop
   left_inv := unop_op
   right_inv := op_unop
-  map_le_map_iff' := op_le_op_iff
+  map_rel_iff' := op_le_op_iff
 
 @[simp]
 theorem op_bot : (⊥ : Subalgebra R A).op = ⊥ := opEquiv.map_bot

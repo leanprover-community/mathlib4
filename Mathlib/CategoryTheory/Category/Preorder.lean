@@ -198,7 +198,7 @@ def Equivalence.toOrderIso (e : X ≌ Y) : X ≃o Y where
   invFun := e.inverse.obj
   left_inv a := (e.unitIso.app a).to_eq.symm
   right_inv b := (e.counitIso.app b).to_eq
-  map_le_map_iff' {a a'} :=
+  map_rel_iff' {a a'} :=
     ⟨fun h =>
       ((Equivalence.unit e).app a ≫ e.inverse.map h.hom ≫ (Equivalence.unitInv e).app a').le,
       fun h : a ≤ a' => (e.functor.map h.hom).le⟩

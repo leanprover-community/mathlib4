@@ -61,7 +61,7 @@ def _root_.Function.Embedding.coeWithTop : α ↪ WithTop α where
 def coeOrderHom {α : Type*} [Preorder α] : α ↪o WithTop α where
   toFun := (↑)
   inj' := WithTop.coe_injective
-  map_le_map_iff' := WithTop.coe_le_coe
+  map_rel_iff' := WithTop.coe_le_coe
 
 end WithTop
 
@@ -107,7 +107,7 @@ def _root_.Function.Embedding.coeWithBot : α ↪ WithBot α where
 def coeOrderHom {α : Type*} [Preorder α] : α ↪o WithBot α where
   toFun := (↑)
   inj' := WithBot.coe_injective
-  map_le_map_iff' := WithBot.coe_le_coe
+  map_rel_iff' := WithBot.coe_le_coe
 
 end WithBot
 
@@ -136,7 +136,7 @@ variable [Preorder α] [Preorder β]
 protected def withBotMap (f : α ↪o β) : WithBot α ↪o WithBot β where
   toFun := WithBot.map f
   inj' := WithBot.map_injective f.injective
-  map_le_map_iff' := WithBot.map_le_iff f f.map_rel_iff
+  map_rel_iff' := WithBot.map_le_iff f f.map_rel_iff
 
 /-- A version of `WithTop.map` for order embeddings. -/
 @[simps -fullyApplied]
@@ -148,7 +148,7 @@ protected def withTopMap (f : α ↪o β) : WithTop α ↪o WithTop β :=
 protected def withBotCoe : α ↪o WithBot α where
   toFun := .some
   inj' := Option.some_injective _
-  map_le_map_iff' := WithBot.coe_le_coe
+  map_rel_iff' := WithBot.coe_le_coe
 
 /-- Coercion `α → WithTop α` as an `OrderEmbedding`. -/
 @[simps -fullyApplied]

@@ -74,7 +74,7 @@ When you extend this structure, make sure to extend `OrderRingIsoClass`. -/
 structure OrderRingIso (α β : Type*) [Mul α] [Mul β] [Add α] [Add β] [LE α] [LE β] extends
   α ≃+* β where
   /-- The proposition that the function preserves the order bijectively. -/
-  map_le_map_iff' {a b : α} : toFun a ≤ toFun b ↔ a ≤ b
+  map_rel_iff' {a b : α} : toFun a ≤ toFun b ↔ a ≤ b
 
 @[inherit_doc]
 infixl:25 " ≃+*o " => OrderRingIso
@@ -111,7 +111,7 @@ This is declared as the default coercion from `F` to `α ≃+*o β`. -/
 @[coe]
 def OrderRingIsoClass.toOrderRingIso [Mul α] [Add α] [LE α] [Mul β] [Add β] [LE β]
     [OrderIsoClass F α β] [RingEquivClass F α β] (f : F) : α ≃+*o β :=
-{ (f : α ≃+* β) with map_le_map_iff' := map_le_map_iff f}
+{ (f : α ≃+* β) with map_rel_iff' := map_le_map_iff f}
 
 /-- Any type satisfying `OrderRingIsoClass` can be cast into `OrderRingIso` via
   `OrderRingIsoClass.toOrderRingIso`. -/
@@ -300,7 +300,7 @@ variable [Mul α] [Add α] [LE α] [Mul β] [Add β] [LE β] [Mul γ] [Add γ] [
 /-- Reinterpret an ordered ring isomorphism as an order isomorphism. -/
 @[coe]
 def toOrderIso (f : α ≃+*o β) : α ≃o β :=
-  ⟨f.toRingEquiv.toEquiv, f.map_le_map_iff'⟩
+  ⟨f.toRingEquiv.toEquiv, f.map_rel_iff'⟩
 
 instance : EquivLike (α ≃+*o β) α β where
   coe f := f.toFun
@@ -313,7 +313,7 @@ instance : EquivLike (α ≃+*o β) α β where
   right_inv f := f.right_inv
 
 instance : OrderIsoClass (α ≃+*o β) α β where
-  map_le_map_iff f _ _ := f.map_le_map_iff'
+  map_le_map_iff f _ _ := f.map_rel_iff'
 
 instance : RingEquivClass (α ≃+*o β) α β where
   map_mul f := f.map_mul'

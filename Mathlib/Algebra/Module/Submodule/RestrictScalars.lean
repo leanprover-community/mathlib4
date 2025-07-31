@@ -77,7 +77,7 @@ the lattice of `S`-submodules. -/
 def restrictScalarsEmbedding : Submodule R M ↪o Submodule S M where
   toFun := restrictScalars S
   inj' := restrictScalars_injective S R M
-  map_le_map_iff' := by simp [SetLike.le_def]
+  map_rel_iff' := by simp [SetLike.le_def]
 
 /-- Turning `p : Submodule R M` into an `S`-submodule gives the same module structure
 as turning it into a type and adding a module structure. -/

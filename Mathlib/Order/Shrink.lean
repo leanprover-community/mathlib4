@@ -26,7 +26,7 @@ instance [Preorder α] : Preorder (Shrink.{u} α) where
 /-- The order isomorphism `α ≃o Shrink.{u} α`. -/
 noncomputable def orderIsoShrink [Preorder α] : α ≃o Shrink.{u} α where
   toEquiv := equivShrink α
-  map_le_map_iff' {a b} := by
+  map_rel_iff' {a b} := by
     obtain ⟨a, rfl⟩ := (equivShrink.{u} α).symm.surjective a
     obtain ⟨b, rfl⟩ := (equivShrink.{u} α).symm.surjective b
     simp only [Equiv.apply_symm_apply]

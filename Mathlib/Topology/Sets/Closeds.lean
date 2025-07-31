@@ -230,7 +230,7 @@ def Closeds.complOrderIso : Closeds α ≃o (Opens α)ᵒᵈ where
   invFun := Opens.compl ∘ OrderDual.ofDual
   left_inv s := by simp [Closeds.compl_compl]
   right_inv s := by simp [Opens.compl_compl]
-  map_le_map_iff' := (@OrderDual.toDual_le_toDual (Opens α)).trans compl_subset_compl
+  map_rel_iff' := (@OrderDual.toDual_le_toDual (Opens α)).trans compl_subset_compl
 
 /-- `TopologicalSpace.Opens.compl` as an `OrderIso` to the order dual of
 `TopologicalSpace.Closeds α`. -/
@@ -240,7 +240,7 @@ def Opens.complOrderIso : Opens α ≃o (Closeds α)ᵒᵈ where
   invFun := Closeds.compl ∘ OrderDual.ofDual
   left_inv s := by simp [Opens.compl_compl]
   right_inv s := by simp [Closeds.compl_compl]
-  map_le_map_iff' := (@OrderDual.toDual_le_toDual (Closeds α)).trans compl_subset_compl
+  map_rel_iff' := (@OrderDual.toDual_le_toDual (Closeds α)).trans compl_subset_compl
 
 variable {α}
 

@@ -208,7 +208,7 @@ def _root_.Subgroup.orderIsoCon :
   invFun c := ⟨c.subgroup, inferInstance⟩
   left_inv := fun ⟨N, _⟩ ↦ Subtype.mk_eq_mk.mpr (Con.subgroup_quotientGroupCon N)
   right_inv c := QuotientGroup.con_subgroup c
-  map_le_map_iff' := by
+  map_rel_iff' := by
     simp only [QuotientGroup.con, Equiv.coe_fn_mk, Con.le_def, Con.rel_mk, leftRel_apply]
     refine ⟨fun h x _ ↦ ?_, fun hle _ _ h ↦ hle h⟩
     specialize @h 1 x

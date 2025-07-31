@@ -105,7 +105,7 @@ sending `a` to `a - b`."]
 def mkOrderEmbedding (b : s) : α ↪o Localization s where
   toFun a := mk a b
   inj' := mk_left_injective _
-  map_le_map_iff' {a b} := by simp [mk_le_mk]
+  map_rel_iff' {a b} := by simp [mk_le_mk]
 
 end OrderedCancelCommMonoid
 

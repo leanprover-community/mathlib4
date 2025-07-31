@@ -106,12 +106,12 @@ lemma toUpperSet_le_iff {a b : α} : toUpperSet a ≤ toUpperSet b ↔ a ≤ b :
 /-- `ofUpperSet` as an `OrderIso` -/
 def ofUpperSetOrderIso : WithUpperSet α ≃o α where
   toEquiv := ofUpperSet
-  map_le_map_iff' := ofUpperSet_le_iff
+  map_rel_iff' := ofUpperSet_le_iff
 
 /-- `toUpperSet` as an `OrderIso` -/
 def toUpperSetOrderIso : α ≃o WithUpperSet α where
   toEquiv := toUpperSet
-  map_le_map_iff' := toUpperSet_le_iff
+  map_rel_iff' := toUpperSet_le_iff
 
 end WithUpperSet
 
@@ -152,12 +152,12 @@ lemma toLowerSet_le_iff {a b : α} : toLowerSet a ≤ toLowerSet b ↔ a ≤ b :
 /-- `ofLowerSet` as an `OrderIso` -/
 def ofLowerSetOrderIso : WithLowerSet α ≃o α where
   toEquiv := ofLowerSet
-  map_le_map_iff' := ofLowerSet_le_iff
+  map_rel_iff' := ofLowerSet_le_iff
 
 /-- `toLowerSet` as an `OrderIso` -/
 def toLowerSetOrderIso : α ≃o WithLowerSet α where
   toEquiv := toLowerSet
-  map_le_map_iff' := toLowerSet_le_iff
+  map_rel_iff' := toLowerSet_le_iff
 
 end WithLowerSet
 

@@ -835,7 +835,7 @@ def equivBool {α} [DecidableEq α] [LE α] [BoundedOrder α] [IsSimpleOrder α]
 /-- Every simple lattice over a partial order is order-isomorphic to `Bool`. -/
 def orderIsoBool : α ≃o Bool :=
   { equivBool with
-    map_le_map_iff' := @fun a b => by
+    map_rel_iff' := @fun a b => by
       rcases eq_bot_or_eq_top a with (rfl | rfl)
       · simp
       · rcases eq_bot_or_eq_top b with (rfl | rfl)

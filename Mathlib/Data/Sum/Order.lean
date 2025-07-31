@@ -492,7 +492,7 @@ variable {α₁ α₂ β₁ β₂ γ₁ γ₂ : Type*} [Preorder α] [Preorder �
 @[simps! apply]
 def sumCongr (ea : α₁ ≃o α₂) (eb : β₁ ≃o β₂) : α₁ ⊕ β₁ ≃o α₂ ⊕ β₂ where
   toEquiv := .sumCongr ea eb
-  map_le_map_iff' := by aesop
+  map_rel_iff' := by aesop
 
 @[simp]
 theorem sumCongr_trans (e₁ : α₁ ≃o β₁) (e₂ : α₂ ≃o β₂) (f₁ : β₁ ≃o γ₁) (f₂ : β₂ ≃o γ₂) :
@@ -511,7 +511,7 @@ theorem sumCongr_refl : sumCongr (.refl α) (.refl β) = .refl _ := by
 /-- `Equiv.sumComm` promoted to an order isomorphism. -/
 @[simps! apply]
 def sumComm (α β : Type*) [Preorder α] [Preorder β] : α ⊕ β ≃o β ⊕ α :=
-  { Equiv.sumComm α β with map_le_map_iff' := swap_le_swap_iff }
+  { Equiv.sumComm α β with map_rel_iff' := swap_le_swap_iff }
 
 @[simp]
 theorem sumComm_symm (α β : Type*) [Preorder α] [Preorder β] :
@@ -521,7 +521,7 @@ theorem sumComm_symm (α β : Type*) [Preorder α] [Preorder β] :
 /-- `Equiv.sumAssoc` promoted to an order isomorphism. -/
 def sumAssoc (α β γ : Type*) [Preorder α] [Preorder β] [Preorder γ] : (α ⊕ β) ⊕ γ ≃o α ⊕ (β ⊕ γ) :=
   { Equiv.sumAssoc α β γ with
-    map_le_map_iff' := fun {a b} => by
+    map_rel_iff' := fun {a b} => by
       rcases a with ((_ | _) | _) <;> rcases b with ((_ | _) | _) <;>
       simp [Equiv.sumAssoc] }
 
@@ -552,7 +552,7 @@ theorem sumAssoc_symm_apply_inr_inr : (sumAssoc α β γ).symm (inr (inr c)) = i
 /-- `orderDual` is distributive over `⊕` up to an order isomorphism. -/
 def sumDualDistrib (α β : Type*) [Preorder α] [Preorder β] : (α ⊕ β)ᵒᵈ ≃o αᵒᵈ ⊕ βᵒᵈ :=
   { Equiv.refl _ with
-    map_le_map_iff' := by
+    map_rel_iff' := by
       rintro (a | a) (b | b)
       · change inl (toDual a) ≤ inl (toDual b) ↔ toDual (inl a) ≤ toDual (inl b)
         simp [toDual_le_toDual, inl_le_inl_iff]
@@ -581,7 +581,7 @@ theorem sumDualDistrib_symm_inr : (sumDualDistrib α β).symm (inr (toDual b)) =
 @[simps! apply]
 def sumLexCongr (ea : α₁ ≃o α₂) (eb : β₁ ≃o β₂) : α₁ ⊕ₗ β₁ ≃o α₂ ⊕ₗ β₂ where
   toEquiv := ofLex.trans ((Equiv.sumCongr ea eb).trans toLex)
-  map_le_map_iff' := by simp_rw [Lex.forall]; rintro (a | a) (b | b) <;> simp
+  map_rel_iff' := by simp_rw [Lex.forall]; rintro (a | a) (b | b) <;> simp
 
 @[simp]
 theorem sumLexCongr_trans (e₁ : α₁ ≃o β₁) (e₂ : α₂ ≃o β₂) (f₁ : β₁ ≃o γ₁) (f₂ : β₂ ≃o γ₂) :
@@ -601,7 +601,7 @@ theorem sumLexCongr_refl : sumLexCongr (.refl α) (.refl β) = .refl _ := by
 def sumLexAssoc (α β γ : Type*) [Preorder α] [Preorder β] [Preorder γ] :
     (α ⊕ₗ β) ⊕ₗ γ ≃o α ⊕ₗ β ⊕ₗ γ :=
   { Equiv.sumAssoc α β γ with
-    map_le_map_iff' := fun {a b} =>
+    map_rel_iff' := fun {a b} =>
       ⟨fun h =>
         match a, b, h with
         | inlₗ (inlₗ _), inlₗ (inlₗ _), Lex.inl h => Lex.inl <| Lex.inl h
@@ -649,7 +649,7 @@ theorem sumLexAssoc_symm_apply_inr_inr : (sumLexAssoc α β γ).symm (inr (inr c
 /-- `OrderDual` is antidistributive over `⊕ₗ` up to an order isomorphism. -/
 def sumLexDualAntidistrib (α β : Type*) [Preorder α] [Preorder β] : (α ⊕ₗ β)ᵒᵈ ≃o βᵒᵈ ⊕ₗ αᵒᵈ :=
   { Equiv.sumComm α β with
-    map_le_map_iff' := fun {a b} => by
+    map_rel_iff' := fun {a b} => by
       rcases a with (a | a) <;> rcases b with (b | b)
       · unfold Equiv.sumComm
         change

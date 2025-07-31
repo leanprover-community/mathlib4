@@ -821,7 +821,7 @@ def Equiv.toOrderIsoSet (e : α ≃ β) : Set α ≃o Set β where
   invFun s := e.symm '' s
   left_inv s := by simp only [← image_comp, Equiv.symm_comp_self, id, image_id']
   right_inv s := by simp only [← image_comp, Equiv.self_comp_symm, id, image_id']
-  map_le_map_iff' :=
+  map_rel_iff' :=
     ⟨fun h => by simpa using @monotone_image _ _ e.symm _ _ h, fun h => monotone_image h⟩
 
 variable [CompleteLattice α] (x : α × α)
