@@ -939,7 +939,7 @@ irreducible set is a zero locus of some prime ideal.
 protected def pointsEquivIrreducibleCloseds :
     PrimeSpectrum R ≃o (TopologicalSpace.IrreducibleCloseds (PrimeSpectrum R))ᵒᵈ where
   __ := irreducibleSetEquivPoints.toEquiv.symm.trans OrderDual.toDual
-  map_rel_iff' {p q} :=
+  map_le_map_iff' {p q} :=
     (RelIso.symm irreducibleSetEquivPoints).map_rel_iff.trans (le_iff_specializes p q).symm
 
 lemma stableUnderSpecialization_singleton {x : PrimeSpectrum R} :
@@ -1081,7 +1081,7 @@ def mulZeroAddOneEquivClopens :
           (IsIdempotentElem.of_mul_add hy.1 hy.2).1 <| SetLike.ext' (congr_arg (·.1) eq)
       · have ⟨e, f, mul, add, eq⟩ := isClopen_iff_mul_add.mp s.2
         exact ⟨⟨(e, f), mul, add⟩, SetLike.ext' eq.symm⟩
-  map_rel_iff' {a b} := show basicOpen _ ≤ basicOpen _ ↔ _ by
+  map_le_map_iff' {a b} := show basicOpen _ ≤ basicOpen _ ↔ _ by
     rw [← inf_eq_left, ← basicOpen_mul]
     refine ⟨fun h ↦ ?_, (by rw [·])⟩
     rw [← inf_eq_left]

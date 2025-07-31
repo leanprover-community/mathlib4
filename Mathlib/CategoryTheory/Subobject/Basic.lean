@@ -635,7 +635,7 @@ def mapIsoToOrderIso (e : X ≅ Y) : Subobject X ≃o Subobject Y where
   invFun := (map e.inv).obj
   left_inv g := by simp_rw [← map_comp, e.hom_inv_id, map_id]
   right_inv g := by simp_rw [← map_comp, e.inv_hom_id, map_id]
-  map_rel_iff' {A B} := by
+  map_le_map_iff' {A B} := by
     dsimp
     constructor
     · intro h

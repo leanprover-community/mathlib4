@@ -110,7 +110,7 @@ def PrespectralSpace.opensEquiv [PrespectralSpace X] :
     simp only [← SetLike.coe_subset_coe, Opens.iSup_mk, Opens.carrier_eq_coe, Opens.coe_mk] at H
     obtain ⟨s, hsI, hs, hU⟩ := U.isCompact.elim_finite_subcover_image (fun U _ ↦ U.2) H
     exact I.lower (a := hs.toFinset.sup fun i ↦ i) (by simpa [← SetLike.coe_subset_coe]) (by simpa)
-  map_rel_iff' {U V} := by
+  map_le_map_iff' {U V} := by
     change (∀ (W : CompactOpens X), (W : Set X) ⊆ U → (W : Set X) ⊆ V) ↔ U ≤ V
     refine ⟨?_, fun H W ↦ (le_trans · H)⟩
     intro H x hxU

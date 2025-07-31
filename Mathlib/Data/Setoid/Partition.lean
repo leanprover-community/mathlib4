@@ -259,7 +259,7 @@ protected def Partition.orderIso : Setoid α ≃o { C : Set (Set α) // IsPartit
   invFun C := mkClasses C.1 C.2.2
   left_inv := mkClasses_classes
   right_inv C := by rw [Subtype.ext_iff_val, ← classes_mkClasses C.1 C.2]
-  map_rel_iff' {r s} := by
+  map_le_map_iff' {r s} := by
     conv_rhs => rw [← mkClasses_classes r, ← mkClasses_classes s]
     rfl
 

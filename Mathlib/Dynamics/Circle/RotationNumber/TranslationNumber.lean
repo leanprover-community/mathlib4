@@ -199,7 +199,7 @@ def toOrderIso : CircleDeg1Liftˣ →* ℝ ≃o ℝ where
       invFun := ⇑f⁻¹
       left_inv := units_inv_apply_apply f
       right_inv := units_apply_inv_apply f
-      map_rel_iff' := ⟨fun h => by simpa using mono (↑f⁻¹) h, mono f⟩ }
+      map_le_map_iff' := ⟨fun h => by simpa using mono (↑f⁻¹) h, mono f⟩ }
   map_one' := rfl
   map_mul' _ _ := rfl
 

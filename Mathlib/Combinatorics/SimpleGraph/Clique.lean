@@ -414,7 +414,7 @@ def topEmbedding (f : ∀ (i : ι), V i) :
     (⊤ : SimpleGraph ι) ↪g completeMultipartiteGraph V where
   toFun := fun i ↦ ⟨i, f i⟩
   inj' := fun _ _ h ↦ (Sigma.mk.inj_iff.1 h).1
-  map_rel_iff' := by simp
+  map_le_map_iff' := by simp
 
 theorem not_cliqueFree_of_le_card [Fintype ι] (f : ∀ (i : ι), V i) (hc : n ≤ Fintype.card ι) :
     ¬ (completeMultipartiteGraph V).CliqueFree n :=

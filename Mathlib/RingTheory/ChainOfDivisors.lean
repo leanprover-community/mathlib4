@@ -361,7 +361,7 @@ def mkFactorOrderIsoOfFactorDvdEquiv {m : M} {n : N} {d : { l : M // l ∣ m } �
   right_inv := fun ⟨l, hl⟩ => by
     simp only [Subtype.coe_eta, Equiv.apply_symm_apply, Subtype.coe_mk,
       associatesEquivOfUniqueUnits_apply, out_mk, normalize_eq, mk_out]
-  map_rel_iff' := by
+  map_le_map_iff' := by
     rintro ⟨a, ha⟩ ⟨b, hb⟩
     simp only [Equiv.coe_fn_mk, Subtype.mk_le_mk, Associates.mk_le_mk_iff_dvd, hd,
         associatesEquivOfUniqueUnits_apply, out_dvd_iff, mk_out]

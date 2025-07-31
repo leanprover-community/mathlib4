@@ -34,7 +34,7 @@ variable (α)
 @[to_additive (attr := simps!) "`x ↦ -x` as an order-reversing equivalence."]
 def OrderIso.inv : α ≃o αᵒᵈ where
   toEquiv := (Equiv.inv α).trans OrderDual.toDual
-  map_rel_iff' {_ _} := inv_le_inv_iff (α := α)
+  map_le_map_iff' {_ _} := inv_le_inv_iff (α := α)
 
 end
 
@@ -54,7 +54,7 @@ theorem le_inv' : a ≤ b⁻¹ ↔ b ≤ a⁻¹ :=
 @[to_additive (attr := simps!) "`x ↦ a - x` as an order-reversing equivalence."]
 def OrderIso.divLeft (a : α) : α ≃o αᵒᵈ where
   toEquiv := (Equiv.divLeft a).trans OrderDual.toDual
-  map_rel_iff' {_ _} := div_le_div_iff_left (α := α) _
+  map_le_map_iff' {_ _} := div_le_div_iff_left (α := α) _
 
 end TypeclassesLeftRightLE
 
@@ -76,7 +76,7 @@ variable [MulRightMono α] {a : α}
 @[to_additive (attr := simps! +simpRhs toEquiv apply)
   "`Equiv.addRight` as an `OrderIso`. See also `OrderEmbedding.addRight`."]
 def OrderIso.mulRight (a : α) : α ≃o α where
-  map_rel_iff' {_ _} := mul_le_mul_iff_right a
+  map_le_map_iff' {_ _} := mul_le_mul_iff_right a
   toEquiv := Equiv.mulRight a
 
 @[to_additive (attr := simp)]
@@ -88,7 +88,7 @@ theorem OrderIso.mulRight_symm (a : α) : (OrderIso.mulRight a).symm = OrderIso.
 @[to_additive (attr := simps!) "`x ↦ x - a` as an order isomorphism."]
 def OrderIso.divRight (a : α) : α ≃o α where
   toEquiv := Equiv.divRight a
-  map_rel_iff' {_ _} := div_le_div_iff_right a
+  map_le_map_iff' {_ _} := div_le_div_iff_right a
 
 end Right
 
@@ -100,7 +100,7 @@ variable [MulLeftMono α]
 @[to_additive (attr := simps! +simpRhs toEquiv apply)
   "`Equiv.addLeft` as an `OrderIso`. See also `OrderEmbedding.addLeft`."]
 def OrderIso.mulLeft (a : α) : α ≃o α where
-  map_rel_iff' {_ _} := mul_le_mul_iff_left a
+  map_le_map_iff' {_ _} := mul_le_mul_iff_left a
   toEquiv := Equiv.mulLeft a
 
 @[to_additive (attr := simp)]

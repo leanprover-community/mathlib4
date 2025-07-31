@@ -192,7 +192,7 @@ namespace Finsupp
 /-- `Finsupp.toMultiset` as an order isomorphism. -/
 def orderIsoMultiset [DecidableEq ι] : (ι →₀ ℕ) ≃o Multiset ι where
   toEquiv := Multiset.toFinsupp.symm.toEquiv
-  map_rel_iff' {f g} := by simp [le_def, Multiset.le_iff_count]
+  map_le_map_iff' {f g} := by simp [le_def, Multiset.le_iff_count]
 
 @[simp]
 theorem coe_orderIsoMultiset [DecidableEq ι] : ⇑(@orderIsoMultiset ι _) = toMultiset :=

@@ -101,7 +101,7 @@ def sinhEquiv : ℝ ≃ ℝ where
 @[simps! -fullyApplied]
 def sinhOrderIso : ℝ ≃o ℝ where
   toEquiv := sinhEquiv
-  map_rel_iff' := @sinh_le_sinh
+  map_le_map_iff' := @sinh_le_sinh
 
 /-- `Real.sinh` as a `Homeomorph`. -/
 @[simps! -fullyApplied]

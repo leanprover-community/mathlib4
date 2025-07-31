@@ -62,7 +62,7 @@ def orderEmbeddingToFun : (ι →₀ α) ↪o (ι → α) where
     Finsupp.ext fun i => by
       dsimp at h
       rw [h]
-  map_rel_iff' := coe_le_coe
+  map_le_map_iff' := coe_le_coe
 
 @[simp]
 theorem orderEmbeddingToFun_apply {f : ι →₀ α} {i : ι} : orderEmbeddingToFun f i = f i :=

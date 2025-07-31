@@ -60,7 +60,7 @@ noncomputable def orderIsoSubobject : Subpresheaf F ≃o Subobject F where
   invFun X := Subpresheaf.range X.arrow
   left_inv A := by simp
   right_inv X := by simp
-  map_rel_iff' {A B} := by
+  map_le_map_iff' {A B} := by
     constructor
     · intro h
       have : range (Subobject.mk A.ι).arrow ≤ range (Subobject.mk B.ι).arrow :=

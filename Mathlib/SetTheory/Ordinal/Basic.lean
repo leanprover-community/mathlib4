@@ -506,7 +506,7 @@ noncomputable def enumIsoToType (o : Ordinal) : Set.Iio o ≃o o.toType where
   invFun x := ⟨typein (α := o.toType) (· < ·) x, typein_lt_self x⟩
   left_inv _ := Subtype.ext_val (typein_enum _ _)
   right_inv _ := enum_typein _ _
-  map_rel_iff' := enum_le_enum' _
+  map_le_map_iff' := enum_le_enum' _
 
 instance small_Iio (o : Ordinal.{u}) : Small.{u} (Iio o) :=
   ⟨_, ⟨(enumIsoToType _).toEquiv⟩⟩

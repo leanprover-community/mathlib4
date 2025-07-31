@@ -82,7 +82,7 @@ def opEquiv : Subgroup G ≃o Subgroup Gᵐᵒᵖ where
   invFun := Subgroup.unop
   left_inv := unop_op
   right_inv := op_unop
-  map_rel_iff' := op_le_op_iff
+  map_le_map_iff' := op_le_op_iff
 
 @[to_additive]
 theorem op_injective : (@Subgroup.op G _).Injective := opEquiv.injective

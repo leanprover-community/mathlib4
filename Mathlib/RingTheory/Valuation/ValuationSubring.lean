@@ -345,7 +345,7 @@ def primeSpectrumEquiv : PrimeSpectrum A ≃ {S // A ≤ S} where
 @[simps!]
 def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S // A ≤ S} :=
   { OrderDual.ofDual.trans (primeSpectrumEquiv A) with
-    map_rel_iff' {a b} :=
+    map_le_map_iff' {a b} :=
       ⟨a.rec <| fun a => b.rec <| fun b => fun h => by
         simp only [OrderDual.toDual_le_toDual]
         dsimp at h
@@ -473,7 +473,7 @@ theorem eq_iff_unitGroup {A B : ValuationSubring K} : A = B ↔ A.unitGroup = B.
 def unitGroupOrderEmbedding : ValuationSubring K ↪o Subgroup Kˣ where
   toFun A := A.unitGroup
   inj' := unitGroup_injective
-  map_rel_iff' {_A _B} := unitGroup_le_unitGroup
+  map_le_map_iff' {_A _B} := unitGroup_le_unitGroup
 
 theorem unitGroup_strictMono : StrictMono (unitGroup : ValuationSubring K → Subgroup _) :=
   unitGroupOrderEmbedding.strictMono
@@ -511,7 +511,7 @@ theorem nonunits_inj {A B : ValuationSubring K} : A.nonunits = B.nonunits ↔ A 
 def nonunitsOrderEmbedding : ValuationSubring K ↪o (Subsemigroup K)ᵒᵈ where
   toFun A := A.nonunits
   inj' := nonunits_injective
-  map_rel_iff' {_A _B} := nonunits_le_nonunits
+  map_le_map_iff' {_A _B} := nonunits_le_nonunits
 
 variable {A}
 
@@ -603,7 +603,7 @@ theorem eq_iff_principalUnitGroup {A B : ValuationSubring K} :
 def principalUnitGroupOrderEmbedding : ValuationSubring K ↪o (Subgroup Kˣ)ᵒᵈ where
   toFun A := A.principalUnitGroup
   inj' := principalUnitGroup_injective
-  map_rel_iff' {_A _B} := principalUnitGroup_le_principalUnitGroup
+  map_le_map_iff' {_A _B} := principalUnitGroup_le_principalUnitGroup
 
 theorem coe_mem_principalUnitGroup_iff {x : A.unitGroup} :
     (x : Kˣ) ∈ A.principalUnitGroup ↔

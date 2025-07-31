@@ -27,7 +27,7 @@ def sumEquiv : Set (α ⊕ β) ≃o Set α × Set β where
   left_inv s := image_preimage_inl_union_image_preimage_inr s
   right_inv s := by
     simp [preimage_image_eq _ Sum.inl_injective, preimage_image_eq _ Sum.inr_injective]
-  map_rel_iff' := by simp [subset_def]
+  map_le_map_iff' := by simp [subset_def]
 
 end Set
 
@@ -78,12 +78,12 @@ variable [Preorder α]
 def setCongr (s t : Set α) (h : s = t) :
     s ≃o t where
   toEquiv := Equiv.setCongr h
-  map_rel_iff' := Iff.rfl
+  map_le_map_iff' := Iff.rfl
 
 /-- Order isomorphism between `univ : Set α` and `α`. -/
 def Set.univ : (Set.univ : Set α) ≃o α where
   toEquiv := Equiv.Set.univ α
-  map_rel_iff' := Iff.rfl
+  map_le_map_iff' := Iff.rfl
 
 end OrderIso
 
@@ -92,7 +92,7 @@ end OrderIso
 noncomputable def OrderEmbedding.orderIso [LE α] [LE β] {f : α ↪o β} :
     α ≃o Set.range f :=
   { Equiv.ofInjective _ f.injective with
-    map_rel_iff' := f.map_rel_iff }
+    map_le_map_iff' := f.map_rel_iff }
 
 /-- If a function `f` is strictly monotone on a set `s`, then it defines an order isomorphism
 between `s` and its image. -/
@@ -100,7 +100,7 @@ protected noncomputable def StrictMonoOn.orderIso {α β} [LinearOrder α] [Preo
     (s : Set α) (hf : StrictMonoOn f s) :
     s ≃o f '' s where
   toEquiv := hf.injOn.bijOn_image.equiv _
-  map_rel_iff' := hf.le_iff_le (Subtype.property _) (Subtype.property _)
+  map_le_map_iff' := hf.le_iff_le (Subtype.property _) (Subtype.property _)
 
 namespace StrictMono
 
@@ -113,7 +113,7 @@ its range. -/
 protected noncomputable def orderIso :
     α ≃o Set.range f where
   toEquiv := Equiv.ofInjective f h_mono.injective
-  map_rel_iff' := h_mono.le_iff_le
+  map_le_map_iff' := h_mono.le_iff_le
 
 /-- A strictly monotone surjective function from a linear order is an order isomorphism. -/
 noncomputable def orderIsoOfSurjective : α ≃o β :=
@@ -181,7 +181,7 @@ protected def Iic [Lattice α] [Lattice β] (e : α ≃o β) (x : α) :
   invFun y := ⟨e.symm y, e.symm_apply_le.mpr y.property⟩
   left_inv y := by simp
   right_inv y := by simp
-  map_rel_iff' := by simp
+  map_le_map_iff' := by simp
 
 /-- An order isomorphism between lattices induces an order isomorphism between corresponding
 interval sublattices. -/
@@ -191,7 +191,7 @@ protected def Ici [Lattice α] [Lattice β] (e : α ≃o β) (x : α) :
   invFun y := ⟨e.symm y, e.le_symm_apply.mpr y.property⟩
   left_inv y := by simp
   right_inv y := by simp
-  map_rel_iff' := by simp
+  map_le_map_iff' := by simp
 
 /-- An order isomorphism between lattices induces an order isomorphism between corresponding
 interval sublattices. -/
@@ -201,7 +201,7 @@ protected def Icc [Lattice α] [Lattice β] (e : α ≃o β) (x y : α) :
   invFun z := ⟨e.symm z, by simp only [mem_Icc, e.le_symm_apply, e.symm_apply_le]; exact z.property⟩
   left_inv y := by simp
   right_inv y := by simp
-  map_rel_iff' := by simp
+  map_le_map_iff' := by simp
 
 end OrderIso
 
@@ -216,7 +216,7 @@ def OrderIso.compl : α ≃o αᵒᵈ where
   invFun := HasCompl.compl ∘ OrderDual.ofDual
   left_inv := compl_compl
   right_inv := compl_compl (α := αᵒᵈ)
-  map_rel_iff' := compl_le_compl_iff_le
+  map_le_map_iff' := compl_le_compl_iff_le
 
 theorem compl_strictAnti : StrictAnti (compl : α → α) :=
   (OrderIso.compl α).strictMono

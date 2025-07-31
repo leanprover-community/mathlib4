@@ -86,7 +86,7 @@ infixr:25 " →o " => OrderHom
 /-- An order embedding is an embedding `f : α ↪ β` such that `a ≤ b ↔ (f a) ≤ (f b)`.
 This definition is an abbreviation of `RelEmbedding (≤) (≤)`. -/
 structure OrderEmbedding (α β : Type*) [Preorder α] [Preorder β] extends α ↪ β where
-  le_iff_le' {a b} : toEmbedding a ≤ toEmbedding b ↔ a ≤ b
+  map_le_map_iff' {a b} : toEmbedding a ≤ toEmbedding b ↔ a ≤ b
 
 /-- Notation for an `OrderEmbedding`. -/
 infixl:25 " ↪o " => OrderEmbedding
@@ -94,7 +94,7 @@ infixl:25 " ↪o " => OrderEmbedding
 /-- An order isomorphism is an equivalence such that `a ≤ b ↔ (f a) ≤ (f b)`.
 This definition is an abbreviation of `RelIso (≤) (≤)`. -/
 structure OrderIso (α β : Type*) [Preorder α] [Preorder β] extends α ≃ β where
-  le_iff_le' {a b} : toEquiv a ≤ toEquiv b ↔ a ≤ b
+  map_le_map_iff' {a b} : toEquiv a ≤ toEquiv b ↔ a ≤ b
 
 /-- Notation for an `OrderIso`. -/
 infixl:25 " ≃o " => OrderIso
@@ -110,7 +110,7 @@ You should extend this class when you extend `OrderIso`. -/
 class OrderIsoClass (F : Type*) (α β : outParam Type*) [Preorder α] [Preorder β] [EquivLike F α β] :
     Prop where
   /-- An order isomorphism respects `≤`. -/
-  le_iff_le (f : F) {a b : α} : f a ≤ f b ↔ a ≤ b
+  map_le_map_iff (f : F) {a b : α} : f a ≤ f b ↔ a ≤ b
 
 namespace OrderHom
 
@@ -427,7 +427,7 @@ attribute [simp] monotone
 instance (priority := 100) OrderIsoClass.toOrderHomClass [Preorder α] [Preorder β]
     [EquivLike F α β] [OrderIsoClass F α β] : OrderHomClass F α β :=
   { EquivLike.toEmbeddingLike (E := F) with
-    monotone := fun f _ _ => (le_iff_le f).2 }
+    monotone := fun f _ _ => (map_le_map_iff f).2 }
 
 namespace OrderEmbedding
 
@@ -454,7 +454,7 @@ initialize_simps_projections OrderEmbedding (toFun → apply)
 
 @[simp]
 theorem le_iff_le {a b} : f a ≤ f b ↔ a ≤ b :=
-  f.le_iff_le'
+  f.map_le_map_iff'
 
 @[simp]
 theorem lt_iff_lt {a b} : f a < f b ↔ a < b := by
@@ -462,7 +462,7 @@ theorem lt_iff_lt {a b} : f a < f b ↔ a < b := by
 
 /-- `<` is preserved by order embeddings of preorders. -/
 def ltEmbedding : ((· < ·) : α → α → Prop) ↪r ((· < ·) : β → β → Prop) :=
-  { f with map_rel_iff' := by intros; simp only [coe_toEmbedding, f.lt_iff_lt] }
+  { f with map_le_map_iff' := by intros; simp only [coe_toEmbedding, f.lt_iff_lt] }
 
 @[simp]
 theorem ltEmbedding_apply (x : α) : f.ltEmbedding x = f x :=
@@ -508,7 +508,7 @@ def ofMapLEIff {α β} [PartialOrder α] [Preorder β] (f : α → β) (hf : ∀
     α ↪o β where
   toFun := f
   inj' _ _ h := antisymm ((hf _ _).1 (h ▸ refl _)) ((hf _ _).1 (h ▸ refl _))
-  le_iff_le' := hf _ _
+  map_le_map_iff' := hf _ _
 
 @[simp]
 theorem coe_ofMapLEIff {α β} [PartialOrder α] [Preorder β] {f : α → β} (h) :
@@ -544,7 +544,7 @@ theorem coe_subtype (p : α → Prop) : ⇑(subtype p) = Subtype.val :=
 def _root_.Subtype.orderEmbedding {p q : α → Prop} (h : ∀ a, p a → q a) :
     {x // p x} ↪o {x // q x} :=
   { Subtype.impEmbedding _ _ h with
-    le_iff_le' := by aesop }
+    map_le_map_iff' := by aesop }
 
 /-- Convert an `OrderEmbedding` to an `OrderHom`. -/
 @[simps -fullyApplied]
@@ -556,7 +556,7 @@ def toOrderHom {X Y : Type*} [Preorder X] [Preorder Y] (f : X ↪o Y) : X →o Y
 @[simps] def ofIsEmpty [IsEmpty α] : α ↪o β where
   toFun := isEmptyElim
   inj' := isEmptyElim
-  le_iff_le' {a} := isEmptyElim a
+  map_le_map_iff' {a} := isEmptyElim a
 
 @[simp, norm_cast]
 lemma coe_ofIsEmpty [IsEmpty α] : (ofIsEmpty : α ↪o β) = (isEmptyElim : α → β) := rfl
@@ -577,7 +577,7 @@ instance : FunLike (α ≃o β) α β where
     exact h₂.eq_rightInverse h₃
 
 @[simp]
-theorem le_iff_le (e : α ≃o β) {a b} : e a ≤ e b ↔ a ≤ b := e.le_iff_le'
+theorem le_iff_le (e : α ≃o β) {a b} : e a ≤ e b ↔ a ≤ b := e.map_le_map_iff'
 
 @[simp]
 theorem lt_iff_lt (e : α ≃o β) {a b} : e a < e b ↔ a < b := by
@@ -604,7 +604,7 @@ instance : EquivLike (α ≃o β) α β where
   coe_injective' _ _ h₁ _ := DFunLike.coe_injective h₁
 
 instance : OrderIsoClass (α ≃o β) α β where
-  le_iff_le f _ _ := f.le_iff_le'
+  map_le_map_iff f _ _ := f.map_le_map_iff'
 
 @[simp]
 theorem toFun_eq_coe {f : α ≃o β} : f.toFun = f :=
@@ -616,7 +616,7 @@ theorem ext {f g : α ≃o β} (h : (f : α → β) = g) : f = g := DFunLike.ext
 
 /-- Reinterpret an order isomorphism as an order embedding. -/
 def toOrderEmbedding (e : α ≃o β) : α ↪o β :=
-  ⟨e.toEquiv.toEmbedding, e.le_iff_le'⟩
+  ⟨e.toEquiv.toEmbedding, e.map_le_map_iff'⟩
 
 @[simp]
 theorem coe_toOrderEmbedding (e : α ≃o β) : ⇑e.toOrderEmbedding = e :=
@@ -729,7 +729,7 @@ theorem symm_trans_self (e : α ≃o β) : e.symm.trans e = OrderIso.refl β :=
 def curryIso : (α × β →o γ) ≃o (α →o β →o γ) where
   toFun f := OrderHom.curry f
   invFun f := OrderHom.uncurry f
-  le_iff_le' := by simp [OrderHom.le_def]
+  map_le_map_iff' := by simp [OrderHom.le_def]
 
 @[simp]
 theorem curryIso_apply (f : α × β →o γ) (x : α) (y : β) : curryIso f x y = f (x, y) :=
@@ -745,7 +745,7 @@ of monotone maps to `β` and `γ`. -/
 def prodIso : (α →o β × γ) ≃o (α →o β) × (α →o γ) where
   toFun f := (OrderHom.fst.comp f, OrderHom.snd.comp f)
   invFun f := f.1.prod f.2
-  le_iff_le' := forall_and.symm
+  map_le_map_iff' := forall_and.symm
 
 variable {ι : Type*} {π : ι → Type*} [∀ i, Preorder (π i)]
 
@@ -755,12 +755,12 @@ maps `Π i, α →o π i`. -/
 def piIso : (α →o ∀ i, π i) ≃o ∀ i, α →o π i where
   toFun f i := (Pi.evalOrderHom i).comp f
   invFun := OrderHom.pi
-  le_iff_le' := forall_swap
+  map_le_map_iff' := forall_swap
 
 /-- `OrderHom.dual` as an order isomorphism. -/
 def dualIso (α β : Type*) [Preorder α] [Preorder β] : (α →o β) ≃o (αᵒᵈ →o βᵒᵈ)ᵒᵈ where
   toEquiv := OrderHom.dual.trans OrderDual.toDual
-  le_iff_le' := Iff.rfl
+  map_le_map_iff' := Iff.rfl
 
 /-- An order isomorphism between the domains and codomains of two prosets of
 order homomorphisms gives an order isomorphism between the two function prosets. -/
@@ -777,7 +777,7 @@ def arrowCongr {α β γ δ} [Preorder α] [Preorder β] [Preorder γ] [Preorder
     change (g ∘ g.symm) ∘ p ∘ (f ∘ f.symm) = p
     simp only [← OrderIso.coe_trans, Function.id_comp,
                OrderIso.symm_trans_self, OrderIso.coe_refl, Function.comp_id]
-  le_iff_le' {p q} := by
+  map_le_map_iff' {p q} := by
     simp only [Equiv.coe_fn_mk, OrderHom.le_def, OrderHom.comp_apply,
                OrderHomClass.coe_coe, Function.comp_apply, le_iff_le]
     exact Iff.symm f.forall_congr_left
@@ -791,7 +791,7 @@ def conj {α β} [Preorder α] [Preorder β] (f : α ≃o β) : (α →o α) ≃
 /-- `Prod.swap` as an `OrderIso`. -/
 def prodComm : α × β ≃o β × α where
   toEquiv := Equiv.prodComm α β
-  le_iff_le' := Prod.swap_le_swap
+  map_le_map_iff' := Prod.swap_le_swap
 
 @[simp]
 theorem coe_prodComm : ⇑(prodComm : α × β ≃o β × α) = Prod.swap :=
@@ -910,7 +910,7 @@ def ofCmpEqCmp {α β} [LinearOrder α] [LinearOrder β] (f : α → β) (g : β
     right_inv := by
       intro
       rw [← cmp_eq_eq_iff, ← h, cmp_self_eq_eq],
-    le_iff_le' := by
+    map_le_map_iff' := by
       intros a b
       apply le_iff_le_of_cmp_eq_cmp
       convert (h a (f b)).symm
@@ -928,7 +928,7 @@ def ofHomInv {F G : Type*} [FunLike F α β] [OrderHomClass F α β] [FunLike G 
   invFun := g
   left_inv := DFunLike.congr_fun h₂
   right_inv := DFunLike.congr_fun h₁
-  le_iff_le' := @fun a b =>
+  map_le_map_iff' := @fun a b =>
     ⟨fun h => by
       replace h := monotone g h
       rwa [Equiv.coe_fn_mk, show g (f a) = (g : β →o α).comp (f : α →o β) a from rfl,
@@ -946,7 +946,7 @@ theorem ofHomInv_symm_apply {F G : Type*} [FunLike F α β] [OrderHomClass F α 
 @[simps! toEquiv apply]
 def funUnique (α β : Type*) [Unique α] [Preorder β] : (α → β) ≃o β where
   toEquiv := Equiv.funUnique α β
-  le_iff_le' := by simp [Pi.le_def, Unique.forall_iff]
+  map_le_map_iff' := by simp [Pi.le_def, Unique.forall_iff]
 
 @[simp]
 theorem funUnique_symm_apply {α β : Type*} [Unique α] [Preorder β] :
@@ -960,20 +960,20 @@ noncomputable def ofUnique
     (α β : Type*) [Unique α] [Unique β] [Preorder α] [Preorder β] :
     α ≃o β where
   toEquiv := Equiv.ofUnique α β
-  le_iff_le' := by simp
+  map_le_map_iff' := by simp
 
 end OrderIso
 
-export OrderIsoClass (le_iff_le)
+export OrderIsoClass (map_le_map_iff)
 
-attribute [simp] le_iff_le
+attribute [simp] map_le_map_iff
 
 /-- Turn an element of a type `F` satisfying `OrderIsoClass F α β` into an actual
 `OrderIso`. This is declared as the default coercion from `F` to `α ≃o β`. -/
 @[coe]
 def OrderIsoClass.toOrderIso [Preorder α] [Preorder β] [EquivLike F α β]
     [OrderIsoClass F α β] (f : F) : α ≃o β :=
-  { EquivLike.toEquiv f with le_iff_le' := le_iff_le f }
+  { EquivLike.toEquiv f with map_le_map_iff' := map_le_map_iff f }
 
 /-- Any type satisfying `OrderIsoClass` can be cast into `OrderIso` via
 `OrderIsoClass.toOrderIso`. -/
@@ -986,7 +986,7 @@ variable [Preorder α] [Preorder β] [EquivLike F α β] [OrderIsoClass F α β]
 
 @[simp]
 theorem map_inv_le_iff (f : F) {a : α} {b : β} : EquivLike.inv f b ≤ a ↔ b ≤ f a := by
-  convert (le_iff_le f).symm
+  convert (map_le_map_iff f).symm
   exact (EquivLike.right_inv f _).symm
 
 theorem map_inv_le_map_inv_iff (f : F) {a b : β} :
@@ -995,11 +995,11 @@ theorem map_inv_le_map_inv_iff (f : F) {a b : β} :
 
 @[simp]
 theorem le_map_inv_iff (f : F) {a : α} {b : β} : a ≤ EquivLike.inv f b ↔ f a ≤ b := by
-  convert (le_iff_le f).symm
+  convert (map_le_map_iff f).symm
   exact (EquivLike.right_inv _ _).symm
 
 theorem map_lt_map_iff (f : F) {a b : α} : f a < f b ↔ a < b :=
-  lt_iff_lt_of_le_iff_le' (le_iff_le f) (le_iff_le f)
+  lt_iff_lt_of_le_iff_le' (map_le_map_iff f) (map_le_map_iff f)
 
 @[simp]
 theorem map_inv_lt_iff (f : F) {a : α} {b : β} : EquivLike.inv f b < a ↔ b < f a := by
@@ -1026,7 +1026,7 @@ instance (priority := 90) OrderHomClass.toOrderHomClassOrderDual [Preorder α] [
 def RelEmbedding.orderEmbeddingOfLTEmbedding [PartialOrder α] [PartialOrder β]
     (f : ((· < ·) : α → α → Prop) ↪r ((· < ·) : β → β → Prop)) : α ↪o β :=
   { f with
-    le_iff_le' := by
+    map_le_map_iff' := by
       intros
       simp [le_iff_lt_or_eq, f.map_rel_iff, f.injective.eq_iff] }
 
@@ -1228,7 +1228,7 @@ end LatticeIsos
 -- See note [lower instance priority]
 instance (priority := 90) OrderIsoClass.toOrderIsoClassOrderDual [Preorder α] [Preorder β]
     [EquivLike F α β] [OrderIsoClass F α β] : OrderIsoClass F αᵒᵈ βᵒᵈ where
-  le_iff_le f := le_iff_le f
+  map_le_map_iff f := map_le_map_iff f
 
 section DenselyOrdered
 

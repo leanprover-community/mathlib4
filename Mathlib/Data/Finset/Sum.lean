@@ -231,7 +231,7 @@ def sumEquiv {α β : Type*} : Finset (α ⊕ β) ≃o Finset α × Finset β wh
   invFun s := disjSum s.1 s.2
   left_inv s := toLeft_disjSum_toRight
   right_inv s := by simp
-  map_rel_iff' := by simp [← Finset.coe_subset, Set.subset_def]
+  map_le_map_iff' := by simp [← Finset.coe_subset, Set.subset_def]
 
 @[simp]
 lemma sumEquiv_symm_apply {α β : Type*} (s : Finset α × Finset β) :

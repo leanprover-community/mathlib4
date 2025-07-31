@@ -265,7 +265,7 @@ def toNonUnitalSubalgebra' : NonUnitalStarSubalgebra R A ↪o NonUnitalSubalgebr
   toEmbedding :=
     { toFun := fun S => S.toNonUnitalSubalgebra
       inj' := fun S T h => ext <| by apply SetLike.ext_iff.1 h }
-  map_rel_iff' := SetLike.coe_subset_coe.symm.trans SetLike.coe_subset_coe
+  map_le_map_iff' := SetLike.coe_subset_coe.symm.trans SetLike.coe_subset_coe
 
 section
 

@@ -259,7 +259,7 @@ def infIccOrderIsoIccSup (a b : α) : Set.Icc (a ⊓ b) a ≃o Set.Icc b (a ⊔ 
       (by
         change a ⊓ ↑x ⊔ b = ↑x
         rw [inf_comm, inf_sup_assoc_of_le _ x.prop.1, inf_eq_left.2 x.prop.2])
-  map_rel_iff' {x y} := by
+  map_le_map_iff' {x y} := by
     simp only [Subtype.mk_le_mk, Equiv.coe_fn_mk]
     rw [← Subtype.coe_le_coe]
     refine ⟨fun h => ?_, fun h => sup_le_sup_right h _⟩
@@ -294,7 +294,7 @@ def infIooOrderIsoIooSup (a b : α) : Ioo (a ⊓ b) a ≃o Ioo b (a ⊔ b) where
     Subtype.ext <| by
       dsimp
       rw [inf_comm, inf_sup_assoc_of_le _ c.prop.1.le, inf_eq_left.2 c.prop.2.le]
-  map_rel_iff' := @fun c d =>
+  map_le_map_iff' := @fun c d =>
     @OrderIso.le_iff_le _ _ _ _ (infIccOrderIsoIccSup _ _) ⟨c.1, Ioo_subset_Icc_self c.2⟩
       ⟨d.1, Ioo_subset_Icc_self d.2⟩
 

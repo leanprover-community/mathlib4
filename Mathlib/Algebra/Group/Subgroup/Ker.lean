@@ -485,7 +485,7 @@ def MapSubtype.orderIso (H : Subgroup G) : Subgroup ↥H ≃o { H' : Subgroup G 
   invFun sH' := sH'.1.subgroupOf H
   left_inv H' := comap_map_eq_self_of_injective H.subtype_injective H'
   right_inv sH' := Subtype.ext (map_subgroupOf_eq_of_le sH'.2)
-  map_rel_iff' := by simp
+  map_le_map_iff' := by simp
 
 @[to_additive (attr := simp)]
 lemma MapSubtype.orderIso_symm_apply (H : Subgroup G) (sH' : { H' : Subgroup G // H' ≤ H }) :

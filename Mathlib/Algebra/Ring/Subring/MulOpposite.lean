@@ -69,7 +69,7 @@ def opEquiv : Subring R ≃o Subring Rᵐᵒᵖ where
   invFun := Subring.unop
   left_inv := unop_op
   right_inv := op_unop
-  map_rel_iff' := op_le_op_iff
+  map_le_map_iff' := op_le_op_iff
 
 theorem op_injective : (@Subring.op R _).Injective := opEquiv.injective
 theorem unop_injective : (@Subring.unop R _).Injective := opEquiv.symm.injective

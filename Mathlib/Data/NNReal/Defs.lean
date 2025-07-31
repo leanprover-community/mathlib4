@@ -394,7 +394,7 @@ isomorphic to the interval `Set.Iic a`. -/
 -- @[simps!? apply_coe_coe]
 def orderIsoIccZeroCoe (a : ℝ≥0) : Set.Icc (0 : ℝ) a ≃o Set.Iic a where
   toEquiv := Equiv.Set.sep (Set.Ici 0) fun x : ℝ => x ≤ a
-  map_rel_iff' := Iff.rfl
+  map_le_map_iff' := Iff.rfl
 
 @[simp]
 theorem orderIsoIccZeroCoe_apply_coe_coe (a : ℝ≥0) (b : Set.Icc (0 : ℝ) a) :

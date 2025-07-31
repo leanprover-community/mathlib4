@@ -64,7 +64,7 @@ def Subgroup.toAddSubgroup : Subgroup G ≃o AddSubgroup (Additive G) where
   invFun S := { AddSubmonoid.toSubmonoid S.toAddSubmonoid with inv_mem' := S.neg_mem' }
   left_inv x := by cases x; rfl
   right_inv x := by cases x; rfl
-  map_rel_iff' := Iff.rfl
+  map_le_map_iff' := Iff.rfl
 
 /-- Additive subgroup of an additive group `Additive G` are isomorphic to subgroup of `G`. -/
 abbrev AddSubgroup.toSubgroup' : AddSubgroup (Additive G) ≃o Subgroup G :=
@@ -78,7 +78,7 @@ def AddSubgroup.toSubgroup : AddSubgroup A ≃o Subgroup (Multiplicative A) wher
   invFun S := { Submonoid.toAddSubmonoid S.toSubmonoid with neg_mem' := S.inv_mem' }
   left_inv x := by cases x; rfl
   right_inv x := by cases x; rfl
-  map_rel_iff' := Iff.rfl
+  map_le_map_iff' := Iff.rfl
 
 /-- Subgroups of an additive group `Multiplicative A` are isomorphic to additive subgroups of `A`.
 -/

@@ -266,7 +266,7 @@ def toSubmodule : Subalgebra R A ↪o Submodule R A where
           smul_mem' := fun c {x} hx ↦
             (Algebra.smul_def c x).symm ▸ mul_mem (S.range_le ⟨c, rfl⟩) hx }
       inj' := fun _ _ h ↦ ext fun x ↦ SetLike.ext_iff.mp h x }
-  map_rel_iff' := SetLike.coe_subset_coe.symm.trans SetLike.coe_subset_coe
+  map_le_map_iff' := SetLike.coe_subset_coe.symm.trans SetLike.coe_subset_coe
 
 /- TODO: bundle other forgetful maps between algebraic substructures, e.g.
   `toSubsemiring` and `toSubring` in this file. -/
@@ -1009,4 +1009,3 @@ lemma Subalgebra.toNonUnitalSubalgebra_toSubalgebra (S : Subalgebra R A) :
 lemma NonUnitalSubalgebra.toSubalgebra_toNonUnitalSubalgebra (S : NonUnitalSubalgebra R A)
     (h1 : (1 : A) ∈ S) : (NonUnitalSubalgebra.toSubalgebra S h1).toNonUnitalSubalgebra = S := by
   cases S; rfl
-

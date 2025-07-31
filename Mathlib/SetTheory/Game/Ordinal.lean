@@ -149,13 +149,13 @@ theorem toPGame_inj {a b : Ordinal} : a.toPGame = b.toPGame ↔ a = b :=
 noncomputable def toPGameEmbedding : Ordinal.{u} ↪o PGame.{u} where
   toFun := Ordinal.toPGame
   inj' := toPGame_injective
-  map_rel_iff' := @toPGame_le_iff
+  map_le_map_iff' := @toPGame_le_iff
 
 /-- Converts an ordinal into the corresponding game. -/
 noncomputable def toGame : Ordinal.{u} ↪o Game.{u} where
   toFun o := ⟦o.toPGame⟧
   inj' a b := by simpa [AntisymmRel] using le_antisymm
-  map_rel_iff' := toPGame_le_iff
+  map_le_map_iff' := toPGame_le_iff
 
 @[simp]
 theorem mk_toPGame (o : Ordinal) : ⟦o.toPGame⟧ = o.toGame :=

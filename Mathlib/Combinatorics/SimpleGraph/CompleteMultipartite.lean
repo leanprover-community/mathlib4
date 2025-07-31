@@ -53,7 +53,7 @@ def IsCompleteMultipartite.iso (h : G.IsCompleteMultipartite) :
   toFun := fun x ↦ ⟨_, ⟨_, Quotient.mk_out x⟩⟩
   invFun := fun ⟨_, x⟩ ↦  x.1
   right_inv := fun ⟨_, x⟩ ↦ Sigma.subtype_ext (Quotient.mk_eq_iff_out.2 <| h.setoid.symm x.2) rfl
-  map_rel_iff' := by
+  map_le_map_iff' := by
     simp_rw [Equiv.coe_fn_mk, comap_adj, top_adj, ne_eq, Quotient.eq]
     intros
     change ¬¬ G.Adj _ _ ↔ _
@@ -132,7 +132,7 @@ def IsPathGraph3Compl.pathGraph3ComplEmbedding {v w₁ w₂ : α} (h : G.IsPathG
     have := h.ne_snd
     have := h.adj.ne
     aesop
-  map_rel_iff' := by
+  map_le_map_iff' := by
     intro _ _
     simp_rw [Function.Embedding.coeFn_mk, compl_adj, ne_eq, pathGraph_adj, not_or]
     have := h.adj

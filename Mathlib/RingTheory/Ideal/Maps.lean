@@ -376,7 +376,7 @@ theorem comap_le_comap_iff_of_surjective (hf : Function.Surjective f) (I J : Ide
 def orderEmbeddingOfSurjective (hf : Function.Surjective f) : Ideal S ↪o Ideal R where
   toFun := comap f
   inj' _ _ eq := SetLike.ext' (Set.preimage_injective.mpr hf <| SetLike.ext'_iff.mp eq)
-  map_rel_iff' := comap_le_comap_iff_of_surjective _ hf ..
+  map_le_map_iff' := comap_le_comap_iff_of_surjective _ hf ..
 
 theorem map_eq_top_or_isMaximal_of_surjective (hf : Function.Surjective f) {I : Ideal R}
     (H : IsMaximal I) : map f I = ⊤ ∨ IsMaximal (map f I) :=
@@ -460,7 +460,7 @@ def relIsoOfBijective : Ideal S ≃o Ideal R where
     le_antisymm
       (fun _ h ↦ have ⟨y, hy, eq⟩ := (mem_map_iff_of_surjective _ hf.2).mp h; hf.1 eq ▸ hy)
       le_comap_map
-  map_rel_iff' {_ _} := by
+  map_le_map_iff' {_ _} := by
     refine ⟨fun h ↦ ?_, comap_mono⟩
     have := map_mono (f := f) h
     simpa only [Equiv.coe_fn_mk, map_comap_of_surjective f hf.2] using this
@@ -530,7 +530,7 @@ def relIsoOfSurjective (hf : Function.Surjective f) :
     Subtype.eq <|
       show comap f (map f I.1) = I.1 from
         (comap_map_of_surjective f hf I).symm ▸ le_antisymm (sup_le le_rfl I.2) le_sup_left
-  map_rel_iff' {I1 I2} :=
+  map_le_map_iff' {I1 I2} :=
     ⟨fun H => map_comap_of_surjective f hf I1 ▸ map_comap_of_surjective f hf I2 ▸ map_mono H,
       comap_mono⟩
 

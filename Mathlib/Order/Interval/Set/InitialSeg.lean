@@ -24,7 +24,7 @@ def initialSegIic (j : α) :
     Set.Iic j ≤i α where
   toFun := fun ⟨j, hj⟩ ↦ j
   inj' _ _ _ := by aesop
-  map_rel_iff' := by aesop
+  map_le_map_iff' := by aesop
   mem_range_of_rel' x k h := by simpa using h.le.trans x.2
 
 /-- `Set.Iio j` is a principal segment. -/
@@ -34,7 +34,7 @@ def principalSegIio (j : α) :
   top := j
   toFun := fun ⟨j, hj⟩ ↦ j
   inj' _ _ _ := by aesop
-  map_rel_iff' := by aesop
+  map_le_map_iff' := by aesop
   mem_range_iff_rel' := by aesop
 
 @[simp]
@@ -47,7 +47,7 @@ def initialSegIicIicOfLE {i j : α} (h : i ≤ j) :
     Set.Iic i ≤i Set.Iic j where
   toFun := fun ⟨k, hk⟩ ↦ ⟨k, hk.trans h⟩
   inj' _ _ _ := by aesop
-  map_rel_iff' := by aesop
+  map_le_map_iff' := by aesop
   mem_range_of_rel' x k h := ⟨⟨k.1, (Subtype.coe_le_coe.2 h.le).trans x.2⟩, rfl⟩
 
 /-- If `i ≤ j`, then `Set.Iio i` is a principal segment of `Set.Iic j`. -/
@@ -57,7 +57,7 @@ def principalSegIioIicOfLE {i j : α} (h : i ≤ j) :
   top := ⟨i, h⟩
   toFun := fun ⟨k, hk⟩ ↦ ⟨k, hk.le.trans h⟩
   inj' _ _ _ := by aesop
-  map_rel_iff' := by aesop
+  map_le_map_iff' := by aesop
   mem_range_iff_rel' := by aesop
 
 @[simp]
@@ -80,4 +80,4 @@ noncomputable def PrincipalSeg.orderIsoIio {α β : Type*} [PartialOrder α] [Pa
     · rintro ⟨z, hz⟩
       obtain ⟨x, hx⟩ := f.mem_range_of_rel_top hz
       exact ⟨x, by simpa using hx⟩)
-  map_rel_iff' := by simp
+  map_le_map_iff' := by simp

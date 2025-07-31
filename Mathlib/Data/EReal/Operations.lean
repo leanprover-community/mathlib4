@@ -309,7 +309,7 @@ def negOrderIso : EReal ≃o ERealᵒᵈ :=
   { Equiv.neg EReal with
     toFun := fun x => OrderDual.toDual (-x)
     invFun := fun x => -OrderDual.ofDual x
-    map_rel_iff' := neg_le_neg_iff }
+    map_le_map_iff' := neg_le_neg_iff }
 
 lemma neg_add {x y : EReal} (h1 : x ≠ ⊥ ∨ y ≠ ⊤) (h2 : x ≠ ⊤ ∨ y ≠ ⊥) :
     - (x + y) = - x - y := by

@@ -569,7 +569,7 @@ variable (R L M)
 @[simps] def toSubmodule_orderEmbedding : LieSubmodule R L M ↪o Submodule R M :=
   { toFun := (↑)
     inj' := toSubmodule_injective
-    map_rel_iff' := Iff.rfl }
+    map_le_map_iff' := Iff.rfl }
 
 instance wellFoundedGT_of_noetherian [IsNoetherian R M] : WellFoundedGT (LieSubmodule R L M) :=
   RelHomClass.isWellFounded (toSubmodule_orderEmbedding R L M).dual.ltEmbedding
@@ -889,7 +889,7 @@ of the target. -/
     LieSubmodule R L M ↪o LieSubmodule R L M' where
   toFun := LieSubmodule.map f
   inj' := map_injective_of_injective hf
-  map_rel_iff' := Set.image_subset_image_iff hf
+  map_le_map_iff' := Set.image_subset_image_iff hf
 
 variable (N) in
 /-- For an injective morphism of Lie modules, any Lie submodule is equivalent to its image. -/
@@ -908,7 +908,7 @@ Submodules. -/
   invFun := comap e
   left_inv := fun N ↦ by ext; simp
   right_inv := fun N ↦ by ext; simp [e.apply_eq_iff_eq_symm_apply]
-  map_rel_iff' := fun {_ _} ↦ Set.image_subset_image_iff e.injective
+  map_le_map_iff' := fun {_ _} ↦ Set.image_subset_image_iff e.injective
 
 end LieSubmodule
 

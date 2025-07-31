@@ -46,7 +46,7 @@ theorem hasse_adj : (hasse α).Adj a b ↔ a ⋖ b ∨ b ⋖ a :=
 
 /-- `αᵒᵈ` and `α` have the same Hasse diagram. -/
 def hasseDualIso : hasse αᵒᵈ ≃g hasse α :=
-  { ofDual with map_rel_iff' := by simp [or_comm] }
+  { ofDual with map_le_map_iff' := by simp [or_comm] }
 
 @[simp]
 theorem hasseDualIso_apply (a : αᵒᵈ) : hasseDualIso a = ofDual a :=

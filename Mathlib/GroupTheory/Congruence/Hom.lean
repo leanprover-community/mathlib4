@@ -138,7 +138,7 @@ def correspondence {c : Con M} : { d // c ≤ d } ≃o Con c.Quotient where
       ⟨fun ⟨_, _, H, hx, hy⟩ =>
         hx ▸ hy ▸ H,
         Con.induction_on₂ x y fun w z h => ⟨w, z, h, rfl, rfl⟩⟩
-  map_rel_iff' {s t} := by
+  map_le_map_iff' {s t} := by
     constructor
     · intros h x y hs
       rcases h ⟨x, y, hs, rfl, rfl⟩ with ⟨a, b, ht, hx, hy⟩

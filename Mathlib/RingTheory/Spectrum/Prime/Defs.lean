@@ -62,6 +62,6 @@ variable (R) in
 def equivSubtype : PrimeSpectrum R ≃o {I : Ideal R // I.IsPrime} where
   toFun I := ⟨I.asIdeal, I.2⟩
   invFun I := ⟨I, I.2⟩
-  map_rel_iff' := .rfl
+  map_le_map_iff' := .rfl
 
 end PrimeSpectrum

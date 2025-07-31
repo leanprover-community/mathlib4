@@ -368,7 +368,7 @@ When the ring is commutative, two-sided ideals are exactly the same as left idea
 def orderIsoIdeal : TwoSidedIdeal R ≃o Ideal R where
   toFun := asIdeal
   invFun := fromIdeal
-  map_rel_iff' := ⟨fun h _ hx ↦ h hx, fun h ↦ asIdeal.monotone' h⟩
+  map_le_map_iff' := ⟨fun h _ hx ↦ h hx, fun h ↦ asIdeal.monotone' h⟩
   left_inv _ := SetLike.ext fun _ ↦ mem_span_iff.trans <| by aesop
   right_inv J := SetLike.ext fun x ↦ mem_span_iff.trans
     ⟨fun h ↦ mem_mk' _ _ _ _ _ _ _ |>.1 <| h (mk'
@@ -416,4 +416,4 @@ end Ideal
   invFun I := have := I.2; I.1.toTwoSided
   left_inv _ := by simp
   right_inv I := by simp
-  map_rel_iff' {I I'} := by simp [SetLike.le_def]
+  map_le_map_iff' {I I'} := by simp [SetLike.le_def]

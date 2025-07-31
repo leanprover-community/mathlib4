@@ -634,7 +634,7 @@ def mapSetOfMinimal (f : s ≃o t) : {x | Minimal (· ∈ s) x} ≃o {x | Minima
   invFun x := ⟨f.symm ⟨x, x.2.1⟩, f.symm.map_minimal_mem x.2⟩
   left_inv x := Subtype.ext (congr_arg Subtype.val <| f.left_inv ⟨x, x.2.1⟩ :)
   right_inv x := Subtype.ext (congr_arg Subtype.val <| f.right_inv ⟨x, x.2.1⟩ :)
-  map_rel_iff' := f.map_rel_iff
+  map_le_map_iff' := f.map_rel_iff
 
 /-- If two sets are order isomorphic, their maximals are also order isomorphic. -/
 def mapSetOfMaximal (f : s ≃o t) : {x | Maximal (· ∈ s) x} ≃o {x | Maximal (· ∈ t) x} where
@@ -642,7 +642,7 @@ def mapSetOfMaximal (f : s ≃o t) : {x | Maximal (· ∈ s) x} ≃o {x | Maxima
   invFun x := ⟨f.symm ⟨x, x.2.1⟩, f.symm.map_maximal_mem x.2⟩
   left_inv x := Subtype.ext (congr_arg Subtype.val <| f.left_inv ⟨x, x.2.1⟩ :)
   right_inv x := Subtype.ext (congr_arg Subtype.val <| f.right_inv ⟨x, x.2.1⟩ :)
-  map_rel_iff' := f.map_rel_iff
+  map_le_map_iff' := f.map_rel_iff
 
 /-- If two sets are antitonically order isomorphic, their minimals/maximals are too. -/
 def setOfMinimalIsoSetOfMaximal (f : s ≃o tᵒᵈ) :

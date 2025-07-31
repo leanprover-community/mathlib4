@@ -91,11 +91,11 @@ end Preorder
 /-- Order isomorphism between `Iic (⊤ : α)` and `α` when `α` has a top element -/
 def IicTop {α : Type*} [Preorder α] [OrderTop α] : Iic (⊤ : α) ≃o α :=
   { @Equiv.subtypeUnivEquiv α (Iic (⊤ : α)) fun _ => le_top with
-    map_rel_iff' := @fun x y => by rfl }
+    map_le_map_iff' := @fun x y => by rfl }
 
 /-- Order isomorphism between `Ici (⊥ : α)` and `α` when `α` has a bottom element -/
 def IciBot {α : Type*} [Preorder α] [OrderBot α] : Ici (⊥ : α) ≃o α :=
   { @Equiv.subtypeUnivEquiv α (Ici (⊥ : α)) fun _ => bot_le with
-    map_rel_iff' := @fun x y => by rfl }
+    map_le_map_iff' := @fun x y => by rfl }
 
 end OrderIso

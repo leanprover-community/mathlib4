@@ -162,7 +162,7 @@ into an actual `OrderMonoidIso`. This is declared as the default coercion from `
 def OrderMonoidIsoClass.toOrderMonoidIso [EquivLike F α β] [OrderIsoClass F α β]
     [MulEquivClass F α β] (f : F) :
     α ≃*o β :=
-  { (f : α ≃* β) with map_le_map_iff' := OrderIsoClass.map_le_map_iff f }
+  { (f : α ≃* β) with map_le_map_iff' := OrderIsoClass.le_iff_le f }
 
 /-- Any type satisfying `OrderMonoidHomClass` can be cast into `OrderMonoidHom` via
   `OrderMonoidHomClass.toOrderMonoidHom`. -/
@@ -261,7 +261,7 @@ initialize_simps_projections OrderMonoidHom (toFun → apply, -toMonoidHom)
 
 @[to_additive]
 instance : OrderHomClass (α →*o β) α β where
-  map_rel f _ _ h := f.monotone' h
+  monotone f _ _ h := f.monotone' h
 
 @[to_additive]
 instance : MonoidHomClass (α →*o β) α β where
@@ -516,7 +516,7 @@ theorem mk_coe (f : α ≃*o β) (h) : OrderMonoidIso.mk (f : α ≃* β) h = f 
 @[to_additive "Reinterpret an ordered additive monoid isomomorphism as an order isomomorphism."]
 def toOrderIso (f : α ≃*o β) : α ≃o β :=
   { f with
-    map_rel_iff' := map_le_map_iff f }
+    map_le_map_iff' := map_le_map_iff f }
 
 @[to_additive (attr := simp)]
 theorem coe_mulEquiv (f : α ≃*o β) : ((f : α ≃* β) : α → β) = f :=

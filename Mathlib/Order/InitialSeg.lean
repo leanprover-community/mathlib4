@@ -109,7 +109,7 @@ theorem mem_range_of_rel (f : r ≼i s) {a : α} {b : β} : s b (f a) → b ∈ 
   f.mem_range_of_rel' _ _
 
 theorem map_rel_iff {a b : α} (f : r ≼i s) : s (f a) (f b) ↔ r a b :=
-  f.map_rel_iff'
+  f.map_le_map_iff'
 
 theorem inj (f : r ≼i s) {a b : α} : f a = f b ↔ a = b :=
   f.toRelEmbedding.inj
@@ -178,7 +178,7 @@ private theorem antisymm_aux [IsWellOrder α r] (f : r ≼i s) (g : s ≼i r) : 
 well order, then `α` and `β` are order-isomorphic. -/
 def antisymm [IsWellOrder β s] (f : r ≼i s) (g : s ≼i r) : r ≃r s :=
   have := f.toRelEmbedding.isWellOrder
-  ⟨⟨f, g, antisymm_aux f g, antisymm_aux g f⟩, f.map_rel_iff'⟩
+  ⟨⟨f, g, antisymm_aux f g, antisymm_aux g f⟩, f.map_le_map_iff'⟩
 
 @[simp]
 theorem antisymm_toFun [IsWellOrder β s] (f : r ≼i s) (g : s ≼i r) : (antisymm f g : α → β) = f :=

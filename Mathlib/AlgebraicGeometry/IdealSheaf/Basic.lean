@@ -382,7 +382,7 @@ def equivOfIsAffine [IsAffine X] : IdealSheafData X ≃o Ideal Γ(X, ⊤) where
   invFun := ofIdealTop
   left_inv I := ext_of_isAffine (by simp)
   right_inv I := by simp
-  map_rel_iff' {I J} := ⟨le_of_isAffine, (· _)⟩
+  map_le_map_iff' {I J} := ⟨le_of_isAffine, (· _)⟩
 
 end IsAffine
 

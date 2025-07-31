@@ -98,7 +98,7 @@ See also: `AddSubgroup.toIntSubmodule`, `AddSubmonoid.toNatSubmodule`. -/
 def toZModSubmodule : AddSubgroup M ≃o Submodule (ZMod n) M where
   toFun S := { S with smul_mem' := fun c _ h ↦ ZMod.smul_mem (K := S) h c }
   invFun := Submodule.toAddSubgroup
-  map_rel_iff' := Iff.rfl
+  map_le_map_iff' := Iff.rfl
 
 @[simp]
 theorem toZModSubmodule_symm :

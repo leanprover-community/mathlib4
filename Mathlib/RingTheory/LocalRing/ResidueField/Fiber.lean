@@ -47,4 +47,4 @@ noncomputable def PrimeSpectrum.preimageOrderIsoTensorResidueField (R S : Type*)
     invFun q := ⟨e.symm ⟨q, q.2.le⟩, this.mpr <| by rw [e.apply_symm_apply]; exact q.2.ge⟩
     left_inv q := Subtype.ext (e.left_inv q)
     right_inv q := Subtype.ext <| by apply Subtype.ext_iff.mp (e.right_inv ⟨q, q.2.le⟩)
-    map_rel_iff' := e.map_rel_iff }
+    map_le_map_iff' := e.map_rel_iff }

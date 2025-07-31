@@ -365,7 +365,7 @@ section NatSubmodule
 def AddSubmonoid.toNatSubmodule : AddSubmonoid M ≃o Submodule ℕ M where
   toFun S := { S with smul_mem' := fun r s hs ↦ show r • s ∈ S from nsmul_mem hs _ }
   invFun := Submodule.toAddSubmonoid
-  map_rel_iff' := Iff.rfl
+  map_le_map_iff' := Iff.rfl
 
 @[simp]
 theorem AddSubmonoid.toNatSubmodule_symm :
@@ -403,7 +403,7 @@ variable [AddCommGroup M]
 def AddSubgroup.toIntSubmodule : AddSubgroup M ≃o Submodule ℤ M where
   toFun S := { S with smul_mem' := fun _ _ hs ↦ S.zsmul_mem hs _ }
   invFun := Submodule.toAddSubgroup
-  map_rel_iff' := Iff.rfl
+  map_le_map_iff' := Iff.rfl
 
 @[simp]
 theorem AddSubgroup.toIntSubmodule_symm :

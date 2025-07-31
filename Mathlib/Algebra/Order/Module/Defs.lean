@@ -751,7 +751,7 @@ lemma lt_inv_smul_iff_of_pos [PosSMulStrictMono α β] [PosSMulReflectLT α β] 
 @[simps!]
 def OrderIso.smulRight [PosSMulMono α β] [PosSMulReflectLE α β] {a : α} (ha : 0 < a) : β ≃o β where
   toEquiv := Equiv.smulRight ha.ne'
-  map_rel_iff' := smul_le_smul_iff_of_pos_left ha
+  map_le_map_iff' := smul_le_smul_iff_of_pos_left ha
 
 end GroupWithZero
 

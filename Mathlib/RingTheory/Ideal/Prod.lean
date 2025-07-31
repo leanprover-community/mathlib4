@@ -96,7 +96,7 @@ def idealProdEquiv : Ideal (R × S) ≃o Ideal R × Ideal S where
   invFun I := prod I.1 I.2
   left_inv I := (ideal_prod_eq I).symm
   right_inv := fun ⟨I, J⟩ => by simp
-  map_rel_iff' {I J} := by
+  map_le_map_iff' {I J} := by
     simp only [Equiv.coe_fn_mk, ge_iff_le, Prod.mk_le_mk]
     refine ⟨fun h ↦ ?_, fun h ↦ ⟨map_mono h, map_mono h⟩⟩
     rw [ideal_prod_eq I, ideal_prod_eq J]

@@ -190,7 +190,7 @@ instance instInhabited : Inhabited (BooleanSubalgebra α) := ⟨⊥⟩
 This is the boolean subalgebra version of `Equiv.Set.univ α`. -/
 def topEquiv : (⊤ : BooleanSubalgebra α) ≃o α where
   toEquiv := Equiv.Set.univ _
-  map_rel_iff' := .rfl
+  map_le_map_iff' := .rfl
 
 @[simp, norm_cast] lemma coe_top : (⊤ : BooleanSubalgebra α) = (univ : Set α) := rfl
 @[simp, norm_cast] lemma coe_bot : (⊥ : BooleanSubalgebra α) = ({⊥, ⊤} : Set α) := rfl

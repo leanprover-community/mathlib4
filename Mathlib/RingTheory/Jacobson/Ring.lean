@@ -204,7 +204,7 @@ def IsLocalization.orderIsoOfMaximal [IsJacobsonRing R] :
   left_inv J := Subtype.eq (map_comap (powers y) S J)
   right_inv I := Subtype.eq (comap_map_of_isPrime_disjoint _ _ I.1 (IsMaximal.isPrime I.2.1)
     ((disjoint_powers_iff_notMem y I.2.1.isPrime.isRadical).2 I.2.2))
-  map_rel_iff' {I I'} := ⟨fun h => show I.val ≤ I'.val from
+  map_le_map_iff' {I I'} := ⟨fun h => show I.val ≤ I'.val from
     map_comap (powers y) S I.val ▸ map_comap (powers y) S I'.val ▸ Ideal.map_mono h,
     fun h _ hx => h hx⟩
 

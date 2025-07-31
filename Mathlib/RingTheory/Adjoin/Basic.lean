@@ -107,7 +107,7 @@ theorem adjoin_top {A} [Semiring A] [Algebra S A] (t : Set A) :
       invFun := fun s => s.restrictScalars _
       left_inv := fun _ => SetLike.coe_injective rfl
       right_inv := fun _ => SetLike.coe_injective rfl
-      map_rel_iff' := @fun _ _ => Iff.rfl }
+      map_le_map_iff' := @fun _ _ => Iff.rfl }
   le_antisymm
     (adjoin_le <| show t ⊆ adjoin S t from subset_adjoin)
     (equivTop.symm_apply_le.mpr <|

@@ -79,7 +79,7 @@ noncomputable def mapSubmodule :
     rw [← asModuleEquiv_symm_map_rho]⟩
   left_inv p := by ext; simp
   right_inv q := by ext; aesop
-  map_rel_iff' {p q} :=
+  map_le_map_iff' {p q} :=
     ⟨fun h x hx ↦ by
       suffices ρ.asModuleEquiv.symm x ∈
         (q : Submodule k V).toAddSubmonoid.map ρ.asModuleEquiv.symm by simpa using this

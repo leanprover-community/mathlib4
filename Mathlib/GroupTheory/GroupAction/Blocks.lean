@@ -602,7 +602,7 @@ def block_stabilizerOrderIso [htGX : IsPretransitive G X] (a : X) :
     (id (propext Subtype.mk_eq_mk)).mpr (hB.orbit_stabilizer_eq ha)
   right_inv := fun ⟨_, hH⟩ =>
     (id (propext Subtype.mk_eq_mk)).mpr (stabilizer_orbit_eq hH)
-  map_rel_iff' := by
+  map_le_map_iff' := by
     rintro ⟨B, ha, hB⟩; rintro ⟨B', ha', hB'⟩
     simp only [Equiv.coe_fn_mk, Subtype.mk_le_mk, Set.le_eq_subset]
     constructor

@@ -143,7 +143,7 @@ def subalgebraEquivIntermediateField [Algebra.IsAlgebraic K L] :
   invFun S := S.toSubalgebra
   left_inv _ := toSubalgebra_toIntermediateField _ _
   right_inv := toIntermediateField_toSubalgebra
-  map_rel_iff' := Iff.rfl
+  map_le_map_iff' := Iff.rfl
 
 @[simp]
 theorem mem_subalgebraEquivIntermediateField [Algebra.IsAlgebraic K L] {S : Subalgebra K L}

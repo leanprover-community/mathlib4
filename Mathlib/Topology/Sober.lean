@@ -164,7 +164,7 @@ noncomputable def irreducibleSetEquivPoints [QuasiSober α] [T0Space α] :
     rfl
   right_inv x := isIrreducible_singleton.closure.isGenericPoint_genericPoint_closure.eq
       (by rw [closure_closure]; exact isGenericPoint_closure)
-  map_rel_iff' := by
+  map_le_map_iff' := by
     rintro ⟨s, hs, hs'⟩ ⟨t, ht, ht'⟩
     refine specializes_iff_closure_subset.trans ?_
     simp

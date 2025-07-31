@@ -307,7 +307,7 @@ def orderIsoSubtype : Fin n ≃o {i // i < n} :=
 @[simps]
 def castOrderIso (eq : n = m) : Fin n ≃o Fin m where
   toEquiv := ⟨Fin.cast eq, Fin.cast eq.symm, leftInverse_cast eq, rightInverse_cast eq⟩
-  map_rel_iff' := cast_le_cast eq
+  map_le_map_iff' := cast_le_cast eq
 
 @[simp]
 lemma symm_castOrderIso (h : n = m) : (castOrderIso h).symm = castOrderIso h.symm := by subst h; rfl

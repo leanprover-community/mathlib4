@@ -365,7 +365,7 @@ variable [SuccOrder ι] [PredOrder ι] [IsSuccArchimedean ι]
 noncomputable def orderIsoRangeToZOfLinearSuccPredArch [hι : Nonempty ι] :
     ι ≃o Set.range (toZ hι.some) where
   toEquiv := Equiv.ofInjective _ injective_toZ
-  map_rel_iff' := by intro i j; exact toZ_le_iff i j
+  map_le_map_iff' := by intro i j; exact toZ_le_iff i j
 
 instance (priority := 100) countable_of_linear_succ_pred_arch : Countable ι := by
   rcases isEmpty_or_nonempty ι with _ | hι
@@ -393,7 +393,7 @@ noncomputable def orderIsoIntOfLinearSuccPredArch [NoMaxOrder ι] [NoMinOrder ι
     · simp_rw [if_neg (not_le.mpr hn)]
       rw [toZ_iterate_pred]
       simp only [hn.le, Int.toNat_of_nonneg, Int.neg_nonneg_of_nonpos, Int.neg_neg]
-  map_rel_iff' := by intro i j; exact toZ_le_iff i j
+  map_le_map_iff' := by intro i j; exact toZ_le_iff i j
 
 /-- If the order has a bot but no top, `toZ` defines an `OrderIso` between `ι` and `ℕ`. -/
 def orderIsoNatOfLinearSuccPredArch [NoMaxOrder ι] [OrderBot ι] : ι ≃o ℕ where
@@ -406,7 +406,7 @@ def orderIsoNatOfLinearSuccPredArch [NoMaxOrder ι] [OrderBot ι] : ι ≃o ℕ 
     dsimp only
     rw [toZ_iterate_succ]
     exact Int.toNat_natCast n
-  map_rel_iff' := by
+  map_le_map_iff' := by
     intro i j
     simp only [Equiv.coe_fn_mk, Int.toNat_le]
     rw [← @toZ_le_iff ι _ _ _ _ ⊥, Int.toNat_of_nonneg (toZ_nonneg bot_le)]
@@ -432,7 +432,7 @@ def orderIsoRangeOfLinearSuccPredArch [OrderBot ι] [OrderTop ι] :
       exact Nat.lt_succ_iff.mp (Finset.mem_range.mp n.prop)
     · rw [toZ_iterate_succ_of_not_isMax _ hn_max]
       simp only [Int.toNat_natCast, le_refl]
-  map_rel_iff' := by
+  map_le_map_iff' := by
     intro i j
     simp only [Equiv.coe_fn_mk, Subtype.mk_le_mk, Int.toNat_le]
     rw [← @toZ_le_iff ι _ _ _ _ ⊥, Int.toNat_of_nonneg (toZ_nonneg bot_le)]

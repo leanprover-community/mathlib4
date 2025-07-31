@@ -333,7 +333,7 @@ def OrderIso.dualAntisymmetrization :
   invFun := (Quotient.map' id) fun _ _ => And.symm
   left_inv a := Quotient.inductionOn' a fun a => by simp_rw [Quotient.map'_mk'', id]
   right_inv a := Quotient.inductionOn' a fun a => by simp_rw [Quotient.map'_mk'', id]
-  map_rel_iff' := @fun a b => Quotient.inductionOn₂' a b fun _ _ => Iff.rfl
+  map_le_map_iff' := @fun a b => Quotient.inductionOn₂' a b fun _ _ => Iff.rfl
 
 @[simp]
 theorem OrderIso.dualAntisymmetrization_apply (a : α) :
@@ -365,7 +365,7 @@ def prodEquiv : Antisymmetrization (α × β) (· ≤ ·) ≃o
     fun a₁ b₁ a₂ b₂ h₁ h₂ ↦ Quotient.sound ⟨⟨h₁.1, h₂.1⟩, h₁.2, h₂.2⟩
   left_inv := by rintro ⟨_⟩; rfl
   right_inv := by rintro ⟨⟨_⟩, ⟨_⟩⟩; rfl
-  map_rel_iff' := by rintro ⟨_⟩ ⟨_⟩; rfl
+  map_le_map_iff' := by rintro ⟨_⟩ ⟨_⟩; rfl
 
 @[simp] lemma prodEquiv_apply_mk {ab} : prodEquiv α β ⟦ab⟧ = (⟦ab.1⟧, ⟦ab.2⟧) := rfl
 @[simp] lemma prodEquiv_symm_apply_mk {a b} : (prodEquiv α β).symm (⟦a⟧, ⟦b⟧) = ⟦(a, b)⟧ := rfl
