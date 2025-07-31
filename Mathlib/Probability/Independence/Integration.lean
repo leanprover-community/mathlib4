@@ -3,6 +3,7 @@ Copyright (c) 2021 Martin Zinkevich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Zinkevich, Vincent Beffara, Etienne Marion
 -/
+import Mathlib.MeasureTheory.Integral.Pi
 import Mathlib.MeasureTheory.Integral.Prod
 import Mathlib.Probability.Independence.Basic
 import Mathlib.Probability.Notation
@@ -209,7 +210,7 @@ lemma IndepFun.integral_fun_comp_mul_comp {𝓧 𝓨 : Type*} [MeasurableSpace �
     integral_map]
   any_goals fun_prop
   rw [(indepFun_iff_map_prod_eq_prod_map_map hX hY).1 hXY]
-  exact AEStronglyMeasurable.mul hf.comp_fst hg.comp_snd
+  exact hf.comp_fst.mul hg.comp_snd
 
 lemma IndepFun.integral_comp_mul_comp {𝓧 𝓨 : Type*} [MeasurableSpace 𝓧] [MeasurableSpace 𝓨]
     [IsFiniteMeasure μ] {X : Ω → 𝓧} {Y : Ω → 𝓨} {f : 𝓧 → 𝕜} {g : 𝓨 → 𝕜} (hXY : IndepFun X Y μ)
@@ -260,5 +261,41 @@ theorem indepFun_iff_integral_comp_mul [IsFiniteMeasure μ] {β β' : Type*} {m�
     ← measureReal_def, ← measureReal_def, ← integral_indicator_one ((hfm hA).inter (hgm hB)),
     ← integral_indicator_one (hfm hA), ← integral_indicator_one (hgm hB), Set.inter_indicator_one]
   exact ENNReal.mul_ne_top (measure_ne_top μ _) (measure_ne_top μ _)
+
+variable {ι : Type*} [Fintype ι] {𝓧 : ι → Type*} [∀ i, MeasurableSpace (𝓧 i)]
+    {X : (i : ι) → Ω → 𝓧 i} {f : (i : ι) → 𝓧 i → 𝕜}
+
+lemma iIndepFun.integral_fun_comp_mul_comp (hX : iIndepFun X μ)
+    (mX : ∀ i, AEMeasurable (X i) μ) (hf : ∀ i, AEStronglyMeasurable (f i) (μ.map (X i))) :
+    μ[fun ω ↦ (∏ i, f i (X i ω))] = ∏ i, μ[fun ω ↦ f i (X i ω)] := by
+  have := hX.isProbabilityMeasure
+  change ∫ ω, (fun x ↦ ∏ i, f i (x i)) (X · ω) ∂μ = _
+  rw [← integral_map (f := fun x ↦ ∏ i, f i (x i)) (φ := fun ω ↦ (X · ω)),
+    (iIndepFun_iff_map_fun_eq_pi_map mX).1 hX, integral_fintype_prod_eq_prod]
+  · congr with i
+    rw [integral_map (mX i) (hf i)]
+  · fun_prop
+  rw [(iIndepFun_iff_map_fun_eq_pi_map mX).1 hX]
+  apply Finset.aestronglyMeasurable_prod
+  rintro i -
+
+  exact AEStronglyMeasurable.pi hf.comp_fst hg.comp_snd
+
+lemma IndepFun.integral_comp_mul_comp {𝓧 𝓨 : Type*} [MeasurableSpace 𝓧] [MeasurableSpace 𝓨]
+    [IsFiniteMeasure μ] {X : Ω → 𝓧} {Y : Ω → 𝓨} {f : 𝓧 → 𝕜} {g : 𝓨 → 𝕜} (hXY : IndepFun X Y μ)
+    (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ) (hf : AEStronglyMeasurable f (μ.map X))
+    (hg : AEStronglyMeasurable g (μ.map Y)) :
+    μ[(f ∘ X) * (g ∘ Y)] = μ[f ∘ X] * μ[g ∘ Y] :=
+  hXY.integral_fun_comp_mul_comp hX hY hf hg
+
+lemma IndepFun.integral_mul_eq_mul_integral [IsFiniteMeasure μ]
+    (hXY : IndepFun X Y μ) (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ) :
+    μ[X * Y] = μ[X] * μ[Y] :=
+  hXY.integral_comp_mul_comp hX hY aestronglyMeasurable_id aestronglyMeasurable_id
+
+lemma IndepFun.integral_fun_mul_eq_mul_integral [IsFiniteMeasure μ]
+    (hXY : IndepFun X Y μ) (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ) :
+    μ[fun ω ↦ X ω * Y ω] = μ[X] * μ[Y] :=
+  hXY.integral_mul_eq_mul_integral hX hY
 
 end ProbabilityTheory
