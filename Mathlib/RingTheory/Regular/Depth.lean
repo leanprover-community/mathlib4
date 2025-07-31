@@ -302,15 +302,15 @@ lemma lemma222 [IsNoetherianRing R] (I : Ideal R) [Small.{v} (R ⧸ I)] (n : ℕ
   tfae_have 1 → 2 := by
     intro h1 i hi
     apply h1 (ModuleCat.of R (Shrink.{v} (R ⧸ I))) _ i hi
-    simp_rw [instNontrivialShrink, Module.Finite.equiv (Shrink.linearEquiv (R ⧸ I) R).symm]
-    rw [true_and, true_and, (Shrink.linearEquiv _ R).support_eq, suppQ]
+    simp_rw [instNontrivialShrink, Module.Finite.equiv (Shrink.linearEquiv R (R ⧸ I)).symm]
+    rw [true_and, true_and, (Shrink.linearEquiv R _).support_eq, suppQ]
   tfae_have 2 → 3 := by
     intro h2
     use (ModuleCat.of R (Shrink.{v} (R ⧸ I)))
-    simp only [instNontrivialShrink, Module.Finite.equiv (Shrink.linearEquiv (R ⧸ I) R).symm,
+    simp only [instNontrivialShrink, Module.Finite.equiv (Shrink.linearEquiv R (R ⧸ I)).symm,
       true_and]
     refine ⟨?_, h2⟩
-    rw [(Shrink.linearEquiv _ R).support_eq, suppQ]
+    rw [(Shrink.linearEquiv R _).support_eq, suppQ]
   tfae_have 3 → 4 := lemma222_3_to_4 I n M Mntr Mfin smul_lt
   tfae_have 4 → 1 := fun h4 N ⟨Nntr, Nfin, Nsupp⟩ i hi ↦
     lemma222_4_to_1 I n N Nntr Nfin Nsupp M Mntr Mfin smul_lt h4 i hi
@@ -519,14 +519,14 @@ lemma IsLocalRing.ideal_depth_eq_sSup_length_regular [IsLocalRing R] [IsNoetheri
     (I : Ideal R) (netop : I ≠ ⊤) (M : ModuleCat.{v} R) [Module.Finite R M]
     [Nontrivial M] : I.depth M = sSup {(List.length rs : ℕ∞) | (rs : List R)
     (_ : RingTheory.Sequence.IsRegular M rs) (_ : ∀ r ∈ rs, r ∈ I) } := by
-  let _ := Module.Finite.equiv (Shrink.linearEquiv (R ⧸ I) R).symm
+  let _ := Module.Finite.equiv (Shrink.linearEquiv R (R ⧸ I)).symm
   let _ : Nontrivial (R ⧸ I) := Quotient.nontrivial netop
   have smul_lt : I • (⊤ : Submodule R M) < ⊤ := lt_of_le_of_lt
       (Submodule.smul_mono (le_maximalIdeal netop) (le_refl _))
       (Ne.lt_top' (Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator
         (IsLocalRing.maximalIdeal_le_jacobson _)))
   apply moduleDepth_eq_sSup_length_regular I (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M smul_lt
-  rw [(Shrink.linearEquiv (R ⧸ I) R).support_eq, Module.support_eq_zeroLocus,
+  rw [(Shrink.linearEquiv R (R ⧸ I)).support_eq, Module.support_eq_zeroLocus,
     Ideal.annihilator_quotient]
 
 lemma IsLocalRing.depth_eq_sSup_length_regular [IsLocalRing R] [IsNoetherianRing R]
@@ -545,7 +545,7 @@ lemma IsLocalRing.ideal_depth_le_depth [IsLocalRing R] [IsNoetherianRing R]
   use rs
 
 omit [Small.{v, u} R] in
-lemma Submodule.comap_lt_top_of_lt_range {M N : Type* } [AddCommGroup M] [Module R M]
+lemma Submodule.comap_lt_top_of_lt_range {M N : Type*} [AddCommGroup M] [Module R M]
     [AddCommGroup N] [Module R N] (f : M →ₗ[R] N) (p : Submodule R N)
     (lt : p < LinearMap.range f) : Submodule.comap f p < ⊤ := by
   obtain ⟨x, ⟨y, hy⟩, nmem⟩ : ∃ x ∈ LinearMap.range f, x ∉ p := Set.exists_of_ssubset lt
@@ -562,21 +562,21 @@ lemma moduleDepth_eq_moduleDepth_shrink [IsNoetherianRing R] (I : Ideal R) [Smal
     moduleDepth (ModuleCat.of R (Shrink.{w} N)) (ModuleCat.of R (Shrink.{w} M)) := by
   rw [moduleDepth_eq_sSup_length_regular I (ModuleCat.of R N) (ModuleCat.of R M) smul_lt hsupp]
   let _ : Module.Finite R (Shrink.{w} M) :=
-    Module.Finite.equiv (Shrink.linearEquiv.{v, w} M R).symm
+    Module.Finite.equiv (Shrink.linearEquiv.{w} R M).symm
   let _ : Module.Finite R (Shrink.{w} N) :=
-    Module.Finite.equiv (Shrink.linearEquiv.{v, w} N R).symm
+    Module.Finite.equiv (Shrink.linearEquiv.{w} R N).symm
   have smul_lt' : I • (⊤ : Submodule R (Shrink.{w} M)) < ⊤ := by
     apply lt_of_le_of_lt (Submodule.smul_top_le_comap_smul_top I
-      (Shrink.linearEquiv.{v, w} M R).toLinearMap) (Submodule.comap_lt_top_of_lt_range _ _ _)
+      (Shrink.linearEquiv.{w} R M).toLinearMap) (Submodule.comap_lt_top_of_lt_range _ _ _)
     simpa using smul_lt
   have hsupp' : Module.support R (Shrink.{w} N) = PrimeSpectrum.zeroLocus I := by
-    rw [LinearEquiv.support_eq (Shrink.linearEquiv.{v, w} N R), hsupp]
+    rw [LinearEquiv.support_eq (Shrink.linearEquiv.{w} R N), hsupp]
   rw [moduleDepth_eq_sSup_length_regular I
     (ModuleCat.of R (Shrink.{w} N)) (ModuleCat.of R (Shrink.{w} M)) smul_lt' hsupp']
   have : RingTheory.Sequence.IsRegular M =
     RingTheory.Sequence.IsRegular (R := R) (Shrink.{w, v} M) := by
     ext rs
-    exact LinearEquiv.isRegular_congr (Shrink.linearEquiv.{v, w} M R).symm rs
+    exact LinearEquiv.isRegular_congr (Shrink.linearEquiv.{w} R M).symm rs
   congr!
 
 lemma ring_depth_invariant [IsNoetherianRing R] (I : Ideal R) (lt_top : I < ⊤) :
@@ -585,7 +585,7 @@ lemma ring_depth_invariant [IsNoetherianRing R] (I : Ideal R) (lt_top : I < ⊤)
   let _ : Nontrivial (R ⧸ I) := Submodule.Quotient.nontrivial_of_lt_top I lt_top
   let _ : Nontrivial R := (Submodule.nontrivial_iff R).mp (nontrivial_of_lt I ⊤ lt_top)
   let e : (of R (Shrink.{u, u} (R ⧸ I))) ≅ (of R (R ⧸ I)) :=
-    (Shrink.linearEquiv.{u, u} (R ⧸ I) R).toModuleIso
+    (Shrink.linearEquiv.{u, u} R (R ⧸ I)).toModuleIso
   rw [moduleDepth_eq_of_iso_fst _ e, eq_comm]
   have smul_lt : I • (⊤ : Submodule R R) < ⊤ := by simpa using lt_top
   apply moduleDepth_eq_moduleDepth_shrink I (R ⧸ I) R smul_lt
@@ -595,7 +595,7 @@ omit [Small.{v, u} R] in
 lemma ring_depth_uLift [IsNoetherianRing R] (I : Ideal R) (lt_top : I < ⊤) :
     I.depth (ModuleCat.of R (ULift.{w} R)) = I.depth (ModuleCat.of R R) := by
   let e : (of R (Shrink.{max u w} R)) ≅ (of R (ULift.{w} R)) :=
-    ((Shrink.linearEquiv.{u, max u w} R R).trans ULift.moduleEquiv.symm).toModuleIso
+    ((Shrink.linearEquiv.{max u w} R R).trans ULift.moduleEquiv.symm).toModuleIso
   rw [← I.depth_eq_of_iso e]
   exact ring_depth_invariant.{max u w} I lt_top
 
