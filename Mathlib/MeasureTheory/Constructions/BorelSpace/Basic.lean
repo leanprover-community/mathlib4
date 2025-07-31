@@ -635,9 +635,6 @@ protected theorem Topology.IsEmbedding.measurableEmbedding {f : α → β} (h₁
       (((↑) : range f → β) ∘ h₁.toHomeomorph.toMeasurableEquiv) from
     (MeasurableEmbedding.subtype_coe h₂).comp (MeasurableEquiv.measurableEmbedding _)
 
-@[deprecated (since := "2024-10-26")]
-alias Embedding.measurableEmbedding := IsEmbedding.measurableEmbedding
-
 protected theorem Topology.IsClosedEmbedding.measurableEmbedding {f : α → β}
     (h : IsClosedEmbedding f) : MeasurableEmbedding f :=
   h.isEmbedding.measurableEmbedding h.isClosed_range.measurableSet

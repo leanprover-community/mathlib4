@@ -54,14 +54,10 @@ theorem preservesLimitIso_hom_π (j) :
     (preservesLimitIso G F).hom ≫ limit.π _ j = G.map (limit.π F j) :=
   IsLimit.conePointUniqueUpToIso_hom_comp _ _ j
 
-@[deprecated (since := "2024-10-27")] alias preservesLimitsIso_hom_π := preservesLimitIso_hom_π
-
 @[reassoc (attr := simp)]
 theorem preservesLimitIso_inv_π (j) :
     (preservesLimitIso G F).inv ≫ G.map (limit.π F j) = limit.π _ j :=
   IsLimit.conePointUniqueUpToIso_inv_comp _ _ j
-
-@[deprecated (since := "2024-10-27")] alias preservesLimitsIso_inv_π := preservesLimitIso_inv_π
 
 @[reassoc (attr := simp)]
 theorem lift_comp_preservesLimitIso_hom (t : Cone F) :
@@ -69,9 +65,6 @@ theorem lift_comp_preservesLimitIso_hom (t : Cone F) :
     limit.lift (F ⋙ G) (G.mapCone _) := by
   ext
   simp [← G.map_comp]
-
-@[deprecated (since := "2024-10-27")]
-alias lift_comp_preservesLimitsIso_hom := lift_comp_preservesLimitIso_hom
 
 instance : IsIso (limit.post F G) :=
   show IsIso (preservesLimitIso G F).hom from inferInstance
@@ -128,16 +121,10 @@ theorem ι_preservesColimitIso_inv (j : J) :
     colimit.ι _ j ≫ (preservesColimitIso G F).inv = G.map (colimit.ι F j) :=
   IsColimit.comp_coconePointUniqueUpToIso_inv _ (colimit.isColimit (F ⋙ G)) j
 
-@[deprecated (since := "2024-10-27")]
-alias ι_preservesColimitsIso_inv := ι_preservesColimitIso_inv
-
 @[reassoc (attr := simp)]
 theorem ι_preservesColimitIso_hom (j : J) :
     G.map (colimit.ι F j) ≫ (preservesColimitIso G F).hom = colimit.ι (F ⋙ G) j :=
   (isColimitOfPreserves G (colimit.isColimit _)).comp_coconePointUniqueUpToIso_hom _ j
-
-@[deprecated (since := "2024-10-27")]
-alias ι_preservesColimitsIso_hom := ι_preservesColimitIso_hom
 
 @[reassoc (attr := simp)]
 theorem preservesColimitIso_inv_comp_desc (t : Cocone F) :
@@ -145,9 +132,6 @@ theorem preservesColimitIso_inv_comp_desc (t : Cocone F) :
     colimit.desc _ (G.mapCocone t) := by
   ext
   simp [← G.map_comp]
-
-@[deprecated (since := "2024-10-27")]
-alias preservesColimitsIso_inv_comp_desc := preservesColimitIso_inv_comp_desc
 
 instance : IsIso (colimit.post F G) :=
   show IsIso (preservesColimitIso G F).inv from inferInstance

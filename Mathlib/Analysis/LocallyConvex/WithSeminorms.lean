@@ -920,8 +920,6 @@ lemma Topology.IsInducing.withSeminorms [hι : Nonempty ι] {q : SeminormFamily 
   rw [hf.eq_induced]
   exact f.withSeminorms_induced hq
 
-@[deprecated (since := "2024-10-28")] alias Inducing.withSeminorms := IsInducing.withSeminorms
-
 /-- (Disjoint) union of seminorm families. -/
 protected def SeminormFamily.sigma {κ : ι → Type*} (p : (i : ι) → SeminormFamily 𝕜 E (κ i)) :
     SeminormFamily 𝕜 E ((i : ι) × κ i) :=
