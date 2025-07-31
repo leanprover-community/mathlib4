@@ -46,13 +46,11 @@ instance decidableMemProd [DecidablePred (· ∈ s)] [DecidablePred (· ∈ t)] 
 theorem prod_mono (hs : s₁ ⊆ s₂) (ht : t₁ ⊆ t₂) : s₁ ×ˢ t₁ ⊆ s₂ ×ˢ t₂ :=
   fun _ ⟨h₁, h₂⟩ => ⟨hs h₁, ht h₂⟩
 
-@[gcongr]
 theorem prod_mono_left (hs : s₁ ⊆ s₂) : s₁ ×ˢ t ⊆ s₂ ×ˢ t :=
   prod_mono hs Subset.rfl
 
 alias prod_subset_prod_left := prod_mono_left
 
-@[gcongr]
 theorem prod_mono_right (ht : t₁ ⊆ t₂) : s ×ˢ t₁ ⊆ s ×ˢ t₂ :=
   prod_mono Subset.rfl ht
 
@@ -615,8 +613,8 @@ theorem offDiag_union (h : Disjoint s t) :
   ext x
   simp only [mem_offDiag, mem_union, ne_eq, mem_prod]
   constructor
-  · rintro ⟨h0|h0, h1|h1, h2⟩ <;> simp [h0, h1, h2]
-  · rintro (((⟨h0, h1, h2⟩|⟨h0, h1, h2⟩)|⟨h0, h1⟩)|⟨h0, h1⟩) <;> simp [*]
+  · rintro ⟨h0 | h0, h1 | h1, h2⟩ <;> simp [h0, h1, h2]
+  · rintro (((⟨h0, h1, h2⟩ | ⟨h0, h1, h2⟩) | ⟨h0, h1⟩) | ⟨h0, h1⟩) <;> simp [*]
     · rintro h3
       rw [h3] at h0
       exact Set.disjoint_left.mp h h0 h1

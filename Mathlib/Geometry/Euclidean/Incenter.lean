@@ -198,7 +198,7 @@ lemma sum_excenterWeightsUnnorm_singleton_pos (hn : 1 < n) (i : Fin (n + 1)) :
   convert s.inv_height_lt_sum_inv_height hn i using 2 with j h
   · ext j
     simp
-  · simp only [ne_eq, Finset.mem_filter, Finset.mem_univ, true_and] at h
+  · rw [Finset.mem_filter_univ] at h
     simp [excenterWeightsUnnorm, h]
 
 /-- The existence of the excenter opposite a vertex (in two or more dimensions), expressed in
@@ -458,7 +458,7 @@ lemma exists_forall_dist_eq_iff_exists_excenterExists_and_eq_excenter {p : P}
     intro i
     split_ifs with hi
     · simpa using hi
-    · simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hi
+    · rw [Finset.mem_filter_univ] at hi
       simpa [hi] using h' i
   · rintro ⟨signs, h⟩
     replace h := (s.exists_forall_signedInfDist_eq_iff_excenterExists_and_eq_excenter hp).2 h

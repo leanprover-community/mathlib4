@@ -28,7 +28,8 @@ transformations are used to encode 2-functoriality of categorical pullback squar
 
 namespace CategoryTheory.Limits
 
-universe v₁ v₂ v₃ v₄ v₅ v₆ v₇ v₈ v₉ v₁₀ v₁₁ v₁₂ u₁ u₂ u₃ u₄ u₅ u₆ u₇ u₈ u₉ u₁₀ u₁₁ u₁₂
+universe v₁ v₂ v₃ v₄ v₅ v₆ v₇ v₈ v₉ v₁₀ v₁₁ v₁₂ v₁₃ v₁₄ v₁₅
+universe u₁ u₂ u₃ u₄ u₅ u₆ u₇ u₈ u₉ u₁₀ u₁₁ u₁₂ u₁₃ u₁₄ u₁₅
 
 /-- A `CatCospanTransform F G F' G'` is a diagram
 ```
@@ -78,13 +79,13 @@ variable {F G}
 /-- Composition of `CatCospanTransforms` is defined "componentwise". -/
 @[simps]
 def comp
-  {A' : Type u₄} {B' : Type u₅} {C' : Type u₆}
-  [Category.{v₄} A'] [Category.{v₅} B'] [Category.{v₆} C']
-  {F' : A' ⥤ B'} {G' : C' ⥤ B'}
-  {A'' : Type u₇} {B'' : Type u₈} {C'' : Type u₉}
-  [Category.{v₇} A''] [Category.{v₈} B''] [Category.{v₉} C'']
-  {F'' : A'' ⥤ B''} {G'' : C'' ⥤ B''}
-  (ψ : CatCospanTransform F G F' G') (ψ' : CatCospanTransform F' G' F'' G'') :
+    {A' : Type u₄} {B' : Type u₅} {C' : Type u₆}
+    [Category.{v₄} A'] [Category.{v₅} B'] [Category.{v₆} C']
+    {F' : A' ⥤ B'} {G' : C' ⥤ B'}
+    {A'' : Type u₇} {B'' : Type u₈} {C'' : Type u₉}
+    [Category.{v₇} A''] [Category.{v₈} B''] [Category.{v₉} C'']
+    {F'' : A'' ⥤ B''} {G'' : C'' ⥤ B''}
+    (ψ : CatCospanTransform F G F' G') (ψ' : CatCospanTransform F' G' F'' G'') :
     CatCospanTransform F G F'' G'' where
   left := ψ.left ⋙ ψ'.left
   base := ψ.base ⋙ ψ'.base
@@ -103,7 +104,7 @@ variable {A : Type u₁} {B : Type u₂} {C : Type u₃}
     {F : A ⥤ B} {G : C ⥤ B}
     [Category.{v₄} A'] [Category.{v₅} B'] [Category.{v₆} C']
     {F' : A' ⥤ B'} {G' : C' ⥤ B'}
-    [Category.{v₇} A''] [Category.{v₈} B''] [Category.{v₅} C'']
+    [Category.{v₇} A''] [Category.{v₈} B''] [Category.{v₉} C'']
     {F'' : A'' ⥤ B''} {G'' : C'' ⥤ B''}
 
 /-- A morphism of `CatCospanTransform F G F' G'` is a triple of natural
@@ -260,6 +261,103 @@ def associator {A''' : Type u₁₀} {B''' : Type u₁₁} {C''' : Type u₁₂}
     (φ.left.associator φ'.left φ''.left)
     (φ.right.associator φ'.right φ''.right)
     (φ.base.associator φ'.base φ''.base)
+
+section lemmas
+
+-- We scope the notations with notations from bicategories to make life easier.
+-- Due to performance issues, these notations should not be in scope at the same time
+-- as the ones in bicategories.
+
+@[inherit_doc] scoped infixr:81 " ◁ " => CatCospanTransformMorphism.whiskerLeft
+@[inherit_doc] scoped infixl:81 " ▷ " => CatCospanTransformMorphism.whiskerRight
+@[inherit_doc] scoped notation "α_" => CatCospanTransform.associator
+@[inherit_doc] scoped notation "λ_" => CatCospanTransform.leftUnitor
+@[inherit_doc] scoped notation "ρ_" => CatCospanTransform.rightUnitor
+
+variable
+    {A''' : Type u₁₀} {B''' : Type u₁₁} {C''' : Type u₁₂}
+    [Category.{v₁₀} A'''] [Category.{v₁₁} B'''] [Category.{v₁₂} C''']
+    {F''' : A''' ⥤ B'''} {G''' : C''' ⥤ B'''}
+    {ψ ψ' ψ'' : CatCospanTransform F G F' G'}
+    (η : ψ ⟶ ψ') (η' : ψ' ⟶ ψ'')
+    {φ φ' φ'' : CatCospanTransform F' G' F'' G''}
+    (θ : φ ⟶ φ') (θ' : φ' ⟶ φ'')
+    {τ τ' : CatCospanTransform F'' G'' F''' G'''}
+    (γ : τ ⟶ τ')
+
+@[reassoc]
+lemma whisker_exchange : ψ ◁ θ ≫ η ▷ φ' = η ▷ φ ≫ ψ' ◁ θ := by aesop_cat
+
+@[simp]
+lemma id_whiskerRight : 𝟙 ψ ▷ φ = 𝟙 _ := by aesop_cat
+
+@[reassoc]
+lemma whiskerRight_id : η ▷ (.id _ _) = (ρ_ _).hom ≫ η ≫ (ρ_ _).inv := by aesop_cat
+
+@[simp, reassoc]
+lemma comp_whiskerRight : (η ≫ η') ▷ φ = η ▷ φ ≫ η' ▷ φ := by aesop_cat
+
+@[reassoc]
+lemma whiskerRight_comp :
+    η ▷ (φ.comp τ) = (α_ _ _ _).inv ≫ (η ▷ φ) ▷ τ ≫ (α_ _ _ _ ).hom := by
+  aesop_cat
+
+@[simp]
+lemma whiskerleft_id : ψ ◁ 𝟙 φ = 𝟙 _ := by aesop_cat
+
+@[reassoc]
+lemma id_whiskerLeft : (.id _ _) ◁ η = (λ_ _).hom ≫ η ≫ (λ_ _).inv := by aesop_cat
+
+@[simp, reassoc]
+lemma whiskerLeft_comp : ψ ◁ (θ ≫ θ') = (ψ ◁ θ) ≫ (ψ ◁ θ') := by aesop_cat
+
+@[reassoc]
+lemma comp_whiskerLeft :
+    (ψ.comp φ) ◁ γ = (α_ _ _ _).hom ≫ (ψ ◁ (φ ◁ γ)) ≫ (α_ _ _ _).inv := by
+  aesop_cat
+
+@[reassoc]
+lemma pentagon
+    {A'''' : Type u₁₃} {B'''' : Type u₁₄} {C'''' : Type u₁₅}
+    [Category.{v₁₃} A''''] [Category.{v₁₄} B''''] [Category.{v₁₅} C'''']
+    {F'''' : A'''' ⥤ B''''} {G'''' : C'''' ⥤ B''''}
+    {σ : CatCospanTransform F''' G''' F'''' G''''} :
+    (α_ ψ φ τ).hom ▷ σ ≫ (α_ ψ (φ.comp τ) σ).hom ≫ ψ ◁ (α_ φ τ σ).hom =
+      (α_ (ψ.comp φ) τ σ).hom ≫ (α_ ψ φ (τ.comp σ)).hom := by
+  aesop_cat
+
+@[reassoc]
+lemma triangle :
+    (α_ ψ (.id _ _) φ).hom ≫ ψ ◁ (λ_ φ).hom = (ρ_ ψ).hom ▷ φ := by
+  aesop_cat
+
+@[reassoc]
+lemma triangle_inv :
+     (α_ ψ (.id _ _) φ).inv ≫ (ρ_ ψ).hom ▷ φ = ψ ◁ (λ_ φ).hom := by
+  aesop_cat
+
+section Isos
+
+variable {ψ ψ' : CatCospanTransform F G F' G'} (η : ψ ⟶ ψ') [IsIso η]
+    {φ φ' : CatCospanTransform F' G' F'' G''} (θ : φ ⟶ φ') [IsIso θ]
+
+instance : IsIso (ψ ◁ θ) :=
+    ⟨ψ ◁ inv θ, ⟨by simp [← whiskerLeft_comp], by simp [← whiskerLeft_comp]⟩⟩
+
+lemma inv_whiskerLeft : inv (ψ ◁ θ) = ψ ◁ inv θ := by
+  apply IsIso.inv_eq_of_hom_inv_id
+  simp [← whiskerLeft_comp]
+
+instance : IsIso (η ▷ φ) :=
+    ⟨inv η ▷ φ, ⟨by simp [← comp_whiskerRight], by simp [← comp_whiskerRight]⟩⟩
+
+lemma inv_whiskerRight : inv (η ▷ φ) = inv η ▷ φ := by
+  apply IsIso.inv_eq_of_hom_inv_id
+  simp [← comp_whiskerRight]
+
+end Isos
+
+end lemmas
 
 end CatCospanTransform
 

@@ -223,8 +223,7 @@ variable (L : Type*) [Field L] [Algebra K L] {v : Valuation L Γ}
 
 include hv
 
-lemma valuation_aeval_monomial_eq_valuation_pow (w : L) (n : ℕ) {a : K}
-     (ha : a ≠ 0) :
+lemma valuation_aeval_monomial_eq_valuation_pow (w : L) (n : ℕ) {a : K} (ha : a ≠ 0) :
     v ((monomial n a).aeval w) = (v w) ^ n := by
   simp [← C_mul_X_pow_eq_monomial, map_mul, map_pow, one_mul, hv a ha]
 

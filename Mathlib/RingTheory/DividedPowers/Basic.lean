@@ -112,12 +112,7 @@ noncomputable def dividedPowersBot : DividedPowers (⊥ : Ideal A) where
       apply sum_eq_zero
       intro i hi
       simp only [mem_antidiagonal] at hi
-      split_ifs with h2 h1
-      · rw [h1, h2, add_zero] at hi
-        exfalso
-        exact h hi.symm
-      · rfl
-      · rfl
+      grind
   dpow_mul {n} _ _ hx := by
     rw [mem_bot.mp hx]
     simp only [mul_zero, true_and, mul_ite, mul_one]
@@ -157,10 +152,7 @@ theorem DividedPowers.ext (hI : DividedPowers I) (hI' : DividedPowers I)
   obtain ⟨hI, h₀, _⟩ := hI
   obtain ⟨hI', h₀', _⟩ := hI'
   simp only [mk.injEq]
-  ext n x
-  by_cases hx : x ∈ I
-  · exact h_eq n hx
-  · rw [h₀ hx, h₀' hx]
+  grind
 
 theorem DividedPowers.coe_injective :
     Function.Injective (fun (h : DividedPowers I) ↦ (h : ℕ → A → A)) := fun hI hI' h ↦ by

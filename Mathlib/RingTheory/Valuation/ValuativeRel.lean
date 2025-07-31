@@ -75,8 +75,9 @@ class ValuativeRel (R : Type*) [CommRing R] where
   rel_mul_cancel {x y z} : ¬ rel z 0 → rel (x * z) (y * z) → rel x y
   not_rel_one_zero : ¬ rel 1 0
 
-@[inherit_doc ValuativeRel.rel]
-notation:50 (name := valuativeRel) a:50 " ≤ᵥ " b:51 => binrel% ValuativeRel.rel a b
+@[inherit_doc] infix:50 " ≤ᵥ " => ValuativeRel.rel
+
+macro_rules | `($a ≤ᵥ $b) => `(binrel% ValuativeRel.rel $a $b)
 
 namespace Valuation
 
@@ -161,7 +162,7 @@ lemma left_cancel_posSubmonoid (x y : R) (u : posSubmonoid R) :
 variable (R) in
 /-- The setoid used to construct `ValueGroupWithZero R`. -/
 def valueSetoid : Setoid (R × posSubmonoid R) where
-  r := fun (x,s) (y,t) => x * t ≤ᵥ y * s ∧ y * s ≤ᵥ x * t
+  r := fun (x, s) (y, t) => x * t ≤ᵥ y * s ∧ y * s ≤ᵥ x * t
   iseqv := {
     refl ru := ⟨rel_refl _, rel_refl _⟩
     symm h := ⟨h.2, h.1⟩
@@ -541,7 +542,7 @@ instance : Preorder (WithPreorder R) where
   le_refl _ := rel_refl _
   le_trans _ _ _ := rel_trans
 
-/-- The valutaive relation on `WithPreorder R` arising from the valuative relation on `R`.
+/-- The valuative relation on `WithPreorder R` arising from the valuative relation on `R`.
 This is defined as the preorder itself. -/
 instance : ValuativeRel (WithPreorder R) where
   rel := (· ≤ ·)
