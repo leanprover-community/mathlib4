@@ -24,7 +24,7 @@ def call(number: int, handle: str) -> bool:
     arguments_DO_NOT_PRINT = [
         "--fail-with-body", "--location", "--request", "POST",
         '--header', 'Accept: application/vnd.github+json',
-        '--header', "authorization: Bearer {ASSIGN_REVIEWERS_TOKEN}",
+        '--header', f'Authorization: Bearer {ASSIGN_REVIEWERS_TOKEN}',
         '--header', "X-GitHub-Api-Version: 2022-11-28",
         url, '--data', f'{{"assignees":["{handle}"]}}'
     ]
@@ -56,6 +56,7 @@ if __name__ == '__main__':
         data = json.load(fi)
     all_api_calls_succeeded = True
     for (number, user_handle) in data.items():
-        all_api_calls_succeeded = all_api_calls_succeeded and call(number, user_handle)
+        print(number, user_handle)
+        all_api_calls_succeeded = call(number, user_handle) and all_api_calls_succeeded
     if not all_api_calls_succeeded:
         sys.exit(1)
