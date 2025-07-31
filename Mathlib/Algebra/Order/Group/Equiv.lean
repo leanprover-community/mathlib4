@@ -35,3 +35,13 @@ theorem coe_ofLexMulEquiv [Mul α] : ⇑(ofLexMulEquiv α) = ofLex := rfl
 
 @[to_additive (attr := simp)]
 theorem coe_symm_ofLexMulEquiv [Mul α] : ⇑(ofLexMulEquiv α).symm = toLex := rfl
+
+@[simp]
+lemma toEquiv_toLexMulEquiv (G H : Type*) [MulOneClass G] [MulOneClass H] :
+    ⇑(toLexMulEquiv (G × H) : G × H ≃ G ×ₗ H) = toLex :=
+  rfl
+
+@[simp]
+lemma toEquiv_symm_toLexMulEquiv (G H : Type*) [MulOneClass G] [MulOneClass H] :
+    ⇑((toLexMulEquiv (G × H)).symm : G ×ₗ H ≃ G × H) = ofLex :=
+  rfl
