@@ -841,6 +841,52 @@ end
 
 end Reindex
 
+section
+
+variable {J : Type u₂} [Category.{v₂, u₂} J] (F : J ⥤ C)
+
+section limMapPi
+
+variable [HasLimit F] [HasProduct F.obj]
+
+/-- The canonical morphism from the limit of a functor to the product of its object. -/
+abbrev limMapPi : limit F ⟶ ∏ᶜ F.obj :=
+  Pi.lift (limit.π F)
+
+@[reassoc (attr := simp)]
+lemma limMapPi_π (j : J) : limMapPi F ≫ (Pi.π F.obj j) = limit.π F j :=
+  Pi.lift_π _ _
+
+instance limMapPi_mono : Mono (limMapPi F) :=
+  { right_cancellation _ _ h := by
+      refine limit.hom_ext fun _ => ?_
+      rw [← limMapPi_π, ← Category.assoc, h]
+      simp }
+
+end limMapPi
+
+section sigmaMapColim
+
+variable [HasColimit F] [HasCoproduct F.obj]
+
+/-- The canonical morphism from the coproduct of the objects of a functor to its colimit. -/
+def sigmaMapColim : ∐ F.obj ⟶ colimit F :=
+  Sigma.desc (colimit.ι F)
+
+@[reassoc (attr := simp)]
+lemma ι_sigmaMapColim (j : J) : Sigma.ι F.obj j ≫ sigmaMapColim F = colimit.ι F j :=
+  Sigma.ι_desc _ _
+
+instance sigmaMapColim_epi : Epi (sigmaMapColim F) :=
+  { left_cancellation _ _ h := by
+      refine colimit.hom_ext fun _ => ?_
+      rw [← ι_sigmaMapColim, Category.assoc, h]
+      simp }
+
+end sigmaMapColim
+
+end
+
 section Fubini
 
 variable {ι ι' : Type*} {X : ι → ι' → C}
