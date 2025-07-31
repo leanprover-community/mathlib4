@@ -3,9 +3,7 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Kexing Ying
 -/
-import Mathlib.Probability.Notation
-import Mathlib.Probability.Integration
-import Mathlib.MeasureTheory.Function.L2Space
+import Mathlib.Probability.Moments.Covariance
 
 /-!
 # Variance of random variables
@@ -172,6 +170,14 @@ theorem evariance_mul (c : ℝ) (X : Ω → ℝ) (μ : Measure Ω) :
 theorem variance_zero (μ : Measure Ω) : variance 0 μ = 0 := by
   simp only [variance, evariance_zero, ENNReal.toReal_zero]
 
+lemma covariance_self {X : Ω → ℝ} (hX : AEMeasurable X μ) :
+    cov[X, X; μ] = Var[X; μ] := by
+  rw [covariance, variance_eq_integral hX]
+  congr with x
+  ring
+
+@[deprecated (since := "2025-06-25")] alias covariance_same := covariance_self
+
 theorem variance_nonneg (X : Ω → ℝ) (μ : Measure Ω) : 0 ≤ variance X μ :=
   ENNReal.toReal_nonneg
 
@@ -235,6 +241,47 @@ lemma variance_const_sub [IsProbabilityMeasure μ] (hX : AEStronglyMeasurable X 
     Var[fun ω ↦ c - X ω; μ] = Var[X; μ] := by
   simp_rw [sub_eq_add_neg]
   rw [variance_const_add (by fun_prop) c, variance_fun_neg]
+
+variable {Y : Ω → ℝ}
+
+lemma variance_sub [IsFiniteMeasure μ] (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) :
+    Var[X - Y; μ] = Var[X; μ] - 2 * cov[X, Y; μ] + Var[Y; μ] := by
+  rw [← covariance_self, covariance_sub_left hX hY (hX.sub hY), covariance_sub_right hX hX hY,
+    covariance_sub_right hY hX hY, covariance_self, covariance_self, covariance_comm]
+  · ring
+  · exact hY.aemeasurable
+  · exact hX.aemeasurable
+  · exact hX.aemeasurable.sub hY.aemeasurable
+
+lemma variance_fun_sub [IsFiniteMeasure μ] (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) :
+    Var[fun ω ↦ X ω - Y ω; μ] = Var[X; μ] - 2 * cov[X, Y; μ] + Var[Y; μ] :=
+  variance_sub hX hY
+
+variable {ι : Type*} {s : Finset ι} {X : (i : ι) → Ω → ℝ}
+
+lemma variance_sum' [IsFiniteMeasure μ] (hX : ∀ i ∈ s, MemLp (X i) 2 μ) :
+    Var[∑ i ∈ s, X i; μ] = ∑ i ∈ s, ∑ j ∈ s, cov[X i, X j; μ] := by
+  rw [← covariance_self, covariance_sum_left' (by simpa)]
+  · refine Finset.sum_congr rfl fun i hi ↦ ?_
+    rw [covariance_sum_right' (by simpa) (hX i hi)]
+  · exact memLp_finset_sum' _ (by simpa)
+  · exact (memLp_finset_sum' _ (by simpa)).aemeasurable
+
+lemma variance_sum [IsFiniteMeasure μ] [Fintype ι] (hX : ∀ i, MemLp (X i) 2 μ) :
+    Var[∑ i, X i; μ] = ∑ i, ∑ j, cov[X i, X j; μ] :=
+  variance_sum' (fun _ _ ↦ hX _)
+
+lemma variance_fun_sum' [IsFiniteMeasure μ] (hX : ∀ i ∈ s, MemLp (X i) 2 μ) :
+    Var[fun ω ↦ ∑ i ∈ s, X i ω; μ] = ∑ i ∈ s, ∑ j ∈ s, cov[X i, X j; μ] := by
+  convert variance_sum' hX
+  simp
+
+lemma variance_fun_sum [IsFiniteMeasure μ] [Fintype ι] (hX : ∀ i, MemLp (X i) 2 μ) :
+    Var[fun ω ↦ ∑ i, X i ω; μ] = ∑ i, ∑ j, cov[X i, X j; μ] := by
+  convert variance_sum hX
+  simp
+
+variable {X : Ω → ℝ}
 
 @[simp]
 lemma variance_dirac [MeasurableSingletonClass Ω] (x : Ω) : Var[X; Measure.dirac x] = 0 := by

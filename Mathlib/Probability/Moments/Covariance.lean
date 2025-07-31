@@ -3,7 +3,10 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Etienne Marion
 -/
-import Mathlib.Probability.Moments.Variance
+import Mathlib.MeasureTheory.Function.L2Space
+import Mathlib.Probability.Independence.Integrable
+import Mathlib.Probability.Independence.Integration
+import Mathlib.Probability.Notation
 
 /-!
 # Covariance
@@ -44,13 +47,19 @@ scoped notation "cov[" X ", " Y "; " μ "]" => ProbabilityTheory.covariance X Y 
 according to the volume measure. -/
 scoped notation "cov[" X ", " Y "]" => cov[X, Y; MeasureTheory.MeasureSpace.volume]
 
-lemma covariance_self {X : Ω → ℝ} (hX : AEMeasurable X μ) :
-    cov[X, X; μ] = Var[X; μ] := by
-  rw [covariance, variance_eq_integral hX]
-  congr with x
-  ring
-
-@[deprecated (since := "2025-06-25")] alias covariance_same := covariance_self
+lemma covariance_eq [IsProbabilityMeasure μ] (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) :
+    cov[X, Y; μ] = μ[X * Y] - μ[X] * μ[Y] := by
+  simp_rw [covariance, sub_mul, mul_sub]
+  repeat rw [integral_sub]
+  · simp_rw [integral_mul_const, integral_const_mul, integral_const, Measure.real, measure_univ,
+      ENNReal.toReal_one, one_smul]
+    simp
+  · exact hY.const_mul _ |>.integrable (by simp)
+  · exact integrable_const _
+  · exact hX.integrable_mul hY
+  · exact hX.mul_const _ |>.integrable (by simp)
+  · exact (hX.integrable_mul hY).sub (hX.mul_const _ |>.integrable (by simp))
+  · exact (hY.const_mul _ |>.integrable (by simp)).sub (integrable_const _)
 
 @[simp] lemma covariance_zero_left : cov[0, Y; μ] = 0 := by simp [covariance]
 
@@ -176,19 +185,6 @@ lemma covariance_const_sub_right [IsProbabilityMeasure μ] (hY : Integrable Y μ
     cov[X, fun ω ↦ c - Y ω; μ] = - cov[X, Y; μ] := by
   simp [sub_eq_add_neg, hY.neg']
 
-lemma variance_sub [IsFiniteMeasure μ] (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) :
-    Var[X - Y; μ] = Var[X; μ] - 2 * cov[X, Y; μ] + Var[Y; μ] := by
-  rw [← covariance_self, covariance_sub_left hX hY (hX.sub hY), covariance_sub_right hX hX hY,
-    covariance_sub_right hY hX hY, covariance_self, covariance_self, covariance_comm]
-  · ring
-  · exact hY.aemeasurable
-  · exact hX.aemeasurable
-  · exact hX.aemeasurable.sub hY.aemeasurable
-
-lemma variance_fun_sub [IsFiniteMeasure μ] (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) :
-    Var[fun ω ↦ X ω - Y ω; μ] = Var[X; μ] - 2 * cov[X, Y; μ] + Var[Y; μ] :=
-  variance_sub hX hY
-
 section Sum
 
 variable {ι : Type*} {X : ι → Ω → ℝ} {s : Finset ι} [IsFiniteMeasure μ]
@@ -263,28 +259,6 @@ lemma covariance_fun_sum_fun_sum [Fintype ι] {ι' : Type*} [Fintype ι'] {Y : �
     cov[fun ω ↦ ∑ i, X i ω, fun ω ↦ ∑ j, Y j ω; μ] = ∑ i, ∑ j, cov[X i, Y j; μ] :=
   covariance_fun_sum_fun_sum' (fun _ _ ↦ hX _) (fun _ _ ↦ hY _)
 
-lemma variance_sum' (hX : ∀ i ∈ s, MemLp (X i) 2 μ) :
-    Var[∑ i ∈ s, X i; μ] = ∑ i ∈ s, ∑ j ∈ s, cov[X i, X j; μ] := by
-  rw [← covariance_self, covariance_sum_left' (by simpa)]
-  · refine Finset.sum_congr rfl fun i hi ↦ ?_
-    rw [covariance_sum_right' (by simpa) (hX i hi)]
-  · exact memLp_finset_sum' _ (by simpa)
-  · exact (memLp_finset_sum' _ (by simpa)).aemeasurable
-
-lemma variance_sum [Fintype ι] (hX : ∀ i, MemLp (X i) 2 μ) :
-    Var[∑ i, X i; μ] = ∑ i, ∑ j, cov[X i, X j; μ] :=
-  variance_sum' (fun _ _ ↦ hX _)
-
-lemma variance_fun_sum' (hX : ∀ i ∈ s, MemLp (X i) 2 μ) :
-    Var[fun ω ↦ ∑ i ∈ s, X i ω; μ] = ∑ i ∈ s, ∑ j ∈ s, cov[X i, X j; μ] := by
-  convert variance_sum' hX
-  simp
-
-lemma variance_fun_sum [Fintype ι] (hX : ∀ i, MemLp (X i) 2 μ) :
-    Var[fun ω ↦ ∑ i, X i ω; μ] = ∑ i, ∑ j, cov[X i, X j; μ] := by
-  convert variance_sum hX
-  simp
-
 end Sum
 
 section Map
@@ -311,5 +285,14 @@ lemma covariance_map_fun {Z : Ω' → Ω} (hX : AEStronglyMeasurable X (μ.map Z
   covariance_map hX hY hZ
 
 end Map
+
+lemma IndepFun.covariance_eq_zero (h : IndepFun X Y μ) (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) :
+    cov[X, Y; μ] = 0 := by
+  by_cases h' : ∀ᵐ ω ∂μ, X ω = 0
+  · refine integral_eq_zero_of_ae ?_
+    filter_upwards [h'] with ω hω
+    simp [hω, integral_eq_zero_of_ae h']
+  have := hX.isProbabilityMeasure_of_indepFun X Y (by simp) (by simp) h' h
+  rw [covariance_eq hX hY, h.integral_mul_eq_mul_integral hX.aemeasurable hY.aemeasurable, sub_self]
 
 end ProbabilityTheory
