@@ -116,10 +116,7 @@ theorem Set.Finite.ciSup_lt_iff {s : Set ι} {f : ι → α} (hs : s.Finite)
       simp [hx]
   · intro H
     have := hs.ciSup_mem_image _ h
-    simp only [mem_image] at this
-    obtain ⟨_, hmem, hx⟩ := this
-    rw [← hx]
-    exact H _ hmem
+    grind [Set.mem_image]
 
 theorem Set.Finite.lt_ciInf_iff {s : Set ι} {f : ι → α} (hs : s.Finite)
     (h : ∃ x ∈ s, f x ≤ sInf ∅) :
