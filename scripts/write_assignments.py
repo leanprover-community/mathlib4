@@ -1,9 +1,11 @@
 """
-Read a file |assignments.json| containing reviewer assignments for pull requests,
-parse its contents and generate a shell script making the github API calls to add these users
-as assignees.
+Download and parse a .json file containing reviewer assignments for pull requests,
+and generate a shell script making the github API calls to add these users as assignees.
+
+This script assumes |curl| is installed and on PATH.
 """
 import json
+import subprocess
 
 # Create the github API call to assign mathlib PR |number| to user |handle|.
 # Any existing assignee is kept; specifying a non-existent user does nothing.
@@ -18,6 +20,13 @@ def call(number: int, handle: str) -> str:
     return raw.replace("        ", "  ")
 
 if __name__ == '__main__':
+    # Download the assignments file using curl.abs
+    url = "https://leanprover-community.github.io/queueboard/automatic_assignments.json"
+    print("trace: about to download the assignments file using curl...")
+    out = subprocess.run(["curl", "--output", "assignments.json", url])
+    if out.returncode != 0:
+        print(f"error: curl failed to download the assignment file at {url}"
+            "Please make sure curl is installed and on your PATH.")
     with open('assignments.json', 'r') as fi:
         data = json.load(fi)
     output = [call(number, user_handle) for (number, user_handle) in data.items()]

@@ -10,15 +10,11 @@ jobs:
     name: assign automatically proposed reviewers
     runs-on: ubuntu-latest
     steps:
-      - name: download the list of proposed assignments
+      - name: assign reviewers
         run: |
-          curl --output assignments.json https://leanprover-community.github.io/queueboard/automatic_assignments.json
-
-      - name: parse assignments file and assign reviewers
-        run: |
-          # We use a slightly roundabout way (shelling out to Python to parse the file and write
-          # the shell script we execute), as this is the easiest way to get around variable
-          # quotient issues.
+          # Download and parse the assignments file (calling curl from within Python).
+          # Write out a shell script for the API calls we want to make.
+          # This is the easiest way to get around variable quoting issues.
           # Rewriting this (or deciding that Python is nicer than shell and keeping it) is welcome.
           python3 scripts/write_assignments.py
           chmod u+x assign_users.sh
