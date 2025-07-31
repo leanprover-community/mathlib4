@@ -70,11 +70,9 @@ theorem image₂_subset (hs : s ⊆ s') (ht : t ⊆ t') : image₂ f s t ⊆ ima
   rw [← coe_subset, coe_image₂, coe_image₂]
   exact image2_subset hs ht
 
-@[gcongr]
 theorem image₂_subset_left (ht : t ⊆ t') : image₂ f s t ⊆ image₂ f s t' :=
   image₂_subset Subset.rfl ht
 
-@[gcongr]
 theorem image₂_subset_right (hs : s ⊆ s') : image₂ f s t ⊆ image₂ f s' t :=
   image₂_subset hs Subset.rfl
 
