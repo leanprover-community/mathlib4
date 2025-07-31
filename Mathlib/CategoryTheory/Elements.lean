@@ -281,9 +281,7 @@ def costructuredArrowULiftYonedaEquivalence (F : Cᵒᵖ ⥤ Type max w v) :
     { obj X := op (F.elementsMk _ (uliftYonedaEquiv.{w} X.hom))
       map f := (homMk _ _ f.left.op (by
         dsimp
-        rw [← CostructuredArrow.w f, uliftYonedaEquiv_naturality, Quiver.Hom.unop_op])).op
-      map_id := by aesop
-      map_comp := by aesop }
+        rw [← CostructuredArrow.w f, uliftYonedaEquiv_naturality, Quiver.Hom.unop_op])).op }
   unitIso := NatIso.ofComponents (fun x ↦ Iso.op (isoMk _ _ (Iso.refl _) (by simp)))
     (fun f ↦ Quiver.Hom.unop_inj (by aesop))
   counitIso := NatIso.ofComponents (fun X ↦ CostructuredArrow.isoMk (Iso.refl _))
