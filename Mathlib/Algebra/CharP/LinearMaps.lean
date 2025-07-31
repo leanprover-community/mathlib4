@@ -57,3 +57,4 @@ instance {D : Type*} [DivisionRing D] {p : ℕ} [CharP D p] :
 instance {D : Type*} [DivisionRing D] {p : ℕ} [ExpChar D p] :
     ExpChar (D →ₗ[Subring.center D] D) p :=
   expChar_of_injective_ringHom (Algebra.lmul (Subring.center D) D).toRingHom.injective p
+

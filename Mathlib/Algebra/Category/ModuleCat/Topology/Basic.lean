@@ -194,7 +194,7 @@ variable {R}
 
 variable {M : ModuleCat R} {I : Type*} {X : I → TopModuleCat R} (f : ∀ i, (X i).toModuleCat ⟶ M)
 
-/-- The coinduced topology on `M` from a family of continuous linear map into `M`, which is the
+/-- The coinduced topology on `M` from a family of continuous linear maps into `M`, which is the
 finest topology that makes it into a topological module and makes every map continuous. -/
 def coinduced : TopModuleCat R :=
   letI : TopologicalSpace M := sInf { t | @ContinuousSMul R M _ _ t ∧ @ContinuousAdd M t _ ∧
@@ -255,7 +255,7 @@ variable {R}
 
 variable {M : ModuleCat R} {I : Type*} {X : I → TopModuleCat R} (f : ∀ i, M ⟶ (X i).toModuleCat)
 
-/-- The induced topology on `M` from a family of continuous linear map from `M`, which is the
+/-- The induced topology on `M` from a family of continuous linear maps from `M`, which is the
 coarsest topology that makes every map continuous. -/
 def induced : TopModuleCat R :=
   letI : TopologicalSpace M := ⨅ i, (X i).topologicalSpace.induced (f i)

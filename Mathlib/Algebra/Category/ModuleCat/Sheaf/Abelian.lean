@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Abelian.Transfer
 In this file, it is shown that the category of sheaves of modules over
 a sheaf of rings `R` is an abelian category. More precisely,
 if `J` is a Grothendieck topology on a category `C` and `R : Sheaf J RingCat.{u}`,
-then `SheafOfModules.{v} R` is abelian if the conditions `HasSheafify J AddCommGrp.{v}]`
+then `SheafOfModules.{v} R` is abelian if the conditions `HasSheafify J AddCommGrp.{v}`
 and `J.WEqualsLocallyBijective AddCommGrp.{v}` are satisfied.
 
 In particular, if `u = v` and `C : Type u` is a small category,
