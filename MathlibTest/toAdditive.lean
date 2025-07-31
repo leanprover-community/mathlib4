@@ -326,6 +326,20 @@ has only 5 arguments
 @[to_additive (reorder := 3 4 51)]
 def reorderMulThree' {α : Type _} [Mul α] (x y z : α) : α := x * y * z
 
+/--
+error: invalid cycle `04`, a cycle must have at least 2 elements.
+`(reorder := ...)` uses cycle notation to specify a permutation.
+For example `(reorder := 1 2, 5 6)` swaps the first two arguments with each other and the fifth and the sixth argument and `(reorder := 3 4 5)` will move the fifth argument before the third argument.
+-/
+#guard_msgs in
+@[to_additive (reorder := 04)]
+example : True := trivial
+
+/-- error: invalid position `00`, positions are counted starting from 1. -/
+#guard_msgs in
+@[to_additive (reorder := 100 200, 2 00)]
+example : True := trivial
+
 example {α : Type _} [Add α] (x y z : α) : reorderAddThree z x y = x + y + z := rfl
 
 
@@ -451,8 +465,9 @@ lemma one_eq_one' {α : Type*} [One α] : (1 : α) = 1 := rfl
 
 /--
 error: to_additive: the generated additivised name equals the original name 'foo', meaning that no part of the name was additivised.
-Check that your declaration name is correct (if your declaration is an instance, try naming it)
-or provide an additivised name using the '@[to_additive my_add_name]' syntax.
+If this is intentional, use the `@[to_additive self]` syntax.
+Otherwise, check that your declaration name is correct (if your declaration is an instance, try naming it)
+or provide an additivised name using the `@[to_additive my_add_name]` syntax.
 ---
 warning: declaration uses 'sorry'
 -/
@@ -480,3 +495,66 @@ but 'Eq.trans' has type
 #guard_msgs in
 @[to_additive existing Eq.trans]
 lemma one_eq_one''' {α : Type*} [One α] : (1 : α) = 1 := rfl
+
+/-!
+Test that @[to_additive] can reorder arguments of raw kernel projections.
+-/
+open Lean in
+elab "unfold%" e:term : term => do
+  let e ← Elab.Term.elabTerm e none
+  Meta.unfoldDefinition e
+
+@[to_additive]
+def myPow {α β : Type} [i : Pow α β] (a : α) := unfold% i.1 a
+
+/--
+info: def myPow : {α β : Type} → [i : Pow α β] → α → β → α :=
+fun {α β} [i : Pow α β] a => i.1 a
+-/
+#guard_msgs in
+#print myPow
+/--
+info: def myNSMul : {α β : Type} → [i : SMul β α] → α → β → α :=
+fun {α β} [SMul β α] a a_1 => SMul.smul a_1 a
+-/
+#guard_msgs in
+#print myNSMul
+
+@[to_additive]
+def myMul {α : Type} [i : Mul α] (a : α) := unfold% i.1 a
+
+/--
+info: def myMul : {α : Type} → [i : Mul α] → α → α → α :=
+fun {α} [i : Mul α] a => i.1 a
+-/
+#guard_msgs in
+#print myMul
+/--
+info: def myAdd : {α : Type} → [i : Add α] → α → α → α :=
+fun {α} [Add α] a => Add.add a
+-/
+#guard_msgs in
+#print myAdd
+
+/-! Test that the `existingAttributeWarning` linter doesn't fire for `to_additive self`. -/
+@[simp, to_additive self]
+theorem test1 : 5 = 5 := rfl
+
+/-! Test that we can't write `to_additive self (attr := ..)`. -/
+
+/--
+error: invalid `(attr := ...)` after `self`, as there is only one declaration for the attributes.
+Instead, you can write the attributes in the usual way.
+-/
+#guard_msgs in
+@[to_additive self (attr := simp)]
+theorem test2 : 5 = 5 := rfl
+
+/-! Previously, An application that isn't a constant, such as `(no_index Add) α`, would be seen as
+multiplicative, hence `α` would be set as the `to_additive_relevant_arg`. -/
+
+@[to_additive]
+def fooMul {α β : Type} (_ : (no_index Add) α) [Mul β] (x y : β) : β := x * y
+
+@[to_additive] -- this would not translate `fooMul`
+def barMul {β : Type} [Mul β] (x y : β) : β := fooMul instAddNat x y
