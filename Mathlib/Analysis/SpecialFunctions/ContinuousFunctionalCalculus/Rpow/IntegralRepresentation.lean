@@ -367,9 +367,8 @@ open Real
 section NonUnitalCFC
 
 variable {A : Type*} [NonUnitalNormedRing A] [StarRing A] [NormedSpace ℝ A] [SMulCommClass ℝ A A]
-  [IsScalarTower ℝ A A]
-  [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A]
-  [NonUnitalIsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
+  [IsScalarTower ℝ A A] [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A]
+  [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 
 lemma cfcₙ_rpowIntegrand₀₁_eq_cfcₙ_rpowIntegrand₀₁_one {p t : ℝ} (hp : p ∈ Ioo 0 1) (ht : 0 < t)
     (a : A) (ha : 0 ≤ a) :
