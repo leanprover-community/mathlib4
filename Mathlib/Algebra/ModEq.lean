@@ -68,8 +68,8 @@ attribute [symm] ModEq.symm
 theorem ModEq.trans : a ≡ b [PMOD p] → b ≡ c [PMOD p] → a ≡ c [PMOD p] := fun ⟨m, hm⟩ ⟨n, hn⟩ =>
   ⟨m + n, by simp [add_smul, ← hm, ← hn]⟩
 
-instance ModEq.instIsTrans : IsTrans α (AddCommGroup.ModEq p) where
-  trans _ _ _ := trans
+instance : IsTrans α (ModEq p) where
+  trans _ _ _ := ModEq.trans
 
 instance : IsRefl _ (ModEq p) :=
   ⟨modEq_refl⟩
