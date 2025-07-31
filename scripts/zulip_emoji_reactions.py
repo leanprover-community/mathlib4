@@ -41,8 +41,9 @@ try:
     PR_LABELS = json.loads(PR_LABELS)
     assert isinstance(PR_LABELS, list)
 except:
-    print(f"parsing PR_LABELS failed; setting to None")
-    PR_LABELS = None
+    print(f"parsing PR_LABELS failed; setting to empty list")
+    # an empty list is a good default since we remove reactions if the label is `not in PR_LABELS`
+    PR_LABELS = []
 print(f"PR_LABELS: '{PR_LABELS}'")
 
 # Initialize Zulip client
@@ -114,7 +115,7 @@ for message in messages:
         print(f"matched: '{message}'")
 
         def remove_reaction(name: str, emoji_name: str, label_name: str, **kwargs) -> None:
-            # We do not remove an emoji if the corresponding label is still present.
+            # We only remove the emoji if the corresponding label is not present.
             if label_name not in PR_LABELS:
                 print(f'Removing {name}')
                 result = client.remove_reaction({
@@ -138,7 +139,7 @@ for message in messages:
             if ACTION == "labeled":
                 add_reaction('maintainer-merge', 'hammer')
             elif ACTION == "unlabeled":
-                remove_reaction('maintainer-merge', 'hammer')
+                remove_reaction('maintainer-merge', 'hammer', 'maintainer-merge')
             continue
 
         # We should never remove any "this PR was migrated from a fork" reaction.
