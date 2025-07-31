@@ -122,7 +122,7 @@ theorem le_ciSup_of_le {f : ι → α} (H : BddAbove (range f)) (c : ι) (h : a 
   le_trans h (le_ciSup H c)
 
 /-- The indexed suprema of two functions are comparable if the functions are pointwise comparable -/
-@[gcongr]
+@[gcongr low]
 theorem ciSup_mono {f g : ι → α} (B : BddAbove (range g)) (H : ∀ x, f x ≤ g x) :
     iSup f ≤ iSup g := by
   cases isEmpty_or_nonempty ι
