@@ -195,11 +195,6 @@ theorem EuclideanSpace.inner_eq_star_dotProduct (x y : EuclideanSpace 𝕜 ι) :
 lemma EuclideanSpace.inner_toLp_toLp (x y : ι → 𝕜) :
     ⟪toLp 2 x, toLp 2 y⟫ = dotProduct y (star x) := rfl
 
-@[deprecated EuclideanSpace.inner_toLp_toLp (since := "2024-04-27")]
-theorem EuclideanSpace.inner_piLp_equiv_symm (x y : ι → 𝕜) :
-    ⟪(WithLp.equiv 2 _).symm x, (WithLp.equiv 2 _).symm y⟫ = y ⬝ᵥ star x :=
-  rfl
-
 /-- A finite, mutually orthogonal family of subspaces of `E`, which span `E`, induce an isometry
 from `E` to `PiLp 2` of the subspaces equipped with the `L2` inner product. -/
 def DirectSum.IsInternal.isometryL2OfOrthogonalFamily [DecidableEq ι] {V : ι → Submodule 𝕜 E}
@@ -259,18 +254,8 @@ def EuclideanSpace.single (i : ι) (a : 𝕜) : EuclideanSpace 𝕜 ι :=
 
 @[simp] lemma EuclideanSpace.ofLp_single (i : ι) (a : 𝕜) : ofLp (single i a) = Pi.single i a := rfl
 
-@[deprecated EuclideanSpace.ofLp_single (since := "2024-04-27")]
-theorem WithLp.equiv_single (i : ι) (a : 𝕜) :
-    WithLp.equiv _ _ (EuclideanSpace.single i a) = Pi.single i a :=
-  rfl
-
 @[simp]
 lemma EuclideanSpace.toLp_single (i : ι) (a : 𝕜) : toLp _ (Pi.single i a) = single i a := rfl
-
-@[deprecated EuclideanSpace.toLp_single (since := "2024-04-27")]
-theorem WithLp.equiv_symm_single (i : ι) (a : 𝕜) :
-    (WithLp.equiv _ _).symm (Pi.single i a) = EuclideanSpace.single i a :=
-  rfl
 
 @[simp]
 theorem EuclideanSpace.single_apply (i : ι) (a : 𝕜) (j : ι) :
@@ -1152,20 +1137,9 @@ def toEuclideanLin : Matrix m n 𝕜 ≃ₗ[𝕜] EuclideanSpace 𝕜 n →ₗ[�
 lemma toEuclideanLin_toLp (A : Matrix m n 𝕜) (x : n → 𝕜) :
     Matrix.toEuclideanLin A (toLp _ x) = toLp _ (Matrix.toLin' A x) := rfl
 
-@[deprecated toEuclideanLin_toLp (since := "2024-04-27")]
-theorem toEuclideanLin_piLp_equiv_symm (A : Matrix m n 𝕜) (x : n → 𝕜) :
-    Matrix.toEuclideanLin A ((WithLp.equiv _ _).symm x) =
-      (WithLp.equiv _ _).symm (A *ᵥ x) :=
-  rfl
-
 @[simp]
 theorem piLp_ofLp_toEuclideanLin (A : Matrix m n 𝕜) (x : EuclideanSpace 𝕜 n) :
     ofLp (Matrix.toEuclideanLin A x) = Matrix.toLin' A (ofLp x) :=
-  rfl
-
-@[deprecated piLp_ofLp_toEuclideanLin (since := "2024-04-27")]
-theorem piLp_equiv_toEuclideanLin (A : Matrix m n 𝕜) (x : EuclideanSpace 𝕜 n) :
-    WithLp.equiv _ _ (Matrix.toEuclideanLin A x) = A *ᵥ (WithLp.equiv _ _ x) :=
   rfl
 
 theorem toEuclideanLin_apply (M : Matrix m n 𝕜) (v : EuclideanSpace 𝕜 n) :
@@ -1176,19 +1150,9 @@ theorem ofLp_toEuclideanLin_apply (M : Matrix m n 𝕜) (v : EuclideanSpace 𝕜
     ofLp (toEuclideanLin M v) = M *ᵥ ofLp v :=
   rfl
 
-@[deprecated ofLp_toEuclideanLin_apply (since := "2024-04-27")]
-theorem piLp_equiv_toEuclideanLin_apply (M : Matrix m n 𝕜) (v : EuclideanSpace 𝕜 n) :
-    WithLp.equiv 2 (m → 𝕜) (toEuclideanLin M v) = M *ᵥ WithLp.equiv 2 (n → 𝕜) v :=
-  rfl
-
 @[simp]
 theorem toEuclideanLin_apply_piLp_toLp (M : Matrix m n 𝕜) (v : n → 𝕜) :
     toEuclideanLin M (toLp _ v) = toLp _ (M *ᵥ v) :=
-  rfl
-
-@[deprecated toEuclideanLin_apply_piLp_toLp (since := "2024-04-27")]
-theorem toEuclideanLin_apply_piLp_equiv_symm (M : Matrix m n 𝕜) (v : n → 𝕜) :
-    toEuclideanLin M ((WithLp.equiv 2 (n→ 𝕜)).symm v) = (WithLp.equiv 2 (m → 𝕜)).symm (M *ᵥ v) :=
   rfl
 
 -- `Matrix.toEuclideanLin` is the same as `Matrix.toLin` applied to `PiLp.basisFun`,

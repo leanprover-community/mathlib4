@@ -59,7 +59,7 @@ typeclass diamonds caused by the constructive finiteness used in definitions suc
 other solutions but for beginner mathematicians this approach is easier in practice.
 
 Another application is the construction of a partition of unity from a collection of “bump”
-function. In this case the finite set depends on the point and it's convenient to have a definition
+functions. In this case the finite set depends on the point and it's convenient to have a definition
 that does not mention the set explicitly.
 
 The first arguments in all definitions and lemmas is the codomain of the function of the big
@@ -573,7 +573,7 @@ theorem finprod_mem_of_eqOn_one (hf : s.EqOn f 1) : ∏ᶠ i ∈ s, f i = 1 := b
 /-- If the product of `f i` over `i ∈ s` is not equal to `1`, then there is some `x ∈ s` such that
 `f x ≠ 1`. -/
 @[to_additive
-      "If the product of `f i` over `i ∈ s` is not equal to `0`, then there is some `x ∈ s`
+      "If the sum of `f i` over `i ∈ s` is not equal to `0`, then there is some `x ∈ s`
       such that `f x ≠ 0`."]
 theorem exists_ne_one_of_finprod_mem_ne_one (h : ∏ᶠ i ∈ s, f i ≠ 1) : ∃ x ∈ s, f x ≠ 1 := by
   by_contra! h'

@@ -25,16 +25,10 @@ instance measurableSpace : MeasurableSpace (WithLp p X) :=
 @[fun_prop, measurability]
 lemma measurable_ofLp : Measurable (@ofLp p X) := comap_measurable _
 
-@[deprecated measurable_ofLp (since := "2024-04-27")]
-lemma measurable_equiv : Measurable (WithLp.equiv p X) := measurable_ofLp p X
-
 @[fun_prop, measurability]
 lemma measurable_toLp : Measurable (@toLp p X) := fun s hs ↦ by
   obtain ⟨t, ht, rfl⟩ := hs
   simpa [Set.preimage_preimage]
-
-@[deprecated measurable_toLp (since := "2024-04-27")]
-lemma measurable_equiv_symm : Measurable (WithLp.equiv p X).symm := measurable_toLp p X
 
 variable (Y : Type*) [MeasurableSpace Y] [TopologicalSpace X] [TopologicalSpace Y]
   [BorelSpace X] [BorelSpace Y] [SecondCountableTopologyEither X Y]

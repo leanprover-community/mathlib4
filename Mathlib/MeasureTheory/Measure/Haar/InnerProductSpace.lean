@@ -139,17 +139,9 @@ for the canonical spelling of the equivalence. -/
 theorem PiLp.volume_preserving_ofLp : MeasurePreserving (@ofLp 2 (ι → ℝ)) :=
   EuclideanSpace.volume_preserving_measurableEquiv_toLp_symm ι
 
-@[deprecated PiLp.volume_preserving_ofLp (since := "2024-04-27")]
-theorem PiLp.volume_preserving_equiv : MeasurePreserving (WithLp.equiv 2 (ι → ℝ)) :=
-  EuclideanSpace.volume_preserving_measurableEquiv_toLp_symm ι
-
 /-- The reverse direction of `EuclideanSpace.volume_preserving_measurableEquiv_toLp_symm`, since
 `MeasurePreserving.symm` only works for `MeasurableEquiv`s. -/
 theorem PiLp.volume_preserving_toLp : MeasurePreserving (@toLp 2 (ι → ℝ)) :=
-  (EuclideanSpace.volume_preserving_measurableEquiv_toLp_symm ι).symm
-
-@[deprecated PiLp.volume_preserving_toLp (since := "2024-04-27")]
-theorem PiLp.volume_preserving_equiv_symm : MeasurePreserving (WithLp.equiv 2 (ι → ℝ)).symm :=
   (EuclideanSpace.volume_preserving_measurableEquiv_toLp_symm ι).symm
 
 lemma volume_euclideanSpace_eq_dirac [IsEmpty ι] :
