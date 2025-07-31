@@ -47,20 +47,6 @@ scoped notation "cov[" X ", " Y "; " μ "]" => ProbabilityTheory.covariance X Y 
 according to the volume measure. -/
 scoped notation "cov[" X ", " Y "]" => cov[X, Y; MeasureTheory.MeasureSpace.volume]
 
-lemma covariance_eq [IsProbabilityMeasure μ] (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) :
-    cov[X, Y; μ] = μ[X * Y] - μ[X] * μ[Y] := by
-  simp_rw [covariance, sub_mul, mul_sub]
-  repeat rw [integral_sub]
-  · simp_rw [integral_mul_const, integral_const_mul, integral_const, Measure.real, measure_univ,
-      ENNReal.toReal_one, one_smul]
-    simp
-  · exact hY.const_mul _ |>.integrable (by simp)
-  · exact integrable_const _
-  · exact hX.integrable_mul hY
-  · exact hX.mul_const _ |>.integrable (by simp)
-  · exact (hX.integrable_mul hY).sub (hX.mul_const _ |>.integrable (by simp))
-  · exact (hY.const_mul _ |>.integrable (by simp)).sub (integrable_const _)
-
 @[simp] lemma covariance_zero_left : cov[0, Y; μ] = 0 := by simp [covariance]
 
 @[simp] lemma covariance_zero_right : cov[X, 0; μ] = 0 := by simp [covariance]
