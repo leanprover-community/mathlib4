@@ -420,15 +420,14 @@ def vCompUnitIso :
 
 /-- If two `CatPullbackSquare`s are pasted vertically, the resulting square
 is a `CatPullbackSquare`. -/
-def vComp :
-    CatPullbackSquare H₁ (L₁ ⋙ L₂) (R₁ ⋙ R₂) H₃ :=
-  { inverse := vCompInverse L₁ L₂ H₁ H₂ H₃ R₁ R₂
-    unitIso := vCompUnitIso L₁ L₂ H₁ H₂ H₃ R₁ R₂ h
-    counitIso := vCompCounitIso L₁ L₂ H₁ H₂ H₃ R₁ R₂ h
-    functorEquiv_inverse_obj_unitIso_comp x := by
-      ext <;> dsimp [vCompUnitIso, vCompCounitIso]
-      · simp
-      · simp [← Functor.map_comp_assoc] }
+def vComp : CatPullbackSquare H₁ (L₁ ⋙ L₂) (R₁ ⋙ R₂) H₃ where
+  inverse := vCompInverse L₁ L₂ H₁ H₂ H₃ R₁ R₂
+  unitIso := vCompUnitIso L₁ L₂ H₁ H₂ H₃ R₁ R₂ h
+  counitIso := vCompCounitIso L₁ L₂ H₁ H₂ H₃ R₁ R₂ h
+  functorEquiv_inverse_obj_unitIso_comp x := by
+    ext <;> dsimp [vCompUnitIso, vCompCounitIso]
+    · simp
+    · simp [← Functor.map_comp_assoc]
 
 end
 
@@ -532,17 +531,16 @@ def ofVCompCounitIso :
 
 /-- If two `CatCommSq`s are pasted vertically and if the bottom outer squares
 are `CatPullbackSquare`s, then the top square is a `CatPullbackSquare`. -/
-def ofVComp :
-    CatPullbackSquare H₁ L₁ R₁ H₂ :=
-  { inverse := ofVCompInverse L₁ L₂ H₁ H₂ H₃ R₁ R₂
-    unitIso := ofVCompUnitIso L₁ L₂ H₁ H₂ H₃ R₁ R₂ h
-    counitIso := ofVCompCounitIso L₁ L₂ H₁ H₂ H₃ R₁ R₂ h
-    functorEquiv_inverse_obj_unitIso_comp x := by
-      ext <;> dsimp [ofVCompUnitIso, ofVCompCounitIso]
-      · simp
-      · apply IsCatPullbackSquare.hom_ext H₂ L₂ R₂ H₃
-        · simp [← Functor.map_comp_assoc]
-        · simp [← Functor.comp_map] }
+def ofVComp : CatPullbackSquare H₁ L₁ R₁ H₂ where
+  inverse := ofVCompInverse L₁ L₂ H₁ H₂ H₃ R₁ R₂
+  unitIso := ofVCompUnitIso L₁ L₂ H₁ H₂ H₃ R₁ R₂ h
+  counitIso := ofVCompCounitIso L₁ L₂ H₁ H₂ H₃ R₁ R₂ h
+  functorEquiv_inverse_obj_unitIso_comp x := by
+    ext <;> dsimp [ofVCompUnitIso, ofVCompCounitIso]
+    · simp
+    · apply IsCatPullbackSquare.hom_ext H₂ L₂ R₂ H₃
+      · simp [← Functor.map_comp_assoc]
+      · simp [← Functor.comp_map]
 
 end
 
