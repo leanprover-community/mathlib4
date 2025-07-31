@@ -3,9 +3,8 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Etienne Marion
 -/
-import Mathlib.MeasureTheory.Function.L2Space
-import Mathlib.Probability.Independence.Integrable
-import Mathlib.Probability.Integration
+import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.MeasureTheory.Integral.Bochner.Basic
 import Mathlib.Probability.Notation
 
 /-!
@@ -273,3 +272,4 @@ lemma covariance_map_fun {Z : Ω' → Ω} (hX : AEStronglyMeasurable X (μ.map Z
 end Map
 
 end ProbabilityTheory
+#min_imports
