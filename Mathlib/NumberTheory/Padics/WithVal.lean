@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
 import Mathlib.GroupTheory.ArchimedeanDensely
+import Mathlib.NumberTheory.NumberField.FinitePlaces
 import Mathlib.NumberTheory.Padics.PadicNumbers
+import Mathlib.Topology.Algebra.UniformRing
 import Mathlib.Topology.Algebra.Valued.WithVal
 
 /-!
@@ -14,7 +16,7 @@ import Mathlib.Topology.Algebra.Valued.WithVal
 
 variable {p : ℕ} [Fact p.Prime]
 
-open NNReal WithZero
+open NNReal WithZero UniformSpace
 
 -- TODO: use Rat.padicValuation after #27667
 lemma Padic.continuous_cast_withVal : Continuous ((Rat.castHom ℚ_[p]).comp
@@ -101,4 +103,77 @@ lemma Padic.isDenseInducing_cast_withVal : IsDenseInducing ((Rat.castHom ℚ_[p]
     (WithVal.equiv ((Padic.mulValuation (p := p)).comap (Rat.castHom ℚ_[p]))).toRingHom) := by
   refine Padic.isUniformInducing_cast_withVal.isDenseInducing ?_
   intro
-  simpa using Padic.denseRange_ratCast _ _
+  -- nhds_discrete causes timeouts on TC search
+  simpa [-nhds_discrete] using Padic.denseRange_ratCast p _
+
+open Completion in
+open scoped Valued in
+/-- The p-adic numbers are isomophic as a field to the completion of the rationals at
+the p-adic valuation. -/
+noncomputable
+def Padic.withValRingEquiv :
+    ((Padic.mulValuation (p := p)).comap (Rat.castHom ℚ_[p])).Completion ≃+* ℚ_[p] where
+  toFun := (Completion.extensionHom ((Rat.castHom ℚ_[p]).comp
+    (WithVal.equiv ((Padic.mulValuation (p := p)).comap (Rat.castHom ℚ_[p]))).toRingHom)
+    Padic.isUniformInducing_cast_withVal.uniformContinuous.continuous)
+  invFun := Padic.isDenseInducing_cast_withVal.extend coe'
+  left_inv y := by
+    induction y using induction_on
+    · generalize_proofs _ _ _ H
+      refine isClosed_eq ?_ continuous_id
+      exact (uniformContinuous_uniformly_extend Padic.isUniformInducing_cast_withVal
+        (Padic.denseRange_ratCast p) (uniformContinuous_coe _)).continuous.comp
+        (continuous_extension)
+    · rw [extensionHom_coe]
+      apply IsDenseInducing.extend_eq
+      exact continuous_coe _
+  right_inv y := by
+    induction y using isClosed_property (Padic.denseRange_ratCast p)
+    · refine isClosed_eq ?_ continuous_id
+      refine continuous_extension.comp ?_
+      exact (uniformContinuous_uniformly_extend Padic.isUniformInducing_cast_withVal
+        (Padic.denseRange_ratCast p) (uniformContinuous_coe _)).continuous
+    · have : ∀ q : ℚ, Padic.isDenseInducing_cast_withVal.extend coe' q = coe'
+        ((WithVal.equiv ((Padic.mulValuation (p := p)).comap (Rat.castHom ℚ_[p]))).symm q) := by
+        intro q
+        apply IsDenseInducing.extend_eq
+        exact continuous_coe _
+      rw [this, extensionHom_coe]
+      simp
+  map_mul' := map_mul _
+  map_add' := map_add _
+
+
+@[simp]
+lemma Padic.coe_withValRingEquiv :
+    ⇑(Padic.withValRingEquiv (p := p)) = Completion.extension
+      (Rat.cast ∘ (WithVal.equiv ((Padic.mulValuation (p := p)).comap (Rat.castHom ℚ_[p])))) :=
+  rfl
+
+@[simp]
+lemma Padic.coe_withValRingEquiv_symm :
+    ⇑(Padic.withValRingEquiv (p := p)).symm =
+      Padic.isDenseInducing_cast_withVal.extend Completion.coe' := by
+  rfl
+
+-- is `IsUniformInducing f -> IsUniformInducing (extension f)` true? If so, would golf this.
+lemma Padic.uniformContinuous_withValRingEquiv :
+    UniformContinuous (Padic.withValRingEquiv (p := p)) := by
+  suffices UniformContinuous (Padic.withValRingEquiv (p := p)).toAddMonoidHom from this
+  apply uniformContinuous_addMonoidHom_of_continuous
+  exact Completion.continuous_extension
+
+lemma Padic.uniformContinuous_withValRingEquiv_symm :
+    UniformContinuous (Padic.withValRingEquiv (p := p)).symm := by
+  suffices UniformContinuous (Padic.withValRingEquiv (p := p)).symm.toAddMonoidHom from this
+  exact uniformContinuous_uniformly_extend Padic.isUniformInducing_cast_withVal
+    (Padic.denseRange_ratCast p) (Completion.uniformContinuous_coe _)
+
+/-- The p-adic numbers are isomophic as uniform spaces to the completion of the rationals at
+the p-adic valuation. -/
+noncomputable
+def Padic.withValUniformEquiv :
+    ((Padic.mulValuation (p := p)).comap (Rat.castHom ℚ_[p])).Completion ≃ᵤ ℚ_[p] where
+  __ := Padic.withValRingEquiv
+  uniformContinuous_toFun := Padic.uniformContinuous_withValRingEquiv
+  uniformContinuous_invFun := Padic.uniformContinuous_withValRingEquiv_symm
