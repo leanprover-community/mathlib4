@@ -189,14 +189,14 @@ theorem finrank_euclideanSpace_fin {n : ℕ} :
     Module.finrank 𝕜 (EuclideanSpace 𝕜 (Fin n)) = n := by simp
 
 theorem EuclideanSpace.inner_eq_star_dotProduct (x y : EuclideanSpace 𝕜 ι) :
-    ⟪x, y⟫ = ofLp y ⬝ᵥ star (ofLp x) := rfl
+    ⟪x, y⟫ = ofLp y ·ᵥ star (ofLp x) := rfl
 
 lemma EuclideanSpace.inner_toLp_toLp (x y : ι → 𝕜) :
     ⟪toLp 2 x, toLp 2 y⟫ = dotProduct y (star x) := rfl
 
 @[deprecated EuclideanSpace.inner_toLp_toLp (since := "2024-04-27")]
 theorem EuclideanSpace.inner_piLp_equiv_symm (x y : ι → 𝕜) :
-    ⟪(WithLp.equiv 2 _).symm x, (WithLp.equiv 2 _).symm y⟫ = y ⬝ᵥ star x :=
+    ⟪(WithLp.equiv 2 _).symm x, (WithLp.equiv 2 _).symm y⟫ = y ·ᵥ star x :=
   rfl
 
 /-- A finite, mutually orthogonal family of subspaces of `E`, which span `E`, induce an isometry

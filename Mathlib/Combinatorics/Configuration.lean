@@ -474,8 +474,8 @@ lemma mem_iff (v w : ℙ K (Fin 3 → K)) : v ∈ w ↔ orthogonal v w :=
   Iff.rfl
 
 -- This lemma can't be moved to the crossProduct file due to heavy imports
-lemma crossProduct_eq_zero_of_dotProduct_eq_zero {a b c d : Fin 3 → K} (hac : a ⬝ᵥ c = 0)
-    (hbc : b ⬝ᵥ c = 0) (had : a ⬝ᵥ d = 0) (hbd : b ⬝ᵥ d = 0) :
+lemma crossProduct_eq_zero_of_dotProduct_eq_zero {a b c d : Fin 3 → K} (hac : a ·ᵥ c = 0)
+    (hbc : b ·ᵥ c = 0) (had : a ·ᵥ d = 0) (hbd : b ·ᵥ d = 0) :
     crossProduct a b = 0 ∨ crossProduct c d = 0 := by
   by_contra h
   simp_rw [not_or, ← ne_eq, crossProduct_ne_zero_iff_linearIndependent] at h
