@@ -265,7 +265,7 @@ theorem indepFun_iff_integral_comp_mul [IsFiniteMeasure μ] {β β' : Type*} {m�
 variable {ι : Type*} [Fintype ι] {𝓧 : ι → Type*} [∀ i, MeasurableSpace (𝓧 i)]
     {X : (i : ι) → Ω → 𝓧 i} {f : (i : ι) → 𝓧 i → 𝕜}
 
-lemma iIndepFun.integral_fun_comp_mul_comp (hX : iIndepFun X μ)
+lemma iIndepFun.integral_fun_prod_comp (hX : iIndepFun X μ)
     (mX : ∀ i, AEMeasurable (X i) μ) (hf : ∀ i, AEStronglyMeasurable (f i) (μ.map (X i))) :
     μ[fun ω ↦ (∏ i, f i (X i ω))] = ∏ i, μ[fun ω ↦ f i (X i ω)] := by
   have := hX.isProbabilityMeasure
@@ -276,26 +276,25 @@ lemma iIndepFun.integral_fun_comp_mul_comp (hX : iIndepFun X μ)
     rw [integral_map (mX i) (hf i)]
   · fun_prop
   rw [(iIndepFun_iff_map_fun_eq_pi_map mX).1 hX]
-  apply Finset.aestronglyMeasurable_prod
-  rintro i -
+  exact Finset.aestronglyMeasurable_prod _ fun i _ ↦
+    (hf i).comp_quasiMeasurePreserving (Measure.quasiMeasurePreserving_eval _ i)
 
-  exact AEStronglyMeasurable.pi hf.comp_fst hg.comp_snd
+lemma iIndepFun.integral_prod_comp (hX : iIndepFun X μ)
+    (mX : ∀ i, AEMeasurable (X i) μ) (hf : ∀ i, AEStronglyMeasurable (f i) (μ.map (X i))) :
+    μ[∏ i, (f i) ∘ (X i)] = ∏ i, μ[(f i) ∘ (X i)] := by
+  convert hX.integral_fun_prod_comp mX hf
+  simp
 
-lemma IndepFun.integral_comp_mul_comp {𝓧 𝓨 : Type*} [MeasurableSpace 𝓧] [MeasurableSpace 𝓨]
-    [IsFiniteMeasure μ] {X : Ω → 𝓧} {Y : Ω → 𝓨} {f : 𝓧 → 𝕜} {g : 𝓨 → 𝕜} (hXY : IndepFun X Y μ)
-    (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ) (hf : AEStronglyMeasurable f (μ.map X))
-    (hg : AEStronglyMeasurable g (μ.map Y)) :
-    μ[(f ∘ X) * (g ∘ Y)] = μ[f ∘ X] * μ[g ∘ Y] :=
-  hXY.integral_fun_comp_mul_comp hX hY hf hg
+variable {X : (i : ι) → Ω → 𝕜}
 
-lemma IndepFun.integral_mul_eq_mul_integral [IsFiniteMeasure μ]
-    (hXY : IndepFun X Y μ) (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ) :
-    μ[X * Y] = μ[X] * μ[Y] :=
-  hXY.integral_comp_mul_comp hX hY aestronglyMeasurable_id aestronglyMeasurable_id
+lemma iIndepFun.integral_prod_eq_prod_integral
+    (hX : iIndepFun X μ) (mX : ∀ i, AEMeasurable (X i) μ) :
+    μ[∏ i, X i] = ∏ i, μ[X i] :=
+  hX.integral_prod_comp mX (fun _ ↦ aestronglyMeasurable_id)
 
-lemma IndepFun.integral_fun_mul_eq_mul_integral [IsFiniteMeasure μ]
-    (hXY : IndepFun X Y μ) (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ) :
-    μ[fun ω ↦ X ω * Y ω] = μ[X] * μ[Y] :=
-  hXY.integral_mul_eq_mul_integral hX hY
+lemma iIndepFun.integral_fun_prod_eq_prod_integral
+    (hX : iIndepFun X μ) (mX : ∀ i, AEMeasurable (X i) μ) :
+    μ[fun ω ↦ ∏ i, X i ω] = ∏ i, μ[X i] :=
+  hX.integral_fun_prod_comp mX (fun _ ↦ aestronglyMeasurable_id)
 
 end ProbabilityTheory
