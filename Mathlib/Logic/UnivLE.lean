@@ -77,6 +77,6 @@ example : UnivLE.{2, 5} := inferInstance
 /- When `small_Pi` from `Mathlib/Logic/Small/Basic.lean` is imported, we have : -/
 -- example (α : Type u) (β : Type v) [UnivLE.{u, v}] : Small.{v} (α → β) := inferInstance
 
-example : ¬ UnivLE.{u+1, u} := by
+example : ¬UnivLE.{u + 1, u} := by
   simp only [univLE_iff, small_iff, not_forall, not_exists, not_nonempty_iff]
   exact ⟨Type u, fun α => ⟨fun f => Function.not_surjective_Type.{u, u} f.symm f.symm.surjective⟩⟩
