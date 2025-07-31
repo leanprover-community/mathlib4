@@ -159,7 +159,7 @@ lemma quotient_regular_isCohenMacaulay_iff_isCohenMacaulay
     (Ideal.ofList rs • (⊤ : Submodule R M)))
   simp only [isCohenMacaulay_iff, ← not_nontrivial_iff_subsingleton, ntr1, not_true_eq_false,
     false_or, ntr2]
-  rw [← Module.supportDim_regular_sequence_add_length_eq_supportDim rs reg,
+  rw [← Module.supportDim_add_length_eq_supportDim_of_isRegular rs reg,
     ← depth_quotient_regular_sequence_add_length_eq_depth M rs reg, WithBot.coe_add]
   exact withBotENat_add_coe_cancel _ _ rs.length
 
@@ -537,6 +537,6 @@ lemma quotient_regular_sequence_isCohenMacaulay_iff_isCohenMacaulay [IsLocalRing
   have reg' : IsRegular R rs :=
     ⟨reg, by simpa using ((span_le.mpr mem).trans_lt IsPrime.ne_top'.lt_top).ne_top.symm⟩
   simp only [isCohenMacaulayLocalRing_def,
-    ← ringKrullDim_regular_sequence_add_length_eq_ringKrullDim rs reg',
+    ← ringKrullDim_add_length_eq_ringKrullDim_of_isRegular rs reg',
     ← depth_quotient_regular_sequence_add_length_eq_depth rs reg mem, WithBot.coe_add]
   exact withBotENat_add_coe_cancel _ _ rs.length
