@@ -9,6 +9,9 @@ import Mathlib.CategoryTheory.Adjunction.Triple
 # Adjoint quadruples
 
 This file concerns adjoint quadruples `L ⊣ F ⊣ G ⊣ R` of functors `L G : C ⥤ D`, `F R : D ⥤ C`.
+We bundle the adjunctions in a structure `Quadruple L F G R` and make the two triples `Triple L F G`
+and `Triple F G R` accessible as `Quadruple.leftTriple` and `Quadruple.rightTriple`.
+
 Currently the only two results are the following:
 * When `F` and `R` are fully faithful, the components of the induced natural transformation `G ⟶ L`
   are epic iff the components of the natural transformation `F ⟶ R` are monic.
@@ -69,7 +72,7 @@ of the natural transformation `G ⟶ L` are epic iff all components of the natur
 `F ⟶ R` are monic. -/
 lemma leftTriple_rightToLeft_app_epi_iff_rightTriple_leftToRight_app_mono :
     (∀ X, Epi (q.leftTriple.rightToLeft.app X)) ↔ ∀ X, Mono (q.rightTriple.leftToRight.app X) := by
-  simp_rw [Triple.mono_leftToRight_app_iff_mono_adj₂_unit_app, Triple.rightToLeft_eq_counits]
+  simp_rw [mono_leftToRight_app_iff_mono_adj₂_unit_app, rightToLeft_eq_counits]
   dsimp; simp only [NatIso.isIso_inv_app, Functor.comp_obj, Functor.id_obj,
     whiskerLeft_app, Category.comp_id, Category.id_comp]
   simp_rw [epi_comp_iff_of_epi, epi_iff_forall_injective, mono_iff_forall_injective]
@@ -80,9 +83,8 @@ lemma leftTriple_rightToLeft_app_epi_iff_rightTriple_leftToRight_app_mono :
   refine ((q.adj₁.homEquiv _ _).injective_comp fun f ↦ _).trans ?_
   rw [← ((q.adj₂.homEquiv _ _).trans (q.adj₃.homEquiv _ _)).comp_injective _]
   change (fun g ↦ q.adj₃.homEquiv _ _ (q.adj₂.homEquiv _ _ _)).Injective ↔ _
-  simp_rw [← q.adj₂.homEquiv_symm_id, ← q.adj₂.homEquiv_naturality_right_symm]
-  simp_rw [← q.adj₃.homEquiv_id, ← q.adj₃.homEquiv_naturality_left]
-  simp
+  simp [← q.adj₂.homEquiv_symm_id, ← q.adj₂.homEquiv_naturality_right_symm,
+    ← q.adj₃.homEquiv_id, ← q.adj₃.homEquiv_naturality_left]
 
 /-- For an adjoint quadruple `L ⊣ F ⊣ G ⊣ R` where `F` and `R` are fully faithful, their domain
 has all pushouts and their codomain has all pullbacks, the natural transformation `G ⟶ L` is epic
@@ -106,9 +108,7 @@ lemma leftTriple_leftToRight_app_epi_iff_rightTriple_rightToLeft_app_mono :
   have h := q.op.leftTriple_rightToLeft_app_epi_iff_rightTriple_leftToRight_app_mono
   rw [← (Opposite.equivToOpposite (α := C)).forall_congr_right] at h
   rw [← (Opposite.equivToOpposite (α := D)).forall_congr_right] at h
-  simp_rw [Opposite.equivToOpposite_coe, op_leftTriple, op_rightTriple, ← rightToLeft_app_op,
-    ← leftToRight_app_op, op_mono_iff, op_epi_iff] at h
-  exact h.symm
+  simpa using h.symm
 
 /-- For an adjoint quadruple `L ⊣ F ⊣ G ⊣ R` where `L` and `G` are fully faithful, their domain
 has all pushouts and their codomain has all pullbacks, the natural transformation `L ⟶ G` is epic

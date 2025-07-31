@@ -150,16 +150,11 @@ lemma rightToLeft_app_adj₂_unit_app (X : C) :
   G.map_injective (by simp [← cancel_mono (t.adj₂.counit.app _)])
 
 /-- For an adjoint triple `F ⊣ G ⊣ H` where `G` is fully faithful, the natural transformation
-`H ⟶ F` is dual to the natural transformation `F.op ⟶ H.op` obtained from the dual adjoint
-triple `H.op ⊣ G.op ⊣ F.op`. -/
-lemma rightToLeft_op : NatTrans.op t.rightToLeft = t.op.rightToLeft := by
+`F.op ⟶ H.op` obtained from the dual adjoint triple `H.op ⊣ G.op ⊣ F.op` is dual to the natural
+transformation `H ⟶ F`. -/
+@[simp]
+lemma op_rightToLeft : t.op.rightToLeft = NatTrans.op t.rightToLeft  := by
   ext; rw [rightToLeft_eq_units, rightToLeft_eq_counits]; simp
-
-/-- For an adjoint triple `F ⊣ G ⊣ H` where `G` is fully faithful, the components of the
-natural transformation `H ⟶ F` are dual to the components of the natural transformation
-`F.op ⟶ H.op` obtained from the dual adjoint triple `H.op ⊣ G.op ⊣ F.op`. -/
-lemma rightToLeft_app_op {X : C} : (t.rightToLeft.app X).op = t.op.rightToLeft.app (.op X) :=
-  NatTrans.congr_app t.rightToLeft_op _
 
 /-- For an adjoint triple `F ⊣ G ⊣ H` where `G` is fully faithful, the natural transformation
 `H ⟶ F` is epic at `X` iff the image of the unit of the adjunction `F ⊣ G` under `H` is. -/
@@ -249,16 +244,11 @@ lemma leftToRight_app_map_adj₁_unit_app (X : C) :
   simp [leftToRight_app]
 
 /-- For an adjoint triple `F ⊣ G ⊣ H` where `F` and `H` are fully faithful, the natural
-transformation `F ⟶ H` is dual to the natural transformation `H.op ⟶ F.op` obtained from the
-dual adjoint triple `H.op ⊣ G.op ⊣ F.op`. -/
-lemma leftToRight_op : NatTrans.op t.leftToRight = t.op.leftToRight := by
+transformation `H.op ⟶ F.op` obtained from the dual adjoint triple `H.op ⊣ G.op ⊣ F.op` is
+dual to the natural transformation `F ⟶ H`. -/
+@[simp]
+lemma leftToRight_op : t.op.leftToRight = NatTrans.op t.leftToRight := by
   ext; rw [leftToRight, leftToRight_eq_counits]; simp
-
-/-- For an adjoint triple `F ⊣ G ⊣ H` where `F` and `H` are fully faithful, the components of the
-natural transformation `F ⟶ H` are dual to the components of the natural transformation
-`H.op ⟶ F.op` obtained from the dual adjoint triple `H.op ⊣ G.op ⊣ F.op`. -/
-lemma leftToRight_app_op {X : C} : (t.leftToRight.app X).op = t.op.leftToRight.app (.op X) :=
-  NatTrans.congr_app t.leftToRight_op _
 
 omit [H.Full] [H.Faithful] in
 /-- For an adjoint triple `F ⊣ G ⊣ H` where `F` and `H` are fully faithful, the natural
