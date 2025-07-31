@@ -3,9 +3,9 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan, Yongle Hu
 -/
-import Mathlib.RingTheory.CohenMacaulay.Basic
 import Mathlib.Algebra.Polynomial.FieldDivision
-
+import Mathlib.RingTheory.CohenMacaulay.Basic
+import Mathlib.RingTheory.KrullDimension.Polynomial
 /-!
 # Polynomial Ring Over CM ring is CM
 
@@ -66,7 +66,9 @@ lemma Polynomial.localization_at_comap_maximal_isCM_isCM [IsNoetherianRing R]
       apply (ne_top_of_le_ne_top (b := maximalIdeal _) IsPrime.ne_top' _).symm
       simpa only [span_le] using mem'
     have eq : p = q := le_antisymm (by simpa [← ker, ← Ideal.map_eq_bot_iff_le_ker]) qle
-    have ht1 : p.height ≤ (maximalIdeal R).height := sorry
+    have ht1 : p.height ≤ (maximalIdeal R).height := by
+      rw [eq]
+      exact le_of_eq (Polynomial.height_map_C (maximalIdeal R))
     apply le_trans ht1 (le_sSup _)
     use (rs.map (algebraMap R (Localization.AtPrime p))), reg
     simpa [cm] using mem'
@@ -94,8 +96,9 @@ lemma Polynomial.localization_at_comap_maximal_isCM_isCM [IsNoetherianRing R]
           (e := (Ideal.polynomialQuotientEquivQuotientPolynomial (ofList rs)).toEquiv)
           (fun x ↦ by simp [Algebra.smul_def])).mp
         apply isSMulRegular_of_smul_eq_zero_imp_eq_zero
-        simpa only [Algebra.smul_def, algebraMap_def, Quotient.algebraMap_eq, coe_mapRingHom,
-          mul_comm, ← mem_nonZeroDivisors_iff] using (monf.map _).mem_nonZeroDivisors
+        simpa [Algebra.smul_def, algebraMap_def, Quotient.algebraMap_eq, coe_mapRingHom]
+          using (mem_nonZeroDivisors_iff.mp
+            (monf.map (Ideal.Quotient.mk (ofList rs))).mem_nonZeroDivisors).1
     have mem'' : ∀ r ∈ (((rs.map (algebraMap R R[X])) ++ [f]).map
       (algebraMap R[X] (Localization.AtPrime p))), r ∈ maximalIdeal (Localization.AtPrime p) := by
       intro r hr
@@ -111,7 +114,10 @@ lemma Polynomial.localization_at_comap_maximal_isCM_isCM [IsNoetherianRing R]
       simp only [smul_eq_mul, mul_top]
       apply (ne_top_of_le_ne_top (b := maximalIdeal _) IsPrime.ne_top' _).symm
       simpa only [span_le] using mem''
-    have ht2 : p.height ≤ (maximalIdeal R).height + 1 := sorry
+    have ht2 : p.height ≤ (maximalIdeal R).height + 1 := by
+      rw [← WithBot.coe_le_coe, WithBot.coe_add, maximalIdeal_height_eq_ringKrullDim,
+        height_eq_primeHeight, WithBot.coe_one, ← ringKrullDim_of_isNoetherianRing]
+      exact primeHeight_le_ringKrullDim
     apply le_trans ht2 (le_sSup _)
     use ((rs.map (algebraMap R R[X])) ++ [f]).map (algebraMap R[X] (Localization.AtPrime p)), reg
     simpa [cm] using mem''
@@ -187,7 +193,7 @@ theorem Polynomial.isCM_of_isCM [IsNoetherianRing R] [IsCohenMacaulayRing R] :
   exact isCohenMacaulayLocalRing_of_ringEquiv (IsLocalization.algEquiv p.primeCompl
     (Localization.AtPrime pS) (Localization.AtPrime p)).toRingEquiv
 
-theorem MvPolynomial.isCM_of_isCM [IsNoetherianRing R] [IsCohenMacaulayRing R] (n : ℕ):
+theorem MvPolynomial.isCM_of_isCM [IsNoetherianRing R] [IsCohenMacaulayRing R] (n : ℕ) :
     IsCohenMacaulayRing (MvPolynomial (Fin n) R) := by
   induction' n with n ih
   · exact isCohenMacaulayRing_of_ringEquiv (isEmptyRingEquiv R (Fin 0)).symm
