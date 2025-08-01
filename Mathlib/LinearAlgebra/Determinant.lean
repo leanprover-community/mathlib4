@@ -594,7 +594,7 @@ theorem det_basis (b : Basis ι A M) (b' : Basis ι A M) :
     LinearMap.det (b'.equiv b (Equiv.refl ι)).toLinearMap = b'.det b :=
   (b.det_comp_basis b' (LinearMap.id)).symm
 
-theorem det_mul (b b' b'' : Basis ι A M) :
+theorem det_mul_det (b b' b'' : Basis ι A M) :
     b.det b' * b'.det b'' = b.det b'' := by
   have : b'' = (b'.equiv b'' (Equiv.refl ι)).toLinearMap ∘ b'  := by
     ext; simp

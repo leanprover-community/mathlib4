@@ -25,7 +25,7 @@ Let `L` be a `ℤ`-lattice `L` defined as a discrete `ℤ`-submodule of `E` that
 * `ZLattice.covolume_eq_det`: if `L` is a lattice in `ℝ^n`, then its covolume is the absolute
   value of the determinant of any `ℤ`-basis of `L`.
 
-* `ZLattice. covolume_div_covolume_eq_relindex`: Let `L₁` be a sub-`ℤ`-lattice of `L₂`. Then the
+* `ZLattice.covolume_div_covolume_eq_relindex`: Let `L₁` be a sub-`ℤ`-lattice of `L₂`. Then the
 index of `L₁` inside `L₂` is equal to `covolume L₁ / covolume L₂`.
 
 * `ZLattice.covolume.tendsto_card_div_pow`: Let `s` be a bounded measurable set of `ι → ℝ`, then
@@ -149,7 +149,7 @@ theorem covolume_div_covolume_eq_relindex {ι : Type*} [Fintype ι] [DecidableEq
   rw [AddSubgroup.relindex_eq_natAbs_det L₁.toAddSubgroup L₂.toAddSubgroup h b₁ b₂,
     Nat.cast_natAbs, Int.cast_abs]
   trans |(b₂.ofZLatticeBasis ℝ).det (b₁.ofZLatticeBasis ℝ)|
-  · rw [← Basis.det_mul _ (Pi.basisFun ℝ ι) _, abs_mul, Pi.basisFun_det_apply,
+  · rw [← Basis.det_mul_det _ (Pi.basisFun ℝ ι) _, abs_mul, Pi.basisFun_det_apply,
       ← Basis.det_inv, Units.val_inv_eq_inv_val, IsUnit.unit_spec, Pi.basisFun_det_apply,
       covolume_eq_det _ b₁, covolume_eq_det _ b₂, mul_comm, abs_inv]
     congr <;> ext <;> simp
