@@ -821,9 +821,9 @@ theorem algebraMap_apply_mk {R A : Type*} [CommSemiring R] [CommSemiring A] [Sem
   algebraMap S α (⟨a, ha⟩ : S) = algebraMap A α a := rfl
 
 @[simp]
-theorem mk_algebraMap_apply {R A : Type*} [CommSemiring R] [CommSemiring A] [Semiring α]
+theorem mk_algebraMap_apply {A : Type*} [CommSemiring A] [Semiring α]
     [Algebra A α] {S : Subalgebra A α} (a : A) (ha : algebraMap A α a ∈ S) :
-  ⟨(algebraMap A α) a, ha⟩ = (algebraMap A S) a := rfl
+  ⟨algebraMap A α a, ha⟩ = algebraMap A S a := rfl
 
 @[simp]
 theorem rangeS_algebraMap {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
