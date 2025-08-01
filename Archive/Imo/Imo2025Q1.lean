@@ -636,9 +636,11 @@ lemma no_config_without_vert_horiz_diag_contr_line {n k} (hn : 3 ≤ n) (c : Con
     {l} (hl : l ∈ c.ls) (meml : !₂[1, (m : ℝ)] ∈ l) (hQ : !₂[(n : ℝ) + 1, 1] ∉ l) :
     False := by
   -- find point `∈ l` on bottom line
-  obtain ⟨m₂, ltm₂, m₂lt, hm₂⟩ : ∃ m₂ : ℕ, 1 < m₂ ∧ m₂ < n ∧ !₂[(m₂ : ℝ), 1] ∈ l := sorry
+  obtain ⟨m₂, ltm₂, m₂lt, hm₂⟩ : ∃ m₂ : ℕ, 1 < m₂ ∧ m₂ ≤ n ∧ !₂[(m₂ : ℝ), 1] ∈ l :=
+    sorry
   -- find point `∈ l` on main diag
-  obtain ⟨m₃, ltm₃, m₃lt, hm₃⟩ : ∃ m₃ : ℕ, 1 < m₃ ∧ m₃ < n ∧ !₂[(m₃ : ℝ), n + 2 - m₃] ∈ l := sorry
+  obtain ⟨m₃, ltm₃, m₃lt, hm₃⟩ : ∃ m₃ : ℕ, 1 < m₃ ∧ m₃ ≤ n ∧ !₂[(m₃ : ℝ), n + 2 - m₃] ∈ l :=
+    sorry
   suffices h : finrank ℝ l.direction = 2
   · have := c.rank l hl
     omega
