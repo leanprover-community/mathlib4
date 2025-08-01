@@ -304,15 +304,8 @@ theorem coeff_mul_natTrailingDegree_add_natTrailingDegree : (p * q).coeff
   refine
     Finset.sum_eq_single (p.natTrailingDegree, q.natTrailingDegree) ?_ fun h =>
       (h (mem_antidiagonal.mpr rfl)).elim
-  rintro ⟨i, j⟩ h₁ h₂
-  rw [mem_antidiagonal] at h₁
-  by_cases hi : i < p.natTrailingDegree
-  · rw [coeff_eq_zero_of_lt_natTrailingDegree hi, zero_mul]
-  by_cases hj : j < q.natTrailingDegree
-  · rw [coeff_eq_zero_of_lt_natTrailingDegree hj, mul_zero]
-  rw [not_lt] at hi hj
-  refine (h₂ (Prod.ext_iff.mpr ?_).symm).elim
-  exact (add_eq_add_iff_eq_and_eq hi hj).mp h₁.symm
+  grind [Finset.HasAntidiagonal.mem_antidiagonal, MulZeroClass.mul_zero, MulZeroClass.zero_mul,
+    Polynomial.coeff_eq_zero_of_lt_natTrailingDegree]
 
 theorem trailingDegree_mul' (h : p.trailingCoeff * q.trailingCoeff ≠ 0) :
     (p * q).trailingDegree = p.trailingDegree + q.trailingDegree := by
