@@ -17,7 +17,7 @@ note: this linter can be disabled with `set_option linter.unusedTactic false`
 -/
 #guard_msgs in
 example : @Eq N (1 : Nat) (1 : Nat) := by
-  check_equalities
+  #check_equalities
   change @Eq Nat _ _
-  check_equalities
+  #check_equalities
   rfl
