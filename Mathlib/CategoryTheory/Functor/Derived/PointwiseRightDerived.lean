@@ -36,6 +36,8 @@ at `L.obj X` for any localization functor `L : C ⥤ D` for `W`. In the
 definition, this is stated for `L := W.Q`, see `hasPointwiseRightDerivedFunctorAt_iff`
 for the more general equivalence. -/
 class HasPointwiseRightDerivedFunctorAt (X : C) : Prop where
+  /-- Use the more general `hasColimit` lemma instead, see also
+  `hasPointwiseRightDerivedFunctorAt_iff` -/
   hasColimit' : HasPointwiseLeftKanExtensionAt W.Q F (W.Q.obj X)
 
 /-- A functor `F : C ⥤ H` has a pointwise right derived functor with respect to
@@ -49,7 +51,12 @@ lemma hasPointwiseRightDerivedFunctorAt_iff [L.IsLocalization W] (X : C) :
   rw [← hasPointwiseLeftKanExtensionAt_iff_of_equivalence W.Q L F
     (Localization.uniq W.Q L W) (Localization.compUniqFunctor W.Q L W) (W.Q.obj X) (L.obj X)
     ((Localization.compUniqFunctor W.Q L W).app X)]
-  exact ⟨fun h => h.hasColimit', fun h => ⟨h⟩⟩
+  exact ⟨fun h ↦ h.hasColimit', fun h ↦ ⟨h⟩⟩
+
+lemma HasPointwiseRightDerivedFunctorAt.hasColimit
+    [L.IsLocalization W] (X : C) [F.HasPointwiseRightDerivedFunctorAt W X] :
+    HasPointwiseLeftKanExtensionAt L F (L.obj X) := by
+  rwa [← hasPointwiseRightDerivedFunctorAt_iff F L W]
 
 lemma hasPointwiseRightDerivedFunctorAt_iff_of_mem {X Y : C} (w : X ⟶ Y) (hw : W w) :
     F.HasPointwiseRightDerivedFunctorAt W X ↔
@@ -62,7 +69,7 @@ section
 variable [F.HasPointwiseRightDerivedFunctor W]
 
 lemma hasPointwiseLeftKanExtension_of_hasPointwiseRightDerivedFunctor [L.IsLocalization W] :
-    HasPointwiseLeftKanExtension L F := fun Y => by
+    HasPointwiseLeftKanExtension L F := fun Y ↦ by
   have := Localization.essSurj L W
   rw [← hasPointwiseLeftKanExtensionAt_iff_of_iso _ F (L.objObjPreimageIso Y),
     ← F.hasPointwiseRightDerivedFunctorAt_iff L W]
@@ -132,7 +139,7 @@ def isPointwiseLeftKanExtensionAtOfIso
 then `e.hom` makes `G` a poinwise left Kan extension of `F` along `L`. -/
 noncomputable def isPointwiseLeftKanExtensionOfIso
     {G : D ⥤ H} (e : F ≅ L ⋙ G) [L.IsLocalization W] :
-    (LeftExtension.mk _ e.hom).IsPointwiseLeftKanExtension := fun Y => by
+    (LeftExtension.mk _ e.hom).IsPointwiseLeftKanExtension := fun Y ↦ by
   have := Localization.essSurj L W
   exact (LeftExtension.mk _ e.hom).isPointwiseLeftKanExtensionAtEquivOfIso'
     (L.objObjPreimageIso Y) (isPointwiseLeftKanExtensionAtOfIso W e _)
