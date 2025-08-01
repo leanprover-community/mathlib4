@@ -175,7 +175,7 @@ noncomputable def pushforwardFamily {X} (x : ℱ.obj (op X)) :
 
 @[simp] theorem pushforwardFamily_def {X} (x : ℱ.obj (op X)) :
     pushforwardFamily α x = fun _ _ hf =>
-  ℱ'.val.map hf.some.lift.op <| α.app (op _) (ℱ.map hf.some.map.op x) := rfl
+    ℱ'.val.map hf.some.lift.op <| α.app (op _) (ℱ.map hf.some.map.op x) := rfl
 
 @[simp]
 theorem pushforwardFamily_apply [G.IsLocallyFull K]
@@ -491,7 +491,7 @@ class IsDenseSubsite : Prop where
   isLocallyFaithful' : G.IsLocallyFaithful K := by infer_instance
   functorPushforward_mem_iff : ∀ {X : C} {S : Sieve X}, S.functorPushforward G ∈ K _ ↔ S ∈ J _
 
-lemma functorPushforward_mem_iff {X : C} {S : Sieve X} [G.IsDenseSubsite J K]:
+lemma functorPushforward_mem_iff {X : C} {S : Sieve X} [G.IsDenseSubsite J K] :
     S.functorPushforward G ∈ K _ ↔ S ∈ J _ := IsDenseSubsite.functorPushforward_mem_iff
 
 namespace IsDenseSubsite

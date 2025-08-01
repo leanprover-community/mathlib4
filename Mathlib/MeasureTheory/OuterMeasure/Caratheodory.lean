@@ -165,7 +165,7 @@ def caratheodoryDynkin : MeasurableSpace.DynkinSystem α where
   has_iUnion_nat _ hf hn := by apply isCaratheodory_iUnion m hf
 
 /-- Given an outer measure `μ`, the Carathéodory-measurable space is
-  defined such that `s` is measurable if `∀t, μ t = μ (t ∩ s) + μ (t \ s)`. -/
+  defined such that `s` is measurable if `∀ t, μ t = μ (t ∩ s) + μ (t \ s)`. -/
 protected def caratheodory : MeasurableSpace α := by
   apply MeasurableSpace.DynkinSystem.toMeasurableSpace (caratheodoryDynkin m)
   intro s₁ s₂

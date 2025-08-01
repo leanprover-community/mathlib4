@@ -703,7 +703,7 @@ lemma isIso_f' (hS : S.Exact) (h : S.LeftHomologyData) [Mono S.f] :
   have := mono_of_mono_fac h.f'_i
   exact isIso_of_mono_of_epi h.f'
 
-lemma isIso_toCycles (hS : S.Exact) [Mono S.f] [S.HasLeftHomology]:
+lemma isIso_toCycles (hS : S.Exact) [Mono S.f] [S.HasLeftHomology] :
     IsIso S.toCycles :=
   hS.isIso_f' _
 

@@ -259,4 +259,13 @@ lemma isConj_apply_apply (hσ : IsConj φ σ) (x : K) :
     σ (σ x) = x := by
   simp [← φ.injective.eq_iff, hσ.eq]
 
+theorem IsConj.comp (hσ : IsConj φ σ) (ν : K ≃ₐ[k] K) :
+    IsConj (φ.comp ν) (ν⁻¹ * σ * ν) := by
+  ext
+  simpa [← AlgEquiv.mul_apply, ← mul_assoc] using RingHom.congr_fun hσ _
+
+lemma orderOf_isConj_two_of_ne_one (hσ : IsConj φ σ) (hσ' : σ ≠ 1) :
+    orderOf σ = 2 :=
+  orderOf_eq_prime_iff.mpr ⟨by ext; simpa using isConj_apply_apply hσ _, hσ'⟩
+
 end NumberField.ComplexEmbedding

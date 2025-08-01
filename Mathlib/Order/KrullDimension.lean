@@ -422,7 +422,7 @@ lemma height_eq_top_iff {x : α} :
     rw [height_eq_iSup_last_eq, iSup_subtype', ENat.iSup_coe_eq_top, bddAbove_def]
     push_neg
     intro n
-    obtain ⟨p, hlast, hp⟩ := h (n+1)
+    obtain ⟨p, hlast, hp⟩ := h (n + 1)
     exact ⟨p.length, ⟨⟨⟨p, hlast⟩, by simp [hp]⟩, by simp [hp]⟩⟩
 
 /--
@@ -465,7 +465,7 @@ lemma coe_lt_height_iff {x : α} {n : ℕ} (hfin : height x < ⊤) :
   mpr := fun ⟨y, hyx, hy⟩ =>
     hy ▸ height_strictMono hyx (lt_of_le_of_lt (height_mono hyx.le) hfin)
 
-lemma coe_lt_coheight_iff {x : α} {n : ℕ} (hfin : coheight x < ⊤):
+lemma coe_lt_coheight_iff {x : α} {n : ℕ} (hfin : coheight x < ⊤) :
     n < coheight x ↔ ∃ y > x, coheight y = n :=
   coe_lt_height_iff (α := αᵒᵈ) hfin
 
@@ -480,7 +480,7 @@ lemma height_eq_coe_add_one_iff {x : α} {n : ℕ} :
     simp [ENat.add_one_le_iff]
   · congr! 1
     · exact coe_lt_height_iff hfin
-    · simpa [hfin, ENat.lt_add_one_iff] using height_le_coe_iff (x := x) (n := n+1)
+    · simpa [hfin, ENat.lt_add_one_iff] using height_le_coe_iff (x := x) (n := n + 1)
 
 lemma coheight_eq_coe_add_one_iff {x : α} {n : ℕ} :
     coheight x = n + 1 ↔
@@ -519,7 +519,7 @@ lemma height_eq_coe_iff_minimal_le_height {a : α} {n : ℕ} :
   · suffices ∃ x < a, ↑n ≤ height x by
       simp_all [minimal_iff_forall_lt]
     simp only [not_lt, top_le_iff, height_eq_top_iff] at hfin
-    obtain ⟨p, rfl, hp⟩ := hfin (n+1)
+    obtain ⟨p, rfl, hp⟩ := hfin (n + 1)
     use p.eraseLast.last, p.eraseLast_last_rel_last (by omega)
     simpa [hp] using length_le_height_last (p := p.eraseLast)
 
@@ -1017,8 +1017,7 @@ lemma krullDim_int : krullDim ℤ = ⊤ := krullDim_of_noMaxOrder ..
 @[simp]
 lemma krullDim_enat : krullDim ℕ∞ = ⊤ := by
   change (krullDim (WithTop ℕ) = ⊤)
-  simp only [krullDim_WithTop, krullDim_nat]
-  rfl
+  simp [← WithBot.coe_top, ← WithBot.coe_one, ← WithBot.coe_add]
 
 @[simp]
 lemma height_enat (n : ℕ∞) : height n = n := by

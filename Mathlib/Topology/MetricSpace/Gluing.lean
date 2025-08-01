@@ -325,11 +325,11 @@ theorem dist_same (i : ι) (x y : E i) : dist (Sigma.mk i x) ⟨i, y⟩ = dist x
 
 @[simp]
 theorem dist_ne {i j : ι} (h : i ≠ j) (x : E i) (y : E j) :
-    dist (⟨i, x⟩ : Σk, E k) ⟨j, y⟩ = dist x (Nonempty.some ⟨x⟩) + 1 + dist (Nonempty.some ⟨y⟩) y :=
+    dist (⟨i, x⟩ : Σ k, E k) ⟨j, y⟩ = dist x (Nonempty.some ⟨x⟩) + 1 + dist (Nonempty.some ⟨y⟩) y :=
   dif_neg h
 
 theorem one_le_dist_of_ne {i j : ι} (h : i ≠ j) (x : E i) (y : E j) :
-    1 ≤ dist (⟨i, x⟩ : Σk, E k) ⟨j, y⟩ := by
+    1 ≤ dist (⟨i, x⟩ : Σ k, E k) ⟨j, y⟩ := by
   rw [Sigma.dist_ne h x y]
   linarith [@dist_nonneg _ _ x (Nonempty.some ⟨x⟩), @dist_nonneg _ _ (Nonempty.some ⟨y⟩) y]
 
@@ -385,7 +385,7 @@ protected theorem isOpen_iff (s : Set (Σ i, E i)) :
         1 ≤ Sigma.dist ⟨i, x⟩ ⟨j, y⟩ := Sigma.one_le_dist_of_ne hij _ _
         _ < 1 := hy.trans_le (min_le_right _ _)
   · refine fun H => isOpen_sigma_iff.2 fun i => Metric.isOpen_iff.2 fun x hx => ?_
-    obtain ⟨ε, εpos, hε⟩ : ∃ ε > 0, ∀ y, dist (⟨i, x⟩ : Σj, E j) y < ε → y ∈ s :=
+    obtain ⟨ε, εpos, hε⟩ : ∃ ε > 0, ∀ y, dist (⟨i, x⟩ : Σ j, E j) y < ε → y ∈ s :=
       H ⟨i, x⟩ hx
     refine ⟨ε, εpos, fun y hy => ?_⟩
     apply hε ⟨i, y⟩
@@ -412,7 +412,7 @@ protected def metricSpace : MetricSpace (Σ i, E i) := by
     · intro h
       apply (lt_irrefl (1 : ℝ) _).elim
       calc
-        1 ≤ Sigma.dist (⟨i, x⟩ : Σk, E k) ⟨j, y⟩ := Sigma.one_le_dist_of_ne hij _ _
+        1 ≤ Sigma.dist (⟨i, x⟩ : Σ k, E k) ⟨j, y⟩ := Sigma.one_le_dist_of_ne hij _ _
         _ < 1 := by rw [h]; exact zero_lt_one
 
 attribute [local instance] Sigma.metricSpace
@@ -422,13 +422,13 @@ open Topology
 open Filter
 
 /-- The injection of a space in a disjoint union is an isometry -/
-theorem isometry_mk (i : ι) : Isometry (Sigma.mk i : E i → Σk, E k) :=
+theorem isometry_mk (i : ι) : Isometry (Sigma.mk i : E i → Σ k, E k) :=
   Isometry.of_dist_eq fun x y => by simp
 
 /-- A disjoint union of complete metric spaces is complete. -/
 protected theorem completeSpace [∀ i, CompleteSpace (E i)] : CompleteSpace (Σ i, E i) := by
   set s : ι → Set (Σ i, E i) := fun i => Sigma.fst ⁻¹' {i}
-  set U := { p : (Σk, E k) × Σk, E k | dist p.1 p.2 < 1 }
+  set U := { p : (Σ k, E k) × Σ k, E k | dist p.1 p.2 < 1 }
   have hc : ∀ i, IsComplete (s i) := fun i => by
     simp only [s, ← range_sigmaMk]
     exact (isometry_mk i).isUniformInducing.isComplete_range
@@ -548,7 +548,7 @@ theorem inductiveLimitDist_eq_dist (I : ∀ n, Isometry (f n)) (x y : Σ n, X n)
       exact inductiveLimitDist_eq_dist I x y m xm ym
 
 /-- Premetric space structure on `Σ n, X n`. -/
-def inductivePremetric (I : ∀ n, Isometry (f n)) : PseudoMetricSpace (Σn, X n) where
+def inductivePremetric (I : ∀ n, Isometry (f n)) : PseudoMetricSpace (Σ n, X n) where
   dist := inductiveLimitDist f
   dist_self x := by simp [inductiveLimitDist]
   dist_comm x y := by

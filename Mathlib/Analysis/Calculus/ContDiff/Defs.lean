@@ -281,9 +281,6 @@ theorem ContDiffWithinAt.mono_of_mem_nhdsWithin (h : ContDiffWithinAt 𝕜 n f s
     rcases h m hm with ⟨u, hu, p, H⟩
     exact ⟨u, nhdsWithin_le_of_mem (insert_mem_nhdsWithin_insert hst) hu, p, H⟩
 
-@[deprecated (since := "2024-10-30")]
-alias ContDiffWithinAt.mono_of_mem := ContDiffWithinAt.mono_of_mem_nhdsWithin
-
 theorem ContDiffWithinAt.mono (h : ContDiffWithinAt 𝕜 n f s x) {t : Set E} (hst : t ⊆ s) :
     ContDiffWithinAt 𝕜 n f t x :=
   h.mono_of_mem_nhdsWithin <| Filter.mem_of_superset self_mem_nhdsWithin hst
@@ -298,15 +295,9 @@ theorem ContDiffWithinAt.congr_set (h : ContDiffWithinAt 𝕜 n f s x) {t : Set 
   rw [← nhdsWithin_eq_iff_eventuallyEq] at hst
   apply h.mono_of_mem_nhdsWithin <| hst ▸ self_mem_nhdsWithin
 
-@[deprecated (since := "2024-10-23")]
-alias ContDiffWithinAt.congr_nhds := ContDiffWithinAt.congr_set
-
 theorem contDiffWithinAt_congr_set {t : Set E} (hst : s =ᶠ[𝓝 x] t) :
     ContDiffWithinAt 𝕜 n f s x ↔ ContDiffWithinAt 𝕜 n f t x :=
   ⟨fun h => h.congr_set hst, fun h => h.congr_set hst.symm⟩
-
-@[deprecated (since := "2024-10-23")]
-alias contDiffWithinAt_congr_nhds := contDiffWithinAt_congr_set
 
 theorem contDiffWithinAt_inter' (h : t ∈ 𝓝[s] x) :
     ContDiffWithinAt 𝕜 n f (s ∩ t) x ↔ ContDiffWithinAt 𝕜 n f s x :=
@@ -1007,7 +998,7 @@ theorem ContDiffAt.differentiableAt_one (h : ContDiffAt 𝕜 1 f x) :
     DifferentiableAt 𝕜 f x := by
   simpa [(le_refl 1), differentiableWithinAt_univ] using h.differentiableWithinAt
 
-nonrec lemma ContDiffAt.contDiffOn (h : ContDiffAt 𝕜 n f x) (hm : m ≤ n) (h' : m = ∞ → n = ω):
+nonrec lemma ContDiffAt.contDiffOn (h : ContDiffAt 𝕜 n f x) (hm : m ≤ n) (h' : m = ∞ → n = ω) :
     ∃ u ∈ 𝓝 x, ContDiffOn 𝕜 m f u := by
   simpa [nhdsWithin_univ] using h.contDiffOn hm h'
 
