@@ -335,7 +335,7 @@ lemma tsum_prod_eisSummand_eq_riemannZeta_eisensteinSeries {k : ℕ} (hk : 3 ≤
     simp
 
 lemma EisensteinSeries.q_expansion {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) (z : ℍ) :
-    (E k hk) z = 1 + (1 / (riemannZeta (k))) * ((-2 * ↑π * Complex.I) ^ k / (k - 1)!) *
+    (E hk) z = 1 + (1 / (riemannZeta (k))) * ((-2 * ↑π * Complex.I) ^ k / (k - 1)!) *
     ∑' n : ℕ+, sigma (k - 1) n * cexp (2 * ↑π * Complex.I * z) ^ (n : ℤ) := by
   have : (eisensteinSeries_MF (k := k) (by omega) standardcongruencecondition) z =
     (eisensteinSeries_SIF standardcongruencecondition k) z := rfl
