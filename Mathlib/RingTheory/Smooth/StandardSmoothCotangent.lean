@@ -185,10 +185,7 @@ lemma sectionCotangent_zero_of_notMem_range (i : ι) (hi : i ∉ Set.range P.map
   rw [sectionCotangent_eq_iff] at hi
   simp only [Basis.repr_self, map_zero, Pi.zero_apply, not_forall,
     Finsupp.single_apply, ite_eq_right_iff] at hi
-  obtain ⟨j, hij, _⟩ := hi
-  simp only [Set.mem_range, not_exists, not_forall, not_not]
-  use j
-  exact hij.symm
+  grind [Set.mem_range]
 
 @[deprecated (since := "2025-05-23")]
 alias sectionCotangent_zero_of_not_mem_range := sectionCotangent_zero_of_notMem_range
