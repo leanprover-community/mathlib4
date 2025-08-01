@@ -478,7 +478,7 @@ lemma surj_on_of_inj_on_of_card_le (f : ∀ a ∈ s, β) (hf : ∀ a ha, f a ha 
   exact ⟨a, a.2, rfl⟩
 
 /--
-Given a surjectiive map `f` from a finite set `s` to another finite set `t`, if `s` is no larger
+Given a surjective map `f` from a finite set `s` to another finite set `t`, if `s` is no larger
 than `t`, then `f` is injective when restricted to `s`.
 See `Finset.inj_on_of_surj_on_of_card_le` for the version where `f` is a dependent function.
 -/
