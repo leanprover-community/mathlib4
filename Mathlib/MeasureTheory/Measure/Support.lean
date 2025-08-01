@@ -171,7 +171,12 @@ variable [HereditarilyLindelofSpace X]
 lemma measure_compl_support : μ (μ.support)ᶜ = 0 := support_mem_ae
 
 lemma nonempty_inter_support_of_pos {s : Set X} (hμ : 0 < μ s) :
-    (s ∩ μ.support).Nonempty := by sorry
+    (s ∩ μ.support).Nonempty := by
+  by_contra H
+  have :=  LE.le.not_gt <| (OuterMeasureClass.measure_mono μ (Disjoint.subset_compl_right
+    <| disjoint_iff_inter_eq_empty.mpr <| Set.not_nonempty_iff_eq_empty.mp H)).trans
+      <|le_of_eq (measure_compl_support)
+  contradiction
 
 -- this is optional, as with the common assumption `OpensMeasurableSpace` the
 -- set will simply be measurable because it is open
