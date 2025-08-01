@@ -12,7 +12,7 @@ import Mathlib.Topology.Order.ProjIcc
 In this file we prove a few results about `ContinuousMap` when the domain is an interval.
 -/
 
-open Set ContinuousMap Filter Topology
+open Set Filter Topology
 
 namespace ContinuousMap
 

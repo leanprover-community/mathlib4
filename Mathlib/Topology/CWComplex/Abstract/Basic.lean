@@ -42,9 +42,6 @@ The two approaches are equivalent but serve different purposes:
   Currently there is no way to move between the two definitions.
 -/
 
-open TopCat
-
-
 universe u
 
 open CategoryTheory Limits HomotopicalAlgebra
