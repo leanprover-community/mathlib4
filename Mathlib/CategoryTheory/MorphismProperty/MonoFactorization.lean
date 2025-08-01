@@ -17,8 +17,6 @@ A `MonoFactorization` is a factorization `f = e ≫ m`, where `m` is a monomorph
 
 -/
 
-noncomputable section
-
 universe v u
 
 open CategoryTheory
@@ -81,7 +79,7 @@ def compMono (F : MonoFactorization f) {Y' : C} (g : Y ⟶ Y') [Mono g] :
 /-- A mono factorization of `f ≫ g`, where `g` is an isomorphism,
 gives a mono factorization of `f`. -/
 @[simps]
-def ofCompIso {Y' : C} {g : Y ⟶ Y'} [IsIso g] (F : MonoFactorization (f ≫ g)) :
+noncomputable def ofCompIso {Y' : C} {g : Y ⟶ Y'} [IsIso g] (F : MonoFactorization (f ≫ g)) :
     MonoFactorization f where
   I := F.I
   m := F.m ≫ inv g
@@ -98,7 +96,7 @@ def isoComp (F : MonoFactorization f) {X' : C} (g : X' ⟶ X) : MonoFactorizatio
 /-- A mono factorization of `g ≫ f`, where `g` is an isomorphism,
 gives a mono factorization of `f`. -/
 @[simps]
-def ofIsoComp {X' : C} (g : X' ⟶ X) [IsIso g] (F : MonoFactorization (g ≫ f)) :
+noncomputable def ofIsoComp {X' : C} (g : X' ⟶ X) [IsIso g] (F : MonoFactorization (g ≫ f)) :
     MonoFactorization f where
   I := F.I
   m := F.m
@@ -107,7 +105,7 @@ def ofIsoComp {X' : C} (g : X' ⟶ X) [IsIso g] (F : MonoFactorization (g ≫ f)
 /-- If `f` and `g` are isomorphic arrows, then a mono factorization of `f`
 gives a mono factorization of `g` -/
 @[simps]
-def ofArrowIso {f g : Arrow C} (F : MonoFactorization f.hom) (sq : f ⟶ g) [IsIso sq] :
+noncomputable def ofArrowIso {f g : Arrow C} (F : MonoFactorization f.hom) (sq : f ⟶ g) [IsIso sq] :
     MonoFactorization g.hom where
   I := F.I
   m := F.m ≫ sq.right
