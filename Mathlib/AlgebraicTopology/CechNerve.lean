@@ -133,11 +133,7 @@ def cechNerveEquiv (X : SimplicialObject.Augmented C) (F : Arrow C) :
     (Augmented.toArrow.obj X ⟶ F) ≃ (X ⟶ F.augmentedCechNerve) where
   toFun := equivalenceLeftToRight _ _
   invFun := equivalenceRightToLeft _ _
-  left_inv := by
-    intro A
-    ext
-    · simp
-    · rfl
+  left_inv A := by ext <;> simp
   right_inv := by
     intro A
     ext x : 2
@@ -145,7 +141,7 @@ def cechNerveEquiv (X : SimplicialObject.Augmented C) (F : Arrow C) :
       · simp
         rfl
       · simpa using congr_app A.w.symm x
-    · rfl
+    · simp
 
 /-- The augmented Čech nerve construction is right adjoint to the `toArrow` functor. -/
 abbrev cechNerveAdjunction : (Augmented.toArrow : _ ⥤ Arrow C) ⊣ augmentedCechNerve :=

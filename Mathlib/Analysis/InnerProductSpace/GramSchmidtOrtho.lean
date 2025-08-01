@@ -67,9 +67,12 @@ theorem gramSchmidt_def'' (f : ι → E) (n : ι) :
   rw [← starProjection_apply, starProjection_singleton, RCLike.ofReal_pow]
 
 @[simp]
-theorem gramSchmidt_zero {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [OrderBot ι]
+theorem gramSchmidt_bot {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [OrderBot ι]
     [WellFoundedLT ι] (f : ι → E) : gramSchmidt 𝕜 f ⊥ = f ⊥ := by
   rw [gramSchmidt_def, Iio_eq_Ico, Finset.Ico_self, Finset.sum_empty, sub_zero]
+
+@[simp]
+theorem gramSchmidt_zero (n : ι) : gramSchmidt 𝕜 (0 : ι → E) n = 0 := by simp [gramSchmidt_def]
 
 /-- **Gram-Schmidt Orthogonalisation**:
 `gramSchmidt` produces an orthogonal system of vectors. -/
@@ -159,7 +162,8 @@ theorem span_gramSchmidt (f : ι → E) : span 𝕜 (range (gramSchmidt 𝕜 f))
       range_subset_iff.2 fun _ =>
         span_mono (image_subset_range _ _) <| mem_span_gramSchmidt _ _ le_rfl
 
-theorem gramSchmidt_of_orthogonal {f : ι → E} (hf : Pairwise fun i j => ⟪f i, f j⟫ = 0) :
+/-- If given an orthogonal set of vectors, `gramSchmidt` fixes its input. -/
+theorem gramSchmidt_of_orthogonal {f : ι → E} (hf : Pairwise (⟪f ·, f ·⟫ = 0)) :
     gramSchmidt 𝕜 f = f := by
   ext i
   rw [gramSchmidt_def]
@@ -294,6 +298,16 @@ theorem span_gramSchmidtNormed (f : ι → E) (s : Set ι) :
 theorem span_gramSchmidtNormed_range (f : ι → E) :
     span 𝕜 (range (gramSchmidtNormed 𝕜 f)) = span 𝕜 (range (gramSchmidt 𝕜 f)) := by
   simpa only [image_univ.symm] using span_gramSchmidtNormed f univ
+
+/-- `gramSchmidtNormed` produces linearly independent vectors when given linearly independent
+vectors. -/
+theorem gramSchmidtNormed_linearIndependent {f : ι → E} (h₀ : LinearIndependent 𝕜 f) :
+    LinearIndependent 𝕜 (gramSchmidtNormed 𝕜 f) := by
+  unfold gramSchmidtNormed
+  have (i : ι) : IsUnit (‖gramSchmidt 𝕜 f i‖⁻¹ : 𝕜) :=
+    isUnit_iff_ne_zero.mpr (by simp [gramSchmidt_ne_zero i h₀])
+  let w : ι → 𝕜ˣ := fun i ↦ (this i).unit
+  apply (gramSchmidt_linearIndependent h₀).units_smul (w := fun i ↦ (this i).unit)
 
 section OrthonormalBasis
 

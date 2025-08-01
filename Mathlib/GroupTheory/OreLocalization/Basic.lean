@@ -7,6 +7,7 @@ import Mathlib.GroupTheory.OreLocalization.OreSet
 import Mathlib.Tactic.Common
 import Mathlib.Algebra.Group.Submonoid.MulAction
 import Mathlib.Algebra.Group.Units.Defs
+import Mathlib.Algebra.Group.Basic
 
 /-!
 

@@ -352,10 +352,8 @@ lemma hasDerivAt_jacobiTheta₂_fst (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
       mul_one, ContinuousLinearMap.coe_snd', mul_zero, add_zero, jacobiTheta₂'_term,
       jacobiTheta₂_term, mul_comm _ (cexp _)]
   rw [funext step2] at step1
-  #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-    need `by exact` to bypass unification failure -/
-  have step3 : HasDerivAt (fun x ↦ jacobiTheta₂ x τ) ((jacobiTheta₂_fderiv z τ) (1, 0)) z := by
-    exact ((hasFDerivAt_jacobiTheta₂ z hτ).comp z (hasFDerivAt_prodMk_left z τ)).hasDerivAt
+  have step3 : HasDerivAt (fun x ↦ jacobiTheta₂ x τ) ((jacobiTheta₂_fderiv z τ) (1, 0)) z :=
+    (((hasFDerivAt_jacobiTheta₂ z hτ).comp z (hasFDerivAt_prodMk_left z τ)).hasDerivAt :)
   rwa [← step1.tsum_eq] at step3
 
 lemma continuousAt_jacobiTheta₂' (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
@@ -532,5 +530,5 @@ theorem jacobiTheta₂'_functional_equation (z τ : ℂ) :
     rw [hj.deriv]
     simp only [div_eq_mul_inv _ τ]
     rw [deriv_cexp (((differentiableAt_pow _).const_mul _).mul_const _), mul_comm,
-      deriv_mul_const_field, deriv_const_mul_field, deriv_pow]
+      deriv_mul_const_field, deriv_const_mul_field, deriv_pow_field]
     ring_nf

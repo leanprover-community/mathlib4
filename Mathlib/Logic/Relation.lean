@@ -374,13 +374,7 @@ theorem trans_left (hab : TransGen r a b) (hbc : ReflTransGen r b c) : TransGen 
   | refl => assumption
   | tail _ hcd hac => exact hac.tail hcd
 
-instance : Trans (TransGen r) (ReflTransGen r) (TransGen r) :=
-  ⟨trans_left⟩
-
 attribute [trans] trans
-
-instance : Trans (TransGen r) (TransGen r) (TransGen r) :=
-  ⟨trans⟩
 
 theorem head' (hab : r a b) (hbc : ReflTransGen r b c) : TransGen r a c :=
   trans_left (single hab) hbc
@@ -418,9 +412,6 @@ theorem trans_right (hab : ReflTransGen r a b) (hbc : TransGen r b c) : TransGen
   | single hbc => exact tail' hab hbc
   | tail _ hcd hac => exact hac.tail hcd
 
-instance : Trans (ReflTransGen r) (TransGen r) (TransGen r) :=
-  ⟨trans_right⟩
-
 theorem tail'_iff : TransGen r a c ↔ ∃ b, ReflTransGen r a b ∧ r b c := by
   refine ⟨fun h ↦ ?_, fun ⟨b, hab, hbc⟩ ↦ tail' hab hbc⟩
   cases h with
@@ -454,6 +445,21 @@ end reflGen
 
 section TransGen
 
+instance : IsTrans α (TransGen r) :=
+  ⟨@TransGen.trans α r⟩
+
+instance : Trans (TransGen r) r (TransGen r) :=
+  ⟨TransGen.tail⟩
+
+instance : Trans r (TransGen r) (TransGen r) :=
+  ⟨TransGen.head⟩
+
+instance : Trans (TransGen r) (ReflTransGen r) (TransGen r) :=
+  ⟨TransGen.trans_left⟩
+
+instance : Trans (ReflTransGen r) (TransGen r) (TransGen r) :=
+  ⟨TransGen.trans_right⟩
+
 theorem transGen_eq_self (trans : Transitive r) : TransGen r = r :=
   funext fun a ↦ funext fun b ↦ propext <|
     ⟨fun h ↦ by
@@ -462,9 +468,6 @@ theorem transGen_eq_self (trans : Transitive r) : TransGen r = r :=
       | tail _ hcd hac => exact trans hac hcd, TransGen.single⟩
 
 theorem transitive_transGen : Transitive (TransGen r) := fun _ _ _ ↦ TransGen.trans
-
-instance : IsTrans α (TransGen r) :=
-  ⟨@TransGen.trans α r⟩
 
 theorem transGen_idem : TransGen (TransGen r) = TransGen r :=
   transGen_eq_self transitive_transGen
@@ -544,6 +547,12 @@ lemma reflTransGen_minimal {r' : α → α → Prop} (hr₁ : Reflexive r') (hr�
 theorem reflexive_reflTransGen : Reflexive (ReflTransGen r) := fun _ ↦ refl
 
 theorem transitive_reflTransGen : Transitive (ReflTransGen r) := fun _ _ _ ↦ trans
+
+instance : Trans r (ReflTransGen r) (ReflTransGen r) :=
+  ⟨head⟩
+
+instance : Trans (ReflTransGen r) r (ReflTransGen r) :=
+  ⟨tail⟩
 
 instance : IsRefl α (ReflTransGen r) :=
   ⟨@ReflTransGen.refl α r⟩

@@ -38,7 +38,7 @@ separable degree, degree, separable closure, purely inseparable
 
 -/
 
-open IntermediateField
+open IntermediateField Module
 
 noncomputable section
 
@@ -373,9 +373,9 @@ theorem LinearIndependent.map_pow_expChar_pow_of_isSeparable'
 /-- If `E / F` is a separable extension of exponential characteristic `q`, if `{ u_i }` is an
 `F`-basis of `E`, then `{ u_i ^ (q ^ n) }` is also an `F`-basis of `E`
 for any natural number `n`. -/
-def Basis.mapPowExpCharPowOfIsSeparable [Algebra.IsSeparable F E]
-    (b : Basis ι F E) : Basis ι F E :=
-  Basis.mk (b.linearIndependent.map_pow_expChar_pow_of_isSeparable q n)
+def Module.Basis.mapPowExpCharPowOfIsSeparable [Algebra.IsSeparable F E] (b : Basis ι F E) :
+    Basis ι F E :=
+  .mk (b.linearIndependent.map_pow_expChar_pow_of_isSeparable q n)
     (Field.span_map_pow_expChar_pow_eq_top_of_isSeparable q n b.span_eq).ge
 
 /-- For an extension `E / F` of exponential characteristic `q` and a separable element `a : E`, the

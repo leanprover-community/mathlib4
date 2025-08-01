@@ -27,7 +27,6 @@ a map `𝟙_ V ⟶ U.obj (𝟙_ C)` that exhibits `U` as a pointwise left Kan ex
 
 ## TODOs (@robin-carlier)
 - Braided/symmetric case.
-- Case where `V` is closed.
 - Define a typeclass `DayConvolutionMonoidalCategory` extending `MonoidalCategory`
 - Characterization of lax monoidal functors out of a day convolution monoidal category.
 - Case `V = Type u` and its universal property.

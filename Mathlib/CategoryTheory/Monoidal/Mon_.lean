@@ -822,6 +822,9 @@ instance : SymmetricCategory (Mon_ C) where
     ext
     simp
 
+@[simp] lemma braiding_hom_hom (M N : Mon_ C) : (β_ M N).hom.hom = (β_ M.X N.X).hom := rfl
+@[simp] lemma braiding_inv_hom (M N : Mon_ C) : (β_ M N).inv.hom = (β_ M.X N.X).inv := rfl
+
 end Mon_
 
 end SymmetricCategory

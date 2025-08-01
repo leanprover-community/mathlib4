@@ -58,8 +58,6 @@ universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 namespace CategoryTheory.Limits
 
-attribute [local simp] CatCommSq.iso_hom_naturality  CatCommSq.iso_inv_naturality
-
 section
 
 variable {A : Type u₁} {B : Type u₂} {C : Type u₃}
@@ -212,8 +210,8 @@ instance asSquare (S : CatCommSqOver F G X) : CatCommSq S.fst S.snd F G where
 
 @[reassoc (attr := simp)]
 lemma iso_hom_naturality (S : CatCommSqOver F G X) {x x' : X} (f : x ⟶ x') :
-   F.map (S.fst.map f) ≫ S.iso.hom.app x' =
-   S.iso.hom.app x ≫ G.map (S.snd.map f) :=
+    F.map (S.fst.map f) ≫ S.iso.hom.app x' =
+    S.iso.hom.app x ≫ G.map (S.snd.map f) :=
   S.iso.hom.naturality f
 
 @[reassoc (attr := simp)]

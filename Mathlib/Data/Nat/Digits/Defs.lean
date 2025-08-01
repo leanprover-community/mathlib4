@@ -405,8 +405,8 @@ theorem digits_base_pow_mul {b k m : ℕ} (hb : 1 < b) (hm : 0 < m) :
   induction k generalizing m with
   | zero => simp
   | succ k ih =>
-    rw [pow_succ', mul_assoc, digits_base_mul hb (by positivity), ih hm]
-    rfl
+    rw [pow_succ', mul_assoc, digits_base_mul hb (by positivity), ih hm, List.replicate_succ,
+      List.cons_append]
 
 theorem ofDigits_digits_append_digits {b m n : ℕ} :
     ofDigits b (digits b n ++ digits b m) = n + b ^ (digits b n).length * m := by

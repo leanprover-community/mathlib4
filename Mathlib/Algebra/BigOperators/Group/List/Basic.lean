@@ -64,7 +64,7 @@ theorem rel_prod {R : M → N → Prop} (h : R 1 1) (hf : (R ⇒ R ⇒ R) (· * 
 @[to_additive]
 theorem prod_hom_nonempty {l : List M} {F : Type*} [FunLike F M N] [MulHomClass F M N] (f : F)
     (hl : l ≠ []) : (l.map f).prod = f l.prod :=
-  match l, hl with | x :: xs, hl => by induction xs generalizing x <;> aesop
+  match l, hl with | x :: xs, hl => by induction xs generalizing x <;> simp_all
 
 @[to_additive]
 theorem prod_hom (l : List M) {F : Type*} [FunLike F M N] [MonoidHomClass F M N] (f : F) :
@@ -76,7 +76,7 @@ theorem prod_hom (l : List M) {F : Type*} [FunLike F M N] [MonoidHomClass F M N]
 theorem prod_hom₂_nonempty {l : List ι} (f : M → N → P)
     (hf : ∀ a b c d, f (a * b) (c * d) = f a c * f b d) (f₁ : ι → M) (f₂ : ι → N) (hl : l ≠ []) :
     (l.map fun i => f (f₁ i) (f₂ i)).prod = f (l.map f₁).prod (l.map f₂).prod := by
-  match l, hl with | x :: xs, hl => induction xs generalizing x <;> aesop
+  match l, hl with | x :: xs, hl => induction xs generalizing x <;> simp_all
 
 @[to_additive]
 theorem prod_hom₂ (l : List ι) (f : M → N → P) (hf : ∀ a b c d, f (a * b) (c * d) = f a c * f b d)

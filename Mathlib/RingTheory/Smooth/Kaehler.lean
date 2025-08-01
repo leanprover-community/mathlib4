@@ -490,7 +490,7 @@ lemma CotangentSpace.map_toInfinitesimal_bijective (P : Extension.{u} R S) :
   apply LinearMap.restrictScalars_injective P.Ring
   ext x a
   dsimp
-  simp only [map_tmul, id.map_eq_id, RingHom.id_apply, Hom.toAlgHom_apply]
+  simp only [map_tmul, algebraMap_self, RingHom.id_apply, Hom.toAlgHom_apply]
   exact (tensorKaehlerQuotKerSqEquiv_symm_tmul_D _ _).symm
 
 lemma Cotangent.map_toInfinitesimal_bijective (P : Extension.{u} R S) :
