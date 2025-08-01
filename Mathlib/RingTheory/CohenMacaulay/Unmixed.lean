@@ -29,7 +29,7 @@ lemma associatedPrimes_eq_minimalPrimes_of_isUnmixed [IsNoetherianRing R] {I : I
     apply Ideal.mem_minimalPrimes_of_height_eq _ (le_of_eq (unmix.1 hp))
     rw [← Ideal.annihilator_quotient (I := I), ← Submodule.annihilator_top]
     exact IsAssociatedPrime.annihilator_le hp
-  · convert minimalPrimes_annihilator_mem_associatedPrimes R (R ⧸ I)
+  · convert minimalPrimes_annihilator_subset_associatedPrimes R (R ⧸ I)
     exact Ideal.annihilator_quotient.symm
 
 lemma Ideal.ofList_isUnmixed_of_associatedPrimes_eq_minimalPrimes [IsNoetherianRing R] (l : List R)
