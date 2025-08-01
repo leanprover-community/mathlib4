@@ -269,11 +269,7 @@ theorem mem_generatePiSystem_iUnion_elim {α β} {g : β → Set (Set α)} (h_pi
     constructor
     · ext a
       simp_rw [Set.mem_inter_iff, Set.mem_iInter, Finset.mem_union, or_imp]
-      rw [← forall_and]
-      constructor <;> intro h1 b <;> by_cases hbs : b ∈ T_s <;> by_cases hbt : b ∈ T_t' <;>
-          specialize h1 b <;>
-        simp only [hbs, hbt, if_true, if_false, true_imp_iff, and_self_iff, false_imp_iff] at h1 ⊢
-      all_goals exact h1
+      grind [Set.mem_inter_iff]
     intro b h_b
     split_ifs with hbs hbt hbt
     · refine h_pi b (f_s b) (h_s b hbs) (f_t' b) (h_t' b hbt) (Set.Nonempty.mono ?_ h_nonempty)
