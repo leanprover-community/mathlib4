@@ -596,5 +596,4 @@ theorem tsum_nat_eq_zero_two_pnat {α : Type*} [UniformSpace α] [Ring α] [IsUn
       (summable_int_iff_summable_nat_and_neg.mp hf2).1)
   · exact (summable_nat_add_iff (k := 1)).mpr (summable_int_iff_summable_nat_and_neg.mp hf2).2
 
-
 end pnat
