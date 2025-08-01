@@ -473,7 +473,7 @@ theorem yn_modEq_a_sub_one : ∀ n, yn a1 n ≡ n [MOD a - 1]
 
 theorem yn_modEq_two : ∀ n, yn a1 n ≡ n [MOD 2]
   | 0 => by rfl
-  | 1 => by simp
+  | 1 => by simp [Nat.ModEq.refl]
   | n + 2 =>
     (yn_modEq_two n).add_right_cancel <| by
       rw [yn_succ_succ, mul_assoc, (by ring : n + 2 + n = 2 * (n + 1))]
