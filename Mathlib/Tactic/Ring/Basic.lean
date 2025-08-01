@@ -993,6 +993,17 @@ def mkCache {α : Q(Type u)} (sα : Q(CommSemiring $α)) (cfg : RingConfig) : Me
     czα := (← trySynthInstanceQ q(CharZero $α)).toOption
     cpα := cpα }
 
+def mkCache' {α : Q(Type u)} (sα : Q(CommSemiring $α)) (cfg : RingConfig) : MetaM (Cache sα) := do
+  let charExpr : Q(ℕ) := .lit (.natVal cfg.char)
+  let inst ← trySynthInstanceQ q(CharP $α $charExpr)
+  return {
+    char := cfg.char
+    rα := (← trySynthInstanceQ q(Ring $α)).toOption
+    dα := (← trySynthInstanceQ q(DivisionRing $α)).toOption
+    czα := (← trySynthInstanceQ q(CharZero $α)).toOption
+    cpα := if cfg.char ≠ 0 then inst.toOption else none }
+
+
 theorem cast_pos {n : ℕ} : IsNat (a : R) n → a = n.rawCast + 0
   | ⟨e⟩ => by simp [e]
 
