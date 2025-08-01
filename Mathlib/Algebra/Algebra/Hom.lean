@@ -403,6 +403,22 @@ lemma toIntAlgHom_injective [Ring R] [Ring S] :
     Function.Injective (RingHom.toIntAlgHom : (R →+* S) → _) :=
   fun _ _ e ↦ DFunLike.ext _ _ (fun x ↦ DFunLike.congr_fun e x)
 
+def equivIntAlgHom [Ring R] [Ring S] : (R →+* S) ≃ (R →ₐ[ℤ] S) where
+  toFun := toIntAlgHom
+  invFun := (↑)
+
+@[simp]
+theorem coe_equivIntAlgHom [Ring R] [Ring S] :
+  ⇑(@equivIntAlgHom R S _ _) = toIntAlgHom := rfl
+theorem equivIntAlgHom_apply [Ring R] [Ring S] (f : R →+* S) :
+  equivIntAlgHom f = f.toIntAlgHom := rfl
+
+@[simp]
+theorem coe_equivIntAlgHom_symm [Ring R] [Ring S] :
+  ⇑(@equivIntAlgHom R S _ _).symm = (↑) := rfl
+theorem equivIntAlgHom_symm_apply [Ring R] [Ring S] (f : R →ₐ[ℤ] S) :
+  equivIntAlgHom.symm f = f.toIntAlgHom := rfl
+
 end RingHom
 
 namespace Algebra
