@@ -236,7 +236,8 @@ theorem divisors_image_mul (n : ℕ) {d : ℕ} (hd : d ≠ 0) :
   · rintro ⟨x, ⟨hx, hn⟩, rfl⟩
     refine ⟨⟨Nat.mul_dvd_mul_left d hx, hd, hn⟩, d.dvd_mul_right x⟩
   · rintro ⟨⟨hrdn, hd, hn⟩, hdr⟩
-    exact ⟨r/d, ⟨(div_dvd_iff_dvd_mul hdr hd).mpr hrdn, hn⟩, Nat.mul_div_cancel' hdr⟩
+    exact ⟨r/d, ⟨(div_dvd_iff_dvd_mul hdr (Nat.pos_of_ne_zero hd)).mpr hrdn, hn⟩,
+      Nat.mul_div_cancel' hdr⟩
 
 @[simp]
 theorem divisors_zero : divisors 0 = ∅ := by
