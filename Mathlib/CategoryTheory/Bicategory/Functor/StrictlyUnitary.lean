@@ -296,14 +296,14 @@ lemma toStrictlyUnitaryLaxFunctor_mapId {x : B} :
     F.toStrictlyUnitaryLaxFunctor.mapId x = (F.mapId x).inv := rfl
 
 variable (B) in
-/-- The identity `StrictlyUnitaryLaxFunctor`. -/
+/-- The identity `StrictlyUnitaryPseudofunctor`. -/
 @[simps!]
 def id : StrictlyUnitaryPseudofunctor B B where
   __ := Pseudofunctor.id B
   map_id _ := rfl
   mapId_eq_eqToIso _ := rfl
 
-/-- Composition of `StrictlyUnitaryLaxFunctor`. -/
+/-- Composition of `StrictlyUnitaryPseudofunctor`. -/
 @[simps!]
 def comp (F : StrictlyUnitaryPseudofunctor B C)
     (G : StrictlyUnitaryPseudofunctor C D) :
