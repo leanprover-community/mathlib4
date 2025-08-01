@@ -511,6 +511,11 @@ lemma valuation_posSubmonoid_ne_zero (x : posSubmonoid R) :
   rw [ne_eq, valuation_eq_zero_iff]
   exact x.prop
 
+lemma ValueGroupWithZero.mk_eq_div (r : R) (s : posSubmonoid R) :
+    ValueGroupWithZero.mk r s = valuation R r / valuation R (s : R) := by
+  rw [eq_div_iff (valuation_posSubmonoid_ne_zero _)]
+  simp [valuation, mk_eq_mk]
+
 /-- Construct a valuative relation on a ring using a valuation. -/
 def ofValuation
     {S Γ : Type*} [CommRing S]
@@ -565,7 +570,7 @@ instance : Preorder (WithPreorder R) where
   le_refl _ := rel_refl _
   le_trans _ _ _ := rel_trans
 
-/-- The valutaive relation on `WithPreorder R` arising from the valuative relation on `R`.
+/-- The valuative relation on `WithPreorder R` arising from the valuative relation on `R`.
 This is defined as the preorder itself. -/
 instance : ValuativeRel (WithPreorder R) where
   rel := (· ≤ ·)
@@ -698,12 +703,17 @@ def ValueGroupWithZero.embed [h : v.Compatible] : ValueGroupWithZero R →*₀ �
     field_simp
 
 @[simp]
-lemma ValueGroupWithZero.embed_valuation_apply (γ : ValueGroupWithZero R) :
-    embed (valuation R) γ = γ := by
-  obtain ⟨r, s, rfl⟩ := valuation_surjective γ
-  simp [embed]
+lemma ValueGroupWithZero.embed_mk [v.Compatible] (x : R) (s : posSubmonoid R) :
+    embed v (.mk x s) = v x / v (s : R) :=
+  rfl
 
-lemma ValueGroupWithZero.embed_strictMono [h : v.Compatible] : StrictMono (embed v) := by
+@[simp]
+lemma ValueGroupWithZero.embed_valuation (γ : ValueGroupWithZero R) :
+    embed (valuation R) γ = γ := by
+  induction γ using ValueGroupWithZero.ind
+  simp [embed_mk, ← mk_eq_div]
+
+lemma ValueGroupWithZero.embed_strictMono [v.Compatible] : StrictMono (embed v) := by
   intro a b h
   obtain ⟨a, r, rfl⟩ := valuation_surjective a
   obtain ⟨b, s, rfl⟩ := valuation_surjective b
@@ -744,7 +754,7 @@ def mapPosSubmonoid : posSubmonoid A →* posSubmonoid B where
   map_mul' := by simp
 
 variable (A) in
-instance compatible_comap_of_extension {Γ : Type*}
+instance compatible_comap {Γ : Type*}
     [LinearOrderedCommMonoidWithZero Γ] (w : Valuation B Γ) [w.Compatible] :
     (w.comap (algebraMap A B)).Compatible := by
   constructor
@@ -753,13 +763,18 @@ instance compatible_comap_of_extension {Γ : Type*}
 variable (A B) in
 /-- The map on value groups-with-zero associated to the structure morphism of an algebra. -/
 def mapValueGroupWithZero : ValueGroupWithZero A →*₀ ValueGroupWithZero B :=
-  have := compatible_comap_of_extension A (valuation B)
+  have := compatible_comap A (valuation B)
   ValueGroupWithZero.embed ((valuation B).comap (algebraMap A B))
+
+@[simp]
+lemma mapValueGroupWithZero_mk (r : A) (s : posSubmonoid A) :
+    mapValueGroupWithZero A B (.mk r s) = .mk (algebraMap A B r) (mapPosSubmonoid A B s) := by
+  simp [mapValueGroupWithZero, ValueGroupWithZero.mk_eq_div (R := B)]
 
 @[simp]
 lemma mapValueGroupWithZero_valuation (a : A) :
     mapValueGroupWithZero A B (valuation _ a) = valuation _ (algebraMap _ _ a) := by
-  simp [mapValueGroupWithZero, ValueGroupWithZero.embed]
+  simp [valuation]
 
 end ValuativeExtension
 
