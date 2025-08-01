@@ -32,22 +32,20 @@ def forEachEquality {ω m} [STWorld ω m] [MonadLiftT (ST ω) m] [Monad m]
   let (_, r) ← e.forEach (m := StateT Bool m) (fun e => do
     if e.isAppOfArity ``Eq 3 then do
       let r ← f e
-      modify (fun b => b || r)
-    else
-      pure ()) |>.run false
+      modify (fun b => b || r)) |>.run false
   return r
 
 /-- Given an equality `@Eq α x y`,
-infer the types of `x` and `y` and check whether their types agree,
+infer the types of `x` and `y` and check whether these types agree,
 at "instances and reducible" transparency, with `α`,
-reporting any discrepancies. -/
+returning `true` if there are any discrepancies. -/
 def checkEquality (e : Expr) : MetaM Bool := do
   withReducibleAndInstances do
   match_expr e with
   | Eq α x y =>
     let xα ← inferType x
     if !(← isDefEq α xα) then do
-      logInfo m!"In equality\n  {e}\nthe inferred type of the left hand side\n\
+      logInfo m!"In equality{indentD e}\nthe inferred type of the left hand side\n\
         {x}\nis\n  {xα}\nbut should be\n  {α}"
       return true
     let yα ← inferType y
@@ -62,7 +60,7 @@ def checkEquality (e : Expr) : MetaM Bool := do
 def checkEqualities (e : Expr) : MetaM Bool := do
   forEachEquality e checkEquality
 
-/-- Check the typing of equalities in the goal.-/
+/-- Check the typing of equalities in the goal. -/
 def checkEqualitiesTac : TacticM Unit := withMainContext do
   let e ← getMainTarget
   let r ← checkEqualities e
@@ -77,6 +75,6 @@ reporting discrepancies between the implicit type argument of the equality,
 and the inferred types of the left and right hand sides,
 at "instances and reducible" transparency.
 -/
-elab "check_equalities" : tactic => checkEqualitiesTac
+elab "#check_equalities" : tactic => checkEqualitiesTac
 
 end Mathlib.Tactic.CheckEqualities
