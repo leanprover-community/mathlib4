@@ -62,11 +62,11 @@ section
 variable [F.HasPointwiseRightDerivedFunctor W]
 
 lemma hasPointwiseLeftKanExtension_of_hasPointwiseRightDerivedFunctor [L.IsLocalization W] :
-      HasPointwiseLeftKanExtension L F := fun Y => by
-    have := Localization.essSurj L W
-    rw [← hasPointwiseLeftKanExtensionAt_iff_of_iso _ F (L.objObjPreimageIso Y),
-      ← F.hasPointwiseRightDerivedFunctorAt_iff L W]
-    infer_instance
+    HasPointwiseLeftKanExtension L F := fun Y => by
+  have := Localization.essSurj L W
+  rw [← hasPointwiseLeftKanExtensionAt_iff_of_iso _ F (L.objObjPreimageIso Y),
+    ← F.hasPointwiseRightDerivedFunctorAt_iff L W]
+  infer_instance
 
 lemma hasRightDerivedFunctor_of_hasPointwiseRightDerivedFunctor :
     F.HasRightDerivedFunctor W where
