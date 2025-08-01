@@ -820,7 +820,7 @@ theorem algebraMap_def {R A : Type*} [CommSemiring R] [CommSemiring A] [Semiring
   algebraMap S α s = algebraMap A α (s : A) := rfl
 
 @[simp]
-theorem algebraMap_apply_mk {R A : Type*} [CommSemiring R] [CommSemiring A] [Semiring α]
+theorem algebraMap_mk {R A : Type*} [CommSemiring R] [CommSemiring A] [Semiring α]
     [Algebra R A] [Algebra A α] {S : Subalgebra R A} (a : A) (ha : a ∈ S) :
   algebraMap S α (⟨a, ha⟩ : S) = algebraMap A α a := rfl
 
