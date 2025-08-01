@@ -254,11 +254,11 @@ lemma interior_inter_support [OpensMeasurableSpace X] {s : Set X} :
 
 -- Prove the following directly, without appeal to `support_restrict_subset_closure`
 
+-- SO THE PROOF BELOW MUST BE REPLACED!
+
 lemma support_restrict_subset_closure_inter_support [OpensMeasurableSpace X] {s : Set X} :
-    (μ.restrict s).support ⊆ closure s ∩ μ.support := by
-  apply subset_inter
-  · exact support_restrict_subset_closure
-  · exact support_restrict_subset_support
+  (μ.restrict s).support ⊆ closure s ∩ μ.support :=
+  Set.subset_inter (support_restrict_subset_closure) (support_mono restrict_le_self)
 
 end Restrict
 
