@@ -162,7 +162,7 @@ class NontriviallyNormedField (α : Type*) extends NormedField α where
   non_trivial : ∃ x : α, 1 < ‖x‖
 
 /-- A densely normed field is a normed field for which the image of the norm is dense in `ℝ≥0`,
-which means it is also nontrivially normed. However, not all nontrivally normed fields are densely
+which means it is also nontrivially normed. However, not all nontrivially normed fields are densely
 normed; in particular, the `Padic`s exhibit this fact. -/
 class DenselyNormedField (α : Type*) extends NormedField α where
   /-- The range of the norm is dense in the collection of nonnegative real numbers. -/

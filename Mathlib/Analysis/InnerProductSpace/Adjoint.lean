@@ -393,6 +393,12 @@ theorem isStarProjection_iff_eq_starProjection_range [CompleteSpace E] {p : E �
   simpa [p.orthogonal_range, hp.isSelfAdjoint.isSymmetric]
     using congr($(hp.isIdempotentElem.mul_one_sub_self) x)
 
+lemma isStarProjection_iff_eq_starProjection [CompleteSpace E] {p : E →L[𝕜] E} :
+    IsStarProjection p
+      ↔ ∃ (K : Submodule 𝕜 E) (_ : K.HasOrthogonalProjection), p = K.starProjection :=
+  ⟨fun h ↦ ⟨LinearMap.range p, isStarProjection_iff_eq_starProjection_range.mp h⟩,
+    by rintro ⟨_, _, rfl⟩; simp⟩
+
 namespace LinearMap
 
 variable [CompleteSpace E]
