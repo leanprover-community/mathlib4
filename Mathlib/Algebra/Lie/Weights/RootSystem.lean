@@ -456,12 +456,10 @@ lemma eq_top_of_invtSubmodule_ne_bot
     by_contra h
     have i_non_zero : i.1.IsNonZero := by
       obtain ⟨val, hval⟩ := i
-      simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hval
-      exact hval
+      rwa [Finset.mem_filter_univ] at hval
     have j_non_zero : j.1.IsNonZero := by
       obtain ⟨val, hval⟩ := j
-      simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hval
-      exact hval
+      rwa [Finset.mem_filter_univ] at hval
     let r := Weight.mk (R := K) (L := H) (M := L) (i.1.1 + j.1.1) h
     have r₁ : r ≠ 0 := by
       intro a

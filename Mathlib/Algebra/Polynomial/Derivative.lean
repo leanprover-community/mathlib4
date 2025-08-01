@@ -64,11 +64,7 @@ theorem coeff_derivative (p : R[X]) (n : ℕ) :
       rw [Nat.cast_zero, mul_zero, zero_mul]
     · intro _ H
       rw [Nat.add_one_sub_one, if_neg (mt (congr_arg Nat.succ) H.symm), mul_zero]
-  · rw [if_pos (add_tsub_cancel_right n 1).symm, mul_one, Nat.cast_add, Nat.cast_one,
-      mem_support_iff]
-    intro h
-    push_neg at h
-    simp [h]
+  · simp_all
 
 @[simp]
 theorem derivative_zero : derivative (0 : R[X]) = 0 :=

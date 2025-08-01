@@ -1139,16 +1139,70 @@ theorem ContinuousLinearMap.closedComplemented_ker_of_rightInverse {R : Type*} [
   ⟨f₁.projKerOfRightInverse f₂ h, f₁.projKerOfRightInverse_apply_idem f₂ h⟩
 
 namespace ContinuousLinearMap
-variable {R M : Type*} [Ring R] [TopologicalSpace M]
-  [AddCommGroup M] [Module R M] [IsTopologicalAddGroup M]
+variable {R M : Type*} [Ring R] [TopologicalSpace M] [AddCommGroup M] [Module R M]
 
-theorem IsIdempotentElem.range_eq_ker
-    {p : M →L[R] M} (hp : IsIdempotentElem p) :
+/-- Idempotent operators are equal iff their range and kernels are. -/
+lemma IsIdempotentElem.ext_iff {p q : M →L[R] M}
+    (hp : IsIdempotentElem p) (hq : IsIdempotentElem q) :
+    p = q ↔ range p = range q ∧ ker p = ker q := by
+  simpa using LinearMap.IsIdempotentElem.ext_iff
+    congr(LinearMapClass.linearMap $hp.eq)
+    congr(LinearMapClass.linearMap $hq.eq)
+
+alias ⟨_, IsIdempotentElem.ext⟩ := IsIdempotentElem.ext_iff
+
+/-- `range f` is invariant under `T` if and only if `f ∘L T ∘L f = T ∘L f`,
+for idempotent `f`. -/
+lemma IsIdempotentElem.range_mem_invtSubmodule_iff {f T : M →L[R] M}
+    (hf : IsIdempotentElem f) :
+    LinearMap.range f ∈ Module.End.invtSubmodule T ↔ f ∘L T ∘L f = T ∘L f := by
+  simpa [← ContinuousLinearMap.coe_comp] using
+    LinearMap.IsIdempotentElem.range_mem_invtSubmodule_iff (T := T)
+    congr(LinearMapClass.linearMap $hf.eq)
+
+alias ⟨IsIdempotentElem.conj_eq_of_range_mem_invtSubmodule,
+  IsIdempotentElem.range_mem_invtSubmodule⟩ := IsIdempotentElem.range_mem_invtSubmodule_iff
+
+/-- `ker f` is invariant under `T` if and only if `f ∘L T ∘L f = f ∘L T`,
+for idempotent `f`. -/
+lemma IsIdempotentElem.ker_mem_invtSubmodule_iff {f T : M →L[R] M}
+    (hf : IsIdempotentElem f) :
+    LinearMap.ker f ∈ Module.End.invtSubmodule T ↔ f ∘L T ∘L f = f ∘L T := by
+  simpa [← ContinuousLinearMap.coe_comp] using
+    LinearMap.IsIdempotentElem.ker_mem_invtSubmodule_iff (T := T)
+    congr(LinearMapClass.linearMap $hf.eq)
+
+alias ⟨IsIdempotentElem.conj_eq_of_ker_mem_invtSubmodule,
+  IsIdempotentElem.ker_mem_invtSubmodule⟩ := IsIdempotentElem.ker_mem_invtSubmodule_iff
+
+/-- An idempotent operator `f` commutes with `T` if and only if
+both `range f` and `ker f` are invariant under `T`. -/
+lemma IsIdempotentElem.commute_iff {f T : M →L[R] M}
+    (hf : IsIdempotentElem f) :
+    Commute f T ↔ (LinearMap.range f ∈ Module.End.invtSubmodule T
+      ∧ LinearMap.ker f ∈ Module.End.invtSubmodule T) := by
+  simpa [Commute, SemiconjBy, Module.End.mul_eq_comp, ← ContinuousLinearMap.coe_comp] using
+    LinearMap.IsIdempotentElem.commute_iff (T := T)
+    congr(LinearMapClass.linearMap $hf.eq)
+
+variable [IsTopologicalAddGroup M]
+
+/-- An idempotent operator `f` commutes with an unit operator `T` if and only if
+`T (range f) = range f` and `T (ker f) = ker f`. -/
+theorem IsIdempotentElem.commute_iff_of_isUnit {f T : M →L[R] M} (hT : IsUnit T)
+    (hf : IsIdempotentElem f) :
+    Commute f T ↔ (range f).map T = range f ∧ (ker f).map T = ker f := by
+  have := hT.map ContinuousLinearMap.toLinearMapRingHom
+  lift T to (M →L[R] M)ˣ using hT
+  simpa [Commute, SemiconjBy, Module.End.mul_eq_comp, ← ContinuousLinearMap.coe_comp] using
+    LinearMap.IsIdempotentElem.commute_iff_of_isUnit
+    this congr(LinearMapClass.linearMap $hf.eq)
+
+theorem IsIdempotentElem.range_eq_ker {p : M →L[R] M} (hp : IsIdempotentElem p) :
     LinearMap.range p = LinearMap.ker (1 - p) :=
   LinearMap.IsIdempotentElem.range_eq_ker congr(LinearMapClass.linearMap $hp.eq)
 
-theorem IsIdempotentElem.ker_eq_range
-    {p : M →L[R] M} (hp : IsIdempotentElem p) :
+theorem IsIdempotentElem.ker_eq_range {p : M →L[R] M} (hp : IsIdempotentElem p) :
     LinearMap.ker p = LinearMap.range (1 - p) :=
   LinearMap.IsIdempotentElem.ker_eq_range congr(LinearMapClass.linearMap $hp.eq)
 

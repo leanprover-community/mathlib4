@@ -701,6 +701,11 @@ theorem AddMonoidHom.toNatLinearMap_injective [AddCommMonoid M] [AddCommMonoid M
   ext x
   exact LinearMap.congr_fun h x
 
+@[simp]
+theorem AddMonoidHom.coe_toNatLinearMap [AddCommMonoid M] [AddCommMonoid M₂] (f : M →+ M₂) :
+    ⇑f.toNatLinearMap = f :=
+  rfl
+
 /-- Reinterpret an additive homomorphism as a `ℤ`-linear map. -/
 def AddMonoidHom.toIntLinearMap [AddCommGroup M] [AddCommGroup M₂] (f : M →+ M₂) : M →ₗ[ℤ] M₂ where
   toFun := f

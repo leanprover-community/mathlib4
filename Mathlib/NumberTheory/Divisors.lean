@@ -109,15 +109,14 @@ theorem mem_divisors {m : ℕ} : n ∈ divisors m ↔ n ∣ m ∧ m ≠ 0 := by
     mem_range, and_iff_right_iff_imp, Nat.lt_succ_iff]
   exact le_of_dvd hm.bot_lt
 
+theorem dvd_of_mem_divisors {m : ℕ} (h : n ∈ divisors m) : n ∣ m := (mem_divisors.mp h).1
+
+theorem ne_zero_of_mem_divisors {m : ℕ} (h : n ∈ divisors m) : m ≠ 0 := (mem_divisors.mp h).2
+
 theorem one_mem_divisors : 1 ∈ divisors n ↔ n ≠ 0 := by simp
 
 theorem mem_divisors_self (n : ℕ) (h : n ≠ 0) : n ∈ n.divisors :=
   mem_divisors.2 ⟨dvd_rfl, h⟩
-
-theorem dvd_of_mem_divisors {m : ℕ} (h : n ∈ divisors m) : n ∣ m := by
-  cases m
-  · apply dvd_zero
-  · simp [mem_divisors.1 h]
 
 @[simp]
 theorem mem_divisorsAntidiagonal {x : ℕ × ℕ} :

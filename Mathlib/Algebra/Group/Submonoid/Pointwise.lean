@@ -44,10 +44,9 @@ variable [Monoid M] [AddMonoid A]
 lemma coe_mul_coe [SetLike S M] [SubmonoidClass S M] (H : S) : H * H = (H : Set M) := by
   aesop (add simp mem_mul)
 
-set_option linter.unusedVariables false in
 @[to_additive (attr := simp)]
 lemma coe_set_pow [SetLike S M] [SubmonoidClass S M] :
-    ∀ {n} (hn : n ≠ 0) (H : S), (H ^ n : Set M) = H
+    ∀ {n} (_ : n ≠ 0) (H : S), (H ^ n : Set M) = H
   | 1, _, H => by simp
   | n + 2, _, H => by rw [pow_succ, coe_set_pow n.succ_ne_zero, coe_mul_coe]
 
@@ -99,11 +98,17 @@ theorem sup_eq_closure_mul (H K : Submonoid M) : H ⊔ K = closure ((H : Set M) 
     ((closure_mul_le _ _).trans <| by rw [closure_eq, closure_eq])
 
 @[to_additive]
+theorem coe_sup {N : Type*} [CommMonoid N] (H K : Submonoid N) :
+    ↑(H ⊔ K) = (H * K : Set N) := by
+  ext x
+  simp [mem_sup, Set.mem_mul]
+
+@[to_additive]
 theorem pow_smul_mem_closure_smul {N : Type*} [CommMonoid N] [MulAction M N] [IsScalarTower M N N]
     (r : M) (s : Set N) {x : N} (hx : x ∈ closure s) : ∃ n : ℕ, r ^ n • x ∈ closure (r • s) := by
   induction hx using closure_induction with
   | mem x hx => exact ⟨1, subset_closure ⟨_, hx, by rw [pow_one]⟩⟩
-  | one => exact ⟨0, by simpa using one_mem _⟩
+  | one => exact ⟨0, by simp⟩
   | mul x y _ _ hx hy =>
     obtain ⟨⟨nx, hx⟩, ⟨ny, hy⟩⟩ := And.intro hx hy
     use ny + nx

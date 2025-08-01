@@ -68,9 +68,8 @@ alias image_eq_one_of_nmem_mulTSupport := image_eq_one_of_notMem_mulTSupport
 
 @[to_additive]
 theorem range_subset_insert_image_mulTSupport (f : X → α) :
-    range f ⊆ insert 1 (f '' mulTSupport f) :=
-  (range_subset_insert_image_mulSupport f).trans <|
-    insert_subset_insert <| image_subset _ subset_closure
+    range f ⊆ insert 1 (f '' mulTSupport f) := by
+  grw [← subset_mulTSupport f]; exact range_subset_insert_image_mulSupport f
 
 @[to_additive]
 theorem range_eq_image_mulTSupport_or (f : X → α) :

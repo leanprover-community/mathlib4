@@ -30,8 +30,8 @@ In this file we use the following type variables:
 Bilinear form,
 -/
 
-
 open LinearMap (BilinForm)
+open Module
 
 universe u v w
 
@@ -67,7 +67,7 @@ theorem IsAlt.ortho_comm (H : B₁.IsAlt) {x y : M₁} : IsOrtho B₁ x y ↔ Is
   LinearMap.IsAlt.ortho_comm H
 
 theorem IsSymm.ortho_comm (H : B.IsSymm) {x y : M} : IsOrtho B x y ↔ IsOrtho B y x :=
-  LinearMap.IsSymm.ortho_comm H
+  LinearMap.IsSymm.ortho_comm (isSymm_iff.1 H)
 
 /-- A set of vectors `v` is orthogonal with respect to some bilinear form `B` if and only
 if for all `i ≠ j`, `B (v i) (v j) = 0`. For orthogonality between two elements, use

@@ -46,7 +46,7 @@ namespace CharacterModule
 
 instance : FunLike (CharacterModule A) A (AddCircle (1 : ℚ)) where
   coe c := c.toFun
-  coe_injective' _ _ _ := by aesop
+  coe_injective' _ _ _ := by simp_all
 
 instance : LinearMapClass (CharacterModule A) ℤ A (AddCircle (1 : ℚ)) where
   map_add _ _ _ := by rw [AddMonoidHom.map_add]

@@ -620,6 +620,20 @@ theorem norm_lt_of_mem_ball' (h : b ∈ ball a r) : ‖b‖ < ‖a‖ + r :=
 theorem norm_div_sub_norm_div_le_norm_div (u v w : E) : ‖u / w‖ - ‖v / w‖ ≤ ‖u / v‖ := by
   simpa only [div_div_div_cancel_right] using norm_sub_norm_le' (u / w) (v / w)
 
+@[to_additive norm_add_sub_norm_sub_le_two_mul]
+lemma norm_mul_sub_norm_div_le_two_mul {E : Type*} [SeminormedGroup E] (u v : E) :
+    ‖u * v‖ - ‖u / v‖ ≤ 2 * ‖v‖ := by
+  simpa [- tsub_le_iff_right, tsub_le_iff_left, two_mul, add_assoc]
+    using norm_mul₃_le' (a := (u / v)) (b := v) (c := v)
+
+@[to_additive norm_add_sub_norm_sub_le_two_mul_min]
+lemma norm_mul_sub_norm_div_le_two_mul_min {E : Type*} [SeminormedCommGroup E] (u v : E) :
+    ‖u * v‖ - ‖u / v‖ ≤ 2 * min ‖u‖ ‖v‖ := by
+  rw [mul_min_of_nonneg _ _ (by positivity)]
+  refine le_min ?_ (norm_mul_sub_norm_div_le_two_mul u v)
+  rw [norm_div_rev, mul_comm]
+  exact norm_mul_sub_norm_div_le_two_mul _ _
+
 @[to_additive (attr := simp 1001) mem_sphere_iff_norm]
 -- Porting note: increase priority so the left-hand side doesn't reduce
 theorem mem_sphere_iff_norm' : b ∈ sphere a r ↔ ‖b / a‖ = r := by simp [dist_eq_norm_div]

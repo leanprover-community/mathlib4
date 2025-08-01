@@ -8,7 +8,7 @@ import Mathlib.Logic.Small.Defs
 import Mathlib.Tactic.SuppressCompilation
 
 /-!
-# Transfer group structures from `α` to `Shrink α`.
+# Transfer group structures from `α` to `Shrink α`
 -/
 
 -- FIXME: `to_additive` is incompatible with `noncomputable section`.
