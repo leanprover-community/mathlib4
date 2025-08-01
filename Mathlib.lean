@@ -6470,6 +6470,7 @@ import Mathlib.Topology.MetricSpace.HausdorffDistance
 import Mathlib.Topology.MetricSpace.Holder
 import Mathlib.Topology.MetricSpace.HolderNorm
 import Mathlib.Topology.MetricSpace.Infsep
+import Mathlib.Topology.MetricSpace.Injection
 import Mathlib.Topology.MetricSpace.IsometricSMul
 import Mathlib.Topology.MetricSpace.Isometry
 import Mathlib.Topology.MetricSpace.Kuratowski
