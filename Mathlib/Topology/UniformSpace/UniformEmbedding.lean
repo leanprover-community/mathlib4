@@ -517,6 +517,22 @@ variable {α β : Type*} [UniformSpace α] [UniformSpace β]
 theorem isUniformInducing_val (s : Set α) :
     IsUniformInducing (@Subtype.val α s) := ⟨uniformity_setCoe⟩
 
+theorem uniformContinuous_rangeFactorization_iff {f : α → β} :
+    UniformContinuous (rangeFactorization f) ↔ UniformContinuous f :=
+  (isUniformInducing_val _).uniformContinuous_iff
+
+theorem UniformContinuous.rangeFactorization {f : α → β} (hf : UniformContinuous f) :
+    UniformContinuous (rangeFactorization f) :=
+  uniformContinuous_rangeFactorization_iff.mpr hf
+
+theorem isUniformInducing_rangeFactoriztion_iff {f : α → β} :
+    IsUniformInducing (rangeFactorization f) ↔ IsUniformInducing f :=
+  (isUniformInducing_val (range f)).isUniformInducing_comp_iff.symm
+
+theorem IsUniformInducing.rangeFactoriztion {f : α → β} (hf : IsUniformInducing f) :
+    IsUniformInducing (rangeFactorization f) :=
+  isUniformInducing_rangeFactoriztion_iff.2 hf
+
 namespace Dense
 
 variable {s : Set α} {f : s → β}
@@ -543,18 +559,22 @@ end Dense
 
 lemma IsDenseInducing.isUniformInducing_extend {γ : Type*} [UniformSpace γ]
     [CompleteSpace β] [CompleteSpace γ] {i : α → β} {f : α → γ}
-    (hid : IsDenseInducing i) (hi : IsUniformInducing i)
-    (h : IsUniformInducing f) (h' : DenseRange f) :
+    (hid : IsDenseInducing i) (hi : IsUniformInducing i) (h : IsUniformInducing f) :
     IsUniformInducing (hid.extend f) := by
-  have hgu : IsUniformInducing (SeparationQuotient.mk ∘ f) :=
-    SeparationQuotient.isUniformInducing_mk.comp h
-  have hgd : DenseRange (SeparationQuotient.mk ∘ f) :=
-    SeparationQuotient.surjective_mk.denseRange.comp h' SeparationQuotient.continuous_mk
-  have hg : IsDenseInducing (SeparationQuotient.mk ∘ f) := hgu.isDenseInducing hgd
-  let fwd := hid.extend (SeparationQuotient.mk ∘ f)
+  let sf := SeparationQuotient.mk ∘ f
+  have : CompleteSpace (closure (range sf)) :=
+    isClosed_closure.isComplete.completeSpace_coe
+  let ff : α → closure (range sf) := inclusion subset_closure ∘ rangeFactorization sf
+  have hgu : IsUniformInducing ff :=
+    (isUniformEmbedding_set_inclusion subset_closure).isUniformInducing.comp
+      (SeparationQuotient.isUniformInducing_mk.comp h).rangeFactoriztion
+  have hgd : DenseRange ff :=
+    ((denseRange_inclusion_iff subset_closure).2 subset_rfl).comp
+      surjective_onto_range.denseRange (continuous_inclusion subset_closure)
+  have hg : IsDenseInducing ff := hgu.isDenseInducing hgd
+  let fwd := hid.extend ff
   have hfwd : UniformContinuous fwd :=
-    (uniformContinuous_uniformly_extend hi hid.dense
-    (SeparationQuotient.uniformContinuous_mk.comp h.uniformContinuous))
+    uniformContinuous_uniformly_extend hi hid.dense hgu.uniformContinuous
   have hg' : UniformContinuous (hg.extend i) :=
     uniformContinuous_uniformly_extend hgu hgd hi.uniformContinuous
   have key : SeparationQuotient.mk ∘ hg.extend i ∘ fwd = SeparationQuotient.mk := by
@@ -568,12 +588,24 @@ lemma IsDenseInducing.isUniformInducing_extend {γ : Type*} [UniformSpace γ]
     refine IsUniformInducing.of_comp hfwd (SeparationQuotient.uniformContinuous_mk.comp hg') ?_
     rw [Function.comp_assoc, key]
     exact SeparationQuotient.isUniformInducing_mk
-  suffices fwd = SeparationQuotient.mk ∘ hid.extend f by
+  have hrr : range (SeparationQuotient.mk ∘ hid.extend f) ⊆
+      closure (range (SeparationQuotient.mk ∘ f)) := by
+    refine ((SeparationQuotient.continuous_mk.comp (uniformContinuous_uniformly_extend hi hid.dense
+      h.uniformContinuous).continuous).range_subset_closure_image_dense hid.dense).trans
+      (closure_mono (subset_of_eq ?_))
+    rw [← range_comp]
+    apply congrArg range
+    funext x
+    simpa using (hid.inseparable_extend h.uniformContinuous.continuous.continuousAt)
+  suffices Subtype.val ∘ fwd = SeparationQuotient.mk ∘ hid.extend f by
     rw [← SeparationQuotient.isUniformInducing_mk.isUniformInducing_comp_iff, ← this]
-    exact hfu
+    exact (isUniformInducing_val _).comp hfu
+  rw [← val_comp_rangeFactorization (SeparationQuotient.mk ∘ hid.extend f),
+    ← val_comp_inclusion hrr, Function.comp_assoc, Subtype.val_injective.comp_left.eq_iff]
   refine hid.extend_unique ?_ ?_
-  · simp [hid.inseparable_extend h.uniformContinuous.continuous.continuousAt]
-  · exact SeparationQuotient.continuous_mk.comp
-      (uniformContinuous_uniformly_extend hi hid.dense h.uniformContinuous).continuous
+  · simp [ff, hid.inseparable_extend h.uniformContinuous.continuous.continuousAt, sf]
+  · exact (continuous_inclusion hrr).comp
+      (SeparationQuotient.continuous_mk.comp (uniformContinuous_uniformly_extend hi hid.dense
+        h.uniformContinuous).continuous).rangeFactorization
 
 end DenseExtension

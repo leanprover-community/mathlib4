@@ -150,6 +150,13 @@ def range (f : ι → α) : Set α := {x | ∃ y, f y = x}
 /-- Any map `f : ι → α` factors through a map `rangeFactorization f : ι → range f`. -/
 def rangeFactorization (f : ι → α) : ι → range f := fun i => ⟨f i, mem_range_self i⟩
 
+lemma val_comp_rangeFactorization (f : ι → α) : Subtype.val ∘ rangeFactorization f = f := rfl
+
+@[simp]
+lemma val_rangeFactorization_apply (f : ι → α) (x : ι) :
+    Subtype.val (rangeFactorization f x) = f x :=
+  rfl
+
 end Range
 
 /-- We can use the axiom of choice to pick a preimage for every element of `range f`. -/

@@ -447,9 +447,9 @@ theorem inseparable_extension_coe (hf : UniformContinuous f) (x : α) :
     Inseparable (Completion.extension f x) (f x) :=
   cPkg.inseparable_extension_coe hf x
 
-lemma isUniformInducing_extend [CompleteSpace β] (h : IsUniformInducing f) (h' : DenseRange f) :
+lemma isUniformInducing_extend [CompleteSpace β] (h : IsUniformInducing f) :
     IsUniformInducing (Completion.extension f) :=
-  cPkg.isUniformInducing_extend h h'
+  cPkg.isUniformInducing_extend h
 
 variable [T0Space β] [CompleteSpace β]
 

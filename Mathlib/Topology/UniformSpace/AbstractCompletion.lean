@@ -142,10 +142,10 @@ theorem uniformContinuous_extend : UniformContinuous (pkg.extend f) := by
 theorem continuous_extend : Continuous (pkg.extend f) :=
   pkg.uniformContinuous_extend.continuous
 
-lemma isUniformInducing_extend (h : IsUniformInducing f) (h' : DenseRange f) :
+lemma isUniformInducing_extend (h : IsUniformInducing f) :
     IsUniformInducing (pkg.extend f) := by
   rw [extend_def _ h.uniformContinuous]
-  exact pkg.isDenseInducing.isUniformInducing_extend pkg.isUniformInducing h h'
+  exact pkg.isDenseInducing.isUniformInducing_extend pkg.isUniformInducing h
 
 variable [T0Space β]
 
