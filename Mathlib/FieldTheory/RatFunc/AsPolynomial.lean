@@ -176,6 +176,16 @@ end Field
 
 end Eval
 
+section Algebra
+
+variable [CommRing K] [IsDomain K]
+
+lemma transcendental_X : Transcendental K (X : RatFunc K) := by
+  rw [← RatFunc.algebraMap_X, transcendental_algebraMap_iff (algebraMap_injective K)]
+  exact Polynomial.transcendental_X K
+
+end Algebra
+
 end RatFunc
 
 section AdicValuation
