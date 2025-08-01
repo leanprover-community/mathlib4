@@ -18,13 +18,16 @@ then it has a pointwise right derived functor.
 
 -/
 
+universe v₁ v₂ v₃ u₁ u₂ u₃
+
 namespace CategoryTheory
 
 open Category Limits
 
 namespace Functor
 
-variable {C D H : Type _} [Category C] [Category D] [Category H]
+variable {C : Type u₁} {D : Type u₂} {H : Type u₃}
+  [Category.{v₁} C] [Category.{v₂} D] [Category.{v₃} H]
   (F' : D ⥤ H) (F : C ⥤ H) (L : C ⥤ D) (α : F ⟶ L ⋙ F') (W : MorphismProperty C)
 
 /-- Given `F : C ⥤ H`, `W : MorphismProperty C` and `X : C`, we say that `F` has a
