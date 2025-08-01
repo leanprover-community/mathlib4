@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
 import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
+import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 
 /-!
 # Strictly unitary lax functors and pseudofunctors
@@ -43,12 +44,6 @@ universe w₁ w₂ w₃ w₄ v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 variable {B : Type u₁} [Bicategory.{w₁, v₁} B]
   {C : Type u₂} [Bicategory.{w₂, v₂} C]
   {D : Type u₃} [Bicategory.{w₃, v₃} D]
-
-lemma PrelaxFunctor.map₂_eqToHom (F : PrelaxFunctor B C)
-    {a b : B} {f g : a ⟶ b} (h : f = g) :
-    F.map₂ (eqToHom h) = eqToHom (congrArg F.map h) := by
-  subst h
-  simp
 
 variable (B C) in
 /-- A strictly unitary lax functor `F` between bicategories `B` and `C` is a
