@@ -387,7 +387,7 @@ theorem y_dvd_iff (m n) : yn a1 m ∣ yn a1 n ↔ m ∣ n :=
 theorem xy_modEq_yn (n) :
     ∀ k, xn a1 (n * k) ≡ xn a1 n ^ k [MOD yn a1 n ^ 2] ∧ yn a1 (n * k) ≡
         k * xn a1 n ^ (k - 1) * yn a1 n [MOD yn a1 n ^ 3]
-  | 0 => by simp
+  | 0 => by simp [Nat.ModEq.refl]
   | k + 1 => by
     let ⟨hx, hy⟩ := xy_modEq_yn n k
     have L : xn a1 (n * k) * xn a1 n + d a1 * yn a1 (n * k) * yn a1 n ≡
@@ -725,8 +725,8 @@ end
 
 theorem xy_modEq_of_modEq {a b c} (a1 : 1 < a) (b1 : 1 < b) (h : a ≡ b [MOD c]) :
     ∀ n, xn a1 n ≡ xn b1 n [MOD c] ∧ yn a1 n ≡ yn b1 n [MOD c]
-  | 0 => by simp
-  | 1 => by simpa
+  | 0 => by simp [Nat.ModEq.refl]
+  | 1 => by simpa [Nat.ModEq.refl]
   | n + 2 =>
     ⟨(xy_modEq_of_modEq a1 b1 h n).left.add_right_cancel <| by
         rw [xn_succ_succ a1, xn_succ_succ b1]
