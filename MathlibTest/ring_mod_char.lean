@@ -34,17 +34,17 @@ example (x y : ZMod 3) : (x + y) ^ 3 = x ^ 3 + y ^ 3 := by ring (config := {char
 example {α} [CommSemiring α] [CharP α 3] (x : α) : (x + 1) ^ 6 = (1 + x) ^ 6 := by ring (config := {char := 3})
 example (n : ℕ) : (n / 2) + (n / 2) = 2 * (n / 2) := by ring (config := {char := 3})
 example {α} [Field α] [CharP α 3] (a : α) : a / 2 = a / 2 := by ring (config := {char := 3})
-example {α} [LinearOrderedField α] [CharP α 3] (a b c : α) :
+example {α} [Field α] [LinearOrder α] [IsStrictOrderedRing α] [CharP α 3] (a b c : α) :
   a * (-c / b) * (-c / b) + -c + c = a * (c / b * (c / b)) := by ring (config := {char := 3})
-example {α} [LinearOrderedField α] [CharP α 3] (a b c : α) :
+example {α} [Field α] [LinearOrder α] [IsStrictOrderedRing α] [CharP α 3] (a b c : α) :
   b ^ 2 - 4 * c * a = -(4 * c * a) + b ^ 2 := by ring (config := {char := 3})
 example {α} [CommSemiring α] [CharP α 3] (x : α) : x ^ (2 + 2) = x^4 := by ring1 (config := {char := 3})
 example {α} [CommSemiring α] [CharP α 3] (x : α) : x ^ (2 + 2) = x^4 := by ring (config := {char := 3})
 example {α} [CommRing α] [CharP α 3] (x : α) : x ^ 2 = x * x := by ring (config := {char := 3})
 -- example {α} [CommRing α] [CharP α 3] (x : α) : x ^ (2 : ℤ) = x * x := by ring (config := {char := 3})
-example {α} [LinearOrderedField α] [CharP α 3] (a b c : α) :
+example {α} [Field α] [LinearOrder α] [IsStrictOrderedRing α] [CharP α 3] (a b c : α) :
   b ^ 2 - 4 * c * a = -(4 * c * a) + b ^ 2 := by ring (config := {char := 3})
-example {α} [LinearOrderedField α] [CharP α 3] (a b c : α) :
+example {α} [Field α] [LinearOrder α] [IsStrictOrderedRing α] [CharP α 3] (a b c : α) :
   b ^ 2 - 4 * a * c = 4 * a * 0 + b * b - 4 * a * c := by ring (config := {char := 3})
 example {α} [CommSemiring α] [CharP α 3] (x y z : α) (n : ℕ) :
   (x + y) * (z * (y * y) + (x * x ^ n + (1 + ↑n) * x ^ n * y)) =
