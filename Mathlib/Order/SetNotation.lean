@@ -155,11 +155,11 @@ def sUnion (S : Set (Set α)) : Set α :=
 /-- Notation for `Set.sUnion`. Union of a set of sets. -/
 prefix:110 "⋃₀ " => sUnion
 
-@[simp]
+@[simp, grind =]
 theorem mem_sInter {x : α} {S : Set (Set α)} : x ∈ ⋂₀ S ↔ ∀ t ∈ S, x ∈ t :=
   Iff.rfl
 
-@[simp]
+@[simp, grind =]
 theorem mem_sUnion {x : α} {S : Set (Set α)} : x ∈ ⋃₀ S ↔ ∃ t ∈ S, x ∈ t :=
   Iff.rfl
 

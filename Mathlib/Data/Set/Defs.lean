@@ -59,6 +59,8 @@ instance : Membership α (Set α) :=
 theorem ext {a b : Set α} (h : ∀ (x : α), x ∈ a ↔ x ∈ b) : a = b :=
   funext (fun x ↦ propext (h x))
 
+attribute [local ext] ext in
+attribute [grind ext] ext
 
 /-- The subset relation on sets. `s ⊆ t` means that all elements of `s` are elements of `t`.
 
