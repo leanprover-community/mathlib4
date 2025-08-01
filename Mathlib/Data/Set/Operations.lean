@@ -67,7 +67,8 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 
 /-! ### Lemmas about `mem` and `setOf` -/
 
-@[simp, mfld_simps] theorem mem_setOf_eq {x : α} {p : α → Prop} : (x ∈ {y | p y}) = p x := rfl
+@[simp, mfld_simps]
+theorem mem_setOf_eq {x : α} {p : α → Prop} : (x ∈ {y | p y}) = p x := rfl
 
 /-- This lemma is intended for use with `rw` where a membership predicate is needed,
 hence the explicit argument and the equality in the reverse direction from normal.
@@ -87,17 +88,20 @@ theorem notMem_setOf_iff {a : α} {p : α → Prop} : a ∉ { x | p x } ↔ ¬p 
 
 @[simp] theorem setOf_mem_eq {s : Set α} : { x | x ∈ s } = s := rfl
 
-@[simp, mfld_simps, grind ←] theorem mem_univ (x : α) : x ∈ @univ α := trivial
+@[simp, mfld_simps, grind]
+theorem mem_univ (x : α) : x ∈ @univ α := trivial
 
 /-! ### Operations -/
 
 instance : HasCompl (Set α) := ⟨fun s ↦ {x | x ∉ s}⟩
 
-@[simp, grind =] theorem mem_compl_iff (s : Set α) (x : α) : x ∈ sᶜ ↔ x ∉ s := Iff.rfl
+@[simp, grind =]
+theorem mem_compl_iff (s : Set α) (x : α) : x ∈ sᶜ ↔ x ∉ s := Iff.rfl
 
 theorem diff_eq (s t : Set α) : s \ t = s ∩ tᶜ := rfl
 
-@[simp, grind =] theorem mem_diff {s t : Set α} (x : α) : x ∈ s \ t ↔ x ∈ s ∧ x ∉ t := Iff.rfl
+@[simp, grind =]
+theorem mem_diff {s t : Set α} (x : α) : x ∈ s \ t ↔ x ∈ s ∧ x ∉ t := Iff.rfl
 
 theorem mem_diff_of_mem {s t : Set α} {x : α} (h1 : x ∈ s) (h2 : x ∉ t) : x ∈ s \ t := ⟨h1, h2⟩
 
@@ -114,7 +118,7 @@ theorem mem_preimage {f : α → β} {s : Set β} {a : α} : a ∈ f ⁻¹' s �
 /-- `f '' s` denotes the image of `s : Set α` under the function `f : α → β`. -/
 infixl:80 " '' " => image
 
-@[simp]
+@[simp, grind =]
 theorem mem_image (f : α → β) (s : Set α) (y : β) : y ∈ f '' s ↔ ∃ x ∈ s, f x = y :=
   Iff.rfl
 
@@ -143,7 +147,7 @@ This function is more flexible than `f '' univ`, as the image requires that the 
 and not an arbitrary Sort. -/
 def range (f : ι → α) : Set α := {x | ∃ y, f y = x}
 
-@[simp] theorem mem_range {x : α} : x ∈ range f ↔ ∃ y, f y = x := Iff.rfl
+@[simp, grind =] theorem mem_range {x : α} : x ∈ range f ↔ ∃ y, f y = x := Iff.rfl
 
 @[mfld_simps] theorem mem_range_self (i : ι) : f i ∈ range f := ⟨i, rfl⟩
 
@@ -284,7 +288,7 @@ def image2 (f : α → β → γ) (s : Set α) (t : Set β) : Set γ := {c | ∃
 
 variable {f : α → β → γ} {s : Set α} {t : Set β} {a : α} {b : β} {c : γ}
 
-@[simp] theorem mem_image2 : c ∈ image2 f s t ↔ ∃ a ∈ s, ∃ b ∈ t, f a b = c := .rfl
+@[simp, grind =] theorem mem_image2 : c ∈ image2 f s t ↔ ∃ a ∈ s, ∃ b ∈ t, f a b = c := .rfl
 
 theorem mem_image2_of_mem (ha : a ∈ s) (hb : b ∈ t) : f a b ∈ image2 f s t :=
   ⟨a, ha, b, hb, rfl⟩
@@ -295,7 +299,7 @@ end image2
 all `f ∈ s`. -/
 def seq (s : Set (α → β)) (t : Set α) : Set β := image2 (fun f ↦ f) s t
 
-@[simp]
+@[simp, grind =]
 theorem mem_seq_iff {s : Set (α → β)} {t : Set α} {b : β} :
     b ∈ seq s t ↔ ∃ f ∈ s, ∃ a ∈ t, (f : α → β) a = b :=
   Iff.rfl

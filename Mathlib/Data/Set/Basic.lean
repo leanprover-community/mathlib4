@@ -459,11 +459,11 @@ theorem Nonempty.of_subtype [Nonempty (↥s)] : s.Nonempty := nonempty_subtype.m
 theorem empty_def : (∅ : Set α) = { _x : α | False } :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem mem_empty_iff_false (x : α) : x ∈ (∅ : Set α) ↔ False :=
   Iff.rfl
 
-@[simp]
+@[simp, grind =]
 theorem setOf_false : { _a : α | False } = ∅ :=
   rfl
 
@@ -473,7 +473,7 @@ theorem setOf_false : { _a : α | False } = ∅ :=
 theorem empty_subset (s : Set α) : ∅ ⊆ s :=
   nofun
 
-@[simp]
+@[simp, grind =]
 theorem subset_empty_iff {s : Set α} : s ⊆ ∅ ↔ s = ∅ :=
   (Subset.antisymm_iff.trans <| and_iff_left (empty_subset _)).symm
 
@@ -552,7 +552,7 @@ Mathematically it is the same as `α` but it has a different type.
 -/
 
 
-@[simp, grind =_]
+@[simp, grind =]
 theorem setOf_true : { _x : α | True } = univ :=
   rfl
 
@@ -566,7 +566,7 @@ theorem univ_eq_empty_iff : (univ : Set α) = ∅ ↔ IsEmpty α :=
 theorem empty_ne_univ [Nonempty α] : (∅ : Set α) ≠ univ := fun e =>
   not_isEmpty_of_nonempty α <| univ_eq_empty_iff.1 e.symm
 
-@[simp]
+@[simp, grind]
 theorem subset_univ (s : Set α) : s ⊆ univ := fun _ _ => trivial
 
 @[simp, grind =]
@@ -695,11 +695,9 @@ theorem union_subset_iff {s t u : Set α} : s ∪ t ⊆ u ↔ s ⊆ u ∧ t ⊆ 
 theorem union_subset_union {s₁ s₂ t₁ t₂ : Set α} (h₁ : s₁ ⊆ s₂) (h₂ : t₁ ⊆ t₂) :
     s₁ ∪ t₁ ⊆ s₂ ∪ t₂ := fun _ => Or.imp (@h₁ _) (@h₂ _)
 
-@[gcongr]
 theorem union_subset_union_left {s₁ s₂ : Set α} (t) (h : s₁ ⊆ s₂) : s₁ ∪ t ⊆ s₂ ∪ t :=
   union_subset_union h Subset.rfl
 
-@[gcongr]
 theorem union_subset_union_right (s) {t₁ t₂ : Set α} (h : t₁ ⊆ t₂) : s ∪ t₁ ⊆ s ∪ t₂ :=
   union_subset_union Subset.rfl h
 
@@ -838,11 +836,9 @@ theorem univ_inter (a : Set α) : univ ∩ a = a := top_inf_eq _
 theorem inter_subset_inter {s₁ s₂ t₁ t₂ : Set α} (h₁ : s₁ ⊆ t₁) (h₂ : s₂ ⊆ t₂) :
     s₁ ∩ s₂ ⊆ t₁ ∩ t₂ := fun _ => And.imp (@h₁ _) (@h₂ _)
 
-@[gcongr]
 theorem inter_subset_inter_left {s t : Set α} (u : Set α) (H : s ⊆ t) : s ∩ u ⊆ t ∩ u :=
   inter_subset_inter H Subset.rfl
 
-@[gcongr]
 theorem inter_subset_inter_right {s t : Set α} (u : Set α) (H : s ⊆ t) : u ∩ s ⊆ u ∩ t :=
   inter_subset_inter Subset.rfl H
 
