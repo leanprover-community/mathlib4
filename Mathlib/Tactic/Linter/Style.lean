@@ -600,63 +600,110 @@ register_option linter.style.indentation.debug : Bool := {
 
 namespace Style.indentation
 
-/-- docstring TODO -/
-inductive PositionInfo where
-  | node (pos : Option String.Pos) (children : Array PositionInfo) (stx : Syntax)
-  | leaf (pos : Option String.Pos) (stx : Syntax)
-deriving Repr
+mutual
+  /-- docstring TODO -/
+  structure ChildrenInfo where
+    children : Array SyntaxTreeInfo
+    headTailIdxInChildren : Option (Nat × Nat)
+    outIdx : Nat
+
+  /-- docstring TODO -/
+  structure ParentInfo where
+    parentIdx : Nat
+    idxInChildren : Nat
+  deriving Inhabited
+
+  /-- docstring TODO -/
+  structure SyntaxTreeInfo where
+    stx : Syntax
+    idx : Nat
+    childrenInfo? : Option ChildrenInfo
+    parentInfo? : Option ParentInfo
+  deriving Repr, Inhabited
+end
 
 /-- docstring TODO -/
-def PositionInfo.pos? (p : PositionInfo) : Option String.Pos :=
-  match p with
-  | .node pos ..
-  | .leaf pos _ => pos
+inductive FlattenSyntaxTreeInfoElement
+  | leaf (info : SyntaxTreeInfo) : FlattenSyntaxTreeInfoElement
+  | into (info : SyntaxTreeInfo) : FlattenSyntaxTreeInfoElement
+  | out (info : SyntaxTreeInfo) : FlattenSyntaxTreeInfoElement
 
 /-- docstring TODO -/
-def PositionInfo.stx (p : PositionInfo) : Syntax :=
-  match p with
-  | .node _ _ stx
-  | .leaf _ stx => stx
+abbrev FlattenSyntaxTreeInfo := Array FlattenSyntaxTreeInfoElement
+
+/-- docstring TODO -/
+def FlattenSyntaxTreeInfoElement.info : FlattenSyntaxTreeInfoElement → SyntaxTreeInfo
+  | leaf info
+  | into info
+  | out info => info
+
+/-- docstring TODO -/
+def SyntaxTreeInfo.children? (treeInfo : SyntaxTreeInfo) : Option (Array SyntaxTreeInfo) :=
+  treeInfo.childrenInfo?.map (·.children)
+
+/-- docstring TODO -/
+def SyntaxTreeInfo.getInfo? (treeInfo : SyntaxTreeInfo) : Option SourceInfo :=
+  treeInfo.stx.getInfo?
+
+/-- docstring TODO -/
+def SyntaxTreeInfo.getPos? (treeInfo : SyntaxTreeInfo) : Option String.Pos :=
+  treeInfo.getInfo?.map (·.getPos?) |>.getD .none
+
+/-- docstring TODO -/
+def SyntaxTreeInfo.getTailPos? (treeInfo : SyntaxTreeInfo) : Option String.Pos :=
+  treeInfo.getInfo?.map (·.getTailPos?) |>.getD .none
 
 /-- docstringTODO -/
-def PositionInfo.headTailOfChildren (children : Array PositionInfo) :
-    Subarray PositionInfo × Option (PositionInfo × Subarray PositionInfo) :=
-  match children.findFinIdx? (·.pos?.isSome) with
-  | .some idxOfHead => (children[:idxOfHead], .some (children[idxOfHead], children[idxOfHead:]))
-  | .none => (children.toSubarray, .none)
+def SyntaxTreeInfo.headTailOfChildren (children : Array SyntaxTreeInfo) :
+    Option (Nat × Nat) :=
+  children.findIdx? (·.getPos?.isSome) |>.map
+    fun headIdx ↦
+      (headIdx,
+        -- a workaround for not-yet-existing `Array.findRevIdx?`.
+        children.findRev? (·.getPos?.isSome) |>.map (·.parentInfo?.get!.idxInChildren) |>.get!)
 
 /-- docstring TODO -/
-def PositionInfo.headTail (p : PositionInfo) :
-    Subarray PositionInfo × Option (PositionInfo × Subarray PositionInfo) :=
-  match p with
-  | .node _ children _ =>
-    PositionInfo.headTailOfChildren children
-  | .leaf .. => (#[].toSubarray, .none)
-
-/-- docstring TODO -/
-def PositionInfo.ofSyntax (stx : Syntax) : PositionInfo :=
+def SyntaxTreeInfo.ofSyntaxAux (stx : Syntax) (flatten : FlattenSyntaxTreeInfo) (nextIdx : Nat)
+    (parentInfo : Option ParentInfo) :
+    SyntaxTreeInfo × FlattenSyntaxTreeInfo × Nat :=
   match stx with
   | .atom s ..
   | .ident s .. =>
-    let pos : Option String.Pos := match s with
-      | .original _ start _ _ => .some start
-      | _ => unreachable!
-    .leaf pos stx
-  | .node _ _ args =>
-    let children := args.map PositionInfo.ofSyntax
-    let ⟨_, headTail⟩ := PositionInfo.headTailOfChildren children
-    .node (headTail.map (·.fst.pos? |>.get!)) children stx
-  | .missing => .node .none #[] stx
+    assert! match s with | .original .. => true | _ => false
+    let leaf : SyntaxTreeInfo :=
+      { stx := stx, idx := nextIdx, childrenInfo? := .none, parentInfo? := parentInfo}
+    (leaf, flatten.push (.leaf leaf), nextIdx + 1)
+  | .node _ kind args =>
+    let intoIdx := nextIdx
+    let flatten := flatten.push (.into default)
+    let ⟨children, flatten, outIdx, _⟩ : _ × _ × _ × ParentInfo :=
+      args.foldl
+        (fun (arr, flatten, idx, parentInfo) stx ↦
+          let ⟨treeInfo, flatten, idx⟩ := SyntaxTreeInfo.ofSyntaxAux stx flatten idx parentInfo
+          ⟨arr.push treeInfo, flatten, idx,
+            { parentInfo with idxInChildren := parentInfo.idxInChildren + 1}⟩)
+        (#[], flatten, intoIdx + 1, { parentIdx := intoIdx, idxInChildren := 0})
+    let headTail := SyntaxTreeInfo.headTailOfChildren children
+    let info := (headTail.map · |>.getD SourceInfo.none) <| fun ⟨h, t⟩ ↦
+      SourceInfo.synthetic (children[h]!.getPos?.get!) (children[t]!.getTailPos?.get!)
+    let stx : Syntax := .node info kind <| children.map (·.stx)
+    let childrenInfo : ChildrenInfo :=
+      { children := children, outIdx := outIdx, headTailIdxInChildren := headTail}
+    let node : SyntaxTreeInfo :=
+      { stx := stx, idx := intoIdx, childrenInfo? := childrenInfo, parentInfo? := parentInfo }
+    let flatten := (flatten.set! intoIdx <| .into node).push <| .out node
+    (node, flatten, outIdx + 1)
+  | .missing => -- It should not happen?
+    let childrenInfo : ChildrenInfo:=
+      { children := #[], outIdx := nextIdx + 1, headTailIdxInChildren := .none }
+    let node :=
+      { stx := stx, idx := nextIdx, childrenInfo? := childrenInfo, parentInfo? := parentInfo }
+    (node, flatten.push (.into node) |>.push (.out node), nextIdx + 2)
 
 /-- docstring TODO -/
-partial def PositionInfo.lastPos? (posInfo : PositionInfo) : Option String.Pos :=
-  match posInfo with
-  | .node (.some _) children _ => children.findSomeRev? (·.lastPos?)
-  | .leaf (.some _) stx =>
-    match stx.getInfo? with
-    | .some (.original _ _ _ endPos) => .some endPos
-    | _ => unreachable!
-  | _ => .none
+def SyntaxTreeInfo.ofSyntax (stx : Syntax) : SyntaxTreeInfo × FlattenSyntaxTreeInfo :=
+  let ⟨treeInfo, flatten, _⟩ := SyntaxTreeInfo.ofSyntaxAux stx.updateLeading #[] 0 .none
+  ⟨treeInfo, flatten⟩
 
 /-- docstring TODO -/
 def indentationOfPos (str : String) (pos : String.Pos) : Option Nat :=
@@ -669,55 +716,67 @@ def indentationBeforePos (str : String) (pos : String.Pos) : Nat :=
   beforePos.takeWhile (· == ' ') |>.bsize
 
 /-- docstring TODO -/
-def warn (stx : Syntax) (msg : MessageData) : CommandElabM Unit :=
-  logLint Mathlib.Linter.linter.style.indentation stx msg
-
-/-- docstring TODO -/
 structure Limitation where
   src : String
   atLeast : Nat := 0
   atMost : Option Nat := .none
   continueWhenFailed : Bool
+  flatten : FlattenSyntaxTreeInfo
 
 /-- docstring TODO -/
-abbrev IndentationLinter := (posInfo : PositionInfo) → (limit : Limitation) → CommandElabM Bool
+def warn (stx : Syntax) (msg : MessageData) (limit : Limitation) : CommandElabM Unit :=
+  let stx :=
+    match stx.getPos? with
+    | .some pos => stx.setInfo <| .synthetic (limit.src.findLineStart pos) pos
+    | _ => stx
+  logLint Mathlib.Linter.linter.style.indentation stx msg
 
 /-- docstring TODO -/
-def checkIndentationAt (posInfo : PositionInfo) (limit : Limitation)
+abbrev IndentationLinter := (treeInfo : SyntaxTreeInfo) → (limit : Limitation) → CommandElabM Bool
+
+/-- docstring TODO -/
+def checkIndentationAt (treeInfo : SyntaxTreeInfo) (limit : Limitation)
     (msgLtAtLeast : Nat → MessageData := (m!"too few spaces, which should be at least {·}"))
     (msgGtAtMost : Nat → MessageData := (m!"too many spaces, which should be at most {·}")) :
     CommandElabM Bool := do
-  let .some pos := posInfo.pos? | return true
+  let .some pos := treeInfo.getPos? | return true
   let .some spaces := indentationOfPos limit.src pos | return true
   if spaces < limit.atLeast then
-    warn posInfo.stx (msgLtAtLeast limit.atLeast)
+    warn treeInfo.stx (msgLtAtLeast limit.atLeast) limit
     return false
   else if let .some atMost := limit.atMost then
     if spaces > atMost then
-      warn posInfo.stx (msgGtAtMost limit.atLeast)
+      warn treeInfo.stx (msgGtAtMost limit.atLeast) limit
       return false
   return true
 
 /-- docstring TODO -/
-def checkIndentationAtNode (posInfo : PositionInfo) (limit : Limitation)
+def checkIndentationAtNode (treeInfo : SyntaxTreeInfo) (limit : Limitation)
     (msg : Nat → MessageData := (m!"too few spaces, which should be at least {·}"))
     (checkInCategories : Bool := true) : CommandElabM (Option Limitation) := do
-  let pass ← checkIndentationAt posInfo limit msg
+  let pass ← checkIndentationAt treeInfo limit msg
   if !(limit.continueWhenFailed || pass) then return .none
-  if let .some pos := posInfo.pos? then
+  if let .some pos := treeInfo.getPos? then
     let atLeast := indentationOfPos limit.src pos |>.getD limit.atLeast
     if !checkInCategories then
       return .some {limit with atLeast := atLeast, atMost := .none}
     for ⟨_, cat⟩ in (parserExtension.getState (← getEnv)).categories do
-      if cat.kinds.contains posInfo.stx.getKind then
+      if cat.kinds.contains treeInfo.stx.getKind then
         return .some {limit with atLeast := atLeast, atMost := .none}
   return .some { limit with atMost := .none }
 
+universe u v in
+@[inline, expose]
+def _root_.Subarray.findSomeRev? {α : Type u} {β : Type v}
+    (as : Subarray α) (p : α → Option β) : Option β :=
+  Id.run <| as.findSomeRevM? (pure <| p ·)
+
 mutual
+  /-- docstring TODO. -/
   partial def declModifiersLinter : IndentationLinter :=
-    fun posInfo limit ↦ do
-      match posInfo with
-      | .node _ children _ =>
+    fun treeInfo limit ↦ do
+      match treeInfo.children? with
+      | .some children =>
         for child in children do
           let pass ← checkIndentation child limit
           if !(limit.continueWhenFailed || pass) then return false
@@ -727,103 +786,134 @@ mutual
   /-- docstring TODO.
   https://leanprover-community.github.io/contribute/style.html#structuring-definitions-and-theorems -/
   partial def declarationLinter : IndentationLinter :=
-    fun posInfo limit ↦ do
-      let .node (.some pos) children stx := posInfo | unreachable!
-      let .some initIndent := indentationOfPos limit.src pos | defaultLinter posInfo limit
-      let pass ← checkIndentationAt posInfo limit
+    fun treeInfo limit ↦ do
+      let { stx := stx, childrenInfo? := .some childrenInfo, .. } := treeInfo | unreachable!
+      let .some pos := treeInfo.getPos? | unreachable!
+      let .some initIndent := indentationOfPos limit.src pos | defaultLinter treeInfo limit
+      let pass ← checkIndentationAt treeInfo limit
       if !(limit.continueWhenFailed || pass) then return false
       let kind := stx.getKind
       match kind with
-      | ``declaration | `«lemma» => pure ()
-      | _ => unreachable!
-
-      let #[modifiers@(_), .node _ declArgs nameStx@(.node _ name _)] := children | unreachable!
+        | ``declaration | `«lemma» => pure ()
+        | _ => unreachable!
+      let #[modifiers@(_), decl] := childrenInfo.children | unreachable!
+      let pass ← -- check indentation of modifiers
+        checkIndentation modifiers { limit with atLeast := initIndent, atMost := initIndent}
+      if !(limit.continueWhenFailed || pass) then return false
+      let { childrenInfo? := .some declArgs, stx := .node _ name _, .. } := decl |
+        unreachable!
       match name with
       | ``«abbrev» | ``definition | ``«theorem» | ``«opaque» | ``«axiom» | ``«example»
       | ``«instance» | `group =>
         pure ()
-      | ``«inductive» => return (← defaultLinter posInfo limit) -- TODO
-      | ``«structure» => return (← defaultLinter posInfo limit) -- TODO
-      | ``«classInductive» => return (← defaultLinter posInfo limit) -- TODO
-      | _ => warn nameStx m!"unknown declaration `{name}`, please send us feedback"; unreachable!
-
+      | ``«inductive» => return (← defaultLinter treeInfo limit) -- TODO
+      | ``«structure» => return (← defaultLinter treeInfo limit) -- TODO
+      | ``«classInductive» => return (← defaultLinter treeInfo limit) -- TODO
+      | _ => panic! s!"unknown declaration `{name}`, please send us feedback"
+      /- `idxOfDeclHead` is the index of the head (such as `theorem` and `instance`) in
+      `declArgs.children`. It is not 0 in instance declaration, where the first (index 0) node is a
+      `Lean.Parser.Term.attrKind`. -/
       let .some idxOfDeclHead :=
-        declArgs.findFinIdx? (if let .atom .. := ·.stx then true else false) | unreachable!
-      let idxOfValue :=
-        (declArgs[idxOfDeclHead:].toArray).findFinIdx? (
-          match ·.stx with
-          | .node _ ``declValSimple _ | .node _ ``declValEqns _ | .node _ ``whereStructInst _
-          | .node _ `null #[.node _ ``declValSimple _] => true
-          | _ => false)
-      let idxOfValue := idxOfValue.map Fin.val |>.getD declArgs.size
-      let pass ←
-        checkIndentation modifiers { limit with atLeast := initIndent, atMost := initIndent}
-      if !(limit.continueWhenFailed || pass) then return false
-
-      for child in declArgs[: idxOfDeclHead] do
+        declArgs.children.findFinIdx? (if let .atom .. := ·.stx then true else false) |
+          unreachable!
+      /- the declaration value (`:= ...`, `| ...`, and `where ...`) -/
+      let value : Option SyntaxTreeInfo :=
+        declArgs.children[idxOfDeclHead:].findSomeRev? (fun child ↦
+          match child.stx with
+          | .node _ ``declValSimple _ | .node _ ``declValEqns _ | .node _ ``whereStructInst _ =>
+            .some child
+          -- for the optional value of opaque
+          | .node _ `null #[.node _ ``declValSimple _] =>
+            .some child.children?.get![0]!
+          | _ => .none)
+      /- `idxOfValue` is the index of the declaration value (`:= ...`, `| ...`, and `where ...`)
+      in `declArgs.children`. It can be `none` in axiom declaration -/
+      let idxOfValue := value.map (·.parentInfo?.get!.idxInChildren)
+      for child in declArgs.children[:idxOfDeclHead] do
         let pass ←
           checkIndentation child { limit with atLeast := initIndent, atMost := initIndent}
         if !(limit.continueWhenFailed || pass) then return false
-
-      for child in declArgs[idxOfDeclHead + 1 : idxOfValue] do
-        match child with
-        | .leaf (.some pos) stx@(.atom _ ":") =>
-          if (indentationOfPos limit.src pos).isSome then
-            warn stx "`:` should not be at the beginning of a line"
-        | _ =>
-          let pass ←
-            checkIndentation child { limit with atLeast := (initIndent + 4), atMost := .none }
-          if !(limit.continueWhenFailed || pass) then return false
-
-      for child in declArgs[idxOfValue :] do
+      for child in declArgs.children[idxOfDeclHead + 1 : idxOfValue.getD declArgs.children.size] do
         let pass ←
-          checkIndentation child { limit with atLeast := initIndent, atMost := .none }
+          checkIndentation child { limit with atLeast := (initIndent + 4), atMost := .none }
         if !(limit.continueWhenFailed || pass) then return false
-
+      if let .some idxOfValue := idxOfValue then
+        -- it may exists.
+        for child in declArgs.children[idxOfValue + 1 : ] do
+          let pass ←
+            checkIndentation child { limit with atLeast := initIndent, atMost := initIndent }
+          if !(limit.continueWhenFailed || pass) then return false
       return true
 
   partial def stringLinter : IndentationLinter :=
-    fun posInfo limit ↦ do
-      let .some pos := posInfo.pos? | defaultLinter posInfo limit
-      let .some indent := (indentationOfPos limit.src pos) | defaultLinter posInfo limit
-      let endPos := limit.src.next posInfo.lastPos?.get!
+    fun treeInfo limit ↦ do
+      let .some pos := treeInfo.getPos? | defaultLinter treeInfo limit
+      let .some indent := (indentationOfPos limit.src pos) | defaultLinter treeInfo limit
+      let endPos := limit.src.next treeInfo.getTailPos?.get!
       if Substring.any ⟨limit.src, pos, endPos⟩ (· == '\n') then
         if indent = 0 then return true
-        checkIndentationAt posInfo limit
+        checkIndentationAt treeInfo limit
           (m!"multi-line literal here should be \
             either at the beginning of a line without indentation or \
             indented by at least {·} spaces")
       else
-        defaultLinter posInfo limit
+        defaultLinter treeInfo limit
+
+  partial def notAfterLineBreakLinter : IndentationLinter :=
+    fun treeInfo limit ↦ do
+      let .some pos := treeInfo.getPos? | defaultLinter treeInfo limit
+      if (indentationOfPos limit.src pos).isSome then
+        warn treeInfo.stx "should not be at the beginning of a line" limit
+        if !limit.continueWhenFailed then return false
+      defaultLinter treeInfo limit
+
+  partial def byLinter : IndentationLinter :=
+    fun treeInfo limit ↦ do
+      let lastAtom? := limit.flatten[0:treeInfo.idx].findRev?
+        (match · with | .leaf { stx := stx, ..} => stx.isAtom || stx.isIdent | _ => false)
+      match lastAtom? with
+      | .some (.leaf { stx := .atom (val := ":=") .., .. }) =>
+        notAfterLineBreakLinter treeInfo limit
+      | _ => defaultLinter treeInfo limit
 
   /-- docstring TODO
 
-  `Unit` here is a workaround for `invalid use of 'partial'` (when with `partial`) and
-  `cannot mix partial and non-partial definitions` (when without `partial`).
+  the argument in `Unit` here is a workaround for `invalid use of 'partial'` (when with `partial`)
+  and `cannot mix partial and non-partial definitions` (when without `partial`).
   -/
   partial def nodeLinters (_ : Unit := ()) : Std.HashMap SyntaxNodeKind IndentationLinter :=
      .ofList [
       (``declModifiers, declModifiersLinter),
       (``declaration, declarationLinter), (`«lemma», declarationLinter),
       (`str, stringLinter), (``termS!_, stringLinter), (``termM!_, stringLinter),
-      (``Std.termF!_, stringLinter), (interpolatedStrKind, stringLinter)
+      (``Std.termF!_, stringLinter), (interpolatedStrKind, stringLinter),
+      (``Term.typeSpec, notAfterLineBreakLinter), (``Term.byTactic, byLinter)
     ]
 
+  partial def atomLinters (_ : Unit := ()) : Std.HashMap String IndentationLinter :=
+    .ofList [
+      (":=", notAfterLineBreakLinter)
+    ]
+
+  partial def identLinters (_ : Unit := ()) : Std.HashMap Name IndentationLinter := .ofList []
+
   partial def defaultLinter : IndentationLinter :=
-    fun posInfo limit ↦ do
-      match posInfo with
-      | .node _ children _ =>
-        let .some limit ← checkIndentationAtNode posInfo limit | return false
+    fun treeInfo limit ↦ do
+      match treeInfo.children? with
+      | .some children =>
+        let .some limit ← checkIndentationAtNode treeInfo limit | return false
         for child in children do
           let pass ← checkIndentation child limit
           if !(limit.continueWhenFailed || pass) then return false
         pure true
-      | _ => checkIndentationAt posInfo limit
+      | _ => checkIndentationAt treeInfo limit
 
   partial def checkIndentation : IndentationLinter :=
     fun p limit ↦
-      match p with
-      | .node _ _ stx => (nodeLinters.getD stx.getKind defaultLinter) p limit
+      match p.stx with
+      | .node (kind := kind) .. => (nodeLinters.getD kind defaultLinter) p limit
+      | .atom (val := val) .. => (atomLinters.getD val defaultLinter) p limit
+      | .ident (val := val) .. => (identLinters.getD val defaultLinter) p limit
       | _ => defaultLinter p limit
 
 end
@@ -835,17 +925,18 @@ partial def indentationLinter : Linter where run := withSetOptionIn fun stx => d
   if (← get).messages.hasErrors then
     return
   let debug := getLinterValue Mathlib.Linter.linter.style.indentation.debug (← getLinterOptions)
-  let continueWhenFailed :=
-    getLinterValue Mathlib.Linter.linter.style.indentation.continueWhenFailed (← getLinterOptions)
-  let posInfo := PositionInfo.ofSyntax stx
   if debug then
     IO.println (repr stx)
-  let .some initialPos := posInfo.pos? | return
+  let continueWhenFailed :=
+    getLinterValue Mathlib.Linter.linter.style.indentation.continueWhenFailed (← getLinterOptions)
+  let ⟨treeInfo, flatten⟩ := SyntaxTreeInfo.ofSyntax stx
+  let .some initialPos := treeInfo.getPos? | return
   let src := (← getFileMap).source
-  let _ ← checkIndentation posInfo {
+  let _ ← checkIndentation treeInfo {
       src := src,
       atMost := .some 0,
-      continueWhenFailed := continueWhenFailed}
+      continueWhenFailed := continueWhenFailed,
+      flatten := flatten }
 
 initialize addLinter indentationLinter
 
