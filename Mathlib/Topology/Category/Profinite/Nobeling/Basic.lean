@@ -509,7 +509,7 @@ theorem Products.prop_of_isGood_of_contained {l : Products I} (o : Ordinal) (h :
     (hsC : contained C o) (i : I) (hi : i ∈ l.val) : ord I i < o := by
   by_contra h'
   apply h
-  suffices eval C l = 0 by simp [this, Submodule.zero_mem]
+  suffices eval C l = 0 by simp [this]
   ext x
   simp only [eval_eq, LocallyConstant.coe_zero, Pi.zero_apply, ite_eq_right_iff, one_ne_zero]
   contrapose! h'

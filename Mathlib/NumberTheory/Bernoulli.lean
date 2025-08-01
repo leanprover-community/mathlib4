@@ -60,13 +60,12 @@ variable (A : Type*) [CommRing A] [Algebra ℚ A]
 /-- The Bernoulli numbers:
 the $n$-th Bernoulli number $B_n$ is defined recursively via
 $$B_n = 1 - \sum_{k < n} \binom{n}{k}\frac{B_k}{n+1-k}$$ -/
-def bernoulli' : ℕ → ℚ :=
-  WellFounded.fix Nat.lt_wfRel.wf fun n bernoulli' =>
-    1 - ∑ k : Fin n, n.choose k / (n - k + 1) * bernoulli' k k.2
+def bernoulli' (n : ℕ) : ℚ :=
+  1 - ∑ k : Fin n, n.choose k / (n - k + 1) * bernoulli' k
 
 theorem bernoulli'_def' (n : ℕ) :
-    bernoulli' n = 1 - ∑ k : Fin n, n.choose k / (n - k + 1) * bernoulli' k :=
-  WellFounded.fix_eq _ _ _
+    bernoulli' n = 1 - ∑ k : Fin n, n.choose k / (n - k + 1) * bernoulli' k := by
+  rw [bernoulli']
 
 theorem bernoulli'_def (n : ℕ) :
     bernoulli' n = 1 - ∑ k ∈ range n, n.choose k / (n - k + 1) * bernoulli' k := by
@@ -284,7 +283,7 @@ theorem sum_range_pow (n p : ℕ) :
     simp? at h says simp only [succ_eq_add_one, mem_range] at h
     rw [choose_eq_factorial_div_factorial h.le, eq_comm, div_eq_iff (hne q.succ), succ_eq_add_one,
       mul_assoc _ _ (q.succ ! : ℚ), mul_comm _ (q.succ ! : ℚ), ← mul_assoc, div_mul_eq_mul_div]
-    simp only [MonoidHom.coe_mk, OneHom.coe_mk, coeff_exp, Algebra.id.map_eq_id, one_div,
+    simp only [MonoidHom.coe_mk, OneHom.coe_mk, coeff_exp, Algebra.algebraMap_self, one_div,
       map_inv₀, map_natCast, coeff_mk]
     rw [mul_comm ((n : ℚ) ^ (q - m + 1)), ← mul_assoc _ _ ((n : ℚ) ^ (q - m + 1)), ← one_div,
       mul_one_div, div_div, tsub_add_eq_add_tsub (le_of_lt_succ h), cast_div, cast_mul]
