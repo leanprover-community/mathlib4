@@ -127,8 +127,8 @@ lemma Module.nonempty_support_iff :
   rw [Set.nonempty_iff_ne_empty, ne_eq,
     Module.support_eq_empty_iff, ← not_subsingleton_iff_nontrivial]
 
-instance [h : Nontrivial M] : Nonempty (Module.support R M) :=
-  (Module.nonempty_support_iff.mpr h).to_subtype
+instance [Nontrivial M] : Nonempty (Module.support R M) :=
+  (Module.nonempty_support_iff.mpr ‹_›).to_subtype
 
 lemma Module.support_eq_empty [Subsingleton M] :
     Module.support R M = ∅ :=
