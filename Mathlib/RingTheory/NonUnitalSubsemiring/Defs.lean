@@ -30,7 +30,7 @@ theorem neg_mul_mem {x y : R} (hx : -x ∈ s) (hy : y ∈ s) : -(x * y) ∈ s :=
   simpa using mul_mem hx hy
 
 @[aesop unsafe 80% (rule_sets := [SetLike])]
-/- The Aesop rule `mul_mem` doesn't work in the absense of `neg_mem`
+/- The Aesop rule `mul_mem` doesn't work in the absence of `neg_mem`
 because `x * -y` simplifies to `-(x * y)`. -/
 theorem mul_neg_mem {x y : R} (hx : x ∈ s) (hy : -y ∈ s) : -(x * y) ∈ s := by
   simpa using mul_mem hx hy
