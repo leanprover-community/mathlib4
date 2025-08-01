@@ -101,7 +101,8 @@ monotone: if `K₁ ⊆ K₂` are compact subsets in `X`, then `λ(K₁) ≤ λ(K
 theorem rieszContentAux_mono {K₁ K₂ : Compacts X} (h : K₁ ≤ K₂) :
     rieszContentAux Λ K₁ ≤ rieszContentAux Λ K₂ := by
   unfold rieszContentAux
-  gcongr; exacts [OrderBot.bddBelow _, rieszContentAux_image_nonempty Λ K₂]
+  gcongr
+  apply rieszContentAux_image_nonempty
 
 end RieszMonotone
 
