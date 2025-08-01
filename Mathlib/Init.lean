@@ -22,6 +22,27 @@ import Mathlib.Tactic.Linter.Style
 import Mathlib.Tactic.MinImports
 import Mathlib.Tactic.TacticAnalysis
 
+open Lean in
+@[tacticAnalysis]
+def mergeWithGrind : TacticAnalysis.Config := .ofComplex {
+  out := List MVarId
+  ctx := Syntax
+  trigger _ stx := if
+      stx.getKind ∈
+        [``Lean.Parser.Tactic.grind]
+    then .accept stx else .continue stx
+  test _stx goal := withOptions (fun opts => opts.set `grind.warning false) do
+    let tac ← `(tactic| grind)
+    try
+      let (goals, _) ← Lean.Elab.runTactic goal tac
+      return goals
+    catch _e => -- Grind throws an error if it fails.
+      return [goal]
+  tell stx _old new :=
+    if new.1.isEmpty then
+      m!"'{stx}; grind' can be replaced with 'grind'"
+    else none }
+
 /-!
 This is the root file in Mathlib: it is imported by virtually *all* Mathlib files.
 For this reason, the imports of this file are carefully curated.

@@ -72,13 +72,58 @@ inductive TriggerCondition (ctx : Type _)
 deriving BEq
 
 /-- Specifies which analysis steps to take. -/
-structure Config (out ctx) where
-  /-- Which (sequences of) tactics to analyze. -/
+structure ComplexConfig where
+  out : Type
+  ctx : Type
+  /-- Which (sequences of) tactics to analyze.
+
+  `context` is `some ctx` whenever the previous trigger returned `continue ctx`,
+  `none` at the start of a tactic sequence or after a `skip`/`accept`.
+  -/
   trigger (context : Option ctx) (currentTactic : Syntax) : TriggerCondition ctx
   /-- Code to run in the context of the tactic, for example an alternative tactic. -/
   test (context : ctx) (goal : MVarId) : MetaM out
   /-- Decides what to report to the user. -/
   tell (stx : Syntax) (original : List MVarId × Nat) (new : out × Nat) : Option MessageData
+
+structure Config where
+  run : Array (ContextInfo × TacticInfo) → CommandElabM Unit
+
+/-- Read a configuration from a declaration of the right type. -/
+def mkConfig (n : Name) : ImportM Config := do
+  let { env, opts, .. } ← read
+  IO.ofExcept <| unsafe env.evalConstCheck Config opts ``Config n
+
+/-- Each `tacticAnalysis` extension is represented by the declaration name. -/
+abbrev Entry := Name
+
+/-- Environment extensions for `tacticAnalysis` declarations -/
+initialize tacticAnalysisExt : PersistentEnvExtension Entry (Entry × Config)
+    (Array (Entry × Config)) ←
+  registerPersistentEnvExtension {
+    mkInitial := pure #[]
+    addImportedFn s := s.flatten.mapM fun n => do
+      return (n, ← mkConfig n)
+    addEntryFn := Array.push
+    exportEntriesFn s := s.map (· |>.1)
+  }
+
+initialize registerBuiltinAttribute {
+  name := `tacticAnalysis
+  descr := "adds a tacticAnalysis extension"
+  applicationTime := .afterCompilation
+  add declName stx kind := match stx with
+    | `(attr| tacticAnalysis) => do
+      unless kind == AttributeKind.global do
+        throwError "invalid attribute 'tacticAnalysis', must be global"
+      let env ← getEnv
+      unless (env.getModuleIdxFor? declName).isNone do
+        throwError "invalid attribute 'tacticAnalysis', declaration is in an imported module"
+      if (IR.getSorryDep env declName).isSome then return -- ignore in progress definitions
+      let ext ← mkConfig declName
+      setEnv <| tacticAnalysisExt.addEntry env (declName, ext)
+    | _ => throwUnsupportedSyntax
+}
 
 def findTacticSeqs (stx : Syntax) (tree : InfoTree) : CommandElabM (Array (Array (ContextInfo × TacticInfo))) := do
   let some enclosingRange := stx.getRange? | throw (Exception.error stx m!"operating on syntax without range")
@@ -121,41 +166,59 @@ def findTacticSeqs (stx : Syntax) (tree : InfoTree) : CommandElabM (Array (Array
         return (none, childSequences))
   return (out.map Prod.snd).getD #[]
 
-def filterTactics {out ctx} (config : Config out ctx) (seq : Array (ContextInfo × TacticInfo)) : CommandElabM Unit := do
+def testTacticSeq (config : ComplexConfig) (tacticSeq : Array (TSyntax `tactic))
+    (ctxI : ContextInfo) (i : TacticInfo) (ctx : config.ctx) :
+    CommandElabM Unit := do
+  let stx ← `(tactic| $(tacticSeq);*)
+  if let [goal] := i.goalsBefore then -- TODO: support more than 1 goal. Probably by requiring all tests to succeed in a row
+    let old ← withHeartbeats <| ctxI.runTactic i goal fun goal => do
+      try
+        Lean.Elab.runTactic goal stx
+      catch e =>
+        logWarningAt stx m!"original tactic '{stx}' failed: {e.toMessageData}"
+        return ([goal], {})
+    let new ← withHeartbeats <| ctxI.runTactic i goal <| config.test ctx
+    if let some msg := config.tell stx (old.1.1, old.2) new then
+      Linter.logLint linter.tactic_analysis stx msg
+
+def filterTactics (config : ComplexConfig) (seq : Array (ContextInfo × TacticInfo)) : CommandElabM Unit := do
   let mut acc := none
   let mut firstInfo := none
+  let mut tacticSeq := #[]
   for (ctxI, i) in seq do
     if firstInfo.isNone then
       firstInfo := some (ctxI, i)
-    let stx := i.stx
+    let stx : TSyntax `tactic := ⟨i.stx⟩
+    tacticSeq := tacticSeq.push stx
     match config.trigger acc stx with
     | .continue ctx =>
       acc := ctx
     | .skip =>
       acc := none
+      tacticSeq := #[]
       firstInfo := none
     | .accept ctx =>
       if let some (ctxI, i) := firstInfo then
-        if let [goal] := i.goalsBefore then -- TODO: support more than 1 goal. Probably by requiring all tests to succeed in a row
-          let old ← withHeartbeats <| ctxI.runTactic i goal fun goal => do
-            try
-              Lean.Elab.runTactic goal stx
-            catch e =>
-              logWarningAt stx m!"original tactic '{stx}' failed: {e.toMessageData}"
-              return ([goal], {})
-          let new ← withHeartbeats <| ctxI.runTactic i goal <| config.test ctx
-          if let some msg := config.tell stx (old.1.1, old.2) new then
-            Linter.logLint linter.tactic_analysis stx msg
+        testTacticSeq config tacticSeq ctxI i ctx
       else
         logWarningAt stx m!"internal error in tactic analysis: accepted an empty sequence."
+      acc := none
+  -- Insert a `done` at the end so we can handle a final `.continue` at the end.
+  match config.trigger acc (← `(tactic| done)) with
+  | .accept ctx =>
+    if let some (ctxI, i) := firstInfo then
+      testTacticSeq config tacticSeq ctxI i ctx
+  | _ => pure ()
 
-def filterTacticsList {out ctx} (config : Config out ctx) (stx : Syntax)
+def filterTacticsList (configs : Array Config) (stx : Syntax)
     (trees : PersistentArray InfoTree) : CommandElabM Unit :=
   for i in trees do
-    let seqs ← findTacticSeqs stx i
-    -- logInfoAt stx m!"Sequences: {seqs.map (· |>.map (· |>.2.stx.getKind))}"
-    for seq in seqs do
-      filterTactics config seq
+    for seq in (← findTacticSeqs stx i) do
+      for config in configs do
+        config.run seq
+
+def Config.ofComplex (config : ComplexConfig) : Config where
+  run := filterTactics config
 
 /-- Run a tactic, returning any new messages rather than adding them to the message log.
 
@@ -165,31 +228,6 @@ def withMessageLog (t : MetaM Unit) : MetaM MessageLog := do
   let initMsgs ← modifyGetThe Core.State fun st => (st.messages, { st with messages := {} })
   t
   modifyGetThe Core.State fun st => (st.messages, { st with messages := initMsgs })
-
-def grindReplacement : Config (List MVarId × MessageData) Syntax where
-  trigger _ stx := if
-      stx.getKind ∈
-        [`Mathlib.Tactic.linarith, `Lean.Parser.Tactic.omega, `Mathlib.Tactic.RingNF.ring]
-    then .accept stx else .skip
-  test stx goal := withOptions (fun opts => opts.set `grind.warning false) do
-    let tac ← `(tactic| grind)
-    try
-      let (goals, _) ← Lean.Elab.runTactic goal tac
-      return (goals, m!"")
-    catch e => -- Grind throws an error if it fails.
-      let name ← mkAuxDeclName `extracted
-      let ((sig, _, modules), _) ← (Mathlib.Tactic.ExtractGoal.goalSignature name goal).run
-      let imports := modules.toList.map (s!"import {·}")
-      return ([goal], m!"{"\n".intercalate imports}\n\ntheorem {sig} := by\n  fail_if_success grind\n  {stx}")
-  tell stx old new :=
-    if new.1.1 != [] then
-      m!"'grind' failed where '{stx}' succeeded. Counterexample:\n{new.1.2}"
-    /-
-    else
-      if old.2 * 2 < new.2 then
-        return m!"'grind' is slower than '{stx}': {new.2 / 1000} versus {old.2 / 1000} heartbeats"
-    -/
-    else none
 
 /-- A tactic analysis framework.
 It is aimed at allowing developers to specify refactoring patterns,
@@ -209,16 +247,14 @@ def tactic_analysis : Linter where run := withSetOptionIn fun stx => do
   if (← get).messages.hasErrors then
     return
   let env ← getEnv
+  let configs := (tacticAnalysisExt.getState env).map (· |>.snd)
   let cats := (Parser.parserExtension.getState env).categories
   -- These lookups may fail when the linter is run in a fresh, empty environment
   let some tactics := Parser.ParserCategory.kinds <$> cats.find? `tactic
     | return
-  /-
-  let some convs := Parser.ParserCategory.kinds <$> cats.find? `conv
-    | return
-  -/
   let trees ← getInfoTrees
-  filterTacticsList grindReplacement stx trees
+  -- filterTacticsList grindReplacement stx trees
+  filterTacticsList configs stx trees
 
 initialize addLinter tactic_analysis
 
