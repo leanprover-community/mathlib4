@@ -142,7 +142,7 @@ theorem log_zpow {b : ℕ} (hb : 1 < b) (z : ℤ) : log b (b ^ z : R) = z := by
       neg_nonpos.2 (Int.natCast_nonneg _)),
       zpow_neg, inv_inv, zpow_natCast, ← Nat.cast_pow, Nat.ceil_natCast, Nat.clog_pow _ _ hb]
 
-@[mono, gcongr]
+@[mono, gcongr] -- TODO: add a `gcongr` lemma about monotonicity in both args
 theorem log_mono_right {b : ℕ} {r₁ r₂ : R} (h₀ : 0 < r₁) (h : r₁ ≤ r₂) : log b r₁ ≤ log b r₂ := by
   rcases le_total r₁ 1 with h₁ | h₁ <;> rcases le_total r₂ 1 with h₂ | h₂
   · rw [log_of_right_le_one _ h₁, log_of_right_le_one _ h₂]
