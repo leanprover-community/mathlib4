@@ -445,14 +445,8 @@ lemma getElem_alternatingWord (i j : B) (p k : ℕ) (hk : k < p) :
 
 lemma getElem_alternatingWord_swapIndices (i j : B) (p k : ℕ) (h : k + 1 < p) :
      (alternatingWord i j p)[k+1]'(by simp [h]) =
-     (alternatingWord j i p)[k]'(by simp; omega) := by
-  rw [getElem_alternatingWord i j p (k+1) (by omega), getElem_alternatingWord j i p k (by omega)]
-  by_cases h_even : Even (p + k)
-  · rw [if_pos h_even, ← add_assoc]
-    simp only [ite_eq_right_iff, isEmpty_Prop, Nat.not_even_iff_odd, Even.add_one h_even,
-      IsEmpty.forall_iff]
-  · rw [if_neg h_even, ← add_assoc]
-    simp [Odd.add_one (Nat.not_even_iff_odd.mp h_even)]
+     (alternatingWord j i p)[k]'(by simp; grind) := by
+  grind [CoxeterSystem.getElem_alternatingWord]
 
 lemma listTake_alternatingWord (i j : B) (p k : ℕ) (h : k < 2 * p) :
     List.take k (alternatingWord i j (2 * p)) =
