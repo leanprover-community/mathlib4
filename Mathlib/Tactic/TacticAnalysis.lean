@@ -8,6 +8,7 @@ import Lean.Meta.Tactic.Grind.Main
 import Lean.Util.Heartbeats
 import Mathlib.Tactic.ExtractGoal
 import Mathlib.Tactic.MinImports
+import Batteries.Data.Array.Merge
 
 open Lean Elab Term Command Linter
 
@@ -102,7 +103,7 @@ initialize tacticAnalysisExt : PersistentEnvExtension Entry (Entry × Config)
     (Array (Entry × Config)) ←
   registerPersistentEnvExtension {
     mkInitial := pure #[]
-    addImportedFn s := s.flatten.mapM fun n => do
+    addImportedFn s := (s.flatten.sortDedup (ord := ⟨fun n1 n2 => n1.cmp n2⟩)).mapM fun n => do
       return (n, ← mkConfig n)
     addEntryFn := Array.push
     exportEntriesFn s := s.map (· |>.1)
@@ -143,7 +144,7 @@ def findTacticSeqs (stx : Syntax) (tree : InfoTree) : CommandElabM (Array (Array
       let stx := i.stx
       if let some (.original _ _ _ _) := stx.getHeadInfo? then
         -- Punctuation: skip this.
-        if stx.getKind ∈ [`«;», `Lean.cdotTk, `«]», nullKind] then
+        if stx.getKind ∈ [`«;», `Lean.cdotTk, `«]», nullKind, `«by»] then
           return (none, childSequences)
         -- Tactic modifiers: return the children unmodified.
         if stx.getKind ∈ [``Lean.Parser.Tactic.withAnnotateState] then
