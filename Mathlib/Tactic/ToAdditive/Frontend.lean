@@ -476,7 +476,7 @@ structure Config : Type where
   (or the `to_additive` attribute if it is added later),
   which we need for adding definition ranges. -/
   ref : Syntax
-  /-- An optional flag stating whether the additive declaration already exists.
+  /-- An optional flag stating that the additive declaration already exists.
     If this flag is wrong about whether the additive declaration exists, `to_additive` will
     raise a linter error.
     Note: the linter will never raise an error for inductive types and structures. -/
