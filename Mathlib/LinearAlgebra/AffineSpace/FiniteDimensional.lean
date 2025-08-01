@@ -598,15 +598,14 @@ theorem collinear_insert_insert_insert_left_of_mem_affineSpan_pair {p₁ p₂ p�
     (h₁ : p₁ ∈ line[k, p₄, p₅]) (h₂ : p₂ ∈ line[k, p₄, p₅]) (h₃ : p₃ ∈ line[k, p₄, p₅]) :
     Collinear k ({p₁, p₂, p₃, p₄} : Set P) := by
   refine (collinear_insert_insert_insert_of_mem_affineSpan_pair h₁ h₂ h₃).subset ?_
-  repeat apply Set.insert_subset_insert
-  simp
+  gcongr; simp
 
 /-- If three points lie in the affine span of two points, the first three points are collinear. -/
 theorem collinear_triple_of_mem_affineSpan_pair {p₁ p₂ p₃ p₄ p₅ : P} (h₁ : p₁ ∈ line[k, p₄, p₅])
     (h₂ : p₂ ∈ line[k, p₄, p₅]) (h₃ : p₃ ∈ line[k, p₄, p₅]) :
     Collinear k ({p₁, p₂, p₃} : Set P) := by
   refine (collinear_insert_insert_insert_left_of_mem_affineSpan_pair h₁ h₂ h₃).subset ?_
-  simp [Set.insert_subset_insert]
+  gcongr; simp
 
 variable (k) in
 /-- A set of points is coplanar if their `vectorSpan` has dimension at most `2`. -/

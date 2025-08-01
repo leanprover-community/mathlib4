@@ -134,6 +134,29 @@ lemma mlieBracket_swap : mlieBracket I V W = - mlieBracket I W V :=
 @[simp] lemma mlieBracket_self : mlieBracket I V V = 0 := by
   ext x; simp_rw [mlieBracket, mlieBracketWithin_self, Pi.zero_apply]
 
+/-- We have `[0, W] = 0` for all vector fields `W`: this depends on the junk value 0
+if `W` is not differentiable. Version within a set. -/
+@[simp]
+lemma mlieBracketWithin_zero_left : mlieBracketWithin I 0 W s = 0 := by
+  ext x
+  simp [mlieBracketWithin]
+
+/-- We have `[W, 0] = 0` for all vector fields `W`: this depends on the junk value 0
+if `W` is not differentiable. Version within a set. -/
+@[simp]
+lemma mlieBracketWithin_zero_right : mlieBracketWithin I W 0 s = 0 := by
+  rw [mlieBracketWithin_swap]; simp
+
+/-- We have `[0, W] = 0` for all vector fields `W`: this depends on the junk value 0
+if `W` is not differentiable. -/
+@[simp]
+lemma mlieBracket_zero_left : mlieBracket I 0 W = 0 := by simp [← mlieBracketWithin_univ]
+
+/-- We have `[W, 0] = 0` for all vector fields `W`: this depends on the junk value 0
+if `W` is not differentiable. -/
+@[simp]
+lemma mlieBracket_zero_right : mlieBracket I W 0 = 0 := by simp [← mlieBracketWithin_univ]
+
 /-- Variant of `mlieBracketWithin_congr_set` where one requires the sets to coincide only in
 the complement of a point. -/
 theorem mlieBracketWithin_congr_set' (y : M) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :

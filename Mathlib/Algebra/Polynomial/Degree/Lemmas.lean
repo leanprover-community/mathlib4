@@ -323,7 +323,7 @@ lemma nextCoeff_C_mul_X_add_C (ha : a ≠ 0) (c : R) : nextCoeff (C a * X + C c)
 lemma natDegree_eq_one : p.natDegree = 1 ↔ ∃ a ≠ 0, ∃ b, C a * X + C b = p := by
   refine ⟨fun hp ↦ ⟨p.coeff 1, fun h ↦ ?_, p.coeff 0, ?_⟩, ?_⟩
   · rw [← hp, coeff_natDegree, leadingCoeff_eq_zero] at h
-    aesop
+    simp_all
   · ext n
     obtain _ | _ | n := n
     · simp

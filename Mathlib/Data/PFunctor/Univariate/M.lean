@@ -75,7 +75,7 @@ theorem agree_trivial {x : CofixA F 0} {y : CofixA F 1} : Agree x y := by constr
 @[deprecated (since := "2024-12-25")] alias agree_trival := agree_trivial
 
 theorem agree_children {n : ℕ} (x : CofixA F (succ n)) (y : CofixA F (succ n + 1)) {i j}
-    (h₀ : HEq i j) (h₁ : Agree x y) : Agree (children' x i) (children' y j) := by
+    (h₀ : i ≍ j) (h₁ : Agree x y) : Agree (children' x i) (children' y j) := by
   obtain - | ⟨_, _, hagree⟩ := h₁; cases h₀
   apply hagree
 

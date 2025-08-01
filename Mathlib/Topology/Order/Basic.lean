@@ -243,6 +243,13 @@ theorem StrictMono.isEmbedding_of_ordConnected {α β : Type*} [LinearOrder α] 
 @[deprecated (since := "2024-10-26")]
 alias StrictMono.embedding_of_ordConnected := StrictMono.isEmbedding_of_ordConnected
 
+/-- An `OrderEmbedding` is a topological embedding provided that the range of `f` is
+order-connected -/
+lemma OrderEmbedding.isEmbedding_of_ordConnected {α β : Type*} [LinearOrder α] [LinearOrder β]
+    [TopologicalSpace α] [OrderTopology α] [TopologicalSpace β] [OrderTopology β]
+    (f : α ↪o β) (hc : OrdConnected (range f)) : Topology.IsEmbedding f :=
+  f.strictMono.isEmbedding_of_ordConnected hc
+
 /-- On a `Set.OrdConnected` subset of a linear order, the order topology for the restriction of the
 order is the same as the restriction to the subset of the order topology. -/
 instance orderTopology_of_ordConnected {α : Type u} [TopologicalSpace α] [LinearOrder α]
@@ -440,6 +447,23 @@ theorem dense_of_exists_between [OrderTopology α] [Nontrivial α] {s : Set α}
   obtain ⟨a, b, hab, H⟩ : ∃ a b : α, a < b ∧ Ioo a b ⊆ U := U_open.exists_Ioo_subset U_nonempty
   obtain ⟨x, xs, hx⟩ : ∃ x ∈ s, a < x ∧ x < b := h hab
   exact ⟨x, ⟨H hx, xs⟩⟩
+
+theorem IsUpperSet.isClosed [OrderTopology α] [WellFoundedLT α] {s : Set α} (h : IsUpperSet s) :
+    IsClosed s := by
+  obtain rfl | ⟨a, rfl⟩ := h.eq_empty_or_Ici
+  exacts [isClosed_empty, isClosed_Ici]
+
+theorem IsLowerSet.isClosed [OrderTopology α] [WellFoundedGT α] {s : Set α} (h : IsLowerSet s) :
+    IsClosed s :=
+  h.toDual.isClosed
+
+theorem IsLowerSet.isOpen [OrderTopology α] [WellFoundedLT α] {s : Set α} (h : IsLowerSet s) :
+    IsOpen s := by
+  simpa using h.compl.isClosed
+
+theorem IsUpperSet.isOpen [OrderTopology α] [WellFoundedGT α] {s : Set α} (h : IsUpperSet s) :
+    IsOpen s :=
+  h.toDual.isOpen
 
 /-- A set in a nontrivial densely linear ordered type is dense in the sense of topology if and only
 if for any `a < b` there exists `c ∈ s`, `a < c < b`. Each implication requires less typeclass
@@ -708,15 +732,15 @@ instance instIsCountablyGenerated_atBot [OrderTopology α] [SecondCountableTopol
 section Pi
 
 /-!
-### Intervals in `Π i, π i` belong to `𝓝 x`
+### Intervals in `Π i, X i` belong to `𝓝 x`
 
 For each lemma `pi_Ixx_mem_nhds` we add a non-dependent version `pi_Ixx_mem_nhds'` because
 sometimes Lean fails to unify different instances while trying to apply the dependent version to,
 e.g., `ι → ℝ`.
 -/
 
-variable [OrderTopology α] {ι : Type*} {π : ι → Type*} [Finite ι] [∀ i, LinearOrder (π i)]
-  [∀ i, TopologicalSpace (π i)] [∀ i, OrderTopology (π i)] {a b x : ∀ i, π i} {a' b' x' : ι → α}
+variable [OrderTopology α] {ι : Type*} {X : ι → Type*} [Finite ι] [∀ i, LinearOrder (X i)]
+  [∀ i, TopologicalSpace (X i)] [∀ i, OrderTopology (X i)] {a b x : ∀ i, X i} {a' b' x' : ι → α}
 
 theorem pi_Iic_mem_nhds (ha : ∀ i, x i < a i) : Iic a ∈ 𝓝 x :=
   pi_univ_Iic a ▸ set_pi_mem_nhds (Set.toFinite _) fun _ _ => Iic_mem_nhds (ha _)
@@ -745,7 +769,7 @@ theorem pi_Iio_mem_nhds' (ha : ∀ i, x' i < a' i) : Iio a' ∈ 𝓝 x' :=
   pi_Iio_mem_nhds ha
 
 theorem pi_Ioi_mem_nhds (ha : ∀ i, a i < x i) : Ioi a ∈ 𝓝 x :=
-  pi_Iio_mem_nhds (π := fun i => (π i)ᵒᵈ) ha
+  pi_Iio_mem_nhds (X := fun i => (X i)ᵒᵈ) ha
 
 theorem pi_Ioi_mem_nhds' (ha : ∀ i, a' i < x' i) : Ioi a' ∈ 𝓝 x' :=
   pi_Ioi_mem_nhds ha

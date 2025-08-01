@@ -61,16 +61,16 @@ instance [Unique α] : Unique (Quot ra) := Unique.mk' _
 
 /-- Recursion on two `Quotient` arguments `a` and `b`, result type depends on `⟦a⟧` and `⟦b⟧`. -/
 protected def hrecOn₂ (qa : Quot ra) (qb : Quot rb) (f : ∀ a b, φ ⟦a⟧ ⟦b⟧)
-    (ca : ∀ {b a₁ a₂}, ra a₁ a₂ → HEq (f a₁ b) (f a₂ b))
-    (cb : ∀ {a b₁ b₂}, rb b₁ b₂ → HEq (f a b₁) (f a b₂)) :
+    (ca : ∀ {b a₁ a₂}, ra a₁ a₂ → f a₁ b ≍ f a₂ b)
+    (cb : ∀ {a b₁ b₂}, rb b₁ b₂ → f a b₁ ≍ f a b₂) :
     φ qa qb :=
   Quot.hrecOn (motive := fun qa ↦ φ qa qb) qa
     (fun a ↦ Quot.hrecOn qb (f a) (fun _ _ pb ↦ cb pb))
     fun a₁ a₂ pa ↦
       Quot.induction_on qb fun b ↦
-        have h₁ : HEq (@Quot.hrecOn _ _ (φ _) ⟦b⟧ (f a₁) (@cb _)) (f a₁ b) := by
+        have h₁ : @Quot.hrecOn _ _ (φ _) ⟦b⟧ (f a₁) (@cb _) ≍ f a₁ b := by
           simp
-        have h₂ : HEq (f a₂ b) (@Quot.hrecOn _ _ (φ _) ⟦b⟧ (f a₂) (@cb _)) := by
+        have h₂ : f a₂ b ≍ @Quot.hrecOn _ _ (φ _) ⟦b⟧ (f a₂) (@cb _) := by
           simp
         (h₁.trans (ca pa)).trans h₂
 
@@ -218,7 +218,7 @@ instance {α : Type*} [Setoid α] : IsEquiv α (· ≈ ·) where
 
 /-- Induction on two `Quotient` arguments `a` and `b`, result type depends on `⟦a⟧` and `⟦b⟧`. -/
 protected def hrecOn₂ (qa : Quotient sa) (qb : Quotient sb) (f : ∀ a b, φ ⟦a⟧ ⟦b⟧)
-    (c : ∀ a₁ b₁ a₂ b₂, a₁ ≈ a₂ → b₁ ≈ b₂ → HEq (f a₁ b₁) (f a₂ b₂)) : φ qa qb :=
+    (c : ∀ a₁ b₁ a₂ b₂, a₁ ≈ a₂ → b₁ ≈ b₂ → f a₁ b₁ ≍ f a₂ b₂) : φ qa qb :=
   Quot.hrecOn₂ qa qb f (fun p ↦ c _ _ _ _ p (Setoid.refl _)) fun p ↦ c _ _ _ _ (Setoid.refl _) p
 
 /-- Map a function `f : α → β` that sends equivalent elements to equivalent elements
@@ -654,26 +654,26 @@ protected def recOnSubsingleton₂' {φ : Quotient s₁ → Quotient s₂ → So
 
 /-- Recursion on a `Quotient` argument `a`, result type depends on `⟦a⟧`. -/
 protected def hrecOn' {φ : Quotient s₁ → Sort*} (qa : Quotient s₁) (f : ∀ a, φ (Quotient.mk'' a))
-    (c : ∀ a₁ a₂, a₁ ≈ a₂ → HEq (f a₁) (f a₂)) : φ qa :=
+    (c : ∀ a₁ a₂, a₁ ≈ a₂ → f a₁ ≍ f a₂) : φ qa :=
   Quot.hrecOn qa f c
 
 @[simp]
 theorem hrecOn'_mk'' {φ : Quotient s₁ → Sort*} (f : ∀ a, φ (Quotient.mk'' a))
-    (c : ∀ a₁ a₂, a₁ ≈ a₂ → HEq (f a₁) (f a₂))
+    (c : ∀ a₁ a₂, a₁ ≈ a₂ → f a₁ ≍ f a₂)
     (x : α) : (Quotient.mk'' x).hrecOn' f c = f x :=
   rfl
 
 /-- Recursion on two `Quotient` arguments `a` and `b`, result type depends on `⟦a⟧` and `⟦b⟧`. -/
 protected def hrecOn₂' {φ : Quotient s₁ → Quotient s₂ → Sort*} (qa : Quotient s₁)
     (qb : Quotient s₂) (f : ∀ a b, φ (Quotient.mk'' a) (Quotient.mk'' b))
-    (c : ∀ a₁ b₁ a₂ b₂, a₁ ≈ a₂ → b₁ ≈ b₂ → HEq (f a₁ b₁) (f a₂ b₂)) :
+    (c : ∀ a₁ b₁ a₂ b₂, a₁ ≈ a₂ → b₁ ≈ b₂ → f a₁ b₁ ≍ f a₂ b₂) :
     φ qa qb :=
   Quotient.hrecOn₂ qa qb f c
 
 @[simp]
 theorem hrecOn₂'_mk'' {φ : Quotient s₁ → Quotient s₂ → Sort*}
     (f : ∀ a b, φ (Quotient.mk'' a) (Quotient.mk'' b))
-    (c : ∀ a₁ b₁ a₂ b₂, a₁ ≈ a₂ → b₁ ≈ b₂ → HEq (f a₁ b₁) (f a₂ b₂)) (x : α) (qb : Quotient s₂) :
+    (c : ∀ a₁ b₁ a₂ b₂, a₁ ≈ a₂ → b₁ ≈ b₂ → f a₁ b₁ ≍ f a₂ b₂) (x : α) (qb : Quotient s₂) :
     (Quotient.mk'' x).hrecOn₂' qb f c = qb.hrecOn' (f x) fun _ _ ↦ c _ _ _ _ (Setoid.refl _) :=
   rfl
 

@@ -282,7 +282,7 @@ theorem apply_eq_iff_eq_symm_apply {x : α} {y : β} (f : α ≃ β) : f x = y �
     (Equiv.cast h).trans (Equiv.cast h2) = Equiv.cast (h.trans h2) :=
   ext fun x => by substs h h2; rfl
 
-theorem cast_eq_iff_heq {α β} (h : α = β) {a : α} {b : β} : Equiv.cast h a = b ↔ HEq a b := by
+theorem cast_eq_iff_heq {α β} (h : α = β) {a : α} {b : β} : Equiv.cast h a = b ↔ a ≍ b := by
   subst h; simp
 
 theorem symm_apply_eq {α β} (e : α ≃ β) {x y} : e.symm x = y ↔ x = e y :=
@@ -330,6 +330,11 @@ theorem bijective_comp (e : α ≃ β) (f : β → γ) : Bijective (f ∘ e) ↔
 
 theorem comp_bijective (f : α → β) (e : β ≃ γ) : Bijective (e ∘ f) ↔ Bijective f :=
   EquivLike.comp_bijective f e
+
+@[simp]
+theorem extend_apply {f : α ≃ β} (g : α → γ) (e' : β → γ) (b : β) :
+    extend f g e' b = g (f.symm b) := by
+  rw [← f.apply_symm_apply b, f.injective.extend_apply, apply_symm_apply]
 
 /-- If `α` is equivalent to `β` and `γ` is equivalent to `δ`, then the type of equivalences `α ≃ γ`
 is equivalent to the type of equivalences `β ≃ δ`. -/

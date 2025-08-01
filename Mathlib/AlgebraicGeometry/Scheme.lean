@@ -16,6 +16,14 @@ and the structure sheaf of `Spec R`, for some commutative ring `R`.
 
 A morphism of schemes is just a morphism of the underlying locally ringed spaces.
 
+## Notation
+
+`Spec R` typechecks only for `R : CommRingCat`. It happens quite often that we want to take Spec of
+an unbundled ring, and this can be spelled `Spec (CommRingCat.of R)`, or `Spec (.of R)` using
+anonymous dot notation. This is such a common situation that we have dedicated notation: `Spec(R)`
+
+Note that one can write `Spec(R)` for `R : CommRingCat`, but one shouldn't: This is `Spec (.of ↑R)`
+under the hood, which simplifies to `Spec R`.
 -/
 
 -- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
@@ -116,6 +124,13 @@ lemma Hom.continuous {X Y : Scheme} (f : X.Hom Y) : Continuous f.base := f.base.
 /-- The structure sheaf of a scheme. -/
 protected abbrev sheaf (X : Scheme) :=
   X.toSheafedSpace.sheaf
+
+/--
+We give schemes the specialization preorder by default.
+-/
+instance {X : Scheme.{u}} : Preorder X := specializationPreorder X
+
+lemma le_iff_specializes {X : Scheme.{u}} {a b : X} : a ≤ b ↔ b ⤳ a := by rfl
 
 namespace Hom
 
@@ -413,6 +428,12 @@ def Spec (R : CommRingCat) : Scheme where
   local_affine _ := ⟨⟨⊤, trivial⟩, R, ⟨(Spec.toLocallyRingedSpace.obj (op R)).restrictTopIso⟩⟩
   toLocallyRingedSpace := Spec.locallyRingedSpaceObj R
 
+/-- The spectrum of an unbundled ring as a scheme.
+
+WARNING: If `R` is already an element of `CommRingCat`, you should use `Spec R` instead of
+`Spec(R)`, which is secretly `Spec(↑R)`. -/
+scoped notation3 "Spec("R")" => Spec <| .of R
+
 theorem Spec_toLocallyRingedSpace (R : CommRingCat) :
     (Spec R).toLocallyRingedSpace = Spec.locallyRingedSpaceObj R :=
   rfl
@@ -555,11 +576,11 @@ lemma toOpen_eq (U) :
     (by exact StructureSheaf.toOpen R U) =
     (ΓSpecIso R).inv ≫ (Spec R).presheaf.map (homOfLE le_top).op := rfl
 
-instance {K} [Field K] : Unique (Spec (.of K)) :=
+instance {K} [Field K] : Unique Spec(K) :=
   inferInstanceAs <| Unique (PrimeSpectrum K)
 
 @[simp]
-lemma default_asIdeal {K} [Field K] : (default : Spec (.of K)).asIdeal = ⊥ := rfl
+lemma default_asIdeal {K} [Field K] : (default : Spec(K)).asIdeal = ⊥ := rfl
 
 section BasicOpen
 
@@ -672,7 +693,7 @@ lemma zeroLocus_isClosed {U : X.Opens} (s : Set Γ(X, U)) :
   X.toRingedSpace.zeroLocus_isClosed s
 
 lemma zeroLocus_singleton {U : X.Opens} (f : Γ(X, U)) :
-    X.zeroLocus {f} = (X.basicOpen f).carrierᶜ :=
+    X.zeroLocus {f} = (↑(X.basicOpen f))ᶜ :=
   X.toRingedSpace.zeroLocus_singleton f
 
 @[simp]
@@ -704,8 +725,7 @@ lemma zeroLocus_map {U V : X.Opens} (i : U ≤ V) (s : Set Γ(X, V)) :
   ext x
   suffices (∀ f ∈ s, x ∈ U → x ∉ X.basicOpen f) ↔ x ∈ U → (∀ f ∈ s, x ∉ X.basicOpen f) by
     simpa [or_iff_not_imp_right]
-  conv_lhs => enter [i]; rw [forall_comm (β := x ∈ U)] -- why doesn't simp fire on this
-  rw [forall_comm (β := x ∈ U)]
+  grind
 
 lemma zeroLocus_map_of_eq {U V : X.Opens} (i : U = V) (s : Set Γ(X, V)) :
     X.zeroLocus ((X.presheaf.map (eqToHom i).op).hom '' s) = X.zeroLocus s := by
@@ -729,6 +749,10 @@ lemma zeroLocus_univ {U : X.Opens} :
   simp only [Scheme.mem_zeroLocus_iff, Set.mem_univ, forall_const, Set.mem_compl_iff,
     SetLike.mem_coe, ← not_exists, not_iff_not]
   exact ⟨fun ⟨f, hf⟩ ↦ X.basicOpen_le f hf, fun _ ↦ ⟨1, by rwa [X.basicOpen_of_isUnit isUnit_one]⟩⟩
+
+lemma zeroLocus_iUnion {U : X.Opens} {ι : Type*} (f : ι → Set Γ(X, U)) :
+    X.zeroLocus (⋃ i, f i) = ⋂ i, X.zeroLocus (f i) := by
+  simpa [zeroLocus, AlgebraicGeometry.RingedSpace.zeroLocus] using Set.iInter_comm _
 
 lemma zeroLocus_radical {U : X.Opens} (I : Ideal Γ(X, U)) :
     X.zeroLocus (U := U) I.radical = X.zeroLocus (U := U) I := by

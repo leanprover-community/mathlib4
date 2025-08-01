@@ -274,7 +274,7 @@ theorem symmL_trivializationAt_eq_core {b₀ b : M} (hb : b ∈ (chartAt H b₀)
   simp [hb]
 
 @[deprecated (since := "2025-07-03")]
-alias trivializationAt_symmL  := symmL_trivializationAt_eq_core
+alias trivializationAt_symmL := symmL_trivializationAt_eq_core
 
 -- Porting note: `simp` simplifies LHS to `.id _ _`
 @[simp high, mfld_simps]
@@ -398,14 +398,14 @@ def tangentBundleModelSpaceHomeomorph : TangentBundle I H ≃ₜ ModelProd H E :
     continuous_toFun := by
       let p : TangentBundle I H := ⟨I.symm (0 : E), (0 : E)⟩
       have : Continuous (chartAt (ModelProd H E) p) := by
-        rw [continuous_iff_continuousOn_univ]
+        rw [← continuousOn_univ]
         convert (chartAt (ModelProd H E) p).continuousOn
         simp only [TangentSpace.fiberBundle, mfld_simps]
       simpa only [mfld_simps] using this
     continuous_invFun := by
       let p : TangentBundle I H := ⟨I.symm (0 : E), (0 : E)⟩
       have : Continuous (chartAt (ModelProd H E) p).symm := by
-        rw [continuous_iff_continuousOn_univ]
+        rw [← continuousOn_univ]
         convert (chartAt (ModelProd H E) p).symm.continuousOn
         simp only [mfld_simps]
       simpa only [mfld_simps] using this }

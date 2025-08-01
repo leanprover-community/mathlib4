@@ -112,7 +112,7 @@ Pattern a + b
   add_comm
 -/
 #guard_msgs in
-#rw?? n+1
+#rw?? n + 1
 
 /--
 info: Pattern n / 2
