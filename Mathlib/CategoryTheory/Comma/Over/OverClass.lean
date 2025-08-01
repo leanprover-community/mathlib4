@@ -95,7 +95,7 @@ instance [OverClass X S] [OverClass Y S] [OverClass Z S]
     (f : X ⟶ Y) (g : Y ⟶ Z) [HomIsOver f S] [HomIsOver g S] :
     HomIsOver (f ≫ g) S where
 
-/-- `Scheme.IsOverTower X Y S` is the typeclass asserting that the structure morphisms
+/-- `IsOverTower X Y S` is the typeclass asserting that the structure morphisms
 `X ↘ Y`, `Y ↘ S`, and `X ↘ S` commute. -/
 abbrev IsOverTower (X Y S : C) [OverClass X S] [OverClass Y S] [OverClass X Y] :=
   HomIsOver (X ↘ Y) S
@@ -142,18 +142,6 @@ instance {S : C} {X Y : Over S} (f : X ⟶ Y) : HomIsOver f.left S where
 
 variable [OverClass X S] [OverClass Y S] [OverClass Z S]
 
-/-- Reinterpret an isomorphism over an object `S` into an isomorphism in the category over `S`. -/
-def Iso.asOver (e : X ≅ Y) [HomIsOver e.hom S] : OverClass.asOver X S ≅ OverClass.asOver Y S :=
-  Over.isoMk e (by simp)
-
-@[simp] lemma Iso.asOver_hom (e : X ≅ Y) [HomIsOver e.hom S] :
-    (e.asOver S).hom = OverClass.asOverHom S e.hom := rfl
-
-@[simp] lemma Iso.asOver_inv (e : X ≅ Y) [HomIsOver e.hom S] :
-    have : HomIsOver e.inv S := ⟨by rw [e.inv_comp_eq]; simp⟩
-    (e.asOver S).inv = OverClass.asOverHom S e.inv := rfl
-
-
 namespace OverClass
 
 instance (f : X ⟶ Y) [IsIso f] [HomIsOver f S] : IsIso (asOverHom S f) :=
@@ -168,16 +156,24 @@ set_option linter.style.commandStart false in
 attribute [local simp ←] Iso.eq_inv_comp in
 instance {e : X ≅ Y} [HomIsOver e.inv S] : HomIsOver e.hom S where
 
-instance {f : X ⟶ Y} [IsIso f] [HomIsOver f S] : HomIsOver (asIso f).hom S := ‹_›
+instance {f : X ⟶ Y} [IsIso f] [HomIsOver f S] : HomIsOver (asIso f).hom S where
 instance {f : X ⟶ Y} [IsIso f] [HomIsOver f S] : HomIsOver (asIso f).inv S where
 instance {f : X ⟶ Y} [IsIso f] [HomIsOver f S] : HomIsOver (inv f) S where
 
 @[simp] lemma asOverHom_id : asOverHom S (𝟙 X) = 𝟙 (asOver X S) := rfl
 
-@[simp] lemma asOverHom_comp (f : X ⟶ Y) (g : Y ⟶ Z) [HomIsOver f S] [HomIsOver g S] :
+@[simp, reassoc] lemma asOverHom_comp (f : X ⟶ Y) (g : Y ⟶ Z) [HomIsOver f S] [HomIsOver g S] :
     asOverHom S (f ≫ g) = asOverHom S f ≫ asOverHom S g := rfl
 
 @[simp] lemma asOverHom_inv (f : X ⟶ Y) [IsIso f] [HomIsOver f S] :
     asOverHom S (inv f) = inv (asOverHom S f) := by simp [← hom_comp_eq_id, ← asOverHom_comp]
 
-end CategoryTheory.OverClass
+end OverClass
+
+/-- Reinterpret an isomorphism over an object `S` into an isomorphism in the category over `S`. -/
+@[simps]
+def Iso.asOver (e : X ≅ Y) [HomIsOver e.hom S] : OverClass.asOver X S ≅ OverClass.asOver Y S where
+  hom := OverClass.asOverHom S e.hom
+  inv := OverClass.asOverHom S e.inv
+
+end CategoryTheory
