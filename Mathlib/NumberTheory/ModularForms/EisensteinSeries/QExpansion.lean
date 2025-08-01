@@ -42,8 +42,7 @@ lemma iteratedDerivWithin_cexp_mul_const (k m : ℕ) (p : ℝ) {S : Set ℂ} (hs
 
 private lemma aux_IsBigO_mul (k l : ℕ) (p : ℝ) {f : ℕ → ℂ}
     (hf : f =O[atTop] (fun n ↦ ((n ^ l) : ℝ))) :
-    (fun n ↦ f n * (2 * ↑π * Complex.I * ↑n / p) ^ k) =O[atTop]
-    (fun n ↦ (↑(n ^ (l + k)) : ℝ)) := by
+    (fun n ↦ f n * (2 * ↑π * Complex.I * ↑n / p) ^ k) =O[atTop] (fun n ↦ (↑(n ^ (l + k)) : ℝ)) := by
   have h0 : (fun n : ℕ ↦ (2 * ↑π * Complex.I * ↑n / p) ^ k) =O[atTop]
     (fun n ↦ (↑(n ^ (k)) : ℝ)) := by
     have h1 : (fun n : ℕ ↦ (2 * ↑π * Complex.I * ↑n / p) ^ k) =
@@ -60,7 +59,7 @@ open BoundedContinuousFunction in
 theorem summableLocallyUniformlyOn_iteratedDerivWithin_qExpansion (k l : ℕ) {f : ℕ → ℂ} {p : ℝ}
     (hp : 0 < p) (hf : f =O[atTop] (fun n ↦ ((n ^ l) : ℝ))) :
     SummableLocallyUniformlyOn (fun n ↦ (f n) •
-    iteratedDerivWithin k (fun z ↦  cexp (2 * ↑π * Complex.I * z / p) ^ n) ℍₒ) ℍₒ := by
+    iteratedDerivWithin k (fun z ↦ cexp (2 * ↑π * Complex.I * z / p) ^ n) ℍₒ) ℍₒ := by
   apply SummableLocallyUniformlyOn_of_locally_bounded complexUpperHalPlane_isOpen
   intro K hK hKc
   haveI : CompactSpace K := isCompact_univ_iff.mp (isCompact_iff_isCompact_univ.mp hKc)
@@ -241,7 +240,7 @@ theorem tsum_prod_pow_cexp_eq_tsum_sigma (k : ℕ) (z : ℍ) :
     ∑' d : ℕ+, ∑' (c : ℕ+), (c ^ k : ℂ) * cexp (2 * ↑π * Complex.I * d * z) ^ (c : ℕ) =
       ∑' e : ℕ+, sigma k e * cexp (2 * ↑π * Complex.I * z) ^ (e : ℕ) := by
   suffices  ∑' (c : ℕ+ × ℕ+), (c.1 ^ k : ℂ) * cexp (2 * ↑π * Complex.I * c.2 * z) ^ (c.1 : ℕ) =
-      ∑' e : ℕ+, sigma k e * cexp (2 * ↑π * Complex.I * z) ^ (e : ℕ)  by
+      ∑' e : ℕ+, sigma k e * cexp (2 * ↑π * Complex.I * z) ^ (e : ℕ) by
     rw [Summable.tsum_prod (summable_prod_aux k z), Summable.tsum_comm] at this
     · simpa using this
     · apply (summable_prod_aux k z).prod_symm.congr
