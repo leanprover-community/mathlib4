@@ -549,7 +549,7 @@ theorem IsBigOWith.right_le_sub_of_lt_one {f₁ f₂ : α → E'} (h : IsBigOWit
     mem_of_superset h.bound fun x hx => by
       simp only [mem_setOf_eq] at hx ⊢
       rw [mul_comm, one_div, ← div_eq_mul_inv, le_div_iff₀, mul_sub, mul_one, mul_comm]
-      · exact le_trans (sub_le_sub_left hx _) (norm_sub_norm_le _ _)
+      · grw [hx]; apply norm_sub_norm_le
       · exact sub_pos.2 hc
 
 theorem IsBigOWith.right_le_add_of_lt_one {f₁ f₂ : α → E'} (h : IsBigOWith c l f₁ f₂) (hc : c < 1) :

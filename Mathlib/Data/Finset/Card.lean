@@ -546,12 +546,8 @@ theorem card_sdiff (h : s ⊆ t) : #(t \ s) = #t - #s := by
 theorem card_sdiff_add_card_eq_card {s t : Finset α} (h : s ⊆ t) : #(t \ s) + #s = #t :=
   ((Nat.sub_eq_iff_eq_add (card_le_card h)).mp (card_sdiff h).symm).symm
 
-theorem le_card_sdiff (s t : Finset α) : #t - #s ≤ #(t \ s) :=
-  calc
-    #t - #s ≤ #t - #(s ∩ t) :=
-      Nat.sub_le_sub_left (card_le_card inter_subset_left) _
-    _ = #(t \ (s ∩ t)) := (card_sdiff inter_subset_right).symm
-    _ ≤ #(t \ s) := by rw [sdiff_inter_self_right t s]
+theorem le_card_sdiff (s t : Finset α) : #t - #s ≤ #(t \ s) := by
+  grw [← sdiff_inter_self_right, card_sdiff inter_subset_right, inter_subset_left]
 
 theorem card_le_card_sdiff_add_card : #s ≤ #(s \ t) + #t :=
   Nat.sub_le_iff_le_add.1 <| le_card_sdiff _ _

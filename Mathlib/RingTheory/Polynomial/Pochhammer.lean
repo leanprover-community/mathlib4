@@ -474,7 +474,9 @@ theorem monotoneOn_descPochhammer_eval (n : ℕ) :
     have ha_sub1 : n - 1 ≤ a := (sub_le_self (n : S) zero_le_one).trans ha
     have hb_sub1 : n - 1 ≤ b := (sub_le_self (n : S) zero_le_one).trans hb
     simp_rw [descPochhammer_succ_eval]
-    exact mul_le_mul (ih ha_sub1 hb_sub1 hab) (sub_le_sub_right hab (n : S))
-      (sub_nonneg_of_le ha) (descPochhammer_nonneg hb_sub1)
+    gcongr
+    · exact sub_nonneg_of_le ha
+    · exact descPochhammer_nonneg hb_sub1
+    exact ih ha_sub1 hb_sub1 hab
 
 end StrictOrderedRing
