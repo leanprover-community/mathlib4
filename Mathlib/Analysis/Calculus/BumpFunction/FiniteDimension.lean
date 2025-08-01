@@ -113,7 +113,7 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
     rw [← hT] at hx
     obtain ⟨i, iT, hi⟩ : ∃ i ∈ T, x ∈ support (i : E → ℝ) := by
       simpa only [mem_iUnion, exists_prop] using hx
-    grind [Set.mem_range]
+    grind
   have g_smooth : ∀ n, ContDiff ℝ ∞ (g n) := fun n => (g0 n).2.2.2.1
   have g_comp_supp : ∀ n, HasCompactSupport (g n) := fun n => (g0 n).2.2.1
   have g_nonneg : ∀ n x, 0 ≤ g n x := fun n x => ((g0 n).2.2.2.2 (mem_range_self x)).1

@@ -65,7 +65,7 @@ variable [ConditionallyCompleteLinearOrder ι] {u : ι → Ω → β} {s : Set �
 
 /-- This lemma is strictly weaker than `hitting_of_le`. -/
 theorem hitting_of_lt {m : ι} (h : m < n) : hitting u s n m ω = m := by
-  grind [hitting, not_le, Set.Icc_eq_empty, Set.mem_empty_iff_false]
+  grind [hitting, not_le, Set.Icc_eq_empty]
 
 theorem hitting_le {m : ι} (ω : Ω) : hitting u s n m ω ≤ m := by
   simp only [hitting]
