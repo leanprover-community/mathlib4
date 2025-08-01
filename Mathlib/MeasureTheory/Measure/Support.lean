@@ -153,7 +153,6 @@ lemma support_eq_sInter : μ.support = ⋂₀ {t : Set X | IsClosed t ∧ μ t�
     use tᶜ
     exact ⟨Set.mem_compl htc1, ht.isOpen_compl, le_of_eq htc⟩
 
-
 open Set
 
 /-- If the complement of the support is Lindelöf, then the support of a measure is conull. -/
@@ -172,20 +171,22 @@ variable [HereditarilyLindelofSpace X]
 lemma measure_compl_support : μ (μ.support)ᶜ = 0 := support_mem_ae
 
 lemma nonempty_inter_support_of_pos {s : Set X} (hμ : 0 < μ s) :
-    (s ∩ μ.support).Nonempty :=
-  sorry
+    (s ∩ μ.support).Nonempty := by sorry
 
 -- this is optional, as with the common assumption `OpensMeasurableSpace` the
 -- set will simply be measurable because it is open
 @[simp]
-lemma nullMeasurableSet_compl_support : NullMeasurableSet (μ.supportᶜ) μ := sorry
+lemma nullMeasurableSet_compl_support : NullMeasurableSet (μ.supportᶜ) μ :=
+  NullMeasurableSet.of_null measure_compl_support
 
 -- likewise, optional
 @[simp]
-lemma nullMeasurableSet_support : NullMeasurableSet μ.support μ := sorry
+lemma nullMeasurableSet_support : NullMeasurableSet μ.support μ :=
+  NullMeasurableSet.compl_iff.mp nullMeasurableSet_compl_support
 
 @[simp]
-lemma measure_support : μ μ.support = μ Set.univ := sorry
+lemma measure_support : μ μ.support = μ Set.univ :=
+  measure_of_measure_compl_eq_zero measure_compl_support
 
 lemma nonempty_support (hμ : μ ≠ 0) : μ.support.Nonempty := sorry
 
