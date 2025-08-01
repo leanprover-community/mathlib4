@@ -549,7 +549,7 @@ lemma isNilpotent_e :
   have case_inl (j : b.support) : (e i ^ 2).col (Sum.inl j) = 0 := by
     ext (k | k)
     · simp [e, sq, ne_neg P i, -indexNeg_neg]
-    · have aux : ∀ x : ι, x ∈ Finset.univ → ¬(x = i ∧ P.root k = P.root i + P.root x) := by
+    · have aux : ∀ x : ι, x ∈ Finset.univ → ¬ (x = i ∧ P.root k = P.root i + P.root x) := by
         suffices P.root k ≠ (2 : ℕ) • P.root i by simpa [two_smul]
         exact fun contra ↦ P.nsmul_notMem_range_root (n := 2) (i := i) ⟨k, contra⟩
       simp [e, sq, -indexNeg_neg, ← ite_and, Finset.sum_ite_of_false aux]
