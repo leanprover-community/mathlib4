@@ -280,10 +280,7 @@ theorem natDegree_map_eq_iff {f : R →+* S} {p : Polynomial R} :
   simp_all [natDegree, WithBot.unbotD_eq_unbotD_iff]
 
 theorem natDegree_pos_of_nextCoeff_ne_zero (h : p.nextCoeff ≠ 0) : 0 < p.natDegree := by
-  rw [nextCoeff] at h
-  by_cases hpz : p.natDegree = 0
-  · simp_all only [ne_eq, ite_true, not_true_eq_false]
-  · apply Nat.zero_lt_of_ne_zero hpz
+  grind [nextCoeff]
 
 end Degree
 
