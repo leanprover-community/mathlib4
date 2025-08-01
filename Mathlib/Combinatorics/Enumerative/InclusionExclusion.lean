@@ -59,15 +59,15 @@ lemma prod_indicator_biUnion_sub_indicator (hs : s.Nonempty) (S : ι → Set α)
 
 /-- **Inclusion-exclusion principle**, indicator version over a finite union of sets. -/
 lemma indicator_biUnion_eq_sum_powerset (s : Finset ι) (S : ι → Set α) (f : α → G) (a : α) :
-    Set.indicator (⋃ i ∈ s, S i) f a = ∑ t : s.powerset.filter (·.Nonempty),
-      (-1) ^ (#t.1 + 1) • Set.indicator (⋂ i ∈ t.1, S i) f a := by
+    Set.indicator (⋃ i ∈ s, S i) f a = ∑ t ∈ s.powerset with t.Nonempty,
+      (-1) ^ (#t + 1) • Set.indicator (⋂ i ∈ t, S i) f a := by
   classical
   by_cases ha : a ∈ ⋃ i ∈ s, S i; swap
-  · simp only [ha, not_false_eq_true, Set.indicator_of_notMem, univ_eq_attach, Int.reduceNeg,
+  · simp only [ha, not_false_eq_true, Set.indicator_of_notMem, Int.reduceNeg,
       pow_succ, mul_neg, mul_one, neg_smul]
     symm
     apply sum_eq_zero
-    simp only [mem_attach, Int.reduceNeg, neg_eq_zero, forall_const, Subtype.forall, mem_filter,
+    simp only [Int.reduceNeg, neg_eq_zero, mem_filter,
       mem_powerset, and_imp]
     intro t hts ht
     rw [Set.indicator_of_notMem]
@@ -79,11 +79,11 @@ lemma indicator_biUnion_eq_sum_powerset (s : Finset ι) (S : ι → Set α) (f :
       refine ⟨i, hts hi, ha _ hi⟩
   rw [← sub_eq_zero]
   calc
-    Set.indicator (⋃ i ∈ s, S i) f a - ∑ t : s.powerset.filter (·.Nonempty),
-      (-1) ^ (#t.1 + 1) • Set.indicator (⋂ i ∈ t.1, S i) f a
-    _ = ∑ t ∈ s.powerset.filter (·.Nonempty), (-1) ^ #t • Set.indicator (⋂ i ∈ t, S i) f a +
-        ∑ t ∈ s.powerset.filter (¬ ·.Nonempty), (-1) ^ #t • Set.indicator (⋂ i ∈ t, S i) f a := by
-      simp [sub_eq_neg_add, ← sum_neg_distrib, filter_eq', pow_succ, ha, ← sum_attach (filter ..)]
+    Set.indicator (⋃ i ∈ s, S i) f a - ∑ t ∈ s.powerset with t.Nonempty,
+      (-1) ^ (#t + 1) • Set.indicator (⋂ i ∈ t.1, S i) f a
+    _ = ∑ t ∈ s.powerset with t.Nonempty, (-1) ^ #t • Set.indicator (⋂ i ∈ t, S i) f a +
+        ∑ t ∈ s.powerset with ¬ t.Nonempty, (-1) ^ #t • Set.indicator (⋂ i ∈ t, S i) f a := by
+      simp [sub_eq_neg_add, ← sum_neg_distrib, filter_eq', pow_succ, ha]
     _ = ∑ t ∈ s.powerset, (-1) ^ #t • Set.indicator (⋂ i ∈ t, S i) f a := by
       rw [sum_filter_add_sum_filter_not]
     _ = (∏ i ∈ s, (1 - Set.indicator (S i) 1 a : ℤ)) • f a := by
