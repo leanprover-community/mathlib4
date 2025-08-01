@@ -357,7 +357,7 @@ def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S // A ≤ S} :=
 instance le_total_ideal : IsTotal {S // A ≤ S} LE.le := by
   classical
   let _ : IsTotal (PrimeSpectrum A) (· ≤ ·) := ⟨fun ⟨x, _⟩ ⟨y, _⟩ => LE.isTotal.total x y⟩
-  exact ⟨(primeSpectrumOrderEquiv A).symm.toRelEmbedding.isTotal.total⟩
+  exact ⟨(primeSpectrumOrderEquiv A).symm.toOrderEmbedding.toRelEmbeddingLE.isTotal.total⟩
 
 open scoped Classical in
 instance linearOrderOverring : LinearOrder {S // A ≤ S} where

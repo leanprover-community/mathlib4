@@ -242,7 +242,7 @@ theorem single_order_mul_powerSeriesPart (x : R⸨X⸩) :
     · contrapose! h
       exact order_le_of_coeff_ne_zero h.symm
     · contrapose! h
-      simp only [Set.mem_range, RelEmbedding.coe_mk, Function.Embedding.coeFn_mk] at h
+      simp only [Set.mem_range, OrderEmbedding.coe_mk, Function.Embedding.coeFn_mk] at h
       obtain ⟨m, hm⟩ := h
       rw [← sub_nonneg, ← hm]
       simp only [Nat.cast_nonneg]
@@ -337,9 +337,8 @@ theorem coeff_coe (i : ℤ) :
   · rw [Int.ofNat_eq_coe, coeff_coe_powerSeries, if_neg (Int.natCast_nonneg _).not_gt,
       Int.natAbs_natCast]
   · rw [ofPowerSeries_apply, embDomain_notin_image_support, if_pos (Int.negSucc_lt_zero _)]
-    simp only [not_exists, RelEmbedding.coe_mk, Set.mem_image, not_and, Function.Embedding.coeFn_mk,
-      Ne, toPowerSeries_symm_apply_coeff, mem_support, imp_true_iff,
-      not_false_iff, reduceCtorEq]
+    simp only [OrderEmbedding.coe_mk, Function.Embedding.coeFn_mk, Set.mem_image, mem_support, Ne,
+      toPowerSeries_symm_apply_coeff, reduceCtorEq, and_false, exists_const, not_false_eq_true]
 
 theorem coe_C (r : R) : ((C R r : R⟦X⟧) : R⸨X⸩) = HahnSeries.C r :=
   ofPowerSeries_C _
@@ -702,11 +701,8 @@ theorem val_le_one_iff_eq_coe (f : K⸨X⸩) : Valued.v f ≤ (1 : ℤᵐ⁰) �
   on_goal 2 => rintro ⟨F, rfl⟩ _ _
   all_goals
     apply HahnSeries.embDomain_notin_range
-    simp only [Nat.coe_castAddMonoidHom, RelEmbedding.coe_mk, Function.Embedding.coeFn_mk,
-      Set.mem_range, not_exists, reduceCtorEq]
-    intro
-  · simp only [not_false_eq_true]
-  · omega
+    simp
+  omega
 
 end LaurentSeries
 

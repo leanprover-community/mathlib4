@@ -246,7 +246,6 @@ def IsPartition.finpartition {c : Finset (Set α)} (hc : Setoid.IsPartition (c :
   sup_parts := c.sup_id_set_eq_sUnion.trans hc.sUnion_eq_univ
   bot_notMem := hc.left
 
-end Setoid
 
 structure Partition (α : Type*) where
   sets : Set (Set α)
@@ -255,8 +254,6 @@ structure Partition (α : Type*) where
 namespace Partition
 
 open Setoid
-
-variable {α}
 
 @[ext] theorem ext {a b : Partition α} (h : a.sets = b.sets) : a = b := by
   cases a; cases b; exact mk.injEq _ _ _ _ ▸ h
@@ -291,6 +288,8 @@ instance completeLattice : CompleteLattice (Partition α) :=
   Partition.orderIso.toGaloisInsertion.liftCompleteLattice
 
 end Partition
+
+end Setoid
 
 /-- A finpartition gives rise to a setoid partition -/
 theorem Finpartition.isPartition_parts {α} (f : Finpartition (Set.univ : Set α)) :
