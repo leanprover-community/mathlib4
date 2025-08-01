@@ -3,6 +3,7 @@ Copyright (c) 2020 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov
 -/
+import Mathlib.Combinatorics.Enumerative.InclusionExclusion
 import Mathlib.MeasureTheory.Function.LocallyIntegrable
 import Mathlib.MeasureTheory.Integral.Bochner.Basic
 import Mathlib.Topology.ContinuousMap.Compact
@@ -40,7 +41,7 @@ but we reference them here because all theorems about set integrals are in this 
 assert_not_exists InnerProductSpace
 
 open Filter Function MeasureTheory RCLike Set TopologicalSpace Topology
-open scoped ENNReal NNReal
+open scoped ENNReal NNReal Finset
 
 variable {X Y E F : Type*}
 
@@ -162,8 +163,38 @@ theorem setIntegral_indicator (ht : MeasurableSet t) :
     ∫ x in s, t.indicator f x ∂μ = ∫ x in s ∩ t, f x ∂μ := by
   rw [integral_indicator ht, Measure.restrict_restrict ht, Set.inter_comm]
 
+/-- **Inclusion-exclusion principle** for the integral of a function over a union.
+
+The integral of a function `f` over the union of the `s i` over `i ∈ t` is the alternating sum of
+the integrals of `f` over the intersections of the `s i`. -/
+theorem integral_biUnion_eq_sum_powerset {ι : Type*} {t : Finset ι} {s : ι → Set X}
+    (hs : ∀ i ∈ t, MeasurableSet (s i)) (hf : ∀ i ∈ t, IntegrableOn f (s i) μ) :
+    ∫ x in ⋃ i ∈ t, s i, f x ∂μ = ∑ u : t.powerset.filter (·.Nonempty),
+      (-1 : ℝ) ^ (#u.1 + 1) • ∫ x in ⋂ i ∈ u.1, s i, f x ∂μ := by
+  simp_rw [← integral_smul]
+  rw [← integral_indicator (Finset.measurableSet_biUnion _ hs)]
+  have A (u : t.powerset.filter (·.Nonempty)) : MeasurableSet (⋂ i ∈ u.1, s i) := by
+    apply Finset.measurableSet_biInter
+    intro i hi
+    apply hs
+    aesop
+  simp_rw [← integral_indicator (A _)]
+  rw [← integral_finset_sum]; swap
+  · intro u hu
+    rw [integrable_indicator_iff (A _)]
+    apply Integrable.smul
+    have : u.1.Nonempty := by aesop
+    rcases this with ⟨i, hi⟩
+    have it : i ∈ t := by aesop
+    exact (hf i it).mono (biInter_subset_of_mem hi) le_rfl
+  congr with x
+  convert Finset.indicator_biUnion_eq_sum_powerset t s f x with u hu
+  rw [indicator_smul_apply]
+  norm_cast
+
 theorem ofReal_setIntegral_one_of_measure_ne_top {X : Type*} {m : MeasurableSpace X}
-    {μ : Measure X} {s : Set X} (hs : μ s ≠ ∞) : ENNReal.ofReal (∫ _ in s, (1 : ℝ) ∂μ) = μ s :=
+    {μ : Measure X} {s : Set X} (hs : μ s ≠ ∞ := by finiteness) :
+    ENNReal.ofReal (∫ _ in s, (1 : ℝ) ∂μ) = μ s :=
   calc
     ENNReal.ofReal (∫ _ in s, (1 : ℝ) ∂μ) = ENNReal.ofReal (∫ _ in s, ‖(1 : ℝ)‖ ∂μ) := by
       simp only [norm_one]
@@ -172,7 +203,24 @@ theorem ofReal_setIntegral_one_of_measure_ne_top {X : Type*} {m : MeasurableSpac
 
 theorem ofReal_setIntegral_one {X : Type*} {_ : MeasurableSpace X} (μ : Measure X)
     [IsFiniteMeasure μ] (s : Set X) : ENNReal.ofReal (∫ _ in s, (1 : ℝ) ∂μ) = μ s :=
-  ofReal_setIntegral_one_of_measure_ne_top (measure_ne_top μ s)
+  ofReal_setIntegral_one_of_measure_ne_top
+
+theorem setIntegral_one_eq_measureReal {X : Type*} {m : MeasurableSpace X}
+    {μ : Measure X} {s : Set X} :
+    ∫ _ in s, (1 : ℝ) ∂μ = μ.real s := by simp
+
+/-- **Inclusion-exclusion principle** for the measure of a union of sets of finite measure.
+
+The measure of the union of the `s i` over `i ∈ t` is the alternating sum of the measures of the
+intersections of the `s i`. -/
+theorem measureReal_biUnion_eq_sum_powerset {ι : Type*} (t : Finset ι) {s : ι → Set X}
+    (hs : ∀ i ∈ t, MeasurableSet (s i)) (hf : ∀ i ∈ t, μ (s i) ≠ ∞ := by finiteness) :
+    μ.real (⋃ i ∈ t, s i) = ∑ u : t.powerset.filter (·.Nonempty),
+      (-1 : ℝ) ^ (#u.1 + 1) * μ.real (⋂ i ∈ u.1, s i) := by
+  simp only [← setIntegral_one_eq_measureReal]
+  apply integral_biUnion_eq_sum_powerset hs
+  intro i hi
+  simpa using (hf i hi).lt_top
 
 theorem integral_piecewise [DecidablePred (· ∈ s)] (hs : MeasurableSet s) (hf : IntegrableOn f s μ)
     (hg : IntegrableOn g sᶜ μ) :
