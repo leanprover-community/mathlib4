@@ -3,7 +3,7 @@ Copyright (c) 2024 James Sundstrom. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: James Sundstrom, Xavier Roblot
 -/
-import Mathlib.RingTheory.DedekindDomain.Ideal
+import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 
 /-!
 # Extension of fractional ideals
@@ -23,7 +23,7 @@ This file defines the extension of a fractional ideal along a ring homomorphism.
 * `FractionalIdeal.extended_mul` says that extension commutes with multiplication.
 * `FractionalIdeal.extended_inv` says that extension commutes with inversion.
 * `FractionalIdeal.extended_injective` says that extension (by an algebra map) is injective.
-* `Ideal.map_algebraMap_injective`: the map of an ideal by an algebra map is injective
+* `Ideal.map_algebraMap_injective`: the image of an ideal by an algebra map is injective
 
 ## Tags
 
