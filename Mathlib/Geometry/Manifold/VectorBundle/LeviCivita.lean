@@ -315,31 +315,36 @@ lemma leviCivita_rhs_addY [CompleteSpace E]
   ext x
   simp [leviCivita_rhs_addY_apply I (hX x) (hY x) (hY' x) (hZ x)]
 
--- TODO: write a point-wise version of this!
+lemma leviCivita_rhs'_addZ_apply [CompleteSpace E]
+    (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x)
+    (hZ : MDiffAt (T% Z) x) (hZ' : MDiffAt (T% Z') x) :
+    leviCivita_rhs' I X Y (Z + Z') x =
+      leviCivita_rhs' I X Y Z x + leviCivita_rhs' I X Y Z' x := by
+  simp only [leviCivita_rhs', rhs_aux_addX, Pi.add_apply, Pi.sub_apply, product_add_left_apply]
+  rw [rhs_aux_addY_apply, rhs_aux_addZ_apply] <;> try assumption
+  simp only [product_apply]
+  simp only [VectorField.mlieBracket_add_right (V := X) hZ hZ',
+    VectorField.mlieBracket_add_left (W := Y) hZ hZ', inner_add_right, ← product_apply]
+  abel
+
 lemma leviCivita_rhs'_addZ [CompleteSpace E]
     (hX : MDiff (T% X)) (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) (hZ' : MDiff (T% Z')) :
     leviCivita_rhs' I X Y (Z + Z') =
       leviCivita_rhs' I X Y Z + leviCivita_rhs' I X Y Z' := by
-  simp only [leviCivita_rhs']
   ext x
-  have h : VectorField.mlieBracket I X (Z + Z') =
-    VectorField.mlieBracket I X Z + VectorField.mlieBracket I X Z' := by
-    ext x
-    simp [VectorField.mlieBracket_add_right (V := X) (hZ x) (hZ' x)]
-  have h' : VectorField.mlieBracket I (Z + Z') Y =
-    VectorField.mlieBracket I Z Y + VectorField.mlieBracket I Z' Y := by
-    ext x
-    simp [VectorField.mlieBracket_add_left (W := Y) (hZ x) (hZ' x)]
-  simp only [rhs_aux_addX, h, h', Pi.add_apply, Pi.sub_apply]
-  rw [rhs_aux_addY, rhs_aux_addZ] <;> try assumption
-  rw [product_add_left, product_add_right, product_add_right]
-  simp only [Pi.add_apply]
-  abel
+  exact leviCivita_rhs'_addZ_apply I (hX x) (hY x) (hZ x) (hZ' x)
+
+lemma leviCivita_rhs_addZ_apply [CompleteSpace E]
+    (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x)
+    (hZ : MDiffAt (T% Z) x) (hZ' : MDiffAt (T% Z') x) :
+    leviCivita_rhs I X Y (Z + Z') x = leviCivita_rhs I X Y Z x + leviCivita_rhs I X Y Z' x := by
+  simp [leviCivita_rhs, leviCivita_rhs'_addZ_apply I hX hY hZ hZ', left_distrib]
 
 lemma leviCivita_rhs_addZ [CompleteSpace E]
     (hX : MDiff (T% X)) (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) (hZ' : MDiff (T% Z')) :
     leviCivita_rhs I X Y (Z + Z') = leviCivita_rhs I X Y Z + leviCivita_rhs I X Y Z' := by
-  simp [leviCivita_rhs, leviCivita_rhs'_addZ I hX hY hZ hZ']
+  ext x
+  exact leviCivita_rhs_addZ_apply I (hX x) (hY x) (hZ x) (hZ' x)
 
 lemma leviCivita_rhs_smulZ [CompleteSpace E] {f : M → ℝ} (hf : MDiff f) (hZ : MDiff (T% Z)) :
     leviCivita_rhs I X Y (f • Z) = f • leviCivita_rhs I X Y Z := by
