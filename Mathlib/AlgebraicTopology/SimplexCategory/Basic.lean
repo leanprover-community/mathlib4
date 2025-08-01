@@ -401,39 +401,11 @@ then `factor_δ f j` is a morphism `⦋m⦌ ⟶ ⦋n⦌` such that
 def factor_δ {m n : ℕ} (f : ⦋m⦌ ⟶ ⦋n + 1⦌) (j : Fin (n + 2)) : ⦋m⦌ ⟶ ⦋n⦌ :=
   f ≫ σ (Fin.predAbove 0 j)
 
-open Fin in
 lemma factor_δ_spec {m n : ℕ} (f : ⦋m⦌ ⟶ ⦋n + 1⦌) (j : Fin (n + 2))
     (hj : ∀ (k : Fin (m + 1)), f.toOrderHom k ≠ j) :
     factor_δ f j ≫ δ j = f := by
   ext k : 3
-  specialize hj k
-  dsimp [factor_δ, δ, σ]
-  cases j using cases with
-  | zero =>
-    ext
-    unfold predAbove
-    simp only [castSucc_zero, lt_self_iff_false, ↓reduceDIte]
-    split
-    · simp
-    · simp only [zero_succAbove, val_succ, coe_castPred]
-      simp_all
-  | succ j =>
-    rw [predAbove_of_castSucc_lt 0 _ (by simp), pred_succ]
-    rcases hj.lt_or_gt with (hj | hj)
-    · rw [predAbove_of_le_castSucc j _]
-      swap
-      · exact (le_castSucc_iff.mpr hj)
-      · rw [succAbove_of_castSucc_lt]
-        swap
-        · rwa [castSucc_lt_succ_iff, castPred_le_iff, le_castSucc_iff]
-        rw [castSucc_castPred]
-    · rw [predAbove_of_castSucc_lt]
-      swap
-      · exact (castSucc_lt_succ _).trans hj
-      rw [succAbove_of_le_castSucc]
-      swap
-      · rwa [succ_le_castSucc_iff, lt_pred_iff]
-      rw [succ_pred]
+  cases j using Fin.cases <;> simp_all [factor_δ, δ, σ]
 
 @[simp]
 lemma δ_zero_mkOfSucc {n : ℕ} (i : Fin n) :
