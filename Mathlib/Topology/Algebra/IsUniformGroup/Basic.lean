@@ -403,10 +403,7 @@ theorem extend_Z_bilin : Continuous (extend (de.prodMap df) (fun p : β × δ =>
     constructor
     · have := prod_mem_prod U'_nhds V'_nhds
       tauto
-    · intro p h'
-      simp only [Set.mem_preimage, Set.prodMk_mem_set_prod_eq] at h'
-      rcases p with ⟨⟨x, y⟩, ⟨x', y'⟩⟩
-      apply h <;> tauto
+    · grind [Set.subset_def, Set.mem_preimage, Set.mem_prod]
 
 end IsDenseInducing
 
