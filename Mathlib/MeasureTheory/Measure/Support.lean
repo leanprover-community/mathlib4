@@ -137,7 +137,21 @@ lemma compl_support_eq_sUnion : μ.supportᶜ = ⋃₀ {t : Set X | IsOpen t ∧
 lemma support_eq_sInter : μ.support = ⋂₀ {t : Set X | IsClosed t ∧ μ tᶜ = 0} := by
   ext x
   simp only [(nhds_basis_opens x).mem_measureSupport, and_imp, Set.mem_sInter, Set.mem_setOf_eq]
-  sorry
+  rw [← not_iff_not]
+  push_neg
+  constructor
+  · intro h
+    obtain ⟨t, ht, htc, htc1⟩ := h
+    use tᶜ
+    have A := htc.isClosed_compl
+    have B := nonpos_iff_eq_zero.mp htc1
+    rw [← compl_compl t] at B ht
+    have C := (Set.mem_compl_iff tᶜ x).mp ht
+    exact ⟨htc.isClosed_compl, B, C⟩
+  · intro h
+    obtain ⟨t, ht, htc, htc1⟩ := h
+    use tᶜ
+    exact ⟨Set.mem_compl htc1, ht.isOpen_compl, le_of_eq htc⟩
 
 
 open Set
