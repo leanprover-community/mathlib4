@@ -284,11 +284,75 @@ lemma leviCivita_rhs_addX [CompleteSpace E]
   ext x
   simp [leviCivita_rhs_addX_apply _ (hX x) (hX' x) (hY x) (hZ x)]
 
-variable (Y Z) in
+variable {I} in
+lemma leviCivita_rhs'_smulX_apply [CompleteSpace E] {f : M → ℝ} (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) :
+    letI dfY : ℝ := (mfderiv I 𝓘(ℝ, ℝ) f x) (Y x)
+    letI A := dfY * ⟪Z, X⟫ x
+    leviCivita_rhs' I (f • X) Y Z x = f x • leviCivita_rhs' I X Y Z x + A + A := by
+  -- TODO: do I need to assume X is differentiable? yes, I think so!
+  unfold leviCivita_rhs'
+  rw [rhs_aux_smulX]
+  rw [rhs_aux_smulY, rhs_aux_smulZ] <;> try assumption -- TODO: want more surgical reasoning
+  rotate_left; iterate 6 sorry
+  have h := VectorField.mlieBracket_smul_left (W := Z) hf hX
+  simp
+  simp only [product_apply]
+  simp only [VectorField.mlieBracket_smul_left (W := Z) hf hX,
+    VectorField.mlieBracket_smul_left (W := Y) hf hX]
+  simp only [inner_add_right, ← product_apply]
+  simp only [neg_smul, inner_neg_right]
+  have h1 :
+      letI dfZ : ℝ := (mfderiv I 𝓘(ℝ, ℝ) f x) (Z x);
+      inner ℝ (Y x) ((mfderiv I 𝓘(ℝ, ℝ) f x) (Z x) • X x) = dfZ * ⟪X, Y⟫ x := by
+    simp only [product]
+    rw [← real_inner_smul_left, real_inner_smul_right, real_inner_smul_left, real_inner_comm]
+  have h2 :
+      letI dfZ : ℝ := (mfderiv I 𝓘(ℝ, ℝ) f x) (Y x);
+      inner ℝ (Z x) ((mfderiv I 𝓘(ℝ, ℝ) f x) (Y x) • X x) = dfZ * ⟪Z, X⟫ x := by
+    simp only [product]
+    rw [← real_inner_smul_left, real_inner_smul_right, real_inner_smul_left]
+  simp only [h1, h2]
+  clear h1 h2
+  set dfY : ℝ := (mfderiv I 𝓘(ℝ, ℝ) f x) (Y x)
+  set dfZ : ℝ := (mfderiv I 𝓘(ℝ, ℝ) f x) (Z x)
+  have h3 : inner ℝ (Y x) (f x • VectorField.mlieBracket I X Z x) =
+      f x * ⟪Y, VectorField.mlieBracket I X Z⟫ x := sorry
+  have h4 : ⟪f • X, VectorField.mlieBracket I Z Y⟫ x = f x * ⟪X, VectorField.mlieBracket I Z Y⟫ x := sorry
+  have h5 : inner ℝ (Z x) (f x • VectorField.mlieBracket I X Y x) = f x * ⟪Z, VectorField.mlieBracket I X Y⟫ x := sorry
+  rw [h3, h4, h5]
+  set A := ⟪Y, VectorField.mlieBracket I X Z⟫
+  set B := ⟪Z, VectorField.mlieBracket I X Y⟫
+  set C := ⟪X, VectorField.mlieBracket I Z Y⟫
+  set R := dfZ * ⟪X, Y⟫ x
+  set R' := dfY * ⟪Z, X⟫ x
+
+  calc f x * rhs_aux I X Y Z x + (f x * rhs_aux I Y Z X x + R') - (f x * rhs_aux I Z X Y x + R) - (-R + f x * A x) - (-R' + f x * B x) + f x * C x
+    _ = f x * rhs_aux I X Y Z x + f x * rhs_aux I Y Z X x + R' - f x * rhs_aux I Z X Y x - R + R - f x * A x + R' - f x * B x + f x * C x := by
+      abel
+    _ = f x * rhs_aux I X Y Z x + f x * rhs_aux I Y Z X x - f x * rhs_aux I Z X Y x - f x * A x - f x * B x + f x * C x + R' + R' := by
+      abel
+    _ = (f x * rhs_aux I X Y Z x + f x * rhs_aux I Y Z X x - f x * rhs_aux I Z X Y x - f x * A x - f x * B x + f x * C x) + R' + R' := by
+      abel
+    _ = f x * (rhs_aux I X Y Z x + rhs_aux I Y Z X x - rhs_aux I Z X Y x - A x - B x + C x) + R' + R' := by
+      congr 1
+      congr 2
+      sorry -- why abel not successful?
+    _ = _ := by
+      abel
+
+#exit
+
+variable {I} in
+lemma leviCivita_rhs_smulX_apply {f : M → ℝ} (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) :
+    leviCivita_rhs I (f • X) Y Z x = f x • leviCivita_rhs I X Y Z x := by
+  simp [leviCivita_rhs, leviCivita_rhs'_smulX_apply (Y := Y) (Z := Z) hf hX,
+    ← mul_assoc, mul_comm _ (f x)]
+
+variable {I} in
 lemma leviCivita_rhs_smulX {f : M → ℝ} (hf : MDiff f) (hX : MDiff (T% X)) :
     leviCivita_rhs I (f • X) Y Z = f • leviCivita_rhs I X Y Z := by
-  -- TODO: do I need to assume X is differentiable?
-  sorry
+  ext x
+  exact leviCivita_rhs_smulX_apply (hf x) (hX x)
 
 lemma leviCivita_rhs'_addY_apply [CompleteSpace E]
     (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x)
