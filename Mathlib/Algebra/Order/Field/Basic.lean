@@ -7,7 +7,6 @@ import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Data.Set.Monotone
-import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.Bounds.OrderIso
 import Mathlib.Tactic.Positivity.Core
 
@@ -274,12 +273,19 @@ theorem le_iff_forall_one_lt_le_mul₀ {α : Type*}
     [Semifield α] [LinearOrder α] [IsStrictOrderedRing α]
     {a b : α} (hb : 0 ≤ b) : a ≤ b ↔ ∀ ε, 1 < ε → a ≤ b * ε := by
   refine ⟨fun h _ hε ↦ h.trans <| le_mul_of_one_le_right hb hε.le, fun h ↦ ?_⟩
-  obtain rfl|hb := hb.eq_or_lt
+  obtain rfl | hb := hb.eq_or_lt
   · simp_rw [zero_mul] at h
     exact h 2 one_lt_two
   refine le_of_forall_gt_imp_ge_of_dense fun x hbx => ?_
   convert h (x / b) ((one_lt_div hb).mpr hbx)
   rw [mul_div_cancel₀ _ hb.ne']
+
+theorem div_nat_le_self_of_nonnneg (ha : 0 ≤ a) (n : ℕ) : a / n ≤ a :=
+  if h : n = 0 then by simpa [h] using ha
+  else div_le_self ha (n.one_le_cast_iff_ne_zero.mpr h)
+
+theorem div_nat_lt_self_of_pos_of_two_le (ha : 0 < a) {n : ℕ} (hn : 2 ≤ n) : a / n < a :=
+  div_lt_self ha (n.one_lt_cast.mpr hn)
 
 /-! ### Results about `IsGLB` -/
 
@@ -409,23 +415,23 @@ theorem lt_inv_of_neg (ha : a < 0) (hb : b < 0) : a < b⁻¹ ↔ b < a⁻¹ :=
 
 
 theorem sub_inv_antitoneOn_Ioi :
-    AntitoneOn (fun x ↦ (x-c)⁻¹) (Set.Ioi c) :=
+    AntitoneOn (fun x ↦ (x - c)⁻¹) (Set.Ioi c) :=
   antitoneOn_iff_forall_lt.mpr fun _ ha _ hb hab ↦
     inv_le_inv₀ (sub_pos.mpr hb) (sub_pos.mpr ha) |>.mpr <| sub_le_sub (le_of_lt hab) le_rfl
 
 theorem sub_inv_antitoneOn_Iio :
-    AntitoneOn (fun x ↦ (x-c)⁻¹) (Set.Iio c) :=
+    AntitoneOn (fun x ↦ (x - c)⁻¹) (Set.Iio c) :=
   antitoneOn_iff_forall_lt.mpr fun _ ha _ hb hab ↦
     inv_le_inv_of_neg (sub_neg.mpr hb) (sub_neg.mpr ha) |>.mpr <| sub_le_sub (le_of_lt hab) le_rfl
 
 theorem sub_inv_antitoneOn_Icc_right (ha : c < a) :
-    AntitoneOn (fun x ↦ (x-c)⁻¹) (Set.Icc a b) := by
+    AntitoneOn (fun x ↦ (x - c)⁻¹) (Set.Icc a b) := by
   by_cases hab : a ≤ b
   · exact sub_inv_antitoneOn_Ioi.mono <| (Set.Icc_subset_Ioi_iff hab).mpr ha
   · simp [hab, Set.Subsingleton.antitoneOn]
 
 theorem sub_inv_antitoneOn_Icc_left (ha : b < c) :
-    AntitoneOn (fun x ↦ (x-c)⁻¹) (Set.Icc a b) := by
+    AntitoneOn (fun x ↦ (x - c)⁻¹) (Set.Icc a b) := by
   by_cases hab : a ≤ b
   · exact sub_inv_antitoneOn_Iio.mono <| (Set.Icc_subset_Iio_iff hab).mpr ha
   · simp [hab, Set.Subsingleton.antitoneOn]
@@ -493,13 +499,13 @@ theorem lt_one_div_of_neg (ha : a < 0) (hb : b < 0) : a < 1 / b ↔ b < 1 / a :=
 theorem one_lt_div_iff : 1 < a / b ↔ 0 < b ∧ b < a ∨ b < 0 ∧ a < b := by
   rcases lt_trichotomy b 0 with (hb | rfl | hb)
   · simp [hb, hb.not_gt, one_lt_div_of_neg]
-  · simp [lt_irrefl, zero_le_one]
+  · simp [zero_le_one]
   · simp [hb, hb.not_gt, one_lt_div]
 
 theorem one_le_div_iff : 1 ≤ a / b ↔ 0 < b ∧ b ≤ a ∨ b < 0 ∧ a ≤ b := by
   rcases lt_trichotomy b 0 with (hb | rfl | hb)
   · simp [hb, hb.not_gt, one_le_div_of_neg]
-  · simp [lt_irrefl, zero_lt_one.not_ge, zero_lt_one]
+  · simp [zero_lt_one.not_ge]
   · simp [hb, hb.not_gt, one_le_div]
 
 theorem div_lt_one_iff : a / b < 1 ↔ 0 < b ∧ a < b ∨ b = 0 ∨ b < 0 ∧ b < a := by

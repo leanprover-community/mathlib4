@@ -363,6 +363,7 @@ theorem DifferentiableAt.exp (hc : DifferentiableAt ℝ f x) :
     DifferentiableAt ℝ (fun x => Real.exp (f x)) x :=
   hc.hasFDerivAt.exp.differentiableAt
 
+@[fun_prop]
 theorem DifferentiableOn.exp (hc : DifferentiableOn ℝ f s) :
     DifferentiableOn ℝ (fun x => Real.exp (f x)) s := fun x h => (hc x h).exp
 

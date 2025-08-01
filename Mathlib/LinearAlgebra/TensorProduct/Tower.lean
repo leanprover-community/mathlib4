@@ -44,8 +44,6 @@ probably should still implement the less general ones as abbreviations to the mo
 fewer type arguments.
 -/
 
-suppress_compilation
-
 namespace TensorProduct
 
 namespace AlgebraTensorModule
@@ -617,7 +615,7 @@ theorem baseChange_add : (f + g).baseChange A = f.baseChange A + g.baseChange A 
 @[simp]
 theorem baseChange_zero : baseChange A (0 : M →ₗ[R] N) = 0 := by
   ext
-  simp [baseChange_eq_ltensor]
+  simp
 
 @[simp]
 theorem baseChange_smul : (r • f).baseChange A = r • f.baseChange A := by
@@ -664,6 +662,12 @@ lemma baseChange_pow (f : Module.End R M) (n : ℕ) :
     (f ^ n).baseChange A = f.baseChange A ^ n :=
   map_pow (Module.End.baseChangeHom _ _ _) f n
 
+variable {R A M N} in
+theorem rTensor_baseChange (φ : A →ₐ[R] B) (t : A ⊗[R] M) (f : M →ₗ[R] N) :
+    (φ.toLinearMap.rTensor N) (f.baseChange A t)  =
+      (f.baseChange B) (φ.toLinearMap.rTensor M t) := by
+  simp [LinearMap.baseChange_eq_ltensor, ← LinearMap.comp_apply]
+
 end Semiring
 
 section Ring
@@ -676,12 +680,12 @@ variable (f g : M →ₗ[R] N)
 @[simp]
 theorem baseChange_sub : (f - g).baseChange A = f.baseChange A - g.baseChange A := by
   ext
-  simp [baseChange_eq_ltensor, tmul_sub]
+  simp [tmul_sub]
 
 @[simp]
 theorem baseChange_neg : (-f).baseChange A = -f.baseChange A := by
   ext
-  simp [baseChange_eq_ltensor, tmul_neg]
+  simp [tmul_neg]
 
 end Ring
 

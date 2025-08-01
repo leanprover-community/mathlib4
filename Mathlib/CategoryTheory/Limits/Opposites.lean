@@ -756,7 +756,7 @@ variable {A B : C} [HasBinaryProduct A B]
 
 instance : HasBinaryCoproduct (op A) (op B) := by
   have : HasProduct fun x ↦ (WalkingPair.casesOn x A B : C) := ‹_›
-  show HasCoproduct _
+  change HasCoproduct _
   convert inferInstanceAs (HasCoproduct fun x ↦ op (WalkingPair.casesOn x A B : C)) with x
   cases x <;> rfl
 
@@ -771,7 +771,7 @@ def opProdIsoCoprod : op (A ⨯ B) ≅ (op A ⨿ op B) where
   hom_inv_id := by
     apply Quiver.Hom.unop_inj
     ext <;>
-    · simp only [limit.lift_π]
+    · simp only
       apply Quiver.Hom.op_inj
       simp
   inv_hom_id := by

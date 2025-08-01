@@ -100,7 +100,7 @@ lemma eventually_deriv_rpow_p_mul_one_sub_smoothingFn (p : ℝ) :
   deriv (fun x => x ^ p * (1 - ε x))
     =ᶠ[atTop] fun x => deriv (· ^ p) x * (1 - ε x) + x ^ p * deriv (1 - ε ·) x := by
             filter_upwards [eventually_gt_atTop 1] with x hx
-            rw [deriv_mul]
+            rw [deriv_fun_mul]
             · exact differentiableAt_rpow_const_of_ne _ (by positivity)
             · exact differentiableAt_one_sub_smoothingFn hx
   _ =ᶠ[atTop] fun x => p * x ^ (p-1) * (1 - ε x) + x ^ p * (x⁻¹ / (log x ^ 2)) := by
@@ -117,7 +117,7 @@ lemma eventually_deriv_rpow_p_mul_one_add_smoothingFn (p : ℝ) :
   deriv (fun x => x ^ p * (1 + ε x))
     =ᶠ[atTop] fun x => deriv (· ^ p) x * (1 + ε x) + x ^ p * deriv (1 + ε ·) x := by
             filter_upwards [eventually_gt_atTop 1] with x hx
-            rw [deriv_mul]
+            rw [deriv_fun_mul]
             · exact differentiableAt_rpow_const_of_ne _ (by positivity)
             · exact differentiableAt_one_add_smoothingFn hx
   _ =ᶠ[atTop] fun x => p * x ^ (p-1) * (1 + ε x) - x ^ p * (x⁻¹ / (log x ^ 2)) := by
@@ -202,7 +202,7 @@ lemma growsPolynomially_deriv_rpow_p_mul_one_sub_smoothingFn (p : ℝ) :
       have : 0 ≤ x⁻¹ / (log x ^ 2) := by
         have hlog : 0 < log x := Real.log_pos hx_pos
         positivity
-      simp only [hp, Real.rpow_zero, one_mul, differentiableAt_const, hx, Real.norm_of_nonneg this]
+      simp only [hp, Real.rpow_zero, one_mul, hx, Real.norm_of_nonneg this]
     refine GrowsPolynomially.congr_of_eventuallyEq h₁ ?_
     refine GrowsPolynomially.div (GrowsPolynomially.inv growsPolynomially_id)
       (GrowsPolynomially.pow 2 growsPolynomially_log ?_)
@@ -225,7 +225,7 @@ lemma growsPolynomially_deriv_rpow_p_mul_one_add_smoothingFn (p : ℝ) :
         have hlog : 0 < log x := Real.log_pos hx_pos
         positivity
       simp only [neg_div, norm_neg, hp, Real.rpow_zero,
-        one_mul, differentiableAt_const, hx, Real.norm_of_nonneg this]
+        one_mul, hx, Real.norm_of_nonneg this]
     refine GrowsPolynomially.congr_of_eventuallyEq h₁ ?_
     refine GrowsPolynomially.div (GrowsPolynomially.inv growsPolynomially_id)
       (GrowsPolynomially.pow 2 growsPolynomially_log ?_)
@@ -290,7 +290,7 @@ lemma rpow_p_mul_one_sub_smoothingFn_le :
           _ =ᶠ[atTop] fun x => deriv (fun z => z ^ (p a b)) x * (1 - ε x) +
                   x ^ (p a b) * deriv (fun z => 1 - ε z) x := by
               filter_upwards [eventually_ne_atTop 0, eventually_gt_atTop 1] with x hx hx'
-              rw [deriv_mul] <;> aesop
+              rw [deriv_fun_mul] <;> aesop
           _ =O[atTop] fun x => x ^ ((p a b) - 1) := by
               refine IsBigO.add ?left ?right
               case left => calc
@@ -363,7 +363,7 @@ lemma rpow_p_mul_one_sub_smoothingFn_le :
     have := R.b_pos i
     simp only [q, mul_rpow (by positivity : (0 : ℝ) ≤ b i) (by positivity : (0 : ℝ) ≤ n)]
     ring
-  show q (r i n) ≤ (b i) ^ (p a b) * n ^ (p a b) * (1 - ε n)
+  change q (r i n) ≤ (b i) ^ (p a b) * n ^ (p a b) * (1 - ε n)
   rw [← h₁, ← sub_le_iff_le_add']
   exact hn
 
@@ -385,7 +385,7 @@ lemma rpow_p_mul_one_add_smoothingFn_ge :
           _ =ᶠ[atTop] fun x => deriv (fun z => z ^ (p a b)) x * (1 + ε x)
               + x ^ (p a b) * deriv (fun z => 1 + ε z) x := by
                 filter_upwards [eventually_ne_atTop 0, eventually_gt_atTop 1] with x hx hx'
-                rw [deriv_mul] <;> aesop
+                rw [deriv_fun_mul] <;> aesop
           _ =O[atTop] fun x => x ^ ((p a b) - 1) := by
                 refine IsBigO.add ?left ?right
                 case left => calc
@@ -443,7 +443,7 @@ lemma rpow_p_mul_one_add_smoothingFn_ge :
                 refine sub_nonneg_of_le <|
                   (strictAntiOn_smoothingFn.le_iff_le ?n_gt_one ?bn_gt_one).mpr ?le
                 case n_gt_one =>
-                  show 1 < (n : ℝ)
+                  change 1 < (n : ℝ)
                   rw [Nat.one_lt_cast]
                   exact hn'
                 case bn_gt_one =>
@@ -459,7 +459,7 @@ lemma rpow_p_mul_one_add_smoothingFn_ge :
     have := R.b_pos i
     simp only [q, mul_rpow (by positivity : (0 : ℝ) ≤ b i) (by positivity : (0 : ℝ) ≤ n)]
     ring
-  show (b i) ^ (p a b) * n ^ (p a b) * (1 + ε n) ≤ q (r i n)
+  change (b i) ^ (p a b) * n ^ (p a b) * (1 + ε n) ≤ q (r i n)
   rw [← h₁, sub_le_iff_le_add', ← sub_le_iff_le_add]
   exact hn
 

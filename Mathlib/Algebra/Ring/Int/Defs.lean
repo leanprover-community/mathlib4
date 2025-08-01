@@ -7,6 +7,7 @@ import Mathlib.Algebra.CharZero.Defs
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.Group.Int.Defs
 import Mathlib.Data.Int.Cast.Basic
+import Mathlib.Algebra.Ring.GrindInstances
 
 /-!
 # The integers are a ring

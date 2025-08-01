@@ -59,7 +59,7 @@ open Subgroup
 /-- The range of a monoid homomorphism from a group is a subgroup. -/
 @[to_additive "The range of an `AddMonoidHom` from an `AddGroup` is an `AddSubgroup`."]
 def range (f : G →* N) : Subgroup N :=
-  Subgroup.copy ((⊤ : Subgroup G).map f) (Set.range f) (by simp [Set.ext_iff])
+  Subgroup.copy ((⊤ : Subgroup G).map f) (Set.range f) (by simp)
 
 @[to_additive (attr := simp)]
 theorem coe_range (f : G →* N) : (f.range : Set N) = Set.range f :=
@@ -177,8 +177,7 @@ def ofLeftInverse {f : G →* N} {g : N →* G} (h : Function.LeftInverse g f) :
     left_inv := h
     right_inv := by
       rintro ⟨x, y, rfl⟩
-      apply Subtype.ext
-      rw [coe_rangeRestrict, Function.comp_apply, Subgroup.coe_subtype, Subtype.coe_mk, h] }
+      solve_by_elim }
 
 @[to_additive (attr := simp)]
 theorem ofLeftInverse_apply {f : G →* N} {g : N →* G} (h : Function.LeftInverse g f) (x : G) :
@@ -293,6 +292,12 @@ theorem ker_one : (1 : G →* M).ker = ⊤ :=
 theorem ker_id : (MonoidHom.id G).ker = ⊥ :=
   rfl
 
+@[to_additive] theorem ker_eq_top_iff {f : G →* M} : f.ker = ⊤ ↔ f = 1 := by
+  simp [ker, ← top_le_iff, SetLike.le_def, f.ext_iff]
+
+@[to_additive] theorem range_eq_bot_iff {f : G →* G'} : f.range = ⊥ ↔ f = 1 := by
+  rw [← le_bot_iff, f.range_eq_map, map_le_iff_le_comap, top_le_iff, comap_bot, ker_eq_top_iff]
+
 @[to_additive]
 theorem ker_eq_bot_iff (f : G →* M) : f.ker = ⊥ ↔ Function.Injective f :=
   ⟨fun h x y hxy => by rwa [eq_iff, h, mem_bot, inv_mul_eq_one, eq_comm] at hxy, fun h =>
@@ -401,7 +406,7 @@ theorem map_comap_eq (H : Subgroup N) : map f (comap f H) = f.range ⊓ H :=
 @[to_additive]
 theorem comap_map_eq (H : Subgroup G) : comap f (map f H) = H ⊔ f.ker := by
   refine le_antisymm ?_ (sup_le (le_comap_map _ _) (ker_le_comap _ _))
-  intro x hx; simp only [exists_prop, mem_map, mem_comap] at hx
+  intro x hx; simp only [mem_map, mem_comap] at hx
   rcases hx with ⟨y, hy, hy'⟩
   rw [← mul_inv_cancel_left y x]
   exact mul_mem_sup hy (by simp [mem_ker, hy'])
@@ -488,6 +493,11 @@ lemma MapSubtype.orderIso_symm_apply (H : Subgroup G) (sH' : { H' : Subgroup G /
   rfl
 
 @[to_additive]
+protected lemma «forall» {H : Subgroup G} {P : Subgroup H → Prop} :
+    (∀ H' : Subgroup H, P H') ↔ (∀ H' ≤ H, P (H'.subgroupOf H)) := by
+  simp [(MapSubtype.orderIso H).forall_congr_left]
+
+@[to_additive]
 theorem map_lt_map_iff_of_injective {f : G →* N} (hf : Function.Injective f) {H K : Subgroup G} :
     H.map f < K.map f ↔ H < K :=
   lt_iff_lt_of_le_iff_le' (map_le_map_iff_of_injective hf) (map_le_map_iff_of_injective hf)
@@ -514,11 +524,7 @@ theorem ker_subgroupMap : (f.subgroupMap H).ker = f.ker.subgroupOf H :=
 
 @[to_additive]
 theorem closure_preimage_eq_top (s : Set G) : closure ((closure s).subtype ⁻¹' s) = ⊤ := by
-  apply map_injective (closure s).subtype_injective
-  rw [MonoidHom.map_closure, ← MonoidHom.range_eq_map, range_subtype,
-    Set.image_preimage_eq_of_subset]
-  rw [coe_subtype, Subtype.range_coe_subtype]
-  exact subset_closure
+  simp
 
 @[to_additive]
 theorem comap_sup_eq_of_le_range {H K : Subgroup N} (hH : H ≤ f.range) (hK : K ≤ f.range) :

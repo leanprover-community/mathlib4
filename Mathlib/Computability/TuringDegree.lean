@@ -119,8 +119,6 @@ theorem partrec_iff_forall_turingReducible : Nat.Partrec f ↔ ∀ g, f ≤ᵀ g
 protected theorem TuringReducible.refl (f : ℕ →. ℕ) : f ≤ᵀ f := .oracle _ <| by simp
 protected theorem TuringReducible.rfl : f ≤ᵀ f := .refl _
 
-instance : IsRefl (ℕ →. ℕ) TuringReducible where refl _ := .rfl
-
 theorem TuringReducible.trans (hg : f ≤ᵀ g) (hh : g ≤ᵀ h) : f ≤ᵀ h := by
   induction hg with repeat {constructor}
   | oracle _ hg => rw [Set.mem_singleton_iff] at hg; rw [hg]; exact hh
@@ -129,11 +127,9 @@ theorem TuringReducible.trans (hg : f ≤ᵀ g) (hh : g ≤ᵀ h) : f ≤ᵀ h :
   | prec _ _ ih₁ ih₂ => exact RecursiveIn.prec ih₁ ih₂
   | rfind _ ih => exact RecursiveIn.rfind ih
 
-instance : IsTrans (ℕ →. ℕ) TuringReducible :=
-  ⟨@TuringReducible.trans⟩
-
 instance : IsPreorder (ℕ →. ℕ) TuringReducible where
-  refl := .refl
+  refl _ := .rfl
+  trans := @TuringReducible.trans
 
 theorem TuringEquivalent.equivalence : Equivalence TuringEquivalent :=
   (AntisymmRel.setoid _ _).iseqv
@@ -149,13 +145,6 @@ theorem TuringEquivalent.symm {f g : ℕ →. ℕ} (h : f ≡ᵀ g) : g ≡ᵀ f
 @[trans]
 theorem TuringEquivalent.trans (f g h : ℕ →. ℕ) (h₁ : f ≡ᵀ g) (h₂ : g ≡ᵀ h) : f ≡ᵀ h :=
   Equivalence.trans equivalence h₁ h₂
-
-/--
-Instance declaring that `RecursiveIn` is a preorder.
--/
-instance : IsPreorder (ℕ →. ℕ) TuringReducible where
-  refl := TuringReducible.refl
-  trans := @TuringReducible.trans
 
 /--
 Turing degrees are the equivalence classes of partial functions under Turing equivalence.

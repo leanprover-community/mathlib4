@@ -165,9 +165,6 @@ theorem ofReal_injective : Function.Injective ((↑) : ℝ → K) :=
 theorem ofReal_inj {z w : ℝ} : (z : K) = (w : K) ↔ z = w :=
   algebraMap.coe_inj
 
--- replaced by `RCLike.ofNat_re`
--- replaced by `RCLike.ofNat_im`
-
 theorem ofReal_eq_zero {x : ℝ} : (x : K) = 0 ↔ x = 0 :=
   algebraMap.lift_map_eq_zero_iff x
 
@@ -177,8 +174,6 @@ theorem ofReal_ne_zero {x : ℝ} : (x : K) ≠ 0 ↔ x ≠ 0 :=
 @[rclike_simps, norm_cast]
 theorem ofReal_add (r s : ℝ) : ((r + s : ℝ) : K) = r + s :=
   algebraMap.coe_add _ _
-
--- replaced by `RCLike.ofReal_ofNat`
 
 @[rclike_simps, norm_cast]
 theorem ofReal_neg (r : ℝ) : ((-r : ℝ) : K) = -r :=
@@ -300,9 +295,7 @@ theorem conj_I : conj (I : K) = -I :=
 @[simp, rclike_simps]
 theorem conj_ofReal (r : ℝ) : conj (r : K) = (r : K) := by
   rw [ext_iff]
-  simp only [ofReal_im, conj_im, eq_self_iff_true, conj_re, and_self_iff, neg_zero]
-
--- replaced by `RCLike.conj_ofNat`
+  simp only [ofReal_im, conj_im, conj_re, and_self_iff, neg_zero]
 
 theorem conj_nat_cast (n : ℕ) : conj (n : K) = n := map_natCast _ _
 
@@ -484,11 +477,11 @@ theorem inv_im (z : K) : im z⁻¹ = -im z / normSq z := by
   rw [inv_def, normSq_eq_def', mul_comm, im_ofReal_mul, conj_im, div_eq_inv_mul]
 
 theorem div_re (z w : K) : re (z / w) = re z * re w / normSq w + im z * im w / normSq w := by
-  simp only [div_eq_mul_inv, mul_assoc, sub_eq_add_neg, neg_mul, mul_neg, neg_neg, map_neg,
+  simp only [div_eq_mul_inv, mul_assoc, sub_eq_add_neg, neg_mul, mul_neg, neg_neg,
     rclike_simps]
 
 theorem div_im (z w : K) : im (z / w) = im z * re w / normSq w - re z * im w / normSq w := by
-  simp only [div_eq_mul_inv, mul_assoc, sub_eq_add_neg, add_comm, neg_mul, mul_neg, map_neg,
+  simp only [div_eq_mul_inv, mul_assoc, sub_eq_add_neg, add_comm, neg_mul, mul_neg,
     rclike_simps]
 
 @[rclike_simps] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): was `simp`
@@ -753,7 +746,7 @@ noncomputable instance Real.instRCLike : RCLike ℝ where
   I_re_ax := by simp only [AddMonoidHom.map_zero]
   I_mul_I_ax := Or.intro_left _ rfl
   re_add_im_ax z := by
-    simp only [add_zero, mul_zero, Algebra.id.map_eq_id, RingHom.id_apply, AddMonoidHom.id_apply]
+    simp only [add_zero, mul_zero, Algebra.algebraMap_self, RingHom.id_apply, AddMonoidHom.id_apply]
   ofReal_re_ax _ := rfl
   ofReal_im_ax _ := rfl
   mul_re_ax z w := by simp only [sub_zero, mul_zero, AddMonoidHom.zero_apply, AddMonoidHom.id_apply]

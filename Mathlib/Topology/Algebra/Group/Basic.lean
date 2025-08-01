@@ -121,8 +121,7 @@ theorem discreteTopology_of_isOpen_singleton_one (h : IsOpen ({1} : Set G)) :
   suffices {g} = (g⁻¹ * ·) ⁻¹' {1} by
     rw [this]
     exact (continuous_mul_left g⁻¹).isOpen_preimage _ h
-  simp only [mul_one, Set.preimage_mul_left_singleton, eq_self_iff_true, inv_inv,
-    Set.singleton_eq_singleton_iff]
+  simp only [mul_one, Set.preimage_mul_left_singleton, inv_inv]
 
 @[to_additive]
 theorem discreteTopology_iff_isOpen_singleton_one : DiscreteTopology G ↔ IsOpen ({1} : Set G) :=
@@ -444,7 +443,7 @@ variable [TopologicalSpace H] [CommGroup H] [PartialOrder H] [IsOrderedMonoid H]
 
 @[to_additive]
 theorem tendsto_inv_nhdsGT {a : H} : Tendsto Inv.inv (𝓝[>] a) (𝓝[<] a⁻¹) :=
-  (continuous_inv.tendsto a).inf <| by simp [tendsto_principal_principal]
+  (continuous_inv.tendsto a).inf <| by simp
 
 @[deprecated (since := "2024-12-22")]
 alias tendsto_neg_nhdsWithin_Ioi := tendsto_neg_nhdsGT
@@ -453,7 +452,7 @@ alias tendsto_inv_nhdsWithin_Ioi := tendsto_inv_nhdsGT
 
 @[to_additive]
 theorem tendsto_inv_nhdsLT {a : H} : Tendsto Inv.inv (𝓝[<] a) (𝓝[>] a⁻¹) :=
-  (continuous_inv.tendsto a).inf <| by simp [tendsto_principal_principal]
+  (continuous_inv.tendsto a).inf <| by simp
 
 @[deprecated (since := "2024-12-22")]
 alias tendsto_neg_nhdsWithin_Iio := tendsto_neg_nhdsLT
@@ -480,7 +479,7 @@ alias tendsto_inv_nhdsWithin_Iio_inv := tendsto_inv_nhdsLT_inv
 
 @[to_additive]
 theorem tendsto_inv_nhdsGE {a : H} : Tendsto Inv.inv (𝓝[≥] a) (𝓝[≤] a⁻¹) :=
-  (continuous_inv.tendsto a).inf <| by simp [tendsto_principal_principal]
+  (continuous_inv.tendsto a).inf <| by simp
 
 @[deprecated (since := "2024-12-22")]
 alias tendsto_neg_nhdsWithin_Ici := tendsto_neg_nhdsGE
@@ -489,7 +488,7 @@ alias tendsto_inv_nhdsWithin_Ici := tendsto_inv_nhdsGE
 
 @[to_additive]
 theorem tendsto_inv_nhdsLE {a : H} : Tendsto Inv.inv (𝓝[≤] a) (𝓝[≥] a⁻¹) :=
-  (continuous_inv.tendsto a).inf <| by simp [tendsto_principal_principal]
+  (continuous_inv.tendsto a).inf <| by simp
 
 @[deprecated (since := "2024-12-22")]
 alias tendsto_neg_nhdsWithin_Iic := tendsto_neg_nhdsLE
@@ -849,7 +848,7 @@ theorem IsTopologicalGroup.of_nhds_one' {G : Type u} [Group G] [TopologicalSpace
           (by
             rw [show (fun x => x₀ * x * x₀⁻¹) = (fun x => x * x₀⁻¹) ∘ fun x => x₀ * x from rfl, ←
               map_map, ← hleft, hright, map_map]
-            simp [(· ∘ ·)]) }
+            simp) }
 
 @[to_additive]
 theorem IsTopologicalGroup.of_nhds_one {G : Type u} [Group G] [TopologicalSpace G]
@@ -884,7 +883,7 @@ theorem IsTopologicalGroup.exists_antitone_basis_nhds_one [FirstCountableTopolog
   have :=
     ((hu.prod_nhds hu).tendsto_iff hu).mp
       (by simpa only [mul_one] using continuous_mul.tendsto ((1, 1) : G × G))
-  simp only [and_self_iff, mem_prod, and_imp, Prod.forall, exists_true_left, Prod.exists,
+  simp only [and_self_iff, mem_prod, and_imp, Prod.forall, Prod.exists,
     forall_true_left] at this
   have event_mul : ∀ n : ℕ, ∀ᶠ m in atTop, u m * u m ⊆ u n := by
     intro n
@@ -1048,7 +1047,7 @@ theorem Subgroup.properlyDiscontinuousSMul_opposite_of_tendsto_cofinite (S : Sub
       apply Finite.of_preimage _ (equivOp S).surjective
       convert H using 1
       ext x
-      simp only [image_smul, mem_setOf_eq, coe_subtype, mem_preimage, mem_image, Prod.exists]
+      simp only [image_smul, mem_setOf_eq, mem_preimage, mem_image, Prod.exists]
       exact Set.op_smul_inter_ne_empty_iff }
 
 end
@@ -1155,7 +1154,7 @@ theorem exists_disjoint_smul_of_isCompact [NoncompactSpace G] {K L : Set G} (hK 
   refine disjoint_left.2 fun a ha h'a => hg ?_
   rcases h'a with ⟨b, bL, rfl⟩
   refine ⟨g * b, ha, b⁻¹, by simpa only [Set.mem_inv, inv_inv] using bL, ?_⟩
-  simp only [smul_eq_mul, mul_inv_cancel_right]
+  simp only [mul_inv_cancel_right]
 
 end
 

@@ -396,7 +396,7 @@ theorem zero_lt_orderTop_of_order {x : HahnSeries Γ R} (hx : 0 < x.order) : 0 <
 theorem zero_le_orderTop_iff {x : HahnSeries Γ R} : 0 ≤ x.orderTop ↔ 0 ≤ x.order := by
   by_cases h : x = 0
   · simp_all
-  · simp_all [order_of_ne h, orderTop_of_ne h, zero_lt_orderTop_iff]
+  · simp_all [order_of_ne h, orderTop_of_ne h]
 
 theorem leadingCoeff_eq {x : HahnSeries Γ R} : x.leadingCoeff = x.coeff x.order := by
   by_cases h : x = 0

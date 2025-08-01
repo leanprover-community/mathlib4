@@ -72,8 +72,8 @@ lemma natCard_rootsOfUnity (M : Type*) [CommMonoid M] (n : ℕ) [NeZero n]
     let ζ' : rootsOfUnity n M := ⟨(h.isUnit <| NeZero.pos n).unit, ?_⟩
     · rw [← Subgroup.orderOf_mk]
       exact Monoid.order_dvd_exponent ζ'
-    simp only [mem_rootsOfUnity, PNat.mk_coe]
-    rw [← Units.eq_iff, Units.val_pow_eq_pow_val, IsUnit.unit_spec, h.pow_eq_one, Units.val_one]
+    simp only [mem_rootsOfUnity]
+    rw [← Units.val_inj, Units.val_pow_eq_pow_val, IsUnit.unit_spec, h.pow_eq_one, Units.val_one]
 
 end HasEnoughRootsOfUnity
 

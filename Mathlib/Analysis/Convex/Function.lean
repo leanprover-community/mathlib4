@@ -1026,7 +1026,7 @@ theorem OrderIso.convexOn_symm (f : α ≃o β) (hf : ConcaveOn 𝕜 univ f) :
   refine ⟨convex_univ, fun x _ y _ a b ha hb hab => ?_⟩
   obtain ⟨x', hx''⟩ := f.surjective.exists.mp ⟨x, rfl⟩
   obtain ⟨y', hy''⟩ := f.surjective.exists.mp ⟨y, rfl⟩
-  simp only [hx'', hy'', OrderIso.symm_apply_apply, gt_iff_lt]
+  simp only [hx'', hy'', OrderIso.symm_apply_apply]
   rw [← f.le_iff_le, OrderIso.apply_symm_apply]
   exact hf.2 (by simp : x' ∈ univ) (by simp : y' ∈ univ) ha hb hab
 
@@ -1045,7 +1045,7 @@ theorem OrderIso.concaveOn_symm (f : α ≃o β) (hf : ConvexOn 𝕜 univ f) :
   refine ⟨convex_univ, fun x _ y _ a b ha hb hab => ?_⟩
   obtain ⟨x', hx''⟩ := f.surjective.exists.mp ⟨x, rfl⟩
   obtain ⟨y', hy''⟩ := f.surjective.exists.mp ⟨y, rfl⟩
-  simp only [hx'', hy'', OrderIso.symm_apply_apply, gt_iff_lt]
+  simp only [hx'', hy'', OrderIso.symm_apply_apply]
   rw [← f.le_iff_le, OrderIso.apply_symm_apply]
   exact hf.2 (by simp : x' ∈ univ) (by simp : y' ∈ univ) ha hb hab
 

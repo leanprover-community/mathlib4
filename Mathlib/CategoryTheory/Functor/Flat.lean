@@ -203,9 +203,11 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
   let α₂ : (F.mapCone c).toStructuredArrow ⋙ map f₂ ⟶ s.toStructuredArrow :=
     { app := fun X => eqToHom (by simp [← h₂]) }
   let c₁ : Cone (s.toStructuredArrow ⋙ pre s.pt K F) :=
-    (Cones.postcompose (whiskerRight α₁ (pre s.pt K F) :)).obj (c.toStructuredArrowCone F f₁)
+    (Cones.postcompose (Functor.whiskerRight α₁ (pre s.pt K F) :)).obj
+      (c.toStructuredArrowCone F f₁)
   let c₂ : Cone (s.toStructuredArrow ⋙ pre s.pt K F) :=
-    (Cones.postcompose (whiskerRight α₂ (pre s.pt K F) :)).obj (c.toStructuredArrowCone F f₂)
+    (Cones.postcompose (Functor.whiskerRight α₂ (pre s.pt K F) :)).obj
+      (c.toStructuredArrowCone F f₂)
   -- The two cones can then be combined and we may obtain a cone over the two cones since
   -- `StructuredArrow s.pt F` is cofiltered.
   let c₀ := IsCofiltered.cone (biconeMk _ c₁ c₂)
@@ -277,7 +279,7 @@ lemma preservesFiniteLimits_iff_flat [HasFiniteLimits C] (F : C ⥤ D) :
   ⟨fun _ ↦ preservesFiniteLimits_of_flat F, fun _ ↦ flat_of_preservesFiniteLimits F⟩
 
 /-- If `C` is finitely cocomplete, then `F : C ⥤ D` is representably coflat iff it preserves
-finite colmits. -/
+finite colimits. -/
 lemma preservesFiniteColimits_iff_coflat [HasFiniteColimits C] (F : C ⥤ D) :
     RepresentablyCoflat F ↔ PreservesFiniteColimits F :=
   ⟨fun _ => preservesFiniteColimits_of_coflat F, fun _ => coflat_of_preservesFiniteColimits F⟩
@@ -295,7 +297,7 @@ The evaluation of `F.lan` at `X` is the colimit over the costructured arrows ove
 noncomputable def lanEvaluationIsoColim (F : C ⥤ D) (X : D)
     [∀ X : D, HasColimitsOfShape (CostructuredArrow F X) E] :
     F.lan ⋙ (evaluation D E).obj X ≅
-      (whiskeringLeft _ _ E).obj (CostructuredArrow.proj F X) ⋙ colim :=
+      (Functor.whiskeringLeft _ _ E).obj (CostructuredArrow.proj F X) ⋙ colim :=
   NatIso.ofComponents (fun G =>
     IsColimit.coconePointUniqueUpToIso
     (Functor.isPointwiseLeftKanExtensionLeftKanExtensionUnit F G X)
@@ -309,7 +311,7 @@ noncomputable def lanEvaluationIsoColim (F : C ⥤ D) (X : D)
       simp only [Category.assoc] at h₁ ⊢
       simp only [Functor.lan, Functor.lanUnit] at h₂ ⊢
       rw [reassoc_of% h₁, NatTrans.naturality_assoc, ← reassoc_of% h₂, h₁,
-        ι_colimMap, whiskerLeft_app]
+        ι_colimMap, Functor.whiskerLeft_app]
       rfl)
 
 variable [HasForget.{u₁} E] [HasLimits E] [HasColimits E]

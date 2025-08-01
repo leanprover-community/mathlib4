@@ -307,17 +307,17 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
         simp only [norm_smul, Real.norm_eq_abs, abs_mul, abs_of_nonneg, ht.1, hpos.le, mul_assoc]
         exact mul_le_of_le_one_left (by positivity) ht.2.le
       _ = ε * ((‖v‖ + ‖w‖) * ‖w‖) * h ^ 2 := by
-        simp only [norm_smul, Real.norm_eq_abs, abs_mul, abs_of_nonneg, hpos.le]; ring
+        simp only [norm_smul, Real.norm_eq_abs, abs_of_nonneg, hpos.le]; ring
   -- conclude using the mean value inequality
   have I : ‖g 1 - g 0‖ ≤ ε * ((‖v‖ + ‖w‖) * ‖w‖) * h ^ 2 := by
     simpa only [mul_one, sub_zero] using
       norm_image_sub_le_of_norm_deriv_le_segment' g_deriv g'_bound 1 (right_mem_Icc.2 zero_le_one)
   convert I using 1
   · congr 1
-    simp only [g, Nat.one_ne_zero, add_zero, one_mul, zero_div, zero_mul, sub_zero,
+    simp only [g, add_zero, one_mul, zero_div, zero_mul, sub_zero,
       zero_smul, Ne, not_false_iff, zero_pow, reduceCtorEq]
     abel
-  · simp (discharger := positivity) only [Real.norm_eq_abs, abs_mul, abs_of_nonneg, abs_pow]
+  · simp (discharger := positivity) only [Real.norm_eq_abs, abs_of_nonneg]
     ring
 
 /-- One can get `f'' v w` as the limit of `h ^ (-2)` times the alternate sum of the values of `f`
@@ -357,8 +357,7 @@ theorem Convex.isLittleO_alternate_sum_square {v w : E} (h4v : x + (4 : ℝ) •
   convert TA1.sub TA2 using 1
   ext h
   simp only [two_smul, smul_add, ← add_assoc, ContinuousLinearMap.map_add,
-    ContinuousLinearMap.add_apply, Pi.smul_apply, ContinuousLinearMap.coe_smul',
-    ContinuousLinearMap.map_smul]
+    ContinuousLinearMap.add_apply]
   abel
 
 /-- Assume that `f` is differentiable inside a convex set `s`, and that its derivative `f'` is
@@ -422,14 +421,14 @@ theorem Convex.second_derivative_within_at_symmetric {s : Set E} (s_conv : Conve
       s_conv.second_derivative_within_at_symmetric_of_mem_interior hf xs hx (ts 0) (ts m)
     simp only [ContinuousLinearMap.map_add, ContinuousLinearMap.map_smul, add_right_inj,
       ContinuousLinearMap.add_apply, Pi.smul_apply, ContinuousLinearMap.coe_smul', add_zero,
-      ContinuousLinearMap.zero_apply, smul_zero, ContinuousLinearMap.map_zero] at this
+      smul_zero] at this
     exact smul_right_injective F (tpos m).ne' this
   -- applying `second_derivative_within_at_symmetric_of_mem_interior` to the vectors `z + (t v) v`
   -- and `z + (t w) w`, we deduce that `f'' v w = f'' w v`. Cross terms involving `z` can be
   -- eliminated thanks to the fact proved above that `f'' m z = f'' z m`.
   have : f'' (z + t v • v) (z + t w • w) = f'' (z + t w • w) (z + t v • v) :=
     s_conv.second_derivative_within_at_symmetric_of_mem_interior hf xs hx (ts w) (ts v)
-  simp only [ContinuousLinearMap.map_add, ContinuousLinearMap.map_smul, smul_add, smul_smul,
+  simp only [ContinuousLinearMap.map_add, ContinuousLinearMap.map_smul, smul_smul,
     ContinuousLinearMap.add_apply, Pi.smul_apply, ContinuousLinearMap.coe_smul', C] at this
   have : (t v * t w) • (f'' v) w = (t v * t w) • (f'' w) v := by
     linear_combination (norm := module) this
