@@ -25,7 +25,7 @@ import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
 
 noncomputable section
 
-open ModularForm UpperHalfPlane Complex Matrix CongruenceSubgroup
+open ModularForm UpperHalfPlane Complex Matrix CongruenceSubgroup Set
 
 open scoped MatrixGroups
 
@@ -52,6 +52,72 @@ lemma gammaSet_one_eq (a a' : Fin 2 → ZMod 1) : gammaSet 1 a = gammaSet 1 a' :
 /-- For level `N = 1`, the gamma sets are all equivalent; this is the equivalence. -/
 def gammaSet_one_equiv (a a' : Fin 2 → ZMod 1) : gammaSet 1 a ≃ gammaSet 1 a' :=
   Equiv.setCongr (gammaSet_one_eq a a')
+
+open Pointwise
+def gammaSetN (N : ℕ) : Set (Fin 2 → ℤ) := ({N} : Set ℕ) • gammaSet 1 0
+
+noncomputable def gammaSetN_map (N : ℕ) (v : gammaSetN N) : gammaSet 1 0 := by
+  have hv2 := v.2
+  simp only [gammaSetN, singleton_smul, mem_smul_set, nsmul_eq_mul] at hv2
+  refine ⟨hv2.choose, hv2.choose_spec.1⟩
+
+lemma gammaSet_top_mem (v : Fin 2 → ℤ) : v ∈ gammaSet 1 0 ↔ IsCoprime (v 0) (v 1) := by
+  simpa [gammaSet] using fun h ↦ Subsingleton.eq_zero (Int.cast ∘ v)
+
+lemma gammaSetN_map_eq {N : ℕ} (v : gammaSetN N) : v.1 = N • gammaSetN_map N v := by
+  have hv2 := v.2
+  simp only [gammaSetN, singleton_smul, mem_smul_set, nsmul_eq_mul] at hv2
+  exact (hv2.choose_spec.2).symm
+
+noncomputable def gammaSetN_Equiv {N : ℕ} (hN : N ≠ 0) : gammaSetN N ≃ gammaSet 1 0 where
+  toFun v := gammaSetN_map N v
+  invFun v := by
+    use N • v
+    simp only [gammaSetN, singleton_smul, nsmul_eq_mul, mem_smul_set]
+    refine ⟨v, by simp⟩
+  left_inv v := by
+    simp_rw [← gammaSetN_map_eq v]
+  right_inv v := by
+    have H : N • v.1 ∈ gammaSetN N := by
+      simp only [gammaSetN, singleton_smul, nsmul_eq_mul, mem_smul_set]
+      refine ⟨v.1, by simp⟩
+    simp [gammaSetN, mem_smul_set] at *
+    let x := H.choose
+    have hx := H.choose_spec
+    have hxv : ⟨H.choose, H.choose_spec.1⟩ = v := by
+      ext i
+      simpa [hN] using (congr_fun H.choose_spec.2 i)
+    simp_all only [gammaSetN_map]
+
+private def fin_to_GammaSetN (v : Fin 2 → ℤ) : Σ n : ℕ, gammaSetN n := by
+  refine ⟨(v 0).gcd (v 1), ⟨(v 0).gcd (v 1) • ![(v 0)/(v 0).gcd (v 1), (v 1)/(v 0).gcd (v 1)], ?_⟩⟩
+  by_cases hn : 0 < (v 0).gcd (v 1)
+  · apply Set.smul_mem_smul (by aesop)
+    rw [gammaSet_top_mem, Int.isCoprime_iff_gcd_eq_one]
+    apply Int.gcd_div_gcd_div_gcd hn
+  · simp only [gammaSetN, Fin.isValue, (nonpos_iff_eq_zero.mp (not_lt.mp hn)), singleton_smul,
+    Nat.succ_eq_add_one, Nat.reduceAdd, CharP.cast_eq_zero, zero_nsmul]
+    refine ⟨![1,1], by simpa [gammaSet_top_mem] using Int.isCoprime_iff_gcd_eq_one.mpr rfl⟩
+
+def GammaSet_one_Equiv : (Fin 2 → ℤ) ≃ (Σ n : ℕ, gammaSetN n) where
+  toFun v := fin_to_GammaSetN v
+  invFun v := v.2
+  left_inv v := by
+            ext i
+            fin_cases i
+            · exact Int.mul_ediv_cancel' (Int.gcd_dvd_left _ _)
+            · exact Int.mul_ediv_cancel' (Int.gcd_dvd_right _ _)
+  right_inv v := by
+          ext i
+          · have hv2 := v.2.2
+            simp only [gammaSetN, singleton_smul, mem_smul_set, nsmul_eq_mul] at hv2
+            obtain ⟨x, hx⟩ := hv2
+            simp [← hx.2, fin_to_GammaSetN, Fin.isValue, Int.gcd_mul_left,
+              Int.isCoprime_iff_gcd_eq_one.mp hx.1.2]
+          · fin_cases i
+            · exact Int.mul_ediv_cancel' (Int.gcd_dvd_left _ _)
+            · exact Int.mul_ediv_cancel' (Int.gcd_dvd_right _ _)
+
 
 end gammaSet_def
 
