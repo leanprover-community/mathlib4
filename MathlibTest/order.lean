@@ -87,7 +87,14 @@ error: No contradiction found.
 
 Additional diagnostic information may be available using the `set_option trace.order true` command.
 ---
-trace: [order] Working on type α (partial order)
+trace: [order] Working on type ℕ (linear order)
+[order] Collected atoms:
+    #0 := x
+    #1 := y
+[order] Collected facts:
+    #0 ≠ #1
+    #0 ≤ #1
+[order] Working on type α (partial order)
 [order] Collected atoms:
     #0 := a ⊓ (b ⊔ c)
     #1 := a
@@ -115,13 +122,6 @@ trace: [order] Working on type α (partial order)
     #5 := #6 ⊔ #7
     #0 ≠ #5
     ¬ #0 < #5
-[order] Working on type ℕ (linear order)
-[order] Collected atoms:
-    #0 := x
-    #1 := y
-[order] Collected facts:
-    #0 ≠ #1
-    #0 ≤ #1
 -/
 #guard_msgs in
 example (a b c : α) (x y : Nat) (h : x < y) [Lattice α] : a ⊓ (b ⊔ c) ≤ (a ⊓ b) ⊔ (a ⊓ c) := by

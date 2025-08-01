@@ -34,8 +34,9 @@ example : Nat → Nat → True := by
 
 
 def err (t : Bool) := if t then
-  "tactic 'rewrite' failed, equality or iff proof expected
+  "Tactic `rewrite` failed: equality or iff proof expected
   n ≤ n.succ
+
 n : Nat
 ⊢ True"
   else

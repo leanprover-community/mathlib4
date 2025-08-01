@@ -562,8 +562,16 @@ is tested, instead of the first argument.
 It will also reorder arguments of certain functions, using `reorderFn`:
 e.g. `g x₁ x₂ x₃ ... xₙ` becomes `g x₂ x₁ x₃ ... xₙ` if `reorderFn g = some [1]`.
 -/
-def applyReplacementFun (e : Expr) : MetaM Expr :=
-  return aux (← getEnv) (← getBoolOption `trace.to_additive_detail) e
+def applyReplacementFun (e : Expr) : MetaM Expr := do
+  let e' := aux (← getEnv) (← getBoolOption `trace.to_additive_detail) e
+  -- Make sure any new reserved names in the expr are realized; this needs to be done outside of
+  -- `aux` as it is monadic.
+  e'.forEach fun
+    | .const n .. => do
+      if !(← hasConst (skipRealize := false) n) && isReservedName (← getEnv) n then
+        executeReservedNameAction n
+    | _ => pure ()
+  return e'
 where /-- Implementation of `applyReplacementFun`. -/
   aux (env : Environment) (trace : Bool) : Expr → Expr :=
   let reorderFn : Name → List (List ℕ) := fun nm ↦ (reorderAttr.find? env nm |>.getD [])

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
 import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.Basic
 import Batteries.Logic
 import Batteries.Tactic.Trans
@@ -211,6 +212,11 @@ lemma Iff.ne_right {α β : Sort*} {a b : α} {c d : β} : (a ≠ b ↔ c = d) �
 
 /-! ### Declarations about `Xor'` -/
 
+#adaptation_note
+/--
+2025-07-31. Upstream `Xor` has been renamed to `XorOp`.
+Anytime after v4.23.0-rc1 lands it should be okay to remove the deprecation, and then rename this.
+-/
 /-- `Xor' a b` is the exclusive-or of propositions. -/
 def Xor' (a b : Prop) := (a ∧ ¬b) ∨ (b ∧ ¬a)
 

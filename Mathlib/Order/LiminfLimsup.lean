@@ -275,7 +275,7 @@ theorem HasBasis.liminf_eq_sSup_iUnion_iInter {ι ι' : Type*} {f : ι → α} {
     {p : ι' → Prop} {s : ι' → Set ι} (hv : v.HasBasis p s) :
     liminf f v = sSup (⋃ (j : Subtype p), ⋂ (i : s j), Iic (f i)) := by
   simp_rw [liminf_eq, hv.eventually_iff]
-  congr
+  congr 1
   ext x
   simp only [mem_setOf_eq, iInter_coe_set, mem_iUnion, mem_iInter, mem_Iic, Subtype.exists,
     exists_prop]

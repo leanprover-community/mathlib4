@@ -44,7 +44,7 @@ def Lean.Name.prefix? (n : Name) : Option Name :=
 
 /-- Collect all prefixes of names in `ns` into a single `NameSet`. -/
 def Lean.Name.collectPrefixes (ns : Array Name) : NameSet :=
-  ns.foldl (fun ns n => ns.union n.prefixes) ∅
+  ns.foldl (fun ns n => ns.append n.prefixes) ∅
 
 /-- Find a name in `ns` that starts with prefix `p`. -/
 def Lean.Name.prefixToName (p : Name) (ns : Array Name) : Option Name :=
@@ -144,7 +144,7 @@ def getAllLeft (r : NamePrefixRel) (n : Name) : NameSet := Id.run do
   let matchingPrefixes := n.prefixes.filter (fun prf ↦ r.containsKey prf)
   let mut allRules := NameSet.empty
   for prefix_ in matchingPrefixes do
-    let some rules := RBMap.find? r prefix_ | unreachable!
+    let some rules := r.find? prefix_ | unreachable!
     allRules := allRules.append rules
   allRules
 
