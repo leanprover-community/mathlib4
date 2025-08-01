@@ -5,11 +5,12 @@ import re
 import json
 
 # Usage:
-# python scripts/zulip_emoji_reactions.py $ZULIP_API_KEY $ZULIP_EMAIL $ZULIP_SITE $ACTION $LABEL_NAME $PR_NUMBER $PR_LABELS
+# python scripts/zulip_emoji_reactions.py $ZULIP_API_KEY $ZULIP_EMAIL $ZULIP_SITE $ACTION $LABEL_NAME $PR_NUMBER $LABELS_TO_KEEP
 # The first three variables identify the lean4 Zulip chat and allow the bot to access it
 # (see .github/workflows/zulip_emoji_merge_delegate.yaml),
 # see the comment below for a description of $ACTION and $LABEL_NAME.
-# $PR_LABELS is optional, but if present, should be a JSON array of label names
+# $LABELS_TO_KEEP is optional, but if present, should be a JSON array of GitHub PR label names
+# Emoji reactions that correspond to these labels will not be removed
 # (see .github/workflows/zulip_emoji_labelling.yaml)
 
 ZULIP_API_KEY = sys.argv[1]
@@ -36,15 +37,16 @@ print(f"ACTION: '{ACTION}'")
 print(f"LABEL_NAME: '{LABEL_NAME}'")
 print(f"PR_NUMBER: '{PR_NUMBER}'")
 try:
-    PR_LABELS = sys.argv[7]
-    print(f"Attempting to parse PR_LABELS: '{PR_LABELS}")
-    PR_LABELS = json.loads(PR_LABELS)
-    assert isinstance(PR_LABELS, list)
+    LABELS_TO_KEEP = sys.argv[7]
+    print(f"Attempting to parse LABELS_TO_KEEP: '{LABELS_TO_KEEP}")
+    LABELS_TO_KEEP = json.loads(LABELS_TO_KEEP)
+    assert isinstance(LABELS_TO_KEEP, list)
+    assert '' not in LABELS_TO_KEEP
 except:
-    print(f"parsing PR_LABELS failed; setting to empty list")
-    # an empty list is a good default since we remove reactions if the label is `not in PR_LABELS`
-    PR_LABELS = []
-print(f"PR_LABELS: '{PR_LABELS}'")
+    print(f"parsing LABELS_TO_KEEP failed; setting to empty list")
+    # an empty list is a good default since we remove reactions if the label is `not in LABELS_TO_KEEP`
+    LABELS_TO_KEEP = []
+print(f"LABELS_TO_KEEP: '{LABELS_TO_KEEP}'")
 
 # Initialize Zulip client
 client = zulip.Client(
@@ -114,9 +116,13 @@ for message in messages:
     if match:
         print(f"matched: '{message}'")
 
+        # name: a description of the emoji to be removed
+        # emoji_name: the emoji name as used on Zulip
+        # label_name: the name of the corresponding PR label, if present in LABELS_TO_KEEP, we do not remove the reaction
+        # if there is no corresponding label (e.g. for the "closed-pr" reaction) then this should be an empty string ""
+        # additional arguments will be passed to the zulip library remove_reaction function
         def remove_reaction(name: str, emoji_name: str, label_name: str, **kwargs) -> None:
-            # We only remove the emoji if the corresponding label is not present.
-            if label_name not in PR_LABELS:
+            if label_name not in LABELS_TO_KEEP:
                 print(f'Removing {name}')
                 result = client.remove_reaction({
                     "message_id": message['id'],
@@ -145,9 +151,10 @@ for message in messages:
         # We should never remove any "this PR was migrated from a fork" reaction.
 
         # Otherwise, remove all previous mutually exclusive emoji reactions (unless
-        # PR_LABELS contains the corresponding label).
+        # LABELS_TO_KEEP contains the corresponding label). This is because otherwise this script
+        # may end up removing reactions that are still relevant. See PR #27570
         # Note that the 'merge' and 'closed-pr' reactions do not have a corresponding label,
-        # so we pass the empty string (which should never be in PR_LABELS) so that they are
+        # so we pass the empty string (which will never be in LABELS_TO_KEEP) so that they are
         # always removed.
         # If the emoji is a custom emoji, add the fields `emoji_code` and `reaction_type` as well.
         print("Removing previous reactions, if present.")
