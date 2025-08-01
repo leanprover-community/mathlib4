@@ -110,7 +110,8 @@ variable [AddLeftMono α]
 theorem tsub_le_tsub_left (h : a ≤ b) (c : α) : c - b ≤ c - a :=
   tsub_le_iff_left.mpr <| le_add_tsub.trans <| add_le_add_right h _
 
-@[gcongr] theorem tsub_le_tsub (hab : a ≤ b) (hcd : c ≤ d) : a - d ≤ b - c :=
+@[gcongr low] -- lower priority than `sub_le_sub`, for performance reasons
+theorem tsub_le_tsub (hab : a ≤ b) (hcd : c ≤ d) : a - d ≤ b - c :=
   (tsub_le_tsub_right hab _).trans <| tsub_le_tsub_left hcd _
 
 theorem antitone_const_tsub : Antitone fun x => c - x := fun _ _ hxy => tsub_le_tsub rfl.le hxy
