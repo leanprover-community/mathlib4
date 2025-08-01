@@ -937,10 +937,8 @@ Zero loci of prime ideals are closed irreducible sets in the Zariski topology an
 irreducible set is a zero locus of some prime ideal.
 -/
 protected def pointsEquivIrreducibleCloseds :
-    PrimeSpectrum R ≃o (TopologicalSpace.IrreducibleCloseds (PrimeSpectrum R))ᵒᵈ where
-  __ := irreducibleSetEquivPoints.toEquiv.symm.trans OrderDual.toDual
-  map_rel_iff' {p q} :=
-    (RelIso.symm irreducibleSetEquivPoints).map_rel_iff.trans (le_iff_specializes p q).symm
+    PrimeSpectrum R ≃o (TopologicalSpace.IrreducibleCloseds (PrimeSpectrum R))ᵒᵈ :=
+  (irreducibleSetEquivPoints le_iff_specializes).symm
 
 lemma stableUnderSpecialization_singleton {x : PrimeSpectrum R} :
     StableUnderSpecialization {x} ↔ x.asIdeal.IsMaximal := by
