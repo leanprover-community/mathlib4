@@ -139,9 +139,9 @@ def isPointwiseLeftKanExtensionAtOfIsoOfIsLocalization
 then `e.hom` makes `G` a poinwise left Kan extension of `F` along `L`. -/
 noncomputable def isPointwiseLeftKanExtensionOfIsoOfIsLocalization
     {G : D ⥤ H} (e : F ≅ L ⋙ G) [L.IsLocalization W] :
-    (LeftExtension.mk _ e.hom).IsPointwiseLeftKanExtension := fun Y ↦ by
+    (LeftExtension.mk _ e.hom).IsPointwiseLeftKanExtension := fun Y ↦
   have := Localization.essSurj L W
-  exact (LeftExtension.mk _ e.hom).isPointwiseLeftKanExtensionAtEquivOfIso'
+  (LeftExtension.mk _ e.hom).isPointwiseLeftKanExtensionAtEquivOfIso'
     (L.objObjPreimageIso Y) (isPointwiseLeftKanExtensionAtOfIsoOfIsLocalization W e _)
 
 /-- Let `L : C ⥤ D` be a localization functor for `W`, if an extension `E`
