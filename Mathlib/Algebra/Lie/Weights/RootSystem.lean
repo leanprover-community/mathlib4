@@ -585,9 +585,7 @@ lemma eq_top_of_invtSubmodule_ne_bot
   have c₂ : I' ≠ ⊥ := by
     rw [← h] at s₆
     exact ne_of_apply_ne (LieIdeal.toLieSubalgebra K L) s₆
-  rcases this with h_bot | h_top
-  · contradiction
-  · contradiction
+  grind
 
 instance : (rootSystem H).IsIrreducible := by
   have _i := nontrivial_of_isIrreducible K L L
