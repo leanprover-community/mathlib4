@@ -483,6 +483,23 @@ noncomputable def directSum : Representation k G (⨁ i, V i) where
 
 end DirectSum
 
+section Prod
+
+variable {k G V W : Type*} [CommSemiring k] [Monoid G]
+variable [AddCommMonoid V] [Module k V] [AddCommMonoid W] [Module k W]
+variable (ρV : Representation k G V) (ρW : Representation k G W)
+
+/-- Given representations of `G` on `V` and `W`, there is a natural representation of `G` on their
+product `V × W`.
+-/
+@[simps!]
+noncomputable def prod : Representation k G (V × W) where
+  toFun g := (ρV g).prodMap (ρW g)
+  map_one' := by simp
+  map_mul' g h := by simp; rfl
+
+end Prod
+
 section TensorProduct
 
 variable {k G V W : Type*} [CommSemiring k] [Monoid G]
