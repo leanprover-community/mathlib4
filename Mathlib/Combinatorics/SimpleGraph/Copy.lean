@@ -563,7 +563,7 @@ lemma le_card_edgeFinset_killCopies [Fintype V] :
   let f (G' : {G' : G.Subgraph // Nonempty (H ≃g G'.coe)}) := (aux hH G'.2).some
   calc
     _ = #G.edgeFinset - card {G' : G.Subgraph // Nonempty (H ≃g G'.coe)} := ?_
-    _ ≤ #G.edgeFinset - #(univ.image f) := by grw [card_image_le]
+    _ ≤ #G.edgeFinset - #(univ.image f) := by grw [card_image_le, card_univ]
     _ = #G.edgeFinset - #(Set.range f).toFinset := by rw [Set.toFinset_range]
     _ ≤ #(G.edgeFinset \ (Set.range f).toFinset) := le_card_sdiff ..
     _ = #(G.killCopies H).edgeFinset := ?_
