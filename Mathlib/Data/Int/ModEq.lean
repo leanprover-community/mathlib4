@@ -62,6 +62,7 @@ end ModEq
 
 theorem modEq_comm : a ≡ b [ZMOD n] ↔ b ≡ a [ZMOD n] := ⟨ModEq.symm, ModEq.symm⟩
 
+@[simp]
 theorem natCast_modEq_iff {a b n : ℕ} : a ≡ b [ZMOD n] ↔ a ≡ b [MOD n] := by
   unfold ModEq Nat.ModEq; rw [← Int.ofNat_inj]; simp
 
