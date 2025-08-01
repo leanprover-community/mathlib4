@@ -70,6 +70,18 @@ Multiplication of powers can be simplified a little bit further:
 in a similar way that `2 * a + 2 * a = 4 * a := by ring` already works.
 This feature wasn't needed yet, so it's not implemented yet.
 
+The reduction modulo characteristic `p` is *only* attempted when using `(config := {char := p})`.
+The tactic *does not* try to infer the instance without prompt,
+as that is (thought to be) expensive.
+
+Exponentiation in the specific case where the characteristic `p` is a prime that divides
+the exponent `n` can be optimized: `(x + y) ^ n = x ^ n + y ^ n`
+
+The reduction modulo characteristic could hypothetically be made to work when there is only
+a `Semiring` instance. Since the support for `%` in NormNum only exists for integers,
+the reduction is implemented only when a Ring instance is available.
+It is still sound in the semiring case, just not complete.
+
 ## Tags
 
 ring, semiring, exponent, power
