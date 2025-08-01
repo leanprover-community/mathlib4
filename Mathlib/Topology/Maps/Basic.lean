@@ -80,11 +80,7 @@ lemma IsInducing.of_comp_iff (hg : IsInducing g) : IsInducing (g ∘ f) ↔ IsIn
 
 lemma IsInducing.of_comp (hf : Continuous f) (hg : Continuous g) (hgf : IsInducing (g ∘ f)) :
     IsInducing f :=
-  ⟨le_antisymm (by rwa [← continuous_iff_le_induced])
-      (by
-        rw [hgf.eq_induced, ← induced_compose]
-        exact induced_mono hg.le_induced)⟩
-
+  ⟨le_antisymm hf.le_induced (by grw [hgf.eq_induced, ← induced_compose, ← hg.le_induced])⟩
 @[deprecated (since := "2024-10-28")] alias inducing_of_inducing_compose := IsInducing.of_comp
 
 lemma isInducing_iff_nhds : IsInducing f ↔ ∀ x, 𝓝 x = comap f (𝓝 (f x)) :=
@@ -307,9 +303,7 @@ protected theorem comp (hg : IsQuotientMap g) (hf : IsQuotientMap f) : IsQuotien
 protected theorem of_comp (hf : Continuous f) (hg : Continuous g)
     (hgf : IsQuotientMap (g ∘ f)) : IsQuotientMap g :=
   ⟨hgf.1.of_comp,
-    le_antisymm
-      (by rw [hgf.eq_coinduced, ← coinduced_compose]; exact coinduced_mono hf.coinduced_le)
-      hg.coinduced_le⟩
+    le_antisymm (by grw [hgf.eq_coinduced, ← coinduced_compose, hf.coinduced_le]) hg.coinduced_le⟩
 
 @[deprecated (since := "2024-10-22")]
 alias of_quotientMap_compose := IsQuotientMap.of_comp
