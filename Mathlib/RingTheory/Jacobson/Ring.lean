@@ -599,10 +599,10 @@ private noncomputable def Cₐ (R : Type u) (S : Type v)
   { Polynomial.C with commutes' := fun r => by rfl }
 
 private lemma aux_IH {R : Type u} {S : Type v} {T : Type w}
-  [CommRing R] [CommRing S] [CommRing T] [IsJacobsonRing S] [Algebra R S] [Algebra R T]
-  (IH : ∀ (Q : Ideal S), (IsMaximal Q) → RingHom.IsIntegral (algebraMap R (S ⧸ Q)))
-  (v : S[X] ≃ₐ[R] T) (P : Ideal T) (hP : P.IsMaximal) :
-  RingHom.IsIntegral (algebraMap R (T ⧸ P)) := by
+    [CommRing R] [CommRing S] [CommRing T] [IsJacobsonRing S] [Algebra R S] [Algebra R T]
+    (IH : ∀ (Q : Ideal S), (IsMaximal Q) → RingHom.IsIntegral (algebraMap R (S ⧸ Q)))
+    (v : S[X] ≃ₐ[R] T) (P : Ideal T) (hP : P.IsMaximal) :
+    RingHom.IsIntegral (algebraMap R (T ⧸ P)) := by
   let Q := P.comap v.toAlgHom.toRingHom
   have hw : Ideal.map v Q = P := map_comap_of_surjective v v.surjective P
   have hQ : IsMaximal Q := comap_isMaximal_of_surjective _ v.surjective
@@ -688,8 +688,7 @@ lemma finite_of_finite_type_of_isJacobsonRing (R S : Type*) [CommRing R] [Field 
   obtain ⟨ι, hι, f, hf⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial'.mp ‹_›
   have : (algebraMap R S).IsIntegral := by
     rw [← f.comp_algebraMap]
-    #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-    we needed to write `f.toRingHom` instead of just `f`, to avoid unification issues. -/
+    -- We need to write `f.toRingHom` instead of just `f`, to avoid unification issues.
     exact MvPolynomial.comp_C_integral_of_surjective_of_isJacobsonRing f.toRingHom hf
   have : Algebra.IsIntegral R S := Algebra.isIntegral_def.mpr this
   exact Algebra.IsIntegral.finite

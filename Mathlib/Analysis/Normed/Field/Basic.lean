@@ -130,7 +130,7 @@ lemma norm_eq_one_iff_ne_zero_of_discrete {x : 𝕜} : ‖x‖ = 1 ↔ x ≠ 0 :
 @[simp]
 lemma norm_le_one_of_discrete
     (x : 𝕜) : ‖x‖ ≤ 1 := by
-  rcases eq_or_ne x 0 with rfl|hx
+  rcases eq_or_ne x 0 with rfl | hx
   · simp
   · simp [norm_eq_one_iff_ne_zero_of_discrete.mpr hx]
 

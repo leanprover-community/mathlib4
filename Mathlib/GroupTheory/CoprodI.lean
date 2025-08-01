@@ -205,7 +205,7 @@ theorem induction_left {motive : CoprodI M → Prop} (m : CoprodI M) (one : moti
     (mul : ∀ {i} (m : M i) x, motive x → motive (of m * x)) : motive m := by
   induction m using Submonoid.induction_of_closure_eq_top_left mclosure_iUnion_range_of with
   | one => exact one
-  | mul x hx y ihy =>
+  | mul_left x hx y ihy =>
     obtain ⟨i, m, rfl⟩ : ∃ (i : ι) (m : M i), of m = x := by simpa using hx
     exact mul m y ihy
 
@@ -1010,7 +1010,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
     refine FreeGroup.freeGroupUnitEquivInt.forall_congr_left.mpr ?_
     intro n hne1
     change FreeGroup.lift (fun _ => a i) (FreeGroup.of () ^ n) • X' j ⊆ X' i
-    simp only [map_zpow, FreeGroup.lift.of]
+    simp only [map_zpow, FreeGroup.lift_apply_of]
     change a i ^ n • X' j ⊆ X' i
     have hnne0 : n ≠ 0 := by
       rintro rfl

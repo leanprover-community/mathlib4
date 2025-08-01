@@ -540,7 +540,7 @@ theorem lineDifferentiableAt_smul_iff {c : 𝕜} (hc : c ≠ 0) :
   ⟨fun h ↦ by simpa [smul_smul, inv_mul_cancel₀ hc] using h.smul (c ⁻¹), fun h ↦ h.smul c⟩
 
 theorem lineDeriv_smul {c : 𝕜} : lineDeriv 𝕜 f x (c • v) = c • lineDeriv 𝕜 f x v := by
-  rcases eq_or_ne c 0 with rfl|hc
+  rcases eq_or_ne c 0 with rfl | hc
   · simp [lineDeriv_zero]
   by_cases H : LineDifferentiableAt 𝕜 f x v
   · exact (H.hasLineDerivAt.smul c).lineDeriv

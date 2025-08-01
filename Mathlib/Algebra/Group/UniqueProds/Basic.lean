@@ -67,6 +67,10 @@ namespace UniqueMul
 
 variable {G H : Type*} [Mul G] [Mul H] {A B : Finset G} {a0 b0 : G}
 
+@[to_additive]
+theorem mono {A' B' : Finset G} (hA : A ⊆ A') (hB : B ⊆ B') (h : UniqueMul A' B' a0 b0) :
+    UniqueMul A B a0 b0 := fun _ _ ha hb he ↦ h (hA ha) (hB hb) he
+
 @[to_additive (attr := nontriviality, simp)]
 theorem of_subsingleton [Subsingleton G] : UniqueMul A B a0 b0 := by
   simp [UniqueMul, eq_iff_true_of_subsingleton]
@@ -292,7 +296,7 @@ variable (G : Type u) (H : Type v) [Mul G] [Mul H]
 private abbrev I : Bool → Type max u v := Bool.rec (ULift.{v} G) (ULift.{u} H)
 @[to_additive] private instance : ∀ b, Mul (I G H b) := Bool.rec ULift.mul ULift.mul
 @[to_additive] private def Prod.upMulHom : G × H →ₙ* ∀ b, I G H b :=
-  ⟨fun x ↦ Bool.rec ⟨x.1⟩ ⟨x.2⟩, fun x y ↦ by ext (_|_) <;> rfl⟩
+  ⟨fun x ↦ Bool.rec ⟨x.1⟩ ⟨x.2⟩, fun x y ↦ by ext (_ | _) <;> rfl⟩
 @[to_additive] private def downMulHom : ULift G →ₙ* G := ⟨ULift.down, fun _ _ ↦ rfl⟩
 
 variable {G H}

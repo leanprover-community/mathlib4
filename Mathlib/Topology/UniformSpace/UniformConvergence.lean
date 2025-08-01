@@ -486,10 +486,8 @@ theorem UniformCauchySeqOn.tendstoUniformlyOn_of_tendsto (hF : UniformCauchySeqO
     (hF.uniformCauchySeqOnFilter.tendstoUniformlyOnFilter_of_tendsto hF')
 
 theorem UniformCauchySeqOnFilter.mono_left {p'' : Filter ι} (hf : UniformCauchySeqOnFilter F p p')
-    (hp : p'' ≤ p) : UniformCauchySeqOnFilter F p'' p' := by
-  intro u hu
-  have := (hf u hu).filter_mono (p'.prod_mono_left (Filter.prod_mono hp hp))
-  assumption
+    (hp : p'' ≤ p) : UniformCauchySeqOnFilter F p'' p' := fun u hu =>
+  (hf u hu).filter_mono (p'.prod_mono_left (Filter.prod_mono hp hp))
 
 theorem UniformCauchySeqOnFilter.mono_right {p'' : Filter α} (hf : UniformCauchySeqOnFilter F p p')
     (hp : p'' ≤ p') : UniformCauchySeqOnFilter F p p'' := fun u hu =>

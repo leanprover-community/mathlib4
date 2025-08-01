@@ -23,7 +23,7 @@ We introduce the following notation for the lower Lebesgue integral of a functio
   to the canonical measure `volume`, defined as `∫⁻ x, f x ∂(volume.restrict s)`.
 -/
 
-assert_not_exists Basis Norm MeasureTheory.MeasurePreserving MeasureTheory.Measure.dirac
+assert_not_exists Module.Basis Norm MeasureTheory.MeasurePreserving MeasureTheory.Measure.dirac
 
 open Set hiding restrict restrict_apply
 
