@@ -583,10 +583,10 @@ theorem integrableOn_Ioc_of_intervalIntegral_norm_bounded {I a₀ b₀ : ℝ}
   rw [Measure.restrict_restrict measurableSet_Ioc]
   grw [← hi]
   gcongr
-  · exact inter_subset_left
   · apply ae_of_all
     simp
   · exact (hfi i).norm
+  · exact inter_subset_left
 
 theorem integrableOn_Ioc_of_intervalIntegral_norm_bounded_left {I a₀ b : ℝ}
     (hfi : ∀ i, IntegrableOn f <| Ioc (a i) b) (ha : Tendsto a l <| 𝓝 a₀)
