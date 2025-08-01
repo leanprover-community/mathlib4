@@ -17,9 +17,9 @@ For a field `k`, we say that a `k`-algebra `A` is geometrically reduced (`IsGeom
 if the tensor product `A ⊗[k] AlgebraicClosure k` is reduced.
 
 ## Main results
-- `all_FG_geometricallyReduced_isGeometricallyReduced`: if `k` is a commutative ring and `A` and `C`
-  are `k`-algebras, such that `C ⊗[k] B` is reduced for all finitely generated `k` subalgebras `B`
-  of `A`, then `C ⊗[k] A` is reduced.
+- `FlatBaseChangeIsReduced.of_FG`: if `k` is a commutative ring and `A` and `C` are `k`-algebras,
+  such that `C ⊗[k] B` is reduced for all finitely generated `k` subalgebras `B` of `A`, then
+  `C ⊗[k] A` is reduced.
 
 ## References
 - See [https://stacks.math.columbia.edu/tag/05DS] for some theory of geometrically reduced algebras.
@@ -55,7 +55,7 @@ lemma isGeometricallyReduced_of_injective {B : Type} [Ring B] [Algebra k B] (f :
     (Module.Flat.lTensor_preserves_injective_linearMap _ hf)⟩
 
 
-theorem isGeometricallyReduced_isReduced [IsGeometricallyReduced k A] : IsReduced A :=
+theorem isReduced_of_isGeometricallyReduced [IsGeometricallyReduced k A] : IsReduced A :=
   isReduced_of_injective
     (Algebra.TensorProduct.includeRight : A →ₐ[k] (AlgebraicClosure k) ⊗[k] A)
     (Algebra.TensorProduct.includeRight_injective <| FaithfulSMul.algebraMap_injective _ _)
@@ -74,7 +74,7 @@ def subAlgebra.baseChange {A k : Type} [CommRing k] [Ring A] [Algebra k A] (B : 
     [Algebra k B] (C : Subalgebra k A) : Subalgebra B (B ⊗[k] A) :=
   AlgHom.range (Algebra.TensorProduct.map (AlgHom.id B B) C.val)
 
-lemma FGsubalgebra_baseChange_of_element {k A B : Type} [CommRing k] [CommRing A] [CommRing B]
+lemma exists_fg_and_mem_baseChange {k A B : Type} [CommRing k] [CommRing A] [CommRing B]
     [Algebra k A] [Algebra k B] (x : A ⊗[k] B) :
     ∃ C : Subalgebra k B, C.FG ∧ x ∈ subAlgebra.baseChange A C := by
   obtain ⟨S, hS⟩ := TensorProduct.exists_finset x
@@ -86,13 +86,13 @@ lemma FGsubalgebra_baseChange_of_element {k A B : Type} [CommRing k] [CommRing A
 
 -- If all finitely generated subalgebras of A are geometrically reduced, then A is geometrically
 -- reduced. The result is in https://stacks.math.columbia.edu/tag/030T
-theorem all_FG_flatBaseChangeReduced_imp_baseChangeReduced {k A C : Type} [CommRing A] [CommRing C]
+theorem FlatBaseChangeIsReduced.of_FG {k A C : Type} [CommRing A] [CommRing C]
     [CommRing k] [Algebra k A] [Algebra k C] [Module.Flat k C]
     (h : ∀ B : Subalgebra k A, B.FG → IsReduced (C ⊗[k] B)) :
     IsReduced (C ⊗[k] A) := by
   by_contra h_contra
   obtain ⟨x, hx⟩ := notReduced_has_nilpotent h_contra
-  obtain ⟨D, hD⟩ := FGsubalgebra_baseChange_of_element x
+  obtain ⟨D, hD⟩ := exists_fg_and_mem_baseChange x
   have h_inj : Function.Injective
       (Algebra.TensorProduct.map (AlgHom.id C C ) D.val) := by
     apply Module.Flat.lTensor_preserves_injective_linearMap
