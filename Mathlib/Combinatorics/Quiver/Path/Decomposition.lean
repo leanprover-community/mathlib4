@@ -17,22 +17,6 @@ cross the boundary of a given set of vertices `S`.
 -/
 namespace Quiver.Path
 
-section Decomposition
-
-variable {V R : Type*} [Quiver V] {a b : V} (p : Path a b)
-
-lemma length_ne_zero_iff_eq_comp (p : Path a b) :
-    p.length ≠ 0 ↔ ∃ (c : V) (e : a ⟶ c) (p' : Path c b),
-      p = e.toPath.comp p' ∧ p.length = p'.length + 1 := by
-  refine ⟨fun h ↦ ?_, ?_⟩
-  · have h_len : p.length = (p.length - 1) + 1 := by omega
-    obtain ⟨c, e, p', hp', rfl⟩ := Path.eq_toPath_comp_of_length_eq_succ p h_len
-    exact ⟨c, e, p', rfl, by omega⟩
-  · rintro ⟨c, p', e, rfl, h⟩
-    simp [h]
-
-end Decomposition
-
 section BoundaryEdges
 
 variable {V : Type*} [Quiver V]
