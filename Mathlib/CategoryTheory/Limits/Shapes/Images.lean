@@ -12,16 +12,16 @@ import Mathlib.CategoryTheory.MorphismProperty.MonoFactorization
 /-!
 # Categorical images
 
-We define the categorical image of `f` as a factorisation `f = e ≫ m` through a monomorphism `m`,
-so that `m` factors through the `m'` in any other such factorisation.
+We define the categorical image of `f` as a factorization `f = e ≫ m` through a monomorphism `m`,
+so that `m` factors through the `m'` in any other such factorization.
 
 ## Main definitions
 
-* A `MonoFactorization` is a factorisation `f = e ≫ m`, where `m` is a monomorphism
-* `IsImage F` means that a given mono factorisation `F` has the universal property of the image.
+* A `MonoFactorization` is a factorization `f = e ≫ m`, where `m` is a monomorphism
+* `IsImage F` means that a given mono factorization `F` has the universal property of the image.
 * `HasImage f` means that there is some image factorization for the morphism `f : X ⟶ Y`.
   * In this case, `image f` is some image object (selected with choice), `image.ι f : image f ⟶ Y`
-    is the monomorphism `m` of the factorisation and `factorThruImage f : X ⟶ image f` is the
+    is the monomorphism `m` of the factorization and `factorThruImage f : X ⟶ image f` is the
     morphism `e`.
 * `HasImages C` means that every morphism in `C` has an image.
 * Let `f : X ⟶ Y` and `g : P ⟶ Q` be morphisms in `C`, which we will represent as objects of the
@@ -35,8 +35,8 @@ so that `m` factors through the `m'` in any other such factorisation.
   ↓         ↓           ↓
   P ----→ image g ----→ Q
 
-  commute, where the top row is the image factorisation of `f`, the bottom row is the image
-  factorisation of `g`, and the outer rectangle is the commutative square `sq`.
+  commute, where the top row is the image factorization of `f`, the bottom row is the image
+  factorization of `g`, and the outer rectangle is the commutative square `sq`.
 * If a category `HasImages`, then `HasImageMaps` means that every commutative square admits an
   image map.
 * If a category `HasImages`, then `HasStrongEpiImages` means that the morphism to the image is
@@ -44,7 +44,7 @@ so that `m` factors through the `m'` in any other such factorisation.
 
 ## Main statements
 
-* When `C` has equalizers, the morphism `e` appearing in an image factorisation is an epimorphism.
+* When `C` has equalizers, the morphism `e` appearing in an image factorization is an epimorphism.
 * When `C` has strong epi images, then these images admit image maps.
 
 ## Future work
@@ -69,7 +69,7 @@ variable {X Y : C} (f : X ⟶ Y)
 
 variable {f}
 
-/-- Data exhibiting that a given factorisation through a mono is initial. -/
+/-- Data exhibiting that a given factorization through a mono is initial. -/
 structure IsImage (F : MonoFactorization f) where
   lift : ∀ F' : MonoFactorization f, F.I ⟶ F'.I
   lift_fac : ∀ F' : MonoFactorization f, lift F' ≫ F'.m = F.m := by aesop_cat
@@ -87,7 +87,7 @@ theorem fac_lift {F : MonoFactorization f} (hF : IsImage F) (F' : MonoFactorizat
 
 variable (f)
 
-/-- The trivial factorisation of a monomorphism satisfies the universal property. -/
+/-- The trivial factorization of a monomorphism satisfies the universal property. -/
 @[simps]
 def self [Mono f] : IsImage (MonoFactorization.self f) where lift F' := F'.e
 
@@ -97,7 +97,7 @@ instance [Mono f] : Inhabited (IsImage (MonoFactorization.self f)) :=
 variable {f}
 
 -- TODO this is another good candidate for a future `UniqueUpToCanonicalIso`.
-/-- Two factorisations through monomorphisms satisfying the universal property
+/-- Two factorizations through monomorphisms satisfying the universal property
 must factor through isomorphic objects. -/
 @[simps]
 def isoExt {F F' : MonoFactorization f} (hF : IsImage F) (hF' : IsImage F') :
@@ -117,8 +117,8 @@ theorem e_isoExt_hom : F.e ≫ (isoExt hF hF').hom = F'.e := by simp
 
 theorem e_isoExt_inv : F'.e ≫ (isoExt hF hF').inv = F.e := by simp
 
-/-- If `f` and `g` are isomorphic arrows, then a mono factorisation of `f` that is an image
-gives a mono factorisation of `g` that is an image -/
+/-- If `f` and `g` are isomorphic arrows, then a mono factorization of `f` that is an image
+gives a mono factorization of `g` that is an image -/
 @[simps]
 def ofArrowIso {f g : Arrow C} {F : MonoFactorization f.hom} (hF : IsImage F) (sq : f ⟶ g)
     [IsIso sq] : IsImage (F.ofArrowIso sq) where
@@ -132,34 +132,36 @@ end IsImage
 variable (f)
 
 /-- Data exhibiting that a morphism `f` has an image. -/
-structure ImageFactorisation (f : X ⟶ Y) where
+structure ImageFactorization (f : X ⟶ Y) where
   F : MonoFactorization f -- Porting note: another violation of the naming convention
   isImage : IsImage F
 
-attribute [inherit_doc ImageFactorisation] ImageFactorisation.F ImageFactorisation.isImage
+attribute [inherit_doc ImageFactorization] ImageFactorization.F ImageFactorization.isImage
 
-namespace ImageFactorisation
+@[deprecated (since := "2025-08-01")] alias ImageFactorisation := ImageFactorization
 
-instance [Mono f] : Inhabited (ImageFactorisation f) :=
+namespace ImageFactorization
+
+instance [Mono f] : Inhabited (ImageFactorization f) :=
   ⟨⟨_, IsImage.self f⟩⟩
 
-/-- If `f` and `g` are isomorphic arrows, then an image factorisation of `f`
-gives an image factorisation of `g` -/
+/-- If `f` and `g` are isomorphic arrows, then an image factorization of `f`
+gives an image factorization of `g` -/
 @[simps]
-def ofArrowIso {f g : Arrow C} (F : ImageFactorisation f.hom) (sq : f ⟶ g) [IsIso sq] :
-    ImageFactorisation g.hom where
+def ofArrowIso {f g : Arrow C} (F : ImageFactorization f.hom) (sq : f ⟶ g) [IsIso sq] :
+    ImageFactorization g.hom where
   F := F.F.ofArrowIso sq
   isImage := F.isImage.ofArrowIso sq
 
-end ImageFactorisation
+end ImageFactorization
 
-/-- `HasImage f` means that there exists an image factorisation of `f`. -/
+/-- `HasImage f` means that there exists an image factorization of `f`. -/
 class HasImage (f : X ⟶ Y) : Prop where mk' ::
-  exists_image : Nonempty (ImageFactorisation f)
+  exists_image : Nonempty (ImageFactorization f)
 
 attribute [inherit_doc HasImage] HasImage.exists_image
 
-theorem HasImage.mk {f : X ⟶ Y} (F : ImageFactorisation f) : HasImage f :=
+theorem HasImage.mk {f : X ⟶ Y} (F : ImageFactorization f) : HasImage f :=
   ⟨Nonempty.intro F⟩
 
 theorem HasImage.of_arrow_iso {f g : Arrow C} [h : HasImage f.hom] (sq : f ⟶ g) [IsIso sq] :
@@ -173,11 +175,11 @@ section
 
 variable [HasImage f]
 
-/-- Some factorisation of `f` through a monomorphism (selected with choice). -/
+/-- Some factorization of `f` through a monomorphism (selected with choice). -/
 def Image.MonoFactorization : MonoFactorization f :=
   (Classical.choice HasImage.exists_image).F
 
-/-- The witness of the universal property for the chosen factorisation of `f` through
+/-- The witness of the universal property for the chosen factorization of `f` through
 a monomorphism. -/
 def Image.isImage : IsImage (Image.MonoFactorization f) :=
   (Classical.choice HasImage.exists_image).isImage
@@ -211,7 +213,7 @@ theorem image.fac : factorThruImage f ≫ image.ι f = f :=
 
 variable {f}
 
-/-- Any other factorisation of the morphism `f` through a monomorphism receives a map from the
+/-- Any other factorization of the morphism `f` through a monomorphism receives a map from the
 image. -/
 def image.lift (F' : MonoFactorization f) : image f ⟶ F'.I :=
   (Image.isImage f).lift F'
@@ -544,7 +546,7 @@ theorem ImageMap.factor_map {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] (s
   (cancel_mono (image.ι g.hom)).1 <| by simp
 
 /-- To give an image map for a commutative square with `f` at the top and `g` at the bottom, it
-    suffices to give a map between any mono factorisation of `f` and any image factorisation of
+    suffices to give a map between any mono factorization of `f` and any image factorization of
     `g`. -/
 def ImageMap.transport {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] (sq : f ⟶ g)
     (F : MonoFactorization f.hom) {F' : MonoFactorization g.hom} (hF' : IsImage F')
@@ -702,7 +704,7 @@ end HasImageMaps
 
 section StrongEpiMonoFactorization
 
-/-- A strong epi-mono factorisation is a decomposition `f = e ≫ m` with `e` a strong epimorphism
+/-- A strong epi-mono factorization is a decomposition `f = e ≫ m` with `e` a strong epimorphism
     and `m` a monomorphism. -/
 structure StrongEpiMonoFactorization {X Y : C} (f : X ⟶ Y) extends MonoFactorization f where
   [e_strong_epi : StrongEpi e]
@@ -711,12 +713,14 @@ attribute [inherit_doc StrongEpiMonoFactorization] StrongEpiMonoFactorization.e_
 
 attribute [instance] StrongEpiMonoFactorization.e_strong_epi
 
+@[deprecated (since := "2025-08-01")] alias StrongEpiMonoFactorisation := StrongEpiMonoFactorization
+
 /-- Satisfying the inhabited linter -/
 instance strongEpiMonoFactorizationInhabited {X Y : C} (f : X ⟶ Y) [StrongEpi f] :
     Inhabited (StrongEpiMonoFactorization f) :=
   ⟨⟨⟨Y, 𝟙 Y, f, by simp⟩⟩⟩
 
-/-- A mono factorisation coming from a strong epi-mono factorisation always has the universal
+/-- A mono factorization coming from a strong epi-mono factorization always has the universal
     property of the image. -/
 def StrongEpiMonoFactorization.toMonoIsImage {X Y : C} {f : X ⟶ Y}
     (F : StrongEpiMonoFactorization f) : IsImage F.toMonoFactorization where
@@ -725,10 +729,13 @@ def StrongEpiMonoFactorization.toMonoIsImage {X Y : C} {f : X ⟶ Y}
 
 variable (C)
 
-/-- A category has strong epi-mono factorisations if every morphism admits a strong epi-mono
-    factorisation. -/
+/-- A category has strong epi-mono factorizations if every morphism admits a strong epi-mono
+    factorization. -/
 class HasStrongEpiMonoFactorizations : Prop where mk' ::
   has_fac : ∀ {X Y : C} (f : X ⟶ Y), Nonempty (StrongEpiMonoFactorization f)
+
+@[deprecated (since := "2025-08-01")] alias HasStrongEpiMonoFactorisations :=
+  HasStrongEpiMonoFactorizations
 
 attribute [inherit_doc HasStrongEpiMonoFactorizations] HasStrongEpiMonoFactorizations.has_fac
 
@@ -764,8 +771,8 @@ end HasStrongEpiImages
 
 section HasStrongEpiImages
 
-/-- If there is a single strong epi-mono factorisation of `f`, then every image factorisation is a
-    strong epi-mono factorisation. -/
+/-- If there is a single strong epi-mono factorization of `f`, then every image factorization is a
+    strong epi-mono factorization. -/
 theorem strongEpi_of_strongEpiMonoFactorization {X Y : C} {f : X ⟶ Y}
     (F : StrongEpiMonoFactorization f) {F' : MonoFactorization f} (hF' : IsImage F') :
     StrongEpi F'.e := by
@@ -776,7 +783,7 @@ theorem strongEpi_factorThruImage_of_strongEpiMonoFactorization {X Y : C} {f : X
     (F : StrongEpiMonoFactorization f) : StrongEpi (factorThruImage f) :=
   strongEpi_of_strongEpiMonoFactorization F <| Image.isImage f
 
-/-- If we constructed our images from strong epi-mono factorisations, then these images are
+/-- If we constructed our images from strong epi-mono factorizations, then these images are
     strong epi images. -/
 instance (priority := 100) hasStrongEpiImages_of_hasStrongEpiMonoFactorizations
     [HasStrongEpiMonoFactorizations C] : HasStrongEpiImages C where
@@ -784,7 +791,7 @@ instance (priority := 100) hasStrongEpiImages_of_hasStrongEpiMonoFactorizations
     strongEpi_factorThruImage_of_strongEpiMonoFactorization <|
       Classical.choice <| HasStrongEpiMonoFactorizations.has_fac f
 
-/-- Having strong epi images induces an strong epi-mono factorisation -/
+/-- Having strong epi images induces an strong epi-mono factorization -/
 instance (priority := 100) hasStrongEpiMonoFactorizations_of_hasStrongEpiImages
     [HasImages C] [HasStrongEpiImages C] : HasStrongEpiMonoFactorizations C := .mk fun f ↦ {
       __ := Image.MonoFactorization f
@@ -821,9 +828,9 @@ variable [HasStrongEpiMonoFactorizations C]
 variable {X Y : C} {f : X ⟶ Y}
 
 /--
-If `C` has strong epi mono factorisations, then the image is unique up to isomorphism, in that if
-`f` factors as a strong epi followed by a mono, this factorisation is essentially the image
-factorisation.
+If `C` has strong epi mono factorizations, then the image is unique up to isomorphism, in that if
+`f` factors as a strong epi followed by a mono, this factorization is essentially the image
+factorization.
 -/
 def image.isoStrongEpiMono {I' : C} (e : X ⟶ I') (m : I' ⟶ Y) (comm : e ≫ m = f) [StrongEpi e]
     [Mono m] : I' ≅ image f :=
@@ -845,7 +852,7 @@ open MorphismProperty
 
 variable (C)
 
-/-- A category with strong epi mono factorisations admits functorial epi/mono factorizations. -/
+/-- A category with strong epi mono factorizations admits functorial epi/mono factorizations. -/
 noncomputable def functorialEpiMonoFactorizationData :
     FunctorialFactorizationData (epimorphisms C) (monomorphisms C) where
   Z := im

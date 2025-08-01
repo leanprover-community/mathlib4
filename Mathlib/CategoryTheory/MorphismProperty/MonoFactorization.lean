@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.EqToHom
 /-!
 # Mono Factorizations
 
-A `MonoFactorization` is a factorisation `f = e ≫ m`, where `m` is a monomorphism.
+A `MonoFactorization` is a factorization `f = e ≫ m`, where `m` is a monomorphism.
 
 ## Future work
 * TODO: Connect definitions with `CategoryTheory/MorphismProperty/Factorization.lean`
@@ -43,6 +43,8 @@ attribute [reassoc (attr := simp)] MonoFactorization.fac
 
 attribute [instance] MonoFactorization.m_mono
 
+@[deprecated (since := "2025-08-01")] alias MonoFactorisation := MonoFactorization
+
 namespace MonoFactorization
 
 /-- The obvious factorization of a monomorphism through itself. -/
@@ -51,8 +53,6 @@ def self [Mono f] : MonoFactorization f where
   m := f
   e := 𝟙 X
 
--- I'm not sure we really need this, but the linter says that an inhabited instance
--- ought to exist...
 instance [Mono f] : Inhabited (MonoFactorization f) := ⟨self f⟩
 
 variable {f}
