@@ -148,14 +148,16 @@ theorem classToCong_empty : classToCong ∅ = ∅ := by
 def powerset (x : Class) : Class :=
   congToClass (Set.powerset x)
 
-/-- The union of a class is the class of all members of ZFC sets in the class -/
+/-- The union of a class is the class of all members of ZFC sets in the class. Uses `⋃₀` notation,
+scoped under the `Class` namespace. -/
 def sUnion (x : Class) : Class :=
   ⋃₀ classToCong x
 
 @[inherit_doc]
 scoped prefix:110 "⋃₀ " => Class.sUnion
 
-/-- The intersection of a class is the class of all members of ZFC sets in the class -/
+/-- The intersection of a class is the class of all members of ZFC sets in the class .
+Uses `⋂₀` notation, scoped under the `Class` namespace. -/
 def sInter (x : Class) : Class :=
   ⋂₀ classToCong x
 
