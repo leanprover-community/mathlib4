@@ -3,6 +3,7 @@ Copyright (c) 2021 David Wärn,. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn, Kim Morrison, Matteo Cipollina
 -/
+
 import Mathlib.Combinatorics.Quiver.Prefunctor
 import Mathlib.Logic.Lemmas
 import Batteries.Data.List.Basic
@@ -160,7 +161,19 @@ lemma eq_toPath_comp_of_length_eq_succ (p : Path a b) {n : ℕ}
       obtain ⟨x, q'', p'', hl, rfl⟩ := h hp
       exact ⟨x, q'', p''.cons q, by simpa, rfl⟩
 
+section Decomposition
+
 variable {V R : Type*} [Quiver V] {a b : V} (p : Path a b)
+
+lemma length_ne_zero_iff_eq_comp (p : Path a b) :
+    p.length ≠ 0 ↔ ∃ (c : V) (e : a ⟶ c) (p' : Path c b),
+      p = e.toPath.comp p' ∧ p.length = p'.length + 1 := by
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · have h_len : p.length = (p.length - 1) + 1 := by omega
+    obtain ⟨c, e, p', hp', rfl⟩ := Path.eq_toPath_comp_of_length_eq_succ p h_len
+    exact ⟨c, e, p', rfl, by omega⟩
+  · rintro ⟨c, p', e, rfl, h⟩
+    simp [h]
 
 /-- Every non-empty path can be decomposed as an initial path plus a final edge. -/
 lemma length_ne_zero_iff_eq_cons :
@@ -175,6 +188,8 @@ lemma length_ne_zero_iff_eq_cons :
 @[simp] lemma comp_toPath_eq_cons {a b c : V} (p : Path a b) (e : b ⟶ c) :
     p.comp e.toPath = p.cons e :=
   rfl
+
+end Decomposition
 
 /-- Turn a path into a list. The list contains `a` at its head, but not `b` a priori. -/
 @[simp]
