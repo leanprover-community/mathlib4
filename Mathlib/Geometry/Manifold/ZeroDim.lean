@@ -59,7 +59,7 @@ theorem zero_dim_manifold_discrete : DiscreteTopology M := by
   have : Unique U := φ.unique
   suffices {a} = U by rwa [this]
   apply Set.eq_of_subset_of_card_le
-  exact Set.singleton_subset_iff.mpr h2
+  · exact Set.singleton_subset_iff.mpr h2
   simp only [Set.card_singleton]
   exact Nat.factorial_eq_one.mp rfl
 
@@ -80,9 +80,9 @@ open PUnit
 /-- Construction of a zero-dimensional manifold structure on any discrete countable space. -/
 def zeroDimMfd : ChartedSpace ZeroDimModel M :=
 { atlas       := Set.univ,
-  chartAt     := λ x ↦
-  { toFun              := λ _ ↦ (default : ZeroDimModel),
-    invFun             := λ _ ↦ x,
+  chartAt     := fun x ↦
+  { toFun              := fun _ ↦ (default : ZeroDimModel),
+    invFun             := fun _ ↦ x,
     source             := {x},
     target             := Set.univ,
     continuousOn_toFun := by
