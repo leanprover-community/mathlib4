@@ -54,8 +54,12 @@ def gammaSet_one_equiv (a a' : Fin 2 → ZMod 1) : gammaSet 1 a ≃ gammaSet 1 a
   Equiv.setCongr (gammaSet_one_eq a a')
 
 open Pointwise
+/-- The set of pairs of integers with gcd 1 scaled by a natural number `N`, making them have gcd
+equal to N. -/
 def gammaSetN (N : ℕ) : Set (Fin 2 → ℤ) := ({N} : Set ℕ) • gammaSet 1 0
 
+/-- The map from `gammaSetN` to `gammaSet` given by forgetting the scalar multiple in
+`gammaSetN`. -/
 noncomputable def gammaSetN_map (N : ℕ) (v : gammaSetN N) : gammaSet 1 0 := by
   have hv2 := v.2
   simp only [gammaSetN, singleton_smul, mem_smul_set, nsmul_eq_mul] at hv2
@@ -89,6 +93,7 @@ noncomputable def gammaSetN_Equiv {N : ℕ} (hN : N ≠ 0) : gammaSetN N ≃ gam
       simpa [hN] using (congr_fun H.choose_spec.2 i)
     simp_all only [gammaSetN_map]
 
+/-- The map from `Fin 2 → ℤ` to the union of `gammaSetN` given by dividing out by the gcd. -/
 private def fin_to_GammaSetN (v : Fin 2 → ℤ) : Σ n : ℕ, gammaSetN n := by
   refine ⟨(v 0).gcd (v 1), ⟨(v 0).gcd (v 1) • ![(v 0)/(v 0).gcd (v 1), (v 1)/(v 0).gcd (v 1)], ?_⟩⟩
   by_cases hn : 0 < (v 0).gcd (v 1)
@@ -99,6 +104,8 @@ private def fin_to_GammaSetN (v : Fin 2 → ℤ) : Σ n : ℕ, gammaSetN n := by
     Nat.succ_eq_add_one, Nat.reduceAdd, CharP.cast_eq_zero, zero_nsmul]
     refine ⟨![1,1], by simpa [gammaSet_top_mem] using Int.isCoprime_iff_gcd_eq_one.mpr rfl⟩
 
+/-- The equivalence between `Fin 2 → ℤ` and the union of `gammaSetN` given by
+dividing out by the gcd. -/
 def GammaSet_one_Equiv : (Fin 2 → ℤ) ≃ (Σ n : ℕ, gammaSetN n) where
   toFun v := fin_to_GammaSetN v
   invFun v := v.2
