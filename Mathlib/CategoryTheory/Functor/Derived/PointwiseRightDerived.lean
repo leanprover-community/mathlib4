@@ -100,8 +100,7 @@ def isPointwiseLeftKanExtensionAtOfIso
     {G : D ⥤ H} (e : F ≅ L ⋙ G) [L.IsLocalization W] (Y : C) :
     (LeftExtension.mk _ e.hom).IsPointwiseLeftKanExtensionAt (L.obj Y) where
   desc s := e.inv.app Y ≫ s.ι.app (CostructuredArrow.mk (𝟙 (L.obj Y)))
-  fac s := by
-    intro j
+  fac s j := by
     refine Localization.induction_costructuredArrow L W _ (by simp)
       (fun X₁ X₂ f φ hφ ↦ ?_) (fun X₁ X₂ w hw φ hφ ↦ ?_) j
     · have eq := s.ι.naturality
