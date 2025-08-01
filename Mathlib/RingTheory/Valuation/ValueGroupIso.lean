@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
 import Mathlib.Algebra.Order.GroupWithZero.Range
+import Mathlib.Algebra.Order.Hom.MonoidWithZero
 import Mathlib.RingTheory.Valuation.ValuativeRel
 
 /-!
