@@ -19,10 +19,7 @@ namespace LindemannWeierstrass
 noncomputable section
 
 open scoped Nat
-
 open Complex Polynomial
-
-attribute [local fun_prop] Polynomial.differentiable Complex.continuous_abs
 
 theorem hasDerivAt_cexp_mul_sumIDeriv (p : ℂ[X]) (s : ℂ) (x : ℝ) :
     HasDerivAt (fun x : ℝ ↦ -(cexp (-(x • s)) * p.sumIDeriv.eval (x • s)))
