@@ -47,7 +47,7 @@ def isArtinianObject : ObjectProperty C :=
 variable (X Y : C)
 
 /-- An object `X` in a category `C` is Artinian if `Subobject X`
-satisfies the ascending chain condition. -/
+satisfies the descending chain condition. -/
 @[stacks 0FCF]
 abbrev IsArtinianObject : Prop := isArtinianObject.Is X
 
