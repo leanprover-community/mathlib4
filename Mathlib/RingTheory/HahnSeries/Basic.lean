@@ -541,18 +541,26 @@ section Truncate
 variable [Zero R]
 
 /-- Zeros out coefficients of a `HahnSeries` at indices equal to or greater than `c`. -/
-@[simps]
-def truncate [PartialOrder Γ] [DecidableLE Γ] (c : Γ) (x : HahnSeries Γ R) : HahnSeries Γ R where
-  coeff i := if c ≤ i then 0 else x.coeff i
-  isPWO_support' := Set.IsPWO.mono x.isPWO_support (by simp)
+def trunc [PartialOrder Γ] [DecidableLE Γ] (c : Γ) : ZeroHom (HahnSeries Γ R) (HahnSeries Γ R) where
+  toFun x :=
+    { coeff i := if c ≤ i then 0 else x.coeff i
+      isPWO_support' := Set.IsPWO.mono x.isPWO_support (by simp) }
+  map_zero' := by
+    ext
+    simp
 
-theorem coeff_truncate_eq [LinearOrder Γ] {c i : Γ} (h : i < c) (x : HahnSeries Γ R) :
-    (truncate c x).coeff i = x.coeff i := by
+@[simp]
+protected theorem coeff_trunc [PartialOrder Γ] [DecidableLE Γ]
+    (c : Γ) (x : HahnSeries Γ R) (i : Γ) :
+  (trunc c x).coeff i = if c ≤ i then 0 else x.coeff i := rfl
+
+theorem coeff_trunc_eq [LinearOrder Γ] {c i : Γ} (h : i < c) (x : HahnSeries Γ R) :
+    (trunc c x).coeff i = x.coeff i := by
   simp [not_le_of_gt h]
 
-theorem coeff_truncate_eq_zero [PartialOrder Γ] [DecidableLE Γ]
+theorem coeff_trunc_eq_zero [PartialOrder Γ] [DecidableLE Γ]
     {c i : Γ} (h : c ≤ i) (x : HahnSeries Γ R) :
-    (truncate c x).coeff i = 0 := by
+    (trunc c x).coeff i = 0 := by
   simp [h]
 
 
