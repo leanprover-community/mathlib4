@@ -526,9 +526,7 @@ lemma isCovariantDerivativeOn_lcCandidate_aux [FiniteDimensional ℝ E]
     congr; ext i
     rw [leviCivita_rhs_addX] <;> try assumption
     · abel
-    · have : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E) := by
-        choose r wo using exists_wellOrder _
-        exact r
+    · let : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E) := Classical.choose (exists_wellOrder _)
       have : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := sorry
       set f := ((Basis.ofVectorSpace ℝ E).orthonormalFrame e i)
       have : MDiffAt (T% f) x := -- missing API lemma!
@@ -558,16 +556,14 @@ lemma isCovariantDerivativeOn_lcCandidate_aux [FiniteDimensional ℝ E]
     simp [← Finset.sum_add_distrib, ← add_smul]
     congr; ext i
     rw [leviCivita_rhs_addY_apply] <;> try assumption
-    · have : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E) := by
-        choose r wo using exists_wellOrder _
-        exact r
-      have : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := sorry
+    · let ⟨r, o⟩ := exists_wellOrder (↑(Basis.ofVectorSpaceIndex ℝ E))
+      have : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := by sorry
       set f := ((Basis.ofVectorSpace ℝ E).orthonormalFrame e i)
       have : MDiffAt (T% f) x := -- missing API lemma!
         (contMDiffAt_orthonormalFrame_of_mem (Basis.ofVectorSpace ℝ E) e i hx)
           |>.mdifferentiableAt le_rfl
-      -- `this` does it, except for some mismatch because we chose different linear orders??
-      sorry
+      -- mismatch between different orders; the sorry above
+      convert this <;> sorry
   leibniz := by
     sorry
 
