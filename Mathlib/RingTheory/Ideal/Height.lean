@@ -315,3 +315,42 @@ lemma exists_spanRank_le_and_le_height_of_le_height [IsNoetherianRing R] (I : Id
         refine ⟨mem_minimalPrimes_of_primeHeight_eq_height (le_sup_left.trans hp.1.2) this.symm, ?_⟩
         rwa [p.height_eq_primeHeight, eq_comm]
       · exact hp.1.2 <| Ideal.mem_sup_right <| Ideal.subset_span <| Set.mem_singleton x
+
+lemma Ideal.sup_height_ne_ringKrullDim_of_subsingleton [Subsingleton R] :
+    ↑(⨆ (I : Ideal R) (_ : I ≠ ⊤), I.height) ≠ ringKrullDim R := by
+  simp [ringKrullDim_eq_bot_of_subsingleton]
+
+lemma Ideal.sup_primeHeight_ne_ringKrullDim_of_subsingleton [Subsingleton R] :
+    ↑(⨆ (I : Ideal R) (_ : I.IsPrime), I.primeHeight) ≠ ringKrullDim R := by
+  simp [ringKrullDim_eq_bot_of_subsingleton]
+
+lemma Ideal.sup_height_eq_ringKrullDim [Nontrivial R] :
+    ↑(⨆ (I : Ideal R) (_ : I ≠ ⊤), I.height) = ringKrullDim R := by
+  apply le_antisymm
+  · rw [WithBot.coe_iSup ⟨⊤, fun _ _ => le_top⟩]
+    refine iSup_le fun I => ?_
+    by_cases IsEmpty (I ≠ ⊤)
+    · simp [ringKrullDim_nonneg_of_nontrivial]
+    · rw [@WithBot.coe_iSup _ _ _ (not_isEmpty_iff.mp ‹_›) _ _ ⟨⊤, fun _ _ => le_top⟩]
+      exact iSup_le fun hI => height_le_ringKrullDim_of_ne_top hI
+  · refine iSup_le fun p => WithBot.coe_le_coe.mpr (le_trans (b := p.last.asIdeal.height) ?_ ?_)
+    · rw [height_eq_primeHeight]
+      apply le_trans (b := ⨆ (_ : p.last ≤ p.last), ↑p.length)
+      · exact le_iSup (fun _ => (↑p.length : ℕ∞)) le_rfl
+      · exact le_iSup (fun p' => (⨆ _, p'.length : ℕ∞)) p
+    · apply le_trans (b := ⨆ (_ : (p.last).asIdeal ≠ ⊤), p.last.asIdeal.height)
+      · exact le_iSup_of_le p.last.isPrime.ne_top' le_rfl
+      · exact le_iSup (fun I => ⨆ _, I.height) p.last.asIdeal
+
+lemma Ideal.sup_primeHeight_eq_ringKrullDim [Nontrivial R] :
+    ↑(⨆ (I : Ideal R) (_ : I.IsPrime), I.primeHeight) = ringKrullDim R := by
+  simp [← sup_height_eq_ringKrullDim]
+  refine le_antisymm ?_ ?_
+  · exact iSup_mono fun I => iSup_mono' fun hI => ⟨hI.ne_top, by rw [← height_eq_primeHeight]⟩
+  · refine iSup_mono' fun I => ?_
+    by_cases I_top : I = ⊤
+    · exact ⟨⊥, by simp; exact fun h => False.elim (h I_top)⟩
+    · obtain ⟨P, hP⟩ : I.minimalPrimes.Nonempty :=
+        Set.nonempty_coe_sort.mp (nonempty_minimalPrimes I_top)
+      refine ⟨P, iSup_pos (α := ℕ∞) I_top ▸ le_iSup_of_le (hP.left.left) ?_⟩
+      exact iInf_le_of_le P (iInf_le_of_le hP le_rfl)
