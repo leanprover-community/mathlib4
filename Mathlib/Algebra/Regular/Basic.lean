@@ -23,6 +23,12 @@ by adding one further `0`.
 The final goal is to develop part of the API to prove, eventually, results about non-zero-divisors.
 -/
 
+variable {R : Type*}
+
+section Mul
+
+variable [Mul R]
+
 theorem IsLeftRegular.right_of_commute {a : R}
     (ca : ∀ b, Commute a b) (h : IsLeftRegular a) : IsRightRegular a :=
   fun x y xy => h <| (ca x).trans <| xy.trans <| (ca y).symm
