@@ -37,7 +37,7 @@ variable {C : Type u} [Category.{v} C]
 /-- An object `X` in a category `C` is Artinian if `Subobject X`
 satisfies the descending chain condition. This definition is a
 term in `ObjectProperty C` which allows to study the stability
-properties of artinian objects. For statements regarding
+properties of Artinian objects. For statements regarding
 specific objects, it is advisable to use the type class
 `IsArtinianObject` instead. -/
 @[stacks 0FCF]
@@ -47,7 +47,7 @@ def isArtinianObject : ObjectProperty C :=
 variable (X Y : C)
 
 /-- An object `X` in a category `C` is Artinian if `Subobject X`
-satisfies the ascending chain condition. -/
+satisfies the descending chain condition. -/
 @[stacks 0FCF]
 abbrev IsArtinianObject : Prop := isArtinianObject.Is X
 
@@ -86,15 +86,13 @@ lemma isArtinianObject_iff_isEventuallyConstant :
     IsArtinianObject X ↔ ∀ (F : ℕ ⥤ (MonoOver X)ᵒᵖ),
       IsFiltered.IsEventuallyConstant F := by
   rw [isArtinianObject_iff_antitone_chain_condition]
-  constructor
-  · intro h G
-    obtain ⟨n, hn⟩ := h ⟨_, (G ⋙ (Subobject.equivMonoOver X).inverse.op ⋙
+  refine ⟨fun h G => ?_, fun h F => ?_⟩
+  · obtain ⟨n, hn⟩ := h ⟨_, (G ⋙ (Subobject.equivMonoOver X).inverse.op ⋙
       (orderDualEquivalence _).inverse).monotone⟩
     refine ⟨n, fun m hm ↦ ?_⟩
     rw [← isIso_unop_iff, MonoOver.isIso_iff_subobjectMk_eq]
     exact (hn m (leOfHom hm)).symm
-  · intro h F
-    obtain ⟨n, hn⟩ := h (F.monotone.functor ⋙ (orderDualEquivalence _).functor ⋙
+  · obtain ⟨n, hn⟩ := h (F.monotone.functor ⋙ (orderDualEquivalence _).functor ⋙
       Subobject.representative.op)
     refine ⟨n, fun m hm ↦ Eq.symm ?_⟩
     simpa [isIso_op_iff, isIso_iff_of_reflects_iso, PartialOrder.isIso_iff_eq]
@@ -142,7 +140,7 @@ theorem exists_simple_subobject {X : C} [IsArtinianObject X] (h : ¬IsZero X) :
   obtain ⟨Y, s⟩ := (IsAtomic.eq_bot_or_exists_atom_le (⊤ : Subobject X)).resolve_left top_ne_bot
   exact ⟨Y, (subobject_simple_iff_isAtom _).mpr s.1⟩
 
-/-- Choose an arbitrary simple subobject of a non-zero artinian object. -/
+/-- Choose an arbitrary simple subobject of a non-zero Artinian object. -/
 noncomputable def simpleSubobject {X : C} [IsArtinianObject X] (h : ¬IsZero X) : C :=
   (exists_simple_subobject h).choose
 

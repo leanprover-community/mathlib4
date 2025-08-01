@@ -16,7 +16,7 @@ A noetherian category is a category in which objects do not
 have infinite increasing sequences of subobjects.
 
 Note: In the file, `CategoryTheory.Subobject.ArtinianObject`,
-it is shown that any nonzero artinian object has a simple subobject.
+it is shown that any nonzero Artinian object has a simple subobject.
 
 ## Future work
 The Jordan-Hölder theorem, following https://stacks.math.columbia.edu/tag/0FCK.
