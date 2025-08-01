@@ -169,24 +169,27 @@ The integral of a function `f` over the union of the `s i` over `i ∈ t` is the
 the integrals of `f` over the intersections of the `s i`. -/
 theorem integral_biUnion_eq_sum_powerset {ι : Type*} {t : Finset ι} {s : ι → Set X}
     (hs : ∀ i ∈ t, MeasurableSet (s i)) (hf : ∀ i ∈ t, IntegrableOn f (s i) μ) :
-    ∫ x in ⋃ i ∈ t, s i, f x ∂μ = ∑ u : t.powerset.filter (·.Nonempty),
-      (-1 : ℝ) ^ (#u.1 + 1) • ∫ x in ⋂ i ∈ u.1, s i, f x ∂μ := by
+    ∫ x in ⋃ i ∈ t, s i, f x ∂μ = ∑ u ∈ t.powerset with u.Nonempty,
+      (-1 : ℝ) ^ (#u + 1) • ∫ x in ⋂ i ∈ u, s i, f x ∂μ := by
   simp_rw [← integral_smul]
   rw [← integral_indicator (Finset.measurableSet_biUnion _ hs)]
-  have A (u : t.powerset.filter (·.Nonempty)) : MeasurableSet (⋂ i ∈ u.1, s i) := by
+  have A (u) (hu : u ∈ t.powerset.filter (·.Nonempty)) : MeasurableSet (⋂ i ∈ u, s i) := by
     apply Finset.measurableSet_biInter
     intro i hi
     apply hs
     aesop
-  simp_rw [← integral_indicator (A _)]
-  rw [← integral_finset_sum]; swap
+  have : ∑ x ∈ t.powerset with x.Nonempty, ∫ (a : X) in ⋂ i ∈ x, s i, (-1 : ℝ) ^ (#x + 1) • f a ∂μ
+      = ∑ x ∈ t.powerset with x.Nonempty, ∫ a, indicator (⋂ i ∈ x, s i)
+        (fun a ↦ (-1 : ℝ) ^ (#x + 1) • f a) a ∂μ := by
+    apply Finset.sum_congr rfl (fun x hx ↦ ?_)
+    rw [← integral_indicator (A x hx)]
+  rw [this, ← integral_finset_sum]; swap
   · intro u hu
-    rw [integrable_indicator_iff (A _)]
+    rw [integrable_indicator_iff (A u hu)]
     apply Integrable.smul
-    have : u.1.Nonempty := by aesop
-    rcases this with ⟨i, hi⟩
-    have it : i ∈ t := by aesop
-    exact (hf i it).mono (biInter_subset_of_mem hi) le_rfl
+    simp only [Finset.mem_filter, Finset.mem_powerset] at hu
+    rcases hu.2 with ⟨i, hi⟩
+    exact (hf i (hu.1 hi)).mono (biInter_subset_of_mem hi) le_rfl
   congr with x
   convert Finset.indicator_biUnion_eq_sum_powerset t s f x with u hu
   rw [indicator_smul_apply]
@@ -215,8 +218,8 @@ The measure of the union of the `s i` over `i ∈ t` is the alternating sum of t
 intersections of the `s i`. -/
 theorem measureReal_biUnion_eq_sum_powerset {ι : Type*} (t : Finset ι) {s : ι → Set X}
     (hs : ∀ i ∈ t, MeasurableSet (s i)) (hf : ∀ i ∈ t, μ (s i) ≠ ∞ := by finiteness) :
-    μ.real (⋃ i ∈ t, s i) = ∑ u : t.powerset.filter (·.Nonempty),
-      (-1 : ℝ) ^ (#u.1 + 1) * μ.real (⋂ i ∈ u.1, s i) := by
+    μ.real (⋃ i ∈ t, s i) = ∑ u ∈ t.powerset with u.Nonempty,
+      (-1 : ℝ) ^ (#u + 1) * μ.real (⋂ i ∈ u, s i) := by
   simp only [← setIntegral_one_eq_measureReal]
   apply integral_biUnion_eq_sum_powerset hs
   intro i hi
