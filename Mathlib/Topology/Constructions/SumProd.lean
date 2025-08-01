@@ -512,14 +512,8 @@ theorem isOpen_prod_iff' {s : Set X} {t : Set Y} :
 theorem isQuotientMap_fst [Nonempty Y] : IsQuotientMap (Prod.fst : X × Y → X) :=
   isOpenMap_fst.isQuotientMap continuous_fst Prod.fst_surjective
 
-@[deprecated (since := "2024-10-22")]
-alias quotientMap_fst := isQuotientMap_fst
-
 theorem isQuotientMap_snd [Nonempty X] : IsQuotientMap (Prod.snd : X × Y → Y) :=
   isOpenMap_snd.isQuotientMap continuous_snd Prod.snd_surjective
-
-@[deprecated (since := "2024-10-22")]
-alias quotientMap_snd := isQuotientMap_snd
 
 theorem closure_prod_eq {s : Set X} {t : Set Y} : closure (s ×ˢ t) = closure s ×ˢ closure t :=
   ext fun ⟨a, b⟩ => by
@@ -569,23 +563,17 @@ lemma Topology.IsInducing.prodMap {f : X → Y} {g : Z → W} (hf : IsInducing f
   isInducing_iff_nhds.2 fun (x, z) => by simp_rw [Prod.map_def, nhds_prod_eq, hf.nhds_eq_comap,
     hg.nhds_eq_comap, prod_comap_comap_eq]
 
-@[deprecated (since := "2024-10-28")] alias Inducing.prodMap := IsInducing.prodMap
-
 @[simp]
 lemma Topology.isInducing_const_prod {x : X} {f : Y → Z} :
     IsInducing (fun x' => (x, f x')) ↔ IsInducing f := by
   simp_rw [isInducing_iff, instTopologicalSpaceProd, induced_inf, induced_compose,
     Function.comp_def, induced_const, top_inf_eq]
 
-@[deprecated (since := "2024-10-28")] alias inducing_const_prod := isInducing_const_prod
-
 @[simp]
 lemma Topology.isInducing_prod_const {y : Y} {f : X → Z} :
     IsInducing (fun x => (f x, y)) ↔ IsInducing f := by
   simp_rw [isInducing_iff, instTopologicalSpaceProd, induced_inf, induced_compose,
     Function.comp_def, induced_const, inf_top_eq]
-
-@[deprecated (since := "2024-10-28")] alias inducing_prod_const := isInducing_prod_const
 
 lemma isInducing_prodMkLeft (y : Y) : IsInducing (fun x : X ↦ (x, y)) :=
   .of_comp (.prodMk_left y) continuous_fst .id
@@ -612,9 +600,6 @@ protected lemma Topology.IsOpenEmbedding.prodMap {f : X → Y} {g : Z → W} (hf
 lemma isEmbedding_graph {f : X → Y} (hf : Continuous f) : IsEmbedding fun x => (x, f x) :=
   .of_comp (continuous_id.prodMk hf) continuous_fst .id
 
-@[deprecated (since := "2024-10-26")]
-alias embedding_graph := isEmbedding_graph
-
 lemma isEmbedding_prodMkLeft (y : Y) : IsEmbedding (fun x : X ↦ (x, y)) :=
   .of_comp (.prodMk_left y) continuous_fst .id
 
@@ -622,8 +607,6 @@ lemma isEmbedding_prodMkRight (x : X) : IsEmbedding (Prod.mk x : Y → X × Y) :
   .of_comp (.prodMk_right x) continuous_snd .id
 
 @[deprecated (since := "2025-06-12")] alias isEmbedding_prodMk := isEmbedding_prodMkRight
-@[deprecated (since := "2024-10-26")] alias embedding_prod_mk := isEmbedding_prodMkRight
-
 theorem IsOpenQuotientMap.prodMap {f : X → Y} {g : Z → W} (hf : IsOpenQuotientMap f)
     (hg : IsOpenQuotientMap g) : IsOpenQuotientMap (Prod.map f g) :=
   ⟨.prodMap hf.1 hg.1, .prodMap hf.2 hg.2, .prodMap hf.3 hg.3⟩
@@ -771,18 +754,11 @@ theorem isClosedMap_inr : IsClosedMap (@inr X Y) := fun u hu ↦ by
 protected lemma Topology.IsOpenEmbedding.inl : IsOpenEmbedding (@inl X Y) :=
   .of_continuous_injective_isOpenMap continuous_inl inl_injective isOpenMap_inl
 
-@[deprecated (since := "2024-10-30")] alias isOpenEmbedding_inl := IsOpenEmbedding.inl
-
 protected lemma Topology.IsOpenEmbedding.inr : IsOpenEmbedding (@inr X Y) :=
   .of_continuous_injective_isOpenMap continuous_inr inr_injective isOpenMap_inr
 
-@[deprecated (since := "2024-10-30")] alias isOpenEmbedding_inr := IsOpenEmbedding.inr
-
 protected lemma Topology.IsEmbedding.inl : IsEmbedding (@inl X Y) := IsOpenEmbedding.inl.1
 protected lemma Topology.IsEmbedding.inr : IsEmbedding (@inr X Y) := IsOpenEmbedding.inr.1
-
-@[deprecated (since := "2024-10-26")]
-alias embedding_inr := IsEmbedding.inr
 
 lemma isOpen_range_inl : IsOpen (range (inl : X → X ⊕ Y)) := IsOpenEmbedding.inl.2
 lemma isOpen_range_inr : IsOpen (range (inr : Y → X ⊕ Y)) := IsOpenEmbedding.inr.2
@@ -798,12 +774,8 @@ theorem isClosed_range_inr : IsClosed (range (inr : Y → X ⊕ Y)) := by
 theorem Topology.IsClosedEmbedding.inl : IsClosedEmbedding (inl : X → X ⊕ Y) :=
   ⟨.inl, isClosed_range_inl⟩
 
-@[deprecated (since := "2024-10-30")] alias isClosedEmbedding_inl := IsClosedEmbedding.inl
-
 theorem Topology.IsClosedEmbedding.inr : IsClosedEmbedding (inr : Y → X ⊕ Y) :=
   ⟨.inr, isClosed_range_inr⟩
-
-@[deprecated (since := "2024-10-30")] alias isClosedEmbedding_inr := IsClosedEmbedding.inr
 
 theorem nhds_inl (x : X) : 𝓝 (inl x : X ⊕ Y) = map inl (𝓝 x) :=
   (IsOpenEmbedding.inl.map_nhds_eq _).symm

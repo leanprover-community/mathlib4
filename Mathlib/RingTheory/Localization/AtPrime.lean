@@ -85,8 +85,6 @@ theorem AtPrime.isLocalRing [IsLocalization.AtPrime S P] : IsLocalRing S :=
         P.mul_mem_left _ <| P.mul_mem_right _ <|
             P.add_mem (P.mul_mem_right _ <| this hx) <| P.mul_mem_right _ <| this hy)
 
-@[deprecated (since := "2024-11-09")] alias AtPrime.localRing := AtPrime.isLocalRing
-
 end IsLocalization
 
 namespace Localization

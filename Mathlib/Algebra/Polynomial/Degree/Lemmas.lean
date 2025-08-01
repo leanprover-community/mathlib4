@@ -134,9 +134,6 @@ theorem natDegree_C_mul_of_mul_ne_zero (h : a * p.leadingCoeff ≠ 0) :
   refine mem_support_iff.mpr ?_
   rwa [coeff_C_mul]
 
-@[deprecated (since := "2025-01-03")]
-alias natDegree_C_mul_eq_of_mul_ne_zero := natDegree_C_mul_of_mul_ne_zero
-
 lemma degree_C_mul_of_mul_ne_zero (h : a * p.leadingCoeff ≠ 0) : (C a * p).degree = p.degree := by
   rw [degree_mul' (by simpa)]; simp [left_ne_zero_of_mul h]
 

@@ -435,8 +435,6 @@ theorem pair_eq_singleton (a : α) : ({a, a} : Finset α) = {a} :=
 theorem insert_comm (a b : α) (s : Finset α) : insert a (insert b s) = insert b (insert a s) :=
   ext fun x => by simp only [mem_insert, or_left_comm]
 
-@[deprecated (since := "2024-11-29")] alias Insert.comm := insert_comm
-
 @[norm_cast]
 theorem coe_pair {a b : α} : (({a, b} : Finset α) : Set α) = {a, b} := by
   ext

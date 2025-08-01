@@ -155,9 +155,6 @@ theorem exists_integral_multiple (hz : IsAlgebraic R z) : ∃ y ≠ (0 : R), IsI
       integralNormalization_aeval_eq_zero px fun _ ↦ (map_eq_zero_iff _ inj).mp⟩
   exact ⟨_, a_ne_zero, Algebra.smul_def a z ▸ x_integral⟩
 
-@[deprecated (since := "2024-11-30")]
-alias _root_.exists_integral_multiple := exists_integral_multiple
-
 variable (R) in
 theorem _root_.Algebra.IsAlgebraic.exists_integral_multiples [NoZeroDivisors R]
     [alg : Algebra.IsAlgebraic R A] (s : Finset A) :

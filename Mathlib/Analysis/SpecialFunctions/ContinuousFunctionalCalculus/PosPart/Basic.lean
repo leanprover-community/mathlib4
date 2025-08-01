@@ -173,10 +173,6 @@ lemma posPart_eq_self (a : A) : a⁺ = a ↔ 0 ≤ a := by
   refine cfcₙ_congr (fun x hx ↦ ?_)
   simpa [_root_.posPart_def] using quasispectrum_nonneg_of_nonneg a ha x hx
 
-@[deprecated posPart_eq_self (since := "2024-11-18")]
-lemma eq_posPart_iff (a : A) : a = a⁺ ↔ 0 ≤ a := by
-  rw [eq_comm, posPart_eq_self]
-
 lemma negPart_eq_zero_iff (a : A) (ha : IsSelfAdjoint a := by cfc_tac) :
     a⁻ = 0 ↔ 0 ≤ a := by
   rw [← posPart_eq_self, eq_comm (b := a)]
@@ -195,10 +191,6 @@ lemma negPart_eq_neg (a : A) : a⁻ = -a ↔ a ≤ 0 := by
     spectrum.neg_eq, ← Unitization.inr_neg, ← Unitization.quasispectrum_eq_spectrum_inr ℝ] at hx
   rw [← neg_eq_iff_eq_neg, eq_comm]
   simpa using quasispectrum_nonneg_of_nonneg _ ha _ hx
-
-@[deprecated negPart_eq_neg (since := "2024-11-18")]
-lemma eq_negPart_iff (a : A) : a = -a⁻ ↔ a ≤ 0 := by
-  rw [← neg_inj, neg_neg, eq_comm, negPart_eq_neg]
 
 lemma posPart_eq_zero_iff (a : A) (ha : IsSelfAdjoint a := by cfc_tac) :
     a⁺ = 0 ↔ a ≤ 0 := by
