@@ -56,7 +56,8 @@ def checkEquality (e : Expr) : MetaM Bool := do
     return false
   | _ => throwError "{e} is not an equality."
 
-/-- Check the typing of equalities in an expression.-/
+/-- Check the typing of equalities in an expression, and return whether or not a
+defeq problem was found. -/
 def checkEqualities (e : Expr) : MetaM Bool := do
   forEachEquality e checkEquality
 
