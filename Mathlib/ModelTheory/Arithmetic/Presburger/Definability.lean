@@ -6,7 +6,7 @@ Authors: Dexin Zhang
 import Mathlib.Algebra.GCDMonoid.Finset
 import Mathlib.Algebra.GCDMonoid.Nat
 import Mathlib.ModelTheory.Arithmetic.Presburger.Basic
-import Mathlib.ModelTheory.Arithmetic.Presburger.Semilinear.Nat
+import Mathlib.ModelTheory.Arithmetic.Presburger.Semilinear.FinitelyGenerated
 import Mathlib.ModelTheory.Definability
 
 /-!
@@ -115,7 +115,7 @@ lemma boundedFormula_realize_semilinear {n} (φ : presburger[[A]].BoundedFormula
   | equal t₁ t₂ =>
     rcases term_realize_eq_add_dotProduct t₁ with ⟨k₁, u₁, ht₁⟩
     rcases term_realize_eq_add_dotProduct t₂ with ⟨k₂, u₂, ht₂⟩
-    convert Semilinear.of_linear_equation ![k₁] ![k₂] (.of ![u₁]) (.of ![u₂])
+    convert Semilinear.of_linear_equation_nat ![k₁] ![k₂] (.of ![u₁]) (.of ![u₂])
     simp [ht₁, ht₂]
   | rel f => nomatch f
   | falsum => exact Semilinear.empty
@@ -124,33 +124,24 @@ lemma boundedFormula_realize_semilinear {n} (φ : presburger[[A]].BoundedFormula
     simp [setOf_inter_eq_sep, imp_iff_not_or, compl_setOf]
   | @all n φ ih =>
     let e := (Equiv.sumAssoc α (Fin n) (Fin 1)).trans (Equiv.sumCongr (.refl α) finSumFinEquiv)
-    convert (ih.compl.reindex e).proj.compl using 1
-    simp_rw [compl_setOf, not_exists, Fin.forall_fin_succ_pi, Fin.forall_fin_zero_pi, mem_image,
-      not_exists, mem_setOf, not_and, not_imp_not]
-    congr! 3 with x k
-    constructor
-    · intro hφ y hy
-      convert hφ using 1 <;> ext i
-      · apply congr_fun (a := e.symm (Sum.inl i)) at hy
-        simpa [e] using hy
-      · apply congr_fun (a := e.symm (Sum.inr i)) at hy
-        cases i using Fin.lastCases <;> simpa [e] using hy
-    · intro h
-      convert h (fun y => Sum.elim x ![k] (e.symm y)) ?_ using 1
-      · ext i
-        cases i using Fin.lastCases <;> simp [e]
-      · ext i
-        cases i with
-        | inl => simp
-        | inr i => fin_cases i; simp
+    rw [← Semilinear.image_iff (LinearEquiv.funCongrLeft ℕ ℕ e)] at ih
+    convert ih.compl.proj.compl using 1
+    simp_rw [compl_setOf, not_exists, Fin.forall_fin_succ_pi, Fin.forall_fin_zero_pi,
+      mem_compl_iff, mem_image, not_not, ← LinearEquiv.eq_symm_apply, LinearEquiv.funCongrLeft_symm,
+      exists_eq_right, mem_setOf, LinearEquiv.funCongrLeft_apply, LinearMap.funLeft,
+      LinearMap.coe_mk, AddHom.coe_mk]
+    congr! 4
+    ext i
+    cases i using Fin.lastCases <;> simp [e]
 
 lemma formula_realize_semilinear (φ : presburger[[A]].Formula α) :
     (setOf φ.Realize : Set (α → ℕ)).Semilinear := by
-  convert (boundedFormula_realize_semilinear φ).reindex (Equiv.sumEmpty α (Fin 0)).symm
+  let e := Equiv.sumEmpty α (Fin 0)
+  convert (boundedFormula_realize_semilinear φ).image (LinearMap.funLeft ℕ ℕ e.symm)
   ext x
   simp only [mem_setOf_eq, mem_image]
-  rw [((Equiv.sumEmpty α (Fin 0)).arrowCongr (.refl ℕ)).exists_congr_left]
-  simp [Formula.Realize, Unique.eq_default, Function.comp_def]
+  rw [(e.arrowCongr (.refl ℕ)).exists_congr_left]
+  simp [Formula.Realize, Unique.eq_default, Function.comp_def, LinearMap.funLeft, e]
 
 /-- A set is Presburger definable in `ℕ` if and only if it is semilinear. -/
 theorem definable_iff_semilinear {s : Set (α → ℕ)} :
@@ -161,18 +152,18 @@ theorem definable_iff_semilinear {s : Set (α → ℕ)} :
   is ultimately periodic, i.e. periodic after some number `k`. -/
 theorem definable₁_iff_ultimately_periodic {s : Set ℕ} :
     A.Definable₁ presburger s ↔ ∃ k, ∃ p > 0, ∀ x ≥ k, x ∈ s ↔ x + p ∈ s := by
-  rw [Definable₁, definable_iff_semilinear]
+  rw [Definable₁, definable_iff_semilinear,
+    ← Semilinear.image_iff (LinearEquiv.funUnique (Fin 1) ℕ ℕ), ← preimage_setOf_eq]
+  simp only [LinearEquiv.funUnique_apply, Function.eval, Fin.default_eq_zero, setOf_mem_eq]
+  rw [image_preimage_eq s fun x => ⟨![x], rfl⟩]
   constructor
   · intro hs
     apply Semilinear.proper_semilinear at hs
-    rcases hs with ⟨S, hS, hs⟩
-    simp only [Set.ext_iff, mem_setOf_eq, mem_sUnion, Finset.mem_coe] at hs
-    replace hs := (hs ![·])
-    simp only [Fin.isValue, cons_val_fin_one] at hs
-    replace hS : ∀ t ∈ S, ∃ k, ∃ p > 0, ∀ x ≥ k, ![x] ∈ t ↔ ![x + p] ∈ t := by
+    rcases hs with ⟨S, hS, rfl⟩
+    replace hS : ∀ t ∈ S, ∃ k, ∃ p > 0, ∀ x ≥ k, x ∈ t ↔ x + p ∈ t := by
       intro t ht
       apply hS at ht
-      rcases ht with ⟨v, t, ht, rfl⟩
+      rcases ht with ⟨a, t, ht, rfl⟩
       have hcard : t.card ≤ 1 := by
         by_contra hcard
         simp only [not_le, Finset.one_lt_card_iff] at hcard
@@ -181,49 +172,41 @@ theorem definable₁_iff_ultimately_periodic {s : Set ℕ} :
           intro hb'
           apply ht.zero_notMem_image
           simp [← hb', hb]
-        simp only [ne_eq, funext_iff, Fin.forall_fin_one, Pi.zero_apply] at hb'
         revert ht
         simp only [imp_false, not_linearIndepOn_finset_iffₛ, id_eq]
-        refine ⟨Pi.single a (b 0), Pi.single b (a 0), ?_, a, ha, ?_⟩
-        · simpa [Pi.single_apply, ha, hb, funext_iff (f := (b 0 : Fin 1 → ℕ) * a),
-            Fin.forall_fin_one] using mul_comm (b 0) (a 0)
+        refine ⟨Pi.single a b, Pi.single b a, ?_, a, ha, ?_⟩
+        · simpa [Pi.single_apply, ha, hb] using mul_comm b a
         · simp [hab, hb']
       simp_rw [Finset.card_le_one_iff_subset_singleton, Finset.subset_singleton_iff] at hcard
-      rcases hcard with ⟨u, (rfl | rfl)⟩
-      · refine ⟨v 0 + 1, 1, zero_lt_one, fun x hx => ?_⟩
-        have hx' : x ≠ v 0 := (Nat.lt_of_succ_le hx).ne'
-        have hx'' : x + 1 ≠ v 0 := (Nat.lt_of_succ_le (Nat.le_succ_of_le hx)).ne'
-        simp [funext_iff, Fin.forall_fin_one, hx', hx'']
-      · have hu : u ≠ 0 := by
-          intro hu
+      rcases hcard with ⟨b, (rfl | rfl)⟩
+      · refine ⟨a + 1, 1, zero_lt_one, fun x hx => ?_⟩
+        simp [(Nat.lt_of_succ_le hx).ne', (Nat.lt_of_succ_le (Nat.le_succ_of_le hx)).ne']
+      · have hb : b ≠ 0 := by
+          intro hb
           apply ht.zero_notMem_image
-          simp [hu]
-        simp only [ne_eq, funext_iff, Fin.forall_fin_one, Pi.zero_apply, Nat.ne_zero_iff_zero_lt]
-          at hu
-        refine ⟨v 0, u 0, hu, fun x hx => ?_⟩
-        simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Finset.coe_singleton, mem_vadd_set,
-          SetLike.mem_coe, Submodule.mem_span_singleton, nsmul_eq_mul, funext_iff, Pi.mul_apply,
-          Pi.natCast_apply, Nat.cast_id, Fin.forall_fin_one, Fin.isValue, vadd_eq_add, Pi.add_apply,
-          cons_val_fin_one]
+          simp [hb]
+        rw [Nat.ne_zero_iff_zero_lt] at hb
+        refine ⟨a, b, hb, fun x hx => ?_⟩
+        simp only [Finset.coe_singleton, mem_vadd_set, SetLike.mem_coe,
+          Submodule.mem_span_singleton, smul_eq_mul, vadd_eq_add, exists_exists_eq_and]
         constructor
-        · rintro ⟨y, ⟨a, ha⟩, rfl⟩
-          refine ⟨y + u, ⟨a + 1, ?_⟩, ?_⟩ <;> simp [← ha, Nat.add_one_mul, add_assoc]
-        · rintro ⟨y, ⟨a, ha⟩, heq⟩
-          rw [← ha] at heq
-          cases a with
+        · rintro ⟨x, rfl⟩
+          refine ⟨x + 1, ?_⟩
+          simp [add_one_mul, add_assoc]
+        · rintro ⟨y, heq⟩
+          cases y with
           | zero =>
             rw [zero_mul, add_zero] at heq
-            simp only [heq, add_le_iff_nonpos_right, nonpos_iff_eq_zero] at hx
-            simp [hx] at hu
-          | succ a =>
+            simp only [heq, ge_iff_le, add_le_iff_nonpos_right, nonpos_iff_eq_zero] at hx
+            simp [hx] at hb
+          | succ y =>
             rw [add_one_mul, ← add_assoc, add_right_cancel_iff] at heq
-            refine ⟨a * u 0, ⟨a, rfl⟩, heq⟩
+            exact ⟨y, heq⟩
     choose! k p hS hS' using hS
     refine ⟨S.sup k, S.lcm p, ?_, fun x hx => ?_⟩
     · rw [gt_iff_lt, Nat.pos_iff_ne_zero, ne_eq]
       simpa [Finset.lcm_eq_zero_iff, ← Nat.pos_iff_ne_zero]
     · simp only [ge_iff_le, Finset.sup_le_iff] at hx
-      rw [hs, hs]
       refine exists_congr fun t => and_congr_right fun ht => ?_
       have hpt : p t ∣ S.lcm p := Finset.dvd_lcm ht
       rw [dvd_iff_exists_eq_mul_left] at hpt
@@ -239,33 +222,27 @@ theorem definable₁_iff_ultimately_periodic {s : Set ℕ} :
     have h₁ : {x ∈ s | x < k}.Finite := (Set.finite_lt_nat k).subset (sep_subset_setOf _ _)
     have h₂ : {x ∈ s | k ≤ x ∧ x < k + p}.Finite :=
       (Set.finite_Ico k (k + p)).subset (sep_subset_setOf _ _)
-    convert (h₁.image (![·])).semilinear.union
-      ((h₂.image (![·])).semilinear.add (Semilinear.singleton ![p]).span) using 1
-    ext v
-    simp only [mem_setOf_eq, Nat.succ_eq_add_one, Nat.reduceAdd, sep_and, mem_union,
-      mem_image, mem_add, mem_inter_iff, SetLike.mem_coe, Submodule.mem_span_singleton, smul_cons,
-      smul_eq_mul, Matrix.smul_empty, exists_exists_eq_and, add_cons, empty_add_empty,
-      exists_exists_and_eq_and, head_cons]
+    convert h₁.semilinear.union (h₂.semilinear.add (Semilinear.span_finset {p}))
+    ext x
+    simp only [sep_and, Finset.coe_singleton, mem_union, mem_setOf_eq, mem_add, mem_inter_iff,
+      SetLike.mem_coe, Submodule.mem_span_singleton, smul_eq_mul, exists_exists_eq_and]
     constructor
-    · intro hv
-      by_cases hv' : v 0 < k
-      · refine Or.inl ⟨v 0, ⟨hv, hv'⟩, ?_⟩
-        simp [funext_iff, Fin.forall_fin_one]
-      · simp only [not_lt] at hv'
-        refine Or.inr ⟨k + (v 0 - k) % p, ⟨⟨?_1, ?_2⟩, ?_1, ?_3⟩, (v 0 - k) / p, ?_4⟩
-        · rw [← add_tsub_cancel_of_le hv', ← Nat.mod_add_div' (v 0 - k) p, ← add_assoc] at hv
-          generalize (v 0 - k) / p = m at hv
+    · intro hx
+      by_cases hx' : x < k
+      · exact Or.inl ⟨hx, hx'⟩
+      · rw [not_lt] at hx'
+        refine Or.inr ⟨k + (x - k) % p, ⟨⟨?_1, ?_2⟩, ?_1, ?_3⟩, (x - k) / p, ?_4⟩
+        · rw [← add_tsub_cancel_of_le hx', ← Nat.mod_add_div' (x - k) p, ← add_assoc] at hx
+          generalize (x - k) / p = m at hx
           induction m with
-          | zero => simpa using hv
+          | zero => simpa using hx
           | succ m ih =>
             refine ih ?_
             rwa [hs _ (Nat.le_add_right_of_le (Nat.le_add_right _ _)), add_assoc, ← Nat.add_one_mul]
         · apply Nat.le_add_right
         · apply Nat.add_lt_add_left (Nat.mod_lt _ hp)
-        · rw [add_assoc, Nat.mod_add_div', add_tsub_cancel_of_le hv']
-          simp [funext_iff, Fin.forall_fin_one]
-    · rintro (⟨x, ⟨hx, _⟩, rfl⟩ | ⟨x, ⟨⟨hx, hx'⟩, _⟩, m, rfl⟩)
-        <;> simp only [cons_val_fin_one]
+        · rw [add_assoc, Nat.mod_add_div', add_tsub_cancel_of_le hx']
+    · rintro (⟨hx, hx'⟩ | ⟨x, ⟨⟨hx, hx'⟩, _⟩, m, rfl⟩)
       · exact hx
       · induction m with
         | zero => simpa
