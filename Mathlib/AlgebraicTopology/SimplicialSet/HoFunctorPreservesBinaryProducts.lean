@@ -6,6 +6,7 @@ Authors: Emily Riehl, Dominic Verity
 import Mathlib.AlgebraicTopology.Quasicategory.Basic
 import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
 import Mathlib.AlgebraicTopology.SimplicialSet.NerveAdjunction
+import Mathlib.CategoryTheory.Category.Cat.CartesianClosed
 import Mathlib.CategoryTheory.Category.Cat.Limit
 import Mathlib.CategoryTheory.Closed.FunctorToTypes
 import Mathlib.CategoryTheory.PUnit
@@ -199,17 +200,19 @@ lemma hoFunctor.binaryProductWithSimplexIsIso (D X : SSet.{u})
     IsIso (prodComparison hoFunctor D X) := by
   letI Xcolim := CategoryTheory.Presheaf.isColimitTautologicalCocone' X
   have : (prod.functor.obj D).IsLeftAdjoint := by
-    have := (CategoryTheory.FunctorToTypes.adj D).isLeftAdjoint
-    have : (MonoidalCategory.tensorLeft D).IsLeftAdjoint := by infer_instance
+    have : (MonoidalCategory.tensorLeft D).IsLeftAdjoint :=
+      (CategoryTheory.FunctorToTypes.adj D).isLeftAdjoint
     exact Functor.isLeftAdjoint_of_iso (CartesianMonoidalCategory.tensorLeftIsoProd _)
-  have : (prod.functor.obj (hoFunctor.obj (D : SSet.{u}))).IsLeftAdjoint := by infer_instance
+  have : (prod.functor.obj (hoFunctor.obj (D : SSet.{u}))).IsLeftAdjoint := by
+    have : (MonoidalCategory.tensorLeft (hoFunctor.obj D)).IsLeftAdjoint := by infer_instance
+    exact Functor.isLeftAdjoint_of_iso (CartesianMonoidalCategory.tensorLeftIsoProd _)
   have : (hoFunctor).IsLeftAdjoint := nerveAdjunction.isLeftAdjoint
   have : IsIso (whiskerLeft (CostructuredArrow.proj uliftYoneda X ⋙ uliftYoneda)
       (prodComparisonNatTrans hoFunctor D)) := by
     rw [NatTrans.isIso_iff_isIso_app]
     intro x
     dsimp
-    exact H (unop (unop x).fst).len
+    exact H (x.left).len
   exact foo
     (C := SSet.{u})
     (D := Cat.{u, u})
