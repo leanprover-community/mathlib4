@@ -313,7 +313,7 @@ instance (priority := 500) algebra' [CommSemiring R'] [SMul R' R] [Algebra R' A]
 instance algebra : Algebra R S := S.algebra'
 
 @[simp]
-theorem mk_algebraMap_apply {S : Subalgebra R A} (r : R) (hr : algebraMap R A r ∈ S) :
+theorem mk_algebraMap {S : Subalgebra R A} (r : R) (hr : algebraMap R A r ∈ S) :
   ⟨algebraMap R A r, hr⟩ = algebraMap R S r := rfl
 
 end
