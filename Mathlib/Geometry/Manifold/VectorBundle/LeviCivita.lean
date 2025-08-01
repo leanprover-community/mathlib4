@@ -524,23 +524,21 @@ lemma isCovariantDerivativeOn_lcCandidate_aux [FiniteDimensional ℝ E]
     IsCovariantDerivativeOn E (lcCandidate_aux I (M := M) e) e.baseSet where
   addX X X' σ x := by
     -- these three sorries seem to be necessary!
-    have hX : MDiff (T% X) := sorry
-    have hX' : MDiff (T% X') := sorry
-    have hσ : MDiff (T% σ) := sorry
+    have hX : MDiffAt (T% X) x := sorry
+    have hX' : MDiffAt (T% X') x := sorry
+    have hσ : MDiffAt (T% σ) x := sorry
     intro hx
     unfold lcCandidate_aux
     simp only [← Finset.sum_add_distrib, ← add_smul]
     congr; ext i
-    rw [leviCivita_rhs_addX] <;> try assumption
-    · abel
+    rw [leviCivita_rhs_addX_apply] <;> try assumption
     · let : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E) := Classical.choose (exists_wellOrder _)
       have : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := sorry
       set f := ((Basis.ofVectorSpace ℝ E).orthonormalFrame e i)
       have : MDiffAt (T% f) x := -- missing API lemma!
         (contMDiffAt_orthonormalFrame_of_mem (Basis.ofVectorSpace ℝ E) e i hx)
           |>.mdifferentiableAt le_rfl
-      -- TODO: need a local version of leviCivita_rhs_addX!
-      sorry
+      sorry -- convert this works, except for different local orders...
   smulX X σ g x hx := by
     unfold lcCandidate_aux
     dsimp
