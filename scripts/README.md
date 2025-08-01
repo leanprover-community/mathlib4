@@ -92,7 +92,7 @@ to learn about it as well!
   `*-pr-testing-NNNN` branch.
 - `update_nolints_CI.sh`
   Update the `nolints.json` file to remove unneeded entries. Automatically run once a week.
-- `assign_reviewers.py` is used to automatically assign a reviewer to each stale github PR.
+- `assign_reviewers.py` is used to automatically assign a reviewer to each stale github PR on the review queue.
   This script downloads a .json file with proposed assignments and makes the
   corresponding github API calls.
 - `bench_summary.lean`

@@ -29,7 +29,8 @@ def call(number: int, handle: str) -> bool:
         url, '--data', f'{{"assignees":["{handle}"]}}'
     ]
     out = subprocess.run(["curl"] + arguments_DO_NOT_PRINT, capture_output=True, encoding="utf-8")
-    print("output from calling CURL:\n" + out.stdout)
+    if out.stdout:
+        print("output from calling CURL:\n" + out.stdout)
     if out.stderr:
         print("standard error output is:\n" + out.stderr)
     if out.returncode != 0:
@@ -57,6 +58,8 @@ if __name__ == '__main__':
     all_api_calls_succeeded = True
     for (number, user_handle) in data.items():
         print(number, user_handle)
+        # put in a wait here if the number of API calls might be greater than 2000 per hour
+        # The limit is 5000/hr per https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api?apiVersion=2022-11-28#primary-rate-limit-for-authenticated-users
         all_api_calls_succeeded = call(number, user_handle) and all_api_calls_succeeded
     if not all_api_calls_succeeded:
         sys.exit(1)
