@@ -291,6 +291,7 @@ lemma IndepFun.covariance_eq_zero (h : IndepFun X Y μ) (hX : MemLp X 2 μ) (hY 
     filter_upwards [h'] with ω hω
     simp [hω, integral_eq_zero_of_ae h']
   have := hX.isProbabilityMeasure_of_indepFun X Y (by simp) (by simp) h' h
-  rw [covariance_eq hX hY, h.integral_mul_eq_mul_integral hX.aemeasurable hY.aemeasurable, sub_self]
+  rw [covariance_eq hX hY, h.integral_mul_eq_mul_integral
+      hX.aestronglyMeasurable hY.aestronglyMeasurable, sub_self]
 
 end ProbabilityTheory

@@ -5,6 +5,7 @@ Authors: Martin Zinkevich, Vincent Beffara, Etienne Marion
 -/
 import Mathlib.MeasureTheory.Integral.Pi
 import Mathlib.Probability.Independence.Basic
+import Mathlib.Probability.Independence.Integrable
 import Mathlib.Probability.Notation
 
 /-!
@@ -199,33 +200,55 @@ theorem IndepFun.integrable_right_of_integrable_mul {β : Type*} [MeasurableSpac
   simp only [ENNReal.mul_top I, lt_self_iff_false] at A
 
 lemma IndepFun.integral_fun_comp_mul_comp {𝓧 𝓨 : Type*} [MeasurableSpace 𝓧] [MeasurableSpace 𝓨]
-    [IsFiniteMeasure μ] {X : Ω → 𝓧} {Y : Ω → 𝓨} {f : 𝓧 → 𝕜} {g : 𝓨 → 𝕜} (hXY : IndepFun X Y μ)
+    {X : Ω → 𝓧} {Y : Ω → 𝓨} {f : 𝓧 → 𝕜} {g : 𝓨 → 𝕜} (hXY : IndepFun X Y μ)
     (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ) (hf : AEStronglyMeasurable f (μ.map X))
     (hg : AEStronglyMeasurable g (μ.map Y)) :
-    μ[fun ω ↦ f (X ω) * g (Y ω)] = μ[fun ω ↦ f (X ω)] * μ[fun ω ↦ g (Y ω)] := by
-  change ∫ ω, (fun x ↦ f x.1 * g x.2) (X ω, Y ω) ∂μ = _
-  rw [← integral_map (f := fun x ↦ f x.1 * g x.2) (φ := fun ω ↦ (X ω, Y ω)),
-    (indepFun_iff_map_prod_eq_prod_map_map hX hY).1 hXY, integral_prod_mul, integral_map,
-    integral_map]
-  any_goals fun_prop
-  rw [(indepFun_iff_map_prod_eq_prod_map_map hX hY).1 hXY]
-  exact hf.comp_fst.mul hg.comp_snd
+    ∫ ω, f (X ω) * g (Y ω) ∂μ = (∫ ω, f (X ω) ∂μ) * ∫ ω, g (Y ω) ∂μ := by
+  have hfXgY := (hXY.comp₀ hX hY hf.aemeasurable hg.aemeasurable)
+  have hfX := (hf.comp_aemeasurable hX)
+  have hgY := (hg.comp_aemeasurable hY)
+  by_cases h'X : ∀ᵐ ω ∂μ, f (X ω) = 0
+  · have h' : ∀ᵐ ω ∂μ, f (X ω) * g (Y ω) = 0 := by
+      filter_upwards [h'X] with ω hω
+      simp [hω]
+    simp [integral_congr_ae h'X, integral_congr_ae h']
+  by_cases h'Y : ∀ᵐ ω ∂μ, g (Y ω) = 0
+  · have h' : ∀ᵐ ω ∂μ, f (X ω) * g (Y ω) = 0 := by
+      filter_upwards [h'Y] with ω hω
+      simp [hω]
+    simp [integral_congr_ae h'Y, integral_congr_ae h']
+  by_cases h : Integrable (fun ω ↦ f (X ω) * g (Y ω)) μ
+  · have :=
+      (hfXgY.integrable_left_of_integrable_mul h hfX hgY h'Y).isProbabilityMeasure_of_indepFun
+        _ _ h'X hfXgY
+    change ∫ ω, (fun x ↦ f x.1 * g x.2) (X ω, Y ω) ∂μ = _
+    rw [← integral_map (f := fun x ↦ f x.1 * g x.2) (φ := fun ω ↦ (X ω, Y ω)),
+      (indepFun_iff_map_prod_eq_prod_map_map hX hY).1 hXY, integral_prod_mul, integral_map,
+      integral_map]
+    any_goals fun_prop
+    rw [(indepFun_iff_map_prod_eq_prod_map_map hX hY).1 hXY]
+    exact hf.comp_fst.mul hg.comp_snd
+  · rw [integral_undef h]
+    obtain h | h : ¬(Integrable (fun ω ↦ f (X ω)) μ) ∨ ¬(Integrable (fun ω ↦ g (Y ω)) μ) :=
+      not_and_or.1 fun ⟨HX, HY⟩ ↦ h (hfXgY.integrable_mul HX HY)
+    all_goals simp [integral_undef h]
 
 lemma IndepFun.integral_comp_mul_comp {𝓧 𝓨 : Type*} [MeasurableSpace 𝓧] [MeasurableSpace 𝓨]
-    [IsFiniteMeasure μ] {X : Ω → 𝓧} {Y : Ω → 𝓨} {f : 𝓧 → 𝕜} {g : 𝓨 → 𝕜} (hXY : IndepFun X Y μ)
+    {X : Ω → 𝓧} {Y : Ω → 𝓨} {f : 𝓧 → 𝕜} {g : 𝓨 → 𝕜} (hXY : IndepFun X Y μ)
     (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ) (hf : AEStronglyMeasurable f (μ.map X))
     (hg : AEStronglyMeasurable g (μ.map Y)) :
     μ[(f ∘ X) * (g ∘ Y)] = μ[f ∘ X] * μ[g ∘ Y] :=
   hXY.integral_fun_comp_mul_comp hX hY hf hg
 
-lemma IndepFun.integral_mul_eq_mul_integral [IsFiniteMeasure μ]
-    (hXY : IndepFun X Y μ) (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ) :
+lemma IndepFun.integral_mul_eq_mul_integral
+    (hXY : IndepFun X Y μ) (hX : AEStronglyMeasurable X μ) (hY : AEStronglyMeasurable Y μ) :
     μ[X * Y] = μ[X] * μ[Y] :=
-  hXY.integral_comp_mul_comp hX hY aestronglyMeasurable_id aestronglyMeasurable_id
+  hXY.integral_comp_mul_comp hX.aemeasurable hY.aemeasurable
+    aestronglyMeasurable_id aestronglyMeasurable_id
 
-lemma IndepFun.integral_fun_mul_eq_mul_integral [IsFiniteMeasure μ]
-    (hXY : IndepFun X Y μ) (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ) :
-    μ[fun ω ↦ X ω * Y ω] = μ[X] * μ[Y] :=
+lemma IndepFun.integral_fun_mul_eq_mul_integral
+    (hXY : IndepFun X Y μ) (hX : AEStronglyMeasurable X μ) (hY : AEStronglyMeasurable Y μ) :
+    ∫ ω, X ω * Y ω ∂μ = μ[X] * μ[Y] :=
   hXY.integral_mul_eq_mul_integral hX hY
 
 @[deprecated (since := "2025-07-30")] alias IndepFun.integral_mul_of_nonneg :=
@@ -266,7 +289,7 @@ variable {ι : Type*} [Fintype ι] {𝓧 : ι → Type*} [∀ i, MeasurableSpace
 
 lemma iIndepFun.integral_fun_prod_comp (hX : iIndepFun X μ)
     (mX : ∀ i, AEMeasurable (X i) μ) (hf : ∀ i, AEStronglyMeasurable (f i) (μ.map (X i))) :
-    μ[fun ω ↦ (∏ i, f i (X i ω))] = ∏ i, μ[fun ω ↦ f i (X i ω)] := by
+    ∫ ω, ∏ i, f i (X i ω) ∂μ = ∏ i, ∫ ω, f i (X i ω) ∂μ := by
   have := hX.isProbabilityMeasure
   change ∫ ω, (fun x ↦ ∏ i, f i (x i)) (X · ω) ∂μ = _
   rw [← integral_map (f := fun x ↦ ∏ i, f i (x i)) (φ := fun ω ↦ (X · ω)),
@@ -287,13 +310,13 @@ lemma iIndepFun.integral_prod_comp (hX : iIndepFun X μ)
 variable {X : (i : ι) → Ω → 𝕜}
 
 lemma iIndepFun.integral_prod_eq_prod_integral
-    (hX : iIndepFun X μ) (mX : ∀ i, AEMeasurable (X i) μ) :
+    (hX : iIndepFun X μ) (mX : ∀ i, AEStronglyMeasurable (X i) μ) :
     μ[∏ i, X i] = ∏ i, μ[X i] :=
-  hX.integral_prod_comp mX (fun _ ↦ aestronglyMeasurable_id)
+  hX.integral_prod_comp (fun i ↦ (mX i).aemeasurable) (fun _ ↦ aestronglyMeasurable_id)
 
 lemma iIndepFun.integral_fun_prod_eq_prod_integral
-    (hX : iIndepFun X μ) (mX : ∀ i, AEMeasurable (X i) μ) :
-    μ[fun ω ↦ ∏ i, X i ω] = ∏ i, μ[X i] :=
-  hX.integral_fun_prod_comp mX (fun _ ↦ aestronglyMeasurable_id)
+    (hX : iIndepFun X μ) (mX : ∀ i, AEStronglyMeasurable (X i) μ) :
+    ∫ ω, ∏ i, X i ω ∂μ = ∏ i, μ[X i] :=
+  hX.integral_fun_prod_comp (fun i ↦ (mX i).aemeasurable) (fun _ ↦ aestronglyMeasurable_id)
 
 end ProbabilityTheory
