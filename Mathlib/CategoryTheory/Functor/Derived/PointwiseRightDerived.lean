@@ -89,10 +89,10 @@ variable {F L}
 there exists a pointwise right derived functor. -/
 noncomputable def isPointwiseLeftKanExtensionOfHasPointwiseRightDerivedFunctor
      [L.IsLocalization W] [F'.IsRightDerivedFunctor α W] :
-    (LeftExtension.mk _ α).IsPointwiseLeftKanExtension := by
+    (LeftExtension.mk _ α).IsPointwiseLeftKanExtension :=
   have := hasPointwiseLeftKanExtension_of_hasPointwiseRightDerivedFunctor F L
   have := IsRightDerivedFunctor.isLeftKanExtension F' α W
-  exact isPointwiseLeftKanExtensionOfIsLeftKanExtension F' α
+  isPointwiseLeftKanExtensionOfIsLeftKanExtension F' α
 
 end
 
