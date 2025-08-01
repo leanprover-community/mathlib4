@@ -250,10 +250,7 @@ theorem isAdjointPair_inner (A : E →L[𝕜] F) :
 
 theorem adjoint_innerSL_apply (x : E) :
     adjoint (innerSL 𝕜 x) = (lsmul 𝕜 𝕜).flip x := by
-  ext
-  apply ext_inner_left 𝕜
-  intro y
-  simp [adjoint_inner_right]
+  ext; exact ext_inner_left 𝕜 (fun _ => by simp [adjoint_inner_right])
 
 theorem innerSL_apply_comp (x : F) (f : E →L[𝕜] F) :
     innerSL 𝕜 x ∘L f = innerSL 𝕜 (adjoint f x) := by
