@@ -256,7 +256,7 @@ lemma isLocalization_at_prime_prime_depth_le_depth [IsLocalRing Rₚ] [Module.Fi
   rw [moduleDepth_eq_sSup_length_regular p _ _ smul_lt h_supp]
   apply sSup_le (fun n hn ↦ le_sSup ?_)
   rcases hn with ⟨rs, reg, mem, len⟩
-  refine ⟨rs.map (algebraMap R Rₚ), reg.isRegular_of_isLocalizedModule_of_mem_prime p Rₚ f mem,
+  refine ⟨rs.map (algebraMap R Rₚ), reg.isRegular_of_isLocalizedModule_of_mem_prime Rₚ p f mem,
     fun _ hr ↦ ?_, by simpa using len⟩
   rcases List.mem_map.mp hr with ⟨r, hr, eq⟩
   simpa only [← eq, IsLocalization.AtPrime.to_map_mem_maximal_iff Rₚ p] using mem r hr
@@ -350,7 +350,7 @@ lemma isLocalize_at_prime_dim_eq_prime_depth_of_isCohenMacaulay
     have : Nontrivial M'ₚ := quotSMulTop_nontrivial map_mem Mₚ
     have eq_succ : Module.supportDim Rₚ M'ₚ + 1 = Module.supportDim Rₚ Mₚ :=
       Module.supportDim_quotSMulTop_succ_eq_supportDim
-        (reg.of_isLocalizedModule p.primeCompl Rₚ f) map_mem
+        (reg.of_isLocalizedModule Rₚ p.primeCompl f) map_mem
     have := isLocalizedModule_quotSMulTop_isLocalizedModule_map p Rₚ a M Mₚ f
     simp [← eq_succ, ← hn, depth_eq, ih M' M'ₚ (quotSMulTop_isLocalizedModule_map Rₚ a M Mₚ f)
       inferInstance ‹_› netop' depth_eq.symm]
