@@ -238,9 +238,7 @@ private theorem continuous_equivFun_basis_aux [T2Space E] {ι : Type v} [Fintype
     change Continuous (ξ.coord i)
     exact H₂ (ξ.coord i)
 
-variable (E 𝕜) in
-theorem FiniteDimensional.isModuleTopology [T2Space E] [FiniteDimensional 𝕜 E] :
-    IsModuleTopology 𝕜 E :=
+instance [T2Space E] [FiniteDimensional 𝕜 E] : IsModuleTopology 𝕜 E :=
   -- for the proof, go to a model vector space `b → 𝕜` thanks to `continuous_equivFun_basis`, and
   -- use that it has the module topology
   let b := Basis.ofVectorSpace 𝕜 E
@@ -255,7 +253,6 @@ theorem FiniteDimensional.isModuleTopology [T2Space E] [FiniteDimensional 𝕜 E
 /-- Any linear map on a finite dimensional space over a complete field is continuous. -/
 theorem LinearMap.continuous_of_finiteDimensional [T2Space E] [FiniteDimensional 𝕜 E]
     (f : E →ₗ[𝕜] F') : Continuous f :=
-  have := FiniteDimensional.isModuleTopology
   IsModuleTopology.continuous_of_linearMap f
 
 instance LinearMap.continuousLinearMapClassOfFiniteDimensional [T2Space E] [FiniteDimensional 𝕜 E] :
@@ -325,7 +322,6 @@ theorem range_toContinuousLinearMap (f : E →ₗ[𝕜] F') :
 /-- A surjective linear map `f` with finite dimensional codomain is an open map. -/
 theorem isOpenMap_of_finiteDimensional (f : F →ₗ[𝕜] E) (hf : Function.Surjective f) :
     IsOpenMap f :=
-  have := FiniteDimensional.isModuleTopology
   IsModuleTopology.isOpenMap_of_surjective hf
 
 instance canLiftContinuousLinearMap : CanLift (E →ₗ[𝕜] F) (E →L[𝕜] F) (↑) fun _ => True :=
