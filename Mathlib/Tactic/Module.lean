@@ -649,6 +649,6 @@ example [AddCommGroup M] [CommRing R] [Module R M] (a b μ ν : R) (x y : M) :
 -/
 elab "module" : tactic => Tactic.liftMetaFinishingTactic fun g ↦ do
   let l ← matchScalars g
-  discard <| l.mapM fun mvar ↦ AtomM.run .instances (Ring.proveEq mvar)
+  discard <| l.mapM fun mvar ↦ AtomM.run .instances (Ring.proveEq mvar {})
 
 end Mathlib.Tactic.Module
