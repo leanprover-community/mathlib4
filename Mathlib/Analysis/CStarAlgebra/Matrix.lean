@@ -97,7 +97,7 @@ open LinearMap
 variable [RCLike 𝕜]
 variable [Fintype m] [Fintype n] [DecidableEq n] [Fintype l] [DecidableEq l]
 
-/-- The natural star algebra equivalence between matrices and continuous linear endomoporphisms
+/-- The natural star algebra equivalence between matrices and continuous linear endomorphisms
 of Euclidean space induced by the orthonormal basis `EuclideanSpace.basisFun`.
 
 This is a more-bundled version of `Matrix.toEuclideanLin`, for the special case of square matrices,
