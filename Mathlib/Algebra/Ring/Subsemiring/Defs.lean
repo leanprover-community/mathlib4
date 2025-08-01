@@ -193,6 +193,10 @@ theorem mem_mk {toSubmonoid : Submonoid R} (add_mem zero_mem) {x : R} :
 theorem coe_set_mk {toSubmonoid : Submonoid R} (add_mem zero_mem) :
     (mk toSubmonoid add_mem zero_mem : Set R) = toSubmonoid := rfl
 
+@[simp]
+theorem mk_eq_zero {S : Subsemiring R} (r : R) (hr : r ∈ S) :
+    (⟨r, hr⟩ : S) = 0 ↔ r = 0 := Subtype.ext_iff
+
 /-- Two subsemirings are equal if they have the same elements. -/
 @[ext]
 theorem ext {S T : Subsemiring R} (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T :=
