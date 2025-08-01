@@ -172,10 +172,13 @@ theorem multSum_eq_main_err (d : ℕ) : s.multSum d = s.nu d * s.totalMass + s.r
   dsimp [rem]
   ring
 
-theorem siftedsum_eq_sum_support_mul_ite :
+theorem siftedSum_eq_sum_support_mul_ite :
     s.siftedSum = ∑ d ∈ s.support, s.weights d * if Nat.gcd s.prodPrimes d = 1 then 1 else 0 := by
   dsimp only [siftedSum]
   simp_rw [mul_ite, mul_one, mul_zero]
+
+@[deprecated (since := "2025-07-27")]
+alias siftedsum_eq_sum_support_mul_ite := siftedSum_eq_sum_support_mul_ite
 
 omit s in
 /-- A sequence of coefficients $\mu^{+}$ is upper Moebius if $\mu * \zeta ≤ \mu^{+} * \zeta$. These
@@ -192,7 +195,7 @@ theorem siftedSum_le_sum_of_upperMoebius (muPlus : ℕ → ℝ) (h : IsUpperMoeb
         if d ∣ n then s.weights n * muPlus d else 0 := ?caseB
     _ = ∑ d ∈ divisors s.prodPrimes, muPlus d * multSum d := ?caseC
   case caseA =>
-    rw [siftedsum_eq_sum_support_mul_ite]
+    rw [siftedSum_eq_sum_support_mul_ite]
     gcongr with n
     exact hμ (Nat.gcd s.prodPrimes n)
   case caseB =>

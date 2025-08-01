@@ -159,6 +159,14 @@ lemma left_cancel_posSubmonoid (x y : R) (u : posSubmonoid R) :
     u * x ≤ᵥ u * y ↔ x ≤ᵥ y := by
   simp only [← right_cancel_posSubmonoid x y u, mul_comm]
 
+@[simp]
+lemma val_posSubmonoid_ne_zero (x : posSubmonoid R) :
+    (x : R) ≠ 0 := by
+  have := x.prop
+  rw [posSubmonoid_def] at this
+  contrapose! this
+  simp [this]
+
 variable (R) in
 /-- The setoid used to construct `ValueGroupWithZero R`. -/
 def valueSetoid : Setoid (R × posSubmonoid R) where
@@ -494,6 +502,20 @@ lemma ValueGroupWithZero.lift_valuation {α : Sort*} (f : R → posSubmonoid R �
     ValueGroupWithZero.lift f hf (valuation R x) = f x 1 :=
   rfl
 
+lemma valuation_eq_zero_iff {x : R} :
+    valuation R x = 0 ↔ x ≤ᵥ 0 :=
+  ValueGroupWithZero.mk_eq_zero _ _
+
+lemma valuation_posSubmonoid_ne_zero (x : posSubmonoid R) :
+    valuation R (x : R) ≠ 0 := by
+  rw [ne_eq, valuation_eq_zero_iff]
+  exact x.prop
+
+lemma ValueGroupWithZero.mk_eq_div (r : R) (s : posSubmonoid R) :
+    ValueGroupWithZero.mk r s = valuation R r / valuation R (s : R) := by
+  rw [eq_div_iff (valuation_posSubmonoid_ne_zero _)]
+  simp [valuation, mk_eq_mk]
+
 /-- Construct a valuative relation on a ring using a valuation. -/
 def ofValuation
     {S Γ : Type*} [CommRing S]
@@ -529,6 +551,12 @@ lemma isEquiv {Γ₁ Γ₂ : Type*}
   intro x y
   simp_rw [← Valuation.Compatible.rel_iff_le]
 
+@[simp]
+lemma valuation_posSubmonoid_ne_zero_of_compatible {Γ : Type*} [LinearOrderedCommMonoidWithZero Γ]
+    (v : Valuation R Γ) [v.Compatible] (x : posSubmonoid R) :
+    v (x : R) ≠ 0 := by
+  simp [(isEquiv v (valuation R)).ne_zero, valuation_posSubmonoid_ne_zero]
+
 variable (R) in
 /-- An alias for endowing a ring with a preorder defined as the valuative relation. -/
 def WithPreorder := R
@@ -542,7 +570,7 @@ instance : Preorder (WithPreorder R) where
   le_refl _ := rel_refl _
   le_trans _ _ _ := rel_trans
 
-/-- The valutaive relation on `WithPreorder R` arising from the valuative relation on `R`.
+/-- The valuative relation on `WithPreorder R` arising from the valuative relation on `R`.
 This is defined as the preorder itself. -/
 instance : ValuativeRel (WithPreorder R) where
   rel := (· ≤ ·)
@@ -584,7 +612,7 @@ instance : (supp R).IsPrime := by
   infer_instance
 
 open NNReal in variable (R) in
-/-- An auxiliary structure used to define `IsRankOne`. -/
+/-- An auxiliary structure used to define `IsRankLeOne`. -/
 structure RankLeOneStruct where
   /-- The embedding of the value group-with-zero into the nonnegative reals. -/
   emb : ValueGroupWithZero R →*₀ ℝ≥0
@@ -657,10 +685,43 @@ class ValuativeTopology (R : Type*) [CommRing R] [ValuativeRel R] [TopologicalSp
 
 namespace ValuativeRel
 
-variable
-  {R Γ : Type*} [CommRing R] [ValuativeRel R] [TopologicalSpace R]
-  [LinearOrderedCommGroupWithZero Γ]
-  (v : Valuation R Γ) [v.Compatible]
+variable {R Γ : Type*} [CommRing R] [ValuativeRel R] [LinearOrderedCommGroupWithZero Γ]
+  (v : Valuation R Γ)
+
+/-- Any valuation compatible with the valuative relation can be factored through
+the value group. -/
+noncomputable
+def ValueGroupWithZero.embed [h : v.Compatible] : ValueGroupWithZero R →*₀ Γ where
+  toFun := ValuativeRel.ValueGroupWithZero.lift (fun r s ↦ v r / v (s : R)) <| by
+    intro x y r s
+    simp only [h.rel_iff_le, map_mul, ← and_imp, ← le_antisymm_iff]
+    rw [div_eq_div_iff] <;> simp
+  map_zero' := by simp [ValueGroupWithZero.lift_zero]
+  map_one' := by simp
+  map_mul' _ _ := by
+    apply ValuativeRel.ValueGroupWithZero.lift_mul
+    field_simp
+
+@[simp]
+lemma ValueGroupWithZero.embed_mk [v.Compatible] (x : R) (s : posSubmonoid R) :
+    embed v (.mk x s) = v x / v (s : R) :=
+  rfl
+
+@[simp]
+lemma ValueGroupWithZero.embed_valuation (γ : ValueGroupWithZero R) :
+    embed (valuation R) γ = γ := by
+  induction γ using ValueGroupWithZero.ind
+  simp [embed_mk, ← mk_eq_div]
+
+lemma ValueGroupWithZero.embed_strictMono [v.Compatible] : StrictMono (embed v) := by
+  intro a b h
+  obtain ⟨a, r, rfl⟩ := valuation_surjective a
+  obtain ⟨b, s, rfl⟩ := valuation_surjective b
+  simp only [map_div₀]
+  rw [div_lt_div_iff₀] at h ⊢
+  any_goals simp [zero_lt_iff]
+  rw [← map_mul, ← map_mul, (isEquiv (valuation R) v).lt_iff_lt] at h
+  simpa [embed] using h
 
 end ValuativeRel
 
@@ -692,26 +753,27 @@ def mapPosSubmonoid : posSubmonoid A →* posSubmonoid B where
   map_one' := by simp
   map_mul' := by simp
 
+variable (A) in
+instance compatible_comap {Γ : Type*}
+    [LinearOrderedCommMonoidWithZero Γ] (w : Valuation B Γ) [w.Compatible] :
+    (w.comap (algebraMap A B)).Compatible := by
+  constructor
+  simp [← rel_iff_rel (A := A) (B := B), Valuation.Compatible.rel_iff_le (v := w)]
+
 variable (A B) in
 /-- The map on value groups-with-zero associated to the structure morphism of an algebra. -/
-def mapValueGroupWithZero : ValueGroupWithZero A →*₀ ValueGroupWithZero B where
-  toFun := ValueGroupWithZero.lift
-    (fun a u => ValueGroupWithZero.mk (algebraMap _ _ a) (mapPosSubmonoid _ _ u)) <| by
-      intro x y s t h1 h2
-      apply ValueGroupWithZero.sound <;>
-        simpa only [mapPosSubmonoid_apply_coe, ← (algebraMap A B).map_mul, rel_iff_rel]
-  map_zero' := by
-    apply ValueGroupWithZero.sound <;> simp
-  map_one' := by
-    apply ValueGroupWithZero.sound <;> simp
-  map_mul' x y := by
-    apply x.ind; apply y.ind
-    intro x s y t
-    simp
+def mapValueGroupWithZero : ValueGroupWithZero A →*₀ ValueGroupWithZero B :=
+  have := compatible_comap A (valuation B)
+  ValueGroupWithZero.embed ((valuation B).comap (algebraMap A B))
+
+@[simp]
+lemma mapValueGroupWithZero_mk (r : A) (s : posSubmonoid A) :
+    mapValueGroupWithZero A B (.mk r s) = .mk (algebraMap A B r) (mapPosSubmonoid A B s) := by
+  simp [mapValueGroupWithZero, ValueGroupWithZero.mk_eq_div (R := B)]
 
 @[simp]
 lemma mapValueGroupWithZero_valuation (a : A) :
     mapValueGroupWithZero A B (valuation _ a) = valuation _ (algebraMap _ _ a) := by
-  apply ValueGroupWithZero.sound <;> simp
+  simp [valuation]
 
 end ValuativeExtension

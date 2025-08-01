@@ -122,8 +122,6 @@ end Disjoint
 namespace Set
 
 theorem mem_union_of_disjoint (h : Disjoint s t) {x : α} : x ∈ s ∪ t ↔ Xor' (x ∈ s) (x ∈ t) := by
-  rw [Set.mem_union, Xor']
-  have := Set.disjoint_left.1 h
-  tauto
+  grind [Xor', Set.disjoint_left]
 
 end Set

@@ -8,7 +8,6 @@ import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Nat.Cast.Order.Basic
 import Mathlib.Data.Set.Countable
-import Mathlib.Logic.Equiv.Fin.Basic
 import Mathlib.Logic.Small.Set
 import Mathlib.Logic.UnivLE
 import Mathlib.SetTheory.Cardinal.Order
@@ -16,7 +15,7 @@ import Mathlib.SetTheory.Cardinal.Order
 /-!
 # Basic results on cardinal numbers
 
-We provide a collection of basic results on cardinal numbers, in particular focussing on
+We provide a collection of basic results on cardinal numbers, in particular focusing on
 finite/countable/small types and sets.
 
 ## Main definitions
