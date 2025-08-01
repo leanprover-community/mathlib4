@@ -69,10 +69,8 @@ theorem zero_dim_manifold_discrete : DiscreteTopology M := by
   · rw [Set.singleton_subset_iff]
     apply ChartedSpace.mem_chart_source
 
-variable [SecondCountableTopology M]
-
-theorem zero_dim_manifold_countable : Countable M := by
-  have h : DiscreteTopology M := zero_dim_manifold_discrete
+theorem zero_dim_manifold_countable [SecondCountableTopology M] : Countable M := by
+  have : DiscreteTopology M := zero_dim_manifold_discrete
   exact countable_of_Lindelof_of_discrete
 
 end ZeroDimCharts
