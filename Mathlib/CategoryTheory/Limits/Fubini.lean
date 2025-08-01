@@ -35,7 +35,7 @@ All statements have their counterpart for colimits.
 -/
 
 
-open CategoryTheory
+open CategoryTheory Functor
 
 namespace CategoryTheory.Limits
 
@@ -118,8 +118,7 @@ def coneOfConeUncurry {D : DiagramOfCones F} (Q : ∀ j, IsLimit (D.obj j))
               Category.assoc]
             have := @NatTrans.naturality _ _ _ _ _ _ c.π (j, k) (j', k) (f, 𝟙 k)
             dsimp at this
-            simp only [Category.id_comp, Category.comp_id, CategoryTheory.Functor.map_id,
-              NatTrans.id_app] at this
+            simp only [Category.id_comp, Category.comp_id, CategoryTheory.Functor.map_id] at this
             exact this) }
 
 /-- Given a diagram `D` of limit cones over the `curry.obj G j`, and a cone over `G`,
@@ -162,12 +161,11 @@ def coconeOfCoconeUncurry {D : DiagramOfCocones F} (Q : ∀ j, IsColimit (D.obj 
             dsimp
             intro k
             simp only [Limits.CoconeMorphism.w_assoc, Limits.Cocones.precompose_obj_ι,
-              Limits.IsColimit.fac_assoc, Limits.IsColimit.fac, NatTrans.comp_app, Category.comp_id,
+              Limits.IsColimit.fac, NatTrans.comp_app, Category.comp_id,
               Category.assoc]
             have := @NatTrans.naturality _ _ _ _ _ _ c.ι (j, k) (j', k) (f, 𝟙 k)
             dsimp at this
-            simp only [Category.id_comp, Category.comp_id, CategoryTheory.Functor.map_id,
-              NatTrans.id_app] at this
+            simp only [Category.comp_id, CategoryTheory.Functor.map_id] at this
             exact this) }
 
 /-- Given a diagram `D` of colimit cocones under the `curry.obj G j`, and a cocone under `G`,
@@ -240,7 +238,7 @@ def IsLimit.ofConeOfConeUncurry {D : DiagramOfCones F} (Q : ∀ j, IsLimit (D.ob
     fac s p := by
       have h1 := (Q p.1).fac ((Cones.postcompose (E p.1).hom).obj <|
         s.whisker (Prod.sectR p.1 K)) p.2
-      simp only [Functor.comp_obj, Prod.sectR_obj, uncurry_obj_obj, NatTrans.id_app,
+      simp only [Functor.comp_obj, Prod.sectR_obj, uncurry_obj_obj,
         Cones.postcompose_obj_pt, Cone.whisker_pt, Cones.postcompose_obj_π,
         Cone.whisker_π, NatTrans.comp_app, Functor.const_obj_obj, whiskerLeft_app,
         NatIso.ofComponents_hom_app, Iso.refl_hom, Category.comp_id, E] at h1
@@ -265,13 +263,13 @@ def coconeOfCoconeUncurryIsColimit {D : DiagramOfCocones F} (Q : ∀ j, IsColimi
         ι :=
           { app := fun p => (D.obj p.1).ι.app p.2 ≫ s.ι.app p.1
             naturality := fun p p' f => by
-              dsimp; simp only [Category.id_comp, Category.assoc]
+              dsimp; simp only [Category.assoc]
               rcases p with ⟨j, k⟩
               rcases p' with ⟨j', k'⟩
               rcases f with ⟨fj, fk⟩
               dsimp
               slice_lhs 2 3 => rw [(D.obj j').ι.naturality]
-              simp only [Functor.const_obj_map, Category.id_comp, Category.assoc]
+              simp only [Functor.const_obj_map, Category.assoc]
               have w := (D.map fj).w k
               dsimp at w
               slice_lhs 1 2 => rw [← w]
@@ -312,7 +310,7 @@ def IsColimit.ofCoconeUncurry {D : DiagramOfCocones F}
     fac s p := by
       have h1 := (Q p.1).fac ((Cocones.precompose (E p.1).inv).obj <|
         s.whisker (Prod.sectR p.1 K)) p.2
-      simp only [Functor.comp_obj, Prod.sectR_obj, uncurry_obj_obj, NatTrans.id_app,
+      simp only [Functor.comp_obj, Prod.sectR_obj, uncurry_obj_obj,
         Cocones.precompose_obj_pt, Cocone.whisker_pt, Functor.const_obj_obj,
         Cocones.precompose_obj_ι, Cocone.whisker_ι, NatTrans.comp_app, NatIso.ofComponents_inv_app,
         Iso.refl_inv, whiskerLeft_app, Category.id_comp, E] at h1

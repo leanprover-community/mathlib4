@@ -63,8 +63,8 @@ instance : GeneralizedBooleanAlgebra (Finset α) :=
       simp only [Finset.ext_iff, mem_union, mem_sdiff, inf_eq_inter, sup_eq_union, mem_inter,
         ← and_or_left, em, and_true, implies_true]
     inf_inf_sdiff := fun x y => by
-      simp only [Finset.ext_iff, inter_sdiff_self, inter_empty, inter_assoc, false_iff,
-        inf_eq_inter, notMem_empty, bot_eq_empty, not_false_iff, implies_true] }
+      simp only [inter_sdiff_self, inter_empty, inter_assoc,
+        inf_eq_inter, bot_eq_empty] }
 
 theorem notMem_sdiff_of_mem_right (h : a ∈ t) : a ∉ s \ t := by
   simp only [mem_sdiff, h, not_true, not_false_iff, and_false]

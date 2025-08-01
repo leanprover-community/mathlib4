@@ -101,7 +101,7 @@ def toMon_Comon_obj (M : Bimon_ C) : Mon_ (Comon_ C) where
       mul :=
         { hom := μ[M.X.X]
           is_comon_hom :=
-            { hom_comul := by simp [tensor_μ] } } }
+            { hom_comul := by simp } } }
 
 /-- The forward direction of `Comon_ (Mon_ C) ≌ Mon_ (Comon_ C)` -/
 @[simps]
@@ -162,7 +162,7 @@ instance (M : Bimon_ C) : IsMon_Hom (equivMon_Comon_UnitIsoAppXAux M).hom where
 @[simps!]
 def equivMon_Comon_UnitIsoAppX (M : Bimon_ C) :
     M.X ≅ ((toMon_Comon_ C ⋙ ofMon_Comon_ C).obj M).X :=
-  Mon_.mkIso' (equivMon_Comon_UnitIsoAppXAux M)
+  Mon_.mkIso (equivMon_Comon_UnitIsoAppXAux M)
 
 instance (M : Bimon_ C) : IsComon_Hom (equivMon_Comon_UnitIsoAppX M).hom where
 
@@ -202,14 +202,14 @@ instance (M : Mon_ (Comon_ C)) : IsMon_Hom (equivMon_Comon_CounitIsoAppX M).hom 
 @[simps!]
 def equivMon_Comon_CounitIsoApp (M : Mon_ (Comon_ C)) :
     (ofMon_Comon_ C ⋙ toMon_Comon_ C).obj M ≅ M :=
-  Mon_.mkIso' <| (equivMon_Comon_CounitIsoAppX M)
+  Mon_.mkIso <| (equivMon_Comon_CounitIsoAppX M)
 
 /-- The equivalence `Comon_ (Mon_ C) ≌ Mon_ (Comon_ C)` -/
 def equivMon_Comon_ : Bimon_ C ≌ Mon_ (Comon_ C) where
   functor := toMon_Comon_ C
   inverse := ofMon_Comon_ C
-  unitIso := NatIso.ofComponents (fun _ => equivMon_Comon_UnitIsoApp _)
-  counitIso := NatIso.ofComponents (fun _ => equivMon_Comon_CounitIsoApp _)
+  unitIso := NatIso.ofComponents equivMon_Comon_UnitIsoApp
+  counitIso := NatIso.ofComponents equivMon_Comon_CounitIsoApp
 
 /-! # The trivial bimonoid -/
 

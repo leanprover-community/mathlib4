@@ -92,7 +92,7 @@ theorem mem_fixedPoints_iff_card_orbit_eq_one {a : α} [Fintype (orbit M a)] :
 @[to_additive instDecidablePredMemSetFixedByAddOfDecidableEq]
 instance (m : M) [DecidableEq β] :
     DecidablePred fun b : β => b ∈ MulAction.fixedBy β m := fun b ↦ by
-  simp only [MulAction.mem_fixedBy, Equiv.Perm.smul_def]
+  simp only [MulAction.mem_fixedBy]
   infer_instance
 
 end FixedPoints
@@ -157,11 +157,11 @@ lemma orbitRel_subgroupOf (H K : Subgroup G) :
   simp_rw [orbitRel_apply]
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rcases h with ⟨⟨gv, gp⟩, rfl⟩
-    simp only [Submonoid.mk_smul]
+    simp only
     refine mem_orbit _ (⟨gv, ?_⟩ : Subgroup.map K.subtype (H.subgroupOf K))
     simpa using gp
   · rcases h with ⟨⟨gv, gp⟩, rfl⟩
-    simp only [Submonoid.mk_smul]
+    simp only
     simp only [Subgroup.subgroupOf_map_subtype, Subgroup.mem_inf] at gp
     refine mem_orbit _ (⟨⟨gv, ?_⟩, ?_⟩ : H.subgroupOf K)
     · exact gp.2
@@ -318,7 +318,7 @@ theorem stabilizerEquivStabilizer_symm_apply (hg : b = g +ᵥ b) (x : stabilizer
   simp [stabilizerEquivStabilizer]
 
 theorem stabilizerEquivStabilizer_trans
-    (hg : b = g +ᵥ a) (hh : c = h +ᵥ b) (hk : c = k +ᵥ a) (H : k = h + g):
+    (hg : b = g +ᵥ a) (hh : c = h +ᵥ b) (hk : c = k +ᵥ a) (H : k = h + g) :
     (stabilizerEquivStabilizer hg).trans (stabilizerEquivStabilizer hh)
       = stabilizerEquivStabilizer hk := by
   ext; simp [stabilizerEquivStabilizer_apply, H]

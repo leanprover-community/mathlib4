@@ -318,7 +318,7 @@ theorem ι_sndSigmaMap (b) : Sigma.ι I.left b ≫ I.sndSigmaMap = I.snd b ≫ S
 
 /--
 Taking the multicoequalizer over the multispan index is equivalent to taking the coequalizer over
-the two morphsims `∐ I.left ⇉ ∐ I.right`. This is the diagram of the latter.
+the two morphisms `∐ I.left ⇉ ∐ I.right`. This is the diagram of the latter.
 -/
 protected noncomputable abbrev parallelPairDiagram :=
   parallelPair I.fstSigmaMap I.sndSigmaMap
@@ -408,7 +408,7 @@ variable {K}
 lemma IsLimit.hom_ext (hK : IsLimit K) {T : C} {f g : T ⟶ K.pt}
     (h : ∀ a, f ≫ K.ι a = g ≫ K.ι a) : f = g := by
   apply hK.hom_ext
-  rintro (_|b)
+  rintro (_ | b)
   · apply h
   · dsimp
     rw [app_right_eq_ι_comp_fst, reassoc_of% h]
@@ -527,7 +527,7 @@ noncomputable def multiforkEquivPiFork : Multifork I ≌ Fork I.fstPiMap I.sndPi
   unitIso :=
     NatIso.ofComponents fun K =>
       Cones.ext (Iso.refl _) (by
-        rintro (_ | _) <;> simp [← Fork.app_one_eq_ι_comp_left])
+        rintro (_ | _) <;> simp)
   counitIso :=
     NatIso.ofComponents fun K => Fork.ext (Iso.refl _)
 
@@ -701,7 +701,7 @@ noncomputable def toSigmaCoforkFunctor : Multicofork I ⥤ Cofork I.fstSigmaMap 
   map {K₁ K₂} f :=
   { hom := f.hom
     w := by
-      rintro (_|_)
+      rintro (_ | _)
       all_goals {
         apply colimit.hom_ext
         rintro ⟨j⟩

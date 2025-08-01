@@ -137,7 +137,7 @@ lemma nnrpow_nnrpow {a : A} {x y : ℝ≥0} : (a ^ x) ^ y = a ^ (x * y) := by
   case pos =>
     obtain (rfl | hx) := eq_zero_or_pos x <;> obtain (rfl | hy) := eq_zero_or_pos y
     all_goals try simp
-    simp only [nnrpow_def, NNReal.coe_mul]
+    simp only [nnrpow_def]
     rw [← cfcₙ_comp _ _ a]
     congr! 2 with u
     ext
@@ -219,10 +219,10 @@ section sqrt
 noncomputable def sqrt (a : A) : A := cfcₙ NNReal.sqrt a
 
 @[simp]
-lemma sqrt_nonneg {a : A} : 0 ≤ sqrt a := cfcₙ_predicate _ a
+lemma sqrt_nonneg (a : A) : 0 ≤ sqrt a := cfcₙ_predicate _ a
 
-lemma sqrt_eq_nnrpow {a : A} : sqrt a = a ^ (1 / 2 : ℝ≥0) := by
-  simp only [sqrt, nnrpow, NNReal.coe_inv, NNReal.coe_ofNat, NNReal.rpow_eq_pow]
+lemma sqrt_eq_nnrpow (a : A) : sqrt a = a ^ (1 / 2 : ℝ≥0) := by
+  simp only [sqrt]
   congr
   ext
   exact_mod_cast NNReal.sqrt_eq_rpow _
@@ -343,7 +343,7 @@ lemma rpow_nonneg {a : A} {y : ℝ} : 0 ≤ a ^ y := cfc_predicate _ a
 lemma rpow_def {a : A} {y : ℝ} : a ^ y = cfc (fun x : ℝ≥0 => x ^ y) a := rfl
 
 lemma rpow_one (a : A) (ha : 0 ≤ a := by cfc_tac) : a ^ (1 : ℝ) = a := by
-  simp only [rpow_def, NNReal.coe_one, NNReal.rpow_eq_pow, NNReal.rpow_one, cfc_id' ℝ≥0 a]
+  simp only [rpow_def, NNReal.rpow_one, cfc_id' ℝ≥0 a]
 
 @[simp]
 lemma one_rpow {x : ℝ} : (1 : A) ^ x = (1 : A) := by simp [rpow_def]
@@ -366,7 +366,7 @@ lemma rpow_algebraMap {x : ℝ≥0} {y : ℝ} :
 lemma rpow_add {a : A} {x y : ℝ} (ha : IsUnit a) :
     a ^ (x + y) = a ^ x * a ^ y := by
   have ha' : 0 ∉ spectrum ℝ≥0 a := spectrum.zero_notMem _ ha
-  simp only [rpow_def, NNReal.rpow_eq_pow]
+  simp only [rpow_def]
   rw [← cfc_mul _ _ a]
   refine cfc_congr ?_
   intro z hz
@@ -536,7 +536,7 @@ lemma nnrpow_eq_rpow {a : A} {x : ℝ≥0} (hx : 0 < x) : a ^ x = a ^ (x : ℝ) 
 
 lemma sqrt_eq_rpow {a : A} : sqrt a = a ^ (1 / 2 : ℝ) := by
   have : a ^ (1 / 2 : ℝ) = a ^ ((1 / 2 : ℝ≥0) : ℝ) := rfl
-  rw [this, ← nnrpow_eq_rpow (by norm_num), sqrt_eq_nnrpow (A := A)]
+  rw [this, ← nnrpow_eq_rpow (by norm_num), sqrt_eq_nnrpow a]
 
 lemma sqrt_eq_cfc {a : A} : sqrt a = cfc NNReal.sqrt a := by
   unfold sqrt
@@ -585,7 +585,7 @@ lemma rpow_sqrt_nnreal {a : A} {x : ℝ≥0}
     (ha : 0 ≤ a := by cfc_tac) : (sqrt a) ^ (x : ℝ) = a ^ (x / 2 : ℝ) := by
   by_cases hx : x = 0
   case pos =>
-    have ha' : 0 ≤ sqrt a := sqrt_nonneg
+    have ha' : 0 ≤ sqrt a := sqrt_nonneg _
     simp [hx, rpow_zero _ ha', rpow_zero _ ha]
   case neg =>
     have h₁ : 0 ≤ (x : ℝ) := NNReal.zero_le_coe

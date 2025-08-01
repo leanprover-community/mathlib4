@@ -24,7 +24,7 @@ theorem mul_toSubmodule_le (S T : Subalgebra R A) :
     (Subalgebra.toSubmodule S)* (Subalgebra.toSubmodule T) ≤ Subalgebra.toSubmodule (S ⊔ T) := by
   rw [Submodule.mul_le]
   intro y hy z hz
-  show y * z ∈ S ⊔ T
+  change y * z ∈ S ⊔ T
   exact mul_mem (Algebra.mem_sup_left hy) (Algebra.mem_sup_right hz)
 
 /-- As submodules, subalgebras are idempotent. -/

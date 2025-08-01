@@ -122,7 +122,7 @@ lemma continuous_comp_left {X Y Z : Type*} [TopologicalSpace X]
     [TopologicalSpace Y] [TopologicalSpace Z] [Zero X] [Zero Y] [Zero Z] (f : C(X, Y)₀) :
     Continuous fun g : C(Y, Z)₀ ↦ g.comp f := by
   rw [continuous_induced_rng]
-  show Continuous fun g : C(Y, Z)₀ ↦ (g : C(Y, Z)).comp (f : C(X, Y))
+  change Continuous fun g : C(Y, Z)₀ ↦ (g : C(Y, Z)).comp (f : C(X, Y))
   fun_prop
 
 /-- The identity function as an element of `C(s, R)₀` when `0 ∈ (s : Set R)`. -/
@@ -451,7 +451,7 @@ section Norm
 
 variable {α : Type*} {𝕜 : Type*} {R : Type*} [TopologicalSpace α] [CompactSpace α] [Zero α]
 
-noncomputable instance [MetricSpace R] [Zero R]: MetricSpace C(α, R)₀ :=
+noncomputable instance [MetricSpace R] [Zero R] : MetricSpace C(α, R)₀ :=
   ContinuousMapZero.isUniformEmbedding_toContinuousMap.comapMetricSpace _
 
 lemma isometry_toContinuousMap [MetricSpace R] [Zero R] :

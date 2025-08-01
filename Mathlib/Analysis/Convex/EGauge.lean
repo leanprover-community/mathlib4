@@ -199,7 +199,7 @@ theorem egauge_prod_mk {F : Type*} [AddCommGroup F] [Module 𝕜 F] {U : Set E} 
     (hU : Balanced 𝕜 U) (hV : Balanced 𝕜 V) (a : E) (b : F) :
     egauge 𝕜 (U ×ˢ V) (a, b) = max (egauge 𝕜 U a) (egauge 𝕜 V b) := by
   refine le_antisymm (le_of_forall_gt fun r hr ↦ ?_) (le_egauge_prod _ _ _ _)
-  simp only [max_lt_iff, egauge_lt_iff, smul_set_prod, mk_mem_prod] at hr ⊢
+  simp only [max_lt_iff, egauge_lt_iff, smul_set_prod] at hr ⊢
   rcases hr with ⟨⟨x, hx, hxr⟩, ⟨y, hy, hyr⟩⟩
   cases le_total ‖x‖ ‖y‖ with
   | inl hle => exact ⟨y, ⟨hU.smul_mono hle hx, hy⟩, hyr⟩

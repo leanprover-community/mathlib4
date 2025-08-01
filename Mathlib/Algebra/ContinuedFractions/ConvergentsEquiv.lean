@@ -83,9 +83,9 @@ section WithDivisionRing
 
 variable [DivisionRing K]
 
-/-- Given a sequence of `GenContFract.Pair`s `s = [(a₀, bₒ), (a₁, b₁), ...]`, `squashSeq s n`
+/-- Given a sequence of `GenContFract.Pair`s `s = [(a₀, b₀), (a₁, b₁), ...]`, `squashSeq s n`
 combines `⟨aₙ, bₙ⟩` and `⟨aₙ₊₁, bₙ₊₁⟩` at position `n` to `⟨aₙ, bₙ + aₙ₊₁ / bₙ₊₁⟩`. For example,
-`squashSeq s 0 = [(a₀, bₒ + a₁ / b₁), (a₁, b₁),...]`.
+`squashSeq s 0 = [(a₀, b₀ + a₁ / b₁), (a₁, b₁),...]`.
 If `s.TerminatedAt (n + 1)`, then `squashSeq s n = s`.
 -/
 def squashSeq (s : Stream'.Seq <| Pair K) (n : ℕ) : Stream'.Seq (Pair K) :=
@@ -173,8 +173,8 @@ theorem succ_succ_nth_conv'Aux_eq_succ_nth_conv'Aux_squashSeq :
 /-! Let us now lift the squashing operation to gcfs. -/
 
 
-/-- Given a gcf `g = [h; (a₀, bₒ), (a₁, b₁), ...]`, we have
-- `squashGCF g 0 = [h + a₀ / b₀); (a₀, bₒ), ...]`,
+/-- Given a gcf `g = [h; (a₀, b₀), (a₁, b₁), ...]`, we have
+- `squashGCF g 0 = [h + a₀ / b₀; (a₁, b₁), ...]`,
 - `squashGCF g (n + 1) = ⟨g.h, squashSeq g.s n⟩`
 -/
 def squashGCF (g : GenContFract K) : ℕ → GenContFract K
@@ -194,7 +194,7 @@ theorem squashGCF_eq_self_of_terminated (terminatedAt_n : TerminatedAt g n) :
   cases n with
   | zero =>
     change g.s.get? 0 = none at terminatedAt_n
-    simp only [convs', squashGCF, convs'Aux, terminatedAt_n]
+    simp only [squashGCF, terminatedAt_n]
   | succ =>
     cases g
     simp only [squashGCF, mk.injEq, true_and]
@@ -203,7 +203,7 @@ theorem squashGCF_eq_self_of_terminated (terminatedAt_n : TerminatedAt g n) :
 /-- The values before the squashed position stay the same. -/
 theorem squashGCF_nth_of_lt {m : ℕ} (m_lt_n : m < n) :
     (squashGCF g (n + 1)).s.get? m = g.s.get? m := by
-  simp only [squashGCF, squashSeq_nth_of_lt m_lt_n, Nat.add_eq, add_zero]
+  simp only [squashGCF, squashSeq_nth_of_lt m_lt_n]
 
 /-- `convs'` returns the same value for a gcf and the corresponding squashed gcf at the
 squashed position. -/
@@ -320,7 +320,7 @@ For example, the dual - sequences with strictly negative values only - would als
 
 In practice, one most commonly deals with regular continued fractions, which satisfy the
 positivity criterion required here. The analogous result for them
-(see `ContFract.convs_eq_convs`) hence follows directly from this theorem.
+(see `ContFract.convs_eq_convs'`) hence follows directly from this theorem.
 -/
 theorem convs_eq_convs' [Field K] [LinearOrder K] [IsStrictOrderedRing K]
     (s_pos : ∀ {gp : Pair K} {m : ℕ}, m < n → g.s.get? m = some gp → 0 < gp.a ∧ 0 < gp.b) :

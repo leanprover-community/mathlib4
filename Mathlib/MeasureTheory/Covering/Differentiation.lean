@@ -100,14 +100,14 @@ theorem ae_eventually_measure_pos [SecondCountableTopology α] :
   have h : v.FineSubfamilyOn f s := by
     intro x hx ε εpos
     rw [hs] at hx
-    simp only [frequently_filterAt_iff, exists_prop, gt_iff_lt, mem_setOf_eq] at hx
+    simp only [frequently_filterAt_iff, gt_iff_lt, mem_setOf_eq] at hx
     rcases hx ε εpos with ⟨a, a_sets, ax, μa⟩
     exact ⟨a, ⟨a_sets, μa⟩, ax⟩
   refine le_antisymm ?_ bot_le
   calc
     μ s ≤ ∑' x : h.index, μ (h.covering x) := h.measure_le_tsum
     _ = ∑' x : h.index, 0 := by congr; ext1 x; exact h.covering_mem x.2
-    _ = 0 := by simp only [tsum_zero, add_zero]
+    _ = 0 := by simp only [tsum_zero]
 
 /-- For every point `x`, sufficiently small sets in a Vitali family around `x` have finite measure.
 (This is a trivial result, following from the fact that the measure is locally finite). -/
@@ -550,7 +550,7 @@ theorem withDensity_le_mul {s : Set α} (hs : MeasurableSet s) {t : ℝ≥0} (ht
     intro n
     let I := Ico ((t : ℝ≥0∞) ^ n) ((t : ℝ≥0∞) ^ (n + 1))
     have M : MeasurableSet (s ∩ f ⁻¹' I) := hs.inter (f_meas measurableSet_Ico)
-    simp only [ν, I, M, withDensity_apply, coe_nnreal_smul_apply]
+    simp only [ν, I, M, withDensity_apply]
     calc
       (∫⁻ x in s ∩ f ⁻¹' I, f x ∂μ) ≤ ∫⁻ _ in s ∩ f ⁻¹' I, (t : ℝ≥0∞) ^ (n + 1) ∂μ :=
         lintegral_mono_ae ((ae_restrict_iff' M).2 (Eventually.of_forall fun x hx => hx.2.2.le))
@@ -647,9 +647,9 @@ theorem withDensity_limRatioMeas_eq : μ.withDensity (v.limRatioMeas hρ) = ρ :
         ((t : ℝ≥0∞) ^ 2 * ρ s : ℝ≥0∞)) (𝓝[>] 1) (𝓝 ((1 : ℝ≥0∞) ^ 2 * ρ s)) := by
       refine ENNReal.Tendsto.mul ?_ ?_ tendsto_const_nhds ?_
       · exact ENNReal.Tendsto.pow (ENNReal.tendsto_coe.2 nhdsWithin_le_nhds)
-      · simp only [one_pow, ENNReal.coe_one, true_or, Ne, not_false_iff, one_ne_zero]
-      · simp only [one_pow, ENNReal.coe_one, Ne, or_true, ENNReal.one_ne_top, not_false_iff]
-    simp only [one_pow, one_mul, ENNReal.coe_one] at this
+      · simp only [one_pow, true_or, Ne, not_false_iff, one_ne_zero]
+      · simp only [one_pow, Ne, or_true, ENNReal.one_ne_top, not_false_iff]
+    simp only [one_pow, one_mul] at this
     refine ge_of_tendsto this ?_
     filter_upwards [self_mem_nhdsWithin] with _ ht
     exact v.withDensity_le_mul hρ hs ht
@@ -657,8 +657,8 @@ theorem withDensity_limRatioMeas_eq : μ.withDensity (v.limRatioMeas hρ) = ρ :
       Tendsto (fun t : ℝ≥0 => (t : ℝ≥0∞) * μ.withDensity (v.limRatioMeas hρ) s) (𝓝[>] 1)
         (𝓝 ((1 : ℝ≥0∞) * μ.withDensity (v.limRatioMeas hρ) s)) := by
       refine ENNReal.Tendsto.mul_const (ENNReal.tendsto_coe.2 nhdsWithin_le_nhds) ?_
-      simp only [ENNReal.coe_one, true_or, Ne, not_false_iff, one_ne_zero]
-    simp only [one_mul, ENNReal.coe_one] at this
+      simp only [true_or, Ne, not_false_iff, one_ne_zero]
+    simp only [one_mul] at this
     refine ge_of_tendsto this ?_
     filter_upwards [self_mem_nhdsWithin] with _ ht
     exact v.le_mul_withDensity hρ hs ht
@@ -897,7 +897,7 @@ theorem ae_tendsto_average_norm_sub {f : α → E} (hf : LocallyIntegrable f μ)
     exact (h''a.sub (integrableOn_const h'a.ne)).norm
   dsimp [enorm]
   rw [lintegral_coe_eq_integral _ A, ENNReal.toReal_ofReal (by positivity)]
-  simp only [coe_nnnorm, smul_eq_mul, measureReal_def]
+  simp only [coe_nnnorm, measureReal_def]
 
 /-- *Lebesgue differentiation theorem*: for almost every point `x`, the
 average of `f` on `a` tends to `f x` as `a` shrinks to `x` along a Vitali family. -/

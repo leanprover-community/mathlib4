@@ -208,8 +208,8 @@ theorem fib_le_of_contsAux_b :
     (by
       intro n IH hyp
       rcases n with (_ | _ | n)
-      · simp [fib_add_two, contsAux] -- case n = 0
-      · simp [fib_add_two, contsAux] -- case n = 1
+      · simp [contsAux] -- case n = 0
+      · simp [contsAux] -- case n = 1
       · let g := of v -- case 2 ≤ n
         have : ¬n + 2 ≤ 1 := by omega
         have not_terminatedAt_n : ¬g.TerminatedAt n := Or.resolve_left hyp this
@@ -218,7 +218,7 @@ theorem fib_le_of_contsAux_b :
         set pconts := g.contsAux (n + 1) with pconts_eq
         set ppconts := g.contsAux n with ppconts_eq
         -- use the recurrence of `contsAux`
-        simp only [Nat.succ_eq_add_one, Nat.add_assoc, Nat.reduceAdd]
+        simp only [Nat.add_assoc, Nat.reduceAdd]
         suffices (fib n : K) + fib (n + 1) ≤ gp.a * ppconts.b + gp.b * pconts.b by
           simpa [g, fib_add_two, add_comm, contsAux_recurrence s_ppred_nth_eq ppconts_eq pconts_eq]
         -- make use of the fact that `gp.a = 1`
@@ -426,7 +426,7 @@ theorem abs_sub_convs_le (not_terminatedAt_n : ¬(of v).TerminatedAt n) :
     have : v - g.convs n = (-1) ^ n / den' := by
       -- apply `sub_convs_eq` and simplify the result
       have tmp := sub_convs_eq stream_nth_eq
-      simp only [stream_nth_fr_ne_zero, conts_eq.symm, pred_conts_eq.symm, if_false] at tmp
+      simp only [stream_nth_fr_ne_zero, if_false] at tmp
       rw [tmp]
       ring
     rwa [this]
@@ -483,7 +483,7 @@ theorem abs_sub_convergents_le' {b : K}
   refine (abs_sub_convs_le not_terminatedAt_n).trans ?_
   -- One can show that `0 < (GenContFract.of v).dens n` but it's easier
   -- to consider the case `(GenContFract.of v).dens n = 0`.
-  rcases (zero_le_of_den (K := K)).eq_or_gt with
+  rcases (zero_le_of_den (K := K)).eq_or_lt' with
     ((hB : (GenContFract.of v).dens n = 0) | hB)
   · simp only [hB, mul_zero, zero_mul, div_zero, le_refl]
   · apply one_div_le_one_div_of_le

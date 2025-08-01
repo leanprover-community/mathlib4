@@ -36,9 +36,7 @@ We also prove trivial `simp` lemmas, and define the following operations on `Mon
 * `divMonoidHom`: Division bundled as a monoid homomorphism.
 -/
 
-assert_not_exists MonoidWithZero DenselyOrdered
--- TODO:
--- assert_not_exists AddMonoidWithOne
+assert_not_exists MonoidWithZero DenselyOrdered AddMonoidWithOne
 
 variable {G : Type*} {H : Type*} {M : Type*} {N : Type*} {P : Type*}
 
@@ -616,7 +614,7 @@ Used mainly to define the natural topology of `αˣ`. -/
 def embedProduct (α : Type*) [Monoid α] : αˣ →* α × αᵐᵒᵖ where
   toFun x := ⟨x, op ↑x⁻¹⟩
   map_one' := by
-    simp only [inv_one, eq_self_iff_true, Units.val_one, op_one, Prod.mk_eq_one, and_self_iff]
+    simp only [inv_one, Units.val_one, op_one, Prod.mk_eq_one, and_self_iff]
   map_mul' x y := by simp only [mul_inv_rev, op_mul, Units.val_mul, Prod.mk_mul_mk]
 
 @[to_additive]

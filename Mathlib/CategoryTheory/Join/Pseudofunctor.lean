@@ -19,7 +19,7 @@ universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory.Join
 
-open Bicategory
+open Bicategory Functor
 
 -- The proof gets too slow if we put it in a single `pseudofunctor` constructor,
 -- so we break down the component proofs for the pseudofunctors over several lemmas.
@@ -58,7 +58,7 @@ lemma mapWhiskerRight_whiskerLeft (F : A ⥤ B) {G H : B ⥤ C} (η : G ⟶ H) :
 
 variable (A) in
 @[reassoc]
-lemma mapWhiskerLeft_whiskerRight {F G: B ⥤ C} (η : F ⟶ G) (H : C ⥤ D) :
+lemma mapWhiskerLeft_whiskerRight {F G : B ⥤ C} (η : F ⟶ G) (H : C ⥤ D) :
     mapWhiskerLeft _ (whiskerRight η H) =
     (mapCompRight A F H).hom ≫ whiskerRight (mapWhiskerLeft _ η) (mapPair (𝟭 A) H) ≫
       (mapCompRight A G H).inv := by
@@ -66,7 +66,7 @@ lemma mapWhiskerLeft_whiskerRight {F G: B ⥤ C} (η : F ⟶ G) (H : C ⥤ D) :
 
 variable (D) in
 @[reassoc]
-lemma mapWhiskerRight_whiskerRight {F G: A ⥤ B} (η : F ⟶ G) (H : B ⥤ C) :
+lemma mapWhiskerRight_whiskerRight {F G : A ⥤ B} (η : F ⟶ G) (H : B ⥤ C) :
     mapWhiskerRight (whiskerRight η H) _ =
     (mapCompLeft D F H).hom ≫ whiskerRight (mapWhiskerRight η _) (mapPair H (𝟭 D)) ≫
       (mapCompLeft D G H).inv := by

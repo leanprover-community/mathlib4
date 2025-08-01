@@ -147,14 +147,14 @@ theorem frontier_Iic [NoMaxOrder α] {a : α} : frontier (Iic a) = {a} :=
 
 @[simp]
 theorem frontier_Ioi' {a : α} (ha : (Ioi a).Nonempty) : frontier (Ioi a) = {a} := by
-  simp [frontier, closure_Ioi' ha, Iic_diff_Iio, Icc_self]
+  simp [frontier, closure_Ioi' ha]
 
 theorem frontier_Ioi [NoMaxOrder α] {a : α} : frontier (Ioi a) = {a} :=
   frontier_Ioi' nonempty_Ioi
 
 @[simp]
 theorem frontier_Iio' {a : α} (ha : (Iio a).Nonempty) : frontier (Iio a) = {a} := by
-  simp [frontier, closure_Iio' ha, Iic_diff_Iio, Icc_self]
+  simp [frontier, closure_Iio' ha]
 
 theorem frontier_Iio [NoMinOrder α] {a : α} : frontier (Iio a) = {a} :=
   frontier_Iio' nonempty_Iio

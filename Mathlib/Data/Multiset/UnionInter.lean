@@ -239,7 +239,7 @@ theorem inter_add_sub_of_add_eq_add [DecidableEq α] {M N P Q : Multiset α} (h 
   rw [Multiset.count_add, Multiset.count_inter, Multiset.count_sub]
   have h0 : M.count x + N.count x = P.count x + Q.count x := by
     rw [Multiset.ext] at h
-    simp_all only [Multiset.mem_add, Multiset.count_add]
+    simp_all only [Multiset.count_add]
   omega
 
 /-! ### Disjoint multisets -/
@@ -366,7 +366,7 @@ section Nodup
 variable {s t : Multiset α} {a : α}
 
 theorem nodup_add {s t : Multiset α} : Nodup (s + t) ↔ Nodup s ∧ Nodup t ∧ Disjoint s t :=
-  Quotient.inductionOn₂ s t fun _ _ => by simp [nodup_append]
+  Quotient.inductionOn₂ s t fun _ _ => by simp [nodup_append, disjoint_iff_ne]
 
 theorem disjoint_of_nodup_add {s t : Multiset α} (d : Nodup (s + t)) : Disjoint s t :=
   (nodup_add.1 d).2.2

@@ -5,6 +5,7 @@ Authors: Markus Himmel
 -/
 import Mathlib.Algebra.Category.Grp.Biproducts
 import Mathlib.Algebra.Category.Grp.Zero
+import Mathlib.Algebra.Ring.PUnit
 import Mathlib.CategoryTheory.Monoidal.Types.Basic
 
 /-!
@@ -107,7 +108,7 @@ end CommGrp
 
 namespace AddCommGrp
 
-/-- We choose `AddCommGrp.of (G × H)` as the product of `G` and `H` and `AddGrp.of PUnit` as
+/-- We choose `AddCommGrp.of (G × H)` as the product of `G` and `H` and `AddCommGrp.of PUnit` as
 the terminal object. -/
 noncomputable def cartesianMonoidalCategoryAddCommGrp : CartesianMonoidalCategory AddCommGrp.{u} :=
   .ofChosenFiniteProducts ⟨_, (isZero_of_subsingleton (AddCommGrp.of PUnit.{u + 1})).isTerminal⟩
