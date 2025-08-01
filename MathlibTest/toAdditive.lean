@@ -318,7 +318,7 @@ def reorderMulThree {α : Type _} [Mul α] (x y z : α) : α := x * y * z
 /--
 error: the permutation
 [[2, 3, 50]]
-provided by the reorder config option is too large, the type
+provided by the `(reorder := ...)` option is out of bounds, the type
   {α : Type u_1} → [Mul α] → α → α → α → α
 has only 5 arguments
 -/
