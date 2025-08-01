@@ -212,10 +212,11 @@ lemma not_sunny_diag (x : ℝ) (h : x ≠ 1 := by simp): ¬ Sunny line[ℝ, !₂
     (right_mem_affineSpan_pair ℝ !₂[x, 1] !₂[1, x]) rfl h
 
 lemma sunny_of_ne {l : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2))}
+    (hrank : finrank ℝ l.direction = 1)
     {x₁ x₂ y₁ y₂} (h₁ : !₂[x₁, y₁] ∈ l) (h₂ : !₂[x₂, y₂] ∈ l)
     (h₃ : y₂ - y₁ ≠ x₁ - x₂) (h₄ : x₁ ≠ x₂ := by simp) (h₅ : y₁ ≠ y₂ := by simp) : Sunny l := by
   simp only [Sunny]
-  rw [l.eq_line_of_mem_mem_finrank h₁ h₂ (point_ne_of_x_ne h₄) sorry]
+  rw [l.eq_line_of_mem_mem_finrank h₁ h₂ (point_ne_of_x_ne h₄) hrank]
   refine ⟨fun h => ?_, fun h => ?_, fun h => ?_⟩
   · rw [xAxis, line_parallel_iff] at h
     grind
@@ -243,7 +244,7 @@ def l4 : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2)) := line[ℝ, !₂[3, 1]
 
 @[simp]
 lemma sunny_l4 : Sunny l4 :=
-  sunny_of_ne (show !₂[3, 1] ∈ l4 by apply left_mem_affineSpan_pair)
+  sunny_of_ne (by sorry) (show !₂[3, 1] ∈ l4 by apply left_mem_affineSpan_pair)
     (show !₂[4, 2] ∈ l4 by apply right_mem_affineSpan_pair)
     (by grind)
 
@@ -251,7 +252,7 @@ def l5 : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2)) := line[ℝ, !₂[0, 0]
 
 @[simp]
 lemma sunny_l5 : Sunny l5 :=
-  sunny_of_ne (show !₂[0, 0] ∈ l5 by apply left_mem_affineSpan_pair)
+  sunny_of_ne (by sorry) (show !₂[0, 0] ∈ l5 by apply left_mem_affineSpan_pair)
     (show !₂[1, 1] ∈ l5 by apply right_mem_affineSpan_pair)
     (by grind)
 
@@ -259,7 +260,7 @@ def l6 : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2)) := line[ℝ, !₂[1, 3]
 
 @[simp]
 lemma sunny_l6 : Sunny l6 :=
-  sunny_of_ne (show !₂[1, 3] ∈ l6 by apply left_mem_affineSpan_pair)
+  sunny_of_ne (by sorry) (show !₂[1, 3] ∈ l6 by apply left_mem_affineSpan_pair)
     (show !₂[2, 1] ∈ l6 by apply right_mem_affineSpan_pair)
     (by grind)
 
@@ -267,7 +268,7 @@ def l7 : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2)) := line[ℝ, !₂[3, 1]
 
 @[simp]
 lemma sunny_l7 : Sunny l7 :=
-  sunny_of_ne (show !₂[3, 1] ∈ l7 by apply left_mem_affineSpan_pair)
+  sunny_of_ne (by sorry) (show !₂[3, 1] ∈ l7 by apply left_mem_affineSpan_pair)
     (show !₂[1, 2] ∈ l7 by apply right_mem_affineSpan_pair)
     (by grind)
 
@@ -492,6 +493,9 @@ noncomputable def Config.restrict_vert {n k : ℕ} (c : Config (n + 1) k)
         vadd_eq_add]
       exact ⟨_, meml, by simp⟩
   sunny := by
+    conv_rhs => rw [← c.sunny]
+    apply Finset.card_eq_of_equiv
+    simp
     -- TODO show translation invariance of sunniness
     sorry
 
@@ -541,20 +545,8 @@ lemma no_config_3_2_no_vert (c : Config 3 2) (h_no_vert : ∀ l ∈ c.ls, ¬ l �
       rw [l₁.eq_line_of_mem_mem_finrank meml₁ meml₃ (fun h => by have := congr_fun h 1; simp_all)
         (c.rank _ hl₁), AffineSubspace.map_span, Set.image_pair, yAxis]
       simp only [AffineEquiv.coe_toAffineMap, AffineEquiv.constVAdd_apply, vadd_eq_add, point_add]
+      rw [line_eq_iff]
       norm_num
-      apply le_antisymm
-      · apply affineSpan_pair_le_of_right_mem
-        rw [mem_affineSpan_iff_exists]
-        refine ⟨!₂[0, 0], by simp, !₂[0, 1], ?_, by simp⟩
-        have := smul_vsub_mem_vectorSpan_pair (k := ℝ) (P := EuclideanSpace ℝ (Fin 2))
-          (- 1 / 2) !₂[0, 0] !₂[0, 2]
-        simpa using this
-      · apply affineSpan_pair_le_of_right_mem
-        rw [mem_affineSpan_iff_exists]
-        refine ⟨!₂[0, 0], by simp, !₂[0, 2], ?_, by simp⟩
-        have := smul_vsub_mem_vectorSpan_pair (k := ℝ) (P := EuclideanSpace ℝ (Fin 2))
-          (-2) !₂[0, 0] !₂[0, 1]
-        simpa using this
     · fapply h_no_vert l₂ hl₂
       use !₂[-1, -2]
       rw [l₂.eq_line_of_mem_mem_finrank meml₂ meml₃ (fun h => by have := congr_fun h 1; simp_all)
@@ -600,15 +592,15 @@ lemma no_config_3_2_no_vert (c : Config 3 2) (h_no_vert : ∀ l ∈ c.ls, ¬ l �
       have hl₅ : ¬ Sunny l₅ := not_sunny_of_diag meml₃ meml₅ (by norm_num)
       split_ifs at hsunny <;> simp at hsunny
   · -- l₃ = l₄
-    have hl₄ : Sunny l₄ := sunny_of_ne meml₄ meml₃ (by simp)
+    have hl₄ : Sunny l₄ := sunny_of_ne (c.rank _ hl₃) meml₄ meml₃ (by simp)
     rcases hl₅ with (rfl | rfl | rfl)
     · -- l₅ = l₁
-      have hl₅ : Sunny l₅ := sunny_of_ne meml₁ meml₅ (by simp; norm_num)
+      have hl₅ : Sunny l₅ := sunny_of_ne (c.rank _ hl₁) meml₁ meml₅ (by simp; norm_num)
       rcases hl₆ with (rfl | rfl | rfl)
       · -- l₆ = l₅, finrank violated
         apply c.not_rank_2 hl₁ <| l₆.finrank_eq_two_of_ne meml₅ meml₁ meml₆ (by norm_num)
       · -- l₆ = l₂, three sunny lines
-        have hl₆ : Sunny l₆ := sunny_of_ne meml₆ meml₂ (by norm_num)
+        have hl₆ : Sunny l₆ := sunny_of_ne (c.rank _ hl₂) meml₆ meml₂ (by norm_num)
         split_ifs at hsunny
         omega
       · -- l₆ = l₄, finrank violated
