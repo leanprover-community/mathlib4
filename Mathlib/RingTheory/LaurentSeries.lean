@@ -91,8 +91,6 @@ open HahnSeries Polynomial
 
 noncomputable section
 
-attribute [local instance] RatFunc.liftAlgebra
-
 /-- `LaurentSeries R` is the type of formal Laurent series with coefficients in `R`, denoted `R⸨X⸩`.
 
   It is implemented as a `HahnSeries` with value group `ℤ`.
@@ -795,7 +793,7 @@ section Dense
 
 open scoped Multiplicative
 
-open LaurentSeries PowerSeries IsDedekindDomain.HeightOneSpectrum WithZero
+open LaurentSeries PowerSeries IsDedekindDomain.HeightOneSpectrum WithZero RatFunc
 
 theorem exists_Polynomial_intValuation_lt (F : K⟦X⟧) (η : ℤᵐ⁰ˣ) :
     ∃ P : K[X], (PowerSeries.idealX K).intValuation (F - P) < η := by
