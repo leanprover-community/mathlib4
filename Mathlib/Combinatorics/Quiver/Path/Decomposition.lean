@@ -21,6 +21,8 @@ open List
 
 section Decomposition
 
+variable {V R : Type*} [Quiver V] {a b : V} (p : Path a b)
+
 lemma length_ne_zero_iff_eq_comp (p : Path a b) :
     p.length ≠ 0 ↔ ∃ (c : V) (e : a ⟶ c) (p' : Path c b),
       p = e.toPath.comp p' ∧ p.length = p'.length + 1 := by
