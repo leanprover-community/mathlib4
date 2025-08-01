@@ -203,7 +203,7 @@ end MeasureTheory
 
 end Support
 
-section SupportAdd
+section Add
 
 /- This will need reincorporation into the above. -/
 
@@ -218,4 +218,46 @@ lemma support_add (μ ν : Measure X) :
   (μ + ν).support = μ.support ∪ ν.support := by
   ext; simp [mem_support_iff]
 
-end SupportAdd
+end Add
+
+section Restrict
+
+open MeasureTheory Measure
+
+open scoped Topology
+
+variable {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
+
+variable {μ : Measure X}
+
+lemma support_restrict_subset_closure [OpensMeasurableSpace X] {s : Set X} :
+  (μ.restrict s).support ⊆ closure s := by
+  intro x hx
+  simp only [mem_closure_iff_nhds]
+  rw [(nhds_basis_opens x).forall_iff (fun _ _ h ↦ Set.Nonempty.mono (by gcongr))]
+  intro U ⟨hxU, hU⟩
+  by_cases H : (s ∩ U).Nonempty
+  · exact Set.inter_nonempty_iff_exists_right.mpr H
+  · have h_restr : (μ.restrict s) U = μ (U ∩ s) := by
+      simp [Measure.restrict_apply hU.measurableSet, Set.inter_comm]
+    rw [(nhds_basis_opens x).mem_measureSupport] at hx
+    exact MeasureTheory.nonempty_of_measure_ne_zero
+      (ne_of_gt (h_restr ▸ hx U ⟨hxU, hU⟩))
+
+lemma mem_support_restrict [OpensMeasurableSpace X] {s : Set X} {x : X} :
+    x ∈ (μ.restrict s).support ↔ ∃ᶠ u in (𝓝[s] x).smallSets, 0 < μ u := by
+  sorry
+
+lemma interior_inter_support [OpensMeasurableSpace X] {s : Set X} :
+    interior s ∩ μ.support ⊆ (μ.restrict s).support := by
+  sorry
+
+-- Prove the following directly, without appeal to `support_restrict_subset_closure`
+
+lemma support_restrict_subset_closure_inter_support [OpensMeasurableSpace X] {s : Set X} :
+    (μ.restrict s).support ⊆ closure s ∩ μ.support := by
+  apply subset_inter
+  · exact support_restrict_subset_closure
+  · exact support_restrict_subset_support
+
+end Restrict
