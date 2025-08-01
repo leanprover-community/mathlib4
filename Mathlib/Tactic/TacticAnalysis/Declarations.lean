@@ -44,8 +44,7 @@ def rwMerge : TacticAnalysis.Config := .ofComplex {
     try
       let (goals, _) ← Lean.Elab.runTactic goal tac
       return (goals, ctxT.map (↑·))
-    catch e => -- rw throws an error if it fails.
-      logInfo m!"rw failed: {e.toMessageData}"
+    catch _e => -- rw throws an error if it fails to pattern-match.
       return ([goal], ctxT.map (↑·))
   tell _stx _old new :=
     if new.1.1.isEmpty then
@@ -67,16 +66,16 @@ def mergeWithGrind : TacticAnalysis.Config where
             if goals.isEmpty then
               logWarningAt preI.stx m!"'{preI.stx}; grind' can be replaced with 'grind'"
 
-/-
 @[tacticAnalysis]
 def terminalToGrind : TacticAnalysis.Config where
   run seq := do
+    let threshold := 3
     let mut replaced : Array (TSyntax `tactic) := #[]
+    let mut success := false
     for (ctx, i) in seq.reverse do
-      if i.stx.getKind != ``Lean.Parser.Tactic.grind then
+      if replaced.size >= threshold - 1 && i.stx.getKind != ``Lean.Parser.Tactic.grind then
         if let [goal] := i.goalsBefore then
           let goals ← ctx.runTactic i goal <| fun goal => do
-            logInfoAt i.stx "running 'grind' here"
             let tac ← `(tactic| grind)
             let (goals, _) ←
               try
@@ -84,15 +83,16 @@ def terminalToGrind : TacticAnalysis.Config where
               catch _e =>
                 pure ([goal], {})
             return goals
-          if !goals.isEmpty then
+          if goals.isEmpty then
+            success := true
+          else
             break
         else
           break
       replaced := replaced.push ⟨i.stx⟩
     replaced := replaced.reverse
 
-    if h : replaced.size >= 2 then
+    if h : replaced.size >= threshold ∧ success then
       let stx := replaced[0]
       let seq ← `(tactic| $replaced;*)
       logWarningAt stx m!"replace the proof with 'grind': {seq}"
--/
