@@ -346,10 +346,10 @@ lemma haarScalarFactor_smul [LocallyCompactSpace G] (μ' μ : Measure G) [IsHaar
 @[to_additive mul_addHaarScalarFactor_smul]
 lemma mul_haarScalarFactor_smul [LocallyCompactSpace G] (μ' μ : Measure G)
     [IsHaarMeasure μ] [IsFiniteMeasureOnCompacts μ'] [IsMulLeftInvariant μ'] {c : ℝ≥0}
-    (hc : 0 < c) :
-    haveI : IsHaarMeasure (c • μ) := IsHaarMeasure.nnreal_smul _ hc
+    (hc : c ≠ 0) :
+    have : IsHaarMeasure (c • μ) := IsHaarMeasure.nnreal_smul _ hc
     c * haarScalarFactor μ' (c • μ) = haarScalarFactor μ' μ := by
-  haveI : IsHaarMeasure (c • μ) := IsHaarMeasure.nnreal_smul _ hc
+  have : IsHaarMeasure (c • μ) := IsHaarMeasure.nnreal_smul _ hc
   obtain ⟨⟨g, g_cont⟩, g_comp, g_nonneg, g_one⟩ :
     ∃ g : C(G, ℝ), HasCompactSupport g ∧ 0 ≤ g ∧ g 1 ≠ 0 := exists_continuous_nonneg_pos 1
   have int_g_ne_zero : ∫ x, g x ∂μ ≠ 0 :=
@@ -357,18 +357,18 @@ lemma mul_haarScalarFactor_smul [LocallyCompactSpace G] (μ' μ : Measure G)
   apply NNReal.coe_injective
   calc
     c * haarScalarFactor μ' (c • μ) = c * ((∫ x, g x ∂μ') / ∫ x, g x ∂(c • μ)) :=
-      by rw [haarScalarFactor_eq_integral_div _ _ g_cont g_comp (by simp [int_g_ne_zero, hc.ne'])]
+      by rw [haarScalarFactor_eq_integral_div _ _ g_cont g_comp (by simp [int_g_ne_zero, hc])]
     _ = c * ((∫ x, g x ∂μ') / (c • ∫ x, g x ∂μ)) := by simp
     _ = (∫ x, g x ∂μ') / (∫ x, g x ∂μ) := by
       rw [NNReal.smul_def, smul_eq_mul, ← mul_div_assoc]
-      exact mul_div_mul_left (∫ (x : G), g x ∂μ') (∫ (x : G), g x ∂μ) (by simp [hc.ne'])
+      exact mul_div_mul_left (∫ (x : G), g x ∂μ') (∫ (x : G), g x ∂μ) (by simp [hc])
     _ = μ'.haarScalarFactor μ :=
       (haarScalarFactor_eq_integral_div _ _ g_cont g_comp int_g_ne_zero).symm
 
 @[to_additive]
 lemma haarScalarFactor_smul_smul [LocallyCompactSpace G] (μ' μ : Measure G)
     [IsHaarMeasure μ] [IsFiniteMeasureOnCompacts μ'] [IsMulLeftInvariant μ'] {c : ℝ≥0}
-    (hc : 0 < c) :
+    (hc : c ≠ 0) :
     haveI : IsHaarMeasure (c • μ) := IsHaarMeasure.nnreal_smul _ hc
     haarScalarFactor (c • μ') (c • μ) = haarScalarFactor μ' μ := by
   rw [haarScalarFactor_smul, smul_eq_mul, mul_haarScalarFactor_smul _ _ hc]

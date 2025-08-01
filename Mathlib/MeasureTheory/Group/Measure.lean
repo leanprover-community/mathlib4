@@ -742,8 +742,8 @@ theorem IsHaarMeasure.smul {c : ℝ≥0∞} (cpos : c ≠ 0) (ctop : c ≠ ∞) 
     toIsOpenPosMeasure := isOpenPosMeasure_smul μ cpos }
 
 @[to_additive IsAddHaarMeasure.nnreal_smul]
-lemma IsHaarMeasure.nnreal_smul {c : ℝ≥0} (hc : 0 < c) : IsHaarMeasure (c • μ) :=
-  .smul _ (by simp [hc.ne']) (Option.some_ne_none _)
+lemma IsHaarMeasure.nnreal_smul {c : ℝ≥0} (hc : c ≠ 0) : IsHaarMeasure (c • μ) :=
+  .smul _ (by simp [hc]) (Option.some_ne_none _)
 
 /-- If a left-invariant measure gives positive mass to some compact set with nonempty interior, then
 it is a Haar measure. -/
