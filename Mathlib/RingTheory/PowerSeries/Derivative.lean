@@ -156,7 +156,7 @@ theorem derivative.ext {R} [CommRing R] [NoZeroSMulDivisors ℕ R] {f g} (hD : d
   simp
 
 @[simp] theorem derivative_invOf {R} [CommRing R] (f : R⟦X⟧) [Invertible f] :
-    d⁄dX R ⅟ f = -⅟ f ^ 2 * d⁄dX R f := by
+    d⁄dX R ⅟f = -⅟f ^ 2 * d⁄dX R f := by
   rw [Derivation.leibniz_invOf, smul_eq_mul]
 
 /-

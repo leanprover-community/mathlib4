@@ -457,14 +457,11 @@ theorem eq_zero_of_bot_submodule : ∀ b : (⊥ : Submodule R M), b = 0
 
 /-- The infimum of a family of invariant submodule of an endomorphism is also an invariant
 submodule. -/
-theorem _root_.LinearMap.iInf_invariant {σ : R →+* R} [RingHomSurjective σ] {ι : Sort*}
+theorem _root_.LinearMap.iInf_invariant {σ : R →+* R} {ι : Sort*}
     (f : M →ₛₗ[σ] M) {p : ι → Submodule R M} (hf : ∀ i, ∀ v ∈ p i, f v ∈ p i) :
     ∀ v ∈ iInf p, f v ∈ iInf p := by
-  have : ∀ i, (p i).map f ≤ p i := by
-    rintro i - ⟨v, hv, rfl⟩
-    exact hf i v hv
-  suffices (iInf p).map f ≤ iInf p by exact fun v hv => this ⟨v, hv, rfl⟩
-  exact le_iInf fun i => (Submodule.map_mono (iInf_le p i)).trans (this i)
+  simp only [mem_iInf]
+  exact fun v a i ↦ hf i v (a i)
 
 theorem disjoint_iff_comap_eq_bot {p q : Submodule R M} : Disjoint p q ↔ comap p.subtype q = ⊥ := by
   rw [← (map_injective_of_injective (show Injective p.subtype from Subtype.coe_injective)).eq_iff,
