@@ -16,10 +16,6 @@ import Mathlib.Probability.Kernel.WithDensity
 
 Inequalities on the risks:
 * `bayesRisk_le_minimaxRisk`: the Bayes risk is less than or equal to the minimax risk.
-* `lintegral_iInf_posterior_le_bayesRiskPrior`: the Bayes risk with respect to a prior is bounded
-  from below by the integral over the data (with distribution `P ∘ₘ π`) of the infimum over the
-  possible predictions `y` of the posterior loss `∫⁻ θ, ℓ θ y ∂((P†π) x)`:
-  `∫⁻ x, ⨅ y : 𝓨, ∫⁻ θ, ℓ θ y ∂((P†π) x) ∂(P ∘ₘ π) ≤ bayesRiskPrior ℓ P π`
 
 Data-processing inequalities: if we compose the data generating kernel `P` with a Markov kernel
 `η : Kernel 𝓧 𝓧'`, then the Bayes risk increases.
@@ -37,9 +33,6 @@ namespace ProbabilityTheory
 variable {Θ Θ' 𝓧 𝓧' 𝓨 : Type*} {mΘ : MeasurableSpace Θ} {mΘ' : MeasurableSpace Θ'}
   {m𝓧 : MeasurableSpace 𝓧} {m𝓧' : MeasurableSpace 𝓧'} {m𝓨 : MeasurableSpace 𝓨}
   {ℓ : Θ → 𝓨 → ℝ≥0∞} {P : Kernel Θ 𝓧} {κ : Kernel 𝓧 𝓨} {π : Measure Θ}
-
-@[simp]
-lemma bayesianRisk_of_isEmpty [IsEmpty Θ] : bayesianRisk ℓ P κ π = 0 := by simp [bayesianRisk]
 
 section Zero
 
@@ -62,18 +55,12 @@ instance [IsEmpty 𝓨] : Subsingleton (Kernel 𝓧 𝓨) where
     exact Set.eq_empty_of_isEmpty s
 
 @[simp]
+lemma bayesianRisk_of_isEmpty [IsEmpty Θ] : bayesianRisk ℓ P κ π = 0 := by simp [bayesianRisk]
+
+@[simp]
 lemma bayesianRisk_of_isEmpty' [IsEmpty 𝓧] : bayesianRisk ℓ P κ π = 0 := by
   have : P = 0 := Subsingleton.elim P 0
   simp [this]
-
-instance [IsEmpty 𝓧] (κ : Kernel 𝓧 𝓨) : IsMarkovKernel κ where
-  isProbabilityMeasure := by simp
-
-lemma not_isMarkovKernel_zero [Nonempty 𝓧] : ¬ IsMarkovKernel (0 : Kernel 𝓧 𝓨) := by
-  by_contra h
-  let x : 𝓧 := Nonempty.some inferInstance
-  have h1 : (0 : Measure 𝓨) .univ = 1 := (h.isProbabilityMeasure x).measure_univ
-  simp only [Measure.coe_zero, Pi.zero_apply, zero_ne_one] at h1
 
 @[simp]
 lemma bayesRiskPrior_of_isEmpty_of_isEmpty (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) (π : Measure Θ)

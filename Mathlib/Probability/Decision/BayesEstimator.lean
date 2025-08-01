@@ -21,6 +21,10 @@ import Mathlib.Probability.Kernel.Posterior
 
 ## Main statements
 
+* `lintegral_iInf_posterior_le_bayesRiskPrior`: the Bayes risk with respect to a prior is bounded
+  from below by the integral over the data (with distribution `P ∘ₘ π`) of the infimum over the
+  possible predictions `y` of the posterior loss `∫⁻ θ, ℓ θ y ∂((P†π) x)`:
+  `∫⁻ x, ⨅ y : 𝓨, ∫⁻ θ, ℓ θ y ∂((P†π) x) ∂(P ∘ₘ π) ≤ bayesRiskPrior ℓ P π`
 * `IsGenBayesEstimator.isBayesEstimator`: a generalized Bayes estimator is a Bayes estimator.
   That is, it minimizes the Bayesian risk.
 * `bayesRiskPrior_eq_of_hasGenBayesEstimator`: if the estimation problem admits a generalized Bayes

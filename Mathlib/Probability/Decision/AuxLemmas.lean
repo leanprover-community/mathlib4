@@ -107,6 +107,15 @@ instance [Nonempty 𝓨] : Nonempty (Subtype (@IsMarkovKernel 𝓧 𝓨 m𝓧 m�
   let y : 𝓨 := Classical.ofNonempty
   exact ⟨Kernel.const _ (Measure.dirac y), inferInstance⟩
 
+instance [IsEmpty 𝓧] (κ : Kernel 𝓧 𝓨) : IsMarkovKernel κ where
+  isProbabilityMeasure := by simp
+
+lemma not_isMarkovKernel_zero [Nonempty 𝓧] : ¬ IsMarkovKernel (0 : Kernel 𝓧 𝓨) := by
+  by_contra h
+  let x : 𝓧 := Nonempty.some inferInstance
+  have h1 : (0 : Measure 𝓨) .univ = 1 := (h.isProbabilityMeasure x).measure_univ
+  simp only [Measure.coe_zero, Pi.zero_apply, zero_ne_one] at h1
+
 end ProbabilityTheory
 
 namespace MeasureTheory
