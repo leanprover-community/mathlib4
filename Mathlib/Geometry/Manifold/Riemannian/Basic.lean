@@ -116,17 +116,8 @@ noncomputable def riemannianMetricVectorSpace :
     rw [contMDiffAt_section]
     convert contMDiffAt_const (c := innerSL ℝ)
     ext v w
-    simp? [hom_trivializationAt_apply, ContinuousLinearMap.inCoordinates,
-        Trivialization.linearMapAt_apply, ContinuousLinearMap.one_def] says
-      simp only [hom_trivializationAt_apply, ContinuousLinearMap.inCoordinates,
-        TangentBundle.symmL_model_space, ContinuousLinearMap.one_def, ContinuousLinearMap.comp_id,
-        ContinuousLinearMap.coe_comp', Trivialization.continuousLinearMapAt_apply,
-        Function.comp_apply, Trivialization.linearMapAt_apply, hom_trivializationAt_baseSet,
-        TangentBundle.trivializationAt_baseSet, PartialHomeomorph.refl_partialEquiv,
-        PartialEquiv.refl_source, PartialHomeomorph.singletonChartedSpace_chartAt_eq,
-        Trivial.fiberBundle_trivializationAt', Trivial.trivialization_baseSet, inter_self, mem_univ,
-        ↓reduceIte, Trivial.continuousLinearMapAt_trivialization, ContinuousLinearMap.id_comp]
-    rfl
+    simp [hom_trivializationAt_apply, ContinuousLinearMap.inCoordinates,
+      Trivialization.linearMapAt_apply, TangentSpace]
 
 noncomputable instance : RiemannianBundle (fun (x : F) ↦ TangentSpace 𝓘(ℝ, F) x) :=
   ⟨(riemannianMetricVectorSpace F).toRiemannianMetric⟩
