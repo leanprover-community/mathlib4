@@ -29,8 +29,8 @@ open scoped Topology Real Nat Complex Pointwise
 local notation "ℍₒ" => complexUpperHalfPlane
 
 lemma iteratedDerivWithin_cexp_mul_const (k m : ℕ) (p : ℝ) {S : Set ℂ} (hs : IsOpen S) :
-    EqOn (iteratedDerivWithin k (fun s : ℂ => cexp (2 * ↑π * Complex.I * m * s / p)) S)
-    (fun s => (2 * ↑π * Complex.I * m / p) ^ k * cexp (2 * ↑π * Complex.I * m * s / p)) S := by
+    EqOn (iteratedDerivWithin k (fun s : ℂ ↦ cexp (2 * ↑π * Complex.I * m * s / p)) S)
+    (fun s ↦ (2 * ↑π * Complex.I * m / p) ^ k * cexp (2 * ↑π * Complex.I * m * s / p)) S := by
   apply EqOn.trans (iteratedDerivWithin_of_isOpen hs)
   intro x hx
   have : (fun s ↦ cexp (2 * ↑π * Complex.I * ↑m * s / ↑p)) =
@@ -41,13 +41,13 @@ lemma iteratedDerivWithin_cexp_mul_const (k m : ℕ) (p : ℝ) {S : Set ℂ} (hs
   ring_nf
 
 private lemma aux_IsBigO_mul (k l : ℕ) (p : ℝ) {f : ℕ → ℂ}
-    (hf : f =O[atTop] (fun n => (↑(n ^ l) : ℝ))) :
-    (fun n => f n * (2 * ↑π * Complex.I * ↑n / p) ^ k) =O[atTop]
-    (fun n => (↑(n ^ (l + k)) : ℝ)) := by
-  have h0 : (fun n : ℕ => (2 * ↑π * Complex.I * ↑n / p) ^ k) =O[atTop]
-    (fun n => (↑(n ^ (k)) : ℝ)) := by
-    have h1 : (fun n : ℕ => (2 * ↑π * Complex.I * ↑n / p) ^ k) =
-      (fun n : ℕ => ((2 * ↑π * Complex.I / p) ^ k) * ↑n ^ k) := by
+    (hf : f =O[atTop] (fun n ↦ ((n ^ l) : ℝ))) :
+    (fun n ↦ f n * (2 * ↑π * Complex.I * ↑n / p) ^ k) =O[atTop]
+    (fun n ↦ (↑(n ^ (l + k)) : ℝ)) := by
+  have h0 : (fun n : ℕ ↦ (2 * ↑π * Complex.I * ↑n / p) ^ k) =O[atTop]
+    (fun n ↦ (↑(n ^ (k)) : ℝ)) := by
+    have h1 : (fun n : ℕ ↦ (2 * ↑π * Complex.I * ↑n / p) ^ k) =
+      (fun n : ℕ ↦ ((2 * ↑π * Complex.I / p) ^ k) * ↑n ^ k) := by
       ext z
       ring
     simpa [h1] using (Complex.isBigO_ofReal_right.mp (Asymptotics.isBigO_const_mul_self
@@ -58,13 +58,13 @@ private lemma aux_IsBigO_mul (k l : ℕ) (p : ℝ) {f : ℕ → ℂ}
 
 open BoundedContinuousFunction in
 theorem summableLocallyUniformlyOn_iteratedDerivWithin_qExpansion (k l : ℕ) {f : ℕ → ℂ} {p : ℝ}
-    (hp : 0 < p) (hf : f =O[atTop] (fun n => (↑(n ^ l) : ℝ))) :
+    (hp : 0 < p) (hf : f =O[atTop] (fun n ↦ ((n ^ l) : ℝ))) :
     SummableLocallyUniformlyOn (fun n ↦ (f n) •
     iteratedDerivWithin k (fun z ↦  cexp (2 * ↑π * Complex.I * z / p) ^ n) ℍₒ) ℍₒ := by
   apply SummableLocallyUniformlyOn_of_locally_bounded complexUpperHalPlane_isOpen
   intro K hK hKc
   haveI : CompactSpace K := isCompact_univ_iff.mp (isCompact_iff_isCompact_univ.mp hKc)
-  let c : ContinuousMap K ℂ := ⟨fun r : K => Complex.exp (2 * ↑π * Complex.I * r / p), by fun_prop⟩
+  let c : ContinuousMap K ℂ := ⟨fun r : K ↦ Complex.exp (2 * ↑π * Complex.I * r / p), by fun_prop⟩
   let r : ℝ := ‖mkOfCompact c‖
   have hr : ‖r‖ < 1 := by
     simp only [norm_norm, r, norm_lt_iff_of_compact Real.zero_lt_one, mkOfCompact_apply,
@@ -78,12 +78,11 @@ theorem summableLocallyUniformlyOn_iteratedDerivWithin_qExpansion (k l : ℕ) {f
     (Asymptotics.isBigO_norm_left.mpr (aux_IsBigO_mul k l p hf))), ?_⟩
   intro n z hz
   have h0 := pow_le_pow_left₀ (by apply norm_nonneg _) (norm_coe_le_norm (mkOfCompact c) ⟨z, hz⟩) n
-  simp
-  simp only [Nat.cast_pow, norm_mkOfCompact, mkOfCompact_apply, ContinuousMap.coe_mk, ←
-    exp_nsmul', iteratedDerivWithin_cexp_mul_const k n p complexUpperHalPlane_isOpen (hK hz),
-    norm_mul, norm_pow, norm_div,
-    RCLike.norm_ofNat, norm_real, norm_I, mul_one, RCLike.norm_natCast, abs_norm, r,
-    c] at *
+  simp only [norm_mkOfCompact, mkOfCompact_apply, ContinuousMap.coe_mk, ←
+    exp_nsmul', Pi.smul_apply,
+    iteratedDerivWithin_cexp_mul_const k n p complexUpperHalPlane_isOpen (hK hz), smul_eq_mul,
+    norm_mul, norm_pow, Complex.norm_div, norm_ofNat, norm_real, Real.norm_eq_abs, norm_I, mul_one,
+    norm_natCast, abs_norm, ge_iff_le, r, c] at *
   rw [← mul_assoc]
   gcongr
   convert h0
@@ -94,8 +93,8 @@ and q-expansion coefficients all `1`. -/
 theorem summableLocallyUniformlyOn_iteratedDerivWithin_qExpansion' (k : ℕ) :
     SummableLocallyUniformlyOn (fun n ↦ iteratedDerivWithin k
     (fun z ↦ cexp (2 * ↑π * Complex.I * z) ^ n) ℍₒ) ℍₒ := by
-  have h0 : (fun n : ℕ => (1 : ℂ)) =O[atTop] (fun n => (↑(n ^ 1) : ℝ)) := by
-    simp only [Nat.cast_pow, Asymptotics.isBigO_iff, norm_one, norm_pow, Real.norm_natCast,
+  have h0 : (fun n : ℕ ↦ (1 : ℂ)) =O[atTop] (fun n ↦ ((n ^ 1) : ℝ)) := by
+    simp only [Asymptotics.isBigO_iff, norm_one, norm_pow, Real.norm_natCast,
       eventually_atTop, ge_iff_le]
     refine ⟨1, 1, fun b hb => by norm_cast; simp [hb]⟩
   simpa using summableLocallyUniformlyOn_iteratedDerivWithin_qExpansion k 1 (p := 1)
@@ -109,7 +108,7 @@ theorem differnetiableAt_iteratedDerivWithin_cexp (n a : ℕ) {s : Set ℂ} (hs 
     apply this.congr (iteratedDerivWithin_of_isOpen hs)
   fun_prop
 
-lemma iteratedDerivWithin_tsum_exp_eq (k : ℕ) (z : ℍ) : iteratedDerivWithin k (fun z =>
+lemma iteratedDerivWithin_tsum_exp_eq (k : ℕ) (z : ℍ) : iteratedDerivWithin k (fun z ↦
     ∑' n : ℕ, cexp (2 * π * Complex.I * z) ^ n) ℍₒ z =
     ∑' n : ℕ, iteratedDerivWithin k (fun s : ℂ ↦ cexp (2 * ↑π * Complex.I * s) ^ n) ℍₒ z := by
   rw [iteratedDerivWithin_tsum k complexUpperHalPlane_isOpen (by simpa using z.2)]
@@ -120,7 +119,7 @@ lemma iteratedDerivWithin_tsum_exp_eq (k : ℕ) (z : ℍ) : iteratedDerivWithin 
       complexUpperHalPlane_isOpen hz
 
 theorem contDiffOn_tsum_cexp (k : ℕ∞) :
-    ContDiffOn ℂ k (fun z : ℂ => ∑' n : ℕ, cexp (2 * ↑π * Complex.I * z) ^ n) ℍₒ :=
+    ContDiffOn ℂ k (fun z : ℂ ↦ ∑' n : ℕ, cexp (2 * ↑π * Complex.I * z) ^ n) ℍₒ :=
   contDiffOn_of_differentiableOn_deriv fun m _ z hz ↦
   ((summableUniformlyOn_differentiableOn complexUpperHalPlane_isOpen
   (summableLocallyUniformlyOn_iteratedDerivWithin_qExpansion' m)
@@ -129,14 +128,14 @@ theorem contDiffOn_tsum_cexp (k : ℕ∞) :
     iteratedDerivWithin_tsum_exp_eq m ⟨z, hz⟩) (iteratedDerivWithin_tsum_exp_eq m ⟨z, hz⟩)
 
 private lemma iteratedDerivWithin_tsum_exp_eq' {k : ℕ} (hk : 1 ≤ k) (z : ℍ) :
-    iteratedDerivWithin k (fun z => (((π : ℂ) * Complex.I) -
+    iteratedDerivWithin k (fun z ↦ (((π : ℂ) * Complex.I) -
     (2 * π * Complex.I) * ∑' n : ℕ, cexp (2 * π * Complex.I * z) ^ n)) ℍₒ z =
     -(2 * π * Complex.I) ^ (k + 1) * ∑' n : ℕ, n ^ k * cexp (2 * ↑π * Complex.I * z) ^ n := by
   suffices
     iteratedDerivWithin k (fun z ↦ ((↑π * Complex.I) -
     (2 * π * Complex.I) * ∑' n : ℕ, cexp (2 * π * Complex.I * z) ^ n)) ℍₒ z =
     -(2 * π * Complex.I) * ∑' n : ℕ, iteratedDerivWithin k
-    (fun s : ℂ => cexp (2 * ↑π * Complex.I * s) ^ n) ℍₒ z by
+    (fun s : ℂ ↦ cexp (2 * ↑π * Complex.I * s) ^ n) ℍₒ z by
     have h : -(2 * ↑π * Complex.I * (2 * ↑π * Complex.I) ^ k) *
       ∑' (n : ℕ), ↑n ^ k * cexp (2 * ↑π * Complex.I * ↑z) ^ n = -(2 * π * Complex.I) *
       ∑' n : ℕ, (2 * ↑π * Complex.I * n) ^ k * cexp (2 * ↑π * Complex.I * z) ^ n := by
@@ -182,11 +181,11 @@ theorem EisensteinSeries.qExpansion_identity {k : ℕ} (hk : 1 ≤ k) (z : ℍ) 
   · simpa using z.2
 
 theorem summable_pow_mul_cexp (k : ℕ) (e : ℕ+) (z : ℍ) :
-    Summable fun c : ℕ => (c : ℂ) ^ k * cexp (2 * ↑π * Complex.I * e * ↑z) ^ c := by
+    Summable fun c : ℕ ↦ (c : ℂ) ^ k * cexp (2 * ↑π * Complex.I * e * ↑z) ^ c := by
   have he : 0 < (e * (z : ℂ)).im := by
     simpa using z.2
   apply ((summableLocallyUniformlyOn_iteratedDerivWithin_qExpansion 0 k (p := 1)
-    (f := fun n => (n ^ k : ℂ)) (by norm_num)
+    (f := fun n ↦ (n ^ k : ℂ)) (by norm_num)
     (by simp [← Complex.isBigO_ofReal_right, Asymptotics.isBigO_refl])).summable he).congr
   intro b
   simp only [ofReal_one, div_one, ← Complex.exp_nsmul, nsmul_eq_mul, iteratedDerivWithin_zero,
@@ -214,13 +213,13 @@ theorem summable_divisorsAntidiagonal_aux (k : ℕ) (z : ℍ) :
   · simp only [Complex.norm_mul, norm_pow, Complex.norm_natCast, tsum_fintype,
     Finset.univ_eq_attach]
     · apply Summable.of_nonneg_of_le (fun b => Finset.sum_nonneg (by simp)) ?_ ((summable_norm_iff
-      (f := fun c : ℕ+ => (c : ℂ) ^ (k + 1) * exp (2 * ↑π * Complex.I * (1: ℕ+) * ↑z) ^ (c : ℕ)).mpr
+      (f := fun c : ℕ+ ↦ (c : ℂ) ^ (k + 1) * exp (2 * ↑π * Complex.I * (1: ℕ+) * ↑z) ^ (c : ℕ)).mpr
       (by apply (summable_pow_mul_cexp (k+1) 1 z).subtype)))
       intro b
       apply le_trans (b := ∑ _ ∈ (b : ℕ).divisors, b ^ k * ‖exp (2 * ↑π * Complex.I * z) ^ (b : ℕ)‖)
-      · rw [Finset.sum_attach ((b : ℕ).divisorsAntidiagonal) (fun (x : ℕ × ℕ) =>
+      · rw [Finset.sum_attach ((b : ℕ).divisorsAntidiagonal) (fun (x : ℕ × ℕ) ↦
             (x.1 : ℝ) ^ (k : ℕ) * ‖Complex.exp (2 * ↑π * Complex.I * x.2 * z)‖ ^ x.1),
-          Nat.sum_divisorsAntidiagonal ((fun x y =>
+          Nat.sum_divisorsAntidiagonal ((fun x y ↦
           (x : ℝ) ^ (k : ℕ) * ‖Complex.exp (2 * ↑π * Complex.I * y * z)‖ ^ x))]
         gcongr <;> rename_i i hi <;> simp at hi
         · exact Nat.le_of_dvd b.2 hi
@@ -235,7 +234,7 @@ theorem summable_divisorsAntidiagonal_aux (k : ℕ) (z : ℍ) :
 theorem summable_prod_aux (k : ℕ) (z : ℍ) : Summable fun c : ℕ+ × ℕ+ ↦
     (c.1 ^ k : ℂ) * Complex.exp (2 * ↑π * Complex.I * c.2 * z) ^ (c.1 : ℕ) := by
   rw [sigmaAntidiagonalEquivProd.summable_iff.symm]
-  simp [sigmaAntidiagonalEquivProd, mapdiv]
+  simp only [sigmaAntidiagonalEquivProd, mapdiv, PNat.mk_coe, Equiv.coe_fn_mk]
   apply summable_divisorsAntidiagonal_aux k z
 
 theorem tsum_prod_pow_cexp_eq_tsum_sigma (k : ℕ) (z : ℍ) :
@@ -253,10 +252,10 @@ theorem tsum_prod_pow_cexp_eq_tsum_sigma (k : ℕ) (z : ℍ) :
   apply tsum_congr
   intro n
   simp only [tsum_fintype, Finset.univ_eq_attach,Finset.sum_attach ((n : ℕ).divisorsAntidiagonal)
-    (fun (x : ℕ × ℕ) => (x.1 : ℂ) ^ k * cexp (2 * ↑π * Complex.I * x.2 * z) ^ x.1),
-    Nat.sum_divisorsAntidiagonal' (fun x y => (x : ℂ) ^ k * cexp (2 * ↑π * Complex.I * y * z) ^ x),
+    (fun (x : ℕ × ℕ) ↦ (x.1 : ℂ) ^ k * cexp (2 * ↑π * Complex.I * x.2 * z) ^ x.1),
+    Nat.sum_divisorsAntidiagonal' (fun x y ↦ (x : ℂ) ^ k * cexp (2 * ↑π * Complex.I * y * z) ^ x),
     Finset.sum_mul]
-  refine Finset.sum_congr (rfl) fun i hi => ?_
+  refine Finset.sum_congr (rfl) fun i hi ↦ ?_
   have hni : (n / i : ℕ) * (i : ℂ) = n := by
     norm_cast
     simp only [Nat.mem_divisors, ne_eq, PNat.ne_zero, not_false_eq_true, and_true] at *
@@ -266,18 +265,19 @@ theorem tsum_prod_pow_cexp_eq_tsum_sigma (k : ℕ) (z : ℍ) :
   left
   ring_nf
 
-theorem summable_prod_eisSummand (k : ℕ) (hk : 3 ≤ k) (z : ℍ) :
+theorem summable_prod_eisSummand {k : ℕ} (hk : 3 ≤ k) (z : ℍ) :
     Summable fun x : ℤ × ℤ ↦ eisSummand k ![x.1, x.2] z := by
-  simp [← (piFinTwoEquiv fun _ => ℤ).summable_iff, ← summable_norm_iff]
+  simp only [← (piFinTwoEquiv fun _ ↦ ℤ).summable_iff, piFinTwoEquiv_apply, Fin.isValue, ←
+    summable_norm_iff, comp_apply, norm_norm]
   apply (EisensteinSeries.summable_norm_eisSummand (by linarith) z).congr
   simp [EisensteinSeries.eisSummand]
 
-lemma tsum_prod_eisSummand_eq_sigma_cexp (k : ℕ) (hk : 3 ≤ k) (hk2 : Even k) (z : ℍ) :
+lemma tsum_prod_eisSummand_eq_sigma_cexp {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) (z : ℍ) :
     ∑' (x : Fin 2 → ℤ), eisSummand k x z = 2 * riemannZeta ↑k +
     2 * ((-2 * ↑π * Complex.I) ^ k / ↑(k - 1)!) *
     ∑' (n : ℕ+), ↑((σ (k - 1)) ↑n) * cexp (2 * ↑π * Complex.I * ↑z) ^ (n : ℕ) := by
-  rw [← (piFinTwoEquiv fun _ => ℤ).symm.tsum_eq, Summable.tsum_prod
-    (by apply summable_prod_eisSummand k hk), tsum_nat_eq_zero_two_pnat]
+  rw [← (piFinTwoEquiv fun _ ↦ ℤ).symm.tsum_eq, Summable.tsum_prod
+    (by apply summable_prod_eisSummand hk), tsum_nat_eq_zero_two_pnat]
   · have (b : ℕ+) := EisensteinSeries.qExpansion_identity_pnat (k := k - 1) (by omega)
       ⟨b * z , by simpa using z.2⟩
     have hk1 : k - 1 + 1 = k := by omega
@@ -300,8 +300,8 @@ lemma tsum_prod_eisSummand_eq_sigma_cexp (k : ℕ) (hk : 3 ≤ k) (hk2 : Even k)
       zpow_neg, zpow_natCast, ← Even.neg_pow hk2 (n * (z : ℂ) + y), neg_add_rev, Int.cast_neg,
       neg_mul, inv_inj]
     ring
-  · simpa using Summable.prod (f := fun x : ℤ × ℤ => eisSummand k ![x.1, x.2] z)
-      (by apply summable_prod_eisSummand k hk)
+  · simpa using Summable.prod (f := fun x : ℤ × ℤ ↦ eisSummand k ![x.1, x.2] z)
+      (by apply summable_prod_eisSummand hk)
 
 lemma gammaSetN_eisSummand (k : ℤ) (z : ℍ) {n : ℕ} (v : gammaSetN n) : eisSummand k v z =
   ((n : ℂ) ^ k)⁻¹ * eisSummand k (gammaSetN_map n v) z := by
@@ -323,14 +323,14 @@ lemma tsum_prod_eisSummand_eq_riemannZeta_eisensteinSeries {k : ℕ} (hk : 3 ≤
       by_cases hb : b = 0
       · simp [hb, CharP.cast_eq_zero, gammaSetN_eisSummand k z, show ((0 : ℂ) ^ k)⁻¹ = 0 by aesop]
       · simpa [gammaSetN_eisSummand k z, zpow_natCast, tsum_mul_left, hb] using
-          (gammaSetN_Equiv hb).tsum_eq (fun v => eisSummand k v z)
-    · apply summable_mul_of_summable_norm (f:= fun (n : ℕ)=> ((n : ℂ) ^ k)⁻¹)
-        (g := fun (v : gammaSet 1 0) => eisSummand k v z) (by simp [hk1])
+          (gammaSetN_Equiv hb).tsum_eq (fun v ↦ eisSummand k v z)
+    · apply summable_mul_of_summable_norm (f:= fun (n : ℕ) ↦ ((n : ℂ) ^ k)⁻¹)
+        (g := fun (v : gammaSet 1 0) ↦ eisSummand k v z) (by simp [hk1])
       apply (EisensteinSeries.summable_norm_eisSummand (by omega) z).subtype
     · intro b
       simpa using (Summable.of_norm (by apply (EisensteinSeries.summable_norm_eisSummand
         (by omega) z).subtype)).mul_left (a := ((b : ℂ) ^ k)⁻¹)
-  · apply ((GammaSet_one_Equiv.symm.summable_iff (f := fun v => eisSummand k v z)).mpr
+  · apply ((GammaSet_one_Equiv.symm.summable_iff (f := fun v ↦ eisSummand k v z)).mpr
       (EisensteinSeries.summable_norm_eisSummand (by omega) z).of_norm).congr
     simp
 
@@ -341,7 +341,7 @@ lemma EisensteinSeries.q_expansion {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) (z : 
     (eisensteinSeries_SIF standardcongruencecondition k) z := rfl
   rw [E, ModularForm.smul_apply, this, eisensteinSeries_SIF_apply standardcongruencecondition k z,
     eisensteinSeries, standardcongruencecondition]
-  have HE1 := tsum_prod_eisSummand_eq_sigma_cexp k (by omega) hk2 z
+  have HE1 := tsum_prod_eisSummand_eq_sigma_cexp (by omega) hk2 z
   have HE2 := tsum_prod_eisSummand_eq_riemannZeta_eisensteinSeries (by omega) z
   have z2 : (riemannZeta (k)) ≠ 0 := by
     refine riemannZeta_ne_zero_of_one_lt_re ?_
