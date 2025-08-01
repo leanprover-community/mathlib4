@@ -19,9 +19,9 @@ def xAxis : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2)) :=
 def yAxis : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2)) :=
   line[ℝ, !₂[0, 0], !₂[0, 1]]
 
-/- The line `x+y=0`, as an affine subspace. -/
+/- The line `x+y=1`, as an affine subspace. -/
 noncomputable def linexy0 : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2)) :=
-  line[ℝ, !₂[0, 0], !₂[-1, -1]]
+  line[ℝ, !₂[1, 0], !₂[0, 1]]
 
 /-- The condition on lines in the problem. -/
 def Sunny (s : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2))) : Prop :=
@@ -118,7 +118,6 @@ lemma _root_.AffineSubspace.finrank_eq_two_of_ne
 lemma _root_.EuclideanGeometry.orthogonalProjection_diag_apply (a b : ℝ) :
     (EuclideanGeometry.orthogonalProjection line[ℝ, !₂[(0 : ℝ), 0], !₂[1, 1]]) !₂[↑b, ↑a]  =
     !₂[(a + b) / 2, (a + b) / 2] := by
-
   sorry
 
 /-- This is still missing non-degeneracy conditions -/
@@ -126,6 +125,11 @@ lemma line_eq_iff {a₀ b₀ c₀ d₀ a₁ b₁ c₁ d₁ : ℝ} :
     line[ℝ, !₂[a₀, b₀], !₂[c₀, d₀]] = line[ℝ, !₂[a₁, b₁], !₂[c₁, d₁]] ↔
     (a₀ - a₁) * (d₀ - b₁) = (c₀ - a₁) * (b₀ - b₁) ∧
       (a₀ - c₁) * (d₀ - d₁) = (c₀ - c₁) * (b₀ - d₁) := by
+  sorry
+
+lemma line_parallel_iff {a₀ b₀ c₀ d₀ a₁ b₁ c₁ d₁ : ℝ} :
+    line[ℝ, !₂[a₀, b₀], !₂[c₀, d₀]] ∥ line[ℝ, !₂[a₁, b₁], !₂[c₁, d₁]] ↔
+    (d₀ - b₀) * (c₁ - a₁) = (d₁ - b₁) * (c₀ - a₀) := by
   sorry
 
 @[simp]
@@ -169,11 +173,65 @@ lemma not_sunny_vert {x : ℝ} : ¬Sunny line[ℝ, !₂[x, 0], !₂[x, 1]] := by
   congr 1
   simp [Set.vsub, Set.image_insert_eq]
 
-@[simp]
-lemma not_sunny_diag (x : ℝ) : ¬ Sunny line[ℝ, !₂[x, 1], !₂[1, x]] := by
-  sorry
+/- General helper lemmas -/
 
-/- Lines we'll use -/
+noncomputable instance : DecidablePred Sunny := Classical.decPred _
+
+lemma not_sunny_of_horiz {l : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2))}
+    {x₁ x₂ y₁ : ℝ} (h₁ : !₂[x₁, y₁] ∈ l) (h₂ : !₂[x₂, y₁] ∈ l) (h : x₁ ≠ x₂ := by simp) :
+    ¬ Sunny l := by
+  classical
+  simp only [Sunny, Decidable.not_and_iff_or_not, not_not, xAxis]
+  left
+  rw [l.eq_line_of_mem_mem_finrank h₁ h₂ (point_ne_of_x_ne h) sorry, line_parallel_iff]
+  grind
+
+lemma not_sunny_of_vert {l : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2))}
+    {x₁ y₁ y₂ : ℝ} (h₁ : !₂[x₁, y₁] ∈ l) (h₂ : !₂[x₁, y₂] ∈ l) (h : y₁ ≠ y₂ := by simp) :
+    ¬ Sunny l := by
+  classical
+  simp only [Sunny, Decidable.not_and_iff_or_not, not_not, yAxis]
+  right; left
+  rw [l.eq_line_of_mem_mem_finrank h₁ h₂ (point_ne_of_y_ne h) sorry, line_parallel_iff]
+  grind
+
+lemma not_sunny_of_diag {l : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2))}
+    {x₁ x₂ y₁ y₂ : ℝ} (h₁ : !₂[x₁, y₁] ∈ l) (h₂ : !₂[x₂, y₂] ∈ l)
+    (h : y₂ - y₁ = x₁ - x₂) (h : x₁ ≠ x₂ := by simp) :
+    ¬ Sunny l := by
+  classical
+  simp only [Sunny, Decidable.not_and_iff_or_not, not_not, linexy0]
+  right; right
+  rw [l.eq_line_of_mem_mem_finrank h₁ h₂ (point_ne_of_x_ne h) sorry, line_parallel_iff]
+  simp
+  grind
+
+@[simp]
+lemma not_sunny_diag (x : ℝ) (h : x ≠ 1 := by simp): ¬ Sunny line[ℝ, !₂[x, 1], !₂[1, x]] :=
+  not_sunny_of_diag (left_mem_affineSpan_pair ℝ !₂[x, 1] !₂[1, x])
+    (right_mem_affineSpan_pair ℝ !₂[x, 1] !₂[1, x]) rfl h
+
+lemma sunny_of_ne {l : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2))}
+    {x₁ x₂ y₁ y₂} (h₁ : !₂[x₁, y₁] ∈ l) (h₂ : !₂[x₂, y₂] ∈ l)
+    (h₃ : y₂ - y₁ ≠ x₁ - x₂) (h₄ : x₁ ≠ x₂ := by simp) (h₅ : y₁ ≠ y₂ := by simp) : Sunny l := by
+  simp only [Sunny]
+  rw [l.eq_line_of_mem_mem_finrank h₁ h₂ (point_ne_of_x_ne h₄) sorry]
+  refine ⟨fun h => ?_, fun h => ?_, fun h => ?_⟩
+  · rw [xAxis, line_parallel_iff] at h
+    grind
+  · rw [yAxis, line_parallel_iff] at h
+    grind
+  · rw [linexy0, line_parallel_iff] at h
+    grind
+
+lemma reflection_inj : Function.Injective fun (l : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2))) =>
+    l.map (EuclideanGeometry.reflection line[ℝ, !₂[(0 : ℝ), 0], !₂[1, 1]]).toAffineMap := by
+  intro l₁ l₂ h
+  have := congr_arg
+   (·.map (EuclideanGeometry.reflection line[ℝ, !₂[(0 : ℝ), 0], !₂[1, 1]]).toAffineMap) h
+  convert this <;> ext <;> simp
+
+/- Lemmas for the case `n = 3` -/
 
 def l1 : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2)) := line[ℝ, !₂[1, 0], !₂[1, 1]]
 
@@ -184,60 +242,34 @@ def l3 : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2)) := line[ℝ, !₂[3, 0]
 def l4 : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2)) := line[ℝ, !₂[3, 1], !₂[4, 2]]
 
 @[simp]
-lemma sunny_l4 : Sunny l4 := by
-  sorry
+lemma sunny_l4 : Sunny l4 :=
+  sunny_of_ne (show !₂[3, 1] ∈ l4 by apply left_mem_affineSpan_pair)
+    (show !₂[4, 2] ∈ l4 by apply right_mem_affineSpan_pair)
+    (by grind)
 
 def l5 : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2)) := line[ℝ, !₂[0, 0], !₂[1, 1]]
 
 @[simp]
-lemma sunny_l5 : Sunny l5 := by
-  sorry
+lemma sunny_l5 : Sunny l5 :=
+  sunny_of_ne (show !₂[0, 0] ∈ l5 by apply left_mem_affineSpan_pair)
+    (show !₂[1, 1] ∈ l5 by apply right_mem_affineSpan_pair)
+    (by grind)
 
 def l6 : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2)) := line[ℝ, !₂[1, 3], !₂[2, 1]]
 
 @[simp]
-lemma sunny_l6 : Sunny l6 := by
-  sorry
+lemma sunny_l6 : Sunny l6 :=
+  sunny_of_ne (show !₂[1, 3] ∈ l6 by apply left_mem_affineSpan_pair)
+    (show !₂[2, 1] ∈ l6 by apply right_mem_affineSpan_pair)
+    (by grind)
 
 def l7 : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2)) := line[ℝ, !₂[3, 1], !₂[1, 2]]
 
 @[simp]
-lemma sunny_l7 : Sunny l7 := by
-  sorry
-
-/- General helper lemmas -/
-
-noncomputable instance : DecidablePred Sunny := Classical.decPred _
-
-lemma notSunny_of_horiz {l : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2))}
-    {x₁ x₂ y₁ y₂ : ℝ} (h₁ : !₂[x₁, y₁] ∈ l) (h₂ : !₂[x₂, y₂] ∈ l) (h : x₁ ≠ x₂ := by simp) :
-    ¬ Sunny l :=
-  sorry
-
-lemma notSunny_of_vert {l : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2))}
-    {x₁ x₂ y₁ y₂ : ℝ} (h₁ : !₂[x₁, y₁] ∈ l) (h₂ : !₂[x₂, y₂] ∈ l) (h : y₁ ≠ y₂ := by simp) :
-    ¬ Sunny l :=
-  sorry
-
-lemma notSunny_of_diag {l : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2))}
-    {x₁ x₂ y₁ y₂ : ℝ} (h₁ : !₂[x₁, y₁] ∈ l) (h₂ : !₂[x₂, y₂] ∈ l)
-    (h : y₂ - y₁ = x₁ - x₂) (h : x₁ ≠ x₂ := by simp) :
-    ¬ Sunny l :=
-  sorry
-
-lemma sunny_of_ne {l : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2))}
-    {x₁ x₂ y₁ y₂} (h₁ : !₂[x₁, y₁] ∈ l) (h₂ : !₂[x₂, y₂] ∈ l)
-    (h₃ : y₂ - y₁ ≠ x₁ - x₂) (h₄ : x₁ ≠ x₂ := by simp) (h₅ : y₁ ≠ y₂ := by simp) : Sunny l :=
-  sorry
-
-lemma reflection_inj : Function.Injective fun (l : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2))) =>
-    l.map (EuclideanGeometry.reflection line[ℝ, !₂[(0 : ℝ), 0], !₂[1, 1]]).toAffineMap := by
-  intro l₁ l₂ h
-  have := congr_arg
-   (·.map (EuclideanGeometry.reflection line[ℝ, !₂[(0 : ℝ), 0], !₂[1, 1]]).toAffineMap) h
-  convert this <;> ext <;> simp
-
-/- Lemmas for the case `n = 3` -/
+lemma sunny_l7 : Sunny l7 :=
+  sunny_of_ne (show !₂[3, 1] ∈ l7 by apply left_mem_affineSpan_pair)
+    (show !₂[1, 2] ∈ l7 by apply right_mem_affineSpan_pair)
+    (by grind)
 
 lemma zero_mem3 : 0 ∈ {k | ∃ lines : Finset (AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2))),
       have : DecidablePred Sunny := Classical.decPred _;
@@ -348,6 +380,8 @@ lemma three_mem3 : 3 ∈ {k | ∃ lines : Finset (AffineSubspace ℝ (EuclideanS
 noncomputable instance : DecidableEq (AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2))) :=
   Classical.decEq _
 
+/-- Valid configurations and operations on them -/
+
 structure Config (n k : Nat) where
   ls : Finset (AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2)))
   card : #ls = n
@@ -426,7 +460,7 @@ def Config.extend {n k : ℕ} (hn : 3 ≤ n) (c : Config n k) : Config (n + 1) k
     simp only [Finset.cons_eq_insert, Finset.mem_insert, or_iff_right_iff_imp]
     rintro rfl
     absurd hl
-    exact not_sunny_diag (n + 1)
+    exact not_sunny_diag (n + 1) (by norm_cast; omega)
 
 /-- Restrict a configuration for `n + 1` points to a configuration for `n` points by discarding
 a vertical line. -/
@@ -487,7 +521,7 @@ noncomputable def Config.restrict_diag {n k : ℕ} (hn : 3 ≤ n) (c : Config (n
     rw [Finset.filter_inj]
     simp
     rintro l hl - rfl
-    apply not_sunny_diag (n + 1) hl
+    apply not_sunny_diag (n + 1) (by norm_cast; omega) hl
 
 lemma no_config_3_2_no_vert (c : Config 3 2) (h_no_vert : ∀ l ∈ c.ls, ¬ l ∥ yAxis) : False := by
   obtain ⟨l₁, hl₁, meml₁⟩ := c.cover 1 1 (by norm_num) (by norm_num) (by norm_num)
@@ -537,33 +571,33 @@ lemma no_config_3_2_no_vert (c : Config 3 2) (h_no_vert : ∀ l ∈ c.ls, ¬ l �
   simp [← hcls, Finset.filter_insert, Finset.filter_singleton] at hsunny
   rcases hl₄ with (rfl | rfl | rfl)
   · -- l₁ = l₄ must be non-sunny
-    have hl₄ : ¬ Sunny l₄ := notSunny_of_horiz meml₁ meml₄
+    have hl₄ : ¬ Sunny l₄ := not_sunny_of_horiz meml₁ meml₄
     rcases hl₅ with (rfl | rfl | rfl)
     · -- l₅ = l₄, finrank violated
       apply c.not_rank_2 hl₁ <| l₅.finrank_eq_two_of_ne meml₅ meml₄ meml₁ (by norm_num)
     · -- l₅ = l₂, only one sunny line
-      have hl₅ : ¬ Sunny l₅ := notSunny_of_horiz meml₂ meml₅
+      have hl₅ : ¬ Sunny l₅ := not_sunny_of_horiz meml₂ meml₅
       split_ifs at hsunny <;> simp at hsunny
     · -- l₅ = l₃, only one sunny line
-      have hl₅ : ¬ Sunny l₅ := notSunny_of_diag meml₃ meml₅ (by simp; norm_num)
+      have hl₅ : ¬ Sunny l₅ := not_sunny_of_diag meml₃ meml₅ (by simp; norm_num)
       split_ifs at hsunny <;> simp at hsunny
   · -- l₂ = l₄ must be non-sunny
-    have hl₄ : ¬ Sunny l₄ := notSunny_of_diag meml₂ meml₄ (by simp)
+    have hl₄ : ¬ Sunny l₄ := not_sunny_of_diag meml₂ meml₄ (by simp)
     rcases hl₅ with (rfl | rfl | rfl)
     · -- l₅ = l₁, only one sunny line
       rcases hl₆ with (rfl | rfl | rfl)
       · -- l₆ = l₅
-        have hl₆ : ¬ Sunny l₆ := notSunny_of_diag meml₅ meml₆ (by norm_num)
+        have hl₆ : ¬ Sunny l₆ := not_sunny_of_diag meml₅ meml₆ (by norm_num)
         split_ifs at hsunny <;> simp at hsunny
       · -- l₆ = l₄, finrank violated
         apply c.not_rank_2 hl₂ <|  l₆.finrank_eq_two_of_ne meml₆ meml₂ meml₄ (by norm_num)
       · -- l₆ = l₃
-        have hl₆ : ¬ Sunny l₆ := notSunny_of_diag meml₃ meml₆ (by simp)
+        have hl₆ : ¬ Sunny l₆ := not_sunny_of_diag meml₃ meml₆ (by simp)
         split_ifs at hsunny <;> simp at hsunny
     · -- l₅ = l₄, finrank violated
       apply c.not_rank_2 hl₂ <| l₅.finrank_eq_two_of_ne meml₅ meml₂ meml₄ (by norm_num)
     · -- l₅ = l₃
-      have hl₅ : ¬ Sunny l₅ := notSunny_of_diag meml₃ meml₅ (by norm_num)
+      have hl₅ : ¬ Sunny l₅ := not_sunny_of_diag meml₃ meml₅ (by norm_num)
       split_ifs at hsunny <;> simp at hsunny
   · -- l₃ = l₄
     have hl₄ : Sunny l₄ := sunny_of_ne meml₄ meml₃ (by simp)
@@ -580,10 +614,10 @@ lemma no_config_3_2_no_vert (c : Config 3 2) (h_no_vert : ∀ l ∈ c.ls, ¬ l �
       · -- l₆ = l₄, finrank violated
         apply c.not_rank_2 hl₃ <| l₆.finrank_eq_two_of_ne meml₄ meml₃ meml₆ (by norm_num)
     · -- l₅ = l₂
-      have hl₅ : ¬ Sunny l₅ := notSunny_of_horiz meml₅ meml₂ (by norm_num)
+      have hl₅ : ¬ Sunny l₅ := not_sunny_of_horiz meml₅ meml₂ (by norm_num)
       rcases hl₆ with (rfl | rfl | rfl)
       · -- l₆ = l₁, only one sunny line
-        have : ¬ Sunny l₆ := notSunny_of_horiz meml₁ meml₆ (by norm_num)
+        have : ¬ Sunny l₆ := not_sunny_of_horiz meml₁ meml₆ (by norm_num)
         split_ifs at hsunny; simp at hsunny
       · -- l₆ = l₅, finrank violated
         apply c.not_rank_2 hl₂ <| l₆.finrank_eq_two_of_ne meml₂ meml₅ meml₆ (by norm_num)
@@ -612,15 +646,15 @@ lemma no_config_3_2 (c : Config 3 2) : False := by
       obtain ⟨l₃, hl₃, meml₃⟩ := c.cover 2 2
       -- `c.ls` contains two distinct non-sunny lines
       have nsunnyl₁ : ¬ Sunny l₁ := fun h => by simp [Sunny, yl₁] at h
-      have yl₂' : l₂' ∥ xAxis := sorry
+      have yl₂' : l₂' ∥ xAxis := by
+        sorry -- TODO characterize reflection
       have nsunnyl₂' : ¬ Sunny l₂' := fun h => by simp [Sunny, yl₂'] at h
       -- `l₁` and `l₂'` are distinct because they have different directions
       have : l₁ ≠ l₂' := fun h => by
         subst h
         have := yl₂'.symm.trans yl₁
-        simp [xAxis, yAxis] at this
-        have := AffineSubspace.Parallel.vectorSpan_eq this
-        sorry
+        rw [xAxis, yAxis, line_parallel_iff] at this
+        grind
       have hsunny := c.sunny
       rw [← Finset.union_sdiff_of_subset (Finset.insert_subset hl₁
         (Finset.singleton_subset_iff.mpr hl₂')),
@@ -668,7 +702,7 @@ lemma get_horiz_point_of_no_horiz_line {n k} (c : Config n k)
 /-- Obtain a point on the main diagonal which lies on a given line, when no main diagonal line
 is present in a configuration. -/
 lemma get_diag_point_of_no_diag_line {n k} (c : Config n k)
-    (hdiag : line[ℝ, !₂[(n : ℝ), 1], !₂[1, (n : ℝ)]] ∉ c.ls) {l} (hl : l ∈ c.ls):
+    (hdiag : line[ℝ, !₂[(n : ℝ), 1], !₂[1, (n : ℝ)]] ∉ c.ls) {l} (hl : l ∈ c.ls) :
     ∃ m : ℕ, 1 ≤ m ∧ m ≤ n ∧ !₂[(m : ℝ), n + 1 - m] ∈ l := by
   let cl m (hm : m ∈ Finset.Icc 1 n) := Classical.choose <| c.cover m (n + 1 - m)
     (by rw [Finset.mem_Icc] at hm; omega)
