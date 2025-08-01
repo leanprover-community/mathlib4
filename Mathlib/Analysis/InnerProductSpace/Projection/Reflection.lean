@@ -5,6 +5,12 @@ Authors: Zhouhang Zhou, Frédéric Dupuis, Heather Macbeth
 -/
 import Mathlib.Analysis.InnerProductSpace.Projection.Basic
 
+/-!
+
+# Reflection
+
+-/
+
 noncomputable section
 
 namespace Submodule

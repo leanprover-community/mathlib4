@@ -6,6 +6,12 @@ Authors: Zhouhang Zhou, Frédéric Dupuis, Heather Macbeth
 import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.Analysis.SpecificLimits.Basic
 
+/-!
+
+# Hilbert-projection theorem and
+
+-/
+
 variable {𝕜 E F : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]
 variable [InnerProductSpace 𝕜 E] [InnerProductSpace ℝ F]

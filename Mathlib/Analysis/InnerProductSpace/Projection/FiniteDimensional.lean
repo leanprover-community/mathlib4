@@ -9,6 +9,12 @@ import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
 import Mathlib.Algebra.DirectSum.Decomposition
 import Mathlib.Analysis.NormedSpace.RCLike
 
+/-!
+
+# Finite dimensional..
+
+-/
+
 variable {𝕜 E F : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]
 variable [InnerProductSpace 𝕜 E] [InnerProductSpace ℝ F]
