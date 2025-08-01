@@ -7,14 +7,14 @@ import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Analysis.Normed.Ring.Lemmas
 import Mathlib.Data.Nat.Choose.Dvd
 import Mathlib.Data.ZMod.Units
-import Mathlib.GroupTheory.SpecificGroups.ZGroup
+import Mathlib.FieldTheory.Finite.Basic
 
 /-! # Cyclicity of the units of `ZMod n`
 
 `ZMod.isCyclic_units_iff` : `(ZMod n)ˣ` is cyclic iff
 one of the following mutually exclusive cases happens:
   - `n = 0` (then `ZMod 0 ≃+* ℤ` and the group of units is cyclic of order 2);
-  - `n = `1`,  `2`  or `4`
+  - `n = 1`, `2` or `4`
   - `n` is a power `p ^ e` of an odd prime number, or twice such a power
   (with `1 ≤ e`).
 
@@ -294,7 +294,7 @@ theorem not_isCyclic_units_of_mul_coprime (m n : ℕ)
 
 theorem isCyclic_units_iff_of_odd {n : ℕ} (hn : Odd n) :
     IsCyclic (ZMod n)ˣ ↔ ∃ (p m : ℕ), p.Prime ∧ Odd p ∧ n = p ^ m := by
-  have hn0 : n ≠ 0 := by rintro rfl; revert hn; decide
+  have hn0 : n ≠ 0 := by rintro rfl; exact Nat.not_odd_zero hn
   obtain rfl | h1 := eq_or_ne n 1
   · simp_rw [isCyclic_units_one, true_iff]
     exact ⟨3, 0, Nat.prime_three, by simp [Nat.odd_iff], by rw [pow_zero]⟩

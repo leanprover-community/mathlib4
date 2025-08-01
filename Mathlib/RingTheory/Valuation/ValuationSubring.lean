@@ -402,6 +402,9 @@ theorem isEquiv_valuation_valuationSubring : v.IsEquiv v.valuationSubring.valuat
   rw [ValuationSubring.valuation_le_one_iff]
   rfl
 
+lemma valuationSubring.integers : v.Integers v.valuationSubring :=
+  Valuation.integer.integers _
+
 end Valuation
 
 namespace ValuationSubring
@@ -665,7 +668,7 @@ def unitsModPrincipalUnitsEquivResidueFieldUnits :
 
 /-- Porting note: Lean needs to be reminded of this instance -/
 local instance : MulOneClass ({ x // x ∈ unitGroup A } ⧸
-  Subgroup.comap (Subgroup.subtype (unitGroup A)) (principalUnitGroup A)) := inferInstance
+    Subgroup.comap (Subgroup.subtype (unitGroup A)) (principalUnitGroup A)) := inferInstance
 
 theorem unitsModPrincipalUnitsEquivResidueFieldUnits_comp_quotientGroup_mk :
     (A.unitsModPrincipalUnitsEquivResidueFieldUnits : _ ⧸ Subgroup.comap _ _ →* _).comp

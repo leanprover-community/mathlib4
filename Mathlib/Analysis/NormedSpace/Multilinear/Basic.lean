@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel, Sophie Morel, Yury Kudryashov
 import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
 import Mathlib.Logic.Embedding.Basic
 import Mathlib.Data.Fintype.CardEmbedding
+import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
 import Mathlib.Topology.Algebra.Module.Multilinear.Topology
 
 /-!
@@ -804,7 +805,7 @@ def smulRightL : ContinuousMultilinearMap 𝕜 E 𝕜 →L[𝕜] G →L[𝕜] Co
     1 (fun f z ↦ by simp [norm_smulRight])
 
 @[simp] lemma smulRightL_apply (f : ContinuousMultilinearMap 𝕜 E 𝕜) (z : G) :
-  smulRightL 𝕜 E G f z = f.smulRight z := rfl
+    smulRightL 𝕜 E G f z = f.smulRight z := rfl
 
 lemma norm_smulRightL_le : ‖smulRightL 𝕜 E G‖ ≤ 1 :=
   LinearMap.mkContinuous₂_norm_le _ zero_le_one _
@@ -1284,7 +1285,7 @@ variable {𝕜 : Type u} {ι : Type v} {E : ι → Type wE} {G : Type wG} {G' : 
 
 /-- A continuous linear map is zero iff its norm vanishes. -/
 theorem opNorm_zero_iff {f : ContinuousMultilinearMap 𝕜 E G} : ‖f‖ = 0 ↔ f = 0 := by
-  simp [← (opNorm_nonneg f).le_iff_eq, opNorm_le_iff le_rfl, ContinuousMultilinearMap.ext_iff]
+  simp [← (opNorm_nonneg f).ge_iff_eq', opNorm_le_iff le_rfl, ContinuousMultilinearMap.ext_iff]
 
 /-- Continuous multilinear maps themselves form a normed group with respect to
     the operator norm. -/

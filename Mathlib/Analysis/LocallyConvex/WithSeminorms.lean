@@ -287,11 +287,7 @@ theorem WithSeminorms.hasBasis_zero_ball (hp : WithSeminorms p) :
     (fun sr : Finset ι × ℝ => 0 < sr.2) fun sr => (sr.1.sup p).ball 0 sr.2 := by
   refine ⟨fun V => ?_⟩
   simp only [hp.hasBasis.mem_iff, SeminormFamily.basisSets_iff, Prod.exists]
-  constructor
-  · rintro ⟨-, ⟨s, r, hr, rfl⟩, hV⟩
-    exact ⟨s, r, hr, hV⟩
-  · rintro ⟨s, r, hr, hV⟩
-    exact ⟨_, ⟨s, r, hr, rfl⟩, hV⟩
+  grind
 
 theorem WithSeminorms.hasBasis_ball (hp : WithSeminorms p) {x : E} :
     (𝓝 (x : E)).HasBasis
@@ -923,8 +919,6 @@ lemma Topology.IsInducing.withSeminorms [hι : Nonempty ι] {q : SeminormFamily 
     WithSeminorms (q.comp f) := by
   rw [hf.eq_induced]
   exact f.withSeminorms_induced hq
-
-@[deprecated (since := "2024-10-28")] alias Inducing.withSeminorms := IsInducing.withSeminorms
 
 /-- (Disjoint) union of seminorm families. -/
 protected def SeminormFamily.sigma {κ : ι → Type*} (p : (i : ι) → SeminormFamily 𝕜 E (κ i)) :

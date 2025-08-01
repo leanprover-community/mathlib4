@@ -252,6 +252,6 @@ theorem intervalIntegrable_one_div_one_add_sq :
 @[simp]
 theorem intervalIntegrable_inv_one_add_sq :
     IntervalIntegrable (fun x : ℝ => (↑1 + x ^ 2)⁻¹) μ a b := by
-  field_simp; exact mod_cast intervalIntegrable_one_div_one_add_sq
+  field_simp [mod_cast intervalIntegrable_one_div_one_add_sq]
 
 end intervalIntegral

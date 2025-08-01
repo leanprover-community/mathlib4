@@ -478,6 +478,17 @@ lemma SMulCommClass.of_commMonoid
     rw [← one_smul G (s • x), ← smul_assoc, ← one_smul G x, ← smul_assoc s 1 x,
       smul_comm, smul_assoc, one_smul, smul_assoc, one_smul]
 
+lemma IsScalarTower.of_commMonoid (R₁ R : Type*)
+    [Monoid R₁] [CommMonoid R] [MulAction R₁ R] [SMulCommClass R₁ R R] : IsScalarTower R₁ R R where
+  smul_assoc x₁ y z := by rw [smul_eq_mul, mul_comm, ← smul_eq_mul, ← smul_comm, smul_eq_mul,
+    mul_comm, ← smul_eq_mul]
+
+lemma isScalarTower_iff_smulCommClass_of_commMonoid (R₁ R : Type*)
+    [Monoid R₁] [CommMonoid R] [MulAction R₁ R] :
+    SMulCommClass R₁ R R ↔ IsScalarTower R₁ R R :=
+  ⟨fun _ ↦ IsScalarTower.of_commMonoid R₁ R, fun _ ↦ SMulCommClass.of_commMonoid R₁ R R⟩
+
+
 end
 
 section CompatibleScalar

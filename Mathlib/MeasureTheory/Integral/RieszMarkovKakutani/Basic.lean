@@ -57,7 +57,7 @@ lemma CompactlySupportedContinuousMap.monotone_of_nonneg {Λ : C_c(X, ℝ) →�
     simp only [coe_zero, Pi.zero_apply, coe_sub, Pi.sub_apply, sub_nonneg]
     exact h x
   calc Λ f₁ ≤ Λ f₁ + Λ (f₂ - f₁) := by exact (le_add_iff_nonneg_right (Λ f₁)).mpr this
-  _ =  Λ (f₁ + (f₂ - f₁)) := by exact Eq.symm (LinearMap.map_add Λ f₁ (f₂ - f₁))
+  _ = Λ (f₁ + (f₂ - f₁)) := by exact Eq.symm (LinearMap.map_add Λ f₁ (f₂ - f₁))
   _ = Λ f₂ := by congr; exact add_sub_cancel f₁ f₂
 
 end Monotone
@@ -162,7 +162,7 @@ lemma exists_continuous_add_one_of_isCompact_nnreal
     (t_compact : IsCompact t) (disj : Disjoint s₀ s₁) (hst : s₀ ∪ s₁ ⊆ t) :
     ∃ (f₀ f₁ : C_c(X, ℝ≥0)), EqOn f₀ 1 s₀ ∧ EqOn f₁ 1 s₁ ∧ EqOn (f₀ + f₁) 1 t := by
   set so : Fin 2 → Set X := fun j => if j = 0 then s₀ᶜ else s₁ᶜ with hso
-  have soopen (j : Fin 2) :  IsOpen (so j) := by
+  have soopen (j : Fin 2) : IsOpen (so j) := by
     fin_cases j
     · simp only [hso, Fin.zero_eta, Fin.isValue, ↓reduceIte, isOpen_compl_iff]
       exact IsCompact.isClosed <| s₀_compact

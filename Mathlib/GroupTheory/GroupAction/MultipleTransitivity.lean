@@ -511,7 +511,7 @@ theorem isMultiplyPretransitive {m n : ℕ} [Hn : IsMultiplyPretransitive G α n
   exists_smul_eq x y := by
     have : IsMultiplyPretransitive G α (s.ncard + m) := by rw [hmn]; infer_instance
     have Hs : Nonempty (Fin (s.ncard) ≃ s) :=
-      Finite.card_eq.mp (by simp [Set.Nat.card_coe_set_eq])
+      Finite.card_eq.mp (by simp [Nat.card_coe_set_eq])
     set x' := ofFixingSubgroup.append x with hx
     set y' := ofFixingSubgroup.append y with hy
     obtain ⟨g, hg⟩ := exists_smul_eq G x' y'

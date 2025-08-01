@@ -34,6 +34,7 @@ Bilinear form,
 
 
 open LinearMap (BilinForm)
+open Module
 
 universe u v w
 
@@ -80,43 +81,96 @@ theorem isRefl_neg {B : BilinForm R₁ M₁} : (-B).IsRefl ↔ B.IsRefl :=
   ⟨fun h => neg_neg B ▸ h.neg, IsRefl.neg⟩
 
 /-- The proposition that a bilinear form is symmetric -/
-def IsSymm (B : BilinForm R M) : Prop := LinearMap.IsSymm B
+structure IsSymm (B : BilinForm R M) : Prop where
+  protected eq : ∀ x y, B x y = B y x
+
+theorem isSymm_def : IsSymm B ↔ ∀ x y, B x y = B y x where
+  mp := fun ⟨h⟩ ↦ h
+  mpr h := ⟨h⟩
+
+theorem isSymm_iff : IsSymm B ↔ LinearMap.IsSymm B := by
+  simp [isSymm_def, LinearMap.IsSymm]
 
 namespace IsSymm
 
-protected theorem eq (H : B.IsSymm) (x y : M) : B x y = B y x :=
-  H x y
-
-theorem isRefl (H : B.IsSymm) : B.IsRefl := fun x y H1 => H x y ▸ H1
+theorem isRefl (H : B.IsSymm) : B.IsRefl := fun x y H1 => H.eq x y ▸ H1
 
 protected theorem add {B₁ B₂ : BilinForm R M} (hB₁ : B₁.IsSymm) (hB₂ : B₂.IsSymm) :
-    (B₁ + B₂).IsSymm := fun x y => (congr_arg₂ (· + ·) (hB₁ x y) (hB₂ x y) :)
+    (B₁ + B₂).IsSymm := ⟨fun x y => (congr_arg₂ (· + ·) (hB₁.eq x y) (hB₂.eq x y) :)⟩
 
 protected theorem sub {B₁ B₂ : BilinForm R₁ M₁} (hB₁ : B₁.IsSymm) (hB₂ : B₂.IsSymm) :
-    (B₁ - B₂).IsSymm := fun x y => (congr_arg₂ Sub.sub (hB₁ x y) (hB₂ x y) :)
+    (B₁ - B₂).IsSymm := ⟨fun x y => (congr_arg₂ Sub.sub (hB₁.eq x y) (hB₂.eq x y) :)⟩
 
-protected theorem neg {B : BilinForm R₁ M₁} (hB : B.IsSymm) : (-B).IsSymm := fun x y =>
-  congr_arg Neg.neg (hB x y)
+protected theorem neg {B : BilinForm R₁ M₁} (hB : B.IsSymm) : (-B).IsSymm := ⟨fun x y =>
+  congr_arg Neg.neg (hB.eq x y)⟩
 
 protected theorem smul {α} [Monoid α] [DistribMulAction α R] [SMulCommClass R α R] (a : α)
-    {B : BilinForm R M} (hB : B.IsSymm) : (a • B).IsSymm := fun x y =>
-  congr_arg (a • ·) (hB x y)
+    {B : BilinForm R M} (hB : B.IsSymm) : (a • B).IsSymm := ⟨fun x y =>
+  congr_arg (a • ·) (hB.eq x y)⟩
 
 /-- The restriction of a symmetric bilinear form on a submodule is also symmetric. -/
 theorem restrict {B : BilinForm R M} (b : B.IsSymm) (W : Submodule R M) :
-    (B.restrict W).IsSymm := fun x y => b x y
+    (B.restrict W).IsSymm := ⟨fun x y => b.eq x y⟩
 
 end IsSymm
 
 @[simp]
-theorem isSymm_zero : (0 : BilinForm R M).IsSymm := fun _ _ => rfl
+theorem isSymm_zero : (0 : BilinForm R M).IsSymm := ⟨fun _ _ => rfl⟩
 
 @[simp]
 theorem isSymm_neg {B : BilinForm R₁ M₁} : (-B).IsSymm ↔ B.IsSymm :=
   ⟨fun h => neg_neg B ▸ h.neg, IsSymm.neg⟩
 
-theorem isSymm_iff_flip : B.IsSymm ↔ flipHom B = B :=
-  (forall₂_congr fun _ _ => by exact eq_comm).trans BilinForm.ext_iff.symm
+theorem isSymm_iff_flip : B.IsSymm ↔ flipHom B = B where
+  mp := fun ⟨h⟩ ↦ by ext; simp [h]
+  mpr h := ⟨fun x y ↦ by rw [← flip_apply, h]⟩
+
+section polarization
+
+variable {R : Type*} [Field R] [NeZero (2 : R)] [Module R M] {B C : BilinForm R M}
+
+/-- Polarization identity: a symmetric bilinear form can be expressed through the values
+it takes on the diagonal. -/
+lemma IsSymm.polarization (x y : M) (hB : B.IsSymm) :
+    B x y = (B (x + y) (x + y) - B x x - B y y) / 2 := by
+  simp only [map_add, LinearMap.add_apply]
+  rw [hB.eq y x]
+  ring_nf
+  rw [mul_assoc, inv_mul_cancel₀ two_ne_zero, mul_one]
+
+/-- A symmetric bilinear form is characterized by the values it takes on the diagonal. -/
+lemma ext_of_isSymm (hB : IsSymm B) (hC : IsSymm C)
+    (h : ∀ x, B x x = C x x) : B = C := by
+  ext x y
+  rw [hB.polarization, hC.polarization]
+  simp_rw [h]
+
+/-- A symmetric bilinear form is characterized by the values it takes on the diagonal. -/
+lemma ext_iff_of_isSymm (hB : IsSymm B) (hC : IsSymm C) :
+    B = C ↔ ∀ x, B x x = C x x where
+  mp h := by simp [h]
+  mpr := ext_of_isSymm hB hC
+
+end polarization
+
+lemma isSymm_iff_basis {ι : Type*} (b : Basis ι R M) :
+    IsSymm B ↔ ∀ i j, B (b i) (b j) = B (b j) (b i) where
+  mp := fun ⟨h⟩ i j ↦ h _ _
+  mpr := by
+    refine fun h ↦ ⟨fun x y ↦ ?_⟩
+    obtain ⟨fx, tx, ix, -, hx⟩ := Submodule.mem_span_iff_exists_finset_subset.1
+      (by simp : x ∈ Submodule.span R (Set.range b))
+    obtain ⟨fy, ty, iy, -, hy⟩ := Submodule.mem_span_iff_exists_finset_subset.1
+      (by simp : y ∈ Submodule.span R (Set.range b))
+    rw [← hx, ← hy]
+    simp only [map_sum, map_smul, coeFn_sum, Finset.sum_apply, smul_apply, smul_eq_mul,
+      Finset.mul_sum]
+    rw [Finset.sum_comm]
+    refine Finset.sum_congr rfl (fun b₁ h₁ ↦ Finset.sum_congr rfl fun b₂ h₂ ↦ ?_)
+    rw [mul_left_comm]
+    obtain ⟨i, rfl⟩ := ix h₁
+    obtain ⟨j, rfl⟩ := iy h₂
+    rw [h]
 
 /-- The proposition that a bilinear form is alternating -/
 def IsAlt (B : BilinForm R M) : Prop := LinearMap.IsAlt B
@@ -268,11 +322,9 @@ noncomputable def dualBasis (B : BilinForm K V) (hB : B.Nondegenerate) (b : Basi
 theorem dualBasis_repr_apply
     (B : BilinForm K V) (hB : B.Nondegenerate) (b : Basis ι K V) (x i) :
     (B.dualBasis hB b).repr x i = B x (b i) := by
-  #adaptation_note /-- https://github.com/leanprover/lean4/pull/4814
-  we did not need the `@` in front of `toDual_def` in the `rw`.
-  I'm confused! -/
+  have := FiniteDimensional.of_fintype_basis b
   rw [dualBasis, Basis.map_repr, LinearEquiv.symm_symm, LinearEquiv.trans_apply,
-    Basis.dualBasis_repr, @toDual_def]
+    Basis.dualBasis_repr, toDual_def]
 
 theorem apply_dualBasis_left (B : BilinForm K V) (hB : B.Nondegenerate) (b : Basis ι K V) (i j) :
     B (B.dualBasis hB b i) (b j) = if j = i then 1 else 0 := by
