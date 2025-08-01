@@ -166,19 +166,19 @@ theorem card_fintype_Ioc_of_le (h : a ≤ b) : (Fintype.card (Set.Ioc a b) : ℤ
   simp [h]
 
 theorem card_fintype_Ioo_of_lt (h : a < b) : (Fintype.card (Set.Ioo a b) : ℤ) = b - a - 1 := by
-  simp [h, h.le]
+  simp [h]
 
 theorem image_Ico_emod (n a : ℤ) (h : 0 ≤ a) : (Ico n (n + a)).image (· % a) = Ico 0 a := by
   obtain rfl | ha := eq_or_lt_of_le h
   · simp
   ext i
-  simp only [mem_image, mem_range, mem_Ico]
+  simp only [mem_image, mem_Ico]
   constructor
   · rintro ⟨i, _, rfl⟩
     exact ⟨emod_nonneg i ha.ne', emod_lt_of_pos i ha⟩
   intro hia
   have hn := Int.emod_add_ediv n a
-  obtain hi | hi := lt_or_le i (n % a)
+  obtain hi | hi := lt_or_ge i (n % a)
   · refine ⟨i + a * (n / a + 1), ⟨?_, ?_⟩, ?_⟩
     · rw [add_comm (n / a), mul_add, mul_one, ← add_assoc]
       refine hn.symm.le.trans (add_le_add_right ?_ _)
@@ -190,7 +190,7 @@ theorem image_Ico_emod (n a : ℤ) (h : 0 ≤ a) : (Ico n (n + a)).image (· % a
     · exact hn.symm.le.trans (add_le_add_right hi _)
     · rw [add_comm n a]
       refine add_lt_add_of_lt_of_le hia.right (le_trans ?_ hn.le)
-      simp only [Nat.zero_le, le_add_iff_nonneg_left]
+      simp only [le_add_iff_nonneg_left]
       exact Int.emod_nonneg n (ne_of_gt ha)
     · rw [Int.add_mul_emod_self_left, Int.emod_eq_of_lt hia.left hia.right]
 

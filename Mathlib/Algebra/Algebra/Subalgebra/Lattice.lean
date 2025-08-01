@@ -11,7 +11,7 @@ import Mathlib.Algebra.Algebra.Subalgebra.Basic
 
 In this file we define `Algebra.adjoin` and the complete lattice structure on subalgebras.
 
-More lemmas about `adjoin` can be found in `Mathlib.RingTheory.Adjoin.Basic`.
+More lemmas about `adjoin` can be found in `Mathlib/RingTheory/Adjoin/Basic.lean`.
 -/
 
 assert_not_exists Polynomial
@@ -329,7 +329,7 @@ instance : Unique (Subalgebra R R) :=
       intro S
       refine le_antisymm ?_ bot_le
       intro _ _
-      simp only [Set.mem_range, mem_bot, id.map_eq_self, exists_apply_eq_apply, default] }
+      simp only [Set.mem_range, mem_bot, algebraMap_self_apply, exists_apply_eq_apply, default] }
 
 section Center
 
@@ -419,9 +419,12 @@ variable [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
 variable [Algebra R S] [Algebra R A] [Algebra S A] [Algebra R B] [IsScalarTower R S A]
 variable {s t : Set A}
 
-@[aesop safe 20 apply (rule_sets := [SetLike])]
+@[simp, aesop safe 20 (rule_sets := [SetLike])]
 theorem subset_adjoin : s ⊆ adjoin R s :=
   Algebra.gc.le_u_l s
+
+@[aesop 80% (rule_sets := [SetLike])]
+theorem mem_adjoin_of_mem {s : Set A} {x : A} (hx : x ∈ s) : x ∈ adjoin R s := subset_adjoin hx
 
 theorem adjoin_le {S : Subalgebra R A} (H : s ⊆ S) : adjoin R s ≤ S :=
   Algebra.gc.l_le H
@@ -435,6 +438,7 @@ theorem adjoin_eq_sInf : adjoin R s = sInf { p : Subalgebra R A | s ⊆ p } :=
 theorem adjoin_le_iff {S : Subalgebra R A} : adjoin R s ≤ S ↔ s ⊆ S :=
   Algebra.gc _ _
 
+@[gcongr]
 theorem adjoin_mono (H : s ⊆ t) : adjoin R s ≤ adjoin R t :=
   Algebra.gc.monotone_l H
 

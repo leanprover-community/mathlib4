@@ -5,7 +5,7 @@ Authors: Martin Dvorak, Vladimir Kolmogorov, Ivan Sergeev, Bhavik Mehta
 -/
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.Data.Matrix.ColumnRowPartitioned
-import Mathlib.Data.Sign
+import Mathlib.Data.Sign.Basic
 
 /-!
 # Totally unimodular matrices
@@ -119,7 +119,7 @@ lemma IsTotallyUnimodular.fromRows_unitlike [DecidableEq n] {A : Matrix m n R} {
     · have hAB := det_succ_row ((fromRows A B).submatrix f g) i
       simp only [submatrix_apply, hfi, fromRows_apply_inr] at hAB
       obtain ⟨j', s, hj'⟩ := hB j
-      · simp only [hj', Function.update_apply] at hAB
+      · simp only [hj'] at hAB
         by_cases hj'' : ∃ x, g x = j'
         · obtain ⟨x, rfl⟩ := hj''
           rw [Fintype.sum_eq_single x fun y hxy => ?_, Pi.single_eq_same] at hAB

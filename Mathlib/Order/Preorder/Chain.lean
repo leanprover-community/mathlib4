@@ -138,23 +138,27 @@ theorem IsChain.exists3 (hchain : IsChain r s) [IsTrans α r] {a b c} (mem1 : a 
 
 end Total
 
-lemma IsChain.le_of_not_lt [Preorder α] (hs : IsChain (· ≤ ·) s)
+lemma IsChain.le_of_not_gt [Preorder α] (hs : IsChain (· ≤ ·) s)
     {x y : α} (hx : x ∈ s) (hy : y ∈ s) (h : ¬ x < y) : y ≤ x := by
   cases hs.total hx hy with
   | inr h' => exact h'
-  | inl h' => simpa [lt_iff_le_not_le, h'] using h
+  | inl h' => simpa [lt_iff_le_not_ge, h'] using h
+
+@[deprecated (since := "2025-05-11")] alias IsChain.le_of_not_lt := IsChain.le_of_not_gt
 
 lemma IsChain.not_lt [Preorder α] (hs : IsChain (· ≤ ·) s)
     {x y : α} (hx : x ∈ s) (hy : y ∈ s) : ¬ x < y ↔ y ≤ x :=
-  ⟨(hs.le_of_not_lt hx hy ·), fun h h' ↦ h'.not_le h⟩
+  ⟨(hs.le_of_not_gt hx hy ·), fun h h' ↦ h'.not_ge h⟩
 
-lemma IsChain.lt_of_not_le [Preorder α] (hs : IsChain (· ≤ ·) s)
+lemma IsChain.lt_of_not_ge [Preorder α] (hs : IsChain (· ≤ ·) s)
     {x y : α} (hx : x ∈ s) (hy : y ∈ s) (h : ¬ x ≤ y) : y < x :=
-  (hs.total hx hy).elim (h · |>.elim) (lt_of_le_not_le · h)
+  (hs.total hx hy).elim (h · |>.elim) (lt_of_le_not_ge · h)
+
+@[deprecated (since := "2025-05-11")] alias IsChain.lt_of_not_le := IsChain.lt_of_not_ge
 
 lemma IsChain.not_le [Preorder α] (hs : IsChain (· ≤ ·) s)
     {x y : α} (hx : x ∈ s) (hy : y ∈ s) : ¬ x ≤ y ↔ y < x :=
-  ⟨(hs.lt_of_not_le hx hy ·), fun h h' ↦ h'.not_lt h⟩
+  ⟨(hs.lt_of_not_ge hx hy ·), fun h h' ↦ h'.not_gt h⟩
 
 theorem IsMaxChain.isChain (h : IsMaxChain r s) : IsChain r s :=
   h.1
@@ -196,7 +200,7 @@ theorem IsChain.succ (hs : IsChain r s) : IsChain r (SuccChain r s) :=
 
 theorem IsChain.superChain_succChain (hs₁ : IsChain r s) (hs₂ : ¬IsMaxChain r s) :
     SuperChain r s (SuccChain r s) := by
-  simp only [IsMaxChain, _root_.not_and, not_forall, exists_prop, exists_and_left] at hs₂
+  simp only [IsMaxChain, _root_.not_and, not_forall, exists_prop] at hs₂
   obtain ⟨t, ht, hst⟩ := hs₂ hs₁
   exact succChain_spec ⟨t, hs₁, ht, ssubset_iff_subset_ne.2 hst⟩
 
@@ -205,7 +209,7 @@ theorem subset_succChain : s ⊆ SuccChain r s :=
   if h : ∃ t, IsChain r s ∧ SuperChain r s t then (succChain_spec h).2.1
   else by
     rw [exists_and_left] at h
-    simp [SuccChain, dif_neg, h, Subset.rfl]
+    simp [SuccChain, h]
 
 end Chain
 
@@ -288,7 +292,7 @@ instance [BoundedOrder α] (s : Flag α) : BoundedOrder s :=
 lemma mem_iff_forall_le_or_ge : a ∈ s ↔ ∀ ⦃b⦄, b ∈ s → a ≤ b ∨ b ≤ a :=
   ⟨fun ha b => s.le_or_le ha, fun hb =>
     of_not_not fun ha =>
-      Set.ne_insert_of_not_mem _ ‹_› <|
+      Set.ne_insert_of_notMem _ ‹_› <|
         s.maxChain.2 (s.chain_le.insert fun c hc _ => hb hc) <| Set.subset_insert _ _⟩
 
 /-- Flags are preserved under order isomorphisms. -/

@@ -3,6 +3,7 @@ Copyright (c) 2018 Ellen Arlt. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu-Ming Zhang
 -/
+import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Data.Int.Cast.Pi
 import Mathlib.Data.Matrix.Defs
 import Mathlib.Data.Nat.Cast.Basic
@@ -107,6 +108,12 @@ theorem diagonal_sub [SubNegZeroMonoid α] (d₁ d₂ : n → α) :
   by_cases h : i = j <;>
   simp [h]
 
+theorem diagonal_mem_matrix_iff [Zero α] {S : Set α} (hS : 0 ∈ S) {d : n → α} :
+    Matrix.diagonal d ∈ S.matrix ↔ ∀ i, d i ∈ S := by
+  simp only [Set.mem_matrix, diagonal, of_apply]
+  conv_lhs => intro _ _; rw[ite_mem]
+  simp [hS]
+
 instance [Zero α] [NatCast α] : NatCast (Matrix n n α) where
   natCast m := diagonal fun _ => m
 
@@ -147,6 +154,14 @@ protected theorem map_ofNat [AddMonoidWithOne α] [Zero β]
     {f : α → β} (h : f 0 = 0) (d : ℕ) [d.AtLeastTwo] :
     (ofNat(d) : Matrix n n α).map f = diagonal (fun _ => f (OfNat.ofNat d)) :=
   diagonal_map h
+
+theorem natCast_apply [AddMonoidWithOne α] {i j} {d : ℕ} :
+    (d : Matrix n n α) i j = if i = j then d else 0 := by
+  rw [Nat.cast_ite, Nat.cast_zero, ← diagonal_natCast, diagonal_apply]
+
+theorem ofNat_apply [AddMonoidWithOne α] {i j} {d : ℕ} [d.AtLeastTwo] :
+    (ofNat(d) : Matrix n n α) i j = if i = j then d else 0 :=
+  natCast_apply
 
 protected theorem map_intCast [AddGroupWithOne α] [Zero β]
     {f : α → β} (h : f 0 = 0) (d : ℤ) :
@@ -200,7 +215,7 @@ protected theorem map_one [Zero β] [One β] (f : α → β) (h₀ : f 0 = 0) (h
   simp only [one_apply, map_apply]
   split_ifs <;> simp [h₀, h₁]
 
-theorem one_eq_pi_single {i j} : (1 : Matrix n n α) i j = Pi.single (f := fun _ => α) i 1 j := by
+theorem one_eq_pi_single {i j} : (1 : Matrix n n α) i j = Pi.single (M := fun _ => α) i 1 j := by
   simp only [one_apply, Pi.single_apply, eq_comm]
 
 end One
@@ -285,8 +300,6 @@ open Matrix
 namespace Matrix
 
 section Transpose
-
-open Matrix
 
 @[simp]
 theorem transpose_eq_diagonal [DecidableEq n] [Zero α] {M : Matrix n n α} {v : n → α} :

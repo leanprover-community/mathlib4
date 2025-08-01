@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Junyan Xu
 -/
 import Mathlib.RingTheory.Localization.LocalizationLocalization
+import Mathlib.LinearAlgebra.FreeModule.Basic
+import Mathlib.Algebra.Algebra.Subalgebra.Tower
 
 /-!
 

@@ -125,7 +125,7 @@ theorem norm_condExpL2_coe_le (hm : m ≤ m0) (f : α →₂[μ] E) :
 theorem inner_condExpL2_left_eq_right (hm : m ≤ m0) {f g : α →₂[μ] E} :
     ⟪(condExpL2 E 𝕜 hm f : α →₂[μ] E), g⟫ = ⟪f, (condExpL2 E 𝕜 hm g : α →₂[μ] E)⟫ :=
   haveI : Fact (m ≤ m0) := ⟨hm⟩
-  Submodule.inner_orthogonalProjection_left_eq_right _ f g
+  Submodule.inner_starProjection_left_eq_right _ f g
 
 @[deprecated (since := "2025-01-21")]
 alias inner_condexpL2_left_eq_right := inner_condExpL2_left_eq_right
@@ -151,8 +151,9 @@ theorem inner_condExpL2_eq_inner_fun (hm : m ≤ m0) (f g : α →₂[μ] E)
     ⟪(condExpL2 E 𝕜 hm f : α →₂[μ] E), g⟫ = ⟪f, g⟫ := by
   symm
   rw [← sub_eq_zero, ← inner_sub_left, condExpL2]
-  simp only [mem_lpMeas_iff_aestronglyMeasurable.mpr hg,
-    Submodule.orthogonalProjection_inner_eq_zero f g]
+  simp only [← Submodule.starProjection_apply,
+    mem_lpMeas_iff_aestronglyMeasurable.mpr hg,
+    Submodule.starProjection_inner_eq_zero f g]
 
 @[deprecated (since := "2025-01-21")]
 alias inner_condexpL2_eq_inner_fun := inner_condExpL2_eq_inner_fun
@@ -365,7 +366,7 @@ theorem setLIntegral_nnnorm_condExpL2_indicator_le (hm : m ≤ m0) (hs : Measura
   calc
     ∫⁻ a in t, ‖(condExpL2 E' 𝕜 hm (indicatorConstLp 2 hs hμs x) : α → E') a‖₊ ∂μ =
         ∫⁻ a in t, ‖(condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) : α → ℝ) a • x‖₊ ∂μ :=
-      setLIntegral_congr_fun (hm t ht)
+      setLIntegral_congr_fun_ae (hm t ht)
         ((condExpL2_indicator_ae_eq_smul 𝕜 hm hs hμs x).mono fun a ha _ => by rw [ha])
     _ = (∫⁻ a in t, ‖(condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) : α → ℝ) a‖₊ ∂μ) * ‖x‖₊ := by
       simp_rw [nnnorm_smul, ENNReal.coe_mul]
@@ -464,7 +465,7 @@ theorem setLIntegral_nnnorm_condExpIndSMul_le (hm : m ≤ m0) (hs : MeasurableSe
   calc
     ∫⁻ a in t, ‖condExpIndSMul hm hs hμs x a‖₊ ∂μ =
         ∫⁻ a in t, ‖(condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) : α → ℝ) a • x‖₊ ∂μ :=
-      setLIntegral_congr_fun (hm t ht)
+      setLIntegral_congr_fun_ae (hm t ht)
         ((condExpIndSMul_ae_eq_smul hm hs hμs x).mono fun a ha _ => by rw [ha])
     _ = (∫⁻ a in t, ‖(condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) : α → ℝ) a‖₊ ∂μ) * ‖x‖₊ := by
       simp_rw [nnnorm_smul, ENNReal.coe_mul]
@@ -542,17 +543,15 @@ theorem condExpL2_indicator_nonneg (hm : m ≤ m0) (hs : MeasurableSet s) (hμs 
   refine @ae_le_of_ae_le_trim _ _ _ _ _ _ hm (0 : α → ℝ) _ ?_
   refine ae_nonneg_of_forall_setIntegral_nonneg_of_sigmaFinite ?_ ?_
   · rintro t - -
-    refine @Integrable.integrableOn _ _ m _ _ _ _ ?_
-    refine Integrable.trim hm ?_ ?_
-    · rw [integrable_congr h.ae_eq_mk.symm]
-      exact integrable_condExpL2_indicator hm hs hμs _
-    · exact h.stronglyMeasurable_mk
+    refine @Integrable.integrableOn _ _ m _ _ _ _ _ ?_
+    refine Integrable.trim hm ?_ h.stronglyMeasurable_mk
+    rw [integrable_congr h.ae_eq_mk.symm]
+    exact integrable_condExpL2_indicator hm hs hμs _
   · intro t ht hμt
     rw [← setIntegral_trim hm h.stronglyMeasurable_mk ht]
     have h_ae :
-      ∀ᵐ x ∂μ, x ∈ t → h.mk _ x = (condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) : α → ℝ) x := by
-      filter_upwards [h.ae_eq_mk] with x hx
-      exact fun _ => hx.symm
+        ∀ᵐ x ∂μ, x ∈ t → h.mk _ x = (condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) : α → ℝ) x := by
+      filter_upwards [h.ae_eq_mk] with x hx using fun _ => hx.symm
     rw [setIntegral_congr_ae (hm t ht) h_ae,
       setIntegral_condExpL2_indicator ht hs ((le_trim hm).trans_lt hμt).ne hμs]
     exact ENNReal.toReal_nonneg

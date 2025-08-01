@@ -134,7 +134,7 @@ protected theorem intCast [StarOrderedRing R] [DecidableEq n] (d : ℤ) (hd : 0 
 protected theorem _root_.Matrix.posSemidef_intCast_iff
     [StarOrderedRing R] [DecidableEq n] [Nonempty n] [Nontrivial R] (d : ℤ) :
     PosSemidef (d : Matrix n n R) ↔ 0 ≤ d :=
-  posSemidef_diagonal_iff.trans <| by simp [Pi.le_def]
+  posSemidef_diagonal_iff.trans <| by simp
 
 protected lemma pow [StarOrderedRing R] [DecidableEq n]
     {M : Matrix n n R} (hM : M.PosSemidef) (k : ℕ) :
@@ -359,8 +359,8 @@ theorem PosSemidef.dotProduct_mulVec_zero_iff
 /-- For `A` positive semidefinite, we have `x⋆ A x = 0` iff `A x = 0` (linear maps version). -/
 theorem PosSemidef.toLinearMap₂'_zero_iff [DecidableEq n]
     {A : Matrix n n 𝕜} (hA : PosSemidef A) (x : n → 𝕜) :
-    Matrix.toLinearMap₂' 𝕜 A (star x) x = 0 ↔ Matrix.toLin' A x = 0 := by
-  simpa only [toLinearMap₂'_apply', toLin'_apply] using hA.dotProduct_mulVec_zero_iff x
+    Matrix.toLinearMap₂' 𝕜 A (star x) x = 0 ↔ A *ᵥ x = 0 := by
+  simpa only [toLinearMap₂'_apply'] using hA.dotProduct_mulVec_zero_iff x
 
 /-!
 ## Positive definite matrices
@@ -384,7 +384,7 @@ theorem posSemidef {M : Matrix n n R} (hM : M.PosDef) : M.PosSemidef := by
   refine ⟨hM.1, ?_⟩
   intro x
   by_cases hx : x = 0
-  · simp only [hx, zero_dotProduct, star_zero, RCLike.zero_re']
+  · simp only [hx, zero_dotProduct, star_zero]
     exact le_rfl
   · exact le_of_lt (hM.2 x hx)
 
@@ -602,7 +602,7 @@ noncomputable abbrev NormedAddCommGroup.ofMatrix {M : Matrix n n 𝕜} (hM : M.P
       definite := fun x (hx : _ ⬝ᵥ _ = 0) => by
         by_contra! h
         simpa [hx, lt_irrefl, dotProduct_comm] using hM.re_dotProduct_pos h
-      add_left := by simp only [star_add, dotProduct_add, eq_self_iff_true, forall_const]
+      add_left := by simp only [star_add, dotProduct_add, forall_const]
       smul_left := fun x y r => by
         rw [← smul_eq_mul, ← dotProduct_smul, starRingEnd_apply, ← star_smul] }
 

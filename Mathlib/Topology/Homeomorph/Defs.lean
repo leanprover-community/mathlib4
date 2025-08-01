@@ -227,8 +227,11 @@ theorem isEmbedding (h : X ≃ₜ Y) : IsEmbedding h := ⟨h.isInducing, h.injec
 @[deprecated (since := "2024-10-26")]
 alias embedding := isEmbedding
 
-protected theorem discreteTopology [DiscreteTopology X] (h : X ≃ₜ Y) :
-  DiscreteTopology Y := h.symm.isEmbedding.discreteTopology
+protected theorem discreteTopology [DiscreteTopology X] (h : X ≃ₜ Y) : DiscreteTopology Y :=
+  h.symm.isEmbedding.discreteTopology
+
+theorem discreteTopology_iff (h : X ≃ₜ Y) : DiscreteTopology X ↔ DiscreteTopology Y :=
+  ⟨fun _ ↦ h.discreteTopology, fun _ ↦ h.symm.discreteTopology⟩
 
 @[simp]
 theorem isOpen_preimage (h : X ≃ₜ Y) {s : Set Y} : IsOpen (h ⁻¹' s) ↔ IsOpen s :=
@@ -345,10 +348,10 @@ def toHomeomorph (e : X ≃ Y) (he : ∀ s, IsOpen (e ⁻¹' s) ↔ IsOpen s) : 
 lemma toHomeomorph_apply (e : X ≃ Y) (he) (x : X) : e.toHomeomorph he x = e x := rfl
 
 @[simp] lemma toHomeomorph_refl :
-  (Equiv.refl X).toHomeomorph (fun _s ↦ Iff.rfl) = Homeomorph.refl _ := rfl
+    (Equiv.refl X).toHomeomorph (fun _s ↦ Iff.rfl) = Homeomorph.refl _ := rfl
 
 @[simp] lemma toHomeomorph_symm (e : X ≃ Y) (he) :
-  (e.toHomeomorph he).symm = e.symm.toHomeomorph fun s ↦ by convert (he _).symm; simp := rfl
+    (e.toHomeomorph he).symm = e.symm.toHomeomorph fun s ↦ by convert (he _).symm; simp := rfl
 
 lemma toHomeomorph_trans (e : X ≃ Y) (f : Y ≃ Z) (he hf) :
     (e.trans f).toHomeomorph (fun _s ↦ (he _).trans (hf _)) =
@@ -362,6 +365,12 @@ def toHomeomorphOfIsInducing (f : X ≃ Y) (hf : IsInducing f) : X ≃ₜ Y :=
     continuous_invFun := hf.continuous_iff.2 <| by simpa using continuous_id }
 
 @[deprecated (since := "2024-10-28")] alias toHomeomorphOfInducing := toHomeomorphOfIsInducing
+
+@[simp] lemma toHomeomorphOfIsInducing_apply (f : X ≃ Y) (hf : IsInducing f) :
+    ⇑(f.toHomeomorphOfIsInducing hf) = f := rfl
+
+@[simp] lemma toHomeomorphOfIsInducing_symm_apply (f : X ≃ Y) (hf : IsInducing f) :
+    ⇑(f.toHomeomorphOfIsInducing hf).symm = f.symm := rfl
 
 /-- If a bijective map `e : X ≃ Y` is continuous and open, then it is a homeomorphism. -/
 @[simps! toEquiv]

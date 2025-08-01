@@ -73,6 +73,10 @@ instance of_intermediateField [NumberField K] [NumberField L] [Algebra K L]
     (E : IntermediateField K L) : NumberField E :=
   of_module_finite K E
 
+variable {K} in
+instance of_subfield [NumberField K] (E : Subfield K) : NumberField E where
+  to_finiteDimensional := FiniteDimensional.left ℚ E K
+
 theorem of_tower [NumberField K] [NumberField L] [Algebra K L] (E : Type*) [Field E]
     [Algebra K E] [Algebra E L] [IsScalarTower K E L] : NumberField E :=
   letI := Module.Finite.left K E L
@@ -173,7 +177,8 @@ def mapRingEquiv {K L E : Type*} [Field K] [Field L] [EquivLike E K L]
 
 end RingOfIntegers
 
-/-- Given an algebra between two fields, create an algebra between their two rings of integers. -/
+/-- Given an algebra structure between two fields, this instance creates an algebra structure
+between their two rings of integers. -/
 instance inst_ringOfIntegersAlgebra [Algebra K L] : Algebra (𝓞 K) (𝓞 L) :=
   (RingOfIntegers.mapRingHom (algebraMap K L)).toAlgebra
 
@@ -182,7 +187,7 @@ example : Algebra.id (𝓞 K) = inst_ringOfIntegersAlgebra K K := rfl
 
 namespace RingOfIntegers
 
-/-- The algebra homomorphism `(𝓞 K) →ₐ[𝓞 k] (𝓞 L)` given by restricting a algebra homomorphism
+/-- The algebra homomorphism `(𝓞 K) →ₐ[𝓞 k] (𝓞 L)` given by restricting an algebra homomorphism
   `f : K →ₐ[k] L` to `𝓞 K`. -/
 def mapAlgHom {k K L F : Type*} [Field k] [Field K] [Field L] [Algebra k K]
     [Algebra k L] [FunLike F K L] [AlgHomClass F k K L] (f : F) : (𝓞 K) →ₐ[𝓞 k] (𝓞 L) where

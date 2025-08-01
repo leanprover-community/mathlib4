@@ -87,14 +87,14 @@ lemma not_isG2_iff_isNotG2 :
     ¬ P.IsG2 ↔ P.IsNotG2 := by
   simp only [isG2_iff, isNotG2_iff, not_exists, Set.mem_insert_iff, mem_singleton_iff]
   refine ⟨fun h i j ↦ ?_, fun h i j ↦ ?_⟩
-  · have hij := h (P.reflection_perm i i) j
+  · have hij := h (P.reflectionPerm i i) j
     have := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed i j
     aesop
   · specialize h i j
     aesop
 
 lemma IsG2.pairingIn_mem_zero_one_three [P.IsG2]
-    (i j : ι) (h : P.root i ≠ P.root j) (h' : P.root i ≠ - P.root j) :
+    (i j : ι) (h : P.root i ≠ P.root j) (h' : P.root i ≠ -P.root j) :
     P.pairingIn ℤ i j ∈ ({-3, -1, 0, 1, 3} : Set ℤ) := by
   suffices ¬ (∀ i j, P.pairingIn ℤ i j = P.pairingIn ℤ j i ∨
                      P.pairingIn ℤ i j = 2 * P.pairingIn ℤ j i ∨
@@ -119,7 +119,7 @@ namespace EmbeddedG2
 /-- A pair of roots which pair to `+3` are also sufficient to distinguish an embedded `𝔤₂`. -/
 @[simps] def ofPairingInThree [CharZero R] [P.IsCrystallographic] [P.IsReduced] (long short : ι)
     (h : P.pairingIn ℤ long short = 3) : P.EmbeddedG2 where
-  long := P.reflection_perm long long
+  long := P.reflectionPerm long long
   short := short
   pairingIn_long_short := by simp [h]
 
@@ -136,16 +136,16 @@ lemma pairing_long_short : P.pairing (long P) (short P) = - 3 := by
   simp
 
 /-- The index of the root `α + β` where `α` is the short root and `β` is the long root. -/
-def shortAddLong : ι := P.reflection_perm (long P) (short P)
+def shortAddLong : ι := P.reflectionPerm (long P) (short P)
 
 /-- The index of the root `2α + β` where `α` is the short root and `β` is the long root. -/
-def twoShortAddLong : ι := P.reflection_perm (short P) <| P.reflection_perm (long P) (short P)
+def twoShortAddLong : ι := P.reflectionPerm (short P) <| P.reflectionPerm (long P) (short P)
 
 /-- The index of the root `3α + β` where `α` is the short root and `β` is the long root. -/
-def threeShortAddLong : ι := P.reflection_perm (short P) (long P)
+def threeShortAddLong : ι := P.reflectionPerm (short P) (long P)
 
 /-- The index of the root `3α + 2β` where `α` is the short root and `β` is the long root. -/
-def threeShortAddTwoLong : ι := P.reflection_perm (long P) <| P.reflection_perm (short P) (long P)
+def threeShortAddTwoLong : ι := P.reflectionPerm (long P) <| P.reflectionPerm (short P) (long P)
 
 /-- The short root `α`. -/
 abbrev shortRoot := P.root (short P)

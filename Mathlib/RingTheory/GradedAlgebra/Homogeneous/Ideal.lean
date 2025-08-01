@@ -512,7 +512,7 @@ theorem Ideal.toIdeal_homogeneousHull_eq_iSup :
   apply congr_arg Ideal.span _
   ext1
   simp only [Set.mem_iUnion, Set.mem_image, mem_setOf_eq, GradedRing.proj_apply, SetLike.exists,
-    exists_prop, Subtype.coe_mk, SetLike.mem_coe]
+    exists_prop, SetLike.mem_coe]
 
 theorem Ideal.homogeneousHull_eq_iSup :
     I.homogeneousHull 𝒜 =

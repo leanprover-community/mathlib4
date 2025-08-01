@@ -67,8 +67,10 @@ def TopologicalSpace.PositiveCompacts.piIcc01 (ι : Type*) [Finite ι] :
     simp only [interior_pi_set, Set.toFinite, interior_Icc, univ_pi_nonempty_iff, nonempty_Ioo,
       imp_true_iff, zero_lt_one]
 
+namespace Module.Basis
+
 /-- The parallelepiped formed from the standard basis for `ι → ℝ` is `[0,1]^ι` -/
-theorem Basis.parallelepiped_basisFun (ι : Type*) [Fintype ι] :
+theorem parallelepiped_basisFun (ι : Type*) [Fintype ι] :
     (Pi.basisFun ℝ ι).parallelepiped = TopologicalSpace.PositiveCompacts.piIcc01 ι :=
   SetLike.coe_injective <| by
     refine Eq.trans ?_ ((uIcc_of_le ?_).trans (Set.pi_univ_Icc _ _).symm)
@@ -76,7 +78,7 @@ theorem Basis.parallelepiped_basisFun (ι : Type*) [Fintype ι] :
     · exact zero_le_one
 
 /-- A parallelepiped can be expressed on the standard basis. -/
-theorem Basis.parallelepiped_eq_map {ι E : Type*} [Fintype ι] [NormedAddCommGroup E]
+theorem parallelepiped_eq_map {ι E : Type*} [Fintype ι] [NormedAddCommGroup E]
     [NormedSpace ℝ E] (b : Basis ι ℝ E) :
     b.parallelepiped = (PositiveCompacts.piIcc01 ι).map b.equivFun.symm
       b.equivFunL.symm.continuous b.equivFunL.symm.isOpenMap := by
@@ -87,7 +89,7 @@ theorem Basis.parallelepiped_eq_map {ι E : Type*} [Fintype ι] [NormedAddCommGr
 
 open MeasureTheory MeasureTheory.Measure
 
-theorem Basis.map_addHaar {ι E F : Type*} [Fintype ι] [NormedAddCommGroup E] [NormedAddCommGroup F]
+theorem map_addHaar {ι E F : Type*} [Fintype ι] [NormedAddCommGroup E] [NormedAddCommGroup F]
     [NormedSpace ℝ E] [NormedSpace ℝ F] [MeasurableSpace E] [MeasurableSpace F] [BorelSpace E]
     [BorelSpace F] [SecondCountableTopology F] [SigmaCompactSpace F]
     (b : Basis ι ℝ E) (f : E ≃L[ℝ] F) :
@@ -97,6 +99,8 @@ theorem Basis.map_addHaar {ι E F : Type*} [Fintype ι] [NormedAddCommGroup E] [
   rw [eq_comm, Basis.addHaar_eq_iff, Measure.map_apply f.continuous.measurable
     (PositiveCompacts.isCompact _).measurableSet, Basis.coe_parallelepiped, Basis.coe_map]
   erw [← image_parallelepiped, f.toEquiv.preimage_image, addHaar_self]
+
+end Module.Basis
 
 namespace MeasureTheory
 
@@ -516,7 +520,7 @@ theorem addHaar_real_closedBall_eq_addHaar_real_ball [Nontrivial E] (x : E) (r :
   simp [measureReal_def, addHaar_closedBall_eq_addHaar_ball μ x r]
 
 theorem addHaar_sphere_of_ne_zero (x : E) {r : ℝ} (hr : r ≠ 0) : μ (sphere x r) = 0 := by
-  rcases hr.lt_or_lt with (h | h)
+  rcases hr.lt_or_gt with (h | h)
   · simp only [empty_diff, measure_empty, ← closedBall_diff_ball, closedBall_eq_empty.2 h]
   · rw [← closedBall_diff_ball,
       measure_diff ball_subset_closedBall measurableSet_ball.nullMeasurableSet
@@ -630,8 +634,8 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero_aux1 (s : Set E) (x : E)
         (Eventually.of_forall fun b => zero_le _)
     filter_upwards [self_mem_nhdsWithin]
     rintro r (rpos : 0 < r)
-    rw [← affinity_unitClosedBall rpos.le, singleton_add, ← image_vadd]
-    gcongr
+    grw [t_bound]
+    rw [← vadd_eq_add, singleton_vadd, affinity_unitClosedBall rpos.le]
   have B :
     Tendsto (fun r : ℝ => μ (closedBall x r) / μ ({x} + r • u)) (𝓝[>] 0)
       (𝓝 (μ (closedBall x 1) / μ ({x} + u))) := by
@@ -800,7 +804,7 @@ theorem tendsto_addHaar_inter_smul_one_of_density_one_aux (s : Set E) (hs : Meas
       ENNReal.ofReal_eq_zero, not_le, or_false, Ne, measure_preimage_add, abs_pow,
       singleton_add, mul_eq_zero]
   · simp [h''t, ENNReal.ofReal_ne_top, addHaar_smul, image_add_left, ENNReal.mul_eq_top,
-      Ne, not_false_iff, measure_preimage_add, singleton_add, or_self_iff]
+      Ne, measure_preimage_add, singleton_add]
 
 /-- Consider a point `x` at which a set `s` has density one, with respect to closed balls (i.e.,
 a Lebesgue density point of `s`). Then `s` has also density one at `x` with respect to any

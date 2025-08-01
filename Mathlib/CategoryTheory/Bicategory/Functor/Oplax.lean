@@ -59,7 +59,7 @@ structure OplaxFunctor (B : Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u�
     ∀ {a b c : B} {f f' : a ⟶ b} (η : f ⟶ f') (g : b ⟶ c),
       map₂ (η ▷ g) ≫ mapComp f' g = mapComp f g ≫ map₂ η ▷ map g := by
     aesop_cat
-  /-- Naturality of the lax functoriality constraight, on the right. -/
+  /-- Naturality of the lax functoriality constraint, on the right. -/
   mapComp_naturality_right :
     ∀ {a b c : B} (f : a ⟶ b) {g g' : b ⟶ c} (η : g ⟶ g'),
       map₂ (f ◁ η) ≫ mapComp f g' = mapComp f g ≫ map f ◁ map₂ η := by
@@ -111,6 +111,20 @@ lemma mapComp_assoc_left {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d)
     ≫ (α_ (F.map f) (F.map g) (F.map h)).inv := by
   simp
 
+@[reassoc]
+theorem mapComp_id_left {a b : B} (f : a ⟶ b) :
+    F.mapComp (𝟙 a) f ≫ F.mapId a ▷ F.map f = F.map₂ (λ_ f).hom ≫ (λ_ (F.map f)).inv := by
+  rw [Iso.eq_comp_inv]
+  simp only [Category.assoc]
+  rw [← F.map₂_leftUnitor]
+
+@[reassoc]
+theorem mapComp_id_right {a b : B} (f : a ⟶ b) :
+    F.mapComp f (𝟙 b) ≫ F.map f ◁ F.mapId b = F.map₂ (ρ_ f).hom ≫ (ρ_ (F.map f)).inv := by
+  rw [Iso.eq_comp_inv]
+  simp only [Category.assoc]
+  rw [← F.map₂_rightUnitor]
+
 /-- The identity oplax functor. -/
 @[simps]
 def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : OplaxFunctor B B where
@@ -139,7 +153,7 @@ def comp (F : OplaxFunctor B C) (G : OplaxFunctor C D) : OplaxFunctor B D where
   map₂_associator := fun f g h => by
     dsimp
     simp only [map₂_associator, ← PrelaxFunctor.map₂_comp_assoc, ← mapComp_naturality_right_assoc,
-      Bicategory.whiskerLeft_comp, assoc]
+      whiskerLeft_comp, assoc]
     simp only [map₂_associator, PrelaxFunctor.map₂_comp, mapComp_naturality_left_assoc,
       comp_whiskerRight, assoc]
   map₂_leftUnitor := fun f => by
@@ -149,7 +163,7 @@ def comp (F : OplaxFunctor B C) (G : OplaxFunctor C D) : OplaxFunctor B D where
   map₂_rightUnitor := fun f => by
     dsimp
     simp only [map₂_rightUnitor, PrelaxFunctor.map₂_comp, mapComp_naturality_right_assoc,
-      Bicategory.whiskerLeft_comp, assoc]
+      whiskerLeft_comp, assoc]
 
 /-- A structure on an oplax functor that promotes an oplax functor to a pseudofunctor.
 

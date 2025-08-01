@@ -599,7 +599,7 @@ theorem _root_.isLocallyConstant_of_fderiv_eq_zero (h₁ : Differentiable 𝕜 f
 theorem _root_.IsOpen.exists_is_const_of_fderiv_eq_zero
     (hs : IsOpen s) (hs' : IsPreconnected s) (hf : DifferentiableOn 𝕜 f s)
     (hf' : s.EqOn (fderiv 𝕜 f) 0) : ∃ a, ∀ x ∈ s, f x = a := by
-  obtain (rfl|⟨y, hy⟩) := s.eq_empty_or_nonempty
+  obtain (rfl | ⟨y, hy⟩) := s.eq_empty_or_nonempty
   · exact ⟨0, by simp⟩
   · refine ⟨f y, fun x hx ↦ ?_⟩
     have h₁ := hs.isOpen_inter_preimage_of_fderiv_eq_zero hf hf' {f y}
@@ -622,7 +622,7 @@ theorem _root_.IsOpen.exists_eq_add_of_fderiv_eq (hs : IsOpen s) (hs' : IsPrecon
     (hf' : s.EqOn (fderiv 𝕜 f) (fderiv 𝕜 g)) : ∃ a, s.EqOn f (g · + a) := by
   simp_rw [Set.EqOn, ← sub_eq_iff_eq_add']
   refine hs.exists_is_const_of_fderiv_eq_zero hs' (hf.sub hg) fun x hx ↦ ?_
-  rw [fderiv_sub (hf.differentiableAt (hs.mem_nhds hx)) (hg.differentiableAt (hs.mem_nhds hx)),
+  rw [fderiv_fun_sub (hf.differentiableAt (hs.mem_nhds hx)) (hg.differentiableAt (hs.mem_nhds hx)),
     hf' hx, sub_self, Pi.zero_apply]
 
 /-- If two functions have equal Fréchet derivatives at every point of a connected open set,

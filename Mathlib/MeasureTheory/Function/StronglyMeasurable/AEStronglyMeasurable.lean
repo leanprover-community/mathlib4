@@ -273,7 +273,7 @@ lemma of_measurableSpace_le_on {m' m₀ : MeasurableSpace α} {μ : Measure[m₀
   suffices StronglyMeasurable[m'] (s.indicator (hf.mk f)) from
     this.aestronglyMeasurable.congr h_ind_eq
   exact (hf.stronglyMeasurable_mk.indicator hs_m).stronglyMeasurable_of_measurableSpace_le_on hs_m
-    hs fun x hxs => Set.indicator_of_not_mem hxs _
+    hs fun x hxs => Set.indicator_of_notMem hxs _
 
 section Arithmetic
 
@@ -370,10 +370,12 @@ variable {M : Type*} [Monoid M] [TopologicalSpace M] [ContinuousMul M]
 @[to_additive (attr := fun_prop, measurability)]
 theorem _root_.List.aestronglyMeasurable_prod' (l : List (α → M))
     (hl : ∀ f ∈ l, AEStronglyMeasurable f μ) : AEStronglyMeasurable l.prod μ := by
-  induction' l with f l ihl; · exact aestronglyMeasurable_one
-  rw [List.forall_mem_cons] at hl
-  rw [List.prod_cons]
-  exact hl.1.mul (ihl hl.2)
+  induction l with
+  | nil => exact aestronglyMeasurable_one
+  | cons f l ihl =>
+    rw [List.forall_mem_cons] at hl
+    rw [List.prod_cons]
+    exact hl.1.mul (ihl hl.2)
 
 @[to_additive (attr := fun_prop, measurability)]
 theorem _root_.List.aestronglyMeasurable_prod
@@ -611,9 +613,6 @@ theorem _root_.Topology.IsEmbedding.aestronglyMeasurable_comp_iff [PseudoMetriza
   · rcases (aestronglyMeasurable_iff_aemeasurable_separable.1 H).2 with ⟨t, ht, h't⟩
     exact ⟨g ⁻¹' t, hg.isSeparable_preimage ht, h't⟩
 
-@[deprecated (since := "2024-10-26")]
-alias _root_.Embedding.aestronglyMeasurable_comp_iff := IsEmbedding.aestronglyMeasurable_comp_iff
-
 /-- An almost everywhere sequential limit of almost everywhere strongly measurable functions is
 almost everywhere strongly measurable. -/
 theorem _root_.aestronglyMeasurable_of_tendsto_ae {ι : Type*} [PseudoMetrizableSpace β]
@@ -687,7 +686,7 @@ theorem piecewise {s : Set α} [DecidablePred (· ∈ s)]
     filter_upwards [h] with x hx
     intro hx_mem
     rw [Set.mem_compl_iff] at hx_mem
-    simp only [hx_mem, not_false_eq_true, Set.piecewise_eq_of_not_mem, hx hx_mem]
+    simp only [hx_mem, not_false_eq_true, Set.piecewise_eq_of_notMem, hx hx_mem]
 
 @[fun_prop]
 theorem sum_measure [PseudoMetrizableSpace β] {m : MeasurableSpace α} {μ : ι → Measure α}

@@ -84,7 +84,7 @@ theorem mk'_surjective : Surjective <| mk' N :=
 @[to_additive]
 theorem mk'_eq_mk' {x y : G} : mk' N x = mk' N y ↔ ∃ z ∈ N, x * z = y :=
   QuotientGroup.eq.trans <| by
-    simp only [← _root_.eq_inv_mul_iff_mul_eq, exists_prop, exists_eq_right]
+    simp only [← _root_.eq_inv_mul_iff_mul_eq, exists_eq_right]
 
 /-- Two `MonoidHom`s from a quotient group are equal if their compositions with
 `QuotientGroup.mk'` are equal.
@@ -102,6 +102,9 @@ theorem eq_one_iff {N : Subgroup G} [N.Normal] (x : G) : (x : G ⧸ N) = 1 ↔ x
   refine QuotientGroup.eq.trans ?_
   rw [mul_one, Subgroup.inv_mem_iff]
 
+@[to_additive (attr := simp)]
+lemma mk'_comp_subtype : (mk' N).comp N.subtype = 1 := by ext; simp
+
 /- Note: `range_mk'` is a lemma about the primed constructor `QuotientGroup.mk'`, not a
   modified version of some `range_mk`. -/
 set_option linter.docPrime false in
@@ -118,7 +121,6 @@ theorem ker_le_range_iff {I : Type w} [MulOneClass I] (f : G →* H) [f.range.No
 @[to_additive (attr := simp)]
 theorem ker_mk' : MonoidHom.ker (QuotientGroup.mk' N : G →* G ⧸ N) = N :=
   Subgroup.ext eq_one_iff
--- Porting note: I think this is misnamed without the prime
 
 @[to_additive]
 theorem eq_iff_div_mem {N : Subgroup G} [nN : N.Normal] {x y : G} :
@@ -357,7 +359,7 @@ def congr (e : G ≃* H) (he : G'.map e = H') : G ⧸ G' ≃* H ⧸ H' :=
     left_inv := fun x => by
       rw [map_map G' H' G' e e.symm (he ▸ G'.le_comap_map (e : G →* H))
         (he ▸ (G'.map_equiv_eq_comap_symm e).le)]
-      simp only [map_map, ← MulEquiv.coe_monoidHom_trans, MulEquiv.self_trans_symm,
+      simp only [← MulEquiv.coe_monoidHom_trans, MulEquiv.self_trans_symm,
         MulEquiv.coe_monoidHom_refl, map_id_apply]
     right_inv := fun x => by
       rw [map_map H' G' H' e.symm e (he ▸ (G'.map_equiv_eq_comap_symm e).le)

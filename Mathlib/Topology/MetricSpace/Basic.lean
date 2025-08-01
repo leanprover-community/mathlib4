@@ -143,10 +143,10 @@ section Pi
 
 open Finset
 
-variable {π : β → Type*} [Fintype β] [∀ b, MetricSpace (π b)]
+variable {X : β → Type*} [Fintype β] [∀ b, MetricSpace (X b)]
 
 /-- A finite product of metric spaces is a metric space, with the sup distance. -/
-instance metricSpacePi : MetricSpace (∀ b, π b) := .ofT0PseudoMetricSpace _
+instance metricSpacePi : MetricSpace (∀ b, X b) := .ofT0PseudoMetricSpace _
 
 end Pi
 

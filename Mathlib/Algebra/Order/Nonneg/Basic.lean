@@ -177,9 +177,6 @@ section Pow
 
 variable [MonoidWithZero α] [Preorder α] [ZeroLEOneClass α] [PosMulMono α]
 
-theorem pow_nonneg {a : α} (H : 0 ≤ a) : ∀ n : ℕ, 0 ≤ a ^ n := by
-  simp [H]
-
 instance pow : Pow { x : α // 0 ≤ x } ℕ where
   pow x n := ⟨(x : α) ^ n, pow_nonneg x.2 n⟩
 
@@ -193,6 +190,8 @@ theorem mk_pow {x : α} (hx : 0 ≤ x) (n : ℕ) :
     (⟨x, hx⟩ : { x : α // 0 ≤ x }) ^ n = ⟨x ^ n, pow_nonneg hx n⟩ :=
   rfl
 
+@[deprecated (since := "2025-05-19")] alias pow_nonneg := _root_.pow_nonneg
+
 end Pow
 
 section Semiring
@@ -202,7 +201,7 @@ variable [Semiring α] [PartialOrder α] [ZeroLEOneClass α]
 
 instance semiring : Semiring { x : α // 0 ≤ x } :=
   Subtype.coe_injective.semiring _ Nonneg.coe_zero Nonneg.coe_one
-    (fun _ _ => rfl) (fun _ _=> rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ => rfl
 
 instance monoidWithZero : MonoidWithZero { x : α // 0 ≤ x } := by infer_instance
@@ -270,7 +269,7 @@ variable [Zero α] [LinearOrder α]
 @[simp]
 theorem toNonneg_lt {a : { x : α // 0 ≤ x }} {b : α} : a < toNonneg b ↔ ↑a < b := by
   obtain ⟨a, ha⟩ := a
-  simp [toNonneg, ha.not_lt]
+  simp [toNonneg, ha.not_gt]
 
 end LinearOrder
 

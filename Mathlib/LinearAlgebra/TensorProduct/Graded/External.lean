@@ -43,8 +43,6 @@ multiplication follows trivially from this after some point-free nonsense.
 
 -/
 
-suppress_compilation
-
 open scoped TensorProduct DirectSum
 
 variable {R ι : Type*}
@@ -84,7 +82,6 @@ theorem gradedCommAux_lof_tmul (i j : ι) (a : 𝒜 i) (b : ℬ j) :
     gradedCommAux R 𝒜 ℬ (lof R _ 𝒜ℬ (i, j) (a ⊗ₜ b)) =
       (-1 : ℤˣ)^(j * i) • lof R _ ℬ𝒜 (j, i) (b ⊗ₜ a) := by
   rw [gradedCommAux]
-  dsimp
   simp [mul_comm i j]
 
 @[simp]

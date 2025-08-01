@@ -101,7 +101,7 @@ namespace lp
 
 theorem summable_inner (f g : lp G 2) : Summable fun i => ⟪f i, g i⟫ := by
   -- Apply the Direct Comparison Test, comparing with ∑' i, ‖f i‖ * ‖g i‖ (summable by Hölder)
-  refine .of_norm_bounded (fun i => ‖f i‖ * ‖g i‖) (lp.summable_mul ?_ f g) ?_
+  refine .of_norm_bounded (lp.summable_mul ?_ f g) ?_
   · rw [Real.holderConjugate_iff]; norm_num
   intro i
   -- Then apply Cauchy-Schwarz pointwise
@@ -355,7 +355,7 @@ theorem Submodule.isHilbertSumOrthogonal (K : Submodule 𝕜 E) [hK : CompleteSp
   refine le_trans ?_ (Submodule.le_topologicalClosure _)
   rw [iSup_bool_eq, cond, cond]
   refine Codisjoint.top_le ?_
-  exact Submodule.isCompl_orthogonal_of_completeSpace.codisjoint
+  exact Submodule.isCompl_orthogonal_of_hasOrthogonalProjection.codisjoint
 
 end IsHilbertSum
 

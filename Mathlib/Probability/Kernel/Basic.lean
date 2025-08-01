@@ -72,7 +72,7 @@ theorem deterministic_apply' {f : α → β} (hf : Measurable f) (a : α) {s : S
 `deterministic f hf` to `deterministic g ⋯`. Instead one can do `rw [deterministic_congr h]`. -/
 theorem deterministic_congr {f g : α → β} {hf : Measurable f} (h : f = g) :
     deterministic f hf = deterministic g (h ▸ hf) := by
-  conv_lhs => enter [1]; rw [h]
+  grind
 
 instance isMarkovKernel_deterministic {f : α → β} (hf : Measurable f) :
     IsMarkovKernel (deterministic f hf) :=
@@ -313,7 +313,7 @@ theorem IsMarkovKernel.comapRight (κ : Kernel α β) (hf : MeasurableEmbedding 
     (hκ : ∀ a, κ a (Set.range f) = 1) : IsMarkovKernel (comapRight κ hf) := by
   refine ⟨fun a => ⟨?_⟩⟩
   rw [comapRight_apply' κ hf a MeasurableSet.univ]
-  simp only [Set.image_univ, Subtype.range_coe_subtype, Set.setOf_mem_eq]
+  simp only [Set.image_univ]
   exact hκ a
 
 instance IsFiniteKernel.comapRight (κ : Kernel α β) [IsFiniteKernel κ]
@@ -401,7 +401,7 @@ lemma exists_ae_eq_isMarkovKernel {μ : Measure α}
   obtain ⟨a, ha⟩ : sᶜ.Nonempty := by
     contrapose! h'; simpa [μs, h'] using measure_univ_le_add_compl s (μ := μ)
   refine ⟨Kernel.piecewise s_meas (Kernel.const _ (κ a)) κ, ?_, ?_⟩
-  · filter_upwards [measure_zero_iff_ae_nmem.1 μs] with b hb
+  · filter_upwards [measure_zero_iff_ae_notMem.1 μs] with b hb
     simp [hb, piecewise]
   · refine ⟨fun b ↦ ?_⟩
     by_cases hb : b ∈ s
