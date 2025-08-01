@@ -36,7 +36,7 @@ Moreover, we also prove the unique norm extension theorem: if `K` is a field com
 to a nontrivial nonarchimedean multiplicative norm and `L/K` is an algebraic extension, then the
 spectral norm on `L` is a nonarchimedean multiplicative norm, and any power-multiplicative
 `K`-algebra norm on `L` coincides with the spectral norm. More over, if `L/K` is finite, then `L`
-is a complete space. This result is [S. Bosch, U. Güntzer, R. Remmert,*Non-Archimedean Analysis*
+is a complete space. This result is [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*
 (Theorem 3.2.4/2)][bosch-guntzer-remmert].
 
 As a prerequisite, we formalize the proof of [S. Bosch, U. Güntzer, R. Remmert,
@@ -210,7 +210,7 @@ variable {K : Type*} [NormedField K] {L : Type*} [Field L] [Algebra K L]
 
 open Nat in
 /-- The norm of any root of `p` is bounded by the spectral value of `p`. See
-[S. Bosch, U. Güntzer, R. Remmert,*Non-Archimedean Analysis* (Proposition 3.1.2/1(1))]
+[S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis* (Proposition 3.1.2/1(1))]
 [bosch-guntzer-remmert]. -/
 theorem norm_root_le_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
     (hf_na : IsNonarchimedean f) {p : K[X]} (hp : p.Monic) {x : L} (hx : aeval x p = 0) :
@@ -266,7 +266,7 @@ open Multiset
 
 /-- If `f` is a nonarchimedean, power-multiplicative `K`-algebra norm on `L`, then the spectral
 value of a polynomial `p : K[X]` that decomposes into linear factors in `L` is equal to the
-maximum of the norms of the roots. See [S. Bosch, U. Güntzer, R. Remmert,*Non-Archimedean Analysis*
+maximum of the norms of the roots. See [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*
 (Proposition 3.1.2/1(2))][bosch-guntzer-remmert]. -/
 theorem max_norm_root_eq_spectralValue [DecidableEq L] {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
     (hf_na : IsNonarchimedean f) (hf1 : f 1 = 1) (p : K[X]) (s : Multiset L)
@@ -345,7 +345,7 @@ end BddBySpectralValue
 section spectralNorm
 
 section NormedField
-/- In this section we prove [S. Bosch, U. Güntzer, R. Remmert,*Non-Archimedean Analysis*
+/- In this section we prove [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*
 (Theorem 3.2.1/2)][bosch-guntzer-remmert]. -/
 
 open IntermediateField
@@ -508,7 +508,7 @@ def spectralAlgNorm_of_finiteDimensional_normal [IsUltrametricDist K] : AlgebraN
   map_zero' := by rw [spectralNorm_eq_invariantExtension K L, map_zero]
   add_le'   := by rw [spectralNorm_eq_invariantExtension]; exact map_add_le_add _
   neg'      := by rw [spectralNorm_eq_invariantExtension]; exact map_neg_eq_map _
-  mul_le'   :=  by
+  mul_le'   := by
     simp only [spectralNorm_eq_invariantExtension]
     exact map_mul_le_mul (invariantExtension K L)
   smul'     := by
