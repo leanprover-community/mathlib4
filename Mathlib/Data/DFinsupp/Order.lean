@@ -41,6 +41,17 @@ lemma le_def : f ≤ g ↔ ∀ i, f i ≤ g i := Iff.rfl
 
 @[simp, norm_cast] lemma coe_le_coe : ⇑f ≤ g ↔ f ≤ g := Iff.rfl
 
+
+end LE
+
+section Preorder
+variable [∀ i, Preorder (α i)] {f g : Π₀ i, α i}
+
+instance : Preorder (Π₀ i, α i) :=
+  { (inferInstance : LE (DFinsupp α)) with
+    le_refl := fun _ _ ↦ le_rfl
+    le_trans := fun _ _ _ hfg hgh i ↦ (hfg i).trans (hgh i) }
+
 /-- The order on `DFinsupp`s over a partial order embeds into the order on functions -/
 def orderEmbeddingToFun : (Π₀ i, α i) ↪o ∀ i, α i where
   toFun := DFunLike.coe
@@ -53,16 +64,6 @@ lemma coe_orderEmbeddingToFun : ⇑(orderEmbeddingToFun (α := α)) = DFunLike.c
 theorem orderEmbeddingToFun_apply {f : Π₀ i, α i} {i : ι} :
     orderEmbeddingToFun f i = f i :=
   rfl
-
-end LE
-
-section Preorder
-variable [∀ i, Preorder (α i)] {f g : Π₀ i, α i}
-
-instance : Preorder (Π₀ i, α i) :=
-  { (inferInstance : LE (DFinsupp α)) with
-    le_refl := fun _ _ ↦ le_rfl
-    le_trans := fun _ _ _ hfg hgh i ↦ (hfg i).trans (hgh i) }
 
 lemma lt_def : f < g ↔ f ≤ g ∧ ∃ i, f i < g i := Pi.lt_def
 @[simp, norm_cast] lemma coe_lt_coe : ⇑f < g ↔ f < g := Iff.rfl

@@ -161,8 +161,8 @@ lemma spine_δ_vertex_lt (hij : i.castSucc < j) :
       (sx.spineToSimplex (m + 1) _ f))).vertex i = f.vertex i.castSucc := by
   rw [spine_vertex, ← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp,
     SimplexCategory.const_comp, spineToSimplex_vertex]
-  dsimp only [δ, len_mk, mkHom, Hom.toOrderHom_mk, Fin.succAboveOrderEmb_apply,
-    OrderEmbedding.toOrderHom_coe]
+  simp only [len_mk, δ, mkHom, Hom.toOrderHom_mk, OrderEmbedding.toOrderHom_apply,
+    Fin.succAboveOrderEmb_toEmbedding, Function.Embedding.coeFn_mk]
   rw [Fin.succAbove_of_castSucc_lt j i hij]
 
 /-- If we take the path along the spine of the `j`th face of a `spineToSimplex`,
@@ -173,8 +173,8 @@ lemma spine_δ_vertex_ge (hij : j ≤ i.castSucc) :
       (sx.spineToSimplex (m + 1) _ f))).vertex i = f.vertex i.succ := by
   rw [spine_vertex, ← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp,
     SimplexCategory.const_comp, spineToSimplex_vertex]
-  dsimp only [δ, len_mk, mkHom, Hom.toOrderHom_mk, Fin.succAboveOrderEmb_apply,
-    OrderEmbedding.toOrderHom_coe]
+  simp only [len_mk, δ, mkHom, Hom.toOrderHom_mk, OrderEmbedding.toOrderHom_apply,
+    Fin.succAboveOrderEmb_toEmbedding, Function.Embedding.coeFn_mk]
   rw [Fin.succAbove_of_le_castSucc j i hij]
 
 variable {i : Fin m} {j : Fin (m + 2)}
@@ -339,8 +339,8 @@ lemma spine_δ_vertex_lt (h : i.castSucc < j) :
   simp only [SimplicialObject.δ, spine_vertex]
   rw [← FunctorToTypes.map_comp_apply, ← op_comp, SimplexCategory.const_comp,
     spineToSimplex_vertex]
-  simp only [SimplexCategory.δ, Hom.toOrderHom, len_mk, mkHom, Hom.mk,
-    OrderEmbedding.toOrderHom_coe, Fin.succAboveOrderEmb_apply]
+  simp only [len_mk, Hom.toOrderHom, δ, mkHom, Hom.mk, OrderEmbedding.toOrderHom_apply,
+    Fin.succAboveOrderEmb_toEmbedding, Function.Embedding.coeFn_mk]
   rw [Fin.succAbove_of_castSucc_lt j i h]
 
 /-- If we take the path along the spine of the `j`th face of a `spineToSimplex`,
@@ -351,8 +351,8 @@ lemma spine_δ_vertex_ge (h : j ≤ i.castSucc) :
   simp only [SimplicialObject.δ, spine_vertex]
   rw [← FunctorToTypes.map_comp_apply, ← op_comp, SimplexCategory.const_comp,
     spineToSimplex_vertex]
-  simp only [SimplexCategory.δ, Hom.toOrderHom, len_mk, mkHom, Hom.mk,
-    OrderEmbedding.toOrderHom_coe, Fin.succAboveOrderEmb_apply]
+  simp only [len_mk, Hom.toOrderHom, δ, mkHom, Hom.mk, OrderEmbedding.toOrderHom_apply,
+    Fin.succAboveOrderEmb_toEmbedding, Function.Embedding.coeFn_mk]
   rw [Fin.succAbove_of_le_castSucc j i h]
 
 variable {i : Fin n} {j : Fin (n + 2)}

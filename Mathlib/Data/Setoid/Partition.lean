@@ -235,41 +235,6 @@ theorem classes_mkClasses (c : Set (Set α)) (hc : IsPartition c) :
     rwa [← eq_eqv_class_of_mem _ hb hy]
   · exact exists_of_mem_partition hc
 
-/-- Defining `≤` on partitions as the `≤` defined on their induced equivalence relations. -/
-instance Partition.le : LE (Subtype (@IsPartition α)) :=
-  ⟨fun x y => mkClasses x.1 x.2.2 ≤ mkClasses y.1 y.2.2⟩
-
-/-- Defining a partial order on partitions as the partial order on their induced
-    equivalence relations. -/
-instance Partition.partialOrder : PartialOrder (Subtype (@IsPartition α)) where
-  le := (· ≤ ·)
-  lt x y := x ≤ y ∧ ¬y ≤ x
-  le_refl _ := @le_refl (Setoid α) _ _
-  le_trans _ _ _ := @le_trans (Setoid α) _ _ _ _
-  lt_iff_le_not_ge _ _ := Iff.rfl
-  le_antisymm x y hx hy := by
-    let h := @le_antisymm (Setoid α) _ _ _ hx hy
-    rw [Subtype.ext_iff_val, ← classes_mkClasses x.1 x.2, ← classes_mkClasses y.1 y.2, h]
-
-variable (α) in
-/-- The order-preserving bijection between equivalence relations on a type `α`, and
-  partitions of `α` into subsets. -/
-protected def Partition.orderIso : Setoid α ≃o { C : Set (Set α) // IsPartition C } where
-  toFun r := ⟨r.classes, empty_notMem_classes, classes_eqv_classes⟩
-  invFun C := mkClasses C.1 C.2.2
-  left_inv := mkClasses_classes
-  right_inv C := by rw [Subtype.ext_iff_val, ← classes_mkClasses C.1 C.2]
-  map_rel_iff' {r s} := by
-    conv_rhs => rw [← mkClasses_classes r, ← mkClasses_classes s]
-    rfl
-
-/-- A complete lattice instance for partitions; there is more infrastructure for the
-    equivalent complete lattice on equivalence relations. -/
-instance Partition.completeLattice : CompleteLattice (Subtype (@IsPartition α)) :=
-  GaloisInsertion.liftCompleteLattice <|
-    @OrderIso.toGaloisInsertion _ (Subtype (@IsPartition α)) _ (PartialOrder.toPreorder) <|
-      Partition.orderIso α
-
 end Partition
 
 /-- A finite setoid partition furnishes a finpartition -/
@@ -282,6 +247,50 @@ def IsPartition.finpartition {c : Finset (Set α)} (hc : Setoid.IsPartition (c :
   bot_notMem := hc.left
 
 end Setoid
+
+structure Partition (α : Type*) where
+  sets : Set (Set α)
+  private isPartition_sets' : Setoid.IsPartition sets
+
+namespace Partition
+
+open Setoid
+
+variable {α}
+
+@[ext] theorem ext {a b : Partition α} (h : a.sets = b.sets) : a = b := by
+  cases a; cases b; exact mk.injEq _ _ _ _ ▸ h
+
+@[simp]
+theorem isPartition_sets {a : Partition α} : IsPartition a.sets := a.isPartition_sets'
+
+@[simps! apply_sets symm_apply]
+protected def equiv : Setoid α ≃ Partition α where
+  toFun r := Partition.mk r.classes r.isPartition_classes
+  invFun C := mkClasses C.sets isPartition_sets.2
+  left_inv := mkClasses_classes
+  right_inv _ := ext (classes_mkClasses _ isPartition_sets)
+
+/-- Defining a partial order on partitions as the partial order on their induced
+    equivalence relations. -/
+instance partialOrder : PartialOrder (Partition α) :=
+  PartialOrder.lift Partition.equiv.symm (Equiv.injective _)
+
+theorem le_def {x y : Partition α} : x ≤ y ↔
+  mkClasses x.sets isPartition_sets.2 ≤ mkClasses y.sets isPartition_sets.2 := Iff.rfl
+
+/-- The order-preserving bijection between equivalence relations on a type `α`, and
+  partitions of `α` into subsets. -/
+protected def orderIso : Setoid α ≃o Partition α where
+  toEquiv := Partition.equiv
+  map_rel_iff' {r s} := by simp [le_def, mkClasses_classes]
+
+/-- A complete lattice instance for partitions; there is more infrastructure for the
+    equivalent complete lattice on equivalence relations. -/
+instance completeLattice : CompleteLattice (Partition α) :=
+  Partition.orderIso.toGaloisInsertion.liftCompleteLattice
+
+end Partition
 
 /-- A finpartition gives rise to a setoid partition -/
 theorem Finpartition.isPartition_parts {α} (f : Finpartition (Set.univ : Set α)) :

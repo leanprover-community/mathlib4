@@ -463,13 +463,13 @@ theorem isBounded_ge_of_bot [LE α] [OrderBot α] {f : Filter α} : f.IsBounded 
   ⟨⊥, Eventually.of_forall fun _ => bot_le⟩
 
 @[simp]
-theorem _root_.OrderIso.isBoundedUnder_le_comp [LE α] [LE β] (e : α ≃o β) {l : Filter γ}
+theorem _root_.OrderIso.isBoundedUnder_le_comp [Preorder α] [Preorder β] (e : α ≃o β) {l : Filter γ}
     {u : γ → α} : (IsBoundedUnder (· ≤ ·) l fun x => e (u x)) ↔ IsBoundedUnder (· ≤ ·) l u :=
   (Function.Surjective.exists e.surjective).trans <|
     exists_congr fun a => by simp only [eventually_map, e.le_iff_le]
 
 @[simp]
-theorem _root_.OrderIso.isBoundedUnder_ge_comp [LE α] [LE β] (e : α ≃o β) {l : Filter γ}
+theorem _root_.OrderIso.isBoundedUnder_ge_comp [Preorder α] [Preorder β] (e : α ≃o β) {l : Filter γ}
     {u : γ → α} : (IsBoundedUnder (· ≥ ·) l fun x => e (u x)) ↔ IsBoundedUnder (· ≥ ·) l u :=
   OrderIso.isBoundedUnder_le_comp e.dual
 

@@ -476,6 +476,14 @@ theorem injective : Function.Injective f :=
 theorem inj {a b} : f a = f b ↔ a = b := f.injective.eq_iff
 
 @[simp]
+theorem coe_mk {f} {h} : ⇑(⟨f, h⟩ : α ↪o β) = f :=
+  rfl
+
+/-- The map `coe_fn : (α ↪o β) → (α → β)` is injective. -/
+theorem coe_fn_injective : Function.Injective fun f : α ↪o β => (f : α → β) :=
+  DFunLike.coe_injective
+
+@[simp]
 theorem le_iff_le {a b} : f a ≤ f b ↔ a ≤ b :=
   f.map_rel_iff'
 
@@ -717,6 +725,14 @@ def Simps.apply (h : α ≃o β) : α → β := h
 /-- See Note [custom simps projection]. -/
 def Simps.symm_apply (h : α ≃o β) : β → α := h.symm
 
+@[simp]
+theorem apply_symm_apply (e : α ≃o β) (x : β) : e (e.symm x) = x :=
+  e.toEquiv.apply_symm_apply x
+
+@[simp]
+theorem symm_apply_apply (e : α ≃o β) (x : α) : e.symm (e x) = x :=
+  e.toEquiv.symm_apply_apply x
+
 initialize_simps_projections OrderIso (toFun → apply, invFun → symm_apply)
 
 instance : EquivLike (α ≃o β) α β where
@@ -736,6 +752,10 @@ theorem toFun_eq_coe {f : α ≃o β} : f.toFun = f :=
 @[simp]
 theorem coe_fn_mk (f : α ≃ β) (o : ∀ ⦃a b⦄, f a ≤ f b ↔ a ≤ b) :
     (OrderIso.mk f @o : α → β) = f :=
+  rfl
+
+theorem coe_fn_symm_mk (f : α ≃ β) (o : ∀ ⦃a b⦄, f a ≤ f b ↔ a ≤ b) :
+    ⇑(OrderIso.mk f @o).symm = f.symm :=
   rfl
 
 @[simp]
@@ -768,6 +788,21 @@ theorem apply_eq_iff_eq (e : α ≃o β) {x y : α} : e x = e y ↔ x = y :=
 
 alias eq_iff_eq := apply_eq_iff_eq
 
+/-- Copy of a `OrderIso` with a new `toFun` and `invFun` equal to the old ones.
+Useful to fix definitional equalities. -/
+def copy (e : α ≃o β) (f : α → β) (g : β → α) (hf : f = e) (hg : g = e.symm) : α ≃o β where
+  toFun := f
+  invFun := g
+  left_inv _ := by simp [hf, hg]
+  right_inv _ := by simp [hf, hg]
+  map_rel_iff' := by simp [hf, e.le_iff_le]
+
+@[simp, norm_cast]
+lemma coe_copy (e : α ≃o β) (f : α → β) (g : β → α) (hf hg) : e.copy f g hf hg = f := rfl
+
+lemma copy_eq (e : α ≃o β) (f : α → β) (g : β → α) (hf hg) : e.copy f g hf hg = e :=
+  DFunLike.coe_injective hf
+
 /-- Identity order isomorphism. -/
 def refl (α : Type*) [Preorder α] : α ≃o α := ⟨Equiv.refl _, Iff.rfl⟩
 
@@ -784,14 +819,6 @@ theorem refl_toEquiv : (refl α).toEquiv = Equiv.refl α :=
   rfl
 
 @[simp]
-theorem apply_symm_apply (e : α ≃o β) (x : β) : e (e.symm x) = x :=
-  e.toEquiv.apply_symm_apply x
-
-@[simp]
-theorem symm_apply_apply (e : α ≃o β) (x : α) : e.symm (e x) = x :=
-  e.toEquiv.symm_apply_apply x
-
-@[simp]
 theorem symm_refl (α : Type*) [Preorder α] : (refl α).symm = refl α :=
   rfl
 
@@ -800,6 +827,9 @@ theorem apply_eq_iff_eq_symm_apply (e : α ≃o β) (x : α) (y : β) : e x = y 
 
 theorem symm_apply_eq (e : α ≃o β) {x : α} {y : β} : e.symm y = x ↔ y = e x :=
   e.toEquiv.symm_apply_eq
+
+theorem eq_symm_apply (e : α ≃o β) {x : α} {y : β} : x = e.symm y ↔ e x = y :=
+  e.toEquiv.eq_symm_apply
 
 @[simp]
 theorem symm_symm (e : α ≃o β) : e.symm.symm = e :=
@@ -925,6 +955,10 @@ from `α` and `β` to themselves are order-isomorphic. -/
 def conj {α β} [Preorder α] [Preorder β] (f : α ≃o β) : (α →o α) ≃ (β →o β) :=
   arrowCongr f f
 
+@[simps! apply]
+noncomputable def ofSurjective (f : α ↪o β) (H : Function.Surjective f) : α ≃o β :=
+    ⟨Equiv.ofBijective f ⟨f.injective, H⟩, f.le_iff_le⟩
+
 /-- `Prod.swap` as an `OrderIso`. -/
 def prodComm : α × β ≃o β × α where
   toEquiv := Equiv.prodComm α β
@@ -963,8 +997,6 @@ theorem dualDual_symm_apply (a : αᵒᵈᵒᵈ) : (dualDual α).symm a = ofDual
   rfl
 
 section
-
-open Set
 
 @[gcongr] protected alias ⟨_, GCongr.orderIso_apply_le_apply⟩ := le_iff_le
 

@@ -394,21 +394,21 @@ end structure_to_order
 
 namespace order
 
-variable [Language.order.Structure M] [LE M] [Language.order.OrderedStructure M]
-  {N : Type*} [Language.order.Structure N] [LE N] [Language.order.OrderedStructure N]
+variable [Language.order.Structure M] [Preorder M] [Language.order.OrderedStructure M]
+  {N : Type*} [Language.order.Structure N] [Preorder N] [Language.order.OrderedStructure N]
   {F : Type*}
 
 instance [FunLike F M N] [OrderHomClass F M N] : Language.order.HomClass F M N :=
   ⟨fun _ => isEmptyElim, by
     simp only [forall_relations, relation_eq_leSymb, relMap_leSymb, Fin.isValue,
       Function.comp_apply]
-    exact fun φ x => map_rel φ⟩
+    exact fun φ x => (monotone φ).imp⟩
 
 -- If `OrderEmbeddingClass` or `RelEmbeddingClass` is defined, this should be generalized.
 instance : Language.order.StrongHomClass (M ↪o N) M N :=
   ⟨fun _ => isEmptyElim,
     by simp only [order.forall_relations, order.relation_eq_leSymb, relMap_leSymb, Fin.isValue,
-    Function.comp_apply, RelEmbedding.map_rel_iff, implies_true]⟩
+    Function.comp_apply, OrderEmbedding.le_iff_le, implies_true]⟩
 
 instance [EquivLike F M N] [OrderIsoClass F M N] : Language.order.StrongHomClass F M N :=
   ⟨fun _ => isEmptyElim,
@@ -440,8 +440,8 @@ end HomClass
 `FirstOrder.Language.order.instStrongHomClassOfOrderIsoClass`.
 As both types are `Prop`s, it would only cause a slowdown. -/
 lemma StrongHomClass.toOrderIsoClass
-    (L : Language) [L.IsOrdered] (M : Type*) [L.Structure M] [LE M] [L.OrderedStructure M]
-    (N : Type*) [L.Structure N] [LE N] [L.OrderedStructure N]
+    (L : Language) [L.IsOrdered] (M : Type*) [L.Structure M] [Preorder M] [L.OrderedStructure M]
+    (N : Type*) [L.Structure N] [Preorder N] [L.OrderedStructure N]
     (F : Type*) [EquivLike F M N] [L.StrongHomClass F M N] :
     OrderIsoClass F M N where
   map_le_map_iff f a b := by

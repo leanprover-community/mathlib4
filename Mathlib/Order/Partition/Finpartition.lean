@@ -120,10 +120,10 @@ def map {β : Type*} [Lattice β] [OrderBot β] {a : α} (e : α ≃o β) (P : F
   supIndep u hu _ hb hbu _ hx hxu := by
     rw [← map_symm_subset] at hu
     simp only [mem_map_equiv] at hb
-    have := P.supIndep hu hb (by simp [hbu]) (map_rel e.symm hx) ?_
+    have := P.supIndep hu hb (by simp [hbu]) (monotone e.symm hx) ?_
     · rw [← e.symm.map_bot] at this
-      exact e.symm.map_rel_iff.mp this
-    · convert e.symm.map_rel_iff.mpr hxu
+      exact e.symm.le_iff_le.mp this
+    · convert e.symm.le_iff_le.mpr hxu
       rw [map_finset_sup, sup_map]
       rfl
   sup_parts := by simp [← P.sup_parts]

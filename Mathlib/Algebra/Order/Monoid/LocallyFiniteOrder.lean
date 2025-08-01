@@ -149,7 +149,7 @@ def LocallyFiniteOrder.orderAddMonoidEquiv [Nontrivial G] :
     G ≃+o ℤ where
   __ := orderAddMonoidHom G
   __ := AddEquiv.ofBijective (orderAddMonoidHom G) orderAddMonoidHom_bijective
-  map_rel_iff' {a b} := by
+  map_le_map_iff' {a b} := by
     obtain ⟨b, rfl⟩ := add_left_surjective a b
     suffices 0 ≤ orderAddMonoidHom G b ↔ 0 ≤ b by simpa
     obtain hb | hb := le_total 0 b
@@ -194,10 +194,17 @@ open scoped WithZero in
 noncomputable
 def LocallyFiniteOrder.orderMonoidWithZeroHom (G : Type*) [LinearOrderedCommGroupWithZero G]
     [LocallyFiniteOrder Gˣ] : G →*₀o ℤᵐ⁰ where
-  __ := (WithZero.map' (orderMonoidHom Gˣ)).comp
+  toMonoidWithZeroHom := (WithZero.map' (orderMonoidHom Gˣ)).comp
     OrderMonoidIso.withZeroUnits.symm.toMonoidWithZeroHom
-  monotone' a b h := by have := (orderMonoidHom Gˣ).monotone'; aesop
+  monotone' a b h := by
+    have := (orderMonoidHom Gˣ).monotone';
+    simp [apply_dite, dite_apply]
+    split_ifs with hb
+    · subst hb
+      simpa using h
+    · exact fun _ => (orderMonoidHom Gˣ).monotone' h
 
+--by have := (orderMonoidHom Gˣ).monotone'; aesop
 lemma LocallyFiniteOrder.orderMonoidWithZeroHom_strictMono {G : Type*}
     [LinearOrderedCommGroupWithZero G] [LocallyFiniteOrder Gˣ] :
     StrictMono (orderMonoidWithZeroHom G) := by

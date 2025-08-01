@@ -117,7 +117,7 @@ def orderEmbeddingOfSet [DecidablePred (· ∈ s)] : ℕ ↪o ℕ :=
 noncomputable def Subtype.orderIsoOfNat : ℕ ≃o s := by
   classical
   exact
-    RelIso.ofSurjective
+    OrderIso.ofSurjective
       (RelEmbedding.orderEmbeddingOftoRelEmbeddingLT
         (RelEmbedding.natLT (Nat.Subtype.ofNat s) fun n => Nat.Subtype.lt_succ_self _))
       Nat.Subtype.ofNat_surjective

@@ -465,8 +465,9 @@ lemma mkOfSucc_δ_gt {n : ℕ} {i : Fin n} {j : Fin (n + 2)}
     (h : j < i.succ.castSucc) :
     mkOfSucc i ≫ δ j = mkOfSucc i.succ := by
   ext x
-  simp only [δ, len_mk, mkHom, comp_toOrderHom, Hom.toOrderHom_mk, OrderHom.comp_coe,
-    OrderEmbedding.toOrderHom_coe, Function.comp_apply, Fin.succAboveOrderEmb_apply]
+  simp only [len_mk, Nat.reduceAdd, δ, mkHom, comp_toOrderHom, Hom.toOrderHom_mk,
+    OrderHom.comp_apply, Function.comp_apply, OrderEmbedding.toOrderHom_apply,
+    Fin.succAboveOrderEmb_toEmbedding, Function.Embedding.coeFn_mk]
   fin_cases x <;> rw [Fin.succAbove_of_le_castSucc]
   · rfl
   · exact Nat.le_of_lt_succ h
@@ -481,14 +482,15 @@ lemma mkOfSucc_δ_eq {n : ℕ} {i : Fin n} {j : Fin (n + 2)}
   ext x
   fin_cases x
   · subst h
-    simp only [δ, len_mk, Nat.reduceAdd, mkHom, comp_toOrderHom, Hom.toOrderHom_mk,
-      Fin.zero_eta, OrderHom.comp_coe, OrderEmbedding.toOrderHom_coe, Function.comp_apply,
-      mkOfSucc_homToOrderHom_zero, Fin.succAboveOrderEmb_apply,
-      Fin.castSucc_succAbove_castSucc, Fin.succAbove_succ_self]
+    simp only [len_mk, Nat.reduceAdd, δ, mkHom, Fin.castSucc_succ, comp_toOrderHom,
+      Hom.toOrderHom_mk, Fin.zero_eta, Fin.isValue, OrderHom.comp_apply, Function.comp_apply,
+      mkOfSucc_homToOrderHom_zero, OrderEmbedding.toOrderHom_apply,
+      Fin.succAboveOrderEmb_toEmbedding, Function.Embedding.coeFn_mk, Fin.succAbove_succ_self,
+      Fin.coe_castSucc]
     rfl
-  · simp only [δ, len_mk, Nat.reduceAdd, mkHom, comp_toOrderHom, Hom.toOrderHom_mk, Fin.mk_one,
-      OrderHom.comp_coe, OrderEmbedding.toOrderHom_coe, Function.comp_apply,
-      mkOfSucc_homToOrderHom_one, Fin.succAboveOrderEmb_apply]
+  · simp only [len_mk, Nat.reduceAdd, δ, mkHom, comp_toOrderHom, Hom.toOrderHom_mk, Fin.mk_one,
+    Fin.isValue, OrderHom.comp_apply, Function.comp_apply, mkOfSucc_homToOrderHom_one,
+    OrderEmbedding.toOrderHom_apply, Fin.succAboveOrderEmb_toEmbedding, Function.Embedding.coeFn_mk]
     subst h
     rw [Fin.succAbove_castSucc_self]
     rfl
@@ -737,8 +739,8 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : ⦋
     ∃ θ' : ⦋n⦌ ⟶ Δ', θ = σ i ≫ θ' := by
   use δ i.succ ≫ θ
   ext x : 3
-  simp only [len_mk, σ, mkHom, comp_toOrderHom, Hom.toOrderHom_mk, OrderHom.comp_coe,
-    Function.comp_apply, Fin.predAboveOrderHom_coe]
+  simp only [len_mk, σ, mkHom, comp_toOrderHom, Hom.toOrderHom_mk, OrderHom.comp_apply,
+    Function.comp_apply, Fin.predAboveOrderHom_apply]
   by_cases h' : x ≤ Fin.castSucc i
   · rw [Fin.predAbove_of_le_castSucc i x h']
     dsimp [δ]
