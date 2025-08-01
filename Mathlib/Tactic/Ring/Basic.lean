@@ -993,20 +993,6 @@ structure Cache {α : Q(Type u)} (sα : Q(CommSemiring $α)) where
 /-- Create a new cache for `α` by doing the necessary instance searches. -/
 def mkCache {α : Q(Type u)} (sα : Q(CommSemiring $α)) (cfg : RingConfig) : MetaM (Cache sα) := do
   let charExpr : Q(ℕ) := .lit (.natVal cfg.char)
-  -- Note that this next `let` was inlined until updating to Lean 4.8.0-rc1.
-  let cpα ←
-    if cfg.char ≠ 0
-    then pure (← trySynthInstanceQ q(CharP $α $charExpr)).toOption
-    else pure none
-  return {
-    char := cfg.char
-    rα := (← trySynthInstanceQ q(Ring $α)).toOption
-    dα := (← trySynthInstanceQ q(DivisionRing $α)).toOption
-    czα := (← trySynthInstanceQ q(CharZero $α)).toOption
-    cpα := cpα }
-
-def mkCache' {α : Q(Type u)} (sα : Q(CommSemiring $α)) (cfg : RingConfig) : MetaM (Cache sα) := do
-  let charExpr : Q(ℕ) := .lit (.natVal cfg.char)
   let inst ← trySynthInstanceQ q(CharP $α $charExpr)
   return {
     char := cfg.char
