@@ -6,6 +6,7 @@ Authors: Aaron Anderson
 import Mathlib.Algebra.Group.Support
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Module.LinearMap.Defs
+import Mathlib.Data.Finsupp.SMul
 import Mathlib.RingTheory.HahnSeries.Basic
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Tactic.FastInstance
@@ -301,6 +302,21 @@ def coeff.addMonoidHom (g : Γ) : HahnSeries Γ R →+ R where
   map_zero' := coeff_zero
   map_add' _ _ := coeff_add
 
+section Finsupp
+
+/-- `ofFinsupp` as an additive monoid/group homomorphism. -/
+def ofFinsuppAddMonoidHom : (Γ →₀ R) →+ HahnSeries Γ R where
+  __ := ofFinsupp
+  map_add' _ _ := by
+    ext
+    simp
+
+@[simp]
+theorem coeff_ofFinsuppAddMonoidHom (f : Γ →₀ R) (a : Γ) :
+    (ofFinsuppAddMonoidHom f).coeff a = f a := rfl
+
+end Finsupp
+
 section Domain
 
 variable [PartialOrder Γ']
@@ -506,6 +522,23 @@ def coeff.linearMap (g : Γ) : HahnSeries Γ V →ₗ[R] V :=
 protected lemma map_smul [AddCommMonoid U] [Module R U] (f : U →ₗ[R] V) {r : R}
     {x : HahnSeries Γ U} : (r • x).map f = r • ((x.map f) : HahnSeries Γ V) := by
   ext; simp
+
+section Finsupp
+
+variable (R) in
+/-- `ofFinsupp` as a linear map. -/
+def ofFinsuppLinearMap : (Γ →₀ V) →ₗ[R] HahnSeries Γ V where
+  __ := ofFinsuppAddMonoidHom
+  map_smul' _ _ := by
+    ext
+    simp
+
+variable (R) in
+@[simp]
+theorem coeff_ofFinsuppLinearMap (f : Γ →₀ V) (a : Γ) :
+    (ofFinsuppLinearMap R f).coeff a = f a := rfl
+
+end Finsupp
 
 section Domain
 
