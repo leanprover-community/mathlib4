@@ -59,8 +59,9 @@ if __name__ == '__main__':
         data = json.load(fi)
     all_api_calls_succeeded = True
     for (number, user_handle) in data.items():
-        # If the number of API calls might be greater than 2000 per hour, put a wait in here.
+        # If the number of API calls is greater than 2000 per hour, put a wait in here.
         # The limit is 5000/hr per https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api?apiVersion=2022-11-28#primary-rate-limit-for-authenticated-users
         all_api_calls_succeeded = call(number, user_handle) and all_api_calls_succeeded
     if not all_api_calls_succeeded:
+        print("Some API calls were not successful")
         sys.exit(1)
