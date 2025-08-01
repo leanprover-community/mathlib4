@@ -35,10 +35,10 @@ bilinear form, positive, semidefinite
 
 open Module
 
-variable {E n : Type*} [AddCommMonoid E] [Module ℝ E] (f : LinearMap.BilinForm ℝ E)
-    (b : Basis n ℝ E)
+variable {E n R : Type*} [AddCommMonoid E] [CommSemiring R] [LE R] --[PartialOrder R] [StarRing R]
+    [Module R E] {I : R →+* R} (f : E →ₛₗ[I] E →ₗ[R] R) (b : Basis n R E)
 
-namespace LinearMap.BilinForm
+namespace LinearMap
 
 section IsPos
 
@@ -55,18 +55,14 @@ end IsPos
 section IsPosSemidef
 
 /-- A bilinear map is positive semidefinite if it is symmetric and positive. -/
-structure IsPosSemidef : Prop extends f.IsSymm, f.IsPos
+structure IsPosSemidef : Prop extends f.IsPos where
+  isSymm : f.IsSymm
 
-variable {f}
-
-lemma IsPosSemidef.isSymm (hf : IsPosSemidef f) :f.IsSymm := hf.toIsSymm
-
+variable {f} in
 lemma IsPosSemidef.isPos (hf : IsPosSemidef f) : f.IsPos := hf.toIsPos
 
-
-variable (f) in
-lemma isPosSemidef_iff : f.IsPosSemidef ↔ f.IsSymm ∧ f.IsPos where
-  mp h := ⟨h.isSymm, h.isPos⟩
+lemma isPosSemidef_iff : f.IsPosSemidef ↔ f.IsPos ∧ f.IsSymm where
+  mp h := ⟨h.isPos, h.isSymm⟩
   mpr := fun ⟨h₁, h₂⟩ ↦ ⟨h₁, h₂⟩
 
 variable [Fintype n] [DecidableEq n]
