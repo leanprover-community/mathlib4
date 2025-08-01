@@ -552,7 +552,7 @@ def trunc [PartialOrder Γ] [DecidableLE Γ] (c : Γ) : ZeroHom (HahnSeries Γ R
 @[simp]
 protected theorem coeff_trunc [PartialOrder Γ] [DecidableLE Γ]
     (c : Γ) (x : HahnSeries Γ R) (i : Γ) :
-  (trunc c x).coeff i = if c ≤ i then 0 else x.coeff i := rfl
+    (trunc c x).coeff i = if c ≤ i then 0 else x.coeff i := rfl
 
 theorem coeff_trunc_eq [LinearOrder Γ] {c i : Γ} (h : i < c) (x : HahnSeries Γ R) :
     (trunc c x).coeff i = x.coeff i := by
