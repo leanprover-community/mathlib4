@@ -171,14 +171,16 @@ theorem Semilinear.image (hs : s.Semilinear) (f : α →ₗ[ℕ] β) : (f '' s).
   simp_rw [sUnion_eq_biUnion, Finset.mem_coe, image_iUnion]
   exact biUnion_finset fun s hs => ((hS s hs).image f).semilinear
 
-theorem Semilinear.reindex {s : Set (ι₁ → α)} (hs : s.Semilinear) (f : ι₂ → ι₁) :
-    ((· ∘ f) '' s).Semilinear :=
-  hs.image (LinearMap.funLeft ℕ α f)
+theorem Semilinear.image_iff (f : α ≃ₗ[ℕ] β) : (f '' s).Semilinear ↔ s.Semilinear := by
+  constructor <;> intro h
+  · convert h.image f.symm.toLinearMap
+    simp [image_image]
+  · exact h.image f.toLinearMap
 
 /-- Semilinear sets are closed under projection. -/
 theorem Semilinear.proj {s : Set (ι₁ ⊕ ι₂ → α)} (hs : s.Semilinear) :
     {x | ∃ y, Sum.elim x y ∈ s}.Semilinear := by
-  convert hs.reindex Sum.inl
+  convert hs.image (LinearMap.funLeft ℕ α Sum.inl)
   ext x
   constructor
   · intro ⟨y, hy⟩
@@ -187,7 +189,7 @@ theorem Semilinear.proj {s : Set (ι₁ ⊕ ι₂ → α)} (hs : s.Semilinear) :
   · simp only [mem_image, mem_setOf_eq, forall_exists_index, and_imp]
     rintro y hy rfl
     refine ⟨y ∘ Sum.inr, ?_⟩
-    simp [hy]
+    simpa [LinearMap.funLeft]
 
 /-- An variant of `Semilinear.proj` for backward reasoning. -/
 theorem Semilinear.proj' {p : (ι₁ → α) → (ι₂ → α) → Prop} :
