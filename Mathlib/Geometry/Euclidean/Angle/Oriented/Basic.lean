@@ -795,10 +795,7 @@ theorem oangle_sign_smul_add_right (x y : V) (r : ℝ) :
     · simpa [hz] using (h' 0).1
     · simpa [hz] using (h' r').1
   have hs : ∀ z : V × V, z ∈ s → o.oangle z.1 z.2 ≠ 0 ∧ o.oangle z.1 z.2 ≠ π := by
-    intro z hz
-    simp_rw [s, Set.mem_image] at hz
-    obtain ⟨r', -, rfl⟩ := hz
-    exact h' r'
+    grind [Set.mem_image]
   have hx : (x, y) ∈ s := by
     convert Set.mem_image_of_mem (fun r' : ℝ => (x, r' • x + y)) (Set.mem_univ 0)
     simp
