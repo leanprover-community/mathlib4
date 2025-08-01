@@ -138,14 +138,12 @@ theorem covolume_eq_det_inv {ι : Type*} [Fintype ι] (L : Submodule ℤ (ι →
 Let `L₁` be a sub-`ℤ`-lattice of `L₂`. Then the index of `L₁` inside `L₂` is equal to
 `covolume L₁ / covolume L₂`.
 -/
-theorem covolume_div_covolume_eq_relindex {ι : Type*} [Fintype ι] [DecidableEq ι]
-    (L₁ L₂ : Submodule ℤ (ι → ℝ)) [DiscreteTopology L₁] [IsZLattice ℝ L₁] [DiscreteTopology L₂]
-    [IsZLattice ℝ L₂] (h : L₁ ≤ L₂) :
+theorem covolume_div_covolume_eq_relindex {ι : Type*} [Fintype ι] (L₁ L₂ : Submodule ℤ (ι → ℝ))
+    [DiscreteTopology L₁] [IsZLattice ℝ L₁] [DiscreteTopology L₂] [IsZLattice ℝ L₂] (h : L₁ ≤ L₂) :
     covolume L₁ / covolume L₂ = L₁.toAddSubgroup.relindex L₂.toAddSubgroup := by
-  let b₁ : Basis ι ℤ L₁ := (Free.chooseBasis ℤ L₁).reindex (Fintype.equivOfCardEq
-    (by rw [← finrank_eq_card_chooseBasisIndex, ZLattice.rank ℝ, finrank_fintype_fun_eq_card]))
-  let b₂ : Basis ι ℤ L₂ := (Free.chooseBasis ℤ L₂).reindex (Fintype.equivOfCardEq
-    (by rw [← finrank_eq_card_chooseBasisIndex, ZLattice.rank ℝ, finrank_fintype_fun_eq_card]))
+  classical
+  let b₁ := IsZLattice.basis L₁
+  let b₂ := IsZLattice.basis L₂
   rw [AddSubgroup.relindex_eq_natAbs_det L₁.toAddSubgroup L₂.toAddSubgroup h b₁ b₂,
     Nat.cast_natAbs, Int.cast_abs]
   trans |(b₂.ofZLatticeBasis ℝ).det (b₁.ofZLatticeBasis ℝ)|

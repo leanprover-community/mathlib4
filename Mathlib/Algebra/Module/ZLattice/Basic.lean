@@ -669,6 +669,19 @@ theorem Real.finrank_eq_int_finrank_of_discrete {E : Type*} [NormedAddCommGroup 
 
 end NormedLinearOrderedField
 
+section Basis
+
+variable {ι : Type*} [Fintype ι] (L : Submodule ℤ (ι → ℝ)) [DiscreteTopology L] [IsZLattice ℝ L]
+
+/--
+Return an arbitrary `ℤ`-basis of a lattice `L` of `ι → ℝ` indexed by `ι`.
+-/
+def IsZLattice.basis : Basis ι ℤ L :=
+  (Free.chooseBasis ℤ L).reindex (Fintype.equivOfCardEq
+    (by rw [← finrank_eq_card_chooseBasisIndex, ZLattice.rank ℝ, finrank_fintype_fun_eq_card]))
+
+end Basis
+
 section comap
 
 variable (K : Type*) [NormedField K] {E F : Type*} [NormedAddCommGroup E] [NormedSpace K E]
