@@ -232,7 +232,9 @@ two players, invented by John H. Conway. The two players take turns naming posit
 that are not the sum of nonnegative multiples of previously named integers.
 The player who names 1 loses. -/
 
-/-- `SylverCoinage.Rel t s` means that `s ⟶ t` is a valid move in the game of Sylver coinage. -/
+/-- `SylverCoinage.Rel t s` means that `s ⟶ t` is a valid move in the game of Sylver coinage.
+We forbid naming 1 as a move to turn a misère game into a game in normal-play convention, which
+simplies the definition of `IsPPosition`. -/
 protected inductive Rel : Set ℕ → Set ℕ → Prop
   | move (s : Set ℕ) (n : ℕ) (hns : n ∉ Ideal.span s) (h1 : n ≠ 1) :
       SylverCoinage.Rel (insert n s) s
@@ -253,7 +255,7 @@ theorem wellFounded_rel : WellFounded SylverCoinage.Rel := by
 /-- A position in the game of Sylver coinage is a P-position (i.e., a win for the previous player)
 if every move leads to an N-position (i.e., a win for the next player). -/
 def IsPPosition (s : Set ℕ) : Prop :=
-  ∀ t (_ : SylverCoinage.Rel t s), ¬ IsPPosition t
+  ∀ t, SylverCoinage.Rel t s, ¬ IsPPosition t
 termination_by wellFounded_rel.wrap s
 
 variable {s : Set ℕ}
