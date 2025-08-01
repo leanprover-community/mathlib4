@@ -11,7 +11,6 @@ import Mathlib.Logic.Function.Defs
 import Mathlib.Tactic.MkIffOfInductiveProp
 import Mathlib.Tactic.OfNat
 import Mathlib.Tactic.Simps.Basic
-import Mathlib.Util.TransImports
 
 /-!
 # Typeclasses for (semi)groups and monoids

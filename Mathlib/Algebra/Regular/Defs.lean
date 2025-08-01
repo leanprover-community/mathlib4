@@ -5,7 +5,6 @@ Authors: Damiano Testa
 -/
 import Mathlib.Algebra.Notation.Defs
 import Mathlib.Logic.Function.Defs
-import Mathlib.Tactic.ToAdditive
 
 /-!
 # Regular elements
