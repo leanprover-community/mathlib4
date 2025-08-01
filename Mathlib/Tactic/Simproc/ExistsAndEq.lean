@@ -21,13 +21,7 @@ namespace existsAndEq
 universe u in
 private theorem exists_of_imp_eq {α : Sort u} {p : α → Prop} (a : α) (h : ∀ b, p b → a = b) :
     (∃ b, p b) = p a := by
-  apply propext
-  constructor
-  · intro h'
-    obtain ⟨b, hb⟩ := h'
-    rwa [h b hb]
-  · intro h'
-    exact ⟨a, h'⟩
+  grind
 
 /-- For an expression `p` of the form `fun (x : α) ↦ (body : Prop)`, checks whether
 `body` implies `x = a` for some `a`, and constructs a proof of `(∃ x, p x) = p a` using
