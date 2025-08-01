@@ -336,7 +336,7 @@ lemma Ideal.primeHeight_add_ringKrullDim_quotient_eq_ringKrullDim [IsCohenMacaul
   rw [(isCohenMacaulayLocalRing_def R).mp (by assumption),
     ← depth_quotient_regular_sequence_add_length_eq_depth (ModuleCat.of R R) rs reg]
   have ass : p ∈ associatedPrimes R (R ⧸ ofList rs • (⊤ : Ideal R)) := by
-    apply Module.associatedPrimes.minimalPrimes_annihilator_mem_associatedPrimes
+    apply Module.associatedPrimes.minimalPrimes_annihilator_subset_associatedPrimes
     simp only [smul_eq_mul, annihilator_quotient, mul_top]
     apply Ideal.mem_minimalPrimes_of_height_eq
     · exact (span_le.mpr mem)
