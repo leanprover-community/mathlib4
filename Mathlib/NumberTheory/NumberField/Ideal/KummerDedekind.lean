@@ -163,14 +163,15 @@ def primesOverSpanEquivMonicFactorsMod (hp : ¬ p ∣ exponent θ) :
   have h : span {(p : ℤ)} ≠ ⊥ := by simp [NeZero.ne p]
   ((Equiv.setCongr (by ext; simp [mem_primesOver_iff_mem_normalizedFactors _ h])).trans
     (normalizedFactorsMapEquivNormalizedFactorsMinPolyMk
-    (Int.ideal_span_isMaximal_of_prime p) h (not_dvd_exponent_iff.mp hp) θ.isIntegral)).trans <|
-      (primesOverSpanEquivMonicFactorsModAux _)
+    (Int.ideal_span_isMaximal_of_prime p) h
+      (not_dvd_exponent_iff.mp hp).eq_top θ.isIntegral)).trans <|
+        (primesOverSpanEquivMonicFactorsModAux _)
 
 theorem primesOverSpanEquivMonicFactorsMod_symm_apply (hp : ¬ p ∣ exponent θ)
     {Q : (ZMod p)[X]} (hQ : Q ∈ monicFactorsMod θ p) :
     ((primesOverSpanEquivMonicFactorsMod hp).symm ⟨Q, hQ⟩ : Ideal (𝓞 K)) =
       (normalizedFactorsMapEquivNormalizedFactorsMinPolyMk
-        inferInstance (by simp [NeZero.ne p]) (not_dvd_exponent_iff.mp hp) θ.isIntegral).symm
+        inferInstance (by simp [NeZero.ne p]) (not_dvd_exponent_iff.mp hp).eq_top θ.isIntegral).symm
         ⟨Q.map (Int.quotientSpanNatEquivZMod p).symm, by
           rw [← primesOverSpanEquivMonicFactorsModAux_symm_apply]
           exact ((primesOverSpanEquivMonicFactorsModAux _).symm ⟨Q, hQ⟩).coe_prop⟩ := rfl
@@ -238,7 +239,7 @@ theorem ramificationIdx_primesOverSpanEquivMonicFactorsMod_symm_apply (hp : ¬ p
   · apply multiplicity_eq_of_emultiplicity_eq
     rw [← emultiplicity_map_eq (mapEquiv (Int.quotientSpanNatEquivZMod p).symm),
       emultiplicity_factors_map_eq_emultiplicity inferInstance (by simp [NeZero.ne p])
-      (not_dvd_exponent_iff.mp hp) θ.isIntegral]
+      (not_dvd_exponent_iff.mp hp).eq_top θ.isIntegral]
     · simp only [primesOverSpanEquivMonicFactorsMod_symm_apply,
         Equiv.apply_symm_apply (normalizedFactorsMapEquivNormalizedFactorsMinPolyMk _ _ _ _),
         Polynomial.map_map, Int.quotientSpanNatEquivZMod_comp_castRingHom, mapEquiv_apply]
