@@ -56,7 +56,7 @@ variable [Preorder α] [Preorder β] [TopologicalSpace α] [TopologicalSpace β]
 instance (priority := 100) toOrderHomClass :
     OrderHomClass F α β :=
   { ‹ContinuousOrderHomClass F α β› with
-    map_rel := ContinuousOrderHomClass.map_monotone }
+    monotone := ContinuousOrderHomClass.map_monotone }
 
 /-- Turn an element of a type `F` satisfying `ContinuousOrderHomClass F α β` into an actual
 `ContinuousOrderHom`. This is declared as the default coercion from `F` to `α →Co β`. -/

@@ -343,8 +343,7 @@ def MapSubtype.orderIso : Submodule R p ≃o { p' : Submodule R M // p' ≤ p } 
 /-- If `p ⊆ M` is a submodule, the ordering of submodules of `p` is embedded in the ordering of
 submodules of `M`. -/
 def MapSubtype.orderEmbedding : Submodule R p ↪o Submodule R M :=
-  (RelIso.toRelEmbedding <| MapSubtype.orderIso p).trans <|
-    Subtype.relEmbedding (X := Submodule R M) (fun p p' ↦ p ≤ p') _
+  (OrderIso.toOrderEmbedding <| MapSubtype.orderIso p).trans <| OrderEmbedding.subtype _
 
 @[simp]
 theorem map_subtype_embedding_eq (p' : Submodule R p) :

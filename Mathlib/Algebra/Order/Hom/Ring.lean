@@ -109,13 +109,13 @@ variable [EquivLike F α β]
 into an actual `OrderRingIso`.
 This is declared as the default coercion from `F` to `α ≃+*o β`. -/
 @[coe]
-def OrderRingIsoClass.toOrderRingIso [Mul α] [Add α] [LE α] [Mul β] [Add β] [LE β]
+def OrderRingIsoClass.toOrderRingIso [Mul α] [Add α] [Preorder α] [Mul β] [Add β] [Preorder β]
     [OrderIsoClass F α β] [RingEquivClass F α β] (f : F) : α ≃+*o β :=
 { (f : α ≃+* β) with map_le_map_iff' := map_le_map_iff f}
 
 /-- Any type satisfying `OrderRingIsoClass` can be cast into `OrderRingIso` via
   `OrderRingIsoClass.toOrderRingIso`. -/
-instance [Mul α] [Add α] [LE α] [Mul β] [Add β] [LE β] [OrderIsoClass F α β]
+instance [Mul α] [Add α] [Preorder α] [Mul β] [Add β] [Preorder β] [OrderIsoClass F α β]
     [RingEquivClass F α β] : CoeTC F (α ≃+*o β) :=
   ⟨OrderRingIsoClass.toOrderRingIso⟩
 
@@ -147,7 +147,7 @@ instance : FunLike (α →+*o β) α β where
     exact DFunLike.coe_injective' h
 
 instance : OrderHomClass (α →+*o β) α β where
-  map_rel f _ _ h := f.monotone' h
+ monotone f := f.monotone'
 
 instance : RingHomClass (α →+*o β) α β where
   map_mul f := f.map_mul'
@@ -295,7 +295,7 @@ namespace OrderRingIso
 
 section LE
 
-variable [Mul α] [Add α] [LE α] [Mul β] [Add β] [LE β] [Mul γ] [Add γ] [LE γ]
+variable [Mul α] [Add α] [Preorder α] [Mul β] [Add β] [Preorder β] [Mul γ] [Add γ] [Preorder γ]
 
 /-- Reinterpret an ordered ring isomorphism as an order isomorphism. -/
 @[coe]

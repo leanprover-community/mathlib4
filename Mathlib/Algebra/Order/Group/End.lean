@@ -61,9 +61,9 @@ instance : Group (r ≃r r) where
   mul f₁ f₂ := f₂.trans f₁
   inv := .symm
   mul_assoc _ _ _ := rfl
-  one_mul _ := ext fun _ => rfl
-  mul_one _ := ext fun _ => rfl
-  inv_mul_cancel f := ext f.symm_apply_apply
+  one_mul _ := rfl
+  mul_one _ := rfl
+  inv_mul_cancel f := f.self_trans_symm
 
 lemma one_def : (1 : r ≃r r) = .refl r := rfl
 lemma mul_def (f g : r ≃r r) : (f * g) = g.trans f := rfl
