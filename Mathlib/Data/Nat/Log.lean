@@ -204,7 +204,7 @@ theorem log_antitone_left {n : ℕ} : AntitoneOn (fun b => log b n) (Set.Ioi 1) 
   log_anti_left (Set.mem_Iio.1 hc) hb
 
 @[gcongr]
-theorem log_mono_both {b c m n : ℕ} (hc : 1 < c) (hb : c ≤ b) (hmn : m ≤ n) :
+theorem log_mono {b c m n : ℕ} (hc : 1 < c) (hb : c ≤ b) (hmn : m ≤ n) :
     log b m ≤ log c n := by
   trans log c m <;> gcongr
   assumption
@@ -334,7 +334,7 @@ theorem clog_antitone_left {n : ℕ} : AntitoneOn (fun b : ℕ => clog b n) (Set
   fun _ hc _ _ hb => clog_anti_left (Set.mem_Iio.1 hc) hb
 
 @[gcongr]
-theorem clog_mono_both {b c m n : ℕ} (hc : 1 < c) (hb : c ≤ b) (hmn : m ≤ n) :
+theorem clog_mono {b c m n : ℕ} (hc : 1 < c) (hb : c ≤ b) (hmn : m ≤ n) :
     clog b m ≤ clog c n := by
   trans clog b n <;> gcongr; assumption
 
