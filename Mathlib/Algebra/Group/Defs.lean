@@ -104,6 +104,11 @@ section Regular
 
 variable {R : Type*}
 
+@[to_additive] theorem isCancelMul_iff_forall_isRegular [Mul R] :
+    IsCancelMul R ↔ ∀ r : R, IsRegular r := by
+  rw [isCancelMul_iff, isLeftCancelMul_iff, isRightCancelMul_iff, ← forall_and]
+  exact forall_congr' fun _ ↦ isRegular_iff.symm
+
 /-- If all multiplications cancel on the left then every element is left-regular. -/
 @[to_additive "If all additions cancel on the left then every element is add-left-regular."]
 theorem IsLeftRegular.all [Mul R] [IsLeftCancelMul R] (g : R) : IsLeftRegular g :=
@@ -1128,12 +1133,11 @@ instance (priority := 100) Group.toDivisionMonoid : DivisionMonoid G :=
 
 -- see Note [lower instance priority]
 @[to_additive]
-instance (priority := 100) Group.toCancelMonoid : CancelMonoid G :=
-  { ‹Group G› with
-    mul_right_cancel := fun a b c h ↦ by
-      rw [← mul_inv_cancel_right b a, show b * a = c * a from h, mul_inv_cancel_right]
-    mul_left_cancel := fun a {b c} h ↦ by
-      rw [← inv_mul_cancel_left a b, show a * b = a * c from h, inv_mul_cancel_left] }
+instance (priority := 100) Group.toCancelMonoid : CancelMonoid G where
+  mul_right_cancel := fun a b c h ↦ by
+    rw [← mul_inv_cancel_right b a, show b * a = c * a from h, mul_inv_cancel_right]
+  mul_left_cancel := fun a {b c} h ↦ by
+    rw [← inv_mul_cancel_left a b, show a * b = a * c from h, inv_mul_cancel_left]
 
 end Group
 

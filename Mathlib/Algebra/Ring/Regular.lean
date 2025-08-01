@@ -62,8 +62,7 @@ section IsDomain
 
 -- see Note [lower instance priority]
 instance (priority := 100) IsDomain.toCancelMonoidWithZero [Semiring α] [IsDomain α] :
-    CancelMonoidWithZero α :=
-  { }
+    CancelMonoidWithZero α where
 
 variable [CommSemiring α] [IsDomain α]
 
