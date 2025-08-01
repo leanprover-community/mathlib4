@@ -199,6 +199,14 @@ theorem intrinsicClosure_idem (s : Set P) :
   rw [intrinsicClosure, preimage_image_eq _ Subtype.coe_injective]
   exact isClosed_closure
 
+theorem intrinsicClosure_eq_closure_inter_affineSpan (s : Set P) :
+    intrinsicClosure 𝕜 s = closure s ∩ affineSpan 𝕜 s := by
+  have h : Topology.IsInducing ((↑) : affineSpan 𝕜 s → P) := .subtypeVal
+  rw [intrinsicClosure, h.closure_eq_preimage_closure_image, Set.image_preimage_eq_inter_range,
+    Set.image_preimage_eq_of_subset ?_, Subtype.range_coe]
+  rw [Subtype.range_coe]
+  apply subset_affineSpan
+
 end AddTorsor
 
 namespace AffineIsometry
@@ -284,6 +292,17 @@ theorem closure_diff_intrinsicFrontier (s : Set P) :
   intrinsicClosure_eq_closure 𝕜 s ▸ intrinsicClosure_diff_intrinsicFrontier s
 
 end NormedAddTorsor
+
+section Convex
+
+variable [Field 𝕜] [LinearOrder 𝕜] [AddCommGroup V] [Module 𝕜 V] [TopologicalSpace V]
+  [IsTopologicalAddGroup V] [ContinuousConstSMul 𝕜 V] {s : Set V}
+
+protected theorem Convex.intrinsicClosure (hs : Convex 𝕜 s) : Convex 𝕜 (intrinsicClosure 𝕜 s) := by
+  rw [intrinsicClosure_eq_closure_inter_affineSpan]
+  exact hs.closure.inter (affineSpan 𝕜 s).convex
+
+end Convex
 
 private theorem aux {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] (φ : α ≃ₜ β)
     (s : Set β) : (interior s).Nonempty ↔ (interior (φ ⁻¹' s)).Nonempty := by

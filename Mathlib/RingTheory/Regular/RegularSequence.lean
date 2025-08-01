@@ -592,8 +592,6 @@ private lemma IsWeaklyRegular.swap {a b : R} (h1 : IsWeaklyRegular M [a, b])
 -- subsequences and regularity on poly ring. See [07DW] in stacks project
 -- We need a theory of multivariate polynomial modules first
 
--- This is needed due to a bug in the linter
-set_option linter.unusedVariables false in
 lemma IsWeaklyRegular.prototype_perm {rs : List R} (h : IsWeaklyRegular M rs)
     {rs'} (h'' : rs ~ rs') (h' : ∀ a b rs', (a :: b :: rs') <+~ rs →
       let K := torsionBy R (M ⧸ (Ideal.ofList rs' • ⊤ : Submodule R M)) b

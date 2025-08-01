@@ -30,12 +30,11 @@ of formally unramified algebras which are essentially of finite type.
 
 -/
 
-variable {R S} [CommRing R] [CommRing S] [Algebra R S]
-variable (M : Type*) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
-
-open Algebra
-
+open Algebra Module
 open scoped TensorProduct
+
+variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+variable (M : Type*) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
 
 namespace Algebra.FormallyUnramified
 
