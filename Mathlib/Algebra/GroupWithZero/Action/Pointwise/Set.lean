@@ -105,7 +105,7 @@ end SMulWithZero
 /-- If the scalar multiplication `(· • ·) : α → β → β` is distributive,
 then so is `(· • ·) : α → Set β → Set β`. -/
 protected noncomputable def distribSMulSet [AddZeroClass β] [DistribSMul α β] :
-   DistribSMul α (Set β) where
+    DistribSMul α (Set β) where
   smul_add _ _ _ := image_image2_distrib <| smul_add _
 
 scoped[Pointwise] attribute [instance] Set.distribSMulSet

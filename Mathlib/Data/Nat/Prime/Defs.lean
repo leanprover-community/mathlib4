@@ -28,9 +28,8 @@ This file deals with prime numbers: natural numbers `p ≥ 2` whose only divisor
 
 assert_not_exists Ring
 
-open Bool Subtype Nat
-
 namespace Nat
+
 variable {n : ℕ}
 
 /-- `Nat.Prime p` means that `p` is a prime number, that is, a natural number
@@ -461,10 +460,6 @@ end Primes
 
 instance monoid.primePow {α : Type*} [Monoid α] : Pow α Primes :=
   ⟨fun x p => x ^ (p : ℕ)⟩
-
-end Nat
-
-namespace Nat
 
 instance fact_prime_two : Fact (Prime 2) :=
   ⟨prime_two⟩

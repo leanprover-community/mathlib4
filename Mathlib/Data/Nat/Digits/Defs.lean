@@ -461,6 +461,35 @@ lemma self_div_pow_eq_ofDigits_drop {p : ℕ} (i n : ℕ) (h : 2 ≤ p) :
     (fun l hl ↦ digits_lt_base h hl)
   exact (ofDigits_digits p n).symm
 
+/-- Interpreting as a base `p` number and modulo `p^i` is the same as taking the first `i` digits.
+-/
+lemma ofDigits_mod_pow_eq_ofDigits_take
+    {p : ℕ} (i : ℕ) (hpos : 0 < p) (digits : List ℕ) (w₁ : ∀ l ∈ digits, l < p) :
+    ofDigits p digits % p ^ i = ofDigits p (digits.take i) := by
+  induction i generalizing digits with
+  | zero => simp [mod_one]
+  | succ i ih =>
+    cases digits with
+    | nil => simp
+    | cons hd tl =>
+      rw [List.take_succ_cons, ofDigits_cons, ofDigits_cons,
+        ← ih _ fun x hx ↦ w₁ x <| List.mem_cons_of_mem hd hx, add_mod,
+        mod_eq_of_lt <| lt_of_lt_of_le (w₁ hd List.mem_cons_self) (le_pow <| add_one_pos i),
+        pow_succ', mul_mod_mul_left, mod_eq_of_lt]
+      apply add_lt_of_lt_sub
+      apply lt_of_lt_of_le (b := p)
+      · exact w₁ hd List.mem_cons_self
+      · rw [← Nat.mul_sub]
+        exact Nat.le_mul_of_pos_right _ <| Nat.sub_pos_of_lt <| mod_lt _ <| pow_pos hpos i
+
+/-- `n` modulo `p^i` is like taking the least significant `i` digits of `n` in base `p`.
+-/
+lemma self_mod_pow_eq_ofDigits_take {p : ℕ} (i n : ℕ) (h : 2 ≤ p) :
+    n % p ^ i = ofDigits p ((p.digits n).take i) := by
+  convert ofDigits_mod_pow_eq_ofDigits_take i (zero_lt_of_lt h) (p.digits n)
+    (fun l hl ↦ digits_lt_base h hl)
+  exact (ofDigits_digits p n).symm
+
 /-! ### `Nat.toDigits` length -/
 
 lemma toDigitsCore_lens_eq_aux (b f : Nat) :
