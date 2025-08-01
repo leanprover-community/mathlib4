@@ -1,7 +1,12 @@
+/-
+Copyright (c) 2025 Yueqing Feng. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yueqing Feng, Lucy Horowitz
+-/
 import Mathlib.Geometry.Manifold.ChartedSpace
 import Mathlib.Topology.Constructions
 
-/-
+/-!
 # Main definitions
 
 - `ZeroDimModel`: The model space `Fin 0 → ℝ` for zero-dimensional manifolds.
@@ -19,6 +24,7 @@ open Topology Set
 
 noncomputable section
 
+/-- The model space `Fin 0 → ℝ` for zero-dimensional manifolds. -/
 def ZeroDimModel : Type := (Fin 0 → ℝ)
     deriving TopologicalSpace, Unique, Subsingleton
 
