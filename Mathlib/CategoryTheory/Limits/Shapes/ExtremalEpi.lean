@@ -31,7 +31,8 @@ open Category Limits
 variable {C : Type u} [Category.{v} C]
 variable {P Q : C}
 
-/-- An extremal epimorphism `f` is an epimorphism that doesn't factor through any non-trivial monomorphism. -/
+/-- An extremal epimorphism `f` is an epimorphism that doesn't factor through any non-trivial
+monomorphism. -/
 class ExtremalEpi (f : P ⟶ Q) : Prop where
   /-- The epimorphism condition on `f` -/
   epi : Epi f := by infer_instance
@@ -86,17 +87,9 @@ end
 
 attribute [instance] ExtremalEpiCategory.extremalEpi_of_epi
 
-section
-
-attribute [local instance] extremalEpi_of_epi
-
 instance (priority := 100) balanced_of_extremalEpiCategory [ExtremalEpiCategory C] :
     Balanced C where
   isIso_of_mono_of_epi _ _ _ := isIso_of_mono_of_extremalEpi _
-
-end
-
-section
 
 /-- Strong epimorphisms are extremal. -/
 instance extremalEpi_of_strongEpi {X Y : C} (f : X ⟶ Y) [StrongEpi f] : ExtremalEpi f where
@@ -121,7 +114,5 @@ lemma hasLift_of_extremalEpi {X Y A B : C} {f : X ⟶ Y} [ExtremalEpi f] {g : A 
 instance strongEpi_of_extremalEpi [HasPullbacks C] {X Y : C} (f : X ⟶ Y) [ExtremalEpi f] :
     StrongEpi f where
   llp A B g := .mk fun sq ↦ hasLift_of_extremalEpi sq
-
-end
 
 end CategoryTheory

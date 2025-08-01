@@ -67,6 +67,13 @@ theorem ext {F F' : MonoFactorization f} (hI : F.I = F'.I)
   apply (cancel_mono Fm).1
   rw [Ffac, hm, Ffac']
 
+/-- Any mono factorization of `f` gives a mono factorization of `g ≫ f`. -/
+@[simps]
+def precomp (F : MonoFactorization f) {X' : C} (g : X' ⟶ X) : MonoFactorization (g ≫ f) where
+  I := F.I
+  m := F.m
+  e := g ≫ F.e
+
 /-- Any mono factorization of `f` gives a mono factorization of `f ≫ g` when `g` is a mono. -/
 @[simps]
 def compMono (F : MonoFactorization f) {Y' : C} (g : Y ⟶ Y') [Mono g] :
@@ -85,13 +92,6 @@ noncomputable def ofCompIso {Y' : C} {g : Y ⟶ Y'} [IsIso g] (F : MonoFactoriza
   m := F.m ≫ inv g
   m_mono := mono_comp _ _
   e := F.e
-
-/-- Any mono factorization of `f` gives a mono factorization of `g ≫ f`. -/
-@[simps]
-def isoComp (F : MonoFactorization f) {X' : C} (g : X' ⟶ X) : MonoFactorization (g ≫ f) where
-  I := F.I
-  m := F.m
-  e := g ≫ F.e
 
 /-- A mono factorization of `g ≫ f`, where `g` is an isomorphism,
 gives a mono factorization of `f`. -/

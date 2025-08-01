@@ -452,7 +452,7 @@ instance image.preComp_epi_of_epi [HasImage g] [HasImage (f ≫ g)] [Epi f] :
 
 instance hasImage_iso_comp [IsIso f] [HasImage g] : HasImage (f ≫ g) :=
   HasImage.mk
-    { F := (Image.MonoFactorization g).isoComp f
+    { F := (Image.MonoFactorization g).precomp f
       isImage := { lift := fun F' => image.lift (F'.ofIsoComp f)
                    lift_fac := fun F' => by
                     dsimp
