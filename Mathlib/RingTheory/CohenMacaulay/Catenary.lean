@@ -65,7 +65,7 @@ lemma Ideal.ofList_height_eq_length_of_isWeaklyRegular (rs : List R) (reg : IsWe
     have p_min : p ∈ (Module.annihilator R
       (R ⧸ Ideal.ofList (rs.take n) • (⊤ : Ideal R))).minimalPrimes := by
       simpa [← eq, Ideal.annihilator_quotient] using hq
-    absurd Module.notMem_minimalPrimes_of_isSMulRegular (reg.1 n (by simp [len])) p_min
+    absurd IsSMulRegular.notMem_of_mem_minimalPrimes (reg.1 n (by simp [len])) p_min
     apply hp.1.2 (Ideal.subset_span _)
     simp
 
