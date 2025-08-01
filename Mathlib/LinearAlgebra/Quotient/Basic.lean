@@ -71,9 +71,7 @@ theorem nontrivial_of_lt_top (h : p < ⊤) : Nontrivial (M ⧸ p) := by
   simpa using notMem_s
 
 instance [Subsingleton M] : Subsingleton (M ⧸ p) := by
-  apply subsingleton_of_forall_eq 0
-  rintro ⟨x⟩
-  exact congrArg Submodule.Quotient.mk (Subsingleton.eq_zero x)
+  Submodule.subsingleton_quotient_iff_eq_top.mpr (Subsingleton.elim _ _)
 
 end Quotient
 
