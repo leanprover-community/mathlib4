@@ -72,14 +72,6 @@ theorem exists_mem_notMem_hom_path_path_of_notMem_mem {a b : V} (p : Path a b) (
   simp at hu_not_in_compl hv_in_compl
   refine ⟨u, hu_not_in_compl, v, hv_in_compl, e, p₁, p₂, hp⟩
 
-/-- Corollary: there exists an edge crossing the boundary. -/
-theorem exists_notMem_mem_hom_of_notMem_mem {a b : V} (p : Path a b) (S : Set V)
-    (ha_not_in_S : a ∉ S) (hb_in_S : b ∈ S) :
-    ∃ (u v : V) (_ : u ⟶ v), u ∉ S ∧ v ∈ S := by
-  obtain ⟨u, hu_not_S, v, hv_S, e, _, _⟩ :=
-    exists_notMem_mem_hom_path_path_of_notMem_mem p S ha_not_in_S hb_in_S
-  exact ⟨u, v, e, hu_not_S, hv_S⟩
-
 end BoundaryEdges
 
 end Quiver.Path
