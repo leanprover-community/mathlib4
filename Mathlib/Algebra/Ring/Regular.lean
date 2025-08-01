@@ -44,12 +44,10 @@ theorem isRegular_iff_ne_zero' [Nontrivial α] [NonUnitalNonAssocRing α] [NoZer
 /-- A ring with no zero divisors is a `CancelMonoidWithZero`.
 
 Note this is not an instance as it forms a typeclass loop. -/
-abbrev NoZeroDivisors.toCancelMonoidWithZero [Ring α] [NoZeroDivisors α] : CancelMonoidWithZero α :=
-  { (by infer_instance : MonoidWithZero α) with
-    mul_left_cancel_of_ne_zero := fun ha =>
-      @IsRegular.left _ _ _ (isRegular_of_ne_zero' ha) _ _,
-    mul_right_cancel_of_ne_zero := fun hb =>
-      @IsRegular.right _ _ _ (isRegular_of_ne_zero' hb) _ _ }
+abbrev NoZeroDivisors.toCancelMonoidWithZero [Ring α] [NoZeroDivisors α] :
+    CancelMonoidWithZero α where
+  mul_left_cancel_of_ne_zero ha := (isRegular_of_ne_zero' ha).1
+  mul_right_cancel_of_ne_zero hb := (isRegular_of_ne_zero' hb).2
 
 /-- A commutative ring with no zero divisors is a `CancelCommMonoidWithZero`.
 
