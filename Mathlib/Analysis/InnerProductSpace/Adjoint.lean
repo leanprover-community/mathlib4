@@ -248,6 +248,22 @@ theorem isAdjointPair_inner (A : E →L[𝕜] F) :
   intro x y
   simp only [sesqFormOfInner_apply_apply, adjoint_inner_left]
 
+theorem adjoint_innerSL_apply (x : E) :
+    adjoint (innerSL 𝕜 x) = (lsmul 𝕜 𝕜).flip x := by
+  ext
+  apply ext_inner_left 𝕜
+  intro y
+  simp [adjoint_inner_right]
+
+theorem innerSL_apply_comp (x : F) (f : E →L[𝕜] F) :
+    innerSL 𝕜 x ∘L f = innerSL 𝕜 (adjoint f x) := by
+  ext; simp [adjoint_inner_left]
+
+omit [CompleteSpace E] in
+theorem innerSL_apply_comp_of_isSymmetric (x : E) {f : E →L[𝕜] E} (hf : f.IsSymmetric) :
+    innerSL 𝕜 x ∘L f = innerSL 𝕜 (f x) := by
+  ext; simp [hf]
+
 end ContinuousLinearMap
 
 /-! ### Self-adjoint operators -/
