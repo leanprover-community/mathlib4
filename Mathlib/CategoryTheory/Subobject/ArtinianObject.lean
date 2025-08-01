@@ -142,7 +142,7 @@ theorem exists_simple_subobject {X : C} [IsArtinianObject X] (h : ¬IsZero X) :
   obtain ⟨Y, s⟩ := (IsAtomic.eq_bot_or_exists_atom_le (⊤ : Subobject X)).resolve_left top_ne_bot
   exact ⟨Y, (subobject_simple_iff_isAtom _).mpr s.1⟩
 
-/-- Choose an arbitrary simple subobject of a non-zero artinian object. -/
+/-- Choose an arbitrary simple subobject of a non-zero Artinian object. -/
 noncomputable def simpleSubobject {X : C} [IsArtinianObject X] (h : ¬IsZero X) : C :=
   (exists_simple_subobject h).choose
 
