@@ -153,14 +153,14 @@ def sUnion (x : Class) : Class :=
   ⋃₀ classToCong x
 
 @[inherit_doc]
-prefix:110 "⋃₀ " => Class.sUnion
+scoped prefix:110 "⋃₀ " => Class.sUnion
 
 /-- The intersection of a class is the class of all members of ZFC sets in the class -/
 def sInter (x : Class) : Class :=
   ⋂₀ classToCong x
 
 @[inherit_doc]
-prefix:110 "⋂₀ " => Class.sInter
+scoped prefix:110 "⋂₀ " => Class.sInter
 
 theorem ofSet.inj {x y : ZFSet.{u}} (h : (x : Class.{u}) = y) : x = y :=
   ZFSet.ext fun z => by
@@ -223,6 +223,7 @@ theorem sUnion_apply {x : Class} {y : ZFSet} : (⋃₀ x) y ↔ ∃ z : ZFSet, x
     exact ⟨z, hxz, hyz⟩
   · exact fun ⟨z, hxz, hyz⟩ => ⟨_, coe_mem.2 hxz, hyz⟩
 
+open scoped ZFSet in
 @[simp, norm_cast]
 theorem coe_sUnion (x : ZFSet.{u}) : ↑(⋃₀ x : ZFSet) = ⋃₀ (x : Class.{u}) :=
   ext fun y =>
@@ -241,6 +242,7 @@ theorem sInter_apply {x : Class.{u}} {y : ZFSet.{u}} : (⋂₀ x) y ↔ ∀ z : 
   rintro H - ⟨z, rfl, hxz⟩
   exact H _ hxz
 
+open scoped ZFSet in
 @[simp, norm_cast]
 theorem coe_sInter {x : ZFSet.{u}} (h : x.Nonempty) : ↑(⋂₀ x : ZFSet) = ⋂₀ (x : Class.{u}) :=
   Set.ext fun _ => (ZFSet.mem_sInter h).trans sInter_apply.symm

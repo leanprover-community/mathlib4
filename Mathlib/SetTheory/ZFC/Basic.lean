@@ -470,14 +470,14 @@ def sUnion : ZFSet → ZFSet :=
           fun b hb => ⟨b, PSet.Equiv.symm hb⟩⟩
 
 @[inherit_doc]
-prefix:110 "⋃₀ " => ZFSet.sUnion
+scoped prefix:110 "⋃₀ " => ZFSet.sUnion
 
 /-- The intersection operator, the collection of elements in all of the elements of a ZFC set. We
 define `⋂₀ ∅ = ∅`. -/
 def sInter (x : ZFSet) : ZFSet := (⋃₀ x).sep (fun y => ∀ z ∈ x, y ∈ z)
 
 @[inherit_doc]
-prefix:110 "⋂₀ " => ZFSet.sInter
+scoped prefix:110 "⋂₀ " => ZFSet.sInter
 
 @[simp]
 theorem mem_sUnion {x y : ZFSet.{u}} : y ∈ ⋃₀ x ↔ ∃ z ∈ x, y ∈ z :=
