@@ -25,6 +25,7 @@ open Topology Set
 noncomputable section
 
 /-- The model space `Fin 0 → ℝ` for zero-dimensional manifolds. -/
+
 def ZeroDimModel : Type := (Fin 0 → ℝ)
     deriving TopologicalSpace, Unique, Subsingleton
 
@@ -56,18 +57,17 @@ lemma exists_chart_at (x : M) : ∃ (U : Set M) (_ : U ≃ₜ ZeroDimModel),
     · exact ChartedSpace.mem_chart_source x
   · exact φ
 
+instance : DiscreteTopology ZeroDimModel := Subsingleton.discreteTopology
+
 /-- Any manifold modeled on the zero-dimensional space has discrete topology. -/
+
 theorem zero_dim_manifold_discrete : DiscreteTopology M := by
   rw [← singletons_open_iff_discrete]
   intro a
-  have : Unique ZeroDimModel := inferInstance
-  obtain ⟨U, φ, h1, h2⟩ := exists_chart_at a
-  have : Unique U := φ.unique
-  suffices {a} = U by rwa [this]
-  apply Set.eq_of_subset_of_card_le
-  · exact Set.singleton_subset_iff.mpr h2
-  simp only [Set.card_singleton]
-  exact Nat.factorial_eq_one.mp rfl
+  rw [← (chartAt ZeroDimModel a).isOpen_image_iff_of_subset_source]
+  · apply isOpen_discrete
+  · rw [Set.singleton_subset_iff]
+    apply ChartedSpace.mem_chart_source
 
 variable [SecondCountableTopology M]
 
@@ -84,6 +84,7 @@ variable {M : Type} [TopologicalSpace M] [DiscreteTopology M] [Countable M]
 open PUnit
 
 /-- Construction of a zero-dimensional manifold structure on any discrete countable space. -/
+
 def zeroDimMfd : ChartedSpace ZeroDimModel M :=
 { atlas       := Set.univ,
   chartAt     := fun x ↦
