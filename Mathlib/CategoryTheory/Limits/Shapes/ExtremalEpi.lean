@@ -31,15 +31,14 @@ open Category Limits
 variable {C : Type u} [Category.{v} C]
 variable {P Q : C}
 
-/-- A extremal epi `f` is an epi that doesn't factor through any non-trivial monomorphism. -/
+/-- An extremal epimorphism `f` is an epimorphism that doesn't factor through any non-trivial monomorphism. -/
 class ExtremalEpi (f : P ⟶ Q) : Prop where
-  -- The epimorphism condition on `f`
+  /-- The epimorphism condition on `f` -/
   epi : Epi f := by infer_instance
-  -- The left lifting property with respect to all monomorphism -/
+  /-- The left lifting property with respect to all monomorphism -/
   isIso_of_monoFactor : ∀ (d : MonoFactorization f), IsIso d.m
 
-instance (priority := 100) epi_of_extremalEpi (f : P ⟶ Q) [ExtremalEpi f] : Epi f :=
-  ExtremalEpi.epi
+attribute [instance 100] ExtremalEpi.epi
 
 section
 
@@ -54,12 +53,14 @@ instance (priority := 100) extremalEpi_of_isIso [IsIso f] : ExtremalEpi f where
     · aesop_cat
 
 theorem ExtremalEpi.of_arrow_iso {A B A' B' : C} {f : A ⟶ B} {g : A' ⟶ B'}
-    (e : Arrow.mk f ≅ Arrow.mk g) [h : ExtremalEpi f] : ExtremalEpi g :=
-  { epi := by rw [Arrow.iso_w' e]; infer_instance
-    isIso_of_monoFactor d := by
-        let fac : MonoFactorization f := ⟨d.I, d.m ≫ e.inv.right, e.hom.left ≫ d.e, by aesop_cat⟩
-        have := h.isIso_of_monoFactor fac
-        exact IsIso.of_isIso_comp_right d.m e.inv.right }
+    (e : Arrow.mk f ≅ Arrow.mk g) [h : ExtremalEpi f] :
+    ExtremalEpi g where
+  epi := by rw [Arrow.iso_w' e]; infer_instance
+  isIso_of_monoFactor d :=
+    let fac : MonoFactorization f := ⟨d.I, d.m ≫ e.inv.right, e.hom.left ≫ d.e, by aesop_cat⟩
+    have := h.isIso_of_monoFactor fac
+    IsIso.of_isIso_comp_right d.m e.inv.right
+
 
 theorem ExtremalEpi.iff_of_arrow_iso {A B A' B' : C} {f : A ⟶ B} {g : A' ⟶ B'}
     (e : Arrow.mk f ≅ Arrow.mk g) : ExtremalEpi f ↔ ExtremalEpi g := by
@@ -68,7 +69,7 @@ theorem ExtremalEpi.iff_of_arrow_iso {A B A' B' : C} {f : A ⟶ B} {g : A' ⟶ B
 
 end
 
-/-- A extremal epimorphism that is a monomorphism is an isomorphism. -/
+/-- An extremal epimorphism that is a monomorphism is an isomorphism. -/
 theorem isIso_of_mono_of_extremalEpi (f : P ⟶ Q) [Mono f] [ExtremalEpi f] : IsIso f :=
   ExtremalEpi.isIso_of_monoFactor ⟨P, f, 𝟙 _, id_comp f⟩
 
@@ -76,15 +77,14 @@ section
 
 variable (C)
 
-/-- A extremal epi category is a category in which every epimorphism is extremal. -/
+/-- An extremal epi category is a category in which every epimorphism is extremal. -/
 class ExtremalEpiCategory : Prop where
-  /-- A extremal epi category is a category in which every epimorphism is extremal. -/
+  /-- Every epimorphism is extremal. -/
   extremalEpi_of_epi : ∀ {X Y : C} (f : X ⟶ Y) [Epi f], ExtremalEpi f
 
 end
 
-theorem extremalEpi_of_epi [ExtremalEpiCategory C] (f : P ⟶ Q) [Epi f] : ExtremalEpi f :=
-  ExtremalEpiCategory.extremalEpi_of_epi _
+attribute [instance] ExtremalEpiCategory.extremalEpi_of_epi
 
 section
 
@@ -98,7 +98,7 @@ end
 
 section
 
--- Strong epimorphisms are extremal
+/-- Strong epimorphisms are extremal. -/
 instance extremalEpi_of_strongEpi {X Y : C} (f : X ⟶ Y) [StrongEpi f] : ExtremalEpi f where
   isIso_of_monoFactor d := by
     let square : CommSq d.e f d.m (𝟙 _) := ⟨by rw [d.fac]; aesop_cat⟩
@@ -114,10 +114,10 @@ lemma hasLift_of_extremalEpi {X Y A B : C} {f : X ⟶ Y} [ExtremalEpi f] {g : A 
     ⟨pullback h g, fs, pullback.lift f i (w := sq.w.symm), pullback.lift_fst f i (w := sq.w.symm)⟩
   have faa : f ≫ inv fs = l := by aesop_cat
   refine CommSq.HasLift.mk' ⟨inv fs ≫ sn , ?_, ?_⟩
-  · rw [← assoc, faa, pullback.lift_snd f i (w := sq.w.symm)]
+  · rw [reassoc_of% faa, pullback.lift_snd f i (w := sq.w.symm)]
   · rw [assoc, (cancel_epi fs (g := inv fs ≫ sn ≫ g)).1 (by simp; rw [pullback.condition])]
 
---  For a category with pullbacks, extremal epimorphisms are strong
+/-- For a category with pullbacks, extremal epimorphisms are strong. -/
 instance strongEpi_of_extremalEpi [HasPullbacks C] {X Y : C} (f : X ⟶ Y) [ExtremalEpi f] :
     StrongEpi f where
   llp A B g := .mk fun sq ↦ hasLift_of_extremalEpi sq

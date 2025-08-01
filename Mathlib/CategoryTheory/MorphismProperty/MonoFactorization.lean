@@ -28,9 +28,9 @@ namespace CategoryTheory.Limits
 variable {C : Type u} [Category.{v} C]
 variable {X Y : C} (f : X ⟶ Y)
 
-/-- A factorisation of a morphism `f = e ≫ m`, with `m` monic. -/
+/-- A factorization of a morphism `f = e ≫ m`, with `m` monic. -/
 structure MonoFactorization where
-  I : C -- Porting note: violates naming conventions but can't think a better replacement
+  I : C
   m : I ⟶ Y
   [m_mono : Mono m]
   e : X ⟶ I
@@ -45,7 +45,7 @@ attribute [instance] MonoFactorization.m_mono
 
 namespace MonoFactorization
 
-/-- The obvious factorisation of a monomorphism through itself. -/
+/-- The obvious factorization of a monomorphism through itself. -/
 def self [Mono f] : MonoFactorization f where
   I := X
   m := f
@@ -57,7 +57,7 @@ instance [Mono f] : Inhabited (MonoFactorization f) := ⟨self f⟩
 
 variable {f}
 
-/-- The morphism `m` in a factorisation `f = e ≫ m` through a monomorphism is uniquely
+/-- The morphism `m` in a factorization `f = e ≫ m` through a monomorphism is uniquely
 determined. -/
 @[ext (iff := false)]
 theorem ext {F F' : MonoFactorization f} (hI : F.I = F'.I)
@@ -69,7 +69,7 @@ theorem ext {F F' : MonoFactorization f} (hI : F.I = F'.I)
   apply (cancel_mono Fm).1
   rw [Ffac, hm, Ffac']
 
-/-- Any mono factorisation of `f` gives a mono factorisation of `f ≫ g` when `g` is a mono. -/
+/-- Any mono factorization of `f` gives a mono factorization of `f ≫ g` when `g` is a mono. -/
 @[simps]
 def compMono (F : MonoFactorization f) {Y' : C} (g : Y ⟶ Y') [Mono g] :
     MonoFactorization (f ≫ g) where
@@ -78,8 +78,8 @@ def compMono (F : MonoFactorization f) {Y' : C} (g : Y ⟶ Y') [Mono g] :
   m_mono := mono_comp _ _
   e := F.e
 
-/-- A mono factorisation of `f ≫ g`, where `g` is an isomorphism,
-gives a mono factorisation of `f`. -/
+/-- A mono factorization of `f ≫ g`, where `g` is an isomorphism,
+gives a mono factorization of `f`. -/
 @[simps]
 def ofCompIso {Y' : C} {g : Y ⟶ Y'} [IsIso g] (F : MonoFactorization (f ≫ g)) :
     MonoFactorization f where
@@ -88,15 +88,15 @@ def ofCompIso {Y' : C} {g : Y ⟶ Y'} [IsIso g] (F : MonoFactorization (f ≫ g)
   m_mono := mono_comp _ _
   e := F.e
 
-/-- Any mono factorisation of `f` gives a mono factorisation of `g ≫ f`. -/
+/-- Any mono factorization of `f` gives a mono factorization of `g ≫ f`. -/
 @[simps]
 def isoComp (F : MonoFactorization f) {X' : C} (g : X' ⟶ X) : MonoFactorization (g ≫ f) where
   I := F.I
   m := F.m
   e := g ≫ F.e
 
-/-- A mono factorisation of `g ≫ f`, where `g` is an isomorphism,
-gives a mono factorisation of `f`. -/
+/-- A mono factorization of `g ≫ f`, where `g` is an isomorphism,
+gives a mono factorization of `f`. -/
 @[simps]
 def ofIsoComp {X' : C} (g : X' ⟶ X) [IsIso g] (F : MonoFactorization (g ≫ f)) :
     MonoFactorization f where
@@ -104,8 +104,8 @@ def ofIsoComp {X' : C} (g : X' ⟶ X) [IsIso g] (F : MonoFactorization (g ≫ f)
   m := F.m
   e := inv g ≫ F.e
 
-/-- If `f` and `g` are isomorphic arrows, then a mono factorisation of `f`
-gives a mono factorisation of `g` -/
+/-- If `f` and `g` are isomorphic arrows, then a mono factorization of `f`
+gives a mono factorization of `g` -/
 @[simps]
 def ofArrowIso {f g : Arrow C} (F : MonoFactorization f.hom) (sq : f ⟶ g) [IsIso sq] :
     MonoFactorization g.hom where
