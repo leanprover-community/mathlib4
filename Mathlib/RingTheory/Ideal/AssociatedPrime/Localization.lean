@@ -114,7 +114,8 @@ variable (R')
 
 include S f in
 open Set in
-lemma associatedPrimes_isLocalizedModule_eq_preimage_comap_associatedPrimes [IsNoetherianRing R] :
+lemma preimage_comap_associatedPrimes_eq_associatedPrimes_of_isLocalizedModule
+    [IsNoetherianRing R] :
     (Ideal.comap (algebraMap R R')) ⁻¹' (associatedPrimes R M) = associatedPrimes R' M' := by
   ext p
   exact ⟨mem_associatedPrimes_of_comap_mem_associatedPrimes_of_isLocalizedModule S f p,
@@ -131,8 +132,8 @@ lemma minimalPrimes_annihilator_subset_associatedPrimes [IsNoetherianRing R] [Mo
     simpa [← Module.mem_support_iff (p := ⟨p, prime⟩), Module.support_eq_zeroLocus] using hp.1.2
   rcases associatedPrimes.nonempty Rₚ (LocalizedModule p.primeCompl M) with ⟨q, hq⟩
   have q_prime : q.IsPrime := IsAssociatedPrime.isPrime hq
-  simp only [← associatedPrimes_isLocalizedModule_eq_preimage_comap_associatedPrimes p.primeCompl Rₚ
-    (LocalizedModule.mkLinearMap p.primeCompl M), Set.mem_preimage] at hq
+  simp only [← preimage_comap_associatedPrimes_eq_associatedPrimes_of_isLocalizedModule p.primeCompl
+    Rₚ (LocalizedModule.mkLinearMap p.primeCompl M), Set.mem_preimage] at hq
   have ann_le : Module.annihilator R M ≤ Ideal.comap (algebraMap R Rₚ) q :=
     le_of_eq_of_le Submodule.annihilator_top.symm (IsAssociatedPrime.annihilator_le hq)
   have le : Ideal.comap (algebraMap R Rₚ) q ≤ p := by
