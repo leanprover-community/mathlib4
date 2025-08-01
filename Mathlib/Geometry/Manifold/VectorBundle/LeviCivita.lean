@@ -250,34 +250,24 @@ section leviCivita_rhs
 
 variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)]
 
--- TODO: relax assumptions; I only need differentiability at x!
 @[simp]
 lemma leviCivita_rhs'_addX_apply [CompleteSpace E]
-    (hX : MDiffAt (T% X) x) (hX' : MDiffAt (T% X') x) (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) :
+    (hX : MDiffAt (T% X) x) (hX' : MDiffAt (T% X') x)
+    (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     leviCivita_rhs' I (X + X') Y Z x =
       leviCivita_rhs' I X Y Z x + leviCivita_rhs' I X' Y Z x := by
   simp only [leviCivita_rhs']
   have h : VectorField.mlieBracket I (X + X') Y x =
     VectorField.mlieBracket I X Y x + VectorField.mlieBracket I X' Y x := by
-    simp [VectorField.mlieBracket_add_left (W := Y) (hX) (hX')]
+    simp [VectorField.mlieBracket_add_left (W := Y) hX hX']
   have h' : VectorField.mlieBracket I (X + X') Z x =
     VectorField.mlieBracket I X Z x + VectorField.mlieBracket I X' Z x := by
-    simp [VectorField.mlieBracket_add_left (W := Z) (hX) (hX')]
-  have := hY x; have := hZ x
+    simp [VectorField.mlieBracket_add_left (W := Z) hX hX']
   simp only [rhs_aux_addX, Pi.add_apply, Pi.sub_apply]
-  -- XXX: this is not elegant; is there a better way?
-  simp only [product_apply, h, h']
-  simp only [← product_apply]
-
-  simp only [product_add_left_apply]
+  -- We have to rewrite back and forth: the Lie bracket is only additive at x,
+  -- as we are only asking for differentiability at x.
+  simp_rw [product_apply, h, h', inner_add_right, ← product_apply, product_add_left_apply]
   rw [rhs_aux_addY_apply, rhs_aux_addZ_apply] <;> try assumption
-  have h3 : inner ℝ (Y x) (VectorField.mlieBracket I X Z x + VectorField.mlieBracket I X' Z x)
-      = inner ℝ (Y x) (VectorField.mlieBracket I X Z x) + inner ℝ (Y x) (VectorField.mlieBracket I X' Z x) := by
-    sorry
-  have h4 : inner ℝ (Z x) (VectorField.mlieBracket I X Y x + VectorField.mlieBracket I X' Y x)
-      = inner ℝ (Z x) (VectorField.mlieBracket I X Y x) + inner ℝ (Z x) (VectorField.mlieBracket I X' Y x) := sorry
-  rw [h3, h4]
-  simp only [← product_apply] --, Pi.add_apply]
   abel
 
 lemma leviCivita_rhs'_addX [CompleteSpace E]
@@ -285,30 +275,45 @@ lemma leviCivita_rhs'_addX [CompleteSpace E]
     leviCivita_rhs' I (X + X') Y Z =
       leviCivita_rhs' I X Y Z + leviCivita_rhs' I X' Y Z := by
   ext x
-  simp [leviCivita_rhs'_addX_apply _ (hX x) (hX' x) hY hZ]
+  simp [leviCivita_rhs'_addX_apply _ (hX x) (hX' x) (hY x) (hZ x)]
 
 lemma leviCivita_rhs_addX_apply [CompleteSpace E]
-    (hX : MDiffAt (T% X) x) (hX' : MDiffAt (T% X') x) (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) :
+    (hX : MDiffAt (T% X) x) (hX' : MDiffAt (T% X') x)
+    (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     leviCivita_rhs I (X + X') Y Z = leviCivita_rhs I X Y Z + leviCivita_rhs I X' Y Z := by
   sorry -- divide the previous equation by 2
 
 lemma leviCivita_rhs_addX [CompleteSpace E]
     (hX : MDiff (T% X)) (hX' : MDiff (T% X')) (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) :
     leviCivita_rhs I (X + X') Y Z = leviCivita_rhs I X Y Z + leviCivita_rhs I X' Y Z := by
-  sorry -- divide the previous equation by 2
+  ext x
+  simp [leviCivita_rhs_addX_apply _ (hX x) (hX' x) (hY x) (hZ x)]
 
-variable (X Y Z) in
+variable (Y Z) in
 lemma leviCivita_rhs_smulX {f : M → ℝ} (hf : MDiff f) (hX : MDiff (T% X)) :
     leviCivita_rhs I (f • X) Y Z = f • leviCivita_rhs I X Y Z := by
   -- TODO: do I need to assume X is differentiable?
   sorry
 
-variable (X Z) in
+lemma leviCivita_rhs'_addY_apply [CompleteSpace E]
+    (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x)
+    (hY' : MDiffAt (T% Y') x) (hZ : MDiffAt (T% Z) x) :
+    leviCivita_rhs' I X (Y + Y') Z x = leviCivita_rhs' I X Y Z x + leviCivita_rhs' I X Y' Z x := by
+  sorry -- TODO: prove this!
+
+lemma leviCivita_rhs_addY_apply [CompleteSpace E]
+    (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x)
+    (hY' : MDiffAt (T% Y') x) (hZ : MDiffAt (T% Z) x) :
+    leviCivita_rhs I X (Y + Y') Z x = leviCivita_rhs I X Y Z x + leviCivita_rhs I X Y' Z x := by
+  sorry -- divide the previous equation by 2
+
 lemma leviCivita_rhs_addY [CompleteSpace E]
     (hX : MDiff (T% X)) (hY : MDiff (T% Y)) (hY' : MDiff (T% Y')) (hZ : MDiff (T% Z)) :
     leviCivita_rhs I X (Y + Y') Z = leviCivita_rhs I X Y Z + leviCivita_rhs I X Y' Z := by
-  sorry -- divide the previous equation by 2
+  ext x
+  simp [leviCivita_rhs_addY_apply I (hX x) (hY x) (hY' x) (hZ x)]
 
+-- TODO: write a point-wise version of this!
 lemma leviCivita_rhs'_addZ [CompleteSpace E]
     (hX : MDiff (T% X)) (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) (hZ' : MDiff (T% Z')) :
     leviCivita_rhs' I X Y (Z + Z') =
@@ -538,7 +543,7 @@ lemma isCovariantDerivativeOn_lcCandidate_aux [FiniteDimensional ℝ E]
     have hg : MDiff g := sorry -- might need this (hopefully not!)
     rw [Finset.smul_sum]
     congr; ext i
-    rw [leviCivita_rhs_smulX _ _ _ _ hg hX]
+    rw [leviCivita_rhs_smulX _ _ _ hg hX]
     simp [← smul_assoc]
   smul_const_σ X σ a x hx := by
     unfold lcCandidate_aux
@@ -547,16 +552,12 @@ lemma isCovariantDerivativeOn_lcCandidate_aux [FiniteDimensional ℝ E]
     -- want leviCivita_rhs_smulY (with a constant)
     sorry
   addσ X σ σ' x hσ hσ' hx := by
-    have hX : MDiff (T% X) := sorry -- missing assumption!
-    -- TODO: these should not be necessary with a local version of addY!
-    have hσ2 : MDiff (T% σ) := sorry
-    have hσ'2 : MDiff (T% σ') := sorry
+    have hX : MDiffAt (T% X) x := sorry -- missing assumption!
     unfold lcCandidate_aux
     dsimp
     simp [← Finset.sum_add_distrib, ← add_smul]
     congr; ext i
-    rw [leviCivita_rhs_addY] <;> try assumption
-    · abel
+    rw [leviCivita_rhs_addY_apply] <;> try assumption
     · have : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E) := by
         choose r wo using exists_wellOrder _
         exact r
@@ -565,7 +566,7 @@ lemma isCovariantDerivativeOn_lcCandidate_aux [FiniteDimensional ℝ E]
       have : MDiffAt (T% f) x := -- missing API lemma!
         (contMDiffAt_orthonormalFrame_of_mem (Basis.ofVectorSpace ℝ E) e i hx)
           |>.mdifferentiableAt le_rfl
-      -- TODO: need a local version of leviCivita_rhs_addX!
+      -- `this` does it, except for some mismatch because we chose different linear orders??
       sorry
   leibniz := by
     sorry
