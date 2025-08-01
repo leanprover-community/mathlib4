@@ -811,6 +811,20 @@ theorem algebraMap_eq {R A : Type*} [CommSemiring R] [CommSemiring A] [Semiring 
     [Algebra A α] (S : Subalgebra R A) : algebraMap S α = (algebraMap A α).comp S.val :=
   rfl
 
+theorem algebraMap_def {R A : Type*} [CommSemiring R] [CommSemiring A] [Semiring α]
+    [Algebra R A] [Algebra A α] {S : Subalgebra R A} (s : S) :
+  algebraMap S α s = algebraMap A α (s : A) := rfl
+
+@[simp]
+theorem algebraMap_apply_mk {R A : Type*} [CommSemiring R] [CommSemiring A] [Semiring α]
+    [Algebra R A] [Algebra A α] {S : Subalgebra R A} (a : A) (ha : a ∈ S) :
+  algebraMap S α (⟨a, ha⟩ : S) = algebraMap A α a := rfl
+
+@[simp]
+theorem mk_algebraMap_apply {R A : Type*} [CommSemiring R] [CommSemiring A] [Semiring α]
+    [Algebra A α] {S : Subalgebra A α} (a : A) (ha : algebraMap A α a ∈ S) :
+  ⟨(algebraMap A α) a, ha⟩ = (algebraMap A S) a := rfl
+
 @[simp]
 theorem rangeS_algebraMap {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
     (S : Subalgebra R A) : (algebraMap S A).rangeS = S.toSubsemiring := by
@@ -904,23 +918,6 @@ lemma centralizer_centralizer_centralizer {s : Set A} :
 end Centralizer
 
 end Subalgebra
-
-section algebraMap
-
-variable {R A B : Type*} [CommRing R] [CommRing A] [CommRing B] [Algebra R A] [Algebra A B]
-
-theorem Subalgebra.algebraMap_def {S : Subalgebra R A} (s : S) :
-  algebraMap S B s = algebraMap A B (s : A) := rfl
-
-@[simp]
-theorem Subalgebra.algebraMap_apply_mk {S : Subalgebra R A} (a : A) (ha : a ∈ S) :
-  algebraMap S B (⟨a, ha⟩ : S) = algebraMap A B a := rfl
-
-@[simp]
-theorem Subalgebra.mk_algebraMap_apply {S : Subalgebra A B} (a : A) (ha : algebraMap A B a ∈ S) :
-  ⟨(algebraMap A B) a, ha⟩ = (algebraMap A S) a := rfl
-
-end algebraMap
 
 section Nat
 
