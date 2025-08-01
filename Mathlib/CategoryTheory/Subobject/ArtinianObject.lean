@@ -86,7 +86,7 @@ lemma isArtinianObject_iff_isEventuallyConstant :
     IsArtinianObject X ↔ ∀ (F : ℕ ⥤ (MonoOver X)ᵒᵖ),
       IsFiltered.IsEventuallyConstant F := by
   rw [isArtinianObject_iff_antitone_chain_condition]
-  refine ⟨fun h G => ?_, fun h F => ?_⟩
+  refine ⟨fun h G ↦ ?_, fun h F ↦ ?_⟩
   · obtain ⟨n, hn⟩ := h ⟨_, (G ⋙ (Subobject.equivMonoOver X).inverse.op ⋙
       (orderDualEquivalence _).inverse).monotone⟩
     refine ⟨n, fun m hm ↦ ?_⟩
