@@ -261,7 +261,7 @@ theorem gfpApprox_le {a : Ordinal} : gfpApprox f x a ≤ x :=
   le_lfpApprox f.dual x
 
 theorem gfpApprox_add_one (h : f x ≤ x) (a : Ordinal) :
-    gfpApprox f x (a+1) = f (gfpApprox f x a) :=
+    gfpApprox f x (a + 1) = f (gfpApprox f x a) :=
   lfpApprox_add_one f.dual x h a
 
 theorem gfpApprox_mono_left : Monotone (gfpApprox : (α →o α) → _) := by
