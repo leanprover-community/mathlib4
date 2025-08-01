@@ -516,11 +516,7 @@ theorem det_eq_of_forall_row_eq_smul_add_const_aux {A B : Matrix n n R} {s : Fin
   induction s using Finset.induction_on generalizing B with
   | empty =>
     rintro c hs k - A_eq
-    have : ∀ i, c i = 0 := by
-      intro i
-      specialize hs i
-      contrapose! hs
-      simp [hs]
+    have : ∀ i, c i = 0 := by grind [Finset.notMem_empty]
     congr
     ext i j
     rw [A_eq, this, zero_mul, add_zero]
