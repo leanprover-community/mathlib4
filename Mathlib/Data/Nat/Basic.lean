@@ -47,6 +47,10 @@ instance instNontrivial : Nontrivial ℕ := ⟨⟨0, 1, Nat.zero_ne_one⟩⟩
 
 attribute [gcongr] Nat.succ_le_succ Nat.div_le_div_right Nat.div_le_div
 
+@[gcongr]
+lemma sub_le_sub {a b c d : ℕ} (h₁ : a ≤ b) (h₂ : c ≤ d) : a - d ≤ b - c :=
+  Nat.le_trans (Nat.sub_le_sub_right h₁ d) (Nat.sub_le_sub_left h₂ b)
+
 /-! ### `succ`, `pred` -/
 
 lemma succ_injective : Injective Nat.succ := @succ.inj
