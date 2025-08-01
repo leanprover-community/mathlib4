@@ -700,7 +700,7 @@ noncomputable def schroederBernstein {f : α → β} {g : β → α} (hf : Measu
   -- the crux of which is finding a fixed point of this F.
   -- However, we must find this fixed point manually instead of invoking Knaster-Tarski
   -- in order to make sure it is measurable.
-  suffices Σ'A : Set α, MeasurableSet A ∧ F A = A by
+  suffices Σ' A : Set α, MeasurableSet A ∧ F A = A by
     classical
     rcases this with ⟨A, Ameas, Afp⟩
     let B := f '' A

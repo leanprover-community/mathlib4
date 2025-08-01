@@ -39,12 +39,12 @@ namespace Functor
 variable {C C' H D D' : Type*} [Category C] [Category C'] [Category H] [Category D] [Category D']
 
 /-- Given two functors `L : C ⥤ D` and `F : C ⥤ H`, this is the category of functors
-`F' : H ⥤ D` equipped with a natural transformation `L ⋙ F' ⟶ F`. -/
+`F' : D ⥤ H` equipped with a natural transformation `L ⋙ F' ⟶ F`. -/
 abbrev RightExtension (L : C ⥤ D) (F : C ⥤ H) :=
   CostructuredArrow ((whiskeringLeft C D H).obj L) F
 
 /-- Given two functors `L : C ⥤ D` and `F : C ⥤ H`, this is the category of functors
-`F' : H ⥤ D` equipped with a natural transformation `F ⟶ L ⋙ F'`. -/
+`F' : D ⥤ H` equipped with a natural transformation `F ⟶ L ⋙ F'`. -/
 abbrev LeftExtension (L : C ⥤ D) (F : C ⥤ H) :=
   StructuredArrow F ((whiskeringLeft C D H).obj L)
 
@@ -687,6 +687,54 @@ lemma limitIsoOfIsRightKanExtension_hom_π (i : C) :
   rw [← Iso.eq_inv_comp, limitIsoOfIsRightKanExtension_inv_π]
 
 end Limit
+
+section
+
+variable {L : C ≌ D} {F₀ : C ⥤ H} {F₁ : D ⥤ H}
+
+variable (F₀) in
+instance isLeftKanExtensionId : F₀.IsLeftKanExtension F₀.leftUnitor.inv where
+  nonempty_isUniversal := ⟨StructuredArrow.mkIdInitial⟩
+
+variable (F₀) in
+instance isRightKanExtensionId : F₀.IsRightKanExtension F₀.leftUnitor.hom where
+  nonempty_isUniversal := ⟨CostructuredArrow.mkIdTerminal⟩
+
+instance isLeftKanExtensionAlongEquivalence (α : F₀ ≅ L.functor ⋙ F₁) :
+    F₁.IsLeftKanExtension α.hom := by
+  refine ⟨⟨?_⟩⟩
+  apply LeftExtension.isUniversalPostcomp₁Equiv
+    (G := L.functor) L.functor.leftUnitor F₀ _|>.invFun
+  refine IsInitial.ofUniqueHom
+    (fun y ↦ StructuredArrow.homMk <| α.inv ≫ y.hom ≫ y.right.leftUnitor.hom) ?_
+  intro y m
+  ext x
+  simpa using α.inv.app x ≫= congr_app m.w.symm x
+
+instance isLeftKanExtensionAlongEquivalence' (L : C ⥤ D) (α : F₀ ⟶ L ⋙ F₁)
+    [IsEquivalence L] [IsIso α] :
+    F₁.IsLeftKanExtension α :=
+  inferInstanceAs <|
+    F₁.IsLeftKanExtension (asIso α : F₀ ≅ (asEquivalence L).functor ⋙ F₁).hom
+
+instance isRightKanExtensionAlongEquivalence (α : L.functor ⋙ F₁ ≅ F₀) :
+    F₁.IsRightKanExtension α.hom := by
+  refine ⟨⟨?_⟩⟩
+  apply RightExtension.isUniversalPostcomp₁Equiv
+    (G := L.functor) L.functor.leftUnitor F₀ _|>.invFun
+  refine IsTerminal.ofUniqueHom
+    (fun y ↦ CostructuredArrow.homMk <| y.left.leftUnitor.inv ≫ y.hom ≫ α.inv) ?_
+  intro y m
+  ext x
+  simpa using congr_app m.w x =≫ α.inv.app x
+
+instance isRightKanExtensionAlongEquivalence' (L : C ⥤ D) (α : L ⋙ F₁ ⟶ F₀)
+    [IsEquivalence L] [IsIso α] :
+    F₁.IsRightKanExtension α :=
+  inferInstanceAs <|
+    F₁.IsRightKanExtension (asIso α : (asEquivalence L).functor ⋙ F₁ ≅ F₀).hom
+
+end
 
 end Functor
 

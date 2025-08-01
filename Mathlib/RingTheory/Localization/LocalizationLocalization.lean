@@ -161,7 +161,7 @@ variable (S)
 
 /-- Given submonoids `M ≤ N` of `R`, this is the canonical algebra structure
 of `M⁻¹S` acting on `N⁻¹S`. -/
-noncomputable def localizationAlgebraOfSubmonoidLe (M N : Submonoid R) (h : M ≤ N)
+noncomputable abbrev localizationAlgebraOfSubmonoidLe (M N : Submonoid R) (h : M ≤ N)
     [IsLocalization M S] [IsLocalization N T] : Algebra S T :=
   (@IsLocalization.lift R _ M S _ _ T _ _ (algebraMap R T)
     (fun y => map_units T ⟨↑y, h y.prop⟩)).toAlgebra
@@ -174,7 +174,7 @@ theorem localization_isScalarTower_of_submonoid_le (M N : Submonoid R) (h : M �
   letI := localizationAlgebraOfSubmonoidLe S T M N h
   IsScalarTower.of_algebraMap_eq' (IsLocalization.lift_comp _).symm
 
-noncomputable instance (x : Ideal R) [H : x.IsPrime] [IsDomain R] :
+noncomputable instance instAlgebraLocalizationAtPrime (x : Ideal R) [H : x.IsPrime] [IsDomain R] :
     Algebra (Localization.AtPrime x) (Localization (nonZeroDivisors R)) :=
   localizationAlgebraOfSubmonoidLe _ _ x.primeCompl (nonZeroDivisors R)
     (by
@@ -259,11 +259,11 @@ theorem isFractionRing_of_isLocalization (S T : Type*) [CommRing S] [CommRing T]
   have := isLocalization_of_submonoid_le S T M (nonZeroDivisors R) hM
   refine @isLocalization_of_is_exists_mul_mem _ _ _ _ _ _ _ this ?_ ?_
   · exact map_nonZeroDivisors_le M S
-  · rintro ⟨x, hx⟩
+  · rintro ⟨x, -, hx⟩
     obtain ⟨⟨y, s⟩, e⟩ := IsLocalization.surj M x
     use algebraMap R S s
     rw [mul_comm, Subtype.coe_mk, e]
-    refine Set.mem_image_of_mem (algebraMap R S) ?_
+    refine Set.mem_image_of_mem (algebraMap R S) (mem_nonZeroDivisors_iff_right.mpr ?_)
     intro z hz
     apply IsLocalization.injective S hM
     rw [map_zero]

@@ -1234,35 +1234,17 @@ lemma ZModModule.add_add_add_cancel (x y z : G) : (x + y) + (y + z) = x + z := b
 end two
 end Module
 
-section AddGroup
-variable {α : Type*} [AddGroup α] {n : ℕ}
-
-@[simp]
-lemma nsmul_zmod_val_inv_nsmul (hn : (Nat.card α).gcd n = 1) (a : α) :
-    n • (n⁻¹ : ZMod (Nat.card α)).val • a = a := by
-  replace hn : (Nat.card α).Coprime n := hn
-  rw [← mul_nsmul', ← mod_natCard_nsmul, ← ZMod.val_natCast, Nat.cast_mul,
-    ZMod.mul_val_inv hn.symm, ZMod.val_one_eq_one_mod, mod_natCard_nsmul, one_nsmul]
-
-@[simp]
-lemma zmod_val_inv_nsmul_nsmul (hn : (Nat.card α).gcd n = 1) (a : α) :
-    (n⁻¹ : ZMod (Nat.card α)).val • n • a = a := by
-  rw [nsmul_left_comm, nsmul_zmod_val_inv_nsmul hn]
-
-end AddGroup
-
 section Group
 variable {α : Type*} [Group α] {n : ℕ}
 
--- TODO: we can't use `to_additive`, because it tries to translate `n⁻¹` into `-n`
-@[simp]
+@[to_additive (attr := simp) nsmul_zmod_val_inv_nsmul]
 lemma pow_zmod_val_inv_pow (hn : (Nat.card α).gcd n = 1) (a : α) :
     (a ^ (n⁻¹ : ZMod (Nat.card α)).val) ^ n = a := by
   replace hn : (Nat.card α).Coprime n := hn
   rw [← pow_mul', ← pow_mod_natCard, ← ZMod.val_natCast, Nat.cast_mul, ZMod.mul_val_inv hn.symm,
     ZMod.val_one_eq_one_mod, pow_mod_natCard, pow_one]
 
-@[simp]
+@[to_additive (attr := simp) zmod_val_inv_nsmul_nsmul]
 lemma pow_pow_zmod_val_inv (hn : (Nat.card α).gcd n = 1) (a : α) :
     (a ^ n) ^ (n⁻¹ : ZMod (Nat.card α)).val = a := by rw [pow_right_comm, pow_zmod_val_inv_pow hn]
 

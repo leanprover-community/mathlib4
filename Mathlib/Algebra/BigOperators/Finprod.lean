@@ -59,7 +59,7 @@ typeclass diamonds caused by the constructive finiteness used in definitions suc
 other solutions but for beginner mathematicians this approach is easier in practice.
 
 Another application is the construction of a partition of unity from a collection of “bump”
-function. In this case the finite set depends on the point and it's convenient to have a definition
+functions. In this case the finite set depends on the point and it's convenient to have a definition
 that does not mention the set explicitly.
 
 The first arguments in all definitions and lemmas is the codomain of the function of the big
@@ -112,12 +112,12 @@ open Batteries.ExtendedBinder
 /-- `∑ᶠ x, f x` is notation for `finsum f`. It is the sum of `f x`, where `x` ranges over the
 support of `f`, if it's finite, zero otherwise. Taking the sum over multiple arguments or
 conditions is possible, e.g. `∏ᶠ (x) (y), f x y` and `∏ᶠ (x) (h: x ∈ s), f x` -/
-notation3"∑ᶠ "(...)", "r:67:(scoped f => finsum f) => r
+notation3"∑ᶠ " (...) ", " r:67:(scoped f => finsum f) => r
 
 /-- `∏ᶠ x, f x` is notation for `finprod f`. It is the product of `f x`, where `x` ranges over the
 multiplicative support of `f`, if it's finite, one otherwise. Taking the product over multiple
 arguments or conditions is possible, e.g. `∏ᶠ (x) (y), f x y` and `∏ᶠ (x) (h: x ∈ s), f x` -/
-notation3"∏ᶠ "(...)", "r:67:(scoped f => finprod f) => r
+notation3"∏ᶠ " (...) ", " r:67:(scoped f => finprod f) => r
 
 -- Porting note: The following ports the lean3 notation for this file, but is currently very fickle.
 
@@ -573,7 +573,7 @@ theorem finprod_mem_of_eqOn_one (hf : s.EqOn f 1) : ∏ᶠ i ∈ s, f i = 1 := b
 /-- If the product of `f i` over `i ∈ s` is not equal to `1`, then there is some `x ∈ s` such that
 `f x ≠ 1`. -/
 @[to_additive
-      "If the product of `f i` over `i ∈ s` is not equal to `0`, then there is some `x ∈ s`
+      "If the sum of `f i` over `i ∈ s` is not equal to `0`, then there is some `x ∈ s`
       such that `f x ≠ 0`."]
 theorem exists_ne_one_of_finprod_mem_ne_one (h : ∏ᶠ i ∈ s, f i ≠ 1) : ∃ x ∈ s, f x ≠ 1 := by
   by_contra! h'
@@ -951,7 +951,7 @@ lemma finprod_option {f : Option α → M} (hf : (mulSupport (f ∘ some)).Finit
   replace hf : (mulSupport f).Finite := by simpa [finite_option]
   convert finprod_mem_insert' f (show none ∉ Set.range Option.some by aesop)
     (hf.subset inter_subset_right)
-  · aesop
+  · simp
   · rw [finprod_mem_range]
     exact Option.some_injective _
 

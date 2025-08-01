@@ -56,7 +56,7 @@ section kernel_defs
 -/
 
 /-- Even Hurwitz zeta kernel (function whose Mellin transform will be the even part of the
-completed Hurwit zeta function). See `evenKernel_def` for the defining formula, and
+completed Hurwitz zeta function). See `evenKernel_def` for the defining formula, and
 `hasSum_int_evenKernel` for an expression as a sum over `ℤ`. -/
 @[irreducible] def evenKernel (a : UnitAddCircle) (x : ℝ) : ℝ :=
   (show Function.Periodic
@@ -450,7 +450,7 @@ private lemma tendsto_div_two_punctured_nhds (a : ℂ) :
 /-- The residue of `completedHurwitzZetaEven a s` at `s = 1` is equal to `1`. -/
 lemma completedHurwitzZetaEven_residue_one (a : UnitAddCircle) :
     Tendsto (fun s ↦ (s - 1) * completedHurwitzZetaEven a s) (𝓝[≠] 1) (𝓝 1) := by
-  have h1 : Tendsto (fun s : ℂ ↦ (s - ↑(1  / 2 : ℝ)) * _) (𝓝[≠] ↑(1  / 2 : ℝ))
+  have h1 : Tendsto (fun s : ℂ ↦ (s - ↑(1 / 2 : ℝ)) * _) (𝓝[≠] ↑(1 / 2 : ℝ))
     (𝓝 ((1 : ℂ) * (1 : ℂ))) := (hurwitzEvenFEPair a).Λ_residue_k
   simp only [push_cast, one_mul] at h1
   refine (h1.comp <| tendsto_div_two_punctured_nhds 1).congr (fun s ↦ ?_)

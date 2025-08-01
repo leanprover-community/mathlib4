@@ -29,9 +29,8 @@ namespace QuadraticModuleCat
 open QuadraticForm
 
 instance : BraidedCategory (QuadraticModuleCat.{u} R) :=
-  braidedCategoryOfFaithful (forget₂ (QuadraticModuleCat R) (ModuleCat R))
-    (fun X Y => ofIso <| tensorComm X.form Y.form)
-    (by aesop_cat)
+  .ofFaithful (forget₂ (QuadraticModuleCat R) (ModuleCat R))
+    fun X Y ↦ ofIso <| tensorComm X.form Y.form
 
 /-- `forget₂ (QuadraticModuleCat R) (ModuleCat R)` is a braided functor. -/
 instance : (forget₂ (QuadraticModuleCat R) (ModuleCat R)).Braided where
