@@ -556,7 +556,7 @@ theorem UniformCauchySeqOn.cauchy_map [hp : NeBot p] (hf : UniformCauchySeqOn F 
   filter_upwards [hf u hu] with p hp using hp x hx
 
 /-- If a sequence of functions is uniformly Cauchy on a set, then the values at each point form
-a Cauchy sequence.  See `UniformCauchSeqOn.cauchy_map` for the non-`atTop` case. -/
+a Cauchy sequence.  See `UniformCauchySeqOn.cauchy_map` for the non-`atTop` case. -/
 theorem UniformCauchySeqOn.cauchySeq [Nonempty ι] [SemilatticeSup ι]
     (hf : UniformCauchySeqOn F atTop s) (hx : x ∈ s) :
     CauchySeq fun i ↦ F i x :=
