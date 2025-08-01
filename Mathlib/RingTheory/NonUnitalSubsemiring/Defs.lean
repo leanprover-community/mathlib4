@@ -24,7 +24,7 @@ section neg_mul
 variable {R S : Type*} [Mul R] [HasDistribNeg R] [SetLike S R] [MulMemClass S R] {s : S}
 
 @[aesop unsafe 80% (rule_sets := [SetLike])]
-/- The Aesop rule `mul_mem` doesn't work in the absense of `neg_mem`
+/- The Aesop rule `mul_mem` doesn't work in the absence of `neg_mem`
 because `-x * y` simplifies to `-(x * y)`. -/
 theorem neg_mul_mem {x y : R} (hx : -x ∈ s) (hy : y ∈ s) : -(x * y) ∈ s := by
   simpa using mul_mem hx hy
