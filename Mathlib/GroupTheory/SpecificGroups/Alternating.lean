@@ -41,7 +41,7 @@ consisting of the even permutations.
   of `Equiv.Perm α` contains the alternating group.
 
 * `Equiv.Perm.alternatingGroup.center_eq_bot`: when `4 ≤ Nat.card α`,
-then center of `alternatingGroup α` is trivial.
+  then center of `alternatingGroup α` is trivial.
 
 ## Instances
 
@@ -390,28 +390,28 @@ theorem center_eq_bot (hα4 : 4 ≤ Nat.card α) :
   have : 2 ≤ (({a, g a} : Finset α)ᶜ).card := by
     rw [← Nat.add_le_add_iff_left, Finset.card_add_card_compl]
     rw [← Nat.card_eq_fintype_card]
-    rw [Finset.card_pair (id (Ne.symm hab))]
+    rw [Finset.card_pair hab.symm]
     exact hα4
   rw [← Nat.lt_iff_add_one_le, Finset.one_lt_card_iff] at this
   obtain ⟨c, d, hc, hd, hcd⟩ := this
-  simp only [Finset.compl_insert, Finset.mem_erase, ne_eq, Finset.mem_compl,
+  simp only [Finset.compl_insert, Finset.mem_erase, ← ne_eq, Finset.mem_compl,
     Finset.mem_singleton] at hc hd
   let k := swap (g a) d * swap (g a) c
   have hka : k • a = a := by
     simp only [Perm.smul_def, coe_mul, Function.comp_apply, k]
-    rw [swap_apply_of_ne_of_ne (x := a) hab.symm (Ne.symm hc.1)]
-    rw [swap_apply_of_ne_of_ne (Ne.symm hab) (Ne.symm hd.1)]
+    rw [swap_apply_of_ne_of_ne (x := a) hab.symm hc.1.symm]
+    rw [swap_apply_of_ne_of_ne hab.symm hd.1.symm]
   have hkga : k • (g a) = c := by
     simp only [Perm.smul_def, coe_mul, Function.comp_apply, swap_apply_left, k]
     rw [swap_apply_of_ne_of_ne hc.2 hcd]
   suffices k • (⟨g, hg⟩ : alternatingGroup α) • a ≠ c by
     apply this; simp [← hkga]
   suffices k • (⟨g, hg⟩ : alternatingGroup α) • a = (⟨g, hg⟩ : alternatingGroup α) • k • a by
-    rw [this, hka]; exact Ne.symm hc.right
+    rw [this, hka]; exact hc.right.symm
   rw [Subgroup.mem_center_iff] at hg'
   suffices k ∈ alternatingGroup α by
     simp only [← Subgroup.mk_smul k this, ← mul_smul, hg']
-  simp [k, Ne.symm hc.2, Ne.symm hd.2]
+  simp [k, hc.2.symm, hd.2.symm]
 
 end alternatingGroup
 
