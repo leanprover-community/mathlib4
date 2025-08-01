@@ -76,7 +76,7 @@ theorem Ideal.exists_mul_mem_of_mem_minimalPrimes
   rw [← mul_assoc, ← pow_succ', tsub_add_cancel_of_le (Nat.one_le_iff_ne_zero.mpr this)]
   exact Nat.find_spec H
 
-theorem Module.notMem_minimalPrimes_of_isSMulRegular {M : Type*} [AddCommMonoid M] [Module R M]
+theorem IsSMulRegular.notMem_of_mem_minimalPrimes {M : Type*} [AddCommMonoid M] [Module R M]
     {x : R} (reg : IsSMulRegular M x) {p : Ideal R} (hp : p ∈ (annihilator R M).minimalPrimes) :
     x ∉ p := by
   intro hx
