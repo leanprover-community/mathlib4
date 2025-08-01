@@ -236,7 +236,7 @@ theorem _root_.Function.Commute.set_image {f g : α → α} (h : Function.Commut
     Function.Commute (image f) (image g) :=
   Function.Semiconj.set_image h
 
-@[deprecated image_mono (since := "2025-07-19")]
+@[deprecated image_mono (since := "2025-08-01")]
 theorem image_subset {a b : Set α} (f : α → β) (h : a ⊆ b) : f '' a ⊆ f '' b :=
   image_mono h
 
