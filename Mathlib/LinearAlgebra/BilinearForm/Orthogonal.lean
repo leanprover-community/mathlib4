@@ -120,11 +120,11 @@ end
 section Orthogonal
 
 /-- The orthogonal complement of a submodule `N` with respect to some bilinear form is the set of
-elements `x` which are orthogonal to all elements of `N`; i.e., for all `y` in `N`, `B x y = 0`.
+elements `x` which are orthogonal to all elements of `N`; i.e., for all `y` in `N`, `B y x = 0`.
 
 Note that for general (neither symmetric nor antisymmetric) bilinear forms this definition has a
-chirality; in addition to this "left" orthogonal complement one could define a "right" orthogonal
-complement for which, for all `y` in `N`, `B y x = 0`.  This variant definition is not currently
+chirality; in addition to this "right" orthogonal complement one could define a "left" orthogonal
+complement for which, for all `y` in `N`, `B x y = 0`.  This variant definition is not currently
 provided in mathlib. -/
 def orthogonal (B : BilinForm R M) (N : Submodule R M) : Submodule R M where
   carrier := { m | ∀ n ∈ N, IsOrtho B n m }
