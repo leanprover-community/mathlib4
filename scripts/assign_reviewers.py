@@ -2,7 +2,9 @@
 Download and parse a .json file containing reviewer assignments for pull requests,
 and make the github API calls to add these users as assignees.
 
-This script assumes |curl| is installed and on PATH.
+This script assumes |curl| is installed and on PATH,
+and that a github token with `public_repo` permissions is passed in via the
+|ASSIGN_REVIEWERS_TOKEN| environment variable.
 """
 import json
 import os
@@ -39,7 +41,7 @@ def call(number: int, handle: str) -> bool:
     return True
 
 if __name__ == '__main__':
-    # Download the assignments file using curl
+    # Download the assignments file using curl.
     url = "https://leanprover-community.github.io/queueboard/automatic_assignments.json"
     args = ["curl", "--output", "assignments.json", url]
     print("trace: about to download the assignments file using curl...")
@@ -57,8 +59,7 @@ if __name__ == '__main__':
         data = json.load(fi)
     all_api_calls_succeeded = True
     for (number, user_handle) in data.items():
-        print(number, user_handle)
-        # put in a wait here if the number of API calls might be greater than 2000 per hour
+        # If the number of API calls might be greater than 2000 per hour, put a wait in here.
         # The limit is 5000/hr per https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api?apiVersion=2022-11-28#primary-rate-limit-for-authenticated-users
         all_api_calls_succeeded = call(number, user_handle) and all_api_calls_succeeded
     if not all_api_calls_succeeded:
