@@ -307,6 +307,12 @@ theorem symm_apply_apply (e : R ≃+* S) : ∀ x, e.symm (e x) = x :=
 theorem image_eq_preimage (e : R ≃+* S) (s : Set R) : e '' s = e.symm ⁻¹' s :=
   e.toEquiv.image_eq_preimage s
 
+theorem symm_apply_eq (e : R ≃+* S) {x : S} {y : R} :
+    e.symm x = y ↔ x = e y := Equiv.symm_apply_eq _
+
+theorem eq_symm_apply (e : R ≃+* S) {x : S} {y : R} :
+    y = e.symm x ↔ e y = x := Equiv.eq_symm_apply _
+
 end symm
 
 section simps
