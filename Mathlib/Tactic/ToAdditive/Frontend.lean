@@ -477,10 +477,10 @@ structure Config : Type where
   which we need for adding definition ranges. -/
   ref : Syntax
   /-- An optional flag stating whether the additive declaration already exists.
-    If this flag is set but wrong about whether the additive declaration exists, `to_additive` will
+    If this flag is wrong about whether the additive declaration exists, `to_additive` will
     raise a linter error.
     Note: the linter will never raise an error for inductive types and structures. -/
-  existing : Option Bool := none
+  existing : Bool := false
   /-- An optional flag stating that the target of the translation is the target itself.
   This can be used to reorder arguments, such as in
   `attribute [to_dual self (reorder := 3 4)] LE.le`.
@@ -1364,7 +1364,7 @@ partial def addToAdditiveAttr (src : Name) (cfg : Config) (kind := AttributeKind
   withOptions (· |>.updateBool `trace.to_additive (cfg.trace || ·)) <| do
   let tgt ← targetName cfg src
   let alreadyExists := (← getEnv).contains tgt
-  if cfg.existing == some !alreadyExists && !(← isInductive src) then
+  if cfg.existing != alreadyExists && !(← isInductive src) then
     Linter.logLintIf linter.toAdditiveExisting cfg.ref <|
       if alreadyExists then
         m!"The additive declaration already exists. Please specify this explicitly using \
