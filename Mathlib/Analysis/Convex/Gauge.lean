@@ -73,8 +73,9 @@ theorem Absorbent.gauge_set_nonempty (absorbs : Absorbent ℝ s) :
   let ⟨r, hr₁, hr₂⟩ := (absorbs x).exists_pos
   ⟨r, hr₁, hr₂ r (Real.norm_of_nonneg hr₁.le).ge rfl⟩
 
-theorem gauge_mono (hs : Absorbent ℝ s) (h : s ⊆ t) : gauge t ≤ gauge s := fun _ =>
-  csInf_le_csInf gauge_set_bddBelow hs.gauge_set_nonempty fun _ hr => ⟨hr.1, smul_set_mono h hr.2⟩
+theorem gauge_mono (hs : Absorbent ℝ s) (h : s ⊆ t) : gauge t ≤ gauge s := fun _ => by
+  unfold gauge
+  gcongr; exacts [gauge_set_bddBelow, hs.gauge_set_nonempty]
 
 theorem exists_lt_of_gauge_lt (absorbs : Absorbent ℝ s) (h : gauge s x < a) :
     ∃ b, 0 < b ∧ b < a ∧ x ∈ b • s := by
