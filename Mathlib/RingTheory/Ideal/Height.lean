@@ -316,14 +316,6 @@ lemma exists_spanRank_le_and_le_height_of_le_height [IsNoetherianRing R] (I : Id
         rwa [p.height_eq_primeHeight, eq_comm]
       · exact hp.1.2 <| Ideal.mem_sup_right <| Ideal.subset_span <| Set.mem_singleton x
 
-lemma Ideal.sup_height_ne_ringKrullDim_of_subsingleton [Subsingleton R] :
-    ↑(⨆ (I : Ideal R) (_ : I ≠ ⊤), I.height) ≠ ringKrullDim R := by
-  simp [ringKrullDim_eq_bot_of_subsingleton]
-
-lemma Ideal.sup_primeHeight_ne_ringKrullDim_of_subsingleton [Subsingleton R] :
-    ↑(⨆ (I : Ideal R) (_ : I.IsPrime), I.primeHeight) ≠ ringKrullDim R := by
-  simp [ringKrullDim_eq_bot_of_subsingleton]
-
 lemma Ideal.sup_height_eq_ringKrullDim [Nontrivial R] :
     ↑(⨆ (I : Ideal R) (_ : I ≠ ⊤), I.height) = ringKrullDim R := by
   apply le_antisymm
