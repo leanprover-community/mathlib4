@@ -651,7 +651,7 @@ It also expands all kernel projections that have as head a constant `n` in `reor
 def expand (e : Expr) : MetaM Expr := do
   let env ← getEnv
   let reorderFn : Name → List (List ℕ) := fun nm ↦ (reorderAttr.find? env nm |>.getD [])
-  let e₂ ← Lean.Meta.transform (input := e) (skipConstInApp  := true)
+  let e₂ ← Lean.Meta.transform (input := e) (skipConstInApp := true)
     (post := fun e => return .done e) fun e ↦
     e.withApp fun f args ↦ do
     match f with
@@ -690,8 +690,8 @@ def reorderForall (reorder : List (List Nat) := []) (src : Expr) : MetaM Expr :=
       if xs.size = maxReorder + 1 then
         mkForallFVars (xs.permute! reorder) e
       else
-        throwError "the permutation\n{reorder}\nprovided by the reorder config option is too \
-          large, the type{indentExpr src}\nhas only {xs.size} arguments"
+        throwError "the permutation\n{reorder}\nprovided by the `(reorder := ...)` option is \
+          out of bounds, the type{indentExpr src}\nhas only {xs.size} arguments"
   else
     return src
 
@@ -703,6 +703,8 @@ def reorderLambda (reorder : List (List Nat) := []) (src : Expr) : MetaM Expr :=
       if xs.size = maxReorder then
         mkLambdaFVars (xs.permute! reorder) e
       else
+        -- we don't have to consider the case where the given permutation is out of bounds,
+        -- since `reorderForall` applied to the type would already have failed in that case.
         forallBoundedTelescope (← inferType e) (maxReorder - xs.size) fun ys _ => do
           mkLambdaFVars ((xs ++ ys).permute! reorder) (mkAppN e ys)
   else
