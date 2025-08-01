@@ -31,6 +31,8 @@ category of abelian groups.
   abelian groups to groups.
 -/
 
+assert_not_exists Cardinal
+
 noncomputable section
 
 universe u
@@ -75,9 +77,6 @@ instance : free.{u}.IsLeftAdjoint :=
   ⟨_, ⟨adj⟩⟩
 
 instance : (forget AddCommGrp.{u}).IsRightAdjoint :=
-  ⟨_, ⟨adj⟩⟩
-
-instance : AddCommGrp.free.{u}.IsLeftAdjoint :=
   ⟨_, ⟨adj⟩⟩
 
 /-- As an example, we now give a high-powered proof that
@@ -145,7 +144,7 @@ def abelianize : Grp.{u} ⥤ CommGrp.{u} where
     apply (Equiv.apply_eq_iff_eq_symm_apply Abelianization.lift).mpr
     rfl
 
-/-- The abelianization-forgetful adjuction from `Group` to `CommGroup`. -/
+/-- The abelianization-forgetful adjunction from `Group` to `CommGroup`. -/
 def abelianizeAdj : abelianize ⊣ forget₂ CommGrp.{u} Grp.{u} :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun _ _ => ((ConcreteCategory.homEquiv (C := CommGrp)).trans
@@ -155,11 +154,11 @@ def abelianizeAdj : abelianize ⊣ forget₂ CommGrp.{u} Grp.{u} :=
       homEquiv_naturality_left_symm := by
         intros
         ext
-        simp only [Equiv.symm_symm]
+        simp only
         apply Eq.symm
-        apply Abelianization.lift.unique
+        apply Abelianization.lift_unique
         intros
-        apply Abelianization.lift.of }
+        apply Abelianization.lift_apply_of }
 
 end Abelianization
 
@@ -177,9 +176,7 @@ def MonCat.units : MonCat.{u} ⥤ Grp.{u} where
 def Grp.forget₂MonAdj : forget₂ Grp MonCat ⊣ MonCat.units.{u} := Adjunction.mk' {
   homEquiv _ Y :=
     { toFun f := ofHom (MonoidHom.toHomUnits f.hom)
-      invFun f := MonCat.ofHom ((Units.coeHom Y).comp f.hom)
-      left_inv _ := MonCat.ext fun _ => rfl
-      right_inv _ := Grp.ext fun _ => Units.ext rfl }
+      invFun f := MonCat.ofHom ((Units.coeHom Y).comp f.hom) }
   unit :=
     { app X := ofHom (@toUnits X _)
       naturality _ _ _ := Grp.ext fun _ => Units.ext rfl }
@@ -203,9 +200,7 @@ def CommGrp.forget₂CommMonAdj : forget₂ CommGrp CommMonCat ⊣ CommMonCat.un
   Adjunction.mk' {
     homEquiv := fun _ Y ↦
       { toFun f := ofHom (MonoidHom.toHomUnits f.hom)
-        invFun f := CommMonCat.ofHom ((Units.coeHom Y).comp f.hom)
-        left_inv _ := CommMonCat.ext fun _ => rfl
-        right_inv _ := CommGrp.ext fun _ => Units.ext rfl }
+        invFun f := CommMonCat.ofHom ((Units.coeHom Y).comp f.hom) }
     unit.app X := ofHom toUnits.toMonoidHom
     -- `aesop` can find the following proof but it takes `0.5`s.
     unit.naturality _ _ _ := CommGrp.ext fun _ => Units.ext rfl

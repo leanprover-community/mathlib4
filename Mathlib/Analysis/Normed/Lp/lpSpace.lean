@@ -7,7 +7,6 @@ import Mathlib.Analysis.MeanInequalities
 import Mathlib.Analysis.MeanInequalitiesPow
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.Data.Set.Image
-import Mathlib.Topology.Algebra.Order.LiminfLimsup
 import Mathlib.Topology.Algebra.ContinuousMonoidHom
 
 /-!
@@ -182,11 +181,11 @@ theorem of_exponent_ge {p q : ℝ≥0∞} {f : ∀ i, E i} (hfq : Memℓp f q) (
       Real.rpow_le_rpow this (hA ⟨i, rfl⟩) (inv_nonneg.mpr hq.le)
   · apply memℓp_gen
     have hf' := hfq.summable hq
-    refine .of_norm_bounded_eventually _ hf' (@Set.Finite.subset _ { i | 1 ≤ ‖f i‖ } ?_ _ ?_)
+    refine .of_norm_bounded_eventually hf' (@Set.Finite.subset _ { i | 1 ≤ ‖f i‖ } ?_ _ ?_)
     · have H : { x : α | 1 ≤ ‖f x‖ ^ q.toReal }.Finite := by
         simpa using hf'.tendsto_cofinite_zero.eventually_lt_const (by norm_num)
       exact H.subset fun i hi => Real.one_le_rpow hi hq.le
-    · show ∀ i, ¬|‖f i‖ ^ p.toReal| ≤ ‖f i‖ ^ q.toReal → 1 ≤ ‖f i‖
+    · change ∀ i, ¬|‖f i‖ ^ p.toReal| ≤ ‖f i‖ ^ q.toReal → 1 ≤ ‖f i‖
       intro i hi
       have : 0 ≤ ‖f i‖ ^ p.toReal := Real.rpow_nonneg (norm_nonneg _) p.toReal
       simp only [abs_of_nonneg, this] at hi
@@ -883,8 +882,8 @@ protected def single (p) (i : α) (a : E i) : lp E p :=
     refine (memℓp_zero ?_).of_exponent_ge (zero_le p)
     refine (Set.finite_singleton i).subset ?_
     intro j
-    simp only [forall_exists_index, Set.mem_singleton_iff, Ne, dite_eq_right_iff,
-      Set.mem_setOf_eq, not_forall]
+    simp only [Set.mem_singleton_iff, Ne,
+      Set.mem_setOf_eq]
     rw [not_imp_comm]
     intro h
     exact Pi.single_eq_of_ne h _⟩
@@ -1015,7 +1014,7 @@ protected theorem norm_sub_norm_compl_sub_single (hp : 0 < p.toReal) (f : lp E p
     simp only [if_neg hi, sub_zero, sub_self]
   have hF' : ∀ i ∈ s, F i = ‖f i‖ ^ p.toReal := by
     intro i hi
-    simp only [F, coeFn_sum, lp.single_apply, if_pos hi, sub_self, eq_self_iff_true, coeFn_sub,
+    simp only [F, coeFn_sum, lp.single_apply, if_pos hi, sub_self, coeFn_sub,
       Pi.sub_apply, Finset.sum_apply, Finset.sum_pi_single, sub_eq_self]
     simp [Real.zero_rpow hp.ne']
   have : HasSum F (∑ i ∈ s, F i) := hasSum_sum_of_ne_finset_zero hF
@@ -1131,7 +1130,7 @@ theorem sum_rpow_le_of_tendsto (hp : p ≠ ∞) {C : ℝ} {F : ι → lp E p} (h
   gcongr
 
 /-- "Semicontinuity of the `lp` norm": If all sufficiently large elements of a sequence in `lp E p`
- have `lp` norm `≤ C`, then the pointwise limit, if it exists, also has `lp` norm `≤ C`. -/
+have `lp` norm `≤ C`, then the pointwise limit, if it exists, also has `lp` norm `≤ C`. -/
 theorem norm_le_of_tendsto {C : ℝ} {F : ι → lp E p} (hCF : ∀ᶠ k in l, ‖F k‖ ≤ C) {f : lp E p}
     (hf : Tendsto (id fun i => F i : ι → ∀ a, E a) l (𝓝 f)) : ‖f‖ ≤ C := by
   obtain ⟨i, hi⟩ := hCF.exists

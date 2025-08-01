@@ -28,10 +28,10 @@ is its vertices are in `ι → ℤ`, then the corresponding prepartition is actu
   coordinates in `ℤ`
 
 * `BoxIntegral.unitPartition.box`: a `BoxIntegral`, indexed by `ν : ι → ℤ`, with vertices
-`ν i / n` and of side length `1 / n`.
+  `ν i / n` and of side length `1 / n`.
 
 * `BoxIntegral.unitPartition.admissibleIndex`: For `B : BoxIntegral.Box`, the set of indices of
-`unitPartition.box` that are subsets of `B`. This is a finite set.
+  `unitPartition.box` that are subsets of `B`. This is a finite set.
 
 * `BoxIntegral.unitPartition.prepartition_isPartition`: For `B : BoxIntegral.Box`, if `B`
   has integral vertices, then the prepartition of `unitPartition.box` admissible for `B` is a
@@ -323,8 +323,8 @@ local notation "L" => span ℤ (Set.range (Pi.basisFun ℝ ι))
 variable {n} in
 theorem mem_smul_span_iff {v : ι → ℝ} :
     v ∈ (n : ℝ)⁻¹ • L ↔ ∀ i, n * v i ∈ Set.range (algebraMap ℤ ℝ) := by
-  rw [ZSpan.smul _ (inv_ne_zero (NeZero.ne _)), Basis.mem_span_iff_repr_mem]
-  simp_rw [Basis.repr_isUnitSMul, Pi.basisFun_repr, Units.smul_def, Units.val_inv_eq_inv_val,
+  rw [ZSpan.smul _ (inv_ne_zero (NeZero.ne _)), Module.Basis.mem_span_iff_repr_mem]
+  simp_rw [Module.Basis.repr_isUnitSMul, Pi.basisFun_repr, Units.smul_def, Units.val_inv_eq_inv_val,
     IsUnit.unit_spec, inv_inv, smul_eq_mul]
 
 theorem tag_mem_smul_span (ν : ι → ℤ) :

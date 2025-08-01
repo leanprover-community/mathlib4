@@ -25,7 +25,7 @@ which sends an object `X : C` to a complex where `X` sits in a single degree.
 
 -/
 
-open CategoryTheory Category ZeroObject Limits
+open CategoryTheory Category ZeroObject Limits Functor
 
 variable (C D E E' : Type*) [Category C] [Category D] [Category E] [Category E']
   (A : Type*) [AddMonoid A] [HasShift D A] [HasShift E A] [HasShift E' A]
@@ -248,7 +248,6 @@ def postcompIsoOfIso {G G' : D ⥤ E} (e : G ≅ G') [G.CommShift A] [G'.CommShi
     F.postcomp G ≅ F.postcomp G' :=
   isoMk (fun a => isoWhiskerLeft (F.functor a) e) (fun n a a' ha' => by
     ext X
-    dsimp
     simp [NatTrans.shift_app e.hom n])
 
 end SingleFunctors

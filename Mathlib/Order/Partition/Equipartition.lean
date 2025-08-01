@@ -55,9 +55,7 @@ theorem IsEquipartition.card_parts_eq_average (hP : P.IsEquipartition) (ht : t �
 theorem IsEquipartition.card_part_eq_average_iff (hP : P.IsEquipartition) (ht : t ∈ P.parts) :
     #t = #s / #P.parts ↔ #t ≠ #s / #P.parts + 1 := by
   have a := hP.card_parts_eq_average ht
-  have b : ¬(#t = #s / #P.parts ∧ #t = #s / #P.parts + 1) := by
-    by_contra h; exact absurd (h.1 ▸ h.2) (lt_add_one _).ne
-  tauto
+  omega
 
 theorem IsEquipartition.average_le_card_part (hP : P.IsEquipartition) (ht : t ∈ P.parts) :
     #s / #P.parts ≤ #t := by

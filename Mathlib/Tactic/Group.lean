@@ -64,7 +64,7 @@ syntax (name := aux_group₂) "aux_group₂" (location)? : tactic
 
 macro_rules
 | `(tactic| aux_group₂ $[at $location]?) =>
-  `(tactic| ring_nf $[at $location]?)
+  `(tactic| ring_nf -failIfUnchanged $[at $location]?)
 
 /-- Tactic for normalizing expressions in multiplicative groups, without assuming
 commutativity, using only the group axioms without any information about which group
@@ -87,3 +87,9 @@ macro_rules
   `(tactic| repeat (fail_if_no_progress (aux_group₁ $[$loc]? <;> aux_group₂ $[$loc]?)))
 
 end Mathlib.Tactic.Group
+
+/-!
+We register `group` with the `hint` tactic.
+-/
+
+register_hint group

@@ -81,28 +81,15 @@ def reflTransSymm (p : Path x₀ x₁) : Homotopy (Path.refl x₀) (p.trans p.sy
   continuous_toFun := by fun_prop
   map_zero_left := by simp [reflTransSymmAux]
   map_one_left x := by
-    dsimp only [reflTransSymmAux, Path.coe_toContinuousMap, Path.trans]
-    change _ = ite _ _ _
-    split_ifs with h
-    · rw [Path.extend, Set.IccExtend_of_mem]
-      · norm_num
-      · rw [unitInterval.mul_pos_mem_iff zero_lt_two]
-        exact ⟨unitInterval.nonneg x, h⟩
-    · rw [Path.symm, Path.extend, Set.IccExtend_of_mem]
-      · simp only [Set.Icc.coe_one, one_mul, coe_mk_mk, Function.comp_apply]
-        congr 1
-        ext
-        norm_num [sub_sub_eq_add_sub]
-      · rw [unitInterval.two_mul_sub_one_mem_iff]
-        exact ⟨(not_le.1 h).le, unitInterval.le_one x⟩
-  prop' t x hx := by
-    simp only [Set.mem_singleton_iff, Set.mem_insert_iff] at hx
-    simp only [ContinuousMap.coe_mk, coe_toContinuousMap, Path.refl_apply]
-    cases hx with
-    | inl hx
+    simp only [reflTransSymmAux, Path.trans]
+    cases le_or_gt (x : ℝ) 2⁻¹ with
+    | inl hx => simp [hx, ← extend_extends]
     | inr hx =>
-      rw [hx]
-      norm_num [reflTransSymmAux]
+      simp? [hx.not_le, ← extend_extends] says
+        simp only [one_div, hx.not_ge, ↓reduceIte, Set.Icc.coe_one, one_mul, ← extend_extends,
+          extend_symm, ContinuousMap.coe_mk, Function.comp_apply]
+      ring_nf
+  prop' t := by norm_num [reflTransSymmAux]
 
 /-- For any path `p` from `x₀` to `x₁`, we have a homotopy from the constant path based at `x₁` to
   `p.symm.trans p`. -/
@@ -140,7 +127,7 @@ theorem trans_refl_reparam (p : Path x₀ x₁) :
         (Subtype.ext transReflReparamAux_zero) (Subtype.ext transReflReparamAux_one) := by
   ext
   unfold transReflReparamAux
-  simp only [Path.trans_apply, not_le, coe_reparam, Function.comp_apply, one_div, Path.refl_apply]
+  simp only [Path.trans_apply, coe_reparam, Function.comp_apply, one_div, Path.refl_apply]
   split_ifs
   · rfl
   · rfl
@@ -193,15 +180,13 @@ theorem trans_assoc_reparam {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : 
         (fun t => ⟨transAssocReparamAux t, transAssocReparamAux_mem_I t⟩) (by fun_prop)
         (Subtype.ext transAssocReparamAux_zero) (Subtype.ext transAssocReparamAux_one) := by
   ext x
-  simp only [transAssocReparamAux, Path.trans_apply, mul_inv_cancel_left₀, not_le,
-    Function.comp_apply, Ne, not_false_iff, one_ne_zero, mul_ite, Subtype.coe_mk,
-    Path.coe_reparam]
+  simp only [transAssocReparamAux, Path.trans_apply, Function.comp_apply, mul_ite, Path.coe_reparam]
   -- TODO: why does split_ifs not reduce the ifs??????
   split_ifs with h₁ h₂ h₃ h₄ h₅
   · rfl
   iterate 6 exfalso; linarith
   · have h : 2 * (2 * (x : ℝ)) - 1 = 2 * (2 * (↑x + 1 / 4) - 1) := by linarith
-    simp [h₂, h₁, h, dif_neg (show ¬False from id), dif_pos True.intro, if_false, if_true]
+    simp [h]
   iterate 6 exfalso; linarith
   · congr
     ring
@@ -236,8 +221,6 @@ namespace FundamentalGroupoid
 def equiv (X : Type*) : FundamentalGroupoid X ≃ X where
   toFun x := x.as
   invFun x := .mk x
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 @[simp]
 lemma isEmpty_iff (X : Type*) :
@@ -333,7 +316,7 @@ def fundamentalGroupoidFunctor : TopCat ⥤ CategoryTheory.Grpd where
     congr
     ext x y p
     refine Quotient.inductionOn p fun q => ?_
-    simp only [Quotient.map_mk, Path.map_map, Quotient.eq']
+    simp only
     rfl
 
 @[inherit_doc] scoped notation "π" => FundamentalGroupoid.fundamentalGroupoidFunctor

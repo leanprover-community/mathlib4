@@ -10,6 +10,7 @@ import Mathlib.CategoryTheory.Conj
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.SingleObj
+import Mathlib.Tactic.ApplyFun
 
 /-!
 # `Action V G`, the category of actions of a monoid `G` inside some category `V`.
@@ -63,16 +64,15 @@ variable (G : Type*) [Monoid G]
 
 section
 
+/-- The action defined by sending every group element to the identity. -/
+@[simps]
+def trivial (X : V) : Action V G := { V := X, ρ := 1 }
+
 instance inhabited' : Inhabited (Action (Type*) G) :=
   ⟨⟨PUnit, 1⟩⟩
 
-/-- The trivial representation of a group. -/
-def trivial : Action AddCommGrp G where
-  V := AddCommGrp.of PUnit
-  ρ := 1
-
 instance : Inhabited (Action AddCommGrp G) :=
-  ⟨trivial G⟩
+  ⟨trivial G <| AddCommGrp.of PUnit⟩
 
 end
 
@@ -298,7 +298,7 @@ def actionPunitEquivalence : Action V PUnit ≌ V where
       map := fun f => ⟨f, fun ⟨⟩ => by simp⟩ }
   unitIso :=
     NatIso.ofComponents fun X => mkIso (Iso.refl _) fun ⟨⟩ => by
-      simp only [Functor.id_obj, MonoidHom.one_apply, End.one_def, id_eq, Functor.comp_obj,
+      simp only [Functor.id_obj, MonoidHom.one_apply, End.one_def, Functor.comp_obj,
         forget_obj, Iso.refl_hom, Category.comp_id]
       exact ρ_one X
   counitIso := NatIso.ofComponents fun _ => Iso.refl _
@@ -333,6 +333,22 @@ to the restriction along the composition of homomorphism.
 def resComp {G H K : Type*} [Monoid G] [Monoid H] [Monoid K]
     (f : G →* H) (g : H →* K) : res V g ⋙ res V f ≅ res V (g.comp f) :=
   NatIso.ofComponents fun M => mkIso (Iso.refl _)
+
+/-- Restricting scalars along equal maps is naturally isomorphic. -/
+@[simps! hom inv]
+def resCongr {G H : Type*} [Monoid G] [Monoid H] {f f' : G →* H} (h : f = f') :
+    Action.res V f ≅ Action.res V f' :=
+  NatIso.ofComponents (fun _ ↦ Action.mkIso (Iso.refl _))
+
+/-- Restricting scalars along a monoid isomorphism induces an equivalence of categories. -/
+@[simps! functor inverse]
+def resEquiv {G H : Type*} [Monoid G] [Monoid H] (f : G ≃* H) :
+    Action V H ≌ Action V G where
+  functor := Action.res _ f
+  inverse := Action.res _ f.symm
+  unitIso := Action.resCongr (f := MonoidHom.id H) V (by ext; simp) ≪≫ (Action.resComp _ _ _).symm
+  counitIso := Action.resComp _ _ _ ≪≫
+    Action.resCongr (f' := MonoidHom.id G) V (by ext; simp)
 
 -- TODO promote `res` to a pseudofunctor from
 -- the locally discrete bicategory constructed from `Monᵒᵖ` to `Cat`, sending `G` to `Action V G`.
@@ -381,4 +397,50 @@ def mapAction (F : V ⥤ W) (G : Type*) [Monoid G] : Action V G ⥤ Action W G w
   map_id M := by ext; simp only [Action.id_hom, F.map_id]
   map_comp f g := by ext; simp only [Action.comp_hom, F.map_comp]
 
-end CategoryTheory.Functor
+instance (F : V ⥤ W) (G : Type*) [Monoid G] [F.Faithful] : (F.mapAction G).Faithful where
+  map_injective eq := by
+    ext
+    apply_fun (fun f ↦ f.hom) at eq
+    exact F.map_injective eq
+
+/--
+A fully faithful functor between categories induces a fully faithful functor between
+the categories of `G`-actions within those categories. -/
+def FullyFaithful.mapAction {F : V ⥤ W} (h : F.FullyFaithful) (G : Type*) [Monoid G] :
+    (F.mapAction G).FullyFaithful where
+  preimage f := by
+    refine ⟨h.preimage f.hom, fun _ ↦ h.map_injective ?_⟩
+    simp only [map_comp, map_preimage]
+    exact f.comm _
+
+instance (F : V ⥤ W) (G : Type*) [Monoid G] [F.Faithful] [F.Full] : (F.mapAction G).Full :=
+  ((Functor.FullyFaithful.ofFullyFaithful F).mapAction G).full
+
+variable (G : Type*) [Monoid G]
+
+/-- `Functor.mapAction` is functorial in the functor. -/
+@[simps! hom inv]
+def mapActionComp {T : Type*} [Category T] (F : V ⥤ W) (F' : W ⥤ T) :
+    (F ⋙ F').mapAction G ≅ F.mapAction G ⋙ F'.mapAction G :=
+  NatIso.ofComponents (fun X ↦ Iso.refl _)
+
+/-- `Functor.mapAction` preserves isomorphisms of functors. -/
+@[simps! hom inv]
+def mapActionCongr {F F' : V ⥤ W} (e : F ≅ F') :
+    F.mapAction G ≅ F'.mapAction G :=
+  NatIso.ofComponents (fun X ↦ Action.mkIso (e.app X.V))
+
+end Functor
+
+/-- An equivalence of categories induces an equivalence of
+the categories of `G`-actions within those categories. -/
+@[simps functor inverse]
+def Equivalence.mapAction {V W : Type*} [Category V] [Category W] (G : Type*) [Monoid G]
+    (E : V ≌ W) : Action V G ≌ Action W G where
+  functor := E.functor.mapAction G
+  inverse := E.inverse.mapAction G
+  unitIso := Functor.mapActionCongr G E.unitIso  ≪≫ Functor.mapActionComp G _ _
+  counitIso := (Functor.mapActionComp G _ _).symm ≪≫ Functor.mapActionCongr G E.counitIso
+  functor_unitIso_comp X := by ext; simp
+
+end CategoryTheory

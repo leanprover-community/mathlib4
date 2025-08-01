@@ -61,7 +61,7 @@ theorem orbit.eq_or_disjoint (a b : X) :
     orbit G a = orbit G b ∨ Disjoint (orbit G a) (orbit G b) := by
   apply (em (Disjoint (orbit G a) (orbit G b))).symm.imp _ id
   simp +contextual
-    only [Set.not_disjoint_iff, ← orbit_eq_iff, forall_exists_index, and_imp, eq_comm, implies_true]
+    only [Set.not_disjoint_iff, ← orbit_eq_iff, forall_exists_index, eq_comm, implies_true]
 
 @[to_additive]
 theorem orbit.pairwiseDisjoint :
@@ -124,7 +124,7 @@ theorem IsTrivialBlock.image {φ : M → N} {f : α →ₑ[φ] β}
   obtain hB | hB := hB
   · apply Or.intro_left; apply Set.Subsingleton.image hB
   · apply Or.intro_right; rw [hB]
-    simp only [Set.top_eq_univ, Set.image_univ, Set.range_eq_univ, hf]
+    simp only [Set.image_univ, Set.range_eq_univ, hf]
 
 @[to_additive]
 theorem IsTrivialBlock.preimage {φ : M → N} {f : α →ₑ[φ] β}
@@ -132,7 +132,7 @@ theorem IsTrivialBlock.preimage {φ : M → N} {f : α →ₑ[φ] β}
     IsTrivialBlock (f ⁻¹' B) := by
   obtain hB | hB := hB
   · apply Or.intro_left; exact Set.Subsingleton.preimage hB hf
-  · apply Or.intro_right; simp only [hB, Set.top_eq_univ]; apply Set.preimage_univ
+  · apply Or.intro_right; simp only [hB]; apply Set.preimage_univ
 
 end monoid
 
@@ -385,7 +385,6 @@ theorem _root_.AddAction.IsBlock.of_addSubgroup_of_conjugate
   rw [← hh, vadd_vadd, vadd_vadd]
   simp
 
-@[to_additive existing]
 theorem IsBlock.of_subgroup_of_conjugate {H : Subgroup G} (hB : IsBlock H B) (g : G) :
     IsBlock (H.map (MulAut.conj g).toMonoidHom) (g • B) := by
   rw [isBlock_iff_smul_eq_or_disjoint]
@@ -424,9 +423,9 @@ theorem IsBlock.translate (g : G) (hB : IsBlock G B) :
 
 variable (G) in
 /-- For `SMul G X`, a block system of `X` is a partition of `X` into blocks
-  for the action of `G` -/
+for the action of `G` -/
 @[to_additive "For `VAdd G X`, a block system of `X` is a partition of `X` into blocks
- for the additive action of `G`"]
+for the additive action of `G`"]
 def IsBlockSystem (ℬ : Set (Set X)) := Setoid.IsPartition ℬ ∧ ∀ ⦃B⦄, B ∈ ℬ → IsBlock G B
 
 /-- Translates of a block form a block system -/
@@ -444,8 +443,8 @@ theorem IsBlock.isBlockSystem [hGX : MulAction.IsPretransitive G X]
     obtain ⟨b : X, hb : b ∈ B⟩ := hBe
     obtain ⟨g, rfl⟩ := exists_smul_eq G b a
     use g • B
-    simp only [Set.smul_mem_smul_set_iff, hb, existsUnique_iff_exists, Set.mem_range,
-      exists_apply_eq_apply, exists_const, exists_prop, and_imp, forall_exists_index,
+    simp only [Set.smul_mem_smul_set_iff, hb, Set.mem_range,
+      exists_apply_eq_apply, and_imp, forall_exists_index,
       forall_apply_eq_imp_iff, true_and]
     exact fun g' ha ↦ hB.smul_eq_smul_of_nonempty ⟨g • b, ha, ⟨b, hb, rfl⟩⟩
 
@@ -454,7 +453,7 @@ section Normal
 @[to_additive]
 lemma smul_orbit_eq_orbit_smul (N : Subgroup G) [nN : N.Normal] (a : X) (g : G) :
     g • orbit N a = orbit N (g • a) := by
-  simp only [orbit, Set.image_smul, Set.smul_set_range]
+  simp only [orbit, Set.smul_set_range]
   ext
   simp only [Set.mem_range]
   constructor
@@ -465,7 +464,7 @@ lemma smul_orbit_eq_orbit_smul (N : Subgroup G) [nN : N.Normal] (a : X) (g : G) 
   · rintro ⟨⟨k, hk⟩, rfl⟩
     use ⟨g⁻¹ * k * g, nN.conj_mem' k hk g⟩
     simp only [Subgroup.mk_smul]
-    simp only [← mul_assoc, ← smul_smul, smul_inv_smul, inv_inv]
+    simp only [← smul_smul, smul_inv_smul]
 
 /-- An orbit of a normal subgroup is a block -/
 @[to_additive "An orbit of a normal subgroup is a block"]
@@ -590,10 +589,10 @@ theorem stabilizer_orbit_eq {a : X} {H : Subgroup G} (hH : stabilizer G a ≤ H)
 variable (G)
 
 /-- Order equivalence between blocks in `X` containing a point `a`
- and subgroups of `G` containing the stabilizer of `a` (Wielandt, th. 7.5) -/
+and subgroups of `G` containing the stabilizer of `a` (Wielandt, th. 7.5) -/
 @[to_additive
-  "Order equivalence between blocks in `X` containing a point `a`
- and subgroups of `G` containing the stabilizer of `a` (Wielandt, th. 7.5)"]
+"Order equivalence between blocks in `X` containing a point `a`
+and subgroups of `G` containing the stabilizer of `a` (Wielandt, th. 7.5)"]
 def block_stabilizerOrderIso [htGX : IsPretransitive G X] (a : X) :
     { B : Set X // a ∈ B ∧ IsBlock G B } ≃o Set.Ici (stabilizer G a) where
   toFun := fun ⟨B, ha, hB⟩ => ⟨stabilizer G B, hB.stabilizer_le ha⟩
@@ -627,10 +626,10 @@ namespace BlockMem
 @[to_additive
 "The type of blocks for an additive group action containing a given element is a bounded order"]
 instance (a : X) : BoundedOrder (BlockMem G a) where
-  top := ⟨⊤, Set.mem_univ a, .univ⟩
+  top := ⟨Set.univ, Set.mem_univ a, .univ⟩
   le_top := by
     rintro ⟨B, ha, hB⟩
-    simp only [Set.top_eq_univ, Subtype.mk_le_mk, Set.le_eq_subset, Set.subset_univ]
+    simp only [Subtype.mk_le_mk, le_eq_subset, subset_univ]
   bot := ⟨{a}, Set.mem_singleton a, IsBlock.singleton⟩
   bot_le := by
     rintro ⟨B, ha, hB⟩
@@ -639,7 +638,7 @@ instance (a : X) : BoundedOrder (BlockMem G a) where
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_top (a : X) :
-    ((⊤ : BlockMem G a) : Set X) = ⊤ :=
+    ((⊤ : BlockMem G a) : Set X) = Set.univ :=
   rfl
 
 @[to_additive (attr := simp, norm_cast)]
@@ -656,7 +655,7 @@ instance [Nontrivial X] (a : X) : Nontrivial (BlockMem G a) := by
   simp only [coe_top, coe_bot] at h
   obtain ⟨b, hb⟩ := exists_ne a
   apply hb
-  rw [← Set.mem_singleton_iff, h, Set.top_eq_univ]
+  rw [← Set.mem_singleton_iff, h]
   apply Set.mem_univ
 
 end BlockMem
@@ -728,9 +727,9 @@ theorem subsingleton_of_card_lt [Finite X] (hB : IsBlock G B)
     exact fun hb ↦ hB' (Nat.mul_le_mul_right _ hb)
 
 /- The assumption `B.Finite` is necessary :
-   For G = ℤ acting on itself, a = 0 and B = ℕ, the translates `k • B` of the statement
-   are just `k + ℕ`, for `k ≤ 0`, and the corresponding intersection is `ℕ`, which is not a block.
-   (Remark by Thomas Browning) -/
+  For G = ℤ acting on itself, a = 0 and B = ℕ, the translates `k • B` of the statement
+  are just `k + ℕ`, for `k ≤ 0`, and the corresponding intersection is `ℕ`, which is not a block.
+  (Remark by Thomas Browning) -/
 /-- The intersection of the translates of a *finite* subset which contain a given point
 is a block (Wielandt, th. 7.3). -/
 @[to_additive

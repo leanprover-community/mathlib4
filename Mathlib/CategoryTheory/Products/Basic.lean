@@ -27,6 +27,8 @@ and products of functors and natural transformations, written `F.prod G` and `α
 
 namespace CategoryTheory
 
+open Functor
+
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
@@ -36,7 +38,7 @@ variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
 
 -- the generates simp lemmas like `id_fst` and `comp_snd`
 /-- `prod C D` gives the cartesian product of two categories. -/
-@[simps (config := { notRecursive := [] }) Hom id_fst id_snd comp_fst comp_snd, stacks 001K]
+@[simps (notRecursive := []) Hom id_fst id_snd comp_fst comp_snd, stacks 001K]
 instance prod : Category.{max v₁ v₂} (C × D) where
   Hom X Y := (X.1 ⟶ Y.1) × (X.2 ⟶ Y.2)
   id X := ⟨𝟙 X.1, 𝟙 X.2⟩
@@ -57,6 +59,19 @@ theorem prod_comp {P Q R : C} {S T U : D} (f : (P, S) ⟶ (Q, T)) (g : (Q, T) �
     f ≫ g = (f.1 ≫ g.1, f.2 ≫ g.2) :=
   rfl
 
+namespace Prod
+
+variable {C D} in
+/-- Construct a morphism in a product category by giving its constituent components.
+This constructor should be preferred over `Prod.mk`, because lean infers better the
+source and target of the resulting morphism. -/
+abbrev mkHom {X₁ X₂ : C} {Y₁ Y₂ : D} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) : (X₁, Y₁) ⟶ (X₂, Y₂) :=
+  ⟨f, g⟩
+
+@[inherit_doc Prod.mkHom]
+scoped infixr:70 " ×ₘ " => Prod.mkHom
+
+end Prod
 theorem isIso_prod_iff {P Q : C} {S T : D} {f : (P, S) ⟶ (Q, T)} :
     IsIso f ↔ IsIso f.1 ∧ IsIso f.2 := by
   constructor
@@ -170,14 +185,12 @@ variable {C D}
 /-- Any morphism in a product factors as a morphsim whose left component is an identity
 followed by a morphism whose right component is an identity. -/
 @[reassoc]
-lemma fac {x y : C × D} (f : x ⟶ y) :
-    f = ((𝟙 x.1, f.2) : _ ⟶ ⟨x.1, y.2⟩) ≫ (f.1, 𝟙 y.2) := by aesop
+lemma fac {x y : C × D} (f : x ⟶ y) : f = (𝟙 x.1 ×ₘ f.2) ≫ (f.1 ×ₘ (𝟙 y.2)) := by aesop
 
 /-- Any morphism in a product factors as a morphsim whose right component is an identity
 followed by a morphism whose left component is an identity. -/
 @[reassoc]
-lemma fac' {x y : C × D} (f : x ⟶ y) :
-    f = ((f.1, 𝟙 x.2) : _ ⟶ ⟨y.1, x.2⟩) ≫ (𝟙 y.1, f.2) := by aesop
+lemma fac' {x y : C × D} (f : x ⟶ y) : f = (f.1 ×ₘ 𝟙 x.2) ≫ ((𝟙 y.1) ×ₘ f.2) := by aesop
 
 end Prod
 
@@ -226,7 +239,7 @@ def prod (F : A ⥤ B) (G : C ⥤ D) : A × C ⥤ B × D where
   map f := (F.map f.1, G.map f.2)
 
 /- Because of limitations in Lean 3's handling of notations, we do not setup a notation `F × G`.
-   You can use `F.prod G` as a "poor man's infix", or just write `functor.prod F G`. -/
+You can use `F.prod G` as a "poor man's infix", or just write `functor.prod F G`. -/
 /-- Similar to `prod`, but both functors start from the same category `A` -/
 @[simps]
 def prod' (F : A ⥤ B) (G : A ⥤ C) : A ⥤ B × C where
@@ -264,7 +277,7 @@ def prod {F G : A ⥤ B} {H I : C ⥤ D} (α : F ⟶ G) (β : H ⟶ I) : F.prod 
   app X := (α.app X.1, β.app X.2)
 
 /- Again, it is inadvisable in Lean 3 to setup a notation `α × β`;
-   use instead `α.prod β` or `NatTrans.prod α β`. -/
+use instead `α.prod β` or `NatTrans.prod α β`. -/
 
 /-- The cartesian product of two natural transformations where both functors have the
 same source. -/

@@ -5,7 +5,7 @@ Authors: Riccardo Brasca
 -/
 
 import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
-import Mathlib.NumberTheory.NumberField.Embeddings
+import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
 
 /-!
 # Cyclotomic extensions of `ℚ` are totally complex number fields.
@@ -14,7 +14,7 @@ We prove that cyclotomic extensions of `ℚ` are totally complex, meaning that
 
 ## Main results
 * `nrRealPlaces_eq_zero`: If `K` is a `n`-th cyclotomic extension of `ℚ`, where `2 < n`,
-then there are no real places of `K`.
+  then there are no real places of `K`.
 -/
 
 universe u
@@ -23,7 +23,7 @@ namespace IsCyclotomicExtension.Rat
 
 open NumberField InfinitePlace Module Complex Nat Polynomial
 
-variable {n : ℕ+} (K : Type u) [Field K] [CharZero K]
+variable {n : ℕ} [NeZero n] (K : Type u) [Field K] [CharZero K]
 
 /-- If `K` is a `n`-th cyclotomic extension of `ℚ`, where `2 < n`, then there are no real places
 of `K`. -/
@@ -46,18 +46,18 @@ theorem nrComplexPlaces_eq_totient_div_two [h : IsCyclotomicExtension {n} ℚ K]
   · obtain ⟨k, hk : φ n = k + k⟩ := totient_even hn
     have key := card_add_two_mul_card_eq_rank K
     rw [nrRealPlaces_eq_zero K hn, zero_add, IsCyclotomicExtension.finrank (n := n) K
-      (cyclotomic.irreducible_rat n.pos), hk, ← two_mul, Nat.mul_right_inj (by norm_num)] at key
+      (cyclotomic.irreducible_rat (NeZero.pos _)), hk, ← two_mul,
+      Nat.mul_right_inj (by norm_num)] at key
     simp [hk, key, ← two_mul]
   · have : φ n = 1 := by
-      by_cases h1 : 1 < n.1
+      by_cases h1 : 1 < n
       · convert totient_two
         exact (eq_of_le_of_not_lt (succ_le_of_lt h1) hn).symm
       · convert totient_one
-        rw [← PNat.one_coe, PNat.coe_inj]
-        exact eq_of_le_of_not_lt (not_lt.mp h1) (PNat.not_lt_one _)
+        exact eq_of_le_of_not_lt (not_lt.mp h1) (by simp [NeZero.ne _])
     rw [this]
     apply nrComplexPlaces_eq_zero_of_finrank_eq_one
-    rw [IsCyclotomicExtension.finrank K (cyclotomic.irreducible_rat n.pos), this]
+    rw [IsCyclotomicExtension.finrank K (cyclotomic.irreducible_rat (NeZero.pos n)), this]
 
 
 end IsCyclotomicExtension.Rat

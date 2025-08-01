@@ -89,7 +89,7 @@ lemma jacobiTheta₂'_functional_equation' (z τ : ℂ) :
     (by rw [cpow_one, ← div_div, div_self (neg_ne_zero.mpr I_ne_zero)] :
       1 / τ = -I / (-I * τ) ^ (1 : ℂ)), div_mul_div_comm,
     ← cpow_add _ _ (mul_ne_zero (neg_ne_zero.mpr I_ne_zero) hτ), ← div_mul_eq_mul_div,
-    (by norm_num : (1 / 2  + 1 : ℂ) = 3 / 2), mul_assoc (1 / _), mul_assoc (1 / _),
+    (by norm_num : (1 / 2 + 1 : ℂ) = 3 / 2), mul_assoc (1 / _), mul_assoc (1 / _),
     ← mul_one_div (-2 * π : ℂ), mul_comm _ (1 / _), mul_assoc (1 / _)]
   congr 1
   rw [jacobiTheta₂'', div_add' _ _ _ two_pi_I_ne_zero, ← mul_div_assoc, ← mul_div_assoc,
@@ -178,7 +178,7 @@ lemma continuousOn_sinKernel (a : UnitAddCircle) : ContinuousOn (sinKernel a) (I
 lemma oddKernel_functional_equation (a : UnitAddCircle) (x : ℝ) :
     oddKernel a x = 1 / x ^ (3 / 2 : ℝ) * sinKernel a (1 / x) := by
   -- first reduce to `0 < x`
-  rcases le_or_lt x 0 with hx | hx
+  rcases le_or_gt x 0 with hx | hx
   · rw [oddKernel_undef _ hx, sinKernel_undef _ (one_div_nonpos.mpr hx), mul_zero]
   induction a using QuotientAddGroup.induction_on with | H a =>
   have h1 : -1 / (I * ↑(1 / x)) = I * x := by rw [one_div, ofReal_inv, mul_comm, ← div_div,
@@ -240,7 +240,7 @@ lemma hasSum_nat_sinKernel (a : ℝ) {t : ℝ} (ht : 0 < t) :
     (sinKernel ↑a t) := by
   rw [← hasSum_ofReal]
   have := (hasSum_int_sinKernel a ht).nat_add_neg
-  simp only [Int.cast_zero, sq (0 : ℂ), zero_mul, mul_zero, add_zero] at this
+  simp only [Int.cast_zero, zero_mul, mul_zero, add_zero] at this
   refine this.congr_fun fun n ↦ ?_
   simp_rw [Int.cast_neg, neg_sq, mul_neg, ofReal_mul, Int.cast_natCast, ofReal_natCast,
       ofReal_ofNat, ← add_mul, ofReal_sin, Complex.sin]

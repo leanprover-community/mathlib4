@@ -9,7 +9,9 @@ import Mathlib.LinearAlgebra.Dual.Lemmas
 import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.Flat.EquationalCriterion
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 import Mathlib.RingTheory.Nakayama
+import Mathlib.RingTheory.Support
 
 /-!
 # Finite modules over local rings
@@ -28,13 +30,14 @@ This file gathers various results about finite modules over a local ring `(R, �
   `l` is a split injection if and only if `k ⊗ l` is a (split) injection.
 -/
 
-universe u
+open Module
 
-variable {R} [CommRing R]
+universe u
+variable {R M N P : Type*} [CommRing R]
 
 section
 
-variable {M N} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
+variable [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
 
 open Function (Injective Surjective Exact)
 open IsLocalRing TensorProduct
@@ -42,7 +45,7 @@ open IsLocalRing TensorProduct
 local notation "k" => ResidueField R
 local notation "𝔪" => maximalIdeal R
 
-variable {P} [AddCommGroup P] [Module R P] (f : M →ₗ[R] N) (g : N →ₗ[R] P)
+variable [AddCommGroup P] [Module R P] (f : M →ₗ[R] N) (g : N →ₗ[R] P)
 
 namespace IsLocalRing
 
@@ -98,6 +101,16 @@ theorem span_eq_top_of_tmul_eq_basis [Module.Finite R M] {ι}
   simp only [Function.comp_def, mk_apply, hb, Basis.span_eq]
 
 end IsLocalRing
+
+lemma Module.mem_support_iff_nontrivial_residueField_tensorProduct [Module.Finite R M]
+    (p : PrimeSpectrum R) :
+    p ∈ Module.support R M ↔ Nontrivial (p.asIdeal.ResidueField ⊗[R] M) := by
+  let K := p.asIdeal.ResidueField
+  let e := (AlgebraTensorModule.cancelBaseChange R (Localization.AtPrime p.asIdeal) K K M).symm
+  rw [e.nontrivial_congr, Module.mem_support_iff,
+    (LocalizedModule.equivTensorProduct p.asIdeal.primeCompl M).nontrivial_congr,
+    ← not_iff_not, not_nontrivial_iff_subsingleton, not_nontrivial_iff_subsingleton,
+    IsLocalRing.subsingleton_tensorProduct]
 
 @[deprecated (since := "2024-11-11")]
 alias LocalRing.map_mkQ_eq := IsLocalRing.map_mkQ_eq
@@ -159,7 +172,7 @@ variable [IsLocalRing R]
 `𝔪 ⊗ M → M` is injective, then every family of elements that is a `k`-basis of
 `k ⊗ M` is an `R`-basis of `M`. -/
 lemma exists_basis_of_basis_baseChange [Module.FinitePresentation R M]
-    {ι : Type u} (v : ι → M) (hli : LinearIndependent k (TensorProduct.mk R k M 1 ∘ v))
+    {ι : Type*} (v : ι → M) (hli : LinearIndependent k (TensorProduct.mk R k M 1 ∘ v))
     (hsp : Submodule.span k (Set.range (TensorProduct.mk R k M 1 ∘ v)) = ⊤)
     (H : Function.Injective ((𝔪).subtype.rTensor M)) :
     ∃ (b : Basis ι R M), ∀ i, b i = v i := by
@@ -251,7 +264,7 @@ theorem IsLocalRing.linearIndependent_of_flat [Flat R M] {ι : Type u} (v : ι �
   rw [linearIndependent_iff']; intro s f hfv
   classical
   induction' s using Finset.induction with n s hn ih generalizing v <;> intro i hi
-  · exact (Finset.not_mem_empty _ hi).elim
+  · exact (Finset.notMem_empty _ hi).elim
   rw [← Finset.sum_coe_sort] at hfv
   have ⟨l, a, y, hay, hfa⟩ := Flat.isTrivialRelation_of_sum_smul_eq_zero hfv
   have : v n ∉ 𝔪 • (⊤ : Submodule R M) := by

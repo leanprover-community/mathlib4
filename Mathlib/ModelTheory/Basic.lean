@@ -3,7 +3,6 @@ Copyright (c) 2021 Aaron Anderson, Jesse Michael Han, Floris van Doorn. All righ
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
 -/
-import Mathlib.Data.Fin.VecNotation
 import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
@@ -116,7 +115,7 @@ instance isEmpty_empty : IsEmpty Language.empty.Symbols := by
   simp only [Language.Symbols, isEmpty_sum, isEmpty_sigma]
   exact ⟨fun _ => inferInstance, fun _ => inferInstance⟩
 
-instance Countable.countable_functions [h : Countable L.Symbols] : Countable (Σl, L.Functions l) :=
+instance Countable.countable_functions [h : Countable L.Symbols] : Countable (Σ l, L.Functions l) :=
   @Function.Injective.countable _ _ h _ Sum.inl_injective
 
 @[simp]
@@ -811,8 +810,6 @@ end FirstOrder
 namespace Equiv
 
 open FirstOrder FirstOrder.Language FirstOrder.Language.Structure
-
-open FirstOrder
 
 variable {L : Language} {M : Type*} {N : Type*} [L.Structure M]
 

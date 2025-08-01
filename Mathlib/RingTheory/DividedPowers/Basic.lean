@@ -30,12 +30,12 @@ this is the binomial theorem without binomial coefficients.
 * `DividedPowers.dpow_comp` : `dpow m (dpow n x) = uniformBell m n * dpow (m * n) x`
 * `DividedPowers.dividedPowersBot` : the trivial divided powers structure on the zero ideal
 * `DividedPowers.prod_dpow`: a product of divided powers is a multinomial coefficients
-times a divided power
+  times a divided power
 * `DividedPowers.dpow_sum`: the multinomial theorem for divided powers,
-without multinomial coefficients.
+  without multinomial coefficients.
 * `DividedPowers.ofRingEquiv`: transfer divided powers along `RingEquiv`
 * `DividedPowers.equiv`: the equivalence `DividedPowers I ≃ DividedPowers J`,
-for `e : R ≃+* S`, and `I : Ideal R`,  `J : Ideal S` such that `I.map e = J`
+  for `e : R ≃+* S`, and `I : Ideal R`, `J : Ideal S` such that `I.map e = J`
 * `DividedPowers.exp`: the power series `Σ (dpow n a) X ^n`
 * `DividedPowers.exp_add`: its multiplicativity
 
@@ -89,8 +89,8 @@ structure DividedPowers where
 
 variable (A) in
 /-- The canonical `DividedPowers` structure on the zero ideal -/
-def dividedPowersBot [DecidableEq A] : DividedPowers (⊥ : Ideal A) where
-  dpow n a := ite (a = 0 ∧ n = 0) 1 0
+noncomputable def dividedPowersBot : DividedPowers (⊥ : Ideal A) where
+  dpow n a := open Classical in ite (a = 0 ∧ n = 0) 1 0
   dpow_null {n a} ha := by
     simp only [mem_bot] at ha
     rw [if_neg]
@@ -105,19 +105,14 @@ def dividedPowersBot [DecidableEq A] : DividedPowers (⊥ : Ideal A) where
     exact fun _ a ↦ False.elim (hn a)
   dpow_add ha hb := by
     rw [mem_bot.mp ha, mem_bot.mp hb, add_zero]
-    simp only [true_and, ge_iff_le, tsub_eq_zero_iff_le, mul_ite, mul_one, mul_zero]
+    simp only [true_and, mul_ite, mul_one, mul_zero]
     split_ifs with h
     · simp [h]
     · symm
       apply sum_eq_zero
       intro i hi
       simp only [mem_antidiagonal] at hi
-      split_ifs with h2 h1
-      · rw [h1, h2, add_zero] at hi
-        exfalso
-        exact h hi.symm
-      · rfl
-      · rfl
+      grind
   dpow_mul {n} _ _ hx := by
     rw [mem_bot.mp hx]
     simp only [mul_zero, true_and, mul_ite, mul_one]
@@ -138,7 +133,12 @@ def dividedPowersBot [DecidableEq A] : DividedPowers (⊥ : Ideal A) where
     · simp [hm, uniformBell_zero_left, hn]
     · simp only [hm, and_false, ite_false, false_or, if_neg hn]
 
-instance [DecidableEq A] : Inhabited (DividedPowers (⊥ : Ideal A)) :=
+lemma dividedPowersBot_dpow_eq [DecidableEq A] (n : ℕ) (a : A) :
+    (dividedPowersBot A).dpow n a =
+      if a = 0 ∧ n = 0 then 1 else 0 := by
+  simp [dividedPowersBot]
+
+noncomputable instance : Inhabited (DividedPowers (⊥ : Ideal A)) :=
   ⟨dividedPowersBot A⟩
 
 /-- The coercion from the divided powers structures to functions -/
@@ -152,10 +152,7 @@ theorem DividedPowers.ext (hI : DividedPowers I) (hI' : DividedPowers I)
   obtain ⟨hI, h₀, _⟩ := hI
   obtain ⟨hI', h₀', _⟩ := hI'
   simp only [mk.injEq]
-  ext n x
-  by_cases hx : x ∈ I
-  · exact h_eq n hx
-  · rw [h₀ hx, h₀' hx]
+  grind
 
 theorem DividedPowers.coe_injective :
     Function.Injective (fun (h : DividedPowers I) ↦ (h : ℕ → A → A)) := fun hI hI' h ↦ by
@@ -188,7 +185,7 @@ theorem exp_add' (dp : ℕ → A → A)
     PowerSeries.mk (fun n ↦ dp n (a + b)) =
       (PowerSeries.mk fun n ↦ dp n a) * (PowerSeries.mk fun n ↦ dp n b) := by
   ext n
-  simp only [exp, PowerSeries.coeff_mk, PowerSeries.coeff_mul, dp_add n,
+  simp only [PowerSeries.coeff_mk, PowerSeries.coeff_mul, dp_add n,
     sum_antidiagonal_eq_sum_range_succ_mk]
 
 theorem exp_add (hI : DividedPowers I) (ha : a ∈ I) (hb : b ∈ I) :

@@ -26,7 +26,8 @@ lemma sum_le_sum_Ioc {s : Finset ℤ} {c : ℤ} (hs : ∀ x ∈ s, x ≤ c) :
   calc
     _ ≤ ∑ x ∈ s ∩ r, x + #(s \ r) • (c - #s) := by
       rw [← sum_inter_add_sum_diff s r _]
-      refine add_le_add_left (sum_le_card_nsmul _ _ _ fun x mx ↦ ?_) _
+      gcongr
+      refine sum_le_card_nsmul _ _ _ fun x mx ↦ ?_
       rw [mem_sdiff, mem_Ioc, not_and'] at mx
       have := mx.2 (hs _ mx.1); omega
     _ = ∑ x ∈ r ∩ s, x + #(r \ s) • (c - #s) := by
@@ -34,7 +35,8 @@ lemma sum_le_sum_Ioc {s : Finset ℤ} {c : ℤ} (hs : ∀ x ∈ s, x ≤ c) :
       rw [Int.card_Ioc, sub_sub_cancel, Int.toNat_natCast]
     _ ≤ _ := by
       rw [← sum_inter_add_sum_diff r s _]
-      refine add_le_add_left (card_nsmul_le_sum _ _ _ fun x mx ↦ ?_) _
+      gcongr
+      refine card_nsmul_le_sum _ _ _ fun x mx ↦ ?_
       rw [mem_sdiff, mem_Ioc] at mx; exact mx.1.1.le
 
 /-- Sharp upper bound for the sum of a finset of integers that is bounded above, `range` version. -/

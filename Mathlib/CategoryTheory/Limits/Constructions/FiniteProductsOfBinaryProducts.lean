@@ -170,7 +170,6 @@ and a binary cofan on `c₁.X` and `f 0`, we can build a cofan for all `n+1`.
 In `extendCofanIsColimit` we show that if the two given cofans are colimits,
 then this cofan is also a colimit.
 -/
-
 @[simps!]
 def extendCofan {n : ℕ} {f : Fin (n + 1) → C} (c₁ : Cofan fun i : Fin n => f i.succ)
     (c₂ : BinaryCofan (f 0) c₁.pt) : Cofan f :=

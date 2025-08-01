@@ -7,9 +7,11 @@ import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Algebra.Group.Hom.Basic
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Algebra.Group.Torsion
 import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.Algebra.Notation.Prod
 import Mathlib.Logic.Equiv.Prod
+import Mathlib.Tactic.TermCongr
 
 /-!
 # Monoid, group etc structures on `M × N`
@@ -34,9 +36,7 @@ We also prove trivial `simp` lemmas, and define the following operations on `Mon
 * `divMonoidHom`: Division bundled as a monoid homomorphism.
 -/
 
-assert_not_exists MonoidWithZero DenselyOrdered
--- TODO:
--- assert_not_exists AddMonoidWithOne
+assert_not_exists MonoidWithZero DenselyOrdered AddMonoidWithOne
 
 variable {G : Type*} {H : Type*} {M : Type*} {N : Type*} {P : Type*}
 
@@ -80,6 +80,11 @@ instance instMonoid [Monoid M] [Monoid N] : Monoid (M × N) :=
     npow_succ := fun _ _ => Prod.ext (Monoid.npow_succ _ _) (Monoid.npow_succ _ _),
     one_mul := by simp,
     mul_one := by simp }
+
+instance instIsMulTorsionFree [Monoid M] [Monoid N] [IsMulTorsionFree M] [IsMulTorsionFree N] :
+    IsMulTorsionFree (M × N) where
+  pow_left_injective n hn a b hab := by
+    ext <;> apply pow_left_injective hn; exacts [congr(($hab).1), congr(($hab).2)]
 
 @[to_additive Prod.subNegMonoid]
 instance [DivInvMonoid G] [DivInvMonoid H] : DivInvMonoid (G × H) where
@@ -547,13 +552,21 @@ def prodCongr (f : M ≃* M') (g : N ≃* N') : M × N ≃* M' × N' :=
   { f.toEquiv.prodCongr g.toEquiv with
     map_mul' := fun _ _ => Prod.ext (map_mul f _ _) (map_mul g _ _) }
 
-/-- Multiplying by the trivial monoid doesn't change the structure. -/
-@[to_additive uniqueProd "Multiplying by the trivial monoid doesn't change the structure."]
+/-- Multiplying by the trivial monoid doesn't change the structure.
+
+This is the `MulEquiv` version of `Equiv.uniqueProd`. -/
+@[to_additive uniqueProd "Multiplying by the trivial monoid doesn't change the structure.
+
+This is the `AddEquiv` version of `Equiv.uniqueProd`."]
 def uniqueProd [Unique N] : N × M ≃* M :=
   { Equiv.uniqueProd M N with map_mul' := fun _ _ => rfl }
 
-/-- Multiplying by the trivial monoid doesn't change the structure. -/
-@[to_additive prodUnique "Multiplying by the trivial monoid doesn't change the structure."]
+/-- Multiplying by the trivial monoid doesn't change the structure.
+
+This is the `MulEquiv` version of `Equiv.prodUnique`. -/
+@[to_additive prodUnique "Multiplying by the trivial monoid doesn't change the structure.
+
+This is the `AddEquiv` version of `Equiv.prodUnique`."]
 def prodUnique [Unique N] : M × N ≃* M :=
   { Equiv.prodUnique M N with map_mul' := fun _ _ => rfl }
 
@@ -601,7 +614,7 @@ Used mainly to define the natural topology of `αˣ`. -/
 def embedProduct (α : Type*) [Monoid α] : αˣ →* α × αᵐᵒᵖ where
   toFun x := ⟨x, op ↑x⁻¹⟩
   map_one' := by
-    simp only [inv_one, eq_self_iff_true, Units.val_one, op_one, Prod.mk_eq_one, and_self_iff]
+    simp only [inv_one, Units.val_one, op_one, Prod.mk_eq_one, and_self_iff]
   map_mul' x y := by simp only [mul_inv_rev, op_mul, Units.val_mul, Prod.mk_mul_mk]
 
 @[to_additive]

@@ -115,7 +115,7 @@ equalities. -/
 @[simps]
 protected def copy (p : Submodule R M) (s : Set M) (hs : s = ↑p) : Submodule R M where
   carrier := s
-  zero_mem' := by simpa [hs] using p.zero_mem'
+  zero_mem' := by simp [hs]
   add_mem' := hs.symm ▸ p.add_mem'
   smul_mem' := by simpa [hs] using p.smul_mem'
 
@@ -186,7 +186,6 @@ variable (p)
 theorem mem_carrier : x ∈ p.carrier ↔ x ∈ (p : Set M) :=
   Iff.rfl
 
-@[simp]
 protected theorem zero_mem : (0 : M) ∈ p :=
   zero_mem _
 
@@ -211,6 +210,11 @@ lemma smul_mem_iff'' [Invertible r] :
   refine ⟨fun h ↦ ?_, p.smul_mem r⟩
   rw [← invOf_smul_smul r x]
   exact p.smul_mem _ h
+
+lemma smul_mem_iff_of_isUnit (hr : IsUnit r) :
+    r • x ∈ p ↔ x ∈ p :=
+  let _ : Invertible r := hr.invertible
+  smul_mem_iff'' p
 
 instance add : Add p :=
   ⟨fun x y => ⟨x.1 + y.1, add_mem x.2 y.2⟩⟩

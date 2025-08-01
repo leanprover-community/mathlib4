@@ -74,8 +74,7 @@ private theorem glueDist_self (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) : ∀ x, 
 theorem glueDist_glued_points [Nonempty Z] (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) (p : Z) :
     glueDist Φ Ψ ε (.inl (Φ p)) (.inr (Ψ p)) = ε := by
   have : ⨅ q, dist (Φ p) (Φ q) + dist (Ψ p) (Ψ q) = 0 := by
-    have A : ∀ q, 0 ≤ dist (Φ p) (Φ q) + dist (Ψ p) (Ψ q) := fun _ =>
-      add_nonneg dist_nonneg dist_nonneg
+    have A : ∀ q, 0 ≤ dist (Φ p) (Φ q) + dist (Ψ p) (Ψ q) := fun _ => by positivity
     refine le_antisymm ?_ (le_ciInf A)
     have : 0 = dist (Φ p) (Φ p) + dist (Ψ p) (Ψ p) := by simp
     rw [this]
@@ -93,12 +92,12 @@ theorem glueDist_swap (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) :
     ∀ x y, glueDist Ψ Φ ε x.swap y.swap = glueDist Φ Ψ ε x y
   | .inl _, .inl _ => rfl
   | .inr _, .inr _ => rfl
-  | .inl _, .inr _ => by simp only [glueDist, Sum.swap_inl, Sum.swap_inr, dist_comm, add_comm]
-  | .inr _, .inl _ => by simp only [glueDist, Sum.swap_inl, Sum.swap_inr, dist_comm, add_comm]
+  | .inl _, .inr _ => by simp only [glueDist, Sum.swap_inl, Sum.swap_inr, add_comm]
+  | .inr _, .inl _ => by simp only [glueDist, Sum.swap_inl, Sum.swap_inr, add_comm]
 
 theorem le_glueDist_inl_inr (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) (x y) :
     ε ≤ glueDist Φ Ψ ε (.inl x) (.inr y) :=
-  le_add_of_nonneg_left <| Real.iInf_nonneg fun _ => add_nonneg dist_nonneg dist_nonneg
+  le_add_of_nonneg_left <| Real.iInf_nonneg fun _ => by positivity
 
 theorem le_glueDist_inr_inl (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) (x y) :
     ε ≤ glueDist Φ Ψ ε (.inr x) (.inl y) := by
@@ -113,7 +112,7 @@ private theorem glueDist_triangle_inl_inr_inr (Φ : Z → X) (Ψ : Z → Y) (ε 
   simp only [glueDist]
   rw [add_right_comm, add_le_add_iff_right]
   refine le_ciInf_add fun p => ciInf_le_of_le ⟨0, ?_⟩ p ?_
-  · exact forall_mem_range.2 fun _ => add_nonneg dist_nonneg dist_nonneg
+  · exact forall_mem_range.2 fun _ => by positivity
   · linarith [dist_triangle_left z (Ψ p) y]
 
 private theorem glueDist_triangle_inl_inr_inl (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ)
@@ -164,8 +163,8 @@ theorem Sum.mem_uniformity_iff_glueDist (hε : 0 < ε) (s : Set ((X ⊕ Y) × (X
     refine ⟨min (min δX δY) ε, lt_min (lt_min δX0 δY0) hε, ?_⟩
     rintro (a | a) (b | b) h <;> simp only [lt_min_iff] at h
     · exact hX h.1.1
-    · exact absurd h.2 (le_glueDist_inl_inr _ _ _ _ _).not_lt
-    · exact absurd h.2 (le_glueDist_inr_inl _ _ _ _ _).not_lt
+    · exact absurd h.2 (le_glueDist_inl_inr _ _ _ _ _).not_gt
+    · exact absurd h.2 (le_glueDist_inr_inl _ _ _ _ _).not_gt
     · exact hY h.1.2
   · rintro ⟨ε, ε0, H⟩
     constructor <;> exact ⟨ε, ε0, fun _ _ h => H _ _ h⟩
@@ -222,7 +221,7 @@ theorem Sum.dist_eq_glueDist {p q : X ⊕ Y} (x : X) (y : Y) :
     add_left_comm, add_assoc]
 
 private theorem Sum.dist_comm (x y : X ⊕ Y) : Sum.dist x y = Sum.dist y x := by
-  cases x <;> cases y <;> simp [Sum.dist, _root_.dist_comm, add_comm, add_left_comm, add_assoc]
+  cases x <;> cases y <;> simp [Sum.dist, _root_.dist_comm, add_comm, add_left_comm]
 
 theorem Sum.one_le_dist_inl_inr {x : X} {y : Y} : 1 ≤ Sum.dist (.inl x) (.inr y) :=
   le_trans (le_add_of_nonneg_right dist_nonneg) <|
@@ -240,8 +239,8 @@ private theorem Sum.mem_uniformity (s : Set ((X ⊕ Y) × (X ⊕ Y))) :
     refine ⟨min (min εX εY) 1, lt_min (lt_min εX0 εY0) zero_lt_one, ?_⟩
     rintro (a | a) (b | b) h
     · exact hX (lt_of_lt_of_le h (le_trans (min_le_left _ _) (min_le_left _ _)))
-    · cases not_le_of_lt (lt_of_lt_of_le h (min_le_right _ _)) Sum.one_le_dist_inl_inr
-    · cases not_le_of_lt (lt_of_lt_of_le h (min_le_right _ _)) Sum.one_le_dist_inr_inl
+    · cases not_le_of_gt (lt_of_lt_of_le h (min_le_right _ _)) Sum.one_le_dist_inl_inr
+    · cases not_le_of_gt (lt_of_lt_of_le h (min_le_right _ _)) Sum.one_le_dist_inr_inl
     · exact hY (lt_of_lt_of_le h (le_trans (min_le_left _ _) (min_le_right _ _)))
   · rintro ⟨ε, ε0, H⟩
     constructor <;> rw [Filter.mem_map, mem_uniformity_dist] <;> exact ⟨ε, ε0, fun _ _ h => H _ _ h⟩
@@ -326,11 +325,11 @@ theorem dist_same (i : ι) (x y : E i) : dist (Sigma.mk i x) ⟨i, y⟩ = dist x
 
 @[simp]
 theorem dist_ne {i j : ι} (h : i ≠ j) (x : E i) (y : E j) :
-    dist (⟨i, x⟩ : Σk, E k) ⟨j, y⟩ = dist x (Nonempty.some ⟨x⟩) + 1 + dist (Nonempty.some ⟨y⟩) y :=
+    dist (⟨i, x⟩ : Σ k, E k) ⟨j, y⟩ = dist x (Nonempty.some ⟨x⟩) + 1 + dist (Nonempty.some ⟨y⟩) y :=
   dif_neg h
 
 theorem one_le_dist_of_ne {i j : ι} (h : i ≠ j) (x : E i) (y : E j) :
-    1 ≤ dist (⟨i, x⟩ : Σk, E k) ⟨j, y⟩ := by
+    1 ≤ dist (⟨i, x⟩ : Σ k, E k) ⟨j, y⟩ := by
   rw [Sigma.dist_ne h x y]
   linarith [@dist_nonneg _ _ x (Nonempty.some ⟨x⟩), @dist_nonneg _ _ (Nonempty.some ⟨y⟩) y]
 
@@ -386,7 +385,7 @@ protected theorem isOpen_iff (s : Set (Σ i, E i)) :
         1 ≤ Sigma.dist ⟨i, x⟩ ⟨j, y⟩ := Sigma.one_le_dist_of_ne hij _ _
         _ < 1 := hy.trans_le (min_le_right _ _)
   · refine fun H => isOpen_sigma_iff.2 fun i => Metric.isOpen_iff.2 fun x hx => ?_
-    obtain ⟨ε, εpos, hε⟩ : ∃ ε > 0, ∀ y, dist (⟨i, x⟩ : Σj, E j) y < ε → y ∈ s :=
+    obtain ⟨ε, εpos, hε⟩ : ∃ ε > 0, ∀ y, dist (⟨i, x⟩ : Σ j, E j) y < ε → y ∈ s :=
       H ⟨i, x⟩ hx
     refine ⟨ε, εpos, fun y hy => ?_⟩
     apply hε ⟨i, y⟩
@@ -413,7 +412,7 @@ protected def metricSpace : MetricSpace (Σ i, E i) := by
     · intro h
       apply (lt_irrefl (1 : ℝ) _).elim
       calc
-        1 ≤ Sigma.dist (⟨i, x⟩ : Σk, E k) ⟨j, y⟩ := Sigma.one_le_dist_of_ne hij _ _
+        1 ≤ Sigma.dist (⟨i, x⟩ : Σ k, E k) ⟨j, y⟩ := Sigma.one_le_dist_of_ne hij _ _
         _ < 1 := by rw [h]; exact zero_lt_one
 
 attribute [local instance] Sigma.metricSpace
@@ -423,13 +422,13 @@ open Topology
 open Filter
 
 /-- The injection of a space in a disjoint union is an isometry -/
-theorem isometry_mk (i : ι) : Isometry (Sigma.mk i : E i → Σk, E k) :=
+theorem isometry_mk (i : ι) : Isometry (Sigma.mk i : E i → Σ k, E k) :=
   Isometry.of_dist_eq fun x y => by simp
 
 /-- A disjoint union of complete metric spaces is complete. -/
 protected theorem completeSpace [∀ i, CompleteSpace (E i)] : CompleteSpace (Σ i, E i) := by
   set s : ι → Set (Σ i, E i) := fun i => Sigma.fst ⁻¹' {i}
-  set U := { p : (Σk, E k) × Σk, E k | dist p.1 p.2 < 1 }
+  set U := { p : (Σ k, E k) × Σ k, E k | dist p.1 p.2 < 1 }
   have hc : ∀ i, IsComplete (s i) := fun i => by
     simp only [s, ← range_sigmaMk]
     exact (isometry_mk i).isUniformInducing.isComplete_range
@@ -496,9 +495,8 @@ theorem toGlueL_isometry (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : Isometry (toG
 theorem toGlueR_isometry (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : Isometry (toGlueR hΦ hΨ) :=
   Isometry.of_dist_eq fun _ _ => rfl
 
-end Gluing
+end Gluing --section
 
---section
 section InductiveLimit
 
 /-!
@@ -550,9 +548,9 @@ theorem inductiveLimitDist_eq_dist (I : ∀ n, Isometry (f n)) (x y : Σ n, X n)
       exact inductiveLimitDist_eq_dist I x y m xm ym
 
 /-- Premetric space structure on `Σ n, X n`. -/
-def inductivePremetric (I : ∀ n, Isometry (f n)) : PseudoMetricSpace (Σn, X n) where
+def inductivePremetric (I : ∀ n, Isometry (f n)) : PseudoMetricSpace (Σ n, X n) where
   dist := inductiveLimitDist f
-  dist_self x := by simp [dist, inductiveLimitDist]
+  dist_self x := by simp [inductiveLimitDist]
   dist_comm x y := by
     let m := max x.1 y.1
     have hx : x.1 ≤ m := le_max_left _ _
@@ -606,14 +604,34 @@ theorem toInductiveLimit_commute (I : ∀ n, Isometry (f n)) (n : ℕ) :
   funext x
   simp only [comp, toInductiveLimit]
   refine SeparationQuotient.mk_eq_mk.2 (Metric.inseparable_iff.2 ?_)
-  show inductiveLimitDist f ⟨n.succ, f n x⟩ ⟨n, x⟩ = 0
+  change inductiveLimitDist f ⟨n.succ, f n x⟩ ⟨n, x⟩ = 0
   rw [inductiveLimitDist_eq_dist I ⟨n.succ, f n x⟩ ⟨n, x⟩ n.succ, leRecOn_self,
     leRecOn_succ, leRecOn_self, dist_self]
   exact le_succ _
 
-end InductiveLimit
+theorem dense_iUnion_range_toInductiveLimit
+    {X : ℕ → Type u} [(n : ℕ) → MetricSpace (X n)]
+    {f : (n : ℕ) → X n → X (n + 1)}
+    (I : ∀ (n : ℕ), Isometry (f n)) :
+    Dense (⋃ i, range (toInductiveLimit I i)) := by
+  refine dense_univ.mono ?_
+  rintro ⟨n, x⟩ _
+  refine mem_iUnion.2 ⟨n, mem_range.2 ⟨x, rfl⟩⟩
 
---section
-end Metric
+theorem separableSpaceInductiveLimit_of_separableSpace
+    {X : ℕ → Type u} [(n : ℕ) → MetricSpace (X n)]
+    [hs : (n : ℕ) → TopologicalSpace.SeparableSpace (X n)] {f : (n : ℕ) → X n → X (n + 1)}
+    (I : ∀ (n : ℕ), Isometry (f n)) :
+    TopologicalSpace.SeparableSpace (Metric.InductiveLimit I) := by
+  choose hsX hcX hdX using (fun n ↦ TopologicalSpace.exists_countable_dense (X n))
+  let s := ⋃ (i : ℕ), (toInductiveLimit I i '' (hsX i))
+  refine ⟨s, countable_iUnion (fun n => (hcX n).image _), ?_⟩
+  refine .of_closure <| (dense_iUnion_range_toInductiveLimit I).mono <| iUnion_subset fun i ↦ ?_
+  calc
+    range (toInductiveLimit I i) ⊆ closure (toInductiveLimit I i '' (hsX i)) :=
+      (toInductiveLimit_isometry I i |>.continuous).range_subset_closure_image_dense (hdX i)
+    _ ⊆ closure s := closure_mono <| subset_iUnion (fun j ↦ toInductiveLimit I j '' hsX j) i
 
---namespace
+end InductiveLimit --section
+
+end Metric --namespace

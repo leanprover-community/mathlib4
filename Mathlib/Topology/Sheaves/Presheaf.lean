@@ -17,12 +17,12 @@ and inherit the category structure with natural transformations as morphisms.
 
 We define
 * Given `{X Y : TopCat.{w}}` and `f : X ⟶ Y`, we define
-`TopCat.Presheaf.pushforward C f : X.Presheaf C ⥤ Y.Presheaf C`,
-with notation `f _* ℱ` for `ℱ : X.Presheaf C`.
+  `TopCat.Presheaf.pushforward C f : X.Presheaf C ⥤ Y.Presheaf C`,
+  with notation `f _* ℱ` for `ℱ : X.Presheaf C`.
 and for `ℱ : X.Presheaf C` provide the natural isomorphisms
 * `TopCat.Presheaf.Pushforward.id : (𝟙 X) _* ℱ ≅ ℱ`
 * `TopCat.Presheaf.Pushforward.comp : (f ≫ g) _* ℱ ≅ g _* (f _* ℱ)`
-along with their `@[simp]` lemmas.
+  along with their `@[simp]` lemmas.
 
 We also define the functors `pullback C f : Y.Presheaf C ⥤ X.Presheaf c`,
 and provide their adjunction at
@@ -31,7 +31,7 @@ and provide their adjunction at
 
 universe w v u
 
-open CategoryTheory TopologicalSpace Opposite
+open CategoryTheory TopologicalSpace Opposite Functor
 
 variable (C : Type u) [Category.{v} C]
 

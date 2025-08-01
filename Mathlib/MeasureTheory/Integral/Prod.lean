@@ -93,7 +93,7 @@ theorem MeasureTheory.StronglyMeasurable.integral_prod_right [SFinite ν] ⦃f :
   have h2f' : Tendsto f' atTop (𝓝 fun x : α => ∫ y : β, f x y ∂ν) := by
     rw [tendsto_pi_nhds]; intro x
     by_cases hfx : Integrable (f x) ν
-    · have (n) : Integrable (s' n x) ν := by
+    · have (n : _) : Integrable (s' n x) ν := by
         apply (hfx.norm.add hfx.norm).mono' (s' n x).aestronglyMeasurable
         filter_upwards with y
         simp_rw [s', SimpleFunc.coe_comp]; exact SimpleFunc.norm_approxOn_zero_le _ _ (x, y) n
@@ -174,11 +174,11 @@ nonrec theorem MeasureTheory.AEStronglyMeasurable.prod_swap {γ : Type*} [Topolo
   rw [← prod_swap] at hf
   exact hf.comp_measurable measurable_swap
 
-theorem MeasureTheory.AEStronglyMeasurable.fst {γ} [TopologicalSpace γ] {f : α → γ}
+theorem MeasureTheory.AEStronglyMeasurable.comp_fst {γ} [TopologicalSpace γ] {f : α → γ}
     (hf : AEStronglyMeasurable f μ) : AEStronglyMeasurable (fun z : α × β => f z.1) (μ.prod ν) :=
   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_fst
 
-theorem MeasureTheory.AEStronglyMeasurable.snd {γ} [TopologicalSpace γ] {f : β → γ}
+theorem MeasureTheory.AEStronglyMeasurable.comp_snd {γ} [TopologicalSpace γ] {f : β → γ}
     (hf : AEStronglyMeasurable f ν) : AEStronglyMeasurable (fun z : α × β => f z.2) (μ.prod ν) :=
   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_snd
 
@@ -224,7 +224,7 @@ theorem hasFiniteIntegral_prod_iff ⦃f : α × β → E⦄ (h1f : StronglyMeasu
       (∀ᵐ x ∂μ, HasFiniteIntegral (fun y => f (x, y)) ν) ∧
         HasFiniteIntegral (fun x => ∫ y, ‖f (x, y)‖ ∂ν) μ := by
   simp only [hasFiniteIntegral_iff_enorm, lintegral_prod _ h1f.enorm.aemeasurable]
-  have (x) : ∀ᵐ y ∂ν, 0 ≤ ‖f (x, y)‖ := by filter_upwards with y using norm_nonneg _
+  have (x : _) : ∀ᵐ y ∂ν, 0 ≤ ‖f (x, y)‖ := by filter_upwards with y using norm_nonneg _
   simp_rw [integral_eq_lintegral_of_nonneg_ae (this _)
       (h1f.norm.comp_measurable measurable_prodMk_left).aestronglyMeasurable,
     enorm_eq_ofReal toReal_nonneg, ofReal_norm_eq_enorm]
@@ -290,7 +290,7 @@ theorem Integrable.op_fst_snd {F G : Type*} [NormedAddCommGroup F] [NormedAddCom
     {op : E → F → G} (hop : Continuous op.uncurry) (hop_norm : ∃ C, ∀ x y, ‖op x y‖ ≤ C * ‖x‖ * ‖y‖)
     {f : α → E} {g : β → F} (hf : Integrable f μ) (hg : Integrable g ν) :
     Integrable (fun z ↦ op (f z.1) (g z.2)) (μ.prod ν) := by
-  use hop.comp_aestronglyMeasurable₂ hf.1.fst hg.1.snd
+  use hop.comp_aestronglyMeasurable₂ hf.1.comp_fst hg.1.comp_snd
   rcases hop_norm with ⟨C, hC⟩
   calc
     ∫⁻ z, ‖op (f z.1) (g z.2)‖ₑ ∂μ.prod ν ≤ ∫⁻ z, .ofReal C * ‖f z.1‖ₑ * ‖g z.2‖ₑ ∂μ.prod ν := by
@@ -302,7 +302,7 @@ theorem Integrable.op_fst_snd {F G : Type*} [NormedAddCommGroup F] [NormedAddCom
       apply le_coe_toNNReal
     _ ≤ ∫⁻ x, ∫⁻ y, .ofReal C * ‖f x‖ₑ * ‖g y‖ₑ ∂ν ∂μ := lintegral_prod_le _
     _ ≤ .ofReal C * (∫⁻ x, ‖f x‖ₑ ∂μ) * ∫⁻ y, ‖g y‖ₑ ∂ν := by
-      simp [lintegral_const_mul', lintegral_mul_const', hf.2.ne, hg.2.ne, mul_assoc]
+      simp [lintegral_const_mul', lintegral_mul_const', hg.2.ne, mul_assoc]
     _ < ∞ := by apply_rules [ENNReal.mul_lt_top, hf.2, hg.2, ENNReal.ofReal_lt_top]
 
 omit [SFinite ν] in
@@ -431,7 +431,7 @@ theorem continuous_integral_integral :
   apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds _ (fun i => zero_le _) _
   · exact fun i => ∫⁻ x, ∫⁻ y, ‖i (x, y) - g (x, y)‖ₑ ∂ν ∂μ
   swap; · exact fun i => lintegral_mono fun x => enorm_integral_le_lintegral_enorm _
-  show
+  change
     Tendsto (fun i : α × β →₁[μ.prod ν] E => ∫⁻ x, ∫⁻ y : β, ‖i (x, y) - g (x, y)‖ₑ ∂ν ∂μ) (𝓝 g)
       (𝓝 0)
   have this (i : α × β →₁[μ.prod ν] E) : Measurable fun z => ‖i z - g z‖ₑ :=
@@ -487,6 +487,18 @@ theorem integral_integral_symm {f : α → β → E} (hf : Integrable (uncurry f
 theorem integral_integral_swap ⦃f : α → β → E⦄ (hf : Integrable (uncurry f) (μ.prod ν)) :
     ∫ x, ∫ y, f x y ∂ν ∂μ = ∫ y, ∫ x, f x y ∂μ ∂ν :=
   (integral_integral hf).trans (integral_prod_symm _ hf)
+
+/-- Change the order of integration, when one of the integrals is an interval integral. -/
+lemma intervalIntegral_integral_swap {a b : ℝ} {f : ℝ → α → E}
+    (h_int : Integrable (uncurry f) ((volume.restrict (Set.uIoc a b)).prod μ)) :
+    ∫ x in a..b, ∫ y, f x y ∂μ = ∫ y, (∫ x in a..b, f x y) ∂μ := by
+  rcases le_total a b with (hab | hab)
+  · simp_rw [intervalIntegral.integral_of_le hab]
+    simp only [hab, Set.uIoc_of_le] at h_int
+    exact integral_integral_swap h_int
+  · simp_rw [intervalIntegral.integral_of_ge hab]
+    simp only [hab, Set.uIoc_of_ge] at h_int
+    rw [integral_integral_swap h_int, integral_neg]
 
 /-- **Fubini's Theorem** for set integrals. -/
 theorem setIntegral_prod (f : α × β → E) {s : Set α} {t : Set β}
@@ -560,7 +572,7 @@ lemma integral_integral_swap_of_hasCompactSupport
     apply (integrableOn_iff_integrable_of_support_subset (subset_tsupport f.uncurry)).mp
     refine ⟨(h'f.stronglyMeasurable_of_prod hf).aestronglyMeasurable, ?_⟩
     obtain ⟨C, hC⟩ : ∃ C, ∀ p, ‖f.uncurry p‖ ≤ C := hf.bounded_above_of_compact_support h'f
-    exact hasFiniteIntegral_of_bounded (C := C) (Eventually.of_forall hC)
+    exact .of_bounded (C := C) (.of_forall hC)
   _ = ∫ y, (∫ x in U, f x y ∂μ) ∂ν := by
     apply setIntegral_eq_integral_of_forall_compl_eq_zero (fun y hy ↦ ?_)
     have : ∀ x, f x y = 0 := by
