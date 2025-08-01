@@ -109,14 +109,15 @@ theorem subgroups_range_basis : RingSubgroupsBasis
         (fun h ↦ ⟨⟨γ.val.swap, γ.prop.symm⟩, ?_⟩)
       all_goals
         intro x
-        simp only [ltAddSubgroup, Units.val_mk0, AddSubgroup.coe_set_mk, mem_mul, mem_setOf_eq,
+        simp only [ltAddSubgroup, ne_eq, Units.val_mk0, AddSubgroup.coe_set_mk,
+          AddSubmonoid.coe_set_mk, AddSubsemigroup.coe_set_mk, mem_mul, mem_setOf_eq,
           forall_exists_index, and_imp]
         rintro y hy z hz rfl
         rw [map_mul]
         refine (mul_lt_mul'' hy hz zero_le' zero_le').trans_le ?_
       · refine mul_le_of_le_one_right' ?_
         exact div_le_one_of_le₀ h zero_le'
-      · simp only [ne_eq, Prod.snd_swap, Prod.fst_swap]
+      · simp only [Prod.snd_swap, Prod.fst_swap]
         rw [div_mul_div_comm, div_le_div_iff₀, mul_assoc]
         · gcongr
         · simp [zero_lt_iff, γ.prop]
@@ -129,9 +130,7 @@ theorem subgroups_range_basis : RingSubgroupsBasis
         simp [ltAddSubgroup, Hx, zero_lt_iff, hr, hs]
       · use ⟨⟨r * x, s⟩, by simp [Hx, hr, hs]⟩
         rintro y
-        simp only [ltAddSubgroup, map_mul, Units.val_mk0, AddSubgroup.coe_set_mk, mem_setOf_eq,
-          preimage_setOf_eq]
-        simp [← lt_div_iff₀' (zero_lt_iff.mpr Hx), div_div]
+        simp [ltAddSubgroup, ← lt_div_iff₀' (zero_lt_iff.mpr Hx), div_div]
     rightMul := by
       rintro x ⟨⟨r, s⟩, hr, hs⟩
       rcases eq_or_ne (v x) 0 with (Hx | Hx)
@@ -140,10 +139,7 @@ theorem subgroups_range_basis : RingSubgroupsBasis
         simp [ltAddSubgroup, Hx, zero_lt_iff, hr, hs]
       · use ⟨⟨r * x, s⟩, by simp [Hx, hr, hs]⟩
         rintro y
-        simp only [ltAddSubgroup, map_mul, Units.val_mk0, AddSubgroup.coe_set_mk, mem_setOf_eq,
-          preimage_setOf_eq]
-        rw [mul_comm (v y)]
-        simp [← lt_div_iff₀' (zero_lt_iff.mpr Hx), div_div] }
+        simp [ltAddSubgroup, mul_comm (v y), ← lt_div_iff₀' (zero_lt_iff.mpr Hx), div_div] }
 
 lemma subgroups_basis_le_subgroups_range_basis :
     haveI : Nonempty { rs : R × R // v rs.1 ≠ 0 ∧ v rs.2 ≠ 0 } := ⟨⟨⟨1, 1⟩, by simp⟩⟩
@@ -151,8 +147,8 @@ lemma subgroups_basis_le_subgroups_range_basis :
   haveI : Nonempty { rs : R × R // v rs.1 ≠ 0 ∧ v rs.2 ≠ 0 } := ⟨⟨⟨1, 1⟩, by simp⟩⟩
   intro U
   simp_rw [@isOpen_iff_mem_nhds, (RingSubgroupsBasis.hasBasis_nhds _ _).mem_iff]
-  simp only [ne_eq, ltAddSubgroup, Units.val_mk0, AddSubgroup.mem_mk, mem_setOf_eq, true_and,
-    Subtype.exists, exists_prop, Prod.exists]
+  simp only [ne_eq, ltAddSubgroup, Units.val_mk0, AddSubgroup.mem_mk, AddSubmonoid.mem_mk,
+    AddSubsemigroup.mem_mk, mem_setOf_eq, true_and, Subtype.exists, exists_prop, Prod.exists]
   intro H x hx
   obtain ⟨r, s, ⟨hr, hs⟩, h⟩ := H x hx
   refine ⟨Units.mk0 (v s / v r) ?_, h⟩
@@ -186,8 +182,9 @@ def mk' (v : Valuation R Γ₀) : Valued R Γ₀ :=
       intro s
       rw [Filter.hasBasis_iff.mp v.subgroups_range_basis.hasBasis_nhds_zero s]
       refine exists_congr ?_
-      simp only [ne_eq, ltAddSubgroup, Units.val_mk0, AddSubgroup.coe_set_mk, true_and,
-        Subtype.forall, and_imp, Prod.forall]
+      simp only [ne_eq, ltAddSubgroup, Units.val_mk0, AddSubgroup.coe_set_mk,
+        AddSubmonoid.coe_set_mk, AddSubsemigroup.coe_set_mk, true_and, Subtype.forall, and_imp,
+        Prod.forall]
       intro r s hr hs
       simp [lt_div_iff₀ (zero_lt_iff.mpr hr)] }
 
@@ -213,9 +210,9 @@ theorem toUniformSpace_eq :
   rw [uniformity_eq_comap_nhds_zero']
   haveI : Nonempty { rs : R × R // v rs.1 ≠ 0 ∧ v rs.2 ≠ 0 } := ⟨⟨⟨1, 1⟩, by simp⟩⟩
   refine (v.subgroups_range_basis.hasBasis_nhds_zero.comap _).to_hasBasis ?_ ?_ <;>
-  · simp only [ne_eq, ltAddSubgroup, Units.val_mk0, AddSubgroup.coe_set_mk, preimage_setOf_eq,
-    setOf_subset_setOf, Prod.forall, Prod.exists, forall_const, Subtype.forall, and_imp, ne_eq,
-    Subtype.exists, exists_prop]
+  · simp only [ne_eq, ltAddSubgroup, Units.val_mk0, AddSubgroup.coe_set_mk, exists_prop,
+    AddSubmonoid.coe_set_mk, AddSubsemigroup.coe_set_mk, preimage_setOf_eq, setOf_subset_setOf,
+    Prod.forall, Prod.exists, forall_const, Subtype.forall, and_imp, true_and, Subtype.exists]
     intro r s hr hs
     use r, s
     simp [hr, hs, lt_div_iff₀ (zero_lt_iff.mpr hr)]
