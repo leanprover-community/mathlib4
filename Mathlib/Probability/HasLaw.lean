@@ -3,6 +3,8 @@ Copyright (c) 2025 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: EtienneMarion
 -/
+import Mathlib.MeasureTheory.Measure.WithDensity
+import Mathlib.Probability.Density
 import Mathlib.Probability.Moments.Covariance
 
 /-!
@@ -117,5 +119,9 @@ lemma HasLaw.covariance_fun_comp (hX : HasLaw X μ P) {f g : 𝓧 → ℝ}
 lemma HasLaw.variance_eq {μ : Measure ℝ} {X : Ω → ℝ} (hX : HasLaw X μ P) :
     Var[X; P] = Var[id; μ] := by
   rw [← hX.map_eq, variance_map aemeasurable_id hX.aemeasurable, Function.id_comp]
+
+lemma HasPDF.hasLaw [h : HasPDF X P μ] : HasLaw X (μ.withDensity (pdf X P μ)) P where
+  aemeasurable := h.aemeasurable
+  map_eq := map_eq_withDensity_pdf X P μ
 
 end ProbabilityTheory
