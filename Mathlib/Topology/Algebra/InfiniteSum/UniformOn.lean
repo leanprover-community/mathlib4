@@ -168,7 +168,7 @@ lemma hasProdLocallyUniformlyOn_of_of_forall_exists_nhds
 
 @[to_additive]
 lemma HasProdUniformlyOn.hasProdLocallyUniformlyOn (h : HasProdUniformlyOn f g {s}) :
-  HasProdLocallyUniformlyOn f g s := by
+    HasProdLocallyUniformlyOn f g s := by
   simp [HasProdLocallyUniformlyOn, hasProdUniformlyOn_iff_tendstoUniformlyOn] at *
   exact TendstoUniformlyOn.tendstoLocallyUniformlyOn h
 

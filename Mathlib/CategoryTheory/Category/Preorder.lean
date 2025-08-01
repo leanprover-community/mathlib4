@@ -46,8 +46,8 @@ instance (priority := 100) smallCategory (α : Type u) [Preorder α] : SmallCate
   id X := ⟨⟨le_refl X⟩⟩
   comp f g := ⟨⟨le_trans _ _ _ f.down.down g.down.down⟩⟩
 
-instance subsingleton_hom {α : Type u} [Preorder α] (U V : α) :
-  Subsingleton (U ⟶ V) := ⟨fun _ _ => ULift.ext _ _ (Subsingleton.elim _ _ )⟩
+instance subsingleton_hom {α : Type u} [Preorder α] (U V : α) : Subsingleton (U ⟶ V) :=
+  ⟨fun _ _ => ULift.ext _ _ (Subsingleton.elim _ _ )⟩
 
 end Preorder
 
@@ -180,7 +180,7 @@ theorem monotone (f : X ⥤ Y) : Monotone f.obj := fun _ _ hxy => (f.map hxy.hom
 
 /-- A functor `X ⥤ Y` between preorder categories as an `OrderHom`. -/
 @[simps!]
-def toOrderHom (F : X ⥤ Y) : (X →o Y) where
+def toOrderHom (F : X ⥤ Y) : X →o Y where
   toFun := F.obj
   monotone' := F.monotone
 
@@ -207,10 +207,10 @@ of functors `X ⥤ Y`, where `X` and `Y` are preorder categories. -/
 def equivalenceFunctor : (X →o Y) ≌ (X ⥤ Y) where
   functor :=
     { obj f := f.toFunctor
-      map f := { app a := f.down.down a |>.hom } }
+      map f := { app x := homOfLE <| leOfHom f x } }
   inverse :=
     { obj F := F.toOrderHom
-      map f := ⟨⟨fun i ↦ f.app i |>.down.down⟩⟩ }
+      map f := homOfLE fun x ↦ leOfHom <| f.app x }
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
