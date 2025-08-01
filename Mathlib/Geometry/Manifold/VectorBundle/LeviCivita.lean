@@ -55,6 +55,8 @@ section product
 
 omit [IsManifold I ∞ M]
 
+lemma product_apply (x) : ⟪X, Y⟫ x = inner ℝ (X x) (Y x) := rfl
+
 variable (X Y) in
 lemma product_swap : ⟪Y, X⟫ = ⟪X, Y⟫ := by
   ext x
@@ -74,9 +76,19 @@ lemma product_add_left : ⟪X + X', Y⟫ = ⟪X, Y⟫ + ⟪X', Y⟫ := by
   ext x
   simp [product, InnerProductSpace.add_left]
 
+variable (X X' Y) in
+@[simp]
+lemma product_add_left_apply (x) : ⟪X + X', Y⟫ x = ⟪X, Y⟫ x + ⟪X', Y⟫ x := by
+  simp [product, InnerProductSpace.add_left]
+
 variable (X Y Y') in
 lemma product_add_right : ⟪X, Y + Y'⟫ = ⟪X, Y⟫ + ⟪X, Y'⟫ := by
   rw [product_swap, product_swap _ Y, product_swap _ Y', product_add_left]
+
+variable (X X' Y) in
+@[simp]
+lemma product_add_right_apply (x) : ⟪X, Y + Y'⟫ x = ⟪X, Y⟫ x + ⟪X, Y'⟫ x := by
+  rw [product_swap, product_swap _ Y, product_swap _ Y', product_add_left_apply]
 
 variable (X Y) in
 @[simp] lemma product_neg_left : ⟪-X, Y⟫ = -⟪X, Y⟫ := by ext x; simp [product]
@@ -119,6 +131,10 @@ variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)] 
 lemma foo (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) : MDiff ⟪Y, Z⟫ :=
   MDifferentiable.inner_bundle hY hZ
 
+variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)] {I} in
+lemma fooAt {x} (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) : MDiffAt ⟪Y, Z⟫ x :=
+  MDifferentiableAt.inner_bundle hY hZ
+
 namespace CovariantDerivative
 
 -- Let `cov` be a covariant derivative on `TM`.
@@ -149,7 +165,7 @@ lemma rhs_aux_swap : rhs_aux I X Y Z = rhs_aux I X Z Y := by
   congr
   exact product_swap I Z Y
 
-variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)]
+variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)] {x}
 
 omit [IsManifold I ∞ M] in
 variable (X X' Y Z) in
@@ -158,19 +174,31 @@ lemma rhs_aux_addX : rhs_aux I (X + X') Y Z = rhs_aux I X Y Z + rhs_aux I X' Y Z
   simp [rhs_aux]
 
 variable (X) in
-lemma rhs_aux_addY (hY : MDiff (T% Y)) (hY' : MDiff (T% Y')) (hZ : MDiff (T% Z)) :
-    rhs_aux I X (Y + Y') Z = rhs_aux I X Y Z + rhs_aux I X Y' Z := by
-  ext x
+@[simp]
+lemma rhs_aux_addY_apply (hY : MDiffAt (T% Y) x) (hY' : MDiffAt (T% Y') x) (hZ : MDiffAt (T% Z) x) :
+    rhs_aux I X (Y + Y') Z x = rhs_aux I X Y Z x + rhs_aux I X Y' Z x := by
   simp only [rhs_aux]
-  rw [product_add_left, mfderiv_add ((foo hY hZ) x) ((foo hY' hZ) x)]
+  rw [product_add_left, mfderiv_add (fooAt hY hZ) (fooAt hY' hZ)]
   simp; congr
 
 variable (X) in
-lemma rhs_aux_addZ (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) (hZ' : MDiff (T% Z')) :
-  rhs_aux I X Y (Z + Z') = rhs_aux I X Y Z + rhs_aux I X Y Z' := by
-  unfold rhs_aux
+lemma rhs_aux_addY (hY : MDiff (T% Y)) (hY' : MDiff (T% Y')) (hZ : MDiff (T% Z)) :
+    rhs_aux I X (Y + Y') Z = rhs_aux I X Y Z + rhs_aux I X Y' Z := by
   ext x
-  rw [product_add_right, mfderiv_add ((foo hY hZ) x) ((foo hY hZ') x)]; simp; congr
+  exact rhs_aux_addY_apply I X (hY x) (hY' x) (hZ x)
+
+variable (X) in
+@[simp]
+lemma rhs_aux_addZ_apply (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) (hZ' : MDiffAt (T% Z') x) :
+  rhs_aux I X Y (Z + Z') x = rhs_aux I X Y Z x + rhs_aux I X Y Z' x := by
+  unfold rhs_aux
+  rw [product_add_right, mfderiv_add (fooAt hY hZ) (fooAt hY hZ')]; simp; congr
+
+variable (X) in
+lemma rhs_aux_addZ (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) (hZ' : MDiff (T% Z')) :
+    rhs_aux I X Y (Z + Z') = rhs_aux I X Y Z + rhs_aux I X Y Z' := by
+  ext x
+  exact rhs_aux_addZ_apply I X (hY x) (hZ x) (hZ' x)
 
 omit [IsManifold I ∞ M] in
 variable (X Y Z) in
@@ -225,22 +253,31 @@ variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)]
 -- TODO: relax assumptions; I only need differentiability at x!
 @[simp]
 lemma leviCivita_rhs'_addX_apply [CompleteSpace E]
-    (hX : MDiff (T% X)) (hX' : MDiff (T% X')) (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) :
+    (hX : MDiffAt (T% X) x) (hX' : MDiffAt (T% X') x) (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) :
     leviCivita_rhs' I (X + X') Y Z x =
       leviCivita_rhs' I X Y Z x + leviCivita_rhs' I X' Y Z x := by
   simp only [leviCivita_rhs']
-  have h : VectorField.mlieBracket I (X + X') Y =
-    VectorField.mlieBracket I X Y + VectorField.mlieBracket I X' Y := by
-    ext x
-    simp [VectorField.mlieBracket_add_left (W := Y) (hX x) (hX' x)]
-  have h' : VectorField.mlieBracket I (X + X') Z =
-    VectorField.mlieBracket I X Z + VectorField.mlieBracket I X' Z := by
-    ext x
-    simp [VectorField.mlieBracket_add_left (W := Z) (hX x) (hX' x)]
-  simp only [rhs_aux_addX, h, h', Pi.add_apply, Pi.sub_apply]
-  rw [rhs_aux_addY, rhs_aux_addZ] <;> try assumption
-  rw [product_add_left, product_add_right, product_add_right]
-  simp only [Pi.add_apply]
+  have h : VectorField.mlieBracket I (X + X') Y x =
+    VectorField.mlieBracket I X Y x + VectorField.mlieBracket I X' Y x := by
+    simp [VectorField.mlieBracket_add_left (W := Y) (hX) (hX')]
+  have h' : VectorField.mlieBracket I (X + X') Z x =
+    VectorField.mlieBracket I X Z x + VectorField.mlieBracket I X' Z x := by
+    simp [VectorField.mlieBracket_add_left (W := Z) (hX) (hX')]
+  have := hY x; have := hZ x
+  simp only [rhs_aux_addX, Pi.add_apply, Pi.sub_apply]
+  -- XXX: this is not elegant; is there a better way?
+  simp only [product_apply, h, h']
+  simp only [← product_apply]
+
+  simp only [product_add_left_apply]
+  rw [rhs_aux_addY_apply, rhs_aux_addZ_apply] <;> try assumption
+  have h3 : inner ℝ (Y x) (VectorField.mlieBracket I X Z x + VectorField.mlieBracket I X' Z x)
+      = inner ℝ (Y x) (VectorField.mlieBracket I X Z x) + inner ℝ (Y x) (VectorField.mlieBracket I X' Z x) := by
+    sorry
+  have h4 : inner ℝ (Z x) (VectorField.mlieBracket I X Y x + VectorField.mlieBracket I X' Y x)
+      = inner ℝ (Z x) (VectorField.mlieBracket I X Y x) + inner ℝ (Z x) (VectorField.mlieBracket I X' Y x) := sorry
+  rw [h3, h4]
+  simp only [← product_apply] --, Pi.add_apply]
   abel
 
 lemma leviCivita_rhs'_addX [CompleteSpace E]
@@ -248,7 +285,12 @@ lemma leviCivita_rhs'_addX [CompleteSpace E]
     leviCivita_rhs' I (X + X') Y Z =
       leviCivita_rhs' I X Y Z + leviCivita_rhs' I X' Y Z := by
   ext x
-  simp [leviCivita_rhs'_addX_apply _ hX hX' hY hZ]
+  simp [leviCivita_rhs'_addX_apply _ (hX x) (hX' x) hY hZ]
+
+lemma leviCivita_rhs_addX_apply [CompleteSpace E]
+    (hX : MDiffAt (T% X) x) (hX' : MDiffAt (T% X') x) (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) :
+    leviCivita_rhs I (X + X') Y Z = leviCivita_rhs I X Y Z + leviCivita_rhs I X' Y Z := by
+  sorry -- divide the previous equation by 2
 
 lemma leviCivita_rhs_addX [CompleteSpace E]
     (hX : MDiff (T% X)) (hX' : MDiff (T% X')) (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) :
