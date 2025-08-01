@@ -394,7 +394,7 @@ lemma eisensteinSeries_coeff_identity {k : ℕ} (hk2 : Even k) (hkn0 : k ≠ 0) 
   ring
 
 lemma EisensteinSeries.q_expansion_bernoulli {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) (z : ℍ) :
-    (E k hk) z = 1 + -((2 * k) / bernoulli k) *
+    (E hk) z = 1 + -((2 * k) / bernoulli k) *
     ∑' n : ℕ+, sigma (k - 1) n * cexp (2 * ↑π * Complex.I * z) ^ (n : ℤ) := by
   have h2 := EisensteinSeries.q_expansion hk hk2 z
   rw [eisensteinSeries_coeff_identity hk2 (by omega)] at h2

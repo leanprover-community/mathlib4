@@ -42,7 +42,7 @@ scoped notation "𝟙" => standardcongruencecondition
 
 /-- Normalised Eisenstein series of level 1 and weight `k`,
 here they need  `1/2` since we sum over coprime pairs. -/
-noncomputable def E (k : ℕ) (hk : 3 ≤ k) : ModularForm Γ(1) k :=
+noncomputable def E {k : ℕ} (hk : 3 ≤ k) : ModularForm Γ(1) k :=
   (1/2 : ℂ) • eisensteinSeries_MF (by omega) 𝟙
 
 end ModularForm
