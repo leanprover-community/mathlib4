@@ -180,12 +180,21 @@ section TransportEnrichment
 
 variable (W : Type u'') [Category.{v''} W] [MonoidalCategory W]
   (F : V ⥤ W) [F.LaxMonoidal]
-  (C : Type u) [Category.{v'} C] [EnrichedOrdinaryCategory V C]
 
 instance : Category (TransportEnrichment F C) := inferInstanceAs (Category C)
 
-instance TransportEnrichment.EnrichedOrdinaryCategory :
-    EnrichedOrdinaryCategory W (TransportEnrichment F C) := sorry
+open EnrichedCategory
+
+noncomputable def TransportEnrichment.EnrichedOrdinaryCategory
+    (h : ∀ v : V, Function.Bijective fun (f : 𝟙_ V ⟶ v) =>
+      (Functor.LaxMonoidal.ε F ≫ F.map f : 𝟙_ W ⟶ F.obj v)) :
+    EnrichedOrdinaryCategory W (TransportEnrichment F C) where
+  homEquiv {X Y} := (eHomEquiv V (C := C)).trans <| Equiv.ofBijective _ (h (Hom (C := C) (X : C) Y))
+  homEquiv_comp {X Y Z} f g := by
+    simp
+    rw [eHomEquiv_comp V (C := C) f g]
+    simp
+    sorry
 
 end TransportEnrichment
 
