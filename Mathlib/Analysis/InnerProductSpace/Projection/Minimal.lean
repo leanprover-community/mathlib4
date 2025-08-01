@@ -13,13 +13,7 @@ variable [InnerProductSpace 𝕜 E] [InnerProductSpace ℝ F]
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 local notation "absR" => @abs ℝ _ _
 
-open Topology Finsupp
-
-open RCLike Real Filter
-
-open LinearMap (ker range)
-
-open InnerProductSpace
+open Topology RCLike Real Filter InnerProductSpace
 
 -- FIXME this monolithic proof causes a deterministic timeout with `-T50000`
 -- It should be broken in a sequence of more manageable pieces,
