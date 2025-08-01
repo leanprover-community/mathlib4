@@ -195,6 +195,6 @@ instance : ValuativeTopology 𝒪[K] := by
       MonoidWithZeroHom.toZeroHom_coe, OneHom.coe_mk]
     intro _ _ hxr
     rw [← (ValuativeExtension.mapValueGroupWithZero_strictMono (B := K)).lt_iff_lt]
-    exact hxr -- somewhat heavy rfl
+    simp [Algebra.algebraMap_ofSubring_apply, hxr]
 
 end ValuativeTopology
