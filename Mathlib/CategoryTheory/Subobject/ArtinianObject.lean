@@ -37,7 +37,7 @@ variable {C : Type u} [Category.{v} C]
 /-- An object `X` in a category `C` is Artinian if `Subobject X`
 satisfies the descending chain condition. This definition is a
 term in `ObjectProperty C` which allows to study the stability
-properties of artinian objects. For statements regarding
+properties of Artinian objects. For statements regarding
 specific objects, it is advisable to use the type class
 `IsArtinianObject` instead. -/
 @[stacks 0FCF]
