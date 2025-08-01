@@ -127,6 +127,10 @@ def mapEquiv (e : R ≃+* S) : R[X] ≃+* S[X] :=
   RingEquiv.ofHomInv (mapRingHom (e : R →+* S)) (mapRingHom (e.symm : S →+* R)) (by ext; simp)
     (by ext; simp)
 
+theorem irreducible_mapEquiv_iff (e : R ≃+* S) (p : R[X]) :
+    Irreducible (Polynomial.mapEquiv e p) ↔ Irreducible p :=
+  MulEquiv.irreducible_iff (Polynomial.mapEquiv e)
+
 theorem map_monic_eq_zero_iff (hp : p.Monic) : p.map f = 0 ↔ ∀ x, f x = 0 :=
   ⟨fun hfp x =>
     calc
