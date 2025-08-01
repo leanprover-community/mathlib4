@@ -207,12 +207,26 @@ lemma rhs_aux_smulX (f : M → ℝ) : rhs_aux I (f • X) Y Z = f • rhs_aux I 
   simp [rhs_aux]
 
 variable (X) in
+lemma rhs_aux_smulY_apply {f : M → ℝ}
+    (hf : MDiffAt f x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
+    letI A (x) : ℝ := (mfderiv% f x) (X x)
+    rhs_aux I X (f • Y) Z x = f x • rhs_aux I X Y Z x + A x • ⟪Y, Z⟫ x := by
+  rw [rhs_aux, product_smul_left, mfderiv_smul (fooAt hY hZ) hf]
+
+variable (X) in
 lemma rhs_aux_smulY {f : M → ℝ} (hf : MDiff f) (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) :
     letI A (x) : ℝ := (mfderiv% f x) (X x)
     rhs_aux I X (f • Y) Z = f • rhs_aux I X Y Z + A • ⟪Y, Z⟫ := by
   ext x
-  rw [rhs_aux, product_smul_left, mfderiv_smul (foo hY hZ x) (hf x)]
-  congr
+  simp [rhs_aux_smulY_apply I X (hf x) (hY x) (hZ x)]
+
+variable (X) in
+lemma rhs_aux_smulZ_apply {f : M → ℝ}
+    (hf : MDiffAt f x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
+    letI A (x) : ℝ := (mfderiv% f x) (X x)
+    rhs_aux I X Y (f • Z) x = f x • rhs_aux I X Y Z x + A x • ⟪Y, Z⟫ x := by
+  rw [rhs_aux_swap, rhs_aux_smulY_apply, rhs_aux_swap, product_swap]
+  exacts [hf, hZ, hY]
 
 variable (X) in
 lemma rhs_aux_smulZ {f : M → ℝ} (hf : MDiff f) (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) :
@@ -285,21 +299,17 @@ lemma leviCivita_rhs_addX [CompleteSpace E]
   simp [leviCivita_rhs_addX_apply _ (hX x) (hX' x) (hY x) (hZ x)]
 
 variable {I} in
-lemma leviCivita_rhs'_smulX_apply [CompleteSpace E] {f : M → ℝ} (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) :
+lemma leviCivita_rhs'_smulX_apply [CompleteSpace E] {f : M → ℝ}
+    (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     letI dfY : ℝ := (mfderiv I 𝓘(ℝ, ℝ) f x) (Y x)
     letI A := dfY * ⟪Z, X⟫ x
     leviCivita_rhs' I (f • X) Y Z x = f x • leviCivita_rhs' I X Y Z x + A + A := by
-  -- TODO: do I need to assume X is differentiable? yes, I think so!
   unfold leviCivita_rhs'
-  rw [rhs_aux_smulX]
-  rw [rhs_aux_smulY, rhs_aux_smulZ] <;> try assumption -- TODO: want more surgical reasoning
-  rotate_left; iterate 6 sorry
-  have h := VectorField.mlieBracket_smul_left (W := Z) hf hX
-  simp
-  simp only [product_apply]
-  simp only [VectorField.mlieBracket_smul_left (W := Z) hf hX,
-    VectorField.mlieBracket_smul_left (W := Y) hf hX]
-  simp only [inner_add_right, ← product_apply]
+  simp only [Pi.add_apply, Pi.sub_apply]
+  rw [rhs_aux_smulX, rhs_aux_smulY_apply, rhs_aux_smulZ_apply] <;> try assumption
+  simp only [product_apply, VectorField.mlieBracket_smul_left (W := Z) hf hX,
+    VectorField.mlieBracket_smul_left (W := Y) hf hX, inner_add_right]
+  simp only [← product_apply]
   simp only [neg_smul, inner_neg_right]
   have h1 :
       letI dfZ : ℝ := (mfderiv I 𝓘(ℝ, ℝ) f x) (Z x);
@@ -315,44 +325,49 @@ lemma leviCivita_rhs'_smulX_apply [CompleteSpace E] {f : M → ℝ} (hf : MDiffA
   clear h1 h2
   set dfY : ℝ := (mfderiv I 𝓘(ℝ, ℝ) f x) (Y x)
   set dfZ : ℝ := (mfderiv I 𝓘(ℝ, ℝ) f x) (Z x)
-  have h3 : inner ℝ (Y x) (f x • VectorField.mlieBracket I X Z x) =
-      f x * ⟪Y, VectorField.mlieBracket I X Z⟫ x := sorry
-  have h4 : ⟪f • X, VectorField.mlieBracket I Z Y⟫ x = f x * ⟪X, VectorField.mlieBracket I Z Y⟫ x := sorry
-  have h5 : inner ℝ (Z x) (f x • VectorField.mlieBracket I X Y x) = f x * ⟪Z, VectorField.mlieBracket I X Y⟫ x := sorry
-  rw [h3, h4, h5]
+  have h4 : ⟪f • X, VectorField.mlieBracket I Z Y⟫ x =
+      f x * ⟪X, VectorField.mlieBracket I Z Y⟫ x := by
+    rw [product_apply, Pi.smul_apply', real_inner_smul_left]
+  have h5 : inner ℝ (Z x) (f x • VectorField.mlieBracket I X Y x) =
+      f x * ⟪Z, VectorField.mlieBracket I X Y⟫ x := by
+    rw [product_apply, real_inner_smul_right]
+  rw [real_inner_smul_right (Y x), h4, h5]
   set A := ⟪Y, VectorField.mlieBracket I X Z⟫
   set B := ⟪Z, VectorField.mlieBracket I X Y⟫
   set C := ⟪X, VectorField.mlieBracket I Z Y⟫
   set R := dfZ * ⟪X, Y⟫ x
   set R' := dfY * ⟪Z, X⟫ x
-
-  calc f x * rhs_aux I X Y Z x + (f x * rhs_aux I Y Z X x + R') - (f x * rhs_aux I Z X Y x + R) - (-R + f x * A x) - (-R' + f x * B x) + f x * C x
-    _ = f x * rhs_aux I X Y Z x + f x * rhs_aux I Y Z X x + R' - f x * rhs_aux I Z X Y x - R + R - f x * A x + R' - f x * B x + f x * C x := by
+  set E := rhs_aux I X Y Z x
+  set F := rhs_aux I Y Z X x
+  set G := rhs_aux I Z X Y x
+  calc f x * E + (f x * F + R') - (f x * G + R) - (-R + f x * A x) - (-R' + f x * B x) + f x * C x
+    _ = (f x * E + f x * F - f x * G - f x * A x - f x * B x + f x * C x) + R' + R' := by
       abel
-    _ = f x * rhs_aux I X Y Z x + f x * rhs_aux I Y Z X x - f x * rhs_aux I Z X Y x - f x * A x - f x * B x + f x * C x + R' + R' := by
-      abel
-    _ = (f x * rhs_aux I X Y Z x + f x * rhs_aux I Y Z X x - f x * rhs_aux I Z X Y x - f x * A x - f x * B x + f x * C x) + R' + R' := by
-      abel
-    _ = f x * (rhs_aux I X Y Z x + rhs_aux I Y Z X x - rhs_aux I Z X Y x - A x - B x + C x) + R' + R' := by
-      congr 1
-      congr 2
-      sorry -- why abel not successful?
-    _ = _ := by
-      abel
-
-#exit
-
+    _ = f x * (E + F - G - A x - B x + C x) + R' + R' := by ring
+    _ = _ := by ac_rfl
+#print axioms leviCivita_rhs'_smulX_apply
 variable {I} in
-lemma leviCivita_rhs_smulX_apply {f : M → ℝ} (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) :
-    leviCivita_rhs I (f • X) Y Z x = f x • leviCivita_rhs I X Y Z x := by
-  simp [leviCivita_rhs, leviCivita_rhs'_smulX_apply (Y := Y) (Z := Z) hf hX,
-    ← mul_assoc, mul_comm _ (f x)]
+lemma leviCivita_rhs_smulX_apply [CompleteSpace E] {f : M → ℝ}
+    (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
+    letI dfY : ℝ := (mfderiv I 𝓘(ℝ, ℝ) f x) (Y x)
+    letI A := dfY * ⟪Z, X⟫ x
+    leviCivita_rhs I (f • X) Y Z x = f x • leviCivita_rhs I X Y Z x + A := by
+  simp only [leviCivita_rhs, one_div, Pi.smul_apply, smul_eq_mul]
+  simp_rw [leviCivita_rhs'_smulX_apply (I := I) hf hX hY hZ]
+  rw [← mul_assoc, mul_comm (f x), left_distrib, left_distrib]
+  set dfY : ℝ := (mfderiv I 𝓘(ℝ, ℝ) f x) (Y x)
+  set A := dfY * ⟪Z, X⟫ x
+  rw [add_assoc, show 2⁻¹ * A + 2⁻¹ * A = A by ring]
+  congr 1
+  rw [smul_eq_mul]; rw [mul_assoc]
 
+-- TODO: need an extra term; how to state this in the nicest way?
 variable {I} in
-lemma leviCivita_rhs_smulX {f : M → ℝ} (hf : MDiff f) (hX : MDiff (T% X)) :
+lemma leviCivita_rhs_smulX [CompleteSpace E] {f : M → ℝ}
+    (hf : MDiff f) (hX : MDiff (T% X)) (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) :
     leviCivita_rhs I (f • X) Y Z = f • leviCivita_rhs I X Y Z := by
   ext x
-  exact leviCivita_rhs_smulX_apply (hf x) (hX x)
+  sorry -- exact leviCivita_rhs_smulX_apply (hf x) (hX x) (hY x) (hZ x)
 
 lemma leviCivita_rhs'_addY_apply [CompleteSpace E]
     (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x)
@@ -610,8 +625,9 @@ lemma isCovariantDerivativeOn_lcCandidate_aux [FiniteDimensional ℝ E]
     have hg : MDiff g := sorry -- might need this (hopefully not!)
     rw [Finset.smul_sum]
     congr; ext i
-    rw [leviCivita_rhs_smulX _ _ _ hg hX]
-    simp [← smul_assoc]
+    sorry -- TODO: fix this once all the smul computations are sorry-free!
+    --rw [leviCivita_rhs_smulX _ _ _ hg hX]
+    --simp [← smul_assoc]
   smul_const_σ X σ a x hx := by
     unfold lcCandidate_aux
     dsimp
