@@ -10,7 +10,7 @@ import Mathlib.Analysis.InnerProductSpace.PiL2
 
 In this file we provide the following non-instances for norms on matrices:
 
-* The elementwise norm:
+* The elementwise norm (with `open scoped Matrix.Norms.Elementwise`):
 
   * `Matrix.seminormedAddCommGroup`
   * `Matrix.normedAddCommGroup`
@@ -18,7 +18,7 @@ In this file we provide the following non-instances for norms on matrices:
   * `Matrix.isBoundedSMul`
   * `Matrix.normSMulClass`
 
-* The Frobenius norm:
+* The Frobenius norm (with `open scoped Matrix.Norms.Frobenius`):
 
   * `Matrix.frobeniusSeminormedAddCommGroup`
   * `Matrix.frobeniusNormedAddCommGroup`
@@ -28,7 +28,7 @@ In this file we provide the following non-instances for norms on matrices:
   * `Matrix.frobeniusIsBoundedSMul`
   * `Matrix.frobeniusNormSMulClass`
 
-* The $L^\infty$ operator norm:
+* The $L^\infty$ operator norm (with `open scoped Matrix.Norms.Operator`):
 
   * `Matrix.linftyOpSeminormedAddCommGroup`
   * `Matrix.linftyOpNormedAddCommGroup`
@@ -72,7 +72,6 @@ declared as an instance because there are several natural choices for defining t
 matrix. -/
 protected def seminormedAddCommGroup : SeminormedAddCommGroup (Matrix m n α) :=
   Pi.seminormedAddCommGroup
-
 
 attribute [local instance] Matrix.seminormedAddCommGroup
 
@@ -209,6 +208,17 @@ declared as an instance because there are several natural choices for defining t
 matrix. -/
 protected def normedSpace : NormedSpace R (Matrix m n α) :=
   Pi.normedSpace
+
+namespace Norms.Elementwise
+
+attribute [scoped instance]
+  Matrix.seminormedAddCommGroup
+  Matrix.normedAddCommGroup
+  Matrix.normedSpace
+  Matrix.isBoundedSMul
+  Matrix.normSMulClass
+
+end Norms.Elementwise
 
 end NormedSpace
 
@@ -462,6 +472,20 @@ variable [DecidableEq n]
 
 end
 
+namespace Norms.Operator
+attribute [scoped instance]
+  Matrix.linftyOpSeminormedAddCommGroup
+  Matrix.linftyOpNormedAddCommGroup
+  Matrix.linftyOpNormedSpace
+  Matrix.linftyOpIsBoundedSMul
+  Matrix.linftyOpNormSMulClass
+  Matrix.linftyOpNonUnitalSemiNormedRing
+  Matrix.linftyOpSemiNormedRing
+  Matrix.linftyOpNonUnitalNormedRing
+  Matrix.linftyOpNormedRing
+  Matrix.linftyOpNormedAlgebra
+end Norms.Operator
+
 end LinftyOp
 
 /-! ### The Frobenius norm
@@ -652,5 +676,16 @@ def frobeniusNormedAlgebra [DecidableEq m] [NormedField R] [NormedAlgebra R α] 
 end RCLike
 
 end frobenius
+
+namespace Norms.Frobenius
+attribute [scoped instance]
+  Matrix.frobeniusSeminormedAddCommGroup
+  Matrix.frobeniusNormedAddCommGroup
+  Matrix.frobeniusNormedSpace
+  Matrix.frobeniusNormedRing
+  Matrix.frobeniusNormedAlgebra
+  Matrix.frobeniusIsBoundedSMul
+  Matrix.frobeniusNormSMulClass
+end Norms.Frobenius
 
 end Matrix
