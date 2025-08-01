@@ -101,7 +101,7 @@ theorem isCancelMulZero (f : LocalizationMap S N) [IsCancelMulZero M] : IsCancel
     ← Commute.isRightRegular_iff (Commute.all _)]
   intro n hn
   have ⟨ms, eq⟩ := f.surj n
-  refine (eq ▸ f.isRegular_toMap_apply (isCancelMulZero_iff_forall_isRegular.mp ‹_› ?_)).2.of_mul
+  refine (eq ▸ f.map_isRegular (isCancelMulZero_iff_forall_isRegular.mp ‹_› ?_)).2.of_mul
   refine fun h ↦ hn ?_
   rwa [h, f.map_zero, (f.map_units _).mul_left_eq_zero] at eq
 
