@@ -150,7 +150,7 @@ theorem mem_span_iff_bound [Nonempty ι] {f : ι → E →ₗ[𝕜] 𝕜} (φ : 
   letI t𝕜 : TopologicalSpace 𝕜 := inferInstance
   let t := ⨅ i, induced (f i) t𝕜
   have : IsTopologicalAddGroup E := topologicalAddGroup_iInf fun _ ↦ topologicalAddGroup_induced _
-  have : WithSeminorms (fun i ↦ (normSeminorm 𝕜 𝕜).comp (f i)) := by
+  have : WithSeminorms (fun i ↦ (f i).toSeminorm) := by
     simp_rw [SeminormFamily.withSeminorms_iff_nhds_eq_iInf, nhds_iInf, nhds_induced, map_zero,
       ← comap_norm_nhds_zero (E := 𝕜), Filter.comap_comap]
     rfl
