@@ -909,6 +909,9 @@ section algebraMap
 
 variable {R A B : Type*} [CommRing R] [CommRing A] [CommRing B] [Algebra R A] [Algebra A B]
 
+theorem Subalgebra.algebraMap_def {S : Subalgebra R A} (s : S) :
+  algebraMap S B s = algebraMap A B (s : A) := rfl
+
 @[simp]
 theorem Subalgebra.algebraMap_apply_mk {S : Subalgebra R A} (a : A) (ha : a ∈ S) :
   algebraMap S B (⟨a, ha⟩ : S) = algebraMap A B a := rfl
