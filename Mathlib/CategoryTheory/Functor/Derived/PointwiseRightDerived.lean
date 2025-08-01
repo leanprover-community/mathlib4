@@ -103,7 +103,7 @@ variable {F L}
 /-- If `L : C ⥤ D` is a localization functor for `W` and `e : F ≅ L ⋙ G` is an isomorphism,
 then `e.hom` makes `G` a pointwise left Kan extension of `F` along `L` at `L.obj Y`
 for any `Y : C`. -/
-def isPointwiseLeftKanExtensionAtOfIso
+def isPointwiseLeftKanExtensionAtOfIsoOfIsLocalization
     {G : D ⥤ H} (e : F ≅ L ⋙ G) [L.IsLocalization W] (Y : C) :
     (LeftExtension.mk _ e.hom).IsPointwiseLeftKanExtensionAt (L.obj Y) where
   desc s := e.inv.app Y ≫ s.ι.app (CostructuredArrow.mk (𝟙 (L.obj Y)))
@@ -137,28 +137,28 @@ def isPointwiseLeftKanExtensionAtOfIso
 
 /-- If `L` is a localization functor for `W` and `e : F ≅ L ⋙ G` is an isomorphism,
 then `e.hom` makes `G` a poinwise left Kan extension of `F` along `L`. -/
-noncomputable def isPointwiseLeftKanExtensionOfIso
+noncomputable def isPointwiseLeftKanExtensionOfIsoOfIsLocalization
     {G : D ⥤ H} (e : F ≅ L ⋙ G) [L.IsLocalization W] :
     (LeftExtension.mk _ e.hom).IsPointwiseLeftKanExtension := fun Y ↦ by
   have := Localization.essSurj L W
   exact (LeftExtension.mk _ e.hom).isPointwiseLeftKanExtensionAtEquivOfIso'
-    (L.objObjPreimageIso Y) (isPointwiseLeftKanExtensionAtOfIso W e _)
+    (L.objObjPreimageIso Y) (isPointwiseLeftKanExtensionAtOfIsoOfIsLocalization W e _)
 
 /-- Let `L : C ⥤ D` be a localization functor for `W`, if an extension `E`
 of `F : C ⥤ H` along `L` is such that the natural transformation
 `E.hom : F ⟶ L ⋙ E.right` is an isomorphism, then `E` is a pointwise
 left Kan extension. -/
-noncomputable def LeftExtension.isPointwiseLeftKanExtensionOfIsIso
+noncomputable def LeftExtension.isPointwiseLeftKanExtensionOfIsIsoOfIsLocalization
     (E : LeftExtension L F) [IsIso E.hom] [L.IsLocalization W] :
     E.IsPointwiseLeftKanExtension :=
-  Functor.isPointwiseLeftKanExtensionOfIso W (asIso E.hom)
+  Functor.isPointwiseLeftKanExtensionOfIsoOfIsLocalization W (asIso E.hom)
 
 lemma hasPointwiseRightDerivedFunctor_of_inverts
     (F : C ⥤ H) {W : MorphismProperty C} (hF : W.IsInvertedBy F) :
     F.HasPointwiseRightDerivedFunctor W := by
   intro X
   rw [hasPointwiseRightDerivedFunctorAt_iff F W.Q W]
-  exact (isPointwiseLeftKanExtensionOfIso W
+  exact (isPointwiseLeftKanExtensionOfIsoOfIsLocalization W
     (Localization.fac F hF W.Q).symm).hasPointwiseLeftKanExtension  _
 
 end
