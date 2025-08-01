@@ -947,7 +947,6 @@ lemma zpow_right_strictAnti₀ (ha₀ : 0 < a) (ha₁ : a < 1) : StrictAnti fun 
 @[gcongr]
 lemma zpow_le_zpow_right₀ (ha : 1 ≤ a) (hmn : m ≤ n) : a ^ m ≤ a ^ n := zpow_right_mono₀ ha hmn
 
-@[gcongr]
 lemma zpow_le_zpow_right_of_le_one₀ (ha₀ : 0 < a) (ha₁ : a ≤ 1) (hmn : m ≤ n) : a ^ n ≤ a ^ m :=
   zpow_right_anti₀ ha₀ ha₁ hmn
 
@@ -966,7 +965,6 @@ lemma one_le_zpow_of_nonpos₀ (ha₀ : 0 < a) (ha₁ : a ≤ 1) (hn : n ≤ 0) 
 lemma zpow_lt_zpow_right₀ (ha : 1 < a) (hmn : m < n) : a ^ m < a ^ n :=
   zpow_right_strictMono₀ ha hmn
 
-@[gcongr]
 lemma zpow_lt_zpow_right_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) (hmn : m < n) : a ^ n < a ^ m :=
   zpow_right_strictAnti₀ ha₀ ha₁ hmn
 
@@ -1206,7 +1204,6 @@ lemma div_lt_div_iff_of_pos_left (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) : a / b 
     (div_le_div_iff_of_pos_left ha hb hc)
 
 -- Not a `mono` lemma b/c `div_le_div₀` is strictly more general
-@[gcongr]
 lemma div_le_div_of_nonneg_left (ha : 0 ≤ a) (hc : 0 < c) (h : c ≤ b) : a / b ≤ a / c := by
   rw [div_eq_mul_inv, div_eq_mul_inv]
   gcongr
