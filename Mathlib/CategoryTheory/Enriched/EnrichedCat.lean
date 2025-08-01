@@ -72,9 +72,10 @@ def whiskerRight
 /-- Composing the `V`-enriched identity functor with any functor is isomorphic to that functor. -/
 def leftUnitor (F : EnrichedFunctor V C D) :
     EnrichedFunctor.comp V (EnrichedFunctor.id V _) F ≅ F :=
-  EnrichedFunctor.isoOfComponents (fun X => EnrichedIso.refl _) fun X Y => by
-    simp only [EnrichedFunctor.comp_obj, EnrichedFunctor.id_obj, EnrichedFunctor.comp_map,
-      EnrichedFunctor.id_map, Category.id_comp, EnrichedIso.refl_hom]
+  EnrichedFunctor.isoOfComponents (fun X => Iso.refl _) fun X Y => by
+    simp only [EnrichedFunctor.comp_obj, EnrichedFunctor.id_obj, ForgetEnrichment.to_of,
+      EnrichedFunctor.comp_map, EnrichedFunctor.id_map, Category.id_comp, Iso.refl_hom,
+      ForgetEnrichment.homTo_id]
     rw [tensorHom_def, Category.assoc, (Iso.inv_comp_eq _).mp (e_comp_id ..),
       tensorHom_def', Category.assoc, (Iso.inv_comp_eq _).mp (e_id_comp ..)]
     simp
@@ -83,9 +84,10 @@ def leftUnitor (F : EnrichedFunctor V C D) :
 functor. -/
 def rightUnitor (F : EnrichedFunctor V C D) :
     EnrichedFunctor.comp V F (EnrichedFunctor.id V _) ≅ F :=
-  EnrichedFunctor.isoOfComponents (fun X => EnrichedIso.refl _) fun X Y => by
-    simp only [EnrichedFunctor.comp_obj, EnrichedFunctor.id_obj, EnrichedFunctor.comp_map,
-      EnrichedFunctor.id_map, Category.comp_id, EnrichedIso.refl_hom]
+  EnrichedFunctor.isoOfComponents (fun X => Iso.refl _) fun X Y => by
+    simp only [EnrichedFunctor.comp_obj, EnrichedFunctor.id_obj, ForgetEnrichment.to_of,
+      EnrichedFunctor.comp_map, EnrichedFunctor.id_map, Category.comp_id, Iso.refl_hom,
+      ForgetEnrichment.homTo_id]
     rw [tensorHom_def, Category.assoc, (Iso.inv_comp_eq _).mp (e_comp_id ..),
       tensorHom_def', Category.assoc, (Iso.inv_comp_eq _).mp (e_id_comp ..)]
     simp
@@ -95,9 +97,9 @@ def associator (F : EnrichedFunctor V C D) (G : EnrichedFunctor V D E)
     (H : EnrichedFunctor V E E') :
     EnrichedFunctor.comp V (EnrichedFunctor.comp V F G) H ≅
     EnrichedFunctor.comp V F (EnrichedFunctor.comp V G H) :=
-  EnrichedFunctor.isoOfComponents (fun X => EnrichedIso.refl _) fun X Y => by
-    simp only [EnrichedFunctor.comp_obj, EnrichedFunctor.comp_map, Category.assoc,
-      EnrichedIso.refl_hom]
+  EnrichedFunctor.isoOfComponents (fun X => Iso.refl _) fun X Y => by
+    simp only [EnrichedFunctor.comp_obj, ForgetEnrichment.to_of, EnrichedFunctor.comp_map,
+      Category.assoc, Iso.refl_hom, ForgetEnrichment.homTo_id]
     rw [tensorHom_def, Category.assoc, (Iso.inv_comp_eq _).mp (e_comp_id ..),
       tensorHom_def', Category.assoc, (Iso.inv_comp_eq _).mp (e_id_comp ..)]
     simp
