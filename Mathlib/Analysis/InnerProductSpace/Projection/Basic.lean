@@ -553,7 +553,7 @@ theorem starProjection_comp_starProjection_of_le {U V : Submodule 𝕜 E}
   simp [orthogonalProjection_starProjection_of_le h]
 
 open ContinuousLinearMap in
-theorem ContinuousLinearMap.IsIdempotentElem.hasOrthogonalProjection_range [CompleteSpace E]
+theorem _root_.ContinuousLinearMap.IsIdempotentElem.hasOrthogonalProjection_range [CompleteSpace E]
     {p : E →L[𝕜] E} (hp : IsIdempotentElem p) : (LinearMap.range p).HasOrthogonalProjection :=
   have := hp.isClosed_range.completeSpace_coe
   .ofCompleteSpace _
