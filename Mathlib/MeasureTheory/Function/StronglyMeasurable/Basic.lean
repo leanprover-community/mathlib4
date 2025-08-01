@@ -612,7 +612,6 @@ theorem _root_.Finset.stronglyMeasurable_fun_prod {ι : Type*} {f : ι → α �
     (hf : ∀ i ∈ s, StronglyMeasurable (f i)) : StronglyMeasurable fun a => ∏ i ∈ s, f i a := by
   simpa only [← Finset.prod_apply] using s.stronglyMeasurable_prod hf
 
-attribute [local fun_prop] Finset.stronglyMeasurable_fun_prod in
 variable {n : MeasurableSpace β} in
 /-- Compositional version of `Finset.stronglyMeasurable_prod` for use by `fun_prop`. -/
 @[to_additive (attr := measurability, fun_prop)

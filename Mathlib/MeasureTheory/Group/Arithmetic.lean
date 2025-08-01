@@ -913,7 +913,6 @@ theorem Finset.measurable_prod (s : Finset ι) (hf : ∀ i ∈ s, Measurable (f 
   simp_rw [← Finset.prod_apply]
   exact Finset.prod_induction _ _ (fun _ _ => Measurable.mul) (@measurable_one M _ _ _ _) hf
 
-attribute [local fun_prop] Finset.measurable_fun_prod in
 /-- Compositional version of `Finset.measurable_prod` for use by `fun_prop`. -/
 @[to_additive (attr := measurability, fun_prop)
 "Compositional version of `Finset.measurable_sum` for use by `fun_prop`."]
