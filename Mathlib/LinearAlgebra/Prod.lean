@@ -666,7 +666,7 @@ theorem fst_comp_prodAssoc :
 
 theorem snd_comp_prodAssoc :
     (LinearMap.snd R M₁ (M₂ × M₃)).comp (prodAssoc R M₁ M₂ M₃).toLinearMap =
-    (LinearMap.snd R M₁ M₂).prodMap (LinearMap.id : M₃ →ₗ[R] M₃):= by
+    (LinearMap.snd R M₁ M₂).prodMap (LinearMap.id : M₃ →ₗ[R] M₃) := by
   ext <;> simp
 
 end prodAssoc
@@ -833,10 +833,10 @@ we can find an infinite decreasing `tunnel f i n` of copies of `M` inside `M`,
 and sitting beside these, an infinite sequence of copies of `N`.
 
 We picturesquely name these as `tailing f i n` for each individual copy of `N`,
-and `tailings f i n` for the supremum of the first `n+1` copies:
+and `tailings f i n` for the supremum of the first `n + 1` copies:
 they are the pieces left behind, sitting inside the tunnel.
 
-By construction, each `tailing f i (n+1)` is disjoint from `tailings f i n`;
+By construction, each `tailing f i (n + 1)` is disjoint from `tailings f i n`;
 later, when we assume `M` is noetherian, this implies that `N` must be trivial,
 and establishes the strong rank condition for any left-noetherian ring.
 -/

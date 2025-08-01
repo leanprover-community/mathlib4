@@ -3,6 +3,7 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
 import Mathlib.Topology.MetricSpace.HausdorffDistance
 
 /-!
@@ -580,7 +581,7 @@ theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsC
     rcases eq_or_ne x y with (rfl | hxy)
     · simp
     rcases eq_or_ne (f x) (f y) with (h' | hfxfy)
-    · simp [h', dist_nonneg]
+    · simp [h']
     have I2 : cylinder x (firstDiff x y) = cylinder y (firstDiff x y) := by
       rw [← mem_cylinder_iff_eq]
       apply mem_cylinder_firstDiff

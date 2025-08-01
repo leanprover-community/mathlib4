@@ -66,7 +66,8 @@ lemma innerProbChar_zero : innerProbChar (0 : E) = 1 := by simp [innerProbChar]
 /-- The bounded continuous map `x ↦ exp (L x * I)`, for a continuous linear form `L`. -/
 noncomputable
 def probCharDual (L : Dual ℝ F) : F →ᵇ ℂ :=
-  char continuous_probChar (L := isBoundedBilinearMap_apply.symm.toContinuousLinearMap.toLinearMap₂)
+  char continuous_probChar
+    (L := isBoundedBilinearMap_apply.symm.toContinuousLinearMap.toLinearMap₁₂)
     isBoundedBilinearMap_apply.symm.continuous L
 
 lemma probCharDual_apply (L : Dual ℝ F) (x : F) : probCharDual L x = exp (L x * I) := rfl
@@ -330,7 +331,7 @@ theorem Measure.ext_of_charFunDual [CompleteSpace E]
     ?_ ?_ (fun L ↦ funext_iff.mp h L)
   · intro v hv
     rw [ne_eq, LinearMap.ext_iff]
-    simp only [ContinuousLinearMap.toLinearMap₂_apply, LinearMap.zero_apply, not_forall]
+    simp only [ContinuousLinearMap.toLinearMap₁₂_apply, LinearMap.zero_apply, not_forall]
     change ∃ L : Dual ℝ E, L v ≠ 0
     by_contra! h
     exact hv (NormedSpace.eq_zero_of_forall_dual_eq_zero _ h)

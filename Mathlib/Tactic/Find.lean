@@ -26,7 +26,7 @@ or the `find` tactic which looks for lemmas which are `apply`able against the cu
 open Lean Std
 open Lean.Meta
 open Lean.Elab
-open Lean.Elab
+
 open Batteries.Tactic
 
 namespace Mathlib.Tactic.Find

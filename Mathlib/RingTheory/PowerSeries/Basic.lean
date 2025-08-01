@@ -544,7 +544,7 @@ theorem map_eq_zero {R S : Type*} [DivisionSemiring R] [Semiring S] [Nontrivial 
 
 theorem X_pow_dvd_iff {n : ℕ} {φ : R⟦X⟧} :
     (X : R⟦X⟧) ^ n ∣ φ ↔ ∀ m, m < n → coeff R m φ = 0 := by
-  convert@MvPowerSeries.X_pow_dvd_iff Unit R _ () n φ
+  convert @MvPowerSeries.X_pow_dvd_iff Unit R _ () n φ
   constructor <;> intro h m hm
   · rw [Finsupp.unique_single m]
     convert h _ hm
@@ -915,7 +915,7 @@ section CommRing
 variable {R : Type*} [CommRing R]
 
 @[simp, norm_cast]
-lemma coe_neg (p : R[X]) : ((- p : R[X]) : PowerSeries R) = - p :=
+lemma coe_neg (p : R[X]) : ((-p : R[X]) : PowerSeries R) = -p :=
   coeToPowerSeries.ringHom.map_neg p
 
 @[simp, norm_cast]

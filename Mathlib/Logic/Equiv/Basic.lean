@@ -284,11 +284,7 @@ theorem subtypeEquiv_refl {p : α → Prop} (h : ∀ a, p a ↔ p (Equiv.refl _ 
 -- We use `as_aux_lemma` here to avoid creating large proof terms when using `simp`
 @[simp]
 theorem subtypeEquiv_symm {p : α → Prop} {q : β → Prop} (e : α ≃ β) (h : ∀ a : α, p a ↔ q (e a)) :
-    (e.subtypeEquiv h).symm =
-      e.symm.subtypeEquiv (by as_aux_lemma =>
-        intro a
-        convert (h <| e.symm a).symm
-        exact (e.apply_symm_apply a).symm) :=
+    (e.subtypeEquiv h).symm = e.symm.subtypeEquiv (by as_aux_lemma => grind) :=
   rfl
 
 @[simp]
@@ -525,12 +521,7 @@ theorem subtypeEquivCodomain_apply (f : { x' // x' ≠ x } → Y) (g) :
 
 theorem coe_subtypeEquivCodomain_symm (f : { x' // x' ≠ x } → Y) :
     ((subtypeEquivCodomain f).symm : Y → _) = fun y =>
-      ⟨fun x' => if h : x' ≠ x then f ⟨x', h⟩ else y, by
-        funext x'
-        simp only [ne_eq, dite_not, comp_apply, Subtype.coe_eta, dite_eq_ite, ite_eq_right_iff]
-        intro w
-        exfalso
-        exact x'.property w⟩ :=
+      ⟨fun x' => if h : x' ≠ x then f ⟨x', h⟩ else y, by grind⟩ :=
   rfl
 
 @[simp]
@@ -700,9 +691,7 @@ theorem comp_swap_eq_update (i j : α) (f : α → β) :
 theorem symm_trans_swap_trans [DecidableEq β] (a b : α) (e : α ≃ β) :
     (e.symm.trans (swap a b)).trans e = swap (e a) (e b) :=
   Equiv.ext fun x => by
-    have : ∀ a, e.symm x = a ↔ x = e a := fun a => by
-      rw [@eq_comm _ (e.symm x)]
-      constructor <;> intros <;> simp_all
+    have : ∀ a, e.symm x = a ↔ x = e a := fun a => by grind
     simp only [trans_apply, swap_apply_def, this]
     split_ifs <;> simp
 

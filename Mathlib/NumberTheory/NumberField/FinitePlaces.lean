@@ -219,7 +219,7 @@ instance : NonnegHomClass (FinitePlace K) K ℝ where
   apply_nonneg w := w.1.nonneg
 
 @[simp]
-theorem mk_apply (v : HeightOneSpectrum (𝓞 K)) (x : K) : mk v x =  ‖embedding v x‖ := rfl
+theorem mk_apply (v : HeightOneSpectrum (𝓞 K)) (x : K) : mk v x = ‖embedding v x‖ := rfl
 
 @[deprecated (since := "2025-02-28")] alias apply := mk_apply
 

@@ -309,8 +309,7 @@ protected def Faithful.div (F : C ⥤ E) (G : D ⥤ E) [G.Faithful] (obj : C →
       intros X Y Z f g
       refine G.map_injective <| eq_of_heq <| h_map.trans ?_
       simp only [Functor.map_comp]
-      convert HEq.refl (F.map f ≫ F.map g)
-      all_goals { first | apply h_obj | apply h_map } }
+      grind }
 
 -- This follows immediately from `Functor.hext` (`Functor.hext h_obj @h_map`),
 -- but importing `CategoryTheory.EqToHom` causes an import loop:
