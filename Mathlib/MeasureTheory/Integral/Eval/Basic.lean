@@ -3,6 +3,7 @@ Copyright (c) 2025 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
+import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
 import Mathlib.MeasureTheory.Constructions.Pi
 import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 
@@ -12,52 +13,6 @@ import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 We prove that `f : (i : ι) → X → E i` is in `Lᵖ` if and only if for all `i`, `f i` is in `Lᵖ`.
 We do the same for `f : X → (E × F)`.
 -/
-
-section aux
-
-variable {ι 𝕜 : Type*} [Fintype ι] [DecidableEq ι] [NontriviallyNormedField 𝕜] {E : ι → Type*}
-
-lemma Isometry.single [∀ i, PseudoEMetricSpace (E i)] [∀ i, Zero (E i)] (i : ι) :
-    Isometry (Pi.single (M := E) i) := by
-  intro x y
-  rw [edist_pi_def, Finset.sup_univ_eq_ciSup]
-  refine le_antisymm (iSup_le fun j ↦ ?_) (le_iSup_of_le i (by simp))
-  obtain rfl | h := eq_or_ne i j
-  · simp
-  · simp [h]
-
-lemma ContinuousLinearMap.norm_single_le_one [∀ i, SeminormedAddCommGroup (E i)]
-    [∀ i, NormedSpace 𝕜 (E i)] (i : ι) :
-    ‖ContinuousLinearMap.single 𝕜 E i‖ ≤ 1 := by
-  have : Isometry (ContinuousLinearMap.single 𝕜 E i).toLinearMap := Isometry.single i
-  change
-    ‖((ContinuousLinearMap.single 𝕜 E i).toLinearMap.toLinearIsometry
-      this).toContinuousLinearMap‖ ≤ 1
-  exact LinearIsometry.norm_toContinuousLinearMap_le _
-
-lemma ContinuousLinearMap.norm_single [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
-    (i : ι) [Nontrivial (E i)] :
-    ‖ContinuousLinearMap.single 𝕜 E i‖ = 1 := by
-  have : Isometry (ContinuousLinearMap.single 𝕜 E i).toLinearMap := Isometry.single i
-  change
-    ‖((ContinuousLinearMap.single 𝕜 E i).toLinearMap.toLinearIsometry
-      this).toContinuousLinearMap‖ = 1
-  exact LinearIsometry.norm_toContinuousLinearMap _
-
-variable {E F : Type*} [PseudoEMetricSpace E] [PseudoEMetricSpace F]
-    [AddZeroClass E] [AddZeroClass F]
-
-lemma Isometry.inl : Isometry (AddMonoidHom.inl E F) := by
-  intro x y
-  rw [Prod.edist_eq]
-  simp
-
-lemma Isometry.inr : Isometry (AddMonoidHom.inr E F) := by
-  intro x y
-  rw [Prod.edist_eq]
-  simp
-
-end aux
 
 namespace MeasureTheory
 

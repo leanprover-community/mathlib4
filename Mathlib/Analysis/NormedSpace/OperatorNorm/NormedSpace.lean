@@ -6,6 +6,7 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Bilinear
 import Mathlib.Analysis.NormedSpace.OperatorNorm.NNNorm
 import Mathlib.Analysis.Normed.Module.Span
+import Mathlib.Topology.MetricSpace.Injection
 
 /-!
 # Operator norm for maps on normed spaces
@@ -352,3 +353,27 @@ protected theorem NormedSpace.equicontinuous_TFAE : List.TFAE
   tfae_finish
 
 end Equicontinuous
+
+section single
+
+variable {ι 𝕜 : Type*} [Fintype ι] [DecidableEq ι] [NontriviallyNormedField 𝕜] {E : ι → Type*}
+
+lemma ContinuousLinearMap.norm_single_le_one [∀ i, SeminormedAddCommGroup (E i)]
+    [∀ i, NormedSpace 𝕜 (E i)] (i : ι) :
+    ‖ContinuousLinearMap.single 𝕜 E i‖ ≤ 1 := by
+  have : Isometry (ContinuousLinearMap.single 𝕜 E i).toLinearMap := Isometry.single i
+  change
+    ‖((ContinuousLinearMap.single 𝕜 E i).toLinearMap.toLinearIsometry
+      this).toContinuousLinearMap‖ ≤ 1
+  exact LinearIsometry.norm_toContinuousLinearMap_le _
+
+lemma ContinuousLinearMap.norm_single [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
+    (i : ι) [Nontrivial (E i)] :
+    ‖ContinuousLinearMap.single 𝕜 E i‖ = 1 := by
+  have : Isometry (ContinuousLinearMap.single 𝕜 E i).toLinearMap := Isometry.single i
+  change
+    ‖((ContinuousLinearMap.single 𝕜 E i).toLinearMap.toLinearIsometry
+      this).toContinuousLinearMap‖ = 1
+  exact LinearIsometry.norm_toContinuousLinearMap _
+
+end single
