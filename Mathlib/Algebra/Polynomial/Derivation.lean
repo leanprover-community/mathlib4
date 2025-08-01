@@ -1,11 +1,12 @@
 /-
 Copyright (c) 2023 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kevin Buzzard, Richard Hill
+Authors: Kevin Buzzard, Richard M. Hill
 -/
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Derivative
 import Mathlib.Algebra.Polynomial.Module.AEval
+import Mathlib.RingTheory.Adjoin.Polynomial
 import Mathlib.RingTheory.Derivation.Basic
 /-!
 # Derivations of univariate polynomials
@@ -122,11 +123,11 @@ def compAEval : Derivation R R[X] <| AEval R M a where
   map_one_eq_zero' := by simp
 
 /--
-  A form of the chain rule: if `f` is a polynomial over `R`
-  and `d : A → M` is an `R`-derivation then for all `a : A` we have
-  $$ d(f(a)) = f' (a) d a. $$
-  The equation is in the `R[X]`-module `Module.AEval R M a`.
-  For the same equation in `M`, see `Derivation.compAEval_eq`.
+A form of the chain rule: if `f` is a polynomial over `R`
+and `d : A → M` is an `R`-derivation then for all `a : A` we have
+$$ d(f(a)) = f' (a) d a. $$
+The equation is in the `R[X]`-module `Module.AEval R M a`.
+For the same equation in `M`, see `Derivation.compAEval_eq`.
 -/
 theorem compAEval_eq (d : Derivation R A M) (f : R[X]) :
     d.compAEval a f = derivative f • (AEval.of R M a (d a)) := by
@@ -136,14 +137,16 @@ theorem compAEval_eq (d : Derivation R A M) (f : R[X]) :
   simp
 
 /--
-  A form of the chain rule: if `f` is a polynomial over `R`
-  and `d : A → M` is an `R`-derivation then for all `a : A` we have
-  $$ d(f(a)) = f' (a) d a. $$
-  The equation is in `M`. For the same equation in `Module.AEval R M a`,
-  see `Derivation.compAEval_eq`.
+A form of the chain rule: if `f` is a polynomial over `R`
+and `d : A → M` is an `R`-derivation then for all `a : A` we have
+$$ d(f(a)) = f' (a) d a. $$
+The equation is in `M`. For the same equation in `Module.AEval R M a`,
+see `Derivation.compAEval_eq`.
 -/
 theorem comp_aeval_eq (d : Derivation R A M) (f : R[X]) :
     d (aeval a f) = aeval a (derivative f) • d a :=
   calc
     _ = (AEval.of R M a).symm (d.compAEval a f) := rfl
     _ = _ := by simp [-compAEval_apply, compAEval_eq]
+
+end Derivation

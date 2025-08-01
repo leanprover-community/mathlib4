@@ -1,13 +1,12 @@
 /-
-Copyright (c) 2024 Tomas Skrivan. All rights reserved.
+Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Tomas Skrivan
+Authors: Tomáš Skřivan
 -/
-import Lean
 import Qq
 
-import Batteries.Lean.Expr
 import Mathlib.Tactic.FunProp.Mor
+import Mathlib.Tactic.FunProp.ToBatteries
 
 /-!
 ## `funProp` data structure holding information about a function
@@ -42,7 +41,7 @@ def FunctionData.toExpr (f : FunctionData) : MetaM Expr := do
     let body := Mor.mkAppN f.fn f.args
     mkLambdaFVars #[f.mainVar] body
 
-/-- Is `f` an indentity function? -/
+/-- Is `f` an identity function? -/
 def FunctionData.isIdentityFun (f : FunctionData) : Bool :=
   (f.args.size = 0 && f.fn == f.mainVar)
 
@@ -77,8 +76,19 @@ def getFunctionData (f : Expr) : MetaM FunctionData := do
 
     Mor.withApp b fun fn args => do
 
+      let mut fn := fn
+      let mut args := args
+
+      -- revert projection in fn
+      if let .proj n i x := fn then
+        let .some info := getStructureInfo? (← getEnv) n | unreachable!
+        let .some projName := info.getProjFn? i | unreachable!
+        let p ← mkAppM projName #[x]
+        fn := p.getAppFn
+        args := p.getAppArgs.map (fun a => {expr:=a}) ++ args
+
       let mainArgs := args
-        |>.mapIdx (fun i ⟨arg,_⟩ => if arg.containsFVar xId then some i.1 else none)
+        |>.mapIdx (fun i ⟨arg,_⟩ => if arg.containsFVar xId then some i else none)
         |>.filterMap id
 
       return {
@@ -108,18 +118,21 @@ def MaybeFunctionData.get (fData : MaybeFunctionData) : MetaM Expr :=
 
 /-- Get `FunctionData` for `f`. -/
 def getFunctionData? (f : Expr)
-    (unfoldPred : Name → Bool := fun _ => false) (cfg : WhnfCoreConfig := {}) :
+    (unfoldPred : Name → Bool := fun _ => false) :
     MetaM MaybeFunctionData := do
+  withConfig (fun cfg => { cfg with zeta := false, zetaDelta := false }) do
 
-  let unfold := fun e : Expr =>
+  let unfold := fun e : Expr => do
     if let .some n := e.getAppFn'.constName? then
-      pure (unfoldPred n)
+      pure ((unfoldPred n) || (← isReducible n))
     else
       pure false
 
-  let .forallE xName xType _ _ ← inferType f | throwError "fun_prop bug: function expected"
+  let .forallE xName xType _ _ ← instantiateMVars (← inferType f)
+    | throwError m!"fun_prop bug: function expected, got `{f} : {← inferType f}, \
+                    type ctor {(← inferType f).ctorName}"
   withLocalDeclD xName xType fun x => do
-    let fx' ← Mor.whnfPred (f.beta #[x]).eta unfold cfg
+    let fx' := (← Mor.whnfPred (f.beta #[x]).eta unfold) |> headBetaThroughLet
     let f' ← mkLambdaFVars #[x] fx'
     match fx' with
     | .letE .. => return .letE f'
@@ -132,7 +145,7 @@ def FunctionData.unfoldHeadFVar? (fData : FunctionData) : MetaM (Option Expr) :=
   let .fvar id := fData.fn | return none
   let .some val ← id.getValue? | return none
   let f ← withLCtx fData.lctx fData.insts do
-    mkLambdaFVars #[fData.mainVar] (Mor.mkAppN val fData.args)
+    mkLambdaFVars #[fData.mainVar] (headBetaThroughLet (Mor.mkAppN val fData.args))
   return f
 
 /-- Type of morphism application. -/
@@ -152,16 +165,15 @@ def FunctionData.isMorApplication (f : FunctionData) : MetaM MorApplication := d
   if let .some name := f.fn.constName? then
     if ← Mor.isCoeFunName name then
       let info ← getConstInfo name
-      let arity := info.type.forallArity
+      let arity := info.type.getNumHeadForalls
       match compare arity f.args.size with
       | .eq => return .exact
       | .lt => return .overApplied
       | .gt => return .underApplied
-  match f.args.size with
+  match h : f.args.size with
   | 0 => return .none
-  | _ =>
-    let n := f.args.size
-    if f.args[n-1]!.coe.isSome then
+  | n + 1 =>
+    if f.args[n].coe.isSome then
       return .exact
     else if f.args.any (fun a => a.coe.isSome) then
       return .overApplied
@@ -240,7 +252,7 @@ def FunctionData.nontrivialDecomposition (fData : FunctionData) : MetaM (Option 
 
     -- check if is non-triviality
     let f' ← fData.toExpr
-    if (← isDefEq f' f) || (← isDefEq f' g) then
+    if (← withReducibleAndInstances <| isDefEq f' f <||> isDefEq f' g) then
       return none
 
     return (f, g)
@@ -273,10 +285,14 @@ def FunctionData.decompositionOverArgs (fData : FunctionData) (args : Array Nat)
     withLocalDeclD `y (← inferType gx) fun y => do
 
       let ys ← mkProdSplitElem y gxs.size
-      let args' := (args.zip ys).foldl (init:=fData.args)
+      let args' := (args.zip ys).foldl (init := fData.args)
           (fun args' (i,y) => args'.set! i { expr := y, coe := args'[i]!.coe })
 
       let f ← mkLambdaFVars #[y] (Mor.mkAppN fData.fn args')
       return (f,g)
   catch _ =>
     return none
+
+end Meta.FunProp
+
+end Mathlib

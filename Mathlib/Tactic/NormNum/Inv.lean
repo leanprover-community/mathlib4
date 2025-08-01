@@ -11,7 +11,7 @@ import Mathlib.Algebra.Field.Basic
 # `norm_num` plugins for `Rat.cast` and `⁻¹`.
 -/
 
-set_option autoImplicit true
+variable {u : Lean.Level}
 
 namespace Mathlib.Meta.NormNum
 
@@ -20,18 +20,18 @@ open Lean.Meta Qq
 /-- Helper function to synthesize a typed `CharZero α` expression given `Ring α`. -/
 def inferCharZeroOfRing {α : Q(Type u)} (_i : Q(Ring $α) := by with_reducible assumption) :
     MetaM Q(CharZero $α) :=
-  return ← synthInstanceQ (q(CharZero $α) : Q(Prop)) <|>
+  return ← synthInstanceQ q(CharZero $α) <|>
     throwError "not a characteristic zero ring"
 
 /-- Helper function to synthesize a typed `CharZero α` expression given `Ring α`, if it exists. -/
 def inferCharZeroOfRing? {α : Q(Type u)} (_i : Q(Ring $α) := by with_reducible assumption) :
     MetaM (Option Q(CharZero $α)) :=
-  return (← trySynthInstanceQ (q(CharZero $α) : Q(Prop))).toOption
+  return (← trySynthInstanceQ q(CharZero $α)).toOption
 
 /-- Helper function to synthesize a typed `CharZero α` expression given `AddMonoidWithOne α`. -/
 def inferCharZeroOfAddMonoidWithOne {α : Q(Type u)}
     (_i : Q(AddMonoidWithOne $α) := by with_reducible assumption) : MetaM Q(CharZero $α) :=
-  return ← synthInstanceQ (q(CharZero $α) : Q(Prop)) <|>
+  return ← synthInstanceQ q(CharZero $α) <|>
     throwError "not a characteristic zero AddMonoidWithOne"
 
 /-- Helper function to synthesize a typed `CharZero α` expression given `AddMonoidWithOne α`, if it
@@ -39,24 +39,25 @@ exists. -/
 def inferCharZeroOfAddMonoidWithOne? {α : Q(Type u)}
     (_i : Q(AddMonoidWithOne $α) := by with_reducible assumption) :
       MetaM (Option Q(CharZero $α)) :=
-  return (← trySynthInstanceQ (q(CharZero $α) : Q(Prop))).toOption
+  return (← trySynthInstanceQ q(CharZero $α)).toOption
 
 /-- Helper function to synthesize a typed `CharZero α` expression given `DivisionRing α`. -/
 def inferCharZeroOfDivisionRing {α : Q(Type u)}
     (_i : Q(DivisionRing $α) := by with_reducible assumption) : MetaM Q(CharZero $α) :=
-  return ← synthInstanceQ (q(CharZero $α) : Q(Prop)) <|>
+  return ← synthInstanceQ q(CharZero $α) <|>
     throwError "not a characteristic zero division ring"
 
 /-- Helper function to synthesize a typed `CharZero α` expression given `DivisionRing α`, if it
 exists. -/
 def inferCharZeroOfDivisionRing? {α : Q(Type u)}
     (_i : Q(DivisionRing $α) := by with_reducible assumption) : MetaM (Option Q(CharZero $α)) :=
-  return (← trySynthInstanceQ (q(CharZero $α) : Q(Prop))).toOption
+  return (← trySynthInstanceQ q(CharZero $α)).toOption
 
 theorem isRat_mkRat : {a na n : ℤ} → {b nb d : ℕ} → IsInt a na → IsNat b nb →
     IsRat (na / nb : ℚ) n d → IsRat (mkRat a b) n d
   | _, _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, ⟨_, h⟩ => by rw [Rat.mkRat_eq_div]; exact ⟨_, h⟩
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `mkRat a b`,
 such that `norm_num` successfully recognises both `a` and `b`, and returns `a / b`. -/
 @[norm_num mkRat _ _]
@@ -70,15 +71,15 @@ def evalMkRat : NormNumExt where eval {u α} (e : Q(ℚ)) : MetaM (Result e) := 
   let ⟨q, n, d, p⟩ ← rab.toRat' q(Rat.instDivisionRing)
   return .isRat' _ q n d q(isRat_mkRat $pa $pb $p)
 
-theorem isNat_ratCast [DivisionRing R] : {q : ℚ} → {n : ℕ} →
+theorem isNat_ratCast {R : Type*} [DivisionRing R] : {q : ℚ} → {n : ℕ} →
     IsNat q n → IsNat (q : R) n
   | _, _, ⟨rfl⟩ => ⟨by simp⟩
 
-theorem isInt_ratCast [DivisionRing R] : {q : ℚ} → {n : ℤ} →
+theorem isInt_ratCast {R : Type*} [DivisionRing R] : {q : ℚ} → {n : ℤ} →
     IsInt q n → IsInt (q : R) n
   | _, _, ⟨rfl⟩ => ⟨by simp⟩
 
-theorem isRat_ratCast [DivisionRing R] [CharZero R] : {q : ℚ} → {n : ℤ} → {d : ℕ} →
+theorem isRat_ratCast {R : Type*} [DivisionRing R] [CharZero R] : {q : ℚ} → {n : ℤ} → {d : ℕ} →
     IsRat q n d → IsRat (q : R) n d
   | _, _, _, ⟨⟨qi,_,_⟩, rfl⟩ => ⟨⟨qi, by norm_cast, by norm_cast⟩, by simp only []; norm_cast⟩
 
@@ -119,7 +120,7 @@ theorem isRat_inv_zero {α} [DivisionRing α] : {a : α} →
 
 theorem isRat_inv_neg_one {α} [DivisionRing α] : {a : α} →
     IsInt a (.negOfNat (nat_lit 1)) → IsInt a⁻¹ (.negOfNat (nat_lit 1))
-  | _, ⟨rfl⟩ => ⟨by simp [inv_neg_one]⟩
+  | _, ⟨rfl⟩ => ⟨by simp⟩
 
 theorem isRat_inv_neg {α} [DivisionRing α] [CharZero α] {a : α} {n d : ℕ} :
     IsRat a (.negOfNat (Nat.succ n)) d → IsRat a⁻¹ (.negOfNat d) (Nat.succ n) := by
@@ -132,6 +133,7 @@ theorem isRat_inv_neg {α} [DivisionRing α] [CharZero α] {a : α} {n d : ℕ} 
 
 open Lean
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `a⁻¹`,
 such that `norm_num` successfully recognises `a`. -/
 @[norm_num _⁻¹] def evalInv : NormNumExt where eval {u α} e := do

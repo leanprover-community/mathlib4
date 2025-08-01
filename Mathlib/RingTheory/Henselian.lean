@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Polynomial.Taylor
-import Mathlib.RingTheory.Ideal.LocalRing
+import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 import Mathlib.RingTheory.AdicCompletion.Basic
-
-#align_import ring_theory.henselian from "leanprover-community/mathlib"@"d1accf4f9cddb3666c6e8e4da0ac2d19c4ed73f0"
 
 /-!
 # Henselian rings
@@ -31,8 +29,7 @@ In this case the first condition is automatic, and in the second condition we ma
 
 * `HenselianRing`: a typeclass on commutative rings,
   asserting that the ring is Henselian at the ideal `I`.
-* `HenselianLocalRing`: a typeclass on commutative rings,
-   asserting that the ring is local Henselian.
+* `HenselianLocalRing`: a typeclass on commutative rings, asserting that the ring is local Henselian
 * `Field.henselian`: fields are Henselian local rings
 * `Henselian.TFAE`: equivalent ways of expressing the Henselian property for local rings
 * `IsAdicComplete.henselianRing`:
@@ -42,7 +39,7 @@ In this case the first condition is automatic, and in the second condition we ma
 
 https://stacks.math.columbia.edu/tag/04GE
 
-## Todo
+## TODO
 
 After a good API for etale ring homomorphisms has been developed,
 we can give more equivalent characterization of Henselian rings.
@@ -60,10 +57,10 @@ noncomputable section
 
 universe u v
 
-open Polynomial LocalRing Polynomial Function List
+open Polynomial IsLocalRing Function List
 
-theorem isLocalRingHom_of_le_jacobson_bot {R : Type*} [CommRing R] (I : Ideal R)
-    (h : I ≤ Ideal.jacobson ⊥) : IsLocalRingHom (Ideal.Quotient.mk I) := by
+theorem isLocalHom_of_le_jacobson_bot {R : Type*} [CommRing R] (I : Ideal R)
+    (h : I ≤ Ideal.jacobson ⊥) : IsLocalHom (Ideal.Quotient.mk I) := by
   constructor
   intro a h
   have : IsUnit (Ideal.Quotient.mk (Ideal.jacobson ⊥) a) := by
@@ -80,7 +77,6 @@ theorem isLocalRingHom_of_le_jacobson_bot {R : Type*} [CommRing R] (I : Ideal R)
   specialize h1 1
   simp? at h1 says simp only [mul_one, sub_add_cancel, IsUnit.mul_iff] at h1
   exact h1.1
-#align is_local_ring_hom_of_le_jacobson_bot isLocalRingHom_of_le_jacobson_bot
 
 /-- A ring `R` is *Henselian* at an ideal `I` if the following condition holds:
 for every polynomial `f` over `R`, with a *simple* root `a₀` over the quotient ring `R/I`,
@@ -95,7 +91,6 @@ class HenselianRing (R : Type*) [CommRing R] (I : Ideal R) : Prop where
   is_henselian :
     ∀ (f : R[X]) (_ : f.Monic) (a₀ : R) (_ : f.eval a₀ ∈ I)
       (_ : IsUnit (Ideal.Quotient.mk I (f.derivative.eval a₀))), ∃ a : R, f.IsRoot a ∧ a - a₀ ∈ I
-#align henselian_ring HenselianRing
 
 /-- A local ring `R` is *Henselian* if the following condition holds:
 for every polynomial `f` over `R`, with a *simple* root `a₀` over the residue field,
@@ -105,20 +100,18 @@ there exists a lift `a : R` of `a₀` that is a root of `f`.
 
 In other words, `R` is local Henselian if it is Henselian at the ideal `I`,
 in the sense of `HenselianRing`. -/
-class HenselianLocalRing (R : Type*) [CommRing R] extends LocalRing R : Prop where
+class HenselianLocalRing (R : Type*) [CommRing R] : Prop extends IsLocalRing R where
   is_henselian :
     ∀ (f : R[X]) (_ : f.Monic) (a₀ : R) (_ : f.eval a₀ ∈ maximalIdeal R)
       (_ : IsUnit (f.derivative.eval a₀)), ∃ a : R, f.IsRoot a ∧ a - a₀ ∈ maximalIdeal R
-#align henselian_local_ring HenselianLocalRing
 
 -- see Note [lower instance priority]
 instance (priority := 100) Field.henselian (K : Type*) [Field K] : HenselianLocalRing K where
   is_henselian f _ a₀ h₁ _ := by
     simp only [(maximalIdeal K).eq_bot_of_prime, Ideal.mem_bot] at h₁ ⊢
     exact ⟨a₀, h₁, sub_self _⟩
-#align field.henselian Field.henselian
 
-theorem HenselianLocalRing.TFAE (R : Type u) [CommRing R] [LocalRing R] :
+theorem HenselianLocalRing.TFAE (R : Type u) [CommRing R] [IsLocalRing R] :
     TFAE
       [HenselianLocalRing R,
         ∀ f : R[X], f.Monic → ∀ a₀ : ResidueField R, aeval a₀ f = 0 →
@@ -127,33 +120,31 @@ theorem HenselianLocalRing.TFAE (R : Type u) [CommRing R] [LocalRing R] :
           ∀ (φ : R →+* K), Surjective φ → ∀ f : R[X], f.Monic → ∀ a₀ : K,
             f.eval₂ φ a₀ = 0 → f.derivative.eval₂ φ a₀ ≠ 0 → ∃ a : R, f.IsRoot a ∧ φ a = a₀] := by
   tfae_have 3 → 2
-  · intro H
-    exact H (residue R) Ideal.Quotient.mk_surjective
+  | H => H (residue R) Ideal.Quotient.mk_surjective
   tfae_have 2 → 1
-  · intro H
+  | H => by
     constructor
     intro f hf a₀ h₁ h₂
     specialize H f hf (residue R a₀)
     have aux := flip mem_nonunits_iff.mp h₂
     simp only [aeval_def, ResidueField.algebraMap_eq, eval₂_at_apply, ←
-      Ideal.Quotient.eq_zero_iff_mem, ← LocalRing.mem_maximalIdeal] at H h₁ aux
+      Ideal.Quotient.eq_zero_iff_mem, ← IsLocalRing.mem_maximalIdeal] at H h₁ aux
     obtain ⟨a, ha₁, ha₂⟩ := H h₁ aux
     refine ⟨a, ha₁, ?_⟩
     rw [← Ideal.Quotient.eq_zero_iff_mem]
     rwa [← sub_eq_zero, ← RingHom.map_sub] at ha₂
   tfae_have 1 → 3
-  · intro hR K _K φ hφ f hf a₀ h₁ h₂
+  | hR, K, _K, φ, hφ, f, hf, a₀, h₁, h₂ => by
     obtain ⟨a₀, rfl⟩ := hφ a₀
     have H := HenselianLocalRing.is_henselian f hf a₀
-    simp only [← ker_eq_maximalIdeal φ hφ, eval₂_at_apply, RingHom.mem_ker φ] at H h₁ h₂
+    simp only [← ker_eq_maximalIdeal φ hφ, eval₂_at_apply, RingHom.mem_ker] at H h₁ h₂
     obtain ⟨a, ha₁, ha₂⟩ := H h₁ (by
       contrapose! h₂
-      rwa [← mem_nonunits_iff, ← LocalRing.mem_maximalIdeal, ← LocalRing.ker_eq_maximalIdeal φ hφ,
+      rwa [← mem_nonunits_iff, ← mem_maximalIdeal, ← ker_eq_maximalIdeal φ hφ,
         RingHom.mem_ker] at h₂)
     refine ⟨a, ha₁, ?_⟩
     rwa [φ.map_sub, sub_eq_zero] at ha₂
   tfae_finish
-#align henselian_local_ring.tfae HenselianLocalRing.TFAE
 
 instance (R : Type*) [CommRing R] [hR : HenselianLocalRing R] :
     HenselianRing R (maximalIdeal R) where
@@ -165,7 +156,7 @@ instance (R : Type*) [CommRing R] [hR : HenselianLocalRing R] :
     intro f hf a₀ h₁ h₂
     refine HenselianLocalRing.is_henselian f hf a₀ h₁ ?_
     contrapose! h₂
-    rw [← mem_nonunits_iff, ← LocalRing.mem_maximalIdeal, ← Ideal.Quotient.eq_zero_iff_mem] at h₂
+    rw [← mem_nonunits_iff, ← IsLocalRing.mem_maximalIdeal, ← Ideal.Quotient.eq_zero_iff_mem] at h₂
     rw [h₂]
     exact not_isUnit_zero
 
@@ -184,7 +175,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
       let c : ℕ → R := fun n => Nat.recOn n a₀ fun _ b => b - f.eval b * Ring.inverse (f'.eval b)
       have hc : ∀ n, c (n + 1) = c n - f.eval (c n) * Ring.inverse (f'.eval (c n)) := by
         intro n
-        simp only [c, Nat.rec_add_one]
+        simp only [c]
       -- we now spend some time determining properties of the sequence `c : ℕ → R`
       -- `hc_mod`: for every `n`, we have `c n ≡ a₀ [SMOD I]`
       -- `hf'c`  : for every `n`, `f'.eval (c n)` is a unit
@@ -201,14 +192,14 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         exact (ih.eval f).trans h₁
       have hf'c : ∀ n, IsUnit (f'.eval (c n)) := by
         intro n
-        haveI := isLocalRingHom_of_le_jacobson_bot I (IsAdicComplete.le_jacobson_bot I)
-        apply isUnit_of_map_unit (Ideal.Quotient.mk I)
+        haveI := isLocalHom_of_le_jacobson_bot I (IsAdicComplete.le_jacobson_bot I)
+        apply IsUnit.of_map (Ideal.Quotient.mk I)
         convert h₂ using 1
         exact SModEq.def.mp ((hc_mod n).eval _)
       have hfcI : ∀ n, f.eval (c n) ∈ I ^ (n + 1) := by
         intro n
         induction' n with n ih
-        · simpa only [Nat.zero_eq, Nat.rec_zero, zero_add, pow_one] using h₁
+        · simpa only [Nat.rec_zero, zero_add, pow_one] using h₁
         rw [← taylor_eval_sub (c n), hc, sub_eq_add_neg, sub_eq_add_neg,
           add_neg_cancel_comm]
         rw [eval_eq_sum, sum_over_range' _ _ _ (lt_add_of_pos_right _ zero_lt_two), ←
@@ -217,10 +208,9 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         · intro i
           rw [zero_mul]
         refine Ideal.add_mem _ ?_ ?_
-        · erw [Finset.sum_range_succ]
-          rw [Finset.range_one, Finset.sum_singleton,
+        · rw [← one_add_one_eq_two, Finset.sum_range_succ, Finset.range_one, Finset.sum_singleton,
             taylor_coeff_zero, taylor_coeff_one, pow_zero, pow_one, mul_one, mul_neg,
-            mul_left_comm, Ring.mul_inverse_cancel _ (hf'c n), mul_one, add_neg_self]
+            mul_left_comm, Ring.mul_inverse_cancel _ (hf'c n), mul_one, add_neg_cancel]
           exact Ideal.zero_mem _
         · refine Submodule.sum_mem _ ?_
           simp only [Finset.mem_Ico]
@@ -237,13 +227,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         clear hmn
         induction' k with k ih
         · rw [add_zero]
-        rw [← add_assoc]
-        #adaptation_note /-- nightly-2024-03-11
-        I'm not sure why the `erw` is now needed here. It looks like it should work.
-        It looks like a diamond between `instHAdd` on `Nat` and `AddSemigroup.toAdd` which is
-        used by `instHAdd` -/
-        erw [hc]
-        rw [← add_zero (c m), sub_eq_add_neg]
+        rw [← add_assoc, hc, ← add_zero (c m), sub_eq_add_neg]
         refine ih.add ?_
         symm
         rw [SModEq.zero, Ideal.neg_mem_iff]
@@ -268,4 +252,3 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         refine ha.symm.trans (SModEq.rfl.add ?_)
         rw [SModEq.zero, Ideal.neg_mem_iff]
         exact Ideal.mul_mem_right _ _ h₁
-#align is_adic_complete.henselian_ring IsAdicComplete.henselianRing

@@ -3,11 +3,10 @@ Copyright (c) 2021 Henry Swanson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henry Swanson, Patrick Massot
 -/
+import Mathlib.Algebra.BigOperators.Field
 import Mathlib.Analysis.SpecialFunctions.Exponential
 import Mathlib.Combinatorics.Derangements.Finite
-import Mathlib.Order.Filter.Basic
-
-#align_import combinatorics.derangements.exponential from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
+import Mathlib.Data.Nat.Cast.Field
 
 /-!
 # Derangement exponential series
@@ -50,4 +49,3 @@ theorem numDerangements_tendsto_inv_e :
   push_cast [Nat.factorial_dvd_factorial h_le]
   field_simp [Nat.factorial_ne_zero]
   ring
-#align num_derangements_tendsto_inv_e numDerangements_tendsto_inv_e

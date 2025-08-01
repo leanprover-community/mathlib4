@@ -6,8 +6,6 @@ Authors: Yury Kudryashov
 import Mathlib.Analysis.Convex.Star
 import Mathlib.Topology.Homotopy.Contractible
 
-#align_import analysis.convex.contractible from "leanprover-community/mathlib"@"3339976e2bcae9f1c81e620836d1eb736e3c4700"
-
 /-!
 # A convex set is contractible
 
@@ -36,16 +34,13 @@ protected theorem StarConvex.contractibleSpace (h : StarConvex ℝ x s) (hne : s
     simp
   · ext1
     simp
-#align star_convex.contractible_space StarConvex.contractibleSpace
 
 /-- A non-empty convex set is a contractible space. -/
 protected theorem Convex.contractibleSpace (hs : Convex ℝ s) (hne : s.Nonempty) :
     ContractibleSpace s :=
   let ⟨_, hx⟩ := hne
   (hs.starConvex hx).contractibleSpace hne
-#align convex.contractible_space Convex.contractibleSpace
 
 instance (priority := 100) RealTopologicalVectorSpace.contractibleSpace : ContractibleSpace E :=
   (Homeomorph.Set.univ E).contractibleSpace_iff.mp <|
     convex_univ.contractibleSpace Set.univ_nonempty
-#align real_topological_vector_space.contractible_space RealTopologicalVectorSpace.contractibleSpace

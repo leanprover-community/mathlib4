@@ -84,7 +84,7 @@ lemma strictAnti_eulerMascheroniSeq' : StrictAnti eulerMascheroniSeq' := by
   refine strictAnti_nat_of_succ_lt (fun n ↦ ?_)
   rcases Nat.eq_zero_or_pos n with rfl | hn
   · simp [eulerMascheroniSeq']
-  simp_rw [eulerMascheroniSeq', eq_false_intro hn.ne', if_false]
+  simp_rw [eulerMascheroniSeq', eq_false_intro hn.ne', reduceCtorEq, if_false]
   rw [← sub_pos, sub_sub_sub_comm,
     harmonic_succ, Rat.cast_add, ← sub_sub, sub_self, zero_sub, sub_eq_add_neg, neg_sub,
     ← sub_eq_neg_add, sub_pos, ← log_div (by positivity) (by positivity), ← neg_lt_neg_iff,
@@ -142,12 +142,7 @@ lemma tendsto_eulerMascheroniSeq' :
     apply (this.comp tendsto_natCast_atTop_atTop).congr'
     filter_upwards [eventually_ne_atTop 0] with n hn
     simp [eulerMascheroniSeq, eulerMascheroniSeq', eq_false_intro hn]
-  suffices Tendsto (fun x : ℝ ↦ log (1 + 1 / x)) atTop (𝓝 0) by
-    apply this.congr'
-    filter_upwards [eventually_gt_atTop 0] with x hx
-    rw [← log_div (by positivity) (by positivity), add_div, div_self hx.ne']
-  simpa only [add_zero, log_one] using
-    ((tendsto_const_nhds.div_atTop tendsto_id).const_add 1).log (by positivity)
+  exact tendsto_log_comp_add_sub_log 1
 
 lemma tendsto_harmonic_sub_log :
     Tendsto (fun n : ℕ ↦ harmonic n - log n) atTop (𝓝 eulerMascheroniConstant) := by

@@ -21,6 +21,7 @@ bicomplex `(((F.mapBifunctorHomologicalComplex c₁ c₂).obj K₁).obj K₂)`.
 
 -/
 
+assert_not_exists TwoSidedIdeal
 
 open CategoryTheory Limits
 
@@ -134,6 +135,127 @@ lemma ιMapBifunctorOrZero_eq (i₁ : I₁) (i₂ : I₂) (j : J)
 lemma ιMapBifunctorOrZero_eq_zero (i₁ : I₁) (i₂ : I₂) (j : J)
     (h : ComplexShape.π c₁ c₂ c (i₁, i₂) ≠ j) :
     ιMapBifunctorOrZero K₁ K₂ F c i₁ i₂ j = 0 := dif_neg h
+
+section
+
+variable {K₁ K₂ F c}
+variable {A : D} {j : J}
+  (f : ∀ (i₁ : I₁) (i₂ : I₂) (_ : ComplexShape.π c₁ c₂ c ⟨i₁, i₂⟩ = j),
+    (F.obj (K₁.X i₁)).obj (K₂.X i₂) ⟶ A)
+
+/-- Constructor for morphisms from `(mapBifunctor K₁ K₂ F c).X j`. -/
+noncomputable def mapBifunctorDesc : (mapBifunctor K₁ K₂ F c).X j ⟶ A :=
+  HomologicalComplex₂.totalDesc _ f
+
+@[reassoc (attr := simp)]
+lemma ι_mapBifunctorDesc (i₁ : I₁) (i₂ : I₂) (h : ComplexShape.π c₁ c₂ c ⟨i₁, i₂⟩ = j) :
+    ιMapBifunctor K₁ K₂ F c i₁ i₂ j h ≫ mapBifunctorDesc f = f i₁ i₂ h := by
+  apply HomologicalComplex₂.ι_totalDesc
+
+end
+
+namespace mapBifunctor
+
+variable {K₁ K₂ F c} in
+@[ext]
+lemma hom_ext {Y : D} {j : J} {f g : (mapBifunctor K₁ K₂ F c).X j ⟶ Y}
+    (h : ∀ (i₁ : I₁) (i₂ : I₂) (h : ComplexShape.π c₁ c₂ c ⟨i₁, i₂⟩ = j),
+      ιMapBifunctor K₁ K₂ F c i₁ i₂ j h ≫ f = ιMapBifunctor K₁ K₂ F c i₁ i₂ j h ≫ g) :
+    f = g :=
+  HomologicalComplex₂.total.hom_ext _ h
+
+section
+
+variable (j j' : J)
+
+/-- The first differential on `mapBifunctor K₁ K₂ F c` -/
+noncomputable def D₁ :
+    (mapBifunctor K₁ K₂ F c).X j ⟶ (mapBifunctor K₁ K₂ F c).X j' :=
+  (((F.mapBifunctorHomologicalComplex c₁ c₂).obj K₁).obj K₂).D₁ c j j'
+
+/-- The second differential on `mapBifunctor K₁ K₂ F c` -/
+noncomputable def D₂ :
+    (mapBifunctor K₁ K₂ F c).X j ⟶ (mapBifunctor K₁ K₂ F c).X j' :=
+  (((F.mapBifunctorHomologicalComplex c₁ c₂).obj K₁).obj K₂).D₂ c j j'
+
+lemma d_eq :
+    (mapBifunctor K₁ K₂ F c).d j j' = D₁ K₁ K₂ F c j j' + D₂ K₁ K₂ F c j j' := rfl
+
+end
+
+section
+
+variable (i₁ : I₁) (i₂ : I₂) (j : J)
+
+/-- The first differential on a summand of `mapBifunctor K₁ K₂ F c` -/
+noncomputable def d₁ :
+    (F.obj (K₁.X i₁)).obj (K₂.X i₂) ⟶ (mapBifunctor K₁ K₂ F c).X j :=
+  (((F.mapBifunctorHomologicalComplex c₁ c₂).obj K₁).obj K₂).d₁ c i₁ i₂ j
+
+/-- The second differential on a summand of `mapBifunctor K₁ K₂ F c` -/
+noncomputable def d₂ :
+    (F.obj (K₁.X i₁)).obj (K₂.X i₂) ⟶ (mapBifunctor K₁ K₂ F c).X j :=
+  (((F.mapBifunctorHomologicalComplex c₁ c₂).obj K₁).obj K₂).d₂ c i₁ i₂ j
+
+lemma d₁_eq_zero (h : ¬ c₁.Rel i₁ (c₁.next i₁)) :
+    d₁ K₁ K₂ F c i₁ i₂ j = 0 :=
+  HomologicalComplex₂.d₁_eq_zero _ _ _ _ _ h
+
+lemma d₂_eq_zero (h : ¬ c₂.Rel i₂ (c₂.next i₂)) :
+    d₂ K₁ K₂ F c i₁ i₂ j = 0 :=
+  HomologicalComplex₂.d₂_eq_zero _ _ _ _ _ h
+
+lemma d₁_eq_zero' {i₁ i₁' : I₁} (h : c₁.Rel i₁ i₁') (i₂ : I₂) (j : J)
+    (h' : ComplexShape.π c₁ c₂ c ⟨i₁', i₂⟩ ≠ j) :
+    d₁ K₁ K₂ F c i₁ i₂ j = 0 :=
+  HomologicalComplex₂.d₁_eq_zero' _ _ h _ _ h'
+
+lemma d₂_eq_zero' (i₁ : I₁) {i₂ i₂' : I₂} (h : c₂.Rel i₂ i₂') (j : J)
+    (h' : ComplexShape.π c₁ c₂ c ⟨i₁, i₂'⟩ ≠ j) :
+    d₂ K₁ K₂ F c i₁ i₂ j = 0 :=
+  HomologicalComplex₂.d₂_eq_zero' _ _ _ h _ h'
+
+lemma d₁_eq' {i₁ i₁' : I₁} (h : c₁.Rel i₁ i₁') (i₂ : I₂) (j : J) :
+    d₁ K₁ K₂ F c i₁ i₂ j = ComplexShape.ε₁ c₁ c₂ c ⟨i₁, i₂⟩ •
+      ((F.map (K₁.d i₁ i₁')).app (K₂.X i₂) ≫ ιMapBifunctorOrZero K₁ K₂ F c i₁' i₂ j) :=
+  HomologicalComplex₂.d₁_eq' _ _ h _ _
+
+lemma d₂_eq' (i₁ : I₁) {i₂ i₂' : I₂} (h : c₂.Rel i₂ i₂') (j : J) :
+    d₂ K₁ K₂ F c i₁ i₂ j = ComplexShape.ε₂ c₁ c₂ c ⟨i₁, i₂⟩ •
+      ((F.obj (K₁.X i₁)).map (K₂.d i₂ i₂') ≫ ιMapBifunctorOrZero K₁ K₂ F c i₁ i₂' j) :=
+  HomologicalComplex₂.d₂_eq' _ _ _ h _
+
+lemma d₁_eq {i₁ i₁' : I₁} (h : c₁.Rel i₁ i₁') (i₂ : I₂) (j : J)
+    (h' : ComplexShape.π c₁ c₂ c ⟨i₁', i₂⟩ = j) :
+    d₁ K₁ K₂ F c i₁ i₂ j = ComplexShape.ε₁ c₁ c₂ c ⟨i₁, i₂⟩ •
+      ((F.map (K₁.d i₁ i₁')).app (K₂.X i₂) ≫ ιMapBifunctor K₁ K₂ F c i₁' i₂ j h') :=
+  HomologicalComplex₂.d₁_eq _ _ h _ _ h'
+
+lemma d₂_eq (i₁ : I₁) {i₂ i₂' : I₂} (h : c₂.Rel i₂ i₂') (j : J)
+    (h' : ComplexShape.π c₁ c₂ c ⟨i₁, i₂'⟩ = j) :
+    d₂ K₁ K₂ F c i₁ i₂ j = ComplexShape.ε₂ c₁ c₂ c ⟨i₁, i₂⟩ •
+      ((F.obj (K₁.X i₁)).map (K₂.d i₂ i₂') ≫ ιMapBifunctor K₁ K₂ F c i₁ i₂' j h') :=
+  HomologicalComplex₂.d₂_eq _ _ _ h _ h'
+
+end
+
+section
+
+variable (j j' : J) (i₁ : I₁) (i₂ : I₂) (h : ComplexShape.π c₁ c₂ c (i₁, i₂) = j)
+
+@[reassoc (attr := simp)]
+lemma ι_D₁ :
+    ιMapBifunctor K₁ K₂ F c i₁ i₂ j h ≫ D₁ K₁ K₂ F c j j' = d₁ K₁ K₂ F c i₁ i₂ j' := by
+  apply HomologicalComplex₂.ι_D₁
+
+@[reassoc (attr := simp)]
+lemma ι_D₂ :
+    ιMapBifunctor K₁ K₂ F c i₁ i₂ j h ≫ D₂ K₁ K₂ F c j j' = d₂ K₁ K₂ F c i₁ i₂ j' := by
+  apply HomologicalComplex₂.ι_D₂
+
+end
+
+end mapBifunctor
 
 section
 

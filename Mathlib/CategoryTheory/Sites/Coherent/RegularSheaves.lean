@@ -5,7 +5,7 @@ Authors: Dagur Asgeirsson, Filippo A. E. Nuccio, Riccardo Brasca
 -/
 import Mathlib.CategoryTheory.EffectiveEpi.Preserves
 import Mathlib.CategoryTheory.Limits.Final.ParallelPair
-import Mathlib.CategoryTheory.Preadditive.Projective
+import Mathlib.CategoryTheory.Preadditive.Projective.Basic
 import Mathlib.CategoryTheory.Sites.Canonical
 import Mathlib.CategoryTheory.Sites.Coherent.Basic
 import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
@@ -17,7 +17,7 @@ This file characterises sheaves for the regular topology.
 
 ## Main results
 
-* `equalizerCondition_iff_isSheaf`: In a preregular category with pullbacks, the sheaves for the
+* `equalizerCondition_iff_isSheaf`: In a preregular category with pullbacks, the sheaves for the
   regular topology are precisely the presheaves satisfying an equaliser condition with respect to
   effective epimorphisms.
 
@@ -46,7 +46,7 @@ lemma equalizerCondition_w (P : Cᵒᵖ ⥤ D) {X B : C} {π : X ⟶ B} (c : Pul
   simp only [← Functor.map_comp, ← op_comp, c.condition]
 
 /--
-A contravariant functor on `C` satisifies `SingleEqualizerCondition` with respect to a morphism `π`
+A contravariant functor on `C` satisfies `SingleEqualizerCondition` with respect to a morphism `π`
 if it takes its kernel pair to an equalizer diagram.
 -/
 def SingleEqualizerCondition (P : Cᵒᵖ ⥤ D) ⦃X B : C⦄ (π : X ⟶ B) : Prop :=
@@ -54,7 +54,7 @@ def SingleEqualizerCondition (P : Cᵒᵖ ⥤ D) ⦃X B : C⦄ (π : X ⟶ B) : 
     Nonempty (IsLimit (Fork.ofι (P.map π.op) (equalizerCondition_w P c)))
 
 /--
-A contravariant functor on `C` satisfies `EqualizerCondition` if it takes kernel pairs of effective
+A contravariant functor on `C` satisfies `EqualizerCondition` if it takes kernel pairs of effective
 epimorphisms to equalizer diagrams.
 -/
 def EqualizerCondition (P : Cᵒᵖ ⥤ D) : Prop :=
@@ -87,8 +87,7 @@ def MapToEqualizer (P : Cᵒᵖ ⥤ Type*) {W X B : C} (f : X ⟶ B)
 theorem EqualizerCondition.bijective_mapToEqualizer_pullback (P : Cᵒᵖ ⥤ Type*)
     (hP : EqualizerCondition P) : ∀ (X B : C) (π : X ⟶ B) [EffectiveEpi π] [HasPullback π π],
     Function.Bijective
-      (MapToEqualizer P π (pullback.fst (f := π) (g := π)) (pullback.snd (f := π) (g := π))
-        pullback.condition) := by
+      (MapToEqualizer P π (pullback.fst π π) (pullback.snd π π) pullback.condition) := by
   intro X B π _ _
   specialize hP π _ (pullbackIsPullback π π)
   rw [Types.type_equalizer_iff_unique] at hP
@@ -101,7 +100,7 @@ theorem EqualizerCondition.bijective_mapToEqualizer_pullback (P : Cᵒᵖ ⥤ Ty
 
 theorem EqualizerCondition.mk (P : Cᵒᵖ ⥤ Type*)
     (hP : ∀ (X B : C) (π : X ⟶ B) [EffectiveEpi π] [HasPullback π π], Function.Bijective
-    (MapToEqualizer P π (pullback.fst (f := π) (g := π)) (pullback.snd (f := π) (g := π))
+    (MapToEqualizer P π (pullback.fst π π) (pullback.snd π π)
     pullback.condition)) : EqualizerCondition P := by
   intro X B π _ c hc
   have : HasPullback π π := ⟨c, hc⟩
@@ -110,8 +109,8 @@ theorem EqualizerCondition.mk (P : Cᵒᵖ ⥤ Type*)
   rw [Function.bijective_iff_existsUnique] at hP
   intro b hb
   have h₁ : ((pullbackIsPullback π π).conePointUniqueUpToIso hc).hom ≫ c.fst =
-    pullback.fst (f := π) (g := π) := by simp
-  have hb' : P.map (pullback.fst (f := π) (g := π)).op b = P.map pullback.snd.op b := by
+    pullback.fst π π := by simp
+  have hb' : P.map (pullback.fst π π).op b = P.map (pullback.snd _ _).op b := by
     rw [← h₁, op_comp, FunctorToTypes.map_comp_apply, hb]
     simp [← FunctorToTypes.map_comp_apply, ← op_comp]
   obtain ⟨a, ha₁, ha₂⟩ := hP ⟨b, hb'⟩
@@ -120,12 +119,12 @@ theorem EqualizerCondition.mk (P : Cᵒᵖ ⥤ Type*)
   · simpa [MapToEqualizer] using ha₂
 
 lemma equalizerCondition_w' (P : Cᵒᵖ ⥤ Type*) {X B : C} (π : X ⟶ B)
-    [HasPullback π π] : P.map π.op ≫ P.map (pullback.fst (f := π) (g := π)).op =
-    P.map π.op ≫ P.map (pullback.snd).op := by
+    [HasPullback π π] : P.map π.op ≫ P.map (pullback.fst π π).op =
+    P.map π.op ≫ P.map (pullback.snd π π).op := by
   simp only [← Functor.map_comp, ← op_comp, pullback.condition]
 
-lemma mapToEqualizer_eq_comp (P : Cᵒᵖ ⥤ Type*) {X B : C} (π : X ⟶ B)
-    [HasPullback π π] : MapToEqualizer P π pullback.fst pullback.snd pullback.condition =
+lemma mapToEqualizer_eq_comp (P : Cᵒᵖ ⥤ Type*) {X B : C} (π : X ⟶ B) [HasPullback π π] :
+    MapToEqualizer P π (pullback.fst π π) (pullback.snd π π) pullback.condition =
     equalizer.lift (P.map π.op) (equalizerCondition_w' P π) ≫
     (Types.equalizerIso _ _).hom := by
   rw [← Iso.comp_inv_eq (α := Types.equalizerIso _ _)]
@@ -149,7 +148,7 @@ theorem equalizerCondition_iff_isIso_lift (P : Cᵒᵖ ⥤ Type*) : EqualizerCon
     rw [mapToEqualizer_eq_comp, ← isIso_iff_bijective]
     infer_instance
 
-/-- `P` satisfies the equalizer condition iff its precomposition by an equivalence does. -/
+/-- `P` satisfies the equalizer condition iff its precomposition by an equivalence does. -/
 theorem equalizerCondition_iff_of_equivalence (P : Cᵒᵖ ⥤ D)
     (e : C ≌ E) : EqualizerCondition P ↔ EqualizerCondition (e.op.inverse ⋙ P) :=
   ⟨fun h ↦ equalizerCondition_precomp_of_preservesPullback P e.inverse h, fun h ↦
@@ -178,7 +177,7 @@ theorem parallelPair_pullback_initial {X B : C} (π : X ⟶ B)
     all_goals exact Comma.hom_ext _ _ (by erw [Over.comp_left]; simp [ij]) rfl
 
 /--
-Given a limiting pullback cone, the fork in `SingleEqualizerCondition` is limiting iff the diagram
+Given a limiting pullback cone, the fork in `SingleEqualizerCondition` is limiting iff the diagram
 in `Presheaf.isSheaf_iff_isLimit_coverage` is limiting.
 -/
 noncomputable def isLimit_forkOfι_equiv (P : Cᵒᵖ ⥤ D) {X B : C} (π : X ⟶ B)
@@ -237,7 +236,7 @@ theorem isSheaf_of_projective (F : Cᵒᵖ ⥤ D) [Preregular C] [∀ (X : C), P
     isSheafFor_regular_of_projective _ _
 
 /-- Every Yoneda-presheaf is a sheaf for the regular topology. -/
-lemma isSheaf_yoneda_obj [Preregular C] (W : C)  :
+lemma isSheaf_yoneda_obj [Preregular C] (W : C) :
     Presieve.IsSheaf (regularTopology C) (yoneda.obj W) := by
   rw [regularTopology, isSheaf_coverage]
   intro X S ⟨_, hS⟩
@@ -258,8 +257,8 @@ lemma isSheaf_yoneda_obj [Preregular C] (W : C)  :
   · exact fun y hy ↦ t_uniq y <| Presieve.isAmalgamation_sieveExtend x y hy
 
 /-- The regular topology on any preregular category is subcanonical. -/
-theorem subcanonical [Preregular C] : Sheaf.Subcanonical (regularTopology C) :=
-  Sheaf.Subcanonical.of_yoneda_isSheaf _ isSheaf_yoneda_obj
+instance subcanonical [Preregular C] : (regularTopology C).Subcanonical :=
+  GrothendieckTopology.Subcanonical.of_isSheaf_yoneda_obj _ isSheaf_yoneda_obj
 
 end regularTopology
 

@@ -1,450 +1,544 @@
 /-
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Yury Kudryashov
+Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.Group.TypeTags
-import Mathlib.Algebra.Opposites
-import Mathlib.Logic.Embedding.Basic
-
-#align_import group_theory.group_action.defs from "leanprover-community/mathlib"@"dad7ecf9a1feae63e6e49f07619b7087403fb8d4"
+import Mathlib.Algebra.Group.Action.Basic
+import Mathlib.Algebra.Group.Pointwise.Set.Scalar
+import Mathlib.Algebra.Group.Subgroup.Defs
+import Mathlib.Algebra.Group.Submonoid.MulAction
+import Mathlib.Data.Set.BooleanAlgebra
 
 /-!
-# Definitions of group actions
+# Definition of `orbit`, `fixedPoints` and `stabilizer`
 
-This file defines a hierarchy of group action type-classes on top of the previously defined
-notation classes `SMul` and its additive version `VAdd`:
+This file defines orbits, stabilizers, and other objects defined in terms of actions.
 
-* `MulAction M α` and its additive version `AddAction G P` are typeclasses used for
-  actions of multiplicative and additive monoids and groups; they extend notation classes
-  `SMul` and `VAdd` that are defined in `Algebra.Group.Defs`;
-* `DistribMulAction M A` is a typeclass for an action of a multiplicative monoid on
-  an additive monoid such that `a • (b + c) = a • b + a • c` and `a • 0 = 0`.
+## Main definitions
 
-The hierarchy is extended further by `Module`, defined elsewhere.
+* `MulAction.orbit`
+* `MulAction.fixedPoints`
+* `MulAction.fixedBy`
+* `MulAction.stabilizer`
 
-Also provided are typeclasses for faithful and transitive actions, and typeclasses regarding the
-interaction of different group actions,
-
-* `SMulCommClass M N α` and its additive version `VAddCommClass M N α`;
-* `IsScalarTower M N α` and its additive version `VAddAssocClass M N α`;
-* `IsCentralScalar M α` and its additive version `IsCentralVAdd M N α`.
-
-## Notation
-
-- `a • b` is used as notation for `SMul.smul a b`.
-- `a +ᵥ b` is used as notation for `VAdd.vadd a b`.
-
-## Implementation details
-
-This file should avoid depending on other parts of `GroupTheory`, to avoid import cycles.
-More sophisticated lemmas belong in `GroupTheory.GroupAction`.
-
-## Tags
-
-group action
 -/
 
+assert_not_exists MonoidWithZero DistribMulAction
 
-variable {M N G A B α β γ δ : Type*}
+universe u v
 
-open Function (Injective Surjective)
+open Pointwise
 
-/-- Typeclass for scalar multiplication that preserves `0` on the right. -/
-class SMulZeroClass (M A : Type*) [Zero A] extends SMul M A where
-  /-- Multiplying `0` by a scalar gives `0` -/
-  smul_zero : ∀ a : M, a • (0 : A) = 0
-#align smul_zero_class SMulZeroClass
+open Function
 
-section smul_zero
+namespace MulAction
 
-variable [Zero A] [SMulZeroClass M A]
+variable (M : Type u) [Monoid M] (α : Type v) [MulAction M α] {β : Type*} [MulAction M β]
 
-@[simp]
-theorem smul_zero (a : M) : a • (0 : A) = 0 :=
-  SMulZeroClass.smul_zero _
-#align smul_zero smul_zero
+section Orbit
 
-lemma smul_ite_zero (p : Prop) [Decidable p] (a : M) (b : A) :
-    (a • if p then b else 0) = if p then a • b else 0 := by split_ifs <;> simp
+variable {α}
 
-lemma smul_eq_zero_of_right (a : M) {b : A} (h : b = 0) : a • b = 0 := h.symm ▸ smul_zero a
-#align smul_eq_zero_of_right smul_eq_zero_of_right
-lemma right_ne_zero_of_smul {a : M} {b : A} : a • b ≠ 0 → b ≠ 0 := mt <| smul_eq_zero_of_right a
-#align right_ne_zero_of_smul right_ne_zero_of_smul
+/-- The orbit of an element under an action. -/
+@[to_additive "The orbit of an element under an action."]
+def orbit (a : α) :=
+  Set.range fun m : M => m • a
 
-/-- Pullback a zero-preserving scalar multiplication along an injective zero-preserving map.
-See note [reducible non-instances]. -/
-protected abbrev Function.Injective.smulZeroClass [Zero B] [SMul M B] (f : ZeroHom B A)
-    (hf : Injective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) :
-    SMulZeroClass M B where
-  smul := (· • ·)
-  smul_zero c := hf <| by simp only [smul, map_zero, smul_zero]
-#align function.injective.smul_zero_class Function.Injective.smulZeroClass
+variable {M}
 
-/-- Pushforward a zero-preserving scalar multiplication along a zero-preserving map.
-See note [reducible non-instances]. -/
-protected abbrev ZeroHom.smulZeroClass [Zero B] [SMul M B] (f : ZeroHom A B)
-    (smul : ∀ (c : M) (x), f (c • x) = c • f x) :
-    SMulZeroClass M B where
-  -- Porting note: `simp` no longer works here.
-  smul_zero c := by rw [← map_zero f, ← smul, smul_zero]
-#align zero_hom.smul_zero_class ZeroHom.smulZeroClass
+@[to_additive]
+theorem mem_orbit_iff {a₁ a₂ : α} : a₂ ∈ orbit M a₁ ↔ ∃ x : M, x • a₁ = a₂ :=
+  Iff.rfl
 
-/-- Push forward the multiplication of `R` on `M` along a compatible surjective map `f : R → S`.
+@[to_additive (attr := simp)]
+theorem mem_orbit (a : α) (m : M) : m • a ∈ orbit M a :=
+  ⟨m, rfl⟩
 
-See also `Function.Surjective.distribMulActionLeft`.
--/
-abbrev Function.Surjective.smulZeroClassLeft {R S M : Type*} [Zero M] [SMulZeroClass R M]
-    [SMul S M] (f : R → S) (hf : Function.Surjective f)
-    (hsmul : ∀ (c) (x : M), f c • x = c • x) :
-    SMulZeroClass S M where
-  smul := (· • ·)
-  smul_zero := hf.forall.mpr fun c => by rw [hsmul, smul_zero]
-#align function.surjective.smul_zero_class_left Function.Surjective.smulZeroClassLeft
+@[to_additive]
+theorem mem_orbit_of_mem_orbit {a₁ a₂ : α} (m : M) (h : a₂ ∈ orbit M a₁) :
+    m • a₂ ∈ orbit M a₁ := by
+  obtain ⟨x, rfl⟩ := mem_orbit_iff.mp h
+  simp [smul_smul]
 
-variable (A)
+@[to_additive (attr := simp)]
+theorem mem_orbit_self (a : α) : a ∈ orbit M a :=
+  ⟨1, by simp⟩
 
-/-- Compose a `SMulZeroClass` with a function, with scalar multiplication `f r' • m`.
-See note [reducible non-instances]. -/
-abbrev SMulZeroClass.compFun (f : N → M) :
-    SMulZeroClass N A where
-  smul := SMul.comp.smul f
-  smul_zero x := smul_zero (f x)
-#align smul_zero_class.comp_fun SMulZeroClass.compFun
+@[to_additive]
+theorem orbit_nonempty (a : α) : Set.Nonempty (orbit M a) :=
+  Set.range_nonempty _
 
-/-- Each element of the scalars defines a zero-preserving map. -/
-@[simps]
-def SMulZeroClass.toZeroHom (x : M) :
-    ZeroHom A A where
-  toFun := (x • ·)
-  map_zero' := smul_zero x
-#align smul_zero_class.to_zero_hom SMulZeroClass.toZeroHom
-#align smul_zero_class.to_zero_hom_apply SMulZeroClass.toZeroHom_apply
+@[to_additive]
+theorem mapsTo_smul_orbit (m : M) (a : α) : Set.MapsTo (m • ·) (orbit M a) (orbit M a) :=
+  Set.range_subset_iff.2 fun m' => ⟨m * m', mul_smul _ _ _⟩
 
-end smul_zero
+@[to_additive]
+theorem smul_orbit_subset (m : M) (a : α) : m • orbit M a ⊆ orbit M a :=
+  (mapsTo_smul_orbit m a).image_subset
 
-/-- Typeclass for scalar multiplication that preserves `0` and `+` on the right.
+@[to_additive]
+theorem orbit_smul_subset (m : M) (a : α) : orbit M (m • a) ⊆ orbit M a :=
+  Set.range_subset_iff.2 fun m' => mul_smul m' m a ▸ mem_orbit _ _
 
-This is exactly `DistribMulAction` without the `MulAction` part.
--/
-@[ext]
-class DistribSMul (M A : Type*) [AddZeroClass A] extends SMulZeroClass M A where
-  /-- Scalar multiplication distributes across addition -/
-  smul_add : ∀ (a : M) (x y : A), a • (x + y) = a • x + a • y
-#align distrib_smul DistribSMul
-#align distrib_smul.ext DistribSMul.ext
-#align distrib_smul.ext_iff DistribSMul.ext_iff
+@[to_additive]
+instance {a : α} : MulAction M (orbit M a) where
+  smul m := (mapsTo_smul_orbit m a).restrict _ _ _
+  one_smul m := Subtype.ext (one_smul M (m : α))
+  mul_smul m m' a' := Subtype.ext (mul_smul m m' (a' : α))
 
-section DistribSMul
-
-variable [AddZeroClass A] [DistribSMul M A]
-
-theorem smul_add (a : M) (b₁ b₂ : A) : a • (b₁ + b₂) = a • b₁ + a • b₂ :=
-  DistribSMul.smul_add _ _ _
-#align smul_add smul_add
-
-instance AddMonoidHom.smulZeroClass [AddZeroClass B] : SMulZeroClass M (B →+ A) where
-  smul r f :=
-    { toFun := fun a => r • (f a)
-      map_zero' := by simp only [map_zero, smul_zero]
-      map_add' := fun x y => by simp only [map_add, smul_add] }
-  smul_zero r := ext fun _ => smul_zero _
-
-/-- Pullback a distributive scalar multiplication along an injective additive monoid
-homomorphism.
-See note [reducible non-instances]. -/
-protected abbrev Function.Injective.distribSMul [AddZeroClass B] [SMul M B] (f : B →+ A)
-    (hf : Injective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : DistribSMul M B :=
-  { hf.smulZeroClass f.toZeroHom smul with
-    smul_add := fun c x y => hf <| by simp only [smul, map_add, smul_add] }
-#align function.injective.distrib_smul Function.Injective.distribSMul
-
-/-- Pushforward a distributive scalar multiplication along a surjective additive monoid
-homomorphism.
-See note [reducible non-instances]. -/
-protected abbrev Function.Surjective.distribSMul [AddZeroClass B] [SMul M B] (f : A →+ B)
-    (hf : Surjective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : DistribSMul M B :=
-  { f.toZeroHom.smulZeroClass smul with
-    smul_add := fun c x y => by
-      rcases hf x with ⟨x, rfl⟩
-      rcases hf y with ⟨y, rfl⟩
-      simp only [smul_add, ← smul, ← map_add] }
-#align function.surjective.distrib_smul Function.Surjective.distribSMul
-
-/-- Push forward the multiplication of `R` on `M` along a compatible surjective map `f : R → S`.
-
-See also `Function.Surjective.distribMulActionLeft`.
--/
-abbrev Function.Surjective.distribSMulLeft {R S M : Type*} [AddZeroClass M] [DistribSMul R M]
-    [SMul S M] (f : R → S) (hf : Function.Surjective f)
-    (hsmul : ∀ (c) (x : M), f c • x = c • x) : DistribSMul S M :=
-  { hf.smulZeroClassLeft f hsmul with
-    smul_add := hf.forall.mpr fun c x y => by simp only [hsmul, smul_add] }
-#align function.surjective.distrib_smul_left Function.Surjective.distribSMulLeft
-
-variable (A)
-
-/-- Compose a `DistribSMul` with a function, with scalar multiplication `f r' • m`.
-See note [reducible non-instances]. -/
-abbrev DistribSMul.compFun (f : N → M) : DistribSMul N A :=
-  { SMulZeroClass.compFun A f with
-    smul_add := fun x => smul_add (f x) }
-#align distrib_smul.comp_fun DistribSMul.compFun
-
-/-- Each element of the scalars defines an additive monoid homomorphism. -/
-@[simps]
-def DistribSMul.toAddMonoidHom (x : M) : A →+ A :=
-  { SMulZeroClass.toZeroHom A x with toFun := (· • ·) x, map_add' := smul_add x }
-#align distrib_smul.to_add_monoid_hom DistribSMul.toAddMonoidHom
-#align distrib_smul.to_add_monoid_hom_apply DistribSMul.toAddMonoidHom_apply
-
-end DistribSMul
-
-/-- Typeclass for multiplicative actions on additive structures. This generalizes group modules. -/
-@[ext]
-class DistribMulAction (M A : Type*) [Monoid M] [AddMonoid A] extends MulAction M A where
-  /-- Multiplying `0` by a scalar gives `0` -/
-  smul_zero : ∀ a : M, a • (0 : A) = 0
-  /-- Scalar multiplication distributes across addition -/
-  smul_add : ∀ (a : M) (x y : A), a • (x + y) = a • x + a • y
-#align distrib_mul_action DistribMulAction
-#align distrib_mul_action.ext DistribMulAction.ext
-#align distrib_mul_action.ext_iff DistribMulAction.ext_iff
-
-section
-
-variable [Monoid M] [AddMonoid A] [DistribMulAction M A]
-
--- See note [lower instance priority]
-instance (priority := 100) DistribMulAction.toDistribSMul : DistribSMul M A :=
-  { ‹DistribMulAction M A› with }
-#align distrib_mul_action.to_distrib_smul DistribMulAction.toDistribSMul
-
--- Porting note: this probably is no longer relevant.
-/-! Since Lean 3 does not have definitional eta for structures, we have to make sure
-that the definition of `DistribMulAction.toDistribSMul` was done correctly,
-and the two paths from `DistribMulAction` to `SMul` are indeed definitionally equal. -/
-example :
-    (DistribMulAction.toMulAction.toSMul : SMul M A) =
-      DistribMulAction.toDistribSMul.toSMul :=
+@[to_additive (attr := simp)]
+theorem orbit.coe_smul {a : α} {m : M} {a' : orbit M a} : ↑(m • a') = m • (a' : α) :=
   rfl
 
-/-- Pullback a distributive multiplicative action along an injective additive monoid
-homomorphism.
-See note [reducible non-instances]. -/
-protected abbrev Function.Injective.distribMulAction [AddMonoid B] [SMul M B] (f : B →+ A)
-    (hf : Injective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : DistribMulAction M B :=
-  { hf.distribSMul f smul, hf.mulAction f smul with }
-#align function.injective.distrib_mul_action Function.Injective.distribMulAction
+@[to_additive]
+lemma orbit_submonoid_subset (S : Submonoid M) (a : α) : orbit S a ⊆ orbit M a := by
+  rintro b ⟨g, rfl⟩
+  exact mem_orbit _ _
 
-/-- Pushforward a distributive multiplicative action along a surjective additive monoid
-homomorphism.
-See note [reducible non-instances]. -/
-protected abbrev Function.Surjective.distribMulAction [AddMonoid B] [SMul M B] (f : A →+ B)
-    (hf : Surjective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : DistribMulAction M B :=
-  { hf.distribSMul f smul, hf.mulAction f smul with }
-#align function.surjective.distrib_mul_action Function.Surjective.distribMulAction
+@[to_additive]
+lemma mem_orbit_of_mem_orbit_submonoid {S : Submonoid M} {a b : α} (h : a ∈ orbit S b) :
+    a ∈ orbit M b :=
+  orbit_submonoid_subset S _ h
 
-/-- Push forward the action of `R` on `M` along a compatible surjective map `f : R →* S`.
+end Orbit
 
-See also `Function.Surjective.mulActionLeft` and `Function.Surjective.moduleLeft`.
--/
-abbrev Function.Surjective.distribMulActionLeft {R S M : Type*} [Monoid R] [AddMonoid M]
-    [DistribMulAction R M] [Monoid S] [SMul S M] (f : R →* S) (hf : Function.Surjective f)
-    (hsmul : ∀ (c) (x : M), f c • x = c • x) : DistribMulAction S M :=
-  { hf.distribSMulLeft f hsmul, hf.mulActionLeft f hsmul with }
-#align function.surjective.distrib_mul_action_left Function.Surjective.distribMulActionLeft
+section FixedPoints
 
-variable (A)
+/-- The set of elements fixed under the whole action. -/
+@[to_additive "The set of elements fixed under the whole action."]
+def fixedPoints : Set α :=
+  { a : α | ∀ m : M, m • a = a }
 
-/-- Compose a `DistribMulAction` with a `MonoidHom`, with action `f r' • m`.
-See note [reducible non-instances]. -/
-abbrev DistribMulAction.compHom [Monoid N] (f : N →* M) : DistribMulAction N A :=
-  { DistribSMul.compFun A f, MulAction.compHom A f with }
-#align distrib_mul_action.comp_hom DistribMulAction.compHom
+variable {M} in
+/-- `fixedBy m` is the set of elements fixed by `m`. -/
+@[to_additive "`fixedBy m` is the set of elements fixed by `m`."]
+def fixedBy (m : M) : Set α :=
+  { x | m • x = x }
 
-/-- Each element of the monoid defines an additive monoid homomorphism. -/
-@[simps!]
-def DistribMulAction.toAddMonoidHom (x : M) : A →+ A :=
-  DistribSMul.toAddMonoidHom A x
-#align distrib_mul_action.to_add_monoid_hom DistribMulAction.toAddMonoidHom
-#align distrib_mul_action.to_add_monoid_hom_apply DistribMulAction.toAddMonoidHom_apply
+@[to_additive]
+theorem fixed_eq_iInter_fixedBy : fixedPoints M α = ⋂ m : M, fixedBy α m :=
+  Set.ext fun _ =>
+    ⟨fun hx => Set.mem_iInter.2 fun m => hx m, fun hx m => (Set.mem_iInter.1 hx m :)⟩
 
-variable (M)
+variable {M α}
 
-/-- Each element of the monoid defines an additive monoid homomorphism. -/
-@[simps]
-def DistribMulAction.toAddMonoidEnd :
-    M →* AddMonoid.End A where
-  toFun := DistribMulAction.toAddMonoidHom A
-  map_one' := AddMonoidHom.ext <| one_smul M
-  map_mul' x y := AddMonoidHom.ext <| mul_smul x y
-#align distrib_mul_action.to_add_monoid_End DistribMulAction.toAddMonoidEnd
-#align distrib_mul_action.to_add_monoid_End_apply DistribMulAction.toAddMonoidEnd_apply
+@[to_additive (attr := simp)]
+theorem mem_fixedPoints {a : α} : a ∈ fixedPoints M α ↔ ∀ m : M, m • a = a :=
+  Iff.rfl
 
-instance AddMonoid.nat_smulCommClass :
-    SMulCommClass ℕ M
-      A where smul_comm n x y := ((DistribMulAction.toAddMonoidHom A x).map_nsmul y n).symm
-#align add_monoid.nat_smul_comm_class AddMonoid.nat_smulCommClass
+@[to_additive (attr := simp)]
+theorem mem_fixedBy {m : M} {a : α} : a ∈ fixedBy α m ↔ m • a = a :=
+  Iff.rfl
 
--- `SMulCommClass.symm` is not registered as an instance, as it would cause a loop
-instance AddMonoid.nat_smulCommClass' : SMulCommClass M ℕ A :=
-  SMulCommClass.symm _ _ _
-#align add_monoid.nat_smul_comm_class' AddMonoid.nat_smulCommClass'
+@[to_additive]
+theorem mem_fixedPoints' {a : α} : a ∈ fixedPoints M α ↔ ∀ a', a' ∈ orbit M a → a' = a :=
+  ⟨fun h _ h₁ =>
+    let ⟨m, hm⟩ := mem_orbit_iff.1 h₁
+    hm ▸ h m,
+    fun h _ => h _ (mem_orbit _ _)⟩
 
-end
+end FixedPoints
 
-section
+section Stabilizers
 
-variable [Monoid M] [AddGroup A] [DistribMulAction M A]
+variable {α}
 
-instance AddGroup.int_smulCommClass : SMulCommClass ℤ M A where
-  smul_comm n x y := ((DistribMulAction.toAddMonoidHom A x).map_zsmul y n).symm
-#align add_group.int_smul_comm_class AddGroup.int_smulCommClass
+/-- The stabilizer of a point `a` as a submonoid of `M`. -/
+@[to_additive "The stabilizer of a point `a` as an additive submonoid of `M`."]
+def stabilizerSubmonoid (a : α) : Submonoid M where
+  carrier := { m | m • a = a }
+  one_mem' := one_smul _ a
+  mul_mem' {m m'} (ha : m • a = a) (hb : m' • a = a) :=
+    show (m * m') • a = a by rw [← smul_smul, hb, ha]
 
--- `SMulCommClass.symm` is not registered as an instance, as it would cause a loop
-instance AddGroup.int_smulCommClass' : SMulCommClass M ℤ A :=
-  SMulCommClass.symm _ _ _
-#align add_group.int_smul_comm_class' AddGroup.int_smulCommClass'
+variable {M}
 
-@[simp]
-theorem smul_neg (r : M) (x : A) : r • -x = -(r • x) :=
-  eq_neg_of_add_eq_zero_left <| by rw [← smul_add, neg_add_self, smul_zero]
-#align smul_neg smul_neg
+@[to_additive]
+instance [DecidableEq α] (a : α) : DecidablePred (· ∈ stabilizerSubmonoid M a) :=
+  fun _ => inferInstanceAs <| Decidable (_ = _)
 
-theorem smul_sub (r : M) (x y : A) : r • (x - y) = r • x - r • y := by
-  rw [sub_eq_add_neg, sub_eq_add_neg, smul_add, smul_neg]
-#align smul_sub smul_sub
+@[to_additive (attr := simp)]
+theorem mem_stabilizerSubmonoid_iff {a : α} {m : M} : m ∈ stabilizerSubmonoid M a ↔ m • a = a :=
+  Iff.rfl
 
-end
+end Stabilizers
 
-/-- Typeclass for multiplicative actions on multiplicative structures. This generalizes
-conjugation actions. -/
-@[ext]
-class MulDistribMulAction (M : Type*) (A : Type*) [Monoid M] [Monoid A] extends
-  MulAction M A where
-  /-- Distributivity of `•` across `*` -/
-  smul_mul : ∀ (r : M) (x y : A), r • (x * y) = r • x * r • y
-  /-- Multiplying `1` by a scalar gives `1` -/
-  smul_one : ∀ r : M, r • (1 : A) = 1
-#align mul_distrib_mul_action MulDistribMulAction
-#align mul_distrib_mul_action.ext MulDistribMulAction.ext
-#align mul_distrib_mul_action.ext_iff MulDistribMulAction.ext_iff
+end MulAction
 
-export MulDistribMulAction (smul_one)
+section FixedPoints
 
-section
+variable (M : Type u) (α : Type v) [Monoid M]
 
-variable [Monoid M] [Monoid A] [MulDistribMulAction M A]
+section Monoid
 
-theorem smul_mul' (a : M) (b₁ b₂ : A) : a • (b₁ * b₂) = a • b₁ * a • b₂ :=
-  MulDistribMulAction.smul_mul _ _ _
-#align smul_mul' smul_mul'
+variable [Monoid α] [MulDistribMulAction M α]
 
-/-- Pullback a multiplicative distributive multiplicative action along an injective monoid
-homomorphism.
-See note [reducible non-instances]. -/
-protected abbrev Function.Injective.mulDistribMulAction [Monoid B] [SMul M B] (f : B →* A)
-    (hf : Injective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : MulDistribMulAction M B :=
-  { hf.mulAction f smul with
-    smul_mul := fun c x y => hf <| by simp only [smul, f.map_mul, smul_mul'],
-    smul_one := fun c => hf <| by simp only [smul, f.map_one, smul_one] }
-#align function.injective.mul_distrib_mul_action Function.Injective.mulDistribMulAction
-
-/-- Pushforward a multiplicative distributive multiplicative action along a surjective monoid
-homomorphism.
-See note [reducible non-instances]. -/
-protected abbrev Function.Surjective.mulDistribMulAction [Monoid B] [SMul M B] (f : A →* B)
-    (hf : Surjective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : MulDistribMulAction M B :=
-  { hf.mulAction f smul with
-    smul_mul := fun c x y => by
-      rcases hf x with ⟨x, rfl⟩
-      rcases hf y with ⟨y, rfl⟩
-      simp only [smul_mul', ← smul, ← f.map_mul],
-    smul_one := fun c => by rw [← f.map_one, ← smul, smul_one] }
-#align function.surjective.mul_distrib_mul_action Function.Surjective.mulDistribMulAction
-
-variable (A)
-
-/-- Compose a `MulDistribMulAction` with a `MonoidHom`, with action `f r' • m`.
-See note [reducible non-instances]. -/
-abbrev MulDistribMulAction.compHom [Monoid N] (f : N →* M) : MulDistribMulAction N A :=
-  { MulAction.compHom A f with
-    smul_one := fun x => smul_one (f x),
-    smul_mul := fun x => smul_mul' (f x) }
-#align mul_distrib_mul_action.comp_hom MulDistribMulAction.compHom
-
-/-- Scalar multiplication by `r` as a `MonoidHom`. -/
-def MulDistribMulAction.toMonoidHom (r : M) :
-    A →* A where
-  toFun := (r • ·)
-  map_one' := smul_one r
-  map_mul' := smul_mul' r
-#align mul_distrib_mul_action.to_monoid_hom MulDistribMulAction.toMonoidHom
-
-variable {A}
+/-- The submonoid of elements fixed under the whole action. -/
+def FixedPoints.submonoid : Submonoid α where
+  carrier := MulAction.fixedPoints M α
+  one_mem' := smul_one
+  mul_mem' ha hb _ := by rw [smul_mul', ha, hb]
 
 @[simp]
-theorem MulDistribMulAction.toMonoidHom_apply (r : M) (x : A) :
-    MulDistribMulAction.toMonoidHom A r x = r • x :=
+lemma FixedPoints.mem_submonoid (a : α) : a ∈ submonoid M α ↔ ∀ m : M, m • a = a :=
+  Iff.rfl
+
+end Monoid
+
+section Group
+namespace FixedPoints
+variable [Group α] [MulDistribMulAction M α]
+
+/-- The subgroup of elements fixed under the whole action. -/
+def subgroup : Subgroup α where
+  __ := submonoid M α
+  inv_mem' ha _ := by rw [smul_inv', ha]
+
+/-- The notation for `FixedPoints.subgroup`, chosen to resemble `αᴹ`. -/
+scoped notation α "^*" M:51 => FixedPoints.subgroup M α
+
+@[simp]
+lemma mem_subgroup (a : α) : a ∈ α^*M ↔ ∀ m : M, m • a = a :=
+  Iff.rfl
+
+@[simp]
+lemma subgroup_toSubmonoid : (α^*M).toSubmonoid = submonoid M α :=
   rfl
-#align mul_distrib_mul_action.to_monoid_hom_apply MulDistribMulAction.toMonoidHom_apply
 
-@[simp] lemma smul_pow' (r : M) (x : A) (n : ℕ) : r • x ^ n = (r • x) ^ n :=
-  (MulDistribMulAction.toMonoidHom _ _).map_pow _ _
-#align smul_pow' smul_pow'
+end FixedPoints
+end Group
+end FixedPoints
 
-variable (M A)
+namespace MulAction
+variable {G α β : Type*} [Group G] [MulAction G α] [MulAction G β]
 
-/-- Each element of the monoid defines a monoid homomorphism. -/
-@[simps]
-def MulDistribMulAction.toMonoidEnd :
-    M →* Monoid.End A where
-  toFun := MulDistribMulAction.toMonoidHom A
-  map_one' := MonoidHom.ext <| one_smul M
-  map_mul' x y := MonoidHom.ext <| mul_smul x y
-#align mul_distrib_mul_action.to_monoid_End MulDistribMulAction.toMonoidEnd
-#align mul_distrib_mul_action.to_monoid_End_apply MulDistribMulAction.toMonoidEnd_apply
+section Orbit
 
-end
+@[to_additive (attr := simp)]
+theorem orbit_smul (g : G) (a : α) : orbit G (g • a) = orbit G a :=
+  (orbit_smul_subset g a).antisymm <|
+    calc
+      orbit G a = orbit G (g⁻¹ • g • a) := by rw [inv_smul_smul]
+      _ ⊆ orbit G (g • a) := orbit_smul_subset _ _
 
-section
+@[to_additive]
+theorem orbit_eq_iff {a b : α} : orbit G a = orbit G b ↔ a ∈ orbit G b :=
+  ⟨fun h => h ▸ mem_orbit_self _, fun ⟨_, hc⟩ => hc ▸ orbit_smul _ _⟩
 
-variable [Monoid M] [Group A] [MulDistribMulAction M A]
+@[to_additive]
+theorem mem_orbit_smul (g : G) (a : α) : a ∈ orbit G (g • a) := by
+  simp only [orbit_smul, mem_orbit_self]
 
-@[simp]
-theorem smul_inv' (r : M) (x : A) : r • x⁻¹ = (r • x)⁻¹ :=
-  (MulDistribMulAction.toMonoidHom A r).map_inv x
-#align smul_inv' smul_inv'
+@[to_additive]
+theorem smul_mem_orbit_smul (g h : G) (a : α) : g • a ∈ orbit G (h • a) := by
+  simp only [orbit_smul, mem_orbit]
 
-theorem smul_div' (r : M) (x y : A) : r • (x / y) = r • x / r • y :=
-  map_div (MulDistribMulAction.toMonoidHom A r) x y
-#align smul_div' smul_div'
+@[to_additive]
+instance instMulAction (H : Subgroup G) : MulAction H α :=
+  inferInstanceAs (MulAction H.toSubmonoid α)
 
-end
+@[to_additive]
+lemma subgroup_smul_def {H : Subgroup G} (a : H) (b : α) : a • b = (a : G) • b := rfl
 
-/-- The tautological action by `AddMonoid.End α` on `α`.
+@[to_additive]
+lemma orbit_subgroup_subset (H : Subgroup G) (a : α) : orbit H a ⊆ orbit G a :=
+  orbit_submonoid_subset H.toSubmonoid a
 
-This generalizes `Function.End.applyMulAction`. -/
-instance AddMonoid.End.applyDistribMulAction [AddMonoid α] :
-    DistribMulAction (AddMonoid.End α) α where
-  smul := (· <| ·)
-  smul_zero := AddMonoidHom.map_zero
-  smul_add := AddMonoidHom.map_add
-  one_smul _ := rfl
-  mul_smul _ _ _ := rfl
-#align add_monoid.End.apply_distrib_mul_action AddMonoid.End.applyDistribMulAction
+@[to_additive]
+lemma mem_orbit_of_mem_orbit_subgroup {H : Subgroup G} {a b : α} (h : a ∈ orbit H b) :
+    a ∈ orbit G b :=
+  orbit_subgroup_subset H _ h
 
-@[simp]
-theorem AddMonoid.End.smul_def [AddMonoid α] (f : AddMonoid.End α) (a : α) : f • a = f a :=
+@[to_additive]
+lemma mem_orbit_symm {a₁ a₂ : α} : a₁ ∈ orbit G a₂ ↔ a₂ ∈ orbit G a₁ := by
+  simp_rw [← orbit_eq_iff, eq_comm]
+
+@[to_additive]
+lemma mem_subgroup_orbit_iff {H : Subgroup G} {x : α} {a b : orbit G x} :
+    a ∈ MulAction.orbit H b ↔ (a : α) ∈ MulAction.orbit H (b : α) := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rcases h with ⟨g, rfl⟩
+    exact MulAction.mem_orbit _ g
+  · rcases h with ⟨g, h⟩
+    dsimp at h
+    rw [subgroup_smul_def, ← orbit.coe_smul, ← Subtype.ext_iff] at h
+    subst h
+    exact MulAction.mem_orbit _ g
+
+variable (G α)
+
+/-- The relation 'in the same orbit'. -/
+@[to_additive "The relation 'in the same orbit'."]
+def orbitRel : Setoid α where
+  r a b := a ∈ orbit G b
+  iseqv :=
+    ⟨mem_orbit_self, fun {a b} => by simp [orbit_eq_iff.symm, eq_comm], fun {a b} => by
+      simp +contextual [orbit_eq_iff.symm]⟩
+
+variable {G α}
+
+@[to_additive]
+theorem orbitRel_apply {a b : α} : orbitRel G α a b ↔ a ∈ orbit G b :=
+  Iff.rfl
+
+/-- When you take a set `U` in `α`, push it down to the quotient, and pull back, you get the union
+of the orbit of `U` under `G`. -/
+@[to_additive
+      "When you take a set `U` in `α`, push it down to the quotient, and pull back, you get the
+      union of the orbit of `U` under `G`."]
+theorem quotient_preimage_image_eq_union_mul (U : Set α) :
+    letI := orbitRel G α
+    Quotient.mk' ⁻¹' (Quotient.mk' '' U) = ⋃ g : G, (g • ·) '' U := by
+  letI := orbitRel G α
+  set f : α → Quotient (MulAction.orbitRel G α) := Quotient.mk'
+  ext a
+  constructor
+  · rintro ⟨b, hb, hab⟩
+    obtain ⟨g, rfl⟩ := Quotient.exact hab
+    rw [Set.mem_iUnion]
+    exact ⟨g⁻¹, g • a, hb, inv_smul_smul g a⟩
+  · intro hx
+    rw [Set.mem_iUnion] at hx
+    obtain ⟨g, u, hu₁, hu₂⟩ := hx
+    rw [Set.mem_preimage, Set.mem_image]
+    refine ⟨g⁻¹ • a, ?_, by simp [f, orbitRel, Quotient.eq']⟩
+    rw [← hu₂]
+    convert hu₁
+    simp only [inv_smul_smul]
+
+@[to_additive]
+theorem disjoint_image_image_iff {U V : Set α} :
+    letI := orbitRel G α
+    Disjoint (Quotient.mk' '' U) (Quotient.mk' '' V) ↔ ∀ x ∈ U, ∀ g : G, g • x ∉ V := by
+  letI := orbitRel G α
+  set f : α → Quotient (MulAction.orbitRel G α) := Quotient.mk'
+  refine
+    ⟨fun h a a_in_U g g_in_V =>
+      h.le_bot ⟨⟨a, a_in_U, Quotient.sound ⟨g⁻¹, ?_⟩⟩, ⟨g • a, g_in_V, rfl⟩⟩, ?_⟩
+  · simp
+  · intro h
+    rw [Set.disjoint_left]
+    rintro _ ⟨b, hb₁, hb₂⟩ ⟨c, hc₁, hc₂⟩
+    obtain ⟨g, rfl⟩ := Quotient.exact (hc₂.trans hb₂.symm)
+    exact h b hb₁ g hc₁
+
+@[to_additive]
+theorem image_inter_image_iff (U V : Set α) :
+    letI := orbitRel G α
+    Quotient.mk' '' U ∩ Quotient.mk' '' V = ∅ ↔ ∀ x ∈ U, ∀ g : G, g • x ∉ V :=
+  Set.disjoint_iff_inter_eq_empty.symm.trans disjoint_image_image_iff
+
+variable (G α)
+
+/-- The quotient by `MulAction.orbitRel`, given a name to enable dot notation. -/
+@[to_additive
+    "The quotient by `AddAction.orbitRel`, given a name to enable dot notation."]
+abbrev orbitRel.Quotient : Type _ :=
+  _root_.Quotient <| orbitRel G α
+
+variable {G α}
+
+/-- The orbit corresponding to an element of the quotient by `MulAction.orbitRel` -/
+@[to_additive "The orbit corresponding to an element of the quotient by `AddAction.orbitRel`"]
+nonrec def orbitRel.Quotient.orbit (x : orbitRel.Quotient G α) : Set α :=
+  Quotient.liftOn' x (orbit G) fun _ _ => MulAction.orbit_eq_iff.2
+
+@[to_additive (attr := simp)]
+theorem orbitRel.Quotient.orbit_mk (a : α) :
+    orbitRel.Quotient.orbit (Quotient.mk'' a : orbitRel.Quotient G α) = MulAction.orbit G a :=
   rfl
-#align add_monoid.End.smul_def AddMonoid.End.smul_def
 
-/-- `AddMonoid.End.applyDistribMulAction` is faithful. -/
-instance AddMonoid.End.applyFaithfulSMul [AddMonoid α] :
-    FaithfulSMul (AddMonoid.End α) α :=
-  ⟨fun {_ _ h} => AddMonoidHom.ext h⟩
-#align add_monoid.End.apply_has_faithful_smul AddMonoid.End.applyFaithfulSMul
+@[to_additive]
+theorem orbitRel.Quotient.mem_orbit {a : α} {x : orbitRel.Quotient G α} :
+    a ∈ x.orbit ↔ Quotient.mk'' a = x := by
+  induction x using Quotient.inductionOn'
+  rw [Quotient.eq'']
+  rfl
+
+/-- Note that `hφ = Quotient.out_eq'` is a useful choice here. -/
+@[to_additive "Note that `hφ = Quotient.out_eq'` is a useful choice here."]
+theorem orbitRel.Quotient.orbit_eq_orbit_out (x : orbitRel.Quotient G α)
+    {φ : orbitRel.Quotient G α → α} (hφ : letI := orbitRel G α; RightInverse φ Quotient.mk') :
+    orbitRel.Quotient.orbit x = MulAction.orbit G (φ x) := by
+  conv_lhs => rw [← hφ x]
+  rfl
+
+@[to_additive]
+lemma orbitRel.Quotient.orbit_injective :
+    Injective (orbitRel.Quotient.orbit : orbitRel.Quotient G α → Set α) := by
+  intro x y h
+  simp_rw [orbitRel.Quotient.orbit_eq_orbit_out _ Quotient.out_eq', orbit_eq_iff,
+    ← orbitRel_apply] at h
+  simpa [← Quotient.eq''] using h
+
+@[to_additive (attr := simp)]
+lemma orbitRel.Quotient.orbit_inj {x y : orbitRel.Quotient G α} : x.orbit = y.orbit ↔ x = y :=
+  orbitRel.Quotient.orbit_injective.eq_iff
+
+@[to_additive]
+lemma orbitRel.quotient_eq_of_quotient_subgroup_eq {H : Subgroup G} {a b : α}
+    (h : (⟦a⟧ : orbitRel.Quotient H α) = ⟦b⟧) : (⟦a⟧ : orbitRel.Quotient G α) = ⟦b⟧ := by
+  rw [@Quotient.eq] at h ⊢
+  exact mem_orbit_of_mem_orbit_subgroup h
+
+@[to_additive]
+lemma orbitRel.quotient_eq_of_quotient_subgroup_eq' {H : Subgroup G} {a b : α}
+    (h : (Quotient.mk'' a : orbitRel.Quotient H α) = Quotient.mk'' b) :
+    (Quotient.mk'' a : orbitRel.Quotient G α) = Quotient.mk'' b :=
+  orbitRel.quotient_eq_of_quotient_subgroup_eq h
+
+@[to_additive]
+nonrec lemma orbitRel.Quotient.orbit_nonempty (x : orbitRel.Quotient G α) :
+    Set.Nonempty x.orbit := by
+  rw [orbitRel.Quotient.orbit_eq_orbit_out x Quotient.out_eq']
+  exact orbit_nonempty _
+
+@[to_additive]
+nonrec lemma orbitRel.Quotient.mapsTo_smul_orbit (g : G) (x : orbitRel.Quotient G α) :
+    Set.MapsTo (g • ·) x.orbit x.orbit := by
+  rw [orbitRel.Quotient.orbit_eq_orbit_out x Quotient.out_eq']
+  exact mapsTo_smul_orbit g x.out
+
+@[to_additive]
+instance (x : orbitRel.Quotient G α) : MulAction G x.orbit where
+  smul g := (orbitRel.Quotient.mapsTo_smul_orbit g x).restrict _ _ _
+  one_smul a := Subtype.ext (one_smul G (a : α))
+  mul_smul g g' a' := Subtype.ext (mul_smul g g' (a' : α))
+
+@[to_additive (attr := simp)]
+lemma orbitRel.Quotient.orbit.coe_smul {g : G} {x : orbitRel.Quotient G α} {a : x.orbit} :
+    ↑(g • a) = g • (a : α) :=
+  rfl
+
+@[to_additive (attr := norm_cast, simp)]
+lemma orbitRel.Quotient.mem_subgroup_orbit_iff {H : Subgroup G} {x : orbitRel.Quotient G α}
+    {a b : x.orbit} : (a : α) ∈ MulAction.orbit H (b : α) ↔ a ∈ MulAction.orbit H b := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rcases h with ⟨g, h⟩
+    dsimp at h
+    rw [subgroup_smul_def, ← orbit.coe_smul, ← Subtype.ext_iff] at h
+    subst h
+    exact MulAction.mem_orbit _ g
+  · rcases h with ⟨g, rfl⟩
+    exact MulAction.mem_orbit _ g
+
+@[to_additive]
+lemma orbitRel.Quotient.subgroup_quotient_eq_iff {H : Subgroup G} {x : orbitRel.Quotient G α}
+    {a b : x.orbit} : (⟦a⟧ : orbitRel.Quotient H x.orbit) = ⟦b⟧ ↔
+      (⟦↑a⟧ : orbitRel.Quotient H α) = ⟦↑b⟧ := by
+  simp_rw [← @Quotient.mk''_eq_mk, Quotient.eq'']
+  exact orbitRel.Quotient.mem_subgroup_orbit_iff.symm
+
+@[to_additive]
+lemma orbitRel.Quotient.mem_subgroup_orbit_iff' {H : Subgroup G} {x : orbitRel.Quotient G α}
+    {a b : x.orbit} {c : α} (h : (⟦a⟧ : orbitRel.Quotient H x.orbit) = ⟦b⟧) :
+    (a : α) ∈ MulAction.orbit H c ↔ (b : α) ∈ MulAction.orbit H c := by
+  simp_rw [mem_orbit_symm (a₂ := c)]
+  convert Iff.rfl using 2
+  rw [orbit_eq_iff]
+  suffices hb : ↑b ∈ orbitRel.Quotient.orbit (⟦a⟧ : orbitRel.Quotient H x.orbit) by
+    rw [orbitRel.Quotient.orbit_eq_orbit_out (⟦a⟧ : orbitRel.Quotient H x.orbit) Quotient.out_eq']
+       at hb
+    rw [orbitRel.Quotient.mem_subgroup_orbit_iff]
+    convert hb using 1
+    rw [orbit_eq_iff, ← orbitRel_apply, ← Quotient.eq'', Quotient.out_eq', @Quotient.mk''_eq_mk]
+  rw [orbitRel.Quotient.mem_orbit, h, @Quotient.mk''_eq_mk]
+
+variable (G) (α)
+
+local notation "Ω" => orbitRel.Quotient G α
+
+/-- Decomposition of a type `X` as a disjoint union of its orbits under a group action.
+
+This version is expressed in terms of `MulAction.orbitRel.Quotient.orbit` instead of
+`MulAction.orbit`, to avoid mentioning `Quotient.out`. -/
+@[to_additive
+      "Decomposition of a type `X` as a disjoint union of its orbits under an additive group action.
+
+      This version is expressed in terms of `AddAction.orbitRel.Quotient.orbit` instead of
+      `AddAction.orbit`, to avoid mentioning `Quotient.out`. "]
+def selfEquivSigmaOrbits' : α ≃ Σ ω : Ω, ω.orbit :=
+  letI := orbitRel G α
+  calc
+    α ≃ Σ ω : Ω, { a // Quotient.mk' a = ω } := (Equiv.sigmaFiberEquiv Quotient.mk').symm
+    _ ≃ Σ ω : Ω, ω.orbit :=
+      Equiv.sigmaCongrRight fun _ =>
+        Equiv.subtypeEquivRight fun _ => orbitRel.Quotient.mem_orbit.symm
+
+/-- Decomposition of a type `X` as a disjoint union of its orbits under a group action. -/
+@[to_additive
+      "Decomposition of a type `X` as a disjoint union of its orbits under an additive group
+      action."]
+def selfEquivSigmaOrbits : α ≃ Σ ω : Ω, orbit G ω.out :=
+  (selfEquivSigmaOrbits' G α).trans <|
+    Equiv.sigmaCongrRight fun _ =>
+      Equiv.setCongr <| orbitRel.Quotient.orbit_eq_orbit_out _ Quotient.out_eq'
+
+/-- Decomposition of a type `X` as a disjoint union of its orbits under a group action.
+Phrased as a set union. See `MulAction.selfEquivSigmaOrbits` for the type isomorphism. -/
+@[to_additive "Decomposition of a type `X` as a disjoint union of its orbits under an additive group
+action. Phrased as a set union. See `AddAction.selfEquivSigmaOrbits` for the type isomorphism."]
+lemma univ_eq_iUnion_orbit :
+    Set.univ (α := α) = ⋃ x : Ω, x.orbit := by
+  ext x
+  simp only [Set.mem_univ, Set.mem_iUnion, true_iff]
+  exact ⟨Quotient.mk'' x, by simp⟩
+
+end Orbit
+
+section Stabilizer
+
+variable (G) in
+/-- The stabilizer of an element under an action, i.e. what sends the element to itself.
+A subgroup. -/
+@[to_additive
+      "The stabilizer of an element under an action, i.e. what sends the element to itself.
+      An additive subgroup."]
+def stabilizer (a : α) : Subgroup G :=
+  { stabilizerSubmonoid G a with
+    inv_mem' := fun {m} (ha : m • a = a) => show m⁻¹ • a = a by rw [inv_smul_eq_iff, ha] }
+
+@[to_additive]
+instance [DecidableEq α] (a : α) : DecidablePred (· ∈ stabilizer G a) :=
+  fun _ => inferInstanceAs <| Decidable (_ = _)
+
+@[to_additive (attr := simp)]
+theorem mem_stabilizer_iff {a : α} {g : G} : g ∈ stabilizer G a ↔ g • a = a :=
+  Iff.rfl
+
+@[to_additive]
+lemma le_stabilizer_smul_left [SMul α β] [IsScalarTower G α β] (a : α) (b : β) :
+    stabilizer G a ≤ stabilizer G (a • b) := by
+  simp_rw [SetLike.le_def, mem_stabilizer_iff, ← smul_assoc]; rintro a h; rw [h]
+
+-- This lemma does not need `MulAction G α`, only `SMul G α`.
+-- We use `G'` instead of `G` to locally reduce the typeclass assumptions.
+@[to_additive]
+lemma le_stabilizer_smul_right {G'} [Group G'] [SMul α β] [MulAction G' β]
+    [SMulCommClass G' α β] (a : α) (b : β) :
+    stabilizer G' b ≤ stabilizer G' (a • b) := by
+  simp_rw [SetLike.le_def, mem_stabilizer_iff, smul_comm]; rintro a h; rw [h]
+
+@[to_additive (attr := simp)]
+lemma stabilizer_smul_eq_left [SMul α β] [IsScalarTower G α β] (a : α) (b : β)
+    (h : Injective (· • b : α → β)) : stabilizer G (a • b) = stabilizer G a := by
+  refine (le_stabilizer_smul_left _ _).antisymm' fun a ha ↦ ?_
+  simpa only [mem_stabilizer_iff, ← smul_assoc, h.eq_iff] using ha
+
+@[to_additive (attr := simp)]
+lemma stabilizer_smul_eq_right {α} [Group α] [MulAction α β] [SMulCommClass G α β] (a : α) (b : β) :
+    stabilizer G (a • b) = stabilizer G b :=
+  (le_stabilizer_smul_right _ _).antisymm' <| (le_stabilizer_smul_right a⁻¹ _).trans_eq <| by
+    rw [inv_smul_smul]
+
+@[to_additive (attr := simp)]
+lemma stabilizer_mul_eq_left [Group α] [IsScalarTower G α α] (a b : α) :
+    stabilizer G (a * b) = stabilizer G a := stabilizer_smul_eq_left a _ <| mul_left_injective _
+
+@[to_additive (attr := simp)]
+lemma stabilizer_mul_eq_right [Group α] [SMulCommClass G α α] (a b : α) :
+    stabilizer G (a * b) = stabilizer G b := stabilizer_smul_eq_right a _
+
+end Stabilizer
+
+end MulAction

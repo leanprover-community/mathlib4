@@ -7,8 +7,9 @@ import Mathlib.Analysis.Convex.Cone.Extension
 import Mathlib.Analysis.Convex.Gauge
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 import Mathlib.Topology.Algebra.Module.LocallyConvex
-
-#align_import analysis.normed_space.hahn_banach.separation from "leanprover-community/mathlib"@"915591b2bb3ea303648db07284a161a7f2a9e3d4"
+import Mathlib.Topology.Algebra.MulAction
+import Mathlib.Analysis.RCLike.Basic
+import Mathlib.Analysis.NormedSpace.Extend
 
 /-!
 # Separation Hahn-Banach theorem
@@ -44,7 +45,7 @@ variable {𝕜 E : Type*}
 /-- Given a set `s` which is a convex neighbourhood of `0` and a point `x₀` outside of it, there is
 a continuous linear functional `f` separating `x₀` and `s`, in the sense that it sends `x₀` to 1 and
 all of `s` to values strictly below `1`. -/
-theorem separate_convex_open_set [TopologicalSpace E] [AddCommGroup E] [TopologicalAddGroup E]
+theorem separate_convex_open_set [TopologicalSpace E] [AddCommGroup E] [IsTopologicalAddGroup E]
     [Module ℝ E] [ContinuousSMul ℝ E] {s : Set E} (hs₀ : (0 : E) ∈ s) (hs₁ : Convex ℝ s)
     (hs₂ : IsOpen s) {x₀ : E} (hx₀ : x₀ ∉ s) : ∃ f : E →L[ℝ] ℝ, f x₀ = 1 ∧ ∀ x ∈ s, f x < 1 := by
   let f : E →ₗ.[ℝ] ℝ := LinearPMap.mkSpanSingleton x₀ 1 (ne_of_mem_of_not_mem hs₀ hx₀).symm
@@ -67,17 +68,19 @@ theorem separate_convex_open_set [TopologicalSpace E] [AddCommGroup E] [Topologi
   rintro ⟨x, hx⟩
   obtain ⟨y, rfl⟩ := Submodule.mem_span_singleton.1 hx
   rw [LinearPMap.mkSpanSingleton'_apply]
-  simp only [mul_one, Algebra.id.smul_eq_mul, Submodule.coe_mk]
-  obtain h | h := le_or_lt y 0
+  simp only [mul_one, Algebra.id.smul_eq_mul]
+  obtain h | h := le_or_gt y 0
   · exact h.trans (gauge_nonneg _)
   · rw [gauge_smul_of_nonneg h.le, smul_eq_mul, le_mul_iff_one_le_right h]
     exact
-      one_le_gauge_of_not_mem (hs₁.starConvex hs₀)
+      one_le_gauge_of_notMem (hs₁.starConvex hs₀)
         (absorbent_nhds_zero <| hs₂.mem_nhds hs₀).absorbs hx₀
-#align separate_convex_open_set separate_convex_open_set
 
-variable [TopologicalSpace E] [AddCommGroup E] [TopologicalAddGroup E] [Module ℝ E]
-  [ContinuousSMul ℝ E] {s t : Set E} {x y : E}
+variable [TopologicalSpace E] [AddCommGroup E] [Module ℝ E]
+  {s t : Set E} {x y : E}
+section
+
+variable [IsTopologicalAddGroup E] [ContinuousSMul ℝ E]
 
 /-- A version of the **Hahn-Banach theorem**: given disjoint convex sets `s`, `t` where `s` is open,
 there is a continuous linear functional which separates them. -/
@@ -95,7 +98,7 @@ theorem geometric_hahn_banach_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) (ht
   have : x₀ ∉ C := by
     intro hx₀
     rw [← add_zero x₀] at hx₀
-    exact disj.zero_not_mem_sub_set (vadd_mem_vadd_set_iff.1 hx₀)
+    exact disj.zero_notMem_sub_set (vadd_mem_vadd_set_iff.1 hx₀)
   obtain ⟨f, hf₁, hf₂⟩ := separate_convex_open_set ‹0 ∈ C› ‹_› (hs₂.sub_right.vadd _) ‹x₀ ∉ C›
   have : f b₀ = f a₀ + 1 := by simp [x₀, ← hf₁]
   have forall_le : ∀ a ∈ s, ∀ b ∈ t, f a ≤ f b := by
@@ -110,20 +113,17 @@ theorem geometric_hahn_banach_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) (ht
     · rintro rfl
       simp at hf₁
   · exact csInf_le ⟨f a₀, forall_mem_image.2 <| forall_le _ ha₀⟩ (mem_image_of_mem _ hb)
-#align geometric_hahn_banach_open geometric_hahn_banach_open
 
 theorem geometric_hahn_banach_open_point (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) (disj : x ∉ s) :
     ∃ f : E →L[ℝ] ℝ, ∀ a ∈ s, f a < f x :=
   let ⟨f, _s, hs, hx⟩ :=
     geometric_hahn_banach_open hs₁ hs₂ (convex_singleton x) (disjoint_singleton_right.2 disj)
   ⟨f, fun a ha => lt_of_lt_of_le (hs a ha) (hx x (mem_singleton _))⟩
-#align geometric_hahn_banach_open_point geometric_hahn_banach_open_point
 
 theorem geometric_hahn_banach_point_open (ht₁ : Convex ℝ t) (ht₂ : IsOpen t) (disj : x ∉ t) :
     ∃ f : E →L[ℝ] ℝ, ∀ b ∈ t, f x < f b :=
   let ⟨f, hf⟩ := geometric_hahn_banach_open_point ht₁ ht₂ disj
   ⟨-f, by simpa⟩
-#align geometric_hahn_banach_point_open geometric_hahn_banach_point_open
 
 theorem geometric_hahn_banach_open_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) (ht₁ : Convex ℝ t)
     (ht₃ : IsOpen t) (disj : Disjoint s t) :
@@ -137,14 +137,13 @@ theorem geometric_hahn_banach_open_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s
     refine f.isOpenMap_of_ne_zero ?_
     rintro rfl
     simp_rw [ContinuousLinearMap.zero_apply] at hf₁ hf₂
-    exact (hf₁ _ ha₀).not_le (hf₂ _ hb₀)
+    exact (hf₁ _ ha₀).not_ge (hf₂ _ hb₀)
   refine ⟨f, s, hf₁, image_subset_iff.1 (?_ : f '' t ⊆ Ioi s)⟩
   rw [← interior_Ici]
   refine interior_maximal (image_subset_iff.2 hf₂) (f.isOpenMap_of_ne_zero ?_ _ ht₃)
   rintro rfl
   simp_rw [ContinuousLinearMap.zero_apply] at hf₁ hf₂
-  exact (hf₁ _ ha₀).not_le (hf₂ _ hb₀)
-#align geometric_hahn_banach_open_open geometric_hahn_banach_open_open
+  exact (hf₁ _ ha₀).not_ge (hf₂ _ hb₀)
 
 variable [LocallyConvexSpace ℝ E]
 
@@ -166,7 +165,6 @@ theorem geometric_hahn_banach_compact_closed (hs₁ : Convex ℝ s) (hs₂ : IsC
       fun a ha => by have := hx₂ ha; dsimp at this; linarith,
       by linarith,
       fun b hb => hf₂ b (tV hb)⟩
-#align geometric_hahn_banach_compact_closed geometric_hahn_banach_compact_closed
 
 /-- A version of the **Hahn-Banach theorem**: given disjoint convex sets `s`, `t` where `s` is
 closed, and `t` is compact, there is a continuous linear functional which strongly separates them.
@@ -176,7 +174,6 @@ theorem geometric_hahn_banach_closed_compact (hs₁ : Convex ℝ s) (hs₂ : IsC
     ∃ (f : E →L[ℝ] ℝ) (u v : ℝ), (∀ a ∈ s, f a < u) ∧ u < v ∧ ∀ b ∈ t, v < f b :=
   let ⟨f, s, t, hs, st, ht⟩ := geometric_hahn_banach_compact_closed ht₁ ht₂ hs₁ hs₂ disj.symm
   ⟨-f, -t, -s, by simpa using ht, by simpa using st, by simpa using hs⟩
-#align geometric_hahn_banach_closed_compact geometric_hahn_banach_closed_compact
 
 theorem geometric_hahn_banach_point_closed (ht₁ : Convex ℝ t) (ht₂ : IsClosed t) (disj : x ∉ t) :
     ∃ (f : E →L[ℝ] ℝ) (u : ℝ), f x < u ∧ ∀ b ∈ t, u < f b :=
@@ -184,7 +181,6 @@ theorem geometric_hahn_banach_point_closed (ht₁ : Convex ℝ t) (ht₂ : IsClo
     geometric_hahn_banach_compact_closed (convex_singleton x) isCompact_singleton ht₁ ht₂
       (disjoint_singleton_left.2 disj)
   ⟨f, v, hst.trans' <| ha x <| mem_singleton _, hb⟩
-#align geometric_hahn_banach_point_closed geometric_hahn_banach_point_closed
 
 theorem geometric_hahn_banach_closed_point (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) (disj : x ∉ s) :
     ∃ (f : E →L[ℝ] ℝ) (u : ℝ), (∀ a ∈ s, f a < u) ∧ u < f x :=
@@ -192,7 +188,6 @@ theorem geometric_hahn_banach_closed_point (hs₁ : Convex ℝ s) (hs₂ : IsClo
     geometric_hahn_banach_closed_compact hs₁ hs₂ (convex_singleton x) isCompact_singleton
       (disjoint_singleton_right.2 disj)
   ⟨f, s, ha, hst.trans <| hb x <| mem_singleton _⟩
-#align geometric_hahn_banach_closed_point geometric_hahn_banach_closed_point
 
 /-- See also `NormedSpace.eq_iff_forall_dual_eq`. -/
 theorem geometric_hahn_banach_point_point [T1Space E] (hxy : x ≠ y) :
@@ -201,15 +196,129 @@ theorem geometric_hahn_banach_point_point [T1Space E] (hxy : x ≠ y) :
     geometric_hahn_banach_compact_closed (convex_singleton x) isCompact_singleton
       (convex_singleton y) isClosed_singleton (disjoint_singleton.2 hxy)
   exact ⟨f, by linarith [hs x rfl, ht y rfl]⟩
-#align geometric_hahn_banach_point_point geometric_hahn_banach_point_point
 
-/-- A closed convex set is the intersection of the halfspaces containing it. -/
-theorem iInter_halfspaces_eq (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
+/-- A closed convex set is the intersection of the half-spaces containing it. -/
+theorem iInter_halfSpaces_eq (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
     ⋂ l : E →L[ℝ] ℝ, { x | ∃ y ∈ s, l x ≤ l y } = s := by
   rw [Set.iInter_setOf]
   refine Set.Subset.antisymm (fun x hx => ?_) fun x hx l => ⟨x, hx, le_rfl⟩
   by_contra h
   obtain ⟨l, s, hlA, hl⟩ := geometric_hahn_banach_closed_point hs₁ hs₂ h
   obtain ⟨y, hy, hxy⟩ := hx l
-  exact ((hxy.trans_lt (hlA y hy)).trans hl).not_le le_rfl
-#align Inter_halfspaces_eq iInter_halfspaces_eq
+  exact ((hxy.trans_lt (hlA y hy)).trans hl).not_ge le_rfl
+@[deprecated (since := "2024-11-12")] alias iInter_halfspaces_eq := iInter_halfSpaces_eq
+
+end
+
+namespace RCLike
+
+variable [RCLike 𝕜] [Module 𝕜 E] [IsScalarTower ℝ 𝕜 E]
+
+/-- Real linear extension of continuous extension of `LinearMap.extendTo𝕜'` -/
+noncomputable def extendTo𝕜'ₗ [ContinuousConstSMul 𝕜 E] : (E →L[ℝ] ℝ) →ₗ[ℝ] (E →L[𝕜] 𝕜) :=
+  letI to𝕜 (fr : (E →L[ℝ] ℝ)) : (E →L[𝕜] 𝕜) :=
+    { toLinearMap := LinearMap.extendTo𝕜' fr
+      cont := show Continuous fun x ↦ (fr x : 𝕜) - (I : 𝕜) * (fr ((I : 𝕜) • x) : 𝕜) by fun_prop }
+  have h fr x : to𝕜 fr x = ((fr x : 𝕜) - (I : 𝕜) * (fr ((I : 𝕜) • x) : 𝕜)) := rfl
+  { toFun := to𝕜
+    map_add' := by intros; ext; simp [h]; ring
+    map_smul' := by intros; ext; simp [h, real_smul_eq_coe_mul]; ring }
+
+@[simp]
+lemma re_extendTo𝕜'ₗ [ContinuousConstSMul 𝕜 E] (g : E →L[ℝ] ℝ) (x : E) : re ((extendTo𝕜'ₗ g) x : 𝕜)
+    = g x := by
+  have h g (x : E) : extendTo𝕜'ₗ g x = ((g x : 𝕜) - (I : 𝕜) * (g ((I : 𝕜) • x) : 𝕜)) := rfl
+  simp only [h , map_sub, ofReal_re, mul_re, I_re, zero_mul, ofReal_im, mul_zero,
+    sub_self, sub_zero]
+
+variable [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
+
+theorem separate_convex_open_set {s : Set E}
+    (hs₀ : (0 : E) ∈ s) (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) {x₀ : E} (hx₀ : x₀ ∉ s) :
+    ∃ f : E →L[𝕜] 𝕜, re (f x₀) = 1 ∧ ∀ x ∈ s, re (f x) < 1 := by
+  have := IsScalarTower.continuousSMul (M := ℝ) (α := E) 𝕜
+  obtain ⟨g, hg⟩ := _root_.separate_convex_open_set hs₀ hs₁ hs₂ hx₀
+  use extendTo𝕜'ₗ g
+  simp only [re_extendTo𝕜'ₗ]
+  exact hg
+
+theorem geometric_hahn_banach_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) (ht : Convex ℝ t)
+    (disj : Disjoint s t) : ∃ (f : E →L[𝕜] 𝕜) (u : ℝ), (∀ a ∈ s, re (f a) < u) ∧
+    ∀ b ∈ t, u ≤ re (f b) := by
+  have := IsScalarTower.continuousSMul (M := ℝ) (α := E) 𝕜
+  obtain ⟨f, u, h⟩ := _root_.geometric_hahn_banach_open hs₁ hs₂ ht disj
+  use extendTo𝕜'ₗ f
+  simp only [re_extendTo𝕜'ₗ]
+  exact Exists.intro u h
+
+theorem geometric_hahn_banach_open_point (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) (disj : x ∉ s) :
+    ∃ f : E →L[𝕜] 𝕜, ∀ a ∈ s, re (f a) < re (f x) := by
+  have := IsScalarTower.continuousSMul (M := ℝ) (α := E) 𝕜
+  obtain ⟨f, h⟩ := _root_.geometric_hahn_banach_open_point hs₁ hs₂ disj
+  use extendTo𝕜'ₗ f
+  simp only [re_extendTo𝕜'ₗ]
+  exact fun a a_1 ↦ h a a_1
+
+theorem geometric_hahn_banach_point_open (ht₁ : Convex ℝ t) (ht₂ : IsOpen t) (disj : x ∉ t) :
+    ∃ f : E →L[𝕜] 𝕜, ∀ b ∈ t, re (f x) < re (f b) :=
+  let ⟨f, hf⟩ := geometric_hahn_banach_open_point ht₁ ht₂ disj
+  ⟨-f, by simpa⟩
+
+theorem geometric_hahn_banach_open_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s)
+    (ht₁ : Convex ℝ t) (ht₃ : IsOpen t) (disj : Disjoint s t) :
+    ∃ (f : E →L[𝕜] 𝕜) (u : ℝ), (∀ a ∈ s, re (f a) < u) ∧ ∀ b ∈ t, u < re (f b) := by
+  have := IsScalarTower.continuousSMul (M := ℝ) (α := E) 𝕜
+  obtain ⟨f, u, h⟩ := _root_.geometric_hahn_banach_open_open hs₁ hs₂ ht₁ ht₃ disj
+  use extendTo𝕜'ₗ f
+  simp only [re_extendTo𝕜'ₗ]
+  exact Exists.intro u h
+
+variable [LocallyConvexSpace ℝ E]
+
+theorem geometric_hahn_banach_compact_closed (hs₁ : Convex ℝ s) (hs₂ : IsCompact s)
+    (ht₁ : Convex ℝ t) (ht₂ : IsClosed t) (disj : Disjoint s t) :
+    ∃ (f : E →L[𝕜] 𝕜) (u v : ℝ), (∀ a ∈ s, re (f a) < u) ∧ u < v ∧ ∀ b ∈ t, v < re (f b) := by
+  have := IsScalarTower.continuousSMul (M := ℝ) (α := E) 𝕜
+  obtain ⟨g, u, v, h1⟩ := _root_.geometric_hahn_banach_compact_closed hs₁ hs₂ ht₁ ht₂ disj
+  use extendTo𝕜'ₗ g
+  simp only [re_extendTo𝕜'ₗ, exists_and_left]
+  exact ⟨u, h1.1, v, h1.2⟩
+
+theorem geometric_hahn_banach_closed_compact (hs₁ : Convex ℝ s) (hs₂ : IsClosed s)
+    (ht₁ : Convex ℝ t) (ht₂ : IsCompact t) (disj : Disjoint s t) :
+    ∃ (f : E →L[𝕜] 𝕜) (u v : ℝ), (∀ a ∈ s, re (f a) < u) ∧ u < v ∧ ∀ b ∈ t, v < re (f b) :=
+  let ⟨f, s, t, hs, st, ht⟩ := geometric_hahn_banach_compact_closed ht₁ ht₂ hs₁ hs₂ disj.symm
+  ⟨-f, -t, -s, by simpa using ht, by simpa using st, by simpa using hs⟩
+
+theorem geometric_hahn_banach_point_closed (ht₁ : Convex ℝ t) (ht₂ : IsClosed t)
+    (disj : x ∉ t) : ∃ (f : E →L[𝕜] 𝕜) (u : ℝ), re (f x) < u ∧ ∀ b ∈ t, u < re (f b) :=
+  let ⟨f, _u, v, ha, hst, hb⟩ :=
+    geometric_hahn_banach_compact_closed (convex_singleton x) isCompact_singleton ht₁ ht₂
+      (disjoint_singleton_left.2 disj)
+  ⟨f, v, hst.trans' <| ha x <| mem_singleton _, hb⟩
+
+theorem geometric_hahn_banach_closed_point (hs₁ : Convex ℝ s) (hs₂ : IsClosed s)
+    (disj : x ∉ s) : ∃ (f : E →L[𝕜] 𝕜) (u : ℝ), (∀ a ∈ s, re (f a) < u) ∧ u < re (f x) :=
+  let ⟨f, s, _t, ha, hst, hb⟩ :=
+    geometric_hahn_banach_closed_compact hs₁ hs₂ (convex_singleton x) isCompact_singleton
+      (disjoint_singleton_right.2 disj)
+  ⟨f, s, ha, hst.trans <| hb x <| mem_singleton _⟩
+
+theorem geometric_hahn_banach_point_point [T1Space E] (hxy : x ≠ y) :
+    ∃ f : E →L[𝕜] 𝕜, re (f x) < re (f y) := by
+  obtain ⟨f, s, t, hs, st, ht⟩ :=
+    geometric_hahn_banach_compact_closed (𝕜 := 𝕜) (convex_singleton x) isCompact_singleton
+      (convex_singleton y) isClosed_singleton (disjoint_singleton.2 hxy)
+  exact ⟨f, by linarith [hs x rfl, ht y rfl]⟩
+
+theorem iInter_halfSpaces_eq (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
+    ⋂ l : E →L[𝕜] 𝕜, { x | ∃ y ∈ s, re (l x) ≤ re (l y) } = s := by
+  rw [Set.iInter_setOf]
+  refine Set.Subset.antisymm (fun x hx => ?_) fun x hx l => ⟨x, hx, le_rfl⟩
+  by_contra h
+  obtain ⟨l, s, hlA, hl⟩ := geometric_hahn_banach_closed_point (𝕜 := 𝕜) hs₁ hs₂ h
+  obtain ⟨y, hy, hxy⟩ := hx l
+  exact ((hxy.trans_lt (hlA y hy)).trans hl).false
+@[deprecated (since := "2024-11-12")] alias iInter_halfspaces_eq := iInter_halfSpaces_eq
+
+end RCLike

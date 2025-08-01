@@ -18,7 +18,7 @@ from a given list. These are list versions of `Nat.multichoose`.
 * `List.sym2`: `xs.sym2` is a list of all unordered pairs of elements from `xs`,
   with multiplicity. The list's values are in `Sym2 α`.
 
-## Todo
+## TODO
 
 * Prove `protected theorem Perm.sym (n : ℕ) {xs ys : List α} (h : xs ~ ys) : xs.sym n ~ ys.sym n`
   and lift the result to `Multiset` and `Finset`.
@@ -27,7 +27,7 @@ from a given list. These are list versions of `Nat.multichoose`.
 
 namespace List
 
-variable {α : Type*}
+variable {α β : Type*}
 
 section Sym2
 
@@ -36,6 +36,12 @@ If `xs` has no duplicates then neither does `xs.sym2`. -/
 protected def sym2 : List α → List (Sym2 α)
   | [] => []
   | x :: xs => (x :: xs).map (fun y => s(x, y)) ++ xs.sym2
+
+theorem sym2_map (f : α → β) (xs : List α) :
+    (xs.map f).sym2 = xs.sym2.map (Sym2.map f) := by
+  induction xs with
+  | nil => simp [List.sym2]
+  | cons x xs ih => simp [List.sym2, ih, Function.comp]
 
 theorem mem_sym2_cons_iff {x : α} {xs : List α} {z : Sym2 α} :
     z ∈ (x :: xs).sym2 ↔ z = s(x, x) ∨ (∃ y, y ∈ xs ∧ z = s(x, y)) ∨ z ∈ xs.sym2 := by
@@ -49,7 +55,7 @@ theorem sym2_eq_nil_iff {xs : List α} : xs.sym2 = [] ↔ xs = [] := by
 theorem left_mem_of_mk_mem_sym2 {xs : List α} {a b : α}
     (h : s(a, b) ∈ xs.sym2) : a ∈ xs := by
   induction xs with
-  | nil => exact (not_mem_nil _ h).elim
+  | nil => exact (not_mem_nil h).elim
   | cons x xs ih =>
     rw [mem_cons]
     rw [mem_sym2_cons_iff] at h
@@ -91,6 +97,10 @@ theorem mem_sym2_iff {xs : List α} {z : Sym2 α} :
   refine z.ind (fun a b => ?_)
   simp [mk_mem_sym2_iff]
 
+lemma setOf_mem_sym2 {xs : List α} :
+    {z : Sym2 α | z ∈ xs.sym2} = {x : α | x ∈ xs}.sym2 :=
+  Set.ext fun z ↦ z.ind fun a b => by simp [mk_mem_sym2_iff]
+
 protected theorem Nodup.sym2 {xs : List α} (h : xs.Nodup) : xs.sym2.Nodup := by
   induction xs with
   | nil => simp only [List.sym2, nodup_nil]
@@ -112,6 +122,67 @@ protected theorem Nodup.sym2 {xs : List α} (h : xs.Nodup) : xs.sym2.Nodup := by
       simp only [Sym2.eq_iff, true_and]
       rintro (rfl | ⟨rfl, rfl⟩) <;> rfl
 
+theorem map_mk_sublist_sym2 (x : α) (xs : List α) (h : x ∈ xs) :
+    map (fun y ↦ s(x, y)) xs <+ xs.sym2 := by
+  induction xs with
+  | nil => simp
+  | cons x' xs ih =>
+    simp only [map_cons, List.sym2, cons_append]
+    cases h with
+    | head =>
+      exact (sublist_append_left _ _).cons₂ _
+    | tail _ h =>
+      refine .cons _ ?_
+      rw [← singleton_append]
+      refine .append ?_ (ih h)
+      rw [singleton_sublist, mem_map]
+      exact ⟨_, h, Sym2.eq_swap⟩
+
+theorem map_mk_disjoint_sym2 (x : α) (xs : List α) (h : x ∉ xs) :
+    (map (fun y ↦ s(x, y)) xs).Disjoint xs.sym2 := by
+  induction xs with
+  | nil => simp
+  | cons x' xs ih =>
+    simp only [mem_cons, not_or] at h
+    rw [List.sym2, map_cons, map_cons, disjoint_cons_left, disjoint_append_right,
+      disjoint_cons_right]
+    refine ⟨?_, ⟨?_, ?_⟩, ?_⟩
+    · refine not_mem_cons_of_ne_of_not_mem ?_ (not_mem_append ?_ ?_)
+      · simp [h.1]
+      · simp_rw [mem_map, not_exists, not_and]
+        intro x'' hx
+        simp_rw [Sym2.mk_eq_mk_iff, Prod.swap_prod_mk, Prod.mk.injEq, true_and]
+        rintro (⟨rfl, rfl⟩ | rfl)
+        · exact h.2 hx
+        · exact h.2 hx
+      · simp [mk_mem_sym2_iff, h.2]
+    · simp [h.1]
+    · intro z hx hy
+      rw [List.mem_map] at hx hy
+      obtain ⟨a, hx, rfl⟩ := hx
+      obtain ⟨b, hy, hx⟩ := hy
+      simp [Ne.symm h.1] at hx
+      obtain ⟨rfl, rfl⟩ := hx
+      exact h.2 hy
+    · exact ih h.2
+
+theorem dedup_sym2 [DecidableEq α] (xs : List α) : xs.sym2.dedup = xs.dedup.sym2 := by
+  induction xs with
+  | nil => simp only [List.sym2, dedup_nil]
+  | cons x xs ih =>
+    simp only [List.sym2, map_cons, cons_append]
+    obtain hm | hm := Decidable.em (x ∈ xs)
+    · rw [dedup_cons_of_mem hm, ← ih, dedup_cons_of_mem,
+        List.Subset.dedup_append_right (map_mk_sublist_sym2 _ _ hm).subset]
+      refine mem_append_left _ ?_
+      rw [mem_map]
+      exact ⟨_, hm, Sym2.eq_swap⟩
+    · rw [dedup_cons_of_notMem hm, List.sym2, map_cons, ← ih, dedup_cons_of_notMem, cons_append,
+        List.Disjoint.dedup_append, dedup_map_of_injective]
+      · exact (Sym2.mkEmbedding _).injective
+      · exact map_mk_disjoint_sym2 x xs hm
+      · simp [hm, mem_sym2_iff]
+
 protected theorem Perm.sym2 {xs ys : List α} (h : xs ~ ys) :
     xs.sym2 ~ ys.sym2 := by
   induction h with
@@ -126,7 +197,7 @@ protected theorem Perm.sym2 {xs ys : List α} (h : xs ~ ys) :
     refine Perm.trans (Perm.swap ..) (Perm.trans (Perm.cons _ ?_) (Perm.swap ..))
     simp only [← Multiset.coe_eq_coe, ← Multiset.cons_coe,
       ← Multiset.coe_add, ← Multiset.singleton_add]
-    simp only [add_assoc, add_left_comm]
+    simp only [add_left_comm]
   | trans _ _ ih1 ih2 => exact ih1.trans ih2
 
 protected theorem Sublist.sym2 {xs ys : List α} (h : xs <+ ys) : xs.sym2 <+ ys.sym2 := by
@@ -170,7 +241,7 @@ theorem sym_one_eq : xs.sym 1 = xs.map (· ::ₛ .nil) := by
 
 theorem sym2_eq_sym_two : xs.sym2.map (Sym2.equivSym α) = xs.sym 2 := by
   induction xs with
-  | nil => simp only [List.sym, map_eq_nil, sym2_eq_nil_iff]
+  | nil => simp only [List.sym, map_eq_nil_iff, sym2_eq_nil_iff]
   | cons x xs ih =>
     rw [List.sym, ← ih, sym_one_eq, map_map, List.sym2, map_append, map_map]
     rfl
@@ -202,7 +273,7 @@ protected theorem Sublist.sym (n : ℕ) {xs ys : List α} (h : xs <+ ys) : xs.sy
     · exact h.sym (n + 1)
 
 theorem sym_sublist_sym_cons {a : α} : xs.sym n <+ (a :: xs).sym n :=
-  (sublist_cons a xs).sym n
+  (sublist_cons_self a xs).sym n
 
 theorem mem_of_mem_of_mem_sym {n : ℕ} {xs : List α} {a : α} {z : Sym α n}
     (ha : a ∈ z) (hz : z ∈ xs.sym n) : a ∈ xs :=

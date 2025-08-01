@@ -5,6 +5,8 @@ Authors: Mitchell Lee
 -/
 import Mathlib.Data.ZMod.Basic
 import Mathlib.GroupTheory.Coxeter.Basic
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Zify
 
 /-!
 # The length function, reduced words, and descents
@@ -45,9 +47,11 @@ prove analogous results.
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 namespace CoxeterSystem
 
-open List Matrix Function Classical
+open List Matrix Function
 
 variable {B : Type*}
 variable {W : Type*} [Group W]
@@ -62,6 +66,7 @@ private theorem exists_word_with_prod (w : W) : ∃ n ω, ω.length = n ∧ π �
   rcases cs.wordProd_surjective w with ⟨ω, rfl⟩
   use ω.length, ω
 
+open scoped Classical in
 /-- The length of `w`; i.e., the minimum number of simple reflections that
 must be multiplied to form `w`. -/
 noncomputable def length (w : W) : ℕ := Nat.find (cs.exists_word_with_prod w)
@@ -69,9 +74,11 @@ noncomputable def length (w : W) : ℕ := Nat.find (cs.exists_word_with_prod w)
 local prefix:100 "ℓ" => cs.length
 
 theorem exists_reduced_word (w : W) : ∃ ω, ω.length = ℓ w ∧ w = π ω := by
+  classical
   have := Nat.find_spec (cs.exists_word_with_prod w)
   tauto
 
+open scoped Classical in
 theorem length_wordProd_le (ω : List B) : ℓ (π ω) ≤ ω.length :=
   Nat.find_min' (cs.exists_word_with_prod (π ω)) ⟨ω, by tauto⟩
 
@@ -122,7 +129,7 @@ def lengthParity : W →* Multiplicative (ZMod 2) := cs.lift ⟨fun _ ↦ Multip
   simp_rw [CoxeterMatrix.IsLiftable, ← ofAdd_add, (by decide : (1 + 1 : ZMod 2) = 0)]
   simp⟩
 
-theorem lengthParity_simple (i : B):
+theorem lengthParity_simple (i : B) :
     cs.lengthParity (s i) = Multiplicative.ofAdd 1 := cs.lift_apply_simple _ _
 
 theorem lengthParity_comp_simple :
@@ -153,7 +160,7 @@ theorem length_eq_one_iff {w : W} : ℓ w = 1 ↔ ∃ i : B, w = s i := by
   constructor
   · intro h
     rcases cs.exists_reduced_word w with ⟨ω, hω, rfl⟩
-    rcases List.length_eq_one.mp (hω.trans h) with ⟨i, rfl⟩
+    rcases List.length_eq_one_iff.mp (hω.trans h) with ⟨i, rfl⟩
     exact ⟨i, cs.wordProd_singleton i⟩
   · rintro ⟨i, rfl⟩
     exact cs.length_simple i
@@ -162,11 +169,7 @@ theorem length_mul_simple_ne (w : W) (i : B) : ℓ (w * s i) ≠ ℓ w := by
   intro eq
   have length_mod_two := cs.length_mul_mod_two w (s i)
   rw [eq, length_simple] at length_mod_two
-  rcases Nat.mod_two_eq_zero_or_one (ℓ w) with even | odd
-  · rw [even, Nat.succ_mod_two_eq_one_iff.mpr even] at length_mod_two
-    contradiction
-  · rw [odd, Nat.succ_mod_two_eq_zero_iff.mpr odd] at length_mod_two
-    contradiction
+  omega
 
 theorem length_simple_mul_ne (w : W) (i : B) : ℓ (s i * w) ≠ ℓ w := by
   convert cs.length_mul_simple_ne w⁻¹ i using 1
@@ -182,13 +185,13 @@ theorem length_mul_simple (w : W) (i : B) :
     have length_ge := cs.length_mul_ge_length_sub_length w (s i)
     simp only [length_simple, tsub_le_iff_right] at length_ge
     -- length_ge : ℓ w ≤ ℓ (w * s i) + 1
-    linarith
+    omega
   · -- gt : ℓ w < ℓ (w * s i)
     left
     have length_le := cs.length_mul_le w (s i)
     simp only [length_simple] at length_le
     -- length_le : ℓ (w * s i) ≤ ℓ w + 1
-    linarith
+    omega
 
 theorem length_simple_mul (w : W) (i : B) :
     ℓ (s i * w) = ℓ w + 1 ∨ ℓ (s i * w) + 1 = ℓ w := by
@@ -202,8 +205,12 @@ represent the same element of `W`. -/
 def IsReduced (ω : List B) : Prop := ℓ (π ω) = ω.length
 
 @[simp]
-theorem isReduced_reverse (ω : List B) : cs.IsReduced (ω.reverse) ↔ cs.IsReduced ω := by
+theorem isReduced_reverse_iff (ω : List B) : cs.IsReduced (ω.reverse) ↔ cs.IsReduced ω := by
   simp [IsReduced]
+
+theorem IsReduced.reverse {cs : CoxeterSystem M W} {ω : List B}
+    (hω : cs.IsReduced ω) : cs.IsReduced (ω.reverse) :=
+  (cs.isReduced_reverse_iff ω).mpr hω
 
 theorem exists_reduced_word' (w : W) : ∃ ω : List B, cs.IsReduced ω ∧ w = π ω := by
   rcases cs.exists_reduced_word w with ⟨ω, hω, rfl⟩
@@ -216,33 +223,32 @@ private theorem isReduced_take_and_drop {ω : List B} (hω : cs.IsReduced ω) (j
   have h₂ : ℓ (π (ω.drop j)) ≤ (ω.drop j).length    := cs.length_wordProd_le (ω.drop j)
   have h₃ := calc
     (ω.take j).length + (ω.drop j).length
-    _ = ω.length                             := by rw [← List.length_append, ω.take_append_drop j];
+    _ = ω.length                             := by rw [← List.length_append, ω.take_append_drop j]
     _ = ℓ (π ω)                              := hω.symm
-    _ = ℓ (π (ω.take j) * π (ω.drop j))      := by rw [← cs.wordProd_append, ω.take_append_drop j];
+    _ = ℓ (π (ω.take j) * π (ω.drop j))      := by rw [← cs.wordProd_append, ω.take_append_drop j]
     _ ≤ ℓ (π (ω.take j)) + ℓ (π (ω.drop j))  := cs.length_mul_le _ _
   unfold IsReduced
-  exact ⟨by linarith, by linarith⟩
+  omega
 
-theorem isReduced_take {ω : List B} (hω : cs.IsReduced ω) (j : ℕ) : cs.IsReduced (ω.take j) :=
+theorem IsReduced.take {cs : CoxeterSystem M W} {ω : List B} (hω : cs.IsReduced ω) (j : ℕ) :
+    cs.IsReduced (ω.take j) :=
   (isReduced_take_and_drop _ hω _).1
 
-theorem isReduced_drop {ω : List B} (hω : cs.IsReduced ω) (j : ℕ) : cs.IsReduced (ω.drop j) :=
+theorem IsReduced.drop {cs : CoxeterSystem M W} {ω : List B} (hω : cs.IsReduced ω) (j : ℕ) :
+    cs.IsReduced (ω.drop j) :=
   (isReduced_take_and_drop _ hω _).2
 
 theorem not_isReduced_alternatingWord (i i' : B) {m : ℕ} (hM : M i i' ≠ 0) (hm : m > M i i') :
     ¬cs.IsReduced (alternatingWord i i' m) := by
-  induction' hm with m _ ih
-  · -- Base case; m = M i i' + 1
+  induction hm with
+  | refl => -- Base case; m = M i i' + 1
     suffices h : ℓ (π (alternatingWord i i' (M i i' + 1))) < M i i' + 1 by
       unfold IsReduced
       rw [Nat.succ_eq_add_one, length_alternatingWord]
-      linarith
+      omega
     have : M i i' + 1 ≤ M i i' * 2 := by linarith [Nat.one_le_iff_ne_zero.mpr hM]
     rw [cs.prod_alternatingWord_eq_prod_alternatingWord_sub i i' _ this]
-    have : M i i' * 2 - (M i i' + 1) = M i i' - 1 := by
-      apply (Nat.sub_eq_iff_eq_add' this).mpr
-      rw [add_assoc, add_comm 1, Nat.sub_add_cancel (Nat.one_le_iff_ne_zero.mpr hM)]
-      exact mul_two _
+    have : M i i' * 2 - (M i i' + 1) = M i i' - 1 := by omega
     rw [this]
     calc
       ℓ (π (alternatingWord i' i (M i i' - 1)))
@@ -250,10 +256,10 @@ theorem not_isReduced_alternatingWord (i i' : B) {m : ℕ} (hM : M i i' ≠ 0) (
       _ = M i i' - 1                                  := length_alternatingWord _ _ _
       _ ≤ M i i'                                      := Nat.sub_le _ _
       _ < M i i' + 1                                  := Nat.lt_succ_self _
-  · -- Inductive step
+  | step m ih => -- Inductive step
     contrapose! ih
     rw [alternatingWord_succ'] at ih
-    apply isReduced_drop (j := 1) at ih
+    apply IsReduced.drop (j := 1) at ih
     simpa using ih
 
 /-! ### Descents -/
@@ -298,36 +304,32 @@ theorem isLeftDescent_iff {w : W} {i : B} :
   unfold IsLeftDescent
   constructor
   · intro _
-    exact (cs.length_simple_mul w i).resolve_left (by linarith)
-  · intro _
-    linarith
+    exact (cs.length_simple_mul w i).resolve_left (by omega)
+  · omega
 
 theorem not_isLeftDescent_iff {w : W} {i : B} :
     ¬cs.IsLeftDescent w i ↔ ℓ (s i * w) = ℓ w + 1 := by
   unfold IsLeftDescent
   constructor
   · intro _
-    exact (cs.length_simple_mul w i).resolve_right (by linarith)
-  · intro _
-    linarith
+    exact (cs.length_simple_mul w i).resolve_right (by omega)
+  · omega
 
 theorem isRightDescent_iff {w : W} {i : B} :
     cs.IsRightDescent w i ↔ ℓ (w * s i) + 1 = ℓ w := by
   unfold IsRightDescent
   constructor
   · intro _
-    exact (cs.length_mul_simple w i).resolve_left (by linarith)
-  · intro _
-    linarith
+    exact (cs.length_mul_simple w i).resolve_left (by omega)
+  · omega
 
 theorem not_isRightDescent_iff {w : W} {i : B} :
     ¬cs.IsRightDescent w i ↔ ℓ (w * s i) = ℓ w + 1 := by
   unfold IsRightDescent
   constructor
   · intro _
-    exact (cs.length_mul_simple w i).resolve_right (by linarith)
-  · intro _
-    linarith
+    exact (cs.length_mul_simple w i).resolve_right (by omega)
+  · omega
 
 theorem isLeftDescent_iff_not_isLeftDescent_mul {w : W} {i : B} :
     cs.IsLeftDescent w i ↔ ¬cs.IsLeftDescent (s i * w) i := by

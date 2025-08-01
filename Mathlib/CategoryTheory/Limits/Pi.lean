@@ -1,12 +1,10 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Pi.Basic
 import Mathlib.CategoryTheory.Limits.HasLimits
-
-#align_import category_theory.limits.pi from "leanprover-community/mathlib"@"744d59af0b28d0c42f631038627df9b85ae1d1ce"
 
 /-!
 # Limits in the category of indexed families of objects.
@@ -38,7 +36,6 @@ def coneCompEval (c : Cone F) (i : I) : Cone (F ⋙ Pi.eval C i) where
   π :=
     { app := fun j => c.π.app j i
       naturality := fun _ _ f => congr_fun (c.π.naturality f) i }
-#align category_theory.pi.cone_comp_eval CategoryTheory.pi.coneCompEval
 
 /--
 A cocone over `F : J ⥤ Π i, C i` has as its components cocones over each of the `F ⋙ Pi.eval C i`.
@@ -48,7 +45,6 @@ def coconeCompEval (c : Cocone F) (i : I) : Cocone (F ⋙ Pi.eval C i) where
   ι :=
     { app := fun j => c.ι.app j i
       naturality := fun _ _ f => congr_fun (c.ι.naturality f) i }
-#align category_theory.pi.cocone_comp_eval CategoryTheory.pi.coconeCompEval
 
 /--
 Given a family of cones over the `F ⋙ Pi.eval C i`, we can assemble these together as a `Cone F`.
@@ -60,7 +56,6 @@ def coneOfConeCompEval (c : ∀ i, Cone (F ⋙ Pi.eval C i)) : Cone F where
       naturality := fun j j' f => by
         funext i
         exact (c i).π.naturality f }
-#align category_theory.pi.cone_of_cone_comp_eval CategoryTheory.pi.coneOfConeCompEval
 
 /-- Given a family of cocones over the `F ⋙ Pi.eval C i`,
 we can assemble these together as a `Cocone F`.
@@ -72,7 +67,6 @@ def coconeOfCoconeCompEval (c : ∀ i, Cocone (F ⋙ Pi.eval C i)) : Cocone F wh
       naturality := fun j j' f => by
         funext i
         exact (c i).ι.naturality f }
-#align category_theory.pi.cocone_of_cocone_comp_eval CategoryTheory.pi.coconeOfCoconeCompEval
 
 /-- Given a family of limit cones over the `F ⋙ Pi.eval C i`,
 assembling them together as a `Cone F` produces a limit cone.
@@ -86,7 +80,6 @@ def coneOfConeEvalIsLimit {c : ∀ i, Cone (F ⋙ Pi.eval C i)} (P : ∀ i, IsLi
   uniq s m w := by
     funext i
     exact (P i).uniq (coneCompEval s i) (m i) fun j => congr_fun (w j) i
-#align category_theory.pi.cone_of_cone_eval_is_limit CategoryTheory.pi.coneOfConeEvalIsLimit
 
 /-- Given a family of colimit cocones over the `F ⋙ Pi.eval C i`,
 assembling them together as a `Cocone F` produces a colimit cocone.
@@ -100,7 +93,6 @@ def coconeOfCoconeEvalIsColimit {c : ∀ i, Cocone (F ⋙ Pi.eval C i)} (P : ∀
   uniq s m w := by
     funext i
     exact (P i).uniq (coconeCompEval s i) (m i) fun j => congr_fun (w j) i
-#align category_theory.pi.cocone_of_cocone_eval_is_colimit CategoryTheory.pi.coconeOfCoconeEvalIsColimit
 
 section
 
@@ -114,7 +106,6 @@ theorem hasLimit_of_hasLimit_comp_eval : HasLimit F :=
   HasLimit.mk
     { cone := coneOfConeCompEval fun _ => limit.cone _
       isLimit := coneOfConeEvalIsLimit fun _ => limit.isLimit _ }
-#align category_theory.pi.has_limit_of_has_limit_comp_eval CategoryTheory.pi.hasLimit_of_hasLimit_comp_eval
 
 end
 
@@ -130,7 +121,6 @@ theorem hasColimit_of_hasColimit_comp_eval : HasColimit F :=
   HasColimit.mk
     { cocone := coconeOfCoconeCompEval fun _ => colimit.cocone _
       isColimit := coconeOfCoconeEvalIsColimit fun _ => colimit.isColimit _ }
-#align category_theory.pi.has_colimit_of_has_colimit_comp_eval CategoryTheory.pi.hasColimit_of_hasColimit_comp_eval
 
 end
 
@@ -139,7 +129,7 @@ As an example, we can use this to construct particular shapes of limits
 in a category of indexed families.
 
 With the addition of
-`import CategoryTheory.Limits.Shapes.Types`
+`import CategoryTheory.Limits.Types.Shapes`
 we can use:
 ```
 attribute [local instance] hasLimit_of_hasLimit_comp_eval
