@@ -16,7 +16,7 @@ import Mathlib.SetTheory.Cardinal.Order
 /-!
 # Basic results on cardinal numbers
 
-We provide a collection of basic results on cardinal numbers, in particular focussing on
+We provide a collection of basic results on cardinal numbers, in particular focusing on
 finite/countable/small types and sets.
 
 ## Main definitions

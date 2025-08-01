@@ -27,7 +27,7 @@ TODO: add continuous algebra isomorphisms.
 
 -/
 
-assert_not_exists Basis
+assert_not_exists Module.Basis
 
 open Algebra Set TopologicalSpace Topology
 
@@ -239,9 +239,8 @@ theorem _root_.Subalgebra.topologicalClosure_map
   image_closure_subset_closure_image f.continuous
 
 @[simp]
-theorem _root_.Subalgebra.topologicalClosure_coe
-    (s : Subalgebra R A) :
-  (s.topologicalClosure : Set A) = closure ↑s := rfl
+theorem _root_.Subalgebra.topologicalClosure_coe (s : Subalgebra R A) :
+    (s.topologicalClosure : Set A) = closure ↑s := rfl
 
 /-- Under a dense continuous algebra map, a subalgebra
 whose `TopologicalClosure` is `⊤` is sent to another such submodule.
@@ -592,7 +591,7 @@ def Algebra.elemental (x : A) : Subalgebra R A :=
 
 namespace Algebra.elemental
 
-@[aesop safe (rule_sets := [SetLike])]
+@[simp, aesop safe (rule_sets := [SetLike])]
 theorem self_mem (x : A) : x ∈ elemental R x :=
   le_topologicalClosure _ <| self_mem_adjoin_singleton R x
 

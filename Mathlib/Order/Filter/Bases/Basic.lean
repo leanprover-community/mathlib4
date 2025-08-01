@@ -441,6 +441,10 @@ theorem hasBasis_biInf_of_directed {ι : Type*} {ι' : Sort _} {dom : Set ι} (h
   · rintro ⟨b, ⟨hi, hb⟩, hibt⟩
     exact ⟨hi, (hl i hi).mem_iff.mpr ⟨b, hb, hibt⟩⟩
 
+lemma hasBasis_top :
+    (⊤ : Filter α).HasBasis (fun _ : Unit ↦ True) (fun _ ↦ Set.univ) :=
+  ⟨fun U => by simp⟩
+
 theorem hasBasis_principal (t : Set α) : (𝓟 t).HasBasis (fun _ : Unit => True) fun _ => t :=
   ⟨fun U => by simp⟩
 
