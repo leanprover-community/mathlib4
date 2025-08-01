@@ -150,8 +150,6 @@ theorem liftR_iff {α : TypeVec n} (r : ∀ ⦃i⦄, α i → α i → Prop) (x 
 
 open Set
 
-open MvFunctor (LiftP LiftR)
-
 theorem mem_supp {α : TypeVec n} (x : F α) (i) (u : α i) :
     u ∈ supp x i ↔ ∀ a f, abs ⟨a, f⟩ = x → u ∈ f i '' univ := by
   rw [supp]; dsimp; constructor
@@ -162,10 +160,7 @@ theorem mem_supp {α : TypeVec n} (x : F α) (i) (u : α i) :
       intro i u
       exact mem_image_of_mem _ (mem_univ _)
     exact h this
-  intro h p; rw [liftP_iff]
-  rintro ⟨a, f, xeq, h'⟩
-  rcases h a f xeq.symm with ⟨i, _, hi⟩
-  rw [← hi]; apply h'
+  grind [liftP_iff]
 
 theorem supp_eq {α : TypeVec n} {i} (x : F α) :
     supp x i = { u | ∀ a f, abs ⟨a, f⟩ = x → u ∈ f i '' univ } := by ext; apply mem_supp

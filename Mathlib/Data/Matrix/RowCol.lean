@@ -276,7 +276,7 @@ theorem updateCol_apply [DecidableEq n] {j' : n} :
 theorem updateCol_subsingleton [Subsingleton n] (A : Matrix m n R) (i : n) (b : m → R) :
     A.updateCol i b = (replicateCol (Fin 1) b).submatrix id (Function.const n 0) := by
   ext x y
-  simp [updateCol_apply, Subsingleton.elim i y]
+  simp [Subsingleton.elim i y]
 
 @[deprecated (since := "2024-12-11")] alias updateColumn_subsingleton := updateCol_subsingleton
 
@@ -284,7 +284,7 @@ theorem updateCol_subsingleton [Subsingleton n] (A : Matrix m n R) (i : n) (b : 
 theorem updateRow_subsingleton [Subsingleton m] (A : Matrix m n R) (i : m) (b : n → R) :
     A.updateRow i b = (replicateRow (Fin 1) b).submatrix (Function.const m 0) id := by
   ext x y
-  simp [updateCol_apply, Subsingleton.elim i x]
+  simp [Subsingleton.elim i x]
 
 theorem map_updateRow [DecidableEq m] (f : α → β) :
     map (updateRow M i b) f = updateRow (M.map f) i (f ∘ b) := by
@@ -483,7 +483,7 @@ theorem single_mul_eq_updateRow_zero
 @[simp]
 theorem updateRow_zero_mul_updateCol_zero
     [DecidableEq l] [DecidableEq n] [Fintype m] [NonUnitalNonAssocSemiring α]
-    (i : l) (r : m → α) (j : n) (c : m → α):
+    (i : l) (r : m → α) (j : n) (c : m → α) :
     (0 : Matrix l m α).updateRow i r * (0 : Matrix m n α).updateCol j c = single i j (r ⬝ᵥ c) := by
   rw [updateRow_mul, vecMul_updateCol, mul_updateCol, single_eq_of_single_single, Matrix.zero_mul,
     vecMul_zero, zero_mulVec, updateCol_zero_zero, updateRow, ← Pi.single, ← Pi.single]

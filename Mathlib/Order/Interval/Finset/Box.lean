@@ -54,7 +54,7 @@ lemma box_succ_disjUnion (n : ℕ) :
 
 @[simp] lemma zero_mem_box : (0 : α) ∈ box n ↔ n = 0 := by cases n <;> simp [box_succ_eq_sdiff]
 
-lemma eq_zero_iff_eq_zero_of_mem_box  {x : α} (hx : x ∈ box n) : x = 0 ↔ n = 0 :=
+lemma eq_zero_iff_eq_zero_of_mem_box {x : α} (hx : x ∈ box n) : x = 0 ↔ n = 0 :=
   ⟨zero_mem_box.mp ∘ (· ▸ hx), fun hn ↦ by rwa [hn, box_zero, mem_singleton] at hx⟩
 
 end Finset
@@ -74,7 +74,8 @@ variable {α β : Type*} [Ring α] [PartialOrder α] [IsOrderedRing α]
         #(Icc (-n : α) n) * #(Icc (-n : β) n) := by
   rw [box_succ_eq_sdiff, card_sdiff (Icc_neg_mono n.le_succ), Finset.card_Icc_prod,
     Finset.card_Icc_prod]
-  rfl
+  simp_rw [Nat.succ_eq_add_one, Nat.cast_add, Nat.cast_one, neg_add_rev, fst_add, fst_neg,
+    fst_one, fst_natCast, snd_add, snd_neg, snd_one, snd_natCast]
 
 end Prod
 

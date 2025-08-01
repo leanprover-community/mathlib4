@@ -77,16 +77,16 @@ lemma map_comp (i j k : ℕ) (hij : i ≤ j) (hjk : j ≤ k) :
           intros X f k hij hjk
           rw [map_id, id_comp]
       | succ j hj =>
-          rintro X f (_|_|k) hij hjk
+          rintro X f (_ | _ | k) hij hjk
           · omega
           · obtain rfl : j = 0 := by omega
             rw [map_id, comp_id]
           · simp only [map, Nat.reduceAdd]
             rw [hj (fun n ↦ f (n + 1)) (k + 1) (by omega) (by omega)]
-            obtain _|j := j
+            obtain _ | j := j
             all_goals simp [map]
   | succ i hi =>
-      rintro X f (_|j) (_|k)
+      rintro X f (_ | j) (_ | k)
       · omega
       · omega
       · omega

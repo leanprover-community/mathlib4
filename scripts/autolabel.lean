@@ -94,11 +94,15 @@ def mathlibLabels : Array Label := #[
     dirs := #[
       "Mathlib" / "AlgebraicGeometry",
       "Mathlib" / "Geometry" / "RingedSpace"] },
+  { label := "t-algebraic-topology",
+    dirs := #["Mathlib" / "AlgebraicTopology"] },
   { label := "t-analysis" },
   { label := "t-category-theory" },
   { label := "t-combinatorics" },
   { label := "t-computability" },
   { label := "t-condensed" },
+  { label := "t-convex-geometry",
+    dirs := #["Mathlib" / "Geometry" / "Convex"] },
   { label := "t-data"
     dirs := #[
       "Mathlib" / "Control",
@@ -132,9 +136,7 @@ def mathlibLabels : Array Label := #[
   { label := "t-order" },
   { label := "t-set-theory" },
   { label := "t-topology",
-    dirs := #[
-      "Mathlib" / "Topology",
-      "Mathlib" / "AlgebraicTopology"] },
+    dirs := #["Mathlib" / "Topology"] },
   { label := "CI",
     dirs := #[".github"] },
   { label := "IMO",
@@ -291,9 +293,11 @@ unsafe def main (args : List String): IO UInt32 := do
     -- return 3
 
   -- get the modified files
+  println "Computing 'git diff --name-only origin/master...HEAD'"
   let gitDiff ← IO.Process.run {
     cmd := "git",
     args := #["diff", "--name-only", "origin/master...HEAD"] }
+  println s!"---\n{gitDiff}\n---"
   let modifiedFiles : Array FilePath := (gitDiff.splitOn "\n").toArray.map (⟨·⟩)
 
   -- find labels covering the modified files

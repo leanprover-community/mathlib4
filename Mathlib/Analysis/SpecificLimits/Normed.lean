@@ -233,7 +233,7 @@ lemma tendsto_pow_atTop_nhds_zero_iff_norm_lt_one {R : Type*} [SeminormedRing R]
   filter_upwards [eventually_ge_atTop 1] with n hn
   induction n, hn using Nat.le_induction with
   | base => simp
-  | succ n hn IH => simp [norm_pow, pow_succ, IH]
+  | succ n hn IH => simp [pow_succ, IH]
 
 /-! ### Geometric series -/
 
@@ -251,7 +251,7 @@ instance {R : Type*} [NormedRing R] [CompleteSpace R] : HasSummableGeomSeries R 
   constructor
   intro x hx
   have h1 : Summable fun n : ℕ ↦ ‖x‖ ^ n := summable_geometric_of_lt_one (norm_nonneg _) hx
-  exact h1.of_norm_bounded_eventually_nat _ (eventually_norm_pow_le x)
+  exact h1.of_norm_bounded_eventually_nat (eventually_norm_pow_le x)
 
 section HasSummableGeometricSeries
 
@@ -391,7 +391,7 @@ theorem summable_norm_mul_geometric_of_norm_lt_one {k : ℕ} {r : R}
   _ =O[atTop] fun n ↦ u n * ‖r‖ ^ n := by
       apply (IsBigOWith.of_bound (c := ‖(1 : R)‖) ?_).isBigO
       filter_upwards [eventually_norm_pow_le r] with n hn
-      simp only [norm_norm, norm_mul, Real.norm_eq_abs, abs_cast, norm_pow, abs_norm]
+      simp only [norm_mul, Real.norm_eq_abs, abs_cast, norm_pow, abs_norm]
       apply (norm_mul_le _ _).trans
       have : ‖(u n : R)‖ * ‖r ^ n‖ ≤ (u n * ‖(1 : R)‖) * ‖r‖ ^ n := by
         gcongr; exact norm_cast_le (u n)
@@ -546,7 +546,7 @@ theorem dist_partial_sum_le_of_le_geometric (hf : ∀ n, ‖f n‖ ≤ C * r ^ n
 Cauchy sequence. This lemma does not assume `0 ≤ r` or `0 ≤ C`. -/
 theorem cauchySeq_finset_of_geometric_bound (hr : r < 1) (hf : ∀ n, ‖f n‖ ≤ C * r ^ n) :
     CauchySeq fun s : Finset ℕ ↦ ∑ x ∈ s, f x :=
-  cauchySeq_finset_of_norm_bounded _
+  cauchySeq_finset_of_norm_bounded
     (aux_hasSum_of_le_geometric hr (dist_partial_sum_le_of_le_geometric hf)).summable hf
 
 /-- If `‖f n‖ ≤ C * r ^ n` for all `n : ℕ` and some `r < 1`, then the partial sums of `f` are within
@@ -584,7 +584,7 @@ theorem NormedAddCommGroup.cauchy_series_of_le_geometric'' {C : ℝ} {u : ℕ �
     (mul_nonneg_iff_of_pos_right <| pow_pos hr₀ N).mp ((norm_nonneg _).trans <| h N <| le_refl N)
   have : ∀ n ≥ N, u n = v n := by
     intro n hn
-    simp [v, hn, if_neg (not_lt.mpr hn)]
+    simp [v, if_neg (not_lt.mpr hn)]
   apply cauchySeq_sum_of_eventually_eq this
     (NormedAddCommGroup.cauchy_series_of_le_geometric' hr₁ _)
   · exact C
@@ -614,7 +614,7 @@ theorem summable_of_ratio_norm_eventually_le {α : Type*} [SeminormedAddCommGrou
   · rw [eventually_atTop] at h
     rcases h with ⟨N, hN⟩
     rw [← @summable_nat_add_iff α _ _ _ _ N]
-    refine .of_norm_bounded (fun n ↦ ‖f N‖ * r ^ n)
+    refine .of_norm_bounded (g := fun n ↦ ‖f N‖ * r ^ n)
       (Summable.mul_left _ <| summable_geometric_of_lt_one hr₀ hr₁) fun n ↦ ?_
     simp only
     conv_rhs => rw [mul_comm, ← zero_add N]
@@ -622,7 +622,7 @@ theorem summable_of_ratio_norm_eventually_le {α : Type*} [SeminormedAddCommGrou
     convert hN (i + N) (N.le_add_left i) using 3
     ac_rfl
   · push_neg at hr₀
-    refine .of_norm_bounded_eventually_nat 0 summable_zero ?_
+    refine .of_norm_bounded_eventually_nat summable_zero ?_
     filter_upwards [h] with _ hn
     by_contra! h
     exact not_lt.mpr (norm_nonneg _) (lt_of_le_of_lt hn <| mul_neg_of_neg_of_pos hr₀ h)
@@ -651,10 +651,7 @@ theorem not_summable_of_ratio_norm_eventually_ge {α : Type*} [SeminormedAddComm
     specialize hN₀ N hNN₀
     simp only [comp_apply, zero_add] at h''
     exact hN h''.symm
-  · intro i
-    dsimp only [comp_apply]
-    convert hN₀ (i + N) (hNN₀.trans (N.le_add_left i)) using 3
-    ac_rfl
+  · grind
 
 theorem not_summable_of_ratio_test_tendsto_gt_one {α : Type*} [SeminormedAddCommGroup α]
     {f : ℕ → α} {l : ℝ} (hl : 1 < l) (h : Tendsto (fun n ↦ ‖f (n + 1)‖ / ‖f n‖) atTop (𝓝 l)) :
@@ -711,7 +708,7 @@ theorem Monotone.cauchySeq_series_mul_of_tendsto_zero_of_bounded (hfa : Monotone
   apply (NormedField.tendsto_zero_smul_of_tendsto_zero_of_bounded hf0
     ⟨b, eventually_map.mpr <| Eventually.of_forall fun n ↦ hgb <| n + 1⟩).cauchySeq.add
   refine CauchySeq.neg ?_
-  refine cauchySeq_range_of_norm_bounded _ ?_
+  refine cauchySeq_range_of_norm_bounded ?_
     (fun n ↦ ?_ : ∀ n, ‖(f (n + 1) + -f n) • (Finset.range (n + 1)).sum z‖ ≤ b * |f (n + 1) - f n|)
   · simp_rw [abs_of_nonneg (sub_nonneg_of_le (hfa (Nat.le_succ _))), ← mul_sum]
     apply Real.uniformContinuous_const_mul.comp_cauchySeq
@@ -870,7 +867,7 @@ lemma tendsto_zero_of_isBoundedUnder_smul_of_tendsto_cobounded [NormedAddGroup K
   refine Metric.nhds_basis_closedBall.tendsto_right_iff.mpr fun ε hε0 ↦ ?_
   filter_upwards [hc, hasBasis_cobounded_norm.tendsto_right_iff.mp hf (c / ε) trivial,
     hf.eventually_ne_cobounded 0] with x hfgc hεf hf0
-  rcases eq_or_gt_of_le ((norm_nonneg _).trans hfgc) with rfl | hc0
+  rcases eq_or_lt_of_le ((norm_nonneg _).trans hfgc) with rfl | hc0
   · simpa [(smul_eq_zero_iff_right hf0).mp (norm_le_zero_iff.mp hfgc)] using hε0.le
   calc
     _ = ‖g x‖ := by simp
@@ -893,7 +890,7 @@ lemma tendsto_smul_congr_of_tendsto_left_cobounded_of_isBoundedUnder
   dsimp
   simp_rw [dist_eq_norm, ← sub_smul, norm_smul]
   apply isBoundedUnder_le_mul_tendsto_zero
-  · show IsBoundedUnder _ _ fun _ ↦ _
+  · change IsBoundedUnder _ _ fun _ ↦ _
     simpa using hbdd
   · rw [← tendsto_zero_iff_norm_tendsto_zero]
     exact tendsto_zero_of_isBoundedUnder_smul_of_tendsto_cobounded hmul.norm.isBoundedUnder_le hf₁

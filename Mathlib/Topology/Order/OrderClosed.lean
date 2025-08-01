@@ -733,10 +733,13 @@ theorem isClosed_Icc {a b : α} : IsClosed (Icc a b) :=
 theorem closure_Icc (a b : α) : closure (Icc a b) = Icc a b :=
   isClosed_Icc.closure_eq
 
+theorem le_of_tendsto_of_tendsto_of_frequently {f g : β → α} {b : Filter β} {a₁ a₂ : α}
+    (hf : Tendsto f b (𝓝 a₁)) (hg : Tendsto g b (𝓝 a₂)) (h : ∃ᶠ x in b, f x ≤ g x) : a₁ ≤ a₂ :=
+  t.isClosed_le'.mem_of_frequently_of_tendsto h (hf.prodMk_nhds hg)
+
 theorem le_of_tendsto_of_tendsto {f g : β → α} {b : Filter β} {a₁ a₂ : α} [NeBot b]
     (hf : Tendsto f b (𝓝 a₁)) (hg : Tendsto g b (𝓝 a₂)) (h : f ≤ᶠ[b] g) : a₁ ≤ a₂ :=
-  have : Tendsto (fun b => (f b, g b)) b (𝓝 (a₁, a₂)) := hf.prodMk_nhds hg
-  show (a₁, a₂) ∈ { p : α × α | p.1 ≤ p.2 } from t.isClosed_le'.mem_of_tendsto this h
+  le_of_tendsto_of_tendsto_of_frequently hf hg <| Eventually.frequently h
 
 alias tendsto_le_of_eventuallyLE := le_of_tendsto_of_tendsto
 
@@ -779,6 +782,26 @@ theorem IsClosed.hypograph [TopologicalSpace β] {f : β → α} {s : Set β} (h
     (hf : ContinuousOn f s) : IsClosed { p : β × α | p.1 ∈ s ∧ p.2 ≤ f p.1 } :=
   (hs.preimage continuous_fst).isClosed_le continuousOn_snd (hf.comp continuousOn_fst Subset.rfl)
 
+/-- The set of monotone functions on a set is closed. -/
+theorem isClosed_monotoneOn [Preorder β] {s : Set β} : IsClosed {f : β → α | MonotoneOn f s} := by
+  simp only [isClosed_iff_clusterPt, clusterPt_principal_iff_frequently]
+  intro g hg a ha b hb hab
+  have hmain (x) : Tendsto (fun f' ↦ f' x) (𝓝 g) (𝓝 (g x)) := continuousAt_apply x _
+  exact le_of_tendsto_of_tendsto_of_frequently (hmain a) (hmain b) (hg.mono fun g h ↦ h ha hb hab)
+
+/-- The set of monotone functions is closed. -/
+theorem isClosed_monotone [Preorder β] : IsClosed {f : β → α | Monotone f} := by
+  simp_rw [← monotoneOn_univ]
+  exact isClosed_monotoneOn
+
+/-- The set of antitone functions on a set is closed. -/
+theorem isClosed_antitoneOn [Preorder β] {s : Set β} : IsClosed {f : β → α | AntitoneOn f s} :=
+  isClosed_monotoneOn (α := αᵒᵈ) (β := β)
+
+/-- The set of antitone functions is closed. -/
+theorem isClosed_antitone [Preorder β] : IsClosed {f : β → α | Antitone f} :=
+  isClosed_monotone (α := αᵒᵈ) (β := β)
+
 end Preorder
 
 section PartialOrder
@@ -799,7 +822,7 @@ variable [TopologicalSpace α] [LinearOrder α] [OrderClosedTopology α]
 
 theorem isOpen_lt [TopologicalSpace β] {f g : β → α} (hf : Continuous f) (hg : Continuous g) :
     IsOpen { b | f b < g b } := by
-  simpa only [lt_iff_not_le] using (isClosed_le hg hf).isOpen_compl
+  simpa only [lt_iff_not_ge] using (isClosed_le hg hf).isOpen_compl
 
 theorem isOpen_lt_prod : IsOpen { p : α × α | p.1 < p.2 } :=
   isOpen_lt continuous_fst continuous_snd

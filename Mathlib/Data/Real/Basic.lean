@@ -307,15 +307,15 @@ theorem add_lt_add_iff_left {a b : ℝ} (c : ℝ) : c + a < c + b ↔ a < b := b
   induction b using Real.ind_mk
   induction c using Real.ind_mk
   simp only [mk_lt, ← mk_add]
-  show Pos _ ↔ Pos _; rw [add_sub_add_left_eq_sub]
+  change Pos _ ↔ Pos _; rw [add_sub_add_left_eq_sub]
 
 instance partialOrder : PartialOrder ℝ where
   le := (· ≤ ·)
   lt := (· < ·)
-  lt_iff_le_not_le a b := by
+  lt_iff_le_not_ge a b := by
     induction a using Real.ind_mk
     induction b using Real.ind_mk
-    simpa using lt_iff_le_not_le
+    simpa using lt_iff_le_not_ge
   le_refl a := by
     induction a using Real.ind_mk
     rw [mk_le]
@@ -514,11 +514,11 @@ unsafe instance : Repr ℝ where
 theorem le_mk_of_forall_le {f : CauSeq ℚ abs} : (∃ i, ∀ j ≥ i, x ≤ f j) → x ≤ mk f := by
   intro h
   induction x using Real.ind_mk
-  apply le_of_not_lt
+  apply le_of_not_gt
   rw [mk_lt]
   rintro ⟨K, K0, hK⟩
   obtain ⟨i, H⟩ := exists_forall_ge_and h (exists_forall_ge_and hK (f.cauchy₃ <| half_pos K0))
-  apply not_lt_of_le (H _ le_rfl).1
+  apply not_lt_of_ge (H _ le_rfl).1
   rw [← mk_const, mk_lt]
   refine ⟨_, half_pos K0, i, fun j ij => ?_⟩
   have := add_le_add (H _ ij).2.1 (le_of_lt (abs_lt.1 <| (H _ le_rfl).2.2 _ ij).1)
@@ -561,6 +561,12 @@ end Real
 `f (r ^ n) = (f r) ^ n`. -/
 def IsPowMul {R : Type*} [Pow R ℕ] (f : R → ℝ) :=
   ∀ (a : R) {n : ℕ}, 1 ≤ n → f (a ^ n) = f a ^ n
+
+lemma IsPowMul.map_one_le_one {R : Type*} [Monoid R] {f : R → ℝ} (hf : IsPowMul f) :
+    f 1 ≤ 1 := by
+  have hf1 : (f 1)^2 = f 1 := by conv_rhs => rw [← one_pow 2, hf _ one_le_two]
+  rcases eq_zero_or_one_of_sq_eq_self hf1 with h | h <;> rw [h]
+  exact zero_le_one
 
 /-- A ring homomorphism `f : α →+* β` is bounded with respect to the functions `nα : α → ℝ` and
   `nβ : β → ℝ` if there exists a positive constant `C` such that for all `x` in `α`,

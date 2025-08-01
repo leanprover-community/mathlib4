@@ -148,10 +148,13 @@ theorem Disjoint.exists_open_convexes (disj : Disjoint s t)
 
 /-- In a locally convex space, every point `x` and closed convex set `s ∌ x` admit disjoint convex
 open neighborhoods. -/
-lemma exists_open_convex_of_not_mem (hx : x ∉ s) (hsconv : Convex 𝕜 s) (hsclosed : IsClosed s) :
+lemma exists_open_convex_of_notMem (hx : x ∉ s) (hsconv : Convex 𝕜 s) (hsclosed : IsClosed s) :
     ∃ U V : Set E,
       IsOpen U ∧ IsOpen V ∧ Convex 𝕜 U ∧ Convex 𝕜 V ∧ x ∈ U ∧ s ⊆ V ∧ Disjoint U V := by
   simpa [*] using Disjoint.exists_open_convexes (s := {x}) (t := s) (𝕜 := 𝕜)
+
+@[deprecated (since := "2025-05-23")]
+alias exists_open_convex_of_not_mem := exists_open_convex_of_notMem
 
 end LinearOrderedField
 
@@ -237,7 +240,7 @@ instance LinearOrderedSemiring.toLocallyConvexSpace {R : Type*} [TopologicalSpac
       refine nhds_top_basis.to_hasBasis' ?_ ?_
       · intros
         refine ⟨Set.Ioi _, ?_, subset_refl _⟩
-        simp_all [Ioi_mem_nhds, convex_Ioi]
+        simp_all
       · simp +contextual
     refine (nhds_basis_Ioo' hl hu).to_hasBasis' ?_ ?_
     · simp only [id_eq, and_imp, Prod.forall]

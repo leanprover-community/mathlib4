@@ -68,7 +68,7 @@ namespace IsDedekindDomain
 
 noncomputable section
 
-open scoped Multiplicative nonZeroDivisors
+open scoped WithZero nonZeroDivisors
 
 universe u v
 
@@ -90,7 +90,7 @@ def valuationOfNeZeroToFun (x : Kˣ) : Multiplicative ℤ :=
 
 @[simp]
 theorem valuationOfNeZeroToFun_eq (x : Kˣ) :
-    (v.valuationOfNeZeroToFun x : ℤₘ₀) = v.valuation K x := by
+    (v.valuationOfNeZeroToFun x : ℤᵐ⁰) = v.valuation K x := by
   classical
   rw [show v.valuation K x = _ * _ by rfl]
   rw [Units.val_inv_eq_inv_val]
@@ -110,7 +110,7 @@ def valuationOfNeZero : Kˣ →* Multiplicative ℤ where
     simp only [valuationOfNeZeroToFun_eq]; exact map_mul _ _ _
 
 @[simp]
-theorem valuationOfNeZero_eq (x : Kˣ) : (v.valuationOfNeZero x : ℤₘ₀) = v.valuation K x :=
+theorem valuationOfNeZero_eq (x : Kˣ) : (v.valuationOfNeZero x : ℤᵐ⁰) = v.valuation K x :=
   valuationOfNeZeroToFun_eq v x
 
 @[simp]
@@ -186,7 +186,7 @@ theorem valuation_ker_eq :
     by_cases hv : v ∈ S
     · exact congr_fun hx' ⟨v, hv⟩
     · exact hx v hv
-  · exact fun hx' => funext fun v => hx' v <| Set.not_mem_empty v
+  · exact fun hx' => funext fun v => hx' v <| Set.notMem_empty v
 
 /-- The natural homomorphism from `Rˣ` to `K⟮∅, n⟯`. -/
 def fromUnit {n : ℕ} : Rˣ →* K⟮(∅ : Set <| HeightOneSpectrum R),n⟯ where

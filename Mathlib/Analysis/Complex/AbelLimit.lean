@@ -101,7 +101,7 @@ lemma stolzCone_subset_stolzSet_aux {s : ℝ} (hs : 0 < s) :
   replace H :=
     H (1 - z).re z.im ((mul_pos_iff_of_pos_left hs).mp <| (abs_nonneg z.im).trans_lt hzr) hzl hzr
   have h : z.im ^ 2 = (1 - z).im ^ 2 := by
-    simp only [sub_im, one_im, zero_sub, even_two, neg_sq]
+    simp only [sub_im, one_im, zero_sub, neg_sq]
   rw [h, ← norm_eq_sqrt_sq_add_sq, ← h, sub_re, one_re, sub_sub_cancel,
     ← norm_eq_sqrt_sq_add_sq] at H
   exact ⟨sub_pos.mp <| (mul_pos_iff_of_pos_left hM).mp <| (norm_nonneg _).trans_lt H, H⟩
@@ -158,7 +158,7 @@ theorem tendsto_tsum_powerSeries_nhdsWithin_stolzSet
     (h : Tendsto (fun n ↦ ∑ i ∈ range n, f i) atTop (𝓝 l)) {M : ℝ} :
     Tendsto (fun z ↦ ∑' n, f n * z ^ n) (𝓝[stolzSet M] 1) (𝓝 l) := by
   -- If `M ≤ 1` the Stolz set is empty and the statement is trivial
-  rcases le_or_lt M 1 with hM | hM
+  rcases le_or_gt M 1 with hM | hM
   · simp_rw [stolzSet_empty hM, nhdsWithin_empty, tendsto_bot]
   -- Abbreviations
   let s := fun n ↦ ∑ i ∈ range n, f i

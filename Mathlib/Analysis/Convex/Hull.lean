@@ -119,7 +119,7 @@ theorem convexHull_convexHull_union_right (s t : Set E) :
     convexHull 𝕜 (s ∪ convexHull 𝕜 t) = convexHull 𝕜 (s ∪ t) :=
   ClosureOperator.closure_sup_closure_right _ _ _
 
-theorem Convex.convex_remove_iff_not_mem_convexHull_remove {s : Set E} (hs : Convex 𝕜 s) (x : E) :
+theorem Convex.convex_remove_iff_notMem_convexHull_remove {s : Set E} (hs : Convex 𝕜 s) (x : E) :
     Convex 𝕜 (s \ {x}) ↔ x ∉ convexHull 𝕜 (s \ {x}) := by
   constructor
   · rintro hsx hx
@@ -134,6 +134,10 @@ theorem Convex.convex_remove_iff_not_mem_convexHull_remove {s : Set E} (hs : Con
       ⟨convexHull_min diff_subset hs hy, by
         rintro (rfl : y = x)
         exact hx hy⟩
+
+@[deprecated (since := "2025-05-23")]
+alias Convex.convex_remove_iff_not_mem_convexHull_remove :=
+  Convex.convex_remove_iff_notMem_convexHull_remove
 
 theorem IsLinearMap.image_convexHull {f : E → F} (hf : IsLinearMap 𝕜 f) (s : Set E) :
     f '' convexHull 𝕜 s = convexHull 𝕜 (f '' s) :=

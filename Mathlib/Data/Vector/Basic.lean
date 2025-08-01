@@ -160,9 +160,7 @@ theorem map₂_cons (hd₁ : α) (tl₁ : Vector α n) (hd₂ : β) (tl₂ : Vec
 
 @[simp]
 theorem get_ofFn {n} (f : Fin n → α) (i) : get (ofFn f) i = f i := by
-  conv_rhs => erw [← List.get_ofFn f ⟨i, by simp⟩]
-  simp only [get_eq_get_toList]
-  congr <;> simp [Fin.heq_ext_iff]
+  simp [get_eq_get_toList]
 
 @[simp]
 theorem ofFn_get (v : Vector α n) : ofFn (get v) = v := by
@@ -217,7 +215,7 @@ retrieved via `toList`, is equal to the list of that single element. -/
 @[simp]
 theorem toList_singleton (v : Vector α 1) : v.toList = [v.head] := by
   rw [← v.cons_head_tail]
-  simp only [toList_cons, toList_nil, head_cons, eq_self_iff_true, and_self_iff, singleton_tail]
+  simp only [toList_cons, toList_nil, head_cons, singleton_tail]
 
 @[simp]
 theorem empty_toList_eq_ff (v : Vector α (n + 1)) : v.toList.isEmpty = false :=
@@ -368,7 +366,7 @@ theorem scanl_get (i : Fin n) :
   · exact i.elim0
   induction' n with n hn generalizing b
   · have i0 : i = 0 := Fin.eq_zero _
-    simp [scanl_singleton, i0, get_zero]; simp [get_eq_get_toList, List.get]
+    simp [scanl_singleton, i0, get_zero]; simp [get_eq_get_toList]
   · rw [← cons_head_tail v, scanl_cons, get_cons_succ]
     refine Fin.cases ?_ ?_ i
     · simp only [get_zero, scanl_head, Fin.castSucc_zero, head_cons]
@@ -534,9 +532,12 @@ theorem insertIdx_val {i : Fin (n + 1)} {v : Vector α n} :
 theorem eraseIdx_val {i : Fin n} : ∀ {v : Vector α n}, (eraseIdx i v).val = v.val.eraseIdx i
   | _ => rfl
 
-theorem eraseIdx_insertIdx {v : Vector α n} {i : Fin (n + 1)} :
+theorem eraseIdx_insertIdx_self {v : Vector α n} {i : Fin (n + 1)} :
     eraseIdx i (insertIdx a i v) = v :=
-  Subtype.eq (List.eraseIdx_insertIdx ..)
+  Subtype.eq (List.eraseIdx_insertIdx_self ..)
+
+@[deprecated (since := "2025-06-17")]
+alias eraseIdx_insertIdx := eraseIdx_insertIdx_self
 
 /-- Erasing an element after inserting an element, at different indices. -/
 theorem eraseIdx_insertIdx' {v : Vector α (n + 1)} :
@@ -649,7 +650,7 @@ protected theorem traverse_def (f : α → F β) (x : α) :
 protected theorem id_traverse : ∀ x : Vector α n, x.traverse (pure : _ → Id _) = pure x := by
   rintro ⟨x, rfl⟩; dsimp [Vector.traverse, cast]
   induction' x with x xs IH; · rfl
-  simp! [IH]; rfl
+  simp! [IH]
 
 end
 
@@ -672,7 +673,7 @@ protected theorem comp_traverse (f : β → F γ) (g : α → G β) (x : Vector 
 
 protected theorem traverse_eq_map_id {α β} (f : α → β) :
     ∀ x : Vector α n, x.traverse ((pure : _ → Id _) ∘ f) = pure (map f x) := by
-  rintro ⟨x, rfl⟩; simp!; induction x <;> simp! [*, functor_norm] <;> rfl
+  rintro ⟨x, rfl⟩; simp!; induction x <;> simp! [*, functor_norm]; rfl
 
 variable [LawfulApplicative F] (η : ApplicativeTransformation F G)
 
@@ -722,22 +723,22 @@ variable {x : α} {y : β} {s : σ} (xs : Vector α n)
 
 @[simp]
 theorem replicate_succ (val : α) :
-    replicate (n+1) val = val ::ᵥ (replicate n val) :=
+    replicate (n + 1) val = val ::ᵥ (replicate n val) :=
   rfl
 
 section Append
 variable (ys : Vector α m)
 
-@[simp] lemma get_append_cons_zero : get (append (x ::ᵥ xs) ys) 0 = x := rfl
+@[simp] lemma get_append_cons_zero : get (x ::ᵥ xs ++ ys) 0 = x := rfl
 
 @[simp]
 theorem get_append_cons_succ {i : Fin (n + m)} {h} :
-    get (append (x ::ᵥ xs) ys) ⟨i+1, h⟩ = get (append xs ys) i :=
+    get (x ::ᵥ xs ++ ys) ⟨i+1, h⟩ = get (xs ++ ys) i :=
   rfl
 
 @[simp]
-theorem append_nil : append xs nil = xs := by
-  cases xs; simp [append]
+theorem append_nil : xs ++ (nil : Vector α 0) = xs := by
+  cases xs; simp only [append_def, append_nil]
 
 end Append
 

@@ -3,33 +3,36 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Paul Lezeau
 -/
-import Mathlib.RingTheory.DedekindDomain.Ideal
+import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 import Mathlib.RingTheory.IsAdjoinRoot
 
 /-!
 # Kummer-Dedekind theorem
 
-This file proves the monogenic version of the Kummer-Dedekind theorem on the splitting of prime
-ideals in an extension of the ring of integers. This states that if `I` is a prime ideal of
-Dedekind domain `R` and `S = R[α]` for some `α` that is integral over `R` with minimal polynomial
-`f`, then the prime factorisations of `I * S` and `f mod I` have the same shape, i.e. they have the
-same number of prime factors, and each prime factors of `I * S` can be paired with a prime factor
-of `f mod I` in a way that ensures multiplicities match (in fact, this pairing can be made explicit
+This file proves the Kummer-Dedekind theorem on the splitting of prime ideals in an extension of
+the ring of integers. This states the following: assume we are given
+  - A prime ideal `I` of Dedekind domain `R`
+  - An `R`-algebra `S` that is a Dedekind Domain
+  - An `α : S` such that that is integral over `R` with minimal polynomial `f`
+If the conductor `𝓒` of `x` is such that `𝓒 ∩ R` is coprime to `I` then the prime
+factorisations of `I * S` and `f mod I` have the same shape, i.e. they have the same number of
+prime factors, and each prime factors of `I * S` can be paired with a prime factor of `f mod I` in
+a way that ensures multiplicities match (in fact, this pairing can be made explicit
 with a formula).
 
 ## Main definitions
 
-* `normalizedFactorsMapEquivNormalizedFactorsMinPolyMk` : The bijection in the
-    Kummer-Dedekind theorem. This is the pairing between the prime factors of `I * S` and the prime
-    factors of `f mod I`.
+* `normalizedFactorsMapEquivNormalizedFactorsMinPolyMk` : The bijection in the Kummer-Dedekind
+  theorem. This is the pairing between the prime factors of `I * S` and the prime factors of
+  `f mod I`.
 
 ## Main results
 
-* `normalized_factors_ideal_map_eq_normalized_factors_min_poly_mk_map` : The Kummer-Dedekind
-    theorem.
+* `normalizedFactors_ideal_map_eq_normalizedFactors_min_poly_mk_map` : The Kummer-Dedekind
+  theorem.
 * `Ideal.irreducible_map_of_irreducible_minpoly` : `I.map (algebraMap R S)` is irreducible if
-    `(map (Ideal.Quotient.mk I) (minpoly R pb.gen))` is irreducible, where `pb` is a power basis
-    of `S` over `R`.
+  `(map (Ideal.Quotient.mk I) (minpoly R pb.gen))` is irreducible, where `pb` is a power basis
+  of `S` over `R`.
   * `normalizedFactorsMapEquivNormalizedFactorsMinPolyMk_symm_apply_eq_span` : Let `Q` be a lift of
     factor of the minimal polynomial of `x`, a generator of `S` over `R`, taken
     `mod I`. Then (the reduction of) `Q` corresponds via
@@ -37,8 +40,6 @@ with a formula).
     `span (I.map (algebraMap R S) ∪ {Q.aeval x})`.
 
 ## TODO
-
-* Prove the Kummer-Dedekind theorem in full generality.
 
 * Prove the converse of `Ideal.irreducible_map_of_irreducible_minpoly`.
 
@@ -62,7 +63,7 @@ local notation:max R "<" x:max ">" => adjoin R ({x} : Set S)
     biggest ideal of `S` contained in `R<x>`. -/
 def conductor (x : S) : Ideal S where
   carrier := {a | ∀ b : S, a * b ∈ R<x>}
-  zero_mem' b := by simpa only [zero_mul] using Subalgebra.zero_mem _
+  zero_mem' b := by simp only [zero_mul, zero_mem]
   add_mem' ha hb c := by simpa only [add_mul] using Subalgebra.add_mem _ (ha c) (hb c)
   smul_mem' c a ha b := by simpa only [smul_eq_mul, mul_left_comm, mul_assoc] using ha (c * b)
 
@@ -91,6 +92,15 @@ theorem conductor_eq_top_iff_adjoin_eq_top {x : S} :
 
 theorem conductor_eq_top_of_powerBasis (pb : PowerBasis R S) : conductor R pb.gen = ⊤ :=
   conductor_eq_top_of_adjoin_eq_top pb.adjoin_gen_eq_top
+
+theorem adjoin_eq_top_of_conductor_eq_top {x : S} (h : conductor R x = ⊤) :
+    Algebra.adjoin R {x} = ⊤ :=
+  Algebra.eq_top_iff.mpr fun y ↦
+    one_mul y ▸ (mem_conductor_iff).mp ((Ideal.eq_top_iff_one (conductor R x)).mp h) y
+
+theorem conductor_eq_top_iff_adjoin_eq_top {x : S} :
+    conductor R x = ⊤ ↔ Algebra.adjoin R {x} = ⊤ :=
+  ⟨fun h ↦ adjoin_eq_top_of_conductor_eq_top h, fun h ↦ conductor_eq_top_of_adjoin_eq_top h⟩
 
 open IsLocalization in
 lemma mem_coeSubmodule_conductor {L} [CommRing L] [Algebra S L] [Algebra R L]
@@ -266,7 +276,7 @@ lemma quotMapEquivQuotQuotMap_symm_apply (hx : (conductor R x).comap (algebraMap
     coe_aeval_mk_apply]
 
 open Classical in
-/-- The first half of the **Kummer-Dedekind Theorem** in the monogenic case, stating that the prime
+/-- The first half of the **Kummer-Dedekind Theorem**, stating that the prime
     factors of `I*S` are in bijection with those of the minimal polynomial of the generator of `S`
     over `R`, taken `mod I`. -/
 noncomputable def normalizedFactorsMapEquivNormalizedFactorsMinPolyMk (hI : IsMaximal I)
@@ -283,7 +293,7 @@ noncomputable def normalizedFactorsMapEquivNormalizedFactorsMinPolyMk (hI : IsMa
     exact Polynomial.map_monic_ne_zero (minpoly.monic hx')
 
 open Classical in
-/-- The second half of the **Kummer-Dedekind Theorem** in the monogenic case, stating that the
+/-- The second half of the **Kummer-Dedekind Theorem**, stating that the
     bijection `FactorsEquiv'` defined in the first half preserves multiplicities. -/
 theorem emultiplicity_factors_map_eq_emultiplicity
     (hI : IsMaximal I) (hI' : I ≠ ⊥)
@@ -385,7 +395,7 @@ theorem normalizedFactorsMapEquivNormalizedFactorsMinPolyMk_symm_apply_eq_span
     normalizedFactorsEquivSpanNormalizedFactors]
   rw [normalizedFactorsEquivOfQuotEquiv_symm]
   dsimp [normalizedFactorsEquivOfQuotEquiv, idealFactorsEquivOfQuotEquiv, OrderIso.ofHomInv]
-  simp only [map_span, image_singleton, coe_coe,quotMapEquivQuotQuotMap_symm_apply hx hx' Q]
+  simp only [map_span, image_singleton, coe_coe, quotMapEquivQuotQuotMap_symm_apply hx hx' Q]
   refine le_antisymm (fun a ha ↦ ?_) (span_le.mpr <| union_subset_iff.mpr <|
     ⟨le_comap_of_map_le (by simp), by simp [mem_span_singleton]⟩)
   rw [mem_comap, Ideal.mem_span_singleton] at ha

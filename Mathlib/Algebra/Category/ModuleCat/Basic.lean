@@ -183,13 +183,8 @@ lemma hom_inv_apply {M N : ModuleCat.{v} R} (e : M ≅ N) (x : N) : e.hom (e.inv
 def homEquiv {M N : ModuleCat.{v} R} : (M ⟶ N) ≃ (M →ₗ[R] N) where
   toFun := Hom.hom
   invFun := ofHom
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 end
-
-instance : Inhabited (ModuleCat R) :=
-  ⟨of R R⟩
 
 /- Not a `@[simp]` lemma since it will rewrite the (co)domain of maps and cause
 definitional equality issues. -/
@@ -237,7 +232,6 @@ theorem isZero_of_subsingleton (M : ModuleCat R) [Subsingleton M] : IsZero M whe
   unique_to X := ⟨⟨⟨ofHom (0 : M →ₗ[R] X)⟩, fun f => by
     ext x
     rw [Subsingleton.elim x (0 : M)]
-    dsimp
     simp⟩⟩
   unique_from X := ⟨⟨⟨ofHom (0 : X →ₗ[R] M)⟩, fun f => by
     ext x
@@ -466,8 +460,6 @@ variable (M N : ModuleCat.{v} R)
   toFun := ModuleCat.Hom.hom
   invFun := ModuleCat.ofHom
   map_mul' _ _ := rfl
-  left_inv _ := rfl
-  right_inv _ := rfl
   map_add' _ _ := rfl
 
 /-- `ModuleCat.Hom.hom` as an isomorphism of monoids. -/

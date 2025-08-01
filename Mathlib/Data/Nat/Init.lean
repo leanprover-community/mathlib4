@@ -39,16 +39,16 @@ finsets, powers in groups, ...).
 Less basic uses of `ℕ` and `ℤ` should however use the typeclass-mediated development.
 
 The relevant files are:
-* `Mathlib.Data.Nat.Basic` for the continuation of the home-baked development on `ℕ`
-* `Mathlib.Data.Int.Init` for the continuation of the home-baked development on `ℤ`
-* `Mathlib.Algebra.Group.Nat` for the monoid instances on `ℕ`
-* `Mathlib.Algebra.Group.Int` for the group instance on `ℤ`
-* `Mathlib.Algebra.Ring.Nat` for the semiring instance on `ℕ`
-* `Mathlib.Algebra.Ring.Int` for the ring instance on `ℤ`
-* `Mathlib.Algebra.Order.Group.Nat` for the ordered monoid instance on `ℕ`
-* `Mathlib.Algebra.Order.Group.Int` for the ordered group instance on `ℤ`
-* `Mathlib.Algebra.Order.Ring.Nat` for the ordered semiring instance on `ℕ`
-* `Mathlib.Algebra.Order.Ring.Int` for the ordered ring instance on `ℤ`
+* `Mathlib/Data/Nat/Basic.lean` for the continuation of the home-baked development on `ℕ`
+* `Mathlib/Data/Int/Init.lean` for the continuation of the home-baked development on `ℤ`
+* `Mathlib/Algebra/Group/Nat.lean` for the monoid instances on `ℕ`
+* `Mathlib/Algebra/Group/Int.lean` for the group instance on `ℤ`
+* `Mathlib/Algebra/Ring/Nat.lean` for the semiring instance on `ℕ`
+* `Mathlib/Algebra/Ring/Int.lean` for the ring instance on `ℤ`
+* `Mathlib/Algebra/Order/Group/Nat.lean` for the ordered monoid instance on `ℕ`
+* `Mathlib/Algebra/Order/Group/Int.lean` for the ordered group instance on `ℤ`
+* `Mathlib/Algebra/Order/Ring/Nat.lean` for the ordered semiring instance on `ℕ`
+* `Mathlib/Algebra/Order/Ring/Int.lean` for the ordered ring instance on `ℤ`
 -/
 
 /- We don't want to import the algebraic hierarchy in this file. -/
@@ -98,11 +98,9 @@ lemma two_mul_ne_two_mul_add_one : 2 * n ≠ 2 * m + 1 :=
   mt (congrArg (· % 2))
     (by rw [Nat.add_comm, add_mul_mod_self_left, mul_mod_right, mod_eq_of_lt] <;> simp)
 
--- TODO: Deprecate
-lemma mul_right_eq_self_iff (ha : 0 < a) : a * b = a ↔ b = 1 := mul_eq_left <| ne_of_gt ha
-lemma mul_left_eq_self_iff (hb : 0 < b) : a * b = b ↔ a = 1 := mul_eq_right <| ne_of_gt hb
-
-lemma eq_zero_of_double_le (h : 2 * n ≤ n) : n = 0 := eq_zero_of_two_mul_le h
+@[deprecated (since := "2025-06-05")] alias mul_right_eq_self_iff := mul_eq_left
+@[deprecated (since := "2025-06-05")] alias mul_left_eq_self_iff := mul_eq_right
+@[deprecated (since := "2025-06-05")] alias eq_zero_of_double_le := eq_zero_of_two_mul_le
 
 /-! ### `div` -/
 
@@ -121,15 +119,11 @@ lemma div_lt_iff_lt_mul' (hb : 0 < b) : a / b < c ↔ a < c * b := div_lt_iff_lt
 
 @[deprecated (since := "2025-04-15")] alias sub_mul_div' := sub_mul_div
 
-lemma eq_zero_of_le_half (h : n ≤ n / 2) : n = 0 := eq_zero_of_le_div_two h
-
-lemma le_half_of_half_lt_sub (h : a / 2 < a - b) : b ≤ a / 2 := le_div_two_of_div_two_lt_sub h
-
-lemma half_le_of_sub_le_half (h : a - b ≤ a / 2) : a / 2 ≤ b := div_two_le_of_sub_le_div_two h
-
-protected lemma div_le_of_le_mul' (h : m ≤ k * n) : m / k ≤ n := Nat.div_le_of_le_mul h
-
-protected lemma div_le_self' (m n : ℕ) : m / n ≤ m := Nat.div_le_self m n
+@[deprecated (since := "2025-06-05")] alias eq_zero_of_le_half := eq_zero_of_le_div_two
+@[deprecated (since := "2025-06-05")] alias le_half_of_half_lt_sub := le_div_two_of_div_two_lt_sub
+@[deprecated (since := "2025-06-05")] alias half_le_of_sub_le_half := div_two_le_of_sub_le_div_two
+@[deprecated (since := "2025-06-05")] protected alias div_le_of_le_mul' := Nat.div_le_of_le_mul
+@[deprecated (since := "2025-06-05")] protected alias div_le_self' := Nat.div_le_self
 
 lemma two_mul_odd_div_two (hn : n % 2 = 1) : 2 * (n / 2) = n - 1 := by
   conv => rhs; rw [← Nat.mod_add_div n 2, hn, Nat.add_sub_cancel_left]
@@ -334,7 +328,7 @@ lemma decreasingInduction_trans {motive : (m : ℕ) → m ≤ k → Sort*} (hmn 
   | step hnk ih =>
       rw [decreasingInduction_succ _ _ (Nat.le_trans hmn hnk), ih, decreasingInduction_succ]
 
-lemma decreasingInduction_succ_left  {motive : (m : ℕ) → m ≤ n → Sort*} (of_succ self)
+lemma decreasingInduction_succ_left {motive : (m : ℕ) → m ≤ n → Sort*} (of_succ self)
     (smn : m + 1 ≤ n) (mn : m ≤ n) :
     decreasingInduction (motive := motive) of_succ self mn =
       of_succ m smn (decreasingInduction of_succ self smn) := by
@@ -401,8 +395,8 @@ lemma not_pos_pow_dvd {a n : ℕ} (ha : 1 < a) (hn : 1 < n) : ¬ a ^ n ∣ a :=
     (lt_of_eq_of_lt (Nat.pow_one a).symm ((Nat.pow_lt_pow_iff_right ha).2 hn))
 
 /-- `m` is not divisible by `n` if it is between `n * k` and `n * (k + 1)` for some `k`. -/
-theorem not_dvd_of_between_consec_multiples (h1 : n * k < m) (h2 : m < n * (k + 1)) : ¬n ∣ m :=
-  not_dvd_of_lt_of_lt_mul_succ h1 h2
+@[deprecated (since := "2025-06-05")] alias not_dvd_of_between_consec_multiples :=
+  not_dvd_of_lt_of_lt_mul_succ
 
 @[simp]
 protected theorem not_two_dvd_bit1 (n : ℕ) : ¬2 ∣ 2 * n + 1 := by
@@ -415,9 +409,8 @@ protected theorem not_two_dvd_bit1 (n : ℕ) : ¬2 ∣ 2 * n + 1 := by
 @[simp] protected lemma dvd_add_self_right : m ∣ n + m ↔ m ∣ n := Nat.dvd_add_left (Nat.dvd_refl m)
 
 /-- `n` is not divisible by `a` iff it is between `a * k` and `a * (k + 1)` for some `k`. -/
-lemma not_dvd_iff_between_consec_multiples (n : ℕ) {a : ℕ} (ha : 0 < a) :
-    ¬ a ∣ n ↔ (∃ k : ℕ, a * k < n ∧ n < a * (k + 1)) :=
-  not_dvd_iff_lt_mul_succ n ha
+@[deprecated (since := "2025-06-05")] alias not_dvd_iff_between_consec_multiples :=
+  not_dvd_iff_lt_mul_succ
 
 /-- Two natural numbers are equal if and only if they have the same multiples. -/
 lemma dvd_right_iff_eq : (∀ a : ℕ, m ∣ a ↔ n ∣ a) ↔ m = n :=

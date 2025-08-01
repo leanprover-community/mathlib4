@@ -64,7 +64,7 @@ theorem log_of_right_le_one (b : ℕ) {r : R} (hr : r ≤ 1) : log b r = -Nat.cl
   obtain rfl | hr := hr.eq_or_lt
   · rw [log, if_pos hr, inv_one, Nat.ceil_one, Nat.floor_one, Nat.log_one_right, Nat.clog_one_right,
       Int.ofNat_zero, neg_zero]
-  · exact if_neg hr.not_le
+  · exact if_neg hr.not_ge
 
 @[simp, norm_cast]
 theorem log_natCast (b : ℕ) (n : ℕ) : log b (n : R) = Nat.log b n := by
@@ -97,10 +97,10 @@ theorem zpow_log_le_self {b : ℕ} {r : R} (hb : 1 < b) (hr : 0 < r) : (b : R) ^
     exact inv_le_of_inv_le₀ hr (Nat.ceil_le.1 <| Nat.le_pow_clog hb _)
 
 theorem lt_zpow_succ_log_self {b : ℕ} (hb : 1 < b) (r : R) : r < (b : R) ^ (log b r + 1) := by
-  rcases le_or_lt r 0 with hr | hr
+  rcases le_or_gt r 0 with hr | hr
   · rw [log_of_right_le_zero _ hr, zero_add, zpow_one]
     exact hr.trans_lt (zero_lt_one.trans_le <| mod_cast hb.le)
-  rcases le_or_lt 1 r with hr1 | hr1
+  rcases le_or_gt 1 r with hr1 | hr1
   · rw [log_of_one_le_right _ hr1]
     rw [Int.ofNat_add_one_out, zpow_natCast, ← Nat.cast_pow]
     apply Nat.lt_of_floor_lt
@@ -187,19 +187,19 @@ theorem clog_of_right_le_one (b : ℕ) {r : R} (hr : r ≤ 1) : clog b r = -Nat.
   obtain rfl | hr := hr.eq_or_lt
   · rw [clog, if_pos hr, inv_one, Nat.ceil_one, Nat.floor_one, Nat.log_one_right,
       Nat.clog_one_right, Int.ofNat_zero, neg_zero]
-  · exact if_neg hr.not_le
+  · exact if_neg hr.not_ge
 
 theorem clog_of_right_le_zero (b : ℕ) {r : R} (hr : r ≤ 0) : clog b r = 0 := by
-  rw [clog, if_neg (hr.trans_lt zero_lt_one).not_le, neg_eq_zero, Int.natCast_eq_zero,
+  rw [clog, if_neg (hr.trans_lt zero_lt_one).not_ge, neg_eq_zero, Int.natCast_eq_zero,
     Nat.log_eq_zero_iff]
-  rcases le_or_lt b 1 with hb | hb
+  rcases le_or_gt b 1 with hb | hb
   · exact Or.inr hb
   · refine Or.inl (lt_of_le_of_lt ?_ hb)
     exact Nat.floor_le_one_of_le_one ((inv_nonpos.2 hr).trans zero_le_one)
 
 @[simp]
 theorem clog_inv (b : ℕ) (r : R) : clog b r⁻¹ = -log b r := by
-  rcases lt_or_le 0 r with hrp | hrp
+  rcases lt_or_ge 0 r with hrp | hrp
   · obtain hr | hr := le_total 1 r
     · rw [clog_of_right_le_one _ (inv_le_one_of_one_le₀ hr), log_of_one_le_right _ hr, inv_inv]
     · rw [clog_of_one_le_right _ ((one_le_inv₀ hrp).2 hr), log_of_right_le_one _ hr, neg_neg]
@@ -229,7 +229,7 @@ theorem clog_of_left_le_one {b : ℕ} (hb : b ≤ 1) (r : R) : clog b r = 0 := b
   rw [← neg_log_inv_eq_clog, log_of_left_le_one hb, neg_zero]
 
 theorem self_le_zpow_clog {b : ℕ} (hb : 1 < b) (r : R) : r ≤ (b : R) ^ clog b r := by
-  rcases le_or_lt r 0 with hr | hr
+  rcases le_or_gt r 0 with hr | hr
   · rw [clog_of_right_le_zero _ hr, zpow_zero]
     exact hr.trans zero_le_one
   rw [← neg_log_inv_eq_clog, zpow_neg, le_inv_comm₀ hr (zpow_pos ..)]

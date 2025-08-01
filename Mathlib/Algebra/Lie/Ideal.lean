@@ -245,10 +245,7 @@ In other words, in general, ideals of `I`, regarded as a Lie algebra in its own 
 same as ideals of `L` contained in `I`. -/
 instance subsingleton_of_bot : Subsingleton (LieIdeal R (⊥ : LieIdeal R L)) := by
   apply subsingleton_of_bot_eq_top
-  ext ⟨x, hx⟩
-  rw [LieSubmodule.mem_bot] at hx
-  subst hx
-  simp only [LieSubmodule.mk_eq_zero, LieSubmodule.mem_bot, LieSubmodule.mem_top]
+  subsingleton
 
 end LieIdeal
 
@@ -360,7 +357,7 @@ end LieHom
 
 namespace LieIdeal
 variable [LieAlgebra R L] [LieModule R L M] [LieModule R L M']
-variable {f : L →ₗ⁅R⁆ L'} {I : LieIdeal R L} {J : LieIdeal R L'}
+variable {f : L →ₗ⁅R⁆ L'} {I I₂ : LieIdeal R L} {J : LieIdeal R L'}
 
 @[simp]
 theorem map_eq_bot_iff : I.map f = ⊥ ↔ I ≤ f.ker := by
@@ -375,8 +372,8 @@ theorem coe_map_of_surjective (h : Function.Surjective f) :
         have hy' : ∃ x : L, x ∈ I ∧ f x = y := by simpa [hy]
         obtain ⟨z₂, hz₂, rfl⟩ := hy'
         obtain ⟨z₁, rfl⟩ := h x
-        simp only [LieHom.coe_toLinearMap, SetLike.mem_coe, Set.mem_image,
-          LieSubmodule.mem_toSubmodule, Submodule.mem_carrier, Submodule.map_coe]
+        simp only [LieHom.coe_toLinearMap, SetLike.mem_coe, Set.mem_image, Submodule.mem_carrier,
+          Submodule.map_coe]
         use ⁅z₁, z₂⁆
         exact ⟨I.lie_mem hz₂, f.map_lie z₁ z₂⟩ }
   rw [map, toLieSubalgebra_toSubmodule, LieSubmodule.coe_lieSpan_submodule_eq_iff]
@@ -480,6 +477,21 @@ theorem incl_idealRange : I.incl.idealRange = I := by
 theorem incl_isIdealMorphism : I.incl.IsIdealMorphism := by
   rw [I.incl.isIdealMorphism_def, incl_idealRange]
   exact (I : LieSubalgebra R L).incl_range.symm
+
+variable {I}
+
+@[simp] theorem comap_incl_eq_top : I₂.comap I.incl = ⊤ ↔ I ≤ I₂ := by
+  rw [← LieSubmodule.toSubmodule_inj, LieIdeal.comap_toSubmodule, LieSubmodule.top_toSubmodule,
+    incl_coe]
+  simp_rw [toLieSubalgebra_toSubmodule]
+  rw [Submodule.comap_subtype_eq_top, LieSubmodule.toSubmodule_le_toSubmodule]
+
+@[simp] theorem comap_incl_eq_bot : I₂.comap I.incl = ⊥ ↔ Disjoint I I₂ := by
+  rw [disjoint_iff, ←LieSubmodule.toSubmodule_inj, LieIdeal.comap_toSubmodule,
+    LieSubmodule.bot_toSubmodule, ← LieSubmodule.toSubmodule_inj, LieSubmodule.inf_toSubmodule,
+    LieSubmodule.bot_toSubmodule, incl_coe]
+  simp_rw [toLieSubalgebra_toSubmodule]
+  rw [← Submodule.disjoint_iff_comap_eq_bot, disjoint_iff]
 
 end LieIdeal
 
