@@ -255,7 +255,7 @@ theorem wellFounded_rel : WellFounded SylverCoinage.Rel := by
 /-- A position in the game of Sylver coinage is a P-position (i.e., a win for the previous player)
 if every move leads to an N-position (i.e., a win for the next player). -/
 def IsPPosition (s : Set ℕ) : Prop :=
-  ∀ t, SylverCoinage.Rel t s, ¬ IsPPosition t
+  ∀ t, SylverCoinage.Rel t s → ¬ IsPPosition t
 termination_by wellFounded_rel.wrap s
 
 variable {s : Set ℕ}
