@@ -546,6 +546,7 @@ theorem card_sdiff (h : s ⊆ t) : #(t \ s) = #t - #s := by
 theorem card_sdiff_add_card_eq_card {s t : Finset α} (h : s ⊆ t) : #(t \ s) + #s = #t :=
   ((Nat.sub_eq_iff_eq_add (card_le_card h)).mp (card_sdiff h).symm).symm
 
+attribute [local gcongr] Nat.sub_le_sub_left in
 theorem le_card_sdiff (s t : Finset α) : #t - #s ≤ #(t \ s) := by
   grw [← sdiff_inter_self_right, card_sdiff inter_subset_right, inter_subset_left]
 
