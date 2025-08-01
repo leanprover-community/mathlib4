@@ -178,13 +178,10 @@ lemma nonempty_inter_support_of_pos {s : Set X} (hμ : 0 < μ s) :
       <| le_of_eq (measure_compl_support)
   contradiction
 
--- this is optional, as with the common assumption `OpensMeasurableSpace` the
--- set will simply be measurable because it is open
 @[simp]
 lemma nullMeasurableSet_compl_support : NullMeasurableSet (μ.supportᶜ) μ :=
   NullMeasurableSet.of_null measure_compl_support
 
--- likewise, optional
 @[simp]
 lemma nullMeasurableSet_support : NullMeasurableSet μ.support μ :=
   NullMeasurableSet.compl_iff.mp nullMeasurableSet_compl_support
@@ -193,9 +190,12 @@ lemma nullMeasurableSet_support : NullMeasurableSet μ.support μ :=
 lemma measure_support : μ μ.support = μ Set.univ :=
   measure_of_measure_compl_eq_zero measure_compl_support
 
-lemma nonempty_support (hμ : μ ≠ 0) : μ.support.Nonempty := sorry
+lemma nonempty_support (hμ : μ ≠ 0) : μ.support.Nonempty :=
+   Nonempty.right <| nonempty_inter_support_of_pos <| measure_univ_pos.mpr hμ
 
-lemma nonempty_support_iff : μ.support.Nonempty ↔ μ ≠ 0 := sorry
+lemma nonempty_support_iff : μ.support.Nonempty ↔ μ ≠ 0 :=
+  ⟨fun h e ↦ (not_nonempty_iff_eq_empty.mpr <| (congrArg Measure.support e).trans
+    <| support_zero) h, fun h ↦ nonempty_support h⟩
 
 end Measure
 
