@@ -507,7 +507,6 @@ lemma valuation_eq_zero_iff {x : R} :
     valuation R x = 0 ↔ x ≤ᵥ 0 :=
   ValueGroupWithZero.mk_eq_zero _ _
 
-@[simp]
 lemma valuation_posSubmonoid_ne_zero (x : posSubmonoid R) :
     valuation R (x : R) ≠ 0 := by
   rw [ne_eq, valuation_eq_zero_iff]
