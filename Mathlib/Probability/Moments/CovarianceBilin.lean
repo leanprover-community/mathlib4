@@ -5,6 +5,7 @@ Authors: Rémy Degenne
 -/
 import Mathlib.Analysis.LocallyConvex.ContinuousOfBounded
 import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
+import Mathlib.MeasureTheory.Measure.Typeclasses.FiniteMoments
 import Mathlib.Probability.Moments.Covariance
 
 /-!
@@ -29,10 +30,6 @@ Let `μ` be a finite measure on a normed space `E` with the Borel σ-algebra. We
 * `covarianceBilin_apply` : the covariance of `μ` on `L₁, L₂ : Dual ℝ E` is equal to
   `∫ x, (L₁ x - μ[L₁]) * (L₂ x - μ[L₂]) ∂μ`.
 * `covarianceBilin_same_eq_variance`: `covarianceBilin μ L L = Var[L; μ]`.
-
-## Implementation notes
-
-The hypothesis that `μ` has a second moment is written as `MemLp id 2 μ` in the code.
 
 -/
 
@@ -215,7 +212,7 @@ end Centered
 
 section Covariance
 
-variable [NormedSpace ℝ E] [BorelSpace E] [IsFiniteMeasure μ]
+variable [NormedSpace ℝ E] [BorelSpace E]
 
 open Classical in
 /-- Continuous bilinear form with value `∫ x, (L₁ x - μ[L₁]) * (L₂ x - μ[L₂]) ∂μ` on `(L₁, L₂)`
@@ -225,7 +222,7 @@ def covarianceBilin (μ : Measure E) : Dual ℝ E →L[ℝ] Dual ℝ E →L[ℝ]
   uncenteredCovarianceBilin (μ.map (fun x ↦ x - ∫ x, x ∂μ))
 
 @[simp]
-lemma covarianceBilin_of_not_memLp (h : ¬ MemLp id 2 μ) (L₁ L₂ : Dual ℝ E) :
+lemma covarianceBilin_of_not_memLp [IsFiniteMeasure μ] (h : ¬ MemLp id 2 μ) (L₁ L₂ : Dual ℝ E) :
     covarianceBilin μ L₁ L₂ = 0 := by
   rw [covarianceBilin, uncenteredCovarianceBilin_of_not_memLp]
   rw [(measurableEmbedding_subRight _).memLp_map_measure_iff]
@@ -238,7 +235,7 @@ lemma covarianceBilin_of_not_memLp (h : ¬ MemLp id 2 μ) (L₁ L₂ : Dual ℝ 
 lemma covarianceBilin_zero : covarianceBilin (0 : Measure E) = 0 := by
   rw [covarianceBilin, Measure.map_zero, uncenteredCovarianceBilin_zero]
 
-lemma covarianceBilin_comm (L₁ L₂ : Dual ℝ E) :
+lemma covarianceBilin_comm [IsFiniteMeasure μ] (L₁ L₂ : Dual ℝ E) :
     covarianceBilin μ L₁ L₂ = covarianceBilin μ L₂ L₁ := by
   by_cases h : MemLp id 2 μ
   · have h' : MemLp id 2 (Measure.map (fun x ↦ x - ∫ (x : E), x ∂μ) μ) :=
@@ -248,27 +245,28 @@ lemma covarianceBilin_comm (L₁ L₂ : Dual ℝ E) :
 
 variable [CompleteSpace E]
 
-lemma covarianceBilin_apply (h : MemLp id 2 μ) (L₁ L₂ : Dual ℝ E) :
+lemma covarianceBilin_apply [HasFiniteVar μ] (L₁ L₂ : Dual ℝ E) :
     covarianceBilin μ L₁ L₂ = ∫ x, (L₁ x - μ[L₁]) * (L₂ x - μ[L₂]) ∂μ := by
   rw [covarianceBilin, uncenteredCovarianceBilin_apply,
     integral_map (by fun_prop) (by fun_prop)]
-  · have hL (L : Dual ℝ E) : μ[L] = L (∫ x, x ∂μ) := L.integral_comp_comm (h.integrable (by simp))
+  · have hL (L : Dual ℝ E) : μ[L] = L (∫ x, x ∂μ) := L.integral_comp_comm integrable_id
     simp [← hL]
-  · exact (measurableEmbedding_subRight _).memLp_map_measure_iff.mpr <| h.sub (memLp_const _)
+  · exact (measurableEmbedding_subRight _).memLp_map_measure_iff.mpr <|
+      memLp_two_id.sub (memLp_const _)
 
-lemma covarianceBilin_apply' (h : MemLp id 2 μ) (L₁ L₂ : Dual ℝ E) :
+lemma covarianceBilin_apply' [HasFiniteVar μ] (L₁ L₂ : Dual ℝ E) :
     covarianceBilin μ L₁ L₂ = ∫ x, L₁ (x - μ[id]) * L₂ (x - μ[id]) ∂μ := by
-  rw [covarianceBilin_apply h]
-  have hL (L : Dual ℝ E) : μ[L] = L (∫ x, x ∂μ) := L.integral_comp_comm (h.integrable (by simp))
+  rw [covarianceBilin_apply]
+  have hL (L : Dual ℝ E) : μ[L] = L (∫ x, x ∂μ) := L.integral_comp_comm integrable_id
   simp [← hL]
 
-lemma covarianceBilin_eq_covariance (h : MemLp id 2 μ) (L₁ L₂ : Dual ℝ E) :
+lemma covarianceBilin_eq_covariance [HasFiniteVar μ] (L₁ L₂ : Dual ℝ E) :
     covarianceBilin μ L₁ L₂ = cov[L₁, L₂; μ] := by
-  rw [covarianceBilin_apply h, covariance]
+  rw [covarianceBilin_apply, covariance]
 
-lemma covarianceBilin_self_eq_variance (h : MemLp id 2 μ) (L : Dual ℝ E) :
+lemma covarianceBilin_self_eq_variance [HasFiniteVar μ] (L : Dual ℝ E) :
     covarianceBilin μ L L = Var[L; μ] := by
-  rw [covarianceBilin_eq_covariance h, covariance_self (by fun_prop)]
+  rw [covarianceBilin_eq_covariance, covariance_self (by fun_prop)]
 
 @[deprecated (since := "2025-07-16")] alias covarianceBilin_same_eq_variance :=
   covarianceBilin_self_eq_variance
