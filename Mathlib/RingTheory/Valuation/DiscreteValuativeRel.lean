@@ -20,7 +20,7 @@ In the rank-one case, this is equivalent to the value group being isomorphic to 
 
 namespace ValuativeRel
 
-variable {R : Type} [CommRing R] [ValuativeRel R]
+variable {R : Type*} [CommRing R] [ValuativeRel R]
 
 open WithZero
 
