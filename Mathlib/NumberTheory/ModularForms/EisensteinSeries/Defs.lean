@@ -73,6 +73,7 @@ lemma gammaSetN_map_eq {N : ℕ} (v : gammaSetN N) : v.1 = N • gammaSetN_map N
   simp only [gammaSetN, singleton_smul, mem_smul_set, nsmul_eq_mul] at hv2
   exact (hv2.choose_spec.2).symm
 
+/-- The equivalence between `gammaSetN` and `gammaSet` for non-zero `N`. -/
 noncomputable def gammaSetN_Equiv {N : ℕ} (hN : N ≠ 0) : gammaSetN N ≃ gammaSet 1 0 where
   toFun v := gammaSetN_map N v
   invFun v := by
