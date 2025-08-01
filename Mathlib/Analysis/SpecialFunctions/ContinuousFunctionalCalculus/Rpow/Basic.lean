@@ -219,7 +219,7 @@ section sqrt
 noncomputable def sqrt (a : A) : A := cfcₙ NNReal.sqrt a
 
 @[simp, grind]
-lemma sqrt_nonneg {a : A} : 0 ≤ sqrt a := cfcₙ_predicate _ a
+lemma sqrt_nonneg (a : A) : 0 ≤ sqrt a := cfcₙ_predicate _ a
 
 lemma sqrt_eq_nnrpow (a : A) : sqrt a = a ^ (1 / 2 : ℝ≥0) := by
   simp only [sqrt]
