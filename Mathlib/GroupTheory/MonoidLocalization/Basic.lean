@@ -5,6 +5,7 @@ Authors: Amelia Livingston
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.Group.Submonoid.Operations
+import Mathlib.Algebra.Regular.Basic
 import Mathlib.GroupTheory.Congruence.Hom
 import Mathlib.GroupTheory.OreLocalization.Basic
 
@@ -1341,3 +1342,39 @@ protected def localizationMap : S.LocalizationMap R[S⁻¹] := Localization.mono
 protected noncomputable def equivMonoidLocalization : Localization S ≃* R[S⁻¹] := MulEquiv.refl _
 
 end OreLocalization
+
+namespace Submonoid.LocalizationMap
+
+variable {M N : Type*} [CommMonoid M] {S : Submonoid M} [CommMonoid N]
+
+@[to_additive] theorem toMap_injective_iff (f : LocalizationMap S N) :
+    Injective f.toMap ↔ ∀ ⦃x⦄, x ∈ S → IsRegular x := by
+  simp_rw [Commute.isRegular_iff (Commute.all _), IsLeftRegular,
+    Injective, LocalizationMap.eq_iff_exists, exists_imp, Subtype.forall]
+  exact forall₂_swap
+
+@[to_additive] theorem top_toMap_injective_iff (f : (⊤ : Submonoid M).LocalizationMap N) :
+    Injective f.toMap ↔ IsCancelMul M := by
+  simp [toMap_injective_iff, isCancelMul_iff_forall_isRegular]
+
+theorem isRegular_toMap_apply (f : LocalizationMap S N) {m : M} (hm : IsRegular m) :
+    IsRegular (f.toMap m) := by
+  refine (Commute.isRegular_iff (Commute.all _)).mpr fun n₁ n₂ eq ↦ ?_
+  have ⟨ms₁, eq₁⟩ := f.surj n₁
+  have ⟨ms₂, eq₂⟩ := f.surj n₂
+  rw [← (f.map_units (ms₁.2 * ms₂.2)).mul_left_inj, Submonoid.coe_mul]
+  replace eq := congr($eq * f.toMap (ms₁.2 * ms₂.2))
+  simp_rw [mul_assoc] at eq
+  rw [map_mul, ← mul_assoc n₁, eq₁, ← mul_assoc n₂, mul_right_comm n₂, eq₂] at eq ⊢
+  simp_rw [← map_mul, eq_iff_exists] at eq ⊢
+  simp_rw [mul_left_comm _ m] at eq
+  exact eq.imp fun _ ↦ (hm.1 ·)
+
+theorem isCancelMul [IsCancelMul M] (f : LocalizationMap S N) : IsCancelMul N := by
+  simp_rw [isCancelMul_iff_forall_isRegular, Commute.isRegular_iff (Commute.all _),
+    ← Commute.isRightRegular_iff (Commute.all _)]
+  intro n
+  have ⟨ms, eq⟩ := f.surj n
+  exact (eq ▸ f.isRegular_toMap_apply (isCancelMul_iff_forall_isRegular.mp ‹_› ms.1)).2.of_mul
+
+end Submonoid.LocalizationMap
