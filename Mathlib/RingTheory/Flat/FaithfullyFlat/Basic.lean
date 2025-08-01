@@ -206,7 +206,7 @@ end
 
 /-- Any free, nontrivial `R`-module is flat. -/
 instance [Nontrivial M] [Module.Free R M] : FaithfullyFlat R M :=
-  of_linearEquiv _ _ (Free.repr R M)
+  of_linearEquiv _ _ (chooseBasis R M).repr
 
 section
 
