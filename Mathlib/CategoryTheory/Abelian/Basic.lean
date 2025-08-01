@@ -39,7 +39,7 @@ working with.
 * In an abelian category, mono + epi = iso.
 * If `f : X ⟶ Y`, then the map `factorThruImage f : X ⟶ image f` is an epimorphism, and the map
   `factorThruCoimage f : coimage f ⟶ Y` is a monomorphism.
-* Factoring through the image and coimage is a strong epi-mono factorisation. This means that
+* Factoring through the image and coimage is a strong epi-mono factorization. This means that
   * every abelian category has images. We provide the isomorphism
     `imageIsoImage : abelian.image f ≅ limits.image f`.
   * the canonical morphism `coimageImageComparison : coimage f ⟶ image f`
@@ -131,7 +131,7 @@ variable [Limits.HasKernels C] [Limits.HasCokernels C]
 
 namespace OfCoimageImageComparisonIsIso
 
-/-- The factorisation of a morphism through its abelian image. -/
+/-- The factorization of a morphism through its abelian image. -/
 @[simps]
 def imageMonoFactorization {X Y : C} (f : X ⟶ Y) : MonoFactorization f where
   I := Abelian.image f
@@ -148,9 +148,9 @@ theorem imageMonoFactorization_e' {X Y : C} (f : X ⟶ Y) :
     cokernel.π_desc_assoc]
 
 /-- If the coimage-image comparison morphism for a morphism `f` is an isomorphism,
-we obtain an image factorisation of `f`. -/
-def imageFactorisation {X Y : C} (f : X ⟶ Y) [IsIso (Abelian.coimageImageComparison f)] :
-    ImageFactorisation f where
+we obtain an image factorization of `f`. -/
+def imageFactorization {X Y : C} (f : X ⟶ Y) [IsIso (Abelian.coimageImageComparison f)] :
+    ImageFactorization f where
   F := imageMonoFactorization f
   isImage :=
     { lift := fun F => inv (Abelian.coimageImageComparison f) ≫ cokernel.desc _ F.e F.kernel_ι_comp
@@ -174,7 +174,7 @@ variable [∀ {X Y : C} (f : X ⟶ Y), IsIso (Abelian.coimageImageComparison f)]
 
 /-- A category in which coimage-image comparisons are all isomorphisms has images. -/
 theorem hasImages : HasImages C :=
-  { has_image := fun {_} {_} f => { exists_image := ⟨imageFactorisation f⟩ } }
+  { has_image := fun {_} {_} f => { exists_image := ⟨imageFactorization f⟩ } }
 
 variable [Limits.HasFiniteProducts C]
 
@@ -330,7 +330,7 @@ theorem comp_coimage_π_eq_zero {R : C} {g : Q ⟶ R} (h : f ≫ g = 0) : f ≫ 
 
 end
 
-/-- Factoring through the image is a strong epi-mono factorisation. -/
+/-- Factoring through the image is a strong epi-mono factorization. -/
 @[simps]
 def imageStrongEpiMonoFactorization : StrongEpiMonoFactorization f where
   I := Abelian.image f
@@ -339,7 +339,7 @@ def imageStrongEpiMonoFactorization : StrongEpiMonoFactorization f where
   e := Abelian.factorThruImage f
   e_strong_epi := strongEpi_of_epi _
 
-/-- Factoring through the coimage is a strong epi-mono factorisation. -/
+/-- Factoring through the coimage is a strong epi-mono factorization. -/
 @[simps]
 def coimageStrongEpiMonoFactorization : StrongEpiMonoFactorization f where
   I := Abelian.coimage f
@@ -352,7 +352,7 @@ end Factor
 
 section HasStrongEpiMonoFactorizations
 
-/-- An abelian category has strong epi-mono factorisations. -/
+/-- An abelian category has strong epi-mono factorizations. -/
 instance (priority := 100) : HasStrongEpiMonoFactorizations C :=
   HasStrongEpiMonoFactorizations.mk fun f => imageStrongEpiMonoFactorization f
 

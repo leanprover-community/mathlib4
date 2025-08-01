@@ -251,7 +251,7 @@ def imageMonoFactorization {F F' : Sheaf J (Type w)} (f : F ⟶ F') : Limits.Mon
 attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /-- The mono factorization given by `image_sheaf` for a morphism is an image. -/
 noncomputable def imageFactorization {F F' : Sheaf J (Type (max v u))} (f : F ⟶ F') :
-    Limits.ImageFactorisation f where
+    Limits.ImageFactorization f where
   F := imageMonoFactorization f
   isImage :=
     { lift := fun I => by

@@ -511,18 +511,18 @@ def MonoFactorizationZero (X Y : C) : MonoFactorization (0 : X ⟶ Y) where
   m := 0
   e := 0
 
-/-- The factorisation through the zero object is an image factorisation.
+/-- The factorization through the zero object is an image factorization.
 -/
-def imageFactorisationZero (X Y : C) : ImageFactorisation (0 : X ⟶ Y) where
+def imageFactorizationZero (X Y : C) : ImageFactorization (0 : X ⟶ Y) where
   F := MonoFactorizationZero X Y
   isImage := { lift := fun _ => 0 }
 
 instance hasImage_zero {X Y : C} : HasImage (0 : X ⟶ Y) :=
-  HasImage.mk <| imageFactorisationZero _ _
+  HasImage.mk <| imageFactorizationZero _ _
 
 /-- The image of a zero morphism is the zero object. -/
 def imageZero {X Y : C} : image (0 : X ⟶ Y) ≅ 0 :=
-  IsImage.isoExt (Image.isImage (0 : X ⟶ Y)) (imageFactorisationZero X Y).isImage
+  IsImage.isoExt (Image.isImage (0 : X ⟶ Y)) (imageFactorizationZero X Y).isImage
 
 /-- The image of a morphism which is equal to zero is the zero object. -/
 def imageZero' {X Y : C} {f : X ⟶ Y} (h : f = 0) [HasImage f] : image f ≅ 0 :=
