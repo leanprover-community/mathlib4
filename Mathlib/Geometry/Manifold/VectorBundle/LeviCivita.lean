@@ -256,17 +256,12 @@ lemma leviCivita_rhs'_addX_apply [CompleteSpace E]
     (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     leviCivita_rhs' I (X + X') Y Z x =
       leviCivita_rhs' I X Y Z x + leviCivita_rhs' I X' Y Z x := by
-  simp only [leviCivita_rhs']
-  have h : VectorField.mlieBracket I (X + X') Y x =
-    VectorField.mlieBracket I X Y x + VectorField.mlieBracket I X' Y x := by
-    simp [VectorField.mlieBracket_add_left (W := Y) hX hX']
-  have h' : VectorField.mlieBracket I (X + X') Z x =
-    VectorField.mlieBracket I X Z x + VectorField.mlieBracket I X' Z x := by
-    simp [VectorField.mlieBracket_add_left (W := Z) hX hX']
-  simp only [rhs_aux_addX, Pi.add_apply, Pi.sub_apply]
+  simp only [leviCivita_rhs', rhs_aux_addX, Pi.add_apply, Pi.sub_apply]
   -- We have to rewrite back and forth: the Lie bracket is only additive at x,
   -- as we are only asking for differentiability at x.
-  simp_rw [product_apply, h, h', inner_add_right, ← product_apply, product_add_left_apply]
+  simp_rw [product_apply, VectorField.mlieBracket_add_left (W := Y) hX hX',
+    VectorField.mlieBracket_add_left (W := Z) hX hX', inner_add_right, ← product_apply,
+    product_add_left_apply]
   rw [rhs_aux_addY_apply, rhs_aux_addZ_apply] <;> try assumption
   abel
 
@@ -299,7 +294,14 @@ lemma leviCivita_rhs'_addY_apply [CompleteSpace E]
     (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x)
     (hY' : MDiffAt (T% Y') x) (hZ : MDiffAt (T% Z) x) :
     leviCivita_rhs' I X (Y + Y') Z x = leviCivita_rhs' I X Y Z x + leviCivita_rhs' I X Y' Z x := by
-  sorry -- TODO: prove this!
+  simp only [leviCivita_rhs', Pi.add_apply, Pi.sub_apply, product_add_left_apply]
+  rw [rhs_aux_addX, rhs_aux_addY_apply, rhs_aux_addZ_apply] <;> try assumption
+  -- We have to rewrite back and forth: the Lie bracket is only additive at x,
+  -- as we are only asking for differentiability at x.
+  simp only [product_apply]
+  simp only [Pi.add_apply, VectorField.mlieBracket_add_right (V := X) hY hY',
+    VectorField.mlieBracket_add_right (V := Z) hY hY', inner_add_right, ← product_apply]
+  abel
 
 lemma leviCivita_rhs_addY_apply [CompleteSpace E]
     (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x)
