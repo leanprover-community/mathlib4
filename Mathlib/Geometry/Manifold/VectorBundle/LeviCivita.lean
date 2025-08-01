@@ -280,8 +280,8 @@ lemma leviCivita_rhs'_addX [CompleteSpace E]
 lemma leviCivita_rhs_addX_apply [CompleteSpace E]
     (hX : MDiffAt (T% X) x) (hX' : MDiffAt (T% X') x)
     (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
-    leviCivita_rhs I (X + X') Y Z = leviCivita_rhs I X Y Z + leviCivita_rhs I X' Y Z := by
-  sorry -- divide the previous equation by 2
+    leviCivita_rhs I (X + X') Y Z x = leviCivita_rhs I X Y Z x + leviCivita_rhs I X' Y Z x := by
+  simp [leviCivita_rhs, leviCivita_rhs'_addX_apply I hX hX' hY hZ, left_distrib]
 
 lemma leviCivita_rhs_addX [CompleteSpace E]
     (hX : MDiff (T% X)) (hX' : MDiff (T% X')) (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) :
@@ -305,7 +305,7 @@ lemma leviCivita_rhs_addY_apply [CompleteSpace E]
     (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x)
     (hY' : MDiffAt (T% Y') x) (hZ : MDiffAt (T% Z) x) :
     leviCivita_rhs I X (Y + Y') Z x = leviCivita_rhs I X Y Z x + leviCivita_rhs I X Y' Z x := by
-  sorry -- divide the previous equation by 2
+  simp [leviCivita_rhs, leviCivita_rhs'_addY_apply I hX hY hY' hZ, left_distrib]
 
 lemma leviCivita_rhs_addY [CompleteSpace E]
     (hX : MDiff (T% X)) (hY : MDiff (T% Y)) (hY' : MDiff (T% Y')) (hZ : MDiff (T% Z)) :
@@ -337,7 +337,7 @@ lemma leviCivita_rhs'_addZ [CompleteSpace E]
 lemma leviCivita_rhs_addZ [CompleteSpace E]
     (hX : MDiff (T% X)) (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) (hZ' : MDiff (T% Z')) :
     leviCivita_rhs I X Y (Z + Z') = leviCivita_rhs I X Y Z + leviCivita_rhs I X Y Z' := by
-  sorry -- divide previous equation by two
+  simp [leviCivita_rhs, leviCivita_rhs'_addZ I hX hY hZ hZ']
 
 lemma leviCivita_rhs_smulZ [CompleteSpace E] {f : M → ℝ} (hf : MDiff f) (hZ : MDiff (T% Z)) :
     leviCivita_rhs I X Y (f • Z) = f • leviCivita_rhs I X Y Z := by
