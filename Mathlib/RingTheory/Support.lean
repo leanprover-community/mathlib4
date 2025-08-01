@@ -259,6 +259,7 @@ theorem Module.support_quotient (I : Ideal R) :
     exact e.nontrivial
 
 open Pointwise in
+@[simp]
 theorem Module.support_quotSMulTop (x : R) :
     support R (QuotSMulTop x M) = support R M ∩ zeroLocus {x} :=
   (x • (⊤ : Submodule R M)).quotEquivOfEq (Ideal.span {x} • ⊤)
