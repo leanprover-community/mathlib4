@@ -10,7 +10,6 @@ import Mathlib.RingTheory.Ideal.IsPrincipalPowQuotient
 import Mathlib.RingTheory.Valuation.Archimedean
 import Mathlib.Topology.Algebra.Valued.NormedValued
 import Mathlib.Topology.Algebra.Valued.ValuedField
-import Mathlib.Algebra.Order.Monoid.LocallyFiniteOrder
 
 /-!
 # Necessary and sufficient conditions for a locally compact valued field
@@ -172,7 +171,9 @@ section CompactDVR
 open Valued
 
 lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X := K) 𝒪[K]) :
-    Nonempty (LocallyFiniteOrder (MonoidHom.mrange (Valued.v : Valuation K Γ₀))ˣ) := by
+    Nonempty (LocallyFiniteOrder (MonoidHom.mrange (Valued.v : Valuation K Γ₀))ˣ):= by
+  -- TODO: generalize to `Valuation.Integer`, which will require showing that `IsCompact`
+  -- pulls back across `TopologicalSpace.induced` from a `LocallyCompactSpace`.
   constructor
   refine LocallyFiniteOrder.ofFiniteIcc ?_
   -- We only need to show that we can construct a finite set for some set between
@@ -260,35 +261,36 @@ lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X :=
       rw [dif_neg hcj]
       simp [← hj', hc]
 
+lemma mulArchimedean_mrange_of_isCompact_integer (hc : IsCompact (X := K) 𝒪[K]) :
+    MulArchimedean (MonoidHom.mrange (Valued.v : Valuation K Γ₀)) := by
+  rw [← Units.mulArchimedean_iff]
+  obtain ⟨_⟩ := locallyFiniteOrder_units_mrange_of_isCompact_integer hc
+  exact MulArchimedean.of_locallyFiniteOrder
+
 lemma isPrincipalIdealRing_of_compactSpace [hc : CompactSpace 𝒪[K]] :
     IsPrincipalIdealRing 𝒪[K] := by
-  -- TODO: generalize to `Valuation.Integer`, which will require showing that `IsCompact`
-  -- pulls back across `TopologicalSpace.induced` from a `LocallyCompactSpace`.
   -- The strategy to show that we have a PIR is by contradiction,
   -- assuming that the range of the valuation is densely ordered.
-  -- We can also construct that it has a locally finite ordered, by compactness
-  -- which leads to a contradiction.
-  -- the key result is that a valuation ring that maps into a `MulArchimedean` value group
-  -- is a PIR iff the value group is not densely ordered.
   have hi : Valuation.Integers (R := K) Valued.v 𝒪[K] := Valuation.integer.integers v
   have hc : IsCompact (X := K) 𝒪[K] := by
     simpa [← isCompact_univ_iff, Subtype.isCompact_iff, Set.image_univ,
       Subtype.range_coe_subtype] using hc
+  -- We can also construct that it has a locally finite order, by compactness
+  -- which leads to a contradiction.
   obtain ⟨_⟩ := locallyFiniteOrder_units_mrange_of_isCompact_integer hc
-  have : MulArchimedean (MonoidHom.mrange (v (R := K))) :=
-    .comap (LocallyFiniteOrder.orderMonoidWithZeroHom _).toMonoidHom
-      (LocallyFiniteOrder.orderMonoidWithZeroHom_strictMono)
+  have hm := mulArchimedean_mrange_of_isCompact_integer hc
+  -- The key result is that a valuation ring that maps into a `MulArchimedean` value group
+  -- is a PIR iff the value group is not densely ordered.
   rw [hi.isPrincipalIdealRing_iff_not_denselyOrdered]
-  change ¬ DenselyOrdered (MonoidHom.mrange (v (R := K)))
-  cases subsingleton_or_nontrivial (MonoidHom.mrange (v (R := K)))ˣ
-  · intro H
-    obtain ⟨a, ha, hb⟩ := H.1 0 1 zero_lt_one
-    cases hb.ne congr($(Subsingleton.elim (α := (MonoidHom.mrange (v (R := K)))ˣ)
-      (Units.mk0 a ha.ne') 1).1)
-  · rw [denselyOrdered_iff_of_orderIsoClass
-      (LocallyFiniteOrder.orderMonoidWithZeroEquiv (MonoidHom.mrange (v (R := K)))),
-      ← LinearOrderedCommGroupWithZero.discrete_iff_not_denselyOrdered]
-    exact ⟨.refl _⟩
+  intro H
+  -- since we are densely ordered, we necessarily are nontrivial
+  replace H : DenselyOrdered (MonoidHom.mrange (v : Valuation K Γ₀)) := H
+  obtain ⟨x, hx, hx'⟩ := exists_between (α := (MonoidHom.mrange (v : Valuation K Γ₀))) zero_lt_one
+  lift x to (MonoidHom.mrange (v : Valuation K Γ₀))ˣ using IsUnit.mk0 _ hx.ne'
+  rw [← Units.val_one, Units.val_lt_val] at hx'
+  have : Nontrivial (MonoidHom.mrange (Valued.v : Valuation K Γ₀))ˣ := ⟨_, _, hx'.ne'⟩
+  rw [← denselyOrdered_units_iff] at H
+  exact not_lt_of_denselyOrdered_of_locallyFinite _ _ hx'
 
 lemma isDiscreteValuationRing_of_compactSpace [hn : (Valued.v : Valuation K Γ₀).IsNontrivial]
     [CompactSpace 𝒪[K]] : IsDiscreteValuationRing 𝒪[K] := by
