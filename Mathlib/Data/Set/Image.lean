@@ -213,9 +213,6 @@ lemma image_mono (h : s ⊆ t) : f '' s ⊆ f '' t := by grind
 /-- `Set.image` is monotone. See `Set.image_mono` for the statement in terms of `⊆`. -/
 lemma monotone_image : Monotone (image f) := fun _ _ => image_mono
 
-/-- `Set.image` is monotone. See `Set.image_mono` for the statement in terms of `⊆`. -/
-lemma monotone_image : Monotone (image f) := fun _ _ => image_mono
-
 theorem image_comp (f : β → γ) (g : α → β) (a : Set α) : f ∘ g '' a = f '' (g '' a) := by aesop
 
 theorem image_comp_eq {g : β → γ} : image (g ∘ f) = image g ∘ image f := by grind
