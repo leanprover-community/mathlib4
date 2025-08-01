@@ -495,6 +495,14 @@ instance : DiscreteTopology ℤ := ⟨rfl⟩
 instance {n} : TopologicalSpace (Fin n) := ⊥
 instance {n} : DiscreteTopology (Fin n) := ⟨rfl⟩
 
+lemma Nat.cast_continuous {R : Type*} [NatCast R] [TopologicalSpace R] :
+    Continuous (Nat.cast (R := R)) :=
+  continuous_of_discreteTopology
+
+lemma Int.cast_continuous {R : Type*} [IntCast R] [TopologicalSpace R] :
+    Continuous (Int.cast (R := R)) :=
+  continuous_of_discreteTopology
+
 instance sierpinskiSpace : TopologicalSpace Prop :=
   generateFrom {{True}}
 
