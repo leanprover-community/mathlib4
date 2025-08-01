@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
 import Mathlib.Algebra.GroupWithZero.Hom
-import Mathlib.Algebra.Regular.Basic
 import Mathlib.GroupTheory.MonoidLocalization.Basic
 import Mathlib.RingTheory.OreLocalization.Basic
 import Mathlib.Algebra.GroupWithZero.Units.Basic
