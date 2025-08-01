@@ -208,6 +208,7 @@
   ["Mathlib.Topology.Connected.TotallyDisconnected"],
   "Mathlib.Topology.Order.LeftRightNhds":
   ["Mathlib.Algebra.Ring.Pointwise.Set"],
+  "Mathlib.Topology.Instances.ENNReal.Lemmas": ["Mathlib.Tactic.Bound"],
   "Mathlib.Topology.Germ": ["Mathlib.Analysis.Normed.Module.Basic"],
   "Mathlib.Topology.DiscreteSubset": ["Mathlib.Tactic.TautoSet"],
   "Mathlib.Topology.Defs.Basic": ["Mathlib.Tactic.FunProp"],
@@ -248,7 +249,8 @@
    "Mathlib.Data.Int.CharZero",
    "Mathlib.Data.Nat.Factorial.Basic",
    "Mathlib.Data.PNat.Defs"],
-  "Mathlib.Tactic.Order.CollectFacts": ["Mathlib.Order.Basic"],
+  "Mathlib.Tactic.Order.CollectFacts":
+  ["Mathlib.Order.BoundedOrder.Basic", "Mathlib.Order.Lattice"],
   "Mathlib.Tactic.NormNum.Ineq":
   ["Mathlib.Algebra.Order.Field.Defs", "Mathlib.Algebra.Order.Monoid.WithTop"],
   "Mathlib.Tactic.NormNum.BigOperators":

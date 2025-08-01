@@ -293,7 +293,7 @@ theorem ker_id : (MonoidHom.id G).ker = ⊥ :=
   rfl
 
 @[to_additive] theorem ker_eq_top_iff {f : G →* M} : f.ker = ⊤ ↔ f = 1 := by
-  simp_rw [ker, ← top_le_iff, SetLike.le_def, f.ext_iff, Subgroup.mem_top, true_imp_iff]; rfl
+  simp [ker, ← top_le_iff, SetLike.le_def, f.ext_iff]
 
 @[to_additive] theorem range_eq_bot_iff {f : G →* G'} : f.range = ⊥ ↔ f = 1 := by
   rw [← le_bot_iff, f.range_eq_map, map_le_iff_le_comap, top_le_iff, comap_bot, ker_eq_top_iff]
@@ -491,6 +491,11 @@ def MapSubtype.orderIso (H : Subgroup G) : Subgroup ↥H ≃o { H' : Subgroup G 
 lemma MapSubtype.orderIso_symm_apply (H : Subgroup G) (sH' : { H' : Subgroup G // H' ≤ H }) :
     (MapSubtype.orderIso H).symm sH' = sH'.1.subgroupOf H :=
   rfl
+
+@[to_additive]
+protected lemma «forall» {H : Subgroup G} {P : Subgroup H → Prop} :
+    (∀ H' : Subgroup H, P H') ↔ (∀ H' ≤ H, P (H'.subgroupOf H)) := by
+  simp [(MapSubtype.orderIso H).forall_congr_left]
 
 @[to_additive]
 theorem map_lt_map_iff_of_injective {f : G →* N} (hf : Function.Injective f) {H K : Subgroup G} :

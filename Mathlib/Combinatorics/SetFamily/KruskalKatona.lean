@@ -206,11 +206,7 @@ private lemma familyMeasure_compression_lt_familyMeasure {U V : Finset (Fin n)} 
     {hV : V.Nonempty} (h : max' U hU < max' V hV) {𝒜 : Finset (Finset (Fin n))} (a : 𝓒 U V 𝒜 ≠ 𝒜) :
     familyMeasure (𝓒 U V 𝒜) < familyMeasure 𝒜 := by
   rw [compression] at a ⊢
-  have q : ∀ Q ∈ {A ∈ 𝒜 | compress U V A ∉ 𝒜}, compress U V Q ≠ Q := by
-    simp_rw [mem_filter]
-    intro Q hQ h
-    rw [h] at hQ
-    exact hQ.2 hQ.1
+  have q : ∀ Q ∈ {A ∈ 𝒜 | compress U V A ∉ 𝒜}, compress U V Q ≠ Q := by grind [Finset.mem_filter]
   have uA : {A ∈ 𝒜 | compress U V A ∈ 𝒜} ∪ {A ∈ 𝒜 | compress U V A ∉ 𝒜} = 𝒜 :=
     filter_union_filter_neg_eq _ _
   have ne₂ : {A ∈ 𝒜 | compress U V A ∉ 𝒜}.Nonempty := by
