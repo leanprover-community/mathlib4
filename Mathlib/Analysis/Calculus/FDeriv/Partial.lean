@@ -48,16 +48,15 @@ theorem isLittleO_sub_sub_fderiv {f : E → F → G} {f' : E → F → F →L[�
     (fun χ => f χ (y χ) - f χ (z χ) - f' ξ x (y χ - z χ)) =o[𝓝[s] ξ] (fun χ => y χ - z χ) := by
   rw [isLittleO_iff]
   intro ε hε
-  have cf' : ∀ᶠ χ in 𝓝[s] ξ, ∀ v ∈ [z χ -[ℝ] y χ], dist (f' χ v) (f' ξ x) < ε := by
+  replace cf' : ∀ᶠ χ in 𝓝[s] ξ, ∀ v ∈ [z χ -[ℝ] y χ], dist (f' χ v) (f' ξ x) < ε := by
     rw [Metric.continuousWithinAt_iff'] at cf'
     exact eventually_segment seg hy hz (cf' ε hε)
-  have df' : ∀ᶠ χ in 𝓝[s] ξ, ∀ v ∈ [z χ -[ℝ] y χ], HasFDerivWithinAt (f χ) (f' χ v) t v := by
-    exact eventually_segment seg hy hz df'
+  replace df' : ∀ᶠ χ in 𝓝[s] ξ, ∀ v ∈ [z χ -[ℝ] y χ], HasFDerivWithinAt (f χ) (f' χ v) t v :=
+    eventually_segment seg hy hz df'
   filter_upwards [seg, cf', df'] with χ seg cf' df'
   exact Convex.norm_image_sub_le_of_norm_hasFDerivWithin_le'
-    (fun v hv => (df' v hv).mono seg)
-    (fun v hv => (cf' v hv).le)
-    (convex_segment (z χ) (y χ)) (left_mem_segment ℝ (z χ) (y χ)) (right_mem_segment ℝ (z χ) (y χ))
+    (fun v hv => (df' v hv).mono seg) (fun v hv => (cf' v hv).le)
+    (convex_segment ..) (left_mem_segment ..) (right_mem_segment ..)
 
 end aux
 
