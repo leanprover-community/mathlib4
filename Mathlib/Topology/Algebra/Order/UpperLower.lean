@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.UpperLower
-import Mathlib.Topology.Algebra.Group.Basic
-
-#align_import topology.algebra.order.upper_lower from "leanprover-community/mathlib"@"b1abe23ae96fef89ad30d9f4362c307f72a55010"
+import Mathlib.Topology.Algebra.Group.Pointwise
 
 /-!
 # Topological facts about upper/lower/order-connected sets
@@ -34,13 +32,13 @@ class HasUpperLowerClosure (α : Type*) [TopologicalSpace α] [Preorder α] : Pr
   isLowerSet_closure : ∀ s : Set α, IsLowerSet s → IsLowerSet (closure s)
   isOpen_upperClosure : ∀ s : Set α, IsOpen s → IsOpen (upperClosure s : Set α)
   isOpen_lowerClosure : ∀ s : Set α, IsOpen s → IsOpen (lowerClosure s : Set α)
-#align has_upper_lower_closure HasUpperLowerClosure
 
 variable {α : Type*} [TopologicalSpace α]
 
 -- See note [lower instance priority]
 @[to_additive]
-instance (priority := 100) OrderedCommGroup.to_hasUpperLowerClosure [OrderedCommGroup α]
+instance (priority := 100) IsOrderedMonoid.to_hasUpperLowerClosure
+    [CommGroup α] [PartialOrder α] [IsOrderedMonoid α]
     [ContinuousConstSMul α α] : HasUpperLowerClosure α where
   isUpperSet_closure s h x y hxy hx :=
     closure_mono (h.smul_subset <| one_le_div'.2 hxy) <| by
@@ -56,26 +54,20 @@ instance (priority := 100) OrderedCommGroup.to_hasUpperLowerClosure [OrderedComm
   isOpen_lowerClosure s hs := by
     rw [← mul_one s, ← mul_lowerClosure]
     exact hs.mul_right
-#align ordered_comm_group.to_has_upper_lower_closure OrderedCommGroup.to_hasUpperLowerClosure
-#align ordered_add_comm_group.to_has_upper_lower_closure OrderedAddCommGroup.to_hasUpperLowerClosure
 
 variable [Preorder α] [HasUpperLowerClosure α] {s : Set α}
 
 protected theorem IsUpperSet.closure : IsUpperSet s → IsUpperSet (closure s) :=
   HasUpperLowerClosure.isUpperSet_closure _
-#align is_upper_set.closure IsUpperSet.closure
 
 protected theorem IsLowerSet.closure : IsLowerSet s → IsLowerSet (closure s) :=
   HasUpperLowerClosure.isLowerSet_closure _
-#align is_lower_set.closure IsLowerSet.closure
 
 protected theorem IsOpen.upperClosure : IsOpen s → IsOpen (upperClosure s : Set α) :=
   HasUpperLowerClosure.isOpen_upperClosure _
-#align is_open.upper_closure IsOpen.upperClosure
 
 protected theorem IsOpen.lowerClosure : IsOpen s → IsOpen (lowerClosure s : Set α) :=
   HasUpperLowerClosure.isOpen_lowerClosure _
-#align is_open.lower_closure IsOpen.lowerClosure
 
 instance : HasUpperLowerClosure αᵒᵈ where
   isUpperSet_closure := @IsLowerSet.closure α _ _ _
@@ -100,14 +92,11 @@ oooooxx
 protected theorem IsUpperSet.interior (h : IsUpperSet s) : IsUpperSet (interior s) := by
   rw [← isLowerSet_compl, ← closure_compl]
   exact h.compl.closure
-#align is_upper_set.interior IsUpperSet.interior
 
 protected theorem IsLowerSet.interior (h : IsLowerSet s) : IsLowerSet (interior s) :=
   h.toDual.interior
-#align is_lower_set.interior IsLowerSet.interior
 
 protected theorem Set.OrdConnected.interior (h : s.OrdConnected) : (interior s).OrdConnected := by
   rw [← h.upperClosure_inter_lowerClosure, interior_inter]
   exact
     (upperClosure s).upper.interior.ordConnected.inter (lowerClosure s).lower.interior.ordConnected
-#align set.ord_connected.interior Set.OrdConnected.interior

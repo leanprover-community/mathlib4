@@ -3,7 +3,7 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.Finsupp.Defs
+import Mathlib.Data.Finsupp.Single
 
 /-!
 # Notation for `Finsupp`
@@ -15,9 +15,7 @@ This file provides `fun₀ | 3 => a | 7 => b` notation for `Finsupp`, which desu
 
 namespace Finsupp
 
-open Lean
-open Lean.Parser
-open Lean.Parser.Term
+open Lean Parser Term
 
 -- A variant of `Lean.Parser.Term.matchAlts` with less line wrapping.
 @[nolint docBlame] -- we do not want any doc hover on this notation.
@@ -85,16 +83,16 @@ unsafe instance instRepr {α β} [Repr α] [Repr β] [Zero β] : Repr (α →₀
     if f.support.card = 0 then
       "0"
     else
-      let ret := "fun₀" ++
-        Std.Format.join (f.support.val.unquot.map <|
-          fun a => " | " ++ repr a ++ " => " ++ repr (f a))
+      let ret : Std.Format := f!"fun₀" ++ .nest 2 (
+        .group (.join <| f.support.val.unquot.map fun a =>
+          .line ++ .group (f!"| {repr a} =>" ++ .line ++ repr (f a))))
       if p ≥ leadPrec then Format.paren ret else ret
-#align finsupp.has_repr Finsupp.instRepr
 
--- lean4#3497 causes a PANIC if we put this in `Mathlib.Data.DFinsupp.Notation` where it belongs
+-- This cannot be put in `Mathlib/Data/DFinsupp/Notation.lean` where it belongs, since doc-strings
+-- can only be added/modified in the file where the corresponding declaration is defined.
 extend_docs Finsupp.fun₀ after
   "If the expected type is `Π₀ i, α i` (`DFinsupp`)
-  and `Mathlib.Data.DFinsupp.Notation` is imported,
+  and `Mathlib/Data/DFinsupp/Notation.lean` is imported,
   then this is notation for `DFinsupp.single` and  `Dfinsupp.update` instead."
 
 end Finsupp

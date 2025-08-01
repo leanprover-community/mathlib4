@@ -5,17 +5,15 @@ Authors: Kenny Lau
 -/
 import Mathlib.RingTheory.Adjoin.FG
 
-#align_import ring_theory.adjoin.tower from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
-
 /-!
 # Adjoining elements and being finitely generated in an algebra tower
 
 ## Main results
 
- * `Algebra.fg_trans'`: if `S` is finitely generated as `R`-algebra and `A` as `S`-algebra,
-   then `A` is finitely generated as `R`-algebra
- * `fg_of_fg_of_fg`: **Artin--Tate lemma**: if C/B/A is a tower of rings, and A is noetherian, and
-   C is algebra-finite over A, and C is module-finite over B, then B is algebra-finite over A.
+* `Algebra.fg_trans'`: if `S` is finitely generated as `R`-algebra and `A` as `S`-algebra,
+  then `A` is finitely generated as `R`-algebra
+* `fg_of_fg_of_fg`: **Artin--Tate lemma**: if C/B/A is a tower of rings, and A is noetherian, and
+  C is algebra-finite over A, and C is module-finite over B, then B is algebra-finite over A.
 -/
 
 
@@ -44,7 +42,6 @@ theorem adjoin_restrictScalars (C D E : Type*) [CommSemiring C] [CommSemiring D]
     exact ⟨⟨algebraMap D E y, ⟨y, ⟨Algebra.mem_top, rfl⟩⟩⟩, hy⟩
   · rintro ⟨⟨y, ⟨z, ⟨h0, h1⟩⟩⟩, h2⟩
     exact ⟨z, Eq.trans h1 h2⟩
-#align algebra.adjoin_restrict_scalars Algebra.adjoin_restrictScalars
 
 theorem adjoin_res_eq_adjoin_res (C D E F : Type*) [CommSemiring C] [CommSemiring D]
     [CommSemiring E] [CommSemiring F] [Algebra C D] [Algebra C E] [Algebra C F] [Algebra D F]
@@ -56,24 +53,24 @@ theorem adjoin_res_eq_adjoin_res (C D E F : Type*) [CommSemiring C] [CommSemirin
     ← Algebra.adjoin_image, ← AlgHom.coe_toRingHom, ← AlgHom.coe_toRingHom,
     IsScalarTower.coe_toAlgHom, IsScalarTower.coe_toAlgHom, ← adjoin_union_eq_adjoin_adjoin, ←
     adjoin_union_eq_adjoin_adjoin, Set.union_comm]
-#align algebra.adjoin_res_eq_adjoin_res Algebra.adjoin_res_eq_adjoin_res
 
 end Algebra
 
 section
 
-open scoped Classical
-
 theorem Algebra.fg_trans' {R S A : Type*} [CommSemiring R] [CommSemiring S] [Semiring A]
     [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A] (hRS : (⊤ : Subalgebra R S).FG)
-    (hSA : (⊤ : Subalgebra S A).FG) : (⊤ : Subalgebra R A).FG :=
-  let ⟨s, hs⟩ := hRS
-  let ⟨t, ht⟩ := hSA
-  ⟨s.image (algebraMap S A) ∪ t, by
-    rw [Finset.coe_union, Finset.coe_image, Algebra.adjoin_algebraMap_image_union_eq_adjoin_adjoin,
-      hs, Algebra.adjoin_top, ht, Subalgebra.restrictScalars_top, Subalgebra.restrictScalars_top]⟩
-#align algebra.fg_trans' Algebra.fg_trans'
-
+    (hSA : (⊤ : Subalgebra S A).FG) : (⊤ : Subalgebra R A).FG := by
+  classical
+  rcases hRS with ⟨s, hs⟩
+  rcases hSA with ⟨t, ht⟩
+  exact ⟨s.image (algebraMap S A) ∪ t, by
+    rw [Finset.coe_union, Finset.coe_image,
+        Algebra.adjoin_algebraMap_image_union_eq_adjoin_adjoin,
+        hs, Algebra.adjoin_top, ht, Subalgebra.restrictScalars_top,
+        Subalgebra.restrictScalars_top
+       ]
+    ⟩
 end
 
 section ArtinTate
@@ -87,15 +84,14 @@ variable [Algebra A B] [Algebra B C] [Algebra A C] [IsScalarTower A B C]
 
 open Finset Submodule
 
-open scoped Classical
-
 theorem exists_subalgebra_of_fg (hAC : (⊤ : Subalgebra A C).FG) (hBC : (⊤ : Submodule B C).FG) :
     ∃ B₀ : Subalgebra A B, B₀.FG ∧ (⊤ : Submodule B₀ C).FG := by
-  cases' hAC with x hx
-  cases' hBC with y hy
+  obtain ⟨x, hx⟩ := hAC
+  obtain ⟨y, hy⟩ := hBC
   have := hy
   simp_rw [eq_top_iff', mem_span_finset] at this
-  choose f hf using this
+  choose f _ hf using this
+  classical
   let s : Finset B := Finset.image₂ f (x ∪ y * y) y
   have hxy :
     ∀ xi ∈ x, xi ∈ span (Algebra.adjoin A (↑s : Set B)) (↑(insert 1 y : Finset C) : Set C) :=
@@ -131,9 +127,8 @@ theorem exists_subalgebra_of_fg (hAC : (⊤ : Subalgebra A C).FG) (hBC : (⊤ : 
   rw [restrictScalars_top, eq_top_iff, ← Algebra.top_toSubmodule, ← hx, Algebra.adjoin_eq_span,
     span_le]
   refine fun r hr =>
-    Submonoid.closure_induction hr (fun c hc => hxy c hc) (subset_span <| mem_insert_self _ _)
-      fun p q hp hq => hyy <| Submodule.mul_mem_mul hp hq
-#align exists_subalgebra_of_fg exists_subalgebra_of_fg
+    Submonoid.closure_induction (fun c hc => hxy c hc) (subset_span <| mem_insert_self _ _)
+      (fun p q _ _ hp hq => hyy <| Submodule.mul_mem_mul hp hq) hr
 
 end Semiring
 
@@ -146,7 +141,8 @@ variable [Algebra A B] [Algebra B C] [Algebra A C] [IsScalarTower A B C]
 A is noetherian, and C is algebra-finite over A, and C is module-finite over B,
 then B is algebra-finite over A.
 
-References: Atiyah--Macdonald Proposition 7.8; Stacks 00IS; Altman--Kleiman 16.17. -/
+References: Atiyah--Macdonald Proposition 7.8; Altman--Kleiman 16.17. -/
+@[stacks 00IS]
 theorem fg_of_fg_of_fg [IsNoetherianRing A] (hAC : (⊤ : Subalgebra A C).FG)
     (hBC : (⊤ : Submodule B C).FG) (hBCi : Function.Injective (algebraMap B C)) :
     (⊤ : Subalgebra A B).FG :=
@@ -156,7 +152,6 @@ theorem fg_of_fg_of_fg [IsNoetherianRing A] (hAC : (⊤ : Subalgebra A C).FG)
       have : IsNoetherianRing B₀ := isNoetherianRing_of_fg hAB₀
       have : Module.Finite B₀ C := ⟨hB₀C⟩
       fg_of_injective (IsScalarTower.toAlgHom B₀ B C).toLinearMap hBCi
-#align fg_of_fg_of_fg fg_of_fg_of_fg
 
 end Ring
 

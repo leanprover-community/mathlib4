@@ -21,7 +21,7 @@ variable {ι ι' : Type*} {c : ComplexShape ι} {c' : ComplexShape ι'}
 
 namespace HomologicalComplex
 
-variable {C : Type*} [Category C] [HasZeroMorphisms C] [HasZeroObject C]
+variable {C : Type*} [Category C] [HasZeroMorphisms C]
   (K L M : HomologicalComplex C c') (φ : K ⟶ L) (φ' : L ⟶ M)
   (e : c.Embedding c') [e.IsRelIff]
 
@@ -77,7 +77,7 @@ variable (e : Embedding c c') (C : Type*) [Category C] [HasZeroObject C] [e.IsRe
 /-- Given `e : ComplexShape.Embedding c c'`, this is the restriction
 functor `HomologicalComplex C c' ⥤ HomologicalComplex C c`. -/
 @[simps]
-noncomputable def restrictionFunctor [HasZeroMorphisms C] :
+def restrictionFunctor [HasZeroMorphisms C] :
     HomologicalComplex C c' ⥤ HomologicalComplex C c where
   obj K := K.restriction e
   map φ := HomologicalComplex.restrictionMap φ e

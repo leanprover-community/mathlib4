@@ -6,8 +6,6 @@ Authors: Heather Macbeth
 import Mathlib.Geometry.Manifold.LocalInvariantProperties
 import Mathlib.Topology.Sheaves.LocalPredicate
 
-#align_import geometry.manifold.sheaf.basic from "leanprover-community/mathlib"@"431589bce478b2229eba14b14a283250428217db"
-
 /-! # Generic construction of a sheaf from a `LocalInvariantProp` on a manifold
 
 This file constructs the sheaf-of-types of functions `f : M → M'` (for charted spaces `M`, `M'`)
@@ -44,13 +42,9 @@ variable {H : Type*} [TopologicalSpace H] {H' : Type*} [TopologicalSpace H']
 
 instance TopCat.of.chartedSpace : ChartedSpace H (TopCat.of M) :=
   (inferInstance : ChartedSpace H M)
-set_option linter.uppercaseLean3 false in
-#align Top.of.charted_space TopCat.of.chartedSpace
 
 instance TopCat.of.hasGroupoid [HasGroupoid M G] : HasGroupoid (TopCat.of M) G :=
   (inferInstance : HasGroupoid M G)
-set_option linter.uppercaseLean3 false in
-#align Top.of.has_groupoid TopCat.of.hasGroupoid
 
 /-- Let `P` be a `LocalInvariantProp` for functions between spaces with the groupoids `G`, `G'`
 and let `M`, `M'` be charted spaces modelled on the model spaces of those groupoids.  Then there is
@@ -61,19 +55,18 @@ def StructureGroupoid.LocalInvariantProp.localPredicate (hG : LocalInvariantProp
   res := by
     intro U V i f h x
     have hUV : U ≤ V := CategoryTheory.leOfHom i
-    show ChartedSpace.LiftPropAt P (f ∘ Set.inclusion hUV) x
+    change ChartedSpace.LiftPropAt P (f ∘ Opens.inclusion hUV) x
     rw [← hG.liftPropAt_iff_comp_inclusion hUV]
     apply h
   locality := by
     intro V f h x
-    obtain ⟨U, hxU, i, hU : ChartedSpace.LiftProp P (f ∘ i)⟩ := h x
+    obtain ⟨U, hxU, i, hU : ChartedSpace.LiftProp P (f ∘ _)⟩ := h x
     let x' : U := ⟨x, hxU⟩
     have hUV : U ≤ V := CategoryTheory.leOfHom i
-    have : ChartedSpace.LiftPropAt P f (inclusion hUV x') := by
+    have : ChartedSpace.LiftPropAt P f (Opens.inclusion hUV x') := by
       rw [hG.liftPropAt_iff_comp_inclusion hUV]
       exact hU x'
     convert this
-#align structure_groupoid.local_invariant_prop.local_predicate StructureGroupoid.LocalInvariantProp.localPredicate
 
 /-- Let `P` be a `LocalInvariantProp` for functions between spaces with the groupoids `G`, `G'`
 and let `M`, `M'` be charted spaces modelled on the model spaces of those groupoids.  Then there is
@@ -82,14 +75,11 @@ functions from `U` to `M'` satisfying the lift of `P`. -/
 def StructureGroupoid.LocalInvariantProp.sheaf (hG : LocalInvariantProp G G' P) :
     TopCat.Sheaf (Type u) (TopCat.of M) :=
   TopCat.subsheafToTypes (hG.localPredicate M M')
-#align structure_groupoid.local_invariant_prop.sheaf StructureGroupoid.LocalInvariantProp.sheaf
 
 instance StructureGroupoid.LocalInvariantProp.sheafHasCoeToFun (hG : LocalInvariantProp G G' P)
     (U : (Opens (TopCat.of M))ᵒᵖ) : CoeFun ((hG.sheaf M M').val.obj U) fun _ => ↑(unop U) → M' where
   coe a := a.1
-#align structure_groupoid.local_invariant_prop.sheaf_has_coe_to_fun StructureGroupoid.LocalInvariantProp.sheafHasCoeToFun
 
 theorem StructureGroupoid.LocalInvariantProp.section_spec (hG : LocalInvariantProp G G' P)
     (U : (Opens (TopCat.of M))ᵒᵖ) (f : (hG.sheaf M M').val.obj U) : ChartedSpace.LiftProp P f :=
   f.2
-#align structure_groupoid.local_invariant_prop.section_spec StructureGroupoid.LocalInvariantProp.section_spec

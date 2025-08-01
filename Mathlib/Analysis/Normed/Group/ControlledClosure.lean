@@ -6,11 +6,9 @@ Authors: Patrick Massot
 import Mathlib.Analysis.Normed.Group.Hom
 import Mathlib.Analysis.SpecificLimits.Normed
 
-#align_import analysis.normed.group.controlled_closure from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
-
 /-! # Extending a backward bound on a normed group homomorphism from a dense set
 
-Possible TODO (from the PR's review, https://github.com/leanprover-community/mathlib/pull/8498 ):
+Possible TODO (from the PR's review, https://github.com/leanprover-community/mathlib/pull/8498):
 "This feels a lot like the second step in the proof of the Banach open mapping theorem
 (`exists_preimage_norm_le`) ... wonder if it would be possible to refactor it using one of [the
 lemmas in this file]."
@@ -61,7 +59,7 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
       calc
         ‖u n‖ ≤ C * ‖v n‖ := hnorm_u n
         _ ≤ C * b n := by gcongr; exact (hv _ <| Nat.succ_le_iff.mp hn).le
-        _ = (1 / 2) ^ n * (ε * ‖h‖ / 2) := by simp [mul_div_cancel₀ _ hC.ne.symm]
+        _ = (1 / 2) ^ n * (ε * ‖h‖ / 2) := by simp [b, mul_div_cancel₀ _ hC.ne.symm]
         _ = ε * ‖h‖ / 2 * (1 / 2) ^ n := mul_comm _ _
   -- We now show that the limit `g` of `s` is the desired preimage.
   obtain ⟨g : G, hg⟩ := cauchySeq_tendsto_of_complete this
@@ -91,7 +89,7 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
     have : (∑ k ∈ range (n + 1), C * b k) ≤ ε * ‖h‖ :=
       calc (∑ k ∈ range (n + 1), C * b k)
         _ = (∑ k ∈ range (n + 1), (1 / 2 : ℝ) ^ k) * (ε * ‖h‖ / 2) := by
-          simp only [mul_div_cancel₀ _ hC.ne.symm, ← sum_mul]
+          simp only [b, mul_div_cancel₀ _ hC.ne.symm, ← sum_mul]
         _ ≤ 2 * (ε * ‖h‖ / 2) := by gcongr; apply sum_geometric_two_le
         _ = ε * ‖h‖ := mul_div_cancel₀ _ two_ne_zero
     calc
@@ -103,8 +101,7 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
       _ = (∑ k ∈ range (n + 1), C * b k) + C * ‖h‖ := by rw [← add_assoc, sum_range_succ']
       _ ≤ (C + ε) * ‖h‖ := by
         rw [add_comm, add_mul]
-        apply add_le_add_left this
-#align controlled_closure_of_complete controlled_closure_of_complete
+        gcongr
 
 /-- Given `f : NormedAddGroupHom G H` for some complete `G`, if every element `x` of the image of
 an isometric immersion `j : NormedAddGroupHom K H` has a preimage under `f` whose norm is at most
@@ -123,4 +120,3 @@ theorem controlled_closure_range_of_complete {f : NormedAddGroupHom G H} {K : Ty
     rw [hj]
     exact hyp k
   exact controlled_closure_of_complete hC hε hyp
-#align controlled_closure_range_of_complete controlled_closure_range_of_complete

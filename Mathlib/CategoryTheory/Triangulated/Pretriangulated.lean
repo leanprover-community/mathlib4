@@ -7,8 +7,6 @@ import Mathlib.Algebra.Homology.ShortComplex.Basic
 import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
 import Mathlib.CategoryTheory.Triangulated.TriangleShift
 
-#align_import category_theory.triangulated.pretriangulated from "leanprover-community/mathlib"@"6876fa15e3158ff3e4a4e2af1fb6e1945c6e8803"
-
 /-!
 # Pretriangulated Categories
 
@@ -23,6 +21,7 @@ but not necessarily additive categories, as is assumed in some sources.
 TODO: generalise this to n-angulated categories as in https://arxiv.org/abs/1006.4592
 -/
 
+assert_not_exists TwoSidedIdeal
 
 noncomputable section
 
@@ -57,9 +56,8 @@ relative to that shift is called pretriangulated if the following hold:
   ```
   where the left square commutes, and whose rows are distinguished triangles,
   there exists a morphism `c : Z ⟶ Z'` such that `(a,b,c)` is a triangle morphism.
-
-See <https://stacks.math.columbia.edu/tag/0145>
 -/
+@[stacks 0145]
 class Pretriangulated [∀ n : ℤ, Functor.Additive (shiftFunctor C n)] where
   /-- a class of triangle which are called `distinguished` -/
   distinguishedTriangles : Set (Triangle C)
@@ -81,7 +79,6 @@ class Pretriangulated [∀ n : ℤ, Functor.Additive (shiftFunctor C n)] where
     ∀ (T₁ T₂ : Triangle C) (_ : T₁ ∈ distinguishedTriangles) (_ : T₂ ∈ distinguishedTriangles)
       (a : T₁.obj₁ ⟶ T₂.obj₁) (b : T₁.obj₂ ⟶ T₂.obj₂) (_ : T₁.mor₁ ≫ b = a ≫ T₂.mor₁),
       ∃ c : T₁.obj₃ ⟶ T₂.obj₃, T₁.mor₂ ≫ c = b ≫ T₂.mor₂ ∧ T₁.mor₃ ≫ a⟦1⟧' = c ≫ T₂.mor₃
-#align category_theory.pretriangulated CategoryTheory.Pretriangulated
 
 
 namespace Pretriangulated
@@ -104,7 +101,6 @@ lemma distinguished_iff_of_iso {T₁ T₂ : Triangle C} (e : T₁ ≅ T₂) :
 -/
 theorem rot_of_distTriang (T : Triangle C) (H : T ∈ distTriang C) : T.rotate ∈ distTriang C :=
   (rotate_distinguished_triangle T).mp H
-#align category_theory.pretriangulated.rot_of_dist_triangle CategoryTheory.Pretriangulated.rot_of_distTriang
 
 /-- Given any distinguished triangle `T`, then we know `T.inv_rotate` is also distinguished.
 -/
@@ -112,52 +108,42 @@ theorem inv_rot_of_distTriang (T : Triangle C) (H : T ∈ distTriang C) :
     T.invRotate ∈ distTriang C :=
   (rotate_distinguished_triangle T.invRotate).mpr
     (isomorphic_distinguished T H T.invRotate.rotate (invRotCompRot.app T))
-#align category_theory.pretriangulated.inv_rot_of_dist_triangle CategoryTheory.Pretriangulated.inv_rot_of_distTriang
 
 /-- Given any distinguished triangle
 ```
       f       g       h
   X  ───> Y  ───> Z  ───> X⟦1⟧
 ```
-the composition `f ≫ g = 0`.
-See <https://stacks.math.columbia.edu/tag/0146>
--/
-@[reassoc]
+the composition `f ≫ g = 0`. -/
+@[reassoc, stacks 0146]
 theorem comp_distTriang_mor_zero₁₂ (T) (H : T ∈ (distTriang C)) : T.mor₁ ≫ T.mor₂ = 0 := by
   obtain ⟨c, hc⟩ :=
     complete_distinguished_triangle_morphism _ _ (contractible_distinguished T.obj₁) H (𝟙 T.obj₁)
       T.mor₁ rfl
   simpa only [contractibleTriangle_mor₂, zero_comp] using hc.left.symm
-#align category_theory.pretriangulated.comp_dist_triangle_mor_zero₁₂ CategoryTheory.Pretriangulated.comp_distTriang_mor_zero₁₂
 
 /-- Given any distinguished triangle
 ```
       f       g       h
   X  ───> Y  ───> Z  ───> X⟦1⟧
 ```
-the composition `g ≫ h = 0`.
-See <https://stacks.math.columbia.edu/tag/0146>
--/
-@[reassoc]
+the composition `g ≫ h = 0`. -/
+@[reassoc, stacks 0146]
 theorem comp_distTriang_mor_zero₂₃ (T : Triangle C) (H : T ∈ distTriang C) :
     T.mor₂ ≫ T.mor₃ = 0 :=
   comp_distTriang_mor_zero₁₂ T.rotate (rot_of_distTriang T H)
-#align category_theory.pretriangulated.comp_dist_triangle_mor_zero₂₃ CategoryTheory.Pretriangulated.comp_distTriang_mor_zero₂₃
 
 /-- Given any distinguished triangle
 ```
       f       g       h
   X  ───> Y  ───> Z  ───> X⟦1⟧
 ```
-the composition `h ≫ f⟦1⟧ = 0`.
-See <https://stacks.math.columbia.edu/tag/0146>
--/
-@[reassoc]
+the composition `h ≫ f⟦1⟧ = 0`. -/
+@[reassoc, stacks 0146]
 theorem comp_distTriang_mor_zero₃₁ (T : Triangle C) (H : T ∈ distTriang C) :
     T.mor₃ ≫ T.mor₁⟦1⟧' = 0 := by
   have H₂ := rot_of_distTriang T.rotate (rot_of_distTriang T H)
   simpa using comp_distTriang_mor_zero₁₂ T.rotate.rotate H₂
-#align category_theory.pretriangulated.comp_dist_triangle_mor_zero₃₁ CategoryTheory.Pretriangulated.comp_distTriang_mor_zero₃₁
 
 /-- The short complex `T.obj₁ ⟶ T.obj₂ ⟶ T.obj₃` attached to a distinguished triangle. -/
 @[simps]
@@ -227,7 +213,7 @@ lemma contractible_distinguished₁ (X : C) :
   refine isomorphic_distinguished _
     (inv_rot_of_distTriang _ (contractible_distinguished X)) _ ?_
   exact Triangle.isoMk _ _ (Functor.mapZeroObject _).symm (Iso.refl _) (Iso.refl _)
-    (by aesop_cat) (by aesop_cat) (by aesop_cat)
+    (by simp) (by simp) (by simp)
 
 /-- Obvious triangles `X ⟶ 0 ⟶ X⟦1⟧ ⟶ X⟦1⟧` are distinguished -/
 lemma contractible_distinguished₂ (X : C) :
@@ -235,12 +221,13 @@ lemma contractible_distinguished₂ (X : C) :
   refine isomorphic_distinguished _
     (inv_rot_of_distTriang _ (contractible_distinguished₁ (X⟦(1 : ℤ)⟧))) _ ?_
   exact Triangle.isoMk _ _ ((shiftEquiv C (1 : ℤ)).unitIso.app X) (Iso.refl _) (Iso.refl _)
-    (by aesop_cat) (by aesop_cat)
+    (by simp) (by simp)
     (by dsimp; simp only [shift_shiftFunctorCompIsoId_inv_app, id_comp])
 
 namespace Triangle
 
 variable (T : Triangle C) (hT : T ∈ distTriang C)
+include hT
 
 lemma yoneda_exact₂ {X : C} (f : T.obj₂ ⟶ X) (hf : T.mor₁ ≫ f = 0) :
     ∃ (g : T.obj₃ ⟶ X), f = T.mor₂ ≫ g := by
@@ -407,12 +394,12 @@ lemma shift_distinguished (n : ℤ) :
     isomorphic_distinguished _ (hb _ (ha _ hT)) _
       ((Triangle.shiftFunctorAdd' C _ _ _ hc).app T)
   obtain (n|n) := n
-  · induction' n with n hn
-    · exact H_zero
-    · exact H_add hn H_one rfl
-  · induction' n with n hn
-    · exact H_neg_one
-    · exact H_add hn H_neg_one rfl
+  · induction n with
+    | zero =>  exact H_zero
+    | succ n hn => exact H_add hn H_one rfl
+  · induction n with
+    | zero => exact H_neg_one
+    | succ n hn => exact H_add hn H_neg_one rfl
 
 end Triangle
 
@@ -538,7 +525,7 @@ lemma binaryBiproductTriangle_distinguished (X₁ X₂ : C) :
   dsimp at he₁ he₂
   refine isomorphic_distinguished _ mem _ (Iso.symm ?_)
   refine Triangle.isoMk _ _ (Iso.refl _) e (Iso.refl _)
-    (by aesop_cat) (by aesop_cat) (by aesop_cat)
+    (by aesop_cat) (by aesop_cat) (by simp)
 
 lemma binaryProductTriangle_distinguished (X₁ X₂ : C) :
     binaryProductTriangle X₁ X₂ ∈ distTriang C :=
@@ -570,7 +557,7 @@ lemma productTriangle_distinguished {J : Type*} (T : J → Triangle C)
     `φ'.hom₁` and `φ'.hom₂` are identities. Then, it suffices to show that
     `φ'.hom₃` is an isomorphism, which is achieved by using Yoneda's lemma
     and diagram chases. -/
-  let f₁ := Pi.map (fun j => (T j).mor₁)
+  let f₁ := Limits.Pi.map (fun j => (T j).mor₁)
   obtain ⟨Z, f₂, f₃, hT'⟩ := distinguished_cocone_triangle f₁
   let T' := Triangle.mk f₁ f₂ f₃
   change T' ∈ distTriang C at hT'

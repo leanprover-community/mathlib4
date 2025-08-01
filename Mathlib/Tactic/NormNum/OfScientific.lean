@@ -10,20 +10,20 @@ import Mathlib.Data.Rat.Cast.Lemmas
 ## `norm_num` plugin for scientific notation.
 -/
 
-set_option autoImplicit true
-
 namespace Mathlib
-open Lean hiding Rat mkRat
+open Lean
 open Meta
 
 namespace Meta.NormNum
 open Qq
 
+variable {α : Type*}
+
 -- see note [norm_num lemma function equality]
 theorem isRat_ofScientific_of_true [DivisionRing α] :
     {m e : ℕ} → {n : ℤ} → {d : ℕ} →
     IsRat (mkRat m (10 ^ e) : α) n d → IsRat (OfScientific.ofScientific m true e : α) n d
-  | _, _, _, _, ⟨_, eq⟩ => ⟨_, by
+  | _, _, _, _, ⟨_, eq⟩ => ⟨‹_›, by
     rwa [← Rat.cast_ofScientific, ← Rat.ofScientific_eq_ofScientific, Rat.ofScientific_true_def]⟩
 
 -- see note [norm_num lemma function equality]
@@ -61,3 +61,9 @@ to rat casts if the scientific notation is inherited from the one for rationals.
     have n : Q(ℕ) := mkRawNatLit n'
     haveI : $n =Q Nat.mul $nm ((10 : ℕ) ^ $ne) := ⟨⟩
     return .isNat _ n q(isNat_ofScientific_of_false $pm $pe (.refl $n))
+
+end NormNum
+
+end Meta
+
+end Mathlib

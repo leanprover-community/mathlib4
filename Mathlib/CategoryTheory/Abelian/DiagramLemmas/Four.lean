@@ -6,8 +6,6 @@ Authors: Markus Himmel, Joël Riou
 import Mathlib.Algebra.Homology.ExactSequence
 import Mathlib.CategoryTheory.Abelian.Refinements
 
-#align_import category_theory.abelian.diagram_lemmas.four from "leanprover-community/mathlib"@"d34cbcf6c94953e965448c933cd9cc485115ebbd"
-
 /-!
 # The four and five lemmas
 
@@ -81,7 +79,6 @@ theorem mono_of_epi_of_mono_of_mono' (hR₁ : R₁.map' 0 2 = 0)
     rfl
   rw [← cancel_epi π₁, comp_zero, hf₁, ← cancel_epi π₂, ← cancel_epi π₃, comp_zero,
     comp_zero, ← reassoc_of% h₄, ← R₁.map'_comp 0 1 2, hR₁, comp_zero]
-#align category_theory.abelian.mono_of_epi_of_mono_of_mono CategoryTheory.Abelian.mono_of_epi_of_mono_of_mono'
 
 theorem mono_of_epi_of_mono_of_mono (hR₁ : R₁.Exact) (hR₂ : R₂.Exact)
     (h₀ : Epi (app' φ 0)) (h₁ : Mono (app' φ 1)) (h₃ : Mono (app' φ 3)) :
@@ -89,8 +86,6 @@ theorem mono_of_epi_of_mono_of_mono (hR₁ : R₁.Exact) (hR₂ : R₂.Exact)
   mono_of_epi_of_mono_of_mono' φ
     (by simpa only [R₁.map'_comp 0 1 2] using hR₁.toIsComplex.zero 0)
     (hR₁.exact 1).exact_toComposableArrows (hR₂.exact 0).exact_toComposableArrows h₀ h₁ h₃
-
-attribute [local instance] epi_comp
 
 theorem epi_of_epi_of_epi_of_mono'
     (hR₁ : (mk₂ (R₁.map' 1 2) (R₁.map' 2 3)).Exact)
@@ -118,7 +113,6 @@ theorem epi_of_epi_of_epi_of_mono'
     ← reassoc_of% h₆, ← h₅, comp_sub]
   dsimp
   rw [add_sub_cancel]
-#align category_theory.abelian.epi_of_epi_of_epi_of_mono CategoryTheory.Abelian.epi_of_epi_of_epi_of_mono'
 
 theorem epi_of_epi_of_epi_of_mono (hR₁ : R₁.Exact) (hR₂ : R₂.Exact)
     (h₀ : Epi (app' φ 0)) (h₂ : Epi (app' φ 2)) (h₃ : Mono (app' φ 3)) :
@@ -132,13 +126,8 @@ end Four
 section Five
 
 variable {R₁ R₂ : ComposableArrows C 4} (hR₁ : R₁.Exact) (hR₂ : R₂.Exact) (φ : R₁ ⟶ R₂)
+include hR₁ hR₂
 
-#adaptation_note /-- nightly-2024-03-11
-We turn off simprocs here.
-Ideally someone will investigate whether `simp` lemmas can be rearranged
-so that this works without the `set_option`,
-*or* come up with a proposal regarding finer control of disabling simprocs. -/
-set_option simprocs false in
 /-- The five lemma. -/
 theorem isIso_of_epi_of_isIso_of_isIso_of_mono (h₀ : Epi (app' φ 0)) (h₁ : IsIso (app' φ 1))
     (h₂ : IsIso (app' φ 3)) (h₃ : Mono (app' φ 4)) : IsIso (app' φ 2) := by
@@ -150,7 +139,6 @@ theorem isIso_of_epi_of_isIso_of_isIso_of_mono (h₀ : Epi (app' φ 0)) (h₁ : 
     apply epi_of_epi_of_epi_of_mono (δ₀Functor.map φ) (R₁.exact_iff_δ₀.1 hR₁).2
       (R₂.exact_iff_δ₀.1 hR₂).2 <;> dsimp <;> infer_instance
   apply isIso_of_mono_of_epi
-#align category_theory.abelian.is_iso_of_is_iso_of_is_iso_of_is_iso_of_is_iso CategoryTheory.Abelian.isIso_of_epi_of_isIso_of_isIso_of_mono
 
 end Five
 
@@ -233,5 +221,34 @@ theorem epi_of_epi_of_epi_of_epi (hR₂ : R₂.Exact) (hR₁' : Epi (R₁.map' 1
 end Three
 
 end Abelian
+
+namespace ShortComplex
+
+variable {C : Type*} [Category C] [Abelian C]
+variable {R₁ R₂ : ShortComplex C} (φ : R₁ ⟶ R₂)
+
+attribute [local simp] ComposableArrows.Precomp.map
+
+theorem mono_of_epi_of_epi_of_mono (hR₂ : R₂.Exact) (hR₁' : Epi R₁.g)
+    (h₀ : Epi φ.τ₁) (h₁ : Mono φ.τ₂) : Mono (φ.τ₃) :=
+  Abelian.mono_of_epi_of_epi_mono' (ShortComplex.mapToComposableArrows φ)
+    (by simp) hR₁' hR₂.exact_toComposableArrows h₀ h₁
+
+theorem epi_of_mono_of_epi_of_mono (hR₁ : R₁.Exact)
+    (hR₂' : Mono R₂.f) (h₀ : Epi φ.τ₂) (h₁ : Mono φ.τ₃) : Epi φ.τ₁ :=
+  Abelian.epi_of_mono_of_epi_of_mono' (ShortComplex.mapToComposableArrows φ)
+    hR₁.exact_toComposableArrows (by simp) hR₂' h₀ h₁
+
+theorem mono_of_mono_of_mono_of_mono (hR₁ : R₁.Exact) (hR₂' : Mono R₂.f) (h₀ : Mono φ.τ₁)
+    (h₁ : Mono φ.τ₃) : Mono φ.τ₂ :=
+  Abelian.mono_of_mono_of_mono_of_mono (ShortComplex.mapToComposableArrows φ)
+    hR₁.exact_toComposableArrows hR₂' h₀ h₁
+
+theorem epi_of_epi_of_epi_of_epi (hR₂ : R₂.Exact) (hR₁' : Epi R₁.g) (h₀ : Epi φ.τ₁)
+    (h₁ : Epi φ.τ₃) : Epi φ.τ₂ :=
+  Abelian.epi_of_epi_of_epi_of_epi (ShortComplex.mapToComposableArrows φ)
+    hR₂.exact_toComposableArrows hR₁' h₀ h₁
+
+end ShortComplex
 
 end CategoryTheory

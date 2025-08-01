@@ -3,10 +3,8 @@ Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.RingTheory.Trace
+import Mathlib.RingTheory.Trace.Basic
 import Mathlib.FieldTheory.Finite.GaloisField
-
-#align_import field_theory.finite.trace from "leanprover-community/mathlib"@"0723536a0522d24fc2f159a096fb3304bef77472"
 
 /-!
 # The trace map for finite fields
@@ -21,7 +19,7 @@ finite field, trace
 
 namespace FiniteField
 
-/-- The trace map from a finite field to its prime field is nongedenerate. -/
+/-- The trace map from a finite field to its prime field is nondegenerate. -/
 theorem trace_to_zmod_nondegenerate (F : Type*) [Field F] [Finite F]
     [Algebra (ZMod (ringChar F)) F] {a : F} (ha : a ≠ 0) :
     ∃ b : F, Algebra.trace (ZMod (ringChar F)) F (a * b) ≠ 0 := by
@@ -30,6 +28,5 @@ theorem trace_to_zmod_nondegenerate (F : Type*) [Field F] [Finite F]
   simp_rw [Algebra.traceForm_apply] at htr
   by_contra! hf
   exact ha (htr hf)
-#align finite_field.trace_to_zmod_nondegenerate FiniteField.trace_to_zmod_nondegenerate
 
 end FiniteField

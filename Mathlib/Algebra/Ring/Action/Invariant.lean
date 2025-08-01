@@ -4,12 +4,17 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.GroupTheory.GroupAction.Hom
-import Mathlib.Algebra.Ring.Subring.Basic
+import Mathlib.Algebra.Ring.Subring.Defs
 
-#align_import algebra.group_ring_action.invariant from "leanprover-community/mathlib"@"e7bab9a85e92cf46c02cb4725a7be2f04691e3a7"
+/-! # Subrings invariant under an action
 
-/-! # Subrings invariant under an action -/
+If a monoid acts on a ring via a `MulSemiringAction`, then `IsInvariantSubring` is
+a predicate on subrings asserting that the subring is fixed elementwise by the
+action.
 
+-/
+
+assert_not_exists RelIso
 
 section Ring
 
@@ -23,7 +28,6 @@ variable {R}
 /-- A typeclass for subrings invariant under a `MulSemiringAction`. -/
 class IsInvariantSubring : Prop where
   smul_mem : ∀ (m : M) {x : R}, x ∈ S → m • x ∈ S
-#align is_invariant_subring IsInvariantSubring
 
 instance IsInvariantSubring.toMulSemiringAction [IsInvariantSubring M S] :
     MulSemiringAction M S where
@@ -34,7 +38,6 @@ instance IsInvariantSubring.toMulSemiringAction [IsInvariantSubring M S] :
   smul_zero m := Subtype.eq <| smul_zero m
   smul_one m := Subtype.eq <| smul_one m
   smul_mul m s₁ s₂ := Subtype.eq <| smul_mul' m (s₁ : R) (s₂ : R)
-#align is_invariant_subring.to_mul_semiring_action IsInvariantSubring.toMulSemiringAction
 
 end Ring
 
@@ -47,18 +50,13 @@ variable (U : Subring R') [IsInvariantSubring M U]
 /-- The canonical inclusion from an invariant subring. -/
 def IsInvariantSubring.subtypeHom : U →+*[M] R' :=
   { U.subtype with map_smul' := fun _ _ ↦ rfl }
-#align is_invariant_subring.subtype_hom IsInvariantSubring.subtypeHom
 
--- Porting note: changed `coe` to `Subtype.val`
 @[simp]
 theorem IsInvariantSubring.coe_subtypeHom :
     (IsInvariantSubring.subtypeHom M U : U → R') = Subtype.val := rfl
-#align is_invariant_subring.coe_subtype_hom IsInvariantSubring.coe_subtypeHom
 
--- Porting note: added `toRingHom`
 @[simp]
 theorem IsInvariantSubring.coe_subtypeHom' :
-    ((IsInvariantSubring.subtypeHom M U).toRingHom : U →+* R') = U.subtype := rfl
-#align is_invariant_subring.coe_subtype_hom' IsInvariantSubring.coe_subtypeHom'
+    ((IsInvariantSubring.subtypeHom M U) : U →+* R') = U.subtype := rfl
 
 end

@@ -8,8 +8,6 @@ import Mathlib.Algebra.Polynomial.Derivative
 import Mathlib.Data.Nat.Choose.Cast
 import Mathlib.NumberTheory.Bernoulli
 
-#align_import number_theory.bernoulli_polynomials from "leanprover-community/mathlib"@"ca3d21f7f4fd613c2a3c54ac7871163e1e5ecb3a"
-
 /-!
 # Bernoulli polynomials
 
@@ -52,7 +50,6 @@ namespace Polynomial
 /-- The Bernoulli polynomials are defined in terms of the negative Bernoulli numbers. -/
 def bernoulli (n : ℕ) : ℚ[X] :=
   ∑ i ∈ range (n + 1), Polynomial.monomial (n - i) (_root_.bernoulli i * choose n i)
-#align polynomial.bernoulli Polynomial.bernoulli
 
 theorem bernoulli_def (n : ℕ) : bernoulli n =
     ∑ i ∈ range (n + 1), Polynomial.monomial i (_root_.bernoulli (n - i) * choose n i) := by
@@ -61,7 +58,6 @@ theorem bernoulli_def (n : ℕ) : bernoulli n =
   rintro x hx
   rw [mem_range_succ_iff] at hx
   rw [choose_symm hx, tsub_tsub_cancel_of_le hx]
-#align polynomial.bernoulli_def Polynomial.bernoulli_def
 
 /-
 ### examples
@@ -70,7 +66,6 @@ section Examples
 
 @[simp]
 theorem bernoulli_zero : bernoulli 0 = 1 := by simp [bernoulli]
-#align polynomial.bernoulli_zero Polynomial.bernoulli_zero
 
 @[simp]
 theorem bernoulli_eval_zero (n : ℕ) : (bernoulli n).eval 0 = _root_.bernoulli n := by
@@ -80,17 +75,15 @@ theorem bernoulli_eval_zero (n : ℕ) : (bernoulli n).eval 0 = _root_.bernoulli 
     intros x hx
     simp [tsub_eq_zero_iff_le, mem_range.1 hx]
   simp [this]
-#align polynomial.bernoulli_eval_zero Polynomial.bernoulli_eval_zero
 
 @[simp]
 theorem bernoulli_eval_one (n : ℕ) : (bernoulli n).eval 1 = bernoulli' n := by
   simp only [bernoulli, eval_finset_sum]
   simp only [← succ_eq_add_one, sum_range_succ, mul_one, cast_one, choose_self,
-    (_root_.bernoulli _).mul_comm, sum_bernoulli, one_pow, mul_one, eval_C, eval_monomial, one_mul]
+    (_root_.bernoulli _).mul_comm, sum_bernoulli, one_pow, mul_one, eval_monomial, one_mul]
   by_cases h : n = 1
   · norm_num [h]
   · simp [h, bernoulli_eq_bernoulli'_of_ne_one h]
-#align polynomial.bernoulli_eval_one Polynomial.bernoulli_eval_one
 
 end Examples
 
@@ -98,7 +91,7 @@ theorem derivative_bernoulli_add_one (k : ℕ) :
     Polynomial.derivative (bernoulli (k + 1)) = (k + 1) * bernoulli k := by
   simp_rw [bernoulli, derivative_sum, derivative_monomial, Nat.sub_sub, Nat.add_sub_add_right]
   -- LHS sum has an extra term, but the coefficient is zero:
-  rw [range_add_one, sum_insert not_mem_range_self, tsub_self, cast_zero, mul_zero,
+  rw [range_add_one, sum_insert notMem_range_self, tsub_self, cast_zero, mul_zero,
     map_zero, zero_add, mul_sum]
   -- the rest of the sum is termwise equal:
   refine sum_congr (by rfl) fun m _ => ?_
@@ -106,14 +99,12 @@ theorem derivative_bernoulli_add_one (k : ℕ) :
   rw [mul_assoc, mul_assoc, ← Nat.cast_mul, ← Nat.cast_mul]
   congr 3
   rw [(choose_mul_succ_eq k m).symm]
-#align polynomial.derivative_bernoulli_add_one Polynomial.derivative_bernoulli_add_one
 
 theorem derivative_bernoulli (k : ℕ) :
     Polynomial.derivative (bernoulli k) = k * bernoulli (k - 1) := by
   cases k with
   | zero => rw [Nat.cast_zero, zero_mul, bernoulli_zero, derivative_one]
   | succ k => exact mod_cast derivative_bernoulli_add_one k
-#align polynomial.derivative_bernoulli Polynomial.derivative_bernoulli
 
 @[simp]
 nonrec theorem sum_bernoulli (n : ℕ) :
@@ -134,9 +125,9 @@ nonrec theorem sum_bernoulli (n : ℕ) :
           smul_monomial]
   simp_rw [← sum_smul]
   rw [sum_range_succ_comm]
-  simp only [add_right_eq_self, mul_one, cast_one, cast_add, add_tsub_cancel_left,
+  simp only [add_eq_left, mul_one, cast_one, cast_add, add_tsub_cancel_left,
     choose_succ_self_right, one_smul, _root_.bernoulli_zero, sum_singleton, zero_add,
-    map_add, range_one, bernoulli_zero, mul_one, one_mul, add_zero, choose_self]
+    map_add, range_one, mul_one]
   apply sum_eq_zero fun x hx => _
   have f : ∀ x ∈ range n, ¬n + 1 - x = 1 := by
     rintro x H
@@ -150,7 +141,6 @@ nonrec theorem sum_bernoulli (n : ℕ) :
     intro h₁
     exact (f x hx) h₁
   rw [g, zero_smul]
-#align polynomial.sum_bernoulli Polynomial.sum_bernoulli
 
 /-- Another version of `Polynomial.sum_bernoulli`. -/
 theorem bernoulli_eq_sub_sum (n : ℕ) :
@@ -158,7 +148,6 @@ theorem bernoulli_eq_sub_sum (n : ℕ) :
       monomial n (n.succ : ℚ) - ∑ k ∈ Finset.range n, ((n + 1).choose k : ℚ) • bernoulli k := by
   rw [Nat.cast_succ, ← sum_bernoulli n, sum_range_succ, add_sub_cancel_left, choose_succ_self_right,
     Nat.cast_succ]
-#align polynomial.bernoulli_eq_sub_sum Polynomial.bernoulli_eq_sub_sum
 
 /-- Another version of `sum_range_pow`. -/
 theorem sum_range_pow_eq_bernoulli_sub (n p : ℕ) :
@@ -176,20 +165,17 @@ theorem sum_range_pow_eq_bernoulli_sub (n p : ℕ) :
     · rw [Nat.sub_sub_self (mem_range_le hx)]
     · rw [← choose_symm (mem_range_le hx)]
   · norm_cast
-#align polynomial.sum_range_pow_eq_bernoulli_sub Polynomial.sum_range_pow_eq_bernoulli_sub
 
 /-- Rearrangement of `Polynomial.sum_range_pow_eq_bernoulli_sub`. -/
 theorem bernoulli_succ_eval (n p : ℕ) : (bernoulli p.succ).eval (n : ℚ) =
     _root_.bernoulli p.succ + (p + 1 : ℚ) * ∑ k ∈ range n, (k : ℚ) ^ p := by
   apply eq_add_of_sub_eq'
   rw [sum_range_pow_eq_bernoulli_sub]
-#align polynomial.bernoulli_succ_eval Polynomial.bernoulli_succ_eval
 
 theorem bernoulli_eval_one_add (n : ℕ) (x : ℚ) :
     (bernoulli n).eval (1 + x) = (bernoulli n).eval x + n * x ^ (n - 1) := by
   refine Nat.strong_induction_on n fun d hd => ?_
-  have nz : ((d.succ : ℕ) : ℚ) ≠ 0 := by
-    norm_cast
+  have nz : ((d.succ : ℕ) : ℚ) ≠ 0 := by norm_cast
   apply (mul_right_inj' nz).1
   rw [← smul_eq_mul, ← eval_smul, bernoulli_eq_sub_sum, mul_add, ← smul_eq_mul, ← eval_smul,
     bernoulli_eq_sub_sum, eval_sub, eval_finset_sum]
@@ -209,7 +195,6 @@ theorem bernoulli_eval_one_add (n : ℕ) (x : ℚ) :
       rw [succ_eq_add_one, ← choose_succ_self_right d]
   rw [Nat.cast_succ, ← smul_eq_mul, ← sum_range_succ _ d, eval_monomial_one_add_sub]
   simp_rw [smul_eq_mul]
-#align polynomial.bernoulli_eval_one_add Polynomial.bernoulli_eval_one_add
 
 open PowerSeries
 
@@ -224,8 +209,7 @@ theorem bernoulli_generating_function (t : A) :
   -- check equality of power series by checking coefficients of X^n
   ext n
   -- n = 0 case solved by `simp`
-  cases' n with n;
-  · simp
+  cases n with | zero => simp | succ n =>
   -- n ≥ 1, the coefficients is a sum to n+2, so use `sum_range_succ` to write as
   -- last term plus sum to n+1
   rw [coeff_succ_X_mul, coeff_rescale, coeff_exp, PowerSeries.coeff_mul,
@@ -243,7 +227,7 @@ theorem bernoulli_generating_function (t : A) :
     mul_one_div_cancel (show (n ! : ℚ) ≠ 0 from cast_ne_zero.2 (factorial_ne_zero n)), mul_one,
     mul_comm (t ^ n), ← aeval_monomial, cast_add, cast_one]
   -- But this is the RHS of `Polynomial.sum_bernoulli`
-  rw [← sum_bernoulli, Finset.mul_sum, AlgHom.map_sum]
+  rw [← sum_bernoulli, Finset.mul_sum, map_sum]
   -- and now we have to prove a sum is a sum, but all the terms are equal.
   apply Finset.sum_congr rfl
   -- The rest is just trivialities, hampered by the fact that we're coercing
@@ -251,12 +235,11 @@ theorem bernoulli_generating_function (t : A) :
   intro i hi
   -- deal with coefficients of e^X-1
   simp only [Nat.cast_choose ℚ (mem_range_le hi), coeff_mk, if_neg (mem_range_sub_ne_zero hi),
-    one_div, AlgHom.map_smul, PowerSeries.coeff_one, coeff_exp, sub_zero, LinearMap.map_sub,
-    Algebra.smul_mul_assoc, Algebra.smul_def, mul_right_comm _ ((aeval t) _), ← mul_assoc, ←
-    RingHom.map_mul, succ_eq_add_one, ← Polynomial.C_eq_algebraMap, Polynomial.aeval_mul,
+    one_div, PowerSeries.coeff_one, coeff_exp, sub_zero, LinearMap.map_sub,
+    Algebra.smul_def, mul_right_comm _ ((aeval t) _), ← mul_assoc, ←
+    RingHom.map_mul, ← Polynomial.C_eq_algebraMap, Polynomial.aeval_mul,
     Polynomial.aeval_C]
   -- finally cancel the Bernoulli polynomial and the algebra_map
   field_simp
-#align polynomial.bernoulli_generating_function Polynomial.bernoulli_generating_function
 
 end Polynomial

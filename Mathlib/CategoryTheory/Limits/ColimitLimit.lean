@@ -1,13 +1,12 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Limits.Types
+import Mathlib.CategoryTheory.Limits.Types.Colimits
+import Mathlib.CategoryTheory.Limits.Types.Limits
 import Mathlib.CategoryTheory.Functor.Currying
-import Mathlib.CategoryTheory.Limits.FunctorCategory
-
-#align_import category_theory.limits.colimit_limit from "leanprover-community/mathlib"@"59382264386afdbaf1727e617f5fdda511992eb9"
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 
 /-!
 # The morphism comparing a colimit of limits with the corresponding limit of colimits.
@@ -27,7 +26,7 @@ is that when `C = Type`, filtered colimits commute with finite limits.
 
 universe v₁ v₂ v u₁ u₂ u
 
-open CategoryTheory
+open CategoryTheory Functor
 
 namespace CategoryTheory.Limits
 
@@ -35,17 +34,15 @@ variable {J : Type u₁} {K : Type u₂} [Category.{v₁} J] [Category.{v₂} K]
 variable {C : Type u} [Category.{v} C]
 variable (F : J × K ⥤ C)
 
-open CategoryTheory.prod
+open CategoryTheory.prod Prod
 
 theorem map_id_left_eq_curry_map {j : J} {k k' : K} {f : k ⟶ k'} :
-    F.map ((𝟙 j, f) : (j, k) ⟶ (j, k')) = ((curry.obj F).obj j).map f :=
+    F.map (𝟙 j ×ₘ f) = ((curry.obj F).obj j).map f :=
   rfl
-#align category_theory.limits.map_id_left_eq_curry_map CategoryTheory.Limits.map_id_left_eq_curry_map
 
 theorem map_id_right_eq_curry_swap_map {j j' : J} {f : j ⟶ j'} {k : K} :
-    F.map ((f, 𝟙 k) : (j, k) ⟶ (j', k)) = ((curry.obj (Prod.swap K J ⋙ F)).obj k).map f :=
+    F.map (f ×ₘ 𝟙 k) = ((curry.obj (Prod.swap K J ⋙ F)).obj k).map f :=
   rfl
-#align category_theory.limits.map_id_right_eq_curry_swap_map CategoryTheory.Limits.map_id_right_eq_curry_swap_map
 
 variable [HasLimitsOfShape J C]
 variable [HasColimitsOfShape K C]
@@ -80,7 +77,6 @@ noncomputable def colimitLimitToLimitColimit :
               colimit.ι_desc_assoc, Category.assoc, ι_colimMap,
               curry_obj_obj_obj, curry_obj_map_app]
             rw [map_id_right_eq_curry_swap_map, limit.w_assoc] } }
-#align category_theory.limits.colimit_limit_to_limit_colimit CategoryTheory.Limits.colimitLimitToLimitColimit
 
 /-- Since `colimit_limit_to_limit_colimit` is a morphism from a colimit to a limit,
 this lemma characterises it.
@@ -91,7 +87,6 @@ theorem ι_colimitLimitToLimitColimit_π (j) (k) :
       limit.π ((curry.obj (Prod.swap K J ⋙ F)).obj k) j ≫ colimit.ι ((curry.obj F).obj j) k := by
   dsimp [colimitLimitToLimitColimit]
   simp
-#align category_theory.limits.ι_colimit_limit_to_limit_colimit_π CategoryTheory.Limits.ι_colimitLimitToLimitColimit_π
 
 @[simp]
 theorem ι_colimitLimitToLimitColimit_π_apply [Small.{v} J] [Small.{v} K] (F : J × K ⥤ Type v)
@@ -103,7 +98,6 @@ theorem ι_colimitLimitToLimitColimit_π_apply [Small.{v} J] [Small.{v} K] (F : 
   dsimp only
   rw [Types.Colimit.ι_desc_apply]
   dsimp
-#align category_theory.limits.ι_colimit_limit_to_limit_colimit_π_apply CategoryTheory.Limits.ι_colimitLimitToLimitColimit_π_apply
 
 /-- The map `colimit_limit_to_limit_colimit` realized as a map of cones. -/
 @[simps]
@@ -111,7 +105,7 @@ noncomputable def colimitLimitToLimitColimitCone (G : J ⥤ K ⥤ C) [HasLimit G
     colim.mapCone (limit.cone G) ⟶ limit.cone (G ⋙ colim) where
   hom :=
     colim.map (limitIsoSwapCompLim G).hom ≫
-      colimitLimitToLimitColimit (uncurry.obj G : _) ≫
+      colimitLimitToLimitColimit (uncurry.obj G :) ≫
         lim.map (whiskerRight (currying.unitIso.app G).inv colim)
   w j := by
     dsimp
@@ -122,6 +116,5 @@ noncomputable def colimitLimitToLimitColimitCone (G : J ⥤ K ⥤ C) [HasLimit G
       uncurry_obj_obj, ι_colimMap, currying_unitIso_inv_app_app_app, Category.id_comp,
       limMap_π_assoc, Functor.flip_obj_obj, flipIsoCurrySwapUncurry_hom_app_app]
     erw [limitObjIsoLimitCompEvaluation_hom_π_assoc]
-#align category_theory.limits.colimit_limit_to_limit_colimit_cone CategoryTheory.Limits.colimitLimitToLimitColimitCone
 
 end CategoryTheory.Limits

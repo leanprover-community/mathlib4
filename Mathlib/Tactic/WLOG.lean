@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Johan Commelin, Reid Barton, Thomas Murrills
 -/
 import Mathlib.Tactic.Core
+import Lean.Meta.Tactic.Cases
 
 /-!
 
@@ -29,7 +30,7 @@ structure WLOGResult where
   * `h : ¬ P`: the assumption that `P` does not hold
   * `H`: the statement that in the original context `P` suffices to prove the goal.
   -/
-  reductionGoal    : MVarId
+  reductionGoal : MVarId
   /-- The pair `(HFVarId, negHypFVarId)` of `FVarIds` for `reductionGoal`:
 
   * `HFVarId`: `H`, the statement that in the original context `P` suffices to prove the goal.
@@ -76,7 +77,8 @@ def _root_.Lean.MVarId.wlog (goal : MVarId) (h : Option Name) (P : Expr)
   let (revertedFVars, HType) ← liftMkBindingM fun ctx => (do
     let f ← collectForwardDeps lctx fvars
     let revertedFVars := filterOutImplementationDetails lctx (f.map Expr.fvarId!)
-    let HType ← withFreshCache do mkAuxMVarType lctx (revertedFVars.map Expr.fvar) .natural HSuffix
+    let HType ← withFreshCache do
+      mkAuxMVarType lctx (revertedFVars.map Expr.fvar) .natural HSuffix (usedLetOnly := true)
     return (revertedFVars, HType))
       { preserveOrder := false, mainModule := ctx.mainModule }
   /- Set up the goal which will suppose `h`; this begins as a goal with type H (hence HExpr), and h
@@ -85,7 +87,8 @@ def _root_.Lean.MVarId.wlog (goal : MVarId) (h : Option Name) (P : Expr)
   let hGoal := HExpr.mvarId!
   /- Begin the "reduction goal" which will contain hypotheses `H` and `¬h`. For now, it only
   contains `H`. Keep track of that hypothesis' FVarId. -/
-  let (HFVarId, reductionGoal) ← goal.assertHypotheses #[⟨H, HType, HExpr⟩]
+  let (HFVarId, reductionGoal) ←
+    goal.assertHypotheses #[{ userName := H, type := HType, value := HExpr }]
   let HFVarId := HFVarId[0]!
   /- Clear the reverted fvars from the branch that will contain `h` as a hypothesis. -/
   let hGoal ← hGoal.tryClearMany revertedFVars
@@ -137,3 +140,5 @@ elab_rules : tactic
   let goal ← getMainGoal
   let { reductionGoal, hypothesisGoal .. } ← goal.wlog h P xs H
   replaceMainGoal [reductionGoal, hypothesisGoal]
+
+end Mathlib.Tactic

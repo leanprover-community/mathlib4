@@ -3,9 +3,9 @@ Copyright (c) 2024 Miyahara Kō. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Miyahara Kō
 -/
-
-import Mathlib.Data.List.Range
-import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Data.List.Defs
+import Mathlib.Data.Set.Function
 
 /-!
 # iterate
@@ -23,17 +23,17 @@ theorem length_iterate (f : α → α) (a : α) (n : ℕ) : length (iterate f a 
 
 @[simp]
 theorem iterate_eq_nil {f : α → α} {a : α} {n : ℕ} : iterate f a n = [] ↔ n = 0 := by
-  rw [← length_eq_zero, length_iterate]
+  rw [← length_eq_zero_iff, length_iterate]
 
-theorem get?_iterate (f : α → α) (a : α) :
-    ∀ (n i : ℕ), i < n → get? (iterate f a n) i = f^[i] a
-  | n + 1, 0    , _ => rfl
-  | n + 1, i + 1, h => by simp [get?_iterate f (f a) n i (by simpa using h)]
+theorem getElem?_iterate (f : α → α) (a : α) :
+    ∀ (n i : ℕ), i < n → (iterate f a n)[i]? = f^[i] a
+  | n + 1, 0    , _ => by simp
+  | n + 1, i + 1, h => by simp [getElem?_iterate f (f a) n i (by simpa using h)]
 
 @[simp]
-theorem get_iterate (f : α → α) (a : α) (n : ℕ) (i : Fin (iterate f a n).length) :
-    get (iterate f a n) i = f^[↑i] a :=
-  (get?_eq_some.1 <| get?_iterate f a n i.1 (by simpa using i.2)).2
+theorem getElem_iterate (f : α → α) (a : α) (n : ℕ) (i : Nat) (h : i < (iterate f a n).length) :
+    (iterate f a n)[i] = f^[i] a :=
+  (getElem_eq_iff _).2 <| getElem?_iterate _ _ _ _ <| by rwa [length_iterate] at h
 
 @[simp]
 theorem mem_iterate {f : α → α} {a : α} {n : ℕ} {b : α} :
@@ -43,7 +43,7 @@ theorem mem_iterate {f : α → α} {a : α} {n : ℕ} {b : α} :
 @[simp]
 theorem range_map_iterate (n : ℕ) (f : α → α) (a : α) :
     (List.range n).map (f^[·] a) = List.iterate f a n := by
-  apply List.ext_get <;> simp
+  apply List.ext_getElem <;> simp
 
 theorem iterate_add (f : α → α) (a : α) (m n : ℕ) :
     iterate f a (m + n) = iterate f a m ++ iterate f (f^[m] a) n := by
