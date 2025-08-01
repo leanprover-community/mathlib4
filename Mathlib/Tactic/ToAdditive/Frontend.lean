@@ -659,7 +659,8 @@ It also expands all kernel projections that have as head a constant `n` in `reor
 def expand (e : Expr) : MetaM Expr := do
   let env ← getEnv
   let reorderFn : Name → List (List ℕ) := fun nm ↦ (reorderAttr.find? env nm |>.getD [])
-  let e₂ ← Lean.Meta.transform (input := e) (post := fun e => return .done e) fun e ↦
+  let e₂ ← Lean.Meta.transform (input := e) (skipConstInApp := true)
+    (post := fun e => return .done e) fun e ↦
     e.withApp fun f args ↦ do
     match f with
     | .proj n i s =>
@@ -677,9 +678,7 @@ def expand (e : Expr) : MetaM Expr := do
         -- no need to expand if nothing needs reordering
         return .continue
       let needed_n := reorder.flatten.foldr Nat.max 0 + 1
-      -- the second disjunct is a temporary fix to avoid infinite loops. We may need to use
-      -- `replaceRec` or something similar to not change the head of an application
-      if needed_n ≤ args.size || args.size == 0 then
+      if needed_n ≤ args.size then
         return .continue
       else
         -- in this case, we need to reorder arguments that are not yet
@@ -699,20 +698,23 @@ def reorderForall (reorder : List (List Nat) := []) (src : Expr) : MetaM Expr :=
       if xs.size = maxReorder + 1 then
         mkForallFVars (xs.permute! reorder) e
       else
-        throwError "the permutation\n{reorder}\nprovided by the reorder config option is too \
-          large, the type{indentExpr src}\nhas only {xs.size} arguments"
+        throwError "the permutation\n{reorder}\nprovided by the `(reorder := ...)` option is \
+          out of bounds, the type{indentExpr src}\nhas only {xs.size} arguments"
   else
     return src
 
 /-- Reorder lambda-binders. See doc of `reorderAttr` for the interpretation of the argument -/
 def reorderLambda (reorder : List (List Nat) := []) (src : Expr) : MetaM Expr := do
   if let some maxReorder := reorder.flatten.max? then
-    lambdaBoundedTelescope src (maxReorder + 1) fun xs e => do
-      if xs.size = maxReorder + 1 then
+    let maxReorder := maxReorder + 1
+    lambdaBoundedTelescope src maxReorder fun xs e => do
+      if xs.size = maxReorder then
         mkLambdaFVars (xs.permute! reorder) e
       else
-        throwError "the permutation\n{reorder}\nprovided by the reorder config option is too \
-          large, the function{indentExpr src}\nhas only {xs.size} arguments"
+        -- we don't have to consider the case where the given permutation is out of bounds,
+        -- since `reorderForall` applied to the type would already have failed in that case.
+        forallBoundedTelescope (← inferType e) (maxReorder - xs.size) fun ys _ => do
+          mkLambdaFVars ((xs ++ ys).permute! reorder) (mkAppN e ys)
   else
     return src
 
