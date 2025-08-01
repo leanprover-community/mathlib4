@@ -96,6 +96,12 @@ lemma mem_line_iff {p} {x₀ x₁ y₀ y₁ : ℝ} (hx : x₀ ≠ x₁ ∨ y₀ 
         field_simp [mul_div_cancel_right₀ _ (sub_ne_zero_of_ne hy.symm)]
         ring
 
+lemma point_ne_of_x_ne {x₁ x₂ y₁ y₂ : ℝ} (hne : x₁ ≠ x₂) : !₂[x₁, y₁] ≠ !₂[x₂, y₂] := fun h =>
+  hne <| congr_fun h 0
+
+lemma point_ne_of_y_ne {x₁ x₂ y₁ y₂ : ℝ} (hne : y₁ ≠ y₂) : !₂[x₁, y₁] ≠ !₂[x₂, y₂] := fun h =>
+  hne <| congr_fun h 1
+
 lemma _root_.AffineSubspace.eq_line_of_mem_mem_finrank
     (l : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2)))
     {p q} (hp : p ∈ l) (hq : q ∈ l) (hpq : p ≠ q) (h : finrank ℝ l.direction = 1) :
@@ -386,6 +392,8 @@ noncomputable def Config.symm {n k : ℕ} (c : Config n k) : Config n k where
 /-- Extend a valid configuration without changing the number of sunny lines. -/
 def Config.extend {n k : ℕ} (hn : 3 ≤ n) (c : Config n k) : Config (n + 1) k where
   ls := c.ls.cons line[ℝ, !₂[(n : ℝ) + 1, 1], !₁[1, n + 1]] <| fun h => by
+    -- Bit annoying that we need to prove this, we could as well add some junk line if the diagonal
+    -- is already in the set
     sorry
   card := by rw [Finset.card_cons, c.card]
   rank l hl := by
@@ -628,6 +636,72 @@ lemma no_config_3_2 (c : Config 3 2) : False := by
         _ = 1 := by rw [c.card]
       omega
 
+lemma get_horiz_point_of_no_horiz_line {n k} (c : Config n k)
+    (hhoriz : line[ℝ, !₂[0, 1], !₂[1, 1]] ∉ c.ls) {l} (hl : l ∈ c.ls) :
+    ∃ m : ℕ, 1 ≤ m ∧ m ≤ n ∧ !₂[(m : ℝ), 1] ∈ l := by
+  let cl m (hm : m ∈ Finset.Icc 1 n) := Classical.choose <| c.cover m 1
+    (by rw [Finset.mem_Icc] at hm; omega) Nat.one_pos (by rw [Finset.mem_Icc] at hm; omega)
+  have hcl m (hm : m ∈ Finset.Icc 1 n) : cl m hm ∈ c.ls ∧ !₂[↑m, ((1 : ℕ) : ℝ)] ∈ cl m hm :=
+    Classical.choose_spec (c.cover m 1
+      (by rw [Finset.mem_Icc] at hm; omega) Nat.one_pos (by rw [Finset.mem_Icc] at hm; omega))
+  obtain ⟨m, hm, rfl⟩ := Finset.surj_on_of_inj_on_of_card_le (s := Finset.Icc 1 n) (t := c.ls)
+    cl (fun m hm => (hcl m hm).1)
+    (fun m₁ m₂ hm₁ hm₂ h => by
+      simp only [Finset.mem_Icc, Nat.cast_one] at *
+      have hm₁'' := Finset.mem_Icc.mp hm₁
+      have hm₂'' := Finset.mem_Icc.mp hm₂
+      by_contra! hm₁m₂
+      apply hhoriz
+      have hm₁' := hcl m₁ hm₁''
+      have hm₂' := hcl m₂ hm₂''
+      rw [← h] at hm₂'
+      convert (hcl m₁ hm₁'').1
+      rw [(cl m₁ hm₁).eq_line_of_mem_mem_finrank hm₁'.2 hm₂'.2 (point_ne_of_x_ne (by norm_cast))
+        (c.rank _ hm₁'.1), line_eq_iff]
+      simp)
+    (by simp [c.card]) l hl
+  have := (hcl m hm).2
+  simp only [Nat.cast_one] at this
+  rw [Finset.mem_Icc] at hm
+  refine ⟨m, hm.1, hm.2, this⟩
+
+/-- Obtain a point on the main diagonal which lies on a given line, when no main diagonal line
+is present in a configuration. -/
+lemma get_diag_point_of_no_diag_line {n k} (c : Config n k)
+    (hdiag : line[ℝ, !₂[(n : ℝ), 1], !₂[1, (n : ℝ)]] ∉ c.ls) {l} (hl : l ∈ c.ls):
+    ∃ m : ℕ, 1 ≤ m ∧ m ≤ n ∧ !₂[(m : ℝ), n + 1 - m] ∈ l := by
+  let cl m (hm : m ∈ Finset.Icc 1 n) := Classical.choose <| c.cover m (n + 1 - m)
+    (by rw [Finset.mem_Icc] at hm; omega)
+    (by rw [Finset.mem_Icc] at hm; omega)
+    (by rw [Finset.mem_Icc] at hm; omega)
+  have hcl m (hm : m ∈ Finset.Icc 1 n) : cl m hm ∈ c.ls ∧ !₂[(m : ℝ), (n + 1 - m : ℕ)] ∈ cl m hm :=
+    Classical.choose_spec (c.cover m (n + 1 - m)
+      (by rw [Finset.mem_Icc] at hm; omega)
+      (by rw [Finset.mem_Icc] at hm; omega)
+      (by rw [Finset.mem_Icc] at hm; omega))
+  obtain ⟨m, hm, rfl⟩ := Finset.surj_on_of_inj_on_of_card_le (s := Finset.Icc 1 n) (t := c.ls)
+    cl (fun m hm => (hcl m hm).1)
+    (fun m₁ m₂ hm₁ hm₂ h => by
+      simp only [Finset.mem_Icc] at *
+      have hm₁'' := Finset.mem_Icc.mp hm₁
+      have hm₂'' := Finset.mem_Icc.mp hm₂
+      by_contra! hm₁m₂
+      apply hdiag
+      have hm₁' := hcl m₁ hm₁''
+      have hm₂' := hcl m₂ hm₂''
+      rw [← h] at hm₂'
+      convert (hcl m₁ hm₁'').1
+      rw [(cl m₁ hm₁).eq_line_of_mem_mem_finrank hm₁'.2 hm₂'.2 (point_ne_of_x_ne (by norm_cast))
+        (c.rank _ hm₁'.1), line_eq_iff]
+      rw [Nat.cast_sub (by omega), Nat.cast_sub (by omega)]
+      push_cast
+      grind)
+    (by simp [c.card]) l hl
+  have := (hcl m hm).2
+  rw [Finset.mem_Icc] at hm
+  rw [Nat.cast_sub (by omega), Nat.cast_add, Nat.cast_one] at this
+  refine ⟨m, hm.1, hm.2, this⟩
+
 lemma no_config_without_vert_horiz_diag_contr_line {n k} (hn : 3 ≤ n) (c : Config (n + 1) k)
     (hvert : line[ℝ, !₂[1, 0], !₂[1, 1]] ∉ c.ls)
     (hhoriz : line[ℝ, !₂[0, 1], !₂[1, 1]] ∉ c.ls)
@@ -636,14 +710,40 @@ lemma no_config_without_vert_horiz_diag_contr_line {n k} (hn : 3 ≤ n) (c : Con
     {l} (hl : l ∈ c.ls) (meml : !₂[1, (m : ℝ)] ∈ l) (hQ : !₂[(n : ℝ) + 1, 1] ∉ l) :
     False := by
   -- find point `∈ l` on bottom line
-  obtain ⟨m₂, ltm₂, m₂lt, hm₂⟩ : ∃ m₂ : ℕ, 1 < m₂ ∧ m₂ ≤ n ∧ !₂[(m₂ : ℝ), 1] ∈ l :=
-    sorry
+  obtain ⟨m₂, ltm₂, m₂lt, hm₂⟩ : ∃ m₂ : ℕ, 1 < m₂ ∧ m₂ ≤ n ∧ !₂[(m₂ : ℝ), 1] ∈ l := by
+    obtain ⟨m, lem, mle, hm⟩ := get_horiz_point_of_no_horiz_line c hhoriz hl
+    by_cases h : m = 1
+    · subst h
+      absurd hvert
+      obtain rfl := l.eq_line_of_mem_mem_finrank meml hm (point_ne_of_y_ne (by norm_cast; omega))
+        (c.rank l hl)
+      convert hl using 1
+      rw [line_eq_iff]
+      simp
+    · by_cases h : m = n + 1
+      · absurd hQ
+        rwa [h, Nat.cast_add, Nat.cast_one] at hm
+      · exact ⟨m, by omega, by omega, hm⟩
   -- find point `∈ l` on main diag
-  obtain ⟨m₃, ltm₃, m₃lt, hm₃⟩ : ∃ m₃ : ℕ, 1 < m₃ ∧ m₃ ≤ n ∧ !₂[(m₃ : ℝ), n + 2 - m₃] ∈ l :=
-    sorry
-  suffices h : finrank ℝ l.direction = 2
-  · have := c.rank l hl
-    omega
+  obtain ⟨m₃, ltm₃, m₃lt, hm₃⟩ : ∃ m₃ : ℕ, 1 < m₃ ∧ m₃ ≤ n ∧ !₂[(m₃ : ℝ), n + 2 - m₃] ∈ l := by
+    norm_cast at hdiag
+    obtain ⟨m, lem, mle, hm⟩ := get_diag_point_of_no_diag_line c hdiag hl
+    by_cases h : m = 1
+    · subst h
+      absurd hvert
+      obtain rfl := l.eq_line_of_mem_mem_finrank meml hm
+        (point_ne_of_y_ne (by norm_cast; rw [Int.subNatNat_of_le (by omega)]; simp; omega))
+        (c.rank l hl)
+      convert hl using 1
+      rw [line_eq_iff]
+      simp
+    · by_cases h : m = n + 1
+      · absurd hQ
+        rwa [← h, add_sub_cancel_left, h, Nat.cast_add, Nat.cast_one] at hm
+      · rw [Nat.cast_add, Nat.cast_one] at hm
+        ring_nf at hm ⊢
+        exact ⟨m, by omega, by omega, hm⟩
+  apply c.not_rank_2 hl
   -- This should be solvable by `grind` or so
   apply l.finrank_eq_two_of_ne hm₃ meml hm₂
   simp
@@ -688,12 +788,12 @@ lemma no_config_without_vert_horiz_diag {n k} (hn : 3 ≤ n) (c : Config (n + 1)
         have := c.cover m₁ 1 (Nat.lt_of_add_one_le hm₁.1) Nat.one_pos (Nat.succ_le_succ hm₁.2)
         simpa using this)
       (fun m₁ hm₁ m₂ hm₂ l hl hm₁l hm₂l => by
-        dsimp at *
         by_contra! h
         apply hhoriz
         convert hl
-        -- TODO this is missing an extensionality for rank 1 affine subspaces
-        sorry)
+        rw [l.eq_line_of_mem_mem_finrank hm₁l hm₂l (point_ne_of_x_ne (by simpa)) (c.rank l hl),
+          line_eq_iff]
+        simp)
       (n + 1) (by simp) l₁ hl₁ l₂ hl₂ (by simp [hQ]) (by push_cast; assumption)
     apply c.not_rank_2 hl₁ <| l₁.finrank_eq_two_of_ne h meml₁ meml₂ _
     simp only [Fin.isValue, PiLp.toLp_apply, Matrix.cons_val_zero, Matrix.cons_val_one,
