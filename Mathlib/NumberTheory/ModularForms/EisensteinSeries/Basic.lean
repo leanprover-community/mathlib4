@@ -37,6 +37,7 @@ def eisensteinSeries_MF {k : ℤ} {N : ℕ+} (hk : 3 ≤ k) (a : Fin 2 → ZMod 
 /-- The trivial congruence condition at level 1. -/
 def standardcongruencecondition : Fin 2 → ZMod ((1 : ℕ+) : ℕ) := 0
 
+/-- Notation for the `standardcongruencecondition`. -/
 scoped notation "𝟙" => standardcongruencecondition
 
 /-- Normalised Eisenstein series of level 1 and weight `k`,
