@@ -425,7 +425,7 @@ theorem ofId_apply (r) : ofId R A r = algebraMap R A r :=
 instance subsingleton_id : Subsingleton (R →ₐ[R] A) :=
   ⟨fun f g => AlgHom.ext fun _ => (f.commutes _).trans (g.commutes _).symm⟩
 
-/-- This ext lemma closes trivial subgoals create when chaining heterobasic ext lemmas. -/
+/-- This ext lemma closes trivial subgoals created when chaining heterobasic ext lemmas. -/
 @[ext high]
 theorem ext_id (f g : R →ₐ[R] A) : f = g := Subsingleton.elim _ _
 
@@ -489,3 +489,18 @@ theorem toAlgHom_injective [FaithfulSMul M A] :
   eq_of_smul_eq_smul fun r => AlgHom.ext_iff.1 h r
 
 end MulSemiringAction
+
+section
+
+variable {R S T : Type*} [CommSemiring R] [Semiring S] [Semiring T] [Algebra R S] [Algebra R T]
+  [Subsingleton T]
+
+instance uniqueOfRight : Unique (S →ₐ[R] T) where
+  default := AlgHom.ofLinearMap default (Subsingleton.elim _ _) (fun _ _ ↦ (Subsingleton.elim _ _))
+  uniq _ := AlgHom.ext fun _ ↦ Subsingleton.elim _ _
+
+@[simp]
+lemma AlgHom.default_apply (x : S) : (default : S →ₐ[R] T) x = 0 :=
+  rfl
+
+end

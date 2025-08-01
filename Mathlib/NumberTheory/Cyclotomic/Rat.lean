@@ -212,10 +212,8 @@ theorem integralPowerBasis_gen [hcycl : IsCyclotomicExtension {p ^ k} ℚ K]
     simp only [adjoinEquivRingOfIntegers_apply, IsIntegralClosure.algebraMap_lift]
     rfl
 
-#adaptation_note /-- https://github.com/leanprover/lean4/pull/5338
-We name `hcycl` so it can be used as a named argument,
-but since https://github.com/leanprover/lean4/pull/5338, this is considered unused,
-so we need to disable the linter. -/
+/- We name `hcycl` so it can be used as a named argument, but this is unused in the declaration
+otherwise, so we need to disable the linter. -/
 set_option linter.unusedVariables false in
 @[simp]
 theorem integralPowerBasis_dim [hcycl : IsCyclotomicExtension {p ^ k} ℚ K]
@@ -671,7 +669,7 @@ theorem absdiscr_prime_pow [IsCyclotomicExtension {p ^ k} ℚ K] :
     rw [← Algebra.discr_reindex _ _ (finCongr this)]
     congr 1
     ext i
-    simp_rw [Function.comp_apply, Basis.localizationLocalization_apply, powerBasis_dim,
+    simp_rw [Function.comp_apply, Module.Basis.localizationLocalization_apply, powerBasis_dim,
       PowerBasis.coe_basis, pB₁, integralPowerBasis_gen]
     convert ← ((IsPrimitiveRoot.powerBasis ℚ hζ).basis_eq_pow i).symm using 1
   · simp_rw [algebraMap_int_eq, map_mul, map_pow, map_neg, map_one, map_natCast]

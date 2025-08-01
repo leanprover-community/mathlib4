@@ -44,10 +44,9 @@ variable [Monoid M] [AddMonoid A]
 lemma coe_mul_coe [SetLike S M] [SubmonoidClass S M] (H : S) : H * H = (H : Set M) := by
   aesop (add simp mem_mul)
 
-set_option linter.unusedVariables false in
 @[to_additive (attr := simp)]
 lemma coe_set_pow [SetLike S M] [SubmonoidClass S M] :
-    ∀ {n} (hn : n ≠ 0) (H : S), (H ^ n : Set M) = H
+    ∀ {n} (_ : n ≠ 0) (H : S), (H ^ n : Set M) = H
   | 1, _, H => by simp
   | n + 2, _, H => by rw [pow_succ, coe_set_pow n.succ_ne_zero, coe_mul_coe]
 

@@ -75,8 +75,8 @@ variable [IsFiltered J]
 @[to_additive
   "As `J` is nonempty, we can pick an arbitrary object `j₀ : J`. We use this object to
   define the \"zero\" in the colimit as the equivalence class of `⟨j₀, 0 : F.obj j₀⟩`."]
-noncomputable instance colimitOne :
-  One (M.{v, u} F) where one := M.mk F ⟨IsFiltered.nonempty.some,1⟩
+noncomputable instance colimitOne : One (M.{v, u} F) where
+  one := M.mk F ⟨IsFiltered.nonempty.some,1⟩
 
 /-- The definition of the "one" in the colimit is independent of the chosen object of `J`.
 In particular, this lemma allows us to "unfold" the definition of `colimit_one` at a custom chosen
@@ -265,10 +265,10 @@ noncomputable def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) wh
 
 @[to_additive]
 instance forget_preservesFilteredColimits :
-    PreservesFilteredColimits (forget MonCat.{u}) :=
-  ⟨fun J hJ1 _ => letI : Category J := hJ1
+    PreservesFilteredColimits (forget MonCat.{u}) where
+  preserves_filtered_colimits _ _ _ :=
     ⟨fun {F} => preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit.{u, u} F)
-      (Types.TypeMax.colimitCoconeIsColimit (F ⋙ forget MonCat.{u}))⟩⟩
+      (Types.TypeMax.colimitCoconeIsColimit (F ⋙ forget MonCat.{u}))⟩
 end
 
 end MonCat.FilteredColimits
@@ -329,10 +329,10 @@ noncomputable def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) :=
 
 @[to_additive forget₂AddMonPreservesFilteredColimits]
 noncomputable instance forget₂Mon_preservesFilteredColimits :
-  PreservesFilteredColimits (forget₂ CommMonCat MonCat.{u}) :=
-⟨fun J hJ1 _ => letI : Category J := hJ1
-  ⟨fun {F} => preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit.{u, u} F)
-    (MonCat.FilteredColimits.colimitCoconeIsColimit (F ⋙ forget₂ CommMonCat MonCat.{u}))⟩⟩
+    PreservesFilteredColimits (forget₂ CommMonCat MonCat.{u}) where
+  preserves_filtered_colimits _ _ _ :=
+    ⟨fun {F} => preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit.{u, u} F)
+      (MonCat.FilteredColimits.colimitCoconeIsColimit (F ⋙ forget₂ CommMonCat MonCat.{u}))⟩
 
 @[to_additive]
 noncomputable instance forget_preservesFilteredColimits :
