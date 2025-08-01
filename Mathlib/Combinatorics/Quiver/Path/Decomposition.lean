@@ -17,8 +17,6 @@ cross the boundary of a given set of vertices `S`.
 -/
 namespace Quiver.Path
 
-open List
-
 section Decomposition
 
 variable {V R : Type*} [Quiver V] {a b : V} (p : Path a b)
