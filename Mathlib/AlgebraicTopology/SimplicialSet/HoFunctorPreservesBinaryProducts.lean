@@ -49,6 +49,40 @@ lemma foo : IsIso (α.app c.pt) := by
 
 end
 
+--Temporary code to check Joël's PR #27576
+section
+
+universe w v₁ u₁
+namespace CategoryTheory
+
+open Category Limits Opposite Functor
+
+variable {C : Type u₁} [Category.{v₁} C]
+
+/-- Variant of the Yoneda embedding which allows a raise in the universe level
+for the category of types. -/
+@[pp_with_univ, simps!]
+def uliftYoneda : C ⥤ Cᵒᵖ ⥤ Type (max w v₁) :=
+  yoneda ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{w}
+
+namespace Presheaf
+
+@[simps]
+def tautologicalCocone' (P : Cᵒᵖ ⥤ Type max w v₁) :
+    Cocone (CostructuredArrow.proj uliftYoneda.{w} P ⋙ uliftYoneda.{w}) where
+  pt := P
+  ι := { app X := X.hom }
+
+/-- The tautological cocone with point `P` is a colimit cocone, exhibiting `P` as a colimit of
+    representables. (In this version, we allow the presheaf `P` to have values in
+    a larger universe.)
+    Proposition 2.6.3(i) in [Kashiwara2006] -/
+noncomputable def isColimitTautologicalCocone' (P : Cᵒᵖ ⥤ Type max w v₁) :
+    IsColimit (tautologicalCocone'.{w} P) := sorry
+
+end CategoryTheory.Presheaf
+end
+
 namespace CategoryTheory
 
 universe u v
@@ -119,7 +153,10 @@ Note Mathlib does not seem to recognize that `Cat.{v, u}` has binary products. -
 instance nerveHoNerve.binaryProductIsIso (C D : Type v) [Category.{v} C] [Category.{v} D] :
     IsIso (prodComparison (nerveFunctor ⋙ hoFunctor ⋙ nerveFunctor)
       (Cat.of C) (Cat.of D)) := by
-  sorry
+  have iso : nerveFunctor ⋙ hoFunctor ⋙ nerveFunctor ≅ nerveFunctor :=
+    (nerveFunctor.associator hoFunctor nerveFunctor).symm ≪≫
+      isoWhiskerRight nerveFunctorCompHoFunctorIso nerveFunctor ≪≫ nerveFunctor.leftUnitor
+  exact IsIso.of_isIso_fac_right (prodComparison_naturalInNatTrans iso.hom).symm
 
 -- This proof can probably be golfed.
 instance hoFunctor.binaryProductNerveIsIso (C D : Type v) [Category.{v} C] [Category.{v} D] :
@@ -160,23 +197,23 @@ the result proven in `hoFunctor.binarySimplexProductIsIso`.
 lemma hoFunctor.binaryProductWithSimplexIsIso (D X : SSet.{u})
     (H : ∀ m, IsIso (prodComparison hoFunctor D Δ[m])) :
     IsIso (prodComparison hoFunctor D X) := by
-  letI Xcolim := CategoryTheory.Presheaf.colimitOfRepresentable X
+  letI Xcolim := CategoryTheory.Presheaf.isColimitTautologicalCocone' X
   have : (prod.functor.obj D).IsLeftAdjoint := by
     have := (CategoryTheory.FunctorToTypes.adj D).isLeftAdjoint
+    have : (MonoidalCategory.tensorLeft D).IsLeftAdjoint := by infer_instance
     exact Functor.isLeftAdjoint_of_iso (CartesianMonoidalCategory.tensorLeftIsoProd _)
   have : (prod.functor.obj (hoFunctor.obj (D : SSet.{u}))).IsLeftAdjoint := by infer_instance
   have : (hoFunctor).IsLeftAdjoint := nerveAdjunction.isLeftAdjoint
-  have : IsIso (whiskerLeft (CategoryTheory2.Presheaf.functorToRepresentables X)
+  have : IsIso (whiskerLeft (CostructuredArrow.proj uliftYoneda X ⋙ uliftYoneda)
       (prodComparisonNatTrans hoFunctor D)) := by
     rw [NatTrans.isIso_iff_isIso_app]
     intro x
     dsimp
     exact H (unop (unop x).fst).len
   exact foo
-    (J := (Elements X)ᵒᵖ)
     (C := SSet.{u})
     (D := Cat.{u, u})
-    (CategoryTheory2.Presheaf.functorToRepresentables X)
+    (CostructuredArrow.proj uliftYoneda X ⋙ uliftYoneda)
     (prod.functor.obj D ⋙ hoFunctor) (hoFunctor ⋙ prod.functor.obj (hoFunctor.obj D))
     (prodComparisonNatTrans ..) _ Xcolim
 
@@ -188,7 +225,7 @@ and `Cat.{u,u}` to establish cocontinuity of the product functors on both catego
 Using the colimit `Presheaf.colimitOfRepresentable (C := SimplexCategory) Y` this reduces to
 the result proven in `hoFunctor.binaryProductWithSimplexIsIso`.
 -/
-instance hoFunctor.binaryProductIsIso (X Y : SSet):
+instance hoFunctor.binaryProductIsIso (X Y : SSet) :
     IsIso (prodComparison hoFunctor X Y) := by
   apply hoFunctor.binaryProductWithSimplexIsIso
   intro m
@@ -218,6 +255,5 @@ instance hoFunctor.preservesFiniteProducts : PreservesFiniteProducts hoFunctor :
 /-- A product preserving functor between cartesian closed categories is lax monoidal. -/
 noncomputable instance hoFunctor.laxMonoidal : LaxMonoidal hoFunctor :=
   (Monoidal.ofChosenFiniteProducts hoFunctor).toLaxMonoidal
-
 
 end CategoryTheory
