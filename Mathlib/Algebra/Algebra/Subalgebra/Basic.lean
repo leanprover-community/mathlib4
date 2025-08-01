@@ -312,6 +312,10 @@ instance (priority := 500) algebra' [CommSemiring R'] [SMul R' R] [Algebra R' A]
 
 instance algebra : Algebra R S := S.algebra'
 
+@[simp]
+theorem mk_algebraMap_apply {S : Subalgebra R A} (r : R) (hr : algebraMap R A r ∈ S) :
+  ⟨algebraMap R A r, hr⟩ = algebraMap R S r := rfl
+
 end
 
 instance noZeroSMulDivisors_bot [NoZeroSMulDivisors R A] : NoZeroSMulDivisors R S :=
@@ -821,11 +825,6 @@ theorem algebraMap_apply_mk {R A : Type*} [CommSemiring R] [CommSemiring A] [Sem
   algebraMap S α (⟨a, ha⟩ : S) = algebraMap A α a := rfl
 
 @[simp]
-theorem mk_algebraMap_apply {A : Type*} [CommSemiring A] [Semiring α]
-    [Algebra A α] {S : Subalgebra A α} (a : A) (ha : algebraMap A α a ∈ S) :
-  ⟨algebraMap A α a, ha⟩ = algebraMap A S a := rfl
-
-@[simp]
 theorem rangeS_algebraMap {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
     (S : Subalgebra R A) : (algebraMap S A).rangeS = S.toSubsemiring := by
   rw [algebraMap_eq, Algebra.algebraMap_self, RingHom.id_comp, ← toSubsemiring_subtype,
@@ -1023,4 +1022,3 @@ lemma Subalgebra.toNonUnitalSubalgebra_toSubalgebra (S : Subalgebra R A) :
 lemma NonUnitalSubalgebra.toSubalgebra_toNonUnitalSubalgebra (S : NonUnitalSubalgebra R A)
     (h1 : (1 : A) ∈ S) : (NonUnitalSubalgebra.toSubalgebra S h1).toNonUnitalSubalgebra = S := by
   cases S; rfl
-
