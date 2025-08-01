@@ -42,7 +42,7 @@ instance : Decidable (ModEq n a b) := inferInstanceAs <| Decidable (a % n = b % 
 
 namespace ModEq
 
-@[refl, simp]
+@[refl]
 protected theorem refl (a : ℕ) : a ≡ a [MOD n] := rfl
 
 protected theorem rfl : a ≡ a [MOD n] :=
