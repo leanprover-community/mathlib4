@@ -141,7 +141,7 @@ noncomputable def isPointwiseLeftKanExtensionOfIso
 /-- Let `L : C ⥤ D` be a localization functor for `W`, if an extension `E`
 of `F : C ⥤ H` along `L` is such that the natural transformation
 `E.hom : F ⟶ L ⋙ E.right` is an isomorphism, then `E` is a pointwise
-left Ken extension. -/
+left Kan extension. -/
 noncomputable def LeftExtension.isPointwiseLeftKanExtensionOfIsIso
     (E : LeftExtension L F) [IsIso E.hom] [L.IsLocalization W] :
     E.IsPointwiseLeftKanExtension :=
