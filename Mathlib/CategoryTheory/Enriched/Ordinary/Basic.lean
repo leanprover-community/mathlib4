@@ -24,7 +24,7 @@ using an abbreviation for `EnrichedOrdinaryCategory SSet C`.
 
 -/
 
-universe v' v u u'
+universe v' v v'' u u' u''
 
 open CategoryTheory Category MonoidalCategory Opposite
 
@@ -175,5 +175,18 @@ instance ForgetEnrichment.EnrichedOrdinaryCategory {D : Type*} [EnrichedCategory
 
 /-- enriched coyoneda functor `(X ⟶[V] _) : C ⥤ V`. -/
 abbrev eCoyoneda (X : C) := (eHomFunctor V C).obj (op X)
+
+section TransportEnrichment
+
+variable (W : Type u'') [Category.{v''} W] [MonoidalCategory W]
+  (F : V ⥤ W) [F.LaxMonoidal]
+  (C : Type u) [Category.{v'} C] [EnrichedOrdinaryCategory V C]
+
+instance : Category (TransportEnrichment F C) := inferInstanceAs (Category C)
+
+instance TransportEnrichment.EnrichedOrdinaryCategory :
+    EnrichedOrdinaryCategory W (TransportEnrichment F C) := sorry
+
+end TransportEnrichment
 
 end CategoryTheory
