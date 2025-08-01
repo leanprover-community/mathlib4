@@ -454,12 +454,8 @@ lemma eq_top_of_invtSubmodule_ne_bot
   have s₂' (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : j.1 (coroot i) = 0 := s₁' i j h₁ h₂
   have s₃ (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : genWeightSpace L (i.1.1 + j.1.1) = ⊥ := by
     by_contra h
-    have i_non_zero : i.1.IsNonZero := by
-      obtain ⟨val, hval⟩ := i
-      rwa [Finset.mem_filter_univ] at hval
-    have j_non_zero : j.1.IsNonZero := by
-      obtain ⟨val, hval⟩ := j
-      rwa [Finset.mem_filter_univ] at hval
+    have i_non_zero : i.1.IsNonZero := by grind
+    have j_non_zero : j.1.IsNonZero := by grind
     let r := Weight.mk (R := K) (L := H) (M := L) (i.1.1 + j.1.1) h
     have r₁ : r ≠ 0 := by
       intro a

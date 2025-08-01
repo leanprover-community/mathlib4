@@ -194,6 +194,7 @@ lemma IsCompact.elim_nhds_subcover_nhdsSet (hs : IsCompact s) {U : X → Set X}
   let ⟨t, ht⟩ := hs.elim_nhds_subcover_nhdsSet' (fun x _ => U x) hU
   classical
   exact ⟨t.image (↑), fun x hx =>
+
     let ⟨y, _, hyx⟩ := Finset.mem_image.1 hx
     hyx ▸ y.2,
     by rwa [Finset.set_biUnion_finset_image]⟩
