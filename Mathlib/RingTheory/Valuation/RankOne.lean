@@ -166,4 +166,10 @@ lemma ValuativeRel.isRankLeOne_iff_mulArchimedean :
       · exact ⟨⟨b, (H.trans' zero_lt_one).ne', H.ne'⟩⟩
       · exact ⟨⟨a, ha, ha'⟩⟩
 
+lemma ValuativeRel.IsRankLeOne.of_compatible_mulArchimedean [MulArchimedean Γ₀]
+    (v : Valuation R Γ₀) [v.Compatible] :
+    ValuativeRel.IsRankLeOne R := by
+  rw [isRankLeOne_iff_mulArchimedean]
+  exact .comap (ValueGroupWithZero.embed v).toMonoidHom (ValueGroupWithZero.embed_strictMono v)
+
 end ValuativeRel
