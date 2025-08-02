@@ -543,7 +543,7 @@ end Int
 
 section pnat
 
-variable {α R : Type*} [TopologicalSpace α] [CommMonoid α] [AddMonoidWithOne R]
+variable {R : Type*} {α : Type*} [AddMonoidWithOne R] [TopologicalSpace α] [CommMonoid α]
 
 @[to_additive]
 theorem pnat_multipliable_iff_multipliable_succ
@@ -565,20 +565,17 @@ theorem pnat_multipliable_iff_multipliable_succ' {f : R → α} :
   convert Equiv.pnatEquivNat.symm.multipliable_iff.symm
   simp
 
-theorem pnat_summable_iff_summable_succ' {α : Type*} [TopologicalSpace α]
-  [AddCommMonoid α] {f : R → α} :
-  Summable (fun x : ℕ+ => f x) ↔ Summable fun x : ℕ => f (x + 1) := by
+theorem pnat_summable_iff_summable_succ' {α : Type*} [TopologicalSpace α] [AddCommMonoid α]
+    {f : R → α} : Summable (fun x : ℕ+ => f x) ↔ Summable fun x : ℕ => f (x + 1) := by
   convert Equiv.pnatEquivNat.symm.summable_iff.symm
   simp
 
-theorem tprod_pnat_eq_tprod_succ'
-    (f : R → α) : ∏' n : ℕ+, f n = ∏' (n : ℕ), f (n + 1) := by
+theorem tprod_pnat_eq_tprod_succ' (f : R → α) : ∏' n : ℕ+, f n = ∏' (n : ℕ), f (n + 1) := by
   convert (Equiv.pnatEquivNat.symm.tprod_eq _).symm
   simp
 
-theorem tsum_pnat_eq_tsum_succ' {α : Type*}
-    [TopologicalSpace α] [AddCommMonoid α]
-    (f : R → α) : ∑' n : ℕ+, f n = ∑' (n : ℕ), f (n + 1) := by
+theorem tsum_pnat_eq_tsum_succ' {α : Type*} [TopologicalSpace α] [AddCommMonoid α] (f : R → α) :
+    ∑' n : ℕ+, f n = ∑' (n : ℕ), f (n + 1) := by
   convert (Equiv.pnatEquivNat.symm.tsum_eq _).symm
   simp
 
