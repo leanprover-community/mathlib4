@@ -1360,7 +1360,7 @@ See the attribute implementation for more details.
 It returns an array with names of additive declarations (usually 1, but more if there are nested
 `to_additive` calls. -/
 partial def addToAdditiveAttr (src : Name) (cfg : Config) (kind := AttributeKind.global) :
-  AttrM (Array Name) := do
+    AttrM (Array Name) := do
   if (kind != AttributeKind.global) then
     throwError "`to_additive` can only be used as a global attribute"
   withOptions (· |>.updateBool `trace.to_additive (cfg.trace || ·)) <| do
