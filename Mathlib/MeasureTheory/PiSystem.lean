@@ -268,8 +268,8 @@ theorem mem_generatePiSystem_iUnion_elim {α β} {g : β → Set (Set α)} (h_pi
       else if b ∈ T_t' then f_t' b else (∅ : Set α)
     constructor
     · ext a
-      simp_rw [Set.mem_inter_iff, Set.mem_iInter, Finset.mem_union, or_imp]
-      grind [Set.mem_inter_iff]
+      simp_rw [Set.mem_inter_iff, Set.mem_iInter, Finset.mem_union]
+      grind
     intro b h_b
     split_ifs with hbs hbt hbt
     · refine h_pi b (f_s b) (h_s b hbs) (f_t' b) (h_t' b hbt) (Set.Nonempty.mono ?_ h_nonempty)
