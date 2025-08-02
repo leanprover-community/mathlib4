@@ -277,9 +277,9 @@ section Norm
 variable {k G V : Type*} [CommSemiring k] [Group G] [Fintype G] [AddCommMonoid V] [Module k V]
 variable (ρ : Representation k G V)
 
-/-- Given a representation `(V, ρ)` of a finite group `G`, this is the linear map `V →ₗ[k] V`
+/-- Given a representation `(V, ρ)` of a finite group `G`, `norm ρ` is the linear map `V →ₗ[k] V`
 defined by `x ↦ ∑ ρ g x` for `g` in `G`. -/
-def norm : V →ₗ[k] V := ∑ g : G, ρ g
+def norm : Module.End k V := ∑ g : G, ρ g
 
 @[simp]
 lemma norm_comp_self (g : G) : norm ρ ∘ₗ ρ g = norm ρ := by
@@ -382,7 +382,7 @@ lemma apply_sub_id_partialSum_eq (n : ℕ) (g : G) (x : V) :
   | succ n h =>
     have : (fun (j : Fin (n + 2)) => ρ (g ^ (j : ℕ)) x) ∘ Fin.castSucc =
       fun (j : Fin (n + 1)) => ρ (g ^ (j : ℕ)) x := by ext; simp
-    rw [← Fin.succ_eq_last_succ.2 rfl, Fin.partialSum_succ, ← Fin.partialSum_castSucc, map_add,
+    rw [← Fin.succ_eq_last_succ.2 rfl, Fin.partialSum_succ, ← Fin.partialSum_init, map_add,
       this, h]
     simp [pow_succ']
 

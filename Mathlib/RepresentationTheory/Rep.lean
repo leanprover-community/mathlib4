@@ -675,10 +675,10 @@ section
 
 variable [Fintype G] (A : Rep k G)
 
-/-- Given a representation `A` of a finite group `G`, this is the representation morphism `A ⟶ A`
-defined by `x ↦ ∑ A.ρ g x` for `g` in `G`. -/
+/-- Given a representation `A` of a finite group `G`, `norm A` is the representation morphism
+`A ⟶ A` defined by `x ↦ ∑ A.ρ g x` for `g` in `G`. -/
 @[simps]
-def norm : A ⟶ A where
+def norm : End A where
   hom := ModuleCat.ofHom <| Representation.norm A.ρ
   comm g := by ext; simp
 
@@ -688,9 +688,9 @@ lemma norm_comm {A B : Rep k G} (f : A ⟶ B) : f ≫ norm B = norm A ≫ f := b
   simp [Representation.norm, hom_comm_apply]
 
 /-- Given a representation `A` of a finite group `G`, the norm map `A ⟶ A` defined by
-`x ↦ ∑ A.ρ g x` for `g` in `G` defined a natural endomorphism of the identity functor. -/
+`x ↦ ∑ A.ρ g x` for `g` in `G` defines a natural endomorphism of the identity functor. -/
 @[simps]
-def normNatTrans : 𝟭 (Rep k G) ⟶ 𝟭 (Rep k G) where
+def normNatTrans : End (𝟭 (Rep k G)) where
   app := norm
   naturality _ _ := norm_comm
 

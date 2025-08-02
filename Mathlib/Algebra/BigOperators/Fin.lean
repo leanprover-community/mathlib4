@@ -451,9 +451,9 @@ theorem partialProd_succ' (f : Fin (n + 1) → M) (j : Fin (n + 1)) :
   rfl
 
 @[to_additive]
-lemma partialProd_castSucc {f : Fin (n + 1) → M} (i : Fin (n + 1)) :
-    partialProd (f ∘ castSucc) i = partialProd f i.castSucc :=
-  i.inductionOn (by simp) fun i hi => by simp_all [partialProd_succ]
+lemma partialProd_init {f : Fin (n + 1) → M} (i : Fin (n + 1)) :
+    partialProd (init f) i = partialProd f i.castSucc :=
+  i.inductionOn (by simp) fun i hi => by simp_all [init, partialProd_succ]
 
 @[to_additive]
 theorem partialProd_left_inv {G : Type*} [Group G] (f : Fin (n + 1) → G) :
