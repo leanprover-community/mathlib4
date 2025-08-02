@@ -29,8 +29,8 @@ attribute [gcongr] mt
   And.imp And.imp_left GCongr.and_right_mono
   imp_imp_imp GCongr.imp_trans GCongr.imp_right_mono
   forall_imp Exists.imp
-  List.Sublist.append List.Sublist.append_left List.Sublist.append_right
-  List.Sublist.reverse List.drop_sublist_drop_left List.Sublist.drop
-  List.Perm.append_left List.Perm.append_right List.Perm.append List.Perm.map
+
+  List.Sublist.append List.Sublist.reverse List.drop_sublist_drop_left List.Sublist.drop
+  List.Perm.append List.Perm.map
 
 end Mathlib.Tactic.GCongr
