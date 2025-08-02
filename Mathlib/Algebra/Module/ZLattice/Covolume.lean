@@ -165,7 +165,6 @@ theorem covolume_div_covolume_eq_relindex' {E : Type*} [NormedAddCommGroup E]
     (L₁ L₂ : Submodule ℤ E) [DiscreteTopology L₁] [IsZLattice ℝ L₁] [DiscreteTopology L₂]
     [IsZLattice ℝ L₂] (h : L₁ ≤ L₂) :
     covolume L₁ / covolume L₂ = L₁.toAddSubgroup.relindex L₂.toAddSubgroup := by
-  classical
   let f := (EuclideanSpace.equiv _ ℝ).symm.trans
     (stdOrthonormalBasis ℝ E).repr.toContinuousLinearEquiv.symm
   have hf : MeasurePreserving f := (stdOrthonormalBasis ℝ E).measurePreserving_repr_symm.comp
