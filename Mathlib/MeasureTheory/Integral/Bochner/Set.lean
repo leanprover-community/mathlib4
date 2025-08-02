@@ -216,7 +216,7 @@ theorem setIntegral_one_eq_measureReal {X : Type*} {m : MeasurableSpace X}
 
 The measure of the union of the `s i` over `i ∈ t` is the alternating sum of the measures of the
 intersections of the `s i`. -/
-theorem measureReal_biUnion_eq_sum_powerset {ι : Type*} (t : Finset ι) {s : ι → Set X}
+theorem measureReal_biUnion_eq_sum_powerset {ι : Type*} {t : Finset ι} {s : ι → Set X}
     (hs : ∀ i ∈ t, MeasurableSet (s i)) (hf : ∀ i ∈ t, μ (s i) ≠ ∞ := by finiteness) :
     μ.real (⋃ i ∈ t, s i) = ∑ u ∈ t.powerset with u.Nonempty,
       (-1 : ℝ) ^ (#u + 1) * μ.real (⋂ i ∈ u, s i) := by
