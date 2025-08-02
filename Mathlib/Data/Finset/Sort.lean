@@ -23,51 +23,52 @@ variable {α β : Type*}
 
 section sort
 
+/-- `sort s` constructs a sorted list from the unordered set `s`.
+  (Uses merge sort algorithm.) -/
+def sort (s : Finset α) (r : α → α → Prop := by exact fun a b => a ≤ b)
+    [DecidableRel r] [IsTrans α r] [IsAntisymm α r] [IsTotal α r] : List α :=
+  Multiset.sort s.1 r
+
 variable (r : α → α → Prop) [DecidableRel r] [IsTrans α r] [IsAntisymm α r] [IsTotal α r]
 variable (r' : β → β → Prop) [DecidableRel r'] [IsTrans β r'] [IsAntisymm β r'] [IsTotal β r']
 
-/-- `sort s` constructs a sorted list from the unordered set `s`.
-  (Uses merge sort algorithm.) -/
-def sort (s : Finset α) : List α :=
-  Multiset.sort r s.1
-
 @[simp]
-theorem sort_val (s : Finset α) : Multiset.sort r s.val = sort r s :=
+theorem sort_val (s : Finset α) : Multiset.sort s.val r  = sort s r :=
   rfl
 
 @[simp]
-theorem sort_mk {s : Multiset α} (h : s.Nodup) : sort r ⟨s, h⟩ = s.sort r := rfl
+theorem sort_mk {s : Multiset α} (h : s.Nodup) : sort ⟨s, h⟩ r = s.sort r := rfl
 
 @[simp]
-theorem sort_sorted (s : Finset α) : List.Sorted r (sort r s) :=
+theorem sort_sorted (s : Finset α) : List.Sorted r (sort s r) :=
   Multiset.sort_sorted _ _
 
 @[simp]
-theorem sort_eq (s : Finset α) : ↑(sort r s) = s.1 :=
+theorem sort_eq (s : Finset α) : ↑(sort s r) = s.1 :=
   Multiset.sort_eq _ _
 
 @[simp]
-theorem sort_nodup (s : Finset α) : (sort r s).Nodup :=
-  (by rw [sort_eq]; exact s.2 : @Multiset.Nodup α (sort r s))
+theorem sort_nodup (s : Finset α) : (sort s r).Nodup :=
+  (by rw [sort_eq]; exact s.2 : @Multiset.Nodup α (sort s r))
 
 @[simp]
-theorem sort_toFinset [DecidableEq α] (s : Finset α) : (sort r s).toFinset = s :=
+theorem sort_toFinset [DecidableEq α] (s : Finset α) : (sort s r).toFinset = s :=
   List.toFinset_eq (sort_nodup r s) ▸ eq_of_veq (sort_eq r s)
 
 @[simp]
-theorem mem_sort {s : Finset α} {a : α} : a ∈ sort r s ↔ a ∈ s :=
+theorem mem_sort {s : Finset α} {a : α} : a ∈ sort s r ↔ a ∈ s :=
   Multiset.mem_sort _
 
 @[simp]
-theorem length_sort {s : Finset α} : (sort r s).length = s.card :=
+theorem length_sort {s : Finset α} : (sort s r).length = s.card :=
   Multiset.length_sort _
 
 @[simp]
-theorem sort_empty : sort r ∅ = [] :=
+theorem sort_empty : sort ∅ r = [] :=
   Multiset.sort_zero r
 
 @[simp]
-theorem sort_singleton (a : α) : sort r {a} = [a] :=
+theorem sort_singleton (a : α) : sort {a} r = [a] :=
   Multiset.sort_singleton r a
 
 theorem map_sort (f : α ↪ β) (s : Finset α)
@@ -81,24 +82,24 @@ theorem _root_.StrictMonoOn.map_finsetSort [LinearOrder α] [LinearOrder β]
   Finset.map_sort _ _ _ _ fun _a ha _b hb => (hf.le_iff_le ha hb).symm
 
 theorem sort_cons {a : α} {s : Finset α} (h₁ : ∀ b ∈ s, r a b) (h₂ : a ∉ s) :
-    sort r (cons a s h₂) = a :: sort r s := by
+    sort (cons a s h₂) r = a :: sort s r := by
   rw [sort, cons_val, Multiset.sort_cons r a _ h₁, sort_val]
 
 theorem sort_insert [DecidableEq α] {a : α} {s : Finset α} (h₁ : ∀ b ∈ s, r a b) (h₂ : a ∉ s) :
-    sort r (insert a s) = a :: sort r s := by
+    sort (insert a s) r = a :: sort s r := by
   rw [← cons_eq_insert _ _ h₂, sort_cons r h₁]
 
 @[simp]
-theorem sort_range (n : ℕ) : sort (· ≤ ·) (range n) = List.range n :=
+theorem sort_range (n : ℕ) : sort (range n) = List.range n :=
   Multiset.sort_range n
 
 open scoped List in
-theorem sort_perm_toList (s : Finset α) : sort r s ~ s.toList := by
+theorem sort_perm_toList (s : Finset α) : sort s r ~ s.toList := by
   rw [← Multiset.coe_eq_coe]
   simp only [coe_toList, sort_eq]
 
 theorem _root_.List.toFinset_sort [DecidableEq α] {l : List α} (hl : l.Nodup) :
-    sort r l.toFinset = l ↔ l.Sorted r := by
+    sort l.toFinset r = l ↔ l.Sorted r := by
   refine ⟨?_, List.eq_of_perm_of_sorted ((sort_perm_toList r _).trans (List.toFinset_toList hl))
     (sort_sorted r _)⟩
   intro h
@@ -111,13 +112,13 @@ section SortLinearOrder
 
 variable [LinearOrder α]
 
-theorem sort_sorted_lt (s : Finset α) : List.Sorted (· < ·) (sort (· ≤ ·) s) :=
+theorem sort_sorted_lt (s : Finset α) : List.Sorted (· < ·) (sort s) :=
   (sort_sorted _ _).lt_of_le (sort_nodup _ _)
 
-theorem sort_sorted_gt (s : Finset α) : List.Sorted (· > ·) (sort (· ≥ ·) s) :=
+theorem sort_sorted_gt (s : Finset α) : List.Sorted (· > ·) (sort s (· ≥ ·)) :=
   (sort_sorted _ _).gt_of_ge (sort_nodup _ _)
 
-theorem sorted_zero_eq_min'_aux (s : Finset α) (h : 0 < (s.sort (· ≤ ·)).length) (H : s.Nonempty) :
+theorem sorted_zero_eq_min'_aux (s : Finset α) (h : 0 < (s.sort).length) (H : s.Nonempty) :
     (s.sort (· ≤ ·)).get ⟨0, h⟩ = s.min' H := by
   let l := s.sort (· ≤ ·)
   apply le_antisymm
