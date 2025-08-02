@@ -186,6 +186,23 @@ noncomputable def uliftYonedaAdjunction : L ⊣ restrictedULiftYoneda.{max w v�
         simp [restrictedULiftYonedaHomEquiv,
           restrictedULiftYonedaHomEquiv'_symm_naturality_right, this] }
 
+@[simp]
+lemma uliftYonedaAdjunction_homEquiv_app {P : Cᵒᵖ ⥤ Type max w v₁ v₂}
+    {Y : ℰ} (f : L.obj P ⟶ Y) {Z : Cᵒᵖ} (z : P.obj Z) :
+    ((uliftYonedaAdjunction.{w} L α).homEquiv P Y f).app Z z =
+      ULift.up (α.app Z.unop ≫ L.map (uliftYonedaEquiv.symm z) ≫ f) := by
+  simp [uliftYonedaAdjunction, restrictedULiftYonedaHomEquiv,
+    restrictedULiftYonedaHomEquiv', IsColimit.homEquiv]
+
+@[simp]
+lemma uliftYonedaAdjunction_unit_app_app (P : Cᵒᵖ ⥤ Type max w v₁ v₂)
+    {Z : Cᵒᵖ} (z : P.obj Z) :
+    ((uliftYonedaAdjunction.{w} L α).unit.app P).app Z z =
+      ULift.up (α.app Z.unop ≫ L.map (uliftYonedaEquiv.symm z)) := by
+  have h₁ := (uliftYonedaAdjunction.{w} L α).homEquiv_unit P _ (𝟙 _)
+  simp only [Functor.comp_obj, Functor.map_id, comp_id] at h₁
+  simp [← h₁]
+
 include α in
 /-- Any left Kan extension along the Yoneda embedding preserves colimits. -/
 lemma preservesColimitsOfSize_of_isLeftKanExtension :
