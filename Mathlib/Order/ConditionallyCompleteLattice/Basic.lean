@@ -805,7 +805,7 @@ lemma MonotoneOn.csInf_eq_of_subset_of_forall_exists_le
   simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
   intro a ha
   obtain ⟨x, hxs, hxa⟩ := h a ha
-  exact csInf_le_of_le (ht.mono (image_subset _ hst)) ⟨x, hxs, rfl⟩ (hf (hst hxs) ha hxa)
+  exact csInf_le_of_le (ht.mono (image_mono hst)) ⟨x, hxs, rfl⟩ (hf (hst hxs) ha hxa)
 
 lemma MonotoneOn.csSup_eq_of_subset_of_forall_exists_le
     [Preorder α] [ConditionallyCompleteLattice β] {f : α → β}

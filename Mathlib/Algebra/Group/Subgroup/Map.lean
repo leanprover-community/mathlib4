@@ -133,7 +133,7 @@ theorem apply_coe_mem_map (f : G →* N) (K : Subgroup G) (x : K) : f x ∈ K.ma
 
 @[to_additive (attr := gcongr)]
 theorem map_mono {f : G →* N} {K K' : Subgroup G} : K ≤ K' → map f K ≤ map f K' :=
-  image_subset _
+  image_mono
 
 @[to_additive (attr := simp)]
 theorem map_id : K.map (MonoidHom.id G) = K :=
