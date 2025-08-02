@@ -632,7 +632,7 @@ private noncomputable def normedSpaceAux : NormedSpace ℂ (CStarMatrix m n A) :
 /- In this `Aux` section, we locally activate the following instances: a norm on `CStarMatrix`
 which induces a topology that is not defeq with the matrix one, and the elementwise norm on
 matrices, in order to show that the two topologies are in fact equal -/
-open scoped Matrix.Norms.Elementwise
+open scoped Matrix.ElementwiseNorm
 
 private lemma nnnorm_le_of_forall_inner_le {M : CStarMatrix m n A} {C : ℝ≥0}
     (h : ∀ v w, ‖⟪w, CStarMatrix.toCLM M v⟫_A‖₊ ≤ C * ‖v‖₊ * ‖w‖₊) : ‖M‖₊ ≤ C :=

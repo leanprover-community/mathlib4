@@ -75,7 +75,7 @@ theorem entry_norm_bound_of_unitary {U : Matrix n n 𝕜} (hU : U ∈ Matrix.uni
   rw [← sq_le_one_iff₀ (norm_nonneg (U i j)), ← diag_eq_one, re_diag_eq_norm_sum]
   exact norm_sum
 
-open scoped Matrix.Norms.Elementwise in
+open scoped Matrix.ElementwiseNorm in
 /-- The entrywise sup norm of a unitary matrix is at most 1. -/
 theorem entrywise_sup_norm_bound_of_unitary {U : Matrix n n 𝕜} (hU : U ∈ Matrix.unitaryGroup n 𝕜) :
     ‖U‖ ≤ 1 := by

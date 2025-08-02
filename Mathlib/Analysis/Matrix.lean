@@ -10,7 +10,7 @@ import Mathlib.Analysis.InnerProductSpace.PiL2
 
 In this file we provide the following non-instances for norms on matrices:
 
-* The elementwise norm (with `open scoped Matrix.Norms.Elementwise`):
+* The elementwise norm (with `open scoped Matrix.ElementwiseNorm`):
 
   * `Matrix.seminormedAddCommGroup`
   * `Matrix.normedAddCommGroup`
@@ -18,7 +18,7 @@ In this file we provide the following non-instances for norms on matrices:
   * `Matrix.isBoundedSMul`
   * `Matrix.normSMulClass`
 
-* The Frobenius norm (with `open scoped Matrix.Norms.Frobenius`):
+* The Frobenius norm (with `open scoped Matrix.FrobeniusNorm`):
 
   * `Matrix.frobeniusSeminormedAddCommGroup`
   * `Matrix.frobeniusNormedAddCommGroup`
@@ -28,7 +28,7 @@ In this file we provide the following non-instances for norms on matrices:
   * `Matrix.frobeniusIsBoundedSMul`
   * `Matrix.frobeniusNormSMulClass`
 
-* The $L^\infty$ operator norm (with `open scoped Matrix.Norms.Operator`):
+* The $L^\infty$ operator norm (with `open scoped Matrix.LInftyOpNorm`):
 
   * `Matrix.linftyOpSeminormedAddCommGroup`
   * `Matrix.linftyOpNormedAddCommGroup`
@@ -209,7 +209,7 @@ matrix. -/
 protected def normedSpace : NormedSpace R (Matrix m n α) :=
   Pi.normedSpace
 
-namespace Norms.Elementwise
+namespace ElementwiseNorm
 
 attribute [scoped instance]
   Matrix.seminormedAddCommGroup
@@ -218,7 +218,7 @@ attribute [scoped instance]
   Matrix.isBoundedSMul
   Matrix.normSMulClass
 
-end Norms.Elementwise
+end ElementwiseNorm
 
 end NormedSpace
 
@@ -472,7 +472,7 @@ variable [DecidableEq n]
 
 end
 
-namespace Norms.Operator
+namespace LInftyOpNorm
 attribute [scoped instance]
   Matrix.linftyOpSeminormedAddCommGroup
   Matrix.linftyOpNormedAddCommGroup
@@ -484,7 +484,7 @@ attribute [scoped instance]
   Matrix.linftyOpNonUnitalNormedRing
   Matrix.linftyOpNormedRing
   Matrix.linftyOpNormedAlgebra
-end Norms.Operator
+end LInftyOpNorm
 
 end LinftyOp
 
@@ -677,7 +677,7 @@ end RCLike
 
 end frobenius
 
-namespace Norms.Frobenius
+namespace FrobeniusNorm
 attribute [scoped instance]
   Matrix.frobeniusSeminormedAddCommGroup
   Matrix.frobeniusNormedAddCommGroup
@@ -686,6 +686,6 @@ attribute [scoped instance]
   Matrix.frobeniusNormedAlgebra
   Matrix.frobeniusIsBoundedSMul
   Matrix.frobeniusNormSMulClass
-end Norms.Frobenius
+end FrobeniusNorm
 
 end Matrix

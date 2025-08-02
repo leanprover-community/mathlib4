@@ -119,24 +119,24 @@ variable [RCLike 𝕂] [Fintype m] [DecidableEq m]
 
 nonrec theorem exp_add_of_commute (A B : Matrix m m 𝔸) (h : Commute A B) :
     exp 𝕂 (A + B) = exp 𝕂 A * exp 𝕂 B :=
-  open scoped Norms.Operator in exp_add_of_commute h
+  open scoped LInftyOpNormNorms in exp_add_of_commute h
 
 open scoped Function in -- required for scoped `on` notation
 nonrec theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → Matrix m m 𝔸)
     (h : (s : Set ι).Pairwise (Commute on f)) :
     exp 𝕂 (∑ i ∈ s, f i) =
       s.noncommProd (fun i => exp 𝕂 (f i)) fun _ hi _ hj _ => (h.of_refl hi hj).exp 𝕂 :=
-  open scoped Norms.Operator in exp_sum_of_commute s f h
+  open scoped LInftyOpNormNorms in exp_sum_of_commute s f h
 
 nonrec theorem exp_nsmul (n : ℕ) (A : Matrix m m 𝔸) : exp 𝕂 (n • A) = exp 𝕂 A ^ n :=
-  open scoped Norms.Operator in exp_nsmul n A
+  open scoped LInftyOpNormNorms in exp_nsmul n A
 
 nonrec theorem isUnit_exp (A : Matrix m m 𝔸) : IsUnit (exp 𝕂 A) :=
-  open scoped Norms.Operator in isUnit_exp _ A
+  open scoped LInftyOpNormNorms in isUnit_exp _ A
 
 nonrec theorem exp_units_conj (U : (Matrix m m 𝔸)ˣ) (A : Matrix m m 𝔸) :
     exp 𝕂 (U * A * U⁻¹) = U * exp 𝕂 A * U⁻¹ :=
-  open scoped Norms.Operator in exp_units_conj _ U A
+  open scoped LInftyOpNormNorms in exp_units_conj _ U A
 
 theorem exp_units_conj' (U : (Matrix m m 𝔸)ˣ) (A : Matrix m m 𝔸) :
     exp 𝕂 (U⁻¹ * A * U) = U⁻¹ * exp 𝕂 A * U :=
@@ -151,7 +151,7 @@ variable [RCLike 𝕂] [Fintype m] [DecidableEq m]
 
 theorem exp_neg (A : Matrix m m 𝔸) : exp 𝕂 (-A) = (exp 𝕂 A)⁻¹ := by
   rw [nonsing_inv_eq_ringInverse]
-  open scoped Norms.Operator in exact (Ring.inverse_exp _ A).symm
+  open scoped LInftyOpNormNorms in exact (Ring.inverse_exp _ A).symm
 
 theorem exp_zsmul (z : ℤ) (A : Matrix m m 𝔸) : exp 𝕂 (z • A) = exp 𝕂 A ^ z := by
   obtain ⟨n, rfl | rfl⟩ := z.eq_nat_or_neg
