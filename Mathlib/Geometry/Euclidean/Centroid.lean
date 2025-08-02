@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chu Zheng
 -/
 import Mathlib.Geometry.Euclidean.Simplex
-import Mathlib.Analysis.Convex.Combination
-import Mathlib.Analysis.Normed.Affine.Convex
 
 /-!
 # Centroid and median of a simplex
@@ -44,12 +42,10 @@ namespace Affine
 
 namespace Simplex
 
-open Finset AffineSubspace EuclideanGeometry
+open Finset AffineSubspace
 
 variable {k : Type*} {V : Type*} {P : Type*} [DivisionRing k] [AddCommGroup V] [Module k V]
-[AffineSpace V P]
-
-variable {n : ℕ}
+variable [AffineSpace V P] {n : ℕ}
 
 /-- The centroid of a simplex is the `Finset.centroid` of the set of all its vertices. -/
 abbrev centroid (t : Affine.Simplex k P n) : P := Finset.univ.centroid k t.points
