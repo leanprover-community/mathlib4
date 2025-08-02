@@ -680,8 +680,11 @@ open scoped Topology Finset
 
 variable {α ι : Type*} [MeasurableSpace α]
 
-lemma foo (S : Set (Set α)) (hS : IsPiSystem S) {μ : ι → Measure α} {ν : Measure α} {l : Filter ι}
-    {t : Finset S}
+/-- Given a π-system, if a sequence of measures converges along all elements of the π-system, then
+it also converges along finite unions of elements of the π-system. -/
+lemma _root_IsPiSystem.tendsto_measureReal_biUnion
+    {S : Set (Set α)} (hS : IsPiSystem S) {μ : ι → Measure α} {ν : Measure α} {l : Filter ι}
+    {t : Finset (Set α)} (ht : ∀ s ∈ t, s ∈ S)
     (hmeas : ∀ s ∈ S, MeasurableSet s)
     (hν : ∀ s ∈ S, ν s ≠ ∞ := by finiteness)
     (hμ : ∀ s ∈ S, ∀ i, μ i s ≠ ∞ := by finiteness)
@@ -689,15 +692,59 @@ lemma foo (S : Set (Set α)) (hS : IsPiSystem S) {μ : ι → Measure α} {ν : 
     Tendsto (fun i ↦ (μ i).real (⋃ s ∈ t, s)) l (𝓝 (ν.real (⋃ s ∈ t, s))) := by
   have A (i) : (μ i).real (⋃ s ∈ t, s) = ∑ u ∈ t.powerset with u.Nonempty,
       (-1 : ℝ) ^ (#u + 1) * (μ i).real (⋂ s ∈ u, s) :=
-    measureReal_biUnion_eq_sum_powerset _ (fun s hs ↦ hmeas _ s.2) (fun s hs ↦ hμ _ s.2 i)
-  simp_rw [A]
-  rw [measureReal_biUnion_eq_sum_powerset _ (fun s hs ↦ hmeas _ s.2) (fun s hs ↦ hν _ s.2)]
+    measureReal_biUnion_eq_sum_powerset (fun s hs ↦ hmeas _ (ht _ hs))
+      (fun s hs ↦ hμ _ (ht _ hs) i)
+  simp_rw [A, measureReal_biUnion_eq_sum_powerset (fun s hs ↦ hmeas _ (ht _ hs))
+    (fun s hs ↦ hν _ (ht _ hs))]
   apply tendsto_finset_sum _ (fun u hu ↦ ?_)
   simp only [Finset.mem_filter, Finset.mem_powerset] at hu
   apply Filter.Tendsto.const_mul
   rcases eq_empty_or_nonempty (⋂ s ∈ u, (s : Set α)) with h'u | h'u
   · simpa [h'u] using tendsto_const_nhds
   apply h
+  exact hS.biInter_mem hu.2 (fun s hs ↦ ht _ (hu.1 hs)) h'u
+
+open TopologicalSpace
+
+lemma glouk [TopologicalSpace α] [SecondCountableTopology α] [OpensMeasurableSpace α]
+    {S : Set (Set α)} (hS : IsPiSystem S) {μ : ι → ProbabilityMeasure α} {ν : ProbabilityMeasure α}
+    {l : Filter ι} [l.IsCountablyGenerated]
+    (h : ∀ (u : Set α), ∀ x ∈ u, IsOpen u → ∃ s ∈ S, x ∈ s ∧ s ∈ 𝓝 x ∧ s ⊆ u)
+    (h' : ∀ s ∈ S, Tendsto (fun i ↦ μ i s) l (𝓝 (ν s))) :
+    Tendsto μ l (𝓝 ν) := by
+  apply tendsto_of_forall_isOpen_le_liminf
+  intro G hG
+  rcases eq_empty_or_nonempty G with rfl | G_ne
+  · simp
+  obtain ⟨T, TS, T_count, hT⟩ : ∃ T : Set (Set α), T ⊆ S ∧ T.Countable ∧ ⋃ t ∈ T, t = G := by
+    have : ∀ (x : G), ∃ s ∈ S, (x : α) ∈ s ∧ s ∈ 𝓝 (x : α) ∧ s ⊆ G := fun x ↦ h G x x.2 hG
+    choose! s hsS hxs hs_nhds hsG using this
+    rcases isOpen_biUnion_countable univ (fun i ↦ interior (s i)) (fun i hi ↦ isOpen_interior)
+      with ⟨T₀, -, T₀_count, hT₀⟩
+    refine ⟨s '' T₀, by grind, Countable.image T₀_count s, ?_⟩
+    refine Subset.antisymm (by simp; grind) ?_
+    have : G ⊆ ⋃ i ∈ univ, interior (s i) := by
+      intro y hy
+      simp only [mem_univ, iUnion_true, iUnion_coe_set, mem_iUnion]
+      refine ⟨y, hy, ?_⟩
+      apply mem_interior_iff_mem_nhds.2
+      exact hs_nhds ⟨y, hy⟩
+    apply this.trans
+    rw [← hT₀, biUnion_image]
+    exact iUnion₂_mono fun i j ↦ interior_subset
+  have : T.Nonempty := by
+    contrapose! G_ne
+    simpa [G_ne] using hT.symm
+  rcases T_count.exists_eq_range this with ⟨f, hf⟩
+  have : G = ⋃ n, f n := by simp [← hT, hf]
+
+
+
+
+
+
+
+
 
 
 
