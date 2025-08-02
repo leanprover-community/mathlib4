@@ -663,8 +663,8 @@ lemma chevalley_mvPolynomialC
     (hSn : ∀ C ∈ S, C.n ≤ k)
     (hS : ∀ C ∈ S, ∀ j, C.g j ∈ coeffsIn _ M ⊓ (degreesLE _ _ d).restrictScalars _) :
     ∃ T : ConstructibleSetData R,
-      comap MvPolynomial.C '' S.toSet = T.toSet ∧ ∀ C ∈ T,
-        C.n ≤ numBound k (fun i ↦ 1 + (d.map Fin.val).count i) n ∧
+      comap MvPolynomial.C '' S.toSet = T.toSet ∧
+      ∀ C ∈ T, C.n ≤ numBound k (fun i ↦ 1 + (d.map Fin.val).count i) n ∧
       ∀ i, C.g i ∈ M ^ (degBound k (fun i ↦ 1 + (d.map Fin.val).count i) n) := by
   classical
   induction' n with n IH generalizing k M

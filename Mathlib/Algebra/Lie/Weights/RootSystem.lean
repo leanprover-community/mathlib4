@@ -429,10 +429,9 @@ section IsSimple
 variable [IsSimple K L]
 
 open Weight in
-lemma eq_top_of_invtSubmodule_ne_bot
-   (q : Submodule K (Dual K H))
-   (h₀ : ∀ (i : H.root), q ∈ End.invtSubmodule ((rootSystem H).reflection i))
-   (h₁ : q ≠ ⊥) : q = ⊤ := by
+lemma eq_top_of_invtSubmodule_ne_bot (q : Submodule K (Dual K H))
+    (h₀ : ∀ (i : H.root), q ∈ End.invtSubmodule ((rootSystem H).reflection i))
+    (h₁ : q ≠ ⊥) : q = ⊤ := by
   have _i := nontrivial_of_isIrreducible K L L
   let S := rootSystem H
   by_contra h₃

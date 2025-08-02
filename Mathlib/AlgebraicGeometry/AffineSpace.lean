@@ -465,8 +465,8 @@ One should bear this equality in mind when breaking the `Spec R/ PrimeSpectrum R
 boundary, since these instances are not definitionally equal.
 -/
 example (R : CommRingCat) :
-    inferInstance (α := Preorder (Spec R)) =
-    inferInstance (α := Preorder (PrimeSpectrum R)ᵒᵈ) := by aesop (add simp spec_le_iff)
+    inferInstance (α := Preorder (Spec R)) = inferInstance (α := Preorder (PrimeSpectrum R)ᵒᵈ) := by
+  aesop (add simp spec_le_iff)
 
 end instances
 
