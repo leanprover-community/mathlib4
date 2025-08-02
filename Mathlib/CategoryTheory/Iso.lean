@@ -55,12 +55,11 @@ structure Iso {C : Type u} [Category.{v} C] (X Y : C) where
   is the identity on the target. -/
   inv_hom_id : inv ≫ hom = 𝟙 Y := by aesop_cat
 
-attribute [reassoc (attr := simp)] Iso.hom_inv_id Iso.inv_hom_id
 attribute [to_dual self (reorder := 3 4, 7 8)] Iso.mk
 attribute [to_dual self (reorder := 3 4)] Iso.hom Iso.inv
-attribute [to_dual existing (reorder := 3 4) inv_hom_id] Iso.hom_inv_id
-
--- TODO: combine `reassoc` with `to_dual`
+attribute [to_dual existing (reorder := 3 4) (attr := simp, reassoc) inv_hom_id] Iso.hom_inv_id
+attribute [to_dual (attr := simp) hom_inv_id_assocRev] Iso.hom_inv_id_assoc
+attribute [to_dual (attr := simp) inv_hom_id_assocRev] Iso.inv_hom_id_assoc
 
 /-- Notation for an isomorphism in a category. -/
 infixr:10 " ≅ " => Iso -- type as \cong or \iso
@@ -135,7 +134,7 @@ def trans (α : X ≅ Y) (β : Y ≅ Z) : X ≅ Z where
   hom := α.hom ≫ β.hom
   inv := β.inv ≫ α.inv
 
-@[simps, to_dual instTransIsoOP]
+@[to_dual instTransIsoRev, simps]
 instance instTransIso : Trans (α := C) (· ≅ ·) (· ≅ ·) (· ≅ ·) where
   trans := trans
 
@@ -153,14 +152,10 @@ theorem trans_mk {X Y Z : C} (hom : X ⟶ Y) (inv : Y ⟶ X) (hom_inv_id) (inv_h
 theorem trans_symm (α : X ≅ Y) (β : Y ≅ Z) : (α ≪≫ β).symm = β.symm ≪≫ α.symm :=
   rfl
 
-@[simp]
+@[to_dual trans_assoc_rev, simp]
 theorem trans_assoc {Z' : C} (α : X ≅ Y) (β : Y ≅ Z) (γ : Z ≅ Z') :
     (α ≪≫ β) ≪≫ γ = α ≪≫ β ≪≫ γ := by
   ext; simp only [trans_hom, Category.assoc]
-
-@[to_dual existing trans_assoc]
-theorem trans_assoc_rev {Z' : C} (γ : Y ≅ X) (β : Z ≅ Y) (α : Z' ≅ Z) :
-    α ≪≫ β ≪≫ γ = (α ≪≫ β) ≪≫ γ := (trans_assoc α β γ).symm
 
 @[to_dual (attr := simp) trans_refl]
 theorem refl_trans (α : X ≅ Y) : Iso.refl X ≪≫ α = α := by ext; apply Category.id_comp
@@ -177,36 +172,28 @@ theorem symm_self_id_assoc (α : X ≅ Y) (β : Y ≅ Z) : α.symm ≪≫ α ≪
 theorem self_symm_id_assoc (α : X ≅ Y) (β : X ≅ Z) : α ≪≫ α.symm ≪≫ β = β := by
   rw [← trans_assoc, self_symm_id, refl_trans]
 
--- problem: proof uses `assoc` lemma, which isn't tagged.
--- @[to_dual comp_inv_eq]
+@[to_dual comp_inv_eq]
 theorem inv_comp_eq (α : X ≅ Y) {f : X ⟶ Z} {g : Y ⟶ Z} : α.inv ≫ f = g ↔ f = α.hom ≫ g :=
   ⟨fun H => by simp [H.symm], fun H => by simp [H]⟩
 
+@[to_dual eq_comp_inv]
 theorem eq_inv_comp (α : X ≅ Y) {f : X ⟶ Z} {g : Y ⟶ Z} : g = α.inv ≫ f ↔ α.hom ≫ g = f :=
   (inv_comp_eq α.symm).symm
 
-theorem comp_inv_eq (α : X ≅ Y) {f : Z ⟶ Y} {g : Z ⟶ X} : f ≫ α.inv = g ↔ f = g ≫ α.hom :=
-  ⟨fun H => by simp [H.symm], fun H => by simp [H]⟩
-
-theorem eq_comp_inv (α : X ≅ Y) {f : Z ⟶ Y} {g : Z ⟶ X} : g = f ≫ α.inv ↔ g ≫ α.hom = f :=
-  (comp_inv_eq α.symm).symm
-
+@[to_dual self (reorder := 3 4)]
 theorem inv_eq_inv (f g : X ≅ Y) : f.inv = g.inv ↔ f.hom = g.hom :=
   have : ∀ {X Y : C} (f g : X ≅ Y), f.hom = g.hom → f.inv = g.inv := fun f g h => by rw [ext h]
   ⟨this f.symm g.symm, this f g⟩
 
+@[to_dual comp_hom_eq_id]
 theorem hom_comp_eq_id (α : X ≅ Y) {f : Y ⟶ X} : α.hom ≫ f = 𝟙 X ↔ f = α.inv := by
   rw [← eq_inv_comp, comp_id]
 
-theorem comp_hom_eq_id (α : X ≅ Y) {f : Y ⟶ X} : f ≫ α.hom = 𝟙 Y ↔ f = α.inv := by
-  rw [← eq_comp_inv, id_comp]
-
+@[to_dual comp_inv_eq_id]
 theorem inv_comp_eq_id (α : X ≅ Y) {f : X ⟶ Y} : α.inv ≫ f = 𝟙 Y ↔ f = α.hom :=
   hom_comp_eq_id α.symm
 
-theorem comp_inv_eq_id (α : X ≅ Y) {f : X ⟶ Y} : f ≫ α.inv = 𝟙 X ↔ f = α.hom :=
-  comp_hom_eq_id α.symm
-
+@[to_dual self (reorder := 3 4)]
 theorem hom_eq_inv (α : X ≅ Y) (β : Y ≅ X) : α.hom = β.inv ↔ β.hom = α.inv := by
   rw [← symm_inv, inv_eq_inv α.symm β, eq_comm]
   rfl

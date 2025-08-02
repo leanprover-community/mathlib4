@@ -52,14 +52,14 @@ structure NatTrans (F G : C ⥤ D) : Type max u₁ v₂ where
 attribute [to_dual self (reorder := 5 6)] NatTrans.app
 -- Rather arbitrarily, we say that the 'simpler' form is
 -- components of natural transformations moving earlier.
-attribute [reassoc (attr := simp)] NatTrans.naturality
+attribute [reassoc, simp] NatTrans.naturality
 
 @[to_dual existing NatTrans.naturality]
 theorem NatTrans.naturality' {F G : C ⥤ D} (self : NatTrans G F) ⦃X Y : C⦄ (f : Y ⟶ X) :
   self.app Y ≫ F.map f = G.map f ≫ self.app X := (NatTrans.naturality self f).symm
 
 -- TODO: combine `reassoc` with `to_dual`
-attribute [to_dual NatTrans.naturality_assocRev] NatTrans.naturality_assoc
+attribute [to_dual NatTrans.naturality_assocRev, simp] NatTrans.naturality_assoc
 
 @[to_dual self (reorder := 5 6)]
 theorem congr_app {F G : C ⥤ D} {α β : NatTrans F G} (h : α = β) (X : C) : α.app X = β.app X := by

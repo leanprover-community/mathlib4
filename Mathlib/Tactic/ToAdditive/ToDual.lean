@@ -5,6 +5,14 @@ Authors: Jovan Gerbscheid, Bryan Gin-ge Chen
 -/
 import Mathlib.Tactic.ToAdditive.Frontend
 
+/-!
+# The `@[to_dual]` attribute.
+
+The implementation of the `to_dual` attribute is in `Tactic.ToAdditive.Frontend`.
+See the docstring of `ToAdditive.to_additive` for more information.
+
+-/
+
 open Lean Meta Elab Command Std ToAdditive
 
 namespace ToDual
@@ -107,6 +115,7 @@ initialize dontTranslateAttr : NameMapExtension Unit ←
 /-- Maps names to their dual counterparts. -/
 initialize translations : NameMapExtension Name ← registerNameMapExtension _
 
+/-- The bundle of environment extensions for `to_dual` -/
 def toDualBundle : BundledExtensions where
   ignoreArgsAttr := ignoreArgsAttr
   reorderAttr := reorderAttr

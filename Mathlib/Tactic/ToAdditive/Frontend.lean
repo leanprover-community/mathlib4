@@ -437,17 +437,28 @@ initialize changeNumeralAttr : NameMapExtension (List Nat) ←
 /-- Maps multiplicative names to their additive counterparts. -/
 initialize translations : NameMapExtension Name ← registerNameMapExtension _
 
+/-- `BundlesExtensions` is a structure that holds all environment extensions related to a
+`to_additive`-like attribute. This allows us to use the `to_additive` machinery for other
+attributes, such as `to_dual`. -/
 structure BundledExtensions : Type where
   ignoreArgsAttr : NameMapExtension (List Nat)
+  /-- `reorderAttr` stores the declarations that need their arguments reordered when tranlating.
+  This is speicified using the `(reorder := ...)` syntax. -/
   reorderAttr : NameMapExtension (List <| List Nat)
   relevantArgAttr : NameMapExtension Nat
   dontTranslateAttr : NameMapExtension Unit
+  /-- `translations` stores all of the constants that have been tagged with this attribute,
+  and maps them to their translation. -/
   translations : NameMapExtension Name
+  /-- The name of the attribute, for example `to_additive` or `to_dual`. -/
   attrName : Name
   /-- If `changeNumeral := true`, then try to translate the number `1` to `0`. -/
   changeNumeral : Bool
   /-- When `isDual := true`, every translation `A → B` will also give a translation `B → A`. -/
   isDual : Bool
+attribute [inherit_doc to_additive_ignore_args] BundledExtensions.ignoreArgsAttr
+attribute [inherit_doc to_additive_relevant_arg] BundledExtensions.relevantArgAttr
+attribute [inherit_doc to_additive_dont_translate] BundledExtensions.dontTranslateAttr
 
 /-- Get the multiplicative → additive translation for the given name. -/
 def findTranslation? (env : Environment) (b : BundledExtensions) : Name → Option Name :=
@@ -1455,6 +1466,7 @@ partial def addToAdditiveAttr (b : BundledExtensions)
 
 end
 
+/-- The bundle of environment extensions for `to_additive` -/
 def toAdditiveBundle : BundledExtensions where
   ignoreArgsAttr := ignoreArgsAttr
   reorderAttr := reorderAttr
