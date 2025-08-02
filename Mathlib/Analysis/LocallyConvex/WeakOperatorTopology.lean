@@ -262,7 +262,6 @@ def seminormFamily : SeminormFamily 𝕜 (E →WOT[𝕜] F) (E × F⋆) :=
 
 lemma withSeminorms : WithSeminorms (seminormFamily 𝕜 E F) :=
   let e : E × F⋆ ≃ (Σ _ : E × F⋆, Fin 1) := .symm <| .sigmaUnique _ _
-  have : Nonempty (Σ _ : E × F⋆, Fin 1) := e.symm.nonempty
   isInducing_inducingFn.withSeminorms <| withSeminorms_pi (fun _ ↦ norm_withSeminorms 𝕜 𝕜)
     |>.congr_equiv e
 
