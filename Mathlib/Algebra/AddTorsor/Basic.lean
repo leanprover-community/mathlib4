@@ -76,8 +76,8 @@ theorem vsub_sub_vsub_cancel_left (p₁ p₂ p₃ : P) : p₃ -ᵥ p₂ - (p₃ 
 theorem vadd_vsub_vadd_cancel_left (v : G) (p₁ p₂ : P) : (v +ᵥ p₁) -ᵥ (v +ᵥ p₂) = p₁ -ᵥ p₂ := by
   rw [vsub_vadd_eq_vsub_sub, vadd_vsub_assoc, add_sub_cancel_left]
 
-theorem vadd_vsub_vadd_comm (v₁ v₂ : G) (p₁ p₂ : P) : (v₁ +ᵥ p₁) -ᵥ (v₂ +ᵥ p₂) = (v₁ - v₂)
-    + (p₁ -ᵥ p₂) := by
+theorem vadd_vsub_vadd_comm (v₁ v₂ : G) (p₁ p₂ : P) :
+    (v₁ +ᵥ p₁) -ᵥ (v₂ +ᵥ p₂) = (v₁ - v₂) + (p₁ -ᵥ p₂) := by
   rw [vsub_vadd_eq_vsub_sub, vadd_vsub_assoc, add_sub_assoc, ← add_comm_sub]
 
 theorem vsub_vadd_comm (p₁ p₂ p₃ : P) : (p₁ -ᵥ p₂ : G) +ᵥ p₃ = (p₃ -ᵥ p₂) +ᵥ p₁ := by
