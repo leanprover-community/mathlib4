@@ -6,7 +6,6 @@ Authors: Anne Baanen
 import Mathlib.Algebra.Regular.Basic
 import Mathlib.LinearAlgebra.Matrix.MvPolynomial
 import Mathlib.LinearAlgebra.Matrix.Polynomial
-import Mathlib.RingTheory.Polynomial.Basic
 
 /-!
 # Cramer's rule and adjugate matrices

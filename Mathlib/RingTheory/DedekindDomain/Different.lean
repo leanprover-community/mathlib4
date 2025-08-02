@@ -86,7 +86,7 @@ lemma le_traceDual_traceDual {I : Submodule B L} :
 
 @[simp]
 lemma restrictScalars_traceDual {I : Submodule B L} :
-  Iᵛ.restrictScalars A = (Algebra.traceForm K L).dualSubmodule (I.restrictScalars A) := rfl
+    Iᵛ.restrictScalars A = (Algebra.traceForm K L).dualSubmodule (I.restrictScalars A) := rfl
 
 @[simp]
 lemma traceDual_bot :
