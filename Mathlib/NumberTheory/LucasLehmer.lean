@@ -598,7 +598,7 @@ lemma mersenne_mod_four {n : ℕ} (h : 2 ≤ n) : mersenne n % 4 = 3 := by
     rw [mersenne_succ]
     omega
 
-lemma mersenne_mod_three {n : ℕ} (odd : Odd n) (h : 3 ≤ n) : (mersenne n) % 3 = 1 := by
+lemma mersenne_mod_three {n : ℕ} (odd : Odd n) (h : 3 ≤ n) : mersenne n % 3 = 1 := by
   rcases odd with ⟨i, hi⟩
   rw [hi]
   replace h : 1 ≤ i := by omega
@@ -610,7 +610,7 @@ lemma mersenne_mod_three {n : ℕ} (odd : Odd n) (h : 3 ≤ n) : (mersenne n) % 
     rw [mersenne_succ, (by ring : 2 * (j + 1) = 2 * j + 1 + 1), mersenne_succ]
     omega
 
-lemma mersenne_mod_eight {n : ℕ} (h : 3 ≤ n) : (mersenne n) % 8 = 7 := by
+lemma mersenne_mod_eight {n : ℕ} (h : 3 ≤ n) : mersenne n % 8 = 7 := by
   induction n, h using Nat.le_induction with
   | base =>
     dsimp[mersenne]
