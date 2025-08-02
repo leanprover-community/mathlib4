@@ -65,14 +65,14 @@ theorem mersenne_le_mersenne {p q : ℕ} : mersenne p ≤ mersenne q ↔ p ≤ q
 
 @[simp] theorem mersenne_pos {p : ℕ} : 0 < mersenne p ↔ 0 < p := mersenne_lt_mersenne (p := 0)
 
-lemma mersenne_succ (n : ℕ) : mersenne (n + 1) = 2 * (mersenne n) + 1 := by
+lemma mersenne_succ (n : ℕ) : mersenne (n + 1) = 2 * mersenne n + 1 := by
   dsimp [mersenne]
   rw [pow_succ]
   have := Nat.one_le_pow n 2 two_pos
   omega
 
 /-- If `2 ^ p - 1` is prime, then `p` is prime. -/
-lemma prime_of_mersenne_prime {p : ℕ} (h : Nat.Prime (mersenne p)) : Nat.Prime p := by
+lemma Prime.of_mersenne {p : ℕ} (h : (mersenne p).Prime) : Nat.Prime p := by
   apply Nat.prime_of_pow_sub_one_prime _ h |>.2
   intro eq_one
   rw [eq_one, mersenne] at h
@@ -591,7 +591,7 @@ theorem lucas_lehmer_sufficiency (p : ℕ) (w : 1 < p) : LucasLehmerTest p → (
   have h := lt_of_lt_of_le h₁ h₂
   exact not_lt_of_ge (Nat.sub_le _ _) h
 
-lemma mersenne_mod_four {n : ℕ} (h : 2 ≤ n) : (mersenne n) % 4 = 3 := by
+lemma mersenne_mod_four {n : ℕ} (h : 2 ≤ n) : mersenne n % 4 = 3 := by
   induction n, h using Nat.le_induction with
   | base =>  rw [mersenne]; norm_num
   | succ _ _ _ =>
@@ -601,7 +601,7 @@ lemma mersenne_mod_four {n : ℕ} (h : 2 ≤ n) : (mersenne n) % 4 = 3 := by
 lemma mersenne_mod_three {n : ℕ} (odd : Odd n) (h : 3 ≤ n) : (mersenne n) % 3 = 1 := by
   rcases odd with ⟨i, hi⟩
   rw [hi]
-  replace h : i >= 1 := by omega
+  replace h : 1 ≤ i := by omega
   clear hi
   induction i, h using Nat.le_induction with
   | base =>
@@ -611,7 +611,7 @@ lemma mersenne_mod_three {n : ℕ} (odd : Odd n) (h : 3 ≤ n) : (mersenne n) % 
     omega
 
 lemma mersenne_mod_eight {n : ℕ} (h : 3 ≤ n) : (mersenne n) % 8 = 7 := by
-induction n, h using Nat.le_induction with
+  induction n, h using Nat.le_induction with
   | base =>
     dsimp[mersenne]
   | succ _ _ _ =>
@@ -619,7 +619,7 @@ induction n, h using Nat.le_induction with
     omega
 
 /-- If `2^p - 1` is prime then 2 is a square mod `2^p - 1`. -/
-lemma mersenne_legendre_two {p : ℕ} [Fact (mersenne p).Prime] (hp : 3 ≤ p) :
+lemma legendreSym_mersenne_two {p : ℕ} [Fact (mersenne p).Prime] (hp : 3 ≤ p) :
     legendreSym (mersenne p) 2 = 1 := by
   rw_mod_cast [legendreSym.at_two]
   · rw [ZMod.χ₈_nat_eq_if_mod_eight]
@@ -630,7 +630,7 @@ lemma mersenne_legendre_two {p : ℕ} [Fact (mersenne p).Prime] (hp : 3 ≤ p) :
     omega
 
 /-- If `2^p - 1` is prime then 3 is not a square mod `2^p - 1`. -/
-lemma mersenne_legendre_three {p : ℕ} [Fact (mersenne p).Prime] (hp : 3 ≤ p) (odd : Odd p) :
+lemma legendreSym_mersenne_three {p : ℕ} [Fact (mersenne p).Prime] (hp : 3 ≤ p) (odd : Odd p) :
     legendreSym (mersenne p) 3 = -1 := by
   have : Fact ((3 : ℕ).Prime) := ⟨Nat.prime_three⟩
   rw [(by rfl : (3 : ℤ) = (3 : ℕ))]
@@ -652,7 +652,7 @@ theorem lucas_lehmer_necessity (p : ℕ) (w : 3 ≤ p) : (mersenne p).Prime → 
     · absurd w
       omega
     · assumption
-  dsimp[LucasLehmerTest, lucasLehmerResidue]
+  dsimp [LucasLehmerTest, lucasLehmerResidue]
   have pos : 0 < 2^(p' + 2) - 1 := by
     rw [← z]
     exact hp.pos
@@ -682,7 +682,7 @@ theorem lucas_lehmer_necessity (p : ℕ) (w : 3 ≤ p) : (mersenne p).Prime → 
   · simp only [PNat.mk_coe]
     use 2 ^ p'
     rw [mul_comm, (by norm_num : 4 = 2^2), ← pow_add]
-    apply  succ_mersenne
+    apply succ_mersenne
 
 namespace LucasLehmer
 
