@@ -43,6 +43,7 @@ instance instIsStrictOrderedRing : IsStrictOrderedRing ℤ := .of_mul_pos @Int.m
 lemma isCompl_even_odd : IsCompl { n : ℤ | Even n } { n | Odd n } := by
   simp [← not_even_iff_odd, ← Set.compl_setOf, isCompl_compl]
 
+@[simp]
 lemma _root_.Nat.cast_natAbs {α : Type*} [AddGroupWithOne α] (n : ℤ) : (n.natAbs : α) = |n| := by
   rw [← natCast_natAbs, Int.cast_natCast]
 
