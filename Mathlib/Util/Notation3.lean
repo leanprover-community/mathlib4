@@ -111,6 +111,7 @@ structure MatchState where
   `foldl` and `foldr` expressions. For `foldl`, the arrays are stored in reverse order. -/
   foldState : Std.HashMap Name (Array Term)
 
+set_option linter.style.indentation false in -- TODO: disable on deriving indentation
 /-- A matcher is a delaboration function that transforms `MatchState`s. -/
 def Matcher := MatchState → DelabM MatchState
   deriving Inhabited

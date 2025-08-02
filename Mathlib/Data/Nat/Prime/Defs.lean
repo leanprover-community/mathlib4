@@ -434,6 +434,7 @@ alias ⟨Prime.prime, _root_.Prime.nat_prime⟩ := prime_iff
 theorem irreducible_iff_prime {p : ℕ} : Irreducible p ↔ _root_.Prime p :=
   prime_iff
 
+set_option linter.style.indentation false in -- TODO: disable on deriving indentation
 /-- The type of prime numbers -/
 def Primes :=
   { p : ℕ // p.Prime }

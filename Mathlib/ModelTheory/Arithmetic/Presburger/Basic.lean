@@ -34,6 +34,7 @@ inductive presburgerFunc : ℕ → Type
   | add : presburgerFunc 2
   deriving DecidableEq
 
+set_option linter.style.indentation false in -- TODO: disable on deriving indentation
 /-- The language of Presburger arithmetic, defined as (0, 1, +). -/
 def Language.presburger : Language :=
   { Functions := presburgerFunc

@@ -53,6 +53,7 @@ inductive ringFunc : ℕ → Type
   | one : ringFunc 0
   deriving DecidableEq
 
+set_option linter.style.indentation false in -- TODO: disable on deriving indentation
 /-- The language of rings contains the operations (+,*,-,0,1) -/
 def Language.ring : Language :=
   { Functions := ringFunc
