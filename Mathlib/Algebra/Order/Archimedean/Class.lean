@@ -332,7 +332,7 @@ theorem mk_prod {ι : Type*} [LinearOrder ι] {s : Finset ι} (hnonempty : s.Non
       congr
       apply le_antisymm (Finset.le_min' _ _ _ ?_) (Finset.min'_le _ _ (by simp))
       intro y hy
-      obtain rfl|hmem := Finset.mem_cons.mp hy
+      obtain rfl | hmem := Finset.mem_cons.mp hy
       · rfl
       · refine (lt_of_lt_of_le ?_ (Finset.min'_le _ _ hmem)).le
         apply (hmono.lt_iff_lt (by simp) hminmem).mp
@@ -342,7 +342,7 @@ theorem mk_prod {ι : Type*} [LinearOrder ι] {s : Finset ι} (hnonempty : s.Non
       congr 2
       refine le_antisymm (Finset.le_min' _ _ _ ?_) (Finset.min'_le _ _ hminmem)
       intro y hy
-      obtain rfl|hmem := Finset.mem_cons.mp hy
+      obtain rfl | hmem := Finset.mem_cons.mp hy
       · apply ((hmono.lt_iff_lt hminmem (by simp)).mp ?_).le
         rw [ih] at hlt
         exact hlt

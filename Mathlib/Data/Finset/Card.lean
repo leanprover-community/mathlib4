@@ -292,6 +292,7 @@ theorem card_filter_eq_zero_iff {p : α → Prop} [DecidablePred p] :
     #(s.filter p) = 0 ↔ ∀ x ∈ s, ¬ p x := by
   rw [card_eq_zero, filter_eq_empty_iff]
 
+@[gcongr]
 nonrec lemma card_lt_card (h : s ⊂ t) : #s < #t := card_lt_card <| val_lt_iff.2 h
 
 lemma card_strictMono : StrictMono (card : Finset α → ℕ) := fun _ _ ↦ card_lt_card
@@ -478,7 +479,7 @@ lemma surj_on_of_inj_on_of_card_le (f : ∀ a ∈ s, β) (hf : ∀ a ha, f a ha 
   exact ⟨a, a.2, rfl⟩
 
 /--
-Given a surjectiive map `f` from a finite set `s` to another finite set `t`, if `s` is no larger
+Given a surjective map `f` from a finite set `s` to another finite set `t`, if `s` is no larger
 than `t`, then `f` is injective when restricted to `s`.
 See `Finset.inj_on_of_surj_on_of_card_le` for the version where `f` is a dependent function.
 -/

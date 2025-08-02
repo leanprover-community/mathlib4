@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Data.ENNReal.BigOperators
+import Mathlib.Tactic.Bound
 import Mathlib.Topology.Order.LiminfLimsup
 import Mathlib.Topology.EMetricSpace.Lipschitz
 import Mathlib.Topology.Instances.NNReal.Lemmas
@@ -1053,6 +1054,14 @@ theorem Summable.toNNReal {f : α → ℝ} (hf : Summable f) : Summable fun n =>
   refine .of_nonneg_of_le (fun n => NNReal.coe_nonneg _) (fun n => ?_) hf.abs
   simp only [le_abs_self, Real.coe_toNNReal', max_le_iff, abs_nonneg, and_self_iff]
 
+lemma Summable.tsum_ofReal_lt_top {f : α → ℝ} (hf : Summable f) : ∑' i, .ofReal (f i) < ∞ := by
+  unfold ENNReal.ofReal
+  rw [lt_top_iff_ne_top, ENNReal.tsum_coe_ne_top_iff_summable]
+  exact hf.toNNReal
+
+lemma Summable.tsum_ofReal_ne_top {f : α → ℝ} (hf : Summable f) : ∑' i, .ofReal (f i) ≠ ∞ :=
+  hf.tsum_ofReal_lt_top.ne
+
 /-- Finitely summable non-negative functions have countable support -/
 theorem _root_.Summable.countable_support_ennreal {f : α → ℝ≥0∞} (h : ∑' (i : α), f i ≠ ∞) :
     f.support.Countable := by
@@ -1425,6 +1434,36 @@ lemma ofNNReal_liminf {u : ι → ℝ≥0} (hf : f.IsCoboundedUnder (· ≥ ·) 
   refine eq_of_forall_nnreal_iff fun r ↦ ?_
   rw [coe_le_coe, le_liminf_iff, le_liminf_iff]
   simp [forall_ennreal]
+
+theorem liminf_add_of_right_tendsto_zero {u : Filter ι} {g : ι → ℝ≥0∞} (hg : u.Tendsto g (𝓝 0))
+    (f : ι → ℝ≥0∞) : u.liminf (f + g) = u.liminf f := by
+  refine le_antisymm ?_ <| liminf_le_liminf <| .of_forall <| by simp
+  refine liminf_le_of_le (by isBoundedDefault) fun b hb ↦ ?_
+  rw [Filter.le_liminf_iff']
+  rintro a hab
+  filter_upwards [hb, ENNReal.tendsto_nhds_zero.1 hg _ <| lt_min (tsub_pos_of_lt hab) one_pos]
+    with i hfg hg
+  exact ENNReal.le_of_add_le_add_right (hg.trans_lt <| by bound).ne <|
+    (add_le_of_le_tsub_left_of_le hab.le <| hg.trans <| min_le_left ..).trans hfg
+
+theorem liminf_add_of_left_tendsto_zero {u : Filter ι} {f : ι → ℝ≥0∞} (hf : u.Tendsto f (𝓝 0))
+    (g : ι → ℝ≥0∞) : u.liminf (f + g) = u.liminf g := by
+  rw [add_comm, liminf_add_of_right_tendsto_zero hf]
+
+theorem limsup_add_of_right_tendsto_zero {u : Filter ι} {g : ι → ℝ≥0∞} (hg : u.Tendsto g (𝓝 0))
+    (f : ι → ℝ≥0∞) : u.limsup (f + g) = u.limsup f := by
+  refine le_antisymm ?_ <| limsup_le_limsup <| .of_forall <| by simp
+  refine le_limsup_of_le (by isBoundedDefault) fun b hb ↦ ?_
+  rw [Filter.limsup_le_iff']
+  rintro a hba
+  filter_upwards [hb, ENNReal.tendsto_nhds_zero.1 hg _ <| tsub_pos_of_lt hba] with i hf hg
+  calc  f i + g i
+    _ ≤ b + g i := by gcongr
+    _ ≤ a := add_le_of_le_tsub_left_of_le hba.le hg
+
+theorem limsup_add_of_left_tendsto_zero {u : Filter ι} {f : ι → ℝ≥0∞} (hf : u.Tendsto f (𝓝 0))
+    (g : ι → ℝ≥0∞) : u.limsup (f + g) = u.limsup g := by
+  rw [add_comm, limsup_add_of_right_tendsto_zero hf]
 
 end LimsupLiminf
 

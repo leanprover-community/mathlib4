@@ -351,6 +351,6 @@ theorem isMultiplyPreprimitive_congr
         suffices y ∈ ofFixingSubgroup M s by
           exact ⟨⟨y, this⟩, rfl⟩
         simp only [mem_ofFixingSubgroup_iff, Set.mem_image, not_exists, not_and, t] at hx ⊢
-        exact fun  hy ↦ hx y hy rfl
+        exact fun hy ↦ hx y hy rfl
 
 end MulAction
