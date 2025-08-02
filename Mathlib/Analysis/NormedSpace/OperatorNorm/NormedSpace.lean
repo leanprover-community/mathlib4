@@ -141,9 +141,6 @@ theorem antilipschitz_of_isEmbedding (f : E →L[𝕜] Fₗ) (hf : IsEmbedding f
     ∃ K, AntilipschitzWith K f :=
   f.toLinearMap.antilipschitz_of_comap_nhds_le <| map_zero f ▸ (hf.nhds_eq_comap 0).ge
 
-@[deprecated (since := "2024-10-26")]
-alias antilipschitz_of_embedding := antilipschitz_of_isEmbedding
-
 end OpNorm
 
 end ContinuousLinearMap

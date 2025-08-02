@@ -59,7 +59,7 @@ typeclass diamonds caused by the constructive finiteness used in definitions suc
 other solutions but for beginner mathematicians this approach is easier in practice.
 
 Another application is the construction of a partition of unity from a collection of “bump”
-function. In this case the finite set depends on the point and it's convenient to have a definition
+functions. In this case the finite set depends on the point and it's convenient to have a definition
 that does not mention the set explicitly.
 
 The first arguments in all definitions and lemmas is the codomain of the function of the big
@@ -346,7 +346,7 @@ theorem finprod_eq_prod_of_mulSupport_subset (f : α → M) {s : Finset α} (h :
     exact (Equiv.plift.symm.image_eq_preimage _).symm
   have : mulSupport (f ∘ PLift.down) ⊆ s.map Equiv.plift.symm.toEmbedding := by
     rw [A, Finset.coe_map]
-    exact image_subset _ h
+    exact image_mono h
   rw [finprod_eq_prod_plift_of_mulSupport_subset this]
   simp only [Finset.prod_map, Equiv.coe_toEmbedding]
   congr
@@ -573,7 +573,7 @@ theorem finprod_mem_of_eqOn_one (hf : s.EqOn f 1) : ∏ᶠ i ∈ s, f i = 1 := b
 /-- If the product of `f i` over `i ∈ s` is not equal to `1`, then there is some `x ∈ s` such that
 `f x ≠ 1`. -/
 @[to_additive
-      "If the product of `f i` over `i ∈ s` is not equal to `0`, then there is some `x ∈ s`
+      "If the sum of `f i` over `i ∈ s` is not equal to `0`, then there is some `x ∈ s`
       such that `f x ≠ 0`."]
 theorem exists_ne_one_of_finprod_mem_ne_one (h : ∏ᶠ i ∈ s, f i ≠ 1) : ∃ x ∈ s, f x ≠ 1 := by
   by_contra! h'
@@ -954,6 +954,21 @@ lemma finprod_option {f : Option α → M} (hf : (mulSupport (f ∘ some)).Finit
   · simp
   · rw [finprod_mem_range]
     exact Option.some_injective _
+
+@[to_additive]
+lemma finprod_mem_powerset_insert {f : Set α → M} {s : Set α} {a : α} (hs : s.Finite)
+    (has : a ∉ s) : ∏ᶠ t ∈ 𝒫 insert a s, f t = (∏ᶠ t ∈ 𝒫 s, f t) * ∏ᶠ t ∈ 𝒫 s, f (insert a t) := by
+  rw [Set.powerset_insert,
+    finprod_mem_union (disjoint_powerset_insert has) hs.powerset (hs.powerset.image (insert a)),
+    finprod_mem_image (powerset_insert_injOn has)]
+
+@[to_additive]
+lemma finprod_mem_powerset_diff_elem {f : Set α → M} {s : Set α} {a : α} (hs : s.Finite)
+    (has : a ∈ s) : ∏ᶠ t ∈ 𝒫 s, f t = (∏ᶠ t ∈ 𝒫 (s \ {a}), f t)
+    * ∏ᶠ t ∈ 𝒫 (s \ {a}), f (insert a t) := by
+  nth_rw 1 2 [← Set.insert_diff_self_of_mem has] -- second appearence hidden by notation
+  exact finprod_mem_powerset_insert (hs.subset Set.diff_subset)
+    (notMem_diff_of_mem (Set.mem_singleton a))
 
 @[to_additive]
 theorem mul_finprod_cond_ne (a : α) (hf : (mulSupport f).Finite) :
