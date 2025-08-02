@@ -65,7 +65,7 @@ lemma toMatrix_def : f.toMatrix b = f.toSesquilinForm.toMatrix b := rfl
 lemma toMatrix_apply (i j : n) : f.toMatrix b i j = f (b i) (b j) := by
   simp [toMatrix]
 
-variable [Fintype n] [DecidableEq n]
+variable [Fintype n]
 
 lemma dotProduct_toMatrix_mulVec (x y : n → 𝕜) :
     star x ⬝ᵥ (f.toMatrix b) *ᵥ y = f (b.equivFun.symm x) (b.equivFun.symm y) := by
@@ -145,7 +145,7 @@ lemma isPosSemidef_iff_of_basis : f.IsPosSemidef ↔
   simp_rw [isPosSemidef_iff', SesquilinForm.isSymm_iff_basis b, SesquilinForm.isPos_def,
     toSesquilinForm_apply]
 
-variable [Fintype n] [DecidableEq n]
+variable [Fintype n]
 
 lemma isPosSemidef_iff_posSemidef_toMatrix :
     f.IsPosSemidef ↔ (f.toMatrix b).PosSemidef := by

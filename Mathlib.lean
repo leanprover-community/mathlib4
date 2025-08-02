@@ -1765,7 +1765,7 @@ import Mathlib.Analysis.NormedSpace.Alternating.Curry
 import Mathlib.Analysis.NormedSpace.BallAction
 import Mathlib.Analysis.NormedSpace.ConformalLinearMap
 import Mathlib.Analysis.NormedSpace.Connected
-import Mathlib.Analysis.NormedSpace.ContinuousBilinForm
+import Mathlib.Analysis.NormedSpace.ContinuousSesquilinForm
 import Mathlib.Analysis.NormedSpace.DualNumber
 import Mathlib.Analysis.NormedSpace.ENormedSpace
 import Mathlib.Analysis.NormedSpace.Extend
@@ -3995,7 +3995,6 @@ import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.LinearAlgebra.BilinearForm.Basic
 import Mathlib.LinearAlgebra.BilinearForm.DualLattice
 import Mathlib.LinearAlgebra.BilinearForm.Hom
-import Mathlib.LinearAlgebra.BilinearForm.IsPosSemidef
 import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
 import Mathlib.LinearAlgebra.BilinearForm.Properties
 import Mathlib.LinearAlgebra.BilinearForm.TensorProduct
