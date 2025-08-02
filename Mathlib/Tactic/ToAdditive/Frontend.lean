@@ -87,7 +87,13 @@ syntax (name := to_additive_dont_translate) "to_additive_dont_translate" : attr
 
 /-- An `attr := ...` option for `to_additive`. -/
 syntax toAdditiveAttrOption := &"attr" " := " Parser.Term.attrInstance,*
-/-- A `reorder := ...` option for `to_additive`. -/
+/--
+`reorder := ...` reorders the arguments/hypotheses in the generated declaration.
+It uses cycle notation. For example `(reorder := 1 2, 5 6)` swaps the first two
+arguments with each other and the fifth and the sixth argument and `(reorder := 3 4 5)` will move
+the fifth argument before the third argument. This is used in `to_dual` to swap the arguments in
+`≤`, `<` and `⟶`. It is also used in `to_additive` to translate from `^` to `•`.
+-/
 syntax toAdditiveReorderOption := &"reorder" " := " (num+),+
 /-- Options to `to_additive`. -/
 syntax toAdditiveOption := "(" toAdditiveAttrOption <|> toAdditiveReorderOption ")"
@@ -470,11 +476,11 @@ structure Config : Type where
   (or the `to_additive` attribute if it is added later),
   which we need for adding definition ranges. -/
   ref : Syntax
-  /-- An optional flag stating whether the additive declaration already exists.
-    If this flag is set but wrong about whether the additive declaration exists, `to_additive` will
+  /-- An optional flag stating that the additive declaration already exists.
+    If this flag is wrong about whether the additive declaration exists, `to_additive` will
     raise a linter error.
     Note: the linter will never raise an error for inductive types and structures. -/
-  existing : Option Bool := none
+  existing : Bool := false
   /-- An optional flag stating that the target of the translation is the target itself.
   This can be used to reorder arguments, such as in
   `attribute [to_dual self (reorder := 3 4)] LE.le`.
@@ -645,7 +651,8 @@ It also expands all kernel projections that have as head a constant `n` in `reor
 def expand (e : Expr) : MetaM Expr := do
   let env ← getEnv
   let reorderFn : Name → List (List ℕ) := fun nm ↦ (reorderAttr.find? env nm |>.getD [])
-  let e₂ ← Lean.Meta.transform (input := e) (post := fun e => return .done e) fun e ↦
+  let e₂ ← Lean.Meta.transform (input := e) (skipConstInApp := true)
+    (post := fun e => return .done e) fun e ↦
     e.withApp fun f args ↦ do
     match f with
     | .proj n i s =>
@@ -663,9 +670,7 @@ def expand (e : Expr) : MetaM Expr := do
         -- no need to expand if nothing needs reordering
         return .continue
       let needed_n := reorder.flatten.foldr Nat.max 0 + 1
-      -- the second disjunct is a temporary fix to avoid infinite loops. We may need to use
-      -- `replaceRec` or something similar to not change the head of an application
-      if needed_n ≤ args.size || args.size == 0 then
+      if needed_n ≤ args.size then
         return .continue
       else
         -- in this case, we need to reorder arguments that are not yet
@@ -685,20 +690,23 @@ def reorderForall (reorder : List (List Nat) := []) (src : Expr) : MetaM Expr :=
       if xs.size = maxReorder + 1 then
         mkForallFVars (xs.permute! reorder) e
       else
-        throwError "the permutation\n{reorder}\nprovided by the reorder config option is too \
-          large, the type{indentExpr src}\nhas only {xs.size} arguments"
+        throwError "the permutation\n{reorder}\nprovided by the `(reorder := ...)` option is \
+          out of bounds, the type{indentExpr src}\nhas only {xs.size} arguments"
   else
     return src
 
 /-- Reorder lambda-binders. See doc of `reorderAttr` for the interpretation of the argument -/
 def reorderLambda (reorder : List (List Nat) := []) (src : Expr) : MetaM Expr := do
   if let some maxReorder := reorder.flatten.max? then
-    lambdaBoundedTelescope src (maxReorder + 1) fun xs e => do
-      if xs.size = maxReorder + 1 then
+    let maxReorder := maxReorder + 1
+    lambdaBoundedTelescope src maxReorder fun xs e => do
+      if xs.size = maxReorder then
         mkLambdaFVars (xs.permute! reorder) e
       else
-        throwError "the permutation\n{reorder}\nprovided by the reorder config option is too \
-          large, the function{indentExpr src}\nhas only {xs.size} arguments"
+        -- we don't have to consider the case where the given permutation is out of bounds,
+        -- since `reorderForall` applied to the type would already have failed in that case.
+        forallBoundedTelescope (← inferType e) (maxReorder - xs.size) fun ys _ => do
+          mkLambdaFVars ((xs ++ ys).permute! reorder) (mkAppN e ys)
   else
     return src
 
@@ -1202,9 +1210,19 @@ def elabToAdditive : Syntax → CoreM Config
       | `(toAdditiveOption| (attr := $[$stxs],*)) =>
         attrs := attrs ++ stxs
       | `(toAdditiveOption| (reorder := $[$[$reorders:num]*],*)) =>
-        reorder := reorder ++ reorders.toList.map (·.toList.map (·.raw.isNatLit?.get! - 1))
+        for cycle in reorders do
+          if h : cycle.size = 1 then
+            throwErrorAt cycle[0] "\
+              invalid cycle `{cycle[0]}`, a cycle must have at least 2 elements.\n\
+              `(reorder := ...)` uses cycle notation to specify a permutation.\n\
+              For example `(reorder := 1 2, 5 6)` swaps the first two arguments with each other \
+              and the fifth and the sixth argument and `(reorder := 3 4 5)` will move \
+              the fifth argument before the third argument."
+          let cycle ← cycle.toList.mapM fun n => match n.getNat with
+            | 0 => throwErrorAt n "invalid position `{n}`, positions are counted starting from 1."
+            | n+1 => pure n
+          reorder := cycle :: reorder
       | _ => throwUnsupportedSyntax
-    reorder := reorder.reverse
     let (existing, self) := match existing? with
       | `(toAdditiveNameHint| existing) => (true, false)
       | `(toAdditiveNameHint| self) => (true, true)
@@ -1348,7 +1366,7 @@ partial def addToAdditiveAttr (src : Name) (cfg : Config) (kind := AttributeKind
   withOptions (· |>.updateBool `trace.to_additive (cfg.trace || ·)) <| do
   let tgt ← targetName cfg src
   let alreadyExists := (← getEnv).contains tgt
-  if cfg.existing == some !alreadyExists && !(← isInductive src) then
+  if cfg.existing != alreadyExists && !(← isInductive src) then
     Linter.logLintIf linter.toAdditiveExisting cfg.ref <|
       if alreadyExists then
         m!"The additive declaration already exists. Please specify this explicitly using \
