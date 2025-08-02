@@ -674,4 +674,34 @@ instance instMetrizableSpaceProbabilityMeasure (X : Type*) [TopologicalSpace X]
 
 end Levy_Prokhorov_metrizes_convergence_in_distribution
 
+section test
+
+open scoped Topology Finset
+
+variable {α ι : Type*} [MeasurableSpace α]
+
+lemma foo (S : Set (Set α)) (hS : IsPiSystem S) {μ : ι → Measure α} {ν : Measure α} {l : Filter ι}
+    {t : Finset S}
+    (hmeas : ∀ s ∈ S, MeasurableSet s)
+    (hν : ∀ s ∈ S, ν s ≠ ∞ := by finiteness)
+    (hμ : ∀ s ∈ S, ∀ i, μ i s ≠ ∞ := by finiteness)
+    (h : ∀ s ∈ S, Tendsto (fun i ↦ (μ i).real s) l (𝓝 (ν.real s))) :
+    Tendsto (fun i ↦ (μ i).real (⋃ s ∈ t, s)) l (𝓝 (ν.real (⋃ s ∈ t, s))) := by
+  have A (i) : (μ i).real (⋃ s ∈ t, s) = ∑ u ∈ t.powerset with u.Nonempty,
+      (-1 : ℝ) ^ (#u + 1) * (μ i).real (⋂ s ∈ u, s) :=
+    measureReal_biUnion_eq_sum_powerset _ (fun s hs ↦ hmeas _ s.2) (fun s hs ↦ hμ _ s.2 i)
+  simp_rw [A]
+  rw [measureReal_biUnion_eq_sum_powerset _ (fun s hs ↦ hmeas _ s.2) (fun s hs ↦ hν _ s.2)]
+  apply tendsto_finset_sum _ (fun u hu ↦ ?_)
+  simp only [Finset.mem_filter, Finset.mem_powerset] at hu
+  apply Filter.Tendsto.const_mul
+  rcases eq_empty_or_nonempty (⋂ s ∈ u, (s : Set α)) with h'u | h'u
+  · simpa [h'u] using tendsto_const_nhds
+  apply h
+
+
+
+end test
+
+
 end MeasureTheory -- namespace
