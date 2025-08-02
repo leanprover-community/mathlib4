@@ -36,6 +36,7 @@ That is, for any types α, β (in a particular universe)
 This provides a function of type
 `((α → m β) → m α) → m α`
 
+TODO now explain what this means
 -/
 class MonadCont (m : Type u → Type v) where
   callCC : ∀ {α β}, (MonadCont.Label α m β → m α) → m α
