@@ -389,7 +389,7 @@ instance : CharP (X q) q where
     exact ⟨congr_arg Prod.fst, fun hx ↦ ext hx (by simp)⟩
 
 instance : Coe (ZMod ↑q) (X q) where
-  coe := ZMod.castHom (dvd_refl _) (X q)
+  coe := ZMod.castHom dvd_rfl (X q)
 
 lemma coe_eq_coe (n : ℕ) : (n : X q) = (n : ZMod q) := by
   rw [map_natCast]
