@@ -28,7 +28,7 @@ example : (mersenne 5).Prime :=
 example : (mersenne 7).Prime :=
   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
 
-example : ¬ ((mersenne 11).Prime) := by
+example : ¬ (mersenne 11).Prime := by
   intro h
   have := lucas_lehmer_necessity 11 (by norm_num) h
   norm_num at this
