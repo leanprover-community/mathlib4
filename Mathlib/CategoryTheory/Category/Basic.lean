@@ -280,7 +280,7 @@ theorem cancel_epi_id (f : X ⟶ Y) [Epi f] {g : Y ⟶ Y} : f ≫ g = f ↔ g = 
 
 /-- The composition of epimorphisms is again an epimorphism. This version takes `Epi f` and `Epi g`
 as typeclass arguments. For a version taking them as explicit arguments, see `epi_comp'`. -/
-@[to_dual (reorder := 6 7)
+@[to_dual (reorder := 6 7, 8 9)
 "The composition of monomorphisms is again a monomorphism. This version takes `Mono f` and `Mono g`
 as typeclass arguments. For a version taking them as explicit arguments, see `mono_comp'`."]
 instance epi_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [Epi f] [Epi g] : Epi (f ≫ g) :=
@@ -288,7 +288,7 @@ instance epi_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [Epi f] [Epi g] : Epi 
 
 /-- The composition of epimorphisms is again an epimorphism. This version takes `Epi f` and `Epi g`
 as explicit arguments. For a version taking them as typeclass arguments, see `epi_comp`. -/
-@[to_dual (reorder := 8 9)
+@[to_dual (reorder := 6 7, 8 9)
 "The composition of monomorphisms is again a monomorphism. This version takes `Mono f` and
 `Mono g` as explicit arguments. For a version taking them as typeclass arguments, see `mono_comp`."]
 theorem epi_comp' {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} (hf : Epi f) (hg : Epi g) : Epi (f ≫ g) :=
