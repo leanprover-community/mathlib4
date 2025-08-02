@@ -89,11 +89,8 @@ lemma notMem_support_iff {x : X} : x ∉ μ.support ↔ ∀ᶠ u in (𝓝 x).sma
 
 theorem _root_.Filter.HasBasis.notMem_measureSupport {ι : Sort*} {p : ι → Prop}
     {s : ι → Set X} {x : X} (hl : (𝓝 x).HasBasis p s) :
-    x ∉ μ.support ↔ ∃ (i : ι), p i ∧ μ (s i) = 0 := by
-  rw [← not_iff_not]
-  push_neg
-  have := (hl.mem_measureSupport : x ∈ μ.support ↔ ∀ i, p i → 0 < μ (s i))
-  simpa only [pos_iff_ne_zero, ne_eq]
+    x ∉ μ.support ↔ ∃ i, p i ∧ μ (s i) = 0 := by
+  simp only [hl.mem_measureSupport, not_forall, not_lt, nonpos_iff_eq_zero, bex_def]
 
 @[simp]
 lemma support_zero : (0 : Measure X).support = ∅ := by
@@ -119,14 +116,9 @@ lemma isClosed_support {μ : Measure X} : IsClosed μ.support := by
 lemma isOpen_compl_support {μ : Measure X} : IsOpen μ.supportᶜ :=
   isOpen_compl_iff.mpr μ.isClosed_support
 
-lemma subset_compl_support_of_isOpen ⦃t : Set X⦄ (ht : IsOpen t) (h : μ t = 0) :
-    t ⊆ μ.supportᶜ := by
-      intro x hx
-      simp only [Set.mem_compl_iff, notMem_support_iff_exists]
-      use t
-      constructor
-      · exact IsOpen.mem_nhds ht hx
-      · exact h
+lemma subset_compl_support_of_isOpen {t : Set X} (ht : IsOpen t) (h : μ t = 0) :
+  t ⊆ μ.supportᶜ := fun _ hx =>
+  notMem_support_iff_exists.2 ⟨t, ht.mem_nhds hx, h⟩
 
 lemma compl_support_eq_sUnion : μ.supportᶜ = ⋃₀ {t : Set X | IsOpen t ∧ μ t = 0} := by
   ext x
@@ -244,9 +236,52 @@ lemma support_restrict_subset_closure [OpensMeasurableSpace X] {s : Set X} :
     exact MeasureTheory.nonempty_of_measure_ne_zero
       (ne_of_gt (h_restr ▸ hx U ⟨hxU, hU⟩))
 
+
 lemma mem_support_restrict [OpensMeasurableSpace X] {s : Set X} {x : X} :
     x ∈ (μ.restrict s).support ↔ ∃ᶠ u in (𝓝[s] x).smallSets, 0 < μ u := by
-  sorry
+  constructor
+  intro h
+  rw [(nhds_basis_opens x).mem_measureSupport] at h
+
+/- Maybe we are not working at a fine enough level. Let's break things down more.
+
+The LHS after this rewrite becomes: for every subset i of x, x in i and i open, the
+restricted measure of i is positive. This means that we have a predicate version here.
+We need some kind of basis-related version of frequently_smallSets...Do we have one?
+
+ -/
+
+
+#exit
+lemma mem_support_restrict' [OpensMeasurableSpace X] {s : Set X} {x : X} :
+    x ∈ (μ.restrict s).support ↔ ∃ᶠ u in (𝓝[s] x).smallSets, 0 < μ u := by
+  rw [mem_support_iff, Filter.frequently_smallSets', Filter.frequently_smallSets']
+  constructor
+  · intro y hy hyy
+    rw [mem_nhdsWithin_iff_exists_mem_nhds_inter] at hyy
+    obtain ⟨b, hb, hbb⟩ := hyy
+    have G := y b hb
+    rw [restrict_apply] at G
+    exact pos_mono μ hbb G
+    --again, the arbitrary neighborhood b isn't necessarily measurable. We have to do all of this
+    --with respect to open neighborhoods, since we know those are measurable!
+  · sorry
+  --constructor
+  --· intro h
+  --  rw [Filter.frequently_smallSets'] at *
+  --  intro t ht
+  --  rw [mem_nhdsWithin_iff_exists_mem_nhds_inter] at ht
+  --  obtain ⟨b, hb, hbb⟩ := ht
+  --  have G := h b hb
+  --  rw [restrict_apply] at G
+  --  exact pos_mono μ hbb G
+  --· intro h
+  --  rw [Filter.frequently_smallSets'] at *
+  --  intro t ht
+  --  simp [mem_nhdsWithin_iff_exists_mem_nhds_inter] at h
+  --  rw [restrict_apply]
+  --  have := h s t ht
+  --  exact h (t ∩ s) t ht fun ⦃a⦄ a ↦ a
 
 lemma interior_inter_support [OpensMeasurableSpace X] {s : Set X} :
     interior s ∩ μ.support ⊆ (μ.restrict s).support := by
