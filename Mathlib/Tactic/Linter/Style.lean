@@ -742,8 +742,11 @@ def checkIndentationAt (treeInfo : SyntaxTreeInfo) (limit : Limitation)
     CommandElabM Bool := do
   let .some pos := treeInfo.getPos? | return true
   let .some spaces := indentationOfPos limit.src pos | return true
-  if spaces < limit.atLeast || spaces < limit.headAtLeast then
+  if spaces < limit.atLeast then
     warn treeInfo.stx (msgLtAtLeast limit.atLeast) limit
+    return false
+  else if spaces < limit.headAtLeast then
+    warn treeInfo.stx (msgLtAtLeast limit.headAtLeast) limit
     return false
   else if let .some atMost := limit.atMost then
     if spaces > atMost then
@@ -814,9 +817,9 @@ mutual
       | ``«abbrev» | ``definition | ``«theorem» | ``«opaque» | ``«axiom» | ``«example»
       | ``«instance» | `group =>
         pure ()
-      | ``«inductive» => return true -- TODO
-      | ``«structure» => return true -- TODO
-      | ``«classInductive» => return true -- TODO
+      | ``«inductive» => return (← defaultLinter treeInfo limit) -- TODO
+      | ``«structure» => return (← defaultLinter treeInfo limit) -- TODO
+      | ``«classInductive» => return (← defaultLinter treeInfo limit) -- TODO
       | _ => panic! s!"unknown declaration `{name}`, please send us feedback"
       /- `idxOfDeclHead` is the index of the head (such as `theorem` and `instance`) in
       `declArgs.children`. It is not 0 in instance declaration, where the first (index 0) node is a
@@ -835,7 +838,7 @@ mutual
       /- `idxOfValue` is the index of the declaration value (`:= ...`, `| ...`, and `where ...`)
       in `declArgs.children`. It can be `none` in axiom declaration -/
       let idxOfValue := value.map (·.parentInfo?.get!.idxInChildren)
-      for child in declArgs.children[:idxOfDeclHead] do
+      for child in declArgs.children[: idxOfDeclHead + 1] do
         let pass ←
           checkIndentation child { limit with atLeast := initialIndent, atMost := initialIndent}
         if !(limit.continueWhenFailed || pass) then return false
