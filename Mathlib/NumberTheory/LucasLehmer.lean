@@ -72,7 +72,7 @@ lemma mersenne_succ (n : ℕ) : mersenne (n + 1) = 2 * mersenne n + 1 := by
   omega
 
 /-- If `2 ^ p - 1` is prime, then `p` is prime. -/
-lemma Prime.of_mersenne {p : ℕ} (h : (mersenne p).Prime) : Nat.Prime p := by
+lemma Nat.Prime.of_mersenne {p : ℕ} (h : (mersenne p).Prime) : Nat.Prime p := by
   apply Nat.prime_of_pow_sub_one_prime _ h |>.2
   intro eq_one
   rw [eq_one, mersenne] at h
@@ -645,7 +645,7 @@ theorem lucas_lehmer_necessity (p : ℕ) (w : 3 ≤ p) : (mersenne p).Prime → 
   let p' := p - 2
   have z : p = p' + 2 := by omega
   intro hp
-  have pprime := Prime.of_mersenne hp
+  have pprime := hp.of_mersenne
   have odd : Odd p := by
     rcases pprime.eq_two_or_odd' with h|h
     · absurd w
