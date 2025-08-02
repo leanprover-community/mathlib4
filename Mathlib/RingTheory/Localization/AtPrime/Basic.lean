@@ -172,6 +172,65 @@ theorem mk'_mem_maximal_iff (x : R) (y : I.primeCompl) (h : IsLocalRing S := isL
     simpa only [IsLocalRing.mem_maximalIdeal, mem_nonunits_iff, Classical.not_not] using
       isUnit_mk'_iff S I x y
 
+section equivQuotMaximalIdeal
+
+attribute [local instance] Ideal.Quotient.field
+
+variable {R : Type*} [CommRing R] (p : Ideal R) [p.IsMaximal]
+variable (Rₚ : Type*) [CommRing Rₚ] [Algebra R Rₚ] [IsLocalization.AtPrime Rₚ p] [IsLocalRing Rₚ]
+
+open IsLocalRing
+
+/--
+The isomorphism `R ⧸ p ≃+* Rₚ ⧸ maximalIdeal Rₚ`, where `Rₚ` is the localization of `R` at the
+complement of `p`. In particular, localization preserves the residue field.
+-/
+noncomputable def equivQuotMaximalIdeal : R ⧸ p ≃+* Rₚ ⧸ maximalIdeal Rₚ := by
+  refine (Ideal.quotEquivOfEq ?_).trans
+    (RingHom.quotientKerEquivOfSurjective (f := algebraMap R (Rₚ ⧸ maximalIdeal Rₚ)) ?_)
+  · rw [IsScalarTower.algebraMap_eq R Rₚ, ← RingHom.comap_ker,
+      Ideal.Quotient.algebraMap_eq, Ideal.mk_ker, comap_maximalIdeal Rₚ p]
+  · intro x
+    obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
+    obtain ⟨x, s, rfl⟩ := mk'_surjective p.primeCompl x
+    obtain ⟨s', hs⟩ := Ideal.Quotient.mk_surjective (I := p) (Ideal.Quotient.mk p s)⁻¹
+    simp only [IsScalarTower.algebraMap_eq R Rₚ (Rₚ ⧸ _),
+      Ideal.Quotient.algebraMap_eq, RingHom.comp_apply]
+    use x * s'
+    rw [← sub_eq_zero, ← map_sub, Ideal.Quotient.eq_zero_iff_mem]
+    have : algebraMap R Rₚ s ∉ maximalIdeal Rₚ := by
+      rw [← Ideal.mem_comap, comap_maximalIdeal Rₚ p]
+      exact s.prop
+    refine ((inferInstanceAs <| (maximalIdeal Rₚ).IsPrime).mem_or_mem ?_).resolve_left this
+    rw [mul_sub, mul_mk'_eq_mk'_of_mul, mk'_mul_cancel_left, ← map_mul, ← map_sub,
+      ← Ideal.mem_comap, comap_maximalIdeal Rₚ p, mul_left_comm, ← Ideal.Quotient.eq_zero_iff_mem,
+      map_sub, map_mul, map_mul, hs, mul_inv_cancel₀, mul_one, sub_self]
+    rw [Ne, Ideal.Quotient.eq_zero_iff_mem]
+    exact s.prop
+
+@[deprecated (since := "2025-07-31")] alias equivQuotMaximalIdealOfIsLocalization :=
+  equivQuotMaximalIdeal
+
+@[simp]
+theorem equivQuotMaximalIdeal_apply_mk (x : R) :
+    equivQuotMaximalIdeal p Rₚ (Ideal.Quotient.mk _ x) =
+      (Ideal.Quotient.mk _ (algebraMap R Rₚ x)) := rfl
+
+@[simp]
+theorem equivQuotMaximalIdeal_symm_apply_mk (x : R) (s : p.primeCompl) :
+    (equivQuotMaximalIdeal p Rₚ).symm (Ideal.Quotient.mk _ (IsLocalization.mk' Rₚ x s)) =
+        (Ideal.Quotient.mk p x) * (Ideal.Quotient.mk p s)⁻¹ := by
+  have h₁ : Ideal.Quotient.mk p ↑s ≠ 0 := by
+    simpa [ne_eq, Ideal.Quotient.eq_zero_iff_mem] using Ideal.mem_primeCompl_iff.mp s.prop
+  have h₂ : equivQuotMaximalIdeal p Rₚ (Ideal.Quotient.mk p ↑s) ≠ 0 := by
+    rwa [RingEquiv.map_ne_zero_iff]
+  rw [RingEquiv.symm_apply_eq, ← mul_left_inj' h₂, map_mul, mul_assoc, ← map_mul,
+    inv_mul_cancel₀ h₁, map_one, mul_one, equivQuotMaximalIdeal_apply_mk, ← map_mul,
+    mk'_spec, Ideal.Quotient.mk_algebraMap, equivQuotMaximalIdeal_apply_mk,
+    Ideal.Quotient.mk_algebraMap]
+
+end equivQuotMaximalIdeal
+
 end AtPrime
 
 end IsLocalization
