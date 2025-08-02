@@ -27,8 +27,8 @@ variable [TopologicalSpace E] [NormedAddCommGroup F] [NormedSpace ℝ F]
 variable {s : Set E} {t : Set F} {ξ : E} {x : F} {y z : E → F}
 
 theorem eventually_segment {r : E → F → Prop}
-    (seg : ∀ᶠ χ in 𝓝[s] ξ, [z χ -[ℝ] y χ] ⊆ t) (hy : Tendsto y (𝓝[s] ξ) (𝓝 x))
-    (hz : Tendsto z (𝓝[s] ξ) (𝓝 x)) (hr : ∀ᶠ p in 𝓝[s ×ˢ t] (ξ, x), r p.1 p.2) :
+    (hy : Tendsto y (𝓝[s] ξ) (𝓝 x)) (hz : Tendsto z (𝓝[s] ξ) (𝓝 x))
+    (seg : ∀ᶠ χ in 𝓝[s] ξ, [z χ -[ℝ] y χ] ⊆ t) (hr : ∀ᶠ p in 𝓝[s ×ˢ t] (ξ, x), r p.1 p.2) :
     ∀ᶠ χ in 𝓝[s] ξ, ∀ v ∈ [z χ -[ℝ] y χ], r χ v := by
   rw [nhdsWithin_prod_eq, eventually_prod_iff] at hr
   obtain ⟨p, hp, q, hq, hr⟩ := hr
@@ -42,17 +42,17 @@ theorem eventually_segment {r : E → F → Prop}
 variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 F] [NormedSpace 𝕜 G]
 
 theorem isLittleO_sub_sub_fderiv {f : E → F → G} {f' : E → F → F →L[𝕜] G}
-    (seg : ∀ᶠ χ in 𝓝[s] ξ, [z χ -[ℝ] y χ] ⊆ t) (hy : Tendsto y (𝓝[s] ξ) (𝓝 x))
-    (hz : Tendsto z (𝓝[s] ξ) (𝓝 x)) (cf' : ContinuousWithinAt ↿f' (s ×ˢ t) (ξ, x))
+    (hy : Tendsto y (𝓝[s] ξ) (𝓝 x)) (hz : Tendsto z (𝓝[s] ξ) (𝓝 x))
+    (seg : ∀ᶠ χ in 𝓝[s] ξ, [z χ -[ℝ] y χ] ⊆ t) (cf' : ContinuousWithinAt ↿f' (s ×ˢ t) (ξ, x))
     (df' : ∀ᶠ p in 𝓝[s ×ˢ t] (ξ, x), HasFDerivWithinAt (f p.1) (f' p.1 p.2) t p.2) :
     (fun χ => f χ (y χ) - f χ (z χ) - f' ξ x (y χ - z χ)) =o[𝓝[s] ξ] (fun χ => y χ - z χ) := by
   rw [isLittleO_iff]
   intro ε hε
   replace cf' : ∀ᶠ χ in 𝓝[s] ξ, ∀ v ∈ [z χ -[ℝ] y χ], dist (f' χ v) (f' ξ x) < ε := by
     rw [Metric.continuousWithinAt_iff'] at cf'
-    exact eventually_segment seg hy hz (cf' ε hε)
+    exact eventually_segment hy hz seg (cf' ε hε)
   replace df' : ∀ᶠ χ in 𝓝[s] ξ, ∀ v ∈ [z χ -[ℝ] y χ], HasFDerivWithinAt (f χ) (f' χ v) t v :=
-    eventually_segment seg hy hz df'
+    eventually_segment hy hz seg df'
   filter_upwards [seg, cf', df'] with χ seg cf' df'
   exact Convex.norm_image_sub_le_of_norm_hasFDerivWithin_le'
     (fun v hv => (df' v hv).mono seg) (fun v hv => (cf' v hv).le)
@@ -65,8 +65,8 @@ variable [NormedAddCommGroup E₁] [NormedAddCommGroup E₂] [NormedAddCommGroup
 variable [NormedSpace 𝕜 E₁] [NormedSpace 𝕜 E₂] [NormedSpace 𝕜 F]
 
 /-- If a bivariate function $f$ has partial derivatives $f_1$ and $f_2$ in a neighbourhood of a
-point $(x_1,x_2)$ and if they are continuous at that point, then $f$ is strictly differentiable
-there with derivative $(h_1,h_2)\mapsto f_1(x_1,x_2)\cdot h_1 + f_2(x_1,x_2)\cdot h_2$. -/
+point $(x_1,x_2)$ and if they are continuous at that point then $f$ is strictly differentiable there
+with derivative $(h_1,h_2)\mapsto f_1(x_1,x_2)\cdot h_1 + f_2(x_1,x_2)\cdot h_2$. -/
 theorem hasStrictFDerivAt_uncurry_coprod [IsRCLikeNormedField 𝕜]
     [NormedSpace ℝ E₁] [NormedSpace ℝ E₂] {f : E₁ → E₂ → F} {x₁ : E₁} {x₂ : E₂}
     {f₁ : E₁ → E₂ → E₁ →L[𝕜] F} (cf₁ : ContinuousAt ↿f₁ (x₁, x₂))
@@ -94,9 +94,9 @@ theorem hasStrictFDerivAt_uncurry_coprod [IsRCLikeNormedField 𝕜]
               tendsto_fst (f := (𝓝 x₁ ×ˢ 𝓝 x₂) ×ˢ (𝓝 x₁ ×ˢ 𝓝 x₂)) (g := 𝓝 x₁)
             apply isLittleO_sub_sub_fderiv (E := (E₁ × E₂) × (E₁ × E₂))
               (t := Set.univ) (f := fun (y, z) u => f u z.2) (f' := fun (y, z) u => f₁ u z.2)
-            · simp
             · simpa [nhds_prod_eq] using tendsto_fst.comp tendsto_fst
             · simpa [nhds_prod_eq] using tendsto_fst.comp tendsto_snd
+            · simp
             · simpa [continuousWithinAt_univ, ContinuousAt, nhds_prod_eq] using cf₁.comp this
             · simpa [nhds_prod_eq] using this.eventually df₁
           _ =O[𝓝 ((x₁, x₂), (x₁, x₂))] (fun (y, z) => y - z : _ → E₁ × E₂) := by
@@ -109,15 +109,15 @@ theorem hasStrictFDerivAt_uncurry_coprod [IsRCLikeNormedField 𝕜]
               tendsto_snd (f := (𝓝 x₁ ×ˢ 𝓝 x₂) ×ˢ (𝓝 x₁ ×ˢ 𝓝 x₂)) (g := 𝓝 x₂)
             apply isLittleO_sub_sub_fderiv (E := (E₁ × E₂) × (E₁ × E₂))
               (t := Set.univ) (f := fun (y, z) v => f y.1 v) (f' := fun (y, z) v => f₂ y.1 v)
-            · simp
             · simpa [nhds_prod_eq] using tendsto_snd.comp tendsto_fst
             · simpa [nhds_prod_eq] using tendsto_snd.comp tendsto_snd
+            · simp
             · simpa [continuousWithinAt_univ, ContinuousAt, nhds_prod_eq] using cf₂.comp this
             · simpa [nhds_prod_eq] using this.eventually df₂
           _ =O[𝓝 ((x₁, x₂), (x₁, x₂))] (fun (y, z) => y - z : _ → E₁ × E₂) := by
             simp [isBigO_of_le]
 
-theorem hasFDerivWithinAt_uncurry_of_continuousWithinAt_snd
+theorem hasFDerivWithinAt_uncurry_coprod_of_continuousWithinAt_snd
     [IsRCLikeNormedField 𝕜] [NormedSpace ℝ E₂] {f : E₁ → E₂ → F} {x₁ : E₁} {x₂ : E₂}
     {s₁ : Set E₁} {s₂ : Set E₂} (seg : ∀ᶠ y₂ in 𝓝[s₂] x₂, [x₂ -[ℝ] y₂] ⊆ s₂)
     {f₁x : E₁ →L[𝕜] F} (df₁x : HasFDerivWithinAt (f · x₂) f₁x s₁ x₁)
@@ -150,9 +150,9 @@ theorem hasFDerivWithinAt_uncurry_of_continuousWithinAt_snd
             have := (tendsto_fst.comp tendsto_fst).prodMk <|
               tendsto_snd (f := 𝓝[s₁] x₁ ×ˢ 𝓝[s₂] x₂) (g := 𝓝[s₂] x₂)
             apply isLittleO_sub_sub_fderiv (E := E₁ × E₂) (f' := fun y v => f₂ y.1 v)
-            · simpa [nhdsWithin_prod_eq] using seg.prod_inr _
             · simpa [nhdsWithin_prod_eq] using tendsto_nhds_of_tendsto_nhdsWithin tendsto_snd
             · exact tendsto_const_nhds
+            · simpa [nhdsWithin_prod_eq] using seg.prod_inr _
             · simpa [ContinuousWithinAt, nhdsWithin_prod_eq] using cf₂.comp this
             · simpa [nhdsWithin_prod_eq] using this.eventually df₂
           _ =O[𝓝[s₁ ×ˢ s₂] (x₁, x₂)] fun y => (y.1 - x₁, y.2 - x₂) := by
