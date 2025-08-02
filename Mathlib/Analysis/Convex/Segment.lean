@@ -8,7 +8,6 @@ import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.LinearAlgebra.AffineSpace.Midpoint
 import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 import Mathlib.LinearAlgebra.Ray
-import Mathlib.Tactic.GCongr
 
 /-!
 # Segments in vector spaces

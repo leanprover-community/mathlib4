@@ -6,7 +6,6 @@ Authors: Kevin Kappelmann
 import Mathlib.Algebra.ContinuedFractions.Computation.Approximations
 import Mathlib.Algebra.ContinuedFractions.ConvergentsEquiv
 import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Tactic.GCongr
 import Mathlib.Topology.Order.LeftRightNhds
 
 /-!
