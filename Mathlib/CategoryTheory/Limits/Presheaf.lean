@@ -389,8 +389,6 @@ instance (X : C) (Y : F.op.LeftExtension (uliftYoneda.{max w v₂}.obj X)) :
   default := StructuredArrow.homMk
     (uliftYonedaEquiv.symm (uliftYonedaEquiv (F := F.op ⋙ Y.right) Y.hom)) (by
       ext Z ⟨f⟩
-      dsimp
-      rw [uliftYonedaMap_app_apply]
       simpa [uliftYonedaEquiv, uliftYoneda] using
         congr_fun (Y.hom.naturality f.op).symm (ULift.up (𝟙 _)) )
   uniq φ := by
