@@ -5,7 +5,7 @@ Authors: Joseph Myers
 -/
 import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Fin.VecNotation
-import Mathlib.Data.Sign
+import Mathlib.Data.Sign.Basic
 import Mathlib.LinearAlgebra.AffineSpace.Combination
 import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 import Mathlib.LinearAlgebra.AffineSpace.Restrict
@@ -36,7 +36,7 @@ This file defines affinely independent families of points.
 
 noncomputable section
 
-open Finset Function
+open Finset Function Module
 open scoped Affine
 
 section AffineIndependent
@@ -577,7 +577,7 @@ theorem exists_subset_affineIndependent_affineSpan_eq_top {s : Set P}
     rw [← linearIndependent_subtype_iff,
       linearIndependent_set_iff_affineIndependent_vadd_union_singleton k h0 p₁] at hsvi
     refine ⟨{p₁} ∪ (fun v => v +ᵥ p₁) '' h.extend (Set.subset_univ _), ?_, ?_⟩
-    · refine Set.Subset.trans ?_ (Set.union_subset_union_right _ (Set.image_subset _ hsv))
+    · refine Set.Subset.trans ?_ (Set.union_subset_union_right _ (Set.image_mono hsv))
       simp [Set.image_image]
     · use hsvi
       exact affineSpan_singleton_union_vadd_eq_top_of_span_eq_top p₁ hsvt

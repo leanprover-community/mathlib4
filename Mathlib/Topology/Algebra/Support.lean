@@ -68,9 +68,8 @@ alias image_eq_one_of_nmem_mulTSupport := image_eq_one_of_notMem_mulTSupport
 
 @[to_additive]
 theorem range_subset_insert_image_mulTSupport (f : X → α) :
-    range f ⊆ insert 1 (f '' mulTSupport f) :=
-  (range_subset_insert_image_mulSupport f).trans <|
-    insert_subset_insert <| image_subset _ subset_closure
+    range f ⊆ insert 1 (f '' mulTSupport f) := by
+  grw [← subset_mulTSupport f]; exact range_subset_insert_image_mulSupport f
 
 @[to_additive]
 theorem range_eq_image_mulTSupport_or (f : X → α) :
@@ -252,7 +251,7 @@ include hf cont
 theorem mulTSupport_extend_one_subset :
     mulTSupport (g.extend f 1) ⊆ g '' mulTSupport f :=
   (hf.image cont).isClosed.closure_subset_iff.mpr <|
-    mulSupport_extend_one_subset.trans (image_subset g subset_closure)
+    mulSupport_extend_one_subset.trans (image_mono subset_closure)
 
 @[to_additive]
 theorem extend_one : HasCompactMulSupport (g.extend f 1) :=
@@ -332,6 +331,12 @@ protected lemma HasCompactMulSupport.inv' {α β : Type*} [TopologicalSpace α] 
     {f : α → β} (hf : HasCompactMulSupport f) :
     HasCompactMulSupport (f⁻¹) := by
   simpa only [HasCompactMulSupport, mulTSupport, mulSupport_inv'] using hf
+
+@[to_additive]
+theorem HasCompactSupport.div {α β : Type*} [TopologicalSpace α] [DivisionMonoid β]
+    {f f' : α → β} (hf : HasCompactMulSupport f) (hf' : HasCompactMulSupport f') :
+    HasCompactMulSupport (f / f') :=
+  div_eq_mul_inv f f' ▸ hf.mul hf'.inv'
 
 end DivisionMonoid
 

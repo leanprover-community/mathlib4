@@ -15,6 +15,8 @@ representations.
 ## Main definitions
 
   * `Representation`
+  * `Representation.directSum`
+  * `Representation.prod`
   * `Representation.tprod`
   * `Representation.linHom`
   * `Representation.dual`
@@ -31,10 +33,8 @@ module can be accessed via `ρ.asModule`. Conversely, given a `MonoidAlgebra k G
 `M.ofModule` is the associociated representation seen as a homomorphism.
 -/
 
-
 open MonoidAlgebra (lift of)
-
-open LinearMap
+open LinearMap Module
 
 section
 
@@ -464,6 +464,43 @@ theorem asGroupHom_apply (g : G) : ↑(asGroupHom ρ g) = ρ g := by
   simp only [asGroupHom, MonoidHom.coe_toHomUnits]
 
 end Group
+
+section DirectSum
+
+variable {k G : Type*} [CommSemiring k] [Monoid G]
+variable {ι : Type*} {V : ι → Type*}
+variable [(i : ι) → AddCommMonoid (V i)] [(i : ι) → Module k (V i)]
+variable (ρ : (i : ι) → Representation k G (V i))
+
+open DirectSum
+
+/-- Given representations of `G` on a family `V i` indexed by `i`, there is a
+natural representation of `G` on their direct sum `⨁ i, V i`.
+-/
+@[simps]
+noncomputable def directSum : Representation k G (⨁ i, V i) where
+  toFun g := DirectSum.lmap (fun _ => ρ _ g)
+  map_one' := by ext; simp
+  map_mul' g h := by ext; simp
+
+end DirectSum
+
+section Prod
+
+variable {k G V W : Type*} [CommSemiring k] [Monoid G]
+variable [AddCommMonoid V] [Module k V] [AddCommMonoid W] [Module k W]
+variable (ρV : Representation k G V) (ρW : Representation k G W)
+
+/-- Given representations of `G` on `V` and `W`, there is a natural representation of `G` on their
+product `V × W`.
+-/
+@[simps!]
+noncomputable def prod : Representation k G (V × W) where
+  toFun g := (ρV g).prodMap (ρW g)
+  map_one' := by simp
+  map_mul' g h := by simp; rfl
+
+end Prod
 
 section TensorProduct
 

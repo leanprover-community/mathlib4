@@ -141,9 +141,6 @@ theorem antilipschitz_of_isEmbedding (f : E →L[𝕜] Fₗ) (hf : IsEmbedding f
     ∃ K, AntilipschitzWith K f :=
   f.toLinearMap.antilipschitz_of_comap_nhds_le <| map_zero f ▸ (hf.nhds_eq_comap 0).ge
 
-@[deprecated (since := "2024-10-26")]
-alias antilipschitz_of_embedding := antilipschitz_of_isEmbedding
-
 end OpNorm
 
 end ContinuousLinearMap
@@ -154,6 +151,16 @@ namespace LinearIsometry
 theorem norm_toContinuousLinearMap [Nontrivial E] [RingHomIsometric σ₁₂] (f : E →ₛₗᵢ[σ₁₂] F) :
     ‖f.toContinuousLinearMap‖ = 1 :=
   f.toContinuousLinearMap.homothety_norm <| by simp
+
+@[simp]
+theorem nnnorm_toContinuousLinearMap [Nontrivial E] [RingHomIsometric σ₁₂] (f : E →ₛₗᵢ[σ₁₂] F) :
+    ‖f.toContinuousLinearMap‖₊ = 1 :=
+  Subtype.ext f.norm_toContinuousLinearMap
+
+@[simp]
+theorem enorm_toContinuousLinearMap [Nontrivial E] [RingHomIsometric σ₁₂] (f : E →ₛₗᵢ[σ₁₂] F) :
+    ‖f.toContinuousLinearMap‖ₑ = 1 :=
+  congrArg _ f.nnnorm_toContinuousLinearMap
 
 variable {σ₁₃ : 𝕜 →+* 𝕜₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 
@@ -205,9 +212,7 @@ theorem opNorm_comp_linearIsometryEquiv (f : F →SL[σ₂₃] G) (g : F' ≃ₛ
     haveI := g.symm.surjective.nontrivial
     simp [g.symm.toLinearIsometry.norm_toContinuousLinearMap]
 
--- `SeminormedAddGroup (Fₗ →L[𝕜] E →L[𝕜] Fₗ)` is too slow to synthesize in the `simpNF` linter,
--- which fails on this lemma with a deterministic timeout
-@[simp, nolint simpNF]
+@[simp]
 theorem norm_smulRightL (c : E →L[𝕜] 𝕜) [Nontrivial Fₗ] : ‖smulRightL 𝕜 E Fₗ c‖ = ‖c‖ :=
   ContinuousLinearMap.homothety_norm _ c.norm_smulRight_apply
 

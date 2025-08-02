@@ -64,10 +64,7 @@ instance {R A : Type*} [CommRing R] [StarRing R] [NormedRing A] [Algebra R A] [S
   { SubringClass.toNormedRing (elemental R a) with
     mul_comm := mul_comm }
 
-#adaptation_note /-- 2025-03-29 for lean4#7717 had to add `norm_mul_self_le` field. -/
 noncomputable instance (a : A) [IsStarNormal a] : CommCStarAlgebra (elemental ℂ a) where
-  mul_comm := mul_comm
-  norm_mul_self_le := CStarRing.norm_mul_self_le
 
 variable (a : A) [IsStarNormal a]
 
@@ -454,8 +451,8 @@ lemma Unitization.complex_cfcₙ_eq_cfc_inr (a : A) (f : ℂ → ℂ) (hf₀ : f
     cfcₙ f a = cfc f (a : A⁺¹) :=
   Unitization.cfcₙ_eq_cfc_inr isStarNormal_inr ..
 
-/-- note: the version for `ℝ≥0`, `Unization.nnreal_cfcₙ_eq_cfc_inr`, can be found in
-`Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order` -/
+/-- note: the version for `ℝ≥0`, `Unitization.nnreal_cfcₙ_eq_cfc_inr`, can be found in
+`Analysis/CStarAlgebra/ContinuousFunctionalCalculus/Order.lean` -/
 lemma Unitization.real_cfcₙ_eq_cfc_inr (a : A) (f : ℝ → ℝ) (hf₀ : f 0 = 0 := by cfc_zero_tac) :
     cfcₙ f a = cfc f (a : A⁺¹) :=
   Unitization.cfcₙ_eq_cfc_inr isSelfAdjoint_inr ..
