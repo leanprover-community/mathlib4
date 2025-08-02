@@ -122,7 +122,6 @@ theorem algebraMap_eq : algebraMap R A = (algebraMap S A).comp (algebraMap R S) 
 theorem algebraMap_apply (x : R) : algebraMap R A x = algebraMap S A (algebraMap R S x) := by
   rw [algebraMap_eq R S A, RingHom.comp_apply]
 
-
 /--
 Let `R ⊆ S ⊆ T ⊆ U` be a tower of rings. If `R ⊆ S ⊆ T`, `R ⊆ T ⊆ U` and `S ⊆ T ⊆ U` are
 scalar towers, then `R ⊆ S ⊆ U` is also a scalar tower.
