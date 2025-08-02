@@ -243,8 +243,7 @@ lemma mem_support_restrict [OpensMeasurableSpace X] {s : Set X} {x : X} :
     Filter.HasBasis.frequently_smallSets (hl := nhdsWithin_basis_open x s) (hq := pos_mono μ)] at *
   constructor
   all_goals
-  · intro h
-    intro i hi
+  · intro h i hi
     have D := h i hi
     rw [restrict_apply] at *
     · exact D
