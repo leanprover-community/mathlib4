@@ -1026,6 +1026,7 @@ import Mathlib.Algebra.Quaternion
 import Mathlib.Algebra.QuaternionBasis
 import Mathlib.Algebra.Quotient
 import Mathlib.Algebra.Regular.Basic
+import Mathlib.Algebra.Regular.Defs
 import Mathlib.Algebra.Regular.Opposite
 import Mathlib.Algebra.Regular.Pi
 import Mathlib.Algebra.Regular.Pow

@@ -135,17 +135,17 @@ instance [RightCancelSemigroup G] [RightCancelSemigroup H] : RightCancelSemigrou
 instance [LeftCancelMonoid M] [LeftCancelMonoid N] : LeftCancelMonoid (M × N) :=
   { mul_one := by simp,
     one_mul := by simp
-    mul_left_cancel := by simp }
+    mul_left_cancel _ _ := by simp }
 
 @[to_additive]
 instance [RightCancelMonoid M] [RightCancelMonoid N] : RightCancelMonoid (M × N) :=
   { mul_one := by simp,
     one_mul := by simp
-    mul_right_cancel := by simp }
+    mul_right_cancel _ _ := by simp }
 
 @[to_additive]
 instance [CancelMonoid M] [CancelMonoid N] : CancelMonoid (M × N) :=
-  { mul_right_cancel := by simp only [mul_left_inj, imp_self, forall_const] }
+  { mul_right_cancel _ _ := by simp only [mul_left_inj, imp_self, forall_const] }
 
 @[to_additive]
 instance instCommMonoid [CommMonoid M] [CommMonoid N] : CommMonoid (M × N) :=
@@ -153,7 +153,7 @@ instance instCommMonoid [CommMonoid M] [CommMonoid N] : CommMonoid (M × N) :=
 
 @[to_additive]
 instance [CancelCommMonoid M] [CancelCommMonoid N] : CancelCommMonoid (M × N) :=
-  { mul_left_cancel := by simp }
+  { mul_left_cancel _ _ := by simp }
 
 @[to_additive]
 instance instCommGroup [CommGroup G] [CommGroup H] : CommGroup (G × H) :=

@@ -9,7 +9,6 @@ import Mathlib.Data.Ordering.Basic
 import Mathlib.Order.MinMax
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Use
-import Mathlib.Algebra.Regular.Basic
 
 /-!
 # Ordered monoids

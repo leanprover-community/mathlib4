@@ -413,7 +413,7 @@ a computable alternative.
 instance FractionalIdeal.cancelCommMonoidWithZero :
     CancelCommMonoidWithZero (FractionalIdeal A⁰ K) where
   __ : CommSemiring (FractionalIdeal A⁰ K) := inferInstance
-  mul_left_cancel_of_ne_zero := mul_left_cancel₀
+  mul_left_cancel_of_ne_zero h _ _ := mul_left_cancel₀ h
 
 instance : PosMulStrictMono (FractionalIdeal A⁰ K) := PosMulMono.toPosMulStrictMono
 

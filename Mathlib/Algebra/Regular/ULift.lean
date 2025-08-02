@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Group.ULift
-import Mathlib.Algebra.Regular.Basic
 import Mathlib.Algebra.Regular.SMul
 
 /-!

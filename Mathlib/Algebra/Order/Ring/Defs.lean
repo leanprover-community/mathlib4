@@ -228,10 +228,10 @@ instance (priority := 100) IsStrictOrderedRing.noZeroDivisors : NoZeroDivisors R
 -- Note that we can't use `NoZeroDivisors.to_isDomain` since we are merely in a semiring.
 -- See note [lower instance priority]
 instance (priority := 100) IsStrictOrderedRing.isDomain : IsDomain R where
-  mul_left_cancel_of_ne_zero {a b c} ha h := by
+  mul_left_cancel_of_ne_zero {a} ha _ _ h := by
     obtain ha | ha := ha.lt_or_gt
     exacts [(strictAnti_mul_left ha).injective h, (strictMono_mul_left_of_pos ha).injective h]
-  mul_right_cancel_of_ne_zero {b a c} ha h := by
+  mul_right_cancel_of_ne_zero {a} ha _ _ h := by
     obtain ha | ha := ha.lt_or_gt
     exacts [(strictAnti_mul_right ha).injective h, (strictMono_mul_right_of_pos ha).injective h]
 

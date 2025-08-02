@@ -177,10 +177,10 @@ lemma IsRightCancelMulZero.to_noZeroDivisors [MulZeroClass α]
 instance (priority := 100) NoZeroDivisors.to_isCancelMulZero
     [NonUnitalNonAssocRing α] [NoZeroDivisors α] :
     IsCancelMulZero α where
-  mul_left_cancel_of_ne_zero ha h := by
+  mul_left_cancel_of_ne_zero ha _ _ h := by
     rw [← sub_eq_zero, ← mul_sub] at h
     exact sub_eq_zero.1 ((eq_zero_or_eq_zero_of_mul_eq_zero h).resolve_left ha)
-  mul_right_cancel_of_ne_zero hb h := by
+  mul_right_cancel_of_ne_zero hb _ _ h := by
     rw [← sub_eq_zero, ← sub_mul] at h
     exact sub_eq_zero.1 ((eq_zero_or_eq_zero_of_mul_eq_zero h).resolve_right hb)
 
