@@ -128,8 +128,6 @@ lemma not_lt_iff_le_imp_ge : ¬ a < b ↔ (a ≤ b → b ≤ a) := by
 
 @[deprecated (since := "2025-05-11")] alias not_lt_iff_le_imp_le := not_lt_iff_le_imp_ge
 
-lemma ge_of_eq (h : a = b) : b ≤ a := le_of_eq h.symm
-
 @[simp] lemma lt_self_iff_false (x : α) : x < x ↔ False := ⟨lt_irrefl x, False.elim⟩
 
 alias le_trans' := ge_trans

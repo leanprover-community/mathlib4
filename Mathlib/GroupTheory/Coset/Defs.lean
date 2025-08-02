@@ -46,7 +46,8 @@ open scoped Pointwise
 variable {α : Type*}
 
 -- Porting note: see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.E2.9C.94.20to_additive.2Emap_namespace
-run_cmd Lean.Elab.Command.liftCoreM <| ToAdditive.insertTranslation `QuotientGroup `QuotientAddGroup
+run_cmd Lean.Elab.Command.liftCoreM <|
+  ToAdditive.insertTranslation ToAdditive.toAdditiveBundle `QuotientGroup `QuotientAddGroup
 
 namespace QuotientGroup
 
