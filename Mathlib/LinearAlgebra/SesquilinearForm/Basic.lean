@@ -29,15 +29,19 @@ variable {R M n : Type*} [AddCommMonoid M] [CommSemiring R] [StarRing R] [Module
     (b : Basis n R M)
 
 variable (R M) in
+/-- The type of sesquilinear forms, i.e. maps `f : M × M → R` which are antilinear in the first
+coordinate and linear in the second coordinate. -/
 abbrev SesquilinForm : Type _ := M →ₗ⋆[R] M →ₗ[R] R
 
 namespace SesquilinForm
 
 noncomputable section
 
+/-- The matrix associated to a sesquilinear form in the basis `b`. -/
 def toMatrix (f : SesquilinForm R M) : Matrix n n R :=
   LinearMap.toMatrix₂Aux R b b f
 
+/-- The sesquilinear form associated to a matrix in the basis `b`. -/
 def ofMatrix [Fintype n] [DecidableEq n] (A : Matrix n n R) : SesquilinForm R M :=
   (b.equivFun.arrowCongr (b.equivFun.arrowCongr (LinearEquiv.refl R R))).trans
     (LinearMap.toMatrixₛₗ₂' R) |>.symm A
@@ -88,8 +92,7 @@ lemma ofMatrix_apply [Fintype n] [DecidableEq n] (A : Matrix n n R) (x y : M) :
     smul_algebra_smul_comm ((starRingEnd R) ((Basis.equivFun b) x _))
     ((RingHom.id R) ((Basis.equivFun b) y _)) (A _ _)
 
-lemma dotProduct_toMatrix_mulVec [Fintype n] [DecidableEq n]
-    (f : SesquilinForm R M) (x y : n → R) :
+lemma dotProduct_toMatrix_mulVec [Fintype n] (f : SesquilinForm R M) (x y : n → R) :
     dotProduct (star x) ((f.toMatrix b).mulVec y) = f (b.equivFun.symm x) (b.equivFun.symm y) := by
   simp only [dotProduct, Pi.star_apply, Matrix.mulVec, toMatrix_apply, mul_sum,
     Basis.equivFun_symm_apply, map_sum, LinearMap.map_smulₛₗ, starRingEnd_apply, map_smul,
@@ -99,8 +102,7 @@ lemma dotProduct_toMatrix_mulVec [Fintype n] [DecidableEq n]
   congr with
   ring
 
-lemma apply_eq_dotProduct_toMatrix_mulVec [Fintype n] [DecidableEq n] (f : SesquilinForm R M)
-    (x y : M) :
+lemma apply_eq_dotProduct_toMatrix_mulVec [Fintype n] (f : SesquilinForm R M) (x y : M) :
     dotProduct (star (b.repr x)) ((f.toMatrix b).mulVec (b.repr y)) = f x y := by
   nth_rw 2 [← b.sum_repr x, ← b.sum_repr y]
   simp only [dotProduct, Pi.star_apply, Matrix.mulVec, toMatrix_apply, mul_sum, map_sum,

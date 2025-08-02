@@ -66,9 +66,7 @@ lemma isPosSemidef_iff : f.IsPosSemidef ↔ f.IsSymm ∧ f.IsPos where
 
 end Def
 
-variable [Fintype n] [DecidableEq n] [PartialOrder R]
-
-lemma isPosSemidef_iff_posSemidef_toMatrix [StarOrderedRing R] :
+lemma isPosSemidef_iff_posSemidef_toMatrix [Fintype n] [PartialOrder R] :
     f.IsPosSemidef ↔ (f.toMatrix b).PosSemidef := by
   rw [isPosSemidef_iff, Matrix.PosSemidef, SesquilinForm.isSymm_iff_isHermitian_toMatrix b,
     isPos_def]
