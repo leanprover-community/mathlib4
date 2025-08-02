@@ -3,7 +3,10 @@ Copyright (c) 2025 Chu Zheng. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chu Zheng
 -/
-import Mathlib.Geometry.Euclidean.Simplex
+
+import Mathlib.Analysis.InnerProductSpace.Defs
+import Mathlib.Analysis.Normed.Group.AddTorsor
+import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 
 /-!
 # Centroid and median of a simplex
@@ -250,7 +253,7 @@ theorem smul_centroid_vsub_point_eq_smul_faceOppositeCentroid_vsub_point [CharZe
   rw [smul_faceOppositeCentroid_vsub_point_eq_sum_vsub s i,
     smul_centroid_vsub_point_eq_sum_vsub s i]
 
-/-- The vector between two `faceOppositeCentroids` equals `n⁻¹` times the vector between the
+/-- The vector between two `faceOppositeCentroid` equals `n⁻¹` times the vector between the
 corresponding vertices. -/
 theorem faceOppositeCentroid_vsub_faceOppositeCentroid [CharZero k] (s : Affine.Simplex k P n)
     (i j : Fin (n + 1)) :
