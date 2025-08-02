@@ -21,7 +21,7 @@ The proof is loosely based on the strategy given in [D. Marcus, *Number Fields*]
 
 1. since `NormLeOne K` is norm-stable, in the sense that
   `normLeOne K = normAtAllPlaces⁻¹' (normAtAllPlaces '' (normLeOne K))`,
-  see `normLeOne_eq_primeage_image`, it's enough to study the subset
+  see `normLeOne_eq_preimage_image`, it's enough to study the subset
   `normAtAllPlaces '' (normLeOne K)` of `realSpace K`.
 
 2. A description of `normAtAllPlaces '' (normLeOne K)` is given by `normAtAllPlaces_normLeOne`, it
@@ -168,13 +168,16 @@ theorem measurableSet_normLeOne :
   (measurableSet_fundamentalCone K).inter <|
     measurableSet_le (mixedEmbedding.continuous_norm K).measurable measurable_const
 
-theorem normLeOne_eq_primeage_image :
+theorem normLeOne_eq_preimage_image :
     normLeOne K = normAtAllPlaces ⁻¹' (normAtAllPlaces '' (normLeOne K)) := by
   refine subset_antisymm (Set.subset_preimage_image _ _) ?_
   rintro x ⟨y, hy₁, hy₂⟩
   rw [mem_normLeOne, ← normAtAllPlaces_mem_fundamentalCone_iff, ← norm_normAtAllPlaces,
     ← mem_normLeOne] at hy₁ ⊢
   rwa [← hy₂]
+
+@[deprecated (since := "2025-07-27")]
+alias normLeOne_eq_primeage_image := normLeOne_eq_preimage_image
 
 open scoped Classical in
 theorem normAtAllPlaces_normLeOne :
@@ -676,7 +679,7 @@ theorem normAtAllPlaces_normLeOne_eq_image :
 
 theorem normLeOne_eq_preimage :
     normLeOne K = normAtAllPlaces ⁻¹' (expMapBasis '' (paramSet K)) := by
-  rw [normLeOne_eq_primeage_image, normAtAllPlaces_normLeOne_eq_image]
+  rw [normLeOne_eq_preimage_image, normAtAllPlaces_normLeOne_eq_image]
 
 theorem subset_interior_normLeOne :
     normAtAllPlaces ⁻¹' (expMapBasis '' interior (paramSet K)) ⊆ interior (normLeOne K) := by
@@ -833,7 +836,7 @@ theorem isBounded_normLeOne :
 open scoped Classical in
 theorem volume_normLeOne : volume (normLeOne K) =
     2 ^ nrRealPlaces K * NNReal.pi ^ nrComplexPlaces K * .ofReal (regulator K) := by
-  rw [volume_eq_two_pow_mul_two_pi_pow_mul_integral (normLeOne_eq_primeage_image K).symm
+  rw [volume_eq_two_pow_mul_two_pi_pow_mul_integral (normLeOne_eq_preimage_image K).symm
     (measurableSet_normLeOne K), normLeOne_eq_preimage,
     normAtAllPlaces_image_preimage_expMapBasis,
     setLIntegral_expMapBasis_image (measurableSet_paramSet K) (by fun_prop)]
