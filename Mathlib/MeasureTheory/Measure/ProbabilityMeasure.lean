@@ -149,6 +149,14 @@ theorem coeFn_empty (ν : ProbabilityMeasure Ω) : ν ∅ = 0 := by simp [coeFn_
 theorem coeFn_univ_ne_zero (ν : ProbabilityMeasure Ω) : ν univ ≠ 0 := by
   simp only [coeFn_univ, Ne, one_ne_zero, not_false_iff]
 
+@[simp] theorem measureReal_eq_coe_coeFn (ν : ProbabilityMeasure Ω) (s : Set Ω) :
+    (ν : Measure Ω).real s = ν s := by
+  simp [coeFn_def, Measure.real, ENNReal.toReal]
+
+theorem toNNReal_measureReal_eq_coeFn (ν : ProbabilityMeasure Ω) (s : Set Ω) :
+    ((ν : Measure Ω).real s).toNNReal = ν s := by
+  simp
+
 /-- A probability measure can be interpreted as a finite measure. -/
 def toFiniteMeasure (μ : ProbabilityMeasure Ω) : FiniteMeasure Ω := ⟨μ, inferInstance⟩
 

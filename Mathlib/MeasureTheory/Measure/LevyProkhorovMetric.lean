@@ -682,7 +682,7 @@ variable {α ι : Type*} [MeasurableSpace α]
 
 /-- Given a π-system, if a sequence of measures converges along all elements of the π-system, then
 it also converges along finite unions of elements of the π-system. -/
-lemma _root_IsPiSystem.tendsto_measureReal_biUnion
+lemma _root_.IsPiSystem.tendsto_measureReal_biUnion
     {S : Set (Set α)} (hS : IsPiSystem S) {μ : ι → Measure α} {ν : Measure α} {l : Filter ι}
     {t : Finset (Set α)} (ht : ∀ s ∈ t, s ∈ S)
     (hmeas : ∀ s ∈ S, MeasurableSet s)
@@ -704,18 +704,32 @@ lemma _root_IsPiSystem.tendsto_measureReal_biUnion
   apply h
   exact hS.biInter_mem hu.2 (fun s hs ↦ ht _ (hu.1 hs)) h'u
 
+
+/-- Given a π-system, if a sequence of measures converges along all elements of the π-system, then
+it also converges along finite unions of elements of the π-system. -/
+lemma _root_.IsPiSystem.tendsto_probabilityMeasure_biUnion
+    {S : Set (Set α)} (hS : IsPiSystem S) {μ : ι → ProbabilityMeasure α} {ν : ProbabilityMeasure α}
+    {l : Filter ι} {t : Finset (Set α)} (ht : ∀ s ∈ t, s ∈ S)
+    (hmeas : ∀ s ∈ S, MeasurableSet s)
+    (h : ∀ s ∈ S, Tendsto (fun i ↦ μ i s) l (𝓝 (ν s))) :
+    Tendsto (fun i ↦ μ i (⋃ s ∈ t, s)) l (𝓝 (ν (⋃ s ∈ t, s))) := by
+  have : Tendsto (fun i ↦ (μ i : Measure α).real (⋃ s ∈ t, s)) l
+      (𝓝 ((ν : Measure α).real (⋃ s ∈ t, s))) := by
+    apply hS.tendsto_measureReal_biUnion ht hmeas
+
+
+
+#exit
+
 open TopologicalSpace
 
-lemma glouk [TopologicalSpace α] [SecondCountableTopology α] [OpensMeasurableSpace α]
-    {S : Set (Set α)} (hS : IsPiSystem S) {μ : ι → ProbabilityMeasure α} {ν : ProbabilityMeasure α}
-    {l : Filter ι} [l.IsCountablyGenerated]
+
+lemma glouk1 [TopologicalSpace α] [SecondCountableTopology α] [OpensMeasurableSpace α]
+    {S : Set (Set α)} {ν : ProbabilityMeasure α}
     (h : ∀ (u : Set α), ∀ x ∈ u, IsOpen u → ∃ s ∈ S, x ∈ s ∧ s ∈ 𝓝 x ∧ s ⊆ u)
-    (h' : ∀ s ∈ S, Tendsto (fun i ↦ μ i s) l (𝓝 (ν s))) :
-    Tendsto μ l (𝓝 ν) := by
-  apply tendsto_of_forall_isOpen_le_liminf
-  intro G hG
-  rcases eq_empty_or_nonempty G with rfl | G_ne
-  · simp
+    {G : Set α} (hG : IsOpen G) {r : ℝ≥0} (hr : r < ν G) :
+    ∃ T : Finset (Set α), (∀ t ∈ T, t ∈ S) ∧ (r < ν (⋃ t ∈ T, t)) ∧ (⋃ t ∈ T, t) ⊆ G := by
+  classical
   obtain ⟨T, TS, T_count, hT⟩ : ∃ T : Set (Set α), T ⊆ S ∧ T.Countable ∧ ⋃ t ∈ T, t = G := by
     have : ∀ (x : G), ∃ s ∈ S, (x : α) ∈ s ∧ s ∈ 𝓝 (x : α) ∧ s ⊆ G := fun x ↦ h G x x.2 hG
     choose! s hsS hxs hs_nhds hsG using this
@@ -733,10 +747,46 @@ lemma glouk [TopologicalSpace α] [SecondCountableTopology α] [OpensMeasurableS
     rw [← hT₀, biUnion_image]
     exact iUnion₂_mono fun i j ↦ interior_subset
   have : T.Nonempty := by
-    contrapose! G_ne
-    simpa [G_ne] using hT.symm
+    contrapose! hr
+    simp [← hT, hr]
   rcases T_count.exists_eq_range this with ⟨f, hf⟩
-  have : G = ⋃ n, f n := by simp [← hT, hf]
+  have G_eq : G = ⋃ n, f n := by simp [← hT, hf]
+  have : Tendsto (fun i ↦ ν (Accumulate f i)) atTop (𝓝 (ν (⋃ i, f i))) :=
+    (tendsto_toNNReal_iff (by simp) (by simp)).2
+      (MeasureTheory.tendsto_measure_iUnion_accumulate (f := f) (μ := ν))
+  rw [← G_eq] at this
+  rcases ((tendsto_order.1 this).1 r hr).exists with ⟨n, hn⟩
+  refine ⟨(Finset.range (n + 1)).image f, by simp; grind, ?_, ?_⟩
+  · convert hn
+    simp [accumulate_def]
+    grind
+  · simp only [Finset.mem_image, Finset.mem_range, iUnion_exists, biUnion_and',
+      iUnion_iUnion_eq_right, G_eq, iUnion_subset_iff]
+    intro i hi
+    exact subset_iUnion_of_subset i fun ⦃a⦄ a ↦ a
+
+lemma glouk [TopologicalSpace α] [SecondCountableTopology α] [OpensMeasurableSpace α]
+    {S : Set (Set α)} (hS : IsPiSystem S) {μ : ι → ProbabilityMeasure α} {ν : ProbabilityMeasure α}
+    {l : Filter ι} [l.IsCountablyGenerated]
+    (h : ∀ (u : Set α), ∀ x ∈ u, IsOpen u → ∃ s ∈ S, x ∈ s ∧ s ∈ 𝓝 x ∧ s ⊆ u)
+    (h' : ∀ s ∈ S, Tendsto (fun i ↦ μ i s) l (𝓝 (ν s))) :
+    Tendsto μ l (𝓝 ν) := by
+  classical
+  rcases l.eq_or_neBot with rfl | hl
+  · simp
+  apply tendsto_of_forall_isOpen_le_liminf
+  intro G hG
+  apply (le_liminf_iff _ _).2 (fun r hr ↦ ?_)
+  · apply isCoboundedUnder_ge_of_le (x := 1) l (by simp)
+  · exact isBoundedUnder_of ⟨0, by simp⟩
+  obtain ⟨T, TS, T_meas, TG⟩ :
+      ∃ T : Finset (Set α), (∀ t ∈ T, t ∈ S) ∧ (r < ν (⋃ t ∈ T, t)) ∧ (⋃ t ∈ T, t) ⊆ G :=
+    glouk1 h hG hr
+
+
+
+
+
 
 
 
