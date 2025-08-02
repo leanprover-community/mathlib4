@@ -114,8 +114,7 @@ def restrictedULiftYonedaHomEquiv' (P : Cᵒᵖ ⥤ Type (max w v₁ v₂)) (E :
           ext Y x
           dsimp
           rw [← FunctorToTypes.naturality]
-          simp [uliftYoneda]
-          rfl )
+          congr )
     simpa [e] using f.naturality e.inv
   right_inv g := by
     ext X x
