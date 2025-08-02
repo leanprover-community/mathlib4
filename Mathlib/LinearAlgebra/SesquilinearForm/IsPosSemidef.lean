@@ -52,14 +52,17 @@ section Def
 variable [LE R]
 
 /-- A sesquilinear map is positive semidefinite if it is symmetric and positive. -/
-structure IsPosSemidef : Prop extends f.IsPos where
-  isSymm : f.IsSymm
+structure IsPosSemidef : Prop extends f.IsSymm, f.IsPos
 
-variable {f} in
+variable {f}
+
+lemma IsPosSemidef.isSymm (hf : IsPosSemidef f) : f.IsSymm := hf.toIsSymm
+
 lemma IsPosSemidef.isPos (hf : IsPosSemidef f) : f.IsPos := hf.toIsPos
 
-lemma isPosSemidef_iff : f.IsPosSemidef ↔ f.IsPos ∧ f.IsSymm where
-  mp h := ⟨h.isPos, h.isSymm⟩
+variable (f) in
+lemma isPosSemidef_iff : f.IsPosSemidef ↔ f.IsSymm ∧ f.IsPos where
+  mp h := ⟨h.isSymm, h.isPos⟩
   mpr := fun ⟨h₁, h₂⟩ ↦ ⟨h₁, h₂⟩
 
 end Def
@@ -68,8 +71,8 @@ variable [Fintype n] [DecidableEq n] [PartialOrder R]
 
 lemma isPosSemidef_iff_posSemidef_toMatrix [StarOrderedRing R] :
     f.IsPosSemidef ↔ (f.toMatrix b).PosSemidef := by
-  rw [isPosSemidef_iff, Matrix.PosSemidef, and_comm,
-    SesquilinForm.isSymm_iff_isHermitian_toMatrix b, isPos_def]
+  rw [isPosSemidef_iff, Matrix.PosSemidef, SesquilinForm.isSymm_iff_isHermitian_toMatrix b,
+    isPos_def]
   refine and_congr .rfl ⟨fun h x ↦ ?_, fun h x ↦ ?_⟩
   · rw [dotProduct_toMatrix_mulVec]
     exact h _
