@@ -45,6 +45,7 @@ open Limits
 
 variable (C : Type*) [Category C]
 
+set_option linter.style.indentation false in -- linter false positive
 /--
 The condition `Precoherent C` is essentially the minimal condition required to define the
 coherent coverage on `C`.
