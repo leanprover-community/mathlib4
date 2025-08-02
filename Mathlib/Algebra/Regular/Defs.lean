@@ -11,6 +11,8 @@ import Mathlib.Logic.Function.Defs
 
 We introduce left-regular, right-regular and regular elements, along with their `to_additive`
 analogues add-left-regular, add-right-regular and add-regular elements.
+
+For monoids where _every_ element is regular, see `IsCancelMul` and nearby typeclasses.
 -/
 
 variable {R : Type*} [Mul R]
