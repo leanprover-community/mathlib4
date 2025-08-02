@@ -201,10 +201,7 @@ theorem commProb_reciprocal (n : ℕ) :
     have key : n % 4 = 1 ∨ n % 4 = 3 := Nat.odd_mod_four_iff.mp (Nat.odd_iff.mp h2)
     have hn : Odd (n % 4) := by rcases key with h | h <;> rw [h] <;> decide
     rw [commProb_odd (hn.mul h2), div_mul_div_comm, mul_one, div_eq_div_iff, one_mul] <;> norm_cast
-    · have h0 : (n % 4) ^ 2 + 3 = n % 4 * 4 := by rcases key with h | h <;> rw [h] <;> norm_num
-      have h1 := (Nat.div_add_mod n 4).symm
-      zify at h0 h1 ⊢
-      linear_combination (h0 + h1 * (n % 4)) * n
+    · grind [Nat.cast_inj]
     · have := hn.pos.ne'
       positivity
 
