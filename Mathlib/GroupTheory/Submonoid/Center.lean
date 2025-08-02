@@ -136,8 +136,8 @@ variable {M} {N : Type*}
   let e := MulEquivClass.toMulEquiv e
   change e x ∈ Set.center N
   constructor <;>
-  (intros; apply e.symm.injective;
-    simp only [map_mul, e.symm_apply_apply, (isMulCentral_iff _).mp hx])
+  (intros; apply e.symm.injective; simp only
+    [map_mul, e.symm_apply_apply, (hx.comm _).eq, (isMulCentral_iff _).mp hx, ← hx.right_comm])
 
 @[to_additive] theorem _root_.MulEquivClass.apply_mem_center_iff {F} [EquivLike F M N]
     [Mul M] [Mul N] [MulEquivClass F M N] (e : F) {x : M} :

@@ -95,8 +95,8 @@ private lemma measure_cast {a b : ℕ} (h : a = b) (μ : (n : ℕ) → Measure (
   exact Measure.map_id
 
 private lemma heq_measurableSpace_Iic_pi {a b : ℕ} (h : a = b) :
-    HEq (inferInstance : MeasurableSpace (Π i : Iic a, X i))
-    (inferInstance : MeasurableSpace (Π i : Iic b, X i)) := by cases h; rfl
+    (inferInstance : MeasurableSpace (Π i : Iic a, X i)) ≍
+      (inferInstance : MeasurableSpace (Π i : Iic b, X i)) := by cases h; rfl
 
 end castLemmas
 

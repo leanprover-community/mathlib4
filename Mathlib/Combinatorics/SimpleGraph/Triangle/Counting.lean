@@ -160,8 +160,7 @@ lemma triangle_counting
   rw [Nat.cast_le]
   refine card_le_card_of_injOn (fun (x, y, z) ↦ {x, y, z}) ?_ ?_
   · rintro ⟨x, y, z⟩
-    simp only [and_imp, mem_filter, mem_product, mem_cliqueFinset_iff, is3Clique_triple_iff]
-    exact fun _ _ _ hxy hxz hyz ↦ ⟨hxy, hxz, hyz⟩
+    simp +contextual [is3Clique_triple_iff]
   rintro ⟨x₁, y₁, z₁⟩ h₁ ⟨x₂, y₂, z₂⟩ h₂ t
   simp only [mem_coe, mem_filter, mem_product] at h₁ h₂
   apply triple_eq_triple_of_mem hst hsu htu t <;> tauto

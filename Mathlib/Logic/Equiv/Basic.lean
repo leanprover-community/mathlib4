@@ -284,11 +284,7 @@ theorem subtypeEquiv_refl {p : α → Prop} (h : ∀ a, p a ↔ p (Equiv.refl _ 
 -- We use `as_aux_lemma` here to avoid creating large proof terms when using `simp`
 @[simp]
 theorem subtypeEquiv_symm {p : α → Prop} {q : β → Prop} (e : α ≃ β) (h : ∀ a : α, p a ↔ q (e a)) :
-    (e.subtypeEquiv h).symm =
-      e.symm.subtypeEquiv (by as_aux_lemma =>
-        intro a
-        convert (h <| e.symm a).symm
-        exact (e.apply_symm_apply a).symm) :=
+    (e.subtypeEquiv h).symm = e.symm.subtypeEquiv (by as_aux_lemma => grind) :=
   rfl
 
 @[simp]
@@ -373,7 +369,7 @@ def sigmaSubtypeEquivOfSubset {α} (p : α → Type v) (q : α → Prop) (h : �
 def sigmaSubtypeFiberEquiv {α β : Type*} (f : α → β) (p : β → Prop) (h : ∀ x, p (f x)) :
     (Σ y : Subtype p, { x : α // f x = y }) ≃ α :=
   calc
-    _ ≃ Σy : β, { x : α // f x = y } := sigmaSubtypeEquivOfSubset _ p fun _ ⟨x, h'⟩ => h' ▸ h x
+    _ ≃ Σ y : β, { x : α // f x = y } := sigmaSubtypeEquivOfSubset _ p fun _ ⟨x, h'⟩ => h' ▸ h x
     _ ≃ α := sigmaFiberEquiv f
 
 /-- If for each `x` we have `p x ↔ q (f x)`, then `Σ y : {y // q y}, f ⁻¹' {y}` is equivalent
@@ -381,7 +377,7 @@ to `{x // p x}`. -/
 def sigmaSubtypeFiberEquivSubtype {α β : Type*} (f : α → β) {p : α → Prop} {q : β → Prop}
     (h : ∀ x, p x ↔ q (f x)) : (Σ y : Subtype q, { x : α // f x = y }) ≃ Subtype p :=
   calc
-    (Σy : Subtype q, { x : α // f x = y }) ≃ Σy :
+    (Σ y : Subtype q, { x : α // f x = y }) ≃ Σ y :
         Subtype q, { x : Subtype p // Subtype.mk (f x) ((h x).1 x.2) = y } := by {
           apply sigmaCongrRight
           intro y
@@ -483,7 +479,7 @@ def sigmaSigmaSubtypeEq {α β : Type*} {γ : α → β → Type*} (a : α) (b :
 
 @[simp]
 lemma sigmaSigmaSubtypeEq_apply {α β : Type*} {γ : α → β → Type*} {a : α} {b : β}
-    (s: {s : (a : α) × (b : β) × γ a b // s.1 = a ∧ s.2.1 = b}) :
+    (s : {s : (a : α) × (b : β) × γ a b // s.1 = a ∧ s.2.1 = b}) :
     sigmaSigmaSubtypeEq a b s = cast (congrArg₂ γ s.2.1 s.2.2) s.1.2.2 := by
   simp [sigmaSigmaSubtypeEq]
 
@@ -525,12 +521,7 @@ theorem subtypeEquivCodomain_apply (f : { x' // x' ≠ x } → Y) (g) :
 
 theorem coe_subtypeEquivCodomain_symm (f : { x' // x' ≠ x } → Y) :
     ((subtypeEquivCodomain f).symm : Y → _) = fun y =>
-      ⟨fun x' => if h : x' ≠ x then f ⟨x', h⟩ else y, by
-        funext x'
-        simp only [ne_eq, dite_not, comp_apply, Subtype.coe_eta, dite_eq_ite, ite_eq_right_iff]
-        intro w
-        exfalso
-        exact x'.property w⟩ :=
+      ⟨fun x' => if h : x' ≠ x then f ⟨x', h⟩ else y, by grind⟩ :=
   rfl
 
 @[simp]
@@ -700,9 +691,7 @@ theorem comp_swap_eq_update (i j : α) (f : α → β) :
 theorem symm_trans_swap_trans [DecidableEq β] (a b : α) (e : α ≃ β) :
     (e.symm.trans (swap a b)).trans e = swap (e a) (e b) :=
   Equiv.ext fun x => by
-    have : ∀ a, e.symm x = a ↔ x = e a := fun a => by
-      rw [@eq_comm _ (e.symm x)]
-      constructor <;> intros <;> simp_all
+    have : ∀ a, e.symm x = a ↔ x = e a := fun a => by grind
     simp only [trans_apply, swap_apply_def, this]
     split_ifs <;> simp
 

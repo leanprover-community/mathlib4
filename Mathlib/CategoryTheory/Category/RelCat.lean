@@ -23,8 +23,6 @@ By flipping the arguments to a relation, we construct an equivalence `opEquivale
 
 open Rel
 
-attribute [local simp] Rel.comp Rel.inv flip
-
 namespace CategoryTheory
 
 universe u
@@ -49,21 +47,22 @@ structure Hom (X Y : RelCat.{u}) : Type u where
 initialize_simps_projections Hom (as_prefix rel)
 
 /-- The category of types with binary relations as morphisms. -/
-@[simps]
 instance instLargeCategory : LargeCategory RelCat where
   Hom := Hom
-  id _ := .ofRel (· = ·)
-  comp f g := .ofRel <| f.rel.comp g.rel
+  id _ := .ofRel .id
+  comp f g := .ofRel <| f.rel ○ g.rel
 
 namespace Hom
 
-@[ext] lemma ext (f g : X ⟶ Y) (h : f.rel = g.rel) : f = g := by
-  obtain ⟨R⟩ := f; obtain ⟨S⟩ := g; congr
+@[ext] lemma ext (f g : X ⟶ Y) (h : f.rel = g.rel) : f = g := by cases f; cases g; congr
 
-theorem rel_id_apply₂ (X : RelCat) (x y : X) : rel (𝟙 X) x y ↔ x = y := .rfl
+@[simp] protected lemma rel_id (X : RelCat.{u}) : rel (𝟙 X) = .id := rfl
+@[simp] protected lemma rel_comp (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g).rel = f.rel.comp g.rel := rfl
+
+theorem rel_id_apply₂ (x y : X) : x ~[rel (𝟙 X)] y ↔ x = y := .rfl
 
 theorem rel_comp_apply₂ (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) (z : Z) :
-    (f ≫ g).rel x z ↔ ∃ y, f.rel x y ∧ g.rel y z := .rfl
+    x ~[(f ≫ g).rel] z ↔ ∃ y, x ~[f.rel] y ∧ y ~[g.rel] z := .rfl
 
 end Hom
 
@@ -73,11 +72,10 @@ from the category of types and functions into the category of types and relation
 def graphFunctor : Type u ⥤ RelCat.{u} where
   obj X := X
   map f := .ofRel f.graph
-  map_comp := by aesop (add simp [Rel.comp])
 
 @[deprecated rel_graphFunctor_map (since := "2025-06-08")]
 theorem graphFunctor_map {X Y : Type u} (f : X ⟶ Y) (x : X) (y : Y) :
-    (graphFunctor.map f).rel x y ↔ f x = y := .rfl
+    x ~[(graphFunctor.map f).rel] y ↔ f x = y := .rfl
 
 instance graphFunctor_faithful : graphFunctor.Faithful where
   map_injective h := Function.graph_injective congr(($h).rel)
@@ -91,14 +89,14 @@ theorem rel_iso_iff {X Y : RelCat} (r : X ⟶ Y) :
     IsIso (C := RelCat) r ↔ ∃ f : Iso (C := Type u) X Y, graphFunctor.map f.hom = r := by
   constructor
   · intro h
-    have h1 := congr_fun₂ congr(($h.hom_inv_id).rel)
-    have h2 := congr_fun₂ congr(($h.inv_hom_id).rel)
+    have h1 := congr_fun₂ congr((· ~[($h.hom_inv_id).rel] ·))
+    have h2 := congr_fun₂ congr((· ~[($h.inv_hom_id).rel] ·))
     simp only [RelCat.Hom.rel_comp_apply₂, RelCat.Hom.rel_id_apply₂, eq_iff_iff] at h1 h2
     obtain ⟨f, hf⟩ := Classical.axiomOfChoice (fun a => (h1 a a).mpr rfl)
     obtain ⟨g, hg⟩ := Classical.axiomOfChoice (fun a => (h2 a a).mpr rfl)
     suffices hif : IsIso (C := Type u) f by
       use asIso f
-      ext x y
+      ext ⟨x, y⟩
       exact ⟨by aesop, fun hxy ↦ (h2 (f x) y).1 ⟨x, (hf x).2, hxy⟩⟩
     use g
     constructor
@@ -118,17 +116,6 @@ open Opposite
 def opFunctor : RelCat ⥤ RelCatᵒᵖ where
   obj X := op X
   map {_ _} r := .op <| .ofRel r.rel.inv
-  map_id X := by
-    congr
-    simp only [unop_op]
-    ext x y
-    exact Eq.comm
-  map_comp {X Y Z} f g := by
-    unfold Category.opposite
-    congr
-    ext x y
-    apply exists_congr
-    exact fun a => And.comm
 
 /-- The other direction of `opFunctor`. -/
 def unopFunctor : RelCatᵒᵖ ⥤ RelCat where

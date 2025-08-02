@@ -196,7 +196,7 @@ protected def addSubgroup [AddCommGroup Y] : AddSubgroup (X → Y) where
   neg_mem' {f} hf := by
     simp_all
 
-protected lemma memAddSubgroup  [AddCommGroup Y] (D : locallyFinsuppWithin U Y) :
+protected lemma memAddSubgroup [AddCommGroup Y] (D : locallyFinsuppWithin U Y) :
     (D : X → Y) ∈ locallyFinsuppWithin.addSubgroup U :=
   ⟨D.supportWithinDomain, D.supportLocallyFiniteWithinDomain⟩
 
@@ -210,7 +210,7 @@ def mk_of_mem [AddCommGroup Y] (f : X → Y) (hf : f ∈ locallyFinsuppWithin.ad
 instance [AddCommGroup Y] : Zero (locallyFinsuppWithin U Y) where
   zero := mk_of_mem 0 <| zero_mem _
 
-instance [AddCommGroup Y]: Add (locallyFinsuppWithin U Y) where
+instance [AddCommGroup Y] : Add (locallyFinsuppWithin U Y) where
   add D₁ D₂ := mk_of_mem (D₁ + D₂) <| add_mem D₁.memAddSubgroup D₂.memAddSubgroup
 
 instance [AddCommGroup Y] : Neg (locallyFinsuppWithin U Y) where
@@ -324,7 +324,7 @@ instance [Lattice Y] [Zero Y] : Lattice (locallyFinsuppWithin U Y) where
 /--
 Functions with locally finite support within `U` form an ordered commutative group.
 -/
-instance [AddCommGroup Y] [LinearOrder Y] [IsOrderedAddMonoid Y]:
+instance [AddCommGroup Y] [LinearOrder Y] [IsOrderedAddMonoid Y] :
     IsOrderedAddMonoid (locallyFinsuppWithin U Y) where
   add_le_add_left := fun _ _ _ _ ↦ by simpa [le_def]
 

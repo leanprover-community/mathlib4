@@ -40,7 +40,7 @@ theorem prod_isUnit : ∀ {L : List M}, (∀ m ∈ L, IsUnit m) → IsUnit L.pro
     exact IsUnit.mul (u h mem_cons_self) (prod_isUnit fun m mt => u m (mem_cons_of_mem h mt))
 
 @[to_additive]
-theorem prod_isUnit_iff {α : Type*} [CommMonoid α] {L : List α} :
+theorem prod_isUnit_iff {M : Type*} [CommMonoid M] {L : List M} :
     IsUnit L.prod ↔ ∀ m ∈ L, IsUnit m := by
   refine ⟨fun h => ?_, prod_isUnit⟩
   induction L with
@@ -126,7 +126,7 @@ lemma ranges_flatten : ∀ (l : List ℕ), l.ranges.flatten = range l.sum
   | [] => rfl
   | a :: l => by simp [ranges, ← map_flatten, ranges_flatten, range_add]
 
-/-- The members of `l.ranges` have no duplicate -/
+/-- The members of `l.ranges` have no duplicates -/
 theorem ranges_nodup {l s : List ℕ} (hs : s ∈ ranges l) : s.Nodup :=
   (List.pairwise_flatten.mp <| by rw [ranges_flatten]; exact nodup_range).1 s hs
 
@@ -173,11 +173,11 @@ theorem Sublist.prod_dvd_prod [CommMonoid M] {l₁ l₂ : List M} (h : l₁ <+ l
 
 section Alternating
 
-variable [CommGroup α]
+variable [CommGroup G]
 
 @[to_additive]
 theorem alternatingProd_append :
-    ∀ l₁ l₂ : List α,
+    ∀ l₁ l₂ : List G,
       alternatingProd (l₁ ++ l₂) = alternatingProd l₁ * alternatingProd l₂ ^ (-1 : ℤ) ^ length l₁
   | [], l₂ => by simp
   | a :: l₁, l₂ => by
@@ -186,7 +186,7 @@ theorem alternatingProd_append :
 
 @[to_additive]
 theorem alternatingProd_reverse :
-    ∀ l : List α, alternatingProd (reverse l) = alternatingProd l ^ (-1 : ℤ) ^ (length l + 1)
+    ∀ l : List G, alternatingProd (reverse l) = alternatingProd l ^ (-1 : ℤ) ^ (length l + 1)
   | [] => by simp only [alternatingProd_nil, one_zpow, reverse_nil]
   | a :: l => by
     simp_rw [reverse_cons, alternatingProd_append, alternatingProd_reverse,

@@ -34,7 +34,7 @@ variable {n : ℕ}
 /-- (Impl.) An auxiliary definition for `digits`, to help get the desired definitional unfolding. -/
 def digitsAux0 : ℕ → List ℕ
   | 0 => []
-  | n + 1 => [n + 1]
+  | n + 1 => [n+1]
 
 /-- (Impl.) An auxiliary definition for `digits`, to help get the desired definitional unfolding. -/
 def digitsAux1 (n : ℕ) : List ℕ :=
@@ -82,7 +82,7 @@ theorem digits_zero_zero : digits 0 0 = [] :=
   rfl
 
 @[simp]
-theorem digits_zero_succ (n : ℕ) : digits 0 n.succ = [n + 1] :=
+theorem digits_zero_succ (n : ℕ) : digits 0 n.succ = [n+1] :=
   rfl
 
 theorem digits_zero_succ' : ∀ {n : ℕ}, n ≠ 0 → digits 0 n = [n]
@@ -167,6 +167,33 @@ theorem ofDigits_append {b : ℕ} {l1 l2 : List ℕ} :
   · simp [ofDigits]
   · rw [ofDigits, List.cons_append, ofDigits, IH, List.length_cons, pow_succ']
     ring
+
+@[simp]
+theorem ofDigits_append_zero {b : ℕ} (l : List ℕ) :
+    ofDigits b (l ++ [0]) = ofDigits b l := by
+  rw [ofDigits_append, ofDigits_singleton, mul_zero, add_zero]
+
+@[simp]
+theorem ofDigits_replicate_zero {b k : ℕ} : ofDigits b (List.replicate k 0) = 0 := by
+  induction k with
+  | zero => rfl
+  | succ k ih => simp [List.replicate, ofDigits_cons, ih]
+
+@[simp]
+theorem ofDigits_append_replicate_zero {b k : ℕ} (l : List ℕ) :
+    ofDigits b (l ++ List.replicate k 0) = ofDigits b l := by
+  rw [ofDigits_append]
+  simp
+
+theorem ofDigits_reverse_cons {b : ℕ} (l : List ℕ) (d : ℕ) :
+    ofDigits b (d :: l).reverse = ofDigits b l.reverse + b^l.length * d := by
+  simp only [List.reverse_cons]
+  rw [ofDigits_append]
+  simp
+
+theorem ofDigits_reverse_zero_cons {b : ℕ} (l : List ℕ) :
+    ofDigits b (0 :: l).reverse = ofDigits b l.reverse := by
+  simp only [List.reverse_cons, ofDigits_append_zero]
 
 @[norm_cast]
 theorem coe_ofDigits (α : Type*) [Semiring α] (b : ℕ) (L : List ℕ) :
@@ -368,18 +395,18 @@ theorem lt_base_pow_length_digits {b m : ℕ} (hb : 1 < b) : m < b ^ (digits b m
   rcases b with (_ | _ | b) <;> try simp_all
   exact lt_base_pow_length_digits'
 
+theorem digits_base_mul {b m : ℕ} (hb : 1 < b) (hm : 0 < m) :
+    b.digits (b * m) = 0 :: b.digits m := by
+  rw [digits_def' hb (by positivity)]
+  simp [mul_div_right m (by positivity)]
+
 theorem digits_base_pow_mul {b k m : ℕ} (hb : 1 < b) (hm : 0 < m) :
     digits b (b ^ k * m) = List.replicate k 0 ++ digits b m := by
   induction k generalizing m with
   | zero => simp
   | succ k ih =>
-    have hmb : 0 < m * b := lt_mul_of_lt_of_one_lt' hm hb
-    let h1 := digits_def' hb hmb
-    have h2 : m = m * b / b :=
-      Nat.eq_div_of_mul_eq_left (ne_zero_of_lt hb) rfl
-    simp only [mul_mod_left, ← h2] at h1
-    rw [List.replicate_succ', List.append_assoc, List.singleton_append, ← h1, ← ih hmb]
-    ring_nf
+    rw [pow_succ', mul_assoc, digits_base_mul hb (by positivity), ih hm, List.replicate_succ,
+      List.cons_append]
 
 theorem ofDigits_digits_append_digits {b m n : ℕ} :
     ofDigits b (digits b n ++ digits b m) = n + b ^ (digits b n).length * m := by
@@ -431,6 +458,35 @@ lemma ofDigits_div_pow_eq_ofDigits_drop
 lemma self_div_pow_eq_ofDigits_drop {p : ℕ} (i n : ℕ) (h : 2 ≤ p) :
     n / p ^ i = ofDigits p ((p.digits n).drop i) := by
   convert ofDigits_div_pow_eq_ofDigits_drop i (zero_lt_of_lt h) (p.digits n)
+    (fun l hl ↦ digits_lt_base h hl)
+  exact (ofDigits_digits p n).symm
+
+/-- Interpreting as a base `p` number and modulo `p^i` is the same as taking the first `i` digits.
+-/
+lemma ofDigits_mod_pow_eq_ofDigits_take
+    {p : ℕ} (i : ℕ) (hpos : 0 < p) (digits : List ℕ) (w₁ : ∀ l ∈ digits, l < p) :
+    ofDigits p digits % p ^ i = ofDigits p (digits.take i) := by
+  induction i generalizing digits with
+  | zero => simp [mod_one]
+  | succ i ih =>
+    cases digits with
+    | nil => simp
+    | cons hd tl =>
+      rw [List.take_succ_cons, ofDigits_cons, ofDigits_cons,
+        ← ih _ fun x hx ↦ w₁ x <| List.mem_cons_of_mem hd hx, add_mod,
+        mod_eq_of_lt <| lt_of_lt_of_le (w₁ hd List.mem_cons_self) (le_pow <| add_one_pos i),
+        pow_succ', mul_mod_mul_left, mod_eq_of_lt]
+      apply add_lt_of_lt_sub
+      apply lt_of_lt_of_le (b := p)
+      · exact w₁ hd List.mem_cons_self
+      · rw [← Nat.mul_sub]
+        exact Nat.le_mul_of_pos_right _ <| Nat.sub_pos_of_lt <| mod_lt _ <| pow_pos hpos i
+
+/-- `n` modulo `p^i` is like taking the least significant `i` digits of `n` in base `p`.
+-/
+lemma self_mod_pow_eq_ofDigits_take {p : ℕ} (i n : ℕ) (h : 2 ≤ p) :
+    n % p ^ i = ofDigits p ((p.digits n).take i) := by
+  convert ofDigits_mod_pow_eq_ofDigits_take i (zero_lt_of_lt h) (p.digits n)
     (fun l hl ↦ digits_lt_base h hl)
   exact (ofDigits_digits p n).symm
 

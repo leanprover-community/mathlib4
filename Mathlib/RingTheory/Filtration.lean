@@ -85,7 +85,7 @@ instance : SupSet (I.Filtration M) :=
   ⟨fun S =>
     { N := sSup (Ideal.Filtration.N '' S)
       mono := fun i => by
-        apply sSup_le_sSup_of_forall_exists_le _
+        apply sSup_le_sSup_of_isCofinalFor _
         rintro _ ⟨⟨_, F, hF, rfl⟩, rfl⟩
         exact ⟨_, ⟨⟨_, F, hF, rfl⟩, rfl⟩, F.mono i⟩
       smul_le := fun i => by
@@ -105,7 +105,7 @@ instance : InfSet (I.Filtration M) :=
   ⟨fun S =>
     { N := sInf (Ideal.Filtration.N '' S)
       mono := fun i => by
-        apply sInf_le_sInf_of_forall_exists_le _
+        apply sInf_le_sInf_of_isCoinitialFor _
         rintro _ ⟨⟨_, F, hF, rfl⟩, rfl⟩
         exact ⟨_, ⟨⟨_, F, hF, rfl⟩, rfl⟩, F.mono i⟩
       smul_le := fun i => by
@@ -281,8 +281,9 @@ theorem submodule_span_single :
 theorem submodule_eq_span_le_iff_stable_ge (n₀ : ℕ) :
     F.submodule = Submodule.span _ (⋃ i ≤ n₀, single R i '' (F.N i : Set M)) ↔
       ∀ n ≥ n₀, I • F.N n = F.N (n + 1) := by
-  rw [← submodule_span_single, ← LE.le.le_iff_eq, Submodule.span_le, Set.iUnion_subset_iff]
-  swap; · exact Submodule.span_mono (Set.iUnion₂_subset_iUnion _ _)
+  rw [← submodule_span_single,
+    ← (Submodule.span_mono (Set.iUnion₂_subset_iUnion _ _)).ge_iff_eq',
+    Submodule.span_le, Set.iUnion_subset_iff]
   constructor
   · intro H n hn
     refine (F.smul_le n).antisymm ?_
@@ -446,7 +447,7 @@ theorem Ideal.isIdempotentElem_iff_eq_bot_or_top_of_isLocalRing {R} [CommRing R]
     refine Or.inl (eq_bot_iff.mpr ?_)
     rw [← Ideal.iInf_pow_eq_bot_of_isLocalRing I ‹_›]
     apply le_iInf
-    rintro (_|n) <;> simp [H.pow_succ_eq]
+    rintro (_ | n) <;> simp [H.pow_succ_eq]
   · rintro (rfl | rfl) <;> simp [IsIdempotentElem]
 
 @[deprecated (since := "2024-11-12")]

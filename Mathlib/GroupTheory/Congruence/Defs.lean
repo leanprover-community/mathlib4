@@ -234,13 +234,13 @@ protected def liftOn₂ {β} {c : Con M} (q r : c.Quotient) (f : M → M → β)
 @[to_additive "A version of `Quotient.hrecOn₂'` for quotients by `AddCon`."]
 protected def hrecOn₂ {cM : Con M} {cN : Con N} {φ : cM.Quotient → cN.Quotient → Sort*}
     (a : cM.Quotient) (b : cN.Quotient) (f : ∀ (x : M) (y : N), φ x y)
-    (h : ∀ x y x' y', cM x x' → cN y y' → HEq (f x y) (f x' y')) : φ a b :=
+    (h : ∀ x y x' y', cM x x' → cN y y' → f x y ≍ f x' y') : φ a b :=
   Quotient.hrecOn₂' a b f h
 
 @[to_additive (attr := simp)]
 theorem hrec_on₂_coe {cM : Con M} {cN : Con N} {φ : cM.Quotient → cN.Quotient → Sort*} (a : M)
     (b : N) (f : ∀ (x : M) (y : N), φ x y)
-    (h : ∀ x y x' y', cM x x' → cN y y' → HEq (f x y) (f x' y')) :
+    (h : ∀ x y x' y', cM x x' → cN y y' → f x y ≍ f x' y') :
     Con.hrecOn₂ (↑a) (↑b) f h = f a b :=
   rfl
 
@@ -594,7 +594,7 @@ theorem map_of_mul_left_rel_one [Monoid M] (c : Con M)
   have hf' : ∀ x : M, (x : c.Quotient) * f x = 1 := fun x ↦
     calc
       (x : c.Quotient) * f x = f (f x) * f x * (x * f x) := by simp [hf]
-      _ = f (f x) * (f x * x) * f x := by ac_rfl
+      _ = f (f x) * (f x * x) * f x := by simp_rw [mul_assoc]
       _ = 1 := by simp [hf]
   have : (⟨_, _, hf' x, hf x⟩ : c.Quotientˣ) = ⟨_, _, hf' y, hf y⟩ := Units.ext h
   exact congr_arg Units.inv this

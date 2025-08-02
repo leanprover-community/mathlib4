@@ -97,7 +97,7 @@ lemma stabilizer_union_eq_left (hdisj : Disjoint s t) (hstab : stabilizer G s �
 
 @[to_additive]
 lemma stabilizer_union_eq_right (hdisj : Disjoint s t) (hstab : stabilizer G t ≤ stabilizer G s)
-    (hstab_union : stabilizer G (s ∪ t) ≤ stabilizer G s)  :
+    (hstab_union : stabilizer G (s ∪ t) ≤ stabilizer G s) :
     stabilizer G (s ∪ t) = stabilizer G t := by
   rw [union_comm, stabilizer_union_eq_left hdisj.symm hstab (union_comm .. ▸ hstab_union)]
 

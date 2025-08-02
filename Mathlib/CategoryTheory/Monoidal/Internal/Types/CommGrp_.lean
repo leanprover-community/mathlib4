@@ -15,6 +15,8 @@ is equivalent to the category of "native" bundled commutative groups.
 Moreover, this equivalence is compatible with the forgetful functors to `Type`.
 -/
 
+assert_not_exists Field
+
 universe v u
 
 open CategoryTheory Mon_Class

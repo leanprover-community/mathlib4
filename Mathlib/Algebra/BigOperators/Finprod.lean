@@ -59,7 +59,7 @@ typeclass diamonds caused by the constructive finiteness used in definitions suc
 other solutions but for beginner mathematicians this approach is easier in practice.
 
 Another application is the construction of a partition of unity from a collection of “bump”
-function. In this case the finite set depends on the point and it's convenient to have a definition
+functions. In this case the finite set depends on the point and it's convenient to have a definition
 that does not mention the set explicitly.
 
 The first arguments in all definitions and lemmas is the codomain of the function of the big
@@ -112,12 +112,12 @@ open Batteries.ExtendedBinder
 /-- `∑ᶠ x, f x` is notation for `finsum f`. It is the sum of `f x`, where `x` ranges over the
 support of `f`, if it's finite, zero otherwise. Taking the sum over multiple arguments or
 conditions is possible, e.g. `∏ᶠ (x) (y), f x y` and `∏ᶠ (x) (h: x ∈ s), f x` -/
-notation3"∑ᶠ "(...)", "r:67:(scoped f => finsum f) => r
+notation3"∑ᶠ " (...) ", " r:67:(scoped f => finsum f) => r
 
 /-- `∏ᶠ x, f x` is notation for `finprod f`. It is the product of `f x`, where `x` ranges over the
 multiplicative support of `f`, if it's finite, one otherwise. Taking the product over multiple
 arguments or conditions is possible, e.g. `∏ᶠ (x) (y), f x y` and `∏ᶠ (x) (h: x ∈ s), f x` -/
-notation3"∏ᶠ "(...)", "r:67:(scoped f => finprod f) => r
+notation3"∏ᶠ " (...) ", " r:67:(scoped f => finprod f) => r
 
 -- Porting note: The following ports the lean3 notation for this file, but is currently very fickle.
 
@@ -346,7 +346,7 @@ theorem finprod_eq_prod_of_mulSupport_subset (f : α → M) {s : Finset α} (h :
     exact (Equiv.plift.symm.image_eq_preimage _).symm
   have : mulSupport (f ∘ PLift.down) ⊆ s.map Equiv.plift.symm.toEmbedding := by
     rw [A, Finset.coe_map]
-    exact image_subset _ h
+    exact image_mono h
   rw [finprod_eq_prod_plift_of_mulSupport_subset this]
   simp only [Finset.prod_map, Equiv.coe_toEmbedding]
   congr
@@ -573,7 +573,7 @@ theorem finprod_mem_of_eqOn_one (hf : s.EqOn f 1) : ∏ᶠ i ∈ s, f i = 1 := b
 /-- If the product of `f i` over `i ∈ s` is not equal to `1`, then there is some `x ∈ s` such that
 `f x ≠ 1`. -/
 @[to_additive
-      "If the product of `f i` over `i ∈ s` is not equal to `0`, then there is some `x ∈ s`
+      "If the sum of `f i` over `i ∈ s` is not equal to `0`, then there is some `x ∈ s`
       such that `f x ≠ 0`."]
 theorem exists_ne_one_of_finprod_mem_ne_one (h : ∏ᶠ i ∈ s, f i ≠ 1) : ∃ x ∈ s, f x ≠ 1 := by
   by_contra! h'
@@ -951,9 +951,24 @@ lemma finprod_option {f : Option α → M} (hf : (mulSupport (f ∘ some)).Finit
   replace hf : (mulSupport f).Finite := by simpa [finite_option]
   convert finprod_mem_insert' f (show none ∉ Set.range Option.some by aesop)
     (hf.subset inter_subset_right)
-  · aesop
+  · simp
   · rw [finprod_mem_range]
     exact Option.some_injective _
+
+@[to_additive]
+lemma finprod_mem_powerset_insert {f : Set α → M} {s : Set α} {a : α} (hs : s.Finite)
+    (has : a ∉ s) : ∏ᶠ t ∈ 𝒫 insert a s, f t = (∏ᶠ t ∈ 𝒫 s, f t) * ∏ᶠ t ∈ 𝒫 s, f (insert a t) := by
+  rw [Set.powerset_insert,
+    finprod_mem_union (disjoint_powerset_insert has) hs.powerset (hs.powerset.image (insert a)),
+    finprod_mem_image (powerset_insert_injOn has)]
+
+@[to_additive]
+lemma finprod_mem_powerset_diff_elem {f : Set α → M} {s : Set α} {a : α} (hs : s.Finite)
+    (has : a ∈ s) : ∏ᶠ t ∈ 𝒫 s, f t = (∏ᶠ t ∈ 𝒫 (s \ {a}), f t)
+    * ∏ᶠ t ∈ 𝒫 (s \ {a}), f (insert a t) := by
+  nth_rw 1 2 [← Set.insert_diff_self_of_mem has] -- second appearence hidden by notation
+  exact finprod_mem_powerset_insert (hs.subset Set.diff_subset)
+    (notMem_diff_of_mem (Set.mem_singleton a))
 
 @[to_additive]
 theorem mul_finprod_cond_ne (a : α) (hf : (mulSupport f).Finite) :
@@ -1144,5 +1159,25 @@ theorem finprod_emb_domain' {f : α → β} (hf : Injective f) [DecidablePred (�
 theorem finprod_emb_domain (f : α ↪ β) [DecidablePred (· ∈ Set.range f)] (g : α → M) :
     (∏ᶠ b : β, if h : b ∈ Set.range f then g (Classical.choose h) else 1) = ∏ᶠ a : α, g a :=
   finprod_emb_domain' f.injective g
+
+@[simp, norm_cast]
+lemma Nat.cast_finprod [Finite ι] {R : Type*} [CommSemiring R] (f : ι → ℕ) :
+    ↑(∏ᶠ x, f x : ℕ) = ∏ᶠ x, (f x : R) :=
+  (Nat.castRingHom R).map_finprod f.mulSupport.toFinite
+
+@[simp, norm_cast]
+lemma Nat.cast_finprod_mem {s : Set ι} (hs : s.Finite) {R : Type*} [CommSemiring R] (f : ι → ℕ) :
+    ↑(∏ᶠ x ∈ s, f x : ℕ) = ∏ᶠ x ∈ s, (f x : R) :=
+  (Nat.castRingHom R).map_finprod_mem _ hs
+
+@[simp, norm_cast]
+lemma Nat.cast_finsum [Finite ι] {M : Type*} [AddCommMonoidWithOne M]
+    (f : ι → ℕ) : ↑(∑ᶠ x, f x : ℕ) = ∑ᶠ x, (f x : M) :=
+  (Nat.castAddMonoidHom M).map_finsum f.support.toFinite
+
+@[simp, norm_cast]
+lemma Nat.cast_finsum_mem {s : Set ι} (hs : s.Finite) {M : Type*}
+    [AddCommMonoidWithOne M] (f : ι → ℕ) : ↑(∑ᶠ x ∈ s, f x : ℕ) = ∑ᶠ x ∈ s, (f x : M) :=
+  (Nat.castAddMonoidHom M).map_finsum_mem _ hs
 
 end type
