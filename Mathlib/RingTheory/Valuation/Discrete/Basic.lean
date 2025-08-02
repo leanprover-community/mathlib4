@@ -462,7 +462,7 @@ theorem exists_lift_of_le_one {x : K} (H : ((maximalIdeal A).valuation K) x ≤ 
       Valuation.map_mul, Integers.one_of_isUnit' u.isUnit (valuation_le_one _), one_mul,
       mul_inv, ← mul_assoc, Valuation.map_mul, map_mul, map_inv₀, map_inv₀,
       Integers.one_of_isUnit' w.isUnit (valuation_le_one _), inv_one, mul_one, ← div_eq_mul_inv,
-      ← map_div₀, ← @IsFractionRing.mk'_mk_eq_div _ _ K _ _ _ (π ^ n) _ hb,
+      ← map_div₀, ← IsFractionRing.mk'_mk_eq_div hb,
       valuation_of_mk', map_pow, map_pow] at H
     have h_mn : m ≤ n := by
       have v_π_lt_one := (intValuation_lt_one_iff_dvd (maximalIdeal A) π).mpr
