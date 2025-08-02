@@ -773,7 +773,7 @@ protected theorem push_pull (f : α → β) (F : Filter α) (G : Filter β) :
     apply mem_inf_of_inter (image_mem_map V_in) Z_in
     calc
       f '' V ∩ Z = f '' (V ∩ f ⁻¹' Z) := by rw [image_inter_preimage]
-      _ ⊆ f '' (V ∩ W) := image_subset _ (inter_subset_inter_right _ ‹_›)
+      _ ⊆ f '' (V ∩ W) := by gcongr
       _ = f '' (f ⁻¹' U) := by rw [h]
       _ ⊆ U := image_preimage_subset f U
 

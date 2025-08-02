@@ -89,7 +89,7 @@ theorem intrinsicFrontier_subset (hs : IsClosed s) : intrinsicFrontier 𝕜 s �
   image_subset_iff.2 (hs.preimage continuous_induced_dom).frontier_subset
 
 theorem intrinsicFrontier_subset_intrinsicClosure : intrinsicFrontier 𝕜 s ⊆ intrinsicClosure 𝕜 s :=
-  image_subset _ frontier_subset_closure
+  image_mono frontier_subset_closure
 
 theorem subset_intrinsicClosure : s ⊆ intrinsicClosure 𝕜 s :=
   fun x hx => ⟨⟨x, subset_affineSpan _ _ hx⟩, subset_closure hx, rfl⟩

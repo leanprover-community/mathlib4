@@ -813,7 +813,7 @@ theorem map_normalClosure (s : Set G) (f : G →* N) (hf : Surjective f) :
   apply le_antisymm
   · simp [map_le_iff_le_comap, normalClosure_le_normal, coe_comap,
       ← Set.image_subset_iff, subset_normalClosure]
-  · exact normalClosure_le_normal (Set.image_subset f subset_normalClosure)
+  · exact normalClosure_le_normal (Set.image_mono subset_normalClosure)
 
 theorem comap_normalClosure (s : Set N) (f : G ≃* N) :
     normalClosure (f ⁻¹' s) = (normalClosure s).comap f := by

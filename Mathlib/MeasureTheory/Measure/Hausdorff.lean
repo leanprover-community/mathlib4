@@ -700,8 +700,7 @@ theorem hausdorffMeasure_image_le (h : HolderOnWith C r f s) (hr : 0 < r) {d : �
     refine le_iSup₂_of_le δ δ0 <| iInf₂_mono' fun t hst ↦
       ⟨fun n => f '' (t n ∩ s), ?_, iInf_mono' fun htδ ↦
         ⟨fun n => (h.ediam_image_inter_le (t n)).trans (H (htδ n)).le, ?_⟩⟩
-    · rw [← image_iUnion, ← iUnion_inter]
-      exact image_subset _ (subset_inter hst Subset.rfl)
+    · grw [← image_iUnion, ← iUnion_inter, ← hst, inter_self]
     · refine ENNReal.tsum_le_tsum fun n => ?_
       simp only [iSup_le_iff, image_nonempty]
       intro hft

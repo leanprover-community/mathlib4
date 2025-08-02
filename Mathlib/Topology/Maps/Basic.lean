@@ -350,7 +350,7 @@ theorem isOpen_range (hf : IsOpenMap f) : IsOpen (range f) := by
 
 theorem image_mem_nhds (hf : IsOpenMap f) {x : X} {s : Set X} (hx : s ∈ 𝓝 x) : f '' s ∈ 𝓝 (f x) :=
   let ⟨t, hts, ht, hxt⟩ := mem_nhds_iff.1 hx
-  mem_of_superset (IsOpen.mem_nhds (hf t ht) (mem_image_of_mem _ hxt)) (image_subset _ hts)
+  mem_of_superset (IsOpen.mem_nhds (hf t ht) (mem_image_of_mem _ hxt)) (image_mono hts)
 
 theorem range_mem_nhds (hf : IsOpenMap f) (x : X) : range f ∈ 𝓝 (f x) :=
   hf.isOpen_range.mem_nhds <| mem_range_self _
@@ -471,7 +471,7 @@ protected theorem of_comp_surjective (hf : Surjective f) (hf' : Continuous f)
 
 theorem closure_image_subset (hf : IsClosedMap f) (s : Set X) :
     closure (f '' s) ⊆ f '' closure s :=
-  closure_minimal (image_subset _ subset_closure) (hf _ isClosed_closure)
+  closure_minimal (image_mono subset_closure) (hf _ isClosed_closure)
 
 theorem of_inverse {f' : Y → X} (h : Continuous f') (l_inv : LeftInverse f f')
     (r_inv : RightInverse f f') : IsClosedMap f := fun s hs => by

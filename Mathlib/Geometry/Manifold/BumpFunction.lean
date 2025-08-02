@@ -243,14 +243,14 @@ theorem isClosed_symm_image_closedBall :
 theorem tsupport_subset_symm_image_closedBall :
     tsupport f ⊆ (extChartAt I c).symm '' (closedBall (extChartAt I c c) f.rOut ∩ range I) := by
   rw [tsupport, support_eq_symm_image]
-  exact closure_minimal (image_subset _ <| inter_subset_inter_left _ ball_subset_closedBall)
+  exact closure_minimal (image_mono <| inter_subset_inter_left _ ball_subset_closedBall)
     f.isClosed_symm_image_closedBall
 
 theorem tsupport_subset_extChartAt_source : tsupport f ⊆ (extChartAt I c).source :=
   calc
     tsupport f ⊆ (extChartAt I c).symm '' (closedBall (extChartAt I c c) f.rOut ∩ range I) :=
       f.tsupport_subset_symm_image_closedBall
-    _ ⊆ (extChartAt I c).symm '' (extChartAt I c).target := image_subset _ f.closedBall_subset
+    _ ⊆ (extChartAt I c).symm '' (extChartAt I c).target := image_mono f.closedBall_subset
     _ = (extChartAt I c).source := (extChartAt I c).symm_image_target_eq_source
 
 theorem tsupport_subset_chartAt_source : tsupport f ⊆ (chartAt H c).source := by
