@@ -1,5 +1,26 @@
+/-
+Copyright (c) 2025 Etienne Marion. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Etienne Marion
+-/
 import Mathlib.LinearAlgebra.Matrix.Hermitian
 import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
+
+/-!
+# Sesquilinear forms
+
+This file defines an abbreviation for sesquilinear maps. More precisely, given a star ring `R`
+and an `R`-module `M`, we define sesquilinear forms to be maps `f : M × M → R` satisfying
+
+* `f (c • x + y) z = star c * (f x z) + f y z` and
+* `f x (c • y + z) = c * (f x y) + f x z`.
+
+This is spelled as `M →ₗ⋆[R] M →ₗ[R] R`, and abbreviated to `SesquilinForm R M`.
+
+We define `SesquilinForm.toMatrix` and `SesquilinForm.ofMatrix` and prove that
+`f : SesquilinForm R M` is symmetric (in the sense of `LinearMap.IsSymm`) if and only if
+`f.toMatrix b` is Hermitian (in the sense of `Matrix.IsHermitian`) (for a certain basis `b`).
+-/
 
 open Module (Basis)
 open Set LinearMap Finset
