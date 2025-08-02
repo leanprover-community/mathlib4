@@ -67,11 +67,11 @@ attribute [deprecated HAdd.hAdd "Use (· + g) instead" (since := "2025-04-08")] 
 
 /-- A mixin for left cancellative multiplication. -/
 @[mk_iff] class IsLeftCancelMul (G : Type u) [Mul G] : Prop where
-  /-- Multiplication is left cancellative. -/
+  /-- Multiplication is left cancellative (i.e. left regular). -/
   protected mul_left_cancel (a : G) : IsLeftRegular a
 /-- A mixin for right cancellative multiplication. -/
 @[mk_iff] class IsRightCancelMul (G : Type u) [Mul G] : Prop where
-  /-- Multiplication is right cancellative. -/
+  /-- Multiplication is right cancellative (i.e. right regular). -/
   protected mul_right_cancel (a : G) : IsRightRegular a
 /-- A mixin for cancellative multiplication. -/
 @[mk_iff]
@@ -79,7 +79,7 @@ class IsCancelMul (G : Type u) [Mul G] : Prop extends IsLeftCancelMul G, IsRight
 
 /-- A mixin for left cancellative addition. -/
 class IsLeftCancelAdd (G : Type u) [Add G] : Prop where
-  /-- Addition is left cancellative. -/
+  /-- Addition is left cancellative (i.e. left regular). -/
   protected add_left_cancel (a : G) : IsAddLeftRegular a
 
 attribute [to_additive IsLeftCancelAdd] IsLeftCancelMul
@@ -87,7 +87,7 @@ attribute [to_additive] isLeftCancelMul_iff
 
 /-- A mixin for right cancellative addition. -/
 class IsRightCancelAdd (G : Type u) [Add G] : Prop where
-  /-- Addition is right cancellative. -/
+  /-- Addition is right cancellative (i.e. right regular). -/
   protected add_right_cancel (a : G) : IsAddRightRegular a
 
 attribute [to_additive IsRightCancelAdd] IsRightCancelMul
