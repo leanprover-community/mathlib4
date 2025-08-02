@@ -76,6 +76,9 @@ attribute [instance 900] LinearOrder.toDecidableLT
 attribute [instance 900] LinearOrder.toDecidableLE
 attribute [instance 900] LinearOrder.toDecidableEq
 
+instance : Lean.Grind.LinearOrder α where
+  le_total := LinearOrder.le_total
+
 lemma le_total : ∀ a b : α, a ≤ b ∨ b ≤ a := LinearOrder.le_total
 
 lemma le_of_not_ge : ¬a ≤ b → b ≤ a := (le_total a b).resolve_left

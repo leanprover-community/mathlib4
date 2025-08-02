@@ -94,6 +94,8 @@ def mathlibLabels : Array Label := #[
     dirs := #[
       "Mathlib" / "AlgebraicGeometry",
       "Mathlib" / "Geometry" / "RingedSpace"] },
+  { label := "t-algebraic-topology",
+    dirs := #["Mathlib" / "AlgebraicTopology"] },
   { label := "t-analysis" },
   { label := "t-category-theory" },
   { label := "t-combinatorics" },
@@ -134,9 +136,7 @@ def mathlibLabels : Array Label := #[
   { label := "t-order" },
   { label := "t-set-theory" },
   { label := "t-topology",
-    dirs := #[
-      "Mathlib" / "Topology",
-      "Mathlib" / "AlgebraicTopology"] },
+    dirs := #["Mathlib" / "Topology"] },
   { label := "CI",
     dirs := #[".github"] },
   { label := "IMO",
