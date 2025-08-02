@@ -44,6 +44,20 @@ for the category of types. -/
 def uliftYoneda : C ⥤ Cᵒᵖ ⥤ Type (max w v₁) :=
   yoneda ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{w}
 
+/-- If `C` is a category with `[Category.{v₁} C]`, this is the isomorphism
+`uliftYoneda.{v₁} (C := C) ≅ yoneda`. -/
+@[simps!]
+def uliftYonedaIsoYoneda :
+    uliftYoneda.{v₁} (C := C) ≅ yoneda :=
+  NatIso.ofComponents (fun _ ↦ NatIso.ofComponents (fun _ ↦ Equiv.ulift.toIso))
+
+/-- If `C` is a category with `[Category.{v₁} C]`, this is the isomorphism
+`uliftYoneda.{0} (C := C) ≅ yoneda`. -/
+@[simps!]
+def uliftYoneda₀IsoYoneda :
+    uliftYoneda.{0} (C := C) ≅ yoneda :=
+  NatIso.ofComponents (fun _ ↦ NatIso.ofComponents (fun _ ↦ Equiv.ulift.toIso))
+
 /-- The co-Yoneda embedding, as a functor from `Cᵒᵖ` into co-presheaves on `C`.
 -/
 @[simps]

@@ -119,8 +119,7 @@ def restrictedULiftYonedaHomEquiv' (P : Cᵒᵖ ⥤ Type (max w v₁ v₂)) (E :
   right_inv g := by
     ext X x
     apply ULift.down_injective
-    dsimp
-    rw [uliftYonedaEquiv_comp, Equiv.apply_symm_apply]
+    simp [uliftYonedaEquiv]
 
 @[reassoc]
 lemma restrictedULiftYonedaHomEquiv'_symm_naturality_right (P : Cᵒᵖ ⥤ Type (max w v₁ v₂)) {E E' : ℰ}

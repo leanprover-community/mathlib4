@@ -286,6 +286,13 @@ def costructuredArrowULiftYonedaEquivalence (F : Cᵒᵖ ⥤ Type max w v) :
     (fun f ↦ Quiver.Hom.unop_inj (by aesop))
   counitIso := NatIso.ofComponents (fun X ↦ CostructuredArrow.isoMk (Iso.refl _))
 
+/-- The equivalence of categories `costructuredArrowULiftYonedaEquivalence`
+commutes with the projections. -/
+def costructuredArrowULiftYonedaEquivalenceFunctorCompProjIso (F : Cᵒᵖ ⥤ Type max w v) :
+    (costructuredArrowULiftYonedaEquivalence.{w} F).functor ⋙ CostructuredArrow.proj _ _ ≅
+      (π F).leftOp :=
+  Iso.refl _
+
 end CategoryOfElements
 
 namespace Functor
