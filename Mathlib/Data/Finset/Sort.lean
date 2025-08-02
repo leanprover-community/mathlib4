@@ -29,39 +29,31 @@ def sort (s : Finset α) (r : α → α → Prop := by exact fun a b => a ≤ b)
     [DecidableRel r] [IsTrans α r] [IsAntisymm α r] [IsTotal α r] : List α :=
   Multiset.sort s.1 r
 
+section
+
+variable (f : α ↪ β) (s : Finset α)
 variable (r : α → α → Prop) [DecidableRel r] [IsTrans α r] [IsAntisymm α r] [IsTotal α r]
 variable (r' : β → β → Prop) [DecidableRel r'] [IsTrans β r'] [IsAntisymm β r'] [IsTotal β r']
 
 @[simp]
-theorem sort_val (s : Finset α) : Multiset.sort s.val r  = sort s r :=
+theorem sort_val : Multiset.sort s.val r  = sort s r :=
   rfl
 
 @[simp]
-theorem sort_mk {s : Multiset α} (h : s.Nodup) : sort ⟨s, h⟩ r = s.sort r := rfl
-
-@[simp]
-theorem sort_sorted (s : Finset α) : List.Sorted r (sort s r) :=
+theorem sort_sorted : List.Sorted r (sort s r) :=
   Multiset.sort_sorted _ _
 
 @[simp]
-theorem sort_eq (s : Finset α) : ↑(sort s r) = s.1 :=
+theorem sort_eq : ↑(sort s r) = s.1 :=
   Multiset.sort_eq _ _
 
 @[simp]
-theorem sort_nodup (s : Finset α) : (sort s r).Nodup :=
+theorem sort_nodup : (sort s r).Nodup :=
   (by rw [sort_eq]; exact s.2 : @Multiset.Nodup α (sort s r))
 
 @[simp]
-theorem sort_toFinset [DecidableEq α] (s : Finset α) : (sort s r).toFinset = s :=
-  List.toFinset_eq (sort_nodup r s) ▸ eq_of_veq (sort_eq r s)
-
-@[simp]
-theorem mem_sort {s : Finset α} {a : α} : a ∈ sort s r ↔ a ∈ s :=
-  Multiset.mem_sort _
-
-@[simp]
-theorem length_sort {s : Finset α} : (sort s r).length = s.card :=
-  Multiset.length_sort _
+theorem sort_toFinset [DecidableEq α] : (sort s r).toFinset = s :=
+  List.toFinset_eq (s.sort_nodup r) ▸ eq_of_veq (s.sort_eq r)
 
 @[simp]
 theorem sort_empty : sort ∅ r = [] :=
@@ -69,42 +61,62 @@ theorem sort_empty : sort ∅ r = [] :=
 
 @[simp]
 theorem sort_singleton (a : α) : sort {a} r = [a] :=
-  Multiset.sort_singleton r a
+  Multiset.sort_singleton a r
 
-theorem map_sort (f : α ↪ β) (s : Finset α)
+theorem map_sort
     (hs : ∀ a ∈ s, ∀ b ∈ s, r a b ↔ r' (f a) (f b)) :
     (s.sort r).map f = (s.map f).sort r' :=
   Multiset.map_sort _ _ _ _ hs
 
 theorem _root_.StrictMonoOn.map_finsetSort [LinearOrder α] [LinearOrder β]
-    (f : α ↪ β) (s : Finset α) (hf : StrictMonoOn f s) :
+    (hf : StrictMonoOn f s) :
     s.sort.map f = (s.map f).sort :=
   Finset.map_sort _ _ _ _ fun _a ha _b hb => (hf.le_iff_le ha hb).symm
-
-theorem sort_cons {a : α} {s : Finset α} (h₁ : ∀ b ∈ s, r a b) (h₂ : a ∉ s) :
-    sort (cons a s h₂) r = a :: sort s r := by
-  rw [sort, cons_val, Multiset.sort_cons r a _ h₁, sort_val]
-
-theorem sort_insert [DecidableEq α] {a : α} {s : Finset α} (h₁ : ∀ b ∈ s, r a b) (h₂ : a ∉ s) :
-    sort (insert a s) r = a :: sort s r := by
-  rw [← cons_eq_insert _ _ h₂, sort_cons r h₁]
 
 @[simp]
 theorem sort_range (n : ℕ) : sort (range n) = List.range n :=
   Multiset.sort_range n
 
 open scoped List in
-theorem sort_perm_toList (s : Finset α) : sort s r ~ s.toList := by
+theorem sort_perm_toList : sort s r ~ s.toList := by
   rw [← Multiset.coe_eq_coe]
   simp only [coe_toList, sort_eq]
 
 theorem _root_.List.toFinset_sort [DecidableEq α] {l : List α} (hl : l.Nodup) :
     sort l.toFinset r = l ↔ l.Sorted r := by
-  refine ⟨?_, List.eq_of_perm_of_sorted ((sort_perm_toList r _).trans (List.toFinset_toList hl))
-    (sort_sorted r _)⟩
+  refine ⟨?_, List.eq_of_perm_of_sorted ((sort_perm_toList _ r).trans (List.toFinset_toList hl))
+    (sort_sorted _ r)⟩
   intro h
   rw [← h]
-  exact sort_sorted r _
+  exact sort_sorted _ r
+
+end
+
+section
+
+variable {m : Multiset α} {s : Finset α}
+variable (r : α → α → Prop) [DecidableRel r] [IsTrans α r] [IsAntisymm α r] [IsTotal α r]
+
+@[simp]
+theorem sort_mk (h : m.Nodup) : sort ⟨m, h⟩ r = m.sort r := rfl
+
+@[simp]
+theorem mem_sort {a : α} : a ∈ sort s r ↔ a ∈ s :=
+  Multiset.mem_sort _
+
+@[simp]
+theorem length_sort : (sort s r).length = s.card :=
+  Multiset.length_sort _
+
+theorem sort_cons {a : α} (h₁ : ∀ b ∈ s, r a b) (h₂ : a ∉ s) :
+    sort (cons a s h₂) r = a :: sort s r := by
+  rw [sort, cons_val, Multiset.sort_cons a _ r h₁, sort_val]
+
+theorem sort_insert [DecidableEq α] {a : α} (h₁ : ∀ b ∈ s, r a b) (h₂ : a ∉ s) :
+    sort (insert a s) r = a :: sort s r := by
+  rw [← cons_eq_insert _ _ h₂, sort_cons r h₁]
+
+end
 
 end sort
 
