@@ -187,7 +187,7 @@ theorem eq_zero_of_polynomial_mem_map_range (I : Ideal R[X]) (x : ((Quotient.mk 
 
 /-- Given a domain `R`, if `R[X]` is a prinicpal ideal ring, then `R` is a field. -/
 lemma IsField.of_isPrincipalIdealRing_polynomial [IsDomain R] [IsPrincipalIdealRing R[X]] :
-   IsField R := by
+    IsField R := by
   have h : IsField (R[X] ⧸ span ({X - C 0} : Set R[X])) :=
     (Quotient.maximal_ideal_iff_isField_quotient (span ({X - C 0} : Set R[X]))).mp
     (PrincipalIdealRing.isMaximal_of_irreducible (irreducible_X_sub_C 0))
