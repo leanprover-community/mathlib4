@@ -1,0 +1,6 @@
+# macOS leaves these files everywhere:
+.DS_Store
+# Created by `lake exe cache get` if no home directory is available
+.cache
+# `lake` stores its files here:
+.lake
