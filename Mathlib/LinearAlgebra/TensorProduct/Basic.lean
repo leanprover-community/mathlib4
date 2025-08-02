@@ -135,7 +135,7 @@ unsafe instance [Repr M] [Repr N] : Repr (M ⊗[R] N) where
       Std.Format.group f!"{reprPrec mi 100} ⊗ₜ {reprPrec ni 101}"
     match parts with
     | [] => f!"0"
-    | [p] => (if p > 100 then (Std.Format.bracketFill "(" · ")") else (.fill ·)) p
+    | [part] => if p > 100 then Std.Format.bracketFill "(" part ")" else .fill part
     | parts =>
       (if p > 65 then (Std.Format.bracketFill "(" · ")") else (.fill ·)) <|
         .joinSep parts f!" +{Std.Format.line}"
