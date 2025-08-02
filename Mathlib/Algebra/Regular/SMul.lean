@@ -235,11 +235,15 @@ protected lemma IsSMulRegular.eq_zero_of_smul_eq_zero [Zero M] [SMulZeroClass R 
 
 end SMulZeroClass
 
-variable {M} in
-lemma isSMulRegular_iff_eq_zero_of_smul [AddGroup M] [DistribSMul R M] {r : R} :
+lemma isSMulRegular_iff_smul_eq_zero_imp_eq_zero [AddGroup M] [DistribSMul R M] (r : R) :
     IsSMulRegular M r ↔ ∀ m : M, r • m = 0 → m = 0 where
   mp h _ := h.eq_zero_of_smul_eq_zero
   mpr h m₁ m₂ eq := sub_eq_zero.mp <| h _ <| by simp_rw [smul_sub, eq, sub_self]
+
+variable {M} in
+lemma isSMulRegular_of_smul_eq_zero_imp_eq_zero [AddGroup M] [DistribSMul R M] {r : R}
+    (h : ∀ x : M, r • x = 0 → x = 0) : IsSMulRegular M r :=
+  (isSMulRegular_iff_smul_eq_zero_imp_eq_zero M r).mpr h
 
 lemma Equiv.isSMulRegular_congr {R S M M'} [SMul R M] [SMul S M'] {e : M ≃ M'}
     {r : R} {s : S} (h : ∀ x, e (r • x) = s • e x) :

@@ -949,7 +949,7 @@ end MulSemiringActionHom
 
 end DistribMulAction
 
-lemma of_injective {R S M : Type*} [SMul R M] [SMul R S] [SMul S M] [IsScalarTower R S M]
+lemma IsSMulRegular.of_injective {R M : Type*} [SMul R M]
     {N F} [SMul R N] [FunLike F M N] [MulActionHomClass F R M N]
     (f : F) {r : R} (h1 : Function.Injective f) (h2 : IsSMulRegular N r) :
     IsSMulRegular M r := fun x y h3 => h1 <| h2 <|

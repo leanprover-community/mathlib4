@@ -71,26 +71,9 @@ lemma isSMulRegular_algebraMap_iff [CommSemiring R] [Semiring S] [Algebra R S]
 
 section Ring
 
-variable (M) [Ring R] [AddCommGroup M] [Module R M]
+variable [Ring R] [AddCommGroup M] [Module R M]
     [AddCommGroup M'] [Module R M'] [AddCommGroup M''] [Module R M'']
     (N : Submodule R M) (r : R)
-
-lemma isSMulRegular_iff_smul_eq_zero_imp_eq_zero :
-    IsSMulRegular M r ↔ ∀ x : M, r • x = 0 → x = 0 :=
-  Iff.trans (Module.toAddMonoidEnd R M r).ker_eq_bot_iff.symm
-    <| AddSubgroup.eq_bot_iff_forall _
-
-lemma isSMulRegular_iff_mem_nonZeroSMulDivisors :
-    IsSMulRegular M r ↔ r ∈ nonZeroSMulDivisors R M :=
-  isSMulRegular_iff_smul_eq_zero_imp_eq_zero M r
-
-variable {M r}
-
-lemma isSMulRegular_of_smul_eq_zero_imp_eq_zero
-    (h : ∀ x : M, r • x = 0 → x = 0) : IsSMulRegular M r :=
-  (isSMulRegular_iff_smul_eq_zero_imp_eq_zero M r).mpr h
-
-variable (r)
 
 lemma isSMulRegular_on_submodule_iff_mem_imp_smul_eq_zero_imp_eq_zero :
     IsSMulRegular N r ↔ ∀ x ∈ N, r • x = 0 → x = 0 :=

@@ -240,7 +240,7 @@ lemma IsSMulRegular.mem_nonZeroSMulDivisors {M : Type*} [Zero M] [MulActionWithZ
 
 lemma isSMulRegular_iff_mem_nonZeroSMulDivisors {M : Type*} [AddGroup M] [DistribMulAction M₀ M]
     {m₀ : M₀} : IsSMulRegular M m₀ ↔ m₀ ∈ nonZeroSMulDivisors M₀ M :=
-  isSMulRegular_iff_eq_zero_of_smul
+  isSMulRegular_iff_smul_eq_zero_imp_eq_zero ..
 
 variable [FunLike F M₀ M₀']
 
