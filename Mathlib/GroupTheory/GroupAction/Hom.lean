@@ -7,6 +7,7 @@ Authors: Kenny Lau, Antoine Chambert-Loir
 import Mathlib.Algebra.Group.Hom.CompTypeclasses
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Notation.Prod
+import Mathlib.Algebra.Regular.SMul
 import Mathlib.Algebra.Ring.Action.Basic
 
 /-!
@@ -947,3 +948,9 @@ def inverse {S₁ : Type*} [Semiring S₁] [MulSemiringAction M S₁]
 end MulSemiringActionHom
 
 end DistribMulAction
+
+lemma of_injective {R S M : Type*} [SMul R M] [SMul R S] [SMul S M] [IsScalarTower R S M]
+    {N F} [SMul R N] [FunLike F M N] [MulActionHomClass F R M N]
+    (f : F) {r : R} (h1 : Function.Injective f) (h2 : IsSMulRegular N r) :
+    IsSMulRegular M r := fun x y h3 => h1 <| h2 <|
+  (map_smulₛₗ f r x).symm.trans ((congrArg f h3).trans (map_smulₛₗ f r y))

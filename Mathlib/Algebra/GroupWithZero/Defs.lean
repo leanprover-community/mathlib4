@@ -84,7 +84,7 @@ theorem isCancelMulZero_iff_forall_isRegular {M₀} [Mul M₀] [Zero M₀] :
 
 /-- Predicate typeclass for expressing that `a * b = 0` implies `a = 0` or `b = 0`
 for all `a` and `b` of type `G₀`. -/
-class NoZeroDivisors (M₀ : Type*) [Mul M₀] [Zero M₀] : Prop where
+@[mk_iff] class NoZeroDivisors (M₀ : Type*) [Mul M₀] [Zero M₀] : Prop where
   /-- For all `a` and `b` of `G₀`, `a * b = 0` implies `a = 0` or `b = 0`. -/
   eq_zero_or_eq_zero_of_mul_eq_zero : ∀ {a b : M₀}, a * b = 0 → a = 0 ∨ b = 0
 
@@ -258,6 +258,21 @@ variable [MulZeroClass M₀]
 theorem mul_eq_zero_of_left {a : M₀} (h : a = 0) (b : M₀) : a * b = 0 := h.symm ▸ zero_mul b
 
 theorem mul_eq_zero_of_right (a : M₀) {b : M₀} (h : b = 0) : a * b = 0 := h.symm ▸ mul_zero a
+
+lemma noZeroDivisors_iff_eq_zero_of_mul_left :
+    NoZeroDivisors M₀ ↔ ∀ x : M₀, x ≠ 0 → ∀ y, x * y = 0 → y = 0 := by
+  simp only [noZeroDivisors_iff, or_iff_not_imp_left]
+  exact ⟨fun h a ha b eq ↦ h eq ha, fun h a b eq ha ↦ h a ha b eq⟩
+
+lemma noZeroDivisors_iff_eq_zero_of_mul_right :
+    NoZeroDivisors M₀ ↔ ∀ x : M₀, x ≠ 0 → ∀ y, y * x = 0 → y = 0 := by
+  simp only [noZeroDivisors_iff, or_iff_not_imp_right]
+  exact ⟨fun h b hb a eq ↦ h eq hb, fun h a b eq hb ↦ h b hb a eq⟩
+
+lemma noZeroDivisors_iff_eq_zero_of_mul :
+    NoZeroDivisors M₀ ↔ ∀ x : M₀, x ≠ 0 → (∀ y, x * y = 0 → y = 0) ∧ (∀ y, y * x = 0 → y = 0) := by
+  simp only [forall_and, ← noZeroDivisors_iff_eq_zero_of_mul_left,
+    ← noZeroDivisors_iff_eq_zero_of_mul_right, and_self]
 
 variable [NoZeroDivisors M₀] {a b : M₀}
 
