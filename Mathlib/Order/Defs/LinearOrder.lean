@@ -84,6 +84,9 @@ def LinearOrder.toDecidableGT : DecidableGT α := fun a b => toDecidableLT b a
 @[to_dual existing toDecidableLE]
 def LinearOrder.toDecidableGE : DecidableGE α := fun a b => toDecidableLE b a
 
+instance : Lean.Grind.LinearOrder α where
+  le_total := LinearOrder.le_total
+
 @[to_dual self (reorder := 3 4)]
 lemma le_total : ∀ a b : α, a ≤ b ∨ b ≤ a := LinearOrder.le_total
 
