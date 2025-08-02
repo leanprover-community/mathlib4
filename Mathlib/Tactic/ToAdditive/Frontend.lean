@@ -1244,7 +1244,7 @@ def elabToAdditive : Syntax → CoreM Config
 mutual
 /-- Apply attributes to the multiplicative and additive declarations. -/
 partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr src tgt : Name) :
-  TermElabM (Array Name) := do
+    TermElabM (Array Name) := do
   -- we only copy the `instance` attribute, since `@[to_additive] instance` is nice to allow
   copyInstanceAttribute src tgt
   -- Warn users if the multiplicative version has an attribute
