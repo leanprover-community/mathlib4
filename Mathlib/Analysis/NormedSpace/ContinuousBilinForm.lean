@@ -6,42 +6,44 @@ Authors: Etienne Marion
 import Mathlib.LinearAlgebra.SesquilinearForm.IsPosSemidef
 
 /-!
-# Continuous bilinear forms
+# Continuous sesquilinear forms
 
-Define an abbreviation for continuous bilinear forms.
+Define an abbreviation for continuous sesquilinear forms, i.e. `E →L⋆[𝕜] E →L[𝕜] 𝕜` for `RCLike 𝕜`.
+This is the type of continuous maps `f : E × E → 𝕜` which are antilinear in the first coordinate
+and linear in the second coordinate.
 
 ## Main definitions
 
-* `ContinuousBilinForm.toMatrix`: The matrix representing a continuous bilinear form on a
+* `ContinuousSesquilinForm.toMatrix`: The matrix representing a continuous sesquilinear form on a
   finite dimensional space.
-* `ContinuousBilinForm.ofMatrix`: The continuous bilinear form represented by a matrix.
-* `ContinuousBilinForm.inner`: The inner product as a continuous bilinear form.
+* `ContinuousSesquilinForm.ofMatrix`: The continuous sesquilinear form represented by a matrix.
+* `ContinuousSesquilinForm.inner`: The inner product as a continuous sesquilinear form.
 
 ## Implementation notes
 
-We choose to redefine `ContinuousBilinForm.toMatrix` on top of `LinearMap.BilinForm.toMatrix`
+We choose to redefine `ContinuousSesquilinForm.toMatrix` on top of `SesquilinForm.toMatrix`
 to allow for dot notation.
 
 ## Tags
 
-continuous bilinear form
+continuous sesquilinear form
 -/
 
 open Module (Basis)
 
 open scoped Matrix ComplexOrder
 
-namespace ContinuousBilinForm
+namespace ContinuousSesquilinForm
 
 variable {𝕜 E n : Type*} [NormedAddCommGroup E] [RCLike 𝕜] [NormedSpace 𝕜 E]
 
 variable (𝕜 E) in
-/-- The type of continuous bilinear forms. -/
-abbrev _root_.ContinuousBilinForm := E →L⋆[𝕜] E →L[𝕜] 𝕜
+/-- The type of continuous sesquilinear forms. -/
+abbrev _root_.ContinuousSesquilinForm := E →L⋆[𝕜] E →L[𝕜] 𝕜
 
-variable (b : Basis n 𝕜 E) (f : ContinuousBilinForm 𝕜 E)
+variable (b : Basis n 𝕜 E) (f : ContinuousSesquilinForm 𝕜 E)
 
-/-- The underlying bilinear form of a continuous bilinear form -/
+/-- The underlying sesquilinear form of a continuous sesquilinear form -/
 def toSesquilinForm : SesquilinForm 𝕜 E where
   toFun x := f x
   map_add' x y := by simp
@@ -54,7 +56,7 @@ section Matrix
 
 section toMatrix
 
-/-- A continuous bilinear map on a finite dimensional space can be represented by a matrix. -/
+/-- A continuous sesquilinear map on a finite dimensional space can be represented by a matrix. -/
 noncomputable def toMatrix : Matrix n n 𝕜 := f.toSesquilinForm.toMatrix b
 
 lemma toMatrix_def : f.toMatrix b = f.toSesquilinForm.toMatrix b := rfl
@@ -79,8 +81,8 @@ section ofMatrix
 
 variable [Fintype n] [DecidableEq n] (b : Basis n 𝕜 E) (M : Matrix n n 𝕜)
 
-/-- The continuous bilinear form represented by a matrix. -/
-noncomputable def ofMatrix : ContinuousBilinForm 𝕜 E :=
+/-- The continuous sesquilinear form represented by a matrix. -/
+noncomputable def ofMatrix : ContinuousSesquilinForm 𝕜 E :=
   haveI : FiniteDimensional 𝕜 E := FiniteDimensional.of_fintype_basis b
   letI f : E →ₗ⋆[𝕜] E →L[𝕜] 𝕜 :=
     { toFun x := (SesquilinForm.ofMatrix b M x).toContinuousLinearMap
@@ -158,9 +160,9 @@ variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 open scoped InnerProductSpace
 
 variable (𝕜 E) in
-/-- The inner product as continuous bilinear form.
+/-- The inner product as continuous sesquilinear form.
 -/
-protected noncomputable def inner : ContinuousBilinForm 𝕜 E :=
+protected noncomputable def inner : ContinuousSesquilinForm 𝕜 E :=
   letI f : SesquilinForm 𝕜 E := LinearMap.mk₂'ₛₗ (starRingEnd 𝕜) (RingHom.id 𝕜)
     (fun x y ↦ ⟪x, y⟫_𝕜)
     inner_add_left
@@ -171,7 +173,7 @@ protected noncomputable def inner : ContinuousBilinForm 𝕜 E :=
     by simpa [f] using norm_inner_le_norm x y
 
 @[simp]
-lemma inner_apply (x y : E) : ContinuousBilinForm.inner 𝕜 E x y = ⟪x, y⟫_𝕜 := rfl
+lemma inner_apply (x y : E) : ContinuousSesquilinForm.inner 𝕜 E x y = ⟪x, y⟫_𝕜 := rfl
 
 lemma isPosSemidef_inner : IsPosSemidef (.inner 𝕜 E) where
   eq := by simp
@@ -181,10 +183,10 @@ lemma isPosSemidef_inner : IsPosSemidef (.inner 𝕜 E) where
 
 variable [Fintype n] [DecidableEq n] (b : OrthonormalBasis n 𝕜 E)
 
-lemma inner_toMatrix_eq_one : (ContinuousBilinForm.inner 𝕜 E).toMatrix b.toBasis = 1 := by
+lemma inner_toMatrix_eq_one : (ContinuousSesquilinForm.inner 𝕜 E).toMatrix b.toBasis = 1 := by
   ext i j
   simp [Matrix.one_apply, b.inner_eq_ite]
 
 end Inner
 
-end ContinuousBilinForm
+end ContinuousSesquilinForm
