@@ -3,8 +3,6 @@ Copyright (c) 2025 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.LinearAlgebra.Matrix.BilinearForm
-import Mathlib.LinearAlgebra.Matrix.SchurComplement
 import Mathlib.LinearAlgebra.SesquilinearForm.IsPosSemidef
 
 /-!
@@ -154,7 +152,7 @@ lemma isPosSemidef_iff_posSemidef_toMatrix :
 end IsPosSemidef
 
 section Inner
-#where
+
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 open scoped InnerProductSpace
