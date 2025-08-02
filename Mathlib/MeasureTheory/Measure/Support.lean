@@ -242,16 +242,15 @@ lemma mem_support_restrict [OpensMeasurableSpace X] {s : Set X} {x : X} :
   constructor
   · intro h
     rw [(nhds_basis_opens x).mem_measureSupport] at h
-    have A := nhds_basis_opens x
-    have B := nhdsWithin_basis_open x s
-    have C := Filter.HasBasis.frequently_smallSets (hl := B) (hq := pos_mono μ)
-    rw [C]
+    rw [Filter.HasBasis.frequently_smallSets (hl := nhdsWithin_basis_open x s) (hq := pos_mono μ)]
     intro i hi
     have D := h i hi
     rw [restrict_apply] at D
     · exact D
     · exact IsOpen.measurableSet hi.2
-  · sorry
+  · --have A := nhds_basis_opens x
+    --have B := nhdsWithin_basis_open x s
+    sorry
 
 /-
  For this reverse direction, maybe we need a nhdsWithin version of `mem_measureSupport`?
