@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2025 Joseph Myers. All rights reserved.
+Copyright (c) 2025 Chu Zheng. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chu Zheng
 -/
@@ -48,11 +48,8 @@ namespace Simplex
 
 open Finset AffineSubspace EuclideanGeometry
 
-variable {k : Type*} {V : Type*} {P : Type*}
-variable [DivisionRing k] [AddCommGroup V]
-variable [Module k V]
-variable [AffineSpace V P]
-variable {n : ℕ}
+variable {k : Type*} {V : Type*} {P : Type*} [DivisionRing k] [AddCommGroup V] [Module k V]
+[AffineSpace V P] {n : ℕ}
 
 /-- Centroid is an affineCombination of the points in simplex with centroid weight. -/
 abbrev centroid (t : Affine.Simplex k P n) : P := Finset.univ.centroid k t.points
@@ -71,16 +68,15 @@ theorem centroid_not_mem_affineSpan_compl [CharZero k] (s : Simplex k P n) (i : 
     s.centroid ∉ affineSpan k (s.points '' {i}ᶜ) := by
   intro h
   rw [s.centroid_eq_affine_combination] at h
-  set w:= (centroidWeights k (univ: Finset (Fin (n + 1)))) with wdef
-  have hw: ∑ i, w i = 1 := by
+  set w := (centroidWeights k (univ : Finset (Fin (n + 1)))) with wdef
+  have hw : ∑ i, w i = 1 := by
     rw [sum_centroidWeights_eq_one_of_card_ne_zero]
     simp
-  have hi: i ∈ univ := by simp
+  have hi : i ∈ univ := by simp
   have hi' : i ∉ ({i}ᶜ : Set (Fin (n+1))) := by simp
-  have h1:= AffineIndependent.eq_zero_of_affineCombination_mem_affineSpan s.independent hw h hi hi'
+  have h1 := AffineIndependent.eq_zero_of_affineCombination_mem_affineSpan s.independent hw h hi hi'
   have h2 : w i = (1:k)/(n+1) := by
-    rw [wdef, centroidWeights_apply, card_univ, Fintype.card_fin]
-    simp only [Nat.cast_add, Nat.cast_one]
+    rw [wdef, centroidWeights_apply, card_univ, Fintype.card_fin, Nat.cast_add, Nat.cast_one]
     field_simp
   rw [h2] at h1
   field_simp at h1
@@ -162,9 +158,7 @@ theorem faceOppositeCentroid_eq_affineCombination (s : Affine.Simplex k P n) (i 
     s.faceOppositeCentroid i = ((affineCombination k {i}ᶜ s.points) fun _ ↦ (↑n)⁻¹) := by
   unfold faceOppositeCentroid
   have : s.faceOpposite i = s.face (fs := {i}ᶜ) (by simp [card_compl, NeZero.one_le]) := by rfl
-  rw [this]
-  unfold centroid
-  rw [face_centroid_eq_centroid, centroid_def, centroidWeights_eq_const, card_compl]
+  rw [this, centroid, face_centroid_eq_centroid, centroid_def, centroidWeights_eq_const, card_compl]
   simp only [Fintype.card_fin, card_singleton, add_tsub_cancel_right]
   rfl
 
@@ -173,26 +167,17 @@ displacements. -/
 theorem faceOppositeCentroid_vsub_point_eq_smul_sum_vsub [CharZero k] (s : Affine.Simplex k P n)
     (i : Fin (n + 1)) :
     s.faceOppositeCentroid i -ᵥ (s.points i) = (n : k)⁻¹ • ∑ x, (s.points x -ᵥ s.points i) := by
-  rw [faceOppositeCentroid_eq_affineCombination]
-  rw [affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one _ _ _
-    ?_ (s.points i)]
-  · simp only [weightedVSubOfPoint_apply, vadd_vsub]
-    have h (i: Fin (n+1)) : ∑ i_1 ∈ {i}ᶜ, (n:k)⁻¹ • (s.points i_1 -ᵥ s.points i) =
-      ∑ i_1 : (Fin (n + 1)) , ((n:k)⁻¹ • (s.points i_1 -ᵥ s.points i)) :=by
-      rw [←Finset.sum_compl_add_sum {i}]
-      simp
-    rw [h i]
-    field_simp
-    rw [smul_sum]
-  simp [sum_const, card_compl]
-  field_simp
-  rw [div_self]
-  exact NeZero.ne (n:k)
+  have hsum : ∑ i ∈ {i}ᶜ, (n : k)⁻¹ = 1 := by
+    field_simp [sum_const, card_compl, div_self (NeZero.ne (n : k))]
+  rw [faceOppositeCentroid_eq_affineCombination,
+    affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one _ _ _ hsum (s.points i),
+    weightedVSubOfPoint_apply, vadd_vsub, ← Finset.sum_compl_add_sum {i}, sum_singleton,
+    vsub_self, add_zero, smul_sum]
 
 /-- The faceOppositeCentroid equals the average displacement from a vertex plus that vertex. -/
 theorem faceOppositeCentroid_eq_sum_vsub_vadd [CharZero k] (s : Affine.Simplex k P n)
     (i : Fin (n + 1)) :
-    s.faceOppositeCentroid i = (n:k)⁻¹ • ∑ x, (s.points x -ᵥ s.points i) +ᵥ (s.points i) := by
+    s.faceOppositeCentroid i = (n : k)⁻¹ • ∑ x, (s.points x -ᵥ s.points i) +ᵥ (s.points i) := by
   rw [←faceOppositeCentroid_vsub_point_eq_smul_sum_vsub s i, vsub_vadd]
 
 /-- The vector from a vertex to its faceOppositeCentroid equals the average of reversed
@@ -232,13 +217,12 @@ theorem faceOppositeCentroid_vsub_faceOppositeCentroid [CharZero k] (s : Affine.
   simp_rw [h1 i, h1 j, sum_sub_distrib]
   field_simp
   rw [smul_sub, smul_sub, one_div, sub_sub_sub_cancel_left, ← smul_sub, ← smul_sub,
-    vsub_sub_vsub_cancel_right]
-  have : (s.points i -ᵥ s.points j) = -(s.points j -ᵥ s.points i) := by simp
-  rw [this, ← sub_eq_add_neg, add_smul, sub_eq_iff_eq_add ,one_smul, smul_add, add_comm]
+    vsub_sub_vsub_cancel_right, ← neg_vsub_eq_vsub_rev (s.points j) (s.points i), ← sub_eq_add_neg,
+    add_smul, sub_eq_iff_eq_add ,one_smul, smul_add, add_comm]
   field_simp
   have : ((1:k) / ↑n) • n • (s.points j -ᵥ s.points i) = (n : k)⁻¹ •
       (n : k) • (s.points j -ᵥ s.points i) := by
-    norm_cast0
+    norm_cast
     congr 1
     rw [one_div]
   rw [this, smul_smul, inv_eq_one_div, one_div_mul_cancel (NeZero.ne (n : k)), one_smul]
@@ -294,6 +278,45 @@ theorem point_eq_smul_vsub_vadd_centroid [CharZero k] (s : Simplex k P n) (i : F
     s.points i = (-n : k) • (s.faceOppositeCentroid i -ᵥ s.centroid) +ᵥ s.centroid := by
   rw [← neg_vsub_eq_vsub_rev, neg_smul_neg, ← point_vsub_centroid_eq_smul_vsub, vsub_vadd]
 
+/-- Replacing any vertex of a simplex with its centroid yields an affine independent set. -/
+theorem affineIndependent_centroid_replace_point [CharZero k] (s : Simplex k P n)
+    (i : Fin (n + 1)) : AffineIndependent k fun x => if x = i then s.centroid else s.points x := by
+  set p : Fin (n + 1) → P := fun x => if x = i then s.centroid else s.points x with hp
+  have hi : p i ∉ affineSpan k (p '' {x : Fin (n+1) | x ≠ i}) := by
+    simp_rw [hp, if_pos]
+    have h : (p '' {x : Fin (n+1) | x ≠ i}) = s.points '' {i}ᶜ := by ext x; simp; grind
+    rw [h]
+    exact centroid_not_mem_affineSpan_compl s i
+  apply AffineIndependent.affineIndependent_of_notMem_span ?_ hi
+  have hsub := (s.faceOpposite i).independent.range
+  set q : {y // y ≠ i} → P := fun x => if x.val = i then s.centroid else s.points x
+  have hq: Set.range q = Set.range (s.faceOpposite i).points :=by
+    simp
+    ext x
+    unfold q
+    constructor
+    · intro hx
+      simp at hx
+      obtain ⟨a, ha1,ha2⟩ := hx
+      rw [if_neg (by simp [ha1])] at ha2
+      rw [←ha2]
+      tauto
+    · intro hx
+      simp at hx
+      obtain ⟨a, ha⟩ := hx
+      simp only [ne_eq, Set.mem_range, Subtype.exists]
+      grind
+  rw [← hq] at hsub
+  refine AffineIndependent.of_set_of_injective hsub ?_
+  have q_inj: Function.Injective q := by
+    unfold q
+    intro x y hxy
+    simp at hxy
+    rw [if_neg (by grind), if_neg (by grind)] at hxy
+    apply s.independent.injective at hxy
+    grind
+  exact q_inj
+
 /-- The centroid, a vertex, and the corresponding faceOppositeCentroid of a simplex are collinear.
 -/
 theorem collinear_point_centroid_faceOppositeCentroid [CharZero k] (s : Simplex k P n)
@@ -338,55 +361,14 @@ theorem median_eq_affineSpan_point_centroid [CharZero k] (s : Simplex k P n) (i 
     apply affineSpan_pair_le_of_right_mem
     have h : s.faceOppositeCentroid i = (-1 / (n:k)) • (s.points i -ᵥ s.centroid) +ᵥ s.centroid
         := by
-      rw[point_eq_smul_vsub_vadd_centroid, vadd_vsub, smul_smul]
-      field_simp
-      rw [div_mul_cancel₀ _ (NeZero.ne (n:k)), neg_one_smul,neg_neg, vsub_vadd]
+      rw [point_eq_smul_vsub_vadd_centroid, vadd_vsub, smul_smul, mul_neg, neg_smul,
+        div_mul_cancel₀ _ (NeZero.ne (n:k)), neg_one_smul,neg_neg, vsub_vadd]
     rw [h]
     exact smul_vsub_rev_vadd_mem_affineSpan_pair _ _ _
   have h2 : affineSpan k {s.points i, s.centroid} ≤ s.median i := by
     rw [median]
-    apply affineSpan_pair_le_of_right_mem
-    exact centroid_mem_median s i
+    exact affineSpan_pair_le_of_right_mem (centroid_mem_median s i)
   exact le_antisymm h1 h2
-
-/-- Replacing any vertex of a simplex with its centroid yields an affine independent set. -/
-theorem affineIndependent_centroid_replace_point [CharZero k] [NeZero n] (s : Simplex k P n)
-    (i : Fin (n + 1)) : AffineIndependent k fun x => if x = i then s.centroid else s.points x := by
-  set p : Fin (n + 1) → P := fun x => if x = i then s.centroid else s.points x with hp
-  have hi : p i ∉ affineSpan k (p '' {x : Fin (n+1) | x ≠ i}) := by
-    simp_rw [hp, if_pos]
-    have h : (p '' {x : Fin (n+1) | x ≠ i}) = s.points '' {i}ᶜ := by ext x; simp; grind
-    rw [h]
-    exact centroid_not_mem_affineSpan_compl s i
-  apply AffineIndependent.affineIndependent_of_notMem_span ?_ hi
-  have hsub := (s.faceOpposite i).independent.range
-  set q : {y // y ≠ i} → P := fun x => if x.val = i then s.centroid else s.points x
-  have hq: Set.range q = Set.range (s.faceOpposite i).points :=by
-    simp
-    ext x
-    unfold q
-    constructor
-    · intro hx
-      simp at hx
-      obtain ⟨a, ha1,ha2⟩ := hx
-      rw [if_neg (by simp [ha1])] at ha2
-      rw [←ha2]
-      tauto
-    · intro hx
-      simp at hx
-      obtain ⟨a, ha⟩ := hx
-      simp only [ne_eq, Set.mem_range, Subtype.exists]
-      grind
-  rw [← hq] at hsub
-  refine AffineIndependent.of_set_of_injective hsub ?_
-  have q_inj: Function.Injective q := by
-    unfold q
-    intro x y hxy
-    simp at hxy
-    rw [if_neg (by grind), if_neg (by grind)] at hxy
-    apply s.independent.injective at hxy
-    grind
-  exact q_inj
 
 theorem linearIndependent_point_compl_vsub_centroid [CharZero k] (s : Simplex k P n)
     (i₀ : Fin (n + 1)) :
