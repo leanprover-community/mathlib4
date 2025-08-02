@@ -128,8 +128,8 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_1
     have _i := P.reflexive_left; letI := P.indexNeg
     P.root i + P.root m ∈ range P.root → P.root j + P.root (-l) ∈ range P.root →
       P.root j + P.root (-k) ∈ range P.root →
-    (P.chainBotCoeff i m + 1) * (P.chainBotCoeff j (-k) + 1) =
-      (P.chainBotCoeff j (-l) + 1) * (P.chainBotCoeff i k + 1) := by
+      (P.chainBotCoeff i m + 1) * (P.chainBotCoeff j (-k) + 1) =
+        (P.chainBotCoeff j (-l) + 1) * (P.chainBotCoeff i k + 1) := by
   intro _ him_mem hjl_mem hjk_mem
   /- Setup some typeclasses and name the 6th root `n`. -/
   letI := P.indexNeg
@@ -189,7 +189,7 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_2
     have _i := P.reflexive_left; letI := P.indexNeg
     P.root i + P.root m ∈ range P.root → P.root j + P.root (-l) ∈ range P.root →
       P.root j + P.root (-k) ∈ range P.root →
-    ¬ (P.chainBotCoeff i m = 1 ∧ P.chainBotCoeff j (-l) = 0) := by
+      ¬ (P.chainBotCoeff i m = 1 ∧ P.chainBotCoeff j (-l) = 0) := by
   intro _ him_mem hjl_mem hjk_mem
   letI := P.indexNeg
   /- Setup some typeclasses. -/
