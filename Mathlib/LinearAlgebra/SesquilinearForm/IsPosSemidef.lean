@@ -26,8 +26,8 @@ sesquilinear form, positive, semidefinite
 
 open Module (Basis)
 
-variable {E n R : Type*} [AddCommMonoid E] [CommRing R] [StarRing R]
-    [Module R E]{f : SesquilinForm R E} (b : Basis n R E)
+variable {E n R : Type*} [AddCommMonoid E] [CommRing R] [StarRing R] [Module R E]
+    {f : SesquilinForm R E} (b : Basis n R E)
 
 namespace SesquilinForm
 
