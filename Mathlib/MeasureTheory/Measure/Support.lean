@@ -118,7 +118,7 @@ lemma isOpen_compl_support {μ : Measure X} : IsOpen μ.supportᶜ :=
 
 lemma subset_compl_support_of_isOpen {t : Set X} (ht : IsOpen t) (h : μ t = 0) :
   t ⊆ μ.supportᶜ := fun _ hx =>
-  notMem_support_iff_exists.2 ⟨t, ht.mem_nhds hx, h⟩
+  notMem_support_iff_exists.mpr ⟨t, ht.mem_nhds hx, h⟩
 
 lemma compl_support_eq_sUnion : μ.supportᶜ = ⋃₀ {t : Set X | IsOpen t ∧ μ t = 0} := by
   ext x
@@ -240,15 +240,22 @@ lemma support_restrict_subset_closure [OpensMeasurableSpace X] {s : Set X} :
 lemma mem_support_restrict [OpensMeasurableSpace X] {s : Set X} {x : X} :
     x ∈ (μ.restrict s).support ↔ ∃ᶠ u in (𝓝[s] x).smallSets, 0 < μ u := by
   constructor
-  intro h
-  rw [(nhds_basis_opens x).mem_measureSupport] at h
+  · intro h
+    rw [(nhds_basis_opens x).mem_measureSupport] at h
+    have A := nhds_basis_opens x
+    have B := nhdsWithin_basis_open x s
+    have C := Filter.HasBasis.frequently_smallSets (hl := B) (hq := pos_mono μ)
+    rw [C]
+    intro i hi
+    have D := h i hi
+    rw [restrict_apply] at D
+    · exact D
+    · exact IsOpen.measurableSet hi.2
+  · sorry
 
-/- Maybe we are not working at a fine enough level. Let's break things down more.
-
-The LHS after this rewrite becomes: for every subset i of x, x in i and i open, the
-restricted measure of i is positive. This means that we have a predicate version here.
-We need some kind of basis-related version of frequently_smallSets...Do we have one?
-
+/-
+ For this reverse direction, maybe we need a nhdsWithin version of `mem_measureSupport`?
+ Or perhaps we can break `nhdsWithin` and then use `mem_measureSupport` on the result.
  -/
 
 
