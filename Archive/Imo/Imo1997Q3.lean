@@ -8,6 +8,7 @@ import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Sign.Defs
 import Mathlib.GroupTheory.Perm.Sign
+import Mathlib.Tactic.Linarith
 
 /-!
 # IMO 1997 Q3
@@ -48,35 +49,18 @@ def S (x : Fin n → ℝ) (p : Perm (Fin n)) : ℝ :=
 
 lemma sign_eq_of_abs_sub_le {a b c : ℝ} (ha : c / 2 < |a|) (hb : c / 2 < |b|) (hc : 0 < c)
     (hs : |a - b| ≤ c) : sign a = sign b := by
-  rw [lt_abs] at ha hb
-  rcases ha with ha | ha
-  · rw [sign_pos ((half_pos hc).trans ha)]
-    rcases hb with hb | hb
-    · rw [sign_pos ((half_pos hc).trans hb)]
-    · have m := add_lt_add ha hb; rw [add_halves, ← sub_eq_add_neg] at m
-      exact absurd (le_of_abs_le hs) (not_le.mpr m)
-  · rw [sign_neg (neg_pos.mp <| (half_pos hc).trans ha)]
-    rcases hb with hb | hb
-    · have m := add_lt_add ha hb; rw [add_halves, ← sub_eq_neg_add, ← neg_sub, lt_neg] at m
-      exact absurd (neg_le_of_abs_le hs) (not_le.mpr m)
-    · rw [sign_neg (neg_pos.mp <| (half_pos hc).trans hb)]
+  rcases lt_trichotomy 0 a with ha' | rfl | ha' <;>
+  rcases lt_trichotomy 0 b with hb' | rfl | hb' <;>
+  simp_all [abs_of_pos, abs_of_neg, abs_le] <;> linarith
 
 lemma lt_abs_add_of_sign_eq {a b c : ℝ} (ha : c / 2 < |a|) (hb : c / 2 < |b|) (hc : 0 < c)
     (hs : sign a = sign b) : c < |a + b| := by
-  rw [lt_abs] at ha hb
-  rcases ha with ha | ha
-  · rw [sign_pos ((half_pos hc).trans ha)] at hs
-    rcases hb with hb | hb
-    · have m := add_lt_add ha hb; rw [add_halves] at m
-      exact m.trans_le (le_abs_self _)
-    · rw [sign_neg (neg_pos.mp <| (half_pos hc).trans hb)] at hs
-      norm_num at hs
-  · rw [sign_neg (neg_pos.mp <| (half_pos hc).trans ha)] at hs
-    rcases hb with hb | hb
-    · rw [sign_pos ((half_pos hc).trans hb)] at hs
-      norm_num at hs
-    · have m := add_lt_add ha hb; rw [add_halves, ← neg_add] at m
-      exact m.trans_le (neg_le_abs _)
+  rcases lt_trichotomy 0 a with ha' | rfl | ha' <;>
+  rcases lt_trichotomy 0 b with hb' | rfl | hb' <;>
+  simp_all [abs_of_pos, abs_of_neg, lt_abs]
+  · left; linarith
+  · linarith
+  · right; linarith
 
 /-- For fixed nonempty `x`, assuming the opposite of what is to be proven,
 the signs of `S x p` are all the same. -/
