@@ -27,7 +27,7 @@ sesquilinear form, positive, semidefinite
 open Module (Basis)
 
 variable {E n R : Type*} [AddCommMonoid E] [CommRing R] [StarRing R]
-    [Module R E] (f : SesquilinForm R E) (b : Basis n R E)
+    [Module R E]{f : SesquilinForm R E} (b : Basis n R E)
 
 namespace SesquilinForm
 
@@ -35,6 +35,7 @@ section IsPos
 
 variable [LE R]
 
+variable (f) in
 /-- A sesquilinear map `f` is positive if for any `x`, `0 ≤ f x x`. -/
 structure IsPos : Prop where
   nonneg : ∀ x, 0 ≤ f x x
@@ -51,16 +52,14 @@ section Def
 
 variable [LE R]
 
+variable (f) in
 /-- A sesquilinear map is positive semidefinite if it is symmetric and positive. -/
 structure IsPosSemidef : Prop extends f.IsSymm, f.IsPos
-
-variable {f}
 
 lemma IsPosSemidef.isSymm (hf : IsPosSemidef f) : f.IsSymm := hf.toIsSymm
 
 lemma IsPosSemidef.isPos (hf : IsPosSemidef f) : f.IsPos := hf.toIsPos
 
-variable (f) in
 lemma isPosSemidef_iff : f.IsPosSemidef ↔ f.IsSymm ∧ f.IsPos where
   mp h := ⟨h.isSymm, h.isPos⟩
   mpr := fun ⟨h₁, h₂⟩ ↦ ⟨h₁, h₂⟩
