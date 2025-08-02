@@ -17,7 +17,7 @@ without exploding its imports.
 variable {α : Type*}
 
 /-- Attach `⊥` to a type. -/
-@[to_dual]
+@[to_dual "attach `⊤` to a type."]
 def WithBot (α : Type*) := Option α
 
 namespace WithBot
@@ -30,7 +30,8 @@ instance [Repr α] : Repr (WithBot α) :=
     | some a => "↑" ++ repr a⟩
 
 /-- The canonical map from `α` into `WithBot α` -/
-@[to_dual (attr := coe, match_pattern)] def some : α → WithBot α :=
+@[to_dual (attr := coe, match_pattern) "The canonical map from `α` into `WithTop α`"]
+def some : α → WithBot α :=
   Option.some
 
 @[to_dual]

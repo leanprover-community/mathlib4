@@ -224,6 +224,7 @@
   ["ProofWidgets.Component.OfRpcMethod"],
   "Mathlib.Tactic.Widget.CommDiag": ["Mathlib.CategoryTheory.Category.Basic"],
   "Mathlib.Tactic.Use": ["Batteries.Logic", "Mathlib.Tactic.WithoutCDot"],
+  "Mathlib.Tactic.ToDual": ["Mathlib.Tactic.ToAdditive.ToDual"],
   "Mathlib.Tactic.TermCongr": ["Mathlib.Logic.Basic"],
   "Mathlib.Tactic.TautoSet":
   ["Mathlib.Data.Set.Disjoint", "Mathlib.Data.Set.SymmDiff"],
@@ -365,6 +366,7 @@
   "Mathlib.Probability.Kernel.Proper":
   ["Mathlib.Probability.Kernel.Composition.CompNotation"],
   "Mathlib.Order.RelClasses": ["Batteries.WF"],
+  "Mathlib.Order.Notation": ["Mathlib.Tactic.ToDual"],
   "Mathlib.Order.Interval.Finset.Nat":
   ["Mathlib.Order.Interval.Finset.SuccPred"],
   "Mathlib.Order.Filter.ListTraverse":

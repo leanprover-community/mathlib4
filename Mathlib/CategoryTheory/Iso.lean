@@ -58,8 +58,8 @@ structure Iso {C : Type u} [Category.{v} C] (X Y : C) where
 attribute [to_dual self (reorder := 3 4, 7 8)] Iso.mk
 attribute [to_dual self (reorder := 3 4)] Iso.hom Iso.inv
 attribute [to_dual existing (reorder := 3 4) (attr := simp, reassoc) inv_hom_id] Iso.hom_inv_id
-attribute [to_dual (attr := simp) hom_inv_id_assocRev] Iso.hom_inv_id_assoc
-attribute [to_dual (attr := simp) inv_hom_id_assocRev] Iso.inv_hom_id_assoc
+attribute [to_dual hom_inv_id_assocRev, simp] Iso.hom_inv_id_assoc
+attribute [to_dual inv_hom_id_assocRev, simp] Iso.inv_hom_id_assoc
 
 /-- Notation for an isomorphism in a category. -/
 infixr:10 " ≅ " => Iso -- type as \cong or \iso
@@ -164,11 +164,11 @@ theorem refl_trans (α : X ≅ Y) : Iso.refl X ≪≫ α = α := by ext; apply C
 theorem symm_self_id (α : X ≅ Y) : α.symm ≪≫ α = Iso.refl Y :=
   ext α.inv_hom_id
 
-@[to_dual (attr := simp) self_symm_id_revAssoc]
+@[to_dual self_symm_id_assocRev, simp]
 theorem symm_self_id_assoc (α : X ≅ Y) (β : Y ≅ Z) : α.symm ≪≫ α ≪≫ β = β := by
   rw [← trans_assoc, symm_self_id, refl_trans]
 
-@[to_dual (attr := simp) symm_self_id_revAssoc]
+@[to_dual symm_self_id_assocRev, simp]
 theorem self_symm_id_assoc (α : X ≅ Y) (β : X ≅ Z) : α ≪≫ α.symm ≪≫ β = β := by
   rw [← trans_assoc, self_symm_id, refl_trans]
 
