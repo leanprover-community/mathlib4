@@ -641,7 +641,6 @@ lemma legendreSym_mersenne_three {p : ℕ} [Fact (mersenne p).Prime] (hp : 3 ≤
   · exact mersenne_mod_four (by omega)
 
 /-- If `2^p-1` is prime then the Lucas-Lehmer test holds, `s(p-2) % (2^p-1) = 0. -/
-@[nolint unusedHavesSuffices]
 theorem lucas_lehmer_necessity (p : ℕ) (w : 3 ≤ p) : (mersenne p).Prime → LucasLehmerTest p := by
   let p' := p - 2
   have z : p = p' + 2 := by omega
@@ -661,7 +660,6 @@ theorem lucas_lehmer_necessity (p : ℕ) (w : 3 ≤ p) : (mersenne p).Prime → 
   have : Fact ((Nat.Prime (↑⟨2 ^ (p' + 2) - 1, pos⟩ : ℕ+))) := by
     refine ⟨?_⟩
     rwa [PNat.mk_coe, ← z, ← mersenne]
-  -- The `unusedHavesSuffices` linter incorrectly thinks this `have` is unnecessary.
   have : Fact (mersenne (p' + 2)).Prime := by
     refine ⟨?_⟩
     rwa [← z]
