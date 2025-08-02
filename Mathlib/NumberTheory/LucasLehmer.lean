@@ -646,7 +646,7 @@ theorem lucas_lehmer_necessity (p : ℕ) (w : 3 ≤ p) : (mersenne p).Prime → 
   let p' := p - 2
   have z : p = p' + 2 := by omega
   intro hp
-  have pprime := prime_of_mersenne_prime hp
+  have pprime := Prime.of_mersenne hp
   have odd : Odd p := by
     rcases pprime.eq_two_or_odd' with h|h
     · absurd w
@@ -667,7 +667,7 @@ theorem lucas_lehmer_necessity (p : ℕ) (w : 3 ≤ p) : (mersenne p).Prime → 
     rwa [← z]
   rw [z] at w odd
   have := X.ω_pow_trace (q := ⟨_, pos⟩) ?_
-    (mersenne_legendre_three w odd) (mersenne_legendre_two w) ?_
+    (legendreSym_mersenne_three w odd) (legendreSym_mersenne_two w) ?_
   · simp only [PNat.mk_coe] at this
     have other : (2 ^ (p' + 2) - 1 + 1) / 4 = 2 ^ p' := by
       rw [Nat.sub_add_cancel, pow_add,
