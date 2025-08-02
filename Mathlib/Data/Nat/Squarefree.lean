@@ -109,7 +109,7 @@ def minSqFacAux : ℕ → ℕ → Option ℕ
         exact Nat.minFac_lemma n k h
       if k ∣ n then
         let n' := n / k
-        have : Nat.sqrt n' - k < Nat.sqrt n + 2 - k :=
+        have : Nat.sqrt n' - k < Nat.sqrt n + 2 - k := by
           revert this; gcongr -- TODO: use `gconvert`
           apply div_le_self
         if k ∣ n' then some k else minSqFacAux n' (k + 2)
