@@ -131,10 +131,14 @@ notation:100 x " ⊗ₜ[" R "] " y:100 => tmul R x y
 /-- Produces an arbitrary representation of the form `mₒ ⊗ₜ n₀ + ...`. -/
 unsafe instance [Repr M] [Repr N] : Repr (M ⊗[R] N) where
   reprPrec mn p :=
-    (if p > 65 then (Std.Format.bracketFill "(" · ")") else (.fill ·)) <|
     let parts := mn.unquot.toList.map fun (mi, ni) =>
-      Std.Format.group f!"{reprPrec mi 100} ⊗ₜ {reprPrec ni 100}"
-    if let [] := parts then f!"0" else .joinSep parts f!" +{Std.Format.line}"
+      Std.Format.group f!"{reprPrec mi 100} ⊗ₜ {reprPrec ni 101}"
+    match parts with
+    | [] => f!"0"
+    | [p] => (if p > 100 then (Std.Format.bracketFill "(" · ")") else (.fill ·)) p
+    | parts =>
+      (if p > 65 then (Std.Format.bracketFill "(" · ")") else (.fill ·)) <|
+        .joinSep parts f!" +{Std.Format.line}"
 
 @[elab_as_elim, induction_eliminator]
 protected theorem induction_on {motive : M ⊗[R] N → Prop} (z : M ⊗[R] N)
