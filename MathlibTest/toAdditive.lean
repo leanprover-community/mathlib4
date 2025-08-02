@@ -474,7 +474,7 @@ lemma one_eq_one' {α : Type*} [One α] : (1 : α) = 1 := rfl
 -- Test the error message for a name that cannot be additivised.
 
 /--
-error: to_additive: the generated additivised name equals the original name 'foo', meaning that no part of the name was additivised.
+error: to_additive: the generated translated name equals the original name 'foo'.
 If this is intentional, use the `@[to_additive self]` syntax.
 Otherwise, check that your declaration name is correct (if your declaration is an instance, try naming it)
 or provide an additivised name using the `@[to_additive my_add_name]` syntax.
