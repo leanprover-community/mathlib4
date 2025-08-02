@@ -122,6 +122,29 @@ theorem algebraMap_eq : algebraMap R A = (algebraMap S A).comp (algebraMap R S) 
 theorem algebraMap_apply (x : R) : algebraMap R A x = algebraMap S A (algebraMap R S x) := by
   rw [algebraMap_eq R S A, RingHom.comp_apply]
 
+
+/--
+Let `R ⊆ S ⊆ T ⊆ U` be a tower of rings. If `R ⊆ S ⊆ T`, `R ⊆ T ⊆ U` and `S ⊆ T ⊆ U` are
+scalar towers, then `R ⊆ S ⊆ U` is also a scalar tower.
+-/
+theorem trans_left (T U : Type*) [CommSemiring T] [CommSemiring U] [Algebra S T] [Algebra R T]
+    [Algebra T U] [Algebra R U] [Algebra S U] [IsScalarTower R S T] [IsScalarTower R T U]
+    [IsScalarTower S T U] : IsScalarTower R S U := by
+  apply IsScalarTower.of_algebraMap_eq'
+  rw [IsScalarTower.algebraMap_eq S T, RingHom.comp_assoc, ← IsScalarTower.algebraMap_eq,
+    ← IsScalarTower.algebraMap_eq]
+
+/--
+Let `R ⊆ S ⊆ T ⊆ U` be a tower of rings. If `R ⊆ S ⊆ T`, `R ⊆ S ⊆ U` and `S ⊆ T ⊆ U` are
+scalar towers, then `R ⊆ T ⊆ U` is also a scalar tower.
+-/
+theorem trans_right (T U : Type*) [CommSemiring T] [CommSemiring U] [Algebra S T] [Algebra R T]
+    [Algebra T U] [Algebra R U] [Algebra S U] [IsScalarTower R S T] [IsScalarTower R S U]
+    [IsScalarTower S T U] : IsScalarTower R T U := by
+  apply IsScalarTower.of_algebraMap_eq'
+  rw [IsScalarTower.algebraMap_eq R S T, ← RingHom.comp_assoc, ← IsScalarTower.algebraMap_eq,
+    ← IsScalarTower.algebraMap_eq]
+
 @[ext]
 theorem Algebra.ext {S : Type u} {A : Type v} [CommSemiring S] [Semiring A] (h1 h2 : Algebra S A)
     (h : ∀ (r : S) (x : A), (by have I := h1; exact r • x) = r • x) : h1 = h2 :=
