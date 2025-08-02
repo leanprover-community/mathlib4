@@ -78,7 +78,7 @@ lemma preReflection_apply_self (h : f x = 2) :
 
 lemma involutive_preReflection (h : f x = 2) :
     Involutive (preReflection x f) :=
-  fun y ↦ by simp [map_sub, h, smul_sub, two_smul, preReflection_apply]
+  fun y ↦ by simp [map_sub, h, two_smul, preReflection_apply]
 
 lemma preReflection_preReflection (g : Dual R M) (h : f x = 2) :
     preReflection (preReflection x f y) (preReflection f (Dual.eval R M x) g) =
@@ -315,7 +315,7 @@ lemma reflection_mul_reflection_mul_reflection_zpow_apply_self (m : ℤ)
       ((S R m).eval t + (S R (m - 1)).eval t) • x + ((S R m).eval t * -g x) • y := by
   rw [LinearEquiv.mul_apply, reflection_mul_reflection_zpow_apply_self hf hg m t ht]
   -- Expand out all the reflections and use `hf`, `hg`.
-  simp only [reflection_apply, map_add, map_sub, map_smul, hf, hg]
+  simp only [reflection_apply, map_add, map_smul, hg]
   -- Equate coefficients of `x` and `y`.
   module
 

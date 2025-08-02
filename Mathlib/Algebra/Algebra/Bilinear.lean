@@ -27,7 +27,7 @@ variable [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A]
 section left
 variable {A} [SMulCommClass R A A]
 
-/-- The multiplication on the left in a algebra is a linear map.
+/-- The multiplication on the left in an algebra is a linear map.
 
 Note that this only assumes `SMulCommClass R A A`, so that it also works for `R := Aᵐᵒᵖ`.
 
@@ -89,7 +89,7 @@ def mul : A →ₗ[R] A →ₗ[R] A :=
 
 /-- The multiplication map on a non-unital algebra, as an `R`-linear map from `A ⊗[R] A` to `A`. -/
 -- TODO: upgrade to A-linear map if A is a semiring.
-noncomputable def mul' : A ⊗[R] A →ₗ[R] A :=
+def mul' : A ⊗[R] A →ₗ[R] A :=
   TensorProduct.lift (mul R A)
 
 variable {A}

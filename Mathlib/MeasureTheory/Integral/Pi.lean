@@ -30,14 +30,14 @@ theorem fin_nat_prod {n : ℕ} {E : Fin n → Type*}
     {f : (i : Fin n) → E i → 𝕜} (hf : ∀ i, Integrable (f i) (μ i)) :
     Integrable (fun (x : (i : Fin n) → E i) ↦ ∏ i, f i (x i)) (Measure.pi μ) := by
   induction n with
-  | zero => simp only [Finset.univ_eq_empty, Finset.prod_empty, volume_pi, isFiniteMeasure_iff,
-      integrable_const_iff, one_ne_zero, pi_empty_univ, ENNReal.one_lt_top, or_true]
+  | zero => simp only [Finset.univ_eq_empty, Finset.prod_empty, isFiniteMeasure_iff,
+      integrable_const_iff, pi_empty_univ, ENNReal.one_lt_top, or_true]
   | succ n n_ih =>
       have := ((measurePreserving_piFinSuccAbove μ 0).symm)
       rw [← this.integrable_comp_emb (MeasurableEquiv.measurableEmbedding _)]
       simp_rw [MeasurableEquiv.piFinSuccAbove_symm_apply, Fin.insertNthEquiv,
         Fin.prod_univ_succ, Fin.insertNth_zero]
-      simp only [Fin.zero_succAbove, cast_eq, Function.comp_def, Fin.cons_zero, Fin.cons_succ]
+      simp only [Fin.zero_succAbove, cast_eq, Function.comp_def]
       have : Integrable (fun (x : (j : Fin n) → E (Fin.succ j)) ↦ ∏ j, f (Fin.succ j) (x j))
           (Measure.pi (fun i ↦ μ i.succ)) :=
         n_ih (fun i ↦ hf _)

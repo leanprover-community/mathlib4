@@ -116,11 +116,7 @@ theorem one_lt_ack_succ_left : ∀ m n, 1 < ack (m + 1) n
 
 theorem one_lt_ack_succ_right : ∀ m n, 1 < ack m (n + 1)
   | 0, n => by simp
-  | m + 1, n => by
-    rw [ack_succ_succ]
-    obtain ⟨h, h⟩ := exists_eq_succ_of_ne_zero (ack_pos (m + 1) n).ne'
-    rw [h]
-    apply one_lt_ack_succ_right
+  | m + 1, n => one_lt_ack_succ_left m (n + 1)
 
 theorem ack_strictMono_right : ∀ m, StrictMono (ack m)
   | 0, n₁, n₂, h => by simpa using h

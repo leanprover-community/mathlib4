@@ -20,8 +20,6 @@ In this file we define `Coalgebra`, and provide instances for:
 * <https://en.wikipedia.org/wiki/Coalgebra>
 -/
 
-suppress_compilation
-
 universe u v w
 
 open scoped TensorProduct
@@ -54,7 +52,7 @@ structure Coalgebra.Repr (R : Type u) {A : Type v}
   (eq : ∑ i ∈ index, left i ⊗ₜ[R] right i = CoalgebraStruct.comul a)
 
 /-- An arbitrarily chosen representation. -/
-def Coalgebra.Repr.arbitrary (R : Type u) {A : Type v}
+noncomputable def Coalgebra.Repr.arbitrary (R : Type u) {A : Type v}
     [CommSemiring R] [AddCommMonoid A] [Module R A] [CoalgebraStruct R A] (a : A) :
     Coalgebra.Repr R a where
   left := Prod.fst
@@ -122,9 +120,9 @@ lemma sum_tmul_counit_eq {a : A} (repr : Coalgebra.Repr R a) :
 lemma sum_tmul_tmul_eq {a : A} (repr : Repr R a)
     (a₁ : (i : repr.ι) → Repr R (repr.left i)) (a₂ : (i : repr.ι) → Repr R (repr.right i)) :
     ∑ i ∈ repr.index, ∑ j ∈ (a₁ i).index,
-      (a₁ i).left j ⊗ₜ[R] (a₁ i).right j ⊗ₜ[R] repr.right i
+      (a₁ i).left j ⊗ₜ[R] ((a₁ i).right j ⊗ₜ[R] repr.right i)
       = ∑ i ∈ repr.index, ∑ j ∈ (a₂ i).index,
-      repr.left i ⊗ₜ[R] (a₂ i).left j ⊗ₜ[R] (a₂ i).right j := by
+      repr.left i ⊗ₜ[R] ((a₂ i).left j ⊗ₜ[R] (a₂ i).right j) := by
   simpa [(a₂ _).eq, ← (a₁ _).eq, ← TensorProduct.tmul_sum,
     TensorProduct.sum_tmul, ← repr.eq] using congr($(coassoc (R := R)) a)
 
@@ -354,7 +352,7 @@ variable [CommSemiring R] [AddCommMonoid A] [Module R A] [Coalgebra R A]
 
 open LinearMap
 
-instance instCoalgebraStruct : CoalgebraStruct R (ι →₀ A) where
+noncomputable instance instCoalgebraStruct : CoalgebraStruct R (ι →₀ A) where
   comul := Finsupp.lsum R fun i =>
     TensorProduct.map (Finsupp.lsingle i) (Finsupp.lsingle i) ∘ₗ comul
   counit := Finsupp.lsum R fun _ => counit
@@ -389,7 +387,7 @@ theorem comul_comp_lapply (i : ι) :
 elements of `ι` has a coalgebra structure. The coproduct `Δ` is given by `Δ(fᵢ a) = fᵢ a₁ ⊗ fᵢ a₂`
 where `Δ(a) = a₁ ⊗ a₂` and the counit `ε` by `ε(fᵢ a) = ε(a)`, where `fᵢ a` is the function sending
 `i` to `a` and all other elements of `ι` to zero. -/
-instance instCoalgebra : Coalgebra R (ι →₀ A) where
+noncomputable instance instCoalgebra : Coalgebra R (ι →₀ A) where
   rTensor_counit_comp_comul := by
     ext : 1
     rw [comp_assoc, comul_comp_lsingle, ← comp_assoc, rTensor_comp_map, counit_comp_lsingle,

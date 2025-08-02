@@ -128,7 +128,7 @@ lemma isOver_iff [X.Over S] [Y.Over S] {f : X.PartialMap Y} :
 
 lemma isOver_iff_eq_restrict [X.Over S] [Y.Over S] {f : X.PartialMap Y} :
     f.IsOver S ↔ f.compHom (Y ↘ S) = (X ↘ S).toPartialMap.restrict _ f.dense_domain (by simp) := by
-  simp [isOver_iff, PartialMap.ext_iff]
+  simp [PartialMap.ext_iff]
 
 /-- If `x` is in the domain of a partial map `f`, then `f` restricts to a map from `Spec 𝒪_x`. -/
 noncomputable
@@ -157,7 +157,7 @@ lemma fromSpecStalkOfMem_restrict (f : X.PartialMap Y)
   congr 3
   rw [Iso.eq_inv_comp, ← Category.assoc, IsIso.comp_inv_eq, IsIso.eq_inv_comp,
     stalkMap_congr_hom _ _ (X.homOfLE_ι hU').symm]
-  simp only [restrictFunctor_obj_left, homOfLE_leOfHom, TopCat.Presheaf.stalkCongr_hom]
+  simp only [TopCat.Presheaf.stalkCongr_hom]
   rw [← stalkSpecializes_stalkMap_assoc, stalkMap_comp]
 
 lemma fromFunctionField_restrict (f : X.PartialMap Y) [IrreducibleSpace X]
@@ -221,8 +221,7 @@ lemma equivalence_rel : Equivalence (@Scheme.PartialMap.equiv X Y) where
     refine ⟨W₁ ⊓ W₂, hW₁.inter_of_isOpen_left hW₂ W₁.2, inf_le_left.trans hW₁l,
       inf_le_right.trans hW₂r, ?_⟩
     dsimp at e₁ e₂
-    simp only [restrict_domain, restrict_hom, restrictFunctor_obj_left, homOfLE_leOfHom,
-      ← X.homOfLE_homOfLE (U := W₁ ⊓ W₂) inf_le_left hW₁l, Functor.map_comp, Over.comp_left,
+    simp only [restrict_domain, restrict_hom, ← X.homOfLE_homOfLE (U := W₁ ⊓ W₂) inf_le_left hW₁l,
       Category.assoc, e₁, ← X.homOfLE_homOfLE (U := W₁ ⊓ W₂) inf_le_right hW₂r, ← e₂]
     simp only [homOfLE_homOfLE_assoc]
 
@@ -248,8 +247,7 @@ lemma equiv_of_fromSpecStalkOfMem_eq [IrreducibleSpace X]
       ((Set.image_subset_range _ _).trans_eq (Subtype.range_val)).trans inf_le_left,
       ((Set.image_subset_range _ _).trans_eq (Subtype.range_val)).trans inf_le_right, ?_⟩
     rw [← cancel_epi (Scheme.Hom.isoImage _ _).hom]
-    simp only [TopologicalSpace.Opens.carrier_eq_coe, IsOpenMap.coe_functor_obj,
-      TopologicalSpace.Opens.coe_inf, restrict_hom, ← Category.assoc] at e ⊢
+    simp only [restrict_hom, ← Category.assoc] at e ⊢
     convert e using 2 <;> rw [← cancel_mono (Scheme.Opens.ι _)] <;> simp
   · rw [← f.fromSpecStalkOfMem_restrict hdense inf_le_left ⟨hxf, hxg⟩,
       ← g.fromSpecStalkOfMem_restrict hdense inf_le_right ⟨hxf, hxg⟩] at H
@@ -509,7 +507,7 @@ def RationalMap.toPartialMap [IsReduced X] [Y.IsSeparated] (f : X ⤏ Y) : X.Par
   refine (cancel_epi (isPullback_opens_inf_le (le_sSup x.2) (le_sSup y.2)).isoPullback.hom).mp ?_
   simp only [openCoverDomain, IsPullback.isoPullback_hom_fst_assoc,
     IsPullback.isoPullback_hom_snd_assoc]
-  show _ ≫ _ ≫ (g x).hom = _ ≫ _ ≫ (g y).hom
+  change _ ≫ _ ≫ (g x).hom = _ ≫ _ ≫ (g y).hom
   simp_rw [← cancel_epi (X.isoOfEq congr($(hg₂ x) ⊓ $(hg₂ y))).hom, ← Category.assoc]
   convert (PartialMap.equiv_iff_of_isSeparated (S := ⊤_ _) (f := g x) (g := g y)).mp ?_ using 1
   · dsimp; congr 1; simp [g, ← cancel_mono (Opens.ι _)]

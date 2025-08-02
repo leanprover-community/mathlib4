@@ -60,7 +60,7 @@ lemma shadow_initSeg [Fintype α] (hs : s.Nonempty) :
     ∂ (initSeg s) = initSeg (erase s <| min' s hs) := by
   -- This is a pretty painful proof, with lots of cases.
   ext t
-  simp only [mem_shadow_iff_insert_mem, mem_initSeg, exists_prop]
+  simp only [mem_shadow_iff_insert_mem, mem_initSeg]
   constructor
   -- First show that if t ∪ a ≤ s, then t ≤ s - min s
   · rintro ⟨a, ha, hst, hts⟩
@@ -70,7 +70,7 @@ lemma shadow_initSeg [Fintype α] (hs : s.Nonempty) :
   -- Now show that if t ≤ s - min s, there is j such that t ∪ j ≤ s
   -- We choose j as the smallest thing not in t
   simp_rw [le_iff_eq_or_lt, lt_iff_exists_filter_lt, mem_sdiff, filter_inj, and_assoc]
-  simp only [toColex_inj, ofColex_toColex, ne_eq, and_imp]
+  simp only [toColex_inj, and_imp]
   rintro cards' (rfl | ⟨k, hks, hkt, z⟩)
   -- If t = s - min s, then use j = min s so t ∪ j = s
   · refine ⟨min' s hs, notMem_erase _ _, ?_⟩
@@ -206,11 +206,7 @@ private lemma familyMeasure_compression_lt_familyMeasure {U V : Finset (Fin n)} 
     {hV : V.Nonempty} (h : max' U hU < max' V hV) {𝒜 : Finset (Finset (Fin n))} (a : 𝓒 U V 𝒜 ≠ 𝒜) :
     familyMeasure (𝓒 U V 𝒜) < familyMeasure 𝒜 := by
   rw [compression] at a ⊢
-  have q : ∀ Q ∈ {A ∈ 𝒜 | compress U V A ∉ 𝒜}, compress U V Q ≠ Q := by
-    simp_rw [mem_filter]
-    intro Q hQ h
-    rw [h] at hQ
-    exact hQ.2 hQ.1
+  have q : ∀ Q ∈ {A ∈ 𝒜 | compress U V A ∉ 𝒜}, compress U V Q ≠ Q := by grind [Finset.mem_filter]
   have uA : {A ∈ 𝒜 | compress U V A ∈ 𝒜} ∪ {A ∈ 𝒜 | compress U V A ∉ 𝒜} = 𝒜 :=
     filter_union_filter_neg_eq _ _
   have ne₂ : {A ∈ 𝒜 | compress U V A ∉ 𝒜}.Nonempty := by

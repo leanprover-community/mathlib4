@@ -130,7 +130,7 @@ theorem one_lt_rootMultiplicity_iff_isRoot
     1 < p.rootMultiplicity t ↔ p.IsRoot t ∧ (derivative p).IsRoot t := by
   rw [one_lt_rootMultiplicity_iff_isRoot_iterate_derivative h]
   refine ⟨fun h ↦ ⟨h 0 (by norm_num), h 1 (by norm_num)⟩, fun ⟨h0, h1⟩ m hm ↦ ?_⟩
-  obtain (_|_|m) := m
+  obtain (_ | _ | m) := m
   exacts [h0, h1, by omega]
 
 end CommRing
@@ -603,16 +603,20 @@ theorem X_sub_C_mul_divByMonic_eq_sub_modByMonic {K : Type*} [Ring K] (f : K[X])
   rw [eq_sub_iff_add_eq, ← eq_sub_iff_add_eq', modByMonic_eq_sub_mul_div]
   exact monic_X_sub_C a
 
-theorem divByMonic_add_X_sub_C_mul_derivate_divByMonic_eq_derivative
+theorem divByMonic_add_X_sub_C_mul_derivative_divByMonic_eq_derivative
     {K : Type*} [CommRing K] (f : K[X]) (a : K) :
     f /ₘ (X - C a) + (X - C a) * derivative (f /ₘ (X - C a)) = derivative f := by
   have key := by apply congrArg derivative <| X_sub_C_mul_divByMonic_eq_sub_modByMonic f a
   simpa only [derivative_mul, derivative_sub, derivative_X, derivative_C, sub_zero, one_mul,
     modByMonic_X_sub_C_eq_C_eval] using key
 
+@[deprecated (since := "2025-07-08")]
+alias divByMonic_add_X_sub_C_mul_derivate_divByMonic_eq_derivative :=
+divByMonic_add_X_sub_C_mul_derivative_divByMonic_eq_derivative
+
 theorem X_sub_C_dvd_derivative_of_X_sub_C_dvd_divByMonic {K : Type*} [Field K] (f : K[X]) {a : K}
     (hf : (X - C a) ∣ f /ₘ (X - C a)) : X - C a ∣ derivative f := by
-  have key := divByMonic_add_X_sub_C_mul_derivate_divByMonic_eq_derivative f a
+  have key := divByMonic_add_X_sub_C_mul_derivative_divByMonic_eq_derivative f a
   have ⟨u,hu⟩ := hf
   rw [← key, hu, ← mul_add (X - C a) u _]
   use (u + derivative ((X - C a) * u))

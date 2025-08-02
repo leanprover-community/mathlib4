@@ -220,7 +220,7 @@ lemma MulAction.automorphize_smul_left [Group α] [MulAction α β] (f : β → 
 
 /-- Automorphization of a function into an `R`-`Module` distributes, that is, commutes with the
 `R`-scalar multiplication. -/
-lemma AddAction.automorphize_smul_left [AddGroup α] [AddAction α β]  (f : β → M)
+lemma AddAction.automorphize_smul_left [AddGroup α] [AddAction α β] (f : β → M)
     (g : Quotient (AddAction.orbitRel α β) → R) :
     AddAction.automorphize ((g ∘ (@Quotient.mk' _ (_))) • f)
       = g • (AddAction.automorphize f : Quotient (AddAction.orbitRel α β) → M) := by
