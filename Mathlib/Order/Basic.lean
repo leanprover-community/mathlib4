@@ -6,7 +6,7 @@ Authors: Jeremy Avigad, Mario Carneiro
 import Mathlib.Data.Subtype
 import Mathlib.Order.Defs.LinearOrder
 import Mathlib.Order.Notation
-import Mathlib.Tactic.GCongr
+import Mathlib.Tactic.GCongr.CoreAttrs
 import Mathlib.Tactic.GRewrite
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.Convert
