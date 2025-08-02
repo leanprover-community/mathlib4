@@ -258,38 +258,6 @@ lemma mem_support_restrict [OpensMeasurableSpace X] {s : Set X} {x : X} :
  Or perhaps we can break `nhdsWithin` and then use `mem_measureSupport` on the result.
  -/
 
-
-#exit
-lemma mem_support_restrict' [OpensMeasurableSpace X] {s : Set X} {x : X} :
-    x ∈ (μ.restrict s).support ↔ ∃ᶠ u in (𝓝[s] x).smallSets, 0 < μ u := by
-  rw [mem_support_iff, Filter.frequently_smallSets', Filter.frequently_smallSets']
-  constructor
-  · intro y hy hyy
-    rw [mem_nhdsWithin_iff_exists_mem_nhds_inter] at hyy
-    obtain ⟨b, hb, hbb⟩ := hyy
-    have G := y b hb
-    rw [restrict_apply] at G
-    exact pos_mono μ hbb G
-    --again, the arbitrary neighborhood b isn't necessarily measurable. We have to do all of this
-    --with respect to open neighborhoods, since we know those are measurable!
-  · sorry
-  --constructor
-  --· intro h
-  --  rw [Filter.frequently_smallSets'] at *
-  --  intro t ht
-  --  rw [mem_nhdsWithin_iff_exists_mem_nhds_inter] at ht
-  --  obtain ⟨b, hb, hbb⟩ := ht
-  --  have G := h b hb
-  --  rw [restrict_apply] at G
-  --  exact pos_mono μ hbb G
-  --· intro h
-  --  rw [Filter.frequently_smallSets'] at *
-  --  intro t ht
-  --  simp [mem_nhdsWithin_iff_exists_mem_nhds_inter] at h
-  --  rw [restrict_apply]
-  --  have := h s t ht
-  --  exact h (t ∩ s) t ht fun ⦃a⦄ a ↦ a
-
 lemma interior_inter_support [OpensMeasurableSpace X] {s : Set X} :
     interior s ∩ μ.support ⊆ (μ.restrict s).support := by
   sorry
