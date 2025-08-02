@@ -206,7 +206,7 @@ the inequality goes in the wrong direction). -/
 /--
 error: Tactic `grewrite` failed: could not discharge x ≤ y using x ≥ y
 
-case a.h
+case h₁.h
 α : Type u_1
 inst✝² : CommRing α
 inst✝¹ : LinearOrder α
