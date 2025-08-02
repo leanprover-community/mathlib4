@@ -216,10 +216,7 @@ theorem cot_series_rep' (hz : x ∈ ℂ_ℤ) : π * cot (π * x) - 1 / x =
 /-- The cotangent infinite sum representation. -/
 theorem cot_series_rep (hz : x ∈ ℂ_ℤ) :
     π * cot (π * x) = 1 / x + ∑' n : ℕ+, (1 / (x - n) + 1 / (x + n)) := by
-  have h0 := tsum_pnat_eq_tsum_succ fun n ↦ 1 / (x - n) + 1 / (x + n)
-  have h1 := cot_series_rep' hz
-  simp only [one_div, Nat.cast_add, Nat.cast_one] at *
-  rw [h0, ← h1]
-  ring
+  have := tsum_pnat_eq_tsum_succ fun n ↦ 1 / (x - n) + 1 / (x + n)
+  grind [Nat.cast_succ, cot_series_rep']
 
 end MittagLeffler
