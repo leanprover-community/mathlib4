@@ -59,8 +59,7 @@ theorem AtPrime.nontrivial [IsLocalization.AtPrime S P] : Nontrivial S :=
     have htz : (t : R) = 0 := by simpa using ht.symm
     exact t.2 (htz.symm ▸ P.zero_mem : ↑t ∈ P)
 
-@[deprecated (since := "2025-07-31")] alias AtPrime.Nontrivial :=
-  IsLocalization.AtPrime.nontrivial
+@[deprecated (since := "2025-07-31")] alias AtPrime.Nontrivial := IsLocalization.AtPrime.nontrivial
 
 theorem AtPrime.isLocalRing [IsLocalization.AtPrime S P] : IsLocalRing S :=
   -- Porting note: since I couldn't get local instance running, I just specify it manually
