@@ -719,6 +719,7 @@ def indentationBeforePos (str : String) (pos : String.Pos) : Nat :=
 structure Limitation where
   src : String
   atLeast : Nat := 0
+  headAtLeast : Nat := 0
   atMost : Option Nat := .none
   continueWhenFailed : Bool
   flatten : FlattenSyntaxTreeInfo
@@ -741,29 +742,37 @@ def checkIndentationAt (treeInfo : SyntaxTreeInfo) (limit : Limitation)
     CommandElabM Bool := do
   let .some pos := treeInfo.getPos? | return true
   let .some spaces := indentationOfPos limit.src pos | return true
-  if spaces < limit.atLeast then
+  if spaces < limit.atLeast || spaces < limit.headAtLeast then
     warn treeInfo.stx (msgLtAtLeast limit.atLeast) limit
     return false
   else if let .some atMost := limit.atMost then
     if spaces > atMost then
-      warn treeInfo.stx (msgGtAtMost limit.atLeast) limit
+      warn treeInfo.stx (msgGtAtMost atMost) limit
       return false
   return true
 
 /-- docstring TODO -/
 def checkIndentationAtNode (treeInfo : SyntaxTreeInfo) (limit : Limitation)
-    (msg : Nat → MessageData := (m!"too few spaces, which should be at least {·}"))
-    (checkInCategories : Bool := true) : CommandElabM (Option Limitation) := do
-  let pass ← checkIndentationAt treeInfo limit msg
-  if !(limit.continueWhenFailed || pass) then return .none
-  if let .some pos := treeInfo.getPos? then
-    let atLeast := indentationOfPos limit.src pos |>.getD limit.atLeast
-    if !checkInCategories then
-      return .some {limit with atLeast := atLeast, atMost := .none}
-    for ⟨_, cat⟩ in (parserExtension.getState (← getEnv)).categories do
-      if cat.kinds.contains treeInfo.stx.getKind then
-        return .some {limit with atLeast := atLeast, atMost := .none}
-  return .some { limit with atMost := .none }
+    (checkInCategories : Bool := true)
+    (msgLtAtLeast : Nat → MessageData := (m!"too few spaces, which should be at least {·}"))
+    (msgGtAtMost : Nat → MessageData := (m!"too many spaces, which should be at most {·}")) :
+    CommandElabM (Bool × Option (Limitation × Limitation)) := do
+  let pass ← checkIndentationAt treeInfo limit msgLtAtLeast msgGtAtMost
+  if !(limit.continueWhenFailed || pass) then return (pass, .none)
+  let atLeast ← show CommandElabM Nat from do
+    if let .some pos := treeInfo.getPos? then
+      let curIndentation := indentationOfPos limit.src pos |>.getD limit.atLeast
+      if !checkInCategories then
+        return curIndentation
+      for ⟨_, cat⟩ in (parserExtension.getState (← getEnv)).categories do
+        if cat.kinds.contains treeInfo.stx.getKind then
+          return curIndentation
+    return limit.atLeast
+  let headLimit :=
+    if pass then { limit with atLeast := atLeast, atMost := limit.atMost }
+    else { limit with atLeast := atLeast, atMost := .none, headAtLeast := 0 }
+  let childrenLimit := { limit with atLeast := atLeast, atMost := .none, headAtLeast := 0 }
+  return (pass, .some (headLimit, childrenLimit))
 
 universe u v in
 @[inline, expose]
@@ -789,16 +798,15 @@ mutual
     fun treeInfo limit ↦ do
       let { stx := stx, childrenInfo? := .some childrenInfo, .. } := treeInfo | unreachable!
       let .some pos := treeInfo.getPos? | unreachable!
-      let .some initIndent := indentationOfPos limit.src pos | defaultLinter treeInfo limit
-      let pass ← checkIndentationAt treeInfo limit
-      if !(limit.continueWhenFailed || pass) then return false
+      let .some initialIndent := indentationOfPos limit.src pos | defaultLinter treeInfo limit
+      let (_, .some (_, limit)) ← checkIndentationAtNode treeInfo limit | return false
       let kind := stx.getKind
       match kind with
         | ``declaration | `«lemma» => pure ()
         | _ => unreachable!
       let #[modifiers@(_), decl] := childrenInfo.children | unreachable!
       let pass ← -- check indentation of modifiers
-        checkIndentation modifiers { limit with atLeast := initIndent, atMost := initIndent}
+        checkIndentation modifiers { limit with atLeast := initialIndent, atMost := initialIndent}
       if !(limit.continueWhenFailed || pass) then return false
       let { childrenInfo? := .some declArgs, stx := .node _ name _, .. } := decl |
         unreachable!
@@ -806,9 +814,9 @@ mutual
       | ``«abbrev» | ``definition | ``«theorem» | ``«opaque» | ``«axiom» | ``«example»
       | ``«instance» | `group =>
         pure ()
-      | ``«inductive» => return (← defaultLinter treeInfo limit) -- TODO
-      | ``«structure» => return (← defaultLinter treeInfo limit) -- TODO
-      | ``«classInductive» => return (← defaultLinter treeInfo limit) -- TODO
+      | ``«inductive» => return true -- TODO
+      | ``«structure» => return true -- TODO
+      | ``«classInductive» => return true -- TODO
       | _ => panic! s!"unknown declaration `{name}`, please send us feedback"
       /- `idxOfDeclHead` is the index of the head (such as `theorem` and `instance`) in
       `declArgs.children`. It is not 0 in instance declaration, where the first (index 0) node is a
@@ -820,28 +828,31 @@ mutual
       let value : Option SyntaxTreeInfo :=
         declArgs.children[idxOfDeclHead:].findSomeRev? (fun child ↦
           match child.stx with
-          | .node _ ``declValSimple _ | .node _ ``declValEqns _ | .node _ ``whereStructInst _ =>
-            .some child
-          -- for the optional value of opaque
+          | .node _ ``declValSimple _ | .node _ ``declValEqns _ | .node _ ``whereStructInst _
           | .node _ `null #[.node _ ``declValSimple _] =>
-            .some child.children?.get![0]!
+            .some child
           | _ => .none)
       /- `idxOfValue` is the index of the declaration value (`:= ...`, `| ...`, and `where ...`)
       in `declArgs.children`. It can be `none` in axiom declaration -/
       let idxOfValue := value.map (·.parentInfo?.get!.idxInChildren)
       for child in declArgs.children[:idxOfDeclHead] do
         let pass ←
-          checkIndentation child { limit with atLeast := initIndent, atMost := initIndent}
+          checkIndentation child { limit with atLeast := initialIndent, atMost := initialIndent}
         if !(limit.continueWhenFailed || pass) then return false
       for child in declArgs.children[idxOfDeclHead + 1 : idxOfValue.getD declArgs.children.size] do
         let pass ←
-          checkIndentation child { limit with atLeast := (initIndent + 4), atMost := .none }
+          checkIndentation child { limit with atLeast := (initialIndent + 4), atMost := .none }
         if !(limit.continueWhenFailed || pass) then return false
       if let .some idxOfValue := idxOfValue then
-        -- it may exists.
+        -- check the declaration value (`:= ...`, `| ...`, and `where ...`)
+        let pass ← checkIndentation declArgs.children[idxOfValue]!
+          { limit with atLeast := initialIndent, atMost := .some (initialIndent + 2) }
+        if !(limit.continueWhenFailed || pass) then return false
+        -- `deriving instance` may exists in `definition`.
         for child in declArgs.children[idxOfValue + 1 : ] do
           let pass ←
-            checkIndentation child { limit with atLeast := initIndent, atMost := initIndent }
+            checkIndentation child
+              { limit with atLeast := initialIndent, atMost := .some (initialIndent + 2) }
           if !(limit.continueWhenFailed || pass) then return false
       return true
 
@@ -876,6 +887,25 @@ mutual
         notAfterLineBreakLinter treeInfo limit
       | _ => defaultLinter treeInfo limit
 
+  /-- docstring TODO. -/
+  partial def strictlyDeeperHeadLinter (additionIndentation := 2) : IndentationLinter :=
+    fun treeInfo limit ↦ do
+      let .some pos := treeInfo.getPos? | defaultLinter treeInfo limit
+      let .some initialIndent := indentationOfPos limit.src pos | defaultLinter treeInfo limit
+      match treeInfo.childrenInfo? with
+      | .some { children := children, headTailIdxInChildren := headTailIdxInChildren, ..} =>
+        let (_, .some (headLimit, limit)) ← checkIndentationAtNode treeInfo limit | return false
+        let afterHead := headTailIdxInChildren.map (·.fst + 1) |>.getD children.size
+        for child in children[:afterHead] do
+          let pass ← checkIndentation child headLimit
+          if !(limit.continueWhenFailed || pass) then return false
+        let limit := { limit with headAtLeast := initialIndent + additionIndentation }
+        for child in children[afterHead:] do
+          let pass ← checkIndentation child limit
+          if !(limit.continueWhenFailed || pass) then return false
+        return true
+      | _ => defaultLinter treeInfo limit
+
   /-- docstring TODO
 
   the argument in `Unit` here is a workaround for `invalid use of 'partial'` (when with `partial`)
@@ -887,7 +917,8 @@ mutual
       (``declaration, declarationLinter), (`«lemma», declarationLinter),
       (`str, stringLinter), (``termS!_, stringLinter), (``termM!_, stringLinter),
       (``Std.termF!_, stringLinter), (interpolatedStrKind, stringLinter),
-      (``Term.typeSpec, notAfterLineBreakLinter), (``Term.byTactic, byLinter)
+      (``Term.typeSpec, notAfterLineBreakLinter), (``Term.byTactic, byLinter),
+      (``Term.app, strictlyDeeperHeadLinter)
     ]
 
   partial def atomLinters (_ : Unit := ()) : Std.HashMap String IndentationLinter :=
@@ -899,11 +930,16 @@ mutual
 
   partial def defaultLinter : IndentationLinter :=
     fun treeInfo limit ↦ do
-      match treeInfo.children? with
-      | .some children =>
-        let .some limit ← checkIndentationAtNode treeInfo limit | return false
-        for child in children do
-          let pass ← checkIndentation child limit
+      match treeInfo.childrenInfo? with
+      | .some { children := children, headTailIdxInChildren := headTailIdxInChildren, ..} =>
+        let (_, .some (headLimit, childrenlimit)) ← checkIndentationAtNode treeInfo limit |
+          return false
+        let afterHead := headTailIdxInChildren.map (·.fst + 1) |>.getD children.size
+        for child in children[:afterHead] do
+          let pass ← checkIndentation child headLimit
+          if !(limit.continueWhenFailed || pass) then return false
+        for child in children[afterHead:] do
+          let pass ← checkIndentation child childrenlimit
           if !(limit.continueWhenFailed || pass) then return false
         pure true
       | _ => checkIndentationAt treeInfo limit
