@@ -233,11 +233,10 @@ theorem TendstoInMeasure.exists_seq_tendsto_ae (hfg : TendstoInMeasure μ f atTo
 
     On the other hand, as `s` is precisely the set for which `f (ns k)`
     doesn't converge to `g`, `f (ns k)` converges almost everywhere to `g` as required. -/
-  have h_lt_ε_real : ∀ (ε : ℝ≥0∞) (_ : 0 < ε), ∃ k : ℕ, 2 * (2 : ℝ≥0∞)⁻¹ ^ k < ε := by
-    intro ε hε
+  have h_lt_ε_real (ε : ℝ≥0∞) (hε : 0 < ε) : ∃ k : ℕ, 2 * (2 : ℝ≥0∞)⁻¹ ^ k < ε := by
     obtain ⟨k, h_k⟩ : ∃ k : ℕ, (2 : ℝ≥0∞)⁻¹ ^ k < ε := ENNReal.exists_inv_two_pow_lt hε.ne'
-    refine ⟨k + 1, (le_of_eq ?_).trans_lt h_k⟩
-    rw [pow_add, pow_one, mul_comm, mul_assoc, ENNReal.inv_mul_cancel, mul_one]
+    refine ⟨k + 1, lt_of_eq_of_lt ?_ h_k⟩
+    rw [pow_succ', ← mul_assoc, ENNReal.mul_inv_cancel, one_mul]
     · positivity
     · simp
   set ns := ExistsSeqTendstoAe.seqTendstoAeSeq hfg
