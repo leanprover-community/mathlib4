@@ -6,6 +6,7 @@ Authors: Yakov Pechersky
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Algebra.Regular.Basic
 import Mathlib.Algebra.Ring.Defs
+import Mathlib.Tactic.TFAE
 
 /-!
 # Non-zero divisors in a ring
@@ -14,19 +15,6 @@ import Mathlib.Algebra.Ring.Defs
 assert_not_exists Field
 
 open scoped nonZeroDivisors
-
-section MonoidWithZero
-
-variable {R : Type*} [MonoidWithZero R] {r : R}
-
-theorem IsLeftRegular.mem_nonZeroDivisorsLeft (h : IsLeftRegular r) : r ∈ nonZeroDivisorsLeft R :=
-  fun x hrx ↦ h (by simpa)
-
-theorem IsRightRegular.mem_nonZeroDivisorsRight (h : IsRightRegular r) :
-    r ∈ nonZeroDivisorsRight R :=
-  fun x hrx ↦ h (by simpa)
-
-end MonoidWithZero
 
 section Monoid
 
@@ -43,6 +31,34 @@ theorem isRegular_iff_isUnit_of_finite {r : R} : IsRegular r ↔ IsUnit r where
   mpr h := h.isRegular
 
 end Monoid
+
+section NonUnitalNonAssocRing
+
+variable {R : Type*} [NonUnitalNonAssocRing R] {r : R}
+
+lemma isLeftRegular_iff_eq_zero_of_mul_left : IsLeftRegular r ↔ ∀ x, r * x = 0 → x = 0 where
+  mp h r' eq := h (by simp_rw [eq, mul_zero])
+  mpr h r₁ r₂ eq := sub_eq_zero.mp <| h _ <| by simp_rw [mul_sub, eq, sub_self]
+
+lemma isRightRegular_iff_eq_zero_of_mul_right : IsRightRegular r ↔ ∀ x, x * r = 0 → x = 0 where
+  mp h r' eq := h (by simp_rw [eq, zero_mul])
+  mpr h r₁ r₂ eq := sub_eq_zero.mp <| h _ <| by simp_rw [sub_mul, eq, sub_self]
+
+lemma isRegular_iff_eq_zero_of_mul :
+    IsRegular r ↔ (∀ x, r * x = 0 → x = 0) ∧ (∀ x, x * r = 0 → x = 0) := by
+  rw [isRegular_iff, isLeftRegular_iff_eq_zero_of_mul_left, isRightRegular_iff_eq_zero_of_mul_right]
+
+lemma nonZeroDivisors_tfae : List.TFAE
+    [NoZeroDivisors R, IsLeftCancelMulZero R, IsRightCancelMulZero R, IsCancelMulZero R] := by
+  simp_rw [isLeftCancelMulZero_iff, isRightCancelMulZero_iff, isCancelMulZero_iff_forall_isRegular,
+    isLeftRegular_iff_eq_zero_of_mul_left, isRightRegular_iff_eq_zero_of_mul_right,
+    isRegular_iff_eq_zero_of_mul]
+  tfae_have 1 ↔ 2 := noZeroDivisors_iff_eq_zero_of_mul_left
+  tfae_have 1 ↔ 3 := noZeroDivisors_iff_eq_zero_of_mul_right
+  tfae_have 1 ↔ 4 := noZeroDivisors_iff_eq_zero_of_mul
+  tfae_finish
+
+end NonUnitalNonAssocRing
 
 section Ring
 
@@ -65,16 +81,12 @@ lemma mul_cancel_right_coe_nonZeroDivisors {c : R⁰} : x * c = y * c ↔ x = y 
   mul_cancel_right_mem_nonZeroDivisors c.prop
 
 lemma isLeftRegular_iff_mem_nonZeroDivisorsLeft : IsLeftRegular r ↔ r ∈ nonZeroDivisorsLeft R :=
-  ⟨fun h r' eq ↦ h (by simp_rw [eq, mul_zero]),
-    fun h r₁ r₂ eq ↦ sub_eq_zero.mp <| h _ <| by simp_rw [mul_sub, eq, sub_self]⟩
+  isLeftRegular_iff_eq_zero_of_mul_left
 
 lemma isRightRegular_iff_mem_nonZeroDivisorsRight : IsRightRegular r ↔ r ∈ nonZeroDivisorsRight R :=
-  ⟨fun h r' eq ↦ h (by simp_rw [eq, zero_mul]),
-    fun h r₁ r₂ eq ↦ sub_eq_zero.mp <| h _ <| by simp_rw [sub_mul, eq, sub_self]⟩
+  isRightRegular_iff_eq_zero_of_mul_right
 
-lemma isRegular_iff_mem_nonZeroDivisors : IsRegular r ↔ r ∈ R⁰ := by
-  rw [isRegular_iff, isLeftRegular_iff_mem_nonZeroDivisorsLeft,
-    isRightRegular_iff_mem_nonZeroDivisorsRight, nonZeroDivisors, Submonoid.mem_inf]
+lemma isRegular_iff_mem_nonZeroDivisors : IsRegular r ↔ r ∈ R⁰ := isRegular_iff_eq_zero_of_mul
 
 lemma le_nonZeroDivisorsLeft_iff_isLeftRegular {S : Submonoid R} :
     S ≤ nonZeroDivisorsLeft R ↔ ∀ s : S, IsLeftRegular (s : R) := by

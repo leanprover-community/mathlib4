@@ -187,10 +187,10 @@ protected theorem mul_assoc (a b c : Nimber) : a * b * c = a * (b * c) := by
 termination_by (a, b, c)
 
 instance : IsCancelMulZero Nimber where
-  mul_left_cancel_of_ne_zero ha h := by
+  mul_left_cancel_of_ne_zero ha _ _ h := by
     rw [← add_eq_zero, ← Nimber.mul_add, mul_eq_zero] at h
     exact add_eq_zero.1 (h.resolve_left ha)
-  mul_right_cancel_of_ne_zero ha h := by
+  mul_right_cancel_of_ne_zero ha _ _ h := by
     rw [← add_eq_zero, ← Nimber.add_mul, mul_eq_zero] at h
     exact add_eq_zero.1 (h.resolve_right ha)
 

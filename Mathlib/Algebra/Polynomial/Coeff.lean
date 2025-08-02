@@ -3,10 +3,11 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
+import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Algebra.Polynomial.Basic
+import Mathlib.Algebra.Regular.Basic
 import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.Algebra.CharP.Defs
 
 /-!
 # Theory of univariate polynomials
