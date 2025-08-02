@@ -82,7 +82,7 @@ lemma map_comp_uliftYonedaEquiv_down (E : ℰ) {X Y : C} (f : X ⟶ Y)
   have this := congr_fun (g.naturality f.op) (ULift.up (𝟙 Y))
   dsimp [uliftYonedaEquiv, uliftYoneda] at this ⊢
   simp only [comp_id] at this
-  simp only [id_comp, this]
+  simp [id_comp, this]
 
 /-- Auxiliary definition for `restrictedULiftYonedaHomEquiv`. -/
 def restrictedULiftYonedaHomEquiv' (P : Cᵒᵖ ⥤ Type (max w v₁ v₂)) (E : ℰ) :
