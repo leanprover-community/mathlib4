@@ -742,7 +742,7 @@ def checkIndentationAt (treeInfo : SyntaxTreeInfo) (limit : Limitation)
     CommandElabM Bool := do
   let .some pos := treeInfo.getPos? | return true
   let .some spaces := indentationOfPos limit.src pos | return true
-  if spaces < limit.atLeast then
+  if spaces < limit.atLeast || spaces < limit.headAtLeast then
     warn treeInfo.stx (msgLtAtLeast limit.atLeast) limit
     return false
   else if spaces < limit.headAtLeast then
@@ -817,9 +817,9 @@ mutual
       | ``«abbrev» | ``definition | ``«theorem» | ``«opaque» | ``«axiom» | ``«example»
       | ``«instance» | `group =>
         pure ()
-      | ``«inductive» => return (← defaultLinter treeInfo limit) -- TODO
-      | ``«structure» => return (← defaultLinter treeInfo limit) -- TODO
-      | ``«classInductive» => return (← defaultLinter treeInfo limit) -- TODO
+      | ``«inductive» => return true -- TODO
+      | ``«structure» => return true -- TODO
+      | ``«classInductive» => return true -- TODO
       | _ => panic! s!"unknown declaration `{name}`, please send us feedback"
       /- `idxOfDeclHead` is the index of the head (such as `theorem` and `instance`) in
       `declArgs.children`. It is not 0 in instance declaration, where the first (index 0) node is a
