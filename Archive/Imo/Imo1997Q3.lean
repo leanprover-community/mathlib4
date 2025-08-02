@@ -5,7 +5,8 @@ Authors: Jeremy Tan
 -/
 import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.Data.Real.Sign
+import Mathlib.Data.Real.Basic
+import Mathlib.Data.Sign.Defs
 import Mathlib.GroupTheory.Perm.Sign
 
 /-!
@@ -37,7 +38,7 @@ assumption that all permutations satisfy $\frac{n+1}2 < |S(π)|$ must be false; 
 
 namespace Imo1997Q3
 
-open Equiv Fin Finset
+open Equiv Fin Finset SignType
 
 variable {n : ℕ}
 
@@ -46,33 +47,33 @@ def S (x : Fin n → ℝ) (p : Perm (Fin n)) : ℝ :=
   ∑ i, (i + 1) * x (p i)
 
 lemma sign_eq_of_abs_sub_le {a b c : ℝ} (ha : c / 2 < |a|) (hb : c / 2 < |b|) (hc : 0 < c)
-    (hs : |a - b| ≤ c) : a.sign = b.sign := by
+    (hs : |a - b| ≤ c) : sign a = sign b := by
   rw [lt_abs] at ha hb
   rcases ha with ha | ha
-  · rw [Real.sign_of_pos ((half_pos hc).trans ha)]
+  · rw [sign_pos ((half_pos hc).trans ha)]
     rcases hb with hb | hb
-    · rw [Real.sign_of_pos ((half_pos hc).trans hb)]
+    · rw [sign_pos ((half_pos hc).trans hb)]
     · have m := add_lt_add ha hb; rw [add_halves, ← sub_eq_add_neg] at m
       exact absurd (le_of_abs_le hs) (not_le.mpr m)
-  · rw [Real.sign_of_neg (neg_pos.mp <| (half_pos hc).trans ha)]
+  · rw [sign_neg (neg_pos.mp <| (half_pos hc).trans ha)]
     rcases hb with hb | hb
     · have m := add_lt_add ha hb; rw [add_halves, ← sub_eq_neg_add, ← neg_sub, lt_neg] at m
       exact absurd (neg_le_of_abs_le hs) (not_le.mpr m)
-    · rw [Real.sign_of_neg (neg_pos.mp <| (half_pos hc).trans hb)]
+    · rw [sign_neg (neg_pos.mp <| (half_pos hc).trans hb)]
 
 lemma lt_abs_add_of_sign_eq {a b c : ℝ} (ha : c / 2 < |a|) (hb : c / 2 < |b|) (hc : 0 < c)
-    (hs : a.sign = b.sign) : c < |a + b| := by
+    (hs : sign a = sign b) : c < |a + b| := by
   rw [lt_abs] at ha hb
   rcases ha with ha | ha
-  · rw [Real.sign_of_pos ((half_pos hc).trans ha)] at hs
+  · rw [sign_pos ((half_pos hc).trans ha)] at hs
     rcases hb with hb | hb
     · have m := add_lt_add ha hb; rw [add_halves] at m
       exact m.trans_le (le_abs_self _)
-    · rw [Real.sign_of_neg (neg_pos.mp <| (half_pos hc).trans hb)] at hs
+    · rw [sign_neg (neg_pos.mp <| (half_pos hc).trans hb)] at hs
       norm_num at hs
-  · rw [Real.sign_of_neg (neg_pos.mp <| (half_pos hc).trans ha)] at hs
+  · rw [sign_neg (neg_pos.mp <| (half_pos hc).trans ha)] at hs
     rcases hb with hb | hb
-    · rw [Real.sign_of_pos ((half_pos hc).trans hb)] at hs
+    · rw [sign_pos ((half_pos hc).trans hb)] at hs
       norm_num at hs
     · have m := add_lt_add ha hb; rw [add_halves, ← neg_add] at m
       exact m.trans_le (neg_le_abs _)
@@ -82,7 +83,7 @@ the signs of `S x p` are all the same. -/
 lemma sign_eq_of_contra
     {x : Fin (n + 1) → ℝ} (hx₂ : ∀ i, |x i| ≤ ((n + 1 : ℕ) + 1) / 2)
     (h : ∀ (p : Perm (Fin (n + 1))), ((n + 1 : ℕ) + 1) / 2 < |S x p|) :
-    ∀ p, (S x 1).sign = (S x p).sign := fun p ↦ by
+    ∀ p, sign (S x 1) = sign (S x p) := fun p ↦ by
   induction p using Submonoid.induction_of_closure_eq_top_right
     (Perm.mclosure_swap_castSucc_succ n) with
   | one => rfl
