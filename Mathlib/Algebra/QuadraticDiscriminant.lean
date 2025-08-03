@@ -140,7 +140,6 @@ theorem pos_of_pos_of_discrim_lt_zero {x : K} (ha : 0 < a) (h : discrim a b c < 
   convert_to 0 < (2 * a * x + b)^2 + - discrim a b c using 1
   · simp [discrim]
     ring
-
   exact add_pos_of_nonneg_of_pos (sq_nonneg (2 * a * x + b)) (neg_pos.mpr h)
 
 lemma neg_of_neg_of_discrim_lt_zero {x : K} (ha : a < 0) (h : discrim a b c < 0) :
