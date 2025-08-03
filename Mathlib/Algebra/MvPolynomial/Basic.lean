@@ -907,6 +907,10 @@ variable (σ) in
 theorem constantCoeff_C (r : R) : constantCoeff (C r : MvPolynomial σ R) = r := by
   classical simp [constantCoeff_eq]
 
+@[simp] theorem isUnit_C_iff {r : R} : IsUnit (C (σ := σ) r) ↔ IsUnit r where
+  mp h := by simpa using h.map constantCoeff
+  mpr := (·.map C)
+
 variable (R) in
 @[simp]
 theorem constantCoeff_X (i : σ) : constantCoeff (X i : MvPolynomial σ R) = 0 := by

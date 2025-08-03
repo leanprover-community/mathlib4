@@ -460,6 +460,10 @@ theorem Monic.sub_of_right {p q : R[X]} (hq : q.leadingCoeff = -1) (hpq : degree
 
 end Ring
 
+theorem irreducible_X_sub_C {R} [CommRing R] [NoZeroDivisors R] [Nontrivial R] (r : R) :
+    Irreducible (X - C r) :=
+  (monic_X_sub_C r).irreducible_of_degree_eq_one (degree_X_sub_C r)
+
 section NonzeroSemiring
 
 variable [Semiring R] [Nontrivial R] {p q : R[X]}

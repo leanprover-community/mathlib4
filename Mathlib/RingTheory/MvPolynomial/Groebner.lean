@@ -141,7 +141,7 @@ theorem div {ι : Type*} {b : ι → MvPolynomial σ R}
         simp only [hj, hb0, Finsupp.single_eq_same, zero_add]
         apply le_of_eq
         simp only [EmbeddingLike.apply_eq_iff_eq]
-        apply degree_smul (Units.isRegular _)
+        apply degree_smul (Units.isUnit _).mem_nonZeroDivisors
       · simp only [Finsupp.single_eq_of_ne (Ne.symm hj), mul_zero, degree_zero, map_zero]
         apply bot_le
     · simp

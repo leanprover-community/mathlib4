@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Antoine Chambert-Loir
 -/
 
+import Mathlib.Algebra.Polynomial.FieldDivision
 import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.RingTheory.Polynomial.Content
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 
 /-! # The Eisenstein criterion
