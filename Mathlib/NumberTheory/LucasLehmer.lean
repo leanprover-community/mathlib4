@@ -390,15 +390,14 @@ instance : Coe (ZMod ↑q) (X q) where
   coe := ZMod.castHom dvd_rfl (X q)
 
 /-- If `3` is not a square mod `q` then `(1 + α) ^ q = 1 - α` -/
-lemma one_add_α_pow_q [Fact (Prime q)] (odd : Odd (q : ℕ)) (leg3 : legendreSym q 3 = -1) :
+lemma one_add_α_pow_q [Fact q.Prime] (odd : Odd (q : ℕ)) (leg3 : legendreSym q 3 = -1) :
     (1 + (α : X q)) ^ (q : ℕ) = 1 - (α : X q) := by
   rcases odd with ⟨k, hk⟩
   have : q / 2 = k := by rw [hk, mul_add_div (by norm_num)]; simp
   rw [add_pow_expChar, one_pow, hk, α_pow, ← this]
   have : (3 : X q) = (3 : ZMod q) := by rw [map_ofNat]
   rw [this, ← RingHom.map_pow]
-  have leg := legendreSym.eq_pow q 3
-  rw_mod_cast [← leg, leg3]
+  rw_mod_cast [← legendreSym.eq_pow q 3, leg3]
   simp
   ring
 
@@ -608,7 +607,7 @@ lemma mersenne_mod_three {n : ℕ} (odd : Odd n) (h : 3 ≤ n) : mersenne n % 3 
 lemma mersenne_mod_eight {n : ℕ} (h : 3 ≤ n) : mersenne n % 8 = 7 := by
   induction n, h using Nat.le_induction with
   | base =>
-    dsimp[mersenne]
+    dsimp [mersenne]
   | succ _ _ _ =>
     rw [mersenne_succ]
     omega
@@ -620,8 +619,7 @@ lemma legendreSym_mersenne_two {p : ℕ} [Fact (mersenne p).Prime] (hp : 3 ≤ p
   · rw [ZMod.χ₈_nat_eq_if_mod_eight]
     have := mersenne_mod_eight hp
     omega
-  · have := mersenne_le_mersenne.mpr hp
-    rw [(by dsimp[mersenne] : mersenne 3 = 7)] at this
+  · have : 7 ≤ mersenne p := mersenne_le_mersenne.mpr hp
     omega
 
 /-- If `2^p - 1` is prime then 3 is not a square mod `2^p - 1`. -/
