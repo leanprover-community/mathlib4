@@ -82,23 +82,25 @@ Usage notes:
 -/
 syntax (name := to_additive_dont_translate) "to_additive_dont_translate" : attr
 
-/-- An `attr := ...` option for `to_additive`. -/
+/-- `(attr := ...)` applies the given attributes to both the original and the
+translated declaration. -/
 syntax toAdditiveAttrOption := &"attr" " := " Parser.Term.attrInstance,*
 /--
-`reorder := ...` reorders the arguments/hypotheses in the generated declaration.
+`(reorder := ...)` reorders the arguments/hypotheses in the generated declaration.
 It uses cycle notation. For example `(reorder := 1 2, 5 6)` swaps the first two
 arguments with each other and the fifth and the sixth argument and `(reorder := 3 4 5)` will move
 the fifth argument before the third argument. This is used in `to_dual` to swap the arguments in
 `≤`, `<` and `⟶`. It is also used in `to_additive` to translate from `^` to `•`.
 -/
 syntax toAdditiveReorderOption := &"reorder" " := " (num+),+
-/-- Options to `to_additive`. -/
 syntax toAdditiveOption := "(" toAdditiveAttrOption <|> toAdditiveReorderOption ")"
-/-- An `existing` or `self` name hint for `to_additive`. -/
+/-- A hint for where to find the tranlated declaration (`existing` or `self`) -/
 syntax toAdditiveNameHint := (ppSpace (&"existing" <|> &"self"))?
-/-- Remaining arguments of `to_additive`. -/
 syntax toAdditiveRest :=
   toAdditiveNameHint (ppSpace toAdditiveOption)* (ppSpace ident)? (ppSpace str)?
+
+-- We omit a doc-string on these syntaxes to instead show the `to_additive` or `to_dual` doc-string
+attribute [nolint docBlame] toAdditiveRest toAdditiveOption
 
 /-- The attribute `to_additive` can be used to automatically transport theorems
 and definitions (but not inductive types and structures) from a multiplicative

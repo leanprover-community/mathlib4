@@ -60,10 +60,12 @@ arguments with each other and the fifth and the sixth argument and `(reorder := 
 the fifth argument before the third argument. For example, this is used to tag `LE.le`
 with `(reorder := 3 4)`, so that `a ≤ b` gets transformed into `b ≤ a`.
 
-Use the `to_dual self` syntax to use the lemma itself as its own dual. This is often
-combined with the `(reorder := ...)` syntax, because a lemma can be dual to itself
-after rearranging its arguments. Use the `to_dual existing` syntax to use an existing
-dual declaration, instead of automatically generating it.
+Use the `to_dual self` syntax to use the lemma as its own dual. This is often
+combined with the `(reorder := ...)` syntax, because a lemma is usually dual to itself only
+up to some reordering of its arguments.
+
+Use the `to_dual existing` syntax to use an existing dual declaration,
+instead of automatically generating it.
 
 Use the `(attr := ...)` syntax to apply attributes to both the original and the dual version:
 ```
