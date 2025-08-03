@@ -108,10 +108,7 @@ theorem degreeLT_eq_span_X_pow [DecidableEq R] {n : ℕ} :
     refine Submodule.sum_mem _ fun k hk => ?_
     have := WithBot.coe_lt_coe.1 ((Finset.sup_lt_iff <| WithBot.bot_lt_coe n).1 hp k hk)
     rw [← C_mul_X_pow_eq_monomial, C_mul']
-    refine
-      Submodule.smul_mem _ _
-        (Submodule.subset_span <|
-          Finset.mem_coe.2 <| Finset.mem_image.2 ⟨_, Finset.mem_range.2 this, rfl⟩)
+    refine Submodule.smul_mem _ _ (Submodule.subset_span <| by grind)
   rw [Submodule.span_le, Finset.coe_image, Set.image_subset_iff]
   intro k hk
   apply mem_degreeLT.2
@@ -607,9 +604,7 @@ theorem _root_.Polynomial.coeff_prod_mem_ideal_pow_tsub {ι : Type*} (s : Finset
       obtain rfl : i + j = k := mem_antidiagonal.mp e
       apply Ideal.pow_le_pow_right add_tsub_add_le_tsub_add_tsub
       rw [pow_add]
-      exact
-        Ideal.mul_mem_mul (h _ (Finset.mem_insert.mpr <| Or.inl rfl) _)
-          (hs (fun i hi k => h _ (Finset.mem_insert.mpr <| Or.inr hi) _) j)
+      exact Ideal.mul_mem_mul (by grind) (by grind)
 
 end CommSemiring
 

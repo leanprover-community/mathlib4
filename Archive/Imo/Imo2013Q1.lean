@@ -34,8 +34,7 @@ theorem prod_lemma (m : ℕ → ℕ+) (k : ℕ) (nm : ℕ+) :
       ∏ i ∈ Finset.range k, (1 + 1 / (m i : ℚ)) := by
   suffices ∀ i, i ∈ Finset.range k → (1 : ℚ) + 1 / ↑(if i < k then m i else nm) = 1 + 1 / m i from
     Finset.prod_congr rfl this
-  intro i hi
-  simp [Finset.mem_range.mp hi]
+  grind
 
 end Imo2013Q1
 

@@ -117,8 +117,7 @@ lemma toMvPolynomial_one [DecidableEq n] : (1 : Matrix n n R).toMvPolynomial = X
   · simp only [one_apply_eq, ← C_mul_X_eq_monomial, C_1, one_mul]
   · rintro j - hj
     simp only [one_apply_ne hj.symm, map_zero]
-  · intro h
-    exact (h (Finset.mem_univ _)).elim
+  · grind
 
 lemma toMvPolynomial_add (M N : Matrix m n R) :
     (M + N).toMvPolynomial = M.toMvPolynomial + N.toMvPolynomial := by
@@ -263,8 +262,7 @@ lemma polyCharpolyAux_baseChange (A : Type*) [CommRing A] [Algebra R A] :
       · rw [this, if_pos rfl, X]
       · rintro kl - H
         rw [this, if_neg H, map_zero]
-      · intro h
-        exact (h (Finset.mem_univ _)).elim
+      · grind
     intro kl
     rw [toMatrix_apply, tensorProduct, TensorProduct.AlgebraTensorModule.lift_apply,
       basis_apply, TensorProduct.lift.tmul, coe_restrictScalars]

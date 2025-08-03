@@ -150,10 +150,7 @@ theorem Finset.all_card_le_biUnion_card_iff_exists_injective {ι : Type u} {α :
     rintro ⟨f, hf₁, hf₂⟩ s
     rw [← Finset.card_image_of_injective s hf₁]
     apply Finset.card_le_card
-    intro
-    rw [Finset.mem_image, Finset.mem_biUnion]
-    rintro ⟨x, hx, rfl⟩
-    exact ⟨x, hx, hf₂ x⟩
+    grind
 
 /-- Given a relation such that the image of every singleton set is finite, then the image of every
 finite set is finite. -/
