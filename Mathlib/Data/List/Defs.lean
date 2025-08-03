@@ -145,8 +145,8 @@ defined) is the list of lists of the form `insert_nth n t (ys ++ ts)` for `0 ≤
     permutations_aux2 10 [4, 5, 6] [] [1, 2, 3] id =
       ([1, 2, 3, 4, 5, 6],
        [[10, 1, 2, 3, 4, 5, 6],
-        [1, 10, 2, 3, 4, 5, 6],
-        [1, 2, 10, 3, 4, 5, 6]]) -/
+       [1, 10, 2, 3, 4, 5, 6],
+       [1, 2, 10, 3, 4, 5, 6]]) -/
 def permutationsAux2 (t : α) (ts : List α) (r : List β) : List α → (List α → β) → List α × List β
   | [], _ => (ts, r)
   | y :: ys, f =>
@@ -172,9 +172,8 @@ def permutationsAux : List α → List α → List (List α) :=
 
 /-- List of all permutations of `l`.
 
-     permutations [1, 2, 3] =
-       [[1, 2, 3], [2, 1, 3], [3, 2, 1],
-        [2, 3, 1], [3, 1, 2], [1, 3, 2]] -/
+    permutations [1, 2, 3] =
+      [[1, 2, 3], [2, 1, 3], [3, 2, 1], [2, 3, 1], [3, 1, 2], [1, 3, 2]] -/
 def permutations (l : List α) : List (List α) :=
   l :: permutationsAux l []
 
@@ -198,9 +197,8 @@ def permutations'Aux (t : α) : List α → List (List α)
 simpler definitional equations. The permutations are in a different order,
 but are equal up to permutation, as shown by `List.permutations_perm_permutations'`.
 
-     permutations [1, 2, 3] =
-       [[1, 2, 3], [2, 1, 3], [2, 3, 1],
-        [1, 3, 2], [3, 1, 2], [3, 2, 1]] -/
+    permutations [1, 2, 3] =
+      [[1, 2, 3], [2, 1, 3], [2, 3, 1], [1, 3, 2], [3, 1, 2], [3, 2, 1]] -/
 @[simp]
 def permutations' : List α → List (List α)
   | [] => [[]]
@@ -240,9 +238,9 @@ instance decidableChain' {R : α → α → Prop} [DecidableRel R] (l : List α)
 end Chain
 
 /-- `dedup l` removes duplicates from `l` (taking only the last occurrence).
-  Defined as `pwFilter (≠)`.
+Defined as `pwFilter (≠)`.
 
-     dedup [1, 0, 2, 2, 1] = [0, 2, 1] -/
+  dedup [1, 0, 2, 2, 1] = [0, 2, 1] -/
 def dedup [DecidableEq α] : List α → List α :=
   pwFilter (· ≠ ·)
 
