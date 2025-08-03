@@ -760,8 +760,7 @@ def invFun [Nonempty α] (hf : MeasurableEmbedding f) [∀ x, Decidable (x ∈ r
   if hx : x ∈ range f then hf.equivRange.symm ⟨x, hx⟩ else (Nonempty.some inferInstance)
 
 @[fun_prop, measurability]
-lemma measurable_invFun [Nonempty α] [∀ x, Decidable (x ∈ range f)]
-    (hf : MeasurableEmbedding f) :
+lemma measurable_invFun [Nonempty α] [∀ x, Decidable (x ∈ range f)] (hf : MeasurableEmbedding f) :
     Measurable (hf.invFun : β → α) :=
   Measurable.dite (by fun_prop) measurable_const hf.measurableSet_range
 
