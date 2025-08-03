@@ -316,7 +316,7 @@ theorem embDomain_add (f : Γ ↪o Γ') (x y : HahnSeries Γ R) :
 
 end Domain
 
-/-- `HahnSeries.trunc` as a additive monoid/group homomorphism. -/
+/-- `HahnSeries.trunc` as an additive monoid/group homomorphism. -/
 def truncAddMonoidHom [DecidableLE Γ] (c : Γ) : HahnSeries Γ R →+ HahnSeries Γ R where
   __ := trunc c
   map_add' x y := by
