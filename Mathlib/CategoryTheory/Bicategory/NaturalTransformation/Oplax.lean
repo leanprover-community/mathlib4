@@ -4,12 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno, Calle Sönne
 -/
 import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
+import Mathlib.CategoryTheory.Bicategory.Functor.Lax
 
 /-!
-# Transformations between oplax functors
+# Transformations between op/lax functors
 
 Just as there are natural transformations between functors, there are transformations
-between oplax functors. The equality in the naturality condition of a natural transformation gets
+between op/lax functors. The equality in the naturality condition of a natural transformation gets
 replaced by a specified 2-morphism. Now, there are three possible types of transformations (between
 oplax functors):
 * Oplax natural transformations;
@@ -43,7 +44,7 @@ This file could also include lax transformations between oplax functors.
 
 -/
 
-namespace CategoryTheory.Oplax
+namespace CategoryTheory
 
 open Category Bicategory
 
@@ -51,7 +52,9 @@ universe w₁ w₂ v₁ v₂ u₁ u₂
 
 variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
 
-/-- If `η` is an oplax transformation between `F` and `G`, we have a 1-morphism
+namespace Oplax
+
+/-- If `η` is an oplax transformation between oplax functors `F` and `G`, we have a 1-morphism
 `η.app a : F.obj a ⟶ G.obj a` for each object `a : B`. We also have a 2-morphism
 `η.naturality f : F.map f ≫ app b ⟶ app a ≫ G.map f` for each 1-morphism `f : a ⟶ b`.
 These 2-morphisms satisfies the naturality condition, and preserve the identities and
@@ -334,4 +337,116 @@ end
 
 end StrongTrans
 
-end CategoryTheory.Oplax
+end Oplax
+
+namespace Lax
+
+/-- If `η` is an oplax transformation between lax functors `F` and `G`, we have a 1-morphism
+`η.app a : F.obj a ⟶ G.obj a` for each object `a : B`. We also have a 2-morphism
+`η.naturality f : F.map f ≫ app b ⟶ app a ≫ G.map f` for each 1-morphism `f : a ⟶ b`.
+These 2-morphisms satisfies the naturality condition, and preserve the identities and
+the compositions modulo some adjustments of domains and codomains of 2-morphisms.
+-/
+structure OplaxTrans (F G : LaxFunctor B C) where
+  /-- The component 1-morphisms of an oplax transformation. -/
+  app (a : B) : F.obj a ⟶ G.obj a
+  /-- The 2-morphisms underlying the oplax naturality constraint. -/
+  naturality {a b : B} (f : a ⟶ b) : F.map f ≫ app b ⟶ app a ≫ G.map f
+  /-- Naturality of the oplax naturality constraint. -/
+  naturality_naturality {a b : B} {f g : a ⟶ b} (η : f ⟶ g) :
+      F.map₂ η ▷ app b ≫ naturality g = naturality f ≫ app a ◁ G.map₂ η := by
+    aesop_cat
+  /-- Oplax unity. -/
+  naturality_id (a : B) :
+      F.mapId a ▷ app a ≫ naturality (𝟙 a) =
+      (λ_ (app a)).hom ≫ (ρ_ (app a)).inv ≫ app a ◁ G.mapId a := by
+    aesop_cat
+  /-- Oplax functoriality. -/
+  naturality_comp {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
+      F.mapComp f g ▷ app c ≫ naturality (f ≫ g) =
+      (α_ _ _ _).hom ≫ F.map f ◁ naturality g ≫
+        (α_ _ _ _).inv ≫ naturality f ▷ G.map g ≫
+        (α_ _ _ _).hom ≫ app a ◁ G.mapComp f g := by
+    aesop_cat
+
+attribute [reassoc (attr := simp)] OplaxTrans.naturality_naturality OplaxTrans.naturality_id
+  OplaxTrans.naturality_comp
+
+namespace OplaxTrans
+
+variable {F : LaxFunctor B C} {G H : LaxFunctor B C} (η : OplaxTrans F G) (θ : OplaxTrans G H)
+
+section
+
+variable {a b c : B} {a' : C}
+
+@[reassoc (attr := simp)]
+theorem whiskerLeft_naturality_naturality (f : a' ⟶ G.obj a) {g h : a ⟶ b} (β : g ⟶ h) :
+    f ◁ G.map₂ β ▷ θ.app b ≫ f ◁ θ.naturality h =
+      f ◁ θ.naturality g ≫ f ◁ θ.app a ◁ H.map₂ β := by
+  simp_rw [← whiskerLeft_comp, naturality_naturality]
+
+@[reassoc (attr := simp)]
+theorem whiskerRight_naturality_naturality {f g : a ⟶ b} (β : f ⟶ g) (h : G.obj b ⟶ a') :
+    F.map₂ β ▷ η.app b ▷ h ≫ η.naturality g ▷ h =
+      η.naturality f ▷ h ≫ (α_ _ _ _).hom ≫ η.app a ◁ G.map₂ β ▷ h ≫ (α_ _ _ _).inv := by
+  rw [← comp_whiskerRight, naturality_naturality, comp_whiskerRight, whisker_assoc]
+
+@[reassoc (attr := simp)]
+theorem whiskerLeft_naturality_comp (f : a' ⟶ F.obj a) (g : a ⟶ b) (h : b ⟶ c) :
+    f ◁ F.mapComp g h ▷ η.app c ≫ f ◁ η.naturality (g ≫ h) =
+      f ◁ (α_ _ _ _).hom ≫ f ◁ F.map g ◁ η.naturality h ≫
+      f ◁ (α_ _ _ _).inv ≫ f ◁ η.naturality g ▷ G.map h ≫
+      f ◁ (α_ _ _ _).hom ≫ f ◁ η.app a ◁ G.mapComp g h := by
+  simp_rw [← whiskerLeft_comp, naturality_comp]
+
+@[reassoc (attr := simp)]
+theorem whiskerRight_naturality_comp (f : a ⟶ b) (g : b ⟶ c) (h : G.obj c ⟶ a') :
+    F.mapComp f g ▷ η.app c ▷ h ≫ η.naturality (f ≫ g) ▷ h =
+    (α_ _ _ _).hom ▷ h ≫ (F.map f ◁ η.naturality g) ▷ h ≫
+      (α_ _ _ _).inv ▷ h ≫ η.naturality f ▷ G.map g ▷ h ≫
+      (α_ _ _ _).hom ▷ h ≫ (η.app a ◁ G.mapComp f g) ▷ h := by
+  simp_rw [← comp_whiskerRight, naturality_comp]
+
+@[reassoc (attr := simp)]
+theorem whiskerLeft_naturality_id (f : a' ⟶ F.obj a) :
+    f ◁ F.mapId a ▷ η.app a ≫ f ◁ η.naturality (𝟙 a) =
+    f ◁ (λ_ (η.app a)).hom ≫ f ◁ (ρ_ (η.app a)).inv ≫ f ◁ η.app a ◁ G.mapId a := by
+  simp_rw [← whiskerLeft_comp, naturality_id]
+
+@[reassoc (attr := simp)]
+theorem whiskerRight_naturality_id (f : G.obj a ⟶ a') :
+    F.mapId a ▷ η.app a ▷ f ≫ η.naturality (𝟙 a) ▷ f =
+    (λ_ (η.app a)).hom ▷ f ≫ (ρ_ (η.app a)).inv ▷ f ≫ (η.app a ◁ G.mapId a) ▷ f := by
+  simp_rw [← comp_whiskerRight, naturality_id]
+
+end
+
+variable (F) in
+/-- The identity oplax transformation. -/
+def id : OplaxTrans F F where
+  app a := 𝟙 (F.obj a)
+  naturality {_ _} f := (ρ_ (F.map f)).hom ≫ (λ_ (F.map f)).inv
+
+instance : Inhabited (OplaxTrans F F) :=
+  ⟨id F⟩
+
+/-- Vertical composition of oplax transformations. -/
+def vcomp : OplaxTrans F H where
+  app a := η.app a ≫ θ.app a
+  naturality {a b} f :=
+    (α_ _ _ _).inv ≫ η.naturality f ▷ θ.app b ≫
+      (α_ _ _ _).hom ≫ η.app a ◁ θ.naturality f ≫ (α_ _ _ _).inv
+  naturality_comp {a b c} f g := by
+    simp only [whiskerRight_comp, assoc, Iso.hom_inv_id_assoc,
+      whiskerRight_naturality_comp_assoc, whisker_assoc, Iso.inv_hom_id_assoc,
+      whiskerLeft_naturality_comp_assoc, pentagon_assoc, comp_whiskerLeft,
+      pentagon_inv_hom_hom_hom_inv_assoc, whiskerLeft_comp, comp_whiskerRight,
+      pentagon_inv_hom_hom_hom_hom_assoc, pentagon_inv_assoc,
+      Iso.cancel_iso_hom_left]
+    simp only [associator_naturality_left_assoc, ← pentagon_inv_assoc,
+      pentagon_inv_inv_hom_hom_inv_assoc, comp_whiskerLeft_symm, Category.assoc,
+      Iso.hom_inv_id_assoc, ← whisker_exchange_assoc]
+    simp
+
+end CategoryTheory.Lax.OplaxTrans
