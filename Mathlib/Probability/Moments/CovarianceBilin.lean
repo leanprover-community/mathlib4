@@ -5,7 +5,7 @@ Authors: Rémy Degenne
 -/
 import Mathlib.Analysis.LocallyConvex.ContinuousOfBounded
 import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
-import Mathlib.Probability.Moments.Variance
+import Mathlib.Probability.Moments.Covariance
 
 /-!
 # Covariance in Banach spaces
@@ -81,7 +81,7 @@ lemma norm_toLpₗ_le [OpensMeasurableSpace E] (L : Dual 𝕜 E) :
   by_cases hp_top : p = ∞
   · simp only [hp_top, Dual.toLpₗ_apply h_Lp, Lp.norm_toLp, eLpNorm_exponent_top] at h_Lp ⊢
     simp only [eLpNormEssSup, id_eq]
-    suffices (essSup (fun x ↦ ‖L x‖ₑ) μ).toReal ≤ (essSup (fun x ↦ ‖L‖ₑ *‖x‖ₑ) μ).toReal by
+    suffices (essSup (fun x ↦ ‖L x‖ₑ) μ).toReal ≤ (essSup (fun x ↦ ‖L‖ₑ * ‖x‖ₑ) μ).toReal by
       rwa [ENNReal.essSup_const_mul, ENNReal.toReal_mul, toReal_enorm] at this
     gcongr
     · rw [ENNReal.essSup_const_mul]

@@ -78,12 +78,12 @@ open Batteries.ExtendedBinder
 
 /-- `Πʳ i, [R i, A i]_[𝓕]` is `RestrictedProduct R A 𝓕`. -/
 scoped[RestrictedProduct]
-notation3 "Πʳ "(...)", ""["r:(scoped R => R)", "a:(scoped A => A)"]_[" f "]" =>
+notation3 "Πʳ " (...) ", " "[" r:(scoped R => R)", " a:(scoped A => A) "]_[" f "]" =>
   RestrictedProduct r a f
 
 /-- `Πʳ i, [R i, A i]` is `RestrictedProduct R A cofinite`. -/
 scoped[RestrictedProduct]
-notation3"Πʳ "(...)", ""["r:(scoped R => R)", "a:(scoped A => A)"]" =>
+notation3 "Πʳ " (...) ", " "[" r:(scoped R => R)", " a:(scoped A => A) "]" =>
   RestrictedProduct r a cofinite
 
 namespace RestrictedProduct

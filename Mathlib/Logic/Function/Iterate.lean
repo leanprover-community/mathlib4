@@ -38,7 +38,7 @@ def Nat.iterate {α : Sort u} (op : α → α) : ℕ → α → α
   | succ k, a => iterate op k (op a)
 
 @[inherit_doc Nat.iterate]
-notation:max f "^["n"]" => Nat.iterate f n
+notation:max f "^[" n "]" => Nat.iterate f n
 
 namespace Function
 
@@ -181,7 +181,7 @@ def Iterate.rec (p : α → Sort*) {f : α → α} (h : ∀ a, p a → p (f a)) 
     p (f^[n] a) :=
   match n with
   | 0 => ha
-  | m+1 => Iterate.rec p h (h _ ha) m
+  | m + 1 => Iterate.rec p h (h _ ha) m
 
 theorem Iterate.rec_zero (p : α → Sort*) {f : α → α} (h : ∀ a, p a → p (f a)) {a : α} (ha : p a) :
     Iterate.rec p h ha 0 = ha :=
