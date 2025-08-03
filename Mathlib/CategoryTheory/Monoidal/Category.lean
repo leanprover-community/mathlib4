@@ -30,6 +30,7 @@ e.g. `(λ_ (𝟙_ C)).hom = (ρ_ (𝟙_ C)).hom` in `CategoryTheory.Monoidal.Coh
 In the definition of monoidal categories, we also provide the whiskering operators:
 * `whiskerLeft (X : C) {Y₁ Y₂ : C} (f : Y₁ ⟶ Y₂) : X ⊗ Y₁ ⟶ X ⊗ Y₂`, denoted by `X ◁ f`,
 * `whiskerRight {X₁ X₂ : C} (f : X₁ ⟶ X₂) (Y : C) : X₁ ⊗ Y ⟶ X₂ ⊗ Y`, denoted by `f ▷ Y`.
+
 These are products of an object and a morphism (the terminology "whiskering"
 is borrowed from 2-category theory). The tensor product of morphisms `tensorHom` can be defined
 in terms of the whiskerings. There are two possible such definitions, which are related by

@@ -56,6 +56,7 @@ Diamond inheritance cannot depend on `outParam`s in the following circumstances:
 * the instance `Bottom.toMiddle` takes a `[Left α]` parameter
 * the instance `Middle.toTop` takes a `[Right α]` parameter
 * there is a `Leaf` class that inherits from both `Left` and `Right`.
+
 In that case, given instances `Bottom α` and `Leaf α`, Lean cannot synthesize a `Top α` instance,
 even though the hypotheses of the instances `Bottom.toMiddle` and `Middle.toTop` are satisfied.
 
