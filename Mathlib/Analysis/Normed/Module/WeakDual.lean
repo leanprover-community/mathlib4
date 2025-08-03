@@ -101,58 +101,46 @@ i.e., that the weak-* topology is coarser (not necessarily strictly) than the to
 by the dual-norm (i.e. the operator-norm).
 -/
 
+namespace StrongDual
+
+section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-
-namespace NormedSpace
-
-namespace Dual
+variable {E : Type*} [AddCommMonoid E] [TopologicalSpace E] [Module 𝕜 E]
 
 /-- For normed spaces `E`, there is a canonical map `StrongDual 𝕜 E → WeakDual 𝕜 E` (the "identity"
 mapping). It is a linear equivalence. -/
 def toWeakDual : StrongDual 𝕜 E ≃ₗ[𝕜] WeakDual 𝕜 E :=
   LinearEquiv.refl 𝕜 (E →L[𝕜] 𝕜)
 
+@[deprecated (since := "2025-08-3")] alias _root_.NormedSpace.Dual.toWeakDual := toWeakDual
+
 @[simp]
 theorem coe_toWeakDual (x' : StrongDual 𝕜 E) : toWeakDual x' = x' :=
   rfl
+
+@[deprecated (since := "2025-08-3")] alias _root_.NormedSpace.Dual.coe_toWeakDual := coe_toWeakDual
 
 @[simp]
 theorem toWeakDual_inj (x' y' : StrongDual 𝕜 E) : toWeakDual x' = toWeakDual y' ↔ x' = y' :=
   (LinearEquiv.injective toWeakDual).eq_iff
 
-@[deprecated (since := "2024-12-29")] alias toWeakDual_eq_iff := toWeakDual_inj
+@[deprecated (since := "2025-08-3")] alias _root_.NormedSpace.Dual.toWeakDual_inj := toWeakDual_inj
 
-theorem toWeakDual_continuous : Continuous fun x' : StrongDual 𝕜 E => toWeakDual x' :=
-  WeakBilin.continuous_of_continuous_eval _ fun z => (inclusionInDoubleDual 𝕜 E z).continuous
+end
 
-/-- For a normed space `E`, according to `toWeakDual_continuous` the "identity mapping"
-`Dual 𝕜 E → WeakDual 𝕜 E` is continuous. This definition implements it as a continuous linear
-map. -/
-def continuousLinearMapToWeakDual : StrongDual 𝕜 E →L[𝕜] WeakDual 𝕜 E :=
-  { toWeakDual with cont := toWeakDual_continuous }
-
-/-- The weak-star topology is coarser than the dual-norm topology. -/
-theorem dual_norm_topology_le_weak_dual_topology :
-    (UniformSpace.toTopologicalSpace : TopologicalSpace (StrongDual 𝕜 E)) ≤
-      (WeakDual.instTopologicalSpace : TopologicalSpace (WeakDual 𝕜 E)) := by
-  convert (@toWeakDual_continuous _ _ _ _ (by assumption)).le_induced
-  exact induced_id.symm
-
-end Dual
-
-end NormedSpace
+end StrongDual
 
 namespace WeakDual
 
-open NormedSpace
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {E : Type*} [AddCommMonoid E] [TopologicalSpace E] [Module 𝕜 E]
 
 /-- For normed spaces `E`, there is a canonical map `WeakDual 𝕜 E → Dual 𝕜 E` (the "identity"
 mapping). It is a linear equivalence. Here it is implemented as the inverse of the linear
 equivalence `NormedSpace.Dual.toWeakDual` in the other direction. -/
 def toStrongDual : WeakDual 𝕜 E ≃ₗ[𝕜] StrongDual 𝕜 E :=
-  NormedSpace.Dual.toWeakDual.symm
+  StrongDual.toWeakDual.symm
 
 @[deprecated (since := "2025-08-03")] alias toNormedDual := toStrongDual
 
@@ -168,15 +156,6 @@ theorem toNormedDual_inj (x' y' : WeakDual 𝕜 E) : toStrongDual x' = toStrongD
   (LinearEquiv.injective toStrongDual).eq_iff
 
 @[deprecated (since := "2024-12-29")] alias toNormedDual_eq_iff := toNormedDual_inj
-
-theorem isClosed_closedBall (x' : StrongDual 𝕜 E) (r : ℝ) :
-    IsClosed (toStrongDual ⁻¹' closedBall x' r) :=
-  isClosed_induced_iff'.2 (ContinuousLinearMap.is_weak_closed_closedBall x' r)
-
-/-!
-### Polar sets in the weak dual space
--/
-
 
 variable (𝕜)
 
@@ -194,17 +173,58 @@ theorem isClosed_polar (s : Set E) : IsClosed (polar 𝕜 s) := by
   simp only [polar_def, setOf_forall]
   exact isClosed_biInter fun x hx => isClosed_Iic.preimage (WeakBilin.eval_continuous _ _).norm
 
-variable {𝕜}
+end WeakDual
+
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+
+namespace NormedSpace
+
+namespace Dual
+
+@[deprecated (since := "2024-12-29")] alias toWeakDual_eq_iff := toWeakDual_inj
+
+theorem toWeakDual_continuous : Continuous fun x' : StrongDual 𝕜 E => StrongDual.toWeakDual x' :=
+  WeakBilin.continuous_of_continuous_eval _ fun z => (inclusionInDoubleDual 𝕜 E z).continuous
+
+/-- For a normed space `E`, according to `toWeakDual_continuous` the "identity mapping"
+`Dual 𝕜 E → WeakDual 𝕜 E` is continuous. This definition implements it as a continuous linear
+map. -/
+def continuousLinearMapToWeakDual : StrongDual 𝕜 E →L[𝕜] WeakDual 𝕜 E :=
+  { StrongDual.toWeakDual with cont := toWeakDual_continuous }
+
+/-- The weak-star topology is coarser than the dual-norm topology. -/
+theorem dual_norm_topology_le_weak_dual_topology :
+    (UniformSpace.toTopologicalSpace : TopologicalSpace (StrongDual 𝕜 E)) ≤
+      (WeakDual.instTopologicalSpace : TopologicalSpace (WeakDual 𝕜 E)) := by
+  convert (@toWeakDual_continuous _ _ _ _ (by assumption)).le_induced
+  exact induced_id.symm
+
+end Dual
+
+end NormedSpace
+
+namespace WeakDual
+
+open NormedSpace
+
+theorem isClosed_closedBall (x' : StrongDual 𝕜 E) (r : ℝ) :
+    IsClosed (toStrongDual ⁻¹' closedBall x' r) :=
+  isClosed_induced_iff'.2 (ContinuousLinearMap.is_weak_closed_closedBall x' r)
+
+/-!
+### Polar sets in the weak dual space
+-/
 
 /-- While the coercion `↑ : WeakDual 𝕜 E → (E → 𝕜)` is not a closed map, it sends *bounded*
 closed sets to closed sets. -/
 theorem isClosed_image_coe_of_bounded_of_closed {s : Set (WeakDual 𝕜 E)}
-    (hb : IsBounded (Dual.toWeakDual ⁻¹' s)) (hc : IsClosed s) :
+    (hb : IsBounded (StrongDual.toWeakDual ⁻¹' s)) (hc : IsClosed s) :
     IsClosed (((↑) : WeakDual 𝕜 E → E → 𝕜) '' s) :=
   ContinuousLinearMap.isClosed_image_coe_of_bounded_of_weak_closed hb (isClosed_induced_iff'.1 hc)
 
 theorem isCompact_of_bounded_of_closed [ProperSpace 𝕜] {s : Set (WeakDual 𝕜 E)}
-    (hb : IsBounded (Dual.toWeakDual ⁻¹' s)) (hc : IsClosed s) : IsCompact s :=
+    (hb : IsBounded (StrongDual.toWeakDual ⁻¹' s)) (hc : IsClosed s) : IsCompact s :=
   DFunLike.coe_injective.isEmbedding_induced.isCompact_iff.mpr <|
     ContinuousLinearMap.isCompact_image_coe_of_bounded_of_closed_image hb <|
       isClosed_image_coe_of_bounded_of_closed hb hc
