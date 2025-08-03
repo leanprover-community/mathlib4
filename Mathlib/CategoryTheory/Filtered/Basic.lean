@@ -492,8 +492,9 @@ class IsCofilteredOrEmpty : Prop where
 /-- A category `IsCofiltered` if
 1. for every pair of objects there exists another object "to the left",
 2. for every pair of parallel morphisms there exists a morphism to the left so the compositions
-   are equal, and
-3. there exists some object. -/
+  are equal, and
+3. there exists some object.
+-/
 @[stacks 04AZ]
 class IsCofiltered : Prop extends IsCofilteredOrEmpty C where
   /-- a cofiltered category must be non empty -/

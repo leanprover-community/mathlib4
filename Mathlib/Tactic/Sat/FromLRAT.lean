@@ -421,11 +421,11 @@ arithmetic by hand.
   1. First, we call `reifyFormula ctx'` which returns `a` and `pr : reify v ctx' a`
   2. Then we build `fun (v : Valuation) (h1 : v 0 ↔ a1) ... (hn : v (n-1) ↔ an) ↦ pr`
   3. We have to lower expression `a` from step 1 out of the quantifiers by lowering all variable
-     indices by `nvars+1`. This is okay because `v` and `h1..hn` do not appear in `a`.
+    indices by `nvars+1`. This is okay because `v` and `h1..hn` do not appear in `a`.
   4. We construct the expression `ps`, which is `a1 .. an : Prop ⊢ [a1, ..., an] : List Prop`
   5. `refute ctx (hf : ctx.proof []) (fun v h1 .. hn ↦ pr) : a` forces some definitional unfolding
-     since `fun h1 .. hn ↦ pr` should have type `implies v (reify v ctx a) [a1, ..., an] a`,
-     which involves unfolding `implies` n times as well as `ctx ↦ ctx'`.
+    since `fun h1 .. hn ↦ pr` should have type `implies v (reify v ctx a) [a1, ..., an] a`,
+    which involves unfolding `implies` n times as well as `ctx ↦ ctx'`.
   6. Finally, we `intro a1 ... an` so that we have a proof of `∀ a1 ... an, a`.
 -/
 partial def buildReify (ctx ctx' proof : Expr) (nvars : Nat) : Expr × Expr := Id.run do
