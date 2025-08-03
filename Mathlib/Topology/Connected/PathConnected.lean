@@ -461,10 +461,7 @@ theorem IsPathConnected.exists_path_through_family {n : ℕ}
           rw [this]
           use 1
           exact γ.target
-      · rw [range_eq]
-        apply union_subset hγ₀.2
-        rw [range_subset_iff]
-        exact hγ₁
+      · grind [Set.union_subset, Set.range_subset_iff]
   have hpp' : ∀ k < n + 1, p k = p' k := by
     intro k hk
     simp only [p', hk, dif_pos]

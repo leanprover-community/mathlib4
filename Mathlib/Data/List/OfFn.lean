@@ -105,8 +105,7 @@ theorem ofFn_getElem_eq_map {β : Type*} (l : List α) (f : α → β) :
 -- Note there is a now another `mem_ofFn` defined in Lean, with an existential on the RHS,
 -- which is marked as a simp lemma.
 theorem mem_ofFn' {n} (f : Fin n → α) (a : α) : a ∈ ofFn f ↔ a ∈ Set.range f := by
-  simp only [mem_iff_get, Set.mem_range, get_ofFn]
-  exact ⟨fun ⟨i, hi⟩ => ⟨Fin.cast (by simp) i, hi⟩, fun ⟨i, hi⟩ => ⟨Fin.cast (by simp) i, hi⟩⟩
+  grind [Set.mem_range]
 
 theorem forall_mem_ofFn_iff {n : ℕ} {f : Fin n → α} {P : α → Prop} :
     (∀ i ∈ ofFn f, P i) ↔ ∀ j : Fin n, P (f j) := by simp

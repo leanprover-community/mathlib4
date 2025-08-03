@@ -201,4 +201,10 @@ theorem injective_pointReflection_left_of_injective_two_nsmul {G P : Type*} [Add
     vsub_sub_vsub_cancel_right, ← neg_vsub_eq_vsub_rev, neg_eq_iff_add_eq_zero,
     ← two_nsmul, ← nsmul_zero 2, h.eq_iff, vsub_eq_zero_iff_eq] at hy
 
+/-- In the special case of additive commutative groups (as opposed to just additive torsors),
+`Equiv.pointReflection x` coincides with `Equiv.subLeft (2 • x)`. -/
+lemma pointReflection_eq_subLeft {G : Type*} [AddCommGroup G] (x : G) :
+    pointReflection x = Equiv.subLeft (2 • x) := by
+  ext; simp [pointReflection, sub_add_eq_add_sub, two_nsmul]
+
 end Equiv

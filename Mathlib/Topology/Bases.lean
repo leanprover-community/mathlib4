@@ -937,7 +937,7 @@ theorem IsTopologicalBasis.isQuotientMap {V : Set (Set X)} (hV : IsTopologicalBa
     have x_in_W : x ∈ W := y_in_U
     have W_open : IsOpen W := U_open.preimage h'.continuous
     obtain ⟨Z, Z_in_V, x_in_Z, Z_in_W⟩ := hV.exists_subset_of_mem_open x_in_W W_open
-    have XZ_in_U : π '' Z ⊆ U := (Set.image_subset _ Z_in_W).trans (image_preimage_subset π U)
+    have XZ_in_U : π '' Z ⊆ U := (Set.image_mono Z_in_W).trans (image_preimage_subset π U)
     exact ⟨π '' Z, ⟨Z, Z_in_V, rfl⟩, ⟨x, x_in_Z, rfl⟩, XZ_in_U⟩
 
 /-- A second countable space is mapped by an open quotient map to a second countable space. -/

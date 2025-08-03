@@ -178,7 +178,7 @@ theorem sSup_unitClosedBall_eq_nnnorm {𝕜 𝕜₂ E F : Type*} [NormedAddCommG
   refine le_antisymm (csSup_le ((nonempty_closedBall.mpr zero_le_one).image _) hbdd) ?_
   rw [← sSup_unit_ball_eq_nnnorm]
   exact csSup_le_csSup ⟨‖f‖₊, hbdd⟩ ((nonempty_ball.2 zero_lt_one).image _)
-    (Set.image_subset _ ball_subset_closedBall)
+    (Set.image_mono ball_subset_closedBall)
 
 theorem sSup_unitClosedBall_eq_norm {𝕜 𝕜₂ E F : Type*} [NormedAddCommGroup E]
     [SeminormedAddCommGroup F] [DenselyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
