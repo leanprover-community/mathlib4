@@ -85,7 +85,7 @@ lemma isGδ_iff_eq_iInter_nat {s : Set X} :
     IsGδ s ↔ ∃ (f : ℕ → Set X), (∀ n, IsOpen (f n)) ∧ s = ⋂ n, f n := by
   refine ⟨?_, ?_⟩
   · rintro ⟨T, hT, T_count, rfl⟩
-    rcases Set.eq_empty_or_nonempty T with rfl|hT
+    rcases Set.eq_empty_or_nonempty T with rfl | hT
     · exact ⟨fun _n ↦ univ, fun _n ↦ isOpen_univ, by simp⟩
     · obtain ⟨f, hf⟩ : ∃ (f : ℕ → Set X), T = range f := Countable.exists_eq_range T_count hT
       exact ⟨f, by aesop, by simp [hf]⟩
@@ -234,8 +234,8 @@ lemma IsMeagre.union {s t : Set X} (hs : IsMeagre s) (ht : IsMeagre t) : IsMeagr
   exact inter_mem hs ht
 
 /-- A countable union of meagre sets is meagre. -/
-lemma isMeagre_iUnion [Countable ι] {f : ι → Set X} (hs : ∀ i, IsMeagre (f i))
-    : IsMeagre (⋃ i, f i) := by
+lemma isMeagre_iUnion [Countable ι] {f : ι → Set X} (hs : ∀ i, IsMeagre (f i)) :
+    IsMeagre (⋃ i, f i) := by
   rw [IsMeagre, compl_iUnion]
   exact countable_iInter_mem.mpr hs
 
