@@ -133,4 +133,25 @@ theorem mem_commutant_iff {S : VonNeumannAlgebra H} {z : H →L[ℂ] H} :
 theorem commutant_commutant (S : VonNeumannAlgebra H) : S.commutant.commutant = S :=
   SetLike.coe_injective <| by simp
 
+open ContinuousLinearMap in
+/-- An idempotent is an element in a von Neumann algebra if and only if
+its range and kernel are invariant under the commutant. -/
+theorem IsIdempotentElem.mem_iff {e : H →L[ℂ] H} (h : IsIdempotentElem e)
+    (S : VonNeumannAlgebra H) :
+    e ∈ S ↔ ∀ y ∈ S.commutant,
+    LinearMap.range e ∈ Module.End.invtSubmodule y
+      ∧ LinearMap.ker e ∈ Module.End.invtSubmodule y := by
+  conv_rhs => simp [← h.commute_iff, Commute.symm_iff (a := e), commute_iff_eq, ← mem_commutant_iff]
+
+open VonNeumannAlgebra ContinuousLinearMap in
+/-- A star projection is an element in a von Neumann algebra if and only if
+its range is invariant under the commutant. -/
+theorem IsStarProjection.mem_iff {e : H →L[ℂ] H} (he : IsStarProjection e)
+    (S : VonNeumannAlgebra H) :
+    e ∈ S ↔ ∀ y ∈ S.commutant, LinearMap.range e ∈ Module.End.invtSubmodule y := by
+  simp_rw [he.isIdempotentElem.mem_iff, he.isIdempotentElem.range_mem_invtSubmodule_iff,
+    he.isIdempotentElem.ker_mem_invtSubmodule_iff, forall_and, and_iff_left_iff_imp, ← mul_def]
+  intro h x hx
+  simpa [he.isSelfAdjoint.star_eq] using congr(star $(h _ (star_mem hx)))
+
 end VonNeumannAlgebra

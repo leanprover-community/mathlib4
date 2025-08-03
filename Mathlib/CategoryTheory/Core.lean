@@ -110,7 +110,7 @@ def coreId : (𝟭 C).core ≅ 𝟭 (Core C) := Iso.refl _
 /-- The core of the composition of F and G is the composition of the cores. -/
 @[simps!]
 def coreComp {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) (G : D ⥤ E) :
-  (F ⋙ G).core ≅ F.core ⋙ G.core := Iso.refl _
+    (F ⋙ G).core ≅ F.core ⋙ G.core := Iso.refl _
 
 end Functor
 

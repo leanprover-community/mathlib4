@@ -261,11 +261,11 @@ theorem simple_induction_left {p : W → Prop} (w : W) (one : p 1)
   let p' : (w : W) → w ∈ Submonoid.closure (Set.range cs.simple) → Prop :=
     fun w _ ↦ p w
   have := cs.submonoid_closure_range_simple.symm ▸ Submonoid.mem_top w
-  apply Submonoid.closure_induction_left (p := p')
-  · exact one
-  · rintro _ ⟨i, rfl⟩ y _
-    exact mul_simple_left y i
-  · exact this
+  induction this using Submonoid.closure_induction_left with
+  | one => exact one
+  | mul_left i mi y my ih =>
+    rw [Set.mem_range] at mi
+    exact mi.choose_spec ▸ mul_simple_left _ _ ih
 
 /-- If `p : W → Prop` holds for the identity and it is preserved under multiplying on the right
 by a simple reflection, then it holds for all elements of `W`. -/
@@ -274,11 +274,11 @@ theorem simple_induction_right {p : W → Prop} (w : W) (one : p 1)
   let p' : ((w : W) → w ∈ Submonoid.closure (Set.range cs.simple) → Prop) :=
     fun w _ ↦ p w
   have := cs.submonoid_closure_range_simple.symm ▸ Submonoid.mem_top w
-  apply Submonoid.closure_induction_right (p := p')
-  · exact one
-  · rintro x _ _ ⟨i, rfl⟩
-    exact mul_simple_right x i
-  · exact this
+  induction this using Submonoid.closure_induction_right with
+  | one => exact one
+  | mul_right y my i mi ih =>
+    rw [Set.mem_range] at mi
+    exact mi.choose_spec ▸ mul_simple_right _ _ ih
 
 /-! ### Homomorphisms from a Coxeter group -/
 
@@ -295,7 +295,7 @@ def _root_.CoxeterMatrix.IsLiftable {G : Type*} [Monoid G] (M : CoxeterMatrix B)
 private theorem relations_liftable {G : Type*} [Group G] {f : B → G} (hf : IsLiftable M f)
     (r : FreeGroup B) (hr : r ∈ M.relationsSet) : (FreeGroup.lift f) r = 1 := by
   rcases hr with ⟨⟨i, i'⟩, rfl⟩
-  rw [uncurry, relation, map_pow, map_mul, FreeGroup.lift.of, FreeGroup.lift.of]
+  rw [uncurry, relation, map_pow, map_mul, FreeGroup.lift_apply_of, FreeGroup.lift_apply_of]
   exact hf i i'
 
 private def groupLift {G : Type*} [Group G] {f : B → G} (hf : IsLiftable M f) : W →* G :=
@@ -444,8 +444,8 @@ lemma getElem_alternatingWord (i j : B) (p k : ℕ) (hk : k < p) :
         rw [if_neg h_even]
 
 lemma getElem_alternatingWord_swapIndices (i j : B) (p k : ℕ) (h : k + 1 < p) :
-   (alternatingWord i j p)[k+1]'(by simp [h]) =
-   (alternatingWord j i p)[k]'(by simp; omega) := by
+     (alternatingWord i j p)[k+1]'(by simp [h]) =
+     (alternatingWord j i p)[k]'(by simp; omega) := by
   rw [getElem_alternatingWord i j p (k+1) (by omega), getElem_alternatingWord j i p k (by omega)]
   by_cases h_even : Even (p + k)
   · rw [if_pos h_even, ← add_assoc]
@@ -511,7 +511,7 @@ theorem prod_alternatingWord_eq_prod_alternatingWord_sub (i i' : B) (m : ℕ) (h
   push_cast
   rcases Int.even_or_odd' m' with ⟨k, rfl | rfl⟩
   · rw [if_pos (by use k; ring), if_pos (by use -k + (M i i'); ring), mul_comm 2 k, ← sub_mul]
-    repeat rw [Int.mul_ediv_cancel _ (by norm_num)]
+    repeat rw [Int.mul_ediv_cancel _ (by simp)]
     rw [zpow_sub, zpow_natCast, simple_mul_simple_pow' cs i i', ← inv_zpow]
     simp
   · have : ¬Even (2 * k + 1) := Int.not_even_iff_odd.2 ⟨k, rfl⟩
@@ -521,7 +521,7 @@ theorem prod_alternatingWord_eq_prod_alternatingWord_sub (i i' : B) (m : ℕ) (h
     rw [if_neg this]
     rw [(by ring : ↑(M i i') * 2 - (2 * k + 1) = -1 + (-k + ↑(M i i')) * 2),
       (by ring : 2 * k + 1 = 1 + k * 2)]
-    repeat rw [Int.add_mul_ediv_right _ _ (by norm_num)]
+    repeat rw [Int.add_mul_ediv_right _ _ (by simp)]
     norm_num
     rw [zpow_add, zpow_add, zpow_natCast, simple_mul_simple_pow', zpow_neg, ← inv_zpow, zpow_neg,
       ← inv_zpow]
@@ -532,7 +532,7 @@ This is known as the "braid relation" or "Artin-Tits relation". -/
 theorem wordProd_braidWord_eq (i i' : B) :
     π (braidWord M i i') = π (braidWord M i' i) := by
   have := cs.prod_alternatingWord_eq_prod_alternatingWord_sub i i' (M i i')
-    (Nat.le_mul_of_pos_right _ (by norm_num))
+    (Nat.le_mul_of_pos_right _ (by simp))
   rw [tsub_eq_of_eq_add (mul_two (M i i'))] at this
   nth_rw 2 [M.symmetric i i'] at this
   exact this

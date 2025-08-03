@@ -20,8 +20,8 @@ This theory will serve as the foundation for spectral theory in Banach algebras.
   `A` is an `R`-algebra.
 * `spectrum a : Set R`: the spectrum of an element `a : A` where
   `A` is an `R`-algebra.
-* `resolvent : R → A`: the resolvent function is `fun r ↦ Ring.inverse (↑ₐr - a)`, and hence
-  when `r ∈ resolvent R A`, it is actually the inverse of the unit `(↑ₐr - a)`.
+* `resolvent : R → A`: the resolvent function is `fun r ↦ Ring.inverse (↑ₐ r - a)`, and hence
+  when `r ∈ resolvent R A`, it is actually the inverse of the unit `(↑ₐ r - a)`.
 
 ## Main statements
 
@@ -420,7 +420,7 @@ local notation "↑ₐ" => algebraMap R A
 theorem apply_mem_spectrum [Nontrivial R] (φ : F) (a : A) : φ a ∈ σ a := by
   have h : ↑ₐ (φ a) - a ∈ RingHom.ker (φ : A →+* R) := by
     simp only [RingHom.mem_ker, map_sub, RingHom.coe_coe, AlgHomClass.commutes,
-      Algebra.id.map_eq_id, RingHom.id_apply, sub_self]
+      Algebra.algebraMap_self, RingHom.id_apply, sub_self]
   simp only [spectrum.mem_iff, ← mem_nonunits_iff,
     coe_subset_nonunits (RingHom.ker_ne_top (φ : A →+* R)) h]
 

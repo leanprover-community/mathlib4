@@ -113,8 +113,8 @@ to the lattice of open subsets of `X`. More generally, if `C` is a topos, this i
 def Subterminals (C : Type u₁) [Category.{v₁} C] :=
   ObjectProperty.FullSubcategory fun A : C => IsSubterminal A
 
-instance (C : Type u₁) [Category.{v₁} C] :
-  Category (Subterminals C) := ObjectProperty.FullSubcategory.category _
+instance (C : Type u₁) [Category.{v₁} C] : Category (Subterminals C) :=
+  ObjectProperty.FullSubcategory.category _
 
 instance [HasTerminal C] : Inhabited (Subterminals C) :=
   ⟨⟨⊤_ C, isSubterminal_of_terminal⟩⟩

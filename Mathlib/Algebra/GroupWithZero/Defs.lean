@@ -37,9 +37,9 @@ class MulZeroClass (M₀ : Type u) extends Mul M₀, Zero M₀ where
   mul_zero : ∀ a : M₀, a * 0 = 0
 
 /-- A mixin for left cancellative multiplication by nonzero elements. -/
-class IsLeftCancelMulZero (M₀ : Type u) [Mul M₀] [Zero M₀] : Prop where
+@[mk_iff] class IsLeftCancelMulZero (M₀ : Type u) [Mul M₀] [Zero M₀] : Prop where
   /-- Multiplication by a nonzero element is left cancellative. -/
-  protected mul_left_cancel_of_ne_zero : ∀ {a b c : M₀}, a ≠ 0 → a * b = a * c → b = c
+  protected mul_left_cancel_of_ne_zero : ∀ {a : M₀}, a ≠ 0 → IsLeftRegular a
 
 section IsLeftCancelMulZero
 
@@ -54,9 +54,9 @@ theorem mul_right_injective₀ (ha : a ≠ 0) : Function.Injective (a * ·) :=
 end IsLeftCancelMulZero
 
 /-- A mixin for right cancellative multiplication by nonzero elements. -/
-class IsRightCancelMulZero (M₀ : Type u) [Mul M₀] [Zero M₀] : Prop where
-  /-- Multiplicatin by a nonzero element is right cancellative. -/
-  protected mul_right_cancel_of_ne_zero : ∀ {a b c : M₀}, b ≠ 0 → a * b = c * b → a = c
+@[mk_iff] class IsRightCancelMulZero (M₀ : Type u) [Mul M₀] [Zero M₀] : Prop where
+  /-- Multiplication by a nonzero element is right cancellative. -/
+  protected mul_right_cancel_of_ne_zero : ∀ {a : M₀}, a ≠ 0 → IsRightRegular a
 
 section IsRightCancelMulZero
 
@@ -71,11 +71,16 @@ theorem mul_left_injective₀ (hb : b ≠ 0) : Function.Injective fun a => a * b
 end IsRightCancelMulZero
 
 /-- A mixin for cancellative multiplication by nonzero elements. -/
-class IsCancelMulZero (M₀ : Type u) [Mul M₀] [Zero M₀] : Prop
+@[mk_iff] class IsCancelMulZero (M₀ : Type u) [Mul M₀] [Zero M₀] : Prop
   extends IsLeftCancelMulZero M₀, IsRightCancelMulZero M₀
 
 export MulZeroClass (zero_mul mul_zero)
 attribute [simp] zero_mul mul_zero
+
+theorem isCancelMulZero_iff_forall_isRegular {M₀} [Mul M₀] [Zero M₀] :
+    IsCancelMulZero M₀ ↔ ∀ {a : M₀}, a ≠ 0 → IsRegular a := by
+  simp only [isCancelMulZero_iff, isLeftCancelMulZero_iff, isRightCancelMulZero_iff, ← forall_and]
+  exact forall₂_congr fun _ _ ↦ isRegular_iff.symm
 
 /-- Predicate typeclass for expressing that `a * b = 0` implies `a = 0` or `b = 0`
 for all `a` and `b` of type `G₀`. -/
@@ -136,12 +141,12 @@ variable [CommSemigroup M₀] [Zero M₀]
 lemma IsLeftCancelMulZero.to_isRightCancelMulZero [IsLeftCancelMulZero M₀] :
     IsRightCancelMulZero M₀ :=
 { mul_right_cancel_of_ne_zero :=
-    fun hb h => mul_left_cancel₀ hb <| (mul_comm _ _).trans (h.trans (mul_comm _ _)) }
+    fun hb _ _ h => mul_left_cancel₀ hb <| (mul_comm _ _).trans (h.trans (mul_comm _ _)) }
 
 lemma IsRightCancelMulZero.to_isLeftCancelMulZero [IsRightCancelMulZero M₀] :
     IsLeftCancelMulZero M₀ :=
 { mul_left_cancel_of_ne_zero :=
-    fun hb h => mul_right_cancel₀ hb <| (mul_comm _ _).trans (h.trans (mul_comm _ _)) }
+    fun hb _ _ h => mul_right_cancel₀ hb <| (mul_comm _ _).trans (h.trans (mul_comm _ _)) }
 
 lemma IsLeftCancelMulZero.to_isCancelMulZero [IsLeftCancelMulZero M₀] :
     IsCancelMulZero M₀ :=
