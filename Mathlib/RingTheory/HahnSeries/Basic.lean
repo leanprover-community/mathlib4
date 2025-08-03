@@ -540,7 +540,7 @@ end LocallyFiniteLinearOrder
 section Truncate
 variable [Zero R]
 
-/-- Zeros out coefficients of a `HahnSeries` at indices equal to or greater than `c`. -/
+/-- Zeroes out coefficients of a `HahnSeries` at indices equal to or greater than `c`. -/
 def trunc [PartialOrder Γ] [DecidableLE Γ] (c : Γ) : ZeroHom (HahnSeries Γ R) (HahnSeries Γ R) where
   toFun x :=
     { coeff i := if c ≤ i then 0 else x.coeff i
