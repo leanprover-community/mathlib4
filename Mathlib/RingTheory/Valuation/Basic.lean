@@ -392,7 +392,7 @@ lemma mem_leAddSubgroup_iff {v : Valuation R Γ₀} {γ : Γ₀} {x : R} :
     x ∈ v.leAddSubgroup γ ↔ v x ≤ γ :=
   Iff.rfl
 
-lemma leAddSubgroup_mono (v : Valuation R Γ₀) : Monotone v.leAddSubgroup :=
+lemma leAddSubgroup_monotone (v : Valuation R Γ₀) : Monotone v.leAddSubgroup :=
   fun _ _ h _ ↦ h.trans'
 
 /-- The subgroup of elements whose valuation is less than a certain unit. -/
@@ -407,7 +407,7 @@ lemma mem_ltAddSubgroup_iff {v : Valuation R Γ₀} {γ : Γ₀ˣ} {x : R} :
     x ∈ v.ltAddSubgroup γ ↔ v x < γ :=
   Iff.rfl
 
-lemma ltAddSubgroup_mono (v : Valuation R Γ₀) : Monotone v.ltAddSubgroup :=
+lemma ltAddSubgroup_monotone (v : Valuation R Γ₀) : Monotone v.ltAddSubgroup :=
   fun _ _ h _ ↦ (Units.val_le_val.mpr h).trans_lt'
 
 lemma ltAddSubgroup_le_leAddSubgroup (v : Valuation R Γ₀) (γ : Γ₀ˣ) :

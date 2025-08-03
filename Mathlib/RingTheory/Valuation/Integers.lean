@@ -282,10 +282,10 @@ def ltSubmodule (γ : Γ₀ˣ) : Submodule 𝓞 R where
   smul_mem' r x h := by
     simpa [Subring.smul_def] using mul_lt_of_le_one_of_lt r.prop h
 
-lemma leSubmodule_mono : Monotone (leSubmodule v) :=
+lemma leSubmodule_monotone : Monotone (leSubmodule v) :=
   leAddSubgroup_mono v
 
-lemma ltSubmodule_mono : Monotone (ltSubmodule v) :=
+lemma ltSubmodule_monotone : Monotone (ltSubmodule v) :=
   ltAddSubgroup_mono v
 
 lemma ltSubmodule_le_leSubmodule (γ : Γ₀ˣ) :
