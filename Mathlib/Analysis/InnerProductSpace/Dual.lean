@@ -54,19 +54,21 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 local postfix:90 "†" => starRingEnd _
 
-/-- An element `x` of an inner product space `E` induces an element of the dual space `Dual 𝕜 E`,
-the map `fun y => ⟪x, y⟫`; moreover this operation is a conjugate-linear isometric embedding of `E`
-into `Dual 𝕜 E`.
+/-- An element `x` of an inner product space `E` induces an element of the strong dual space
+`StrongDual 𝕜 E`, the map `fun y => ⟪x, y⟫`; moreover this operation is a conjugate-linear isometric
+embedding of `E` into `StrongDual 𝕜 E`.
 If `E` is complete, this operation is surjective, hence a conjugate-linear isometric equivalence;
 see `toDual`.
 -/
-def toDualMap : E →ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
+noncomputable def _root_.toStrongDualMap : E →ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
   { innerSL 𝕜 with norm_map' := innerSL_apply_norm _ }
+
+@[deprecated (since := "2025-08-3")] alias toDualMap := toStrongDualMap
 
 variable {E}
 
 @[simp]
-theorem toDualMap_apply {x y : E} : toDualMap 𝕜 E x y = ⟪x, y⟫ :=
+theorem toDualMap_apply {x y : E} : toStrongDualMap 𝕜 E x y = ⟪x, y⟫ :=
   rfl
 
 section NullSubmodule
@@ -74,11 +76,12 @@ section NullSubmodule
 open LinearMap
 
 /-- For each `x : E`, the kernel of `⟪x, ⬝⟫` includes the null space. -/
-lemma nullSubmodule_le_ker_toDualMap_right (x : E) : nullSubmodule 𝕜 E ≤ ker (toDualMap 𝕜 E x) :=
+lemma nullSubmodule_le_ker_toDualMap_right (x : E) :
+    nullSubmodule 𝕜 E ≤ ker (toStrongDualMap 𝕜 E x) :=
   fun _ hx ↦ inner_eq_zero_of_right x ((mem_nullSubmodule_iff).mp hx)
 
 /-- The kernel of the map `x ↦ ⟪·, x⟫` includes the null space. -/
-lemma nullSubmodule_le_ker_toDualMap_left : nullSubmodule 𝕜 E ≤ ker (toDualMap 𝕜 E) :=
+lemma nullSubmodule_le_ker_toDualMap_left : nullSubmodule 𝕜 E ≤ ker (toStrongDualMap 𝕜 E) :=
   fun _ hx ↦ ContinuousLinearMap.ext <| fun y ↦ inner_eq_zero_of_left y hx
 
 end NullSubmodule
@@ -93,13 +96,14 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 local postfix:90 "†" => starRingEnd _
 
 theorem innerSL_norm [Nontrivial E] : ‖(innerSL 𝕜 : E →L⋆[𝕜] E →L[𝕜] 𝕜)‖ = 1 :=
-  show ‖(toDualMap 𝕜 E).toContinuousLinearMap‖ = 1 from LinearIsometry.norm_toContinuousLinearMap _
+  show ‖(toStrongDualMap 𝕜 E).toContinuousLinearMap‖ = 1 from
+    LinearIsometry.norm_toContinuousLinearMap _
 
 variable {E 𝕜}
 
 theorem ext_inner_left_basis {ι : Type*} {x y : E} (b : Basis ι 𝕜 E)
     (h : ∀ i : ι, ⟪b i, x⟫ = ⟪b i, y⟫) : x = y := by
-  apply (toDualMap 𝕜 E).map_eq_iff.mp
+  apply (toStrongDualMap 𝕜 E).map_eq_iff.mp
   refine (Function.Injective.eq_iff ContinuousLinearMap.coe_injective).mp (b.ext ?_)
   intro i
   simp only [ContinuousLinearMap.coe_coe]
@@ -122,7 +126,7 @@ variable [CompleteSpace E]
 `fun u => ⟪y, u⟫` for some `y : E`, i.e. `toDualMap` is surjective.
 -/
 def toDual : E ≃ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
-  LinearIsometryEquiv.ofSurjective (toDualMap 𝕜 E)
+  LinearIsometryEquiv.ofSurjective (toStrongDualMap 𝕜 E)
     (by
       intro ℓ
       set Y := LinearMap.ker ℓ
