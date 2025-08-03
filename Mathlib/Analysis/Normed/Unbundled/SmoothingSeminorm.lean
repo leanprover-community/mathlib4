@@ -407,11 +407,10 @@ private theorem limsup_mu_le (hμ1 : μ 1 ≤ 1) {s : ℕ → ℕ} (hs_le : ∀ 
         exact (tendsto_natCast_atTop_atTop.comp hψ_mono.tendsto_atTop).num ha_pos hψ_lim
       simp_rw [← rpow_mul (apply_nonneg μ _), mul_div]
       exact EventuallyEq.comp₂ EventuallyEq.rfl HPow.hPow (h.div EventuallyEq.rfl)
-    exact le_of_eq <| Tendsto.limsup_eq <| Tendsto.congr' h_eq <|
-      ((tendsto_smoothingFun_of_map_one_le_one μ hμ1 x).comp
-        ((tendsto_natCast_atTop_iff (R := ℝ)).mp <|
-          (tendsto_natCast_atTop_atTop.comp hψ_mono.tendsto_atTop) ha_pos hψ_lim).num).rpow hψ_lim
-            (.inr ha_pos)
+    exact ((tendsto_smoothingFun_of_map_one_le_one μ hμ1 x |>.comp <|
+      tendsto_natCast_atTop_iff.mp <| (tendsto_natCast_atTop_atTop.comp
+        hψ_mono.tendsto_atTop).num ha_pos hψ_lim).rpow
+          hψ_lim <| .inr ha_pos).congr' h_eq |>.limsup_eq.le
 
 theorem tendsto_smoothingFun_comp (hμ1 : μ 1 ≤ 1) (x : R) {ψ : ℕ → ℕ}
     (hψ_mono : StrictMono ψ) :
