@@ -109,13 +109,16 @@ lemma ofMatrix_apply (x y : E) :
   congr with
   ring
 
+@[simp]
 lemma ofMatrix_basis (i j : n) : ofMatrix b M (b i) (b j) = M i j := by
   simp [ofMatrix_apply, Finsupp.single_eq_pi_single, ← Pi.single_star]
 
+@[simp]
 lemma toMatrix_ofMatrix : ofMatrix b (f.toMatrix b) = f := by
   ext x y
   rw [ofMatrix_apply, f.apply_eq_dotProduct_toMatrix_mulVec b]
 
+@[simp]
 lemma ofMatrix_toMatrix : (ofMatrix b M).toMatrix b = M := by
   ext i j
   rw [toMatrix_apply, ofMatrix_basis]
@@ -160,8 +163,7 @@ variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 open scoped InnerProductSpace
 
 variable (𝕜 E) in
-/-- The inner product as continuous sesquilinear form.
--/
+/-- The inner product as continuous sesquilinear form. -/
 protected noncomputable def inner : ContinuousSesquilinForm 𝕜 E :=
   letI f : SesquilinForm 𝕜 E := LinearMap.mk₂'ₛₗ (starRingEnd 𝕜) (RingHom.id 𝕜)
     (fun x y ↦ ⟪x, y⟫_𝕜)
