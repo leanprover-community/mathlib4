@@ -74,8 +74,9 @@ theorem algebraMap_monomial (n : ℕ) (a : K) :
     algebraMap K[X] (RatFunc K) (Polynomial.monomial n a) = C a * X ^ n := by
   simp [← Polynomial.C_mul_X_pow_eq_monomial]
 
-theorem algebraMap_eq_aeval_X_left (p : K[X]) :
-    algebraMap K[X] (RatFunc K) p = p.aeval (X : RatFunc K) := by
+@[simp]
+theorem aeval_X_left_eq_algebraMap (p : K[X]) :
+    p.aeval (X : RatFunc K) = algebraMap K[X] (RatFunc K) p := by
   induction p using Polynomial.induction_on' <;> simp_all
 
 end Domain
