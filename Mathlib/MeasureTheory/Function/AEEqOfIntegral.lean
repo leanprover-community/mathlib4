@@ -36,7 +36,7 @@ example, `Lp.ae_eq_zero_of_forall_setIntegral_eq_zero`.
 Generally useful lemmas which are not related to integrals:
 * `ae_eq_zero_of_forall_inner`: if for all constants `c`, `(fun x => ⟪c, f x⟫_𝕜) =ᵐ[μ] 0` then
   `f =ᵐ[μ] 0`.
-* `ae_eq_zero_of_forall_dual`: if for all constants `c` in the StrongDual space,
+* `ae_eq_zero_of_forall_dual`: if for all constants `c` in the `StrongDual` space,
   `fun x => c (f x) =ᵐ[μ] 0` then `f =ᵐ[μ] 0`.
 
 -/
