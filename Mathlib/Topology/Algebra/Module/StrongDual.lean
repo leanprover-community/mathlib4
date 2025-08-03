@@ -11,7 +11,7 @@ import Mathlib.Analysis.LocallyConvex.Polar
 
 ## Main definitions
 
-- `StrongDual.dualPairing`: The StrongDual pairing as a bilinear form.
+- `strongDualPairing`: The StrongDual pairing as a bilinear form.
 - `StrongDual.polar`: Given a subset `s` in a monoid `M` (over a commutative ring `R`), the polar
   `polar R s` is the subset of `StrongDual R M` consisting of those functionals which evaluate to
   something of norm at most one at all points `z ∈ s`.
@@ -37,13 +37,13 @@ variable (R : Type*) [CommSemiring R] [TopologicalSpace R]
   [ContinuousConstSMul R R]
 
 /-- The StrongDual pairing as a bilinear form. -/
-def dualPairing : StrongDual R M →ₗ[R] M →ₗ[R] R :=
+def _root_.strongDualPairing : StrongDual R M →ₗ[R] M →ₗ[R] R :=
   ContinuousLinearMap.coeLM R
 
-@[deprecated (since := "2025-08-3")] alias NormedSpace.dualPairing := dualPairing
+@[deprecated (since := "2025-08-3")] alias NormedSpace.dualPairing := strongDualPairing
 
 @[simp]
-theorem dualPairing_apply {v : StrongDual R M} {x : M} : dualPairing R M v x = v x :=
+theorem dualPairing_apply {v : StrongDual R M} {x : M} : strongDualPairing R M v x = v x :=
   rfl
 
 @[deprecated (since := "2025-08-3")] alias NormedSpace.dualPairing_apply := dualPairing_apply
@@ -55,9 +55,9 @@ section
 variable (R : Type*) [SeminormedCommRing R]
 variable (M : Type*) [TopologicalSpace M] [AddCommGroup M] [Module R M]
 
-theorem dualPairing_separatingLeft : (dualPairing R M).SeparatingLeft := by
+theorem dualPairing_separatingLeft : (strongDualPairing R M).SeparatingLeft := by
   rw [LinearMap.separatingLeft_iff_ker_eq_bot]
-  unfold dualPairing
+  unfold strongDualPairing
   rw [LinearMap.ker_eq_bot]
   exact ContinuousLinearMap.coe_injective
 
@@ -74,7 +74,7 @@ subset of `StrongDual R M` consisting of those functionals which evaluate to som
 most one at all points `z ∈ s`. -/
 def polar (R : Type*) [NormedCommRing R] {M : Type*} [AddCommMonoid M]
   [TopologicalSpace M] [Module R M] : Set M → Set (StrongDual R M) :=
-  (dualPairing R M).flip.polar
+  (strongDualPairing R M).flip.polar
 
 @[deprecated (since := "2025-08-3")] alias _root_.NormedSpace.polar := polar
 
@@ -83,7 +83,7 @@ the polar `polarSubmodule 𝕜 s` is the submodule of `StrongDual 𝕜 M` consis
 which evaluate to zero at all points `z ∈ s`. -/
 def polarSubmodule (𝕜 : Type*) [NontriviallyNormedField 𝕜] {M : Type*} [AddCommMonoid M]
     [TopologicalSpace M] [Module 𝕜 M] {S : Type*} [SetLike S M] [SMulMemClass S 𝕜 M] (m : S) :
-    Submodule 𝕜 (StrongDual 𝕜 M) := (dualPairing 𝕜 M).flip.polarSubmodule m
+    Submodule 𝕜 (StrongDual 𝕜 M) := (strongDualPairing 𝕜 M).flip.polarSubmodule m
 
 @[deprecated (since := "2025-08-3")] alias _root_.NormedSpace.polarSubmodule := polarSubmodule
 
@@ -103,7 +103,7 @@ theorem mem_polar_iff {x' : StrongDual 𝕜 E} (s : Set E) : x' ∈ polar 𝕜 s
 
 lemma polarSubmodule_eq_setOf {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] (m : S) :
     polarSubmodule 𝕜 m = { y : StrongDual 𝕜 E | ∀ x ∈ m, y x = 0 } :=
-  (dualPairing 𝕜 E).flip.polar_subMulAction _
+  (strongDualPairing 𝕜 E).flip.polar_subMulAction _
 
 @[deprecated (since := "2025-08-3")] alias _root_.NormedSpace.polarSubmodule_eq_setOf :=
   polarSubmodule_eq_setOf
@@ -164,7 +164,7 @@ open Set
 
 @[simp]
 theorem polar_univ : polar 𝕜 (univ : Set E) = {(0 : StrongDual 𝕜 E)} :=
-  (dualPairing 𝕜 E).flip.polar_univ
+  (strongDualPairing 𝕜 E).flip.polar_univ
     (LinearMap.flip_separatingRight.mpr (dualPairing_separatingLeft 𝕜 E))
 
 @[deprecated (since := "2025-08-3")] alias _root_.NormedSpace.polar_univ := polar_univ
