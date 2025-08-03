@@ -227,8 +227,8 @@ lemma char_is_prime_of_two_le (p : ℕ) [CharP R p] (hp : 2 ≤ p) : Nat.Prime p
     have : p ∣ e := (cast_eq_zero_iff R p e).mp he
     have : e ∣ p := dvd_of_mul_left_eq d (Eq.symm hmul)
     have : e = p := ‹e ∣ p›.antisymm ‹p ∣ e›
-    have h₀ : 0 < p := by omega
-    have : d * p = 1 * p := by rw [‹e = p›] at hmul; rw [one_mul]; exact Eq.symm hmul
+    have h₀ : 0 < p := by grind
+    have : d * p = 1 * p := by grind
     show d = 1 ∨ d = p from Or.inl (mul_right_cancel₀ h₀.ne' this)
 
 section Nontrivial

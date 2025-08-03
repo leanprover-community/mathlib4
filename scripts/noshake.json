@@ -22,6 +22,7 @@
   "Batteries.Tactic.Relation.Rfl",
   "Batteries.Tactic.Relation.Symm",
   "Batteries.Tactic.Replace",
+  "Batteries.Tactic.SeqFocus",
   "Batteries.Tactic.Simpa",
   "Batteries.Tactic.SolveByElim",
   "Batteries.Tactic.SolveByElim.Backtrack",

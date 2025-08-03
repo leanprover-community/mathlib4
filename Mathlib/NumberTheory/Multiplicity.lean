@@ -267,7 +267,7 @@ theorem Int.two_pow_two_pow_add_two_pow_two_pow {x y : ℤ} (hx : ¬2 ∣ x) (hx
   rcases i with - | i
   · grind
   suffices ∀ x : ℤ, Odd x → x ^ 2 ^ (i + 1) % 4 = 1 by
-    rw [show (2 ^ (1 + 1) : ℤ) = 4 by norm_num, Int.dvd_iff_emod_eq_zero, Int.add_emod,
+    rw [show (2 ^ (1 + 1) : ℤ) = 4 by simp, Int.dvd_iff_emod_eq_zero, Int.add_emod,
       this _ hx_odd, this _ hy_odd]
     decide
   intro x hx
@@ -286,7 +286,7 @@ theorem Int.two_pow_sub_pow' {x y : ℤ} (n : ℕ) (hxy : 4 ∣ x - y) (hx : ¬2
   have hy_odd : Odd y := by simpa using hx_odd.sub_even hxy_even
   rcases n with - | n
   · simp only [pow_zero, sub_self, emultiplicity_zero, Int.ofNat_zero, add_top]
-  have h : FiniteMultiplicity 2 n.succ := Nat.finiteMultiplicity_iff.mpr ⟨by norm_num, n.succ_pos⟩
+  have h : FiniteMultiplicity 2 n.succ := Nat.finiteMultiplicity_iff.mpr ⟨by simp, n.succ_pos⟩
   simp only [Nat.succ_eq_add_one] at h
   rcases emultiplicity_eq_coe.mp h.emultiplicity_eq_multiplicity with ⟨⟨k, hk⟩, hpn⟩
   rw [hk, pow_mul, pow_mul, emultiplicity_pow_sub_pow_of_prime,

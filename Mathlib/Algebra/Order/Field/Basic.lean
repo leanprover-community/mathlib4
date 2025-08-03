@@ -519,12 +519,10 @@ theorem one_div_le_neg_one (h1 : a < 0) (h2 : -1 ≤ a) : 1 / a ≤ -1 :=
 
 
 theorem sub_self_div_two (a : α) : a - a / 2 = a / 2 := by
-  suffices a / 2 + a / 2 - a / 2 = a / 2 by rwa [add_halves] at this
-  rw [add_sub_cancel_right]
+  grind
 
 theorem div_two_sub_self (a : α) : a / 2 - a = -(a / 2) := by
-  suffices a / 2 - (a / 2 + a / 2) = -(a / 2) by rwa [add_halves] at this
-  rw [sub_add_eq_sub_sub, sub_self, zero_sub]
+  grind
 
 theorem add_sub_div_two_lt (h : a < b) : a + (b - a) / 2 < b := by
   rwa [← div_sub_div_same, sub_eq_add_neg, add_comm (b / 2), ← add_assoc, ← sub_eq_add_neg, ←
