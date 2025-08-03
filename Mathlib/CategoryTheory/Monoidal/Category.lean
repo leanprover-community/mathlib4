@@ -14,6 +14,7 @@ A monoidal category is a category equipped with a tensor product, unitors, and a
 In the definition, we provide the tensor product as a pair of functions
 * `tensorObj : C → C → C`
 * `tensorHom : (X₁ ⟶ Y₁) → (X₂ ⟶ Y₂) → ((X₁ ⊗ X₂) ⟶ (Y₁ ⊗ Y₂))`
+
 and allow use of the overloaded notation `⊗` for both.
 The unitors and associator are provided componentwise.
 

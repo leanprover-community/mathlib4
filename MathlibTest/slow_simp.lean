@@ -15,6 +15,7 @@ After deleting some bad simp lemmas that were being tried everywhere
 * LightProfinite.hasForget_forget_obj
 * CategoryTheory.sum_comp_inl
 * CategoryTheory.sum_comp_inr
+
 it is back down to 19,000 heartbeats even with `import Mathlib`.
 -/
 
