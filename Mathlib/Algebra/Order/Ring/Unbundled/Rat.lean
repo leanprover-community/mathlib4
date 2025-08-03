@@ -25,7 +25,7 @@ assert_not_exists OrderedCommMonoid Field Finset Set.Icc GaloisConnection
 
 namespace Rat
 
-variable {a b p q : ℚ}
+variable {a b c p q : ℚ}
 
 @[simp] lemma divInt_nonneg_iff_of_pos_right {a b : ℤ} (hb : 0 < b) : 0 ≤ a /. b ↔ 0 ≤ a := by
   rcases hab : a /. b with ⟨n, d, hd, hnd⟩
