@@ -115,7 +115,7 @@ theorem trunc_one (n : σ →₀ ℕ) (hnn : n ≠ 0) : trunc R n 1 = 1 :=
       exact Ne.bot_lt hnn
 
 @[simp]
-theorem trunc_C (n : σ →₀ ℕ) (hnn : n ≠ 0) (a : R) : trunc R n (C σ R a) = MvPolynomial.C a :=
+theorem trunc_C (n : σ →₀ ℕ) (hnn : n ≠ 0) (a : R) : trunc R n (C a) = MvPolynomial.C a :=
   MvPolynomial.ext _ _ fun m ↦ by
     classical
     rw [coeff_trunc, coeff_C, MvPolynomial.coeff_C]
@@ -124,7 +124,7 @@ theorem trunc_C (n : σ →₀ ℕ) (hnn : n ≠ 0) (a : R) : trunc R n (C σ R 
 
 @[simp]
 theorem trunc_C_mul (n : σ →₀ ℕ) (a : R) (p : MvPowerSeries σ R) :
-    trunc R n (C σ R a * p) = MvPolynomial.C a * trunc R n p := by
+    trunc R n (C a * p) = MvPolynomial.C a * trunc R n p := by
   ext m; simp [coeff_trunc]
 
 @[simp]
@@ -185,7 +185,7 @@ theorem trunc'_one (n : σ →₀ ℕ) : trunc' R n 1 = 1 :=
 
 @[simp]
 theorem trunc'_C (n : σ →₀ ℕ) (a : R) :
-    trunc' R n (C σ R a) = MvPolynomial.C a :=
+    trunc' R n (C a) = MvPolynomial.C a :=
   MvPolynomial.ext _ _ fun m ↦ by
     classical
     rw [coeff_trunc', coeff_C, MvPolynomial.coeff_C]
@@ -209,7 +209,7 @@ theorem coeff_mul_eq_coeff_trunc'_mul_trunc' (n : σ →₀ ℕ)
 
 @[simp]
 theorem trunc'_C_mul (n : σ →₀ ℕ) (a : R) (p : MvPowerSeries σ R) :
-    trunc' R n (C σ R a * p) = MvPolynomial.C a * trunc' R n p := by
+    trunc' R n (C a * p) = MvPolynomial.C a * trunc' R n p := by
   ext m; simp [coeff_trunc']
 
 @[simp]

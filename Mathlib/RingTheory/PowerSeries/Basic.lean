@@ -197,7 +197,7 @@ def constantCoeff : R⟦X⟧ →+* R :=
 
 /-- The constant formal power series. -/
 def C : R →+* R⟦X⟧ :=
-  MvPowerSeries.C Unit R
+  MvPowerSeries.C
 
 @[simp] lemma algebraMap_eq {R : Type*} [CommSemiring R] : algebraMap R R⟦X⟧ = C R := rfl
 

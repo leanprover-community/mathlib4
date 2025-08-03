@@ -102,7 +102,7 @@ lemma monomial_mem_nonzeroDivisorsLeft {n : σ →₀ ℕ} {r} :
     monomial R n r ∈ nonZeroDivisorsLeft (MvPowerSeries σ R) ↔ r ∈ nonZeroDivisorsLeft R := by
   constructor
   · intro H s hrs
-    have := H (C _ _ s) (by rw [← monomial_zero_eq_C, monomial_mul_monomial]; ext; simp [hrs])
+    have := H (C s) (by rw [← monomial_zero_eq_C, monomial_mul_monomial]; ext; simp [hrs])
     simpa using congr(coeff _ 0 $(this))
   · intro H p hrp
     ext i
@@ -115,7 +115,7 @@ lemma monomial_mem_nonzeroDivisorsRight {n : σ →₀ ℕ} {r} :
     monomial R n r ∈ nonZeroDivisorsRight (MvPowerSeries σ R) ↔ r ∈ nonZeroDivisorsRight R := by
   constructor
   · intro H s hrs
-    have := H (C _ _ s) (by rw [← monomial_zero_eq_C, monomial_mul_monomial]; ext; simp [hrs])
+    have := H (C s) (by rw [← monomial_zero_eq_C, monomial_mul_monomial]; ext; simp [hrs])
     simpa using congr(coeff _ 0 $(this))
   · intro H p hrp
     ext i

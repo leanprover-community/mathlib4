@@ -204,7 +204,7 @@ theorem eval₂_coe (f : MvPolynomial σ R) :
   rw [← MvPolynomial.coe_inj, this.choose_spec]
 
 @[simp]
-theorem eval₂_C (r : R) : eval₂ φ a (C σ R r) = φ r := by
+theorem eval₂_C (r : R) : eval₂ φ a (C r) = φ r := by
   rw [← coe_C, eval₂_coe, MvPolynomial.eval₂_C]
 
 @[simp]

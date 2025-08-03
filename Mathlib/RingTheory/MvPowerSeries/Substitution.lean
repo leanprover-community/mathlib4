@@ -435,7 +435,7 @@ theorem coeff_rescale (f : MvPowerSeries σ R) (a : σ → R) (n : σ →₀ ℕ
 
 @[simp]
 theorem rescale_zero :
-    (rescale 0 : MvPowerSeries σ R →+* MvPowerSeries σ R) = (C σ R).comp (constantCoeff σ R) := by
+    (rescale 0 : MvPowerSeries σ R →+* MvPowerSeries σ R) = C.comp (constantCoeff σ R) := by
   classical
   ext x n
   simp [Function.comp_apply, RingHom.coe_comp, rescale, RingHom.coe_mk, coeff_C]
@@ -450,7 +450,7 @@ theorem rescale_zero :
     simpa using h
 
 theorem rescale_zero_apply (f : MvPowerSeries σ R) :
-    rescale 0 f = C σ R (constantCoeff σ R f) := by simp
+    rescale 0 f = C (constantCoeff σ R f) := by simp
 
 @[simp]
 theorem rescale_one : rescale 1 = RingHom.id (MvPowerSeries σ R) := by

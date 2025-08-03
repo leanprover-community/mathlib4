@@ -174,7 +174,7 @@ variable {σ R}
 
 @[fun_prop]
 theorem continuous_C [Semiring R] :
-    Continuous (C σ R) := by
+    Continuous (C (σ := σ) (R := R)) := by
   classical
   simp only [continuous_iff_continuousAt]
   refine fun r ↦ (tendsto_iff_coeff_tendsto _ _ _).mpr fun d ↦ ?_
