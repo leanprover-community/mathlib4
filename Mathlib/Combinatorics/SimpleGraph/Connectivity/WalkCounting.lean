@@ -55,11 +55,7 @@ theorem set_walk_length_succ_eq (u v : V) (n : ℕ) :
   | cons huw pwv =>
     simp only [Nat.succ_eq_add_one, Set.mem_setOf_eq, Walk.length_cons, add_left_inj,
       Set.mem_iUnion, Set.mem_image]
-    constructor
-    · rintro rfl
-      exact ⟨_, huw, pwv, rfl, rfl⟩
-    · rintro ⟨w, huw, pwv, rfl, rfl, rfl⟩
-      rfl
+    grind
 
 /-- Walks of length two from `u` to `v` correspond bijectively to common neighbours of `u` and `v`.
 Note that `u` and `v` may be the same. -/
