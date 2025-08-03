@@ -24,7 +24,7 @@ namespace Meta.FunProp
   2. check it is equal to `x` -/
 def synthesizeInstance (thmId : Origin) (x type : Expr) : MetaM Bool := do
   match (← trySynthInstance type) with
-  | some val =>
+  | .some val =>
     if (← withReducibleAndInstances <| isDefEq x val) then
       return true
     else
@@ -32,7 +32,7 @@ def synthesizeInstance (thmId : Origin) (x type : Expr) : MetaM Bool := do
 "{← ppOrigin thmId}, failed to assign instance{indentExpr type}
 synthesized value{indentExpr val}\nis not definitionally equal to{indentExpr x}"
       return false
-  | none =>
+  | _ =>
     trace[Meta.Tactic.fun_prop]
       "{← ppOrigin thmId}, failed to synthesize instance{indentExpr type}"
     return false
@@ -233,7 +233,7 @@ def applyCompRule (funPropDecl : FunPropDecl) (e f g : Expr)
 
   for thm in thms do
     let .comp id_f id_g := thm.thmArgs | return none
-    if let some r ← tryTheoremWithHint? e (.decl thm.thmName) #[(id_f,f),(id_g,g)] funProp then
+    if let some r ← tryTheoremWithHint? e (.decl thm.thmName) #[(id_f, f), (id_g, g)] funProp then
       return r
 
   return none
@@ -320,7 +320,7 @@ def applyMorRules (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
   | .underApplied =>
     applyPiRule funPropDecl e funProp
   | .overApplied =>
-    let some (f,g) ← fData.peeloffArgDecomposition | return none
+    let some (f, g) ← fData.peeloffArgDecomposition | return none
     applyCompRule funPropDecl e f g funProp
   | .exact =>
 
@@ -374,7 +374,7 @@ def removeArgRule (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
       -- if have to apply morphisms rules if we deal with morphims
       return ← applyMorRules funPropDecl e fData funProp
     else
-      let some (f,g) ← fData.peeloffArgDecomposition | return none
+      let some (f, g) ← fData.peeloffArgDecomposition | return none
       applyCompRule funPropDecl e f g funProp
 
 
@@ -425,7 +425,7 @@ def getLocalTheorems (funPropDecl : FunPropDecl) (funOrigin : Origin)
     let thm? : Option FunctionTheorem ←
       forallTelescope type fun _ b => do
       let b ← whnfR b
-      let some (decl,f) ← getFunProp? b | return none
+      let some (decl, f) ← getFunProp? b | return none
       unless decl.funPropName = funPropDecl.funPropName do return none
 
       let .data fData ← getFunctionData? f (← unfoldNamePred)
@@ -501,7 +501,7 @@ def tryTheorems (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
           | some none =>
             if let some r ← tryTheorem? e thm.thmOrigin funProp then
               return r
-          | some (some (f,g)) =>
+          | some (some (f, g)) =>
             trace[Meta.Tactic.fun_prop]
               s!"decomposing to later use {←ppOrigin' thm.thmOrigin} as:
                    ({← ppExpr f}) ∘ ({← ppExpr g})"
@@ -509,8 +509,7 @@ def tryTheorems (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
               return r
           | _ => continue
         else
-          let some (f,g) ← fData.decompositionOverArgs thm.mainArgs
-            | continue
+          let some (f, g) ← fData.decompositionOverArgs thm.mainArgs | continue
           trace[Meta.Tactic.fun_prop]
             s!"decomposing to later use {←ppOrigin' thm.thmOrigin} as:
                  ({← ppExpr f}) ∘ ({← ppExpr g})"
@@ -524,7 +523,7 @@ def fvarAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
 
   -- fvar theorems are almost exclusively in uncurried form so we decompose if we can
-  if let some (f,g) ← fData.nontrivialDecomposition then
+  if let some (f, g) ← fData.nontrivialDecomposition then
     applyCompRule funPropDecl e f g funProp
   else
     let .fvar id := fData.fn | throwError "fun_prop bug: invalid use of fvar app case"
@@ -559,7 +558,7 @@ def fvarAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
 def constAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
 
-  let some (funName,_) := fData.fn.const?
+  let some (funName, _) := fData.fn.const?
     | throwError "fun_prop bug: invelid use of const app case"
   let globalThms ← getDeclTheorems funPropDecl funName fData.mainArgs fData.args.size
 
@@ -586,7 +585,7 @@ def constAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     if let some r ← applyMorRules funPropDecl e fData funProp then
       return r
 
-  if let some (f,g) ← fData.nontrivialDecomposition then
+  if let some (f, g) ← fData.nontrivialDecomposition then
     trace[Meta.Tactic.fun_prop]
       s!"failed applying `{funPropDecl.funPropName}` theorems for `{funName}`
          trying again after decomposing function as: `({← ppExpr f}) ∘ ({← ppExpr g})`"
