@@ -23,9 +23,9 @@ To avoid coercions, we rather consider `DividedPowers.dpow : ℕ → A → A`, e
 For `x y : A` and `m n : ℕ` such that `x ∈ I` and `y ∈ I`, one has
 * `DividedPowers.dpow_zero` : `dpow 0 x = 1`
 * `DividedPowers.dpow_one` : `dpow 1 x = 1`
-* `DividedPowers.dpow_add` : `dpow n (x + y) =
-(antidiagonal n).sum fun k ↦ dpow k.1 x * dpow k.2 y`,
-this is the binomial theorem without binomial coefficients.
+* `DividedPowers.dpow_add` :
+  `dpow n (x + y) = (antidiagonal n).sum fun k ↦ dpow k.1 x * dpow k.2 y`,
+  this is the binomial theorem without binomial coefficients.
 * `DividedPowers.dpow_mul`: `dpow n (a * x) = a ^ n * dpow n x`
 * `DividedPowers.mul_dpow` : `dpow m x * dpow n x = choose (m + n) m * dpow (m + n) x`
 * `DividedPowers.dpow_comp` : `dpow m (dpow n x) = uniformBell m n * dpow (m * n) x`
