@@ -4,12 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
 import Mathlib.Topology.Algebra.Module.LinearMap
-import Mathlib.Analysis.Normed.Field.Basic
-import Mathlib.Analysis.Normed.Group.Uniform
-import Mathlib.Topology.Algebra.MulAction
-import Mathlib.Topology.Algebra.Monoid
-import Mathlib.Analysis.Normed.Ring.Lemmas
-import Mathlib.LinearAlgebra.SesquilinearForm
 import Mathlib.Analysis.LocallyConvex.Polar
 
 /-!
