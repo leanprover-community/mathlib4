@@ -1024,6 +1024,11 @@ lemma valuation_zpow (x : ℚ_[p]) : ∀ n : ℤ, (x ^ n).valuation = n * x.valu
   | (n : ℕ) => by simp
   | .negSucc n => by simp [← neg_mul]; simp [Int.negSucc_eq]
 
+open Classical in
+/-- The additive `p`-adic valuation on `ℚ_[p]`, with values in `WithTop ℤ`. -/
+def addValuationDef : ℚ_[p] → WithTop ℤ :=
+  fun x ↦ if x = 0 then ⊤ else x.valuation
+
 @[simp]
 theorem AddValuation.map_zero : addValuationDef (0 : ℚ_[p]) = ⊤ := by
   rw [addValuationDef, if_pos rfl]
