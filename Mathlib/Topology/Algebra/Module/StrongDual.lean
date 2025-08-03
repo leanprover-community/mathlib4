@@ -9,6 +9,13 @@ import Mathlib.Analysis.LocallyConvex.Polar
 /-!
 # The topological StrongDual of a Module
 
+## Main definitions
+
+- `StrongDual.dualPairing`: The StrongDual pairing as a bilinear form.
+- `StrongDual.polar`: Given a subset `s` in a monoid `M` (over a commutative ring `R`), the polar
+  `polar R s` is the subset of `StrongDual R M` consisting of those functionals which evaluate to
+  something of norm at most one at all points `z ∈ s`.
+
 ## References
 
 * [Conway, John B., A course in functional analysis][conway1990]
@@ -18,9 +25,6 @@ import Mathlib.Analysis.LocallyConvex.Polar
 StrongDual, polar
 -/
 
-/-
-TODO Change the namespace
--/
 namespace StrongDual
 
 section
@@ -48,8 +52,6 @@ section
 variable (R : Type*) [SeminormedCommRing R]
 variable (M : Type*) [TopologicalSpace M] [AddCommGroup M] [Module R M]
 
---instance : ContinuousMul R  := by exact ContinuousMul.to_continuousSMul
-
 theorem dualPairing_separatingLeft : (dualPairing R M).SeparatingLeft := by
   rw [LinearMap.separatingLeft_iff_ker_eq_bot]
   unfold dualPairing
@@ -64,26 +66,26 @@ end
 
 section
 
-/-- Given a subset `s` in a normed space `E` (over a field `𝕜`), the polar
-`polar 𝕜 s` is the subset of `StrongDual 𝕜 E` consisting of those functionals which
-evaluate to something of norm at most one at all points `z ∈ s`. -/
-def polar (𝕜 : Type*) [NormedCommRing 𝕜] {E : Type*} [AddCommGroup E]
-  [TopologicalSpace E] [Module 𝕜 E] : Set E → Set (StrongDual 𝕜 E) :=
-  (dualPairing 𝕜 E).flip.polar
+/-- Given a subset `s` in a monoid `M` (over a commutative ring `R`), the polar `polar R s` is the
+subset of `StrongDual R M` consisting of those functionals which evaluate to something of norm at
+most one at all points `z ∈ s`. -/
+def polar (R : Type*) [NormedCommRing R] {M : Type*} [AddCommMonoid M]
+  [TopologicalSpace M] [Module R M] : Set M → Set (StrongDual R M) :=
+  (dualPairing R M).flip.polar
 
 @[deprecated (since := "2025-08-3")] alias _root_.NormedSpace.polar := polar
 
 /-- Given a subset `s` in a normed space `E` (over a field `𝕜`) closed under scalar multiplication,
 the polar `polarSubmodule 𝕜 s` is the submodule of `StrongDual 𝕜 E` consisting of those functionals
 which evaluate to zero at all points `z ∈ s`. -/
-def polarSubmodule (𝕜 : Type*) [NontriviallyNormedField 𝕜] {E : Type*} [AddCommGroup E]
+def polarSubmodule (𝕜 : Type*) [NontriviallyNormedField 𝕜] {E : Type*} [AddCommMonoid E]
     [TopologicalSpace E] [Module 𝕜 E] {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] (m : S) :
     Submodule 𝕜 (StrongDual 𝕜 E) := (dualPairing 𝕜 E).flip.polarSubmodule m
 
 @[deprecated (since := "2025-08-3")] alias _root_.NormedSpace.polarSubmodule := polarSubmodule
 
 variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
-variable {E : Type*} [AddCommGroup E] [TopologicalSpace E] [Module 𝕜 E]
+variable {E : Type*} [AddCommMonoid E] [TopologicalSpace E] [Module 𝕜 E]
 
 lemma polarSubmodule_eq_polar (m : SubMulAction 𝕜 E) :
     (polarSubmodule 𝕜 m : Set (StrongDual 𝕜 E)) = polar 𝕜 m := rfl
@@ -126,13 +128,6 @@ theorem polar_nonempty (s : Set E) : Set.Nonempty (polar 𝕜 s) :=
 open Set
 
 @[simp]
-theorem polar_univ : polar 𝕜 (univ : Set E) = {(0 : StrongDual 𝕜 E)} :=
-  (dualPairing 𝕜 E).flip.polar_univ
-    (LinearMap.flip_separatingRight.mpr (dualPairing_separatingLeft 𝕜 E))
-
-@[deprecated (since := "2025-08-3")] alias _root_.NormedSpace.polar_univ := polar_univ
-
-@[simp]
 theorem polar_empty : polar 𝕜 (∅ : Set E) = Set.univ :=
   LinearMap.polar_empty _
 
@@ -154,6 +149,22 @@ theorem polar_zero : polar 𝕜 ({0} : Set E) = Set.univ :=
   LinearMap.polar_zero _
 
 @[deprecated (since := "2025-08-3")] alias _root_.NormedSpace.polar_zero := polar_zero
+
+end
+
+section
+
+variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
+variable {E : Type*} [AddCommGroup E] [TopologicalSpace E] [Module 𝕜 E]
+
+open Set
+
+@[simp]
+theorem polar_univ : polar 𝕜 (univ : Set E) = {(0 : StrongDual 𝕜 E)} :=
+  (dualPairing 𝕜 E).flip.polar_univ
+    (LinearMap.flip_separatingRight.mpr (dualPairing_separatingLeft 𝕜 E))
+
+@[deprecated (since := "2025-08-3")] alias _root_.NormedSpace.polar_univ := polar_univ
 
 end
 
