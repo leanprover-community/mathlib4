@@ -118,30 +118,26 @@ theorem mem_span_iff_continuous {f : ι → E →ₗ[𝕜] 𝕜} (φ : E →ₗ[
     φ ∈ Submodule.span 𝕜 (Set.range f) ↔
     Continuous[⨅ i, induced (f i) inferInstance, inferInstance] φ := by
   letI t𝕜 : TopologicalSpace 𝕜 := inferInstance
-  let t := ⨅ i, induced (f i) t𝕜
-  constructor
-  -- TODO: is it worth factoring the first implication with `mem_span_iff_continuous_of_finite`?
-  · exact Submodule.span_induction
-      (Set.forall_mem_range.mpr fun i ↦ continuous_iInf_dom continuous_induced_dom) continuous_zero
-      (fun _ _ _ _ ↦ .add) (fun c _ _ h ↦ h.const_smul c)
-  · intro φ_cont
-    obtain ⟨s, hs⟩ : ∃ s : Finset ι, Continuous[⨅ i : s, induced (f i) t𝕜, t𝕜] φ := by
-      -- The following should be golfable by using/developping better API
-      have : φ ⁻¹' (Metric.ball 0 1) ∈ 𝓝 0 :=
-        φ_cont.continuousAt.tendsto (map_zero φ ▸ Metric.ball_mem_nhds (0 : 𝕜) one_pos)
-      rw [nhds_iInf, Filter.mem_iInf_finite] at this
-      rcases this with ⟨s, hs⟩
-      use s
-      let t' := ⨅ i : s, induced (f i) t𝕜
-      have : IsTopologicalAddGroup E :=
-        topologicalAddGroup_iInf fun _ ↦ topologicalAddGroup_induced _
-      have : ContinuousSMul 𝕜 E :=
-        continuousSMul_iInf fun _ ↦ continuousSMul_induced _
-      rw [Seminorm.continuous_iff_continuous_comp (norm_withSeminorms 𝕜 𝕜), forall_const]
-      refine Seminorm.continuous (r := 1) ?_
-      rwa [nhds_iInf, Seminorm.ball_comp, ball_normSeminorm, iInf_subtype, map_zero]
-    rw [← LinearMap.mem_span_iff_continuous_of_finite] at hs
-    exact Submodule.span_mono (Set.range_comp_subset_range _ _) hs
+  letI t₁ : TopologicalSpace E := ⨅ i, induced (f i) t𝕜
+  letI t₂ (s : Finset ι) : TopologicalSpace E := ⨅ i : s, induced (f i) t𝕜
+  suffices
+      Continuous[t₁, t𝕜] φ ↔ ∃ s : Finset ι, Continuous[t₂ s, t𝕜] φ by
+    simp_rw [this, ← mem_span_iff_continuous_of_finite, Submodule.span_range_eq_iSup,
+      iSup_subtype]
+    rw [Submodule.mem_iSup_iff_exists_finset]
+  have t₁_group : @IsTopologicalAddGroup E t₁ _ :=
+    topologicalAddGroup_iInf fun _ ↦ topologicalAddGroup_induced _
+  have t₂_group (s : Finset ι) : @IsTopologicalAddGroup E (t₂ s) _ :=
+    topologicalAddGroup_iInf fun _ ↦ topologicalAddGroup_induced _
+  have t₁_smul : @ContinuousSMul 𝕜 E _ _ t₁ :=
+    continuousSMul_iInf fun _ ↦ continuousSMul_induced _
+  have t₂_smul (s : Finset ι) : @ContinuousSMul 𝕜 E _ _ (t₂ s) :=
+    continuousSMul_iInf fun _ ↦ continuousSMul_induced _
+  simp_rw [Seminorm.continuous_iff_continuous_comp (norm_withSeminorms 𝕜 𝕜), forall_const]
+  conv in Continuous _ => rw [Seminorm.continuous_iff one_pos, nhds_iInf]
+  conv in Continuous _ =>
+    rw [letI := t₂ s; Seminorm.continuous_iff one_pos, nhds_iInf, iInf_subtype]
+  rw [Filter.mem_iInf_finite]
 
 theorem mem_span_iff_bound [Nonempty ι] {f : ι → E →ₗ[𝕜] 𝕜} (φ : E →ₗ[𝕜] 𝕜) :
     φ ∈ Submodule.span 𝕜 (Set.range f) ↔
