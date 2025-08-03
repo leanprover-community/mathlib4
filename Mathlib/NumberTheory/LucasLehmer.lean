@@ -73,8 +73,7 @@ lemma mersenne_succ (n : ℕ) : mersenne (n + 1) = 2 * mersenne n + 1 := by
 /-- If `2 ^ p - 1` is prime, then `p` is prime. -/
 lemma Nat.Prime.of_mersenne {p : ℕ} (h : (mersenne p).Prime) : Nat.Prime p := by
   apply Nat.prime_of_pow_sub_one_prime _ h |>.2
-  intro eq_one
-  rw [eq_one, mersenne] at h
+  rintro rfl
   apply Nat.not_prime_one h
 
 namespace Mathlib.Meta.Positivity
