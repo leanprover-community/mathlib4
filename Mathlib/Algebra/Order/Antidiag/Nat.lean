@@ -37,7 +37,7 @@ This is `Nat.divisorsAntidiagonal` without a special case for `n = 0`. -/
     x ∈ divisorsAntidiagonal n ↔ x.1 * x.2 = n := by
     simp_rw [divisorsAntidiagonal, Finset.mem_map, Finset.mem_attach, Function.Embedding.coeFn_mk,
       Prod.ext_iff, true_and, ← coe_inj, Subtype.exists]
-    aesop
+    simp
   { antidiagonal := fun n ↦ divisorsAntidiagonal (Additive.toMul n) |>.map
       (.prodMap (Additive.ofMul.toEmbedding) (Additive.ofMul.toEmbedding))
     mem_antidiagonal := by simp [← ofMul_mul, mem_divisorsAntidiagonal] }
@@ -170,7 +170,7 @@ private def primeFactorsPiBij (d n : ℕ) :
   fun f _ i => ∏ p ∈ {p ∈ n.primeFactors.attach | f p.1 p.2 = i} , p
 
 private theorem primeFactorsPiBij_img (d n : ℕ) (hn : Squarefree n)
-  (f : (p : ℕ) → p ∈ n.primeFactors → Fin d) (hf : f ∈ pi n.primeFactors fun _ => univ) :
+    (f : (p : ℕ) → p ∈ n.primeFactors → Fin d) (hf : f ∈ pi n.primeFactors fun _ => univ) :
     Nat.primeFactorsPiBij d n f hf ∈ finMulAntidiag d n := by
   rw [mem_finMulAntidiag]
   refine ⟨?_, hn.ne_zero⟩
@@ -216,8 +216,7 @@ private theorem primeFactorsPiBij_surj (d n : ℕ) (hn : Squarefree n)
   trans (∏ p ∈ n.primeFactors.attach, if p.1 ∣ t i then p else 1)
   · rw [Nat.primeFactorsPiBij, ← prod_filter]
     congr
-    ext ⟨p, hp⟩
-    refine ⟨by rintro rfl; apply hf, fun h => (hf_unique p hp i h).symm⟩
+    grind
   rw [prod_attach (f:=fun p => if p ∣ t i then p else 1), ← Finset.prod_filter]
   rw [primeFactors_filter_dvd_of_dvd hn.ne_zero this]
   exact prod_primeFactors_of_squarefree <| hn.squarefree_of_dvd this

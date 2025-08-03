@@ -355,7 +355,7 @@ instance instRing {R : Type uR} [Ring R] (r : R → R → Prop) : Ring (RingQuot
       exact congrArg (Quot.mk _) (Int.cast_negSucc n) }
 
 instance instCommSemiring {R : Type uR} [CommSemiring R] (r : R → R → Prop) :
-  CommSemiring (RingQuot r) :=
+    CommSemiring (RingQuot r) :=
   { RingQuot.instSemiring r with
     mul_comm := by
       rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
