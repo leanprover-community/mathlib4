@@ -769,8 +769,8 @@ lemma measurable_invFun [Nonempty α] [∀ x, Decidable (x ∈ range f)] (hf : M
 lemma leftInverse_invFun [Nonempty α] [∀ x, Decidable (x ∈ range f)] (hf : MeasurableEmbedding f) :
     hf.invFun.LeftInverse f := by
   intro x
-  simp only [MeasurableEmbedding.invFun, mem_range, exists_apply_eq_apply, ↓reduceDIte]
-  exact hf.equivRange_symm_apply_mk x
+  simp only [MeasurableEmbedding.invFun, mem_range, exists_apply_eq_apply, ↓reduceDIte,
+    equivRange_symm_apply_mk]
 
 end MeasurableEmbedding
 
