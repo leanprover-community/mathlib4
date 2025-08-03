@@ -13,6 +13,25 @@ example : True := by
   trivial
 
 /--
+warning: warning: this doc-string is empty
+
+Note: This linter can be disabled with `set_option linter.style.docString.empty false`
+-/
+#guard_msgs in
+/---/
+example : Nat := 0
+
+/--
+warning: warning: this doc-string is empty
+
+Note: This linter can be disabled with `set_option linter.style.docString.empty false`
+-/
+#guard_msgs in
+/--
+-/
+example : Nat := 0
+
+/--
 warning: error: doc-strings should start with a single space or newline
 
 Note: This linter can be disabled with `set_option linter.style.docString false`

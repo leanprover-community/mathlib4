@@ -25,6 +25,14 @@ register_option linter.style.docString : Bool := {
 }
 
 /--
+The "empty doc string" warns on empty doc-strings.
+-/
+register_option linter.style.docString.empty : Bool := {
+  defValue := true
+  descr := "enable the style.docString.empty linter"
+}
+
+/--
 Extract all `declModifiers` from the input syntax. We later extract the `docstring` from it,
 but we avoid extracting directly the `docComment` node, to skip `#adaptation_note`s.
 -/
@@ -64,6 +72,9 @@ def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- `docString` contains e.g. trailing spaces before the `-/`, but does not contain
     -- any leading whitespace before the actual string starts.
     let docString ← try getDocStringText ⟨docStx⟩ catch _ => continue
+    if docString.trim.isEmpty then
+      Linter.logLint linter.style.docString.empty docStx m!"warning: this doc-string is empty"
+      continue
     -- `startSubstring` is the whitespace between `/--` and the actual doc-string text.
     let startSubstring := match docStx with
       | .node _ _ #[(.atom si ..), _] => si.getTrailing?.getD default
