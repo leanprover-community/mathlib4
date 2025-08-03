@@ -355,6 +355,25 @@ lemma AffineIndependent.eq_zero_of_affineCombination_mem_affineSpan {p : ι → 
   rw [Set.indicator_apply_eq_zero] at hi'
   exact hi' (Finset.mem_coe.2 hifs)
 
+lemma AffineIndependent.indicator_eq_of_affineCombination_comp_embedding_eq {ι₂ : Type*} {p : ι → P}
+    (ha : AffineIndependent k p) {s₁ : Finset ι} {s₂ : Finset ι₂} {w₁ : ι → k} {w₂ : ι₂ → k}
+    (hw₁ : ∑ i ∈ s₁, w₁ i = 1) (hw₂ : ∑ i ∈ s₂, w₂ i = 1) (e : ι₂ ↪ ι)
+    (h : s₁.affineCombination k p w₁ = s₂.affineCombination k (p ∘ e) w₂) :
+    Set.indicator (↑s₁) w₁ = Set.indicator (s₂.map e) (extend e w₂ 0) := by
+  have hw₂e : extend e w₂ 0 ∘ e = w₂ := extend_comp e.injective _ _
+  rw [← hw₂e, ← affineCombination_map] at h
+  refine ha.indicator_eq_of_affineCombination_eq s₁ (s₂.map e) _ _ hw₁ ?_ h
+  rw [sum_map]
+  convert hw₂ with i hi
+  exact e.injective.extend_apply _ _ _
+
+lemma AffineIndependent.indicator_eq_of_affineCombination_comp_embedding_eq_of_fintype [Fintype ι]
+    {ι₂ : Type*} [Fintype ι₂] {p : ι → P} (ha : AffineIndependent k p) {w₁ : ι → k} {w₂ : ι₂ → k}
+    (hw₁ : ∑ i, w₁ i = 1) (hw₂ : ∑ i, w₂ i = 1) (e : ι₂ ↪ ι)
+    (h : Finset.univ.affineCombination k p w₁ = Finset.univ.affineCombination k (p ∘ e) w₂) :
+    w₁ = Set.indicator (Set.range e) (extend e w₂ 0) := by
+  simpa using ha.indicator_eq_of_affineCombination_comp_embedding_eq hw₁ hw₂ e h
+
 section Composition
 
 variable {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AffineSpace V₂ P₂]
@@ -1167,35 +1186,19 @@ lemma affineCombination_mem_interior_face_iff_mem_Ioo {n : ℕ} (s : Simplex k P
         ((s.face h).interior_subset_closedInterior.trans closedInterior_subset_affineSpan)
     obtain ⟨w', hw', he⟩ := eq_affineCombination_of_mem_affineSpan_of_fintype h'
     rw [he, affineCombination_mem_interior_iff hw'] at hi
-    have hfs : ∀ i ∉ fs, w i = 0 := by
-      intro i hifs
-      simp only [range_face_points] at h'
-      exact s.independent.eq_zero_of_affineCombination_mem_affineSpan hw h' (Finset.mem_univ _)
-        (mt (Finset.mem_coe.1) hifs)
-    refine ⟨?_, hfs⟩
-    suffices w' = w ∘ fs.orderEmbOfFin h by
-      intro i hifs
-      have hi' : i ∈ Finset.univ.image (fs.orderEmbOfFin h) := by
-        convert hifs
-        convert fs.image_orderEmbOfFin_univ h
-      rw [Finset.mem_image] at hi'
-      obtain ⟨j, -, rfl⟩ := hi'
-      convert hi j
-      rw [this, comp_apply]
-    have he' : Finset.univ.affineCombination k s.points w =
-        (Finset.univ.map (fs.orderEmbOfFin h).toEmbedding).affineCombination k s.points w := by
-      rw [map_orderEmbOfFin_univ,
-        Finset.affineCombination_indicator_subset _ _ (Finset.subset_univ fs)]
-      congr
-      rw [eq_comm, Set.indicator_eq_self, support_subset_iff]
-      simp only [mem_coe]
-      exact fun i ↦ Not.imp_symm (hfs i)
-    rw [he', affineCombination_map] at he
-    refine (affineIndependent_iff_eq_of_fintype_affineCombination_eq _ _).1
-      (s.face h).independent w' (w ∘ fs.orderEmbOfFin h) hw' ?_ he.symm
-    rw [Fintype.sum_of_injective _ (fs.orderEmbOfFin h).injective (w ∘ fs.orderEmbOfFin h) w ?_
-        (fun _ ↦ rfl), hw]
-    simpa using hfs
+    have he' := s.independent.indicator_eq_of_affineCombination_comp_embedding_eq_of_fintype
+      hw hw' (fs.orderEmbOfFin h).toEmbedding he
+    simp_rw [he']
+    constructor
+    · intro i hi
+      simp only [RelEmbedding.coe_toEmbedding, range_orderEmbOfFin, mem_coe, hi,
+        Set.indicator_of_mem]
+      rw [← mem_coe, ← fs.range_orderEmbOfFin h] at hi
+      obtain ⟨j, rfl⟩ := hi
+      rw [(fs.orderEmbOfFin h).injective.extend_apply]
+      exact hi _
+    · intro i hi
+      simp [hi]
   · let w' : Fin (m + 1) → k := w ∘ fs.orderEmbOfFin h
     have hw' : ∑ i, w' i = 1 := by
       rw [Fintype.sum_of_injective _ (fs.orderEmbOfFin h).injective w' w (fun i hi ↦ ?_)
@@ -1223,35 +1226,19 @@ lemma affineCombination_mem_closedInterior_face_iff_mem_Icc {n : ℕ} (s : Simpl
         closedInterior_subset_affineSpan
     obtain ⟨w', hw', he⟩ := eq_affineCombination_of_mem_affineSpan_of_fintype h'
     rw [he, affineCombination_mem_closedInterior_iff hw'] at hi
-    have hfs : ∀ i ∉ fs, w i = 0 := by
-      intro i hifs
-      simp only [range_face_points] at h'
-      exact s.independent.eq_zero_of_affineCombination_mem_affineSpan hw h' (Finset.mem_univ _)
-        (mt (Finset.mem_coe.1) hifs)
-    refine ⟨?_, hfs⟩
-    suffices w' = w ∘ fs.orderEmbOfFin h by
-      intro i hifs
-      have hi' : i ∈ Finset.univ.image (fs.orderEmbOfFin h) := by
-        convert hifs
-        convert fs.image_orderEmbOfFin_univ h
-      rw [Finset.mem_image] at hi'
-      obtain ⟨j, -, rfl⟩ := hi'
-      convert hi j
-      rw [this, comp_apply]
-    have he' : Finset.univ.affineCombination k s.points w =
-        (Finset.univ.map (fs.orderEmbOfFin h).toEmbedding).affineCombination k s.points w := by
-      rw [map_orderEmbOfFin_univ,
-        Finset.affineCombination_indicator_subset _ _ (Finset.subset_univ fs)]
-      congr
-      rw [eq_comm, Set.indicator_eq_self, support_subset_iff]
-      simp only [mem_coe]
-      exact fun i ↦ Not.imp_symm (hfs i)
-    rw [he', affineCombination_map] at he
-    refine (affineIndependent_iff_eq_of_fintype_affineCombination_eq _ _).1
-      (s.face h).independent w' (w ∘ fs.orderEmbOfFin h) hw' ?_ he.symm
-    rw [Fintype.sum_of_injective _ (fs.orderEmbOfFin h).injective (w ∘ fs.orderEmbOfFin h) w ?_
-        (fun _ ↦ rfl), hw]
-    simpa using hfs
+    have he' := s.independent.indicator_eq_of_affineCombination_comp_embedding_eq_of_fintype
+      hw hw' (fs.orderEmbOfFin h).toEmbedding he
+    simp_rw [he']
+    constructor
+    · intro i hi
+      simp only [RelEmbedding.coe_toEmbedding, range_orderEmbOfFin, mem_coe, hi,
+        Set.indicator_of_mem]
+      rw [← mem_coe, ← fs.range_orderEmbOfFin h] at hi
+      obtain ⟨j, rfl⟩ := hi
+      rw [(fs.orderEmbOfFin h).injective.extend_apply]
+      exact hi _
+    · intro i hi
+      simp [hi]
   · let w' : Fin (m + 1) → k := w ∘ fs.orderEmbOfFin h
     have hw' : ∑ i, w' i = 1 := by
       rw [Fintype.sum_of_injective _ (fs.orderEmbOfFin h).injective w' w (fun i hi ↦ ?_)
