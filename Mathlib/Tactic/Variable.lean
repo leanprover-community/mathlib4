@@ -202,7 +202,7 @@ partial def completeBinders' (maxSteps : Nat) (gas : Nat)
               return (binders.set! i binder', toOmit.push true)
             -- Check that this wasn't already an instance
             let res ← try withLCtx lctx linst <| trySynthInstance type catch _ => pure .none
-            if let some _ := res then
+            if let .some _ := res then
               if checkRedundant then
                 let mvar ← mkFreshExprMVarAt lctx linst type
                 logWarningAt binder
