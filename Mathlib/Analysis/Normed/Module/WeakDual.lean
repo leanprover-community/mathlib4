@@ -188,7 +188,7 @@ theorem toWeakDual_continuous : Continuous fun x' : StrongDual 𝕜 E => StrongD
   WeakBilin.continuous_of_continuous_eval _ fun z => (inclusionInDoubleDual 𝕜 E z).continuous
 
 /-- For a normed space `E`, according to `toWeakDual_continuous` the "identity mapping"
-`Dual 𝕜 E → WeakDual 𝕜 E` is continuous. This definition implements it as a continuous linear
+`StrongDual 𝕜 E → WeakDual 𝕜 E` is continuous. This definition implements it as a continuous linear
 map. -/
 def continuousLinearMapToWeakDual : StrongDual 𝕜 E →L[𝕜] WeakDual 𝕜 E :=
   { StrongDual.toWeakDual with cont := toWeakDual_continuous }
