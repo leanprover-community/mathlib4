@@ -419,7 +419,7 @@ lemma two_mul_ω_pow [Fact q.Prime] (odd : Odd (q : ℕ))
   rw [this, one_add_α_pow_q_succ odd leg3]
 
 /-- If 3 is not a square and 2 is square then $\omega^{(q+1)/2}=-1$. -/
-lemma pow_ω [Fact (Prime q)] (odd : Odd (q : ℕ))
+lemma pow_ω [Fact q.Prime] (odd : Odd (q : ℕ))
     (leg3 : legendreSym q 3 = -1)
     (leg2 : legendreSym q 2 = 1) :
     (ω : X q) ^ (((q : ℕ) + 1)/ 2) = -1 := by
@@ -451,7 +451,7 @@ lemma pow_ω [Fact (Prime q)] (odd : Odd (q : ℕ))
   exact unit.mul_right_inj.mp this
 
 /-- The final evaluation needed to establish the Lucas-Lehmer necessity. -/
-lemma ω_pow_trace [Fact (Prime q)] (odd : Odd (q : ℕ))
+lemma ω_pow_trace [Fact q.Prime] (odd : Odd (q : ℕ))
     (leg3 : legendreSym q 3 = -1)
     (leg2 : legendreSym q 2 = 1)
     (hq4 : 4 ∣ (q : ℕ) + 1) :
@@ -651,8 +651,9 @@ theorem lucas_lehmer_necessity (p : ℕ) (w : 3 ≤ p) : (mersenne p).Prime → 
     exact hp.pos
   have := X.fst_intCast (s (p' + 2 - 2)) (q := ⟨_,pos⟩)
   rw [z, sZMod_eq_s p', ← this, X.closed_form, add_tsub_cancel_right]
-  have : Fact ((Nat.Prime (↑⟨2 ^ (p' + 2) - 1, pos⟩ : ℕ+))) := by
+  have : Fact (↑⟨2 ^ (p' + 2) - 1, pos⟩ : ℕ+).Prime := by
     refine ⟨?_⟩
+    unfold PNat.Prime
     rwa [PNat.mk_coe, ← z, ← mersenne]
   have : Fact (mersenne (p' + 2)).Prime := by
     refine ⟨?_⟩
