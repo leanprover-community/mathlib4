@@ -88,16 +88,20 @@ def check (str : String) : Array MessageData := Id.run do
   for line in lines do
     let indent := line.takeWhile Char.isWhitespace
     if line.trimLeft.startsWith "- " || line.startsWith "* " then
-      --dbg_trace s!"{line} is a list item"
       if let some n := prev_ident then
         -- De-denting is possibly by any number of levels.
         if indent.length > n + 2 then
           msgs := msgs.push m!"unexpected indentation: \
-            line {line.trim} is indented by {indent.length} spaces,\n\
+            line '{line.trim}' is indented by {indent.length} spaces,\n\
             but should have been indented by at most {n + 2}.\n\
             The the previous line was indented by {n} spaces."
+        else if in_item && indent.length == n then
+          msgs := msgs.push m!"bad indentation: line '{line}' follows an enumeration item, \
+            expected additional indentation.\n\
+            To start a new paragraph, insert a blank line instead."
       in_item := true
     prev_ident := some indent.length
+  -- TODO: check that subsequent lines are indented stronger!
   return msgs
 
 @[inherit_doc Mathlib.Linter.linter.style.docString]
