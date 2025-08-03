@@ -83,9 +83,10 @@ theorem isCancelMulZero_iff_forall_isRegular {M₀} [Mul M₀] [Zero M₀] :
   exact forall₂_congr fun _ _ ↦ isRegular_iff.symm
 
 /-- Predicate typeclass for expressing that `a * b = 0` implies `a = 0` or `b = 0`
-for all `a` and `b` of type `G₀`. -/
+for all `a` and `b` of type `M₀`. It is weaker than `IsCancelMulZero` in general,
+but equivalent to it if `M₀` is a (not necessarily unital or associative) ring. -/
 @[mk_iff] class NoZeroDivisors (M₀ : Type*) [Mul M₀] [Zero M₀] : Prop where
-  /-- For all `a` and `b` of `G₀`, `a * b = 0` implies `a = 0` or `b = 0`. -/
+  /-- For all `a` and `b` of `M₀`, `a * b = 0` implies `a = 0` or `b = 0`. -/
   eq_zero_or_eq_zero_of_mul_eq_zero : ∀ {a b : M₀}, a * b = 0 → a = 0 ∨ b = 0
 
 export NoZeroDivisors (eq_zero_or_eq_zero_of_mul_eq_zero)
