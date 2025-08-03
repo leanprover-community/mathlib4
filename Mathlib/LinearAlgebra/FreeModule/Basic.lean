@@ -155,7 +155,9 @@ instance ulift [Free R M] : Free R (ULift M) := of_equiv ULift.moduleEquiv.symm
 instance (priority := 100) of_subsingleton [Subsingleton N] : Module.Free R N :=
   of_basis.{u,z,z} (Basis.empty N : Basis PEmpty R N)
 
-instance (priority := 100) of_subsingleton' [Subsingleton R] : Module.Free R N :=
+-- This was previously a global instance,
+-- but it doesn't appear to be used and has been implicated in slow typeclass resolutions.
+lemma of_subsingleton' [Subsingleton R] : Module.Free R N :=
   letI := Module.subsingleton R N
   Module.Free.of_subsingleton R N
 

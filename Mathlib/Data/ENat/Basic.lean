@@ -38,7 +38,7 @@ assert_not_exists Field
 
 deriving instance Zero, CommSemiring, Nontrivial,
   LinearOrder, Bot, Sub,
-  LinearOrderedAddCommMonoidWithTop, WellFoundedRelation
+  LinearOrderedAddCommMonoidWithTop
   for ENat
 -- The `CanonicallyOrderedAdd, OrderBot, OrderTop, OrderedSub, SuccOrder, WellFoundedLT, CharZero`
 -- instances should be constructed by a deriving handler.
@@ -223,9 +223,6 @@ theorem top_sub_ofNat (a : ℕ) [a.AtLeastTwo] : (⊤ : ℕ∞) - ofNat(a) = ⊤
 @[simp]
 theorem top_pos : (0 : ℕ∞) < ⊤ :=
   WithTop.top_pos
-
-@[deprecated ENat.top_pos (since := "2024-10-22")]
-alias zero_lt_top := top_pos
 
 @[simp]
 theorem one_lt_top : (1 : ℕ∞) < ⊤ :=
@@ -430,9 +427,6 @@ lemma add_one_natCast_le_withTop_of_lt {m : ℕ} {n : WithTop ℕ∞} (h : m < n
     simp only [coe_ne_top]
 
 @[simp] lemma natCast_ne_coe_top (n : ℕ) : (n : WithTop ℕ∞) ≠ (⊤ : ℕ∞) := nofun
-
-@[deprecated (since := "2024-10-22")]
-alias nat_ne_coe_top := natCast_ne_coe_top
 
 lemma one_le_iff_ne_zero_withTop {n : WithTop ℕ∞} : 1 ≤ n ↔ n ≠ 0 :=
   ⟨fun h ↦ (zero_lt_one.trans_le h).ne',
