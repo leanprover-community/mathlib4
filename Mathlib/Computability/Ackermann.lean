@@ -318,7 +318,7 @@ theorem exists_lt_ack_of_nat_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) :
         -- If m is the maximum, we get a very weak inequality.
         rcases lt_or_ge _ m with h₁ | h₁
         · rw [max_eq_left h₁.le]
-          gcongr <;> simp
+          gcongr <;> omega
         rw [max_eq_right h₁]
         -- We get rid of the second `pair`.
         apply (ack_pair_lt _ _ _).le.trans
