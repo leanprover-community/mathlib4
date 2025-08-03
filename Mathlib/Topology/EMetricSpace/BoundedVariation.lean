@@ -387,19 +387,8 @@ theorem add_le_union (f : α → E) {s t : Set α} (h : ∀ x ∈ s, ∀ y ∈ t
           ∑ i ∈ Finset.range m, edist (f (w (n + 1 + i + 1))) (f (w (n + 1 + i))) := by
       dsimp only [w]
       congr 1
-      · refine Finset.sum_congr rfl fun i hi => ?_
-        simp only [Finset.mem_range] at hi
-        have : i + 1 ≤ n := Nat.succ_le_of_lt hi
-        simp [hi.le, this]
-      · refine Finset.sum_congr rfl fun i hi => ?_
-        simp only [Finset.mem_range] at hi
-        have B : ¬n + 1 + i ≤ n := by omega
-        have A : ¬n + 1 + i + 1 ≤ n := fun h => B ((n + 1 + i).le_succ.trans h)
-        have C : n + 1 + i - n = i + 1 := by
-          rw [tsub_eq_iff_eq_add_of_le]
-          · abel
-          · exact n.le_succ.trans (n.succ.le_add_right i)
-        simp only [A, B, C, Nat.succ_sub_succ_eq_sub, if_false, add_tsub_cancel_left]
+      · grind [Finset.mem_range, Finset.sum_congr]
+      · grind
     _ = (∑ i ∈ Finset.range n, edist (f (w (i + 1))) (f (w i))) +
           ∑ i ∈ Finset.Ico (n + 1) (n + 1 + m), edist (f (w (i + 1))) (f (w i)) := by
       congr 1
