@@ -136,10 +136,8 @@ lemma subset_compl_support_of_isOpen {t : Set X} (ht : IsOpen t) (h : μ t = 0) 
   notMem_support_iff_exists.mpr ⟨t, ht.mem_nhds hx, h⟩
 
 lemma compl_support_eq_sUnion : μ.supportᶜ = ⋃₀ {t : Set X | IsOpen t ∧ μ t = 0} := by
-  ext x
-  have A (t : Set X) := and_comm (a := IsOpen t) (b := x ∈ t)
-  simp only [Set.mem_compl_iff, Set.mem_sUnion, Set.mem_setOf_eq, and_right_comm,
-     (nhds_basis_opens x).notMem_measureSupport, A]
+  ext x; simp only [Set.mem_compl_iff, Set.mem_sUnion, Set.mem_setOf_eq, and_right_comm,
+     (nhds_basis_opens x).notMem_measureSupport, fun t ↦ and_comm (b := x ∈ t)]
 
 lemma support_eq_sInter : μ.support = ⋂₀ {t : Set X | IsClosed t ∧ μ tᶜ = 0} := by
   ext x
