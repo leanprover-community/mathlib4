@@ -122,13 +122,7 @@ A list
 -/
 example : Nat := 1
 
-/--
-warning: unexpected indentation: line '- over-indented second item' is indented by 4 spaces,
-but should have been indented by at most 2.
-The the previous line was indented by 0 spaces.
-
-Note: This linter can be disabled with `set_option linter.style.docString false`
--/
+-- Future: lint against this!
 #guard_msgs in
 /--
 A list
@@ -137,14 +131,9 @@ A list
 -/
 example : Nat := 1
 
+-- Future: lint against this!
 /--
 warning: error: line '- an odd item' is indented by 3 spaces, which is an odd number
-
-Note: This linter can be disabled with `set_option linter.style.docString false`
----
-warning: unexpected indentation: line '- another' is indented by 6 spaces,
-but should have been indented by at most 5.
-The the previous line was indented by 3 spaces.
 
 Note: This linter can be disabled with `set_option linter.style.docString false`
 -/
@@ -162,6 +151,7 @@ A list
 -/
 example : Nat := 1
 
+-- Future: lint against this!
 #guard_msgs in
 /--
 A list
@@ -172,12 +162,7 @@ A list
 -/
 example : Nat := 1
 
-/--
-warning: bad indentation: line '- second item' follows an enumeration item, expected additional indentation.
-To start a new paragraph, insert a blank line instead.
-
-Note: This linter can be disabled with `set_option linter.style.docString false`
--/
+-- Future: lint against this!
 #guard_msgs in
 /-- A doc-string with an enumeration
 * first item
@@ -197,21 +182,6 @@ Now, a new paragraph begins.
 -/
 example : Nat := 1
 
-/--
-warning: bad indentation: line '' follows an enumeration item, expected additional indentation.
-To start a new paragraph, insert a blank line instead.
-
-Note: This linter can be disabled with `set_option linter.style.docString false`
----
-warning: bad indentation: line '' follows an enumeration item, expected additional indentation.
-To start a new paragraph, insert a blank line instead.
-
-Note: This linter can be disabled with `set_option linter.style.docString false`
----
-warning: error: doc-strings should end with a single space or newline
-
-Note: This linter can be disabled with `set_option linter.style.docString false`
--/
 #guard_msgs in
 /-- First doc-string line.
 
@@ -223,7 +193,6 @@ Note: This linter can be disabled with `set_option linter.style.docString false`
   * `· ∈ s`, `· ∉ s`
   * `· ⊆ s`, `· ⊂ s`, `· ⊇ s`, `· ⊃ s`
   * `· ≤ a`, `· ≥ a`, `· < a`, `· > a`, `· ≠ a`
-
 -/
 example : Nat := 1
 

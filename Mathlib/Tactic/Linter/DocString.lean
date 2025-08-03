@@ -78,34 +78,6 @@ def check (str : String) : Array MessageData := Id.run do
     else if indent.length.mod 2 == 1 then
       msgs := msgs.push m!"error: line '{line.trimLeft}' is indented by {indent.length} \
         space{if indent.length == 1 then "" else "s"}, which is an odd number"
-  -- Check for correct indentation of markdown lists. The line following a list item
-  -- (starting a line with "- " or "* ", after initial spaces)
-  -- should either be blank, or another such item, or indented by two spaces more.
-  let mut in_item := false -- TODO: need this recursively?? are we using this at all?
-  let mut prev_ident := none
-  -- TODO: right now, we check pretty rigorous indenting --- even outside of enumeration items
-  -- is this what we want, or rather too strong?
-  for line in lines do
-    let indent := line.takeWhile Char.isWhitespace
-    if let some n := prev_ident then
-      if line.trimLeft.startsWith "- " || line.startsWith "* " then
-        -- De-denting is possibly by any number of levels.
-        if indent.length > n + 2 then
-          msgs := msgs.push m!"unexpected indentation: \
-            line '{line.trim}' is indented by {indent.length} spaces,\n\
-            but should have been indented by at most {n + 2}.\n\
-            The the previous line was indented by {n} spaces."
-        prev_ident := some indent.length
-      else if in_item then
-        if indent.length != n + 2 then
-          msgs := msgs.push m!"bad indentation: line '{line}' follows an enumeration item, \
-            expected additional indentation.\n\
-            To start a new paragraph, insert a blank line instead."
-      in_item := true
-    else
-      prev_ident := some indent.length
-      in_item := false
-  -- TODO: check that subsequent lines are indented stronger!
   return msgs
 
 @[inherit_doc Mathlib.Linter.linter.style.docString]
