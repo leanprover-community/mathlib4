@@ -52,7 +52,7 @@ additive combinatorics, number theory, sumset, cauchy-davenport
 open Finset Function Monoid MulOpposite Subgroup
 open scoped Pointwise
 
-variable {α : Type*}
+variable {G α : Type*}
 
 /-! ### General case -/
 
@@ -176,17 +176,20 @@ lemma cauchy_davenport_minOrder_mul (hs : s.Nonempty) (ht : t.Nonempty) :
       (WithTop.coe_le_coe.2 aux2).trans' fun h ↦
         hstg.le.trans <| h.trans <| add_le_add_right aux2 _
 
+end General
+
 /-- The **Cauchy-Davenport Theorem** for torsion-free groups. The size of `s * t` is lower-bounded
 by `|s| + |t| - 1`. -/
 @[to_additive
 "The **Cauchy-Davenport theorem** for torsion-free groups. The size of `s + t` is lower-bounded
 by `|s| + |t| - 1`."]
-lemma cauchy_davenport_mul_of_isTorsionFree (h : IsTorsionFree α)
-    (hs : s.Nonempty) (ht : t.Nonempty) : #s + #t - 1 ≤ #(s * t) := by
-  simpa only [h.minOrder, min_eq_right, le_top, Nat.cast_le]
+lemma cauchy_davenport_of_isMulTorsionFree [DecidableEq G] [Group G] [IsMulTorsionFree G]
+    {s t : Finset G} (hs : s.Nonempty) (ht : t.Nonempty) : #s + #t - 1 ≤ #(s * t) := by
+  simpa only [Monoid.minOrder_eq_top, min_eq_right, le_top, Nat.cast_le]
     using cauchy_davenport_minOrder_mul hs ht
 
-end General
+@[to_additive (attr := deprecated cauchy_davenport_of_isMulTorsionFree (since := "2025-04-23"))]
+alias cauchy_davenport_mul_of_isTorsionFree := cauchy_davenport_of_isMulTorsionFree
 
 /-! ### $$ℤ/nℤ$$ -/
 

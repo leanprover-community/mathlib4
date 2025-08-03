@@ -278,7 +278,7 @@ protected theorem IsEquivalent.inv (huv : u ~[l] v) : (fun x ↦ (u x)⁻¹) ~[l
   rw [isEquivalent_iff_exists_eq_mul] at *
   rcases huv with ⟨φ, hφ, h⟩
   rw [← inv_one]
-  refine ⟨fun x ↦ (φ x)⁻¹, Tendsto.inv₀ hφ (by norm_num), ?_⟩
+  refine ⟨fun x ↦ (φ x)⁻¹, Tendsto.inv₀ hφ (by simp), ?_⟩
   convert h.inv
   simp [mul_comm]
 
