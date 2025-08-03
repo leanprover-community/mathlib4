@@ -258,10 +258,7 @@ theorem succ_nth_conv_eq_squashGCF_nth_conv [Field K]
       suffices (b * g.h + a) / b = g.h + a / b by
         simpa [squashGCF, s_nth_eq, conv_eq_conts_a_div_conts_b,
           conts_recurrenceAux s_nth_eq zeroth_contAux_eq_one_zero first_contAux_eq_h_one]
-      calc
-        (b * g.h + a) / b = b * g.h / b + a / b := by ring
-        -- requires `Field`, not `DivisionRing`
-        _ = g.h + a / b := by rw [mul_div_cancel_left₀ _ b_ne_zero]
+      grind
     | succ n' =>
       obtain ⟨⟨pa, pb⟩, s_n'th_eq⟩ : ∃ gp_n', g.s.get? n' = some gp_n' :=
         g.s.ge_stable n'.le_succ s_nth_eq
