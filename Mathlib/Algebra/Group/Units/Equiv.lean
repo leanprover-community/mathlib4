@@ -171,10 +171,6 @@ lemma symm_divLeft (a : G) : (Equiv.divLeft a).symm = Equiv.divLeft a :=
 lemma divLeft_involutive (a : G) : Function.Involutive (Equiv.divLeft a) :=
   fun _ ↦ div_div_cancel ..
 
-@[to_additive (attr := simp)]
-lemma const_div_involutive (a : G) : Function.Involutive (a / ·) :=
-  divLeft_involutive a
-
 end CommGroup
 
 end Equiv

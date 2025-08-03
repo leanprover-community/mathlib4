@@ -207,6 +207,8 @@ theorem injective_pointReflection_left_of_injective_two_nsmul {G P : Type*} [Add
 @[deprecated (since := "2024-11-18")] alias injective_pointReflection_left_of_injective_bit0 :=
 injective_pointReflection_left_of_injective_two_nsmul
 
+/-- In the special case of additive commutative groups (as opposed to just additive torsors),
+`Equiv.pointReflection x` coincides with `Equiv.subLeft (2 • x)`. -/
 lemma pointReflection_eq_subLeft {G : Type*} [AddCommGroup G] (x : G) :
     pointReflection x = Equiv.subLeft (2 • x) := by
   ext; simp [pointReflection, sub_add_eq_add_sub, two_nsmul]
