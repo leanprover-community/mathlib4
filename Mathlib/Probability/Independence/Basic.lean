@@ -746,7 +746,7 @@ lemma iIndepFun.precomp {g : ι' → ι} (hg : g.Injective) (h : iIndepFun f μ)
   intro t s' hs'
   simpa [A] using h (t.map ⟨g, hg⟩) (f' := fun i ↦ s' (invFun g i)) (by simpa [A] using hs')
 
-lemma iIndepFun_iff_finite : iIndepFun f μ ↔ ∀ s : Finset ι, iIndepFun (s.restrict f) μ where
+lemma iIndepFun_iff_finset : iIndepFun f μ ↔ ∀ s : Finset ι, iIndepFun (s.restrict f) μ where
   mp h s := h.precomp (g := ((↑) : s → ι)) Subtype.val_injective
   mpr h := by
     rw [iIndepFun_iff]
