@@ -270,8 +270,7 @@ lemma chainBotCoeff_mul_chainTopCoeff :
     simp only [root_reflectionPerm, reflection_apply_self, indexNeg_neg]; rw [← h₁]; abel
   have h₂' : P.root (-k) + P.root j = P.root (-m) := by
     simp only [root_reflectionPerm, reflection_apply_self, indexNeg_neg]; rw [← h₂]; abel
-  have h₃' : P.root (-k) + P.root j - P.root i ∈ range P.root := by
-    grind [Set.mem_range]
+  have h₃' : P.root (-k) + P.root j - P.root i ∈ range P.root := by grind
   /- Proceed to the main argument, following Geck's case splits. It's all just bookkeeping. -/
   rcases aux_0 hik_mem with hki | ⟨hki, hik⟩
   · /- Geck "Case 1" -/
