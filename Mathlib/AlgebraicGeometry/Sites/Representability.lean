@@ -118,8 +118,8 @@ lemma yonedaGluedToSheaf_app_toGlued {i : ι} :
 
 @[simp]
 lemma yonedaGluedToSheaf_app_comp {V U : Scheme.{u}} (γ : V ⟶ U) (α : U ⟶ (glueData hf).glued) :
-  (yonedaGluedToSheaf hf).val.app (op V) (γ ≫ α) =
-    F.val.map γ.op ((yonedaGluedToSheaf hf).val.app (op U) α) :=
+    (yonedaGluedToSheaf hf).val.app (op V) (γ ≫ α) =
+      F.val.map γ.op ((yonedaGluedToSheaf hf).val.app (op U) α) :=
   congr_fun ((yonedaGluedToSheaf hf).val.naturality γ.op) α
 
 instance [Presheaf.IsLocallySurjective Scheme.zariskiTopology (Sigma.desc f)] :

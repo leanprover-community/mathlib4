@@ -309,7 +309,7 @@ private theorem bound' : Tendsto (fun n : ℕ => ‖F.derivative.aeval a‖ * T 
   exact
     tendsto_const_nhds.mul
       (Tendsto.comp (tendsto_pow_atTop_nhds_zero_of_lt_one (norm_nonneg _) (T_lt_one hnorm))
-        (Nat.tendsto_pow_atTop_atTop_of_one_lt (by norm_num)))
+        (Nat.tendsto_pow_atTop_atTop_of_one_lt (by simp)))
 
 private theorem bound :
     ∀ {ε}, ε > 0 → ∃ N : ℕ, ∀ {n}, n ≥ N → ‖F.derivative.aeval a‖ * T ^ 2 ^ n < ε := fun hε ↦
@@ -361,7 +361,7 @@ private theorem T_pos : T > 0 := by
 private theorem newton_seq_succ_dist_weak (n : ℕ) :
     ‖newton_seq (n + 2) - newton_seq (n + 1)‖ < ‖F.aeval a‖ / ‖F.derivative.aeval a‖ :=
   have : 2 ≤ 2 ^ (n + 1) := by
-    have := pow_right_mono₀ (by norm_num : 1 ≤ 2) (Nat.le_add_left _ _ : 1 ≤ n + 1)
+    have := pow_right_mono₀ (by simp : 1 ≤ 2) (Nat.le_add_left _ _ : 1 ≤ n + 1)
     simpa using this
   calc
     ‖newton_seq (n + 2) - newton_seq (n + 1)‖ ≤ ‖F.derivative.aeval a‖ * T ^ 2 ^ (n + 1) :=

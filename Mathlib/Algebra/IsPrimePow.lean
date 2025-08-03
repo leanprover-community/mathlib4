@@ -80,13 +80,7 @@ instance {n : ℕ} : Decidable (IsPrimePow n) :=
   decidable_of_iff' _ (isPrimePow_nat_iff_bounded n)
 
 theorem IsPrimePow.dvd {n m : ℕ} (hn : IsPrimePow n) (hm : m ∣ n) (hm₁ : m ≠ 1) : IsPrimePow m := by
-  rw [isPrimePow_nat_iff] at hn ⊢
-  rcases hn with ⟨p, k, hp, _hk, rfl⟩
-  obtain ⟨i, hik, rfl⟩ := (Nat.dvd_prime_pow hp).1 hm
-  refine ⟨p, i, hp, ?_, rfl⟩
-  apply Nat.pos_of_ne_zero
-  rintro rfl
-  simp only [pow_zero, ne_eq, not_true_eq_false] at hm₁
+  grind [isPrimePow_nat_iff, Nat.dvd_prime_pow, Nat.pow_eq_one]
 
 theorem IsPrimePow.two_le : ∀ {n : ℕ}, IsPrimePow n → 2 ≤ n
   | 0, h => (not_isPrimePow_zero h).elim
