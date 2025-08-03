@@ -225,7 +225,7 @@ theorem norm_eq_iInf_iff_real_inner_le_zero {K : Set F} (h : Convex ℝ K) {u : 
     by_cases hq : q = 0
     · rw [hq] at this
       have : p ≤ 0 := by
-        have := this (1 : ℝ) (by norm_num) (by norm_num)
+        have := this (1 : ℝ) (by simp) (by simp)
         linarith
       exact this
     · have q_pos : 0 < q := lt_of_le_of_ne (sq_nonneg _) fun h ↦ hq h.symm
@@ -239,7 +239,7 @@ theorem norm_eq_iInf_iff_real_inner_le_zero {K : Set F} (h : Convex ℝ K) {u : 
       have : 2 * p ≤ p :=
         calc
           2 * p ≤ θ * q := by
-            exact this θ (lt_min (by norm_num) (div_pos hp q_pos)) (by norm_num [θ])
+            exact this θ (lt_min (by simp) (div_pos hp q_pos)) (by simp [θ])
           _ ≤ p := eq₁
       linarith
   · intro h
@@ -687,7 +687,7 @@ variable (K)
 
 /-- The orthogonal projection has norm `≤ 1`. -/
 theorem orthogonalProjection_norm_le : ‖K.orthogonalProjection‖ ≤ 1 :=
-  LinearMap.mkContinuous_norm_le _ (by norm_num) _
+  LinearMap.mkContinuous_norm_le _ (by simp) _
 
 theorem starProjection_norm_le : ‖K.starProjection‖ ≤ 1 :=
   K.orthogonalProjection_norm_le
@@ -1038,6 +1038,11 @@ theorem orthogonalProjection_coe_eq_linearProjOfIsCompl [K.HasOrthogonalProjecti
 @[deprecated (since := "2025-07-11")] alias orthogonalProjection_coe_linearMap_eq_linearProj :=
   orthogonalProjection_coe_eq_linearProjOfIsCompl
 
+open Submodule in
+theorem starProjection_coe_eq_isCompl_projection [K.HasOrthogonalProjection] :
+    K.starProjection.toLinearMap = K.isCompl_orthogonal_of_hasOrthogonalProjection.projection := by
+  simp [starProjection, orthogonalProjection_coe_eq_linearProjOfIsCompl, IsCompl.projection]
+
 /-- The reflection in `K` of an element of `Kᗮ` is its negation. -/
 theorem reflection_mem_subspace_orthogonalComplement_eq_neg [K.HasOrthogonalProjection] {v : E}
     (hv : v ∈ Kᗮ) : K.reflection v = -v := by
@@ -1204,7 +1209,7 @@ theorem reflection_orthogonalComplement_singleton_eq_neg (v : E) : reflection (�
 theorem reflection_sub {v w : F} (h : ‖v‖ = ‖w‖) : reflection (ℝ ∙ (v - w))ᗮ v = w := by
   set R : F ≃ₗᵢ[ℝ] F := reflection (ℝ ∙ v - w)ᗮ
   suffices R v + R v = w + w by
-    apply smul_right_injective F (by norm_num : (2 : ℝ) ≠ 0)
+    apply smul_right_injective F (by simp : (2 : ℝ) ≠ 0)
     simpa [two_smul] using this
   have h₁ : R (v - w) = -(v - w) := reflection_orthogonalComplement_singleton_eq_neg (v - w)
   have h₂ : R (v + w) = v + w := by
@@ -1277,6 +1282,13 @@ theorem norm_sq_eq_add_norm_sq_starProjection (x : E) (S : Submodule 𝕜 E)
     [S.HasOrthogonalProjection] :
     ‖x‖ ^ 2 = ‖S.starProjection x‖ ^ 2 + ‖Sᗮ.starProjection x‖ ^ 2 :=
   norm_sq_eq_add_norm_sq_projection x S
+
+theorem mem_iff_norm_starProjection (U : Submodule 𝕜 E)
+    [U.HasOrthogonalProjection] (v : E) :
+    v ∈ U ↔ ‖U.starProjection v‖ = ‖v‖ := by
+  refine ⟨fun h => norm_starProjection_apply _ h, fun h => ?_⟩
+  simpa [h, sub_eq_zero, eq_comm (a := v), starProjection_eq_self_iff] using
+    U.norm_sq_eq_add_norm_sq_starProjection v
 
 /-- In a complete space `E`, the projection maps onto a complete subspace `K` and its orthogonal
 complement sum to the identity. -/
@@ -1633,11 +1645,7 @@ theorem maximal_orthonormal_iff_orthogonalComplement_eq_bot (hv : Orthonormal �
       rintro ⟨a, ha'⟩
       rcases eq_or_mem_of_mem_insert ha' with ha | ha
       · rintro ⟨b, hb'⟩ hab'
-        have hb : b ∈ v := by
-          refine mem_of_mem_insert_of_ne hb' ?_
-          intro hbe'
-          apply hab'
-          simp [ha, hbe']
+        have hb : b ∈ v := by grind
         rw [inner_eq_zero_symm]
         simpa [ha] using h_end b hb
       rintro ⟨b, hb'⟩ hab'

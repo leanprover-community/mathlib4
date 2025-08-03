@@ -1085,7 +1085,7 @@ theorem tr_respects :
       apply IH
     | branch p q₁ q₂ IH₁ IH₂ =>
       simp only [trNormal, stepAux_read dec enc0 encdec, stepAux, Tape.mk'_head]
-      cases p R.head v <;> [apply IH₂; apply IH₁]
+      grind
     | goto l =>
       simp only [trNormal, stepAux_read dec enc0 encdec, stepAux, trCfg, trTape_mk']
       apply ReflTransGen.refl
