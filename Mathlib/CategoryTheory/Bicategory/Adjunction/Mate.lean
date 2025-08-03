@@ -626,11 +626,13 @@ variable {l₁ : a ⟶ b} {r₁ : b ⟶ a} {l₂ : c ⟶ d} {r₂ : d ⟶ c}
 variable (adj₁ : l₁ ⊣ r₁) (adj₂ : l₂ ⊣ r₂) (adj₃ : f₁ ⊣ u₁) (adj₄ : f₂ ⊣ u₂)
 
 /-- When all four morphisms in a square are left adjoints, the mates operation can be iterated:
+```
          l₁                  r₁                  r₁
       c --→ d             c ←-- d             c ←-- d
    f₁ ↓  ↗  ↓  f₂      f₁ ↓  ↘  ↓ f₂       u₁ ↑  ↙  ↑ u₂
       a --→ b             a ←-- b             a ←-- b
          l₂                  r₂                  r₂
+```
 In this case the iterated mate equals the conjugate of the original 2-morphism and is thus an
 isomorphism if and only if the original 2-morphism is. This explains why some Beck-Chevalley
 2-morphisms are isomorphisms.
