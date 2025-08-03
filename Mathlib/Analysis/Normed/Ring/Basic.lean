@@ -653,6 +653,11 @@ theorem RingHomIsometric.nnnorm_map [SeminormedRing R₁] [SeminormedRing R₂] 
     [RingHomIsometric σ] (x : R₁) : ‖σ x‖₊ = ‖x‖₊ :=
   NNReal.eq norm_map
 
+@[simp]
+theorem RingHomIsometric.enorm_map [SeminormedRing R₁] [SeminormedRing R₂] (σ : R₁ →+* R₂)
+    [RingHomIsometric σ] (x : R₁) : ‖σ x‖ₑ = ‖x‖ₑ :=
+  congrArg ENNReal.ofNNReal <| nnnorm_map σ x
+
 variable [SeminormedRing R₁]
 
 instance RingHomIsometric.ids : RingHomIsometric (RingHom.id R₁) :=
