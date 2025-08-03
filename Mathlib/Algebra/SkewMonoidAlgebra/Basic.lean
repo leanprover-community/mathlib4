@@ -854,9 +854,7 @@ theorem coeff_mul_antidiagonal [Monoid G] (f g : SkewMonoidAlgebra k G) [MulSemi
     _ = ∑ p ∈ s, f.coeff p.1 * p.1 • g.coeff p.2 :=
       Finset.sum_subset (Finset.filter_subset _ _) fun p hps hp => by
         simp only [Finset.mem_filter, mem_support_iff, not_and, Classical.not_not] at hp ⊢
-        by_cases h1 : f.coeff p.1 = 0
-        · rw [h1, zero_mul]
-        · rw [hp hps h1, smul_zero, mul_zero]
+        by_cases h1 : f.coeff p.1 = 0 <;> simp_all
 
 theorem coeff_mul_single_aux [Monoid G] [MulSemiringAction G k] (f : SkewMonoidAlgebra k G) {r : k}
     {x y z : G} (H : ∀ a, a * x = z ↔ a = y) : (f * single x r).coeff z = f.coeff y * y • r := by
@@ -887,8 +885,7 @@ theorem coeff_mul_single_of_not_exists_mul [Monoid G] [MulSemiringAction G k] (r
 theorem coeff_single_mul_aux [Monoid G] [MulSemiringAction G k] (f : SkewMonoidAlgebra k G) {r : k}
     {x y z : G} (H : ∀ a, x * a = y ↔ a = z) : (single x r * f).coeff y = r * x • f.coeff z := by
   classical
-  have : (f.sum fun a b => ite (x * a = y) (0 * x • b) 0) = 0 := by
-    simp [zero_mul, ite_self,sum_zero]
+  have : (f.sum fun a b => ite (x * a = y) (0 * x • b) 0) = 0 := by simp
   calc
     ((single x r) *  f).coeff y =
         sum f fun a b => ite (x * a = y) (r * x • b) 0 :=
@@ -899,8 +896,7 @@ theorem coeff_single_mul_aux [Monoid G] [MulSemiringAction G k] (f : SkewMonoidA
 
 theorem coeff_single_one_mul [Monoid G] [MulSemiringAction G k] (f : SkewMonoidAlgebra k G) (r : k)
     (x : G) : (single (1 : G) r * f).coeff x = r * f.coeff x := by
-  rw [coeff_single_mul_aux, one_smul]
-  simp [one_mul]
+  simp [coeff_single_mul_aux, one_smul]
 
 theorem coeff_single_mul_of_not_exists_mul [Monoid G] [MulSemiringAction G k] (r : k) {g g' : G}
     (x : SkewMonoidAlgebra k G) (h : ¬∃ d, g' = g * d) : (single g r * x).coeff g' = 0 := by
@@ -910,7 +906,7 @@ theorem coeff_single_mul_of_not_exists_mul [Monoid G] [MulSemiringAction G k] (r
     simp_rw [ite_eq_right_iff]
     rintro g'' _hg'' rfl
     exact absurd ⟨_, rfl⟩ h
-  · simp [zero_mul, ite_self, sum_zero]
+  · simp
 
 end Monoid
 
@@ -934,14 +930,14 @@ theorem coeff_mul_left (f g : SkewMonoidAlgebra k G) (x : G) :
   calc
     (f * g).coeff x = sum f fun a b => (single a b * g).coeff x := by
       rw [← coeff_sum, ← sum_mul g f, f.sum_single]
-    _ = _ := by simp [coeff_single_mul]
+    _ = _ := by simp
 
 theorem coeff_mul_right (f g : SkewMonoidAlgebra k G) (x : G) :
     (f * g).coeff x = g.sum fun a b => f.coeff (x * a⁻¹) * (x * a⁻¹) • b :=
   calc
     (f * g).coeff x = sum g fun a b => (f * single a b).coeff x := by
       rw [← coeff_sum, ← mul_sum f g, g.sum_single]
-    _ = _ := by simp [coeff_mul_single]
+    _ = _ := by simp
 
 end Group
 
