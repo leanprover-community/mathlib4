@@ -397,18 +397,19 @@ lemma one_add_α_pow_q [Fact q.Prime] (odd : Odd (q : ℕ)) (leg3 : legendreSym 
   rw [add_pow_expChar, one_pow, hk, α_pow, ← this]
   have : (3 : X q) = (3 : ZMod q) := by rw [map_ofNat]
   rw [this, ← RingHom.map_pow]
-  rw_mod_cast [← legendreSym.eq_pow q 3, leg3]
+  have leg := legendreSym.eq_pow q 3
+  rw_mod_cast [← leg, leg3]
   simp
   ring
 
 /-- If `3` is not a square then `(1 + α) ^ (q + 1) = -2`. -/
-lemma one_add_α_pow_q_succ [Fact (Prime q)] (odd : Odd (q : ℕ))
+lemma one_add_α_pow_q_succ [Fact q.Prime] (odd : Odd (q : ℕ))
     (leg3 : legendreSym q 3 = -1) : (1 + (α : X q)) ^ (q + 1 : ℕ) = -2 := by
   rw [pow_succ, one_add_α_pow_q odd leg3, mul_comm, ← _root_.sq_sub_sq, α_sq]
   norm_num
 
 /-- If `3` is not a square then `(2 * ω) ^ ((q + 1) / 2) = -2`. -/
-lemma two_mul_ω_pow [Fact (Prime q)] (odd : Odd (q : ℕ))
+lemma two_mul_ω_pow [Fact q.Prime] (odd : Odd (q : ℕ))
     (leg3 : legendreSym q 3 = -1) : (2 * ω : X q) ^ (((q : ℕ) + 1)/ 2) = -2 := by
   rw [← one_add_α_sq, ← pow_mul]
   have : 2 * (((q : ℕ) + 1) / 2) = q + 1 := by
