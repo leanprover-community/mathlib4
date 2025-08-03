@@ -67,7 +67,6 @@ theorem mersenne_le_mersenne {p q : ℕ} : mersenne p ≤ mersenne q ↔ p ≤ q
 
 lemma mersenne_succ (n : ℕ) : mersenne (n + 1) = 2 * mersenne n + 1 := by
   dsimp [mersenne]
-  rw [pow_succ]
   have := Nat.one_le_pow n 2 two_pos
   omega
 
