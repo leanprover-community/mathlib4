@@ -15,6 +15,9 @@ import Mathlib.Analysis.LocallyConvex.Polar
 - `StrongDual.polar`: Given a subset `s` in a monoid `M` (over a commutative ring `R`), the polar
   `polar R s` is the subset of `StrongDual R M` consisting of those functionals which evaluate to
   something of norm at most one at all points `z ∈ s`.
+- `StrongDual.polarSubmodule`: Given a subset `s` in a monoid `M` (over a field `𝕜`) closed under
+  scalar multiplication, the polar `polarSubmodule 𝕜 s` is the submodule of `StrongDual 𝕜 M`
+  consisting of those functionals which evaluate to zero at all points `z ∈ s`.
 
 ## References
 
@@ -75,12 +78,12 @@ def polar (R : Type*) [NormedCommRing R] {M : Type*} [AddCommMonoid M]
 
 @[deprecated (since := "2025-08-3")] alias _root_.NormedSpace.polar := polar
 
-/-- Given a subset `s` in a normed space `E` (over a field `𝕜`) closed under scalar multiplication,
-the polar `polarSubmodule 𝕜 s` is the submodule of `StrongDual 𝕜 E` consisting of those functionals
+/-- Given a subset `s` in a monoid `M` (over a field `𝕜`) closed under scalar multiplication,
+the polar `polarSubmodule 𝕜 s` is the submodule of `StrongDual 𝕜 M` consisting of those functionals
 which evaluate to zero at all points `z ∈ s`. -/
-def polarSubmodule (𝕜 : Type*) [NontriviallyNormedField 𝕜] {E : Type*} [AddCommMonoid E]
-    [TopologicalSpace E] [Module 𝕜 E] {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] (m : S) :
-    Submodule 𝕜 (StrongDual 𝕜 E) := (dualPairing 𝕜 E).flip.polarSubmodule m
+def polarSubmodule (𝕜 : Type*) [NontriviallyNormedField 𝕜] {M : Type*} [AddCommMonoid M]
+    [TopologicalSpace M] [Module 𝕜 M] {S : Type*} [SetLike S M] [SMulMemClass S 𝕜 M] (m : S) :
+    Submodule 𝕜 (StrongDual 𝕜 M) := (dualPairing 𝕜 M).flip.polarSubmodule m
 
 @[deprecated (since := "2025-08-3")] alias _root_.NormedSpace.polarSubmodule := polarSubmodule
 
