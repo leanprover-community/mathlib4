@@ -543,7 +543,7 @@ end IsComplement
 
 section Action
 
-open Pointwise MulAction MemLeftTransversals
+open Pointwise MulAction
 
 /-- The collection of left transversals of a subgroup -/
 @[to_additive "The collection of left transversals of a subgroup."]
