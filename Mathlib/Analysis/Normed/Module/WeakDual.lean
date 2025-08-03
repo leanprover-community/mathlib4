@@ -92,15 +92,6 @@ open Filter Function Bornology Metric Set
 
 open Topology Filter
 
-/-!
-### Weak star topology on duals of normed spaces
-
-In this section, we prove properties about the weak-* topology on duals of normed spaces.
-We prove in particular that the canonical mapping `Dual 𝕜 E → WeakDual 𝕜 E` is continuous,
-i.e., that the weak-* topology is coarser (not necessarily strictly) than the topology given
-by the dual-norm (i.e. the operator-norm).
--/
-
 namespace StrongDual
 
 section
@@ -109,7 +100,7 @@ variable {R : Type*} [CommSemiring R] [TopologicalSpace R] [ContinuousAdd R]
   [ContinuousConstSMul R R]
 variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M] [Module R M]
 
-/-- For normed spaces `E`, there is a canonical map `StrongDual 𝕜 E → WeakDual 𝕜 E` (the "identity"
+/-- For monoids `M`, there is a canonical map `StrongDual R M → WeakDual R M` (the "identity"
 mapping). It is a linear equivalence. -/
 def toWeakDual : StrongDual R M ≃ₗ[R] WeakDual R M :=
   LinearEquiv.refl R (M →L[R] R)
@@ -175,6 +166,15 @@ theorem isClosed_polar (s : Set E) : IsClosed (polar 𝕜 s) := by
   exact isClosed_biInter fun x hx => isClosed_Iic.preimage (WeakBilin.eval_continuous _ _).norm
 
 end WeakDual
+
+/-!
+### Weak star topology on duals of normed spaces
+
+In this section, we prove properties about the weak-* topology on duals of normed spaces.
+We prove in particular that the canonical mapping `Dual 𝕜 E → WeakDual 𝕜 E` is continuous,
+i.e., that the weak-* topology is coarser (not necessarily strictly) than the topology given
+by the dual-norm (i.e. the operator-norm).
+-/
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
