@@ -76,6 +76,81 @@ Note: This linter can be disabled with `set_option linter.style.docString false`
 example : Nat := 0
 
 
+#guard_msgs in
+/-- Odd indentation,
+```
+ but in a code block
+-/
+example : Nat := 1
+
+#guard_msgs in
+/-- Currently, odd indentation before any code block
+ is also allowed
+```
+1 + 2 = 2
+```
+-/
+example : Nat := 1
+
+/--
+warning: error: line '* oddly indented' is indented by 1 space, which is an odd number
+
+Note: This linter can be disabled with `set_option linter.style.docString false`
+-/
+#guard_msgs in
+/--
+A list
+* first item
+ * oddly indented
+-/
+example : Nat := 1
+
+#guard_msgs in
+/--
+A list
+* first item
+  - second item
+-/
+example : Nat := 1
+
+-- TODO: should error!
+#guard_msgs in
+/--
+A list
+* first item
+    - over-indented second item
+-/
+example : Nat := 1
+
+/--
+warning: error: line '- an odd item' is indented by 3 spaces, which is an odd number
+
+Note: This linter can be disabled with `set_option linter.style.docString false`
+-/
+#guard_msgs in
+/--
+A list
+* first item
+  - over-indented second item
+    - third
+   - an odd item
+      - another
+    - fine again
+  * less indentation
+- even less
+-/
+example : Nat := 1
+
+#guard_msgs in
+/--
+A list
+* first item
+  - over-indented second item
+    - third
+* abrupt de-indentation
+-/
+example : Nat := 1
+
 /--
 warning: error: doc-strings should start with a single space or newline
 
