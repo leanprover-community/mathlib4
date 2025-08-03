@@ -65,7 +65,7 @@ class IsBezout : Prop where
 instance (priority := 100) IsBezout.of_isPrincipalIdealRing [IsPrincipalIdealRing R] : IsBezout R :=
   ⟨fun I _ => IsPrincipalIdealRing.principal I⟩
 
-instance (priority := 100) DivisionRing.isPrincipalIdealRing (K : Type u) [DivisionSemiring K] :
+instance (priority := 100) DivisionSemiring.isPrincipalIdealRing (K : Type u) [DivisionSemiring K] :
     IsPrincipalIdealRing K where
   principal S := by
     rcases Ideal.eq_bot_or_top S with (rfl | rfl)
