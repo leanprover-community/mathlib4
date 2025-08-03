@@ -754,7 +754,7 @@ lemma equivRange_symm_apply_mk (hf : MeasurableEmbedding f) (x : α) :
   nth_rw 3 [← hf.equivRange.symm_apply_apply x]
   rw [hf.equivRange_apply]
 
-/-- The left-inverse of a MeasurableEmbedding -/
+/-- The left-inverse of a `MeasurableEmbedding` -/
 protected noncomputable
 def invFun [Nonempty α] (hf : MeasurableEmbedding f) [∀ x, Decidable (x ∈ range f)] (x : β) : α :=
   if hx : x ∈ range f then hf.equivRange.symm ⟨x, hx⟩ else (Nonempty.some inferInstance)
