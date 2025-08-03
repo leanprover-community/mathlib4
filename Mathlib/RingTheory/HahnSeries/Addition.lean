@@ -569,7 +569,7 @@ def truncLinearMap [DecidableLE Γ] (c : Γ) : HahnSeries Γ V →ₗ[R] HahnSer
 variable (R) in
 @[simp]
 theorem truncLinearMap_apply [DecidableLE Γ] (c : Γ) (x : HahnSeries Γ V) :
-  truncLinearMap R c x = trunc c x := rfl
+    truncLinearMap R c x = trunc c x := rfl
 
 end Module
 
