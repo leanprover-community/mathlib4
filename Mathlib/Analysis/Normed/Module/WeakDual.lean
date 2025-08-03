@@ -181,7 +181,7 @@ variable (𝕜)
 /-- The polar set `polar 𝕜 s` of `s : Set E` seen as a subset of the dual of `E` with the
 weak-star topology is `WeakDual.polar 𝕜 s`. -/
 def polar (s : Set E) : Set (WeakDual 𝕜 E) :=
-  toNormedDual ⁻¹' (NormedSpace.polar 𝕜) s
+  toNormedDual ⁻¹' (StrongDual.polar 𝕜) s
 
 theorem polar_def (s : Set E) : polar 𝕜 s = { f : WeakDual 𝕜 E | ∀ x ∈ s, ‖f x‖ ≤ 1 } :=
   rfl
@@ -220,7 +220,7 @@ theorem isClosed_image_polar_of_mem_nhds {s : Set E} (s_nhds : s ∈ 𝓝 (0 : E
 neighborhood `s` of the origin is a closed set. -/
 theorem _root_.NormedSpace.Dual.isClosed_image_polar_of_mem_nhds {s : Set E}
     (s_nhds : s ∈ 𝓝 (0 : E)) :
-    IsClosed (((↑) : StrongDual 𝕜 E → E → 𝕜) '' NormedSpace.polar 𝕜 s) :=
+    IsClosed (((↑) : StrongDual 𝕜 E → E → 𝕜) '' StrongDual.polar 𝕜 s) :=
   WeakDual.isClosed_image_polar_of_mem_nhds 𝕜 s_nhds
 
 /-- The **Banach-Alaoglu theorem**: the polar set of a neighborhood `s` of the origin in a

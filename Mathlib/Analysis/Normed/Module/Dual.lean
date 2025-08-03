@@ -123,19 +123,19 @@ end BidualIsometry
 
 section PolarSets
 
-open Metric Set NormedSpace
+open Metric Set StrongDual
 
 variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
 variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 
-theorem isClosed_polar (s : Set E) : IsClosed (polar 𝕜 s) := by
-  dsimp only [NormedSpace.polar]
+theorem isClosed_polar (s : Set E) : IsClosed (StrongDual.polar 𝕜 s) := by
+  dsimp only [StrongDual.polar]
   simp only [LinearMap.polar_eq_iInter, LinearMap.flip_apply]
   refine isClosed_biInter fun z _ => ?_
   exact isClosed_Iic.preimage (ContinuousLinearMap.apply 𝕜 𝕜 z).continuous.norm
 
 @[simp]
-theorem polar_closure (s : Set E) : polar 𝕜 (closure s) = polar 𝕜 s :=
+theorem polar_closure (s : Set E) : StrongDual.polar 𝕜 (closure s) = StrongDual.polar 𝕜 s :=
   ((dualPairing 𝕜 E).flip.polar_antitone subset_closure).antisymm <|
     (dualPairing 𝕜 E).flip.polar_gc.l_le <|
       closure_minimal ((dualPairing 𝕜 E).flip.polar_gc.le_u_l s) <| by
@@ -147,7 +147,7 @@ variable {𝕜}
 /-- If `x'` is a StrongDual element such that the norms `‖x' z‖` are bounded for `z ∈ s`, then a
 small scalar multiple of `x'` is in `polar 𝕜 s`. -/
 theorem smul_mem_polar {s : Set E} {x' : StrongDual 𝕜 E} {c : 𝕜} (hc : ∀ z, z ∈ s → ‖x' z‖ ≤ ‖c‖) :
-    c⁻¹ • x' ∈ polar 𝕜 s := by
+    c⁻¹ • x' ∈ StrongDual.polar 𝕜 s := by
   by_cases c_zero : c = 0
   · simp only [c_zero, inv_zero, zero_smul]
     exact (dualPairing 𝕜 E).flip.zero_mem_polar _
@@ -161,9 +161,9 @@ theorem smul_mem_polar {s : Set E} {x' : StrongDual 𝕜 E} {c : 𝕜} (hc : ∀
   rwa [cancel] at le
 
 theorem polar_ball_subset_closedBall_div {c : 𝕜} (hc : 1 < ‖c‖) {r : ℝ} (hr : 0 < r) :
-    polar 𝕜 (ball (0 : E) r) ⊆ closedBall (0 : StrongDual 𝕜 E) (‖c‖ / r) := by
+    StrongDual.polar 𝕜 (ball (0 : E) r) ⊆ closedBall (0 : StrongDual 𝕜 E) (‖c‖ / r) := by
   intro x' hx'
-  rw [mem_polar_iff] at hx'
+  rw [StrongDual.mem_polar_iff] at hx'
   simp only [mem_closedBall_zero_iff, mem_ball_zero_iff] at *
   have hcr : 0 < ‖c‖ / r := div_pos (zero_lt_one.trans hc) hr
   refine ContinuousLinearMap.opNorm_le_of_shell hr hcr.le hc fun x h₁ h₂ => ?_
@@ -174,7 +174,8 @@ theorem polar_ball_subset_closedBall_div {c : 𝕜} (hc : 1 < ‖c‖) {r : ℝ}
 variable (𝕜)
 
 theorem closedBall_inv_subset_polar_closedBall {r : ℝ} :
-    closedBall (0 : StrongDual 𝕜 E) r⁻¹ ⊆ polar 𝕜 (closedBall (0 : E) r) := fun x' hx' x hx =>
+    closedBall (0 : StrongDual 𝕜 E) r⁻¹ ⊆ StrongDual.polar 𝕜 (closedBall (0 : E) r) :=
+  fun x' hx' x hx =>
   calc
     ‖x' x‖ ≤ ‖x'‖ * ‖x‖ := x'.le_opNorm x
     _ ≤ r⁻¹ * r :=
@@ -186,7 +187,8 @@ theorem closedBall_inv_subset_polar_closedBall {r : ℝ} :
 /-- The `polar` of closed ball in a normed space `E` is the closed ball of the StrongDual with
 inverse radius. -/
 theorem polar_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] {r : ℝ}
-    (hr : 0 < r) : polar 𝕜 (closedBall (0 : E) r) = closedBall (0 : StrongDual 𝕜 E) r⁻¹ := by
+    (hr : 0 < r) :
+    StrongDual.polar 𝕜 (closedBall (0 : E) r) = closedBall (0 : StrongDual 𝕜 E) r⁻¹ := by
   refine Subset.antisymm ?_ (closedBall_inv_subset_polar_closedBall 𝕜)
   intro x' h
   simp only [mem_closedBall_zero_iff]
@@ -194,7 +196,7 @@ theorem polar_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [
   simpa only [one_div] using LinearMap.bound_of_ball_bound' hr 1 x'.toLinearMap h z
 
 theorem polar_ball {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] {r : ℝ}
-    (hr : 0 < r) : polar 𝕜 (ball (0 : E) r) = closedBall (0 : StrongDual 𝕜 E) r⁻¹ := by
+    (hr : 0 < r) : StrongDual.polar 𝕜 (ball (0 : E) r) = closedBall (0 : StrongDual 𝕜 E) r⁻¹ := by
   apply le_antisymm
   · intro x hx
     rw [mem_closedBall_zero_iff]
@@ -213,7 +215,7 @@ theorem polar_ball {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [Normed
 /-- Given a neighborhood `s` of the origin in a normed space `E`, the StrongDual norms
 of all elements of the polar `polar 𝕜 s` are bounded by a constant. -/
 theorem isBounded_polar_of_mem_nhds_zero {s : Set E} (s_nhds : s ∈ 𝓝 (0 : E)) :
-    IsBounded (polar 𝕜 s) := by
+    IsBounded (StrongDual.polar 𝕜 s) := by
   obtain ⟨a, ha⟩ : ∃ a : 𝕜, 1 < ‖a‖ := NormedField.exists_one_lt_norm 𝕜
   obtain ⟨r, r_pos, r_ball⟩ : ∃ r : ℝ, 0 < r ∧ ball 0 r ⊆ s := Metric.mem_nhds_iff.1 s_nhds
   exact isBounded_closedBall.subset
@@ -222,9 +224,9 @@ theorem isBounded_polar_of_mem_nhds_zero {s : Set E} (s_nhds : s ∈ 𝓝 (0 : E
 
 theorem sInter_polar_eq_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     {r : ℝ} (hr : 0 < r) :
-    ⋂₀ (polar 𝕜 '' { F | F.Finite ∧ F ⊆ closedBall (0 : E) r⁻¹ }) = closedBall 0 r := by
+    ⋂₀ (StrongDual.polar 𝕜 '' { F | F.Finite ∧ F ⊆ closedBall (0 : E) r⁻¹ }) = closedBall 0 r := by
   conv_rhs => rw [← inv_inv r]
-  rw [← polar_closedBall (inv_pos_of_pos hr), polar,
+  rw [← polar_closedBall (inv_pos_of_pos hr), StrongDual.polar,
     (dualPairing 𝕜 E).flip.sInter_polar_finite_subset_eq_polar (closedBall (0 : E) r⁻¹)]
 
 end PolarSets
