@@ -94,19 +94,33 @@ theorem colimitLimitToLimitColimit_injective :
     -- We now use that `K` is filtered, picking some point to the right of all these
     -- morphisms `f j` and `g j`.
     let O : Finset K := Finset.univ.image k ∪ {kx, ky}
-    have kxO : kx ∈ O := by grind
-    have kyO : ky ∈ O := by grind
-    have kjO : ∀ j, k j ∈ O := by grind
+    have kxO : kx ∈ O := Finset.mem_union.mpr (Or.inr (by simp))
+    have kyO : ky ∈ O := Finset.mem_union.mpr (Or.inr (by simp))
+    have kjO : ∀ j, k j ∈ O := fun j => Finset.mem_union.mpr (Or.inl (by simp))
     let H : Finset (Σ' (X Y : K) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) :=
       (Finset.univ.image fun j : J =>
-          ⟨kx, k j, kxO, by grind, f j⟩) ∪
-        Finset.univ.image fun j : J => ⟨ky, k j, kyO, by grind, g j⟩
+          ⟨kx, k j, kxO, Finset.mem_union.mpr (Or.inl (by simp)), f j⟩) ∪
+        Finset.univ.image fun j : J => ⟨ky, k j, kyO, Finset.mem_union.mpr (Or.inl (by simp)), g j⟩
     obtain ⟨S, T, W⟩ := IsFiltered.sup_exists O H
     have fH : ∀ j, (⟨kx, k j, kxO, kjO j, f j⟩ : Σ' (X Y : K) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) ∈ H :=
-      fun j => by grind
+      fun j =>
+      Finset.mem_union.mpr
+        (Or.inl
+          (by
+            simp only [true_and, Finset.mem_univ,
+              Finset.mem_image]
+            refine ⟨j, ?_⟩
+            simp only ))
     have gH :
       ∀ j, (⟨ky, k j, kyO, kjO j, g j⟩ : Σ' (X Y : K) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) ∈ H :=
-      fun j => by grind
+      fun j =>
+      Finset.mem_union.mpr
+        (Or.inr
+          (by
+            simp only [true_and, Finset.mem_univ,
+              Finset.mem_image]
+            refine ⟨j, ?_⟩
+            simp only))
     -- Our goal is now an equation between equivalence classes of representatives of a colimit,
     -- and so it suffices to show those representative become equal somewhere, in particular at `S`.
     apply colimit_sound' (T kxO) (T kyO)
@@ -211,7 +225,9 @@ theorem colimitLimitToLimitColimit_surjective :
     have kfO : ∀ {j j'} (f : j ⟶ j'), kf f ∈ O := fun {j} {j'} f =>
       Finset.mem_union.mpr
         (Or.inl
-          (Finset.mem_biUnion.mpr ⟨j, by grind⟩))
+          (Finset.mem_biUnion.mpr ⟨j, Finset.mem_univ j,
+            Finset.mem_biUnion.mpr ⟨j', Finset.mem_univ j',
+              Finset.mem_image.mpr ⟨f, Finset.mem_univ _, rfl⟩⟩⟩))
     have k'O : k' ∈ O := Finset.mem_union.mpr (Or.inr (Finset.mem_singleton.mpr rfl))
     let H : Finset (Σ' (X Y : K) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) :=
       Finset.univ.biUnion fun j : J =>
@@ -228,10 +244,22 @@ theorem colimitLimitToLimitColimit_surjective :
       · exact k'O
       · exact Finset.mem_biUnion.mpr ⟨j₃, Finset.mem_univ _,
           Finset.mem_biUnion.mpr ⟨j₄, Finset.mem_univ _,
-            Finset.mem_biUnion.mpr ⟨f', Finset.mem_univ _, by grind⟩⟩⟩
+            Finset.mem_biUnion.mpr ⟨f', Finset.mem_univ _, by
+              -- This works by `simp`, but has very high variation in heartbeats.
+              rw [Finset.mem_insert, PSigma.mk.injEq, heq_eq_eq, PSigma.mk.injEq, heq_eq_eq,
+                PSigma.mk.injEq, heq_eq_eq, PSigma.mk.injEq, heq_eq_eq, eq_self, true_and, eq_self,
+                true_and, eq_self, true_and, eq_self, true_and, Finset.mem_singleton, eq_self,
+                or_true]
+              trivial⟩⟩⟩
       · exact Finset.mem_biUnion.mpr ⟨j₁, Finset.mem_univ _,
           Finset.mem_biUnion.mpr ⟨j₂, Finset.mem_univ _,
-            Finset.mem_biUnion.mpr ⟨f, Finset.mem_univ _, by grind⟩⟩⟩
+            Finset.mem_biUnion.mpr ⟨f, Finset.mem_univ _, by
+              -- This works by `simp`, but has very high variation in heartbeats.
+              rw [Finset.mem_insert, PSigma.mk.injEq, heq_eq_eq, PSigma.mk.injEq, heq_eq_eq,
+                PSigma.mk.injEq, heq_eq_eq, PSigma.mk.injEq, heq_eq_eq, eq_self, true_and, eq_self,
+                true_and, eq_self, true_and, eq_self, true_and, Finset.mem_singleton, eq_self,
+                true_or]
+              trivial⟩⟩⟩
     clear_value i
     clear s' i' H kfO k'O O
     -- We're finally ready to construct the pre-image, and verify it really maps to `x`.
