@@ -1056,7 +1056,7 @@ theorem iIndepFun.indepFun_finset (S T : Finset ι) (hST : Disjoint S T)
     f (↑i) ω) ⁻¹' Set.pi Set.univ sets_s = ⋂ i ∈ S, f i ⁻¹' sets_s' i := by
     ext1 x
     simp_rw [Set.mem_preimage, Set.mem_univ_pi, Set.mem_iInter]
-    constructor <;> intro h <;> grind [Set.mem_preimage]
+    grind
   have h_eq_inter_T : (fun (ω : Ω) (i : ↥T) => f (↑i) ω) ⁻¹' Set.pi Set.univ sets_t
     = ⋂ i ∈ T, f i ⁻¹' sets_t' i := by
     ext1 x
