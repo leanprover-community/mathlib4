@@ -618,18 +618,22 @@ theorem vecMulVec_add [Mul α] [Add α] [LeftDistribClass α] (w : m → α) (v�
     vecMulVec w (v₁ + v₂) = vecMulVec w v₁ + vecMulVec w v₂  :=
   ext fun _ _ => mul_add _ _ _
 
+@[simp]
 theorem neg_vecMulVec [Mul α] [HasDistribNeg α] (w : m → α) (v : n → α) :
     vecMulVec (-w) v = -vecMulVec w v :=
   ext fun _ _ => neg_mul _ _
 
+@[simp]
 theorem vecMulVec_neg [Mul α] [HasDistribNeg α] (w : m → α) (v : n → α) :
     vecMulVec w (-v) = -vecMulVec w v :=
   ext fun _ _ => mul_neg _ _
 
+@[simp]
 theorem smul_vecMulVec [Mul α] [SMul R α] [IsScalarTower R α α] (r : R) (w : m → α) (v : n → α) :
     vecMulVec (r • w) v = r • vecMulVec w v :=
   ext fun _ _ => smul_mul_assoc _ _ _
 
+@[simp]
 theorem vecMulVec_smul [Mul α] [SMul R α] [SMulCommClass R α α] (r : R) (w : m → α) (v : n → α) :
     vecMulVec w (r • v) = r • vecMulVec w v :=
   ext fun _ _ => mul_smul_comm _ _ _
@@ -638,6 +642,7 @@ theorem vecMulVec_smul' [Semigroup α] (w : m → α) (r : α) (v : n → α) :
     vecMulVec w (r • v) = vecMulVec (MulOpposite.op r • w) v :=
   ext fun _ _ => mul_assoc _ _ _ |>.symm
 
+@[simp]
 theorem transpose_vecMulVec [CommMagma α] (w : m → α) (v : n → α) :
     (vecMulVec w v)ᵀ = vecMulVec v w :=
   ext fun _ _ => mul_comm _ _
