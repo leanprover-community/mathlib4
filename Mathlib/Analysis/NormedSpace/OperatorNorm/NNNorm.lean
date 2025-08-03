@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 -/
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
+import Mathlib.Analysis.NormedSpace.Real
 
 /-!
 # Operator norm as an `NNNorm`
@@ -51,6 +52,10 @@ theorem nnnorm_def (f : E →SL[σ₁₂] F) : ‖f‖₊ = sInf { c | ∀ x, �
   rw [NNReal.coe_sInf, coe_nnnorm, norm_def, NNReal.coe_image]
   simp_rw [← NNReal.coe_le_coe, NNReal.coe_mul, coe_nnnorm, mem_setOf_eq, NNReal.coe_mk,
     exists_prop]
+
+@[simp, nontriviality]
+theorem opNNNorm_subsingleton [Subsingleton E] (f : E →SL[σ₁₂] F) : ‖f‖₊ = 0 :=
+  NNReal.eq <| f.opNorm_subsingleton
 
 /-- If one controls the norm of every `A x`, then one controls the norm of `A`. -/
 theorem opNNNorm_le_bound (f : E →SL[σ₁₂] F) (M : ℝ≥0) (hM : ∀ x, ‖f x‖₊ ≤ M * ‖x‖₊) : ‖f‖₊ ≤ M :=
@@ -192,6 +197,39 @@ theorem sSup_unitClosedBall_eq_norm {𝕜 𝕜₂ E F : Type*} [NormedAddCommGro
 
 @[deprecated (since := "2024-12-01")]
 alias sSup_closed_unit_ball_eq_norm := sSup_unitClosedBall_eq_norm
+
+theorem exists_nnnorm_eq_one_lt_apply_of_lt_opNNNorm
+    {𝕜₂ E F : Type*} [NormedAddCommGroup E]
+    [SeminormedAddCommGroup F] [NontriviallyNormedField 𝕜₂] {σ₁₂ : ℝ →+* 𝕜₂}
+    [NormedSpace ℝ E] [NormedSpace 𝕜₂ F] [RingHomIsometric σ₁₂] (f : E →SL[σ₁₂] F) {r : ℝ≥0}
+    (hr : r < ‖f‖₊) : ∃ x : E, ‖x‖₊ = 1 ∧ r < ‖f x‖₊ := by
+  obtain ⟨x, hlt, hr⟩ := exists_lt_apply_of_lt_opNNNorm f hr
+  have hx0 : ‖x‖₊ ≠ 0 := by
+    rw [nnnorm_ne_zero_iff]
+    rintro rfl
+    simp at hr
+  use ‖x‖⁻¹ • x
+  suffices r < ‖x‖₊⁻¹ * ‖f x‖₊ by
+    simpa [nnnorm_smul, inv_mul_cancel₀ hx0] using this
+  refine hr.trans (lt_mul_of_one_lt_left ?_ ?_)
+  · exact zero_le _ |>.trans_lt hr
+  · exact one_lt_inv_iff₀.mpr ⟨by simpa using hx0, hlt⟩
+
+/-- When the domain is a real normed space, `sSup_unitClosedBall_eq_norm` can be tightened to take
+the supremum over only the `Metric.sphere`. -/
+theorem sSup_sphere_eq_nnnorm {𝕜₂ E F : Type*} [NormedAddCommGroup E]
+    [SeminormedAddCommGroup F] [NontriviallyNormedField 𝕜₂] {σ₁₂ : ℝ →+* 𝕜₂}
+    [NormedSpace ℝ E] [NormedSpace 𝕜₂ F] [RingHomIsometric σ₁₂] (f : E →SL[σ₁₂] F)
+    [NormSMulClass 𝕜₂ F] :
+    sSup ((fun x => ‖f x‖₊) '' Metric.sphere 0 1) = ‖f‖₊ := by
+  cases subsingleton_or_nontrivial E
+  · simp [sphere_eq_empty_of_subsingleton one_ne_zero]
+  refine csSup_eq_of_forall_le_of_forall_lt_exists_gt
+      ((NormedSpace.sphere_nonempty.mpr zero_le_one).image _) ?_ fun ub hub => ?_
+  · rintro - ⟨x, hx, rfl⟩
+    simpa only [mul_one] using f.le_opNorm_of_le (mem_sphere_zero_iff_norm.1 hx).le
+  · obtain ⟨x, hx, hxf⟩ := f.exists_nnnorm_eq_one_lt_apply_of_lt_opNNNorm hub
+    exact ⟨_, ⟨x, by simpa using congrArg NNReal.toReal hx, rfl⟩, hxf⟩
 
 end Sup
 

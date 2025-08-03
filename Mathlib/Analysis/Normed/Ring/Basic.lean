@@ -644,6 +644,11 @@ class RingHomIsometric [Semiring R₁] [Semiring R₂] [Norm R₁] [Norm R₂] (
   /-- The ring homomorphism is an isometry. -/
   is_iso : ∀ {x : R₁}, ‖σ x‖ = ‖x‖
 
+@[simp]
+theorem RingHomIsometric.nnnorm_map [SeminormedRing R₁] [SeminormedRing R₂] (σ : R₁ →+* R₂)
+    [RingHomIsometric σ] (x : R₁) : ‖σ x‖₊ = ‖x‖₊ :=
+  NNReal.eq RingHomIsometric.is_iso
+
 attribute [simp] RingHomIsometric.is_iso
 
 variable [SeminormedRing R₁]
