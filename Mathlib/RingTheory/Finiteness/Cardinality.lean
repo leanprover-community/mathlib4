@@ -52,7 +52,6 @@ lemma _root_.Module.finite_of_finite [Finite R] [Module.Finite R M] : Finite M :
 
 variable {R}
 
-/-- A finite dimensional vector space over a finite field is finite -/
 /-- A module over a finite ring has finite dimension iff it is finite. -/
 lemma _root_.Module.finite_iff_finite [Finite R] : Module.Finite R M ↔ Finite M :=
   ⟨fun _ ↦ finite_of_finite R, fun _ ↦ .of_finite⟩
