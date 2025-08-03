@@ -48,6 +48,8 @@ lemma isRegular_iff_eq_zero_of_mul :
     IsRegular r ↔ (∀ x, r * x = 0 → x = 0) ∧ (∀ x, x * r = 0 → x = 0) := by
   rw [isRegular_iff, isLeftRegular_iff_eq_zero_of_mul_left, isRightRegular_iff_eq_zero_of_mul_right]
 
+/-- A (not necessarily unital or associative) ring has no zero divisors
+iff multiplication is both left and right cancellative. -/
 lemma noZeroDivisors_tfae : List.TFAE
     [NoZeroDivisors R, IsLeftCancelMulZero R, IsRightCancelMulZero R, IsCancelMulZero R] := by
   simp_rw [isLeftCancelMulZero_iff, isRightCancelMulZero_iff, isCancelMulZero_iff_forall_isRegular,
