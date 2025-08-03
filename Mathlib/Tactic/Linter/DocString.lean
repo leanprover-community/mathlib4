@@ -63,6 +63,23 @@ def deindentString (currIndent : Nat) (docString : String) : String :=
 
 namespace Style
 
+/-- Check if a doc-string conforms to some basic style guidelines.
+TODO: flesh out which ones and why! -/
+def check (str : String) : Array MessageData := Id.run do
+  let lines := str.splitOn "\n"
+  -- If the doc-string contains a code block, we skip any analysis (for now).
+  if lines.any (·.startsWith "```") then return #[]
+  let mut msgs := #[]
+  -- Each line should be indented by an even number of spaces (and no tabs).
+  for line in lines do
+    let indent := line.takeWhile Char.isWhitespace
+    if indent.contains '\t' then
+      msgs := msgs.push m!"error: line '{line}' starts with a tab; use spaces instead"
+    else if indent.length.mod 2 == 1 then
+      msgs := msgs.push m!"error: line '{line.trimLeft}' is indented by {indent.length} \
+        space{if indent.length == 1 then "" else "s"}, which is an odd number"
+  return msgs
+
 @[inherit_doc Mathlib.Linter.linter.style.docString]
 def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
   unless getLinterValue linter.style.docString (← getLinterOptions) ||
@@ -84,8 +101,12 @@ def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- any leading whitespace before the actual string starts.
     let docString ← try getDocStringText ⟨docStx⟩ catch _ => continue
     if docString.trim.isEmpty then
-      Linter.logLintIf linter.style.docString.empty docStx m!"warning: this doc-string is empty"
+      Linter.logLintIf linter.style.docString.empty docStx m!"error: this doc-string is empty"
       continue
+
+    for msg in check docString do
+      Linter.logLintIf linter.style.docString docStx msg
+
     -- `startSubstring` is the whitespace between `/--` and the actual doc-string text.
     let startSubstring := match docStx with
       | .node _ _ #[(.atom si ..), _] => si.getTrailing?.getD default

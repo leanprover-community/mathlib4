@@ -13,7 +13,7 @@ example : True := by
   trivial
 
 /--
-warning: warning: this doc-string is empty
+warning: error: this doc-string is empty
 
 Note: This linter can be disabled with `set_option linter.style.docString.empty false`
 -/
@@ -22,7 +22,7 @@ Note: This linter can be disabled with `set_option linter.style.docString.empty 
 example : Nat := 0
 
 /--
-warning: warning: this doc-string is empty
+warning: error: this doc-string is empty
 
 Note: This linter can be disabled with `set_option linter.style.docString.empty false`
 -/
@@ -43,6 +43,38 @@ set_option linter.style.docString false
 example : Nat := 1
 
 set_option linter.style.docString true
+
+#guard_msgs in
+/-- A doc-string
+with fine indentation -/
+example : Nat := 0
+
+/--
+warning: error: line 'with odd indentation ' is indented by 1 space, which is an odd number
+
+Note: This linter can be disabled with `set_option linter.style.docString false`
+-/
+#guard_msgs in
+/-- A doc-string
+ with odd indentation -/
+example : Nat := 0
+
+/--
+warning: error: line 'with odd indentation' is indented by 3 spaces, which is an odd number
+
+Note: This linter can be disabled with `set_option linter.style.docString false`
+---
+warning: error: line 'and even odder. ' is indented by 5 spaces, which is an odd number
+
+Note: This linter can be disabled with `set_option linter.style.docString false`
+-/
+#guard_msgs in
+/-- A doc-string
+   with odd indentation
+
+     and even odder. -/
+example : Nat := 0
+
 
 /--
 warning: error: doc-strings should start with a single space or newline
