@@ -145,10 +145,9 @@ lemma support_eq_sInter : μ.support = ⋂₀ {t : Set X | IsClosed t ∧ μ t�
   rw [← not_iff_not]
   push_neg
   constructor
-  · intro h; obtain ⟨t, ht, htc, htc1⟩ := h; use tᶜ
-    rw [← compl_compl t] at htc1 ht
+  · rintro ⟨t, ht, htc, htc1⟩; use tᶜ; rw [← compl_compl t] at htc1 ht
     exact ⟨htc.isClosed_compl, nonpos_iff_eq_zero.mp htc1, (Set.mem_compl_iff tᶜ x).mp ht⟩
-  · intro h; obtain ⟨t, ht, htc, htc1⟩ := h; use tᶜ
+  · rintro ⟨t, ht, htc, htc1⟩; use tᶜ
     exact ⟨Set.mem_compl htc1, ht.isOpen_compl, le_of_eq htc⟩
 
 open Set
