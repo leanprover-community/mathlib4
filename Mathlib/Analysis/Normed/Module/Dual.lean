@@ -41,6 +41,25 @@ theory for `SeminormedAddCommGroup` and we specialize to `NormedAddCommGroup` wh
 StrongDual, polar
 -/
 
+section
+
+/-
+TODO change namespace
+-/
+namespace NormedSpace
+
+variable (𝕜 : Type*) [SeminormedCommRing 𝕜]
+variable (E : Type*) [TopologicalSpace E] [AddCommGroup E] [Module 𝕜 E]
+
+theorem dualPairing_separatingLeft : (dualPairing 𝕜 E).SeparatingLeft := by
+  rw [LinearMap.separatingLeft_iff_ker_eq_bot]
+  unfold dualPairing
+  rw [LinearMap.ker_eq_bot]
+  exact ContinuousLinearMap.coe_injective
+
+end NormedSpace
+
+end
 
 noncomputable section
 
@@ -75,10 +94,6 @@ theorem inclusionInDoubleDual_norm_le : ‖inclusionInDoubleDual 𝕜 E‖ ≤ 1
 
 theorem double_dual_bound (x : E) : ‖(inclusionInDoubleDual 𝕜 E) x‖ ≤ ‖x‖ := by
   simpa using ContinuousLinearMap.le_of_opNorm_le _ (inclusionInDoubleDual_norm_le 𝕜 E) x
-
-theorem dualPairing_separatingLeft : (dualPairing 𝕜 E).SeparatingLeft := by
-  rw [LinearMap.separatingLeft_iff_ker_eq_bot, LinearMap.ker_eq_bot]
-  exact ContinuousLinearMap.coe_injective
 
 end General
 
