@@ -360,7 +360,7 @@ theorem mod_eq_self_iff (hq0 : q ≠ 0) : p % q = p ↔ degree p < degree q :=
     dsimp
     simp only [this, false_and, if_false]⟩
 
-theorem div_eq_zero_iff (hq0 : q ≠ 0) : p / q = 0 ↔ degree p < degree q :=
+protected theorem div_eq_zero_iff (hq0 : q ≠ 0) : p / q = 0 ↔ degree p < degree q :=
   ⟨fun h => by
     have := EuclideanDomain.div_add_mod p q
     rwa [h, mul_zero, zero_add, mod_eq_self_iff hq0] at this,
@@ -375,7 +375,7 @@ theorem degree_add_div (hq0 : q ≠ 0) (hpq : degree q ≤ degree p) :
   have : degree (p % q) < degree (q * (p / q)) :=
     calc
       degree (p % q) < degree q := EuclideanDomain.mod_lt _ hq0
-      _ ≤ _ := degree_le_mul_left _ (mt (div_eq_zero_iff hq0).1 (not_lt_of_ge hpq))
+      _ ≤ _ := degree_le_mul_left _ (mt (Polynomial.div_eq_zero_iff hq0).1 (not_lt_of_ge hpq))
   conv_rhs =>
     rw [← EuclideanDomain.div_add_mod p q, degree_add_eq_left_of_degree_lt this, degree_mul]
 
