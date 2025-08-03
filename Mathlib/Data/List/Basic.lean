@@ -998,6 +998,12 @@ theorem length_eq_length_filter_add {l : List (α)} (f : α → Bool) :
   simp_rw [← List.countP_eq_length_filter, l.length_eq_countP_add_countP f, Bool.not_eq_true,
     Bool.decide_eq_false]
 
+theorem filter_length_ne_zero_iff {f : α → β → Prop} [DecidableRel f] {l : List α} {b : β} :
+    ((fun l ↦ filter (fun a ↦ f a b) l) l).length ≠ 0 ↔ (∃ a ∈ l, f a b) := by simp
+
+theorem filter_length_eq_length_iff {f : α → β → Prop} [DecidableRel f] {l : List α} {b : β} :
+    ((filter (f · b) l)).length = l.length ↔ (∀ a ∈ l, f a b) := by simp
+
 /-! ### filterMap -/
 
 theorem filterMap_eq_flatMap_toList (f : α → Option β) (l : List α) :
@@ -1020,6 +1026,12 @@ theorem filterMap_eq_map_iff_forall_eq_some {f : α → Option β} {g : α → �
     · rintro rfl h
       exact ⟨rfl, ih h⟩
   mpr h := Eq.trans (filterMap_congr <| by simpa) (congr_fun filterMap_eq_map _)
+
+theorem filter_eq_filtermap_ite {b : β} {f : α → β → Prop} {l : List α} [DecidableRel f] :
+    l.filter (fun a ↦ f a b) = filterMap (fun a ↦ if f a b then some a else none) l := by
+  rw [← filterMap_eq_filter]
+  apply filterMap_congr
+  simp only [Option.guard, decide_eq_true_eq, implies_true]
 
 /-! ### filter -/
 
