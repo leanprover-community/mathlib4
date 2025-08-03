@@ -624,7 +624,7 @@ over a scheme `Spec R` and the `Spec` of the tensor product `S ⊗[R] T`. -/
 noncomputable
 def pullbackSpecIso :
     pullback (Spec.map (CommRingCat.ofHom (algebraMap R S)))
-      (Spec.map (CommRingCat.ofHom (algebraMap R T))) ≅ Spec (.of <| S ⊗[R] T) :=
+      (Spec.map (CommRingCat.ofHom (algebraMap R T))) ≅ Spec(S ⊗[R] T) :=
   letI H := IsLimit.equivIsoLimit (PullbackCone.eta _)
     (PushoutCocone.isColimitEquivIsLimitOp _ (CommRingCat.pushoutCoconeIsColimit R S T))
   limit.isoLimitCone ⟨_, isLimitPullbackConeMapOfIsLimit Scheme.Spec _ H⟩

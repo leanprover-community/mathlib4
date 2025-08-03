@@ -102,7 +102,6 @@ theorem mem_toSubmodule {x : M} : x ∈ (N : Submodule R M) ↔ x ∈ N :=
 theorem mem_coe {x : M} : x ∈ (N : Set M) ↔ x ∈ N :=
   Iff.rfl
 
-@[simp]
 protected theorem zero_mem : (0 : M) ∈ N :=
   zero_mem N
 
@@ -678,6 +677,7 @@ theorem lieSpan_le {N} : lieSpan R L s ≤ N ↔ s ⊆ N := by
   · exact Subset.trans subset_lieSpan
   · intro hs m hm; rw [mem_lieSpan] at hm; exact hm _ hs
 
+@[gcongr]
 theorem lieSpan_mono {t : Set M} (h : s ⊆ t) : lieSpan R L s ≤ lieSpan R L t := by
   rw [lieSpan_le]
   exact Subset.trans h subset_lieSpan
@@ -861,7 +861,7 @@ theorem comap_incl_eq_bot : N₂.comap N.incl = ⊥ ↔ N ⊓ N₂ = ⊥ := by
 
 @[gcongr, mono]
 theorem map_mono (h : N ≤ N₂) : N.map f ≤ N₂.map f :=
-  Set.image_subset _ h
+  Set.image_mono h
 
 theorem map_comp
     {M'' : Type*} [AddCommGroup M''] [Module R M''] [LieRingModule L M''] {g : M' →ₗ⁅R,L⁆ M''} :
@@ -887,10 +887,10 @@ lemma map_injective_of_injective (hf : Function.Injective f) :
 /-- An injective morphism of Lie modules embeds the lattice of submodules of the domain into that
 of the target. -/
 @[simps] def mapOrderEmbedding {f : M →ₗ⁅R,L⁆ M'} (hf : Function.Injective f) :
-  LieSubmodule R L M ↪o LieSubmodule R L M' where
-    toFun := LieSubmodule.map f
-    inj' := map_injective_of_injective hf
-    map_rel_iff' := Set.image_subset_image_iff hf
+    LieSubmodule R L M ↪o LieSubmodule R L M' where
+  toFun := LieSubmodule.map f
+  inj' := map_injective_of_injective hf
+  map_rel_iff' := Set.image_subset_image_iff hf
 
 variable (N) in
 /-- For an injective morphism of Lie modules, any Lie submodule is equivalent to its image. -/

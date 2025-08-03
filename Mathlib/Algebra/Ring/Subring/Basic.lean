@@ -557,8 +557,8 @@ theorem mem_closure_iff {s : Set R} {x} :
       clear _hx _hy
       induction hx, hy using AddSubgroup.closure_induction₂ with
       | mem _ _ hx hy => exact AddSubgroup.subset_closure (mul_mem hx hy)
-      | one_left => simpa using zero_mem _
-      | one_right => simpa using zero_mem _
+      | one_left => simp
+      | one_right => simp
       | mul_left _ _ _ _ _ _ h₁ h₂ => simpa [add_mul] using add_mem h₁ h₂
       | mul_right _ _ _ _ _ _ h₁ h₂ => simpa [mul_add] using add_mem h₁ h₂
       | inv_left _ _ _ _ h => simpa [neg_mul] using neg_mem h
@@ -852,6 +852,11 @@ end RingHom
 namespace Subring
 
 open RingHom
+
+theorem mem_closure_image_of (f : R →+* S) {s : Set R} {x : R} (hx : x ∈ Subring.closure s) :
+    f x ∈ Subring.closure (f '' s) := by
+  rw [← f.map_closure, Subring.mem_map]
+  exact ⟨x, hx, rfl⟩
 
 /-- The ring homomorphism associated to an inclusion of subrings. -/
 def inclusion {S T : Subring R} (h : S ≤ T) : S →+* T :=
