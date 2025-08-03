@@ -228,7 +228,7 @@ variable {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
 variable {μ : Measure X}
 
 lemma support_restrict_subset_closure [OpensMeasurableSpace X] {s : Set X} :
-  (μ.restrict s).support ⊆ closure s := by
+    (μ.restrict s).support ⊆ closure s := by
   intro x hx
   simp only [mem_closure_iff_nhds]
   rw [(nhds_basis_opens x).forall_iff (fun _ _ h ↦ Set.Nonempty.mono (by gcongr))]
