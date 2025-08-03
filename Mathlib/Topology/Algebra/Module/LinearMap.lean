@@ -1218,3 +1218,26 @@ theorem IsIdempotentElem.isClosed_range [T1Space M] {p : M →L[R] M}
   hp.range_eq_ker ▸ isClosed_ker (1 - p)
 
 end ContinuousLinearMap
+
+/-
+TODO Change the namespace
+-/
+namespace NormedSpace
+
+section
+
+variable (R : Type*) [CommSemiring R] [TopologicalSpace R]
+  (M : Type*) [TopologicalSpace M] [AddCommMonoid M] [Module R M] [ContinuousAdd R]
+  [ContinuousConstSMul R R]
+
+/-- The StrongDual pairing as a bilinear form. -/
+def dualPairing : StrongDual R M →ₗ[R] M →ₗ[R] R :=
+  ContinuousLinearMap.coeLM R
+
+@[simp]
+theorem dualPairing_apply {v : StrongDual R M} {x : M} : dualPairing R M v x = v x :=
+  rfl
+
+end
+
+end NormedSpace

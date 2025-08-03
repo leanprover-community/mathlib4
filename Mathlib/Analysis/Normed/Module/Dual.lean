@@ -76,14 +76,6 @@ theorem inclusionInDoubleDual_norm_le : ‖inclusionInDoubleDual 𝕜 E‖ ≤ 1
 theorem double_dual_bound (x : E) : ‖(inclusionInDoubleDual 𝕜 E) x‖ ≤ ‖x‖ := by
   simpa using ContinuousLinearMap.le_of_opNorm_le _ (inclusionInDoubleDual_norm_le 𝕜 E) x
 
-/-- The StrongDual pairing as a bilinear form. -/
-def dualPairing : StrongDual 𝕜 E →ₗ[𝕜] E →ₗ[𝕜] 𝕜 :=
-  ContinuousLinearMap.coeLM 𝕜
-
-@[simp]
-theorem dualPairing_apply {v : StrongDual 𝕜 E} {x : E} : dualPairing 𝕜 E v x = v x :=
-  rfl
-
 theorem dualPairing_separatingLeft : (dualPairing 𝕜 E).SeparatingLeft := by
   rw [LinearMap.separatingLeft_iff_ker_eq_bot, LinearMap.ker_eq_bot]
   exact ContinuousLinearMap.coe_injective
