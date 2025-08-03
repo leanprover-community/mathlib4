@@ -24,12 +24,6 @@ import Mathlib.Analysis.LocallyConvex.Polar
 StrongDual, polar
 -/
 
-/-- The *strong dual* of a topological vector space space `M`. This is the space of
-continuous linear functionals and is equipped with the topology of uniform convergence
-on bounded subsets. -/
-abbrev StrongDual (R : Type*) [Semiring R] [TopologicalSpace R]
-  (M : Type*) [TopologicalSpace M] [AddCommMonoid M] [Module R M] : Type _ := M →L[R] R
-
 /-
 TODO Change the namespace
 -/
