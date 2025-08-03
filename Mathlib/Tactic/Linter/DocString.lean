@@ -87,20 +87,24 @@ def check (str : String) : Array MessageData := Id.run do
   -- is this what we want, or rather too strong?
   for line in lines do
     let indent := line.takeWhile Char.isWhitespace
-    if line.trimLeft.startsWith "- " || line.startsWith "* " then
-      if let some n := prev_ident then
+    if let some n := prev_ident then
+      if line.trimLeft.startsWith "- " || line.startsWith "* " then
         -- De-denting is possibly by any number of levels.
         if indent.length > n + 2 then
           msgs := msgs.push m!"unexpected indentation: \
             line '{line.trim}' is indented by {indent.length} spaces,\n\
             but should have been indented by at most {n + 2}.\n\
             The the previous line was indented by {n} spaces."
-        else if in_item && indent.length == n then
+        prev_ident := some indent.length
+      else if in_item then
+        if indent.length != n + 2 then
           msgs := msgs.push m!"bad indentation: line '{line}' follows an enumeration item, \
             expected additional indentation.\n\
             To start a new paragraph, insert a blank line instead."
       in_item := true
-    prev_ident := some indent.length
+    else
+      prev_ident := some indent.length
+      in_item := false
   -- TODO: check that subsequent lines are indented stronger!
   return msgs
 

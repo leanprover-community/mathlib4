@@ -189,13 +189,17 @@ Now, a new paragraph begins.
 example : Nat := 1
 
 /--
-warning: bad indentation: line '* `{x : α | p x}` is elaborated as `Set.setOf fun x : α ↦ p x`' follows an enumeration item, expected additional indentation.
+warning: bad indentation: line '' follows an enumeration item, expected additional indentation.
 To start a new paragraph, insert a blank line instead.
 
 Note: This linter can be disabled with `set_option linter.style.docString false`
 ---
-warning: bad indentation: line '* `{binder x | p x}`, where `x` is bound by the `binder` binder, is elaborated as' follows an enumeration item, expected additional indentation.
+warning: bad indentation: line '' follows an enumeration item, expected additional indentation.
 To start a new paragraph, insert a blank line instead.
+
+Note: This linter can be disabled with `set_option linter.style.docString false`
+---
+warning: error: doc-strings should end with a single space or newline
 
 Note: This linter can be disabled with `set_option linter.style.docString false`
 -/
@@ -210,6 +214,7 @@ Note: This linter can be disabled with `set_option linter.style.docString false`
   * `· ∈ s`, `· ∉ s`
   * `· ⊆ s`, `· ⊂ s`, `· ⊇ s`, `· ⊃ s`
   * `· ≤ a`, `· ≥ a`, `· < a`, `· > a`, `· ≠ a`
+
 -/
 example : Nat := 1
 
