@@ -751,8 +751,8 @@ lemma equivRange_apply (hf : MeasurableEmbedding f) (x : α) :
 
 lemma equivRange_symm_apply_mk (hf : MeasurableEmbedding f) (x : α) :
     hf.equivRange.symm ⟨f x, mem_range_self x⟩ = x := by
-  have : x = hf.equivRange.symm (hf.equivRange x) := EquivLike.inv_apply_eq.mp rfl
-  conv_rhs => rw [this, hf.equivRange_apply]
+  nth_rw 3 [← hf.equivRange.symm_apply_apply x]
+  rw [hf.equivRange_apply]
 
 /-- The left-inverse of a MeasurableEmbedding -/
 protected noncomputable
