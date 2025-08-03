@@ -389,16 +389,13 @@ instance : CharP (X q) q where
 instance : Coe (ZMod ↑q) (X q) where
   coe := ZMod.castHom dvd_rfl (X q)
 
-lemma coe_eq_coe (n : ℕ) : (n : X q) = (n : ZMod q) := by
-  rw [map_natCast]
-
 /-- If `3` is not a square mod `q` then `(1 + α) ^ q = 1 - α` -/
 lemma one_add_α_pow_q [Fact (Prime q)] (odd : Odd (q : ℕ)) (leg3 : legendreSym q 3 = -1) :
     (1 + (α : X q)) ^ (q : ℕ) = 1 - (α : X q) := by
   rcases odd with ⟨k, hk⟩
   have : q / 2 = k := by rw [hk, mul_add_div (by norm_num)]; simp
   rw [add_pow_expChar, one_pow, hk, α_pow, ← this]
-  have : (3 : X q) = (3 : ZMod q) := by exact coe_eq_coe 3
+  have : (3 : X q) = (3 : ZMod q) := by rw [map_ofNat]
   rw [this, ← RingHom.map_pow]
   have leg := legendreSym.eq_pow q 3
   rw_mod_cast [← leg, leg3]
@@ -435,7 +432,7 @@ lemma pow_ω [Fact (Prime q)] (odd : Odd (q : ℕ))
     ring
   have := two_mul_ω_pow odd leg3
   rw [mul_pow] at this
-  have coe : (2 : X q) = (2 : ZMod q) := by exact coe_eq_coe 2
+  have coe : (2 : X q) = (2 : ZMod q) := by rw [map_ofNat]
   rw [coe, ← RingHom.map_pow, pow2, ← coe,
     (by ring : (-2 : X q) = 2 * -1)] at this
   have unit : IsUnit (2 : X q) := by
