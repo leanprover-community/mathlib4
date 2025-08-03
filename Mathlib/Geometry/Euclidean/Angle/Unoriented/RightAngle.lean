@@ -120,7 +120,7 @@ theorem angle_add_lt_pi_div_two_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) 
 theorem cos_angle_add_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) :
     Real.cos (angle x (x + y)) = ‖x‖ / ‖x + y‖ := by
   rw [angle_add_eq_arccos_of_inner_eq_zero h,
-    Real.cos_arccos (le_trans (by norm_num) (div_nonneg (norm_nonneg _) (norm_nonneg _)))
+    Real.cos_arccos (le_trans (by simp) (div_nonneg (norm_nonneg _) (norm_nonneg _)))
       (div_le_one_of_le₀ _ (norm_nonneg _))]
   rw [mul_self_le_mul_self_iff (norm_nonneg _) (norm_nonneg _),
     norm_add_sq_eq_norm_sq_add_norm_sq_real h]
@@ -130,7 +130,7 @@ theorem cos_angle_add_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) :
 theorem sin_angle_add_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) (h0 : x ≠ 0 ∨ y ≠ 0) :
     Real.sin (angle x (x + y)) = ‖y‖ / ‖x + y‖ := by
   rw [angle_add_eq_arcsin_of_inner_eq_zero h h0,
-    Real.sin_arcsin (le_trans (by norm_num) (div_nonneg (norm_nonneg _) (norm_nonneg _)))
+    Real.sin_arcsin (le_trans (by simp) (div_nonneg (norm_nonneg _) (norm_nonneg _)))
       (div_le_one_of_le₀ _ (norm_nonneg _))]
   rw [mul_self_le_mul_self_iff (norm_nonneg _) (norm_nonneg _),
     norm_add_sq_eq_norm_sq_add_norm_sq_real h]

@@ -615,7 +615,7 @@ end
 instance : SecondCountableTopology GHSpace := by
   refine secondCountable_of_countable_discretization fun δ δpos => ?_
   let ε := 2 / 5 * δ
-  have εpos : 0 < ε := mul_pos (by norm_num) δpos
+  have εpos : 0 < ε := mul_pos (by simp) δpos
   have : ∀ p : GHSpace, ∃ s : Set p.Rep, s.Finite ∧ univ ⊆ ⋃ x ∈ s, ball x ε := fun p => by
     simpa only [subset_univ, true_and] using
       finite_cover_balls_of_compact (X := p.Rep) isCompact_univ εpos
@@ -749,7 +749,7 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
     it possible to reconstruct `p` up to `ε`. This is enough to prove total boundedness. -/
   refine Metric.totallyBounded_of_finite_discretization fun δ δpos => ?_
   let ε := 1 / 5 * δ
-  have εpos : 0 < ε := mul_pos (by norm_num) δpos
+  have εpos : 0 < ε := mul_pos (by simp) δpos
   -- choose `n` for which `u n < ε`
   rcases Metric.tendsto_atTop.1 ulim ε εpos with ⟨n, hn⟩
   have u_le_ε : u n ≤ ε := by

@@ -225,7 +225,7 @@ theorem norm_eq_iInf_iff_real_inner_le_zero {K : Set F} (h : Convex ℝ K) {u : 
     by_cases hq : q = 0
     · rw [hq] at this
       have : p ≤ 0 := by
-        have := this (1 : ℝ) (by norm_num) (by norm_num)
+        have := this (1 : ℝ) (by simp) (by simp)
         linarith
       exact this
     · have q_pos : 0 < q := lt_of_le_of_ne (sq_nonneg _) fun h ↦ hq h.symm
@@ -239,7 +239,7 @@ theorem norm_eq_iInf_iff_real_inner_le_zero {K : Set F} (h : Convex ℝ K) {u : 
       have : 2 * p ≤ p :=
         calc
           2 * p ≤ θ * q := by
-            exact this θ (lt_min (by norm_num) (div_pos hp q_pos)) (by norm_num [θ])
+            exact this θ (lt_min (by simp) (div_pos hp q_pos)) (by simp [θ])
           _ ≤ p := eq₁
       linarith
   · intro h
@@ -687,7 +687,7 @@ variable (K)
 
 /-- The orthogonal projection has norm `≤ 1`. -/
 theorem orthogonalProjection_norm_le : ‖K.orthogonalProjection‖ ≤ 1 :=
-  LinearMap.mkContinuous_norm_le _ (by norm_num) _
+  LinearMap.mkContinuous_norm_le _ (by simp) _
 
 theorem starProjection_norm_le : ‖K.starProjection‖ ≤ 1 :=
   K.orthogonalProjection_norm_le
@@ -1209,7 +1209,7 @@ theorem reflection_orthogonalComplement_singleton_eq_neg (v : E) : reflection (�
 theorem reflection_sub {v w : F} (h : ‖v‖ = ‖w‖) : reflection (ℝ ∙ (v - w))ᗮ v = w := by
   set R : F ≃ₗᵢ[ℝ] F := reflection (ℝ ∙ v - w)ᗮ
   suffices R v + R v = w + w by
-    apply smul_right_injective F (by norm_num : (2 : ℝ) ≠ 0)
+    apply smul_right_injective F (by simp : (2 : ℝ) ≠ 0)
     simpa [two_smul] using this
   have h₁ : R (v - w) = -(v - w) := reflection_orthogonalComplement_singleton_eq_neg (v - w)
   have h₂ : R (v + w) = v + w := by

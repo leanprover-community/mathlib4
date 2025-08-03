@@ -75,7 +75,7 @@ theorem log_div_self_rpow_antitoneOn {a : ℝ} (ha : 0 < a) :
 
 theorem log_div_sqrt_antitoneOn : AntitoneOn (fun x : ℝ => log x / √x) { x | exp 2 ≤ x } := by
   simp_rw [sqrt_eq_rpow]
-  convert @log_div_self_rpow_antitoneOn (1 / 2) (by norm_num)
+  convert @log_div_self_rpow_antitoneOn (1 / 2) (by simp)
   norm_num
 
 end Real

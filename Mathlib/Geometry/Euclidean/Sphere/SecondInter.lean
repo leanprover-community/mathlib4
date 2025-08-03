@@ -65,7 +65,7 @@ theorem Sphere.secondInter_eq_self_iff {s : Sphere P} {p : P} {v : V} :
     · simp [hv]
     rwa [Sphere.secondInter, eq_comm, eq_vadd_iff_vsub_eq, vsub_self, eq_comm, smul_eq_zero,
       or_iff_left hv, div_eq_zero_iff, inner_self_eq_zero, or_iff_left hv, mul_eq_zero,
-      or_iff_right (by norm_num : (-2 : ℝ) ≠ 0)] at hp
+      or_iff_right (by simp : (-2 : ℝ) ≠ 0)] at hp
   · rw [Sphere.secondInter, hp, mul_zero, zero_div, zero_smul, zero_vadd]
 
 /-- A point on a line through a point on a sphere equals that point or `secondInter`. -/
@@ -100,7 +100,7 @@ theorem Sphere.secondInter_smul (s : Sphere P) (p : P) (v : V) {r : ℝ} (hr : r
 @[simp]
 theorem Sphere.secondInter_neg (s : Sphere P) (p : P) (v : V) :
     s.secondInter p (-v) = s.secondInter p v := by
-  rw [← neg_one_smul ℝ v, s.secondInter_smul p v (by norm_num : (-1 : ℝ) ≠ 0)]
+  rw [← neg_one_smul ℝ v, s.secondInter_smul p v (by simp : (-1 : ℝ) ≠ 0)]
 
 /-- Applying `secondInter` twice returns the original point. -/
 @[simp]

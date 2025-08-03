@@ -47,7 +47,7 @@ theorem nrComplexPlaces_eq_totient_div_two [h : IsCyclotomicExtension {n} ℚ K]
     have key := card_add_two_mul_card_eq_rank K
     rw [nrRealPlaces_eq_zero K hn, zero_add, IsCyclotomicExtension.finrank (n := n) K
       (cyclotomic.irreducible_rat (NeZero.pos _)), hk, ← two_mul,
-      Nat.mul_right_inj (by norm_num)] at key
+      Nat.mul_right_inj (by simp)] at key
     simp [hk, key, ← two_mul]
   · have : φ n = 1 := by
       by_cases h1 : 1 < n
