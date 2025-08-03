@@ -119,9 +119,9 @@ structure CCConfig where
   /-- If `true`, congruence closure modulo Associativity and Commutativity. -/
   ac : Bool := true
   /-- If `hoFns` is `some fns`, then full (and more expensive) support for higher-order functions is
-     *only* considered for the functions in fns and local functions. The performance overhead is
-     described in the paper "Congruence Closure in Intensional Type Theory". If `hoFns` is `none`,
-     then full support is provided for *all* constants. -/
+  *only* considered for the functions in fns and local functions. The performance overhead is
+  described in the paper "Congruence Closure in Intensional Type Theory". If `hoFns` is `none`,
+  then full support is provided for *all* constants. -/
   hoFns : Option (List Name) := none
   /-- If `true`, then use excluded middle -/
   em : Bool := true

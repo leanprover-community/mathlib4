@@ -1048,7 +1048,7 @@ end Pullback
 section Pushout
 
 /-- The pushout of `f` and `g` in `C` is isomorphic to the pullback of
- `f.op` and `g.op` in `Cᵒᵖ`. -/
+`f.op` and `g.op` in `Cᵒᵖ`. -/
 noncomputable def pushoutIsoUnopPullback {X Y Z : C} (f : X ⟶ Z) (g : X ⟶ Y) [h : HasPushout f g]
     [HasPullback f.op g.op] : pushout f g ≅ unop (pullback f.op g.op) :=
   IsColimit.coconePointUniqueUpToIso (@colimit.isColimit _ _ _ _ _ h)
