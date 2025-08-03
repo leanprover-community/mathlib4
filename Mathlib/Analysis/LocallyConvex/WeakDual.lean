@@ -8,6 +8,7 @@ import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Topology.Algebra.Module.WeakBilin
 import Mathlib.Data.Finsupp.Order
 import Mathlib.LinearAlgebra.Dual.Lemmas
+import Mathlib.LinearAlgebra.Finsupp.Span
 
 /-!
 # Weak Dual in Topological Vector Spaces
