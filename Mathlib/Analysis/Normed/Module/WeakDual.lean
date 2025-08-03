@@ -12,10 +12,10 @@ import Mathlib.Topology.Algebra.Module.WeakDual
 
 Let `E` be a normed space over a field `𝕜`. This file is concerned with properties of the weak-*
 topology on the dual of `E`. By the dual, we mean either of the type synonyms
-`NormedSpace.Dual 𝕜 E` or `WeakDual 𝕜 E`, depending on whether it is viewed as equipped with its
-usual operator norm topology or the weak-* topology.
+`StrongDual 𝕜 E` or `WeakDual 𝕜 E`, depending on whether it is viewed as equipped with its usual
+operator norm topology or the weak-* topology.
 
-It is shown that the canonical mapping `NormedSpace.Dual 𝕜 E → WeakDual 𝕜 E` is continuous, and
+It is shown that the canonical mapping `StrongDual 𝕜 E → WeakDual 𝕜 E` is continuous, and
 as a consequence the weak-* topology is coarser than the topology obtained from the operator norm
 (dual norm).
 
@@ -25,18 +25,17 @@ topology.
 
 ## Main definitions
 
-The main definitions concern the canonical mapping `Dual 𝕜 E → WeakDual 𝕜 E`.
+The main definitions concern the canonical mapping `StrongDual 𝕜 E → WeakDual 𝕜 E`.
 
-* `NormedSpace.Dual.toWeakDual` and `WeakDual.toNormedDual`: Linear equivalences from
-  `dual 𝕜 E` to `WeakDual 𝕜 E` and in the converse direction.
+* `StrongDual.toWeakDual` and `WeakDual.toStrongDual`: Linear equivalences from `StrongDual 𝕜 E` to
+`WeakDual 𝕜 E` and in the converse direction.
 * `NormedSpace.Dual.continuousLinearMapToWeakDual`: A continuous linear mapping from
-  `Dual 𝕜 E` to `WeakDual 𝕜 E` (same as `NormedSpace.Dual.toWeakDual` but different bundled
-  data).
+  `StrongDual 𝕜 E` to `WeakDual 𝕜 E` (same as `StrongDual.toWeakDual` but different bundled data).
 
 ## Main results
 
-The first main result concerns the comparison of the operator norm topology on `dual 𝕜 E` and the
-weak-* topology on (its type synonym) `WeakDual 𝕜 E`:
+The first main result concerns the comparison of the operator norm topology on `StrongDual 𝕜 E` and
+the weak-* topology on (its type synonym) `WeakDual 𝕜 E`:
 * `dual_norm_topology_le_weak_dual_topology`: The weak-* topology on the dual of a normed space is
   coarser (not necessarily strictly) than the operator norm topology.
 * `WeakDual.isCompact_polar` (a version of the Banach-Alaoglu theorem): The polar set of a
@@ -63,15 +62,15 @@ No new notation is introduced.
 
 Weak-* topology is defined generally in the file `Topology.Algebra.Module.WeakDual`.
 
-When `E` is a normed space, the duals `Dual 𝕜 E` and `WeakDual 𝕜 E` are type synonyms with
+When `M` is a monoid, the duals `StrongDual 𝕜 M` and `WeakDual 𝕜 M` are type synonyms with
 different topology instances.
 
 For the proof of Banach-Alaoglu theorem, the weak dual of `E` is embedded in the space of
 functions `E → 𝕜` with the topology of pointwise convergence.
 
 The polar set `polar 𝕜 s` of a subset `s` of `E` is originally defined as a subset of the dual
-`Dual 𝕜 E`. We care about properties of these w.r.t. weak-* topology, and for this purpose give
-the definition `WeakDual.polar 𝕜 s` for the "same" subset viewed as a subset of `WeakDual 𝕜 E`
+`StrongDual 𝕜 E`. We care about properties of these w.r.t. weak-* topology, and for this purpose
+give the definition `WeakDual.polar 𝕜 s` for the "same" subset viewed as a subset of `WeakDual 𝕜 E`
 (a type synonym of the dual but with a different topology instance).
 
 ## References
@@ -128,9 +127,9 @@ namespace WeakDual
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [AddCommMonoid E] [TopologicalSpace E] [Module 𝕜 E]
 
-/-- For normed spaces `E`, there is a canonical map `WeakDual 𝕜 E → Dual 𝕜 E` (the "identity"
+/-- For normed spaces `E`, there is a canonical map `WeakDual 𝕜 E → StrongDual 𝕜 E` (the "identity"
 mapping). It is a linear equivalence. Here it is implemented as the inverse of the linear
-equivalence `NormedSpace.Dual.toWeakDual` in the other direction. -/
+equivalence `StrongDual.toWeakDual` in the other direction. -/
 def toStrongDual : WeakDual 𝕜 E ≃ₗ[𝕜] StrongDual 𝕜 E :=
   StrongDual.toWeakDual.symm
 
@@ -171,7 +170,7 @@ end WeakDual
 ### Weak star topology on duals of normed spaces
 
 In this section, we prove properties about the weak-* topology on duals of normed spaces.
-We prove in particular that the canonical mapping `Dual 𝕜 E → WeakDual 𝕜 E` is continuous,
+We prove in particular that the canonical mapping `StrongDual 𝕜 E → WeakDual 𝕜 E` is continuous,
 i.e., that the weak-* topology is coarser (not necessarily strictly) than the topology given
 by the dual-norm (i.e. the operator-norm).
 -/
