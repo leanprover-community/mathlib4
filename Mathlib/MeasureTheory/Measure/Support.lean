@@ -150,11 +150,9 @@ lemma support_eq_sInter : μ.support = ⋂₀ {t : Set X | IsClosed t ∧ μ t�
   · intro h
     obtain ⟨t, ht, htc, htc1⟩ := h
     use tᶜ
-    have A := htc.isClosed_compl
     have B := nonpos_iff_eq_zero.mp htc1
     rw [← compl_compl t] at B ht
-    have C := (Set.mem_compl_iff tᶜ x).mp ht
-    exact ⟨htc.isClosed_compl, B, C⟩
+    exact ⟨htc.isClosed_compl, B, (Set.mem_compl_iff tᶜ x).mp ht⟩
   · intro h
     obtain ⟨t, ht, htc, htc1⟩ := h
     use tᶜ
