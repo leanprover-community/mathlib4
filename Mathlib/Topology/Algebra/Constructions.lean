@@ -131,7 +131,7 @@ topological embedding. Use `AddUnits.isEmbedding_val` or `toAddUnits_homeomorph`
 lemma isEmbedding_val_mk' {M : Type*} [Monoid M] [TopologicalSpace M] {f : M → M}
     (hc : ContinuousOn f {x : M | IsUnit x}) (hf : ∀ u : Mˣ, f u.1 = ↑u⁻¹) :
     IsEmbedding (val : Mˣ → M) := by
-  refine ⟨⟨?_⟩, ext⟩
+  refine ⟨⟨?_⟩, val_injective⟩
   rw [topology_eq_inf, inf_eq_left, ← continuous_iff_le_induced,
     @continuous_iff_continuousAt _ _ (.induced _ _)]
   intros u s hs

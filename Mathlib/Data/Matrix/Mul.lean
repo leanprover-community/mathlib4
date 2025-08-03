@@ -598,6 +598,12 @@ def vecMulVec [Mul α] (w : m → α) (v : n → α) : Matrix m n α :=
 theorem vecMulVec_apply [Mul α] (w : m → α) (v : n → α) (i j) : vecMulVec w v i j = w i * v j :=
   rfl
 
+lemma row_vecMulVec [Mul α] (w : m → α) (v : n → α) (i : m) :
+    (vecMulVec w v).row i = w i • v := rfl
+
+lemma col_vecMulVec [Mul α] (w : m → α) (v : n → α) (j : n) :
+    (vecMulVec w v).col j = MulOpposite.op (v j) • w := rfl
+
 section NonUnitalNonAssocSemiring
 
 variable [NonUnitalNonAssocSemiring α]

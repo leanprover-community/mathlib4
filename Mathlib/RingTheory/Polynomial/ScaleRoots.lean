@@ -60,7 +60,7 @@ theorem support_scaleRoots_eq (p : R[X]) {s : R} (hs : s ∈ nonZeroDivisors R) 
     (by intro i
         simp only [coeff_scaleRoots, Polynomial.mem_support_iff]
         intro p_ne_zero ps_zero
-        have := pow_mem hs (p.natDegree - i) _ ps_zero
+        have := (pow_mem hs (p.natDegree - i)).2 _ ps_zero
         contradiction)
 
 @[simp]

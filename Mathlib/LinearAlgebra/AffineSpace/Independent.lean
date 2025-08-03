@@ -5,7 +5,7 @@ Authors: Joseph Myers
 -/
 import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Fin.VecNotation
-import Mathlib.Data.Sign
+import Mathlib.Data.Sign.Basic
 import Mathlib.LinearAlgebra.AffineSpace.Combination
 import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 import Mathlib.LinearAlgebra.AffineSpace.Restrict
@@ -36,7 +36,7 @@ This file defines affinely independent families of points.
 
 noncomputable section
 
-open Finset Function
+open Finset Function Module
 open scoped Affine
 
 section AffineIndependent
@@ -101,11 +101,7 @@ theorem affineIndependent_iff_linearIndependent_vsub (p : ι → P) (i1 : ι) :
       intro s g hg i hi
       set f : ι → k := fun x => if hx : x = i1 then -∑ y ∈ s, g y else g ⟨x, hx⟩ with hfdef
       let s2 : Finset ι := insert i1 (s.map (Embedding.subtype _))
-      have hfg : ∀ x : { x // x ≠ i1 }, g x = f x := by
-        intro x
-        rw [hfdef]
-        dsimp only
-        rw [dif_neg x.property, Subtype.coe_eta]
+      have hfg : ∀ x : { x // x ≠ i1 }, g x = f x := by grind
       rw [hfg]
       have hf : ∑ ι ∈ s2, f ι = 0 := by
         rw [Finset.sum_insert
@@ -581,7 +577,7 @@ theorem exists_subset_affineIndependent_affineSpan_eq_top {s : Set P}
     rw [← linearIndependent_subtype_iff,
       linearIndependent_set_iff_affineIndependent_vadd_union_singleton k h0 p₁] at hsvi
     refine ⟨{p₁} ∪ (fun v => v +ᵥ p₁) '' h.extend (Set.subset_univ _), ?_, ?_⟩
-    · refine Set.Subset.trans ?_ (Set.union_subset_union_right _ (Set.image_subset _ hsv))
+    · refine Set.Subset.trans ?_ (Set.union_subset_union_right _ (Set.image_mono hsv))
       simp [Set.image_image]
     · use hsvi
       exact affineSpan_singleton_union_vadd_eq_top_of_span_eq_top p₁ hsvt
@@ -616,7 +612,7 @@ variable {V}
 /-- Two different points are affinely independent. -/
 theorem affineIndependent_of_ne {p₁ p₂ : P} (h : p₁ ≠ p₂) : AffineIndependent k ![p₁, p₂] := by
   rw [affineIndependent_iff_linearIndependent_vsub k ![p₁, p₂] 0]
-  let i₁ : { x // x ≠ (0 : Fin 2) } := ⟨1, by norm_num⟩
+  let i₁ : { x // x ≠ (0 : Fin 2) } := ⟨1, by simp⟩
   have he' : ∀ i, i = i₁ := by
     rintro ⟨i, hi⟩
     ext
@@ -1138,6 +1134,15 @@ lemma affineCombination_mem_closedInterior_iff {n : ℕ} {s : Simplex k P n} {w 
   simp_rw [← (affineIndependent_iff_eq_of_fintype_affineCombination_eq k s.points).1
     s.independent w' w hw' hw hww']
   exact hw'01
+
+lemma interior_subset_closedInterior {n : ℕ} (s : Simplex k P n) :
+    s.interior ⊆ s.closedInterior :=
+  fun _ ⟨w, hw, hw01, hww⟩ ↦ ⟨w, hw, fun i ↦ ⟨(hw01 i).1.le, (hw01 i).2.le⟩, hww⟩
+
+lemma closedInterior_subset_affineSpan {n : ℕ} {s : Simplex k P n} :
+    s.closedInterior ⊆ affineSpan k (Set.range s.points) := by
+  rintro p ⟨w, hw, hi, rfl⟩
+  exact affineCombination_mem_affineSpan_of_nonempty hw _
 
 end Simplex
 

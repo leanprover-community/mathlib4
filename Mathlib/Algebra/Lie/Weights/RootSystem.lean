@@ -429,10 +429,9 @@ section IsSimple
 variable [IsSimple K L]
 
 open Weight in
-lemma eq_top_of_invtSubmodule_ne_bot
-   (q : Submodule K (Dual K H))
-   (h₀ : ∀ (i : H.root), q ∈ End.invtSubmodule ((rootSystem H).reflection i))
-   (h₁ : q ≠ ⊥) : q = ⊤ := by
+lemma eq_top_of_invtSubmodule_ne_bot (q : Submodule K (Dual K H))
+    (h₀ : ∀ (i : H.root), q ∈ End.invtSubmodule ((rootSystem H).reflection i))
+    (h₁ : q ≠ ⊥) : q = ⊤ := by
   have _i := nontrivial_of_isIrreducible K L L
   let S := rootSystem H
   by_contra h₃
@@ -456,12 +455,10 @@ lemma eq_top_of_invtSubmodule_ne_bot
     by_contra h
     have i_non_zero : i.1.IsNonZero := by
       obtain ⟨val, hval⟩ := i
-      simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hval
-      exact hval
+      rwa [Finset.mem_filter_univ] at hval
     have j_non_zero : j.1.IsNonZero := by
       obtain ⟨val, hval⟩ := j
-      simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hval
-      exact hval
+      rwa [Finset.mem_filter_univ] at hval
     let r := Weight.mk (R := K) (L := H) (M := L) (i.1.1 + j.1.1) h
     have r₁ : r ≠ 0 := by
       intro a
@@ -587,9 +584,7 @@ lemma eq_top_of_invtSubmodule_ne_bot
   have c₂ : I' ≠ ⊥ := by
     rw [← h] at s₆
     exact ne_of_apply_ne (LieIdeal.toLieSubalgebra K L) s₆
-  rcases this with h_bot | h_top
-  · contradiction
-  · contradiction
+  grind
 
 instance : (rootSystem H).IsIrreducible := by
   have _i := nontrivial_of_isIrreducible K L L

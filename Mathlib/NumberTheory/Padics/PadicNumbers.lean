@@ -640,7 +640,7 @@ theorem exi_rat_seq_conv {ε : ℚ} (hε : 0 < ε) :
     simpa
 
 theorem exi_rat_seq_conv_cauchy : IsCauSeq (padicNorm p) (limSeq f) := fun ε hε ↦ by
-  have hε3 : 0 < ε / 3 := div_pos hε (by norm_num)
+  have hε3 : 0 < ε / 3 := div_pos hε (by simp)
   let ⟨N, hN⟩ := exi_rat_seq_conv f hε3
   let ⟨N2, hN2⟩ := f.cauchy₂ hε3
   exists max N N2
@@ -1066,6 +1066,21 @@ theorem AddValuation.map_add (x y : ℚ_[p]) :
         exact le_top
       · rw [if_neg hx, if_neg hy, if_neg hxy, ← WithTop.coe_min, WithTop.coe_le_coe]
         exact le_valuation_add hxy
+
+open WithZero
+
+open Classical in
+/-- The `p`-adic valuation on `ℚ_[p]`, as a `Valuation`, bundled `Padic.valuation`. -/
+@[simps]
+noncomputable def mulValuation : Valuation ℚ_[p] ℤᵐ⁰ where
+  toFun x := if x = 0 then 0 else exp (-x.valuation)
+  map_zero' := by simp
+  map_one' := by simp
+  map_mul' _ := by split_ifs <;> simp_all [exp_add, exp_neg, mul_comm]
+  map_add_le_max' _ _ := by
+    split_ifs
+    any_goals simp_all
+    simpa using le_valuation_add ‹_›
 
 /-- The additive `p`-adic valuation on `ℚ_[p]`, as an `addValuation`. -/
 def addValuation : AddValuation ℚ_[p] (WithTop ℤ) :=

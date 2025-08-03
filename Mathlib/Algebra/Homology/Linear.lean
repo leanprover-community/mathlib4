@@ -52,4 +52,4 @@ end HomologicalComplex
 
 instance CategoryTheory.Functor.mapHomologicalComplex_linear
     (F : C ⥤ D) [F.Additive] [Functor.Linear R F] (c : ComplexShape ι) :
-  Functor.Linear R (F.mapHomologicalComplex c) where
+    Functor.Linear R (F.mapHomologicalComplex c) where

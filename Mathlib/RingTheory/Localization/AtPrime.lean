@@ -52,16 +52,18 @@ protected abbrev Localization.AtPrime :=
 
 namespace IsLocalization
 
-theorem AtPrime.Nontrivial [IsLocalization.AtPrime S P] : Nontrivial S :=
+theorem AtPrime.nontrivial [IsLocalization.AtPrime S P] : Nontrivial S :=
   nontrivial_of_ne (0 : S) 1 fun hze => by
     rw [← (algebraMap R S).map_one, ← (algebraMap R S).map_zero] at hze
     obtain ⟨t, ht⟩ := (eq_iff_exists P.primeCompl S).1 hze
     have htz : (t : R) = 0 := by simpa using ht.symm
     exact t.2 (htz.symm ▸ P.zero_mem : ↑t ∈ P)
 
+@[deprecated (since := "2025-07-31")] alias AtPrime.Nontrivial := IsLocalization.AtPrime.nontrivial
+
 theorem AtPrime.isLocalRing [IsLocalization.AtPrime S P] : IsLocalRing S :=
   -- Porting note: since I couldn't get local instance running, I just specify it manually
-  letI := AtPrime.Nontrivial S P
+  letI := AtPrime.nontrivial S P
   IsLocalRing.of_nonunits_add
     (by
       intro x y hx hy hu
@@ -94,6 +96,12 @@ namespace Localization
 /-- The localization of `R` at the complement of a prime ideal is a local ring. -/
 instance AtPrime.isLocalRing : IsLocalRing (Localization P.primeCompl) :=
   IsLocalization.AtPrime.isLocalRing (Localization P.primeCompl) P
+
+instance {R S : Type*} [CommRing R] [NoZeroDivisors R] {P : Ideal R} [CommRing S] [Algebra R S]
+    [NoZeroSMulDivisors R S] [IsDomain S] [P.IsPrime] :
+    NoZeroSMulDivisors (Localization.AtPrime P)
+    (Localization (Algebra.algebraMapSubmonoid S P.primeCompl)) :=
+  NoZeroSMulDivisors_of_isLocalization R S _ _ P.primeCompl_le_nonZeroDivisors
 
 end Localization
 

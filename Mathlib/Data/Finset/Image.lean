@@ -223,6 +223,10 @@ theorem map_inter [DecidableEq α] [DecidableEq β] {f : α ↪ β} (s₁ s₂ :
     (s₁ ∩ s₂).map f = s₁.map f ∩ s₂.map f :=
   mod_cast Set.image_inter f.injective (s := s₁) (t := s₂)
 
+theorem map_sdiff [DecidableEq α] [DecidableEq β] {f : α ↪ β} (s₁ s₂ : Finset α) :
+    (s₁ \ s₂).map f = s₁.map f \ s₂.map f :=
+  mod_cast Set.image_diff f.injective (s := s₁) (t := s₂)
+
 @[simp]
 theorem map_singleton (f : α ↪ β) (a : α) : map f {a} = {f a} :=
   coe_injective <| by simp only [coe_map, coe_singleton, Set.image_singleton]
@@ -643,7 +647,7 @@ theorem subset_set_image_iff [DecidableEq β] {s : Set α} {t : Finset β} {f : 
     ext y; simp
   · rintro ⟨t, ht, rfl⟩
     rw [coe_image]
-    exact Set.image_subset f ht
+    exact Set.image_mono ht
 
 /--
 If a finset `t` is a subset of the image of another finset `s` under `f`, then it is equal to the
