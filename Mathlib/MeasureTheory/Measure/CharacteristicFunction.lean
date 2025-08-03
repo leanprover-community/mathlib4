@@ -250,8 +250,8 @@ variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {mE : Measurab
   [NormedAddCommGroup F] [NormedSpace ℝ F] {mF : MeasurableSpace F}
   {μ : Measure E} {ν : Measure F}
 
-/-- The characteristic function of a measure in a normed space, function from `StrongDual ℝ E` to `ℂ`
-with `charFunDual μ L = ∫ v, exp (L v * I) ∂μ`. -/
+/-- The characteristic function of a measure in a normed space, function from `StrongDual ℝ E` to
+`ℂ` with `charFunDual μ L = ∫ v, exp (L v * I) ∂μ`. -/
 noncomputable
 def charFunDual (μ : Measure E) (L : StrongDual ℝ E) : ℂ := ∫ v, probCharDual L v ∂μ
 
