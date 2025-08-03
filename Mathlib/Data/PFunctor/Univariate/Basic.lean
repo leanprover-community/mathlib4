@@ -294,45 +294,6 @@ protected def ulift (P : PFunctor.{uA, uB}) : PFunctor.{max uA vA, max uB vB} :=
 
 end ULift
 
-/-- An equivalence between two polynomial functors `P` and `Q`, written `P ≃ₚ Q`, is given by an
-equivalence of the `A` types and an equivalence between the `B` types for each `a : A`. -/
-@[ext]
-structure Equiv (P : PFunctor.{uA₁, uB₁}) (Q : PFunctor.{uA₂, uB₂}) where
-  /-- An equivalence between the `A` types -/
-  equivA : P.A ≃ Q.A
-  /-- An equivalence between the `B` types for each `a : A` -/
-  equivB : ∀ a, P.B a ≃ Q.B (equivA a)
-
-@[inherit_doc] scoped[PFunctor] infixl:25 " ≃ₚ " => Equiv
-
-namespace Equiv
-
-/-- The identity equivalence between a polynomial functor `P` and itself. -/
-def refl (P : PFunctor.{uA, uB}) : P ≃ₚ P where
-  equivA := _root_.Equiv.refl P.A
-  equivB := fun a => _root_.Equiv.refl (P.B a)
-
-/-- The inverse of an equivalence between polynomial functors. -/
-def symm {P : PFunctor.{uA₁, uB₁}} {Q : PFunctor.{uA₂, uB₂}} (E : P ≃ₚ Q) : Q ≃ₚ P where
-  equivA := E.equivA.symm
-  equivB := fun a =>
-    (Equiv.cast (congrArg Q.B ((Equiv.symm_apply_eq E.equivA).mp rfl))).trans
-      (E.equivB (E.equivA.symm a)).symm
-
-/-- The composition of two equivalences between polynomial functors. -/
-def trans {P : PFunctor.{uA₁, uB₁}} {Q : PFunctor.{uA₂, uB₂}} {R : PFunctor.{uA₃, uB₃}}
-    (E : P ≃ₚ Q) (F : Q ≃ₚ R) : P ≃ₚ R where
-  equivA := E.equivA.trans F.equivA
-  equivB := fun a => (E.equivB a).trans (F.equivB (E.equivA a))
-
-/-- Equivalence between two polynomial functors `P` and `Q` that are equal. -/
-def cast {P Q : PFunctor.{uA, uB}} (hA : P.A = Q.A) (hB : ∀ a, P.B a = Q.B (cast hA a)) :
-    P ≃ₚ Q where
-  equivA := _root_.Equiv.cast hA
-  equivB := fun a => _root_.Equiv.cast (hB a)
-
-end Equiv
-
 end PFunctor
 
 /-
