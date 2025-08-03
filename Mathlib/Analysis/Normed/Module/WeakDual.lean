@@ -105,24 +105,25 @@ namespace StrongDual
 
 section
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type*} [AddCommMonoid E] [TopologicalSpace E] [Module 𝕜 E]
+variable {R : Type*} [CommSemiring R] [TopologicalSpace R] [ContinuousAdd R]
+  [ContinuousConstSMul R R]
+variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M] [Module R M]
 
 /-- For normed spaces `E`, there is a canonical map `StrongDual 𝕜 E → WeakDual 𝕜 E` (the "identity"
 mapping). It is a linear equivalence. -/
-def toWeakDual : StrongDual 𝕜 E ≃ₗ[𝕜] WeakDual 𝕜 E :=
-  LinearEquiv.refl 𝕜 (E →L[𝕜] 𝕜)
+def toWeakDual : StrongDual R M ≃ₗ[R] WeakDual R M :=
+  LinearEquiv.refl R (M →L[R] R)
 
 @[deprecated (since := "2025-08-3")] alias _root_.NormedSpace.Dual.toWeakDual := toWeakDual
 
 @[simp]
-theorem coe_toWeakDual (x' : StrongDual 𝕜 E) : toWeakDual x' = x' :=
+theorem coe_toWeakDual (x' : StrongDual R M) : toWeakDual x' = x' :=
   rfl
 
 @[deprecated (since := "2025-08-3")] alias _root_.NormedSpace.Dual.coe_toWeakDual := coe_toWeakDual
 
 @[simp]
-theorem toWeakDual_inj (x' y' : StrongDual 𝕜 E) : toWeakDual x' = toWeakDual y' ↔ x' = y' :=
+theorem toWeakDual_inj (x' y' : StrongDual R M) : toWeakDual x' = toWeakDual y' ↔ x' = y' :=
   (LinearEquiv.injective toWeakDual).eq_iff
 
 @[deprecated (since := "2025-08-3")] alias _root_.NormedSpace.Dual.toWeakDual_inj := toWeakDual_inj
