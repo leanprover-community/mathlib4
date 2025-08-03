@@ -12,8 +12,7 @@ private def finOfNat (n : Nat) (a : Nat) : Fin (n + 1) :=
   ⟨a % (n+1), Nat.mod_lt _ (Nat.zero_lt_succ _)⟩
 
 open Lean Elab Term in
-/-- Produce the annotation ``.mdata .. e`` for testing.
-Standard elaborators may represent projections as ordinary functions instead. -/
+/-- Produce the annotation ``.mdata .. e`` for testing. -/
 elab "mdata% " e:term : term => do
   let e ← elabTerm e none
   return .mdata ({ : MData}.insert `abc "def") e
