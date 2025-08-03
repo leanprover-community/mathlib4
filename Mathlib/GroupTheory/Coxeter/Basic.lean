@@ -444,8 +444,8 @@ lemma getElem_alternatingWord (i j : B) (p k : ℕ) (hk : k < p) :
         rw [if_neg h_even]
 
 lemma getElem_alternatingWord_swapIndices (i j : B) (p k : ℕ) (h : k + 1 < p) :
-   (alternatingWord i j p)[k+1]'(by simp [h]) =
-   (alternatingWord j i p)[k]'(by simp; omega) := by
+     (alternatingWord i j p)[k+1]'(by simp [h]) =
+     (alternatingWord j i p)[k]'(by simp; omega) := by
   rw [getElem_alternatingWord i j p (k+1) (by omega), getElem_alternatingWord j i p k (by omega)]
   by_cases h_even : Even (p + k)
   · rw [if_pos h_even, ← add_assoc]

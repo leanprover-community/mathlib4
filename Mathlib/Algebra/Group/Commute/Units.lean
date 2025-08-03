@@ -99,7 +99,7 @@ lemma isUnit_pow_succ_iff : IsUnit (a ^ (n + 1)) ↔ IsUnit a := isUnit_pow_iff 
 
 lemma isUnit_pow_iff_of_not_isUnit (hx : ¬ IsUnit a) {n : ℕ} :
     IsUnit (a ^ n) ↔ n = 0 := by
-  rcases n with (_|n) <;>
+  rcases n with (_ | n) <;>
   simp [hx]
 
 /-- If `a ^ n = 1`, `n ≠ 0`, then `a` is a unit. -/
@@ -116,6 +116,26 @@ lemma IsUnit.of_pow_eq_one (ha : a ^ n = 1) (hn : n ≠ 0) : IsUnit a :=
 
 @[deprecated (since := "2025-02-03")] alias isUnit_ofPowEqOne := IsUnit.of_pow_eq_one
 @[deprecated (since := "2025-02-03")] alias isAddUnit_ofNSMulEqZero := IsAddUnit.of_nsmul_eq_zero
+
+@[to_additive]
+lemma _root_.Units.commute_iff_inv_mul_cancel {u : Mˣ} {a : M} :
+    Commute ↑u a ↔ ↑u⁻¹ * a * u = a := by
+  rw [mul_assoc, Units.inv_mul_eq_iff_eq_mul, eq_comm, Commute, SemiconjBy]
+
+@[to_additive]
+lemma _root_.Units.commute_iff_inv_mul_cancel_assoc {u : Mˣ} {a : M} :
+    Commute ↑u a ↔ ↑u⁻¹ * (a * u) = a := by
+  rw [u.commute_iff_inv_mul_cancel, mul_assoc]
+
+@[to_additive]
+lemma _root_.Units.commute_iff_mul_inv_cancel {u : Mˣ} {a : M} :
+    Commute ↑u a ↔ ↑u * a * ↑u⁻¹ = a := by
+  rw [Units.mul_inv_eq_iff_eq_mul, Commute, SemiconjBy]
+
+@[to_additive]
+lemma _root_.Units.commute_iff_mul_inv_cancel_assoc {u : Mˣ} {a : M} :
+    Commute ↑u a ↔ ↑u * (a * ↑u⁻¹) = a := by
+  rw [u.commute_iff_mul_inv_cancel, mul_assoc]
 
 end Monoid
 

@@ -150,8 +150,7 @@ lemma hom_ext {M N : MonCat} {f g : M ⟶ N} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
 
 @[to_additive (attr := simp)]
-lemma hom_ofHom {M N : Type u} [Monoid M] [Monoid N] (f : M →* N) :
-  (ofHom f).hom = f := rfl
+lemma hom_ofHom {M N : Type u} [Monoid M] [Monoid N] (f : M →* N) : (ofHom f).hom = f := rfl
 
 @[to_additive (attr := simp)]
 lemma ofHom_hom {M N : MonCat} (f : M ⟶ N) :
@@ -333,8 +332,7 @@ lemma hom_ext {M N : CommMonCat} {f g : M ⟶ N} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
 
 @[to_additive (attr := simp)]
-lemma hom_ofHom {M N : Type u} [CommMonoid M] [CommMonoid N] (f : M →* N) :
-  (ofHom f).hom = f := rfl
+lemma hom_ofHom {M N : Type u} [CommMonoid M] [CommMonoid N] (f : M →* N) : (ofHom f).hom = f := rfl
 
 @[to_additive (attr := simp)]
 lemma ofHom_hom {M N : CommMonCat} (f : M ⟶ N) :

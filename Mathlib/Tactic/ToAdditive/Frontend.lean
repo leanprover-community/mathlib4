@@ -87,7 +87,13 @@ syntax (name := to_additive_dont_translate) "to_additive_dont_translate" : attr
 
 /-- An `attr := ...` option for `to_additive`. -/
 syntax toAdditiveAttrOption := &"attr" " := " Parser.Term.attrInstance,*
-/-- A `reorder := ...` option for `to_additive`. -/
+/--
+`reorder := ...` reorders the arguments/hypotheses in the generated declaration.
+It uses cycle notation. For example `(reorder := 1 2, 5 6)` swaps the first two
+arguments with each other and the fifth and the sixth argument and `(reorder := 3 4 5)` will move
+the fifth argument before the third argument. This is used in `to_dual` to swap the arguments in
+`≤`, `<` and `⟶`. It is also used in `to_additive` to translate from `^` to `•`.
+-/
 syntax toAdditiveReorderOption := &"reorder" " := " (num+),+
 /-- Options to `to_additive`. -/
 syntax toAdditiveOption := "(" toAdditiveAttrOption <|> toAdditiveReorderOption ")"
@@ -331,7 +337,7 @@ def endCapitalNames : TreeMap String (List String) compare :=
 
 open String in
 /-- This function takes a String and splits it into separate parts based on the following
-(naming conventions)[https://github.com/leanprover-community/mathlib4/wiki#naming-convention].
+[naming conventions](https://github.com/leanprover-community/mathlib4/wiki#naming-convention).
 
 E.g. `#eval "InvHMulLEConjugate₂SMul_ne_top".splitCase` yields
 `["Inv", "HMul", "LE", "Conjugate₂", "SMul", "_", "ne", "_", "top"]`. -/
@@ -470,11 +476,11 @@ structure Config : Type where
   (or the `to_additive` attribute if it is added later),
   which we need for adding definition ranges. -/
   ref : Syntax
-  /-- An optional flag stating whether the additive declaration already exists.
-    If this flag is set but wrong about whether the additive declaration exists, `to_additive` will
+  /-- An optional flag stating that the additive declaration already exists.
+    If this flag is wrong about whether the additive declaration exists, `to_additive` will
     raise a linter error.
     Note: the linter will never raise an error for inductive types and structures. -/
-  existing : Option Bool := none
+  existing : Bool := false
   /-- An optional flag stating that the target of the translation is the target itself.
   This can be used to reorder arguments, such as in
   `attribute [to_dual self (reorder := 3 4)] LE.le`.
@@ -645,15 +651,16 @@ It also expands all kernel projections that have as head a constant `n` in `reor
 def expand (e : Expr) : MetaM Expr := do
   let env ← getEnv
   let reorderFn : Name → List (List ℕ) := fun nm ↦ (reorderAttr.find? env nm |>.getD [])
-  let e₂ ← Lean.Meta.transform (input := e) (post := fun e => return .done e) fun e ↦
+  let e₂ ← Lean.Meta.transform (input := e) (skipConstInApp := true)
+    (post := fun e => return .done e) fun e ↦
     e.withApp fun f args ↦ do
     match f with
     | .proj n i s =>
       let some info := getStructureInfo? (← getEnv) n | return .continue -- e.g. if `n` is `Exists`
       let some projName := info.getProjFn? i | unreachable!
-      -- if `projName` requires reordering, replace `f` with the application `projName s`
-      -- and then visit `projName s args` again.
-      if (reorderFn projName).isEmpty then
+      -- if `projName` is explicitly tagged with `@[to_additive]`,
+      -- replace `f` with the application `projName s` and then visit `projName s args` again.
+      if findTranslation? env projName |>.isNone then
         return .continue
       return .visit <| (← whnfD (← inferType s)).withApp fun sf sargs ↦
         mkAppN (mkApp (mkAppN (.const projName sf.constLevels!) sargs) s) args
@@ -663,9 +670,7 @@ def expand (e : Expr) : MetaM Expr := do
         -- no need to expand if nothing needs reordering
         return .continue
       let needed_n := reorder.flatten.foldr Nat.max 0 + 1
-      -- the second disjunct is a temporary fix to avoid infinite loops. We may need to use
-      -- `replaceRec` or something similar to not change the head of an application
-      if needed_n ≤ args.size || args.size == 0 then
+      if needed_n ≤ args.size then
         return .continue
       else
         -- in this case, we need to reorder arguments that are not yet
@@ -685,20 +690,23 @@ def reorderForall (reorder : List (List Nat) := []) (src : Expr) : MetaM Expr :=
       if xs.size = maxReorder + 1 then
         mkForallFVars (xs.permute! reorder) e
       else
-        throwError "the permutation\n{reorder}\nprovided by the reorder config option is too \
-          large, the type{indentExpr src}\nhas only {xs.size} arguments"
+        throwError "the permutation\n{reorder}\nprovided by the `(reorder := ...)` option is \
+          out of bounds, the type{indentExpr src}\nhas only {xs.size} arguments"
   else
     return src
 
 /-- Reorder lambda-binders. See doc of `reorderAttr` for the interpretation of the argument -/
 def reorderLambda (reorder : List (List Nat) := []) (src : Expr) : MetaM Expr := do
   if let some maxReorder := reorder.flatten.max? then
-    lambdaBoundedTelescope src (maxReorder + 1) fun xs e => do
-      if xs.size = maxReorder + 1 then
+    let maxReorder := maxReorder + 1
+    lambdaBoundedTelescope src maxReorder fun xs e => do
+      if xs.size = maxReorder then
         mkLambdaFVars (xs.permute! reorder) e
       else
-        throwError "the permutation\n{reorder}\nprovided by the reorder config option is too \
-          large, the type{indentExpr src}\nhas only {xs.size} arguments"
+        -- we don't have to consider the case where the given permutation is out of bounds,
+        -- since `reorderForall` applied to the type would already have failed in that case.
+        forallBoundedTelescope (← inferType e) (maxReorder - xs.size) fun ys _ => do
+          mkLambdaFVars ((xs ++ ys).permute! reorder) (mkAppN e ys)
   else
     return src
 
@@ -913,7 +921,7 @@ def additivizeLemmas {m : Type → Type} [Monad m] [MonadError m] [MonadLiftT Co
 /--
 Find the first argument of `nm` that has a multiplicative type-class on it.
 Returns 1 if there are no types with a multiplicative class as arguments.
-E.g. `Prod.Group` returns 1, and `Pi.One` returns 2.
+E.g. `Prod.instGroup` returns 1, and `Pi.instOne` returns 2.
 Note: we only consider the first argument of each type-class.
 E.g. `[Pow A N]` is a multiplicative type-class on `A`, not on `N`.
 -/
@@ -922,19 +930,18 @@ def firstMultiplicativeArg (nm : Name) : MetaM Nat := do
     -- xs are the arguments to the constant
     let xs := xs.toList
     let l ← xs.filterMapM fun x ↦ do
-      -- x is an argument and i is the index
-      -- write `x : (y₀ : α₀) → ... → (yₙ : αₙ) → tgt_fn tgt_args₀ ... tgt_argsₘ`
+      -- write the type of `x` as `(y₀ : α₀) → ... → (yₙ : αₙ) → f a₀ ... aₙ`;
+      -- if `f` can be additivized, mark free variables in `a₀` as multiplicative arguments
       forallTelescopeReducing (← inferType x) fun _ys tgt ↦ do
-        let (_tgt_fn, tgt_args) := tgt.getAppFnArgs
         if let some c := tgt.getAppFn.constName? then
-          if findTranslation? (← getEnv) c |>.isNone then
-            return none
-        return tgt_args[0]?.bind fun tgtArg ↦
-          xs.findIdx? fun x ↦ Expr.containsFVar tgtArg x.fvarId!
+          if findTranslation? (← getEnv) c |>.isSome then
+            if let some arg := tgt.getArg? 0 then
+              return xs.findIdx? (arg.containsFVar ·.fvarId!)
+        return none
     trace[to_additive_detail] "firstMultiplicativeArg: {l}"
     match l with
     | [] => return 0
-    | (head :: tail) => return tail.foldr Nat.min head
+    | (head :: tail) => return tail.foldl Nat.min head
 
 /-- Helper for `capitalizeLike`. -/
 partial def capitalizeLikeAux (s : String) (i : String.Pos := 0) (p : String) : String :=
@@ -1203,13 +1210,27 @@ def elabToAdditive : Syntax → CoreM Config
       | `(toAdditiveOption| (attr := $[$stxs],*)) =>
         attrs := attrs ++ stxs
       | `(toAdditiveOption| (reorder := $[$[$reorders:num]*],*)) =>
-        reorder := reorder ++ reorders.toList.map (·.toList.map (·.raw.isNatLit?.get! - 1))
+        for cycle in reorders do
+          if h : cycle.size = 1 then
+            throwErrorAt cycle[0] "\
+              invalid cycle `{cycle[0]}`, a cycle must have at least 2 elements.\n\
+              `(reorder := ...)` uses cycle notation to specify a permutation.\n\
+              For example `(reorder := 1 2, 5 6)` swaps the first two arguments with each other \
+              and the fifth and the sixth argument and `(reorder := 3 4 5)` will move \
+              the fifth argument before the third argument."
+          let cycle ← cycle.toList.mapM fun n => match n.getNat with
+            | 0 => throwErrorAt n "invalid position `{n}`, positions are counted starting from 1."
+            | n+1 => pure n
+          reorder := cycle :: reorder
       | _ => throwUnsupportedSyntax
-    reorder := reorder.reverse
     let (existing, self) := match existing? with
       | `(toAdditiveNameHint| existing) => (true, false)
       | `(toAdditiveNameHint| self) => (true, true)
       | _ => (false, false)
+    if self && !attrs.isEmpty then
+      throwError "invalid `(attr := ...)` after `self`, \
+        as there is only one declaration for the attributes.\n\
+        Instead, you can write the attributes in the usual way."
     trace[to_additive_detail] "attributes: {attrs}; reorder arguments: {reorder}"
     return {
       trace := trace.isSome
@@ -1223,11 +1244,11 @@ def elabToAdditive : Syntax → CoreM Config
 mutual
 /-- Apply attributes to the multiplicative and additive declarations. -/
 partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr src tgt : Name) :
-  TermElabM (Array Name) := do
+    TermElabM (Array Name) := do
   -- we only copy the `instance` attribute, since `@[to_additive] instance` is nice to allow
   copyInstanceAttribute src tgt
   -- Warn users if the multiplicative version has an attribute
-  if linter.existingAttributeWarning.get (← getOptions) then
+  if src != tgt && linter.existingAttributeWarning.get (← getOptions) then
     let appliedAttrs ← getAllSimpAttrs src
     if appliedAttrs.size > 0 then
       let appliedAttrs := ", ".intercalate (appliedAttrs.toList.map toString)
@@ -1339,13 +1360,13 @@ See the attribute implementation for more details.
 It returns an array with names of additive declarations (usually 1, but more if there are nested
 `to_additive` calls. -/
 partial def addToAdditiveAttr (src : Name) (cfg : Config) (kind := AttributeKind.global) :
-  AttrM (Array Name) := do
+    AttrM (Array Name) := do
   if (kind != AttributeKind.global) then
     throwError "`to_additive` can only be used as a global attribute"
   withOptions (· |>.updateBool `trace.to_additive (cfg.trace || ·)) <| do
   let tgt ← targetName cfg src
   let alreadyExists := (← getEnv).contains tgt
-  if cfg.existing == some !alreadyExists && !(← isInductive src) then
+  if cfg.existing != alreadyExists && !(← isInductive src) then
     Linter.logLintIf linter.toAdditiveExisting cfg.ref <|
       if alreadyExists then
         m!"The additive declaration already exists. Please specify this explicitly using \
