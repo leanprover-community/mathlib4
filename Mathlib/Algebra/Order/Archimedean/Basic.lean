@@ -444,8 +444,8 @@ theorem exists_pow_btwn {n : ℕ} (hn : n ≠ 0) {x y : K} (h : x < y) (hy : 0 <
     calc _ = y - (y - max x 0) := by rw [sub_sub_cancel]
       _ ≤ (m * δ) ^ n - (y - max x 0) := by grw [← Nat.find_spec ex]
       _ < (m * δ) ^ n - |(m * δ) ^ n - q ^ n| := by
-        gcongr 1
-        refine cont _ _ q1y.le ?_
+        gcongr
+        apply cont _ _ q1y.le
         rw [← Nat.succ_pred_eq_of_pos m_pos, Nat.cast_succ, ← sub_mul,
           add_sub_cancel_left, one_mul, abs_eq_self.mpr (by positivity)]
       _ ≤ q ^ n := by grw [← le_abs_self, sub_sub_cancel]
