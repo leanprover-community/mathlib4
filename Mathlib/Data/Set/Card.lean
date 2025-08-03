@@ -118,6 +118,13 @@ theorem encard_union_eq (h : Disjoint s t) : (s ∪ t).encard = s.encard + t.enc
   classical
   simp [encard, ENat.card_congr (Equiv.Set.union h)]
 
+theorem encard_ne_add_one (a : α) :
+    ({x | x ≠ a}).encard + 1 = ENat.card α := by
+  have : Disjoint {x | x ≠ a} {a} := disjoint_singleton_right.mpr <| by simp
+  replace this := (Set.encard_union_eq this).symm
+  have aux : {x | x ≠ a} ∪ {a} = univ := by ext x; simp [eq_or_ne x a]
+  rwa [encard_singleton, aux, encard_univ] at this
+
 theorem encard_insert_of_notMem {a : α} (has : a ∉ s) : (insert a s).encard = s.encard + 1 := by
   rw [← union_singleton, encard_union_eq (by simpa), encard_singleton]
 
@@ -411,6 +418,10 @@ theorem _root_.Function.Injective.encard_image (hf : f.Injective) (s : Set α) :
     (f '' s).encard = s.encard :=
   hf.injOn.encard_image
 
+theorem _root_.Function.Injective.encard_range (hf : f.Injective) :
+    ENat.card α ≤ (range f).encard := by
+  rw [← image_univ, hf.encard_image, encard_univ]
+
 theorem _root_.Function.Embedding.encard_le (e : s ↪ t) : s.encard ≤ t.encard := by
   rw [← encard_univ_coe, ← e.injective.encard_image, ← Subtype.coe_injective.encard_image]
   exact encard_mono (by simp)
@@ -480,6 +491,18 @@ theorem Finite.exists_bijOn_of_encard_eq [Nonempty β] (hs : s.Finite) (h : s.en
   convert hinj.bijOn_image
   rw [(hs.image f).eq_of_subset_of_encard_le (image_subset_iff.mpr hf)
     (h.symm.trans hinj.encard_image.symm).le]
+
+/-- A version of the pigeonhole principle for `Set`s rather than `Finset`s.
+
+See also `Finset.exists_ne_map_eq_of_card_lt_of_maps_to` and
+`Set.exists_ne_map_eq_of_ncard_lt_of_maps_to`. -/
+lemma exists_ne_map_eq_of_encard_lt_of_maps_to (hc : t.encard < s.encard) (hf : MapsTo f s t) :
+    ∃ᵉ (a₁ ∈ s) (a₂ ∈ s), a₁ ≠ a₂ ∧ f a₁ = f a₂ := by
+  contrapose! hc
+  suffices Function.Injective (hf.restrict f) by
+    let f' : s ↪ t := ⟨hf.restrict, this⟩
+    exact f'.encard_le
+  simpa only [hf.restrict_inj, not_imp_not] using hc
 
 end Function
 
@@ -782,6 +805,10 @@ theorem ncard_le_ncard_of_injOn {t : Set β} (f : α → β) (hf : ∀ a ∈ s, 
   have hle := encard_le_encard_of_injOn hf f_inj
   to_encard_tac; rwa [ht.cast_ncard_eq, (ht.finite_of_encard_le hle).cast_ncard_eq]
 
+/-- A version of the pigeonhole principle for `Set`s rather than `Finset`s.
+
+See also `Finset.exists_ne_map_eq_of_card_lt_of_maps_to` and
+`Set.exists_ne_map_eq_of_encard_lt_of_maps_to`. -/
 theorem exists_ne_map_eq_of_ncard_lt_of_maps_to {t : Set β} (hc : t.ncard < s.ncard) {f : α → β}
     (hf : ∀ a ∈ s, f a ∈ t) (ht : t.Finite := by toFinite_tac) :
     ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ f x = f y := by
