@@ -31,6 +31,19 @@ Note: This linter can be disabled with `set_option linter.style.docString.empty 
 -/
 example : Nat := 0
 
+set_option linter.style.docString.empty false
+/---/
+example : Nat := 0
+
+set_option linter.style.docString.empty true
+set_option linter.style.docString false
+
+#guard_msgs in
+/--Missing space -/
+example : Nat := 1
+
+set_option linter.style.docString true
+
 /--
 warning: error: doc-strings should start with a single space or newline
 
