@@ -230,7 +230,7 @@ lemma support_restrict_subset_closure [OpensMeasurableSpace X] {s : Set X} :
     (μ.restrict s).support ⊆ closure s := by
   intro x hx
   simp only [mem_closure_iff_nhds]
-  rw [(nhds_basis_opens x).forall_iff (fun _ _ h ↦ Set.Nonempty.mono (by gcongr))]
+  rw [nhds_basis_opens x |>.forall_iff <| fun _ _ h ↦ Set.Nonempty.mono <| by gcongr]
   intro U ⟨hxU, hU⟩
   by_cases H : (s ∩ U).Nonempty
   · exact Set.inter_nonempty_iff_exists_right.mpr H
