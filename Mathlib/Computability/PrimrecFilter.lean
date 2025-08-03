@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David J. Webb
 -/
 import Mathlib.Computability.Primrec
+
 /-!
 
 # Bounded quantifiers are primitive recursive
@@ -28,7 +29,7 @@ namespace Primrec
 variable {α} [Primcodable α] {f : α → Prop} [DecidablePred f]
 
 /-- Filtering a list for elements that satisfy a decidable predicate is primitive recursive. -/
-lemma list_filter (hf : PrimrecPred f) : Primrec fun L ↦ filter (f ·) L := by
+lemma filter (hf : PrimrecPred f) : Primrec fun L ↦ filter (f ·) L := by
   rw [← List.filterMap_eq_filter]
   apply listFilterMap Primrec.id
   simp only [Primrec₂, Option.guard, decide_eq_true_eq]
@@ -36,17 +37,17 @@ lemma list_filter (hf : PrimrecPred f) : Primrec fun L ↦ filter (f ·) L := by
 
 /-- Checking if any element of a list satisfies a decidable predicate is primitive recursive. -/
 lemma filter_exists (hf : PrimrecPred f) : PrimrecPred fun (L : List α) ↦ (∃ a ∈ L, f a) := by
-  let g := fun L ↦ filter (f ·) L
+  let g := fun L ↦ List.filter (f ·) L
   have h (L : List α): ((g L).length ≠ 0) ↔ (∃ a ∈ L, f a) := by simp [g]
   apply PrimrecPred.of_eq (PrimrecPred.not ?_) h
-  exact PrimrecRel.comp Primrec.eq (comp list_length (list_filter hf)) (const 0)
+  exact PrimrecRel.comp Primrec.eq (comp list_length (filter hf)) (const 0)
 
 /-- Checking if every element of a list satisfies a decidable predicate is primitive recursive. -/
 lemma filter_forall (hf : PrimrecPred f) : PrimrecPred fun (L : List α) ↦ (∀ a ∈ L, f a) := by
-  let g := fun L ↦ filter (f ·) L
+  let g := fun L ↦ List.filter (f ·) L
   have h (L : List α): ((g L).length = L.length) ↔ (∀ a ∈ L, f a) := by simp [g]
   apply PrimrecPred.of_eq ?_ h
-  exact PrimrecRel.comp Primrec.eq (comp list_length (list_filter hf)) list_length
+  exact PrimrecRel.comp Primrec.eq (comp list_length (filter hf)) list_length
 
 variable {f : ℕ → Prop} [DecidablePred f]
 
@@ -66,18 +67,10 @@ variable {α β : Type} {b : β} {f : α → β → Prop} {L : List α} [Decidab
 
 /-- If `f a b` is decidable, then given `L : List α` and `b : β`, it is primitive recurisve
 to filter `L` for elements `a` with `f a b` -/
-
-lemma filter_filtermap_lemma : L.filter (fun a ↦ f a b) =
-    filterMap ((fun b a ↦ if f a b = True then some a else none) b) L := by
-  rw [← filterMap_eq_filter]
-  apply filterMap_congr
-  simp only [Option.guard, decide_eq_true_eq, eq_iff_iff, iff_true, implies_true]
-
 lemma list_filter [Primcodable α] [Primcodable β] (hf : PrimrecRel f) :
     Primrec₂ fun (L : List α) ↦ fun b ↦ (L.filter (fun a ↦ f a b)) := by
-  simp only [primrec₂.filter_filtermap_lemma]
+  simp only [filter_eq_filtermap_ite]
   refine listFilterMap fst (Primrec.ite ?_ (option_some_iff.mpr snd) (Primrec.const Option.none))
-  simp only [eq_iff_iff, iff_true]
   exact PrimrecRel.comp hf snd (Primrec.comp snd fst)
 
 end primrec₂
@@ -86,21 +79,14 @@ namespace PrimrecRel
 
 variable {α β : Type} {f : α → β → Prop} [DecidableRel f] {L : List α} {b : β}
 
-/-- If `f a b` is decidable, then given `L : List α` and `b : β`, `"g L b ↔ ∃ a L, f a b"`
-is a primitive recurisve relation. -/
-
-lemma filter_length_ne_zero_exists :
-    ((fun L ↦ filter (fun a ↦ f a b) L) L).length ≠ 0 ↔ (∃ a ∈ L, f a b) := by simp
-
-lemma filter_length_eq_length_for_all :
-    ((fun L ↦ filter (fun a ↦ f a b) L) L).length = L.length ↔ (∀ a ∈ L, f a b) := by simp
-
 variable [Primcodable α] [Primcodable β]
 
+/-- If `f a b` is decidable, then given `L : List α` and `b : β`, `"g L b ↔ ∃ a L, f a b"`
+is a primitive recurisve relation. -/
 lemma filter_exists (hf : PrimrecRel f) :
     PrimrecRel fun (L : List α) ↦ fun b ↦ (∃ a ∈ L, f a b) := by
-  let g (b) := fun L ↦ filter (fun a ↦ f a b) L
-  have h (L) (b) : (g b L).length ≠ 0 ↔ (∃ a ∈ L, f a b) := filter_length_ne_zero_exists
+  let g (b) := fun L ↦ filter (f · b) L
+  have h (L) (b) : (g b L).length ≠ 0 ↔ (∃ a ∈ L, f a b) := filter_length_ne_zero_iff
   apply of_eq ?_ h
   apply PrimrecPred.not (PrimrecRel.comp Primrec.eq (Primrec.comp list_length ?_) (const 0))
   exact Primrec₂.comp (Primrec₂.swap (primrec₂.list_filter hf)) snd fst
@@ -109,8 +95,8 @@ lemma filter_exists (hf : PrimrecRel f) :
 is a primitive recurisve relation. -/
 lemma filter_forall (hf : PrimrecRel f) :
     PrimrecRel fun (L : List α) ↦ fun b ↦ (∀ a ∈ L, f a b) := by
-  let g (b) := fun L ↦ filter (fun a ↦ f a b) L
-  have h (L) (b) : (g b L).length = L.length ↔ (∀ a ∈ L, f a b) := filter_length_eq_length_for_all
+  let g (b) := fun L ↦ filter (f · b) L
+  have h (L) (b) : (g b L).length = L.length ↔ (∀ a ∈ L, f a b) := filter_length_eq_length_iff
   apply PrimrecRel.of_eq ?_ h
   apply PrimrecRel.comp Primrec.eq (Primrec.comp list_length ?_) (Primrec.comp list_length fst)
   exact Primrec₂.comp (Primrec₂.swap (primrec₂.list_filter hf)) snd fst
@@ -139,12 +125,9 @@ namespace Primrec
 lemma nat_rel_list_filter {f : ℕ → ℕ → Prop} (s : ℕ) [DecidableRel f] (hf : PrimrecRel f) :
     Primrec fun n ↦ ((range (s)).filter (fun y ↦ f y n)) := by
   let g (n) : ℕ → Option Nat := (fun y ↦ (if f y n = True then y else Option.none))
-  have h (n) : (range (s)).filter (fun y ↦ f y n) = filterMap (g n) (range s) :=
-    primrec₂.filter_filtermap_lemma
-  simp only [h]
+  simp only [filter_eq_filtermap_ite]
   refine listFilterMap (Primrec.const (range s)) ?_
   refine Primrec.ite ?_ (option_some_iff.mpr snd) (Primrec.const Option.none)
-  simp only [eq_iff_iff, iff_true]
   exact PrimrecRel.comp hf snd fst
 
 end Primrec
