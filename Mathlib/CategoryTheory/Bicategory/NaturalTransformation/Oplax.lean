@@ -31,7 +31,7 @@ CategoryStruct's are given by oplax transformations and strong transformations r
 
 We also provide API for going between oplax transformations and strong transformations:
 * `Oplax.StrongCore F G`: a structure on an oplax transformation between oplax functors that
-promotes it to a strong transformation.
+  promotes it to a strong transformation.
 * `Oplax.mkOfOplax η η'`: given an oplax transformation `η` such that each component
   2-morphism is an isomorphism, `mkOfOplax` gives the corresponding strong transformation.
 

@@ -55,9 +55,9 @@ modules*][Roby-1963]
 ## Discussion
 
 * In practice, one often has a single such structure to handle on a given ideal,
-but several ideals of the same ring might be considered.
-Without any explicit mention of the ideal, it is not clear whether such structures
-should be provided as instances.
+  but several ideals of the same ring might be considered.
+  Without any explicit mention of the ideal, it is not clear whether such structures
+  should be provided as instances.
 
 * We do not provide any notation such as `a ^[n]` for `dpow a n`.
 
