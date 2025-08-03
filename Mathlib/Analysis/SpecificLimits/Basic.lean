@@ -124,7 +124,7 @@ theorem Filter.EventuallyEq.div_mul_cancel_atTop {α K : Type*}
 
 /-- If when `x` tends to `∞`, `g` tends to `∞` and `f x / g x` tends to a positive
   constant, then `f` tends to `∞`. -/
-theorem Tendsto.num {α K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
+theorem Filter.Tendsto.num {α K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
     [TopologicalSpace K] [OrderTopology K]
     {f g : α → K} {l : Filter α} (hg : Tendsto g l atTop) {a : K} (ha : 0 < a)
     (hlim : Tendsto (fun x => f x / g x) l (𝓝 a)) :
@@ -133,7 +133,7 @@ theorem Tendsto.num {α K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRin
 
 /-- If when `x` tends to `∞`, `g` tends to `∞` and `f x / g x` tends to a positive
   constant, then `f` tends to `∞`. -/
-theorem Tendsto.den {α K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
+theorem Filter.Tendsto.den {α K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
     [TopologicalSpace K] [OrderTopology K]
     [ContinuousInv K] {f g : α → K} {l : Filter α} (hf : Tendsto f l atTop) {a : K} (ha : 0 < a)
     (hlim : Tendsto (fun x => f x / g x) l (𝓝 a)) :
@@ -145,12 +145,12 @@ theorem Tendsto.den {α K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRin
 
 /-- If when `x` tends to `∞`, `f x / g x` tends to a positive constant, then `f` tends to `∞` if
   and only if `g` tends to `∞`. -/
-theorem Tendsto.num_atTop_iff_den_atTop {α K : Type*}
+theorem Filter.Tendsto.num_atTop_iff_den_atTop {α K : Type*}
     [Field K] [LinearOrder K] [IsStrictOrderedRing K] [TopologicalSpace K]
     [OrderTopology K] [ContinuousInv K] {f g : α → K} {l : Filter α} {a : K} (ha : 0 < a)
     (hlim : Tendsto (fun x => f x / g x) l (𝓝 a)) :
     Tendsto f l atTop ↔ Tendsto g l atTop :=
-  ⟨fun hf ↦ Tendsto.den hf ha hlim, fun hg ↦ Tendsto.num hg ha hlim⟩
+  ⟨fun hf ↦ hf.den ha hlim, fun hg ↦ hg.num ha hlim⟩
 
 /-! ### Powers -/
 
