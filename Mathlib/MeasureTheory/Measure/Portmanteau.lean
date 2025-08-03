@@ -632,7 +632,7 @@ lemma _root_.IsPiSystem.tendsto_probabilityMeasure_biUnion
 probability measure. Then any open set can be approximated arbitrarily well in measure from inside
 by a finite union of elements of `S`. -/
 lemma ProbabilityMeasure.exists_lt_measure_biUnion_of_isOpen
-    [TopologicalSpace α] [SecondCountableTopology α] [OpensMeasurableSpace α]
+    [TopologicalSpace α] [SecondCountableTopology α]
     {S : Set (Set α)} (ν : ProbabilityMeasure α)
     (h : ∀ (u : Set α), ∀ x ∈ u, IsOpen u → ∃ s ∈ S, x ∈ s ∧ s ∈ 𝓝 x ∧ s ⊆ u)
     {G : Set α} (hG : IsOpen G) {r : ℝ≥0} (hr : r < ν G) :
