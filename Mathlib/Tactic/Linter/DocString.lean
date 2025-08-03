@@ -68,7 +68,7 @@ TODO: flesh out which ones and why! -/
 def check (str : String) : Array MessageData := Id.run do
   let lines := str.splitOn "\n"
   -- If the doc-string contains a code block, we skip any analysis (for now).
-  if lines.any (·.startsWith "```") then return #[]
+  if lines.any (·.trimLeft.startsWith "```") then return #[]
   let mut msgs := #[]
   -- Each line should be indented by an even number of spaces (and no tabs).
   for line in lines do

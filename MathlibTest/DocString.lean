@@ -92,6 +92,15 @@ example : Nat := 1
 -/
 example : Nat := 1
 
+#guard_msgs in
+/--
+Code blocks are also recognised even if indented:
+  ```
+   1 + 2 = 2
+  ```
+-/
+example : Nat := 1
+
 /--
 warning: error: line '* oddly indented' is indented by 1 space, which is an odd number
 
