@@ -564,9 +564,7 @@ variable (R) in
 /-- `HahnSeries.trunc` as a linear map. -/
 def truncLinearMap [DecidableLE Γ] (c : Γ) : HahnSeries Γ V →ₗ[R] HahnSeries Γ V where
   __ := truncAddMonoidHom c
-  map_smul' s x := by
-    ext
-    simp
+  map_smul' s x := by ext; simp
 
 variable (R) in
 @[simp]
