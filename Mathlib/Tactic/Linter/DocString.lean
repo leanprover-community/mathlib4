@@ -9,7 +9,7 @@ import Mathlib.Tactic.Linter.Header
 /-!
 #  The "DocString" style linter
 
-The "DocString" linter validates style conventions regarding doc-string formatting.
+The "DocString" linters validate style conventions regarding doc-string formatting.
 -/
 
 open Lean Elab Linter
@@ -25,11 +25,21 @@ register_option linter.style.docString : Bool := {
 }
 
 /--
-The "empty doc string" warns on empty doc-strings.
+The "empty doc string" linter warns on empty doc-strings.
 -/
 register_option linter.style.docString.empty : Bool := {
   defValue := true
   descr := "enable the style.docString.empty linter"
+}
+
+/--
+The "doc string indentation" linter warns about incorrect indentation in doc-strings, particularly
+for enumeration items in lists. (This affects rendering with stricter markdown renderers than
+github's, and hides real formatting issues.)
+-/
+register_option linter.style.docString.indentation : Bool := {
+  defValue := false
+  descr := "enable the style.docString.indentation linter"
 }
 
 /--
