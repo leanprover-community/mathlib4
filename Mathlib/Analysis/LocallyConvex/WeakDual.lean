@@ -158,11 +158,6 @@ theorem mem_span_iff_bound [Nonempty ι] {f : ι → E →ₗ[𝕜] 𝕜} (φ : 
     exact ⟨s, C, hC⟩
   · exact Seminorm.cont_withSeminorms_normedSpace _ this _ H
 
-example [AddCommGroup F] [Module 𝕜 F] {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (f : E →ₗ[𝕜] 𝕜) :
-    f ∈ Submodule.span 𝕜 (Set.range (B.flip)) ↔
-    ∃ s : Finset F, ∃ (γ : NNReal), f.toSeminorm ≤ γ • (s.sup B.toSeminormFamily) := by
-  apply mem_span_iff_bound f
-
 end NontriviallyNormedField
 
 end
