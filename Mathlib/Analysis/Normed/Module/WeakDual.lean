@@ -151,24 +151,26 @@ open NormedSpace
 /-- For normed spaces `E`, there is a canonical map `WeakDual 𝕜 E → Dual 𝕜 E` (the "identity"
 mapping). It is a linear equivalence. Here it is implemented as the inverse of the linear
 equivalence `NormedSpace.Dual.toWeakDual` in the other direction. -/
-def toNormedDual : WeakDual 𝕜 E ≃ₗ[𝕜] StrongDual 𝕜 E :=
+def toStrongDual : WeakDual 𝕜 E ≃ₗ[𝕜] StrongDual 𝕜 E :=
   NormedSpace.Dual.toWeakDual.symm
 
-theorem toNormedDual_apply (x : WeakDual 𝕜 E) (y : E) : (toNormedDual x) y = x y :=
+@[deprecated (since := "2025-08-03")] alias toNormedDual := toStrongDual
+
+theorem toNormedDual_apply (x : WeakDual 𝕜 E) (y : E) : (toStrongDual x) y = x y :=
   rfl
 
 @[simp]
-theorem coe_toNormedDual (x' : WeakDual 𝕜 E) : toNormedDual x' = x' :=
+theorem coe_toNormedDual (x' : WeakDual 𝕜 E) : toStrongDual x' = x' :=
   rfl
 
 @[simp]
-theorem toNormedDual_inj (x' y' : WeakDual 𝕜 E) : toNormedDual x' = toNormedDual y' ↔ x' = y' :=
-  (LinearEquiv.injective toNormedDual).eq_iff
+theorem toNormedDual_inj (x' y' : WeakDual 𝕜 E) : toStrongDual x' = toStrongDual y' ↔ x' = y' :=
+  (LinearEquiv.injective toStrongDual).eq_iff
 
 @[deprecated (since := "2024-12-29")] alias toNormedDual_eq_iff := toNormedDual_inj
 
 theorem isClosed_closedBall (x' : StrongDual 𝕜 E) (r : ℝ) :
-    IsClosed (toNormedDual ⁻¹' closedBall x' r) :=
+    IsClosed (toStrongDual ⁻¹' closedBall x' r) :=
   isClosed_induced_iff'.2 (ContinuousLinearMap.is_weak_closed_closedBall x' r)
 
 /-!
@@ -181,7 +183,7 @@ variable (𝕜)
 /-- The polar set `polar 𝕜 s` of `s : Set E` seen as a subset of the dual of `E` with the
 weak-star topology is `WeakDual.polar 𝕜 s`. -/
 def polar (s : Set E) : Set (WeakDual 𝕜 E) :=
-  toNormedDual ⁻¹' (StrongDual.polar 𝕜) s
+  toStrongDual ⁻¹' (StrongDual.polar 𝕜) s
 
 theorem polar_def (s : Set E) : polar 𝕜 s = { f : WeakDual 𝕜 E | ∀ x ∈ s, ‖f x‖ ≤ 1 } :=
   rfl
@@ -232,7 +234,7 @@ theorem isCompact_polar [ProperSpace 𝕜] {s : Set E} (s_nhds : s ∈ 𝓝 (0 :
 /-- The **Banach-Alaoglu theorem**: closed balls of the dual of a normed space `E` are compact in
 the weak-star topology. -/
 theorem isCompact_closedBall [ProperSpace 𝕜] (x' : StrongDual 𝕜 E) (r : ℝ) :
-    IsCompact (toNormedDual ⁻¹' closedBall x' r) :=
+    IsCompact (toStrongDual ⁻¹' closedBall x' r) :=
   isCompact_of_bounded_of_closed isBounded_closedBall (isClosed_closedBall x' r)
 
 end WeakDual
