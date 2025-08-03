@@ -569,7 +569,7 @@ theorem tendsto_of_forall_isOpen_le_liminf {ι : Type*} {μ : ProbabilityMeasure
   apply (h_opens G hG).trans
   change _ ≤ atTop.liminf ((fun i ↦ μs i G) ∘ u)
   rw [liminf_comp]
-  refine liminf_le_liminf_of_le hu (by isBoundedDefault) ⟨1, ?_⟩
+  refine liminf_le_liminf_of_le hu (by isBoundedDefault) ?_
   exact isBoundedUnder_of ⟨1, by simp⟩ |>.isCoboundedUnder_ge
 
 end le_liminf_open_implies_convergence
