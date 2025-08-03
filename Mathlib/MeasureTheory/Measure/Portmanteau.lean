@@ -540,7 +540,9 @@ lemma integral_le_liminf_integral_of_forall_isOpen_measure_le_liminf_measure
 
 /-- One implication of the portmanteau theorem:
 If for all open sets G we have the liminf condition `μ(G) ≤ liminf μsₙ(G)`, then the measures
-μsₙ converge weakly to the measure μ. -/
+μsₙ converge weakly to the measure μ.
+Superseded by `tendsto_of_forall_isOpen_le_liminf` which works for all countably
+generated filters. -/
 theorem tendsto_of_forall_isOpen_le_liminf_nat {μ : ProbabilityMeasure Ω}
     {μs : ℕ → ProbabilityMeasure Ω}
     (h_opens : ∀ G, IsOpen G → μ G ≤ atTop.liminf (fun i ↦ μs i G)) :
@@ -572,17 +574,10 @@ theorem tendsto_of_forall_isOpen_le_liminf {ι : Type*} {μ : ProbabilityMeasure
   apply Filter.tendsto_of_seq_tendsto (fun u hu ↦ ?_)
   apply tendsto_of_forall_isOpen_le_liminf_nat (fun G hG ↦ ?_)
   apply (h_opens G hG).trans
-  simp only [Function.comp_apply]
   change _ ≤ atTop.liminf ((fun i ↦ μs i G) ∘ u)
   rw [liminf_comp]
-  apply liminf_le_liminf_of_le ?_ ?_ ?_
-  · exact hu
-  · refine ⟨0, by simp⟩
-  · refine ⟨1, ?_⟩
-    simp only [ge_iff_le, map_map, eventually_map, Function.comp_apply, eventually_atTop,
-      forall_exists_index]
-    intro a x hx
-    exact  (hx x le_rfl).trans (by simp)
+  refine liminf_le_liminf_of_le hu (by isBoundedDefault) ?_
+  exact isBoundedUnder_of ⟨1, by simp⟩ |>.isCoboundedUnder_ge
 
 end le_liminf_open_implies_convergence
 
