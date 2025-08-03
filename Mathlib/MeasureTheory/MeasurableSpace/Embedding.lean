@@ -743,12 +743,14 @@ noncomputable def schroederBernstein {f : α → β} {g : β → α} (hf : Measu
   apply hx
   exact ⟨y, h, rfl⟩
 
+@[simp]
 lemma equivRange_apply (hf : MeasurableEmbedding f) (x : α) :
     hf.equivRange x = ⟨f x, mem_range_self x⟩ := by
   suffices f x = (hf.equivRange x).1 by simp [this]
   simp [MeasurableEmbedding.equivRange, MeasurableEquiv.cast, MeasurableEquiv.Set.univ,
     MeasurableEmbedding.equivImage]
 
+@[simp]
 lemma equivRange_symm_apply_mk (hf : MeasurableEmbedding f) (x : α) :
     hf.equivRange.symm ⟨f x, mem_range_self x⟩ = x := by
   nth_rw 3 [← hf.equivRange.symm_apply_apply x]
