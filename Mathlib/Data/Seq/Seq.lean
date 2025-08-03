@@ -301,7 +301,7 @@ theorem corec_nil (f : β → Option (α × β)) (b : β)
   simp [h]
 
 theorem corec_cons {f : β → Option (α × β)} {b : β} {x : α} {s : β}
-    (h : f b = .some (x, s)) : corec f b = cons x (corec f s) := by
+    (h : f b = some (x, s)) : corec f b = cons x (corec f s) := by
   apply destruct_eq_cons
   simp [h]
 
@@ -492,7 +492,7 @@ instance : Membership α (Seq α) :=
   ⟨Seq.Mem⟩
 
 -- Cannot be @[simp] because `n` can not be inferred by `simp`.
-theorem get?_mem {s : Seq α} {n : ℕ} {x : α} (h : s.get? n = .some x) : x ∈ s := ⟨n, h.symm⟩
+theorem get?_mem {s : Seq α} {n : ℕ} {x : α} (h : s.get? n = some x) : x ∈ s := ⟨n, h.symm⟩
 
 theorem notMem_nil (a : α) : a ∉ @nil α := fun ⟨_, (h : some a = none)⟩ => by injection h
 
@@ -577,8 +577,8 @@ section MLList
 def ofMLList : MLList Id α → Seq α :=
   corec fun l =>
     match l.uncons with
-    | .none => none
-    | .some (a, l') => some (a, l')
+    | none => none
+    | some (a, l') => some (a, l')
 
 instance coeMLList : Coe (MLList Id α) (Seq α) :=
   ⟨ofMLList⟩
@@ -711,8 +711,8 @@ def enum (s : Seq α) : Seq (ℕ × α) :=
 def fold (s : Seq α) (init : β) (f : β → α → β) : Seq β :=
   let f : β × Seq α → Option (β × (β × Seq α)) := fun (acc, x) =>
     match destruct x with
-    | none => .none
-    | some (x, s) => .some (f acc x, f acc x, s)
+    | none => none
+    | some (x, s) => some (f acc x, f acc x, s)
   cons init <| corec f (init, s)
 
 section OfStream
@@ -768,7 +768,7 @@ theorem getElem?_take : ∀ (n k : ℕ) (s : Seq α),
           simp [List.getElem?_cons_succ, Nat.add_lt_add_iff_right, getElem?_take]
 
 theorem get?_mem_take {s : Seq α} {m n : ℕ} (h_mn : m < n) {x : α}
-    (h_get : s.get? m = .some x) : x ∈ s.take n := by
+    (h_get : s.get? m = some x) : x ∈ s.take n := by
   induction m generalizing n s with
   | zero =>
     obtain ⟨l, hl⟩ := Nat.exists_add_one_eq.mpr h_mn
@@ -777,7 +777,7 @@ theorem get?_mem_take {s : Seq α} {m n : ℕ} (h_mn : m < n) {x : α}
   | succ k ih =>
     obtain ⟨l, hl⟩ := Nat.exists_eq_add_of_lt h_mn
     subst hl
-    have : ∃ y, s.get? 0 = .some y := by
+    have : ∃ y, s.get? 0 = some y := by
       apply ge_stable _ _ h_get
       simp
     obtain ⟨y, hy⟩ := this
