@@ -251,7 +251,19 @@ lemma mem_support_restrict [OpensMeasurableSpace X] {s : Set X} {x : X} :
 
 lemma interior_inter_support [OpensMeasurableSpace X] {s : Set X} :
     interior s ∩ μ.support ⊆ (μ.restrict s).support := by
-  sorry
+  intro x ⟨hxs, hxp⟩
+  apply mem_support_restrict.mpr
+  rw [Filter.HasBasis.frequently_smallSets (hl := nhdsWithin_basis_open x s) (hq := pos_mono μ)]
+  intro V ⟨hs1, hs2⟩
+  obtain ⟨y, hy1, hy2⟩ := hxs
+  rw [(nhds_basis_opens x).mem_measureSupport] at hxp
+  exact lt_of_lt_of_le (hxp (V ∩ y) ⟨Set.mem_inter hs1 hy2, IsOpen.inter hs2 hy1.1⟩)
+    <| OuterMeasureClass.measure_mono μ <| Set.inter_subset_inter (fun ⦃a⦄ a ↦ a) hy1.2
+
+  /- We have reduced the proof to showing that the intersection of this
+  open neighborhood of x, which is in the support of mu, with this arbitrary
+  subset s of x, has positive measure.-/
+
 
 -- Prove the following directly, without appeal to `support_restrict_subset_closure`
 
