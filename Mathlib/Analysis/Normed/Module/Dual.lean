@@ -48,10 +48,10 @@ TODO change namespace
 -/
 namespace NormedSpace
 
-variable (𝕜 : Type*) [SeminormedCommRing 𝕜]
-variable (E : Type*) [TopologicalSpace E] [AddCommGroup E] [Module 𝕜 E]
+variable (R : Type*) [SeminormedCommRing R]
+variable (M : Type*) [TopologicalSpace M] [AddCommGroup M] [Module R M]
 
-theorem dualPairing_separatingLeft : (dualPairing 𝕜 E).SeparatingLeft := by
+theorem dualPairing_separatingLeft : (dualPairing R M).SeparatingLeft := by
   rw [LinearMap.separatingLeft_iff_ker_eq_bot]
   unfold dualPairing
   rw [LinearMap.ker_eq_bot]
