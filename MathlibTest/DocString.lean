@@ -113,7 +113,13 @@ A list
 -/
 example : Nat := 1
 
--- TODO: should error!
+/--
+warning: unexpected indentation: line - over-indented second item is indented by 4 spaces,
+but should have been indented by at most 2.
+The the previous line was indented by 0 spaces.
+
+Note: This linter can be disabled with `set_option linter.style.docString false`
+-/
 #guard_msgs in
 /--
 A list
@@ -124,6 +130,12 @@ example : Nat := 1
 
 /--
 warning: error: line '- an odd item' is indented by 3 spaces, which is an odd number
+
+Note: This linter can be disabled with `set_option linter.style.docString false`
+---
+warning: unexpected indentation: line - another is indented by 6 spaces,
+but should have been indented by at most 5.
+The the previous line was indented by 3 spaces.
 
 Note: This linter can be disabled with `set_option linter.style.docString false`
 -/
