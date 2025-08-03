@@ -123,6 +123,52 @@ theorem countable_setOf_isolated_left [SecondCountableTopology α] :
     { x : α | 𝓝[<] x = ⊥ }.Countable :=
   countable_setOf_isolated_right (α := αᵒᵈ)
 
+/-- The set of points in a set which are isolated on the right in this set is countable when the
+space is second-countable. -/
+theorem countable_setOf_isolated_right_within [SecondCountableTopology α] {s : Set α} :
+    { x ∈ s | 𝓝[s ∩ Ioi x] x = ⊥ }.Countable := by
+  /- This does not follow from `countable_setOf_isolated_right`, which gives the result when `s`
+  is the whole space, as one can not use it inside the subspace since it doesn't have the order
+  topology. Instead, we follow the main steps of its proof. -/
+  let t := { x ∈ s | 𝓝[s ∩ Ioi x] x = ⊥ ∧ ¬ IsTop x}
+  suffices H : t.Countable by
+    have : { x ∈ s | 𝓝[s ∩ Ioi x] x = ⊥ } ⊆ t ∪ {x | IsTop x} := by
+      intro x hx
+      by_cases h'x : IsTop x
+      · simp [h'x]
+      · simpa [-sep_and, t, h'x]
+    apply Countable.mono this
+    simp [H, (subsingleton_isTop α).countable]
+  have (x) (hx : x ∈ t) : ∃ y > x, s ∩ Ioo x y = ∅ := by
+    simp only [← empty_mem_iff_bot, mem_nhdsWithin_iff_exists_mem_nhds_inter,
+      subset_empty_iff, IsTop, not_forall, not_le, mem_setOf_eq, t] at hx
+    rcases hx.2.1 with ⟨u, hu, h'u⟩
+    obtain ⟨y, hxy, hy⟩ : ∃ y, x < y ∧ Ico x y ⊆ u := exists_Ico_subset_of_mem_nhds hu hx.2.2
+    refine ⟨y, hxy, ?_⟩
+    contrapose! h'u
+    apply h'u.mono
+    intro z hz
+    exact ⟨hy ⟨hz.2.1.le, hz.2.2⟩, hz.1, hz.2.1⟩
+  choose! y hy h'y using this
+  apply Set.PairwiseDisjoint.countable_of_Ioo (y := y) _ hy
+  simp only [PairwiseDisjoint, Set.Pairwise, Function.onFun]
+  intro a ha b hb hab
+  wlog H : a < b generalizing a b with h
+  · have : b < a := lt_of_le_of_ne (not_lt.1 H) hab.symm
+    exact (h hb ha hab.symm this).symm
+  have : y a ≤ b := by
+    by_contra!
+    have : b ∈ s ∩ Ioo a (y a) := by simp [hb.1, H, this]
+    simp [h'y a ha] at this
+  rw [disjoint_iff_forall_ne]
+  exact fun u hu v hv ↦ ((hu.2.trans_le this).trans hv.1).ne
+
+/-- The set of points in a set which are isolated on the left in this set is countable when the
+space is second-countable. -/
+theorem countable_setOf_isolated_left_within [SecondCountableTopology α] {s : Set α} :
+    { x ∈ s | 𝓝[s ∩ Iio x] x = ⊥ }.Countable :=
+  countable_setOf_isolated_right_within (α := αᵒᵈ)
+
 /-- A set is a neighborhood of `a` within `(a, +∞)` if and only if it contains an interval `(a, u]`
 with `a < u`. -/
 theorem mem_nhdsGT_iff_exists_Ioc_subset [NoMaxOrder α] [DenselyOrdered α] {a : α} {s : Set α} :
@@ -207,7 +253,7 @@ theorem nhdsLT_basis [NoMinOrder α] (a : α) : (𝓝[<] a).HasBasis (· < a) (I
 alias nhdsWithin_Iio_basis := nhdsLT_basis
 
 theorem nhdsLT_eq_bot_iff {a : α} : 𝓝[<] a = ⊥ ↔ IsBot a ∨ ∃ b, b ⋖ a := by
-  convert (config := { preTransparency := .default }) nhdsGT_eq_bot_iff (a := OrderDual.toDual a)
+  convert (config := {preTransparency := .default}) nhdsGT_eq_bot_iff (a := OrderDual.toDual a)
     using 4
   exact ofDual_covBy_ofDual_iff
 
@@ -245,7 +291,7 @@ alias TFAE_mem_nhdsWithin_Ici := TFAE_mem_nhdsGE
 
 theorem mem_nhdsGE_iff_exists_mem_Ioc_Ico_subset {a u' : α} {s : Set α} (hu' : a < u') :
     s ∈ 𝓝[≥] a ↔ ∃ u ∈ Ioc a u', Ico a u ⊆ s :=
-  (TFAE_mem_nhdsGE hu' s).out 0 3 (by norm_num) (by norm_num)
+  (TFAE_mem_nhdsGE hu' s).out 0 3 (by simp) (by simp)
 
 @[deprecated (since := "2024-12-22")]
 alias mem_nhdsWithin_Ici_iff_exists_mem_Ioc_Ico_subset := mem_nhdsGE_iff_exists_mem_Ioc_Ico_subset
@@ -254,7 +300,7 @@ alias mem_nhdsWithin_Ici_iff_exists_mem_Ioc_Ico_subset := mem_nhdsGE_iff_exists_
 with `a < u < u'`, provided `a` is not a top element. -/
 theorem mem_nhdsGE_iff_exists_Ico_subset' {a u' : α} {s : Set α} (hu' : a < u') :
     s ∈ 𝓝[≥] a ↔ ∃ u ∈ Ioi a, Ico a u ⊆ s :=
-  (TFAE_mem_nhdsGE hu' s).out 0 4 (by norm_num) (by norm_num)
+  (TFAE_mem_nhdsGE hu' s).out 0 4 (by simp) (by simp)
 
 @[deprecated (since := "2024-12-22")]
 alias mem_nhdsWithin_Ici_iff_exists_Ico_subset' := mem_nhdsGE_iff_exists_Ico_subset'
@@ -315,7 +361,7 @@ alias TFAE_mem_nhdsWithin_Iic := TFAE_mem_nhdsLE
 
 theorem mem_nhdsLE_iff_exists_mem_Ico_Ioc_subset {a l' : α} {s : Set α} (hl' : l' < a) :
     s ∈ 𝓝[≤] a ↔ ∃ l ∈ Ico l' a, Ioc l a ⊆ s :=
-  (TFAE_mem_nhdsLE hl' s).out 0 3 (by norm_num) (by norm_num)
+  (TFAE_mem_nhdsLE hl' s).out 0 3 (by simp) (by simp)
 
 @[deprecated (since := "2024-12-22")]
 alias mem_nhdsWithin_Iic_iff_exists_mem_Ico_Ioc_subset := mem_nhdsLE_iff_exists_mem_Ico_Ioc_subset
@@ -324,7 +370,7 @@ alias mem_nhdsWithin_Iic_iff_exists_mem_Ico_Ioc_subset := mem_nhdsLE_iff_exists_
 with `l < a`, provided `a` is not a bottom element. -/
 theorem mem_nhdsLE_iff_exists_Ioc_subset' {a l' : α} {s : Set α} (hl' : l' < a) :
     s ∈ 𝓝[≤] a ↔ ∃ l ∈ Iio a, Ioc l a ⊆ s :=
-  (TFAE_mem_nhdsLE hl' s).out 0 4 (by norm_num) (by norm_num)
+  (TFAE_mem_nhdsLE hl' s).out 0 4 (by simp) (by simp)
 
 @[deprecated (since := "2024-12-22")]
 alias mem_nhdsWithin_Iic_iff_exists_Ioc_subset' := mem_nhdsLE_iff_exists_Ioc_subset'

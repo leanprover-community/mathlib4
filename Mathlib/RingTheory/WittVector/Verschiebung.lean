@@ -86,7 +86,7 @@ variable (p)
 -/
 instance verschiebungFun_isPoly : IsPoly p fun R _Rcr => @verschiebungFun p R _Rcr := by
   use verschiebungPoly
-  simp only [aeval_verschiebung_poly', eq_self_iff_true, forall₃_true_iff]
+  simp only [aeval_verschiebung_poly', forall₃_true_iff]
 
 -- We add this example as a verification that Lean 4's instance resolution can handle the `IsPoly`
 -- typeclass, whereas Lean 3 needed a bespoke `@[is_poly]` attribute.
@@ -107,7 +107,7 @@ noncomputable def verschiebung : 𝕎 R →+ 𝕎 R where
   toFun := verschiebungFun
   map_zero' := by
     ext ⟨⟩ <;> rw [verschiebungFun_coeff] <;>
-      simp only [if_true, eq_self_iff_true, zero_coeff, ite_self]
+      simp only [zero_coeff, ite_self]
   map_add' := by
     ghost_calc _ _
     rintro ⟨⟩ <;> ghost_simp
@@ -166,10 +166,10 @@ theorem bind₁_verschiebungPoly_wittPolynomial (n : ℕ) :
   apply MvPolynomial.funext
   intro x
   split_ifs with hn
-  · simp only [hn, wittPolynomial_zero, bind₁_X_right, verschiebungPoly_zero, map_zero, ite_true]
+  · simp only [hn, wittPolynomial_zero, bind₁_X_right, verschiebungPoly_zero, map_zero]
   · obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hn
     rw [Nat.succ_eq_add_one, add_tsub_cancel_right]
-    simp only [add_eq_zero, and_false, ite_false, map_mul]
+    simp only [map_mul]
     rw [map_natCast, hom_bind₁]
     calc
       _ = ghostComponent (n + 1) (verschiebung <| mk p x) := by

@@ -52,16 +52,18 @@ protected abbrev Localization.AtPrime :=
 
 namespace IsLocalization
 
-theorem AtPrime.Nontrivial [IsLocalization.AtPrime S P] : Nontrivial S :=
+theorem AtPrime.nontrivial [IsLocalization.AtPrime S P] : Nontrivial S :=
   nontrivial_of_ne (0 : S) 1 fun hze => by
     rw [← (algebraMap R S).map_one, ← (algebraMap R S).map_zero] at hze
     obtain ⟨t, ht⟩ := (eq_iff_exists P.primeCompl S).1 hze
     have htz : (t : R) = 0 := by simpa using ht.symm
     exact t.2 (htz.symm ▸ P.zero_mem : ↑t ∈ P)
 
+@[deprecated (since := "2025-07-31")] alias AtPrime.Nontrivial := IsLocalization.AtPrime.nontrivial
+
 theorem AtPrime.isLocalRing [IsLocalization.AtPrime S P] : IsLocalRing S :=
   -- Porting note: since I couldn't get local instance running, I just specify it manually
-  letI := AtPrime.Nontrivial S P
+  letI := AtPrime.nontrivial S P
   IsLocalRing.of_nonunits_add
     (by
       intro x y hx hy hu
@@ -76,7 +78,7 @@ theorem AtPrime.isLocalRing [IsLocalization.AtPrime S P] : IsLocalRing S :=
       rw [← hrx] at hx
       rw [← hry] at hy
       obtain ⟨t, ht⟩ := IsLocalization.eq.1 hxyz
-      simp only [mul_one, one_mul, Submonoid.coe_mul, Subtype.coe_mk] at ht
+      simp only [mul_one, one_mul, Submonoid.coe_mul] at ht
       suffices (t : R) * (sx * sy * sz) ∈ P from
         not_or_intro (mt hp.mem_or_mem <| not_or_intro sx.2 sy.2) sz.2
           (hp.mem_or_mem <| (hp.mem_or_mem this).resolve_left t.2)
@@ -94,6 +96,12 @@ namespace Localization
 /-- The localization of `R` at the complement of a prime ideal is a local ring. -/
 instance AtPrime.isLocalRing : IsLocalRing (Localization P.primeCompl) :=
   IsLocalization.AtPrime.isLocalRing (Localization P.primeCompl) P
+
+instance {R S : Type*} [CommRing R] [NoZeroDivisors R] {P : Ideal R} [CommRing S] [Algebra R S]
+    [NoZeroSMulDivisors R S] [IsDomain S] [P.IsPrime] :
+    NoZeroSMulDivisors (Localization.AtPrime P)
+    (Localization (Algebra.algebraMapSubmonoid S P.primeCompl)) :=
+  NoZeroSMulDivisors_of_isLocalization R S _ _ P.primeCompl_le_nonZeroDivisors
 
 end Localization
 
@@ -255,14 +263,15 @@ variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
   [Algebra R A] [Algebra R B] [IsScalarTower R A B]
 
 noncomputable instance (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime] [P.LiesOver p] :
-  Algebra (Localization.AtPrime p) (Localization.AtPrime P) :=
-    (Localization.localRingHom p P (algebraMap A B) Ideal.LiesOver.over).toAlgebra
+    Algebra (Localization.AtPrime p) (Localization.AtPrime P) :=
+  (Localization.localRingHom p P (algebraMap A B) Ideal.LiesOver.over).toAlgebra
 
 instance (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime] [P.LiesOver p] :
-  IsScalarTower R (Localization.AtPrime p) (Localization.AtPrime P) := .of_algebraMap_eq (by
-  simp [RingHom.algebraMap_toAlgebra, IsScalarTower.algebraMap_apply R A (Localization.AtPrime p),
-    Localization.localRingHom_to_map, IsScalarTower.algebraMap_apply R B (Localization.AtPrime P),
-    IsScalarTower.algebraMap_apply R A B])
+    IsScalarTower R (Localization.AtPrime p) (Localization.AtPrime P) :=
+  .of_algebraMap_eq <| by
+    simp [RingHom.algebraMap_toAlgebra, IsScalarTower.algebraMap_apply R A (Localization.AtPrime p),
+      Localization.localRingHom_to_map, IsScalarTower.algebraMap_apply R B (Localization.AtPrime P),
+      IsScalarTower.algebraMap_apply R A B]
 
 end
 

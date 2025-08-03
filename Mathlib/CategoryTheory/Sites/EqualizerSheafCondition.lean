@@ -49,7 +49,7 @@ of the Stacks entry.
 -/
 @[stacks 00VM "This is the middle object of the fork diagram there."]
 def FirstObj : Type max v u :=
-  ∏ᶜ fun f : ΣY, { f : Y ⟶ X // R f } => P.obj (op f.1)
+  ∏ᶜ fun f : Σ Y, { f : Y ⟶ X // R f } => P.obj (op f.1)
 
 variable {P R}
 
@@ -67,7 +67,7 @@ variable (P R)
 /-- Show that `FirstObj` is isomorphic to `FamilyOfElements`. -/
 @[simps]
 def firstObjEqFamily : FirstObj P R ≅ R.FamilyOfElements P where
-  hom t _ _ hf := Pi.π (fun f : ΣY, { f : Y ⟶ X // R f } => P.obj (op f.1)) ⟨_, _, hf⟩ t
+  hom t _ _ hf := Pi.π (fun f : Σ Y, { f : Y ⟶ X // R f } => P.obj (op f.1)) ⟨_, _, hf⟩ t
   inv := Pi.lift fun f x => x _ f.2.2
 
 instance : Inhabited (FirstObj P (⊥ : Presieve X)) :=
@@ -115,7 +115,7 @@ variable (P S)
 /-- The map `p` of Equations (3,4) [MM92]. -/
 def firstMap : FirstObj P (S : Presieve X) ⟶ SecondObj P S :=
   Pi.lift fun fg =>
-    Pi.π _ (⟨_, _, S.downward_closed fg.2.2.2.2 fg.2.2.1⟩ : ΣY, { f : Y ⟶ X // S f })
+    Pi.π _ (⟨_, _, S.downward_closed fg.2.2.2.2 fg.2.2.1⟩ : Σ Y, { f : Y ⟶ X // S f })
 
 instance : Inhabited (SecondObj P (⊥ : Sieve X)) :=
   ⟨firstMap _ _ default⟩
@@ -183,7 +183,7 @@ contains the data used to check a family of elements for a presieve is compatibl
 -/
 @[simp, stacks 00VM "This is the rightmost object of the fork diagram there."]
 def SecondObj : Type max v u :=
-  ∏ᶜ fun fg : (ΣY, { f : Y ⟶ X // R f }) × ΣZ, { g : Z ⟶ X // R g } =>
+  ∏ᶜ fun fg : (Σ Y, { f : Y ⟶ X // R f }) × Σ Z, { g : Z ⟶ X // R g } =>
     haveI := Presieve.hasPullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
     P.obj (op (pullback fg.1.2.1 fg.2.2.1))
 
@@ -366,6 +366,32 @@ theorem sheaf_condition : (Presieve.ofArrows X π).IsSheafFor P ↔
     simp [forkMap]
 
 end Arrows
+
+/-- The sheaf condition for a single morphism is the same as the canonical fork diagram being
+limiting. -/
+lemma isSheafFor_singleton_iff {F : Cᵒᵖ ⥤ Type*} {X Y : C} {f : X ⟶ Y}
+    (c : PullbackCone f f) (hc : IsLimit c) :
+    Presieve.IsSheafFor F (.singleton f) ↔
+      Nonempty
+        (IsLimit (Fork.ofι (F.map f.op) (f := F.map c.fst.op) (g := F.map c.snd.op)
+          (by simp [← Functor.map_comp, ← op_comp, c.condition]))) := by
+  have h (x : F.obj (op X)) : (∀ {Z : C} (p₁ p₂ : Z ⟶ X),
+      p₁ ≫ f = p₂ ≫ f → F.map p₁.op x = F.map p₂.op x) ↔ F.map c.fst.op x = F.map c.snd.op x := by
+    refine ⟨fun H ↦ H _ _ c.condition, fun H Z p₁ p₂ h ↦ ?_⟩
+    rw [← PullbackCone.IsLimit.lift_fst hc _ _ h, op_comp, FunctorToTypes.map_comp_apply, H]
+    simp [← FunctorToTypes.map_comp_apply, ← op_comp]
+  rw [Types.type_equalizer_iff_unique, Presieve.isSheafFor_singleton]
+  simp_rw [h]
+
+/-- Special case of `isSheafFor_singleton_iff` with `c = pullback.cone f f`. -/
+lemma isSheafFor_singleton_iff_of_hasPullback {F : Cᵒᵖ ⥤ Type*} {X Y : C} {f : X ⟶ Y}
+    [HasPullback f f] :
+    Presieve.IsSheafFor F (.singleton f) ↔
+      Nonempty
+        (IsLimit (Fork.ofι (F.map f.op) (f := F.map (pullback.fst f f).op)
+          (g := F.map (pullback.snd f f).op)
+          (by simp [← Functor.map_comp, ← op_comp, pullback.condition]))) :=
+  isSheafFor_singleton_iff (pullback.cone f f) (pullback.isLimit f f)
 
 end Presieve
 

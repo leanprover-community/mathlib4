@@ -195,7 +195,7 @@ alias condexpIndL1_of_measurableSet_of_measure_ne_top :=
   condExpIndL1_of_measurableSet_of_measure_ne_top
 
 theorem condExpIndL1_of_measure_eq_top (hμs : μ s = ∞) (x : G) : condExpIndL1 hm μ s x = 0 := by
-  simp only [condExpIndL1, hμs, eq_self_iff_true, not_true, Ne, dif_neg, not_false_iff,
+  simp only [condExpIndL1, hμs, not_true, Ne, dif_neg, not_false_iff,
     and_false]
 
 @[deprecated (since := "2025-01-21")]

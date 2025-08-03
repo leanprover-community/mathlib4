@@ -235,7 +235,7 @@ theorem canonicalEquiv_canonicalEquiv (P'' : Type*) [CommRing P''] [Algebra R P'
     canonicalEquiv S P' P'' (canonicalEquiv S P P' I) = canonicalEquiv S P P'' I := by
   ext
   simp only [IsLocalization.map_map, RingHomInvPair.comp_eq₂, mem_canonicalEquiv_apply,
-    exists_prop, exists_exists_and_eq_and]
+    exists_exists_and_eq_and]
 
 theorem canonicalEquiv_trans_canonicalEquiv (P'' : Type*) [CommRing P''] [Algebra R P'']
     [IsLocalization S P''] :
@@ -610,7 +610,7 @@ theorem isPrincipal_iff (I : FractionalIdeal S P) :
 @[simp]
 theorem spanSingleton_zero : spanSingleton S (0 : P) = 0 := by
   ext
-  simp [Submodule.mem_span_singleton, eq_comm]
+  simp [eq_comm]
 
 theorem spanSingleton_eq_zero_iff {y : P} : spanSingleton S y = 0 ↔ y = 0 :=
   ⟨fun h =>
@@ -796,7 +796,7 @@ theorem le_spanSingleton_mul_iff {x : P} {I J : FractionalIdeal S P} :
 
 theorem spanSingleton_mul_le_iff {x : P} {I J : FractionalIdeal S P} :
     spanSingleton _ x * I ≤ J ↔ ∀ z ∈ I, x * z ∈ J := by
-  simp only [mul_le, mem_singleton_mul, mem_spanSingleton]
+  simp only [mul_le, mem_spanSingleton]
   constructor
   · intro h zI hzI
     exact h x ⟨1, one_smul _ _⟩ zI hzI

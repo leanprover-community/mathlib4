@@ -153,7 +153,7 @@ theorem parallelFamily_map_left {j : J} : (parallelFamily f).map (line j) = f j 
 def diagramIsoParallelFamily (F : WalkingParallelFamily J ⥤ C) :
     F ≅ parallelFamily fun j => F.map (line j) :=
   NatIso.ofComponents (fun j => eqToIso <| by cases j <;> aesop_cat) <| by
-    rintro _ _ (_|_) <;> aesop_cat
+    rintro _ _ (_ | _) <;> aesop_cat
 
 /-- `WalkingParallelPair` as a category is equivalent to a special case of
 `WalkingParallelFamily`. -/
@@ -164,10 +164,10 @@ def walkingParallelFamilyEquivWalkingParallelPair :
     parallelFamily fun p => cond p.down WalkingParallelPairHom.left WalkingParallelPairHom.right
   inverse := parallelPair (line (ULift.up true)) (line (ULift.up false))
   unitIso := NatIso.ofComponents (fun X => eqToIso (by cases X <;> rfl)) (by
-    rintro _ _ (_|⟨_|_⟩) <;> aesop_cat)
+    rintro _ _ (_ | ⟨_ | _⟩) <;> aesop_cat)
   counitIso := NatIso.ofComponents (fun X => eqToIso (by cases X <;> rfl)) (by
-    rintro _ _ (_|_|_) <;> aesop_cat)
-  functor_unitIso_comp := by rintro (_|_) <;> aesop_cat
+    rintro _ _ (_ | _ | _) <;> aesop_cat)
+  functor_unitIso_comp := by rintro (_ | _) <;> aesop_cat
 
 /-- A trident on `f` is just a `Cone (parallelFamily f)`. -/
 abbrev Trident :=
@@ -423,7 +423,7 @@ def Trident.ofCone {F : WalkingParallelFamily J ⥤ C} (t : Cone F) :
   pt := t.pt
   π :=
     { app := fun X => t.π.app X ≫ eqToHom (by cases X <;> aesop_cat)
-      naturality := by rintro _ _ (_|_) <;> aesop_cat }
+      naturality := by rintro _ _ (_ | _) <;> aesop_cat }
 
 /-- Given `F : WalkingParallelFamily ⥤ C`, which is really the same as
     `parallelFamily (F.map left) (F.map right)` and a cocone on `F`, we get a cotrident on
@@ -433,7 +433,7 @@ def Cotrident.ofCocone {F : WalkingParallelFamily J ⥤ C} (t : Cocone F) :
   pt := t.pt
   ι :=
     { app := fun X => eqToHom (by cases X <;> aesop_cat) ≫ t.ι.app X
-      naturality := by rintro _ _ (_|_) <;> aesop_cat }
+      naturality := by rintro _ _ (_ | _) <;> aesop_cat }
 
 @[simp]
 theorem Trident.ofCone_π {F : WalkingParallelFamily J ⥤ C} (t : Cone F) (j) :

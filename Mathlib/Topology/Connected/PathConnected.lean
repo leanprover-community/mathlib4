@@ -257,33 +257,33 @@ theorem pathComponent_subset_component (x : X) : pathComponent x ⊆ connectedCo
   (isConnected_range h.somePath.continuous).subset_connectedComponent ⟨0, by simp⟩ ⟨1, by simp⟩
 
 /-- The path component of `x` in `F` is the set of points that can be joined to `x` in `F`. -/
-def pathComponentIn (x : X) (F : Set X) :=
+def pathComponentIn (F : Set X) (x : X) :=
   { y | JoinedIn F x y }
 
 @[simp]
-theorem pathComponentIn_univ (x : X) : pathComponentIn x univ = pathComponent x := by
+theorem pathComponentIn_univ (x : X) : pathComponentIn univ x = pathComponent x := by
   simp [pathComponentIn, pathComponent, JoinedIn, Joined, exists_true_iff_nonempty]
 
 theorem Joined.mem_pathComponent (hyz : Joined y z) (hxy : y ∈ pathComponent x) :
     z ∈ pathComponent x :=
   hxy.trans hyz
 
-theorem mem_pathComponentIn_self (h : x ∈ F) : x ∈ pathComponentIn x F :=
+theorem mem_pathComponentIn_self (h : x ∈ F) : x ∈ pathComponentIn F x :=
   JoinedIn.refl h
 
-theorem pathComponentIn_subset : pathComponentIn x F ⊆ F :=
+theorem pathComponentIn_subset : pathComponentIn F x ⊆ F :=
   fun _ hy ↦ hy.target_mem
 
-theorem pathComponentIn_nonempty_iff : (pathComponentIn x F).Nonempty ↔ x ∈ F :=
+theorem pathComponentIn_nonempty_iff : (pathComponentIn F x).Nonempty ↔ x ∈ F :=
   ⟨fun ⟨_, ⟨γ, hγ⟩⟩ ↦ γ.source ▸ hγ 0, fun hx ↦ ⟨x, mem_pathComponentIn_self hx⟩⟩
 
-theorem pathComponentIn_congr (h : x ∈ pathComponentIn y F) :
-    pathComponentIn x F = pathComponentIn y F := by
+theorem pathComponentIn_congr (h : x ∈ pathComponentIn F y) :
+    pathComponentIn F x = pathComponentIn F y := by
   ext; exact ⟨h.trans, h.symm.trans⟩
 
 @[gcongr]
 theorem pathComponentIn_mono {G : Set X} (h : F ⊆ G) :
-    pathComponentIn x F ⊆ pathComponentIn x G :=
+    pathComponentIn F x ⊆ pathComponentIn G x :=
   fun _ ⟨γ, hγ⟩ ↦ ⟨γ, fun t ↦ h (hγ t)⟩
 
 /-! ### Path component of the identity in a group -/
@@ -318,7 +318,7 @@ instance Subgroup.Normal.pathComponentOne (G : Type*) [Group G] [TopologicalSpac
 def IsPathConnected (F : Set X) : Prop :=
   ∃ x ∈ F, ∀ ⦃y⦄, y ∈ F → JoinedIn F x y
 
-theorem isPathConnected_iff_eq : IsPathConnected F ↔ ∃ x ∈ F, pathComponentIn x F = F := by
+theorem isPathConnected_iff_eq : IsPathConnected F ↔ ∃ x ∈ F, pathComponentIn F x = F := by
   constructor <;> rintro ⟨x, x_in, h⟩ <;> use x, x_in
   · ext y
     exact ⟨fun hy => hy.mem.2, @h _⟩
@@ -394,7 +394,7 @@ theorem IsPathConnected.subset_pathComponent (h : IsPathConnected F) (x_in : x �
     F ⊆ pathComponent x := fun _y y_in => h.mem_pathComponent x_in y_in
 
 theorem IsPathConnected.subset_pathComponentIn {s : Set X} (hs : IsPathConnected s)
-    (hxs : x ∈ s) (hsF : s ⊆ F) : s ⊆ pathComponentIn x F :=
+    (hxs : x ∈ s) (hsF : s ⊆ F) : s ⊆ pathComponentIn F x :=
   fun y hys ↦ (hs.joinedIn x hxs y hys).mono hsF
 
 theorem isPathConnected_singleton (x : X) : IsPathConnected ({x} : Set X) := by
@@ -402,7 +402,7 @@ theorem isPathConnected_singleton (x : X) : IsPathConnected ({x} : Set X) := by
   rintro y rfl
   exact JoinedIn.refl rfl
 
-theorem isPathConnected_pathComponentIn (h : x ∈ F) : IsPathConnected (pathComponentIn x F) :=
+theorem isPathConnected_pathComponentIn (h : x ∈ F) : IsPathConnected (pathComponentIn F x) :=
   ⟨x, mem_pathComponentIn_self h, fun _ ⟨γ, hγ⟩ ↦ by
     refine ⟨γ, fun t ↦
       ⟨(γ.truncateOfLE t.2.1).cast (γ.extend_zero.symm) (γ.extend_extends' t).symm, fun t' ↦ ?_⟩⟩
@@ -466,10 +466,7 @@ theorem IsPathConnected.exists_path_through_family {n : ℕ}
           rw [this]
           use 1
           exact γ.target
-      · rw [range_eq]
-        apply union_subset hγ₀.2
-        rw [range_subset_iff]
-        exact hγ₁
+      · grind [Set.union_subset, Set.range_subset_iff]
   have hpp' : ∀ k < n + 1, p k = p' k := by
     intro k hk
     simp only [p', hk, dif_pos]

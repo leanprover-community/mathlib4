@@ -159,12 +159,6 @@ def coeEquiv (m : Multiset α) : m ≃ m.toEnumFinset where
     ⟨x.1.1, x.1.2, by
       rw [← Multiset.mem_toEnumFinset]
       exact x.2⟩
-  left_inv := by
-    rintro ⟨x, i, h⟩
-    rfl
-  right_inv := by
-    rintro ⟨⟨x, i⟩, h⟩
-    rfl
 
 @[simp]
 theorem toEmbedding_coeEquiv_trans (m : Multiset α) :
@@ -178,7 +172,7 @@ theorem map_univ_coeEmbedding (m : Multiset α) :
     (Finset.univ : Finset m).map m.coeEmbedding = m.toEnumFinset := by
   ext ⟨x, i⟩
   simp only [Fin.exists_iff, Finset.mem_map, Finset.mem_univ, Multiset.coeEmbedding_apply,
-    Prod.mk_inj, exists_true_left, Multiset.exists_coe, Multiset.coe_mk, Fin.val_mk,
+    Prod.mk_inj, Multiset.exists_coe, Multiset.coe_mk,
     exists_prop, exists_eq_right_right, exists_eq_right, Multiset.mem_toEnumFinset, true_and]
 
 @[simp]
@@ -236,8 +230,6 @@ If `s = t` then there's an equivalence between the appropriate types.
 def cast {s t : Multiset α} (h : s = t) : s ≃ t where
   toFun x := ⟨x.1, x.2.cast (by simp [h])⟩
   invFun x := ⟨x.1, x.2.cast (by simp [h])⟩
-  left_inv x := rfl
-  right_inv x := rfl
 
 instance : IsEmpty (0 : Multiset α) := Fintype.card_eq_zero_iff.mp (by simp)
 
@@ -268,7 +260,7 @@ def consEquiv {v : α} : v ::ₘ m ≃ Option m where
   right_inv := by
     rintro (_ | x)
     · simp
-    · simp only [Option.elim_some, Nat.zero_eq, Fin.coe_castLE, Fin.eta, Sigma.eta, dite_eq_ite,
+    · simp only [Option.elim_some, Fin.coe_castLE, Fin.eta, Sigma.eta, dite_eq_ite,
         ite_eq_right_iff, reduceCtorEq, imp_false, not_and]
       rintro rfl
       exact x.2.2.ne
@@ -307,7 +299,7 @@ def mapEquiv_aux (m : Multiset α) (f : α → β) :
       fun a s ⟨v, hv⟩ ↦ ⟨Multiset.consEquiv.trans v.optionCongr |>.trans
         Multiset.consEquiv.symm |>.trans (Multiset.cast (map_cons f a s)).symm, fun x ↦ by
         simp only [consEquiv, Equiv.trans_apply, Equiv.coe_fn_mk, Equiv.optionCongr_apply,
-            Equiv.coe_fn_symm_mk, cast_symm_apply_fst]
+            Equiv.coe_fn_symm_mk]
         split <;> simp_all⟩
 
 /--

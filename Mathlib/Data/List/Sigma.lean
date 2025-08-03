@@ -209,7 +209,7 @@ theorem mem_dlookup_iff {a : α} {b : β a} {l : List (Sigma β)} (nd : l.NodupK
 
 theorem perm_dlookup (a : α) {l₁ l₂ : List (Sigma β)} (nd₁ : l₁.NodupKeys) (nd₂ : l₂.NodupKeys)
     (p : l₁ ~ l₂) : dlookup a l₁ = dlookup a l₂ := by
-  ext b; simp only [← Option.mem_def, mem_dlookup_iff nd₁, mem_dlookup_iff nd₂]; exact p.mem_iff
+  ext b; simp only [← Option.mem_def, mem_dlookup_iff nd₁, mem_dlookup_iff nd₂, p.mem_iff]
 
 theorem lookup_ext {l₀ l₁ : List (Sigma β)} (nd₀ : l₀.NodupKeys) (nd₁ : l₁.NodupKeys)
     (h : ∀ x y, y ∈ l₀.dlookup x ↔ y ∈ l₁.dlookup x) : l₀ ~ l₁ :=
@@ -288,7 +288,7 @@ theorem lookupAll_sublist (a : α) : ∀ l : List (Sigma β), (lookupAll a l).ma
   | ⟨a', b'⟩ :: l => by
     by_cases h : a = a'
     · subst h
-      simp only [ne_eq, not_true, lookupAll_cons_eq, List.map]
+      simp only [lookupAll_cons_eq, List.map]
       exact (lookupAll_sublist a l).cons₂ _
     · simp only [ne_eq, h, not_false_iff, lookupAll_cons_ne]
       exact (lookupAll_sublist a l).cons _
@@ -584,7 +584,7 @@ theorem kextract_eq_dlookup_kerase (a : α) :
     simp only [kextract]; split_ifs with h
     · subst a'
       simp [kerase]
-    · simp [kextract, Ne.symm h, kextract_eq_dlookup_kerase a l, kerase]
+    · simp [Ne.symm h, kextract_eq_dlookup_kerase a l, kerase]
 
 /-! ### `dedupKeys` -/
 
@@ -608,7 +608,7 @@ theorem nodupKeys_dedupKeys (l : List (Sigma β)) : NodupKeys (dedupKeys l) := b
   induction' l with x xs l_ih
   · apply this
   · cases x
-    simp only [foldr_cons, kinsert_def, nodupKeys_cons, ne_eq, not_true]
+    simp only [foldr_cons, kinsert_def, nodupKeys_cons]
     constructor
     · simp only [keys_kerase]
       apply l_ih.not_mem_erase
@@ -675,14 +675,14 @@ theorem NodupKeys.kunion (nd₁ : l₁.NodupKeys) (nd₂ : l₂.NodupKeys) : (ku
   | nil => simp only [nil_kunion, nd₂]
   | cons s l₁ ih =>
     simp? at nd₁ says simp only [nodupKeys_cons] at nd₁
-    simp [not_or, nd₁.1, nd₂, ih nd₁.2 (nd₂.kerase s.1)]
+    simp [nd₁.1, nd₂, ih nd₁.2 (nd₂.kerase s.1)]
 
 theorem Perm.kunion_right {l₁ l₂ : List (Sigma β)} (p : l₁ ~ l₂) (l) :
     kunion l₁ l ~ kunion l₂ l := by
   induction p generalizing l with
   | nil => rfl
   | cons hd _ ih =>
-    simp [ih (List.kerase _ _), Perm.cons]
+    simp [ih (List.kerase _ _)]
   | swap s₁ s₂ l => simp [kerase_comm, Perm.swap]
   | trans _ _ ih₁₂ ih₂₃ => exact Perm.trans (ih₁₂ l) (ih₂₃ l)
 

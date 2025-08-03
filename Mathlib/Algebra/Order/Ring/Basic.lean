@@ -25,6 +25,12 @@ theorem IsSquare.nonneg [Semiring R] [LinearOrder R] [IsRightCancelAdd R]
   rcases h with ⟨y, rfl⟩
   exact mul_self_nonneg y
 
+@[simp]
+lemma not_isSquare_of_neg [Semiring R] [LinearOrder R] [IsRightCancelAdd R]
+    [ZeroLEOneClass R] [ExistsAddOfLE R] [PosMulMono R] [AddLeftStrictMono R]
+    {x : R} (h : x < 0) : ¬ IsSquare x :=
+  (h.not_ge ·.nonneg)
+
 namespace MonoidHom
 
 variable [Ring R] [Monoid M] [LinearOrder M] [MulLeftMono M] (f : R →* M)
@@ -70,8 +76,8 @@ theorem pow_le_pow_left {a b : R} (ha : 0 ≤ a) (hab : a ≤ b) : ∀ n, a ^ n 
 
 lemma pow_add_pow_le' (ha : 0 ≤ a) (hb : 0 ≤ b) : a ^ n + b ^ n ≤ 2 * (a + b) ^ n := by
   rw [two_mul]
-  exact add_le_add (pow_le_pow_left₀ ha (le_add_of_nonneg_right hb) _)
-    (pow_le_pow_left₀ hb (le_add_of_nonneg_left ha) _)
+  gcongr <;> try assumption
+  exacts [le_add_of_nonneg_right hb, le_add_of_nonneg_left ha]
 
 end OrderedSemiring
 

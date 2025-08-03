@@ -16,7 +16,7 @@ Many important quotient maps are open quotient maps, including
 
 - the quotient map from a topological space to its quotient by the action of a group;
 - the quotient map from a topological group to its quotient by a normal subgroup;
-- the quotient map from a topological spaace to its separation quotient.
+- the quotient map from a topological space to its separation quotient.
 
 Contrary to general quotient maps,
 the category of open quotient maps is closed under `Prod.map`.
@@ -113,7 +113,7 @@ lemma coinduced_eq_induced_of_isOpenQuotientMap_of_isInducing
     (H : q ⁻¹' (q '' (Set.range f)) ⊆ Set.range f) :
     ‹TopologicalSpace A›.coinduced p = ‹TopologicalSpace D›.induced g := by
   ext U
-  show IsOpen (p ⁻¹' U) ↔ ∃ V, _
+  change IsOpen (p ⁻¹' U) ↔ ∃ V, _
   simp_rw [hf.isOpen_iff,
     (Set.image_surjective.mpr hq.surjective).exists,
     ← hq.isQuotientMap.isOpen_preimage]

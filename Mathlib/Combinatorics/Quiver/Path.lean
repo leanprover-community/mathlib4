@@ -1,8 +1,9 @@
 /-
 Copyright (c) 2021 David Wärn,. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: David Wärn, Kim Morrison
+Authors: David Wärn, Kim Morrison, Matteo Cipollina
 -/
+
 import Mathlib.Combinatorics.Quiver.Prefunctor
 import Mathlib.Logic.Lemmas
 import Batteries.Data.List.Basic
@@ -46,10 +47,10 @@ lemma obj_eq_of_cons_eq_cons {p : Path a b} {p' : Path a c}
     {e : b ⟶ d} {e' : c ⟶ d} (h : p.cons e = p'.cons e') : b = c := by injection h
 
 lemma heq_of_cons_eq_cons {p : Path a b} {p' : Path a c}
-    {e : b ⟶ d} {e' : c ⟶ d} (h : p.cons e = p'.cons e') : HEq p p' := by injection h
+    {e : b ⟶ d} {e' : c ⟶ d} (h : p.cons e = p'.cons e') : p ≍ p' := by injection h
 
 lemma hom_heq_of_cons_eq_cons {p : Path a b} {p' : Path a c}
-    {e : b ⟶ d} {e' : c ⟶ d} (h : p.cons e = p'.cons e') : HEq e e' := by injection h
+    {e : b ⟶ d} {e' : c ⟶ d} (h : p.cons e = p'.cons e') : e ≍ e' := by injection h
 
 /-- The length of a path is the number of arrows it uses. -/
 def length {a : V} : ∀ {b : V}, Path a b → ℕ
@@ -160,6 +161,36 @@ lemma eq_toPath_comp_of_length_eq_succ (p : Path a b) {n : ℕ}
       obtain ⟨x, q'', p'', hl, rfl⟩ := h hp
       exact ⟨x, q'', p''.cons q, by simpa, rfl⟩
 
+section Decomposition
+
+variable {V R : Type*} [Quiver V] {a b : V} (p : Path a b)
+
+lemma length_ne_zero_iff_eq_comp (p : Path a b) :
+    p.length ≠ 0 ↔ ∃ (c : V) (e : a ⟶ c) (p' : Path c b),
+      p = e.toPath.comp p' ∧ p.length = p'.length + 1 := by
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · have h_len : p.length = (p.length - 1) + 1 := by omega
+    obtain ⟨c, e, p', hp', rfl⟩ := Path.eq_toPath_comp_of_length_eq_succ p h_len
+    exact ⟨c, e, p', rfl, by omega⟩
+  · rintro ⟨c, p', e, rfl, h⟩
+    simp [h]
+
+/-- Every non-empty path can be decomposed as an initial path plus a final edge. -/
+lemma length_ne_zero_iff_eq_cons :
+    p.length ≠ 0 ↔ ∃ (c : V) (p' : Path a c) (e : c ⟶ b), p = p'.cons e := by
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · cases p with
+  | nil => simp at h
+  | cons p' e => exact ⟨_, p', e, rfl⟩
+  · rintro ⟨c, p', e, rfl⟩
+    simp
+
+@[simp] lemma comp_toPath_eq_cons {a b c : V} (p : Path a b) (e : b ⟶ c) :
+    p.comp e.toPath = p.cons e :=
+  rfl
+
+end Decomposition
+
 /-- Turn a path into a list. The list contains `a` at its head, but not `b` a priori. -/
 @[simp]
 def toList : ∀ {b : V}, Path a b → List V
@@ -205,10 +236,10 @@ def BoundedPaths (v w : V) (n : ℕ) : Sort _ :=
 /-- Bounded paths of length zero between two vertices form a subsingleton. -/
 instance instSubsingletonBddPaths (v w : V) : Subsingleton (BoundedPaths v w 0) where
   allEq := fun ⟨p, hp⟩ ⟨q, hq⟩ =>
-   match v, w, p, q with
-   | _, _, .nil, .nil => rfl
-   | _, _, .cons _ _, _ => by simp [Quiver.Path.length] at hp
-   | _, _, _, .cons _ _ => by simp [Quiver.Path.length] at hq
+    match v, w, p, q with
+    | _, _, .nil, .nil => rfl
+    | _, _, .cons _ _, _ => by simp [Quiver.Path.length] at hp
+    | _, _, _, .cons _ _ => by simp [Quiver.Path.length] at hq
 
 /-- Bounded paths of length zero between two vertices have decidable equality. -/
 def decidableEqBddPathsZero (v w : V) : DecidableEq (BoundedPaths v w 0) :=
@@ -217,7 +248,7 @@ def decidableEqBddPathsZero (v w : V) : DecidableEq (BoundedPaths v w 0) :=
 /-- Given decidable equality on paths of length up to `n`, we can construct
 decidable equality on paths of length up to `n + 1`. -/
 def decidableEqBddPathsOfDecidableEq (n : ℕ) (h₁ : DecidableEq V)
-    (h₂ : ∀ (v w : V), DecidableEq (v ⟶  w)) (h₃ : ∀ (v w : V), DecidableEq (BoundedPaths v w n))
+    (h₂ : ∀ (v w : V), DecidableEq (v ⟶ w)) (h₃ : ∀ (v w : V), DecidableEq (BoundedPaths v w n))
     (v w : V) : DecidableEq (BoundedPaths v w (n + 1)) :=
   fun ⟨p, hp⟩ ⟨q, hq⟩ =>
     match v, w, p, q with

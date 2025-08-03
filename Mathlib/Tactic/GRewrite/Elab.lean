@@ -56,7 +56,7 @@ def grewriteLocalDecl (stx : Syntax) (symm : Bool) (fvarId : FVarId) (config : G
 declare_config_elab elabGRewriteConfig GRewrite.Config
 
 /--
-`grewrite [e]` works just like `rewerite [e]`, but `e` can be a relation other than `=` or `↔`.
+`grewrite [e]` works just like `rewrite [e]`, but `e` can be a relation other than `=` or `↔`.
 
 For example,
 ```lean

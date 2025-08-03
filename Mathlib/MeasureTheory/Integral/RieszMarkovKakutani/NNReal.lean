@@ -41,9 +41,7 @@ associated to `Λ` is equal to `Λ f`. -/
 theorem integral_rieszMeasure (f : C_c(X, ℝ≥0)) : ∫ (x : X), (f x : ℝ) ∂(rieszMeasure Λ) = Λ f := by
   rw [← eq_toRealLinear_toReal Λ f,
       ← RealRMK.integral_rieszMeasure (toRealLinear_nonneg Λ) f.toReal]
-  simp only [toReal_apply]
-  congr
-  exact Eq.symm (eq_toNNRealLinear_toRealLinear Λ)
+  simp [RealRMK.rieszMeasure, NNRealRMK.rieszMeasure]
 
 /-- The **Riesz-Markov-Kakutani representation theorem**: given a positive linear functional `Λ`,
 the (lower) Lebesgue integral of `f` with respect to the `rieszMeasure` associated to `Λ` is equal

@@ -197,17 +197,29 @@ example (f g : ℕ → ℕ) (s : Finset ℕ) (h : ∀ i ∈ s, f i ^ 2 + 1 ≤ g
   gcongr ∑ _i ∈ s, (3 + ?_) with i hi
   linarith [h i hi]
 
+example (f g : ℕ → ℕ) (s : Finset ℕ) (h : ∀ i ∈ s, f i ^ 2 + 1 ≤ g i ^ 2 + 1) :
+    ∑ i ∈ s, (f i ^ 2 / 5) ≤ ∑ i ∈ s, (g i ^ 2 / 5) := by
+  gcongr 2 with i hi
+  linarith [h i hi]
+
 axiom f : ℕ → ℕ
 
 example {x y : ℕ} (h : f x ≤ f y) : f x ≤ f y := by
   success_if_fail_with_msg
-    "gcongr failed, no @[gcongr] lemma applies for the template portion GCongrTests.f ?a and the relation LE.le"
+    "tactic 'gcongr' failed, there is no `@[gcongr]` lemma for relation 'LE.le' and constant 'GCongrTests.f'.
+x y : ℕ
+h : GCongrTests.f x ≤ GCongrTests.f y
+⊢ GCongrTests.f x ≤ GCongrTests.f y"
     (gcongr f ?a)
   exact h
 
 example {x y : ℕ} (h : f x ≤ f y) : f x ^ 2 ≤ f y ^ 2 := by
   success_if_fail_with_msg
-    "gcongr failed, no @[gcongr] lemma applies for the template portion GCongrTests.f ?a and the relation LE.le"
+    "tactic 'gcongr' failed, there is no `@[gcongr]` lemma for relation 'LE.le' and constant 'GCongrTests.f'.
+case hab
+x y : ℕ
+h : GCongrTests.f x ≤ GCongrTests.f y
+⊢ GCongrTests.f x ≤ GCongrTests.f y"
     (gcongr (f ?a) ^ 2)
   gcongr
 
@@ -218,7 +230,7 @@ example (s : Finset ℕ) (h : ∀ i ∈ s, f i ≤ f (2 * i)) : ∑ i ∈ s, f i
 
 def dontUnfoldMe : Nat → List Bool → Nat
   | 0, _ => 0
-  | n+1, l => dontUnfoldMe n (true::l) + dontUnfoldMe n (false::l)
+  | n + 1, l => dontUnfoldMe n (true::l) + dontUnfoldMe n (false::l)
 
 -- times out if a certain reducibility setting in `gcongr`'s implementation is not correct
 example {x y : ℕ} (h : x ≤ y) (l) : dontUnfoldMe 14 l + x ≤ 0 + y := by
@@ -257,5 +269,9 @@ example {a b : ℕ} (_h1 : a ≤ 0) (h2 : 0 ≤ b) : b ≤ a + 1 → 0 ≤ a + 1
 example {a b : ℕ} (h1 : a ≤ 0) (h2 : 0 ≤ b)  : b < a + 1 → 0 < 0 + 1 := by gcongr
 example {a b : ℕ} (h1 : a ≤ 0) (_h2 : 0 ≤ b) : b < a + 1 → b < 0 + 1 := by gcongr
 example {a b : ℕ} (_h1 : a ≤ 0) (h2 : 0 ≤ b) : b < a + 1 → 0 < a + 1 := by gcongr
+
+/-! Test that `gcongr` with a pattern doesn't complain about type class inference problems. -/
+
+example {a b : ℕ} (h1 : a ≤ 0) (h2 : 0 ≤ b) : b ≤ a + 1 → 0 ≤ 0 + 1 := by gcongr ?_ ≤ ?_ + _
 
 end GCongrTests

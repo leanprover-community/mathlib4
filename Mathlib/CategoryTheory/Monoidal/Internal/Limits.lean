@@ -44,7 +44,7 @@ def limit (F : J ⥤ Mon_ C) : Mon_ C :=
 def limitCone (F : J ⥤ Mon_ C) : Cone F where
   pt := limit F
   π :=
-    { app := fun j => { hom := limit.π (F ⋙ Mon_.forget C) j }
+    { app := fun j => .mk' (limit.π (F ⋙ Mon_.forget C) j)
       naturality := fun j j' f => by ext; exact (limit.cone (F ⋙ Mon_.forget C)).π.naturality f }
 
 /-- The image of the proposed limit cone for `F : J ⥤ Mon_ C` under the forgetful functor
@@ -61,12 +61,13 @@ the proposed cone over a functor `F : J ⥤ Mon_ C` is a limit cone.
 def limitConeIsLimit (F : J ⥤ Mon_ C) : IsLimit (limitCone F) where
   lift s :=
     { hom := limit.lift (F ⋙ Mon_.forget C) ((Mon_.forget C).mapCone s)
-      mul_hom := limit.hom_ext (fun j ↦ by
-        dsimp
-        simp only [Category.assoc, limit.lift_π, Functor.mapCone_pt, forget_obj,
-          Functor.mapCone_π_app, forget_map, Hom.mul_hom, limMap_π, tensorObj_obj, Functor.comp_obj,
-          MonFunctorCategoryEquivalence.inverseObj_mon_mul_app, lim_μ_π_assoc, lim_obj,
-          ← MonoidalCategory.tensor_comp_assoc]) }
+      is_mon_hom :=
+        { mul_hom := limit.hom_ext (fun j ↦ by
+          dsimp
+          simp only [Category.assoc, limit.lift_π, Functor.mapCone_pt, forget_obj,
+            Functor.mapCone_π_app, forget_map, IsMon_Hom.mul_hom, limMap_π, tensorObj_obj,
+            Functor.comp_obj, MonFunctorCategoryEquivalence.inverseObj_mon_mul_app, lim_μ_π_assoc,
+            lim_obj, ← tensor_comp_assoc]) } }
   fac s h := by ext; simp
   uniq s m w := by
     ext1
@@ -79,7 +80,7 @@ instance hasLimitsOfShape [HasLimitsOfShape J C] : HasLimitsOfShape J (Mon_ C) w
     { cone := limitCone F
       isLimit := limitConeIsLimit F }
 
-instance forget_freservesLimitsOfShape : PreservesLimitsOfShape J (Mon_.forget C) where
+instance forget_preservesLimitsOfShape : PreservesLimitsOfShape J (Mon_.forget C) where
   preservesLimit := fun {F} =>
     preservesLimit_of_preserves_limit_cone (limitConeIsLimit F)
       (IsLimit.ofIsoLimit (limit.isLimit (F ⋙ Mon_.forget C)) (forgetMapConeLimitConeIso F).symm)

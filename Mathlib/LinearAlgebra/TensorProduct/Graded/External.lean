@@ -43,8 +43,6 @@ multiplication follows trivially from this after some point-free nonsense.
 
 -/
 
-suppress_compilation
-
 open scoped TensorProduct DirectSum
 
 variable {R ι : Type*}
@@ -238,7 +236,8 @@ theorem gradedMul_assoc (x y z : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
   let mA := gradedMul R 𝒜 ℬ
     -- restate as an equality of morphisms so that we can use `ext`
   suffices LinearMap.llcomp R _ _ _ mA ∘ₗ mA =
-      (LinearMap.llcomp R _ _ _ LinearMap.lflip <| LinearMap.llcomp R _ _ _ mA.flip ∘ₗ mA).flip by
+      (LinearMap.llcomp R _ _ _ LinearMap.lflip.toLinearMap <|
+        LinearMap.llcomp R _ _ _ mA.flip ∘ₗ mA).flip by
     exact DFunLike.congr_fun (DFunLike.congr_fun (DFunLike.congr_fun this x) y) z
   ext ixa xa ixb xb iya ya iyb yb iza za izb zb
   dsimp [mA]

@@ -24,7 +24,7 @@ A graph is complete multipartite iff non-adjacency is transitive.
    non-complete-multi-partite-ness of a graph G. (The name refers to the fact that the three
    vertices form the complement of `pathGraph 3`.)
 
-# See also: Mathlib.Combinatorics.SimpleGraph.FiveWheelLike
+* See also: `Mathlib/Combinatorics/SimpleGraph/FiveWheelLike.lean`
   `colorable_iff_isCompleteMultipartite_of_maximal_cliqueFree` a maximally `r + 1`- cliquefree graph
    is `r`-colorable iff it is complete-multipartite.
 -/
@@ -52,7 +52,6 @@ def IsCompleteMultipartite.iso (h : G.IsCompleteMultipartite) :
     G ≃g completeMultipartiteGraph (fun (c : Quotient h.setoid) ↦ {x // h.setoid.r c.out x}) where
   toFun := fun x ↦ ⟨_, ⟨_, Quotient.mk_out x⟩⟩
   invFun := fun ⟨_, x⟩ ↦  x.1
-  left_inv := fun _ ↦ rfl
   right_inv := fun ⟨_, x⟩ ↦ Sigma.subtype_ext (Quotient.mk_eq_iff_out.2 <| h.setoid.symm x.2) rfl
   map_rel_iff' := by
     simp_rw [Equiv.coe_fn_mk, comap_adj, top_adj, ne_eq, Quotient.eq]

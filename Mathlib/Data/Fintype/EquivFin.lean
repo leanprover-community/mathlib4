@@ -217,8 +217,6 @@ theorem card_eq_one_iff_nonempty_unique : card α = 1 ↔ Nonempty (Unique α) :
         uniq := h }⟩,
     fun ⟨_h⟩ => Fintype.card_unique⟩
 
-instance [Nonempty α] : NeZero (card α) := ⟨card_ne_zero⟩
-
 theorem card_le_one_iff : card α ≤ 1 ↔ ∀ a b : α, a = b :=
   let n := card α
   have hn : n = card α := rfl
@@ -358,8 +356,6 @@ alias equiv_of_fintype_self_embedding_to_embedding := toEmbedding_equivOfFiniteS
     (α ↪ α) ≃ (α ≃ α) where
   toFun e := e.equivOfFiniteSelfEmbedding
   invFun e := e.toEmbedding
-  left_inv e := rfl
-  right_inv e := by ext; rfl
 
 /-- A constructive embedding of a fintype `α` in another fintype `β` when `card α ≤ card β`. -/
 def truncOfCardLE [Fintype α] [Fintype β] [DecidableEq α] [DecidableEq β]
@@ -559,7 +555,7 @@ theorem exists_superset_card_eq [Infinite α] (s : Finset α) (n : ℕ) (hn : #s
     obtain ⟨t, hs, ht⟩ := IH _ (Nat.le_of_lt_succ hn')
     obtain ⟨x, hx⟩ := exists_notMem_finset t
     refine ⟨Finset.cons x t hx, hs.trans (Finset.subset_cons _), ?_⟩
-    simp [hx, ht]
+    simp [ht]
 
 end Infinite
 
