@@ -92,8 +92,8 @@ lemma innerDual_sUnion (S : Set (Set E)) : innerDual (⋃₀ S) = sInf (innerDua
 theorem hyperplane_separation' (C : ProperCone ℝ E) (hx₀ : x₀ ∉ C) :
     ∃ y, (∀ x ∈ C, 0 ≤ ⟪x, y⟫) ∧ ⟪x₀, y⟫ < 0 := by
   obtain ⟨f, hf, hf₀⟩ := C.hyperplane_separation_point hx₀
-  refine ⟨(InnerProductSpace.toDual ℝ E).symm f, ?_⟩
-  simpa [← real_inner_comm _ ((InnerProductSpace.toDual ℝ E).symm f), *]
+  refine ⟨(toStrongDual ℝ E).symm f, ?_⟩
+  simpa [← real_inner_comm _ ((toStrongDual ℝ E).symm f), *]
 
 /-- The inner dual of inner dual of a proper cone is itself. -/
 @[simp] theorem innerDual_innerDual (C : ProperCone ℝ E) :

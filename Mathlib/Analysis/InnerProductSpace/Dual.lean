@@ -11,17 +11,17 @@ import Mathlib.Topology.Algebra.Module.PerfectPairing
 # The Fréchet-Riesz representation theorem
 
 We consider an inner product space `E` over `𝕜`, which is either `ℝ` or `ℂ`. We define
-`toDualMap`, a conjugate-linear isometric embedding of `E` into its dual, which maps an element
-`x` of the space to `fun y => ⟪x, y⟫`.
+`toStrongDualMap`, a conjugate-linear isometric embedding of `E` into its dual, which maps an
+element `x` of the space to `fun y => ⟪x, y⟫`.
 
-Under the hypothesis of completeness (i.e., for Hilbert spaces), we upgrade this to `toDual`, a
-conjugate-linear isometric *equivalence* of `E` onto its dual; that is, we establish the
-surjectivity of `toDualMap`.  This is the Fréchet-Riesz representation theorem: every element of
-the dual of a Hilbert space `E` has the form `fun u => ⟪x, u⟫` for some `x : E`.
+Under the hypothesis of completeness (i.e., for Hilbert spaces), we upgrade this to `toStrongDual`,
+a conjugate-linear isometric *equivalence* of `E` onto its dual; that is, we establish the
+surjectivity of `toStrongDualMap`.  This is the Fréchet-Riesz representation theorem: every element
+of the dual of a Hilbert space `E` has the form `fun u => ⟪x, u⟫` for some `x : E`.
 
 For a bounded sesquilinear form `B : E →L⋆[𝕜] E →L[𝕜] 𝕜`,
 we define a map `InnerProductSpace.continuousLinearMapOfBilin B : E →L[𝕜] E`,
-given by substituting `E →L[𝕜] 𝕜` with `E` using `toDual`.
+given by substituting `E →L[𝕜] 𝕜` with `E` using `toStrongDual`.
 
 
 ## References
@@ -58,7 +58,7 @@ local postfix:90 "†" => starRingEnd _
 `StrongDual 𝕜 E`, the map `fun y => ⟪x, y⟫`; moreover this operation is a conjugate-linear isometric
 embedding of `E` into `StrongDual 𝕜 E`.
 If `E` is complete, this operation is surjective, hence a conjugate-linear isometric equivalence;
-see `toDual`.
+see `toStrongDual`.
 -/
 noncomputable def _root_.toStrongDualMap : E →ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
   { innerSL 𝕜 with norm_map' := innerSL_apply_norm _ }
@@ -123,9 +123,9 @@ variable (𝕜) (E)
 variable [CompleteSpace E]
 
 /-- **Fréchet-Riesz representation**: any `ℓ` in the dual of a Hilbert space `E` is of the form
-`fun u => ⟪y, u⟫` for some `y : E`, i.e. `toDualMap` is surjective.
+`fun u => ⟪y, u⟫` for some `y : E`, i.e. `toStrongDualMap` is surjective.
 -/
-def toDual : E ≃ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
+noncomputable def _root_.toStrongDual : E ≃ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
   LinearIsometryEquiv.ofSurjective (toStrongDualMap 𝕜 E)
     (by
       intro ℓ
@@ -165,23 +165,25 @@ def toDual : E ≃ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
             _ = ℓ x := by field_simp [inner_self_ne_zero.2 z_ne_0]
         exact h₄)
 
+@[deprecated (since := "2025-08-3")] alias toDual := toStrongDual
+
 variable {𝕜} {E}
 
 @[simp]
-theorem toDual_apply {x y : E} : toDual 𝕜 E x y = ⟪x, y⟫ :=
+theorem toDual_apply {x y : E} : toStrongDual 𝕜 E x y = ⟪x, y⟫ :=
   rfl
 
 @[simp]
-theorem toDual_symm_apply {x : E} {y : StrongDual 𝕜 E} : ⟪(toDual 𝕜 E).symm y, x⟫ = y x := by
+theorem toDual_symm_apply {x : E} {y : StrongDual 𝕜 E} : ⟪(toStrongDual 𝕜 E).symm y, x⟫ = y x := by
   rw [← toDual_apply]
   simp only [LinearIsometryEquiv.apply_symm_apply]
 
 /-- Maps a bounded sesquilinear form to its continuous linear map,
 given by interpreting the form as a map `B : E →L⋆[𝕜] NormedSpace.Dual 𝕜 E`
-and dualizing the result using `toDual`.
+and dualizing the result using `toStrongDual`.
 -/
 def continuousLinearMapOfBilin (B : E →L⋆[𝕜] E →L[𝕜] 𝕜) : E →L[𝕜] E :=
-  comp (toDual 𝕜 E).symm.toContinuousLinearEquiv.toContinuousLinearMap B
+  comp (toStrongDual 𝕜 E).symm.toContinuousLinearEquiv.toContinuousLinearMap B
 
 local postfix:1024 "♯" => continuousLinearMapOfBilin
 
@@ -204,9 +206,9 @@ end Normed
 instance [NormedAddCommGroup E] [CompleteSpace E] [InnerProductSpace ℝ E] :
     (innerₗ E).IsContPerfPair where
   continuous_uncurry := continuous_inner
-  bijective_left := (InnerProductSpace.toDual ℝ E).bijective
+  bijective_left := (toStrongDual ℝ E).bijective
   bijective_right := by
-    convert (InnerProductSpace.toDual ℝ E).bijective
+    convert (toStrongDual ℝ E).bijective
     ext y
     simp
 

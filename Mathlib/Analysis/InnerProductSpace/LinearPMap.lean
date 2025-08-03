@@ -118,7 +118,7 @@ variable [CompleteSpace E]
 This is an auxiliary definition needed to define the adjoint operator as a `LinearPMap` without
 the assumption that `T.domain` is dense. -/
 def adjointAux : T.adjointDomain →ₗ[𝕜] E where
-  toFun y := (InnerProductSpace.toDual 𝕜 E).symm (adjointDomainMkCLMExtend hT y)
+  toFun y := (toStrongDual 𝕜 E).symm (adjointDomainMkCLMExtend hT y)
   map_add' x y :=
     hT.eq_of_inner_left fun _ => by
       simp only [inner_add_left, Submodule.coe_add, InnerProductSpace.toDual_symm_apply,
