@@ -123,13 +123,13 @@ protected lemma divInt_le_divInt {a b c d : ℤ} (b0 : 0 < b) (d0 : 0 < d) :
   rw [Rat.le_iff_sub_nonneg, ← Int.sub_nonneg]
   simp [sub_eq_add_neg, ne_of_gt b0, ne_of_gt d0, Int.mul_pos d0 b0]
 
-protected lemma le_total {a b : ℚ} : a ≤ b ∨ b ≤ a := by
+protected lemma le_total : a ≤ b ∨ b ≤ a := by
   simpa only [← Rat.le_iff_sub_nonneg, neg_sub] using Rat.nonneg_total (b - a)
 
-protected lemma le_refl {a : ℚ} : a ≤ a := by
+protected lemma le_refl : a ≤ a := by
   rw [Rat.le_iff_sub_nonneg, ← num_nonneg]; simp
 
-protected lemma le_trans {a b c : ℚ} (hab : a ≤ b) (hbc : b ≤ c) : a ≤ c := by
+protected lemma le_trans (hab : a ≤ b) (hbc : b ≤ c) : a ≤ c := by
   rw [Rat.le_iff_sub_nonneg] at hab hbc
   have := Rat.add_nonneg hab hbc
   simp_rw [sub_eq_add_neg, add_left_comm (b + -a) c (-b), add_comm (b + -a) (-b),
@@ -137,7 +137,7 @@ protected lemma le_trans {a b c : ℚ} (hab : a ≤ b) (hbc : b ≤ c) : a ≤ c
     ← sub_eq_add_neg] at this
   rwa [Rat.le_iff_sub_nonneg]
 
-protected lemma le_antisymm {a b : ℚ} (hab : a ≤ b) (hba : b ≤ a) : a = b := by
+protected lemma le_antisymm (hab : a ≤ b) (hba : b ≤ a) : a = b := by
   rw [Rat.le_iff_sub_nonneg] at hab hba
   rw [sub_eq_add_neg] at hba
   rw [← neg_sub, sub_eq_add_neg] at hab
