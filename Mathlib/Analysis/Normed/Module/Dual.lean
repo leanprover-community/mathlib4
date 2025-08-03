@@ -12,7 +12,7 @@ import Mathlib.Analysis.Normed.Module.Convex
 import Mathlib.Topology.Algebra.Module.StrongDual
 
 /-!
-# The topological StrongDual of a normed space
+# The topological strong dual of a normed space
 
 In this file we consider the topological dual `StrongDual` of a normed space, and the
 continuous linear map `NormedSpace.inclusionInDoubleDual` from a normed space into its double
@@ -39,7 +39,7 @@ theory for `SeminormedAddCommGroup` and we specialize to `NormedAddCommGroup` wh
 
 ## Tags
 
-StrongDual, polar
+strong dual, polar
 -/
 
 noncomputable section
@@ -56,7 +56,7 @@ variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
 variable (E : Type*) [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
-/-- The inclusion of a normed space in its double (topological) StrongDual, considered
+/-- The inclusion of a normed space in its double (topological) strong dual, considered
 as a bounded linear map. -/
 def inclusionInDoubleDual : E →L[𝕜] StrongDual 𝕜 (StrongDual 𝕜 E) :=
   ContinuousLinearMap.apply 𝕜 𝕜
@@ -107,7 +107,7 @@ theorem eq_iff_forall_dual_eq {x y : E} : x = y ↔ ∀ g : StrongDual 𝕜 E, g
   rw [← sub_eq_zero, eq_zero_iff_forall_dual_eq_zero 𝕜 (x - y)]
   simp [sub_eq_zero]
 
-/-- The inclusion of a normed space in its double StrongDual is an isometry onto its image. -/
+/-- The inclusion of a normed space in its double strong dual is an isometry onto its image. -/
 def inclusionInDoubleDualLi : E →ₗᵢ[𝕜] StrongDual 𝕜 (StrongDual 𝕜 E) :=
   { inclusionInDoubleDual 𝕜 E with
     norm_map' := by
@@ -144,8 +144,8 @@ theorem polar_closure (s : Set E) : StrongDual.polar 𝕜 (closure s) = StrongDu
 
 variable {𝕜}
 
-/-- If `x'` is a StrongDual element such that the norms `‖x' z‖` are bounded for `z ∈ s`, then a
-small scalar multiple of `x'` is in `polar 𝕜 s`. -/
+/-- If `x'` is a `StrongDual 𝕜 E` element such that the norms `‖x' z‖` are bounded for `z ∈ s`, then
+a small scalar multiple of `x'` is in `polar 𝕜 s`. -/
 theorem smul_mem_polar {s : Set E} {x' : StrongDual 𝕜 E} {c : 𝕜} (hc : ∀ z, z ∈ s → ‖x' z‖ ≤ ‖c‖) :
     c⁻¹ • x' ∈ StrongDual.polar 𝕜 s := by
   by_cases c_zero : c = 0
@@ -184,8 +184,8 @@ theorem closedBall_inv_subset_polar_closedBall {r : ℝ} :
     _ = r / r := inv_mul_eq_div _ _
     _ ≤ 1 := div_self_le_one r
 
-/-- The `polar` of closed ball in a normed space `E` is the closed ball of the StrongDual with
-inverse radius. -/
+/-- The `polar` of closed ball in a normed space `E` is the closed ball of the dual with inverse
+radius. -/
 theorem polar_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] {r : ℝ}
     (hr : 0 < r) :
     StrongDual.polar 𝕜 (closedBall (0 : E) r) = closedBall (0 : StrongDual 𝕜 E) r⁻¹ := by
@@ -212,8 +212,8 @@ theorem polar_ball {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [Normed
   · rw [← polar_closedBall hr]
     exact LinearMap.polar_antitone _ ball_subset_closedBall
 
-/-- Given a neighborhood `s` of the origin in a normed space `E`, the StrongDual norms
-of all elements of the polar `polar 𝕜 s` are bounded by a constant. -/
+/-- Given a neighborhood `s` of the origin in a normed space `E`, the dual norms of all elements of
+the polar `polar 𝕜 s` are bounded by a constant. -/
 theorem isBounded_polar_of_mem_nhds_zero {s : Set E} (s_nhds : s ∈ 𝓝 (0 : E)) :
     IsBounded (StrongDual.polar 𝕜 s) := by
   obtain ⟨a, ha⟩ : ∃ a : 𝕜, 1 < ‖a‖ := NormedField.exists_one_lt_norm 𝕜
