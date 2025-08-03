@@ -919,6 +919,14 @@ theorem iIndepFun.congr' {β : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i
   convert h'a using 2 with i hi
   exact A i hi
 
+theorem iIndepFun_congr' {β : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)}
+    {f g : Π i, Ω → β i} (h : ∀ i, ∀ᵐ a ∂μ, f i =ᵐ[κ a] g i) :
+    iIndepFun f κ μ ↔ iIndepFun g κ μ where
+  mp h' := h'.congr' h
+  mpr h' := by
+    refine h'.congr' fun i ↦ ?_
+    filter_upwards [h i] with a ha using ha.symm
+
 lemma iIndepFun.comp {β γ : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)}
     {mγ : ∀ i, MeasurableSpace (γ i)} {f : ∀ i, Ω → β i}
     (h : iIndepFun f κ μ) (g : ∀ i, β i → γ i) (hg : ∀ i, Measurable (g i)) :
