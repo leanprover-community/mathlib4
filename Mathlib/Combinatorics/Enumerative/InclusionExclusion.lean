@@ -63,12 +63,11 @@ lemma indicator_biUnion_eq_sum_powerset (s : Finset ι) (S : ι → Set α) (f :
       (-1) ^ (#t + 1) • Set.indicator (⋂ i ∈ t, S i) f a := by
   classical
   by_cases ha : a ∈ ⋃ i ∈ s, S i; swap
-  · simp only [ha, not_false_eq_true, Set.indicator_of_notMem, Int.reduceNeg,
-      pow_succ, mul_neg, mul_one, neg_smul]
+  · simp only [ha, not_false_eq_true, Set.indicator_of_notMem, Int.reduceNeg, pow_succ, mul_neg,
+      mul_one, neg_smul]
     symm
     apply sum_eq_zero
-    simp only [Int.reduceNeg, neg_eq_zero, mem_filter,
-      mem_powerset, and_imp]
+    simp only [Int.reduceNeg, neg_eq_zero, mem_filter, mem_powerset, and_imp]
     intro t hts ht
     rw [Set.indicator_of_notMem]
     · simp
@@ -76,7 +75,7 @@ lemma indicator_biUnion_eq_sum_powerset (s : Finset ι) (S : ι → Set α) (f :
       simp only [Set.mem_iInter] at ha
       rcases ht with ⟨i, hi⟩
       simp only [Set.mem_iUnion, exists_prop]
-      refine ⟨i, hts hi, ha _ hi⟩
+      exact ⟨i, hts hi, ha _ hi⟩
   rw [← sub_eq_zero]
   calc
     Set.indicator (⋃ i ∈ s, S i) f a - ∑ t ∈ s.powerset with t.Nonempty,

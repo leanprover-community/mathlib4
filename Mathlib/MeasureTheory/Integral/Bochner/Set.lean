@@ -171,12 +171,9 @@ theorem integral_biUnion_eq_sum_powerset {ι : Type*} {t : Finset ι} {s : ι �
     (hs : ∀ i ∈ t, MeasurableSet (s i)) (hf : ∀ i ∈ t, IntegrableOn f (s i) μ) :
     ∫ x in ⋃ i ∈ t, s i, f x ∂μ = ∑ u ∈ t.powerset with u.Nonempty,
       (-1 : ℝ) ^ (#u + 1) • ∫ x in ⋂ i ∈ u, s i, f x ∂μ := by
-  simp_rw [← integral_smul]
-  rw [← integral_indicator (Finset.measurableSet_biUnion _ hs)]
+  simp_rw [← integral_smul, ← integral_indicator (Finset.measurableSet_biUnion _ hs)]
   have A (u) (hu : u ∈ t.powerset.filter (·.Nonempty)) : MeasurableSet (⋂ i ∈ u, s i) := by
-    apply Finset.measurableSet_biInter
-    intro i hi
-    apply hs
+    refine u.measurableSet_biInter fun i hi ↦ hs i ?_
     aesop
   have : ∑ x ∈ t.powerset with x.Nonempty, ∫ (a : X) in ⋂ i ∈ x, s i, (-1 : ℝ) ^ (#x + 1) • f a ∂μ
       = ∑ x ∈ t.powerset with x.Nonempty, ∫ a, indicator (⋂ i ∈ x, s i)
@@ -220,7 +217,7 @@ theorem measureReal_biUnion_eq_sum_powerset {ι : Type*} {t : Finset ι} {s : ι
     (hs : ∀ i ∈ t, MeasurableSet (s i)) (hf : ∀ i ∈ t, μ (s i) ≠ ∞ := by finiteness) :
     μ.real (⋃ i ∈ t, s i) = ∑ u ∈ t.powerset with u.Nonempty,
       (-1 : ℝ) ^ (#u + 1) * μ.real (⋂ i ∈ u, s i) := by
-  simp only [← setIntegral_one_eq_measureReal]
+  simp_rw [← setIntegral_one_eq_measureReal]
   apply integral_biUnion_eq_sum_powerset hs
   intro i hi
   simpa using (hf i hi).lt_top
