@@ -24,7 +24,7 @@ def bonza : Set (ℕ → ℕ) :=
 
 variable {f : ℕ → ℕ}
 
-/- For each bonza function, we have $f n | n ^ n$
+/- For each bonza function $f$, we have $f n | n ^ n$
 -/
 lemma bonza_apply_dvd_pow (hf : f ∈ bonza) {n : ℕ} (hn : n > 0) : f n ∣ n ^ n := by
   have : (f n : ℤ) ∣ (f n : ℤ) ^ f n :=
@@ -54,6 +54,8 @@ lemma bonza_apply_prime_eq_one_or_dvd_self_sub_apply (hf : f ∈ bonza) {p : ℕ
           (one_le_pow k p (Prime.pos hp)) (by norm_num)
     rwa [modEq_comm, Int.modEq_iff_dvd] at this
 
+/- For each bonza function $f$, then $f p = 1$ for sufficient big prime $p$
+-/
 theorem bonza_not_x_apply_prime_of_gt_eq_one (hf : f ∈ bonza) (hnf : ¬ ∀ x, x > 0 → f x = x) :
     (∃ N, ∀ p > N, Nat.Prime p → f p = 1) := by
   obtain ⟨b, hb, neq⟩ : ∃ b, b > 0 ∧ f b ≠ b := Set.not_subset.mp hnf
@@ -100,6 +102,8 @@ theorem bonza_apply_prime_gt_two_eq_one (hf : f ∈ bonza) (hnf : ¬ ∀ x, x > 
     have : (q : ℤ).natAbs ≤ (1 - (-1) : ℤ).natAbs := natAbs_le_of_dvd_ne_zero this (by norm_num)
     omega
 
+/- Therefore, if a bonza function is not identity, then every $f x$ is a pow of two
+-/
 lemma bonza_not_id_two_pow (hf : f ∈ bonza) (hnf : ¬ ∀ x, x > 0 → f x = x) :
     ∀ n, n > 0 → ∃ a, f n = 2 ^ a := fun n hn ↦ by
   have : ∀ {p}, Nat.Prime p → p ∣ f n → p = 2 := fun {p} pp hp ↦ by
@@ -132,11 +136,10 @@ lemma LTE_lemma_of_pow_sub {a b : ℕ} (h1b : 1 < b) (hb : ¬2 ∣ b) (ha : a �
 
 lemma padicValNat_lemma {a : ℕ} (ha : a ≥ 4) (dvd : 2 ∣ a) : padicValNat 2 a + 2 ≤ a := by
   rcases dvd with ⟨k, hk⟩
-  rw [hk, padicValNat.mul (by norm_num) (by omega), padicValNat.self (by norm_num)]
   have : padicValNat 2 k < k := by calc
     _ ≤ Nat.log 2 k := padicValNat_le_nat_log k
     _ < _ := log_lt_self 2 (by omega)
-  omega
+  grind [padicValNat.mul, padicValNat.self]
 
 lemma verify_case_two_dvd {a b : ℕ} {x : ℤ} (hb : 2 ∣ b) (ha : a ≥ 4) (ha2 : 2 ∣ a) (hx : 2 ∣ x) :
     2 ^ (padicValNat 2 a + 2) ∣ (b : ℤ) ^ a - x ^ 2 ^ (padicValNat 2 a + 2) := by
@@ -151,6 +154,8 @@ lemma verify_case_two_dvd {a b : ℕ} {x : ℤ} (hb : 2 ∣ b) (ha : a ≥ 4) (h
       _ ≤ _ := by simp [propext (Nat.pow_le_pow_iff_right le.refl)]
     _ ∣ _ := pow_dvd_pow_of_dvd hx (2 ^ (padicValNat 2 a + 2))
 
+/- To verify the example is a bonza function
+-/
 lemma bonza_fExample : fExample ∈ bonza := by
   constructor
   · intro a b ha hb
