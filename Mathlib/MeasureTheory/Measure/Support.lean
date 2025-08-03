@@ -260,11 +260,6 @@ lemma interior_inter_support [OpensMeasurableSpace X] {s : Set X} :
   exact lt_of_lt_of_le (hxp (V ∩ y) ⟨Set.mem_inter hs1 hy2, IsOpen.inter hs2 hy1.1⟩)
     <| OuterMeasureClass.measure_mono μ <| Set.inter_subset_inter (fun ⦃a⦄ a ↦ a) hy1.2
 
-  /- We have reduced the proof to showing that the intersection of this
-  open neighborhood of x, which is in the support of mu, with this arbitrary
-  subset s of x, has positive measure.-/
-
-
 -- Prove the following directly, without appeal to `support_restrict_subset_closure`
 
 -- SO THE PROOF BELOW MUST BE REPLACED!
