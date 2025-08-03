@@ -55,7 +55,7 @@ universe w₁ w₂ v₁ v₂ u₁ u₂
 
 variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
 
-/-- If `η` is an lax transformation between `F` and `G`, we have a 1-morphism
+/-- If `η` is a lax transformation between `F` and `G`, we have a 1-morphism
 `η.app a : F.obj a ⟶ G.obj a` for each object `a : B`. We also have a 2-morphism
 `η.naturality f : app a ≫ G.map f ⟶ F.map f ≫ app b` for each 1-morphism `f : a ⟶ b`.
 These 2-morphisms satisfy the naturality condition, and preserve the identities and

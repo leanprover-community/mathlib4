@@ -182,12 +182,10 @@ structure OplaxTrans (F G : LaxFunctor B C) where
   naturality_naturality {a b : B} {f g : a ⟶ b} (η : f ⟶ g) :
       F.map₂ η ▷ app b ≫ naturality g = naturality f ≫ app a ◁ G.map₂ η := by
     aesop_cat
-  /-- Oplax unity. -/
   naturality_id (a : B) :
       F.mapId a ▷ app a ≫ naturality (𝟙 a) =
         (λ_ (app a)).hom ≫ (ρ_ (app a)).inv ≫ app a ◁ G.mapId a := by
     aesop_cat
-  /-- Oplax functoriality. -/
   naturality_comp {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
       F.mapComp f g ▷ app c ≫ naturality (f ≫ g) =
         (α_ _ _ _).hom ≫ F.map f ◁ naturality g ≫
