@@ -238,16 +238,15 @@ private theorem continuous_equivFun_basis_aux [T2Space E] {ι : Type v} [Fintype
     change Continuous (ξ.coord i)
     exact H₂ (ξ.coord i)
 
-instance [T2Space E] [FiniteDimensional 𝕜 E] : IsModuleTopology 𝕜 E :=
+instance (priority := 100) [T2Space E] [FiniteDimensional 𝕜 E] : IsModuleTopology 𝕜 E :=
   -- for the proof, go to a model vector space `b → 𝕜` thanks to `continuous_equivFun_basis`, and
   -- use that it has the module topology
   let b := Basis.ofVectorSpace 𝕜 E
-  have continuousEquiv : E ≃L[𝕜] (Basis.ofVectorSpaceIndex 𝕜 E) → 𝕜 := {
-    __ := b.equivFun
-    continuous_toFun := continuous_equivFun_basis_aux b
-    continuous_invFun := IsModuleTopology.continuous_of_linearMap (R:=𝕜)
-        (A:=(Basis.ofVectorSpaceIndex 𝕜 E) → 𝕜) (B:=E) (b.equivFun.symm)
-  }
+  have continuousEquiv : E ≃L[𝕜] (Basis.ofVectorSpaceIndex 𝕜 E) → 𝕜 :=
+    { __ := b.equivFun
+      continuous_toFun := continuous_equivFun_basis_aux b
+      continuous_invFun := IsModuleTopology.continuous_of_linearMap (R := 𝕜)
+        (A := (Basis.ofVectorSpaceIndex 𝕜 E) → 𝕜) (B := E) b.equivFun.symm }
   IsModuleTopology.iso continuousEquiv.symm
 
 /-- Any linear map on a finite dimensional space over a complete field is continuous. -/
