@@ -443,7 +443,7 @@ theorem exists_lt_lowerSemicontinuous_integral_lt [SigmaFinite μ] (f : α → �
       LowerSemicontinuous g ∧
       Integrable (fun x => EReal.toReal (g x)) μ ∧
       (∀ᵐ x ∂μ, g x < ⊤) ∧ (∫ x, EReal.toReal (g x) ∂μ) < (∫ x, f x ∂μ) + ε := by
-  let δ : ℝ := ε / 2
+  let δ := ε / 2
   have δpos : 0 < δ := half_pos εpos
   let fp : α → ℝ≥0 := fun x => Real.toNNReal (f x)
   have int_fp : Integrable (fun x => (fp x : ℝ)) μ := hf.real_toNNReal
