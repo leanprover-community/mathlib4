@@ -236,7 +236,6 @@ lemma support_restrict_subset_closure [OpensMeasurableSpace X] {s : Set X} :
     exact MeasureTheory.nonempty_of_measure_ne_zero
       (ne_of_gt (h_restr ▸ hx U ⟨hxU, hU⟩))
 
-
 lemma mem_support_restrict [OpensMeasurableSpace X] {s : Set X} {x : X} :
     x ∈ (μ.restrict s).support ↔ ∃ᶠ u in (𝓝[s] x).smallSets, 0 < μ u := by
   rw [(nhds_basis_opens x).mem_measureSupport,
