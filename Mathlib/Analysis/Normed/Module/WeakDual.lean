@@ -62,7 +62,7 @@ No new notation is introduced.
 
 Weak-* topology is defined generally in the file `Topology.Algebra.Module.WeakDual`.
 
-When `M` is a monoid, the duals `StrongDual 𝕜 M` and `WeakDual 𝕜 M` are type synonyms with
+When `M` is a vector space, the duals `StrongDual 𝕜 M` and `WeakDual 𝕜 M` are type synonyms with
 different topology instances.
 
 For the proof of Banach-Alaoglu theorem, the weak dual of `E` is embedded in the space of
@@ -99,7 +99,7 @@ variable {R : Type*} [CommSemiring R] [TopologicalSpace R] [ContinuousAdd R]
   [ContinuousConstSMul R R]
 variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M] [Module R M]
 
-/-- For monoids `M`, there is a canonical map `StrongDual R M → WeakDual R M` (the "identity"
+/-- For vector spaces `M`, there is a canonical map `StrongDual R M → WeakDual R M` (the "identity"
 mapping). It is a linear equivalence. -/
 def toWeakDual : StrongDual R M ≃ₗ[R] WeakDual R M :=
   LinearEquiv.refl R (M →L[R] R)
@@ -127,7 +127,7 @@ namespace WeakDual
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [AddCommMonoid E] [TopologicalSpace E] [Module 𝕜 E]
 
-/-- For normed spaces `E`, there is a canonical map `WeakDual 𝕜 E → StrongDual 𝕜 E` (the "identity"
+/-- For vector spaces `E`, there is a canonical map `WeakDual 𝕜 E → StrongDual 𝕜 E` (the "identity"
 mapping). It is a linear equivalence. Here it is implemented as the inverse of the linear
 equivalence `StrongDual.toWeakDual` in the other direction. -/
 def toStrongDual : WeakDual 𝕜 E ≃ₗ[𝕜] StrongDual 𝕜 E :=
