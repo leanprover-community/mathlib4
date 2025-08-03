@@ -5,8 +5,7 @@ Authors: Yakov Pechersky
 -/
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Algebra.Regular.Basic
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Tactic.TFAE
+import Mathlib.Algebra.Ring.Basic
 
 /-!
 # Non-zero divisors in a ring
@@ -32,55 +31,9 @@ theorem isRegular_iff_isUnit_of_finite {r : R} : IsRegular r ↔ IsUnit r where
 
 end Monoid
 
-section NonUnitalNonAssocRing
-
-variable {R : Type*} [NonUnitalNonAssocRing R] {r : R}
-
-lemma isLeftRegular_iff_eq_zero_of_mul_left : IsLeftRegular r ↔ ∀ x, r * x = 0 → x = 0 where
-  mp h r' eq := h (by simp_rw [eq, mul_zero])
-  mpr h r₁ r₂ eq := sub_eq_zero.mp <| h _ <| by simp_rw [mul_sub, eq, sub_self]
-
-lemma isRightRegular_iff_eq_zero_of_mul_right : IsRightRegular r ↔ ∀ x, x * r = 0 → x = 0 where
-  mp h r' eq := h (by simp_rw [eq, zero_mul])
-  mpr h r₁ r₂ eq := sub_eq_zero.mp <| h _ <| by simp_rw [sub_mul, eq, sub_self]
-
-lemma isRegular_iff_eq_zero_of_mul :
-    IsRegular r ↔ (∀ x, r * x = 0 → x = 0) ∧ (∀ x, x * r = 0 → x = 0) := by
-  rw [isRegular_iff, isLeftRegular_iff_eq_zero_of_mul_left, isRightRegular_iff_eq_zero_of_mul_right]
-
-/-- A (not necessarily unital or associative) ring has no zero divisors
-iff multiplication is both left and right cancellative. -/
-lemma noZeroDivisors_tfae : List.TFAE
-    [NoZeroDivisors R, IsLeftCancelMulZero R, IsRightCancelMulZero R, IsCancelMulZero R] := by
-  simp_rw [isLeftCancelMulZero_iff, isRightCancelMulZero_iff, isCancelMulZero_iff_forall_isRegular,
-    isLeftRegular_iff_eq_zero_of_mul_left, isRightRegular_iff_eq_zero_of_mul_right,
-    isRegular_iff_eq_zero_of_mul]
-  tfae_have 1 ↔ 2 := noZeroDivisors_iff_eq_zero_of_mul_left
-  tfae_have 1 ↔ 3 := noZeroDivisors_iff_eq_zero_of_mul_right
-  tfae_have 1 ↔ 4 := noZeroDivisors_iff_eq_zero_of_mul
-  tfae_finish
-
-end NonUnitalNonAssocRing
-
 section Ring
 
 variable {R : Type*} [Ring R] {a x y r : R}
-
-lemma mul_cancel_left_mem_nonZeroDivisorsLeft (hr : r ∈ nonZeroDivisorsLeft R) :
-    r * x = r * y ↔ x = y := by
-  refine ⟨fun h ↦ ?_, congrArg (r * ·)⟩
-  rw [← sub_eq_zero, ← mul_left_mem_nonZeroDivisorsLeft_eq_zero_iff hr, mul_sub, h, sub_self]
-
-lemma mul_cancel_right_mem_nonZeroDivisorsRight (hr : r ∈ nonZeroDivisorsRight R) :
-    x * r = y * r ↔ x = y := by
-  refine ⟨fun h ↦ ?_, congrArg (· * r)⟩
-  rw [← sub_eq_zero, ← mul_right_mem_nonZeroDivisorsRight_eq_zero_iff hr, sub_mul, h, sub_self]
-
-lemma mul_cancel_right_mem_nonZeroDivisors (hr : r ∈ R⁰) : x * r = y * r ↔ x = y :=
-  mul_cancel_right_mem_nonZeroDivisorsRight hr.2
-
-lemma mul_cancel_right_coe_nonZeroDivisors {c : R⁰} : x * c = y * c ↔ x = y :=
-  mul_cancel_right_mem_nonZeroDivisors c.prop
 
 lemma isLeftRegular_iff_mem_nonZeroDivisorsLeft : IsLeftRegular r ↔ r ∈ nonZeroDivisorsLeft R :=
   isLeftRegular_iff_eq_zero_of_mul_left
@@ -111,6 +64,20 @@ alias isRightRegular_iff_mem_nonZeroDivisorsLeft := isRightRegular_iff_mem_nonZe
 
 @[deprecated (since := "2025-07-16")]
 alias le_nonZeroDivisors_iff_isRightRegular := le_nonZeroDivisorsRight_iff_isRightRegular
+
+lemma mul_cancel_left_mem_nonZeroDivisorsLeft (hr : r ∈ nonZeroDivisorsLeft R) :
+    r * x = r * y ↔ x = y :=
+  ⟨(isLeftRegular_iff_mem_nonZeroDivisorsLeft.mpr hr ·), congr_arg (r * ·)⟩
+
+lemma mul_cancel_right_mem_nonZeroDivisorsRight (hr : r ∈ nonZeroDivisorsRight R) :
+    x * r = y * r ↔ x = y :=
+  ⟨(isRightRegular_iff_mem_nonZeroDivisorsRight.mpr hr ·), congr_arg (· * r)⟩
+
+lemma mul_cancel_right_mem_nonZeroDivisors (hr : r ∈ R⁰) : x * r = y * r ↔ x = y :=
+  mul_cancel_right_mem_nonZeroDivisorsRight hr.2
+
+lemma mul_cancel_right_coe_nonZeroDivisors {c : R⁰} : x * c = y * c ↔ x = y :=
+  mul_cancel_right_mem_nonZeroDivisors c.prop
 
 /-- In a finite ring, an element is a unit iff it is a non-zero-divisor. -/
 lemma isUnit_iff_mem_nonZeroDivisors_of_finite [Finite R] : IsUnit a ↔ a ∈ nonZeroDivisors R := by
