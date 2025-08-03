@@ -10,15 +10,18 @@ import Mathlib.Analysis.Normed.Module.FiniteDimension
 /-!
 # Asymptotic cone of a set
 
-This file defines the asymptotic cone of a set in a normed affine space. The asymptotic cone of a
-set $A$ is usually defined as the set of points $v$ for which there exist sequences $t_n > 0$ and
-$x_n \in A$ such that $t_n \to 0$ and $t_n x_n \to v$. We take a different approach here using
-filters: we define the asymptotic cone of `s` as the set of vectors `v` such that
-`∃ᶠ p in Filter.atTop • 𝓝 v, p ∈ s` holds.
+This file defines the asymptotic cone of a set in a normed affine space.
+
+## Implementation details
+
+The asymptotic cone of a set $A$ is usually defined as the set of points $v$ for which there exist
+sequences $t_n > 0$ and $x_n \in A$ such that $t_n \to 0$ and $t_n x_n \to v$. We take a different
+approach here using filters: we define the asymptotic cone of `s` as the set of vectors `v` such
+that `∃ᶠ p in Filter.atTop • 𝓝 v, p ∈ s` holds.
 
 ## Main definitions
 
-* `asymptoticNhds`: the filter of neighborhoods at infinity in some direction.
+* `AffineSpace.asymptoticNhds`: the filter of neighborhoods at infinity in some direction.
 * `asymptoticCone`: the asymptotic cone of a subset of a normed affine space.
 
 ## Main statements
@@ -39,16 +42,48 @@ section General
 
 variable
   {k V P : Type*}
-  [NormedField k] [LinearOrder k] [OrderTopology k] [IsStrictOrderedRing k]
+  [NormedField k] [LinearOrder k]
   [NormedAddCommGroup V] [NormedSpace k V] [MetricSpace P] [NormedAddTorsor V P]
 
+namespace AffineSpace
+
 variable (k P) in
-/-- In a normed affine space `P` over `k`, `asymptoticNhds k P v` is the filter of neighborhoods at
-infinity in the direction of `v`. In a normed vector space, this is the filter
+/-- In a normed affine space `P` over `k`, `AffineSpace.asymptoticNhds k P v` is the filter of
+neighborhoods at infinity in the direction of `v`. In a normed vector space, this is the filter
 `Filter.atTop • 𝓝 v`. To support affine spaces, the actual definition is different and should be
-considered an implementation detail. -/
+considered an implementation detail. Use `AffineSpace.asymptoticNhds_eq_smul` or
+`AffineSpace.asymptoticNhds_eq_smul` for unfolding. -/
 @[irreducible]
 def asymptoticNhds (v : V) : Filter P := ⨆ p, atTop (α := k) • 𝓝 v +ᵥ pure p
+
+theorem asymptoticNhds_vadd_pure (v : V) (p : P) :
+    asymptoticNhds k V v +ᵥ pure p = asymptoticNhds k P v := by
+  simp_rw [asymptoticNhds, vadd_pure, map_iSup, map_map, Function.comp_def]
+  refine (Equiv.vaddConst p).iSup_congr fun _ => ?_
+  simp [add_vadd]
+
+theorem vadd_asymptoticNhds (u v : V) : u +ᵥ asymptoticNhds k P v = asymptoticNhds k P v := by
+  have ⟨p⟩ : Nonempty P := inferInstance
+  nth_rw 1 [← asymptoticNhds_vadd_pure v p]
+  simp_rw [← asymptoticNhds_vadd_pure v (u +ᵥ p), vadd_pure, ← Filter.map_vadd, map_map]
+  congr with v
+  exact vadd_comm u v p
+
+variable {α : Type*} {l : Filter α}
+
+theorem _root_.Filter.Tendsto.asymptoticNhds_vadd_const {f : α → V} {v : V} (p : P)
+    (hf : Tendsto f l (asymptoticNhds k V v)) :
+    Tendsto (fun x => f x +ᵥ p) l (asymptoticNhds k P v) := by
+  rw [← asymptoticNhds_vadd_pure, vadd_pure]
+  exact tendsto_map.comp hf
+
+theorem _root_.Filter.Tendsto.const_vadd_asymptoticNhds {f : α → P} {v : V} (u : V)
+    (hf : Tendsto f l (asymptoticNhds k P v)) :
+    Tendsto (fun x => u +ᵥ f x) l (asymptoticNhds k P v) := by
+  rw [← vadd_asymptoticNhds u, ← Filter.map_vadd]
+  exact tendsto_map.comp hf
+
+variable [OrderTopology k] [IsStrictOrderedRing k]
 
 theorem asymptoticNhds_eq_smul (v : V) : asymptoticNhds k V v = atTop (α := k) • 𝓝 v := by
   unfold asymptoticNhds
@@ -67,24 +102,9 @@ theorem asymptoticNhds_eq_smul (v : V) : asymptoticNhds k V v = atTop (α := k) 
   · apply (le_iSup _ 0).trans'
     simp
 
-omit [OrderTopology k] [IsStrictOrderedRing k] in
-theorem asymptoticNhds_vadd_pure (v : V) (p : P) :
-    asymptoticNhds k V v +ᵥ pure p = asymptoticNhds k P v := by
-  simp_rw [asymptoticNhds, vadd_pure, map_iSup, map_map, Function.comp_def]
-  refine (Equiv.vaddConst p).iSup_congr fun _ => ?_
-  simp [add_vadd]
-
 theorem asymptoticNhds_eq_smul_vadd (v : V) (p : P) :
     asymptoticNhds k P v = atTop (α := k) • 𝓝 v +ᵥ pure p := by
   rw [← asymptoticNhds_eq_smul, asymptoticNhds_vadd_pure]
-
-omit [OrderTopology k] [IsStrictOrderedRing k] in
-theorem vadd_asymptoticNhds (u v : V) : u +ᵥ asymptoticNhds k P v = asymptoticNhds k P v := by
-  have ⟨p⟩ : Nonempty P := inferInstance
-  nth_rw 1 [← asymptoticNhds_vadd_pure v p]
-  simp_rw [← asymptoticNhds_vadd_pure v (u +ᵥ p), vadd_pure, ← Filter.map_vadd, map_map]
-  congr with v
-  exact vadd_comm u v p
 
 instance {v : V} : (asymptoticNhds k P v).NeBot := by
   have ⟨p⟩ : Nonempty P := inferInstance
@@ -92,7 +112,7 @@ instance {v : V} : (asymptoticNhds k P v).NeBot := by
   infer_instance
 
 private theorem asymptoticNhds_zero' : asymptoticNhds k V (0 : V) = ⊤ := by
-  rw [← top_le_iff, top_eq_iSup_pure, iSup_le_iff]
+  rw [← top_le_iff, ← iSup_pure_eq_top, iSup_le_iff]
   intro v
   rw [← map_const (f := atTop (α := k))]
   have : (fun _ => v) =ᶠ[atTop (α := k)]
@@ -111,30 +131,16 @@ theorem asymptoticNhds_zero : asymptoticNhds k P (0 : V) = ⊤ := by
   rw [← asymptoticNhds_vadd_pure 0 p, asymptoticNhds_zero', vadd_pure]
   exact (Equiv.vaddConst p).surjective.filter_map_top
 
-theorem Filter.Tendsto.atTop_smul_nhds {α} {f : α → k} {g : α → V} {l : Filter α} {v : V}
+theorem _root_.Filter.Tendsto.atTop_smul_nhds_tendsto_asymptoticNhds {f : α → k} {g : α → V} {v : V}
     (hf : Tendsto f l atTop) (hg : Tendsto g l (𝓝 v)) :
     Tendsto (fun x => f x • g x) l (asymptoticNhds k V v) := by
   rw [asymptoticNhds_eq_smul, ← map₂_smul, ← map_prod_eq_map₂]
   exact tendsto_map.comp (hf.prodMk hg)
 
-theorem Filter.Tendsto.atTop_smul_const {α} {f : α → k} {l : Filter α} (v : V)
+theorem _root_.Filter.Tendsto.atTop_smul_const_tendsto_asymptoticNhds {f : α → k} (v : V)
     (hf : Tendsto f l atTop) :
     Tendsto (fun x => f x • v) l (asymptoticNhds k V v) :=
-  hf.atTop_smul_nhds tendsto_const_nhds
-
-omit [OrderTopology k] [IsStrictOrderedRing k] in
-theorem Filter.Tendsto.asymptoticNhds_vadd_const {α} {f : α → V} {l : Filter α} {v : V} (p : P)
-    (hf : Tendsto f l (asymptoticNhds k V v)) :
-    Tendsto (fun x => f x +ᵥ p) l (asymptoticNhds k P v) := by
-  rw [← asymptoticNhds_vadd_pure, vadd_pure]
-  exact tendsto_map.comp hf
-
-omit [OrderTopology k] [IsStrictOrderedRing k] in
-theorem Filter.Tendsto.const_vadd_asymptoticNhds {α} {f : α → P} {l : Filter α} {v : V} (u : V)
-    (hf : Tendsto f l (asymptoticNhds k P v)) :
-    Tendsto (fun x => u +ᵥ f x) l (asymptoticNhds k P v) := by
-  rw [← vadd_asymptoticNhds u, ← Filter.map_vadd]
-  exact tendsto_map.comp hf
+  hf.atTop_smul_nhds_tendsto_asymptoticNhds tendsto_const_nhds
 
 theorem asymptoticNhds_smul (v : V) {c : k} (hc : 0 < c) :
     asymptoticNhds k P (c • v) = asymptoticNhds k P v := by
@@ -145,7 +151,8 @@ theorem asymptoticNhds_smul (v : V) {c : k} (hc : 0 < c) :
     ← map₂_smul, map₂_map_right, smul_smul, ← map₂_map_left,
     show map (· * c) atTop = atTop from (OrderIso.mulRight₀ _ hc).map_atTop]
 
-theorem nhds_bind_asymptoticNhds {v : V} :
+@[simp]
+theorem nhds_bind_asymptoticNhds (v : V) :
     (𝓝 v).bind (asymptoticNhds k P) = asymptoticNhds k P v := by
   apply le_antisymm
   · have ⟨p⟩ : Nonempty P := inferInstance
@@ -159,7 +166,8 @@ theorem nhds_bind_asymptoticNhds {v : V} :
   · rw [← pure_bind v (asymptoticNhds k P)]
     exact bind_mono (pure_le_nhds v) .rfl
 
-theorem asymptoticNhds_bind_nhds {v : V} :
+@[simp]
+theorem asymptoticNhds_bind_nhds (v : V) :
     (asymptoticNhds k P v).bind 𝓝 = asymptoticNhds k P v := by
   refine le_antisymm (fun s h => ?_) (bind_mono le_rfl (.of_forall pure_le_nhds))
   have ⟨p⟩ : Nonempty P := inferInstance
@@ -178,7 +186,8 @@ theorem asymptoticNhds_bind_nhds {v : V} :
   rw [← Set.image_smul, Set.forall_mem_image]
   exact fun w hw => hs (Set.smul_mem_smul hc₁ hw)
 
-theorem asymptoticNhds_bind_asymptoticNhds {v : V} :
+@[simp]
+theorem asymptoticNhds_bind_asymptoticNhds (v : V) :
     (asymptoticNhds k V v).bind (asymptoticNhds k P) = asymptoticNhds k P v := by
   refine Filter.ext' fun p => ?_
   rw [asymptoticNhds_eq_smul, eventually_bind, ← map₂_smul, ← map_prod_eq_map₂, eventually_map,
@@ -189,58 +198,55 @@ theorem asymptoticNhds_bind_asymptoticNhds {v : V} :
   filter_upwards [tendsto_fst.eventually (eventually_gt_atTop 0)] with ⟨c, u⟩ (hc : 0 < c)
   simp only [asymptoticNhds_smul _ hc]
 
-variable (k) in
+end AffineSpace
 
+open AffineSpace
+
+variable (k) in
 /-- The set of directions `v` for which the set has points arbitrarily far in directions near `v`.
 -/
 def asymptoticCone (s : Set P) : Set V := {v | ∃ᶠ p in asymptoticNhds k P v, p ∈ s}
 
-omit [OrderTopology k] [IsStrictOrderedRing k] in
 theorem mem_asymptoticCone_iff {v : V} {s : Set P} :
     v ∈ asymptoticCone k s ↔ ∃ᶠ p in asymptoticNhds k P v, p ∈ s :=
   Iff.rfl
 
-omit [OrderTopology k] [IsStrictOrderedRing k] in
 @[simp]
 theorem asymptoticCone_empty : asymptoticCone k (∅ : Set P) = ∅ :=
   Set.eq_empty_iff_forall_notMem.mpr fun _ => frequently_false _
 
-omit [OrderTopology k] [IsStrictOrderedRing k] in
 @[mono]
 theorem asymptoticCone_mono {s t : Set P} (h : s ⊆ t) : asymptoticCone k s ⊆ asymptoticCone k t :=
   fun _ h' => h'.mono h
 
-omit [OrderTopology k] [IsStrictOrderedRing k] in
 theorem asymptoticCone_union {s t : Set P} :
     asymptoticCone k (s ∪ t) = asymptoticCone k s ∪ asymptoticCone k t := by
   ext
   simp only [Set.mem_union, mem_asymptoticCone_iff, Filter.frequently_or_distrib]
 
-omit [OrderTopology k] [IsStrictOrderedRing k] in
-theorem Set.Finite.asymptoticCone_biUnion {ι : Type*} {s : Set ι} (hs : s.Finite) (f : ι → Set P) :
+theorem asymptoticCone_biUnion {ι : Type*} {s : Set ι} (hs : s.Finite) (f : ι → Set P) :
     asymptoticCone k (⋃ i ∈ s, f i) = ⋃ i ∈ s, asymptoticCone k (f i) := by
   induction s, hs using Set.Finite.induction_on <;>
     simp [asymptoticCone_union, *]
 
-omit [OrderTopology k] [IsStrictOrderedRing k] in
-theorem Set.Finite.asymptoticCone_sUnion {S : Set (Set P)} (hS : S.Finite) :
+theorem asymptoticCone_sUnion {S : Set (Set P)} (hS : S.Finite) :
     asymptoticCone k (⋃₀ S) = ⋃ s ∈ S, asymptoticCone k s := by
-  rw [sUnion_eq_biUnion, hS.asymptoticCone_biUnion]
+  rw [Set.sUnion_eq_biUnion, asymptoticCone_biUnion hS]
 
-omit [OrderTopology k] [IsStrictOrderedRing k] in
-theorem Finset.asymptoticCone_biUnion {ι : Type*} (s : Finset ι) (f : ι → Set P) :
+nonrec theorem Finset.asymptoticCone_biUnion {ι : Type*} (s : Finset ι) (f : ι → Set P) :
     asymptoticCone k (⋃ i ∈ s, f i) = ⋃ i ∈ s, asymptoticCone k (f i) :=
-  s.finite_toSet.asymptoticCone_biUnion f
+  asymptoticCone_biUnion s.finite_toSet f
 
-omit [OrderTopology k] [IsStrictOrderedRing k] in
 theorem asymptoticCone_iUnion_of_finite {ι : Type*} [Finite ι] (f : ι → Set P) :
     asymptoticCone k (⋃ i, f i) = ⋃ i, asymptoticCone k (f i) := by
-  rw [← Set.sUnion_range, (Set.finite_range _).asymptoticCone_sUnion, Set.biUnion_range]
+  rw [← Set.sUnion_range, asymptoticCone_sUnion (Set.finite_range f), Set.biUnion_range]
+
+variable [OrderTopology k] [IsStrictOrderedRing k]
 
 theorem zero_mem_asymptoticCone {s : Set P} (hs : s.Nonempty) : 0 ∈ asymptoticCone k s := by
   simpa [mem_asymptoticCone_iff]
 
-theorem asymptoticCone_nonempty_iff {s : Set P} : (asymptoticCone k s).Nonempty ↔ s.Nonempty := by
+theorem asymptoticCone_nonempty {s : Set P} : (asymptoticCone k s).Nonempty ↔ s.Nonempty := by
   refine ⟨Function.mtr ?_, fun h => ⟨0, zero_mem_asymptoticCone h⟩⟩
   simp +contextual [Set.not_nonempty_iff_eq_empty]
 
@@ -251,24 +257,29 @@ theorem smul_mem_asymptoticCone_iff {s : Set P} {c : k} {v : V} (hc : 0 < c) :
 theorem smul_mem_asymptoticCone {s : Set P} {c : k} {v : V} (hc : 0 ≤ c)
     (h : v ∈ asymptoticCone k s) : c • v ∈ asymptoticCone k s := by
   rcases hc.eq_or_lt with rfl | hc
-  · rw [zero_smul]; exact zero_mem_asymptoticCone (asymptoticCone_nonempty_iff.mp ⟨v, h⟩)
+  · rw [zero_smul]; exact zero_mem_asymptoticCone (asymptoticCone_nonempty.mp ⟨v, h⟩)
   · rwa [smul_mem_asymptoticCone_iff hc]
+
+theorem asymptoticCone_eq_closure_of_forall_smul_mem {s : Set V}
+    (hs : ∀ c : k, 0 < c → ∀ x ∈ s, c • x ∈ s) : asymptoticCone k s = closure s := by
+  ext v
+  rw [mem_closure_iff_frequently, ← map_snd_prod (atTop (α := k)) (𝓝 v), frequently_map,
+    mem_asymptoticCone_iff, asymptoticNhds_eq_smul, ← map₂_smul, ← map_prod_eq_map₂, frequently_map]
+  apply frequently_congr
+  filter_upwards [tendsto_fst.eventually (eventually_gt_atTop 0)] with ⟨c, u⟩ hc
+  refine ⟨fun hu => ?_, hs c hc u⟩
+  specialize hs c⁻¹ (inv_pos_of_pos hc) (c • u) hu
+  rwa [inv_smul_smul₀ hc.ne'] at hs
+
+theorem asymptoticCone_submodule {s : Submodule k V} : asymptoticCone k (s : Set V) = closure s :=
+  asymptoticCone_eq_closure_of_forall_smul_mem fun _ _ _ h => s.smul_mem _ h
 
 theorem asymptoticCone_affineSubspace {s : AffineSubspace k P} (hs : (s : Set P).Nonempty) :
     asymptoticCone k (s : Set P) = closure s.direction := by
   have ⟨p, hp⟩ := hs
   ext v
-  rw [mem_closure_iff_frequently, ← map_snd_prod (atTop (α := k)) (𝓝 v), frequently_map,
-    mem_asymptoticCone_iff, asymptoticNhds_eq_smul_vadd v p, vadd_pure, frequently_map, ← map₂_smul,
-    ← map_prod_eq_map₂, frequently_map]
-  apply frequently_congr
-  filter_upwards [tendsto_fst.eventually (eventually_ne_atTop 0)] with ⟨c, u⟩ hc
-  simp_rw [SetLike.mem_coe, s.vadd_mem_iff_mem_direction _ hp, Submodule.smul_mem_iff _ hc]
-
-theorem asymptoticCone_submodule {s : Submodule k V} :
-    asymptoticCone k (s : Set V) = closure s := by
-  nth_rw 2 [← s.toAffineSubspace_direction]
-  exact asymptoticCone_affineSubspace (s := s.toAffineSubspace) s.nonempty
+  simp_rw [← asymptoticCone_submodule, mem_asymptoticCone_iff, ← asymptoticNhds_vadd_pure v p,
+    vadd_pure, frequently_map, SetLike.mem_coe, s.vadd_mem_iff_mem_direction _ hp]
 
 @[simp]
 theorem asymptoticCone_univ : asymptoticCone k (Set.univ : Set P) = Set.univ := by
@@ -287,7 +298,8 @@ theorem isClosed_asymptoticCone {s : Set P} : IsClosed (asymptoticCone k s) := b
   simp_rw [mem_asymptoticCone_iff, ← frequently_bind, nhds_bind_asymptoticNhds] at h
   exact h
 
-theorem asymptoticCone_asymptoticCone {s : Set P} :
+@[simp]
+theorem asymptoticCone_asymptoticCone (s : Set P) :
     asymptoticCone k (asymptoticCone k s) = asymptoticCone k s := by
   ext
   simp_rw [mem_asymptoticCone_iff, ← Filter.frequently_bind, asymptoticNhds_bind_asymptoticNhds]
@@ -295,6 +307,8 @@ theorem asymptoticCone_asymptoticCone {s : Set P} :
 end General
 
 section Convex
+
+open AffineSpace
 
 variable
   {k V : Type*} [NormedField k] [LinearOrder k] [OrderTopology k] [IsStrictOrderedRing k]
@@ -332,8 +346,8 @@ protected theorem Convex.asymptoticCone (hs : Convex k s) : Convex k (asymptotic
   · rw [asymptoticCone_empty]; exact convex_empty
   intro v hv u hu a b ha hb hab
   rw [mem_asymptoticCone_iff]
-  refine tendsto_id.atTop_smul_const _ |>.asymptoticNhds_vadd_const p |>.frequently
-    (Eventually.frequently ?_)
+  refine tendsto_id.atTop_smul_const_tendsto_asymptoticNhds _ |>.asymptoticNhds_vadd_const p
+    |>.frequently (Eventually.frequently ?_)
   filter_upwards [eventually_ge_atTop 0] with c hc
   simp_rw [id, smul_add, smul_smul]
   have h₁ : c • v +ᵥ p ∈ s := hs.smul_vadd_mem_of_isClosed_of_mem_asymptoticCone hs' hc hv hp
@@ -364,12 +378,13 @@ end Convex
 
 section Real
 
-open Bornology
+open AffineSpace Bornology
 
 variable
   {V P : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
 
-theorem asymptoticNhds_le_cobounded {v : V} (hv : v ≠ 0) : asymptoticNhds ℝ P v ≤ cobounded P := by
+theorem AffineSpace.asymptoticNhds_le_cobounded {v : V} (hv : v ≠ 0) :
+    asymptoticNhds ℝ P v ≤ cobounded P := by
   have ⟨p⟩ : Nonempty P := inferInstance
   rw [← tendsto_id', ← Metric.tendsto_dist_right_atTop_iff p,
     asymptoticNhds_eq_smul_vadd v p, vadd_pure, ← map₂_smul, ← map_prod_eq_map₂, map_map,
@@ -388,7 +403,7 @@ theorem asymptoticCone_subset_singleton_of_bounded {s : Set P} (hs : IsBounded s
 
 variable [FiniteDimensional ℝ V]
 
-theorem cobounded_eq_iSup_sphere_asymptoticNhds :
+theorem AffineSpace.cobounded_eq_iSup_sphere_asymptoticNhds :
     cobounded P = ⨆ v ∈ Metric.sphere 0 1, asymptoticNhds ℝ P v := by
   refine le_antisymm ?_ <| iSup₂_le fun _ h => asymptoticNhds_le_cobounded <|
     Metric.ne_of_mem_sphere h one_ne_zero
