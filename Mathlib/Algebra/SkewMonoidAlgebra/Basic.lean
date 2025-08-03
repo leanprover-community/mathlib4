@@ -865,14 +865,14 @@ theorem coeff_mul_single_aux [Monoid G] [MulSemiringAction G k] (f : SkewMonoidA
       ite (a₁ * x = z) (b₁ * a₁ • r) 0 :=
     fun a₁ b₁ => sum_single_index <| by simp
   calc
-    (HMul.hMul (β := SkewMonoidAlgebra k G) f (single x r)).coeff z =
+    (f * (single x r)).coeff z =
         sum f fun a b => if a = y then b * y • r else 0 := by simp [coeff_mul, A, H, sum_ite_eq']
     _ = if y ∈ f.support then f.coeff y * y • r else 0 := (f.support.sum_ite_eq' _ _)
     _ = f.coeff y * y • r := by
       split_ifs with h <;> simp [support] at h <;> simp [h]
 
 theorem coeff_mul_single_one [Monoid G] [MulSemiringAction G k] (f : SkewMonoidAlgebra k G) (r : k)
-    (x : G) : (HMul.hMul (β := SkewMonoidAlgebra k G) f (single 1 r)).coeff x = f.coeff x * x • r :=
+    (x : G) : (f * (single 1 r)).coeff x = f.coeff x * x • r :=
   f.coeff_mul_single_aux fun a => by rw [mul_one]
 
 theorem coeff_mul_single_of_not_exists_mul [Monoid G] [MulSemiringAction G k] (r : k) {g g' : G}
@@ -890,7 +890,7 @@ theorem coeff_single_mul_aux [Monoid G] [MulSemiringAction G k] (f : SkewMonoidA
   have : (f.sum fun a b => ite (x * a = y) (0 * x • b) 0) = 0 := by
     simp [zero_mul, ite_self,sum_zero]
   calc
-    (HMul.hMul (α := SkewMonoidAlgebra k G) (single x r) f).coeff y =
+    ((single x r) *  f).coeff y =
         sum f fun a b => ite (x * a = y) (r * x • b) 0 :=
       (coeff_mul _ _ _).trans <| sum_single_index this
     _ = f.sum fun a b => ite (a = z) (r * x • b) 0 := by simp [H]
