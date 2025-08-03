@@ -165,14 +165,6 @@ lemma exists_foo {ι K M : Type*} [Finite ι] [Field K] [Infinite K] [AddCommGro
   obtain ⟨⟨x, hxp⟩, hx₀⟩ := exists_foo' f' h
   exact ⟨x, hxp, hx₀⟩
 
-/-- Evaluation as a linear map.
-
-Surely this already exists!? -/
-@[simps] def Pi.evalLinear {ι : Type*} (R : Type*) [Semiring R] (i : ι) : (ι → R) →ₗ[R] R where
-  toFun f := f i
-  map_add' _ _ := rfl
-  map_smul' _ _ := rfl
-
 noncomputable section
 
 open Function Module.End
@@ -913,7 +905,8 @@ lemma exists_distinct_blah :
   rcases isEmpty_or_nonempty ι; · simpa using ⟨0, Submodule.zero_mem _⟩
   set p := span K (range fun (i : b.support) j ↦ (P.pairingIn ℤ j i : K))
   let f : ι ⊕ {(i, j) : ι × ι | i ≠ j} → Dual K (ι → K) :=
-    Sum.elim (Pi.evalLinear K) (fun ij ↦ Pi.evalLinear K ij.1.1 - Pi.evalLinear K ij.1.2)
+    Sum.elim LinearMap.proj
+      (fun ij ↦ LinearMap.proj (R := K) (φ := fun _ ↦ K) ij.1.1 - LinearMap.proj ij.1.2)
   suffices ∃ d ∈ p, ∀ i, f i d ≠ 0 by
     obtain ⟨d, hp, hf⟩ := this
     refine ⟨d, fun i ↦ hf (Sum.inl i), fun i j h ↦ ?_, hp⟩
