@@ -159,6 +159,11 @@ protected theorem map_update_smul [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) 
     f (update m i (c • x)) = c • f (update m i x) :=
   f.map_update_smul' m i c x
 
+theorem map_coord_zero {m : ∀ i, M₁ i} (i : ι) (h : m i = 0) : f m = 0 := by
+  classical
+    have : (0 : R) • (0 : M₁ i) = 0 := by simp
+    rw [← update_eq_self i m, h, ← this, f.map_update_smul, zero_smul]
+
 @[simp]
 theorem map_update_zero [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) : f (update m i 0) = 0 :=
   f.map_coord_zero i (update_self i 0 m)
@@ -1314,10 +1319,14 @@ theorem map_update_neg [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) (x : M₁ i
     rw [← MultilinearMap.map_update_add, neg_add_cancel, f.map_coord_zero i (update_self i 0 m)]
 
 
+@[deprecated (since := "2024-11-03")] protected alias map_neg := MultilinearMap.map_update_neg
+
 @[simp]
 theorem map_update_sub [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) (x y : M₁ i) :
     f (update m i (x - y)) = f (update m i x) - f (update m i y) := by
   rw [sub_eq_add_neg, sub_eq_add_neg, MultilinearMap.map_update_add, map_update_neg]
+
+@[deprecated (since := "2024-11-03")] protected alias map_sub := MultilinearMap.map_update_sub
 
 lemma map_update [DecidableEq ι] (x : (i : ι) → M₁ i) (i : ι) (v : M₁ i) :
     f (update x i v) = f x - f (update x i (x i - v)) := by
