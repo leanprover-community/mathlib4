@@ -31,18 +31,16 @@ condition.
   condition is given by a 2-isomorphism `F.map f ≫ app b ≅ app a ≫ G.map f` for each 1-morphism
   `f : a ⟶ b`.
 
-Using these, we define two `CategoryStruct` (scoped) instances on `OplaxFunctor B C`, one in the
-`Oplax.OplaxTrans` namespace and one in the `Oplax.StrongTrans` namespace. The arrows in these
-CategoryStruct's are given by oplax transformations and strong transformations respectively.
+Using these, we define three `CategoryStruct` (scoped) instances on `OplaxFunctor B C`, in the
+`Oplax.LaxTrans` namespace, the `Oplax.OplaxTrans` namespace, and the `Oplax.StrongTrans`
+namespace. The arrows in these CategoryStruct's are given by lax transformations, oplax
+transformations, and strong transformations respectively.
 
 We also provide API for going between oplax transformations and strong transformations:
 * `Oplax.StrongCore F G`: a structure on an oplax transformation between oplax functors that
 promotes it to a strong transformation.
 * `Oplax.mkOfOplax η η'`: given an oplax transformation `η` such that each component
   2-morphism is an isomorphism, `mkOfOplax` gives the corresponding strong transformation.
-
-# TODO
-This file could also include lax transformations between oplax functors.
 
 ## References
 * [Niles Johnson, Donald Yau, *2-Dimensional Categories*](https://arxiv.org/abs/2002.06055)
@@ -60,7 +58,7 @@ variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory
 /-- If `η` is an lax transformation between `F` and `G`, we have a 1-morphism
 `η.app a : F.obj a ⟶ G.obj a` for each object `a : B`. We also have a 2-morphism
 `η.naturality f : app a ≫ G.map f ⟶ F.map f ≫ app b` for each 1-morphism `f : a ⟶ b`.
-These 2-morphisms satisfies the naturality condition, and preserve the identities and
+These 2-morphisms satisfy the naturality condition, and preserve the identities and
 the compositions modulo some adjustments of domains and codomains of 2-morphisms.
 -/
 structure LaxTrans (F G : OplaxFunctor B C) where
