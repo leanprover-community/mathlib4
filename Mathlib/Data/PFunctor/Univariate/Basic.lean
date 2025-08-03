@@ -163,7 +163,7 @@ def monomial (A : Type uA) (B : Type uB) : PFunctor.{uA, uB} :=
 def C (A : Type uA) : PFunctor.{uA, uB} :=
   A X^ PEmpty
 
-/-- The variable (or indeterminate) polynomial functor `X`, defined as `P(X) = PUnit X^ PUnit`.
+/-- The variable (or indeterminate) polynomial functor `X`, defined as `X(Y) = PUnit X^ PUnit`.
 
 This is the identity with respect to tensor product and composition (up to equivalence). -/
 def X : PFunctor.{uA, uB} :=
