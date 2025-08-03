@@ -565,17 +565,12 @@ theorem tendsto_of_forall_isOpen_le_liminf {ι : Type*} {μ : ProbabilityMeasure
   apply Filter.tendsto_of_seq_tendsto (fun u hu ↦ ?_)
   apply tendsto_of_forall_isOpen_le_liminf_nat (fun G hG ↦ ?_)
   apply (h_opens G hG).trans
-  simp only [Function.comp_apply]
   change _ ≤ atTop.liminf ((fun i ↦ μs i G) ∘ u)
   rw [liminf_comp]
-  apply liminf_le_liminf_of_le ?_ ?_ ?_
-  · exact hu
-  · refine ⟨0, by simp⟩
-  · refine ⟨1, ?_⟩
-    simp only [ge_iff_le, map_map, eventually_map, Function.comp_apply, eventually_atTop,
-      forall_exists_index]
-    intro a x hx
-    exact  (hx x le_rfl).trans (by simp)
+  refine liminf_le_liminf_of_le hu (by isBoundedDefault) ⟨1, ?_⟩
+  simp only [ge_iff_le, map_map, eventually_map, Function.comp_apply, eventually_atTop,
+    forall_exists_index]
+  exact fun a x hx ↦ (hx x le_rfl).trans (by simp)
 
 end le_liminf_open_implies_convergence
 
