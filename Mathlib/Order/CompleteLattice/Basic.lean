@@ -47,7 +47,6 @@ section
 
 variable [CompleteSemilatticeSup α] {s t : Set α} {a b : α}
 
-@[gcongr]
 theorem sSup_le_sSup_of_isCofinalFor (h : IsCofinalFor s t) : sSup s ≤ sSup t :=
   IsLeast.mono (isLUB_sSup t) (isLUB_sSup s) <| upperBounds_mono_of_isCofinalFor h
 
@@ -66,7 +65,6 @@ section
 
 variable [CompleteSemilatticeInf α] {s t : Set α} {a b : α}
 
-@[gcongr]
 theorem sInf_le_sInf_of_isCoinitialFor (h : IsCoinitialFor s t) : sInf t ≤ sInf s :=
   IsGreatest.mono (isGLB_sInf t) (isGLB_sInf s) <| lowerBounds_mono_of_isCoinitialFor h
 
