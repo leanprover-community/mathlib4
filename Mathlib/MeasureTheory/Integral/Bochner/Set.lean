@@ -3,6 +3,7 @@ Copyright (c) 2020 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov
 -/
+import Mathlib.Combinatorics.Enumerative.InclusionExclusion
 import Mathlib.MeasureTheory.Function.LocallyIntegrable
 import Mathlib.MeasureTheory.Integral.Bochner.Basic
 import Mathlib.Topology.ContinuousMap.Compact
@@ -40,7 +41,7 @@ but we reference them here because all theorems about set integrals are in this 
 assert_not_exists InnerProductSpace
 
 open Filter Function MeasureTheory RCLike Set TopologicalSpace Topology
-open scoped ENNReal NNReal
+open scoped ENNReal NNReal Finset
 
 variable {X Y E F : Type*}
 
@@ -162,8 +163,38 @@ theorem setIntegral_indicator (ht : MeasurableSet t) :
     ∫ x in s, t.indicator f x ∂μ = ∫ x in s ∩ t, f x ∂μ := by
   rw [integral_indicator ht, Measure.restrict_restrict ht, Set.inter_comm]
 
+/-- **Inclusion-exclusion principle** for the integral of a function over a union.
+
+The integral of a function `f` over the union of the `s i` over `i ∈ t` is the alternating sum of
+the integrals of `f` over the intersections of the `s i`. -/
+theorem integral_biUnion_eq_sum_powerset {ι : Type*} {t : Finset ι} {s : ι → Set X}
+    (hs : ∀ i ∈ t, MeasurableSet (s i)) (hf : ∀ i ∈ t, IntegrableOn f (s i) μ) :
+    ∫ x in ⋃ i ∈ t, s i, f x ∂μ = ∑ u ∈ t.powerset with u.Nonempty,
+      (-1 : ℝ) ^ (#u + 1) • ∫ x in ⋂ i ∈ u, s i, f x ∂μ := by
+  simp_rw [← integral_smul, ← integral_indicator (Finset.measurableSet_biUnion _ hs)]
+  have A (u) (hu : u ∈ t.powerset.filter (·.Nonempty)) : MeasurableSet (⋂ i ∈ u, s i) := by
+    refine u.measurableSet_biInter fun i hi ↦ hs i ?_
+    aesop
+  have : ∑ x ∈ t.powerset with x.Nonempty, ∫ (a : X) in ⋂ i ∈ x, s i, (-1 : ℝ) ^ (#x + 1) • f a ∂μ
+      = ∑ x ∈ t.powerset with x.Nonempty, ∫ a, indicator (⋂ i ∈ x, s i)
+        (fun a ↦ (-1 : ℝ) ^ (#x + 1) • f a) a ∂μ := by
+    apply Finset.sum_congr rfl (fun x hx ↦ ?_)
+    rw [← integral_indicator (A x hx)]
+  rw [this, ← integral_finset_sum]; swap
+  · intro u hu
+    rw [integrable_indicator_iff (A u hu)]
+    apply Integrable.smul
+    simp only [Finset.mem_filter, Finset.mem_powerset] at hu
+    rcases hu.2 with ⟨i, hi⟩
+    exact (hf i (hu.1 hi)).mono (biInter_subset_of_mem hi) le_rfl
+  congr with x
+  convert Finset.indicator_biUnion_eq_sum_powerset t s f x with u hu
+  rw [indicator_smul_apply]
+  norm_cast
+
 theorem ofReal_setIntegral_one_of_measure_ne_top {X : Type*} {m : MeasurableSpace X}
-    {μ : Measure X} {s : Set X} (hs : μ s ≠ ∞) : ENNReal.ofReal (∫ _ in s, (1 : ℝ) ∂μ) = μ s :=
+    {μ : Measure X} {s : Set X} (hs : μ s ≠ ∞ := by finiteness) :
+    ENNReal.ofReal (∫ _ in s, (1 : ℝ) ∂μ) = μ s :=
   calc
     ENNReal.ofReal (∫ _ in s, (1 : ℝ) ∂μ) = ENNReal.ofReal (∫ _ in s, ‖(1 : ℝ)‖ ∂μ) := by
       simp only [norm_one]
@@ -172,7 +203,24 @@ theorem ofReal_setIntegral_one_of_measure_ne_top {X : Type*} {m : MeasurableSpac
 
 theorem ofReal_setIntegral_one {X : Type*} {_ : MeasurableSpace X} (μ : Measure X)
     [IsFiniteMeasure μ] (s : Set X) : ENNReal.ofReal (∫ _ in s, (1 : ℝ) ∂μ) = μ s :=
-  ofReal_setIntegral_one_of_measure_ne_top (measure_ne_top μ s)
+  ofReal_setIntegral_one_of_measure_ne_top
+
+theorem setIntegral_one_eq_measureReal {X : Type*} {m : MeasurableSpace X}
+    {μ : Measure X} {s : Set X} :
+    ∫ _ in s, (1 : ℝ) ∂μ = μ.real s := by simp
+
+/-- **Inclusion-exclusion principle** for the measure of a union of sets of finite measure.
+
+The measure of the union of the `s i` over `i ∈ t` is the alternating sum of the measures of the
+intersections of the `s i`. -/
+theorem measureReal_biUnion_eq_sum_powerset {ι : Type*} {t : Finset ι} {s : ι → Set X}
+    (hs : ∀ i ∈ t, MeasurableSet (s i)) (hf : ∀ i ∈ t, μ (s i) ≠ ∞ := by finiteness) :
+    μ.real (⋃ i ∈ t, s i) = ∑ u ∈ t.powerset with u.Nonempty,
+      (-1 : ℝ) ^ (#u + 1) * μ.real (⋂ i ∈ u, s i) := by
+  simp_rw [← setIntegral_one_eq_measureReal]
+  apply integral_biUnion_eq_sum_powerset hs
+  intro i hi
+  simpa using (hf i hi).lt_top
 
 theorem integral_piecewise [DecidablePred (· ∈ s)] (hs : MeasurableSet s) (hf : IntegrableOn f s μ)
     (hg : IntegrableOn g sᶜ μ) :
