@@ -62,6 +62,7 @@ instance instMeasurableAdd₂ {α : Type*} {m : MeasurableSpace α} : Measurable
 
 -- There is no typeclass for measurability of `SMul` only on that side, otherwise we could
 -- turn that into an instance.
+@[fun_prop]
 lemma _root_.Measurable.smul_measure {f : α → ℝ≥0∞} (hf : Measurable f) (μ : Measure β) :
     Measurable (fun x ↦ f x • μ) := by
   refine Measure.measurable_of_measurable_coe _ fun s hs ↦ ?_
