@@ -359,8 +359,7 @@ end PartialOrder
 @[grind →]
 theorem IsIdempotentElem.isPositive_iff_isSelfAdjoint
     {p : E →L[𝕜] E} (hp : IsIdempotentElem p) : p.IsPositive ↔ IsSelfAdjoint p := by
-  rw [← isPositive_toLinearMap_iff, IsIdempotentElem.isPositive_iff_isSymmetric
-    (congr(LinearMapClass.linearMap $hp.eq))]
+  rw [← isPositive_toLinearMap_iff, IsIdempotentElem.isPositive_iff_isSymmetric hp.toLinearMap]
   exact isSelfAdjoint_iff_isSymmetric.symm
 
 /-- A star projection operator is positive.
