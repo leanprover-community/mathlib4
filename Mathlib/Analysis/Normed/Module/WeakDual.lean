@@ -135,7 +135,7 @@ def toStrongDual : WeakDual 𝕜 E ≃ₗ[𝕜] StrongDual 𝕜 E :=
 
 @[deprecated (since := "2025-08-03")] alias toNormedDual := toStrongDual
 
-theorem toNormedDual_apply (x : WeakDual 𝕜 E) (y : E) : (toStrongDual x) y = x y :=
+theorem toStrongDual_apply (x : WeakDual 𝕜 E) (y : E) : (toStrongDual x) y = x y :=
   rfl
 
 @[simp]
