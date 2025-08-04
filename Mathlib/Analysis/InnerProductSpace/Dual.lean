@@ -184,9 +184,12 @@ theorem toStrongDual_apply {x y : E} : toStrongDual 𝕜 E x y = ⟪x, y⟫ :=
 @[deprecated (since := "2025-08-3")] alias toDual_apply := toStrongDual_apply
 
 @[simp]
-theorem toStrongDual_symm_apply {x : E} {y : StrongDual 𝕜 E} : ⟪(toStrongDual 𝕜 E).symm y, x⟫ = y x := by
+theorem toStrongDual_symm_apply {x : E} {y : StrongDual 𝕜 E} :
+    ⟪(toStrongDual 𝕜 E).symm y, x⟫ = y x := by
   rw [← toStrongDual_apply]
   simp only [LinearIsometryEquiv.apply_symm_apply]
+
+@[deprecated (since := "2025-08-3")] alias toDual_symm_apply := toStrongDual_symm_apply
 
 /-- Maps a bounded sesquilinear form to its continuous linear map,
 given by interpreting the form as a map `B : E →L⋆[𝕜] NormedSpace.Dual 𝕜 E`
@@ -202,7 +205,7 @@ variable (B : E →L⋆[𝕜] E →L[𝕜] 𝕜)
 @[simp]
 theorem continuousLinearMapOfBilin_apply (v w : E) : ⟪B♯ v, w⟫ = B v w := by
   rw [continuousLinearMapOfBilin, coe_comp', ContinuousLinearEquiv.coe_coe,
-    LinearIsometryEquiv.coe_toContinuousLinearEquiv, Function.comp_apply, toDual_symm_apply]
+    LinearIsometryEquiv.coe_toContinuousLinearEquiv, Function.comp_apply, toStrongDual_symm_apply]
 
 theorem unique_continuousLinearMapOfBilin {v f : E} (is_lax_milgram : ∀ w, ⟪f, w⟫ = B v w) :
     f = B♯ v := by

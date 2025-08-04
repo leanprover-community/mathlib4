@@ -121,12 +121,12 @@ def adjointAux : T.adjointDomain →ₗ[𝕜] E where
   toFun y := (InnerProductSpace.toStrongDual 𝕜 E).symm (adjointDomainMkCLMExtend hT y)
   map_add' x y :=
     hT.eq_of_inner_left fun _ => by
-      simp only [inner_add_left, Submodule.coe_add, InnerProductSpace.toDual_symm_apply,
+      simp only [inner_add_left, Submodule.coe_add, InnerProductSpace.toStrongDual_symm_apply,
         adjointDomainMkCLMExtend_apply]
   map_smul' _ _ :=
     hT.eq_of_inner_left fun _ => by
       simp only [inner_smul_left, Submodule.coe_smul_of_tower, RingHom.id_apply,
-        InnerProductSpace.toDual_symm_apply, adjointDomainMkCLMExtend_apply]
+        InnerProductSpace.toStrongDual_symm_apply, adjointDomainMkCLMExtend_apply]
 
 theorem adjointAux_inner (y : T.adjointDomain) (x : T.domain) :
     ⟪adjointAux hT y, x⟫ = ⟪(y : F), T x⟫ := by
