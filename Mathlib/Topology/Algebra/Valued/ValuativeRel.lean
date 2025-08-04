@@ -21,13 +21,13 @@ namespace ValuativeRel
 
 variable {R : Type*} [CommRing R]
 
-instance [UniformSpace R] [IsUniformAddGroup R] [ValuativeRel R] [ValuativeTopology R] :
+instance [UniformSpace R] [IsUniformAddGroup R] [ValuativeRel R] [IsValuativeTopology R] :
     Valued R (ValueGroupWithZero R) :=
-  .mk (valuation R) ValuativeTopology.mem_nhds_iff
+  .mk (valuation R) IsValuativeTopology.mem_nhds_iff
 
 end ValuativeRel
 
-namespace ValuativeTopology
+namespace IsValuativeTopology
 
 variable {R : Type*} [CommRing R] [ValuativeRel R] [TopologicalSpace R]
 
@@ -37,10 +37,10 @@ local notation "v" => valuation R
 
 lemma of_hasBasis (h : (𝓝 (0 : R)).HasBasis (fun _ ↦ True)
     fun γ : (ValueGroupWithZero R)ˣ ↦ { x | v x < γ }) :
-    ValuativeTopology R :=
+    IsValuativeTopology R :=
   ⟨by simp [h.mem_iff]⟩
 
-variable [ValuativeTopology R]
+variable [IsValuativeTopology R]
 
 variable (R) in
 theorem hasBasis_nhds_zero :
@@ -48,12 +48,18 @@ theorem hasBasis_nhds_zero :
       fun γ : (ValueGroupWithZero R)ˣ => { x | v x < γ } := by
   simp [Filter.hasBasis_iff, mem_nhds_iff]
 
+@[deprecated (since := "2025-08-01")]
+alias _root_.ValuativeTopology.hasBasis_nhds_zero := hasBasis_nhds_zero
+
 variable [IsTopologicalAddGroup R]
 
 theorem mem_nhds {s : Set R} {x : R} :
     s ∈ 𝓝 x ↔ ∃ γ : (ValueGroupWithZero R)ˣ, { y | v (y - x) < γ } ⊆ s := by
   simp only [← nhds_translation_add_neg x, ← sub_eq_add_neg, preimage_setOf_eq, true_and,
     ((hasBasis_nhds_zero R).comap fun y => y - x).mem_iff]
+
+@[deprecated (since := "2025-08-01")]
+alias _root_.ValuativeTopology.mem_nhds := mem_nhds
 
 theorem isOpen_ball (r : ValueGroupWithZero R) :
     IsOpen {x | v x < r} := by
@@ -66,6 +72,9 @@ theorem isOpen_ball (r : ValueGroupWithZero R) :
     exact ⟨Units.mk0 _ hr,
       fun y hy => (sub_add_cancel y x).symm ▸ ((v).map_add _ x).trans_lt (max_lt hy hx)⟩
 
+@[deprecated (since := "2025-08-01")]
+alias _root_.ValuativeTopology.isOpen_ball := isOpen_ball
+
 theorem isClosed_ball (r : ValueGroupWithZero R) :
     IsClosed {x | v x < r} := by
   rcases eq_or_ne r 0 with rfl | hr
@@ -73,9 +82,15 @@ theorem isClosed_ball (r : ValueGroupWithZero R) :
   · exact AddSubgroup.isClosed_of_isOpen (Valuation.ltAddSubgroup v (Units.mk0 r hr))
       (isOpen_ball _)
 
+@[deprecated (since := "2025-08-01")]
+alias _root_.ValuativeTopology.isClosed_ball := isClosed_ball
+
 theorem isClopen_ball (r : ValueGroupWithZero R) :
     IsClopen {x | v x < r} :=
   ⟨isClosed_ball _, isOpen_ball _⟩
+
+@[deprecated (since := "2025-08-01")]
+alias _root_.ValuativeTopology.isClopen_ball := isClopen_ball
 
 lemma isOpen_closedBall {r : ValueGroupWithZero R} (hr : r ≠ 0) :
     IsOpen {x | v x ≤ r} := by
@@ -85,6 +100,9 @@ lemma isOpen_closedBall {r : ValueGroupWithZero R} (hr : r ≠ 0) :
   simp only [setOf_subset_setOf]
   exact ⟨Units.mk0 _ hr, fun y hy => (sub_add_cancel y x).symm ▸
     le_trans ((v).map_add _ _) (max_le (le_of_lt hy) hx)⟩
+
+@[deprecated (since := "2025-08-01")]
+alias _root_.ValuativeTopology.isOpen_closedBall := isOpen_closedBall
 
 theorem isClosed_closedBall (r : ValueGroupWithZero R) :
     IsClosed {x | v x ≤ r} := by
@@ -96,9 +114,15 @@ theorem isClosed_closedBall (r : ValueGroupWithZero R) :
   exact ⟨Units.mk0 _ hx', fun y hy hy' => ne_of_lt hy <| Valuation.map_sub_swap v x y ▸
       (Valuation.map_sub_eq_of_lt_left _ <| lt_of_le_of_lt hy' hx)⟩
 
+@[deprecated (since := "2025-08-01")]
+alias _root_.ValuativeTopology.isClosed_closedBall := isClosed_closedBall
+
 theorem isClopen_closedBall {r : ValueGroupWithZero R} (hr : r ≠ 0) :
     IsClopen {x | v x ≤ r} :=
   ⟨isClosed_closedBall _, isOpen_closedBall hr⟩
+
+@[deprecated (since := "2025-08-01")]
+alias _root_.ValuativeTopology.isClopen_closedBall := isClopen_closedBall
 
 theorem isClopen_sphere {r : ValueGroupWithZero R} (hr : r ≠ 0) :
     IsClopen {x | v x = r} := by
@@ -108,22 +132,28 @@ theorem isClopen_sphere {r : ValueGroupWithZero R} (hr : r ≠ 0) :
   rw [h]
   exact IsClopen.diff (isClopen_closedBall hr) (isClopen_ball _)
 
+@[deprecated (since := "2025-08-01")]
+alias _root_.ValuativeTopology.isClopen_sphere := isClopen_sphere
+
 lemma isOpen_sphere {r : ValueGroupWithZero R} (hr : r ≠ 0) :
     IsOpen {x | v x = r} :=
   isClopen_sphere hr |>.isOpen
 
-end ValuativeTopology
+@[deprecated (since := "2025-08-01")]
+alias _root_.ValuativeTopology.isOpen_sphere := isOpen_sphere
+
+end IsValuativeTopology
 
 namespace Valued
 
 variable {R : Type*} [CommRing R] [ValuativeRel R] [UniformSpace R]
-  [IsUniformAddGroup R] [ValuativeTopology R]
+  [IsUniformAddGroup R] [IsValuativeTopology R]
 
 /-- Helper `Valued` instance when `ValuativeTopology R` over a `UniformSpace R`,
 for use in porting files from `Valued` to `ValuativeRel`. -/
 scoped instance : Valued R (ValuativeRel.ValueGroupWithZero R) where
   v := ValuativeRel.valuation R
-  is_topological_valuation := ValuativeTopology.mem_nhds_iff
+  is_topological_valuation := IsValuativeTopology.mem_nhds_iff
 
 end Valued
 
@@ -156,14 +186,14 @@ instance : ValuativeExtension 𝒪[R] R where
 
 end ValuativeRel
 
-namespace ValuativeTopology
+namespace IsValuativeTopology
 
-variable {K : Type*} [Field K] [ValuativeRel K] [TopologicalSpace K] [ValuativeTopology K]
+variable {K : Type*} [Field K] [ValuativeRel K] [TopologicalSpace K] [IsValuativeTopology K]
 
 open ValuativeRel
 
-instance : ValuativeTopology 𝒪[K] := by
-  apply ValuativeTopology.of_hasBasis
+instance : IsValuativeTopology 𝒪[K] := by
+  apply IsValuativeTopology.of_hasBasis
   rw [nhds_subtype_eq_comap]
   refine ((hasBasis_nhds_zero K).comap Subtype.val).to_hasBasis ?_ ?_
   · simp only [Set.preimage_setOf_eq, Set.setOf_subset_setOf, Subtype.forall, true_and,
@@ -197,4 +227,4 @@ instance : ValuativeTopology 𝒪[K] := by
     rw [← (ValuativeExtension.mapValueGroupWithZero_strictMono (B := K)).lt_iff_lt]
     simp [Algebra.algebraMap_ofSubring_apply, hxr]
 
-end ValuativeTopology
+end IsValuativeTopology
