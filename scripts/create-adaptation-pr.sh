@@ -302,7 +302,7 @@ if git diff --name-only bump/$BUMPVERSION bump/nightly-$NIGHTLYDATE | grep -q .;
   echo "### [auto] post a link to the PR on Zulip"
 
   zulip_title="nightly#$pr_number adaptations for nightly-$NIGHTLYDATE"
-  zulip_body=$(printf "> %s\n\nPlease review this PR. At the end of the month this diff will land in 'master'." "$pr_title nightly#$pr_number")
+  zulip_body=$(printf "> %s\n\nPlease review this PR. At the next toolchain release this diff will land in 'master'." "$pr_title nightly#$pr_number")
 
   # Only post to Zulip if we created a new PR
   if [ -z "$existing_pr" ]; then
