@@ -172,6 +172,40 @@ theorem IsPositive.of_isSymmetricProjection {p : E →ₗ[𝕜] E} (hp : p.IsSym
     p.IsPositive :=
   hp.isIdempotentElem.isPositive_iff_isSymmetric.mpr hp.isSymmetric
 
+theorem IsSymmetricProjection.sub_of_mul_eq_right {p q : E →ₗ[𝕜] E}
+    (hp : p.IsSymmetricProjection) (hq : q.IsSymmetricProjection) (hqp : q ∘ₗ p = p) :
+    (q - p).IsSymmetricProjection := by
+  refine ⟨hp.isIdempotentElem.sub hq.isIdempotentElem (LinearMap.ext fun x => ext_inner_left 𝕜
+    fun y => ?_) hqp, hq.isSymmetric.sub hp.isSymmetric⟩
+  simp_rw [Module.End.mul_apply, ← hp.isSymmetric _, ← hq.isSymmetric _, ← comp_apply, hqp]
+
+theorem IsSymmetricProjection.le_iff_comp_eq_right {p q : E →ₗ[𝕜] E}
+    (hp : p.IsSymmetricProjection) (hq : q.IsSymmetricProjection) : p ≤ q ↔ q ∘ₗ p = p := by
+  refine ⟨fun ⟨h1, h2⟩ => ?_, fun hpq ↦
+    IsPositive.of_isSymmetricProjection (hp.sub_of_mul_eq_right hq hpq)⟩
+  rw [hq.isIdempotentElem.comp_eq_right_iff]
+  intro a ha
+  specialize h2 a
+  have hh {T : E →ₗ[𝕜] E} (hT : T.IsSymmetricProjection) : RCLike.re ⟪T a, a⟫_𝕜 = ‖T a‖ ^ 2 := by
+    nth_rw 1 [← hT.isIdempotentElem]
+    rw [Module.End.mul_apply, hT.isSymmetric]
+    exact inner_self_eq_norm_sq _
+  simp_rw [sub_apply, inner_sub_left, map_sub, hh hq, hh hp,
+    hp.isIdempotentElem.mem_range_iff.mp ha, sub_nonneg, sq_le_sq, abs_norm] at h2
+  obtain ⟨U, _, rfl⟩ := isSymmetricProjection_iff_eq_starProjection.mp hq
+  simpa [Submodule.starProjection_coe_eq_isCompl_projection] using
+    U.mem_iff_norm_starProjection _ |>.mpr <| le_antisymm (U.norm_starProjection_apply_le a) h2
+
+open Submodule in
+theorem starProjection_le_starProjection_iff (U V : Submodule 𝕜 E)
+    [U.HasOrthogonalProjection] [V.HasOrthogonalProjection] :
+    U.starProjection.toLinearMap ≤ V.starProjection ↔ U ≤ V := by
+  simp_rw [starProjection_isSymmetricProjection.le_iff_comp_eq_right
+    starProjection_isSymmetricProjection, starProjection_coe_eq_isCompl_projection,
+    IsCompl.projection_isIdempotentElem _ |>.comp_eq_right_iff]
+  simp
+
+
 end LinearMap
 
 namespace ContinuousLinearMap
@@ -363,7 +397,8 @@ end PartialOrder
 @[grind →]
 theorem IsIdempotentElem.isPositive_iff_isSelfAdjoint
     {p : E →L[𝕜] E} (hp : IsIdempotentElem p) : p.IsPositive ↔ IsSelfAdjoint p := by
-  rw [← isPositive_toLinearMap_iff, IsIdempotentElem.isPositive_iff_isSymmetric hp.toLinearMap]
+  rw [← isPositive_toLinearMap_iff, IsIdempotentElem.isPositive_iff_isSymmetric
+    (congr(LinearMapClass.linearMap $hp.eq))]
   exact isSelfAdjoint_iff_isSymmetric.symm
 
 /-- A star projection operator is positive.
@@ -388,33 +423,6 @@ theorem IsIdempotentElem.TFAE {p : E →L[𝕜] E} (hp : IsIdempotentElem p) :
   tfae_have 2 ↔ 4 := p.isSelfAdjoint_iff_isSymmetric.eq ▸
     (ContinuousLinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range hp)
   tfae_finish
-
-/-- For star projection operators `p,q`, we have `p ≤ q` iff `q ∘ p = p`. -/
-theorem IsStarProjection.le_iff_comp_eq_right {p q : E →L[𝕜] E}
-    (hp : IsStarProjection p) (hq : IsStarProjection q) : p ≤ q ↔ q ∘L p = p := by
-  refine ⟨fun ⟨h1, h2⟩ => ?_, fun hpq ↦
-    IsPositive.of_isStarProjection (hp.sub_of_mul_eq_right hq hpq)⟩
-  have : q.comp p = p ↔ LinearMap.range p ≤ LinearMap.range q := by
-    simpa [coe_comp, ← coe_inj] using LinearMap.IsIdempotentElem.comp_eq_right_iff
-      congr(LinearMapClass.linearMap $hq.isIdempotentElem.eq) p.toLinearMap
-  rw [this]
-  intro a ha
-  specialize h2 a
-  have {T : E →L[𝕜] E} (hT : IsStarProjection T) : a ∈ LinearMap.range T ↔ T a = a :=
-    (LinearMap.IsIdempotentElem.mem_range_iff
-      congr(LinearMapClass.linearMap $hT.isIdempotentElem.eq))
-  have hh {T : E →L[𝕜] E} (hT : IsStarProjection T) :
-      T.reApplyInnerSelf a = ‖T a‖ ^ 2 := by
-    rw [reApplyInnerSelf_apply]
-    nth_rw 1 [← hT.isIdempotentElem]
-    rw [mul_apply, ← adjoint_inner_right, hT.isSelfAdjoint.adjoint_eq]
-    exact inner_self_eq_norm_sq _
-  simp_rw [reApplyInnerSelf, sub_apply, inner_sub_left, map_sub,
-    ← reApplyInnerSelf_apply, hh hq, hh hp, (this hp).mp ha,
-    sub_nonneg, sq_le_sq, abs_norm] at h2
-  obtain ⟨U, hU, rfl⟩ := isStarProjection_iff_eq_starProjection.mp hq
-  simpa using U.mem_iff_norm_starProjection _ |>.mpr
-    (le_antisymm (U.norm_starProjection_apply_le _) h2)
 
 /-- `U.starProjection ≤ V.starProjection` iff `U ≤ V`. -/
 theorem starProjection_le_starProjection_iff (U V : Submodule 𝕜 E)
