@@ -392,7 +392,44 @@ theorem condExp_condExp_of_le {m₁ m₂ m₀ : MeasurableSpace α} {μ : Measur
 
 @[deprecated (since := "2025-01-21")] alias condexp_condexp_of_le := condExp_condExp_of_le
 
+/-- Conditional expectation commutes with bounded linear functional. -/
+theorem condExp_comm_continuousLinearMap (hm : m ≤ m₀) [SigmaFinite (μ.trim hm)]
+    {F : Type*} [NormedAddCommGroup F] [CompleteSpace F] [NormedSpace ℝ F]
+    (hf_int : Integrable f μ) (T : E →L[ℝ] F) :
+    T ∘ μ[f | m] =ᵐ[μ] μ[T ∘ f | m] := by
+  apply ae_eq_condExp_of_forall_setIntegral_eq
+  · exact ContinuousLinearMap.integrable_comp T hf_int
+  · intro s ms hs
+    apply Integrable.integrableOn
+    exact ContinuousLinearMap.integrable_comp T integrable_condExp
+  · intro s ms hs
+    apply Eq.trans
+    · exact ContinuousLinearMap.integral_comp_comm T (Integrable.restrict integrable_condExp)
+    · apply Eq.trans
+      · apply congrArg T; apply setIntegral_condExp hm hf_int ms
+      · exact (ContinuousLinearMap.integral_comp_comm T (Integrable.restrict hf_int)).symm
+  · apply Continuous.comp_aestronglyMeasurable T.cont
+    apply AEStronglyMeasurable.congr
+    · exact aestronglyMeasurable_condExpL1 (f := f)
+    · exact (condExp_ae_eq_condExpL1 hm f).symm
+
 section RCLike
+
+/-- Conditional expectation commutes with affine functions. -/
+theorem condExp_comm_affine [Module 𝕜 E] [ContinuousSMul 𝕜 E] [IsFiniteMeasure μ] (hm : m ≤ m₀)
+    (hf_int : Integrable f μ) (T : E →L[𝕜] 𝕜) (a : ℝ) :
+    (fun x ↦ RCLike.re (T (μ[f | m] x)) + a) =ᵐ[μ] μ[fun y ↦ RCLike.re (T (f y)) + a | m] := by
+  let g := @RCLike.reCLM 𝕜 (by infer_instance)
+  let h := ContinuousLinearMap.restrictScalars ℝ T
+  have reTf_int : Integrable ((RCLike.re ∘ T) ∘ f) μ :=
+    ContinuousLinearMap.integrable_comp (ContinuousLinearMap.comp g h) hf_int
+  have hp : (fun x ↦ RCLike.re (T (μ[f | m] x)) + a)
+    =ᵐ[μ] (μ[(RCLike.re ∘ T) ∘ f | m] + μ[(fun y ↦ a) | m]) := by
+      filter_upwards [condExp_comm_continuousLinearMap hm hf_int
+        (ContinuousLinearMap.comp g h)] with b hb
+      simpa [condExp_const hm a] using hb
+  exact hp.trans (condExp_add reTf_int (integrable_const a) m).symm
+
 variable [InnerProductSpace 𝕜 E]
 
 lemma MemLp.condExpL2_ae_eq_condExp' (hm : m ≤ m₀) (hf1 : Integrable f μ) (hf2 : MemLp f 2 μ)

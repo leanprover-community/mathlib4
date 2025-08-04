@@ -31,10 +31,9 @@ This file contains the conditional Jensen's inequality.
 open MeasureTheory ProbabilityTheory TopologicalSpace Set Metric ContinuousLinearMap RCLike
 open scoped ENNReal
 
-variable {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E]
-variable {s : Set E} {φ : E → ℝ}
+variable {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] {s : Set E} {φ : E → ℝ}
 
-theorem LowerSemicontinuous.isClosed_epigraph_RCLike (hφ_cont : LowerSemicontinuous φ) :
+theorem LowerSemicontinuous.isClosed_re_epigraph (hφ_cont : LowerSemicontinuous φ) :
     IsClosed  { p : E × 𝕜 | φ p.1 ≤ re p.2 } := by
   let A := {(x, (s : EReal)) | φ x ≤ s}
   have hC : { p : E × 𝕜 | φ p.1 ≤ re p.2 }
@@ -51,9 +50,7 @@ theorem LowerSemicontinuous.isClosed_epigraph_RCLike (hφ_cont : LowerSemicontin
       continuous_coe_real_ereal hφ_cont M
     exact LowerSemicontinuous.isClosed_epigraph hφ
 
-variable [NormedSpace ℝ E]
-
-theorem ConvexOn.convex_epigraph_RCLike (hφ_cvx : ConvexOn ℝ s φ) :
+theorem ConvexOn.convex_re_epigraph [Module ℝ E] [IsScalarTower ℝ ℝ E] (hφ_cvx : ConvexOn ℝ s φ) :
     Convex ℝ { p : E × 𝕜 | p.1 ∈ s ∧ φ p.1 ≤ re p.2 } := by
   have lem : { p : E × 𝕜 | p.1 ∈ s ∧ φ p.1 ≤ re p.2 } = (LinearMap.prodMap
     (LinearMap.id : E →ₗ[ℝ] E) reLm)⁻¹' { p : E × ℝ | p.1 ∈ s ∧ φ p.1 ≤ p.2 } := by simp
@@ -61,17 +58,19 @@ theorem ConvexOn.convex_epigraph_RCLike (hφ_cvx : ConvexOn ℝ s φ) :
   apply Convex.linear_preimage
   exact ConvexOn.convex_epigraph hφ_cvx
 
-/-- Lemma 1.2.10 in [Hytonen_VanNeerven_Veraar_Wies_2016]: a convex lower-semicontinuous function
-  is the supremum of a sequence of affine functions in a separable space. -/
-theorem ConvexOn.iSup_affine_eq_of_separableSpace
-    [SecondCountableTopology E] [Module 𝕜 E] [ContinuousSMul 𝕜 E]
-    (hφ_cvx : ConvexOn ℝ Set.univ φ) (hφ_cont : LowerSemicontinuous φ) :
+variable [NormedSpace ℝ E]
+
+/-- A convex lower-semicontinuous function is the supremum of a sequence of affine functions
+in a separable space.
+Lemma 1.2.10 in [Hytonen_VanNeerven_Veraar_Wies_2016]. -/
+theorem ConvexOn.iSup_affine_eq_of_separableSpace (hφ_cont : LowerSemicontinuous φ) [Module 𝕜 E]
+    [SecondCountableTopology E] [ContinuousSMul 𝕜 E] (hφ_cvx : ConvexOn ℝ Set.univ φ) :
     ∃ (L : ℕ → E →L[𝕜] 𝕜) (c : ℕ → ℝ),
     ∀ x, BddAbove (Set.range (fun i ↦ (re ((L i) x) + c i)))
     ∧ (⨆ (i : ℕ), re ((L i) x) + c i = φ x) := by
   let C :=  {(x, (s : 𝕜)) | φ x ≤ re s}
-  have hC₁ : Convex ℝ C := by simpa using (ConvexOn.convex_epigraph_RCLike hφ_cvx)
-  have hC₂ : IsClosed C := by simpa using (LowerSemicontinuous.isClosed_epigraph_RCLike hφ_cont)
+  have hC₁ : Convex ℝ C := by simpa using hφ_cvx.convex_re_epigraph
+  have hC₂ : IsClosed C := by simpa using hφ_cont.isClosed_re_epigraph
   have hC₃ : C.Nonempty := by refine (nonempty_of_mem (x := (0, ↑ (φ 0))) ?_); simp [C]
   rcases iInter_nat_halfSpaces_eq_of_prod (𝕜 := 𝕜) hC₁ hC₂ (.of_separableSpace _)
     with ⟨L, T, c, hLTc1, hLTc2⟩
@@ -286,44 +285,8 @@ theorem ConvexOn.iSup_affine_eq_of_separableSpace
     · rw [← @ofReal_re 𝕜 (by infer_instance) (⨆ i, re ((-(T i 1)⁻¹ • L i) x) + c i / re (T i 1))]
       apply (lem6 x (ofReal (⨆ i, re ((-(T i 1)⁻¹ • L i) x) + c i / re (T i 1)))).mp; simp [f]
 
-variable [CompleteSpace E]
-variable {α F : Type*} [NormedAddCommGroup F] [CompleteSpace F] [NormedSpace ℝ F]
-variable {m mα : MeasurableSpace α} {μ : Measure α}
-variable {f : α → E}
-
-/-- Conditional expectation commutes with bounded linear functional. -/
-theorem condExpL1_comm_continuousLinearMap (hm : m ≤ mα) [SigmaFinite (μ.trim hm)]
-    (hf_int : Integrable f μ) (T : E →L[ℝ] F) :
-    T ∘ μ[f | m] =ᵐ[μ] μ[T ∘ f | m] := by
-  apply ae_eq_condExp_of_forall_setIntegral_eq
-  · exact integrable_comp T hf_int
-  · intro s ms hs
-    apply Integrable.integrableOn
-    exact integrable_comp T integrable_condExp
-  · intro s ms hs
-    apply Eq.trans
-    · exact ContinuousLinearMap.integral_comp_comm T (Integrable.restrict integrable_condExp)
-    · apply Eq.trans
-      · apply congrArg T; apply setIntegral_condExp hm hf_int ms
-      · exact (ContinuousLinearMap.integral_comp_comm T (Integrable.restrict hf_int)).symm
-  · apply Continuous.comp_aestronglyMeasurable T.cont
-    apply AEStronglyMeasurable.congr
-    · exact aestronglyMeasurable_condExpL1 (f := f)
-    · exact (condExp_ae_eq_condExpL1 hm f).symm
-
-variable [IsFiniteMeasure μ]
-
-/-- Conditional expectation commutes with affine functions. -/
-theorem condExpL1_comm_affine [Module 𝕜 E] [ContinuousSMul 𝕜 E] (hm : m ≤ mα)
-    (hf_int : Integrable f μ) (T : E →L[𝕜] 𝕜) (a : ℝ) :
-    (fun x ↦ re (T (μ[f | m] x)) + a) =ᵐ[μ] μ[fun y ↦ re (T (f y)) + a | m] := by
-  let g := @reCLM 𝕜 (by infer_instance)
-  let h := restrictScalars ℝ T
-  have reTf_int : Integrable ((re ∘ T) ∘ f) μ := integrable_comp (comp g h) hf_int
-  have hp : (fun x ↦ re (T (μ[f | m] x)) + a) =ᵐ[μ] (μ[(re ∘ T) ∘ f | m] + μ[(fun y ↦ a) | m]) := by
-    filter_upwards [condExpL1_comm_continuousLinearMap hm hf_int (comp g h)] with b hb
-    simpa [condExp_const hm a] using hb
-  exact hp.trans (condExp_add reTf_int (integrable_const a) m).symm
+variable [CompleteSpace E] {α : Type*} {f : α → E}
+variable {m mα : MeasurableSpace α} {μ : Measure α} [IsFiniteMeasure μ]
 
 /-- Conditional Jensen for separable spaces. -/
 private lemma conditional_jensen_of_separableSpace [SecondCountableTopology E]
@@ -333,7 +296,7 @@ private lemma conditional_jensen_of_separableSpace [SecondCountableTopology E]
   rcases hφ_cvx.iSup_affine_eq_of_separableSpace (𝕜 := ℝ) hφ_cont with ⟨L, c, hp⟩
   have py : ∀ᵐ a ∂μ, ∀ i : ℕ, re (L i (μ[f | m] a)) + c i
     = μ[re ∘ (L i) ∘ f + (fun (b : α) ↦ (c i)) | m] a := by
-    rw [ae_all_iff]; intro i; apply condExpL1_comm_affine hm hf_int (L i) (c i)
+    rw [ae_all_iff]; intro i; apply condExp_comm_affine hm hf_int (L i) (c i)
   have pz : ∀ᵐ a ∂μ, ∀ i : ℕ, (re ∘ (L i) ∘ f + (fun (b : α) ↦ (c i))) a ≤ (φ ∘ f) a := by
     rw [ae_all_iff]; intro i; filter_upwards with a
     rw [Function.comp_apply, ← (hp (f a)).2, Pi.add_apply, Function.comp_apply, Function.comp_apply]
@@ -399,7 +362,7 @@ theorem conditional_jensen (hm : m ≤ mα)
     calc
       μ[f | m] =ᵐ[μ] μ[fX | m] := condExp_congr_ae lem1
       _        =ᵐ[μ] Y.subtypeL ∘ μ[fY | m] :=
-        (condExpL1_comm_continuousLinearMap hm hfY_int Y.subtypeL).symm
+        (condExp_comm_continuousLinearMap hm hfY_int Y.subtypeL).symm
   have lem2 : φ ∘ f =ᵐ[μ] φY ∘ fY := by filter_upwards [lem1] with a ha; simp [φY, ha, fX]
   have hφYfY_int : Integrable (φY ∘ fY) μ := hφ_int.congr lem2
   calc
