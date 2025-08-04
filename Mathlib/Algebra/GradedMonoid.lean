@@ -686,11 +686,8 @@ theorem prod_mem_graded (hF : ∀ k ∈ F, g k ∈ A (i k)) : ∏ k ∈ F, g k �
   · simp [GradedOne.one_mem]
   · case insert j F' hF2 h3 =>
     rw [Finset.prod_insert hF2, Finset.sum_insert hF2]
-    apply SetLike.mul_mem_graded (hF j <| Finset.mem_insert_self j F')
-    apply h3
-    intro k hk
-    apply hF k
-    exact Finset.mem_insert_of_mem hk
+    apply SetLike.mul_mem_graded (by grind)
+    grind
 
 theorem prod_pow_mem_graded (n : κ → ℕ) (hF : ∀ k ∈ F, g k ∈ A (i k)) :
     ∏ k ∈ F, g k ^ n k ∈ A (∑ k ∈ F, n k • i k) :=
