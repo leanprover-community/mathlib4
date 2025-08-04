@@ -8,6 +8,7 @@ import Mathlib.MeasureTheory.Measure.MeasureSpace
 import Mathlib.MeasureTheory.Measure.OpenPos
 import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
 import Mathlib.Topology.Defs.Filter
+import Mathlib.Order.Filter.SmallSets
 
 /-!
 # Support of a Measure
@@ -103,26 +104,6 @@ protected def support (μ : Measure X) : Set X := {x : X | ∃ᶠ u in (𝓝 x).
 variable {μ : Measure X}
 
 /- MeasureTheory.measure_mono_null should be renamed to allow for dot notation. -/
-
-/- Move the next three Filter results near the definition of `smallSets` filter. -/
-
-theorem Filter.frequently_smallSets' {α : Type*} {l : Filter α} {p : Set α → Prop}
-    (hp : ∀ ⦃s t : Set α⦄, s ⊆ t → p s → p t) :
-    (∃ᶠ s in l.smallSets, p s) ↔ ∀ t ∈ l, p t := by
-  convert not_iff_not.mpr <| l.eventually_smallSets' (p := (¬ p ·)) (by tauto)
-  simp
-
-theorem Filter.HasBasis.frequently_smallSets {α : Type*} {ι : Sort*} {p : ι → Prop} {l : Filter α}
-    {s : ι → Set α} {q : Set α → Prop} {hl : l.HasBasis p s}
-    (hq : ∀ ⦃s t : Set α⦄, s ⊆ t → q s → q t) :
-    (∃ᶠ s in l.smallSets, q s) ↔ ∀ i, p i → q (s i) := by
-  rw [Filter.frequently_smallSets' hq, hl.forall_iff hq]
-
-theorem eventually_smallSets {α : Type*} {ι : Sort*} {p : ι → Prop} {l : Filter α}
-    {s : ι → Set α} {q : Set α → Prop} {hl : l.HasBasis p s}
-    (hq : ∀ ⦃s t : Set α⦄, s ⊆ t → q t → q s) :
-    (∀ᶠ s in l.smallSets, q s) ↔ ∃ i, p i ∧ q (s i) := by
-  rw [l.eventually_smallSets' hq, hl.exists_iff hq]
 
 lemma pos_mono {α : Type*} [MeasurableSpace α]
     (μ : Measure α) ⦃s t : Set α⦄ (h : s ⊆ t) (hs : 0 < μ s) :
