@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
 import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-import Mathlib.GroupTheory.Abelianization
+import Mathlib.GroupTheory.Abelianization.Defs
 import Mathlib.RepresentationTheory.Homological.GroupHomology.Basic
 import Mathlib.RepresentationTheory.Invariants
 
@@ -13,8 +13,8 @@ import Mathlib.RepresentationTheory.Invariants
 
 Let `k` be a commutative ring and `G` a group. This file contains specialised API for
 the cycles and group homology  of a `k`-linear `G`-representation `A` in degrees 0, 1 and 2.
-In `RepresentationTheory/Homological/GroupHomology/Basic.lean`, we define the `n`th group homology
-of `A` to be the homology of a complex `inhomogeneousChains A`, whose objects are
+In `Mathlib/RepresentationTheory/Homological/GroupHomology/Basic.lean`, we define the `n`th group
+homology of `A` to be the homology of a complex `inhomogeneousChains A`, whose objects are
 `(Fin n →₀ G) → A`; this is unnecessarily unwieldy in low degree.
 
 Given an additive abelian group `A` with an appropriate scalar action of `G`, we provide support
@@ -23,8 +23,9 @@ for turning a finsupp `f : G →₀ A` satisfying the 1-cycle identity into an e
 0-boundaries, 1-boundaries, 2-cycles and 2-boundaries.
 
 The file also contains an identification between the definitions in
-`RepresentationTheory/Homological/GroupHomology/Basic.lean`, `groupHomology.cycles A n`, and the
-`cyclesₙ` in this file for `n = 1, 2`, as well as an isomorphism `groupHomology.cycles A 0 ≅ A.V`.
+`Mathlib/RepresentationTheory/Homological/GroupHomology/Basic.lean`, `groupHomology.cycles A n`, and
+the `cyclesₙ` in this file for `n = 1, 2`, as well as an isomorphism
+`groupHomology.cycles A 0 ≅ A.V`.
 Moreover, we provide API for the natural maps `cyclesₙ A → Hn A` for `n = 1, 2`.
 
 We show that when the representation on `A` is trivial, `H₁(G, A) ≃+ Gᵃᵇ ⊗[ℤ] A`.
@@ -714,6 +715,10 @@ lemma coinvariantsMk_comp_opcyclesIso₀_inv :
       (chainsIso₀ A).inv ≫ (inhomogeneousChains A).pOpcycles 0 :=
   (CommSq.vert_inv ⟨pOpcycles_comp_opcyclesIso_hom A⟩).w
 
+lemma cyclesMk₀_eq (x : A) :
+    cyclesMk 0 0 (by simp) ((chainsIso₀ A).inv x) (by simp) = (cyclesIso₀ A).inv x :=
+  (ModuleCat.mono_iff_injective <| iCycles A 0).1 inferInstance <| by rw [iCycles_mk]; simp
+
 end cyclesIso₀
 
 section isoCycles₁
@@ -750,6 +755,13 @@ lemma toCycles_comp_isoCycles₁_hom :
   simp [← cancel_mono (shortComplexH1 A).moduleCatLeftHomologyData.i, comp_d₂₁_eq,
     shortComplexH1_f]
 
+lemma cyclesMk₁_eq (x : cycles₁ A) :
+    cyclesMk 1 0 (by simp) ((chainsIso₁ A).inv x) (by simp) = (isoCycles₁ A).inv x :=
+  (ModuleCat.mono_iff_injective <| iCycles A 1).1 inferInstance <| by
+    rw [iCycles_mk]
+    simp only [ChainComplex.of_x, isoCycles₁_inv_comp_iCycles_apply]
+    rfl
+
 end isoCycles₁
 
 section isoCycles₂
@@ -785,6 +797,13 @@ lemma toCycles_comp_isoCycles₂_hom :
       (chainsIso₃ A).hom ≫ (shortComplexH2 A).moduleCatLeftHomologyData.f' := by
   simp [← cancel_mono (shortComplexH2 A).moduleCatLeftHomologyData.i, comp_d₃₂_eq,
     shortComplexH2_f]
+
+lemma cyclesMk₂_eq (x : cycles₂ A) :
+    cyclesMk 2 1 (by simp) ((chainsIso₂ A).inv x) (by simp) = (isoCycles₂ A).inv x :=
+  (ModuleCat.mono_iff_injective <| iCycles A 2).1 inferInstance <| by
+    rw [iCycles_mk]
+    simp only [ChainComplex.of_x, isoCycles₂_inv_comp_iCycles_apply]
+    rfl
 
 end isoCycles₂
 

@@ -27,7 +27,7 @@ universe u v w u₁
 
 namespace DirectSum
 
-open DirectSum Finsupp
+open DirectSum Finsupp Module
 
 section General
 

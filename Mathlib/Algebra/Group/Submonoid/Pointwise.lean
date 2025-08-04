@@ -44,10 +44,9 @@ variable [Monoid M] [AddMonoid A]
 lemma coe_mul_coe [SetLike S M] [SubmonoidClass S M] (H : S) : H * H = (H : Set M) := by
   aesop (add simp mem_mul)
 
-set_option linter.unusedVariables false in
 @[to_additive (attr := simp)]
 lemma coe_set_pow [SetLike S M] [SubmonoidClass S M] :
-    ∀ {n} (hn : n ≠ 0) (H : S), (H ^ n : Set M) = H
+    ∀ {n} (_ : n ≠ 0) (H : S), (H ^ n : Set M) = H
   | 1, _, H => by simp
   | n + 2, _, H => by rw [pow_succ, coe_set_pow n.succ_ne_zero, coe_mul_coe]
 
@@ -224,7 +223,7 @@ theorem smul_mem_pointwise_smul (m : M) (a : α) (S : Submonoid M) : m ∈ S →
   (Set.smul_mem_smul_set : _ → _ ∈ a • (S : Set M))
 
 instance : CovariantClass α (Submonoid M) HSMul.hSMul LE.le :=
-  ⟨fun _ _ => image_subset _⟩
+  ⟨fun _ _ => image_mono⟩
 
 theorem mem_smul_pointwise_iff_exists (m : M) (a : α) (S : Submonoid M) :
     m ∈ a • S ↔ ∃ s : M, s ∈ S ∧ a • s = m :=

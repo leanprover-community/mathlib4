@@ -24,7 +24,7 @@ This file proves Nöbeling's theorem. For the overall proof outline see
 - [scholze2019condensed], Theorem 5.4.
 -/
 
-open Topology
+open Module Topology
 
 universe u
 

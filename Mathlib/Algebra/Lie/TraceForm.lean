@@ -176,7 +176,7 @@ lemma eq_zero_of_mem_genWeightSpace_mem_posFitting [LieRing.IsNilpotent L]
       ← (φ x).comp_apply, ← Module.End.mul_eq_comp, ← pow_succ', ← smul_assoc, this]
   suffices ∀ (x : L) m, m ∈ posFittingCompOf R M x → B m₀ m = 0 by
     refine LieSubmodule.iSup_induction (motive := fun m ↦ (B m₀) m = 0) _ hm₁ this (map_zero _) ?_
-    aesop
+    simp_all
   clear hm₁ m₁; intro x m₁ hm₁
   simp only [mem_genWeightSpace, Pi.zero_apply, zero_smul, sub_zero] at hm₀
   obtain ⟨k, hk⟩ := hm₀ x
