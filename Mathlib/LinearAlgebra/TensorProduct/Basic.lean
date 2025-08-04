@@ -49,10 +49,12 @@ variable [AddCommMonoid Q] [AddCommMonoid S] [AddCommMonoid T]
 variable [Module R M] [Module R N] [Module R Q] [Module R S] [Module R T]
 variable [DistribMulAction R' M]
 variable [Module R'' M]
-variable {R₂ M₂ N₂ P₂ : Type*} [CommSemiring R₂]
-  [AddCommMonoid M₂] [AddCommMonoid N₂] [AddCommMonoid P₂]
-  [Module R₂ M₂] [Module R₂ N₂] [Module R₂ P₂]
-  {σ₁₂ : R →+* R₂}
+variable {R₂ R₃ M₂ M₃ N₂ N₃ P₂ : Type*}
+variable [CommSemiring R₂] [CommSemiring R₃]
+variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃}
+variable [AddCommMonoid M₂] [AddCommMonoid M₃] [AddCommMonoid N₂]
+  [AddCommMonoid N₃] [AddCommMonoid P₂]
+variable [Module R₂ M₂] [Module R₃ M₃] [Module R₂ N₂] [Module R₃ N₃] [Module R₂ P₂]
 
 variable (M N)
 
@@ -534,7 +536,7 @@ theorem ext' {g h : M ⊗[R] N →ₛₗ[σ₁₂] P₂} (H : ∀ x y, g (x ⊗�
     TensorProduct.induction_on z (by simp_rw [LinearMap.map_zero]) H fun x y ihx ihy => by
       rw [g.map_add, h.map_add, ihx, ihy]
 
-theorem lift.unique {g : M ⊗[R] N →ₗ[R] P} (H : ∀ x y, g (x ⊗ₜ y) = f x y) : g = lift f :=
+theorem lift.unique {g : M ⊗[R] N →ₛₗ[σ₁₂] P₂} (H : ∀ x y, g (x ⊗ₜ y) = f' x y) : g = lift f' :=
   ext' fun m n => by rw [H, lift.tmul]
 
 theorem lift_mk : lift (mk R M N) = LinearMap.id :=
@@ -762,8 +764,10 @@ section
 variable {P' Q' : Type*}
 variable [AddCommMonoid P'] [Module R P']
 variable [AddCommMonoid Q'] [Module R Q']
+variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 
-theorem map_comp (f₂ : P →ₗ[R] P') (f₁ : M →ₗ[R] P) (g₂ : Q →ₗ[R] Q') (g₁ : N →ₗ[R] Q) :
+theorem map_comp (f₂ : M₂ →ₛₗ[σ₂₃] M₃) (f₁ : M →ₛₗ[σ₁₂] M₂)
+    (g₂ : N₂ →ₛₗ[σ₂₃] N₃) (g₁ : N →ₛₗ[σ₁₂] N₂) :
     map (f₂.comp f₁) (g₂.comp g₁) = (map f₂ g₂).comp (map f₁ g₁) :=
   ext' fun _ _ => rfl
 
