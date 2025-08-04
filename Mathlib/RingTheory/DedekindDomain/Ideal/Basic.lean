@@ -252,7 +252,7 @@ lemma not_inv_le_one_of_ne_bot [IsDedekindDomain A] {I : Ideal A}
     apply coe_mem_one
   · refine mt (mem_one_iff _).mp ?_
     rintro ⟨x', h₂_abs⟩
-    rw [← div_eq_mul_inv, eq_div_iff_mul_eq hnz_fa, ← RingHom.map_mul] at h₂_abs
+    rw [← div_eq_mul_inv, eq_div_iff hnz_fa, ← RingHom.map_mul] at h₂_abs
     have := Ideal.mem_span_singleton'.mpr ⟨x', IsFractionRing.injective A K h₂_abs⟩
     contradiction
 
