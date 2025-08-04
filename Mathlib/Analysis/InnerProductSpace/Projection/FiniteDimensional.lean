@@ -11,6 +11,8 @@ import Mathlib.Analysis.NormedSpace.RCLike
 
 /-!
 
+# Orthogonal projections in finite-dimensional spaces
+
 This file contains results about orthogonal projections in finite-dimensional spaces.
 
 -/
