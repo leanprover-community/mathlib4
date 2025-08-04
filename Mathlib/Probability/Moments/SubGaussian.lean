@@ -826,7 +826,7 @@ lemma HasSubgaussianMGF_sum_of_HasCondSubgaussianMGF [IsZeroOrProbabilityMeasure
       simp_rw [Finset.sum_range_succ _ (n + 1)]
       refine HasSubgaussianMGF_add_of_HasCondSubgaussianMGF (ℱ.le n) ?_ (h_subG n (by omega))
       refine HasSubgaussianMGF.trim (ℱ.le n) ?_ hn
-      refine Finset.measurable_sum (Finset.range (n + 1)) fun m hm ↦
+      refine Finset.measurable_fun_sum (Finset.range (n + 1)) fun m hm ↦
         ((h_adapted m).mono (ℱ.mono ?_)).measurable
       simp only [Finset.mem_range] at hm
       omega

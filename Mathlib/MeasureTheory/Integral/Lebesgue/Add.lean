@@ -334,7 +334,7 @@ theorem lintegral_tsum [Countable β] {f : β → α → ℝ≥0∞} (hf : ∀ i
   rw [lintegral_iSup_directed]
   · simp [lintegral_finset_sum' _ fun i _ => hf i]
   · intro b
-    exact Finset.aemeasurable_sum _ fun i _ => hf i
+    exact Finset.aemeasurable_fun_sum _ fun i _ => hf i
   · intro s t
     use s ∪ t
     constructor
