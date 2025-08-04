@@ -359,13 +359,6 @@ theorem isStarProjection_iff_isSymmetricProjection :
     isSelfAdjoint_iff_isSymmetric, IsIdempotentElem, End.mul_eq_comp, ← coe_comp, mul_def]
 
 open ContinuousLinearMap in
-omit [CompleteSpace E] in
-/-- An idempotent operator `T` is symmetric iff `(range T)ᗮ = ker T`. -/
-theorem IsIdempotentElem.isSymmetric_iff_orthogonal_range (h : IsIdempotentElem T) :
-    T.IsSymmetric ↔ (LinearMap.range T)ᗮ = LinearMap.ker T :=
-  LinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range h.toLinearMap
-
-open ContinuousLinearMap in
 /-- Star projection operators are equal iff their range are. -/
 theorem IsStarProjection.ext_iff {S : E →L[𝕜] E}
     (hS : IsStarProjection S) (hT : IsStarProjection T) :
