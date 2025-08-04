@@ -1043,6 +1043,20 @@ theorem eq_affineCombination_of_mem_affineSpan_of_fintype [Fintype ι] {p1 : P} 
     simp only [Finset.mem_coe, Set.indicator_apply, ← hw]
     rw [Fintype.sum_extend_by_zero s w]
 
+/-- A point in the `affineSpan` of a subset of an indexed family is an
+`affineCombination` with sum of weights 1, using only points in the given subset. -/
+lemma eq_affineCombination_of_mem_affineSpan_image {p₁ : P} {p : ι → P} {s : Set ι}
+    (h : p₁ ∈ affineSpan k (p '' s)) :
+    ∃ (fs : Finset ι) (w : ι → k), ↑fs ⊆ s ∧ ∑ i ∈ fs, w i = 1 ∧
+      p₁ = fs.affineCombination k p w := by
+  classical
+  rw [Set.image_eq_range] at h
+  obtain ⟨fs', w', hw', rfl⟩ := eq_affineCombination_of_mem_affineSpan h
+  refine ⟨fs'.map (Function.Embedding.subtype _), fun i ↦ if hi : i ∈ s then w' ⟨i, hi⟩ else 0,
+    (by simp), (by simp [hw']), ?_⟩
+  simp only [Finset.affineCombination_map, Function.Embedding.coe_subtype]
+  exact fs'.affineCombination_congr (by simp) (by simp)
+
 variable (k V)
 
 /-- A point is in the `affineSpan` of an indexed family if and only
