@@ -207,7 +207,7 @@ variable [CommMonoid α] {a b : α}
 theorem mul_dvd_mul_right (h : a ∣ b) (c : α) : a * c ∣ b * c := by
   gcongr
 
-theorem pow_dvd_pow_of_dvd (h : a ∣ b) (n : ℕ) : a ^ n ∣ b ^ n := by
+@[to_additive] theorem pow_dvd_pow_of_dvd (h : a ∣ b) (n : ℕ) : a ^ n ∣ b ^ n := by
   induction n with
   | zero => simp
   | succ =>
