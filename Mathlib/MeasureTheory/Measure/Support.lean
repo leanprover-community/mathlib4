@@ -60,10 +60,6 @@ and various descriptions of the complement of the support are provided.
 
 Have to go through and resove some of these, and remove the associated bullets!
 
-* The definition of support uses the `frequently_smallSets` formulation. Auxiliary lemmas
-  about `Filter.frequently_smallSets'` and the `HasBasis` variants are provided; these should
-  eventually live near the definition of `smallSets` in the core filter API to streamline
-  rewrites.
 * The proof of `mem_support_iff_forall` is golfable; consider replacing the current composition
   of `Filter.frequently_smallSets` with more idiomatic uses of basis lemmas like `Filter.basis_sets`
   when possible.
