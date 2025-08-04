@@ -347,7 +347,7 @@ lemma haarScalarFactor_smul [LocallyCompactSpace G] (μ' μ : Measure G) [IsHaar
 lemma mul_haarScalarFactor_smul [LocallyCompactSpace G] (μ' μ : Measure G)
     [IsHaarMeasure μ] [IsFiniteMeasureOnCompacts μ'] [IsMulLeftInvariant μ'] {c : ℝ≥0}
     (hc : c ≠ 0) :
-    have : IsHaarMeasure (c • μ) := IsHaarMeasure.nnreal_smul _ hc
+    haveI : IsHaarMeasure (c • μ) := IsHaarMeasure.nnreal_smul _ hc
     c * haarScalarFactor μ' (c • μ) = haarScalarFactor μ' μ := by
   have : IsHaarMeasure (c • μ) := IsHaarMeasure.nnreal_smul _ hc
   obtain ⟨⟨g, g_cont⟩, g_comp, g_nonneg, g_one⟩ :
