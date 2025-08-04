@@ -88,14 +88,14 @@ theorem WithTop.coe_sInf' [InfSet α] {s : Set α} (hs : s.Nonempty) (h's : BddB
     · cases h1 (mem_image_of_mem _ hx)
     · exact (h2 (Monotone.map_bddBelow coe_mono h's)).elim
   · rw [preimage_image_eq]
-    exact Option.some_injective _
+    exact WithTop.coe_injective
 
 theorem WithTop.coe_sSup' [SupSet α] {s : Set α} (hs : BddAbove s) :
     ↑(sSup s) = (sSup ((fun (a : α) ↦ ↑a) '' s) : WithTop α) := by
   classical
   change _ = ite _ _ _
   rw [if_neg, preimage_image_eq, if_pos hs]
-  · exact Option.some_injective _
+  · exact WithTop.coe_injective
   · rintro ⟨x, _, ⟨⟩⟩
 
 @[simp]
