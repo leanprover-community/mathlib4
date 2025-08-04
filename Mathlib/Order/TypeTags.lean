@@ -17,28 +17,33 @@ without exploding its imports.
 variable {α : Type*}
 
 /-- Attach `⊥` to a type. -/
-def WithBot (α : Type*) := Option α
+inductive WithBot (α : Type*) where
+  | bot : WithBot α
+  /- TODO: rename to `coe`:
+  this is only called `some` because of the historical implementation via `Option`. -/
+  /-- The canonical map from `α` into `WithBot α` -/
+  | some : α → WithBot α
 
 namespace WithBot
 
 instance [Repr α] : Repr (WithBot α) :=
   ⟨fun o _ =>
     match o with
-    | none => "⊥"
-    | some a => "↑" ++ repr a⟩
+    | .bot => "⊥"
+    | .some a => "↑" ++ repr a⟩
 
-/-- The canonical map from `α` into `WithBot α` -/
-@[coe, match_pattern] def some : α → WithBot α :=
-  Option.some
+attribute [coe] some
 
 instance coe : Coe α (WithBot α) :=
   ⟨some⟩
 
-instance bot : Bot (WithBot α) :=
-  ⟨none⟩
+instance instBot : Bot (WithBot α) :=
+  ⟨bot⟩
 
 instance inhabited : Inhabited (WithBot α) :=
   ⟨⊥⟩
+
+@[simp, grind _=_] theorem bot_eq : (bot : WithBot α) = ⊥ := rfl
 
 /-- Recursor for `WithBot` using the preferred forms `⊥` and `↑a`. -/
 @[elab_as_elim, induction_eliminator, cases_eliminator]
@@ -60,35 +65,39 @@ end WithBot
 
 --TODO(Mario): Construct using order dual on `WithBot`
 /-- Attach `⊤` to a type. -/
-def WithTop (α : Type*) :=
-  Option α
+def WithTop (α : Type*) := WithBot α
 
 namespace WithTop
+
+/-- The canonical map from `α` into `WithTop α` -/
+@[coe, match_pattern] def some : α → WithTop α :=
+  WithBot.some
+
+@[match_pattern] def top : WithTop α :=
+  WithBot.bot
 
 instance [Repr α] : Repr (WithTop α) :=
   ⟨fun o _ =>
     match o with
-    | none => "⊤"
-    | some a => "↑" ++ repr a⟩
-
-/-- The canonical map from `α` into `WithTop α` -/
-@[coe, match_pattern] def some : α → WithTop α :=
-  Option.some
+    | .top => "⊤"
+    | .some a => "↑" ++ repr a⟩
 
 instance coeTC : CoeTC α (WithTop α) :=
   ⟨some⟩
 
-instance top : Top (WithTop α) :=
-  ⟨none⟩
+instance instTop : Top (WithTop α) :=
+  ⟨top⟩
 
 instance inhabited : Inhabited (WithTop α) :=
   ⟨⊤⟩
 
+@[simp, grind =] theorem top_eq : (top : WithTop α) = ⊤ := rfl
+
 /-- Recursor for `WithTop` using the preferred forms `⊤` and `↑a`. -/
 @[elab_as_elim, induction_eliminator, cases_eliminator]
 def recTopCoe {C : WithTop α → Sort*} (top : C ⊤) (coe : ∀ a : α, C a) : ∀ n : WithTop α, C n
-  | none => top
-  | Option.some a => coe a
+  | .top => top
+  | .some a => coe a
 
 @[simp]
 theorem recTopCoe_top {C : WithTop α → Sort*} (d : C ⊤) (f : ∀ a : α, C a) :
