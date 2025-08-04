@@ -70,13 +70,9 @@ theorem ConvexOn.iSup_affine_eq_of_separableSpace
     ∀ x, BddAbove (Set.range (fun i ↦ (re ((L i) x) + c i)))
     ∧ (⨆ (i : ℕ), re ((L i) x) + c i = φ x) := by
   let C :=  {(x, (s : 𝕜)) | φ x ≤ re s}
-  have hC₁ : Convex ℝ C := by
-    simpa using (ConvexOn.convex_epigraph_RCLike hφ_cvx)
-  have hC₂ : IsClosed C := by
-    simpa using (LowerSemicontinuous.isClosed_epigraph_RCLike hφ_cont)
-  have hC₃ : C.Nonempty := by
-    refine (nonempty_of_mem (x := (0, ↑ (φ 0))) ?_)
-    simp [C]
+  have hC₁ : Convex ℝ C := by simpa using (ConvexOn.convex_epigraph_RCLike hφ_cvx)
+  have hC₂ : IsClosed C := by simpa using (LowerSemicontinuous.isClosed_epigraph_RCLike hφ_cont)
+  have hC₃ : C.Nonempty := by refine (nonempty_of_mem (x := (0, ↑ (φ 0))) ?_); simp [C]
   rcases iInter_nat_halfSpaces_eq_of_prod (𝕜 := 𝕜) hC₁ hC₂ (.of_separableSpace _)
     with ⟨L, T, c, hLTc1, hLTc2⟩
   have lem1 : ∀ i, ∀ y, T i y = (T i 1) * y := by
