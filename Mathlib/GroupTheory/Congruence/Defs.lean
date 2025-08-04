@@ -594,7 +594,7 @@ theorem map_of_mul_left_rel_one [Monoid M] (c : Con M)
   have hf' : ∀ x : M, (x : c.Quotient) * f x = 1 := fun x ↦
     calc
       (x : c.Quotient) * f x = f (f x) * f x * (x * f x) := by simp [hf]
-      _ = f (f x) * (f x * x) * f x := by ac_rfl
+      _ = f (f x) * (f x * x) * f x := by simp_rw [mul_assoc]
       _ = 1 := by simp [hf]
   have : (⟨_, _, hf' x, hf x⟩ : c.Quotientˣ) = ⟨_, _, hf' y, hf y⟩ := Units.ext h
   exact congr_arg Units.inv this

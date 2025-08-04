@@ -142,7 +142,7 @@ theorem seminorm_one_eq_one_iff_ne_zero (hp : p 1 ≤ 1) : p 1 = 1 ↔ p ≠ 0 :
   refine
     ⟨fun h => ne_zero_iff.mpr ⟨1, by rw [h]; exact one_ne_zero⟩,
       fun h => ?_⟩
-  obtain hp0 | hp0 := (apply_nonneg p (1 : R)).eq_or_gt
+  obtain hp0 | hp0 := (apply_nonneg p (1 : R)).eq_or_lt'
   · exfalso
     refine h (ext fun x => (apply_nonneg _ _).antisymm' ?_)
     simpa only [hp0, mul_one, mul_zero] using map_mul_le_mul p x 1

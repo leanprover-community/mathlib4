@@ -172,19 +172,19 @@ theorem isNilpotent_finsum {ι : Type*} {f : ι → R}
     exact Commute.isNilpotent_sum (fun b _ ↦ hf b) (fun _ _ _ _ ↦ h_comm _ _)
   · simp only [finsum_def, dif_neg h, IsNilpotent.zero]
 
-protected lemma isNilpotent_mul_left_iff (h_comm : Commute x y) (hy : y ∈ nonZeroDivisorsLeft R) :
+protected lemma isNilpotent_mul_right_iff (h_comm : Commute x y) (hy : y ∈ nonZeroDivisorsRight R) :
     IsNilpotent (x * y) ↔ IsNilpotent x := by
-  refine ⟨?_, h_comm.isNilpotent_mul_left⟩
-  rintro ⟨k, hk⟩
-  rw [mul_pow h_comm] at hk
-  exact ⟨k, (nonZeroDivisorsLeft R).pow_mem hy k _ hk⟩
-
-protected lemma isNilpotent_mul_right_iff (h_comm : Commute x y) (hx : x ∈ nonZeroDivisorsRight R) :
-    IsNilpotent (x * y) ↔ IsNilpotent y := by
   refine ⟨?_, h_comm.isNilpotent_mul_right⟩
   rintro ⟨k, hk⟩
   rw [mul_pow h_comm] at hk
-  exact ⟨k, (nonZeroDivisorsRight R).pow_mem hx k _ hk⟩
+  exact ⟨k, (nonZeroDivisorsRight R).pow_mem hy k _ hk⟩
+
+protected lemma isNilpotent_mul_left_iff (h_comm : Commute x y) (hx : x ∈ nonZeroDivisorsLeft R) :
+    IsNilpotent (x * y) ↔ IsNilpotent y := by
+  refine ⟨?_, h_comm.isNilpotent_mul_left⟩
+  rintro ⟨k, hk⟩
+  rw [mul_pow h_comm] at hk
+  exact ⟨k, (nonZeroDivisorsLeft R).pow_mem hx k _ hk⟩
 
 end Semiring
 

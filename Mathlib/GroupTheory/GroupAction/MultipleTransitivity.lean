@@ -34,11 +34,10 @@ import Mathlib.SetTheory.Cardinal.Arithmetic
 ## Results for permutation groups
 
 * The permutation group is pretransitive, is multiply pretransitive,
-and is preprimitive (for its natural action)
+  and is preprimitive (for its natural action)
 
 * `Equiv.Perm.eq_top_if_isMultiplyPretransitive`:
-a subgroup of `Equiv.Perm α` which is `Nat.card α - 1` pretransitive
-is equal to `⊤`.
+  a subgroup of `Equiv.Perm α` which is `Nat.card α - 1` pretransitive is equal to `⊤`.
 
 ## Remarks on implementation
 
@@ -511,7 +510,7 @@ theorem isMultiplyPretransitive {m n : ℕ} [Hn : IsMultiplyPretransitive G α n
   exists_smul_eq x y := by
     have : IsMultiplyPretransitive G α (s.ncard + m) := by rw [hmn]; infer_instance
     have Hs : Nonempty (Fin (s.ncard) ≃ s) :=
-      Finite.card_eq.mp (by simp [Set.Nat.card_coe_set_eq])
+      Finite.card_eq.mp (by simp [Nat.card_coe_set_eq])
     set x' := ofFixingSubgroup.append x with hx
     set y' := ofFixingSubgroup.append y with hy
     obtain ⟨g, hg⟩ := exists_smul_eq G x' y'

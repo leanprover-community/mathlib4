@@ -45,7 +45,7 @@ lemma isTransitiveRel_uniformity_ball_le (r : Γ₀) :
 
 end Valuation
 
-namespace ValuativeTopology
+namespace IsValuativeTopology
 
 variable {R : Type*} [CommRing R] [ValuativeRel R] [TopologicalSpace R]
 
@@ -55,16 +55,19 @@ local notation "v" => valuation R
 
 lemma of_hasBasis (h : (𝓝 (0 : R)).HasBasis (fun _ ↦ True)
     fun γ : (ValueGroupWithZero R)ˣ ↦ { x | v x < γ }) :
-    ValuativeTopology R :=
+    IsValuativeTopology R :=
   ⟨by simp [h.mem_iff]⟩
 
-variable [ValuativeTopology R]
+variable [IsValuativeTopology R]
 
 variable (R) in
 theorem hasBasis_nhds_zero :
     (𝓝 (0 : R)).HasBasis (fun _ ↦ True)
       fun γ : (ValueGroupWithZero R)ˣ ↦ { x | v x < γ } := by
   simp [Filter.hasBasis_iff, mem_nhds_iff]
+
+@[deprecated (since := "2025-08-01")]
+alias _root_.ValuativeTopology.hasBasis_nhds_zero := hasBasis_nhds_zero
 
 variable [IsTopologicalAddGroup R]
 
@@ -134,6 +137,9 @@ theorem isOpen_ball (r : ValueGroupWithZero R) :
       (uniformity_ball_lt_mem_uniformity hr)
     simp [UniformSpace.ball]
 
+@[deprecated (since := "2025-08-01")]
+alias _root_.ValuativeTopology.isOpen_ball := isOpen_ball
+
 theorem isClosed_ball (r : ValueGroupWithZero R) :
     IsClosed {x | v x < r} := by
   rcases eq_or_ne r 0 with rfl | hr
@@ -143,15 +149,24 @@ theorem isClosed_ball (r : ValueGroupWithZero R) :
       (uniformity_ball_lt_mem_uniformity hr)
     simp [UniformSpace.ball]
 
+@[deprecated (since := "2025-08-01")]
+alias _root_.ValuativeTopology.isClosed_ball := isClosed_ball
+
 theorem isClopen_ball (r : ValueGroupWithZero R) :
     IsClopen {x | v x < r} :=
   ⟨isClosed_ball _, isOpen_ball _⟩
+
+@[deprecated (since := "2025-08-01")]
+alias _root_.ValuativeTopology.isClopen_ball := isClopen_ball
 
 lemma isOpen_closedBall {r : ValueGroupWithZero R} (hr : r ≠ 0) :
     IsOpen {x | v x ≤ r} := by
   convert ((v).isTransitiveRel_uniformity_ball_le r).isOpen_ball_of_mem_uniformity 0
     (uniformity_ball_le_mem_uniformity hr)
   simp [UniformSpace.ball]
+
+@[deprecated (since := "2025-08-01")]
+alias _root_.ValuativeTopology.isOpen_closedBall := isOpen_closedBall
 
 theorem isClosed_closedBall (r : ValueGroupWithZero R) :
     IsClosed {x | v x ≤ r} := by
@@ -163,9 +178,15 @@ theorem isClosed_closedBall (r : ValueGroupWithZero R) :
   refine ⟨Units.mk0 _ hx', fun y hy hy' => ne_of_lt hy <| Valuation.map_sub_swap v x y ▸
       (Valuation.map_sub_eq_of_lt_left _ <| lt_of_le_of_lt hy' hx)⟩
 
+@[deprecated (since := "2025-08-01")]
+alias _root_.ValuativeTopology.isClosed_closedBall := isClosed_closedBall
+
 theorem isClopen_closedBall {r : ValueGroupWithZero R} (hr : r ≠ 0) :
     IsClopen {x | v x ≤ r} :=
   ⟨isClosed_closedBall _, isOpen_closedBall hr⟩
+
+@[deprecated (since := "2025-08-01")]
+alias _root_.ValuativeTopology.isClopen_closedBall := isClopen_closedBall
 
 theorem isClopen_sphere {r : ValueGroupWithZero R} (hr : r ≠ 0) :
     IsClopen {x | v x = r} := by
@@ -175,19 +196,38 @@ theorem isClopen_sphere {r : ValueGroupWithZero R} (hr : r ≠ 0) :
   rw [h]
   exact IsClopen.diff (isClopen_closedBall hr) (isClopen_ball _)
 
+@[deprecated (since := "2025-08-01")]
+alias _root_.ValuativeTopology.isClopen_sphere := isClopen_sphere
+
 lemma isOpen_sphere {r : ValueGroupWithZero R} (hr : r ≠ 0) :
     IsOpen {x | v x = r} :=
   isClopen_sphere hr |>.isOpen
 
-end ValuativeTopology
+@[deprecated (since := "2025-08-01")]
+alias _root_.ValuativeTopology.isOpen_sphere := isOpen_sphere
+
+end IsValuativeTopology
+
+namespace Valued
+
+variable {R : Type*} [CommRing R] [ValuativeRel R] [UniformSpace R]
+  [IsUniformAddGroup R] [IsValuativeTopology R]
+
+/-- Helper `Valued` instance when `ValuativeTopology R` over a `UniformSpace R`,
+for use in porting files from `Valued` to `ValuativeRel`. -/
+scoped instance : Valued R (ValuativeRel.ValueGroupWithZero R) where
+  v := ValuativeRel.valuation R
+  is_topological_valuation := IsValuativeTopology.mem_nhds_iff
+
+end Valued
 
 namespace ValuativeRel
 
 variable {R : Type*} [CommRing R]
 
-instance [UniformSpace R] [IsUniformAddGroup R] [ValuativeRel R] [ValuativeTopology R] :
+instance [UniformSpace R] [IsUniformAddGroup R] [ValuativeRel R] [IsValuativeTopology R] :
     Valued R (ValueGroupWithZero R) :=
-  .mk (valuation R) ValuativeTopology.mem_nhds_iff
+  .mk (valuation R) IsValuativeTopology.mem_nhds_iff
 
 @[inherit_doc]
 scoped notation "𝒪[" R "]" => Valuation.integer (valuation R)
