@@ -60,9 +60,6 @@ and various descriptions of the complement of the support are provided.
 
 Have to go through and resove some of these, and remove the associated bullets!
 
-* The proof of `mem_support_iff_forall` is golfable; consider replacing the current composition
-  of `Filter.frequently_smallSets` with more idiomatic uses of basis lemmas like `Filter.basis_sets`
-  when possible.
 * There is a to-do about renaming `MeasureTheory.measure_mono_null` to enable dot notation for
   better API ergonomics.
 * The lemma `support_restrict_subset_closure_inter_support` is currently a placeholder and
@@ -80,7 +77,6 @@ measure theory, support, topological support, filter, Lindelöf, hereditarily Li
 absolute continuity, restriction, sum of measures, null measurable, conull
 -/
 
-
 section Support
 
 namespace MeasureTheory
@@ -88,7 +84,6 @@ namespace MeasureTheory
 namespace Measure
 
 open scoped Topology
-
 
 variable {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
 
@@ -119,9 +114,7 @@ lemma mem_support_iff {x : X} : x ∈ μ.support ↔
 /-- A point `x` is in the support of measure `μ` iff every neighborhood of `x` has positive
 measure. -/
 lemma mem_support_iff_forall (x : X) : x ∈ μ.support ↔ ∀ U ∈ 𝓝 x, 0 < μ U :=
-  mem_support_iff.trans <| Filter.frequently_smallSets.trans
-    ⟨fun h _ hU ↦ let ⟨_, ht, μt⟩ := h _ hU; μt.trans_le (measure_mono ht),
-     fun h _ hU ↦ ⟨_, Set.Subset.rfl, h _ hU⟩⟩ --GOLF THIS WITH `Filter.basis_sets`
+  Filter.HasBasis.mem_measureSupport <| (𝓝 x).basis_sets
 
 lemma support_eq_univ [μ.IsOpenPosMeasure] : μ.support = Set.univ :=
   Set.ext fun x ↦ (mem_support_iff_forall x).trans (Iff.intro (fun _ ↦ trivial)
@@ -129,7 +122,14 @@ lemma support_eq_univ [μ.IsOpenPosMeasure] : μ.support = Set.univ :=
 
 lemma support_mono {ν : Measure X} (h : μ ≤ ν) : μ.support ≤ ν.support :=
   fun _ hx ↦ mem_support_iff_forall _ |>.mpr fun _ hU ↦
-    lt_of_lt_of_le (mem_support_iff_forall _ |>.1 hx _ hU) (h _)
+    lt_of_lt_of_le (mem_support_iff_forall _ |>.mp hx _ hU) (h _)
+
+lemma AbsolutelyContinuous.support_mono {μ ν : Measure X} (hμν : μ ≪ ν) :
+     μ.support ≤ ν.support := by
+  intro x
+  contrapose
+  simp only [mem_support_iff, Filter.not_frequently, not_lt, nonpos_iff_eq_zero] at *
+  exact fun a ↦ Filter.Eventually.mono a hμν
 
 /-- A point `x` lies outside the support of `μ` iff all of the subsets of one of its neighborhoods
 have measure zero. -/
@@ -143,9 +143,13 @@ theorem _root_.Filter.HasBasis.notMem_measureSupport {ι : Sort*} {p : ι → Pr
 
 @[simp]
 lemma support_zero : (0 : Measure X).support = ∅ := by
-  ext
-  simp only [Set.mem_empty_iff_false, iff_false, notMem_support_iff]
+  ext; simp only [Set.mem_empty_iff_false, iff_false, notMem_support_iff]
   exact Filter.Eventually.of_forall (congrFun rfl)
+
+/-- The support of the sum of two measures is the union of the supports. -/
+lemma support_add (μ ν : Measure X) :
+  (μ + ν).support = μ.support ∪ ν.support := by
+  ext; simp [mem_support_iff]
 
 /-- A point `x` lies outside the support of `μ` iff some neighborhood of `x` has measure zero. -/
 lemma notMem_support_iff_exists {x : X} : x ∉ μ.support ↔ ∃ U ∈ 𝓝 x, μ U = 0 := by
@@ -166,7 +170,7 @@ lemma isOpen_compl_support {μ : Measure X} : IsOpen μ.supportᶜ :=
   isOpen_compl_iff.mpr μ.isClosed_support
 
 lemma subset_compl_support_of_isOpen {t : Set X} (ht : IsOpen t) (h : μ t = 0) :
-  t ⊆ μ.supportᶜ := fun _ hx =>
+  t ⊆ μ.supportᶜ := fun _ hx ↦
   notMem_support_iff_exists.mpr ⟨t, ht.mem_nhds hx, h⟩
 
 lemma compl_support_eq_sUnion : μ.supportᶜ = ⋃₀ {t : Set X | IsOpen t ∧ μ t = 0} := by
@@ -184,7 +188,7 @@ lemma support_eq_sInter : μ.support = ⋂₀ {t : Set X | IsClosed t ∧ μ t�
   · rintro ⟨t, ht, htc, htc1⟩; use tᶜ
     exact ⟨Set.mem_compl htc1, ht.isOpen_compl, le_of_eq htc⟩
 
-open Set
+section Lindelof
 
 /-- If the complement of the support is Lindelöf, then the support of a measure is conull. -/
 lemma support_mem_ae_of_isLindelof (h : IsLindelof μ.supportᶜ) : μ.support ∈ ae μ := by
@@ -192,14 +196,16 @@ lemma support_mem_ae_of_isLindelof (h : IsLindelof μ.supportᶜ) : μ.support �
   simpa [compl_mem_ae_iff, isOpen_compl_support.nhdsWithin_eq hs]
     using notMem_support_iff_exists.mp hs
 
-/-- In a hereditarily Lindelöf space, the support of a measure is conull. -/
-lemma support_mem_ae [HereditarilyLindelofSpace X] : μ.support ∈ ae μ :=
-  support_mem_ae_of_isLindelof <| HereditarilyLindelof_LindelofSets μ.supportᶜ
-
 variable [HereditarilyLindelofSpace X]
+
+/-- In a hereditarily Lindelöf space, the support of a measure is conull. -/
+lemma support_mem_ae : μ.support ∈ ae μ :=
+  support_mem_ae_of_isLindelof <| HereditarilyLindelof_LindelofSets μ.supportᶜ
 
 @[simp]
 lemma measure_compl_support : μ (μ.support)ᶜ = 0 := support_mem_ae
+
+open Set
 
 lemma nonempty_inter_support_of_pos {s : Set X} (hμ : 0 < μ s) :
     (s ∩ μ.support).Nonempty := by
@@ -227,38 +233,8 @@ lemma nonempty_support_iff : μ.support.Nonempty ↔ μ ≠ 0 :=
   ⟨fun h e ↦ (not_nonempty_iff_eq_empty.mpr <| congrArg Measure.support e|>.trans
     <| support_zero) h, fun h ↦ nonempty_support h⟩
 
-end Measure
-
-end MeasureTheory
-
-end Support
-
-section Add
-
-/- This will need reincorporation into the above. -/
-
-open MeasureTheory
-
-open Measure
-
-variable {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
-
-/-- The support of the sum of two measures is the union of the supports. -/
-lemma support_add (μ ν : Measure X) :
-  (μ + ν).support = μ.support ∪ ν.support := by
-  ext; simp [mem_support_iff]
-
-end Add
-
+end Lindelof
 section Restrict
-
-open MeasureTheory Measure
-
-open scoped Topology
-
-variable {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
-
-variable {μ : Measure X}
 
 lemma support_restrict_subset_closure [OpensMeasurableSpace X] {s : Set X} :
     (μ.restrict s).support ⊆ closure s := by
@@ -270,7 +246,7 @@ lemma support_restrict_subset_closure [OpensMeasurableSpace X] {s : Set X} :
   · exact Set.inter_nonempty_iff_exists_right.mpr H
   · have h_restr : (μ.restrict s) U = μ (U ∩ s) := by
       simp [Measure.restrict_apply hU.measurableSet, Set.inter_comm]
-    rw [(nhds_basis_opens x).mem_measureSupport] at hx
+    rw [nhds_basis_opens x |>.mem_measureSupport] at hx
     exact MeasureTheory.nonempty_of_measure_ne_zero
       (ne_of_gt (h_restr ▸ hx U ⟨hxU, hU⟩))
 
@@ -306,19 +282,8 @@ lemma support_restrict_subset_closure_inter_support [OpensMeasurableSpace X] {s 
 
 end Restrict
 
-section AbsolutelyContinuous
+end Measure
 
-variable {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
+end MeasureTheory
 
-open MeasureTheory
-
-open Measure
-
-lemma AbsolutelyContinuous.support_mono {μ ν : Measure X} (hμν : μ ≪ ν) :
-     μ.support ≤ ν.support := by
-  intro x
-  contrapose
-  simp only [mem_support_iff, Filter.not_frequently, not_lt, nonpos_iff_eq_zero] at *
-  exact fun a ↦ Filter.Eventually.mono a hμν
-
-end AbsolutelyContinuous
+end Support
