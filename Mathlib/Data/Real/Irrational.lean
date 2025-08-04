@@ -55,8 +55,8 @@ theorem irrational_nrt_of_notint_nrt {x : ℝ} (n : ℕ) (m : ℤ) (hxr : x ^ n 
     rw [Int.cast_ne_zero, Int.natCast_ne_zero]
     exact P
   have c2 : ((D : ℤ) : ℝ) ^ n ≠ 0 := pow_ne_zero _ c1
-  rw [mk'_eq_divInt, cast_pow, cast_mk, div_pow, div_eq_iff_mul_eq c2, ← Int.cast_pow,
-    ← Int.cast_pow, ← Int.cast_mul, Int.cast_inj] at hxr
+  rw [mk'_eq_divInt, cast_pow, cast_mk, div_pow, div_eq_iff c2, ← Int.cast_pow,
+    ← Int.cast_pow, ← Int.cast_mul, Int.cast_inj, eq_comm] at hxr
   have hdivn : (D : ℤ) ^ n ∣ N ^ n := Dvd.intro_left m hxr
   rw [← Int.dvd_natAbs, ← Int.natCast_pow, Int.natCast_dvd_natCast, Int.natAbs_pow,
     Nat.pow_dvd_pow_iff hnpos.ne'] at hdivn
@@ -502,7 +502,7 @@ theorem one_lt_natDegree_of_irrational_root (hx : Irrational x) (p_nonzero : p �
   rcases em (a = 0) with (rfl | ha)
   · obtain rfl : b = 0 := by simpa
     simp at p_nonzero
-  · rw [mul_comm, ← eq_div_iff_mul_eq, eq_comm] at this
+  · rw [mul_comm, ← eq_div_iff, eq_comm] at this
     · refine hx ⟨-b / a, ?_⟩
       assumption_mod_cast
     · assumption_mod_cast
