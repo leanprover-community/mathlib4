@@ -220,11 +220,11 @@ lemma IsRegular.mem_nonZeroDivisors (h : IsRegular r) : r ∈ M₀⁰ :=
 
 lemma noZeroDivisors_iff_forall_mem_nonZeroDivisorsLeft :
     NoZeroDivisors M₀ ↔ ∀ x : M₀, x ≠ 0 → x ∈ nonZeroDivisorsLeft M₀ :=
-  noZeroDivisors_iff_eq_zero_of_mul_left
+  noZeroDivisors_iff_right_eq_zero_of_mul
 
 lemma noZeroDivisors_iff_forall_mem_nonZeroDivisorsRight :
     NoZeroDivisors M₀ ↔ ∀ x : M₀, x ≠ 0 → x ∈ nonZeroDivisorsRight M₀ :=
-  noZeroDivisors_iff_eq_zero_of_mul_right
+  noZeroDivisors_iff_left_eq_zero_of_mul
 
 lemma noZeroDivisors_iff_forall_mem_nonZeroDivisors :
     NoZeroDivisors M₀ ↔ ∀ x : M₀, x ≠ 0 → x ∈ M₀⁰ :=
@@ -232,15 +232,15 @@ lemma noZeroDivisors_iff_forall_mem_nonZeroDivisors :
 
 lemma noZeroSMulDivisors_iff_forall_mem_nonZeroSMulDivisors {M : Type*} [Zero M] [MulAction M₀ M] :
     NoZeroSMulDivisors M₀ M ↔ ∀ x : M₀, x ≠ 0 → x ∈ nonZeroSMulDivisors M₀ M :=
-  noZeroSMulDivisors_iff_eq_zero_of_smul
+  noZeroSMulDivisors_iff_right_eq_zero_of_smul
 
 lemma IsSMulRegular.mem_nonZeroSMulDivisors {M : Type*} [Zero M] [MulActionWithZero M₀ M] {m₀ : M₀}
     (h : IsSMulRegular M m₀) : m₀ ∈ nonZeroSMulDivisors M₀ M :=
-  fun _ ↦ h.eq_zero_of_smul_eq_zero
+  fun _ ↦ h.right_eq_zero_of_smul
 
 lemma isSMulRegular_iff_mem_nonZeroSMulDivisors {M : Type*} [AddGroup M] [DistribMulAction M₀ M]
     {m₀ : M₀} : IsSMulRegular M m₀ ↔ m₀ ∈ nonZeroSMulDivisors M₀ M :=
-  isSMulRegular_iff_smul_eq_zero_imp_eq_zero ..
+  isSMulRegular_iff_right_eq_zero_of_smul
 
 variable [FunLike F M₀ M₀']
 

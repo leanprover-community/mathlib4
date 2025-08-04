@@ -36,10 +36,10 @@ section Ring
 variable {R : Type*} [Ring R] {a x y r : R}
 
 lemma isLeftRegular_iff_mem_nonZeroDivisorsLeft : IsLeftRegular r ↔ r ∈ nonZeroDivisorsLeft R :=
-  isLeftRegular_iff_eq_zero_of_mul_left
+  isLeftRegular_iff_right_eq_zero_of_mul
 
 lemma isRightRegular_iff_mem_nonZeroDivisorsRight : IsRightRegular r ↔ r ∈ nonZeroDivisorsRight R :=
-  isRightRegular_iff_eq_zero_of_mul_right
+  isRightRegular_iff_left_eq_zero_of_mul
 
 lemma isRegular_iff_mem_nonZeroDivisors : IsRegular r ↔ r ∈ R⁰ := isRegular_iff_eq_zero_of_mul
 
