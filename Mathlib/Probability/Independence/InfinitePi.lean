@@ -73,4 +73,25 @@ lemma iIndepFun_iff_map_fun_eq_infinitePi_map (mX : ∀ i, Measurable (X i)) :
     iIndepFun X μ ↔ μ.map (fun ω i ↦ X i ω) = infinitePi (fun i ↦ μ.map (X i)) :=
   iIndepFun_iff_map_fun_eq_infinitePi_map₀ <| measurable_pi_iff.2 mX |>.aemeasurable
 
+variable {Ω : ι → Type*} {mΩ : ∀ i, MeasurableSpace (Ω i)}
+    {μ : (i : ι) → Measure (Ω i)} [∀ i, IsProbabilityMeasure (μ i)] {X : Π i, Ω i → 𝓧 i}
+
+/-- Given random variables `X i : Ω i → 𝓧 i`, they are independent when viewed as random
+variables defined on the product space `Π i, Ω i`. -/
+lemma iIndepFun_infinitePi (mX : ∀ i, Measurable (X i)) :
+    iIndepFun (fun i ω ↦ X i (ω i)) (infinitePi μ) := by
+  refine iIndepFun_iff_map_fun_eq_infinitePi_map (by fun_prop) |>.2 ?_
+  have (i : ι) : IsProbabilityMeasure ((infinitePi μ).map (fun ω ↦ X i (ω i))) :=
+    isProbabilityMeasure_map (Measurable.aemeasurable (by fun_prop))
+  refine eq_infinitePi _ fun s t ht ↦ ?_
+  rw [map_apply (by fun_prop) (.pi s.countable_toSet ht)]
+  have : (fun (ω : Π i, Ω i) i ↦ X i (ω i)) ⁻¹' ((s : Set ι).pi t) =
+      (s : Set ι).pi (fun i ↦ (X i) ⁻¹' (t i)) := by ext x; simp
+  rw [this, infinitePi_pi _ (fun i hi ↦ mX i (ht i hi))]
+  refine Finset.prod_congr rfl fun i hi ↦ ?_
+  rw [map_apply (by fun_prop) (ht i hi)]
+  change _ = (infinitePi μ) (((X i) ∘ (fun x ↦ x i)) ⁻¹' t i)
+  rw [Set.preimage_comp, ← map_apply (measurable_pi_apply i) (mX i (ht i hi)),
+    (measurePreserving_eval_infinitePi _ i).map_eq]
+
 end ProbabilityTheory
