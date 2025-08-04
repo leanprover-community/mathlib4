@@ -86,10 +86,12 @@ theorem image.lift_fac (F' : MonoFactorization f) : image.lift F' ≫ F'.m = ima
 end
 
 /-- the factorisation of any morphism in `AddCommGrp` through a mono. -/
-def MonoFactorization : MonoFactorization f where
+def monoFactorization : MonoFactorization f where
   I := image f
   m := image.ι f
   e := factorThruImage f
+
+@[deprecated (since := "2025-08-04")] alias monoFactorisation := monoFactorization
 
 /-- the factorisation of any morphism in `AddCommGrp` through a mono has
 the universal property of the image. -/

@@ -140,7 +140,8 @@ def imageMonoFactorization {X Y : C} (f : X ⟶ Y) : MonoFactorization f where
   e := kernel.lift _ f (cokernel.condition _)
   fac := kernel.lift_ι _ _ _
 
-@[deprecated (since := "2025-08-04")] alias imageMonoFactorisation := imageMonoFactorization
+@[deprecated (since := "2025-08-04")] noncomputable alias imageMonoFactorisation :=
+  imageMonoFactorization
 
 theorem imageMonoFactorization_e' {X Y : C} (f : X ⟶ Y) :
     (imageMonoFactorization f).e = cokernel.π _ ≫ Abelian.coimageImageComparison f := by
@@ -163,7 +164,7 @@ def imageFactorization {X Y : C} (f : X ⟶ Y) [IsIso (Abelian.coimageImageCompa
         ext
         simp }
 
-@[deprecated (since := "2025-08-04")] alias imageFactorisation := imageFactorization
+@[deprecated (since := "2025-08-04")] noncomputable alias imageFactorisation := imageFactorization
 
 instance [HasZeroObject C] {X Y : C} (f : X ⟶ Y) [Mono f]
     [IsIso (Abelian.coimageImageComparison f)] : IsIso (imageMonoFactorization f).e := by
@@ -343,6 +344,9 @@ def imageStrongEpiMonoFactorization : StrongEpiMonoFactorization f where
   e := Abelian.factorThruImage f
   e_strong_epi := strongEpi_of_epi _
 
+@[deprecated (since := "2025-08-04")] noncomputable alias imageStrongEpiMonoFactorisation :=
+  imageStrongEpiMonoFactorization
+
 /-- Factoring through the coimage is a strong epi-mono factorization. -/
 @[simps]
 def coimageStrongEpiMonoFactorization : StrongEpiMonoFactorization f where
@@ -351,6 +355,9 @@ def coimageStrongEpiMonoFactorization : StrongEpiMonoFactorization f where
   m_mono := by infer_instance
   e := coimage.π f
   e_strong_epi := strongEpi_of_epi _
+
+@[deprecated (since := "2025-08-04")] noncomputable alias coimageStrongEpiMonoFactorisation :=
+  coimageStrongEpiMonoFactorization
 
 end Factor
 
