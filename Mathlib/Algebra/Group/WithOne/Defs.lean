@@ -154,7 +154,7 @@ theorem coe_inj {a b : α} : (a : WithOne α) = b ↔ a = b :=
 
 @[to_additive]
 lemma coe_injective : Function.Injective (coe : α → WithOne α) :=
-  fun _ _ ↦ coe_inj.mp
+  Option.some_injective
 
 @[to_additive (attr := elab_as_elim)]
 protected theorem cases_on {P : WithOne α → Prop} : ∀ x : WithOne α, P 1 → (∀ a : α, P a) → P x :=
