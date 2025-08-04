@@ -815,13 +815,8 @@ theorem prod_unique_nonempty [Unique ι] (s : Finset ι) (f : ι → M) (h : s.N
   rw [h.eq_singleton_default, Finset.prod_singleton]
 
 lemma prod_dvd_prod_of_dvd (f g : ι → M) (h : ∀ i ∈ s, f i ∣ g i) :
-    ∏ i ∈ s, f i ∣ ∏ i ∈ s, g i := by
-  induction s using Finset.cons_induction with
-  | empty => simp
-  | cons a T haT IH =>
-    rw [Finset.prod_cons, Finset.prod_cons]
-    rw [Finset.forall_mem_cons] at h
-    exact mul_dvd_mul h.1 <| IH h.2
+    ∏ i ∈ s, f i ∣ ∏ i ∈ s, g i :=
+  Multiset.prod_dvd_prod_of_dvd _ _ h
 
 end CommMonoid
 
