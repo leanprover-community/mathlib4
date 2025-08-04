@@ -55,7 +55,7 @@ lemma riskIncrease_eq_iInf_sub' [Nonempty 𝓨] (hl : Measurable (uncurry ℓ)) 
     (π : Measure Θ) [SFinite π] :
     riskIncrease ℓ P π = (⨅ z : 𝓨, ∫⁻ θ, P θ univ * ℓ θ z ∂π) - bayesRiskPrior ℓ P π := by
   simp_rw [riskIncrease]
-  simp [bayesRiskPrior_of_subsingleton hl, mul_comm]
+  simp [bayesRiskPrior_of_subsingleton hl, mul_comm, Kernel.comp_discard']
 
 lemma riskIncrease_eq_iInf_sub (hl : Measurable (uncurry ℓ)) (P : Kernel Θ 𝓧) [IsMarkovKernel P]
     (π : Measure Θ) [SFinite π] :

@@ -60,14 +60,6 @@ lemma iInf_eq_bot_iff_of_finite {α ι : Type*} [CompleteLinearOrder α] [Finite
   simp only [Set.mem_univ, iInf_pos] at h''
   exact h''.ne' h
 
-lemma _root_.Measurable.smul_measure {α β : Type*} {_ : MeasurableSpace α} {_ : MeasurableSpace β}
-    {f : α → ℝ≥0∞}
-    (hf : Measurable f) (μ : Measure β) :
-    Measurable (fun x ↦ f x • μ) := by
-  refine Measure.measurable_of_measurable_coe _ fun s hs ↦ ?_
-  simp only [Measure.smul_apply, smul_eq_mul]
-  fun_prop
-
 instance {α : Type*} [MeasurableSpace α] [Countable α] [DiscreteMeasurableSpace α]
     {μ : Measure α} : SFinite μ := by
   rw [← Measure.sum_smul_dirac μ]
@@ -82,21 +74,6 @@ lemma Kernel.comp_const {α β γ : Type*} {_ : MeasurableSpace α} {_ : Measura
   ext x s hs
   rw [Kernel.comp_apply, Measure.bind_apply hs (by fun_prop), Kernel.const_apply,
     Kernel.const_apply, Measure.bind_apply hs (by fun_prop)]
-
-@[simp]
-lemma Kernel.comp_discard' {α β : Type*} {_ : MeasurableSpace α} {_ : MeasurableSpace β}
-    (κ : Kernel α β) :
-    discard β ∘ₖ κ =
-      { toFun a := κ a .univ • Measure.dirac ()
-        measurable' := (κ.measurable_coe .univ).smul_measure _ } := by
-  ext a s hs
-  simp [comp_apply' _ _ _ hs, mul_comm]
-
-@[simp]
-lemma _root_.MeasureTheory.Measure.discard_comp {α : Type*} {_ : MeasurableSpace α}
-    (μ : Measure α) :
-    (Kernel.discard α) ∘ₘ μ = μ .univ • (Measure.dirac ()) := by
-  ext s hs; simp [Measure.bind_apply hs (Kernel.aemeasurable _), mul_comm]
 
 variable {Θ Θ' 𝓧 𝓧' 𝓨 : Type*} {mΘ : MeasurableSpace Θ} {mΘ' : MeasurableSpace Θ'}
   {m𝓧 : MeasurableSpace 𝓧} {m𝓧' : MeasurableSpace 𝓧'} {m𝓨 : MeasurableSpace 𝓨}
