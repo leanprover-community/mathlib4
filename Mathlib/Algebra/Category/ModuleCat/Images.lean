@@ -80,14 +80,16 @@ theorem image.lift_fac (F' : MonoFactorization f) : image.lift F' ≫ F'.m = ima
 end
 
 /-- The factorisation of any morphism in `ModuleCat R` through a mono. -/
-def MonoFactorization : MonoFactorization f where
+def monoFactorization : MonoFactorization f where
   I := image f
   m := image.ι f
   e := factorThruImage f
 
+@[deprecated (since := "2025-08-04")] alias monoFactorisation := monoFactorization
+
 /-- The factorisation of any morphism in `ModuleCat R` through a mono has the universal property of
 the image. -/
-noncomputable def isImage : IsImage (MonoFactorization f) where
+noncomputable def isImage : IsImage (monoFactorization f) where
   lift := image.lift
   lift_fac := image.lift_fac
 

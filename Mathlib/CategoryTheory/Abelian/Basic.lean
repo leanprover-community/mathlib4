@@ -140,6 +140,8 @@ def imageMonoFactorization {X Y : C} (f : X ⟶ Y) : MonoFactorization f where
   e := kernel.lift _ f (cokernel.condition _)
   fac := kernel.lift_ι _ _ _
 
+@[deprecated (since := "2025-08-04")] alias imageMonoFactorisation := imageMonoFactorization
+
 theorem imageMonoFactorization_e' {X Y : C} (f : X ⟶ Y) :
     (imageMonoFactorization f).e = cokernel.π _ ≫ Abelian.coimageImageComparison f := by
   dsimp
@@ -160,6 +162,8 @@ def imageFactorization {X Y : C} (f : X ⟶ Y) [IsIso (Abelian.coimageImageCompa
         rw [IsIso.inv_comp_eq]
         ext
         simp }
+
+@[deprecated (since := "2025-08-04")] alias imageFactorisation := imageFactorization
 
 instance [HasZeroObject C] {X Y : C} (f : X ⟶ Y) [Mono f]
     [IsIso (Abelian.coimageImageComparison f)] : IsIso (imageMonoFactorization f).e := by

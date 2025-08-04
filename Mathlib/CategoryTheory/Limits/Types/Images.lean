@@ -51,13 +51,15 @@ theorem Image.lift_fac (F' : MonoFactorization f) : Image.lift F' ≫ F'.m = Ima
 end
 
 /-- the factorisation of any morphism in Type through a mono. -/
-def MonoFactorization : MonoFactorization f where
+def monoFactorization : MonoFactorization f where
   I := Image f
   m := Image.ι f
   e := Set.rangeFactorization f
 
+@[deprecated (since := "2025-08-04")] alias monoFactorisation := monoFactorization
+
 /-- the factorisation through a mono has the universal property of the image. -/
-noncomputable def isImage : IsImage (MonoFactorization f) where
+noncomputable def isImage : IsImage (monoFactorization f) where
   lift := Image.lift
   lift_fac := Image.lift_fac
 
@@ -69,7 +71,7 @@ instance : HasImages (Type u) where
 
 instance : HasImageMaps (Type u) where
   has_image_map {f g} st :=
-    HasImageMap.transport st (MonoFactorization f.hom) (isImage g.hom)
+    HasImageMap.transport st (monoFactorization f.hom) (isImage g.hom)
       (fun x => ⟨st.right x.1, ⟨st.left (Classical.choose x.2), by
         have p := st.w
         replace p := congr_fun p (Classical.choose x.2)
