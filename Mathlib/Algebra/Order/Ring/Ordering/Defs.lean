@@ -194,6 +194,6 @@ instance [P.IsOrdering] : P.support.IsPrime where
 
 instance [HasMemOrNegMem P] [P.support.IsPrime] : P.IsOrdering where
   mem_or_neg_mem := mem_or_neg_mem P
-  mem_or_mem := Ideal.IsPrime.mem_or_mem ‹_›
+  mem_or_mem := ‹P.support.IsPrime›.mem_or_mem
 
 end RingPreordering
