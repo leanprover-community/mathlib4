@@ -641,10 +641,7 @@ lemma mul_le_of_forall_lt_of_nonneg {a b c : α} (ha : 0 ≤ a) (hc : 0 ≤ c)
 
 theorem mul_self_inj_of_nonneg (a0 : 0 ≤ a) (b0 : 0 ≤ b) : a * a = b * b ↔ a = b :=
   mul_self_eq_mul_self_iff.trans <|
-    or_iff_left_of_imp fun h => by
-      subst a
-      have : b = 0 := le_antisymm (neg_nonneg.1 a0) b0
-      rw [this, neg_zero]
+    or_iff_left_of_imp fun h => by grind
 
 theorem min_div_div_right_of_nonpos (hc : c ≤ 0) (a b : α) : min (a / c) (b / c) = max a b / c :=
   Eq.symm <| Antitone.map_max fun _ _ => div_le_div_of_nonpos_of_le hc
