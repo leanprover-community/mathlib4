@@ -1645,11 +1645,7 @@ theorem maximal_orthonormal_iff_orthogonalComplement_eq_bot (hv : Orthonormal �
       rintro ⟨a, ha'⟩
       rcases eq_or_mem_of_mem_insert ha' with ha | ha
       · rintro ⟨b, hb'⟩ hab'
-        have hb : b ∈ v := by
-          refine mem_of_mem_insert_of_ne hb' ?_
-          intro hbe'
-          apply hab'
-          simp [ha, hbe']
+        have hb : b ∈ v := by grind [Set.mem_of_mem_insert_of_ne]
         rw [inner_eq_zero_symm]
         simpa [ha] using h_end b hb
       rintro ⟨b, hb'⟩ hab'
