@@ -247,7 +247,7 @@ theorem div_single {b : MvPolynomial σ R}
   set q := g ⟨b, by simp⟩
   simp only [Set.mem_singleton_iff, forall_eq] at h2
   simp only at h1
-  refine ⟨ q, r, ?_, h1, h2⟩
+  refine ⟨q, r, ?_, h1, h2⟩
   rw [hgr]
   simp only [Finsupp.linearCombination, Finsupp.coe_lsum, LinearMap.coe_smulRight, LinearMap.id_coe,
     id_eq, smul_eq_mul, add_left_inj]
