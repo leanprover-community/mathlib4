@@ -138,7 +138,9 @@ end CommMonoid
 section RelPrime
 
 /-- `x` and `y` are relatively prime if every common divisor is a unit. -/
-@[to_additive] def IsRelPrime [Monoid α] (x y : α) : Prop := ∀ ⦃d⦄, d ∣ x → d ∣ y → IsUnit d
+@[to_additive "`x` and `y` are additively relatively prime if every common additive divisor
+is an additive unit."]
+def IsRelPrime [Monoid α] (x y : α) : Prop := ∀ ⦃d⦄, d ∣ x → d ∣ y → IsUnit d
 
 variable [CommMonoid α] {x y z : α}
 
