@@ -186,12 +186,16 @@ instance : Category (TransportEnrichment F C) := inferInstanceAs (Category C)
 
 open EnrichedCategory
 
+/-- If for a lax monoidal functor `F : V ⥤ W` the canonical function
+`(𝟙_ V ⟶ v) → (𝟙_ W ⟶ F.obj v)` is bijective, and `C` is an enriched ordinary category on `V`,
+then `F` induces the structure of a `W`-enriched ordinary category on `TransportEnrichment F C`,
+i.e. on the same underlying category `C`. -/
 noncomputable def TransportEnrichment.EnrichedOrdinaryCategory
     (h : ∀ v : V, Function.Bijective fun (f : 𝟙_ V ⟶ v) =>
       (Functor.LaxMonoidal.ε F ≫ F.map f : 𝟙_ W ⟶ F.obj v)) :
     EnrichedOrdinaryCategory W (TransportEnrichment F C) where
-  homEquiv {X Y} := (eHomEquiv V (C := C)).trans <| Equiv.ofBijective _ (h (Hom (C := C) (X : C) Y))
-  homEquiv_comp {X Y Z} f g := by
+  homEquiv {X Y} := (eHomEquiv V (C := C)).trans <| Equiv.ofBijective _ (h (Hom (C := C) X Y))
+  homEquiv_comp f g := by
     simp [eHomEquiv_comp, eComp_eq, tensorHom_def (Functor.LaxMonoidal.ε F), unitors_inv_equal]
 
 end TransportEnrichment
