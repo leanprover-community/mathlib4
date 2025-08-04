@@ -39,8 +39,6 @@ local notation "absR" => @abs ℝ _ _
 
 namespace Submodule
 
-/-! ### Orthogonal projection in inner product spaces -/
-
 /-- A subspace `K : Submodule 𝕜 E` has an orthogonal projection if every vector `v : E` admits an
 orthogonal projection to `K`. -/
 class HasOrthogonalProjection (K : Submodule 𝕜 E) : Prop where
