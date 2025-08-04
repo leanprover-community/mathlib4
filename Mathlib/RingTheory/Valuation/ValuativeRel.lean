@@ -680,8 +680,8 @@ open Topology ValuativeRel in
 /-- We say that a topology on `R` is valuative if the neighborhoods of `0` in `R`
 are determined by the relation `· ≤ᵥ ·`. -/
 class IsValuativeTopology (R : Type*) [CommRing R] [ValuativeRel R] [TopologicalSpace R] where
-  mem_nhds {s : Set R} {x : R} : s ∈ 𝓝 (x : R) ↔
-    ∃ γ : (ValueGroupWithZero R)ˣ, { z | valuation _ (z - x) < γ } ⊆ s
+  mem_nhds_iff {s : Set R} {x : R} : s ∈ 𝓝 (x : R) ↔
+    ∃ γ : (ValueGroupWithZero R)ˣ, (x + ·) '' { z | valuation _ z < γ } ⊆ s
 
 @[deprecated (since := "2025-08-01")] alias ValuativeTopology := IsValuativeTopology
 

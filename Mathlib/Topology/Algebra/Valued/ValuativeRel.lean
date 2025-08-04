@@ -23,7 +23,9 @@ variable {R : Type*} [CommRing R]
 
 instance [UniformSpace R] [IsUniformAddGroup R] [ValuativeRel R] [IsValuativeTopology R] :
     Valued R (ValueGroupWithZero R) :=
-  .mk (valuation R) fun s ↦ by convert IsValuativeTopology.mem_nhds (x := (0 : R)); rw [sub_zero]
+  .mk (valuation R) fun s ↦ by
+    convert IsValuativeTopology.mem_nhds_iff (x := (0 : R)) using 4
+    simp
 
 end ValuativeRel
 
@@ -35,15 +37,23 @@ open ValuativeRel TopologicalSpace Filter Topology Set
 
 local notation "v" => valuation R
 
-lemma mem_nhds_iff (s : Set R) : s ∈ 𝓝 (0 : R) ↔
+/-- A version mentioning subtraction. -/
+lemma mem_nhds_iff' {s : Set R} {x : R} :
+    s ∈ 𝓝 (x : R) ↔
+    ∃ γ : (ValueGroupWithZero R)ˣ, { z | v (z - x) < γ } ⊆ s := by
+  convert mem_nhds_iff (s := s) using 4
+  ext z
+  simp [neg_add_eq_sub]
+
+lemma mem_nhds_zero_iff (s : Set R) : s ∈ 𝓝 (0 : R) ↔
     ∃ γ : (ValueGroupWithZero R)ˣ, { x | v x < γ } ⊆ s := by
-  convert IsValuativeTopology.mem_nhds (x := (0 : R))
+  convert IsValuativeTopology.mem_nhds_iff' (x := (0 : R))
   rw [sub_zero]
 
 theorem hasBasis_nhds (x : R) :
     (𝓝 x).HasBasis (fun _ => True)
       fun γ : (ValueGroupWithZero R)ˣ => { z | v (z - x) < γ } := by
-  simp [Filter.hasBasis_iff, mem_nhds]
+  simp [Filter.hasBasis_iff, mem_nhds_iff']
 
 variable (R) in
 theorem hasBasis_nhds_zero :
@@ -74,7 +84,7 @@ instance : IsTopologicalRing R :=
   inferInstance
 
 @[deprecated (since := "2025-08-01")]
-alias _root_.ValuativeTopology.mem_nhds := mem_nhds
+alias _root_.ValuativeTopology.mem_nhds := mem_nhds_iff'
 
 theorem isOpen_ball (r : ValueGroupWithZero R) :
     IsOpen {x | v x < r} := by
@@ -82,7 +92,7 @@ theorem isOpen_ball (r : ValueGroupWithZero R) :
   rcases eq_or_ne r 0 with rfl | hr
   · simp
   · intro x hx
-    rw [mem_nhds]
+    rw [mem_nhds_iff']
     simp only [setOf_subset_setOf]
     exact ⟨Units.mk0 _ hr,
       fun y hy => (sub_add_cancel y x).symm ▸ ((v).map_add _ x).trans_lt (max_lt hy hx)⟩
@@ -111,7 +121,7 @@ lemma isOpen_closedBall {r : ValueGroupWithZero R} (hr : r ≠ 0) :
     IsOpen {x | v x ≤ r} := by
   rw [isOpen_iff_mem_nhds]
   intro x hx
-  rw [mem_nhds]
+  rw [mem_nhds_iff']
   simp only [setOf_subset_setOf]
   exact ⟨Units.mk0 _ hr, fun y hy => (sub_add_cancel y x).symm ▸
     le_trans ((v).map_add _ _) (max_le (le_of_lt hy) hx)⟩
@@ -124,7 +134,7 @@ theorem isClosed_closedBall (r : ValueGroupWithZero R) :
   rw [← isOpen_compl_iff, isOpen_iff_mem_nhds]
   intro x hx
   simp only [mem_compl_iff, mem_setOf_eq, not_le] at hx
-  rw [mem_nhds]
+  rw [mem_nhds_iff']
   have hx' : v x ≠ 0 := ne_of_gt <| lt_of_le_of_lt zero_le' <| hx
   exact ⟨Units.mk0 _ hx', fun y hy hy' => ne_of_lt hy <| Valuation.map_sub_swap v x y ▸
       (Valuation.map_sub_eq_of_lt_left _ <| lt_of_le_of_lt hy' hx)⟩
@@ -168,7 +178,7 @@ variable {R : Type*} [CommRing R] [ValuativeRel R] [UniformSpace R]
 for use in porting files from `Valued` to `ValuativeRel`. -/
 scoped instance : Valued R (ValuativeRel.ValueGroupWithZero R) where
   v := ValuativeRel.valuation R
-  is_topological_valuation := IsValuativeTopology.mem_nhds_iff
+  is_topological_valuation := IsValuativeTopology.mem_nhds_zero_iff
 
 end Valued
 
