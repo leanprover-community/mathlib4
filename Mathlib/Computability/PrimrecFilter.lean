@@ -69,7 +69,7 @@ variable {α β : Type} {b : β} {f : α → β → Prop} {L : List α} [Decidab
 to filter `L` for elements `a` with `f a b` -/
 lemma list_filter [Primcodable α] [Primcodable β] (hf : PrimrecRel f) :
     Primrec₂ fun (L : List α) ↦ fun b ↦ (L.filter (fun a ↦ f a b)) := by
-  simp only [filter_eq_filtermap_ite]
+  simp only [filter_eq_filterMap_ite]
   refine listFilterMap fst (Primrec.ite ?_ (option_some_iff.mpr snd) (Primrec.const Option.none))
   exact PrimrecRel.comp hf snd (Primrec.comp snd fst)
 
@@ -82,24 +82,27 @@ variable {α β : Type} {f : α → β → Prop} [DecidableRel f] {L : List α} 
 variable [Primcodable α] [Primcodable β]
 
 /-- If `f a b` is decidable, then given `L : List α` and `b : β`, `"g L b ↔ ∃ a L, f a b"`
-is a primitive recurisve relation. -/
+is a primitive recursive relation. -/
 lemma filter_exists (hf : PrimrecRel f) :
     PrimrecRel fun (L : List α) ↦ fun b ↦ (∃ a ∈ L, f a b) := by
-  let g (b) := fun L ↦ filter (f · b) L
-  have h (L) (b) : (g b L).length ≠ 0 ↔ (∃ a ∈ L, f a b) := filter_length_ne_zero_iff
+  have h (L) (b) : (filter (f · b) L).length ≠ 0 ↔ (∃ a ∈ L, f a b) := filter_ne_nil
   apply of_eq ?_ h
   apply PrimrecPred.not (PrimrecRel.comp Primrec.eq (Primrec.comp list_length ?_) (const 0))
-  exact Primrec₂.comp (Primrec₂.swap (primrec₂.list_filter hf)) snd fst
+  have h1 := primrec₂.list_filter hf
+  unfold Primrec₂ at h1
+  simp only [h1]
 
 /-- If `f a b` is decidable, then given `L : List α` and `b : β`, `"g L b ↔ ∀ a L, f a b"`
-is a primitive recurisve relation. -/
+is a primitive recursive relation. -/
 lemma filter_forall (hf : PrimrecRel f) :
     PrimrecRel fun (L : List α) ↦ fun b ↦ (∀ a ∈ L, f a b) := by
-  let g (b) := fun L ↦ filter (f · b) L
-  have h (L) (b) : (g b L).length = L.length ↔ (∀ a ∈ L, f a b) := filter_length_eq_length_iff
+  have h (L) (b) : (filter (f · b) L).length = L.length ↔ (∀ a ∈ L, f a b)
+    := filter_length_eq_length_iff
   apply PrimrecRel.of_eq ?_ h
   apply PrimrecRel.comp Primrec.eq (Primrec.comp list_length ?_) (Primrec.comp list_length fst)
-  exact Primrec₂.comp (Primrec₂.swap (primrec₂.list_filter hf)) snd fst
+  have h1 := primrec₂.list_filter hf
+  unfold Primrec₂ at h1
+  simp only [h1]
 
 variable {f : ℕ → ℕ → Prop} [DecidableRel f]
 
@@ -124,8 +127,7 @@ namespace Primrec
 /-- A helper lemma for proofs about bounded quantifiers on decidable relations. -/
 lemma nat_rel_list_filter {f : ℕ → ℕ → Prop} (s : ℕ) [DecidableRel f] (hf : PrimrecRel f) :
     Primrec fun n ↦ ((range (s)).filter (fun y ↦ f y n)) := by
-  let g (n) : ℕ → Option Nat := (fun y ↦ (if f y n = True then y else Option.none))
-  simp only [filter_eq_filtermap_ite]
+  simp only [filter_eq_filterMap_ite]
   refine listFilterMap (Primrec.const (range s)) ?_
   refine Primrec.ite ?_ (option_some_iff.mpr snd) (Primrec.const Option.none)
   exact PrimrecRel.comp hf snd fst
