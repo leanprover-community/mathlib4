@@ -95,7 +95,7 @@ def monoFactorization : MonoFactorization f where
 
 /-- the factorisation of any morphism in `AddCommGrp` through a mono has
 the universal property of the image. -/
-noncomputable def isImage : IsImage (MonoFactorization f) where
+noncomputable def isImage : IsImage (monoFactorization f) where
   lift := image.lift
   lift_fac := image.lift_fac
 
