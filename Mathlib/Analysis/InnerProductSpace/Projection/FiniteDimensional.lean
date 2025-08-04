@@ -10,11 +10,9 @@ import Mathlib.Algebra.DirectSum.Decomposition
 import Mathlib.Analysis.NormedSpace.RCLike
 
 /-!
-
 # Orthogonal projections in finite-dimensional spaces
 
 This file contains results about orthogonal projections in finite-dimensional spaces.
-
 -/
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]

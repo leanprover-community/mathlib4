@@ -7,11 +7,9 @@ import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
-
 # Existence of minimizers (Hilbert projection theorem)
 
 This file shows the existence of minimizers (also known as the Hilbert projection theorem).
-
 -/
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]

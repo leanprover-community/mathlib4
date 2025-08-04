@@ -6,7 +6,6 @@ Authors: Zhouhang Zhou, Frédéric Dupuis, Heather Macbeth
 import Mathlib.Analysis.InnerProductSpace.Projection.Basic
 
 /-!
-
 # Subspaces with orthogonal projections
 
 Here, the orthogonal projection is used to prove a series of more subtle lemmas about the
@@ -16,7 +15,6 @@ orthogonal projections; the lemma
 `Submodule.sup_orthogonal_of_hasOrthogonalProjection`,
 stating that for a subspace `K` of `E` such that `K` admits an orthogonal projection we have
 `K ⊔ Kᗮ = ⊤`, is a typical example.
-
 -/
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
