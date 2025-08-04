@@ -167,7 +167,7 @@ def eHomFunctor : Cᵒᵖ ⥤ C ⥤ V where
   map φ :=
     { app := fun Y => eHomWhiskerRight V φ.unop Y }
 
-instance ForgetEnrichment.EnrichedOrdinaryCategory {D : Type*} [EnrichedCategory V D] :
+instance ForgetEnrichment.enrichedOrdinaryCategory {D : Type*} [EnrichedCategory V D] :
     EnrichedOrdinaryCategory V (ForgetEnrichment V D) where
   toEnrichedCategory := inferInstanceAs (EnrichedCategory V D)
   homEquiv := Equiv.refl _
@@ -179,8 +179,9 @@ abbrev eCoyoneda (X : C) := (eHomFunctor V C).obj (op X)
 
 section TransportEnrichment
 
-variable (W : Type u'') [Category.{v''} W] [MonoidalCategory W]
+variable {V} {W : Type u''} [Category.{v''} W] [MonoidalCategory W]
   (F : V ⥤ W) [F.LaxMonoidal]
+  (C)
 
 instance : Category (TransportEnrichment F C) := inferInstanceAs (Category C)
 
@@ -190,13 +191,32 @@ open EnrichedCategory
 `(𝟙_ V ⟶ v) → (𝟙_ W ⟶ F.obj v)` is bijective, and `C` is an enriched ordinary category on `V`,
 then `F` induces the structure of a `W`-enriched ordinary category on `TransportEnrichment F C`,
 i.e. on the same underlying category `C`. -/
-noncomputable def TransportEnrichment.EnrichedOrdinaryCategory
-    (h : ∀ v : V, Function.Bijective fun (f : 𝟙_ V ⟶ v) =>
-      (Functor.LaxMonoidal.ε F ≫ F.map f : 𝟙_ W ⟶ F.obj v)) :
+@[simps!]
+noncomputable def TransportEnrichment.enrichedOrdinaryCategory
+    (h : ∀ v : V, Function.Bijective fun (f : 𝟙_ V ⟶ v) => Functor.LaxMonoidal.ε F ≫ F.map f) :
     EnrichedOrdinaryCategory W (TransportEnrichment F C) where
   homEquiv {X Y} := (eHomEquiv V (C := C)).trans <| Equiv.ofBijective _ (h (Hom (C := C) X Y))
   homEquiv_comp f g := by
     simp [eHomEquiv_comp, eComp_eq, tensorHom_def (Functor.LaxMonoidal.ε F), unitors_inv_equal]
+
+
+/-
+TODO: Prove that applying the above construction to the result of `ForgetEnrichment V D` results in
+an enriched ordinary category "equal" to `ForgetEnrichment W (TransportEnrichment F D)`.
+-/
+set_option pp.universes true in
+noncomputable def TransportEnrichment.def
+    {W : Type u'} [Category.{v'} W] [MonoidalCategory W]
+    (F : V ⥤ W) [F.LaxMonoidal]
+    (D : Type u) [EnrichedCategory V D]
+    (h : ∀ v : V, Function.Bijective fun (f : 𝟙_ V ⟶ v) => Functor.LaxMonoidal.ε F ≫ F.map f) :
+    sorry := by
+  let A : EnrichedOrdinaryCategory W (TransportEnrichment F (ForgetEnrichment V D)) :=
+    TransportEnrichment.enrichedOrdinaryCategory (ForgetEnrichment V D) F h
+  let B : EnrichedOrdinaryCategory W (ForgetEnrichment W (TransportEnrichment F D)) :=
+    inferInstance
+  have : A = B := sorry
+  sorry
 
 end TransportEnrichment
 
