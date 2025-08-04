@@ -763,11 +763,7 @@ lemma integrable_count_iff :
   · refine ⟨f '' univ, ?_, ae_of_all _ fun a ↦ ⟨a, ⟨mem_univ _, rfl⟩⟩⟩
     suffices f '' univ ⊆ (f '' f.support) ∪ {0} from
       (((hs'.image f).union (countable_singleton 0)).mono this).isSeparable
-    intro g hg
-    rcases eq_or_ne g 0 with rfl | hg'
-    · exact Or.inr (mem_singleton _)
-    · obtain ⟨x, -, rfl⟩ := (mem_image ..).mp hg
-      exact Or.inl ⟨x, hg', rfl⟩
+    grind [Function.mem_support]
 
 end count
 
