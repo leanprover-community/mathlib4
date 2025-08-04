@@ -72,8 +72,8 @@ structure SnakeInput where
   v₁₂ : L₁ ⟶ L₂
   /-- the morphism from the second row to the third row -/
   v₂₃ : L₂ ⟶ L₃
-  w₀₂ : v₀₁ ≫ v₁₂ = 0 := by aesop_cat
-  w₁₃ : v₁₂ ≫ v₂₃ = 0 := by aesop_cat
+  w₀₂ : v₀₁ ≫ v₁₂ = 0 := by cat_disch
+  w₁₃ : v₁₂ ≫ v₂₃ = 0 := by cat_disch
   /-- `L₀` is the kernel of `v₁₂ : L₁ ⟶ L₂`. -/
   h₀ : IsLimit (KernelFork.ofι _ w₀₂)
   /-- `L₃` is the cokernel of `v₁₂ : L₁ ⟶ L₂`. -/
@@ -406,9 +406,9 @@ structure Hom where
   f₂ : S₁.L₂ ⟶ S₂.L₂
   /-- a morphism between the third lines -/
   f₃ : S₁.L₃ ⟶ S₂.L₃
-  comm₀₁ : f₀ ≫ S₂.v₀₁ = S₁.v₀₁ ≫ f₁ := by aesop_cat
-  comm₁₂ : f₁ ≫ S₂.v₁₂ = S₁.v₁₂ ≫ f₂ := by aesop_cat
-  comm₂₃ : f₂ ≫ S₂.v₂₃ = S₁.v₂₃ ≫ f₃ := by aesop_cat
+  comm₀₁ : f₀ ≫ S₂.v₀₁ = S₁.v₀₁ ≫ f₁ := by cat_disch
+  comm₁₂ : f₁ ≫ S₂.v₁₂ = S₁.v₁₂ ≫ f₂ := by cat_disch
+  comm₂₃ : f₂ ≫ S₂.v₂₃ = S₁.v₂₃ ≫ f₃ := by cat_disch
 
 namespace Hom
 

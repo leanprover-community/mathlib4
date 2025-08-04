@@ -39,7 +39,7 @@ structure DifferentialObject where
   /-- The differential of a differential object. -/
   d : obj ⟶ obj⟦(1 : S)⟧
   /-- The differential `d` satisfies that `d² = 0`. -/
-  d_squared : d ≫ d⟦(1 : S)⟧' = 0 := by aesop_cat
+  d_squared : d ≫ d⟦(1 : S)⟧' = 0 := by cat_disch
 
 attribute [reassoc (attr := simp)] DifferentialObject.d_squared
 
@@ -52,7 +52,7 @@ namespace DifferentialObject
 structure Hom (X Y : DifferentialObject S C) where
   /-- The morphism between underlying objects of the two differentiable objects. -/
   f : X.obj ⟶ Y.obj
-  comm : X.d ≫ f⟦1⟧' = f ≫ Y.d := by aesop_cat
+  comm : X.d ≫ f⟦1⟧' = f ≫ Y.d := by cat_disch
 
 attribute [reassoc (attr := simp)] Hom.comm
 
@@ -76,7 +76,7 @@ instance categoryOfDifferentialObjects : Category (DifferentialObject S C) where
   comp f g := Hom.comp f g
 
 @[ext]
-theorem ext {A B : DifferentialObject S C} {f g : A ⟶ B} (w : f.f = g.f := by aesop_cat) : f = g :=
+theorem ext {A B : DifferentialObject S C} {f g : A ⟶ B} (w : f.f = g.f := by cat_disch) : f = g :=
   Hom.ext w
 
 @[simp]

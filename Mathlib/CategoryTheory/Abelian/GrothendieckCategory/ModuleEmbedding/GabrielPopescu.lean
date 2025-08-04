@@ -124,7 +124,7 @@ theorem GabrielPopescu.preservesInjectiveObjects (G : C) (hG : IsSeparator G) :
       preadditiveCoyonedaObj_obj_isModule]
     refine Module.Baer.injective (fun M g => ?_)
     have h := exists_d_comp_eq_d hG B (ModuleCat.ofHom
-      ⟨⟨fun i => i.1.unop, by aesop_cat⟩, by aesop_cat⟩) ?_ (ModuleCat.ofHom g)
+      ⟨⟨fun i => i.1.unop, by cat_disch⟩, by cat_disch⟩) ?_ (ModuleCat.ofHom g)
     · obtain ⟨l, hl⟩ := h
       refine ⟨((preadditiveCoyonedaObj G).map l).hom ∘ₗ
         (Preadditive.homSelfLinearEquivEndMulOpposite G).symm.toLinearMap, ?_⟩

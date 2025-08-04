@@ -78,7 +78,7 @@ variable {C}
 structure Hom (X Y : Center C) where
   /-- The underlying morphism between the first components of the objects involved -/
   f : X.1 ⟶ Y.1
-  comm : ∀ U, (f ▷ U) ≫ (Y.2.β U).hom = (X.2.β U).hom ≫ (U ◁ f) := by aesop_cat
+  comm : ∀ U, (f ▷ U) ≫ (Y.2.β U).hom = (X.2.β U).hom ≫ (U ◁ f) := by cat_disch
 
 attribute [reassoc (attr := simp)] Hom.comm
 

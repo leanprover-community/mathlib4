@@ -286,16 +286,16 @@ variable
     (γ : τ ⟶ τ')
 
 @[reassoc]
-lemma whisker_exchange : ψ ◁ θ ≫ η ▷ φ' = η ▷ φ ≫ ψ' ◁ θ := by aesop_cat
+lemma whisker_exchange : ψ ◁ θ ≫ η ▷ φ' = η ▷ φ ≫ ψ' ◁ θ := by cat_disch
 
 @[simp]
-lemma id_whiskerRight : 𝟙 ψ ▷ φ = 𝟙 _ := by aesop_cat
+lemma id_whiskerRight : 𝟙 ψ ▷ φ = 𝟙 _ := by cat_disch
 
 @[reassoc]
-lemma whiskerRight_id : η ▷ (.id _ _) = (ρ_ _).hom ≫ η ≫ (ρ_ _).inv := by aesop_cat
+lemma whiskerRight_id : η ▷ (.id _ _) = (ρ_ _).hom ≫ η ≫ (ρ_ _).inv := by cat_disch
 
 @[simp, reassoc]
-lemma comp_whiskerRight : (η ≫ η') ▷ φ = η ▷ φ ≫ η' ▷ φ := by aesop_cat
+lemma comp_whiskerRight : (η ≫ η') ▷ φ = η ▷ φ ≫ η' ▷ φ := by cat_disch
 
 @[reassoc]
 lemma whiskerRight_comp :
@@ -303,13 +303,13 @@ lemma whiskerRight_comp :
   aesop_cat
 
 @[simp]
-lemma whiskerleft_id : ψ ◁ 𝟙 φ = 𝟙 _ := by aesop_cat
+lemma whiskerleft_id : ψ ◁ 𝟙 φ = 𝟙 _ := by cat_disch
 
 @[reassoc]
-lemma id_whiskerLeft : (.id _ _) ◁ η = (λ_ _).hom ≫ η ≫ (λ_ _).inv := by aesop_cat
+lemma id_whiskerLeft : (.id _ _) ◁ η = (λ_ _).hom ≫ η ≫ (λ_ _).inv := by cat_disch
 
 @[simp, reassoc]
-lemma whiskerLeft_comp : ψ ◁ (θ ≫ θ') = (ψ ◁ θ) ≫ (ψ ◁ θ') := by aesop_cat
+lemma whiskerLeft_comp : ψ ◁ (θ ≫ θ') = (ψ ◁ θ) ≫ (ψ ◁ θ') := by cat_disch
 
 @[reassoc]
 lemma comp_whiskerLeft :

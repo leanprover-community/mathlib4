@@ -41,9 +41,9 @@ structure Monad extends C ⥤ C where
   η : 𝟭 _ ⟶ toFunctor
   /-- The multiplication for the monad. -/
   μ : toFunctor ⋙ toFunctor ⟶ toFunctor
-  assoc : ∀ X, toFunctor.map (NatTrans.app μ X) ≫ μ.app _ = μ.app _ ≫ μ.app _ := by aesop_cat
-  left_unit : ∀ X : C, η.app (toFunctor.obj X) ≫ μ.app _ = 𝟙 _ := by aesop_cat
-  right_unit : ∀ X : C, toFunctor.map (η.app X) ≫ μ.app _ = 𝟙 _ := by aesop_cat
+  assoc : ∀ X, toFunctor.map (NatTrans.app μ X) ≫ μ.app _ = μ.app _ ≫ μ.app _ := by cat_disch
+  left_unit : ∀ X : C, η.app (toFunctor.obj X) ≫ μ.app _ = 𝟙 _ := by cat_disch
+  right_unit : ∀ X : C, toFunctor.map (η.app X) ≫ μ.app _ = 𝟙 _ := by cat_disch
 
 @[reassoc]
 lemma Monad.unit_naturality (T : Monad C) ⦃X Y : C⦄ (f : X ⟶ Y) :
@@ -68,8 +68,8 @@ structure Comonad extends C ⥤ C where
   δ : toFunctor ⟶ toFunctor ⋙ toFunctor
   coassoc : ∀ X, NatTrans.app δ _ ≫ toFunctor.map (δ.app X) = δ.app _ ≫ δ.app _ := by
     aesop_cat
-  left_counit : ∀ X : C, δ.app X ≫ ε.app (toFunctor.obj X) = 𝟙 _ := by aesop_cat
-  right_counit : ∀ X : C, δ.app X ≫ toFunctor.map (ε.app X) = 𝟙 _ := by aesop_cat
+  left_counit : ∀ X : C, δ.app X ≫ ε.app (toFunctor.obj X) = 𝟙 _ := by cat_disch
+  right_counit : ∀ X : C, δ.app X ≫ toFunctor.map (ε.app X) = 𝟙 _ := by cat_disch
 
 @[reassoc]
 lemma Comonad.counit_naturality (T : Comonad C) ⦃X Y : C⦄ (f : X ⟶ Y) :
@@ -110,7 +110,7 @@ attribute [reassoc (attr := simp)] Comonad.coassoc Comonad.left_counit Comonad.r
 /-- A morphism of monads is a natural transformation compatible with η and μ. -/
 @[ext]
 structure MonadHom (T₁ T₂ : Monad C) extends NatTrans (T₁ : C ⥤ C) T₂ where
-  app_η : ∀ X, T₁.η.app X ≫ app X = T₂.η.app X := by aesop_cat
+  app_η : ∀ X, T₁.η.app X ≫ app X = T₂.η.app X := by cat_disch
   app_μ : ∀ X, T₁.μ.app X ≫ app X = (T₁.map (app X) ≫ app _) ≫ T₂.μ.app X := by
     aesop_cat
 
@@ -119,8 +119,8 @@ initialize_simps_projections MonadHom (+toNatTrans, -app)
 /-- A morphism of comonads is a natural transformation compatible with ε and δ. -/
 @[ext]
 structure ComonadHom (M N : Comonad C) extends NatTrans (M : C ⥤ C) N where
-  app_ε : ∀ X, app X ≫ N.ε.app X = M.ε.app X := by aesop_cat
-  app_δ : ∀ X, app X ≫ N.δ.app X = M.δ.app X ≫ app _ ≫ N.map (app X) := by aesop_cat
+  app_ε : ∀ X, app X ≫ N.ε.app X = M.ε.app X := by cat_disch
+  app_δ : ∀ X, app X ≫ N.δ.app X = M.δ.app X ≫ app _ ≫ N.map (app X) := by cat_disch
 
 initialize_simps_projections ComonadHom (+toNatTrans, -app)
 
@@ -193,9 +193,9 @@ theorem comp_toNatTrans {T₁ T₂ T₃ : Comonad C} (f : T₁ ⟶ T₂) (g : T�
 direction is a monad morphism. -/
 @[simps]
 def MonadIso.mk {M N : Monad C} (f : (M : C ⥤ C) ≅ N)
-    (f_η : ∀ (X : C), M.η.app X ≫ f.hom.app X = N.η.app X := by aesop_cat)
+    (f_η : ∀ (X : C), M.η.app X ≫ f.hom.app X = N.η.app X := by cat_disch)
     (f_μ : ∀ (X : C), M.μ.app X ≫ f.hom.app X =
-    (M.map (f.hom.app X) ≫ f.hom.app (N.obj X)) ≫ N.μ.app X := by aesop_cat) : M ≅ N where
+    (M.map (f.hom.app X) ≫ f.hom.app (N.obj X)) ≫ N.μ.app X := by cat_disch) : M ≅ N where
   hom :=
     { toNatTrans := f.hom
       app_η := f_η
@@ -213,9 +213,9 @@ def MonadIso.mk {M N : Monad C} (f : (M : C ⥤ C) ≅ N)
 direction is a comonad morphism. -/
 @[simps]
 def ComonadIso.mk {M N : Comonad C} (f : (M : C ⥤ C) ≅ N)
-    (f_ε : ∀ (X : C), f.hom.app X ≫ N.ε.app X = M.ε.app X := by aesop_cat)
+    (f_ε : ∀ (X : C), f.hom.app X ≫ N.ε.app X = M.ε.app X := by cat_disch)
     (f_δ : ∀ (X : C), f.hom.app X ≫ N.δ.app X =
-    M.δ.app X ≫ f.hom.app (M.obj X) ≫ N.map (f.hom.app X) := by aesop_cat) : M ≅ N where
+    M.δ.app X ≫ f.hom.app (M.obj X) ≫ N.map (f.hom.app X) := by cat_disch) : M ≅ N where
   hom :=
     { toNatTrans := f.hom
       app_ε := f_ε

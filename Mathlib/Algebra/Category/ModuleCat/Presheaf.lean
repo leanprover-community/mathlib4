@@ -48,7 +48,7 @@ structure PresheafOfModules where
   map_comp {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) :
     map (f ≫ g) = map f ≫ (ModuleCat.restrictScalars _).map (map g) ≫
       (ModuleCat.restrictScalarsComp' (R.map f).hom (R.map g).hom (R.map (f ≫ g)).hom
-        (congrArg RingCat.Hom.hom <| R.map_comp f g)).inv.app _ := by aesop_cat
+        (congrArg RingCat.Hom.hom <| R.map_comp f g)).inv.app _ := by cat_disch
 
 namespace PresheafOfModules
 
@@ -71,7 +71,7 @@ structure Hom where
   app (X : Cᵒᵖ) : M₁.obj X ⟶ M₂.obj X
   naturality {X Y : Cᵒᵖ} (f : X ⟶ Y) :
       M₁.map f ≫ (ModuleCat.restrictScalars (R.map f).hom).map (app Y) =
-        app X ≫ M₂.map f := by aesop_cat
+        app X ≫ M₂.map f := by cat_disch
 
 attribute [reassoc (attr := simp)] Hom.naturality
 
@@ -104,7 +104,7 @@ lemma naturality_apply (f : M₁ ⟶ M₂) {X Y : Cᵒᵖ} (g : X ⟶ Y) (x : M�
 def isoMk (app : ∀ (X : Cᵒᵖ), M₁.obj X ≅ M₂.obj X)
     (naturality : ∀ ⦃X Y : Cᵒᵖ⦄ (f : X ⟶ Y),
       M₁.map f ≫ (ModuleCat.restrictScalars (R.map f).hom).map (app Y).hom =
-        (app X).hom ≫ M₂.map f := by aesop_cat) : M₁ ≅ M₂ where
+        (app X).hom ≫ M₂.map f := by cat_disch) : M₁ ≅ M₂ where
   hom := { app := fun X ↦ (app X).hom }
   inv :=
     { app := fun X ↦ (app X).inv
@@ -270,7 +270,7 @@ noncomputable def unit : PresheafOfModules R where
       (Y := (ModuleCat.restrictScalars (R.map f).hom).obj (ModuleCat.of (R.obj Y) (R.obj Y)))
     { toFun := fun x ↦ R.map f x
       map_add' := by simp
-      map_smul' := by aesop_cat }
+      map_smul' := by cat_disch }
 
 lemma unit_map_one {X Y : Cᵒᵖ} (f : X ⟶ Y) : (unit R).map f (1 : R.obj X) = (1 : R.obj Y) :=
   (R.map f).hom.map_one

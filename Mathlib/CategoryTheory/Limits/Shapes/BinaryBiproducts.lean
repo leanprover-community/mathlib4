@@ -67,13 +67,13 @@ structure BinaryBiconeMorphism {P Q : C} (A B : BinaryBicone P Q) where
   /-- A morphism between the two vertex objects of the bicones -/
   hom : A.pt ⟶ B.pt
   /-- The triangle consisting of the two natural transformations and `hom` commutes -/
-  wfst : hom ≫ B.fst = A.fst := by aesop_cat
+  wfst : hom ≫ B.fst = A.fst := by cat_disch
   /-- The triangle consisting of the two natural transformations and `hom` commutes -/
-  wsnd : hom ≫ B.snd = A.snd := by aesop_cat
+  wsnd : hom ≫ B.snd = A.snd := by cat_disch
   /-- The triangle consisting of the two natural transformations and `hom` commutes -/
-  winl : A.inl ≫ hom = B.inl := by aesop_cat
+  winl : A.inl ≫ hom = B.inl := by cat_disch
   /-- The triangle consisting of the two natural transformations and `hom` commutes -/
-  winr : A.inr ≫ hom = B.inr := by aesop_cat
+  winr : A.inr ≫ hom = B.inr := by cat_disch
 
 attribute [reassoc (attr := simp)] BinaryBiconeMorphism.wfst BinaryBiconeMorphism.wsnd
 attribute [reassoc (attr := simp)] BinaryBiconeMorphism.winl BinaryBiconeMorphism.winr
@@ -102,10 +102,10 @@ namespace BinaryBicones
   maps. -/
 @[aesop apply safe (rule_sets := [CategoryTheory]), simps]
 def ext {P Q : C} {c c' : BinaryBicone P Q} (φ : c.pt ≅ c'.pt)
-    (winl : c.inl ≫ φ.hom = c'.inl := by aesop_cat)
-    (winr : c.inr ≫ φ.hom = c'.inr := by aesop_cat)
-    (wfst : φ.hom ≫ c'.fst = c.fst := by aesop_cat)
-    (wsnd : φ.hom ≫ c'.snd = c.snd := by aesop_cat) : c ≅ c' where
+    (winl : c.inl ≫ φ.hom = c'.inl := by cat_disch)
+    (winr : c.inr ≫ φ.hom = c'.inr := by cat_disch)
+    (wfst : φ.hom ≫ c'.fst = c.fst := by cat_disch)
+    (wsnd : φ.hom ≫ c'.snd = c.snd := by cat_disch) : c ≅ c' where
   hom := { hom := φ.hom }
   inv :=
     { hom := φ.inv
@@ -143,7 +143,7 @@ instance functoriality_full [F.Full] [F.Faithful] : (functoriality P Q F).Full w
       winl := F.map_injective (by simpa using t.winl)
       winr := F.map_injective (by simpa using t.winr)
       wfst := F.map_injective (by simpa using t.wfst)
-      wsnd := F.map_injective (by simpa using t.wsnd) }, by aesop_cat⟩
+      wsnd := F.map_injective (by simpa using t.wsnd) }, by cat_disch⟩
 
 instance functoriality_faithful [F.Faithful] : (functoriality P Q F).Faithful where
   map_injective {_X} {_Y} f g h :=

@@ -101,7 +101,7 @@ def restrictedYonedaHomEquiv' (P : Cᵒᵖ ⥤ Type v₁) (E : ℰ) :
       erw [yonedaEquiv_apply]
       dsimp [CostructuredArrow.mk]
       erw [this]
-    exact yonedaEquiv.injective (by aesop_cat)
+    exact yonedaEquiv.injective (by cat_disch)
   right_inv g := by
     ext X x
     dsimp

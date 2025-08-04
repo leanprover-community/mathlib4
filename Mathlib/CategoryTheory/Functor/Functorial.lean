@@ -25,7 +25,7 @@ class Functorial (F : C → D) : Type max v₁ v₂ u₁ u₂ where
   we can write `map F f : F X ⟶ F Y` for the action of `F` on a morphism `f : X ⟶ Y`. -/
   map (F) : ∀ {X Y : C}, (X ⟶ Y) → (F X ⟶ F Y)
   /-- A functorial map preserves identities. -/
-  map_id : ∀ {X : C}, map (𝟙 X) = 𝟙 (F X) := by aesop_cat
+  map_id : ∀ {X : C}, map (𝟙 X) = 𝟙 (F X) := by cat_disch
   /-- A functorial map preserves composition of morphisms. -/
   map_comp : ∀ {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z}, map (f ≫ g) = map f ≫ map g := by
     aesop_cat
@@ -55,8 +55,6 @@ attribute [grind] id
 instance functorial_id : Functorial.{v₁, v₁} (id : C → C) where map f := f
 
 section
-
-attribute [grind] Function.comp
 
 variable {E : Type u₃} [Category.{v₃} E]
 

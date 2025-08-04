@@ -228,8 +228,8 @@ def restrictedYoneda (A : Cᵒᵖ ⥤ Type v) : Over A ⥤ (CostructuredArrow yo
 def toOverYonedaCompRestrictedYoneda (A : Cᵒᵖ ⥤ Type v) :
     CostructuredArrow.toOver yoneda A ⋙ restrictedYoneda A ≅ yoneda :=
   NatIso.ofComponents
-    (fun s => NatIso.ofComponents (fun _ => OverArrows.costructuredArrowIso _ _) (by aesop_cat))
-    (by aesop_cat)
+    (fun s => NatIso.ofComponents (fun _ => OverArrows.costructuredArrowIso _ _) (by cat_disch))
+    (by cat_disch)
 
 /-! ### Construction of the backward functor `((CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v) ⥤ Over A` -/
 
@@ -403,7 +403,7 @@ def yonedaCollectionPresheafToA (F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type
 @[simps! obj map]
 def costructuredArrowPresheafToOver (A : Cᵒᵖ ⥤ Type v) :
     ((CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v) ⥤ Over A :=
-  (yonedaCollectionFunctor A).toOver _ (yonedaCollectionPresheafToA) (by aesop_cat)
+  (yonedaCollectionFunctor A).toOver _ (yonedaCollectionPresheafToA) (by cat_disch)
 
 section unit
 
@@ -461,16 +461,16 @@ def unitAuxAuxAux {F : Cᵒᵖ ⥤ Type v} (η : F ⟶ A) (X : C) :
 @[simps!]
 def unitAuxAux {F : Cᵒᵖ ⥤ Type v} (η : F ⟶ A) :
     yonedaCollectionPresheaf A (restrictedYonedaObj η) ≅ F :=
-  NatIso.ofComponents (fun X => unitAuxAuxAux η X.unop) (by aesop_cat)
+  NatIso.ofComponents (fun X => unitAuxAuxAux η X.unop) (by cat_disch)
 
 /-- Intermediate stage of assembling the unit. -/
 @[simps! hom]
 def unitAux (η : Over A) : (restrictedYoneda A ⋙ costructuredArrowPresheafToOver A).obj η ≅ η :=
-  Over.isoMk (unitAuxAux η.hom) (by aesop_cat)
+  Over.isoMk (unitAuxAux η.hom) (by cat_disch)
 
 /-- The unit of the equivalence we're constructing. -/
 def unit (A : Cᵒᵖ ⥤ Type v) : 𝟭 (Over A) ≅ restrictedYoneda A ⋙ costructuredArrowPresheafToOver A :=
-  Iso.symm <| NatIso.ofComponents unitAux (by aesop_cat)
+  Iso.symm <| NatIso.ofComponents unitAux (by cat_disch)
 
 end unit
 
@@ -502,7 +502,7 @@ lemma counitForward_val_snd (s : CostructuredArrow yoneda A) (x : F.obj (op s)) 
 @[simp]
 lemma counitForward_naturality₁ {G : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v} (η : F ⟶ G)
     (s : (CostructuredArrow yoneda A)ᵒᵖ) (x : F.obj s) : counitForward G s.unop (η.app s x) =
-      OverArrows.map₁ (counitForward F s.unop x) (yonedaCollectionPresheafMap₁ η) (by aesop_cat) :=
+      OverArrows.map₁ (counitForward F s.unop x) (yonedaCollectionPresheafMap₁ η) (by cat_disch) :=
   OverArrows.ext <| YonedaCollection.ext (by simp) (by simp)
 
 @[simp]
@@ -542,11 +542,11 @@ def counitAuxAux (F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v) (s : Costru
 @[simps! hom]
 def counitAux (F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v) :
     F ≅ restrictedYonedaObj (yonedaCollectionPresheafToA F) :=
-  NatIso.ofComponents (fun s => counitAuxAux F s.unop) (by aesop_cat)
+  NatIso.ofComponents (fun s => counitAuxAux F s.unop) (by cat_disch)
 
 /-- The counit of the equivalence we're constructing. -/
 def counit (A : Cᵒᵖ ⥤ Type v) : (costructuredArrowPresheafToOver A ⋙ restrictedYoneda A) ≅ 𝟭 _ :=
-  Iso.symm <| NatIso.ofComponents counitAux (by aesop_cat)
+  Iso.symm <| NatIso.ofComponents counitAux (by cat_disch)
 
 end counit
 
@@ -586,7 +586,7 @@ def CostructuredArrow.toOverCompYoneda (A : Cᵒᵖ ⥤ Type v) (T : Over A) :
       (Iso.homCongr
         ((CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow A).app X.unop)
         (Iso.refl _)).toIso)
-    (by aesop_cat)
+    (by cat_disch)
 
 @[simp]
 theorem CostructuredArrow.overEquivPresheafCostructuredArrow_inverse_map_toOverCompYoneda
@@ -620,7 +620,7 @@ def CostructuredArrow.toOverCompCoyoneda (A : Cᵒᵖ ⥤ Type v) :
     (overEquivPresheafCostructuredArrow A).fullyFaithfulFunctor.homEquiv.toIso ≪≫
       (Iso.homCongr
         ((CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow A).app X.unop)
-        (Iso.refl _)).toIso)) (by aesop_cat)
+        (Iso.refl _)).toIso)) (by cat_disch)
 
 @[simp]
 theorem CostructuredArrow.overEquivPresheafCostructuredArrow_inverse_map_toOverCompCoyoneda

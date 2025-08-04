@@ -67,8 +67,8 @@ there is a bijection between `X ≅ Y` and `X₁ ≅ Y₁`. -/
 def isoCongr {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ≅ X₂) (g : Y₁ ≅ Y₂) : (X₁ ≅ Y₁) ≃ (X₂ ≅ Y₂) where
   toFun h := f.symm.trans <| h.trans <| g
   invFun h := f.trans <| h.trans <| g.symm
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat -- TODO this only works with `(gen := 20) (ematch := 20)`, because we're grinding out associativity.
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
 /-- If `X₁` is isomorphic to `X₂`, then there is a bijection between `X₁ ≅ Y` and `X₂ ≅ Y`. -/
 def isoCongrLeft {X₁ X₂ Y : C} (f : X₁ ≅ X₂) : (X₁ ≅ Y) ≃ (X₂ ≅ Y) :=

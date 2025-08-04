@@ -24,6 +24,8 @@ However if `C` and `D` are both large categories at the same universe level,
 this is a small category at the next higher level.
 -/
 
+set_option mathlib.tactic.category.grind true
+
 namespace CategoryTheory
 
 -- declare the `v`'s first; see note [CategoryTheory universes].
@@ -191,12 +193,12 @@ namespace Iso
 @[reassoc (attr := simp)]
 theorem map_hom_inv_id_app {X Y : C} (e : X ≅ Y) (F : C ⥤ D ⥤ E) (Z : D) :
     (F.map e.hom).app Z ≫ (F.map e.inv).app Z = 𝟙 _ := by
-  aesop_cat
+  cat_disch
 
 @[reassoc (attr := simp)]
 theorem map_inv_hom_id_app {X Y : C} (e : X ≅ Y) (F : C ⥤ D ⥤ E) (Z : D) :
     (F.map e.inv).app Z ≫ (F.map e.hom).app Z = 𝟙 _ := by
-  aesop_cat
+  cat_disch
 
 end Iso
 

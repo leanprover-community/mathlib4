@@ -208,7 +208,7 @@ by a faithful monoidal functor.
 def BraidedCategory.ofFaithful {C D : Type*} [Category C] [Category D] [MonoidalCategory C]
     [MonoidalCategory D] (F : C ⥤ D) [F.Monoidal] [F.Faithful] [BraidedCategory D]
     (β : ∀ X Y : C, X ⊗ Y ≅ Y ⊗ X)
-    (w : ∀ X Y, μ F _ _ ≫ F.map (β X Y).hom = (β_ _ _).hom ≫ μ F _ _ := by aesop_cat) :
+    (w : ∀ X Y, μ F _ _ ≫ F.map (β X Y).hom = (β_ _ _).hom ≫ μ F _ _ := by cat_disch) :
     BraidedCategory C where
   braiding := β
   braiding_naturality_left := by
@@ -371,7 +371,7 @@ A symmetric monoidal category is a braided monoidal category for which the braid
 class SymmetricCategory (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C] extends
     BraidedCategory.{v} C where
   -- braiding symmetric:
-  symmetry : ∀ X Y : C, (β_ X Y).hom ≫ (β_ Y X).hom = 𝟙 (X ⊗ Y) := by aesop_cat
+  symmetry : ∀ X Y : C, (β_ X Y).hom ≫ (β_ Y X).hom = 𝟙 (X ⊗ Y) := by cat_disch
 
 attribute [reassoc (attr := simp)] SymmetricCategory.symmetry
 
@@ -388,7 +388,7 @@ which preserves the braiding.
 -/
 class Functor.LaxBraided (F : C ⥤ D) extends F.LaxMonoidal where
   braided : ∀ X Y : C, μ X Y ≫ F.map (β_ X Y).hom =
-    (β_ (F.obj X) (F.obj Y)).hom ≫ μ Y X := by aesop_cat
+    (β_ (F.obj X) (F.obj Y)).hom ≫ μ Y X := by cat_disch
 
 namespace Functor.LaxBraided
 
@@ -473,9 +473,9 @@ section
 variable {F G : LaxBraidedFunctor C D} (e : ∀ X, F.obj X ≅ G.obj X)
     (naturality : ∀ {X Y : C} (f : X ⟶ Y), F.map f ≫ (e Y).hom = (e X).hom ≫ G.map f := by
       aesop_cat)
-    (unit : ε F.toFunctor ≫ (e (𝟙_ C)).hom = ε G.toFunctor := by aesop_cat)
+    (unit : ε F.toFunctor ≫ (e (𝟙_ C)).hom = ε G.toFunctor := by cat_disch)
     (tensor : ∀ X Y, μ F.toFunctor X Y ≫ (e (X ⊗ Y)).hom =
-      ((e X).hom ⊗ₘ (e Y).hom) ≫ μ G.toFunctor X Y := by aesop_cat)
+      ((e X).hom ⊗ₘ (e Y).hom) ≫ μ G.toFunctor X Y := by cat_disch)
 
 /-- Constructor for isomorphisms between lax braided functors. -/
 def isoOfComponents :

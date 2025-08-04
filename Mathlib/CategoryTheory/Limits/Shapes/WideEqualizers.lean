@@ -449,7 +449,7 @@ theorem Cotrident.ofCocone_ι {F : WalkingParallelFamily J ⥤ C} (t : Cocone F)
 -/
 @[simps]
 def Trident.mkHom [Nonempty J] {s t : Trident f} (k : s.pt ⟶ t.pt)
-    (w : k ≫ t.ι = s.ι := by aesop_cat) : s ⟶ t where
+    (w : k ≫ t.ι = s.ι := by cat_disch) : s ⟶ t where
   hom := k
   w := by
     rintro ⟨_ | _⟩
@@ -462,7 +462,7 @@ and check that it commutes with the `ι` morphisms.
 -/
 @[simps]
 def Trident.ext [Nonempty J] {s t : Trident f} (i : s.pt ≅ t.pt)
-    (w : i.hom ≫ t.ι = s.ι := by aesop_cat) : s ≅ t where
+    (w : i.hom ≫ t.ι = s.ι := by cat_disch) : s ≅ t where
   hom := Trident.mkHom i.hom w
   inv := Trident.mkHom i.inv (by rw [← w, Iso.inv_hom_id_assoc])
 
@@ -470,7 +470,7 @@ def Trident.ext [Nonempty J] {s t : Trident f} (i : s.pt ≅ t.pt)
 -/
 @[simps]
 def Cotrident.mkHom [Nonempty J] {s t : Cotrident f} (k : s.pt ⟶ t.pt)
-    (w : s.π ≫ k = t.π := by aesop_cat) : s ⟶ t where
+    (w : s.π ≫ k = t.π := by cat_disch) : s ⟶ t where
   hom := k
   w := by
     rintro ⟨_ | _⟩
@@ -482,7 +482,7 @@ it suffices to give an isomorphism between the cocone points
 and check that it commutes with the `π` morphisms.
 -/
 def Cotrident.ext [Nonempty J] {s t : Cotrident f} (i : s.pt ≅ t.pt)
-    (w : s.π ≫ i.hom = t.π := by aesop_cat) : s ≅ t where
+    (w : s.π ≫ i.hom = t.π := by cat_disch) : s ≅ t where
   hom := Cotrident.mkHom i.hom w
   inv := Cotrident.mkHom i.inv (by rw [Iso.comp_inv_eq, w])
 

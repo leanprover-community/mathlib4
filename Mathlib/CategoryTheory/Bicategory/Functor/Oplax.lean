@@ -174,10 +174,10 @@ structure PseudoCore (F : OplaxFunctor B C) where
   /-- The isomorphism giving rise to the oplax functoriality constraint -/
   mapCompIso {a b c : B} (f : a ⟶ b) (g : b ⟶ c) : F.map (f ≫ g) ≅ F.map f ≫ F.map g
   /-- `mapIdIso` gives rise to the oplax unity constraint -/
-  mapIdIso_hom : ∀ {a : B}, (mapIdIso a).hom = F.mapId a := by aesop_cat
+  mapIdIso_hom : ∀ {a : B}, (mapIdIso a).hom = F.mapId a := by cat_disch
   /-- `mapCompIso` gives rise to the oplax functoriality constraint -/
   mapCompIso_hom :
-    ∀ {a b c : B} (f : a ⟶ b) (g : b ⟶ c), (mapCompIso f g).hom = F.mapComp f g := by aesop_cat
+    ∀ {a b c : B} (f : a ⟶ b) (g : b ⟶ c), (mapCompIso f g).hom = F.mapComp f g := by cat_disch
 
 attribute [simp] PseudoCore.mapIdIso_hom PseudoCore.mapCompIso_hom
 

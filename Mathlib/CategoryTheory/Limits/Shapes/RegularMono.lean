@@ -47,7 +47,7 @@ class RegularMono (f : X ⟶ Y) where
   /-- Another map from the codomain of `f` to `Z` -/
   right : Y ⟶ Z
   /-- `f` equalizes the two maps -/
-  w : f ≫ left = f ≫ right := by aesop_cat
+  w : f ≫ left = f ≫ right := by cat_disch
   /-- `f` is the equalizer of the two maps -/
   isLimit : IsLimit (Fork.ofι f w)
 
@@ -175,7 +175,7 @@ class RegularEpi (f : X ⟶ Y) where
   /-- Two maps to the domain of `f` -/
   (left right : W ⟶ X)
   /-- `f` coequalizes the two maps -/
-  w : left ≫ f = right ≫ f := by aesop_cat
+  w : left ≫ f = right ≫ f := by cat_disch
   /-- `f` is the coequalizer -/
   isColimit : IsColimit (Cofork.ofπ f w)
 
