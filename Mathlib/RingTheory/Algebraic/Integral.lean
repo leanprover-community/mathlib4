@@ -33,7 +33,7 @@ is algebraic and that every algebraic element over a field is integral.
   remains transcendental over any algebraic `R`-subalgebra that has no zero divisors.
 -/
 
-assert_not_exists LocalRing
+assert_not_exists IsLocalRing
 
 universe u v w
 
