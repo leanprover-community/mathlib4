@@ -113,6 +113,9 @@ instance : (forget C).Faithful where
 @[simp]
 theorem forget₂Mon_comp_forget : forget₂Mon_ C ⋙ Mon_.forget C = forget C := rfl
 
+instance {M N : CommMon_ C} {f : M ⟶ N} [IsIso f] : IsIso f.hom :=
+  inferInstanceAs <| IsIso <| (forget C).map f
+
 end
 
 /-- Construct an isomorphism of commutative monoid objects by giving a monoid isomorphism between

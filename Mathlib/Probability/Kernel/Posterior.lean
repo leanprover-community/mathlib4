@@ -286,7 +286,7 @@ lemma posterior_eq_withDensity (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ) 
     with ω h h_eq hωs
   rw [← h, h_eq, Kernel.const_apply]
 
-lemma posterior_eq_withDensity_of_countable {Ω : Type*} [Countable Ω] {_ : MeasurableSpace Ω}
+lemma posterior_eq_withDensity_of_countable {Ω : Type*} [Countable Ω] [MeasurableSpace Ω]
     [Nonempty Ω] [StandardBorelSpace Ω] (κ : Kernel Ω 𝓧) [IsFiniteKernel κ]
     (μ : Measure Ω) [IsFiniteMeasure μ] :
     ∀ᵐ x ∂(κ ∘ₘ μ), (κ†μ) x = μ.withDensity (fun ω ↦ (κ ω).rnDeriv (κ ∘ₘ μ) x) := by
