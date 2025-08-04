@@ -335,8 +335,7 @@ variable [NormedAddCommGroup E] [NormedSpace ℝ E] [Module 𝕜 E] [ContinuousS
 half-spaces. -/
 
 /-- A closed convex set is the intersection of countably many half spaces in a separable Banach
-space.
-This is Lemma 1.2.9 in [Hytonen_VanNeerven_Veraar_Wies_2016]. -/
+space.This is Lemma 1.2.9 in [Hytonen_VanNeerven_Veraar_Wies_2016]. -/
 theorem iInter_nat_halfSpaces_eq
     (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) (hsep : IsSeparable sᶜ) :
     ∃ (L : ℕ → E →L[𝕜] 𝕜) (c : ℕ → ℝ),
@@ -348,7 +347,6 @@ theorem iInter_nat_halfSpaces_eq
   obtain rfl | hs_univ := eq_or_ne s univ
   · use 0, 0
     simp [nonempty_iff_ne_empty]
-  -- maybe this should be a definition `IsSeparable.denseSeq`?
   have ⟨f, hfmem, hf⟩ : ∃ f : ℕ → E, (∀ i, f i ∈ sᶜ) ∧ sᶜ ⊆ closure (range f) := by
     have : Nonempty ↑sᶜ := (nonempty_compl.mpr hs_univ).to_subtype
     have : SeparableSpace ↑sᶜ := hsep.separableSpace

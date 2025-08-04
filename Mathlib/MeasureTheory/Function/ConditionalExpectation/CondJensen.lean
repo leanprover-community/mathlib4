@@ -34,12 +34,12 @@ open scoped ENNReal
 variable {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E]
 variable {s : Set E} {φ : E → ℝ}
 
-theorem LowerSemicontinuous.isClosed_RCLike_epigraph (hφ_cont : LowerSemicontinuous φ) :
+theorem LowerSemicontinuous.RCLike_isClosed_epigraph (hφ_cont : LowerSemicontinuous φ) :
   IsClosed  { p : E × 𝕜 | φ p.1 ≤ re p.2 } := by
     let A := {(x, (s : EReal)) | φ x ≤ s}
     have hC : { p : E × 𝕜 | φ p.1 ≤ re p.2 }
     = (Prod.map (id: E → E) ((Real.toEReal ∘ re) : 𝕜 → EReal))⁻¹' A := by
-      simp_all only [preimage_setOf_eq, Prod.map_fst, id_eq, Prod.map_snd, Function.comp_apply,
+      simp_all [preimage_setOf_eq, Prod.map_fst, id_eq, Prod.map_snd, Function.comp_apply,
         EReal.coe_le_coe_iff, A]
     rw [hC]
     apply IsClosed.preimage
@@ -55,7 +55,7 @@ theorem LowerSemicontinuous.isClosed_RCLike_epigraph (hφ_cont : LowerSemicontin
 
 variable [NormedSpace ℝ E]
 
-theorem ConvexOn.convex_RCLike_epigraph (hφ_cvx : ConvexOn ℝ s φ) :
+theorem ConvexOn.RCLike_convex_epigraph (hφ_cvx : ConvexOn ℝ s φ) :
   Convex ℝ { p : E × 𝕜 | p.1 ∈ s ∧ φ p.1 ≤ re p.2 } := by
     have lem : { p : E × 𝕜 | p.1 ∈ s ∧ φ p.1 ≤ re p.2 } = (LinearMap.prodMap
     (LinearMap.id : E →ₗ[ℝ] E) reLm)⁻¹' { p : E × ℝ | p.1 ∈ s ∧ φ p.1 ≤ p.2 } := by
@@ -75,9 +75,9 @@ theorem ConvexOn.iSup_affine_eq_of_separableSpace
   ∧ (⨆ (i : ℕ), re ((L i) x) + c i = φ x) := by
   let C :=  {(x, (s : 𝕜)) | φ x ≤ re s}
   have hC₁ : Convex ℝ C := by
-    simpa only [mem_univ, true_and] using (ConvexOn.convex_RCLike_epigraph hφ_cvx)
+    simpa only [mem_univ, true_and] using (ConvexOn.RCLike_convex_epigraph hφ_cvx)
   have hC₂ : IsClosed C := by
-    simpa using (LowerSemicontinuous.isClosed_RCLike_epigraph hφ_cont)
+    simpa using (LowerSemicontinuous.RCLike_isClosed_epigraph hφ_cont)
   have hC₃ : C.Nonempty := by
     refine (nonempty_of_mem (x := (0, ↑ (φ 0))) ?_)
     simp [mem_setOf_eq, ofReal_re, le_refl, C]
