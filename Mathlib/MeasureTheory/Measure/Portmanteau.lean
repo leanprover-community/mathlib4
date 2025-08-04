@@ -634,13 +634,13 @@ by a finite union of elements of `S`. -/
 lemma ProbabilityMeasure.exists_lt_measure_biUnion_of_isOpen
     [TopologicalSpace α] [SecondCountableTopology α]
     {S : Set (Set α)} (ν : ProbabilityMeasure α)
-    (h : ∀ (u : Set α), ∀ x ∈ u, IsOpen u → ∃ s ∈ S, x ∈ s ∧ s ∈ 𝓝 x ∧ s ⊆ u)
+    (h : ∀ (u : Set α), ∀ x ∈ u, IsOpen u → ∃ s ∈ S, s ∈ 𝓝 x ∧ s ⊆ u)
     {G : Set α} (hG : IsOpen G) {r : ℝ≥0} (hr : r < ν G) :
     ∃ T : Finset (Set α), (∀ t ∈ T, t ∈ S) ∧ (r < ν (⋃ t ∈ T, t)) ∧ (⋃ t ∈ T, t) ⊆ G := by
   classical
   obtain ⟨T, TS, T_count, hT⟩ : ∃ T : Set (Set α), T ⊆ S ∧ T.Countable ∧ ⋃ t ∈ T, t = G := by
-    have : ∀ (x : G), ∃ s ∈ S, (x : α) ∈ s ∧ s ∈ 𝓝 (x : α) ∧ s ⊆ G := fun x ↦ h G x x.2 hG
-    choose! s hsS hxs hs_nhds hsG using this
+    have : ∀ (x : G), ∃ s ∈ S, s ∈ 𝓝 (x : α) ∧ s ⊆ G := fun x ↦ h G x x.2 hG
+    choose! s hsS hs_nhds hsG using this
     rcases TopologicalSpace.isOpen_biUnion_countable univ (fun i ↦ interior (s i))
       (fun i hi ↦ isOpen_interior) with ⟨T₀, -, T₀_count, hT₀⟩
     refine ⟨s '' T₀, by grind, Countable.image T₀_count s, ?_⟩
@@ -682,7 +682,7 @@ lemma _root_.IsPiSystem.tendsto_probabilityMeasure_of_tendsto_of_mem
     {S : Set (Set α)} (hS : IsPiSystem S) {μ : ι → ProbabilityMeasure α} {ν : ProbabilityMeasure α}
     {l : Filter ι} [l.IsCountablyGenerated]
     (hmeas : ∀ s ∈ S, MeasurableSet s)
-    (h : ∀ (u : Set α), ∀ x ∈ u, IsOpen u → ∃ s ∈ S, x ∈ s ∧ s ∈ 𝓝 x ∧ s ⊆ u)
+    (h : ∀ (u : Set α), ∀ x ∈ u, IsOpen u → ∃ s ∈ S, s ∈ 𝓝 x ∧ s ⊆ u)
     (h' : ∀ s ∈ S, Tendsto (fun i ↦ μ i s) l (𝓝 (ν s))) :
     Tendsto μ l (𝓝 ν) := by
   /- We apply the portmanteau theorem: it suffices to show that, given an open set `G`
