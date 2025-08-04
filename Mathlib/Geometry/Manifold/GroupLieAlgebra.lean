@@ -95,7 +95,7 @@ variable [LieGroup I (minSmoothness 𝕜 3) G]
 @[to_additive (attr := simp)]
 lemma inverse_mfderiv_mul_left {g h : G} :
     (mfderiv I I (fun b ↦ g * b) h).inverse = mfderiv I I (fun b ↦ g⁻¹ * b) (g * h) := by
-  have M : 1 ≤ minSmoothness 𝕜 3 := le_trans (by norm_num) le_minSmoothness
+  have M : 1 ≤ minSmoothness 𝕜 3 := le_trans (by simp) le_minSmoothness
   have A : mfderiv I I ((fun x ↦ g⁻¹ * x) ∘ (fun x ↦ g * x)) h =
       ContinuousLinearMap.id _ _ := by
     have : (fun x ↦ g⁻¹ * x) ∘ (fun x ↦ g * x) = id := by ext x; simp
@@ -114,7 +114,7 @@ lemma inverse_mfderiv_mul_left {g h : G} :
 @[to_additive "Invariant vector fields are invariant under pullbacks."]
 lemma mpullback_mulInvariantVectorField (g : G) (v : GroupLieAlgebra I G) :
     mpullback I I (g * ·) (mulInvariantVectorField v) = mulInvariantVectorField v := by
-  have M : 1 ≤ minSmoothness 𝕜 3 := le_trans (by norm_num) le_minSmoothness
+  have M : 1 ≤ minSmoothness 𝕜 3 := le_trans (by simp) le_minSmoothness
   ext h
   simp only [mpullback, inverse_mfderiv_mul_left, mulInvariantVectorField]
   have D : (fun x ↦ h * x) = (fun b ↦ g⁻¹ * b) ∘ (fun x ↦ g * h * x) := by
@@ -148,7 +148,7 @@ theorem contMDiff_mulInvariantVectorField (v : GroupLieAlgebra I G) :
   There is a small abuse of notation in the above argument, where we have identified `T (M × M)`
   and `TM × TM`. In the formal proof, we need to introduce this identification, called `F₂` below,
   which is also already known to be smooth. -/
-  have M : 1 ≤ minSmoothness 𝕜 3 := le_trans (by norm_num) le_minSmoothness
+  have M : 1 ≤ minSmoothness 𝕜 3 := le_trans (by simp) le_minSmoothness
   have A : minSmoothness 𝕜 2 + 1 = minSmoothness 𝕜 3 := by
     rw [← minSmoothness_add]
     norm_num
@@ -186,14 +186,14 @@ theorem contMDiffAt_mulInvariantVectorField (v : GroupLieAlgebra I G) {g : G} :
 theorem mdifferentiable_mulInvariantVectorField (v : GroupLieAlgebra I G) :
     MDifferentiable I I.tangent
       (fun (g : G) ↦ (mulInvariantVectorField v g : TangentBundle I G)) :=
-  (contMDiff_mulInvariantVectorField v).mdifferentiable (le_trans (by norm_num) le_minSmoothness)
+  (contMDiff_mulInvariantVectorField v).mdifferentiable (le_trans (by simp) le_minSmoothness)
 
 @[to_additive]
 theorem mdifferentiableAt_mulInvariantVectorField (v : GroupLieAlgebra I G) {g : G} :
     MDifferentiableAt I I.tangent
       (fun (g : G) ↦ (mulInvariantVectorField v g : TangentBundle I G)) g :=
   (contMDiffAt_mulInvariantVectorField v).mdifferentiableAt
-    (le_trans (by norm_num) le_minSmoothness)
+    (le_trans (by simp) le_minSmoothness)
 
 open VectorField
 

@@ -49,7 +49,7 @@ theorem riesz_lemma {F : Subspace 𝕜 E} (hFc : IsClosed (F : Set E)) (hF : ∃
     have hr' : r' < 1 := by
       simp only [r', max_lt_iff, hr, true_and]
       norm_num
-    have hlt : 0 < r' := lt_of_lt_of_le (by norm_num) (le_max_right r 2⁻¹)
+    have hlt : 0 < r' := lt_of_lt_of_le (by simp) (le_max_right r 2⁻¹)
     have hdlt : d < d / r' := (lt_div_iff₀ hlt).mpr ((mul_lt_iff_lt_one_right hdp).2 hr')
     obtain ⟨y₀, hy₀F, hxy₀⟩ : ∃ y ∈ F, dist x y < d / r' := (Metric.infDist_lt_iff hFn).mp hdlt
     have x_ne_y₀ : x - y₀ ∉ F := by
