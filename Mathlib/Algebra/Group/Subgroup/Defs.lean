@@ -73,13 +73,13 @@ class NegMemClass (S : Type*) (G : outParam Type*) [Neg G] [SetLike S G] : Prop 
 
 export NegMemClass (neg_mem)
 
-/-- Typeclass for substructures s such that s ∪ -s = G. -/
+/-- Typeclass for substructures `s` such that `s ∪ -s = G`. -/
 class HasMemOrNegMem {S G : Type*} [AddCommGroup G] [SetLike S G] (s : S) : Prop where
   mem_or_neg_mem (s) (a : G) : a ∈ s ∨ -a ∈ s
 
 export HasMemOrNegMem (mem_or_neg_mem)
 
-/-- Typeclass for substructures S such that s ∪ s⁻¹ = G. -/
+/-- Typeclass for substructures `s` such that `s ∪ s⁻¹ = G`. -/
 @[to_additive]
 class HasMemOrInvMem {S G : Type*} [CommGroup G] [SetLike S G] (s : S) : Prop where
   mem_or_inv_mem (s) (a : G) : a ∈ s ∨ a⁻¹ ∈ s
