@@ -90,6 +90,7 @@ theorem exists_isIntegralCurveAt_of_contMDiffAt [CompleteSpace E]
     mem_of_mem_of_subset hf3' (extChartAt I x₀).target_subset_preimage_source
   have hft2 := mem_extChartAt_source (I := I) xₜ
   -- express the derivative of the integral curve in the local chart
+  apply HasMFDerivAt.hasMFDerivWithinAt
   refine ⟨(continuousAt_extChartAt_symm'' hf3').comp h.continuousAt,
     HasDerivWithinAt.hasFDerivWithinAt ?_⟩
   simp only [mfld_simps, hasDerivWithinAt_univ]
@@ -201,12 +202,12 @@ theorem isIntegralCurveOn_Ioo_eqOn_of_contMDiff (ht₀ : t₀ ∈ Ioo a b)
       rintro ⟨_, ht⟩
       apply ContinuousAt.comp _ continuousAt_subtype_val
       rw [Subtype.coe_mk]
-      exact hγ.continuousAt ht
+      exact hγ.continuousWithinAt ht |>.continuousAt (Ioo_mem_nhds ht.1 ht.2)
     · rw [continuous_iff_continuousAt]
       rintro ⟨_, ht⟩
       apply ContinuousAt.comp _ continuousAt_subtype_val
       rw [Subtype.coe_mk]
-      exact hγ'.continuousAt ht
+      exact hγ'.continuousWithinAt ht |>.continuousAt (Ioo_mem_nhds ht.1 ht.2)
   · rw [isOpen_iff_mem_nhds]
     intro t₁ ht₁
     have hmem := Ioo_mem_nhds ht₁.2.1 ht₁.2.2

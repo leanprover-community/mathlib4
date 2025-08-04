@@ -15,7 +15,7 @@ The equivalence gets characterized in both directions.
 -/
 
 namespace CategoryTheory.Join
-open Opposite
+open Opposite Functor
 
 universe v₁ v₂ u₁ u₂
 
@@ -76,13 +76,13 @@ lemma opEquiv_functor_map_op_edge (c : C) (d : D) :
 @[simps!]
 def InclLeftCompRightOpOpEquivFunctor :
     inclLeft C D ⋙ (opEquiv C D).functor.rightOp ≅ (inclRight _ _).rightOp :=
-  isoWhiskerLeft _ (Functor.leftOpRightOpIso _) ≪≫ mkFunctorLeft _ _ _
+  isoWhiskerLeft _ (leftOpRightOpIso _) ≪≫ mkFunctorLeft _ _ _
 
 /-- Characterize (up to a rightOp) the action of the right inclusion on `Join.opEquivFunctor`. -/
 @[simps!]
 def InclRightCompRightOpOpEquivFunctor :
     inclRight C D ⋙ (opEquiv C D).functor.rightOp ≅ (inclLeft _ _).rightOp :=
-  isoWhiskerLeft _ (Functor.leftOpRightOpIso _) ≪≫ mkFunctorRight _ _ _
+  isoWhiskerLeft _ (leftOpRightOpIso _) ≪≫ mkFunctorRight _ _ _
 
 variable {D} in
 @[simp]

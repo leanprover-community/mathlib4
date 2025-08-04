@@ -223,7 +223,7 @@ theorem skyscraperPresheaf_isSheaf : (skyscraperPresheaf p₀ A).IsSheaf := by
           · exact terminalIsTerminal
           · #adaptation_note /-- 2024-03-24
             Previously the universe annotation was not needed here. -/
-            exact Set.notMem_empty PUnit.unit.{u+1})))
+            exact Set.notMem_empty PUnit.unit.{u + 1})))
 
 /--
 The skyscraper presheaf supported at `p₀` with value `A` is the sheaf that assigns `A` to all opens
@@ -339,7 +339,7 @@ def skyscraperPresheafStalkAdjunction [HasColimits C] :
     dsimp [Presheaf.stalkFunctor, toSkyscraperPresheaf]
     ext
     simp only [Functor.comp_obj, Functor.op_obj, ι_colimMap_assoc, skyscraperPresheaf_obj,
-      whiskerLeft_app, Category.comp_id]
+      Functor.whiskerLeft_app, Category.comp_id]
     split_ifs with h
     · simp [skyscraperPresheafStalkOfSpecializes]
       rfl
@@ -360,7 +360,7 @@ def skyscraperPresheafStalkAdjunction [HasColimits C] :
     · simp
       rfl
 
-instance [HasColimits C] : (skyscraperPresheafFunctor p₀ : C ⥤ Presheaf C X).IsRightAdjoint  :=
+instance [HasColimits C] : (skyscraperPresheafFunctor p₀ : C ⥤ Presheaf C X).IsRightAdjoint :=
   (skyscraperPresheafStalkAdjunction _).isRightAdjoint
 
 instance [HasColimits C] : (Presheaf.stalkFunctor C p₀).IsLeftAdjoint :=
@@ -383,7 +383,7 @@ def stalkSkyscraperSheafAdjunction [HasColimits C] :
   right_triangle_components _ :=
     Sheaf.Hom.ext ((skyscraperPresheafStalkAdjunction p₀).right_triangle_components _)
 
-instance [HasColimits C] : (skyscraperSheafFunctor p₀ : C ⥤ Sheaf C X).IsRightAdjoint  :=
+instance [HasColimits C] : (skyscraperSheafFunctor p₀ : C ⥤ Sheaf C X).IsRightAdjoint :=
   (stalkSkyscraperSheafAdjunction _).isRightAdjoint
 
 end

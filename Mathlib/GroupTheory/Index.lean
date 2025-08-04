@@ -563,7 +563,7 @@ variable (H K) in
 @[to_additive] class IsFiniteRelIndex : Prop where
   protected relindex_ne_zero : H.relindex K ≠ 0
 
-@[to_additive] lemma relindex_ne_zero  [H.IsFiniteRelIndex K] : H.relindex K ≠ 0 :=
+@[to_additive] lemma relindex_ne_zero [H.IsFiniteRelIndex K] : H.relindex K ≠ 0 :=
   IsFiniteRelIndex.relindex_ne_zero
 
 @[to_additive]
@@ -699,7 +699,7 @@ variable (G : Type*) {X : Type*} [Group G] [MulAction G X] (x : X)
 @[to_additive] theorem index_stabilizer :
     (stabilizer G x).index = (orbit G x).ncard :=
   (Nat.card_congr (MulAction.orbitEquivQuotientStabilizer G x)).symm.trans
-    (Set.Nat.card_coe_set_eq (orbit G x))
+    (Nat.card_coe_set_eq (orbit G x))
 
 @[to_additive] theorem index_stabilizer_of_transitive [IsPretransitive G X] :
     (stabilizer G x).index = Nat.card X := by
@@ -713,7 +713,7 @@ namespace MonoidHom
 lemma surjective_of_card_ker_le_div {G M : Type*} [Group G] [Group M] [Finite G] [Finite M]
     (f : G →* M) (h : Nat.card f.ker ≤ Nat.card G / Nat.card M) : Function.Surjective f := by
   refine range_eq_top.1 <| SetLike.ext' <| Set.eq_of_subset_of_ncard_le (Set.subset_univ _) ?_
-  rw [Subgroup.coe_top, Set.ncard_univ, ← Set.Nat.card_coe_set_eq, SetLike.coe_sort_coe,
+  rw [Subgroup.coe_top, Set.ncard_univ, ← Nat.card_coe_set_eq, SetLike.coe_sort_coe,
     ← Nat.card_congr (QuotientGroup.quotientKerEquivRange f).toEquiv]
   exact Nat.le_of_mul_le_mul_left (f.ker.card_mul_index ▸ Nat.mul_le_of_le_div _ _ _ h) Nat.card_pos
 

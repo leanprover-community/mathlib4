@@ -88,7 +88,7 @@ instance : P.pullbacks.RespectsIso :=
     exact ⟨X, Y, p, e.inv.left ≫ f, e.inv.right ≫ g, hp,
       IsPullback.paste_horiz (IsPullback.of_horiz_isIso ⟨e.inv.w⟩) h⟩)
 
-/-- If `P : MorphismPropety C` is such that any object in `C` maps to the
+/-- If `P : MorphismProperty C` is such that any object in `C` maps to the
 target of some morphism in `P`, then `P.pushouts` contains the isomorphisms. -/
 lemma isomorphisms_le_pushouts
     (h : ∀ (X : C), ∃ (A B : C) (p : A ⟶ B) (_ : P p) (_ : B ⟶ X), IsIso p) :
@@ -476,9 +476,9 @@ lemma colimitsOfShape_le_of_final {J' : Type*} [Category J'] (F : J ⥤ J') [F.F
   have h₁' : IsColimit (c₁.whisker F) := (Functor.Final.isColimitWhiskerEquiv F c₁).symm h₁
   have h₂' : IsColimit (c₂.whisker F) := (Functor.Final.isColimitWhiskerEquiv F c₂).symm h₂
   have : h₁.desc (Cocone.mk c₂.pt (f ≫ c₂.ι)) =
-      h₁'.desc (Cocone.mk c₂.pt (whiskerLeft _ f ≫ (c₂.whisker F).ι)) :=
+      h₁'.desc (Cocone.mk c₂.pt (Functor.whiskerLeft _ f ≫ (c₂.whisker F).ι)) :=
     h₁'.hom_ext (fun j ↦ by
-      have := h₁'.fac (Cocone.mk c₂.pt (whiskerLeft F f ≫ whiskerLeft F c₂.ι)) j
+      have := h₁'.fac (Cocone.mk c₂.pt (Functor.whiskerLeft F f ≫ Functor.whiskerLeft F c₂.ι)) j
       dsimp at this ⊢
       simp [this])
   rw [this]

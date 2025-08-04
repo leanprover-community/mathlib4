@@ -125,7 +125,6 @@ instance lieAlgebra (L' : LieSubalgebra R L) : LieAlgebra R L' where
 variable {R L}
 variable (L' : LieSubalgebra R L)
 
-@[simp]
 protected theorem zero_mem : (0 : L) ∈ L' :=
   zero_mem L'
 
@@ -616,8 +615,7 @@ def lieSpan : LieSubalgebra R L :=
 variable {R L s}
 
 theorem mem_lieSpan {x : L} : x ∈ lieSpan R L s ↔ ∀ K : LieSubalgebra R L, s ⊆ K → x ∈ K := by
-  change x ∈ (lieSpan R L s : Set L) ↔ _
-  rw [lieSpan, sInf_coe]
+  rw [← SetLike.mem_coe, lieSpan, sInf_coe]
   exact Set.mem_iInter₂
 
 theorem subset_lieSpan : s ⊆ lieSpan R L s := by
@@ -627,7 +625,7 @@ theorem subset_lieSpan : s ⊆ lieSpan R L s := by
   exact hK hm
 
 theorem submodule_span_le_lieSpan : Submodule.span R s ≤ lieSpan R L s := by
-  rw [Submodule.span_le]
+  rw [Submodule.span_le, coe_toSubmodule]
   apply subset_lieSpan
 
 theorem lieSpan_le {K} : lieSpan R L s ≤ K ↔ s ⊆ K := by
@@ -710,7 +708,7 @@ variable [CommRing R] [LieRing L₁] [LieRing L₂] [LieAlgebra R L₁] [LieAlge
 /-- An injective Lie algebra morphism is an equivalence onto its range. -/
 noncomputable def ofInjective (f : L₁ →ₗ⁅R⁆ L₂) (h : Function.Injective f) : L₁ ≃ₗ⁅R⁆ f.range :=
   { LinearEquiv.ofInjective (f : L₁ →ₗ[R] L₂) <| by rwa [LieHom.coe_toLinearMap] with
-    map_lie' := @fun x y ↦ SetCoe.ext <| f.map_lie x y }
+    map_lie' {x y} := SetCoe.ext <| f.map_lie x y }
 
 @[simp]
 theorem ofInjective_apply (f : L₁ →ₗ⁅R⁆ L₂) (h : Function.Injective f) (x : L₁) :
@@ -725,7 +723,7 @@ def ofEq (h : (L₁' : Set L₁) = L₁'') : L₁' ≃ₗ⁅R⁆ L₁'' :=
       ext x
       change x ∈ (L₁' : Set L₁) ↔ x ∈ (L₁'' : Set L₁)
       rw [h]) with
-    map_lie' := @fun _ _ ↦ rfl }
+    map_lie' {_ _} := rfl }
 
 @[simp]
 theorem ofEq_apply (L L' : LieSubalgebra R L₁) (h : (L : Set L₁) = L') (x : L) :

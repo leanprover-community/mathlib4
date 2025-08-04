@@ -289,16 +289,9 @@ theorem Int.two_pow_two_pow_add_two_pow_two_pow {x y : ℤ} (hx : ¬2 ∣ x) (hx
   · rw [pow_one, ← even_iff_two_dvd]
     exact hx_odd.pow.add_odd hy_odd.pow
   rcases i with - | i
-  · intro hxy'
-    have : 2 * 2 ∣ 2 * x := by
-      have := dvd_add hxy hxy'
-      norm_num at *
-      rw [two_mul]
-      exact this
-    have : 2 ∣ x := (mul_dvd_mul_iff_left (by norm_num)).mp this
-    contradiction
+  · grind
   suffices ∀ x : ℤ, Odd x → x ^ 2 ^ (i + 1) % 4 = 1 by
-    rw [show (2 ^ (1 + 1) : ℤ) = 4 by norm_num, Int.dvd_iff_emod_eq_zero, Int.add_emod,
+    rw [show (2 ^ (1 + 1) : ℤ) = 4 by simp, Int.dvd_iff_emod_eq_zero, Int.add_emod,
       this _ hx_odd, this _ hy_odd]
     decide
   intro x hx
@@ -317,7 +310,7 @@ theorem Int.two_pow_sub_pow' {x y : ℤ} (n : ℕ) (hxy : 4 ∣ x - y) (hx : ¬2
   have hy_odd : Odd y := by simpa using hx_odd.sub_even hxy_even
   rcases n with - | n
   · simp only [pow_zero, sub_self, emultiplicity_zero, Int.ofNat_zero, add_top]
-  have h : FiniteMultiplicity 2 n.succ := Nat.finiteMultiplicity_iff.mpr ⟨by norm_num, n.succ_pos⟩
+  have h : FiniteMultiplicity 2 n.succ := Nat.finiteMultiplicity_iff.mpr ⟨by simp, n.succ_pos⟩
   simp only [Nat.succ_eq_add_one] at h
   rcases emultiplicity_eq_coe.mp h.emultiplicity_eq_multiplicity with ⟨⟨k, hk⟩, hpn⟩
   rw [hk, pow_mul, pow_mul, emultiplicity_pow_sub_pow_of_prime,
@@ -388,10 +381,10 @@ theorem pow_two_sub_pow (hyx : y < x) (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n : 
   simp only [← Nat.cast_inj (R := ℕ∞), Nat.cast_add]
   iterate 4 rw [padicValNat_eq_emultiplicity]
   · exact Nat.two_pow_sub_pow hxy hx hneven
-  · exact hn.bot_lt
-  · exact Nat.sub_pos_of_lt hyx
+  · exact hn
+  · exact Nat.sub_ne_zero_of_lt hyx
   · omega
-  · simp only [tsub_pos_iff_lt, Nat.pow_lt_pow_left hyx hn]
+  · simp [← Nat.pos_iff_ne_zero, tsub_pos_iff_lt, Nat.pow_lt_pow_left hyx hn]
 
 variable {p : ℕ} [hp : Fact p.Prime] (hp1 : Odd p)
 include hp hp1
@@ -401,9 +394,9 @@ theorem pow_sub_pow (hyx : y < x) (hxy : p ∣ x - y) (hx : ¬p ∣ x) {n : ℕ}
   rw [← Nat.cast_inj (R := ℕ∞), Nat.cast_add]
   iterate 3 rw [padicValNat_eq_emultiplicity]
   · exact Nat.emultiplicity_pow_sub_pow hp.out hp1 hxy hx n
-  · exact hn.bot_lt
-  · exact Nat.sub_pos_of_lt hyx
-  · exact Nat.sub_pos_of_lt (Nat.pow_lt_pow_left hyx hn)
+  · exact hn
+  · exact Nat.sub_ne_zero_of_lt hyx
+  · exact Nat.sub_ne_zero_of_lt (Nat.pow_lt_pow_left hyx hn)
 
 theorem pow_add_pow (hxy : p ∣ x + y) (hx : ¬p ∣ x) {n : ℕ} (hn : Odd n) :
     padicValNat p (x ^ n + y ^ n) = padicValNat p (x + y) + padicValNat p n := by
@@ -412,8 +405,8 @@ theorem pow_add_pow (hxy : p ∣ x + y) (hx : ¬p ∣ x) {n : ℕ} (hn : Odd n) 
   rw [← Nat.cast_inj (R := ℕ∞), Nat.cast_add]
   iterate 3 rw [padicValNat_eq_emultiplicity]
   · exact Nat.emultiplicity_pow_add_pow hp.out hp1 hxy hx hn
-  · exact Odd.pos hn
-  · simp only [add_pos_iff, Nat.succ_pos', or_true]
-  · exact Nat.lt_add_left _ (pow_pos y.succ_pos _)
+  · exact (Odd.pos hn).ne'
+  · simp only [← Nat.pos_iff_ne_zero, add_pos_iff, Nat.succ_pos', or_true]
+  · exact (Nat.lt_add_left _ (pow_pos y.succ_pos _)).ne'
 
 end padicValNat

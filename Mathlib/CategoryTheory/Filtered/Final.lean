@@ -49,7 +49,7 @@ theorem Functor.final_of_isFiltered_structuredArrow [∀ d, IsFiltered (Structur
   out _ := IsFiltered.isConnected _
 
 /-- If `CostructuredArrow F d` is filtered for any `d : D`, then `F : C ⥤ D` is initial. This is
-    simply because cofiltered categories are connectged. More profoundly, the converse is also true
+    simply because cofiltered categories are connected. More profoundly, the converse is also true
     if `C` is cofiltered, see `initial_iff_isCofiltered_costructuredArrow`. -/
 theorem Functor.initial_of_isCofiltered_costructuredArrow
     [∀ d, IsCofiltered (CostructuredArrow F d)] : Initial F where
@@ -463,7 +463,7 @@ end CategoryTheory
 open CategoryTheory
 
 lemma Monotone.final_functor_iff {J₁ J₂ : Type*} [Preorder J₁] [Preorder J₂]
-    [IsDirected J₁ (· ≤ · )] {f : J₁ → J₂} (hf : Monotone f) :
+    [IsDirected J₁ (· ≤ ·)] {f : J₁ → J₂} (hf : Monotone f) :
     hf.functor.Final ↔ ∀ (j₂ : J₂), ∃ (j₁ : J₁), j₂ ≤ f j₁ := by
   rw [Functor.final_iff_of_isFiltered]
   constructor

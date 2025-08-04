@@ -40,9 +40,9 @@ open Fin.NatCast
 
 instance : SMul ℕ (BitVec w) := ⟨fun x y => ofFin <| x • y.toFin⟩
 instance : SMul ℤ (BitVec w) := ⟨fun x y => ofFin <| x • y.toFin⟩
-lemma toFin_nsmul (n : ℕ) (x : BitVec w)  : toFin (n • x) = n • x.toFin := rfl
-lemma toFin_zsmul (z : ℤ) (x : BitVec w)  : toFin (z • x) = z • x.toFin := rfl
-lemma toFin_pow (x : BitVec w) (n : ℕ)    : toFin (x ^ n) = x.toFin ^ n := by
+lemma toFin_nsmul (n : ℕ) (x : BitVec w) : toFin (n • x) = n • x.toFin := rfl
+lemma toFin_zsmul (z : ℤ) (x : BitVec w) : toFin (z • x) = z • x.toFin := rfl
+lemma toFin_pow (x : BitVec w) (n : ℕ) : toFin (x ^ n) = x.toFin ^ n := by
   induction n with
   | zero => simp
   | succ n ih => simp [ih, BitVec.pow_succ, pow_succ]
@@ -65,28 +65,6 @@ instance : CommSemiring (BitVec w) :=
     (by convert toFin_pow)
     (fun _ => rfl) /- toFin_natCast -/
 -- The statement in the new API would be: `n#(k.succ) = ((n / 2)#k).concat (n % 2 != 0)`
-
--- Variant of `Fin.intCast_def` for when we are using the `Fin.CommRing` instance.
-open Fin.CommRing in
-theorem _root_.Fin.intCast_def' {n : Nat} [NeZero n] (x : Int) :
-    (x : Fin n) = if 0 ≤ x then Fin.ofNat n x.natAbs else -Fin.ofNat n x.natAbs := by
-  unfold Fin.instCommRing
-  dsimp [Int.cast, IntCast.intCast, Int.castDef]
-  split <;> (simp [Fin.intCast]; omega)
-
-open Fin.CommRing in
-@[simp] theorem _root_.Fin.val_intCast {n : Nat} [NeZero n] (x : Int) :
-    (x : Fin n).val = (x % n).toNat := by
-  rw [Fin.intCast_def']
-  split <;> rename_i h
-  · simp [Int.emod_natAbs_of_nonneg h]
-  · simp only [Fin.ofNat_eq_cast, Fin.val_neg, Fin.natCast_eq_zero, Fin.val_natCast]
-    split <;> rename_i h
-    · rw [← Int.natCast_dvd] at h
-      rw [Int.emod_eq_zero_of_dvd h, Int.toNat_zero]
-    · rw [Int.emod_natAbs_of_neg (by omega) (NeZero.ne n), if_neg (by rwa [← Int.natCast_dvd] at h)]
-      have : x % n < n := Int.emod_lt_of_pos x (by have := NeZero.ne n; omega)
-      omega
 
 -- TODO: move to the Lean4 repository.
 open Fin.CommRing in

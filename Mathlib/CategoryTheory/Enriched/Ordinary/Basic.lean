@@ -127,7 +127,7 @@ lemma eComp_eHomWhiskerLeft (X Y : C) {Z Z' : C} (g : Z ⟶ Z') :
 object `(X ⟶[V] Y₁) ⊗ (Y₁ ⟶[V] Z)` via the map defined by whiskering in the
 middle with `α.hom` and `α.inv`. -/
 @[reassoc]
-lemma eHom_whisker_cancel {X Y Y₁ Z : C} (α : Y  ≅ Y₁) :
+lemma eHom_whisker_cancel {X Y Y₁ Z : C} (α : Y ≅ Y₁) :
     eHomWhiskerLeft V X α.hom ▷ _ ≫ _ ◁ eHomWhiskerRight V α.inv Z ≫
       eComp V X Y₁ Z = eComp V X Y Z := by
   dsimp [eHomWhiskerLeft, eHomWhiskerRight]
@@ -138,7 +138,7 @@ lemma eHom_whisker_cancel {X Y Y₁ Z : C} (α : Y  ≅ Y₁) :
   simp [← eHomWhiskerLeft_comp]
 
 @[reassoc]
-lemma eHom_whisker_cancel_inv {X Y Y₁ Z : C} (α : Y  ≅ Y₁) :
+lemma eHom_whisker_cancel_inv {X Y Y₁ Z : C} (α : Y ≅ Y₁) :
     eHomWhiskerLeft V X α.inv ▷ _ ≫ _ ◁ eHomWhiskerRight V α.hom Z ≫
       eComp V X Y Z = eComp V X Y₁ Z := eHom_whisker_cancel V α.symm
 

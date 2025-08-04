@@ -223,7 +223,7 @@ lemma essImage_yonedaMon :
   ext F
   constructor
   · rintro ⟨M, ⟨α⟩⟩
-    exact ⟨M.X, ⟨Functor.representableByEquiv.symm (isoWhiskerRight α (forget _))⟩⟩
+    exact ⟨M.X, ⟨Functor.representableByEquiv.symm (Functor.isoWhiskerRight α (forget _))⟩⟩
   · rintro ⟨X, ⟨e⟩⟩
     letI := Mon_Class.ofRepresentableBy X F e
     exact ⟨Mon_.mk X, ⟨yonedaMonObjIsoOfRepresentableBy X F e⟩⟩

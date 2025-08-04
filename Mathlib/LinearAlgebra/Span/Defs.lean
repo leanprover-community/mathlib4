@@ -58,7 +58,7 @@ variable {s t : Set M}
 theorem mem_span : x ∈ span R s ↔ ∀ p : Submodule R M, s ⊆ p → x ∈ p :=
   mem_iInter₂
 
-@[aesop safe 20 apply (rule_sets := [SetLike])]
+@[simp, aesop safe 20 (rule_sets := [SetLike])]
 theorem subset_span : s ⊆ span R s := fun _ h => mem_span.2 fun _ hp => hp h
 
 @[aesop 80% (rule_sets := [SetLike])]
@@ -170,7 +170,7 @@ theorem span_eq_closure {s : Set M} : (span R s).toAddSubmonoid = closure (@univ
       | mem _ h =>
         obtain ⟨r₂, -, x, hx, rfl⟩ := h
         exact subset_closure ⟨r₁ * r₂, trivial, x, hx, mul_smul ..⟩
-      | one => simpa only [smul_zero] using zero_mem _
+      | one => simp only [smul_zero, zero_mem]
       | mul _ _ _ _ h₁ h₂ => simpa only [smul_add] using add_mem h₁ h₂
   case of_mem_closure =>
     refine closure_le.2 ?_ hx
@@ -349,10 +349,13 @@ theorem mem_sup : x ∈ p ⊔ p' ↔ ∃ y ∈ p, ∃ z ∈ p', y + z = x :=
 theorem mem_sup' : x ∈ p ⊔ p' ↔ ∃ (y : p) (z : p'), (y : M) + z = x :=
   mem_sup.trans <| by simp only [Subtype.exists, exists_prop]
 
-lemma exists_add_eq_of_codisjoint (h : Codisjoint p p') (x : M) :
-    ∃ y ∈ p, ∃ z ∈ p', y + z = x := by
-  suffices x ∈ p ⊔ p' by exact Submodule.mem_sup.mp this
-  simpa only [h.eq_top] using Submodule.mem_top
+theorem codisjoint_iff_exists_add_eq :
+    Codisjoint p p' ↔ ∀ z, ∃ x y, x ∈ p ∧ y ∈ p' ∧ x + y = z := by
+  rw [codisjoint_iff, eq_top_iff']
+  exact forall_congr' (fun z => mem_sup.trans <| by simp)
+
+@[deprecated (since := "2025-07-05")]
+alias ⟨exists_add_eq_of_codisjoint, _⟩ := codisjoint_iff_exists_add_eq
 
 variable (p p')
 

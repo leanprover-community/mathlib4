@@ -386,7 +386,7 @@ objects. -/
 @[simps!]
 def mkCommaMorphism {F G : WithTerminal C ⥤ D} (η : F ⟶ G) : mkCommaObject F ⟶ mkCommaObject G where
   right := η.app .star
-  left := whiskerLeft incl η
+  left := Functor.whiskerLeft incl η
 
 /-- An element of the comma category `Comma (𝟭 (C ⥤ D)) (Functor.const C)` can be seen as a
 functor `WithTerminal C ⥤ D`. -/
@@ -768,7 +768,7 @@ objects. -/
 @[simps!]
 def mkCommaMorphism {F G : WithInitial C ⥤ D} (η : F ⟶ G) : mkCommaObject F ⟶ mkCommaObject G where
   left := η.app .star
-  right := whiskerLeft incl η
+  right := Functor.whiskerLeft incl η
 
 /-- An element of the comma category `Comma (Functor.const C) (𝟭 (C ⥤ D))` can be seen as a
 functor `WithInitial C ⥤ D`. -/

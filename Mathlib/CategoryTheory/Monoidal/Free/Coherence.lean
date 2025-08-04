@@ -38,7 +38,7 @@ universe u
 
 namespace CategoryTheory
 
-open MonoidalCategory
+open MonoidalCategory Functor
 
 namespace FreeMonoidalCategory
 
@@ -120,7 +120,7 @@ def normalizeMapAux : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (normalizeObj' X ⟶ nor
   | _, _, l_inv _ => by dsimp; exact Discrete.natTrans (fun _ => 𝟙 _)
   | _, _, ρ_hom _ => by dsimp; exact Discrete.natTrans (fun _ => 𝟙 _)
   | _, _, ρ_inv _ => by dsimp; exact Discrete.natTrans (fun _ => 𝟙 _)
-  | _, _, (@comp _ _ _ _ f g) => normalizeMapAux f ≫ normalizeMapAux g
+  | _, _, (@Hom.comp _ _ _ _ f g) => normalizeMapAux f ≫ normalizeMapAux g
   | _, _, (@Hom.tensor _ T _ _ W f g) =>
     Discrete.natTrans <| fun ⟨X⟩ => (normalizeMapAux g).app ⟨normalizeObj T X⟩ ≫
       (normalizeObj' W).map ((normalizeMapAux f).app ⟨X⟩)
@@ -317,7 +317,7 @@ def inverseAux : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (Y ⟶ᵐ X)
   | _, _, ρ_inv _ => ρ_hom _
   | _, _, l_hom _ => l_inv _
   | _, _, l_inv _ => l_hom _
-  | _, _, comp f g => (inverseAux g).comp (inverseAux f)
+  | _, _, Hom.comp f g => (inverseAux g).comp (inverseAux f)
   | _, _, Hom.whiskerLeft X f => (inverseAux f).whiskerLeft X
   | _, _, Hom.whiskerRight f X => (inverseAux f).whiskerRight X
   | _, _, Hom.tensor f g => (inverseAux f).tensor (inverseAux g)

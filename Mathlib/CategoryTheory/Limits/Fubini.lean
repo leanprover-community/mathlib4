@@ -35,7 +35,7 @@ All statements have their counterpart for colimits.
 -/
 
 
-open CategoryTheory
+open CategoryTheory Functor
 
 namespace CategoryTheory.Limits
 

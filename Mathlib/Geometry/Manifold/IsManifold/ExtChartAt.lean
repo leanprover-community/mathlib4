@@ -88,7 +88,7 @@ theorem mapsTo_extend (hs : s ⊆ f.source) :
     MapsTo (f.extend I) s ((f.extend I).symm ⁻¹' s ∩ range I) := by
   rw [mapsTo', extend_coe, extend_coe_symm, preimage_comp, ← I.image_eq, image_comp,
     f.image_eq_target_inter_inv_preimage hs]
-  exact image_subset _ inter_subset_right
+  exact image_mono inter_subset_right
 
 theorem extend_left_inv {x : M} (hxf : x ∈ f.source) : (f.extend I).symm (f.extend I x) = x :=
   (f.extend I).left_inv <| by rwa [f.extend_source]
@@ -271,6 +271,11 @@ theorem continuousOn_writtenInExtend_iff {f' : PartialHomeomorph M' H'} {g : M �
   rw [← nhdsWithin_eq_iff_eventuallyEq, ← map_extend_nhdsWithin_eq_image_of_subset,
     ← map_extend_nhdsWithin]
   exacts [hs hx, hs hx, hs]
+
+theorem extend_preimage_mem_nhds_of_mem_nhdsWithin {s : Set E} {x : M} (hx : x ∈ f.source)
+    (hs : s ∈ 𝓝[range I] (f.extend I x)) :
+    (f.extend I) ⁻¹' s ∈ 𝓝 x := by
+  rwa [← map_extend_nhds (I := I) f hx] at hs
 
 /-- Technical lemma ensuring that the preimage under an extended chart of a neighborhood of a point
 in the source is a neighborhood of the preimage, within a set. -/
@@ -654,6 +659,12 @@ theorem map_extChartAt_symm_nhdsWithin (x : M) :
 theorem map_extChartAt_symm_nhdsWithin_range (x : M) :
     map (extChartAt I x).symm (𝓝[range I] extChartAt I x x) = 𝓝 x :=
   map_extChartAt_symm_nhdsWithin_range' (mem_extChartAt_source x)
+
+theorem extChartAt_preimage_mem_nhds_of_mem_nhdsWithin {s : Set E} {x x' : M}
+    (hx : x' ∈ (extChartAt I x).source)
+    (hs : s ∈ 𝓝[range I] (extChartAt I x x')) :
+    (extChartAt I x) ⁻¹' s ∈ 𝓝 x' :=
+  extend_preimage_mem_nhds_of_mem_nhdsWithin _ (by simpa using hx) hs
 
 /-- Technical lemma ensuring that the preimage under an extended chart of a neighborhood of a point
 in the source is a neighborhood of the preimage, within a set. -/

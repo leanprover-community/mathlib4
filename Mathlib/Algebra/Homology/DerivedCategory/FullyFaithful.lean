@@ -25,9 +25,9 @@ variable (C : Type u) [Category.{v} C] [Abelian C] [HasDerivedCategory.{w} C]
 `DerivedCateogry.singleFunctor C n ⋙ DerivedCateogry.homologyFunctor C n ≅ 𝟭 C` -/
 noncomputable def singleFunctorCompHomologyFunctorIso (n : ℤ) :
     singleFunctor C n ⋙ homologyFunctor C n ≅ 𝟭 C :=
-  isoWhiskerRight ((SingleFunctors.evaluation _ _ n).mapIso
+  Functor.isoWhiskerRight ((SingleFunctors.evaluation _ _ n).mapIso
     (singleFunctorsPostcompQIso C)) _ ≪≫ Functor.associator _ _ _ ≪≫
-    isoWhiskerLeft _ (homologyFunctorFactors C n) ≪≫
+    Functor.isoWhiskerLeft _ (homologyFunctorFactors C n) ≪≫
       (HomologicalComplex.homologyFunctorSingleIso _ _ _)
 
 instance (n : ℤ) : (singleFunctor C n).Faithful where

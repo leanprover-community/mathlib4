@@ -371,7 +371,7 @@ theorem Ne.nhdsWithin_diff_singleton [T1Space X] {x y : X} (h : x ≠ y) (s : Se
   exact mem_nhdsWithin_of_mem_nhds (isOpen_ne.mem_nhds h)
 
 lemma nhdsWithin_compl_singleton_le [T1Space X] (x y : X) : 𝓝[{x}ᶜ] x ≤ 𝓝[{y}ᶜ] x := by
-  rcases eq_or_ne x y with rfl|hy
+  rcases eq_or_ne x y with rfl | hy
   · exact Eq.le rfl
   · rw [Ne.nhdsWithin_compl_singleton hy]
     exact nhdsWithin_le_nhds
@@ -489,7 +489,7 @@ instance (priority := 100) [T1Space X] : R0Space X :=
 instance : T1Space (CofiniteTopology X) :=
   t1Space_iff_continuous_cofinite_of.mpr continuous_id
 
-theorem t1Space_of_t0Space_of_r0Space [T0Space X] [R0Space X] : T1Space X :=
+instance (priority := 80) [T0Space X] [R0Space X] : T1Space X :=
   t1Space_iff_t0Space_and_r0Space.mpr ⟨‹T0Space X›, ‹R0Space X›⟩
 
 theorem t1Space_antitone {X} : Antitone (@T1Space X) := fun a _ h _ =>
@@ -724,6 +724,18 @@ theorem continuousWithinAt_congr_set' [TopologicalSpace Y] [T1Space X]
     ContinuousWithinAt f s x ↔ ContinuousWithinAt f t x := by
   rw [← continuousWithinAt_insert_self (s := s), ← continuousWithinAt_insert_self (s := t)]
   exact continuousWithinAt_congr_set (eventuallyEq_insert h)
+
+theorem ContinousWithinAt.eq_const_of_mem_closure [TopologicalSpace Y] [T1Space Y]
+    {f : X → Y} {s : Set X} {x : X} {c : Y} (h : ContinuousWithinAt f s x) (hx : x ∈ closure s)
+    (ht : ∀ y ∈ s, f y = c) : f x = c := by
+  rw [← Set.mem_singleton_iff, ← closure_singleton]
+  exact h.mem_closure hx ht
+
+theorem ContinuousWithinAt.eqOn_const_closure [TopologicalSpace Y] [T1Space Y]
+    {f : X → Y} {s : Set X} {c : Y} (h : ∀ x ∈ closure s, ContinuousWithinAt f s x)
+    (ht : s.EqOn f (fun _ ↦ c)) : (closure s).EqOn f (fun _ ↦ c) := by
+  intro x hx
+  apply ContinousWithinAt.eq_const_of_mem_closure (h x hx) hx ht
 
 /-- To prove a function to a `T1Space` is continuous at some point `x`, it suffices to prove that
 `f` admits *some* limit at `x`. -/

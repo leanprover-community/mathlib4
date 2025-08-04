@@ -182,7 +182,9 @@ lemma invMulSubgroup_eq_mul_inv (A : Finset G) (h) : (invMulSubgroup A h : Set G
   exact mul_inv_eq_inv_mul_of_doubling_lt_two (by qify at h ⊢; linarith)
 
 instance (A : Finset G) (h) : Fintype (invMulSubgroup A h) := by
-  simp only [invMulSubgroup, ← coe_mul, Subgroup.mem_mk, mem_coe]; infer_instance
+  simp only [invMulSubgroup, ← coe_mul, Subgroup.mem_mk, Submonoid.mem_mk, Subsemigroup.mem_mk,
+    mem_coe]
+  infer_instance
 
 private lemma weak_invMulSubgroup_bound (h : #(A * A) < (3 / 2 : ℚ) * #A) :
     #(A⁻¹ * A) < 2 * #A := by
@@ -200,8 +202,8 @@ private lemma weak_invMulSubgroup_bound (h : #(A * A) < (3 / 2 : ℚ) * #A) :
     rw [Nat.cast_le]
     refine card_le_card_of_injOn (fun t => (a⁻¹ * t, b⁻¹ * t)) ?_ (by simp [Set.InjOn])
     simp only [mem_inter, mem_product, and_imp, mem_filter, mul_inv_rev, inv_inv,
-      forall_exists_index, smul_eq_mul,
-      forall_apply_eq_imp_iff₂, inv_mul_cancel_left, mem_smul_finset]
+      forall_exists_index, smul_eq_mul, Set.MapsTo, mem_coe, forall_apply_eq_imp_iff₂,
+      inv_mul_cancel_left, mem_smul_finset]
     rintro c hc d hd h
     rw [mul_assoc, mul_inv_cancel_left, ← h, inv_mul_cancel_left]
     simp [hd, hc]

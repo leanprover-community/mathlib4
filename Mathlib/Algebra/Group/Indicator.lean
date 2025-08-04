@@ -213,8 +213,7 @@ theorem comp_mulIndicator (h : M → β) (f : α → M) {s : Set α} {x : α} [D
 @[to_additive]
 theorem mulIndicator_comp_right {s : Set α} (f : β → α) {g : α → M} {x : β} :
     mulIndicator (f ⁻¹' s) (g ∘ f) x = mulIndicator s g (f x) := by
-  simp only [mulIndicator, Function.comp]
-  split_ifs with h h' h'' <;> first | rfl | contradiction
+  tauto
 
 @[to_additive]
 theorem mulIndicator_image {s : Set α} {f : β → M} {g : α → β} (hg : Injective g) {x : α} :

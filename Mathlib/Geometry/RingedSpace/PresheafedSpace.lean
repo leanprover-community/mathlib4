@@ -90,7 +90,7 @@ theorem Hom.ext {X Y : PresheafedSpace C} (α β : Hom X Y) (w : α.base = β.ba
   rfl
 
 -- TODO including `injections` would make tidy work earlier.
-theorem hext {X Y : PresheafedSpace C} (α β : Hom X Y) (w : α.base = β.base) (h : HEq α.c β.c) :
+theorem hext {X Y : PresheafedSpace C} (α β : Hom X Y) (w : α.base = β.base) (h : α.c ≍ β.c) :
     α = β := by
   cases α
   cases β
