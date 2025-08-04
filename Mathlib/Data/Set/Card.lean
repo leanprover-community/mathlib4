@@ -426,10 +426,6 @@ theorem _root_.Function.Embedding.encard_le (e : s ↪ t) : s.encard ≤ t.encar
   rw [← encard_univ_coe, ← e.injective.encard_image, ← Subtype.coe_injective.encard_image]
   exact encard_mono (by simp)
 
-theorem _root_.Function.Injective.encard_range (hf : f.Injective) :
-    ENat.card α ≤ (range f).encard := by
-  rw [← image_univ, hf.encard_image, encard_univ]
-
 theorem encard_image_le (f : α → β) (s : Set α) : (f '' s).encard ≤ s.encard := by
   obtain (h | h) := isEmpty_or_nonempty α
   · rw [s.eq_empty_of_isEmpty]; simp

@@ -6,12 +6,13 @@ Authors: Oliver Nash
 import Mathlib.Algebra.CharZero.Infinite
 import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Algebra.Lie.Matrix
+import Mathlib.Algebra.Lie.Semisimple.Defs
 import Mathlib.Algebra.Lie.Sl2
 import Mathlib.Algebra.Lie.Weights.Linear
+import Mathlib.Algebra.Module.Submodule.Union
 import Mathlib.LinearAlgebra.Eigenspace.Matrix
 import Mathlib.LinearAlgebra.RootSystem.CartanMatrix
 import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Lemmas
-import Mathlib.Algebra.Lie.Semisimple.Defs
 
 /-!
 # Geck's construction of a Lie algebra associated to a root system
@@ -60,110 +61,6 @@ a base: https://mathoverflow.net/questions/495434/
   (included in Lemma 4.6 from [Geck](Geck2017)).
 
 -/
-
-lemma Set.php {α β : Type*} {f : α → β} {s : Set β}
-    (h : range f ⊆ s) (h' : s.encard < ENat.card α) :
-    ∃ a₁ a₂, a₁ ≠ a₂ ∧ f a₁ = f a₂ := by
-  let f' (a : α) : s := ⟨f a, by apply h (mem_range_self a)⟩
-  suffices ∃ a₁ a₂, a₁ ≠ a₂ ∧ f' a₁ = f' a₂ by
-    obtain ⟨a₁, a₂, hne, heq⟩ := this; exact ⟨a₁, a₂, hne, by simpa [f'] using heq⟩
-  have hs : s.Finite := by
-    obtain ⟨k, hk⟩ := ENat.ne_top_iff_exists.mp (lt_top_of_lt h').ne
-    exact finite_of_encard_eq_coe hk.symm
-  cases finite_or_infinite α
-  · let _i : Fintype α := Fintype.ofFinite α
-    let _i : Fintype s := hs.fintype
-    replace h' : Fintype.card s < Fintype.card α := by
-      rwa [ENat.card_eq_coe_fintype_card, ← coe_fintypeCard, Nat.cast_lt] at h'
-    exact Fintype.exists_ne_map_eq_of_card_lt f' h'
-  · have : Finite s := hs
-    exact Finite.exists_ne_map_eq_of_infinite f'
-
-lemma Submodule.iUnion_ssubset_of_forall_ne_top_of_card_lt
-    {ι K M : Type*} [Field K] [AddCommGroup M] [Module K M]
-    (s : Finset ι) (p : ι → Submodule K M) (h₁ : ∀ i, p i ≠ ⊤) (h₂ : s.card < ENat.card K) :
-    ⋃ i ∈ s, (p i : Set M) ⊂ Set.univ := by
-  -- Following https://mathoverflow.net/a/14241/6801
-  classical
-  induction s using Finset.induction_on with
-  | empty => simp
-  | insert j s hj hj' =>
-    simp only [Set.ssubset_univ_iff] at hj' ⊢
-    rcases s.eq_empty_or_nonempty with rfl | hs
-    · simpa [← SetLike.coe_ne_coe] using h₁ j
-    replace h₂ : s.card + 1 < ENat.card K := by simpa [Finset.card_insert_of_notMem hj] using h₂
-    specialize hj' (lt_trans ENat.natCast_lt_succ h₂)
-    contrapose! hj'
-    replace hj' : (p j : Set M) ∪ (⋃ i ∈ s, p i) = Set.univ := by
-      simpa only [Finset.mem_insert, Set.iUnion_iUnion_eq_or_left] using hj'
-    suffices (p j : Set M) ⊆ ⋃ i ∈ s, p i by rwa [Set.union_eq_right.mpr this] at hj'
-    intro x (hx : x ∈ p j)
-    rcases eq_or_ne x 0 with rfl | hx₀; · simpa using hs
-    obtain ⟨y, hy⟩ : ∃ y, y ∉ p j := by specialize h₁ j; contrapose! h₁; ext; simp [h₁]
-    have hy₀ : y ≠ 0 := by contrapose! hy; simp [hy]
-    let sxy := {x + t • y | (t : K) (ht : t ≠ 0)}
-    have hsxy : sxy ⊆ ⋃ i ∈ s, p i := by
-      suffices Disjoint sxy (p j) from this.subset_right_of_subset_union <| hj' ▸ sxy.subset_univ
-      rw [Set.disjoint_iff]
-      rintro - ⟨⟨t, ht₀, rfl⟩, ht : x + t • y ∈ p j⟩
-      rw [(p j).add_mem_iff_right hx, (p j).smul_mem_iff ht₀] at ht
-      contradiction
-    replace key : s.card < sxy.encard := by
-      refine lt_of_add_lt_add_right <| lt_of_lt_of_le h₂ ?_
-      have : Function.Injective (fun t : K ↦ x + t • y) :=
-        fun t₁ t₂ ht ↦ smul_left_injective K hy₀ <| by simpa using ht
-      have aux : sxy = ((fun t : K ↦ x + t • y) '' {t | t ≠ 0}) := by ext; simp [sxy]
-      rw [aux, this.encard_image, Set.encard_ne_add_one]
-    replace key : (s : Set ι).encard < ENat.card sxy := by
-      rwa [Set.encard_coe_eq_coe_finsetCard, ← Set.encard_univ, Set.encard_univ_coe]
-    obtain ⟨k, hk, t₁, t₂, ht, ht₁, ht₂⟩ : ∃ᵉ (k ∈ s) (t₁ : K) (t₂ : K),
-        t₁ ≠ t₂ ∧ x + t₁ • y ∈ p k ∧ x + t₂ • y ∈ p k := by
-      suffices ∃ᵉ (k ∈ s) (z₁ ∈ sxy) (z₂ ∈ sxy), z₁ ≠ z₂ ∧ z₁ ∈ p k ∧ z₂ ∈ p k by
-        obtain ⟨k, hk, -, ⟨t₁, -, rfl⟩, -, ⟨t₂, -, rfl⟩, htne, ht₁, ht₂⟩ := this
-        exact ⟨k, hk, t₁, t₂, by aesop, ht₁, ht₂⟩
-      choose f hf using fun z : sxy ↦ Set.mem_iUnion.mp (hsxy z.property)
-      have hf' : Set.range f ⊆ s := by rintro - ⟨z, rfl⟩; specialize hf z; aesop
-      suffices ∃ z₁ z₂, z₁ ≠ z₂ ∧ f z₁ = f z₂ by
-        obtain ⟨z₁, z₂, hne, heq⟩ := this
-        exact ⟨f z₁, hf' (Set.mem_range_self z₁), z₁, z₁.property, z₂, z₂.property,
-          Subtype.coe_ne_coe.mpr hne, by specialize hf z₁; aesop, by specialize hf z₂; aesop⟩
-      exact Set.php hf' key
-    replace ht : y ∈ p k := by
-      have : (t₁ - t₂) • y ∈ p k := by convert sub_mem ht₁ ht₂ using 1; module
-      refine ((p k).smul_mem_iff ?_).mp this
-      rwa [sub_ne_zero]
-    replace ht : x ∈ p k := by convert sub_mem ht₁ ((p k).smul_mem t₁ ht); simp
-    simpa using ⟨k, hk, ht⟩
-
-open Set in
-lemma Submodule.exists_forall_notMem_of_forall_ne_top
-    {ι K M : Type*} [Finite ι] [Field K] [Infinite K] [AddCommGroup M] [Module K M]
-    (p : ι → Submodule K M) (h : ∀ i, p i ≠ ⊤) :
-    ∃ x, ∀ i, x ∉ p i := by
-  let _i : Fintype ι := Fintype.ofFinite ι
-  suffices ⋃ i, (p i : Set M) ⊂ Set.univ by simpa [ssubset_univ_iff, iUnion_eq_univ_iff] using this
-  simpa using iUnion_ssubset_of_forall_ne_top_of_card_lt Finset.univ p h (by simp)
-
-lemma exists_foo' {ι K M : Type*} [Finite ι] [Field K] [Infinite K] [AddCommGroup M] [Module K M]
-    (f : ι → Module.Dual K M) (h : ∀ i, ∃ x, f i x ≠ 0) :
-    ∃ x, ∀ i, f i x ≠ 0 := by
-  let p i := LinearMap.ker (f i)
-  replace h i : p i ≠ ⊤ := by
-    intro contra
-    simp only [LinearMap.ker_eq_top, p] at contra
-    obtain ⟨x, hx⟩ := h i
-    exact hx <| LinearMap.congr_fun contra x
-  obtain ⟨x, hx⟩ := Submodule.exists_forall_notMem_of_forall_ne_top p h
-  exact ⟨x, by simpa [p] using hx⟩
-
-open Module Submodule in
-lemma exists_foo {ι K M : Type*} [Finite ι] [Field K] [Infinite K] [AddCommGroup M] [Module K M]
-    (p : Submodule K M) (f : ι → Dual K M) (h : ∀ i, ∃ x ∈ p, f i x ≠ 0) :
-    ∃ x ∈ p, ∀ i, f i x ≠ 0 := by
-  let f' (i : ι) : Dual K p := (f i).domRestrict p
-  replace h (i : ι) : ∃ x : p, f' i x ≠ 0 := by obtain ⟨x, hxp, hx₀⟩ := h i; exact ⟨⟨x, hxp⟩, hx₀⟩
-  obtain ⟨⟨x, hxp⟩, hx₀⟩ := exists_foo' f' h
-  exact ⟨x, hxp, hx₀⟩
 
 noncomputable section
 
@@ -901,7 +798,7 @@ lemma exists_distinct_blah :
     obtain ⟨d, hp, hf⟩ := this
     refine ⟨d, fun i ↦ hf (Sum.inl i), fun i j h ↦ ?_, hp⟩
     simpa [f, sub_eq_zero] using hf (Sum.inr ⟨⟨i, j⟩, h⟩)
-  apply exists_foo p f
+  apply Module.Dual.exists_forall_mem_ne_zero_of_forall_exists p f
   rintro (i | ⟨⟨i, j⟩, h : i ≠ j⟩)
   · obtain ⟨j, hj, hj₀⟩ := b.exists_mem_support_pos_pairingIn_ne_zero i
     refine ⟨fun i ↦ P.pairingIn ℤ i j, subset_span ⟨⟨j, hj⟩, rfl⟩, ?_⟩
