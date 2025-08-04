@@ -1066,13 +1066,12 @@ lemma Topology.IsEmbedding.sumElim_right (h : IsEmbedding (Sum.elim f g)) : IsEm
 theorem isEmbedding_sumElim :
     IsEmbedding (Sum.elim f g) ↔ IsEmbedding f ∧ IsEmbedding g ∧
       Disjoint (closure (range f)) (range g) ∧ Disjoint (range f) (closure (range g)) := by
-  simp_rw [isEmbedding_iff, isInducing_sumElim]
+  simp_rw [isEmbedding_iff, isInducing_sumElim, Sum.elim_injective]
   constructor
-  · intro ⟨⟨hf₁, hg₁, hFg, hfG⟩, hfg⟩
-    rw [Sum.elim_injective] at hfg
-    exact ⟨⟨hf₁, hfg.1⟩, ⟨hg₁, hfg.2.1⟩, hFg, hfG⟩
+  · intro ⟨⟨hf₁, hg₁, hFg, hfG⟩, ⟨hf₂, hg₂, f_ne_g⟩⟩
+    exact ⟨⟨hf₁, hf₂⟩, ⟨hg₁, hg₂⟩, hFg, hfG⟩
   · intro ⟨⟨hf₁, hf₂⟩, ⟨hg₁, hg₂⟩, hFg, hfG⟩
-    refine ⟨⟨hf₁, hg₁, hFg, hfG⟩, hf₂.sumElim hg₂ ?_⟩
+    refine ⟨⟨hf₁, hg₁, hFg, hfG⟩, ⟨hf₂, hg₂, ?_⟩⟩
     exact fun a b ↦ hfG.ne_of_mem (mem_range_self a) (subset_closure (mem_range_self b))
 
 /-- If `f` and `g` are embeddings whose ranges are separated, `Sum.elim f g` is an embedding. -/
