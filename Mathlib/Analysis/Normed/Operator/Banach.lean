@@ -98,7 +98,7 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
   rcases eq_or_ne y 0 with rfl | hy
   · use 0
     simp
-  · have hc' : 1 < ‖σ c‖ := by simp only [RingHomIsometric.is_iso, hc]
+  · have hc' : 1 < ‖σ c‖ := by simp only [RingHomIsometric.norm_map, hc]
     rcases rescale_to_shell hc' (half_pos εpos) hy with ⟨d, hd, ydlt, -, dinv⟩
     let δ := ‖d‖ * ‖y‖ / 4
     have δpos : 0 < δ := by positivity
@@ -143,7 +143,7 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
     rw [← dist_eq_norm] at J
     have K : ‖σ' d⁻¹ • x‖ ≤ (ε / 2)⁻¹ * ‖c‖ * 2 * ↑n * ‖y‖ :=
       calc
-        ‖σ' d⁻¹ • x‖ = ‖d‖⁻¹ * ‖x₁ - x₂‖ := by rw [norm_smul, RingHomIsometric.is_iso, norm_inv]
+        ‖σ' d⁻¹ • x‖ = ‖d‖⁻¹ * ‖x₁ - x₂‖ := by rw [norm_smul, RingHomIsometric.norm_map, norm_inv]
         _ ≤ (ε / 2)⁻¹ * ‖c‖ * ‖y‖ * (n + n) := by
           gcongr
           · simpa using dinv
