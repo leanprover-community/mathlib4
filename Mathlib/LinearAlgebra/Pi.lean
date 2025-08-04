@@ -78,7 +78,7 @@ def const : M₂ →ₗ[R] (ι → M₂) := pi fun _ ↦ .id
 
 /-- The projections from a family of modules are linear maps.
 
-Note: this definition would be called `Pi.evalLinear` if we followed the pattern established by
+Note: this definition would be called `Pi.evalLinearMap` if we followed the pattern established by
 `Pi.evalAddHom`, `Pi.evalMonoidHom`, `Pi.evalRingHom`, ... -/
 def proj (i : ι) : ((i : ι) → φ i) →ₗ[R] φ i where
   toFun := Function.eval i
