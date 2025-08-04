@@ -168,6 +168,10 @@ theorem IsIdempotentElem.isPositive_iff_isSymmetric {T : E →ₗ[𝕜] E} (hT :
   rw [← hT.eq, Module.End.mul_apply, h]
   exact inner_self_nonneg
 
+theorem IsPositive.of_isSymmetricProjection {p : E →ₗ[𝕜] E} (hp : p.IsSymmetricProjection) :
+    p.IsPositive :=
+  hp.isIdempotentElem.isPositive_iff_isSymmetric.mpr hp.isSymmetric
+
 end LinearMap
 
 namespace ContinuousLinearMap
@@ -359,8 +363,7 @@ end PartialOrder
 @[grind →]
 theorem IsIdempotentElem.isPositive_iff_isSelfAdjoint
     {p : E →L[𝕜] E} (hp : IsIdempotentElem p) : p.IsPositive ↔ IsSelfAdjoint p := by
-  rw [← isPositive_toLinearMap_iff, IsIdempotentElem.isPositive_iff_isSymmetric
-    (congr(LinearMapClass.linearMap $hp.eq))]
+  rw [← isPositive_toLinearMap_iff, IsIdempotentElem.isPositive_iff_isSymmetric hp.toLinearMap]
   exact isSelfAdjoint_iff_isSymmetric.symm
 
 /-- A star projection operator is positive.
