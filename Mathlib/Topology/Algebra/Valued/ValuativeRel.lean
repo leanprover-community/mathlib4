@@ -23,7 +23,7 @@ variable {R : Type*} [CommRing R]
 
 instance [UniformSpace R] [IsUniformAddGroup R] [ValuativeRel R] [IsValuativeTopology R] :
     Valued R (ValueGroupWithZero R) :=
-  .mk (valuation R) fun s ↦ by convert ValuativeTopology.mem_nhds (x := (0 : R)); rw [sub_zero]
+  .mk (valuation R) fun s ↦ by convert IsValuativeTopology.mem_nhds (x := (0 : R)); rw [sub_zero]
 
 end ValuativeRel
 
@@ -36,8 +36,8 @@ open ValuativeRel TopologicalSpace Filter Topology Set
 local notation "v" => valuation R
 
 lemma mem_nhds_iff (s : Set R) : s ∈ 𝓝 (0 : R) ↔
-    ∃ γ : (ValueGroupWithZero R)ˣ, { x | valuation _ x < γ } ⊆ s := by
-  convert ValuativeTopology.mem_nhds (x := (0 : R))
+    ∃ γ : (ValueGroupWithZero R)ˣ, { x | v x < γ } ⊆ s := by
+  convert IsValuativeTopology.mem_nhds (x := (0 : R))
   rw [sub_zero]
 
 theorem hasBasis_nhds (x : R) :
@@ -51,14 +51,13 @@ theorem hasBasis_nhds_zero :
       fun γ : (ValueGroupWithZero R)ˣ => { x | v x < γ } := by
   convert hasBasis_nhds (0 : R); rw [sub_zero]
 
+@[deprecated (since := "2025-08-01")]
+alias _root_.ValuativeTopology.hasBasis_nhds_zero := hasBasis_nhds_zero
+
 instance : ContinuousConstVAdd R R where
   continuous_const_vadd x := continuous_iff_continuousAt.2 fun z ↦
     ((hasBasis_nhds z).tendsto_iff (hasBasis_nhds (x + z))).2 fun γ _ ↦
       ⟨γ, trivial, fun y hy ↦ by simpa using hy⟩
-@[deprecated (since := "2025-08-01")]
-alias _root_.ValuativeTopology.hasBasis_nhds_zero := hasBasis_nhds_zero
-
-variable [IsTopologicalAddGroup R]
 
 variable (R) in
 theorem tendsto_uncurry_add_nhds_zero :
