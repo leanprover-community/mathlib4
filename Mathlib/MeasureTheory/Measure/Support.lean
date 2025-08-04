@@ -58,7 +58,7 @@ and various descriptions of the complement of the support are provided.
 
 ## Implementation notes
 
-Have to go through and resove some of these, and remove the associated bullets!
+Have to go through and resolve some of these, and remove the associated bullets!
 
 * TO DO: Rename `MeasureTheory.measure_mono_null` as `MeasureTheory.Measure.mono_null`
   to enable dot notation. (In a separate PR?)
@@ -93,8 +93,6 @@ We provide the definition in terms of the filter-theoretic equivalent
 protected def support (μ : Measure X) : Set X := {x : X | ∃ᶠ u in (𝓝 x).smallSets, 0 < μ u}
 
 variable {μ : Measure X}
-
-/- MeasureTheory.measure_mono_null should be renamed to allow for dot notation. -/
 
 lemma pos_mono {α : Type*} [MeasurableSpace α]
     (μ : Measure α) ⦃s t : Set α⦄ (h : s ⊆ t) (hs : 0 < μ s) :
