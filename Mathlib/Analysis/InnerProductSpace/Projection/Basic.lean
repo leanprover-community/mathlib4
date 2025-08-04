@@ -10,23 +10,16 @@ import Mathlib.Analysis.RCLike.Lemmas
 /-!
 # The orthogonal projection
 
-Given a nonempty complete subspace `K` of an inner product space `E`, this file constructs
+Given a nonempty subspace `K` of an inner product space `E` such that `K`
+admits an orthogonal projection, this file constructs
 `K.orthogonalProjection : E →L[𝕜] K`, the orthogonal projection of `E` onto `K`.  This map
 satisfies: for any point `u` in `E`, the point `v = K.orthogonalProjection u` in `K` minimizes the
 distance `‖u - v‖` to `u`.
 
-Also a linear isometry equivalence `K.reflection : E ≃ₗᵢ[𝕜] E` is constructed, by choosing, for
-each `u : E`, the point `K.reflection u` to satisfy
-`u + (K.reflection u) = 2 • K.orthogonalProjection u`.
+This file also defines `K.starProjection : E →L[𝕜] E` which is the
+orthogonal projection of `E` onto `K` but as a map from `E` to `E` instead of `E` to `K`.
 
-Basic API for `orthogonalProjection` and `reflection` is developed.
-
-Next, the orthogonal projection is used to prove a series of more subtle lemmas about the
-orthogonal complement of complete subspaces of `E` (the orthogonal complement itself was
-defined in `Analysis.InnerProductSpace.Orthogonal`); the lemma
-`Submodule.sup_orthogonal_of_hasOrthogonalProjection`,
-stating that for a subspace `K` of `E` such that `K` admits an orthogonal projection we have
-`K ⊔ Kᗮ = ⊤`, is a typical example.
+Basic API for `orthogonalProjection` and `starProjection` is developed.
 
 ## References
 
@@ -386,7 +379,7 @@ variable (K)
 
 /-- The orthogonal projection has norm `≤ 1`. -/
 theorem orthogonalProjection_norm_le : ‖K.orthogonalProjection‖ ≤ 1 :=
-  LinearMap.mkContinuous_norm_le _ (by norm_num) _
+  LinearMap.mkContinuous_norm_le _ (by simp) _
 
 theorem starProjection_norm_le : ‖K.starProjection‖ ≤ 1 :=
   K.orthogonalProjection_norm_le
