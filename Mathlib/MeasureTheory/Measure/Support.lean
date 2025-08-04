@@ -60,8 +60,8 @@ and various descriptions of the complement of the support are provided.
 
 Have to go through and resove some of these, and remove the associated bullets!
 
-* There is a to-do about renaming `MeasureTheory.measure_mono_null` to enable dot notation for
-  better API ergonomics.
+* TO DO: Rename `MeasureTheory.measure_mono_null` as `MeasureTheory.Measure.mono_null`
+  to enable dot notation. (In a separate PR?)
 * The lemma `support_restrict_subset_closure_inter_support` is currently a placeholder and
   explicitly marked for replacement: it should be proved directly without relying on the
   existing commented strategy.
