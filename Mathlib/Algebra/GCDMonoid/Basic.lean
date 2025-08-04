@@ -816,11 +816,7 @@ variable [GCDMonoid α] {m n a b c : α}
  -/
 
 -- adapted from `Nat.lcm_dvd_mul` in Lean 4's source
-@[simp] theorem lcm_dvd_mul [GCDMonoid α] (m n : α) : lcm m n ∣ m * n := /- by
-  rcases gcd_mul_lcm m n with ⟨u, eq_m_mul_n⟩
-  exact ⟨gcd m n * u, by
-    rw [← eq_m_mul_n]
-    sorry⟩ -/
+@[simp] theorem lcm_dvd_mul [GCDMonoid α] (m n : α) : lcm m n ∣ m * n :=
   lcm_dvd (by simp) (by simp)
 
 /-- Adapted from and similar to `dvd_mul_of_dvd_left`. -/
@@ -835,8 +831,7 @@ theorem dvd_of_lcm_right_dvd [GCDMonoid α] {a b c : α} (h : lcm a b ∣ c) : a
   (dvd_lcm_left a b).trans h
 
 /-- Adapted from and similar to `dvd_mul_of_dvd_right`. -/
-theorem dvd_lcm_of_dvd_right [GCDMonoid α] {a b : α} (h : a ∣ b) (c : α) : a ∣ lcm c b := /- by
-  --rw [lcm_comm]; exact h.mul_right _ -/
+theorem dvd_lcm_of_dvd_right [GCDMonoid α] {a b : α} (h : a ∣ b) (c : α) : a ∣ lcm c b :=
   h.trans (dvd_lcm_right c b)
 
 /-- Adapted from and similar to `Dvd.dvd.mul_left`. -/
@@ -844,7 +839,6 @@ alias Dvd.dvd.lcm_left := dvd_lcm_of_dvd_right
 
 /-- Adapted from and similar to `dvd_of_mul_left_dvd`. -/
 theorem dvd_of_lcm_left_dvd [GCDMonoid α] {a b c : α} (h : lcm a b ∣ c) : b ∣ c :=
-  --Dvd.elim h fun d ceq => Dvd.intro (a * d) (by simp [ceq])
   (dvd_lcm_right a b).trans h
 
 --end Divisibility
