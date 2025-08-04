@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Enriched.Basic
 import Mathlib.CategoryTheory.Monoidal.Types.Coyoneda
+import Mathlib.Tactic.Widget.StringDiagram
 
 /-!
 # Enriched ordinary categories
@@ -191,10 +192,7 @@ noncomputable def TransportEnrichment.EnrichedOrdinaryCategory
     EnrichedOrdinaryCategory W (TransportEnrichment F C) where
   homEquiv {X Y} := (eHomEquiv V (C := C)).trans <| Equiv.ofBijective _ (h (Hom (C := C) (X : C) Y))
   homEquiv_comp {X Y Z} f g := by
-    simp
-    rw [eHomEquiv_comp V (C := C) f g]
-    simp
-    sorry
+    simp [eHomEquiv_comp, eComp_eq, tensorHom_def (Functor.LaxMonoidal.ε F), unitors_inv_equal]
 
 end TransportEnrichment
 

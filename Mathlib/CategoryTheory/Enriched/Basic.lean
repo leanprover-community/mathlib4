@@ -138,6 +138,14 @@ instance : EnrichedCategory W (TransportEnrichment F C) where
       F.map_comp, MonoidalCategory.whiskerLeft_comp, Category.assoc,
       Functor.LaxMonoidal.μ_natural_right_assoc]
 
+lemma TransportEnrichment.eId_eq (X : TransportEnrichment F C) :
+    eId W X = ε F ≫ F.map (eId (C := C) V X) :=
+  rfl
+
+lemma TransportEnrichment.eComp_eq (X Y Z : TransportEnrichment F C) :
+    eComp W X Y Z = μ F _ _ ≫ F.map (eComp V _ _ _) :=
+  rfl
+
 end
 
 /-- Construct an honest category from a `Type v`-enriched category.
