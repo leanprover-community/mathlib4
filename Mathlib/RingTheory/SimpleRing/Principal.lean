@@ -9,7 +9,9 @@ import Mathlib.RingTheory.SimpleRing.Field
 import Mathlib.RingTheory.TwoSidedIdeal.Operations
 
 /-!
-# A commutative simple ring is trivially a principal ideal domain
+# A commutative simple ring is a principal ideal domain
+
+Indeed, it is a field.
 
 -/
 
