@@ -198,17 +198,18 @@ theorem sSup_unitClosedBall_eq_norm {𝕜 𝕜₂ E F : Type*} [NormedAddCommGro
 @[deprecated (since := "2024-12-01")]
 alias sSup_closed_unit_ball_eq_norm := sSup_unitClosedBall_eq_norm
 
-theorem exists_nnnorm_eq_one_lt_apply_of_lt_opNNNorm
-    {𝕜₂ E F : Type*} [NormedAddCommGroup E]
-    [SeminormedAddCommGroup F] [NontriviallyNormedField 𝕜₂] {σ₁₂ : ℝ →+* 𝕜₂}
-    [NormedSpace ℝ E] [NormedSpace 𝕜₂ F] [RingHomIsometric σ₁₂] (f : E →SL[σ₁₂] F) {r : ℝ≥0}
-    (hr : r < ‖f‖₊) : ∃ x : E, ‖x‖₊ = 1 ∧ r < ‖f x‖₊ := by
+theorem exists_nnnorm_eq_one_lt_apply_of_lt_opNNNorm {𝕜 𝕜₂ E F : Type*}
+    [NormedAddCommGroup E] [SeminormedAddCommGroup F]
+    [DenselyNormedField 𝕜] [NontriviallyNormedField 𝕜₂]
+    [NormedAlgebra ℝ 𝕜] [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F]
+    {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂] (f : E →SL[σ₁₂] F) {r : ℝ≥0} (hr : r < ‖f‖₊) :
+    ∃ x : E, ‖x‖₊ = 1 ∧ r < ‖f x‖₊ := by
   obtain ⟨x, hlt, hr⟩ := exists_lt_apply_of_lt_opNNNorm f hr
   have hx0 : ‖x‖₊ ≠ 0 := by
     rw [nnnorm_ne_zero_iff]
     rintro rfl
     simp at hr
-  use ‖x‖⁻¹ • x
+  use algebraMap ℝ 𝕜 ‖x‖⁻¹ • x
   suffices r < ‖x‖₊⁻¹ * ‖f x‖₊ by
     simpa [nnnorm_smul, inv_mul_cancel₀ hx0] using this
   refine hr.trans (lt_mul_of_one_lt_left ?_ ?_)
@@ -217,13 +218,15 @@ theorem exists_nnnorm_eq_one_lt_apply_of_lt_opNNNorm
 
 /-- When the domain is a real normed space, `sSup_unitClosedBall_eq_norm` can be tightened to take
 the supremum over only the `Metric.sphere`. -/
-theorem sSup_sphere_eq_nnnorm {𝕜₂ E F : Type*} [NormedAddCommGroup E]
-    [SeminormedAddCommGroup F] [NontriviallyNormedField 𝕜₂] {σ₁₂ : ℝ →+* 𝕜₂}
-    [NormedSpace ℝ E] [NormedSpace 𝕜₂ F] [RingHomIsometric σ₁₂] (f : E →SL[σ₁₂] F)
-    [NormSMulClass 𝕜₂ F] :
+theorem sSup_sphere_eq_nnnorm {𝕜 𝕜₂ E F : Type*}
+    [NormedAddCommGroup E] [SeminormedAddCommGroup F]
+    [DenselyNormedField 𝕜] [NontriviallyNormedField 𝕜₂]
+    [NormedAlgebra ℝ 𝕜] [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F]
+    {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂] (f : E →SL[σ₁₂] F) :
     sSup ((fun x => ‖f x‖₊) '' Metric.sphere 0 1) = ‖f‖₊ := by
   cases subsingleton_or_nontrivial E
   · simp [sphere_eq_empty_of_subsingleton one_ne_zero]
+  have : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E
   refine csSup_eq_of_forall_le_of_forall_lt_exists_gt
       ((NormedSpace.sphere_nonempty.mpr zero_le_one).image _) ?_ fun ub hub => ?_
   · rintro - ⟨x, hx, rfl⟩
