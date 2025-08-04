@@ -190,7 +190,7 @@ lemma nonempty_support (hμ : μ ≠ 0) : μ.support.Nonempty :=
    Nonempty.right <| nonempty_inter_support_of_pos <| measure_univ_pos.mpr hμ
 
 lemma nonempty_support_iff : μ.support.Nonempty ↔ μ ≠ 0 :=
-  ⟨fun h e ↦ (not_nonempty_iff_eq_empty.mpr <| (congrArg Measure.support e).trans
+  ⟨fun h e ↦ (not_nonempty_iff_eq_empty.mpr <| congrArg Measure.support e|>.trans
     <| support_zero) h, fun h ↦ nonempty_support h⟩
 
 end Measure
