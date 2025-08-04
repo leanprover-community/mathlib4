@@ -85,7 +85,7 @@ theorem toSubsemiring_inj {P₁ P₂ : RingPreordering R} :
 theorem mem_toSubsemiring {P : RingPreordering R} {x : R} : x ∈ P.toSubsemiring ↔ x ∈ P := .rfl
 
 @[simp, norm_cast]
-theorem coe_toSubsemiring {P : RingPreordering R} : (P.toSubsemiring : Set R) = P := rfl
+theorem coe_toSubsemiring (P : RingPreordering R) : (P.toSubsemiring : Set R) = P := rfl
 
 @[simp]
 theorem mem_mk {toSubsemiring : Subsemiring R} (mem_of_isSquare) (neg_one_notMem) {x : R} :
