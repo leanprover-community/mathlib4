@@ -22,7 +22,7 @@ variable {R A B : Type*} [CommSemiring R]
   [StarAddMonoid B] [Module R A] [Module R B] [StarModule R A] [StarModule R B]
 
 instance : Star (A ⊗[R] B) where
-  star x := map (starLinearEquiv R).toLinearMap (starLinearEquiv R).toLinearMap x
+  star x := map (starLinearEquiv R (A:=A)) (starLinearEquiv R).toLinearMap x
 
 @[simp]
 theorem star_tmul (x : A) (y : B) :
@@ -40,6 +40,6 @@ noncomputable instance : StarAddMonoid (A ⊗[R] B) where
   star_add _ _ := by simp [star]
 
 instance : StarModule R (A ⊗[R] B) where
-  star_smul r α := by simp [star]; rfl
+  star_smul _ _ := by simp [star]; rfl
 
 end TensorProduct
