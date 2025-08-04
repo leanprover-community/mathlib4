@@ -782,15 +782,7 @@ theorem le_restrict_empty : v ≤[∅] w := by
   rw [restrict_empty, restrict_empty]
 
 theorem le_restrict_univ_iff_le : v ≤[Set.univ] w ↔ v ≤ w := by
-  constructor
-  · intro h s hs
-    have := h s hs
-    rwa [restrict_apply _ MeasurableSet.univ hs, Set.inter_univ,
-      restrict_apply _ MeasurableSet.univ hs, Set.inter_univ] at this
-  · intro h s hs
-    rw [restrict_apply _ MeasurableSet.univ hs, Set.inter_univ,
-      restrict_apply _ MeasurableSet.univ hs, Set.inter_univ]
-    exact h s hs
+  simp
 
 end
 
