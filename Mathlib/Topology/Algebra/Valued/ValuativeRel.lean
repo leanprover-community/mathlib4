@@ -41,7 +41,7 @@ lemma mem_nhds_iff (s : Set R) : s ∈ 𝓝 (0 : R) ↔
   rw [sub_zero]
 
 theorem hasBasis_nhds (x : R) :
-    (𝓝 (x : R)).HasBasis (fun _ => True)
+    (𝓝 x).HasBasis (fun _ => True)
       fun γ : (ValueGroupWithZero R)ˣ => { z | v (z - x) < γ } := by
   simp [Filter.hasBasis_iff, mem_nhds]
 
@@ -54,35 +54,24 @@ theorem hasBasis_nhds_zero :
 @[deprecated (since := "2025-08-01")]
 alias _root_.ValuativeTopology.hasBasis_nhds_zero := hasBasis_nhds_zero
 
-instance : ContinuousConstVAdd R R where
-  continuous_const_vadd x := continuous_iff_continuousAt.2 fun z ↦
-    ((hasBasis_nhds z).tendsto_iff (hasBasis_nhds (x + z))).2 fun γ _ ↦
-      ⟨γ, trivial, fun y hy ↦ by simpa using hy⟩
-
-variable (R) in
-theorem tendsto_uncurry_add_nhds_zero :
-    Tendsto (Function.uncurry (· + ·)) (𝓝 (0 : R) ×ˢ 𝓝 0) (𝓝 0) :=
-  ((hasBasis_nhds_zero R).prod_self.tendsto_iff (hasBasis_nhds_zero R)).2 fun γ _ ↦
-    ⟨γ, trivial, fun ⟨_, _⟩ hx ↦ (v).map_add_lt hx.left hx.right⟩
-
-variable (R) in
-theorem tendsto_neg_nhds_zero :
-    Tendsto (fun x ↦ -x) (𝓝 (0 : R)) (𝓝 0) :=
-  ((hasBasis_nhds_zero R).tendsto_iff (hasBasis_nhds_zero R)).2 fun γ _ ↦
-    ⟨γ, trivial, fun y hy ↦ by simpa using hy⟩
-
-instance : IsTopologicalAddGroup R :=
-  .of_comm_of_nhds_zero (tendsto_uncurry_add_nhds_zero R) (tendsto_neg_nhds_zero R) fun x₀ ↦
-    Eq.symm <| map_eq_of_inverse (-x₀ + ·) (by ext; simp)
-      (by simpa [ContinuousAt] using
-        (ContinuousConstVAdd.continuous_const_vadd (x₀ : R)).continuousAt (x := (0 : R)))
-      (by simpa [ContinuousAt] using
-        (ContinuousConstVAdd.continuous_const_vadd (-x₀ : R)).continuousAt (x := x₀))
+instance : IsTopologicalAddGroup R := by
+  have cts_add : ContinuousConstVAdd R R :=
+    ⟨fun x ↦ continuous_iff_continuousAt.2 fun z ↦
+      ((hasBasis_nhds z).tendsto_iff (hasBasis_nhds (x + z))).2 fun γ _ ↦
+        ⟨γ, trivial, fun y hy ↦ by simpa using hy⟩⟩
+  have basis := hasBasis_nhds_zero R
+  refine .of_comm_of_nhds_zero ?_ ?_ fun x₀ ↦ (map_eq_of_inverse (-x₀ + ·) ?_ ?_ ?_).symm
+  · exact (basis.prod_self.tendsto_iff basis).2 fun γ _ ↦
+      ⟨γ, trivial, fun ⟨_, _⟩ hx ↦ (v).map_add_lt hx.left hx.right⟩
+  · exact (basis.tendsto_iff basis).2 fun γ _ ↦ ⟨γ, trivial, fun y hy ↦ by simpa using hy⟩
+  · ext; simp
+  · simpa [ContinuousAt] using (cts_add.1 x₀).continuousAt (x := (0 : R))
+  · simpa [ContinuousAt] using (cts_add.1 (-x₀)).continuousAt (x := x₀)
 
 instance : IsTopologicalRing R :=
   letI := IsTopologicalAddGroup.toUniformSpace R
   letI := isUniformAddGroup_of_addCommGroup (G := R)
-  by infer_instance
+  inferInstance
 
 @[deprecated (since := "2025-08-01")]
 alias _root_.ValuativeTopology.mem_nhds := mem_nhds
