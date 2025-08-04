@@ -44,6 +44,8 @@ structure RingPreordering extends Subsemiring R where
   mem_of_isSquare' {x : R} (hx : IsSquare x) : x ∈ carrier := by aesop
   neg_one_notMem' : -1 ∉ carrier := by aesop
 
+initialize_simps_projections RingPreordering (carrier → coe, as_prefix coe)
+
 namespace RingPreordering
 
 attribute [coe] toSubsemiring
@@ -109,6 +111,7 @@ protected def copy : RingPreordering R where
   mul_mem' ha hb := by aesop
 
 @[simp, norm_cast] theorem coe_copy : (P.copy S hS : Set R) = S := rfl
+@[simp] theorem mem_copy {x} : x ∈ P.copy S hS ↔ x ∈ S := .rfl
 theorem copy_eq : P.copy S hS = S := rfl
 
 end copy
