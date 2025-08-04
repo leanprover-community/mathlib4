@@ -739,35 +739,39 @@ variable {R A B C D : Type*} [CommSemiring R] [AddCommMonoid A]
   [AddCommMonoid B] [AddCommMonoid C] [AddCommMonoid D]
   [Module R A] [Module R B] [Module R C] [Module R D]
 
-open LinearMap
+open LinearEquiv
 open scoped TensorProduct
 
 lemma TensorProduct.assoc_tensor :
-    (TensorProduct.assoc R (A ⊗[R] B) C D).toLinearMap
-    = (TensorProduct.assoc R A B (C ⊗[R] D)).symm.toLinearMap
-    ∘ₗ lTensor A (TensorProduct.assoc R B C D)
-    ∘ₗ (TensorProduct.assoc R A (B ⊗[R] C) D).toLinearMap
-    ∘ₗ rTensor D (TensorProduct.assoc R A B C) := by
+    (TensorProduct.assoc R (A ⊗[R] B) C D)
+    = rTensor D (TensorProduct.assoc R A B C)
+    ≪≫ₗ (TensorProduct.assoc R A (B ⊗[R] C) D)
+    ≪≫ₗ lTensor A (TensorProduct.assoc R B C D)
+    ≪≫ₗ (TensorProduct.assoc R A B (C ⊗[R] D)).symm := by
+  rw [← LinearEquiv.toLinearMap_inj]
   ext; simp
 
 lemma TensorProduct.assoc_tensor' :
-    (TensorProduct.assoc R A (B ⊗[R] C) D).toLinearMap
-    = lTensor A (TensorProduct.assoc R B C D).symm.toLinearMap
-    ∘ₗ (TensorProduct.assoc R A B (C ⊗[R] D))
-    ∘ₗ (TensorProduct.assoc R (A ⊗[R] B) C D).toLinearMap
-    ∘ₗ rTensor D (TensorProduct.assoc R A B C).symm := by
+    (TensorProduct.assoc R A (B ⊗[R] C) D)
+    = rTensor D (TensorProduct.assoc R A B C).symm
+    ≪≫ₗ (TensorProduct.assoc R (A ⊗[R] B) C D)
+    ≪≫ₗ (TensorProduct.assoc R A B (C ⊗[R] D))
+    ≪≫ₗ lTensor A (TensorProduct.assoc R B C D).symm
+    := by
+  rw [← LinearEquiv.toLinearMap_inj]
   ext; simp
 
 lemma TensorProduct.assoc_tensor'' :
-    (TensorProduct.assoc R A B (C ⊗[R] D)).toLinearMap
-    =  lTensor A (TensorProduct.assoc R B C D)
-    ∘ₗ (TensorProduct.assoc R A (B ⊗[R] C) D).toLinearMap
-    ∘ₗ rTensor D (TensorProduct.assoc R A B C)
-    ∘ₗ (TensorProduct.assoc R (A ⊗[R] B) C D).symm.toLinearMap := by
+    (TensorProduct.assoc R A B (C ⊗[R] D))
+    = (TensorProduct.assoc R (A ⊗[R] B) C D).symm
+    ≪≫ₗ rTensor D (TensorProduct.assoc R A B C)
+    ≪≫ₗ (TensorProduct.assoc R A (B ⊗[R] C) D)
+    ≪≫ₗ lTensor A (TensorProduct.assoc R B C D) := by
+  rw [assoc_tensor]
   ext; simp
 
 lemma TensorProduct.lid_tensor :
-    (TensorProduct.lid R (A ⊗[R] B)).toLinearMap
-    = rTensor B (TensorProduct.lid R A)
-    ∘ₗ (TensorProduct.assoc R R A B).symm.toLinearMap := by
+    (TensorProduct.lid R (A ⊗[R] B))
+    = (TensorProduct.assoc R R A B).symm ≪≫ₗ rTensor B (TensorProduct.lid R A) := by
+  rw [← LinearEquiv.toLinearMap_inj]
   ext; simp
