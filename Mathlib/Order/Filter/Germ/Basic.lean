@@ -657,7 +657,7 @@ instance instModule [Semiring R] [AddCommMonoid M] [Module R M] : Module R (Germ
   zero_smul f :=
     inductionOn f fun f => by
       norm_cast
-      simp
+      simp [zero_smul]
 
 instance instModule' [Semiring R] [AddCommMonoid M] [Module R M] :
     Module (Germ l R) (Germ l M) where
