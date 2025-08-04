@@ -128,23 +128,6 @@ Implementation notes:
 -/
 macro (name := rfl_cat) "rfl_cat" : tactic => do `(tactic| (refine id ?_; intros; apply_rfl))
 
-open Lean Elab Tactic in
-def categoryTheoryDischarger : TacticM Unit := do
-  if ← getBoolOption `mathlib.tactic.category.grind then
-    if ← getBoolOption `mathlib.tactic.category.log_grind then
-      logInfo "Category theory discharger using `grind`."
-    evalTacticSeq (← `(tacticSeq|
-      intros; (try dsimp only) <;> ((try ext); grind (gen := 20) (ematch := 20))))
-  else
-    if ← getBoolOption `mathlib.tactic.category.log_aesop then
-      logInfo "Category theory discharger using `aesop`."
-    evalTactic (← `(tactic|
-      aesop (config := { introsTransparency? := some .default, terminal := true })
-        (rule_sets := [$(Lean.mkIdent `CategoryTheory):ident])))
-
-elab (name := cat_disch) "cat_disch" : tactic =>
-  categoryTheoryDischarger
-
 /--
 A thin wrapper for `aesop` which adds the `CategoryTheory` rule set and
 allows `aesop` to look through semireducible definitions when calling `intros`.
@@ -176,6 +159,21 @@ macro (name := aesop_cat_nonterminal) "aesop_cat_nonterminal" c:Aesop.tactic_cla
               (rule_sets := [$(Lean.mkIdent `CategoryTheory):ident]))
 
 attribute [aesop safe (rule_sets := [CategoryTheory])] Subsingleton.elim
+
+open Lean Elab Tactic in
+def categoryTheoryDischarger : TacticM Unit := do
+  if ← getBoolOption `mathlib.tactic.category.grind then
+    if ← getBoolOption `mathlib.tactic.category.log_grind then
+      logInfo "Category theory discharger using `grind`."
+    evalTacticSeq (← `(tacticSeq|
+      intros; (try dsimp only) <;> ((try ext); grind (gen := 20) (ematch := 20))))
+  else
+    if ← getBoolOption `mathlib.tactic.category.log_aesop then
+      logInfo "Category theory discharger using `aesop`."
+    evalTactic (← `(tactic| aesop_cat))
+
+elab (name := cat_disch) "cat_disch" : tactic =>
+  categoryTheoryDischarger
 
 set_option mathlib.tactic.category.grind true
 
