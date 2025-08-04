@@ -353,8 +353,7 @@ theorem isStarProjection_iff_isIdempotentElem_and_isStarNormal :
   rw [isStarProjection_iff, and_congr_right_iff]
   exact fun h => IsIdempotentElem.isSelfAdjoint_iff_isStarNormal h
 
-open ContinuousLinearMap
-
+open ContinuousLinearMap in
 omit [CompleteSpace E] in
 /-- An idempotent operator `T` is symmetric iff `(range T)ᗮ = ker T`. -/
 theorem IsIdempotentElem.isSymmetric_iff_orthogonal_range (h : IsIdempotentElem T) :
