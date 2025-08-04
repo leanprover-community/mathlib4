@@ -5,7 +5,6 @@ Authors: Scott Carnahan
 -/
 import Mathlib.Algebra.Order.Monoid.Prod
 import Mathlib.RingTheory.HahnSeries.Binomial
-import Mathlib.RingTheory.HahnSeries.Finsupp
 
 /-!
 # Heterogeneous vertex operators
@@ -156,10 +155,10 @@ theorem support_arrowCongrLeft_subset {f : Γ₁ ↪ Γ₂} {A : HVertexOperator
 
 omit [PartialOrder Γ₁] in
 @[simp]
-theorem arrowCongrLeft_zero {f : Γ₁ ↪ Γ₂} :
-    f.arrowCongrLeft (0 : Γ₁ → (V →ₗ[R] W)) = 0 := by
+theorem extend_zero {f : Γ₁ ↪ Γ₂} :
+    (Function.extend f (0 : Γ₁ → (V →ₗ[R] W)) fun _ ↦ 0)  = 0 := by
   ext1 g
-  by_cases h : g ∈ f '' Set.univ <;> simp [Function.Embedding.arrowCongrLeft, Function.extend]
+  by_cases h : g ∈ f '' Set.univ <;> simp [Function.extend]
 
 theorem support_arrowCongrLeft_coeff_injective {f : Γ₁ ↪ Γ₂} :
     Function.Injective fun (A : HVertexOperator Γ₁ R V W) ↦ (f.arrowCongrLeft A.coeff) := by
