@@ -47,9 +47,11 @@ theorem congr_heq {α β γ : Sort _} {f : α → γ} {g : β → γ} {x : α} {
     (h₁ : f ≍ g) (h₂ : x ≍ y) : f x = g y := by
   cases h₂; cases h₁; rfl
 
-theorem congr_heq₂ {α β γ : Sort _} {f : α → γ} {g : β → γ} {x : α} {y : β}
-    (h₁ : f ≍ g) (h₂ : x ≍ y) : f x = g y := by
-  cases h₂; cases h₁; rfl
+theorem congr_heq₂ {α α' β β' γ : Sort _} {f : α → α' → γ} {g : β → β' → γ}
+    {x : α} {u : α'} {y : β} {v : β'}
+    (h₁ : f ≍ g) (h₂ : x ≍ y) (h₃ : u ≍ v) :
+    f x u = g y v := by
+  cases h₃; cases h₂; cases h₁; rfl
 
 theorem congr_arg_heq {β : α → Sort*} (f : ∀ a, β a) :
     ∀ {a₁ a₂ : α}, a₁ = a₂ → f a₁ ≍ f a₂
