@@ -68,7 +68,7 @@ noncomputable def toStrongDualMap : E →ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
 variable {E}
 
 @[simp]
-theorem toDualMap_apply {x y : E} : toStrongDualMap 𝕜 E x y = ⟪x, y⟫ :=
+theorem toStrongDualMap_apply {x y : E} : toStrongDualMap 𝕜 E x y = ⟪x, y⟫ :=
   rfl
 
 section NullSubmodule
