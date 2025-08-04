@@ -305,8 +305,7 @@ def LieRing.toNonUnitalNonAssocRing : NonUnitalNonAssocRing L :=
 variable {ι κ : Type*}
 
 theorem sum_lie (s : Finset ι) (f : ι → L) (m : M) : ⁅∑ i ∈ s, f i, m⁆ = ∑ i ∈ s, ⁅f i, m⁆ :=
-  let g : L →+ M := ⟨⟨fun x ↦ ⁅x, m⁆, zero_lie m⟩, fun x y ↦ add_lie x y m⟩
-  map_sum g f s
+  map_sum ((LieModule.toEndAddHom L M).flip m) f s
 
 theorem lie_sum (s : Finset ι) (f : ι → M) (a : L) : ⁅a, ∑ i ∈ s, f i⁆ = ∑ i ∈ s, ⁅a, f i⁆ :=
   map_sum (LieModule.toEndAddHom L M a) f s
