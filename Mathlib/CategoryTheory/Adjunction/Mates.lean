@@ -275,12 +275,7 @@ def conjugateEquiv : (L₂ ⟶ L₁) ≃ (R₁ ⟶ R₂) :=
 theorem conjugateEquiv_counit (α : L₂ ⟶ L₁) (d : D) :
     L₂.map ((conjugateEquiv adj₁ adj₂ α).app _) ≫ adj₂.counit.app d =
       α.app _ ≫ adj₁.counit.app d := by
-  dsimp [conjugateEquiv]
-  rw [id_comp, comp_id]
-  have := mateEquiv_counit adj₁ adj₂ (L₂.leftUnitor.hom ≫ α ≫ L₁.rightUnitor.inv) d
-  dsimp at this
-  rw [this]
-  simp only [comp_id, id_comp]
+  simp
 
 /-- A component of a transposed form of the inverse conjugation definition. -/
 theorem conjugateEquiv_counit_symm (α : R₁ ⟶ R₂) (d : D) :
