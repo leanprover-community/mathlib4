@@ -92,7 +92,7 @@ theorem mem_mk {toSubsemiring : Subsemiring R} (mem_of_isSquare) (neg_one_notMem
     x ∈ mk toSubsemiring mem_of_isSquare neg_one_notMem ↔ x ∈ toSubsemiring := .rfl
 
 @[simp]
-theorem coe_set_mk {toSubsemiring : Subsemiring R} (mem_of_isSquare) (neg_one_notMem) :
+theorem coe_set_mk (toSubsemiring : Subsemiring R) (mem_of_isSquare neg_one_notMem) :
     (mk toSubsemiring mem_of_isSquare neg_one_notMem : Set R) = toSubsemiring := rfl
 
 section copy
