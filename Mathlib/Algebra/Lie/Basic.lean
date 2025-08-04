@@ -230,7 +230,7 @@ variable (L M) in
 /-- The Lie bracket as a biadditive map.
 
 Usually one will have coefficients and `LieModule.toEnd` will be more useful. -/
-@[simps] def LieModule.toEndAddHom : L →+ M →+ M where
+@[simps] def LieRingModule.toEnd : L →+ M →+ M where
   toFun x := ⟨⟨fun m ↦ ⁅x, m⁆, lie_zero x⟩, LieRingModule.lie_add x⟩
   map_zero' := by ext n; exact zero_lie n
   map_add' y z := by ext n; exact add_lie y z n
@@ -305,10 +305,10 @@ def LieRing.toNonUnitalNonAssocRing : NonUnitalNonAssocRing L :=
 variable {ι κ : Type*}
 
 theorem sum_lie (s : Finset ι) (f : ι → L) (m : M) : ⁅∑ i ∈ s, f i, m⁆ = ∑ i ∈ s, ⁅f i, m⁆ :=
-  map_sum ((LieModule.toEndAddHom L M).flip m) f s
+  map_sum ((LieRingModule.toEnd L M).flip m) f s
 
 theorem lie_sum (s : Finset ι) (f : ι → M) (a : L) : ⁅a, ∑ i ∈ s, f i⁆ = ∑ i ∈ s, ⁅a, f i⁆ :=
-  map_sum (LieModule.toEndAddHom L M a) f s
+  map_sum (LieRingModule.toEnd L M a) f s
 
 theorem sum_lie_sum {κ : Type*} (s : Finset ι) (t : Finset κ) (f : ι → L) (g : κ → M) :
     ⁅(∑ i ∈ s, f i), ∑ j ∈ t, g j⁆ = ∑ i ∈ s, ∑ j ∈ t, ⁅f i, g j⁆ := by
