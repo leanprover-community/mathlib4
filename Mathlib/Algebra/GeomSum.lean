@@ -73,10 +73,7 @@ theorem op_geom_sum₂ (x y : R) (n : ℕ) : ∑ i ∈ range n, op y ^ (n - 1 - 
     ∑ i ∈ range n, op y ^ i * op x ^ (n - 1 - i) := by
   rw [← sum_range_reflect]
   refine sum_congr rfl fun j j_in => ?_
-  rw [mem_range, Nat.lt_iff_add_one_le] at j_in
-  congr
-  apply tsub_tsub_cancel_of_le
-  exact le_tsub_of_add_le_right j_in
+  grind
 
 theorem geom_sum₂_with_one (x : R) (n : ℕ) :
     ∑ i ∈ range n, x ^ i * 1 ^ (n - 1 - i) = ∑ i ∈ range n, x ^ i :=
@@ -125,8 +122,7 @@ theorem geom_sum₂_self {R : Type*} [Semiring R] (x : R) (n : ℕ) :
         ∑ i ∈ Finset.range n, x ^ (i + (n - 1 - i)) := by
       simp_rw [← pow_add]
     _ = ∑ _i ∈ Finset.range n, x ^ (n - 1) :=
-      Finset.sum_congr rfl fun _ hi =>
-        congr_arg _ <| add_tsub_cancel_of_le <| Nat.le_sub_one_of_lt <| Finset.mem_range.1 hi
+      Finset.sum_congr rfl fun _ hi => congr_arg _ <| by grind
     _ = #(range n) • x ^ (n - 1) := sum_const _
     _ = n * x ^ (n - 1) := by rw [Finset.card_range, nsmul_eq_mul]
 
@@ -172,10 +168,7 @@ theorem geom_sum₂_mul_of_le [CommSemiring R] [PartialOrder R] [AddLeftReflectL
     (∑ i ∈ range n, x ^ i * y ^ (n - 1 - i)) * (y - x) = y ^ n - x ^ n := by
   rw [← Finset.sum_range_reflect]
   convert geom_sum₂_mul_of_ge hxy n using 3
-  simp_all only [Finset.mem_range]
-  rw [mul_comm]
-  congr
-  omega
+  grind [mul_comm]
 
 theorem Commute.sub_dvd_pow_sub_pow [Ring R] {x y : R} (h : Commute x y) (n : ℕ) :
     x - y ∣ x ^ n - y ^ n :=
@@ -332,8 +325,7 @@ protected theorem Commute.geom_sum₂_succ_eq [Ring R] {x y : R} (h : Commute x 
     (h.symm.pow_right _).eq, mul_assoc, ← pow_succ']
   refine sum_congr rfl fun i hi => ?_
   suffices n - 1 - i + 1 = n - i by rw [this]
-  rw [Finset.mem_range] at hi
-  omega
+  grind
 
 theorem geom_sum₂_succ_eq [CommRing R] (x y : R) {n : ℕ} :
     ∑ i ∈ range (n + 1), x ^ i * y ^ (n - i) =

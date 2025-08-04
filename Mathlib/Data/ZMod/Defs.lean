@@ -45,11 +45,6 @@ open Nat.ModEq Int
 
 open scoped Fin.IntCast Fin.NatCast
 
-/-- Variant of `Fin.intCast_def` for when we are using the `Fin.CommRing` instance. -/
-theorem intCast_def' {n : Nat} [NeZero n] (x : Int) :
-    (x : Fin n) = if 0 ≤ x then ↑x.natAbs else -↑x.natAbs :=
-  Fin.intCast_def _
-
 @[simp] theorem val_intCast {n : Nat} [NeZero n] (x : Int) :
     (x : Fin n).val = (x % n).toNat := by
   rw [Fin.intCast_def']

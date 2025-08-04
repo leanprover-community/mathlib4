@@ -90,6 +90,7 @@ instance : CommSemiring (BitVec w) :=
     toFin_nsmul
     toFin_pow
     toFin_natCast
+-- The statement in the new API would be: `n#(k.succ) = ((n / 2)#k).concat (n % 2 != 0)`
 
 instance : CommRing (BitVec w) :=
   open Fin.CommRing in
@@ -102,7 +103,7 @@ instance : CommRing (BitVec w) :=
 def equivFin {m : ℕ} : BitVec m ≃+* Fin (2 ^ m) where
   toFun a := a.toFin
   invFun a := ofFin a
-  map_mul' _ _ := rfl
-  map_add' _ _ := rfl
+  map_mul' := toFin_mul
+  map_add' := toFin_add
 
 end BitVec

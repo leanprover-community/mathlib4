@@ -448,6 +448,23 @@ theorem dense_of_exists_between [OrderTopology α] [Nontrivial α] {s : Set α}
   obtain ⟨x, xs, hx⟩ : ∃ x ∈ s, a < x ∧ x < b := h hab
   exact ⟨x, ⟨H hx, xs⟩⟩
 
+theorem IsUpperSet.isClosed [OrderTopology α] [WellFoundedLT α] {s : Set α} (h : IsUpperSet s) :
+    IsClosed s := by
+  obtain rfl | ⟨a, rfl⟩ := h.eq_empty_or_Ici
+  exacts [isClosed_empty, isClosed_Ici]
+
+theorem IsLowerSet.isClosed [OrderTopology α] [WellFoundedGT α] {s : Set α} (h : IsLowerSet s) :
+    IsClosed s :=
+  h.toDual.isClosed
+
+theorem IsLowerSet.isOpen [OrderTopology α] [WellFoundedLT α] {s : Set α} (h : IsLowerSet s) :
+    IsOpen s := by
+  simpa using h.compl.isClosed
+
+theorem IsUpperSet.isOpen [OrderTopology α] [WellFoundedGT α] {s : Set α} (h : IsUpperSet s) :
+    IsOpen s :=
+  h.toDual.isOpen
+
 /-- A set in a nontrivial densely linear ordered type is dense in the sense of topology if and only
 if for any `a < b` there exists `c ∈ s`, `a < c < b`. Each implication requires less typeclass
 assumptions. -/
