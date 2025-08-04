@@ -33,7 +33,7 @@ open Subgroup
 
 variable (G : Type*) [CommGroup G] [Group.FG G]
 
-@[to_additive]
+@[to_additive card_dvd_exponent_pow_rankₐ]
 theorem card_dvd_exponent_pow_rank : Nat.card G ∣ Monoid.exponent G ^ Group.rank G := by
   classical
   obtain ⟨S, hS1, hS2⟩ := Group.rank_spec G
@@ -48,7 +48,7 @@ theorem card_dvd_exponent_pow_rank : Nat.card G ∣ Monoid.exponent G ^ Group.ra
   rw [Nat.card_zpowers]
   exact Monoid.order_dvd_exponent (g : G)
 
-@[to_additive]
+@[to_additive card_dvd_exponent_pow_rankₐ']
 theorem card_dvd_exponent_pow_rank' {n : ℕ} (hG : ∀ g : G, g ^ n = 1) :
     Nat.card G ∣ n ^ Group.rank G :=
   (card_dvd_exponent_pow_rank G).trans

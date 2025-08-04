@@ -622,6 +622,7 @@ theorem prod_induction_nonempty {M : Type*} [CommMonoid M] (f : ι → M) (p : M
 theorem prod_pow (s : Finset ι) (n : ℕ) (f : ι → M) : ∏ x ∈ s, f x ^ n = (∏ x ∈ s, f x) ^ n :=
   Multiset.prod_map_pow
 
+@[to_additive]
 theorem prod_dvd_prod_of_subset {ι M : Type*} [CommMonoid M] (s t : Finset ι) (f : ι → M)
     (h : s ⊆ t) : (∏ i ∈ s, f i) ∣ ∏ i ∈ t, f i :=
   Multiset.prod_dvd_prod_of_le <| Multiset.map_le_map <| by simpa
@@ -789,7 +790,7 @@ theorem count_sum' {s : Finset ι} {a : α} {f : ι → Multiset α} :
   dsimp only [Finset.sum]
   rw [count_sum]
 
-theorem toFinset_prod_dvd_prod [DecidableEq M] [CommMonoid M] (S : Multiset M) :
+@[to_additive] theorem toFinset_prod_dvd_prod [DecidableEq M] [CommMonoid M] (S : Multiset M) :
     S.toFinset.prod id ∣ S.prod := by
   rw [Finset.prod_eq_multiset_prod]
   refine Multiset.prod_dvd_prod_of_le ?_

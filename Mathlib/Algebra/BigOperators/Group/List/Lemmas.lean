@@ -155,12 +155,12 @@ theorem neg_one_mem_of_prod_eq_neg_one {l : List ℤ} (h : l.prod = -1) : (-1 : 
     (Int.isUnit_iff.mp (prod_isUnit_iff.mp
       (h.symm ▸ ⟨⟨-1, -1, by decide, by decide⟩, rfl⟩ : IsUnit l.prod) x h₁)) h₂ ▸ h₁
 
-theorem dvd_prod [CommMonoid M] {a} {l : List M} (ha : a ∈ l) : a ∣ l.prod := by
+@[to_additive] theorem dvd_prod [CommMonoid M] {a} {l : List M} (ha : a ∈ l) : a ∣ l.prod := by
   let ⟨s, t, h⟩ := append_of_mem ha
   rw [h, prod_append, prod_cons, mul_left_comm]
   exact dvd_mul_right _ _
 
-theorem Sublist.prod_dvd_prod [CommMonoid M] {l₁ l₂ : List M} (h : l₁ <+ l₂) :
+@[to_additive] theorem Sublist.prod_dvd_prod [CommMonoid M] {l₁ l₂ : List M} (h : l₁ <+ l₂) :
     l₁.prod ∣ l₂.prod := by
   obtain ⟨l, hl⟩ := h.exists_perm_append
   rw [hl.prod_eq, prod_append]

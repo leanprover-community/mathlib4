@@ -212,8 +212,8 @@ theorem card_smul_finset (a : α) (s : Finset β) : (a • s).card = s.card :=
 
 /-- If the left cosets of `t` by elements of `s` are disjoint (but not necessarily distinct!), then
 the size of `t` divides the size of `s • t`. -/
-@[to_additive "If the left cosets of `t` by elements of `s` are disjoint (but not necessarily
-distinct!), then the size of `t` divides the size of `s +ᵥ t`."]
+@[to_additive card_dvd_card_vadd_right "If the left cosets of `t` by elements of `s` are disjoint
+(but not necessarily distinct!), then the size of `t` divides the size of `s +ᵥ t`."]
 theorem card_dvd_card_smul_right {s : Finset α} :
     ((· • t) '' (s : Set α)).PairwiseDisjoint id → t.card ∣ (s • t).card :=
   card_dvd_card_image₂_right fun _ _ => MulAction.injective _
@@ -222,8 +222,8 @@ variable [DecidableEq α]
 
 /-- If the right cosets of `s` by elements of `t` are disjoint (but not necessarily distinct!), then
 the size of `s` divides the size of `s * t`. -/
-@[to_additive "If the right cosets of `s` by elements of `t` are disjoint (but not necessarily
-distinct!), then the size of `s` divides the size of `s + t`."]
+@[to_additive card_dvd_card_add_left "If the right cosets of `s` by elements of `t` are disjoint
+(but not necessarily distinct!), then the size of `s` divides the size of `s + t`."]
 theorem card_dvd_card_mul_left {s t : Finset α} :
     ((fun b => s.image fun a => a * b) '' (t : Set α)).PairwiseDisjoint id →
       s.card ∣ (s * t).card :=
@@ -231,8 +231,8 @@ theorem card_dvd_card_mul_left {s t : Finset α} :
 
 /-- If the left cosets of `t` by elements of `s` are disjoint (but not necessarily distinct!), then
 the size of `t` divides the size of `s * t`. -/
-@[to_additive "If the left cosets of `t` by elements of `s` are disjoint (but not necessarily
-distinct!), then the size of `t` divides the size of `s + t`."]
+@[to_additive card_dvd_card_add_right "If the left cosets of `t` by elements of `s` are disjoint
+(but not necessarily distinct!), then the size of `t` divides the size of `s + t`."]
 theorem card_dvd_card_mul_right {s t : Finset α} :
     ((· • t) '' (s : Set α)).PairwiseDisjoint id → t.card ∣ (s * t).card :=
   card_dvd_card_image₂_right fun _ _ => mul_right_injective _
