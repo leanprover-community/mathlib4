@@ -572,8 +572,8 @@ open AddCommGroup
 
 /-- If `a` and `b` fall within the same cycle WRT `c`, then they are congruent modulo `p`. -/
 @[simp]
-theorem toIcoMod_inj {c : α} : toIcoMod hp c a = toIcoMod hp c b ↔ a ≡ b [PMOD p] := by
-  simp_rw [toIcoMod_eq_toIcoMod, modEq_iff_eq_add_zsmul, sub_eq_iff_eq_add']
+theorem toIcoMod_inj {c : α} : toIcoMod hp c a = toIcoMod hp c b ↔ a ≡ b [PMOD p] :=
+  toIcoMod_eq_toIcoMod _
 
 alias ⟨_, AddCommGroup.ModEq.toIcoMod_eq_toIcoMod⟩ := toIcoMod_inj
 
@@ -836,7 +836,7 @@ instance circularOrder : CircularOrder (α ⧸ AddSubgroup.zmultiples p) :=
       rw [btw_cyclic] at h₃₂₁
       simp_rw [btw_coe_iff] at h₁₂₃ h₃₂₁
       simp_rw [← modEq_iff_eq_mod_zmultiples]
-      exact toIxxMod_antisymm _ h₁₂₃ h₃₂₁
+      simpa only [modEq_comm] using toIxxMod_antisymm _ h₁₂₃ h₃₂₁
     btw_total := fun x₁ x₂ x₃ => by
       induction x₁ using QuotientAddGroup.induction_on
       induction x₂ using QuotientAddGroup.induction_on

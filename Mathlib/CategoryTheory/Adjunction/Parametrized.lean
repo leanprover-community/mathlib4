@@ -37,7 +37,7 @@ universe v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
-open Opposite
+open Opposite Functor
 
 variable {C₁ : Type u₁} {C₂ : Type u₂} {C₃ : Type u₃}
   [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} C₃]

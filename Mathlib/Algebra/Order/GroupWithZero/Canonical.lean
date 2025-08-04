@@ -4,10 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Johan Commelin, Patrick Massot
 -/
 import Mathlib.Algebra.GroupWithZero.InjSurj
-import Mathlib.Algebra.GroupWithZero.Units.Equiv
 import Mathlib.Algebra.GroupWithZero.WithZero
 import Mathlib.Algebra.Order.AddGroupWithTop
+import Mathlib.Algebra.Order.Group.Int
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
+import Mathlib.Algebra.Order.Monoid.Units
 import Mathlib.Algebra.Order.Monoid.Basic
 import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Algebra.Order.Monoid.TypeTags
@@ -397,14 +398,62 @@ instance instLinearOrderedCommMonoidWithZero [CommMonoid α] [LinearOrder α] [I
 instance instLinearOrderedCommGroupWithZero [CommGroup α] [LinearOrder α] [IsOrderedMonoid α] :
     LinearOrderedCommGroupWithZero (WithZero α) where
 
+/-! ### Exponential and logarithm -/
+
+variable {G : Type*} [Preorder G] {a b : G}
+
+@[simp] lemma exp_le_exp : exp a ≤ exp b ↔ a ≤ b := by simp [exp]
+@[simp] lemma exp_lt_exp : exp a < exp b ↔ a < b := by simp [exp]
+
+@[simp] lemma exp_pos : 0 < exp a := by simp [exp]
+
+variable [AddGroup G] {x y : Gᵐ⁰}
+
+@[simp] lemma log_le_log (hx : x ≠ 0) (hy : y ≠ 0) : log x ≤ log y ↔ x ≤ y := by
+  lift x to Multiplicative G using hx; lift y to Multiplicative G using hy; simp [log]
+
+@[simp] lemma log_lt_log (hx : x ≠ 0) (hy : y ≠ 0) : log x < log y ↔ x < y := by
+  lift x to Multiplicative G using hx; lift y to Multiplicative G using hy; simp [log]
+
+lemma log_le_iff_le_exp (hx : x ≠ 0) : log x ≤ a ↔ x ≤ exp a := by
+  lift x to Multiplicative G using hx; simpa [log, exp] using .rfl
+
+lemma log_lt_iff_lt_exp (hx : x ≠ 0) : log x < a ↔ x < exp a := by
+  lift x to Multiplicative G using hx; simpa [log, exp] using .rfl
+
+lemma le_log_iff_exp_le (hx : x ≠ 0) : a ≤ log x ↔ exp a ≤ x := by
+  lift x to Multiplicative G using hx; simpa [log, exp] using .rfl
+
+lemma lt_log_iff_exp_lt (hx : x ≠ 0) : a < log x ↔ exp a < x := by
+  lift x to Multiplicative G using hx; simpa [log, exp] using .rfl
+
+lemma le_exp_of_log_le (hxa : log x ≤ a) : x ≤ exp a := by
+  obtain rfl | hx := eq_or_ne x 0 <;> simp [← log_le_iff_le_exp, *]
+
+lemma lt_exp_of_log_lt (hxa : log x < a) : x < exp a := by
+  obtain rfl | hx := eq_or_ne x 0 <;> simp [← log_lt_iff_lt_exp, *]
+
+lemma le_log_of_exp_le (hax : exp a ≤ x) : a ≤ log x :=
+  (le_log_iff_exp_le (exp_pos.trans_le hax).ne').2 hax
+
+lemma lt_log_of_exp_lt (hax : exp a < x) : a < log x :=
+  (lt_log_iff_exp_lt (exp_pos.trans hax).ne').2 hax
+
+/-- The exponential map as an order isomorphism between `G` and `Gᵐ⁰ˣ`. -/
+@[simps!] def expOrderIso : G ≃o Gᵐ⁰ˣ where
+  __ := expEquiv
+  map_rel_iff' := by simp [← Units.val_le_val]
+
+/-- The logarithm as an order isomorphism between `Gᵐ⁰ˣ` and `G`. -/
+@[simps!] def logOrderIso : Gᵐ⁰ˣ ≃o G where
+  __ := logEquiv
+  map_rel_iff' := by simp
+
+lemma lt_mul_exp_iff_le {x y : ℤᵐ⁰} (hy : y ≠ 0) : x < y * exp 1 ↔ x ≤ y := by
+  lift y to Multiplicative ℤ using hy
+  obtain rfl | hx := eq_or_ne x 0
+  · simp
+  lift x to Multiplicative ℤ using hx
+  rw [← log_le_log, ← log_lt_log] <;> simp [log_mul, Int.lt_add_one_iff]
+
 end WithZero
-
-section MultiplicativeNotation
-
-/-- Notation for `WithZero (Multiplicative ℕ)` -/
-scoped[Multiplicative] notation "ℕₘ₀" => WithZero (Multiplicative ℕ)
-
-/-- Notation for `WithZero (Multiplicative ℤ)` -/
-scoped[Multiplicative] notation "ℤₘ₀" => WithZero (Multiplicative ℤ)
-
-end MultiplicativeNotation

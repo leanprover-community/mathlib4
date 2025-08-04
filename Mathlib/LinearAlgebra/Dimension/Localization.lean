@@ -60,7 +60,7 @@ lemma IsLocalizedModule.rank_eq {N : Type uM} [AddCommGroup N] [Module R N] (f :
 
 lemma IsLocalization.rank_eq : Module.rank S N = Module.rank R N := by
   cases subsingleton_or_nontrivial R
-  · have := (algebraMap R S).codomain_trivial; simp only [rank_subsingleton, lift_one]
+  · have := (algebraMap R S).codomain_trivial; simp only [rank_subsingleton]
   have inj := IsLocalization.injective S hp
   apply le_antisymm <;> (rw [Module.rank]; apply ciSup_le'; intro ⟨s, hs⟩)
   · have := (faithfulSMul_iff_algebraMap_injective R S).mpr inj
@@ -211,8 +211,8 @@ lemma aleph0_le_rank_of_isEmpty_oreSet (hS : IsEmpty (OreLocalization.OreSet R�
     by_cases hg0 : g 0 = 0
     · simp only [hg0, zero_smul, add_zero, add_assoc] at hg
       cases i; exacts [hg0, IH _ _ hg _ (Nat.succ_lt_succ_iff.mp hin)]
-    simp only [MulOpposite.smul_eq_mul_unop, zero_add, ← add_comm _ x, pow_add _ _ x,
-      ← mul_assoc, pow_succ, ← Finset.sum_mul, pow_zero, one_mul, smul_eq_mul] at hg
+    simp only [zero_add, pow_add _ _ x,
+      ← mul_assoc, pow_succ, ← Finset.sum_mul, smul_eq_mul] at hg
     rw [← neg_eq_iff_add_eq_zero, ← neg_mul, ← neg_mul] at hg
     have := mul_right_cancel₀ (mem_nonZeroDivisors_iff_ne_zero.mp (s ^ x).prop) hg
     exact (h _ ⟨(g 0), mem_nonZeroDivisors_iff_ne_zero.mpr (by simpa)⟩ this.symm).elim

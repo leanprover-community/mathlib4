@@ -301,7 +301,7 @@ theorem ofQuaternion_comp_toQuaternion :
     dsimp
     rw [toQuaternion_ι]
     dsimp
-    simp only [toQuaternion_ι, zero_smul, one_smul, zero_add, add_zero, RingHom.map_zero]
+    simp only [zero_smul, one_smul, zero_add, add_zero, RingHom.map_zero]
 
 @[simp]
 theorem ofQuaternion_toQuaternion (c : CliffordAlgebra (Q c₁ c₂)) :

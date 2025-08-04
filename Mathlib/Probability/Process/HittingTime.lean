@@ -65,14 +65,7 @@ variable [ConditionallyCompleteLinearOrder ι] {u : ι → Ω → β} {s : Set �
 
 /-- This lemma is strictly weaker than `hitting_of_le`. -/
 theorem hitting_of_lt {m : ι} (h : m < n) : hitting u s n m ω = m := by
-  simp_rw [hitting]
-  have h_not : ¬∃ (j : ι) (_ : j ∈ Set.Icc n m), u j ω ∈ s := by
-    push_neg
-    intro j
-    rw [Set.Icc_eq_empty_of_lt h]
-    simp only [Set.mem_empty_iff_false, IsEmpty.forall_iff]
-  simp only [exists_prop] at h_not
-  simp only [h_not, if_false]
+  grind [hitting, not_le, Set.Icc_eq_empty]
 
 theorem hitting_le {m : ι} (ω : Ω) : hitting u s n m ω ≤ m := by
   simp only [hitting]
@@ -254,7 +247,7 @@ theorem isStoppingTime_hitting_isStoppingTime [ConditionallyCompleteLinearOrder 
     (⋃ i ≤ n, {x | τ x = i} ∩ {x | hitting u s i N x ≤ n}) ∪
       ⋃ i > n, {x | τ x = i} ∩ {x | hitting u s i N x ≤ n} := by
     ext x
-    simp [← exists_or, ← or_and_right, le_or_gt]
+    simp [← or_and_right, le_or_gt]
   have h₂ : ⋃ i > n, {x | τ x = i} ∩ {x | hitting u s i N x ≤ n} = ∅ := by
     ext x
     simp only [gt_iff_lt, Set.mem_iUnion, Set.mem_inter_iff, Set.mem_setOf_eq, exists_prop,
@@ -270,7 +263,7 @@ section CompleteLattice
 variable [CompleteLattice ι] {u : ι → Ω → β} {s : Set β}
 
 theorem hitting_eq_sInf (ω : Ω) : hitting u s ⊥ ⊤ ω = sInf {i : ι | u i ω ∈ s} := by
-  simp only [hitting, Set.mem_Icc, bot_le, le_top, and_self_iff, exists_true_left, Set.Icc_bot,
+  simp only [hitting, Set.Icc_bot,
     Set.Iic_top, Set.univ_inter, ite_eq_left_iff, not_exists]
   intro h_notMem_s
   symm

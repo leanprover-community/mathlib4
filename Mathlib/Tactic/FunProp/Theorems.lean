@@ -216,7 +216,7 @@ def getTheoremsForFunction (funName : Name) (funPropName : Name) :
 def GeneralTheorem.getProof (thm : GeneralTheorem) : MetaM Expr := do
   mkConstWithFreshMVarLevels thm.thmName
 
-/-- Extendions for transition or morphism theorems -/
+/-- Extensions for transition or morphism theorems -/
 abbrev GeneralTheoremsExt := SimpleScopedEnvExtension GeneralTheorem GeneralTheorems
 
 /-- Environment extension for transition theorems. -/
@@ -238,7 +238,7 @@ def getTransitionTheorems (e : Expr) : FunPropM (Array GeneralTheorem) := do
   let (candidates, thms) ← withConfig (fun cfg => { cfg with iota := false, zeta := false }) <|
     thms.getMatch e false true
   modify ({ · with transitionTheorems := ⟨thms⟩ })
-  return candidates.toArray
+  return (← MonadExcept.ofExcept candidates).toArray
 
 /-- Environment extension for morphism theorems. -/
 initialize morTheoremsExt : GeneralTheoremsExt ←
@@ -260,7 +260,7 @@ def getMorphismTheorems (e : Expr) : FunPropM (Array GeneralTheorem) := do
   let (candidates, thms) ← withConfig (fun cfg => { cfg with iota := false, zeta := false }) <|
     thms.getMatch e false true
   modify ({ · with morTheorems := ⟨thms⟩ })
-  return candidates.toArray
+  return (← MonadExcept.ofExcept candidates).toArray
 
 
 --------------------------------------------------------------------------------

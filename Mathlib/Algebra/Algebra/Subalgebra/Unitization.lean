@@ -84,9 +84,7 @@ theorem unitization_apply (x : Unitization R s) :
 
 theorem unitization_range : (unitization s).range = Algebra.adjoin R (s : Set A) := by
   rw [unitization, Unitization.lift_range]
-  simp only [NonUnitalAlgHom.coe_range, NonUnitalSubalgebraClass.coe_subtype,
-    Subtype.range_coe_subtype, SetLike.mem_coe]
-  rfl
+  simp
 
 end Semiring
 

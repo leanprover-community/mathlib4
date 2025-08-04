@@ -45,7 +45,7 @@ section
 variable (J : Type w) [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J]
   {J' : Type w'} [LinearOrder J'] [SuccOrder J'] [OrderBot J'] [WellFoundedLT J']
 
-/-- Structure expressing that a morpshism `f : X ⟶ Y` in a category `C`
+/-- Structure expressing that a morphism `f : X ⟶ Y` in a category `C`
 is a transfinite composition of shape `J` of morphisms in `W : MorphismProperty C`. -/
 structure TransfiniteCompositionOfShape {X Y : C} (f : X ⟶ Y) extends
     CategoryTheory.TransfiniteCompositionOfShape J f where

@@ -308,6 +308,10 @@ theorem mem_rightTransversals_iff_bijective :
 lemma IsComplement.card_left (h : IsComplement S H) : Nat.card S = H.index :=
   Nat.card_congr <| .ofBijective _ <| isComplement_subgroup_right_iff_bijective.mp h
 
+@[to_additive]
+theorem IsComplement.ncard_left (h : IsComplement S H) : S.ncard = H.index := by
+  rw [← Nat.card_coe_set_eq, h.card_left]
+
 set_option linter.deprecated false in
 @[to_additive (attr := deprecated IsComplement.card_left (since := "2024-12-18"))]
 theorem card_left_transversal (h : S ∈ leftTransversals (H : Set G)) : Nat.card S = H.index :=
@@ -317,6 +321,10 @@ theorem card_left_transversal (h : S ∈ leftTransversals (H : Set G)) : Nat.car
 lemma IsComplement.card_right (h : IsComplement H T) : Nat.card T = H.index :=
   Nat.card_congr <| (Equiv.ofBijective _ <| isComplement_subgroup_left_iff_bijective.mp h).trans <|
     QuotientGroup.quotientRightRelEquivQuotientLeftRel H
+
+@[to_additive]
+theorem IsComplement.ncard_right (h : IsComplement H T) : T.ncard = H.index := by
+  rw [← Nat.card_coe_set_eq, h.card_right]
 
 set_option linter.deprecated false in
 @[to_additive (attr := deprecated IsComplement.card_right (since := "2024-12-18"))]
@@ -416,7 +424,7 @@ lemma exists_left_transversal_of_le {H' H : Subgroup G} (h : H' ≤ H) :
   refine ⟨H.subtype '' S, ?_, ?_⟩
   · have : H.subtype '' (S * H'') = H.subtype '' S * H''.map H.subtype := image_mul H.subtype
     rw [← this, cmem.mul_eq]
-    simp [Set.ext_iff]
+    simp
   · rw [← cmem.card_mul_card]
     refine congr_arg₂ (· * ·) ?_ ?_ <;>
       exact Nat.card_congr (Equiv.Set.image _ _ <| subtype_injective H).symm
@@ -432,7 +440,7 @@ lemma exists_right_transversal_of_le {H' H : Subgroup G} (h : H' ≤ H) :
   refine ⟨H.subtype '' S, ?_, ?_⟩
   · have : H.subtype '' (H'' * S) = H''.map H.subtype * H.subtype '' S := image_mul H.subtype
     rw [← this, cmem.mul_eq]
-    simp [Set.ext_iff]
+    simp
   · have : Nat.card H'' * Nat.card S = Nat.card H := cmem.card_mul_card
     rw [← this]
     refine congr_arg₂ (· * ·) ?_ ?_ <;>
@@ -472,7 +480,7 @@ theorem equiv_fst_eq_iff_leftCosetEquivalence {g₁ g₂ : G} :
       rw [equiv_fst_eq_mul_inv]; simp
     · rw [SetLike.mem_coe, ← mul_mem_cancel_right h]
       -- This used to be `simp [...]` before https://github.com/leanprover/lean4/pull/2644
-      rw [equiv_fst_eq_mul_inv]; simp [equiv_fst_eq_mul_inv, ← mul_assoc]
+      rw [equiv_fst_eq_mul_inv]; simp [← mul_assoc]
 
 theorem equiv_snd_eq_iff_rightCosetEquivalence {g₁ g₂ : G} :
     (hHT.equiv g₁).snd = (hHT.equiv g₂).snd ↔ RightCosetEquivalence H g₁ g₂ := by
@@ -704,6 +712,14 @@ theorem toRightFun_mul_inv_mem (hT : IsComplement H T) (g : G) :
 @[deprecated (since := "2024-12-28")]
 alias _root_.Subgroup.MemRighTransversals.toFun_mul_inv_mem := toRightFun_mul_inv_mem
 
+@[to_additive]
+theorem encard_left [H.FiniteIndex] (h : IsComplement S H) : S.encard = H.index := by
+  rw [← h.finite_left.cast_ncard_eq, h.ncard_left]
+
+@[to_additive]
+theorem encard_right [H.FiniteIndex] (h : IsComplement H T) : T.encard = H.index := by
+  rw [← h.finite_right.cast_ncard_eq, h.ncard_right]
+
 end IsComplement
 
 section Action
@@ -730,7 +746,7 @@ noncomputable instance : MulAction F H.LeftTransversal where
       · exact smul_inv_smul f g ▸ QuotientAction.inv_mul_mem f ht1
       · rintro ⟨-, t', ht', rfl⟩ h
         replace h := QuotientAction.inv_mul_mem f⁻¹ h
-        simp only [Subtype.ext_iff, Subtype.coe_mk, smul_left_cancel_iff, inv_smul_smul] at h ⊢
+        simp only [Subtype.ext_iff, smul_left_cancel_iff, inv_smul_smul] at h ⊢
         exact Subtype.ext_iff.mp (ht2 ⟨t', ht'⟩ h)⟩
   one_smul T := Subtype.ext (one_smul F (T : Set G))
   mul_smul f₁ f₂ T := Subtype.ext (mul_smul f₁ f₂ (T : Set G))

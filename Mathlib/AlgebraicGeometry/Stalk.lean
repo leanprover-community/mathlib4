@@ -270,7 +270,7 @@ instance isLocalHom_stalkClosedPointTo :
 Useful for use in combination with `CommRingCat.of K` for a field `K`.
 -/
 instance isLocalHom_stalkClosedPointTo' {R : Type u} [CommRing R] [IsLocalRing R]
-    (f : Spec (.of R) ⟶ X) :
+    (f : Spec(R) ⟶ X) :
     IsLocalHom (stalkClosedPointTo f).hom :=
   isLocalHom_stalkClosedPointTo f
 
@@ -283,7 +283,7 @@ lemma stalkClosedPointTo_comp (g : X ⟶ Y) :
   rw [stalkClosedPointTo, Scheme.stalkMap_comp]
   exact Category.assoc _ _ _
 
-lemma germ_stalkClosedPointTo_Spec {R S : CommRingCat} [IsLocalRing S] (φ : R ⟶ S):
+lemma germ_stalkClosedPointTo_Spec {R S : CommRingCat} [IsLocalRing S] (φ : R ⟶ S) :
     (Spec R).presheaf.germ ⊤ _ trivial ≫ stalkClosedPointTo (Spec.map φ) =
       (ΓSpecIso R).hom ≫ φ := by
   rw [stalkClosedPointTo, Scheme.stalkMap_germ_assoc, ← Iso.inv_comp_eq,
@@ -299,7 +299,7 @@ lemma germ_stalkClosedPointTo (U : Opens X) (hU : f.base (closedPoint R) ∈ U) 
   rw [stalkClosedPointTo, Scheme.stalkMap_germ_assoc, Iso.trans_hom]
   congr 1
   rw [← Iso.eq_comp_inv, Category.assoc, ΓSpecIso_hom_stalkClosedPointIso_inv]
-  simp only [TopCat.Presheaf.pushforward_obj_obj, Functor.mapIso_hom, Iso.op_hom, eqToIso.hom,
+  simp only [Functor.mapIso_hom, Iso.op_hom, eqToIso.hom,
     TopCat.Presheaf.germ_res]
 
 @[reassoc]
@@ -310,11 +310,9 @@ lemma germ_stalkClosedPointTo_Spec_fromSpecStalk
   have : (Spec.map f ≫ X.fromSpecStalk x).base (closedPoint R) = x := by
     rw [comp_base_apply, Spec_closedPoint, fromSpecStalk_closedPoint]
   have : x ∈ U := this ▸ hU
-  simp only [TopCat.Presheaf.stalkCongr_hom, TopCat.Presheaf.germ_stalkSpecializes_assoc,
-    germ_stalkClosedPointTo, comp_app,
-    fromSpecStalk_app (X := X) (x := x) this, Category.assoc, Iso.trans_hom,
-    Functor.mapIso_hom, Hom.naturality_assoc, ← Functor.map_comp_assoc,
-    (Spec.map f).app_eq_appLE, Hom.appLE_map_assoc, Hom.map_appLE_assoc]
+  simp only [germ_stalkClosedPointTo, comp_app,
+    fromSpecStalk_app (X := X) (x := x) this, Category.assoc, Iso.trans_hom, Functor.mapIso_hom,
+      (Spec.map f).app_eq_appLE, Hom.appLE_map_assoc, Hom.map_appLE_assoc]
   simp_rw [← Opens.map_top (Spec.map f).base]
   rw [← (Spec.map f).app_eq_appLE, ΓSpecIso_naturality, Iso.inv_hom_id_assoc]
 
@@ -322,7 +320,7 @@ lemma stalkClosedPointTo_fromSpecStalk (x : X) :
     stalkClosedPointTo (X.fromSpecStalk x) =
       (X.presheaf.stalkCongr (by rw [fromSpecStalk_closedPoint]; rfl)).hom := by
   refine TopCat.Presheaf.stalk_hom_ext _ fun U hxU ↦ ?_
-  simp only [TopCat.Presheaf.stalkCongr_hom, TopCat.Presheaf.germ_stalkSpecializes, id_eq]
+  simp only [TopCat.Presheaf.stalkCongr_hom, TopCat.Presheaf.germ_stalkSpecializes]
   have : X.fromSpecStalk x = Spec.map (𝟙 (X.presheaf.stalk x)) ≫ X.fromSpecStalk x := by simp
   convert germ_stalkClosedPointTo_Spec_fromSpecStalk (𝟙 (X.presheaf.stalk x)) U hxU
 

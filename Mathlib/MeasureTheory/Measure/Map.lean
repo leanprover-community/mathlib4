@@ -47,7 +47,7 @@ def liftLinear [MeasurableSpace β] (f : OuterMeasure α →ₗ[ℝ≥0∞] Oute
     simp only [map_add, coe_add, Pi.add_apply, toMeasure_apply, add_toOuterMeasure,
       OuterMeasure.coe_add, hs]
   map_smul' c μ := ext fun s hs => by
-    simp only [LinearMap.map_smulₛₗ, coe_smul, Pi.smul_apply,
+    simp only [LinearMap.map_smulₛₗ, Pi.smul_apply,
       toMeasure_apply, smul_toOuterMeasure (R := ℝ≥0∞), OuterMeasure.coe_smul (R := ℝ≥0∞),
       smul_apply, hs]
 
@@ -276,7 +276,7 @@ nonrec theorem map_apply (hf : MeasurableEmbedding f) (μ : Measure α) (s : Set
       hf.measurableSet_range.compl
   have hst : s ⊆ t := by
     rw [subset_union_compl_iff_inter_subset, ← image_preimage_eq_inter_range]
-    exact image_subset _ (subset_toMeasurable _ _)
+    exact image_mono (subset_toMeasurable _ _)
   have hft : f ⁻¹' t = toMeasurable μ (f ⁻¹' s) := by
     rw [preimage_union, preimage_compl, preimage_range, compl_univ, union_empty,
       hf.injective.preimage_image]

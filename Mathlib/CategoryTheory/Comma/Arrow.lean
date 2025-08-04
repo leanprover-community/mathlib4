@@ -192,15 +192,13 @@ variable {f g : Arrow T} (sq : f ⟶ g)
 instance isIso_left [IsIso sq] : IsIso sq.left where
   out := by
     apply Exists.intro (inv sq).left
-    simp only [← Comma.comp_left, IsIso.hom_inv_id, IsIso.inv_hom_id, Arrow.id_left,
-      eq_self_iff_true, and_self_iff]
+    simp only [← Comma.comp_left, IsIso.hom_inv_id, IsIso.inv_hom_id]
     simp
 
 instance isIso_right [IsIso sq] : IsIso sq.right where
   out := by
     apply Exists.intro (inv sq).right
-    simp only [← Comma.comp_right, IsIso.hom_inv_id, IsIso.inv_hom_id, Arrow.id_right,
-      eq_self_iff_true, and_self_iff]
+    simp only [← Comma.comp_right, IsIso.hom_inv_id, IsIso.inv_hom_id]
     simp
 
 lemma isIso_of_isIso {X Y : T} {f : X ⟶ Y} {g : Arrow T} (sq : mk f ⟶ g) [IsIso sq] [IsIso f] :
@@ -240,7 +238,7 @@ instance mono_left [Mono sq] : Mono sq.left where
       { left := φ
         right := φ ≫ f.hom }
     have : ∀ g, (aux g).right = g ≫ f.hom := fun g => by dsimp
-    show (aux φ).left = (aux ψ).left
+    change (aux φ).left = (aux ψ).left
     congr 1
     rw [← cancel_mono sq]
     apply CommaMorphism.ext
@@ -254,7 +252,7 @@ instance epi_right [Epi sq] : Epi sq.right where
     let aux : (g.right ⟶ Z) → (g ⟶ Arrow.mk (𝟙 Z)) := fun φ =>
       { right := φ
         left := g.hom ≫ φ }
-    show (aux φ).right = (aux ψ).right
+    change (aux φ).right = (aux ψ).right
     congr 1
     rw [← cancel_epi sq]
     apply CommaMorphism.ext

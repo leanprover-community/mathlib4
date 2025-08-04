@@ -5,9 +5,10 @@ Authors: Joseph Myers
 -/
 import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Fin.VecNotation
-import Mathlib.Data.Sign
+import Mathlib.Data.Sign.Basic
 import Mathlib.LinearAlgebra.AffineSpace.Combination
 import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
+import Mathlib.LinearAlgebra.AffineSpace.Restrict
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!
@@ -35,7 +36,7 @@ This file defines affinely independent families of points.
 
 noncomputable section
 
-open Finset Function
+open Finset Function Module
 open scoped Affine
 
 section AffineIndependent
@@ -84,7 +85,7 @@ protected alias ⟨AffineIndependent.of_vadd, AffineIndependent.vadd⟩ := affin
 @[simp] lemma affineIndependent_smul {G : Type*} [Group G] [DistribMulAction G V]
     [SMulCommClass G k V] {p : ι → V} {a : G} :
     AffineIndependent k (a • p) ↔ AffineIndependent k p := by
-  simp +contextual [AffineIndependent, weightedVSub_smul,
+  simp +contextual [AffineIndependent,
     ← smul_comm (α := V) a, ← smul_sum, smul_eq_zero_iff_eq]
 
 protected alias ⟨AffineIndependent.of_smul, AffineIndependent.smul⟩ := affineIndependent_smul
@@ -100,11 +101,7 @@ theorem affineIndependent_iff_linearIndependent_vsub (p : ι → P) (i1 : ι) :
       intro s g hg i hi
       set f : ι → k := fun x => if hx : x = i1 then -∑ y ∈ s, g y else g ⟨x, hx⟩ with hfdef
       let s2 : Finset ι := insert i1 (s.map (Embedding.subtype _))
-      have hfg : ∀ x : { x // x ≠ i1 }, g x = f x := by
-        intro x
-        rw [hfdef]
-        dsimp only
-        rw [dif_neg x.property, Subtype.coe_eta]
+      have hfg : ∀ x : { x // x ≠ i1 }, g x = f x := by grind
       rw [hfg]
       have hf : ∑ ι ∈ s2, f ι = 0 := by
         rw [Finset.sum_insert
@@ -300,7 +297,7 @@ theorem AffineIndependent.comp_embedding {ι2 : Type*} (f : ι2 ↪ ι) {p : ι 
     have hs' : fs'.weightedVSub p w' = (0 : V) := by
       rw [← hs, Finset.weightedVSub_map]
       congr with i
-      simp_all only [comp_apply, EmbeddingLike.apply_eq_iff_eq, exists_eq, dite_true]
+      simp_all only [comp_apply]
     rw [← ha fs' w' hw's hs' (f i0) ((Finset.mem_map' _).2 hi0), hw']
 
 /-- If a family is affinely independent, so is any subfamily indexed
@@ -345,6 +342,19 @@ theorem AffineIndependent.of_set_of_injective {p : ι → P}
     (⟨fun i => ⟨p i, Set.mem_range_self _⟩, fun _ _ h => hi (Subtype.mk_eq_mk.1 h)⟩ :
       ι ↪ Set.range p)
 
+/-- If an affine combination of affinely independent points lies in the affine span of a subset
+of those points, all weights outside that subset are zero. -/
+lemma AffineIndependent.eq_zero_of_affineCombination_mem_affineSpan {p : ι → P}
+    (ha : AffineIndependent k p) {fs : Finset ι} {w : ι → k} (hw : ∑ i ∈ fs, w i = 1) {s : Set ι}
+    (hm : fs.affineCombination k p w ∈ affineSpan k (p '' s)) {i : ι} (hifs : i ∈ fs)
+    (his : i ∉ s) : w i = 0 := by
+  obtain ⟨fs', w', hfs's, hw', he⟩ := eq_affineCombination_of_mem_affineSpan_image hm
+  have hi' : (fs : Set ι).indicator w i = 0 := by
+    rw [ha.indicator_eq_of_affineCombination_eq fs fs' w w' hw hw' he]
+    exact Set.indicator_of_notMem (Set.notMem_subset hfs's his) w'
+  rw [Set.indicator_apply_eq_zero] at hi'
+  exact hi' (Finset.mem_coe.2 hifs)
+
 section Composition
 
 variable {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AffineSpace V₂ P₂]
@@ -354,8 +364,7 @@ independent, then the original family of points is also affine-independent. -/
 theorem AffineIndependent.of_comp {p : ι → P} (f : P →ᵃ[k] P₂) (hai : AffineIndependent k (f ∘ p)) :
     AffineIndependent k p := by
   rcases isEmpty_or_nonempty ι with h | h
-  · haveI := h
-    apply affineIndependent_of_subsingleton
+  · apply affineIndependent_of_subsingleton
   obtain ⟨i⟩ := h
   rw [affineIndependent_iff_linearIndependent_vsub k p i]
   simp_rw [affineIndependent_iff_linearIndependent_vsub k (f ∘ p) i, Function.comp_apply, ←
@@ -367,8 +376,7 @@ affine-independent. -/
 theorem AffineIndependent.map' {p : ι → P} (hai : AffineIndependent k p) (f : P →ᵃ[k] P₂)
     (hf : Function.Injective f) : AffineIndependent k (f ∘ p) := by
   rcases isEmpty_or_nonempty ι with h | h
-  · haveI := h
-    apply affineIndependent_of_subsingleton
+  · apply affineIndependent_of_subsingleton
   obtain ⟨i⟩ := h
   rw [affineIndependent_iff_linearIndependent_vsub k p i] at hai
   simp_rw [affineIndependent_iff_linearIndependent_vsub k (f ∘ p) i, Function.comp_apply, ←
@@ -582,7 +590,7 @@ theorem exists_subset_affineIndependent_affineSpan_eq_top {s : Set P}
     rw [← linearIndependent_subtype_iff,
       linearIndependent_set_iff_affineIndependent_vadd_union_singleton k h0 p₁] at hsvi
     refine ⟨{p₁} ∪ (fun v => v +ᵥ p₁) '' h.extend (Set.subset_univ _), ?_, ?_⟩
-    · refine Set.Subset.trans ?_ (Set.union_subset_union_right _ (Set.image_subset _ hsv))
+    · refine Set.Subset.trans ?_ (Set.union_subset_union_right _ (Set.image_mono hsv))
       simp [Set.image_image]
     · use hsvi
       exact affineSpan_singleton_union_vadd_eq_top_of_span_eq_top p₁ hsvt
@@ -617,7 +625,7 @@ variable {V}
 /-- Two different points are affinely independent. -/
 theorem affineIndependent_of_ne {p₁ p₂ : P} (h : p₁ ≠ p₂) : AffineIndependent k ![p₁, p₂] := by
   rw [affineIndependent_iff_linearIndependent_vsub k ![p₁, p₂] 0]
-  let i₁ : { x // x ≠ (0 : Fin 2) } := ⟨1, by norm_num⟩
+  let i₁ : { x // x ≠ (0 : Fin 2) } := ⟨1, by simp⟩
   have he' : ∀ i, i = i₁ := by
     rintro ⟨i, hi⟩
     ext
@@ -866,6 +874,25 @@ def faceOpposite {n : ℕ} [NeZero n] (s : Simplex k P n) (i : Fin (n + 1)) : Si
     Set.range (s.faceOpposite i).points = s.points '' {i}ᶜ  := by
   simp [faceOpposite]
 
+lemma faceOpposite_point_eq_point_succAbove {n : ℕ} [NeZero n] (s : Simplex k P n)
+    (i : Fin (n + 1)) (j : Fin (n - 1 + 1)) :
+    (s.faceOpposite i).points j =
+      s.points (Fin.succAbove i (Fin.cast (Nat.sub_one_add_one (NeZero.ne _)) j)) := by
+  simp_rw [faceOpposite, face, comp_apply, Finset.orderEmbOfFin_compl_singleton_apply]
+
+lemma faceOpposite_point_eq_point_rev (s : Simplex k P 1) (i : Fin 2) (n : Fin 1) :
+    (s.faceOpposite i).points n = s.points i.rev := by
+  have h : i.rev = Fin.succAbove i n := by decide +revert
+  simp [h, faceOpposite_point_eq_point_succAbove]
+
+@[simp] lemma faceOpposite_point_eq_point_one (s : Simplex k P 1) (n : Fin 1) :
+    (s.faceOpposite 0).points n = s.points 1 :=
+  s.faceOpposite_point_eq_point_rev _ _
+
+@[simp] lemma faceOpposite_point_eq_point_zero (s : Simplex k P 1) (n : Fin 1) :
+    (s.faceOpposite 1).points n = s.points 0 :=
+  s.faceOpposite_point_eq_point_rev _ _
+
 /-- Needed to make `affineSpan (s.points '' {i}ᶜ)` nonempty. -/
 instance {α} [Nontrivial α] (i : α) : Nonempty ({i}ᶜ : Set _) :=
   (Set.nonempty_compl_of_nontrivial i).to_subtype
@@ -959,6 +986,61 @@ theorem reindex_map {m n : ℕ} (s : Simplex k P m) (e : Fin (m + 1) ≃ Fin (n 
     (f : P →ᵃ[k] P₂) (hf : Function.Injective f) :
     (s.map f hf).reindex e = (s.reindex e).map f hf :=
   rfl
+
+section restrict
+attribute [local instance] AffineSubspace.toAddTorsor
+
+/-- Restrict an affine simplex to an affine subspace that contains it. -/
+@[simps]
+def restrict {n : ℕ} (s : Affine.Simplex k P n) (S : AffineSubspace k P)
+    (hS : affineSpan k (Set.range s.points) ≤ S) :
+    letI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    Affine.Simplex (V := S.direction) k S n :=
+  letI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  { points i := ⟨s.points i, hS <| mem_affineSpan _ <| Set.mem_range_self _⟩
+    independent := AffineIndependent.of_comp S.subtype s.independent }
+
+/-- Restricting to `S₁` then mapping to a larger `S₂` is the same as restricting to `S₂`. -/
+@[simp]
+theorem restrict_map_inclusion {n : ℕ} (s : Affine.Simplex k P n)
+    (S₁ S₂ : AffineSubspace k P) (hS₁) (hS₂ : S₁ ≤ S₂) :
+    letI := Nonempty.map (AffineSubspace.inclusion hS₁) inferInstance
+    letI := Nonempty.map (Set.inclusion hS₂) ‹_›
+    (s.restrict S₁ hS₁).map (AffineSubspace.inclusion hS₂) (Set.inclusion_injective hS₂) =
+      s.restrict S₂ (hS₁.trans hS₂) :=
+  rfl
+
+@[simp]
+theorem map_subtype_restrict
+    {n : ℕ} (S : AffineSubspace k P) [Nonempty S] (s : Affine.Simplex k S n) :
+    (s.map (AffineSubspace.subtype _) Subtype.coe_injective).restrict
+      S (affineSpan_le.2 <| by rintro x ⟨y, rfl⟩; exact Subtype.prop _) = s := by
+  rfl
+
+/-- Restricting to `S₁` then mapping through the restriction of `f` to `S₁ →ᵃ[k] S₂` is the same
+as mapping through unrestricted `f`, then restricting to `S₂`. -/
+theorem restrict_map_restrict
+    {n : ℕ} (s : Affine.Simplex k P n) (f : P →ᵃ[k] P₂) (hf : Function.Injective f)
+    (S₁ : AffineSubspace k P) (S₂ : AffineSubspace k P₂)
+    (hS₁ : affineSpan k (Set.range s.points) ≤ S₁) (hfS : AffineSubspace.map f S₁ ≤ S₂) :
+    letI := Nonempty.map (AffineSubspace.inclusion hS₁) inferInstance
+    letI : Nonempty (S₁.map f) := AffineSubspace.nonempty_map
+    letI := Nonempty.map (AffineSubspace.inclusion hfS) inferInstance
+    (s.restrict S₁ hS₁).map (f.restrict hfS) (AffineMap.restrict.injective hf _) =
+      (s.map f hf).restrict S₂ (
+        Eq.trans_le
+          (by simp [AffineSubspace.map_span, Set.range_comp])
+          (AffineSubspace.map_mono f hS₁) |>.trans hfS) := by
+  rfl
+
+/-- Restricting to `affineSpan k (Set.range s.points)` can be reversed by mapping through
+`AffineSubspace.subtype`. -/
+@[simp]
+theorem restrict_map_subtype {n : ℕ} (s : Affine.Simplex k P n) :
+    (s.restrict _ le_rfl).map (AffineSubspace.subtype _) Subtype.coe_injective = s :=
+  rfl
+
+end restrict
 
 end Simplex
 
@@ -1065,6 +1147,15 @@ lemma affineCombination_mem_closedInterior_iff {n : ℕ} {s : Simplex k P n} {w 
   simp_rw [← (affineIndependent_iff_eq_of_fintype_affineCombination_eq k s.points).1
     s.independent w' w hw' hw hww']
   exact hw'01
+
+lemma interior_subset_closedInterior {n : ℕ} (s : Simplex k P n) :
+    s.interior ⊆ s.closedInterior :=
+  fun _ ⟨w, hw, hw01, hww⟩ ↦ ⟨w, hw, fun i ↦ ⟨(hw01 i).1.le, (hw01 i).2.le⟩, hww⟩
+
+lemma closedInterior_subset_affineSpan {n : ℕ} {s : Simplex k P n} :
+    s.closedInterior ⊆ affineSpan k (Set.range s.points) := by
+  rintro p ⟨w, hw, hi, rfl⟩
+  exact affineCombination_mem_affineSpan_of_nonempty hw _
 
 end Simplex
 

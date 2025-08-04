@@ -38,7 +38,7 @@ uniqueness is expressed by `uniq`.
 
 noncomputable section
 
-open CategoryTheory.Category
+open CategoryTheory.Category CategoryTheory.Functor
 
 namespace CategoryTheory
 
@@ -147,7 +147,7 @@ def lift : W.Localization ⥤ D :=
     (by
       rintro ⟨X⟩ ⟨Y⟩ f₁ f₂ r
       -- Porting note: rest of proof was `rcases r with ⟨⟩; tidy`
-      rcases r with (_|_|⟨f,hf⟩|⟨f,hf⟩)
+      rcases r with (_ | _ | ⟨f, hf⟩ | ⟨f, hf⟩)
       · aesop_cat
       · simp
       all_goals

@@ -75,11 +75,11 @@ theorem integrableOn_rpow_mul_exp_neg_rpow {p s : ℝ} (hs : -1 < s) (hp : 1 ≤
         intro _ _ hx
         refine continuousWithinAt_id.rpow_const (Or.inl ?_)
         exact ne_of_gt (lt_of_lt_of_le zero_lt_one hx)
-      refine integrable_of_isBigO_exp_neg (by norm_num : (0 : ℝ) < 1 / 2)
+      refine integrable_of_isBigO_exp_neg (by simp : (0 : ℝ) < 1 / 2)
         (ContinuousOn.mul (fun x hx => h_rpow x s hx) (fun x hx => ?_)) (IsLittleO.isBigO ?_)
       · change ContinuousWithinAt ((fun x => exp (- x)) ∘ (fun x => x ^ p)) (Ici 1) x
         exact ContinuousAt.comp_continuousWithinAt (h_exp _) (h_rpow x p hx)
-      · convert rpow_mul_exp_neg_mul_rpow_isLittleO_exp_neg s hp (by norm_num : (0 : ℝ) < 1) using 3
+      · convert rpow_mul_exp_neg_mul_rpow_isLittleO_exp_neg s hp (by simp : (0 : ℝ) < 1) using 3
         rw [neg_mul, one_mul]
   · simp_rw [← hp, Real.rpow_one]
     convert Real.GammaIntegral_convergent (by linarith : 0 < s + 1) using 2
@@ -110,7 +110,7 @@ theorem integrable_rpow_mul_exp_neg_mul_sq {b : ℝ} (hb : 0 < b) {s : ℝ} (hs 
   refine ⟨?_, integrableOn_rpow_mul_exp_neg_mul_sq hb hs⟩
   rw [← (Measure.measurePreserving_neg (volume : Measure ℝ)).integrableOn_comp_preimage
       (Homeomorph.neg ℝ).measurableEmbedding]
-  simp only [Function.comp_def, neg_sq, neg_preimage, neg_Iio, neg_neg, neg_zero]
+  simp only [Function.comp_def, neg_sq, neg_preimage, neg_Iio, neg_zero]
   apply Integrable.mono' (integrableOn_rpow_mul_exp_neg_mul_sq hb hs)
   · apply Measurable.aestronglyMeasurable
     exact (measurable_id'.neg.pow measurable_const).mul
@@ -124,7 +124,7 @@ theorem integrable_rpow_mul_exp_neg_mul_sq {b : ℝ} (hb : 0 < b) {s : ℝ} (hs 
 
 theorem integrable_exp_neg_mul_sq {b : ℝ} (hb : 0 < b) :
     Integrable fun x : ℝ => exp (-b * x ^ 2) := by
-  simpa using integrable_rpow_mul_exp_neg_mul_sq hb (by norm_num : (-1 : ℝ) < 0)
+  simpa using integrable_rpow_mul_exp_neg_mul_sq hb (by simp : (-1 : ℝ) < 0)
 
 theorem integrableOn_Ioi_exp_neg_mul_sq_iff {b : ℝ} :
     IntegrableOn (fun x : ℝ => exp (-b * x ^ 2)) (Ioi 0) ↔ 0 < b := by
@@ -143,7 +143,7 @@ theorem integrable_exp_neg_mul_sq_iff {b : ℝ} :
 
 theorem integrable_mul_exp_neg_mul_sq {b : ℝ} (hb : 0 < b) :
     Integrable fun x : ℝ => x * exp (-b * x ^ 2) := by
-  simpa using integrable_rpow_mul_exp_neg_mul_sq hb (by norm_num : (-1 : ℝ) < 1)
+  simpa using integrable_rpow_mul_exp_neg_mul_sq hb (by simp : (-1 : ℝ) < 1)
 
 theorem norm_cexp_neg_mul_sq (b : ℂ) (x : ℝ) :
     ‖Complex.exp (-b * (x : ℂ) ^ 2)‖ = exp (-b.re * x ^ 2) := by
@@ -183,7 +183,7 @@ theorem integral_mul_cexp_neg_mul_sq {b : ℂ} (hb : 0 < b.re) :
       ((tendsto_pow_atTop two_ne_zero).const_mul_atTop_of_neg (neg_lt_zero.2 hb))
   convert integral_Ioi_of_hasDerivAt_of_tendsto' (fun x _ => (A ↑x).comp_ofReal)
     (integrable_mul_cexp_neg_mul_sq hb).integrableOn B using 1
-  simp only [mul_zero, ofReal_zero, zero_pow, Ne, Nat.one_ne_zero,
+  simp only [mul_zero, ofReal_zero, zero_pow, Ne,
     not_false_iff, Complex.exp_zero, mul_one, sub_neg_eq_add, zero_add, reduceCtorEq]
 
 /-- The *square* of the Gaussian integral `∫ x:ℝ, exp (-b * x^2)` is equal to `π / b`. -/
@@ -212,8 +212,8 @@ theorem integral_gaussian_sq_complex {b : ℂ} (hb : 0 < b.re) :
       conv_rhs => rw [← one_mul ((p.1 : ℂ) ^ 2), ← sin_sq_add_cos_sq (p.2 : ℂ)]
       ring
     _ = ↑π / b := by
-      simp only [neg_mul, integral_const, MeasurableSet.univ, measureReal_restrict_apply,
-        univ_inter, real_smul, mul_one, ← neg_mul, integral_mul_cexp_neg_mul_sq hb]
+      simp only [integral_const, MeasurableSet.univ, measureReal_restrict_apply,
+        univ_inter, real_smul, mul_one, integral_mul_cexp_neg_mul_sq hb]
       rw [volume_real_Ioo_of_le (by linarith [pi_nonneg])]
       field_simp [(by contrapose! hb; rw [hb, zero_re] : b ≠ 0)]
       ring
