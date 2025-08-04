@@ -68,8 +68,7 @@ abbrev IsRelational : Prop := ∀ n, IsEmpty (L.Functions n)
 abbrev IsAlgebraic : Prop := ∀ n, IsEmpty (L.Relations n)
 
 /-- The empty language has no symbols. -/
-protected def empty : Language :=
-  ⟨fun _ => Empty, fun _ => Empty⟩
+protected def empty : Language := ⟨fun _ => Empty, fun _ => Empty⟩
   deriving IsAlgebraic, IsRelational
 
 instance : Inhabited Language :=
