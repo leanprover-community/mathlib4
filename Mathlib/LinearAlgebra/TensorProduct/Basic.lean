@@ -768,7 +768,7 @@ variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 
 theorem map_comp (f₂ : M₂ →ₛₗ[σ₂₃] M₃) (f₁ : M →ₛₗ[σ₁₂] M₂)
     (g₂ : N₂ →ₛₗ[σ₂₃] N₃) (g₁ : N →ₛₗ[σ₁₂] N₂) :
-    map (f₂.comp f₁) (g₂.comp g₁) = (map f₂ g₂).comp (map f₁ g₁) :=
+    map (f₂ ∘ₛₗ f₁) (g₂ ∘ₛₗ g₁) = (map f₂ g₂) ∘ₛₗ (map f₁ g₁) :=
   ext' fun _ _ => rfl
 
 theorem map_map (f₂ : M₂ →ₛₗ[σ₂₃] M₃) (f₁ : M →ₛₗ[σ₁₂] M₂)
