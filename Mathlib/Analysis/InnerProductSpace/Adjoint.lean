@@ -381,9 +381,10 @@ open ContinuousLinearMap in
 /-- An operator is a star projection if and only if it is an orthogonal projection. -/
 theorem isStarProjection_iff_eq_starProjection_range [CompleteSpace E] {p : E →L[𝕜] E} :
     IsStarProjection p ↔ ∃ (_ : (LinearMap.range p).HasOrthogonalProjection),
-    p = (LinearMap.range p).starProjection :=
-  p.isStarProjection_iff_isSymmetricProjection.symm.eq ▸
-    LinearMap.isSymmetricProjection_iff_eq_starProjection_range
+    p = (LinearMap.range p).starProjection := by
+  simp_rw [← p.isStarProjection_iff_isSymmetricProjection.symm.eq,
+    LinearMap.isSymmetricProjection_iff_eq_starProjection_range, coe_inj]
+  rfl
 
 lemma isStarProjection_iff_eq_starProjection [CompleteSpace E] {p : E →L[𝕜] E} :
     IsStarProjection p

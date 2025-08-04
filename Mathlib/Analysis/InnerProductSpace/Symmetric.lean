@@ -306,6 +306,19 @@ theorem IsIdempotentElem.isSymmetric_iff_orthogonal_range {T : E →ₗ[𝕜] E}
   ⟨fun hT => hT.orthogonal_range, fun hT =>
     h.isSymmetric_iff_isOrtho_range_ker.eq ▸ hT.symm ▸ isOrtho_orthogonal_right _⟩
 
+open LinearMap in
+/-- Symmetric projections are equal iff their range are. -/
+theorem IsSymmetricProjection.ext_iff {S T : E →ₗ[𝕜] E}
+    (hS : S.IsSymmetricProjection) (hT : T.IsSymmetricProjection) :
+    S = T ↔ LinearMap.range S = LinearMap.range T := by
+  refine ⟨fun h => h ▸ rfl, fun h => ?_⟩
+  rw [hS.isIdempotentElem.ext_iff hT.isIdempotentElem,
+    ← hT.isIdempotentElem.isSymmetric_iff_orthogonal_range.mp hT.isSymmetric,
+    ← hS.isIdempotentElem.isSymmetric_iff_orthogonal_range.mp hS.isSymmetric]
+  simp [h]
+
+alias ⟨_, IsSymmetricProjection.ext⟩ := IsSymmetricProjection.ext_iff
+
 end LinearMap
 
 open ContinuousLinearMap in
