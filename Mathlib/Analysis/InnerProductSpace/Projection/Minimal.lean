@@ -8,7 +8,9 @@ import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
 
-# Hilbert-projection theorem and
+# Existence of minimizers (Hilbert projection theorem)
+
+This file shows the existence of minimizers (also known as the Hilbert projection theorem).
 
 -/
 
@@ -183,7 +185,7 @@ theorem norm_eq_iInf_iff_real_inner_le_zero {K : Set F} (h : Convex ℝ K) {u : 
     by_cases hq : q = 0
     · rw [hq] at this
       have : p ≤ 0 := by
-        have := this (1 : ℝ) (by norm_num) (by norm_num)
+        have := this (1 : ℝ) (by simp) (by simp)
         linarith
       exact this
     · have q_pos : 0 < q := lt_of_le_of_ne (sq_nonneg _) fun h ↦ hq h.symm
@@ -197,7 +199,7 @@ theorem norm_eq_iInf_iff_real_inner_le_zero {K : Set F} (h : Convex ℝ K) {u : 
       have : 2 * p ≤ p :=
         calc
           2 * p ≤ θ * q := by
-            exact this θ (lt_min (by norm_num) (div_pos hp q_pos)) (by norm_num [θ])
+            exact this θ (lt_min (by simp) (div_pos hp q_pos)) (by simp [θ])
           _ ≤ p := eq₁
       linarith
   · intro h
@@ -221,7 +223,6 @@ theorem norm_eq_iInf_iff_real_inner_le_zero {K : Set F} (h : Convex ℝ K) {u : 
       use 0
       rintro y ⟨z, rfl⟩
       exact norm_nonneg _
-
 
 namespace Submodule
 
