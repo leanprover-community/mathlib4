@@ -359,6 +359,13 @@ theorem isStarProjection_iff_isSymmetricProjection :
     isSelfAdjoint_iff_isSymmetric, IsIdempotentElem, End.mul_eq_comp, ← coe_comp, mul_def]
 
 open ContinuousLinearMap in
+omit [CompleteSpace E] in
+/-- An idempotent operator `T` is symmetric iff `(range T)ᗮ = ker T`. -/
+theorem IsIdempotentElem.isSymmetric_iff_orthogonal_range (h : IsIdempotentElem T) :
+    T.IsSymmetric ↔ (LinearMap.range T)ᗮ = LinearMap.ker T :=
+  LinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range h.toLinearMap
+
+open ContinuousLinearMap in
 /-- Star projection operators are equal iff their range are. -/
 theorem IsStarProjection.ext_iff {S : E →L[𝕜] E}
     (hS : IsStarProjection S) (hT : IsStarProjection T) :
@@ -384,6 +391,12 @@ theorem isStarProjection_iff_eq_starProjection_range [CompleteSpace E] {p : E �
     p = (LinearMap.range p).starProjection :=
   p.isStarProjection_iff_isSymmetricProjection.symm.eq ▸
     LinearMap.isSymmetricProjection_iff_eq_starProjection_range
+
+lemma isStarProjection_iff_eq_starProjection [CompleteSpace E] {p : E →L[𝕜] E} :
+    IsStarProjection p
+      ↔ ∃ (K : Submodule 𝕜 E) (_ : K.HasOrthogonalProjection), p = K.starProjection :=
+  ⟨fun h ↦ ⟨LinearMap.range p, isStarProjection_iff_eq_starProjection_range.mp h⟩,
+    by rintro ⟨_, _, rfl⟩; simp⟩
 
 namespace LinearMap
 
@@ -576,8 +589,8 @@ theorem _root_.ContinuousLinearMap.isSelfAdjoint_toLinearMap_iff (T : E →L[�
 theorem isStarProjection_toContinuousLinearMap_iff {T : E →ₗ[𝕜] E} :
     have := FiniteDimensional.complete 𝕜 E
     IsStarProjection (toContinuousLinearMap T) ↔ IsStarProjection T := by
-  simp [isStarProjection_iff, isSelfAdjoint_toContinuousLinearMap_iff, IsIdempotentElem,
-    ContinuousLinearMap.ext_iff, LinearMap.ext_iff, ← Module.End.mul_apply]
+  simp [isStarProjection_iff, isSelfAdjoint_toContinuousLinearMap_iff,
+    ← ContinuousLinearMap.isIdempotentElem_toLinearMap_iff]
 
 open LinearMap in
 /-- Star projection operators are equal iff their range are. -/

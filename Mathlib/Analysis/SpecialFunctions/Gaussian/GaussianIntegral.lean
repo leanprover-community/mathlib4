@@ -75,11 +75,11 @@ theorem integrableOn_rpow_mul_exp_neg_rpow {p s : ℝ} (hs : -1 < s) (hp : 1 ≤
         intro _ _ hx
         refine continuousWithinAt_id.rpow_const (Or.inl ?_)
         exact ne_of_gt (lt_of_lt_of_le zero_lt_one hx)
-      refine integrable_of_isBigO_exp_neg (by norm_num : (0 : ℝ) < 1 / 2)
+      refine integrable_of_isBigO_exp_neg (by simp : (0 : ℝ) < 1 / 2)
         (ContinuousOn.mul (fun x hx => h_rpow x s hx) (fun x hx => ?_)) (IsLittleO.isBigO ?_)
       · change ContinuousWithinAt ((fun x => exp (- x)) ∘ (fun x => x ^ p)) (Ici 1) x
         exact ContinuousAt.comp_continuousWithinAt (h_exp _) (h_rpow x p hx)
-      · convert rpow_mul_exp_neg_mul_rpow_isLittleO_exp_neg s hp (by norm_num : (0 : ℝ) < 1) using 3
+      · convert rpow_mul_exp_neg_mul_rpow_isLittleO_exp_neg s hp (by simp : (0 : ℝ) < 1) using 3
         rw [neg_mul, one_mul]
   · simp_rw [← hp, Real.rpow_one]
     convert Real.GammaIntegral_convergent (by linarith : 0 < s + 1) using 2
@@ -124,7 +124,7 @@ theorem integrable_rpow_mul_exp_neg_mul_sq {b : ℝ} (hb : 0 < b) {s : ℝ} (hs 
 
 theorem integrable_exp_neg_mul_sq {b : ℝ} (hb : 0 < b) :
     Integrable fun x : ℝ => exp (-b * x ^ 2) := by
-  simpa using integrable_rpow_mul_exp_neg_mul_sq hb (by norm_num : (-1 : ℝ) < 0)
+  simpa using integrable_rpow_mul_exp_neg_mul_sq hb (by simp : (-1 : ℝ) < 0)
 
 theorem integrableOn_Ioi_exp_neg_mul_sq_iff {b : ℝ} :
     IntegrableOn (fun x : ℝ => exp (-b * x ^ 2)) (Ioi 0) ↔ 0 < b := by
@@ -143,7 +143,7 @@ theorem integrable_exp_neg_mul_sq_iff {b : ℝ} :
 
 theorem integrable_mul_exp_neg_mul_sq {b : ℝ} (hb : 0 < b) :
     Integrable fun x : ℝ => x * exp (-b * x ^ 2) := by
-  simpa using integrable_rpow_mul_exp_neg_mul_sq hb (by norm_num : (-1 : ℝ) < 1)
+  simpa using integrable_rpow_mul_exp_neg_mul_sq hb (by simp : (-1 : ℝ) < 1)
 
 theorem norm_cexp_neg_mul_sq (b : ℂ) (x : ℝ) :
     ‖Complex.exp (-b * (x : ℂ) ^ 2)‖ = exp (-b.re * x ^ 2) := by

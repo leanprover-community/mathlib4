@@ -292,7 +292,7 @@ lemma spectrum_star_mul_self_nonneg {b : A} : ∀ x ∈ spectrum ℝ (star b * b
     · exact .neg <| .star_mul_self c
     · rw [← Nat.cast_smul_eq_nsmul ℝ]
       refine (ℜ c).2.sq_spectrumRestricts.nnreal_add ((ℜ c).2.pow 2) ((ℑ c).2.pow 2)
-        (ℑ c).2.sq_spectrumRestricts |>.smul_of_nonneg <| by norm_num
+        (ℑ c).2.sq_spectrumRestricts |>.smul_of_nonneg <| by simp
   -- therefore `- (star c * c) = 0` and so `a⁻ ^ 3 = 0`. By properties of the continuous functional
   -- calculus, `fun x ↦ x⁻ ^ 3` is zero on the spectrum of `a`, `0 ≤ x` for `x ∈ spectrum ℝ a`.
   rw [h_c_spec₁.mul_comm.eq_zero_of_neg (.star_mul_self c) h_c_spec₀, neg_zero, CFC.negPart_def,
@@ -451,8 +451,8 @@ lemma Unitization.complex_cfcₙ_eq_cfc_inr (a : A) (f : ℂ → ℂ) (hf₀ : f
     cfcₙ f a = cfc f (a : A⁺¹) :=
   Unitization.cfcₙ_eq_cfc_inr isStarNormal_inr ..
 
-/-- note: the version for `ℝ≥0`, `Unization.nnreal_cfcₙ_eq_cfc_inr`, can be found in
-`Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order` -/
+/-- note: the version for `ℝ≥0`, `Unitization.nnreal_cfcₙ_eq_cfc_inr`, can be found in
+`Analysis/CStarAlgebra/ContinuousFunctionalCalculus/Order.lean` -/
 lemma Unitization.real_cfcₙ_eq_cfc_inr (a : A) (f : ℝ → ℝ) (hf₀ : f 0 = 0 := by cfc_zero_tac) :
     cfcₙ f a = cfc f (a : A⁺¹) :=
   Unitization.cfcₙ_eq_cfc_inr isSelfAdjoint_inr ..
