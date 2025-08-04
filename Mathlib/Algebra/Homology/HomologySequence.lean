@@ -272,7 +272,7 @@ namespace ShortComplex
 
 namespace ShortExact
 
-/-- The connecting homoomorphism `S.X₃.homology i ⟶ S.X₁.homology j` for a short exact
+/-- The connecting homomorphism `S.X₃.homology i ⟶ S.X₁.homology j` for a short exact
 short complex `S`. -/
 noncomputable def δ : S.X₃.homology i ⟶ S.X₁.homology j := (snakeInput hS i j hij).δ
 
