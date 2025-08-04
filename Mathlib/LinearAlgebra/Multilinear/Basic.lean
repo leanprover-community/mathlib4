@@ -41,7 +41,7 @@ Expressing that a map is linear along the `i`-th coordinate when all other coord
 can be done in two (equivalent) different ways:
 
 * fixing a vector `m : ∀ (j : ι - i), M₁ j.val`, and then choosing separately the `i`-th coordinate
-* fixing a vector `m : ∀j, M₁ j`, and then modifying its `i`-th coordinate
+* fixing a vector `m : ∀ j, M₁ j`, and then modifying its `i`-th coordinate
 
 The second way is more artificial as the value of `m` at `i` is not relevant, but it has the
 advantage of avoiding subtype inclusion issues. This is the definition we use, based on
@@ -713,16 +713,7 @@ lemma domDomRestrict_aux {ι} [DecidableEq ι] (P : ι → Prop) [DecidablePred 
     (c : M₁ i) : (fun j ↦ if h : P j then Function.update x i c ⟨j, h⟩ else z ⟨j, h⟩) =
     Function.update (fun j => if h : P j then x ⟨j, h⟩ else z ⟨j, h⟩) i c := by
   ext j
-  by_cases h : j = i
-  · rw [h, Function.update_self]
-    simp only [i.2, update_self, dite_true]
-  · rw [Function.update_of_ne h]
-    by_cases h' : P j
-    · simp only [h', dite_true]
-      have h'' : ¬ ⟨j, h'⟩ = i :=
-        fun he => by apply_fun (fun x => x.1) at he; exact h he
-      rw [Function.update_of_ne h'']
-    · simp only [h', dite_false]
+  by_cases h : j = i <;> grind [Function.update_self, Function.update_of_ne]
 
 lemma domDomRestrict_aux_right {ι} [DecidableEq ι] (P : ι → Prop) [DecidablePred P] {M₁ : ι → Type*}
     [DecidableEq {a // ¬ P a}]
@@ -1090,9 +1081,9 @@ def _root_.LinearEquiv.multilinearMapCongrLeft (e : Π (i : ι), M₁ i ≃ₗ[R
 sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g` and multilinear in
 `f₁, ..., fₙ`. -/
 @[simps] def compLinearMapMultilinear :
-  @MultilinearMap R ι (fun i ↦ M₁ i →ₗ[R] M₁' i)
-    ((MultilinearMap R M₁' M₂) →ₗ[R] MultilinearMap R M₁ M₂) _ _ _
-      (fun _ ↦ LinearMap.module) _ where
+    @MultilinearMap R ι (fun i ↦ M₁ i →ₗ[R] M₁' i)
+      ((MultilinearMap R M₁' M₂) →ₗ[R] MultilinearMap R M₁ M₂) _ _ _
+        (fun _ ↦ LinearMap.module) _ where
   toFun := MultilinearMap.compLinearMapₗ
   map_update_add' := by
     intro _ f i f₁ f₂
@@ -1356,9 +1347,8 @@ lemma map_sub_map_piecewise [LinearOrder ι] (a b : (i : ι) → M₁ i) (s : Fi
       rw [update_self, s.piecewise_eq_of_notMem _ _ (lt_irrefl _ <| hk k ·)]
     · push_neg at h₁
       rw [update_of_ne (Ne.symm h₂), s.piecewise_eq_of_mem _ _ (h₁.1.resolve_left <| Ne.symm h₂)]
-  · apply sum_congr rfl; intro i hi; congr; ext j; congr 1; apply propext
-    simp_rw [imp_iff_not_or, not_or]; apply or_congr_left'
-    intro h; rw [and_iff_right]; rintro rfl; exact h (hk i hi)
+  · apply sum_congr rfl
+    grind
 
 /-- This calculates the differences between the values of a multilinear map at
 two arguments that differ on a finset `s` of `ι`. It requires a

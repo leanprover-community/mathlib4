@@ -110,11 +110,9 @@ theorem monoidWithZeroHom_ext ⦃f g : WithZero α →*₀ β⦄
 @[simps! symm_apply_apply]
 nonrec def lift' : (α →* β) ≃ (WithZero α →*₀ β) where
   toFun f :=
-    { toFun := fun
-        | 0 => 0
-        | (a : α) => f a
+    { toFun := recZeroCoe 0 f
       map_zero' := rfl
-      map_one' := map_one f
+      map_one' := by simp
       map_mul' := fun
         | 0, _ => (zero_mul _).symm
         | (_ : α), 0 => (mul_zero _).symm
@@ -127,6 +125,12 @@ lemma lift'_zero (f : α →* β) : lift' f (0 : WithZero α) = 0 := rfl
 
 lemma lift'_unique (f : WithZero α →*₀ β) : f = lift' (f.toMonoidHom.comp coeMonoidHom) :=
   (lift'.apply_symm_apply f).symm
+
+lemma lift'_surjective {f : α →* β} (hf : Surjective f) :
+    Surjective (lift' f) := by
+  intro b
+  obtain ⟨a, rfl⟩ := hf b
+  exact ⟨a, by simp⟩
 
 end lift
 
@@ -155,6 +159,19 @@ lemma map'_injective_iff {f : α →* β} : Injective (map' f) ↔ Injective f :
   simp [Injective, WithZero.forall]
 
 alias ⟨_, map'_injective⟩ := map'_injective_iff
+
+lemma map'_surjective_iff {f : α →* β} : Surjective (map' f) ↔ Surjective f := by
+  simp only [Surjective, «forall»]
+  refine ⟨fun h b ↦ ?_, fun h ↦ ⟨⟨0, by simp⟩, fun b ↦ ?_⟩⟩
+  · obtain ⟨a, hab⟩ := h.2 b
+    induction a using WithZero.recZeroCoe <;>
+    simp at hab
+    grind
+  · obtain ⟨a, ha⟩ := h b
+    use a
+    simp [ha]
+
+alias ⟨_, map'_surjective⟩ := map'_surjective_iff
 
 end MulOneClass
 
@@ -273,6 +290,9 @@ def unitsWithZeroEquiv : (WithZero α)ˣ ≃* α where
   invFun a := Units.mk0 a coe_ne_zero
   left_inv _ := Units.ext <| by simp only [coe_unzero, Units.mk0_val]
   map_mul' _ _ := coe_inj.mp <| by simp only [Units.val_mul, coe_unzero, coe_mul]
+
+instance [Nontrivial α] : Nontrivial (WithZero α)ˣ :=
+  unitsWithZeroEquiv.toEquiv.surjective.nontrivial
 
 theorem coe_unitsWithZeroEquiv_eq_units_val (γ : (WithZero α)ˣ) :
     ↑(unitsWithZeroEquiv γ) = γ.val := by
@@ -406,7 +426,7 @@ namespace MonoidWithZeroHom
 
 protected lemma map_eq_zero_iff {G₀ G₀' : Type*} [GroupWithZero G₀]
     [MulZeroOneClass G₀'] [Nontrivial G₀']
-    {f : G₀ →*₀ G₀'} {x : G₀}:
+    {f : G₀ →*₀ G₀'} {x : G₀} :
     f x = 0 ↔ x = 0 := by
   refine ⟨?_, by simp +contextual⟩
   contrapose!

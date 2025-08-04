@@ -114,7 +114,7 @@ open scoped MonoidalLeftAction in
 - A structure isomorphism `αₗ c c' d : c ⊗ c' ⊙ₗ d ≅ c ⊙ₗ c' ⊙ₗ d`.
 - A structure isomorphism `λₗ d : (𝟙_ C) ⊙ₗ d ≅ d`.
 Furthermore, we require identities that turn `- ⊙ₗ -` into a bifunctor,
-ensure naturality of `αₗ` and `λₗ`, and ensure compatibilies with
+ensure naturality of `αₗ` and `λₗ`, and ensure compatibilities with
 the associator and unitor isomorphisms in `C`. -/
 class MonoidalLeftAction [MonoidalCategory C] extends
     MonoidalLeftActionStruct C D where
@@ -428,7 +428,7 @@ open scoped MonoidalRightAction in
 - A structure isomorphism `αᵣ c c' d : c ⊗ c' ⊙ᵣ d ≅ c ⊙ᵣ c' ⊙ᵣ d`.
 - A structure isomorphism `ρᵣ d : (𝟙_ C) ⊙ᵣ d ≅ d`.
 Furthermore, we require identities that turn `- ⊙ᵣ -` into a bifunctor,
-ensure naturality of `αᵣ` and `ρᵣ`, and ensure compatibilies with
+ensure naturality of `αᵣ` and `ρᵣ`, and ensure compatibilities with
 the associator and unitor isomorphisms in `C`. -/
 class MonoidalRightAction [MonoidalCategory C] extends
     MonoidalRightActionStruct C D where

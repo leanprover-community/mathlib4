@@ -529,6 +529,9 @@ def Spec.preimage : R ⟶ S := (Scheme.Spec.preimage f).unop
 
 @[simp] lemma Spec.map_preimage : Spec.map (Spec.preimage f) = f := Scheme.Spec.map_preimage f
 
+@[simp] lemma Spec.map_preimage_unop (f : Spec R ⟶ Spec S) :
+    Spec.map (Spec.fullyFaithful.preimage f).unop = f := Spec.fullyFaithful.map_preimage _
+
 variable (φ) in
 @[simp] lemma Spec.preimage_map : Spec.preimage (Spec.map φ) = φ :=
   Spec.map_injective (Spec.map_preimage (Spec.map φ))

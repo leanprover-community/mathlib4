@@ -466,6 +466,14 @@ theorem _root_.IsPrimitiveRoot.adjoin_isCyclotomicExtension {ζ : B} {n : ℕ} [
       · exact Subalgebra.add_mem _ hb₁ hb₂
       · exact Subalgebra.mul_mem _ hb₁ hb₂ }
 
+variable {L} in
+theorem _root_.IsPrimitiveRoot.intermediateField_adjoin_isCyclotomicExtension
+    [Algebra.IsIntegral K L] {n : ℕ} [NeZero n] {ζ : L} (hζ : IsPrimitiveRoot ζ n) :
+    IsCyclotomicExtension {n} K (IntermediateField.adjoin K {ζ}) := by
+  change IsCyclotomicExtension {n} K (IntermediateField.adjoin K {ζ}).toSubalgebra
+  rw [IntermediateField.adjoin_simple_toSubalgebra_of_integral (IsIntegral.isIntegral ζ)]
+  exact hζ.adjoin_isCyclotomicExtension K
+
 end
 
 section Field
@@ -563,10 +571,10 @@ theorem isGalois [IsCyclotomicExtension S K L] : IsGalois K L := by
   obtain ⟨i⟩ := nonempty_algEquiv_adjoin_of_isSepClosed S K L (AlgebraicClosure K)
   rw [i.transfer_normal, IntermediateField.normal_iff_forall_map_le]
   intro f x hx
-  change x ∈ IntermediateField.toSubalgebra _ at hx
-  rw [IntermediateField.toSubalgebra_map, Subalgebra.mem_map] at hx
+  rw [← IntermediateField.mem_toSubalgebra, IntermediateField.toSubalgebra_map,
+    Subalgebra.mem_map] at hx
   obtain ⟨y, hy, rfl⟩ := hx
-  change y ∈ IntermediateField.adjoin _ _ at hy
+  rw [IntermediateField.mem_toSubalgebra] at hy
   induction hy using IntermediateField.adjoin_induction with
   | mem x hx =>
     obtain ⟨n, hn, h1, h2⟩ := hx

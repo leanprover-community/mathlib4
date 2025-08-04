@@ -121,12 +121,7 @@ lemma trace_comp_toEnd_genWeightSpace_eq (χ : L → R) :
     LinearMap.trace R _ ∘ₗ (toEnd R L (genWeightSpace M χ)).toLinearMap =
     finrank R (genWeightSpace M χ) • χ := by
   ext x
-  let n := toEnd R L (genWeightSpace M χ) x - χ x • LinearMap.id
-  have h₁ : toEnd R L (genWeightSpace M χ) x = n + χ x • LinearMap.id := eq_add_of_sub_eq rfl
-  have h₂ : LinearMap.trace R _ n = 0 := IsReduced.eq_zero _ <|
-    LinearMap.isNilpotent_trace_of_isNilpotent <| isNilpotent_toEnd_sub_algebraMap M χ x
-  rw [LinearMap.comp_apply, LieHom.coe_toLinearMap, h₁, map_add, h₂]
-  simp [mul_comm (χ x)]
+  simp
 
 variable {R L M} in
 lemma zero_lt_finrank_genWeightSpace {χ : L → R} (hχ : genWeightSpace M χ ≠ ⊥) :

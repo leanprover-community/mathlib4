@@ -40,7 +40,7 @@ variable {R : C ⥤ D} [R.Faithful] [R.Full] {L : D ⥤ C} (adj : L ⊣ R)
 /-- The uncurried retraction of the unit in the proof of `4 → 1` in `isIso_tfae` below. -/
 private noncomputable def adjRetractionAux
     (c : C) (d : D) [IsIso (L.map (adj.unit.app ((ihom d).obj (R.obj c)) ⊗ₘ adj.unit.app d))] :
-  d ⊗ ((L ⋙ R).obj ((ihom d).obj (R.obj c))) ⟶ (R.obj c) :=
+    d ⊗ ((L ⋙ R).obj ((ihom d).obj (R.obj c))) ⟶ (R.obj c) :=
   (β_ _ _).hom ≫ (_ ◁ adj.unit.app _) ≫ adj.unit.app _ ≫
     R.map (inv (L.map (adj.unit.app _ ⊗ₘ adj.unit.app _))) ≫ (L ⋙ R).map (β_ _ _).hom ≫
       (L ⋙ R).map ((ihom.ev _).app _) ≫ inv (adj.unit.app _)

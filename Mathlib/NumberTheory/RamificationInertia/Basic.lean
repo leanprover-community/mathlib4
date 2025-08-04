@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.LinearAlgebra.Dimension.DivisionRing
-import Mathlib.RingTheory.DedekindDomain.Ideal
+import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 import Mathlib.RingTheory.Finiteness.Quotient
 import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 
@@ -736,8 +736,7 @@ theorem finrank_prime_pow_ramificationIdx [IsDedekindDomain S] (hP0 : P ≠ ⊥)
   letI : Algebra (R ⧸ p) (S ⧸ P) := Quotient.algebraQuotientOfRamificationIdxNeZero p P
   have hdim := rank_prime_pow_ramificationIdx _ _ hP0 he
   by_cases hP : FiniteDimensional (R ⧸ p) (S ⧸ P)
-  · haveI := hP
-    haveI := (finiteDimensional_iff_of_rank_eq_nsmul he hdim).mpr hP
+  · haveI := (finiteDimensional_iff_of_rank_eq_nsmul he hdim).mpr hP
     apply @Nat.cast_injective Cardinal
     rw [finrank_eq_rank', Nat.cast_mul, finrank_eq_rank', hdim, nsmul_eq_mul]
   have hPe := mt (finiteDimensional_iff_of_rank_eq_nsmul he hdim).mp hP

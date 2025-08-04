@@ -311,9 +311,8 @@ lemma odd_matches_node_outside [Finite V] {u : Set V}
   haveI : Fintype ↑(Subgraph.induce M (Subtype.val '' supp c.val)).verts := Fintype.ofFinite _
   classical
   haveI : Fintype (c.val.supp) := Fintype.ofFinite _
-  simpa [Subgraph.induce_verts, Subgraph.verts_top, Set.toFinset_image, Nat.card_eq_fintype_card,
-    Set.toFinset_image,Finset.card_image_of_injective _ (Subtype.val_injective), Set.toFinset_card,
-    ← Set.Nat.card_coe_set_eq] using hMmatch.even_card
+  simpa [Subgraph.induce_verts, Subgraph.verts_top, Nat.card_eq_fintype_card, Set.toFinset_card,
+    Finset.card_image_of_injective, ← Nat.card_coe_set_eq] using hMmatch.even_card
 
 end Finite
 end ConnectedComponent

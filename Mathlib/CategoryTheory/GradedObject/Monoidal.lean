@@ -59,8 +59,8 @@ variable (X₁ X₂ : GradedObject I C) [HasTensor X₁ X₂]
 
 /-- The inclusion of a summand in a tensor product of two graded objects. -/
 noncomputable def ιTensorObj (i₁ i₂ i₁₂ : I) (h : i₁ + i₂ = i₁₂) :
-  X₁ i₁ ⊗ X₂ i₂ ⟶ tensorObj X₁ X₂ i₁₂ :=
-    ιMapBifunctorMapObj (curriedTensor C) _ _ _ _ _ _ h
+    X₁ i₁ ⊗ X₂ i₂ ⟶ tensorObj X₁ X₂ i₁₂ :=
+  ιMapBifunctorMapObj (curriedTensor C) _ _ _ _ _ _ h
 
 variable {X₁ X₂}
 
@@ -113,11 +113,13 @@ noncomputable abbrev whiskerRight {X₁ X₂ : GradedObject I C} (φ : X₁ ⟶ 
   tensorHom φ (𝟙 Y)
 
 @[simp]
-lemma tensor_id (X Y : GradedObject I C) [HasTensor X Y] :
+lemma id_tensorHom_id (X Y : GradedObject I C) [HasTensor X Y] :
     tensorHom (𝟙 X) (𝟙 Y) = 𝟙 _ := by
   dsimp [tensorHom, mapBifunctorMapMap]
   simp only [Functor.map_id, NatTrans.id_app, comp_id, mapMap_id]
   rfl
+
+@[deprecated (since := "2025-07-14")] alias tensor_id := id_tensorHom_id
 
 @[reassoc]
 lemma tensor_comp {X₁ X₂ X₃ Y₁ Y₂ Y₃ : GradedObject I C} (f₁ : X₁ ⟶ X₂) (f₂ : X₂ ⟶ X₃)
@@ -136,8 +138,8 @@ noncomputable def tensorIso {X₁ X₂ Y₁ Y₂ : GradedObject I C} (e : X₁ �
     tensorObj X₁ Y₁ ≅ tensorObj X₂ Y₂ where
   hom := tensorHom e.hom e'.hom
   inv := tensorHom e.inv e'.inv
-  hom_inv_id := by simp only [← tensor_comp, Iso.hom_inv_id, tensor_id]
-  inv_hom_id := by simp only [← tensor_comp, Iso.inv_hom_id, tensor_id]
+  hom_inv_id := by simp only [← tensor_comp, Iso.hom_inv_id, id_tensorHom_id]
+  inv_hom_id := by simp only [← tensor_comp, Iso.inv_hom_id, id_tensorHom_id]
 
 lemma tensorHom_def {X₁ X₂ Y₁ Y₂ : GradedObject I C} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂)
     [HasTensor X₁ Y₁] [HasTensor X₂ Y₂] [HasTensor X₂ Y₁] :
@@ -282,8 +284,8 @@ variable [HasTensor X₁ X₂] [HasTensor (tensorObj X₁ X₂) X₃] [HasTensor
 
 /-- The associator isomorphism for graded objects. -/
 noncomputable def associator [HasGoodTensor₁₂Tensor X₁ X₂ X₃] [HasGoodTensorTensor₂₃ X₁ X₂ X₃] :
-  tensorObj (tensorObj X₁ X₂) X₃ ≅ tensorObj X₁ (tensorObj X₂ X₃) :=
-    mapBifunctorAssociator (MonoidalCategory.curriedAssociatorNatIso C) ρ₁₂ ρ₂₃ X₁ X₂ X₃
+    tensorObj (tensorObj X₁ X₂) X₃ ≅ tensorObj X₁ (tensorObj X₂ X₃) :=
+  mapBifunctorAssociator (MonoidalCategory.curriedAssociatorNatIso C) ρ₁₂ ρ₂₃ X₁ X₂ X₃
 
 @[reassoc (attr := simp)]
 lemma ιTensorObj₃'_associator_hom
@@ -312,12 +314,7 @@ lemma associator_naturality (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ 
     [HasGoodTensor₁₂Tensor Y₁ Y₂ Y₃] [HasGoodTensorTensor₂₃ Y₁ Y₂ Y₃] :
     tensorHom (tensorHom f₁ f₂) f₃ ≫ (associator Y₁ Y₂ Y₃).hom =
       (associator X₁ X₂ X₃).hom ≫ tensorHom f₁ (tensorHom f₂ f₃) := by
-        #adaptation_note /-- https://github.com/leanprover/lean4/pull/4154
-        this used to be aesop_cat -/
-        ext x i₁ i₂ i₃ h : 2
-        simp only [categoryOfGradedObjects_comp, ιTensorObj₃'_tensorHom_assoc,
-          associator_conjugation, ιTensorObj₃'_associator_hom, assoc, Iso.inv_hom_id_assoc,
-          ιTensorObj₃'_associator_hom_assoc, ιTensorObj₃_tensorHom]
+        aesop_cat
 
 end
 
@@ -461,8 +458,8 @@ lemma pentagon : tensorHom (associator X₁ X₂ X₃).hom (𝟙 X₄) ≫
   rw [← cancel_epi (associator (tensorObj X₁ X₂) X₃ X₄).inv,
     ← cancel_epi (associator X₁ X₂ (tensorObj X₃ X₄)).inv, Iso.inv_hom_id_assoc,
     Iso.inv_hom_id, ← pentagon_inv_assoc, ← tensor_comp_assoc, id_comp, Iso.inv_hom_id,
-    tensor_id, id_comp, Iso.inv_hom_id_assoc, ← tensor_comp, id_comp, Iso.inv_hom_id,
-    tensor_id]
+    id_tensorHom_id, id_comp, Iso.inv_hom_id_assoc, ← tensor_comp, id_comp, Iso.inv_hom_id,
+    id_tensorHom_id]
 
 end Pentagon
 
