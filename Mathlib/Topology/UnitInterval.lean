@@ -236,6 +236,14 @@ lemma Ici_eq_Icc (x : I) : Ici x = Icc x 1 := Icc_top.symm
 @[simp]
 lemma Ioi_eq_Ioc (x : I) : Ioi x = Ioc x 1 := Ioc_top.symm
 
+lemma subtype_Iic_eq_Icc (x : I) : Subtype.val⁻¹' (Iic ↑x) = Icc 0 x := by simp
+
+lemma subtype_Iio_eq_Ico (x : I) : Subtype.val⁻¹' (Iio ↑x) = Ico 0 x := by simp
+
+lemma subtype_Ici_eq_Icc (x : I) : Subtype.val⁻¹' (Ici ↑x) = Icc x 1 := by simp
+
+lemma subtype_Ioi_eq_Ioc (x : I) : Subtype.val⁻¹' (Ioi ↑x) = Ioc x 1 := by simp
+
 end unitInterval
 
 section partition
