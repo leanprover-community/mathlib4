@@ -209,12 +209,12 @@ lemma associator_hom_app_app_app (X₁ : C₁) (X₂ : C₂) (X₃ : C₃) :
           (F₁₂ ⋙ (whiskeringRight C₂ C₁₂ D₁₂).obj L₁₂) F₁₂').hom.app X₁).app X₂)).app (L₃.obj X₃) ≫
           ((Lifting₂.iso L₁₂ L₃ W₁₂ W₃ (G ⋙ (whiskeringRight C₃ C D).obj L) G').hom.app
               ((F₁₂.obj X₁).obj X₂)).app X₃ ≫
-            L.map (((iso.hom.app X₁).app X₂).app X₃) ≫
+          L.map (((iso.hom.app X₁).app X₂).app X₃) ≫
           ((Lifting₂.iso L₁ L₂₃ W₁ W₂₃
             (F ⋙ (whiskeringRight _ _ _).obj L) F').inv.app X₁).app ((G₂₃.obj X₂).obj X₃) ≫
-        (F'.obj (L₁.obj X₁)).map
-          (((Lifting₂.iso L₂ L₃ W₂ W₃
-            (G₂₃ ⋙ (whiskeringRight _ _ _).obj L₂₃) G₂₃').inv.app X₂).app X₃) := by
+          (F'.obj (L₁.obj X₁)).map
+            (((Lifting₂.iso L₂ L₃ W₂ W₃
+              (G₂₃ ⋙ (whiskeringRight _ _ _).obj L₂₃) G₂₃').inv.app X₂).app X₃) := by
   dsimp [associator]
   rw [lift₃NatTrans_app_app_app]
   dsimp [Lifting₃.iso, Lifting₃.bifunctorComp₁₂, Lifting₃.bifunctorComp₂₃]

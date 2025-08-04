@@ -130,7 +130,7 @@ def Finset.enum [DecidableEq α] : List α → List (Finset α)
     let r ← Finset.enum xs
     [r, insert x r]
 
-@[simp]
+@[simp, grind =]
 theorem Finset.mem_enum [DecidableEq α] (s : Finset α) (xs : List α) :
     s ∈ Finset.enum xs ↔ ∀ x ∈ s, x ∈ xs := by
   induction xs generalizing s with

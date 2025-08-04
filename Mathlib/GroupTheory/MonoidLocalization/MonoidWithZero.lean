@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
 import Mathlib.Algebra.GroupWithZero.Hom
-import Mathlib.Algebra.Regular.Basic
 import Mathlib.GroupTheory.MonoidLocalization.Basic
 import Mathlib.RingTheory.OreLocalization.Basic
 import Mathlib.Algebra.GroupWithZero.Units.Basic
@@ -122,7 +121,7 @@ theorem leftCancelMulZero_of_le_isLeftRegular
   let fl := f.toLocalizationMap
   let g := f.toMap
   constructor
-  intro a z w ha hazw
+  intro a ha z w hazw
   obtain ⟨b, hb⟩ := LocalizationMap.surj fl a
   obtain ⟨x, hx⟩ := LocalizationMap.surj fl z
   obtain ⟨y, hy⟩ := LocalizationMap.surj fl w
@@ -145,7 +144,7 @@ theorem leftCancelMulZero_of_le_isLeftRegular
       _ = a * w * g b.2 * (g x.2 * g y.2) := by
         rw [← mul_assoc, ← mul_assoc _ w, mul_comm _ w, mul_assoc w, mul_assoc,
           ← mul_assoc w, ← mul_assoc w, mul_comm w]
-      _ = a * z * g b.2 * (g x.2 * g y.2) := by rw [hazw]
+      _ = a * z * g b.2 * (g x.2 * g y.2) := by dsimp only at hazw; rw [hazw]
       _ = a * g b.2 * (z * g x.2 * g y.2) := by
         rw [mul_assoc a, mul_comm z, ← mul_assoc a, mul_assoc, mul_assoc z]
       _ = g b.1 * g (y.2 * x.1) := by rw [hx, hb, mul_comm (g x.1), ← map_mul g]

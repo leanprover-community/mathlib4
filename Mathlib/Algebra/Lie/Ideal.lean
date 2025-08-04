@@ -214,8 +214,8 @@ theorem comap_map_le : I ≤ comap f (map f I) := by rw [← map_le_iff_le_comap
 
 @[mono]
 theorem map_mono : Monotone (map f) := fun I₁ I₂ h ↦ by
-  rw [SetLike.le_def] at h
-  apply LieSubmodule.lieSpan_mono (Set.image_subset (⇑f) h)
+  unfold map
+  gcongr; exact h
 
 @[mono]
 theorem comap_mono : Monotone (comap f) := fun J₁ J₂ h ↦ by
@@ -411,8 +411,7 @@ theorem inclusion_injective {I₁ I₂ : LieIdeal R L} (h : I₁ ≤ I₂) :
   simp only [inclusion_apply, imp_self, Subtype.mk_eq_mk, SetLike.coe_eq_coe]
 
 theorem map_sup_ker_eq_map : LieIdeal.map f (I ⊔ f.ker) = LieIdeal.map f I := by
-  suffices LieIdeal.map f (I ⊔ f.ker) ≤ LieIdeal.map f I by
-    exact le_antisymm this (LieIdeal.map_mono le_sup_left)
+  refine le_antisymm ?_ (LieIdeal.map_mono le_sup_left)
   apply LieSubmodule.lieSpan_mono
   rintro x ⟨y, hy₁, hy₂⟩
   rw [← hy₂]
