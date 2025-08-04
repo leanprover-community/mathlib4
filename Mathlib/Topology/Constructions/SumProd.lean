@@ -1016,7 +1016,7 @@ theorem Topology.IsInducing.sumElim (hf : IsInducing f) (hg : IsInducing g)
   intro x
   apply le_antisymm ((hf.continuous.sumElim hg.continuous).tendsto x).le_comap
   obtain x | x := x <;>
-  simp only [comap_sumElim_eq, nhds_inl, nhds_inr, mem_map, elim_inl, elim_inr, ← hf.nhds_eq_comap,
+  simp only [comap_sumElim_eq, nhds_inl, nhds_inr, elim_inl, elim_inr, ← hf.nhds_eq_comap,
     ← hg.nhds_eq_comap, sup_le_iff, le_rfl, true_and, and_true] <;>
   convert bot_le (α := Filter (X ⊕ Y)) <;>
   rw [map_eq_bot_iff, comap_eq_bot_iff_compl_range]
