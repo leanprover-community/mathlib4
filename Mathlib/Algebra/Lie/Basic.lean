@@ -297,21 +297,16 @@ def LieRing.toNonUnitalNonAssocRing : NonUnitalNonAssocRing L :=
 variable {ι κ : Type*}
 
 theorem sum_lie (s : Finset ι) (f : ι → L) (m : M) : ⁅∑ i ∈ s, f i, m⁆ = ∑ i ∈ s, ⁅f i, m⁆ := by
-  classical
-  induction s using Finset.induction_on with
-  | empty => simp
-  | insert b s h₁ h₂ => simpa [Finset.sum_insert h₁]
+  let g : L →+ M := ⟨⟨fun x ↦ ⁅x, m⁆, zero_lie m⟩, fun x y ↦ add_lie x y m⟩
+  exact map_sum g f s
 
 theorem lie_sum (s : Finset ι) (f : ι → M) (a : L) : ⁅a, ∑ i ∈ s, f i⁆ = ∑ i ∈ s, ⁅a, f i⁆ := by
-  classical
-  induction s using Finset.induction_on with
-  | empty => simp
-  | insert b s h₁ h₂ => simpa [Finset.sum_insert h₁]
+  let g : M →+ M := ⟨⟨fun n ↦ ⁅a, n⁆, lie_zero a⟩, lie_add a⟩
+  exact map_sum g f s
 
 theorem sum_lie_sum {κ : Type*} (s : Finset ι) (t : Finset κ) (f : ι → L) (g : κ → M) :
     ⁅(∑ i ∈ s, f i), ∑ j ∈ t, g j⁆ = ∑ i ∈ s, ∑ j ∈ t, ⁅f i, g j⁆ := by
-  simp_rw [lie_sum, sum_lie]
-  exact Finset.sum_comm
+  simp_rw [sum_lie, lie_sum]
 
 end BasicProperties
 
