@@ -150,7 +150,23 @@ theorem continuous_prod :
   let S : Set (Set (α × β)) := {t | ∃ (a : Set α) (b : Set β),
     MeasurableSet a ∧ μ.1 (frontier a) = 0 ∧ MeasurableSet b ∧ μ.2 (frontier b) = 0
     ∧ t = a ×ˢ b}
-  have : IsPiSystem S := sorry
+  have : IsPiSystem S := by
+    rintro s ⟨a, b, ameas, ha, bmeas, hb, rfl⟩ s' ⟨a', b', a'meas, ha', b'meas, hb', rfl⟩ -
+    refine ⟨a ∩ a', b ∩ b', ameas.inter a'meas, ?_, bmeas.inter b'meas, ?_, ?_ ⟩
+    · apply le_antisymm ?_ bot_le
+      calc μ.1 (frontier (a ∩ a'))
+      _ ≤ μ.1 (frontier a ∪ frontier a') := by
+        apply apply_mono
+        apply (frontier_inter_subset _ _).trans (by grind)
+      _ ≤ μ.1 (frontier a) + μ.1 (frontier a') := by
+
+      _ = 0 := by simp [ha, ha']
+
+--      apply (apply_mono _ (frontier_inter_subset _ _)).trans
+
+
+
+
   apply this.tendsto_probabilityMeasure_of_tendsto_of_mem
   · rintro s ⟨a, b, ameas, -, bmeas, -, rfl⟩
     exact ameas.prod bmeas
@@ -158,7 +174,9 @@ theorem continuous_prod :
   · rintro s ⟨a, b, ameas, ha, bmeas, hb, rfl⟩
     simp only [prod_prod]
     apply Filter.Tendsto.mul
-    ·
+    · exact tendsto_measure_of_null_frontier_of_tendsto tendsto_id.fst_nhds ha
+    · exact tendsto_measure_of_null_frontier_of_tendsto tendsto_id.snd_nhds hb
+
 
 
 #exit
