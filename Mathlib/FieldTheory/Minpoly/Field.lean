@@ -199,7 +199,7 @@ theorem map_eq_of_equiv_equiv {R S T : Type*} [CommRing R] [IsDomain R] [Ring S]
     [IsDomain S] [IsDomain T] [Algebra R S] [Algebra A T] [Algebra.IsIntegral R S]
     {f : R ≃+* A} {g : S ≃+* T}
     (hcomp : (algebraMap A T).comp f = (g : S →+* T).comp (algebraMap R S)) (x : S) :
-    (map f) (minpoly R x) = minpoly A (g x) := by
+    map f (minpoly R x) = minpoly A (g x) := by
   refine minpoly.eq_of_irreducible_of_monic ?_ ?_ ?_
   · rw [← mapEquiv_apply, irreducible_mapEquiv_iff]
     exact minpoly.irreducible (Algebra.IsIntegral.isIntegral x)
