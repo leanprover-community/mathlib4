@@ -5,6 +5,7 @@ Authors: Jeremy Avigad, Mario Carneiro, Simon Hudon
 -/
 import Mathlib.Data.PFunctor.Multivariate.Basic
 import Mathlib.Data.PFunctor.Univariate.M
+import Mathlib.Tactic.DepRewrite
 
 /-!
 # The M construction as a multivariate polynomial functor.
@@ -44,9 +45,27 @@ that `A` is a possibly infinite tree.
   [*Data Types as Quotients of Polynomial Functors*][avigad-carneiro-hudon2019]
 -/
 
+theorem congr_heq' {α₁ α₂ β₁ β₂ : Sort _} {f : α₁ → β₁} {g : α₂ → β₂} {x : α₁} {y : α₂}
+    (h₀ : β₁ = β₂) (h₁ : f ≍ g) (h₂ : x ≍ y) : f x ≍ g y := by
+  cases h₀; exact heq_of_eq <| congr_heq h₁ h₂
 
+theorem dcongr_heq
+    {α₁ α₂ : Sort _}
+    {β₁ : α₁ → Sort _}
+    {β₂ : α₂ → Sort _}
+    {f₁ : ∀ a, β₁ a}
+    {f₂ : ∀ a, β₂ a}
+    {a₁ : α₁} {a₂ : α₂}
+    (hat : α₁ = α₂)
+    (ht : ∀ a₁ a₂, a₁ ≍ a₂ → β₁ a₁ = β₂ a₂)
+    (hf : β₁ ≍ β₂ → f₁ ≍ f₂)
+    (hargs : a₁ ≍ a₂)
+    : f₁ a₁ ≍ f₂ a₂ := by
+  subst hat
+  obtain rfl : β₁ = β₂ := funext fun v => ht v v .rfl
+  rw [eq_of_heq hargs, eq_of_heq <| hf .rfl]
 
-universe u
+universe u v
 
 open MvFunctor
 
@@ -56,8 +75,11 @@ open TypeVec
 
 variable {n : ℕ} (P : MvPFunctor.{u} (n + 1))
 
-/-- A path from the root of a tree to one of its node -/
-inductive M.Path : P.last.M → Fin2 n → Type u
+/-- A path from the root of a tree to one of its node
+    It takes data from a univariate cofixpoint (alg) and
+    follows it through the focus'th constructor argument.
+-/
+inductive M.Path : (alg : P.last.M) → (focus : Fin2 n) → Type u
   | root (x : P.last.M)
           (a : P.A)
           (f : P.last.B a → P.last.M)
@@ -103,9 +125,11 @@ instance inhabitedM {α : TypeVec _} [I : Inhabited P.A] [∀ i : Fin2 n, Inhabi
 
 /-- construct through corecursion the shape of an M-type
 without its contents -/
-def M.corecShape {β : Type u} (g₀ : β → P.A) (g₂ : ∀ b : β, P.last.B (g₀ b) → β) :
+def M.corecShape {β : Type v}
+    (gen_head : β → P.A)
+    (gen_body : ∀ b : β, P.last.B (gen_head b) → β) :
     β → P.last.M :=
-  PFunctor.M.corec fun b => ⟨g₀ b, g₂ b⟩
+  PFunctor.M.corec fun (b : β) => ⟨gen_head b, gen_body b⟩
 
 /-- Proof of type equality as an arrow -/
 def castDropB {a a' : P.A} (h : a = a') : P.drop.B a ⟹ P.drop.B a' := fun _i b => Eq.recOn h b
@@ -115,39 +139,69 @@ def castLastB {a a' : P.A} (h : a = a') : P.last.B a → P.last.B a' := fun b =>
 
 /-- Using corecursion, construct the contents of an M-type -/
 def M.corecContents {α : TypeVec.{u} n}
-    {β : Type u}
-    (g₀ : β → P.A)
-    (g₁ : ∀ b : β, P.drop.B (g₀ b) ⟹ α)
-    (g₂ : ∀ b : β, P.last.B (g₀ b) → β)
-    (x : _)
-    (b : β)
-    (h : x = M.corecShape P g₀ g₂ b) :
+    {β : Type v}
+    (gen_head : β → P.A)
+    (gen_base : ∀ b : β, P.drop.B (gen_head b) ⟹ α)
+    (gen_cfix : ∀ b : β, P.last.B (gen_head b) → β)
+    -- TODO: Try to replace this `x` with an inline usage
+    (x : P.last.M)
+    (start : β)
+    (h : x = M.corecShape P gen_head gen_cfix start) :
     M.Path P x ⟹ α
   | _, M.Path.root x a f h' i c =>
-    have : a = g₀ b := by
+    have : a = gen_head start := by
       rw [h, M.corecShape, PFunctor.M.dest_corec] at h'
       cases h'
       rfl
-    g₁ b i (P.castDropB this i c)
+    gen_base start i (P.castDropB this i c)
   | _, M.Path.child x a f h' j i c =>
-    have h₀ : a = g₀ b := by
+    have h₀ : a = gen_head start := by
       rw [h, M.corecShape, PFunctor.M.dest_corec] at h'
       cases h'
       rfl
-    have h₁ : f j = M.corecShape P g₀ g₂ (g₂ b (castLastB P h₀ j)) := by
+    have h₁ : f j = M.corecShape P gen_head gen_cfix (gen_cfix start (castLastB P h₀ j)) := by
       rw [h, M.corecShape, PFunctor.M.dest_corec] at h'
       cases h'
       rfl
-    M.corecContents g₀ g₁ g₂ (f j) (g₂ b (P.castLastB h₀ j)) h₁ i c
+    M.corecContents gen_head gen_base gen_cfix (f j) (gen_cfix start (P.castLastB h₀ j)) h₁ i c
 
 /-- Corecursor for M-type of `P` -/
-def M.corec' {α : TypeVec n} {β : Type u} (g₀ : β → P.A) (g₁ : ∀ b : β, P.drop.B (g₀ b) ⟹ α)
-    (g₂ : ∀ b : β, P.last.B (g₀ b) → β) : β → P.M α := fun b =>
-  ⟨M.corecShape P g₀ g₂ b, M.corecContents P g₀ g₁ g₂ _ _ rfl⟩
+def M.corec' {α : TypeVec n} {β : Type v}
+    (gen_head : β → P.A)
+    (gen_base : ∀ b : β, P.drop.B (gen_head b) ⟹ α)
+    (gen_cfix : ∀ b : β, P.last.B (gen_head b) → β) : β → P.M α := fun b =>
+  ⟨
+    M.corecShape P gen_head gen_cfix b,
+    M.corecContents P gen_head gen_base gen_cfix _ _ rfl
+  ⟩
+
+def M.corecU
+    {α : TypeVec.{u} n} {β : Type v}
+    (gen : β → P.uLift (α.uLift.append1 <| ULift.{u, v} β))
+    : β → P.M α :=
+  M.corec' P
+    (gen · |>.fst.down)
+    (gen · |>.snd |> dropFun |>.uLift_arrow)
+    (fun x => (.up · |> (gen x |>.snd |> lastFun) |>.down))
+
+def gen_fn {P : _} {α : TypeVec.{u} n} {β : Type u} (gen : β → P (α.append1 β))
+    : β → uLift P (TypeVec.uLift α ::: ULift β) :=
+  /- (uLift_append1_ULift_uLift.symm ▸ uLift_up.{u, u} P <| gen ·) -/
+  (cast (congr rfl uLift_append1_ULift_uLift.symm) <| uLift_up.{u, u} P <| gen ·)
+
+theorem gen_fn_fst {n : ℕ} (P : MvPFunctor.{u} (n + 1)) {α : TypeVec.{u} n} {β : Type u}
+    (g : β → P (α ::: β)) (x : β)
+    : (gen_fn g x).fst.down = (g x).fst := by
+  apply eq_of_heq
+  apply HEq.trans (b := (P.uLift_up (g x)).fst.down)
+  · congr!
+    · exact uLift_append1_ULift_uLift
+    · apply cast_heq
+  · rfl
 
 /-- Corecursor for M-type of `P` -/
-def M.corec {α : TypeVec n} {β : Type u} (g : β → P (α.append1 β)) : β → P.M α :=
-  M.corec' P (fun b => (g b).fst) (fun b => dropFun (g b).snd) fun b => lastFun (g b).snd
+def M.corec {α : TypeVec.{u} n} {β : Type u} (gen : β → P (α.append1 β)) : β → P.M α :=
+  M.corecU P (gen_fn gen)
 
 /-- Implementation of destructor for M-type of `P` -/
 def M.pathDestLeft {α : TypeVec n} {x : P.last.M} {a : P.A} {f : P.last.B a → P.last.M}
@@ -182,19 +236,120 @@ theorem M.dest_eq_dest' {α : TypeVec n} {x : P.last.M} {a : P.A}
     M.dest P ⟨x, f'⟩ = M.dest' P h f' :=
   M.dest'_eq_dest' _ _ _ _
 
-theorem M.dest_corec' {α : TypeVec.{u} n} {β : Type u} (g₀ : β → P.A)
+theorem M.dest_corec' {α : TypeVec.{u} n} {β : Type v} (g₀ : β → P.A)
     (g₁ : ∀ b : β, P.drop.B (g₀ b) ⟹ α) (g₂ : ∀ b : β, P.last.B (g₀ b) → β) (x : β) :
     M.dest P (M.corec' P g₀ g₁ g₂ x) = ⟨g₀ x, splitFun (g₁ x) (M.corec' P g₀ g₁ g₂ ∘ g₂ x)⟩ :=
   rfl
 
+theorem M.dest_corecU {α : TypeVec n} {β : Type v}
+    (g : β → P.uLift (TypeVec.uLift.{u, v} α ::: ULift.{u, v} β))
+    (x : β) :
+    M.dest P (M.corecU P g x) =
+      (P.uLift_down <|
+      (Arrow.uLift_up ⊚ (Arrow.uLift_down ::: (M.corecU P g ·.down))) <$$> g x) := by
+  trans
+  · apply M.dest_corec'
+  dsimp only
+  rw [←Sigma.eta (g x)]
+  dsimp only
+  rw [MvPFunctor.map_eq]
+  congr 1
+  change splitFun _ (_ ∘ (ULift.down ∘ lastFun (g x).snd ∘ ULift.up)) = _
+  conv =>
+    lhs; rhs; lhs; rhs
+    change fun x ↦ ULift.down ∘ (lastFun (g x).snd) ∘ ULift.up
+  conv_rhs => rw [← split_dropFun_lastFun (g x).snd, ] 
+  rw [Arrow.uLift_up_splitFun, comp_assoc,
+    appendFun_comp_splitFun,
+    ← splitFun_comp, ←comp_assoc,
+    Arrow.uLift_up_down, id_comp]
+  dsimp
+  rw [Arrow.uLift_arrow_splitFun]
+  rfl
+
+
+instance heq_setoid {t : Sort u} : Setoid t :=
+  ⟨ (· ≍ ·), ⟨ HEq.refl, _root_.id ∘ HEq.symm, HEq.trans ⟩ ⟩
+
+
+theorem gen_snd {n : ℕ} (P : MvPFunctor.{u} (n + 1)) {α : TypeVec.{u} n} {β : Type u}
+    (g : β → P (α ::: β)) (x : β) : (gen_fn g x).snd ≍ (P.uLift_up (g x)).snd := by
+  apply dcongr_heq
+  · rw [uLift_append1_ULift_uLift]
+  · congr!
+    <;> rw [uLift_append1_ULift_uLift]
+  · intro heq
+    congr!
+    rw [uLift_append1_ULift_uLift]
+  apply cast_heq
+
 theorem M.dest_corec {α : TypeVec n} {β : Type u} (g : β → P (α.append1 β)) (x : β) :
     M.dest P (M.corec P g x) = appendFun id (M.corec P g) <$$> g x := by
   trans
-  · apply M.dest_corec'
-  obtain ⟨a, f⟩ := g x; dsimp
-  rw [MvPFunctor.map_eq]; congr
-  conv_rhs => rw [← split_dropFun_lastFun f, appendFun_comp_splitFun]
-  rfl
+  · exact M.dest_corecU (α := α) P (gen_fn g) x
+  change P.uLift_down
+    ((Arrow.uLift_up ⊚ (Arrow.uLift_down ::: (corec P g ∘ ULift.down))) <$$> gen_fn g x) = _
+  unfold uLift_down
+  rw [←Sigma.eta (g x)]
+  have gen_fst := gen_fn_fst P g x
+  have gen_snd := gen_snd P g x
+  congr 1
+  · apply Function.hfunext rfl
+    rintro a b r
+    subst r
+    cases a
+    · change corec P g ∘ ULift.down ∘ (gen_fn g x).snd Fin2.fz ∘ ULift.up ≍
+        corec P g ∘ (g x).snd Fin2.fz
+      congr! 2
+      apply Function.hfunext
+      · assumption
+      intro a b heq
+      obtain rfl : a = cast (by rw [gen_fst]) b := eq_cast_iff_heq.mpr heq
+      clear heq
+      dsimp [gen_fn]
+      apply HEq.trans (b := (((P.uLift_up (g x))).snd Fin2.fz { down := b }).down)
+      case h₂ => rfl
+      congr!
+      apply eq_of_heq
+      refine congr_heq' rfl ?_ ?arg
+      case arg =>
+        congr! 1
+        apply cast_heq
+      apply dcongr_heq rfl
+      · intro _ _ heq
+        obtain rfl := eq_of_heq heq
+        conv =>
+          lhs; lhs; lhs
+          change (gen_fn g x).fst
+        conv =>
+          rhs; lhs; lhs
+          dsimp [uLift_up]
+          rw [←gen_fst]
+          change (gen_fn g x).fst
+        congr!
+        rw [uLift_append1_ULift_uLift]
+      case hargs => rfl
+      intro _
+      exact gen_snd
+    case fs a =>
+      change ULift.down ∘ (gen_fn g x).snd a.fs ∘ ULift.up ≍ (g x).snd a.fs
+      apply HEq.trans (b := (ULift.down ∘ (((g x).snd.arrow_uLift)) a.fs ∘ ULift.up))
+      case h₂ => rfl
+      apply Function.hfunext
+      · exact congrFun (congrArg P.B gen_fst) a.fs
+      intro a b heq
+      change ULift.down _ ≍ ULift.down _
+      congr!
+      dsimp
+      apply congr_heq
+      case h₂ => congr!
+      apply dcongr_heq rfl
+      · intro a b h
+        obtain rfl := eq_of_heq h
+        rw [←gen_fst]
+        cases a <;> rfl
+      case hargs => rfl
+      congr!
 
 theorem M.bisim_lemma {α : TypeVec n} {a₁ : (mp P).A} {f₁ : (mp P).B a₁ ⟹ α} {a' : P.A}
     {f' : (P.B a').drop ⟹ α} {f₁' : (P.B a').last → M P α}
@@ -206,7 +361,7 @@ theorem M.bisim_lemma {α : TypeVec n} {a₁ : (mp P).A} {f₁ : (mp P).B a₁ �
   let he₁' := PFunctor.M.dest a₁
   rcases e₁' : he₁' with ⟨a₁', g₁'⟩
   rw [M.dest_eq_dest' _ e₁'] at e₁
-  cases e₁; exact ⟨_, e₁', splitFun_inj ef⟩
+  cases e₁; exact ⟨g₁', e₁', splitFun_inj ef⟩
 
 theorem M.bisim {α : TypeVec n} (R : P.M α → P.M α → Prop)
     (h :
@@ -230,7 +385,7 @@ theorem M.bisim {α : TypeVec n} (R : P.M α → P.M α → Prop)
     rw [e₁', e₂']
     exact ⟨_, _, _, rfl, rfl, fun b => ⟨_, _, h' b, rfl, rfl⟩⟩
   subst this
-  congr with (i p)
+  congr with i p
   induction p with (
     obtain ⟨a', f', f₁', f₂', e₁, e₂, h''⟩ := h _ _ r
     obtain ⟨g₁', e₁', rfl, rfl⟩ := M.bisim_lemma P e₁

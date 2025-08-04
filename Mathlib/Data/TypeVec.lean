@@ -87,6 +87,9 @@ theorem comp_assoc
   rfl
 end
 
+theorem comp_get {i : Fin2 n} {α β γ : TypeVec n} {f : α ⟹ β} {g : β ⟹ γ}
+    : (g ⊚ f) i = g i ∘ f i := rfl
+
 /-- Support for extending a `TypeVec` by one element. -/
 def append1 (α : TypeVec n) (β : Type*) : TypeVec (n + 1)
   | Fin2.fs i => α i
@@ -100,6 +103,11 @@ def drop (α : TypeVec.{u} (n + 1)) : TypeVec n := fun i => α i.fs
 /-- take the last value of a `(n+1)-length` vector -/
 def last (α : TypeVec.{u} (n + 1)) : Type _ :=
   α Fin2.fz
+
+@[simp]
+theorem append1_get_fz {α : TypeVec n} {β : Type*} : (α ::: β) .fz = β := rfl
+@[simp]
+theorem append1_get_fs {α : TypeVec n} {β : Type*} {v : Fin2 n} : (α ::: β) (.fs v) = α v := rfl
 
 instance last.inhabited (α : TypeVec (n + 1)) [Inhabited (α Fin2.fz)] : Inhabited (last α) :=
   ⟨show α Fin2.fz from default⟩
@@ -139,6 +147,9 @@ def appendFun {α α' : TypeVec n} {β β' : Type*} (f : α ⟹ α') (g : β →
 
 @[inherit_doc] infixl:0 " ::: " => appendFun
 
+theorem splitFun_eq_appendFun {n : ℕ} {α α' : TypeVec n} {β β' : Type*} (f : α ⟹ α') (g : β → β')
+    : appendFun f g = splitFun (α := append1 α β) (α' := append1 α' β') f g := rfl
+
 /-- split off the prefix of an arrow -/
 def dropFun {α β : TypeVec (n + 1)} (f : α ⟹ β) : drop α ⟹ drop β := fun i => f i.fs
 
@@ -155,6 +166,18 @@ theorem eq_of_drop_last_eq {α β : TypeVec (n + 1)} {f g : α ⟹ β} (h₀ : d
   cases x
   · apply h₁
   · apply congr_fun h₀
+
+def Arrow.comp_of_splitFun
+    {α₁ : TypeVec.{u} n} {β₁ : TypeVec.{v} n}
+    {α₂ : Type u} {β₂ : Type v}
+    {β₃ : Type v}
+    {f' : (α₁ ::: α₂) ⟹ (β₁ ::: β₂)}
+    {f₁ : α₁ ⟹ β₁}
+    {g₁ : α₂ → β₂}
+    {x : β₂ → β₃}
+    (h : f' = appendFun f₁ g₁)
+    : appendFun f₁ (x ∘ g₁) = (appendFun id x) ⊚ f' :=
+  h ▸ eq_of_drop_last_eq rfl rfl
 
 @[simp]
 theorem dropFun_splitFun {α α' : TypeVec (n + 1)} (f : drop α ⟹ drop α') (g : last α → last α') :
@@ -212,7 +235,12 @@ theorem splitFun_comp {α₀ α₁ α₂ : TypeVec (n + 1)} (f₀ : drop α₀ �
 
 theorem appendFun_comp_splitFun {α γ : TypeVec n} {β δ : Type*} {ε : TypeVec (n + 1)}
     (f₀ : drop ε ⟹ α) (f₁ : α ⟹ γ) (g₀ : last ε → β) (g₁ : β → δ) :
-    appendFun f₁ g₁ ⊚ splitFun f₀ g₀ = splitFun (α' := γ.append1 δ) (f₁ ⊚ f₀) (g₁ ∘ g₀) :=
+    appendFun f₁ g₁ ⊚ splitFun f₀ g₀ = splitFun (f₁ ⊚ f₀) (g₁ ∘ g₀) :=
+  (splitFun_comp _ _ _ _).symm
+
+theorem splitFun_comp_appendFun {α γ : TypeVec n} {β δ : Type*} {ε : TypeVec (n + 1)}
+    (f₀ : drop ε ⟹ γ) (f₁ : α ⟹ drop ε) (g₀ : last ε → δ) (g₁ : β → last ε) :
+    splitFun f₀ g₀ ⊚ appendFun f₁ g₁  = appendFun (f₀ ⊚ f₁) (g₀ ∘ g₁) :=
   (splitFun_comp _ _ _ _).symm
 
 theorem appendFun_comp {α₀ α₁ α₂ : TypeVec n}
@@ -583,8 +611,7 @@ def uLift (α : TypeVec.{u} n) : TypeVec.{max u v} n :=
 @[simp]
 theorem uLift_drop_comm
     {α : TypeVec.{u} n.succ}
-    : α.uLift.drop = α.drop.uLift :=
-  funext (match n, · with | 0, _ | _+1, .fz | _+1, .fs _ => rfl)
+    : α.uLift.drop = α.drop.uLift := rfl
 
 @[simp]
 theorem uLift_append1_ULift_uLift
@@ -595,6 +622,14 @@ theorem uLift_append1_ULift_uLift
 
 def Arrow.uLift_up {α : TypeVec.{u} n} : α ⟹ α.uLift := fun _ => ULift.up
 def Arrow.uLift_down {α : TypeVec.{u} n} : α.uLift ⟹ α := fun _ => ULift.down
+
+def Arrow.uLift_up_splitFun {α : TypeVec.{u} n.succ}
+    : Arrow.uLift_up (α := α) = splitFun Arrow.uLift_up ULift.up :=
+  funext fun | .fz | .fs _ => rfl
+
+def Arrow.uLift_down_splitFun {α : TypeVec.{u} n.succ}
+    : Arrow.uLift_down = splitFun (α := α.uLift) Arrow.uLift_down ULift.down := 
+  funext fun | .fz | .fs _ => rfl
 
 @[simp]
 theorem Arrow.uLift_up_down {α : TypeVec.{u} n}
@@ -607,7 +642,15 @@ theorem Arrow.uLift_down_up {α : TypeVec.{u} n}
 def Arrow.uLift_arrow
     {α β : TypeVec n}
     (h : TypeVec.uLift.{u, v} α ⟹ TypeVec.uLift.{w, x} β)
-    : α ⟹ β := fun i => (.up · |> h i |>.down)
+    : α ⟹ β := uLift_down ⊚ h ⊚ uLift_up
+
+def Arrow.uLift_arrow_splitFun
+    {α : TypeVec n.succ}
+    {β : TypeVec n.succ}
+    (f : α.uLift.drop ⟹ β.uLift.drop)
+    (g : α.uLift.last → β.uLift.last)
+    : (splitFun f g).uLift_arrow = (splitFun f.uLift_arrow (ULift.down ∘ g ∘ .up)) :=
+  funext fun | .fz | .fs _ => rfl
 
 def Arrow.arrow_uLift
     {α β : TypeVec n}
@@ -686,7 +729,7 @@ theorem prod_map_id {α β : TypeVec n} : (@TypeVec.id _ α ⊗' @TypeVec.id _ �
 
 @[simp]
 theorem subtypeVal_diagSub {α : TypeVec n} : subtypeVal (repeatEq α) ⊚ diagSub = prod.diag := by
-  refine funext fun i => ?_
+  funext i
   induction i with
   | fz => rfl
   | fs _ i_ih => apply i_ih
@@ -709,7 +752,7 @@ theorem subtypeVal_toSubtype {α : TypeVec n} (p : α ⟹ «repeat» n Prop) :
 theorem toSubtype_of_subtype_assoc
     {α β : TypeVec n} (p : α ⟹ «repeat» n Prop) (f : β ⟹ Subtype_ p) :
     @toSubtype n _ p ⊚ ofSubtype _ ⊚ f = f := by
-  rw [← comp_assoc, toSubtype_of_subtype]; simp
+  rw [← comp_assoc, toSubtype_of_subtype]; rfl
 
 @[simp]
 theorem toSubtype'_of_subtype' {α : TypeVec n} (r : α ⊗ α ⟹ «repeat» n Prop) :
