@@ -7,6 +7,14 @@ import Mathlib.Analysis.InnerProductSpace.Projection.Basic
 
 /-!
 
+Here, the orthogonal projection is used to prove a series of more subtle lemmas about the
+orthogonal complement of subspaces of `E` (the orthogonal complement itself was
+defined in `Analysis.InnerProductSpace.Orthogonal`) such that they admit
+orthogonal projections; the lemma
+`Submodule.sup_orthogonal_of_hasOrthogonalProjection`,
+stating that for a subspace `K` of `E` such that `K` admits an orthogonal projection we have
+`K ⊔ Kᗮ = ⊤`, is a typical example.
+
 -/
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
@@ -107,7 +115,6 @@ theorem orthogonal_eq_bot_iff [K.HasOrthogonalProjection] : Kᗮ = ⊥ ↔ K = �
   have : K ⊔ Kᗮ = ⊤ := Submodule.sup_orthogonal_of_hasOrthogonalProjection
   rwa [h, sup_comm, bot_sup_eq] at this
 
-
 open Topology Finsupp RCLike Real Filter
 
 /-- Given a monotone family `U` of complete submodules of `E` and a fixed `x : E`,
@@ -200,7 +207,6 @@ end Submodule
 
 namespace Dense
 
-/- TODO: Move to another file? -/
 open Submodule
 
 variable {K} {x y : E}
