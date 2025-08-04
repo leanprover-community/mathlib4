@@ -714,6 +714,7 @@ import Mathlib.Algebra.Module.Submodule.Order
 import Mathlib.Algebra.Module.Submodule.Pointwise
 import Mathlib.Algebra.Module.Submodule.Range
 import Mathlib.Algebra.Module.Submodule.RestrictScalars
+import Mathlib.Algebra.Module.Submodule.Union
 import Mathlib.Algebra.Module.Torsion
 import Mathlib.Algebra.Module.TransferInstance
 import Mathlib.Algebra.Module.ULift
@@ -6561,6 +6562,7 @@ import Mathlib.Topology.PreorderRestrict
 import Mathlib.Topology.QuasiSeparated
 import Mathlib.Topology.Semicontinuous
 import Mathlib.Topology.SeparatedMap
+import Mathlib.Topology.Separation.AlexandrovDiscrete
 import Mathlib.Topology.Separation.Basic
 import Mathlib.Topology.Separation.CompletelyRegular
 import Mathlib.Topology.Separation.Connected
