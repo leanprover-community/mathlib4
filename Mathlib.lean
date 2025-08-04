@@ -4299,6 +4299,7 @@ import Mathlib.Logic.Small.List
 import Mathlib.Logic.Small.Set
 import Mathlib.Logic.Unique
 import Mathlib.Logic.UnivLE
+import Mathlib.Loop
 import Mathlib.MeasureTheory.Category.MeasCat
 import Mathlib.MeasureTheory.Constructions.AddChar
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
