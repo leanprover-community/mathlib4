@@ -127,6 +127,15 @@ theorem nnnorm_surjective : Surjective (nnnorm : E → ℝ≥0) := fun c =>
 theorem range_nnnorm : range (nnnorm : E → ℝ≥0) = univ :=
   (nnnorm_surjective E).range_eq
 
+variable {E} in
+/-- In a nontrivial real normed space, a sphere is nonempty if and only if its radius is
+nonnegative. -/
+@[simp]
+theorem NormedSpace.sphere_nonempty {x : E} {r : ℝ} : (sphere x r).Nonempty ↔ 0 ≤ r := by
+  refine ⟨fun h => nonempty_closedBall.1 (h.mono sphere_subset_closedBall), fun hr => ?_⟩
+  obtain ⟨y, hy⟩ := exists_norm_eq E hr
+  exact ⟨x + y, by simpa using hy⟩
+
 end Surj
 
 theorem interior_closedBall' (x : E) (r : ℝ) : interior (closedBall x r) = ball x r := by
