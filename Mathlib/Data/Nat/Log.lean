@@ -192,7 +192,6 @@ theorem log_eq_log_succ_iff {b n : ℕ} (hb : 1 < b) (hn : n ≠ 0) :
   simp only [le_antisymm_iff, and_iff_right_iff_imp]
   exact fun  _ ↦ log_monotone (le_add_right n 1)
 
-@[mono, gcongr]
 theorem log_anti_left {b c n : ℕ} (hc : 1 < c) (hb : c ≤ b) : log b n ≤ log c n := by
   rcases eq_or_ne n 0 with (rfl | hn); · rw [log_zero_right, log_zero_right]
   apply le_log_of_pow_le hc
@@ -203,11 +202,10 @@ theorem log_anti_left {b c n : ℕ} (hc : 1 < c) (hb : c ≤ b) : log b n ≤ lo
 theorem log_antitone_left {n : ℕ} : AntitoneOn (fun b => log b n) (Set.Ioi 1) := fun _ hc _ _ hb =>
   log_anti_left (Set.mem_Iio.1 hc) hb
 
-@[gcongr]
+@[gcongr, mono]
 theorem log_mono {b c m n : ℕ} (hc : 1 < c) (hb : c ≤ b) (hmn : m ≤ n) :
-    log b m ≤ log c n := by
-  trans log c m <;> gcongr
-  assumption
+    log b m ≤ log c n :=
+  (log_anti_left hc hb).trans <| by gcongr
 
 @[simp]
 theorem log_div_base (b n : ℕ) : log b (n / b) = log b n - 1 := by
@@ -321,7 +319,6 @@ theorem clog_mono_right (b : ℕ) {n m : ℕ} (h : n ≤ m) : clog b n ≤ clog 
   · rw [← le_pow_iff_clog_le hb]
     exact h.trans (le_pow_clog hb _)
 
-@[mono, gcongr]
 theorem clog_anti_left {b c n : ℕ} (hc : 1 < c) (hb : c ≤ b) : clog b n ≤ clog c n := by
   rw [← le_pow_iff_clog_le (lt_of_lt_of_le hc hb)]
   calc
@@ -333,10 +330,10 @@ theorem clog_monotone (b : ℕ) : Monotone (clog b) := fun _ _ => clog_mono_righ
 theorem clog_antitone_left {n : ℕ} : AntitoneOn (fun b : ℕ => clog b n) (Set.Ioi 1) :=
   fun _ hc _ _ hb => clog_anti_left (Set.mem_Iio.1 hc) hb
 
-@[gcongr]
+@[mono, gcongr]
 theorem clog_mono {b c m n : ℕ} (hc : 1 < c) (hb : c ≤ b) (hmn : m ≤ n) :
-    clog b m ≤ clog c n := by
-  trans clog b n <;> gcongr; assumption
+    clog b m ≤ clog c n :=
+  (clog_anti_left hc hb).trans <| by gcongr
 
 @[simp]
 theorem log_le_clog (b n : ℕ) : log b n ≤ clog b n := by
