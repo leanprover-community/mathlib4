@@ -452,6 +452,18 @@ theorem measure_closure_of_null_frontier {μ : Measure α'} {s : Set α'} (h : �
     μ (closure s) = μ s :=
   measure_congr (closure_ae_eq_of_null_frontier h)
 
+theorem null_frontier_inter {μ : Measure α'} {s s' : Set α'}
+    (h : μ (frontier s) = 0) (h' : μ (frontier s') = 0) :
+    μ (frontier (s ∩ s')) = 0 := by
+  apply le_antisymm ?_ bot_le
+  calc μ (frontier (s ∩ s'))
+  _ ≤ μ (frontier s ∪ frontier s') := by
+    apply measure_mono
+    apply (frontier_inter_subset _ _).trans (by grind)
+  _ ≤ μ (frontier s) + μ (frontier s') := by
+    apply measure_union_le
+  _ = 0 := by simp [h, h']
+
 instance separatesPointsOfOpensMeasurableSpaceOfT0Space [T0Space α] :
     MeasurableSpace.SeparatesPoints α where
   separates x y := by

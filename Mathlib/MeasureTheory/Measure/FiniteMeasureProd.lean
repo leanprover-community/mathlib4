@@ -136,15 +136,23 @@ lemma prod_swap : (μ.prod ν).map measurable_swap.aemeasurable = ν.prod μ := 
   apply Subtype.ext
   simp [Measure.prod_swap]
 
-#where
+lemma apply_frontier_inter_eq_zero [TopologicalSpace α] {a a' : Set α}
+    (ha : μ (frontier a) = 0) (ha' : μ (frontier a') = 0) :
+    μ (frontier (a ∩ a')) = 0 := by
+  apply le_antisymm ?_ bot_le
+  calc μ (frontier (a ∩ a'))
+  _ ≤ μ (frontier a ∪ frontier a') := by
+    apply apply_mono
+    apply (frontier_inter_subset _ _).trans (by grind)
+  _ ≤ μ (frontier a) + μ (frontier a') := by
+    apply apply_union_le
+  _ = 0 := by simp [ha, ha']
 
 open TopologicalSpace
 
-variable [TopologicalSpace α] [TopologicalSpace β] [SecondCountableTopology α]
+theorem continuous_prod [TopologicalSpace α] [TopologicalSpace β] [SecondCountableTopology α]
   [SecondCountableTopology β] [PseudoMetrizableSpace α] [PseudoMetrizableSpace β]
-  [OpensMeasurableSpace α] [OpensMeasurableSpace β]
-
-theorem continuous_prod :
+  [OpensMeasurableSpace α] [OpensMeasurableSpace β] :
     Continuous (fun (μ : ProbabilityMeasure α × ProbabilityMeasure β) ↦ μ.1.prod μ.2) := by
   apply continuous_iff_continuousAt.2 (fun μ ↦ ?_)
   let S : Set (Set (α × β)) := {t | ∃ (a : Set α) (b : Set β),
@@ -152,34 +160,32 @@ theorem continuous_prod :
     ∧ t = a ×ˢ b}
   have : IsPiSystem S := by
     rintro s ⟨a, b, ameas, ha, bmeas, hb, rfl⟩ s' ⟨a', b', a'meas, ha', b'meas, hb', rfl⟩ -
-    refine ⟨a ∩ a', b ∩ b', ameas.inter a'meas, ?_, bmeas.inter b'meas, ?_, ?_ ⟩
-    · apply le_antisymm ?_ bot_le
-      calc μ.1 (frontier (a ∩ a'))
-      _ ≤ μ.1 (frontier a ∪ frontier a') := by
-        apply apply_mono
-        apply (frontier_inter_subset _ _).trans (by grind)
-      _ ≤ μ.1 (frontier a) + μ.1 (frontier a') := by
-
-      _ = 0 := by simp [ha, ha']
-
---      apply (apply_mono _ (frontier_inter_subset _ _)).trans
-
-
-
-
+    exact ⟨a ∩ a', b ∩ b', ameas.inter a'meas, apply_frontier_inter_eq_zero μ.1 ha ha',
+      bmeas.inter b'meas, apply_frontier_inter_eq_zero μ.2 hb hb', prod_inter_prod⟩
   apply this.tendsto_probabilityMeasure_of_tendsto_of_mem
   · rintro s ⟨a, b, ameas, -, bmeas, -, rfl⟩
     exact ameas.prod bmeas
-  · sorry
+  · letI : PseudoMetricSpace α := TopologicalSpace.pseudoMetrizableSpacePseudoMetric α
+    letI : PseudoMetricSpace β := TopologicalSpace.pseudoMetrizableSpacePseudoMetric β
+    intro u x xu u_open
+    obtain ⟨ε, εpos, hε⟩ : ∃ ε > 0, ball x ε ⊆ u := Metric.isOpen_iff.1 u_open x xu
+    rcases exists_null_frontier_thickening (μ.1 : Measure α) {x.1} εpos with ⟨r, hr, μr⟩
+    rcases exists_null_frontier_thickening (μ.2 : Measure β) {x.2} εpos with ⟨r', hr', μr'⟩
+    simp only [thickening_singleton] at μr μr'
+    refine ⟨ball x.1 r ×ˢ ball x.2 r', ⟨ball x.1 r, ball x.2 r', measurableSet_ball,
+      by simp [coeFn_def, μr], measurableSet_ball, by simp [coeFn_def, μr'], rfl⟩, ?_, ?_, ?_⟩
+    · simp [hr.1, hr'.1]
+    · apply (isOpen_ball.prod isOpen_ball).mem_nhds (by simp [hr.1, hr'.1])
+    · calc ball x.1 r ×ˢ ball x.2 r'
+      _ ⊆ ball x.1 ε ×ˢ ball x.2 ε := by gcongr; exacts [hr.2.le, hr'.2.le]
+      _ ⊆ _ := by
+        rw [ball_prod_same]
+        exact hε
   · rintro s ⟨a, b, ameas, ha, bmeas, hb, rfl⟩
     simp only [prod_prod]
     apply Filter.Tendsto.mul
     · exact tendsto_measure_of_null_frontier_of_tendsto tendsto_id.fst_nhds ha
     · exact tendsto_measure_of_null_frontier_of_tendsto tendsto_id.snd_nhds hb
-
-
-
-#exit
 
 end ProbabilityMeasure -- namespace
 
