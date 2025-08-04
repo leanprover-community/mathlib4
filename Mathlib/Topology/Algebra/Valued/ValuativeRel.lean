@@ -19,6 +19,27 @@ to facilitate a refactor.
 
 namespace IsValuativeTopology
 
+section
+
+/-! # Alternate constructors -/
+
+variable {R : Type*} [CommRing R] [ValuativeRel R] [TopologicalSpace R]
+
+open ValuativeRel TopologicalSpace Filter Topology Set
+
+local notation "v" => valuation R
+
+/-- Assuming `ContinuousConstVAdd R R`, we only need to check the neighbourhood of `0` in order to
+prove `IsValuativeTopology R`. -/
+theorem of_zero [ContinuousConstVAdd R R]
+    (h₀ : ∀ s : Set R, s ∈ 𝓝 (0 : R) ↔ ∃ γ : (ValueGroupWithZero R)ˣ, { z | v z < ↑γ } ⊆ s) :
+    IsValuativeTopology R where
+  mem_nhds_iff {s x} := by
+    rw [← vadd_mem_nhds_vadd_iff (-x), vadd_eq_add, neg_add_cancel, h₀]
+    simp [← image_vadd, ← image_subset_iff]
+
+end
+
 variable {R : Type*} [CommRing R] [ValuativeRel R] [TopologicalSpace R] [IsValuativeTopology R]
 
 open ValuativeRel TopologicalSpace Filter Topology Set
