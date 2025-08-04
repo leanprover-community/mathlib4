@@ -742,16 +742,32 @@ variable {R A B C D : Type*} [CommSemiring R] [AddCommMonoid A]
 open LinearMap
 open scoped TensorProduct
 
-lemma TensorProduct.assoc_tensor_symm :
-    (TensorProduct.assoc R A B (C ⊗[R] D)).symm.toLinearMap
-    = (TensorProduct.assoc R _ _ _).toLinearMap
-    ∘ₗ (rTensor _ (TensorProduct.assoc R _ _ _).symm.toLinearMap)
-    ∘ₗ (TensorProduct.assoc R _ _ _).symm.toLinearMap
-    ∘ₗ (lTensor _ (TensorProduct.assoc R _ _ _).symm.toLinearMap) := by
+lemma TensorProduct.assoc_tensor :
+    (TensorProduct.assoc R (A ⊗[R] B) C D).toLinearMap
+    = (TensorProduct.assoc R A B (C ⊗[R] D)).symm.toLinearMap
+    ∘ₗ lTensor A (TensorProduct.assoc R B C D)
+    ∘ₗ (TensorProduct.assoc R A (B ⊗[R] C) D).toLinearMap
+    ∘ₗ rTensor D (TensorProduct.assoc R A B C) := by
+  ext; simp
+
+lemma TensorProduct.assoc_tensor' :
+    (TensorProduct.assoc R A (B ⊗[R] C) D).toLinearMap
+    = lTensor A (TensorProduct.assoc R B C D).symm.toLinearMap
+    ∘ₗ (TensorProduct.assoc R A B (C ⊗[R] D))
+    ∘ₗ (TensorProduct.assoc R (A ⊗[R] B) C D).toLinearMap
+    ∘ₗ rTensor D (TensorProduct.assoc R A B C).symm := by
+  ext; simp
+
+lemma TensorProduct.assoc_tensor'' :
+    (TensorProduct.assoc R A B (C ⊗[R] D)).toLinearMap
+    =  lTensor A (TensorProduct.assoc R B C D)
+    ∘ₗ (TensorProduct.assoc R A (B ⊗[R] C) D).toLinearMap
+    ∘ₗ rTensor D (TensorProduct.assoc R A B C)
+    ∘ₗ (TensorProduct.assoc R (A ⊗[R] B) C D).symm.toLinearMap := by
   ext; simp
 
 lemma TensorProduct.lid_tensor :
     (TensorProduct.lid R (A ⊗[R] B)).toLinearMap
-    = rTensor _ (TensorProduct.lid R _).toLinearMap
-    ∘ₗ (TensorProduct.assoc R _ _ _).symm.toLinearMap := by
+    = rTensor B (TensorProduct.lid R A)
+    ∘ₗ (TensorProduct.assoc R R A B).symm.toLinearMap := by
   ext; simp
