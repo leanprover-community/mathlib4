@@ -12,7 +12,7 @@ import Mathlib.Analysis.RCLike.Lemmas
 
 Given a nonempty subspace `K` of an inner product space `E` such that `K`
 admits an orthogonal projection, this file constructs
-`K.orthogonalProjection : E →L[𝕜] K`, the orthogonal projection of `E` onto `K`.  This map
+`K.orthogonalProjection : E →L[𝕜] K`, the orthogonal projection of `E` onto `K`. This map
 satisfies: for any point `u` in `E`, the point `v = K.orthogonalProjection u` in `K` minimizes the
 distance `‖u - v‖` to `u`.
 
@@ -83,7 +83,7 @@ section orthogonalProjection
 variable [K.HasOrthogonalProjection]
 
 /-- The orthogonal projection onto a complete subspace, as an
-unbundled function.  This definition is only intended for use in
+unbundled function. This definition is only intended for use in
 setting up the bundled version `orthogonalProjection` and should not
 be used once that is defined. -/
 def orthogonalProjectionFn (v : E) :=
@@ -105,7 +105,7 @@ theorem orthogonalProjectionFn_inner_eq_zero (v : E) :
   (K.mem_orthogonal' _).1 (HasOrthogonalProjection.exists_orthogonal (K := K) v).choose_spec.right
 
 /-- The unbundled orthogonal projection is the unique point in `K`
-with the orthogonality property.  This lemma is only intended for use
+with the orthogonality property. This lemma is only intended for use
 in setting up the bundled version and should not be used once that is
 defined. -/
 theorem eq_orthogonalProjectionFn_of_mem_of_inner_eq_zero {u v : E} (hvm : v ∈ K)
