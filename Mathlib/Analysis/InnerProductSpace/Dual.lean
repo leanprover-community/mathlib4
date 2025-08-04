@@ -60,7 +60,7 @@ embedding of `E` into `StrongDual 𝕜 E`.
 If `E` is complete, this operation is surjective, hence a conjugate-linear isometric equivalence;
 see `toStrongDual`.
 -/
-noncomputable def _root_.toStrongDualMap : E →ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
+noncomputable def toStrongDualMap : E →ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
   { innerSL 𝕜 with norm_map' := innerSL_apply_norm _ }
 
 @[deprecated (since := "2025-08-3")] alias toDualMap := toStrongDualMap
@@ -125,7 +125,7 @@ variable [CompleteSpace E]
 /-- **Fréchet-Riesz representation**: any `ℓ` in the dual of a Hilbert space `E` is of the form
 `fun u => ⟪y, u⟫` for some `y : E`, i.e. `toStrongDualMap` is surjective.
 -/
-noncomputable def _root_.toStrongDual : E ≃ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
+noncomputable def toStrongDual : E ≃ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
   LinearIsometryEquiv.ofSurjective (toStrongDualMap 𝕜 E)
     (by
       intro ℓ

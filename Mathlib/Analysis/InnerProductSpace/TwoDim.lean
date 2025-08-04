@@ -168,7 +168,7 @@ theorem areaForm_comp_linearIsometryEquiv (φ : E ≃ₗᵢ[ℝ] E)
 oriented real inner product space of dimension 2. -/
 irreducible_def rightAngleRotationAux₁ : E →ₗ[ℝ] E :=
   let to_dual : E ≃ₗ[ℝ] E →ₗ[ℝ] ℝ :=
-    (toStrongDual ℝ E).toLinearEquiv ≪≫ₗ LinearMap.toContinuousLinearMap.symm
+    (InnerProductSpace.toStrongDual ℝ E).toLinearEquiv ≪≫ₗ LinearMap.toContinuousLinearMap.symm
   ↑to_dual.symm ∘ₗ ω
 
 @[simp]
