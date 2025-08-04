@@ -47,7 +47,7 @@ def uliftYoneda : C ⥤ Cᵒᵖ ⥤ Type (max w v₁) :=
 /-- If `C` is a category with `[Category.{max w v₁} C]`, this is the isomorphism
 `uliftYoneda.{w} (C := C) ≅ yoneda`. -/
 @[simps!]
-def uliftYonedaIsoYonedaGen {C : Type u₁} [Category.{max w v₁} C] :
+def uliftYonedaIsoYoneda {C : Type u₁} [Category.{max w v₁} C] :
     uliftYoneda.{w} (C := C) ≅ yoneda :=
   NatIso.ofComponents (fun _ ↦ NatIso.ofComponents (fun _ ↦ Equiv.ulift.toIso))
 
