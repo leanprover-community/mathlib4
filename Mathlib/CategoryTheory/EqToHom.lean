@@ -217,7 +217,7 @@ instance {X Y : C} (h : X = Y) : IsIso (eqToHom h) :=
 
 @[simp]
 theorem inv_eqToHom {X Y : C} (h : X = Y) : inv (eqToHom h) = eqToHom h.symm := by
-  aesop_cat
+  cat_disch
 
 variable {D : Type u₂} [Category.{v₂} D]
 

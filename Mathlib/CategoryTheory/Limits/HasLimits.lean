@@ -484,7 +484,7 @@ theorem limit.map_pre' [HasLimitsOfShape K C] (F : J ⥤ C) {E₁ E₂ : K ⥤ J
   ext1; simp
 
 theorem limit.id_pre (F : J ⥤ C) : limit.pre F (𝟭 _) = lim.map (Functor.leftUnitor F).inv := by
-  aesop_cat
+  cat_disch
 
 theorem limit.map_post {D : Type u'} [Category.{v'} D] [HasLimitsOfShape J D] (H : C ⥤ D) :
     /- H (limit F) ⟶ H (limit G) ⟶ limit (G ⋙ H) vs
@@ -918,7 +918,7 @@ theorem colimit.pre_eq (s : ColimitCocone (E ⋙ F)) (t : ColimitCocone F) :
     colimit.pre F E =
       (colimit.isoColimitCocone s).hom ≫
         s.isColimit.desc (t.cocone.whisker E) ≫ (colimit.isoColimitCocone t).inv := by
-  aesop_cat
+  cat_disch
 
 end Pre
 

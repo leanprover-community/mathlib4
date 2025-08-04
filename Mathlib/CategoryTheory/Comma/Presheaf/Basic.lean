@@ -238,7 +238,7 @@ lemma map_mkPrecomp_eqToHom {F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v} 
     {g g' : yoneda.obj Y ⟶ A} (h : g = g') {x : F.obj (op (CostructuredArrow.mk g'))} :
     F.map (CostructuredArrow.mkPrecomp g f).op (F.map (eqToHom (by rw [h])) x) =
       F.map (eqToHom (by rw [h])) (F.map (CostructuredArrow.mkPrecomp g' f).op x) := by
-  aesop_cat
+  cat_disch
 
 attribute [local simp] map_mkPrecomp_eqToHom
 
@@ -342,7 +342,7 @@ attribute [local simp] CostructuredArrow.mkPrecomp_id CostructuredArrow.mkPrecom
 
 @[simp]
 lemma map₁_id : YonedaCollection.map₁ (𝟙 F) (X := X) = id := by
-  aesop_cat
+  cat_disch
 
 @[simp]
 lemma map₁_comp {G H : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v} (η : F ⟶ G) (μ : G ⟶ H) :
@@ -514,7 +514,7 @@ lemma counitForward_naturality₂ (s t : (CostructuredArrow yoneda A)ᵒᵖ) (f 
       f ≫ eqToHom (by simp [← CostructuredArrow.eq_mk]) := by
     apply Quiver.Hom.unop_inj
     simp
-  aesop_cat
+  cat_disch
 
 /-- Backward direction of the counit. -/
 def counitBackward (F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v) (s : CostructuredArrow yoneda A) :

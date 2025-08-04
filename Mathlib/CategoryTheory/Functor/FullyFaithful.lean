@@ -46,7 +46,7 @@ class Full (F : C ⥤ D) : Prop where
 class Faithful (F : C ⥤ D) : Prop where
   /-- `F.map` is injective for each `X Y : C`. -/
   map_injective : ∀ {X Y : C}, Function.Injective (F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)) := by
-    aesop_cat
+    cat_disch
 
 variable {X Y : C}
 

@@ -59,25 +59,25 @@ structure Pseudofunctor (B : Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u�
   map₂_whisker_left :
     ∀ {a b c : B} (f : a ⟶ b) {g h : b ⟶ c} (η : g ⟶ h),
       map₂ (f ◁ η) = (mapComp f g).hom ≫ map f ◁ map₂ η ≫ (mapComp f h).inv := by
-    aesop_cat
+    cat_disch
   map₂_whisker_right :
     ∀ {a b c : B} {f g : a ⟶ b} (η : f ⟶ g) (h : b ⟶ c),
       map₂ (η ▷ h) = (mapComp f h).hom ≫ map₂ η ▷ map h ≫ (mapComp g h).inv := by
-    aesop_cat
+    cat_disch
   map₂_associator :
     ∀ {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d),
       map₂ (α_ f g h).hom = (mapComp (f ≫ g) h).hom ≫ (mapComp f g).hom ▷ map h ≫
       (α_ (map f) (map g) (map h)).hom ≫ map f ◁ (mapComp g h).inv ≫
       (mapComp f (g ≫ h)).inv := by
-    aesop_cat
+    cat_disch
   map₂_left_unitor :
     ∀ {a b : B} (f : a ⟶ b),
       map₂ (λ_ f).hom = (mapComp (𝟙 a) f).hom ≫ (mapId a).hom ▷ map f ≫ (λ_ (map f)).hom := by
-    aesop_cat
+    cat_disch
   map₂_right_unitor :
     ∀ {a b : B} (f : a ⟶ b),
       map₂ (ρ_ f).hom = (mapComp f (𝟙 b)).hom ≫ map f ◁ (mapId b).hom ≫ (ρ_ (map f)).hom := by
-    aesop_cat
+    cat_disch
 
 initialize_simps_projections Pseudofunctor (+toPrelaxFunctor, -obj, -map, -map₂)
 
@@ -146,7 +146,7 @@ def comp (F : Pseudofunctor B C) (G : Pseudofunctor C D) : Pseudofunctor B D whe
   toPrelaxFunctor := F.toPrelaxFunctor.comp G.toPrelaxFunctor
   mapId := fun a => G.map₂Iso (F.mapId a) ≪≫ G.mapId (F.obj a)
   mapComp := fun f g => (G.map₂Iso (F.mapComp f g)) ≪≫ G.mapComp (F.map f) (F.map g)
-  -- Note: whilst these are all provable by `aesop_cat`, the proof is very slow
+  -- Note: whilst these are all provable by `cat_disch`, the proof is very slow
   map₂_whisker_left f η := by simp
   map₂_whisker_right η h := by simp
   map₂_associator f g h := by simp

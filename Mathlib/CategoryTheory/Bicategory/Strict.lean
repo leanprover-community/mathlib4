@@ -40,7 +40,7 @@ class Bicategory.Strict : Prop where
   comp_id : ∀ {a b : B} (f : a ⟶ b), f ≫ 𝟙 b = f := by cat_disch
   /-- Composition in a bicategory is associative. -/
   assoc : ∀ {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d), (f ≫ g) ≫ h = f ≫ g ≫ h := by
-    aesop_cat
+    cat_disch
   /-- The left unitors are given by equalities -/
   leftUnitor_eqToIso : ∀ {a b : B} (f : a ⟶ b), λ_ f = eqToIso (id_comp f) := by cat_disch
   /-- The right unitors are given by equalities -/
@@ -48,7 +48,7 @@ class Bicategory.Strict : Prop where
   /-- The associators are given by equalities -/
   associator_eqToIso :
     ∀ {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d), α_ f g h = eqToIso (assoc f g h) := by
-    aesop_cat
+    cat_disch
 
 -- see Note [lower instance priority]
 /-- Category structure on a strict bicategory -/

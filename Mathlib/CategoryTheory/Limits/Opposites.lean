@@ -845,7 +845,7 @@ instance hasPushouts_opposite [HasPullbacks C] : HasPushouts Cᵒᵖ := by
 def spanOp {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
     span f.op g.op ≅ walkingCospanOpEquiv.inverse ⋙ (cospan f g).op :=
   NatIso.ofComponents (by rintro (_ | _ | _) <;> rfl)
-    (by rintro (_ | _ | _) (_ | _ | _) f <;> cases f <;> aesop_cat)
+    (by rintro (_ | _ | _) (_ | _ | _) f <;> cases f <;> cat_disch)
 
 /-- The canonical isomorphism relating `(Cospan f g).op` and `Span f.op g.op` -/
 @[simps!]
@@ -864,7 +864,7 @@ def opCospan {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
 def cospanOp {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :
     cospan f.op g.op ≅ walkingSpanOpEquiv.inverse ⋙ (span f g).op :=
   NatIso.ofComponents (by rintro (_ | _ | _) <;> rfl)
-    (by rintro (_ | _ | _) (_ | _ | _) f <;> cases f <;> aesop_cat)
+    (by rintro (_ | _ | _) (_ | _ | _) f <;> cases f <;> cat_disch)
 
 /-- The canonical isomorphism relating `(Span f g).op` and `Cospan f.op g.op` -/
 @[simps!]

@@ -330,12 +330,12 @@ structure CoreHomEquiv (F : C ⥤ D) (G : D ⥤ C) where
   homEquiv_naturality_left_symm :
     ∀ {X' X Y} (f : X' ⟶ X) (g : X ⟶ G.obj Y),
       (homEquiv X' Y).symm (f ≫ g) = F.map f ≫ (homEquiv X Y).symm g := by
-    aesop_cat
+    cat_disch
   /-- The property that describes how `homEquiv` transforms compositions `F X ⟶ Y ⟶ Y'` -/
   homEquiv_naturality_right :
     ∀ {X Y Y'} (f : F.obj X ⟶ Y) (g : Y ⟶ Y'),
       (homEquiv X Y') (f ≫ g) = (homEquiv X Y) f ≫ G.map g := by
-    aesop_cat
+    cat_disch
 
 namespace CoreHomEquiv
 
@@ -367,13 +367,13 @@ structure CoreUnitCounit (F : C ⥤ D) (G : D ⥤ C) where
   left_triangle :
     whiskerRight unit F ≫ (associator F G F).hom ≫ whiskerLeft F counit =
       NatTrans.id (𝟭 C ⋙ F) := by
-    aesop_cat
+    cat_disch
   /-- Equality of the composition of the unit, associator, and counit with the identity
   `G ⟶ G (F G) ⟶ (F G) F ⟶ G = NatTrans.id G` -/
   right_triangle :
     whiskerLeft G unit ≫ (associator G F G).inv ≫ whiskerRight counit G =
       NatTrans.id (G ⋙ 𝟭 C) := by
-    aesop_cat
+    cat_disch
 
 namespace CoreUnitCounit
 

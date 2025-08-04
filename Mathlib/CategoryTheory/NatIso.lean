@@ -161,7 +161,7 @@ theorem cancel_natIso_inv_right_assoc {W X X' : D} {Y : C} (f : W ⟶ X) (g : X 
 
 @[simp]
 theorem inv_inv_app {F G : C ⥤ D} (e : F ≅ G) (X : C) : inv (e.inv.app X) = e.hom.app X := by
-  aesop_cat
+  cat_disch
 
 end
 
@@ -200,7 +200,7 @@ theorem isIso_inv_app (α : F ⟶ G) {_ : IsIso α} (X) : (inv α).app X = inv (
 @[simp]
 theorem inv_map_inv_app (F : C ⥤ D ⥤ E) {X Y : C} (e : X ≅ Y) (Z : D) :
     inv ((F.map e.inv).app Z) = (F.map e.hom).app Z := by
-  aesop_cat
+  cat_disch
 
 /-- Construct a natural isomorphism between functors by giving object level isomorphisms,
 and checking naturality only in the forward direction.

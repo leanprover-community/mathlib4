@@ -74,7 +74,7 @@ theorem mk_hom_eq_self (f : S ⟶ T.obj Y) : (mk f).hom = f :=
 
 @[reassoc (attr := simp)]
 theorem w {A B : StructuredArrow S T} (f : A ⟶ B) : A.hom ≫ T.map f.right = B.hom := by
-  have := f.w; aesop_cat
+  have := f.w; cat_disch
 
 @[simp]
 theorem comp_right {X Y Z : StructuredArrow S T} (f : X ⟶ Y) (g : Y ⟶ Z) :
@@ -159,7 +159,7 @@ theorem obj_ext (x y : StructuredArrow S T) (hr : x.right = y.right)
   cases x
   cases y
   cases hr
-  aesop_cat
+  cat_disch
 
 theorem ext {A B : StructuredArrow S T} (f g : A ⟶ B) : f.right = g.right → f = g :=
   CommaMorphism.ext (Subsingleton.elim _ _)
@@ -512,7 +512,7 @@ theorem obj_ext (x y : CostructuredArrow S T) (hl : x.left = y.left)
   cases x
   cases y
   cases hl
-  aesop_cat
+  cat_disch
 
 theorem ext {A B : CostructuredArrow S T} (f g : A ⟶ B) (h : f.left = g.left) : f = g :=
   CommaMorphism.ext h (Subsingleton.elim _ _)

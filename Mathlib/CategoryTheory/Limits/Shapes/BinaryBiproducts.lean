@@ -907,23 +907,23 @@ def biprod.braiding' (P Q : C) : P ⊞ Q ≅ Q ⊞ P where
   inv := biprod.desc biprod.inr biprod.inl
 
 theorem biprod.braiding'_eq_braiding {P Q : C} : biprod.braiding' P Q = biprod.braiding P Q := by
-  aesop_cat
+  cat_disch
 
 /-- The braiding isomorphism can be passed through a map by swapping the order. -/
 @[reassoc]
 theorem biprod.braid_natural {W X Y Z : C} (f : X ⟶ Y) (g : Z ⟶ W) :
     biprod.map f g ≫ (biprod.braiding _ _).hom = (biprod.braiding _ _).hom ≫ biprod.map g f := by
-  aesop_cat
+  cat_disch
 
 @[reassoc]
 theorem biprod.braiding_map_braiding {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) :
     (biprod.braiding X W).hom ≫ biprod.map f g ≫ (biprod.braiding Y Z).hom = biprod.map g f := by
-  aesop_cat
+  cat_disch
 
 @[reassoc (attr := simp)]
 theorem biprod.symmetry' (P Q : C) :
     biprod.lift biprod.snd biprod.fst ≫ biprod.lift biprod.snd biprod.fst = 𝟙 (P ⊞ Q) := by
-  aesop_cat
+  cat_disch
 
 /-- The braiding isomorphism is symmetric. -/
 @[reassoc]
@@ -941,14 +941,14 @@ def biprod.associator (P Q R : C) : (P ⊞ Q) ⊞ R ≅ P ⊞ (Q ⊞ R) where
 theorem biprod.associator_natural {U V W X Y Z : C} (f : U ⟶ X) (g : V ⟶ Y) (h : W ⟶ Z) :
     biprod.map (biprod.map f g) h ≫ (biprod.associator _ _ _).hom
       = (biprod.associator _ _ _).hom ≫ biprod.map f (biprod.map g h) := by
-  aesop_cat
+  cat_disch
 
 /-- The associator isomorphism can be passed through a map by swapping the order. -/
 @[reassoc]
 theorem biprod.associator_inv_natural {U V W X Y Z : C} (f : U ⟶ X) (g : V ⟶ Y) (h : W ⟶ Z) :
     biprod.map f (biprod.map g h) ≫ (biprod.associator _ _ _).inv
       = (biprod.associator _ _ _).inv ≫ biprod.map (biprod.map f g) h := by
-  aesop_cat
+  cat_disch
 
 end
 

@@ -453,8 +453,8 @@ def isIsoZeroEquivIsoZero (X Y : C) : IsIso (0 : X ⟶ Y) ≃ (X ≅ 0) × (Y �
     fconstructor
     · exact (idZeroEquivIsoZero X) hX
     · exact (idZeroEquivIsoZero Y) hY
-  · aesop_cat
-  · aesop_cat
+  · cat_disch
+  · cat_disch
 
 theorem isIso_of_source_target_iso_zero {X Y : C} (f : X ⟶ Y) (i : X ≅ 0) (j : Y ≅ 0) :
     IsIso f := by

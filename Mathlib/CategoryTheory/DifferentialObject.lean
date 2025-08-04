@@ -304,7 +304,7 @@ def shiftZero : shiftFunctor C (0 : S) ≅ 𝟭 (DifferentialObject S C) := by
   · erw [← NatTrans.naturality]
     dsimp
     simp only [shiftFunctorZero_hom_app_shift, Category.assoc]
-  · aesop_cat
+  · cat_disch
 
 end
 

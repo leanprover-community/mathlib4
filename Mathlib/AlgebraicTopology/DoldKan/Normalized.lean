@@ -73,7 +73,7 @@ theorem PInftyToNormalizedMooreComplex_comp_inclusionOfMooreComplexMap (X : Simp
 theorem PInftyToNormalizedMooreComplex_naturality {X Y : SimplicialObject A} (f : X ⟶ Y) :
     AlternatingFaceMapComplex.map f ≫ PInftyToNormalizedMooreComplex Y =
       PInftyToNormalizedMooreComplex X ≫ NormalizedMooreComplex.map f := by
-  aesop_cat
+  cat_disch
 
 @[reassoc (attr := simp)]
 theorem PInfty_comp_PInftyToNormalizedMooreComplex (X : SimplicialObject A) :

@@ -44,7 +44,7 @@ structure PresheafOfModules where
   map_id (X : Cᵒᵖ) :
     map (𝟙 X) = (ModuleCat.restrictScalarsId' (R.map (𝟙 X)).hom
       (congrArg RingCat.Hom.hom (R.map_id X))).inv.app _ := by
-        aesop_cat
+        cat_disch
   map_comp {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) :
     map (f ≫ g) = map f ≫ (ModuleCat.restrictScalars _).map (map g) ≫
       (ModuleCat.restrictScalarsComp' (R.map f).hom (R.map g).hom (R.map (f ≫ g)).hom

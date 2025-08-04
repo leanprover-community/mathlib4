@@ -131,7 +131,7 @@ theorem GabrielPopescu.preservesInjectiveObjects (G : C) (hG : IsSeparator G) :
       intro f hf
       simpa [d] using Sigma.ι _ ⟨f, hf⟩ ≫= hl
     · rw [ModuleCat.mono_iff_injective]
-      aesop_cat
+      cat_disch
 
 /-- Right exactness follows because `tensorObj G` is a left adjoint. -/
 theorem GabrielPopescu.preservesFiniteLimits (G : C) (hG : IsSeparator G) :

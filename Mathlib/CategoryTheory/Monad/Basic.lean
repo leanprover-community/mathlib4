@@ -67,7 +67,7 @@ structure Comonad extends C ⥤ C where
   /-- The comultiplication for the comonad. -/
   δ : toFunctor ⟶ toFunctor ⋙ toFunctor
   coassoc : ∀ X, NatTrans.app δ _ ≫ toFunctor.map (δ.app X) = δ.app _ ≫ δ.app _ := by
-    aesop_cat
+    cat_disch
   left_counit : ∀ X : C, δ.app X ≫ ε.app (toFunctor.obj X) = 𝟙 _ := by cat_disch
   right_counit : ∀ X : C, δ.app X ≫ toFunctor.map (ε.app X) = 𝟙 _ := by cat_disch
 
@@ -112,7 +112,7 @@ attribute [reassoc (attr := simp)] Comonad.coassoc Comonad.left_counit Comonad.r
 structure MonadHom (T₁ T₂ : Monad C) extends NatTrans (T₁ : C ⥤ C) T₂ where
   app_η : ∀ X, T₁.η.app X ≫ app X = T₂.η.app X := by cat_disch
   app_μ : ∀ X, T₁.μ.app X ≫ app X = (T₁.map (app X) ≫ app _) ≫ T₂.μ.app X := by
-    aesop_cat
+    cat_disch
 
 initialize_simps_projections MonadHom (+toNatTrans, -app)
 
@@ -149,7 +149,7 @@ instance : Category (Monad C) where
     { toNatTrans :=
         { app := fun X => f.app X ≫ g.app X
           naturality := fun X Y h => by rw [assoc, f.1.naturality_assoc, g.1.naturality] } }
-  -- `aesop_cat` can fill in these proofs, but is unfortunately slightly slow.
+  -- `cat_disch` can fill in these proofs, but is unfortunately slightly slow.
   id_comp _ := MonadHom.ext (by funext; simp only [NatTrans.id_app, id_comp])
   comp_id _ := MonadHom.ext (by funext; simp only [NatTrans.id_app, comp_id])
   assoc _ _ _ := MonadHom.ext (by funext; simp only [assoc])
@@ -160,7 +160,7 @@ instance : Category (Comonad C) where
     { toNatTrans :=
         { app := fun X => f.app X ≫ g.app X
           naturality := fun X Y h => by rw [assoc, f.1.naturality_assoc, g.1.naturality] } }
-  -- `aesop_cat` can fill in these proofs, but is unfortunately slightly slow.
+  -- `cat_disch` can fill in these proofs, but is unfortunately slightly slow.
   id_comp _ := ComonadHom.ext (by funext; simp only [NatTrans.id_app, id_comp])
   comp_id _ := ComonadHom.ext (by funext; simp only [NatTrans.id_app, comp_id])
   assoc _ _ _ := ComonadHom.ext (by funext; simp only [assoc])

@@ -492,7 +492,7 @@ noncomputable def functorP : SnakeInput C ⥤ C where
   map f := pullback.map _ _ _ _ f.f₁.τ₂ f.f₀.τ₃ f.f₁.τ₃ f.f₁.comm₂₃.symm
       (congr_arg ShortComplex.Hom.τ₃ f.comm₀₁.symm)
   map_id _ := by dsimp [P]; simp
-  map_comp _ _ := by dsimp [P]; aesop_cat
+  map_comp _ _ := by dsimp [P]; cat_disch
 
 @[reassoc]
 lemma naturality_φ₂ (f : S₁ ⟶ S₂) : S₁.φ₂ ≫ f.f₂.τ₂ = functorP.map f ≫ S₂.φ₂ := by
