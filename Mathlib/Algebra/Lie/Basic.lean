@@ -226,6 +226,15 @@ theorem lie_jacobi : ⁅x, ⁅y, z⁆⁆ + ⁅y, ⁅z, x⁆⁆ + ⁅z, ⁅x, y�
   rw [← neg_neg ⁅x, y⁆, lie_neg z, lie_skew y x, ← lie_skew, lie_lie]
   abel
 
+variable (L M) in
+/-- The Lie bracket as a biadditive map.
+
+Usually one will have coefficients and `LieModule.toEnd` will be more useful. -/
+@[simps] def LieModule.toEndAddHom : L →+ M →+ M where
+  toFun x := ⟨⟨fun m ↦ ⁅x, m⁆, lie_zero x⟩, LieRingModule.lie_add x⟩
+  map_zero' := by ext n; exact zero_lie n
+  map_add' y z := by ext n; exact add_lie y z n
+
 instance LieRing.instLieAlgebra : LieAlgebra ℤ L where lie_smul n x y := lie_zsmul x y n
 
 instance : LieModule ℤ L M where
@@ -295,13 +304,12 @@ def LieRing.toNonUnitalNonAssocRing : NonUnitalNonAssocRing L :=
 
 variable {ι κ : Type*}
 
-theorem sum_lie (s : Finset ι) (f : ι → L) (m : M) : ⁅∑ i ∈ s, f i, m⁆ = ∑ i ∈ s, ⁅f i, m⁆ := by
+theorem sum_lie (s : Finset ι) (f : ι → L) (m : M) : ⁅∑ i ∈ s, f i, m⁆ = ∑ i ∈ s, ⁅f i, m⁆ :=
   let g : L →+ M := ⟨⟨fun x ↦ ⁅x, m⁆, zero_lie m⟩, fun x y ↦ add_lie x y m⟩
-  exact map_sum g f s
+  map_sum g f s
 
-theorem lie_sum (s : Finset ι) (f : ι → M) (a : L) : ⁅a, ∑ i ∈ s, f i⁆ = ∑ i ∈ s, ⁅a, f i⁆ := by
-  let g : M →+ M := ⟨⟨fun n ↦ ⁅a, n⁆, lie_zero a⟩, lie_add a⟩
-  exact map_sum g f s
+theorem lie_sum (s : Finset ι) (f : ι → M) (a : L) : ⁅a, ∑ i ∈ s, f i⁆ = ∑ i ∈ s, ⁅a, f i⁆ :=
+  map_sum (LieModule.toEndAddHom L M a) f s
 
 theorem sum_lie_sum {κ : Type*} (s : Finset ι) (t : Finset κ) (f : ι → L) (g : κ → M) :
     ⁅(∑ i ∈ s, f i), ∑ j ∈ t, g j⁆ = ∑ i ∈ s, ∑ j ∈ t, ⁅f i, g j⁆ := by
