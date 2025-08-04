@@ -1401,6 +1401,10 @@ theorem MemLp.const_mul {f : α → 𝕜} (hf : MemLp f p μ) (c : 𝕜) : MemLp
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.const_mul := MemLp.const_mul
 
+theorem MemLp.mul_const {f : α → 𝕜} (hf : MemLp f p μ) (c : 𝕜) :
+    MemLp (fun x => f x * c) p μ :=
+  hf.const_smul (MulOpposite.op c)
+
 end IsBoundedSMul
 
 section ENormSMulClass
