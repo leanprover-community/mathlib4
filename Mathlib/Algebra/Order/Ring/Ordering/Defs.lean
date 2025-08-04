@@ -153,10 +153,10 @@ theorem hasIdealSupport_iff :
   fun _ => ⟨by simpa [mem_supportAddSubgroup]⟩⟩
 
 instance [HasMemOrNegMem P] : P.HasIdealSupport where
-  smul_mem_support x a ha := by
-    cases mem_or_neg_mem P x with
-    | inl hx => exact ⟨by simpa using mul_mem hx ha.1, by simpa using mul_mem hx ha.2⟩
-    | inr hx => exact ⟨by simpa using mul_mem hx ha.2, by simpa using mul_mem hx ha.1⟩
+  smul_mem_support x a ha :=
+    match mem_or_neg_mem P x with
+    | .inl hx => ⟨by simpa using mul_mem hx ha.1, by simpa using mul_mem hx ha.2⟩
+    | .inr hx => ⟨by simpa using mul_mem hx ha.2, by simpa using mul_mem hx ha.1⟩
 
 section support
 
