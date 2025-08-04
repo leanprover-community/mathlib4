@@ -714,6 +714,7 @@ import Mathlib.Algebra.Module.Submodule.Order
 import Mathlib.Algebra.Module.Submodule.Pointwise
 import Mathlib.Algebra.Module.Submodule.Range
 import Mathlib.Algebra.Module.Submodule.RestrictScalars
+import Mathlib.Algebra.Module.Submodule.Union
 import Mathlib.Algebra.Module.Torsion
 import Mathlib.Algebra.Module.TransferInstance
 import Mathlib.Algebra.Module.ULift
@@ -5854,6 +5855,7 @@ import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.DeclarationNames
 import Mathlib.Tactic.DefEqTransformations
+import Mathlib.Tactic.DepRewrite
 import Mathlib.Tactic.DeprecateTo
 import Mathlib.Tactic.DeriveCountable
 import Mathlib.Tactic.DeriveEncodable
