@@ -183,7 +183,7 @@ given by interpreting the form as a map `B : E →L⋆[𝕜] NormedSpace.Dual �
 and dualizing the result using `toStrongDual`.
 -/
 def continuousLinearMapOfBilin (B : E →L⋆[𝕜] E →L[𝕜] 𝕜) : E →L[𝕜] E :=
-  comp (toStrongDual 𝕜 E).symm.toContinuousLinearEquiv.toContinuousLinearMap B
+  (toStrongDual 𝕜 E).symm.toContinuousLinearEquiv.toContinuousLinearMap.comp B
 
 local postfix:1024 "♯" => continuousLinearMapOfBilin
 
