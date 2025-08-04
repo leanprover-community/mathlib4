@@ -66,7 +66,6 @@ theorem dualPairing_separatingLeft : (strongDualPairing R M).SeparatingLeft := b
 
 end
 
-
 section
 
 /-- Given a subset `s` in a monoid `M` (over a commutative ring `R`), the polar `polar R s` is the
