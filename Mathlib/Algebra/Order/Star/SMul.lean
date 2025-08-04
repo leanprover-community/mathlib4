@@ -31,11 +31,8 @@ lemma smul_nonneg {c : 𝕜} {a : R} (hc : 0 ≤ c) (ha : 0 ≤ a) : 0 ≤ c •
   rw [nonneg_iff] at ha
   induction ha using closure_induction with
   | mem x hx =>
-      rw [RCLike.nonneg_iff_exists_ofReal] at hc
-      obtain ⟨rc, hrc₁, hrc₂⟩ := hc
-      rw [Set.mem_range] at hx
-      obtain ⟨z, hz⟩ := hx
-      rw [← hz, ← hrc₂]
+      obtain ⟨rc, hrc₁, rfl⟩ := RCLike.nonneg_iff_exists_ofReal.mp hc
+      obtain ⟨z, rfl⟩ := hx
       let y := (Real.sqrt rc : 𝕜) • z
       have : (Real.sqrt rc : 𝕜) * Real.sqrt rc = rc := by exact_mod_cast Real.mul_self_sqrt hrc₁
       have hmain : (rc : 𝕜) • (star z * z) = star y * y := by
@@ -45,14 +42,11 @@ lemma smul_nonneg {c : 𝕜} {a : R} (hc : 0 ≤ c) (ha : 0 ≤ a) : 0 ≤ c •
   | one => simp
   | mul x y hx hy hx' hy' => simp [Left.add_nonneg hx' hy']
 
-lemma smul_lt_smul_of_pos {a b : R} {c : 𝕜} (hab : a < b) (hc : 0 < c) : c • a < c • b := by
-  apply lt_of_sub_pos
+lemma smul_lt_smul_of_pos {a b : R} {c : 𝕜} (hab : a < b) (hc : 0 < c) : c • a < c • b :=
   have hab' : 0 < b - a := sub_pos_of_lt hab
-  rw [← smul_sub]
-  apply lt_of_le_of_ne
-  · exact smul_nonneg (le_of_lt hc) (le_of_lt hab')
-  · apply Ne.symm
-    exact smul_ne_zero (Ne.symm (ne_of_lt hc)) (Ne.symm (ne_of_lt hab'))
+  lt_of_sub_pos <| smul_sub c b a ▸
+    lt_of_le_of_ne (smul_nonneg (le_of_lt hc) (le_of_lt hab'))
+    (smul_ne_zero (ne_of_lt hc).symm (ne_of_lt hab').symm).symm
 
 instance (priority := 100) toOrderedSMulRCLike : OrderedSMul 𝕜 R where
   smul_lt_smul_of_pos := smul_lt_smul_of_pos
@@ -75,9 +69,7 @@ lemma smul_nnreal_nonneg {c : ℝ≥0} {a : R} (ha : 0 ≤ a) : 0 ≤ c • a :=
   rw [nonneg_iff] at ha
   induction ha using closure_induction with
   | mem x hx =>
-      rw [Set.mem_range] at hx
-      obtain ⟨z, hz⟩ := hx
-      rw [← hz]
+      obtain ⟨z, rfl⟩ := hx
       let y := NNReal.sqrt c • z
       have hmain : c • (star z * z) = star y * y := by
         simp [y, smul_mul_smul, NNReal.mul_self_sqrt]
@@ -87,14 +79,11 @@ lemma smul_nnreal_nonneg {c : ℝ≥0} {a : R} (ha : 0 ≤ a) : 0 ≤ c • a :=
   | mul x y hx hy hx' hy' => simp [Left.add_nonneg hx' hy']
 
 lemma smul_lt_smul_of_pos_nnreal {a b : R} {c : ℝ≥0} (hab : a < b) (hc : 0 < c) :
-    c • a < c • b := by
-  apply lt_of_sub_pos
+    c • a < c • b :=
   have hab' : 0 < b - a := sub_pos_of_lt hab
-  rw [← smul_sub]
-  apply lt_of_le_of_ne
-  · exact smul_nnreal_nonneg (le_of_lt hab')
-  · apply Ne.symm
-    exact smul_ne_zero (Ne.symm (ne_of_lt hc)) (Ne.symm (ne_of_lt hab'))
+  lt_of_sub_pos <| smul_sub c b a ▸
+    lt_of_le_of_ne (smul_nnreal_nonneg (le_of_lt hab'))
+    (smul_ne_zero (ne_of_lt hc).symm (ne_of_lt hab').symm).symm
 
 instance (priority := 100) toOrderedSMulNNReal : OrderedSMul ℝ≥0 R where
   smul_lt_smul_of_pos := smul_lt_smul_of_pos_nnreal
