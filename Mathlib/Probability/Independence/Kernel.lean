@@ -919,6 +919,14 @@ theorem iIndepFun.congr' {β : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i
   convert h'a using 2 with i hi
   exact A i hi
 
+theorem iIndepFun_congr' {β : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)}
+    {f g : Π i, Ω → β i} (h : ∀ i, ∀ᵐ a ∂μ, f i =ᵐ[κ a] g i) :
+    iIndepFun f κ μ ↔ iIndepFun g κ μ where
+  mp h' := h'.congr' h
+  mpr h' := by
+    refine h'.congr' fun i ↦ ?_
+    filter_upwards [h i] with a ha using ha.symm
+
 lemma iIndepFun.comp {β γ : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)}
     {mγ : ∀ i, MeasurableSpace (γ i)} {f : ∀ i, Ω → β i}
     (h : iIndepFun f κ μ) (g : ∀ i, β i → γ i) (hg : ∀ i, Measurable (g i)) :
@@ -1323,7 +1331,7 @@ theorem iIndepFun.indepFun_finset_prod_of_notMem (hf_Indep : iIndepFun f κ μ)
     have : (∏ j : ↥s, f (↑j) a) = (∏ j : ↥s, f ↑j) a := by rw [Finset.prod_apply]
     rw [this, Finset.prod_coe_sort]
   have h_meas_left : Measurable fun p : s → β => ∏ j, p j :=
-    Finset.univ.measurable_prod fun (j : ↥s) (_H : j ∈ Finset.univ) => measurable_pi_apply j
+    Finset.univ.measurable_fun_prod fun (j : ↥s) (_H : j ∈ Finset.univ) => measurable_pi_apply j
   rw [h_left, h_right]
   exact
     (hf_Indep.indepFun_finset s {i} (Finset.disjoint_singleton_left.mpr hi).symm hf_meas).comp

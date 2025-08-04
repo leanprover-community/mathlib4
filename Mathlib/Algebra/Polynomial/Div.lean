@@ -717,7 +717,7 @@ lemma rootMultiplicity_add {p q : R[X]} (a : R) (hzero : p + q ≠ 0) :
 lemma le_rootMultiplicity_mul {p q : R[X]} (x : R) (hpq : p * q ≠ 0) :
     rootMultiplicity x p + rootMultiplicity x q ≤ rootMultiplicity x (p * q) := by
   rw [le_rootMultiplicity_iff hpq, pow_add]
-  exact mul_dvd_mul (pow_rootMultiplicity_dvd p x) (pow_rootMultiplicity_dvd q x)
+  gcongr <;> apply pow_rootMultiplicity_dvd
 
 lemma pow_rootMultiplicity_not_dvd (p0 : p ≠ 0) (a : R) :
     ¬(X - C a) ^ (rootMultiplicity a p + 1) ∣ p := by rw [← rootMultiplicity_le_iff p0]
@@ -769,11 +769,11 @@ lemma leadingCoeff_divByMonic_X_sub_C (p : R[X]) (hp : degree p ≠ 0) (a : R) :
 lemma eq_of_dvd_of_natDegree_le_of_leadingCoeff {p q : R[X]} (hpq : p ∣ q)
     (h₁ : q.natDegree ≤ p.natDegree) (h₂ : p.leadingCoeff = q.leadingCoeff) :
     p = q := by
-  by_cases hq : q = 0
-  · rwa [hq, leadingCoeff_zero, leadingCoeff_eq_zero, ← hq] at h₂
+  rcases eq_or_ne q 0 with rfl | hq
+  · simpa using h₂
   replace h₁ := (natDegree_le_of_dvd hpq hq).antisymm h₁
   obtain ⟨u, rfl⟩ := hpq
-  replace hq := mul_ne_zero_iff.mp hq
+  rw [mul_ne_zero_iff] at hq
   rw [natDegree_mul hq.1 hq.2, left_eq_add] at h₁
   rw [eq_C_of_natDegree_eq_zero h₁, leadingCoeff_mul, leadingCoeff_C,
     eq_comm, mul_eq_left₀ (leadingCoeff_ne_zero.mpr hq.1)] at h₂
