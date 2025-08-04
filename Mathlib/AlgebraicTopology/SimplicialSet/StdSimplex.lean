@@ -28,8 +28,7 @@ namespace SSet
 /-- The functor `SimplexCategory ⥤ SSet` which sends `⦋n⦌` to the standard simplex `Δ[n]` is a
 cosimplicial object in the category of simplicial sets. (This functor is essentially given by the
 Yoneda embedding). -/
-def stdSimplex : CosimplicialObject SSet.{u} :=
-  yoneda ⋙ uliftFunctor
+def stdSimplex : CosimplicialObject SSet.{u} := uliftYoneda
 
 @[deprecated (since := "2025-01-23")] alias standardSimplex := stdSimplex
 
@@ -106,7 +105,7 @@ lemma map_apply {m₁ m₂ : SimplexCategoryᵒᵖ} (f : m₁ ⟶ m₂) {n : Sim
 /-- The canonical bijection `(stdSimplex.obj n ⟶ X) ≃ X.obj (op n)`. -/
 def _root_.SSet.yonedaEquiv {X : SSet.{u}} {n : SimplexCategory} :
     (stdSimplex.obj n ⟶ X) ≃ X.obj (op n) :=
-  yonedaCompUliftFunctorEquiv X n
+  uliftYonedaEquiv
 
 lemma yonedaEquiv_map {n m : SimplexCategory} (f : n ⟶ m) :
     yonedaEquiv.{u} (stdSimplex.map f) = objEquiv.symm f :=

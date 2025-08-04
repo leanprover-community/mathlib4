@@ -113,7 +113,7 @@ def yonedaULift : C ⥤ Sheaf J (Type (max v v')) := J.yoneda ⋙ sheafCompose J
 /-- A version of `yonedaEquiv` for `yonedaULift`. -/
 def yonedaULiftEquiv {X : C} {F : Sheaf J (Type (max v v'))} :
     ((yonedaULift.{v'} J).obj X ⟶ F) ≃ F.val.obj (op X) :=
-  (fullyFaithfulSheafToPresheaf _ _).homEquiv.trans (yonedaCompUliftFunctorEquiv _ _)
+  (fullyFaithfulSheafToPresheaf _ _).homEquiv.trans uliftYonedaEquiv
 
 theorem yonedaULiftEquiv_apply {X : C} {F : Sheaf J (Type (max v v'))}
     (f : J.yonedaULift.obj X ⟶ F) : yonedaULiftEquiv.{v'} J f = f.val.app (op X) ⟨𝟙 X⟩ :=

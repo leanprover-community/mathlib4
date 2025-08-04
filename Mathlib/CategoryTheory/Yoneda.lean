@@ -44,18 +44,11 @@ for the category of types. -/
 def uliftYoneda : C ⥤ Cᵒᵖ ⥤ Type (max w v₁) :=
   yoneda ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{w}
 
-/-- If `C` is a category with `[Category.{v₁} C]`, this is the isomorphism
-`uliftYoneda.{v₁} (C := C) ≅ yoneda`. -/
+/-- If `C` is a category with `[Category.{max w v₁} C]`, this is the isomorphism
+`uliftYoneda.{w} (C := C) ≅ yoneda`. -/
 @[simps!]
-def uliftYonedaIsoYoneda :
-    uliftYoneda.{v₁} (C := C) ≅ yoneda :=
-  NatIso.ofComponents (fun _ ↦ NatIso.ofComponents (fun _ ↦ Equiv.ulift.toIso))
-
-/-- If `C` is a category with `[Category.{v₁} C]`, this is the isomorphism
-`uliftYoneda.{0} (C := C) ≅ yoneda`. -/
-@[simps!]
-def uliftYoneda₀IsoYoneda :
-    uliftYoneda.{0} (C := C) ≅ yoneda :=
+def uliftYonedaIsoYonedaGen {C : Type u₁} [Category.{max w v₁} C] :
+    uliftYoneda.{w} (C := C) ≅ yoneda :=
   NatIso.ofComponents (fun _ ↦ NatIso.ofComponents (fun _ ↦ Equiv.ulift.toIso))
 
 /-- The co-Yoneda embedding, as a functor from `Cᵒᵖ` into co-presheaves on `C`.
@@ -585,23 +578,6 @@ theorem yonedaPairing_map (P Q : Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁)) (α : P ⟶
     (yonedaPairing C).map α β = yoneda.map α.1.unop ≫ β ≫ α.2 :=
   rfl
 
-variable {C} in
-/-- A bijection `(yoneda.obj X ⋙ uliftFunctor ⟶ F) ≃ F.obj (op X)` which is a variant
-of `yonedaEquiv` with heterogeneous universes. -/
-def yonedaCompUliftFunctorEquiv (F : Cᵒᵖ ⥤ Type max v₁ w) (X : C) :
-    (yoneda.obj X ⋙ uliftFunctor ⟶ F) ≃ F.obj (op X) where
-  toFun φ := φ.app (op X) (ULift.up (𝟙 _))
-  invFun f :=
-    { app := fun _ x => F.map (ULift.down x).op f }
-  left_inv φ := by
-    ext Y f
-    dsimp
-    rw [← FunctorToTypes.naturality]
-    dsimp
-    rw [Category.comp_id]
-    rfl
-  right_inv f := by simp
-
 /-- The Yoneda lemma asserts that the Yoneda pairing
 `(X : Cᵒᵖ, F : Cᵒᵖ ⥤ Type) ↦ (yoneda.obj (unop X) ⟶ F)`
 is naturally isomorphic to the evaluation `(X, F) ↦ F.obj X`. -/
@@ -696,6 +672,9 @@ def uliftYonedaEquiv {X : C} {F : Cᵒᵖ ⥤ Type (max w v₁)} :
     dsimp
     rw [Category.comp_id]
   right_inv x := by simp
+
+@[deprecated (since := "2025-08-04")] alias yonedaCompUliftFunctorEquiv :=
+  uliftYonedaEquiv
 
 attribute [simp] uliftYonedaEquiv_symm_apply_app
 
