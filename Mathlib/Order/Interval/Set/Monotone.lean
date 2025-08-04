@@ -183,6 +183,42 @@ theorem strictAntiOn_Ici_of_lt_pred [PredOrder α] [IsPredArchimedean α] {n : �
 
 end SuccOrder
 
+section SuccLinearOrder
+
+open Order
+
+variable {α β : Type*} [LinearOrder α] [SuccOrder α] [Preorder β] {ψ : α → β}
+
+theorem pairwise_disjoint_Ico_of_monotone (hψ : Monotone ψ) :
+    Pairwise (Function.onFun Disjoint fun (a : α) => Ico (ψ a) (ψ (Order.succ a))) := by
+  unfold Function.onFun
+  simp_rw [Set.disjoint_iff]
+  intro i j hinej
+  wlog hij : i < j generalizing i j
+  · rw [not_lt] at hij
+    have := this hinej.symm (hij.lt_of_ne hinej.symm)
+    rwa [inter_comm]
+  intro b
+  simp_rw [mem_empty_iff_false, mem_inter_iff, mem_Ico, and_imp]
+  intro hb hb2 hb3 hb4
+  exact not_le_of_gt (hb2.trans_le <| hψ <| SuccOrder.succ_le_of_lt hij) hb3
+
+theorem pairwise_disjoint_Ioc_of_monotone (hψ : Monotone ψ) :
+    Pairwise (Function.onFun Disjoint fun (a : α) => Ioc (ψ a) (ψ (Order.succ a))) := by
+  unfold Function.onFun
+  simp_rw [Set.disjoint_iff]
+  intro i j hinej
+  wlog hij : i < j generalizing i j
+  · rw [not_lt] at hij
+    have := this hinej.symm (hij.lt_of_ne hinej.symm)
+    rwa [inter_comm]
+  intro b
+  simp_rw [mem_empty_iff_false, mem_inter_iff, mem_Ioc, and_imp]
+  intro hb hb2 hb3 hb4
+  exact not_lt_of_ge (hb2.trans <| hψ <| SuccOrder.succ_le_of_lt hij) hb3
+
+end SuccLinearOrder
+
 section LinearOrder
 
 open Order
