@@ -115,7 +115,7 @@ lemma mem_support_iff_forall (x : X) : x ∈ μ.support ↔ ∀ U ∈ 𝓝 x, 0 
   Filter.HasBasis.mem_measureSupport <| (𝓝 x).basis_sets
 
 lemma support_eq_univ [μ.IsOpenPosMeasure] : μ.support = Set.univ :=
-  Set.ext fun _ ↦ (mem_support_iff_forall _).trans <| Iff.intro (fun _ ↦ trivial)
+  Set.ext fun _ ↦ mem_support_iff_forall _ |>.trans <| Iff.intro (fun _ ↦ trivial)
     (fun _ _ ↦ measure_pos_of_mem_nhds μ)
 
 lemma support_mono {ν : Measure X} (h : μ ≤ ν) : μ.support ≤ ν.support :=
@@ -124,8 +124,8 @@ lemma support_mono {ν : Measure X} (h : μ ≤ ν) : μ.support ≤ ν.support 
 
 lemma AbsolutelyContinuous.support_mono {μ ν : Measure X} (hμν : μ ≪ ν) :
   μ.support ≤ ν.support :=
-  fun _ hx ↦ (mem_support_iff_forall _).mpr fun _ hU ↦
-     zero_lt_iff.mpr <| mt (fun a ↦ hμν a) <| ne_of_gt <| (mem_support_iff_forall _).mp hx _ hU
+  fun _ hx ↦ mem_support_iff_forall _ |>.mpr fun _ hU ↦
+     zero_lt_iff.mpr <| mt (fun a ↦ hμν a) <| ne_of_gt <| mem_support_iff_forall _ |>.mp hx _ hU
 
 /-- A point `x` lies outside the support of `μ` iff all of the subsets of one of its neighborhoods
 have measure zero. -/
@@ -140,7 +140,7 @@ theorem _root_.Filter.HasBasis.notMem_measureSupport {ι : Sort*} {p : ι → Pr
 @[simp]
 lemma support_zero : (0 : Measure X).support = ∅ := by
   ext; simp only [Set.mem_empty_iff_false, iff_false, notMem_support_iff]
-  exact Filter.Eventually.of_forall (congrFun rfl)
+  exact Filter.Eventually.of_forall <| congrFun rfl
 
 /-- The support of the sum of two measures is the union of the supports. -/
 lemma support_add (μ ν : Measure X) :
@@ -155,11 +155,11 @@ lemma notMem_support_iff_exists {x : X} : x ∉ μ.support ↔ ∃ U ∈ 𝓝 x,
 all have positive measure. -/
 lemma support_eq_forall_isOpen : μ.support =
     {x : X | ∀ u : Set X, x ∈ u → IsOpen u → 0 < μ u} := by
-  simp [Set.ext_iff, (nhds_basis_opens _).mem_measureSupport]
+  simp [Set.ext_iff, nhds_basis_opens _ |>.mem_measureSupport]
 
 lemma isClosed_support {μ : Measure X} : IsClosed μ.support := by
-  simp_rw [isClosed_iff_frequently, (nhds_basis_opens _).mem_measureSupport,
-    (nhds_basis_opens _).frequently_iff]
+  simp_rw [isClosed_iff_frequently, nhds_basis_opens _ |>.mem_measureSupport,
+    nhds_basis_opens _ |>.frequently_iff]
   grind
 
 lemma isOpen_compl_support {μ : Measure X} : IsOpen μ.supportᶜ :=
@@ -171,16 +171,16 @@ lemma subset_compl_support_of_isOpen {t : Set X} (ht : IsOpen t) (h : μ t = 0) 
 
 lemma compl_support_eq_sUnion : μ.supportᶜ = ⋃₀ {t : Set X | IsOpen t ∧ μ t = 0} := by
   ext x; simp only [Set.mem_compl_iff, Set.mem_sUnion, Set.mem_setOf_eq, and_right_comm,
-     (nhds_basis_opens x).notMem_measureSupport, fun t ↦ and_comm (b := x ∈ t)]
+     nhds_basis_opens x |>.notMem_measureSupport, fun t ↦ and_comm (b := x ∈ t)]
 
 lemma support_eq_sInter : μ.support = ⋂₀ {t : Set X | IsClosed t ∧ μ tᶜ = 0} := by
   ext x
-  simp only [(nhds_basis_opens x).mem_measureSupport, and_imp, Set.mem_sInter, Set.mem_setOf_eq]
+  simp only [nhds_basis_opens x |>.mem_measureSupport, and_imp, Set.mem_sInter, Set.mem_setOf_eq]
   rw [← not_iff_not]
   push_neg
   constructor
   · rintro ⟨t, ht, htc, htc1⟩; use tᶜ; rw [← compl_compl t] at htc1 ht
-    exact ⟨htc.isClosed_compl, nonpos_iff_eq_zero.mp htc1, (Set.mem_compl_iff tᶜ x).mp ht⟩
+    exact ⟨htc.isClosed_compl, nonpos_iff_eq_zero.mp htc1, Set.mem_compl_iff tᶜ x |>.mp ht⟩
   · rintro ⟨t, ht, htc, htc1⟩; use tᶜ
     exact ⟨Set.mem_compl htc1, ht.isOpen_compl, le_of_eq htc⟩
 
@@ -226,7 +226,7 @@ lemma nonempty_support (hμ : μ ≠ 0) : μ.support.Nonempty :=
    Nonempty.right <| nonempty_inter_support_of_pos <| measure_univ_pos.mpr hμ
 
 lemma nonempty_support_iff : μ.support.Nonempty ↔ μ ≠ 0 :=
-  ⟨fun h e ↦ (not_nonempty_iff_eq_empty.mpr <| congrArg Measure.support e|>.trans
+  ⟨fun h e ↦ (not_nonempty_iff_eq_empty.mpr <| congrArg Measure.support e |>.trans
     <| support_zero) h, fun h ↦ nonempty_support h⟩
 
 end Lindelof
@@ -244,11 +244,11 @@ lemma support_restrict_subset_closure [OpensMeasurableSpace X] {s : Set X} :
       simp [Measure.restrict_apply hU.measurableSet, Set.inter_comm]
     rw [nhds_basis_opens x |>.mem_measureSupport] at hx
     exact MeasureTheory.nonempty_of_measure_ne_zero
-      (ne_of_gt (h_restr ▸ hx U ⟨hxU, hU⟩))
+      (ne_of_gt <| h_restr ▸ hx U ⟨hxU, hU⟩)
 
 lemma mem_support_restrict [OpensMeasurableSpace X] {s : Set X} {x : X} :
     x ∈ (μ.restrict s).support ↔ ∃ᶠ u in (𝓝[s] x).smallSets, 0 < μ u := by
-  rw [(nhds_basis_opens x).mem_measureSupport,
+  rw [nhds_basis_opens x |>.mem_measureSupport,
     Filter.HasBasis.frequently_smallSets (hl := nhdsWithin_basis_open x s) (hq := pos_mono μ)] at *
   constructor
   all_goals
@@ -264,7 +264,7 @@ lemma interior_inter_support [OpensMeasurableSpace X] {s : Set X} :
   apply mem_support_restrict.mpr
   rw [Filter.HasBasis.frequently_smallSets (hl := nhdsWithin_basis_open x s) (hq := pos_mono μ)]
   intro V ⟨hs1, hs2⟩
-  rw [(nhds_basis_opens x).mem_measureSupport] at hxp
+  rw [nhds_basis_opens x |>.mem_measureSupport] at hxp
   exact lt_of_lt_of_le (hxp (V ∩ y) ⟨Set.mem_inter hs1 hy2, IsOpen.inter hs2 hy1.1⟩)
     <| OuterMeasureClass.measure_mono μ <| Set.inter_subset_inter (fun ⦃a⦄ a ↦ a) hy1.2
 
