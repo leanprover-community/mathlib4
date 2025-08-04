@@ -1144,6 +1144,26 @@ lemma closedInterior_subset_affineSpan {n : ℕ} {s : Simplex k P n} :
   rintro p ⟨w, hw, hi, rfl⟩
   exact affineCombination_mem_affineSpan_of_nonempty hw _
 
+@[simp] lemma interior_eq_empty (s : Simplex k P 0) : s.interior = ∅ := by
+  ext p
+  simp only [Simplex.interior, Nat.reduceAdd, univ_unique, Fin.default_eq_zero, Fin.isValue,
+    sum_singleton, Set.mem_Ioo, Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false, not_exists,
+    not_and]
+  intro w h hi
+  replace hi := hi 0
+  simp [h] at hi
+
+@[simp] lemma closedInterior_eq_singleton [ZeroLEOneClass k] (s : Simplex k P 0) :
+    s.closedInterior = {s.points 0} := by
+  ext p
+  simp only [Simplex.closedInterior, Nat.reduceAdd, univ_unique, Fin.default_eq_zero, Fin.isValue,
+    sum_singleton, Set.mem_Icc, Set.mem_setOf_eq, Set.mem_singleton_iff]
+  constructor
+  · rintro ⟨w, h0, hi, rfl⟩
+    simp [affineCombination_apply, h0]
+  · rintro rfl
+    exact ⟨1, by simp [affineCombination_apply]⟩
+
 end Simplex
 
 end Affine
