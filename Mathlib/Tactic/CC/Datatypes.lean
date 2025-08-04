@@ -152,9 +152,10 @@ scoped instance : Ord ACApps where
     | .apps _ _, .ofExpr _ => .gt
     | .apps op₁ args₁, .apps op₂ args₂ =>
       compare op₁ op₂ |>.then <| compare args₁.size args₂.size |>.dthen fun hs => Id.run do
-        have hs := Batteries.BEqCmp.cmp_iff_eq.mp hs
+        have hs := eq_of_beq <| Std.LawfulBEqCmp.compare_eq_iff_beq.mp hs
         for hi : i in [:args₁.size] do
-          have hi := hi.right; let o := compare args₁[i] (args₂[i]'(hs ▸ hi.1))
+          have hi := hi.right
+          let o := compare args₁[i] (args₂[i]'(hs ▸ hi.1))
           if o != .eq then return o
         return .eq
 
