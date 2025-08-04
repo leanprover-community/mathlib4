@@ -1150,8 +1150,7 @@ lemma closedInterior_subset_affineSpan {n : ℕ} {s : Simplex k P n} :
     sum_singleton, Set.mem_Ioo, Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false, not_exists,
     not_and]
   intro w h hi
-  replace hi := hi 0
-  simp [h] at hi
+  simpa [h] using hi 0
 
 @[simp] lemma closedInterior_eq_singleton [ZeroLEOneClass k] (s : Simplex k P 0) :
     s.closedInterior = {s.points 0} := by
