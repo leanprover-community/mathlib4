@@ -93,6 +93,11 @@ instance pseudoMetrizableSpace_pi [∀ i, PseudoMetrizableSpace (A i)] :
   have := fun i => pseudoMetrizableSpaceUniformity_countably_generated (A i)
   inferInstance
 
+instance PseudoMetrizableSpace.regularSpace [PseudoMetrizableSpace X] : RegularSpace X :=
+  let := pseudoMetrizableSpaceUniformity X
+  have := pseudoMetrizableSpaceUniformity_countably_generated X
+  inferInstance
+
 /-- A topological space is metrizable if there exists a metric space structure compatible with the
 topology. To endow such a space with a compatible uniformity, use
 `letI : UniformSpace X := TopologicalSpace.pseudoMetrizableSpaceUniformity X`.
