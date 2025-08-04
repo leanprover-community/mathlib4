@@ -20,9 +20,10 @@ the underlying space is metrizable and separable.
 * `MeasureTheory.FiniteMeasure.prod`: The product of two finite measures.
 * `MeasureTheory.ProbabilityMeasure.prod`: The product of two probability measures.
 
-## TODO
+## Main results
 
-* Add continuous dependence of the product measures on the factors.
+`MeasureTheory.ProbabilityMeasure.continuous_prod`: the product probability measure depends
+continuously on the factors.
 
 -/
 
@@ -136,32 +137,29 @@ lemma prod_swap : (μ.prod ν).map measurable_swap.aemeasurable = ν.prod μ := 
   apply Subtype.ext
   simp [Measure.prod_swap]
 
-lemma apply_frontier_inter_eq_zero [TopologicalSpace α] {a a' : Set α}
-    (ha : μ (frontier a) = 0) (ha' : μ (frontier a') = 0) :
-    μ (frontier (a ∩ a')) = 0 := by
-  apply le_antisymm ?_ bot_le
-  calc μ (frontier (a ∩ a'))
-  _ ≤ μ (frontier a ∪ frontier a') := by
-    apply apply_mono
-    apply (frontier_inter_subset _ _).trans (by grind)
-  _ ≤ μ (frontier a) + μ (frontier a') := by
-    apply apply_union_le
-  _ = 0 := by simp [ha, ha']
-
 open TopologicalSpace
 
+/-- The map associating to two probability measures their product is a continuous map. -/
+@[fun_prop]
 theorem continuous_prod [TopologicalSpace α] [TopologicalSpace β] [SecondCountableTopology α]
   [SecondCountableTopology β] [PseudoMetrizableSpace α] [PseudoMetrizableSpace β]
   [OpensMeasurableSpace α] [OpensMeasurableSpace β] :
     Continuous (fun (μ : ProbabilityMeasure α × ProbabilityMeasure β) ↦ μ.1.prod μ.2) := by
   apply continuous_iff_continuousAt.2 (fun μ ↦ ?_)
+  /- It suffices to check the convergence along elements of a π-system containing arbitrarily
+  small neighborhoods of any point, by `tendsto_probabilityMeasure_of_tendsto_of_mem`.
+  We take as a π-system the sets of the form `a ×ˢ b` where `a` and `b` have null frontier. -/
   let S : Set (Set (α × β)) := {t | ∃ (a : Set α) (b : Set β),
     MeasurableSet a ∧ μ.1 (frontier a) = 0 ∧ MeasurableSet b ∧ μ.2 (frontier b) = 0
     ∧ t = a ×ˢ b}
   have : IsPiSystem S := by
     rintro s ⟨a, b, ameas, ha, bmeas, hb, rfl⟩ s' ⟨a', b', a'meas, ha', b'meas, hb', rfl⟩ -
-    exact ⟨a ∩ a', b ∩ b', ameas.inter a'meas, apply_frontier_inter_eq_zero μ.1 ha ha',
-      bmeas.inter b'meas, apply_frontier_inter_eq_zero μ.2 hb hb', prod_inter_prod⟩
+    refine ⟨a ∩ a', b ∩ b', ameas.inter a'meas, ?_,
+      bmeas.inter b'meas, ?_, prod_inter_prod⟩
+    · rw [null_iff_toMeasure_null] at ha ha' ⊢
+      exact null_frontier_inter ha ha'
+    · rw [null_iff_toMeasure_null] at hb hb' ⊢
+      exact null_frontier_inter hb hb'
   apply this.tendsto_probabilityMeasure_of_tendsto_of_mem
   · rintro s ⟨a, b, ameas, -, bmeas, -, rfl⟩
     exact ameas.prod bmeas
