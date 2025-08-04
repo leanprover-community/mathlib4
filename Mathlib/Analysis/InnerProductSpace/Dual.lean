@@ -178,7 +178,7 @@ noncomputable def toStrongDual : E ≃ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
 variable {𝕜} {E}
 
 @[simp]
-theorem toDual_apply {x y : E} : toStrongDual 𝕜 E x y = ⟪x, y⟫ :=
+theorem toStrongDual_apply {x y : E} : toStrongDual 𝕜 E x y = ⟪x, y⟫ :=
   rfl
 
 @[simp]
