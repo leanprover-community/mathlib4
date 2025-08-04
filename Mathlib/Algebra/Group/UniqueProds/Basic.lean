@@ -350,7 +350,7 @@ open MulOpposite in
 @[to_additive] theorem toIsCancelMul [UniqueProds G] : IsCancelMul G where
   mul_left_cancel := toIsLeftCancelMul.mul_left_cancel
   mul_right_cancel _ _ _ h :=
-    op_injective <| toIsLeftCancelMul.mul_left_cancel _ _ _ <| unop_injective h
+    op_injective <| toIsLeftCancelMul.mul_left_cancel _ <| unop_injective h
 
 /-! Two theorems in [Andrzej Strojnowski, *A note on u.p. groups*][Strojnowski1980] -/
 
@@ -528,8 +528,7 @@ instance instForall {ι} (G : ι → Type*) [∀ i, Mul (G i)] [∀ i, TwoUnique
       refine ⟨(a1, b1), ⟨ha1.1, hb1.1⟩, (a2, b2), ⟨ha2.1, hb2.1⟩, ?_,
         UniqueMul.of_image_filter (Pi.evalMulHom G i) ha1.2 hb1.2 hi1 hu1,
         UniqueMul.of_image_filter (Pi.evalMulHom G i) ha2.2 hb2.2 hi2 hu2⟩
-      contrapose! hne; rw [Prod.mk_inj] at hne ⊢
-      rw [← ha1.2, ← hb1.2, ← ha2.2, ← hb2.2, hne.1, hne.2]; exact ⟨rfl, rfl⟩
+      grind
     all_goals rcases hc with hc | hc; · exact ihA _ (hc.2 _)
     · by_cases hA : {a ∈ A | a i = p2.1} = A
       · rw [hA]
