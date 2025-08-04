@@ -175,7 +175,7 @@ lemma smul_set_nonempty : (a • s).Nonempty ↔ s.Nonempty := image_nonempty
 @[to_additive (attr := simp)]
 lemma smul_set_singleton : a • ({b} : Set β) = {a • b} := image_singleton
 
-@[to_additive (attr := gcongr)] lemma smul_set_mono : s ⊆ t → a • s ⊆ a • t := image_subset _
+@[to_additive (attr := gcongr)] lemma smul_set_mono : s ⊆ t → a • s ⊆ a • t := image_mono
 
 @[to_additive]
 lemma smul_set_subset_iff : a • s ⊆ t ↔ ∀ ⦃b⦄, b ∈ s → a • b ∈ t :=

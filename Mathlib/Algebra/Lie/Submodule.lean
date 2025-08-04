@@ -677,6 +677,7 @@ theorem lieSpan_le {N} : lieSpan R L s ≤ N ↔ s ⊆ N := by
   · exact Subset.trans subset_lieSpan
   · intro hs m hm; rw [mem_lieSpan] at hm; exact hm _ hs
 
+@[gcongr]
 theorem lieSpan_mono {t : Set M} (h : s ⊆ t) : lieSpan R L s ≤ lieSpan R L t := by
   rw [lieSpan_le]
   exact Subset.trans h subset_lieSpan
@@ -860,7 +861,7 @@ theorem comap_incl_eq_bot : N₂.comap N.incl = ⊥ ↔ N ⊓ N₂ = ⊥ := by
 
 @[gcongr, mono]
 theorem map_mono (h : N ≤ N₂) : N.map f ≤ N₂.map f :=
-  Set.image_subset _ h
+  Set.image_mono h
 
 theorem map_comp
     {M'' : Type*} [AddCommGroup M''] [Module R M''] [LieRingModule L M''] {g : M' →ₗ⁅R,L⁆ M''} :
