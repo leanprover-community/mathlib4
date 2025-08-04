@@ -75,7 +75,7 @@ Note: This linter can be disabled with `set_option linter.style.docString false`
      and even odder. -/
 example : Nat := 0
 
--- TODO: this should also error!
+-- FUTURE: this should also error
 #guard_msgs in
 /-- The realization function sends the abstract maxima and weak coequalizers to the corresponding
     objects in `C`. -/

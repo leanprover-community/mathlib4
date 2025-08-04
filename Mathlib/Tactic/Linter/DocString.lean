@@ -64,8 +64,10 @@ def deindentString (currIndent : Nat) (docString : String) : String :=
 namespace Style
 
 /-- Check if a doc-string conforms to some basic style guidelines.
-TODO: flesh out which ones and why! -/
-def check (str : String) : Array MessageData := Id.run do
+For now, this verifies that each line is indented by an even number of spaces
+(except for code blocks, where anything is allowed).
+-/
+def checkFormatting (str : String) : Array MessageData := Id.run do
   let lines := str.splitOn "\n"
   -- If the doc-string contains a code block, we skip any analysis (for now).
   if lines.any (·.trimLeft.startsWith "```") then return #[]
@@ -103,8 +105,9 @@ def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
     if docString.trim.isEmpty then
       Linter.logLintIf linter.style.docString.empty docStx m!"error: this doc-string is empty"
       continue
-
-    for msg in check docString do
+    -- Check formatting and indentation within the doc-string. Whitespace at the beginning and
+    -- end are checked below.
+    for msg in checkFormatting docString do
       Linter.logLintIf linter.style.docString docStx msg
 
     -- `startSubstring` is the whitespace between `/--` and the actual doc-string text.
