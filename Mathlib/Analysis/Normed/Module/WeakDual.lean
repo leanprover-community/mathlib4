@@ -138,14 +138,19 @@ def toStrongDual : WeakDual 𝕜 E ≃ₗ[𝕜] StrongDual 𝕜 E :=
 theorem toStrongDual_apply (x : WeakDual 𝕜 E) (y : E) : (toStrongDual x) y = x y :=
   rfl
 
+@[deprecated (since := "2025-08-03")] alias toNormedDual_apply := toStrongDual_apply
+
 @[simp]
-theorem coe_toNormedDual (x' : WeakDual 𝕜 E) : toStrongDual x' = x' :=
+theorem coe_toStrongDual (x' : WeakDual 𝕜 E) : toStrongDual x' = x' :=
   rfl
 
+@[deprecated (since := "2025-08-03")] alias coe_toNormedDual := coe_toStrongDual
+
 @[simp]
-theorem toNormedDual_inj (x' y' : WeakDual 𝕜 E) : toStrongDual x' = toStrongDual y' ↔ x' = y' :=
+theorem toStrongDual_inj (x' y' : WeakDual 𝕜 E) : toStrongDual x' = toStrongDual y' ↔ x' = y' :=
   (LinearEquiv.injective toStrongDual).eq_iff
 
+@[deprecated (since := "2025-08-03")] alias toNormedDual_inj := toStrongDual_inj
 @[deprecated (since := "2024-12-29")] alias toNormedDual_eq_iff := toNormedDual_inj
 
 variable (𝕜)
