@@ -159,10 +159,8 @@ theorem nhds_bind_asymptoticNhds (v : V) :
     eta_expand
     simp_rw [asymptoticNhds_eq_smul_vadd _ p, vadd_pure]
     nth_rw 2 [← nhds_bind_nhds]
-    intro s ⟨t₁, ht₁, t₂, ht₂, hs⟩
-    rw [mem_bind] at ht₂ ⊢
-    obtain ⟨t₃, ht₃, ht₂⟩ := ht₂
-    exact ⟨t₃, ht₃, fun u hu => ⟨t₁, ht₁, t₂, ht₂ u hu, hs⟩⟩
+    simp only [le_def, mem_map, ← map₂_smul, mem_map₂_iff, mem_bind]
+    grind
   · rw [← pure_bind v (asymptoticNhds k P)]
     exact bind_mono (pure_le_nhds v) .rfl
 
@@ -215,7 +213,7 @@ theorem mem_asymptoticCone_iff {v : V} {s : Set P} :
 theorem asymptoticCone_empty : asymptoticCone k (∅ : Set P) = ∅ :=
   Set.eq_empty_iff_forall_notMem.mpr fun _ => frequently_false _
 
-@[mono]
+@[gcongr]
 theorem asymptoticCone_mono {s t : Set P} (h : s ⊆ t) : asymptoticCone k s ⊆ asymptoticCone k t :=
   fun _ h' => h'.mono h
 
@@ -243,13 +241,16 @@ theorem asymptoticCone_iUnion_of_finite {ι : Type*} [Finite ι] (f : ι → Set
 
 variable [OrderTopology k] [IsStrictOrderedRing k]
 
-theorem zero_mem_asymptoticCone {s : Set P} (hs : s.Nonempty) : 0 ∈ asymptoticCone k s := by
-  simpa [mem_asymptoticCone_iff]
+theorem zero_mem_asymptoticCone {s : Set P} : 0 ∈ asymptoticCone k s ↔ s.Nonempty := by
+  refine ⟨Function.mtr ?_, fun _ => ?_⟩
+  · simp +contextual [Set.not_nonempty_iff_eq_empty]
+  · simpa [mem_asymptoticCone_iff]
 
 theorem asymptoticCone_nonempty {s : Set P} : (asymptoticCone k s).Nonempty ↔ s.Nonempty := by
-  refine ⟨Function.mtr ?_, fun h => ⟨0, zero_mem_asymptoticCone h⟩⟩
+  refine ⟨Function.mtr ?_, fun h => ⟨0, zero_mem_asymptoticCone.mpr h⟩⟩
   simp +contextual [Set.not_nonempty_iff_eq_empty]
 
+@[simp]
 theorem smul_mem_asymptoticCone_iff {s : Set P} {c : k} {v : V} (hc : 0 < c) :
     c • v ∈ asymptoticCone k s ↔ v ∈ asymptoticCone k s := by
   simp_rw [mem_asymptoticCone_iff, asymptoticNhds_smul v hc]
@@ -257,7 +258,7 @@ theorem smul_mem_asymptoticCone_iff {s : Set P} {c : k} {v : V} (hc : 0 < c) :
 theorem smul_mem_asymptoticCone {s : Set P} {c : k} {v : V} (hc : 0 ≤ c)
     (h : v ∈ asymptoticCone k s) : c • v ∈ asymptoticCone k s := by
   rcases hc.eq_or_lt with rfl | hc
-  · rw [zero_smul]; exact zero_mem_asymptoticCone (asymptoticCone_nonempty.mp ⟨v, h⟩)
+  · rw [zero_smul, zero_mem_asymptoticCone, ← asymptoticCone_nonempty (k := k)]; exact ⟨v, h⟩
   · rwa [smul_mem_asymptoticCone_iff hc]
 
 theorem asymptoticCone_eq_closure_of_forall_smul_mem {s : Set V}
@@ -286,7 +287,7 @@ theorem asymptoticCone_univ : asymptoticCone k (Set.univ : Set P) = Set.univ := 
   rw [← AffineSubspace.top_coe k, asymptoticCone_affineSubspace Set.univ_nonempty,
     AffineSubspace.direction_top, Submodule.top_coe, closure_univ]
 
-theorem asymptoticCone_closure {s : Set P} : asymptoticCone k (closure s) = asymptoticCone k s := by
+theorem asymptoticCone_closure (s : Set P) : asymptoticCone k (closure s) = asymptoticCone k s := by
   ext
   simp_rw [mem_asymptoticCone_iff, mem_closure_iff_frequently, ← frequently_bind,
     asymptoticNhds_bind_nhds]
@@ -435,7 +436,7 @@ theorem isBounded_iff_asymptoticCone_subset_singleton {s : Set P} :
 
 /-- In a finite dimensional normed affine space over `ℝ`, a set is unbounded if and only if its
 asymptotic cone contains a nonzero vector. -/
-theorem unbounded_iff_exists_ne_zero_mem_asymptoticCone {s : Set P} :
+theorem not_bounded_iff_exists_ne_zero_mem_asymptoticCone {s : Set P} :
     ¬ IsBounded s ↔ ∃ v ≠ 0, v ∈ asymptoticCone ℝ s := by
   rw [isBounded_iff_asymptoticCone_subset_singleton, Set.subset_singleton_iff, not_forall]
   tauto
