@@ -123,12 +123,12 @@ lemma mem_support_iff_forall (x : X) : x ∈ μ.support ↔ ∀ U ∈ 𝓝 x, 0 
     ⟨fun h _ hU ↦ let ⟨_, ht, μt⟩ := h _ hU; μt.trans_le (measure_mono ht),
      fun h _ hU ↦ ⟨_, Set.Subset.rfl, h _ hU⟩⟩ --GOLF THIS WITH `Filter.basis_sets`
 
-lemma support_eq_univ [μ.IsOpenPosMeasure] : μ.support = Set.univ := by
-  ext; simp only [Set.mem_univ, iff_true, mem_support_iff_forall]
-  exact fun _ a ↦ measure_pos_of_mem_nhds μ a
+lemma support_eq_univ [μ.IsOpenPosMeasure] : μ.support = Set.univ :=
+  Set.ext fun x ↦ (mem_support_iff_forall x).trans (Iff.intro (fun _ ↦ trivial)
+    (fun _ _ ↦ measure_pos_of_mem_nhds μ))
 
 lemma support_mono {ν : Measure X} (h : μ ≤ ν) : μ.support ≤ ν.support :=
-  fun _ hx => mem_support_iff_forall _ |>.mpr fun _ hU =>
+  fun _ hx ↦ mem_support_iff_forall _ |>.mpr fun _ hU ↦
     lt_of_lt_of_le (mem_support_iff_forall _ |>.1 hx _ hU) (h _)
 
 /-- A point `x` lies outside the support of `μ` iff all of the subsets of one of its neighborhoods
