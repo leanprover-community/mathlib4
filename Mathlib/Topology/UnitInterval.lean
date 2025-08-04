@@ -225,26 +225,16 @@ instance : LinearOrderedCommMonoidWithZero I where
     simp [h_ij]
 
 @[simp]
-lemma Iic_eq_Icc (x : I) : Iic x = Icc 0 x := by
-  ext _
-  simp only [mem_Iic, mem_Icc, zero_le', true_and]
+lemma Iic_eq_Icc (x : I) : Iic x = Icc 0 x := Icc_bot.symm
 
 @[simp]
-lemma Iio_eq_Ico (x : I) : Iio x = Ico 0 x := by
-  ext _
-  simp only [mem_Iio, mem_Ico, zero_le', true_and]
+lemma Iio_eq_Ico (x : I) : Iio x = Ico 0 x := Ico_bot.symm
 
 @[simp]
-lemma Ici_eq_Ico (x : I) : Ici x = Icc x 1 := by
-  ext y
-  simp only [mem_Ici, mem_Icc, iff_self_and]
-  exact fun _ ↦ y.2.2
+lemma Ici_eq_Icc (x : I) : Ici x = Icc x 1 := Icc_top.symm
 
 @[simp]
-lemma Ioi_eq_Ioc (x : I) : Ioi x = Ioc x 1 := by
-  ext y
-  simp only [mem_Ioi, mem_Ioc, iff_self_and]
-  exact fun _ ↦ y.2.2
+lemma Ioi_eq_Ioc (x : I) : Ioi x = Ioc x 1 := Ioc_top.symm
 
 end unitInterval
 
