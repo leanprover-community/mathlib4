@@ -204,7 +204,8 @@ relation does not have its main goals proved by `gcongr` (in the two examples he
 the inequality goes in the wrong direction). -/
 
 /--
-error: tactic 'grewrite' failed, could not discharge x ≤ y using x ≥ y
+error: Tactic `grewrite` failed: could not discharge x ≤ y using x ≥ y
+
 case h₁.h
 α : Type u_1
 inst✝² : CommRing α
