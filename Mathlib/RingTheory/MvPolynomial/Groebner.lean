@@ -249,10 +249,9 @@ theorem div_single {b : MvPolynomial σ R}
   simp only at h1
   refine ⟨ q, r, ?_, h1, h2⟩
   rw [hgr]
-  simp only [Finsupp.linearCombination, Finsupp.coe_lsum]
-  simp only [LinearMap.coe_smulRight, LinearMap.id_coe, id_eq, smul_eq_mul, add_left_inj]
+  simp only [Finsupp.linearCombination, Finsupp.coe_lsum, LinearMap.coe_smulRight, LinearMap.id_coe,
+    id_eq, smul_eq_mul, add_left_inj]
   rw [Finsupp.sum_eq_single ⟨b, by simp⟩ _ (by simp)]
-  simp only [Subtype.forall, Set.mem_singleton_iff, Subtype.mk.injEq, ne_eq]
-  intro _ H' _ H; exact (H H').elim
+  simp +contextual
 
 end MonomialOrder
