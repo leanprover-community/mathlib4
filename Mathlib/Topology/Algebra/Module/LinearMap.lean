@@ -1140,6 +1140,7 @@ theorem ContinuousLinearMap.closedComplemented_ker_of_rightInverse {R : Type*} [
 
 namespace ContinuousLinearMap
 
+@[grind =]
 theorem isIdempotentElem_toLinearMap_iff {R M : Type*} [Semiring R] [TopologicalSpace M]
     [AddCommMonoid M] [Module R M] {f : M →L[R] M} :
     IsIdempotentElem f.toLinearMap ↔ IsIdempotentElem f := by
