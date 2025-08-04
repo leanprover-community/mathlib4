@@ -50,7 +50,7 @@ theorem measure_empty : μ ∅ = 0 := OuterMeasureClass.measure_empty μ
 theorem measure_mono (h : s ⊆ t) : μ s ≤ μ t :=
   OuterMeasureClass.measure_mono μ h
 
-theorem Measure.mono_null (h : s ⊆ t) (ht : μ t = 0) : μ s = 0 :=
+theorem measure_mono_null (h : s ⊆ t) (ht : μ t = 0) : μ s = 0 :=
   eq_bot_mono (measure_mono h) ht
 
 lemma measure_eq_top_mono (h : s ⊆ t) (hs : μ s = ∞) : μ t = ∞ := eq_top_mono (measure_mono h) hs
