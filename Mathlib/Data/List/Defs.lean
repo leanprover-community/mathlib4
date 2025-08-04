@@ -138,6 +138,7 @@ def Forall (p : α → Prop) : List α → Prop
 
 section Permutations
 
+set_option linter.style.docString false in
 /-- An auxiliary function for defining `permutations`. `permutationsAux2 t ts r ys f` is equal to
 `(ys ++ ts, (insert_left ys t ts).map f ++ r)`, where `insert_left ys t ts` (not explicitly
 defined) is the list of lists of the form `insert_nth n t (ys ++ ts)` for `0 ≤ n < length ys`.

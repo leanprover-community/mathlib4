@@ -872,6 +872,7 @@ def adjustWith (f : α → α) (x : α) : Ordnode α → Ordnode α
     | Ordering.eq => node sz l (f y) r
     | Ordering.gt => node sz l y (adjustWith f x r)
 
+set_option linter.style.docString false in
 /-- O(log n). Modify an element in the set with the given function,
 doing nothing if the key is not found.
 Note that the element returned by `f` must be equivalent to `x`.
