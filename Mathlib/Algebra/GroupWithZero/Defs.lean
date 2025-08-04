@@ -260,20 +260,20 @@ theorem mul_eq_zero_of_left {a : M₀} (h : a = 0) (b : M₀) : a * b = 0 := h.s
 
 theorem mul_eq_zero_of_right (a : M₀) {b : M₀} (h : b = 0) : a * b = 0 := h.symm ▸ mul_zero a
 
-lemma noZeroDivisors_iff_eq_zero_of_mul_left :
+lemma noZeroDivisors_iff_right_eq_zero_of_mul :
     NoZeroDivisors M₀ ↔ ∀ x : M₀, x ≠ 0 → ∀ y, x * y = 0 → y = 0 := by
   simp only [noZeroDivisors_iff, or_iff_not_imp_left]
   exact ⟨fun h a ha b eq ↦ h eq ha, fun h a b eq ha ↦ h a ha b eq⟩
 
-lemma noZeroDivisors_iff_eq_zero_of_mul_right :
+lemma noZeroDivisors_iff_left_eq_zero_of_mul :
     NoZeroDivisors M₀ ↔ ∀ x : M₀, x ≠ 0 → ∀ y, y * x = 0 → y = 0 := by
   simp only [noZeroDivisors_iff, or_iff_not_imp_right]
   exact ⟨fun h b hb a eq ↦ h eq hb, fun h a b eq hb ↦ h b hb a eq⟩
 
 lemma noZeroDivisors_iff_eq_zero_of_mul :
     NoZeroDivisors M₀ ↔ ∀ x : M₀, x ≠ 0 → (∀ y, x * y = 0 → y = 0) ∧ (∀ y, y * x = 0 → y = 0) := by
-  simp only [forall_and, ← noZeroDivisors_iff_eq_zero_of_mul_left,
-    ← noZeroDivisors_iff_eq_zero_of_mul_right, and_self]
+  simp only [forall_and, ← noZeroDivisors_iff_right_eq_zero_of_mul,
+    ← noZeroDivisors_iff_left_eq_zero_of_mul, and_self]
 
 variable [NoZeroDivisors M₀] {a b : M₀}
 
@@ -282,7 +282,7 @@ equals zero. -/
 @[simp]
 theorem mul_eq_zero : a * b = 0 ↔ a = 0 ∨ b = 0 :=
   ⟨eq_zero_or_eq_zero_of_mul_eq_zero,
-    fun o => o.elim (fun h => mul_eq_zero_of_left h b) (mul_eq_zero_of_right a)⟩
+    fun o ↦ o.elim (fun h ↦ mul_eq_zero_of_left h b) (mul_eq_zero_of_right a)⟩
 
 /-- If `α` has no zero divisors, then the product of two elements equals zero iff one of them
 equals zero. -/

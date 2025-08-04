@@ -179,17 +179,17 @@ section NonUnitalNonAssocRing
 
 variable {R : Type*} [NonUnitalNonAssocRing R] {r : R}
 
-lemma isLeftRegular_iff_eq_zero_of_mul_left : IsLeftRegular r ↔ ∀ x, r * x = 0 → x = 0 where
+lemma isLeftRegular_iff_right_eq_zero_of_mul : IsLeftRegular r ↔ ∀ x, r * x = 0 → x = 0 where
   mp h r' eq := h (by simp_rw [eq, mul_zero])
   mpr h r₁ r₂ eq := sub_eq_zero.mp <| h _ <| by simp_rw [mul_sub, eq, sub_self]
 
-lemma isRightRegular_iff_eq_zero_of_mul_right : IsRightRegular r ↔ ∀ x, x * r = 0 → x = 0 where
+lemma isRightRegular_iff_left_eq_zero_of_mul : IsRightRegular r ↔ ∀ x, x * r = 0 → x = 0 where
   mp h r' eq := h (by simp_rw [eq, zero_mul])
   mpr h r₁ r₂ eq := sub_eq_zero.mp <| h _ <| by simp_rw [sub_mul, eq, sub_self]
 
 lemma isRegular_iff_eq_zero_of_mul :
     IsRegular r ↔ (∀ x, r * x = 0 → x = 0) ∧ (∀ x, x * r = 0 → x = 0) := by
-  rw [isRegular_iff, isLeftRegular_iff_eq_zero_of_mul_left, isRightRegular_iff_eq_zero_of_mul_right]
+  rw [isRegular_iff, isLeftRegular_iff_right_eq_zero_of_mul, isRightRegular_iff_left_eq_zero_of_mul]
 
 /-- A (not necessarily unital or associative) ring with no zero divisors has cancellative
 multiplicative on both sides. Since either left or right cancellative multiplication implies
@@ -197,10 +197,10 @@ the absence of zero divisors, the four conditions are equivalent to each other. 
 lemma noZeroDivisors_tfae : List.TFAE
     [NoZeroDivisors R, IsLeftCancelMulZero R, IsRightCancelMulZero R, IsCancelMulZero R] := by
   simp_rw [isLeftCancelMulZero_iff, isRightCancelMulZero_iff, isCancelMulZero_iff_forall_isRegular,
-    isLeftRegular_iff_eq_zero_of_mul_left, isRightRegular_iff_eq_zero_of_mul_right,
+    isLeftRegular_iff_right_eq_zero_of_mul, isRightRegular_iff_left_eq_zero_of_mul,
     isRegular_iff_eq_zero_of_mul]
-  tfae_have 1 ↔ 2 := noZeroDivisors_iff_eq_zero_of_mul_left
-  tfae_have 1 ↔ 3 := noZeroDivisors_iff_eq_zero_of_mul_right
+  tfae_have 1 ↔ 2 := noZeroDivisors_iff_right_eq_zero_of_mul
+  tfae_have 1 ↔ 3 := noZeroDivisors_iff_left_eq_zero_of_mul
   tfae_have 1 ↔ 4 := noZeroDivisors_iff_eq_zero_of_mul
   tfae_finish
 
