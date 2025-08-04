@@ -115,19 +115,17 @@ lemma mem_support_iff_forall (x : X) : x ∈ μ.support ↔ ∀ U ∈ 𝓝 x, 0 
   Filter.HasBasis.mem_measureSupport <| (𝓝 x).basis_sets
 
 lemma support_eq_univ [μ.IsOpenPosMeasure] : μ.support = Set.univ :=
-  Set.ext fun x ↦ (mem_support_iff_forall x).trans (Iff.intro (fun _ ↦ trivial)
-    (fun _ _ ↦ measure_pos_of_mem_nhds μ))
+  Set.ext fun _ ↦ (mem_support_iff_forall _).trans <| Iff.intro (fun _ ↦ trivial)
+    (fun _ _ ↦ measure_pos_of_mem_nhds μ)
 
 lemma support_mono {ν : Measure X} (h : μ ≤ ν) : μ.support ≤ ν.support :=
   fun _ hx ↦ mem_support_iff_forall _ |>.mpr fun _ hU ↦
     lt_of_lt_of_le (mem_support_iff_forall _ |>.mp hx _ hU) (h _)
 
 lemma AbsolutelyContinuous.support_mono {μ ν : Measure X} (hμν : μ ≪ ν) :
-     μ.support ≤ ν.support := by
-  intro x
-  contrapose
-  simp only [mem_support_iff, Filter.not_frequently, not_lt, nonpos_iff_eq_zero] at *
-  exact fun a ↦ Filter.Eventually.mono a hμν
+  μ.support ≤ ν.support :=
+  fun _ hx ↦ (mem_support_iff_forall _).mpr fun _ hU ↦
+     zero_lt_iff.mpr <| mt (fun a ↦ hμν a) <| ne_of_gt <| (mem_support_iff_forall _).mp hx _ hU
 
 /-- A point `x` lies outside the support of `μ` iff all of the subsets of one of its neighborhoods
 have measure zero. -/
