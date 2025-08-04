@@ -108,7 +108,7 @@ private lemma norm_aux (x : M ⧸ S) : {m : M | (m : M ⧸ S) = x}.Nonempty := Q
 `x + S`."]
 noncomputable def groupSeminorm : GroupSeminorm (M ⧸ S) where
   toFun x := infDist 1 {m : M | (m : M ⧸ S) = x}
-  map_one' := infDist_zero_of_mem (by simpa using S.one_mem)
+  map_one' := infDist_zero_of_mem (by simp)
   mul_le' x y := by
     simp only [infDist_eq_iInf]
     have := (norm_aux x).to_subtype
@@ -220,7 +220,7 @@ example :
       (instSeminormedCommGroup S).toUniformSpace.toTopologicalSpace := rfl
 
 example [IsClosed (S : Set M)] :
-   (instSeminormedCommGroup S) = NormedCommGroup.toSeminormedCommGroup := rfl
+    (instSeminormedCommGroup S) = NormedCommGroup.toSeminormedCommGroup := rfl
 
 end QuotientGroup
 

@@ -75,7 +75,7 @@ inductive Poly
   | div : Poly → Poly → Poly
   | pow : Poly → Poly → Poly
   | neg : Poly → Poly
-  deriving BEq, Repr
+  deriving BEq
 
 /--
 This converts a poly object into a string representing it. The string
@@ -247,7 +247,7 @@ structure SageCoeffAndPower where
   /-- The function call produces an array of polynomials
   parallel to the input list of hypotheses. -/
   coeffs : Array Poly
-  /-- Sage produces an exponent (default 1) in the case where the hypothesess
+  /-- Sage produces an exponent (default 1) in the case where the hypotheses
   sum to a power of the goal. -/
   power  : ℕ
   deriving FromJson, Repr

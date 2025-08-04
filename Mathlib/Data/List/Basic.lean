@@ -903,7 +903,7 @@ theorem foldl_eq_foldr [Std.Commutative f] [Std.Associative f] :
 
 end FoldlEqFoldr
 
-section FoldlEqFoldlr'
+section FoldlEqFoldr'
 
 variable {f : α → β → α}
 variable (hf : ∀ a b c, f (f a b) c = f (f a c) b)
@@ -918,9 +918,9 @@ theorem foldl_eq_foldr' : ∀ a l, foldl f a l = foldr (flip f) a l
   | _, [] => rfl
   | a, b :: l => by rw [foldl_eq_of_comm' hf, foldr, foldl_eq_foldr' ..]; rfl
 
-end FoldlEqFoldlr'
+end FoldlEqFoldr'
 
-section FoldlEqFoldlr'
+section FoldlEqFoldr'
 
 variable {f : α → β → β}
 
@@ -929,7 +929,7 @@ theorem foldr_eq_of_comm' (hf : ∀ a b c, f a (f b c) = f b (f a c)) :
   | _, _, [] => rfl
   | a, b, c :: l => by rw [foldr, foldr, foldr, hf, ← foldr_eq_of_comm' hf ..]; rfl
 
-end FoldlEqFoldlr'
+end FoldlEqFoldr'
 
 section
 
@@ -1295,14 +1295,12 @@ end lookup
 section range'
 
 @[simp]
-lemma range'_0 (a b : ℕ) :
-   range' a b 0 = replicate b a := by
+lemma range'_0 (a b : ℕ) : range' a b 0 = replicate b a := by
   induction b with
   | zero => simp
   | succ b ih => simp [range'_succ, ih, replicate_succ]
 
-lemma left_le_of_mem_range' {a b s x : ℕ}
-    (hx : x ∈ List.range' a b s) : a ≤ x := by
+lemma left_le_of_mem_range' {a b s x : ℕ} (hx : x ∈ List.range' a b s) : a ≤ x := by
   obtain ⟨i, _, rfl⟩ := List.mem_range'.mp hx
   exact le_add_right a (s * i)
 

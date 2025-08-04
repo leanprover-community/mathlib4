@@ -184,13 +184,13 @@ def elemental (x : A) : StarSubalgebra R A :=
 
 namespace elemental
 
-@[aesop safe (rule_sets := [SetLike])]
+@[simp, aesop safe (rule_sets := [SetLike])]
 theorem self_mem (x : A) : x ∈ elemental R x :=
   le_topologicalClosure _ (self_mem_adjoin_singleton R x)
 
 @[deprecated (since := "2024-11-05")] alias _root_.elementalStarAlgebra.self_mem := self_mem
 
-@[aesop safe (rule_sets := [SetLike])]
+@[simp, aesop safe (rule_sets := [SetLike])]
 theorem star_self_mem (x : A) : star x ∈ elemental R x :=
   star_mem <| self_mem R x
 

@@ -238,8 +238,7 @@ lemma posPart_negPart_unique {a b c : A} (habc : a = b - c) (hbc : b * c = 0)
   have hs : CompactSpace s := by
     refine isCompact_iff_compactSpace.mp <| (IsCompact.union ?_ ?_).union ?_
     all_goals exact isCompact_quasispectrum _
-  obtain ⟨has, hbs, hcs⟩ : σₙ ℝ a ⊆ s ∧ σₙ ℝ b ⊆ s ∧ σₙ ℝ (-c) ⊆ s := by
-    refine ⟨?_, ?_, ?_⟩; all_goals intro; aesop
+  obtain ⟨has, hbs, hcs⟩ : σₙ ℝ a ⊆ s ∧ σₙ ℝ b ⊆ s ∧ σₙ ℝ (-c) ⊆ s := by grind
   let zero : Zero s := ⟨0, by aesop⟩
   have s0 : (0 : s) = (0 : ℝ) := rfl
   /- The continuous functional calculi for functions `f g : C(s, ℝ)₀` applied to `b` and `(-c)`

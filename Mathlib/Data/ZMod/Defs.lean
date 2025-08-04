@@ -43,6 +43,21 @@ to register the ring structure on `ZMod n` as type class instance.
 
 open Nat.ModEq Int
 
+open scoped Fin.IntCast Fin.NatCast
+
+@[simp] theorem val_intCast {n : Nat} [NeZero n] (x : Int) :
+    (x : Fin n).val = (x % n).toNat := by
+  rw [Fin.intCast_def']
+  split <;> rename_i h
+  · simp [Int.emod_natAbs_of_nonneg h]
+  · simp only [Fin.val_neg, Fin.natCast_eq_zero, Fin.val_natCast]
+    split <;> rename_i h
+    · rw [← Int.natCast_dvd] at h
+      rw [Int.emod_eq_zero_of_dvd h, Int.toNat_zero]
+    · rw [Int.emod_natAbs_of_neg (by omega) (NeZero.ne n), if_neg (by rwa [← Int.natCast_dvd] at h)]
+      have : x % n < n := Int.emod_lt_of_pos x (by have := NeZero.ne n; omega)
+      omega
+
 /-- Multiplicative commutative semigroup structure on `Fin n`. -/
 instance instCommSemigroup (n : ℕ) : CommSemigroup (Fin n) :=
   { inferInstanceAs (Mul (Fin n)) with
@@ -120,6 +135,7 @@ instance (n : ℕ) [NeZero n] : NeZero (1 : Fin (n + 1)) :=
 end Fin
 
 /-- The integers modulo `n : ℕ`. -/
+@[to_additive_dont_translate]
 def ZMod : ℕ → Type
   | 0 => ℤ
   | n + 1 => Fin (n + 1)

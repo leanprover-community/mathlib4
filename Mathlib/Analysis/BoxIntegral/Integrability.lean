@@ -336,7 +336,7 @@ theorem AEContinuous.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} (
       isFiniteMeasure_of_le (μ.restrict (Box.Icc I))
                             (μ.restrict_mono Box.coe_subset_Icc (le_refl μ))
     obtain ⟨C, hC⟩ := hb
-    refine hasFiniteIntegral_of_bounded (C := C) (Filter.eventually_iff_exists_mem.2 ?_)
+    refine .of_bounded (C := C) (Filter.eventually_iff_exists_mem.2 ?_)
     use I, self_mem_ae_restrict I.measurableSet_coe, fun y hy ↦ hC y (I.coe_subset_Icc hy)
 
 end MeasureTheory

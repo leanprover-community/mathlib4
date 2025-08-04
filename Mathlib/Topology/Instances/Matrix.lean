@@ -20,6 +20,11 @@ This file is a place to collect topological results about matrices.
 
 ## Main results
 
+* Sets of matrices:
+  * `IsOpen.matrix`: the set of finite matrices with entries in an open set
+    is itself an open set.
+  * `IsCompact.matrix`: the set of matrices with entries in a compact set
+    is itself a compact set.
 * Continuity:
   * `Continuous.matrix_det`: the determinant is continuous over a topological ring.
   * `Continuous.matrix_adjugate`: the adjugate is continuous over a topological ring.
@@ -40,6 +45,21 @@ instance [TopologicalSpace R] : TopologicalSpace (Matrix m n R) :=
 
 instance [TopologicalSpace R] [T2Space R] : T2Space (Matrix m n R) :=
   Pi.t2Space
+
+section Set
+
+theorem IsOpen.matrix [Fintype m] [Fintype n]
+    [TopologicalSpace R] {S : Set R} (hS : IsOpen S) :
+    IsOpen (S.matrix : Set (Matrix m n R)) :=
+  Set.matrix_eq_pi ▸
+    (isOpen_set_pi Set.finite_univ fun _ _ =>
+    isOpen_set_pi Set.finite_univ fun _ _ => hS).preimage continuous_id
+
+theorem IsCompact.matrix [TopologicalSpace R] {S : Set R} (hS : IsCompact S) :
+    IsCompact (S.matrix : Set (Matrix m n R)) :=
+  isCompact_pi_infinite fun _ => isCompact_pi_infinite fun _ => hS
+
+end Set
 
 /-! ### Lemmas about continuity of operations -/
 

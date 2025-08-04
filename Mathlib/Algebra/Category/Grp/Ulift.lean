@@ -12,10 +12,10 @@ import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 # Properties of the universe lift functor for groups
 
 This file shows that the functors `Grp.uliftFunctor` and `CommGrp.uliftFunctor`
-(as well as the additive versions) are fully faithful, preserves all limits and
+(as well as the additive versions) are fully faithful, preserve all limits and
 create small limits.
 
-Full faithfulness is pretty obvious. To prove that the functors preserves limits,
+Full faithfulness is pretty obvious. To prove that the functors preserve limits,
 we use the fact that the forgetful functor from `Grp` or `CommGrp` into `Type`
 creates all limits (because of the way limits are constructed in `Grp` and `CommGrp`),
 and that the universe lift functor on `Type` preserves all limits. Once we know
@@ -61,7 +61,7 @@ determined by the restriction of `coyoneda.obj G` to the category of groups at
 a smaller universe level. Indeed, the functor `Grp.uliftFunctor` does not commute
 with arbitrary colimits: if we take an increasing family `K` of simple groups in
 `Grp.{u}` of unbounded cardinality indexed by a linearly ordered type
-(for example finitary alternating groups on a family of types in `u` of unbouded cardinality),
+(for example finitary alternating groups on a family of types in `u` of unbounded cardinality),
 then the colimit of `K` in `Grp.{u}` exists and is the trivial group; meanwhile, the colimit
 of `K ⋙ Grp.uliftFunctor.{u + 1}` is nontrivial (it is the "union" of all the `K j`, which is
 too big to be in `Grp.{u}`).

@@ -10,7 +10,7 @@ import Mathlib.Init
 
 This module implements the `existsAndEq` simproc that triggers on goals of the form `∃ a, body` and
 checks whether `body` has the form `... ∧ a = a' ∧ ...` or `... ∧ a' = a ∧ ...` for some `a'` that
-is independent of `a`. If so, it replaces all occurancies of `a` with `a'` and removes the
+is independent of `a`. If so, it replaces all occurrences of `a` with `a'` and removes the
 quantifier.
 -/
 
@@ -21,13 +21,7 @@ namespace existsAndEq
 universe u in
 private theorem exists_of_imp_eq {α : Sort u} {p : α → Prop} (a : α) (h : ∀ b, p b → a = b) :
     (∃ b, p b) = p a := by
-  apply propext
-  constructor
-  · intro h'
-    obtain ⟨b, hb⟩ := h'
-    rwa [h b hb]
-  · intro h'
-    exact ⟨a, h'⟩
+  grind
 
 /-- For an expression `p` of the form `fun (x : α) ↦ (body : Prop)`, checks whether
 `body` implies `x = a` for some `a`, and constructs a proof of `(∃ x, p x) = p a` using
@@ -66,7 +60,7 @@ end existsAndEq
 
 /-- Triggers on goals of the form `∃ a, body` and checks whether `body` has the
 form `... ∧ a = a' ∧ ...` or `... ∧ a' = a ∧ ...` for some `a'` that is independent of `a`.
-If so, it replaces all occurancies of `a` with `a'` and removes the quantifier. -/
+If so, it replaces all occurrences of `a` with `a'` and removes the quantifier. -/
 simproc existsAndEq (Exists (fun _ => And _ _)) := fun e => do
   match e.getAppFnArgs with
   | (``Exists, #[_, p]) =>

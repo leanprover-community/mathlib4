@@ -5,10 +5,11 @@ Authors: Frédéric Dupuis
 -/
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.GroupWithZero.Invertible
-import Mathlib.Algebra.Module.Pi
-import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
 import Mathlib.Algebra.Order.Module.Defs
+import Mathlib.Algebra.Group.Action.Basic
+import Mathlib.Algebra.GroupWithZero.Action.Pi
+import Mathlib.Algebra.GroupWithZero.Action.Prod
 
 /-!
 # Ordered scalar product

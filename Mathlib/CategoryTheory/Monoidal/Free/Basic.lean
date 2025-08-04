@@ -126,9 +126,7 @@ inductive HomEquiv : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (X ⟶ᵐ Y) → Prop
     equal if we apply the relations that are true in a monoidal category. Note that we will prove
     that there is only one equivalence class -- this is the monoidal coherence theorem. -/
 def setoidHom (X Y : F C) : Setoid (X ⟶ᵐ Y) :=
-  ⟨HomEquiv,
-    ⟨fun f => HomEquiv.refl f, @fun f g => HomEquiv.symm f g, @fun _ _ _ hfg hgh =>
-      HomEquiv.trans hfg hgh⟩⟩
+  ⟨HomEquiv, ⟨HomEquiv.refl, HomEquiv.symm _ _, HomEquiv.trans⟩⟩
 
 attribute [instance] setoidHom
 
@@ -155,11 +153,11 @@ instance : MonoidalCategory (F C) where
   tensorHom := Quotient.map₂ Hom.tensor (fun _ _ hf _ _ hg ↦ HomEquiv.tensor hf hg)
   whiskerLeft X _ _ f := Quot.map (fun f ↦ Hom.whiskerLeft X f) (fun f f' ↦ .whiskerLeft X f f') f
   whiskerRight f Y := Quot.map (fun f ↦ Hom.whiskerRight f Y) (fun f f' ↦ .whiskerRight f f' Y) f
-  tensorHom_def := by
-    rintro W X Y Z ⟨f⟩ ⟨g⟩
+  tensorHom_def {W X Y Z} := by
+    rintro ⟨f⟩ ⟨g⟩
     exact Quotient.sound (tensorHom_def _ _)
   id_tensorHom_id _ _ := Quot.sound id_tensorHom_id
-  tensor_comp := @fun X₁ Y₁ Z₁ X₂ Y₂ Z₂ => by
+  tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂} := by
     rintro ⟨f₁⟩ ⟨f₂⟩ ⟨g₁⟩ ⟨g₂⟩
     exact Quotient.sound (tensor_comp _ _ _ _)
   whiskerLeft_id X Y := Quot.sound (HomEquiv.whiskerLeft_id X Y)
@@ -167,16 +165,16 @@ instance : MonoidalCategory (F C) where
   tensorUnit := FreeMonoidalCategory.unit
   associator X Y Z :=
     ⟨⟦Hom.α_hom X Y Z⟧, ⟦Hom.α_inv X Y Z⟧, Quotient.sound α_hom_inv, Quotient.sound α_inv_hom⟩
-  associator_naturality := @fun X₁ X₂ X₃ Y₁ Y₂ Y₃ => by
+  associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃} := by
     rintro ⟨f₁⟩ ⟨f₂⟩ ⟨f₃⟩
     exact Quotient.sound (associator_naturality _ _ _)
   leftUnitor X := ⟨⟦Hom.l_hom X⟧, ⟦Hom.l_inv X⟧, Quotient.sound l_hom_inv, Quotient.sound l_inv_hom⟩
-  leftUnitor_naturality := @fun X Y => by
+  leftUnitor_naturality {X Y} := by
     rintro ⟨f⟩
     exact Quotient.sound (l_naturality _)
   rightUnitor X :=
     ⟨⟦Hom.ρ_hom X⟧, ⟦Hom.ρ_inv X⟧, Quotient.sound ρ_hom_inv, Quotient.sound ρ_inv_hom⟩
-  rightUnitor_naturality := @fun X Y => by
+  rightUnitor_naturality {X Y} := by
     rintro ⟨f⟩
     exact Quotient.sound (ρ_naturality _)
   pentagon _ _ _ _ := Quotient.sound pentagon

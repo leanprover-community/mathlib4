@@ -183,8 +183,6 @@ instance finite_of_module_finite [Module.Finite R S] :
 @[deprecated (since := "2025-01-12")]
 alias finiteDimensional_of_noetherian := finite_of_module_finite
 
--- We want to be able to refer to `hfin`
-set_option linter.unusedVariables false in
 lemma finite_of_finite [Module.Finite R S] (hfin : Finite (ResidueField R)) :
     Finite (ResidueField S) := Module.finite_of_finite (ResidueField R)
 

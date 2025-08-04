@@ -45,6 +45,7 @@ free module, finitely generated module, rank, structure theorem
 
 -/
 
+open Module
 
 universe u v
 
@@ -411,7 +412,7 @@ section SmithNormal
 /-- A Smith normal form basis for a submodule `N` of a module `M` consists of
 bases for `M` and `N` such that the inclusion map `N → M` can be written as a
 (rectangular) matrix with `a` along the diagonal: in Smith normal form. -/
-structure Basis.SmithNormalForm (N : Submodule R M) (ι : Type*) (n : ℕ) where
+structure Module.Basis.SmithNormalForm (N : Submodule R M) (ι : Type*) (n : ℕ) where
   /-- The basis of M. -/
   bM : Basis ι R M
   /-- The basis of N. -/
@@ -423,7 +424,7 @@ structure Basis.SmithNormalForm (N : Submodule R M) (ι : Type*) (n : ℕ) where
   /-- The SNF relation between the vectors of the bases. -/
   snf : ∀ i, (bN i : M) = a i • bM (f i)
 
-namespace Basis.SmithNormalForm
+namespace Module.Basis.SmithNormalForm
 
 variable {n : ℕ} {N : Submodule R M} (snf : Basis.SmithNormalForm N ι n) (m : N)
 
@@ -483,7 +484,7 @@ lemma toMatrix_restrict_eq_toMatrix [Fintype ι] [DecidableEq ι]
   ext
   simp [snf.snf]
 
-end Basis.SmithNormalForm
+end Module.Basis.SmithNormalForm
 
 variable [IsDomain R] [IsPrincipalIdealRing R]
 
@@ -635,7 +636,7 @@ is a square diagonal matrix; these are the entries of the diagonal matrix. See:
   forms a square diagonal matrix.
 -/
 noncomputable def Submodule.smithNormalFormCoeffs (b : Basis ι R M)
-  (h : Module.finrank R N = Module.finrank R M) : ι → R :=
+    (h : Module.finrank R N = Module.finrank R M) : ι → R :=
   (exists_smith_normal_form_of_rank_eq b h).choose_spec.choose
 
 @[simp]

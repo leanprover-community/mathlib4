@@ -94,7 +94,7 @@ structure Hom (x y : F ⊡ G) where
   /-- the second component of `f : Hom x y` is a morphism `x.snd ⟶ y.snd` -/
   snd : x.snd ⟶ y.snd
   /-- the compatibility condition on `fst` and `snd` with respect to the structure
-  isompophisms -/
+  isomorphisms -/
   w : F.map fst ≫ y.iso.hom = x.iso.hom ≫ G.map snd := by aesop_cat
 
 attribute [reassoc (attr := simp)] Hom.w
@@ -228,7 +228,7 @@ abbrev fstFunctor : CatCommSqOver F G X ⥤ X ⥤ A := π₁ _ _
 /-- The "second projection" of a CatCommSqOver as a functor. -/
 abbrev sndFunctor : CatCommSqOver F G X ⥤ X ⥤ C := π₂ _ _
 
-/-- The structure isompophism of a `CatCommSqOver` as a natural transformation. -/
+/-- The structure isomorphism of a `CatCommSqOver` as a natural transformation. -/
 abbrev e :
     fstFunctor F G X ⋙ (whiskeringRight X A B).obj F ≅
     sndFunctor F G X ⋙ (whiskeringRight X C B).obj G :=

@@ -92,20 +92,14 @@ theorem exists_approx_aux (n : ℕ) (h : abv.IsAdmissible) :
     obtain ⟨s, hs⟩ :=
       Fintype.exists_lt_card_fiber_of_mul_lt_card (f := t)
         (by simpa only [Fintype.card_fin, pow_succ'] using Nat.lt_succ_self (M ^ n.succ))
-    refine ⟨fun i ↦ (Finset.univ.filter fun x ↦ t x = s).toList.get <| i.castLE ?_, fun i j h ↦ ?_,
+    have : (M ^ n).succ ≤ (Finset.toList {x | t x = s}).length := by
+      rwa [Finset.length_toList]
+    refine ⟨fun i ↦ (Finset.toList {x | t x = s})[i.castLE this], fun i j h ↦ ?_,
       fun i₀ i₁ ↦ ht _ _ ?_⟩
-    · rwa [Finset.length_toList]
-    · ext
-      simpa [(Finset.nodup_toList _).getElem_inj_iff] using h
-    · #adaptation_note /-- https://github.com/leanprover/lean4/pull/4400
-      This proof was nicer before.
-      Please feel welcome to improve it, by avoiding use of `List.get` in favour of `GetElem`. -/
-      have : ∀ i h, t ((Finset.univ.filter fun x ↦ t x = s).toList.get ⟨i, h⟩) = s := fun i h ↦
-        (Finset.mem_filter.mp (Finset.mem_toList.mp (List.get_mem _ ⟨i, h⟩))).2
-      simp only [Nat.succ_eq_add_one, Finset.length_toList, List.get_eq_getElem] at this
-      simp only [Nat.succ_eq_add_one, List.get_eq_getElem, Fin.coe_castLE]
-      rw [this _ (Nat.lt_of_le_of_lt (Nat.le_of_lt_succ i₁.2) hs),
-        this _ (Nat.lt_of_le_of_lt (Nat.le_of_lt_succ i₀.2) hs)]
+    · simpa [(Finset.nodup_toList _).getElem_inj_iff, Fin.val_inj] using h
+    · have : ∀ (i : Fin (M^n).succ), t (Finset.toList {x | t x = s})[i.castLE this] = s := fun i ↦
+        (Finset.mem_filter.mp ((Finset.mem_toList (s := {x | t x = s})).mp (List.getElem_mem _))).2
+      simp_rw [this]
   -- Since `s` is large enough, there are two elements of `A ∘ s`
   -- where the second components lie close together.
   obtain ⟨k₀, k₁, hk, h⟩ := ih hε hb fun x ↦ Fin.tail (A (s x))

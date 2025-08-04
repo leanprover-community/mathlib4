@@ -82,12 +82,10 @@ theorem restrict_mono {_m0 : MeasurableSpace α} ⦃s s' : Set α⦄ (hs : s ⊆
     (hμν : μ ≤ ν) : μ.restrict s ≤ ν.restrict s' :=
   restrict_mono' (ae_of_all _ hs) hμν
 
-@[gcongr]
 theorem restrict_mono_measure {_ : MeasurableSpace α} {μ ν : Measure α} (h : μ ≤ ν) (s : Set α) :
     μ.restrict s ≤ ν.restrict s :=
   restrict_mono subset_rfl h
 
-@[gcongr]
 theorem restrict_mono_set {_ : MeasurableSpace α} (μ : Measure α) {s t : Set α} (h : s ⊆ t) :
     μ.restrict s ≤ μ.restrict t :=
   restrict_mono h le_rfl

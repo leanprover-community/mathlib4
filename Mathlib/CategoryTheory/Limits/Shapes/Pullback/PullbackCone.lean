@@ -92,10 +92,8 @@ abbrev fst (t : PullbackCone f g) : t.pt ⟶ X :=
 abbrev snd (t : PullbackCone f g) : t.pt ⟶ Y :=
   t.π.app WalkingCospan.right
 
-@[simp]
 theorem π_app_left (c : PullbackCone f g) : c.π.app WalkingCospan.left = c.fst := rfl
 
-@[simp]
 theorem π_app_right (c : PullbackCone f g) : c.π.app WalkingCospan.right = c.snd := rfl
 
 @[simp]

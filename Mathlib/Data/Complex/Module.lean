@@ -122,11 +122,11 @@ theorem algHom_ext ⦃f g : ℂ →ₐ[ℝ] A⦄ (h : f I = g I) : f = g := by
 
 end
 
-open Submodule
+open Module Submodule
 
 /-- `ℂ` has a basis over `ℝ` given by `1` and `I`. -/
 noncomputable def basisOneI : Basis (Fin 2) ℝ ℂ :=
-  Basis.ofEquivFun
+  .ofEquivFun
     { toFun := fun z => ![z.re, z.im]
       invFun := fun c => c 0 + c 1 • I
       left_inv := fun z => by simp

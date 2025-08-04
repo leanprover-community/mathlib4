@@ -242,4 +242,34 @@ instance {X Y : C} (f : X ⟶ Y) [hf : IsSplitEpi f] (F : C ⥤ D) : IsSplitEpi 
 
 end
 
+section
+
+/-- When `f` is an epimorphism, `f ≫ g` is epic iff `g` is. -/
+@[simp]
+lemma epi_comp_iff_of_epi {X Y Z : C} (f : X ⟶ Y) [Epi f] (g : Y ⟶ Z) :
+    Epi (f ≫ g) ↔ Epi g :=
+  ⟨fun _ ↦ epi_of_epi f _, fun _ ↦ inferInstance⟩
+
+/-- When `g` is an isomorphism, `f ≫ g` is epic iff `f` is. -/
+@[simp]
+lemma epi_comp_iff_of_isIso {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
+    Epi (f ≫ g) ↔ Epi f := by
+  refine ⟨fun h ↦ ?_, fun h ↦ inferInstance⟩
+  simpa using (inferInstance : Epi ((f ≫ g) ≫ inv g ))
+
+/-- When `f` is an isomorphism, `f ≫ g` is monic iff `g` is. -/
+@[simp]
+lemma mono_comp_iff_of_isIso {X Y Z : C} (f : X ⟶ Y) [IsIso f] (g : Y ⟶ Z) :
+    Mono (f ≫ g) ↔ Mono g := by
+  refine ⟨fun h ↦ ?_, fun h ↦ inferInstance⟩
+  simpa using (inferInstance : Mono (inv f ≫ f ≫ g))
+
+/-- When `g` is a monomorphism, `f ≫ g` is monic iff `f` is. -/
+@[simp]
+lemma mono_comp_iff_of_mono {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [Mono g] :
+    Mono (f ≫ g) ↔ Mono f :=
+  ⟨fun _ ↦ mono_of_mono _ g, fun _ ↦ inferInstance⟩
+
+end
+
 end CategoryTheory

@@ -312,7 +312,7 @@ def inverse' (f : X →ₑ[φ] Y) (g : Y → X) (k : Function.RightInverse φ' �
 @[to_additive]
 lemma inverse_eq_inverse' (f : X →[M] Y₁) (g : Y₁ → X)
     (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) :
-  inverse f g h₁ h₂ = inverse' f g (congrFun rfl) h₁ h₂ := by
+    inverse f g h₁ h₂ = inverse' f g (congrFun rfl) h₁ h₂ := by
   rfl
 
 @[to_additive]
@@ -327,8 +327,7 @@ theorem inverse'_inverse'
 theorem comp_inverse' {f : X →ₑ[φ] Y} {g : Y → X}
     {k₁ : Function.LeftInverse φ' φ} {k₂ : Function.RightInverse φ' φ}
     {h₁ : Function.LeftInverse g f} {h₂ : Function.RightInverse g f} :
-    (inverse' f g k₂ h₁ h₂).comp f (κ := CompTriple.comp_inv k₁)
-      = MulActionHom.id M := by
+    (inverse' f g k₂ h₁ h₂).comp f (κ := CompTriple.comp_inv k₁) = MulActionHom.id M := by
   rw [MulActionHom.ext_iff]
   intro x
   simp only [comp_apply, id_apply]
@@ -625,12 +624,11 @@ def _root_.DistribMulActionSemiHomClass.toDistribMulActionHom
 
 /-- Any type satisfying `MulActionHomClass` can be cast into `MulActionHom`
 via `MulActionHomClass.toMulActionHom`. -/
-instance [DistribMulActionSemiHomClass F φ A B] :
-  CoeTC F (A →ₑ+[φ] B) :=
+instance [DistribMulActionSemiHomClass F φ A B] : CoeTC F (A →ₑ+[φ] B) :=
   ⟨DistribMulActionSemiHomClass.toDistribMulActionHom⟩
 
 /-- If `DistribMulAction` of `M` and `N` on `A` commute,
-  then for each `c : M`, `(c • ·)` is an `N`-action additive homomorphism. -/
+then for each `c : M`, `(c • ·)` is an `N`-action additive homomorphism. -/
 @[simps]
 def _root_.SMulCommClass.toDistribMulActionHom {M} (N A : Type*) [Monoid N] [AddMonoid A]
     [DistribSMul M A] [DistribMulAction N A] [SMulCommClass M N A] (c : M) : A →+[N] A :=
@@ -715,7 +713,6 @@ theorem one_apply (a : A) : (1 : A →+[M] A) a = a :=
 instance : Inhabited (A →ₑ+[φ] B) :=
   ⟨0⟩
 
-set_option linter.unusedVariables false in
 /-- Composition of two equivariant additive monoid homomorphisms. -/
 def comp (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B) [κ : MonoidHom.CompTriple φ ψ χ] :
     A →ₑ+[χ] C :=
@@ -909,7 +906,6 @@ variable {R S T}
 
 variable {φ φ' ψ χ}
 
-set_option linter.unusedVariables false in
 /-- Composition of two equivariant additive ring homomorphisms. -/
 def comp (g : S →ₑ+*[ψ] T) (f : R →ₑ+*[φ] S) [κ : MonoidHom.CompTriple φ ψ χ] : R →ₑ+*[χ] T :=
   { DistribMulActionHom.comp (g : S →ₑ+[ψ] T) (f : R →ₑ+[φ] S),

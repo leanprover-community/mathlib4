@@ -68,9 +68,8 @@ alias image_eq_one_of_nmem_mulTSupport := image_eq_one_of_notMem_mulTSupport
 
 @[to_additive]
 theorem range_subset_insert_image_mulTSupport (f : X → α) :
-    range f ⊆ insert 1 (f '' mulTSupport f) :=
-  (range_subset_insert_image_mulSupport f).trans <|
-    insert_subset_insert <| image_subset _ subset_closure
+    range f ⊆ insert 1 (f '' mulTSupport f) := by
+  grw [← subset_mulTSupport f]; exact range_subset_insert_image_mulSupport f
 
 @[to_additive]
 theorem range_eq_image_mulTSupport_or (f : X → α) :
@@ -135,9 +134,9 @@ end
 
 /-! ## Functions with compact support -/
 section CompactSupport
-variable [TopologicalSpace α] [TopologicalSpace α']
-variable [One β] [One γ] [One δ]
-variable {g : β → γ} {f : α → β} {f₂ : α → γ} {m : β → γ → δ}
+
+variable [TopologicalSpace α] [TopologicalSpace α'] [One β] [One γ] [One δ]
+  {g : β → γ} {f : α → β} {f₂ : α → γ} {m : β → γ → δ}
 
 /-- A function `f` *has compact multiplicative support* or is *compactly supported* if the closure
 of the multiplicative support of `f` is compact. In a T₂ space this is equivalent to `f` being equal
@@ -159,27 +158,29 @@ theorem exists_compact_iff_hasCompactMulSupport [R1Space α] :
     hasCompactMulSupport_def, exists_isCompact_superset_iff]
 
 namespace HasCompactMulSupport
+
+variable {K : Set α}
+
 @[to_additive]
-theorem intro [R1Space α] {K : Set α} (hK : IsCompact K)
-    (hfK : ∀ x, x ∉ K → f x = 1) : HasCompactMulSupport f :=
+theorem intro [R1Space α] (hK : IsCompact K) (hfK : ∀ x, x ∉ K → f x = 1) :
+    HasCompactMulSupport f :=
   exists_compact_iff_hasCompactMulSupport.mp ⟨K, hK, hfK⟩
 
 @[to_additive]
-theorem intro' {K : Set α} (hK : IsCompact K) (h'K : IsClosed K)
-    (hfK : ∀ x, x ∉ K → f x = 1) : HasCompactMulSupport f := by
+theorem intro' (hK : IsCompact K) (h'K : IsClosed K) (hfK : ∀ x, x ∉ K → f x = 1) :
+    HasCompactMulSupport f := by
   have : mulTSupport f ⊆ K := by
     rw [← h'K.closure_eq]
     apply closure_mono (mulSupport_subset_iff'.2 hfK)
   exact IsCompact.of_isClosed_subset hK ( isClosed_mulTSupport f) this
 
 @[to_additive]
-theorem of_mulSupport_subset_isCompact [R1Space α] {K : Set α}
-    (hK : IsCompact K) (h : mulSupport f ⊆ K) : HasCompactMulSupport f :=
+theorem of_mulSupport_subset_isCompact [R1Space α] (hK : IsCompact K) (h : mulSupport f ⊆ K) :
+    HasCompactMulSupport f :=
   hK.closure_of_subset h
 
 @[to_additive]
-theorem isCompact (hf : HasCompactMulSupport f) : IsCompact (mulTSupport f) :=
-  hf
+theorem isCompact (hf : HasCompactMulSupport f) : IsCompact (mulTSupport f) := hf
 
 @[to_additive]
 theorem _root_.hasCompactMulSupport_iff_eventuallyEq :
@@ -188,7 +189,7 @@ theorem _root_.hasCompactMulSupport_iff_eventuallyEq :
 
 @[to_additive]
 theorem _root_.isCompact_range_of_mulSupport_subset_isCompact [TopologicalSpace β]
-    (hf : Continuous f) {k : Set α} (hk : IsCompact k) (h'f : mulSupport f ⊆ k) :
+    (hf : Continuous f) (hk : IsCompact K) (h'f : mulSupport f ⊆ K) :
     IsCompact (range f) := by
   rcases range_eq_image_or_of_mulSupport_subset h'f with h2 | h2 <;> rw [h2]
   exacts [hk.image hf, (hk.image hf).insert 1]
@@ -199,13 +200,13 @@ theorem isCompact_range [TopologicalSpace β] (h : HasCompactMulSupport f)
   isCompact_range_of_mulSupport_subset_isCompact hf h (subset_mulTSupport f)
 
 @[to_additive]
-theorem mono' {f' : α → γ} (hf : HasCompactMulSupport f)
-    (hff' : mulSupport f' ⊆ mulTSupport f) : HasCompactMulSupport f' :=
+theorem mono' {f' : α → γ} (hf : HasCompactMulSupport f) (hff' : mulSupport f' ⊆ mulTSupport f) :
+    HasCompactMulSupport f' :=
   IsCompact.of_isClosed_subset hf isClosed_closure <| closure_minimal hff' isClosed_closure
 
 @[to_additive]
-theorem mono {f' : α → γ} (hf : HasCompactMulSupport f)
-    (hff' : mulSupport f' ⊆ mulSupport f) : HasCompactMulSupport f' :=
+theorem mono {f' : α → γ} (hf : HasCompactMulSupport f) (hff' : mulSupport f' ⊆ mulSupport f) :
+    HasCompactMulSupport f' :=
   hf.mono' <| hff'.trans subset_closure
 
 @[to_additive]
@@ -235,9 +236,9 @@ theorem comp₂_left (hf : HasCompactMulSupport f)
   simp_rw [hx, hx₂, Pi.one_apply, hm]
 
 @[to_additive]
-lemma isCompact_preimage [TopologicalSpace β]
-    (h'f : HasCompactMulSupport f) (hf : Continuous f) {k : Set β} (hk : IsClosed k)
-    (h'k : 1 ∉ k) : IsCompact (f ⁻¹' k) := by
+lemma isCompact_preimage [TopologicalSpace β] {K : Set β}
+    (h'f : HasCompactMulSupport f) (hf : Continuous f) (hk : IsClosed K) (h'k : 1 ∉ K) :
+    IsCompact (f ⁻¹' K) := by
   apply IsCompact.of_isClosed_subset h'f (hk.preimage hf) (fun x hx ↦ ?_)
   apply subset_mulTSupport
   aesop
@@ -245,6 +246,7 @@ lemma isCompact_preimage [TopologicalSpace β]
 variable [T2Space α']
 
 section
+
 variable (hf : HasCompactMulSupport f) {g : α → α'} (cont : Continuous g)
 include hf cont
 
@@ -252,7 +254,7 @@ include hf cont
 theorem mulTSupport_extend_one_subset :
     mulTSupport (g.extend f 1) ⊆ g '' mulTSupport f :=
   (hf.image cont).isClosed.closure_subset_iff.mpr <|
-    mulSupport_extend_one_subset.trans (image_subset g subset_closure)
+    mulSupport_extend_one_subset.trans (image_mono subset_closure)
 
 @[to_additive]
 theorem extend_one : HasCompactMulSupport (g.extend f 1) :=
@@ -328,10 +330,19 @@ end Monoid
 section DivisionMonoid
 
 @[to_additive]
-protected lemma HasCompactMulSupport.inv' {α β : Type*} [TopologicalSpace α] [DivisionMonoid β]
+protected lemma HasCompactMulSupport.inv {α β : Type*} [TopologicalSpace α] [DivisionMonoid β]
     {f : α → β} (hf : HasCompactMulSupport f) :
     HasCompactMulSupport (f⁻¹) := by
   simpa only [HasCompactMulSupport, mulTSupport, mulSupport_inv'] using hf
+
+@[deprecated (since := "2025-07-31")] alias HasCompactSupport.neg' := HasCompactSupport.neg
+@[deprecated (since := "2025-07-31")] alias HasCompactMulSupport.inv' := HasCompactMulSupport.inv
+
+@[to_additive]
+theorem HasCompactSupport.div {α β : Type*} [TopologicalSpace α] [DivisionMonoid β]
+    {f f' : α → β} (hf : HasCompactMulSupport f) (hf' : HasCompactMulSupport f') :
+    HasCompactMulSupport (f / f') :=
+  div_eq_mul_inv f f' ▸ hf.mul hf'.inv
 
 end DivisionMonoid
 

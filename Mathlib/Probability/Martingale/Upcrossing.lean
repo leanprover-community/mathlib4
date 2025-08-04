@@ -631,14 +631,7 @@ theorem crossing_pos_eq (hab : a < b) :
     refine ⟨rfl, ?_⟩
     simp +unfoldPartialApp only [lowerCrossingTime_zero, hitting,
       Set.mem_Icc, Set.mem_Iic]
-    ext ω
-    split_ifs with h₁ h₂ h₂
-    · simp_rw [hf']
-    · simp_rw [Set.mem_Iic, ← hf' _ _] at h₂
-      exact False.elim (h₂ h₁)
-    · simp_rw [Set.mem_Iic, hf' _ _] at h₁
-      exact False.elim (h₁ h₂)
-    · rfl
+    simp_all
   | succ k ih =>
     have : upperCrossingTime 0 (b - a) (fun n ω => (f n ω - a)⁺) N (k + 1) =
         upperCrossingTime a b f N (k + 1) := by
@@ -757,7 +750,7 @@ theorem Adapted.integrable_upcrossingsBefore [IsFiniteMeasure μ] (hf : Adapted 
     rw [Real.norm_eq_abs, Nat.abs_cast, Nat.cast_le]
     exact upcrossingsBefore_le _ _ hab
   ⟨Measurable.aestronglyMeasurable (measurable_from_top.comp (hf.measurable_upcrossingsBefore hab)),
-    hasFiniteIntegral_of_bounded this⟩
+    .of_bounded this⟩
 
 /-- The number of upcrossings of a realization of a stochastic process (`upcrossings` takes value
 in `ℝ≥0∞` and so is allowed to be `∞`). -/

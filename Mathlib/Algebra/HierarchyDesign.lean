@@ -94,7 +94,7 @@ when applicable:
 * Instances transferred elementwise to `Finsupp`s, like `Finsupp.semigroup`.
   See `Mathlib/Data/Finsupp/Pointwise.lean` for more examples.
   ```
-  instance FinSupp.Z [Z β] : Z (α →₀ β) := ...
+  instance Finsupp.Z [Z β] : Z (α →₀ β) := ...
   ```
 * Instances transferred elementwise to `Set`s, like `Set.monoid`.
   See `Mathlib/Algebra/Pointwise.lean` for more examples.
@@ -249,3 +249,4 @@ instance {G : Type*} [Group G] [IsKleinFour G] : IsAddKleinFour (Additive G)
 where the `Group G` instance appears in `IsKleinFour G`. Future work may be done to improve the
 type class synthesis order in this situation.
 -/
+

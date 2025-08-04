@@ -34,11 +34,10 @@ import Mathlib.SetTheory.Cardinal.Arithmetic
 ## Results for permutation groups
 
 * The permutation group is pretransitive, is multiply pretransitive,
-and is preprimitive (for its natural action)
+  and is preprimitive (for its natural action)
 
 * `Equiv.Perm.eq_top_if_isMultiplyPretransitive`:
-a subgroup of `Equiv.Perm α` which is `Nat.card α - 1` pretransitive
-is equal to `⊤`.
+  a subgroup of `Equiv.Perm α` which is `Nat.card α - 1` pretransitive is equal to `⊤`.
 
 ## Remarks on implementation
 

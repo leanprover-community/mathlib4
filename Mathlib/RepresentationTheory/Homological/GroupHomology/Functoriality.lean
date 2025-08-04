@@ -32,7 +32,12 @@ open CategoryTheory Rep Finsupp Representation
 
 variable {k G H : Type u} [CommRing k] [Group G] [Group H]
   {A : Rep k G} {B : Rep k H} (f : G →* H) (φ : A ⟶ (Action.res _ f).obj B) (n : ℕ)
-  [DecidableEq G] [DecidableEq H]
+
+theorem congr {f₁ f₂ : G →* H} (h : f₁ = f₂) {φ : A ⟶ (Action.res _ f₁).obj B} {T : Type*}
+    (F : (f : G →* H) → (φ : A ⟶ (Action.res _ f).obj B) → T) :
+    F f₁ φ = F f₂ (h ▸ φ) := by
+  subst h
+  rfl
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
 this is the chain map sending `∑ aᵢ·gᵢ : Gⁿ →₀ A` to `∑ φ(aᵢ)·(f ∘ gᵢ) : Hⁿ →₀ B`. -/
@@ -70,7 +75,7 @@ lemma chainsMap_id_f_hom_eq_mapRange {A B : Rep k G} (i : ℕ) (φ : A ⟶ B) :
   simp [chainsMap_f, MonoidHom.coe_id]
 
 lemma chainsMap_comp {G H K : Type u} [Group G] [Group H] [Group K]
-    [DecidableEq G] [DecidableEq H] [DecidableEq K] {A : Rep k G} {B : Rep k H} {C : Rep k K}
+    {A : Rep k G} {B : Rep k H} {C : Rep k K}
     (f : G →* H) (g : H →* K) (φ : A ⟶ (Action.res _ f).obj B) (ψ : B ⟶ (Action.res _ g).obj C) :
     chainsMap (g.comp f) (φ ≫ (Action.res _ f).map ψ) = chainsMap f φ ≫ chainsMap g ψ := by
   ext
@@ -117,8 +122,8 @@ lemma cyclesMap_id : cyclesMap (MonoidHom.id G) (𝟙 A) n = 𝟙 _ := by
   simp [cyclesMap]
 
 @[reassoc]
-lemma cyclesMap_comp {G H K : Type u} [Group G] [DecidableEq G] [Group H] [DecidableEq H]
-    [Group K] [DecidableEq K] {A : Rep k G} {B : Rep k H} {C : Rep k K} (f : G →* H) (g : H →* K)
+lemma cyclesMap_comp {G H K : Type u} [Group G] [Group H] [Group K]
+    {A : Rep k G} {B : Rep k H} {C : Rep k K} (f : G →* H) (g : H →* K)
     (φ : A ⟶ (Action.res _ f).obj B) (ψ : B ⟶ (Action.res _ g).obj C) (n : ℕ) :
     cyclesMap (g.comp f) (φ ≫ (Action.res _ f).map ψ) n = cyclesMap f φ n ≫ cyclesMap g ψ n := by
   simp [cyclesMap, ← HomologicalComplex.cyclesMap_comp, ← chainsMap_comp]
@@ -145,8 +150,8 @@ lemma map_id : map (MonoidHom.id G) (𝟙 A) n = 𝟙 _ := by
   simp [map, groupHomology]
 
 @[reassoc]
-lemma map_comp {G H K : Type u} [Group G] [DecidableEq G] [Group H] [DecidableEq H]
-    [Group K] [DecidableEq K] {A : Rep k G} {B : Rep k H} {C : Rep k K} (f : G →* H) (g : H →* K)
+lemma map_comp {G H K : Type u} [Group G] [Group H] [Group K]
+    {A : Rep k G} {B : Rep k H} {C : Rep k K} (f : G →* H) (g : H →* K)
     (φ : A ⟶ (Action.res _ f).obj B) (ψ : B ⟶ (Action.res _ g).obj C) (n : ℕ) :
     map (g.comp f) (φ ≫ (Action.res _ f).map ψ) n = map f φ n ≫ map g ψ n := by
   simp [map, ← HomologicalComplex.homologyMap_comp, ← chainsMap_comp]
@@ -269,7 +274,6 @@ theorem mapShortComplexH1_id : mapShortComplexH1 (MonoidHom.id G) (𝟙 A) = �
   ext <;> simp
 
 theorem mapShortComplexH1_comp {G H K : Type u} [Group G] [Group H] [Group K]
-    [DecidableEq G] [DecidableEq H] [DecidableEq K]
     {A : Rep k G} {B : Rep k H} {C : Rep k K} (f : G →* H) (g : H →* K)
     (φ : A ⟶ (Action.res _ f).obj B) (ψ : B ⟶ (Action.res _ g).obj C) :
     mapShortComplexH1 (g.comp f) (φ ≫ (Action.res _ f).map ψ) =
@@ -356,7 +360,6 @@ theorem mapShortComplexH2_id : mapShortComplexH2 (MonoidHom.id _) (𝟙 A) = �
     simp }
 
 theorem mapShortComplexH2_comp {G H K : Type u} [Group G] [Group H] [Group K]
-    [DecidableEq G] [DecidableEq H] [DecidableEq K]
     {A : Rep k G} {B : Rep k H} {C : Rep k K} (f : G →* H) (g : H →* K)
     (φ : A ⟶ (Action.res _ f).obj B) (ψ : B ⟶ (Action.res _ g).obj C) :
     mapShortComplexH2 (g.comp f) (φ ≫ (Action.res _ f).map ψ) =
@@ -402,10 +405,11 @@ lemma H2π_comp_map :
 
 end H2
 
-variable (k G) in
+variable (k G)
+
 /-- The functor sending a representation to its complex of inhomogeneous chains. -/
 @[simps]
-noncomputable def chainsFunctor [DecidableEq G] :
+noncomputable def chainsFunctor :
     Rep k G ⥤ ChainComplex (ModuleCat k) ℕ where
   obj A := inhomogeneousChains A
   map f := chainsMap (MonoidHom.id _) f
@@ -414,7 +418,6 @@ noncomputable def chainsFunctor [DecidableEq G] :
 
 instance : (chainsFunctor k G).PreservesZeroMorphisms where
 
-variable (k G) in
 /-- The functor sending a `G`-representation `A` to `Hₙ(G, A)`. -/
 @[simps]
 noncomputable def functor (n : ℕ) : Rep k G ⥤ ModuleCat k where
@@ -427,5 +430,30 @@ noncomputable def functor (n : ℕ) : Rep k G ⥤ ModuleCat k where
 
 instance (n : ℕ) : (functor k G n).PreservesZeroMorphisms where
   map_zero _ _ := by simp [map]
+
+variable {G}
+
+/-- Given a group homomorphism `f : G →* H`, this is a natural transformation between the functors
+sending `A : Rep k H` to `Hₙ(G, Res(f)(A))` and to `Hₙ(H, A)`. -/
+@[simps]
+noncomputable def coresNatTrans (n : ℕ) :
+    Action.res (ModuleCat k) f ⋙ functor k G n ⟶ functor k H n where
+  app X := map f (𝟙 _) n
+  naturality {X Y} φ := by simp [← cancel_epi (groupHomology.π _ n),
+    ← HomologicalComplex.cyclesMap_comp_assoc, ← chainsMap_comp, congr (MonoidHom.id_comp _)
+    chainsMap, congr (MonoidHom.comp_id _) chainsMap, Category.id_comp
+    (X := (Action.res _ _).obj _)]
+
+/-- Given a normal subgroup `S ≤ G`, this is a natural transformation between the functors
+sending `A : Rep k G` to `Hₙ(G, A)` and to `Hₙ(G ⧸ S, A_S)`. -/
+@[simps]
+noncomputable def coinfNatTrans (S : Subgroup G) [S.Normal] (n : ℕ) :
+    functor k G n ⟶ quotientToCoinvariantsFunctor k S ⋙ functor k (G ⧸ S) n where
+  app A := map (QuotientGroup.mk' S) (mkQ _ _ <| Coinvariants.le_comap_ker A.ρ S) n
+  naturality {X Y} φ := by
+    simp only [Functor.comp_map, functor_map, ← cancel_epi (groupHomology.π _ n),
+      HomologicalComplex.homologyπ_naturality_assoc, HomologicalComplex.homologyπ_naturality,
+      ← HomologicalComplex.cyclesMap_comp_assoc, ← chainsMap_comp]
+    congr 1
 
 end groupHomology

@@ -118,7 +118,7 @@ theorem coe_map (f : G →* N) (K : Subgroup G) : (K.map f : Set N) = f '' K :=
 
 @[to_additive (attr := simp)]
 theorem map_toSubmonoid (f : G →* G') (K : Subgroup G) :
-  (Subgroup.map f K).toSubmonoid = Submonoid.map f K.toSubmonoid := rfl
+    (Subgroup.map f K).toSubmonoid = Submonoid.map f K.toSubmonoid := rfl
 
 @[to_additive (attr := simp)]
 theorem mem_map {f : G →* N} {K : Subgroup G} {y : N} : y ∈ K.map f ↔ ∃ x ∈ K, f x = y := Iff.rfl
@@ -131,9 +131,9 @@ theorem mem_map_of_mem (f : G →* N) {K : Subgroup G} {x : G} (hx : x ∈ K) : 
 theorem apply_coe_mem_map (f : G →* N) (K : Subgroup G) (x : K) : f x ∈ K.map f :=
   mem_map_of_mem f x.prop
 
-@[to_additive]
+@[to_additive (attr := gcongr)]
 theorem map_mono {f : G →* N} {K K' : Subgroup G} : K ≤ K' → map f K ≤ map f K' :=
-  image_subset _
+  image_mono
 
 @[to_additive (attr := simp)]
 theorem map_id : K.map (MonoidHom.id G) = K :=

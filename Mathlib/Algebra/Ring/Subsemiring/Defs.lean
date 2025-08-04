@@ -25,11 +25,11 @@ class AddSubmonoidWithOneClass (S : Type*) (R : outParam Type*) [AddMonoidWithOn
 
 variable {S R : Type*} [AddMonoidWithOne R] [SetLike S R] (s : S)
 
-@[aesop safe (rule_sets := [SetLike])]
+@[simp, aesop safe (rule_sets := [SetLike])]
 theorem natCast_mem [AddSubmonoidWithOneClass S R] (n : ℕ) : (n : R) ∈ s := by
   induction n <;> simp [zero_mem, add_mem, one_mem, *]
 
-@[aesop safe (rule_sets := [SetLike])]
+@[simp, aesop safe (rule_sets := [SetLike])]
 lemma ofNat_mem [AddSubmonoidWithOneClass S R] (s : S) (n : ℕ) [n.AtLeastTwo] :
     ofNat(n) ∈ s := by
   rw [← Nat.cast_ofNat]; exact natCast_mem s n
@@ -184,6 +184,14 @@ theorem mem_carrier {s : Subsemiring R} {x : R} : x ∈ s.carrier ↔ x ∈ s :=
 
 @[simp]
 lemma coe_toNonUnitalSubsemiring (S : Subsemiring R) : (S.toNonUnitalSubsemiring : Set R) = S := rfl
+
+@[simp]
+theorem mem_mk {toSubmonoid : Submonoid R} (add_mem zero_mem) {x : R} :
+    x ∈ mk toSubmonoid add_mem zero_mem ↔ x ∈ toSubmonoid := .rfl
+
+@[simp]
+theorem coe_set_mk {toSubmonoid : Submonoid R} (add_mem zero_mem) :
+    (mk toSubmonoid add_mem zero_mem : Set R) = toSubmonoid := rfl
 
 /-- Two subsemirings are equal if they have the same elements. -/
 @[ext]

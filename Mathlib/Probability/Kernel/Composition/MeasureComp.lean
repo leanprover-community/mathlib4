@@ -26,7 +26,7 @@ variable {α β γ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β
 lemma comp_assoc {η : Kernel β γ} : η ∘ₘ (κ ∘ₘ μ) = (η ∘ₖ κ) ∘ₘ μ :=
   Measure.bind_bind κ.aemeasurable η.aemeasurable
 
-/-- This lemma allows to rewrite the compostion of a measure and a kernel as the composition
+/-- This lemma allows to rewrite the composition of a measure and a kernel as the composition
 of two kernels, which allows to transfer properties of `∘ₖ` to `∘ₘ`. -/
 lemma comp_eq_comp_const_apply : κ ∘ₘ μ = (κ ∘ₖ (Kernel.const Unit μ)) () := by
   rw [Kernel.comp_apply, Kernel.const_apply]
@@ -78,6 +78,10 @@ lemma map_comp (μ : Measure α) (κ : Kernel α β) {f : β → γ} (hf : Measu
   rw [Measure.map_apply hf hs, Measure.bind_apply (hf hs) κ.aemeasurable,
     Measure.bind_apply hs (Kernel.aemeasurable _)]
   simp_rw [Kernel.map_apply' _ hf _ hs]
+
+@[simp]
+lemma discard_comp (μ : Measure α) : Kernel.discard α ∘ₘ μ = μ .univ • Measure.dirac () := by
+  ext s hs; simp [Measure.bind_apply hs (Kernel.aemeasurable _), mul_comm]
 
 section CompProd
 

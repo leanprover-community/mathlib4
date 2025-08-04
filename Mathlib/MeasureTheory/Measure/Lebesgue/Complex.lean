@@ -17,7 +17,7 @@ used ways to represent `ℝ²` in `mathlib`: `ℝ × ℝ` and `Fin 2 → ℝ`, d
 of `MeasureTheory.measurePreserving`).
 -/
 
-open MeasureTheory
+open MeasureTheory Module
 
 noncomputable section
 

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
 import Mathlib.Data.List.Defs
-import Mathlib.Data.Nat.Basic
 import Mathlib.Tactic.Common
 
 /-!
@@ -59,7 +58,7 @@ theorem take_one_drop_eq_of_lt_length {l : List α} {n : ℕ} (h : n < l.length)
 
 /-- `take_concat_get` in simp normal form -/
 lemma take_concat_get' (l : List α) (i : ℕ) (h : i < l.length) :
-  l.take i ++ [l[i]] = l.take (i + 1) := by simp
+    l.take i ++ [l[i]] = l.take (i + 1) := by simp
 
 theorem cons_getElem_drop_succ {l : List α} {n : Nat} {h : n < l.length} :
     l[n] :: l.drop (n + 1) = l.drop n :=

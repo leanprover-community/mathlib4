@@ -162,16 +162,16 @@ Linear algebra:
     quotient space: 'Submodule.hasQuotient'
     tensor product: 'TensorProduct'
     noetherian module: 'IsNoetherian'
-    basis: 'Basis'
+    basis: 'Module.Basis'
     multilinear map: 'MultilinearMap'
     alternating map: 'AlternatingMap'
     general linear group: 'LinearMap.GeneralLinearGroup'
   Duality:
     dual vector space: 'Module.Dual'
-    dual basis: 'Basis.dualBasis'
+    dual basis: 'Module.Basis.dualBasis'
   Finite-dimensional vector spaces:
     finite-dimensionality : 'FiniteDimensional'
-    isomorphism with $K^n$: 'Basis.equivFun'
+    isomorphism with $K^n$: 'Module.Basis.equivFun'
     isomorphism with bidual: 'Module.evalEquiv'
   Finitely generated modules over a PID:
     structure theorem: 'Module.equiv_free_prod_directSum'

@@ -65,7 +65,7 @@ theorem finiteDimensional [Finite G] [IsGaloisGroup G K L] : FiniteDimensional K
     have := isGalois G K L
     have := finiteDimensional G K L
     rw [Nat.bijective_iff_injective_and_card, card_eq_finrank G K L,
-      Nat.card_eq_fintype_card, IsGalois.card_aut_eq_finrank K L]
+      IsGalois.card_aut_eq_finrank K L]
     exact ⟨fun _ _ ↦ (faithful K).eq_of_smul_eq_smul ∘ DFunLike.ext_iff.mp, rfl⟩)
 
 /-- If `G` and `H` are finite Galois groups for `L/K`, then `G` is isomorphic to `H`. -/
