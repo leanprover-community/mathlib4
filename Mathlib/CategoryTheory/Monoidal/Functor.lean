@@ -358,10 +358,10 @@ open LaxMonoidal OplaxMonoidal
 and both data give inverse isomorphisms. -/
 @[ext]
 class Monoidal (F : C ⥤ D) extends F.LaxMonoidal, F.OplaxMonoidal where
-  ε_η (F) : ε ≫ η = 𝟙 _ := by aesop_cat
-  η_ε (F) : η ≫ ε = 𝟙 _ := by aesop_cat
-  μ_δ (F) (X Y : C) : μ X Y ≫ δ X Y = 𝟙 _ := by aesop_cat
-  δ_μ (F) (X Y : C) : δ X Y ≫ μ X Y = 𝟙 _ := by aesop_cat
+  ε_η (F) : ε ≫ η = 𝟙 _ := by cat_disch
+  η_ε (F) : η ≫ ε = 𝟙 _ := by cat_disch
+  μ_δ (F) (X Y : C) : μ X Y ≫ δ X Y = 𝟙 _ := by cat_disch
+  δ_μ (F) (X Y : C) : δ X Y ≫ μ X Y = 𝟙 _ := by cat_disch
 
 namespace Monoidal
 
@@ -913,9 +913,9 @@ def rightAdjointLaxMonoidal : G.LaxMonoidal where
 this typeclass expresses compatibilities between the adjunction and the (op)lax
 monoidal structures. -/
 class IsMonoidal [G.LaxMonoidal] : Prop where
-  leftAdjoint_ε : ε G = adj.homEquiv _ _ (η F) := by aesop_cat
+  leftAdjoint_ε : ε G = adj.homEquiv _ _ (η F) := by cat_disch
   leftAdjoint_μ (X Y : D) :
-    μ G X Y = adj.homEquiv _ _ (δ F _ _ ≫ (adj.counit.app X ⊗ₘ adj.counit.app Y)) := by aesop_cat
+    μ G X Y = adj.homEquiv _ _ (δ F _ _ ≫ (adj.counit.app X ⊗ₘ adj.counit.app Y)) := by cat_disch
 
 instance :
     letI := adj.rightAdjointLaxMonoidal

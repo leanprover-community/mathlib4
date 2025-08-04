@@ -141,7 +141,7 @@ def map {D : Type*} [Category D] (F : C ⥤ D) : WithTerminal C ⥤ WithTerminal
 def mapId (C : Type*) [Category C] : map (𝟭 C) ≅ 𝟭 (WithTerminal C) :=
   NatIso.ofComponents (fun X => match X with
     | of _ => Iso.refl _
-    | star => Iso.refl _) (by aesop_cat)
+    | star => Iso.refl _) (by cat_disch)
 
 /-- A natural isomorphism between the functor `map (F ⋙ G) ` and `map F ⋙ map G `. -/
 @[simps!]
@@ -149,7 +149,7 @@ def mapComp {D E : Type*} [Category D] [Category E] (F : C ⥤ D) (G : D ⥤ E) 
     map (F ⋙ G) ≅ map F ⋙ map G :=
   NatIso.ofComponents (fun X => match X with
     | of _ => Iso.refl _
-    | star => Iso.refl _) (by aesop_cat)
+    | star => Iso.refl _) (by cat_disch)
 
 /-- From a natural transformation of functors `C ⥤ D`, the induced natural transformation
 of functors `WithTerminal C ⥤ WithTerminal D`. -/
@@ -265,7 +265,7 @@ instance {X : WithTerminal C} : Unique (X ⟶ star) where
     match X with
     | of _ => PUnit.unit
     | star => PUnit.unit
-  uniq := by aesop_cat
+  uniq := by cat_disch
 
 /-- `WithTerminal.star` is terminal. -/
 def starTerminal : Limits.IsTerminal (star : WithTerminal C) :=
@@ -522,7 +522,7 @@ def map {D : Type*} [Category D] (F : C ⥤ D) : WithInitial C ⥤ WithInitial D
 def mapId (C : Type*) [Category C] : map (𝟭 C) ≅ 𝟭 (WithInitial C) :=
   NatIso.ofComponents (fun X => match X with
     | of _ => Iso.refl _
-    | star => Iso.refl _) (by aesop_cat)
+    | star => Iso.refl _) (by cat_disch)
 
 /-- A natural isomorphism between the functor `map (F ⋙ G) ` and `map F ⋙ map G `. -/
 @[simps!]
@@ -530,7 +530,7 @@ def mapComp {D E : Type*} [Category D] [Category E] (F : C ⥤ D) (G : D ⥤ E) 
     map (F ⋙ G) ≅ map F ⋙ map G :=
   NatIso.ofComponents (fun X => match X with
     | of _ => Iso.refl _
-    | star => Iso.refl _) (by aesop_cat)
+    | star => Iso.refl _) (by cat_disch)
 
 /-- From a natural transformation of functors `C ⥤ D`, the induced natural transformation
 of functors `WithInitial C ⥤ WithInitial D`. -/
@@ -645,7 +645,7 @@ instance {X : WithInitial C} : Unique (star ⟶ X) where
     match X with
     | of _x => PUnit.unit
     | star => PUnit.unit
-  uniq := by aesop_cat
+  uniq := by cat_disch
 
 /-- `WithInitial.star` is initial. -/
 def starInitial : Limits.IsInitial (star : WithInitial C) :=

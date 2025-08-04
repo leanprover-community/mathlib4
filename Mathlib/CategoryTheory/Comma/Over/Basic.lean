@@ -91,7 +91,7 @@ end
 /-- To give a morphism in the over category, it suffices to give an arrow fitting in a commutative
     triangle. -/
 @[simps! left]
-def homMk {U V : Over X} (f : U.left ⟶ V.left) (w : f ≫ V.hom = U.hom := by aesop_cat) : U ⟶ V :=
+def homMk {U V : Over X} (f : U.left ⟶ V.left) (w : f ≫ V.hom = U.hom := by cat_disch) : U ⟶ V :=
   CostructuredArrow.homMk f w
 
 @[simp]
@@ -109,7 +109,7 @@ lemma homMk_comp {U V W : Over X} (f : U.left ⟶ V.left) (g : V.left ⟶ W.left
 direction gives a commutative triangle.
 -/
 @[simps! hom_left inv_left]
-def isoMk {f g : Over X} (hl : f.left ≅ g.left) (hw : hl.hom ≫ g.hom = f.hom := by aesop_cat) :
+def isoMk {f g : Over X} (hl : f.left ≅ g.left) (hw : hl.hom ≫ g.hom = f.hom := by cat_disch) :
     f ≅ g :=
   CostructuredArrow.isoMk hl hw
 
@@ -501,7 +501,7 @@ def mk {X Y : T} (f : X ⟶ Y) : Under X :=
 /-- To give a morphism in the under category, it suffices to give a morphism fitting in a
     commutative triangle. -/
 @[simps! right]
-def homMk {U V : Under X} (f : U.right ⟶ V.right) (w : U.hom ≫ f = V.hom := by aesop_cat) : U ⟶ V :=
+def homMk {U V : Under X} (f : U.right ⟶ V.right) (w : U.hom ≫ f = V.hom := by cat_disch) : U ⟶ V :=
   StructuredArrow.homMk f w
 
 @[simp]
@@ -519,7 +519,7 @@ lemma homMk_comp {U V W : Under X} (f : U.right ⟶ V.right) (g : V.right ⟶ W.
 direction gives a commutative triangle.
 -/
 def isoMk {f g : Under X} (hr : f.right ≅ g.right)
-    (hw : f.hom ≫ hr.hom = g.hom := by aesop_cat) : f ≅ g :=
+    (hw : f.hom ≫ hr.hom = g.hom := by cat_disch) : f ≅ g :=
   StructuredArrow.isoMk hr hw
 
 @[simp]
@@ -925,7 +925,7 @@ def ofStructuredArrowProjEquivalence (F : D ⥤ T) (Y : T) (X : D) :
   functor := ofStructuredArrowProjEquivalence.functor F Y X
   inverse := ofStructuredArrowProjEquivalence.inverse F Y X
   unitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by simp)
-  counitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat)
+  counitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by cat_disch)
 
 /-- The canonical functor from the structured arrow category on the diagonal functor
 `T ⥤ T × T` to the structured arrow category on `Under.forget`. -/
@@ -950,7 +950,7 @@ def ofDiagEquivalence (X : T × T) :
   functor := ofDiagEquivalence.functor X
   inverse := ofDiagEquivalence.inverse X
   unitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by simp)
-  counitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat)
+  counitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by cat_disch)
 
 /-- A version of `StructuredArrow.ofDiagEquivalence` with the roles of the first and second
 projection swapped. -/
@@ -1023,7 +1023,7 @@ def ofCostructuredArrowProjEquivalence (F : T ⥤ D) (Y : D) (X : T) :
   functor := ofCostructuredArrowProjEquivalence.functor F Y X
   inverse := ofCostructuredArrowProjEquivalence.inverse F Y X
   unitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by simp)
-  counitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat)
+  counitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by cat_disch)
 
 /-- The canonical functor from the costructured arrow category on the diagonal functor
 `T ⥤ T × T` to the costructured arrow category on `Under.forget`. -/
@@ -1049,7 +1049,7 @@ def ofDiagEquivalence (X : T × T) :
   functor := ofDiagEquivalence.functor X
   inverse := ofDiagEquivalence.inverse X
   unitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by simp)
-  counitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat)
+  counitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by cat_disch)
 
 /-- A version of `CostructuredArrow.ofDiagEquivalence` with the roles of the first and second
 projection swapped. -/

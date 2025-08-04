@@ -98,7 +98,7 @@ and to check that the triangle commutes.
 -/
 @[simps right]
 def homMk {f f' : StructuredArrow S T} (g : f.right ⟶ f'.right)
-    (w : f.hom ≫ T.map g = f'.hom := by aesop_cat) : f ⟶ f' where
+    (w : f.hom ≫ T.map g = f'.hom := by cat_disch) : f ⟶ f' where
   left := 𝟙 f.left
   right := g
   w := by
@@ -117,7 +117,7 @@ def homMk' (f : StructuredArrow S T) (g : f.right ⟶ Y') : f ⟶ mk (f.hom ≫ 
   left := 𝟙 _
   right := g
 
-lemma homMk'_id (f : StructuredArrow S T) : homMk' f (𝟙 f.right) = eqToHom (by aesop_cat) := by
+lemma homMk'_id (f : StructuredArrow S T) : homMk' f (𝟙 f.right) = eqToHom (by cat_disch) := by
   ext
   simp [eqToHom_right]
 
@@ -150,7 +150,7 @@ and to check that the triangle commutes.
 -/
 @[simps! hom_right inv_right]
 def isoMk {f f' : StructuredArrow S T} (g : f.right ≅ f'.right)
-    (w : f.hom ≫ T.map g.hom = f'.hom := by aesop_cat) :
+    (w : f.hom ≫ T.map g.hom = f'.hom := by cat_disch) :
     f ≅ f' :=
   Comma.isoMk (eqToIso (by ext)) g (by simpa using w.symm)
 
@@ -455,7 +455,7 @@ and to check that the triangle commutes.
 -/
 @[simps! left]
 def homMk {f f' : CostructuredArrow S T} (g : f.left ⟶ f'.left)
-    (w : S.map g ≫ f'.hom = f.hom := by aesop_cat) : f ⟶ f' where
+    (w : S.map g ≫ f'.hom = f.hom := by cat_disch) : f ⟶ f' where
   left := g
   right := 𝟙 f.right
 
@@ -471,7 +471,7 @@ def homMk' (f : CostructuredArrow S T) (g : Y' ⟶ f.left) : mk (S.map g ≫ f.h
   left := g
   right := 𝟙 _
 
-lemma homMk'_id (f : CostructuredArrow S T) : homMk' f (𝟙 f.left) = eqToHom (by aesop_cat) := by
+lemma homMk'_id (f : CostructuredArrow S T) : homMk' f (𝟙 f.left) = eqToHom (by cat_disch) := by
   ext
   simp [eqToHom_left]
 
@@ -504,7 +504,7 @@ and to check that the triangle commutes.
 -/
 @[simps! hom_left inv_left]
 def isoMk {f f' : CostructuredArrow S T} (g : f.left ≅ f'.left)
-    (w : S.map g.hom ≫ f'.hom = f.hom := by aesop_cat) : f ≅ f' :=
+    (w : S.map g.hom ≫ f'.hom = f.hom := by cat_disch) : f ≅ f' :=
   Comma.isoMk g (eqToIso (by ext)) (by simpa using w)
 
 theorem obj_ext (x y : CostructuredArrow S T) (hl : x.left = y.left)

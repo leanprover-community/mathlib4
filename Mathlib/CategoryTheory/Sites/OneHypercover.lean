@@ -85,7 +85,7 @@ lemma sieve₁_eq_pullback_sieve₁' {W : C} (p₁ : W ⟶ E.X i₁) (p₂ : W �
   ext Z g
   constructor
   · rintro ⟨j, h, fac₁, fac₂⟩
-    exact ⟨_, h, _, ⟨j⟩, by aesop_cat⟩
+    exact ⟨_, h, _, ⟨j⟩, by cat_disch⟩
   · rintro ⟨_, h, w, ⟨j⟩, fac⟩
     exact ⟨j, h, by simpa using fac.symm =≫ pullback.fst _ _,
       by simpa using fac.symm =≫ pullback.snd _ _⟩
@@ -138,8 +138,8 @@ structure Hom (E F : PreOneHypercover S) extends
   s₁ {i j : E.I₀} (k : E.I₁ i j) : F.I₁ (s₀ i) (s₀ j)
   /-- The refinement morphisms between objects in the coverings of the fibre products over `S`. -/
   h₁ {i j : E.I₀} (k : E.I₁ i j) : E.Y k ⟶ F.Y (s₁ k)
-  w₁₁ {i j : E.I₀} (k : E.I₁ i j) : h₁ k ≫ F.p₁ (s₁ k) = E.p₁ k ≫ h₀ i := by aesop_cat
-  w₁₂ {i j : E.I₀} (k : E.I₁ i j) : h₁ k ≫ F.p₂ (s₁ k) = E.p₂ k ≫ h₀ j := by aesop_cat
+  w₁₁ {i j : E.I₀} (k : E.I₁ i j) : h₁ k ≫ F.p₁ (s₁ k) = E.p₁ k ≫ h₀ i := by cat_disch
+  w₁₂ {i j : E.I₀} (k : E.I₁ i j) : h₁ k ≫ F.p₂ (s₁ k) = E.p₂ k ≫ h₀ j := by cat_disch
 
 attribute [reassoc] Hom.w₁₁ Hom.w₁₂
 

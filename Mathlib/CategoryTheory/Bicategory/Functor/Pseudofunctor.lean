@@ -243,7 +243,7 @@ lemma whiskerLeft_mapId_inv (f : a ⟶ b) : F.map f ◁ (F.mapId b).inv =
 
 /-- More flexible variant of `mapId`. (See the file `Bicategory.Functor.Strict`
 for applications to strict bicategories.) -/
-def mapId' {b : B} (f : b ⟶ b) (hf : f = 𝟙 b := by aesop_cat) :
+def mapId' {b : B} (f : b ⟶ b) (hf : f = 𝟙 b := by cat_disch) :
     F.map f ≅ 𝟙 (F.obj b) :=
   F.map₂Iso (eqToIso (by rw [hf])) ≪≫ F.mapId _
 
@@ -254,7 +254,7 @@ lemma mapId'_eq_mapId (b : B) :
 /-- More flexible variant of `mapComp`. (See `Bicategory.Functor.Strict`
 for applications to strict bicategories.) -/
 def mapComp' {b₀ b₁ b₂ : B} (f : b₀ ⟶ b₁) (g : b₁ ⟶ b₂) (fg : b₀ ⟶ b₂)
-    (h : f ≫ g = fg := by aesop_cat) :
+    (h : f ≫ g = fg := by cat_disch) :
     F.map fg ≅ F.map f ≫ F.map g :=
   F.map₂Iso (eqToIso (by rw [h])) ≪≫ F.mapComp f g
 

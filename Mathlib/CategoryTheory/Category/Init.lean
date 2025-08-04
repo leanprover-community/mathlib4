@@ -16,3 +16,21 @@ they're declared is imported, so we must put this declaration into its own file.
 -/
 
 declare_aesop_rule_sets [CategoryTheory]
+
+/-- Option to control whether the category theory library should use `grind` or `aesop`. -/
+register_option mathlib.tactic.category.grind : Bool := {
+  defValue := false
+  descr := "The category theory library should use `grind` instead of `aesop`."
+}
+
+/-- Log a message whenever the category theory discharger uses `grind`. -/
+register_option mathlib.tactic.category.log_grind : Bool := {
+  defValue := false
+  descr := "Log a message whenever the category theory discharger uses `grind`."
+}
+
+/-- Log a message whenever the category theory discharger uses `aesop`. -/
+register_option mathlib.tactic.category.log_aesop : Bool := {
+  defValue := false
+  descr := "Log a message whenever the category theory discharger uses `aesop`."
+}

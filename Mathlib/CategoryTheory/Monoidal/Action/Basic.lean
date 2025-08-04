@@ -121,8 +121,8 @@ class MonoidalLeftAction [MonoidalCategory C] extends
   actionHom_def {c c' : C} {d d' : D} (f : c ⟶ c') (g : d ⟶ d') :
       f ⊙ₗₘ g = f ⊵ₗ d ≫ c' ⊴ₗ g := by
     aesop_cat
-  actionHomRight_id (c : C) (d : D) : c ⊴ₗ 𝟙 d = 𝟙 (c ⊙ₗ d) := by aesop_cat
-  id_actionHomLeft (c : C) (d : D) : 𝟙 c ⊵ₗ d = 𝟙 (c ⊙ₗ d) := by aesop_cat
+  actionHomRight_id (c : C) (d : D) : c ⊴ₗ 𝟙 d = 𝟙 (c ⊙ₗ d) := by cat_disch
+  id_actionHomLeft (c : C) (d : D) : 𝟙 c ⊵ₗ d = 𝟙 (c ⊙ₗ d) := by cat_disch
   actionHom_comp
       {c c' c'' : C} {d d' d'' : D} (f₁ : c ⟶ c') (f₂ : c' ⟶ c'')
       (g₁ : d ⟶ d') (g₂ : d' ⟶ d'') :
@@ -435,8 +435,8 @@ class MonoidalRightAction [MonoidalCategory C] extends
   actionHom_def {c c' : C} {d d' : D} (f : d ⟶ d') (g : c ⟶ c') :
       f ⊙ᵣₘ g = f ⊵ᵣ c ≫ d' ⊴ᵣ g := by
     aesop_cat
-  actionHomRight_id (c : C) (d : D) : d ⊴ᵣ 𝟙 c = 𝟙 (d ⊙ᵣ c) := by aesop_cat
-  id_actionHomLeft (c : C) (d : D) : 𝟙 d ⊵ᵣ c = 𝟙 (d ⊙ᵣ c) := by aesop_cat
+  actionHomRight_id (c : C) (d : D) : d ⊴ᵣ 𝟙 c = 𝟙 (d ⊙ᵣ c) := by cat_disch
+  id_actionHomLeft (c : C) (d : D) : 𝟙 d ⊵ᵣ c = 𝟙 (d ⊙ᵣ c) := by cat_disch
   actionHom_comp
       {c c' c'' : C} {d d' d'' : D} (f₁ : d ⟶ d') (f₂ : d' ⟶ d'')
       (g₁ : c ⟶ c') (g₂ : c' ⟶ c'') :

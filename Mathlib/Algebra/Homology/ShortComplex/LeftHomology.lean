@@ -272,11 +272,11 @@ structure LeftHomologyMapData where
   /-- the induced map on left homology -/
   φH : h₁.H ⟶ h₂.H
   /-- commutation with `i` -/
-  commi : φK ≫ h₂.i = h₁.i ≫ φ.τ₂ := by aesop_cat
+  commi : φK ≫ h₂.i = h₁.i ≫ φ.τ₂ := by cat_disch
   /-- commutation with `f'` -/
-  commf' : h₁.f' ≫ φK = φ.τ₁ ≫ h₂.f' := by aesop_cat
+  commf' : h₁.f' ≫ φK = φ.τ₁ ≫ h₂.f' := by cat_disch
   /-- commutation with `π` -/
-  commπ : h₁.π ≫ φH = φK ≫ h₂.π := by aesop_cat
+  commπ : h₁.π ≫ φH = φK ≫ h₂.π := by cat_disch
 
 namespace LeftHomologyMapData
 
@@ -958,7 +958,7 @@ lemma liftCycles_i : S.liftCycles k hk ≫ S.iCycles = k :=
 
 @[reassoc]
 lemma comp_liftCycles {A' : C} (α : A' ⟶ A) :
-    α ≫ S.liftCycles k hk = S.liftCycles (α ≫ k) (by rw [assoc, hk, comp_zero]) := by aesop_cat
+    α ≫ S.liftCycles k hk = S.liftCycles (α ≫ k) (by rw [assoc, hk, comp_zero]) := by cat_disch
 
 /-- Via `S.iCycles : S.cycles ⟶ S.X₂`, the object `S.cycles` identifies to the
 kernel of `S.g : S.X₂ ⟶ S.X₃`. -/
@@ -1026,7 +1026,7 @@ lemma hasCokernel [S.HasLeftHomology] [HasKernel S.g] :
   haveI : HasColimit (parallelPair h.f' 0) := ⟨⟨⟨_, h.hπ'⟩⟩⟩
   let e : parallelPair (kernel.lift S.g S.f S.zero) 0 ≅ parallelPair h.f' 0 :=
     parallelPair.ext (Iso.refl _) (IsLimit.conePointUniqueUpToIso (kernelIsKernel S.g) h.hi)
-      (by aesop_cat) (by simp)
+      (by cat_disch) (by simp)
   exact hasColimit_of_iso e
 
 end HasLeftHomology

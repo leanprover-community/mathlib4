@@ -36,7 +36,7 @@ structure BundledHom where
   hom_ext : ∀ {α β : Type u} (Iα : c α) (Iβ : c β), Function.Injective (toFun Iα Iβ) := by
     aesop_cat
   /-- compatibility with identities -/
-  id_toFun : ∀ {α : Type u} (I : c α), toFun I I (id I) = _root_.id := by aesop_cat
+  id_toFun : ∀ {α : Type u} (I : c α), toFun I I (id I) = _root_.id := by cat_disch
   /-- compatibility with the composition -/
   comp_toFun :
     ∀ {α β γ : Type u} (Iα : c α) (Iβ : c β) (Iγ : c γ) (f : hom Iα Iβ) (g : hom Iβ Iγ),
