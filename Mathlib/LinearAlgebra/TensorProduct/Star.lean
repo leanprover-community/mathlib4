@@ -32,9 +32,8 @@ theorem star_tmul (x : A) (y : B) :
 noncomputable instance : InvolutiveStar (A ⊗[R] B) where
   star_involutive x := by
     simp_rw [star, map_map]
-    repeat rw [(by ext; simp :
-      (starLinearEquiv R).toLinearMap ∘ₛₗ (starLinearEquiv R).toLinearMap = .id (R:=R))]
-    simp only [map_id, LinearMap.id_coe, id_eq]
+    conv_rhs => rw [← LinearMap.id_apply (R:=R) x, ← map_id]
+    congr <;> ext <;> simp
 
 noncomputable instance : StarAddMonoid (A ⊗[R] B) where
   star_add _ _ := by simp [star]
