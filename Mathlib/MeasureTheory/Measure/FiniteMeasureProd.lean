@@ -3,7 +3,7 @@ Copyright (c) 2023 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
+import Mathlib.MeasureTheory.Measure.LevyProkhorovMetric
 import Mathlib.MeasureTheory.Measure.Prod
 
 /-!
@@ -54,7 +54,8 @@ lemma prod_apply_symm (s : Set (α × β)) (s_mble : MeasurableSet s) :
     μ.prod ν s = ENNReal.toNNReal (∫⁻ y, μ.toMeasure ((fun x ↦ ⟨x, y⟩) ⁻¹' s) ∂ν) := by
   simp [coeFn_def, Measure.prod_apply_symm s_mble]
 
-lemma prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν t := by simp [coeFn_def]
+@[simp] lemma prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν t := by
+  simp [coeFn_def]
 
 @[simp] lemma mass_prod : (μ.prod ν).mass = μ.mass * ν.mass := by
   simp only [coeFn_def, mass, univ_prod_univ.symm, toMeasure_prod]
@@ -108,7 +109,8 @@ lemma prod_apply_symm (s : Set (α × β)) (s_mble : MeasurableSet s) :
     μ.prod ν s = ENNReal.toNNReal (∫⁻ y, μ.toMeasure ((fun x ↦ ⟨x, y⟩) ⁻¹' s) ∂ν) := by
   simp [coeFn_def, Measure.prod_apply_symm s_mble]
 
-lemma prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν t := by simp [coeFn_def]
+@[simp] lemma prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν t := by
+  simp [coeFn_def]
 
 /-- The first marginal of a product probability measure is the first probability measure. -/
 @[simp] lemma map_fst_prod : (μ.prod ν).map measurable_fst.aemeasurable = μ := by
@@ -133,6 +135,33 @@ lemma map_prod_map {α' : Type*} [MeasurableSpace α'] {β' : Type*} [Measurable
 lemma prod_swap : (μ.prod ν).map measurable_swap.aemeasurable = ν.prod μ := by
   apply Subtype.ext
   simp [Measure.prod_swap]
+
+#where
+
+open TopologicalSpace
+
+variable [TopologicalSpace α] [TopologicalSpace β] [SecondCountableTopology α]
+  [SecondCountableTopology β] [PseudoMetrizableSpace α] [PseudoMetrizableSpace β]
+  [OpensMeasurableSpace α] [OpensMeasurableSpace β]
+
+theorem continuous_prod :
+    Continuous (fun (μ : ProbabilityMeasure α × ProbabilityMeasure β) ↦ μ.1.prod μ.2) := by
+  apply continuous_iff_continuousAt.2 (fun μ ↦ ?_)
+  let S : Set (Set (α × β)) := {t | ∃ (a : Set α) (b : Set β),
+    MeasurableSet a ∧ μ.1 (frontier a) = 0 ∧ MeasurableSet b ∧ μ.2 (frontier b) = 0
+    ∧ t = a ×ˢ b}
+  have : IsPiSystem S := sorry
+  apply this.tendsto_probabilityMeasure_of_tendsto_of_mem
+  · rintro s ⟨a, b, ameas, -, bmeas, -, rfl⟩
+    exact ameas.prod bmeas
+  · sorry
+  · rintro s ⟨a, b, ameas, ha, bmeas, hb, rfl⟩
+    simp only [prod_prod]
+    apply Filter.Tendsto.mul
+    ·
+
+
+#exit
 
 end ProbabilityMeasure -- namespace
 
