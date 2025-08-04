@@ -342,6 +342,19 @@ theorem AffineIndependent.of_set_of_injective {p : ι → P}
     (⟨fun i => ⟨p i, Set.mem_range_self _⟩, fun _ _ h => hi (Subtype.mk_eq_mk.1 h)⟩ :
       ι ↪ Set.range p)
 
+/-- If an affine combination of affinely independent points lies in the affine span of a subset
+of those points, all weights outside that subset are zero. -/
+lemma AffineIndependent.eq_zero_of_affineCombination_mem_affineSpan {p : ι → P}
+    (ha : AffineIndependent k p) {fs : Finset ι} {w : ι → k} (hw : ∑ i ∈ fs, w i = 1) {s : Set ι}
+    (hm : fs.affineCombination k p w ∈ affineSpan k (p '' s)) {i : ι} (hifs : i ∈ fs)
+    (his : i ∉ s) : w i = 0 := by
+  obtain ⟨fs', w', hfs's, hw', he⟩ := eq_affineCombination_of_mem_affineSpan_image hm
+  have hi' : (fs : Set ι).indicator w i = 0 := by
+    rw [ha.indicator_eq_of_affineCombination_eq fs fs' w w' hw hw' he]
+    exact Set.indicator_of_notMem (Set.notMem_subset hfs's his) w'
+  rw [Set.indicator_apply_eq_zero] at hi'
+  exact hi' (Finset.mem_coe.2 hifs)
+
 section Composition
 
 variable {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AffineSpace V₂ P₂]
