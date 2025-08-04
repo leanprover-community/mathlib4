@@ -176,13 +176,13 @@ theorem abs_circleAverage_le_circleAverage_abs {f : ℂ → ℝ} :
 -/
 
 /-- Circle averages commute with continuous linear maps. -/
-theorem ContinuousLinearMap.circleAverage_comp_comm [CompleteSpace E] {ℓ : E →L[ℝ] F} {f : ℂ → E}
-    (hf : CircleIntegrable f c R) :
-    circleAverage (ℓ ∘ f) c R = ℓ (circleAverage f c R) := by
+theorem _root_.ContinuousLinearMap.circleAverage_comp_comm [CompleteSpace E] {L : E →L[ℝ] F}
+    {f : ℂ → E} (hf : CircleIntegrable f c R) :
+    circleAverage (L ∘ f) c R = L (circleAverage f c R) := by
   unfold circleAverage
   rw [map_smul]
   congr
-  apply ℓ.intervalIntegral_comp_comm hf
+  exact L.intervalIntegral_comp_comm hf
 
 /-!
 ## Behaviour with Respect to Arithmetic Operations
