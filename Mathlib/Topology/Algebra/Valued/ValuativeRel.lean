@@ -54,10 +54,24 @@ lemma mem_nhds_iff' {s : Set R} {x : R} :
   ext z
   simp [neg_add_eq_sub]
 
+@[deprecated (since := "2025-08-01")]
+alias _root_.ValuativeTopology.mem_nhds := mem_nhds_iff'
+
 lemma mem_nhds_zero_iff (s : Set R) : s ∈ 𝓝 (0 : R) ↔
     ∃ γ : (ValueGroupWithZero R)ˣ, { x | v x < γ } ⊆ s := by
   convert IsValuativeTopology.mem_nhds_iff' (x := (0 : R))
   rw [sub_zero]
+
+@[deprecated (since := "2025-08-04")]
+alias _root_.ValuativeTopology.mem_nhds_iff := mem_nhds_zero_iff
+
+/-- Helper `Valued` instance when `ValuativeTopology R` over a `UniformSpace R`,
+for use in porting files from `Valued` to `ValuativeRel`. -/
+instance (priority := low) {R : Type*} [CommRing R] [ValuativeRel R] [UniformSpace R]
+    [IsUniformAddGroup R] [IsValuativeTopology R] :
+    Valued R (ValueGroupWithZero R) where
+  «v» := valuation R
+  is_topological_valuation := mem_nhds_zero_iff
 
 theorem hasBasis_nhds (x : R) :
     (𝓝 x).HasBasis (fun _ => True)
@@ -73,7 +87,8 @@ theorem hasBasis_nhds_zero :
 @[deprecated (since := "2025-08-01")]
 alias _root_.ValuativeTopology.hasBasis_nhds_zero := hasBasis_nhds_zero
 
-instance : IsTopologicalAddGroup R := by
+variable (R) in
+instance (priority := low) isTopologicalAddGroup : IsTopologicalAddGroup R := by
   have cts_add : ContinuousConstVAdd R R :=
     ⟨fun x ↦ continuous_iff_continuousAt.2 fun z ↦
       ((hasBasis_nhds z).tendsto_iff (hasBasis_nhds (x + z))).2 fun γ _ ↦
@@ -87,8 +102,10 @@ instance : IsTopologicalAddGroup R := by
   · simpa [ContinuousAt] using (cts_add.1 x₀).continuousAt (x := (0 : R))
   · simpa [ContinuousAt] using (cts_add.1 (-x₀)).continuousAt (x := x₀)
 
-@[deprecated (since := "2025-08-01")]
-alias _root_.ValuativeTopology.mem_nhds := mem_nhds_iff'
+instance (priority := low) : IsTopologicalRing R :=
+  letI := IsTopologicalAddGroup.toUniformSpace R
+  letI := isUniformAddGroup_of_addCommGroup (G := R)
+  inferInstance
 
 theorem isOpen_ball (r : ValueGroupWithZero R) :
     IsOpen {x | v x < r} := by
@@ -172,25 +189,6 @@ lemma isOpen_sphere {r : ValueGroupWithZero R} (hr : r ≠ 0) :
 alias _root_.ValuativeTopology.isOpen_sphere := isOpen_sphere
 
 end IsValuativeTopology
-
-namespace Valued
-
-variable {R : Type*} [CommRing R] [ValuativeRel R] [UniformSpace R]
-  [IsUniformAddGroup R] [IsValuativeTopology R]
-
-/-- Helper `Valued` instance when `ValuativeTopology R` over a `UniformSpace R`,
-for use in porting files from `Valued` to `ValuativeRel`. -/
-instance : Valued R (ValuativeRel.ValueGroupWithZero R) where
-  v := ValuativeRel.valuation R
-  is_topological_valuation := IsValuativeTopology.mem_nhds_zero_iff
-
-end Valued
-
-instance (R : Type*) [CommRing R] [ValuativeRel R] [TopologicalSpace R] [IsValuativeTopology R] :
-    IsTopologicalRing R :=
-  letI := IsTopologicalAddGroup.toUniformSpace R
-  letI := isUniformAddGroup_of_addCommGroup (G := R)
-  inferInstance
 
 namespace ValuativeRel
 
