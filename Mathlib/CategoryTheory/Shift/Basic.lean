@@ -619,7 +619,7 @@ lemma shiftFunctorZero_hom_app_shift (n : A) :
 
 lemma shiftFunctorZero_inv_app_shift (n : A) :
     (shiftFunctorZero C A).inv.app (X⟦n⟧) =
-  ((shiftFunctorZero C A).inv.app X)⟦n⟧' ≫ (shiftFunctorComm C n 0).inv.app X := by
+      ((shiftFunctorZero C A).inv.app X)⟦n⟧' ≫ (shiftFunctorComm C n 0).inv.app X := by
   rw [← cancel_mono ((shiftFunctorZero C A).hom.app (X⟦n⟧)), Category.assoc, Iso.inv_hom_id_app,
     shiftFunctorZero_hom_app_shift, Iso.inv_hom_id_app_assoc, ← Functor.map_comp,
     Iso.inv_hom_id_app]
@@ -636,9 +636,9 @@ lemma shiftFunctorComm_zero_hom_app (a : A) :
 lemma shiftFunctorComm_hom_app_comp_shift_shiftFunctorAdd_hom_app (m₁ m₂ m₃ : A) (X : C) :
     (shiftFunctorComm C m₁ (m₂ + m₃)).hom.app X ≫
     ((shiftFunctorAdd C m₂ m₃).hom.app X)⟦m₁⟧' =
-  (shiftFunctorAdd C m₂ m₃).hom.app (X⟦m₁⟧) ≫
-    ((shiftFunctorComm C m₁ m₂).hom.app X)⟦m₃⟧' ≫
-    (shiftFunctorComm C m₁ m₃).hom.app (X⟦m₂⟧) := by
+      (shiftFunctorAdd C m₂ m₃).hom.app (X⟦m₁⟧) ≫
+        ((shiftFunctorComm C m₁ m₂).hom.app X)⟦m₃⟧' ≫
+        (shiftFunctorComm C m₁ m₃).hom.app (X⟦m₂⟧) := by
   rw [← cancel_mono ((shiftFunctorComm C m₁ m₃).inv.app (X⟦m₂⟧)),
     ← cancel_mono (((shiftFunctorComm C m₁ m₂).inv.app X)⟦m₃⟧')]
   simp only [Category.assoc, Iso.hom_inv_id_app]

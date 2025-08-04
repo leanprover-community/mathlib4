@@ -3,7 +3,7 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Paul Lezeau
 -/
-import Mathlib.RingTheory.DedekindDomain.Ideal
+import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 import Mathlib.RingTheory.IsAdjoinRoot
 
 /-!
@@ -28,7 +28,7 @@ with a formula).
 
 ## Main results
 
-* `normalized_factors_ideal_map_eq_normalized_factors_min_poly_mk_map` : The Kummer-Dedekind
+* `normalizedFactors_ideal_map_eq_normalizedFactors_min_poly_mk_map` : The Kummer-Dedekind
   theorem.
 * `Ideal.irreducible_map_of_irreducible_minpoly` : `I.map (algebraMap R S)` is irreducible if
   `(map (Ideal.Quotient.mk I) (minpoly R pb.gen))` is irreducible, where `pb` is a power basis
@@ -63,7 +63,7 @@ local notation:max R "<" x:max ">" => adjoin R ({x} : Set S)
     biggest ideal of `S` contained in `R<x>`. -/
 def conductor (x : S) : Ideal S where
   carrier := {a | ∀ b : S, a * b ∈ R<x>}
-  zero_mem' b := by simpa only [zero_mul] using Subalgebra.zero_mem _
+  zero_mem' b := by simp only [zero_mul, zero_mem]
   add_mem' ha hb c := by simpa only [add_mul] using Subalgebra.add_mem _ (ha c) (hb c)
   smul_mem' c a ha b := by simpa only [smul_eq_mul, mul_left_comm, mul_assoc] using ha (c * b)
 

@@ -138,7 +138,7 @@ theorem det_mul (M N : Matrix n n R) : det (M * N) = det M * det N :=
       rw [Finset.sum_comm]
     _ = ∑ p : n → n with Bijective p, ∑ σ : Perm n, ε σ * ∏ i, M (σ i) (p i) * N (p i) i := by
       refine (sum_subset (filter_subset _ _) fun f _ hbij ↦ det_mul_aux ?_).symm
-      simpa only [true_and, mem_filter, mem_univ] using hbij
+      simpa only [mem_filter_univ] using hbij
     _ = ∑ τ : Perm n, ∑ σ : Perm n, ε σ * ∏ i, M (σ i) (τ i) * N (τ i) i :=
       sum_bij (fun p h ↦ Equiv.ofBijective p (mem_filter.1 h).2) (fun _ _ ↦ mem_univ _)
         (fun _ _ _ _ h ↦ by injection h)
@@ -516,11 +516,7 @@ theorem det_eq_of_forall_row_eq_smul_add_const_aux {A B : Matrix n n R} {s : Fin
   induction s using Finset.induction_on generalizing B with
   | empty =>
     rintro c hs k - A_eq
-    have : ∀ i, c i = 0 := by
-      intro i
-      specialize hs i
-      contrapose! hs
-      simp [hs]
+    have : ∀ i, c i = 0 := by grind [Finset.notMem_empty]
     congr
     ext i j
     rw [A_eq, this, zero_mul, add_zero]

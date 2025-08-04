@@ -35,7 +35,7 @@ instance [SemilatticeSup β] : Max (α →o β) where
   max f g := ⟨fun a => f a ⊔ g a, f.mono.sup g.mono⟩
 
 @[simp] lemma coe_sup [SemilatticeSup β] (f g : α →o β) :
-  ((f ⊔ g : α →o β) : α → β) = (f : α → β) ⊔ g := rfl
+    ((f ⊔ g : α →o β) : α → β) = (f : α → β) ⊔ g := rfl
 
 instance [SemilatticeSup β] : SemilatticeSup (α →o β) :=
   { (_ : PartialOrder (α →o β)) with
@@ -48,7 +48,7 @@ instance [SemilatticeInf β] : Min (α →o β) where
   min f g := ⟨fun a => f a ⊓ g a, f.mono.inf g.mono⟩
 
 @[simp] lemma coe_inf [SemilatticeInf β] (f g : α →o β) :
-  ((f ⊓ g : α →o β) : α → β) = (f : α → β) ⊓ g := rfl
+    ((f ⊓ g : α →o β) : α → β) = (f : α → β) ⊓ g := rfl
 
 instance [SemilatticeInf β] : SemilatticeInf (α →o β) :=
   { (_ : PartialOrder (α →o β)), (dualIso α β).symm.toGaloisInsertion.liftSemilatticeInf with
