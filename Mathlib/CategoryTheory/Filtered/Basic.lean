@@ -64,7 +64,7 @@ variable (C : Type u) [Category.{v} C]
 /-- A category `IsFilteredOrEmpty` if
 1. for every pair of objects there exists another object "to the right", and
 2. for every pair of parallel morphisms there exists a morphism to the right so the compositions
-   are equal.
+  are equal.
 -/
 class IsFilteredOrEmpty : Prop where
   /-- for every pair of objects there exists another object "to the right" -/
@@ -76,7 +76,7 @@ class IsFilteredOrEmpty : Prop where
 /-- A category `IsFiltered` if
 1. for every pair of objects there exists another object "to the right",
 2. for every pair of parallel morphisms there exists a morphism to the right so the compositions
-   are equal, and
+  are equal, and
 3. there exists some object. -/
 @[stacks 002V "They also define a diagram being filtered."]
 class IsFiltered : Prop extends IsFilteredOrEmpty C where
