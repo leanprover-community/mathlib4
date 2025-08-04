@@ -743,29 +743,22 @@ open LinearEquiv
 open scoped TensorProduct
 
 lemma TensorProduct.assoc_tensor :
-    (TensorProduct.assoc R (A ⊗[R] B) C D)
-    = rTensor D (TensorProduct.assoc R A B C)
-    ≪≫ₗ (TensorProduct.assoc R A (B ⊗[R] C) D)
-    ≪≫ₗ lTensor A (TensorProduct.assoc R B C D)
+    (TensorProduct.assoc R (A ⊗[R] B) C D) = rTensor D (TensorProduct.assoc R A B C)
+    ≪≫ₗ (TensorProduct.assoc R A (B ⊗[R] C) D) ≪≫ₗ lTensor A (TensorProduct.assoc R B C D)
     ≪≫ₗ (TensorProduct.assoc R A B (C ⊗[R] D)).symm := by
   rw [← LinearEquiv.toLinearMap_inj]
   ext; simp
 
 lemma TensorProduct.assoc_tensor' :
-    (TensorProduct.assoc R A (B ⊗[R] C) D)
-    = rTensor D (TensorProduct.assoc R A B C).symm
-    ≪≫ₗ (TensorProduct.assoc R (A ⊗[R] B) C D)
-    ≪≫ₗ (TensorProduct.assoc R A B (C ⊗[R] D))
-    ≪≫ₗ lTensor A (TensorProduct.assoc R B C D).symm
-    := by
+    (TensorProduct.assoc R A (B ⊗[R] C) D) = rTensor D (TensorProduct.assoc R A B C).symm
+    ≪≫ₗ (TensorProduct.assoc R (A ⊗[R] B) C D) ≪≫ₗ (TensorProduct.assoc R A B (C ⊗[R] D))
+    ≪≫ₗ lTensor A (TensorProduct.assoc R B C D).symm := by
   rw [← LinearEquiv.toLinearMap_inj]
   ext; simp
 
 lemma TensorProduct.assoc_tensor'' :
-    (TensorProduct.assoc R A B (C ⊗[R] D))
-    = (TensorProduct.assoc R (A ⊗[R] B) C D).symm
-    ≪≫ₗ rTensor D (TensorProduct.assoc R A B C)
-    ≪≫ₗ (TensorProduct.assoc R A (B ⊗[R] C) D)
+    (TensorProduct.assoc R A B (C ⊗[R] D)) = (TensorProduct.assoc R (A ⊗[R] B) C D).symm
+    ≪≫ₗ rTensor D (TensorProduct.assoc R A B C) ≪≫ₗ (TensorProduct.assoc R A (B ⊗[R] C) D)
     ≪≫ₗ lTensor A (TensorProduct.assoc R B C D) := by
   rw [assoc_tensor]
   ext; simp
