@@ -142,7 +142,7 @@ instance instFintypeWalkingParallelPairHom (j j' : WalkingParallelPair) :
         [left, right].toFinset)
       (WalkingParallelPair.recOn j' ∅ [WalkingParallelPairHom.id one].toFinset)
   complete := by
-    rintro (_|_) <;> simp
+    rintro (_ | _) <;> simp
     cases j <;> simp
 end
 
@@ -177,7 +177,7 @@ instance fintypeHom (j j' : WidePullbackShape J) : Fintype (j ⟶ j') where
         exact {Hom.id j}
       · exact ∅
   complete := by
-    rintro (_|_)
+    rintro (_ | _)
     · cases j <;> simp
     · simp
 
@@ -199,7 +199,7 @@ instance fintypeHom (j j' : WidePushoutShape J) : Fintype (j ⟶ j') where
         exact {Hom.id j'}
       · exact ∅
   complete := by
-    rintro (_|_)
+    rintro (_ | _)
     · cases j <;> simp
     · simp
 
