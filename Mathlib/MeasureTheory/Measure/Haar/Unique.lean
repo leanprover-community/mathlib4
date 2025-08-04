@@ -365,7 +365,7 @@ lemma mul_haarScalarFactor_smul [LocallyCompactSpace G] (μ' μ : Measure G)
     _ = μ'.haarScalarFactor μ :=
       (haarScalarFactor_eq_integral_div _ _ g_cont g_comp int_g_ne_zero).symm
 
-@[to_additive]
+@[to_additive addHaarScalarFactor_smul_smul]
 lemma haarScalarFactor_smul_smul [LocallyCompactSpace G] (μ' μ : Measure G)
     [IsHaarMeasure μ] [IsFiniteMeasureOnCompacts μ'] [IsMulLeftInvariant μ'] {c : ℝ≥0}
     (hc : c ≠ 0) :
