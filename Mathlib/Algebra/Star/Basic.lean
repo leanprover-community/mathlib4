@@ -7,7 +7,6 @@ import Mathlib.Algebra.Group.Action.Opposite
 import Mathlib.Algebra.Group.Action.Units
 import Mathlib.Algebra.Group.Invertible.Defs
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Algebra.Regular.Basic
 import Mathlib.Algebra.Ring.Aut
 import Mathlib.Algebra.Ring.CompTypeclasses
 import Mathlib.Algebra.Ring.Opposite
