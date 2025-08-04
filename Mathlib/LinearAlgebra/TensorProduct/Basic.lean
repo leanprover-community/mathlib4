@@ -87,7 +87,7 @@ def TensorProduct : Type _ :=
 set_option quotPrecheck false in
 @[inherit_doc TensorProduct] scoped[TensorProduct] infixl:100 " ⊗ " => TensorProduct _
 
-@[inherit_doc] scoped[TensorProduct] notation:100 M " ⊗[" R "] " N:100 => TensorProduct R M N
+@[inherit_doc] scoped[TensorProduct] notation:100 M:100 " ⊗[" R "] " N:101 => TensorProduct R M N
 
 namespace TensorProduct
 
@@ -133,7 +133,7 @@ def tmul (m : M) (n : N) : M ⊗[R] N :=
 infixl:100 " ⊗ₜ " => tmul _
 
 /-- The canonical function `M → N → M ⊗ N`. -/
-notation:100 x " ⊗ₜ[" R "] " y:100 => tmul R x y
+notation:100 x:100 " ⊗ₜ[" R "] " y:101 => tmul R x y
 
 @[elab_as_elim, induction_eliminator]
 protected theorem induction_on {motive : M ⊗[R] N → Prop} (z : M ⊗[R] N)
@@ -616,7 +616,7 @@ theorem curry_apply (f : M ⊗ N →ₗ[R] P) (m : M) (n : N) : curry f m n = f 
 theorem curry_injective : Function.Injective (curry : (M ⊗[R] N →ₗ[R] P) → M →ₗ[R] N →ₗ[R] P) :=
   fun _ _ H => ext H
 
-theorem ext_threefold {g h : (M ⊗[R] N) ⊗[R] P →ₗ[R] Q}
+theorem ext_threefold {g h : M ⊗[R] N ⊗[R] P →ₗ[R] Q}
     (H : ∀ x y z, g (x ⊗ₜ y ⊗ₜ z) = h (x ⊗ₜ y ⊗ₜ z)) : g = h := by
   ext x y z
   exact H x y z
@@ -627,14 +627,14 @@ theorem ext_threefold' {g h : M ⊗[R] (N ⊗[R] P) →ₗ[R] Q}
   exact H x y z
 
 -- We'll need this one for checking the pentagon identity!
-theorem ext_fourfold {g h : ((M ⊗[R] N) ⊗[R] P) ⊗[R] Q →ₗ[R] S}
+theorem ext_fourfold {g h : M ⊗[R] N ⊗[R] P ⊗[R] Q →ₗ[R] S}
     (H : ∀ w x y z, g (w ⊗ₜ x ⊗ₜ y ⊗ₜ z) = h (w ⊗ₜ x ⊗ₜ y ⊗ₜ z)) : g = h := by
   ext w x y z
   exact H w x y z
 
 /-- Two linear maps (M ⊗ N) ⊗ (P ⊗ Q) → S which agree on all elements of the
 form (m ⊗ₜ n) ⊗ₜ (p ⊗ₜ q) are equal. -/
-theorem ext_fourfold' {φ ψ : (M ⊗[R] N) ⊗[R] P ⊗[R] Q →ₗ[R] S}
+theorem ext_fourfold' {φ ψ : M ⊗[R] N ⊗[R] (P ⊗[R] Q) →ₗ[R] S}
     (H : ∀ w x y z, φ (w ⊗ₜ x ⊗ₜ (y ⊗ₜ z)) = ψ (w ⊗ₜ x ⊗ₜ (y ⊗ₜ z))) : φ = ψ := by
   ext m n p q
   exact H m n p q
@@ -798,7 +798,7 @@ protected theorem map_one : map (1 : M →ₗ[R] M) (1 : N →ₗ[R] N) = 1 :=
 
 protected theorem map_mul (f₁ f₂ : M →ₗ[R] M) (g₁ g₂ : N →ₗ[R] N) :
     map (f₁ * f₂) (g₁ * g₂) = map f₁ g₁ * map f₂ g₂ :=
-  map_comp f₁ f₂ g₁ g₂
+  map_comp ..
 
 @[simp]
 protected theorem map_pow (f : M →ₗ[R] M) (g : N →ₗ[R] N) (n : ℕ) :
@@ -898,6 +898,9 @@ def congr (f : M ≃ₗ[R] P) (g : N ≃ₗ[R] Q) : M ⊗[R] N ≃ₗ[R] P ⊗[R
   LinearEquiv.ofLinear (map f g) (map f.symm g.symm)
     (ext' fun m n => by simp)
     (ext' fun m n => by simp)
+
+@[simp]
+lemma toLinearMap_congr (f : M ≃ₗ[R] P) (g : N ≃ₗ[R] Q) : (congr f g).toLinearMap = map f g := rfl
 
 @[simp]
 theorem congr_tmul (f : M ≃ₗ[R] P) (g : N ≃ₗ[R] Q) (m : M) (n : N) :

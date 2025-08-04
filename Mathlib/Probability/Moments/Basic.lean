@@ -462,4 +462,15 @@ lemma integrable_exp_mul_of_le [IsFiniteMeasure μ] {X : Ω → ℝ} (t b : ℝ)
   filter_upwards [hb] with ω hb
   exact ⟨by positivity, by gcongr⟩
 
+lemma integrable_exp_mul_of_mem_Icc [IsFiniteMeasure μ] {X : Ω → ℝ} {a b t : ℝ}
+    (hm : AEMeasurable X μ) (hb : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
+    Integrable (fun ω ↦ exp (t * X ω)) μ := by
+  apply Integrable.of_mem_Icc (exp (min (a * t) (b * t))) (exp (max (a * t) (b * t)))
+  · exact (measurable_exp.comp_aemeasurable (hm.const_mul t))
+  filter_upwards [hb] with ω ⟨hl, hr⟩
+  simp only [Set.mem_Icc, exp_le_exp, inf_le_iff, le_sup_iff]
+  by_cases ht : 0 ≤ t
+  · exact ⟨Or.inl (by nlinarith), Or.inr (by nlinarith)⟩
+  · exact ⟨Or.inr (by nlinarith), Or.inl (by nlinarith)⟩
+
 end ProbabilityTheory

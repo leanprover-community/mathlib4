@@ -249,25 +249,6 @@ theorem isClosed_innerDualCone : IsClosed (s.innerDualCone : Set H) := by
   rw [h]
   exact isClosed_Ici.preimage (continuous_const.inner continuous_id')
 
-theorem ConvexCone.pointed_of_nonempty_of_isClosed (K : ConvexCone ℝ H) (ne : (K : Set H).Nonempty)
-    (hc : IsClosed (K : Set H)) : K.Pointed := by
-  obtain ⟨x, hx⟩ := ne
-  let f : ℝ → H := (· • x)
-  -- f (0, ∞) is a subset of K
-  have fI : f '' Set.Ioi 0 ⊆ (K : Set H) := by
-    rintro _ ⟨_, h, rfl⟩
-    exact K.smul_mem (Set.mem_Ioi.1 h) hx
-  -- closure of f (0, ∞) is a subset of K
-  have clf : closure (f '' Set.Ioi 0) ⊆ (K : Set H) := hc.closure_subset_iff.2 fI
-  -- f is continuous at 0 from the right
-  have fc : ContinuousWithinAt f (Set.Ioi (0 : ℝ)) 0 :=
-    (continuous_id.smul continuous_const).continuousWithinAt
-  -- 0 belongs to the closure of the f (0, ∞)
-  have mem₀ := fc.mem_closure_image (by rw [closure_Ioi (0 : ℝ), mem_Ici])
-  -- as 0 ∈ closure f (0, ∞) and closure f (0, ∞) ⊆ K, 0 ∈ K.
-  have f₀ : f 0 = 0 := zero_smul ℝ x
-  simpa only [f₀, ConvexCone.Pointed, ← SetLike.mem_coe] using mem_of_subset_of_mem clf mem₀
-
 namespace PointedCone
 
 set_option linter.deprecated false in
@@ -309,7 +290,7 @@ theorem ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_notMem (K : 
     rwa [add_sub_cancel_right, real_inner_comm, ← neg_nonneg, neg_eq_neg_one_mul,
       ← real_inner_smul_right, neg_smul, one_smul, neg_sub] at hinner
   · -- as `K` is closed and non-empty, it is pointed
-    have hinner₀ := hinner 0 (K.pointed_of_nonempty_of_isClosed ne hc)
+    have hinner₀ := hinner 0 (ConvexCone.Pointed.of_nonempty_of_isClosed (C := K) ne hc)
     -- the rest of the proof is a straightforward calculation
     rw [zero_sub, inner_neg_right, Right.neg_nonpos_iff] at hinner₀
     have hbz : b - z ≠ 0 := by

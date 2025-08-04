@@ -713,16 +713,7 @@ lemma domDomRestrict_aux {ι} [DecidableEq ι] (P : ι → Prop) [DecidablePred 
     (c : M₁ i) : (fun j ↦ if h : P j then Function.update x i c ⟨j, h⟩ else z ⟨j, h⟩) =
     Function.update (fun j => if h : P j then x ⟨j, h⟩ else z ⟨j, h⟩) i c := by
   ext j
-  by_cases h : j = i
-  · rw [h, Function.update_self]
-    simp only [i.2, update_self, dite_true]
-  · rw [Function.update_of_ne h]
-    by_cases h' : P j
-    · simp only [h', dite_true]
-      have h'' : ¬ ⟨j, h'⟩ = i :=
-        fun he => by apply_fun (fun x => x.1) at he; exact h he
-      rw [Function.update_of_ne h'']
-    · simp only [h', dite_false]
+  by_cases h : j = i <;> grind [Function.update_self, Function.update_of_ne]
 
 lemma domDomRestrict_aux_right {ι} [DecidableEq ι] (P : ι → Prop) [DecidablePred P] {M₁ : ι → Type*}
     [DecidableEq {a // ¬ P a}]
@@ -1090,9 +1081,9 @@ def _root_.LinearEquiv.multilinearMapCongrLeft (e : Π (i : ι), M₁ i ≃ₗ[R
 sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g` and multilinear in
 `f₁, ..., fₙ`. -/
 @[simps] def compLinearMapMultilinear :
-  @MultilinearMap R ι (fun i ↦ M₁ i →ₗ[R] M₁' i)
-    ((MultilinearMap R M₁' M₂) →ₗ[R] MultilinearMap R M₁ M₂) _ _ _
-      (fun _ ↦ LinearMap.module) _ where
+    @MultilinearMap R ι (fun i ↦ M₁ i →ₗ[R] M₁' i)
+      ((MultilinearMap R M₁' M₂) →ₗ[R] MultilinearMap R M₁ M₂) _ _ _
+        (fun _ ↦ LinearMap.module) _ where
   toFun := MultilinearMap.compLinearMapₗ
   map_update_add' := by
     intro _ f i f₁ f₂

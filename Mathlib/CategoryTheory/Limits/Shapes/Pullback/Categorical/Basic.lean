@@ -58,8 +58,6 @@ universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 namespace CategoryTheory.Limits
 
-attribute [local simp] CatCommSq.iso_hom_naturality  CatCommSq.iso_inv_naturality
-
 section
 
 variable {A : Type u₁} {B : Type u₂} {C : Type u₃}
@@ -96,7 +94,7 @@ structure Hom (x y : F ⊡ G) where
   /-- the second component of `f : Hom x y` is a morphism `x.snd ⟶ y.snd` -/
   snd : x.snd ⟶ y.snd
   /-- the compatibility condition on `fst` and `snd` with respect to the structure
-  isompophisms -/
+  isomorphisms -/
   w : F.map fst ≫ y.iso.hom = x.iso.hom ≫ G.map snd := by aesop_cat
 
 attribute [reassoc (attr := simp)] Hom.w
@@ -212,8 +210,8 @@ instance asSquare (S : CatCommSqOver F G X) : CatCommSq S.fst S.snd F G where
 
 @[reassoc (attr := simp)]
 lemma iso_hom_naturality (S : CatCommSqOver F G X) {x x' : X} (f : x ⟶ x') :
-   F.map (S.fst.map f) ≫ S.iso.hom.app x' =
-   S.iso.hom.app x ≫ G.map (S.snd.map f) :=
+    F.map (S.fst.map f) ≫ S.iso.hom.app x' =
+    S.iso.hom.app x ≫ G.map (S.snd.map f) :=
   S.iso.hom.naturality f
 
 @[reassoc (attr := simp)]
@@ -230,7 +228,7 @@ abbrev fstFunctor : CatCommSqOver F G X ⥤ X ⥤ A := π₁ _ _
 /-- The "second projection" of a CatCommSqOver as a functor. -/
 abbrev sndFunctor : CatCommSqOver F G X ⥤ X ⥤ C := π₂ _ _
 
-/-- The structure isompophism of a `CatCommSqOver` as a natural transformation. -/
+/-- The structure isomorphism of a `CatCommSqOver` as a natural transformation. -/
 abbrev e :
     fstFunctor F G X ⋙ (whiskeringRight X A B).obj F ≅
     sndFunctor F G X ⋙ (whiskeringRight X C B).obj G :=

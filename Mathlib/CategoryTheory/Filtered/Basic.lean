@@ -242,10 +242,7 @@ theorem sup_exists :
         apply coeq_condition
       · rw [@w' _ _ mX mY f']
         simp only [Finset.mem_insert, PSigma.mk.injEq, heq_eq_eq, true_and] at mf'
-        rcases mf' with mf' | mf'
-        · exfalso
-          exact hf mf'.symm
-        · exact mf'
+        grind
     · rw [@w' _ _ mX' mY' f' _]
       apply Finset.mem_of_mem_insert_of_ne mf'
       contrapose! h
@@ -699,10 +696,7 @@ theorem inf_exists :
         apply eq_condition
       · rw [@w' _ _ mX mY f']
         simp only [Finset.mem_insert, PSigma.mk.injEq, heq_eq_eq, true_and] at mf'
-        rcases mf' with mf' | mf'
-        · exfalso
-          exact hf mf'.symm
-        · exact mf'
+        grind
     · rw [@w' _ _ mX' mY' f' _]
       apply Finset.mem_of_mem_insert_of_ne mf'
       contrapose! h
