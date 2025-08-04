@@ -65,7 +65,7 @@ attribute [instance] ProjectivePresentation.projective ProjectivePresentation.ep
 variable (C)
 
 /-- A category "has enough projectives" if for every object `X` there is a projective object `P` and
-    an epimorphism `P ↠ X`. -/
+an epimorphism `P ↠ X`. -/
 class EnoughProjectives : Prop where
   presentation : ∀ X : C, Nonempty (ProjectivePresentation X)
 
