@@ -13,12 +13,11 @@ import Mathlib.Topology.Defs.Filter
 # Support of a Measure
 
 This file develops the theory of the **topological support** of a measure `μ` on a
-topological measurable space. The support is defined as the set of points whose every
-(neighborhood or filter-theoretic) neighborhood has positive measure. We give equivalent
-characterizations, prove basic functoriality and measure-theoretic properties, and study
-interactions with sums, restrictions, and absolute continuity. Special geometric/topological
-conditions (e.g., Lindelöf or hereditarily Lindelöf ambient spaces) are used to show that
-the support is conull, and various descriptions of the complement of the support are provided.
+topological measurable space. The support is defined as the set of points whose every open
+neighborhood has positive measure. We give equivalent characterizations, prove basic
+measure-theoretic properties, and study interactions with sums, restrictions, and
+absolute continuity. Under various Lindelöf conditions, the support is conull,
+and various descriptions of the complement of the support are provided.
 
 ## Main definitions
 
@@ -28,11 +27,11 @@ the support is conull, and various descriptions of the complement of the support
 
 ## Main results
 
-* `mem_support_iff` and `mem_support_iff_forall` : equivalent filter-theoretic and
+* `mem_support_iff` and `mem_support_iff_forall` : filter-theoretic and
   neighborhood characterizations of membership in the support.
-* `notMem_support_iff` and `notMem_support_iff_exists` : dual characterizations of lying
+* `notMem_support_iff` and `notMem_support_iff_exists` : characterizations of lying
   outside the support.
-* `support_eq_univ` : if `μ` is an open positive measure then its support is the whole space.
+* `support_eq_univ` : if `IsOpenPosMeasure μ`, then the support of `μ` is the whole space.
 * `support_zero` : the support of the zero measure is empty.
 * `support_mono` and `AbsolutelyContinuous.support_mono` : monotonicity of support under
   measure domination and absolute continuity.
@@ -58,6 +57,8 @@ the support is conull, and various descriptions of the complement of the support
 
 ## Implementation notes
 
+Have to go through and resove some of these, and remove the associated bullets!
+
 * The definition of support uses the `frequently_smallSets` formulation. Auxiliary lemmas
   about `Filter.frequently_smallSets'` and the `HasBasis` variants are provided; these should
   eventually live near the definition of `smallSets` in the core filter API to streamline
@@ -75,13 +76,6 @@ the support is conull, and various descriptions of the complement of the support
   extensions in well-delineated subsections or submodules.
 * Some proofs contain “golf” comments or ad hoc constructions—adding focused docstrings and
   cleaning those proofs (and their invariants) will improve maintainability.
-
-## References
-
-* (placeholder) Standard measure theory and topology sources on support of measures, Lindelöf
-  spaces, and absolute continuity.
-  -- e.g., references to the canonical bibliography entry for a measure theory text and a
-  topology reference in `docs/references.bib`.
 
 ## Tags
 
