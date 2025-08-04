@@ -15,9 +15,9 @@ This file defines the finite set of `d`-tuples of natural numbers with a fixed p
 
 ## Main Results
 * There are `d^(ω n)` ways to write `n` as a product of `d` natural numbers, when `n` is squarefree
-(`card_finMulAntidiag_of_squarefree`)
+  (`card_finMulAntidiag_of_squarefree`)
 * There are `3^(ω n)` pairs of natural numbers whose `lcm` is `n`, when `n` is squarefree
-(`card_pair_lcm_eq`)
+  (`card_pair_lcm_eq`)
 -/
 
 open Finset
@@ -170,7 +170,7 @@ private def primeFactorsPiBij (d n : ℕ) :
   fun f _ i => ∏ p ∈ {p ∈ n.primeFactors.attach | f p.1 p.2 = i} , p
 
 private theorem primeFactorsPiBij_img (d n : ℕ) (hn : Squarefree n)
-  (f : (p : ℕ) → p ∈ n.primeFactors → Fin d) (hf : f ∈ pi n.primeFactors fun _ => univ) :
+    (f : (p : ℕ) → p ∈ n.primeFactors → Fin d) (hf : f ∈ pi n.primeFactors fun _ => univ) :
     Nat.primeFactorsPiBij d n f hf ∈ finMulAntidiag d n := by
   rw [mem_finMulAntidiag]
   refine ⟨?_, hn.ne_zero⟩
@@ -216,8 +216,7 @@ private theorem primeFactorsPiBij_surj (d n : ℕ) (hn : Squarefree n)
   trans (∏ p ∈ n.primeFactors.attach, if p.1 ∣ t i then p else 1)
   · rw [Nat.primeFactorsPiBij, ← prod_filter]
     congr
-    ext ⟨p, hp⟩
-    refine ⟨by rintro rfl; apply hf, fun h => (hf_unique p hp i h).symm⟩
+    grind
   rw [prod_attach (f:=fun p => if p ∣ t i then p else 1), ← Finset.prod_filter]
   rw [primeFactors_filter_dvd_of_dvd hn.ne_zero this]
   exact prod_primeFactors_of_squarefree <| hn.squarefree_of_dvd this

@@ -22,7 +22,7 @@ variable {ι R : Type*} [CommSemiring R]
 
 /-- Two multilinear maps indexed by a `Fintype` are equal if they are equal when all arguments
 are basis vectors. -/
-theorem Basis.ext_multilinear [Finite ι] {f g : MultilinearMap R M N} {ιM : ι → Type*}
+theorem Module.Basis.ext_multilinear [Finite ι] {f g : MultilinearMap R M N} {ιM : ι → Type*}
     (e : ∀ i, Basis (ιM i) R (M i))
     (h : ∀ v : (i : ι) → ιM i, (f fun i ↦ e i (v i)) = g fun i ↦ e i (v i)) : f = g := by
   cases nonempty_fintype ι
@@ -34,4 +34,4 @@ theorem Basis.ext_multilinear [Finite ι] {f g : MultilinearMap R M N} {ιM : ι
     map_sum_finset, map_smul_univ, h]
 
 @[deprecated (since := "2025-05-12")]
-alias Basis.ext_multilinear_fin := Basis.ext_multilinear
+alias Basis.ext_multilinear_fin := Module.Basis.ext_multilinear

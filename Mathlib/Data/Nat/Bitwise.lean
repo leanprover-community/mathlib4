@@ -6,6 +6,7 @@ Authors: Markus Himmel, Alex Keizer
 import Mathlib.Algebra.Group.Nat.Even
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Ring.Nat
+import Mathlib.Data.Bool.Basic
 import Mathlib.Data.List.GetD
 import Mathlib.Data.Nat.Bits
 import Mathlib.Order.Basic

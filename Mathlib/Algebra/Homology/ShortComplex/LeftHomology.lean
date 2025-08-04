@@ -232,8 +232,8 @@ class HasLeftHomology : Prop where
   condition : Nonempty S.LeftHomologyData
 
 /-- A chosen `S.LeftHomologyData` for a short complex `S` that has left homology -/
-noncomputable def leftHomologyData [S.HasLeftHomology] :
-  S.LeftHomologyData := HasLeftHomology.condition.some
+noncomputable def leftHomologyData [S.HasLeftHomology] : S.LeftHomologyData :=
+  HasLeftHomology.condition.some
 
 variable {S}
 
@@ -242,7 +242,7 @@ namespace HasLeftHomology
 lemma mk' (h : S.LeftHomologyData) : HasLeftHomology S := ⟨Nonempty.intro h⟩
 
 instance of_hasKernel_of_hasCokernel [HasKernel S.g] [HasCokernel (kernel.lift S.g S.f S.zero)] :
-  S.HasLeftHomology := HasLeftHomology.mk' (LeftHomologyData.ofHasKernelOfHasCokernel S)
+    S.HasLeftHomology := HasLeftHomology.mk' (LeftHomologyData.ofHasKernelOfHasCokernel S)
 
 instance of_hasCokernel {X Y : C} (f : X ⟶ Y) (Z : C) [HasCokernel f] :
     (ShortComplex.mk f (0 : Y ⟶ Z) comp_zero).HasLeftHomology :=
