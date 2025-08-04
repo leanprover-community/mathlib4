@@ -216,7 +216,7 @@ lemma nullMeasurableSet_compl_support : NullMeasurableSet (μ.supportᶜ) μ :=
 
 @[simp]
 lemma nullMeasurableSet_support : NullMeasurableSet μ.support μ :=
-  NullMeasurableSet.compl_iff.mp (nullMeasurableSet_compl_support)
+  NullMeasurableSet.compl_iff.mp nullMeasurableSet_compl_support
 
 @[simp]
 lemma measure_support : μ μ.support = μ Set.univ :=
