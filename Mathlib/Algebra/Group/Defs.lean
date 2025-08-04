@@ -82,7 +82,7 @@ class IsLeftCancelAdd (G : Type u) [Add G] : Prop where
   /-- Addition is left cancellative (i.e. left regular). -/
   protected add_left_cancel (a : G) : IsAddLeftRegular a
 
-attribute [to_additive IsLeftCancelAdd] IsLeftCancelMul
+attribute [to_additive] IsLeftCancelMul
 attribute [to_additive] isLeftCancelMul_iff
 
 /-- A mixin for right cancellative addition. -/
@@ -90,15 +90,15 @@ class IsRightCancelAdd (G : Type u) [Add G] : Prop where
   /-- Addition is right cancellative (i.e. right regular). -/
   protected add_right_cancel (a : G) : IsAddRightRegular a
 
-attribute [to_additive IsRightCancelAdd] IsRightCancelMul
+attribute [to_additive] IsRightCancelMul
 attribute [to_additive] isRightCancelMul_iff
 
 /-- A mixin for cancellative addition. -/
 @[mk_iff]
 class IsCancelAdd (G : Type u) [Add G] : Prop extends IsLeftCancelAdd G, IsRightCancelAdd G
 
-attribute [to_additive IsCancelAdd] IsCancelMul
-attribute [to_additive] isCancelMul_iff
+attribute [to_additive] IsCancelMul
+attribute [to_additive existing] isCancelMul_iff
 
 section Regular
 
@@ -732,7 +732,7 @@ instance (priority := 100) CancelCommMonoid.toCancelMonoid (M : Type u) [CancelC
   { CommMagma.IsLeftCancelMul.toIsRightCancelMul M with }
 
 /-- Any `CancelMonoid G` satisfies `IsCancelMul G`. -/
-@[to_additive toIsCancelAdd "Any `AddCancelMonoid G` satisfies `IsCancelAdd G`."]
+@[to_additive "Any `AddCancelMonoid G` satisfies `IsCancelAdd G`."]
 instance (priority := 100) CancelMonoid.toIsCancelMul (M : Type u) [CancelMonoid M] :
     IsCancelMul M where
 
