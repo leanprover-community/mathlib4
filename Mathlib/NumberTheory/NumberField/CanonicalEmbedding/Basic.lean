@@ -27,10 +27,10 @@ into the type `(K →+* ℂ) → ℂ` of `ℂ`-vectors indexed by the complex em
   radius is finite.
 
 * `NumberField.mixedEmbedding`: the ring homomorphism from `K` to the mixed space
-`K →+* ({ w // IsReal w } → ℝ) × ({ w // IsComplex w } → ℂ)` that sends `x ∈ K` to `(φ_w x)_w`
-where `φ_w` is the embedding associated to the infinite place `w`. In particular, if `w` is real
-then `φ_w : K →+* ℝ` and, if `w` is complex, `φ_w` is an arbitrary choice between the two complex
-embeddings defining the place `w`.
+  `K →+* ({ w // IsReal w } → ℝ) × ({ w // IsComplex w } → ℂ)` that sends `x ∈ K` to `(φ_w x)_w`
+  where `φ_w` is the embedding associated to the infinite place `w`. In particular, if `w` is real
+  then `φ_w : K →+* ℝ` and, if `w` is complex, `φ_w` is an arbitrary choice between the two complex
+  embeddings defining the place `w`.
 
 ## Tags
 

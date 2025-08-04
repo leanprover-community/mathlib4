@@ -33,7 +33,7 @@ without first determining the normalizations once and for all.
 ## Main Definition
 
 * `Valuation.HasExtension vR vA` : The valuation `vA` on `A` is an extension of the valuation
-`vR` on `R`.
+  `vR` on `R`.
 
 ## References
 

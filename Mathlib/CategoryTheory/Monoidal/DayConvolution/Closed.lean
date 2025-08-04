@@ -19,7 +19,7 @@ the Day convolution monoidal structure.
 
 ## TODOs
 * When `LawfulDayConvolutionMonoidalStruct` (#26820) lands, transport the
-constructions here to produce actual `CategoryTheory.MonoidalClosed` instances.
+  constructions here to produce actual `CategoryTheory.MonoidalClosed` instances.
 -/
 
 universe v₁ v₂ u₁ u₂

@@ -354,11 +354,13 @@ lemma normEDS_odd (m : ℤ) : normEDS b c d (2 * m + 1) =
 
 @[deprecated (since := "2025-05-15")] alias normEDS_odd_ofNat := normEDS_odd
 
-/-- Strong recursion principle for a normalised EDS: if we have
+/--
+Strong recursion principle for a normalised EDS: if we have
 * `P 0`, `P 1`, `P 2`, `P 3`, and `P 4`,
 * for all `m : ℕ` we can prove `P (2 * (m + 3))` from `P k` for all `k < 2 * (m + 3)`, and
 * for all `m : ℕ` we can prove `P (2 * (m + 2) + 1)` from `P k` for all `k < 2 * (m + 2) + 1`,
-then we have `P n` for all `n : ℕ`. -/
+  then we have `P n` for all `n : ℕ`.
+-/
 @[elab_as_elim]
 noncomputable def normEDSRec' {P : ℕ → Sort u}
     (zero : P 0) (one : P 1) (two : P 2) (three : P 3) (four : P 4)

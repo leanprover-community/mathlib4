@@ -21,7 +21,7 @@ This file deals with the set of principal ideals of a `CommRing R`.
   the submonoid of principal ideals of `R`.
 
 * `Ideal.associatesNonZeroDivisorsMulEquivIsPrincipal`: the `MulEquiv` between the monoid of
-`Associates R⁰` and the submonoid of non-zero-divisors principal ideals of `R`.
+  `Associates R⁰` and the submonoid of non-zero-divisors principal ideals of `R`.
 -/
 
 variable {R : Type*} [CommRing R]

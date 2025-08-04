@@ -46,9 +46,9 @@ that is "natural up to 2-isomorphisms".
 More precisely, it consists of the following:
 * a 1-morphism `η.app a : F.obj a ⟶ G.obj a` for each object `a : B`.
 * a 2-isomorphism `η.naturality f : F.map f ≫ app b ≅ app a ≫ G.map f` for each 1-morphism
-`f : a ⟶ b`.
+  `f : a ⟶ b`.
 * These 2-isomorphisms satisfy the naturality condition, and preserve the identities and the
-compositions modulo some adjustments of domains and codomains of 2-morphisms.
+  compositions modulo some adjustments of domains and codomains of 2-morphisms.
 -/
 structure StrongTrans (F G : Pseudofunctor B C) where
   /-- The component 1-morphisms of a strong transformation. -/

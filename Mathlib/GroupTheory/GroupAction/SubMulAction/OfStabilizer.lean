@@ -27,25 +27,21 @@ and permit to manipulate them in a relatively smooth way.
 * `SubMulAction.ofStabilizer a` : the action of `stabilizer G a` on `{a}ᶜ`
 
 * `SubMulAction.Enat_card_ofStabilizer_eq_add_one`, `SubMulAction.nat_card_ofStabilizer_eq`
-compute the cardinality of the `carrier` of that action.
+  compute the cardinality of the `carrier` of that action.
 
 Consider `a b : α` and `g : G` such that `hg : g • b = a`.
 
 * `SubMulAction.conjMap hg` is the equivariant map
-from `SubMulAction.ofStabilizer G a` to `SubMulAction.ofStabilizer G b`.
-
+  from `SubMulAction.ofStabilizer G a` to `SubMulAction.ofStabilizer G b`.
 * `SubMulAction.ofStabilizer.isPretransitive_iff_conj hg` shows
-that this actions are equivalently pretransitive or
-
+  that this actions are equivalently pretransitive or
 * `SubMulAction.ofStabilizer.isMultiplyPretransitive_iff_conj hg` shows
-that this actions are equivalently `n`-pretransitive for all `n : ℕ`.
-
+  that this actions are equivalently `n`-pretransitive for all `n : ℕ`.
 * `SubMulAction.ofStabilizer.append` : given `x : Fin n ↪ ofStabilizer G a`,
-append `a` to obtain `y : Fin n.succ ↪ α`
-
+  append `a` to obtain `y : Fin n.succ ↪ α`
 * `SubMulAction.ofStabilizer.isMultiplyPretransitive_iff` : is the action of `G` on `α`
-is pretransitive, then it is `n.succ` pretransitive if and only if
-the action of `stabilizer G a` on `ofStabilizer G a` is `n`-pretransitive.
+  is pretransitive, then it is `n.succ` pretransitive if and only if
+  the action of `stabilizer G a` on `ofStabilizer G a` is `n`-pretransitive.
 
 -/
 

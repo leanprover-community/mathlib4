@@ -25,10 +25,10 @@ in general, but we can still register them as `PartialEquiv`.
 ## Main results
 
 * `contDiffOn_extend_coord_change`: if `f` and `f'` lie in the maximal atlas on `M`,
-`f.extend I ∘ (f'.extend I).symm` is continuous on its source
+  `f.extend I ∘ (f'.extend I).symm` is continuous on its source
 
 * `contDiffOn_ext_coord_change`: for `x x : M`, the coordinate change
-`(extChartAt I x').symm ≫ extChartAt I x` is continuous on its source
+  `(extChartAt I x').symm ≫ extChartAt I x` is continuous on its source
 
 * `Manifold.locallyCompact_of_finiteDimensional`: a finite-dimensional manifold
   modelled on a locally compact field (such as ℝ, ℂ or the `p`-adic numbers) is locally compact

@@ -20,14 +20,13 @@ complement of `s` is primitive.
 
 * `MulAction.is_one_preprimitive_iff` : an action is 1-primitive if and only if it is primitive
 
-* `MulAction.isMultiplyPreprimitive_ofStabilizer`: if an action
-is `n + 1`-primitive, then the action of `stabilizer G a` on
-the complement of `{a}` is `n`-primitive.
+* `MulAction.isMultiplyPreprimitive_ofStabilizer`: if an action is `n + 1`-primitive,
+  then the action of `stabilizer G a` on the complement of `{a}` is `n`-primitive.
 
 * `MulAction.isMultiplyPreprimitive_succ_iff_ofStabilizer` :
-for `1 ≤ n`, an action is `n + 1`-primitive, then the action
-of `stabilizer G a` on the complement of `{a}` is `n`-primitive.
-ofFixingSubgroup.isMultiplyPreprimitive
+  for `1 ≤ n`, an action is `n + 1`-primitive, then the action
+  of `stabilizer G a` on the complement of `{a}` is `n`-primitive.
+  ofFixingSubgroup.isMultiplyPreprimitive
 
 * `MulAction.ofFixingSubgroup.isMultiplyPreprimitive`:
 If an action is `s.ncard + m`-primitive, then

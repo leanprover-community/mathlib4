@@ -32,11 +32,11 @@ explicitly (see `MonoidWithZeroHom.mem_valueGroup_iff_of_comm`).
 * `valueGroup f` is the smallest subgroup of `Bˣ` containing the range of `f`;
 * `valueMonoid₀ f` is the smallest subgroup with `0` containing the range of `f`;
 * When `B` is a group with zero, rather than merely a monoid with zero, the above definitions
-all coincide: see `valueMonoid_eq_valueGroup` for an equality as submonoids and
-`valueMonoid_eq_valueGroup'` for an equality as subsets.
+  all coincide: see `valueMonoid_eq_valueGroup` for an equality as submonoids and
+  `valueMonoid_eq_valueGroup'` for an equality as subsets.
 * When `B` is a *commutative* group with zero, `MonoidWithZeroHom.valueGroup` can be
-explicitly described as the elements that are ratios of terms in `range f`, see
-`MonoidWithZeroHom.mem_valueGroup_iff_of_comm`.
+  explicitly described as the elements that are ratios of terms in `range f`, see
+  `MonoidWithZeroHom.mem_valueGroup_iff_of_comm`.
 
 ## Implementation details
 `MonoidWithZeroHom.valueMonoid` is defined explicitly in terms of its carrier, by proving the
