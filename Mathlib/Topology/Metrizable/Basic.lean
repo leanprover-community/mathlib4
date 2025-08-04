@@ -113,12 +113,11 @@ attribute [instance 100] MetrizableSpace.toPseudoMetrizableSpace
 instance (priority := 100) PseudoMetrizableSpace.toMetrizableSpace
     [T0Space X] [h : PseudoMetrizableSpace X] : MetrizableSpace X where
 
-instance (priority := 100) t2Space_of_metrizableSpace [MetrizableSpace X] : T2Space X :=
+instance (priority := 100) t3Space_of_metrizableSpace [MetrizableSpace X] : T3Space X :=
   letI : UniformSpace X := pseudoMetrizableSpaceUniformity X
   inferInstance
 
-instance (priority := 100) t3Space_of_metrizableSpace [MetrizableSpace X] : T3Space X :=
-  letI : UniformSpace X := pseudoMetrizableSpaceUniformity X
+instance (priority := 100) t2Space_of_metrizableSpace [MetrizableSpace X] : T2Space X :=
   inferInstance
 
 instance metrizableSpace_prod [MetrizableSpace X] [MetrizableSpace Y] :
