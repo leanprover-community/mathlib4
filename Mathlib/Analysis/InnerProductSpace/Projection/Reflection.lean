@@ -9,6 +9,10 @@ import Mathlib.Analysis.InnerProductSpace.Projection.Basic
 
 # Reflection
 
+A linear isometry equivalence `K.reflection : E ≃ₗᵢ[𝕜] E` is constructed, by choosing, for
+each `u : E`, the point `K.reflection u` to satisfy
+`u + (K.reflection u) = 2 • K.orthogonalProjection u`.
+
 -/
 
 noncomputable section
@@ -147,7 +151,7 @@ theorem reflection_orthogonalComplement_singleton_eq_neg (v : E) : reflection (�
 theorem reflection_sub {v w : F} (h : ‖v‖ = ‖w‖) : reflection (ℝ ∙ (v - w))ᗮ v = w := by
   set R : F ≃ₗᵢ[ℝ] F := reflection (ℝ ∙ v - w)ᗮ
   suffices R v + R v = w + w by
-    apply smul_right_injective F (by norm_num : (2 : ℝ) ≠ 0)
+    apply smul_right_injective F (by simp : (2 : ℝ) ≠ 0)
     simpa [two_smul] using this
   have h₁ : R (v - w) = -(v - w) := reflection_orthogonalComplement_singleton_eq_neg (v - w)
   have h₂ : R (v + w) = v + w := by
