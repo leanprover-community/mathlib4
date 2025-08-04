@@ -71,6 +71,8 @@ variable {E}
 theorem toStrongDualMap_apply {x y : E} : toStrongDualMap 𝕜 E x y = ⟪x, y⟫ :=
   rfl
 
+@[deprecated (since := "2025-08-3")] alias toDualMap_apply := toStrongDualMap_apply
+
 section NullSubmodule
 
 open LinearMap
@@ -107,7 +109,7 @@ theorem ext_inner_left_basis {ι : Type*} {x y : E} (b : Basis ι 𝕜 E)
   refine (Function.Injective.eq_iff ContinuousLinearMap.coe_injective).mp (b.ext ?_)
   intro i
   simp only [ContinuousLinearMap.coe_coe]
-  rw [toDualMap_apply, toDualMap_apply]
+  rw [toStrongDualMap_apply, toStrongDualMap_apply]
   rw [← inner_conj_symm]
   conv_rhs => rw [← inner_conj_symm]
   exact congr_arg conj (h i)
