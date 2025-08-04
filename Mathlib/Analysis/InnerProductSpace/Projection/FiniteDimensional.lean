@@ -11,7 +11,7 @@ import Mathlib.Analysis.NormedSpace.RCLike
 
 /-!
 
-# Finite dimensional..
+This file contains results about orthogonal projections in finite-dimensional spaces.
 
 -/
 
@@ -22,13 +22,7 @@ variable [InnerProductSpace 𝕜 E] [InnerProductSpace ℝ F]
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 local notation "absR" => @abs ℝ _ _
 
-open Topology Finsupp Submodule
-
-open RCLike Real Filter
-
-open LinearMap (ker range)
-
-open InnerProductSpace
+open Topology Finsupp Submodule RCLike Real Filter LinearMap (ker range) InnerProductSpace
 
 variable (K : Submodule 𝕜 E)
 
@@ -218,8 +212,6 @@ theorem LinearIsometryEquiv.reflections_generate [FiniteDimensional ℝ F] :
   intro x hx
   rcases List.mem_map.mp hx with ⟨a, _, hax⟩
   exact Subgroup.subset_closure ⟨a, hax⟩
-
-
 
 section OrthogonalFamily
 
