@@ -224,6 +224,28 @@ instance : LinearOrderedCommMonoidWithZero I where
     apply mul_le_mul le_rfl ?_ (nonneg i) (nonneg k)
     simp [h_ij]
 
+@[simp]
+lemma subtype_Iic_eq_Icc (x : I) : Subtype.val⁻¹' (Iic ↑x) = Icc 0 x := by
+  ext _
+  simp only [preimage_subtype_val_Iic, mem_Iic, mem_Icc, zero_le', true_and]
+
+@[simp]
+lemma subtype_Iio_eq_Ico (x : I) : Subtype.val⁻¹' (Iio ↑x) = Ico 0 x := by
+  ext _
+  simp only [preimage_subtype_val_Iio, mem_Iio, mem_Ico, zero_le', true_and]
+
+@[simp]
+lemma subtype_Ici_eq_Ico (x : I) : Subtype.val⁻¹' (Ici ↑x) = Icc x 1 := by
+  ext y
+  simp only [preimage_subtype_val_Ici, mem_Ici, mem_Icc, iff_self_and]
+  exact fun _ ↦ y.2.2
+
+@[simp]
+lemma subtype_Ioi_eq_Ioc (x : I) : Subtype.val⁻¹' (Ioi ↑x) = Ioc x 1 := by
+  ext y
+  simp only [preimage_subtype_val_Ioi, mem_Ioi, mem_Ioc, iff_self_and]
+  exact fun _ ↦ y.2.2
+
 end unitInterval
 
 section partition

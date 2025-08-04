@@ -103,9 +103,8 @@ open unitInterval in
 lemma unitInterval.cdf_eq_real (μ : Measure I) [IsProbabilityMeasure μ] (x : I) :
     cdf (μ.map Subtype.val) x.1 = μ.real (Icc 0 x) := by
   haveI : IsProbabilityMeasure (μ.map Subtype.val) := isProbabilityMeasure_map (by fun_prop)
-  rw [ProbabilityTheory.cdf_eq_real, map_measureReal_apply measurable_subtype_coe measurableSet_Iic]
-  congr with x
-  simp only [preimage_subtype_val_Iic, mem_Iic, mem_Icc, zero_le', true_and]
+  rw [ProbabilityTheory.cdf_eq_real,
+    map_measureReal_apply measurable_subtype_coe measurableSet_Iic, subtype_Iic_eq_Icc]
 
 end ProbabilityTheory
 
