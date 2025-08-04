@@ -390,18 +390,18 @@ theorem geom_sum_Ico_le_of_lt_one [Field K] [LinearOrder K] [IsStrictOrderedRing
 
 theorem geom_sum_inv [DivisionRing K] {x : K} (hx1 : x ≠ 1) (hx0 : x ≠ 0) (n : ℕ) :
     ∑ i ∈ range n, x⁻¹ ^ i = (x - 1)⁻¹ * (x - x⁻¹ ^ n * x) := by
-  have h₁ : x⁻¹ ≠ 1 := by rwa [inv_eq_one_div, Ne, div_eq_iff_mul_eq hx0, one_mul]
+  have h₁ : x⁻¹ ≠ 1 := by rwa [inv_eq_one_div, Ne, div_eq_iff hx0, one_mul, eq_comm]
   have h₂ : x⁻¹ - 1 ≠ 0 := mt sub_eq_zero.1 h₁
   have h₃ : x - 1 ≠ 0 := mt sub_eq_zero.1 hx1
   have h₄ : x * (x ^ n)⁻¹ = (x ^ n)⁻¹ * x :=
     Nat.recOn n (by simp) fun n h => by
       rw [pow_succ', mul_inv_rev, ← mul_assoc, h, mul_assoc, mul_inv_cancel₀ hx0, mul_assoc,
         inv_mul_cancel₀ hx0]
-  rw [geom_sum_eq h₁, div_eq_iff_mul_eq h₂, ← mul_right_inj' h₃, ← mul_assoc, ← mul_assoc,
+  rw [geom_sum_eq h₁, div_eq_iff h₂, ← mul_right_inj' h₃, ← mul_assoc, ← mul_assoc,
     mul_inv_cancel₀ h₃]
   simp [mul_add, add_mul, mul_inv_cancel₀ hx0, mul_assoc, h₄, sub_eq_add_neg, add_comm,
     add_left_comm]
-  rw [add_comm _ (-x), add_assoc, add_assoc _ _ 1]
+  rw [add_comm _ (-x), add_assoc, add_assoc]
 
 variable {S : Type*}
 

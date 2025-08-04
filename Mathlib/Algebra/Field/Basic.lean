@@ -50,7 +50,7 @@ theorem one_div_mul_add_mul_one_div_eq_one_div_add_one_div (ha : a ≠ 0) (hb : 
   simpa only [one_div] using (inv_add_inv' ha hb).symm
 
 theorem add_div_eq_mul_add_div (a b : K) (hc : c ≠ 0) : a + b / c = (a * c + b) / c :=
-  (eq_div_iff_mul_eq hc).2 <| by rw [right_distrib, div_mul_cancel₀ _ hc]
+  (eq_div_iff hc).2 <| by rw [right_distrib, div_mul_cancel₀ _ hc]
 
 @[field_simps]
 theorem add_div' (a b c : K) (hc : c ≠ 0) : b + a / c = (b * c + a) / c := by

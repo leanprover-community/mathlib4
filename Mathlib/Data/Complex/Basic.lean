@@ -695,7 +695,7 @@ theorem ofReal_zpow (r : ℝ) (n : ℤ) : ((r ^ n : ℝ) : ℂ) = (r : ℂ) ^ n 
 
 @[simp]
 theorem div_I (z : ℂ) : z / I = -(z * I) :=
-  (div_eq_iff_mul_eq I_ne_zero).2 <| by simp [mul_assoc]
+  (div_eq_iff I_ne_zero).2 <| by simp [mul_assoc]
 
 @[simp]
 theorem inv_I : I⁻¹ = -I := by
