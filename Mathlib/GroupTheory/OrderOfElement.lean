@@ -242,16 +242,16 @@ lemma pow_mod_orderOf (x : G) (n : ℕ) : x ^ (n % orderOf x) = x ^ n :=
         simp [pow_add, pow_mul, pow_orderOf_eq_one]
     _ = x ^ n := by rw [Nat.mod_add_div]
 
-@[to_additive]
+@[to_additive addOrderOf_dvd_of_nsmul_eq_zero]
 theorem orderOf_dvd_of_pow_eq_one (h : x ^ n = 1) : orderOf x ∣ n :=
   IsPeriodicPt.minimalPeriod_dvd ((isPeriodicPt_mul_iff_pow_eq_one _).mpr h)
 
-@[to_additive]
+@[to_additive addOrderOf_dvd_iff_nsmul_eq_zero]
 theorem orderOf_dvd_iff_pow_eq_one {n : ℕ} : orderOf x ∣ n ↔ x ^ n = 1 :=
   ⟨fun h => by rw [← pow_mod_orderOf, Nat.mod_eq_zero_of_dvd h, _root_.pow_zero],
     orderOf_dvd_of_pow_eq_one⟩
 
-@[to_additive addOrderOf_smul_dvd]
+@[to_additive addOrderOf_nsmul_dvd]
 theorem orderOf_pow_dvd (n : ℕ) : orderOf (x ^ n) ∣ orderOf x := by
   rw [orderOf_dvd_iff_pow_eq_one, pow_right_comm, pow_orderOf_eq_one, one_pow]
 
@@ -363,11 +363,11 @@ theorem orderOf_pow' (h : n ≠ 0) : orderOf (x ^ n) = orderOf x / gcd (orderOf 
   unfold orderOf
   rw [← minimalPeriod_iterate_eq_div_gcd h, mul_left_iterate]
 
-@[to_additive]
+@[to_additive addOrderOf_nsmul_of_dvd]
 lemma orderOf_pow_of_dvd {x : G} {n : ℕ} (hn : n ≠ 0) (dvd : n ∣ orderOf x) :
     orderOf (x ^ n) = orderOf x / n := by rw [orderOf_pow' _ hn, Nat.gcd_eq_right dvd]
 
-@[to_additive]
+@[to_additive addOrderOf_nsmul_addOrderOf_div]
 lemma orderOf_pow_orderOf_div {x : G} {n : ℕ} (hx : orderOf x ≠ 0) (hn : n ∣ orderOf x) :
     orderOf (x ^ (orderOf x / n)) = n := by
   rw [orderOf_pow_of_dvd _ (Nat.div_dvd_of_dvd hn), Nat.div_div_self hn hx]
@@ -402,13 +402,13 @@ namespace Commute
 
 variable {x}
 
-@[to_additive]
+@[to_additive addOrderOf_add_dvd_lcm]
 theorem orderOf_mul_dvd_lcm (h : Commute x y) :
     orderOf (x * y) ∣ Nat.lcm (orderOf x) (orderOf y) := by
   rw [orderOf, ← comp_mul_left]
   exact Function.Commute.minimalPeriod_of_comp_dvd_lcm h.function_commute_mul_left
 
-@[to_additive]
+@[to_additive addOrderOf_dvd_lcm_add]
 theorem orderOf_dvd_lcm_mul (h : Commute x y) :
     orderOf y ∣ Nat.lcm (orderOf x) (orderOf (x * y)) := by
   by_cases h0 : orderOf x = 0
@@ -595,7 +595,7 @@ theorem isOfFinOrder_inv_iff {x : G} : IsOfFinOrder x⁻¹ ↔ IsOfFinOrder x :=
 
 @[to_additive] alias ⟨IsOfFinOrder.of_inv, IsOfFinOrder.inv⟩ := isOfFinOrder_inv_iff
 
-@[to_additive]
+@[to_additive addOrderOf_dvd_iff_zsmul_eq_zero]
 theorem orderOf_dvd_iff_zpow_eq_one : (orderOf x : ℤ) ∣ i ↔ x ^ i = 1 := by
   rcases Int.eq_nat_or_neg i with ⟨i, rfl | rfl⟩
   · rw [Int.natCast_dvd_natCast, orderOf_dvd_iff_pow_eq_one, zpow_natCast]
@@ -605,7 +605,7 @@ theorem orderOf_dvd_iff_zpow_eq_one : (orderOf x : ℤ) ∣ i ↔ x ^ i = 1 := b
 @[to_additive (attr := simp)]
 theorem orderOf_inv (x : G) : orderOf x⁻¹ = orderOf x := by simp [orderOf_eq_orderOf_iff]
 
-@[to_additive]
+@[to_additive addOrderOf_dvd_sub_iff_zsmul_eq_zsmul]
 theorem orderOf_dvd_sub_iff_zpow_eq_zpow {a b : ℤ} : (orderOf x : ℤ) ∣ a - b ↔ x ^ a = x ^ b := by
   rw [orderOf_dvd_iff_zpow_eq_one, zpow_sub, mul_inv_eq_one]
 
@@ -644,7 +644,7 @@ theorem IsOfFinOrder.of_mem_zpowers (h : IsOfFinOrder x) (h' : y ∈ Subgroup.zp
   obtain ⟨k, rfl⟩ := Subgroup.mem_zpowers_iff.mp h'
   exact h.zpow
 
-@[to_additive]
+@[to_additive addOrderOf_dvd_of_mem_zmultiples]
 theorem orderOf_dvd_of_mem_zpowers (h : y ∈ Subgroup.zpowers x) : orderOf y ∣ orderOf x := by
   obtain ⟨k, rfl⟩ := Subgroup.mem_zpowers_iff.mp h
   rw [orderOf_dvd_iff_pow_eq_one]
@@ -910,7 +910,7 @@ theorem card_zpowers_le (a : G) {k : ℕ} (k_pos : k ≠ 0)
 
 open QuotientGroup
 
-@[to_additive]
+@[to_additive addOrderOf_dvd_card]
 theorem orderOf_dvd_card : orderOf x ∣ Fintype.card G := by
   classical
     have ft_prod : Fintype ((G ⧸ zpowers x) × zpowers x) :=
@@ -932,13 +932,13 @@ theorem orderOf_dvd_card : orderOf x ∣ Fintype.card G := by
         _ = _ := congr_arg (@Fintype.card _) <| Subsingleton.elim _ _
     exact Dvd.intro (@Fintype.card (G ⧸ Subgroup.zpowers x) ft_cosets) (by rw [eq₁, eq₂, mul_comm])
 
-@[to_additive]
+@[to_additive addOrderOf_dvd_natCard]
 theorem orderOf_dvd_natCard {G : Type*} [Group G] (x : G) : orderOf x ∣ Nat.card G := by
   obtain h | h := fintypeOrInfinite G
   · simp only [Nat.card_eq_fintype_card, orderOf_dvd_card]
   · simp only [card_eq_zero_of_infinite, dvd_zero]
 
-@[to_additive]
+@[to_additive AddSubgroup.addOrderOf_dvd_natCard]
 nonrec lemma Subgroup.orderOf_dvd_natCard {G : Type*} [Group G] (s : Subgroup G) {x} (hx : x ∈ s) :
     orderOf x ∣ Nat.card s := by
   simpa using orderOf_dvd_natCard (⟨x, hx⟩ : s)
@@ -1136,11 +1136,11 @@ variable [Monoid α] [Monoid β] {x : α × β} {a : α} {b : β}
 protected theorem Prod.orderOf (x : α × β) : orderOf x = (orderOf x.1).lcm (orderOf x.2) :=
   minimalPeriod_prodMap _ _ _
 
-@[to_additive]
+@[to_additive addOrderOf_fst_dvd_addOrderOf]
 theorem orderOf_fst_dvd_orderOf : orderOf x.1 ∣ orderOf x :=
   minimalPeriod_fst_dvd
 
-@[to_additive]
+@[to_additive addOrderOf_snd_dvd_addOrderOf]
 theorem orderOf_snd_dvd_orderOf : orderOf x.2 ∣ orderOf x :=
   minimalPeriod_snd_dvd
 
