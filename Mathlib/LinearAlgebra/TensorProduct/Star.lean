@@ -13,22 +13,23 @@ defines the `StarAddMonoid` and `StarModule` instances for tensor products.
 
 -/
 
+namespace TensorProduct
+
 open scoped TensorProduct
 
 variable {R A B : Type*} [CommSemiring R]
   [StarRing R] [AddCommMonoid A] [AddCommMonoid B] [StarAddMonoid A]
   [StarAddMonoid B] [Module R A] [Module R B] [StarModule R A] [StarModule R B]
 
-instance TensorProduct.instStar :
-    Star (A ⊗[R] B) where
+instance : Star (A ⊗[R] B) where
   star x := mapₛₗ (starLinearEquiv R).toLinearMap (starLinearEquiv R).toLinearMap x
 
 @[simp]
-theorem TensorProduct.star_tmul (x : A) (y : B) :
-    star (x ⊗ₜ[R] y) = star x ⊗ₜ[R] star y := rfl
+theorem star_tmul (x : A) (y : B) :
+    star (x ⊗ₜ[R] y) = star x ⊗ₜ[R] star y :=
+  rfl
 
-noncomputable instance TensorProduct.instInvolutiveStar :
-    InvolutiveStar (A ⊗[R] B) where
+noncomputable instance : InvolutiveStar (A ⊗[R] B) where
   star_involutive x := by
     nth_rw 2 [← LinearMap.id_apply (R:=R) x]
     revert x
@@ -36,9 +37,10 @@ noncomputable instance TensorProduct.instInvolutiveStar :
     apply TensorProduct.ext'
     simp
 
-noncomputable instance TensorProduct.instStarAddMonoid :
-    StarAddMonoid (A ⊗[R] B) where
+noncomputable instance : StarAddMonoid (A ⊗[R] B) where
   star_add _ _ := by simp [star]
 
-instance TensorProduct.instStarModule : StarModule R (A ⊗[R] B) where
+instance : StarModule R (A ⊗[R] B) where
   star_smul r α := by simp [star]; rfl
+
+end TensorProduct
