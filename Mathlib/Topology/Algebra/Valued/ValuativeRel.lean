@@ -17,18 +17,6 @@ to facilitate a refactor.
 
 -/
 
-namespace ValuativeRel
-
-variable {R : Type*} [CommRing R]
-
-instance [UniformSpace R] [IsUniformAddGroup R] [ValuativeRel R] [IsValuativeTopology R] :
-    Valued R (ValueGroupWithZero R) :=
-  .mk (valuation R) fun s ↦ by
-    convert IsValuativeTopology.mem_nhds_iff (x := (0 : R)) using 4
-    simp
-
-end ValuativeRel
-
 namespace IsValuativeTopology
 
 variable {R : Type*} [CommRing R] [ValuativeRel R] [TopologicalSpace R] [IsValuativeTopology R]
@@ -77,11 +65,6 @@ instance : IsTopologicalAddGroup R := by
   · ext; simp
   · simpa [ContinuousAt] using (cts_add.1 x₀).continuousAt (x := (0 : R))
   · simpa [ContinuousAt] using (cts_add.1 (-x₀)).continuousAt (x := x₀)
-
-instance : IsTopologicalRing R :=
-  letI := IsTopologicalAddGroup.toUniformSpace R
-  letI := isUniformAddGroup_of_addCommGroup (G := R)
-  inferInstance
 
 @[deprecated (since := "2025-08-01")]
 alias _root_.ValuativeTopology.mem_nhds := mem_nhds_iff'
@@ -176,11 +159,17 @@ variable {R : Type*} [CommRing R] [ValuativeRel R] [UniformSpace R]
 
 /-- Helper `Valued` instance when `ValuativeTopology R` over a `UniformSpace R`,
 for use in porting files from `Valued` to `ValuativeRel`. -/
-scoped instance : Valued R (ValuativeRel.ValueGroupWithZero R) where
+instance : Valued R (ValuativeRel.ValueGroupWithZero R) where
   v := ValuativeRel.valuation R
   is_topological_valuation := IsValuativeTopology.mem_nhds_zero_iff
 
 end Valued
+
+instance (R : Type*) [CommRing R] [ValuativeRel R] [TopologicalSpace R] [IsValuativeTopology R] :
+    IsTopologicalRing R :=
+  letI := IsTopologicalAddGroup.toUniformSpace R
+  letI := isUniformAddGroup_of_addCommGroup (G := R)
+  inferInstance
 
 namespace ValuativeRel
 
