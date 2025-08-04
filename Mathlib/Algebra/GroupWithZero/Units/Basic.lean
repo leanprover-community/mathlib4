@@ -296,10 +296,8 @@ lemma div_left_inj' (hc : c ≠ 0) : a / c = b / c ↔ a = b := hc.isUnit.div_le
 
 @[field_simps] lemma eq_div_iff (hb : b ≠ 0) : c = a / b ↔ c * b = a := hb.isUnit.eq_div_iff
 
--- TODO: Swap RHS around
-lemma div_eq_iff_mul_eq (hb : b ≠ 0) : a / b = c ↔ c * b = a := hb.isUnit.div_eq_iff.trans eq_comm
-
-lemma eq_div_iff_mul_eq (hc : c ≠ 0) : a = b / c ↔ a * c = b := hc.isUnit.eq_div_iff
+@[deprecated (since := "2025-08-04")] alias div_eq_iff_mul_eq := div_eq_iff
+@[deprecated (since := "2025-08-04")] alias eq_div_iff_mul_eq := eq_div_iff
 
 lemma div_eq_of_eq_mul (hb : b ≠ 0) : a = c * b → a / b = c := hb.isUnit.div_eq_of_eq_mul
 
