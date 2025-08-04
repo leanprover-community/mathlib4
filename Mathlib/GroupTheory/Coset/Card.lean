@@ -56,29 +56,29 @@ lemma card_mul_eq_card_subgroup_mul_card_quotient (s : Subgroup α) (t : Set α)
   aesop (add simp [Set.mem_mul])
 
 /-- **Lagrange's Theorem**: The order of a subgroup divides the order of its ambient group. -/
-@[to_additive "**Lagrange's Theorem**: The order of an additive subgroup divides the order of its
-ambient additive group."]
+@[to_additive card_addSubgroup_dvd_card "**Lagrange's Theorem**: The order of an additive subgroup
+divides the order of its ambient additive group."]
 theorem card_subgroup_dvd_card (s : Subgroup α) : Nat.card s ∣ Nat.card α := by
   classical simp [card_eq_card_quotient_mul_card_subgroup s, @dvd_mul_left ℕ]
 
-@[to_additive]
+@[to_additive card_quotient_dvd_card]
 theorem card_quotient_dvd_card (s : Subgroup α) : Nat.card (α ⧸ s) ∣ Nat.card α := by
   simp [card_eq_card_quotient_mul_card_subgroup s, @dvd_mul_right ℕ]
 
 variable {H : Type*} [Group H]
 
-@[to_additive]
+@[to_additive card_dvd_of_injective]
 theorem card_dvd_of_injective (f : α →* H) (hf : Function.Injective f) :
     Nat.card α ∣ Nat.card H := by
   classical calc
       Nat.card α = Nat.card (f.range : Subgroup H) := Nat.card_congr (Equiv.ofInjective f hf)
       _ ∣ Nat.card H := card_subgroup_dvd_card _
 
-@[to_additive]
+@[to_additive card_dvd_of_le]
 theorem card_dvd_of_le {H K : Subgroup α} (hHK : H ≤ K) : Nat.card H ∣ Nat.card K :=
   card_dvd_of_injective (inclusion hHK) (inclusion_injective hHK)
 
-@[to_additive]
+@[to_additive card_comap_dvd_of_injective]
 theorem card_comap_dvd_of_injective (K : Subgroup H) (f : α →* H)
     (hf : Function.Injective f) : Nat.card (K.comap f) ∣ Nat.card K :=
   calc Nat.card (K.comap f) = Nat.card ((K.comap f).map f) :=
