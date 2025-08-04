@@ -1140,12 +1140,12 @@ theorem ContinuousLinearMap.closedComplemented_ker_of_rightInverse {R : Type*} [
 
 namespace ContinuousLinearMap
 
-theorem IsIdempotentElem.toLinearMap_iff {R M : Type*} [Semiring R] [TopologicalSpace M]
+theorem isIdempotentElem_toLinearMap_iff {R M : Type*} [Semiring R] [TopologicalSpace M]
     [AddCommMonoid M] [Module R M] {f : M →L[R] M} :
     IsIdempotentElem f.toLinearMap ↔ IsIdempotentElem f := by
   simp only [IsIdempotentElem, Module.End.mul_eq_comp, ← coe_comp, mul_def, coe_inj]
 
-alias ⟨_, IsIdempotentElem.toLinearMap⟩ := IsIdempotentElem.toLinearMap_iff
+alias ⟨_, IsIdempotentElem.toLinearMap⟩ := isIdempotentElem_toLinearMap_iff
 
 variable {R M : Type*} [Ring R] [TopologicalSpace M] [AddCommGroup M] [Module R M]
 
