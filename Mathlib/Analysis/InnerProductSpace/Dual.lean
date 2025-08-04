@@ -184,7 +184,7 @@ theorem toStrongDual_apply {x y : E} : toStrongDual 𝕜 E x y = ⟪x, y⟫ :=
 @[deprecated (since := "2025-08-3")] alias toDual_apply := toStrongDual_apply
 
 @[simp]
-theorem toDual_symm_apply {x : E} {y : StrongDual 𝕜 E} : ⟪(toStrongDual 𝕜 E).symm y, x⟫ = y x := by
+theorem toStrongDual_symm_apply {x : E} {y : StrongDual 𝕜 E} : ⟪(toStrongDual 𝕜 E).symm y, x⟫ = y x := by
   rw [← toStrongDual_apply]
   simp only [LinearIsometryEquiv.apply_symm_apply]
 
