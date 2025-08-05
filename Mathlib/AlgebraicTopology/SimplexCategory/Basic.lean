@@ -633,22 +633,7 @@ lemma eq_of_isIso {n m : ℕ} (f : ⦋n⦌ ⟶ ⦋m⦌) [IsIso f] : n = m :=
   len_eq_of_isIso f
 
 instance {n : ℕ} {i : Fin (n + 1)} : Epi (σ i) := by
-  rw [epi_iff_surjective]
-  intro b
-  simp only [σ, mkHom, Hom.toOrderHom_mk]
-  by_cases h : b ≤ i
-  · use b.castSucc
-    -- This was not needed before https://github.com/leanprover/lean4/pull/2644
-    dsimp
-    rw [Fin.predAbove_of_le_castSucc i b.castSucc (by simpa only [Fin.coe_eq_castSucc] using h)]
-    simp only [len_mk, Fin.castPred_castSucc]
-  · use b.succ
-    -- This was not needed before https://github.com/leanprover/lean4/pull/2644
-    dsimp
-    rw [Fin.predAbove_of_castSucc_lt i b.succ _, Fin.pred_succ]
-    rw [not_le] at h
-    rw [Fin.lt_iff_val_lt_val] at h ⊢
-    simpa only [Fin.val_succ, Fin.coe_castSucc] using Nat.lt.step h
+  simpa only [epi_iff_surjective] using Fin.predAbove_surjective i
 
 instance : (forget SimplexCategory).ReflectsIsomorphisms :=
   ⟨fun f hf =>
@@ -679,22 +664,23 @@ theorem isIso_of_bijective {x y : SimplexCategory} {f : x ⟶ y}
   haveI : IsIso ((forget SimplexCategory).map f) := (isIso_iff_bijective _).mpr hf
   isIso_of_reflects_iso f (forget SimplexCategory)
 
-lemma isIso_iff_of_mono {n m : SimplexCategory} (f : n ⟶ m) [Mono f] :
+lemma isIso_iff_of_mono {n m : SimplexCategory} (f : n ⟶ m) [hf : Mono f] :
     IsIso f ↔ n.len = m.len := by
   refine ⟨fun _ ↦ len_eq_of_isIso f, fun h ↦ ?_⟩
   obtain rfl : n = m := by aesop
-  have h := mono_iff_injective.1 (inferInstanceAs (Mono f))
-  exact isIso_of_bijective ⟨h, by rwa [← Finite.injective_iff_surjective]⟩
+  rw [mono_iff_injective] at hf
+  exact isIso_of_bijective ⟨hf, by rwa [← Finite.injective_iff_surjective]⟩
+
 instance {n : ℕ} {i : Fin (n + 2)} : Mono (δ i) := by
   rw [mono_iff_injective]
   exact Fin.succAbove_right_injective
 
-lemma isIso_iff_of_epi {n m : SimplexCategory} (f : n ⟶ m) [Epi f] :
+lemma isIso_iff_of_epi {n m : SimplexCategory} (f : n ⟶ m) [hf : Epi f] :
     IsIso f ↔ n.len = m.len := by
   refine ⟨fun _ ↦ len_eq_of_isIso f, fun h ↦ ?_⟩
   obtain rfl : n = m := by aesop
-  have h := epi_iff_surjective.1 (inferInstanceAs (Epi f))
-  exact isIso_of_bijective ⟨by rwa [Finite.injective_iff_surjective], h⟩
+  rw [epi_iff_surjective] at hf
+  exact isIso_of_bijective ⟨by rwa [Finite.injective_iff_surjective], hf⟩
 
 instance : Balanced SimplexCategory where
   isIso_of_mono_of_epi f _ _ := by
@@ -907,31 +893,16 @@ noncomputable def topIsoZero : ⊤_ SimplexCategory ≅ ⦋0⦌ :=
 
 lemma δ_injective {n : ℕ} : Function.Injective (δ (n := n)) := by
   intro i j hij
-  wlog h : i < j
-  · simp only [not_lt] at h
-    obtain h | rfl := h.lt_or_eq
-    · exact (this hij.symm h).symm
-    · rfl
-  obtain ⟨i, rfl⟩ := Fin.eq_castSucc_of_ne_last (Fin.ne_last_of_lt h)
-  have : i.castSucc.succAbove i = j.succAbove i := by
-    change δ _ _ = δ _ _
-    rw [hij]
-  simp [Fin.succAbove_of_castSucc_lt _ _ h, Fin.ext_iff] at this
+  rw [← Fin.succAbove_left_inj]
+  ext k : 1
+  change δ _ _ = δ _ _
+  rw [hij]
 
 lemma σ_injective {n : ℕ} : Function.Injective (σ (n := n)) := by
   intro i j hij
-  wlog h : i < j
-  · simp only [not_lt] at h
-    obtain h | rfl := h.lt_or_eq
-    · exact (this hij.symm h).symm
-    · rfl
-  exfalso
-  have : i.predAbove i.succ = j.predAbove i.succ := by
-    change σ _ _ = σ _ _
-    rw [hij]
-  rw [← Fin.castSucc_inj, Fin.predAbove_succ_self,
-    Fin.predAbove_of_le_castSucc j _ (by simpa),
-    Fin.castSucc_castPred] at this
-  exact (Fin.castSucc_lt_succ _).ne this
+  rw [← Fin.predAbove_left_inj]
+  ext k : 1
+  change σ _ _ = σ _ _
+  rw [hij]
 
 end SimplexCategory
