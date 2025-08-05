@@ -62,7 +62,7 @@ instance : ValuativeRel.IsRankLeOne R :=
 instance {K : Type*} [NormedField K] [IsUltrametricDist K] :
     IsValuativeTopology K := by
   have he : valuation'.IsEquiv (ValuativeRel.valuation K) := ValuativeRel.isEquiv _ _
-  refine .of_hasBasis (Metric.nhds_basis_ball.to_hasBasis' ?_ ?_)
+  refine .of_hasBasis_zero (Metric.nhds_basis_ball.to_hasBasis' ?_ ?_)
   · intro ε hε
     simp only [true_and]
     rcases discreteTopology_or_nontriviallyNormedField K with _|⟨⟨⟨_, rfl⟩⟩⟩
