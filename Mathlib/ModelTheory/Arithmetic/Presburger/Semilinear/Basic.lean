@@ -110,7 +110,7 @@ theorem Semilinear.union (hs₁ : s₁.Semilinear) (hs₂ : s₂.Semilinear) : (
   simp only [Finset.mem_union] at hs
   exact hs.elim (hS₁ s) (hS₂ s)
 
-theorem Semilinear.sUnion_finset {S : Finset (Set α)} (hS : ∀ s ∈ S, s.Semilinear) :
+theorem Semilinear.sUnion {S : Finset (Set α)} (hS : ∀ s ∈ S, s.Semilinear) :
     (⋃₀ (S : Set (Set α))).Semilinear := by
   classical
   induction S using Finset.induction with
@@ -119,29 +119,25 @@ theorem Semilinear.sUnion_finset {S : Finset (Set α)} (hS : ∀ s ∈ S, s.Semi
     simp only [Finset.mem_insert, forall_eq_or_imp] at hS
     simpa using union hS.1 (ih hS.2)
 
-theorem Semilinear.iUnion_fintype [Fintype ι] {s : ι → Set α}
+theorem Semilinear.iUnion [Fintype ι] {s : ι → Set α}
     (hs : ∀ i, (s i).Semilinear) : (⋃ i, s i).Semilinear := by
   classical
   rw [← sUnion_range, ← image_univ, ← Finset.coe_univ, ← Finset.coe_image]
-  apply sUnion_finset
+  apply sUnion
   simpa
 
-theorem Semilinear.biUnion_finset {s : Finset ι} {t : ι → Set α}
+theorem Semilinear.biUnion {s : Finset ι} {t : ι → Set α}
     (ht : ∀ i ∈ s, (t i).Semilinear) : (⋃ i ∈ s, t i).Semilinear := by
   classical
   simp_rw [← Finset.mem_coe, ← sUnion_image, ← Finset.coe_image]
-  apply sUnion_finset
+  apply sUnion
   simpa
 
-theorem Semilinear.finset (s : Finset α) : (s : Set α).Semilinear := by
-  rw [← biUnion_of_singleton (s : Set α)]
-  simp_rw [Finset.mem_coe]
-  apply biUnion_finset
-  simp [singleton]
-
 theorem Finite.semilinear (hs : s.Finite) : s.Semilinear := by
-  rw [← hs.coe_toFinset]
-  exact Semilinear.finset _
+  rw [← biUnion_of_singleton s, ← hs.coe_toFinset]
+  simp_rw [Finset.mem_coe]
+  apply Semilinear.biUnion
+  simp [Semilinear.singleton]
 
 theorem Semilinear.vadd (hs : s.Semilinear) : (a +ᵥ s).Semilinear := by
   classical
@@ -159,17 +155,13 @@ theorem Semilinear.add (hs₁ : s₁.Semilinear) (hs₂ : s₂.Semilinear) :
   rcases hs₁ with ⟨S₁, hS₁, rfl⟩
   rcases hs₂ with ⟨S₂, hS₂, rfl⟩
   simp_rw [sUnion_add, add_sUnion, Finset.mem_coe]
-  apply biUnion_finset
-  intro s₁ hs₁
-  apply biUnion_finset
-  intro s₂ hs₂
-  exact ((hS₁ s₁ hs₁).add (hS₂ s₂ hs₂)).semilinear
+  exact biUnion fun s₁ hs₁ => biUnion fun s₂ hs₂ => ((hS₁ s₁ hs₁).add (hS₂ s₂ hs₂)).semilinear
 
 theorem Semilinear.image (hs : s.Semilinear) (f : α →ₗ[ℕ] β) : (f '' s).Semilinear := by
   classical
   rcases hs with ⟨S, hS, rfl⟩
   simp_rw [sUnion_eq_biUnion, Finset.mem_coe, image_iUnion]
-  exact biUnion_finset fun s hs => ((hS s hs).image f).semilinear
+  exact biUnion fun s hs => ((hS s hs).image f).semilinear
 
 theorem Semilinear.image_iff (f : α ≃ₗ[ℕ] β) : (f '' s).Semilinear ↔ s.Semilinear := by
   constructor <;> intro h
@@ -286,7 +278,7 @@ theorem ProperSemilinear.union (hs₁ : s₁.ProperSemilinear) (hs₂ : s₂.Pro
   simp only [Finset.mem_union] at hs
   exact hs.elim (hS₁ s) (hS₂ s)
 
-theorem ProperSemilinear.sUnion_finset {S : Finset (Set α)}
+theorem ProperSemilinear.sUnion {S : Finset (Set α)}
     (hS : ∀ s ∈ S, s.ProperSemilinear) : (⋃₀ (S : Set (Set α))).ProperSemilinear := by
   classical
   induction S using Finset.induction with
@@ -295,18 +287,18 @@ theorem ProperSemilinear.sUnion_finset {S : Finset (Set α)}
     simp only [Finset.mem_insert, forall_eq_or_imp] at hS
     simpa using union hS.1 (ih hS.2)
 
-theorem ProperSemilinear.iUnion_fintype [Fintype ι] {s : ι → Set α}
+theorem ProperSemilinear.iUnion [Fintype ι] {s : ι → Set α}
     (hs : ∀ i, (s i).ProperSemilinear) : (⋃ i, s i).ProperSemilinear := by
   classical
   rw [← sUnion_range, ← image_univ, ← Finset.coe_univ, ← Finset.coe_image]
-  apply sUnion_finset
+  apply sUnion
   simpa
 
-theorem ProperSemilinear.biUnion_finset {s : Finset ι} {t : ι → Set α}
+theorem ProperSemilinear.biUnion {s : Finset ι} {t : ι → Set α}
     (ht : ∀ i ∈ s, (t i).ProperSemilinear) : (⋃ i ∈ s, t i).ProperSemilinear := by
   classical
   simp_rw [← Finset.mem_coe, ← sUnion_image, ← Finset.coe_image]
-  apply sUnion_finset
+  apply sUnion
   simpa
 
 lemma Linear.proper_semilinear [IsCancelAdd α] (hs : s.Linear) : s.ProperSemilinear := by
@@ -353,8 +345,8 @@ lemma Linear.proper_semilinear [IsCancelAdd α] (hs : s.Linear) : s.ProperSemili
         refine ⟨k • j + y,
           add_mem (smul_mem _ _ (mem_span_of_mem (ht' hj))) ((span_mono (t.erase_subset j)) hy), ?_⟩
         rw [add_assoc]
-    · exact ProperSemilinear.biUnion_finset fun j hj =>
-        ProperSemilinear.biUnion_finset fun k hk =>
+    · exact ProperSemilinear.biUnion fun j hj =>
+        ProperSemilinear.biUnion fun k hk =>
           ih _ (Finset.card_lt_card (Finset.erase_ssubset (ht' hj))) _ _ rfl
 
 /-- The **proper decomposition** of semilinear sets: every semilinear set is a finite union of
@@ -362,6 +354,6 @@ lemma Linear.proper_semilinear [IsCancelAdd α] (hs : s.Linear) : s.ProperSemili
 theorem Semilinear.proper_semilinear [IsCancelAdd α] (hs : s.Semilinear) : s.ProperSemilinear := by
   rcases hs with ⟨S, hS, rfl⟩
   simp_rw [sUnion_eq_biUnion, Finset.mem_coe]
-  exact ProperSemilinear.biUnion_finset fun s hs => (hS s hs).proper_semilinear
+  exact ProperSemilinear.biUnion fun s hs => (hS s hs).proper_semilinear
 
 end Set
