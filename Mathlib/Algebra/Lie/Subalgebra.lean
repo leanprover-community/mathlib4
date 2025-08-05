@@ -156,8 +156,6 @@ theorem mem_mk_iff' (p : Submodule R L) (h) {x : L} :
     x ∈ (⟨p, h⟩ : LieSubalgebra R L) ↔ x ∈ p :=
   Iff.rfl
 
-@[deprecated (since := "2024-12-30")] alias mem_coe_submodule := mem_toSubmodule
-
 theorem mem_coe {x : L} : x ∈ (L' : Set L) ↔ x ∈ L' :=
   Iff.rfl
 
