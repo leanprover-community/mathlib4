@@ -509,10 +509,10 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
     have h2 : y = (m ^ 2 - n ^ 2) / 2 ∧ z = (m ^ 2 + n ^ 2) / 2 := by
       apply Rat.div_int_inj hzpos _ (h.coprime_of_coprime hc) h1.2.2.2
       · change w = _
-        rw [← Rat.divInt_eq_div, ← Rat.divInt_mul_right (by norm_num : (2 : ℤ) ≠ 0)]
+        rw [← Rat.divInt_eq_div, ← Rat.divInt_mul_right (by simp : (2 : ℤ) ≠ 0)]
         rw [Int.ediv_mul_cancel h1.1, Int.ediv_mul_cancel h1.2.1, hw2, Rat.divInt_eq_div]
         norm_cast
-      · apply (mul_lt_mul_right (by norm_num : 0 < (2 : ℤ))).mp
+      · apply (mul_lt_mul_right (by simp : 0 < (2 : ℤ))).mp
         rw [Int.ediv_mul_cancel h1.1, zero_mul]
         exact hm2n2
     norm_num [h2.1, h1.2.2.1] at hyo

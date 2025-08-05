@@ -230,7 +230,7 @@ theorem comp_rightInv_aux2 (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[�
         p c.length (applyComposition (fun k : ℕ => ite (k < n + 2) (p.rightInv i x k) 0) c v) =
       ∑ c ∈ {c : Composition (n + 2) | 1 < c.length}.toFinset,
         p c.length ((p.rightInv i x).applyComposition c v) := by
-  have N : 0 < n + 2 := by norm_num
+  have N : 0 < n + 2 := by simp
   refine sum_congr rfl fun c hc => p.congr rfl fun j hj1 hj2 => ?_
   have : ∀ k, c.blocksFun k < n + 2 := by
     simp only [Set.mem_toFinset (s := {c : Composition (n + 2) | 1 < c.length}),
@@ -254,7 +254,7 @@ theorem comp_rightInv (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F
     simp only [comp_coeff_one, h, rightInv_coeff_one, ContinuousLinearEquiv.apply_symm_apply,
       id_apply_one, ContinuousLinearEquiv.coe_apply, continuousMultilinearCurryFin1_symm_apply]
   | n + 2 =>
-    have N : 0 < n + 2 := by norm_num
+    have N : 0 < n + 2 := by simp
     simp [comp_rightInv_aux1 N, h, rightInv, comp_rightInv_aux2, -Set.toFinset_setOf]
 
 theorem rightInv_coeff (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) (x : E)

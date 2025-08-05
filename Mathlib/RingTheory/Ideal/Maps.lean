@@ -58,7 +58,7 @@ lemma map_coe [RingHomClass F R S] (I : Ideal R) : I.map (f : R →+* S) = I.map
 variable {f}
 
 theorem map_mono (h : I ≤ J) : map f I ≤ map f J :=
-  span_mono <| Set.image_subset _ h
+  span_mono <| Set.image_mono h
 
 theorem mem_map_of_mem (f : F) {I : Ideal R} {x : R} (h : x ∈ I) : f x ∈ map f I :=
   subset_span ⟨x, h, rfl⟩

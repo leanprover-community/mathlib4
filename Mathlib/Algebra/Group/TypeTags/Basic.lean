@@ -187,11 +187,11 @@ instance Multiplicative.isLeftCancelMul [Add α] [IsLeftCancelAdd α] :
   ⟨@add_left_cancel α _ _⟩
 
 instance Additive.isRightCancelAdd [Mul α] [IsRightCancelMul α] : IsRightCancelAdd (Additive α) :=
-  ⟨@mul_right_cancel α _ _⟩
+  ⟨fun _ _ _ ↦ @mul_right_cancel α _ _ _ _ _⟩
 
 instance Multiplicative.isRightCancelMul [Add α] [IsRightCancelAdd α] :
     IsRightCancelMul (Multiplicative α) :=
-  ⟨@add_right_cancel α _ _⟩
+  ⟨fun _ _ _ ↦ @add_right_cancel α _ _ _ _ _⟩
 
 instance Additive.isCancelAdd [Mul α] [IsCancelMul α] : IsCancelAdd (Additive α) :=
   ⟨⟩

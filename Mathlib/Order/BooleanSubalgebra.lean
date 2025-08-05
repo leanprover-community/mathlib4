@@ -267,7 +267,7 @@ lemma mem_map_of_mem (f : BoundedLatticeHom α β) {a : α} : a ∈ L → f a �
 lemma apply_coe_mem_map (f : BoundedLatticeHom α β) (a : L) : f a ∈ L.map f :=
   mem_map_of_mem f a.prop
 
-lemma map_mono : Monotone (map f) := fun _ _ ↦ image_subset _
+lemma map_mono : Monotone (map f) := fun _ _ ↦ image_mono
 
 @[simp] lemma map_id : L.map (.id α) = L := SetLike.coe_injective <| image_id _
 

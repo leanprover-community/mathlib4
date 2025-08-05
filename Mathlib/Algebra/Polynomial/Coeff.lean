@@ -3,10 +3,11 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
+import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Algebra.Polynomial.Basic
+import Mathlib.Algebra.Regular.Basic
 import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.Algebra.CharP.Defs
 
 /-!
 # Theory of univariate polynomials
@@ -222,14 +223,7 @@ end Fewnomials
 theorem coeff_mul_X_pow (p : R[X]) (n d : ℕ) :
     coeff (p * Polynomial.X ^ n) (d + n) = coeff p d := by
   rw [coeff_mul, Finset.sum_eq_single (d, n), coeff_X_pow, if_pos rfl, mul_one]
-  · rintro ⟨i, j⟩ h1 h2
-    rw [coeff_X_pow, if_neg, mul_zero]
-    rintro rfl
-    apply h2
-    rw [mem_antidiagonal, add_right_cancel_iff] at h1
-    subst h1
-    rfl
-  · exact fun h1 => (h1 (mem_antidiagonal.2 rfl)).elim
+  all_goals grind [mem_antidiagonal, coeff_X_pow, mul_zero]
 
 @[simp]
 theorem coeff_X_pow_mul (p : R[X]) (n d : ℕ) :

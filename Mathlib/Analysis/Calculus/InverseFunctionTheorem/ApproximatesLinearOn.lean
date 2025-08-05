@@ -278,7 +278,7 @@ theorem image_mem_nhds (hf : ApproximatesLinearOn f f' s c) (f'symm : f'.Nonline
     {x : E} (hs : s ∈ 𝓝 x) (hc : Subsingleton F ∨ c < f'symm.nnnorm⁻¹) : f '' s ∈ 𝓝 (f x) := by
   obtain ⟨t, hts, ht, xt⟩ : ∃ t, t ⊆ s ∧ IsOpen t ∧ x ∈ t := _root_.mem_nhds_iff.1 hs
   have := IsOpen.mem_nhds ((hf.mono_set hts).open_image f'symm ht hc) (mem_image_of_mem _ xt)
-  exact mem_of_superset this (image_subset _ hts)
+  exact mem_of_superset this (image_mono hts)
 
 theorem map_nhds_eq (hf : ApproximatesLinearOn f f' s c) (f'symm : f'.NonlinearRightInverse) {x : E}
     (hs : s ∈ 𝓝 x) (hc : Subsingleton F ∨ c < f'symm.nnnorm⁻¹) : map f (𝓝 x) = 𝓝 (f x) := by
@@ -286,7 +286,7 @@ theorem map_nhds_eq (hf : ApproximatesLinearOn f f' s c) (f'symm : f'.NonlinearR
     le_antisymm ((hf.continuousOn x (mem_of_mem_nhds hs)).continuousAt hs) (le_map fun t ht => ?_)
   have : f '' (s ∩ t) ∈ 𝓝 (f x) :=
     (hf.mono_set inter_subset_left).image_mem_nhds f'symm (inter_mem hs ht) hc
-  exact mem_of_superset this (image_subset _ inter_subset_right)
+  exact mem_of_superset this (image_mono inter_subset_right)
 
 end LocallyOnto
 

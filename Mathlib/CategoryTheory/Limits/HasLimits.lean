@@ -1027,11 +1027,10 @@ theorem colimit.pre_id (F : J ⥤ C) :
     colimit.pre F (𝟭 _) = colim.map (Functor.leftUnitor F).hom := by aesop_cat
 
 theorem colimit.map_post {D : Type u'} [Category.{v'} D] [HasColimitsOfShape J D]
-    (H : C ⥤ D) :/- H (colimit F) ⟶ H (colimit G) ⟶ colimit (G ⋙ H) vs
-             H (colimit F) ⟶ colimit (F ⋙ H) ⟶ colimit (G ⋙ H) -/
-          colimit.post
-          F H ≫
-        H.map (colim.map α) =
+    (H : C ⥤ D) :
+    /- H (colimit F) ⟶ H (colimit G) ⟶ colimit (G ⋙ H) vs
+      H (colimit F) ⟶ colimit (F ⋙ H) ⟶ colimit (G ⋙ H) -/
+    colimit.post F H ≫ H.map (colim.map α) =
       colim.map (whiskerRight α H) ≫ colimit.post G H := by
   ext
   rw [← assoc, colimit.ι_post, ← H.map_comp, colimit.ι_map, H.map_comp]

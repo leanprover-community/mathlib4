@@ -473,6 +473,10 @@ theorem norm_nonneg (hd : d ≤ 0) (n : ℤ√d) : 0 ≤ n.norm :=
       rw [mul_assoc, neg_mul_eq_neg_mul]
       exact mul_nonneg (neg_nonneg.2 hd) (mul_self_nonneg _))
 
+@[simp]
+theorem abs_norm (hd : d ≤ 0) (n : ℤ√d) : |n.norm| = n.norm :=
+  abs_of_nonneg <| norm_nonneg hd n
+
 theorem norm_eq_one_iff {x : ℤ√d} : x.norm.natAbs = 1 ↔ IsUnit x :=
   ⟨fun h =>
     isUnit_iff_dvd_one.2 <|
