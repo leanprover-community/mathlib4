@@ -701,20 +701,15 @@ theorem adjoin_singleton_intCast (n : ℤ) : adjoin R {(n : A)} = ⊥ := by
 theorem adjoin_insert_intCast (n : ℤ) (s : Set A) : adjoin R (insert (n : A) s) = adjoin R s := by
   simpa using adjoin_insert_algebraMap (n : R) s
 
-theorem mem_adjoin_iff {s : Set A} {x : A} :
-    x ∈ adjoin R s ↔ x ∈ Subring.closure (Set.range (algebraMap R A) ∪ s) :=
-  ⟨fun hx =>
-    Subsemiring.closure_induction Subring.subset_closure (Subring.zero_mem _) (Subring.one_mem _)
-      (fun _ _ _ _ => Subring.add_mem _) (fun _ _ _ _ => Subring.mul_mem _) hx,
-    suffices Subring.closure (Set.range (algebraMap R A) ∪ s) ≤ (adjoin R s).toSubring
-      from (show (_ : Set A) ⊆ _ from this) (a := x)
-    -- Porting note: Lean doesn't seem to recognize the defeq between the order on subobjects and
-    -- subsets of their coercions to sets as easily as in Lean 3
-    Subring.closure_le.2 Subsemiring.subset_closure⟩
-
 theorem adjoin_eq_ring_closure (s : Set A) :
     (adjoin R s).toSubring = Subring.closure (Set.range (algebraMap R A) ∪ s) :=
-  Subring.ext fun _x => mem_adjoin_iff
+  .symm <| Subring.closure_eq_of_le (by simp [adjoin]) fun x hx =>
+    Subsemiring.closure_induction Subring.subset_closure (Subring.zero_mem _) (Subring.one_mem _)
+      (fun _ _ _ _ => Subring.add_mem _) (fun _ _ _ _ => Subring.mul_mem _) hx
+
+theorem mem_adjoin_iff {s : Set A} {x : A} :
+    x ∈ adjoin R s ↔ x ∈ Subring.closure (Set.range (algebraMap R A) ∪ s) := by
+  rw [← Subalgebra.mem_toSubring, adjoin_eq_ring_closure]
 
 variable (R)
 
