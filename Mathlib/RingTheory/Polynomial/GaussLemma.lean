@@ -71,7 +71,7 @@ theorem integralClosure.mem_lifts_of_monic_of_dvd_map {f : R[X]} (hf : f.Monic) 
 variable [IsFractionRing R K]
 
 /-- If `K = Frac(R)` and `g : K[X]` divides a monic polynomial with coefficients in `R`, then
-    `g * (C g.leadingCoeff⁻¹)` has coefficients in `R` -/
+`g * (C g.leadingCoeff⁻¹)` has coefficients in `R` -/
 theorem IsIntegrallyClosed.eq_map_mul_C_of_dvd [IsIntegrallyClosed R] {f : R[X]} (hf : f.Monic)
     {g : K[X]} (hg : g ∣ f.map (algebraMap R K)) :
     ∃ g' : R[X], g'.map (algebraMap R K) * (C <| leadingCoeff g) = g := by
@@ -176,7 +176,7 @@ theorem Monic.irreducible_iff_irreducible_map_fraction_map [IsIntegrallyClosed R
           (Exists.intro (C b.leadingCoeff) <| by rw [← C_mul, this, C_1]))
 
 /-- Integrally closed domains are precisely the domains for in which Gauss's lemma holds
-    for monic polynomials -/
+for monic polynomials -/
 theorem isIntegrallyClosed_iff' [IsDomain R] :
     IsIntegrallyClosed R ↔
       ∀ p : R[X], p.Monic → (Irreducible p ↔ Irreducible (p.map <| algebraMap R K)) := by

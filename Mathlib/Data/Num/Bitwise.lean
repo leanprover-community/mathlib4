@@ -85,7 +85,7 @@ instance : HXor PosNum PosNum Num where hXor := PosNum.lxor
 @[simp] lemma lxor_eq_xor (p q : PosNum) : p.lxor q = p ^^^ q := rfl
 
 /-- `a.testBit n` is `true` iff the `n`-th bit (starting from the LSB) in the binary representation
-      of `a` is active. If the size of `a` is less than `n`, this evaluates to `false`. -/
+of `a` is active. If the size of `a` is less than `n`, this evaluates to `false`. -/
 def testBit : PosNum → Nat → Bool
   | 1, 0 => true
   | 1, _ => false

@@ -407,7 +407,7 @@ class IsLocal (P : AffineTargetMorphismProperty) : Prop where
   to_basicOpen :
     ∀ {X Y : Scheme} [IsAffine Y] (f : X ⟶ Y) (r : Γ(Y, ⊤)), P f → P (f ∣_ Y.basicOpen r)
   /-- `P` for `f` if `P` holds for `f` restricted to basic sets of a spanning set of the global
-    sections -/
+  sections -/
   of_basicOpenCover :
     ∀ {X Y : Scheme} [IsAffine Y] (f : X ⟶ Y) (s : Finset Γ(Y, ⊤))
       (_ : Ideal.span (s : Set Γ(Y, ⊤)) = ⊤), (∀ r : s, P (f ∣_ Y.basicOpen r.1)) → P f

@@ -126,7 +126,7 @@ fraction representation of `v` in `GenContFract.of`. More precisely, given a val
 recursively computes a stream of option `ℤ × K` pairs as follows:
 - `stream v 0 = some ⟨⌊v⌋, v - ⌊v⌋⟩`
 - `stream v (n + 1) = some ⟨⌊frₙ⁻¹⌋, frₙ⁻¹ - ⌊frₙ⁻¹⌋⟩`,
-    if `stream v n = some ⟨_, frₙ⟩` and `frₙ ≠ 0`
+  if `stream v n = some ⟨_, frₙ⟩` and `frₙ ≠ 0`
 - `stream v (n + 1) = none`, otherwise
 
 For example, let `(v : ℚ) := 3.4`. The process goes as follows:

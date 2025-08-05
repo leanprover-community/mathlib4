@@ -28,7 +28,7 @@ namespace CategoryTheory
 universe u
 
 /-- A type synonym for `Type u`, which carries the category instance for which
-    morphisms are binary relations. -/
+morphisms are binary relations. -/
 def RelCat :=
   Type u
 
@@ -129,7 +129,7 @@ def unopFunctor : RelCatᵒᵖ ⥤ RelCat where
     Functor.comp unopFunctor opFunctor = Functor.id _ := rfl
 
 /-- `RelCat` is self-dual: The map that swaps the argument order of a
-    relation induces an equivalence between `RelCat` and its opposite. -/
+relation induces an equivalence between `RelCat` and its opposite. -/
 @[simps]
 def opEquivalence : RelCat ≌ RelCatᵒᵖ where
   functor := opFunctor

@@ -61,7 +61,7 @@ variable {R₁ : Type*} [Field R₁] [Module R₁ E₁] [Module R₁ F] [FiniteD
   [FiniteDimensional R₁ F]
 
 /-- A linear isometry between finite dimensional spaces of equal dimension can be upgraded
-    to a linear isometry equivalence. -/
+to a linear isometry equivalence. -/
 def toLinearIsometryEquiv (li : E₁ →ₗᵢ[R₁] F) (h : finrank R₁ E₁ = finrank R₁ F) :
     E₁ ≃ₗᵢ[R₁] F where
   toLinearEquiv := li.toLinearMap.linearEquivOfInjective li.injective h
@@ -90,7 +90,7 @@ variable {𝕜 : Type*} {V₁ V₂ : Type*} {P₁ P₂ : Type*} [NormedField �
 variable [FiniteDimensional 𝕜 V₁] [FiniteDimensional 𝕜 V₂]
 
 /-- An affine isometry between finite dimensional spaces of equal dimension can be upgraded
-    to an affine isometry equivalence. -/
+to an affine isometry equivalence. -/
 def toAffineIsometryEquiv [Inhabited P₁] (li : P₁ →ᵃⁱ[𝕜] P₂) (h : finrank 𝕜 V₁ = finrank 𝕜 V₂) :
     P₁ ≃ᵃⁱ[𝕜] P₂ :=
   AffineIsometryEquiv.mk' li (li.linearIsometry.toLinearIsometryEquiv h)

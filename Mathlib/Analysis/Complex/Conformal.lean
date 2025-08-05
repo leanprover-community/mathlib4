@@ -107,7 +107,7 @@ theorem IsConformalMap.is_complex_or_conj_linear (h : IsConformalMap g) :
     simp
 
 /-- A real continuous linear map on the complex plane is conformal if and only if the map or its
-    conjugate is complex linear, and the map is nonvanishing. -/
+conjugate is complex linear, and the map is nonvanishing. -/
 theorem isConformalMap_iff_is_complex_or_conj_linear :
     IsConformalMap g ↔
       ((∃ map : ℂ →L[ℂ] ℂ, map.restrictScalars ℝ = g) ∨

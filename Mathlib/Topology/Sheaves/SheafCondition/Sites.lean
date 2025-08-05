@@ -73,10 +73,9 @@ def presieveOfCoveringAux {ι : Type v} (U : ι → Opens X) (Y : Opens X) : Pre
 def presieveOfCovering {ι : Type v} (U : ι → Opens X) : Presieve (iSup U) :=
   presieveOfCoveringAux U (iSup U)
 
-/-- Given a presieve `R` on `Y`, if we take its associated family of opens via
-    `coveringOfPresieve` (which may not cover `Y` if `R` is not covering), and take
-    the presieve on `Y` associated to the family of opens via `presieveOfCoveringAux`,
-    then we get back the original presieve `R`. -/
+/-- Given a presieve `R` on `Y`, if we take its associated family of opens via `coveringOfPresieve`
+(which may not cover `Y` if `R` is not covering), and take the presieve on `Y` associated to the
+family of opens via `presieveOfCoveringAux`, then we get back the original presieve `R`. -/
 @[simp]
 theorem covering_presieve_eq_self {Y : Opens X} (R : Presieve Y) :
     presieveOfCoveringAux (coveringOfPresieve Y R) Y = R := by

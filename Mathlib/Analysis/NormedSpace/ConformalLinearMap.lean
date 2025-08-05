@@ -44,7 +44,7 @@ open Function LinearIsometry ContinuousLinearMap
 
 
 /-- A continuous linear map `f'` is said to be conformal if it's
-    a nonzero multiple of a linear isometry. -/
+a nonzero multiple of a linear isometry. -/
 def IsConformalMap {R : Type*} {X Y : Type*} [NormedField R] [SeminormedAddCommGroup X]
     [SeminormedAddCommGroup Y] [NormedSpace R X] [NormedSpace R Y] (f' : X →L[R] Y) :=
   ∃ c ≠ (0 : R), ∃ li : X →ₗᵢ[R] Y, f' = c • li.toContinuousLinearMap

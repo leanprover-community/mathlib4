@@ -154,7 +154,7 @@ structure Coverage where
   /-- The collection of covering presieves for an object `X`. -/
   covering : ∀ (X : C), Set (Presieve X)
   /-- Given any covering sieve `S` on `X` and a morphism `f : Y ⟶ X`, there exists
-    some covering sieve `T` on `Y` such that `T` factors through `S` along `f`. -/
+  some covering sieve `T` on `Y` such that `T` factors through `S` along `f`. -/
   pullback : ∀ ⦃X Y : C⦄ (f : Y ⟶ X) (S : Presieve X) (_ : S ∈ covering X),
     ∃ (T : Presieve Y), T ∈ covering Y ∧ T.FactorsThruAlong S f
 

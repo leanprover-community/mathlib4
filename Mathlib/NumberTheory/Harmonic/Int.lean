@@ -22,8 +22,7 @@ lemma harmonic_pos {n : ℕ} (Hn : n ≠ 0) : 0 < harmonic n := by
   rw [← Finset.nonempty_range_iff] at Hn
   positivity
 
-/-- The 2-adic valuation of the n-th harmonic number is the negative of the logarithm
-    of n. -/
+/-- The 2-adic valuation of the n-th harmonic number is the negative of the logarithm of n. -/
 theorem padicValRat_two_harmonic (n : ℕ) : padicValRat 2 (harmonic n) = -Nat.log 2 n := by
   induction n with
   | zero => simp

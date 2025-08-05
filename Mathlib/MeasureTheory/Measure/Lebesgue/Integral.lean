@@ -29,8 +29,8 @@ theorem volume_regionBetween_eq_integral' [SigmaFinite μ] (f_int : IntegrableOn
   rfl
 
 /-- If two functions are integrable on a measurable set, and one function is less than
-    or equal to the other on that set, then the volume of the region
-    between the two functions can be represented as an integral. -/
+or equal to the other on that set, then the volume of the region
+between the two functions can be represented as an integral. -/
 theorem volume_regionBetween_eq_integral [SigmaFinite μ] (f_int : IntegrableOn f s μ)
     (g_int : IntegrableOn g s μ) (hs : MeasurableSet s) (hfg : ∀ x ∈ s, f x ≤ g x) :
     μ.prod volume (regionBetween f g s) = ENNReal.ofReal (∫ y in s, (g - f) y ∂μ) :=

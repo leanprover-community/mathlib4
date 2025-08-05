@@ -74,7 +74,7 @@ end InversionEstimate
 open Valued
 
 /-- The topology coming from a valuation on a division ring makes it a topological division ring
-    [BouAC, VI.5.1 middle of Proposition 1] -/
+[BouAC, VI.5.1 middle of Proposition 1] -/
 instance (priority := 100) Valued.isTopologicalDivisionRing [Valued K Γ₀] :
     IsTopologicalDivisionRing K :=
   { (by infer_instance : IsTopologicalRing K) with

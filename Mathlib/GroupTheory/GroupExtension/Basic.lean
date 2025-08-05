@@ -108,7 +108,7 @@ variable {S}
 variable {E' : Type*} [Group E'] {S' : GroupExtension N E' G}
 
 /-- An equivalence of group extensions from a homomorphism making a commuting diagram. Such a
-    homomorphism is necessarily an isomorphism. -/
+homomorphism is necessarily an isomorphism. -/
 @[to_additive
       "An equivalence of additive group extensions from a homomorphism making a commuting diagram.
       Such a homomorphism is necessarily an isomorphism."]
