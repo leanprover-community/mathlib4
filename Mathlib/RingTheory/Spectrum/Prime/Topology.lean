@@ -202,7 +202,7 @@ theorem vanishingIdeal_anti_mono_iff {s t : Set (PrimeSpectrum R)} (ht : IsClose
 theorem vanishingIdeal_strict_anti_mono_iff {s t : Set (PrimeSpectrum R)} (hs : IsClosed s)
     (ht : IsClosed t) : s ⊂ t ↔ vanishingIdeal t < vanishingIdeal s := by
   rw [Set.ssubset_def, vanishingIdeal_anti_mono_iff hs, vanishingIdeal_anti_mono_iff ht,
-    lt_iff_le_not_le]
+    lt_iff_le_not_ge]
 
 /-- The antitone order embedding of closed subsets of `Spec R` into ideals of `R`. -/
 def closedsEmbedding (R : Type*) [CommSemiring R] :
@@ -270,7 +270,7 @@ lemma vanishingIdeal_isIrreducible :
 lemma vanishingIdeal_isClosed_isIrreducible :
     vanishingIdeal (R := R) '' {s | IsClosed s ∧ IsIrreducible s} = {P | P.IsPrime} := by
   refine (subset_antisymm ?_ ?_).trans vanishingIdeal_isIrreducible
-  · exact Set.image_subset _ fun _ ↦ And.right
+  · exact Set.image_mono fun _ ↦ And.right
   rintro _ ⟨s, hs, rfl⟩
   exact ⟨closure s, ⟨isClosed_closure, hs.closure⟩, vanishingIdeal_closure s⟩
 
@@ -402,9 +402,6 @@ theorem localization_comap_isInducing [Algebra R S] (M : Submonoid R) [IsLocaliz
   · rintro ⟨s, rfl⟩
     exact ⟨_, rfl⟩
 
-@[deprecated (since := "2024-10-28")]
-alias localization_comap_inducing := localization_comap_isInducing
-
 theorem localization_comap_injective [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
     Function.Injective (comap (algebraMap R S)) :=
   fun _ _ h => localization_specComap_injective S M h
@@ -412,9 +409,6 @@ theorem localization_comap_injective [Algebra R S] (M : Submonoid R) [IsLocaliza
 theorem localization_comap_isEmbedding [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
     IsEmbedding (comap (algebraMap R S)) :=
   ⟨localization_comap_isInducing S M, localization_comap_injective S M⟩
-
-@[deprecated (since := "2024-10-26")]
-alias localization_comap_embedding := localization_comap_isEmbedding
 
 theorem localization_comap_range [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
     Set.range (comap (algebraMap R S)) = { p | Disjoint (M : Set R) p.asIdeal } :=
@@ -433,9 +427,6 @@ theorem comap_isInducing_of_surjective (hf : Surjective f) : IsInducing (comap f
         ?_⟩
     rintro ⟨-, ⟨F, rfl⟩, hF⟩
     exact ⟨f '' F, hF.symm.trans (preimage_comap_zeroLocus f F)⟩
-
-@[deprecated (since := "2024-10-28")]
-alias comap_inducing_of_surjective := comap_isInducing_of_surjective
 
 /-- The embedding has closed range if the domain (and therefore the codomain) is a ring,
   see `PrimeSpectrum.isClosedEmbedding_comap_of_surjective`.
@@ -994,8 +985,8 @@ lemma basicOpen_injOn_isIdempotentElem :
   have : x ∉ Ideal.span {y} := fun mem ↦ ne' <| by
     obtain ⟨r, rfl⟩ := Ideal.mem_span_singleton'.mp mem
     rw [mul_assoc, hy]
-  have ⟨p, prime, le, nmem⟩ := Ideal.exists_le_prime_nmem_of_isIdempotentElem _ x hx this
-  exact ne_of_mem_of_not_mem' (a := ⟨p, prime⟩) nmem
+  have ⟨p, prime, le, notMem⟩ := Ideal.exists_le_prime_notMem_of_isIdempotentElem _ x hx this
+  exact ne_of_mem_of_not_mem' (a := ⟨p, prime⟩) notMem
     (not_not.mpr <| p.span_singleton_le_iff_mem.mp le) eq
 
 lemma exists_mul_eq_zero_add_eq_one_basicOpen_eq_of_isClopen {s : Set (PrimeSpectrum R)}
@@ -1044,9 +1035,6 @@ lemma existsUnique_idempotent_basicOpen_eq_of_isClopen {s : Set (PrimeSpectrum R
   refine existsUnique_of_exists_of_unique (exists_idempotent_basicOpen_eq_of_isClopen hs) ?_
   rintro x y ⟨hx, rfl⟩ ⟨hy, eq⟩
   exact basicOpen_injOn_isIdempotentElem hx hy (SetLike.ext' eq)
-
-@[deprecated (since := "2024-11-11")]
-alias exists_idempotent_basicOpen_eq_of_is_clopen := exists_idempotent_basicOpen_eq_of_isClopen
 
 open TopologicalSpace.Opens in
 lemma isClopen_iff_mul_add {s : Set (PrimeSpectrum R)} :
@@ -1155,7 +1143,7 @@ lemma isIntegral_of_isClosedMap_comap_mapRingHom (h : IsClosedMap (comap (mapRin
     rw [← zeroLocus_span, ← closure_eq_iff_isClosed, closure_image_comap_zeroLocus] at H
     rw [← Ideal.eq_top_iff_one, sup_comm, ← zeroLocus_empty_iff_eq_top, zeroLocus_sup, H]
     suffices ∀ (a : PrimeSpectrum S[X]), p ∈ a.asIdeal → X ∉ a.asIdeal by
-      simpa [Set.eq_empty_iff_forall_not_mem]
+      simpa [Set.eq_empty_iff_forall_notMem]
     intro q hpq hXq
     have : 1 ∈ q.asIdeal := by simpa [p] using (sub_mem (q.asIdeal.mul_mem_left (C r) hXq) hpq)
     exact q.2.ne_top (q.asIdeal.eq_top_iff_one.mpr this)
@@ -1283,7 +1271,7 @@ theorem closedPoint_mem_iff (U : TopologicalSpace.Opens <| PrimeSpectrum R) :
   · rw [eq_top_iff]
     exact fun h x _ => (specializes_closedPoint x).mem_open U.2 h
   · rintro rfl
-    trivial
+    exact TopologicalSpace.Opens.mem_top _
 
 lemma closed_point_mem_iff {U : TopologicalSpace.Opens (PrimeSpectrum R)} :
     closedPoint R ∈ U ↔ U = ⊤ :=
@@ -1296,28 +1284,12 @@ theorem PrimeSpectrum.comap_residue (T : Type u) [CommRing T] [IsLocalRing T]
   ext1
   exact Ideal.mk_ker
 
+variable (R) in
+lemma isClosed_singleton_closedPoint : IsClosed {closedPoint R} := by
+  rw [PrimeSpectrum.isClosed_singleton_iff_isMaximal, closedPoint]
+  infer_instance
+
 end IsLocalRing
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.closedPoint := IsLocalRing.closedPoint
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.isLocalHom_iff_comap_closedPoint := IsLocalRing.isLocalHom_iff_comap_closedPoint
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.comap_closedPoint := IsLocalRing.comap_closedPoint
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.specializes_closedPoint := IsLocalRing.specializes_closedPoint
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.closedPoint_mem_iff := IsLocalRing.closedPoint_mem_iff
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.closed_point_mem_iff := IsLocalRing.closed_point_mem_iff
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.PrimeSpectrum.comap_residue := IsLocalRing.PrimeSpectrum.comap_residue
 
 section KrullDimension
 

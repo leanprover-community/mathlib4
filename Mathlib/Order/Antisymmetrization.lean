@@ -46,9 +46,6 @@ theorem antisymmRel_swap_apply : AntisymmRel (swap r) a b ↔ AntisymmRel r a b 
 theorem AntisymmRel.refl [IsRefl α r] (a : α) : AntisymmRel r a a :=
   ⟨_root_.refl _, _root_.refl _⟩
 
-@[deprecated (since := "2025-01-28")]
-alias antisymmRel_refl := AntisymmRel.refl
-
 variable {r} in
 lemma AntisymmRel.rfl [IsRefl α r] {a : α} : AntisymmRel r a a := .refl ..
 
@@ -147,7 +144,7 @@ section Preorder
 variable [Preorder α] [Preorder β]
 
 theorem le_iff_lt_or_antisymmRel : a ≤ b ↔ a < b ∨ AntisymmRel (· ≤ ·) a b := by
-  rw [lt_iff_le_not_le, AntisymmRel]
+  rw [lt_iff_le_not_ge, AntisymmRel]
   tauto
 
 theorem le_of_le_of_antisymmRel (h₁ : a ≤ b) (h₂ : AntisymmRel (· ≤ ·) b c) : a ≤ c :=
@@ -229,7 +226,7 @@ instance instPartialOrderAntisymmetrization : PartialOrder (Antisymmetrization �
                 h₁.1.trans_lt <| h.trans_le h₂.2⟩
   le_refl a := Quotient.inductionOn' a le_refl
   le_trans a b c := Quotient.inductionOn₃' a b c fun _ _ _ => le_trans
-  lt_iff_le_not_le a b := Quotient.inductionOn₂' a b fun _ _ => lt_iff_le_not_le
+  lt_iff_le_not_ge a b := Quotient.inductionOn₂' a b fun _ _ => lt_iff_le_not_ge
   le_antisymm a b := Quotient.inductionOn₂' a b fun _ _ hab hba => Quotient.sound' ⟨hab, hba⟩
 
 theorem antisymmetrization_fibration :

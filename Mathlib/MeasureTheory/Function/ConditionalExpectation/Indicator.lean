@@ -56,9 +56,6 @@ theorem condExp_ae_eq_restrict_zero (hs : MeasurableSet[m] s) (hf : f =ᵐ[μ.re
   · exact stronglyMeasurable_condExp.aestronglyMeasurable
   · exact stronglyMeasurable_zero.aestronglyMeasurable
 
-@[deprecated (since := "2025-01-21")]
-alias condexp_ae_eq_restrict_zero := condExp_ae_eq_restrict_zero
-
 /-- Auxiliary lemma for `condExp_indicator`. -/
 theorem condExp_indicator_aux (hs : MeasurableSet[m] s) (hf : f =ᵐ[μ.restrict sᶜ] 0) :
     μ[s.indicator f|m] =ᵐ[μ] s.indicator (μ[f|m]) := by
@@ -103,7 +100,7 @@ theorem condExp_indicator (hf_int : Integrable f μ) (hs : MeasurableSet[m] s) :
       filter_upwards [this] with x hx
       by_cases hxs : x ∈ s
       · simp only [hx, hxs, Set.indicator_of_mem]
-      · simp only [hxs, Set.indicator_of_not_mem, not_false_iff]
+      · simp only [hxs, Set.indicator_of_notMem, not_false_iff]
     _ =ᵐ[μ] s.indicator (μ[s.indicator f|m]) := by
       rw [Set.indicator_indicator, Set.inter_compl_self, Set.indicator_empty', add_zero]
     _ =ᵐ[μ] μ[s.indicator f|m] := by
@@ -138,9 +135,6 @@ theorem condExp_restrict_ae_eq_restrict (hm : m ≤ m0) [SigmaFinite (μ.trim hm
         rw [integral_indicator (hm _ hs_m), Measure.restrict_restrict (hm _ hs_m),
           Measure.restrict_restrict (hm _ ht), Set.inter_comm]
   · exact (stronglyMeasurable_condExp.indicator hs_m).aestronglyMeasurable
-
-@[deprecated (since := "2025-01-21")]
-alias condexp_restrict_ae_eq_restrict := condExp_restrict_ae_eq_restrict
 
 /-- If the restriction to an `m`-measurable set `s` of a σ-algebra `m` is equal to the restriction
 to `s` of another σ-algebra `m₂` (hypothesis `hs`), then `μ[f | m] =ᵐ[μ.restrict s] μ[f | m₂]`. -/

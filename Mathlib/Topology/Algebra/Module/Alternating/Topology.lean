@@ -134,9 +134,6 @@ lemma isEmbedding_toContinuousMultilinearMap :
   haveI := isUniformAddGroup_of_addCommGroup (G := F)
   isUniformEmbedding_toContinuousMultilinearMap.isEmbedding
 
-@[deprecated (since := "2024-10-26")]
-alias embedding_toContinuousMultilinearMap := isEmbedding_toContinuousMultilinearMap
-
 instance instIsTopologicalAddGroup : IsTopologicalAddGroup (E [⋀^ι]→L[𝕜] F) :=
   isEmbedding_toContinuousMultilinearMap.topologicalAddGroup
     (toContinuousMultilinearMapLinear (R := ℕ))
@@ -184,6 +181,14 @@ instance instT2Space [T2Space F] : T2Space (E [⋀^ι]→L[𝕜] F) :=
 instance instT3Space [T2Space F] : T3Space (E [⋀^ι]→L[𝕜] F) :=
   inferInstance
 
+/-- The inclusion of *alternating* continuous multi-linear maps into continuous multi-linear maps
+as a continuous linear map. -/
+@[simps! -fullyApplied]
+def toContinuousMultilinearMapCLM
+    (R : Type*) [Semiring R] [Module R F] [ContinuousConstSMul R F] [SMulCommClass 𝕜 R F] :
+    E [⋀^ι]→L[𝕜] F →L[R] ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) F :=
+  ⟨toContinuousMultilinearMapLinear, continuous_induced_dom⟩
+
 section RestrictScalars
 
 variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
@@ -194,9 +199,6 @@ theorem isEmbedding_restrictScalars :
   letI : UniformSpace F := IsTopologicalAddGroup.toUniformSpace F
   haveI : IsUniformAddGroup F := isUniformAddGroup_of_addCommGroup
   (isUniformEmbedding_restrictScalars _).isEmbedding
-
-@[deprecated (since := "2024-10-26")]
-alias embedding_restrictScalars := isEmbedding_restrictScalars
 
 @[continuity, fun_prop]
 theorem continuous_restrictScalars :

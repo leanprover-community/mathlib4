@@ -77,8 +77,6 @@ theorem toNat_inj_of_lt_aleph0 (hc : c < ℵ₀) (hd : d < ℵ₀) :
     toNat c = toNat d ↔ c = d :=
   toNat_injOn.eq_iff hc hd
 
-@[deprecated (since := "2024-12-29")] alias toNat_eq_iff_eq_of_lt_aleph0 := toNat_inj_of_lt_aleph0
-
 theorem toNat_le_iff_le_of_lt_aleph0 (hc : c < ℵ₀) (hd : d < ℵ₀) :
     toNat c ≤ toNat d ↔ c ≤ d :=
   toNat_strictMonoOn.le_iff_le hc hd
@@ -151,7 +149,6 @@ theorem toNat_add (hc : c < ℵ₀) (hd : d < ℵ₀) : toNat (c + d) = toNat c 
   lift d to ℕ using hd
   norm_cast
 
-@[simp]
 theorem toNat_lift_add_lift {a : Cardinal.{u}} {b : Cardinal.{v}} (ha : a < ℵ₀) (hb : b < ℵ₀) :
     toNat (lift.{v} a + lift.{u} b) = toNat a + toNat b := by
   simp [*]

@@ -151,7 +151,7 @@ theorem IsUpperSet.exists_subset_ball (hs : IsUpperSet s) (hx : x ∈ closure s)
   · rw [dist_self_add_left]
     refine (add_le_add_left (pi_norm_const_le <| 3 / 4 * δ) _).trans_eq ?_
     simp only [norm_mul, norm_div, Real.norm_eq_abs]
-    simp only [gt_iff_lt, zero_lt_three, abs_of_pos, zero_lt_four, abs_of_pos hδ]
+    simp only [zero_lt_three, abs_of_pos, zero_lt_four, abs_of_pos hδ]
     ring
   obtain ⟨y, hy, hxy⟩ := Metric.mem_closure_iff.1 hx _ (div_pos hδ zero_lt_four)
   refine fun z hz => hs.mem_interior_of_forall_lt (subset_closure hy) fun i => ?_
@@ -168,7 +168,7 @@ theorem IsLowerSet.exists_subset_ball (hs : IsLowerSet s) (hx : x ∈ closure s)
   refine ⟨x - const _ (3 / 4 * δ), closedBall_subset_closedBall' ?_, ?_⟩
   · rw [dist_self_sub_left]
     refine (add_le_add_left (pi_norm_const_le <| 3 / 4 * δ) _).trans_eq ?_
-    simp only [norm_mul, norm_div, Real.norm_eq_abs, gt_iff_lt, zero_lt_three, abs_of_pos,
+    simp only [norm_mul, norm_div, Real.norm_eq_abs, zero_lt_three, abs_of_pos,
       zero_lt_four, abs_of_pos hδ]
     ring
   obtain ⟨y, hy, hxy⟩ := Metric.mem_closure_iff.1 hx _ (div_pos hδ zero_lt_four)

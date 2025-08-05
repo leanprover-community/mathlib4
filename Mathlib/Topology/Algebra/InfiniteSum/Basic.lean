@@ -197,8 +197,6 @@ protected theorem Topology.IsInducing.hasProd_iff [CommMonoid γ] [TopologicalSp
   simp_rw [HasProd, comp_apply, ← map_prod]
   exact hg.tendsto_nhds_iff.symm
 
-@[deprecated (since := "2024-10-28")] alias Inducing.hasProd_iff := IsInducing.hasProd_iff
-
 @[to_additive]
 protected theorem Multipliable.map [CommMonoid γ] [TopologicalSpace γ] (hf : Multipliable f) {G}
     [FunLike G α γ] [MonoidHomClass G α γ] (g : G) (hg : Continuous g) : Multipliable (g ∘ f) :=
@@ -233,10 +231,6 @@ lemma Topology.IsInducing.multipliable_iff_tprod_comp_mem_range [CommMonoid γ] 
     have := hgf.hasProd
     simp_rw [comp_apply, ← ha] at this
     exact (hg.hasProd_iff f a).mp this
-
-@[deprecated (since := "2024-10-28")]
-alias Inducing.multipliable_iff_tprod_comp_mem_range :=
-  IsInducing.multipliable_iff_tprod_comp_mem_range
 
 /-- "A special case of `Multipliable.map_iff_of_leftInverse` for convenience" -/
 @[to_additive "A special case of `Summable.map_iff_of_leftInverse` for convenience"]
@@ -595,7 +589,7 @@ protected theorem Multipliable.tprod_eq_mul_tprod_ite' [DecidableEq β] {f : β 
       congr
       exact tprod_eq_mulSingle b fun b' hb' ↦ if_neg hb'
     _ = f b * ∏' x, ite (x = b) 1 (f x) := by
-      simp only [update, eq_self_iff_true, if_true, eq_rec_constant, dite_eq_ite]
+      simp only [update, if_true, eq_rec_constant, dite_eq_ite]
 
 @[deprecated (since := "2025-04-12")] alias tsum_eq_add_tsum_ite' :=
   Summable.tsum_eq_add_tsum_ite'
