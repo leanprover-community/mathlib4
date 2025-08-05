@@ -247,7 +247,7 @@ theorem bind_apply (f : α →ₛ β) (g : β → α →ₛ γ) (a) : f.bind g a
   rfl
 
 /-- Given a function `g : β → γ` and a simple function `f : α →ₛ β`, `f.map g` return the simple
-    function `g ∘ f : α →ₛ γ` -/
+function `g ∘ f : α →ₛ γ` -/
 def map (g : β → γ) (f : α →ₛ β) : α →ₛ γ :=
   bind f (const α ∘ g)
 
