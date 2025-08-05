@@ -17,6 +17,9 @@ day convolutions and the data of the canonical morphisms to the aforementioned
 ends can be organised as data that exhibit `F` as monoidal closed in `C ⥤ V` for
 the Day convolution monoidal structure.
 
+## TODOs
+* When `LawfulDayConvolutionMonoidalStruct` (#26820) lands, transport the
+  constructions here to produce actual `CategoryTheory.MonoidalClosed` instances.
 -/
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
