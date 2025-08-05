@@ -103,8 +103,6 @@ denoted by `s ×ℂ t`. -/
 def reProdIm (s t : Set ℝ) : Set ℂ :=
   re ⁻¹' s ∩ im ⁻¹' t
 
-@[deprecated (since := "2024-12-03")] protected alias Set.reProdIm := reProdIm
-
 @[inherit_doc]
 infixl:72 " ×ℂ " => reProdIm
 

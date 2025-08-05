@@ -119,10 +119,6 @@ instance (priority := 100) NormedDivisionRing.to_isTopologicalDivisionRing :
 lemma NormedField.tendsto_norm_inv_nhdsNE_zero_atTop : Tendsto (fun x : α ↦ ‖x⁻¹‖) (𝓝[≠] 0) atTop :=
   (tendsto_inv_nhdsGT_zero.comp tendsto_norm_nhdsNE_zero).congr fun x ↦ (norm_inv x).symm
 
-@[deprecated (since := "2024-12-22")]
-alias NormedField.tendsto_norm_inverse_nhdsWithin_0_atTop :=
-  NormedField.tendsto_norm_inv_nhdsNE_zero_atTop
-
 lemma NormedField.tendsto_norm_zpow_nhdsNE_zero_atTop {m : ℤ} (hm : m < 0) :
     Tendsto (fun x : α ↦ ‖x ^ m‖) (𝓝[≠] 0) atTop := by
   obtain ⟨m, rfl⟩ := neg_surjective m
@@ -131,10 +127,6 @@ lemma NormedField.tendsto_norm_zpow_nhdsNE_zero_atTop {m : ℤ} (hm : m < 0) :
   rw [Int.natCast_pos] at hm
   simp only [norm_pow, zpow_neg, zpow_natCast, ← inv_pow]
   exact (tendsto_pow_atTop hm.ne').comp NormedField.tendsto_norm_inv_nhdsNE_zero_atTop
-
-@[deprecated (since := "2024-12-22")]
-alias NormedField.tendsto_norm_zpow_nhdsWithin_0_atTop :=
-  NormedField.tendsto_norm_zpow_nhdsNE_zero_atTop
 
 end NormedDivisionRing
 

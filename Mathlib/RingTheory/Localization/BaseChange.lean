@@ -118,8 +118,6 @@ noncomputable def algebraLid : A ⊗[R] B ≃ₐ[A] B :=
   have := tensorProduct_compatibleSMul S A A B
   Algebra.TensorProduct.lidOfCompatibleSMul R A B
 
-@[deprecated (since := "2024-12-01")] alias tensorSelfAlgEquiv := algebraLid
-
 set_option linter.docPrime false in
 theorem bijective_linearMap_mul' : Function.Bijective (LinearMap.mul' R A) :=
   have := tensorProduct_compatibleSMul S A A A

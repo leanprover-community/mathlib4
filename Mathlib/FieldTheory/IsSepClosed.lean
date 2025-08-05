@@ -276,9 +276,6 @@ theorem surjective_restrictDomain_of_isSeparable {E : Type*}
     fun s ↦ ⟨Algebra.IsSeparable.isIntegral L s,
       IsSepClosed.splits_codomain _ <| Algebra.IsSeparable.isSeparable L s⟩
 
-@[deprecated (since := "2024-11-15")]
-alias surjective_comp_algebraMap_of_isSeparable := surjective_restrictDomain_of_isSeparable
-
 variable [Algebra.IsSeparable K L] {L}
 
 /-- A (random) homomorphism from a separable extension L of K into a separably

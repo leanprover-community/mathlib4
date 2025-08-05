@@ -162,9 +162,6 @@ theorem edist_indicatorConstLp_eq_enorm {t : Set α} {ht : MeasurableSet t} {hμ
   unfold indicatorConstLp
   rw [Lp.edist_toLp_toLp, eLpNorm_indicator_sub_indicator, Lp.enorm_toLp]
 
-@[deprecated (since := "2025-01-20")]
-alias edist_indicatorConstLp_eq_nnnorm := edist_indicatorConstLp_eq_enorm
-
 theorem dist_indicatorConstLp_eq_norm {t : Set α} {ht : MeasurableSet t} {hμt : μ t ≠ ∞} :
     dist (indicatorConstLp p hs hμs c) (indicatorConstLp p ht hμt c) =
       ‖indicatorConstLp p (hs.symmDiff ht) (measure_symmDiff_ne_top hμs hμt) c‖ := by

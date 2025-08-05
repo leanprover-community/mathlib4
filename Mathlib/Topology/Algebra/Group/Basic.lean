@@ -337,8 +337,6 @@ theorem Topology.IsInducing.continuousInv {G H : Type*} [Inv G] [Inv H] [Topolog
     (hf_inv : ∀ x, f x⁻¹ = (f x)⁻¹) : ContinuousInv G :=
   ⟨hf.continuous_iff.2 <| by simpa only [Function.comp_def, hf_inv] using hf.continuous.inv⟩
 
-@[deprecated (since := "2024-10-28")] alias Inducing.continuousInv := IsInducing.continuousInv
-
 section IsTopologicalGroup
 
 /-!
@@ -445,72 +443,34 @@ variable [TopologicalSpace H] [CommGroup H] [PartialOrder H] [IsOrderedMonoid H]
 theorem tendsto_inv_nhdsGT {a : H} : Tendsto Inv.inv (𝓝[>] a) (𝓝[<] a⁻¹) :=
   (continuous_inv.tendsto a).inf <| by simp
 
-@[deprecated (since := "2024-12-22")]
-alias tendsto_neg_nhdsWithin_Ioi := tendsto_neg_nhdsGT
-@[to_additive existing, deprecated (since := "2024-12-22")]
-alias tendsto_inv_nhdsWithin_Ioi := tendsto_inv_nhdsGT
-
 @[to_additive]
 theorem tendsto_inv_nhdsLT {a : H} : Tendsto Inv.inv (𝓝[<] a) (𝓝[>] a⁻¹) :=
   (continuous_inv.tendsto a).inf <| by simp
-
-@[deprecated (since := "2024-12-22")]
-alias tendsto_neg_nhdsWithin_Iio := tendsto_neg_nhdsLT
-@[to_additive existing, deprecated (since := "2024-12-22")]
-alias tendsto_inv_nhdsWithin_Iio := tendsto_inv_nhdsLT
 
 @[to_additive]
 theorem tendsto_inv_nhdsGT_inv {a : H} : Tendsto Inv.inv (𝓝[>] a⁻¹) (𝓝[<] a) := by
   simpa only [inv_inv] using tendsto_inv_nhdsGT (a := a⁻¹)
 
-@[deprecated (since := "2024-12-22")]
-alias tendsto_neg_nhdsWithin_Ioi_neg := tendsto_neg_nhdsGT_neg
-@[to_additive existing, deprecated (since := "2024-12-22")]
-alias tendsto_inv_nhdsWithin_Ioi_inv := tendsto_inv_nhdsGT_inv
-
 @[to_additive]
 theorem tendsto_inv_nhdsLT_inv {a : H} : Tendsto Inv.inv (𝓝[<] a⁻¹) (𝓝[>] a) := by
   simpa only [inv_inv] using tendsto_inv_nhdsLT (a := a⁻¹)
-
-@[deprecated (since := "2024-12-22")]
-alias tendsto_neg_nhdsWithin_Iio_neg := tendsto_neg_nhdsLT_neg
-@[to_additive existing, deprecated (since := "2024-12-22")]
-alias tendsto_inv_nhdsWithin_Iio_inv := tendsto_inv_nhdsLT_inv
 
 @[to_additive]
 theorem tendsto_inv_nhdsGE {a : H} : Tendsto Inv.inv (𝓝[≥] a) (𝓝[≤] a⁻¹) :=
   (continuous_inv.tendsto a).inf <| by simp
 
-@[deprecated (since := "2024-12-22")]
-alias tendsto_neg_nhdsWithin_Ici := tendsto_neg_nhdsGE
-@[to_additive existing, deprecated (since := "2024-12-22")]
-alias tendsto_inv_nhdsWithin_Ici := tendsto_inv_nhdsGE
-
 @[to_additive]
 theorem tendsto_inv_nhdsLE {a : H} : Tendsto Inv.inv (𝓝[≤] a) (𝓝[≥] a⁻¹) :=
   (continuous_inv.tendsto a).inf <| by simp
-
-@[deprecated (since := "2024-12-22")]
-alias tendsto_neg_nhdsWithin_Iic := tendsto_neg_nhdsLE
-@[to_additive existing, deprecated (since := "2024-12-22")]
-alias tendsto_inv_nhdsWithin_Iic := tendsto_inv_nhdsLE
 
 @[to_additive]
 theorem tendsto_inv_nhdsGE_inv {a : H} : Tendsto Inv.inv (𝓝[≥] a⁻¹) (𝓝[≤] a) := by
   simpa only [inv_inv] using tendsto_inv_nhdsGE (a := a⁻¹)
 
-@[deprecated (since := "2024-12-22")]
-alias tendsto_neg_nhdsWithin_Ici_neg := tendsto_neg_nhdsGE_neg
-@[to_additive existing, deprecated (since := "2024-12-22")]
-alias tendsto_inv_nhdsWithin_Ici_inv := tendsto_inv_nhdsGE_inv
-
 @[to_additive]
 theorem tendsto_inv_nhdsLE_inv {a : H} : Tendsto Inv.inv (𝓝[≤] a⁻¹) (𝓝[≥] a) := by
   simpa only [inv_inv] using tendsto_inv_nhdsLE (a := a⁻¹)
 
-@[deprecated (since := "2024-12-22")]
-alias tendsto_neg_nhdsWithin_Iic_neg := tendsto_neg_nhdsLE_neg
-@[to_additive existing, deprecated (since := "2024-12-22")]
 alias tendsto_inv_nhdsWithin_Iic_inv := tendsto_inv_nhdsLE_inv
 
 end OrderedCommGroup
@@ -576,8 +536,6 @@ protected theorem Topology.IsInducing.topologicalGroup {F : Type*} [Group H] [To
     [FunLike F H G] [MonoidHomClass F H G] (f : F) (hf : IsInducing f) : IsTopologicalGroup H :=
   { toContinuousMul := hf.continuousMul _
     toContinuousInv := hf.continuousInv (map_inv f) }
-
-@[deprecated (since := "2024-10-28")] alias Inducing.topologicalGroup := IsInducing.topologicalGroup
 
 @[to_additive]
 theorem topologicalGroup_induced {F : Type*} [Group H] [FunLike F H G] [MonoidHomClass F H G]
@@ -1202,9 +1160,6 @@ def toUnits_homeomorph [Group G] [TopologicalSpace G] [ContinuousInv G] : G ≃�
 @[to_additive] theorem Units.isEmbedding_val [Group G] [TopologicalSpace G] [ContinuousInv G] :
     IsEmbedding (val : Gˣ → G) :=
   toUnits_homeomorph.symm.isEmbedding
-
-@[deprecated (since := "2024-10-26")]
-alias Units.embedding_val := Units.isEmbedding_val
 
 lemma Continuous.of_coeHom_comp [Group G] [Monoid H] [TopologicalSpace G] [TopologicalSpace H]
     [ContinuousInv G] {f : G →* Hˣ} (hf : Continuous ((Units.coeHom H).comp f)) : Continuous f := by

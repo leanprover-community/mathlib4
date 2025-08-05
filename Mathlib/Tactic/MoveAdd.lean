@@ -349,9 +349,6 @@ def moveOperSimpCtx : MetaM Simp.Context := do
   let simpThms ← simpNames.foldlM (·.addConst ·) ({} : SimpTheorems)
   Simp.mkContext {} (simpTheorems := #[simpThms])
 
-@[deprecated (since := "2024-12-07")]
-alias move_oper_simpCtx := moveOperSimpCtx
-
 /-- `reorderAndSimp mv op instr` takes as input an `MVarId`  `mv`, the name `op` of a binary
 operation and a list of "instructions" `instr` that it passes to `permuteExpr`.
 

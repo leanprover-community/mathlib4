@@ -439,8 +439,6 @@ instance instNonemptyTop [Nonempty α] : Nonempty (⊤ : Set α) :=
 
 theorem Nonempty.of_subtype [Nonempty (↥s)] : s.Nonempty := nonempty_subtype.mp ‹_›
 
-@[deprecated (since := "2024-11-23")] alias nonempty_of_nonempty_subtype := Nonempty.of_subtype
-
 /-! ### Lemmas about the empty set -/
 
 theorem empty_def : (∅ : Set α) = { _x : α | False } :=

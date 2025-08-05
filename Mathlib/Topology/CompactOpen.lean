@@ -128,16 +128,11 @@ theorem isInducing_postcomp (g : C(Y, Z)) (hg : IsInducing g) :
     simp only [compactOpen_eq, induced_generateFrom_eq, image_image2, hg.setOf_isOpen,
       image2_image_right, MapsTo, mem_preimage, preimage_setOf_eq, comp_apply]
 
-@[deprecated (since := "2024-10-28")] alias inducing_postcomp := isInducing_postcomp
-
 /-- If `g : C(Y, Z)` is a topological embedding,
 then the composition `ContinuousMap.comp g : C(X, Y) → C(X, Z)` is an embedding too. -/
 theorem isEmbedding_postcomp (g : C(Y, Z)) (hg : IsEmbedding g) :
     IsEmbedding (g.comp : C(X, Y) → C(X, Z)) :=
   ⟨isInducing_postcomp g hg.1, fun _ _ ↦ (cancel_left hg.2).1⟩
-
-@[deprecated (since := "2024-10-26")]
-alias embedding_postcomp := isEmbedding_postcomp
 
 /-- `C(·, Z)` is a functor. -/
 @[continuity, fun_prop]
@@ -569,17 +564,11 @@ theorem Topology.IsQuotientMap.continuous_lift_prod_left (hf : IsQuotientMap f) 
     exact Gf.continuous
   exact ContinuousMap.continuous_uncurry_of_continuous ⟨G, this⟩
 
-@[deprecated (since := "2024-10-22")]
-alias QuotientMap.continuous_lift_prod_left := IsQuotientMap.continuous_lift_prod_left
-
 theorem Topology.IsQuotientMap.continuous_lift_prod_right (hf : IsQuotientMap f) {g : Y × X → Z}
     (hg : Continuous fun p : Y × X₀ => g (p.1, f p.2)) : Continuous g := by
   have : Continuous fun p : X₀ × Y => g ((Prod.swap p).1, f (Prod.swap p).2) :=
     hg.comp continuous_swap
   have : Continuous fun p : X₀ × Y => (g ∘ Prod.swap) (f p.1, p.2) := this
   exact (hf.continuous_lift_prod_left this).comp continuous_swap
-
-@[deprecated (since := "2024-10-22")]
-alias QuotientMap.continuous_lift_prod_right := IsQuotientMap.continuous_lift_prod_right
 
 end IsQuotientMap

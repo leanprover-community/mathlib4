@@ -101,9 +101,6 @@ theorem prime_def {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, m ∣ p → m = 1 �
   refine (h.2 a <| dvd_mul_right ..).imp_right fun hab ↦ ?_
   rw [← mul_right_inj' (Nat.ne_zero_of_lt h1), ← hab, ← hab, mul_one]
 
-@[deprecated (since := "2024-11-19")]
-alias prime_def_lt'' := prime_def
-
 theorem prime_def_lt {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m < p, m ∣ p → m = 1 :=
   prime_def.trans <|
     and_congr_right fun p2 =>

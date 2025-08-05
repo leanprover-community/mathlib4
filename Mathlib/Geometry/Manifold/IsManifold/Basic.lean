@@ -787,9 +787,6 @@ theorem isManifold_of_contDiffOn {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     haveI : HasGroupoid M (contDiffGroupoid n I) := hasGroupoid_of_pregroupoid _ (h _ _)
     apply StructureGroupoid.compatible
 
-@[deprecated (since := "2025-01-09")]
-alias smoothManifoldWithCorners_of_contDiffOn := isManifold_of_contDiffOn
-
 /-- For any model with corners, the model space is a `C^n` manifold -/
 instance instIsManifoldModelSpace {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]

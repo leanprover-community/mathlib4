@@ -143,8 +143,6 @@ lemma smul_fin3_ext (P : Fin 3 → R) (u : R) :
 lemma comp_smul (f : R →+* S) (P : Fin 3 → R) (u : R) : f ∘ (u • P) = f u • f ∘ P := by
   ext n; fin_cases n <;> simp only [smul_fin3, comp_fin3] <;> map_simp
 
-@[deprecated (since := "2025-01-30")] alias map_smul := comp_smul
-
 /-- The multiplicative action for a Jacobian point representative on a Weierstrass curve. -/
 scoped instance : MulAction R <| Fin 3 → R where
   one_smul _ := by simp only [smul_fin3, one_pow, one_mul, fin3_def]

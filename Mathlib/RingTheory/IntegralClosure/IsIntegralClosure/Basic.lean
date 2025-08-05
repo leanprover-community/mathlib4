@@ -286,29 +286,6 @@ section
 
 variable (p : R[X]) (x : S)
 
-/-- The monic polynomial whose roots are `p.leadingCoeff * x` for roots `x` of `p`. -/
-@[deprecated (since := "2024-11-30")]
-alias normalizeScaleRoots := integralNormalization
-
-@[deprecated (since := "2024-11-30")]
-alias normalizeScaleRoots_coeff_mul_leadingCoeff_pow :=
-  integralNormalization_coeff_mul_leadingCoeff_pow
-
-@[deprecated (since := "2024-11-30")]
-alias leadingCoeff_smul_normalizeScaleRoots := leadingCoeff_smul_integralNormalization
-
-@[deprecated (since := "2024-11-30")]
-alias normalizeScaleRoots_support := support_integralNormalization_subset
-
-@[deprecated (since := "2024-11-30")]
-alias normalizeScaleRoots_degree := integralNormalization_degree
-
-@[deprecated (since := "2024-11-30")]
-alias normalizeScaleRoots_eval₂_leadingCoeff_mul := integralNormalization_eval₂_leadingCoeff_mul
-
-@[deprecated (since := "2024-11-30")]
-alias normalizeScaleRoots_monic := monic_integralNormalization
-
 /-- Given a `p : R[X]` and a `x : S` such that `p.eval₂ f x = 0`,
 `f p.leadingCoeff * x` is integral. -/
 theorem RingHom.isIntegralElem_leadingCoeff_mul (h : p.eval₂ f x = 0) :

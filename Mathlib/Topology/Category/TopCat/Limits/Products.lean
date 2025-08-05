@@ -217,17 +217,12 @@ theorem isInducing_prodMap {W X Y Z : TopCat.{u}} {f : W ⟶ X} {g : Y ⟶ Z} (h
     prod.map_fst, prod.map_snd, coe_comp, ← induced_compose (g := f), ← induced_compose (g := g)]
   rw [← hf.eq_induced, ← hg.eq_induced]
 
-@[deprecated (since := "2024-10-28")] alias inducing_prod_map := isInducing_prodMap
-
 theorem isEmbedding_prodMap {W X Y Z : TopCat.{u}} {f : W ⟶ X} {g : Y ⟶ Z} (hf : IsEmbedding f)
     (hg : IsEmbedding g) : IsEmbedding (Limits.prod.map f g) :=
   ⟨isInducing_prodMap hf.isInducing hg.isInducing, by
     haveI := (TopCat.mono_iff_injective _).mpr hf.injective
     haveI := (TopCat.mono_iff_injective _).mpr hg.injective
     exact (TopCat.mono_iff_injective _).mp inferInstance⟩
-
-@[deprecated (since := "2024-10-26")]
-alias embedding_prod_map := isEmbedding_prodMap
 
 end Prod
 
