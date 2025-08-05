@@ -159,19 +159,9 @@ lemma compl_support_eq_sUnion : μ.supportᶜ = ⋃₀ {t : Set X | IsOpen t ∧
   ext x; simp only [Set.mem_compl_iff, Set.mem_sUnion, Set.mem_setOf_eq, and_right_comm,
      nhds_basis_opens x |>.notMem_measureSupport, fun t ↦ and_comm (b := x ∈ t)]
 
---Merge master and then include the following proof.
-/- convert congr($(compl_support_eq_sUnion (μ := μ))ᶜ)
-  all_goals simp [Set.compl_sUnion, compl_involutive.image_eq_preimage]  -/
 lemma support_eq_sInter : μ.support = ⋂₀ {t : Set X | IsClosed t ∧ μ tᶜ = 0} := by
-  ext x
-  simp only [nhds_basis_opens x |>.mem_measureSupport, and_imp, Set.mem_sInter, Set.mem_setOf_eq]
-  rw [← not_iff_not]
-  push_neg
-  constructor
-  · rintro ⟨t, ht, htc, htc1⟩; use tᶜ; rw [← compl_compl t] at htc1 ht
-    exact ⟨htc.isClosed_compl, nonpos_iff_eq_zero.mp htc1, Set.mem_compl_iff tᶜ x |>.mp ht⟩
-  · rintro ⟨t, ht, htc, htc1⟩; use tᶜ
-    exact ⟨Set.mem_compl htc1, ht.isOpen_compl, le_of_eq htc⟩
+  convert congr($(compl_support_eq_sUnion (μ := μ))ᶜ)
+  all_goals simp [Set.compl_sUnion, compl_involutive.image_eq_preimage]
 
 section Lindelof
 
@@ -237,6 +227,7 @@ lemma mem_support_restrict {s : Set X} {x : X} :
     · exact D
     · exact IsOpen.measurableSet hi.2
 
+-- The following application of `grind` doesn't work. Not sure how to troubleshoot...
 --lemma mem_support_restrict {s : Set X} {x : X} :
 --    x ∈ (μ.restrict s).support ↔ ∃ᶠ u in (𝓝[s] x).smallSets, 0 < μ u := by
 --  rw [(nhdsWithin_basis_open x s).frequently_smallSets μ.pos_mono]
