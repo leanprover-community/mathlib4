@@ -34,7 +34,7 @@ so-called stars and costars at each vertex of the domain.
 
 ## TODO
 
-Clean up the namespaces by renaming `Prefunctor` to `Quiver.Prefunctor`.
+Clean up the namespaces by renaming `Prefunctor` to `Mathlib/Combinatorics/Quiver/Prefunctor.lean`.
 
 ## Tags
 

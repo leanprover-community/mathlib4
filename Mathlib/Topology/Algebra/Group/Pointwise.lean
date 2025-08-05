@@ -22,7 +22,7 @@ variable {G : Type w} {H : Type x} {α : Type u} {β : Type v}
 
 A few results about interior and closure of the pointwise addition/multiplication of sets in groups
 with continuous addition/multiplication. See also `Submonoid.top_closure_mul_self_eq` in
-`Topology.Algebra.Monoid`.
+`Mathlib/Topology/Algebra/Monoid.lean`.
 -/
 
 

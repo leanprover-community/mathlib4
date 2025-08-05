@@ -101,9 +101,9 @@ end with_instance
 /-! ### Coercion applying functoriality for `Subtype.val`
 The `Monad` instance gives a coercion using the internal function `Lean.Internal.coeM`.
 In practice this is only used for applying the `Set` functor to `Subtype.val`,
-as was defined in `Data.Set.Notation`. -/
+as was defined in `Mathlib/Data/Set/Notation.lean`. -/
 
-/-- The coercion from `Set.monad` as an instance is equal to the coercion in `Data.Set.Notation`. -/
+/-- The coercion from `Set.monad` as an instance is equal to the coercion in `Mathlib/Data/Set/Notation.lean`. -/
 theorem coe_eq_image_val (t : Set s) :
     @Lean.Internal.coeM Set s α _ Set.monad t = (t : Set α) := by
   change ⋃ (x ∈ t), {x.1} = _

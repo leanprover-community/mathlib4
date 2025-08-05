@@ -8,7 +8,7 @@ import Mathlib.Data.List.Forall2
 /-!
 # Lists with no duplicates
 
-`List.Nodup` is defined in `Data/List/Basic`. In this file we prove various properties of this
+`Mathlib/Data/List/Nodup.lean` is defined in `Mathlib/Data/List/Basic.lean`. In this file we prove various properties of this
 predicate.
 -/
 

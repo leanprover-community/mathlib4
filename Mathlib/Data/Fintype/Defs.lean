@@ -17,22 +17,22 @@ This file defines a typeclass to state that a type is finite.
   that all terms of type `α` are in it.
 * `Finset.univ`: The finset of all elements of a fintype.
 
-See `Data.Fintype.Basic` for elementary results,
-`Data.Fintype.Card` for the cardinality of a fintype,
+See `Mathlib/Data/Fintype/Basic.lean` for elementary results,
+`Mathlib/Data/Fintype/Card.lean` for the cardinality of a fintype,
 the equivalence with `Fin (Fintype.card α)`, and pigeonhole principles.
 
 ## Instances
 
 Instances for `Fintype` for
 * `{x // p x}` are in this file as `Fintype.subtype`
-* `Option α` are in `Data.Fintype.Option`
-* `α × β` are in `Data.Fintype.Prod`
-* `α ⊕ β` are in `Data.Fintype.Sum`
-* `Σ (a : α), β a` are in `Data.Fintype.Sigma`
+* `Option α` are in `Mathlib/Data/Fintype/Option.lean`
+* `α × β` are in `Mathlib/Data/Fintype/Prod.lean`
+* `α ⊕ β` are in `Mathlib/Data/Fintype/Sum.lean`
+* `Σ (a : α), β a` are in `Mathlib/Data/Fintype/Sigma.lean`
 
 These files also contain appropriate `Infinite` instances for these types.
 
-`Infinite` instances for `ℕ`, `ℤ`, `Multiset α`, and `List α` are in `Data.Fintype.Lattice`.
+`Infinite` instances for `ℕ`, `ℤ`, `Multiset α`, and `List α` are in `Mathlib/Data/Fintype/Lattice.lean`.
 -/
 
 assert_not_exists Monoid
@@ -126,10 +126,10 @@ open Lean Elab Term Meta Batteries.ExtendedBinder Parser.Term PrettyPrinter.Dela
   `Finset ?α`.
 
 See also
-* `Data.Set.Defs` for the `Set` builder notation elaborator that this elaborator partly overrides.
-* `Data.Finset.Basic` for the `Finset` builder notation elaborator partly overriding this one for
+* `Mathlib/Data/Set/Defs.lean` for the `Set` builder notation elaborator that this elaborator partly overrides.
+* `Mathlib/Data/Finset/Basic.lean` for the `Finset` builder notation elaborator partly overriding this one for
   syntax of the form `{x ∈ s | p x}`.
-* `Data.Fintype.Basic` for the `Finset` builder notation elaborator handling syntax of the form
+* `Mathlib/Data/Fintype/Basic.lean` for the `Finset` builder notation elaborator handling syntax of the form
   `{x | p x}`, `{x : α | p x}`, `{x ∉ s | p x}`, `{x ≠ a | p x}`.
 * `Order.LocallyFinite.Basic` for the `Finset` builder notation elaborator handling syntax of the
   form `{x ≤ a | p x}`, `{x ≥ a | p x}`, `{x < a | p x}`, `{x > a | p x}`.

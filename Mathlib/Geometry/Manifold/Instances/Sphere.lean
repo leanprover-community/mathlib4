@@ -40,12 +40,12 @@ We prove two lemmas about `C^n` maps:
 
 As an application we prove `contMDiffNegSphere`, that the antipodal map is analytic.
 
-Finally, we equip the `Circle` (defined in `Analysis.Complex.Circle` to be the sphere in `ℂ`
+Finally, we equip the `Circle` (defined in `Mathlib/Analysis/Complex/Circle.lean` to be the sphere in `ℂ`
 centred at `0` of radius `1`) with the following structure:
 * a charted space with model space `EuclideanSpace ℝ (Fin 1)` (inherited from `Metric.Sphere`)
 * an analytic Lie group with model with corners `𝓡 1`
 
-We furthermore show that `Circle.exp` (defined in `Analysis.Complex.Circle` to be the natural
+We furthermore show that `Circle.exp` (defined in `Mathlib/Analysis/Complex/Circle.lean` to be the natural
 map `fun t ↦ exp (t * I)` from `ℝ` to `Circle`) is analytic.
 
 

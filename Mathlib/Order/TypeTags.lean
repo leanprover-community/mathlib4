@@ -10,7 +10,7 @@ import Mathlib.Order.Notation
 
 In this file we define `WithBot`, `WithTop`, `ENat`, and `PNat`.
 The definitions were moved to this file without any theory
-so that, e.g., `Data/Countable/Basic` can prove `Countable ENat`
+so that, e.g., `Mathlib/Data/Countable/Basic.lean` can prove `Countable ENat`
 without exploding its imports.
 -/
 

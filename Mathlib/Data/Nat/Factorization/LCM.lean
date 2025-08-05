@@ -10,7 +10,7 @@ import Mathlib.Data.Nat.GCD.BigOperators
 # Lemmas about `factorizationLCMLeft`
 
 This file contains some lemmas about `factorizationLCMLeft`.
-These were split from `Mathlib.Data.Nat.Factorization.Basic` to reduce transitive imports.
+These were split from `Mathlib/Data/Nat/Factorization/Basic.lean` to reduce transitive imports.
 -/
 
 open Finset List Finsupp

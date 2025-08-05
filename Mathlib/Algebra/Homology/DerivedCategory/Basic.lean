@@ -18,7 +18,7 @@ The derived category is defined here as the localization of cochain complexes
 indexed by `ℤ` with respect to quasi-isomorphisms: it is a type synonym of
 `HomologicalComplexUpToQuasiIso C (ComplexShape.up ℤ)`. Then, we have a
 localization functor `DerivedCategory.Q : CochainComplex C ℤ ⥤ DerivedCategory C`.
-It was already shown in the file `Algebra.Homology.Localization` that the induced
+It was already shown in the file `Mathlib/Algebra/Homology/Localization.lean` that the induced
 functor `DerivedCategory.Qh : HomotopyCategory C (ComplexShape.up ℤ) ⥤ DerivedCategory C`
 is a localization functor with respect to the class of morphisms
 `HomotopyCategory.quasiIso C (ComplexShape.up ℤ)`. In the lemma

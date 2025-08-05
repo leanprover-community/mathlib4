@@ -14,7 +14,7 @@ In this file we prove that `g' (f x) = (f' x)⁻¹` provided that `f` is strictl
 easy half of the inverse function theorem: the harder half states that `g` exists.
 
 For a more detailed overview of one-dimensional derivatives in mathlib, see the module docstring of
-`Analysis/Calculus/Deriv/Basic`.
+`Mathlib/Analysis/Calculus/Deriv/Basic.lean`.
 
 ## Keywords
 

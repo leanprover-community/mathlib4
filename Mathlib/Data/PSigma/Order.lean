@@ -19,11 +19,11 @@ there.
 * `Σₗ' i, α i`: Sigma type equipped with the lexicographic order. A type synonym of `Σ' i, α i`.
 ## See also
 Related files are:
-* `Data.Finset.Colex`: Colexicographic order on finite sets.
-* `Data.List.Lex`: Lexicographic order on lists.
-* `Data.Pi.Lex`: Lexicographic order on `Πₗ i, α i`.
-* `Data.Sigma.Order`: Lexicographic order on `Σₗ i, α i`. Basically a twin of this file.
-* `Data.Prod.Lex`: Lexicographic order on `α × β`.
+* `Mathlib/Combinatorics/Colex.lean`: Colexicographic order on finite sets.
+* `Mathlib/Data/List/Lex.lean`: Lexicographic order on lists.
+* `Mathlib/Order/PiLex.lean`: Lexicographic order on `Πₗ i, α i`.
+* `Mathlib/Data/Sigma/Order.lean`: Lexicographic order on `Σₗ i, α i`. Basically a twin of this file.
+* `Mathlib/Data/Prod/Lex.lean`: Lexicographic order on `α × β`.
 ## TODO
 Define the disjoint order on `Σ' i, α i`, where `x ≤ y` only if `x.fst = y.fst`.
 Prove that a sigma type is a `NoMaxOrder`, `NoMinOrder`, `DenselyOrdered` when its summands

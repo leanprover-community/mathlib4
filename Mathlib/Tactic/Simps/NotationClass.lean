@@ -16,7 +16,7 @@ This declares the `@[notation_class]` attribute, which is used to give smarter d
 for `@[simps]`.
 
 We put this in a separate file so that we can already tag some declarations with this attribute
-in the file where we declare `@[simps]`. For further documentation, see `Tactic.Simps.Basic`.
+in the file where we declare `@[simps]`. For further documentation, see `Mathlib/Tactic/Simps/Basic.lean`.
 -/
 
 /-- The `@[notation_class]` attribute specifies that this is a notation class,

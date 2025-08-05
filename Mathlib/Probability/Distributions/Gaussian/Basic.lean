@@ -11,7 +11,7 @@ import Mathlib.Probability.Distributions.Gaussian.Real
 We introduce a predicate `IsGaussian` for measures on a Banach space `E` such that the map by
 any continuous linear form is a Gaussian measure on `ℝ`.
 
-For Gaussian distributions in `ℝ`, see the file `Mathlib.Probability.Distributions.Gaussian.Real`.
+For Gaussian distributions in `ℝ`, see the file `Mathlib/Probability/Distributions/Gaussian/Real.lean`.
 
 ## Main definitions
 

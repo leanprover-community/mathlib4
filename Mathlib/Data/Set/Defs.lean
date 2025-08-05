@@ -86,13 +86,13 @@ namespace Mathlib.Meta
 /-- Set builder syntax. This can be elaborated to either a `Set` or a `Finset` depending on context.
 
 The elaborators for this syntax are located in:
-* `Data.Set.Defs` for the `Set` builder notation elaborator for syntax of the form `{x | p x}`,
+* `Mathlib/Data/Set/Defs.lean` for the `Set` builder notation elaborator for syntax of the form `{x | p x}`,
   `{x : α | p x}`, `{binder x | p x}`.
-* `Data.Finset.Basic` for the `Finset` builder notation elaborator for syntax of the form
+* `Mathlib/Data/Finset/Basic.lean` for the `Finset` builder notation elaborator for syntax of the form
   `{x ∈ s | p x}`.
-* `Data.Fintype.Basic` for the `Finset` builder notation elaborator for syntax of the form
+* `Mathlib/Data/Fintype/Basic.lean` for the `Finset` builder notation elaborator for syntax of the form
   `{x | p x}`, `{x : α | p x}`, `{x ∉ s | p x}`, `{x ≠ a | p x}`.
-* `Order.LocallyFinite.Basic` for the `Finset` builder notation elaborator for syntax of the form
+* `Mathlib/Order/Interval/Finset/Defs.lean` for the `Finset` builder notation elaborator for syntax of the form
   `{x ≤ a | p x}`, `{x ≥ a | p x}`, `{x < a | p x}`, `{x > a | p x}`.
 -/
 syntax (name := setBuilder) "{" extBinder " | " term "}" : term
@@ -112,11 +112,11 @@ syntax (name := setBuilder) "{" extBinder " | " term "}" : term
   more info.
 
 See also
-* `Data.Finset.Basic` for the `Finset` builder notation elaborator partly overriding this one for
+* `Mathlib/Data/Finset/Basic.lean` for the `Finset` builder notation elaborator partly overriding this one for
   syntax of the form `{x ∈ s | p x}`.
-* `Data.Fintype.Basic` for the `Finset` builder notation elaborator partly overriding this one for
+* `Mathlib/Data/Fintype/Basic.lean` for the `Finset` builder notation elaborator partly overriding this one for
   syntax of the form `{x | p x}`, `{x : α | p x}`, `{x ∉ s | p x}`, `{x ≠ a | p x}`.
-* `Order.LocallyFinite.Basic` for the `Finset` builder notation elaborator partly overriding this
+* `Mathlib/Order/Interval/Finset/Defs.lean` for the `Finset` builder notation elaborator partly overriding this
   one for syntax of the form `{x ≤ a | p x}`, `{x ≥ a | p x}`, `{x < a | p x}`, `{x > a | p x}`.
 -/
 @[term_elab setBuilder]

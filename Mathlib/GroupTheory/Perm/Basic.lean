@@ -15,7 +15,7 @@ This file proves miscellaneous lemmas about `Equiv.Perm`.
 
 ## TODO
 
-Most of the content of this file was moved to `Algebra.Group.End` in
+Most of the content of this file was moved to `Mathlib/Algebra/Group/End.lean` in
 https://github.com/leanprover-community/mathlib4/pull/22141.
 It would be good to merge the remaining lemmas with other files, eg `GroupTheory.Perm.ViaEmbedding`
 looks like it could benefit from such a treatment (splitting into the algebra and non-algebra parts)

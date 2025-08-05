@@ -38,7 +38,7 @@ tactic so that finiteness goals are discharged automatically in `Set.ncard` theo
 
 ## Implementation Notes
 
-The theorems in this file are very similar to those in `Data.Finset.Card`, but with `Set` operations
+The theorems in this file are very similar to those in `Mathlib/Data/Finset/Card.lean`, but with `Set` operations
 instead of `Finset`. We first prove all the theorems for `Set.encard`, and then derive most of the
 `Set.ncard` results as a consequence. Things are done this way to avoid reliance on the `Finset` API
 for theorems about infinite sets, and to allow for a refactor that removes or modifies `Set.ncard`

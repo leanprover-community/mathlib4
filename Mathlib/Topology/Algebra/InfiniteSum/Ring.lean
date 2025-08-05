@@ -131,7 +131,7 @@ end DivisionSemiring
 In this section, we prove various results about `(∑' x : ι, f x) * (∑' y : κ, g y)`. Note that we
 always assume that the family `fun x : ι × κ ↦ f x.1 * g x.2` is summable, since there is no way to
 deduce this from the summabilities of `f` and `g` in general, but if you are working in a normed
-space, you may want to use the analogous lemmas in `Analysis.Normed.Module.Basic`
+space, you may want to use the analogous lemmas in `Mathlib/Analysis/Normed/Module/Basic.lean`
 (e.g `tsum_mul_tsum_of_summable_norm`).
 
 We first establish results about arbitrary index types, `ι` and `κ`, and then we specialize to

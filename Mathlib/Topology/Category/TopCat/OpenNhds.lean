@@ -12,7 +12,7 @@ import Mathlib.Data.Set.Subsingleton
 Given an object `X` of the category `TopCat` of topological spaces and a point `x : X`, this file
 builds the type `OpenNhds x` of open neighborhoods of `x` in `X` and endows it with the partial
 order given by inclusion and the corresponding category structure (as a full subcategory of the
-poset category `Set X`). This is used in `Topology.Sheaves.Stalks` to build the stalk of a sheaf
+poset category `Set X`). This is used in `Mathlib/Topology/Sheaves/Stalks.lean` to build the stalk of a sheaf
 at `x` as a limit over `OpenNhds x`.
 
 ## Main declarations

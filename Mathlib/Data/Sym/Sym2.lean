@@ -16,7 +16,7 @@ This file defines the symmetric square, which is `α × α` modulo
 swapping.  This is also known as the type of unordered pairs.
 
 More generally, the symmetric square is the second symmetric power
-(see `Data.Sym.Basic`). The equivalence is `Sym2.equivSym`.
+(see `Mathlib/Data/Sym/Basic.lean`). The equivalence is `Sym2.equivSym`.
 
 From the point of view that an unordered pair is equivalent to a
 multiset of cardinality two (see `Sym2.equivMultiset`), there is a

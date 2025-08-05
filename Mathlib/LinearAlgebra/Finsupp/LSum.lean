@@ -13,7 +13,7 @@ import Mathlib.Tactic.ApplyFun
 # Sums as a linear map
 
 Given an `R`-module `M`, the `R`-module structure on `α →₀ M` is defined in
-`Data.Finsupp.Basic`.
+`Mathlib/Data/Finsupp/Basic.lean`.
 
 ## Main definitions
 

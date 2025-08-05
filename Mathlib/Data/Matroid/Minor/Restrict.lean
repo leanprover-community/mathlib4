@@ -20,7 +20,7 @@ then we call `N` a 'restriction of `M`', and write `N ≤r M`. This is a partial
 This file proves that the restriction is a matroid and that the `≤r` order is a partial order,
 and gives related API.
 It also proves some `Matroid.IsBasis` analogues of `Matroid.IsBase` lemmas that,
-while they could be stated in `Data.Matroid.Basic`,
+while they could be stated in `Mathlib/Data/Matroid/Basic.lean`,
 are hard to prove without `Matroid.restrict` API.
 
 ## Main Definitions
@@ -400,7 +400,7 @@ end IsRestriction
 ### `IsBasis` and `Base`
 The lemmas below exploit the fact that `(M ↾ X).Base I ↔ M.IsBasis I X` to transfer facts about
 `Matroid.Base` to facts about `Matroid.IsBasis`.
-Their statements thematically belong in `Data.Matroid.Basic`, but they appear here because their
+Their statements thematically belong in `Mathlib/Data/Matroid/Basic.lean`, but they appear here because their
 proofs depend on the API for `Matroid.restrict`,
 -/
 

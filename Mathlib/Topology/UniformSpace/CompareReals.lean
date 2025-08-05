@@ -10,7 +10,7 @@ import Mathlib.Topology.UniformSpace.Completion
 /-!
 # Comparison of Cauchy reals and Bourbaki reals
 
-In `Data.Real.Basic` real numbers are defined using the so called Cauchy construction (although
+In `Mathlib/Data/Real/Basic.lean` real numbers are defined using the so called Cauchy construction (although
 it is due to Georg Cantor). More precisely, this construction applies to commutative rings equipped
 with an absolute value with values in a linear ordered field.
 

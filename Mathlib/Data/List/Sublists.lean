@@ -11,7 +11,7 @@ import Mathlib.Data.List.Induction
 
 /-! # sublists
 
-`List.Sublists` gives a list of all (not necessarily contiguous) sublists of a list.
+`List.sublists` gives a list of all (not necessarily contiguous) sublists of a list.
 
 This file contains basic results on this function.
 -/

@@ -17,7 +17,7 @@ This is analogous to `Algebra.Group.Basic`,
 the difference being that the former is about `+` and `*` separately, while
 the present file is about their interaction.
 
-For the definitions of semirings and rings see `Algebra.Ring.Defs`.
+For the definitions of semirings and rings see `Mathlib/Algebra/Ring/Defs.lean`.
 -/
 
 assert_not_exists Nat.cast_sub

@@ -10,7 +10,7 @@ import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 
 /-! # Manifold structure on real intervals
 
-The manifold structure on real intervals is defined in `Mathlib.Geometry.Manifold.Instances.Real`.
+The manifold structure on real intervals is defined in `Mathlib/Geometry/Manifold/Instances/Real.lean`.
 We relate it to the manifold structure on the real line, by showing that the inclusion
 (`contMDiff_subtype_coe_Icc`) and projection (`contMDiffOn_projIcc`) are smooth, and showing that
 a function defined on the interval is smooth iff its composition with the projection is smooth on

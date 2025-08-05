@@ -9,9 +9,9 @@ import Mathlib.Order.Interval.Set.LinearOrder
 /-!
 # Extra lemmas about intervals
 
-This file contains lemmas about intervals that cannot be included into `Order.Interval.Set.Basic`
+This file contains lemmas about intervals that cannot be included into `Mathlib/Order/Interval/Set/Basic.lean`
 because this would create an `import` cycle. Namely, lemmas in this file can use definitions
-from `Data.Set.Lattice`, including `Disjoint`.
+from `Mathlib/Data/Set/Lattice.lean`, including `Disjoint`.
 
 We consider various intersections and unions of half infinite intervals.
 -/

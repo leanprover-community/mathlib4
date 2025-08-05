@@ -66,12 +66,12 @@ import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.Lift
 import Mathlib.Tactic.Linter
 import Mathlib.Tactic.MkIffOfInductiveProp
--- NormNum imports `Algebra.Order.Invertible`, `Data.Int.Basic`, `Data.Nat.Cast.Commute`
+-- NormNum imports `Mathlib/Algebra/Order/Invertible.lean`, `Mathlib/Data/Int/Basic.lean`, `Mathlib/Data/Nat/Cast/Commute.lean`
 -- import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.NthRewrite
 import Mathlib.Tactic.Observe
 import Mathlib.Tactic.OfNat
--- `positivity` imports `Data.Nat.Factorial.Basic`, but hopefully this can be rearranged.
+-- `positivity` imports `Mathlib/Data/Nat/Factorial/Basic.lean`, but hopefully this can be rearranged.
 -- import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Propose
 import Mathlib.Tactic.Push

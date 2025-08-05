@@ -16,7 +16,7 @@ import Mathlib.Data.List.Perm.Basic
 # Permutations of a list
 
 In this file we prove properties about `List.Permutations`, a list of all permutations of a list. It
-is defined in `Data.List.Defs`.
+is defined in `Mathlib/Data/List/Defs.lean`.
 
 ## Order of the permutations
 

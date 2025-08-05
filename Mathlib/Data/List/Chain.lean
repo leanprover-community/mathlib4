@@ -11,7 +11,7 @@ import Mathlib.Logic.Relation
 /-!
 # Relation chain
 
-This file provides basic results about `List.Chain` (definition in `Data.List.Defs`).
+This file provides basic results about `Mathlib/Data/List/Chain.lean` (definition in `Mathlib/Data/List/Defs.lean`).
 A list `[a₂, ..., aₙ]` is a `Chain` starting at `a₁` with respect to the relation `r` if `r a₁ a₂`
 and `r a₂ a₃` and ... and `r aₙ₋₁ aₙ`. We write it `Chain r a₁ [a₂, ..., aₙ]`.
 A graph-specialized version is in development and will hopefully be added under `combinatorics.`

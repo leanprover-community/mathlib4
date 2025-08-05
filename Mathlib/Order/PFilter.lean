@@ -17,7 +17,7 @@ such as a bottom element, a top element, or a join-semilattice structure.
                This is dual to `Order.Ideal`, so it simply wraps `Order.Ideal Pᵒᵈ`.
 - `Order.IsPFilter P`: a predicate for when a `Set P` is a filter.
 
-Note the relation between `Order/Filter` and `Order/PFilter`: for any type `α`,
+Note the relation between `Mathlib/Topology/Order/Filter.lean` and `Mathlib/Order/PFilter.lean`: for any type `α`,
 `Filter α` represents the same mathematical object as `PFilter (Set α)`.
 
 ## References

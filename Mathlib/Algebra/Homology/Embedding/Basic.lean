@@ -28,10 +28,10 @@ category of an abelian category (TODO).
 
 - The extension functor `e.extendFunctor C : HomologicalComplex C c ⥤ HomologicalComplex C c'`
 (extending by the zero object outside of the image of `e.f`) is defined in
-the file `Embedding.Extend`;
+the file `Mathlib/Algebra/Homology/Embedding/Extend.lean`;
 - assuming `e.IsRelIff`, the restriction functor
 `e.restrictionFunctor C : HomologicalComplex C c' ⥤ HomologicalComplex C c`
-is defined in the file `Embedding.Restriction`;
+is defined in the file `Mathlib/Algebra/Homology/Embedding/Restriction.lean`;
 - the stupid truncation functor
 `e.stupidTruncFunctor C : HomologicalComplex C c' ⥤ HomologicalComplex C c'`
 which is the composition of the two previous functors is defined in the file

@@ -13,7 +13,7 @@ This file provides `Fintype` instances for many set constructions. It also prove
 finite sets and gives ways to manipulate `Set.Finite` expressions.
 
 Note that the instances in this file are selected somewhat arbitrarily on the basis of them not
-needing any imports beyond `Data.Fintype.Card` (which is required by `Finite.ofFinset`); they can
+needing any imports beyond `Mathlib/Data/Fintype/Card.lean` (which is required by `Finite.ofFinset`); they can
 certainly be organized better.
 
 ## Main definitions

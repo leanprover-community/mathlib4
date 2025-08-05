@@ -14,7 +14,7 @@ Two functions *vary together* if a strict change in the first implies a change i
 This is in some sense a way to say that two functions `f : ι → α`, `g : ι → β` are "monotone
 together", without actually having an order on `ι`.
 
-This condition comes up in the rearrangement inequality. See `Algebra.Order.Rearrangement`.
+This condition comes up in the rearrangement inequality. See `Mathlib/Algebra/Order/Rearrangement.lean`.
 
 ## Main declarations
 

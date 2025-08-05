@@ -68,7 +68,7 @@ def simpTheoremsOfNames (lemmas : List Name := []) (simpOnly : Bool := false) :
 
 -- TODO We need to write a `mkSimpContext` in `MetaM`
 -- that supports all the bells and whistles in `simp`.
--- It should generalize this, and another partial implementation in `Tactic.Simps.Basic`.
+-- It should generalize this, and another partial implementation in `Mathlib/Tactic/Simps/Basic.lean`.
 
 /-- Construct a `Simp.Context` from a list of names. -/
 def Simp.Context.ofNames (lemmas : List Name := []) (simpOnly : Bool := false)

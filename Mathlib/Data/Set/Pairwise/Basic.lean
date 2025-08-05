@@ -13,7 +13,7 @@ import Mathlib.Logic.Relation
 This file develops pairwise relations and defines pairwise disjoint indexed sets.
 
 We also prove many basic facts about `Pairwise`. It is possible that an intermediate file,
-with more imports than `Logic.Pairwise` but not importing `Data.Set.Function` would be appropriate
+with more imports than `Mathlib/Logic/Pairwise.lean` but not importing `Mathlib/Data/Set/Function.lean` would be appropriate
 to hold many of these basic facts.
 
 ## Main declarations

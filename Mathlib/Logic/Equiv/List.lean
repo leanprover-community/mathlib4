@@ -51,7 +51,7 @@ def decodeList : ℕ → Option (List α)
       (· :: ·) <$> decode (α := α) v₁ <*> decodeList v₂
 
 /-- If `α` is encodable, then so is `List α`. This uses the `pair` and `unpair` functions from
-`Data.Nat.Pairing`. -/
+`Mathlib/Data/Nat/Pairing.lean`. -/
 instance _root_.List.encodable : Encodable (List α) :=
   ⟨encodeList, decodeList, fun l => by
     induction l <;> simp [encodeList, decodeList, unpair_pair, encodek, *]⟩

@@ -14,7 +14,7 @@ diagonal of a type.
 
 ## Main declarations
 
-This file contains basic results on the following notions, which are defined in `Set.Operations`.
+This file contains basic results on the following notions, which are defined in `Mathlib/Data/Set/Operations.lean`.
 
 * `Set.prod`: Binary product of sets. For `s : Set α`, `t : Set β`, we have
   `s.prod t : Set (α × β)`. Denoted by `s ×ˢ t`.

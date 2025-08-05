@@ -66,7 +66,7 @@ We also define two functions to convert other bundled maps to `α →o β`:
 monotone map, bundled morphism
 -/
 
--- Developments relating order homs and sets belong in `Order.Hom.Set` or later.
+-- Developments relating order homs and sets belong in `Mathlib/Order/Hom/Set.lean` or later.
 assert_not_imported Mathlib.Data.Set.Basic
 
 open OrderDual

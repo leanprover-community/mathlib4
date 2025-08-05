@@ -24,11 +24,11 @@ remaining file
 ```
 It emits a warning if
 * the copyright statement is malformed;
-* `Mathlib.Tactic` is imported;
+* `Mathlib/Tactic.lean` is imported;
 * any import in `Lake` is present;
 * the first non-`import` command is not a module doc-string.
 
-The linter allows `import`-only files and does not require a copyright statement in `Mathlib.Init`.
+The linter allows `import`-only files and does not require a copyright statement in `Mathlib/Init.lean`.
 
 ## Implementation
 The strategy used by the linter is as follows.
@@ -243,11 +243,11 @@ remaining file
 ```
 It emits a warning if
 * the copyright statement is malformed;
-* `Mathlib.Tactic` is imported;
+* `Mathlib/Tactic.lean` is imported;
 * any import in `Lake` is present;
 * the first non-`import` command is not a module doc-string.
 
-The linter allows `import`-only files and does not require a copyright statement in `Mathlib.Init`.
+The linter allows `import`-only files and does not require a copyright statement in `Mathlib/Init.lean`.
 -/
 register_option linter.style.header : Bool := {
   defValue := false
@@ -257,7 +257,7 @@ register_option linter.style.header : Bool := {
 namespace Style.header
 
 /-- Check the `Syntax` `imports` for broad imports:
-`Mathlib.Tactic`, any import starting with `Lake`, or `Mathlib.Tactic.{Have,Replace}`. -/
+`Mathlib/Tactic.lean`, any import starting with `Lake`, or `Mathlib.Tactic.{Have,Replace}`. -/
 def broadImportsCheck (imports : Array Syntax) (mainModule : Name) : CommandElabM Unit := do
   for i in imports do
     match i.getId with
@@ -310,7 +310,7 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   if (← get).messages.hasErrors then
     return
-  -- `Mathlib.lean` imports `Mathlib.Tactic`, which the broad imports check below would flag.
+  -- `Mathlib.lean` imports `Mathlib/Tactic.lean`, which the broad imports check below would flag.
   -- Since that file is imports-only, we can simply skip linting it.
   if mainModule == `Mathlib then return
   let fm ← getFileMap

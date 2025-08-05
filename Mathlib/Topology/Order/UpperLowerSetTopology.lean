@@ -38,7 +38,7 @@ We provide the upper set topology in three ways (and similarly for the lower set
 An Alexandrov topology is a topology where the intersection of any collection of open sets is open.
 The upper set topology is an Alexandrov topology and, given any Alexandrov topological space, we can
 equip it with a preorder (namely the specialization preorder) whose upper set topology coincides
-with the original topology. See `Topology.Specialization`.
+with the original topology. See `Mathlib/Topology/Specialization.lean`.
 
 ## Tags
 

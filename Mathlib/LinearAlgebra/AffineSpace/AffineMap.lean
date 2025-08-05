@@ -34,8 +34,8 @@ This file defines affine maps.
 `P` or `V`.
 
 This file only provides purely algebraic definitions and results. Those depending on analysis or
-topology are defined elsewhere; see `Analysis.Normed.Affine.AddTorsor` and
-`Topology.Algebra.Affine`.
+topology are defined elsewhere; see `Mathlib/Analysis/Normed/Affine/AddTorsor.lean` and
+`Mathlib/Topology/Algebra/Affine.lean`.
 
 ## References
 
