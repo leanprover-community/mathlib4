@@ -484,12 +484,7 @@ instance hasImage_comp_iso [HasImage f] [IsIso g] : HasImage (f ≫ g) :=
           rw [← Category.comp_id (image.lift (MonoFactorization.ofCompIso F') ≫ F'.m),
             ← IsIso.inv_hom_id g,← Category.assoc]
           refine congrArg (· ≫ g) ?_
-          have : (image.lift (MonoFactorization.ofCompIso F') ≫ F'.m) ≫ inv g =
-            image.lift (MonoFactorization.ofCompIso F') ≫
-            ((MonoFactorization.ofCompIso F').m) := by
-              simp only [MonoFactorization.ofCompIso_I, Category.assoc,
-                MonoFactorization.ofCompIso_m]
-          rw [this, image.lift_fac (MonoFactorization.ofCompIso F'),image.as_ι] }}
+          simpa using image.lift_fac (MonoFactorization.ofCompIso F') }}
 
 /-- Postcomposing by an isomorphism induces an isomorphism on the image. -/
 def image.compIso [HasImage f] [IsIso g] : image f ≅ image (f ≫ g) where
