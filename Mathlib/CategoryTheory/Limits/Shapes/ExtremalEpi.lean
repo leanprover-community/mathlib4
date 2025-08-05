@@ -108,7 +108,8 @@ lemma hasLift_of_extremalEpi {X Y A B : C} {f : X ⟶ Y} [ExtremalEpi f] {g : A 
   have faa : f ≫ inv fs = l := by aesop_cat
   refine CommSq.HasLift.mk' ⟨inv fs ≫ sn , ?_, ?_⟩
   · rw [reassoc_of% faa, pullback.lift_snd f i (w := sq.w.symm)]
-  · rw [assoc, (cancel_epi fs (g := inv fs ≫ sn ≫ g)).1 (by simp; rw [pullback.condition])]
+  · rw [assoc, (cancel_epi fs (g := inv fs ≫ sn ≫ g)).1
+      (by rw [pullback.condition, IsIso.hom_inv_id_assoc])]
 
 /-- For a category with pullbacks, extremal epimorphisms are strong. -/
 instance strongEpi_of_extremalEpi [HasPullbacks C] {X Y : C} (f : X ⟶ Y) [ExtremalEpi f] :
