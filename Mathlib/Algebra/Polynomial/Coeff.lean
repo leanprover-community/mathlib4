@@ -3,10 +3,11 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
+import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Algebra.Polynomial.Basic
+import Mathlib.Algebra.Regular.Basic
 import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.Algebra.CharP.Defs
 
 /-!
 # Theory of univariate polynomials
@@ -162,22 +163,22 @@ theorem coeff_mul_C (p : R[X]) (n : ℕ) (a : R) : coeff (p * C a) n = coeff p n
   exact AddMonoidAlgebra.mul_single_zero_apply p a n
 
 @[simp] lemma coeff_mul_natCast {a k : ℕ} :
-  coeff (p * (a : R[X])) k = coeff p k * (↑a : R) := coeff_mul_C _ _ _
+    coeff (p * (a : R[X])) k = coeff p k * (↑a : R) := coeff_mul_C _ _ _
 
 @[simp] lemma coeff_natCast_mul {a k : ℕ} :
-  coeff ((a : R[X]) * p) k = a * coeff p k := coeff_C_mul _
+    coeff ((a : R[X]) * p) k = a * coeff p k := coeff_C_mul _
 
 @[simp] lemma coeff_mul_ofNat {a k : ℕ} [Nat.AtLeastTwo a] :
-  coeff (p * (ofNat(a) : R[X])) k = coeff p k * ofNat(a) := coeff_mul_C _ _ _
+    coeff (p * (ofNat(a) : R[X])) k = coeff p k * ofNat(a) := coeff_mul_C _ _ _
 
 @[simp] lemma coeff_ofNat_mul {a k : ℕ} [Nat.AtLeastTwo a] :
-  coeff ((ofNat(a) : R[X]) * p) k = ofNat(a) * coeff p k := coeff_C_mul _
+    coeff ((ofNat(a) : R[X]) * p) k = ofNat(a) * coeff p k := coeff_C_mul _
 
 @[simp] lemma coeff_mul_intCast [Ring S] {p : S[X]} {a : ℤ} {k : ℕ} :
-  coeff (p * (a : S[X])) k = coeff p k * (↑a : S) := coeff_mul_C _ _ _
+    coeff (p * (a : S[X])) k = coeff p k * (↑a : S) := coeff_mul_C _ _ _
 
 @[simp] lemma coeff_intCast_mul [Ring S] {p : S[X]} {a : ℤ} {k : ℕ} :
-  coeff ((a : S[X]) * p) k = a * coeff p k := coeff_C_mul _
+    coeff ((a : S[X]) * p) k = a * coeff p k := coeff_C_mul _
 
 @[simp]
 theorem coeff_X_pow (k n : ℕ) : coeff (X ^ k : R[X]) n = if n = k then 1 else 0 := by
@@ -222,14 +223,7 @@ end Fewnomials
 theorem coeff_mul_X_pow (p : R[X]) (n d : ℕ) :
     coeff (p * Polynomial.X ^ n) (d + n) = coeff p d := by
   rw [coeff_mul, Finset.sum_eq_single (d, n), coeff_X_pow, if_pos rfl, mul_one]
-  · rintro ⟨i, j⟩ h1 h2
-    rw [coeff_X_pow, if_neg, mul_zero]
-    rintro rfl
-    apply h2
-    rw [mem_antidiagonal, add_right_cancel_iff] at h1
-    subst h1
-    rfl
-  · exact fun h1 => (h1 (mem_antidiagonal.2 rfl)).elim
+  all_goals grind [mem_antidiagonal, coeff_X_pow, mul_zero]
 
 @[simp]
 theorem coeff_X_pow_mul (p : R[X]) (n d : ℕ) :

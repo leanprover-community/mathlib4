@@ -411,8 +411,7 @@ theorem ext [Semiring k] ⦃f g : MonoidAlgebra k G⦄ (H : ∀ (x : G), f x = g
 /-- A copy of `Finsupp.singleAddHom` for `MonoidAlgebra`. -/
 abbrev singleAddHom [Semiring k] (a : G) : k →+ MonoidAlgebra k G := Finsupp.singleAddHom a
 
-@[simp] lemma singleAddHom_apply [Semiring k] (a : G) (b : k) :
-  singleAddHom a b = single a b := rfl
+@[simp] lemma singleAddHom_apply [Semiring k] (a : G) (b : k) : singleAddHom a b = single a b := rfl
 
 /-- A copy of `Finsupp.addHom_ext'` for `MonoidAlgebra`. -/
 @[ext high]
@@ -575,10 +574,7 @@ theorem mul_single_apply_of_not_exists_mul [Mul G] (r : k) {g g' : G} (x : Monoi
     swap
     · simp_rw [Finsupp.sum, mul_zero, ite_self, Finset.sum_const_zero]
     · apply Finset.sum_eq_zero
-      simp_rw [ite_eq_right_iff]
-      rintro g'' _hg'' rfl
-      exfalso
-      exact h ⟨_, rfl⟩
+      grind
 
 theorem single_mul_apply_aux [Mul G] (f : MonoidAlgebra k G) {r : k} {x y z : G}
     (H : ∀ a ∈ f.support, x * a = y ↔ a = z) : (single x r * f) y = r * f z := by
@@ -604,10 +600,7 @@ theorem single_mul_apply_of_not_exists_mul [Mul G] (r : k) {g g' : G} (x : Monoi
     swap
     · simp_rw [Finsupp.sum, zero_mul, ite_self, Finset.sum_const_zero]
     · apply Finset.sum_eq_zero
-      simp_rw [ite_eq_right_iff]
-      rintro g'' _hg'' rfl
-      exfalso
-      exact h ⟨_, rfl⟩
+      grind
 
 theorem liftNC_smul [MulOneClass G] {R : Type*} [Semiring R] (f : k →+* R) (g : G →* R) (c : k)
     (φ : MonoidAlgebra k G) : liftNC (f : k →+ R) g (c • φ) = f c * liftNC (f : k →+ R) g φ := by
@@ -1188,8 +1181,7 @@ theorem ext [Semiring k] ⦃f g : AddMonoidAlgebra k G⦄ (H : ∀ (x : G), f x 
 /-- A copy of `Finsupp.singleAddHom` for `AddMonoidAlgebra`. -/
 abbrev singleAddHom [Semiring k] (a : G) : k →+ AddMonoidAlgebra k G := Finsupp.singleAddHom a
 
-@[simp] lemma singleAddHom_apply [Semiring k] (a : G) (b : k) :
-  singleAddHom a b = single a b := rfl
+@[simp] lemma singleAddHom_apply [Semiring k] (a : G) (b : k) : singleAddHom a b = single a b := rfl
 
 /-- A copy of `Finsupp.addHom_ext'` for `AddMonoidAlgebra`. -/
 @[ext high]
@@ -1214,7 +1206,7 @@ abbrev lsingle [Semiring R] [Semiring k] [Module R k] (a : G) :
     k →ₗ[R] AddMonoidAlgebra k G := Finsupp.lsingle a
 
 @[simp] lemma lsingle_apply [Semiring R] [Semiring k] [Module R k] (a : G) (b : k) :
-  lsingle (R := R) a b = single a b := rfl
+    lsingle (R := R) a b = single a b := rfl
 
 /-- A copy of `Finsupp.lhom_ext'` for `AddMonoidAlgebra`. -/
 @[ext high]

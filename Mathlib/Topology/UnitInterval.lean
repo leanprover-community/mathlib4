@@ -224,6 +224,22 @@ instance : LinearOrderedCommMonoidWithZero I where
     apply mul_le_mul le_rfl ?_ (nonneg i) (nonneg k)
     simp [h_ij]
 
+lemma subtype_Iic_eq_Icc (x : I) : Subtype.val⁻¹' (Iic ↑x) = Icc 0 x := by
+  rw [preimage_subtype_val_Iic]
+  exact Icc_bot.symm
+
+lemma subtype_Iio_eq_Ico (x : I) : Subtype.val⁻¹' (Iio ↑x) = Ico 0 x := by
+  rw [preimage_subtype_val_Iio]
+  exact Ico_bot.symm
+
+lemma subtype_Ici_eq_Icc (x : I) : Subtype.val⁻¹' (Ici ↑x) = Icc x 1 := by
+  rw [preimage_subtype_val_Ici]
+  exact Icc_top.symm
+
+lemma subtype_Ioi_eq_Ioc (x : I) : Subtype.val⁻¹' (Ioi ↑x) = Ioc x 1 := by
+  rw [preimage_subtype_val_Ioi]
+  exact Ioc_top.symm
+
 /-- For monotone functions `f : α → I → ℝ`, the set of pairs `e : α × I`
 such that `a < sSup {x | f e.1 x < e.2}` equals the union over all rationals `q ∈ I`
 with `q > a` of the sets `{e | f e.1 q < e.2}`. -/
