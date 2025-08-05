@@ -3,11 +3,12 @@ Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
+import Mathlib.Analysis.Normed.Field.Lemmas
+import Mathlib.Analysis.Normed.Ring.Ultra
+import Mathlib.RingTheory.Int.Basic
 import Mathlib.RingTheory.Valuation.Basic
 import Mathlib.NumberTheory.Padics.PadicNorm
-import Mathlib.Analysis.Normed.Field.Lemmas
 import Mathlib.Tactic.Peel
-import Mathlib.Topology.MetricSpace.Ultra.Basic
 
 /-!
 # p-adic numbers
@@ -1091,6 +1092,28 @@ def addValuation : AddValuation ℚ_[p] (WithTop ℤ) :=
 theorem addValuation.apply {x : ℚ_[p]} (hx : x ≠ 0) :
     Padic.addValuation x = (x.valuation : WithTop ℤ) := by
   simp only [Padic.addValuation, AddValuation.of_apply, addValuationDef, if_neg hx]
+
+lemma norm_natCast_eq_one_iff {n : ℕ} :
+    ‖(n : ℚ_[p])‖ = 1 ↔ p.Coprime n := by
+  rcases eq_or_ne n 0 with rfl | hn
+  · simp [hp.out.ne_one]
+  rw [norm_eq_zpow_neg_valuation (by exact_mod_cast hn), zpow_neg]
+  rw [inv_eq_one, zpow_eq_one_iff_right₀ (by simp) (by simp [hp.out.ne_one])]
+  simp [hp.out.ne_one, hn, hp.out.coprime_iff_not_dvd]
+
+lemma norm_natCast_lt_one_iff {n : ℕ} :
+    ‖(n : ℚ_[p])‖ < 1 ↔ p ∣ n := by
+  simp [hp.out.dvd_iff_not_coprime, ← norm_natCast_eq_one_iff, lt_iff_le_and_ne,
+    IsUltrametricDist.norm_natCast_le_one]
+
+lemma norm_intCast_eq_one_iff {z : ℤ} :
+    ‖(z : ℚ_[p])‖ = 1 ↔ IsCoprime z p := by
+  rw [Int.isCoprime_iff_nat_coprime, Nat.coprime_comm, Int.natAbs_cast, ← norm_natCast_eq_one_iff,
+    norm_natAbs]
+
+lemma norm_intCast_lt_one_iff {z : ℤ} :
+    ‖(z : ℚ_[p])‖ < 1 ↔ (p : ℤ) ∣ z := by
+  rw [Int.natCast_dvd, ← norm_natAbs, norm_natCast_lt_one_iff]
 
 section NormLEIff
 
