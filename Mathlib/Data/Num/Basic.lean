@@ -523,7 +523,7 @@ private def sqrtAux1 (b : PosNum) (r n : Num) : Num × Num :=
 private def sqrtAux : PosNum → Num → Num → Num
   | b@(bit0 b') => fun r n => let (r', n') := sqrtAux1 b r n; sqrtAux b' r' n'
   | b@(bit1 b') => fun r n => let (r', n') := sqrtAux1 b r n; sqrtAux b' r' n'
-  | 1           => fun r n => (sqrtAux1 1 r n).1
+  | 1 => fun r n => (sqrtAux1 1 r n).1
 
 end PosNum
 

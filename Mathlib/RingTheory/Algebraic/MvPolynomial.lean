@@ -60,7 +60,7 @@ theorem transcendental_supported_polynomial_aeval_X {i : σ} {s : Set σ} (h : i
 
 theorem transcendental_polynomial_aeval_X (i : σ) {f : R[X]} (hf : Transcendental R f) :
     Transcendental R (Polynomial.aeval (X i : MvPolynomial σ R) f) := by
-  have := transcendental_supported_polynomial_aeval_X R (Set.not_mem_empty i) hf
+  have := transcendental_supported_polynomial_aeval_X R (Set.notMem_empty i) hf
   let g := (Algebra.botEquivOfInjective (MvPolynomial.C_injective σ R)).symm.trans
     (Subalgebra.equivOfEq _ _ supported_empty).symm
   rwa [Transcendental, ← isAlgebraic_ringHom_iff_of_comp_eq g (RingHom.id (MvPolynomial σ R))

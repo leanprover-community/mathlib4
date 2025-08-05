@@ -281,10 +281,22 @@ lemma posterior_eq_withDensity (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ) 
   filter_upwards [rnDeriv_posterior_symm h_ac, absolutelyContinuous_posterior h_ac] with x h h_ac'
   ext s hs
   rw [← Measure.setLIntegral_rnDeriv h_ac', withDensity_apply _ hs]
-  refine setLIntegral_congr_fun hs ?_
+  refine setLIntegral_congr_fun_ae hs ?_
   filter_upwards [h, Kernel.rnDeriv_eq_rnDeriv_measure (κ := κ†μ) (η := Kernel.const 𝓧 μ) (a := x)]
     with ω h h_eq hωs
   rw [← h, h_eq, Kernel.const_apply]
+
+lemma posterior_eq_withDensity_of_countable {Ω : Type*} [Countable Ω] [MeasurableSpace Ω]
+    [Nonempty Ω] [StandardBorelSpace Ω] (κ : Kernel Ω 𝓧) [IsFiniteKernel κ]
+    (μ : Measure Ω) [IsFiniteMeasure μ] :
+    ∀ᵐ x ∂(κ ∘ₘ μ), (κ†μ) x = μ.withDensity (fun ω ↦ (κ ω).rnDeriv (κ ∘ₘ μ) x) := by
+  have h_rnDeriv ω := Kernel.rnDeriv_eq_rnDeriv_measure (κ := κ) (η := Kernel.const Ω (κ ∘ₘ μ))
+    (a := ω)
+  simp only [Filter.EventuallyEq, Kernel.const_apply] at h_rnDeriv
+  rw [← ae_all_iff] at h_rnDeriv
+  filter_upwards [posterior_eq_withDensity Measure.absolutelyContinuous_comp_of_countable,
+    h_rnDeriv] with x hx hx_all
+  simp_rw [hx, hx_all]
 
 end CountableOrCountablyGenerated
 
