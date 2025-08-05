@@ -103,17 +103,11 @@ theorem Semilinear.preimage_nat_of_surjective [Fintype ι] {f : (ι → ℕ) →
   rw [setOf_and]
   apply inter_nat
   · exact hs₁.preimage_nat (LinearMap.funLeft ℕ ℕ Sum.inr)
-  · simp_rw [eq_comm]
-    refine (Linear.of_subtractive_addSubmonoid_nat {
+  · refine (Linear.of_subtractive_addSubmonoid_nat {
         carrier := setOf _
         add_mem' h₁ h₂ := ?_
         zero_mem' := ?_
-      } fun _ h₁ _ h₂ => ?_).semilinear
-    · simp only [mem_setOf] at *
-      simp [Pi.add_comp, h₁, h₂]
-    · simp
-    · simp only [AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, mem_setOf_eq, Pi.add_comp] at *
-      simpa [h₁] using h₂
+      } fun _ h₁ _ h₂ => ?_).semilinear <;> simp_all [Pi.add_comp]
 
 /-- Semilinear sets in a commutative cancellative monoid are closed under intersection. -/
 theorem Semilinear.inter (hs₁ : s₁.Semilinear) (hs₂ : s₂.Semilinear) : (s₁ ∩ s₂).Semilinear := by
