@@ -96,9 +96,7 @@ theorem hasseDeriv_monomial (n : ℕ) (r : R) :
   ext i
   simp only [hasseDeriv_coeff, coeff_monomial]
   by_cases hnik : n = i + k
-  · rw [if_pos hnik, if_pos, ← hnik]
-    apply tsub_eq_of_eq_add_rev
-    rwa [add_comm]
+  · grind
   · rw [if_neg hnik, mul_zero]
     by_cases hkn : k ≤ n
     · rw [← tsub_eq_iff_eq_add_of_le hkn] at hnik

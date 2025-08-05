@@ -44,8 +44,6 @@ theorem cardinalMk_le {L : Type u} [CommSemiring L] [Algebra R L]
     (S : Submonoid R) [IsLocalization S L] : #L ≤ #R := by
   simpa using lift_cardinalMk_le (L := L) S
 
-@[deprecated (since := "2024-10-30")] alias card_le := cardinalMk_le
-
 end IsLocalization
 
 end CommSemiring
@@ -75,8 +73,6 @@ theorem lift_cardinalMk (S : Submonoid R) [IsLocalization S L] (hS : S ≤ R⁰)
 theorem cardinalMk (L : Type u) [CommRing L] [Algebra R L]
     (S : Submonoid R) [IsLocalization S L] (hS : S ≤ R⁰) : #L = #R := by
   simpa using lift_cardinalMk L S hS
-
-@[deprecated (since := "2024-10-30")] alias card := cardinalMk
 
 end IsLocalization
 

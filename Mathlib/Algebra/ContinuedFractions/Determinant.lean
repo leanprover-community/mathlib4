@@ -60,10 +60,7 @@ theorem determinant_aux (hyp : n = 0 ∨ ¬(↑s : GenContFract K).TerminatedAt 
       rw [gp_a_eq_one, this.symm]
       ring
     suffices pA * ppB - pB * ppA = (-1) ^ (n + 1) by grind
-    suffices ppA * pB - ppB * pA = (-1) ^ n by
-      have pow_succ_n : (-1 : K) ^ (n + 1) = -1 * (-1) ^ n := pow_succ' (-1) n
-      rw [pow_succ_n, ← this]
-      ring
+    suffices ppA * pB - ppB * pA = (-1) ^ n by grind
     exact IH <| Or.inr <| mt (terminated_stable <| n.sub_le 1) not_terminated_at_n
 
 /-- The determinant formula `Aₙ * Bₙ₊₁ - Bₙ * Aₙ₊₁ = (-1)^(n + 1)`. -/

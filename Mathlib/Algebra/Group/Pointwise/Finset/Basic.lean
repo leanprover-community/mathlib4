@@ -828,11 +828,6 @@ lemma pow_subset_pow (hst : s ⊆ t) (ht : 1 ∈ t) (hmn : m ≤ n) : s ^ m ⊆ 
 lemma subset_pow (hs : 1 ∈ s) (hn : n ≠ 0) : s ⊆ s ^ n := by
   simpa using pow_subset_pow_right hs <| Nat.one_le_iff_ne_zero.2 hn
 
-@[deprecated (since := "2024-11-19")] alias pow_subset_pow_of_one_mem := pow_subset_pow_right
-
-@[deprecated (since := "2024-11-19")]
-alias nsmul_subset_nsmul_of_zero_mem := nsmul_subset_nsmul_right
-
 @[to_additive]
 lemma pow_subset_pow_mul_of_sq_subset_mul (hst : s ^ 2 ⊆ t * s) (hn : n ≠ 0) :
     s ^ n ⊆ t ^ (n - 1) * s := subset_of_le (pow_le_pow_mul_of_sq_le_mul hst hn)

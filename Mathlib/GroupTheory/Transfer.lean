@@ -73,7 +73,7 @@ theorem smul_diff_smul (g : G) : diff ϕ (g • S) (g • T) = diff ϕ S T :=
 
 end leftTransversals
 
-open Equiv Function MemLeftTransversals MulAction ZMod
+open Equiv Function MulAction ZMod
 
 variable (g : G)
 

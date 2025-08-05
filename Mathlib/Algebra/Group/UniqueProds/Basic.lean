@@ -122,9 +122,7 @@ theorem iff_card_le_one [DecidableEq G] (ha0 : a0 ∈ A) (hb0 : b0 ∈ B) :
   simp_rw [card_le_one_iff, mem_filter, mem_product]
   refine ⟨fun h p1 p2 ⟨⟨ha1, hb1⟩, he1⟩ ⟨⟨ha2, hb2⟩, he2⟩ ↦ ?_, fun h a b ha hb he ↦ ?_⟩
   · have h1 := h ha1 hb1 he1; have h2 := h ha2 hb2 he2
-    ext
-    · rw [h1.1, h2.1]
-    · rw [h1.2, h2.2]
+    grind
   · exact Prod.ext_iff.1 (@h (a, b) (a0, b0) ⟨⟨ha, hb⟩, he⟩ ⟨⟨ha0, hb0⟩, rfl⟩)
 
 @[to_additive]

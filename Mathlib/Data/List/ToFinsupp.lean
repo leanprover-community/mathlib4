@@ -128,7 +128,4 @@ theorem toFinsupp_eq_sum_mapIdx_single {R : Type*} [AddMonoid R] (l : List R)
   | append_singleton x xs ih =>
     classical simp [toFinsupp_concat_eq_toFinsupp_add_single, ih]
 
-@[deprecated (since := "2025-01-28")]
-alias toFinsupp_eq_sum_map_enum_single := toFinsupp_eq_sum_mapIdx_single
-
 end List

@@ -140,9 +140,6 @@ theorem condExp_of_stronglyMeasurable (hm : m ≤ m₀) [hμm : SigmaFinite (μ.
     (hf : StronglyMeasurable[m] f) (hfi : Integrable f μ) : μ[f|m] = f := by
   rw [condExp_of_sigmaFinite hm, if_pos hfi, if_pos hf]
 
-@[deprecated (since := "2025-01-21")]
-alias condexp_of_stronglyMeasurable := condExp_of_stronglyMeasurable
-
 @[simp]
 theorem condExp_const (hm : m ≤ m₀) (c : E) [IsFiniteMeasure μ] : μ[fun _ : α ↦ c|m] = fun _ ↦ c :=
   condExp_of_stronglyMeasurable hm stronglyMeasurable_const (integrable_const c)
@@ -226,9 +223,6 @@ theorem condExp_of_aestronglyMeasurable' (hm : m ≤ m₀) [hμm : SigmaFinite (
   rw [condExp_of_stronglyMeasurable hm hf.stronglyMeasurable_mk
     ((integrable_congr hf.ae_eq_mk).mp hfi)]
 
-@[deprecated (since := "2025-01-21")]
-alias condexp_of_aestronglyMeasurable' := condExp_of_aestronglyMeasurable'
-
 @[fun_prop]
 theorem integrable_condExp : Integrable (μ[f|m]) μ := by
   by_cases hm : m ≤ m₀
@@ -278,9 +272,6 @@ theorem ae_eq_condExp_of_forall_setIntegral_eq (hm : m ≤ m₀) [SigmaFinite (�
     (fun s _ _ => integrable_condExp.integrableOn) (fun s hs hμs => ?_) hgm
     (StronglyMeasurable.aestronglyMeasurable stronglyMeasurable_condExp)
   rw [hg_eq s hs hμs, setIntegral_condExp hm hf hs]
-
-@[deprecated (since := "2025-01-21")]
-alias ae_eq_condexp_of_forall_setIntegral_eq := ae_eq_condExp_of_forall_setIntegral_eq
 
 theorem condExp_bot' [hμ : NeZero μ] (f : α → E) :
     μ[f|⊥] = fun _ => (μ.real Set.univ)⁻¹ • ∫ x, f x ∂μ := by
@@ -471,9 +462,6 @@ theorem tendsto_condExpL1_of_dominated_convergence (hm : m ≤ m₀) [SigmaFinit
     (hfs : ∀ᵐ x ∂μ, Tendsto (fun n => fs n x) atTop (𝓝 (f x))) :
     Tendsto (fun n => condExpL1 hm μ (fs n)) atTop (𝓝 (condExpL1 hm μ f)) :=
   tendsto_setToFun_of_dominated_convergence _ bound_fs hfs_meas h_int_bound_fs hfs_bound hfs
-
-@[deprecated (since := "2025-01-21")]
-alias tendsto_condexpL1_of_dominated_convergence := tendsto_condExpL1_of_dominated_convergence
 
 /-- If two sequences of functions have a.e. equal conditional expectations at each step, converge
 and verify dominated convergence hypotheses, then the conditional expectations of their limits are

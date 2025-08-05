@@ -156,8 +156,6 @@ theorem mem_mk_iff' (p : Submodule R L) (h) {x : L} :
 theorem mem_toSubmodule {x : L} : x ∈ (L' : Submodule R L) ↔ x ∈ L' :=
   Iff.rfl
 
-@[deprecated (since := "2024-12-30")] alias mem_coe_submodule := mem_toSubmodule
-
 theorem mem_coe {x : L} : x ∈ (L' : Set L) ↔ x ∈ L' :=
   Iff.rfl
 
@@ -188,8 +186,6 @@ theorem toSubmodule_mk (p : Submodule R L) (h) :
   cases p
   rfl
 
-@[deprecated (since := "2024-12-30")] alias coe_to_submodule_mk := toSubmodule_mk
-
 theorem coe_injective : Function.Injective ((↑) : LieSubalgebra R L → Set L) :=
   SetLike.coe_injective
 
@@ -203,21 +199,13 @@ theorem toSubmodule_injective : Function.Injective ((↑) : LieSubalgebra R L �
   rw [← coe_set_eq]
   exact h
 
-@[deprecated (since := "2024-12-30")] alias to_submodule_injective := toSubmodule_injective
-
 @[simp]
 theorem toSubmodule_inj (L₁' L₂' : LieSubalgebra R L) :
     (L₁' : Submodule R L) = (L₂' : Submodule R L) ↔ L₁' = L₂' :=
   toSubmodule_injective.eq_iff
 
-@[deprecated (since := "2024-12-30")] alias coe_to_submodule_inj := toSubmodule_inj
-
-@[deprecated (since := "2024-12-29")] alias toSubmodule_eq_iff := toSubmodule_inj
-
 theorem coe_toSubmodule : ((L' : Submodule R L) : Set L) = L' :=
   rfl
-
-@[deprecated (since := "2024-12-30")] alias coe_to_submodule := coe_toSubmodule
 
 section LieModule
 
@@ -397,9 +385,6 @@ theorem le_def : K ≤ K' ↔ (K : Set L) ⊆ K' :=
 theorem toSubmodule_le_toSubmodule : (K : Submodule R L) ≤ K' ↔ K ≤ K' :=
   Iff.rfl
 
-@[deprecated (since := "2024-12-30")]
-alias coe_submodule_le_coe_submodule := toSubmodule_le_toSubmodule
-
 instance : Bot (LieSubalgebra R L) :=
   ⟨0⟩
 
@@ -410,8 +395,6 @@ theorem bot_coe : ((⊥ : LieSubalgebra R L) : Set L) = {0} :=
 @[simp]
 theorem bot_toSubmodule : ((⊥ : LieSubalgebra R L) : Submodule R L) = ⊥ :=
   rfl
-
-@[deprecated (since := "2024-12-30")] alias bot_coe_submodule := bot_toSubmodule
 
 @[simp]
 theorem mem_bot (x : L) : x ∈ (⊥ : LieSubalgebra R L) ↔ x = 0 :=
@@ -427,8 +410,6 @@ theorem top_coe : ((⊤ : LieSubalgebra R L) : Set L) = univ :=
 @[simp]
 theorem top_toSubmodule : ((⊤ : LieSubalgebra R L) : Submodule R L) = ⊤ :=
   rfl
-
-@[deprecated (since := "2024-12-30")] alias top_coe_submodule := top_toSubmodule
 
 @[simp]
 theorem mem_top (x : L) : x ∈ (⊤ : LieSubalgebra R L) :=
@@ -460,8 +441,6 @@ theorem inf_coe : (↑(K ⊓ K') : Set L) = (K : Set L) ∩ (K' : Set L) :=
 theorem sInf_toSubmodule (S : Set (LieSubalgebra R L)) :
     (↑(sInf S) : Submodule R L) = sInf {(s : Submodule R L) | s ∈ S} :=
   rfl
-
-@[deprecated (since := "2024-12-30")] alias sInf_coe_to_submodule := sInf_toSubmodule
 
 @[simp]
 theorem sInf_coe (S : Set (LieSubalgebra R L)) : (↑(sInf S) : Set L) = ⋂ s ∈ S, (s : Set L) := by
@@ -521,8 +500,6 @@ theorem add_eq_sup : K + K' = K ⊔ K' :=
 theorem inf_toSubmodule :
     (↑(K ⊓ K') : Submodule R L) = (K : Submodule R L) ⊓ (K' : Submodule R L) :=
   rfl
-
-@[deprecated (since := "2024-12-30")] alias inf_coe_to_submodule := inf_toSubmodule
 
 @[simp]
 theorem mem_inf (x : L) : x ∈ K ⊓ K' ↔ x ∈ K ∧ x ∈ K' := by

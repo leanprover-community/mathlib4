@@ -200,8 +200,6 @@ theorem existsUnique_hilbertPoly (p : F[X]) (d : ℕ) :
     simp only [Set.mem_Ioi, sup_lt_iff, Set.mem_setOf_eq] at hn ⊢
     rw [← coeff_mul_invOneSubPow_eq_hilbertPoly_eval d hn.2, hhN n hn.1]
 
-@[deprecated (since := "2024-12-17")] alias exists_unique_hilbertPoly := existsUnique_hilbertPoly
-
 /--
 If `h : F[X]` and there exists some `N : ℕ` such that for any number `n : ℕ` bigger than `N`
 we have `PowerSeries.coeff F n (p * invOneSubPow F d) = h.eval (n : F)`, then `h` is exactly

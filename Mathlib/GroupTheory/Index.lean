@@ -406,9 +406,6 @@ lemma inf_eq_bot_of_coprime (h : Nat.Coprime (Nat.card H) (Nat.card K)) : H ⊓ 
   card_eq_one.1 <| Nat.eq_one_of_dvd_coprimes h
     (card_dvd_of_le inf_le_left) (card_dvd_of_le inf_le_right)
 
-@[deprecated (since := "2024-12-18")]
-alias _root_.add_inf_eq_bot_of_coprime := AddSubgroup.inf_eq_bot_of_coprime
-
 @[to_additive]
 theorem index_ne_zero_of_finite [hH : Finite (G ⧸ H)] : H.index ≠ 0 := by
   cases nonempty_fintype (G ⧸ H)

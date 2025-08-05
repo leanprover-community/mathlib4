@@ -79,9 +79,6 @@ lemma coe_smul (s : Finset α) (t : Finset β) : ↑(s • t) = (s : Set α) •
 
 @[to_additive] lemma card_smul_le : #(s • t) ≤ #s * #t := card_image₂_le ..
 
-@[deprecated (since := "2024-11-19")] alias smul_card_le := card_smul_le
-@[deprecated (since := "2024-11-19")] alias vadd_card_le := card_vadd_le
-
 @[to_additive (attr := simp)]
 lemma empty_smul (t : Finset β) : (∅ : Finset α) • t = ∅ := image₂_empty_left
 

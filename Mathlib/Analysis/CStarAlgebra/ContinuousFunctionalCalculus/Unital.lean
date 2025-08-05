@@ -196,9 +196,6 @@ class ContinuousMap.UniqueHom (R A : Type*) [CommSemiring R] [StarRing R]
     (h : φ (.restrict s <| .id R) = ψ (.restrict s <| .id R)) :
     φ = ψ
 
-@[deprecated (since := "2025-01-10")] alias UniqueContinuousFunctionalCalculus :=
-  ContinuousMap.UniqueHom
-
 variable {R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R] [MetricSpace R]
 variable [IsTopologicalSemiring R] [ContinuousStar R] [TopologicalSpace A] [Ring A] [StarRing A]
 variable [Algebra R A] [instCFC : ContinuousFunctionalCalculus R A p]

@@ -322,8 +322,6 @@ lemma preservesLimits_unop (F : Cᵒᵖ ⥤ Dᵒᵖ) [PreservesColimits F] : Pre
 lemma preservesColimits_op (F : C ⥤ D) [PreservesLimits F] : PreservesColimits F.op where
   preservesColimitsOfShape {_} _ := preservesColimitsOfShape_op _ _
 
-@[deprecated (since := "2024-12-25")] alias perservesColimits_op := preservesColimits_op
-
 /-- If `F : C ⥤ Dᵒᵖ` preserves limits, then `F.leftOp : Cᵒᵖ ⥤ D` preserves colimits. -/
 lemma preservesColimits_leftOp (F : C ⥤ Dᵒᵖ) [PreservesLimits F] : PreservesColimits F.leftOp where
   preservesColimitsOfShape {_} _ := preservesColimitsOfShape_leftOp _ _

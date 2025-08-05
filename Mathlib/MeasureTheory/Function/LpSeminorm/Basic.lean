@@ -695,9 +695,6 @@ lemma eLpNorm_indicator_eq_eLpNorm_restrict {f : α → ε} {s : Set α} (hs : M
     Function.comp_def]
   simp [ENNReal.toReal_pos hp_zero hp_top]
 
-@[deprecated (since := "2025-01-07")]
-alias eLpNorm_indicator_eq_restrict := eLpNorm_indicator_eq_eLpNorm_restrict
-
 lemma eLpNormEssSup_indicator_eq_eLpNormEssSup_restrict (hs : MeasurableSet s) :
     eLpNormEssSup (s.indicator f) μ = eLpNormEssSup f (μ.restrict s) := by
   simp_rw [← eLpNorm_exponent_top, eLpNorm_indicator_eq_eLpNorm_restrict hs]
@@ -1400,6 +1397,10 @@ theorem MemLp.const_mul {f : α → 𝕜} (hf : MemLp f p μ) (c : 𝕜) : MemLp
 
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.const_mul := MemLp.const_mul
+
+theorem MemLp.mul_const {f : α → 𝕜} (hf : MemLp f p μ) (c : 𝕜) :
+    MemLp (fun x => f x * c) p μ :=
+  hf.const_smul (MulOpposite.op c)
 
 end IsBoundedSMul
 

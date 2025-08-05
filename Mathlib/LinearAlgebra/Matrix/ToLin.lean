@@ -641,6 +641,13 @@ theorem Matrix.toLin_self (M : Matrix m n R) (i : n) :
     have := Finset.mem_univ i
     contradiction
 
+theorem Matrix.toLin_apply_eq_zero_iff {R M₁ M₂ : Type*} [CommRing R]
+    [AddCommGroup M₁] [AddCommGroup M₂] [Module R M₁] [Module R M₂]
+    {v₁ : Basis n R M₁} {v₂ : Basis m R M₂} {A : Matrix m n R} {x : M₁} :
+    A.toLin v₁ v₂ x = 0 ↔ ∀ j, (A *ᵥ v₁.repr x) j = 0 := by
+  rw [toLin_apply]
+  exact ⟨Fintype.linearIndependent_iff.mp v₂.linearIndependent _, fun h ↦ by simp [h]⟩
+
 variable {M₃ : Type*} [AddCommMonoid M₃] [Module R M₃] (v₃ : Basis l R M₃)
 
 theorem LinearMap.toMatrix_comp [Finite l] [DecidableEq m] (f : M₂ →ₗ[R] M₃) (g : M₁ →ₗ[R] M₂) :
@@ -665,6 +672,13 @@ theorem Matrix.toLin_mul [Finite l] [DecidableEq m] (A : Matrix l m R) (B : Matr
   haveI : DecidableEq l := fun _ _ ↦ Classical.propDecidable _
   rw [LinearMap.toMatrix_comp v₁ v₂ v₃]
   repeat' rw [LinearMap.toMatrix_toLin]
+
+@[simp]
+theorem Matrix.toLin_pow (A : Matrix n n R) (k : ℕ) :
+    (A ^ k).toLin v₁ v₁ = (A.toLin v₁ v₁) ^ k := by
+  induction k with
+  | zero => simp only [pow_zero, toLin_one]; rfl
+  | succ n ih => rw [pow_succ, pow_succ, toLin_mul v₁ v₁, ih, Module.End.mul_eq_comp]
 
 /-- Shortcut lemma for `Matrix.toLin_mul` and `LinearMap.comp_apply`. -/
 theorem Matrix.toLin_mul_apply [Finite l] [DecidableEq m] (A : Matrix l m R) (B : Matrix m n R)

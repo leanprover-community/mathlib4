@@ -216,7 +216,7 @@ theorem fromBlocks_multiply [Fintype l] [Fintype m] [NonUnitalNonAssocSemiring �
   rcases i with ⟨⟩ <;> rcases j with ⟨⟩ <;> simp only [fromBlocks, mul_apply, of_apply,
       Sum.elim_inr, Fintype.sum_sum_type, Sum.elim_inl, add_apply]
 
-theorem fromBlocks_pow [Semiring α] [Fintype n] [Fintype m] [DecidableEq n] [DecidableEq m]
+theorem fromBlocks_diagonal_pow [Semiring α] [Fintype n] [Fintype m] [DecidableEq n] [DecidableEq m]
     (A : Matrix n n α) (D : Matrix m m α) (k : ℕ) :
     (fromBlocks A 0 0 D) ^ k = fromBlocks (A ^ k) 0 0 (D ^ k) := by
   induction k with

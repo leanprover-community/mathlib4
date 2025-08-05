@@ -206,8 +206,6 @@ theorem iInter_halfSpaces_eq (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
   obtain ⟨l, s, hlA, hl⟩ := geometric_hahn_banach_closed_point hs₁ hs₂ h
   obtain ⟨y, hy, hxy⟩ := hx l
   exact ((hxy.trans_lt (hlA y hy)).trans hl).not_ge le_rfl
-@[deprecated (since := "2024-11-12")] alias iInter_halfspaces_eq := iInter_halfSpaces_eq
-
 end
 
 namespace RCLike
@@ -319,6 +317,4 @@ theorem iInter_halfSpaces_eq (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
   obtain ⟨l, s, hlA, hl⟩ := geometric_hahn_banach_closed_point (𝕜 := 𝕜) hs₁ hs₂ h
   obtain ⟨y, hy, hxy⟩ := hx l
   exact ((hxy.trans_lt (hlA y hy)).trans hl).false
-@[deprecated (since := "2024-11-12")] alias iInter_halfspaces_eq := iInter_halfSpaces_eq
-
 end RCLike

@@ -707,9 +707,3 @@ lemma converges_of_monotone_of_bounded {f : ℕ → ℕ} (mono_f : Monotone f)
       replace hN : f N = c + 1 := by specialize hc N; omega
       use c + 1, N; intro n hn
       specialize mono_f hn; specialize hc n; omega
-
-@[deprecated (since := "2024-11-27")]
-alias Group.card_pow_eq_card_pow_card_univ_aux := Nat.stabilises_of_monotone
-
-@[deprecated (since := "2024-11-27")]
-alias Group.card_nsmul_eq_card_nsmulpow_card_univ_aux := Nat.stabilises_of_monotone

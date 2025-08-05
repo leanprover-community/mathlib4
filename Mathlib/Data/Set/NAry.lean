@@ -53,8 +53,6 @@ lemma forall_mem_image2 {p : γ → Prop} :
 lemma exists_mem_image2 {p : γ → Prop} :
     (∃ z ∈ image2 f s t, p z) ↔ ∃ x ∈ s, ∃ y ∈ t, p (f x y) := by aesop
 
-@[deprecated (since := "2024-11-23")] alias forall_image2_iff := forall_mem_image2
-
 @[simp]
 theorem image2_subset_iff {u : Set γ} : image2 f s t ⊆ u ↔ ∀ x ∈ s, ∀ y ∈ t, f x y ∈ u :=
   forall_mem_image2

@@ -8,6 +8,7 @@ import Mathlib.Algebra.Squarefree.Basic
 import Mathlib.RingTheory.ChainOfDivisors
 import Mathlib.RingTheory.DedekindDomain.Ideal.Basic
 import Mathlib.RingTheory.Spectrum.Maximal.Localization
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
 
 /-!
 # Dedekind domains and ideals

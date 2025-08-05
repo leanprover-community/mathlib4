@@ -147,8 +147,6 @@ class IsRegularMonoCategory : Prop where
   /-- Every monomorphism is a regular monomorphism -/
   regularMonoOfMono : ∀ {X Y : C} (f : X ⟶ Y) [Mono f], Nonempty (RegularMono f)
 
-@[deprecated (since := "2024-11-27")] alias RegularMonoCategory := IsRegularMonoCategory
-
 end
 
 /-- In a category in which every monomorphism is regular, we can express every monomorphism as
@@ -284,8 +282,6 @@ variable (C)
 class IsRegularEpiCategory : Prop where
   /-- Everyone epimorphism is a regular epimorphism -/
   regularEpiOfEpi : ∀ {X Y : C} (f : X ⟶ Y) [Epi f], Nonempty (RegularEpi f)
-
-@[deprecated (since := "2024-11-27")] alias RegularEpiCategory := IsRegularEpiCategory
 
 end
 

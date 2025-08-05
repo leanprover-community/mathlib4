@@ -123,6 +123,16 @@ theorem setLIntegral_const (s : Set α) (c : ℝ≥0∞) : ∫⁻ _ in s, c ∂�
 
 theorem setLIntegral_one (s) : ∫⁻ _ in s, 1 ∂μ = μ s := by rw [setLIntegral_const, one_mul]
 
+lemma iInf_mul_le_lintegral (f : α → ℝ≥0∞) : (⨅ x, f x) * μ .univ ≤ ∫⁻ x, f x ∂μ := by
+  calc (⨅ x, f x) * μ .univ
+  _ = ∫⁻ y, ⨅ x, f x ∂μ := by simp
+  _ ≤ ∫⁻ x, f x ∂μ := by gcongr; exact iInf_le _ _
+
+lemma lintegral_le_iSup_mul (f : α → ℝ≥0∞) : ∫⁻ x, f x ∂μ ≤ (⨆ x, f x) * μ .univ := by
+  calc ∫⁻ x, f x ∂μ
+  _ ≤ ∫⁻ y, ⨆ x, f x ∂μ := by gcongr; exact le_iSup _ _
+  _ = (⨆ x, f x) * μ .univ := by simp
+
 variable (μ) in
 /-- For any function `f : α → ℝ≥0∞`, there exists a measurable function `g ≤ f` with the same
 integral. -/
@@ -251,6 +261,19 @@ theorem setLIntegral_mono' {s : Set α} {f g : α → ℝ≥0∞} (hs : Measurab
 theorem setLIntegral_le_lintegral (s : Set α) (f : α → ℝ≥0∞) :
     ∫⁻ x in s, f x ∂μ ≤ ∫⁻ x, f x ∂μ :=
   lintegral_mono' Measure.restrict_le_self le_rfl
+
+lemma iInf_mul_le_setLIntegral (f : α → ℝ≥0∞) {s : Set α} (hs : MeasurableSet s) :
+    (⨅ x ∈ s, f x) * μ s ≤ ∫⁻ x in s, f x ∂μ := by
+  calc (⨅ x ∈ s, f x) * μ s
+  _ = ∫⁻ y in s, ⨅ x ∈ s, f x ∂μ := by simp
+  _ ≤ ∫⁻ x in s, f x ∂μ := setLIntegral_mono' hs fun x hx ↦ iInf₂_le x hx
+
+lemma setLIntegral_le_iSup_mul (f : α → ℝ≥0∞) {s : Set α} (hs : MeasurableSet s) :
+    ∫⁻ x in s, f x ∂μ ≤ (⨆ x ∈ s, f x) * μ s := by
+  calc ∫⁻ x in s, f x ∂μ
+  _ ≤ ∫⁻ y in s, ⨆ x ∈ s, f x ∂μ :=
+    setLIntegral_mono' hs fun x hx ↦ le_iSup₂ (f := fun x _ ↦ f x) x hx
+  _ = (⨆ x ∈ s, f x) * μ s := by simp
 
 theorem lintegral_congr_ae {f g : α → ℝ≥0∞} (h : f =ᵐ[μ] g) : ∫⁻ a, f a ∂μ = ∫⁻ a, g a ∂μ :=
   le_antisymm (lintegral_mono_ae <| h.le) (lintegral_mono_ae <| h.symm.le)

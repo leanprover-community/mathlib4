@@ -756,16 +756,6 @@ theorem div_le_of_le_mul' {a b c : ℝ≥0} (h : a ≤ b * c) : a / b ≤ c :=
 theorem mul_lt_of_lt_div {a b r : ℝ≥0} (h : a < b / r) : a * r < b :=
   (lt_div_iff₀ <| pos_iff_ne_zero.2 fun hr => False.elim <| by simp [hr] at h).1 h
 
-@[deprecated div_le_div_of_nonneg_left (since := "2024-11-12")]
-theorem div_le_div_left_of_le {a b c : ℝ≥0} (c0 : c ≠ 0) (cb : c ≤ b) :
-    a / b ≤ a / c :=
-  div_le_div_of_nonneg_left (zero_le _) c0.bot_lt cb
-
-@[deprecated div_le_div_iff_of_pos_left (since := "2024-11-12")]
-nonrec theorem div_le_div_left {a b c : ℝ≥0} (a0 : 0 < a) (b0 : 0 < b) (c0 : 0 < c) :
-    a / b ≤ a / c ↔ c ≤ b :=
-  div_le_div_iff_of_pos_left a0 b0 c0
-
 theorem le_of_forall_lt_one_mul_le {x y : ℝ≥0} (h : ∀ a < 1, a * x ≤ y) : x ≤ y :=
   le_of_forall_lt_imp_le_of_dense fun a ha => by
     have hx : x ≠ 0 := pos_iff_ne_zero.1 (lt_of_le_of_lt (zero_le _) ha)
