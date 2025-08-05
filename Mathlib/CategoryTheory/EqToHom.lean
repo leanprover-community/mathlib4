@@ -114,7 +114,7 @@ theorem heq_comp {C} [Category C] {X Y Z X' Y' Z' : C}
     (eq1 : X = X') (eq2 : Y = Y') (eq3 : Z = Z')
     (H1 : f ≍ f') (H2 : g ≍ g') :
     f ≫ g ≍ f' ≫ g' := by
-  cases eq1; cases eq2; cases eq3; cases H1; cases H2; rfl
+  grind
 
 variable {β : Sort*}
 

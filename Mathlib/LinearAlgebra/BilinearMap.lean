@@ -205,18 +205,25 @@ theorem restrictScalars₁₂_inj {B B' : M →ₗ[R] N →ₗ[S] Pₗ} :
 
 end restrictScalars
 
-/-- Given a linear map from `M` to linear maps from `N` to `P`, i.e., a bilinear map `M → N → P`,
-change the order of variables and get a linear map from `N` to linear maps from `M` to `P`. -/
+/-- `LinearMap.flip` as an isomorphism of modules. -/
 def lflip {R₀ : Type*} [Semiring R₀] [Module R₀ P] [SMulCommClass S₂ R₀ P] [SMulCommClass R₂ R₀ P] :
-    (M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) →ₗ[R₀] N →ₛₗ[σ₁₂] M →ₛₗ[ρ₁₂] P where
+    (M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) ≃ₗ[R₀] (N →ₛₗ[σ₁₂] M →ₛₗ[ρ₁₂] P) where
   toFun := flip
+  invFun := flip
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+@[simp] theorem lflip_symm
+    {R₀ : Type*} [Semiring R₀] [Module R₀ P] [SMulCommClass S₂ R₀ P] [SMulCommClass R₂ R₀ P] :
+    (lflip : (M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) ≃ₗ[R₀] (N →ₛₗ[σ₁₂] M →ₛₗ[ρ₁₂] P)).symm = lflip :=
+  rfl
 
 @[simp]
 theorem lflip_apply {R₀ : Type*} [Semiring R₀] [Module R₀ P] [SMulCommClass S₂ R₀ P]
-    [SMulCommClass R₂ R₀ P] (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (m : M) (n : N) :
-    lflip (R₀ := R₀) f n m = f m n := rfl
+    [SMulCommClass R₂ R₀ P] (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) :
+    lflip (R₀ := R₀) f = f.flip := rfl
 
 end Semiring
 

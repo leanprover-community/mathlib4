@@ -3,13 +3,14 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
-import Mathlib.Algebra.Notation.Defs
+import Batteries.Logic
+import Mathlib.Algebra.Regular.Defs
 import Mathlib.Data.Int.Notation
 import Mathlib.Data.Nat.BinaryRec
 import Mathlib.Logic.Function.Defs
-import Mathlib.Tactic.Simps.Basic
+import Mathlib.Tactic.MkIffOfInductiveProp
 import Mathlib.Tactic.OfNat
-import Batteries.Logic
+import Mathlib.Tactic.Simps.Basic
 
 /-!
 # Typeclasses for (semi)groups and monoids
@@ -65,34 +66,64 @@ attribute [deprecated HMul.hMul "Use (· * g) instead" (since := "2025-04-08")] 
 attribute [deprecated HAdd.hAdd "Use (· + g) instead" (since := "2025-04-08")] rightAdd
 
 /-- A mixin for left cancellative multiplication. -/
-class IsLeftCancelMul (G : Type u) [Mul G] : Prop where
-  /-- Multiplication is left cancellative. -/
-  protected mul_left_cancel : ∀ a b c : G, a * b = a * c → b = c
+@[mk_iff] class IsLeftCancelMul (G : Type u) [Mul G] : Prop where
+  /-- Multiplication is left cancellative (i.e. left regular). -/
+  protected mul_left_cancel (a : G) : IsLeftRegular a
 /-- A mixin for right cancellative multiplication. -/
-class IsRightCancelMul (G : Type u) [Mul G] : Prop where
-  /-- Multiplication is right cancellative. -/
-  protected mul_right_cancel : ∀ a b c : G, a * b = c * b → a = c
+@[mk_iff] class IsRightCancelMul (G : Type u) [Mul G] : Prop where
+  /-- Multiplication is right cancellative (i.e. right regular). -/
+  protected mul_right_cancel (a : G) : IsRightRegular a
 /-- A mixin for cancellative multiplication. -/
+@[mk_iff]
 class IsCancelMul (G : Type u) [Mul G] : Prop extends IsLeftCancelMul G, IsRightCancelMul G
 
 /-- A mixin for left cancellative addition. -/
 class IsLeftCancelAdd (G : Type u) [Add G] : Prop where
-  /-- Addition is left cancellative. -/
-  protected add_left_cancel : ∀ a b c : G, a + b = a + c → b = c
+  /-- Addition is left cancellative (i.e. left regular). -/
+  protected add_left_cancel (a : G) : IsAddLeftRegular a
 
-attribute [to_additive IsLeftCancelAdd] IsLeftCancelMul
+attribute [to_additive] IsLeftCancelMul
+attribute [to_additive] isLeftCancelMul_iff
 
 /-- A mixin for right cancellative addition. -/
 class IsRightCancelAdd (G : Type u) [Add G] : Prop where
-  /-- Addition is right cancellative. -/
-  protected add_right_cancel : ∀ a b c : G, a + b = c + b → a = c
+  /-- Addition is right cancellative (i.e. right regular). -/
+  protected add_right_cancel (a : G) : IsAddRightRegular a
 
-attribute [to_additive IsRightCancelAdd] IsRightCancelMul
+attribute [to_additive] IsRightCancelMul
+attribute [to_additive] isRightCancelMul_iff
 
 /-- A mixin for cancellative addition. -/
+@[mk_iff]
 class IsCancelAdd (G : Type u) [Add G] : Prop extends IsLeftCancelAdd G, IsRightCancelAdd G
 
-attribute [to_additive IsCancelAdd] IsCancelMul
+attribute [to_additive] IsCancelMul
+attribute [to_additive existing] isCancelMul_iff
+
+section Regular
+
+variable {R : Type*}
+
+@[to_additive] theorem isCancelMul_iff_forall_isRegular [Mul R] :
+    IsCancelMul R ↔ ∀ r : R, IsRegular r := by
+  rw [isCancelMul_iff, isLeftCancelMul_iff, isRightCancelMul_iff, ← forall_and]
+  exact forall_congr' fun _ ↦ isRegular_iff.symm
+
+/-- If all multiplications cancel on the left then every element is left-regular. -/
+@[to_additive "If all additions cancel on the left then every element is add-left-regular."]
+theorem IsLeftRegular.all [Mul R] [IsLeftCancelMul R] (g : R) : IsLeftRegular g :=
+  (isLeftCancelMul_iff R).mp ‹_› _
+
+/-- If all multiplications cancel on the right then every element is right-regular. -/
+@[to_additive "If all additions cancel on the right then every element is add-right-regular."]
+theorem IsRightRegular.all [Mul R] [IsRightCancelMul R] (g : R) : IsRightRegular g :=
+  (isRightCancelMul_iff R).mp ‹_› _
+
+/-- If all multiplications cancel then every element is regular. -/
+@[to_additive "If all additions cancel then every element is add-regular."]
+theorem IsRegular.all [Mul R] [IsCancelMul R] (g : R) : IsRegular g := ⟨.all g, .all g⟩
+
+end Regular
 
 section IsLeftCancelMul
 
@@ -100,7 +131,7 @@ variable [IsLeftCancelMul G] {a b c : G}
 
 @[to_additive]
 theorem mul_left_cancel : a * b = a * c → b = c :=
-  IsLeftCancelMul.mul_left_cancel a b c
+  (IsLeftCancelMul.mul_left_cancel a ·)
 
 @[to_additive]
 theorem mul_left_cancel_iff : a * b = a * c ↔ b = c :=
@@ -125,7 +156,7 @@ variable [IsRightCancelMul G] {a b c : G}
 
 @[to_additive]
 theorem mul_right_cancel : a * b = c * b → a = c :=
-  IsRightCancelMul.mul_right_cancel a b c
+  (IsRightCancelMul.mul_right_cancel b ·)
 
 @[to_additive]
 theorem mul_right_cancel_iff : b * a = c * a ↔ b = c :=
@@ -231,8 +262,7 @@ end CommMagma
 
 /-- A `LeftCancelSemigroup` is a semigroup such that `a * b = a * c` implies `b = c`. -/
 @[ext]
-class LeftCancelSemigroup (G : Type u) extends Semigroup G where
-  protected mul_left_cancel : ∀ a b c : G, a * b = a * c → b = c
+class LeftCancelSemigroup (G : Type u) extends Semigroup G, IsLeftCancelMul G
 
 library_note "lower cancel priority" /--
 We lower the priority of inheriting from cancellative structures.
@@ -245,43 +275,38 @@ attribute [instance 75] LeftCancelSemigroup.toSemigroup -- See note [lower cance
 /-- An `AddLeftCancelSemigroup` is an additive semigroup such that
 `a + b = a + c` implies `b = c`. -/
 @[ext]
-class AddLeftCancelSemigroup (G : Type u) extends AddSemigroup G where
-  protected add_left_cancel : ∀ a b c : G, a + b = a + c → b = c
+class AddLeftCancelSemigroup (G : Type u) extends AddSemigroup G, IsLeftCancelAdd G
 
 attribute [instance 75] AddLeftCancelSemigroup.toAddSemigroup -- See note [lower cancel priority]
 
 attribute [to_additive] LeftCancelSemigroup
 
 /-- Any `LeftCancelSemigroup` satisfies `IsLeftCancelMul`. -/
-@[to_additive AddLeftCancelSemigroup.toIsLeftCancelAdd "Any `AddLeftCancelSemigroup` satisfies
-`IsLeftCancelAdd`."]
-instance (priority := 100) LeftCancelSemigroup.toIsLeftCancelMul (G : Type u)
-    [LeftCancelSemigroup G] : IsLeftCancelMul G :=
-  { mul_left_cancel := LeftCancelSemigroup.mul_left_cancel }
+add_decl_doc LeftCancelSemigroup.toIsLeftCancelMul
+
+/-- Any `AddLeftCancelSemigroup` satisfies `IsLeftCancelAdd`. -/
+add_decl_doc AddLeftCancelSemigroup.toIsLeftCancelAdd
 
 /-- A `RightCancelSemigroup` is a semigroup such that `a * b = c * b` implies `a = c`. -/
 @[ext]
-class RightCancelSemigroup (G : Type u) extends Semigroup G where
-  protected mul_right_cancel : ∀ a b c : G, a * b = c * b → a = c
+class RightCancelSemigroup (G : Type u) extends Semigroup G, IsRightCancelMul G
 
 attribute [instance 75] RightCancelSemigroup.toSemigroup -- See note [lower cancel priority]
 
 /-- An `AddRightCancelSemigroup` is an additive semigroup such that
 `a + b = c + b` implies `a = c`. -/
 @[ext]
-class AddRightCancelSemigroup (G : Type u) extends AddSemigroup G where
-  protected add_right_cancel : ∀ a b c : G, a + b = c + b → a = c
+class AddRightCancelSemigroup (G : Type u) extends AddSemigroup G, IsRightCancelAdd G
 
 attribute [instance 75] AddRightCancelSemigroup.toAddSemigroup -- See note [lower cancel priority]
 
 attribute [to_additive] RightCancelSemigroup
 
 /-- Any `RightCancelSemigroup` satisfies `IsRightCancelMul`. -/
-@[to_additive AddRightCancelSemigroup.toIsRightCancelAdd "Any `AddRightCancelSemigroup` satisfies
-`IsRightCancelAdd`."]
-instance (priority := 100) RightCancelSemigroup.toIsRightCancelMul (G : Type u)
-    [RightCancelSemigroup G] : IsRightCancelMul G :=
-  { mul_right_cancel := RightCancelSemigroup.mul_right_cancel }
+add_decl_doc RightCancelSemigroup.toIsRightCancelMul
+
+/-- Any `AddRightCancelSemigroup` satisfies `IsRightCancelAdd`. -/
+add_decl_doc AddRightCancelSemigroup.toIsRightCancelAdd
 
 /-- Typeclass for expressing that a type `M` with multiplication and a one satisfies
 `1 * a = a` and `a * 1 = a` for all `a : M`. -/
@@ -707,11 +732,9 @@ instance (priority := 100) CancelCommMonoid.toCancelMonoid (M : Type u) [CancelC
   { CommMagma.IsLeftCancelMul.toIsRightCancelMul M with }
 
 /-- Any `CancelMonoid G` satisfies `IsCancelMul G`. -/
-@[to_additive toIsCancelAdd "Any `AddCancelMonoid G` satisfies `IsCancelAdd G`."]
+@[to_additive "Any `AddCancelMonoid G` satisfies `IsCancelAdd G`."]
 instance (priority := 100) CancelMonoid.toIsCancelMul (M : Type u) [CancelMonoid M] :
-    IsCancelMul M :=
-  { mul_left_cancel := LeftCancelSemigroup.mul_left_cancel
-    mul_right_cancel := RightCancelSemigroup.mul_right_cancel }
+    IsCancelMul M where
 
 end CancelMonoid
 
@@ -1110,10 +1133,11 @@ instance (priority := 100) Group.toDivisionMonoid : DivisionMonoid G :=
 
 -- see Note [lower instance priority]
 @[to_additive]
-instance (priority := 100) Group.toCancelMonoid : CancelMonoid G :=
-  { ‹Group G› with
-    mul_right_cancel := fun a b c h ↦ by rw [← mul_inv_cancel_right a b, h, mul_inv_cancel_right]
-    mul_left_cancel := fun a b c h ↦ by rw [← inv_mul_cancel_left a b, h, inv_mul_cancel_left] }
+instance (priority := 100) Group.toCancelMonoid : CancelMonoid G where
+  mul_right_cancel := fun a b c h ↦ by
+    rw [← mul_inv_cancel_right b a, show b * a = c * a from h, mul_inv_cancel_right]
+  mul_left_cancel := fun a {b c} h ↦ by
+    rw [← inv_mul_cancel_left a b, show a * b = a * c from h, inv_mul_cancel_left]
 
 end Group
 

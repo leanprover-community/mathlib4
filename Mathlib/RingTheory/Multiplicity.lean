@@ -802,7 +802,7 @@ theorem multiplicity_mul {p a b : α} (hp : Prime p) (hfin : FiniteMultiplicity 
   have hdiva : p ^ multiplicity p a ∣ a := pow_multiplicity_dvd ..
   have hdivb : p ^ multiplicity p b ∣ b := pow_multiplicity_dvd ..
   have hdiv : p ^ (multiplicity p a + multiplicity p b) ∣ a * b := by
-    rw [pow_add]; apply mul_dvd_mul <;> assumption
+    rw [pow_add]; gcongr
   have hsucc : ¬p ^ (multiplicity p a + multiplicity p b + 1) ∣ a * b :=
     fun h =>
     not_or_intro (hfin.mul_left.not_pow_dvd_of_multiplicity_lt (lt_succ_self _))

@@ -87,8 +87,8 @@ theorem Topology.IsOpenEmbedding.isQuasiSeparated_iff (h : IsOpenEmbedding f) {s
   intro H U V hU hU' hU'' hV hV' hV''
   rw [h.isEmbedding.isCompact_iff, Set.image_inter h.injective]
   exact
-    H (f '' U) (f '' V) (Set.image_subset _ hU) (h.isOpenMap _ hU') (hU''.image h.continuous)
-      (Set.image_subset _ hV) (h.isOpenMap _ hV') (hV''.image h.continuous)
+    H (f '' U) (f '' V) (image_mono hU) (h.isOpenMap _ hU') (hU''.image h.continuous)
+      (image_mono hV) (h.isOpenMap _ hV') (hV''.image h.continuous)
 
 theorem isQuasiSeparated_iff_quasiSeparatedSpace (s : Set α) (hs : IsOpen s) :
     IsQuasiSeparated s ↔ QuasiSeparatedSpace s := by

@@ -87,6 +87,7 @@ protected theorem differentiableWithinAt_aeval :
     DifferentiableWithinAt 𝕜 (fun x => aeval x q) s x :=
   q.differentiableAt_aeval.differentiableWithinAt
 
+@[fun_prop]
 protected theorem differentiable : Differentiable 𝕜 fun x => p.eval x := fun _ => p.differentiableAt
 
 protected theorem differentiable_aeval : Differentiable 𝕜 fun x : 𝕜 => aeval x q := fun _ =>

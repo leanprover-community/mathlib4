@@ -463,23 +463,13 @@ lemma lie_e_f_ne [P.IsNotG2] :
       b.root_sub_root_mem_of_mem_of_mem i j l (by aesop) i.property j.property h₅ h₃ h₆
     obtain ⟨l', hl'⟩ := h₆
     by_cases hk : P.root k = P.root l + P.root i - P.root j; swap
-    · have aux₃ : ∀ x ∈ Finset.univ,
-          ¬ (P.root x = P.root l - P.root j ∧ P.root k = P.root i + P.root x) := by
-        rintro x - ⟨hx, hx'⟩; exact hk <| by rw [hx', hx]; abel
-      have aux₄ : ∀ x ∈ Finset.univ,
-          ¬ (P.root x = P.root i + P.root l ∧ P.root k = P.root x - P.root j) := by
-        rintro x - ⟨hx, hx'⟩; exact hk <| by rw [hx', hx]; abel
-      simp [Finset.sum_ite_of_false aux₃, Finset.sum_ite_of_false aux₄]
+    · grind
     have aux₃ (x) (hx : x ≠ m) :
-        ¬ (P.root x = P.root l - P.root j ∧ P.root k = P.root i + P.root x) := by
-      contrapose! hx
-      rw [← hx.1, EmbeddingLike.apply_eq_iff_eq] at hm
-      exact hm.symm
+      ¬ (P.root x = P.root l - P.root j ∧ P.root k = P.root i + P.root x) := by
+        grind [EmbeddingLike.apply_eq_iff_eq]
     have aux₄ (x) (hx : x ≠ l') :
-        ¬ (P.root x = P.root i + P.root l ∧ P.root k = P.root x - P.root j) := by
-      contrapose! hx
-      rw [add_comm, ← hx.1, EmbeddingLike.apply_eq_iff_eq] at hl'
-      exact hl'.symm
+      ¬ (P.root x = P.root i + P.root l ∧ P.root k = P.root x - P.root j) := by
+        grind [EmbeddingLike.apply_eq_iff_eq]
     rw [Finset.sum_eq_single_of_mem m (Finset.mem_univ _) (by rintro x - h; rw [if_neg (aux₃ _ h)]),
       Finset.sum_eq_single_of_mem l' (Finset.mem_univ _) (by rintro x - h; rw [if_neg (aux₄ _ h)]),
       if_pos (⟨hm, by rw [hm, hk]; abel⟩), if_pos ⟨by rw [hl', add_comm], by rw [hl', hk]⟩]

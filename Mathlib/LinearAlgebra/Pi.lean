@@ -78,8 +78,8 @@ def const : M₂ →ₗ[R] (ι → M₂) := pi fun _ ↦ .id
 
 /-- The projections from a family of modules are linear maps.
 
-Note:  known here as `LinearMap.proj`, this construction is in other categories called `eval`, for
-example `Pi.evalMonoidHom`, `Pi.evalRingHom`. -/
+Note: this definition would be called `Pi.evalLinearMap` if we followed the pattern established by
+`Pi.evalAddHom`, `Pi.evalMonoidHom`, `Pi.evalRingHom`, ... -/
 def proj (i : ι) : ((i : ι) → φ i) →ₗ[R] φ i where
   toFun := Function.eval i
   map_add' _ _ := rfl
@@ -87,6 +87,10 @@ def proj (i : ι) : ((i : ι) → φ i) →ₗ[R] φ i where
 
 @[simp]
 theorem coe_proj (i : ι) : ⇑(proj i : ((i : ι) → φ i) →ₗ[R] φ i) = Function.eval i :=
+  rfl
+
+@[simp]
+theorem toAddMonoidHom_proj (i : ι) : (proj i).toAddMonoidHom (R := R) = Pi.evalAddMonoidHom φ i :=
   rfl
 
 theorem proj_apply (i : ι) (b : (i : ι) → φ i) : (proj i : ((i : ι) → φ i) →ₗ[R] φ i) b = b i :=

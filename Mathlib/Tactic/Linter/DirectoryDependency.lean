@@ -239,6 +239,7 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Logic.Hydra, `Mathlib.Algebra),
   (`Mathlib.Logic.Encodable.Pi, `Mathlib.Algebra),
   (`Mathlib.Logic.Equiv.Fin.Rotate, `Mathlib.Algebra.Group),
+  (`Mathlib.Logic.Equiv.Fin.Rotate, `Mathlib.Algebra.Regular),
   (`Mathlib.Logic.Equiv.Array, `Mathlib.Algebra),
   (`Mathlib.Logic.Equiv.Finset, `Mathlib.Algebra),
   (`Mathlib.Logic.Godel.GodelBetaFunction, `Mathlib.Algebra),
