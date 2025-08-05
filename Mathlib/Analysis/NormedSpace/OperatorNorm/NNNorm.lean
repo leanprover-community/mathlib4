@@ -39,6 +39,29 @@ theorem nnnorm_def (f : E →SL[σ₁₂] F) : ‖f‖₊ = sInf { c | ∀ x, �
   simp_rw [← NNReal.coe_le_coe, NNReal.coe_mul, coe_nnnorm, mem_setOf_eq, NNReal.coe_mk,
     exists_prop]
 
+
+theorem nnnorm_map_eq_zero (f : E →SL[σ₁₂] F) {x} (h : ‖x‖₊ = 0) : ‖f x‖₊ = 0 := by
+  obtain ⟨c, hc, hcf⟩ := f.nnbound
+  specialize hcf x
+  rw [h, mul_zero] at hcf
+  exact nonpos_iff_eq_zero.mp hcf
+
+theorem norm_map_eq_zero (f : E →SL[σ₁₂] F) {x} (h : ‖x‖ = 0) : ‖f x‖ = 0 := by
+  simpa using congrArg NNReal.toReal <| nnnorm_map_eq_zero f (NNReal.eq h)
+
+theorem nnnorm_def' (f : E →SL[σ₁₂] F) : ‖f‖₊ = sInf { c | ∀ x, ‖x‖₊ ≠ 0 → ‖f x‖₊ ≤ c * ‖x‖₊ } := by
+  rw [nnnorm_def]
+  rw [csInf_eq_csInf_of_forall_exists_le]
+  · aesop
+  · intro y hy
+    refine ⟨y, fun x => ?_, le_rfl⟩
+    by_cases h : ‖x‖₊ = 0
+    · obtain ⟨c, hc, hcf⟩ := f.nnbound
+      specialize hcf x
+      simp [h] at *
+      exact hcf
+    · apply hy _ h
+
 @[simp, nontriviality]
 theorem opNNNorm_subsingleton [Subsingleton E] (f : E →SL[σ₁₂] F) : ‖f‖₊ = 0 :=
   NNReal.eq <| f.opNorm_subsingleton
@@ -96,13 +119,13 @@ theorem lipschitz_apply (x : E) : LipschitzWith ‖x‖₊ fun f : E →SL[σ₁
   lipschitzWith_iff_norm_sub_le.2 fun f g => ((f - g).le_opNorm x).trans_eq (mul_comm _ _)
 
 theorem exists_mul_lt_apply_of_lt_opNNNorm (f : E →SL[σ₁₂] F) {r : ℝ≥0} (hr : r < ‖f‖₊) :
-    ∃ x, r * ‖x‖₊ < ‖f x‖₊ := by
-  simpa only [not_forall, not_le, Set.mem_setOf] using
-    notMem_of_lt_csInf (nnnorm_def f ▸ hr : r < sInf { c : ℝ≥0 | ∀ x, ‖f x‖₊ ≤ c * ‖x‖₊ })
-      (OrderBot.bddBelow _)
+    ∃ x, ‖x‖₊ ≠ 0 ∧ r * ‖x‖₊ < ‖f x‖₊ := by
+  have :=
+    notMem_of_lt_csInf' (nnnorm_def' f ▸ hr : r < sInf { c : ℝ≥0 | ∀ x, _ → ‖f x‖₊ ≤ c * ‖x‖₊ })
+  simpa only [not_forall, not_le, Set.mem_setOf, exists_prop] using this
 
 theorem exists_mul_lt_of_lt_opNorm (f : E →SL[σ₁₂] F) {r : ℝ} (hr₀ : 0 ≤ r) (hr : r < ‖f‖) :
-    ∃ x, r * ‖x‖ < ‖f x‖ := by
+    ∃ x, ‖x‖₊ ≠ 0 ∧ r * ‖x‖ < ‖f x‖ := by
   lift r to ℝ≥0 using hr₀
   exact f.exists_mul_lt_apply_of_lt_opNNNorm hr
 
@@ -119,23 +142,21 @@ end ContinuousLinearEquiv
 end NontriviallySemiNormed
 
 section DenselyNormedDomain
-variable [NormedAddCommGroup E] [SeminormedAddCommGroup F]
+variable [SeminormedAddCommGroup E] [SeminormedAddCommGroup F]
 variable [DenselyNormedField 𝕜] [NontriviallyNormedField 𝕜₂]
 variable [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 
 namespace ContinuousLinearMap
 
 theorem exists_lt_apply_of_lt_opNNNorm (f : E →SL[σ₁₂] F) {r : ℝ≥0}
-    (hr : r < ‖f‖₊) : ∃ x : E, ‖x‖₊ < 1 ∧ r < ‖f x‖₊ := by
-  obtain ⟨y, hy⟩ := f.exists_mul_lt_apply_of_lt_opNNNorm hr
-  have hy' : ‖y‖₊ ≠ 0 :=
-    nnnorm_ne_zero_iff.2 fun heq => by
-      simp [heq, nnnorm_zero, map_zero] at hy
+    (hr : r < ‖f‖₊) : ∃ x : E, ‖x‖₊ ≠ 0 ∧ ‖x‖₊ < 1 ∧ r < ‖f x‖₊ := by
+  obtain ⟨y, hy', hy⟩ := f.exists_mul_lt_apply_of_lt_opNNNorm hr
   have hfy : ‖f y‖₊ ≠ 0 := (zero_le'.trans_lt hy).ne'
   rw [← inv_inv ‖f y‖₊, NNReal.lt_inv_iff_mul_lt (inv_ne_zero hfy), mul_assoc, mul_comm ‖y‖₊, ←
     mul_assoc, ← NNReal.lt_inv_iff_mul_lt hy'] at hy
   obtain ⟨k, hk₁, hk₂⟩ := NormedField.exists_lt_nnnorm_lt 𝕜 hy
-  refine ⟨k • y, (nnnorm_smul k y).symm ▸ (NNReal.lt_inv_iff_mul_lt hy').1 hk₂, ?_⟩
+  refine ⟨k • y, (nnnorm_smul k y).symm ▸ mul_ne_zero (zero_le _ |>.trans_lt hk₁).ne' hy',
+      (nnnorm_smul k y).symm ▸ (NNReal.lt_inv_iff_mul_lt hy').1 hk₂, ?_⟩
   rwa [map_smulₛₗ f, nnnorm_smul, ← div_lt_iff₀ hfy.bot_lt, div_eq_mul_inv,
     RingHomIsometric.nnnorm_map]
 
@@ -144,7 +165,8 @@ theorem exists_lt_apply_of_lt_opNorm (f : E →SL[σ₁₂] F) {r : ℝ}
   by_cases hr₀ : r < 0
   · exact ⟨0, by simpa using hr₀⟩
   · lift r to ℝ≥0 using not_lt.1 hr₀
-    exact f.exists_lt_apply_of_lt_opNNNorm hr
+    obtain ⟨x, hx, hrx⟩ := f.exists_lt_apply_of_lt_opNNNorm hr
+    exact ⟨x, hrx⟩
 
 theorem sSup_unit_ball_eq_nnnorm (f : E →SL[σ₁₂] F) :
     sSup ((fun x => ‖f x‖₊) '' ball 0 1) = ‖f‖₊ := by
@@ -152,7 +174,7 @@ theorem sSup_unit_ball_eq_nnnorm (f : E →SL[σ₁₂] F) :
     fun ub hub => ?_
   · rintro - ⟨x, hx, rfl⟩
     simpa only [mul_one] using f.le_opNorm_of_le (mem_ball_zero_iff.1 hx).le
-  · obtain ⟨x, hx, hxf⟩ := f.exists_lt_apply_of_lt_opNNNorm hub
+  · obtain ⟨x, hx0, hx, hxf⟩ := f.exists_lt_apply_of_lt_opNNNorm hub
     exact ⟨_, ⟨x, mem_ball_zero_iff.2 hx, rfl⟩, hxf⟩
 
 theorem sSup_unit_ball_eq_norm (f : E →SL[σ₁₂] F) :
@@ -177,11 +199,9 @@ theorem sSup_unitClosedBall_eq_norm (f : E →SL[σ₁₂] F) :
 theorem exists_nnnorm_eq_one_lt_apply_of_lt_opNNNorm [NormedAlgebra ℝ 𝕜]
     (f : E →SL[σ₁₂] F) {r : ℝ≥0} (hr : r < ‖f‖₊) :
     ∃ x : E, ‖x‖₊ = 1 ∧ r < ‖f x‖₊ := by
-  obtain ⟨x, hlt, hr⟩ := exists_lt_apply_of_lt_opNNNorm f hr
-  obtain rfl | hx0 := eq_zero_or_nnnorm_pos x
-  · simp at hr
+  obtain ⟨x, hx0, hlt, hr⟩ := exists_lt_apply_of_lt_opNNNorm f hr
   use algebraMap ℝ 𝕜 ‖x‖⁻¹ • x
-  suffices r < ‖x‖₊⁻¹ * ‖f x‖₊ by simpa [nnnorm_smul, inv_mul_cancel₀ hx0.ne'] using this
+  suffices r < ‖x‖₊⁻¹ * ‖f x‖₊ by simpa [nnnorm_smul, inv_mul_cancel₀ hx0] using this
   calc
     r < 1⁻¹ * ‖f x‖₊ := by simpa
     _ < ‖x‖₊⁻¹ * ‖f x‖₊ := by gcongr; exact (zero_le r).trans_lt hr
