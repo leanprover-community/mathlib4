@@ -155,7 +155,7 @@ variable {σ : Type v} (g : σ → Scheme.{u})
 
 noncomputable
 instance [Small.{u} σ] :
-  CreatesColimitsOfShape (Discrete σ) Scheme.forgetToLocallyRingedSpace.{u} where
+    CreatesColimitsOfShape (Discrete σ) Scheme.forgetToLocallyRingedSpace.{u} where
 
 instance [Small.{u} σ] : PreservesColimitsOfShape (Discrete σ) Scheme.forgetToTop.{u} :=
   inferInstanceAs (PreservesColimitsOfShape (Discrete σ) (Scheme.forgetToLocallyRingedSpace ⋙
@@ -456,10 +456,6 @@ instance : PreservesColimitsOfShape (Discrete PEmpty.{1}) Scheme.Spec.{u} := by
 
 instance {J : Type*} [Finite J] : PreservesColimitsOfShape (Discrete J) Scheme.Spec.{u} :=
   preservesFiniteCoproductsOfPreservesBinaryAndInitial _ _
-
-instance {J : Type*} [Finite J] : PreservesColimitsOfShape (Discrete J) Scheme.Spec.{u} :=
-  letI := (nonempty_fintype J).some
-  preservesColimitsOfShape_of_equiv (Discrete.equivalence (Fintype.equivFin _).symm) _
 
 /-- The canonical map `∐ Spec Rᵢ ⟶ Spec (Π Rᵢ)`.
 This is an isomorphism when the product is finite. -/

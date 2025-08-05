@@ -168,10 +168,9 @@ lemma cyclesMap_sub : cyclesMap (φ - φ') = cyclesMap φ - cyclesMap φ' :=
 end
 
 instance leftHomologyFunctor_additive [HasKernels C] [HasCokernels C] :
-  (leftHomologyFunctor C).Additive where
+    (leftHomologyFunctor C).Additive where
 
-instance cyclesFunctor_additive [HasKernels C] [HasCokernels C] :
-  (cyclesFunctor C).Additive where
+instance cyclesFunctor_additive [HasKernels C] [HasCokernels C] : (cyclesFunctor C).Additive where
 
 end LeftHomology
 
@@ -279,10 +278,10 @@ lemma opcyclesMap_sub : opcyclesMap (φ - φ') = opcyclesMap φ - opcyclesMap φ
 end
 
 instance rightHomologyFunctor_additive [HasKernels C] [HasCokernels C] :
-  (rightHomologyFunctor C).Additive where
+    (rightHomologyFunctor C).Additive where
 
 instance opcyclesFunctor_additive [HasKernels C] [HasCokernels C] :
-  (opcyclesFunctor C).Additive where
+    (opcyclesFunctor C).Additive where
 
 end RightHomology
 
@@ -347,8 +346,7 @@ lemma homologyMap_sub : homologyMap (φ - φ') = homologyMap φ - homologyMap φ
 
 end
 
-instance homologyFunctor_additive [CategoryWithHomology C] :
-  (homologyFunctor C).Additive where
+instance homologyFunctor_additive [CategoryWithHomology C] : (homologyFunctor C).Additive where
 
 end Homology
 
@@ -547,7 +545,7 @@ variable (S₁ S₂)
 @[simps]
 def ofNullHomotopic (h₀ : S₁.X₁ ⟶ S₂.X₁) (h₀_f : h₀ ≫ S₂.f = 0)
     (h₁ : S₁.X₂ ⟶ S₂.X₁) (h₂ : S₁.X₃ ⟶ S₂.X₂) (h₃ : S₁.X₃ ⟶ S₂.X₃) (g_h₃ : S₁.g ≫ h₃ = 0) :
-  Homotopy (nullHomotopic _ _ h₀ h₀_f h₁ h₂ h₃ g_h₃) 0 where
+    Homotopy (nullHomotopic _ _ h₀ h₀_f h₁ h₂ h₃ g_h₃) 0 where
   h₀ := h₀
   h₁ := h₁
   h₂ := h₂

@@ -559,9 +559,8 @@ noncomputable def Hom.map {X Y : C} (f : Hom W X Y) (F : C ⥤ E) (hF : W.IsInve
       F.map_comp, map_comp_map_s_assoc]) f
 
 @[simp]
-lemma Hom.map_mk {W} {X Y : C} (f : LeftFraction W X Y)
-    (F : C ⥤ E) (hF : W.IsInvertedBy F) :
-  Hom.map (Hom.mk f) F hF = f.map F hF := rfl
+lemma Hom.map_mk {W} {X Y : C} (f : LeftFraction W X Y) (F : C ⥤ E) (hF : W.IsInvertedBy F) :
+    Hom.map (Hom.mk f) F hF = f.map F hF := rfl
 
 namespace StrictUniversalPropertyFixedTarget
 
