@@ -1,44 +1,86 @@
-import Mathlib.Tactic
-
+import Lean
+import Mathlib.Tactic.SimpUtils
 
 /--
-info: dsimproc Lean.Elab.WF.paramProj: _
+info: /--
+`let x : T := (wfParam e); body[x] ==> let x : T := e; body[wfParam y]` if `T` is not a proposition,
+otherwise `... ==> let x : T := e; body[x]`. (Applies to `have`s too.)
 
+Note: simprocs are provided the head of a let telescope, but not intermediate lets.
 
-dsimproc Lean.Elab.WF.paramMatcher: _
+-/
+simproc Lean.Elab.WF.paramLet (_)
 
+/--
+`match (wfParam x) with con y => alt[y] ==> match x with con y => alt[wfParam y] ⏎
+-/
+simproc Lean.Elab.WF.paramMatcher (_)
 
-dsimproc Lean.Elab.WF.paramLet: _
+/--
+`f (wfParam x) ==> wfParam (f x)` if `f` is a projection ⏎
+-/
+simproc Lean.Elab.WF.paramProj (_)
 
+/--
+`let x : T := (wfParam e); body[x] ==> let x : T := e; body[wfParam y]` if `T` is not a proposition,
+otherwise `... ==> let x : T := e; body[x]`. (Applies to `have`s too.)
 
-dsimproc Lean.Elab.WF.paramProj: _
+Note: simprocs are provided the head of a let telescope, but not intermediate lets.
 
+-/
+simproc Lean.Elab.WF.paramLet (_)
 
-dsimproc Lean.Elab.WF.paramMatcher: _
+/--
+`match (wfParam x) with con y => alt[y] ==> match x with con y => alt[wfParam y] ⏎
+-/
+simproc Lean.Elab.WF.paramMatcher (_)
 
-
-dsimproc Lean.Elab.WF.paramLet: _
+/--
+`f (wfParam x) ==> wfParam (f x)` if `f` is a projection ⏎
+-/
+simproc Lean.Elab.WF.paramProj (_)
 -/
 #guard_msgs in
 #simprocs ∃ _, _
 
 /--
-info: dsimproc Lean.Elab.WF.paramProj: _
+info: /--
+`let x : T := (wfParam e); body[x] ==> let x : T := e; body[wfParam y]` if `T` is not a proposition,
+otherwise `... ==> let x : T := e; body[x]`. (Applies to `have`s too.)
 
+Note: simprocs are provided the head of a let telescope, but not intermediate lets.
 
-dsimproc Lean.Elab.WF.paramMatcher: _
+-/
+simproc Lean.Elab.WF.paramLet (_)
 
+/--
+`match (wfParam x) with con y => alt[y] ==> match x with con y => alt[wfParam y] ⏎
+-/
+simproc Lean.Elab.WF.paramMatcher (_)
 
-dsimproc Lean.Elab.WF.paramLet: _
+/--
+`f (wfParam x) ==> wfParam (f x)` if `f` is a projection ⏎
+-/
+simproc Lean.Elab.WF.paramProj (_)
 
+/--
+`let x : T := (wfParam e); body[x] ==> let x : T := e; body[wfParam y]` if `T` is not a proposition,
+otherwise `... ==> let x : T := e; body[x]`. (Applies to `have`s too.)
 
-dsimproc Lean.Elab.WF.paramProj: _
+Note: simprocs are provided the head of a let telescope, but not intermediate lets.
 
+-/
+simproc Lean.Elab.WF.paramLet (_)
 
-dsimproc Lean.Elab.WF.paramMatcher: _
+/--
+`match (wfParam x) with con y => alt[y] ==> match x with con y => alt[wfParam y] ⏎
+-/
+simproc Lean.Elab.WF.paramMatcher (_)
 
-
-dsimproc Lean.Elab.WF.paramLet: _
+/--
+`f (wfParam x) ==> wfParam (f x)` if `f` is a projection ⏎
+-/
+simproc Lean.Elab.WF.paramProj (_)
 -/
 #guard_msgs in
 #dsimprocs ∃ _, _
@@ -106,137 +148,205 @@ Prod.exists :  ∀ {α : Type u_1} {β : Type u_2} {p : α × β → Prop}, (∃
 #simp_theorems ∃ _, _
 
 /--
-info: dreduceIte:
+info: simproc dreduceIte (@ite _ _ _ _ _)
 
+/--
+`let x : T := (wfParam e); body[x] ==> let x : T := e; body[wfParam y]` if `T` is not a proposition,
+otherwise `... ==> let x : T := e; body[x]`. (Applies to `have`s too.)
 
+Note: simprocs are provided the head of a let telescope, but not intermediate lets.
 
-Lean.Elab.WF.paramProj:
+-/
+simproc Lean.Elab.WF.paramLet (_)
 
+/--
+`match (wfParam x) with con y => alt[y] ==> match x with con y => alt[wfParam y] ⏎
+-/
+simproc Lean.Elab.WF.paramMatcher (_)
 
+/--
+`f (wfParam x) ==> wfParam (f x)` if `f` is a projection ⏎
+-/
+simproc Lean.Elab.WF.paramProj (_)
 
-Lean.Elab.WF.paramMatcher:
+/--
+`let x : T := (wfParam e); body[x] ==> let x : T := e; body[wfParam y]` if `T` is not a proposition,
+otherwise `... ==> let x : T := e; body[x]`. (Applies to `have`s too.)
 
+Note: simprocs are provided the head of a let telescope, but not intermediate lets.
 
+-/
+simproc Lean.Elab.WF.paramLet (_)
 
-Lean.Elab.WF.paramLet:
+/--
+`match (wfParam x) with con y => alt[y] ==> match x with con y => alt[wfParam y] ⏎
+-/
+simproc Lean.Elab.WF.paramMatcher (_)
 
+/--
+`f (wfParam x) ==> wfParam (f x)` if `f` is a projection ⏎
+-/
+simproc Lean.Elab.WF.paramProj (_)
 
+/--
+`let x : T := (wfParam e); body[x] ==> let x : T := e; body[wfParam y]` if `T` is not a proposition,
+otherwise `... ==> let x : T := e; body[x]`. (Applies to `have`s too.)
 
-Lean.Elab.WF.paramProj:
+Note: simprocs are provided the head of a let telescope, but not intermediate lets.
 
+-/
+simproc Lean.Elab.WF.paramLet (_)
 
+/--
+`match (wfParam x) with con y => alt[y] ==> match x with con y => alt[wfParam y] ⏎
+-/
+simproc Lean.Elab.WF.paramMatcher (_)
 
-Lean.Elab.WF.paramMatcher:
+/--
+`f (wfParam x) ==> wfParam (f x)` if `f` is a projection ⏎
+-/
+simproc Lean.Elab.WF.paramProj (_)
 
+/--
+`let x : T := (wfParam e); body[x] ==> let x : T := e; body[wfParam y]` if `T` is not a proposition,
+otherwise `... ==> let x : T := e; body[x]`. (Applies to `have`s too.)
 
+Note: simprocs are provided the head of a let telescope, but not intermediate lets.
 
-Lean.Elab.WF.paramLet:
+-/
+simproc Lean.Elab.WF.paramLet (_)
 
+/--
+`match (wfParam x) with con y => alt[y] ==> match x with con y => alt[wfParam y] ⏎
+-/
+simproc Lean.Elab.WF.paramMatcher (_)
 
+/--
+`f (wfParam x) ==> wfParam (f x)` if `f` is a projection ⏎
+-/
+simproc Lean.Elab.WF.paramProj (_)
 
-Lean.Elab.WF.paramProj:
+/--
+`let x : T := (wfParam e); body[x] ==> let x : T := e; body[wfParam y]` if `T` is not a proposition,
+otherwise `... ==> let x : T := e; body[x]`. (Applies to `have`s too.)
 
+Note: simprocs are provided the head of a let telescope, but not intermediate lets.
 
+-/
+simproc Lean.Elab.WF.paramLet (_)
 
-Lean.Elab.WF.paramMatcher:
+/--
+`match (wfParam x) with con y => alt[y] ==> match x with con y => alt[wfParam y] ⏎
+-/
+simproc Lean.Elab.WF.paramMatcher (_)
 
-
-
-Lean.Elab.WF.paramLet:
-
-
-
-Lean.Elab.WF.paramProj:
-
-
-
-Lean.Elab.WF.paramMatcher:
-
-
-
-Lean.Elab.WF.paramLet:
-
-
-
-Lean.Elab.WF.paramProj:
-
-
-
-Lean.Elab.WF.paramMatcher:
-
-
-
-Lean.Elab.WF.paramLet:
+/--
+`f (wfParam x) ==> wfParam (f x)` if `f` is a projection ⏎
+-/
+simproc Lean.Elab.WF.paramProj (_)
 -/
 #guard_msgs in
 #dsimprocs ite _ _ _
 
 /--
-info: reduceIte:
+info: simproc dreduceIte (@ite _ _ _ _ _)
 
+dsimproc reduceIte (@ite _ _ _ _ _)
 
+/--
+`let x : T := (wfParam e); body[x] ==> let x : T := e; body[wfParam y]` if `T` is not a proposition,
+otherwise `... ==> let x : T := e; body[x]`. (Applies to `have`s too.)
 
-dreduceIte:
+Note: simprocs are provided the head of a let telescope, but not intermediate lets.
 
+-/
+simproc Lean.Elab.WF.paramLet (_)
 
+/--
+`match (wfParam x) with con y => alt[y] ==> match x with con y => alt[wfParam y] ⏎
+-/
+simproc Lean.Elab.WF.paramMatcher (_)
 
-Lean.Elab.WF.paramProj:
+/--
+`f (wfParam x) ==> wfParam (f x)` if `f` is a projection ⏎
+-/
+simproc Lean.Elab.WF.paramProj (_)
 
+/--
+`let x : T := (wfParam e); body[x] ==> let x : T := e; body[wfParam y]` if `T` is not a proposition,
+otherwise `... ==> let x : T := e; body[x]`. (Applies to `have`s too.)
 
+Note: simprocs are provided the head of a let telescope, but not intermediate lets.
 
-Lean.Elab.WF.paramMatcher:
+-/
+simproc Lean.Elab.WF.paramLet (_)
 
+/--
+`match (wfParam x) with con y => alt[y] ==> match x with con y => alt[wfParam y] ⏎
+-/
+simproc Lean.Elab.WF.paramMatcher (_)
 
+/--
+`f (wfParam x) ==> wfParam (f x)` if `f` is a projection ⏎
+-/
+simproc Lean.Elab.WF.paramProj (_)
 
-Lean.Elab.WF.paramLet:
+/--
+`let x : T := (wfParam e); body[x] ==> let x : T := e; body[wfParam y]` if `T` is not a proposition,
+otherwise `... ==> let x : T := e; body[x]`. (Applies to `have`s too.)
 
+Note: simprocs are provided the head of a let telescope, but not intermediate lets.
 
+-/
+simproc Lean.Elab.WF.paramLet (_)
 
-Lean.Elab.WF.paramProj:
+/--
+`match (wfParam x) with con y => alt[y] ==> match x with con y => alt[wfParam y] ⏎
+-/
+simproc Lean.Elab.WF.paramMatcher (_)
 
+/--
+`f (wfParam x) ==> wfParam (f x)` if `f` is a projection ⏎
+-/
+simproc Lean.Elab.WF.paramProj (_)
 
+/--
+`let x : T := (wfParam e); body[x] ==> let x : T := e; body[wfParam y]` if `T` is not a proposition,
+otherwise `... ==> let x : T := e; body[x]`. (Applies to `have`s too.)
 
-Lean.Elab.WF.paramMatcher:
+Note: simprocs are provided the head of a let telescope, but not intermediate lets.
 
+-/
+simproc Lean.Elab.WF.paramLet (_)
 
+/--
+`match (wfParam x) with con y => alt[y] ==> match x with con y => alt[wfParam y] ⏎
+-/
+simproc Lean.Elab.WF.paramMatcher (_)
 
-Lean.Elab.WF.paramLet:
+/--
+`f (wfParam x) ==> wfParam (f x)` if `f` is a projection ⏎
+-/
+simproc Lean.Elab.WF.paramProj (_)
 
+/--
+`let x : T := (wfParam e); body[x] ==> let x : T := e; body[wfParam y]` if `T` is not a proposition,
+otherwise `... ==> let x : T := e; body[x]`. (Applies to `have`s too.)
 
+Note: simprocs are provided the head of a let telescope, but not intermediate lets.
 
-Lean.Elab.WF.paramProj:
+-/
+simproc Lean.Elab.WF.paramLet (_)
 
+/--
+`match (wfParam x) with con y => alt[y] ==> match x with con y => alt[wfParam y] ⏎
+-/
+simproc Lean.Elab.WF.paramMatcher (_)
 
-
-Lean.Elab.WF.paramMatcher:
-
-
-
-Lean.Elab.WF.paramLet:
-
-
-
-Lean.Elab.WF.paramProj:
-
-
-
-Lean.Elab.WF.paramMatcher:
-
-
-
-Lean.Elab.WF.paramLet:
-
-
-
-Lean.Elab.WF.paramProj:
-
-
-
-Lean.Elab.WF.paramMatcher:
-
-
-
-Lean.Elab.WF.paramLet:
+/--
+`f (wfParam x) ==> wfParam (f x)` if `f` is a projection ⏎
+-/
+simproc Lean.Elab.WF.paramProj (_)
 -/
 #guard_msgs in
 #simprocs ite _ _ _
