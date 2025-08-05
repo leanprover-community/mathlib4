@@ -550,19 +550,20 @@ theorem ContinuousLinearMap.exists_right_inverse_of_surjective [FiniteDimensiona
   let ⟨g, hg⟩ := (f : E →ₗ[𝕜] F).exists_rightInverse_of_surjective hf
   ⟨LinearMap.toContinuousLinearMap g, ContinuousLinearMap.coe_inj.1 hg⟩
 
-/-- If `K` is a complete field and `L` is a finite dimensional vector space over `K`, and `K` is
-locally compact, then `L` is locally compact.
+/-- If `K` is a complete field and `V` is a finite dimensional vector space over `K` (equipped with
+any topology so that `V` is a topological `K`-module, meaning `[IsTopologicalAddGroup V]`
+and `[ContinuousSMul K V]`), and `K` is locally compact, then `V` is locally compact.
 
 This is not an instance because `K` cannot be inferred. -/
-theorem LocallyCompactSpace.of_finiteDimensional_of_complete (K L : Type*)
+theorem LocallyCompactSpace.of_finiteDimensional_of_complete (K V : Type*)
     [NontriviallyNormedField K] [CompleteSpace K] [LocallyCompactSpace K]
-    [AddCommGroup L] [TopologicalSpace L] [IsTopologicalAddGroup L]
-    [Module K L] [ContinuousSMul K L] [FiniteDimensional K L] :
-    LocallyCompactSpace L :=
-  -- Reduce to `SeparationQuotient L`, which is a `T2Space`.
-  suffices LocallyCompactSpace (SeparationQuotient L) from
+    [AddCommGroup V] [TopologicalSpace V] [IsTopologicalAddGroup V]
+    [Module K V] [ContinuousSMul K V] [FiniteDimensional K V] :
+    LocallyCompactSpace V :=
+  -- Reduce to `SeparationQuotient V`, which is a `T2Space`.
+  suffices LocallyCompactSpace (SeparationQuotient V) from
     SeparationQuotient.isInducing_mk.locallyCompactSpace <|
-      SeparationQuotient.range_mk (X := L) ▸ isClosed_univ.isLocallyClosed
-  let ⟨_, ⟨b⟩⟩ := Basis.exists_basis K (SeparationQuotient L)
+      SeparationQuotient.range_mk (X := V) ▸ isClosed_univ.isLocallyClosed
+  let ⟨_, ⟨b⟩⟩ := Basis.exists_basis K (SeparationQuotient V)
   have := FiniteDimensional.fintypeBasisIndex b
   b.equivFun.toContinuousLinearEquiv.toHomeomorph.isOpenEmbedding.locallyCompactSpace
