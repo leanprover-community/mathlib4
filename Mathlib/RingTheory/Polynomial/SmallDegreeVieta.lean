@@ -116,36 +116,37 @@ variable [Field R] {a b c : R}
 
 /-- Roots of a quadratic equation. -/
 theorem isRoot_quadratic_iff [NeZero (2 : R)] (ha : a ≠ 0) {s : R}
-    (h : discrim a b c = s * s) (x : R) :
+    (h : discrim a b c = s ^ 2) (x : R) :
     IsRoot (C a * X ^ 2 + C b * X + C c) x ↔ x = (-b + s) / (2 * a) ∨ x = (-b - s) / (2 * a) := by
-  rw [← quadratic_eq_zero_iff ha h]; simp [pow_two]
+  rw [sq] at h
+  rw [← quadratic_eq_zero_iff ha h]; simp [sq]
 
 /-- Root of a quadratic when its discriminant equals zero -/
 theorem isRoot_quadratic_iff_of_discrim_eq_zero [NeZero (2 : R)] (ha : a ≠ 0)
     (h : discrim a b c = 0) (x : R) :
     IsRoot (C a * X ^ 2 + C b * X + C c) x ↔ x = -b / (2 * a) := by
-  rw [← quadratic_eq_zero_iff_of_discrim_eq_zero ha h]; simp [pow_two]
+  rw [← quadratic_eq_zero_iff_of_discrim_eq_zero ha h]; simp [sq]
 
 /-- A quadratic has no root if its discriminant has no square root. -/
 theorem not_isRoot_of_discrim_ne_sq (h : ∀ s : R, discrim a b c ≠ s^2) (x : R) :
     ¬ IsRoot (C a * X ^ 2 + C b * X + C c) x := by
-  convert quadratic_ne_zero_of_discrim_ne_sq h x using 1; simp [pow_two]
+  convert quadratic_ne_zero_of_discrim_ne_sq h x using 1; simp [sq]
 
 theorem mem_roots_quadratic_iff_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0)
-    {z s : R} (h : discrim a b c = s * s) :
+    {z s : R} (h : discrim a b c = s ^ 2) :
     z ∈ (C a * X ^ 2 + C b * X + C c).roots ↔ z = (-b + s) / (2 * a) ∨ z = (-b - s) / (2 * a) := by
   rw [mem_roots (not_zero_iff.mpr ⟨2, by simp [ha]⟩), isRoot_quadratic_iff ha h]
 
-theorem vieta_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0) {s : R} (h : discrim a b c = s * s) :
+theorem vieta_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0) {s : R} (h : discrim a b c = s ^ 2) :
     b = -a * ((-b + s) / (2 * a) + (-b - s) / (2 * a)) ∧
       c = a * ((-b + s) / (2 * a)) * ((-b - s) / (2 * a)) := by
   ring_nf
-  rw [sq s, ← h, discrim]
+  rw [← h, discrim]
   field_simp
   ring_nf
 
 theorem quadratic_eq_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0) {s : R}
-    (h : discrim a b c = s * s) : C a * X ^ 2 + C b * X + C c =
+    (h : discrim a b c = s ^ 2) : C a * X ^ 2 + C b * X + C c =
       C a * (X - C ((-b + s) / (2 * a))) * (X - C ((-b - s) / (2 * a))) :=
   quadratic_eq_of_vieta (vieta_of_discrim_eq_sq ha h).1 (vieta_of_discrim_eq_sq ha h).2
 
@@ -155,7 +156,7 @@ theorem roots_quadratic_of_discrim_ne_sq (h : ∀ s : R, discrim a b c ≠ s^2) 
     (mem_roots'.mp hc).2)
 
 theorem roots_quadratic_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0) {s : R}
-    (h : discrim a b c = s * s) :
+    (h : discrim a b c = s ^ 2) :
     (C a * X ^ 2 + C b * X + C c).roots = {(-b + s) / (2 * a), (-b - s) / (2 * a)} :=
   roots_of_ne_zero_of_vieta ha (vieta_of_discrim_eq_sq ha h).1 (vieta_of_discrim_eq_sq ha h).2
 
