@@ -931,7 +931,6 @@ B ⨯ X ⟶ B
 lemma of_prod_fst_with_id {A B : C} (f : A ⟶ B) (X : C) [HasBinaryProduct A X]
     [HasBinaryProduct B X] :
     IsPullback prod.fst (prod.map f (𝟙 X)) f prod.fst where
-  w := by simp
   isLimit' := ⟨PullbackCone.isLimitAux' _ (fun s ↦ by
     refine ⟨prod.lift s.fst (s.snd ≫ prod.snd), ?_, ?_, ?_⟩
     · simp
