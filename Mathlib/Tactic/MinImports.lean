@@ -5,9 +5,11 @@ Authors: Damiano Testa
 -/
 import Lean.Elab.DefView
 import Lean.Util.CollectAxioms
-import Mathlib.Init
 import ImportGraph.Imports
 import ImportGraph.RequiredModules
+-- Import this linter explicitly to ensure that
+-- this file has a valid copyright header and module docstring.
+import Mathlib.Tactic.Linter.Header
 
 /-! # `#min_imports in` a command to find minimal imports
 

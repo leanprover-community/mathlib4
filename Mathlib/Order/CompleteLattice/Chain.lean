@@ -29,13 +29,13 @@ variable {α : Type*} {r : α → α → Prop} {c c₁ c₂ s t : Set α} {a b x
 /-- Predicate for whether a set is reachable from `∅` using `SuccChain` and `⋃₀`. -/
 inductive ChainClosure (r : α → α → Prop) : Set α → Prop
   | succ : ∀ {s}, ChainClosure r s → ChainClosure r (SuccChain r s)
-  | union : ∀ {s}, (∀ a ∈ s, ChainClosure r a) → ChainClosure r (⋃₀s)
+  | union : ∀ {s}, (∀ a ∈ s, ChainClosure r a) → ChainClosure r (⋃₀ s)
 
 /-- An explicit maximal chain. `maxChain` is taken to be the union of all sets in `ChainClosure`. -/
 def maxChain (r : α → α → Prop) : Set α := ⋃₀ setOf (ChainClosure r)
 
 lemma chainClosure_empty : ChainClosure r ∅ := by
-  have : ChainClosure r (⋃₀∅) := ChainClosure.union fun a h => (not_mem_empty _ h).elim
+  have : ChainClosure r (⋃₀ ∅) := ChainClosure.union fun a h => (notMem_empty _ h).elim
   simpa using this
 
 lemma chainClosure_maxChain : ChainClosure r (maxChain r) :=

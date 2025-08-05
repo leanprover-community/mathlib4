@@ -91,6 +91,17 @@ theorem adjoin_simple_toSubalgebra_of_integral (hα : IsIntegral F α) :
   rintro x (rfl : x = α)
   rwa [isAlgebraic_iff_isIntegral]
 
+lemma finite_of_fg_of_isAlgebraic
+    (h : IntermediateField.FG (⊤ : IntermediateField F E)) [Algebra.IsAlgebraic F E] :
+    Module.Finite F E := by
+  obtain ⟨s, hs⟩ := h
+  have : Algebra.FiniteType F E := by
+    use s
+    rw [← IntermediateField.adjoin_algebraic_toSubalgebra
+      (fun x hx ↦ Algebra.IsAlgebraic.isAlgebraic x)]
+    simpa [← IntermediateField.toSubalgebra_inj] using hs
+  exact Algebra.IsIntegral.finite
+
 section Supremum
 
 variable {K L : Type*} [Field K] [Field L] [Algebra K L] (E1 E2 : IntermediateField K L)
@@ -179,8 +190,6 @@ variable {F : Type*} [Field F] {E : Type*} [Field E] [Algebra F E]
 theorem fg_of_fg_toSubalgebra (S : IntermediateField F E) (h : S.toSubalgebra.FG) : S.FG := by
   obtain ⟨t, ht⟩ := h
   exact ⟨t, (eq_adjoin_of_eq_algebra_adjoin _ _ _ ht.symm).symm⟩
-
-@[deprecated (since := "2024-10-28")] alias fG_of_fG_toSubalgebra := fg_of_fg_toSubalgebra
 
 theorem fg_of_noetherian (S : IntermediateField F E) [IsNoetherian F E] : S.FG :=
   S.fg_of_fg_toSubalgebra S.toSubalgebra.fg_of_noetherian

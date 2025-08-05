@@ -65,8 +65,6 @@ def wideSubquiverEquivSetTotal {V} [Quiver V] :
       Set (Total V) where
   toFun H := { e | e.hom ∈ H e.left e.right }
   invFun S a b := { e | Total.mk a b e ∈ S }
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- An `L`-labelling of a quiver assigns to every arrow an element of `L`. -/
 def Labelling (V : Type u) [Quiver V] (L : Sort*) :=

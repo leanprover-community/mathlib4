@@ -10,7 +10,7 @@ import Mathlib.Analysis.Normed.MulAction
 # The null subgroup in a seminormed commutative group
 
 For any `SeminormedAddCommGroup M`, the quotient `SeparationQuotient M` by the null subgroup is
-defined as a `NormedAddCommGroup` instance in `Mathlib.Analysis.Normed.Group.Uniform`. Here we
+defined as a `NormedAddCommGroup` instance in `Mathlib/Analysis/Normed/Group/Uniform.lean`. Here we
 define the null space as a subgroup.
 
 ## Main definitions

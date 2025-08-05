@@ -50,6 +50,7 @@ lemma isOpen_Ico_zero {x : NNReal} : IsOpen (Set.Ico 0 x) :=
 
 open Filter Finset
 
+@[fun_prop]
 theorem _root_.continuous_real_toNNReal : Continuous Real.toNNReal :=
   (continuous_id.max continuous_const).subtype_mk _
 
@@ -235,7 +236,7 @@ theorem tendsto_of_antitone {f : ℕ → ℝ≥0} (h_ant : Antitone f) :
 end Monotone
 
 lemma iSup_pow_of_ne_zero (hn : n ≠ 0) (f : ι → ℝ≥0) : (⨆ i, f i) ^ n = ⨆ i, f i ^ n :=
- (NNReal.powOrderIso n hn).map_ciSup' _
+  (NNReal.powOrderIso n hn).map_ciSup' _
 
 lemma iSup_pow [Nonempty ι] (f : ι → ℝ≥0) (n : ℕ) : (⨆ i, f i) ^ n = ⨆ i, f i ^ n := by
   by_cases hn : n = 0

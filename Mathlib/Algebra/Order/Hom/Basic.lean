@@ -3,8 +3,9 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Logic.Basic
-import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Algebra.GroupWithZero.Hom
+import Mathlib.Algebra.Order.Group.Abs
+import Mathlib.Algebra.Ring.Defs
 
 /-!
 # Algebraic order homomorphism classes
@@ -44,16 +45,17 @@ multiplicative ring norms but outside of this use we only consider real-valued s
 Finitary versions of the current lemmas.
 -/
 
+assert_not_exists Field
 
 library_note "out-param inheritance"/--
 Diamond inheritance cannot depend on `outParam`s in the following circumstances:
- * there are three classes `Top`, `Middle`, `Bottom`
- * all of these classes have a parameter `(α : outParam _)`
- * all of these classes have an instance parameter `[Root α]` that depends on this `outParam`
- * the `Root` class has two child classes: `Left` and `Right`, these are siblings in the hierarchy
- * the instance `Bottom.toMiddle` takes a `[Left α]` parameter
- * the instance `Middle.toTop` takes a `[Right α]` parameter
- * there is a `Leaf` class that inherits from both `Left` and `Right`.
+* there are three classes `Top`, `Middle`, `Bottom`
+* all of these classes have a parameter `(α : outParam _)`
+* all of these classes have an instance parameter `[Root α]` that depends on this `outParam`
+* the `Root` class has two child classes: `Left` and `Right`, these are siblings in the hierarchy
+* the instance `Bottom.toMiddle` takes a `[Left α]` parameter
+* the instance `Middle.toTop` takes a `[Right α]` parameter
+* there is a `Leaf` class that inherits from both `Left` and `Right`.
 In that case, given instances `Bottom α` and `Leaf α`, Lean cannot synthesize a `Top α` instance,
 even though the hypotheses of the instances `Bottom.toMiddle` and `Middle.toTop` are satisfied.
 
@@ -136,20 +138,6 @@ theorem le_map_div_mul_map_div [Group α] [Mul β] [LE β] [SubmultiplicativeHom
 theorem le_map_div_add_map_div [Group α] [Add β] [LE β] [MulLEAddHomClass F α β]
     (f : F) (a b c : α) : f (a / c) ≤ f (a / b) + f (b / c) := by
     simpa only [div_mul_div_cancel] using map_mul_le_add f (a / b) (b / c)
-
-namespace Mathlib.Meta.Positivity
-
-open Lean Meta Qq Function
-
-/-- Extension for the `positivity` tactic: nonnegative maps take nonnegative values. -/
-@[positivity DFunLike.coe _ _]
-def evalMap : PositivityExt where eval {_ β} _ _ e := do
-  let .app (.app _ f) a ← whnfR e
-    | throwError "not ↑f · where f is of NonnegHomClass"
-  let pa ← mkAppOptM ``apply_nonneg #[none, none, β, none, none, none, none, f, a]
-  pure (.nonnegative pa)
-
-end Mathlib.Meta.Positivity
 
 /-! ### Group (semi)norms -/
 

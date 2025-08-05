@@ -31,7 +31,7 @@ theorem follows immediately from this fact.
 ## References
 
 * [Ilya Beylin and Peter Dybjer, Extracting a proof of coherence for monoidal categories from a
-   proof of normalization for monoids][beylin1996]
+  proof of normalization for monoids][beylin1996]
 -/
 
 
@@ -156,7 +156,7 @@ theorem normalize_naturality {a b c : B} (p : Path a b) {f g : Hom b c} (η : f 
   induction η' with
   | id => simp
   | vcomp η θ ihf ihg =>
-    simp only [mk_vcomp, Bicategory.whiskerLeft_comp]
+    simp only [mk_vcomp, whiskerLeft_comp]
     slice_lhs 2 3 => rw [ihg]
     slice_lhs 1 2 => rw [ihf]
     simp

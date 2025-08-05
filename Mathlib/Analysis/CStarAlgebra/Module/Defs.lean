@@ -160,7 +160,7 @@ open scoped InnerProductSpace in
 /-- The norm associated with a Hilbert C⋆-module. It is not registered as a norm, since a type
 might already have a norm defined on it. -/
 noncomputable def norm (A : Type*) {E : Type*} [Norm A] [Inner A E] : Norm E where
-  norm x := Real.sqrt ‖⟪x, x⟫_A‖
+  norm x := √‖⟪x, x⟫_A‖
 
 section
 include A
@@ -181,7 +181,7 @@ protected lemma norm_zero : ‖(0 : E)‖ = 0 := by simp [norm_eq_sqrt_norm_inne
 
 lemma norm_zero_iff (x : E) : ‖x‖ = 0 ↔ x = 0 :=
   ⟨fun h => by simpa [norm_eq_sqrt_norm_inner_self (A := A), inner_self] using h,
-    fun h => by simp [norm, h, norm_eq_sqrt_norm_inner_self (A := A)]⟩
+    fun h => by simp [h, norm_eq_sqrt_norm_inner_self (A := A)]⟩
 
 end
 
@@ -207,10 +207,9 @@ lemma inner_mul_inner_swap_le {x y : E} : ⟪x, y⟫ * ⟪y, x⟫ ≤ ‖x‖ ^ 
                   - ‖x‖ ^ 2 • (⟪x, y⟫ * star a) + ‖x‖ ^ 2 • (‖x‖ ^ 2 • ⟪y, y⟫) := by
                       gcongr
                       calc _ ≤ ‖⟪x, x⟫_A‖ • (a * star a) := CStarAlgebra.conjugate_le_norm_smul'
-                        _ = (Real.sqrt ‖⟪x, x⟫_A‖) ^ 2 • (a * star a) := by
-                                  congr
-                                  have : 0 ≤ ‖⟪x, x⟫_A‖ := by positivity
-                                  rw [Real.sq_sqrt this]
+                        _ = (√‖⟪x, x⟫_A‖) ^ 2 • (a * star a) := by
+                          rw [Real.sq_sqrt]
+                          positivity
                         _ = ‖x‖ ^ 2 • (a * star a) := by rw [← norm_eq_sqrt_norm_inner_self]
     specialize h₁ ⟪x, y⟫
     simp only [star_inner, sub_self, zero_sub, le_neg_add_iff_add_le, add_zero] at h₁
@@ -230,7 +229,7 @@ lemma norm_inner_le {x y : E} : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ := by
     _ = ‖x‖ ^ 2 * ‖y‖ ^ 2 := by
                 simp only [norm_eq_sqrt_norm_inner_self (A := A), norm_nonneg, Real.sq_sqrt]
     _ = (‖x‖ * ‖y‖) ^ 2 := by simp only [mul_pow]
-  refine (pow_le_pow_iff_left₀ (norm_nonneg ⟪x, y⟫_A) ?_ (by norm_num)).mp this
+  refine (pow_le_pow_iff_left₀ (norm_nonneg ⟪x, y⟫_A) ?_ (by simp)).mp this
   exact mul_nonneg (CStarModule.norm_nonneg A) (CStarModule.norm_nonneg A)
 
 include A in
@@ -246,7 +245,7 @@ protected lemma norm_triangle (x y : E) : ‖x + y‖ ≤ ‖x‖ + ‖y‖ := b
       _ = ‖x‖ ^ 2 + ‖y‖ * ‖x‖ + ‖x‖ * ‖y‖ + ‖y‖ ^ 2 := by
           simp [norm_eq_sqrt_norm_inner_self (A := A)]
       _ = (‖x‖ + ‖y‖) ^ 2 := by simp only [add_pow_two, add_left_inj]; ring
-  refine (pow_le_pow_iff_left₀ (CStarModule.norm_nonneg A) ?_ (by norm_num)).mp h
+  refine (pow_le_pow_iff_left₀ (CStarModule.norm_nonneg A) ?_ (by simp)).mp h
   exact add_nonneg (CStarModule.norm_nonneg A) (CStarModule.norm_nonneg A)
 
 include A in

@@ -126,10 +126,10 @@ theorem CNF_sorted (b o : Ordinal) : ((CNF b o).map Prod.fst).Sorted (· > ·) :
   refine CNFRec b ?_ (fun o ho IH ↦ ?_) o
   · rw [CNF_zero]
     exact sorted_nil
-  · rcases le_or_lt b 1 with hb | hb
+  · rcases le_or_gt b 1 with hb | hb
     · rw [CNF_of_le_one hb ho]
       exact sorted_singleton _
-    · obtain hob | hbo := lt_or_le o b
+    · obtain hob | hbo := lt_or_ge o b
       · rw [CNF_of_lt ho hob]
         exact sorted_singleton _
       · rw [CNF_ne_zero ho, map_cons, sorted_cons]

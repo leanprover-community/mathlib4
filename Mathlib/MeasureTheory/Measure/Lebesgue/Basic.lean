@@ -66,7 +66,7 @@ theorem volume_eq_stieltjes_id : (volume : Measure ℝ) = StieltjesFunction.id.m
   conv_rhs =>
     rw [addHaarMeasure_unique StieltjesFunction.id.measure
         (stdOrthonormalBasis ℝ ℝ).toBasis.parallelepiped, A]
-  simp only [volume, Basis.addHaar, one_smul]
+  simp only [volume, Module.Basis.addHaar, one_smul]
 
 theorem volume_val (s) : volume s = StieltjesFunction.id.measure s := by
   simp [volume_eq_stieltjes_id]
@@ -111,7 +111,7 @@ theorem volume_real_Ioc {a b : ℝ} : volume.real (Ioc a b) = max (b - a) 0 := b
 theorem volume_real_Ioc_of_le {a b : ℝ} (hab : a ≤ b) : volume.real (Ioc a b) = b - a := by
   simp [hab]
 
-theorem volume_singleton {a : ℝ} : volume ({a} : Set ℝ) = 0 := by simp [volume_val]
+theorem volume_singleton {a : ℝ} : volume ({a} : Set ℝ) = 0 := by simp
 
 theorem volume_univ : volume (univ : Set ℝ) = ∞ :=
   ENNReal.eq_top_of_forall_nnreal_le fun r =>
@@ -385,7 +385,7 @@ theorem volume_preserving_transvectionStruct [DecidableEq ι] (t : TransvectionS
   simp_rw [lmarginal_singleton]
   ext x
   cases t with | mk t_i t_j t_hij t_c =>
-  simp [transvection, mulVec_stdBasisMatrix, t_hij.symm, ← Function.update_add,
+  simp [transvection, single_mulVec, t_hij.symm, ← Function.update_add,
     lintegral_add_right_eq_self fun xᵢ ↦ indicator (univ.pi s) 1 (Function.update x t_i xᵢ)]
 
 /-- Any invertible matrix rescales Lebesgue measure through the absolute value of its
@@ -502,7 +502,7 @@ theorem volume_regionBetween_eq_lintegral' (hf : Measurable f) (hg : Measurable 
         rw [indicator_apply]
         split_ifs with h
         · have hx : { a | x ∈ s ∧ a ∈ Ioo (f x) (g x) } = Ioo (f x) (g x) := by simp [h, Ioo]
-          simp only [hx, Real.volume_Ioo, sub_zero]
+          simp only [hx, Real.volume_Ioo]
         · have hx : { a | x ∈ s ∧ a ∈ Ioo (f x) (g x) } = ∅ := by simp [h]
           simp only [hx, measure_empty]
       dsimp only [regionBetween, preimage_setOf_eq]
@@ -544,8 +544,8 @@ lemma nullMeasurableSet_regionBetween (μ : Measure α)
     NullMeasurableSet {p : α × ℝ | p.1 ∈ s ∧ p.snd ∈ Ioo (f p.fst) (g p.fst)} (μ.prod volume) := by
   refine NullMeasurableSet.inter
           (s_mble.preimage quasiMeasurePreserving_fst) (NullMeasurableSet.inter ?_ ?_)
-  · exact nullMeasurableSet_lt (AEMeasurable.fst f_mble) measurable_snd.aemeasurable
-  · exact nullMeasurableSet_lt measurable_snd.aemeasurable (AEMeasurable.fst g_mble)
+  · exact nullMeasurableSet_lt (by fun_prop) measurable_snd.aemeasurable
+  · exact nullMeasurableSet_lt measurable_snd.aemeasurable (by fun_prop)
 
 /-- The region between two a.e.-measurable functions on a null-measurable set is null-measurable;
 a version for the region together with the graph of the upper function. -/
@@ -555,12 +555,12 @@ lemma nullMeasurableSet_region_between_oc (μ : Measure α)
     NullMeasurableSet {p : α × ℝ | p.1 ∈ s ∧ p.snd ∈ Ioc (f p.fst) (g p.fst)} (μ.prod volume) := by
   refine NullMeasurableSet.inter
           (s_mble.preimage quasiMeasurePreserving_fst) (NullMeasurableSet.inter ?_ ?_)
-  · exact nullMeasurableSet_lt (AEMeasurable.fst f_mble) measurable_snd.aemeasurable
+  · exact nullMeasurableSet_lt (by fun_prop) measurable_snd.aemeasurable
   · change NullMeasurableSet {p : α × ℝ | p.snd ≤ g p.fst} (μ.prod volume)
     rw [show {p : α × ℝ | p.snd ≤ g p.fst} = {p : α × ℝ | g p.fst < p.snd}ᶜ by
           ext p
           simp only [mem_setOf_eq, mem_compl_iff, not_lt]]
-    exact (nullMeasurableSet_lt (AEMeasurable.fst g_mble) measurable_snd.aemeasurable).compl
+    exact (nullMeasurableSet_lt (by fun_prop) measurable_snd.aemeasurable).compl
 
 /-- The region between two a.e.-measurable functions on a null-measurable set is null-measurable;
 a version for the region together with the graph of the lower function. -/
@@ -574,8 +574,8 @@ lemma nullMeasurableSet_region_between_co (μ : Measure α)
     rw [show {p : α × ℝ | f p.fst ≤ p.snd} = {p : α × ℝ | p.snd < f p.fst}ᶜ by
           ext p
           simp only [mem_setOf_eq, mem_compl_iff, not_lt]]
-    exact (nullMeasurableSet_lt measurable_snd.aemeasurable (AEMeasurable.fst f_mble)).compl
-  · exact nullMeasurableSet_lt measurable_snd.aemeasurable (AEMeasurable.fst g_mble)
+    exact (nullMeasurableSet_lt measurable_snd.aemeasurable (by fun_prop)).compl
+  · exact nullMeasurableSet_lt measurable_snd.aemeasurable (by fun_prop)
 
 /-- The region between two a.e.-measurable functions on a null-measurable set is null-measurable;
 a version for the region together with the graphs of both functions. -/
@@ -589,12 +589,12 @@ lemma nullMeasurableSet_region_between_cc (μ : Measure α)
     rw [show {p : α × ℝ | f p.fst ≤ p.snd} = {p : α × ℝ | p.snd < f p.fst}ᶜ by
           ext p
           simp only [mem_setOf_eq, mem_compl_iff, not_lt]]
-    exact (nullMeasurableSet_lt measurable_snd.aemeasurable (AEMeasurable.fst f_mble)).compl
+    exact (nullMeasurableSet_lt measurable_snd.aemeasurable (by fun_prop)).compl
   · change NullMeasurableSet {p : α × ℝ | p.snd ≤ g p.fst} (μ.prod volume)
     rw [show {p : α × ℝ | p.snd ≤ g p.fst} = {p : α × ℝ | g p.fst < p.snd}ᶜ by
           ext p
           simp only [mem_setOf_eq, mem_compl_iff, not_lt]]
-    exact (nullMeasurableSet_lt (AEMeasurable.fst g_mble) measurable_snd.aemeasurable).compl
+    exact (nullMeasurableSet_lt (by fun_prop) measurable_snd.aemeasurable).compl
 
 end regionBetween
 
@@ -628,7 +628,7 @@ theorem ae_restrict_of_ae_restrict_inter_Ioo {μ : Measure ℝ} [NoAtoms μ] {s 
     simp only [this, ae_zero, eventually_bot]
   · rintro ⟨⟨a, as⟩, ⟨b, bs⟩⟩ -
     dsimp [T]
-    rcases le_or_lt b a with (hba | hab)
+    rcases le_or_gt b a with (hba | hab)
     · simp only [Ioo_eq_empty_of_le hba, inter_empty, restrict_empty, ae_zero, eventually_bot]
     · exact h a b as bs hab
 
@@ -646,12 +646,12 @@ theorem ae_of_mem_of_ae_of_mem_inter_Ioo {μ : Measure ℝ} [NoAtoms μ] {s : Se
   obtain ⟨A, A_count, hA⟩ :
     ∃ A : Set (↥s × ↥s), A.Countable ∧ ⋃ i ∈ A, T i = ⋃ i : ↥s × ↥s, T i :=
     isOpen_iUnion_countable _ fun p => isOpen_Ioo
-  have M : ∀ᵐ x ∂μ, x ∉ s \ u := hfinite.countable.ae_not_mem _
+  have M : ∀ᵐ x ∂μ, x ∉ s \ u := hfinite.countable.ae_notMem _
   have M' : ∀ᵐ x ∂μ, ∀ (i : ↥s × ↥s), i ∈ A → x ∈ s ∩ T i → p x := by
     rw [ae_ball_iff A_count]
     rintro ⟨⟨a, as⟩, ⟨b, bs⟩⟩ -
     change ∀ᵐ x : ℝ ∂μ, x ∈ s ∩ Ioo a b → p x
-    rcases le_or_lt b a with (hba | hab)
+    rcases le_or_gt b a with (hba | hab)
     · simp only [Ioo_eq_empty_of_le hba, inter_empty, IsEmpty.forall_iff, eventually_true,
         mem_empty_iff_false]
     · exact h a b as bs hab

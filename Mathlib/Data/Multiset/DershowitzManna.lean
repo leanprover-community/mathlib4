@@ -64,7 +64,7 @@ lemma IsDershowitzMannaLT.trans :
     by_cases z_in : z ∈ Y₂
     · obtain ⟨w, hw, hzw⟩ := hYZ₂ z z_in
       exact ⟨w, .inl hw, hyz.trans hzw⟩
-    · exact ⟨z, .inr <| by rwa [mem_sub, count_eq_zero_of_not_mem z_in, count_pos], hyz⟩
+    · exact ⟨z, .inr <| by rwa [mem_sub, count_eq_zero_of_notMem z_in, count_pos], hyz⟩
   · obtain ⟨z, hz, hyz⟩ := hYZ₂ y <| mem_of_le (Multiset.sub_le_self ..) hy
     exact ⟨z, .inl hz, hyz⟩
 
@@ -163,7 +163,7 @@ theorem wellFounded_isDershowitzMannaLT [WellFoundedLT α] :
   rw [← transGen_oneStep_eq_isDershowitzMannaLT]
   exact isDershowitzMannaLT_singleton_wf.transGen
 
-instance instWellFoundedisDershowitzMannaLT [WellFoundedLT α] : WellFoundedRelation (Multiset α) :=
+instance instWellFoundedIsDershowitzMannaLT [WellFoundedLT α] : WellFoundedRelation (Multiset α) :=
     ⟨IsDershowitzMannaLT, wellFounded_isDershowitzMannaLT⟩
 
 end Multiset

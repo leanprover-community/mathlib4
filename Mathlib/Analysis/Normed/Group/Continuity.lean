@@ -127,7 +127,7 @@ theorem Inseparable.enorm_eq_enorm' {E : Type*} [TopologicalSpace E] [Continuous
 
 @[to_additive]
 theorem mem_closure_one_iff_norm {x : E} : x ∈ closure ({1} : Set E) ↔ ‖x‖ = 0 := by
-  rw [← closedBall_zero', mem_closedBall_one_iff, (norm_nonneg' x).le_iff_eq]
+  rw [← closedBall_zero', mem_closedBall_one_iff, (norm_nonneg' x).ge_iff_eq']
 
 @[to_additive]
 theorem closure_one_eq : closure ({1} : Set E) = { x | ‖x‖ = 0 } :=
@@ -145,9 +145,6 @@ theorem Filter.Tendsto.norm' (h : Tendsto f l (𝓝 a)) : Tendsto (fun x => ‖f
 theorem Filter.Tendsto.nnnorm' (h : Tendsto f l (𝓝 a)) : Tendsto (fun x => ‖f x‖₊) l (𝓝 ‖a‖₊) :=
   Tendsto.comp continuous_nnnorm'.continuousAt h
 
-@[to_additive Filter.Tendsto.enorm]
-lemma Filter.Tendsto.enorm' (h : Tendsto f l (𝓝 a)) : Tendsto (‖f ·‖ₑ) l (𝓝 ‖a‖ₑ) :=
-  .comp continuous_enorm.continuousAt h
 
 end
 
@@ -165,6 +162,16 @@ theorem Continuous.nnnorm' : Continuous f → Continuous fun x => ‖f x‖₊ :
 
 end
 end SeminormedGroup
+
+section ContinuousENorm
+
+variable [TopologicalSpace E] [ContinuousENorm E] {a : E} {l : Filter α} {f : α → E}
+
+@[to_additive Filter.Tendsto.enorm]
+lemma Filter.Tendsto.enorm' (h : Tendsto f l (𝓝 a)) : Tendsto (‖f ·‖ₑ) l (𝓝 ‖a‖ₑ) :=
+  .comp continuous_enorm.continuousAt h
+
+end ContinuousENorm
 
 section SeminormedGroup
 
@@ -307,25 +314,10 @@ variable [NormedGroup E] {a b : E}
 lemma tendsto_norm_nhdsNE_one : Tendsto (norm : E → ℝ) (𝓝[≠] 1) (𝓝[>] 0) :=
   tendsto_norm_one.inf <| tendsto_principal_principal.2 fun _ hx ↦ norm_pos_iff'.2 hx
 
-@[deprecated (since := "2024-12-22")]
-alias tendsto_norm_zero' := tendsto_norm_nhdsNE_zero
-@[to_additive existing, deprecated (since := "2024-12-22")]
-alias tendsto_norm_one' := tendsto_norm_nhdsNE_one
-
-@[deprecated (since := "2024-12-22")]
-alias tendsto_norm_nhdsWithin_zero := tendsto_norm_nhdsNE_zero
-@[to_additive existing, deprecated (since := "2024-12-22")]
-alias tendsto_norm_nhdsWithin_one := tendsto_norm_nhdsNE_one
-
 @[to_additive]
 theorem tendsto_norm_div_self_nhdsNE (a : E) : Tendsto (fun x => ‖x / a‖) (𝓝[≠] a) (𝓝[>] 0) :=
   (tendsto_norm_div_self a).inf <|
     tendsto_principal_principal.2 fun _x hx => norm_pos_iff'.2 <| div_ne_one.2 hx
-
-@[deprecated (since := "2024-12-22")]
-alias tendsto_norm_sub_self_punctured_nhds := tendsto_norm_sub_self_nhdsNE
-@[to_additive existing, deprecated (since := "2024-12-22")]
-alias tendsto_norm_div_self_punctured_nhds := tendsto_norm_div_self_nhdsNE
 
 variable (E)
 
@@ -333,10 +325,5 @@ variable (E)
 @[to_additive comap_norm_nhdsGT_zero]
 lemma comap_norm_nhdsGT_zero' : comap norm (𝓝[>] 0) = 𝓝[≠] (1 : E) := by
   simp [nhdsWithin, comap_norm_nhds_one, Set.preimage, Set.compl_def]
-
-@[deprecated (since := "2024-12-22")]
-alias comap_norm_nhdsWithin_Ioi_zero := comap_norm_nhdsGT_zero
-@[to_additive existing comap_norm_nhdsWithin_Ioi_zero, deprecated (since := "2024-12-22")]
-alias comap_norm_nhdsWithin_Ioi_zero' := comap_norm_nhdsGT_zero'
 
 end NormedGroup

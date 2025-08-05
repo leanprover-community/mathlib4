@@ -64,6 +64,8 @@ structure Config where
   zetaDelta := false
   /-- if true, atoms inside ring expressions will be reduced recursively -/
   recursive := true
+  /-- if true, then fail if no progress is made -/
+  failIfUnchanged := true
   /-- The normalization style. -/
   mode := RingMode.SOP
   deriving Inhabited, BEq, Repr
@@ -177,7 +179,10 @@ def ringNFTarget (s : IO.Ref AtomM.State) (cfg : Config) : TacticM Unit := withM
     goal.assign (← mkOfEqTrue (← r.getProof))
     replaceMainGoal []
   else
-    replaceMainGoal [← applySimpResultToTarget goal tgt r]
+    let newGoal ← applySimpResultToTarget goal tgt r
+    if cfg.failIfUnchanged && goal == newGoal then
+      throwError "ring_nf made no progress"
+    replaceMainGoal [newGoal]
 
 /-- Use `ring_nf` to rewrite hypothesis `h`. -/
 def ringNFLocalDecl (s : IO.Ref AtomM.State) (cfg : Config) (fvarId : FVarId) :
@@ -187,7 +192,10 @@ def ringNFLocalDecl (s : IO.Ref AtomM.State) (cfg : Config) (fvarId : FVarId) :
   let myres ← M.run s cfg <| rewrite tgt
   match ← applySimpResultToLocalDecl goal fvarId myres false with
   | none => replaceMainGoal []
-  | some (_, newGoal) => replaceMainGoal [newGoal]
+  | some (_, newGoal) =>
+    if cfg.failIfUnchanged && goal == newGoal then
+      throwError "ring_nf made no progress"
+    replaceMainGoal [newGoal]
 
 /--
 Simplification tactic for expressions in the language of commutative (semi)rings,

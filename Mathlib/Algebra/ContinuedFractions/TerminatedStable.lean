@@ -28,7 +28,7 @@ variable [DivisionRing K]
 theorem contsAux_stable_step_of_terminated (terminatedAt_n : g.TerminatedAt n) :
     g.contsAux (n + 2) = g.contsAux (n + 1) := by
   rw [terminatedAt_iff_s_none] at terminatedAt_n
-  simp only [contsAux, Nat.add_eq, Nat.add_zero, terminatedAt_n]
+  simp only [contsAux, terminatedAt_n]
 
 theorem contsAux_stable_of_terminated (n_lt_m : n < m) (terminatedAt_n : g.TerminatedAt n) :
     g.contsAux m = g.contsAux (n + 1) := by
@@ -50,7 +50,7 @@ theorem convs'Aux_stable_step_of_terminated {s : Stream'.Seq <| Pair K}
         simp only [Stream'.Seq.TerminatedAt, s.get?_tail, terminatedAt_n]
       have := IH this
       rw [convs'Aux] at this
-      simp [this, Nat.add_eq, add_zero, convs'Aux, s_head_eq]
+      simp [this, convs'Aux, s_head_eq]
 
 theorem convs'Aux_stable_of_terminated {s : Stream'.Seq <| Pair K} (n_le_m : n ≤ m)
     (terminatedAt_n : s.TerminatedAt n) : convs'Aux s m = convs'Aux s n := by

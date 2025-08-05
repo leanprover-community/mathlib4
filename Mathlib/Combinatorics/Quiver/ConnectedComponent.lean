@@ -21,7 +21,7 @@ universe v u
 
 namespace Quiver
 
-variable (V : Type*) [Quiver.{u+1} V]
+variable (V : Type*) [Quiver.{u + 1} V]
 
 /-- Two vertices are related in the zigzag setoid if there is a
     zigzag of arrows from one to the other. -/

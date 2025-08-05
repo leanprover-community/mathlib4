@@ -34,15 +34,15 @@ instance range_Iio : HasCountableSeparatingOn X (· ∈ range Iio) s := by
   · rintro x - y - h
     by_contra! hne
     wlog hlt : x < y generalizing x y
-    · refine this y x ?_ hne.symm (hne.lt_or_lt.resolve_left hlt)
+    · refine this y x ?_ hne.symm (hne.lt_or_gt.resolve_left hlt)
       simpa only [iff_comm] using h
     cases (Ioo x y).eq_empty_or_nonempty with
     | inl he =>
       specialize h (Iio y) (mem_image_of_mem _ (.inr ⟨x, hlt, by simpa using Set.ext_iff.mp he⟩))
-      simp [hlt.not_le] at h
+      simp [hlt.not_ge] at h
     | inr hne =>
       rcases hsd.inter_open_nonempty _ isOpen_Ioo hne with ⟨z, ⟨hxz, hzy⟩, hzs⟩
-      simpa [hxz, hzy.not_lt] using h (Iio z) (mem_image_of_mem _ (.inl hzs))
+      simpa [hxz, hzy.not_gt] using h (Iio z) (mem_image_of_mem _ (.inl hzs))
 
 instance range_Ioi : HasCountableSeparatingOn X (· ∈ range Ioi) s :=
   .range_Iio (X := Xᵒᵈ)

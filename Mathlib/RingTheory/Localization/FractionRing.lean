@@ -3,6 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
+import Mathlib.Algebra.Ring.Hom.InjSurj
 import Mathlib.Algebra.Field.Equiv
 import Mathlib.Algebra.Field.Subfield.Basic
 import Mathlib.Algebra.Order.Ring.Int
@@ -14,14 +15,14 @@ import Mathlib.RingTheory.SimpleRing.Basic
 
 ## Main definitions
 
- * `IsFractionRing R K` expresses that `K` is a field of fractions of `R`, as an abbreviation of
-   `IsLocalization (NonZeroDivisors R) K`
+* `IsFractionRing R K` expresses that `K` is a field of fractions of `R`, as an abbreviation of
+  `IsLocalization (NonZeroDivisors R) K`
 
 ## Main results
 
- * `IsFractionRing.field`: a definition (not an instance) stating the localization of an integral
-   domain `R` at `R \ {0}` is a field
- * `Rat.isFractionRing` is an instance stating `ℚ` is the field of fractions of `ℤ`
+* `IsFractionRing.field`: a definition (not an instance) stating the localization of an integral
+  domain `R` at `R \ {0}` is a field
+* `Rat.isFractionRing` is an instance stating `ℚ` is the field of fractions of `ℤ`
 
 ## Implementation notes
 
@@ -325,16 +326,10 @@ fraction rings `K ≃+* L`. -/
 noncomputable def ringEquivOfRingEquiv : K ≃+* L :=
   IsLocalization.ringEquivOfRingEquiv K L h (MulEquivClass.map_nonZeroDivisors h)
 
-@[deprecated (since := "2024-11-05")]
-alias fieldEquivOfRingEquiv := ringEquivOfRingEquiv
-
 @[simp]
 lemma ringEquivOfRingEquiv_algebraMap
     (a : A) : ringEquivOfRingEquiv h (algebraMap A K a) = algebraMap B L (h a) := by
   simp [ringEquivOfRingEquiv]
-
-@[deprecated (since := "2024-11-05")]
-alias fieldEquivOfRingEquiv_algebraMap := ringEquivOfRingEquiv_algebraMap
 
 @[simp]
 lemma ringEquivOfRingEquiv_symm :
@@ -479,9 +474,6 @@ theorem FaithfulSMul.of_field_isFractionRing (K L : Type*) [Field K] [Semiring L
     [IsScalarTower R S L] [IsScalarTower R K L] : FaithfulSMul R S :=
   (faithfulSMul_iff_algebraMap_injective R S).mpr <|
     algebraMap_injective_of_field_isFractionRing R S K L
-
-@[deprecated (since := "2025-01-31")]
-alias NoZeroSMulDivisors.of_field_isFractionRing := FaithfulSMul.of_field_isFractionRing
 
 end algebraMap_injective
 

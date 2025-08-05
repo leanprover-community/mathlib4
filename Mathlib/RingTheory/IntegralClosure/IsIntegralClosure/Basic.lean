@@ -9,6 +9,7 @@ import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Defs
 import Mathlib.RingTheory.Polynomial.IntegralNormalization
 import Mathlib.RingTheory.Polynomial.ScaleRoots
+import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
 /-!
 # # Integral closure as a characteristic predicate
@@ -256,32 +257,34 @@ theorem IsIntegral.tmul (x : A) {y : B} (h : IsIntegral R y) : IsIntegral A (x �
     (Algebra.TensorProduct.includeRight (R := R) (A := A) (B := B)).toRingHom
     Algebra.TensorProduct.includeLeftRingHom_comp_algebraMap)
 
+section Pushout
+
+variable (R S A) [Algebra R S] [int : Algebra.IsIntegral R S]
+
+instance Algebra.IsIntegral.tensorProduct : Algebra.IsIntegral A (A ⊗[R] S) where
+  isIntegral p := p.induction_on isIntegral_zero (fun _ s ↦ .tmul _ <| int.1 s) (fun _ _ ↦ .add)
+
+variable (SA : Type*) [CommRing SA] [Algebra R SA] [Algebra S SA] [Algebra A SA]
+  [IsScalarTower R S SA] [IsScalarTower R A SA]
+
+theorem Algebra.IsPushout.isIntegral' [IsPushout R A S SA] : Algebra.IsIntegral A SA :=
+  (equiv R A S SA).isIntegral_iff.mp inferInstance
+
+theorem Algebra.IsPushout.isIntegral [h : IsPushout R S A SA] : Algebra.IsIntegral A SA :=
+  h.symm.isIntegral'
+
+attribute [local instance] Polynomial.algebra in
+instance : Algebra.IsIntegral R[X] S[X] := Algebra.IsPushout.isIntegral R _ S _
+
+attribute [local instance] MvPolynomial.algebraMvPolynomial in
+instance {σ} : Algebra.IsIntegral (MvPolynomial σ R) (MvPolynomial σ S) :=
+  Algebra.IsPushout.isIntegral R _ S _
+
+end Pushout
+
 section
 
 variable (p : R[X]) (x : S)
-
-/-- The monic polynomial whose roots are `p.leadingCoeff * x` for roots `x` of `p`. -/
-@[deprecated (since := "2024-11-30")]
-alias normalizeScaleRoots := integralNormalization
-
-@[deprecated (since := "2024-11-30")]
-alias normalizeScaleRoots_coeff_mul_leadingCoeff_pow :=
-  integralNormalization_coeff_mul_leadingCoeff_pow
-
-@[deprecated (since := "2024-11-30")]
-alias leadingCoeff_smul_normalizeScaleRoots := leadingCoeff_smul_integralNormalization
-
-@[deprecated (since := "2024-11-30")]
-alias normalizeScaleRoots_support := support_integralNormalization_subset
-
-@[deprecated (since := "2024-11-30")]
-alias normalizeScaleRoots_degree := integralNormalization_degree
-
-@[deprecated (since := "2024-11-30")]
-alias normalizeScaleRoots_eval₂_leadingCoeff_mul := integralNormalization_eval₂_leadingCoeff_mul
-
-@[deprecated (since := "2024-11-30")]
-alias normalizeScaleRoots_monic := monic_integralNormalization
 
 /-- Given a `p : R[X]` and a `x : S` such that `p.eval₂ f x = 0`,
 `f p.leadingCoeff * x` is integral. -/
@@ -525,10 +528,6 @@ lemma IsIntegralClosure.tower_top {B C : Type*} [CommSemiring C] [CommRing B]
 
 theorem RingHom.isIntegral_of_surjective (hf : Function.Surjective f) : f.IsIntegral :=
   fun x ↦ (hf x).recOn fun _y hy ↦ hy ▸ f.isIntegralElem_map
-
-theorem Algebra.isIntegral_of_surjective (h : Function.Surjective (algebraMap R A)) :
-    Algebra.IsIntegral R A :=
-  ⟨(algebraMap R A).isIntegral_of_surjective h⟩
 
 /-- If `R → A → B` is an algebra tower with `A → B` injective,
 then if the entire tower is an integral extension so is `R → A` -/

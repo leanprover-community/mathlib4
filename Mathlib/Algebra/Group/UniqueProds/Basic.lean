@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Mathlib.Algebra.Group.Equiv.Opposite
+import Mathlib.Algebra.Group.Finsupp
+import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.Algebra.Group.TypeTags.Basic
 import Mathlib.Algebra.Group.ULift
 import Mathlib.Data.DFinsupp.Defs
-import Mathlib.Data.Finsupp.Defs
 
 /-!
 # Unique products and related notions
@@ -66,6 +67,10 @@ namespace UniqueMul
 
 variable {G H : Type*} [Mul G] [Mul H] {A B : Finset G} {a0 b0 : G}
 
+@[to_additive]
+theorem mono {A' B' : Finset G} (hA : A ⊆ A') (hB : B ⊆ B') (h : UniqueMul A' B' a0 b0) :
+    UniqueMul A B a0 b0 := fun _ _ ha hb he ↦ h (hA ha) (hB hb) he
+
 @[to_additive (attr := nontriviality, simp)]
 theorem of_subsingleton [Subsingleton G] : UniqueMul A B a0 b0 := by
   simp [UniqueMul, eq_iff_true_of_subsingleton]
@@ -117,9 +122,7 @@ theorem iff_card_le_one [DecidableEq G] (ha0 : a0 ∈ A) (hb0 : b0 ∈ B) :
   simp_rw [card_le_one_iff, mem_filter, mem_product]
   refine ⟨fun h p1 p2 ⟨⟨ha1, hb1⟩, he1⟩ ⟨⟨ha2, hb2⟩, he2⟩ ↦ ?_, fun h a b ha hb he ↦ ?_⟩
   · have h1 := h ha1 hb1 he1; have h2 := h ha2 hb2 he2
-    ext
-    · rw [h1.1, h2.1]
-    · rw [h1.2, h2.2]
+    grind
   · exact Prod.ext_iff.1 (@h (a, b) (a0, b0) ⟨⟨ha, hb⟩, he⟩ ⟨⟨ha0, hb0⟩, rfl⟩)
 
 @[to_additive]
@@ -291,7 +294,7 @@ variable (G : Type u) (H : Type v) [Mul G] [Mul H]
 private abbrev I : Bool → Type max u v := Bool.rec (ULift.{v} G) (ULift.{u} H)
 @[to_additive] private instance : ∀ b, Mul (I G H b) := Bool.rec ULift.mul ULift.mul
 @[to_additive] private def Prod.upMulHom : G × H →ₙ* ∀ b, I G H b :=
-  ⟨fun x ↦ Bool.rec ⟨x.1⟩ ⟨x.2⟩, fun x y ↦ by ext (_|_) <;> rfl⟩
+  ⟨fun x ↦ Bool.rec ⟨x.1⟩ ⟨x.2⟩, fun x y ↦ by ext (_ | _) <;> rfl⟩
 @[to_additive] private def downMulHom : ULift G →ₙ* G := ⟨ULift.down, fun _ _ ↦ rfl⟩
 
 variable {G H}
@@ -345,7 +348,7 @@ open MulOpposite in
 @[to_additive] theorem toIsCancelMul [UniqueProds G] : IsCancelMul G where
   mul_left_cancel := toIsLeftCancelMul.mul_left_cancel
   mul_right_cancel _ _ _ h :=
-    op_injective <| toIsLeftCancelMul.mul_left_cancel _ _ _ <| unop_injective h
+    op_injective <| toIsLeftCancelMul.mul_left_cancel _ <| unop_injective h
 
 /-! Two theorems in [Andrzej Strojnowski, *A note on u.p. groups*][Strojnowski1980] -/
 
@@ -475,7 +478,7 @@ open Finset
     [TwoUniqueProds G] : TwoUniqueProds H where
   uniqueMul_of_one_lt_card {A B} hc := by
     classical
-    obtain hc' | hc' := lt_or_le 1 (#(A.image f) * #(B.image f))
+    obtain hc' | hc' := lt_or_ge 1 (#(A.image f) * #(B.image f))
     · obtain ⟨⟨a1, b1⟩, h1, ⟨a2, b2⟩, h2, hne, hu1, hu2⟩ := uniqueMul_of_one_lt_card hc'
       simp_rw [mem_product, mem_image] at h1 h2 ⊢
       obtain ⟨⟨a1, ha1, rfl⟩, b1, hb1, rfl⟩ := h1
@@ -516,7 +519,6 @@ instance instForall {ι} (G : ι → Type*) [∀ i, Mul (G i)] [∀ i, TwoUnique
     simp_rw [mem_product, mem_image, ← filter_nonempty_iff] at h1 h2
     replace h1 := uniqueMul_of_twoUniqueMul ?_ h1.1 h1.2
     on_goal 1 => replace h2 := uniqueMul_of_twoUniqueMul ?_ h2.1 h2.2
-
     · obtain ⟨a1, ha1, b1, hb1, hu1⟩ := h1
       obtain ⟨a2, ha2, b2, hb2, hu2⟩ := h2
       rw [mem_filter] at ha1 hb1 ha2 hb2
@@ -524,8 +526,7 @@ instance instForall {ι} (G : ι → Type*) [∀ i, Mul (G i)] [∀ i, TwoUnique
       refine ⟨(a1, b1), ⟨ha1.1, hb1.1⟩, (a2, b2), ⟨ha2.1, hb2.1⟩, ?_,
         UniqueMul.of_image_filter (Pi.evalMulHom G i) ha1.2 hb1.2 hi1 hu1,
         UniqueMul.of_image_filter (Pi.evalMulHom G i) ha2.2 hb2.2 hi2 hu2⟩
-      contrapose! hne; rw [Prod.mk_inj] at hne ⊢
-      rw [← ha1.2, ← hb1.2, ← ha2.2, ← hb2.2, hne.1, hne.2]; exact ⟨rfl, rfl⟩
+      grind
     all_goals rcases hc with hc | hc; · exact ihA _ (hc.2 _)
     · by_cases hA : {a ∈ A | a i = p2.1} = A
       · rw [hA]
@@ -583,9 +584,9 @@ instance (priority := 100) of_covariant_right [IsRightCancelMul G]
     have : UniqueMul A B a0 b0 := by
       intro a b ha hb he
       obtain hl | rfl | hl := lt_trichotomy b b0
-      · exact ((he0 ▸ he ▸ mul_lt_mul_left' hl a).not_le <| le_max' _ _ <| mul_mem_mul ha hb0).elim
+      · exact ((he0 ▸ he ▸ mul_lt_mul_left' hl a).not_ge <| le_max' _ _ <| mul_mem_mul ha hb0).elim
       · exact ⟨mul_right_cancel he, rfl⟩
-      · exact ((he0 ▸ mul_lt_mul_left' hl a0).not_le <| le_max' _ _ <| mul_mem_mul ha0 hb).elim
+      · exact ((he0 ▸ mul_lt_mul_left' hl a0).not_ge <| le_max' _ _ <| mul_mem_mul ha0 hb).elim
     refine ⟨_, mk_mem_product ha0 hb0, _, mk_mem_product ha1 hb1, fun he ↦ ?_, this, ?_⟩
     · rw [Prod.mk_inj] at he; rw [he.1, he.2, he1] at he0
       obtain ⟨⟨a2, b2⟩, h2, hne⟩ := exists_ne_of_one_lt_card hc (a0, b0)
@@ -594,9 +595,9 @@ instance (priority := 100) of_covariant_right [IsRightCancelMul G]
       exact Prod.ext_iff.mpr (this h2.1 h2.2 he.symm)
     · intro a b ha hb he
       obtain hl | rfl | hl := lt_trichotomy b b1
-      · exact ((he1 ▸ mul_lt_mul_left' hl a1).not_le <| min'_le _ _ <| mul_mem_mul ha1 hb).elim
+      · exact ((he1 ▸ mul_lt_mul_left' hl a1).not_ge <| min'_le _ _ <| mul_mem_mul ha1 hb).elim
       · exact ⟨mul_right_cancel he, rfl⟩
-      · exact ((he1 ▸ he ▸ mul_lt_mul_left' hl a).not_le <| min'_le _ _ <| mul_mem_mul ha hb1).elim
+      · exact ((he1 ▸ he ▸ mul_lt_mul_left' hl a).not_ge <| min'_le _ _ <| mul_mem_mul ha hb1).elim
 
 open MulOpposite in
 -- see Note [lower instance priority]
