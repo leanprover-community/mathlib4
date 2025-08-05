@@ -26,7 +26,12 @@ variable
 If `f : ℂ → ℝ` is harmonic at `x`, then `∂f/∂1 - I • ∂f/∂I` is complex differentiable at `x`.
 -/
 theorem HarmonicAt.differentiableAt_complex_partial (hf : HarmonicAt f x) :
-    DifferentiableAt ℂ (ofRealCLM ∘ (fderiv ℝ f · 1) - I • ofRealCLM ∘ (fderiv ℝ f · I)) x := by
+    DifferentiableAt ℂ (fun z ↦ fderiv ℝ f z 1 - I * fderiv ℝ f z I) x := by
+  have : (fun z ↦ fderiv ℝ f z 1 - I * fderiv ℝ f z I) =
+      (ofRealCLM ∘ (fderiv ℝ f · 1) - I • ofRealCLM ∘ (fderiv ℝ f · I)) := by
+    ext
+    simp
+  rw [this]
   have h₁f := hf.1
   apply differentiableAt_complex_iff_differentiableAt_real.2
   constructor
@@ -51,7 +56,8 @@ theorem HarmonicAt.differentiableAt_complex_partial (hf : HarmonicAt f x) :
     · rw [ofReal_inj]
       apply h₁f.isSymmSndFDerivAt (by simp)
     · have h₂f := hf.2.eq_of_nhds
-      simp [laplacian_eq_iteratedFDeriv_complexPlane, iteratedFDeriv_two_apply,
+      simp only [laplacian_eq_iteratedFDeriv_complexPlane, iteratedFDeriv_two_apply, Fin.isValue,
+        Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val_fin_one, Pi.zero_apply,
         add_eq_zero_iff_eq_neg] at h₂f
       simp [h₂f]
 
@@ -59,7 +65,7 @@ theorem HarmonicAt.differentiableAt_complex_partial (hf : HarmonicAt f x) :
 If `f : ℂ → ℝ` is harmonic at `x`, then `∂f/∂1 - I • ∂f/∂I` is complex analytic at `x`.
 -/
 theorem HarmonicAt.analyticAt_complex_partial (hf : HarmonicAt f x) :
-    AnalyticAt ℂ (ofRealCLM ∘ (fderiv ℝ f · 1) - I • ofRealCLM ∘ (fderiv ℝ f · I)) x :=
+    AnalyticAt ℂ (fun z ↦ fderiv ℝ f z 1 - I * fderiv ℝ f z I) x :=
   DifferentiableOn.analyticAt (s := { x | HarmonicAt f x })
     (fun _ hy ↦ (HarmonicAt.differentiableAt_complex_partial hy).differentiableWithinAt)
     ((isOpen_setOf_harmonicAt f).mem_nhds hf)
