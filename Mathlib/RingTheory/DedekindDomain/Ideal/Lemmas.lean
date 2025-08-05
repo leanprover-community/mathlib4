@@ -534,10 +534,10 @@ theorem idealFactorsFunOfQuotHom_id :
     idealFactorsFunOfQuotHom (RingHom.id (A ⧸ J)).surjective = OrderHom.id :=
   OrderHom.ext _ _
     (funext fun X => by
-      simp only [idealFactorsFunOfQuotHom, map_id, OrderHom.coe_mk, OrderHom.id_coe, id,
+      simp only [idealFactorsFunOfQuotHom, map_id,
         comap_map_of_surjective (Ideal.Quotient.mk J) Ideal.Quotient.mk_surjective, ←
-        RingHom.ker_eq_comap_bot (Ideal.Quotient.mk J), mk_ker,
-        sup_eq_left.mpr (dvd_iff_le.mp X.prop), Subtype.coe_eta])
+        RingHom.ker_eq_comap_bot (Ideal.Quotient.mk J), mk_ker, OrderHom.coe_mk,
+        sup_eq_left.mpr (dvd_iff_le.mp X.prop), Subtype.coe_eta, OrderHom.id_apply, id_eq])
 
 variable {B : Type*} [CommRing B] [IsDedekindDomain B] {L : Ideal B}
 
@@ -546,7 +546,7 @@ theorem idealFactorsFunOfQuotHom_comp {f : R ⧸ I →+* A ⧸ J} {g : A ⧸ J �
     (idealFactorsFunOfQuotHom hg).comp (idealFactorsFunOfQuotHom hf) =
       idealFactorsFunOfQuotHom (show Function.Surjective (g.comp f) from hg.comp hf) := by
   refine OrderHom.ext _ _ (funext fun x => ?_)
-  rw [idealFactorsFunOfQuotHom, idealFactorsFunOfQuotHom, OrderHom.comp_coe, OrderHom.coe_mk,
+  rw [idealFactorsFunOfQuotHom, idealFactorsFunOfQuotHom, OrderHom.comp_apply, OrderHom.coe_mk,
     OrderHom.coe_mk, Function.comp_apply, idealFactorsFunOfQuotHom, OrderHom.coe_mk,
     Subtype.mk_eq_mk, Subtype.coe_mk, map_comap_of_surjective (Ideal.Quotient.mk J)
     Ideal.Quotient.mk_surjective, map_map]

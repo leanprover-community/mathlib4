@@ -161,7 +161,7 @@ theorem prodUnique_apply [PartialOrder α] [Preorder β] [Unique β] (x : α ×�
     prodUnique α β x = (ofLex x).1 := rfl
 
 /-- Lexicographic product type with `Unique` type on the left is `OrderIso` to the right. -/
-def uniqueProd [Preorder α] [Unique α] [LE β] : α ×ₗ β ≃o β where
+def uniqueProd [Preorder α] [Unique α] [Preorder β] : α ×ₗ β ≃o β where
   toFun x := (ofLex x).2
   invFun x := toLex (default, x)
   left_inv x := x.rec fun (a, b) ↦ by simpa using Unique.default_eq a
@@ -172,7 +172,7 @@ def uniqueProd [Preorder α] [Unique α] [LE β] : α ×ₗ β ≃o β where
 
 variable {α β} in
 @[simp]
-theorem uniqueProd_apply [Preorder α] [Unique α] [LE β] (x : α ×ₗ β) :
+theorem uniqueProd_apply [Preorder α] [Unique α] [Preorder β] (x : α ×ₗ β) :
     uniqueProd α β x = (ofLex x).2 := rfl
 
 end Prod.Lex

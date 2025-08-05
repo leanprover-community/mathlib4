@@ -217,7 +217,7 @@ def _root_.Subgroup.orderIsoCon :
 @[to_additive (attr := simp)]
 lemma con_le_iff {N M : Subgroup G} [N.Normal] [M.Normal] :
     QuotientGroup.con N ≤ QuotientGroup.con M ↔ N ≤ M :=
-  (Subgroup.orderIsoCon.map_rel_iff (a := ⟨N, inferInstance⟩) (b := ⟨M, inferInstance⟩))
+  (Subgroup.orderIsoCon.le_iff_le (a := ⟨N, inferInstance⟩) (b := ⟨M, inferInstance⟩))
 
 @[to_additive (attr := gcongr)]
 lemma con_mono {N M : Subgroup G} [hN : N.Normal] [hM : M.Normal] (h : N ≤ M) :

@@ -505,7 +505,7 @@ protected def ωSup (c : Chain (α →o β)) : α →o β where
   toFun a := ωSup (c.map (OrderHom.apply a))
   monotone' _ _ h := ωSup_le_ωSup_of_le ((Chain.map_le_map _) fun a => a.monotone h)
 
-@[simps! ωSup_coe]
+@[simps! ωSup_apply]
 instance omegaCompletePartialOrder : OmegaCompletePartialOrder (α →o β) :=
   OmegaCompletePartialOrder.lift OrderHom.coeFnHom OrderHom.ωSup (fun _ _ h => h) fun _ => rfl
 
@@ -528,7 +528,7 @@ instance : FunLike (α →𝒄 β) α β where
   coe_injective' := by rintro ⟨⟩ ⟨⟩ h; congr; exact DFunLike.ext' h
 
 instance : OrderHomClass (α →𝒄 β) α β where
-  map_rel f _ _ h := f.mono h
+  monotone f := f.mono
 
 instance : PartialOrder (α →𝒄 β) :=
   (PartialOrder.lift fun f => f.toOrderHom.toFun) <| by rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩ h; congr
@@ -582,12 +582,12 @@ theorem ωSup_bind {β γ : Type v} (c : Chain α) (f : α →o Part β) (g : α
     replace hy : y ∈ g (c (max i j)) b := g.mono (c.mono (le_max_left i j)) _ _ hy
     apply h''' (max i j)
     simp only [Part.mem_bind_iff, Chain.map_coe,
-      Function.comp_apply, OrderHom.partBind_coe]
+      Function.comp_apply, OrderHom.partBind_apply]
     exact ⟨_, hb, hy⟩
   · intro i
     intro y hy
     simp only [Part.mem_bind_iff, Chain.map_coe,
-      Function.comp_apply, OrderHom.partBind_coe] at hy
+      Function.comp_apply, OrderHom.partBind_apply] at hy
     rcases hy with ⟨b, hb₀, hb₁⟩
     apply h''' b _
     · apply le_ωSup (c.map g) _ _ _ hb₁
@@ -748,7 +748,7 @@ noncomputable def bind {β γ : Type v} (f : α →𝒄 Part β) (g : α →𝒄
 noncomputable def map {β γ : Type v} (f : β → γ) (g : α →𝒄 Part β) : α →𝒄 Part γ :=
   .copy (fun x => f <$> g x) (bind g (const (pure ∘ f))) <| by
     ext1
-    simp only [map_eq_bind_pure_comp, bind, coe_mk, OrderHom.partBind_coe, coe_apply,
+    simp only [map_eq_bind_pure_comp, bind, coe_mk, OrderHom.partBind_apply, coe_apply,
       coe_toOrderHom, const_apply, Part.bind_eq_bind]
 
 /-- `Part.seq` as a continuous function. -/

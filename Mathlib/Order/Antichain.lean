@@ -121,31 +121,31 @@ theorem image_relEmbedding_iff {φ : r ↪r r'} : IsAntichain r' (φ '' s) ↔ I
 theorem image_relIso_iff {φ : r ≃r r'} : IsAntichain r' (φ '' s) ↔ IsAntichain r s :=
   @image_relEmbedding_iff _ _ _ _ _ (φ : r ↪r r')
 
-theorem image_embedding [LE α] [LE β] (hs : IsAntichain (· ≤ ·) s) (φ : α ↪o β) :
+theorem image_embedding [Preorder α] [Preorder β] (hs : IsAntichain (· ≤ ·) s) (φ : α ↪o β) :
     IsAntichain (· ≤ ·) (φ '' s) :=
-  image_relEmbedding hs _
+  image_relEmbedding hs φ.toRelEmbeddingLE
 
-theorem preimage_embedding [LE α] [LE β] {t : Set β} (ht : IsAntichain (· ≤ ·) t) (φ : α ↪o β) :
-    IsAntichain (· ≤ ·) (φ ⁻¹' t) :=
-  preimage_relEmbedding ht _
+theorem preimage_embedding [Preorder α] [Preorder β] {t : Set β}
+    (ht : IsAntichain (· ≤ ·) t) (φ : α ↪o β) : IsAntichain (· ≤ ·) (φ ⁻¹' t) :=
+  preimage_relEmbedding ht φ.toRelEmbeddingLE
 
-theorem image_embedding_iff [LE α] [LE β] {φ : α ↪o β} :
+theorem image_embedding_iff [Preorder α] [Preorder β] {φ : α ↪o β} :
     IsAntichain (· ≤ ·) (φ '' s) ↔ IsAntichain (· ≤ ·) s :=
-  image_relEmbedding_iff
+  image_relEmbedding_iff (φ := φ.toRelEmbeddingLE)
 
-theorem image_iso [LE α] [LE β] (hs : IsAntichain (· ≤ ·) s) (φ : α ≃o β) :
+theorem image_iso [Preorder α] [Preorder β] (hs : IsAntichain (· ≤ ·) s) (φ : α ≃o β) :
     IsAntichain (· ≤ ·) (φ '' s) :=
-  image_relEmbedding hs _
+  image_relEmbedding hs φ.toRelIsoLE.toRelEmbedding
 
-theorem image_iso_iff [LE α] [LE β] {φ : α ≃o β} :
+theorem image_iso_iff [Preorder α] [Preorder β] {φ : α ≃o β} :
     IsAntichain (· ≤ ·) (φ '' s) ↔ IsAntichain (· ≤ ·) s :=
-  image_relEmbedding_iff
+  image_relEmbedding_iff (φ := φ.toRelIsoLE.toRelEmbedding)
 
-theorem preimage_iso [LE α] [LE β] {t : Set β} (ht : IsAntichain (· ≤ ·) t) (φ : α ≃o β) :
-    IsAntichain (· ≤ ·) (φ ⁻¹' t) :=
-  preimage_relEmbedding ht _
+theorem preimage_iso [Preorder α] [Preorder β] {t : Set β}
+    (ht : IsAntichain (· ≤ ·) t) (φ : α ≃o β) : IsAntichain (· ≤ ·) (φ ⁻¹' t) :=
+  preimage_relEmbedding ht φ.toRelIsoLE.toRelEmbedding
 
-theorem preimage_iso_iff [LE α] [LE β] {t : Set β} {φ : α ≃o β} :
+theorem preimage_iso_iff [Preorder α] [Preorder β] {t : Set β} {φ : α ≃o β} :
     IsAntichain (· ≤ ·) (φ ⁻¹' t) ↔ IsAntichain (· ≤ ·) t :=
   ⟨fun h => (φ.image_preimage t).subst (h.image_iso φ), fun h => h.preimage_iso _⟩
 

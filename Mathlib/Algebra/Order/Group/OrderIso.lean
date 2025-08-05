@@ -24,7 +24,7 @@ variable [Group α]
 
 section TypeclassesLeftRightLE
 
-variable [LE α] [MulLeftMono α] [MulRightMono α] {a b : α}
+variable [Preorder α] [MulLeftMono α] [MulRightMono α] {a b : α}
 
 section
 
@@ -66,7 +66,7 @@ attribute [to_additive] le_inv_of_le_inv
 
 section Group
 
-variable [Group α] [LE α]
+variable [Group α] [Preorder α]
 
 section Right
 

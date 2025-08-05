@@ -89,16 +89,16 @@ protected theorem LowerSet.lowerClosure (s : LowerSet α) : lowerClosure (s : Se
 @[simp]
 theorem upperClosure_image (f : α ≃o β) :
     upperClosure (f '' s) = UpperSet.map f (upperClosure s) := by
-  rw [← f.symm_symm, ← UpperSet.symm_map, f.symm_symm]
-  ext
-  simp [-UpperSet.symm_map, UpperSet.map, OrderIso.symm, ← f.le_symm_apply]
+  ext x
+  simp [f.apply_eq_iff_eq_symm_apply, f.le_symm_apply]
+  refine ⟨fun ⟨a, ha⟩ => ?_, fun ⟨a, ha⟩ => ?_⟩ <;> [use f.symm a; use f a] <;> simpa using ha
 
 @[simp]
 theorem lowerClosure_image (f : α ≃o β) :
     lowerClosure (f '' s) = LowerSet.map f (lowerClosure s) := by
-  rw [← f.symm_symm, ← LowerSet.symm_map, f.symm_symm]
-  ext
-  simp [-LowerSet.symm_map, LowerSet.map, OrderIso.symm, ← f.symm_apply_le]
+  ext x
+  simp [f.apply_eq_iff_eq_symm_apply, f.symm_apply_le]
+  refine ⟨fun ⟨a, ha⟩ => ?_, fun ⟨a, ha⟩ => ?_⟩ <;> [use f.symm a; use f a] <;> simpa using ha
 
 @[simp]
 theorem UpperSet.iInf_Ici (s : Set α) : ⨅ a ∈ s, UpperSet.Ici a = upperClosure s := by

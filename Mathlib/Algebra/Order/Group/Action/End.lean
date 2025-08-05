@@ -5,7 +5,6 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Group.Action.Faithful
 import Mathlib.Algebra.Order.Group.End
-import Mathlib.Order.RelIso.Basic
 
 /-!
 # Tautological action by relation automorphisms
@@ -57,3 +56,51 @@ instance applyMulAction : MulAction (r ≃r r) α where
 instance apply_faithfulSMul : FaithfulSMul (r ≃r r) α where eq_of_smul_eq_smul h := RelIso.ext h
 
 end RelIso
+
+namespace OrderHom
+variable {α : Type*} [Preorder α]
+
+/-- The tautological action by `r →r r` on `α`. -/
+instance applyMulAction : MulAction (α →o α) α where
+  smul := (⇑)
+  one_smul _ := rfl
+  mul_smul _ _ _ := rfl
+
+@[simp] lemma smul_def (f : α →o α) (a : α) : f • a = f a := rfl
+
+instance apply_faithfulSMul : FaithfulSMul (α →o α) α where
+  eq_of_smul_eq_smul h := by ext; apply h
+
+end OrderHom
+
+namespace OrderEmbedding
+variable {α : Type*} [Preorder α]
+
+/-- The tautological action by `r ↪r r` on `α`. -/
+instance applyMulAction : MulAction (α ↪o α) α where
+  smul := (⇑)
+  one_smul _ := rfl
+  mul_smul _ _ _ := rfl
+
+@[simp] lemma smul_def (f : α ↪o α) (a : α) : f • a = f a := rfl
+
+instance apply_faithfulSMul : FaithfulSMul (α ↪o α) α where
+  eq_of_smul_eq_smul h := by ext; apply h
+
+end OrderEmbedding
+
+namespace OrderIso
+variable {α : Type*} [Preorder α]
+
+/-- The tautological action by `r ≃r r` on `α`. -/
+instance applyMulAction : MulAction (α ≃o α) α where
+  smul := (⇑)
+  one_smul _ := rfl
+  mul_smul _ _ _ := rfl
+
+@[simp] lemma smul_def (f : α ≃o α) (a : α) : f • a = f a := rfl
+
+instance apply_faithfulSMul : FaithfulSMul (α ≃o α) α where
+  eq_of_smul_eq_smul h := by ext; apply h
+
+end OrderIso

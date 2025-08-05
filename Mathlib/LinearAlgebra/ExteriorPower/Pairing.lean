@@ -113,8 +113,8 @@ lemma pairingDual_apply_apply_eq_one_zero (a b : Fin n ↪o ι) (h : a ≠ b) :
   have hσ : Monotone σ := fun i j hij ↦ by
     have h'' := congr_fun this
     dsimp at h''
-    rw [← a.map_rel_iff] at hij
-    simpa only [← b.map_rel_iff, ← h'']
+    rw [← a.le_iff_le] at hij
+    simpa only [← b.le_iff_le, ← h'']
   have hσ' : Monotone σ.symm := fun i j hij ↦ by
     obtain ⟨i, rfl⟩ := σ.surjective i
     obtain ⟨j, rfl⟩ := σ.surjective j

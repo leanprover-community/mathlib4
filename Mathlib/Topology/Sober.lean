@@ -150,11 +150,10 @@ variable {α}
 theorem genericPoint_specializes [QuasiSober α] [IrreducibleSpace α] (x : α) : genericPoint α ⤳ x :=
   (IsIrreducible.isGenericPoint_genericPoint_closure _).specializes (by simp)
 
-attribute [local instance] specializationOrder
-
 /-- The closed irreducible subsets of a sober space bijects with the points of the space. -/
-noncomputable def irreducibleSetEquivPoints [QuasiSober α] [T0Space α] :
-    TopologicalSpace.IrreducibleCloseds α ≃o α where
+noncomputable def irreducibleSetEquivPoints [Preorder α] [QuasiSober α] [T0Space α]
+    (h : ∀ x y : α, x ≤ y ↔ x ⤳ y) :
+    (TopologicalSpace.IrreducibleCloseds α)ᵒᵈ ≃o α where
   toFun s := s.2.genericPoint
   invFun x := ⟨closure ({x} : Set α), isIrreducible_singleton.closure, isClosed_closure⟩
   left_inv s := by
@@ -166,6 +165,7 @@ noncomputable def irreducibleSetEquivPoints [QuasiSober α] [T0Space α] :
       (by rw [closure_closure]; exact isGenericPoint_closure)
   map_rel_iff' := by
     rintro ⟨s, hs, hs'⟩ ⟨t, ht, ht'⟩
+    simp_rw [h]
     refine specializes_iff_closure_subset.trans ?_
     simp
     rfl

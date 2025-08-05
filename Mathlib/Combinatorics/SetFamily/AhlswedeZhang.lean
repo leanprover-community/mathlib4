@@ -143,7 +143,7 @@ lemma map_truncatedSup [DecidableLE β] (e : α ≃o β) (s : Finset α) (a : α
   have : e a ∈ lowerClosure (s.map e.toEquiv.toEmbedding : Set β) ↔ a ∈ lowerClosure s := by simp
   simp_rw [truncatedSup, apply_dite e, map_finset_sup', map_top, this]
   congr with h
-  simp only [filter_map, Function.comp_def, Equiv.coe_toEmbedding, RelIso.coe_fn_toEquiv,
+  simp only [filter_map, Function.comp_def, Equiv.coe_toEmbedding, OrderIso.coe_fn_toEquiv,
     OrderIso.le_iff_le, id, sup'_map]
 
 lemma truncatedSup_of_isAntichain (hs : IsAntichain (· ≤ ·) (s : Set α)) (ha : a ∈ s) :
@@ -220,7 +220,7 @@ lemma map_truncatedInf (e : α ≃o β) (s : Finset α) (a : α) :
   have : e a ∈ upperClosure (s.map e.toEquiv.toEmbedding) ↔ a ∈ upperClosure s := by simp
   simp_rw [truncatedInf, apply_dite e, map_finset_inf', map_bot, this]
   congr with h
-  simp only [filter_map, Function.comp_def, Equiv.coe_toEmbedding, RelIso.coe_fn_toEquiv,
+  simp only [filter_map, Function.comp_def, Equiv.coe_toEmbedding, OrderIso.coe_fn_toEquiv,
     OrderIso.le_iff_le, id, inf'_map]
 
 lemma truncatedInf_of_isAntichain (hs : IsAntichain (· ≤ ·) (s : Set α)) (ha : a ∈ s) :

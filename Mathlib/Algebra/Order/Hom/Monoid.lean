@@ -254,7 +254,7 @@ initialize_simps_projections OrderMonoidHom (toFun → apply, -toMonoidHom)
 
 @[to_additive]
 instance : OrderHomClass (α →*o β) α β where
-  map_rel f _ _ h := f.monotone' h
+  monotone f _ _ h := f.monotone' h
 
 @[to_additive]
 instance : MonoidHomClass (α →*o β) α β where
@@ -601,7 +601,7 @@ theorem toOrderIso_eq_coe (f : α ≃*o β) : f.toOrderIso = f :=
 /-- The inverse of an isomorphism is an isomorphism. -/
 @[to_additive (attr := symm) "The inverse of an order isomorphism is an order isomorphism."]
 def symm (f : α ≃*o β) : β ≃*o α :=
-  ⟨f.toMulEquiv.symm, f.toOrderIso.symm.map_rel_iff⟩
+  ⟨f.toMulEquiv.symm, f.toOrderIso.symm.le_iff_le⟩
 
 /-- See Note [custom simps projection]. -/
 @[to_additive "See Note [custom simps projection]."]

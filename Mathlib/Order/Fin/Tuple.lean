@@ -123,7 +123,7 @@ namespace Fin
 
 This is `Fin.cons` as an `OrderIso`. -/
 @[simps!, simps toEquiv]
-def consOrderIso (α : Fin (n + 1) → Type*) [∀ i, LE (α i)] :
+def consOrderIso (α : Fin (n + 1) → Type*) [∀ i, Preorder (α i)] :
     α 0 × (∀ i, α (succ i)) ≃o ∀ i, α i where
   toEquiv := consEquiv α
   map_rel_iff' := forall_iff_succ
@@ -133,7 +133,7 @@ def consOrderIso (α : Fin (n + 1) → Type*) [∀ i, LE (α i)] :
 
 This is `Fin.snoc` as an `OrderIso`. -/
 @[simps!, simps toEquiv]
-def snocOrderIso (α : Fin (n + 1) → Type*) [∀ i, LE (α i)] :
+def snocOrderIso (α : Fin (n + 1) → Type*) [∀ i, Preorder (α i)] :
     α (last n) × (∀ i, α (castSucc i)) ≃o ∀ i, α i where
   toEquiv := snocEquiv α
   map_rel_iff' := by simp [Pi.le_def, Prod.le_def, forall_iff_castSucc]
@@ -143,17 +143,17 @@ def snocOrderIso (α : Fin (n + 1) → Type*) [∀ i, LE (α i)] :
 
 This is `Fin.insertNth` as an `OrderIso`. -/
 @[simps!, simps toEquiv]
-def insertNthOrderIso (α : Fin (n + 1) → Type*) [∀ i, LE (α i)] (p : Fin (n + 1)) :
+def insertNthOrderIso (α : Fin (n + 1) → Type*) [∀ i, Preorder (α i)] (p : Fin (n + 1)) :
     α p × (∀ i, α (p.succAbove i)) ≃o ∀ i, α i where
   toEquiv := insertNthEquiv α p
   map_rel_iff' := by simp [Pi.le_def, Prod.le_def, p.forall_iff_succAbove]
 
-@[simp] lemma insertNthOrderIso_zero (α : Fin (n + 1) → Type*) [∀ i, LE (α i)] :
+@[simp] lemma insertNthOrderIso_zero (α : Fin (n + 1) → Type*) [∀ i, Preorder (α i)] :
     insertNthOrderIso α 0 = consOrderIso α := by ext; simp [insertNthOrderIso]
 
 /-- Note this lemma can only be written about non-dependent tuples as `insertNth (last n) = snoc` is
 not a definitional equality. -/
-@[simp] lemma insertNthOrderIso_last (n : ℕ) (α : Type*) [LE α] :
+@[simp] lemma insertNthOrderIso_last (n : ℕ) (α : Type*) [Preorder α] :
     insertNthOrderIso (fun _ ↦ α) (last n) = snocOrderIso (fun _ ↦ α) := by ext; simp
 
 end Fin

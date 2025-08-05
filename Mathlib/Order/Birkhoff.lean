@@ -134,12 +134,12 @@ variable [Finite α]
 /-- **Birkhoff Representation for partial orders.** Any partial order is isomorphic
 to the partial order of sup-irreducible elements in its lattice of lower sets. -/
 noncomputable def supIrredLowerSet : α ≃o {s : LowerSet α // SupIrred s} :=
-  RelIso.ofSurjective _ OrderEmbedding.supIrredLowerSet_surjective
+  OrderIso.ofSurjective _ OrderEmbedding.supIrredLowerSet_surjective
 
 /-- **Birkhoff Representation for partial orders.** Any partial order is isomorphic
 to the partial order of inf-irreducible elements in its lattice of upper sets. -/
 noncomputable def infIrredUpperSet : α ≃o {s : UpperSet α // InfIrred s} :=
-  RelIso.ofSurjective _ OrderEmbedding.infIrredUpperSet_surjective
+  OrderIso.ofSurjective _ OrderEmbedding.infIrredUpperSet_surjective
 
 @[simp] lemma supIrredLowerSet_apply (a : α) : supIrredLowerSet a = ⟨Iic a, supIrred_Iic _⟩ := rfl
 @[simp] lemma infIrredUpperSet_apply (a : α) : infIrredUpperSet a = ⟨Ici a, infIrred_Ici _⟩ := rfl
@@ -211,7 +211,10 @@ noncomputable def birkhoffSet : α ↪o Set {a : α // SupIrred a} := by
   · exact OrderEmbedding.ofIsEmpty
   rw [not_isEmpty_iff] at h
   have := Fintype.toOrderBot α
-  exact OrderIso.lowerSetSupIrred.toOrderEmbedding.trans ⟨⟨_, SetLike.coe_injective⟩, Iff.rfl⟩
+  exact OrderIso.lowerSetSupIrred.toOrderEmbedding.trans (⟨⟨_, SetLike.coe_injective⟩, Iff.rfl⟩)
+
+theorem birkhoffSet_of_isEmpty [h : IsEmpty α] :
+  birkhoffSet (α := α) = OrderEmbedding.ofIsEmpty := by simp [birkhoffSet, h]
 
 /-- **Birkhoff's Representation Theorem**. Any finite distributive lattice can be embedded in a
 powerset lattice. -/
@@ -220,37 +223,35 @@ noncomputable def birkhoffFinset : α ↪o Finset {a : α // SupIrred a} := by
 
 @[simp] lemma coe_birkhoffFinset (a : α) : birkhoffFinset a = birkhoffSet a := by
   classical
-  -- TODO: This should be a single `simp` call but `simp` refuses to use
-  -- `OrderIso.coe_toOrderEmbedding` and `Fintype.coe_finsetOrderIsoSet_symm`
   simp [birkhoffFinset]
-  rw [OrderIso.coe_toOrderEmbedding, Fintype.coe_finsetOrderIsoSet_symm]
-  simp
-
-@[simp] lemma birkhoffSet_sup (a b : α) : birkhoffSet (a ⊔ b) = birkhoffSet a ∪ birkhoffSet b := by
-  unfold OrderEmbedding.birkhoffSet; split <;> simp [eq_iff_true_of_subsingleton]
-
-@[simp] lemma birkhoffSet_inf (a b : α) : birkhoffSet (a ⊓ b) = birkhoffSet a ∩ birkhoffSet b := by
-  unfold OrderEmbedding.birkhoffSet; split <;> simp [eq_iff_true_of_subsingleton]
 
 @[simp] lemma birkhoffSet_apply [OrderBot α] (a : α) :
     birkhoffSet a = OrderIso.lowerSetSupIrred a := by
   simp [birkhoffSet]; have : Subsingleton (OrderBot α) := inferInstance; convert rfl
+
+@[simp] lemma birkhoffSet_apply_of_nonempty [Nonempty α] (a : α) :
+    birkhoffSet a = @OrderIso.lowerSetSupIrred _ _ _ _ (Fintype.toOrderBot α) a :=
+  @birkhoffSet_apply _ _ _ _ (Fintype.toOrderBot α) _
+
+@[simp] lemma birkhoffSet_sup (a b : α) : birkhoffSet (a ⊔ b) = birkhoffSet a ∪ birkhoffSet b := by
+  have : Nonempty α := Nonempty.intro a
+  simp
+
+@[simp] lemma birkhoffSet_inf (a b : α) : birkhoffSet (a ⊓ b) = birkhoffSet a ∩ birkhoffSet b := by
+  have : Nonempty α := Nonempty.intro a
+  simp
 
 variable [DecidableEq α]
 
 @[simp] lemma birkhoffFinset_sup (a b : α) :
     birkhoffFinset (a ⊔ b) = birkhoffFinset a ∪ birkhoffFinset b := by
   classical
-  dsimp [OrderEmbedding.birkhoffFinset]
-  rw [birkhoffSet_sup, OrderIso.coe_toOrderEmbedding]
-  simp
+  simp [birkhoffFinset]
 
 @[simp] lemma birkhoffFinset_inf (a b : α) :
     birkhoffFinset (a ⊓ b) = birkhoffFinset a ∩ birkhoffFinset b := by
   classical
-  dsimp [OrderEmbedding.birkhoffFinset]
-  rw [birkhoffSet_inf, OrderIso.coe_toOrderEmbedding]
-  simp
+  simp [birkhoffFinset]
 
 end OrderEmbedding
 

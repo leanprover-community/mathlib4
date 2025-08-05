@@ -51,7 +51,7 @@ section
 You should extend this class when you extend `PseudoEpimorphism`. -/
 class PseudoEpimorphismClass (F : Type*) (α β : outParam Type*)
     [Preorder α] [Preorder β] [FunLike F α β] : Prop
-    extends RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop) where
+    extends OrderHomClass F α β where
   exists_map_eq_of_map_le (f : F) ⦃a : α⦄ ⦃b : β⦄ : f a ≤ b → ∃ c, a ≤ c ∧ f c = b
 
 /-- `EsakiaHomClass F α β` states that `F` is a type of lattice morphisms.
@@ -81,7 +81,7 @@ instance (priority := 100) PseudoEpimorphismClass.toTopHomClass [PartialOrder α
 instance (priority := 100) EsakiaHomClass.toPseudoEpimorphismClass [TopologicalSpace α] [Preorder α]
     [TopologicalSpace β] [Preorder β] [EsakiaHomClass F α β] : PseudoEpimorphismClass F α β :=
   { ‹EsakiaHomClass F α β› with
-    map_rel := ContinuousOrderHomClass.map_monotone }
+    monotone := ContinuousOrderHomClass.map_monotone }
 
 instance [Preorder α] [Preorder β] [PseudoEpimorphismClass F α β] :
     CoeTC F (PseudoEpimorphism α β) :=
@@ -114,7 +114,7 @@ instance instFunLike : FunLike (PseudoEpimorphism α β) α β where
     congr
 
 instance : PseudoEpimorphismClass (PseudoEpimorphism α β) α β where
-  map_rel f _ _ h := f.monotone' h
+  monotone f := f.monotone'
   exists_map_eq_of_map_le := PseudoEpimorphism.exists_map_eq_of_map_le'
 
 @[simp]

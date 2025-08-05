@@ -302,7 +302,7 @@ theorem powersetCard_map {β : Type*} (f : α ↪ β) (n : ℕ) (s : Finset α) 
   ext fun t => by
     -- `le_eq_subset` is a dangerous lemma since it turns the type `↪o` into `(· ⊆ ·) ↪r (· ⊆ ·)`,
     -- which makes `simp` have trouble working with `mapEmbedding_apply`.
-    simp only [mem_powersetCard, mem_map, RelEmbedding.coe_toEmbedding, mapEmbedding_apply]
+    simp only [mem_powersetCard, mem_map, OrderEmbedding.coe_toEmbedding, mapEmbedding_apply]
     constructor
     · classical
       intro h

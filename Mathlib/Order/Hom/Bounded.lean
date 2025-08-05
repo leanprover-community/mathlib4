@@ -74,9 +74,9 @@ class BotHomClass (F : Type*) (α β : outParam Type*) [Bot α] [Bot β] [FunLik
 /-- `BoundedOrderHomClass F α β` states that `F` is a type of bounded order morphisms.
 
 You should extend this class when you extend `BoundedOrderHom`. -/
-class BoundedOrderHomClass (F α β : Type*) [LE α] [LE β]
+class BoundedOrderHomClass (F α β : Type*) [Preorder α] [Preorder β]
     [BoundedOrder α] [BoundedOrder β] [FunLike F α β] : Prop
-  extends RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop) where
+  extends OrderHomClass F α β where
   /-- Morphisms preserve the top element. The preferred spelling is `_root_.map_top`. -/
   map_top (f : F) : f ⊤ = ⊤
   /-- Morphisms preserve the bottom element. The preferred spelling is `_root_.map_bot`. -/
@@ -95,12 +95,12 @@ section Hom
 variable [FunLike F α β]
 
 -- See note [lower instance priority]
-instance (priority := 100) BoundedOrderHomClass.toTopHomClass [LE α] [LE β]
+instance (priority := 100) BoundedOrderHomClass.toTopHomClass [Preorder α] [Preorder β]
     [BoundedOrder α] [BoundedOrder β] [BoundedOrderHomClass F α β] : TopHomClass F α β :=
   { ‹BoundedOrderHomClass F α β› with }
 
 -- See note [lower instance priority]
-instance (priority := 100) BoundedOrderHomClass.toBotHomClass [LE α] [LE β]
+instance (priority := 100) BoundedOrderHomClass.toBotHomClass [Preorder α] [Preorder β]
     [BoundedOrder α] [BoundedOrder β] [BoundedOrderHomClass F α β] : BotHomClass F α β :=
   { ‹BoundedOrderHomClass F α β› with }
 
@@ -111,29 +111,29 @@ section Equiv
 variable [EquivLike F α β]
 
 -- See note [lower instance priority]
-instance (priority := 100) OrderIsoClass.toTopHomClass [LE α] [OrderTop α]
+instance (priority := 100) OrderIsoClass.toTopHomClass [Preorder α] [OrderTop α]
     [PartialOrder β] [OrderTop β] [OrderIsoClass F α β] : TopHomClass F α β :=
   { show OrderHomClass F α β from inferInstance with
     map_top := fun f => top_le_iff.1 <| (map_inv_le_iff f).1 le_top }
 
 -- See note [lower instance priority]
-instance (priority := 100) OrderIsoClass.toBotHomClass [LE α] [OrderBot α]
+instance (priority := 100) OrderIsoClass.toBotHomClass [Preorder α] [OrderBot α]
     [PartialOrder β] [OrderBot β] [OrderIsoClass F α β] : BotHomClass F α β :=
   { map_bot := fun f => le_bot_iff.1 <| (le_map_inv_iff f).1 bot_le }
 
 -- See note [lower instance priority]
-instance (priority := 100) OrderIsoClass.toBoundedOrderHomClass [LE α] [BoundedOrder α]
+instance (priority := 100) OrderIsoClass.toBoundedOrderHomClass [Preorder α] [BoundedOrder α]
     [PartialOrder β] [BoundedOrder β] [OrderIsoClass F α β] : BoundedOrderHomClass F α β :=
   { show OrderHomClass F α β from inferInstance, OrderIsoClass.toTopHomClass,
     OrderIsoClass.toBotHomClass with }
 
 @[simp]
-theorem map_eq_top_iff [LE α] [OrderTop α] [PartialOrder β] [OrderTop β] [OrderIsoClass F α β]
+theorem map_eq_top_iff [Preorder α] [OrderTop α] [PartialOrder β] [OrderTop β] [OrderIsoClass F α β]
     (f : F) {a : α} : f a = ⊤ ↔ a = ⊤ := by
   rw [← map_top f, (EquivLike.injective f).eq_iff]
 
 @[simp]
-theorem map_eq_bot_iff [LE α] [OrderBot α] [PartialOrder β] [OrderBot β] [OrderIsoClass F α β]
+theorem map_eq_bot_iff [Preorder α] [OrderBot α] [PartialOrder β] [OrderBot β] [OrderIsoClass F α β]
     (f : F) {a : α} : f a = ⊥ ↔ a = ⊥ := by
   rw [← map_bot f, (EquivLike.injective f).eq_iff]
 
@@ -539,7 +539,7 @@ instance : FunLike (BoundedOrderHom α β) α β where
   coe_injective' f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
 
 instance : BoundedOrderHomClass (BoundedOrderHom α β) α β where
-  map_rel f := @(f.monotone')
+  monotone f := f.monotone'
   map_top f := f.map_top'
   map_bot f := f.map_bot'
 

@@ -296,7 +296,7 @@ def comapMkQRelIso : Submodule R (M ⧸ p) ≃o Set.Ici p where
 /-- The ordering on submodules of the quotient of `M` by `p` embeds into the ordering on submodules
 of `M`. -/
 def comapMkQOrderEmbedding : Submodule R (M ⧸ p) ↪o Submodule R M :=
-  (RelIso.toRelEmbedding <| comapMkQRelIso p).trans (Subtype.relEmbedding (· ≤ ·) _)
+  (OrderIso.toOrderEmbedding <| comapMkQRelIso p).trans (OrderEmbedding.subtype _)
 
 @[simp]
 theorem comapMkQOrderEmbedding_eq (p' : Submodule R (M ⧸ p)) :

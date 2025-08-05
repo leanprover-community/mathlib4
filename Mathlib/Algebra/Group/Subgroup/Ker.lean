@@ -456,7 +456,7 @@ theorem map_le_map_iff' {f : G →* N} {H K : Subgroup G} :
 
 @[to_additive]
 theorem map_eq_map_iff {f : G →* N} {H K : Subgroup G} :
-    H.map f = K.map f ↔ H ⊔ f.ker = K ⊔ f.ker := by simp only [le_antisymm_iff, map_le_map_iff']
+    H.map f = K.map f ↔ H ⊔ f.ker = K ⊔ f.ker := by simp [le_antisymm_iff, map_le_map_iff']
 
 @[to_additive]
 theorem map_eq_range_iff {f : G →* N} {H : Subgroup G} :

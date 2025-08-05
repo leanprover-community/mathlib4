@@ -71,13 +71,6 @@ theorem le_def : s ≤ t ↔ t.fst ≤ s.fst ∧ s.snd ≤ t.snd :=
 instance [DecidableLE α] : DecidableLE (NonemptyInterval α) :=
   fun _ _ => decidable_of_iff' _ le_def
 
-/-- `toDualProd` as an order embedding. -/
-@[simps]
-def toDualProdHom : NonemptyInterval α ↪o αᵒᵈ × α where
-  toFun := toDualProd
-  inj' := toDualProd_injective
-  map_rel_iff' := Iff.rfl
-
 /-- Turn an interval into an interval in the dual order. -/
 def dual : NonemptyInterval α ≃ NonemptyInterval αᵒᵈ where
   toFun s := ⟨s.toProd.swap, s.fst_le_snd⟩
@@ -99,6 +92,13 @@ variable [Preorder α] [Preorder β] [Preorder γ] {s : NonemptyInterval α} {x 
 
 instance : Preorder (NonemptyInterval α) :=
   Preorder.lift toDualProd
+
+/-- `toDualProd` as an order embedding. -/
+@[simps]
+def toDualProdHom : NonemptyInterval α ↪o αᵒᵈ × α where
+  toFun := toDualProd
+  inj' := toDualProd_injective
+  map_rel_iff' := Iff.rfl
 
 theorem toDualProd_mono : Monotone (toDualProd : _ → αᵒᵈ × α) := fun _ _ => id
 

@@ -133,7 +133,7 @@ instance : FunLike CircleDeg1Lift ℝ ℝ where
   coe_injective' | ⟨⟨_, _⟩, _⟩, ⟨⟨_, _⟩, _⟩, rfl => rfl
 
 instance : OrderHomClass CircleDeg1Lift ℝ ℝ where
-  map_rel f _ _ h := f.monotone' h
+  monotone f := f.monotone'
 
 @[simp] theorem coe_mk (f h) : ⇑(mk f h) = f := rfl
 

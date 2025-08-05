@@ -25,7 +25,7 @@ variable {α β : Type*} {n : ℕ}
 
 theorem map_valEmbedding_univ : (Finset.univ : Finset (Fin n)).map Fin.valEmbedding = Iio n := by
   ext
-  simp [orderIsoSubtype.symm.surjective.exists, OrderIso.symm]
+  simp [orderIsoSubtype.symm.surjective.exists]
 
 @[simp]
 theorem Ioi_zero_eq_map : Ioi (0 : Fin n.succ) = univ.map (Fin.succEmb _) :=

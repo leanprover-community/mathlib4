@@ -25,28 +25,28 @@ open OrderDual
 
 /-- Taking the dual then adding `⊤` is the same as adding `⊥` then taking the dual.
 This is the order iso form of `WithTop.ofDual`, as proven by `coe_toDualBotEquiv`. -/
-protected def toDualBotEquiv [LE α] : WithTop αᵒᵈ ≃o (WithBot α)ᵒᵈ :=
+protected def toDualBotEquiv [Preorder α] : WithTop αᵒᵈ ≃o (WithBot α)ᵒᵈ :=
   OrderIso.refl _
 
 @[simp]
-theorem toDualBotEquiv_coe [LE α] (a : α) :
+theorem toDualBotEquiv_coe [Preorder α] (a : α) :
     WithTop.toDualBotEquiv ↑(toDual a) = toDual (a : WithBot α) :=
   rfl
 
 @[simp]
-theorem toDualBotEquiv_symm_coe [LE α] (a : α) :
+theorem toDualBotEquiv_symm_coe [Preorder α] (a : α) :
     WithTop.toDualBotEquiv.symm (toDual (a : WithBot α)) = ↑(toDual a) :=
   rfl
 
 @[simp]
-theorem toDualBotEquiv_top [LE α] : WithTop.toDualBotEquiv (⊤ : WithTop αᵒᵈ) = ⊤ :=
+theorem toDualBotEquiv_top [Preorder α] : WithTop.toDualBotEquiv (⊤ : WithTop αᵒᵈ) = ⊤ :=
   rfl
 
 @[simp]
-theorem toDualBotEquiv_symm_top [LE α] : WithTop.toDualBotEquiv.symm (⊤ : (WithBot α)ᵒᵈ) = ⊤ :=
-  rfl
+theorem toDualBotEquiv_symm_top [Preorder α] :
+    WithTop.toDualBotEquiv.symm (⊤ : (WithBot α)ᵒᵈ) = ⊤ := rfl
 
-theorem coe_toDualBotEquiv [LE α] :
+theorem coe_toDualBotEquiv [Preorder α] :
     (WithTop.toDualBotEquiv : WithTop αᵒᵈ → (WithBot α)ᵒᵈ) = toDual ∘ WithTop.ofDual :=
   funext fun _ => rfl
 
@@ -71,28 +71,28 @@ open OrderDual
 
 /-- Taking the dual then adding `⊥` is the same as adding `⊤` then taking the dual.
 This is the order iso form of `WithBot.ofDual`, as proven by `coe_toDualTopEquiv`. -/
-protected def toDualTopEquiv [LE α] : WithBot αᵒᵈ ≃o (WithTop α)ᵒᵈ :=
+protected def toDualTopEquiv [Preorder α] : WithBot αᵒᵈ ≃o (WithTop α)ᵒᵈ :=
   OrderIso.refl _
 
 @[simp]
-theorem toDualTopEquiv_coe [LE α] (a : α) :
+theorem toDualTopEquiv_coe [Preorder α] (a : α) :
     WithBot.toDualTopEquiv ↑(toDual a) = toDual (a : WithTop α) :=
   rfl
 
 @[simp]
-theorem toDualTopEquiv_symm_coe [LE α] (a : α) :
+theorem toDualTopEquiv_symm_coe [Preorder α] (a : α) :
     WithBot.toDualTopEquiv.symm (toDual (a : WithTop α)) = ↑(toDual a) :=
   rfl
 
 @[simp]
-theorem toDualTopEquiv_bot [LE α] : WithBot.toDualTopEquiv (⊥ : WithBot αᵒᵈ) = ⊥ :=
+theorem toDualTopEquiv_bot [Preorder α] : WithBot.toDualTopEquiv (⊥ : WithBot αᵒᵈ) = ⊥ :=
   rfl
 
 @[simp]
-theorem toDualTopEquiv_symm_bot [LE α] : WithBot.toDualTopEquiv.symm (⊥ : (WithTop α)ᵒᵈ) = ⊥ :=
-  rfl
+theorem toDualTopEquiv_symm_bot [Preorder α] :
+    WithBot.toDualTopEquiv.symm (⊥ : (WithTop α)ᵒᵈ) = ⊥ := rfl
 
-theorem coe_toDualTopEquiv_eq [LE α] :
+theorem coe_toDualTopEquiv_eq [Preorder α] :
     (WithBot.toDualTopEquiv : WithBot αᵒᵈ → (WithTop α)ᵒᵈ) = toDual ∘ WithBot.ofDual :=
   funext fun _ => rfl
 
@@ -136,7 +136,7 @@ variable [Preorder α] [Preorder β]
 protected def withBotMap (f : α ↪o β) : WithBot α ↪o WithBot β where
   toFun := WithBot.map f
   inj' := WithBot.map_injective f.injective
-  map_rel_iff' := WithBot.map_le_iff f f.map_rel_iff
+  map_rel_iff' := WithBot.map_le_iff f f.le_iff_le
 
 /-- A version of `WithTop.map` for order embeddings. -/
 @[simps -fullyApplied]
@@ -162,44 +162,43 @@ namespace OrderIso
 variable [PartialOrder α] [PartialOrder β] [PartialOrder γ]
 
 /-- A version of `Equiv.optionCongr` for `WithTop`. -/
-@[simps -fullyApplied]
+@[simps! -fullyApplied]
 def withTopCongr (e : α ≃o β) : WithTop α ≃o WithTop β where
-  toFun := WithTop.map e
+  toEquiv := e.optionCongr
   __ := e.toOrderEmbedding.withTopMap
-  __ := e.toEquiv.optionCongr
 
 @[simp]
 theorem withTopCongr_refl : (OrderIso.refl α).withTopCongr = OrderIso.refl _ :=
-  RelIso.toEquiv_injective Equiv.optionCongr_refl
+  ext <| by simp
 
 @[simp]
 theorem withTopCongr_symm (e : α ≃o β) : e.symm.withTopCongr = e.withTopCongr.symm :=
-  RelIso.toEquiv_injective e.toEquiv.optionCongr_symm
+  ext <| by simp
 
 @[simp]
 theorem withTopCongr_trans (e₁ : α ≃o β) (e₂ : β ≃o γ) :
     (e₁.trans e₂).withTopCongr = e₁.withTopCongr.trans e₂.withTopCongr :=
-  RelIso.toEquiv_injective <| e₁.toEquiv.optionCongr_trans e₂.toEquiv
+  ext <| by simp [Option.map_comp_map e₁ e₂]
 
 /-- A version of `Equiv.optionCongr` for `WithBot`. -/
-@[simps -fullyApplied]
+@[simps! -fullyApplied]
 def withBotCongr (e : α ≃o β) : WithBot α ≃o WithBot β where
-  toFun := WithBot.map e
+  toEquiv := e.optionCongr
   __ := e.toOrderEmbedding.withBotMap
-  __ := e.toEquiv.optionCongr
+
 
 @[simp]
 theorem withBotCongr_refl : (OrderIso.refl α).withBotCongr = OrderIso.refl _ :=
-  RelIso.toEquiv_injective Equiv.optionCongr_refl
+  ext <| by simp
 
 @[simp]
 theorem withBotCongr_symm (e : α ≃o β) : e.symm.withBotCongr = e.withBotCongr.symm :=
-  RelIso.toEquiv_injective e.toEquiv.optionCongr_symm
+  ext <| by simp
 
 @[simp]
 theorem withBotCongr_trans (e₁ : α ≃o β) (e₂ : β ≃o γ) :
     (e₁.trans e₂).withBotCongr = e₁.withBotCongr.trans e₂.withBotCongr :=
-  RelIso.toEquiv_injective <| e₁.toEquiv.optionCongr_trans e₂.toEquiv
+  ext <| by simp [Option.map_comp_map e₁ e₂]
 
 end OrderIso
 
