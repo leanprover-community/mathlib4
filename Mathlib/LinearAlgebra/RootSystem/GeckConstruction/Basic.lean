@@ -338,7 +338,7 @@ instance [Fintype ι] [DecidableEq ι] :
     lieEquivMatrix'_symm_apply]
   suffices ∃ d : b.support ⊕ ι → R, x = Matrix.diagonal d by
     obtain ⟨d, rfl⟩ := this
-    exact Matrix.iSup_maxGenEigenspace_diagonal_eq_top
+    simp
   replace hx : x ∈ span R (range h) := by simpa [cartanSubalgebra', cartanSubalgebra] using hx
   clear hx'
   -- Probably worth breaking out the below as a lemma.
@@ -888,7 +888,7 @@ lemma baz :
       rw [ne_eq, P.pairingIn_eq_zero_iff] at hj₀
       exact ⟨⟨j, hj⟩, hj₀⟩
     obtain ⟨k, hk⟩ := hw (h j) (h_mem_lieAlgebra j) (h_mem_cartanSubalgebra' j _)
-    simpa [h_eq_diagonal, ← Matrix.toLin'_pow, Matrix.fromBlocks_pow, Matrix.diagonal_pow,
+    simpa [h_eq_diagonal, ← Matrix.toLin'_pow, Matrix.fromBlocks_diagonal_pow, Matrix.diagonal_pow,
       Matrix.mulVec_eq_sum, Matrix.diagonal_apply, hj] using congr_fun hk (Sum.inr i)
   · rw [span_le]
     rintro - ⟨i, rfl⟩
