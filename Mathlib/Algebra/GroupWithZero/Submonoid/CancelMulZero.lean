@@ -7,7 +7,7 @@ import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Algebra.Group.Submonoid.Defs
 
 /-!
-# Sub magmas with zero inherit cancellation
+# Submagmas with zero inherit cancellations
 -/
 
 namespace MulZeroMemClass
