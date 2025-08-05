@@ -360,6 +360,17 @@ def homEquiv (h : IsLimit t) {W : C} : (W ⟶ t.pt) ≃ ((Functor.const J).obj W
   left_inv f := h.hom_ext (by simp)
   right_inv π := by aesop_cat
 
+@[reassoc (attr := simp)]
+lemma homEquiv_symm_π_app (h : IsLimit t) {W : C}
+    (f : (const J).obj W ⟶ F) (j : J) :
+    h.homEquiv.symm f ≫ t.π.app j = f.app j := by
+  simp [homEquiv]
+
+lemma homEquiv_symm_naturality (h : IsLimit t) {W W' : C}
+    (f : (const J).obj W ⟶ F) (g : W' ⟶ W) :
+    h.homEquiv.symm ((Functor.const _).map g ≫ f) = g ≫ h.homEquiv.symm f :=
+  h.homEquiv.injective (by aesop)
+
 /-- The universal property of a limit cone: a map `W ⟶ X` is the same as
   a cone on `F` with cone point `W`. -/
 def homIso (h : IsLimit t) (W : C) : ULift.{u₁} (W ⟶ t.pt : Type v₃) ≅ (const J).obj W ⟶ F :=
