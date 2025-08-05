@@ -70,6 +70,16 @@ class IsNotG2 : Prop extends P.IsCrystallographic, P.IsReduced, P.IsIrreducible 
 
 section IsG2
 
+/-- By making an arbitrary choice of roots pairing to `-3`, we can obtain an embedded `𝔤₂` root
+system just from the knowledge that such a pairs exists. -/
+def IsG2.toEmbeddedG2 [P.IsG2] : P.EmbeddedG2 where
+  long := (IsG2.exists_pairingIn_neg_three (P := P)).choose
+  short := (IsG2.exists_pairingIn_neg_three (P := P)).choose_spec.choose
+  pairingIn_long_short := (IsG2.exists_pairingIn_neg_three (P := P)).choose_spec.choose_spec
+
+lemma IsG2.nonempty [P.IsG2] : Nonempty ι :=
+  ⟨(IsG2.exists_pairingIn_neg_three (P := P)).choose⟩
+
 variable [P.IsCrystallographic] [P.IsReduced] [P.IsIrreducible]
 
 lemma isG2_iff :
@@ -470,6 +480,18 @@ variable [P.IsIrreducible]
     fun contra ↦ hk <| span_subset_span ℤ _ _ <| mem_span_of_mem_allRoots P contra
   have aux := isOrthogonal_short_and_long P hk
   rcases hij with rfl | rfl <;> tauto
+
+/-- The distinguished basis carried by an `EmbeddedG2`.
+
+In fact this is a `RootPairing.Base`. TODO Upgrade to this stronger statement. -/
+def basis : Module.Basis (Fin 2) R M :=
+  have : LinearIndependent R ![EmbeddedG2.shortRoot P, EmbeddedG2.longRoot P] := by
+    have := pairing_long_short P
+    refine (IsReduced.linearIndependent_iff P).mpr ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+    · norm_num [h] at this
+    · simp only [root_eq_neg_iff] at h
+      norm_num [h] at this
+  Module.Basis.mk this (by simp)
 
 lemma mem_allRoots (i : ι) :
     P.root i ∈ allRoots P := by

@@ -99,6 +99,36 @@ lemma root_sub_mem_iff_root_add_mem (hkj : k ≠ j) (hkj' : α k ≠ -α i) (hk 
 
 end Base
 
+namespace IsG2 -- TODO Move (requires import reshuffle)
+
+variable {ι R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+  {P : RootPairing ι R M N} [P.IsG2] (b : P.Base) [Finite ι] [CharZero R] [IsDomain R]
+
+@[simp] lemma card_base_support_eq_two :
+    b.support.card = 2 := by
+  have _i := toEmbeddedG2 P
+  have _i : Nonempty ι := IsG2.nonempty P
+  let _i : Fintype b.support := Fintype.ofFinite b.support
+  let b' : P.toRootSystem.Base := b
+  rw [← Fintype.card_fin 2, ← Module.finrank_eq_card_basis (EmbeddedG2.basis P),
+    Module.finrank_eq_card_basis b'.toWeightBasis, Fintype.card_coe]
+
+variable {b}
+variable {i j : ι} (hi : i ∈ b.support) (hj : j ∈ b.support) (h_ne : i ≠ j)
+include hi hj h_ne
+
+lemma span_eq_rootSpan_int :
+    Submodule.span ℤ {P.root i, P.root j} = P.rootSpan ℤ := by
+  classical
+  suffices {i, j} = b.support by rw [← image_pair, ← Finset.coe_pair, this, b.span_int_root_support]
+  have : {i, j} ⊆ b.support := by
+    rw [← Finset.coe_subset, Finset.coe_pair, pair_subset_iff]
+    exact ⟨hi, hj⟩
+  apply Finset.eq_of_subset_of_card_le this
+  aesop
+
+end IsG2
+
 section chainBotCoeff_mul_chainTopCoeff
 
 /-! The proof of Lemma 2.6 from [Geck](Geck2017). -/
@@ -109,7 +139,6 @@ variable {b : P.Base} {i j k l m : ι}
   (h₂ : P.root k - P.root j = P.root m)
   (h₃ : P.root k + P.root i - P.root j ∈ range P.root)
 
--- TODO Turn this `variable` into a lemma: it is implied by the assumptions above.
 variable [P.IsNotG2]
 
 private lemma chainBotCoeff_mul_chainTopCoeff.aux_0 (hik_mem : P.root k + P.root i ∈ range P.root) :
@@ -249,12 +278,86 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_2
   /- We now have contradictory information about root lengths. -/
   omega
 
+omit [P.IsNotG2]
+variable [P.IsReduced] [P.IsIrreducible]
+
+lemma chainBotCoeff_mul_chainTopCoeff.isNotG2 : P.IsNotG2 := by
+  have _i : NoZeroSMulDivisors ℤ M := have _i := P.reflexive_left; .int_of_charZero R M
+  rw [← P.not_isG2_iff_isNotG2]
+  intro contra
+  obtain ⟨n, h₃⟩ := h₃
+  obtain ⟨x, y, h₀⟩ : ∃ x y : ℤ, x • P.root i + y • P.root j = P.root k := by
+    rw [← Submodule.mem_span_pair, IsG2.span_eq_rootSpan_int hi hj hij]
+    exact Submodule.subset_span (mem_range_self k)
+  let s : Set ℤ := {-3, -1, 0, 1, 3}
+  let A : ℤ := P.pairingIn ℤ j i
+  have hki  : P.root k ≠  P.root i := fun contra ↦ by
+    replace h₁ : 2 • P.root i = P.root l := by rwa [contra, ← two_nsmul] at h₁
+    exact P.nsmul_notMem_range_root ⟨_, h₁.symm⟩
+  have hki' : P.root k ≠ -P.root i := fun contra ↦ by
+    replace h₁ : P.root l = 0 := by rwa [contra, neg_add_cancel, eq_comm] at h₁
+    exact P.ne_zero _ h₁
+  have hli  : P.root l ≠  P.root i := fun contra ↦ by
+    replace h₁ : P.root k = 0 := by rwa [contra, add_eq_right] at h₁
+    exact P.ne_zero _ h₁
+  have hli' : P.root l ≠ -P.root i := fun contra ↦ by
+    replace h₁ : P.root k = 2 • P.root l := by
+      rwa [← neg_eq_iff_eq_neg.mpr contra, ← sub_eq_add_neg, sub_eq_iff_eq_add, ← two_nsmul] at h₁
+    exact P.nsmul_notMem_range_root ⟨_, h₁⟩
+  have hmi  : P.root m ≠  P.root i := fun contra ↦ by
+    replace h₂ : P.root k = P.root i + P.root j := by rwa [contra, sub_eq_iff_eq_add] at h₂
+    replace h₃ : P.root n = 2 • P.root i := by rw [h₃, h₂]; abel
+    exact P.nsmul_notMem_range_root ⟨_, h₃⟩
+  have hmi' : P.root m ≠ -P.root i := fun contra ↦ by
+    replace h₂ : P.root k = -P.root i + P.root j := by rwa [contra, sub_eq_iff_eq_add] at h₂
+    replace h₃ : P.root n = 0 := by rw [h₃, h₂]; abel
+    exact P.ne_zero _ h₃
+  have hni  : P.root n ≠  P.root i := fun contra ↦ by
+    replace h₃ : P.root k = P.root j := by
+      rwa [contra, add_comm, add_sub_assoc, left_eq_add, sub_eq_zero] at h₃
+    replace h₂ : P.root m = 0 := by rw [← h₂, h₃, sub_self]
+    exact P.ne_zero _ h₂
+  have hni' : P.root n ≠ -P.root i := fun contra ↦ by
+    replace h₃ : 2 • P.root n = P.root m := by
+      rwa [← neg_eq_iff_eq_neg.mpr contra, add_comm, add_sub_assoc, eq_neg_add_iff_add_eq,
+        ← two_nsmul, h₂] at h₃
+    exact P.nsmul_notMem_range_root ⟨_, h₃.symm⟩
+  replace h₁ : 2 * (x + 1) + A * y ∈ s := by
+    convert IsG2.pairingIn_mem_zero_one_three P l i hli hli'
+    replace h₁ : P.root l = (x + 1) • P.root i + y • P.root j := by rw [← h₁, ← h₀]; module
+    rw [pairingIn_eq_add_of_root_eq_smul_add_smul (S := ℤ) (j := i) h₁, pairingIn_same,
+      Int.zsmul_eq_mul, Int.zsmul_eq_mul]
+    ring
+  replace h₂ : 2 * x + A * (y - 1) ∈ s := by
+    convert IsG2.pairingIn_mem_zero_one_three P m i hmi hmi'
+    replace h₂ : P.root m = x • P.root i + (y - 1) • P.root j := by rw [← h₂, ← h₀]; module
+    rw [pairingIn_eq_add_of_root_eq_smul_add_smul (S := ℤ) (j := i) h₂, pairingIn_same,
+      Int.zsmul_eq_mul, Int.zsmul_eq_mul]
+    ring
+  replace h₃ : 2 * (x + 1) + A * (y - 1) ∈ s := by
+    convert IsG2.pairingIn_mem_zero_one_three P n i hni hni'
+    replace h₃ : P.root n = (x + 1) • P.root i + (y - 1) • P.root j := by rw [h₃, ← h₀]; module
+    rw [pairingIn_eq_add_of_root_eq_smul_add_smul (S := ℤ) (j := i) h₃, pairingIn_same,
+      Int.zsmul_eq_mul, Int.zsmul_eq_mul]
+    ring
+  replace h₀ : 2 * x + A * y ∈ s := by
+    convert IsG2.pairingIn_mem_zero_one_three P k i hki hki'
+    rw [pairingIn_eq_add_of_root_eq_smul_add_smul (j := i) h₀.symm, pairingIn_same,
+      Int.zsmul_eq_mul, Int.zsmul_eq_mul]
+    ring
+  have hA : A ∈ s := IsG2.pairingIn_mem_zero_one_three P j i (P.root.injective.ne_iff.mpr hij.symm)
+    (b.root_ne_neg_of_ne hj hi hij.symm)
+  subst s
+  simp only [mem_insert_iff, mem_singleton_iff] at h₀ h₁ h₂ h₃ hA
+  rcases hA with hA | hA | hA | hA | hA <;> rw [hA] at h₀ h₁ h₂ h₃ <;> omega
+
 open chainBotCoeff_mul_chainTopCoeff in
 /-- This is Lemma 2.6 from [Geck](Geck2017). -/
 lemma chainBotCoeff_mul_chainTopCoeff :
     (P.chainBotCoeff i m + 1) * (P.chainTopCoeff j k + 1) =
       (P.chainTopCoeff j l + 1) * (P.chainBotCoeff i k + 1) := by
   /- Setup some typeclasses. -/
+  have := chainBotCoeff_mul_chainTopCoeff.isNotG2 hi hj hij h₁ h₂ h₃
   have _i := P.reflexive_left
   letI := P.indexNeg
   suffices (P.chainBotCoeff i m + 1) * (P.chainBotCoeff j (-k) + 1) =
@@ -296,6 +399,5 @@ lemma chainBotCoeff_mul_chainTopCoeff :
   omega
 
 end chainBotCoeff_mul_chainTopCoeff
-
 
 end RootPairing
