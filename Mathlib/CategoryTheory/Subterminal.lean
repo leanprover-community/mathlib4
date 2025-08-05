@@ -87,7 +87,7 @@ theorem IsSubterminal.isIso_diag (hA : IsSubterminal A) [HasBinaryProduct A A] :
   ⟨⟨Limits.prod.fst,
       ⟨by simp, by
         rw [IsSubterminal.def] at hA
-        aesop_cat⟩⟩⟩
+        cat_disch⟩⟩⟩
 
 /-- If the diagonal morphism of `A` is an isomorphism, then it is subterminal.
 The converse of `isSubterminal.isIso_diag`.

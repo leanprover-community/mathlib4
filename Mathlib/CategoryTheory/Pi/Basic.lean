@@ -286,7 +286,7 @@ lemma isIso_pi_iff {X Y : ∀ i, C i} (f : X ⟶ Y) :
   · intro _ i
     exact (Pi.isoApp (asIso f) i).isIso_hom
   · intro
-    exact ⟨fun i => inv (f i), by aesop_cat, by aesop_cat⟩
+    exact ⟨fun i => inv (f i), by cat_disch, by cat_disch⟩
 
 variable (C)
 

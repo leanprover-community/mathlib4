@@ -163,8 +163,8 @@ noncomputable def constructLeftAdjoint [∀ X : B, RegularEpi (adj₁.counit.app
   erw [Cofork.IsColimit.homIso_natural, Cofork.IsColimit.homIso_natural]
   erw [adj₂.homEquiv_naturality_right]
   simp_rw [Functor.comp_map]
-  -- This used to be `simp`, but we need `aesop_cat` after https://github.com/leanprover/lean4/pull/2644
-  aesop_cat
+  -- This used to be `simp`, but we need `cat_disch` after https://github.com/leanprover/lean4/pull/2644
+  cat_disch
 
 end LiftLeftAdjoint
 

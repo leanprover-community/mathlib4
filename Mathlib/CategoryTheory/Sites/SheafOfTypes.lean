@@ -185,7 +185,7 @@ theorem yonedaFamily_fromCocone_compatible (S : Sieve X) (s : Cocone (diagram S.
   have hF := @Hs ⟨Over.mk (g₁ ≫ f₁), hgf₁⟩ ⟨Over.mk (g₂ ≫ f₂), hgf₂⟩ F
   have hF₁ := @Hs ⟨Over.mk (g₁ ≫ f₁), hgf₁⟩ ⟨Over.mk f₁, hf₁⟩ F₁
   have hF₂ := @Hs ⟨Over.mk (g₂ ≫ f₂), hgf₂⟩ ⟨Over.mk f₂, hf₂⟩ F₂
-  aesop_cat
+  cat_disch
 
 /--
 The base of a sieve `S` is a colimit of `S` iff all Yoneda-presheaves satisfy
@@ -205,7 +205,7 @@ theorem forallYonedaIsSheaf_iff_colimit (S : Sieve X) :
         replace H := H s.pt (yonedaFamilyOfElements_fromCocone S.arrows s)
           (yonedaFamily_fromCocone_compatible S s)
         have ht := H.choose_spec.1 f.obj.hom f.property
-        aesop_cat
+        cat_disch
       uniq := by
         intro s Fs HFs
         replace H := H s.pt (yonedaFamilyOfElements_fromCocone S.arrows s)

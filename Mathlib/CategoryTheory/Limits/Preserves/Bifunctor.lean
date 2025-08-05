@@ -147,7 +147,7 @@ lemma ι_comp_isoObjConePointsOfIsColimit_inv (j : J₁ × J₂) :
       (isoObjCoconePointsOfIsColimit G hc₁ hc₂ hc₃).inv =
     (G.map <| c₁.ι.app j.1).app (K₂.obj j.2) ≫ (G.obj c₁.pt).map (c₂.ι.app j.2) := by
   dsimp [isoObjCoconePointsOfIsColimit, Functor.mapCocone₂]
-  aesop_cat
+  cat_disch
 
 /-- Characterize the forward direction of the isomorphism
 `PreservesColimit₂.isoObjCoconePointsOfIsColimit` w.r.t the canonical maps to the colimit. -/
@@ -274,7 +274,7 @@ lemma isoObjConePointsOfIsLimit_hom_comp_π (j : J₁ × J₂) :
     (isoObjConePointsOfIsLimit G hc₁ hc₂ hc₃).hom ≫ c₃.π.app j =
     (G.map <| c₁.π.app j.1).app c₂.pt ≫ (G.obj <| K₁.obj j.1).map (c₂.π.app j.2) := by
   dsimp [isoObjConePointsOfIsLimit, Functor.mapCocone₂]
-  aesop_cat
+  cat_disch
 
 /-- Characterize the inverse direction of the isomorphism
 `PreservesLimit₂.isoObjConePointsOfIsLimit` w.r.t the canonical maps to the limit. -/

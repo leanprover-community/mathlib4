@@ -96,8 +96,8 @@ instance : Category.{v} (WithTerminal C) where
     -- Porting note: it would be nice to automate this away as well.
     -- I tried splitting this into separate `Quiver` and `Category` instances,
     -- so the `false_of_from_star` destruct rule below can be used here.
-    -- That works, but causes mysterious failures of `aesop_cat` in `map`.
-    cases a <;> cases b <;> cases c <;> cases d <;> try aesop_cat
+    -- That works, but causes mysterious failures of `cat_disch` in `map`.
+    cases a <;> cases b <;> cases c <;> cases d <;> try cat_disch
     · exact (h : PEmpty).elim
     · exact (g : PEmpty).elim
     · exact (h : PEmpty).elim
@@ -141,7 +141,7 @@ def map {D : Type*} [Category D] (F : C ⥤ D) : WithTerminal C ⥤ WithTerminal
 def mapId (C : Type*) [Category C] : map (𝟭 C) ≅ 𝟭 (WithTerminal C) :=
   NatIso.ofComponents (fun X => match X with
     | of _ => Iso.refl _
-    | star => Iso.refl _) (by aesop_cat)
+    | star => Iso.refl _) (by cat_disch)
 
 /-- A natural isomorphism between the functor `map (F ⋙ G) ` and `map F ⋙ map G `. -/
 @[simps!]
@@ -149,7 +149,7 @@ def mapComp {D E : Type*} [Category D] [Category E] (F : C ⥤ D) (G : D ⥤ E) 
     map (F ⋙ G) ≅ map F ⋙ map G :=
   NatIso.ofComponents (fun X => match X with
     | of _ => Iso.refl _
-    | star => Iso.refl _) (by aesop_cat)
+    | star => Iso.refl _) (by cat_disch)
 
 /-- From a natural transformation of functors `C ⥤ D`, the induced natural transformation
 of functors `WithTerminal C ⥤ WithTerminal D`. -/
@@ -265,7 +265,7 @@ instance {X : WithTerminal C} : Unique (X ⟶ star) where
     match X with
     | of _ => PUnit.unit
     | star => PUnit.unit
-  uniq := by aesop_cat
+  uniq := by cat_disch
 
 /-- `WithTerminal.star` is terminal. -/
 def starTerminal : Limits.IsTerminal (star : WithTerminal C) :=
@@ -478,7 +478,7 @@ instance : Category.{v} (WithInitial C) where
   assoc {a b c d} f g h := by
     -- Porting note: it would be nice to automate this away as well.
     -- See the note on `Category (WithTerminal C)`
-    cases a <;> cases b <;> cases c <;> cases d <;> try aesop_cat
+    cases a <;> cases b <;> cases c <;> cases d <;> try cat_disch
     · exact (g : PEmpty).elim
     · exact (f : PEmpty).elim
     · exact (f : PEmpty).elim
@@ -522,7 +522,7 @@ def map {D : Type*} [Category D] (F : C ⥤ D) : WithInitial C ⥤ WithInitial D
 def mapId (C : Type*) [Category C] : map (𝟭 C) ≅ 𝟭 (WithInitial C) :=
   NatIso.ofComponents (fun X => match X with
     | of _ => Iso.refl _
-    | star => Iso.refl _) (by aesop_cat)
+    | star => Iso.refl _) (by cat_disch)
 
 /-- A natural isomorphism between the functor `map (F ⋙ G) ` and `map F ⋙ map G `. -/
 @[simps!]
@@ -530,7 +530,7 @@ def mapComp {D E : Type*} [Category D] [Category E] (F : C ⥤ D) (G : D ⥤ E) 
     map (F ⋙ G) ≅ map F ⋙ map G :=
   NatIso.ofComponents (fun X => match X with
     | of _ => Iso.refl _
-    | star => Iso.refl _) (by aesop_cat)
+    | star => Iso.refl _) (by cat_disch)
 
 /-- From a natural transformation of functors `C ⥤ D`, the induced natural transformation
 of functors `WithInitial C ⥤ WithInitial D`. -/
@@ -645,7 +645,7 @@ instance {X : WithInitial C} : Unique (star ⟶ X) where
     match X with
     | of _x => PUnit.unit
     | star => PUnit.unit
-  uniq := by aesop_cat
+  uniq := by cat_disch
 
 /-- `WithInitial.star` is initial. -/
 def starInitial : Limits.IsInitial (star : WithInitial C) :=

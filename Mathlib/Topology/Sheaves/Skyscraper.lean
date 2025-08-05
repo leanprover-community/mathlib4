@@ -93,14 +93,14 @@ def SkyscraperPresheafFunctor.map' {a b : C} (f : a ⟶ b) :
 theorem SkyscraperPresheafFunctor.map'_id {a : C} :
     SkyscraperPresheafFunctor.map' p₀ (𝟙 a) = 𝟙 _ := by
   ext U
-  simp only [SkyscraperPresheafFunctor.map'_app]; split_ifs <;> aesop_cat
+  simp only [SkyscraperPresheafFunctor.map'_app]; split_ifs <;> cat_disch
 
 theorem SkyscraperPresheafFunctor.map'_comp {a b c : C} (f : a ⟶ b) (g : b ⟶ c) :
     SkyscraperPresheafFunctor.map' p₀ (f ≫ g) =
       SkyscraperPresheafFunctor.map' p₀ f ≫ SkyscraperPresheafFunctor.map' p₀ g := by
   ext U
   simp only [SkyscraperPresheafFunctor.map'_app]
-  split_ifs with h <;> aesop_cat
+  split_ifs with h <;> cat_disch
 
 /-- Taking skyscraper presheaf at a point is functorial: `c ↦ skyscraper p₀ c` defines a functor by
 sending every `f : a ⟶ b` to the natural transformation `α` defined as: `α(U) = f : a ⟶ b` if

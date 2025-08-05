@@ -85,7 +85,7 @@ commuting with the action of `G`.
 structure Hom (M N : Action V G) where
   /-- The morphism between the underlying objects of this action -/
   hom : M.V ⟶ N.V
-  comm : ∀ g : G, M.ρ g ≫ hom = hom ≫ N.ρ g := by aesop_cat
+  comm : ∀ g : G, M.ρ g ≫ hom = hom ≫ N.ρ g := by cat_disch
 
 namespace Hom
 
@@ -140,7 +140,7 @@ from an isomorphism of the underlying objects,
 where the forward direction commutes with the group action. -/
 @[simps]
 def mkIso {M N : Action V G} (f : M.V ≅ N.V)
-    (comm : ∀ g : G, M.ρ g ≫ f.hom = f.hom ≫ N.ρ g := by aesop_cat) : M ≅ N where
+    (comm : ∀ g : G, M.ρ g ≫ f.hom = f.hom ≫ N.ρ g := by cat_disch) : M ≅ N where
   hom :=
     { hom := f.hom
       comm := comm }

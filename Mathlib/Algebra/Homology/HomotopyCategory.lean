@@ -245,12 +245,12 @@ def NatTrans.mapHomotopyCategory {F G : V ⥤ W} [F.Additive] [G.Additive] (α :
 
 @[simp]
 theorem NatTrans.mapHomotopyCategory_id (c : ComplexShape ι) (F : V ⥤ W) [F.Additive] :
-    NatTrans.mapHomotopyCategory (𝟙 F) c = 𝟙 (F.mapHomotopyCategory c) := by aesop_cat
+    NatTrans.mapHomotopyCategory (𝟙 F) c = 𝟙 (F.mapHomotopyCategory c) := by cat_disch
 
 @[simp]
 theorem NatTrans.mapHomotopyCategory_comp (c : ComplexShape ι) {F G H : V ⥤ W} [F.Additive]
     [G.Additive] [H.Additive] (α : F ⟶ G) (β : G ⟶ H) :
     NatTrans.mapHomotopyCategory (α ≫ β) c =
-      NatTrans.mapHomotopyCategory α c ≫ NatTrans.mapHomotopyCategory β c := by aesop_cat
+      NatTrans.mapHomotopyCategory α c ≫ NatTrans.mapHomotopyCategory β c := by cat_disch
 
 end CategoryTheory

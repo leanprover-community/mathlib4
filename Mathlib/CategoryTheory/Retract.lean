@@ -26,7 +26,7 @@ structure Retract (X Y : C) where
   i : X ⟶ Y
   /-- the split epimorphism -/
   r : Y ⟶ X
-  retract : i ≫ r = 𝟙 X := by aesop_cat
+  retract : i ≫ r = 𝟙 X := by cat_disch
 
 namespace Retract
 

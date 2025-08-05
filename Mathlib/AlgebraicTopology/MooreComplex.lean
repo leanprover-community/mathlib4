@@ -129,7 +129,7 @@ def map (f : X ⟶ Y) : obj X ⟶ obj Y :=
         erw [kernelSubobject_arrow_comp_assoc]
         rw [zero_comp, comp_zero]))
     fun n => by
-    cases n <;> dsimp [objD, objX] <;> aesop_cat
+    cases n <;> dsimp [objD, objX] <;> cat_disch
 
 end NormalizedMooreComplex
 

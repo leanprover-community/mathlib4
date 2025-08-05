@@ -76,7 +76,7 @@ theorem zsmul_f_apply (n : ℤ) (f : C ⟶ D) (i : ι) : (n • f).f i = n • f
 
 instance : AddCommGroup (C ⟶ D) :=
   Function.Injective.addCommGroup Hom.f HomologicalComplex.hom_f_injective
-    (by aesop_cat) (by aesop_cat) (by aesop_cat) (by aesop_cat) (by aesop_cat) (by aesop_cat)
+    (by cat_disch) (by cat_disch) (by cat_disch) (by cat_disch) (by cat_disch) (by cat_disch)
 
 -- Porting note: proofs had to be provided here, otherwise Lean tries to apply
 -- `Preadditive.add_comp/comp_add` to `HomologicalComplex V c`
@@ -159,7 +159,7 @@ def NatTrans.mapHomologicalComplex {F G : W₁ ⥤ W₂}
 @[simp]
 theorem NatTrans.mapHomologicalComplex_id
     (c : ComplexShape ι) (F : W₁ ⥤ W₂) [F.PreservesZeroMorphisms] :
-    NatTrans.mapHomologicalComplex (𝟙 F) c = 𝟙 (F.mapHomologicalComplex c) := by aesop_cat
+    NatTrans.mapHomologicalComplex (𝟙 F) c = 𝟙 (F.mapHomologicalComplex c) := by cat_disch
 
 @[simp]
 theorem NatTrans.mapHomologicalComplex_comp (c : ComplexShape ι) {F G H : W₁ ⥤ W₂}
@@ -167,7 +167,7 @@ theorem NatTrans.mapHomologicalComplex_comp (c : ComplexShape ι) {F G H : W₁ 
     (α : F ⟶ G) (β : G ⟶ H) :
     NatTrans.mapHomologicalComplex (α ≫ β) c =
       NatTrans.mapHomologicalComplex α c ≫ NatTrans.mapHomologicalComplex β c := by
-  aesop_cat
+  cat_disch
 
 @[reassoc]
 theorem NatTrans.mapHomologicalComplex_naturality {c : ComplexShape ι} {F G : W₁ ⥤ W₂}

@@ -47,7 +47,7 @@ structure MapFactorizationData {X Y : C} (f : X ⟶ Y) where
   i : X ⟶ Z
   /-- the second morphism in the factorization -/
   p : Z ⟶ Y
-  fac : i ≫ p = f := by aesop_cat
+  fac : i ≫ p = f := by cat_disch
   hi : W₁ i
   hp : W₂ p
 
@@ -89,7 +89,7 @@ structure FunctorialFactorizationData where
   i : Arrow.leftFunc ⟶ Z
   /-- the second morphism in the factorizations -/
   p : Z ⟶ Arrow.rightFunc
-  fac : i ≫ p = Arrow.leftToRight := by aesop_cat
+  fac : i ≫ p = Arrow.leftToRight := by cat_disch
   hi (f : Arrow C) : W₁ (i.app f)
   hp (f : Arrow C) : W₂ (p.app f)
 

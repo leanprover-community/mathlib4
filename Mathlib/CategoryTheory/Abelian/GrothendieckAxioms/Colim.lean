@@ -80,7 +80,7 @@ lemma IsColimit.mono_ι_app_of_isFiltered
         simp only [Category.id_comp, ← X.map_comp, Under.w] }
   have := NatTrans.mono_of_mono_app f
   exact colim.map_mono' f (isColimitConstCocone _ _)
-    ((Functor.Final.isColimitWhiskerEquiv _ _).symm hc) (c.ι.app j₀) (by aesop_cat)
+    ((Functor.Final.isColimitWhiskerEquiv _ _).symm hc) (c.ι.app j₀) (by cat_disch)
 
 section
 

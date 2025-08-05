@@ -139,7 +139,7 @@ def mapPair : F ⟶ G where
   app
     | ⟨left⟩ => f
     | ⟨right⟩ => g
-  naturality := fun ⟨X⟩ ⟨Y⟩ ⟨⟨u⟩⟩ => by aesop_cat
+  naturality := fun ⟨X⟩ ⟨Y⟩ ⟨⟨u⟩⟩ => by cat_disch
 
 @[simp]
 theorem mapPair_left : (mapPair f g).app ⟨left⟩ = f :=
@@ -156,7 +156,7 @@ def mapPairIso (f : F.obj ⟨left⟩ ≅ G.obj ⟨left⟩) (g : F.obj ⟨right�
   NatIso.ofComponents (fun j ↦ match j with
     | ⟨left⟩ => f
     | ⟨right⟩ => g)
-    (fun ⟨⟨u⟩⟩ => by aesop_cat)
+    (fun ⟨⟨u⟩⟩ => by cat_disch)
 
 end
 

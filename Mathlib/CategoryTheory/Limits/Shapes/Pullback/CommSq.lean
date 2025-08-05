@@ -346,7 +346,7 @@ theorem of_horiz_isIso_mono [IsIso fst] [Mono g] (sq : CommSq fst snd f g) :
     (by
       refine
         PullbackCone.IsLimit.mk _ (fun s => s.fst ≫ inv fst) (by simp)
-          (fun s => ?_) (by aesop_cat)
+          (fun s => ?_) (by cat_disch)
       simp only [← cancel_mono g, Category.assoc, ← sq.w, IsIso.inv_hom_id_assoc, s.condition])
 
 theorem of_horiz_isIso [IsIso fst] [IsIso g] (sq : CommSq fst snd f g) :

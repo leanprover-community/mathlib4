@@ -44,10 +44,10 @@ class Linear (R : Type w) [Semiring R] (C : Type u) [Category.{v} C] [Preadditiv
   homModule : ∀ X Y : C, Module R (X ⟶ Y) := by infer_instance
   /-- compatibility of the scalar multiplication with the post-composition -/
   smul_comp : ∀ (X Y Z : C) (r : R) (f : X ⟶ Y) (g : Y ⟶ Z), (r • f) ≫ g = r • f ≫ g := by
-    aesop_cat
+    cat_disch
   /-- compatibility of the scalar multiplication with the pre-composition -/
   comp_smul : ∀ (X Y Z : C) (f : X ⟶ Y) (r : R) (g : Y ⟶ Z), f ≫ (r • g) = r • f ≫ g := by
-    aesop_cat
+    cat_disch
 
 attribute [instance] Linear.homModule
 

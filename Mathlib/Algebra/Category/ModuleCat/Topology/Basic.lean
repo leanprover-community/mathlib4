@@ -116,8 +116,8 @@ def _root_.CategoryTheory.Iso.toContinuousLinearEquiv
     {X Y : TopModuleCat R} (e : X ≅ Y) : X ≃L[R] Y where
   __ := e.hom.hom
   invFun := e.inv.hom
-  left_inv x := by aesop_cat
-  right_inv x := by aesop_cat
+  left_inv x := by cat_disch
+  right_inv x := by cat_disch
 
 instance {X Y : TopModuleCat R} : AddCommGroup (X ⟶ Y) where
   add f g := ofHom (f.hom + g.hom)

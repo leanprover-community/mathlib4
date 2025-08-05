@@ -125,13 +125,13 @@ theorem w {f g : MonoOver X} (k : f ⟶ g) : k.left ≫ g.arrow = f.arrow :=
 
 /-- Convenience constructor for a morphism in monomorphisms over `X`. -/
 abbrev homMk {f g : MonoOver X} (h : f.obj.left ⟶ g.obj.left)
-    (w : h ≫ g.arrow = f.arrow := by aesop_cat) : f ⟶ g :=
+    (w : h ≫ g.arrow = f.arrow := by cat_disch) : f ⟶ g :=
   Over.homMk h w
 
 /-- Convenience constructor for an isomorphism in monomorphisms over `X`. -/
 @[simps]
 def isoMk {f g : MonoOver X} (h : f.obj.left ≅ g.obj.left)
-    (w : h.hom ≫ g.arrow = f.arrow := by aesop_cat) : f ≅ g where
+    (w : h.hom ≫ g.arrow = f.arrow := by cat_disch) : f ≅ g where
   hom := homMk h.hom w
   inv := homMk h.inv (by rw [h.inv_comp_eq, w])
 

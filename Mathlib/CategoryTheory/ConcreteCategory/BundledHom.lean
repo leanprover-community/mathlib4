@@ -34,14 +34,14 @@ structure BundledHom where
   comp : ∀ {α β γ : Type u} (Iα : c α) (Iβ : c β) (Iγ : c γ), hom Iβ Iγ → hom Iα Iβ → hom Iα Iγ
   /-- a bundled morphism is determined by the underlying map -/
   hom_ext : ∀ {α β : Type u} (Iα : c α) (Iβ : c β), Function.Injective (toFun Iα Iβ) := by
-    aesop_cat
+    cat_disch
   /-- compatibility with identities -/
-  id_toFun : ∀ {α : Type u} (I : c α), toFun I I (id I) = _root_.id := by aesop_cat
+  id_toFun : ∀ {α : Type u} (I : c α), toFun I I (id I) = _root_.id := by cat_disch
   /-- compatibility with the composition -/
   comp_toFun :
     ∀ {α β γ : Type u} (Iα : c α) (Iβ : c β) (Iγ : c γ) (f : hom Iα Iβ) (g : hom Iβ Iγ),
       toFun Iα Iγ (comp Iα Iβ Iγ g f) = toFun Iβ Iγ g ∘ toFun Iα Iβ f := by
-    aesop_cat
+    cat_disch
 
 attribute [class] BundledHom
 
@@ -62,7 +62,7 @@ instance category : Category (Bundled c) where
   id := fun X => BundledHom.id 𝒞 (α := X) X.str
   comp := fun {X Y Z} f g => BundledHom.comp 𝒞 (α := X) (β := Y) (γ := Z) X.str Y.str Z.str g f
   comp_id _ := by apply 𝒞.hom_ext; simp
-  assoc _ _ _ := by apply 𝒞.hom_ext; aesop_cat
+  assoc _ _ _ := by apply 𝒞.hom_ext; cat_disch
   id_comp _ := by apply 𝒞.hom_ext; simp
 
 /-- A category given by `BundledHom` is a concrete category. -/

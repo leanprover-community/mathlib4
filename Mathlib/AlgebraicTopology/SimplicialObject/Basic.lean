@@ -957,7 +957,7 @@ def simplicialCosimplicialAugmentedEquiv :
       rw [← f.op_unop]
       simp_rw [← op_comp]
       congr 1
-      aesop_cat
+      cat_disch
   counitIso := NatIso.ofComponents fun X => X.leftOpRightOpIso
 
 end CategoryTheory

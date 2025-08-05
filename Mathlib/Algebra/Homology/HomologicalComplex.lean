@@ -55,8 +55,8 @@ The composite of any two differentials `d i j ≫ d j k` must be zero.
 structure HomologicalComplex (c : ComplexShape ι) where
   X : ι → V
   d : ∀ i j, X i ⟶ X j
-  shape : ∀ i j, ¬c.Rel i j → d i j = 0 := by aesop_cat
-  d_comp_d' : ∀ i j k, c.Rel i j → c.Rel j k → d i j ≫ d j k = 0 := by aesop_cat
+  shape : ∀ i j, ¬c.Rel i j → d i j = 0 := by cat_disch
+  d_comp_d' : ∀ i j k, c.Rel i j → c.Rel j k → d i j ≫ d j k = 0 := by cat_disch
 
 namespace HomologicalComplex
 
@@ -214,7 +214,7 @@ commuting with the differentials.
 @[ext]
 structure Hom (A B : HomologicalComplex V c) where
   f : ∀ i, A.X i ⟶ B.X i
-  comm' : ∀ i j, c.Rel i j → f i ≫ B.d i j = A.d i j ≫ f j := by aesop_cat
+  comm' : ∀ i j, c.Rel i j → f i ≫ B.d i j = A.d i j ≫ f j := by cat_disch
 
 @[reassoc (attr := simp)]
 theorem Hom.comm {A B : HomologicalComplex V c} (f : A.Hom B) (i j : ι) :
@@ -269,7 +269,7 @@ theorem eqToHom_f {C₁ C₂ : HomologicalComplex V c} (h : C₁ = C₂) (n : ι
 
 -- We'll use this later to show that `HomologicalComplex V c` is preadditive when `V` is.
 theorem hom_f_injective {C₁ C₂ : HomologicalComplex V c} :
-    Function.Injective fun f : Hom C₁ C₂ => f.f := by aesop_cat
+    Function.Injective fun f : Hom C₁ C₂ => f.f := by cat_disch
 
 instance (X Y : HomologicalComplex V c) : Zero (X ⟶ Y) :=
   ⟨{ f := fun _ => 0}⟩
@@ -496,7 +496,7 @@ def isoApp (f : C₁ ≅ C₂) (i : ι) : C₁.X i ≅ C₂.X i :=
 which commute with the differentials. -/
 @[simps]
 def isoOfComponents (f : ∀ i, C₁.X i ≅ C₂.X i)
-    (hf : ∀ i j, c.Rel i j → (f i).hom ≫ C₂.d i j = C₁.d i j ≫ (f j).hom := by aesop_cat) :
+    (hf : ∀ i j, c.Rel i j → (f i).hom ≫ C₂.d i j = C₁.d i j ≫ (f j).hom := by cat_disch) :
     C₁ ≅ C₂ where
   hom :=
     { f := fun i => (f i).hom

@@ -194,8 +194,8 @@ noncomputable def splitEpiEquiv [Full F] [Faithful F] : SplitEpi f ≃ SplitEpi 
     apply F.map_injective
     simp only [map_comp, map_preimage, map_id]
     apply SplitEpi.id⟩
-  left_inv := by aesop_cat
-  right_inv x := by aesop_cat
+  left_inv := by cat_disch
+  right_inv x := by cat_disch
 
 @[simp]
 theorem isSplitEpi_iff [Full F] [Faithful F] : IsSplitEpi (F.map f) ↔ IsSplitEpi f := by
@@ -212,8 +212,8 @@ noncomputable def splitMonoEquiv [Full F] [Faithful F] : SplitMono f ≃ SplitMo
     apply F.map_injective
     simp only [map_comp, map_preimage, map_id]
     apply SplitMono.id⟩
-  left_inv := by aesop_cat
-  right_inv x := by aesop_cat
+  left_inv := by cat_disch
+  right_inv x := by cat_disch
 
 @[simp]
 theorem isSplitMono_iff [Full F] [Faithful F] : IsSplitMono (F.map f) ↔ IsSplitMono f := by

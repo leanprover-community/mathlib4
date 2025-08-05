@@ -193,8 +193,8 @@ defines an isomorphism in `Cat`. -/
 def isoOfEquiv {C D : Cat.{v, u}} (e : C ≌ D)
     (h₁ : ∀ (X : C), e.inverse.obj (e.functor.obj X) = X)
     (h₂ : ∀ (Y : D), e.functor.obj (e.inverse.obj Y) = Y)
-    (h₃ : ∀ (X : C), e.unitIso.hom.app X = eqToHom (h₁ X).symm := by aesop_cat)
-    (h₄ : ∀ (Y : D), e.counitIso.hom.app Y = eqToHom (h₂ Y) := by aesop_cat) :
+    (h₃ : ∀ (X : C), e.unitIso.hom.app X = eqToHom (h₁ X).symm := by cat_disch)
+    (h₄ : ∀ (Y : D), e.counitIso.hom.app Y = eqToHom (h₂ Y) := by cat_disch) :
     C ≅ D where
   hom := e.functor
   inv := e.inverse
@@ -219,9 +219,9 @@ def typeToCat : Type u ⥤ Cat where
       cases f
       simp only [eqToHom_refl, Cat.id_map, Category.comp_id, Category.id_comp]
       apply ULift.ext
-      aesop_cat
+      cat_disch
     · simp
-  map_comp f g := by apply Functor.ext; aesop_cat
+  map_comp f g := by apply Functor.ext; cat_disch
 
 instance : Functor.Faithful typeToCat.{u} where
   map_injective {_X} {_Y} _f _g h :=
@@ -233,7 +233,7 @@ instance : Functor.Full typeToCat.{u} where
     · intro x y f
       dsimp
       apply ULift.ext
-      aesop_cat
+      cat_disch
     · rintro ⟨x⟩
       apply Discrete.ext
       rfl⟩

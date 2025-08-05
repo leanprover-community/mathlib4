@@ -277,7 +277,7 @@ def emptyTo (X : LocallyRingedSpace.{u}) : ∅ ⟶ X :=
 noncomputable
 instance {X : LocallyRingedSpace.{u}} : Unique (∅ ⟶ X) where
   default := LocallyRingedSpace.emptyTo X
-  uniq f := by ext ⟨⟩ x; aesop_cat
+  uniq f := by ext ⟨⟩ x; cat_disch
 
 /-- The empty space is initial in `LocallyRingedSpace`. -/
 noncomputable

@@ -72,7 +72,7 @@ theorem conj_pow (f : End X) (n : ℕ) : α.conj (f ^ n) = α.conj f ^ n :=
 def conjAut : Aut X ≃* Aut Y :=
   (Aut.unitsEndEquivAut X).symm.trans <| (Units.mapEquiv α.conj).trans <| Aut.unitsEndEquivAut Y
 
-theorem conjAut_apply (f : Aut X) : α.conjAut f = α.symm ≪≫ f ≪≫ α := by aesop_cat
+theorem conjAut_apply (f : Aut X) : α.conjAut f = α.symm ≪≫ f ≪≫ α := by cat_disch
 
 @[simp]
 theorem conjAut_hom (f : Aut X) : (α.conjAut f).hom = α.conj f.hom :=

@@ -29,9 +29,9 @@ variable [MonoidalCategory C]
 -/
 class MonoidalLinear [MonoidalPreadditive C] : Prop where
   whiskerLeft_smul : ∀ (X : C) {Y Z : C} (r : R) (f : Y ⟶ Z) , X ◁ (r • f) = r • (X ◁ f) := by
-    aesop_cat
+    cat_disch
   smul_whiskerRight : ∀ (r : R) {Y Z : C} (f : Y ⟶ Z) (X : C), (r • f) ▷ X = r • (f ▷ X) := by
-    aesop_cat
+    cat_disch
 
 attribute [simp] MonoidalLinear.whiskerLeft_smul MonoidalLinear.smul_whiskerRight
 

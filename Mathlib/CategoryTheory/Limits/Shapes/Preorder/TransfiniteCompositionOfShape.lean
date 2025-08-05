@@ -51,7 +51,7 @@ structure TransfiniteCompositionOfShape [SuccOrder J] [WellFoundedLT J] where
   incl : F ⟶ (Functor.const _).obj Y
   /-- the colimit of `F` identifies to `Y` -/
   isColimit : IsColimit (Cocone.mk Y incl)
-  fac : isoBot.inv ≫ incl.app ⊥ = f := by aesop_cat
+  fac : isoBot.inv ≫ incl.app ⊥ = f := by cat_disch
 
 namespace TransfiniteCompositionOfShape
 

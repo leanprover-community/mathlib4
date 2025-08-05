@@ -147,14 +147,14 @@ def cechNerveEquiv (X : SimplicialObject.Augmented C) (F : Arrow C) :
 abbrev cechNerveAdjunction : (Augmented.toArrow : _ ⥤ Arrow C) ⊣ augmentedCechNerve :=
   Adjunction.mkOfHomEquiv
     { homEquiv := cechNerveEquiv
-      homEquiv_naturality_left_symm := by dsimp [cechNerveEquiv]; aesop_cat
+      homEquiv_naturality_left_symm := by dsimp [cechNerveEquiv]; cat_disch
       homEquiv_naturality_right := by
         dsimp [cechNerveEquiv]
         -- The next three lines were not needed before https://github.com/leanprover/lean4/pull/2644
         intro X Y Y' f g
         change equivalenceLeftToRight X Y' (f ≫ g) =
           equivalenceLeftToRight X Y f ≫ augmentedCechNerve.map g
-        aesop_cat
+        cat_disch
     }
 
 end SimplicialObject

@@ -111,7 +111,7 @@ lemma inr_fst :
 
 @[simp]
 lemma inr_snd :
-    (Cochain.ofHom (inr φ)).comp (snd φ) (zero_add 0) = Cochain.ofHom (𝟙 G) := by aesop_cat
+    (Cochain.ofHom (inr φ)).comp (snd φ) (zero_add 0) = Cochain.ofHom (𝟙 G) := by cat_disch
 
 /-! In order to obtain identities of cochains involving `inl`, `inr`, `fst` and `snd`,
 it is often convenient to use an `ext` lemma, and use simp lemmas like `inl_v_f_fst_v`,
@@ -381,7 +381,7 @@ lemma inr_f_desc_f (p : ℤ) :
   simp [desc]
 
 @[reassoc (attr := simp)]
-lemma inr_desc : inr φ ≫ desc φ α β eq = β := by aesop_cat
+lemma inr_desc : inr φ ≫ desc φ α β eq = β := by cat_disch
 
 lemma desc_f (p q : ℤ) (hpq : p + 1 = q) :
     (desc φ α β eq).f p = (fst φ).1.v p q hpq ≫ α.v q p (by omega) +

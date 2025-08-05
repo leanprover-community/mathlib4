@@ -78,18 +78,18 @@ structure Bimod (A B : Mon_ C) where
   X : C
   /-- The left action of this bimodule object -/
   actLeft : A.X ⊗ X ⟶ X
-  one_actLeft : η ▷ X ≫ actLeft = (λ_ X).hom := by aesop_cat
+  one_actLeft : η ▷ X ≫ actLeft = (λ_ X).hom := by cat_disch
   left_assoc :
-    μ ▷ X ≫ actLeft = (α_ A.X A.X X).hom ≫ A.X ◁ actLeft ≫ actLeft := by aesop_cat
+    μ ▷ X ≫ actLeft = (α_ A.X A.X X).hom ≫ A.X ◁ actLeft ≫ actLeft := by cat_disch
   /-- The right action of this bimodule object -/
   actRight : X ⊗ B.X ⟶ X
-  actRight_one : X ◁ η ≫ actRight = (ρ_ X).hom := by aesop_cat
+  actRight_one : X ◁ η ≫ actRight = (ρ_ X).hom := by cat_disch
   right_assoc :
     X ◁ μ ≫ actRight = (α_ X B.X B.X).inv ≫ actRight ▷ B.X ≫ actRight := by
-    aesop_cat
+    cat_disch
   middle_assoc :
     actLeft ▷ B.X ≫ actRight = (α_ A.X X B.X).hom ≫ A.X ◁ actRight ≫ actLeft := by
-    aesop_cat
+    cat_disch
 
 attribute [reassoc (attr := simp)] Bimod.one_actLeft Bimod.actRight_one Bimod.left_assoc
   Bimod.right_assoc Bimod.middle_assoc
@@ -103,8 +103,8 @@ variable {A B : Mon_ C} (M : Bimod A B)
 structure Hom (M N : Bimod A B) where
   /-- The morphism between `M`'s monoidal category and `N`'s monoidal category -/
   hom : M.X ⟶ N.X
-  left_act_hom : M.actLeft ≫ hom = (A.X ◁ hom) ≫ N.actLeft := by aesop_cat
-  right_act_hom : M.actRight ≫ hom = (hom ▷ B.X) ≫ N.actRight := by aesop_cat
+  left_act_hom : M.actLeft ≫ hom = (A.X ◁ hom) ≫ N.actLeft := by cat_disch
+  right_act_hom : M.actRight ≫ hom = (hom ▷ B.X) ≫ N.actRight := by cat_disch
 
 attribute [reassoc (attr := simp)] Hom.left_act_hom Hom.right_act_hom
 

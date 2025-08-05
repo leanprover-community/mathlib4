@@ -46,7 +46,7 @@ class Full (F : C ⥤ D) : Prop where
 class Faithful (F : C ⥤ D) : Prop where
   /-- `F.map` is injective for each `X Y : C`. -/
   map_injective : ∀ {X Y : C}, Function.Injective (F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)) := by
-    aesop_cat
+    cat_disch
 
 variable {X Y : C}
 
@@ -117,8 +117,8 @@ in order to express that `F` is a fully faithful functor. -/
 structure FullyFaithful where
   /-- The inverse map `(F.obj X ⟶ F.obj Y) ⟶ (X ⟶ Y)` of `F.map`. -/
   preimage {X Y : C} (f : F.obj X ⟶ F.obj Y) : X ⟶ Y
-  map_preimage {X Y : C} (f : F.obj X ⟶ F.obj Y) : F.map (preimage f) = f := by aesop_cat
-  preimage_map {X Y : C} (f : X ⟶ Y) : preimage (F.map f) = f := by aesop_cat
+  map_preimage {X Y : C} (f : F.obj X ⟶ F.obj Y) : F.map (preimage f) = f := by cat_disch
+  preimage_map {X Y : C} (f : X ⟶ Y) : preimage (F.map f) = f := by cat_disch
 
 namespace FullyFaithful
 
@@ -204,8 +204,8 @@ lemma isIso_of_isIso_map {X Y : C} (f : X ⟶ Y) [IsIso (F.map f)] :
 def isoEquiv {X Y : C} : (X ≅ Y) ≃ (F.obj X ≅ F.obj Y) where
   toFun := F.mapIso
   invFun := hF.preimageIso
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
 /-- Fully faithful functors are stable by composition. -/
 @[simps]

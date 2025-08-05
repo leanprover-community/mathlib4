@@ -272,7 +272,7 @@ def limit.homIso' (F : J ⥤ C) [HasLimit F] (W : C) :
   (limit.isLimit F).homIso' W
 
 theorem limit.lift_extend {F : J ⥤ C} [HasLimit F] (c : Cone F) {X : C} (f : X ⟶ c.pt) :
-    limit.lift F (c.extend f) = f ≫ limit.lift F c := by aesop_cat
+    limit.lift F (c.extend f) = f ≫ limit.lift F c := by cat_disch
 
 /-- If a functor `F` has a limit, so does any naturally isomorphic functor.
 -/
@@ -383,7 +383,7 @@ we obtain a formula for `limit.pre F E`.
 -/
 theorem limit.pre_eq (s : LimitCone (E ⋙ F)) (t : LimitCone F) :
     limit.pre F E = (limit.isoLimitCone t).hom ≫ s.isLimit.lift (t.cone.whisker E) ≫
-      (limit.isoLimitCone s).inv := by aesop_cat
+      (limit.isoLimitCone s).inv := by cat_disch
 
 end Pre
 
@@ -484,7 +484,7 @@ theorem limit.map_pre' [HasLimitsOfShape K C] (F : J ⥤ C) {E₁ E₂ : K ⥤ J
   ext1; simp
 
 theorem limit.id_pre (F : J ⥤ C) : limit.pre F (𝟭 _) = lim.map (Functor.leftUnitor F).inv := by
-  aesop_cat
+  cat_disch
 
 theorem limit.map_post {D : Type u'} [Category.{v'} D] [HasLimitsOfShape J D] (H : C ⥤ D) :
     /- H (limit F) ⟶ H (limit G) ⟶ limit (G ⋙ H) vs
@@ -508,8 +508,8 @@ def constLimAdj : (const J : C ⥤ J ⥤ C) ⊣ lim := Adjunction.mk' {
     { toFun := fun f => limit.lift _ ⟨c, f⟩
       invFun := fun f =>
         { app := fun _ => f ≫ limit.π _ _ }
-      left_inv := by aesop_cat
-      right_inv := by aesop_cat }
+      left_inv := by cat_disch
+      right_inv := by cat_disch }
   unit := { app := fun _ => limit.lift _ ⟨_, 𝟙 _⟩ }
   counit := { app := fun g => { app := limit.π _ } } }
 
@@ -918,7 +918,7 @@ theorem colimit.pre_eq (s : ColimitCocone (E ⋙ F)) (t : ColimitCocone F) :
     colimit.pre F E =
       (colimit.isoColimitCocone s).hom ≫
         s.isColimit.desc (t.cocone.whisker E) ≫ (colimit.isoColimitCocone t).inv := by
-  aesop_cat
+  cat_disch
 
 end Pre
 
@@ -1024,7 +1024,7 @@ theorem colimit.pre_map' [HasColimitsOfShape K C] (F : J ⥤ C) {E₁ E₂ : K �
   simp
 
 theorem colimit.pre_id (F : J ⥤ C) :
-    colimit.pre F (𝟭 _) = colim.map (Functor.leftUnitor F).hom := by aesop_cat
+    colimit.pre F (𝟭 _) = colim.map (Functor.leftUnitor F).hom := by cat_disch
 
 theorem colimit.map_post {D : Type u'} [Category.{v'} D] [HasColimitsOfShape J D]
     (H : C ⥤ D) :
@@ -1053,8 +1053,8 @@ def colimConstAdj : (colim : (J ⥤ C) ⥤ C) ⊣ const J := Adjunction.mk' {
     { toFun := fun g =>
         { app := fun _ => colimit.ι _ _ ≫ g }
       invFun := fun g => colimit.desc _ ⟨_, g⟩
-      left_inv := by aesop_cat
-      right_inv := by aesop_cat }
+      left_inv := by cat_disch
+      right_inv := by cat_disch }
   unit := { app := fun g => { app := colimit.ι _ } }
   counit := { app := fun _ => colimit.desc _ ⟨_, 𝟙 _⟩ } }
 

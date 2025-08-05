@@ -141,7 +141,7 @@ out to be very easy), and then obtain a functor `F C ⥤ N C` by plugging in the
 @[simp]
 def normalize : F C ⥤ N C ⥤ N C where
   obj X := normalizeObj' X
-  map {X Y} := Quotient.lift normalizeMapAux (by aesop_cat)
+  map {X Y} := Quotient.lift normalizeMapAux (by cat_disch)
 
 /-- A variant of the normalization functor where we consider the result as an object in the free
 monoidal category (rather than an object of the discrete subcategory of objects in normal form). -/
@@ -325,7 +325,7 @@ end
 
 instance : Groupoid.{u} (F C) :=
   { (inferInstance : Category (F C)) with
-    inv := Quotient.lift (fun f => ⟦inverseAux f⟧) (by aesop_cat) }
+    inv := Quotient.lift (fun f => ⟦inverseAux f⟧) (by cat_disch) }
 
 end Groupoid
 

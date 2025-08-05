@@ -81,10 +81,10 @@ class ExactPairing (X Y : C) where
   evaluation' : Y ⊗ X ⟶ 𝟙_ C
   coevaluation_evaluation' :
     Y ◁ coevaluation' ≫ (α_ _ _ _).inv ≫ evaluation' ▷ Y = (ρ_ Y).hom ≫ (λ_ Y).inv := by
-    aesop_cat
+    cat_disch
   evaluation_coevaluation' :
     coevaluation' ▷ X ≫ (α_ _ _ _).hom ≫ X ◁ evaluation' = (λ_ X).hom ≫ (ρ_ X).inv := by
-    aesop_cat
+    cat_disch
 
 namespace ExactPairing
 
