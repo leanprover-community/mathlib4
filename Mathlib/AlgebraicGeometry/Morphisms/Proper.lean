@@ -35,7 +35,7 @@ variable {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
 
 /-- A morphism is proper if it is separated, universally closed and locally of finite type. -/
 @[mk_iff]
-class IsProper extends IsSeparated f, UniversallyClosed f, LocallyOfFiniteType f : Prop where
+class IsProper : Prop extends IsSeparated f, UniversallyClosed f, LocallyOfFiniteType f where
 
 lemma isProper_eq : @IsProper =
     (@IsSeparated ⊓ @UniversallyClosed : MorphismProperty Scheme) ⊓ @LocallyOfFiniteType := by
@@ -114,18 +114,12 @@ theorem isIntegral_appTop_of_universallyClosed (f : X ⟶ Y) [UniversallyClosed 
     rwa [← Scheme.toSpecΓ_naturality,
       MorphismProperty.cancel_right_of_respectsIso (P := @UniversallyClosed)]
   have : UniversallyClosed X.toSpecΓ := .of_comp_of_isSeparated _ (Spec.map f.appTop)
-  have : Surjective X.toSpecΓ := by
-    constructor
-    apply surjective_of_isClosed_range_of_injective
-    · exact X.toSpecΓ.isClosedMap.isClosed_range
-    · simp only [Scheme.toSpecΓ_appTop]
-      exact (ConcreteCategory.bijective_of_isIso (Scheme.ΓSpecIso Γ(X, ⊤)).hom).1
   rw [← IsIntegralHom.SpecMap_iff, IsIntegralHom.iff_universallyClosed_and_isAffineHom]
   exact ⟨.of_comp_surjective X.toSpecΓ _, inferInstance⟩
 
 /-- If `X` is an integral scheme that is universally closed over `Spec K`,
 then `Γ(X, ⊤)` is a field. -/
-theorem isField_of_universallyClosed (f : X ⟶ Spec (.of K)) [IsIntegral X] [UniversallyClosed f] :
+theorem isField_of_universallyClosed (f : X ⟶ Spec(K)) [IsIntegral X] [UniversallyClosed f] :
     IsField Γ(X, ⊤) := by
   let F := (Scheme.ΓSpecIso _).inv ≫ f.appTop
   have : F.hom.IsIntegral := by
@@ -136,7 +130,7 @@ theorem isField_of_universallyClosed (f : X ⟶ Spec (.of K)) [IsIntegral X] [Un
 
 /-- If `X` is an integral scheme that is universally closed and of finite type over `Spec K`,
 then `Γ(X, ⊤)` is a finite field extension over `K`. -/
-theorem finite_appTop_of_universallyClosed (f : X ⟶ Spec (.of K))
+theorem finite_appTop_of_universallyClosed (f : X ⟶ Spec(K))
     [IsIntegral X] [UniversallyClosed f] [LocallyOfFiniteType f] :
     f.appTop.hom.Finite := by
   have x : X := Nonempty.some inferInstance

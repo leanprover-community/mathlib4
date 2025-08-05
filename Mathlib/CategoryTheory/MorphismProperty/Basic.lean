@@ -185,7 +185,7 @@ class RespectsLeft (P Q : MorphismProperty C) : Prop where
 
 /-- A morphism property `P` satisfies `P.Respects Q` if it is stable under composition on the
 left and right by morphisms satisfying `Q`. -/
-class Respects (P Q : MorphismProperty C) extends P.RespectsLeft Q, P.RespectsRight Q : Prop where
+class Respects (P Q : MorphismProperty C) : Prop extends P.RespectsLeft Q, P.RespectsRight Q where
 
 instance (P Q : MorphismProperty C) [P.RespectsLeft Q] [P.RespectsRight Q] : P.Respects Q where
 
@@ -440,6 +440,11 @@ theorem epimorphisms.infer_property [hf : Epi f] : (epimorphisms C) f :=
   hf
 
 end
+
+lemma isomorphisms_op : (isomorphisms C).op = isomorphisms Cᵒᵖ := by
+  ext X Y f
+  simp only [op, isomorphisms.iff]
+  exact ⟨fun _ ↦ inferInstanceAs (IsIso f.unop.op), fun _ ↦ inferInstance⟩
 
 instance RespectsIso.monomorphisms : RespectsIso (monomorphisms C) := by
   apply RespectsIso.mk <;>

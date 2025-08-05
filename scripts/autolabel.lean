@@ -86,20 +86,25 @@ def mathlibLabels : Array Label := #[
     dirs := #[
       "Mathlib" / "Algebra",
       "Mathlib" / "FieldTheory",
-      "Mathlib" / "RingTheory",
-      "Mathlib" / "GroupTheory",
       "Mathlib" / "RepresentationTheory",
       "Mathlib" / "LinearAlgebra"] },
   { label := "t-algebraic-geometry",
     dirs := #[
       "Mathlib" / "AlgebraicGeometry",
       "Mathlib" / "Geometry" / "RingedSpace"] },
+  { label := "t-algebraic-topology",
+    dirs := #["Mathlib" / "AlgebraicTopology"] },
   { label := "t-analysis" },
   { label := "t-category-theory" },
   { label := "t-combinatorics" },
   { label := "t-computability" },
   { label := "t-condensed" },
-  { label := "t-data" },
+  { label := "t-convex-geometry",
+    dirs := #["Mathlib" / "Geometry" / "Convex"] },
+  { label := "t-data"
+    dirs := #[
+      "Mathlib" / "Control",
+      "Mathlib" / "Data",] },
   { label := "t-differential-geometry",
     dirs := #["Mathlib" / "Geometry" / "Manifold"] },
   { label := "t-dynamics" },
@@ -107,6 +112,8 @@ def mathlibLabels : Array Label := #[
     dirs := #["Mathlib" / "Geometry" / "Euclidean"] },
   { label := "t-geometric-group-theory",
     dirs := #["Mathlib" / "Geometry" / "Group"] },
+  { label := "t-group-theory",
+    dirs := #["Mathlib" / "GroupTheory"] },
   { label := "t-linter",
     dirs := #["Mathlib" / "Tactic" / "Linter"] },
   { label := "t-logic",
@@ -120,7 +127,6 @@ def mathlibLabels : Array Label := #[
       "Mathlib" / "InformationTheory"] },
   { label := "t-meta",
     dirs := #[
-      "Mathlib" / "Control",
       "Mathlib" / "Lean",
       "Mathlib" / "Mathport",
       "Mathlib" / "Tactic",
@@ -128,11 +134,11 @@ def mathlibLabels : Array Label := #[
     exclusions := #["Mathlib" / "Tactic" / "Linter"] },
   { label := "t-number-theory" },
   { label := "t-order" },
+  { label := "t-ring-theory",
+    dirs := #["Mathlib" / "RingTheory"] },
   { label := "t-set-theory" },
   { label := "t-topology",
-    dirs := #[
-      "Mathlib" / "Topology",
-      "Mathlib" / "AlgebraicTopology"] },
+    dirs := #["Mathlib" / "Topology"] },
   { label := "CI",
     dirs := #[".github"] },
   { label := "IMO",
@@ -289,9 +295,11 @@ unsafe def main (args : List String): IO UInt32 := do
     -- return 3
 
   -- get the modified files
+  println "Computing 'git diff --name-only origin/master...HEAD'"
   let gitDiff ← IO.Process.run {
     cmd := "git",
     args := #["diff", "--name-only", "origin/master...HEAD"] }
+  println s!"---\n{gitDiff}\n---"
   let modifiedFiles : Array FilePath := (gitDiff.splitOn "\n").toArray.map (⟨·⟩)
 
   -- find labels covering the modified files

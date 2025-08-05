@@ -28,15 +28,18 @@ example : Encodable (T Nat) := inferInstance
 /--
 error: failed to synthesize
   Encodable (ℕ → Bool)
-Additional diagnostic information may be available using the `set_option diagnostics true` command.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
 -/
 #guard_msgs in example : Encodable (Nat → Bool) := inferInstance
 
 /-- info: 96964472478917 -/
-#guard_msgs in #eval Encodable.encode <| T.a 3 true T.b
+#guard_msgs in
+#eval Encodable.encode <| T.a 3 true T.b
 
 /-- info: some (T.a 3 true (T.b)) -/
-#guard_msgs in #eval (Encodable.decode 96964472478917 : Option <| T Nat)
+#guard_msgs in
+#eval (Encodable.decode 96964472478917 : Option <| T Nat)
 
 
 /-!

@@ -78,4 +78,4 @@ theorem primorial_le_4_pow (n : ℕ) : n# ≤ 4 ^ n := by
     · calc
         (n + 1)# = n# := primorial_succ hn ho
         _ ≤ 4 ^ n := ihn n n.lt_succ_self
-        _ ≤ 4 ^ (n + 1) := pow_le_pow_of_le_right four_pos n.le_succ
+        _ ≤ 4 ^ (n + 1) := Nat.pow_le_pow_right four_pos n.le_succ

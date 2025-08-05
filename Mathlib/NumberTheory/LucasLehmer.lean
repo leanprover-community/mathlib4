@@ -91,7 +91,7 @@ theorem one_lt_mersenne {p : ℕ} : 1 < mersenne p ↔ 1 < p :=
 @[simp]
 theorem succ_mersenne (k : ℕ) : mersenne k + 1 = 2 ^ k := by
   rw [mersenne, tsub_add_cancel_of_le]
-  exact one_le_pow₀ (by norm_num)
+  exact one_le_pow₀ (by simp)
 
 namespace LucasLehmer
 
@@ -139,7 +139,7 @@ theorem sMod_mod (p i : ℕ) : sMod p i % (2 ^ p - 1) = sMod p i := by cases i <
 
 theorem sMod_lt (p : ℕ) (hp : p ≠ 0) (i : ℕ) : sMod p i < 2 ^ p - 1 := by
   rw [← sMod_mod]
-  refine (Int.emod_lt _ (mersenne_int_ne_zero p hp)).trans_eq ?_
+  refine (Int.emod_lt_abs _ (mersenne_int_ne_zero p hp)).trans_eq ?_
   exact abs_of_nonneg (mersenne_int_pos hp).le
 
 theorem sZMod_eq_s (p' : ℕ) (i : ℕ) : sZMod (p' + 2) i = (s i : ZMod (2 ^ (p' + 2) - 1)) := by
@@ -185,13 +185,6 @@ the Lucas-Lehmer residue `s p (p-2) % (2^p - 1)` is zero.
 -/
 def LucasLehmerTest (p : ℕ) : Prop :=
   lucasLehmerResidue p = 0
-
--- Porting note: We have a fast `norm_num` extension, and we would rather use that than accidentally
--- have `simp` use `decide`!
-/-
-instance : DecidablePred LucasLehmerTest :=
-  inferInstanceAs (DecidablePred (lucasLehmerResidue · = 0))
--/
 
 /-- `q` is defined as the minimum factor of `mersenne p`, bundled as an `ℕ+`. -/
 def q (p : ℕ) : ℕ+ :=
@@ -405,7 +398,7 @@ theorem ω_pow_formula (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
 
 /-- `q` is the minimum factor of `mersenne p`, so `M p = 0` in `X q`. -/
 theorem mersenne_coe_X (p : ℕ) : (mersenne p : X (q p)) = 0 := by
-  ext <;> simp [mersenne, q, ZMod.natCast_zmod_eq_zero_iff_dvd, -pow_pos]
+  ext <;> simp [mersenne, q, ZMod.natCast_eq_zero_iff, -pow_pos]
   apply Nat.minFac_dvd
 
 theorem ω_pow_eq_neg_one (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
@@ -506,23 +499,23 @@ def sModNat (q : ℕ) : ℕ → ℕ
 
 theorem sModNat_eq_sMod (p k : ℕ) (hp : 2 ≤ p) : (sModNat (2 ^ p - 1) k : ℤ) = sMod p k := by
   have h1 := calc
-    4 = 2 ^ 2 := by norm_num
-    _ ≤ 2 ^ p := Nat.pow_le_pow_of_le_right (by norm_num) hp
+    4 = 2 ^ 2 := by simp
+    _ ≤ 2 ^ p := Nat.pow_le_pow_right (by simp) hp
   have h2 : 1 ≤ 2 ^ p := by omega
   induction k with
   | zero =>
-    rw [sModNat, sMod, Int.ofNat_emod]
+    rw [sModNat, sMod, Int.natCast_emod]
     simp [h2]
   | succ k ih =>
     rw [sModNat, sMod, ← ih]
     have h3 : 2 ≤ 2 ^ p - 1 := by
       zify [h2]
       calc
-        (2 : Int) ≤ 4 - 1 := by norm_num
+        (2 : Int) ≤ 4 - 1 := by simp
         _         ≤ 2 ^ p - 1 := by zify at h1; exact Int.sub_le_sub_right h1 _
     zify [h2, h3]
     rw [← add_sub_assoc, sub_eq_add_neg, add_assoc, add_comm _ (-2), ← add_assoc,
-      Int.add_emod_self, ← sub_eq_add_neg]
+      Int.add_emod_right, ← sub_eq_add_neg]
 
 /-- Tail-recursive version of `sModNat`. -/
 def sModNatTR (q : ℕ) (k : Nat) : ℕ :=

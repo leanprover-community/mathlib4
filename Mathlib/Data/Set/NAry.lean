@@ -35,11 +35,9 @@ theorem image2_subset (hs : s ⊆ s') (ht : t ⊆ t') : image2 f s t ⊆ image2 
   rintro _ ⟨a, ha, b, hb, rfl⟩
   exact mem_image2_of_mem (hs ha) (ht hb)
 
-@[gcongr]
 theorem image2_subset_left (ht : t ⊆ t') : image2 f s t ⊆ image2 f s t' :=
   image2_subset Subset.rfl ht
 
-@[gcongr]
 theorem image2_subset_right (hs : s ⊆ s') : image2 f s t ⊆ image2 f s' t :=
   image2_subset hs Subset.rfl
 
@@ -55,8 +53,6 @@ lemma forall_mem_image2 {p : γ → Prop} :
 lemma exists_mem_image2 {p : γ → Prop} :
     (∃ z ∈ image2 f s t, p z) ↔ ∃ x ∈ s, ∃ y ∈ t, p (f x y) := by aesop
 
-@[deprecated (since := "2024-11-23")] alias forall_image2_iff := forall_mem_image2
-
 @[simp]
 theorem image2_subset_iff {u : Set γ} : image2 f s t ⊆ u ↔ ∀ x ∈ s, ∀ y ∈ t, f x y ∈ u :=
   forall_mem_image2
@@ -69,7 +65,7 @@ theorem image2_subset_iff_right : image2 f s t ⊆ u ↔ ∀ b ∈ t, (fun a => 
 
 variable (f)
 
--- Porting note: Removing `simp` - LHS does not simplify
+@[simp]
 lemma image_prod : (fun x : α × β ↦ f x.1 x.2) '' s ×ˢ t = image2 f s t :=
   ext fun _ ↦ by simp [and_assoc]
 
@@ -78,7 +74,7 @@ lemma image_prod : (fun x : α × β ↦ f x.1 x.2) '' s ×ˢ t = image2 f s t :
 
 @[simp] lemma image2_mk_eq_prod : image2 Prod.mk s t = s ×ˢ t := ext <| by simp
 
--- Porting note: Removing `simp` - LHS does not simplify
+@[simp]
 lemma image2_curry (f : α × β → γ) (s : Set α) (t : Set β) :
     image2 (fun a b ↦ f (a, b)) s t = f '' s ×ˢ t := by
   simp [← image_uncurry_prod, uncurry]

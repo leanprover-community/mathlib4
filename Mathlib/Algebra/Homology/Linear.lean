@@ -15,14 +15,14 @@ category `C` is `R`-linear.
 ## TODO
 
 - show lemmas like `HomologicalComplex.homologyMap_smul` (after doing the same
-for short complexes in `Mathlib.Algebra.Homology.ShortComplex.Linear`)
+for short complexes in `Mathlib/Algebra/Homology/ShortComplex/Linear.lean`)
 
 -/
 
 open CategoryTheory
 
 variable {R : Type*} [Semiring R] {C D : Type*} [Category C] [Preadditive C]
-  [Category D] [Preadditive D] [CategoryTheory.Linear R C]  [CategoryTheory.Linear R D]
+  [Category D] [Preadditive D] [CategoryTheory.Linear R C] [CategoryTheory.Linear R D]
   {ι : Type*} {c : ComplexShape ι}
 
 namespace HomologicalComplex
@@ -52,4 +52,4 @@ end HomologicalComplex
 
 instance CategoryTheory.Functor.mapHomologicalComplex_linear
     (F : C ⥤ D) [F.Additive] [Functor.Linear R F] (c : ComplexShape ι) :
-  Functor.Linear R (F.mapHomologicalComplex c) where
+    Functor.Linear R (F.mapHomologicalComplex c) where

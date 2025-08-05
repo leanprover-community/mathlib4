@@ -7,6 +7,7 @@ import Mathlib.Algebra.Module.Torsion
 import Mathlib.RingTheory.FiniteLength
 import Mathlib.RingTheory.Noetherian.Nilpotent
 import Mathlib.RingTheory.Spectrum.Prime.Noetherian
+import Mathlib.RingTheory.KrullDimension.Zero
 
 /-!
 ## The Hopkins–Levitzki theorem
@@ -29,34 +30,79 @@ import Mathlib.RingTheory.Spectrum.Prime.Noetherian
 * [F. Lorenz, *Algebra: Volume II: Fields with Structure, Algebras and Advanced Topics*][Lorenz2008]
 -/
 
-variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
+universe u
 
-open Ideal in
-theorem IsSemiprimaryRing.isNoetherian_iff_isArtinian [IsSemiprimaryRing R] :
-    IsNoetherian R M ↔ IsArtinian R M := by
+variable (R₀ R : Type*) (M : Type u) [Ring R₀] [Ring R] [Module R₀ R]
+  [AddCommGroup M] [Module R₀ M] [Module R M] [IsScalarTower R₀ R M]
+
+namespace IsSemiprimaryRing
+
+variable [IsSemiprimaryRing R]
+
+@[elab_as_elim] protected theorem induction
+    {P : ∀ (M : Type u) [AddCommGroup M] [Module R₀ M] [Module R M], Prop}
+    (h0 : ∀ (M) [AddCommGroup M] [Module R₀ M] [Module R M] [IsScalarTower R₀ R M]
+      [IsSemisimpleModule R M], Module.IsTorsionBySet R M (Ring.jacobson R) → P M)
+    (h1 : ∀ (M) [AddCommGroup M] [Module R₀ M] [Module R M] [IsScalarTower R₀ R M],
+      let N := Ring.jacobson R • (⊤ : Submodule R M); P N → P (M ⧸ N) → P M) :
+    P M := by
   have ⟨ss, n, hn⟩ := (isSemiprimaryRing_iff R).mp ‹_›
   set Jac := Ring.jacobson R
   replace hn : Jac ^ n ≤ Module.annihilator R M := hn ▸ bot_le
+  have {M} [AddCommGroup M] [Module R₀ M] [Module R M] [IsScalarTower R₀ R M] :
+      Jac ≤ Module.annihilator R M → P M := by
+    rw [← SetLike.coe_subset_coe, ← Module.isTorsionBySet_iff_subset_annihilator]
+    intro h
+    let _ := h.module
+    have := (h.semilinearMap.isSemisimpleModule_iff_of_bijective Function.bijective_id).2
+      inferInstance
+    exact h0 _ h
   induction' n with n ih generalizing M
-  · rw [Submodule.pow_zero, one_eq_top, top_le_iff, Module.annihilator_eq_top_iff] at hn
-    constructor <;> infer_instance
+  · rw [Jac.pow_zero, Ideal.one_eq_top] at hn; exact this (le_top.trans hn)
   obtain _ | n := n
-  · rw [Submodule.pow_one, ← SetLike.coe_subset_coe,
-      ← Module.isTorsionBySet_iff_subset_annihilator] at hn
-    let _ := hn.module
-    have := hn.isSemisimpleModule_iff.mp inferInstance
-    exact IsSemisimpleModule.finite_tfae.out 1 2
-  let N := Jac ^ (n + 1) • (⊤ : Submodule R M)
-  simp_rw [iff_iff_eq] at ih -- otherwise `rw [ih]` below fails!
-  rw [isNoetherian_iff_submodule_quotient N, isArtinian_iff_submodule_quotient N, ih, ih]
+  · rw [Jac.pow_one] at hn; exact this hn
+  refine h1 _ (ih _ ?_) (ih _ ?_)
+  · rwa [← Submodule.annihilator_top, Submodule.le_annihilator_iff, Jac.pow_succ,
+      Submodule.mul_smul, ← Submodule.le_annihilator_iff] at hn
   · rw [← SetLike.coe_subset_coe, ← Module.isTorsionBySet_iff_subset_annihilator,
       Module.isTorsionBySet_quotient_iff]
-    intro m i hi; exact Submodule.smul_mem_smul hi trivial
-  · rw [← Submodule.annihilator_top, Submodule.le_annihilator_iff, Ideal.IsTwoSided.pow_succ,
-      Submodule.mul_smul, ← Submodule.le_annihilator_iff] at hn
-    exact (Ideal.pow_le_self n.succ_ne_zero).trans hn
+    exact fun m i hi ↦ Submodule.smul_mem_smul (Ideal.pow_le_self n.succ_ne_zero hi) trivial
 
-variable (R M)
+section
+
+variable [IsScalarTower R₀ R R] [Module.Finite R₀ (R ⧸ Ring.jacobson R)]
+
+private theorem finite_of_isNoetherian_or_isArtinian :
+    IsNoetherian R M ∨ IsArtinian R M → Module.Finite R₀ M := by
+  refine IsSemiprimaryRing.induction R₀ R M (P := fun M ↦ IsNoetherian R M ∨ IsArtinian R M →
+    Module.Finite R₀ M) (fun M _ _ _ _ _ hJ h ↦ ?_) (fun M _ _ _ _ hs hq h ↦ ?_)
+  · let _ := hJ.module
+    have := IsSemisimpleModule.finite_tfae (R := R) (M := M)
+    simp_rw [this.out 1 0, this.out 2 0, or_self,
+      hJ.semilinearMap.finite_iff_of_bijective Function.bijective_id] at h
+    exact .trans (R ⧸ Ring.jacobson R) M
+  · let N := (Ring.jacobson R • ⊤ : Submodule R M).restrictScalars R₀
+    have : Module.Finite R₀ N := by refine hs (h.imp ?_ ?_) <;> (intro; infer_instance)
+    have : Module.Finite R₀ (M ⧸ N) := by refine hq (h.imp ?_ ?_) <;> (intro; infer_instance)
+    exact .of_submodule_quotient N
+
+theorem finite_of_isNoetherian [IsNoetherian R M] : Module.Finite R₀ M :=
+  finite_of_isNoetherian_or_isArtinian R₀ R M (.inl ‹_›)
+
+theorem finite_of_isArtinian [IsArtinian R M] : Module.Finite R₀ M :=
+  finite_of_isNoetherian_or_isArtinian R₀ R M (.inr ‹_›)
+
+end
+
+variable {R M}
+
+theorem isNoetherian_iff_isArtinian : IsNoetherian R M ↔ IsArtinian R M :=
+  IsSemiprimaryRing.induction R R M (P := fun M ↦ IsNoetherian R M ↔ IsArtinian R M)
+    (fun M _ _ _ _ _ _ ↦ IsSemisimpleModule.finite_tfae.out 1 2)
+    fun M _ _ _ _ h h' ↦ let N : Submodule R M := Ring.jacobson R • ⊤; by
+      simp_rw [isNoetherian_iff_submodule_quotient N, isArtinian_iff_submodule_quotient N, N, h, h']
+
+end IsSemiprimaryRing
 
 theorem IsArtinianRing.tfae [IsArtinianRing R] :
     List.TFAE [Module.Finite R M, IsNoetherian R M, IsArtinian R M, IsFiniteLength R M] := by
@@ -113,3 +159,16 @@ theorem IsNoetherianRing.isArtinianRing_of_krullDimLE_zero {R} [CommRing R]
 @[stacks 00KH] theorem isArtinianRing_iff_isNoetherianRing_krullDimLE_zero {R} [CommRing R] :
     IsArtinianRing R ↔ IsNoetherianRing R ∧ Ring.KrullDimLE 0 R :=
   ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨h, _⟩ ↦ h.isArtinianRing_of_krullDimLE_zero⟩
+
+theorem isArtinianRing_iff_krullDimLE_zero {R : Type*} [CommRing R] [IsNoetherianRing R] :
+    IsArtinianRing R ↔ Ring.KrullDimLE 0 R := by
+  rwa [isArtinianRing_iff_isNoetherianRing_krullDimLE_zero, and_iff_right]
+
+lemma isArtinianRing_iff_isNilpotent_maximalIdeal (R : Type*) [CommRing R] [IsNoetherianRing R]
+    [IsLocalRing R] : IsArtinianRing R ↔ IsNilpotent (IsLocalRing.maximalIdeal R) := by
+  rw [isArtinianRing_iff_krullDimLE_zero,
+    Ideal.FG.isNilpotent_iff_le_nilradical (IsNoetherian.noetherian _),
+    ← and_iff_left (a := Ring.KrullDimLE 0 R) ‹IsLocalRing R›,
+    (Ring.krullDimLE_zero_and_isLocalRing_tfae R).out 0 3 rfl rfl,
+    IsLocalRing.isMaximal_iff, le_antisymm_iff, and_iff_right]
+  exact IsLocalRing.le_maximalIdeal (by simp [nilradical, Ideal.radical_eq_top])

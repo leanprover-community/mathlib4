@@ -220,7 +220,6 @@ protected theorem StateEq.trans {t : Register} (ζ₁ ζ₂ ζ₃ : State) :
   · simp_all only
   · trans ζ₂ <;> assumption
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added instance
 instance (t : Register) : Trans (StateEq (t + 1)) (StateEq (t + 1)) (StateEq (t + 1)) :=
   ⟨@StateEq.trans _⟩
 
@@ -231,7 +230,6 @@ protected theorem StateEqStateEqRs.trans (t : Register) (ζ₁ ζ₂ ζ₃ : Sta
   simp [StateEq]; intros
   trans ζ₂ <;> assumption
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added instance
 instance (t : Register) : Trans (StateEq (t + 1)) (StateEqRs (t + 1)) (StateEqRs (t + 1)) :=
   ⟨@StateEqStateEqRs.trans _⟩
 
@@ -283,8 +281,7 @@ theorem compiler_correctness
   -- 5.III
   | sum =>
     rename_i e_s₁ e_s₂ e_ih_s₁ e_ih_s₂
-    simp only [compile, List.append_assoc, List.singleton_append, List.cons_append, outcome_append,
-      outcome, value]
+    simp only [compile, List.append_assoc, List.cons_append, outcome_append, outcome, value]
     generalize value e_s₁ ξ = ν₁ at e_ih_s₁ ⊢
     generalize value e_s₂ ξ = ν₂ at e_ih_s₂ ⊢
     generalize dν : ν₁ + ν₂ = ν

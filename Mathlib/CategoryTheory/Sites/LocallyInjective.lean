@@ -80,9 +80,7 @@ lemma isLocallyInjective_of_injective (hφ : ∀ (X : Cᵒᵖ), Function.Injecti
     ext Y f
     simp only [equalizerSieve_apply, op_unop, Sieve.top_apply, iff_true]
     apply hφ
-    -- Invoke `elementwise_of%` manually to get a `ConcreteCategory`-based result, instead of the
-    -- `HasForget`-based result.
-    simp [h, elementwise_of% NatTrans.naturality (D := D)]
+    simp [h]
 
 instance [IsIso φ] : IsLocallyInjective J φ :=
   isLocallyInjective_of_injective J φ (fun X => Function.Bijective.injective (by
@@ -92,15 +90,15 @@ instance [IsIso φ] : IsLocallyInjective J φ :=
 
 attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance isLocallyInjective_forget [IsLocallyInjective J φ] :
-    IsLocallyInjective J (whiskerRight φ (forget D)) where
+    IsLocallyInjective J (Functor.whiskerRight φ (forget D)) where
   equalizerSieve_mem x y h := equalizerSieve_mem J φ x y h
 
 attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 lemma isLocallyInjective_forget_iff :
-    IsLocallyInjective J (whiskerRight φ (forget D)) ↔ IsLocallyInjective J φ := by
+    IsLocallyInjective J (Functor.whiskerRight φ (forget D)) ↔ IsLocallyInjective J φ := by
   constructor
   · intro
-    exact ⟨fun x y h => equalizerSieve_mem J (whiskerRight φ (forget D)) x y h⟩
+    exact ⟨fun x y h => equalizerSieve_mem J (Functor.whiskerRight φ (forget D)) x y h⟩
   · intro
     infer_instance
 
@@ -118,10 +116,7 @@ lemma isLocallyInjective_iff_equalizerSieve_mem_imp :
     · intro Y f hf
       refine J.superset_covering (Sieve.le_pullback_bind S.1 T _ hf)
         (equalizerSieve_mem J φ _ _ ?_)
-      -- Invoke `elementwise_of%` manually to get a `ConcreteCategory`-based result, instead of the
-      -- `HasForget`-based result.
-      rw [elementwise_of% NatTrans.naturality (D := D),
-        elementwise_of% NatTrans.naturality (D := D)]
+      rw [NatTrans.naturality_apply, NatTrans.naturality_apply]
       exact hf
   · intro hφ
     exact ⟨fun {X} x y h => hφ x y (by simp [h])⟩

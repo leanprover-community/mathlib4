@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: PFR contributors
 -/
 import Mathlib.Algebra.Group.Indicator
-import Mathlib.Topology.ContinuousOn
+import Mathlib.Topology.Piecewise
 import Mathlib.Topology.Clopen
 
 /-!

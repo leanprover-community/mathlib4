@@ -94,8 +94,6 @@ namespace Solution₁
 
 variable {d : ℤ}
 
--- Porting note(https://github.com/leanprover-community/mathlib4/issues/5020): manual deriving
-
 instance instCommGroup : CommGroup (Solution₁ d) :=
   inferInstanceAs (CommGroup (unitary (ℤ√d)))
 
@@ -235,13 +233,9 @@ theorem x_mul_pos {a b : Solution₁ d} (ha : 0 < a.x) (hb : 0 < b.x) : 0 < (a *
   rw [← abs_of_pos ha, ← abs_of_pos hb, ← abs_mul, ← sq_lt_sq, mul_pow a.x, a.prop_x, b.prop_x, ←
     sub_pos]
   ring_nf
-  rcases le_or_lt 0 d with h | h
+  rcases le_or_gt 0 d with h | h
   · positivity
   · rw [(eq_zero_of_d_neg h a).resolve_left ha.ne', (eq_zero_of_d_neg h b).resolve_left hb.ne']
-    -- Porting note: was
-    -- rw [zero_pow two_ne_zero, zero_add, zero_mul, zero_add]
-    -- exact one_pos
-    -- but this relied on the exact output of `ring_nf`
     simp
 
 /-- The set of solutions with `x` and `y` positive is closed under multiplication. -/
@@ -304,7 +298,7 @@ theorem exists_pos_variant (h₀ : 0 < d) (a : Solution₁ d) :
           ((le_total 0 a.y).elim (fun hy hx => ⟨-a⁻¹, ?_, ?_, ?_⟩) fun hy hx => ⟨-a, ?_, ?_, ?_⟩)
           ((le_total 0 a.y).elim (fun hy hx => ⟨a, hx, hy, ?_⟩) fun hy hx => ⟨a⁻¹, hx, ?_, ?_⟩) <;>
       simp only [neg_neg, inv_inv, neg_inv, Set.mem_insert_iff, Set.mem_singleton_iff, true_or,
-        eq_self_iff_true, x_neg, x_inv, y_neg, y_inv, neg_pos, neg_nonneg, or_true] <;>
+        x_neg, x_inv, y_neg, y_inv, neg_pos, neg_nonneg, or_true] <;>
     assumption
 
 end Solution₁
@@ -381,13 +375,7 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
   · qify [hd₁, hd₂]
     field_simp [hm₀]
     norm_cast
-    conv_rhs =>
-      rw [sq]
-      congr
-      · rw [← h₁]
-      · rw [← h₂]
-    push_cast
-    ring
+    grind
   · qify [hd₂]
     refine div_ne_zero_iff.mpr ⟨?_, hm₀⟩
     exact mod_cast mt sub_eq_zero.mp (mt Rat.eq_iff_mul_eq_mul.mpr hne)
@@ -487,7 +475,7 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
   exact b.prop
 
 /-- The map sending an integer `n` to the `y`-coordinate of `a^n` for a fundamental
-solution `a` is stritcly increasing. -/
+solution `a` is strictly increasing. -/
 theorem y_strictMono {a : Solution₁ d} (h : IsFundamental a) :
     StrictMono fun n : ℤ => (a ^ n).y := by
   have H : ∀ n : ℤ, 0 ≤ n → (a ^ n).y < (a ^ (n + 1)).y := by
@@ -501,7 +489,7 @@ theorem y_strictMono {a : Solution₁ d} (h : IsFundamental a) :
     · simp only [zpow_zero, y_one, le_refl]
     · exact (y_zpow_pos h.x_pos h.2.1 hn).le
   refine strictMono_int_of_lt_succ fun n => ?_
-  rcases le_or_lt 0 n with hn | hn
+  rcases le_or_gt 0 n with hn | hn
   · exact H n hn
   · let m : ℤ := -n - 1
     have hm : n = -m - 1 := by simp only [m, neg_sub, sub_neg_eq_add, add_tsub_cancel_left]
@@ -584,7 +572,6 @@ theorem mul_inv_x_lt_x {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solu
   refine
     ((mul_le_mul_right <| zero_lt_one.trans h.1).mpr <| x_mul_y_le_y_mul_x h hax hay).trans_lt ?_
   rw [mul_assoc, ← sq, a₁.prop_x, ← sub_neg]
-  -- Porting note: was `ring_nf`
   suffices a.y - a.x * a₁.y < 0 by convert this using 1; ring
   rw [sub_neg, ← abs_of_pos hay, ← abs_of_pos h.2.1, ← abs_of_pos <| zero_lt_one.trans hax, ←
     abs_mul, ← sq_lt_sq, mul_pow, a.prop_x]
@@ -600,8 +587,6 @@ theorem mul_inv_x_lt_x {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solu
 theorem eq_pow_of_nonneg {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solution₁ d} (hax : 0 < a.x)
     (hay : 0 ≤ a.y) : ∃ n : ℕ, a = a₁ ^ n := by
   lift a.x to ℕ using hax.le with ax hax'
-  -- Porting note: added
-  clear hax
   induction ax using Nat.strong_induction_on generalizing a with | h x ih =>
   rcases hay.eq_or_lt with hy | hy
   · -- case 1: `a = 1`
@@ -621,7 +606,6 @@ theorem eq_pow_of_nonneg {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : So
     have hxx₂ := h.mul_inv_x_lt_x hx₁ hy
     have hyy := h.mul_inv_y_nonneg hx₁ hy
     lift (a * a₁⁻¹).x to ℕ using hxx₁.le with x' hx'
-    -- Porting note: `ih` has its arguments in a different order compared to lean 3.
     obtain ⟨n, hn⟩ := ih x' (mod_cast hxx₂.trans_eq hax'.symm) hyy hx' hxx₁
     exact ⟨n + 1, by rw [pow_succ', ← hn, mul_comm a, ← mul_assoc, mul_inv_cancel, one_mul]⟩
 

@@ -30,13 +30,11 @@ variable {σ : Type*} {R : Type u}
 section CommSemiring
 
 variable [CommSemiring R] {p : MvPolynomial σ R}
-variable (R)
 
+variable (R) in
 /-- The set of polynomials whose variables are contained in `s` as a `Subalgebra` over `R`. -/
 noncomputable def supported (s : Set σ) : Subalgebra R (MvPolynomial σ R) :=
   Algebra.adjoin R (X '' s)
-
-variable {R}
 
 open Algebra
 
@@ -94,7 +92,7 @@ theorem supported_empty : supported R (∅ : Set σ) = ⊥ := by simp [supported
 variable {s}
 
 theorem supported_mono (st : s ⊆ t) : supported R s ≤ supported R t :=
-  Algebra.adjoin_mono (Set.image_subset _ st)
+  Algebra.adjoin_mono (Set.image_mono st)
 
 @[simp]
 theorem X_mem_supported [Nontrivial R] {i : σ} : X i ∈ supported R s ↔ i ∈ s := by

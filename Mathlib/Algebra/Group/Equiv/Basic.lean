@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Algebra.Group.Hom.Basic
-import Mathlib.Data.FunLike.Equiv
 import Mathlib.Logic.Equiv.Basic
 
 /-!
@@ -17,6 +16,8 @@ This file contains basic results on `MulEquiv` and `AddEquiv`.
 
 Equiv, MulEquiv, AddEquiv
 -/
+
+assert_not_exists Fintype
 
 open Function
 
@@ -44,12 +45,6 @@ section unique
 @[to_additive "The `AddEquiv` between two `AddMonoid`s with a unique element."]
 def ofUnique {M N} [Unique M] [Unique N] [Mul M] [Mul N] : M ≃* N :=
   { Equiv.ofUnique M N with map_mul' := fun _ _ => Subsingleton.elim _ _ }
-
-@[to_additive (attr := deprecated ofUnique (since := "2024-12-25"))]
-alias mulEquivOfUnique := ofUnique
-
-/-- Alias of `AddEquiv.ofEquiv`. -/
-add_decl_doc AddEquiv.addEquivOfUnique
 
 /-- There is a unique monoid homomorphism between two monoids with a unique element. -/
 @[to_additive "There is a unique additive monoid homomorphism between two additive monoids with
@@ -171,7 +166,7 @@ section InvolutiveInv
 variable (G) [InvolutiveInv G]
 
 /-- Inversion on a `Group` or `GroupWithZero` is a permutation of the underlying type. -/
-@[to_additive (attr := simps! (config := .asFn) apply)
+@[to_additive (attr := simps! -fullyApplied apply)
     "Negation on an `AddGroup` is a permutation of the underlying type."]
 protected def inv : Perm G :=
   inv_involutive.toPerm _

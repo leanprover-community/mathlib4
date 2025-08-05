@@ -24,7 +24,7 @@ universe w v u
 
 noncomputable section
 
-open CategoryTheory
+open CategoryTheory Opposite
 
 variable {C : Type u} [Category.{v} C] {α : Type w}
 
@@ -52,7 +52,7 @@ def liftToFinsetColimitCocone [HasColimitsOfShape (Finset (Discrete α)) C]
     { pt := colimit (liftToFinsetObj F)
       ι :=
         Discrete.natTrans fun j =>
-          @Sigma.ι _ _ _ (fun x : ({j} : Finset (Discrete α)) => F.obj x) _ ⟨j, by simp⟩ ≫
+          Sigma.ι (fun x : ({j} : Finset (Discrete α)) => F.obj x) ⟨j, by simp⟩ ≫
             colimit.ι (liftToFinsetObj F) {j} }
   isColimit :=
     { desc := fun s =>
@@ -70,14 +70,37 @@ def liftToFinsetColimitCocone [HasColimitsOfShape (Finset (Discrete α)) C]
           rfl
         · simp }
 
-variable (C) (α)
-
+variable (C) (α) in
 /-- The functor taking a functor `Discrete α ⥤ C` to a functor `Finset (Discrete α) ⥤ C` by taking
 coproducts. -/
 @[simps!]
 def liftToFinset : (Discrete α ⥤ C) ⥤ (Finset (Discrete α) ⥤ C) where
   obj := liftToFinsetObj
   map := fun β => { app := fun _ => Sigma.map (fun x => β.app x.val) }
+
+/-- The converse of the construction in `liftToFinsetColimitCocone`: we can form a cocone on the
+coproduct of `f` whose legs are the coproducts over the finite subsets of `α`. -/
+@[simps!]
+def finiteSubcoproductsCocone (f : α → C) [HasCoproduct f] :
+    Cocone (liftToFinsetObj (Discrete.functor f)) where
+  pt := ∐ f
+  ι := { app S := Sigma.desc fun s => Sigma.ι f _ }
+
+/-- The cocone `finiteSubcoproductsCocone` is a colimit cocone. -/
+def isColimitFiniteSubproductsCocone (f : α → C) [HasColimitsOfShape (Finset (Discrete α)) C]
+    [HasCoproduct f] : IsColimit (finiteSubcoproductsCocone f) :=
+  IsColimit.ofIsoColimit (colimit.isColimit _)
+    (Cocones.ext (IsColimit.coconePointUniqueUpToIso
+      (liftToFinsetColimitCocone (Discrete.functor f)).isColimit (colimit.isColimit _) :) (by
+    intro S
+    simp only [liftToFinsetObj_obj, Discrete.functor_obj_eq_as, finiteSubcoproductsCocone_pt,
+      colimit.cocone_x, Functor.const_obj_obj, colimit.cocone_ι, finiteSubcoproductsCocone_ι_app]
+    ext j
+    rw [← Category.assoc]
+    convert IsColimit.comp_coconePointUniqueUpToIso_hom
+      (liftToFinsetColimitCocone (Discrete.functor f)).isColimit (colimit.isColimit _) j
+    · simp [← colimit.w (liftToFinsetObj _) (homOfLE (x := {j.1}) (y := S) (by simp))]
+    · simp))
 
 end CoproductsFromFiniteFiltered
 
@@ -125,7 +148,7 @@ def liftToFinsetColimIso : liftToFinset C α ⋙ colim ≅ colim :=
     (fun β => by
       simp only [Functor.comp_obj, colim_obj, Functor.comp_map, colim_map, Iso.symm_hom]
       ext J
-      simp only [liftToFinset_obj_obj, liftToFinset_map_app]
+      simp only [liftToFinset_obj_obj]
       ext j
       simp only [liftToFinset, ι_colimMap_assoc, liftToFinsetObj_obj, Discrete.functor_obj_eq_as,
         Discrete.natTrans_app, liftToFinsetColimIso_aux, liftToFinsetColimIso_aux_assoc,
@@ -137,7 +160,7 @@ end
 with `colim`. -/
 def liftToFinsetEvaluationIso [HasFiniteCoproducts C] (I : Finset (Discrete α)) :
     liftToFinset C α ⋙ (evaluation _ _).obj I ≅
-    (whiskeringLeft _ _ _).obj (Discrete.functor (·.val)) ⋙ colim (J := Discrete I) :=
+    (Functor.whiskeringLeft _ _ _).obj (Discrete.functor (·.val)) ⋙ colim (J := Discrete I) :=
   NatIso.ofComponents (fun _ => HasColimit.isoOfNatIso (Discrete.natIso fun _ => Iso.refl _))
     fun _ => by dsimp; ext; simp
 
@@ -182,6 +205,30 @@ def liftToFinsetLimitCone [HasLimitsOfShape (Finset (Discrete α))ᵒᵖ C]
           rfl
         · simp }
 
+/-- The converse of the construction in `liftToFinsetLimitCone`: we can form a cone on the
+product of `f` whose legs are the products over the finite subsets of `α`. -/
+@[simps!]
+def finiteSubproductsCone (f : α → C) [HasProduct f] :
+    Cone (liftToFinsetObj (Discrete.functor f)) where
+  pt := ∏ᶜ f
+  π := { app S := Pi.lift fun s => Pi.π f _ }
+
+/-- The cone `finiteSubproductsCone` is a limit cone. -/
+def isLimitFiniteSubproductsCone (f : α → C) [HasLimitsOfShape (Finset (Discrete α))ᵒᵖ C]
+    [HasProduct f] : IsLimit (finiteSubproductsCone f) :=
+  IsLimit.ofIsoLimit (limit.isLimit _)
+    (Cones.ext (IsLimit.conePointUniqueUpToIso
+      (liftToFinsetLimitCone (Discrete.functor f)).isLimit (limit.isLimit _) :) (by
+    intro S
+    simp only [limit.cone_x, Functor.const_obj_obj, liftToFinsetObj_obj, Discrete.functor_obj_eq_as,
+      limit.cone_π, finiteSubproductsCone_pt, finiteSubproductsCone_π_app]
+    ext j
+    simp only [Discrete.functor_obj_eq_as, Category.assoc, limit.lift_π, Fan.mk_pt, Fan.mk_π_app,
+      limit.conePointUniqueUpToIso_hom_comp, liftToFinsetLimitCone_cone_pt, Discrete.mk_as,
+      liftToFinsetLimitCone_cone_π_app]
+    simp [← limit.w (liftToFinsetObj _)
+      (Quiver.Hom.op (homOfLE (x := {j.1}) (y := S.unop) (by simp)))]))
+
 variable (C) (α)
 
 /-- The functor taking a functor `Discrete α ⥤ C` to a functor `Finset (Discrete α) ⥤ C` by taking
@@ -206,7 +253,7 @@ def liftToFinsetLimIso [HasLimitsOfShape (Finset (Discrete α))ᵒᵖ C]
 with `colim`. -/
 def liftToFinsetEvaluationIso (I : Finset (Discrete α)) :
     liftToFinset C α ⋙ (evaluation _ _).obj ⟨I⟩ ≅
-    (whiskeringLeft _ _ _).obj (Discrete.functor (·.val)) ⋙ lim (J := Discrete I) :=
+    (Functor.whiskeringLeft _ _ _).obj (Discrete.functor (·.val)) ⋙ lim (J := Discrete I) :=
   NatIso.ofComponents (fun _ => HasLimit.isoOfNatIso (Discrete.natIso fun _ => Iso.refl _))
     fun _ => by dsimp; ext; simp
 

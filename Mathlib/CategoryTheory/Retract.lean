@@ -66,6 +66,11 @@ def trans {Z : C} (h' : Retract Y Z) : Retract X Z where
   i := h.i ≫ h'.i
   r := h'.r ≫ h.r
 
+/-- If `e : X ≅ Y`, then `X` is a retract of `Y`. -/
+def ofIso (e : X ≅ Y) : Retract X Y where
+  i := e.hom
+  r := e.inv
+
 end Retract
 
 /--

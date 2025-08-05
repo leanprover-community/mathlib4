@@ -50,7 +50,7 @@ variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 
 @[to_additive]
 instance instMul [Mul β] [ContinuousMul β] : Mul C(α, β) :=
-  ⟨fun f g => ⟨f * g, continuous_mul.comp (f.continuous.prod_mk g.continuous :)⟩⟩
+  ⟨fun f g => ⟨f * g, continuous_mul.comp (f.continuous.prodMk g.continuous :)⟩⟩
 
 @[to_additive (attr := norm_cast, simp)]
 theorem coe_mul [Mul β] [ContinuousMul β] (f g : C(α, β)) : ⇑(f * g) = f * g :=
@@ -82,6 +82,12 @@ theorem one_apply [One β] (x : α) : (1 : C(α, β)) x = 1 :=
 @[to_additive (attr := simp)]
 theorem one_comp [One γ] (g : C(α, β)) : (1 : C(β, γ)).comp g = 1 :=
   rfl
+
+@[to_additive (attr := simp)]
+theorem comp_one [One β] (g : C(β, γ)) : g.comp (1 : C(α, β)) = const α (g 1) := rfl
+
+@[to_additive (attr := simp)]
+theorem const_one [One β] : const α (1 : β) = 1 := rfl
 
 /-! ### `Nat.cast` -/
 
@@ -284,14 +290,13 @@ instance [LocallyCompactSpace α] [Mul β] [ContinuousMul β] : ContinuousMul C(
 
 /-- Coercion to a function as a `MonoidHom`. Similar to `MonoidHom.coeFn`. -/
 @[to_additive (attr := simps)
-  "Coercion to a function as an `AddMonoidHom`. Similar to `AddMonoidHom.coeFn`." ]
+  "Coercion to a function as an `AddMonoidHom`. Similar to `AddMonoidHom.coeFn`."]
 def coeFnMonoidHom [Monoid β] [ContinuousMul β] : C(α, β) →* α → β where
   toFun f := f
   map_one' := coe_one
   map_mul' := coe_mul
 
-variable (α)
-
+variable (α) in
 /-- Composition on the left by a (continuous) homomorphism of topological monoids, as a
 `MonoidHom`. Similar to `MonoidHom.compLeft`. -/
 @[to_additive (attr := simps)
@@ -303,8 +308,6 @@ protected def _root_.MonoidHom.compLeftContinuous {γ : Type*} [Monoid β] [Cont
   toFun f := (⟨g, hg⟩ : C(β, γ)).comp f
   map_one' := ext fun _ => g.map_one
   map_mul' _ _ := ext fun _ => g.map_mul _ _
-
-variable {α}
 
 /-- Composition on the right as a `MonoidHom`. Similar to `MonoidHom.compHom'`. -/
 @[to_additive (attr := simps)
@@ -336,17 +339,17 @@ instance instCommGroupContinuousMap [CommGroup β] [IsTopologicalGroup β] : Com
 instance [CommGroup β] [IsTopologicalGroup β] : IsTopologicalGroup C(α, β) where
   continuous_mul := by
     letI : UniformSpace β := IsTopologicalGroup.toUniformSpace β
-    have : UniformGroup β := comm_topologicalGroup_is_uniform
+    have : IsUniformGroup β := isUniformGroup_of_commGroup
     rw [continuous_iff_continuousAt]
     rintro ⟨f, g⟩
     rw [ContinuousAt, tendsto_iff_forall_isCompact_tendstoUniformlyOn, nhds_prod_eq]
     exact fun K hK =>
       uniformContinuous_mul.comp_tendstoUniformlyOn
-        ((tendsto_iff_forall_isCompact_tendstoUniformlyOn.mp Filter.tendsto_id K hK).prod
+        ((tendsto_iff_forall_isCompact_tendstoUniformlyOn.mp Filter.tendsto_id K hK).prodMk
           (tendsto_iff_forall_isCompact_tendstoUniformlyOn.mp Filter.tendsto_id K hK))
   continuous_inv := by
     letI : UniformSpace β := IsTopologicalGroup.toUniformSpace β
-    have : UniformGroup β := comm_topologicalGroup_is_uniform
+    have : IsUniformGroup β := isUniformGroup_of_commGroup
     rw [continuous_iff_continuousAt]
     intro f
     rw [ContinuousAt, tendsto_iff_forall_isCompact_tendstoUniformlyOn]
@@ -524,18 +527,13 @@ instance instSMul [SMul R M] [ContinuousConstSMul R M] : SMul R C(α, M) :=
   ⟨fun r f => ⟨r • ⇑f, f.continuous.const_smul r⟩⟩
 
 @[to_additive]
-instance [LocallyCompactSpace α] [SMul R M] [ContinuousConstSMul R M] :
-    ContinuousConstSMul R C(α, M) :=
-  ⟨fun γ => continuous_of_continuous_uncurry _ (continuous_eval.const_smul γ)⟩
+instance [SMul R M] [ContinuousConstSMul R M] : ContinuousConstSMul R C(α, M) where
+  continuous_const_smul r := continuous_postcomp ⟨_, continuous_const_smul r⟩
 
 @[to_additive]
-instance [LocallyCompactSpace α] [TopologicalSpace R] [SMul R M] [ContinuousSMul R M] :
+instance [TopologicalSpace R] [SMul R M] [ContinuousSMul R M] :
     ContinuousSMul R C(α, M) :=
-  ⟨by
-    refine continuous_of_continuous_uncurry _ ?_
-    have h : Continuous fun x : (R × C(α, M)) × α => x.fst.snd x.snd :=
-      continuous_eval.comp (continuous_snd.prodMap continuous_id)
-    exact (continuous_fst.comp continuous_fst).smul h⟩
+  ⟨(continuous_postcomp ⟨_, continuous_smul⟩).comp continuous_prodMk_const⟩
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_smul [SMul R M] [ContinuousConstSMul R M] (c : R) (f : C(α, M)) : ⇑(c • f) = c • ⇑f :=
@@ -591,13 +589,22 @@ instance module : Module R C(α, M) :=
 
 variable (R)
 
-/-- Composition on the left by a continuous linear map, as a `LinearMap`.
+/-- Composition on the left by a continuous linear map, as a `ContinuousLinearMap`.
 Similar to `LinearMap.compLeft`. -/
 @[simps]
 protected def _root_.ContinuousLinearMap.compLeftContinuous (α : Type*) [TopologicalSpace α]
-    (g : M →L[R] M₂) : C(α, M) →ₗ[R] C(α, M₂) :=
-  { g.toLinearMap.toAddMonoidHom.compLeftContinuous α g.continuous with
-    map_smul' := fun c _ => ext fun _ => g.map_smul' c _ }
+    (g : M →L[R] M₂) : C(α, M) →L[R] C(α, M₂) where
+  __ := g.toLinearMap.toAddMonoidHom.compLeftContinuous α g.continuous
+  map_smul' := fun c _ => ext fun _ => g.map_smul' c _
+  cont := ContinuousMap.continuous_postcomp _
+
+/-- The constant map `x ↦ y ↦ x` as a `ContinuousLinearMap`. -/
+@[simps!]
+def _root_.ContinuousLinearMap.const (α : Type*) [TopologicalSpace α] : M →L[R] C(α, M) where
+  toFun m := .const α m
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+  cont := ContinuousMap.continuous_const'
 
 /-- Coercion to a function as a `LinearMap`. -/
 @[simps]

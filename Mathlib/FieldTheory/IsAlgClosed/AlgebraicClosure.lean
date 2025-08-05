@@ -170,14 +170,17 @@ instance isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosure k) :=
       let ⟨p, hp⟩ := Ideal.Quotient.mk_surjective z
       rw [← hp]
       induction p using MvPolynomial.induction_on generalizing z with
-        | h_C => exact isIntegral_algebraMap
-        | h_add _ _ ha hb => exact (ha _ rfl).add (hb _ rfl)
-        | h_X p fi ih =>
+        | C => exact isIntegral_algebraMap
+        | add _ _ ha hb => exact (ha _ rfl).add (hb _ rfl)
+        | mul_X p fi ih =>
           rw [map_mul]
           refine (ih _ rfl).mul ⟨_, fi.1.2, ?_⟩
           simp_rw [← eval_map, Monics.map_eq_prod, eval_prod, Polynomial.map_sub, eval_sub]
           apply Finset.prod_eq_zero (Finset.mem_univ fi.2)
-          erw [map_C, eval_C]
+          rw [map_C]
+          -- The `erw` is needed here because the `R` in `eval` is `AlgebraicClosure k`,
+          -- but this has been unfolded in the arguments of `eval`.
+          erw [eval_C]
           simp⟩
 
 instance : IsAlgClosure k (AlgebraicClosure k) := .of_splits fun f hf _ ↦ by
@@ -198,3 +201,22 @@ instance {L : Type*} [Field k] [Field L] [Algebra k L] [Algebra.IsAlgebraic k L]
   isAlgClosed := inferInstance
 
 end AlgebraicClosure
+
+namespace IntermediateField
+
+variable {K L : Type*} [Field K] [Field L] [Algebra K L] (E : IntermediateField K L)
+
+instance [Algebra.IsAlgebraic K E] : IsAlgClosure K (AlgebraicClosure E) :=
+  ⟨AlgebraicClosure.isAlgClosed E, Algebra.IsAlgebraic.trans K E (AlgebraicClosure E)⟩
+
+theorem AdjoinSimple.normal_algebraicClosure {x : L} (hx : IsIntegral K x) :
+    Normal K (AlgebraicClosure K⟮x⟯) :=
+  have : Algebra.IsAlgebraic K K⟮x⟯ := isAlgebraic_adjoin_simple hx
+  IsAlgClosure.normal _ _
+
+theorem AdjoinDouble.normal_algebraicClosure {x y : L} (hx : IsIntegral K x)
+    (hy : IsIntegral K y) : Normal K (AlgebraicClosure K⟮x, y⟯) :=
+  have : Algebra.IsAlgebraic K K⟮x, y⟯ := isAlgebraic_adjoin_pair hx hy
+  IsAlgClosure.normal _ _
+
+end IntermediateField

@@ -3,7 +3,6 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-
 import Mathlib.CategoryTheory.Filtered.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.WideEqualizers
 import Mathlib.CategoryTheory.Comma.CardinalArrow
@@ -53,7 +52,7 @@ namespace IsCardinalFiltered
 variable {J : Type u} [Category.{v} J] {κ : Cardinal.{w}} [hκ : Fact κ.IsRegular]
   [IsCardinalFiltered J κ]
 
-/-- A choice of cocone for a functor `F : A ⥤ J` such that `HasCardinatLT (Arrow A) κ`
+/-- A choice of cocone for a functor `F : A ⥤ J` such that `HasCardinalLT (Arrow A) κ`
 when `J` is a `κ`-filtered category, and `Arrow A` has cardinality `< κ`. -/
 noncomputable def cocone {A : Type v'} [Category.{u'} A]
     (F : A ⥤ J) (hA : HasCardinalLT (Arrow A) κ) :
@@ -165,6 +164,16 @@ lemma isCardinalFiltered_preorder (J : Type w) [Preorder J]
       { app a := homOfLE (hj a)
         naturality _ _ _ := rfl }⟩
 
+instance (κ : Cardinal.{w}) [hκ : Fact κ.IsRegular] :
+    IsCardinalFiltered κ.ord.toType κ :=
+  isCardinalFiltered_preorder _ _ (fun ι f hs ↦ by
+    have h : Function.Surjective (fun i ↦ (⟨f i, i, rfl⟩ : Set.range f)) := fun _ ↦ by aesop
+    obtain ⟨j, hj⟩ := Ordinal.lt_cof_type
+      (α := κ.ord.toType) (r := (· < ·)) (S := Set.range f)
+      (lt_of_le_of_lt (Cardinal.mk_le_of_surjective h)
+        (lt_of_lt_of_le hs (by simp [hκ.out.cof_eq])))
+    exact ⟨j, fun i ↦ (hj (f i) (by simp)).le⟩)
+
 open IsCardinalFiltered
 
 instance isCardinalFiltered_under
@@ -185,6 +194,6 @@ instance isCardinalFiltered_under
               ext
               have := c.w f
               dsimp at this ⊢
-              simp only [reassoc_of% this, Category.assoc, Category.comp_id] } }⟩
+              simp only [reassoc_of% this, Category.comp_id] } }⟩
 
 end CategoryTheory

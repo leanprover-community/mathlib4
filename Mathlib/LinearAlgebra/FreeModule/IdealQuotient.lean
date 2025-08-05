@@ -3,26 +3,22 @@ Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-import Mathlib.LinearAlgebra.FreeModule.PID
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.LinearAlgebra.Quotient.Pi
-import Mathlib.RingTheory.Ideal.Basis
-import Mathlib.LinearAlgebra.Dimension.Constructions
-import Mathlib.Data.ZMod.QuotientRing
+import Mathlib.LinearAlgebra.FreeModule.Finite.Quotient
 
 /-! # Ideals in free modules over PIDs
 
 ## Main results
 
- - `Ideal.quotientEquivPiSpan`: `S ⧸ I`, if `S` is finite free as a module over a PID `R`,
-   can be written as a product of quotients of `R` by principal ideals.
+- `Ideal.quotientEquivPiSpan`: `S ⧸ I`, if `S` is finite free as a module over a PID `R`,
+  can be written as a product of quotients of `R` by principal ideals.
 
 -/
 
+open Module
+open scoped DirectSum
+
 namespace Ideal
 
-open scoped DirectSum
 
 variable {ι R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 variable [IsDomain R] [IsPrincipalIdealRing R] [IsDomain S] [Finite ι]
@@ -30,73 +26,26 @@ variable [IsDomain R] [IsPrincipalIdealRing R] [IsDomain S] [Finite ι]
 /-- We can write the quotient of an ideal over a PID as a product of quotients by principal ideals.
 -/
 noncomputable def quotientEquivPiSpan (I : Ideal S) (b : Basis ι R S) (hI : I ≠ ⊥) :
-    (S ⧸ I) ≃ₗ[R] ∀ i, R ⧸ span ({I.smithCoeffs b hI i} : Set R) := by
-  haveI := Fintype.ofFinite ι
-  -- Choose `e : S ≃ₗ I` and a basis `b'` for `S` that turns the map
-  -- `f := ((Submodule.subtype I).restrictScalars R).comp e` into a diagonal matrix:
-  -- there is an `a : ι → ℤ` such that `f (b' i) = a i • b' i`.
-  let a := I.smithCoeffs b hI
-  let b' := I.ringBasis b hI
-  let ab := I.selfBasis b hI
-  have ab_eq := I.selfBasis_def b hI
-  have mem_I_iff : ∀ x, x ∈ I ↔ ∀ i, a i ∣ b'.repr x i := by
-    intro x
-    simp_rw [ab.mem_ideal_iff', ab, ab_eq]
-    have : ∀ (c : ι → R) (i), b'.repr (∑ j : ι, c j • a j • b' j) i = a i * c i := by
-      intro c i
-      simp only [← MulAction.mul_smul, b'.repr_sum_self, mul_comm]
-    constructor
-    · rintro ⟨c, rfl⟩ i
-      exact ⟨c i, this c i⟩
-    · rintro ha
-      choose c hc using ha
-      exact ⟨c, b'.ext_elem fun i => Eq.trans (hc i) (this c i).symm⟩
-  -- Now we map everything through the linear equiv `S ≃ₗ (ι → R)`,
-  -- which maps `I` to `I' := Π i, a i ℤ`.
-  let I' : Submodule R (ι → R) := Submodule.pi Set.univ fun i => span ({a i} : Set R)
-  have : Submodule.map (b'.equivFun : S →ₗ[R] ι → R) (I.restrictScalars R) = I' := by
-    ext x
-    simp only [I', Submodule.mem_map, Submodule.mem_pi, mem_span_singleton, Set.mem_univ,
-      Submodule.restrictScalars_mem, mem_I_iff, smul_eq_mul, forall_true_left, LinearEquiv.coe_coe,
-      Basis.equivFun_apply]
-    constructor
-    · rintro ⟨y, hy, rfl⟩ i
-      exact hy i
-    · rintro hdvd
-      refine ⟨∑ i, x i • b' i, fun i => ?_, ?_⟩ <;> rw [b'.repr_sum_self]
-      · exact hdvd i
-  refine ((Submodule.Quotient.restrictScalarsEquiv R I).restrictScalars R).symm.trans
-    (σ₁₂ := RingHom.id R) (σ₃₂ := RingHom.id R) (re₂₃ := inferInstance) (re₃₂ := inferInstance) ?_
-  refine (Submodule.Quotient.equiv (I.restrictScalars R) I' b'.equivFun this).trans
-    (σ₁₂ := RingHom.id R) (σ₃₂ := RingHom.id R) (re₂₃ := inferInstance) (re₃₂ := inferInstance) ?_
-  classical
-    let this :=
-      Submodule.quotientPi (show _ → Submodule R R from fun i => span ({a i} : Set R))
-    exact this
+    (S ⧸ I) ≃ₗ[R] ∀ i, R ⧸ span ({I.smithCoeffs b hI i} : Set R) :=
+  Submodule.quotientEquivPiSpan (I.restrictScalars R) b <| finrank_eq_finrank b I hI
 
 /-- Ideal quotients over a free finite extension of `ℤ` are isomorphic to a direct product of
 `ZMod`. -/
 noncomputable def quotientEquivPiZMod (I : Ideal S) (b : Basis ι ℤ S) (hI : I ≠ ⊥) :
     S ⧸ I ≃+ ∀ i, ZMod (I.smithCoeffs b hI i).natAbs :=
-  let a := I.smithCoeffs b hI
-  let e := I.quotientEquivPiSpan b hI
-  let e' : (∀ i : ι, ℤ ⧸ span ({a i} : Set ℤ)) ≃+ ∀ i : ι, ZMod (a i).natAbs :=
-    AddEquiv.piCongrRight fun i => ↑(Int.quotientSpanEquivZMod (a i))
-  (↑(e : (S ⧸ I) ≃ₗ[ℤ] _) : S ⧸ I ≃+ _).trans e'
+  Submodule.quotientEquivPiZMod (I.restrictScalars ℤ) b <| finrank_eq_finrank b I hI
 
-/-- A nonzero ideal over a free finite extension of `ℤ` has a finite quotient.
-
-Can't be an instance because of the side condition `I ≠ ⊥`, and more importantly,
-because the choice of `Fintype` instance is non-canonical.
+/--
+A nonzero ideal over a free finite extension of `ℤ` has a finite quotient.
+It can't be an instance because of the side condition `I ≠ ⊥`.
 -/
-noncomputable def fintypeQuotientOfFreeOfNeBot [Module.Free ℤ S] [Module.Finite ℤ S]
-    (I : Ideal S) (hI : I ≠ ⊥) : Fintype (S ⧸ I) := by
+theorem finiteQuotientOfFreeOfNeBot [Module.Free ℤ S] [Module.Finite ℤ S]
+    (I : Ideal S) (hI : I ≠ ⊥) : Finite (S ⧸ I) :=
   let b := Module.Free.chooseBasis ℤ S
-  let a := I.smithCoeffs b hI
-  let e := I.quotientEquivPiZMod b hI
-  haveI : ∀ i, NeZero (a i).natAbs := fun i =>
-    ⟨Int.natAbs_ne_zero.mpr (smithCoeffs_ne_zero b I hI i)⟩
-  classical exact Fintype.ofEquiv (∀ i, ZMod (a i).natAbs) e.symm
+  Submodule.finiteQuotientOfFreeOfRankEq (I.restrictScalars ℤ) <| finrank_eq_finrank b I hI
+
+@[deprecated (since := "2025-03-15")] alias fintypeQuotientOfFreeOfNeBot :=
+  finiteQuotientOfFreeOfNeBot
 
 variable (F : Type*) [CommRing F] [Algebra F R] [Algebra F S] [IsScalarTower F R S]
   (b : Basis ι R S) {I : Ideal S} (hI : I ≠ ⊥)
@@ -104,10 +53,8 @@ variable (F : Type*) [CommRing F] [Algebra F R] [Algebra F S] [IsScalarTower F R
 /-- Decompose `S⧸I` as a direct sum of cyclic `R`-modules
   (quotients by the ideals generated by Smith coefficients of `I`). -/
 noncomputable def quotientEquivDirectSum :
-    (S ⧸ I) ≃ₗ[F] ⨁ i, R ⧸ span ({I.smithCoeffs b hI i} : Set R) := by
-  haveI := Fintype.ofFinite ι
-  exact ((I.quotientEquivPiSpan b _).restrictScalars F).trans
-    (DirectSum.linearEquivFunOnFintype _ _ _).symm
+    (S ⧸ I) ≃ₗ[F] ⨁ i, R ⧸ span ({I.smithCoeffs b hI i} : Set R) :=
+  Submodule.quotientEquivDirectSum F b (N := (I.restrictScalars R)) <| finrank_eq_finrank b I hI
 
 theorem finrank_quotient_eq_sum {ι} [Fintype ι] (b : Basis ι R S) [Nontrivial F]
     [∀ i, Module.Free F (R ⧸ span ({I.smithCoeffs b hI i} : Set R))]

@@ -60,7 +60,7 @@ variable [RingHomIsometric σ₂₃]
 
 theorem opNorm_le_bound₂ (f : E →SL[σ₁₃] F →SL[σ₂₃] G) {C : ℝ} (h0 : 0 ≤ C)
     (hC : ∀ x y, ‖f x y‖ ≤ C * ‖x‖ * ‖y‖) : ‖f‖ ≤ C :=
-  f.opNorm_le_bound h0 fun x => (f x).opNorm_le_bound (mul_nonneg h0 (norm_nonneg _)) <| hC x
+  f.opNorm_le_bound h0 fun x => (f x).opNorm_le_bound (by positivity) <| hC x
 
 
 theorem le_opNorm₂ [RingHomIsometric σ₁₃] (f : E →SL[σ₁₃] F →SL[σ₂₃] G) (x : E) (y : F) :
@@ -138,16 +138,12 @@ For a version bundled as `LinearIsometryEquiv`, see
 `ContinuousLinearMap.flipL`. -/
 def flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : F →SL[σ₂₃] E →SL[σ₁₃] G :=
   LinearMap.mkContinuous₂
-    -- Porting note: the `simp only`s below used to be `rw`.
-    -- Now that doesn't work as we need to do some beta reduction along the way.
     (LinearMap.mk₂'ₛₗ σ₂₃ σ₁₃ (fun y x => f x y) (fun x y z => (f z).map_add x y)
       (fun c y x => (f x).map_smulₛₗ c y) (fun z x y => by simp only [f.map_add, add_apply])
         (fun c y x => by simp only [f.map_smulₛₗ, smul_apply]))
     ‖f‖ fun y x => (f.le_opNorm₂ x y).trans_eq <| by simp only [mul_right_comm]
 
 private theorem le_norm_flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : ‖f‖ ≤ ‖flip f‖ :=
-  #adaptation_note /-- https://github.com/leanprover/lean4/pull/4119
-  we either need to specify the `f.flip` argument, or use `set_option maxSynthPendingDepth 2 in`. -/
   f.opNorm_le_bound₂ (norm_nonneg f.flip) fun x y => by
     rw [mul_right_comm]
     exact (flip f).le_opNorm₂ y x
@@ -165,6 +161,8 @@ theorem flip_flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : f.flip.flip = f 
 theorem opNorm_flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : ‖f.flip‖ = ‖f‖ :=
   le_antisymm (by simpa only [flip_flip] using le_norm_flip f.flip) (le_norm_flip f)
 
+@[simp]
+lemma flip_zero : flip (0 : E →SL[σ₁₃] F →SL[σ₂₃] G) = 0 := rfl
 
 @[simp]
 theorem flip_add (f g : E →SL[σ₁₃] F →SL[σ₂₃] G) : (f + g).flip = f.flip + g.flip :=
@@ -265,7 +263,6 @@ def compSL : (F →SL[σ₂₃] G) →L[𝕜₃] (E →SL[σ₁₂] F) →SL[σ�
         Pi.smul_apply])
     1 fun f g => by simpa only [one_mul] using opNorm_comp_le f g
 
-set_option maxSynthPendingDepth 2 in
 theorem norm_compSL_le : ‖compSL E F G σ₁₂ σ₂₃‖ ≤ 1 :=
   LinearMap.mkContinuous₂_norm_le _ zero_le_one _
 
@@ -293,7 +290,6 @@ variable (𝕜 σ₁₂ σ₂₃ E Fₗ Gₗ)
 def compL : (Fₗ →L[𝕜] Gₗ) →L[𝕜] (E →L[𝕜] Fₗ) →L[𝕜] E →L[𝕜] Gₗ :=
   compSL E Fₗ Gₗ (RingHom.id 𝕜) (RingHom.id 𝕜)
 
-set_option maxSynthPendingDepth 2 in
 theorem norm_compL_le : ‖compL 𝕜 E Fₗ Gₗ‖ ≤ 1 :=
   norm_compSL_le _ _ _ _ _
 
@@ -306,7 +302,7 @@ variable (Eₗ) {𝕜 E Fₗ Gₗ}
 /-- Apply `L(x,-)` pointwise to bilinear maps, as a continuous bilinear map -/
 @[simps! apply]
 def precompR (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : E →L[𝕜] (Eₗ →L[𝕜] Fₗ) →L[𝕜] Eₗ →L[𝕜] Gₗ :=
-  (compL 𝕜 Eₗ Fₗ Gₗ).comp L
+  compL 𝕜 Eₗ Fₗ Gₗ ∘L L
 
 /-- Apply `L(-,y)` pointwise to bilinear maps, as a continuous bilinear map -/
 def precompL (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : (Eₗ →L[𝕜] E) →L[𝕜] Fₗ →L[𝕜] Eₗ →L[𝕜] Gₗ :=
@@ -315,14 +311,12 @@ def precompL (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : (Eₗ →L[𝕜] E) →L[
 @[simp] lemma precompL_apply (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) (u : Eₗ →L[𝕜] E) (f : Fₗ) (g : Eₗ) :
     precompL Eₗ L u f g = L (u g) f := rfl
 
-set_option maxSynthPendingDepth 2 in
 theorem norm_precompR_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : ‖precompR Eₗ L‖ ≤ ‖L‖ :=
   calc
     ‖precompR Eₗ L‖ ≤ ‖compL 𝕜 Eₗ Fₗ Gₗ‖ * ‖L‖ := opNorm_comp_le _ _
-    _ ≤ 1 * ‖L‖ := mul_le_mul_of_nonneg_right (norm_compL_le _ _ _ _) (norm_nonneg L)
+    _ ≤ 1 * ‖L‖ := by gcongr; apply norm_compL_le
     _ = ‖L‖ := by rw [one_mul]
 
-set_option maxSynthPendingDepth 2 in
 theorem norm_precompL_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : ‖precompL Eₗ L‖ ≤ ‖L‖ := by
   rw [precompL, opNorm_flip, ← opNorm_flip L]
   exact norm_precompR_le _ L.flip
@@ -350,6 +344,18 @@ theorem bilinearComp_apply (f : E →SL[σ₁₃] F →SL[σ₂₃] G) (gE : E' 
     (x : E') (y : F') : f.bilinearComp gE gF x y = f (gE x) (gF y) :=
   rfl
 
+@[simp]
+lemma bilinearComp_zero {gE : E' →SL[σ₁'] E} {gF : F' →SL[σ₂'] F} :
+    bilinearComp (0 : E →SL[σ₁₃] F →SL[σ₂₃] G) gE gF = 0 := rfl
+
+@[simp]
+lemma bilinearComp_zero_left {f : E →SL[σ₁₃] F →SL[σ₂₃] G} {gF : F' →SL[σ₂'] F} :
+    bilinearComp f (0 : E' →SL[σ₁'] E) gF = 0 := by ext; simp
+
+@[simp]
+lemma bilinearComp_zero_right {f : E →SL[σ₁₃] F →SL[σ₂₃] G} {gE : E' →SL[σ₁'] E} :
+    bilinearComp f gE (0 : F' →SL[σ₂'] F) = 0 := by ext; simp
+
 variable [RingHomIsometric σ₁₃] [RingHomIsometric σ₁'] [RingHomIsometric σ₂']
 
 /-- Derivative of a continuous bilinear map `f : E →L[𝕜] F →L[𝕜] G` interpreted as a map `E × F → G`
@@ -372,15 +378,15 @@ is the product of the norms. -/
 @[simp]
 theorem norm_smulRight_apply (c : E →L[𝕜] 𝕜) (f : Fₗ) : ‖smulRight c f‖ = ‖c‖ * ‖f‖ := by
   refine le_antisymm ?_ ?_
-  · refine opNorm_le_bound _ (mul_nonneg (norm_nonneg _) (norm_nonneg _)) fun x => ?_
+  · refine opNorm_le_bound _ (by positivity) fun x => ?_
     calc
       ‖c x • f‖ = ‖c x‖ * ‖f‖ := norm_smul _ _
-      _ ≤ ‖c‖ * ‖x‖ * ‖f‖ := mul_le_mul_of_nonneg_right (le_opNorm _ _) (norm_nonneg _)
+      _ ≤ ‖c‖ * ‖x‖ * ‖f‖ := by gcongr; apply le_opNorm
       _ = ‖c‖ * ‖f‖ * ‖x‖ := by ring
-  · obtain hf | hf := (norm_nonneg f).eq_or_gt
+  · obtain hf | hf := (norm_nonneg f).eq_or_lt'
     · simp [hf]
     · rw [← le_div_iff₀ hf]
-      refine opNorm_le_bound _ (div_nonneg (norm_nonneg _) (norm_nonneg f)) fun x => ?_
+      refine opNorm_le_bound _ (by positivity) fun x => ?_
       rw [div_mul_eq_mul_div, le_div_iff₀ hf]
       calc
         ‖c x‖ * ‖f‖ = ‖c x • f‖ := (norm_smul _ _).symm

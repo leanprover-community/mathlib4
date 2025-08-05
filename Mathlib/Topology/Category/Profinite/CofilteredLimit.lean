@@ -56,7 +56,6 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
   let V : ∀ s : S, Set (F.obj (j s)) := fun s => (hS s.2).choose_spec.choose
   have hV : ∀ s : S, IsClopen (V s) ∧ s.1 = C.π.app (j s) ⁻¹' V s := fun s =>
     (hS s.2).choose_spec.choose_spec
-
   -- Since `U` is also closed, hence compact, it is covered by finitely many of the
   -- clopens constructed in the previous step.
   have hUo : ∀ (i : ↑S), IsOpen ((fun s ↦ (C.π.app (j s)) ⁻¹' V s) i) := by
@@ -114,8 +113,7 @@ theorem exists_locallyConstant_fin_two (hC : IsLimit C) (f : LocallyConstant C.p
   apply LocallyConstant.locallyConstant_eq_of_fiber_zero_eq
   simp only [Fin.isValue, Functor.const_obj_obj, LocallyConstant.coe_comap, Set.preimage_comp,
     LocallyConstant.ofIsClopen_fiber_zero]
-  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-  erw [← h]
+  exact h
 
 open Classical in
 theorem exists_locallyConstant_finite_aux {α : Type*} [Finite α] (hC : IsLimit C)
@@ -128,9 +126,7 @@ theorem exists_locallyConstant_finite_aux {α : Type*} [Finite α] (hC : IsLimit
   choose j g h using hff
   let G : Finset J := Finset.univ.image j
   obtain ⟨j0, hj0⟩ := IsCofiltered.inf_objs_exists G
-  have hj : ∀ a, j a ∈ (Finset.univ.image j : Finset J) := by
-    intro a
-    simp only [Finset.mem_image, Finset.mem_univ, true_and, exists_apply_eq_apply]
+  have hj : ∀ a, j a ∈ (Finset.univ.image j : Finset J) := by grind
   let fs : ∀ a : α, j0 ⟶ j a := fun a => (hj0 (hj a)).some
   let gg : α → LocallyConstant (F.obj j0) (Fin 2) := fun a => (g a).comap (F.map (fs _)).hom
   let ggg := LocallyConstant.unflip gg
@@ -169,8 +165,9 @@ theorem exists_locallyConstant_finite_nonempty {α : Type*} [Finite α] [Nonempt
     rw [h]
     rfl
   have h2 : ∃ a : α, ι a = gg (C.π.app j x) := ⟨f x, h1⟩
-  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-  erw [dif_pos h2]
+  rw [dif_pos]
+  swap
+  · assumption
   apply_fun ι
   · rw [h2.choose_spec]
     exact h1

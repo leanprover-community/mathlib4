@@ -7,7 +7,6 @@ import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.AlgebraicTopology.SimplexCategory.Basic
 import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Topology.Connected.PathConnected
-import Mathlib.Topology.Instances.NNReal.Defs
 
 /-!
 # Topological simplices
@@ -47,7 +46,7 @@ lemma toTopObj_one_coe_add_coe_eq_one (f : ⦋1⦌.toTopObj) : (f 0 : ℝ) + f 1
   rw [toTopObj_one_add_eq_one]
 
 instance (x : SimplexCategory) : Nonempty x.toTopObj :=
-  ⟨⟨Pi.single (I := Fin _) 0 1, (show ∑ _, _ = _ by simp)⟩⟩
+  ⟨⟨Pi.single 0 1, (show ∑ _, _ = _ by simp)⟩⟩
 
 instance : Unique ⦋0⦌.toTopObj :=
   ⟨⟨1, show ∑ _, _ = _ by simp [toType_apply]⟩, fun f ↦ by ext i; fin_cases i; simp⟩
@@ -92,7 +91,7 @@ theorem coe_toTopMap {x y : SimplexCategory} (f : x ⟶ y) (g : x.toTopObj) (i :
     toTopMap f g i = ∑ j ∈ Finset.univ.filter (f · = i), g j :=
   rfl
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_toTopMap {x y : SimplexCategory} (f : x ⟶ y) : Continuous (toTopMap f) := by
   refine Continuous.subtype_mk (continuous_pi fun i => ?_) _
   dsimp only [coe_toTopMap]
@@ -102,12 +101,12 @@ theorem continuous_toTopMap {x y : SimplexCategory} (f : x ⟶ y) : Continuous (
 @[simps obj map]
 def toTop : SimplexCategory ⥤ TopCat where
   obj x := TopCat.of x.toTopObj
-  map f := TopCat.ofHom ⟨toTopMap f, by continuity⟩
+  map f := TopCat.ofHom ⟨toTopMap f, by fun_prop⟩
   map_id := by
     classical
     intro Δ
     ext f
-    simp [Finset.sum_filter, CategoryTheory.id_apply]
+    simp [Finset.sum_filter]
   map_comp := fun f g => by
     classical
     ext h : 3

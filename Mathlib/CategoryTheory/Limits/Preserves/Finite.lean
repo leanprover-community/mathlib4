@@ -88,8 +88,6 @@ lemma preservesFiniteLimits_of_natIso {F G : C ⥤ D} (h : F ≅ G) [PreservesFi
     PreservesFiniteLimits G where
   preservesFiniteLimits _ _ _ := preservesLimitsOfShape_of_natIso h
 
-/- Porting note: adding this class because quantified classes don't behave well
-https://github.com/leanprover-community/mathlib4/pull/2764 -/
 /-- A functor `F` preserves finite products if it preserves all from `Discrete J` for `Finite J`.
 We require this for `J = Fin n` in the definition,
 then generalize to `J : Type u` in the instance. -/
@@ -245,8 +243,6 @@ lemma preservesFiniteColimits_of_natIso {F G : C ⥤ D} (h : F ≅ G) [Preserves
     PreservesFiniteColimits G where
   preservesFiniteColimits _ _ _ := preservesColimitsOfShape_of_natIso h
 
-/- Porting note: adding this class because quantified classes don't behave well
-https://github.com/leanprover-community/mathlib4/pull/2764 -/
 /-- A functor `F` preserves finite products if it preserves all from `Discrete J` for `Fintype J`.
 We require this for `J = Fin n` in the definition,
 then generalize to `J : Type u` in the instance. -/

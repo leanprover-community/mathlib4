@@ -7,7 +7,7 @@ import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
-import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
+import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
 
 /-!
 # Projective objects and categories with enough projectives
@@ -53,8 +53,10 @@ section
 from some projective object `P`.
 -/
 structure ProjectivePresentation (X : C) where
+  /-- The projective object `p` of this presentation -/
   p : C
   [projective : Projective p]
+  /-- The epimorphism from `p` of this presentation -/
   f : p ⟶ X
   [epi : Epi f]
 
@@ -213,6 +215,18 @@ def mapProjectivePresentation (adj : F ⊣ G) [G.PreservesEpimorphisms] (X : C)
   epi := have := Adjunction.leftAdjoint_preservesColimits.{0, 0} adj; inferInstance
 
 end Adjunction
+
+namespace Functor
+
+variable {D : Type*} [Category D] (F : C ⥤ D)
+
+theorem projective_of_map_projective [F.Full] [F.Faithful]
+    [F.PreservesEpimorphisms] {P : C} (hP : Projective (F.obj P)) : Projective P where
+  factors g f _ := by
+    obtain ⟨h, fac⟩ := hP.factors (F.map g) (F.map f)
+    exact ⟨F.preimage h, F.map_injective (by simp [fac])⟩
+
+end Functor
 
 namespace Equivalence
 

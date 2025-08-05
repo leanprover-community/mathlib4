@@ -3,6 +3,7 @@ Copyright (c) 2022 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Xavier Roblot
 -/
+<<<<<<< HEAD
 import Mathlib.Algebra.Algebra.Hom.Rat
 import Mathlib.Analysis.AbsoluteValue.Equivalence
 import Mathlib.Analysis.Complex.Polynomial.Basic
@@ -1239,3 +1240,9 @@ instance : IsTotallyReal ℚ where
     exact Rat.isReal_infinitePlace
 
 end NumberField
+=======
+import Mathlib.NumberTheory.NumberField.InfinitePlace.Ramification
+import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex
+
+deprecated_module (since := "2025-04-30")
+>>>>>>> 25b3be17c7f5c5f9b63e0bfe9eb6a2d876912f92

@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Data.Set.Finite.Lattice
 import Mathlib.Order.Interval.Finset.Defs
-import Mathlib.Order.UpperLower.Basic
+import Mathlib.Order.UpperLower.Closure
 
 /-!
 # Upper and lower sets in a locally finite order

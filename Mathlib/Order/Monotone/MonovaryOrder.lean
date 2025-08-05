@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Order.Monotone.Monovary
-import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.SetTheory.Cardinal.Order
 
 /-!
 # Interpreting monovarying functions as monotone functions
@@ -26,11 +26,10 @@ We define `i < j` if `f i < f j`, or if `f i = f j` and `g i < g j`, breaking ti
 def MonovaryOrder (i j : ι) : Prop :=
   Prod.Lex (· < ·) (Prod.Lex (· < ·) WellOrderingRel) (f i, g i, i) (f j, g j, j)
 
-instance : IsStrictTotalOrder ι (MonovaryOrder f g)
-    where
+instance : IsStrictTotalOrder ι (MonovaryOrder f g) where
   trichotomous i j := by
     convert trichotomous_of (Prod.Lex (· < ·) <| Prod.Lex (· < ·) WellOrderingRel) _ _
-    · simp only [Prod.ext_iff, ← and_assoc, imp_and, eq_iff_iff, iff_and_self]
+    · simp only [Prod.ext_iff, ← and_assoc, imp_and, iff_and_self]
       exact ⟨congr_arg _, congr_arg _⟩
     · infer_instance
   irrefl i := by rw [MonovaryOrder]; exact irrefl _

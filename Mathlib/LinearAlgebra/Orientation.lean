@@ -14,11 +14,11 @@ This file defines orientations of modules.
 ## Main definitions
 
 * `Orientation` is a type synonym for `Module.Ray` for the case where the module is that of
-alternating maps from a module to its underlying ring.  An orientation may be associated with an
-alternating map or with a basis.
+  alternating maps from a module to its underlying ring.  An orientation may be associated with an
+  alternating map or with a basis.
 
 * `Module.Oriented` is a type class for a choice of orientation of a module that is considered
-the positive orientation.
+  the positive orientation.
 
 ## Implementation notes
 
@@ -31,12 +31,13 @@ that index type is a `Fintype` and there exists a basis of the same cardinality.
 
 -/
 
-
 noncomputable section
+
+open Module
 
 section OrderedCommSemiring
 
-variable (R : Type*) [StrictOrderedCommSemiring R]
+variable (R : Type*) [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R]
 variable (M : Type*) [AddCommMonoid M] [Module R M]
 variable {N : Type*} [AddCommMonoid N] [Module R N]
 variable (ι ι' : Type*)
@@ -122,7 +123,7 @@ end OrderedCommSemiring
 
 section OrderedCommRing
 
-variable {R : Type*} [StrictOrderedCommRing R]
+variable {R : Type*} [CommRing R] [PartialOrder R] [IsStrictOrderedRing R]
 variable {M N : Type*} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
 
 @[simp]
@@ -135,7 +136,7 @@ protected theorem Orientation.reindex_neg {ι ι' : Type*} (e : ι ≃ ι') (x :
     Orientation.reindex R M e (-x) = -Orientation.reindex R M e x :=
   Module.Ray.map_neg _ x
 
-namespace Basis
+namespace Module.Basis
 
 variable {ι ι' : Type*}
 
@@ -184,13 +185,13 @@ theorem orientation_isEmpty [IsEmpty ι] (b : Basis ι R M) :
   congr
   exact b.det_isEmpty
 
-end Basis
+end Module.Basis
 
 end OrderedCommRing
 
 section LinearOrderedCommRing
 
-variable {R : Type*} [LinearOrderedCommRing R]
+variable {R : Type*} [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
 variable {M : Type*} [AddCommGroup M] [Module R M]
 variable {ι : Type*}
 
@@ -203,7 +204,7 @@ theorem eq_or_eq_neg_of_isEmpty [IsEmpty ι] (o : Orientation R M ι) :
     o = positiveOrientation ∨ o = -positiveOrientation := by
   induction o using Module.Ray.ind with | h x hx =>
   dsimp [positiveOrientation]
-  simp only [ray_eq_iff, sameRay_neg_swap]
+  simp only [ray_eq_iff]
   rw [sameRay_or_sameRay_neg_iff_not_linearIndependent]
   intro h
   set f : (M [⋀^ι]→ₗ[R] R) ≃ₗ[R] R := AlternatingMap.constLinearEquivOfIsEmpty.symm
@@ -216,7 +217,7 @@ theorem eq_or_eq_neg_of_isEmpty [IsEmpty ι] (o : Orientation R M ι) :
 
 end Orientation
 
-namespace Basis
+namespace Module.Basis
 
 variable [Fintype ι] [DecidableEq ι]
 
@@ -302,8 +303,8 @@ theorem det_adjustToOrientation [Nonempty ι] (e : Basis ι R M)
   · left
     rfl
   · right
-    simp only [e.det_unitsSMul, ne_eq, Finset.mem_univ, Finset.prod_update_of_mem, not_true,
-      Pi.one_apply, Finset.prod_const_one, mul_one, inv_neg', inv_one, Units.val_neg, Units.val_one]
+    simp only [e.det_unitsSMul, Finset.mem_univ, Finset.prod_update_of_mem,
+      Pi.one_apply, Finset.prod_const_one, mul_one, inv_neg, inv_one, Units.val_neg, Units.val_one]
     ext
     simp
 
@@ -312,13 +313,13 @@ theorem abs_det_adjustToOrientation [Nonempty ι] (e : Basis ι R M)
     (x : Orientation R M ι) (v : ι → M) : |(e.adjustToOrientation x).det v| = |e.det v| := by
   rcases e.det_adjustToOrientation x with h | h <;> simp [h]
 
-end Basis
+end Module.Basis
 
 end LinearOrderedCommRing
 
 section LinearOrderedField
 
-variable {R : Type*} [LinearOrderedField R]
+variable {R : Type*} [Field R] [LinearOrder R] [IsStrictOrderedRing R]
 variable {M : Type*} [AddCommGroup M] [Module R M]
 variable {ι : Type*}
 
@@ -334,14 +335,8 @@ theorem eq_or_eq_neg [FiniteDimensional R M] (x₁ x₂ : Orientation R M ι)
     (h : Fintype.card ι = finrank R M) : x₁ = x₂ ∨ x₁ = -x₂ := by
   have e := (finBasis R M).reindex (Fintype.equivFinOfCardEq h).symm
   letI := Classical.decEq ι
-  -- Porting note: this needs to be made explicit for the simp below
-  have orientation_neg_neg :
-      ∀ f : Basis ι R M, - -Basis.orientation f = Basis.orientation f := by
-    #adaptation_note /-- https://github.com/leanprover/lean4/pull/4119
-    `set_option maxSynthPendingDepth 2` required -/
-    set_option maxSynthPendingDepth 2 in simp
   rcases e.orientation_eq_or_eq_neg x₁ with (h₁ | h₁) <;>
-    rcases e.orientation_eq_or_eq_neg x₂ with (h₂ | h₂) <;> simp [h₁, h₂, orientation_neg_neg]
+    rcases e.orientation_eq_or_eq_neg x₂ with (h₂ | h₂) <;> simp [h₁, h₂]
 
 /-- If the index type has cardinality equal to the finite dimension, an orientation equals the
 negation of another orientation if and only if they are not equal. -/

@@ -65,13 +65,10 @@ variable {n R}
 
 namespace TruncatedWittVector
 
-variable (p)
-
+variable (p) in
 /-- Create a `TruncatedWittVector` from a vector `x`. -/
 def mk (x : Fin n → R) : TruncatedWittVector p n R :=
   x
-
-variable {p}
 
 /-- `x.coeff i` is the `i`th entry of `x`. -/
 def coeff (i : Fin n) (x : TruncatedWittVector p n R) : R :=
@@ -188,7 +185,7 @@ instance hasNatPow : Pow (TruncatedWittVector p n R) ℕ :=
 
 @[simp]
 theorem coeff_zero (i : Fin n) : (0 : TruncatedWittVector p n R).coeff i = 0 := by
-  show coeff i (truncateFun _ 0 : TruncatedWittVector p n R) = 0
+  change coeff i (truncateFun _ 0 : TruncatedWittVector p n R) = 0
   rw [coeff_truncateFun, WittVector.zero_coeff]
 
 end TruncatedWittVector
@@ -306,8 +303,8 @@ variable (n)
 
 theorem mem_ker_truncate (x : 𝕎 R) :
     x ∈ RingHom.ker (truncate (p := p) n) ↔ ∀ i < n, x.coeff i = 0 := by
-  simp only [RingHom.mem_ker, truncate, truncateFun, RingHom.coe_mk, TruncatedWittVector.ext_iff,
-    TruncatedWittVector.coeff_mk, coeff_zero]
+  simp only [RingHom.mem_ker, truncate, RingHom.coe_mk, TruncatedWittVector.ext_iff,
+    coeff_zero]
   exact Fin.forall_iff
 
 variable (p)
@@ -418,8 +415,7 @@ defining the `k`th entry to be the final entry of `fₖ s`.
 def liftFun (s : S) : 𝕎 R :=
   @WittVector.mk' p _ fun k => TruncatedWittVector.coeff (Fin.last k) (f (k + 1) s)
 
-variable {f}
-
+variable {f} in
 include f_compat in
 @[simp]
 theorem truncate_liftFun (s : S) : WittVector.truncate n (liftFun f s) = f n s := by
@@ -427,8 +423,6 @@ theorem truncate_liftFun (s : S) : WittVector.truncate n (liftFun f s) = f n s :
   simp only [liftFun, TruncatedWittVector.coeff_mk, WittVector.truncate_mk']
   rw [← f_compat (i + 1) n i.is_lt, RingHom.comp_apply, TruncatedWittVector.coeff_truncate]
   congr 1 with _
-
-variable (f)
 
 /--
 Given compatible ring homs from `S` into `TruncatedWittVector n` for each `n`, we can lift these
@@ -443,7 +437,6 @@ def lift : S →+* 𝕎 R := by
             map_add' := ?_
             map_mul' := ?_ } <;>
   ( intros
-    dsimp only
     rw [← sub_eq_zero, ← Ideal.mem_bot, ← iInf_ker_truncate, Ideal.mem_iInf]
     simp [RingHom.mem_ker, f_compat])
 

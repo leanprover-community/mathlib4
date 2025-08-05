@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
 import Mathlib.Data.FunLike.Basic
-import Mathlib.Tactic.FunProp.ToBatteries
 
 /-!
 ## `funProp` Meta programming functions like in Lean.Expr.* but for working with bundled morphisms.
@@ -62,7 +61,7 @@ Weak normal head form of an expression involving morphism applications. Addition
 can specify which when to unfold definitions.
 
 For example calling this on `coe (f a) b` will put `f` in weak normal head form instead of `coe`.
- -/
+-/
 partial def whnfPred (e : Expr) (pred : Expr → MetaM Bool) :
     MetaM Expr := do
   whnfEasyCases e fun e => do
@@ -73,8 +72,7 @@ partial def whnfPred (e : Expr) (pred : Expr → MetaM Bool) :
       if (← getConfig).zeta then
         return (coe.app f).app x
       else
-        return ← letTelescope f fun xs f' =>
-          mkLambdaFVars xs ((coe.app f').app x)
+        return ← mapLetTelescope f fun _ f' => pure ((coe.app f').app x)
 
     if (← pred e) then
         match (← unfoldDefinition? e) with
@@ -87,7 +85,7 @@ partial def whnfPred (e : Expr) (pred : Expr → MetaM Bool) :
 Weak normal head form of an expression involving morphism applications.
 
 For example calling this on `coe (f a) b` will put `f` in weak normal head form instead of `coe`.
- -/
+-/
 def whnf (e : Expr) : MetaM Expr :=
   whnfPred e (fun _ => return false)
 

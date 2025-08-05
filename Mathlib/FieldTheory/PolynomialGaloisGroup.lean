@@ -50,8 +50,8 @@ variable {F : Type*} [Field F] (p q : F[X]) (E : Type*) [Field E] [Algebra F E]
 /-- The Galois group of a polynomial. -/
 def Gal :=
   p.SplittingField ≃ₐ[F] p.SplittingField
--- Porting note(https://github.com/leanprover-community/mathlib4/issues/5020):
--- deriving Group, Fintype
+-- The `Group, Fintype` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
 namespace Gal
 
@@ -172,7 +172,7 @@ theorem smul_def [Fact (p.Splits (algebraMap F E))] (ϕ : p.Gal) (x : rootSet p 
 instance galAction [Fact (p.Splits (algebraMap F E))] : MulAction p.Gal (rootSet p E) where
   one_smul _ := by simp only [smul_def, Equiv.apply_symm_apply, one_smul]
   mul_smul _ _ _ := by
-    simp only [smul_def, Equiv.apply_symm_apply, Equiv.symm_apply_apply, mul_smul]
+    simp only [smul_def, Equiv.symm_apply_apply, mul_smul]
 
 lemma galAction_isPretransitive [Fact (p.Splits (algebraMap F E))] (hp : Irreducible p) :
     MulAction.IsPretransitive p.Gal (p.rootSet E) := by
@@ -261,7 +261,7 @@ theorem restrictProd_injective : Function.Injective (restrictProd p q) := by
   intro f g hfg
   classical
   simp only [restrictProd, restrictDvd_def] at hfg
-  simp only [dif_neg hpq, MonoidHom.prod_apply, Prod.mk.inj_iff] at hfg
+  simp only [dif_neg hpq, MonoidHom.prod_apply, Prod.mk_inj] at hfg
   ext (x hx)
   rw [rootSet_def, aroots_mul hpq] at hx
   rcases Multiset.mem_add.mp (Multiset.mem_toFinset.mp hx) with h | h
@@ -358,12 +358,12 @@ open scoped IntermediateField
 
 /-- For a separable polynomial, its Galois group has cardinality
 equal to the dimension of its splitting field over `F`. -/
-theorem card_of_separable (hp : p.Separable) : Fintype.card p.Gal = finrank F p.SplittingField :=
+theorem card_of_separable (hp : p.Separable) : Nat.card p.Gal = finrank F p.SplittingField :=
   haveI : IsGalois F p.SplittingField := IsGalois.of_separable_splitting_field hp
   IsGalois.card_aut_eq_finrank F p.SplittingField
 
 theorem prime_degree_dvd_card [CharZero F] (p_irr : Irreducible p) (p_deg : p.natDegree.Prime) :
-    p.natDegree ∣ Fintype.card p.Gal := by
+    p.natDegree ∣ Nat.card p.Gal := by
   rw [Gal.card_of_separable p_irr.separable]
   have hp : p.degree ≠ 0 := fun h =>
     Nat.Prime.ne_zero p_deg (natDegree_eq_zero_iff_degree_le_zero.mpr (le_of_eq h))

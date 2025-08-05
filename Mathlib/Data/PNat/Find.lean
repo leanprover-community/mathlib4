@@ -57,7 +57,7 @@ protected theorem find_min : ∀ {m : ℕ+}, m < PNat.find h → ¬p m :=
   @(PNat.findX h).prop.right
 
 protected theorem find_min' {m : ℕ+} (hm : p m) : PNat.find h ≤ m :=
-  le_of_not_lt fun l => PNat.find_min h l hm
+  le_of_not_gt fun l => PNat.find_min h l hm
 
 variable {n m : ℕ+}
 
@@ -75,7 +75,7 @@ theorem find_lt_iff (n : ℕ+) : PNat.find h < n ↔ ∃ m < n, p m :=
 
 @[simp]
 theorem find_le_iff (n : ℕ+) : PNat.find h ≤ n ↔ ∃ m ≤ n, p m := by
-  simp only [exists_prop, ← lt_add_one_iff, find_lt_iff]
+  simp only [← lt_add_one_iff, find_lt_iff]
 
 @[simp]
 theorem le_find_iff (n : ℕ+) : n ≤ PNat.find h ↔ ∀ m < n, ¬p m := by
@@ -88,9 +88,7 @@ theorem lt_find_iff (n : ℕ+) : n < PNat.find h ↔ ∀ m ≤ n, ¬p m := by
 @[simp]
 theorem find_eq_one : PNat.find h = 1 ↔ p 1 := by simp [find_eq_iff]
 
--- Porting note: deleted `@[simp]` to satisfy the linter because `le_find_iff` is more general
-theorem one_le_find : 1 < PNat.find h ↔ ¬p 1 :=
-  not_iff_not.mp <| by simp
+theorem one_le_find : 1 < PNat.find h ↔ ¬p 1 := by simp
 
 theorem find_mono (h : ∀ n, q n → p n) {hp : ∃ n, p n} {hq : ∃ n, q n} :
     PNat.find hp ≤ PNat.find hq :=

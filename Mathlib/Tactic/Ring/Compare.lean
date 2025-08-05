@@ -38,8 +38,8 @@ namespace Mathlib.Tactic.Ring
 
 open Lean Qq Meta
 
-/-! Rather than having the metaprograms `Mathlib.Tactic.Ring.evalLE` and
-`Mathlib.Tactic.Ring.evalLT` perform all type class inference at the point of use, we record in
+/-! Rather than having the metaprograms `Mathlib.Tactic.Ring.evalLE.lean` and
+`Mathlib.Tactic.Ring.evalLT.lean` perform all type class inference at the point of use, we record in
 advance, as `abbrev`s, a few type class deductions which will certainly be necessary.  They add no
 new information (they can already be proved by `inferInstance`).
 
@@ -49,31 +49,22 @@ runtime is devoted to type class inference. -/
 
 section Typeclass
 
-/-- `OrderedCommSemiring` implies `CommSemiring`. -/
-abbrev cs_of_ocs (α : Type*) [OrderedCommSemiring α] : CommSemiring α := inferInstance
+/-- `CommSemiring` implies `AddMonoidWithOne`. -/
+abbrev amwo_of_cs (α : Type*) [CommSemiring α] : AddMonoidWithOne α := inferInstance
 
-/-- `OrderedCommSemiring` implies `AddMonoidWithOne`. -/
-abbrev amwo_of_ocs (α : Type*) [OrderedCommSemiring α] : AddMonoidWithOne α := inferInstance
+/-- `PartialOrder` implies `LE`. -/
+abbrev le_of_po (α : Type*) [PartialOrder α] : LE α := inferInstance
 
-/-- `OrderedCommSemiring` implies `LE`. -/
-abbrev le_of_ocs (α : Type*) [OrderedCommSemiring α] : LE α := inferInstance
-
-/-- `StrictOrderedCommSemiring` implies `CommSemiring`. -/
-abbrev cs_of_socs (α : Type*) [StrictOrderedCommSemiring α] : CommSemiring α := inferInstance
-
-/-- `StrictOrderedCommSemiring` implies `AddMonoidWithOne`. -/
-abbrev amwo_of_socs (α : Type*) [StrictOrderedCommSemiring α] : AddMonoidWithOne α := inferInstance
-
-/-- `StrictOrderedCommSemiring` implies `LT`. -/
-abbrev lt_of_socs (α : Type*) [StrictOrderedCommSemiring α] : LT α := inferInstance
+/-- `PartialOrder` implies `LT`. -/
+abbrev lt_of_po (α : Type*) [PartialOrder α] : LT α := inferInstance
 
 end Typeclass
 
 /-! The lemmas like `add_le_add_right` in the root namespace are stated under minimal type classes,
 typically just `[AddRightMono α]` or similar.  Here we restate these
 lemmas under stronger type class assumptions (`[OrderedCommSemiring α]` or similar), which helps in
-speeding up the metaprograms in this file (`Mathlib.Tactic.Ring.proveLT` and
-`Mathlib.Tactic.Ring.proveLE`) substantially -- about a 50% reduction in heartbeat count in
+speeding up the metaprograms in this file (`Mathlib.Tactic.Ring.proveLT.lean` and
+`Mathlib.Tactic.Ring.proveLE.lean`) substantially -- about a 50% reduction in heartbeat count in
 representative test cases -- since otherwise a substantial fraction of their runtime is devoted to
 type class inference.
 
@@ -84,48 +75,55 @@ generality simply to require `OrderedCommSemiring`/`StrictOrderedCommSemiring`. 
 
 section Lemma
 
-theorem add_le_add_right {α : Type*} [OrderedCommSemiring α] {b c : α} (bc : b ≤ c) (a : α) :
+theorem add_le_add_right {α : Type*} [CommSemiring α] [PartialOrder α] [IsOrderedRing α]
+    {b c : α} (bc : b ≤ c) (a : α) :
     b + a ≤ c + a :=
   _root_.add_le_add_right bc a
 
-theorem add_le_of_nonpos_left {α : Type*} [OrderedCommSemiring α] (a : α) {b : α} (h : b ≤ 0) :
+theorem add_le_of_nonpos_left {α : Type*} [CommSemiring α] [PartialOrder α] [IsOrderedRing α]
+    (a : α) {b : α} (h : b ≤ 0) :
     b + a ≤ a :=
   _root_.add_le_of_nonpos_left h
 
-theorem le_add_of_nonneg_left {α : Type*} [OrderedCommSemiring α] (a : α) {b : α} (h : 0 ≤ b) :
+theorem le_add_of_nonneg_left {α : Type*} [CommSemiring α] [PartialOrder α] [IsOrderedRing α]
+    (a : α) {b : α} (h : 0 ≤ b) :
     a ≤ b + a :=
   _root_.le_add_of_nonneg_left h
 
-theorem add_lt_add_right {α : Type*} [StrictOrderedCommSemiring α] {b c : α} (bc : b < c) (a : α) :
+theorem add_lt_add_right {α : Type*} [CommSemiring α] [PartialOrder α] [IsStrictOrderedRing α]
+    {b c : α} (bc : b < c) (a : α) :
     b + a < c + a :=
   _root_.add_lt_add_right bc a
 
-theorem add_lt_of_neg_left {α : Type*} [StrictOrderedCommSemiring α] (a : α) {b : α} (h : b < 0) :
+theorem add_lt_of_neg_left {α : Type*} [CommSemiring α] [PartialOrder α] [IsStrictOrderedRing α]
+    (a : α) {b : α} (h : b < 0) :
     b + a < a :=
   _root_.add_lt_of_neg_left a h
 
-theorem lt_add_of_pos_left {α : Type*} [StrictOrderedCommSemiring α] (a : α) {b : α} (h : 0 < b) :
+theorem lt_add_of_pos_left {α : Type*} [CommSemiring α] [PartialOrder α] [IsStrictOrderedRing α]
+    (a : α) {b : α} (h : 0 < b) :
     a < b + a :=
   _root_.lt_add_of_pos_left a h
 
 end Lemma
 
 /-- Inductive type carrying the two kinds of errors which can arise in the metaprograms
-`Mathlib.Tactic.Ring.evalLE` and `Mathlib.Tactic.Ring.evalLT`. -/
+`Mathlib.Tactic.Ring.evalLE.lean` and `Mathlib.Tactic.Ring.evalLT.lean`. -/
 inductive ExceptType | tooSmall | notComparable
 export ExceptType (tooSmall notComparable)
 
 /-- In a commutative semiring, given `Ring.ExSum` objects `va`, `vb` which differ by a positive
 (additive) constant, construct a proof of `$a < $b`, where `a` (resp. `b`) is the expression in the
 semiring to which `va` (resp. `vb`) evaluates. -/
-def evalLE {v : Level} {α : Q(Type v)} (_ : Q(OrderedCommSemiring $α)) {a b : Q($α)}
-    (va : Ring.ExSum q(cs_of_ocs $α) a) (vb : Ring.ExSum q(cs_of_ocs $α) b) :
+def evalLE {v : Level} {α : Q(Type v)}
+    (ics : Q(CommSemiring $α)) (_ : Q(PartialOrder $α)) (_ : Q(IsOrderedRing $α))
+    {a b : Q($α)} (va : Ring.ExSum q($ics) a) (vb : Ring.ExSum q($ics) b) :
     MetaM (Except ExceptType Q($a ≤ $b)) := do
-  let lα : Q(LE $α) := q(le_of_ocs $α)
+  let lα : Q(LE $α) := q(le_of_po $α)
   assumeInstancesCommute
-  let ⟨_, pz⟩ ← NormNum.mkOfNat α q(amwo_of_ocs $α) (mkRawNatLit 0)
+  let ⟨_, pz⟩ ← NormNum.mkOfNat α q(amwo_of_cs $α) (mkRawNatLit 0)
   let rz : NormNum.Result q((0:$α)) :=
-    NormNum.Result.isNat q(amwo_of_ocs $α) (mkRawNatLit 0) (q(NormNum.isNat_ofNat $α $pz):)
+    NormNum.Result.isNat q(amwo_of_cs $α) (mkRawNatLit 0) (q(NormNum.isNat_ofNat $α $pz):)
   match va, vb with
   /- `0 ≤ 0` -/
   | .zero, .zero => pure <| .ok (q(le_refl (0:$α)):)
@@ -151,18 +149,19 @@ def evalLE {v : Level} {α : Q(Type v)} (_ : Q(OrderedCommSemiring $α)) {a b : 
   | _, _ =>
     unless va.eq vb do return .error notComparable
     pure <| .ok (q(le_refl $a):)
-
+--[CommSemiring α] [PartialOrder α] [IsStrictOrderedRing α]
 /-- In a commutative semiring, given `Ring.ExSum` objects `va`, `vb` which differ by a positive
 (additive) constant, construct a proof of `$a < $b`, where `a` (resp. `b`) is the expression in the
 semiring to which `va` (resp. `vb`) evaluates. -/
-def evalLT {v : Level} {α : Q(Type v)} (_ : Q(StrictOrderedCommSemiring $α)) {a b : Q($α)}
-    (va : Ring.ExSum q(cs_of_socs $α) a) (vb : Ring.ExSum q(cs_of_socs $α) b) :
+def evalLT {v : Level} {α : Q(Type v)}
+    (ics : Q(CommSemiring $α)) (_ : Q(PartialOrder $α)) (_ : Q(IsStrictOrderedRing $α))
+    {a b : Q($α)} (va : Ring.ExSum q($ics) a) (vb : Ring.ExSum q($ics) b) :
     MetaM (Except ExceptType Q($a < $b)) := do
-  let lα : Q(LT $α) := q(lt_of_socs $α)
+  let lα : Q(LT $α) := q(lt_of_po $α)
   assumeInstancesCommute
-  let ⟨_, pz⟩ ← NormNum.mkOfNat α q(amwo_of_socs $α) (mkRawNatLit 0)
+  let ⟨_, pz⟩ ← NormNum.mkOfNat α q(amwo_of_cs $α) (mkRawNatLit 0)
   let rz : NormNum.Result q((0:$α)) :=
-    NormNum.Result.isNat q(amwo_of_socs $α) (mkRawNatLit 0) (q(NormNum.isNat_ofNat $α $pz):)
+    NormNum.Result.isNat q(amwo_of_cs $α) (mkRawNatLit 0) (q(NormNum.isNat_ofNat $α $pz):)
   match va, vb with
   /- `0 < 0` -/
   | .zero, .zero => return .error tooSmall
@@ -205,13 +204,15 @@ def proveLE (g : MVarId) : MetaM Unit := do
   let .sort u ← whnf (← inferType α) | unreachable!
   let v ← try u.dec catch _ => throwError "not a type{indentExpr α}"
   have α : Q(Type v) := α
-  let sα ← synthInstanceQ q(OrderedCommSemiring $α)
+  let ics ← synthInstanceQ q(CommSemiring $α)
+  let ipo ← synthInstanceQ q(PartialOrder $α)
+  let sα ← synthInstanceQ q(IsOrderedRing $α)
   assumeInstancesCommute
   have e₁ : Q($α) := e₁; have e₂ : Q($α) := e₂
-  let c ← mkCache q(cs_of_ocs $α)
+  let c ← mkCache q($ics)
   let (⟨a, va, pa⟩, ⟨b, vb, pb⟩)
-    ← AtomM.run .instances do pure (← eval q(cs_of_ocs $α) c e₁, ← eval q(cs_of_ocs $α) c e₂)
-  match ← evalLE sα va vb with
+    ← AtomM.run .instances do pure (← eval q($ics) c e₁, ← eval q($ics) c e₂)
+  match ← evalLE ics ipo sα va vb with
   | .ok p => g.assign q(le_congr $pa $p $pb)
   | .error e =>
     let g' ← mkFreshExprMVar (← (← ringCleanupRef.get) q($a ≤ $b))
@@ -229,13 +230,15 @@ def proveLT (g : MVarId) : MetaM Unit := do
   let .sort u ← whnf (← inferType α) | unreachable!
   let v ← try u.dec catch _ => throwError "not a type{indentExpr α}"
   have α : Q(Type v) := α
-  let sα ← synthInstanceQ q(StrictOrderedCommSemiring $α)
+  let ics ← synthInstanceQ q(CommSemiring $α)
+  let ipo ← synthInstanceQ q(PartialOrder $α)
+  let sα ← synthInstanceQ q(IsStrictOrderedRing $α)
   assumeInstancesCommute
   have e₁ : Q($α) := e₁; have e₂ : Q($α) := e₂
-  let c ← mkCache q(cs_of_socs $α)
+  let c ← mkCache q($ics)
   let (⟨a, va, pa⟩, ⟨b, vb, pb⟩)
-    ← AtomM.run .instances do pure (← eval q(cs_of_socs $α) c e₁, ← eval q(cs_of_socs $α) c e₂)
-  match ← evalLT sα va vb with
+    ← AtomM.run .instances do pure (← eval q($ics) c e₁, ← eval q($ics) c e₂)
+  match ← evalLT ics ipo sα va vb with
   | .ok p => g.assign q(lt_congr $pa $p $pb)
   | .error e =>
     let g' ← mkFreshExprMVar (← (← ringCleanupRef.get) q($a < $b))

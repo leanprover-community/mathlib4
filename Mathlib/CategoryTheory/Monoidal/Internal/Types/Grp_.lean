@@ -16,16 +16,18 @@ is equivalent to the category of "native" bundled groups.
 Moreover, this equivalence is compatible with the forgetful functors to `Type`.
 -/
 
+assert_not_exists Field
+
 universe v u
 
-open CategoryTheory
+open CategoryTheory Mon_Class
 
 namespace GrpTypeEquivalenceGrp
 
-instance grpGroup (A : Grp_ (Type u)) : Group A.X :=
-  { MonTypeEquivalenceMon.monMonoid A.toMon_ with
-    inv := A.inv
-    inv_mul_cancel a := congr_fun A.left_inv a }
+instance grpGroup (A : Type u) [Grp_Class A] : Group A :=
+  { MonTypeEquivalenceMon.monMonoid A with
+    inv := ι[A]
+    inv_mul_cancel a := congr_fun (Grp_Class.left_inv A) a }
 
 /-- Converting a group object in `Type u` into a group. -/
 noncomputable def functor : Grp_ (Type u) ⥤ Grp.{u} where
@@ -36,13 +38,14 @@ noncomputable def functor : Grp_ (Type u) ⥤ Grp.{u} where
 noncomputable def inverse : Grp.{u} ⥤ Grp_ (Type u) where
   obj A :=
     { MonTypeEquivalenceMon.inverse.obj ((forget₂ Grp MonCat).obj A) with
-      inv := ((·⁻¹) : A → A)
-      left_inv := by
-        ext x
-        exact inv_mul_cancel (G := A) x
-      right_inv := by
-        ext x
-        exact mul_inv_cancel (G := A) x }
+      grp :=
+        { inv := ((·⁻¹) : A → A)
+          left_inv := by
+            ext x
+            exact inv_mul_cancel (G := A) x
+          right_inv := by
+            ext x
+            exact mul_inv_cancel (G := A) x } }
   map f := MonTypeEquivalenceMon.inverse.map ((forget₂ Grp MonCat).map f)
 
 end GrpTypeEquivalenceGrp

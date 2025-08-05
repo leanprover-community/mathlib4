@@ -57,7 +57,7 @@ attribute [reassoc] map_comp
 
 variable (M M₁ M₂ : PresheafOfModules.{v} R)
 
-lemma map_smul {X Y : Cᵒᵖ} (f : X ⟶ Y) (r : R.obj X) (m : M.obj X) :
+protected lemma map_smul {X Y : Cᵒᵖ} (f : X ⟶ Y) (r : R.obj X) (m : M.obj X) :
     M.map f (r • m) = R.map f r • M.map f m := by simp
 
 lemma congr_map_apply {X Y : Cᵒᵖ} {f g : X ⟶ Y} (h : f = g) (m : M.obj X) :
@@ -113,7 +113,7 @@ def isoMk (app : ∀ (X : Cᵒᵖ), M₁.obj X ≅ M₂.obj X)
           Category.comp_id, Iso.hom_inv_id_assoc]}
 
 /-- The underlying presheaf of abelian groups of a presheaf of modules. -/
-def presheaf : Cᵒᵖ ⥤ Ab where
+noncomputable def presheaf : Cᵒᵖ ⥤ Ab where
   obj X := (forget₂ _ _).obj (M.obj X)
   map f := AddCommGrp.ofHom <| AddMonoidHom.mk' (M.map f) (by simp)
 
@@ -131,7 +131,7 @@ instance (M : PresheafOfModules R) (X : Cᵒᵖ) :
 
 variable (R) in
 /-- The forgetful functor `PresheafOfModules R ⥤ Cᵒᵖ ⥤ Ab`. -/
-def toPresheaf : PresheafOfModules.{v} R ⥤ Cᵒᵖ ⥤ Ab where
+noncomputable def toPresheaf : PresheafOfModules.{v} R ⥤ Cᵒᵖ ⥤ Ab where
   obj M := M.presheaf
   map f :=
     { app := fun X ↦ AddCommGrp.ofHom <| AddMonoidHom.mk' (Hom.app f X) (by simp)
@@ -162,7 +162,7 @@ that for all `X : Cᵒᵖ`, `M.obj X` is a `R.obj X` module, in such a way that 
 restriction maps are semilinear. (This constructor should be used only in cases
 when the preferred constructor `PresheafOfModules.mk` is not as convenient as this one.) -/
 @[simps]
-def ofPresheaf : PresheafOfModules.{v} R where
+noncomputable def ofPresheaf : PresheafOfModules.{v} R where
   obj X := ModuleCat.of _ (M.obj X)
   -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(Y := ...)`.
   -- This suggests `restrictScalars` needs to be redesigned.
@@ -181,7 +181,7 @@ end
 of abelian presheaves `M₁.presheaf ⟶ M₂.presheaf`
 which satisfy a suitable linearity condition. -/
 @[simps]
-def homMk (φ : M₁.presheaf ⟶ M₂.presheaf)
+noncomputable def homMk (φ : M₁.presheaf ⟶ M₂.presheaf)
     (hφ : ∀ (X : Cᵒᵖ) (r : R.obj X) (m : M₁.obj X), φ.app X (r • m) = r • φ.app X m) :
     M₁ ⟶ M₂ where
   app X := ModuleCat.ofHom
@@ -262,7 +262,7 @@ noncomputable def restriction {X Y : Cᵒᵖ} (f : X ⟶ Y) :
   app M := M.map f
 
 /-- The obvious free presheaf of modules of rank `1`. -/
-def unit : PresheafOfModules R where
+noncomputable def unit : PresheafOfModules R where
   obj X := ModuleCat.of _ (R.obj X)
   -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(Y := ...)`.
   -- This suggests `restrictScalars` needs to be redesigned.
@@ -316,7 +316,7 @@ lemma sectionsMap_id {M : PresheafOfModules.{v} R} (s : M.sections) :
 
 /-- The bijection `(unit R ⟶ M) ≃ M.sections` for `M : PresheafOfModules R`. -/
 @[simps! apply_coe]
-def unitHomEquiv (M : PresheafOfModules R) :
+noncomputable def unitHomEquiv (M : PresheafOfModules R) :
     (unit R ⟶ M) ≃ M.sections where
   toFun f := sectionsMk (fun X ↦ Hom.app f X (1 : R.obj X))
     (by intros; rw [← naturality_apply, unit_map_one])
@@ -360,7 +360,7 @@ lemma forgetToPresheafModuleCatObjObj_coe (Y : Cᵒᵖ) :
     (forgetToPresheafModuleCatObjObj X hX M Y : Type _) = M.obj Y := rfl
 
 /-- Auxiliary definition for `forgetToPresheafModuleCatObj`. -/
-def forgetToPresheafModuleCatObjMap {Y Z : Cᵒᵖ} (f : Y ⟶ Z) :
+noncomputable def forgetToPresheafModuleCatObjMap {Y Z : Cᵒᵖ} (f : Y ⟶ Z) :
     forgetToPresheafModuleCatObjObj X hX M Y ⟶
       forgetToPresheafModuleCatObjObj X hX M Z :=
   ModuleCat.ofHom
@@ -368,15 +368,14 @@ def forgetToPresheafModuleCatObjMap {Y Z : Cᵒᵖ} (f : Y ⟶ Z) :
   { toFun := fun x => M.map f x
     map_add' := by simp
     map_smul' := fun r x => by
-      simp only [ModuleCat.restrictScalars.smul_def, AddHom.toFun_eq_coe, AddHom.coe_mk,
-        RingHom.id_apply, M.map_smul]
+      simp only [ModuleCat.restrictScalars.smul_def, RingHom.id_apply, M.map_smul]
       rw [← RingCat.comp_apply, ← R.map_comp]
       congr
       apply hX.hom_ext }
 
 @[simp]
 lemma forgetToPresheafModuleCatObjMap_apply {Y Z : Cᵒᵖ} (f : Y ⟶ Z) (m : M.obj Y) :
-  (forgetToPresheafModuleCatObjMap X hX M f).hom m = M.map f m := rfl
+    (forgetToPresheafModuleCatObjMap X hX M f).hom m = M.map f m := rfl
 
 /--
 Implementation of the functor `PresheafOfModules R ⥤ Cᵒᵖ ⥤ ModuleCat (R.obj X)`

@@ -3,7 +3,6 @@ Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Data.Fin.Tuple.Basic
 
@@ -14,7 +13,7 @@ This file collects some basic results involving rings and the `Fin` type
 
 ## Main results
 
- * `RingEquiv.piFinTwo`: The product over `Fin 2` of some rings is the cartesian product
+* `RingEquiv.piFinTwo`: The product over `Fin 2` of some rings is the cartesian product
 
 -/
 

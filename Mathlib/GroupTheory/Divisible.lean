@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
 import Mathlib.Algebra.Group.ULift
-import Mathlib.Algebra.Group.Subgroup.Pointwise
+import Mathlib.Algebra.GroupWithZero.Subgroup
 import Mathlib.Algebra.Module.NatInt
 import Mathlib.GroupTheory.QuotientGroup.Defs
 import Mathlib.Tactic.NormNum.Eq
@@ -81,6 +81,7 @@ Here we adopt a constructive approach where we ask an explicit `div : A → α �
 * `n • div a n = a` for all `n ≠ 0 ∈ α` and `a ∈ A`.
 -/
 class DivisibleBy where
+  /-- The division function -/
   div : A → α → A
   div_zero : ∀ a, div a 0 = 0
   div_cancel : ∀ {n : α} (a : A), n ≠ 0 → n • div a n = a
@@ -98,6 +99,7 @@ Here we adopt a constructive approach where we ask an explicit `root : A → α 
 -/
 @[to_additive]
 class RootableBy where
+  /-- The root function -/
   root : A → α → A
   root_zero : ∀ a, root a 0 = 1
   root_cancel : ∀ {n : α} (a : A), n ≠ 0 → root a n ^ n = a
@@ -186,7 +188,7 @@ end AddCommGroup
 instance (priority := 100) divisibleByIntOfCharZero {𝕜} [DivisionRing 𝕜] [CharZero 𝕜] :
     DivisibleBy 𝕜 ℤ where
   div q n := q / n
-  div_zero q := by norm_num
+  div_zero q := by simp
   div_cancel {n} q hn := by
     rw [zsmul_eq_mul, (Int.cast_commute n _).eq, div_mul_cancel₀ q (Int.cast_ne_zero.mpr hn)]
 

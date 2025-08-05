@@ -28,8 +28,9 @@ def PrimeSpectrum.tensorProductTo (x : PrimeSpectrum (S ⊗[R] T)) :
     PrimeSpectrum S × PrimeSpectrum T :=
   ⟨comap (algebraMap _ _) x, comap Algebra.TensorProduct.includeRight.toRingHom x⟩
 
+@[fun_prop]
 lemma PrimeSpectrum.continuous_tensorProductTo : Continuous (tensorProductTo R S T) :=
-  (comap _).2.prod_mk (comap _).2
+  (comap _).2.prodMk (comap _).2
 
 variable (hRT : (algebraMap R T).SurjectiveOnStalks)
 include hRT
@@ -77,7 +78,3 @@ lemma PrimeSpectrum.isEmbedding_tensorProductTo_of_surjectiveOnStalks :
       rw [Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul, ← e]
       exact J.asIdeal.primeCompl.mul_mem ht hJ
     rwa [J.isPrime.mul_mem_iff_mem_or_mem.not, not_or] at this
-
-@[deprecated (since := "2024-10-26")]
-alias PrimeSpectrum.embedding_tensorProductTo_of_surjectiveOnStalks :=
-  PrimeSpectrum.isEmbedding_tensorProductTo_of_surjectiveOnStalks

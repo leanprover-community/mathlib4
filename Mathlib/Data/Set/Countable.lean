@@ -7,6 +7,7 @@ import Mathlib.Data.Countable.Basic
 import Mathlib.Data.Set.Finite.Basic
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Logic.Equiv.List
+import Mathlib.Order.Preorder.Finite
 
 /-!
 # Countable sets
@@ -21,6 +22,8 @@ For a noncomputable conversion to `Encodable s`, use `Set.Countable.nonempty_enc
 
 sets, countable set
 -/
+
+assert_not_exists Monoid Multiset.sort
 
 noncomputable section
 

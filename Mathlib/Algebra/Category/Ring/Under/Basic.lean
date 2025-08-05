@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Comma.Over.Pullback
 
 In this file we provide basic API for `Under R` when `R : CommRingCat`. `Under R` is
 (equivalent to) the category of commutative `R`-algebras. For not necessarily commutative
-algebras, use `AlgebraCat R` instead.
+algebras, use `AlgCat R` instead.
 -/
 
 noncomputable section
@@ -51,7 +51,7 @@ lemma toAlgHom_apply {A B : Under R} (f : A ⟶ B) (a : A) :
 
 variable (R) in
 /-- Make an object of `Under R` from an `R`-algebra. -/
-@[simps! hom, simps! (config := .lemmasOnly) right]
+@[simps! hom, simps! -isSimp right]
 def mkUnder (A : Type u) [CommRing A] [Algebra R A] : Under R :=
   Under.mk (CommRingCat.ofHom <| algebraMap R A)
 

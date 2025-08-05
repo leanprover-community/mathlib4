@@ -41,7 +41,7 @@ synonym for a list of ordered pairs in `R × M`, where typically `M` is an `R`-m
 form to which the tactics reduce module expressions.
 
 (It is not a full "normal form" because the scalars, i.e. `R` components, are not themselves
-ring-normalized.  But this partial normal form is more convenient for our purposes.)  -/
+ring-normalized. But this partial normal form is more convenient for our purposes.) -/
 def NF (R : Type*) (M : Type*) := List (R × M)
 
 namespace NF
@@ -108,7 +108,7 @@ theorem sub_eq_eval₁ [SMul R M] [AddGroup M] (a₁ : R × M) {a₂ : R × M} {
 theorem sub_eq_eval₂ [Ring R] [AddCommGroup M] [Module R M] (r₁ r₂ : R) (x : M) {l₁ l₂ l : NF R M}
     (h : l₁.eval - l₂.eval = l.eval) :
     ((r₁, x) ::ᵣ l₁).eval - ((r₂, x) ::ᵣ l₂).eval = ((r₁ - r₂, x) ::ᵣ l).eval := by
-  simp only [← h, eval_cons, sub_smul, sub_eq_add_neg, neg_add, add_smul, neg_smul, add_assoc]
+  simp only [← h, eval_cons, sub_eq_add_neg, neg_add, add_smul, neg_smul, add_assoc]
   congr! 1
   simp only [← add_assoc]
   congr! 1
@@ -163,7 +163,7 @@ theorem eval_smul [AddCommMonoid M] [Semiring R] [Module R M] {l : NF R M} {x : 
   simp [mul_smul]
 
 theorem smul_eq_eval {R₀ : Type*} [AddCommMonoid M] [Semiring R] [Module R M] [Semiring R₀]
-    [Module R₀ M] [Semiring S] [Module S M]  {l : NF R M} {l₀ : NF R₀ M} {s : S} {r : R}
+    [Module R₀ M] [Semiring S] [Module S M] {l : NF R M} {l₀ : NF R₀ M} {s : S} {r : R}
     {x : M} (hx : x = l₀.eval) (hl : l.eval = l₀.eval) (hs : r • x = s • x) :
     s • x = (r • l).eval := by
   rw [← hs, hx, ← hl, eval_smul]
@@ -188,7 +188,7 @@ theorem eq_const_cons [AddCommMonoid M] [Semiring R] [Module R M] {r : R} (m : M
   simp [← h1, h2]
 
 theorem eq_of_eval_eq_eval {R₁ R₂ : Type*} [AddCommMonoid M] [Semiring R] [Module R M] [Semiring R₁]
-    [Module R₁ M] [Semiring R₂] [Module R₂ M]  {l₁ l₂ : NF R M} {l₁' : NF R₁ M} {l₂' : NF R₂ M}
+    [Module R₁ M] [Semiring R₂] [Module R₂ M] {l₁ l₂ : NF R M} {l₁' : NF R₁ M} {l₂' : NF R₂ M}
     {x₁ x₂ : M} (hx₁ : x₁ = l₁'.eval) (hx₂ : x₂ = l₂'.eval) (h₁ : l₁.eval = l₁'.eval)
     (h₂ : l₂.eval = l₂'.eval) (h : l₁.eval = l₂.eval) :
     x₁ = x₂ := by
@@ -276,7 +276,7 @@ def add (iR : Q(Semiring $R)) : qNF R M → qNF R M → qNF R M
 /-- Given two terms `l₁`, `l₂` of type `qNF R M`, i.e. lists of `(Q($R) × Q($M)) × ℕ`s (two `Expr`s
 and a natural number), recursively construct a proof that in the `$R`-module `$M`, the sum of the
 "linear combinations" represented by `l₁` and `l₂` is the linear combination represented by
-`Module.qNF.add iR l₁ l₁`.-/
+`Module.qNF.add iR l₁ l₁`. -/
 def mkAddProof {iR : Q(Semiring $R)} {iM : Q(AddCommMonoid $M)} (iRM : Q(Module $R $M))
     (l₁ l₂ : qNF R M) :
     Q(NF.eval $(l₁.toNF) + NF.eval $(l₂.toNF) = NF.eval $((qNF.add iR l₁ l₂).toNF)) :=
@@ -321,7 +321,7 @@ def sub (iR : Q(Ring $R)) : qNF R M → qNF R M → qNF R M
 /-- Given two terms `l₁`, `l₂` of type `qNF R M`, i.e. lists of `(Q($R) × Q($M)) × ℕ`s (two `Expr`s
 and a natural number), recursively construct a proof that in the `$R`-module `$M`, the difference
 of the "linear combinations" represented by `l₁` and `l₂` is the linear combination represented by
-`Module.qNF.sub iR l₁ l₁`.-/
+`Module.qNF.sub iR l₁ l₁`. -/
 def mkSubProof (iR : Q(Ring $R)) (iM : Q(AddCommGroup $M)) (iRM : Q(Module $R $M))
     (l₁ l₂ : qNF R M) :
     Q(NF.eval $(l₁.toNF) - NF.eval $(l₂.toNF) = NF.eval $((qNF.sub iR l₁ l₂).toNF)) :=
@@ -461,11 +461,11 @@ partial def parse (iM : Q(AddCommMonoid $M)) (x : Q($M)) :
     pure ⟨u, R, iR, iRM, l.onScalar q(HMul.hMul $s), (q(NF.smul_eq_eval $pf₀ $pf_l $pf_r):)⟩
   /- parse a `(0:M)` -/
   | ~q(0) =>
-    pure ⟨0, q(Nat), q(Nat.instSemiring), q(AddCommGroup.toNatModule), [], q(NF.zero_eq_eval $M)⟩
+    pure ⟨0, q(Nat), q(Nat.instSemiring), q(AddCommMonoid.toNatModule), [], q(NF.zero_eq_eval $M)⟩
   /- anything else should be treated as an atom -/
   | _ =>
     let (k, ⟨x', _⟩) ← AtomM.addAtomQ x
-    pure ⟨0, q(Nat), q(Nat.instSemiring), q(AddCommGroup.toNatModule), [((q(1), x'), k)],
+    pure ⟨0, q(Nat), q(Nat.instSemiring), q(AddCommMonoid.toNatModule), [((q(1), x'), k)],
       q(NF.atom_eq_eval $x')⟩
 
 /-- Given expressions `R` and `M` representing types such that `M`'s is a module over `R`'s, and

@@ -3,9 +3,9 @@ Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
+import Mathlib.Algebra.Field.TransferInstance
 import Mathlib.Algebra.Field.ULift
 import Mathlib.Algebra.MvPolynomial.Cardinal
-import Mathlib.Data.Nat.Factorization.PrimePow
 import Mathlib.Data.Rat.Encodable
 import Mathlib.FieldTheory.Finite.GaloisField
 import Mathlib.RingTheory.Localization.Cardinality
@@ -34,16 +34,9 @@ open scoped Cardinal nonZeroDivisors
 universe u
 
 /-- A finite field has prime power cardinality. -/
-theorem Fintype.isPrimePow_card_of_field {α} [Fintype α] [Field α] : IsPrimePow ‖α‖ := by
+theorem Fintype.isPrimePow_card_of_field {α} [Fintype α] [Field α] : IsPrimePow ‖α‖ :=
   -- TODO: `Algebra` version of `CharP.exists`, of type `∀ p, Algebra (ZMod p) α`
-  obtain ⟨p, _⟩ := CharP.exists α
-  haveI hp := Fact.mk (CharP.char_is_prime α p)
-  letI : Algebra (ZMod p) α := ZMod.algebra _ _
-  let b := IsNoetherian.finsetBasis (ZMod p) α
-  rw [Module.card_fintype b, ZMod.card, isPrimePow_pow_iff]
-  · exact hp.1.isPrimePow
-  rw [← Module.finrank_eq_card_basis b]
-  exact Module.finrank_pos.ne'
+  FiniteField.isPrimePow_card α
 
 /-- A `Fintype` can be given a field structure iff its cardinality is a prime power. -/
 theorem Fintype.nonempty_field_iff {α} [Fintype α] : Nonempty (Field α) ↔ IsPrimePow ‖α‖ := by
@@ -67,7 +60,7 @@ theorem Infinite.nonempty_field {α : Type u} [Infinite α] : Nonempty (Field α
 /-- There is a field structure on type if and only if its cardinality is a prime power. -/
 theorem Field.nonempty_iff {α : Type u} : Nonempty (Field α) ↔ IsPrimePow #α := by
   rw [Cardinal.isPrimePow_iff]
-  cases' fintypeOrInfinite α with h h
+  obtain h | h := fintypeOrInfinite α
   · simpa only [Cardinal.mk_fintype, Nat.cast_inj, exists_eq_left',
-      (Cardinal.nat_lt_aleph0 _).not_le, false_or] using Fintype.nonempty_field_iff
+      (Cardinal.nat_lt_aleph0 _).not_ge, false_or] using Fintype.nonempty_field_iff
   · simpa only [← Cardinal.infinite_iff, h, true_or, iff_true] using Infinite.nonempty_field

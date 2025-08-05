@@ -28,6 +28,8 @@ inductive IsFiniteLength : ∀ (M : Type*) [AddCommGroup M] [Module R M], Prop
   | of_simple_quotient {M} [AddCommGroup M] [Module R M] {N : Submodule R M}
       [IsSimpleModule R (M ⧸ N)] : IsFiniteLength N → IsFiniteLength M
 
+attribute [nontriviality] IsFiniteLength.of_subsingleton
+
 variable {R} {M N : Type*} [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
 theorem LinearEquiv.isFiniteLength (e : M ≃ₗ[R] N)
@@ -98,6 +100,21 @@ theorem IsSemisimpleModule.finite_tfae [IsSemisimpleModule R M] :
 
 instance [IsSemisimpleModule R M] [Module.Finite R M] : IsArtinian R M :=
   (IsSemisimpleModule.finite_tfae.out 0 2).mp ‹_›
+
+variable {f : M →ₗ[R] N}
+
+lemma IsFiniteLength.of_injective (H : IsFiniteLength R N) (hf : Function.Injective f) :
+    IsFiniteLength R M := by
+  rw [isFiniteLength_iff_isNoetherian_isArtinian] at H ⊢
+  cases H
+  exact ⟨isNoetherian_of_injective f hf, isArtinian_of_injective f hf⟩
+
+lemma IsFiniteLength.of_surjective (H : IsFiniteLength R M) (hf : Function.Surjective f) :
+    IsFiniteLength R N := by
+  rw [isFiniteLength_iff_isNoetherian_isArtinian] at H ⊢
+  cases H
+  exact ⟨isNoetherian_of_surjective _ f (LinearMap.range_eq_top.mpr hf),
+    isArtinian_of_surjective _ f hf⟩
 
 /- The following instances are now automatic:
 example [IsSemisimpleRing R] : IsNoetherianRing R := inferInstance

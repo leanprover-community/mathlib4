@@ -138,7 +138,7 @@ lemma oneLePart_leOnePart_injective : Injective fun a : α ↦ (a⁺ᵐ, a⁻ᵐ
 
 @[to_additive]
 lemma oneLePart_leOnePart_inj : a⁺ᵐ = b⁺ᵐ ∧ a⁻ᵐ = b⁻ᵐ ↔ a = b :=
-  Prod.mk.inj_iff.symm.trans oneLePart_leOnePart_injective.eq_iff
+  Prod.mk_inj.symm.trans oneLePart_leOnePart_injective.eq_iff
 
 section MulRightMono
 variable [MulRightMono α]
@@ -216,7 +216,7 @@ variable [LinearOrder α] [Group α] {a b : α}
   rw [oneLePart_def, ← maxDefault, ← sup_eq_maxDefault]; simp_rw [sup_comm]
 
 @[to_additive (attr := simp) posPart_pos_iff] lemma one_lt_oneLePart_iff : 1 < a⁺ᵐ ↔ 1 < a :=
-  lt_iff_lt_of_le_iff_le <| (one_le_oneLePart _).le_iff_eq.trans oneLePart_eq_one
+  lt_iff_lt_of_le_iff_le <| (one_le_oneLePart _).ge_iff_eq'.trans oneLePart_eq_one
 
 @[to_additive posPart_eq_of_posPart_pos]
 lemma oneLePart_of_one_lt_oneLePart (ha : 1 < a⁺ᵐ) : a⁺ᵐ = a := by
@@ -231,7 +231,7 @@ variable [MulLeftMono α]
   simp_rw [← one_le_inv']; rw [leOnePart_def, ← maxDefault, ← sup_eq_maxDefault]; simp_rw [sup_comm]
 
 @[to_additive (attr := simp) negPart_pos_iff] lemma one_lt_ltOnePart_iff : 1 < a⁻ᵐ ↔ a < 1 :=
-  lt_iff_lt_of_le_iff_le <| (one_le_leOnePart _).le_iff_eq.trans leOnePart_eq_one
+  lt_iff_lt_of_le_iff_le <| (one_le_leOnePart _).ge_iff_eq'.trans leOnePart_eq_one
 
 variable [MulRightMono α]
 

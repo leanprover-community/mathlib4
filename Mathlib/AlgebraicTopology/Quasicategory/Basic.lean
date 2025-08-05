@@ -34,13 +34,13 @@ every map of simplicial sets `σ₀ : Λ[n, i] → S` can be extended to a map `
 -/
 @[kerodon 003A]
 class Quasicategory (S : SSet) : Prop where
-  hornFilling' : ∀ ⦃n : ℕ⦄ ⦃i : Fin (n+3)⦄ (σ₀ : Λ[n+2, i] ⟶ S)
+  hornFilling' : ∀ ⦃n : ℕ⦄ ⦃i : Fin (n+3)⦄ (σ₀ : (Λ[n+2, i] : SSet) ⟶ S)
     (_h0 : 0 < i) (_hn : i < Fin.last (n+2)),
-      ∃ σ : Δ[n+2] ⟶ S, σ₀ = hornInclusion (n+2) i ≫ σ
+      ∃ σ : Δ[n+2] ⟶ S, σ₀ = Λ[n + 2, i].ι ≫ σ
 
-lemma Quasicategory.hornFilling {S : SSet} [Quasicategory S] ⦃n : ℕ⦄ ⦃i : Fin (n+1)⦄
+lemma Quasicategory.hornFilling {S : SSet} [Quasicategory S] ⦃n : ℕ⦄ ⦃i : Fin (n + 1)⦄
     (h0 : 0 < i) (hn : i < Fin.last n)
-    (σ₀ : Λ[n, i] ⟶ S) : ∃ σ : Δ[n] ⟶ S, σ₀ = hornInclusion n i ≫ σ := by
+    (σ₀ : (Λ[n, i] : SSet) ⟶ S) : ∃ σ : Δ[n] ⟶ S, σ₀ = Λ[n, i].ι ≫ σ := by
   cases n using Nat.casesAuxOn with
   | zero => simp [Fin.lt_iff_val_lt_val] at hn
   | succ n =>
@@ -56,13 +56,13 @@ instance (S : SSet) [KanComplex S] : Quasicategory S where
   hornFilling' _ _ σ₀ _ _ := KanComplex.hornFilling σ₀
 
 lemma quasicategory_of_filler (S : SSet)
-    (filler : ∀ ⦃n : ℕ⦄ ⦃i : Fin (n+3)⦄ (σ₀ : Λ[n+2, i] ⟶ S)
-      (_h0 : 0 < i) (_hn : i < Fin.last (n+2)),
-      ∃ σ : S _⦋n+2⦌, ∀ (j) (h : j ≠ i), S.δ j σ = σ₀.app _ (horn.face i j h)) :
+    (filler : ∀ ⦃n : ℕ⦄ ⦃i : Fin (n + 3)⦄ (σ₀ : (Λ[n + 2, i] : SSet) ⟶ S)
+      (_h0 : 0 < i) (_hn : i < Fin.last (n + 2)),
+      ∃ σ : S _⦋n + 2⦌, ∀ (j) (h : j ≠ i), S.δ j σ = σ₀.app _ (horn.face i j h)) :
     Quasicategory S where
   hornFilling' n i σ₀ h₀ hₙ := by
     obtain ⟨σ, h⟩ := filler σ₀ h₀ hₙ
-    refine ⟨(S.yonedaEquiv _).symm σ, ?_⟩
+    refine ⟨yonedaEquiv.symm σ, ?_⟩
     apply horn.hom_ext
     intro j hj
     rw [← h j hj, NatTrans.comp_app]

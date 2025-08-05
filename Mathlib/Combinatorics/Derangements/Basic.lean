@@ -36,7 +36,7 @@ variable {α β : Type*}
 
 theorem mem_derangements_iff_fixedPoints_eq_empty {f : Perm α} :
     f ∈ derangements α ↔ fixedPoints f = ∅ :=
-  Set.eq_empty_iff_forall_not_mem.symm
+  Set.eq_empty_iff_forall_notMem.symm
 
 /-- If `α` is equivalent to `β`, then `derangements α` is equivalent to `derangements β`. -/
 def Equiv.derangementsCongr (e : α ≃ β) : derangements α ≃ derangements β :=
@@ -88,12 +88,12 @@ def atMostOneFixedPointEquivSum_derangements [DecidableEq α] (a : α) :
           (a ∈ fixedPoints ·)
       · exact subtypeSubtypeEquivSubtypeInter
           (fun x : Perm α => fixedPoints x ⊆ {a})
-          (¬a ∈ fixedPoints ·)
+          (a ∉ fixedPoints ·)
     _ ≃ { f : Perm α // fixedPoints f = {a} } ⊕ { f : Perm α // fixedPoints f = ∅ } := by
       refine Equiv.sumCongr (subtypeEquivRight fun f => ?_) (subtypeEquivRight fun f => ?_)
       · rw [Set.eq_singleton_iff_unique_mem, and_comm]
         rfl
-      · rw [Set.eq_empty_iff_forall_not_mem]
+      · rw [Set.eq_empty_iff_forall_notMem]
         exact ⟨fun h x hx => h.2 (h.1 hx ▸ hx), fun h => ⟨fun x hx => (h _ hx).elim, h _⟩⟩
     _ ≃ derangements ({a}ᶜ : Set α) ⊕ derangements α := by
       refine
@@ -118,14 +118,14 @@ theorem RemoveNone.mem_fiber (a : Option α) (f : Perm α) :
   simp [RemoveNone.fiber, derangements]
 
 theorem RemoveNone.fiber_none : RemoveNone.fiber (@none α) = ∅ := by
-  rw [Set.eq_empty_iff_forall_not_mem]
+  rw [Set.eq_empty_iff_forall_notMem]
   intro f hyp
   rw [RemoveNone.mem_fiber] at hyp
   rcases hyp with ⟨F, F_derangement, F_none, _⟩
   exact F_derangement none F_none
 
 /-- For any `a : α`, the fiber over `some a` is the set of permutations
-    where `a` is the only possible fixed point. -/
+where `a` is the only possible fixed point. -/
 theorem RemoveNone.fiber_some (a : α) :
     RemoveNone.fiber (some a) = { f : Perm α | fixedPoints f ⊆ {a} } := by
   ext f
@@ -144,10 +144,10 @@ theorem RemoveNone.fiber_some (a : α) :
     constructor
     · intro x
       apply_fun fun x => Equiv.swap none (some a) x
-      simp only [Perm.decomposeOption_symm_apply, swap_apply_self, Perm.coe_mul]
+      simp only [Perm.decomposeOption_symm_apply, Perm.coe_mul]
       rcases x with - | x
       · simp
-      simp only [comp, optionCongr_apply, Option.map_some', swap_apply_self]
+      simp only [comp, optionCongr_apply, Option.map_some, swap_apply_self]
       by_cases x_vs_a : x = a
       · rw [x_vs_a, swap_apply_right]
         apply Option.some_ne_none
@@ -167,17 +167,17 @@ variable [DecidableEq α]
 /-- The set of derangements on `Option α` is equivalent to the union over `a : α`
     of "permutations with `a` the only possible fixed point". -/
 def derangementsOptionEquivSigmaAtMostOneFixedPoint :
-    derangements (Option α) ≃ Σa : α, { f : Perm α | fixedPoints f ⊆ {a} } := by
+    derangements (Option α) ≃ Σ a : α, { f : Perm α | fixedPoints f ⊆ {a} } := by
   have fiber_none_is_false : Equiv.RemoveNone.fiber (@none α) → False := by
     rw [Equiv.RemoveNone.fiber_none]
     exact IsEmpty.false
   calc
     derangements (Option α) ≃ Equiv.Perm.decomposeOption '' derangements (Option α) :=
       Equiv.image _ _
-    _ ≃ Σa : Option α, ↥(Equiv.RemoveNone.fiber a) := setProdEquivSigma _
-    _ ≃ Σa : α, ↥(Equiv.RemoveNone.fiber (some a)) :=
+    _ ≃ Σ a : Option α, ↥(Equiv.RemoveNone.fiber a) := setProdEquivSigma _
+    _ ≃ Σ a : α, ↥(Equiv.RemoveNone.fiber (some a)) :=
       sigmaOptionEquivOfSome _ fiber_none_is_false
-    _ ≃ Σa : α, { f : Perm α | fixedPoints f ⊆ {a} } := by
+    _ ≃ Σ a : α, { f : Perm α | fixedPoints f ⊆ {a} } := by
       simp_rw [Equiv.RemoveNone.fiber_some]
       rfl
 
@@ -185,7 +185,7 @@ def derangementsOptionEquivSigmaAtMostOneFixedPoint :
     "derangements on `α` ⊕ derangements on `{a}ᶜ`". -/
 def derangementsRecursionEquiv :
     derangements (Option α) ≃
-      Σa : α, derangements (({a}ᶜ : Set α) : Type _) ⊕ derangements α :=
+      Σ a : α, derangements (({a}ᶜ : Set α) : Type _) ⊕ derangements α :=
   derangementsOptionEquivSigmaAtMostOneFixedPoint.trans
     (sigmaCongrRight atMostOneFixedPointEquivSum_derangements)
 

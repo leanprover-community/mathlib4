@@ -17,8 +17,8 @@ This file deals with the factors of natural numbers.
 
 ## Important declarations
 
-- `Nat.factors n`: the prime factorization of `n`
-- `Nat.factors_unique`: uniqueness of the prime factorisation
+- `Nat.primeFactorsList n`: the prime factorization of `n`
+- `Nat.primeFactorsList_unique`: uniqueness of the prime factorisation
 
 -/
 
@@ -230,9 +230,7 @@ theorem dvd_of_primeFactorsList_subperm {a b : ℕ} (ha : a ≠ 0)
   rcases a with (_ | _ | a)
   · exact (ha rfl).elim
   · exact one_dvd _
-  -- Porting note: previous proof
-  --use (b.primeFactorsList.diff a.succ.succ.primeFactorsList).prod
-  use (@List.diff _ instBEqOfDecidableEq b.primeFactorsList a.succ.succ.primeFactorsList).prod
+  use (b.primeFactorsList.diff a.succ.succ.primeFactorsList).prod
   nth_rw 1 [← Nat.prod_primeFactorsList ha]
   rw [← List.prod_append,
     List.Perm.prod_eq <| List.subperm_append_diff_self_of_count_le <| List.subperm_ext_iff.mp h,

@@ -66,9 +66,6 @@ theorem independent_iff_iSupIndep : Independent f ↔ iSupIndep fun i => (f i).s
     · simpa only [Function.comp_apply, submodule_eq] using Submodule.mem_span_singleton_self _
     · exact rep_nonzero (f i)
 
-@[deprecated (since := "2024-11-24")]
-alias independent_iff_completeLattice_independent := independent_iff_iSupIndep
-
 /-- A linearly dependent family of nonzero vectors gives a dependent family of points
 in projective space. -/
 inductive Dependent : (ι → ℙ K V) → Prop
@@ -100,15 +97,18 @@ theorem independent_iff_not_dependent : Independent f ↔ ¬Dependent f := by
 /-- Two points in a projective space are dependent if and only if they are equal. -/
 @[simp]
 theorem dependent_pair_iff_eq (u v : ℙ K V) : Dependent ![u, v] ↔ u = v := by
-  rw [dependent_iff_not_independent, independent_iff, linearIndependent_fin2,
-    Function.comp_apply, Matrix.cons_val_one, Matrix.head_cons, Ne]
-  simp only [Matrix.cons_val_zero, not_and, not_forall, Classical.not_not, Function.comp_apply,
-    ← mk_eq_mk_iff' K _ _ (rep_nonzero u) (rep_nonzero v), mk_rep, Classical.imp_iff_right_iff]
+  rw [dependent_iff_not_independent, independent_iff, linearIndependent_fin2]
+  dsimp only [Function.comp_def, Matrix.cons_val]
+  simp only [not_and, not_forall, not_not, ← mk_eq_mk_iff' K _ _ (rep_nonzero u) (rep_nonzero v),
+    mk_rep, Classical.imp_iff_right_iff]
   exact Or.inl (rep_nonzero v)
 
 /-- Two points in a projective space are independent if and only if the points are not equal. -/
 @[simp]
-theorem independent_pair_iff_neq (u v : ℙ K V) : Independent ![u, v] ↔ u ≠ v := by
+theorem independent_pair_iff_ne (u v : ℙ K V) : Independent ![u, v] ↔ u ≠ v := by
   rw [independent_iff_not_dependent, dependent_pair_iff_eq u v]
+
+@[deprecated (since := "2025-04-27")]
+alias independent_pair_iff_neq := independent_pair_iff_ne
 
 end Projectivization

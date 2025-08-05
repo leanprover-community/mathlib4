@@ -127,7 +127,6 @@ The homomorphism from `Gal(K/k)` to `lim Gal(L/k)` where `L` is a
 `FiniteGaloisIntermediateField k K` ordered by inverse inclusion. It is induced by the
 canonical projections from `Gal(K/k)` to `Gal(L/k)`.
 -/
-@[simps]
 noncomputable def algEquivToLimit : (K ≃ₐ[k] K) →* limit (asProfiniteGaloisGroupFunctor k K) where
   toFun σ := {
     val := fun L ↦ σ.restrictNormalHom L.unop
@@ -149,8 +148,7 @@ theorem restrictNormalHom_continuous (L : IntermediateField k K) [Normal k L] :
   intro N hN
   rw [map_one, krullTopology_mem_nhds_one_iff] at hN
   obtain ⟨L', _, hO⟩ := hN
-  let _ : FiniteDimensional k L' :=
-    Module.Finite.equiv <| AlgEquiv.toLinearEquiv <| IntermediateField.liftAlgEquiv L'
+  have := Module.Finite.equiv <| AlgEquiv.toLinearEquiv <| IntermediateField.liftAlgEquiv L'
   apply mem_nhds_iff.mpr
   use (IntermediateField.lift L').fixingSubgroup
   constructor
@@ -177,7 +175,6 @@ noncomputable def proj (L : FiniteGaloisIntermediateField k K) :
   map_one' := rfl
   map_mul' _ _ := rfl
 
-@[simp]
 lemma finGaloisGroupFunctor_map_proj_eq_proj (g : limit (asProfiniteGaloisGroupFunctor k K))
     {L₁ L₂ : FiniteGaloisIntermediateField k K} (h : L₁ ⟶ L₂) :
     (finGaloisGroupFunctor k K).map h.op (proj L₂ g) = proj L₁ g :=
@@ -192,7 +189,7 @@ lemma proj_of_le (L : FiniteGaloisIntermediateField k K)
   letI : Algebra L L' := RingHom.toAlgebra (Subsemiring.inclusion h)
   letI : IsScalarTower k L L' := IsScalarTower.of_algebraMap_eq (congrFun rfl)
   rw [← finGaloisGroupFunctor_map_proj_eq_proj g h.hom]
-  show (algebraMap L' K (algebraMap L L' (AlgEquiv.restrictNormal (proj (mk L') g) L x))) = _
+  change (algebraMap L' K (algebraMap L L' (AlgEquiv.restrictNormal (proj (mk L') g) L x))) = _
   rw [AlgEquiv.restrictNormal_commutes (proj (mk L') g) L]
   rfl
 
@@ -245,7 +242,6 @@ noncomputable def limitToAlgEquiv [IsGalois k K]
     simp only [toAlgEquivAux_eq_proj_of_mem _ _ L hx', mk_toAlgEquivAux g⁻¹ x L hx' hx, map_inv,
       AlgEquiv.aut_inv, AlgEquiv.apply_symm_apply]
   map_mul' x y := by
-    dsimp
     have hx : x ∈ (adjoin k {x, y}).1 := subset_adjoin _ _ (Set.mem_insert x {y})
     have hy : y ∈ (adjoin k {x, y}).1 := subset_adjoin _ _ (Set.mem_insert_of_mem x rfl)
     rw [toAlgEquivAux_eq_liftNormal g x (adjoin k {x, y}) hx,
@@ -272,7 +268,7 @@ noncomputable def mulEquivToLimit [IsGalois k K] :
   right_inv := fun g ↦ by
     apply Subtype.val_injective
     ext L
-    show (limitToAlgEquiv g).restrictNormal _ = _
+    change (limitToAlgEquiv g).restrictNormal _ = _
     ext x
     have : ((limitToAlgEquiv g).restrictNormal L.unop) x = (limitToAlgEquiv g) x.1 := by
       exact AlgEquiv.restrictNormal_commutes (limitToAlgEquiv g) L.unop x
@@ -303,8 +299,8 @@ lemma mulEquivToLimit_symm_continuous [IsGalois k K] : Continuous (mulEquivToLim
   intro H ⟨L, le⟩
   rw [mem_nhds_iff]
   use mulEquivToLimit k K '' L.1.fixingSubgroup
-  simp [le, isOpen_mulEquivToLimit_image_fixingSubgroup L, one_mem,
-    (mulEquivToLimit k K).injective.preimage_image]
+  simp only [isOpen_mulEquivToLimit_image_fixingSubgroup L]
+  simpa [one_mem] using Set.image_subset_iff.mp (Set.image_mono le)
 
 variable (k K)
 

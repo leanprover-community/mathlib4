@@ -3,7 +3,8 @@ Copyright (c) 2021 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
-import Mathlib.Topology.Homeomorph
+import Mathlib.Topology.Separation.Hausdorff
+import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
 # Topological space structure on the opposite monoid and on the units group
@@ -32,11 +33,11 @@ instance instTopologicalSpaceMulOpposite [TopologicalSpace M] : TopologicalSpace
 
 variable [TopologicalSpace M]
 
-@[to_additive (attr := continuity)]
+@[to_additive (attr := continuity, fun_prop)]
 theorem continuous_unop : Continuous (unop : Mᵐᵒᵖ → M) :=
   continuous_induced_dom
 
-@[to_additive (attr := continuity)]
+@[to_additive (attr := continuity, fun_prop)]
 theorem continuous_op : Continuous (op : M → Mᵐᵒᵖ) :=
   continuous_induced_rng.2 continuous_id
 
@@ -53,6 +54,20 @@ instance instT2Space [T2Space M] : T2Space Mᵐᵒᵖ := opHomeomorph.t2Space
 @[to_additive]
 instance instDiscreteTopology [DiscreteTopology M] : DiscreteTopology Mᵐᵒᵖ :=
   opHomeomorph.symm.isEmbedding.discreteTopology
+
+@[to_additive]
+instance instCompactSpace [CompactSpace M] : CompactSpace Mᵐᵒᵖ :=
+  opHomeomorph.compactSpace
+
+@[to_additive]
+instance instWeaklyLocallyCompactSpace [WeaklyLocallyCompactSpace M] :
+    WeaklyLocallyCompactSpace Mᵐᵒᵖ :=
+  opHomeomorph.symm.isClosedEmbedding.weaklyLocallyCompactSpace
+
+@[to_additive]
+instance instLocallyCompactSpace [LocallyCompactSpace M] :
+    LocallyCompactSpace Mᵐᵒᵖ :=
+  opHomeomorph.symm.isClosedEmbedding.locallyCompactSpace
 
 @[to_additive (attr := simp)]
 theorem map_op_nhds (x : M) : map (op : M → Mᵐᵒᵖ) (𝓝 x) = 𝓝 (op x) :=
@@ -87,14 +102,9 @@ instance instTopologicalSpaceUnits : TopologicalSpace Mˣ :=
 @[to_additive]
 theorem isInducing_embedProduct : IsInducing (embedProduct M) := ⟨rfl⟩
 
-@[deprecated (since := "2024-10-28")] alias inducing_embedProduct := isInducing_embedProduct
-
 @[to_additive]
 theorem isEmbedding_embedProduct : IsEmbedding (embedProduct M) :=
   ⟨isInducing_embedProduct, embedProduct_injective M⟩
-
-@[deprecated (since := "2024-10-26")]
-alias embedding_embedProduct := isEmbedding_embedProduct
 
 @[to_additive]
 instance instT2Space [T2Space M] : T2Space Mˣ := isEmbedding_embedProduct.t2Space
@@ -116,15 +126,12 @@ topological embedding. Use `AddUnits.isEmbedding_val` or `toAddUnits_homeomorph`
 lemma isEmbedding_val_mk' {M : Type*} [Monoid M] [TopologicalSpace M] {f : M → M}
     (hc : ContinuousOn f {x : M | IsUnit x}) (hf : ∀ u : Mˣ, f u.1 = ↑u⁻¹) :
     IsEmbedding (val : Mˣ → M) := by
-  refine ⟨⟨?_⟩, ext⟩
+  refine ⟨⟨?_⟩, val_injective⟩
   rw [topology_eq_inf, inf_eq_left, ← continuous_iff_le_induced,
     @continuous_iff_continuousAt _ _ (.induced _ _)]
   intros u s hs
   simp only [← hf, nhds_induced, Filter.mem_map] at hs ⊢
   exact ⟨_, mem_inf_principal.1 (hc u u.isUnit hs), fun u' hu' ↦ hu' u'.isUnit⟩
-
-@[deprecated (since := "2024-10-26")]
-alias embedding_val_mk' := isEmbedding_val_mk'
 
 /-- An auxiliary lemma that can be used to prove that coercion `Mˣ → M` is a topological embedding.
 Use `Units.isEmbedding_val₀`, `Units.isEmbedding_val`, or `toUnits_homeomorph` instead. -/
@@ -138,7 +145,7 @@ lemma embedding_val_mk {M : Type*} [DivisionMonoid M] [TopologicalSpace M]
 theorem continuous_embedProduct : Continuous (embedProduct M) :=
   continuous_induced_dom
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 theorem continuous_val : Continuous ((↑) : Mˣ → M) :=
   (@continuous_embedProduct M _ _).fst
 
@@ -146,10 +153,10 @@ theorem continuous_val : Continuous ((↑) : Mˣ → M) :=
 protected theorem continuous_iff {f : X → Mˣ} :
     Continuous f ↔ Continuous (val ∘ f) ∧ Continuous (fun x => ↑(f x)⁻¹ : X → M) := by
   simp only [isInducing_embedProduct.continuous_iff, embedProduct_apply, Function.comp_def,
-    continuous_prod_mk, opHomeomorph.symm.isInducing.continuous_iff, opHomeomorph_symm_apply,
+    continuous_prodMk, opHomeomorph.symm.isInducing.continuous_iff, opHomeomorph_symm_apply,
     unop_op]
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 theorem continuous_coe_inv : Continuous (fun u => ↑u⁻¹ : Mˣ → M) :=
   (Units.continuous_iff.1 continuous_id).2
 

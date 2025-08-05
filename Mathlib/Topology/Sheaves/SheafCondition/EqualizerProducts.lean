@@ -249,14 +249,14 @@ def coneEquivInverseObj (c : Limits.Cone (SheafConditionEqualizerProducts.diagra
   π :=
     { app := by
         intro x
-        induction x using Opposite.rec' with | h x => ?_
+        induction x with | op x => ?_
         rcases x with (⟨i⟩ | ⟨i, j⟩)
         · exact c.π.app WalkingParallelPair.zero ≫ Pi.π _ i
         · exact c.π.app WalkingParallelPair.one ≫ Pi.π _ (i, j)
       naturality := by
         intro x y f
-        induction x using Opposite.rec' with | h x => ?_
-        induction y using Opposite.rec' with | h y => ?_
+        induction x with | op x => ?_
+        induction y with | op y => ?_
         have ef : f = f.unop.op := rfl
         revert ef
         generalize f.unop = f'
@@ -297,7 +297,7 @@ def coneEquivInverse :
     { hom := f.hom
       w := by
         intro x
-        induction x using Opposite.rec' with | h x => ?_
+        induction x with | op x => ?_
         rcases x with (⟨i⟩ | ⟨i, j⟩)
         · dsimp
           dsimp only [Fork.ι]
@@ -313,14 +313,14 @@ def coneEquivUnitIsoApp (c : Cone ((diagram U).op ⋙ F)) :
   hom :=
     { hom := 𝟙 _
       w := fun j => by
-        induction j using Opposite.rec' with | h j => ?_
+        induction j with | op j => ?_
         rcases j with ⟨⟩ <;>
         · dsimp [coneEquivInverse]
           simp only [Limits.Fan.mk_π_app, Category.id_comp, Limits.limit.lift_π] }
   inv :=
     { hom := 𝟙 _
       w := fun j => by
-        induction j using Opposite.rec' with | h j => ?_
+        induction j with | op j => ?_
         rcases j with ⟨⟩ <;>
         · dsimp [coneEquivInverse]
           simp only [Limits.Fan.mk_π_app, Category.id_comp, Limits.limit.lift_π] }
@@ -379,10 +379,6 @@ def coneEquiv :
   unitIso := coneEquivUnitIso F U
   counitIso := coneEquivCounitIso F U
 
--- Porting note: not supported in Lean 4
--- attribute [local reducible]
---   SheafConditionEqualizerProducts.res SheafConditionEqualizerProducts.leftRes
-
 /-- If `SheafConditionEqualizerProducts.fork` is an equalizer,
 then `F.mapCone (cone U)` is a limit cone.
 -/
@@ -393,7 +389,7 @@ def isLimitMapConeOfIsLimitSheafConditionFork
         { hom := 𝟙 _
           w := by
             intro x
-            induction x with | h x => ?_
+            induction x with | op x => ?_
             rcases x with ⟨⟩
             · simp
               rfl
@@ -407,7 +403,7 @@ def isLimitMapConeOfIsLimitSheafConditionFork
         { hom := 𝟙 _
           w := by
             intro x
-            induction x with | h x => ?_
+            induction x with | op x => ?_
             rcases x with ⟨⟩
             · simp
               rfl

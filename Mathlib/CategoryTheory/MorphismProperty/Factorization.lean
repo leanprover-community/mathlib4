@@ -116,7 +116,8 @@ def ofLE {W₁' W₂' : MorphismProperty C} (le₁ : W₁ ≤ W₁') (le₂ : W�
 
 /-- The term in `FactorizationData W₁ W₂` that is deduced from a functorial factorization. -/
 def factorizationData : FactorizationData W₁ W₂ := fun f =>
-  { i := data.i.app (Arrow.mk f)
+  { Z := data.Z.obj (Arrow.mk f)
+    i := data.i.app (Arrow.mk f)
     p := data.p.app (Arrow.mk f)
     hi := data.hi _
     hp := data.hp _ }

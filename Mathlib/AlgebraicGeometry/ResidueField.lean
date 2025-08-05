@@ -44,6 +44,8 @@ def residueField (x : X) : CommRingCat :=
 instance (x : X) : Field (X.residueField x) :=
   inferInstanceAs <| Field (IsLocalRing.ResidueField (X.presheaf.stalk x))
 
+instance (x : X) : Unique (Spec (X.residueField x)) := inferInstanceAs (Unique Spec(_))
+
 /-- The residue map from the stalk to the residue field. -/
 def residue (X : Scheme.{u}) (x) : X.presheaf.stalk x ⟶ X.residueField x :=
   CommRingCat.ofHom (IsLocalRing.residue (X.presheaf.stalk x))
@@ -98,9 +100,12 @@ abbrev Γevaluation (x : X) : Γ(X, ⊤) ⟶ X.residueField x :=
   X.evaluation ⊤ x trivial
 
 @[simp]
-lemma evaluation_eq_zero_iff_not_mem_basicOpen (x : X) (hx : x ∈ U) (f : Γ(X, U)) :
+lemma evaluation_eq_zero_iff_notMem_basicOpen (x : X) (hx : x ∈ U) (f : Γ(X, U)) :
     X.evaluation U x hx f = 0 ↔ x ∉ X.basicOpen f :=
-  X.toLocallyRingedSpace.evaluation_eq_zero_iff_not_mem_basicOpen ⟨x, hx⟩ f
+  X.toLocallyRingedSpace.evaluation_eq_zero_iff_notMem_basicOpen ⟨x, hx⟩ f
+
+@[deprecated (since := "2025-05-23")]
+alias evaluation_eq_zero_iff_not_mem_basicOpen := evaluation_eq_zero_iff_notMem_basicOpen
 
 lemma evaluation_ne_zero_iff_mem_basicOpen (x : X) (hx : x ∈ U) (f : Γ(X, U)) :
     X.evaluation U x hx f ≠ 0 ↔ x ∈ X.basicOpen f := by
@@ -221,7 +226,7 @@ instance {X : Scheme.{u}} (x : X) : IsPreimmersion (X.fromSpecResidueField x) :=
 @[simps] noncomputable
 instance (x : X) : (Spec (X.residueField x)).Over X := ⟨X.fromSpecResidueField x⟩
 
-@[simps! over] noncomputable
+noncomputable
 instance (x : X) : (Spec (X.residueField x)).CanonicallyOver X where
 
 @[reassoc (attr := simp)]
@@ -251,12 +256,8 @@ lemma fromSpecResidueField_apply (x : X.carrier) (s : Spec (X.residueField x)) :
 lemma range_fromSpecResidueField (x : X.carrier) :
     Set.range (X.fromSpecResidueField x).base = {x} := by
   ext s
-  simp only [Set.mem_range, fromSpecResidueField_apply, Set.mem_singleton_iff, eq_comm (a := s)]
-  constructor
-  · rintro ⟨-, h⟩
-    exact h
-  · rintro rfl
-    exact ⟨closedPoint (X.residueField x), rfl⟩
+  simp only [Set.mem_range, fromSpecResidueField_apply, Set.mem_singleton_iff]
+  grind
 
 lemma descResidueField_fromSpecResidueField {K : Type*} [Field K] (X : Scheme) {x}
     (f : X.presheaf.stalk x ⟶ .of K) [IsLocalHom f.hom] :
@@ -265,7 +266,7 @@ lemma descResidueField_fromSpecResidueField {K : Type*} [Field K] (X : Scheme) {
   simp [fromSpecResidueField, ← Spec.map_comp_assoc]
 
 lemma descResidueField_stalkClosedPointTo_fromSpecResidueField
-    (K : Type u) [Field K] (X : Scheme.{u}) (f : Spec (.of K) ⟶ X) :
+    (K : Type u) [Field K] (X : Scheme.{u}) (f : Spec(K) ⟶ X) :
     Spec.map (@descResidueField (CommRingCat.of K) _ X _ (Scheme.stalkClosedPointTo f)
         _) ≫
       X.fromSpecResidueField (f.base (closedPoint K)) = f := by
@@ -289,7 +290,7 @@ lemma SpecToEquivOfField_eq_iff {K : Type*} [Field K] {X : Scheme}
 /-- For a field `K` and a scheme `X`, the morphisms `Spec K ⟶ X` bijectively correspond
 to pairs of points `x` of `X` and embeddings `κ(x) ⟶ K`. -/
 def SpecToEquivOfField (K : Type u) [Field K] (X : Scheme.{u}) :
-    (Spec (.of K) ⟶ X) ≃ Σ x, X.residueField x ⟶ .of K where
+    (Spec(K) ⟶ X) ≃ Σ x, X.residueField x ⟶ .of K where
   toFun f :=
     ⟨_, X.descResidueField (Scheme.stalkClosedPointTo f)⟩
   invFun xf := Spec.map xf.2 ≫ X.fromSpecResidueField xf.1

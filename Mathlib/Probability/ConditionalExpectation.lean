@@ -40,19 +40,20 @@ theorem condExp_indep_eq (hle₁ : m₁ ≤ m) (hle₂ : m₂ ≤ m) [SigmaFinit
   by_cases hfint : Integrable f μ
   swap; · rw [condExp_of_not_integrable hfint, integral_undef hfint]; rfl
   refine (ae_eq_condExp_of_forall_setIntegral_eq hle₂ hfint
-    (fun s _ hs => integrableOn_const.2 (Or.inr hs)) (fun s hms hs => ?_)
+    (fun s _ hs ↦ integrableOn_const hs.ne) (fun s hms hs => ?_)
       stronglyMeasurable_const.aestronglyMeasurable).symm
   rw [setIntegral_const]
-  rw [← memℒp_one_iff_integrable] at hfint
-  refine Memℒp.induction_stronglyMeasurable hle₁ ENNReal.one_ne_top _ ?_ ?_ ?_ ?_ hfint ?_
+  rw [← memLp_one_iff_integrable] at hfint
+  refine MemLp.induction_stronglyMeasurable hle₁ ENNReal.one_ne_top _ ?_ ?_ ?_ ?_ hfint ?_
   · exact ⟨f, hf, EventuallyEq.rfl⟩
   · intro c t hmt _
     rw [Indep_iff] at hindp
-    rw [integral_indicator (hle₁ _ hmt), setIntegral_const, smul_smul, ← ENNReal.toReal_mul,
+    rw [integral_indicator (hle₁ _ hmt), setIntegral_const, smul_smul, measureReal_def,
+      measureReal_def, ← ENNReal.toReal_mul,
       mul_comm, ← hindp _ _ hmt hms, setIntegral_indicator (hle₁ _ hmt), setIntegral_const,
-      Set.inter_comm]
+      Set.inter_comm, measureReal_def]
   · intro u v _ huint hvint hu hv hu_eq hv_eq
-    rw [memℒp_one_iff_integrable] at huint hvint
+    rw [memLp_one_iff_integrable] at huint hvint
     rw [integral_add' huint hvint, smul_add, hu_eq, hv_eq,
       integral_add' huint.integrableOn hvint.integrableOn]
   · have heq₁ : (fun f : lpMeas E ℝ m₁ 1 μ => ∫ x, (f : Ω → E) x ∂μ) =

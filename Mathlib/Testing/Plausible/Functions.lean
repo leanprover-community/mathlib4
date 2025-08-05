@@ -222,7 +222,7 @@ theorem applyId_mem_iff [DecidableEq α] {xs ys : List α} (h₀ : List.Nodup xs
       dsimp [List.dlookup] at h₃; split_ifs at h₃ with h
       · rw [Option.some_inj] at h₃
         subst x'; subst val
-        simp only [List.mem_cons, true_or, eq_self_iff_true]
+        simp only [List.mem_cons, true_or]
       · obtain - | ⟨h₀, h₅⟩ := h₀
         obtain - | ⟨h₂, h₄⟩ := h₂
         have h₆ := Nat.succ.inj h₁
@@ -230,11 +230,11 @@ theorem applyId_mem_iff [DecidableEq α] {xs ys : List α} (h₀ : List.Nodup xs
         simp only [Ne.symm h, xs_ih, List.mem_cons]
         suffices val ∈ ys by tauto
         rw [← Option.mem_def, List.mem_dlookup_iff] at h₃
-        · simp only [Prod.toSigma, List.mem_map, heq_iff_eq, Prod.exists] at h₃
+        · simp only [Prod.toSigma, List.mem_map, Prod.exists] at h₃
           rcases h₃ with ⟨a, b, h₃, h₄, h₅⟩
           apply (List.of_mem_zip h₃).2
         simp only [List.NodupKeys, List.keys, comp_def, Prod.fst_toSigma, List.map_map]
-        rwa [List.map_fst_zip _ _ (le_of_eq h₆)]
+        rwa [List.map_fst_zip (le_of_eq h₆)]
 
 theorem List.applyId_eq_self [DecidableEq α] {xs ys : List α} (x : α) :
     x ∉ xs → List.applyId.{u} (xs.zip ys) x = x := by
@@ -334,9 +334,9 @@ protected def mk (xs ys : List α) (h : xs ~ ys) (h' : ys.Nodup) : InjectiveFunc
   have h₁ : ys.length ≤ xs.length := le_of_eq h.length_eq.symm
   InjectiveFunction.mapToSelf (List.toFinmap' (xs.zip ys))
     (by
-      simp only [List.toFinmap', comp_def, List.map_fst_zip, List.map_snd_zip, *, Prod.fst_toSigma,
-        Prod.snd_toSigma, List.map_map])
-    (by simp only [List.toFinmap', comp_def, List.map_snd_zip, *, Prod.snd_toSigma, List.map_map])
+      simp only [List.toFinmap', comp_def, List.map_fst_zip, List.map_snd_zip, *,
+        List.map_map])
+    (by simp only [List.toFinmap', comp_def, List.map_snd_zip, *, List.map_map])
 
 protected theorem injective [DecidableEq α] (f : InjectiveFunction α) : Injective (apply f) := by
   obtain ⟨xs, hperm, hnodup⟩ := f
@@ -348,7 +348,7 @@ protected theorem injective [DecidableEq α] (f : InjectiveFunction α) : Inject
     induction xs with
     | nil => simp only [List.zip_nil_right, List.map_nil]
     | cons xs_hd xs_tl xs_ih =>
-      simp only [Prod.toSigma, eq_self_iff_true, Sigma.eta, List.zip_cons_cons,
+      simp only [Sigma.eta, List.zip_cons_cons,
         List.map, List.cons_inj_right]
       exact xs_ih
   revert hperm hnodup
@@ -367,7 +367,7 @@ instance PiInjective.sampleableExt : SampleableExt { f : ℤ → ℤ // Function
     have Hinj : Injective fun r : ℕ => -(2 * sz + 2 : ℤ) + ↑r := fun _x _y h =>
         Int.ofNat.inj (add_right_injective _ h)
     let r : InjectiveFunction ℤ :=
-      InjectiveFunction.mk.{0} xs' ys.1 ys.2 (ys.2.nodup_iff.1 <| (List.nodup_range _).map Hinj)
+      InjectiveFunction.mk.{0} xs' ys.1 ys.2 (ys.2.nodup_iff.1 <| List.nodup_range.map Hinj)
     pure r
   shrink := {shrink := @InjectiveFunction.shrink ℤ _ }
 

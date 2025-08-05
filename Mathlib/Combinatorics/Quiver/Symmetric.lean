@@ -148,6 +148,7 @@ end Paths
 namespace Symmetrify
 
 /-- The inclusion of a quiver in its symmetrification -/
+@[simps]
 def of : Prefunctor V (Symmetrify V) where
   obj := id
   map := Sum.inl

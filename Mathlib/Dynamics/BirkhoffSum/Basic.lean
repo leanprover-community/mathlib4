@@ -3,8 +3,8 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Dynamics.FixedPoints.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Birkhoff sums
@@ -60,6 +60,15 @@ theorem map_birkhoffSum {F N : Type*} [AddCommMonoid N] [FunLike F M N] [AddMono
     (g' : F) (f : α → α) (g : α → M) (n : ℕ) (x : α) :
     g' (birkhoffSum f g n x) = birkhoffSum f (g' ∘ g) n x :=
   map_sum g' _ _
+
+/-- If a function `φ` is invariant under a function `f` (i.e., `φ ∘ f = φ`), then the Birkhoff sum
+of `φ` over `f` for `n` iterations is equal to `n • φ`. -/
+theorem birkhoffSum_of_comp_eq {f : α → α} {φ : α → M} (h : φ ∘ f = φ) (n : ℕ) :
+    birkhoffSum f φ n = n • φ := by
+  funext x
+  suffices ∀ k, φ (f^[k] x) = φ x by simp [birkhoffSum, this]
+  intro k
+  exact congrFun (iterate_invariant h k) x
 
 end AddCommMonoid
 

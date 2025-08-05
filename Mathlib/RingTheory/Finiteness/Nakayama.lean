@@ -26,7 +26,7 @@ theorem exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul {R : Type*} [CommRi
     ∃ r : R, r - 1 ∈ I ∧ ∀ n ∈ N, r • n = (0 : M) := by
   rw [fg_def] at hn
   rcases hn with ⟨s, hfs, hs⟩
-  have : ∃ r : R, r - 1 ∈ I ∧ N ≤ (I • span R s).comap (LinearMap.lsmul R M r) ∧ s ⊆ N := by
+  have H : ∃ r : R, r - 1 ∈ I ∧ N ≤ (I • span R s).comap (LinearMap.lsmul R M r) ∧ s ⊆ N := by
     refine ⟨1, ?_, ?_, ?_⟩
     · rw [sub_self]
       exact I.zero_mem
@@ -38,12 +38,13 @@ theorem exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul {R : Type*} [CommRi
       exact hin hn
     · rw [← span_le, hs]
   clear hin hs
-  revert this
-  refine Set.Finite.induction_on _ hfs (fun H => ?_) @fun i s _ _ ih H => ?_
-  · rcases H with ⟨r, hr1, hrn, _⟩
+  induction s, hfs using Set.Finite.induction_on with
+  | empty =>
+    rcases H with ⟨r, hr1, hrn, _⟩
     refine ⟨r, hr1, fun n hn => ?_⟩
     specialize hrn hn
     rwa [mem_comap, span_empty, smul_bot, mem_bot] at hrn
+  | @insert i s _ _ ih =>
   apply ih
   rcases H with ⟨r, hr1, hrn, hs⟩
   rw [← Set.singleton_union, span_union, smul_sup] at hrn

@@ -118,7 +118,7 @@ open Metric Filter Topology
 
 /-- An *increasing approximate unit* in a C⋆-algebra is an approximate unit contained in the
 closed unit ball of nonnegative elements. -/
-structure Filter.IsIncreasingApproximateUnit (l : Filter A) extends l.IsApproximateUnit : Prop where
+structure Filter.IsIncreasingApproximateUnit (l : Filter A) : Prop extends l.IsApproximateUnit where
   eventually_nonneg : ∀ᶠ x in l, 0 ≤ x
   eventually_norm : ∀ᶠ x in l, ‖x‖ ≤ 1
 
@@ -148,7 +148,7 @@ lemma tendsto_mul_right_of_forall_nonneg_tendsto {l : Filter A}
     (h : ∀ m, 0 ≤ m → ‖m‖ < 1 → Tendsto (· * m) l (𝓝 m)) (m : A) :
     Tendsto (· * m) l (𝓝 m) := by
   obtain ⟨n, c, x, rfl⟩ := mem_span_set'.mp <| by
-    show m ∈ span ℂ ({x | 0 ≤ x} ∩ ball 0 1)
+    change m ∈ span ℂ ({x | 0 ≤ x} ∩ ball 0 1)
     simp [span_nonneg_inter_unitBall]
   simp_rw [Finset.mul_sum]
   refine tendsto_finset_sum _ fun i _ ↦ ?_
@@ -252,7 +252,7 @@ private lemma tendsto_mul_right_approximateUnit (m : A) :
   generalize (x : A⁺¹) = x, (m : A⁺¹) = m at *
   set g : ℝ≥0 → ℝ≥0 := fun y ↦ 1 - (1 + y)⁻¹
   have hg : Continuous g := by
-    rw [continuous_iff_continuousOn_univ]
+    rw [← continuousOn_univ]
     fun_prop (disch := intro _ _; positivity)
   have hg' : ContinuousOn (fun y ↦ (1 + ε⁻¹ ^ 2 • y)⁻¹) (spectrum ℝ≥0 m) :=
     ContinuousOn.inv₀ (by fun_prop) fun _ _ ↦ by positivity

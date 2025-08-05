@@ -63,14 +63,15 @@ since `G` already has a quiver instance from being a groupoid. -/
 def IsFreeGroupoid.Generators (G) [Groupoid G] :=
   G
 
-/-- A groupoid `G` is free when we have the following data:
- - a quiver on `IsFreeGroupoid.Generators G` (a type synonym for `G`)
- - a function `of` taking a generating arrow to a morphism in `G`
- - such that a functor from `G` to any group `X` is uniquely determined
-   by assigning labels in `X` to the generating arrows.
+/--
+A groupoid `G` is free when we have the following data:
+- a quiver on `IsFreeGroupoid.Generators G` (a type synonym for `G`)
+- a function `of` taking a generating arrow to a morphism in `G`
+- such that a functor from `G` to any group `X` is uniquely determined
+  by assigning labels in `X` to the generating arrows.
 
-   This definition is nonstandard. Normally one would require that functors `G ⥤ X`
-   to any _groupoid_ `X` are given by graph homomorphisms from `generators`. -/
+This definition is nonstandard. Normally one would require that functors `G ⥤ X`
+to any _groupoid_ `X` are given by graph homomorphisms from `generators`. -/
 class IsFreeGroupoid (G) [Groupoid.{v} G] where
   quiverGenerators : Quiver.{v + 1} (IsFreeGroupoid.Generators G)
   of : ∀ {a b : IsFreeGroupoid.Generators G}, (a ⟶ b) → ((show G from a) ⟶ b)
@@ -93,9 +94,6 @@ theorem ext_functor {G} [Groupoid.{v} G] [IsFreeGroupoid G] {X : Type v} [Group 
   let ⟨_, _, u⟩ := @unique_lift G _ _ X _ fun (a b : Generators G) (e : a ⟶ b) => g.map (of e)
   _root_.trans (u _ h) (u _ fun _ _ _ => rfl).symm
 
-#adaptation_note /-- https://github.com/leanprover/lean4/pull/5338
-The new unused variable linter flags `{ e // _ }`. -/
-set_option linter.unusedVariables false in
 /-- An action groupoid over a free group is free. More generally, one could show that the groupoid
 of elements over a free groupoid is free, but this version is easier to prove and suffices for our
 purposes.
@@ -106,7 +104,7 @@ instance actionGroupoidIsFree {G A : Type u} [Group G] [IsFreeGroup G] [MulActio
     IsFreeGroupoid (ActionCategory G A) where
   quiverGenerators :=
     ⟨fun a b => { e : IsFreeGroup.Generators G // IsFreeGroup.of e • a.back = b.back }⟩
-  of := fun (e : { e // _ }) => ⟨IsFreeGroup.of e, e.property⟩
+  of := fun (e : Subtype _) => ⟨IsFreeGroup.of e, e.property⟩
   unique_lift := by
     intro X _ f
     let f' : IsFreeGroup.Generators G → (A → X) ⋊[mulAutArrow] G := fun e =>
@@ -219,21 +217,24 @@ lemma endIsFree : IsFreeGroup (End (root' T)) :=
       refine ⟨F'.mapEnd _, ?_, ?_⟩
       · suffices ∀ {x y} (q : x ⟶ y), F'.map (loopOfHom T q) = (F'.map q : X) by
           rintro ⟨⟨a, b, e⟩, h⟩
-          erw [Functor.mapEnd_apply, this, hF']
+          -- Work around the defeq `X = End (F'.obj (IsFreeGroupoid.SpanningTree.root' T))`
+          erw [Functor.mapEnd_apply]
+          rw [this, hF']
           exact dif_neg h
         intros x y q
         suffices ∀ {a} (p : Path (root T) a), F'.map (homOfPath T p) = 1 by
           simp only [this, treeHom, comp_as_mul, inv_as_inv, loopOfHom, inv_one, mul_one,
             one_mul, Functor.map_inv, Functor.map_comp]
         intro a p
-        induction' p with b c p e ih
-        · rw [homOfPath, F'.map_id, id_as_one]
-        rw [homOfPath, F'.map_comp, comp_as_mul, ih, mul_one]
-        rcases e with ⟨e | e, eT⟩
-        · rw [hF']
-          exact dif_pos (Or.inl eT)
-        · rw [F'.map_inv, inv_as_inv, inv_eq_one, hF']
-          exact dif_pos (Or.inr eT)
+        induction p with
+        | nil => rw [homOfPath, F'.map_id, id_as_one]
+        | cons p e ih =>
+          rw [homOfPath, F'.map_comp, comp_as_mul, ih, mul_one]
+          rcases e with ⟨e | e, eT⟩
+          · rw [hF']
+            exact dif_pos (Or.inl eT)
+          · rw [F'.map_inv, inv_as_inv, inv_eq_one, hF']
+            exact dif_pos (Or.inr eT)
       · intro E hE
         ext x
         suffices (functorOfMonoidHom T E).map x = F'.map x by

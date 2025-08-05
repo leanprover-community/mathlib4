@@ -30,10 +30,10 @@ In this file we provide the above construction. It is defined for any square mat
 the results for non-Cartan matrices should be regarded as junk.
 
 Recall that a Cartan matrix is a square matrix of integers `A` such that:
- * For diagonal values we have: `A i i = 2`.
- * For off-diagonal values (`i ≠ j`) we have: `A i j ∈ {-3, -2, -1, 0}`.
- * `A i j = 0 ↔ A j i = 0`.
- * There exists a diagonal matrix `D` over ℝ such that `D * A * D⁻¹` is symmetric positive definite.
+* For diagonal values we have: `A i i = 2`.
+* For off-diagonal values (`i ≠ j`) we have: `A i j ∈ {-3, -2, -1, 0}`.
+* `A i j = 0 ↔ A j i = 0`.
+* There exists a diagonal matrix `D` over ℝ such that `D * A * D⁻¹` is symmetric positive definite.
 
 ## Alternative construction
 
@@ -172,7 +172,8 @@ regarded as junk. -/
 def Matrix.ToLieAlgebra :=
   FreeLieAlgebra R _ ⧸ CartanMatrix.Relations.toIdeal R A
 
--- Porting note: the following were derived automatically in mathlib3.
+-- The `LieRing, Inhabited, LieAlgebra` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 instance Matrix.ToLieAlgebra.instLieRing : LieRing (Matrix.ToLieAlgebra R A) :=
   inferInstanceAs (LieRing (FreeLieAlgebra R _ ⧸ CartanMatrix.Relations.toIdeal R A))
 
