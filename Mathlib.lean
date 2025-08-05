@@ -724,11 +724,10 @@ import Mathlib.Algebra.Module.ZMod
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Algebra.MonoidAlgebra.Defs
 import Mathlib.Algebra.MonoidAlgebra.Degree
+import Mathlib.Algebra.MonoidAlgebra.Divisibility
 import Mathlib.Algebra.MonoidAlgebra.Division
 import Mathlib.Algebra.MonoidAlgebra.Grading
 import Mathlib.Algebra.MonoidAlgebra.Ideal
-import Mathlib.Algebra.MonoidAlgebra.IsUnit
-import Mathlib.Algebra.MonoidAlgebra.Kaplansky
 import Mathlib.Algebra.MonoidAlgebra.MapDomain
 import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
 import Mathlib.Algebra.MonoidAlgebra.Support

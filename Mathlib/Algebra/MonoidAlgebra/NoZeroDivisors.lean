@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Mathlib.Algebra.Group.UniqueProds.Basic
-import Mathlib.Algebra.MonoidAlgebra.IsUnit
+import Mathlib.Algebra.MonoidAlgebra.Defs
 import Mathlib.Algebra.Prime.Defs
 
 /-!
@@ -157,15 +157,3 @@ instance [IsCancelAdd R] [IsDomain R] [AddMonoid A] [UniqueSums A] : IsDomain R[
 
 end AddMonoidAlgebra
 end Semiring
-
-section CommSemiring
-
-variable [CommSemiring R] [NoZeroDivisors R]
-
-theorem MonoidAlgebra.prime_single [Nontrivial R] [CommMonoid A] [UniqueProds A]
-    {a : A} {r : R} (ha : Preprime a) (hr : IsUnit r) : Prime (single a r) where
-  1 := Finsupp.single_ne_zero.mpr hr.ne_zero
-  2.1 h := ha.1 (isUnit_single_iff.mp h).1
-  2.2 f g dvd := sorry
-
-end CommSemiring
