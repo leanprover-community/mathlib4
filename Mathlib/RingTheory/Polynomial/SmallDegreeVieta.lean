@@ -128,9 +128,15 @@ theorem isRoot_quadratic_iff_of_discrim_eq_zero [NeZero (2 : R)] (ha : a ≠ 0)
   rw [← quadratic_eq_zero_iff_of_discrim_eq_zero ha h]; simp [sq]
 
 /-- A quadratic has no root if its discriminant has no square root. -/
-theorem not_isRoot_of_discrim_ne_sq (h : ∀ s : R, discrim a b c ≠ s^2) (x : R) :
+lemma not_isRoot_of_discrim_ne_sq (h : ∀ s : R, discrim a b c ≠ s^2) (x : R) :
     ¬ IsRoot (C a * X ^ 2 + C b * X + C c) x := by
   convert quadratic_ne_zero_of_discrim_ne_sq h x using 1; simp [sq]
+
+/-- Quantifier elimination for a quadratic equation in characteristic `≠ 2`. -/
+lemma exists_isRoot_quadratic_iff [NeZero (2 : R)] (ha : a ≠ 0) :
+    (∃ x, IsRoot (C a * X ^ 2 + C b * X + C c) x) ↔ ∃ s, discrim a b c = s ^ 2 := ⟨
+  fun ⟨x, hx⟩ => by by_contra hc; exact (not_isRoot_of_discrim_ne_sq (not_exists.mp hc) x) hx,
+  fun ⟨s, hs⟩ => ⟨(-b + s) / (2 * a), (isRoot_quadratic_iff ha hs _).mpr (Or.inl rfl)⟩⟩
 
 theorem mem_roots_quadratic_iff_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0)
     {z s : R} (h : discrim a b c = s ^ 2) :
