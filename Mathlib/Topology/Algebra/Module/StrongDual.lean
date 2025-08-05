@@ -70,7 +70,7 @@ section
 subset of `StrongDual R M` consisting of those functionals which evaluate to something of norm at
 most one at all points `z ∈ s`. -/
 def polar (R : Type*) [NormedCommRing R] {M : Type*} [AddCommMonoid M]
-  [TopologicalSpace M] [Module R M] : Set M → Set (StrongDual R M) :=
+    [TopologicalSpace M] [Module R M] : Set M → Set (StrongDual R M) :=
   (strongDualPairing R M).flip.polar
 
 @[deprecated (since := "2025-08-3")] alias _root_.NormedSpace.polar := polar
