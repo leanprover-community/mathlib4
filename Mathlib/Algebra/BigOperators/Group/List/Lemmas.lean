@@ -101,12 +101,7 @@ theorem sum_map_count_dedup_filter_eq_countP (p : α → Bool) (l : List α) :
       by_cases hp : p a
       · refine _root_.trans (sum_map_eq_nsmul_single a _ fun _ h _ => by simp [h.symm]) ?_
         simp [hp, count_dedup]
-      · refine _root_.trans (List.sum_eq_zero fun n hn => ?_) (by simp [hp])
-        obtain ⟨a', ha'⟩ := List.mem_map.1 hn
-        split_ifs at ha' with ha
-        · simp only [ha.symm, mem_filter, mem_dedup, mem_cons, true_or, hp,
-            and_false, false_and, reduceCtorEq] at ha'
-        · exact ha'.2.symm
+      · exact _root_.trans (List.sum_eq_zero fun n hn => by grind) (by simp [hp])
 
 theorem sum_map_count_dedup_eq_length (l : List α) :
     (l.dedup.map fun x => l.count x).sum = l.length := by
@@ -126,7 +121,7 @@ lemma ranges_flatten : ∀ (l : List ℕ), l.ranges.flatten = range l.sum
   | [] => rfl
   | a :: l => by simp [ranges, ← map_flatten, ranges_flatten, range_add]
 
-/-- The members of `l.ranges` have no duplicate -/
+/-- The members of `l.ranges` have no duplicates -/
 theorem ranges_nodup {l s : List ℕ} (hs : s ∈ ranges l) : s.Nodup :=
   (List.pairwise_flatten.mp <| by rw [ranges_flatten]; exact nodup_range).1 s hs
 
@@ -134,9 +129,6 @@ theorem ranges_nodup {l s : List ℕ} (hs : s ∈ ranges l) : s.Nodup :=
 lemma mem_mem_ranges_iff_lt_sum (l : List ℕ) {n : ℕ} :
     (∃ s ∈ l.ranges, n ∈ s) ↔ n < l.sum := by
   rw [← mem_range, ← ranges_flatten, mem_flatten]
-
-@[deprecated (since := "2024-11-18")]
-alias mem_mem_ranges_iff_lt_natSum := mem_mem_ranges_iff_lt_sum
 
 /-- In a flatten of sublists, taking the slice between the indices `A` and `B - 1` gives back the
 original sublist of index `i` if `A` is the sum of the lengths of sublists of index `< i`, and

@@ -110,7 +110,7 @@ lemma Even.LFunction_neg_two_mul_nat {χ : DirichletCharacter ℂ N} (hχ : Even
 
 /-- The L-function of an odd Dirichlet character vanishes at negative odd integers. -/
 @[simp] lemma Odd.LFunction_neg_two_mul_nat_sub_one
-  {χ : DirichletCharacter ℂ N} (hχ : Odd χ) (n : ℕ) :
+    {χ : DirichletCharacter ℂ N} (hχ : Odd χ) (n : ℕ) :
     LFunction χ (-(2 * n) - 1) = 0 :=
   ZMod.LFunction_neg_two_mul_nat_sub_one hχ.to_fun n
 
@@ -360,7 +360,7 @@ lemma deriv_LFunctionTrivChar₁_apply_of_ne_one {s : ℂ} (hs : s ≠ 1) :
   rw [H, deriv_fun_mul (by fun_prop) (differentiableAt_LFunction _ s (.inl hs)), deriv_sub_const,
     deriv_id'', one_mul, add_comm]
 
-/-- The negative logarithmtic derivative of `s ↦ (s - 1) * L χ s` for a trivial
+/-- The negative logarithmic derivative of `s ↦ (s - 1) * L χ s` for a trivial
 Dirichlet character `χ` is continuous away from the zeros of `L χ` (including at `s = 1`). -/
 lemma continuousOn_neg_logDeriv_LFunctionTrivChar₁ :
     ContinuousOn (fun s ↦ -deriv (LFunctionTrivChar₁ n) s / LFunctionTrivChar₁ n s)

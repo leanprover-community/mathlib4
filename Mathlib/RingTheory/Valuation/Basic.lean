@@ -714,9 +714,6 @@ theorem of_apply : (of f h0 h1 hadd hmul) r = f r := rfl
 def toValuation : AddValuation R Γ₀ ≃ Valuation R (Multiplicative Γ₀ᵒᵈ) :=
   Equiv.refl _
 
-@[deprecated (since := "2024-11-09")]
-alias valuation := toValuation
-
 /-- The `AddValuation` associated to a `Valuation`.
 -/
 def ofValuation : Valuation R (Multiplicative Γ₀ᵒᵈ) ≃ AddValuation R Γ₀ :=
@@ -739,9 +736,6 @@ lemma toValuation_ofValuation (v : Valuation R (Multiplicative Γ₀ᵒᵈ)) :
 theorem toValuation_apply (r : R) :
     toValuation v r = Multiplicative.ofAdd (OrderDual.toDual (v r)) :=
   rfl
-
-@[deprecated (since := "2024-11-09")]
-alias valuation_apply := toValuation_apply
 
 @[simp]
 theorem ofValuation_apply (v : Valuation R (Multiplicative Γ₀ᵒᵈ)) (r : R) :
@@ -996,8 +990,8 @@ lemma ofAddValuation_symm_eq : ofAddValuation.symm = toAddValuation (R := R) (Γ
 lemma toAddValuation_symm_eq : toAddValuation.symm = ofAddValuation (R := R) (Γ₀ := Γ₀) := rfl
 
 @[simp]
-lemma ofAddValuation_toAddValuation (v : Valuation R Γ₀) :
-  ofAddValuation (toAddValuation v) = v := rfl
+lemma ofAddValuation_toAddValuation (v : Valuation R Γ₀) : ofAddValuation (toAddValuation v) = v :=
+  rfl
 
 @[simp]
 lemma toValuation_ofValuation (v : AddValuation R (Additive Γ₀)ᵒᵈ) :
