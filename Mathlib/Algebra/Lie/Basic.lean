@@ -30,10 +30,10 @@ modules, morphisms and equivalences, as well as various lemmas to make these def
 ## Notation
 
 Working over a fixed commutative ring `R`, we introduce the notations:
- * `L →ₗ⁅R⁆ L'` for a morphism of Lie algebras,
- * `L ≃ₗ⁅R⁆ L'` for an equivalence of Lie algebras,
- * `M →ₗ⁅R,L⁆ N` for a morphism of Lie algebra modules `M`, `N` over a Lie algebra `L`,
- * `M ≃ₗ⁅R,L⁆ N` for an equivalence of Lie algebra modules `M`, `N` over a Lie algebra `L`.
+* `L →ₗ⁅R⁆ L'` for a morphism of Lie algebras,
+* `L ≃ₗ⁅R⁆ L'` for an equivalence of Lie algebras,
+* `M →ₗ⁅R,L⁆ N` for a morphism of Lie algebra modules `M`, `N` over a Lie algebra `L`,
+* `M ≃ₗ⁅R,L⁆ N` for an equivalence of Lie algebra modules `M`, `N` over a Lie algebra `L`.
 
 ## Implementation notes
 
@@ -448,8 +448,6 @@ theorem toLinearMap_comp (f : L₂ →ₗ⁅R⁆ L₃) (g : L₁ →ₗ⁅R⁆ L
     (f.comp g : L₁ →ₗ[R] L₃) = (f : L₂ →ₗ[R] L₃).comp (g : L₁ →ₗ[R] L₂) :=
   rfl
 
-@[deprecated (since := "2024-12-30")] alias coe_linearMap_comp := toLinearMap_comp
-
 @[simp]
 theorem comp_id (f : L₁ →ₗ⁅R⁆ L₂) : f.comp (id : L₁ →ₗ⁅R⁆ L₁) = f :=
   rfl
@@ -514,10 +512,10 @@ structure LieEquiv (R : Type u) (L : Type v) (L' : Type w) [CommRing R] [LieRing
   invFun : L' → L
   /-- The inverse function of an equivalence of Lie algebras is a left inverse of the underlying
   function. -/
-  left_inv : Function.LeftInverse invFun toLieHom.toFun
+  left_inv : Function.LeftInverse invFun toLieHom.toFun := by intro; first | rfl | ext <;> rfl
   /-- The inverse function of an equivalence of Lie algebras is a right inverse of the underlying
   function. -/
-  right_inv : Function.RightInverse invFun toLieHom.toFun
+  right_inv : Function.RightInverse invFun toLieHom.toFun := by intro; first | rfl | ext <;> rfl
 
 @[inherit_doc]
 notation:50 L " ≃ₗ⁅" R "⁆ " L' => LieEquiv R L L'
@@ -548,13 +546,11 @@ instance : EquivLike (L₁ ≃ₗ⁅R⁆ L₂) L₁ L₂ where
 theorem coe_toLieHom (e : L₁ ≃ₗ⁅R⁆ L₂) : ⇑(e : L₁ →ₗ⁅R⁆ L₂) = e :=
   rfl
 
-@[deprecated (since := "2024-12-30")] alias coe_to_lieHom := coe_toLieHom
-
 @[simp]
 theorem coe_toLinearEquiv (e : L₁ ≃ₗ⁅R⁆ L₂) : ⇑(e : L₁ ≃ₗ[R] L₂) = e :=
   rfl
 
-@[deprecated (since := "2024-12-30")] alias coe_to_linearEquiv := coe_toLinearEquiv
+@[simp] theorem coe_coe (e : L₁ ≃ₗ⁅R⁆ L₂) : ⇑e.toLieHom = e := rfl
 
 @[simp]
 theorem toLinearEquiv_mk (f : L₁ →ₗ⁅R⁆ L₂) (g h₁ h₂) :
@@ -565,16 +561,9 @@ theorem toLinearEquiv_mk (f : L₁ →ₗ⁅R⁆ L₂) (g h₁ h₂) :
         right_inv := h₂ } :=
   rfl
 
-@[deprecated (since := "2024-12-30")] alias to_linearEquiv_mk := toLinearEquiv_mk
-
 theorem toLinearEquiv_injective : Injective ((↑) : (L₁ ≃ₗ⁅R⁆ L₂) → L₁ ≃ₗ[R] L₂) := by
   rintro ⟨⟨⟨⟨f, -⟩, -⟩, -⟩, f_inv⟩ ⟨⟨⟨⟨g, -⟩, -⟩, -⟩, g_inv⟩
-  intro h
-  simp only [toLinearEquiv_mk, LinearEquiv.mk.injEq, LinearMap.mk.injEq, AddHom.mk.injEq] at h
-  congr
-  exacts [h.1, h.2]
-
-@[deprecated (since := "2024-12-30")] alias coe_linearEquiv_injective := toLinearEquiv_injective
+  simp
 
 theorem coe_injective : @Injective (L₁ ≃ₗ⁅R⁆ L₂) (L₁ → L₂) (↑) :=
   LinearEquiv.coe_injective.comp toLinearEquiv_injective
@@ -805,8 +794,6 @@ theorem toLinearMap_comp (f : N →ₗ⁅R,L⁆ P) (g : M →ₗ⁅R,L⁆ N) :
     (f.comp g : M →ₗ[R] P) = (f : N →ₗ[R] P).comp (g : M →ₗ[R] N) :=
   rfl
 
-@[deprecated (since := "2024-12-30")] alias coe_linearMap_comp := toLinearMap_comp
-
 /-- The inverse of a bijective morphism of Lie modules is a morphism of Lie modules. -/
 def inverse (f : M →ₗ⁅R,L⁆ N) (g : N → M) (h₁ : Function.LeftInverse g f)
     (h₂ : Function.RightInverse g f) : N →ₗ⁅R,L⁆ M :=
@@ -957,20 +944,13 @@ theorem coe_mk (f : M →ₗ⁅R,L⁆ N) (invFun h₁ h₂) :
 theorem coe_toLieModuleHom (e : M ≃ₗ⁅R,L⁆ N) : ⇑(e : M →ₗ⁅R,L⁆ N) = e :=
   rfl
 
-@[deprecated (since := "2024-12-30")] alias coe_to_lieModuleHom := coe_toLieModuleHom
-
 @[simp]
 theorem coe_toLinearEquiv (e : M ≃ₗ⁅R,L⁆ N) : ((e : M ≃ₗ[R] N) : M → N) = e :=
   rfl
 
-@[deprecated (since := "2024-12-30")] alias coe_to_linearEquiv := coe_toLinearEquiv
-
 theorem toEquiv_injective : Function.Injective (toEquiv : (M ≃ₗ⁅R,L⁆ N) → M ≃ N) := by
   rintro ⟨⟨⟨⟨f, -⟩, -⟩, -⟩, f_inv⟩ ⟨⟨⟨⟨g, -⟩, -⟩, -⟩, g_inv⟩
-  intro h
-  simp only [toEquiv_mk, LieModuleHom.coe_mk, LinearMap.coe_mk, AddHom.coe_mk, Equiv.mk.injEq] at h
-  congr
-  exacts [h.1, h.2]
+  simp
 
 @[ext]
 theorem ext (e₁ e₂ : M ≃ₗ⁅R,L⁆ N) (h : ∀ m, e₁ m = e₂ m) : e₁ = e₂ :=

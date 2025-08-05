@@ -9,7 +9,7 @@ noncomputable section
 -- We verify that we have successfully created special shapes of limits in `Mon_ C`,
 -- assuming that only those special shapes existed in `C`.
 
--- To avoid unnecessarily adding imports in `Mathlib.CategoryTheory.Monoidal.Internal.Limits`
+-- To avoid unnecessarily adding imports in `Mathlib/CategoryTheory/Monoidal/Internal/Limits.lean`
 -- this check lives in the test suite.
 
 example (D : Type u) [Category.{v} D] [MonoidalCategory D] [HasTerminal D] :

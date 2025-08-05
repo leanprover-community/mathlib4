@@ -49,7 +49,7 @@ namespace Splitting
 
 /-- The index set which appears in the definition of split simplicial objects. -/
 def IndexSet (Δ : SimplexCategoryᵒᵖ) :=
-  ΣΔ' : SimplexCategoryᵒᵖ, { α : Δ.unop ⟶ Δ'.unop // Epi α }
+  Σ Δ' : SimplexCategoryᵒᵖ, { α : Δ.unop ⟶ Δ'.unop // Epi α }
 
 namespace IndexSet
 
@@ -127,7 +127,6 @@ theorem eqId_iff_eq : A.EqId ↔ A.1 = Δ := by
     simp only at h
     subst h
     refine ext _ _ rfl ?_
-    haveI := hf
     simp only [eqToHom_refl, comp_id]
     exact eq_id_of_epi f
 

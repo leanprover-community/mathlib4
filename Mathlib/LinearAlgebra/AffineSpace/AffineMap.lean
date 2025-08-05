@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
 import Mathlib.Algebra.Order.Group.Pointwise.Interval
+import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.LinearAlgebra.BilinearMap
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.Prod
@@ -49,7 +50,10 @@ induces a corresponding linear map from `V1` to `V2`. -/
 structure AffineMap (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*} (P2 : Type*) [Ring k]
   [AddCommGroup V1] [Module k V1] [AffineSpace V1 P1] [AddCommGroup V2] [Module k V2]
   [AffineSpace V2 P2] where
+  /-- The underlying function between the affine spaces `P1` and `P2`. -/
   toFun : P1 → P2
+  /-- The linear map between the corresponding vector spaces `V1` and `V2`.
+  This represents how the affine map acts on differences of points. -/
   linear : V1 →ₗ[k] V2
   map_vadd' : ∀ (p : P1) (v : V1), toFun (v +ᵥ p) = linear v +ᵥ toFun p
 
@@ -219,8 +223,8 @@ theorem smul_linear (t : R) (f : P1 →ᵃ[k] V2) : (t • f).linear = t • f.l
   rfl
 
 instance isCentralScalar [DistribMulAction Rᵐᵒᵖ V2] [IsCentralScalar R V2] :
-  IsCentralScalar R (P1 →ᵃ[k] V2) where
-    op_smul_eq_smul _r _x := ext fun _ => op_smul_eq_smul _ _
+    IsCentralScalar R (P1 →ᵃ[k] V2) where
+  op_smul_eq_smul _r _x := ext fun _ => op_smul_eq_smul _ _
 
 end SMul
 
@@ -282,7 +286,7 @@ instance : AffineSpace (P1 →ᵃ[k] V2) (P1 →ᵃ[k] P2) where
   add_vadd f₁ f₂ f₃ := ext fun p => add_vadd (f₁ p) (f₂ p) (f₃ p)
   vsub f g :=
     ⟨fun p => f p -ᵥ g p, f.linear - g.linear, fun p v => by
-      simp [vsub_vadd_eq_vsub_sub, vadd_vsub_assoc, add_sub, sub_add_eq_add_sub]⟩
+      simp [vsub_vadd_eq_vsub_sub, vadd_vsub_assoc, sub_add_eq_add_sub]⟩
   vsub_vadd' f g := ext fun p => vsub_vadd (f p) (g p)
   vadd_vsub' f g := ext fun p => vadd_vsub (f p) (g p)
 
@@ -407,7 +411,7 @@ theorem linear_injective_iff (f : P1 →ᵃ[k] P2) :
   obtain ⟨p⟩ := (inferInstance : Nonempty P1)
   have h : ⇑f.linear = (Equiv.vaddConst (f p)).symm ∘ f ∘ Equiv.vaddConst p := by
     ext v
-    simp [f.map_vadd, vadd_vsub_assoc]
+    simp [f.map_vadd]
   rw [h, Equiv.comp_injective, Equiv.injective_comp]
 
 @[simp]
@@ -416,7 +420,7 @@ theorem linear_surjective_iff (f : P1 →ᵃ[k] P2) :
   obtain ⟨p⟩ := (inferInstance : Nonempty P1)
   have h : ⇑f.linear = (Equiv.vaddConst (f p)).symm ∘ f ∘ Equiv.vaddConst p := by
     ext v
-    simp [f.map_vadd, vadd_vsub_assoc]
+    simp [f.map_vadd]
   rw [h, Equiv.comp_surjective, Equiv.surjective_comp]
 
 @[simp]
@@ -428,12 +432,8 @@ theorem image_vsub_image {s t : Set P1} (f : P1 →ᵃ[k] P2) :
     f '' s -ᵥ f '' t = f.linear '' (s -ᵥ t) := by
   ext v
   simp only [Set.mem_vsub, Set.mem_image,
-    exists_exists_and_eq_and, exists_and_left, ← f.linearMap_vsub]
-  constructor
-  · rintro ⟨x, hx, y, hy, hv⟩
-    exact ⟨x -ᵥ y, ⟨x, hx, y, hy, rfl⟩, hv⟩
-  · rintro ⟨-, ⟨x, hx, y, hy, rfl⟩, rfl⟩
-    exact ⟨x, hx, y, hy, rfl⟩
+    exists_exists_and_eq_and, ← f.linearMap_vsub]
+  grind
 
 /-! ### Definition of `AffineMap.lineMap` and lemmas about it -/
 
@@ -563,6 +563,29 @@ theorem lineMap_vsub_lineMap (p₁ p₂ p₃ p₄ : P1) (c : k) :
     lineMap (lineMap p₀ p₁ c) p₁ d = lineMap p₀ p₁ (1 - (1 - d) * (1 - c)) := by
   simp_rw [lineMap_apply_one_sub, ← lineMap_apply_one_sub p₁, lineMap_lineMap_right]
 
+lemma lineMap_mono [LinearOrder k] [Preorder V1] [AddRightMono V1] [SMulPosMono k V1]
+    {p₀ p₁ : V1} (h : p₀ ≤ p₁) :
+    Monotone (lineMap (k := k) p₀ p₁) := by
+  intro x y hxy
+  simp? [lineMap] says
+    simp only [lineMap, vsub_eq_sub, vadd_eq_add, coe_add, LinearMap.coe_toAffineMap,
+      LinearMap.coe_smulRight, LinearMap.id_coe, id_eq, coe_const, Pi.add_apply,
+      Function.const_apply, add_le_add_iff_right]
+  gcongr
+  simpa
+
+lemma lineMap_anti [LinearOrder k] [Preorder V1] [AddLeftMono V1] [SMulPosMono k V1]
+    {p₀ p₁ : V1} (h : p₁ ≤ p₀) :
+    Antitone (lineMap (k := k) p₀ p₁) := by
+  intro x y hxy
+  simp? [lineMap] says
+    simp only [lineMap, vsub_eq_sub, vadd_eq_add, coe_add, LinearMap.coe_toAffineMap,
+      LinearMap.coe_smulRight, LinearMap.id_coe, id_eq, coe_const, Pi.add_apply,
+      Function.const_apply, add_le_add_iff_right]
+  rw [← neg_le_neg_iff, ← smul_neg, ← smul_neg]
+  gcongr
+  simpa
+
 /-- Decomposition of an affine map in the special case when the point space and vector space
 are the same. -/
 theorem decomp (f : V1 →ᵃ[k] V2) : (f : V1 → V2) = ⇑f.linear + fun _ => f 0 := by
@@ -659,10 +682,10 @@ def toConstProdLinearMap : (V1 →ᵃ[k] V2) ≃ₗ[R] V2 × (V1 →ₗ[k] V2) w
   left_inv f := by
     ext
     rw [f.decomp]
-    simp [const_apply]
+    simp
   right_inv := by
     rintro ⟨v, f⟩
-    ext <;> simp [const_apply, const_linear]
+    ext <;> simp [const_linear]
   map_add' := by simp
   map_smul' := by simp
 

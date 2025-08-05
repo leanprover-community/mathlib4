@@ -98,7 +98,7 @@ another linear ordered field. -/
 def cutMap (a : α) : Set β :=
   (Rat.cast : ℚ → β) '' {t | ↑t < a}
 
-theorem cutMap_mono (h : a₁ ≤ a₂) : cutMap β a₁ ⊆ cutMap β a₂ := image_subset _ fun _ => h.trans_lt'
+theorem cutMap_mono (h : a₁ ≤ a₂) : cutMap β a₁ ⊆ cutMap β a₂ := image_mono fun _ => h.trans_lt'
 
 variable {β}
 
@@ -110,11 +110,7 @@ theorem coe_mem_cutMap_iff [CharZero β] : (q : β) ∈ cutMap β a ↔ (q : α)
 
 theorem cutMap_self (a : α) : cutMap α a = Iio a ∩ range (Rat.cast : ℚ → α) := by
   ext
-  constructor
-  · rintro ⟨q, h, rfl⟩
-    exact ⟨h, q, rfl⟩
-  · rintro ⟨h, q, rfl⟩
-    exact ⟨q, h, rfl⟩
+  grind [mem_cutMap_iff, mem_inter_iff, mem_range]
 
 end DivisionRing
 
@@ -243,7 +239,7 @@ theorem le_inducedMap_mul_self_of_mem_cutMap (ha : 0 < a) (b : β) (hb : b ∈ c
 /-- Preparatory lemma for `inducedOrderRingHom`. -/
 theorem exists_mem_cutMap_mul_self_of_lt_inducedMap_mul_self (ha : 0 < a) (b : β)
     (hba : b < inducedMap α β a * inducedMap α β a) : ∃ c ∈ cutMap β (a * a), b < c := by
-  obtain hb | hb := lt_or_le b 0
+  obtain hb | hb := lt_or_ge b 0
   · refine ⟨0, ?_, hb⟩
     rw [← Rat.cast_zero, coe_mem_cutMap_iff, Rat.cast_zero]
     exact mul_self_pos.2 ha.ne'

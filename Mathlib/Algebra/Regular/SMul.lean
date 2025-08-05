@@ -3,7 +3,6 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Regular.Basic
 import Mathlib.GroupTheory.GroupAction.Hom
 
 /-!
@@ -242,5 +241,5 @@ end SMulZeroClass
 lemma Equiv.isSMulRegular_congr {R S M M'} [SMul R M] [SMul S M'] {e : M ≃ M'}
     {r : R} {s : S} (h : ∀ x, e (r • x) = s • e x) :
     IsSMulRegular M r ↔ IsSMulRegular M' s :=
-  (e.comp_injective _).symm.trans  <|
+  (e.comp_injective _).symm.trans <|
     (iff_of_eq <| congrArg _ <| funext h).trans <| e.injective_comp _

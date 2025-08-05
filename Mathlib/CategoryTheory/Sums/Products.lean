@@ -18,6 +18,8 @@ the product side.
 
 namespace CategoryTheory
 
+open Functor
+
 universe v u
 
 variable (A : Type*) [Category A] (A' : Type*) [Category A']
@@ -25,8 +27,7 @@ variable (A : Type*) [Category A] (A' : Type*) [Category A']
 
 namespace Sum
 
-/-- The equivalence between functors from a sum and the product of the
- functor categories. -/
+/-- The equivalence between functors from a sum and the product of the functor categories. -/
 @[simps]
 def functorEquiv : A ⊕ A' ⥤ B ≌ (A ⥤ B) × (A' ⥤ B) where
   functor :=
@@ -62,15 +63,15 @@ lemma functorEquiv_unitIso_inv_app_app_inr (X : A ⊕ A' ⥤ B) (a' : A') :
   rfl
 
 /-- Composing the forward direction of `functorEquiv` with the first projection is the same as
- precomposition with `inl_ A A'`. -/
+precomposition with `inl_ A A'`. -/
 @[simps!]
 def functorEquivFunctorCompFstIso :
     (functorEquiv A A' B).functor ⋙ Prod.fst (A ⥤ B) (A' ⥤ B) ≅
     (whiskeringLeft A (A ⊕ A') B).obj (inl_ A A') :=
- NatIso.ofComponents (fun _ ↦ Iso.refl _)
+  NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
 /-- Composing the forward direction of `functorEquiv` with the second projection is the same as
- precomposition with `inr_ A A'`. -/
+precomposition with `inr_ A A'`. -/
 @[simps!]
 def functorEquivFunctorCompSndIso :
     (functorEquiv A A' B).functor ⋙ Prod.snd (A ⥤ B) (A' ⥤ B) ≅
@@ -78,7 +79,7 @@ def functorEquivFunctorCompSndIso :
   NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
 /-- Composing the backward direction of `functorEquiv` with precomposition with `inl_ A A'`.
- is naturally isomorphic to the first projection. -/
+is naturally isomorphic to the first projection. -/
 @[simps!]
 def functorEquivInverseCompWhiskeringLeftInlIso :
     (functorEquiv A A' B).inverse ⋙ (whiskeringLeft A (A ⊕ A') B).obj (inl_ A A') ≅
@@ -86,7 +87,7 @@ def functorEquivInverseCompWhiskeringLeftInlIso :
   NatIso.ofComponents (fun _ ↦ Functor.inlCompSum' _ _)
 
 /-- Composing the backward direction of `functorEquiv` with the second projection is the same as
- precomposition with `inr_ A A'`. -/
+precomposition with `inr_ A A'`. -/
 @[simps!]
 def functorEquivInverseCompWhiskeringLeftInrIso :
     (functorEquiv A A' B).inverse ⋙ (whiskeringLeft A' (A ⊕ A') B).obj (inr_ A A') ≅

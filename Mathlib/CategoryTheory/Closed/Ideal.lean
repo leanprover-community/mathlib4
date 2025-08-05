@@ -39,7 +39,7 @@ open Category
 section Ideal
 
 variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₁} D] {i : D ⥤ C}
-variable (i) [ChosenFiniteProducts C] [CartesianClosed C]
+variable (i) [CartesianMonoidalCategory C] [CartesianClosed C]
 
 /-- The subcategory `D` of `C` expressed as an inclusion functor is an *exponential ideal* if
 `B ∈ D` implies `A ⟹ B ∈ D` for all `A`.
@@ -106,15 +106,16 @@ variable (i : D ⥤ C)
 theorem reflective_products [Limits.HasFiniteProducts C] [Reflective i] :
     Limits.HasFiniteProducts D := ⟨fun _ => hasLimitsOfShape_of_reflective i⟩
 
-open CartesianClosed MonoidalCategory ChosenFiniteProducts
+open CartesianClosed MonoidalCategory CartesianMonoidalCategory
 
 open Limits in
 /-- Given a reflective subcategory `D` of a category with chosen finite products `C`, `D` admits
 finite chosen products. -/
--- Note: This is not an instance as one might already have a (different) `ChosenFiniteProducts`
+-- Note: This is not an instance as one might already have a (different) `CartesianMonoidalCategory`
 -- instance on `D` (as for example with sheaves).
-def reflectiveChosenFiniteProducts [ChosenFiniteProducts C] [Reflective i] :
-    ChosenFiniteProducts D :=
+-- See note [reducible non instances]
+abbrev CartesianMonoidalCategory.ofReflective [CartesianMonoidalCategory C] [Reflective i] :
+    CartesianMonoidalCategory D :=
   .ofChosenFiniteProducts
     ({  cone := Limits.asEmptyCone <| (reflector i).obj (𝟙_ C)
         isLimit := by
@@ -145,11 +146,15 @@ def reflectiveChosenFiniteProducts [ChosenFiniteProducts C] [Reflective i] :
               (tensorProductIsBinaryProduct _ _)
           exact asIso ((reflectorAdjunction i).unit.app (i.obj X ⊗ i.obj Y))|>.symm
         · simp only [BinaryFan.fst, Cones.postcompose, pairComp]
-          simp [← Functor.comp_map, ← NatTrans.naturality_assoc, fst]
+          simp [← Functor.comp_map, ← NatTrans.naturality_assoc]
         · simp only [BinaryFan.snd, Cones.postcompose, pairComp]
-          simp [← Functor.comp_map, ← NatTrans.naturality_assoc, snd] }
+          simp [← Functor.comp_map, ← NatTrans.naturality_assoc] }
 
-variable [ChosenFiniteProducts C] [Reflective i] [CartesianClosed C] [ChosenFiniteProducts D]
+@[deprecated (since := "2025-05-15")]
+noncomputable alias reflectiveChosenFiniteProducts := CartesianMonoidalCategory.ofReflective
+
+variable [CartesianMonoidalCategory C] [Reflective i] [CartesianClosed C]
+  [CartesianMonoidalCategory D]
 
 /-- If the reflector preserves binary products, the subcategory is an exponential ideal.
 This is the converse of `preservesBinaryProductsOfExponentialIdeal`.
@@ -171,8 +176,7 @@ instance (priority := 10) exponentialIdeal_of_preservesBinaryProducts
     dsimp
     rw [← curry_natural_left, curry_eq_iff, uncurry_id_eq_ev, ← ir.homEquiv_naturality_left,
       ir.homEquiv_apply_eq, assoc, assoc, prodComparison_natural_whiskerLeft_assoc,
-      ← MonoidalCategory.whiskerLeft_comp_assoc,
-      ir.left_triangle_components, MonoidalCategory.whiskerLeft_id, id_comp]
+      ← whiskerLeft_comp_assoc, ir.left_triangle_components, whiskerLeft_id, id_comp]
     apply IsIso.hom_inv_id_assoc
   haveI : IsSplitMono (η.app (A ⟹ i.obj B)) := IsSplitMono.mk' ⟨_, this⟩
   apply mem_essImage_of_unit_isSplitMono

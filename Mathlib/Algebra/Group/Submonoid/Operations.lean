@@ -429,7 +429,6 @@ def topEquiv : (⊤ : Submonoid M) ≃* M where
   toFun x := x
   invFun x := ⟨x, mem_top x⟩
   left_inv x := x.eta _
-  right_inv _ := rfl
   map_mul' _ _ := rfl
 
 @[to_additive (attr := simp)]
@@ -673,17 +672,12 @@ theorem map_mrange (g : N →* P) (f : M →* N) : (mrange f).map g = mrange (co
 theorem mrange_eq_top {f : F} : mrange f = (⊤ : Submonoid N) ↔ Surjective f :=
   SetLike.ext'_iff.trans <| Iff.trans (by rw [coe_mrange, coe_top]) Set.range_eq_univ
 
-@[deprecated (since := "2024-11-11")]
-alias mrange_top_iff_surjective := mrange_eq_top
-
 /-- The range of a surjective monoid hom is the whole of the codomain. -/
 @[to_additive (attr := simp)
   "The range of a surjective `AddMonoid` hom is the whole of the codomain."]
 theorem mrange_eq_top_of_surjective (f : F) (hf : Function.Surjective f) :
     mrange f = (⊤ : Submonoid N) :=
   mrange_eq_top.2 hf
-
-@[deprecated (since := "2024-11-11")] alias mrange_top_of_surjective := mrange_eq_top_of_surjective
 
 @[to_additive]
 theorem mclosure_preimage_le (f : F) (s : Set N) : closure (f ⁻¹' s) ≤ (closure s).comap f :=
@@ -882,8 +876,7 @@ theorem prod_eq_bot_iff {s : Submonoid M} {t : Submonoid N} : s.prod t = ⊥ ↔
 
 @[to_additive prod_eq_top_iff]
 theorem prod_eq_top_iff {s : Submonoid M} {t : Submonoid N} : s.prod t = ⊤ ↔ s = ⊤ ∧ t = ⊤ := by
-  simp only [eq_top_iff, le_prod_iff, ← (gc_map_comap _).le_iff_le, ← mrange_eq_map, mrange_fst,
-    mrange_snd]
+  simp only [eq_top_iff, le_prod_iff, ← mrange_eq_map, mrange_fst, mrange_snd]
 
 @[to_additive (attr := simp)]
 theorem mrange_inl_sup_mrange_inr : mrange (inl M N) ⊔ mrange (inr M N) = ⊤ := by

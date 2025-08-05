@@ -278,7 +278,7 @@ protected theorem IsEquivalent.inv (huv : u ~[l] v) : (fun x ↦ (u x)⁻¹) ~[l
   rw [isEquivalent_iff_exists_eq_mul] at *
   rcases huv with ⟨φ, hφ, h⟩
   rw [← inv_one]
-  refine ⟨fun x ↦ (φ x)⁻¹, Tendsto.inv₀ hφ (by norm_num), ?_⟩
+  refine ⟨fun x ↦ (φ x)⁻¹, Tendsto.inv₀ hφ (by simp), ?_⟩
   convert h.inv
   simp [mul_comm]
 
@@ -412,5 +412,18 @@ theorem IsTheta.trans_isEquivalent {f : α → β₂} {g₁ g₂ : α → β} (h
 instance transIsThetaIsEquivalent :
     @Trans (α → β₂) (α → β) (α → β) (IsTheta l) (IsEquivalent l) (IsTheta l) where
   trans := IsTheta.trans_isEquivalent
+
+theorem IsEquivalent.comp_tendsto {α₂ : Type*} {f g : α₂ → β} {l' : Filter α₂}
+    (hfg : f ~[l'] g) {k : α → α₂} (hk : Filter.Tendsto k l l') : (f ∘ k) ~[l] (g ∘ k) :=
+  IsLittleO.comp_tendsto hfg hk
+
+@[simp]
+theorem isEquivalent_map {α₂ : Type*} {f g : α₂ → β} {k : α → α₂} :
+    f ~[Filter.map k l] g ↔ (f ∘ k) ~[l] (g ∘ k) :=
+  isLittleO_map
+
+theorem IsEquivalent.mono {f g : α → β} {l' : Filter α} (h : f ~[l'] g) (hl : l ≤ l') :
+    f ~[l] g :=
+  IsLittleO.mono h hl
 
 end Asymptotics
