@@ -485,7 +485,7 @@ instance instPseudoMetricSpace : PseudoMetricSpace (ContinuousMultilinearMap �
     uniformity_eq_seminorm
 
 /-- Continuous multilinear maps themselves form a seminormed space with respect to
-    the operator norm. -/
+the operator norm. -/
 instance seminormedAddCommGroup :
     SeminormedAddCommGroup (ContinuousMultilinearMap 𝕜 E G) := ⟨fun _ _ ↦ rfl⟩
 
@@ -1288,7 +1288,7 @@ theorem opNorm_zero_iff {f : ContinuousMultilinearMap 𝕜 E G} : ‖f‖ = 0 �
   simp [← (opNorm_nonneg f).ge_iff_eq', opNorm_le_iff le_rfl, ContinuousMultilinearMap.ext_iff]
 
 /-- Continuous multilinear maps themselves form a normed group with respect to
-    the operator norm. -/
+the operator norm. -/
 instance normedAddCommGroup : NormedAddCommGroup (ContinuousMultilinearMap 𝕜 E G) :=
   NormedAddCommGroup.ofSeparation fun _ ↦ opNorm_zero_iff.mp
 
