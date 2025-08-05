@@ -464,15 +464,15 @@ instance toCommMonoid {M} [CommMonoid M] (S : Submonoid M) : CommMonoid S := fas
 instance isLeftCancelMul [IsLeftCancelMul M] (S : Submonoid M) : IsLeftCancelMul S :=
   Subtype.coe_injective.isLeftCancelMul Subtype.val fun _ _ => rfl
 
-/-- A submonoid of a left cancellative unital magma inherits right cancellation. -/
+/-- A submonoid of a right cancellative unital magma inherits right cancellation. -/
 @[to_additive
-      "An `AddSubmonoid` of a left cancellative unital additive magma inherits right cancellation."]
+      "An `AddSubmonoid` of a right cancellative unital additive magma inherits right
+      cancellation."]
 instance isRightCancelMul [IsRightCancelMul M] (S : Submonoid M) : IsRightCancelMul S :=
   Subtype.coe_injective.isRightCancelMul Subtype.val fun _ _ => rfl
 
-/-- A submonoid of a left cancellative unital magma inherits right cancellation. -/
-@[to_additive
-      "An `AddSubmonoid` of a left cancellative unital additive magma inherits right cancellation."]
+/-- A submonoid of a cancellative unital magma inherits cancellation. -/
+@[to_additive "An `AddSubmonoid` of a cancellative unital additive magma inherits cancellation."]
 instance isCancelMul [IsCancelMul M] (S : Submonoid M) : IsCancelMul S where
 
 /-- The natural monoid hom from a submonoid of monoid `M` to `M`. -/
