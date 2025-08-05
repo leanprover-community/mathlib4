@@ -168,7 +168,7 @@ noncomputable abbrev functorMap {J K : Type u} [LinearOrder J] [LinearOrder K]
   obj I := ⟨f '' I.I, Set.mem_image_of_mem f I.left, Set.mem_image_of_mem f I.right,
     by rintro _ ⟨k, hk, rfl⟩; exact f.monotone (I.left_le k hk),
     by rintro _ ⟨k, hk, rfl⟩; exact f.monotone (I.le_right k hk)⟩
-  map f := ⟨⟨Set.image_subset _ f.1.1⟩⟩
+  map f := ⟨⟨Set.image_mono f.1.1⟩⟩
 
 /--
 The simplicial thickening defines a functor from the category of linear orders to the category of

@@ -110,11 +110,9 @@ theorem monoidWithZeroHom_ext ⦃f g : WithZero α →*₀ β⦄
 @[simps! symm_apply_apply]
 nonrec def lift' : (α →* β) ≃ (WithZero α →*₀ β) where
   toFun f :=
-    { toFun := fun
-        | 0 => 0
-        | (a : α) => f a
+    { toFun := recZeroCoe 0 f
       map_zero' := rfl
-      map_one' := map_one f
+      map_one' := by simp
       map_mul' := fun
         | 0, _ => (zero_mul _).symm
         | (_ : α), 0 => (mul_zero _).symm

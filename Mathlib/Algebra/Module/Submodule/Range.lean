@@ -93,6 +93,12 @@ theorem range_eq_top [RingHomSurjective τ₁₂] {f : F} :
 theorem range_eq_top_of_surjective [RingHomSurjective τ₁₂] (f : F) (hf : Surjective f) :
     range f = ⊤ := range_eq_top.2 hf
 
+theorem range_add_le [RingHomSurjective τ₁₂] (f g : M →ₛₗ[τ₁₂] M₂) :
+    range (f + g) ≤ range f ⊔ range g := by
+  rintro - ⟨_, rfl⟩
+  apply add_mem_sup
+  all_goals simp only [mem_range, exists_apply_eq_apply]
+
 theorem range_le_iff_comap [RingHomSurjective τ₁₂] {f : F} {p : Submodule R₂ M₂} :
     range f ≤ p ↔ comap f p = ⊤ := by rw [range_eq_map, map_le_iff_le_comap, eq_top_iff]
 
@@ -402,11 +408,7 @@ theorem mem_submoduleImage {M' : Type*} [AddCommMonoid M'] [Module R M'] {O : Su
 theorem mem_submoduleImage_of_le {M' : Type*} [AddCommMonoid M'] [Module R M'] {O : Submodule R M}
     {ϕ : O →ₗ[R] M'} {N : Submodule R M} (hNO : N ≤ O) {x : M'} :
     x ∈ ϕ.submoduleImage N ↔ ∃ (y : _) (yN : y ∈ N), ϕ ⟨y, hNO yN⟩ = x := by
-  refine mem_submoduleImage.trans ⟨?_, ?_⟩
-  · rintro ⟨y, yO, yN, h⟩
-    exact ⟨y, yN, h⟩
-  · rintro ⟨y, yN, h⟩
-    exact ⟨y, hNO yN, yN, h⟩
+  grind [mem_submoduleImage]
 
 theorem submoduleImage_apply_of_le {M' : Type*} [AddCommMonoid M'] [Module R M']
     {O : Submodule R M} (ϕ : O →ₗ[R] M') (N : Submodule R M) (hNO : N ≤ O) :

@@ -90,26 +90,14 @@ protected theorem Topology.IsInducing.injective [TopologicalSpace Y] [T0Space X]
     (hf : IsInducing f) : Injective f := fun _ _ h =>
   (hf.inseparable_iff.1 <| .of_eq h).eq
 
-@[deprecated (since := "2024-10-28")] alias Inducing.injective := IsInducing.injective
-
 /-- A topology inducing map from a T₀ space is a topological embedding. -/
 protected theorem Topology.IsInducing.isEmbedding [TopologicalSpace Y] [T0Space X] {f : X → Y}
     (hf : IsInducing f) : IsEmbedding f :=
   ⟨hf, hf.injective⟩
 
-@[deprecated (since := "2024-10-28")] alias Inducing.isEmbedding := IsInducing.isEmbedding
-
-@[deprecated (since := "2024-10-26")]
-alias Inducing.embedding := Topology.IsInducing.isEmbedding
-
 lemma isEmbedding_iff_isInducing [TopologicalSpace Y] [T0Space X] {f : X → Y} :
     IsEmbedding f ↔ IsInducing f :=
   ⟨IsEmbedding.isInducing, IsInducing.isEmbedding⟩
-
-@[deprecated (since := "2024-10-28")] alias isEmbedding_iff_inducing := isEmbedding_iff_isInducing
-
-@[deprecated (since := "2024-10-26")]
-alias embedding_iff_inducing := isEmbedding_iff_isInducing
 
 theorem t0Space_iff_nhds_injective (X : Type u) [TopologicalSpace X] :
     T0Space X ↔ Injective (𝓝 : X → Filter X) :=
@@ -226,9 +214,6 @@ protected theorem Topology.IsEmbedding.t0Space [TopologicalSpace Y] [T0Space Y] 
     (hf : IsEmbedding f) : T0Space X :=
   t0Space_of_injective_of_continuous hf.injective hf.continuous
 
-@[deprecated (since := "2024-10-26")]
-alias Embedding.t0Space := IsEmbedding.t0Space
-
 protected theorem Homeomorph.t0Space [TopologicalSpace Y] [T0Space X] (h : X ≃ₜ Y) : T0Space Y :=
   h.symm.isEmbedding.t0Space
 
@@ -298,8 +283,6 @@ theorem Topology.IsInducing.r0Space [TopologicalSpace Y] {f : Y → X} (hf : IsI
     R0Space Y where
   specializes_symmetric a b := by
     simpa only [← hf.specializes_iff] using Specializes.symm
-
-@[deprecated (since := "2024-10-28")] alias Inducing.r0Space := IsInducing.r0Space
 
 instance {p : X → Prop} : R0Space {x // p x} := IsInducing.subtypeVal.r0Space
 
@@ -371,7 +354,7 @@ theorem Ne.nhdsWithin_diff_singleton [T1Space X] {x y : X} (h : x ≠ y) (s : Se
   exact mem_nhdsWithin_of_mem_nhds (isOpen_ne.mem_nhds h)
 
 lemma nhdsWithin_compl_singleton_le [T1Space X] (x y : X) : 𝓝[{x}ᶜ] x ≤ 𝓝[{y}ᶜ] x := by
-  rcases eq_or_ne x y with rfl|hy
+  rcases eq_or_ne x y with rfl | hy
   · exact Eq.le rfl
   · rw [Ne.nhdsWithin_compl_singleton hy]
     exact nhdsWithin_le_nhds
@@ -529,9 +512,6 @@ theorem t1Space_of_injective_of_continuous [TopologicalSpace Y] {f : X → Y}
 protected theorem Topology.IsEmbedding.t1Space [TopologicalSpace Y] [T1Space Y] {f : X → Y}
     (hf : IsEmbedding f) : T1Space X :=
   t1Space_of_injective_of_continuous hf.injective hf.continuous
-
-@[deprecated (since := "2024-10-26")]
-alias Embedding.t1Space := IsEmbedding.t1Space
 
 protected theorem Homeomorph.t1Space [TopologicalSpace Y] [T1Space X] (h : X ≃ₜ Y) : T1Space Y :=
   h.symm.isEmbedding.t1Space
@@ -1011,8 +991,6 @@ theorem R1Space.of_continuous_specializes_imp [TopologicalSpace Y] {f : Y → X}
 
 theorem Topology.IsInducing.r1Space [TopologicalSpace Y] {f : Y → X} (hf : IsInducing f) :
     R1Space Y := .of_continuous_specializes_imp hf.continuous fun _ _ ↦ hf.specializes_iff.1
-
-@[deprecated (since := "2024-10-28")] alias Inducing.r1Space := IsInducing.r1Space
 
 protected theorem R1Space.induced (f : Y → X) : @R1Space Y (.induced f ‹_›) :=
   @IsInducing.r1Space _ _ _ _ (.induced f _) f (.induced f)
