@@ -106,6 +106,23 @@ attribute [local instance] compatible
 nonrec theorem isEquiv : (valuation K[X]).IsEquiv (infinityValuation K) :=
   isEquiv _ _
 
+theorem isNontrivial : (infinityValuation K).IsNontrivial where
+  exists_val_nontrivial := ⟨X, by simpa using by decide⟩
+attribute [local instance] isNontrivial
+
+theorem isNontrivial' : IsNontrivial K[X] :=
+  isNontrivial_iff_isNontrivial.mpr <| (isEquiv K).isNontrivial'
+attribute [local instance] isNontrivial'
+
+theorem isRankLeOne' : IsRankLeOne K[X] :=
+  .of_compatible_mulArchimedean (infinityValuation K)
+attribute [local instance] isRankLeOne'
+
+/-- An arbitrary rank one instance on `valuation K[X]`. -/
+noncomputable def rankOne' : (valuation K[X]).RankOne :=
+  instRankOneValueGroupWithZeroValuationOfIsNontrivialOfIsRankLeOne
+attribute [local instance] rankOne'
+
 @[simp] theorem valuation_lt_one_iff (p : K[X]) : valuation K[X] p < 1 ↔ p = 0 := by
   rw [(isEquiv K).lt_one_iff_lt_one]
   exact ⟨fun hp ↦ by_contra fun hp0 ↦ not_le_of_gt hp (one_le_valuation p hp0), (· ▸ by simp)⟩
@@ -115,20 +132,17 @@ theorem isValuativeTopology : IsValuativeTopology K[X] where
     fun ⟨γ, hγ⟩ ↦ mem_nhds_discrete.mpr <| hγ ⟨0, by simp⟩⟩
 attribute [local instance] isValuativeTopology
 
-theorem isNontrivial : IsNontrivial K[X] :=
-  isNontrivial_iff_isNontrivial.mpr <| (isEquiv K).isNontrivial'
-attribute [local instance] isNontrivial
-
 /-- With the valuation on `K[X]` sending `X` to `37` and `K` to `1`, we get a non-trivial (rank one)
 valuation but with a discrete topology. -/
-example : IsValuativeTopology K[X] ∧ IsNontrivial K[X] ∧ DiscreteTopology K[X] :=
-  ⟨inferInstance, inferInstance, inferInstance⟩
+example : IsValuativeTopology K[X] ∧ Nonempty (valuation K[X]).RankOne ∧
+    IsNontrivial K[X] ∧ DiscreteTopology K[X] :=
+  ⟨inferInstance, ⟨inferInstance⟩, inferInstance, inferInstance⟩
 
 end Polynomial
 
 open ValuativeRel
 
-/-- Does not happen for fields. -/
+/-- Does not happen for fields (even without assuming rank one). -/
 example {F : Type*} [Field F] [ValuativeRel F] [TopologicalSpace F]
     (h : IsValuativeTopology F ∧ IsNontrivial F ∧ DiscreteTopology F) :
     False := by
