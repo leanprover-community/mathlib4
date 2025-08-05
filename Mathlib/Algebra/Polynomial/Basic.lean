@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.Algebra.MonoidAlgebra.Defs
+import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
 import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 import Mathlib.Algebra.Ring.Action.Rat
 import Mathlib.Data.Finset.Sort
@@ -1146,7 +1146,7 @@ instance commRing [CommRing R] : CommRing R[X] :=
   { toRing := Polynomial.ring
     mul_comm := mul_comm }
 
-section NonzeroSemiring
+section Semiring
 
 variable [Semiring R]
 
@@ -1160,7 +1160,20 @@ instance nontrivial [Nontrivial R] : Nontrivial R[X] := by
 theorem X_ne_zero [Nontrivial R] : (X : R[X]) ≠ 0 :=
   mt (congr_arg fun p => coeff p 1) (by simp)
 
-end NonzeroSemiring
+instance [NoZeroDivisors R] : NoZeroDivisors R[X] :=
+  (toFinsuppIso R).injective.noZeroDivisors _ (map_zero _) (map_mul _)
+
+instance [IsCancelAdd R] [IsLeftCancelMulZero R] : IsLeftCancelMulZero R[X] :=
+  (toFinsuppIso R).injective.isLeftCancelMulZero _ (map_zero _) (map_mul _)
+
+instance [IsCancelAdd R] [IsRightCancelMulZero R] : IsRightCancelMulZero R[X] :=
+  (toFinsuppIso R).injective.isRightCancelMulZero _ (map_zero _) (map_mul _)
+
+instance [IsCancelAdd R] [IsCancelMulZero R] : IsCancelMulZero R[X] where
+
+instance [IsCancelAdd R] [IsDomain R] : IsDomain R[X] where
+
+end Semiring
 
 section DivisionSemiring
 variable [DivisionSemiring R]
