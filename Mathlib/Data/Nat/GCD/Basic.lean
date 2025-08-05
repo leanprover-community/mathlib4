@@ -92,7 +92,7 @@ include hp
 
 /-- adapted from and similar to `Prime.dvd_or_dvd` -/
 theorem dvd_or_dvd_of_dvd_lcm (h : p ∣ lcm a b) : p ∣ a ∨ p ∣ b :=
-  (dvd_mul hp).mp (h.trans (lcm_dvd_mul a b))
+  dvd_or_dvd hp (h.trans (lcm_dvd_mul a b))
 
 /-- adapted from and similar to `Prime.dvd_mul` -/
 theorem dvd_lcm : p ∣ lcm a b ↔ p ∣ a ∨ p ∣ b :=
