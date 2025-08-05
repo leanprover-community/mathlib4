@@ -118,7 +118,7 @@ end IntDegree
 
 open _root_.WithZero in
 /-- The degree valuation on `K(X)` sending `X` to `exp 1 : ℤᵐ⁰`. -/
-@[simps!] noncomputable def degreeValuation (K : Type*) [Field K] : Valuation (RatFunc K) (ℤᵐ⁰) :=
+@[simps!] noncomputable def degreeValuation (K : Type*) [Field K] : Valuation (RatFunc K) ℤᵐ⁰ :=
   .mkAdd intDegree intDegree_one intDegree_mul fun _ ↦ intDegree_add_le
 
 end RatFunc
