@@ -68,21 +68,21 @@ universe u
   `r` with the property that `r (a % b) b`, instead of a valuation. -/
 class EuclideanDomain (R : Type u) extends CommRing R, Nontrivial R where
   /-- A division function (denoted `/`) on `R`.
-    This satisfies the property `b * (a / b) + a % b = a`, where `%` denotes `remainder`. -/
+  This satisfies the property `b * (a / b) + a % b = a`, where `%` denotes `remainder`. -/
   protected quotient : R → R → R
   /-- Division by zero should always give zero by convention. -/
   protected quotient_zero : ∀ a, quotient a 0 = 0
   /-- A remainder function (denoted `%`) on `R`.
-    This satisfies the property `b * (a / b) + a % b = a`, where `/` denotes `quotient`. -/
+  This satisfies the property `b * (a / b) + a % b = a`, where `/` denotes `quotient`. -/
   protected remainder : R → R → R
   /-- The property that links the quotient and remainder functions.
-    This allows us to compute GCDs and LCMs. -/
+  This allows us to compute GCDs and LCMs. -/
   protected quotient_mul_add_remainder_eq : ∀ a b, b * quotient a b + remainder a b = a
   /-- A well-founded relation on `R`, satisfying `r (a % b) b`.
-    This ensures that the GCD algorithm always terminates. -/
+  This ensures that the GCD algorithm always terminates. -/
   protected r : R → R → Prop
   /-- The relation `r` must be well-founded.
-    This ensures that the GCD algorithm always terminates. -/
+  This ensures that the GCD algorithm always terminates. -/
   r_wellFounded : WellFounded r
   /-- The relation `r` satisfies `r (a % b) b`. -/
   protected remainder_lt : ∀ (a) {b}, b ≠ 0 → r (remainder a b) b

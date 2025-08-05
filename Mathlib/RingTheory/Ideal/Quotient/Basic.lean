@@ -199,7 +199,7 @@ noncomputable def piQuotEquiv [I.IsTwoSided] : ((ι → R) ⧸ pi fun _ ↦ I) �
   right_inv x := funext fun i ↦ Quotient.out_eq' (x i)
 
 /-- If `f : R^n → R^m` is an `R`-linear map and `I ⊆ R` is an ideal, then the image of `I^n` is
-    contained in `I^m`. -/
+contained in `I^m`. -/
 theorem map_pi [I.IsTwoSided] {ι : Type*} [Finite ι] {ι' : Type w} (x : ι → R) (hi : ∀ i, x i ∈ I)
     (f : (ι → R) →ₗ[R] ι' → R) (i : ι') : f x i ∈ I := by
   classical

@@ -29,7 +29,7 @@ namespace Finset
 namespace Nat
 
 /-- The antidiagonal of a natural number `n` is
-    the finset of pairs `(i, j)` such that `i + j = n`. -/
+the finset of pairs `(i, j)` such that `i + j = n`. -/
 instance instHasAntidiagonal : HasAntidiagonal ℕ where
   antidiagonal n := ⟨Multiset.Nat.antidiagonal n, Multiset.Nat.nodup_antidiagonal n⟩
   mem_antidiagonal {n} {xy} := by

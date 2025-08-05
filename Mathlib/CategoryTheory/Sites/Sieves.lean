@@ -45,7 +45,7 @@ noncomputable instance : Inhabited (Presieve X) :=
   ⟨⊤⟩
 
 /-- The full subcategory of the over category `C/X` consisting of arrows which belong to a
-    presieve on `X`. -/
+presieve on `X`. -/
 abbrev category {X : C} (P : Presieve X) :=
   ObjectProperty.FullSubcategory fun f : Over X => P f.hom
 
@@ -54,13 +54,13 @@ abbrev categoryMk {X : C} (P : Presieve X) {Y : C} (f : Y ⟶ X) (hf : P f) : P.
   ⟨Over.mk f, hf⟩
 
 /-- Given a sieve `S` on `X : C`, its associated diagram `S.diagram` is defined to be
-    the natural functor from the full subcategory of the over category `C/X` consisting
-    of arrows in `S` to `C`. -/
+the natural functor from the full subcategory of the over category `C/X` consisting
+of arrows in `S` to `C`. -/
 abbrev diagram (S : Presieve X) : S.category ⥤ C :=
   ObjectProperty.ι _ ⋙ Over.forget X
 
 /-- Given a sieve `S` on `X : C`, its associated cocone `S.cocone` is defined to be
-    the natural cocone over the diagram defined above with cocone point `X`. -/
+the natural cocone over the diagram defined above with cocone point `X`. -/
 abbrev cocone (S : Presieve X) : Cocone S.diagram :=
   (Over.forgetCocone X).whisker (ObjectProperty.ι _)
 

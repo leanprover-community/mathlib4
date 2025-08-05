@@ -209,12 +209,12 @@ class SplitEpiCategory : Prop where
 end
 
 /-- In a category in which every monomorphism is split, every monomorphism splits. This is not an
-    instance because it would create an instance loop. -/
+instance because it would create an instance loop. -/
 theorem isSplitMono_of_mono [SplitMonoCategory C] {X Y : C} (f : X ⟶ Y) [Mono f] : IsSplitMono f :=
   SplitMonoCategory.isSplitMono_of_mono _
 
 /-- In a category in which every epimorphism is split, every epimorphism splits. This is not an
-    instance because it would create an instance loop. -/
+instance because it would create an instance loop. -/
 theorem isSplitEpi_of_epi [SplitEpiCategory C] {X Y : C} (f : X ⟶ Y) [Epi f] : IsSplitEpi f :=
   SplitEpiCategory.isSplitEpi_of_epi _
 

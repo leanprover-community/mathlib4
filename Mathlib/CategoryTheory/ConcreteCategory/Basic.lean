@@ -227,7 +227,7 @@ def HasForget₂.trans (C : Type u) [Category.{v} C] [HasForget.{w} C]
     simp only [HasForget₂.forget_comp]
 
 /-- Every forgetful functor factors through the identity functor. This is not a global instance as
-    it is prone to creating type class resolution loops. -/
+it is prone to creating type class resolution loops. -/
 def hasForgetToType (C : Type u) [Category.{v} C] [HasForget.{w} C] :
     HasForget₂ C (Type w) where
   forget₂ := forget C

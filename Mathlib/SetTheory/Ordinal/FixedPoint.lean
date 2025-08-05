@@ -119,7 +119,7 @@ theorem nfpFamily_eq_self [Small.{u} ι] {a} (h : ∀ i, f i a = a) : nfpFamily 
 
 -- Todo: This is actually a special case of the fact the intersection of club sets is a club set.
 /-- A generalization of the fixed point lemma for normal functions: any family of normal functions
-    has an unbounded set of common fixed points. -/
+has an unbounded set of common fixed points. -/
 theorem not_bddAbove_fp_family [Small.{u} ι] (H : ∀ i, IsNormal (f i)) :
     ¬ BddAbove (⋂ i, Function.fixedPoints (f i)) := by
   rw [not_bddAbove_iff]

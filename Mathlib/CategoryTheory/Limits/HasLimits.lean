@@ -587,7 +587,7 @@ end Limit
 section Colimit
 
 /-- `ColimitCocone F` contains a cocone over `F` together with the information that it is a
-    colimit. -/
+colimit. -/
 structure ColimitCocone (F : J ⥤ C) where
   /-- The cocone itself -/
   cocone : Cocone F

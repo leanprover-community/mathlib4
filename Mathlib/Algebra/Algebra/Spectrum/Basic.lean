@@ -70,8 +70,8 @@ def spectrum (a : A) : Set R :=
 variable {R}
 
 /-- Given an `a : A` where `A` is an `R`-algebra, the *resolvent* is
-    a map `R → A` which sends `r : R` to `(algebraMap R A r - a)⁻¹` when
-    `r ∈ resolvent R A` and `0` when `r ∈ spectrum R A`. -/
+a map `R → A` which sends `r : R` to `(algebraMap R A r - a)⁻¹` when
+`r ∈ resolvent R A` and `0` when `r ∈ spectrum R A`. -/
 noncomputable def resolvent (a : A) (r : R) : A :=
   Ring.inverse (↑ₐ r - a)
 

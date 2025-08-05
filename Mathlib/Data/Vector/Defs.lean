@@ -186,12 +186,12 @@ end Accum
 section Shift
 
 /-- `shiftLeftFill v i` is the vector obtained by left-shifting `v` `i` times and padding with the
-    `fill` argument. If `v.length < i` then this will return `replicate n fill`. -/
+`fill` argument. If `v.length < i` then this will return `replicate n fill`. -/
 def shiftLeftFill (v : Vector α n) (i : ℕ) (fill : α) : Vector α n :=
   Vector.congr (by simp) (drop i v ++ replicate (min n i) fill)
 
 /-- `shiftRightFill v i` is the vector obtained by right-shifting `v` `i` times and padding with the
-    `fill` argument. If `v.length < i` then this will return `replicate n fill`. -/
+`fill` argument. If `v.length < i` then this will return `replicate n fill`. -/
 def shiftRightFill (v : Vector α n) (i : ℕ) (fill : α) : Vector α n :=
   Vector.congr (by omega) (replicate (min n i) fill ++ take (n - i) v)
 

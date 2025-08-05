@@ -42,14 +42,14 @@ variable (β) [Monoid β] [MulAction β α] (H : Subgroup α)
 /-- A typeclass for when a `MulAction β α` descends to the quotient `α ⧸ H`. -/
 class QuotientAction : Prop where
   /-- The action fulfils a normality condition on products that lie in `H`.
-    This ensures that the action descends to an action on the quotient `α ⧸ H`. -/
+  This ensures that the action descends to an action on the quotient `α ⧸ H`. -/
   inv_mul_mem : ∀ (b : β) {a a' : α}, a⁻¹ * a' ∈ H → (b • a)⁻¹ * b • a' ∈ H
 
 /-- A typeclass for when an `AddAction β α` descends to the quotient `α ⧸ H`. -/
 class _root_.AddAction.QuotientAction {α : Type u} (β : Type v) [AddGroup α] [AddMonoid β]
   [AddAction β α] (H : AddSubgroup α) : Prop where
   /-- The action fulfils a normality condition on summands that lie in `H`.
-    This ensures that the action descends to an action on the quotient `α ⧸ H`. -/
+  This ensures that the action descends to an action on the quotient `α ⧸ H`. -/
   inv_mul_mem : ∀ (b : β) {a a' : α}, -a + a' ∈ H → -(b +ᵥ a) + (b +ᵥ a') ∈ H
 
 attribute [to_additive] MulAction.QuotientAction

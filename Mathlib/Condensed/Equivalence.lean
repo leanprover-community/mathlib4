@@ -41,7 +41,7 @@ namespace Condensed
 namespace StoneanCompHaus
 
 /-- The equivalence from coherent sheaves on `Stonean` to coherent sheaves on `CompHaus`
-    (i.e. condensed sets). -/
+(i.e. condensed sets). -/
 noncomputable
 def equivalence (A : Type*) [Category A]
     [∀ X, HasLimitsOfShape (StructuredArrow X Stonean.toCompHaus.op) A] :

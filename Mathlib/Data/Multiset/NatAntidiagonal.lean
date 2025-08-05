@@ -26,7 +26,7 @@ namespace Multiset
 namespace Nat
 
 /-- The antidiagonal of a natural number `n` is
-    the multiset of pairs `(i, j)` such that `i + j = n`. -/
+the multiset of pairs `(i, j)` such that `i + j = n`. -/
 def antidiagonal (n : ℕ) : Multiset (ℕ × ℕ) :=
   List.Nat.antidiagonal n
 
