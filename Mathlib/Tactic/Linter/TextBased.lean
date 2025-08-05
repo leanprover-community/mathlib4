@@ -391,7 +391,8 @@ register_option linter.modulesForbiddenWindows : Bool := { defValue := true }
 COM6, COM7, COM8, COM9, COM¹, COM², COM³, LPT1, LPT2, LPT3, LPT4, LPT5, LPT6, LPT7, LPT8, LPT9,
 LPT¹, LPT² or LPT³ in its filename, as these are forbidden on Windows.
 
-Also verify that module names contain no forbidden characters such as `*` or `!`.
+Also verify that module names contain no forbidden characters such as `*`, `?` (Windows),
+`!` (forbidden on Nix OS) or `.` (might result from confusion with a module name).
 
 Source: https://learn.microsoft.com/en-gb/windows/win32/fileio/naming-a-file.
 Return the number of module names violating this rule. -/
@@ -419,6 +420,9 @@ def modulesOSForbidden (opts : LinterOptions) (modules : Array Lean.Name) : IO N
         if s.contains '!' then
           isBad := true
           IO.eprintln s!"error: module name '{name}' contains forbidden character '!'"
+        else if s.contains '.' then
+          isBad := true
+          IO.eprintln s!"error: module name '{name}' contains forbidden character '.'"
         for c in forbiddenCharacters do
           if s.contains c then
             badChars := c.toString :: badChars
