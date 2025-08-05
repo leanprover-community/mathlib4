@@ -33,8 +33,8 @@ lemma smul_nonneg {c : 𝕜} {a : R} (hc : 0 ≤ c) (ha : 0 ≤ a) : 0 ≤ c •
   | mem x hx =>
       obtain ⟨rc, hrc₁, rfl⟩ := RCLike.nonneg_iff_exists_ofReal.mp hc
       obtain ⟨z, rfl⟩ := hx
-      let y := (Real.sqrt rc : 𝕜) • z
-      have : (Real.sqrt rc : 𝕜) * Real.sqrt rc = rc := by exact_mod_cast Real.mul_self_sqrt hrc₁
+      let y := (√rc : 𝕜) • z
+      have : (√rc : 𝕜) * √rc = rc := by exact_mod_cast Real.mul_self_sqrt hrc₁
       have hmain : (rc : 𝕜) • (star z * z) = star y * y := by
         simp [y, smul_mul_smul, this]
       rw [hmain]
