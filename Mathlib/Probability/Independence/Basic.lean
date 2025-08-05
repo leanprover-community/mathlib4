@@ -671,6 +671,8 @@ variable {Ω Ω' : Type*} {mΩ : MeasurableSpace Ω} {mΩ' : MeasurableSpace Ω'
     {μ : Measure Ω} {ν : Measure Ω'} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
     {𝓧 𝓨 : Type*} [MeasurableSpace 𝓧] [MeasurableSpace 𝓨] {X : Ω → 𝓧} {Y : Ω' → 𝓨}
 
+/-- Given random variables `X : Ω → 𝓧` and `Y : Ω' → 𝓨`, they are independent when viewed as random
+variables defined on the product space `Ω × Ω'`. -/
 lemma indepFun_prod (mX : Measurable X) (mY : Measurable Y) :
     IndepFun (fun ω ↦ X ω.1) (fun ω ↦ Y ω.2) (μ.prod ν) := by
   refine indepFun_iff_map_prod_eq_prod_map_map (by fun_prop) (by fun_prop) |>.2 ?_
@@ -680,6 +682,8 @@ lemma indepFun_prod (mX : Measurable X) (mY : Measurable Y) :
   · change Measure.map (Y ∘ _) _ = _
     rw [← Measure.map_map mY measurable_snd, Measure.map_snd_prod, measure_univ, one_smul]
 
+/-- Given random variables `X : Ω → 𝓧` and `Y : Ω' → 𝓨`, they are independent when viewed as random
+variables defined on the product space `Ω × Ω'`. -/
 lemma indepFun_prod₀ (mX : AEMeasurable X μ) (mY : AEMeasurable Y ν) :
     IndepFun (fun ω ↦ X ω.1) (fun ω ↦ Y ω.2) (μ.prod ν) := by
   have : IndepFun (fun ω ↦ mX.mk X ω.1) (fun ω ↦ mY.mk Y ω.2) (μ.prod ν) :=
@@ -700,6 +704,8 @@ variable {ι : Type*} [Fintype ι] {Ω : ι → Type*} {mΩ : ∀ i, MeasurableS
     {μ : (i : ι) → Measure (Ω i)} [∀ i, IsProbabilityMeasure (μ i)]
     {𝓧 : ι → Type*} [∀ i, MeasurableSpace (𝓧 i)] {X : (i : ι) → Ω i → 𝓧 i}
 
+/-- Given random variables `X i : Ω i → 𝓧 i`, they are independent when viewed as random
+variables defined on the product space `Π i, Ω i`. -/
 lemma iIndepFun_pi (mX : ∀ i, AEMeasurable (X i) (μ i)) :
     iIndepFun (fun i ω ↦ X i (ω i)) (Measure.pi μ) := by
   refine iIndepFun_iff_map_fun_eq_pi_map ?_ |>.2 ?_
