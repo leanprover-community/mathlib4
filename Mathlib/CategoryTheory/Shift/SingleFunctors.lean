@@ -221,6 +221,7 @@ variable (C A)
 
 /-- The functor `SingleFunctors C D A ⥤ SingleFunctors C E A` given by the postcomposition
 by a functor `G : D ⥤ E` which commutes with the shift. -/
+@[simps]
 def postcompFunctor (G : D ⥤ E) [G.CommShift A] :
     SingleFunctors C D A ⥤ SingleFunctors C E A where
   obj F := F.postcomp G
