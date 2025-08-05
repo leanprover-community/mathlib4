@@ -199,7 +199,7 @@ theorem rightAdjointMate_comp {X Y Z : C} [HasRightDual X] [HasRightDual Y] {f :
     {g : Xᘁ ⟶ Z} :
     fᘁ ≫ g =
       (ρ_ (Yᘁ)).inv ≫
-        _ ◁ η_ X (Xᘁ) ≫ _ ◁ (f ⊗ g) ≫ (α_ (Yᘁ) Y Z).inv ≫ ε_ Y (Yᘁ) ▷ _ ≫ (λ_ Z).hom :=
+        _ ◁ η_ X (Xᘁ) ≫ _ ◁ (f ⊗ₘ g) ≫ (α_ (Yᘁ) Y Z).inv ≫ ε_ Y (Yᘁ) ▷ _ ≫ (λ_ Z).hom :=
   calc
     _ = 𝟙 _ ⊗≫ (Yᘁ : C) ◁ η_ X Xᘁ ≫ Yᘁ ◁ f ▷ Xᘁ ⊗≫ (ε_ Y Yᘁ ▷ Xᘁ ≫ 𝟙_ C ◁ g) ⊗≫ 𝟙 _ := by
       dsimp only [rightAdjointMate]; monoidal
@@ -210,7 +210,7 @@ theorem leftAdjointMate_comp {X Y Z : C} [HasLeftDual X] [HasLeftDual Y] {f : X 
     {g : (ᘁX) ⟶ Z} :
     (ᘁf) ≫ g =
       (λ_ _).inv ≫
-        η_ (ᘁX : C) X ▷ _ ≫ (g ⊗ f) ▷ _ ≫ (α_ _ _ _).hom ≫ _ ◁ ε_ _ _ ≫ (ρ_ _).hom :=
+        η_ (ᘁX : C) X ▷ _ ≫ (g ⊗ₘ f) ▷ _ ≫ (α_ _ _ _).hom ≫ _ ◁ ε_ _ _ ≫ (ρ_ _).hom :=
   calc
     _ = 𝟙 _ ⊗≫ η_ (ᘁX : C) X ▷ (ᘁY) ⊗≫ (ᘁX) ◁ f ▷ (ᘁY) ⊗≫ ((ᘁX) ◁ ε_ (ᘁY) Y ≫ g ▷ 𝟙_ C) ⊗≫ 𝟙 _ := by
       dsimp only [leftAdjointMate]; monoidal
@@ -370,15 +370,15 @@ def closedOfHasLeftDual (Y : C) [HasLeftDual Y] : Closed Y where
 /-- `tensorLeftHomEquiv` commutes with tensoring on the right -/
 theorem tensorLeftHomEquiv_tensor {X X' Y Y' Z Z' : C} [ExactPairing Y Y'] (f : X ⟶ Y ⊗ Z)
     (g : X' ⟶ Z') :
-    (tensorLeftHomEquiv (X ⊗ X') Y Y' (Z ⊗ Z')).symm ((f ⊗ g) ≫ (α_ _ _ _).hom) =
-      (α_ _ _ _).inv ≫ ((tensorLeftHomEquiv X Y Y' Z).symm f ⊗ g) := by
+    (tensorLeftHomEquiv (X ⊗ X') Y Y' (Z ⊗ Z')).symm ((f ⊗ₘ g) ≫ (α_ _ _ _).hom) =
+      (α_ _ _ _).inv ≫ ((tensorLeftHomEquiv X Y Y' Z).symm f ⊗ₘ g) := by
   simp [tensorLeftHomEquiv, tensorHom_def']
 
 /-- `tensorRightHomEquiv` commutes with tensoring on the left -/
 theorem tensorRightHomEquiv_tensor {X X' Y Y' Z Z' : C} [ExactPairing Y Y'] (f : X ⟶ Z ⊗ Y')
     (g : X' ⟶ Z') :
-    (tensorRightHomEquiv (X' ⊗ X) Y Y' (Z' ⊗ Z)).symm ((g ⊗ f) ≫ (α_ _ _ _).inv) =
-      (α_ _ _ _).hom ≫ (g ⊗ (tensorRightHomEquiv X Y Y' Z).symm f) := by
+    (tensorRightHomEquiv (X' ⊗ X) Y Y' (Z' ⊗ Z)).symm ((g ⊗ₘ f) ≫ (α_ _ _ _).inv) =
+      (α_ _ _ _).hom ≫ (g ⊗ₘ (tensorRightHomEquiv X Y Y' Z).symm f) := by
   simp [tensorRightHomEquiv, tensorHom_def]
 
 @[simp]

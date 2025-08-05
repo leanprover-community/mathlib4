@@ -18,7 +18,8 @@ a subset `{ t }` of `S` generating the unit ideal, such that `P` holds for all c
 
 Assuming without further mention that `P` is stable under composition with isomorphisms,
 `Locally P` is local on the target by construction, i.e. it satisfies
-`OfLocalizationSpanTarget`. If `P` itself is local on the target, `Locally P` coincides with `P`.
+`RingHom.OfLocalizationSpanTarget`. If `P` itself is local on the target,
+`Locally P` coincides with `P`.
 
 The `Locally` construction preserves various properties of `P`, e.g. if `P` is stable under
 composition, base change, etc., so is `Locally P`.
@@ -31,7 +32,8 @@ composition, base change, etc., so is `Locally P`.
 - `RingHom.locally_isStableUnderBaseChange`: `Locally P` is stable under base change if `P` is.
 - `RingHom.locally_stableUnderComposition`: `Locally P` is stable under composition
   if `P` is and `P` is preserved under localizations.
-- `RingHom.locally_stableUnderCompositionWithLocalizationAway`: `Locally P` is stable under
+- `RingHom.locally_StableUnderCompositionWithLocalizationAwayTarget` and
+  `RingHom.locally_StableUnderCompositionWithLocalizationAwaySource`: `Locally P` is stable under
   composition with localization away maps if `P` is.
 - `RingHom.locally_localizationPreserves`: If `P` is preserved by localizations, then so is
   `Locally P`.
@@ -329,10 +331,10 @@ lemma locally_localizationAwayPreserves (hPl : LocalizationAwayPreserves P) :
   haveI (a : s) : IsLocalization (Algebra.algebraMapSubmonoid (Localization.Away a.val)
     (Submonoid.map f (Submonoid.powers r))) (Sₐ a) := by
     convert inferInstanceAs (IsLocalization.Away (rₐ a) (Sₐ a))
-    simp [rₐ, Sₐ, Algebra.algebraMapSubmonoid]
+    simp [rₐ, Algebra.algebraMapSubmonoid]
   have H (a : s) : Submonoid.powers (f r) ≤
       (Submonoid.powers (rₐ a)).comap (algebraMap S (Localization.Away a.val)) := by
-    simp [rₐ, Sₐ, Submonoid.powers_le]
+    simp [rₐ, Submonoid.powers_le]
   letI (a : s) : Algebra S' (Sₐ a) :=
     (IsLocalization.map (Sₐ a) (algebraMap S (Localization.Away a.val)) (H a)).toAlgebra
   haveI (a : s) : IsScalarTower S S' (Sₐ a) :=

@@ -15,8 +15,7 @@ import Mathlib.Algebra.GroupWithZero.Pointwise.Finset
 This file proves properties of pointwise operations of finsets in a group with zero.
 -/
 
--- TODO
--- assert_not_exists Ring
+assert_not_exists Ring
 
 open scoped Pointwise
 

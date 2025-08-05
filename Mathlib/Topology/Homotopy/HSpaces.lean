@@ -34,7 +34,7 @@ Some notable properties of `H-spaces` are
 
 ## To Do
 * Prove that for every `NormedAddTorsor Z` and every `z : Z`, the operation
-`fun x y ↦ midpoint x y` defines an `H-space` structure with `z` as a "neutral element".
+  `fun x y ↦ midpoint x y` defines an `H-space` structure with `z` as a "neutral element".
 * Prove that `S^0`, `S^1`, `S^3` and `S^7` are the unique spheres that are `H-spaces`, where the
   first three inherit the structure because they are topological groups (they are Lie groups,
   actually), isomorphic to the invertible elements in `ℤ`, in `ℂ` and in the quaternion; and the
@@ -202,7 +202,7 @@ theorem continuous_delayReflRight : Continuous fun p : I × Path x y => delayRef
 
 theorem delayReflRight_zero (γ : Path x y) : delayReflRight 0 γ = γ.trans (Path.refl y) := by
   ext t
-  simp only [delayReflRight, trans_apply, refl_extend, Path.coe_mk_mk, Function.comp_apply,
+  simp only [delayReflRight, trans_apply, Path.coe_mk_mk,
     refl_apply]
   split_ifs with h; swap
   on_goal 1 => conv_rhs => rw [← γ.target]

@@ -33,9 +33,6 @@ theorem isOpenEmbedding_coe : IsOpenEmbedding ((↑) : ℍ → ℂ) :=
 theorem isEmbedding_coe : IsEmbedding ((↑) : ℍ → ℂ) :=
   IsEmbedding.subtypeVal
 
-@[deprecated (since := "2024-10-26")]
-alias embedding_coe := isEmbedding_coe
-
 theorem continuous_coe : Continuous ((↑) : ℍ → ℂ) :=
   isEmbedding_coe.continuous
 
@@ -67,11 +64,16 @@ instance : NoncompactSpace ℍ := by
 instance : LocallyCompactSpace ℍ :=
   isOpenEmbedding_coe.locallyCompactSpace
 
-/-- Each element of `GL(2, ℝ)⁺` defines a continuous map `ℍ → ℍ`. -/
-instance instContinuousGLPosSMul : ContinuousConstSMul (Matrix.GLPos (Fin 2) ℝ) ℍ where
+/-- Each element of `GL(2, ℝ)` defines a continuous map `ℍ → ℍ`. -/
+instance instContinuousGLSMul : ContinuousConstSMul (GL (Fin 2) ℝ) ℍ where
   continuous_const_smul g := by
-    refine continuous_induced_rng.mpr <| .div ?_ ?_ (denom_ne_zero g) <;>
-    exact (continuous_const.mul continuous_coe).add continuous_const
+    simp_rw [continuous_induced_rng (f := UpperHalfPlane.coe), Function.comp_def,
+      UpperHalfPlane.coe_smul, UpperHalfPlane.σ]
+    refine .comp ?_ ?_
+    · split_ifs
+      exacts [continuous_id, continuous_conj]
+    · refine .div ?_ ?_ (fun x ↦ denom_ne_zero g x) <;>
+      exact (continuous_const.mul continuous_coe).add continuous_const
 
 section strips
 
@@ -88,11 +90,9 @@ lemma verticalStrip_mono {A B A' B' : ℝ} (hA : A ≤ A') (hB : B' ≤ B) :
   rintro z ⟨hzre, hzim⟩
   exact ⟨hzre.trans hA, hB.trans hzim⟩
 
-@[gcongr]
 lemma verticalStrip_mono_left {A A'} (h : A ≤ A') (B) : verticalStrip A B ⊆ verticalStrip A' B :=
   verticalStrip_mono h le_rfl
 
-@[gcongr]
 lemma verticalStrip_anti_right (A) {B B'} (h : B' ≤ B) : verticalStrip A B ⊆ verticalStrip A B' :=
   verticalStrip_mono le_rfl h
 
@@ -112,7 +112,7 @@ theorem ModularGroup_T_zpow_mem_verticalStrip (z : ℍ) {N : ℕ} (hn : 0 < N) :
   refine ⟨?_, (by simp only [mul_neg, Int.cast_neg, Int.cast_mul, Int.cast_natCast, vadd_im,
     le_refl])⟩
   have h : (N * (-n : ℝ) +ᵥ z).re = -N * Int.floor (z.re / N) + z.re := by
-    simp only [n, Int.cast_natCast, mul_neg, vadd_re, neg_mul]
+    simp only [n, mul_neg, vadd_re, neg_mul]
   norm_cast at *
   rw [h, add_comm]
   simp only [neg_mul, Int.cast_neg, Int.cast_mul, Int.cast_natCast]
@@ -142,7 +142,7 @@ lemma ofComplex_apply_eq_ite (w : ℂ) :
   · change (Function.invFunOn UpperHalfPlane.coe Set.univ w) = _
     simp only [invFunOn, dite_eq_right_iff, mem_univ, true_and]
     rintro ⟨a, rfl⟩
-    exact (a.prop.not_le (by simpa using hw)).elim
+    exact (a.prop.not_ge (by simpa using hw)).elim
 
 lemma ofComplex_apply_of_im_pos {z : ℂ} (hz : 0 < z.im) :
     ofComplex z = ⟨z, hz⟩ := by
@@ -162,7 +162,7 @@ lemma comp_ofComplex (f : ℍ → ℂ) (z : ℍ) : (↑ₕ f) z = f z :=
 lemma comp_ofComplex_of_im_pos (f : ℍ → ℂ) (z : ℂ) (hz : 0 < z.im) : (↑ₕ f) z = f ⟨z, hz⟩ :=
   congrArg _ <| ofComplex_apply ⟨z, hz⟩
 
-lemma comp_ofComplex_of_im_le_zero (f : ℍ → ℂ) (z z' : ℂ) (hz : z.im ≤ 0) (hz' : z'.im ≤ 0)  :
+lemma comp_ofComplex_of_im_le_zero (f : ℍ → ℂ) (z z' : ℂ) (hz : z.im ≤ 0) (hz' : z'.im ≤ 0) :
     (↑ₕ f) z = (↑ₕ f) z' := by
   simp [ofComplex_apply_of_im_nonpos, hz, hz']
 

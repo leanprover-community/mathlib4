@@ -118,7 +118,7 @@ variable [RingHomIsometric σ₁₂]
 theorem exists_mul_lt_apply_of_lt_opNNNorm (f : E →SL[σ₁₂] F) {r : ℝ≥0} (hr : r < ‖f‖₊) :
     ∃ x, r * ‖x‖₊ < ‖f x‖₊ := by
   simpa only [not_forall, not_le, Set.mem_setOf] using
-    not_mem_of_lt_csInf (nnnorm_def f ▸ hr : r < sInf { c : ℝ≥0 | ∀ x, ‖f x‖₊ ≤ c * ‖x‖₊ })
+    notMem_of_lt_csInf (nnnorm_def f ▸ hr : r < sInf { c : ℝ≥0 | ∀ x, ‖f x‖₊ ≤ c * ‖x‖₊ })
       (OrderBot.bddBelow _)
 
 theorem exists_mul_lt_of_lt_opNorm (f : E →SL[σ₁₂] F) {r : ℝ} (hr₀ : 0 ≤ r) (hr : r < ‖f‖) :
@@ -133,14 +133,14 @@ theorem exists_lt_apply_of_lt_opNNNorm {𝕜 𝕜₂ E F : Type*} [NormedAddComm
   obtain ⟨y, hy⟩ := f.exists_mul_lt_apply_of_lt_opNNNorm hr
   have hy' : ‖y‖₊ ≠ 0 :=
     nnnorm_ne_zero_iff.2 fun heq => by
-      simp [heq, nnnorm_zero, map_zero, not_lt_zero'] at hy
+      simp [heq, nnnorm_zero, map_zero] at hy
   have hfy : ‖f y‖₊ ≠ 0 := (zero_le'.trans_lt hy).ne'
   rw [← inv_inv ‖f y‖₊, NNReal.lt_inv_iff_mul_lt (inv_ne_zero hfy), mul_assoc, mul_comm ‖y‖₊, ←
     mul_assoc, ← NNReal.lt_inv_iff_mul_lt hy'] at hy
   obtain ⟨k, hk₁, hk₂⟩ := NormedField.exists_lt_nnnorm_lt 𝕜 hy
   refine ⟨k • y, (nnnorm_smul k y).symm ▸ (NNReal.lt_inv_iff_mul_lt hy').1 hk₂, ?_⟩
-  have : ‖σ₁₂ k‖₊ = ‖k‖₊ := Subtype.ext RingHomIsometric.is_iso
-  rwa [map_smulₛₗ f, nnnorm_smul, ← div_lt_iff₀ hfy.bot_lt, div_eq_mul_inv, this]
+  rwa [map_smulₛₗ f, nnnorm_smul, ← div_lt_iff₀ hfy.bot_lt, div_eq_mul_inv,
+    RingHomIsometric.nnnorm_map]
 
 theorem exists_lt_apply_of_lt_opNorm {𝕜 𝕜₂ E F : Type*} [NormedAddCommGroup E]
     [SeminormedAddCommGroup F] [DenselyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
@@ -178,10 +178,7 @@ theorem sSup_unitClosedBall_eq_nnnorm {𝕜 𝕜₂ E F : Type*} [NormedAddCommG
   refine le_antisymm (csSup_le ((nonempty_closedBall.mpr zero_le_one).image _) hbdd) ?_
   rw [← sSup_unit_ball_eq_nnnorm]
   exact csSup_le_csSup ⟨‖f‖₊, hbdd⟩ ((nonempty_ball.2 zero_lt_one).image _)
-    (Set.image_subset _ ball_subset_closedBall)
-
-@[deprecated (since := "2024-12-01")]
-alias sSup_closed_unit_ball_eq_nnnorm := sSup_unitClosedBall_eq_nnnorm
+    (Set.image_mono ball_subset_closedBall)
 
 theorem sSup_unitClosedBall_eq_norm {𝕜 𝕜₂ E F : Type*} [NormedAddCommGroup E]
     [SeminormedAddCommGroup F] [DenselyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
@@ -189,9 +186,6 @@ theorem sSup_unitClosedBall_eq_norm {𝕜 𝕜₂ E F : Type*} [NormedAddCommGro
     sSup ((fun x => ‖f x‖) '' closedBall 0 1) = ‖f‖ := by
   simpa only [NNReal.coe_sSup, Set.image_image] using
     NNReal.coe_inj.2 f.sSup_unitClosedBall_eq_nnnorm
-
-@[deprecated (since := "2024-12-01")]
-alias sSup_closed_unit_ball_eq_norm := sSup_unitClosedBall_eq_norm
 
 end Sup
 

@@ -403,7 +403,7 @@ instance sub : Sub (NormedAddGroupHom V₁ V₂) :=
   ⟨fun f g =>
     { f.toAddMonoidHom - g.toAddMonoidHom with
       bound' := by
-        simp only [AddMonoidHom.sub_apply, AddMonoidHom.toFun_eq_coe, sub_eq_add_neg]
+        simp only [AddMonoidHom.toFun_eq_coe, sub_eq_add_neg]
         exact (f + -g).bound' }⟩
 
 @[simp]
@@ -565,7 +565,7 @@ protected def comp (g : NormedAddGroupHom V₂ V₃) (f : NormedAddGroupHom V₁
 
 theorem norm_comp_le (g : NormedAddGroupHom V₂ V₃) (f : NormedAddGroupHom V₁ V₂) :
     ‖g.comp f‖ ≤ ‖g‖ * ‖f‖ :=
-  mkNormedAddGroupHom_norm_le _ (mul_nonneg (opNorm_nonneg _) (opNorm_nonneg _)) _
+  mkNormedAddGroupHom_norm_le _ (by positivity) _
 
 theorem norm_comp_le_of_le {g : NormedAddGroupHom V₂ V₃} {C₁ C₂ : ℝ} (hg : ‖g‖ ≤ C₂)
     (hf : ‖f‖ ≤ C₁) : ‖g.comp f‖ ≤ C₂ * C₁ :=
@@ -588,7 +588,7 @@ def compHom : NormedAddGroupHom V₂ V₃ →+ NormedAddGroupHom V₁ V₂ →+ 
     (by
       intros
       ext
-      simp only [comp_apply, Pi.add_apply, Function.comp_apply, AddMonoidHom.add_apply,
+      simp only [comp_apply, Pi.add_apply, AddMonoidHom.add_apply,
         AddMonoidHom.mk'_apply, coe_add])
 
 @[simp]
@@ -783,7 +783,7 @@ def lift (φ : NormedAddGroupHom V₁ V) (h : f.comp φ = g.comp φ) :
         rw [NormedAddGroupHom.sub_apply, sub_eq_zero, ← comp_apply, h, comp_apply]⟩
   map_add' v₁ v₂ := by
     ext
-    simp only [map_add, AddSubgroup.coe_add, Subtype.coe_mk]
+    simp only [map_add, AddSubgroup.coe_add]
   bound' := by
     obtain ⟨C, _C_pos, hC⟩ := φ.bound
     exact ⟨C, hC⟩
@@ -802,9 +802,6 @@ def liftEquiv :
   toFun φ := lift φ φ.prop
   invFun ψ := ⟨(ι f g).comp ψ, by rw [← comp_assoc, ← comp_assoc, comp_ι_eq]⟩
   left_inv φ := by simp
-  right_inv ψ := by
-    ext
-    rfl
 
 /-- Given `φ : NormedAddGroupHom V₁ V₂` and `ψ : NormedAddGroupHom W₁ W₂` such that
 `ψ.comp f₁ = f₂.comp φ` and `ψ.comp g₁ = g₂.comp φ`, the induced morphism

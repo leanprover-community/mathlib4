@@ -94,7 +94,7 @@ inductive HomEquiv : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (X ⟶ᵐ Y) → Prop
   | id_comp {X Y} (f : X ⟶ᵐ Y) : HomEquiv ((Hom.id _).comp f) f
   | assoc {X Y U V : F C} (f : X ⟶ᵐ U) (g : U ⟶ᵐ V) (h : V ⟶ᵐ Y) :
       HomEquiv ((f.comp g).comp h) (f.comp (g.comp h))
-  | tensor_id {X Y} : HomEquiv ((Hom.id X).tensor (Hom.id Y)) (Hom.id _)
+  | id_tensorHom_id {X Y} : HomEquiv ((Hom.id X).tensor (Hom.id Y)) (Hom.id _)
   | tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : F C} (f₁ : X₁ ⟶ᵐ Y₁) (f₂ : X₂ ⟶ᵐ Y₂) (g₁ : Y₁ ⟶ᵐ Z₁)
       (g₂ : Y₂ ⟶ᵐ Z₂) :
     HomEquiv ((f₁.comp g₁).tensor (f₂.comp g₂)) ((f₁.tensor f₂).comp (g₁.tensor g₂))
@@ -126,9 +126,7 @@ inductive HomEquiv : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (X ⟶ᵐ Y) → Prop
     equal if we apply the relations that are true in a monoidal category. Note that we will prove
     that there is only one equivalence class -- this is the monoidal coherence theorem. -/
 def setoidHom (X Y : F C) : Setoid (X ⟶ᵐ Y) :=
-  ⟨HomEquiv,
-    ⟨fun f => HomEquiv.refl f, @fun f g => HomEquiv.symm f g, @fun _ _ _ hfg hgh =>
-      HomEquiv.trans hfg hgh⟩⟩
+  ⟨HomEquiv, ⟨HomEquiv.refl, HomEquiv.symm _ _, HomEquiv.trans⟩⟩
 
 attribute [instance] setoidHom
 
@@ -155,11 +153,11 @@ instance : MonoidalCategory (F C) where
   tensorHom := Quotient.map₂ Hom.tensor (fun _ _ hf _ _ hg ↦ HomEquiv.tensor hf hg)
   whiskerLeft X _ _ f := Quot.map (fun f ↦ Hom.whiskerLeft X f) (fun f f' ↦ .whiskerLeft X f f') f
   whiskerRight f Y := Quot.map (fun f ↦ Hom.whiskerRight f Y) (fun f f' ↦ .whiskerRight f f' Y) f
-  tensorHom_def := by
-    rintro W X Y Z ⟨f⟩ ⟨g⟩
+  tensorHom_def {W X Y Z} := by
+    rintro ⟨f⟩ ⟨g⟩
     exact Quotient.sound (tensorHom_def _ _)
-  tensor_id _ _ := Quot.sound tensor_id
-  tensor_comp := @fun X₁ Y₁ Z₁ X₂ Y₂ Z₂ => by
+  id_tensorHom_id _ _ := Quot.sound id_tensorHom_id
+  tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂} := by
     rintro ⟨f₁⟩ ⟨f₂⟩ ⟨g₁⟩ ⟨g₂⟩
     exact Quotient.sound (tensor_comp _ _ _ _)
   whiskerLeft_id X Y := Quot.sound (HomEquiv.whiskerLeft_id X Y)
@@ -167,16 +165,16 @@ instance : MonoidalCategory (F C) where
   tensorUnit := FreeMonoidalCategory.unit
   associator X Y Z :=
     ⟨⟦Hom.α_hom X Y Z⟧, ⟦Hom.α_inv X Y Z⟧, Quotient.sound α_hom_inv, Quotient.sound α_inv_hom⟩
-  associator_naturality := @fun X₁ X₂ X₃ Y₁ Y₂ Y₃ => by
+  associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃} := by
     rintro ⟨f₁⟩ ⟨f₂⟩ ⟨f₃⟩
     exact Quotient.sound (associator_naturality _ _ _)
   leftUnitor X := ⟨⟦Hom.l_hom X⟧, ⟦Hom.l_inv X⟧, Quotient.sound l_hom_inv, Quotient.sound l_inv_hom⟩
-  leftUnitor_naturality := @fun X Y => by
+  leftUnitor_naturality {X Y} := by
     rintro ⟨f⟩
     exact Quotient.sound (l_naturality _)
   rightUnitor X :=
     ⟨⟦Hom.ρ_hom X⟧, ⟦Hom.ρ_inv X⟧, Quotient.sound ρ_hom_inv, Quotient.sound ρ_inv_hom⟩
-  rightUnitor_naturality := @fun X Y => by
+  rightUnitor_naturality {X Y} := by
     rintro ⟨f⟩
     exact Quotient.sound (ρ_naturality _)
   pentagon _ _ _ _ := Quotient.sound pentagon
@@ -270,9 +268,9 @@ theorem Hom.inductionOn {motive : {X Y : F C} → (X ⟶ Y) → Prop} {X Y : F C
   | whiskerLeft X f hf => exact whiskerLeft X _ (hf ⟦f⟧)
   | whiskerRight f X hf => exact whiskerRight _ X (hf ⟦f⟧)
   | @tensor W X Y Z f g hf hg =>
-      have : homMk f ⊗ homMk g = homMk f ▷ X ≫ Y ◁ homMk g :=
+      have : homMk f ⊗ₘ homMk g = homMk f ▷ X ≫ Y ◁ homMk g :=
         Quotient.sound (HomEquiv.tensorHom_def f g)
-      change motive (homMk f ⊗ homMk g)
+      change motive (homMk f ⊗ₘ homMk g)
       rw [this]
       exact comp _ _ (whiskerRight _ _ (hf ⟦f⟧)) (whiskerLeft _ _ (hg ⟦g⟧))
 
@@ -305,7 +303,7 @@ def projectMapAux : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (projectObj f X ⟶ projec
   | _, _, Hom.comp f g => projectMapAux f ≫ projectMapAux g
   | _, _, Hom.whiskerLeft X p => projectObj f X ◁ projectMapAux p
   | _, _, Hom.whiskerRight p X => projectMapAux p ▷ projectObj f X
-  | _, _, Hom.tensor f g => projectMapAux f ⊗ projectMapAux g
+  | _, _, Hom.tensor f g => projectMapAux f ⊗ₘ projectMapAux g
 
 -- Porting note: this declaration generates the same panic.
 /-- Auxiliary definition for `FreeMonoidalCategory.project`. -/
@@ -325,7 +323,7 @@ def projectMap (X Y : F C) : (X ⟶ Y) → (projectObj f X ⟶ projectObj f Y) :
     | comp_id => dsimp only [projectMapAux]; rw [Category.comp_id]
     | id_comp => dsimp only [projectMapAux]; rw [Category.id_comp]
     | assoc => dsimp only [projectMapAux]; rw [Category.assoc]
-    | tensor_id => dsimp only [projectMapAux]; rw [MonoidalCategory.tensor_id]; rfl
+    | id_tensorHom_id => dsimp only [projectMapAux]; rw [MonoidalCategory.id_tensorHom_id]; rfl
     | tensor_comp => dsimp only [projectMapAux]; rw [MonoidalCategory.tensor_comp]
     | whiskerLeft_id =>
         dsimp only [projectMapAux, projectObj]
