@@ -3,6 +3,7 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
+import Mathlib.Topology.Compactness.Bases
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.Separation.Profinite
 import Mathlib.Topology.Sets.Closeds
@@ -38,7 +39,7 @@ namespace TopologicalSpace.Clopens
 
 theorem exists_prod_subset (W : Clopens (X × Y)) {a : X × Y} (h : a ∈ W) :
     ∃ U : Clopens X, a.1 ∈ U ∧ ∃ V : Clopens Y, a.2 ∈ V ∧ U ×ˢ V ≤ W := by
-  have hp : Continuous (fun y : Y ↦ (a.1, y)) := Continuous.Prod.mk _
+  have hp : Continuous (fun y : Y ↦ (a.1, y)) := .prodMk_right _
   let V : Set Y := {y | (a.1, y) ∈ W}
   have hV : IsCompact V := (W.2.1.preimage hp).isCompact
   let U : Set X := {x | MapsTo (Prod.mk x) V W}

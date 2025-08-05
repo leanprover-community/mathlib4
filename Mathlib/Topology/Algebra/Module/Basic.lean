@@ -39,6 +39,14 @@ theorem ContinuousSMul.of_nhds_zero [IsTopologicalRing R] [IsTopologicalAddGroup
     refine continuous_of_continuousAt_zero₂ (AddMonoidHom.smul : R →+ M →+ M) ?_ ?_ ?_ <;>
       simpa [ContinuousAt]
 
+variable (R M) in
+omit [TopologicalSpace R] in
+/-- A topological module over a ring has continuous negation.
+
+This cannot be an instance, because it would cause search for `[Module ?R M]` with unknown `R`. -/
+theorem ContinuousNeg.of_continuousConstSMul [ContinuousConstSMul R M] : ContinuousNeg M where
+  continuous_neg := by simpa using continuous_const_smul (T := M) (-1 : R)
+
 end
 
 section
@@ -102,7 +110,7 @@ lemma TopologicalSpace.IsSeparable.span {R M : Type*} [AddCommMonoid M] [Semirin
     [TopologicalSpace M] [TopologicalSpace R] [SeparableSpace R]
     [ContinuousAdd M] [ContinuousSMul R M] {s : Set M} (hs : IsSeparable s) :
     IsSeparable (Submodule.span R s : Set M) := by
-  rw [span_eq_iUnion_nat]
+  rw [Submodule.span_eq_iUnion_nat]
   refine .iUnion fun n ↦ .image ?_ ?_
   · have : IsSeparable {f : Fin n → R × M | ∀ (i : Fin n), f i ∈ Set.univ ×ˢ s} := by
       apply isSeparable_pi (fun i ↦ .prod (.of_separableSpace Set.univ) hs)

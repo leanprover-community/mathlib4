@@ -63,7 +63,7 @@ example (x : ℚ) (h₀ : x ≠ 0) :
 /-- Specify a simp config. -/
 example (x : ℚ) (h₀ : x ≠ 0) :
     (4 / x)⁻¹ * ((3 * x^3) / x)^2 * ((1 / (2 * x))⁻¹)^3 = 18 * x^8 := by
-  fail_if_success field_simp (config := {maxSteps := 0})
+  fail_if_success field_simp (maxSteps := 0)
   field_simp (config := {})
   ring
 

@@ -24,7 +24,7 @@ and the presheaf of modules.
 
 universe w v v₁ u₁ u
 
-open CategoryTheory
+open CategoryTheory Functor
 
 variable {C : Type u₁} [Category.{v₁} C] {J : GrothendieckTopology C}
 
@@ -246,8 +246,8 @@ protected lemma smul_add : smul α φ r (m + m') = smul α φ r m + smul α φ r
   rw [(A.val.map f.op).hom.map_add, map_smul_eq α φ r m f.op r₀ hr₀ m₀ hm₀,
     map_smul_eq α φ r m' f.op r₀ hr₀ m₀' hm₀',
     map_smul_eq α φ r (m + m') f.op r₀ hr₀ (m₀ + m₀')
-      (by rw [map_add, map_add, hm₀, hm₀']),
-    smul_add, map_add]
+      (by rw [_root_.map_add, _root_.map_add, hm₀, hm₀']),
+    smul_add, _root_.map_add]
 
 protected lemma add_smul : smul α φ (r + r') m = smul α φ r m + smul α φ r' m := by
   let S := Presheaf.imageSieve α r ⊓ Presheaf.imageSieve α r' ⊓ Presheaf.imageSieve φ m
@@ -259,8 +259,8 @@ protected lemma add_smul : smul α φ (r + r') m = smul α φ r m + smul α φ r
     ⟨r₀' : R₀.obj _, (hr₀' : (α.app (Opposite.op Y)) r₀' = (R.val.map f.op) r')⟩⟩, ⟨m₀, hm₀⟩⟩
   rw [(A.val.map f.op).hom.map_add, map_smul_eq α φ r m f.op r₀ hr₀ m₀ hm₀,
     map_smul_eq α φ r' m f.op r₀' hr₀' m₀ hm₀,
-    map_smul_eq α φ (r + r') m f.op (r₀ + r₀') (by rw [map_add, map_add, hr₀, hr₀'])
-      m₀ hm₀, add_smul, map_add]
+    map_smul_eq α φ (r + r') m f.op (r₀ + r₀') (by rw [_root_.map_add, _root_.map_add, hr₀, hr₀'])
+      m₀ hm₀, add_smul, _root_.map_add]
 
 protected lemma mul_smul : smul α φ (r * r') m = smul α φ r (smul α φ r' m) := by
   let S := Presheaf.imageSieve α r ⊓ Presheaf.imageSieve α r' ⊓ Presheaf.imageSieve φ m
@@ -289,7 +289,7 @@ noncomputable def module : Module (R.val.obj X) (A.val.obj X) where
   add_smul := Sheafify.add_smul α φ
   mul_smul := Sheafify.mul_smul α φ
 
-lemma map_smul :
+protected lemma map_smul :
     A.val.map π (smul α φ r m) = smul α φ (R.val.map π r) (A.val.map π m) := by
   let S := Presheaf.imageSieve α (R.val.map π r) ⊓ Presheaf.imageSieve φ (A.val.map π m)
   have hS : S ∈ J Y.unop := by
@@ -316,7 +316,7 @@ noncomputable def sheafify : SheafOfModules.{v} R where
   isSheaf := A.cond
 
 /-- The canonical morphism from a presheaf of modules to its associated sheaf. -/
-def toSheafify : M₀ ⟶ (restrictScalars α).obj (sheafify α φ).val :=
+noncomputable def toSheafify : M₀ ⟶ (restrictScalars α).obj (sheafify α φ).val :=
   homMk φ (fun X r₀ m₀ ↦ by
     simpa using (Sheafify.map_smul_eq α φ (α.app _ r₀) (φ.app _ m₀) (𝟙 _)
       r₀ (by simp) m₀ (by simp)).symm)
@@ -377,7 +377,7 @@ variable {M₀' : PresheafOfModules.{v} R₀} {A' : Sheaf J AddCommGrp.{v}}
 induced by morphisms `τ₀ : M₀ ⟶ M₀'` and `τ : A ⟶ A'`
 which satisfy `τ₀.hom ≫ φ' = φ ≫ τ.val`. -/
 @[simps]
-def sheafifyMap (fac : (toPresheaf R₀).map τ₀ ≫ φ' = φ ≫ τ.val) :
+noncomputable def sheafifyMap (fac : (toPresheaf R₀).map τ₀ ≫ φ' = φ ≫ τ.val) :
     sheafify α φ ⟶ sheafify α φ' where
   val := homMk τ.val (fun X r m ↦ by
     let f := (sheafifyHomEquiv' α φ (by exact A'.cond)).symm (τ₀ ≫ toSheafify α φ')

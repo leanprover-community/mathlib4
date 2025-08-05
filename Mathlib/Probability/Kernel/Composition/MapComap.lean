@@ -83,7 +83,7 @@ lemma map_zero : Kernel.map (0 : Kernel α β) f = 0 := by
   ext
   by_cases hf : Measurable f
   · simp [map_apply, hf]
-  · simp [map_of_not_measurable _ hf, map_apply]
+  · simp [map_of_not_measurable _ hf]
 
 @[simp]
 lemma map_id (κ : Kernel α β) : map κ id = κ := by
@@ -99,8 +99,8 @@ nonrec theorem lintegral_map (κ : Kernel α β) (hf : Measurable f) (a : α) {g
 
 lemma map_apply_eq_iff_map_symm_apply_eq (κ : Kernel α β) {f : β ≃ᵐ γ} (η : Kernel α γ) :
     κ.map f = η ↔ κ = η.map f.symm := by
-    simp_rw [Kernel.ext_iff, map_apply _ f.measurable, map_apply _ f.symm.measurable,
-      f.map_apply_eq_iff_map_symm_apply_eq]
+  simp_rw [Kernel.ext_iff, map_apply _ f.measurable, map_apply _ f.symm.measurable,
+    f.map_apply_eq_iff_map_symm_apply_eq]
 
 theorem sum_map_seq (κ : Kernel α β) [IsSFiniteKernel κ] (f : β → γ) :
     (Kernel.sum fun n => map (seq κ n) f) = map κ f := by
@@ -409,6 +409,10 @@ theorem fst_apply (κ : Kernel α (β × γ)) (a : α) : fst κ a = (κ a).map P
 
 theorem fst_apply' (κ : Kernel α (β × γ)) (a : α) {s : Set β} (hs : MeasurableSet s) :
     fst κ a s = κ a {p | p.1 ∈ s} := by rw [fst_apply, Measure.map_apply measurable_fst hs]; rfl
+
+theorem fst_real_apply (κ : Kernel α (β × γ)) (a : α) {s : Set β} (hs : MeasurableSet s) :
+    (fst κ a).real s = (κ a).real {p | p.1 ∈ s} := by
+  simp [fst_apply', hs, measureReal_def]
 
 @[simp]
 lemma fst_zero : fst (0 : Kernel α (β × γ)) = 0 := by simp [fst]

@@ -75,5 +75,5 @@ theorem frobeniusNumber_pair (cop : Coprime m n) (hm : 1 < m) (hn : 1 < n) :
     rw [Nat.sub_add_cancel (le_tsub_of_add_le_left hmn)]
     exact
       ModEq.le_of_lt_add
-        (x.2.1.trans (modEq_zero_iff_dvd.mpr (Nat.dvd_sub' (dvd_mul_right m n) dvd_rfl)).symm)
+        (x.2.1.trans (modEq_zero_iff_dvd.mpr (Nat.dvd_sub (dvd_mul_right m n) dvd_rfl)).symm)
         (lt_of_lt_of_le hx le_tsub_add)

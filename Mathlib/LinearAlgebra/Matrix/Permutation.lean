@@ -16,12 +16,12 @@ This file defines the matrix associated with a permutation
 
 ## Main definitions
 
- - `Equiv.Perm.permMatrix`: the permutation matrix associated with an `Equiv.Perm`
+- `Equiv.Perm.permMatrix`: the permutation matrix associated with an `Equiv.Perm`
 
 ## Main results
 
- - `Matrix.det_permutation`: the determinant is the sign of the permutation
- - `Matrix.trace_permutation`: the trace is the number of fixed points of the permutation
+- `Matrix.det_permutation`: the determinant is the sign of the permutation
+- `Matrix.trace_permutation`: the trace is the number of fixed points of the permutation
 
 -/
 
@@ -41,7 +41,7 @@ lemma transpose_permMatrix [Zero R] [One R] : (σ.permMatrix R).transpose = (σ�
   rw [← PEquiv.toMatrix_symm, ← Equiv.toPEquiv_symm, ← Equiv.Perm.inv_def]
 
 @[simp]
-lemma conjTranspose_permMatrix [Semiring R] [StarRing R] :
+lemma conjTranspose_permMatrix [NonAssocSemiring R] [StarRing R] :
     (σ.permMatrix R).conjTranspose = (σ⁻¹).permMatrix R := by
   simp only [conjTranspose, transpose_permMatrix, map]
   aesop
@@ -58,6 +58,6 @@ theorem det_permutation [CommRing R] : det (σ.permMatrix R) = Perm.sign σ := b
 theorem trace_permutation [AddCommMonoidWithOne R] :
     trace (σ.permMatrix R) = (Function.fixedPoints σ).ncard := by
   delta trace
-  simp [toPEquiv_apply, ← Set.ncard_coe_Finset, Function.fixedPoints, Function.IsFixedPt]
+  simp [toPEquiv_apply, ← Set.ncard_coe_finset, Function.fixedPoints, Function.IsFixedPt]
 
 end Matrix

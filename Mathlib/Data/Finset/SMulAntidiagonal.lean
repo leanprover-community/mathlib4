@@ -3,7 +3,7 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
+import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 import Mathlib.Data.Set.SMulAntidiagonal
 
 /-!
@@ -27,18 +27,18 @@ open Pointwise
 namespace Set
 
 @[to_additive]
-theorem IsPWO.smul [PartialOrder G] [PartialOrder P] [SMul G P] [IsOrderedCancelSMul G P]
+theorem IsPWO.smul [Preorder G] [Preorder P] [SMul G P] [IsOrderedSMul G P]
     {s : Set G} {t : Set P} (hs : s.IsPWO) (ht : t.IsPWO) : IsPWO (s • t) := by
   rw [← @image_smul_prod]
   exact (hs.prod ht).image_of_monotone (monotone_fst.smul monotone_snd)
 
 @[to_additive]
-theorem IsWF.smul [LinearOrder G] [LinearOrder P] [SMul G P] [IsOrderedCancelSMul G P] {s : Set G}
+theorem IsWF.smul [LinearOrder G] [LinearOrder P] [SMul G P] [IsOrderedSMul G P] {s : Set G}
     {t : Set P} (hs : s.IsWF) (ht : t.IsWF) : IsWF (s • t) :=
   (hs.isPWO.smul ht.isPWO).isWF
 
 @[to_additive]
-theorem IsWF.min_smul [LinearOrder G] [LinearOrder P] [SMul G P] [IsOrderedCancelSMul G P]
+theorem IsWF.min_smul [LinearOrder G] [LinearOrder P] [SMul G P] [IsOrderedSMul G P]
     {s : Set G} {t : Set P} (hs : s.IsWF) (ht : t.IsWF) (hsn : s.Nonempty) (htn : t.Nonempty) :
     (hs.smul ht).min (hsn.smul htn) = hs.min hsn • ht.min htn := by
   refine le_antisymm (IsWF.min_le _ _ (mem_smul.2 ⟨_, hs.min_mem _, _, ht.min_mem _, rfl⟩)) ?_

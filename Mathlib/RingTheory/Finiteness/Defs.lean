@@ -25,7 +25,7 @@ In this file we define a notion of finiteness that is common in commutative alge
 
 -/
 
-assert_not_exists Basis Ideal.radical Matrix Subalgebra
+assert_not_exists Module.Basis Ideal.radical Matrix Subalgebra
 
 open Function (Surjective)
 open Finsupp
@@ -134,6 +134,14 @@ end Finite
 
 end Module
 
+instance AddMonoid.FG.to_moduleFinite_nat {M : Type*} [AddCommMonoid M] [FG M] :
+    Module.Finite ℕ M :=
+  Module.Finite.iff_addMonoid_fg.mpr ‹_›
+
+instance AddMonoid.FG.to_moduleFinite_int {G : Type*} [AddCommGroup G] [FG G] :
+    Module.Finite ℤ G :=
+  Module.Finite.iff_addGroup_fg.mpr <| AddGroup.fg_iff_addMonoid_fg.mpr ‹_›
+
 end ModuleAndAlgebra
 
 namespace RingHom
@@ -141,7 +149,7 @@ namespace RingHom
 variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
 
 /-- A ring morphism `A →+* B` is `RingHom.Finite` if `B` is finitely generated as `A`-module. -/
-@[algebraize Module.Finite]
+@[algebraize Module.Finite, stacks 0563]
 def Finite (f : A →+* B) : Prop :=
   letI : Algebra A B := f.toAlgebra
   Module.Finite A B

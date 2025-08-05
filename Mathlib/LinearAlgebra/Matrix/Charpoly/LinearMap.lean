@@ -39,7 +39,7 @@ theorem PiToModule.fromMatrix_apply [DecidableEq ι] (A : Matrix ι ι R) (w : �
 theorem PiToModule.fromMatrix_apply_single_one [DecidableEq ι] (A : Matrix ι ι R) (j : ι) :
     PiToModule.fromMatrix R b A (Pi.single j 1) = ∑ i : ι, A i j • b i := by
   rw [PiToModule.fromMatrix_apply, Fintype.linearCombination_apply, Matrix.mulVec_single]
-  simp_rw [MulOpposite.op_one, one_smul, transpose_apply]
+  simp_rw [MulOpposite.op_one, one_smul, col_apply]
 
 /-- The endomorphisms of `M` acts on `(ι → R) →ₗ[R] M`, and takes the projection
 to a `(ι → R) →ₗ[R] M`. -/
@@ -98,7 +98,7 @@ theorem Matrix.represents_iff' {A : Matrix ι ι R} {f : Module.End R M} :
 theorem Matrix.Represents.mul {A A' : Matrix ι ι R} {f f' : Module.End R M} (h : A.Represents b f)
     (h' : Matrix.Represents b A' f') : (A * A').Represents b (f * f') := by
   delta Matrix.Represents PiToModule.fromMatrix
-  rw [LinearMap.comp_apply, AlgEquiv.toLinearMap_apply, _root_.map_mul]
+  rw [LinearMap.comp_apply, AlgEquiv.toLinearMap_apply, map_mul]
   ext
   dsimp [PiToModule.fromEnd]
   rw [← h'.congr_fun, ← h.congr_fun]
@@ -106,7 +106,7 @@ theorem Matrix.Represents.mul {A A' : Matrix ι ι R} {f f' : Module.End R M} (h
 
 theorem Matrix.Represents.one : (1 : Matrix ι ι R).Represents b 1 := by
   delta Matrix.Represents PiToModule.fromMatrix
-  rw [LinearMap.comp_apply, AlgEquiv.toLinearMap_apply, _root_.map_one]
+  rw [LinearMap.comp_apply, AlgEquiv.toLinearMap_apply, map_one]
   ext
   rfl
 
@@ -121,7 +121,7 @@ theorem Matrix.Represents.zero : (0 : Matrix ι ι R).Represents b 0 := by
 theorem Matrix.Represents.smul {A : Matrix ι ι R} {f : Module.End R M} (h : A.Represents b f)
     (r : R) : (r • A).Represents b (r • f) := by
   delta Matrix.Represents at h ⊢
-  rw [_root_.map_smul, _root_.map_smul, h]
+  rw [map_smul, map_smul, h]
 
 theorem Matrix.Represents.algebraMap (r : R) :
     (algebraMap _ (Matrix ι ι R) r).Represents b (algebraMap _ (Module.End R M) r) := by
@@ -208,11 +208,9 @@ theorem LinearMap.exists_monic_and_coeff_mem_pow_and_aeval_eq_zero_of_range_le_s
     · exact ⟨0, Polynomial.monic_of_subsingleton _, by simp⟩
     obtain ⟨s : Finset M, hs : Submodule.span R (s : Set M) = ⊤⟩ :=
       Module.Finite.fg_top (R := R) (M := M)
-    -- Porting note: `H` was `rfl`
-    obtain ⟨A, H, h⟩ :=
+    obtain ⟨A, rfl, h⟩ :=
       Matrix.isRepresentation.toEnd_exists_mem_ideal R ((↑) : s → M)
         (by rw [Subtype.range_coe_subtype, Finset.setOf_mem, hs]) f I hI
-    rw [← H]
     refine ⟨A.1.charpoly, A.1.charpoly_monic, ?_, ?_⟩
     · rw [A.1.charpoly_natDegree_eq_dim]
       exact coeff_charpoly_mem_ideal_pow h

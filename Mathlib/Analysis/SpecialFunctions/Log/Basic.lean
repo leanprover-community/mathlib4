@@ -74,13 +74,13 @@ theorem exp_one_mul_le_exp {x : ℝ} : exp 1 * x ≤ exp x := by
   by_cases hx0 : x ≤ 0
   · apply le_trans (mul_nonpos_of_nonneg_of_nonpos (exp_pos 1).le hx0) (exp_nonneg x)
   · have h := add_one_le_exp (log x)
-    rwa [← exp_le_exp, exp_add, exp_log (lt_of_not_le hx0), mul_comm] at h
+    rwa [← exp_le_exp, exp_add, exp_log (lt_of_not_ge hx0), mul_comm] at h
 
 theorem two_mul_le_exp {x : ℝ} : 2 * x ≤ exp x := by
   by_cases hx0 : x < 0
   · exact le_trans (mul_nonpos_of_nonneg_of_nonpos (by simp only [Nat.ofNat_nonneg]) hx0.le)
       (exp_nonneg x)
-  · apply le_trans (mul_le_mul_of_nonneg_right _ (le_of_not_lt hx0)) exp_one_mul_le_exp
+  · apply le_trans (mul_le_mul_of_nonneg_right _ (le_of_not_gt hx0)) exp_one_mul_le_exp
     have := Real.add_one_le_exp 1
     rwa [one_add_one_eq_two] at this
 
@@ -159,7 +159,7 @@ theorem lt_log_iff_exp_lt (hy : 0 < y) : x < log y ↔ exp x < y := by rw [← e
 
 theorem log_pos_iff (hx : 0 ≤ x) : 0 < log x ↔ 1 < x := by
   rcases hx.eq_or_lt with (rfl | hx)
-  · simp [le_refl, zero_le_one]
+  · simp [zero_le_one]
   rw [← log_one]
   exact log_lt_log_iff zero_lt_one hx
 
@@ -322,19 +322,26 @@ theorem abs_log_mul_self_lt (x : ℝ) (h1 : 0 < x) (h2 : x ≤ 1) : |log x * x| 
 theorem tendsto_log_atTop : Tendsto log atTop atTop :=
   tendsto_comp_exp_atTop.1 <| by simpa only [log_exp] using tendsto_id
 
-theorem tendsto_log_nhdsWithin_zero : Tendsto log (𝓝[≠] 0) atBot := by
-  rw [← show _ = log from funext log_abs]
-  refine Tendsto.comp (g := log) ?_ tendsto_abs_nhdsWithin_zero
+lemma tendsto_log_nhdsGT_zero : Tendsto log (𝓝[>] 0) atBot := by
   simpa [← tendsto_comp_exp_atBot] using tendsto_id
 
-lemma tendsto_log_nhdsWithin_zero_left : Tendsto log (𝓝[<] 0) atBot :=
-  tendsto_log_nhdsWithin_zero.mono_left <| nhdsWithin_mono _ fun _ h ↦ ne_of_lt h
+@[deprecated (since := "2025-03-18")]
+alias tendsto_log_nhdsWithin_zero_right := tendsto_log_nhdsGT_zero
 
-lemma tendsto_log_nhdsWithin_zero_right : Tendsto log (𝓝[>] 0) atBot :=
-  tendsto_log_nhdsWithin_zero.mono_left <| nhdsWithin_mono _ fun _ h ↦ ne_of_gt h
+theorem tendsto_log_nhdsNE_zero : Tendsto log (𝓝[≠] 0) atBot := by
+  simpa [comp_def] using tendsto_log_nhdsGT_zero.comp tendsto_abs_nhdsNE_zero
+
+@[deprecated (since := "2025-03-18")]
+alias tendsto_log_nhdsWithin_zero := tendsto_log_nhdsNE_zero
+
+lemma tendsto_log_nhdsLT_zero : Tendsto log (𝓝[<] 0) atBot :=
+  tendsto_log_nhdsNE_zero.mono_left <| nhdsWithin_mono _ fun _ h ↦ ne_of_lt h
+
+@[deprecated (since := "2025-03-18")]
+alias tendsto_log_nhdsWithin_zero_left := tendsto_log_nhdsLT_zero
 
 theorem continuousOn_log : ContinuousOn log {0}ᶜ := by
-  simp (config := { unfoldPartialApp := true }) only [continuousOn_iff_continuous_restrict,
+  simp +unfoldPartialApp only [continuousOn_iff_continuous_restrict,
     restrict]
   conv in log _ => rw [log_of_ne_zero (show (x : ℝ) ≠ 0 from x.2)]
   exact expOrderIso.symm.continuous.comp (continuous_subtype_val.norm.subtype_mk _)
@@ -356,8 +363,8 @@ theorem continuousAt_log (hx : x ≠ 0) : ContinuousAt log x :=
 theorem continuousAt_log_iff : ContinuousAt log x ↔ x ≠ 0 := by
   refine ⟨?_, continuousAt_log⟩
   rintro h rfl
-  exact not_tendsto_nhds_of_tendsto_atBot tendsto_log_nhdsWithin_zero _
-    (h.tendsto.mono_left inf_le_left)
+  exact not_tendsto_nhds_of_tendsto_atBot tendsto_log_nhdsNE_zero _ <|
+    h.tendsto.mono_left nhdsWithin_le_nhds
 
 theorem log_prod {α : Type*} (s : Finset α) (f : α → ℝ) (hf : ∀ x ∈ s, f x ≠ 0) :
     log (∏ i ∈ s, f i) = ∑ i ∈ s, log (f i) := by
@@ -375,7 +382,7 @@ theorem log_nat_eq_sum_factorization (n : ℕ) :
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp -- relies on junk values of `log` and `Nat.factorization`
   · simp only [← log_pow, ← Nat.cast_pow]
-    rw [← Finsupp.log_prod, ← Nat.cast_finsupp_prod, Nat.factorization_prod_pow_eq_self hn]
+    rw [← Finsupp.log_prod, ← Nat.cast_finsuppProd, Nat.factorization_prod_pow_eq_self hn]
     intro p hp
     rw [pow_eq_zero (Nat.cast_eq_zero.1 hp), Nat.factorization_zero_right]
 

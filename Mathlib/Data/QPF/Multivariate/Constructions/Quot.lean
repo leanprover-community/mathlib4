@@ -39,8 +39,8 @@ def quotientQPF (FG_abs_repr : ∀ {α} (x : G α), FG_abs (FG_repr x) = x)
   P := q.P
   abs p := FG_abs (abs p)
   repr x := repr (FG_repr x)
-  abs_repr x := by dsimp; rw [abs_repr, FG_abs_repr]
-  abs_map f p := by dsimp; rw [abs_map, FG_abs_map]
+  abs_repr x := by rw [abs_repr, FG_abs_repr]
+  abs_map f p := by rw [abs_map, FG_abs_map]
 
 end repr
 

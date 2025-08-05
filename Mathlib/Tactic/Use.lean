@@ -3,7 +3,7 @@ Copyright (c) 2022 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Gabriel Ebner, Kyle Miller
 -/
-import Mathlib.Init
+import Mathlib.Tactic.WithoutCDot
 import Lean.Meta.Tactic.Util
 import Lean.Elab.Tactic.Basic
 
@@ -97,7 +97,7 @@ def useLoop (eager : Bool) (gs : List MVarId) (args : List Term) (acc insts : Li
           "argument is not definitionally equal to inferred value{indentExpr (.mvar g)}"
       return ← useLoop eager gs' args' acc insts
     -- Type ascription is a workaround for `refine` ensuring the type after synthesizing mvars.
-    let refineArg ← `(tactic| refine ($arg : $(← Term.exprToSyntax (← g.getType))))
+    let refineArg ← `(tactic| refine without_cdot($arg : $(← Term.exprToSyntax (← g.getType))))
     if eager then
       -- In eager mode, first try refining with the argument before applying the constructor
       if let some newGoals ← observing? (run g do withoutRecover <| evalTactic refineArg) then

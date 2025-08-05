@@ -82,6 +82,14 @@ theorem cutExpand_add_left {t u} (s) : CutExpand r (s + t) (s + u) ↔ CutExpand
 lemma cutExpand_add_right {s' s} (t) : CutExpand r (s' + t) (s + t) ↔ CutExpand r s' s := by
   convert cutExpand_add_left t using 2 <;> apply add_comm
 
+theorem cutExpand_add_single {a' a : α} (s : Multiset α) (h : r a' a) :
+    CutExpand r (s + {a'}) (s + {a}) :=
+  (cutExpand_add_left s).2 <| cutExpand_singleton_singleton h
+
+theorem cutExpand_single_add {a' a : α} (h : r a' a) (s : Multiset α) :
+    CutExpand r ({a'} + s) ({a} + s) :=
+  (cutExpand_add_right s).2 <| cutExpand_singleton_singleton h
+
 theorem cutExpand_iff [DecidableEq α] [IsIrrefl α r] {s' s : Multiset α} :
     CutExpand r s' s ↔
       ∃ (t : Multiset α) (a : α), (∀ a' ∈ t, r a' a) ∧ a ∈ s ∧ s' = s.erase a + t := by
@@ -123,7 +131,7 @@ lemma cutExpand_closed [IsIrrefl α r] (p : α → Prop)
   classical
   rw [cutExpand_iff]
   rintro ⟨t, a, hr, ha, rfl⟩ hsp a' h'
-  obtain (h'|h') := mem_add.1 h'
+  obtain (h' | h') := mem_add.1 h'
   exacts [hsp a' (mem_of_mem_erase h'), h (hr a' h') (hsp a ha)]
 
 lemma cutExpand_double {a a₁ a₂} (h₁ : r a₁ a) (h₂ : r a₂ a) : CutExpand r {a₁, a₂} {a} :=
@@ -155,7 +163,7 @@ theorem acc_of_singleton [IsIrrefl α r] {s : Multiset α} (hs : ∀ a ∈ s, Ac
 /-- A singleton `{a}` is accessible under `CutExpand r` if `a` is accessible under `r`,
   assuming `r` is irreflexive. -/
 theorem _root_.Acc.cutExpand [IsIrrefl α r] {a : α} (hacc : Acc r a) : Acc (CutExpand r) {a} := by
-  induction' hacc with a h ih
+  induction hacc with | _ a h ih
   refine Acc.intro _ fun s ↦ ?_
   classical
   simp only [cutExpand_iff, mem_singleton]
@@ -167,5 +175,8 @@ theorem _root_.Acc.cutExpand [IsIrrefl α r] {a : α} (hacc : Acc r a) : Acc (Cu
 /-- `CutExpand r` is well-founded when `r` is. -/
 theorem _root_.WellFounded.cutExpand (hr : WellFounded r) : WellFounded (CutExpand r) :=
   ⟨have := hr.isIrrefl; fun _ ↦ acc_of_singleton fun a _ ↦ (hr.apply a).cutExpand⟩
+
+instance [h : IsWellFounded α r] : IsWellFounded _ (CutExpand r) :=
+  ⟨h.wf.cutExpand⟩
 
 end Relation

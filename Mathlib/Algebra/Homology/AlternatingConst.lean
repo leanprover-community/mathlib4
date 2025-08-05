@@ -35,8 +35,6 @@ def alternatingConst [HasZeroMorphisms C] : C ⥤ ChainComplex C ℕ where
       rintro _ _ i rfl rfl
       by_cases h : Even i <;> simp [Nat.even_add_one, ← Nat.not_even_iff_odd, h] }
   map {X Y} f := { f _ := f }
-  map_id X := by ext; simp
-  map_comp f g := by ext; simp
 
 variable [HasZeroMorphisms C] [HasZeroObject C]
 
@@ -90,7 +88,7 @@ def AlgebraicTopology.alternatingFaceMapComplexConst :
   NatIso.ofComponents (fun X ↦ HomologicalComplex.Hom.isoOfComponents (fun _ ↦ Iso.refl _) <| by
     rintro _ i rfl
     simp [SimplicialObject.δ, ← Finset.sum_smul, Fin.sum_neg_one_pow, Nat.even_add_one,
-      ← Nat.not_even_iff_odd]) (by intros; ext; simp)
+      -Nat.not_even_iff_odd]) (by intros; ext; simp)
 
 namespace ChainComplex
 

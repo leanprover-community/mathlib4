@@ -47,7 +47,7 @@ lemma innerRegularWRT_isCompact_isClosed_iff_innerRegularWRT_isCompact_closure
   constructor <;> intro h A hA r hr
   · obtain ⟨K, hK1, ⟨hK2, _⟩, hK4⟩ := h hA r hr
     refine ⟨K, hK1, ?_, hK4⟩
-    simp only [closure_closure, Function.comp_apply]
+    simp only [Function.comp_apply]
     exact hK2.closure
   · obtain ⟨K, hK1, hK2, hK3⟩ := h hA r hr
     refine ⟨closure K, closure_minimal hK1 hA, ?_, ?_⟩
@@ -183,7 +183,7 @@ spaces: A finite measure on a Polish space is a tight measure.
 instance InnerRegular_of_polishSpace [TopologicalSpace α]
     [PolishSpace α] [BorelSpace α] (P : Measure α) [IsFiniteMeasure P] :
     P.InnerRegular := by
-  letI := upgradePolishSpace α
+  letI := TopologicalSpace.upgradeIsCompletelyMetrizable α
   exact InnerRegular_of_pseudoEMetricSpace_completeSpace_secondCountable P
 
 /--
@@ -213,7 +213,7 @@ respect to compact sets.
 instance InnerRegularCompactLTTop_of_polishSpace
     [TopologicalSpace α] [PolishSpace α] [BorelSpace α] (μ : Measure α) :
     μ.InnerRegularCompactLTTop := by
-  letI := upgradePolishSpace α
+  letI := TopologicalSpace.upgradeIsCompletelyMetrizable α
   exact InnerRegularCompactLTTop_of_pseudoEMetricSpace_completeSpace_secondCountable μ
 
 theorem innerRegular_isCompact_isClosed_measurableSet_of_finite [PseudoEMetricSpace α]
@@ -239,7 +239,7 @@ particular, a finite measure on a Polish space is a tight measure.
 theorem PolishSpace.innerRegular_isCompact_isClosed_measurableSet [TopologicalSpace α]
     [PolishSpace α] [BorelSpace α] (P : Measure α) [IsFiniteMeasure P] :
     P.InnerRegularWRT (fun s ↦ IsCompact s ∧ IsClosed s) MeasurableSet := by
-  letI := upgradePolishSpace α
+  letI := TopologicalSpace.upgradeIsCompletelyMetrizable α
   exact innerRegular_isCompact_isClosed_measurableSet_of_finite P
 
 end MeasureTheory

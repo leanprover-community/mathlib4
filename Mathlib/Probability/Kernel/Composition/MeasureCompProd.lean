@@ -3,8 +3,9 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Decomposition.Lebesgue
-import Mathlib.Probability.Kernel.Composition.IntegralCompProd
+import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
+import Mathlib.MeasureTheory.Measure.Prod
+import Mathlib.Probability.Kernel.Composition.CompProd
 
 /-!
 # Composition-Product of a measure and a kernel
@@ -178,35 +179,6 @@ lemma setLIntegral_compProd [SFinite μ] [IsSFiniteKernel κ]
   rw [compProd, Kernel.setLIntegral_compProd _ _ _ hf hs ht]
   simp
 
-lemma _root_.MeasureTheory.AEStronglyMeasurable.ae_of_compProd [SFinite μ] [IsSFiniteKernel κ]
-    {E : Type*} [NormedAddCommGroup E] {f : α → β → E}
-    (hf : AEStronglyMeasurable f.uncurry (μ ⊗ₘ κ)) :
-    ∀ᵐ x ∂μ, AEStronglyMeasurable (f x) (κ x) := by
-  simpa using hf.compProd_mk_left
-
-lemma integrable_compProd_iff [SFinite μ] [IsSFiniteKernel κ] {E : Type*} [NormedAddCommGroup E]
-    {f : α × β → E} (hf : AEStronglyMeasurable f (μ ⊗ₘ κ)) :
-    Integrable f (μ ⊗ₘ κ) ↔
-      (∀ᵐ x ∂μ, Integrable (fun y => f (x, y)) (κ x)) ∧
-        Integrable (fun x => ∫ y, ‖f (x, y)‖ ∂(κ x)) μ := by
-  simp_rw [Measure.compProd, ProbabilityTheory.integrable_compProd_iff hf, Kernel.prodMkLeft_apply,
-    Kernel.const_apply]
-
-lemma integral_compProd [SFinite μ] [IsSFiniteKernel κ] {E : Type*}
-    [NormedAddCommGroup E] [NormedSpace ℝ E]
-    {f : α × β → E} (hf : Integrable f (μ ⊗ₘ κ)) :
-    ∫ x, f x ∂(μ ⊗ₘ κ) = ∫ a, ∫ b, f (a, b) ∂(κ a) ∂μ := by
-  rw [compProd, ProbabilityTheory.integral_compProd hf]
-  simp
-
-lemma setIntegral_compProd [SFinite μ] [IsSFiniteKernel κ] {E : Type*}
-    [NormedAddCommGroup E] [NormedSpace ℝ E]
-    {s : Set α} (hs : MeasurableSet s) {t : Set β} (ht : MeasurableSet t)
-    {f : α × β → E} (hf : IntegrableOn f (s ×ˢ t) (μ ⊗ₘ κ))  :
-    ∫ x in s ×ˢ t, f x ∂(μ ⊗ₘ κ) = ∫ a in s, ∫ b in t, f (a, b) ∂(κ a) ∂μ := by
-  rw [compProd, ProbabilityTheory.setIntegral_compProd hs ht hf]
-  simp
-
 end Integral
 
 lemma dirac_compProd_apply [MeasurableSingletonClass α] {a : α} [IsSFiniteKernel κ]
@@ -218,11 +190,11 @@ lemma dirac_unit_compProd (κ : Kernel Unit β) [IsSFiniteKernel κ] :
     Measure.dirac () ⊗ₘ κ = (κ ()).map (Prod.mk ()) := by
   ext s hs; rw [dirac_compProd_apply hs, Measure.map_apply measurable_prodMk_left hs]
 
-lemma dirac_unit_compProd_const (μ : Measure β) [IsFiniteMeasure μ] :
+lemma dirac_unit_compProd_const (μ : Measure β) [SFinite μ] :
     Measure.dirac () ⊗ₘ Kernel.const Unit μ = μ.map (Prod.mk ()) := by
   rw [dirac_unit_compProd, Kernel.const_apply]
 
-lemma snd_dirac_unit_compProd_const (μ : Measure β) [IsFiniteMeasure μ] :
+lemma snd_dirac_unit_compProd_const (μ : Measure β) [SFinite μ] :
     snd (Measure.dirac () ⊗ₘ Kernel.const Unit μ) = μ := by simp
 
 instance : SFinite (μ ⊗ₘ κ) := by rw [compProd]; infer_instance
@@ -236,13 +208,7 @@ instance [IsProbabilityMeasure μ] [IsMarkovKernel κ] : IsProbabilityMeasure (�
 instance [IsZeroOrProbabilityMeasure μ] [IsZeroOrMarkovKernel κ] :
     IsZeroOrProbabilityMeasure (μ ⊗ₘ κ) := by
   rw [compProd]
-  rcases eq_zero_or_isProbabilityMeasure μ with rfl | h
-  · simp only [Kernel.const_zero, Kernel.compProd_zero_left, Kernel.zero_apply]
-    infer_instance
-  rcases eq_zero_or_isMarkovKernel κ with rfl | hκ
-  · simp only [Kernel.prodMkLeft_zero, Kernel.compProd_zero_right, Kernel.zero_apply]
-    infer_instance
-  · infer_instance
+  exact IsZeroOrMarkovKernel.isZeroOrProbabilityMeasure ()
 
 section AbsolutelyContinuous
 
@@ -303,7 +269,7 @@ lemma absolutelyContinuous_of_compProd [SFinite μ] [IsSFiniteKernel κ] [h_zero
   exact (h_zero a).out
 
 lemma absolutelyContinuous_compProd_left_iff [SFinite μ] [SFinite ν]
-    [IsFiniteKernel κ] [∀ a, NeZero (κ a)] :
+    [IsSFiniteKernel κ] [∀ a, NeZero (κ a)] :
     μ ⊗ₘ κ ≪ ν ⊗ₘ κ ↔ μ ≪ ν :=
   ⟨absolutelyContinuous_of_compProd, fun h ↦ h.compProd_left κ⟩
 
@@ -314,7 +280,7 @@ lemma AbsolutelyContinuous.compProd_of_compProd [SFinite ν] [IsSFiniteKernel η
   swap; · rw [compProd_of_not_sfinite _ _ hμ]; simp
   refine AbsolutelyContinuous.mk fun s hs hs_zero ↦ ?_
   suffices (μ ⊗ₘ η) s = 0 from hκη this
-  rw [measure_zero_iff_ae_nmem, ae_compProd_iff hs.compl] at hs_zero ⊢
+  rw [measure_zero_iff_ae_notMem, ae_compProd_iff hs.compl] at hs_zero ⊢
   exact hμν.ae_le hs_zero
 
 end AbsolutelyContinuous

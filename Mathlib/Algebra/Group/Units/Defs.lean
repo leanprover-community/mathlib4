@@ -16,7 +16,7 @@ An element of a `Monoid` is a unit if it has a two-sided inverse.
 * `IsUnit x`: a predicate asserting that `x` is a unit (i.e., invertible element) of a monoid.
 
 For both declarations, there is an additive counterpart: `AddUnits` and `IsAddUnit`.
-See also `Prime`, `Associated`, and `Irreducible` in `Mathlib.Algebra.Associated`.
+See also `Prime`, `Associated`, and `Irreducible` in `Mathlib/Algebra/Associated.lean`.
 
 ## Notation
 
@@ -92,7 +92,8 @@ instance instInv : Inv αˣ :=
 attribute [instance] AddUnits.instNeg
 
 /-- See Note [custom simps projection] -/
-@[to_additive "See Note [custom simps projection]"]
+@[to_additive
+"See Note [custom simps projection]"]
 def Simps.val_inv (u : αˣ) : α := ↑(u⁻¹)
 
 initialize_simps_projections Units (as_prefix val, val_inv → null, inv → val_inv, as_prefix val_inv)
@@ -104,19 +105,24 @@ initialize_simps_projections AddUnits
 theorem val_mk (a : α) (b h₁ h₂) : ↑(Units.mk a b h₁ h₂) = a :=
   rfl
 
-@[to_additive (attr := ext)]
-theorem ext : Function.Injective (val : αˣ → α)
+@[to_additive]
+theorem val_injective : Function.Injective (val : αˣ → α)
   | ⟨v, i₁, vi₁, iv₁⟩, ⟨v', i₂, vi₂, iv₂⟩, e => by
     simp only at e; subst v'; congr
     simpa only [iv₂, vi₁, one_mul, mul_one] using mul_assoc i₂ v i₁
 
+@[to_additive (attr := ext)]
+theorem ext {u v : αˣ} (huv : u.val = v.val) : u = v := val_injective huv
+
 @[to_additive (attr := norm_cast)]
-theorem eq_iff {a b : αˣ} : (a : α) = b ↔ a = b :=
-  ⟨fun h => ext h, congr_arg _⟩
+theorem val_inj {a b : αˣ} : (a : α) = b ↔ a = b :=
+  val_injective.eq_iff
+
+@[to_additive (attr := deprecated val_inj (since := "2025-06-21"))] alias eq_iff := val_inj
 
 /-- Units have decidable equality if the base `Monoid` has decidable equality. -/
 @[to_additive "Additive units have decidable equality
-if the base `AddMonoid` has deciable equality."]
+if the base `AddMonoid` has decidable equality."]
 instance [DecidableEq α] : DecidableEq αˣ := fun _ _ => decidable_of_iff' _ Units.ext_iff
 
 @[to_additive (attr := simp)]
@@ -173,7 +179,7 @@ theorem val_one : ((1 : αˣ) : α) = 1 :=
   rfl
 
 @[to_additive (attr := simp, norm_cast)]
-theorem val_eq_one {a : αˣ} : (a : α) = 1 ↔ a = 1 := by rw [← Units.val_one, eq_iff]
+theorem val_eq_one {a : αˣ} : (a : α) = 1 ↔ a = 1 := by rw [← Units.val_one, val_inj]
 
 @[to_additive (attr := simp)]
 theorem inv_mk (x y : α) (h₁ h₂) : (mk x y h₁ h₂)⁻¹ = mk y x h₂ h₁ :=
@@ -258,6 +264,9 @@ instance instCommGroupUnits {α} [CommMonoid α] : CommGroup αˣ where
 
 @[to_additive (attr := simp, norm_cast)]
 lemma val_pow_eq_pow_val (n : ℕ) : ↑(a ^ n) = (a ^ n : α) := rfl
+
+@[to_additive (attr := simp, norm_cast)]
+lemma inv_pow_eq_pow_inv (n : ℕ) : ↑(a ^ n)⁻¹ = (a⁻¹ ^ n : α) := rfl
 
 end Monoid
 
@@ -357,10 +366,9 @@ variable {M : Type*} {N : Type*}
 /-- An element `a : M` of a `Monoid` is a unit if it has a two-sided inverse.
 The actual definition says that `a` is equal to some `u : Mˣ`, where
 `Mˣ` is a bundled version of `IsUnit`. -/
-@[to_additive
-      "An element `a : M` of an `AddMonoid` is an `AddUnit` if it has a two-sided additive inverse.
-      The actual definition says that `a` is equal to some `u : AddUnits M`,
-      where `AddUnits M` is a bundled version of `IsAddUnit`."]
+@[to_additive "An element `a : M` of an `AddMonoid` is an `AddUnit` if it has a two-sided additive
+inverse. The actual definition says that `a` is equal to some `u : AddUnits M`,
+where `AddUnits M` is a bundled version of `IsAddUnit`."]
 def IsUnit [Monoid M] (a : M) : Prop :=
   ∃ u : Mˣ, (u : M) = a
 
@@ -415,7 +423,8 @@ lemma IsUnit.exists_left_inv {a : M} (h : IsUnit a) : ∃ b, b * a = 1 := by
 @[to_additive] lemma IsUnit.pow (n : ℕ) : IsUnit a → IsUnit (a ^ n) := by
   rintro ⟨u, rfl⟩; exact ⟨u ^ n, rfl⟩
 
-@[to_additive] lemma isUnit_iff_eq_one [Subsingleton Mˣ] {x : M} : IsUnit x ↔ x = 1 :=
+@[to_additive (attr := simp)]
+lemma isUnit_iff_eq_one [Subsingleton Mˣ] {x : M} : IsUnit x ↔ x = 1 :=
   ⟨fun ⟨u, hu⟩ ↦ by rw [← hu, Subsingleton.elim u 1, Units.val_one], fun h ↦ h ▸ isUnit_one⟩
 
 end Monoid
@@ -467,7 +476,7 @@ theorem mul_iff [CommMonoid M] {x y : M} : IsUnit (x * y) ↔ IsUnit x ∧ IsUni
 
 section Monoid
 
-variable [Monoid M] {a : M}
+variable [Monoid M] {a b : M}
 
 /-- The element of the group of units, corresponding to an element of a monoid which is a unit. When
 `α` is a `DivisionMonoid`, use `IsUnit.unit'` instead. -/
@@ -479,7 +488,7 @@ protected noncomputable def unit (h : IsUnit a) : Mˣ :=
 
 @[to_additive (attr := simp)]
 theorem unit_of_val_units {a : Mˣ} (h : IsUnit (a : M)) : h.unit = a :=
-  Units.ext <| rfl
+  Units.ext rfl
 
 @[to_additive (attr := simp)]
 theorem unit_spec (h : IsUnit a) : ↑h.unit = a :=
@@ -487,7 +496,15 @@ theorem unit_spec (h : IsUnit a) : ↑h.unit = a :=
 
 @[to_additive (attr := simp)]
 theorem unit_one (h : IsUnit (1 : M)) : h.unit = 1 :=
-  Units.eq_iff.1 rfl
+  Units.ext rfl
+
+@[to_additive]
+theorem unit_mul (ha : IsUnit a) (hb : IsUnit b) : (ha.mul hb).unit = ha.unit * hb.unit :=
+  Units.ext rfl
+
+@[to_additive]
+theorem unit_pow (h : IsUnit a) (n : ℕ) : (h.pow n).unit = h.unit ^ n :=
+  Units.ext rfl
 
 @[to_additive (attr := simp)]
 theorem val_inv_mul (h : IsUnit a) : ↑h.unit⁻¹ * a = 1 :=
@@ -546,8 +563,17 @@ lemma inv (h : IsUnit a) : IsUnit a⁻¹ := by
   rw [← hu, ← Units.val_inv_eq_inv_val]
   exact Units.isUnit _
 
-@[to_additive] lemma div (ha : IsUnit a) (hb : IsUnit b) : IsUnit (a / b) := by
+@[to_additive]
+lemma unit_inv (h : IsUnit a) : h.inv.unit = h.unit⁻¹ :=
+  Units.ext h.unit.val_inv_eq_inv_val.symm
+
+@[to_additive]
+lemma div (ha : IsUnit a) (hb : IsUnit b) : IsUnit (a / b) := by
   rw [div_eq_mul_inv]; exact ha.mul hb.inv
+
+@[to_additive]
+lemma unit_div (ha : IsUnit a) (hb : IsUnit b) : (ha.div hb).unit = ha.unit / hb.unit :=
+  Units.ext (ha.unit.val_div_eq_div_val hb.unit).symm
 
 @[to_additive]
 protected lemma div_mul_cancel_right (h : IsUnit b) (a : α) : b / (a * b) = a⁻¹ := by

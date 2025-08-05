@@ -104,7 +104,7 @@ def equivOp (H : Subgroup G) : H ≃ H.op :=
 @[to_additive]
 theorem op_normalizer (H : Subgroup G) : H.normalizer.op = H.op.normalizer := by
   ext x
-  simp [mem_normalizer_iff', MulOpposite.op_surjective.forall, iff_comm]
+  simp [mem_normalizer_iff', iff_comm]
 
 @[to_additive]
 theorem unop_normalizer (H : Subgroup Gᵐᵒᵖ) : H.normalizer.unop = H.unop.normalizer := by

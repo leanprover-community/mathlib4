@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Vladimir Goryachev, Kyle Miller, Kim Morrison, Eric Rodriguez
 -/
 import Mathlib.Algebra.Group.Nat.Range
-import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Set.Finite.Basic
 
 /-!
@@ -18,6 +17,7 @@ objects, and helping to evaluate it for specific `k`.
 -/
 
 assert_not_imported Mathlib.Dynamics.FixedPoints.Basic
+assert_not_exists Ring
 
 open Finset
 
@@ -74,7 +74,7 @@ theorem count_add (a b : ℕ) : count p (a + b) = count p a + count (fun k ↦ p
     rw [Finset.disjoint_left]
     simp_rw [mem_map, mem_range, addLeftEmbedding_apply]
     rintro x hx ⟨c, _, rfl⟩
-    exact (self_le_add_right _ _).not_lt hx
+    exact (Nat.le_add_right _ _).not_gt hx
   simp_rw [count_eq_card_filter_range, range_add, filter_union, card_union_of_disjoint this,
     filter_map, addLeftEmbedding, card_map]
   rfl
@@ -114,7 +114,7 @@ theorem count_strict_mono {m n : ℕ} (hm : p m) (hmn : m < n) : count p m < cou
 theorem count_injective {m n : ℕ} (hm : p m) (hn : p n) (heq : count p m = count p n) : m = n := by
   by_contra! h : m ≠ n
   wlog hmn : m < n
-  · exact this hn hm heq.symm h.symm (h.lt_or_lt.resolve_left hmn)
+  · exact this hn hm heq.symm h.symm (h.lt_or_gt.resolve_left hmn)
   · simpa [heq] using count_strict_mono hm hmn
 
 theorem count_le_card (hp : (setOf p).Finite) (n : ℕ) : count p n ≤ #hp.toFinset := by

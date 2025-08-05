@@ -45,12 +45,12 @@ def partialHomeomorph (φ : B → F ≃L[𝕜] F) (hU : IsOpen U)
   open_target := hU.prod isOpen_univ
   continuousOn_toFun :=
     have : ContinuousOn (fun p : B × F => ((φ p.1 : F →L[𝕜] F), p.2)) (U ×ˢ univ) :=
-      hφ.prod_map continuousOn_id
-    continuousOn_fst.prod (isBoundedBilinearMap_apply.continuous.comp_continuousOn this)
+      hφ.prodMap continuousOn_id
+    continuousOn_fst.prodMk (isBoundedBilinearMap_apply.continuous.comp_continuousOn this)
   continuousOn_invFun :=
-    haveI : ContinuousOn (fun p : B × F => (((φ p.1).symm : F →L[𝕜] F), p.2)) (U ×ˢ univ) :=
-      h2φ.prod_map continuousOn_id
-    continuousOn_fst.prod (isBoundedBilinearMap_apply.continuous.comp_continuousOn this)
+    have : ContinuousOn (fun p : B × F => (((φ p.1).symm : F →L[𝕜] F), p.2)) (U ×ˢ univ) :=
+      h2φ.prodMap continuousOn_id
+    continuousOn_fst.prodMk (isBoundedBilinearMap_apply.continuous.comp_continuousOn this)
 
 /-- Compute the composition of two partial homeomorphisms induced by fiberwise linear
 equivalences. -/
@@ -253,11 +253,11 @@ def contMDiffFiberwiseLinear (n : WithTop ℕ∞) : StructureGroupoid (B × F) w
     rintro e e' ⟨φ, U, hU, hφ, h2φ, heφ⟩ ⟨φ', U', hU', hφ', h2φ', heφ'⟩
     refine ⟨fun b => (φ b).trans (φ' b), _, hU.inter hU', ?_, ?_,
       Setoid.trans (PartialHomeomorph.EqOnSource.trans' heφ heφ') ⟨?_, ?_⟩⟩
-    · show
+    · change
         ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n
           (fun x : B => (φ' x).toContinuousLinearMap ∘L (φ x).toContinuousLinearMap) (U ∩ U')
       exact (hφ'.mono inter_subset_right).clm_comp (hφ.mono inter_subset_left)
-    · show
+    · change
         ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n
           (fun x : B => (φ x).symm.toContinuousLinearMap ∘L (φ' x).symm.toContinuousLinearMap)
           (U ∩ U')

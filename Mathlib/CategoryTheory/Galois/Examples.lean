@@ -52,12 +52,16 @@ noncomputable def Action.imageComplement {X Y : Action FintypeCat G}
           = (Y.ρ g⁻¹ * Y.ρ g) y.val := by rw [f.comm, FintypeCat.comp_apply, h]; rfl
         _ = y.val := by rw [← map_mul, inv_mul_cancel, Action.ρ_one, FintypeCat.id_apply]
     map_one' := by simp only [map_one, End.one_def, FintypeCat.id_apply, Subtype.coe_eta]; rfl
-    map_mul' := fun g h ↦ FintypeCat.hom_ext _ _ <| fun y ↦ Subtype.ext <|
-      congrFun (MonoidHom.map_mul Y.ρ g h) y.val
+    map_mul' := by
+      intro g h
+      congr! 1 with ⟨x, hx⟩
+      apply Subtype.ext
+      simp only [map_mul, End.mul_def, FintypeCat.comp_apply]
+      rfl
   }
 
 /-- The inclusion from the complement of the image of `f : X ⟶ Y` into `Y`. -/
-def Action.imageComplementIncl {X Y : Action FintypeCat G} (f : X ⟶ Y) :
+noncomputable def Action.imageComplementIncl {X Y : Action FintypeCat G} (f : X ⟶ Y) :
     Action.imageComplement G f ⟶ Y where
   hom := FintypeCat.imageComplementIncl f.hom
   comm _ := rfl
@@ -75,7 +79,7 @@ instance [Finite G] : HasColimitsOfShape (SingleObj G) FintypeCat.{w} := by
   exact Limits.hasColimitsOfShape_of_equivalence e.toSingleObjEquiv.symm
 
 noncomputable instance : PreservesFiniteLimits (forget (Action FintypeCat G)) := by
-  show PreservesFiniteLimits (Action.forget FintypeCat _ ⋙ FintypeCat.incl)
+  change PreservesFiniteLimits (Action.forget FintypeCat _ ⋙ FintypeCat.incl)
   apply comp_preservesFiniteLimits
 
 /-- The category of finite `G`-sets is a `PreGaloisCategory`. -/
@@ -140,7 +144,7 @@ theorem Action.isConnected_of_transitive (X : FintypeCat) [MulAction G X]
       · letI x : X := i.hom y
         obtain ⟨σ, hσ⟩ := MulAction.exists_smul_eq G x x'
         use σ • y
-        show (Y.ρ σ ≫ i.hom) y = x'
+        change (Y.ρ σ ≫ i.hom) y = x'
         rw [i.comm, FintypeCat.comp_apply]
         exact hσ
     apply isIso_of_reflects_iso i (Action.forget _ _)

@@ -117,7 +117,7 @@ def tryTheoremCore (xs : Array Expr) (val : Expr) (type : Expr) (e : Expr)
 
 /-- Try to apply a theorem provided some of the theorem arguments. -/
 def tryTheoremWithHint? (e : Expr) (thmOrigin : Origin)
-    (hint : Array (Nat×Expr))
+    (hint : Array (Nat × Expr))
     (funProp : Expr → FunPropM (Option Result)) (newMCtxDepth : Bool := false) :
     FunPropM (Option Result) := do
   let go : FunPropM (Option Result) := do
@@ -128,7 +128,7 @@ def tryTheoremWithHint? (e : Expr) (thmOrigin : Origin)
     for (i,x) in hint do
       try
         for (id,v) in hint do
-          xs[id]!.mvarId!.assignIfDefeq v
+          xs[id]!.mvarId!.assignIfDefEq v
       catch _ =>
         trace[Debug.Meta.Tactic.fun_prop]
           "failed to use hint {i} `{← ppExpr x} when applying theorem {← ppOrigin thmOrigin}"
@@ -287,7 +287,7 @@ def letCase (funPropDecl : FunPropDecl) (e : Expr) (f : Expr)
     -- let binding can be pulled out of the lambda function
     if ¬(yValue.hasLooseBVar 0) then
       let body := yBody.swapBVars 0 1
-      let e' := .letE yName yType yValue (nonDep := false)
+      let e' := mkLet yName yType yValue
         (e.setArg (funPropDecl.funArgId) (.lam xName xType body xBi))
       return ← funProp e'
 
@@ -365,11 +365,10 @@ def removeArgRule (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     (funProp : Expr → FunPropM (Option Result)) :
     FunPropM (Option Result) := do
 
-  match fData.args.size with
+  match h : fData.args.size with
   | 0 => throwError "fun_prop bug: invalid use of remove arg case {←ppExpr e}"
-  | _ =>
-    let n := fData.args.size
-    let arg := fData.args[n-1]!
+  | n + 1 =>
+    let arg := fData.args[n]
 
     if arg.coe.isSome then
       -- if have to apply morphisms rules if we deal with morphims
@@ -639,7 +638,7 @@ mutual
         letTelescope e fun xs b => do
           let .some r ← funProp b
             | return none
-          cacheResult e {proof := ← mkLambdaFVars xs r.proof }
+          cacheResult e {proof := ← mkLambdaFVars (generalizeNondepLet := false) xs r.proof }
       | .forallE .. =>
         forallTelescope e fun xs b => do
           let .some r ← funProp b
@@ -664,9 +663,7 @@ mutual
 
     -- if function starts with let bindings move them the top of `e` and try again
     if f.isLet then
-      return ← letTelescope f fun xs b => do
-        let e' := e.setArg funPropDecl.funArgId b
-        funProp (← mkLambdaFVars xs e')
+      return ← funProp (← mapLetTelescope f fun _ b => pure <| e.setArg funPropDecl.funArgId b)
 
     match ← getFunctionData? f (← unfoldNamePred) with
     | .letE f =>

@@ -20,7 +20,7 @@ namespace List
 
 @[simp]
 theorem count_not_add_count (l : List Bool) (b : Bool) : count (!b) l + count b l = length l := by
-  have := length_eq_countP_add_countP (· == !b)
+  have := length_eq_countP_add_countP (l := l) (· == !b)
   aesop (add simp this)
 
 @[simp]
@@ -40,7 +40,7 @@ theorem Chain.count_not :
   | _, [], _h => rfl
   | b, x :: l, h => by
     obtain rfl : b = !x := Bool.eq_not_iff.2 (rel_of_chain_cons h)
-    rw [Bool.not_not, count_cons_self, count_cons_of_ne x.not_ne_self,
+    rw [Bool.not_not, count_cons_self, count_cons_of_ne x.not_ne_self.symm,
       Chain.count_not (chain_of_chain_cons h), length, add_assoc, Nat.mod_two_add_succ_mod_two]
 
 namespace Chain'
@@ -54,7 +54,7 @@ theorem count_not_eq_count (hl : Chain' (· ≠ ·) l) (h2 : Even (length l)) (b
   rw [length_cons, Nat.even_add_one, Nat.not_even_iff] at h2
   suffices count (!x) (x :: l) = count x (x :: l) by
     cases b <;> cases x <;> (try exact this) <;> exact this.symm
-  rw [count_cons_of_ne x.not_ne_self, hl.count_not, h2, count_cons_self]
+  rw [count_cons_of_ne x.not_ne_self.symm, hl.count_not, h2, count_cons_self]
 
 theorem count_false_eq_count_true (hl : Chain' (· ≠ ·) l) (h2 : Even (length l)) :
     count false l = count true l :=
@@ -65,10 +65,10 @@ theorem count_not_le_count_add_one (hl : Chain' (· ≠ ·) l) (b : Bool) :
   rcases l with - | ⟨x, l⟩
   · exact zero_le _
   obtain rfl | rfl : b = x ∨ b = !x := by simp only [Bool.eq_not_iff, em]
-  · rw [count_cons_of_ne b.not_ne_self, count_cons_self, hl.count_not, add_assoc]
-    exact add_le_add_left (Nat.mod_lt _ two_pos).le _
-  · rw [Bool.not_not, count_cons_self, count_cons_of_ne x.not_ne_self, hl.count_not]
-    exact add_le_add_right (le_add_right le_rfl) _
+  · rw [count_cons_of_ne b.not_ne_self.symm, count_cons_self, hl.count_not, add_assoc]
+    omega
+  · rw [Bool.not_not, count_cons_self, count_cons_of_ne x.not_ne_self.symm, hl.count_not]
+    omega
 
 theorem count_false_le_count_true_add_one (hl : Chain' (· ≠ ·) l) :
     count false l ≤ count true l + 1 :=
@@ -90,7 +90,7 @@ theorem two_mul_count_bool_eq_ite (hl : Chain' (· ≠ ·) l) (b : Bool) :
   · rw [if_pos h2, hl.two_mul_count_bool_of_even h2]
   · rcases l with - | ⟨x, l⟩
     · exact (h2 .zero).elim
-    simp only [if_neg h2, count_cons, mul_add, head?, Option.mem_some_iff, @eq_comm _ x]
+    simp only [if_neg h2, count_cons, mul_add, head?]
     rw [length_cons, Nat.even_add_one, not_not] at h2
     replace hl : l.Chain' (· ≠ ·) := hl.tail
     rw [hl.two_mul_count_bool_of_even h2]
@@ -99,7 +99,7 @@ theorem two_mul_count_bool_eq_ite (hl : Chain' (· ≠ ·) l) (b : Bool) :
 theorem length_sub_one_le_two_mul_count_bool (hl : Chain' (· ≠ ·) l) (b : Bool) :
     length l - 1 ≤ 2 * count b l := by
   rw [hl.two_mul_count_bool_eq_ite]
-  split_ifs <;> simp [le_tsub_add, Nat.le_succ_of_le]
+  split_ifs <;> simp [Nat.le_succ_of_le]
 
 theorem length_div_two_le_count_bool (hl : Chain' (· ≠ ·) l) (b : Bool) :
     length l / 2 ≤ count b l := by

@@ -26,7 +26,7 @@ using an abbreviation for `EnrichedOrdinaryCategory SSet C`.
 
 universe v' v u u'
 
-open CategoryTheory Category MonoidalCategory
+open CategoryTheory Category MonoidalCategory Opposite
 
 namespace CategoryTheory
 
@@ -42,7 +42,7 @@ class EnrichedOrdinaryCategory extends EnrichedCategory V C where
   homEquiv {X Y : C} : (X ⟶ Y) ≃ (𝟙_ V ⟶ (X ⟶[V] Y))
   homEquiv_id (X : C) : homEquiv (𝟙 X) = eId V X := by aesop_cat
   homEquiv_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    homEquiv (f ≫ g) = (λ_ _).inv ≫ (homEquiv f ⊗ homEquiv g) ≫
+    homEquiv (f ≫ g) = (λ_ _).inv ≫ (homEquiv f ⊗ₘ homEquiv g) ≫
       eComp V X Y Z := by aesop_cat
 
 variable [EnrichedOrdinaryCategory V C] {C}
@@ -58,7 +58,7 @@ lemma eHomEquiv_id (X : C) : eHomEquiv V (𝟙 X) = eId V X :=
 
 @[reassoc]
 lemma eHomEquiv_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    eHomEquiv V (f ≫ g) = (λ_ _).inv ≫ (eHomEquiv V f ⊗ eHomEquiv V g) ≫ eComp V X Y Z :=
+    eHomEquiv V (f ≫ g) = (λ_ _).inv ≫ (eHomEquiv V f ⊗ₘ eHomEquiv V g) ≫ eComp V X Y Z :=
   EnrichedOrdinaryCategory.homEquiv_comp _ _
 
 /-- The morphism `(X' ⟶[V] Y) ⟶ (X ⟶[V] Y)` induced by a morphism `X ⟶ X'`. -/
@@ -120,14 +120,14 @@ lemma eComp_eHomWhiskerLeft (X Y : C) {Z Z' : C} (g : Z ⟶ Z') :
       _ ◁ eHomWhiskerLeft V Y g ≫ eComp V X Y Z' := by
   dsimp [eHomWhiskerLeft]
   rw [rightUnitor_inv_naturality_assoc, ← whisker_exchange_assoc]
-  simp [e_assoc']
+  simp
 
 /-- Given an isomorphism `α : Y ≅ Y₁` in C, the enriched composition map
 `eComp V X Y Z : (X ⟶[V] Y) ⊗ (Y ⟶[V] Z) ⟶ (X ⟶[V] Z)` factors through the `V`
 object `(X ⟶[V] Y₁) ⊗ (Y₁ ⟶[V] Z)` via the map defined by whiskering in the
 middle with `α.hom` and `α.inv`. -/
 @[reassoc]
-lemma eHom_whisker_cancel {X Y Y₁ Z : C} (α : Y  ≅ Y₁) :
+lemma eHom_whisker_cancel {X Y Y₁ Z : C} (α : Y ≅ Y₁) :
     eHomWhiskerLeft V X α.hom ▷ _ ≫ _ ◁ eHomWhiskerRight V α.inv Z ≫
       eComp V X Y₁ Z = eComp V X Y Z := by
   dsimp [eHomWhiskerLeft, eHomWhiskerRight]
@@ -138,7 +138,7 @@ lemma eHom_whisker_cancel {X Y Y₁ Z : C} (α : Y  ≅ Y₁) :
   simp [← eHomWhiskerLeft_comp]
 
 @[reassoc]
-lemma eHom_whisker_cancel_inv {X Y Y₁ Z : C} (α : Y  ≅ Y₁) :
+lemma eHom_whisker_cancel_inv {X Y Y₁ Z : C} (α : Y ≅ Y₁) :
     eHomWhiskerLeft V X α.inv ▷ _ ≫ _ ◁ eHomWhiskerRight V α.hom Z ≫
       eComp V X Y Z = eComp V X Y₁ Z := eHom_whisker_cancel V α.symm
 
@@ -172,5 +172,8 @@ instance ForgetEnrichment.EnrichedOrdinaryCategory {D : Type*} [EnrichedCategory
   homEquiv := Equiv.refl _
   homEquiv_id _ := Category.id_comp _
   homEquiv_comp _ _ := Category.assoc _ _ _
+
+/-- enriched coyoneda functor `(X ⟶[V] _) : C ⥤ V`. -/
+abbrev eCoyoneda (X : C) := (eHomFunctor V C).obj (op X)
 
 end CategoryTheory

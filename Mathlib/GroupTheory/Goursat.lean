@@ -71,7 +71,7 @@ lemma mk_goursatFst_eq_iff_mk_goursatSnd_eq {x y : G × H} (hx : x ∈ I) (hy : 
   have := normal_goursatFst hI₁
   have := normal_goursatSnd hI₂
   rw [eq_comm]
-  simp [QuotientGroup.eq_iff_div_mem]
+  simp only [QuotientGroup.eq_iff_div_mem, mem_goursatFst, mem_goursatSnd]
   constructor <;> intro h
   · simpa [Prod.mul_def, Prod.div_def] using div_mem (mul_mem h hx) hy
   · simpa [Prod.mul_def, Prod.div_def] using div_mem (mul_mem h hy) hx
@@ -139,7 +139,7 @@ lemma goursat :
   have hI₂' : Surjective (Prod.snd ∘ I'.subtype) := by
     simp only [← MonoidHom.coe_snd, ← MonoidHom.coe_comp, ← MonoidHom.range_eq_top,
       MonoidHom.range_comp, Subgroup.range_subtype, I']
-    simp only [← MonoidHom.range_comp, MonoidHom.fst_comp_prod, MonoidHom.range_eq_top]
+    simp only [← MonoidHom.range_comp, MonoidHom.range_eq_top]
     exact (MonoidHom.snd ..).subgroupMap_surjective I
   have := normal_goursatFst hI₁'
   have := normal_goursatSnd hI₂'

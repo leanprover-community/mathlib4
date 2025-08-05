@@ -31,11 +31,11 @@ TODO: define distributive categories, and show that they satisfy `MonoCoprod`, s
 
 noncomputable section
 
-open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
-
 universe u
 
 namespace CategoryTheory
+
+open CategoryTheory.Category CategoryTheory.Limits
 
 namespace Limits
 
@@ -227,7 +227,7 @@ theorem monoCoprod_of_preservesCoprod_of_reflectsMono [MonoCoprod D]
   binaryCofan_inl {A B} c h := by
     let c' := BinaryCofan.mk (F.map c.inl) (F.map c.inr)
     apply mono_of_mono_map F
-    show Mono c'.inl
+    change Mono c'.inl
     apply MonoCoprod.binaryCofan_inl
     apply mapIsColimitOfPreservesOfIsColimit F
     apply IsColimit.ofIsoColimit h

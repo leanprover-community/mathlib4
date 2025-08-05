@@ -24,18 +24,18 @@ namespace GroupExtension
 variable {E : Type*} [Group E] (S : GroupExtension N E G)
 
 /-- The isomorphism `E ⧸ S.rightHom.ker ≃* G` induced by `S.rightHom` -/
-@[to_additive "The isomorphism `E ⧸ S.rightHom.ker ≃+ G` induced by `S.rightHom`" ]
+@[to_additive "The isomorphism `E ⧸ S.rightHom.ker ≃+ G` induced by `S.rightHom`"]
 noncomputable def quotientKerRightHomEquivRight : E ⧸ S.rightHom.ker ≃* G :=
   QuotientGroup.quotientKerEquivOfSurjective S.rightHom S.rightHom_surjective
 
 /-- The isomorphism `E ⧸ S.inl.range ≃* G` induced by `S.rightHom` -/
-@[to_additive "The isomorphism `E ⧸ S.inl.range ≃+ G` induced by `S.rightHom`" ]
+@[to_additive "The isomorphism `E ⧸ S.inl.range ≃+ G` induced by `S.rightHom`"]
 noncomputable def quotientRangeInlEquivRight : E ⧸ S.inl.range ≃* G :=
   (QuotientGroup.quotientMulEquivOfEq S.range_inl_eq_ker_rightHom).trans
     S.quotientKerRightHomEquivRight
 
 /-- An arbitrarily chosen section -/
-@[to_additive surjInvRightHom "An arbitrarily chosen section" ]
+@[to_additive surjInvRightHom "An arbitrarily chosen section"]
 noncomputable def surjInvRightHom : S.Section where
   toFun := Function.surjInv S.rightHom_surjective
   rightInverse_rightHom := Function.surjInv_eq S.rightHom_surjective

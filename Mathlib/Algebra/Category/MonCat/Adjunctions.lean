@@ -9,6 +9,7 @@ import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.Algebra.Group.WithOne.Basic
 import Mathlib.Data.Finsupp.Basic
 import Mathlib.Data.Finsupp.SMulWithZero
+import Mathlib.CategoryTheory.Adjunction.Basic
 
 /-!
 # Adjunctions regarding the category of monoids
@@ -52,10 +53,11 @@ def adjoinOneAdj : adjoinOne ⊣ forget₂ MonCat.{u} Semigrp.{u} :=
           (ConcreteCategory.homEquiv (X := X) (Y := (forget₂ _ _).obj Y)).symm)
       homEquiv_naturality_left_symm := by
         intros
-        ext ⟨_|_⟩ <;> simp <;> rfl }
+        ext ⟨_ | _⟩ <;> simp <;> rfl }
 
 /-- The free functor `Type u ⥤ MonCat` sending a type `X` to the free monoid on `X`. -/
-@[to_additive "The free functor `Type u ⥤ AddMonCat` sending a type `X` to the free monoid on `X`."]
+@[to_additive "The free functor `Type u ⥤ AddMonCat` sending a type `X` to the free additive monoid
+on `X`."]
 def free : Type u ⥤ MonCat.{u} where
   obj α := MonCat.of (FreeMonoid α)
   map f := ofHom (FreeMonoid.map f)

@@ -151,7 +151,6 @@ theorem toNat_add (hc : c < ℵ₀) (hd : d < ℵ₀) : toNat (c + d) = toNat c 
   lift d to ℕ using hd
   norm_cast
 
-@[simp]
 theorem toNat_lift_add_lift {a : Cardinal.{u}} {b : Cardinal.{v}} (ha : a < ℵ₀) (hb : b < ℵ₀) :
     toNat (lift.{v} a + lift.{u} b) = toNat a + toNat b := by
   simp [*]

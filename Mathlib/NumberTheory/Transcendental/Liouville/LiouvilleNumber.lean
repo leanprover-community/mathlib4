@@ -80,7 +80,7 @@ theorem remainder_summable {m : ℝ} (hm : 1 < m) (k : ℕ) :
   convert (summable_nat_add_iff (k + 1)).2 (LiouvilleNumber.summable hm)
 
 theorem remainder_pos {m : ℝ} (hm : 1 < m) (k : ℕ) : 0 < remainder m k :=
-  tsum_pos (remainder_summable hm k) (fun _ => by positivity) 0 (by positivity)
+  (remainder_summable hm k).tsum_pos (fun _ => by positivity) 0 (by positivity)
 
 theorem partialSum_succ (m : ℝ) (n : ℕ) :
     partialSum m (n + 1) = partialSum m n + 1 / m ^ (n + 1)! :=
@@ -89,7 +89,7 @@ theorem partialSum_succ (m : ℝ) (n : ℕ) :
 /-- Split the sum defining a Liouville number into the first `k` terms and the rest. -/
 theorem partialSum_add_remainder {m : ℝ} (hm : 1 < m) (k : ℕ) :
     partialSum m k + remainder m k = liouvilleNumber m :=
-  sum_add_tsum_nat_add _ (LiouvilleNumber.summable hm)
+  (LiouvilleNumber.summable hm).sum_add_tsum_nat_add _
 
 /-! We now prove two useful inequalities, before collecting everything together. -/
 
@@ -106,7 +106,7 @@ theorem remainder_lt' (n : ℕ) {m : ℝ} (m1 : 1 < m) :
   calc
     (∑' i, 1 / m ^ (i + (n + 1))!) < ∑' i, 1 / m ^ (i + (n + 1)!) :=
         -- 1. the second series dominates the first
-        tsum_lt_tsum (fun b => one_div_pow_le_one_div_pow_of_le m1.le
+        Summable.tsum_lt_tsum (fun b => one_div_pow_le_one_div_pow_of_le m1.le
           (b.add_factorial_succ_le_factorial_add_succ n))
         -- 2. the term with index `i = 2` of the first series is strictly smaller than
         -- the corresponding term of the second series
@@ -126,27 +126,19 @@ theorem remainder_lt' (n : ℕ) {m : ℝ} (m1 : 1 < m) :
 theorem aux_calc (n : ℕ) {m : ℝ} (hm : 2 ≤ m) :
     (1 - 1 / m)⁻¹ * (1 / m ^ (n + 1)!) ≤ 1 / (m ^ n !) ^ n :=
   calc
-    (1 - 1 / m)⁻¹ * (1 / m ^ (n + 1)!) ≤ 2 * (1 / m ^ (n + 1)!) :=
+    (1 - 1 / m)⁻¹ * (1 / m ^ (n + 1)!) ≤ 2 * (1 / m ^ (n + 1)!) := by
       -- the second factors coincide (and are non-negative),
       -- the first factors satisfy the inequality `sub_one_div_inv_le_two`
-      mul_le_mul_of_nonneg_right (sub_one_div_inv_le_two hm) (by positivity)
+      gcongr; exact sub_one_div_inv_le_two hm
     _ = 2 / m ^ (n + 1)! := mul_one_div 2 _
     _ = 2 / m ^ (n ! * (n + 1)) := (congr_arg (2 / ·) (congr_arg (Pow.pow m) (mul_comm _ _)))
-    _ ≤ 1 / m ^ (n ! * n) := by
-      -- [NB: in this block, I do not follow the brace convention for subgoals -- I wait until
-      -- I solve all extraneous goals at once with `exact pow_pos (zero_lt_two.trans_le hm) _`.]
+    _ ≤ 1 / (m ^ n !) ^ n := by
       -- Clear denominators and massage*
-      apply (div_le_div_iff₀ _ _).mpr
-      focus
-        conv_rhs => rw [one_mul, mul_add, pow_add, mul_one, pow_mul, mul_comm, ← pow_mul]
-        -- the second factors coincide, so we prove the inequality of the first factors*
-        refine (mul_le_mul_right ?_).mpr ?_
-      -- solve all the inequalities `0 < m ^ ??`
-      any_goals exact pow_pos (zero_lt_two.trans_le hm) _
-      -- `2 ≤ m ^ n!` is a consequence of monotonicity of exponentiation at `2 ≤ m`.
-      exact _root_.trans (_root_.trans hm (pow_one _).symm.le)
-        (pow_right_mono₀ (one_le_two.trans hm) n.factorial_pos)
-    _ = 1 / (m ^ n !) ^ n := congr_arg (1 / ·) (pow_mul m n ! n)
+      rw [← pow_mul, div_le_div_iff₀, one_mul, mul_add_one, pow_add, mul_comm 2]
+      · gcongr
+        -- `2 ≤ m ^ n!` is a consequence of monotonicity of exponentiation at `2 ≤ m`.
+        exact hm.trans <| le_self_pow₀ (one_le_two.trans hm) <| by positivity
+      all_goals positivity
 
 /-- An upper estimate on the remainder. This estimate works with `m ∈ ℝ` satisfying `2 ≤ m` and is
 weaker than the estimate `LiouvilleNumber.remainder_lt'` above. However, this estimate is

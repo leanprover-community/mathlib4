@@ -3,7 +3,7 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Data.Set.Function
+import Mathlib.Data.Set.Piecewise
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.Attr.Core
@@ -39,26 +39,26 @@ As for equivs, we register a coercion to functions and use it in our simp normal
 There are at least three possible implementations of partial equivalences:
 * equivs on subtypes
 * pairs of functions taking values in `Option α` and `Option β`, equal to none where the partial
-equivalence is not defined
+  equivalence is not defined
 * pairs of functions defined everywhere, keeping the source and target as additional data
 
 Each of these implementations has pros and cons.
 * When dealing with subtypes, one still need to define additional API for composition and
-restriction of domains. Checking that one always belongs to the right subtype makes things very
-tedious, and leads quickly to DTT hell (as the subtype `u ∩ v` is not the "same" as `v ∩ u`, for
-instance).
+  restriction of domains. Checking that one always belongs to the right subtype makes things very
+  tedious, and leads quickly to DTT hell (as the subtype `u ∩ v` is not the "same" as `v ∩ u`, for
+  instance).
 * With option-valued functions, the composition is very neat (it is just the usual composition, and
-the domain is restricted automatically). These are implemented in `PEquiv.lean`. For manifolds,
-where one wants to discuss thoroughly the smoothness of the maps, this creates however a lot of
-overhead as one would need to extend all classes of smoothness to option-valued maps.
+  the domain is restricted automatically). These are implemented in `PEquiv.lean`. For manifolds,
+  where one wants to discuss thoroughly the smoothness of the maps, this creates however a lot of
+  overhead as one would need to extend all classes of smoothness to option-valued maps.
 * The `PartialEquiv` version as explained above is easier to use for manifolds. The drawback is that
-there is extra useless data (the values of `toFun` and `invFun` outside of `source` and `target`).
-In particular, the equality notion between partial equivs is not "the right one", i.e., coinciding
-source and target and equality there. Moreover, there are no partial equivs in this sense between
-an empty type and a nonempty type. Since empty types are not that useful, and since one almost never
-needs to talk about equal partial equivs, this is not an issue in practice.
-Still, we introduce an equivalence relation `EqOnSource` that captures this right notion of
-equality, and show that many properties are invariant under this equivalence relation.
+  there is extra useless data (the values of `toFun` and `invFun` outside of `source` and `target`).
+  In particular, the equality notion between partial equivs is not "the right one", i.e., coinciding
+  source and target and equality there. Moreover, there are no partial equivs in this sense between
+  an empty type and a nonempty type. Since empty types are not that useful, and since one almost
+  never needs to talk about equal partial equivs, this is not an issue in practice.
+  Still, we introduce an equivalence relation `EqOnSource` that captures this right notion of
+  equality, and show that many properties are invariant under this equivalence relation.
 
 ### Local coding conventions
 
@@ -71,8 +71,8 @@ open Lean Meta Elab Tactic
 /-! Implementation of the `mfld_set_tac` tactic for working with the domains of partially-defined
 functions (`PartialEquiv`, `PartialHomeomorph`, etc).
 
-This is in a separate file from `Mathlib.Logic.Equiv.MfldSimpsAttr` because attributes need a new
-file to become functional.
+This is in a separate file from `Mathlib/Logic/Equiv/MfldSimpsAttr.lean` because attributes need a
+new file to become functional.
 -/
 
 /-- Common `@[simps]` configuration options used for manifold-related declarations. -/
@@ -195,6 +195,9 @@ theorem left_inv {x : α} (h : x ∈ e.source) : e.symm (e x) = x :=
 @[simp, mfld_simps]
 theorem right_inv {x : β} (h : x ∈ e.target) : e (e.symm x) = x :=
   e.right_inv' h
+
+theorem target_subset_range : e.target ⊆ range e :=
+  fun x hx ↦ ⟨e.symm x, right_inv e hx⟩
 
 theorem eq_symm_apply {x : α} {y : β} (hx : x ∈ e.source) (hy : y ∈ e.target) :
     x = e.symm y ↔ e x = y :=
@@ -382,7 +385,7 @@ theorem leftInvOn_piecewise {e' : PartialEquiv α β} [∀ i, Decidable (i ∈ s
     LeftInvOn (t.piecewise e.symm e'.symm) (s.piecewise e e') (s.ite e.source e'.source) := by
   rintro x (⟨he, hs⟩ | ⟨he, hs : x ∉ s⟩)
   · rw [piecewise_eq_of_mem _ _ _ hs, piecewise_eq_of_mem _ _ _ ((h he).2 hs), e.left_inv he]
-  · rw [piecewise_eq_of_not_mem _ _ _ hs, piecewise_eq_of_not_mem _ _ _ ((h'.compl he).2 hs),
+  · rw [piecewise_eq_of_notMem _ _ _ hs, piecewise_eq_of_notMem _ _ _ ((h'.compl he).2 hs),
       e'.left_inv he]
 
 theorem inter_eq_of_inter_eq_of_eqOn {e' : PartialEquiv α β} (h : e.IsImage s t)
@@ -671,7 +674,7 @@ def EqOnSource (e e' : PartialEquiv α β) : Prop :=
 `PartialEquiv`s. -/
 instance eqOnSourceSetoid : Setoid (PartialEquiv α β) where
   r := EqOnSource
-  iseqv := by constructor <;> simp only [Equivalence, EqOnSource, EqOn] <;> aesop
+  iseqv := by constructor <;> simp only [EqOnSource, EqOn] <;> aesop
 
 theorem eqOnSource_refl : e ≈ e :=
   Setoid.refl _
@@ -794,7 +797,7 @@ theorem refl_prod_refl :
 theorem prod_trans {η : Type*} {ε : Type*} (e : PartialEquiv α β) (f : PartialEquiv β γ)
     (e' : PartialEquiv δ η) (f' : PartialEquiv η ε) :
     (e.prod e').trans (f.prod f') = (e.trans f).prod (e'.trans f') := by
-  ext ⟨x, y⟩ <;> simp [Set.ext_iff]; tauto
+  ext ⟨x, y⟩ <;> simp; tauto
 
 end Prod
 
@@ -875,6 +878,22 @@ theorem pi_trans (ei : ∀ i, PartialEquiv (αi i) (βi i)) (ei' : ∀ i, Partia
   ext <;> simp [forall_and]
 
 end Pi
+
+lemma surjective_of_target_eq_univ (h : e.target = univ) :
+    Surjective e :=
+  surjective_iff_surjOn_univ.mpr <| e.surjOn.mono (by simp) (by simp [h])
+
+lemma injective_of_source_eq_univ (h : e.source = univ) :
+    Injective e := by
+  simpa [injective_iff_injOn_univ, h] using e.injOn
+
+lemma injective_symm_of_target_eq_univ (h : e.target = univ) :
+    Injective e.symm :=
+  e.symm.injective_of_source_eq_univ h
+
+lemma surjective_symm_of_source_eq_univ (h : e.source = univ) :
+    Surjective e.symm :=
+  e.symm.surjective_of_target_eq_univ h
 
 end PartialEquiv
 
@@ -967,6 +986,6 @@ theorem transEquiv_transEquiv (e : PartialEquiv α β) (f' : β ≃ γ) (f'' : �
 @[simp, mfld_simps]
 theorem trans_transEquiv (e : PartialEquiv α β) (e' : PartialEquiv β γ) (f'' : γ ≃ δ) :
     (e.trans e').transEquiv f'' = e.trans (e'.transEquiv f'') := by
-  simp only [transEquiv_eq_trans, trans_assoc, Equiv.trans_toPartialEquiv]
+  simp only [transEquiv_eq_trans, trans_assoc]
 
 end PartialEquiv

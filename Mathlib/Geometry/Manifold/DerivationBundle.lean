@@ -15,8 +15,8 @@ Moreover, we define the differential of a function in terms of derivations.
 
 The content of this file is not meant to be regarded as an alternative definition to the current
 tangent bundle but rather as a purely algebraic theory that provides a purely algebraic definition
-of the Lie algebra for a Lie group.
-
+of the Lie algebra for a Lie group. This theory coincides with the usual tangent bundle in the
+case of finite-dimensional `C^∞` real manifolds, but not in the general case.
 -/
 
 
@@ -90,7 +90,8 @@ end PointedContMDiffMap
 open scoped Derivation
 
 /-- The derivations at a point of a manifold. Some regard this as a possible definition of the
-tangent space -/
+tangent space, as this coincides with the usual tangent space for finite-dimensional `C^∞` real
+manifolds. The identification is not true in general, though. -/
 abbrev PointDerivation (x : M) :=
   Derivation 𝕜 C^∞⟮I, M; 𝕜⟯⟨x⟩ 𝕜
 
@@ -133,7 +134,7 @@ def hfdifferential {f : C^∞⟮I, M; I', M'⟯} {x : M} {y : M'} (h : f x = y) 
   toFun v :=
     Derivation.mk'
       { toFun := fun g => v (g.comp f)
-        map_add' := fun g g' => by dsimp; rw [ContMDiffMap.add_comp, Derivation.map_add]
+        map_add' := fun g g' => by rw [ContMDiffMap.add_comp, Derivation.map_add]
         map_smul' := fun k g => by
           dsimp; rw [ContMDiffMap.smul_comp, Derivation.map_smul, smul_eq_mul] }
       fun g g' => by

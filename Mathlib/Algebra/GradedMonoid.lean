@@ -51,7 +51,7 @@ of that file.
 ## Dependent graded products
 
 This also introduces `List.dProd`, which takes the (possibly non-commutative) product of a list
-of graded elements of type `A i`. This definition primarily exist to allow `GradedMonoid.mk`
+of graded elements of type `A i`. This definition primarily exists to allow `GradedMonoid.mk`
 and `DirectSum.of` to be pulled outside a product, such as in `GradedMonoid.mk_list_dProd` and
 `DirectSum.of_list_dProd`.
 
@@ -393,7 +393,7 @@ This is a dependent version of `(l.map fA).prod`.
 For a list `l : List α`, this computes the product of `fA a` over `a`, where each `fA` is of type
 `A (fι a)`. -/
 def List.dProd (l : List α) (fι : α → ι) (fA : ∀ a, A (fι a)) : A (l.dProdIndex fι) :=
-  l.foldrRecOn _ _ GradedMonoid.GOne.one fun _ x a _ => GradedMonoid.GMul.mul (fA a) x
+  l.foldrRecOn _ GradedMonoid.GOne.one fun _ x a _ => GradedMonoid.GMul.mul (fA a) x
 
 @[simp]
 theorem List.dProd_nil (fι : α → ι) (fA : ∀ a, A (fι a)) :
@@ -530,7 +530,6 @@ variable {A : ι → S} [SetLike.GradedMonoid A]
 
 namespace GradeZero
 variable (A) in
-
 /-- The submonoid `A 0` of `R`. -/
 @[simps]
 def submonoid : Submonoid R where
@@ -563,7 +562,7 @@ theorem pow_mem_graded (n : ℕ) {r : R} {i : ι} (h : r ∈ A i) : r ^ n ∈ A 
   | 0 =>
     rw [pow_zero, zero_nsmul]
     exact one_mem_graded _
-  | n+1 =>
+  | n + 1 =>
     rw [pow_succ', succ_nsmul']
     exact mul_mem_graded h (pow_mem_graded n h)
 
@@ -576,7 +575,7 @@ theorem list_prod_map_mem_graded {ι'} (l : List ι') (i : ι' → ι) (r : ι' 
   | head::tail =>
     rw [List.map_cons, List.map_cons, List.prod_cons, List.sum_cons]
     exact
-      mul_mem_graded (h _ <| List.mem_cons_self _ _)
+      mul_mem_graded (h _ List.mem_cons_self)
         (list_prod_map_mem_graded tail _ _ fun j hj => h _ <| List.mem_cons_of_mem _ hj)
 
 theorem list_prod_ofFn_mem_graded {n} (i : Fin n → ι) (r : Fin n → R) (h : ∀ j, r j ∈ A (i j)) :
@@ -694,11 +693,8 @@ theorem prod_mem_graded (hF : ∀ k ∈ F, g k ∈ A (i k)) : ∏ k ∈ F, g k �
   · simp [GradedOne.one_mem]
   · case insert j F' hF2 h3 =>
     rw [Finset.prod_insert hF2, Finset.sum_insert hF2]
-    apply SetLike.mul_mem_graded (hF j <| Finset.mem_insert_self j F')
-    apply h3
-    intro k hk
-    apply hF k
-    exact Finset.mem_insert_of_mem hk
+    apply SetLike.mul_mem_graded (by grind)
+    grind
 
 theorem prod_pow_mem_graded (n : κ → ℕ) (hF : ∀ k ∈ F, g k ∈ A (i k)) :
     ∏ k ∈ F, g k ^ n k ∈ A (∑ k ∈ F, n k • i k) :=

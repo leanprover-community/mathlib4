@@ -60,7 +60,7 @@ theorem disjoint_bot_left : Disjoint ⊥ a := fun _ hbot _ ↦ hbot
 @[simp]
 theorem disjoint_bot_right : Disjoint a ⊥ := fun _ _ hbot ↦ hbot
 
-theorem Disjoint.mono (h₁ : a ≤ b) (h₂ : c ≤ d) : Disjoint b d → Disjoint a c :=
+@[gcongr] theorem Disjoint.mono (h₁ : a ≤ b) (h₂ : c ≤ d) : Disjoint b d → Disjoint a c :=
   fun h _ ha hc ↦ h (ha.trans h₁) (hc.trans h₂)
 
 theorem Disjoint.mono_left (h : a ≤ b) : Disjoint b c → Disjoint a c :=
@@ -223,7 +223,7 @@ theorem codisjoint_top_left : Codisjoint ⊤ a := fun _ htop _ ↦ htop
 @[simp]
 theorem codisjoint_top_right : Codisjoint a ⊤ := fun _ _ htop ↦ htop
 
-theorem Codisjoint.mono (h₁ : a ≤ b) (h₂ : c ≤ d) : Codisjoint a c → Codisjoint b d :=
+@[gcongr] theorem Codisjoint.mono (h₁ : a ≤ b) (h₂ : c ≤ d) : Codisjoint a c → Codisjoint b d :=
   fun h _ ha hc ↦ h (h₁.trans ha) (h₂.trans hc)
 
 theorem Codisjoint.mono_left (h : a ≤ b) : Codisjoint a c → Codisjoint b c :=
@@ -356,31 +356,31 @@ end Codisjoint
 
 open OrderDual
 
-theorem Disjoint.dual [SemilatticeInf α] [OrderBot α] {a b : α} :
+theorem Disjoint.dual [PartialOrder α] [OrderBot α] {a b : α} :
     Disjoint a b → Codisjoint (toDual a) (toDual b) :=
   id
 
-theorem Codisjoint.dual [SemilatticeSup α] [OrderTop α] {a b : α} :
+theorem Codisjoint.dual [PartialOrder α] [OrderTop α] {a b : α} :
     Codisjoint a b → Disjoint (toDual a) (toDual b) :=
   id
 
 @[simp]
-theorem disjoint_toDual_iff [SemilatticeSup α] [OrderTop α] {a b : α} :
+theorem disjoint_toDual_iff [PartialOrder α] [OrderTop α] {a b : α} :
     Disjoint (toDual a) (toDual b) ↔ Codisjoint a b :=
   Iff.rfl
 
 @[simp]
-theorem disjoint_ofDual_iff [SemilatticeInf α] [OrderBot α] {a b : αᵒᵈ} :
+theorem disjoint_ofDual_iff [PartialOrder α] [OrderBot α] {a b : αᵒᵈ} :
     Disjoint (ofDual a) (ofDual b) ↔ Codisjoint a b :=
   Iff.rfl
 
 @[simp]
-theorem codisjoint_toDual_iff [SemilatticeInf α] [OrderBot α] {a b : α} :
+theorem codisjoint_toDual_iff [PartialOrder α] [OrderBot α] {a b : α} :
     Codisjoint (toDual a) (toDual b) ↔ Disjoint a b :=
   Iff.rfl
 
 @[simp]
-theorem codisjoint_ofDual_iff [SemilatticeSup α] [OrderTop α] {a b : αᵒᵈ} :
+theorem codisjoint_ofDual_iff [PartialOrder α] [OrderTop α] {a b : αᵒᵈ} :
     Codisjoint (ofDual a) (ofDual b) ↔ Disjoint a b :=
   Iff.rfl
 
@@ -598,7 +598,9 @@ lemma complementedLattice_iff (α) [Lattice α] [BoundedOrder α] :
 
 export ComplementedLattice (exists_isCompl)
 
-instance Subsingleton.instComplementedLattice
+-- This was previously a global instance,
+-- but it doesn't appear to be used and has been implicated in slow typeclass resolutions.
+lemma Subsingleton.instComplementedLattice
     [Lattice α] [BoundedOrder α] [Subsingleton α] : ComplementedLattice α := by
   refine ⟨fun a ↦ ⟨⊥, disjoint_bot_right, ?_⟩⟩
   rw [Subsingleton.elim ⊥ ⊤]
