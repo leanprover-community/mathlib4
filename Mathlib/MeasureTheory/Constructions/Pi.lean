@@ -372,6 +372,23 @@ lemma pi_map_eval [DecidableEq ι] (i : ι) :
    refine Finset.prod_congr rfl fun j hj ↦ ?_
    simp [Function.update, Finset.ne_of_mem_erase hj]
 
+lemma pi_map_pi {X Y : ι → Type*} {mX : ∀ i, MeasurableSpace (X i)} {μ : (i : ι) → Measure (X i)}
+    [∀ i, MeasurableSpace (Y i)] {f : (i : ι) → X i → Y i} [hμ : ∀ i, SigmaFinite ((μ i).map (f i))]
+    (hf : ∀ i, AEMeasurable (f i) (μ i)) :
+    (Measure.pi μ).map (fun x i ↦ (f i (x i))) = Measure.pi (fun i ↦ (μ i).map (f i)) := by
+  have (i : ι) := (hμ i).of_map _ (hf i)
+  refine (pi_eq fun s hs ↦ ?_).symm
+  rw [map_apply_of_aemeasurable _ (.univ_pi hs)]
+  swap
+  · exact aemeasurable_pi_lambda _
+      fun i ↦ (hf i).comp_quasiMeasurePreserving (quasiMeasurePreserving_eval _ i)
+  have : (fun (x : Π i, X i) i ↦ f i (x i)) ⁻¹' (Set.univ.pi s) =
+      Set.univ.pi (fun i ↦ (f i) ⁻¹' (s i)) := by ext x; simp
+  rw [this, pi_pi]
+  congr with i
+  rw [map_apply_of_aemeasurable (hf i) (hs i)]
+
+omit [∀ i, SigmaFinite (μ i)] in
 lemma _root_.MeasureTheory.measurePreserving_eval [∀ i, IsProbabilityMeasure (μ i)] (i : ι) :
     MeasurePreserving (Function.eval i) (Measure.pi μ) (μ i) := by
   refine ⟨measurable_pi_apply i, ?_⟩
