@@ -93,6 +93,19 @@ theorem map_id : map (MulHom.id α) = MonoidHom.id (WithOne α) := by
   induction x <;> rfl
 
 @[to_additive]
+theorem map_injective {f : α →ₙ* β} (hf : Function.Injective f) : Function.Injective (map f)
+  | none, none, _ => rfl
+  | (a₁ : α), (a₂ : α), H => by simpa [hf.eq_iff] using H
+
+@[to_additive]
+theorem map_injective' : Function.Injective (WithOne.map (α := α) (β := β)) := fun f g h ↦
+  MulHom.ext fun x ↦ coe_injective <| by simp only [← map_coe, h]
+
+@[to_additive (attr := simp)]
+theorem map_inj {f g : α →ₙ* β} : map f = map g ↔ f = g :=
+  map_injective'.eq_iff
+
+@[to_additive]
 theorem map_map (f : α →ₙ* β) (g : β →ₙ* γ) (x) : map g (map f x) = map (g.comp f) x := by
   induction x <;> rfl
 
