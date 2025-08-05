@@ -9,9 +9,10 @@ import Mathlib.Dynamics.TopologicalEntropy.CoverEntropy
 # Topological entropy via nets
 We implement Bowen-Dinaburg's definitions of the topological entropy, via nets.
 
-The major design decisions are the same as in `Mathlib.Dynamics.TopologicalEntropy.CoverEntropy`,
-and are explained in detail there: use of uniform spaces, definition of the topological entropy of
-a subset, and values taken in `EReal`.
+The major design decisions are the same as in
+`Mathlib/Dynamics/TopologicalEntropy/CoverEntropy.lean`, and are explained in detail there:
+use of uniform spaces, definition of the topological entropy of a subset, and values taken in
+`EReal`.
 
 Given a map `T : X → X` and a subset `F ⊆ X`, the topological entropy is loosely defined using
 nets as the exponential growth (in `n`) of the number of distinguishable orbits of length `n`
@@ -88,7 +89,7 @@ lemma IsDynNetIn.card_le_card_of_isDynCoverOf {T : X → X} {F : Set X} {U : Set
     s.card ≤ t.card := by
   have (x : X) (x_s : x ∈ s) : ∃ z ∈ t, x ∈ ball z (dynEntourage T U n) := by
     specialize ht (hs.1 x_s)
-    simp only [Finset.coe_sort_coe, mem_iUnion, Subtype.exists, exists_prop] at ht
+    simp only [mem_iUnion, exists_prop] at ht
     exact ht
   choose! F s_t using this
   simp only [mem_ball_symmetry (U_symm.dynEntourage T n)] at s_t
@@ -162,13 +163,13 @@ lemma netMaxcard_empty {T : X → X} {U : Set (X × X)} {n : ℕ} : netMaxcard T
 lemma netMaxcard_eq_zero_iff (T : X → X) (F : Set X) (U : Set (X × X)) (n : ℕ) :
     netMaxcard T F U n = 0 ↔ F = ∅ := by
   refine ⟨fun h ↦ ?_, fun h ↦ by rw [h, netMaxcard_empty]⟩
-  rw [eq_empty_iff_forall_not_mem]
+  rw [eq_empty_iff_forall_notMem]
   intro x x_F
   have key := isDynNetIn_singleton T U n x_F
   rw [← Finset.coe_singleton] at key
   replace key := key.card_le_netMaxcard
   rw [Finset.card_singleton, Nat.cast_one, h] at key
-  exact key.not_lt zero_lt_one
+  exact key.not_gt zero_lt_one
 
 lemma one_le_netMaxcard_iff (T : X → X) (F : Set X) (U : Set (X × X)) (n : ℕ) :
     1 ≤ netMaxcard T F U n ↔ F.Nonempty := by
@@ -242,9 +243,9 @@ lemma coverMincard_le_netMaxcard (T : X → X) (F : Set X) {U : Set (X × X)} (U
     refine fun y y_s _ ↦ disjoint_left.2 fun z z_x z_y ↦ x_uncov y y_s ?_
     exact mem_ball_dynEntourage_comp T n U_symm x y (nonempty_of_mem ⟨z_x, z_y⟩)
   rw [← s.coe_insert x] at larger_net
-  apply larger_net.card_le_netMaxcard.not_lt
+  apply larger_net.card_le_netMaxcard.not_gt
   rw [← s_card, Nat.cast_lt]
-  refine (lt_add_one s.card).trans_eq (s.card_insert_of_not_mem fun x_s ↦ ?_).symm
+  refine (lt_add_one s.card).trans_eq (s.card_insert_of_notMem fun x_s ↦ ?_).symm
   apply x_uncov x x_s (ball_mono (dynEntourage_monotone T n (subset_comp_self U_rfl)) x
     (ball_mono (idRel_subset_dynEntourage T U_rfl n) x _))
   simp only [ball, mem_preimage, mem_idRel]

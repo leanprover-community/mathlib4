@@ -91,7 +91,7 @@ theorem comp_PInfty_eq_zero_iff {Z : C} {n : ℕ} (f : Z ⟶ X _⦋n⦌) :
     f ≫ PInfty.f n = 0 ↔ f ≫ s.πSummand (IndexSet.id (op ⦋n⦌)) = 0 := by
   constructor
   · intro h
-    rcases n with _|n
+    rcases n with _ | n
     · dsimp at h
       rw [comp_id] at h
       rw [h, zero_comp]
@@ -250,9 +250,7 @@ noncomputable def toKaroubiNondegComplexFunctorIsoN₁ :
   NatIso.ofComponents (fun S => S.s.toKaroubiNondegComplexIsoN₁) fun Φ => by
     ext n
     dsimp
-    simp only [Karoubi.comp_f, toKaroubi_map_f, HomologicalComplex.comp_f,
-      nondegComplexFunctor_map_f, Splitting.toKaroubiNondegComplexIsoN₁_hom_f_f, N₁_map_f,
-      AlternatingFaceMapComplex.map_f, assoc, PInfty_f_idem_assoc]
+    simp only [assoc, PInfty_f_idem_assoc]
     erw [← Split.cofan_inj_naturality_symm_assoc Φ (Splitting.IndexSet.id (op ⦋n⦌))]
     rw [PInfty_f_naturality]
 

@@ -7,6 +7,7 @@ import Mathlib.Data.Countable.Basic
 import Mathlib.Data.Set.Finite.Basic
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Logic.Equiv.List
+import Mathlib.Order.Preorder.Finite
 
 /-!
 # Countable sets

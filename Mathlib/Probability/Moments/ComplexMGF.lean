@@ -80,7 +80,7 @@ lemma complexMGF_id_map (hX : AEMeasurable X μ) : complexMGF id (μ.map X) = co
   · fun_prop
 
 lemma complexMGF_congr_identDistrib {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ' : Measure Ω'}
-    {Y : Ω' → ℝ}  (h : IdentDistrib X Y μ μ') :
+    {Y : Ω' → ℝ} (h : IdentDistrib X Y μ μ') :
     complexMGF X μ = complexMGF Y μ' := by
   rw [← complexMGF_id_map h.aemeasurable_fst, ← complexMGF_id_map h.aemeasurable_snd, h.map_eq]
 
@@ -129,7 +129,7 @@ lemma hasDerivAt_integral_pow_mul_exp (hz : z.re ∈ interior (integrableExpSet 
   have h_pos : 0 < (z.re - l) ⊓ (u - z.re) := by simp [hlu.1, hlu.2]
   have ht : 0 < t := half_pos h_pos
   refine (hasDerivAt_integral_of_dominated_loc_of_deriv_le
-    (bound := fun ω ↦ |X ω| ^ (n + 1) * rexp (z.re * X ω + t/2 * |X ω|))
+    (bound := fun ω ↦ |X ω| ^ (n + 1) * rexp (z.re * X ω + t / 2 * |X ω|))
     (F := fun z ω ↦ X ω ^ n * cexp (z * X ω))
     (F' := fun z ω ↦ X ω ^ (n + 1) * cexp (z * X ω)) (half_pos ht) ?_ ?_ ?_ ?_ ?_ ?_).2
   · exact .of_forall fun z ↦ by fun_prop

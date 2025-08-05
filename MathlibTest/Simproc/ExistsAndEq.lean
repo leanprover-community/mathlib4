@@ -21,6 +21,7 @@ example (f : α → α) : ∃ a : α, a = f a := by
 
 open Lean Meta Simp
 
+set_option linter.unusedSimpArgs false in
 set_option linter.unusedTactic false in
 example (a : α) (hp : p a) (hq : q a) : (∃ b : α, p b ∧ (∃ c : α, b = a ∧ q c)) := by
   -- the simproc doesn't handle nested `Exists`

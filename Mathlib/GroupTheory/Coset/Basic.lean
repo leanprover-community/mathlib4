@@ -5,8 +5,6 @@ Authors: Mitchell Rowett, Kim Morrison
 -/
 import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.Algebra.Quotient
-import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Setoid.Basic
 import Mathlib.GroupTheory.Coset.Defs
 
@@ -37,7 +35,7 @@ If instead `G` is an additive group, we can write (with  `open scoped Pointwise`
 Properly merge with pointwise actions on sets, by renaming and deduplicating lemmas as appropriate.
 -/
 
-assert_not_exists Cardinal
+assert_not_exists Cardinal Multiset
 
 open Function MulOpposite Set
 open scoped Pointwise
@@ -100,11 +98,11 @@ variable [Monoid α] (s : Set α)
 
 @[to_additive zero_leftAddCoset]
 theorem one_leftCoset : (1 : α) • s = s :=
-  Set.ext <| by simp [← image_smul]
+  Set.ext <| by simp
 
 @[to_additive rightAddCoset_zero]
 theorem rightCoset_one : op (1 : α) • s = s :=
-  Set.ext <| by simp [← image_smul]
+  Set.ext <| by simp
 
 end CosetMonoid
 
@@ -267,25 +265,11 @@ lemma rightRel_pi {ι : Type*} {β : ι → Type*} [∀ i, Group (β i)] (s' : �
   refine Setoid.ext fun x y ↦ ?_
   simp [Setoid.piSetoid_apply, rightRel_apply, Subgroup.mem_pi]
 
-@[to_additive]
-instance fintypeQuotientRightRel [Fintype (α ⧸ s)] :
-    Fintype (Quotient (QuotientGroup.rightRel s)) :=
-  Fintype.ofEquiv (α ⧸ s) (QuotientGroup.quotientRightRelEquivQuotientLeftRel s).symm
-
-@[to_additive]
-theorem card_quotient_rightRel [Fintype (α ⧸ s)] :
-    Fintype.card (Quotient (QuotientGroup.rightRel s)) = Fintype.card (α ⧸ s) :=
-  Fintype.ofEquiv_card (QuotientGroup.quotientRightRelEquivQuotientLeftRel s).symm
-
 end QuotientGroup
 
 namespace QuotientGroup
 
 variable [Group α] {s : Subgroup α}
-
-@[to_additive]
-instance fintype [Fintype α] (s : Subgroup α) [DecidableRel (leftRel s).r] : Fintype (α ⧸ s) :=
-  Quotient.fintype (leftRel s)
 
 variable (s)
 
@@ -349,11 +333,11 @@ def rightCosetEquivSubgroup (g : α) : (op g • s : Set α) ≃ s :=
   "A (non-canonical) bijection between an add_group `α` and the product `(α/s) × s`"]
 noncomputable def groupEquivQuotientProdSubgroup : α ≃ (α ⧸ s) × s :=
   calc
-    α ≃ ΣL : α ⧸ s, { x : α // (x : α ⧸ s) = L } := (Equiv.sigmaFiberEquiv QuotientGroup.mk).symm
-    _ ≃ ΣL : α ⧸ s, (Quotient.out L • s : Set α) :=
+    α ≃ Σ L : α ⧸ s, { x : α // (x : α ⧸ s) = L } := (Equiv.sigmaFiberEquiv QuotientGroup.mk).symm
+    _ ≃ Σ L : α ⧸ s, (Quotient.out L • s : Set α) :=
       Equiv.sigmaCongrRight fun L => by
         rw [← eq_class_eq_leftCoset]
-        show
+        change
           (_root_.Subtype fun x : α => Quotient.mk'' x = L) ≃
             _root_.Subtype fun x : α => Quotient.mk'' x = Quotient.mk'' _
         simp
@@ -422,8 +406,7 @@ alias AddSubgroup.quotientEquivSumOfLE_apply := AddSubgroup.quotientEquivProdOfL
 alias AddSubgroup.quotientEquivSumOfLE_symm_apply := AddSubgroup.quotientEquivProdOfLE_symm_apply
 
 /-- If `s ≤ t`, then there is an embedding `s ⧸ H.subgroupOf s ↪ t ⧸ H.subgroupOf t`. -/
-@[to_additive "If `s ≤ t`, then there is an embedding
- `s ⧸ H.addSubgroupOf s ↪ t ⧸ H.addSubgroupOf t`."]
+@[to_additive "If `s ≤ t`, there is an embedding `s ⧸ H.addSubgroupOf s ↪ t ⧸ H.addSubgroupOf t`."]
 def quotientSubgroupOfEmbeddingOfLE (H : Subgroup α) (h : s ≤ t) :
     s ⧸ H.subgroupOf s ↪ t ⧸ H.subgroupOf t where
   toFun :=
@@ -467,7 +450,7 @@ theorem quotientMapOfLE_apply_mk (h : s ≤ t) (g : α) :
 
 /-- The natural embedding `H ⧸ (⨅ i, f i).subgroupOf H ↪ Π i, H ⧸ (f i).subgroupOf H`. -/
 @[to_additive (attr := simps) "The natural embedding
- `H ⧸ (⨅ i, f i).addSubgroupOf H) ↪ Π i, H ⧸ (f i).addSubgroupOf H`."]
+`H ⧸ (⨅ i, f i).addSubgroupOf H) ↪ Π i, H ⧸ (f i).addSubgroupOf H`."]
 def quotientiInfSubgroupOfEmbedding {ι : Type*} (f : ι → Subgroup α) (H : Subgroup α) :
     H ⧸ (⨅ i, f i).subgroupOf H ↪ ∀ i, H ⧸ (f i).subgroupOf H where
   toFun q i := quotientSubgroupOfMapOfLE H (iInf_le f i) q
@@ -557,8 +540,8 @@ variable [Group α]
 (typically non-canonical) bijection between the preimage of `t` in `α` and the product `s × t`. -/
 @[to_additive preimageMkEquivAddSubgroupProdSet
 "If `s` is a subgroup of the additive group `α`, and `t` is a subset of `α ⧸ s`, then
- there is a (typically non-canonical) bijection between the preimage of `t` in `α` and the product
- `s × t`."]
+there is a (typically non-canonical) bijection between the preimage of `t` in `α` and the product
+`s × t`."]
 noncomputable def preimageMkEquivSubgroupProdSet (s : Subgroup α) (t : Set (α ⧸ s)) :
     QuotientGroup.mk ⁻¹' t ≃ s × t where
   toFun a :=
