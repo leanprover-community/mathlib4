@@ -20,7 +20,7 @@ namespace Shrink
 instance [Semiring α] [Algebra R α] : Algebra R (Shrink.{v} α) := (equivShrink α).symm.algebra _
 
 variable (R α) in
-/-- Shrink `α` to a smaller universe preserves algebra structure. -/
+/-- Shrinking `α` to a smaller universe preserves algebra structure. -/
 @[simps!]
 def algEquiv [Small.{v} α] [Semiring α] [Algebra R α] : Shrink.{v} α ≃ₐ[R] α :=
   (equivShrink α).symm.algEquiv _

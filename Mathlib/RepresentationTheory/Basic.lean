@@ -15,6 +15,8 @@ representations.
 ## Main definitions
 
   * `Representation`
+  * `Representation.directSum`
+  * `Representation.prod`
   * `Representation.tprod`
   * `Representation.linHom`
   * `Representation.dual`
@@ -31,10 +33,8 @@ module can be accessed via `ρ.asModule`. Conversely, given a `MonoidAlgebra k G
 `M.ofModule` is the associociated representation seen as a homomorphism.
 -/
 
-
 open MonoidAlgebra (lift of)
-
-open LinearMap
+open LinearMap Module
 
 section
 
@@ -277,29 +277,27 @@ section Norm
 variable {k G V : Type*} [CommSemiring k] [Group G] [Fintype G] [AddCommMonoid V] [Module k V]
 variable (ρ : Representation k G V)
 
-/-- Given a representation `(V, ρ)` of a finite group `G`, this is the linear map `V →ₗ[k] V`
+/-- Given a representation `(V, ρ)` of a finite group `G`, `norm ρ` is the linear map `V →ₗ[k] V`
 defined by `x ↦ ∑ ρ g x` for `g` in `G`. -/
-def norm : V →ₗ[k] V := ∑ g : G, ρ g
+def norm : Module.End k V := ∑ g : G, ρ g
 
 @[simp]
-lemma norm_comp_self (g : G) :
-    norm ρ ∘ₗ ρ g = norm ρ := by
+lemma norm_comp_self (g : G) : norm ρ ∘ₗ ρ g = norm ρ := by
   ext
   simpa [norm] using Fintype.sum_bijective (· * g) (Group.mulRight_bijective g) _ _ <| by simp
 
 @[simp]
-lemma norm_self_apply (g : G) (x : V) :
-    norm ρ (ρ g x) = norm ρ x := LinearMap.ext_iff.1 (norm_comp_self _ _) x
+lemma norm_self_apply (g : G) (x : V) : norm ρ (ρ g x) = norm ρ x :=
+  LinearMap.ext_iff.1 (norm_comp_self _ _) x
 
 @[simp]
-lemma self_comp_norm (g : G) :
-    ρ g ∘ₗ norm ρ = norm ρ := by
+lemma self_comp_norm (g : G) : ρ g ∘ₗ norm ρ = norm ρ := by
   ext
   simpa [norm] using Fintype.sum_bijective (g * ·) (Group.mulLeft_bijective g) _ _ <| by simp
 
 @[simp]
-lemma self_norm_apply (g : G) (x : V) :
-    ρ g (norm ρ x) = norm ρ x := LinearMap.ext_iff.1 (self_comp_norm _ _) x
+lemma self_norm_apply (g : G) (x : V) : ρ g (norm ρ x) = norm ρ x :=
+  LinearMap.ext_iff.1 (self_comp_norm _ _) x
 
 end Norm
 
@@ -382,9 +380,9 @@ lemma apply_sub_id_partialSum_eq (n : ℕ) (g : G) (x : V) :
   induction n with
   | zero => simp [Fin.partialSum]
   | succ n h =>
-    have : (fun (j : Fin (n + 2)) => ρ (g ^ (j : ℕ)) x) ∘ Fin.castSucc =
-      fun (j : Fin (n + 1)) => ρ (g ^ (j : ℕ)) x := by ext; simp
-    rw [← Fin.succ_eq_last_succ.2 rfl, Fin.partialSum_succ, ← Fin.partialSum_castSucc, map_add,
+    have : Fin.init (fun (j : Fin (n + 2)) => ρ (g ^ (j : ℕ)) x) =
+      fun (j : Fin (n + 1)) => ρ (g ^ (j : ℕ)) x := by ext; simp [Fin.init]
+    rw [← Fin.succ_eq_last_succ.2 rfl, Fin.partialSum_succ, ← Fin.partialSum_init, map_add,
       this, h]
     simp [pow_succ']
 
@@ -567,6 +565,43 @@ lemma apply_eq_of_leftRegular_eq_of_generator (g : G) (hg : ∀ x, x ∈ Subgrou
 
 end Cyclic
 end Group
+
+section DirectSum
+
+variable {k G : Type*} [CommSemiring k] [Monoid G]
+variable {ι : Type*} {V : ι → Type*}
+variable [(i : ι) → AddCommMonoid (V i)] [(i : ι) → Module k (V i)]
+variable (ρ : (i : ι) → Representation k G (V i))
+
+open DirectSum
+
+/-- Given representations of `G` on a family `V i` indexed by `i`, there is a
+natural representation of `G` on their direct sum `⨁ i, V i`.
+-/
+@[simps]
+noncomputable def directSum : Representation k G (⨁ i, V i) where
+  toFun g := DirectSum.lmap (fun _ => ρ _ g)
+  map_one' := by ext; simp
+  map_mul' g h := by ext; simp
+
+end DirectSum
+
+section Prod
+
+variable {k G V W : Type*} [CommSemiring k] [Monoid G]
+variable [AddCommMonoid V] [Module k V] [AddCommMonoid W] [Module k W]
+variable (ρV : Representation k G V) (ρW : Representation k G W)
+
+/-- Given representations of `G` on `V` and `W`, there is a natural representation of `G` on their
+product `V × W`.
+-/
+@[simps!]
+noncomputable def prod : Representation k G (V × W) where
+  toFun g := (ρV g).prodMap (ρW g)
+  map_one' := by simp
+  map_mul' g h := by simp; rfl
+
+end Prod
 
 section TensorProduct
 

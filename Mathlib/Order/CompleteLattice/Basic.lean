@@ -47,7 +47,6 @@ section
 
 variable [CompleteSemilatticeSup α] {s t : Set α} {a b : α}
 
-@[gcongr]
 theorem sSup_le_sSup_of_isCofinalFor (h : IsCofinalFor s t) : sSup s ≤ sSup t :=
   IsLeast.mono (isLUB_sSup t) (isLUB_sSup s) <| upperBounds_mono_of_isCofinalFor h
 
@@ -66,7 +65,6 @@ section
 
 variable [CompleteSemilatticeInf α] {s t : Set α} {a b : α}
 
-@[gcongr]
 theorem sInf_le_sInf_of_isCoinitialFor (h : IsCoinitialFor s t) : sInf t ≤ sInf s :=
   IsGreatest.mono (isGLB_sInf t) (isGLB_sInf s) <| lowerBounds_mono_of_isCoinitialFor h
 
@@ -320,12 +318,6 @@ theorem iInf_le (f : ι → α) (i : ι) : iInf f ≤ f i :=
 
 lemma iInf_le_iSup [Nonempty ι] : ⨅ i, f i ≤ ⨆ i, f i :=
   (iInf_le _ (Classical.arbitrary _)).trans <| le_iSup _ (Classical.arbitrary _)
-
-@[deprecated le_iSup (since := "2024-12-13")]
-theorem le_iSup' (f : ι → α) (i : ι) : f i ≤ iSup f := le_iSup f i
-
-@[deprecated iInf_le (since := "2024-12-13")]
-theorem iInf_le' (f : ι → α) (i : ι) : iInf f ≤ f i := iInf_le f i
 
 theorem isLUB_iSup : IsLUB (range f) (⨆ j, f j) :=
   isLUB_sSup _

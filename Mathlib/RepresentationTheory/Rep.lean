@@ -228,7 +228,11 @@ open MonoidalCategory in
 theorem tensor_ρ {A B : Rep k G} : (A ⊗ B).ρ = A.ρ.tprod B.ρ := rfl
 
 @[simp]
-lemma res_obj_ρ {H : Type u} [Monoid H] (f : G →* H) (A : Rep k H) (g : G) :
+lemma res_obj_ρ {H : Type u} [Monoid H] (f : G →* H) (A : Rep k H) :
+    ρ ((Action.res _ f).obj A) = A.ρ.comp f := rfl
+
+@[simp]
+lemma coe_res_obj_ρ {H : Type u} [Monoid H] (f : G →* H) (A : Rep k H) (g : G) :
     DFunLike.coe (F := G →* (A →ₗ[k] A)) (ρ ((Action.res _ f).obj A)) g = A.ρ (f g) := rfl
 
 section Linearization
@@ -677,23 +681,22 @@ section
 
 variable [Fintype G] (A : Rep k G)
 
-/-- Given a representation `A` of a finite group `G`, this is the representation morphism `A ⟶ A`
-defined by `x ↦ ∑ A.ρ g x` for `g` in `G`. -/
+/-- Given a representation `A` of a finite group `G`, `norm A` is the representation morphism
+`A ⟶ A` defined by `x ↦ ∑ A.ρ g x` for `g` in `G`. -/
 @[simps]
-def norm : A ⟶ A where
+def norm : End A where
   hom := ModuleCat.ofHom <| Representation.norm A.ρ
   comm g := by ext; simp
 
 @[reassoc, elementwise]
-lemma norm_comm {A B : Rep k G} (f : A ⟶ B) :
-    f ≫ norm B = norm A ≫ f := by
+lemma norm_comm {A B : Rep k G} (f : A ⟶ B) : f ≫ norm B = norm A ≫ f := by
   ext
   simp [Representation.norm, hom_comm_apply]
 
 /-- Given a representation `A` of a finite group `G`, the norm map `A ⟶ A` defined by
-`x ↦ ∑ A.ρ g x` for `g` in `G` defined a natural endomorphism of the identity functor. -/
+`x ↦ ∑ A.ρ g x` for `g` in `G` defines a natural endomorphism of the identity functor. -/
 @[simps]
-def normNatTrans : 𝟭 (Rep k G) ⟶ 𝟭 (Rep k G) where
+def normNatTrans : End (𝟭 (Rep k G)) where
   app := norm
   naturality _ _ := norm_comm
 
@@ -922,8 +925,7 @@ def counitIso (M : ModuleCat.{u} (MonoidAlgebra k G)) :
     { counitIsoAddEquiv with
       map_smul' := fun r x => by
         dsimp [counitIsoAddEquiv]
-        erw [@Representation.ofModule_asAlgebraHom_apply_apply k G _ _ _ _ (_)]
-        exact AddEquiv.symm_apply_apply _ _}
+        simp }
 
 theorem unit_iso_comm (V : Rep k G) (g : G) (x : V) :
     unitIsoAddEquiv ((V.ρ g).toFun x) = ((ofModuleMonoidAlgebra.obj
