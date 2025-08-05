@@ -58,7 +58,7 @@ lemma eq_mul_mul_of_aroots_quadratic_eq_pair [CommRing T] [CommRing S] [IsDomain
   exact eq_mul_mul_of_roots_quadratic_eq_pair haroots
 
 lemma quadratic_eq_of_vieta [CommRing R] {a b c x1 x2 : R}
-    (hvieta : b = -a * (x1 + x2) ∧ c = a * x1 * x2) :
+    (hsum : b = -a * (x1 + x2)) (hprod : c = a * x1 * x2) :
     C a * X ^ 2 + C b * X + C c = C a * (X - C x1) * (X - C x2) := by
   simpa [hvieta.1, hvieta.2] using by ring
 
