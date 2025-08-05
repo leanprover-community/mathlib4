@@ -87,7 +87,7 @@ def printSimprocList (simprocs : Array SimprocData) : MetaM MessageData := do
   return m!"\n\n".joinSep out.toList
 
 /-- Get all simp theorems in the environment that match a pattern in an array of keys. -/
-def simpTheoremsFromKeys (keys : Array SimpTheoremKey) : CoreM <| Array  SimpTheorem  := do
+def simpTheoremsFromKeys (keys : Array SimpTheoremKey) : CoreM <| Array SimpTheorem  := do
   let simpTheorems ← Lean.Meta.getSimpTheorems
   let preMatches := (keys.map fun key ↦ simpTheorems.pre.getAllFromKey key).flatten
   let postMatches := (keys.map fun key ↦ simpTheorems.post.getAllFromKey key).flatten
