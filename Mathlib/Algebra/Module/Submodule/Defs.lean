@@ -278,10 +278,10 @@ instance addCommMonoid : AddCommMonoid p := fast_instance%
   { p.toAddSubmonoid.toAddCommMonoid with }
 
 instance isLeftCancelAdd [IsLeftCancelAdd M] : IsLeftCancelAdd p :=
-  p.toAddSubmonoid.isAddLeftCancel
+  p.toAddSubmonoid.isLeftCancelAdd
 
 instance isRightCancelAdd [IsRightCancelAdd M] : IsRightCancelAdd p :=
-  p.toAddSubmonoid.isAddRightCancel
+  p.toAddSubmonoid.isRightCancelAdd
 
 instance isCancelAdd [IsCancelAdd M] : IsCancelAdd p where
 
