@@ -59,12 +59,12 @@ class PreservesColimit (K : J ⥤ C) (F : C ⥤ D) : Prop where
   preserves {c : Cocone K} (hc : IsColimit c) : Nonempty (IsColimit (F.mapCocone c))
 
 /-- We say that `F` preserves limits of shape `J` if `F` preserves limits for every diagram
-    `K : J ⥤ C`, i.e., `F` maps limit cones over `K` to limit cones. -/
+`K : J ⥤ C`, i.e., `F` maps limit cones over `K` to limit cones. -/
 class PreservesLimitsOfShape (J : Type w) [Category.{w'} J] (F : C ⥤ D) : Prop where
   preservesLimit : ∀ {K : J ⥤ C}, PreservesLimit K F := by infer_instance
 
 /-- We say that `F` preserves colimits of shape `J` if `F` preserves colimits for every diagram
-    `K : J ⥤ C`, i.e., `F` maps colimit cocones over `K` to colimit cocones. -/
+`K : J ⥤ C`, i.e., `F` maps colimit cocones over `K` to colimit cocones. -/
 class PreservesColimitsOfShape (J : Type w) [Category.{w'} J] (F : C ⥤ D) : Prop where
   preservesColimit : ∀ {K : J ⥤ C}, PreservesColimit K F := by infer_instance
 
