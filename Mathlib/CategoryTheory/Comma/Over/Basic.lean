@@ -96,7 +96,7 @@ def homMk {U V : Over X} (f : U.left ⟶ V.left) (w : f ≫ V.hom = U.hom := by 
 
 @[simp]
 lemma homMk_eta {U V : Over X} (f : U ⟶ V) (h) :
-    homMk f.left h = f := by
+    homMk f.left h = f :=
   rfl
 
 /-- This is useful when `homMk (· ≫ ·)` appears under `Functor.map` or a natural equivalence. -/
@@ -122,6 +122,10 @@ lemma hom_left_inv_left {f g : Over X} (e : f ≅ g) :
 lemma inv_left_hom_left {f g : Over X} (e : f ≅ g) :
     e.inv.left ≫ e.hom.left = 𝟙 g.left := by
   simp [← Over.comp_left]
+
+lemma forall_iff (P : Over X → Prop) :
+    (∀ Y, P Y) ↔ (∀ (Y) (f : Y ⟶ X), P (.mk f)) := by
+  aesop
 
 section
 
@@ -168,14 +172,17 @@ theorem map_obj_hom : ((map f).obj U).hom = U.hom ≫ f :=
 @[simp]
 theorem map_map_left : ((map f).map g).left = g.left :=
   rfl
-end
 
 /-- If `f` is an isomorphism, `map f` is an equivalence of categories. -/
-def mapIso {Y : T} (f : X ≅ Y) : Over X ≌ Over Y :=
+def mapIso (f : X ≅ Y) : Over X ≌ Over Y :=
   Comma.mapRightIso _ <| Discrete.natIso fun _ ↦ f
 
-@[simp] lemma mapIso_functor {Y : T} (f : X ≅ Y) : (mapIso f).functor = map f.hom := rfl
-@[simp] lemma mapIso_inverse {Y : T} (f : X ≅ Y) : (mapIso f).inverse = map f.inv := rfl
+@[simp] lemma mapIso_functor (f : X ≅ Y) : (mapIso f).functor = map f.hom := rfl
+@[simp] lemma mapIso_inverse (f : X ≅ Y) : (mapIso f).inverse = map f.inv := rfl
+
+instance [IsIso f] : (Over.map f).IsEquivalence := (Over.mapIso <| asIso f).isEquivalence_functor
+
+end
 
 section coherences
 /-!
@@ -499,7 +506,7 @@ def homMk {U V : Under X} (f : U.right ⟶ V.right) (w : U.hom ≫ f = V.hom := 
 
 @[simp]
 lemma homMk_eta {U V : Under X} (f : U ⟶ V) (h) :
-    homMk f.right h = f := by
+    homMk f.right h = f :=
   rfl
 
 /-- This is useful when `homMk (· ≫ ·)` appears under `Functor.map` or a natural equivalence. -/
@@ -534,6 +541,10 @@ lemma hom_right_inv_right {f g : Under X} (e : f ≅ g) :
 lemma inv_right_hom_right {f g : Under X} (e : f ≅ g) :
     e.inv.right ≫ e.hom.right = 𝟙 g.right := by
   simp [← Under.comp_right]
+
+lemma forall_iff (P : Under X → Prop) :
+    (∀ Y, P Y) ↔ (∀ (Y) (f : X ⟶ Y), P (.mk f)) := by
+  aesop
 
 section
 
@@ -578,14 +589,17 @@ theorem map_obj_hom : ((map f).obj U).hom = f ≫ U.hom :=
 @[simp]
 theorem map_map_right : ((map f).map g).right = g.right :=
   rfl
-end
 
 /-- If `f` is an isomorphism, `map f` is an equivalence of categories. -/
-def mapIso {Y : T} (f : X ≅ Y) : Under Y ≌ Under X :=
+def mapIso (f : X ≅ Y) : Under Y ≌ Under X :=
   Comma.mapLeftIso _ <| Discrete.natIso fun _ ↦ f.symm
 
-@[simp] lemma mapIso_functor {Y : T} (f : X ≅ Y) : (mapIso f).functor = map f.hom := rfl
-@[simp] lemma mapIso_inverse {Y : T} (f : X ≅ Y) : (mapIso f).inverse = map f.inv := rfl
+@[simp] lemma mapIso_functor (f : X ≅ Y) : (mapIso f).functor = map f.hom := rfl
+@[simp] lemma mapIso_inverse (f : X ≅ Y) : (mapIso f).inverse = map f.inv := rfl
+
+instance [IsIso f] : (Under.map f).IsEquivalence := (Under.mapIso <| asIso f).isEquivalence_functor
+
+end
 
 section coherences
 /-!

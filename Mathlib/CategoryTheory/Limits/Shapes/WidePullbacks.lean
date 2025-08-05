@@ -128,7 +128,7 @@ def mkCone {F : WidePullbackShape J ⥤ C} {X : C} (f : X ⟶ F.obj none) (π : 
           | none => f
           | some j => π j
         naturality := fun j j' f => by
-          cases j <;> cases j' <;> cases f <;> dsimp <;> simp [w] } }
+          cases j <;> cases j' <;> cases f <;> simp [w] } }
 
 /-- Wide pullback diagrams of equivalent index types are equivalent. -/
 def equivalenceOfEquiv (J' : Type w') (h : J ≃ J') :
@@ -211,9 +211,9 @@ def wideSpan (B : C) (objs : J → C) (arrows : ∀ j : J, B ⟶ objs j) : WideP
     · exact arrows j
   map_comp := fun f g => by
     cases f
-    · simp only [Eq.ndrec, hom_id, eq_rec_constant, Category.id_comp]; congr
+    · simp only [hom_id, Category.id_comp]; congr
     · cases g
-      simp only [Eq.ndrec, hom_id, eq_rec_constant, Category.comp_id]; congr
+      simp only [hom_id, Category.comp_id]; congr
 
 /-- Every diagram is naturally isomorphic (actually, equal) to a `wideSpan` -/
 def diagramIsoWideSpan (F : WidePushoutShape J ⥤ C) :
@@ -231,7 +231,7 @@ def mkCocone {F : WidePushoutShape J ⥤ C} {X : C} (f : F.obj none ⟶ X) (ι :
           | none => f
           | some j => ι j
         naturality := fun j j' f => by
-          cases j <;> cases j' <;> cases f <;> dsimp <;> simp [w] } }
+          cases j <;> cases j' <;> cases f <;> simp [w] } }
 
 /-- Wide pushout diagrams of equivalent index types are equivalent. -/
 def equivalenceOfEquiv (J' : Type w') (h : J ≃ J') : WidePushoutShape J ≌ WidePushoutShape J' where

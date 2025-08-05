@@ -86,7 +86,6 @@ def comp : ∀ {X Y Z : WithTerminal C}, Hom X Y → Hom Y Z → Hom X Z
   | star, of _X, _ => fun f _g => PEmpty.elim f
   | _, star, of _Y => fun _f g => PEmpty.elim g
   | star, star, star => fun _ _ => PUnit.unit
-attribute [nolint simpNF] comp.eq_3
 attribute [nolint simpNF] comp.eq_4
 
 instance : Category.{v} (WithTerminal C) where
@@ -220,16 +219,13 @@ def pseudofunctor : Pseudofunctor Cat Cat where
     funext X
     cases X
     · rw [NatTrans.comp_app,NatTrans.comp_app,NatTrans.comp_app,NatTrans.comp_app]
-      simp only [prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_obj,
-        prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_map, map_obj, Cat.comp_obj,
+      simp only [map_obj, Cat.comp_obj,
         Bicategory.Strict.associator_eqToIso, eqToIso_refl, Iso.refl_hom,
-        prelaxfunctor_toPrelaxFunctorStruct_map₂, map₂_app, mapComp_hom_app, Cat.whiskerRight_app,
+        map₂_app, mapComp_hom_app, Cat.whiskerRight_app,
         map_map, down_id, Functor.map_id, Cat.whiskerLeft_app, mapComp_inv_app, Iso.refl_inv,
         Category.comp_id, Category.id_comp]
       rw [NatTrans.id_app, NatTrans.id_app]
-      simp only [Cat.comp_obj, Bicategory.whiskerRight, whiskerRight_app, map_obj, mapComp_hom_app,
-        Iso.refl_hom, map_map, down_id, Functor.map_id, Bicategory.whiskerLeft, whiskerLeft_app,
-        mapComp_inv_app, Iso.refl_inv, Category.comp_id]
+      simp only [Cat.comp_obj, map_obj, Category.comp_id]
     · rfl
   map₂_left_unitor := by
     intros
@@ -388,9 +384,9 @@ def mkCommaObject (F : WithTerminal C ⥤ D) : Comma (𝟭 (C ⥤ D)) (Functor.c
 /-- A morphism of functors `WithTerminal C ⥤ D` gives a morphism between the associated comma
 objects. -/
 @[simps!]
-def mkCommaMorphism {F G: WithTerminal C ⥤ D} (η : F ⟶ G) : mkCommaObject F ⟶ mkCommaObject G where
+def mkCommaMorphism {F G : WithTerminal C ⥤ D} (η : F ⟶ G) : mkCommaObject F ⟶ mkCommaObject G where
   right := η.app .star
-  left := whiskerLeft incl η
+  left := Functor.whiskerLeft incl η
 
 /-- An element of the comma category `Comma (𝟭 (C ⥤ D)) (Functor.const C)` can be seen as a
 functor `WithTerminal C ⥤ D`. -/
@@ -401,7 +397,7 @@ def ofCommaObject (c : Comma (𝟭 (C ⥤ D)) (Functor.const C)) : WithTerminal 
 /-- A morphism in `Comma (𝟭 (C ⥤ D)) (Functor.const C)` gives a morphism between the associated
 functors `WithTerminal C ⥤ D`. -/
 @[simps!]
-def ofCommaMorphism {c c': Comma (𝟭 (C ⥤ D)) (Functor.const C)} (φ : c ⟶ c') :
+def ofCommaMorphism {c c' : Comma (𝟭 (C ⥤ D)) (Functor.const C)} (φ : c ⟶ c') :
     ofCommaObject c ⟶ ofCommaObject c' where
   app x :=
     match x with
@@ -434,15 +430,13 @@ def equivComma : (WithTerminal C ⥤ D) ≌ Comma (𝟭 (C ⥤ D)) (Functor.cons
           congr 1)
         F (Iso.refl _) (Iso.refl _)
         (fun x ↦ by
-          simp only [Iso.refl_symm, Iso.refl_hom, Category.id_comp, Functor.comp_obj,
+          simp only [Iso.refl_hom, Category.id_comp, Functor.comp_obj,
             NatTrans.id_app, Category.comp_id]; rfl))
       (fun {x y} f ↦ by ext t; cases t <;> simp [incl])
   counitIso := NatIso.ofComponents (fun F ↦ Iso.refl _)
   functor_unitIso_comp x := by
-    simp only [id_eq, Functor.id_obj, ofCommaObject_obj, ofCommaMorphism_app, Comma.id_right,
-      NatTrans.id_app, Comma.id_left, Comma.comp_right, NatTrans.comp_app, Comma.comp_left,
-      Functor.comp_obj, liftUnique, Functor.comp_map, eq_mpr_eq_cast, lift_obj,
-      NatIso.ofComponents_hom_app, Iso.refl_hom, Category.comp_id]
+    simp only [Functor.id_obj, Functor.comp_obj, liftUnique, lift_obj, NatIso.ofComponents_hom_app,
+      Iso.refl_hom, Category.comp_id]
     ext <;> rfl
 
 end
@@ -476,7 +470,6 @@ def comp : ∀ {X Y Z : WithInitial C}, Hom X Y → Hom Y Z → Hom X Z
   | of _Y, star, _ => fun f _g => PEmpty.elim f
   | star, star, star => fun _ _ => PUnit.unit
 attribute [nolint simpNF] comp.eq_3
-attribute [nolint simpNF] comp.eq_4
 
 instance : Category.{v} (WithInitial C) where
   Hom X Y := Hom X Y
@@ -773,9 +766,9 @@ def mkCommaObject (F : WithInitial C ⥤ D) : Comma (Functor.const C) (𝟭 (C �
 /-- A morphism of functors `WithInitial C ⥤ D` gives a morphism between the associated comma
 objects. -/
 @[simps!]
-def mkCommaMorphism {F G: WithInitial C ⥤ D} (η : F ⟶ G) : mkCommaObject F ⟶ mkCommaObject G where
+def mkCommaMorphism {F G : WithInitial C ⥤ D} (η : F ⟶ G) : mkCommaObject F ⟶ mkCommaObject G where
   left := η.app .star
-  right := whiskerLeft incl η
+  right := Functor.whiskerLeft incl η
 
 /-- An element of the comma category `Comma (Functor.const C) (𝟭 (C ⥤ D))` can be seen as a
 functor `WithInitial C ⥤ D`. -/
@@ -787,7 +780,7 @@ def ofCommaObject (c : Comma (Functor.const C) (𝟭 (C ⥤ D))) : WithInitial C
 /-- A morphism in `Comma (Functor.const C) (𝟭 (C ⥤ D))` gives a morphism between the associated
 functors `WithInitial C ⥤ D`. -/
 @[simps!]
-def ofCommaMorphism {c c': Comma (Functor.const C) (𝟭 (C ⥤ D))} (φ : c ⟶ c') :
+def ofCommaMorphism {c c' : Comma (Functor.const C) (𝟭 (C ⥤ D))} (φ : c ⟶ c') :
     ofCommaObject c ⟶ ofCommaObject c' where
   app x :=
     match x with
@@ -825,10 +818,8 @@ def equivComma : (WithInitial C ⥤ D) ≌ Comma (Functor.const C) (𝟭 (C ⥤ 
       (fun {x y} f ↦ by ext t; cases t <;> simp [incl])
   counitIso := NatIso.ofComponents (fun F ↦ Iso.refl _)
   functor_unitIso_comp x := by
-    simp only [id_eq, Functor.id_obj, ofCommaObject_obj, ofCommaMorphism_app, Comma.id_right,
-      NatTrans.id_app, Comma.id_left, Comma.comp_right, NatTrans.comp_app, Comma.comp_left,
-      Functor.comp_obj, liftUnique, Functor.comp_map, eq_mpr_eq_cast, lift_obj,
-      NatIso.ofComponents_hom_app, Iso.refl_hom, Category.comp_id]
+    simp only [Functor.id_obj, Functor.comp_obj, liftUnique, lift_obj, NatIso.ofComponents_hom_app,
+      Iso.refl_hom, Category.comp_id]
     ext <;> rfl
 
 end
@@ -879,7 +870,7 @@ def WithTerminal.opEquiv : (WithTerminal C)ᵒᵖ ≌ WithInitial Cᵒᵖ where
         | .star => Iso.refl _)
       (fun {x y} ⟨f⟩ ↦ match x, y, f with
         | op (of x), op (of y), f => by
-            simp only [Functor.id_obj, op_unop, Functor.comp_obj,
+            simp only [Functor.id_obj, Functor.comp_obj,
               Functor.id_map, Iso.refl_hom, Category.comp_id, Functor.comp_map, Category.id_comp]
             rfl
         | op star, op (of _), _ => rfl
@@ -942,7 +933,7 @@ def WithInitial.opEquiv : (WithInitial C)ᵒᵖ ≌ WithTerminal Cᵒᵖ where
         | .star => Iso.refl _)
       (fun {x y} f ↦ match x, y, f with
         | op (of x), op (of y), f => by
-            simp only [Functor.id_obj, op_unop, Functor.comp_obj,
+            simp only [Functor.id_obj, Functor.comp_obj,
               Functor.id_map, Iso.refl_hom, Category.comp_id, Functor.comp_map, Category.id_comp]
             rfl
         | op (of _), op star, _ => rfl

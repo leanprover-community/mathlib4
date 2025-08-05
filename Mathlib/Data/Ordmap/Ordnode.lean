@@ -46,12 +46,12 @@ of this data structure.
 
 Based on weight balanced trees:
 
- * Stephen Adams, "Efficient sets: a balancing act",
-   Journal of Functional Programming 3(4):553-562, October 1993,
-   <http://www.swiss.ai.mit.edu/~adams/BB/>.
- * J. Nievergelt and E.M. Reingold,
-   "Binary search trees of bounded balance",
-   SIAM journal of computing 2(1), March 1973.
+* Stephen Adams, "Efficient sets: a balancing act",
+  Journal of Functional Programming 3(4):553-562, October 1993,
+  <http://www.swiss.ai.mit.edu/~adams/BB/>.
+* J. Nievergelt and E.M. Reingold,
+  "Binary search trees of bounded balance",
+  SIAM journal of computing 2(1), March 1973.
 
 Ported from Haskell's `Data.Set`.
 
@@ -319,7 +319,7 @@ def Any (P : α → Prop) : Ordnode α → Prop
   | nil => False
   | node _ l x r => Any P l ∨ P x ∨ Any P r
 
-instance Any.decidable {P : α → Prop} : (t : Ordnode α ) → [DecidablePred P] → Decidable (Any P t)
+instance Any.decidable {P : α → Prop} : (t : Ordnode α) → [DecidablePred P] → Decidable (Any P t)
   | nil => isFalse id
   | node _ l m r =>
     have : Decidable (Any P l) := Any.decidable l

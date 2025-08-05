@@ -24,12 +24,12 @@ We define the trace / Killing form in this file and prove some basic properties.
 
 ## Main definitions
 
- * `LieModule.traceForm`: a finite, free representation of a Lie algebra `L` induces a bilinear form
-   on `L` called the trace Form.
- * `LieModule.traceForm_eq_zero_of_isNilpotent`: the trace form induced by a nilpotent
-   representation of a Lie algebra vanishes.
- * `killingForm`: the adjoint representation of a (finite, free) Lie algebra `L` induces a bilinear
-   form on `L` via the trace form construction.
+* `LieModule.traceForm`: a finite, free representation of a Lie algebra `L` induces a bilinear form
+  on `L` called the trace Form.
+* `LieModule.traceForm_eq_zero_of_isNilpotent`: the trace form induced by a nilpotent
+  representation of a Lie algebra vanishes.
+* `killingForm`: the adjoint representation of a (finite, free) Lie algebra `L` induces a bilinear
+  form on `L` via the trace form construction.
 -/
 
 variable (R K L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
@@ -71,7 +71,7 @@ lemma traceForm_apply_lie_apply (x y z : L) :
     _ = trace R _ (φ x * (φ y * φ z)) - trace R _ (φ x * (φ z * φ y)) := ?_
     _ = traceForm R L M x ⁅y, z⁆ := ?_
   · simp only [LieHom.map_lie, Ring.lie_def, ← Module.End.mul_eq_comp]
-  · simp only [sub_mul, mul_sub, map_sub, mul_assoc]
+  · simp only [sub_mul, map_sub, mul_assoc]
   · simp only [LinearMap.trace_mul_cycle' R (φ x) (φ z) (φ y)]
   · simp only [traceForm_apply_apply, LieHom.map_lie, Ring.lie_def, mul_sub, map_sub,
       ← Module.End.mul_eq_comp]
@@ -161,7 +161,7 @@ lemma traceForm_apply_eq_zero_of_mem_lcs_of_mem_center {x y : L}
 invariant (in the sense that the action of `L` is skew-adjoint wrt `B`) then components of the
 Fitting decomposition of `M` are orthogonal wrt `B`. -/
 lemma eq_zero_of_mem_genWeightSpace_mem_posFitting [LieRing.IsNilpotent L]
-    {B : LinearMap.BilinForm R M} (hB : ∀ (x : L) (m n : M), B ⁅x, m⁆ n = - B m ⁅x, n⁆)
+    {B : LinearMap.BilinForm R M} (hB : ∀ (x : L) (m n : M), B ⁅x, m⁆ n = -B m ⁅x, n⁆)
     {m₀ m₁ : M} (hm₀ : m₀ ∈ genWeightSpace M (0 : L → R)) (hm₁ : m₁ ∈ posFittingComp R L M) :
     B m₀ m₁ = 0 := by
   replace hB : ∀ x (k : ℕ) m n, B m ((φ x ^ k) n) = (- 1 : R) ^ k • B ((φ x ^ k) m) n := by
@@ -176,7 +176,7 @@ lemma eq_zero_of_mem_genWeightSpace_mem_posFitting [LieRing.IsNilpotent L]
       ← (φ x).comp_apply, ← Module.End.mul_eq_comp, ← pow_succ', ← smul_assoc, this]
   suffices ∀ (x : L) m, m ∈ posFittingCompOf R M x → B m₀ m = 0 by
     refine LieSubmodule.iSup_induction (motive := fun m ↦ (B m₀) m = 0) _ hm₁ this (map_zero _) ?_
-    aesop
+    simp_all
   clear hm₁ m₁; intro x m₁ hm₁
   simp only [mem_genWeightSpace, Pi.zero_apply, zero_smul, sub_zero] at hm₀
   obtain ⟨k, hk⟩ := hm₀ x

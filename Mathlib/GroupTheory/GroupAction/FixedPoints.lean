@@ -12,7 +12,7 @@ import Mathlib.GroupTheory.GroupAction.Defs
 # Properties of `fixedPoints` and `fixedBy`
 
 This module contains some useful properties of `MulAction.fixedPoints` and `MulAction.fixedBy`
-that don't directly belong to `Mathlib.GroupTheory.GroupAction.Basic`.
+that don't directly belong to `Mathlib/GroupTheory/GroupAction/Basic.lean`.
 
 ## Main theorems
 

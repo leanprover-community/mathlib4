@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Category.MonCat.Basic
-import Mathlib.Algebra.Small.Group
+import Mathlib.Algebra.Group.Shrink
+import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.CategoryTheory.Limits.Creates
 import Mathlib.CategoryTheory.Limits.Types.Limits
 
@@ -16,6 +17,7 @@ the underlying types are just the limits in the category of types.
 
 -/
 
+assert_not_exists MonoidWithZero
 
 noncomputable section
 
@@ -41,7 +43,7 @@ def sectionsSubmonoid : Submonoid (∀ j, F.obj j) where
   carrier := (F ⋙ forget MonCat).sections
   one_mem' {j} {j'} f := by simp
   mul_mem' {a} {b} ah bh {j} {j'} f := by
-    simp only [Functor.comp_map, MonoidHom.map_mul, Pi.mul_apply]
+    simp only [Functor.comp_map, Pi.mul_apply]
     dsimp [Functor.sections] at ah bh
     rw [← ah f, ← bh f, forget_map, map_mul]
 
@@ -95,7 +97,7 @@ noncomputable def limitConeIsLimit : IsLimit (limitCone F) := by
   · simp only [Functor.mapCone_π_app, forget_map, map_one]
     rfl
   · intro x y
-    simp only [Functor.mapCone_π_app, forget_map, map_mul, Functor.comp_obj, Equiv.toFun_as_coe]
+    simp only [EquivLike.coe_apply, Functor.mapCone_π_app, forget_map, map_mul]
     rw [← equivShrink_mul]
     rfl
 
@@ -171,7 +173,7 @@ noncomputable instance forget_createsLimit :
         map_one' := by simp; rfl, map_mul' := ?_ }
     · intro x y
       simp only [Types.Small.limitConeIsLimit_lift, Functor.comp_obj, Functor.mapCone_pt,
-          Functor.mapCone_π_app, forget_map, map_mul, mul_of]
+          Functor.mapCone_π_app, forget_map, map_mul]
       congr
       simp only [Functor.comp_obj, Equiv.symm_apply_apply]
       rfl
@@ -182,11 +184,8 @@ noncomputable instance forget_createsLimitsOfShape :
     CreatesLimitsOfShape J (forget MonCat.{u}) where
       CreatesLimit := inferInstance
 
-/-- The forgetful functor from monoids to types preserves all limits.
--/
-@[to_additive
-"The forgetful functor from additive monoids to types preserves all limits."
-]
+/-- The forgetful functor from monoids to types preserves all limits. -/
+@[to_additive "The forgetful functor from additive monoids to types preserves all limits."]
 noncomputable instance forget_createsLimitsOfSize :
     CreatesLimitsOfSize.{w,v} (forget MonCat.{u}) where
       CreatesLimitsOfShape := inferInstance
@@ -337,11 +336,9 @@ noncomputable instance forget_createsLimitsOfShape :
     CreatesLimitsOfShape J (forget MonCat.{u}) where
       CreatesLimit := inferInstance
 
-/-- The forgetful functor from commutative monoids to types preserves all limits.
--/
+/-- The forgetful functor from commutative monoids to types preserves all limits. -/
 @[to_additive
-"The forgetful functor from commutative additive monoids to types preserves all limits."
-]
+"The forgetful functor from commutative additive monoids to types preserves all limits."]
 noncomputable instance forget_createsLimitsOfSize :
     CreatesLimitsOfSize.{w,v} (forget MonCat.{u}) where
       CreatesLimitsOfShape := inferInstance

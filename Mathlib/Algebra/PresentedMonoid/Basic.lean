@@ -122,7 +122,7 @@ def lift : PresentedMonoid rels →* M :=
 @[to_additive]
 theorem toMonoid.unique (g : MonoidHom (conGen rels).Quotient M)
     (hg : ∀ a : α, g (of rels a) = f a) : g = lift f h :=
-  Con.lift_unique (Con.conGen_le h) g (FreeMonoid.hom_eq fun x ↦ let_fun this := hg x; this)
+  Con.lift_unique (Con.conGen_le h) g (FreeMonoid.hom_eq hg)
 
 @[to_additive (attr := simp)]
 theorem lift_of {x : α} : lift f h (of rels x) = f x := rfl
@@ -134,9 +134,6 @@ theorem ext {M : Type*} [Monoid M] (rels : FreeMonoid α → FreeMonoid α → P
     {φ ψ : PresentedMonoid rels →* M} (hx : ∀ (x : α), φ (.of rels x) = ψ (.of rels x)) :
     φ = ψ := by
   apply MonoidHom.eq_of_eqOn_denseM (closure_range_of _)
-  apply eqOn_range.mpr
-  ext
-  rw [Function.comp_apply]
-  exact hx _
+  grind [Set.eqOn_range]
 
 end PresentedMonoid

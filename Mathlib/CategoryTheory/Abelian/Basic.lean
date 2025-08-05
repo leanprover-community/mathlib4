@@ -144,7 +144,7 @@ theorem imageMonoFactorisation_e' {X Y : C} (f : X ⟶ Y) :
     (imageMonoFactorisation f).e = cokernel.π _ ≫ Abelian.coimageImageComparison f := by
   dsimp
   ext
-  simp only [Abelian.coimageImageComparison, imageMonoFactorisation_e, Category.assoc,
+  simp only [Abelian.coimageImageComparison, Category.assoc,
     cokernel.π_desc_assoc]
 
 /-- If the coimage-image comparison morphism for a morphism `f` is an isomorphism,
@@ -258,7 +258,7 @@ variable {C : Type u} [Category.{v} C] [Abelian C]
 -- but triggers https://github.com/leanprover/lean4/issues/2055
 -- We set it as a local instance instead.
 -- instance (priority := 100)
--- Turning it into a global instance breaks `Mathlib.Algebra.Category.ModuleCat.Sheaf.Free`.
+-- Turning it into a global instance breaks `Mathlib/Algebra/Category/ModuleCat/Sheaf/Free.lean`.
 /-- An abelian category has finite biproducts. -/
 theorem hasFiniteBiproducts : HasFiniteBiproducts C :=
   Limits.HasFiniteBiproducts.of_hasFiniteProducts

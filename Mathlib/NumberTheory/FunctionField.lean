@@ -14,14 +14,15 @@ import Mathlib.Topology.Algebra.Valued.ValuedField
 This file defines a function field and the ring of integers corresponding to it.
 
 ## Main definitions
- - `FunctionField Fq F` states that `F` is a function field over the (finite) field `Fq`,
-   i.e. it is a finite extension of the field of rational functions in one variable over `Fq`.
- - `FunctionField.ringOfIntegers` defines the ring of integers corresponding to a function field
-    as the integral closure of `Fq[X]` in the function field.
- - `FunctionField.inftyValuation` : The place at infinity on `Fq(t)` is the nonarchimedean
-    valuation on `Fq(t)` with uniformizer `1/t`.
- - `FunctionField.FqtInfty` : The completion `Fq((t⁻¹))` of `Fq(t)` with respect to the
-    valuation at infinity.
+
+- `FunctionField Fq F` states that `F` is a function field over the (finite) field `Fq`,
+  i.e. it is a finite extension of the field of rational functions in one variable over `Fq`.
+- `FunctionField.ringOfIntegers` defines the ring of integers corresponding to a function field
+  as the integral closure of `Fq[X]` in the function field.
+- `FunctionField.inftyValuation` : The place at infinity on `Fq(t)` is the nonarchimedean
+  valuation on `Fq(t)` with uniformizer `1/t`.
+- `FunctionField.FqtInfty` : The completion `Fq((t⁻¹))` of `Fq(t)` with respect to the
+  valuation at infinity.
 
 ## Implementation notes
 The definitions that involve a field of fractions choose a canonical field of fractions,
@@ -41,7 +42,7 @@ function field, ring of integers
 
 noncomputable section
 
-open scoped nonZeroDivisors Polynomial Multiplicative
+open scoped nonZeroDivisors Polynomial WithZero
 
 variable (Fq F : Type*) [Field Fq] [Field F]
 
@@ -145,7 +146,7 @@ variable [DecidableEq (RatFunc Fq)]
 /-- The valuation at infinity is the nonarchimedean valuation on `Fq(t)` with uniformizer `1/t`.
 Explicitly, if `f/g ∈ Fq(t)` is a nonzero quotient of polynomials, its valuation at infinity is
 `Multiplicative.ofAdd(degree(f) - degree(g))`. -/
-def inftyValuationDef (r : RatFunc Fq) : ℤₘ₀ :=
+def inftyValuationDef (r : RatFunc Fq) : ℤᵐ⁰ :=
   if r = 0 then 0 else ↑(Multiplicative.ofAdd r.intDegree)
 
 theorem InftyValuation.map_zero' : inftyValuationDef Fq 0 = 0 :=
@@ -188,7 +189,7 @@ theorem inftyValuation_of_nonzero {x : RatFunc Fq} (hx : x ≠ 0) :
   rw [inftyValuationDef, if_neg hx]
 
 /-- The valuation at infinity on `Fq(t)`. -/
-def inftyValuation : Valuation (RatFunc Fq) ℤₘ₀ where
+def inftyValuation : Valuation (RatFunc Fq) ℤᵐ⁰ where
   toFun := inftyValuationDef Fq
   map_zero' := InftyValuation.map_zero' Fq
   map_one' := InftyValuation.map_one' Fq
@@ -199,11 +200,9 @@ def inftyValuation : Valuation (RatFunc Fq) ℤₘ₀ where
 theorem inftyValuation_apply {x : RatFunc Fq} : inftyValuation Fq x = inftyValuationDef Fq x :=
   rfl
 
-@[simp]
 theorem inftyValuation.C {k : Fq} (hk : k ≠ 0) :
     inftyValuationDef Fq (RatFunc.C k) = Multiplicative.ofAdd (0 : ℤ) := by
-  have hCk : RatFunc.C k ≠ 0 := (map_ne_zero _).mpr hk
-  rw [inftyValuationDef, if_neg hCk, RatFunc.intDegree_C]
+  simp [hk]
 
 @[simp]
 theorem inftyValuation.X : inftyValuationDef Fq RatFunc.X = Multiplicative.ofAdd (1 : ℤ) := by
@@ -218,7 +217,7 @@ theorem inftyValuation.polynomial {p : Fq[X]} (hp : p ≠ 0) :
   rw [inftyValuationDef, if_neg hp', RatFunc.intDegree_polynomial]
 
 /-- The valued field `Fq(t)` with the valuation at infinity. -/
-def inftyValuedFqt : Valued (RatFunc Fq) ℤₘ₀ :=
+def inftyValuedFqt : Valued (RatFunc Fq) ℤᵐ⁰ :=
   Valued.mk' <| inftyValuation Fq
 
 theorem inftyValuedFqt.def {x : RatFunc Fq} :
@@ -237,7 +236,7 @@ instance : Inhabited (FqtInfty Fq) :=
   ⟨(0 : FqtInfty Fq)⟩
 
 /-- The valuation at infinity on `k(t)` extends to a valuation on `FqtInfty`. -/
-instance valuedFqtInfty : Valued (FqtInfty Fq) ℤₘ₀ :=
+instance valuedFqtInfty : Valued (FqtInfty Fq) ℤᵐ⁰ :=
   @Valued.valuedCompletion _ _ _ _ (inftyValuedFqt Fq)
 
 theorem valuedFqtInfty.def {x : FqtInfty Fq} :

@@ -156,8 +156,7 @@ theorem eqvGen_of_π_eq
   have : colimit.ι diagram one x = colimit.ι diagram one y := by
     dsimp only [coequalizer.π] at h
     rw [← ι_preservesColimitIso_hom, ConcreteCategory.forget_map_eq_coe, types_comp_apply]
-    erw [h]
-    simp
+    simp_all
   have :
     (colimit.ι diagram _ ≫ colim.map _ ≫ (colimit.isoColimitCocone _).hom) _ =
       (colimit.ι diagram _ ≫ colim.map _ ≫ (colimit.isoColimitCocone _).hom) _ :=
@@ -431,7 +430,7 @@ theorem range_fromOpenSubsetsGlue : Set.range (fromOpenSubsetsGlue U) = ⋃ i, (
 /-- The gluing of an open cover is homeomomorphic to the original space. -/
 def openCoverGlueHomeo (h : ⋃ i, (U i : Set α) = Set.univ) :
     (ofOpenSubsets U).toGlueData.glued ≃ₜ α :=
-  Homeomorph.homeomorphOfContinuousOpen
+  Equiv.toHomeomorphOfContinuousOpen
     (Equiv.ofBijective (fromOpenSubsetsGlue U)
       ⟨fromOpenSubsetsGlue_injective U,
         Set.range_eq_univ.mp ((range_fromOpenSubsetsGlue U).symm ▸ h)⟩)

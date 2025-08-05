@@ -246,7 +246,7 @@ def toModuleEnd : S →* Module.End R M where
 
 end DistribMulAction
 
-namespace Module
+section Module
 
 variable (R M) [Semiring R] [AddCommMonoid M] [Module R M]
 variable [Semiring S] [Module S M] [SMulCommClass S R M]
@@ -255,7 +255,7 @@ variable [Semiring S] [Module S M] [SMulCommClass S R M]
 
 This is a stronger version of `DistribMulAction.toModuleEnd`. -/
 @[simps]
-def toModuleEnd : S →+* Module.End R M :=
+def Module.toModuleEnd : S →+* Module.End R M :=
   { DistribMulAction.toModuleEnd R M with
     toFun := DistribMulAction.toLinearMap R M
     map_zero' := LinearMap.ext <| zero_smul S
@@ -264,7 +264,7 @@ def toModuleEnd : S →+* Module.End R M :=
 /-- The canonical (semi)ring isomorphism from `Rᵐᵒᵖ` to `Module.End R R` induced by the right
 multiplication. -/
 @[simps]
-def moduleEndSelf : Rᵐᵒᵖ ≃+* Module.End R R :=
+def RingEquiv.moduleEndSelf : Rᵐᵒᵖ ≃+* Module.End R R :=
   { Module.toModuleEnd R R with
     toFun := DistribMulAction.toLinearMap R R
     invFun := fun f ↦ MulOpposite.op (f 1)
@@ -274,18 +274,21 @@ def moduleEndSelf : Rᵐᵒᵖ ≃+* Module.End R R :=
 /-- The canonical (semi)ring isomorphism from `R` to `Module.End Rᵐᵒᵖ R` induced by the left
 multiplication. -/
 @[simps]
-def moduleEndSelfOp : R ≃+* Module.End Rᵐᵒᵖ R :=
+def RingEquiv.moduleEndSelfOp : R ≃+* Module.End Rᵐᵒᵖ R :=
   { Module.toModuleEnd _ _ with
     toFun := DistribMulAction.toLinearMap _ _
     invFun := fun f ↦ f 1
     left_inv := mul_one
     right_inv := fun _ ↦ LinearMap.ext_ring_op <| mul_one _ }
 
-theorem End.natCast_def (n : ℕ) [AddCommMonoid N₁] [Module R N₁] :
+@[deprecated (since := "2025-04-13")] alias Module.moduleEndSelf := RingEquiv.moduleEndSelf
+@[deprecated (since := "2025-04-13")] alias Module.moduleEndSelfOp := RingEquiv.moduleEndSelfOp
+
+theorem Module.End.natCast_def (n : ℕ) [AddCommMonoid N₁] [Module R N₁] :
     (↑n : Module.End R N₁) = Module.toModuleEnd R N₁ n :=
   rfl
 
-theorem End.intCast_def (z : ℤ) [AddCommGroup N₁] [Module R N₁] :
+theorem Module.End.intCast_def (z : ℤ) [AddCommGroup N₁] [Module R N₁] :
     (z : Module.End R N₁) = Module.toModuleEnd R N₁ z :=
   rfl
 
@@ -343,7 +346,7 @@ variable (S)
 
 /-- Applying a linear map at `v : M`, seen as `S`-linear map from `M →ₗ[R] M₂` to `M₂`.
 
- See `LinearMap.applyₗ` for a version where `S = R`. -/
+See `LinearMap.applyₗ` for a version where `S = R`. -/
 @[simps]
 def applyₗ' : M →+ (M →ₗ[R] M₂) →ₗ[S] M₂ where
   toFun v :=

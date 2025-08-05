@@ -47,7 +47,7 @@ def pushTodo (lhs rhs : Expr) (H : EntryExpr) (heqProof : Bool) : CCM Unit := do
 def pushEq (lhs rhs : Expr) (H : EntryExpr) : CCM Unit :=
   pushTodo lhs rhs H false
 
-/-- Add the heterogeneous equality proof `H : HEq lhs rhs` to the end of the todo list. -/
+/-- Add the heterogeneous equality proof `H : lhs ≍ rhs` to the end of the todo list. -/
 @[inline]
 def pushHEq (lhs rhs : Expr) (H : EntryExpr) : CCM Unit :=
   pushTodo lhs rhs H true
@@ -881,9 +881,9 @@ partial def applySimpleEqvs (e : Expr) : CCM Unit := do
   if let .app (.app (.app (.app (.const ``cast [l₁]) A) B) H) a := e then
     /-
     ```
-    HEq (cast H a) a
+    cast H a ≍ a
 
-    theorem cast_heq.{l₁} : ∀ {A B : Sort l₁} (H : A = B) (a : A), HEq (@cast.{l₁} A B H a) a
+    theorem cast_heq.{l₁} : ∀ {A B : Sort l₁} (H : A = B) (a : A), @cast.{l₁} A B H a ≍ a
     ```
     -/
     let proof := mkApp4 (.const ``cast_heq [l₁]) A B H a
@@ -892,10 +892,10 @@ partial def applySimpleEqvs (e : Expr) : CCM Unit := do
   if let .app (.app (.app (.app (.app (.app (.const ``Eq.rec [l₁, l₂]) A) a) P) p) a') H := e then
     /-
     ```
-    HEq (t ▸ p) p
+    t ▸ p ≍ p
 
     theorem eqRec_heq'.{l₁, l₂} : ∀ {A : Sort l₂} {a : A} {P : (a' : A) → a = a' → Sort l₁}
-      (p : P a) {a' : A} (H : a = a'), HEq (@Eq.rec.{l₁ l₂} A a P p a' H) p
+      (p : P a) {a' : A} (H : a = a'), @Eq.rec.{l₁ l₂} A a P p a' H ≍ p
     ```
     -/
     let proof := mkApp6 (.const ``eqRec_heq' [l₁, l₂]) A a P p a' H
@@ -1143,7 +1143,7 @@ partial def propagateConstructorEq (e₁ e₂ : Expr) : CCM Unit := do
       if env.contains name then
         let rec
           /-- Given an injective theorem `val : type`, whose `type` is the form of
-          `a₁ = a₂ ∧ HEq b₁ b₂ ∧ ..`, destruct `val` and push equality proofs to the todo list. -/
+          `a₁ = a₂ ∧ b₁ ≍ b₂ ∧ ..`, destruct `val` and push equality proofs to the todo list. -/
           go (type val : Expr) : CCM Unit := do
             let push (type val : Expr) : CCM Unit :=
               match type.eq? with
@@ -1235,7 +1235,7 @@ def propagateDown (e : Expr) : CCM Unit := do
 /-- Performs one step in the process when the new equation is added.
 
 Here, `H` contains the proof that `e₁ = e₂` (if `heqProof` is false)
-or `HEq e₁ e₂` (if `heqProof` is true). -/
+or `e₁ ≍ e₂` (if `heqProof` is true). -/
 def addEqvStep (e₁ e₂ : Expr) (H : EntryExpr) (heqProof : Bool) : CCM Unit := do
   let some n₁ ← getEntry e₁ | return -- `e₁` have not been internalized
   let some n₂ ← getEntry e₂ | return -- `e₂` have not been internalized
@@ -1411,7 +1411,7 @@ def internalize (e : Expr) : CCM Unit := do
   internalizeCore e none
   processTodo
 
-/-- Add `H : lhs = rhs` or `H : HEq lhs rhs` to the congruence closure. Don't forget to internalize
+/-- Add `H : lhs = rhs` or `H : lhs ≍ rhs` to the congruence closure. Don't forget to internalize
 `lhs` and `rhs` beforehand. -/
 def addEqvCore (lhs rhs H : Expr) (heqProof : Bool) : CCM Unit := do
   pushTodo lhs rhs H heqProof

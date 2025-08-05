@@ -49,6 +49,8 @@ def span (s : Set M) : Submodule R M :=
 class IsPrincipal (S : Submodule R M) : Prop where
   principal (S) : ∃ a, S = span R {a}
 
+instance (x : R) : (span R {x}).IsPrincipal := ⟨x, rfl⟩
+
 end
 
 variable {s t : Set M}
@@ -56,8 +58,11 @@ variable {s t : Set M}
 theorem mem_span : x ∈ span R s ↔ ∀ p : Submodule R M, s ⊆ p → x ∈ p :=
   mem_iInter₂
 
-@[aesop safe 20 apply (rule_sets := [SetLike])]
+@[simp, aesop safe 20 (rule_sets := [SetLike])]
 theorem subset_span : s ⊆ span R s := fun _ h => mem_span.2 fun _ hp => hp h
+
+@[aesop 80% (rule_sets := [SetLike])]
+theorem mem_span_of_mem {s : Set M} {x : M} (hx : x ∈ s) : x ∈ span R s := subset_span hx
 
 theorem span_le {p} : span R s ≤ p ↔ s ⊆ p :=
   ⟨Subset.trans subset_span, fun ss _ h => mem_span.1 h _ ss⟩
@@ -94,6 +99,12 @@ theorem span_insert_zero : span R (insert (0 : M) s) = span R s := by
   refine le_antisymm ?_ (Submodule.span_mono (Set.subset_insert 0 s))
   rw [span_le, Set.insert_subset_iff]
   exact ⟨by simp only [SetLike.mem_coe, Submodule.zero_mem], Submodule.subset_span⟩
+
+@[simp]
+lemma span_sdiff_singleton_zero : span R (s \ {0}) = span R s := by
+  by_cases h : 0 ∈ s
+  · rw [← span_insert_zero, show insert 0 (s \ {0}) = s by simp [h]]
+  · simp [h]
 
 theorem closure_subset_span {s : Set M} : (AddSubmonoid.closure s : Set M) ⊆ span R s :=
   (@AddSubmonoid.closure_le _ _ _ (span R s).toAddSubmonoid).mpr subset_span
@@ -159,7 +170,7 @@ theorem span_eq_closure {s : Set M} : (span R s).toAddSubmonoid = closure (@univ
       | mem _ h =>
         obtain ⟨r₂, -, x, hx, rfl⟩ := h
         exact subset_closure ⟨r₁ * r₂, trivial, x, hx, mul_smul ..⟩
-      | one => simpa only [smul_zero] using zero_mem _
+      | one => simp only [smul_zero, zero_mem]
       | mul _ _ _ _ h₁ h₂ => simpa only [smul_add] using add_mem h₁ h₂
   case of_mem_closure =>
     refine closure_le.2 ?_ hx
@@ -304,7 +315,7 @@ theorem mem_iSup_of_directed {ι} [Nonempty ι] (S : ι → Submodule R M) (H : 
 theorem mem_sSup_of_directed {s : Set (Submodule R M)} {z} (hs : s.Nonempty)
     (hdir : DirectedOn (· ≤ ·) s) : z ∈ sSup s ↔ ∃ y ∈ s, z ∈ y := by
   have : Nonempty s := hs.to_subtype
-  simp only [sSup_eq_iSup', mem_iSup_of_directed _ hdir.directed_val, SetCoe.exists, Subtype.coe_mk,
+  simp only [sSup_eq_iSup', mem_iSup_of_directed _ hdir.directed_val, SetCoe.exists,
     exists_prop]
 
 @[norm_cast, simp]
@@ -338,10 +349,13 @@ theorem mem_sup : x ∈ p ⊔ p' ↔ ∃ y ∈ p, ∃ z ∈ p', y + z = x :=
 theorem mem_sup' : x ∈ p ⊔ p' ↔ ∃ (y : p) (z : p'), (y : M) + z = x :=
   mem_sup.trans <| by simp only [Subtype.exists, exists_prop]
 
-lemma exists_add_eq_of_codisjoint (h : Codisjoint p p') (x : M) :
-    ∃ y ∈ p, ∃ z ∈ p', y + z = x := by
-  suffices x ∈ p ⊔ p' by exact Submodule.mem_sup.mp this
-  simpa only [h.eq_top] using Submodule.mem_top
+theorem codisjoint_iff_exists_add_eq :
+    Codisjoint p p' ↔ ∀ z, ∃ x y, x ∈ p ∧ y ∈ p' ∧ x + y = z := by
+  rw [codisjoint_iff, eq_top_iff']
+  exact forall_congr' (fun z => mem_sup.trans <| by simp)
+
+@[deprecated (since := "2025-07-05")]
+alias ⟨exists_add_eq_of_codisjoint, _⟩ := codisjoint_iff_exists_add_eq
 
 variable (p p')
 
@@ -363,6 +377,7 @@ theorem sup_eq_top_iff : p ⊔ p' = ⊤ ↔ ∀ m : M, ∃ u ∈ p, ∃ v ∈ p'
 
 end
 
+@[simp]
 theorem mem_span_singleton_self (x : M) : x ∈ R ∙ x :=
   subset_span rfl
 
@@ -441,6 +456,16 @@ theorem mem_span_pair {x y z : M} :
     z ∈ span R ({x, y} : Set M) ↔ ∃ a b : R, a • x + b • y = z := by
   simp_rw [mem_span_insert, mem_span_singleton, exists_exists_eq_and, eq_comm]
 
+theorem mem_span_triple {w x y z : M} :
+    w ∈ span R ({x, y, z} : Set M) ↔ ∃ a b c : R, a • x + b • y + c • z = w := by
+  rw [mem_span_insert]
+  simp_rw [mem_span_pair]
+  refine exists_congr fun a ↦ ⟨?_, ?_⟩
+  · rintro ⟨u, ⟨b, c, rfl⟩, rfl⟩
+    exact ⟨b, c, by rw [add_assoc]⟩
+  · rintro ⟨b, c, rfl⟩
+    exact ⟨b • y + c • z, ⟨b, c, rfl⟩, by rw [add_assoc]⟩
+
 @[simp]
 theorem span_eq_bot : span R (s : Set M) = ⊥ ↔ ∀ x ∈ s, (x : M) = 0 :=
   eq_bot_iff.trans
@@ -477,7 +502,9 @@ theorem submodule_eq_sSup_le_nonzero_spans (p : Submodule R M) :
     rintro S ⟨_, ⟨_, ⟨_, rfl⟩⟩⟩
     rwa [span_singleton_le_iff_mem]
 
-theorem lt_sup_iff_not_mem {I : Submodule R M} {a : M} : (I < I ⊔ R ∙ a) ↔ a ∉ I := by simp
+theorem lt_sup_iff_notMem {I : Submodule R M} {a : M} : (I < I ⊔ R ∙ a) ↔ a ∉ I := by simp
+
+@[deprecated (since := "2025-05-23")] alias lt_sup_iff_not_mem := lt_sup_iff_notMem
 
 theorem mem_iSup {ι : Sort*} (p : ι → Submodule R M) {m : M} :
     (m ∈ ⨆ i, p i) ↔ ∀ N, (∀ i, p i ≤ N) → m ∈ N := by
@@ -511,6 +538,18 @@ theorem mem_span_finite_of_mem_span {S : Set M} {x : M} (hx : x ∈ span R S) :
   · rintro a x - ⟨T, hT, h2⟩
     exact ⟨T, hT, smul_mem _ _ h2⟩
 
+theorem subset_span_finite_of_subset_span {s : Set M} {t : Finset M} (ht : (t : Set M) ⊆ span R s) :
+    ∃ T : Finset M, ↑T ⊆ s ∧ (t : Set M) ⊆ span R (T : Set M) := by
+  classical
+  induction t using Finset.induction_on with
+  | empty => exact ⟨∅, by simp⟩
+  | insert a t hat IH =>
+    obtain ⟨T, hTs, htT⟩ := IH (by simp_all [Set.insert_subset_iff])
+    obtain ⟨T', hT's, haT'⟩ := mem_span_finite_of_mem_span (ht (Finset.mem_insert_self _ _))
+    refine ⟨T ∪ T', by aesop, ?_⟩
+    simp only [Finset.coe_insert, Finset.coe_union, span_union, insert_subset_iff, SetLike.mem_coe]
+    exact ⟨mem_sup_right haT', htT.trans (le_sup_left (a := span R _))⟩
+
 end
 
 end AddCommMonoid
@@ -531,7 +570,7 @@ theorem mem_span_insert' {x y} {s : Set M} :
   · rintro ⟨a, z, hz, rfl⟩
     exact ⟨-a, by simp [hz, add_assoc]⟩
   · rintro ⟨a, h⟩
-    exact ⟨-a, _, h, by simp [add_comm, add_left_comm]⟩
+    exact ⟨-a, _, h, by simp [add_comm]⟩
 
 lemma span_range_update_add_smul (hij : i ≠ j) (v : ι → M) (r : R) :
     span R (Set.range (Function.update v j (v j + r • v i))) = span R (Set.range v) := by

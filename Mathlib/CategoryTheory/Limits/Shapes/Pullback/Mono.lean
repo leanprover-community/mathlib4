@@ -14,8 +14,8 @@ the dual statements between pushouts and epimorphisms.
 
 ## Main results
 * Monomorphisms are stable under pullback. This is available using the `PullbackCone` API as
-`mono_fst_of_is_pullback_of_mono` and `mono_snd_of_is_pullback_of_mono`, and using the `pullback`
-API as `pullback.fst_of_mono` and `pullback.snd_of_mono`.
+  `mono_fst_of_is_pullback_of_mono` and `mono_snd_of_is_pullback_of_mono`, and using the `pullback`
+  API as `pullback.fst_of_mono` and `pullback.snd_of_mono`.
 
 * A pullback cone is a limit iff its composition with a monomorphism is a limit. This is available
   as `IsLimitOfCompMono` and `pullbackIsPullbackOfCompMono` respectively.
@@ -268,11 +268,11 @@ def isColimitOfFactors (f : X ⟶ Y) (g : X ⟶ Z) (h : X ⟶ W) [Epi h] (x : W 
       ⟨hs.fac _ WalkingSpan.left, hs.fac _ WalkingSpan.right, fun hr hr' => by
         apply PushoutCocone.IsColimit.hom_ext hs
         · simp only [PushoutCocone.mk_inl, PushoutCocone.mk_inr] at hr hr' ⊢
-          simp only [hr, hr']
+          simp only [hr]
           symm
           exact hs.fac _ WalkingSpan.left
         · simp only [PushoutCocone.mk_inl, PushoutCocone.mk_inr] at hr hr' ⊢
-          simp only [hr, hr']
+          simp only [hr']
           symm
           exact hs.fac _ WalkingSpan.right⟩⟩
 

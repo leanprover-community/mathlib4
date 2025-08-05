@@ -109,9 +109,11 @@ def condExpUnexpander : Lean.PrettyPrinter.Unexpander
   | _ => throw ()
 
 /-- info: μ[f|m] : α → E -/
-#guard_msgs in #check μ[f | m]
+#guard_msgs in
+#check μ[f|m]
 /-- info: μ[f|m] sorry : E -/
-#guard_msgs in #check μ[f | m] (sorry : α)
+#guard_msgs in
+#check μ[f|m] (sorry : α)
 
 theorem condExp_of_not_le (hm_not : ¬m ≤ m₀) : μ[f|m] = 0 := by rw [condExp, dif_neg hm_not]
 
@@ -130,19 +132,13 @@ theorem condExp_of_sigmaFinite (hm : m ≤ m₀) [hμm : SigmaFinite (μ.trim hm
         else aestronglyMeasurable_condExpL1.mk (condExpL1 hm μ f)
       else 0 := by
   rw [condExp, dif_pos hm]
-  simp only [hμm, Ne, true_and]
-  by_cases hf : Integrable f μ
-  · rw [dif_pos hf, if_pos hf]
-  · rw [dif_neg hf, if_neg hf]
+  grind
 
 @[deprecated (since := "2025-01-21")] alias condexp_of_sigmaFinite := condExp_of_sigmaFinite
 
 theorem condExp_of_stronglyMeasurable (hm : m ≤ m₀) [hμm : SigmaFinite (μ.trim hm)] {f : α → E}
     (hf : StronglyMeasurable[m] f) (hfi : Integrable f μ) : μ[f|m] = f := by
   rw [condExp_of_sigmaFinite hm, if_pos hfi, if_pos hf]
-
-@[deprecated (since := "2025-01-21")]
-alias condexp_of_stronglyMeasurable := condExp_of_stronglyMeasurable
 
 @[simp]
 theorem condExp_const (hm : m ≤ m₀) (c : E) [IsFiniteMeasure μ] : μ[fun _ : α ↦ c|m] = fun _ ↦ c :=
@@ -227,9 +223,6 @@ theorem condExp_of_aestronglyMeasurable' (hm : m ≤ m₀) [hμm : SigmaFinite (
   rw [condExp_of_stronglyMeasurable hm hf.stronglyMeasurable_mk
     ((integrable_congr hf.ae_eq_mk).mp hfi)]
 
-@[deprecated (since := "2025-01-21")]
-alias condexp_of_aestronglyMeasurable' := condExp_of_aestronglyMeasurable'
-
 @[fun_prop]
 theorem integrable_condExp : Integrable (μ[f|m]) μ := by
   by_cases hm : m ≤ m₀
@@ -262,7 +255,7 @@ theorem integral_condExp (hm : m ≤ m₀) [hμm : SigmaFinite (μ.trim hm)] :
 /-- **Law of total probability** using `condExp` as conditional probability. -/
 theorem integral_condExp_indicator [mβ : MeasurableSpace β] {Y : α → β} (hY : Measurable Y)
     [SigmaFinite (μ.trim hY.comap_le)] {A : Set α} (hA : MeasurableSet A) :
-    ∫ x, (μ[(A.indicator fun _ ↦ (1 : ℝ)) | mβ.comap Y]) x ∂μ = μ.real A := by
+    ∫ x, (μ[(A.indicator fun _ ↦ (1 : ℝ))|mβ.comap Y]) x ∂μ = μ.real A := by
   rw [integral_condExp, integral_indicator hA, setIntegral_const, smul_eq_mul, mul_one]
 
 @[deprecated (since := "2025-01-21")] alias integral_condexp_indicator := integral_condExp_indicator
@@ -279,9 +272,6 @@ theorem ae_eq_condExp_of_forall_setIntegral_eq (hm : m ≤ m₀) [SigmaFinite (�
     (fun s _ _ => integrable_condExp.integrableOn) (fun s hs hμs => ?_) hgm
     (StronglyMeasurable.aestronglyMeasurable stronglyMeasurable_condExp)
   rw [hg_eq s hs hμs, setIntegral_condExp hm hf hs]
-
-@[deprecated (since := "2025-01-21")]
-alias ae_eq_condexp_of_forall_setIntegral_eq := ae_eq_condExp_of_forall_setIntegral_eq
 
 theorem condExp_bot' [hμ : NeZero μ] (f : α → E) :
     μ[f|⊥] = fun _ => (μ.real Set.univ)⁻¹ • ∫ x, f x ∂μ := by
@@ -336,7 +326,7 @@ theorem condExp_finset_sum {ι : Type*} {s : Finset ι} {f : ι → α → E}
   classical
   induction s using Finset.induction_on with
   | empty => rw [Finset.sum_empty, Finset.sum_empty, condExp_zero]
-  | @insert i s his heq =>
+  | insert i s his heq =>
     rw [Finset.sum_insert his, Finset.sum_insert his]
     exact (condExp_add (hf i <| Finset.mem_insert_self i s)
       (integrable_finset_sum' _ <| Finset.forall_of_forall_insert hf) _).trans
@@ -397,7 +387,7 @@ section RCLike
 variable [InnerProductSpace 𝕜 E]
 
 lemma MemLp.condExpL2_ae_eq_condExp' (hm : m ≤ m₀) (hf1 : Integrable f μ) (hf2 : MemLp f 2 μ)
-    [SigmaFinite (μ.trim hm)] : condExpL2 E 𝕜 hm hf2.toLp =ᵐ[μ] μ[f | m] := by
+    [SigmaFinite (μ.trim hm)] : condExpL2 E 𝕜 hm hf2.toLp =ᵐ[μ] μ[f|m] := by
   refine ae_eq_condExp_of_forall_setIntegral_eq hm hf1
     (fun s hs htop ↦ integrableOn_condExpL2_of_measure_ne_top hm htop.ne _) (fun s hs htop ↦ ?_)
     (aestronglyMeasurable_condExpL2 hm _)
@@ -409,7 +399,7 @@ lemma MemLp.condExpL2_ae_eq_condExp' (hm : m ≤ m₀) (hf1 : Integrable f μ) (
 alias Memℒp.condExpL2_ae_eq_condExp' := MemLp.condExpL2_ae_eq_condExp'
 
 lemma MemLp.condExpL2_ae_eq_condExp (hm : m ≤ m₀) (hf : MemLp f 2 μ) [IsFiniteMeasure μ] :
-    condExpL2 E 𝕜 hm hf.toLp =ᵐ[μ] μ[f | m] :=
+    condExpL2 E 𝕜 hm hf.toLp =ᵐ[μ] μ[f|m] :=
   hf.condExpL2_ae_eq_condExp' hm (memLp_one_iff_integrable.1 <| hf.mono_exponent one_le_two)
 
 @[deprecated (since := "2025-02-21")]
@@ -421,7 +411,7 @@ section Real
 variable [InnerProductSpace ℝ E]
 
 -- TODO: Generalize via the conditional Jensen inequality
-lemma eLpNorm_condExp_le : eLpNorm (μ[f | m]) 2 μ ≤ eLpNorm f 2 μ := by
+lemma eLpNorm_condExp_le : eLpNorm (μ[f|m]) 2 μ ≤ eLpNorm f 2 μ := by
   by_cases hm : m ≤ m₀; swap
   · simp [condExp_of_not_le hm]
   by_cases hfμ : SigmaFinite (μ.trim hm); swap
@@ -437,7 +427,7 @@ lemma eLpNorm_condExp_le : eLpNorm (μ[f | m]) 2 μ ≤ eLpNorm f 2 μ := by
   refine le_trans (eLpNorm_condExpL2_le hm _) ?_
   rw [eLpNorm_congr_ae hf.coeFn_toLp]
 
-protected lemma MemLp.condExp (hf : MemLp f 2 μ) : MemLp (μ[f | m]) 2 μ := by
+protected lemma MemLp.condExp (hf : MemLp f 2 μ) : MemLp (μ[f|m]) 2 μ := by
   by_cases hm : m ≤ m₀
   · exact ⟨(stronglyMeasurable_condExp.mono hm).aestronglyMeasurable,
       eLpNorm_condExp_le.trans_lt hf.eLpNorm_lt_top⟩
@@ -472,9 +462,6 @@ theorem tendsto_condExpL1_of_dominated_convergence (hm : m ≤ m₀) [SigmaFinit
     (hfs : ∀ᵐ x ∂μ, Tendsto (fun n => fs n x) atTop (𝓝 (f x))) :
     Tendsto (fun n => condExpL1 hm μ (fs n)) atTop (𝓝 (condExpL1 hm μ f)) :=
   tendsto_setToFun_of_dominated_convergence _ bound_fs hfs_meas h_int_bound_fs hfs_bound hfs
-
-@[deprecated (since := "2025-01-21")]
-alias tendsto_condexpL1_of_dominated_convergence := tendsto_condExpL1_of_dominated_convergence
 
 /-- If two sequences of functions have a.e. equal conditional expectations at each step, converge
 and verify dominated convergence hypotheses, then the conditional expectations of their limits are

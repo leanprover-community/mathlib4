@@ -44,11 +44,11 @@ section
 variable {I J K : Type*} (p : I × J → K)
 
 /-- Given a bifunctor `F : C₁ ⥤ C₂ ⥤ C₃`, graded objects `X : GradedObject I C₁` and
- `Y : GradedObject J C₂` and a map `p : I × J → K`, this is the `K`-graded object sending
+`Y : GradedObject J C₂` and a map `p : I × J → K`, this is the `K`-graded object sending
 `k` to the coproduct of `(F.obj (X i)).obj (Y j)` for `p ⟨i, j⟩ = k`. -/
 noncomputable def mapBifunctorMapObj (X : GradedObject I C₁) (Y : GradedObject J C₂)
-  [HasMap (((mapBifunctor F I J).obj X).obj Y) p] : GradedObject K C₃ :=
-    (((mapBifunctor F I J).obj X).obj Y).mapObj p
+    [HasMap (((mapBifunctor F I J).obj X).obj Y) p] : GradedObject K C₃ :=
+  (((mapBifunctor F I J).obj X).obj Y).mapObj p
 
 /-- The inclusion of `(F.obj (X i)).obj (Y j)` in `mapBifunctorMapObj F p X Y k`
 when `i + j = k`. -/

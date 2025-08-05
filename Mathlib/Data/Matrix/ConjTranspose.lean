@@ -42,11 +42,13 @@ def conjTranspose [Star α] (M : Matrix m n α) : Matrix n m α :=
 scoped postfix:1024 "ᴴ" => Matrix.conjTranspose
 
 @[simp]
-lemma conjTranspose_stdBasisMatrix [DecidableEq n] [DecidableEq m] [AddMonoid α]
+lemma conjTranspose_single [DecidableEq n] [DecidableEq m] [AddMonoid α]
     [StarAddMonoid α] (i : m) (j : n) (a : α) :
-    (stdBasisMatrix i j a)ᴴ = stdBasisMatrix j i (star a) := by
-  show (stdBasisMatrix i j a).transpose.map starAddEquiv = stdBasisMatrix j i (star a)
+    (single i j a)ᴴ = single j i (star a) := by
+  change (single i j a).transpose.map starAddEquiv = single j i (star a)
   simp
+
+@[deprecated (since := "2025-05-05")] alias conjTranspose_stdBasisMatrix := conjTranspose_single
 
 section Diagonal
 
@@ -407,8 +409,8 @@ theorem star_mul [Fintype n] [NonUnitalNonAssocSemiring α] [StarRing α] (M N :
 end Star
 
 @[simp]
-theorem conjTranspose_submatrix [Star α] (A : Matrix m n α) (r_reindex : l → m)
-    (c_reindex : o → n) : (A.submatrix r_reindex c_reindex)ᴴ = Aᴴ.submatrix c_reindex r_reindex :=
+theorem conjTranspose_submatrix [Star α] (A : Matrix m n α) (r : l → m)
+    (c : o → n) : (A.submatrix r c)ᴴ = Aᴴ.submatrix c r :=
   ext fun _ _ => rfl
 
 theorem conjTranspose_reindex [Star α] (eₘ : m ≃ l) (eₙ : n ≃ o) (M : Matrix m n α) :

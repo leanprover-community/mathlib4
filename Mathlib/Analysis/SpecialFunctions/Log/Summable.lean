@@ -5,7 +5,6 @@ Authors: Chris Birkbeck
 -/
 
 import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
-import Mathlib.Analysis.NormedSpace.FunctionSeries
 
 /-!
 # Summability of logarithms
@@ -43,7 +42,8 @@ lemma summable_log_one_add_of_summable {f : ι → ℂ} (hf : Summable f) :
   filter_upwards [hf.norm.tendsto_cofinite_zero.eventually_le_const one_half_pos] with i hi
     using norm_log_one_add_half_le_self hi
 
-lemma multipliable_one_add_of_summable (hf : Summable f) : Multipliable (fun i ↦ 1 + f i) :=
+protected lemma multipliable_one_add_of_summable (hf : Summable f) :
+    Multipliable (fun i ↦ 1 + f i) :=
   multipliable_of_summable_log (summable_log_one_add_of_summable hf)
 
 end Complex
@@ -87,27 +87,13 @@ lemma summable_log_one_add_of_summable (hf : Summable f) :
   rw [ofReal_log, ofReal_add, ofReal_one]
   linarith
 
-lemma multipliable_one_add_of_summable (hf : Summable f) : Multipliable (fun i ↦ 1 + f i) := by
+protected lemma multipliable_one_add_of_summable (hf : Summable f) :
+    Multipliable (fun i ↦ 1 + f i) := by
   refine multipliable_of_summable_log' ?_ (summable_log_one_add_of_summable hf)
   filter_upwards [hf.tendsto_cofinite_zero.eventually_const_lt neg_one_lt_zero] with i hi
   linarith
 
 end Real
-
-lemma Complex.tendstoUniformlyOn_tsum_nat_log_one_add {α : Type*} {f : ℕ → α → ℂ} (K : Set α)
-    {u : ℕ → ℝ} (hu : Summable u) (h : ∀ᶠ n in atTop, ∀ x ∈ K, ‖f n x‖ ≤ u n) :
-    TendstoUniformlyOn (fun (n : ℕ) (a : α) => ∑ i ∈ Finset.range n,
-    (Complex.log (1 + f i a))) (fun a => ∑' i : ℕ, Complex.log (1 + f i a)) atTop K := by
-  apply tendstoUniformlyOn_tsum_nat_eventually (hu.mul_left (3/2))
-  obtain ⟨N, hN⟩ := Metric.tendsto_atTop.mp (Summable.tendsto_atTop_zero hu) (1/2) (one_half_pos)
-  simp only [eventually_atTop, ge_iff_le] at *
-  obtain ⟨N2, hN2⟩ := h
-  refine ⟨max N N2, fun n hn x hx => ?_⟩
-  apply le_trans (Complex.norm_log_one_add_half_le_self (z := (f n x)) ?_)
-  · simp only [Nat.ofNat_pos, div_pos_iff_of_pos_left, mul_le_mul_left]
-    exact hN2 n (le_of_max_le_right hn) x hx
-  · apply le_trans (le_trans (hN2 n (le_of_max_le_right hn) x hx)
-    (by simpa using Real.le_norm_self (u n))) (hN n (le_of_max_le_left hn)).le
 
 section NormedRing
 
@@ -124,7 +110,7 @@ variable {R : Type*} [NormedCommRing R] [NormOneClass R] {f : ι → R}
 lemma multipliable_norm_one_add_of_summable_norm (hf : Summable fun i ↦ ‖f i‖) :
     Multipliable fun i ↦ ‖1 + f i‖ := by
   conv => enter [1, i]; rw [← sub_add_cancel ‖1 + f i‖ 1, add_comm]
-  refine Real.multipliable_one_add_of_summable <| hf.of_norm_bounded _ (fun i ↦ ?_)
+  refine Real.multipliable_one_add_of_summable <| hf.of_norm_bounded (fun i ↦ ?_)
   simpa using abs_norm_sub_norm_le (1 + f i) 1
 
 lemma Finset.norm_prod_one_add_sub_one_le (t : Finset ι) (f : ι → R) :
@@ -132,7 +118,7 @@ lemma Finset.norm_prod_one_add_sub_one_le (t : Finset ι) (f : ι → R) :
   classical
   induction t using Finset.induction_on with
   | empty => simp
-  | @insert x t hx IH =>
+  | insert x t hx IH =>
     rw [Finset.prod_insert hx, Finset.sum_insert hx, Real.exp_add,
       show (1 + f x) * ∏ i ∈ t, (1 + f i) - 1 =
         (∏ i ∈ t, (1 + f i) - 1) + f x * ∏ x ∈ t, (1 + f x) by ring]
