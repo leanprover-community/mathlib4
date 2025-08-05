@@ -79,14 +79,6 @@ theorem add (hxy₁ : x₁ ≡ y₁ [SMOD U]) (hxy₂ : x₂ ≡ y₂ [SMOD U]) 
   simp_rw [Quotient.mk_add, hxy₁, hxy₂]
 
 @[gcongr]
-theorem add_left (z : M) (hxy : x ≡ y [SMOD U]) : z + x ≡ z + y [SMOD U] :=
-  add rfl hxy
-
-@[gcongr]
-theorem add_right (z : M) (hxy : x ≡ y [SMOD U]) : x + z ≡ y + z [SMOD U] :=
-  add hxy rfl
-
-@[gcongr]
 theorem sum {ι} {s : Finset ι} {x y : ι → M}
     (hxy : ∀ i ∈ s, x i ≡ y i [SMOD U]) : ∑ i ∈ s, x i ≡ ∑ i ∈ s, y i [SMOD U] := by
   classical
@@ -118,16 +110,6 @@ theorem mul {I : Ideal A} {x₁ x₂ y₁ y₂ : A} (hxy₁ : x₁ ≡ y₁ [SMO
   rw [hxy₁, hxy₂]
 
 @[gcongr]
-theorem mul_left {I : Ideal A} (z : A) {x y : A} (hxy : x ≡ y [SMOD I]) :
-    z * x ≡ z * y [SMOD I] :=
-  mul rfl hxy
-
-@[gcongr]
-theorem mul_right {I : Ideal A} (z : A) {x y : A} (hxy : x ≡ y [SMOD I]) :
-    x * z ≡ y * z [SMOD I] :=
-  mul hxy rfl
-
-@[gcongr]
 theorem prod {I : Ideal A} {ι} {s : Finset ι} {x y : ι → A}
     (hxy : ∀ i ∈ s, x i ≡ y i [SMOD I]) : ∏ i ∈ s, x i ≡ ∏ i ∈ s, y i [SMOD I] := by
   classical
@@ -151,14 +133,6 @@ lemma neg (hxy : x ≡ y [SMOD U]) : - x ≡ - y [SMOD U] := by
 lemma sub (hxy₁ : x₁ ≡ y₁ [SMOD U]) (hxy₂ : x₂ ≡ y₂ [SMOD U]) : x₁ - x₂ ≡ y₁ - y₂ [SMOD U] := by
   rw [SModEq.def] at hxy₁ hxy₂ ⊢
   simp_rw [Quotient.mk_sub, hxy₁, hxy₂]
-
-@[gcongr]
-theorem sub_left (z : M) (hxy : x ≡ y [SMOD U]) : z - x ≡ z - y [SMOD U] :=
-  sub rfl hxy
-
-@[gcongr]
-theorem sub_right (z : M) (hxy : x ≡ y [SMOD U]) : x - z ≡ y - z [SMOD U] :=
-  sub hxy rfl
 
 theorem zero : x ≡ 0 [SMOD U] ↔ x ∈ U := by rw [SModEq.def, Submodule.Quotient.eq, sub_zero]
 
