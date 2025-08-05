@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dexin Zhang
 -/
 import Mathlib.ModelTheory.Arithmetic.Presburger.Semilinear.Nat
-import Mathlib.RingTheory.Finiteness.Cardinality
 
 /-!
 # Semilinear sets are closed under intersection and set difference
