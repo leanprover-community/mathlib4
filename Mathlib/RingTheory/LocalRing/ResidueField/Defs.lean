@@ -41,6 +41,3 @@ def residue : R →+* ResidueField R :=
   Ideal.Quotient.mk _
 
 end IsLocalRing
-
-@[deprecated (since := "2024-11-11")] alias LocalRing.ResidueField := IsLocalRing.ResidueField
-@[deprecated (since := "2024-11-11")] alias LocalRing.residue := IsLocalRing.residue
