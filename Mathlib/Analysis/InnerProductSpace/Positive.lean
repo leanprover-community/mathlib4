@@ -197,7 +197,7 @@ theorem IsSymmetricProjection.le_iff_comp_eq_right {p q : E →ₗ[𝕜] E}
     U.mem_iff_norm_starProjection _ |>.mpr <| le_antisymm (U.norm_starProjection_apply_le a) h2
 
 open Submodule in
-theorem starProjection_le_starProjection_iff (U V : Submodule 𝕜 E)
+theorem _root_.Submodule.coe_starProjection_le_coe_starProjection_iff (U V : Submodule 𝕜 E)
     [U.HasOrthogonalProjection] [V.HasOrthogonalProjection] :
     U.starProjection.toLinearMap ≤ V.starProjection ↔ U ≤ V := by
   simp_rw [starProjection_isSymmetricProjection.le_iff_comp_eq_right
@@ -425,14 +425,10 @@ theorem IsIdempotentElem.TFAE {p : E →L[𝕜] E} (hp : IsIdempotentElem p) :
   tfae_finish
 
 /-- `U.starProjection ≤ V.starProjection` iff `U ≤ V`. -/
-theorem starProjection_le_starProjection_iff (U V : Submodule 𝕜 E)
+theorem _root_.Submodule.starProjection_le_starProjection_iff (U V : Submodule 𝕜 E)
     [U.HasOrthogonalProjection] [V.HasOrthogonalProjection] :
-    U.starProjection ≤ V.starProjection ↔ U ≤ V := by
-  rw [isStarProjection_starProjection.le_iff_comp_eq_right isStarProjection_starProjection,
-    ← coe_inj, coe_comp, LinearMap.IsIdempotentElem.comp_eq_right_iff]
-  · have {p : E →L[𝕜] E} : LinearMap.range p.toLinearMap = LinearMap.range p := rfl
-    simp_rw [this, Submodule.range_starProjection]
-  · exact congr(LinearMapClass.linearMap $V.isIdempotentElem_starProjection.eq)
+    U.starProjection ≤ V.starProjection ↔ U ≤ V :=
+  coe_le_coe_iff (𝕜 := 𝕜) (E := E) _ _ |>.eq ▸ U.coe_starProjection_le_coe_starProjection_iff V
 
 end ContinuousLinearMap
 
