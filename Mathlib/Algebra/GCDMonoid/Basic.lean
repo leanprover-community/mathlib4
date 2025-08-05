@@ -819,25 +819,25 @@ variable [GCDMonoid α] {m n a b c : α}
 @[simp] theorem lcm_dvd_mul [GCDMonoid α] (m n : α) : lcm m n ∣ m * n :=
   lcm_dvd (by simp) (by simp)
 
-/-- Adapted from and similar to `dvd_mul_of_dvd_left`. -/
+/-- adapted from and similar to `dvd_mul_of_dvd_left` -/
 theorem dvd_lcm_of_dvd_left [GCDMonoid α] {a b : α} (h : a ∣ b) (c : α) : a ∣ lcm b c :=
   h.trans (dvd_lcm_left b c)
 
-/-- Adapted from and similar to `Dvd.dvd.mul_right`. -/
+/-- adapted from and similar to `Dvd.dvd.mul_right` -/
 alias Dvd.dvd.lcm_right := dvd_lcm_of_dvd_left
 
-/-- Adapted from and similar to `dvd_of_mul_right_dvd`. -/
+/-- adapted from and similar to `dvd_of_mul_right_dvd` -/
 theorem dvd_of_lcm_right_dvd [GCDMonoid α] {a b c : α} (h : lcm a b ∣ c) : a ∣ c :=
   (dvd_lcm_left a b).trans h
 
-/-- Adapted from and similar to `dvd_mul_of_dvd_right`. -/
+/-- adapted from and similar to `dvd_mul_of_dvd_right` -/
 theorem dvd_lcm_of_dvd_right [GCDMonoid α] {a b : α} (h : a ∣ b) (c : α) : a ∣ lcm c b :=
   h.trans (dvd_lcm_right c b)
 
-/-- Adapted from and similar to `Dvd.dvd.mul_left`. -/
+/-- adapted from and similar to `Dvd.dvd.mul_left` -/
 alias Dvd.dvd.lcm_left := dvd_lcm_of_dvd_right
 
-/-- Adapted from and similar to `dvd_of_mul_left_dvd`. -/
+/-- adapted from and similar to `dvd_of_mul_left_dvd` -/
 theorem dvd_of_lcm_left_dvd [GCDMonoid α] {a b c : α} (h : lcm a b ∣ c) : b ∣ c :=
   (dvd_lcm_right a b).trans h
 
