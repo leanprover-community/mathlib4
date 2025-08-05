@@ -698,6 +698,11 @@ lemma isIso_iff_of_epi {n m : SimplexCategory} (f : n ⟶ m) [Epi f] :
   have h := epi_iff_surjective.1 (inferInstanceAs (Epi f))
   exact isIso_of_bijective ⟨by rwa [Finite.injective_iff_surjective], h⟩
 
+instance : Balanced SimplexCategory where
+  isIso_of_mono_of_epi f _ _ := by
+    rw [isIso_iff_of_epi]
+    exact le_antisymm (len_le_of_mono f) (len_le_of_epi f)
+
 instance {n : ℕ} {i : Fin (n + 2)} : Mono (δ i) := by
   rw [mono_iff_injective]
   exact Fin.succAbove_right_injective
