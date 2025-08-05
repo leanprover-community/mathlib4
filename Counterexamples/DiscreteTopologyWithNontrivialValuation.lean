@@ -123,10 +123,6 @@ attribute [local instance] compatible
 nonrec theorem isEquiv : (valuation K[X]).IsEquiv (infinityValuation K) :=
   isEquiv _ _
 
-theorem isNontrivial : (infinityValuation K).IsNontrivial where
-  exists_val_nontrivial := ⟨X, by simpa using by decide⟩
-attribute [local instance] isNontrivial
-
 theorem isNontrivial' : IsNontrivial K[X] :=
   isNontrivial_iff_isNontrivial.mpr <| (isEquiv K).isNontrivial'
 attribute [local instance] isNontrivial'
