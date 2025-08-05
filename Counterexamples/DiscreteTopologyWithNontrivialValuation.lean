@@ -118,10 +118,7 @@ theorem isRankLeOne' : IsRankLeOne K[X] :=
   .of_compatible_mulArchimedean (infinityValuation K)
 attribute [local instance] isRankLeOne'
 
-/-- An arbitrary rank one instance on `valuation K[X]`. -/
-noncomputable def rankOne' : (valuation K[X]).RankOne :=
-  instRankOneValueGroupWithZeroValuationOfIsNontrivialOfIsRankLeOne
-attribute [local instance] rankOne'
+noncomputable example : (valuation K[X]).RankOne := inferInstance
 
 @[simp] theorem valuation_lt_one_iff (p : K[X]) : valuation K[X] p < 1 ↔ p = 0 := by
   rw [(isEquiv K).lt_one_iff_lt_one]
