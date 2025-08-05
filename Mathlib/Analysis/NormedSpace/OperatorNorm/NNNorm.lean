@@ -208,11 +208,10 @@ theorem exists_nnnorm_eq_one_lt_apply_of_lt_opNNNorm {𝕜 𝕜₂ E F : Type*}
   obtain rfl | hx0 := eq_zero_or_nnnorm_pos x
   · simp at hr
   use algebraMap ℝ 𝕜 ‖x‖⁻¹ • x
-  suffices r < ‖x‖₊⁻¹ * ‖f x‖₊ by
-    simpa [nnnorm_smul, inv_mul_cancel₀ hx0.ne'] using this
-  refine hr.trans (lt_mul_of_one_lt_left ?_ ?_)
-  · exact zero_le _ |>.trans_lt hr
-  · exact one_lt_inv_iff₀.mpr ⟨by simpa using hx0, hlt⟩
+  suffices r < ‖x‖₊⁻¹ * ‖f x‖₊ by simpa [nnnorm_smul, inv_mul_cancel₀ hx0.ne'] using this
+  calc
+    r < 1⁻¹ * ‖f x‖₊ := by simpa
+    _ < ‖x‖₊⁻¹ * ‖f x‖₊ := by gcongr; exact (zero_le r).trans_lt hr
 
 /-- When the domain is a real normed space, `sSup_unitClosedBall_eq_norm` can be tightened to take
 the supremum over only the `Metric.sphere`. -/
