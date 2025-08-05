@@ -7,7 +7,7 @@ import Mathlib.Topology.Algebra.Module.LinearMap
 import Mathlib.Analysis.LocallyConvex.Polar
 
 /-!
-# The topological StrongDual of a Module
+# The topological strong dual of a module
 
 ## Main definitions
 
