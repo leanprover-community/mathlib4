@@ -66,10 +66,49 @@ theorem coeff_coe_units_zero_ne_zero [Nontrivial R] (u : R[X]ˣ) : coeff (u : R[
   rw [← leadingCoeff, Ne, leadingCoeff_eq_zero]
   exact Units.ne_zero _
 
+theorem irreducible_iff_of_natDegree_eq_one (h : natDegree p = 1) :
+    Irreducible p ↔ ∀ r q, C r * q = p ∨ q * C r = p → IsUnit r where
+  mp irr r q := by
+    have : p ≠ 0 := by rintro rfl; simp at h
+    rintro (rfl | rfl) <;> rw [← isUnit_C] <;>
+      simp only [natDegree_mul_of_mul_ne_zero this, natDegree_C, zero_add, add_zero] at h <;>
+      replace hq := fun hq ↦ one_ne_zero (h.symm.trans (natDegree_eq_zero_of_isUnit hq))
+    exacts [(irr.2 rfl).resolve_right hq, (irr.2 rfl).resolve_left hq]
+  mpr prim := by
+    refine ⟨fun hp ↦ one_ne_zero (h.symm.trans (natDegree_eq_zero_of_isUnit hp)), fun a b eq ↦ ?_⟩
+    have hf : a * b ≠ 0 := eq ▸ fun hp ↦ one_ne_zero (h.symm.trans <| hp ▸ natDegree_zero)
+    have eq' := congr(natDegree $eq)
+    simp_rw [natDegree_mul_of_mul_ne_zero hf, h, eq_comm (a := 1),
+      Nat.add_eq_one_iff, ← eq_C_coeff_zero_iff_natDegree_eq_zero] at eq'
+    obtain ⟨eq', -⟩ | ⟨-, eq'⟩ := eq' <;> rw [eq'] at eq ⊢
+    · exact .inl ((prim _ _ (.inl eq.symm)).map C)
+    · exact .inr ((prim _ _ (.inr eq.symm)).map C)
+
 end Semiring
 
 section CommSemiring
-variable [CommSemiring R] {a p : R[X]} (hp : p.Monic)
+variable [CommSemiring R] {a p : R[X]}
+
+section NoZeroDivisors
+
+variable [NoZeroDivisors R]
+
+theorem irreducible_iff_isPrimitive_of_natDegree_eq_one (h : natDegree p = 1) :
+    Irreducible p ↔ p.IsPrimitive := by
+  simp_rw [irreducible_iff_of_natDegree_eq_one h,
+    IsPrimitive, dvd_def, mul_comm, or_self, exists_imp, eq_comm]
+
+theorem Monic.irreducible_of_degree_eq_one (hp1 : degree p = 1) (hm : Monic p) : Irreducible p :=
+  (irreducible_iff_isPrimitive_of_natDegree_eq_one <| natDegree_eq_of_degree_eq_some hp1).mpr
+    fun r dvd ↦ isUnit_of_dvd_one <| by
+      simpa only [hm.leadingCoeff, leadingCoeff_C] using leadingCoeff_dvd_leadingCoeff dvd
+
+theorem irreducible_X [Nontrivial R] : Irreducible (X : R[X]) :=
+  monic_X.irreducible_of_degree_eq_one degree_X
+
+end NoZeroDivisors
+
+variable (hp : p.Monic)
 include hp
 
 lemma Monic.C_dvd_iff_isUnit {a : R} : C a ∣ p ↔ IsUnit a where

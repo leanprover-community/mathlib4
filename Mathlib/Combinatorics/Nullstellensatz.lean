@@ -153,11 +153,11 @@ private noncomputable def Alon.P (S : Finset R) (i : σ) : MvPolynomial σ R :=
 private theorem Alon.degree_P [Nontrivial R] (m : MonomialOrder σ) (S : Finset R) (i : σ) :
     m.degree (Alon.P S i) = single i #S := by
   simp only [P]
-  rw [degree_prod_of_regular]
+  rw [degree_prod_of_mem_nonZeroDivisors]
   · simp [Finset.sum_congr rfl (fun r _ ↦ m.degree_X_sub_C i r)]
   · intro r _
     rw [m.monic_X_sub_C]
-    exact isRegular_one
+    exact one_mem _
 
 /-- The leading coefficient of `Alon.P S i` is `1`. -/
 private theorem Alon.monic_P [Nontrivial R] (m : MonomialOrder σ) (S : Finset R) (i : σ) :
@@ -270,8 +270,8 @@ theorem combinatorial_nullstellensatz_exists_eval_nonzero [IsDomain R]
     exact hh i
   -- one could simplify this by proving `totalDegree_mul_eq` (at least in a domain)
   rw [hg, ← degree_degLexDegree,
-    degree_mul_of_isRegular_right hi (by simp only [(Alon.monic_P ..).leadingCoeff_eq_one,
-      isRegular_one]),
+    degree_mul_of_mem_nonZeroDivisors_right hi (by simp only [(Alon.monic_P ..).leadingCoeff_eq_one,
+      one_mem]),
     Alon.degree_P, degree_add, degree_degLexDegree, degree_single, ht'] at this
   rw [smul_eq_mul, coeff_mul, Finset.sum_eq_zero]
   rintro ⟨p, q⟩ hpq

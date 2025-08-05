@@ -8,6 +8,7 @@ import Mathlib.Algebra.CharP.Quotient
 import Mathlib.Algebra.Field.ZMod
 import Mathlib.Algebra.Polynomial.SpecificDegree
 import Mathlib.RingTheory.Ideal.Quotient.Operations
+import Mathlib.RingTheory.Polynomial.Content
 import Mathlib.RingTheory.Polynomial.Eisenstein.Basic
 import Mathlib.Tactic.ComputeDegree
 

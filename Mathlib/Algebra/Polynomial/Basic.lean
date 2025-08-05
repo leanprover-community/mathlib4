@@ -1075,6 +1075,14 @@ instance commSemiring : CommSemiring R[X] :=
   fast_instance% { Function.Injective.commSemigroup toFinsupp toFinsupp_injective toFinsupp_mul with
     toSemiring := Polynomial.semiring }
 
+/-- A polynomial is primitive when the only constant polynomials dividing it are units.
+Note: This has nothing to do with minimal polynomials of primitive elements in finite fields. -/
+def IsPrimitive (p : R[X]) : Prop :=
+  ∀ r : R, C r ∣ p → IsUnit r
+
+theorem isPrimitive_iff_isUnit_of_C_dvd {p : R[X]} : p.IsPrimitive ↔ ∀ r : R, C r ∣ p → IsUnit r :=
+  Iff.rfl
+
 end CommSemiring
 
 section Ring

@@ -201,15 +201,6 @@ theorem Monic.prime_of_degree_eq_one (hp1 : degree p = 1) (hm : Monic p) : Prime
   have : p = X - C (-p.coeff 0) := by simpa [hm.leadingCoeff] using eq_X_add_C_of_degree_eq_one hp1
   this.symm ▸ prime_X_sub_C _
 
-theorem irreducible_X_sub_C (r : R) : Irreducible (X - C r) :=
-  (prime_X_sub_C r).irreducible
-
-theorem irreducible_X : Irreducible (X : R[X]) :=
-  Prime.irreducible prime_X
-
-theorem Monic.irreducible_of_degree_eq_one (hp1 : degree p = 1) (hm : Monic p) : Irreducible p :=
-  (hm.prime_of_degree_eq_one hp1).irreducible
-
 lemma aeval_ne_zero_of_isCoprime {R} [CommSemiring R] [Nontrivial S] [Semiring S] [Algebra R S]
     {p q : R[X]} (h : IsCoprime p q) (s : S) : aeval s p ≠ 0 ∨ aeval s q ≠ 0 := by
   by_contra! hpq

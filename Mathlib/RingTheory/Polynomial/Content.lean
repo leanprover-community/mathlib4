@@ -36,14 +36,6 @@ section Primitive
 
 variable {R : Type*} [CommSemiring R]
 
-/-- A polynomial is primitive when the only constant polynomials dividing it are units.
-Note: This has nothing to do with minimal polynomials of primitive elements in finite fields. -/
-def IsPrimitive (p : R[X]) : Prop :=
-  ∀ r : R, C r ∣ p → IsUnit r
-
-theorem isPrimitive_iff_isUnit_of_C_dvd {p : R[X]} : p.IsPrimitive ↔ ∀ r : R, C r ∣ p → IsUnit r :=
-  Iff.rfl
-
 @[simp]
 theorem isPrimitive_one : IsPrimitive (1 : R[X]) := fun _ h =>
   isUnit_C.mp (isUnit_of_dvd_one h)
