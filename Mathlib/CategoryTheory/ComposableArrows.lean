@@ -79,12 +79,10 @@ abbrev obj' (i : ℕ) (hi : i ≤ n := by valid) : C := F.obj ⟨i, by omega⟩
 are natural numbers such that `i ≤ j ≤ n`. -/
 @[simp]
 abbrev map' (i j : ℕ) (hij : i ≤ j := by valid) (hjn : j ≤ n := by valid) :
-  F.obj ⟨i, by omega⟩ ⟶ F.obj ⟨j, by omega⟩ := F.map (homOfLE (by
-    simp only [Fin.mk_le_mk]
-    valid))
+    F.obj ⟨i, by omega⟩ ⟶ F.obj ⟨j, by omega⟩ :=
+  F.map (homOfLE (by simp only [Fin.mk_le_mk]; valid))
 
-lemma map'_self (i : ℕ) (hi : i ≤ n := by valid) :
-    F.map' i i = 𝟙 _ := F.map_id _
+lemma map'_self (i : ℕ) (hi : i ≤ n := by valid) : F.map' i i = 𝟙 _ := F.map_id _
 
 lemma map'_comp (i j k : ℕ) (hij : i ≤ j := by valid)
     (hjk : j ≤ k := by valid) (hk : k ≤ n := by valid) :
@@ -336,7 +334,7 @@ lemma map_one_succ (j : ℕ) (hj : j + 1 < n + 1 + 1) :
     map F f 1 ⟨j + 1, hj⟩ (by simp [Fin.le_def]) = F.map' 0 j := rfl
 
 lemma map_id (i : Fin (n + 1 + 1)) : map F f i i (by simp) = 𝟙 _ := by
-  obtain ⟨_|_, hi⟩ := i <;> simp
+  obtain ⟨_ | _, hi⟩ := i <;> simp
 
 lemma map_comp {i j k : Fin (n + 1 + 1)} (hij : i ≤ j) (hjk : j ≤ k) :
     map F f i k (hij.trans hjk) = map F f i j hij ≫ map F f j k hjk := by
@@ -540,7 +538,7 @@ lemma ext_succ {F G : ComposableArrows C (n + 1)} (h₀ : F.obj' 0 = G.obj' 0)
       rw [w]
       dsimp [app']
       rw [eqToHom_app, assoc, assoc, eqToHom_trans, eqToHom_refl, comp_id])) this
-    (by rintro ⟨_|_, hi⟩ <;> simp)
+    (by rintro ⟨_ | _, hi⟩ <;> simp)
 
 lemma precomp_surjective (F : ComposableArrows C (n + 1)) :
     ∃ (F₀ : ComposableArrows C n) (X₀ : C) (f₀ : X₀ ⟶ F₀.left), F = F₀.precomp f₀ :=

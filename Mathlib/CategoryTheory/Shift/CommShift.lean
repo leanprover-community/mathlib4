@@ -296,18 +296,12 @@ lemma app_shift (a : A) (X : C) :
       (F₂.commShiftIso a).inv.app X := by
   simp [shift_app_comm_assoc τ a X]
 
-@[deprecated (since := "2024-12-31")] alias CommShift.comm' := shift_comm
-@[deprecated (since := "2024-12-31")] alias CommShift.comm := shift_comm
-@[deprecated (since := "2024-12-31")] alias CommShift.comm_app := shift_app_comm
-@[deprecated (since := "2024-12-31")] alias CommShift.shift_app := shift_app
-@[deprecated (since := "2024-12-31")] alias CommShift.app_shift := app_shift
-
 end
 
 namespace CommShift
 
 instance of_iso_inv [NatTrans.CommShift e.hom A] :
-  NatTrans.CommShift e.inv A := ⟨fun a => by
+    NatTrans.CommShift e.inv A := ⟨fun a => by
   ext X
   dsimp
   rw [← cancel_epi (e.hom.app (X⟦a⟧)), e.hom_inv_id_app_assoc, ← shift_app_comm_assoc,

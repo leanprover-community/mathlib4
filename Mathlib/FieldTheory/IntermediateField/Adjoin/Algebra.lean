@@ -191,8 +191,6 @@ theorem fg_of_fg_toSubalgebra (S : IntermediateField F E) (h : S.toSubalgebra.FG
   obtain ⟨t, ht⟩ := h
   exact ⟨t, (eq_adjoin_of_eq_algebra_adjoin _ _ _ ht.symm).symm⟩
 
-@[deprecated (since := "2024-10-28")] alias fG_of_fG_toSubalgebra := fg_of_fg_toSubalgebra
-
 theorem fg_of_noetherian (S : IntermediateField F E) [IsNoetherian F E] : S.FG :=
   S.fg_of_fg_toSubalgebra S.toSubalgebra.fg_of_noetherian
 

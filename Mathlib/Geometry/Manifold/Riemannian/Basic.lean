@@ -28,6 +28,7 @@ By definition, it then satisfies the predicate `IsRiemannianManifold I M`.
 
 The following code block is the standard way to say "Let `M` be a `C^∞` Riemannian manifold".
 ```
+open scoped Bundle
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
@@ -115,17 +116,8 @@ noncomputable def riemannianMetricVectorSpace :
     rw [contMDiffAt_section]
     convert contMDiffAt_const (c := innerSL ℝ)
     ext v w
-    simp? [hom_trivializationAt_apply, ContinuousLinearMap.inCoordinates,
-        Trivialization.linearMapAt_apply] says
-      simp only [hom_trivializationAt_apply, ContinuousLinearMap.inCoordinates,
-        TangentBundle.symmL_model_space, ContinuousLinearMap.coe_comp',
-        Trivialization.continuousLinearMapAt_apply, Function.comp_apply,
-        Trivialization.linearMapAt_apply, hom_trivializationAt_baseSet,
-        TangentBundle.trivializationAt_baseSet, PartialHomeomorph.refl_partialEquiv,
-        PartialEquiv.refl_source, PartialHomeomorph.singletonChartedSpace_chartAt_eq,
-        Trivial.fiberBundle_trivializationAt', Trivial.trivialization_baseSet, inter_self, mem_univ,
-        ↓reduceIte, Trivial.trivialization_apply]
-    rfl
+    simp [hom_trivializationAt_apply, ContinuousLinearMap.inCoordinates,
+      Trivialization.linearMapAt_apply, TangentSpace]
 
 noncomputable instance : RiemannianBundle (fun (x : F) ↦ TangentSpace 𝓘(ℝ, F) x) :=
   ⟨(riemannianMetricVectorSpace F).toRiemannianMetric⟩
@@ -404,7 +396,7 @@ lemma setOf_riemmanianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
   `IsClosed.Icc_subset_of_forall_mem_nhdsGT_of_mem` which gives an induction-like principle over
   real intervals.
   -/
-    -- first introduce a neighborhood where the derivative of the extended chart is bounded by `C`
+  -- first introduce a neighborhood where the derivative of the extended chart is bounded by `C`
   rcases eventually_enorm_mfderiv_extChartAt_lt I x with ⟨C, C_pos, hC⟩
   -- let `u` be a closed neighborhood, inside `s`, with the derivative control
   obtain ⟨u, u_mem, u_closed, us, hu, uc⟩ : ∃ u ∈ 𝓝 x, IsClosed u ∧ u ⊆ s
@@ -442,12 +434,12 @@ lemma setOf_riemmanianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
   rintro t₁ ⟨ht₁0, ht₁1⟩ t₁_mem
   suffices γ t₁ ∈ v from
     γ_smooth.continuous.continuousWithinAt <| mem_of_superset (v_open.mem_nhds this) hv
-  let γ' := (extChartAt I x) ∘ γ
+  let γ' := extChartAt I x ∘ γ
   have hC : ContMDiffOn 𝓘(ℝ) 𝓘(ℝ, E) 1 γ' (Icc 0 t₁) :=
     ContMDiffOn.comp (I' := I) (t := (chartAt H x).source) contMDiffOn_extChartAt
       γ_smooth.contMDiffOn (fun t' ht' ↦ uc' <| t₁_mem ht')
   have : ‖γ' t₁ - γ' 0‖ₑ < r := by
-    rcases ht₁0.eq_or_lt with rfl|h't'
+    rcases ht₁0.eq_or_lt with rfl | h't'
     · simp [r_pos]
     calc
       ‖γ' t₁ - γ' 0‖ₑ
@@ -481,7 +473,6 @@ lemma setOf_riemmanianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
           pathELength_eq_lintegral_mfderivWithin_Icc]
     _ ≤ C * pathELength I γ 0 1 := by
       gcongr
-      exact pathELength_mono le_rfl ht₁1.le
     _ < C * (r / C) := by
       gcongr
       · exact ENNReal.coe_ne_top

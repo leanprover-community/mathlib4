@@ -59,8 +59,8 @@ variable (X₁ X₂ : GradedObject I C) [HasTensor X₁ X₂]
 
 /-- The inclusion of a summand in a tensor product of two graded objects. -/
 noncomputable def ιTensorObj (i₁ i₂ i₁₂ : I) (h : i₁ + i₂ = i₁₂) :
-  X₁ i₁ ⊗ X₂ i₂ ⟶ tensorObj X₁ X₂ i₁₂ :=
-    ιMapBifunctorMapObj (curriedTensor C) _ _ _ _ _ _ h
+    X₁ i₁ ⊗ X₂ i₂ ⟶ tensorObj X₁ X₂ i₁₂ :=
+  ιMapBifunctorMapObj (curriedTensor C) _ _ _ _ _ _ h
 
 variable {X₁ X₂}
 
@@ -284,8 +284,8 @@ variable [HasTensor X₁ X₂] [HasTensor (tensorObj X₁ X₂) X₃] [HasTensor
 
 /-- The associator isomorphism for graded objects. -/
 noncomputable def associator [HasGoodTensor₁₂Tensor X₁ X₂ X₃] [HasGoodTensorTensor₂₃ X₁ X₂ X₃] :
-  tensorObj (tensorObj X₁ X₂) X₃ ≅ tensorObj X₁ (tensorObj X₂ X₃) :=
-    mapBifunctorAssociator (MonoidalCategory.curriedAssociatorNatIso C) ρ₁₂ ρ₂₃ X₁ X₂ X₃
+    tensorObj (tensorObj X₁ X₂) X₃ ≅ tensorObj X₁ (tensorObj X₂ X₃) :=
+  mapBifunctorAssociator (MonoidalCategory.curriedAssociatorNatIso C) ρ₁₂ ρ₂₃ X₁ X₂ X₃
 
 @[reassoc (attr := simp)]
 lemma ιTensorObj₃'_associator_hom
