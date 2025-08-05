@@ -122,7 +122,7 @@ end SpecialAdjointFunctorTheorem
 namespace Limits
 
 /-- A consequence of the special adjoint functor theorem: if `C` is complete, well-powered and
-    has a small coseparating set, then it is cocomplete. -/
+has a small coseparating set, then it is cocomplete. -/
 theorem hasColimits_of_hasLimits_of_isCoseparating [HasLimits C] [WellPowered.{v} C] {𝒢 : Set C}
     [Small.{v} 𝒢] (h𝒢 : IsCoseparating 𝒢) : HasColimits C :=
   { has_colimits_of_shape := fun _ _ =>
@@ -130,7 +130,7 @@ theorem hasColimits_of_hasLimits_of_isCoseparating [HasLimits C] [WellPowered.{v
         (isRightAdjoint_of_preservesLimits_of_isCoseparating h𝒢 _) }
 
 /-- A consequence of the special adjoint functor theorem: if `C` is cocomplete, well-copowered and
-    has a small separating set, then it is complete. -/
+has a small separating set, then it is complete. -/
 theorem hasLimits_of_hasColimits_of_isSeparating [HasColimits C] [WellPowered.{v} Cᵒᵖ] {𝒢 : Set C}
     [Small.{v} 𝒢] (h𝒢 : IsSeparating 𝒢) : HasLimits C :=
   { has_limits_of_shape := fun _ _ =>
@@ -138,13 +138,13 @@ theorem hasLimits_of_hasColimits_of_isSeparating [HasColimits C] [WellPowered.{v
         (isLeftAdjoint_of_preservesColimits_of_isSeparating h𝒢 _) }
 
 /-- A consequence of the special adjoint functor theorem: if `C` is complete, well-powered and
-    has a separator, then it is complete. -/
+has a separator, then it is complete. -/
 theorem hasLimits_of_hasColimits_of_hasSeparator [HasColimits C] [HasSeparator C]
     [WellPowered.{v} Cᵒᵖ] : HasLimits C :=
   hasLimits_of_hasColimits_of_isSeparating <| isSeparator_separator C
 
 /-- A consequence of the special adjoint functor theorem: if `C` is complete, well-powered and
-    has a coseparator, then it is cocomplete. -/
+has a coseparator, then it is cocomplete. -/
 theorem hasColimits_of_hasLimits_of_hasCoseparator [HasLimits C] [HasCoseparator C]
     [WellPowered.{v} C] : HasColimits C :=
   hasColimits_of_hasLimits_of_isCoseparating <| isCoseparator_coseparator C
