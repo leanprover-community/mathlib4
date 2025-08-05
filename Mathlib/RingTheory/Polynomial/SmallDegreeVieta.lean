@@ -16,10 +16,6 @@ namespace Polynomial
 
 variable {R T S : Type*}
 
-lemma quadratic_ne_zero [Semiring R] {a b c : R} (ha : a ≠ 0) : C a * X ^ 2 + C b * X + C c ≠ 0 :=
-  fun hx ↦ ha (by rw [show a = (C a * X ^ 2 + C b * X + C c).coeff 2 by
-    simp, hx, coeff_zero])
-
 /-- **Vieta's formula** for quadratics. -/
 lemma eq_neg_mul_add_of_roots_quadratic_eq_pair [CommRing R] [IsDomain R] {a b c x1 x2 : R}
     (hroots : (C a * X ^ 2 + C b * X + C c).roots = {x1, x2}) :
@@ -71,7 +67,7 @@ lemma roots_of_ne_zero_of_vieta [CommRing R] [IsDomain R] {a b c x1 x2 : R} (ha 
     (C a * X ^ 2 + C b * X + C c).roots = {x1, x2} := by
   have e1 : C a * (X - C x1) * (X - C x2) ≠ 0 := by
     rw [← quadratic_eq_of_vieta hvieta]
-    exact quadratic_ne_zero ha
+    exact not_zero_iff.mpr ⟨2, by simp [ha]⟩
   simp [quadratic_eq_of_vieta hvieta, Polynomial.roots_mul e1, roots_C_mul _ ha]
 
 /-- **Vieta's formula** for quadratics as an iff. -/
@@ -138,7 +134,7 @@ theorem not_isRoot_of_discrim_ne_sq (h : ∀ s : R, discrim a b c ≠ s^2) (x : 
 theorem mem_roots_quadratic_iff_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0)
     {z s : R} (h : discrim a b c = s * s) :
     z ∈ (C a * X ^ 2 + C b * X + C c).roots ↔ z = (-b + s) / (2 * a) ∨ z = (-b - s) / (2 * a) := by
-  rw [mem_roots (quadratic_ne_zero ha), isRoot_quadratic_iff ha h]
+  rw [mem_roots (not_zero_iff.mpr ⟨2, by simp [ha]⟩), isRoot_quadratic_iff ha h]
 
 theorem vieta_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0) {s : R} (h : discrim a b c = s * s) :
     b = -a * ((-b + s) / (2 * a) + (-b - s) / (2 * a)) ∧

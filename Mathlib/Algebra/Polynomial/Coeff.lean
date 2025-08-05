@@ -330,6 +330,11 @@ theorem update_eq_add_sub_coeff {R : Type*} [Ring R] (p : R[X]) (n : ℕ) (a : R
   rw [coeff_update_apply, coeff_add, coeff_C_mul_X_pow]
   split_ifs with h <;> simp [h]
 
+lemma zero_iff {p : R[X]} : p = 0 ↔ ∀ (n : ℕ), coeff p n = 0 := ext_iff
+
+lemma not_zero_iff {p : R[X]} : ¬ p = 0 ↔ ∃ (n : ℕ), ¬ coeff p n = 0 := by
+  rw [zero_iff, not_forall]
+
 end Coeff
 
 section cast
