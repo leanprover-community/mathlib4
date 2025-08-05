@@ -397,6 +397,23 @@ lemma infinitePi_pi {s : Finset ι} {t : (i : ι) → Set (X i)}
   · exact measurable_restrict _
   · exact .univ_pi fun i ↦ mt i.1 i.2
 
+/-- Given random variables `X i : Ω i → 𝓧 i`, they are independent when viewed as random
+variables defined on the product space `Π i, Ω i`. -/
+lemma iIndepFun_infinitePi {Y : ι → Type*} [∀ i, MeasurableSpace (Y i)] {f : (i : ι) → X i → Y i}
+    (hf : ∀ i, Measurable (f i)) :
+    haveI (i : ι) : IsProbabilityMeasure ((μ i).map (f i)) :=
+      isProbabilityMeasure_map (hf i).aemeasurable
+    (infinitePi μ).map (fun x i ↦ f i (x i)) = infinitePi (fun i ↦ (μ i).map (f i)) := by
+  have (i : ι) : IsProbabilityMeasure ((μ i).map (f i)) :=
+    isProbabilityMeasure_map (hf i).aemeasurable
+  refine eq_infinitePi _ fun s t ht ↦ ?_
+  rw [map_apply (by fun_prop) (.pi s.countable_toSet ht)]
+  have : (fun (x : Π i, X i) i ↦ f i (x i)) ⁻¹' ((s : Set ι).pi t) =
+      (s : Set ι).pi (fun i ↦ (f i) ⁻¹' (t i)) := by ext x; simp
+  rw [this, infinitePi_pi _ (fun i hi ↦ hf i (ht i hi))]
+  refine Finset.prod_congr rfl fun i hi ↦ ?_
+  rw [map_apply (by fun_prop) (ht i hi)]
+
 /-- If we push the product measure forward by a reindexing equivalence, we get a product measure
 on the reindexed product. -/
 theorem infinitePi_map_piCongrLeft {α : Type*} (e : α ≃ ι) :

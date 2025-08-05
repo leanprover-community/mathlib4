@@ -886,18 +886,15 @@ theorem volume_preserving_piFinsetUnion {ι : Type*} [DecidableEq ι] (α : ι �
 theorem measurePreserving_pi {ι : Type*} [Fintype ι] {α : ι → Type v} {β : ι → Type*}
     [∀ i, MeasurableSpace (α i)] [∀ i, MeasurableSpace (β i)]
     (μ : (i : ι) → Measure (α i)) (ν : (i : ι) → Measure (β i))
-    {f : (i : ι) → (α i) → (β i)} [∀ i, SigmaFinite (ν i)]
+    {f : (i : ι) → (α i) → (β i)} [hν : ∀ i, SigmaFinite (ν i)]
     (hf : ∀ i, MeasurePreserving (f i) (μ i) (ν i)) :
     MeasurePreserving (fun a i ↦ f i (a i)) (Measure.pi μ) (Measure.pi ν) where
   measurable :=
     measurable_pi_iff.mpr <| fun i ↦ (hf i).measurable.comp (measurable_pi_apply i)
   map_eq := by
-    haveI : ∀ i, SigmaFinite (μ i) := fun i ↦ (hf i).sigmaFinite
-    refine (Measure.pi_eq fun s hs ↦ ?_).symm
-    rw [Measure.map_apply, Set.preimage_pi, Measure.pi_pi]
-    · simp_rw [← MeasurePreserving.measure_preimage (hf _) (hs _).nullMeasurableSet]
-    · exact measurable_pi_iff.mpr <| fun i ↦ (hf i).measurable.comp (measurable_pi_apply i)
-    · exact MeasurableSet.univ_pi hs
+    have (i : ι) : SigmaFinite ((μ i).map (f i)) := (hf i).map_eq ▸ hν i
+    rw [pi_map_pi (fun i ↦ (hf i).aemeasurable)]
+    exact congrArg _ <| funext fun i ↦ (hf i).map_eq
 
 theorem volume_preserving_pi {α' β' : ι → Type*} [∀ i, MeasureSpace (α' i)]
     [∀ i, MeasureSpace (β' i)] [∀ i, SigmaFinite (volume : Measure (β' i))]
