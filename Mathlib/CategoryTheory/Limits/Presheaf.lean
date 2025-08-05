@@ -645,12 +645,12 @@ def tautologicalCocone (P : Cᵒᵖ ⥤ Type v₁) :
 
     Proposition 2.6.3(i) in [Kashiwara2006] -/
 noncomputable def isColimitTautologicalCocone (P : Cᵒᵖ ⥤ Type v₁) :
-    IsColimit (tautologicalCocone P) := by
+    IsColimit (tautologicalCocone P) :=
   let e : functorToRepresentables.{v₁} P ≅
     ((CategoryOfElements.costructuredArrowYonedaEquivalence P).functor ⋙
       CostructuredArrow.proj yoneda P ⋙ yoneda) :=
     NatIso.ofComponents (fun e ↦ NatIso.ofComponents (fun X ↦ Equiv.ulift.toIso))
-  exact (IsColimit.whiskerEquivalenceEquiv
+  (IsColimit.whiskerEquivalenceEquiv
     (CategoryOfElements.costructuredArrowYonedaEquivalence P)).2
       ((IsColimit.precomposeHomEquiv e _).1 (colimitOfRepresentable.{v₁} P))
 
