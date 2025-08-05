@@ -110,6 +110,10 @@ lemma IsSquare.not_irreducible (ha : IsSquare x) : ¬Irreducible x := fun h ↦ 
 
 variable {z : Additive M}
 
+def addUnitsAdditiveEquivUnits : AddUnits (Additive M) ≃ Mˣ where
+  toFun u := ⟨u.val.toMul, u.neg.toMul, u.val_neg, u.neg_val⟩
+  invFun u := ⟨.ofMul u.val, .ofMul u.inv, u.val_inv, u.inv_val⟩
+
 lemma isAddUnit_ofMul_iff : IsAddUnit (Additive.ofMul x) ↔ IsUnit x := by
   rw [isAddUnit_iff_exists, isUnit_iff_exists]; rfl
 
@@ -126,6 +130,10 @@ end Monoid
 section AddMonoid
 
 variable [AddMonoid M] {x : M} {y : Multiplicative M}
+
+def unitsMultiplicativeEquivAddUnits : (Multiplicative M)ˣ ≃ AddUnits M where
+  toFun u := ⟨u.val.toAdd, u.inv.toAdd, u.val_inv, u.inv_val⟩
+  invFun u := ⟨.ofAdd u.val, .ofAdd u.neg, u.val_neg, u.neg_val⟩
 
 lemma isUnit_ofAdd_iff : IsUnit (Multiplicative.ofAdd x) ↔ IsAddUnit x := isUnit_toMul_iff
 
