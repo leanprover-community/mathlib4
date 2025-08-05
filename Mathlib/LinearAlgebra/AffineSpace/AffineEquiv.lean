@@ -163,10 +163,22 @@ def symm (e : P₁ ≃ᵃ[k] P₂) : P₂ ≃ᵃ[k] P₁ where
         LinearEquiv.apply_symm_apply, Equiv.apply_symm_apply]
 
 @[simp]
+theorem toEquiv_symm (e : P₁ ≃ᵃ[k] P₂) : e.symm.toEquiv = e.toEquiv.symm :=
+  rfl
+
+@[deprecated "use instead `toEquiv_symm`, in the reverse direction" (since := "2025-06-08")]
 theorem symm_toEquiv (e : P₁ ≃ᵃ[k] P₂) : e.toEquiv.symm = e.symm.toEquiv :=
   rfl
 
 @[simp]
+theorem coe_symm_toEquiv (e : P₁ ≃ᵃ[k] P₂) : ⇑e.toEquiv.symm = e.symm :=
+  rfl
+
+@[simp]
+theorem linear_symm (e : P₁ ≃ᵃ[k] P₂) : e.symm.linear = e.linear.symm :=
+  rfl
+
+@[deprecated "use instead `linear_symm`, in the reverse direction" (since := "2025-06-08")]
 theorem symm_linear (e : P₁ ≃ᵃ[k] P₂) : e.linear.symm = e.symm.linear :=
   rfl
 
@@ -355,8 +367,6 @@ def equivUnitsAffineMap : (P₁ ≃ᵃ[k] P₁) ≃* (P₁ →ᵃ[k] P₁)ˣ whe
       linear :=
         LinearMap.GeneralLinearGroup.generalLinearEquiv _ _ <| Units.map AffineMap.linearHom u
       map_vadd' := fun _ _ => (u : P₁ →ᵃ[k] P₁).map_vadd _ _ }
-  left_inv _ := AffineEquiv.ext fun _ => rfl
-  right_inv _ := Units.ext <| AffineMap.ext fun _ => rfl
   map_mul' _ _ := rfl
 
 variable (k)
@@ -484,16 +494,10 @@ theorem pointReflection_fixed_iff_of_injective_two_nsmul {x y : P₁}
     (h : Injective (2 • · : V₁ → V₁)) : pointReflection k x y = y ↔ y = x :=
   Equiv.pointReflection_fixed_iff_of_injective_two_nsmul h
 
-@[deprecated (since := "2024-11-18")] alias pointReflection_fixed_iff_of_injective_bit0 :=
-pointReflection_fixed_iff_of_injective_two_nsmul
-
 theorem injective_pointReflection_left_of_injective_two_nsmul
     (h : Injective (2 • · : V₁ → V₁)) (y : P₁) :
     Injective fun x : P₁ => pointReflection k x y :=
   Equiv.injective_pointReflection_left_of_injective_two_nsmul h y
-
-@[deprecated (since := "2024-11-18")] alias injective_pointReflection_left_of_injective_bit0 :=
-injective_pointReflection_left_of_injective_two_nsmul
 
 theorem injective_pointReflection_left_of_module [Invertible (2 : k)] :
     ∀ y, Injective fun x : P₁ => pointReflection k x y :=

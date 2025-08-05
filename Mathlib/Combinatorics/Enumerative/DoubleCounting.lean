@@ -30,7 +30,7 @@ and `t`.
 ## Implementation notes
 
 For the formulation of double-counting arguments where a bipartite graph is considered as a
-bipartite simple graph `G : SimpleGraph V`, see `Mathlib.Combinatorics.SimpleGraph.Bipartite`.
+bipartite simple graph `G : SimpleGraph V`, see `Mathlib/Combinatorics/SimpleGraph/Bipartite.lean`.
 -/
 
 assert_not_exists Field
@@ -202,8 +202,6 @@ theorem card_le_card_of_forall_subsingleton' (ht : ∀ b ∈ t, ∃ a, a ∈ s �
 end Bipartite
 
 end Finset
-
-open Finset
 
 namespace Fintype
 

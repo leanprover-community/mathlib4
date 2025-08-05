@@ -100,14 +100,14 @@ lemma inl_fst :
 @[simp]
 lemma inl_snd :
     (inl φ).comp (snd φ) (add_zero (-1)) = 0 := by
-  ext p q hpq
-  simp [Cochain.comp_v _ _ (add_zero (-1)) p q q (by omega) (by omega)]
+  ext
+  simp
 
 @[simp]
 lemma inr_fst :
     (Cochain.ofHom (inr φ)).comp (fst φ).1 (zero_add 1) = 0 := by
-  ext p q hpq
-  simp [Cochain.comp_v _ _ (zero_add 1) p p q (by omega) (by omega)]
+  ext
+  simp
 
 @[simp]
 lemma inr_snd :
@@ -398,7 +398,7 @@ noncomputable def descHomotopy {K : CochainComplex C ℤ} (f₁ f₂ : mappingCo
       (inl φ).comp (Cochain.ofHom f₂) (add_zero (-1)))
     (h₂ : Cochain.ofHom (inr φ ≫ f₁) = δ (-1) 0 γ₂ + Cochain.ofHom (inr φ ≫ f₂)) :
     Homotopy f₁ f₂ :=
-  (Cochain.equivHomotopy f₁ f₂).symm ⟨descCochain φ γ₁ γ₂ (by norm_num), by
+  (Cochain.equivHomotopy f₁ f₂).symm ⟨descCochain φ γ₁ γ₂ (by simp), by
     simp only [Cochain.ofHom_comp] at h₂
     simp [ext_cochain_from_iff _ _ _ (neg_add_cancel 1),
       δ_descCochain _ _ _ _ _ (neg_add_cancel 1), h₁, h₂]⟩
@@ -617,10 +617,9 @@ noncomputable def mapHomologicalComplexIso :
       mapHomologicalComplexXIso'_hom, mapHomologicalComplexXIso'_hom]
     constructor
     · dsimp
-      simp only [Functor.mapHomologicalComplex_obj_X, Functor.mapHomologicalComplex_obj_d,
-        comp_neg, add_comp, assoc, inl_v_fst_v_assoc, inr_f_fst_v_assoc, zero_comp,
-        comp_zero, add_zero, comp_add, inl_v_fst_v, comp_id, inr_f_fst_v, ← H.map_comp,
-        d_fst_v φ n (n + 1) (n + 2) rfl (by omega), Functor.map_neg]
+      simp only [Functor.mapHomologicalComplex_obj_X, comp_neg, add_comp, assoc, inl_v_fst_v_assoc,
+        inr_f_fst_v_assoc, zero_comp, comp_zero, add_zero, inl_v_fst_v, comp_id, inr_f_fst_v,
+        ← H.map_comp, d_fst_v φ n (n + 1) (n + 2) rfl (by omega), Functor.map_neg]
     · dsimp
       simp only [comp_add, add_comp, assoc, inl_v_fst_v_assoc, inr_f_fst_v_assoc,
         Functor.mapHomologicalComplex_obj_X, zero_comp, comp_zero, add_zero, inl_v_snd_v_assoc,

@@ -153,7 +153,7 @@ namespace Augmented
 namespace StandardSimplex
 
 /-- When `[Zero X]`, the shift of a map `f : Fin n → X`
-is a map `Fin (n+1) → X` which sends `0` to `0` and `i.succ` to `f i`. -/
+is a map `Fin (n + 1) → X` which sends `0` to `0` and `i.succ` to `f i`. -/
 def shiftFun {n : ℕ} {X : Type*} [Zero X] (f : Fin n → X) (i : Fin (n + 1)) : X :=
   Matrix.vecCons 0 f i
 
@@ -268,7 +268,7 @@ theorem ExtraDegeneracy.s_comp_π_0 (n : ℕ) :
       @WidePullback.base _ _ _ f.right (fun _ : Fin (n + 1) => f.left) (fun _ => f.hom) _ ≫
         S.section_ := by
   dsimp [ExtraDegeneracy.s]
-  simp [WidePullback.lift_π]
+  simp
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] removed as the linter complains the LHS is not in normal form
 theorem ExtraDegeneracy.s_comp_π_succ (n : ℕ) (i : Fin (n + 1)) :
@@ -288,7 +288,7 @@ noncomputable def extraDegeneracy :
   s n := ExtraDegeneracy.s f S n
   s'_comp_ε := by
     dsimp
-    simp only [augmentedCechNerve_hom_app, assoc, WidePullback.lift_base, SplitEpi.id]
+    simp only [assoc, WidePullback.lift_base, SplitEpi.id]
   s₀_comp_δ₁ := by
     dsimp [cechNerve, SimplicialObject.δ, SimplexCategory.δ]
     ext j
@@ -380,13 +380,13 @@ noncomputable def homotopyEquiv [Preadditive C] [HasZeroObject C]
           rw [Homotopy.prevD_chainComplex, Homotopy.dNext_zero_chainComplex, zero_add]
           dsimp
           erw [ChainComplex.fromSingle₀Equiv_symm_apply_f_zero]
-          simp only [ComplexShape.down_Rel, AlternatingFaceMapComplex.obj_d_eq]
+          simp only [AlternatingFaceMapComplex.obj_d_eq]
           rw [Fin.sum_univ_two]
           simp [s_comp_δ₀, s₀_comp_δ₁]
         | succ i =>
           rw [Homotopy.prevD_chainComplex, Homotopy.dNext_succ_chainComplex]
           simp [Fin.sum_univ_succ (n := i + 2), s_comp_δ₀, Preadditive.sum_comp,
-            Preadditive.zsmul_comp, Preadditive.comp_sum, Preadditive.comp_zsmul,
+            Preadditive.comp_sum,
             s_comp_δ, pow_succ] }
 
 end ExtraDegeneracy

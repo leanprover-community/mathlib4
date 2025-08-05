@@ -260,10 +260,10 @@ def toBinaryBiconeFunctor {X Y : C} : Bicone (pairFunction X Y) ⥤ BinaryBicone
       snd := b.π WalkingPair.right
       inl := b.ι WalkingPair.left
       inr := b.ι WalkingPair.right
-      inl_fst := by simp [Bicone.ι_π]
-      inr_fst := by simp [Bicone.ι_π]
-      inl_snd := by simp [Bicone.ι_π]
-      inr_snd := by simp [Bicone.ι_π] }
+      inl_fst := by simp
+      inr_fst := by simp
+      inl_snd := by simp
+      inr_snd := by simp }
   map f :=
     { hom := f.hom }
 
@@ -556,21 +556,21 @@ theorem biprod_isoCoprod_hom {X Y : C} [HasBinaryBiproduct X Y] :
 theorem biprod.map_eq_map' {W X Y Z : C} [HasBinaryBiproduct W X] [HasBinaryBiproduct Y Z]
     (f : W ⟶ Y) (g : X ⟶ Z) : biprod.map f g = biprod.map' f g := by
   ext
-  · simp only [mapPair_left, IsColimit.ι_map, IsLimit.map_π, biprod.inl_fst_assoc,
-      Category.assoc, ← BinaryBicone.toCone_π_app_left, ← BinaryBiproduct.bicone_fst, ←
-      BinaryBicone.toCocone_ι_app_left, ← BinaryBiproduct.bicone_inl]
-    dsimp; simp
-  · simp only [mapPair_left, IsColimit.ι_map, IsLimit.map_π, zero_comp, biprod.inl_snd_assoc,
-      Category.assoc, ← BinaryBicone.toCone_π_app_right, ← BinaryBiproduct.bicone_snd, ←
-      BinaryBicone.toCocone_ι_app_left, ← BinaryBiproduct.bicone_inl]
+  · simp only [mapPair_left, IsColimit.ι_map, IsLimit.map_π,
+      Category.assoc, ← BinaryBicone.toCone_π_app_left, ←
+      BinaryBicone.toCocone_ι_app_left]
     simp
-  · simp only [mapPair_right, biprod.inr_fst_assoc, IsColimit.ι_map, IsLimit.map_π, zero_comp,
-      Category.assoc, ← BinaryBicone.toCone_π_app_left, ← BinaryBiproduct.bicone_fst, ←
-      BinaryBicone.toCocone_ι_app_right, ← BinaryBiproduct.bicone_inr]
+  · simp only [mapPair_left, IsColimit.ι_map, IsLimit.map_π,
+      Category.assoc, ← BinaryBicone.toCone_π_app_right, ←
+      BinaryBicone.toCocone_ι_app_left]
     simp
-  · simp only [mapPair_right, IsColimit.ι_map, IsLimit.map_π, biprod.inr_snd_assoc,
-      Category.assoc, ← BinaryBicone.toCone_π_app_right, ← BinaryBiproduct.bicone_snd, ←
-      BinaryBicone.toCocone_ι_app_right, ← BinaryBiproduct.bicone_inr]
+  · simp only [mapPair_right, IsColimit.ι_map, IsLimit.map_π,
+      Category.assoc, ← BinaryBicone.toCone_π_app_left, ←
+      BinaryBicone.toCocone_ι_app_right]
+    simp
+  · simp only [mapPair_right, IsColimit.ι_map, IsLimit.map_π,
+      Category.assoc, ← BinaryBicone.toCone_π_app_right, ←
+      BinaryBicone.toCocone_ι_app_right]
     simp
 
 instance biprod.inl_mono {X Y : C} [HasBinaryBiproduct X Y] :

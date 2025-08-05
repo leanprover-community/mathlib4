@@ -22,7 +22,7 @@ then saying that `fun i ↦ support (f i)` tendsto `(𝓝 0).smallSets` is a way
 
 open Filter
 
-open Filter Set
+open Set
 
 variable {α β : Type*} {ι : Sort*}
 
@@ -95,7 +95,7 @@ lemma tendsto_image_smallSets {f : α → β} :
     Tendsto (f '' ·) la.smallSets lb.smallSets ↔ Tendsto f la lb := by
   rw [tendsto_smallSets_iff]
   refine forall₂_congr fun u hu ↦ ?_
-  rw [eventually_smallSets' fun s t hst ht ↦ (image_subset _ hst).trans ht]
+  rw [eventually_smallSets' fun s t hst ht ↦ (image_mono hst).trans ht]
   simp only [image_subset_iff, exists_mem_subset_iff, mem_map]
 
 alias ⟨_, Tendsto.image_smallSets⟩ := tendsto_image_smallSets

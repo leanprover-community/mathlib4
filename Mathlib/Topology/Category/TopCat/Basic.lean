@@ -12,7 +12,8 @@ import Mathlib.Topology.ContinuousMap.Basic
 We introduce the bundled category `TopCat` of topological spaces together with the functors
 `TopCat.discrete` and `TopCat.trivial` from the category of types to `TopCat` which equip a type
 with the corresponding discrete, resp. trivial, topology. For a proof that these functors are left,
-resp. right adjoint to the forgetful functor, see `Mathlib.Topology.Category.TopCat.Adjunctions`.
+resp. right adjoint to the forgetful functor, see
+`Mathlib/Topology/Category/TopCat/Adjunctions.lean`.
 -/
 
 assert_not_exists Module
@@ -113,7 +114,7 @@ lemma ext {X Y : TopCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
 
 @[simp]
 lemma hom_ofHom {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y] (f : C(X, Y)) :
-  (ofHom f).hom = f := rfl
+    (ofHom f).hom = f := rfl
 
 @[simp]
 lemma ofHom_hom {X Y : TopCat} (f : X ⟶ Y) :
@@ -210,6 +211,11 @@ lemma isIso_of_bijective_of_isClosedMap {X Y : TopCat.{u}} (f : X ⟶ Y)
     (Equiv.ofBijective f hfbij).toHomeomorphOfContinuousClosed f.hom.continuous hfcl
   inferInstanceAs <| IsIso (TopCat.isoOfHomeo e).hom
 
+lemma isIso_iff_isHomeomorph {X Y : TopCat.{u}} (f : X ⟶ Y) :
+    IsIso f ↔ IsHomeomorph f :=
+  ⟨fun _ ↦ (homeoOfIso (asIso f)).isHomeomorph,
+    fun H ↦ isIso_of_bijective_of_isOpenMap _ H.bijective H.isOpenMap⟩
+
 theorem isOpenEmbedding_iff_comp_isIso {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
     IsOpenEmbedding (f ≫ g) ↔ IsOpenEmbedding f :=
   (TopCat.homeoOfIso (asIso g)).isOpenEmbedding.of_comp_iff f
@@ -217,7 +223,7 @@ theorem isOpenEmbedding_iff_comp_isIso {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶
 @[simp]
 theorem isOpenEmbedding_iff_comp_isIso' {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
     IsOpenEmbedding (g ∘ f) ↔ IsOpenEmbedding f := by
-  simp only [← Functor.map_comp]
+  simp only
   exact isOpenEmbedding_iff_comp_isIso f g
 
 theorem isOpenEmbedding_iff_isIso_comp {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] :
@@ -231,7 +237,7 @@ theorem isOpenEmbedding_iff_isIso_comp {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶
 @[simp]
 theorem isOpenEmbedding_iff_isIso_comp' {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] :
     IsOpenEmbedding (g ∘ f) ↔ IsOpenEmbedding g := by
-  simp only [← Functor.map_comp]
+  simp only
   exact isOpenEmbedding_iff_isIso_comp f g
 
 end TopCat
