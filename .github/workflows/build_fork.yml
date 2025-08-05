@@ -261,7 +261,8 @@ jobs:
           else
             echo "curl to example.com failed as expected - landrun network isolation is working"
           fi
-          bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
+          bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI" ||
+            echo "landrun=fail" >> "$GITHUB_OUTPUT"
       - name: end gh-problem-match-wrap for build step
         uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
         with:
@@ -282,7 +283,21 @@ jobs:
         shell: bash
         run: |
           cd pr-branch
-
+          if [ "${{ steps.build.outputs.landrun }}" == 'fail' ]
+          then
+            printf $'landrun error: removing cache...\n'
+            rm -rf .lake
+            # we use curl rather than octokit/request-action so that the job won't fail
+            # (and send an annoying email) if the labels don't exist
+            printf $'landrun error: adding permission-denied label...\n'
+            curl --request POST \
+              --header 'Accept: application/vnd.github+json' \
+              --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
+              --header 'X-GitHub-Api-Version: 2022-11-28' \
+              --url https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels \
+              --data '{"labels":["permission-denied"]}'
+            exit 2
+          fi
           # Use the trusted cache tool from master-branch
           # TODO: this is not doing anything currently, and needs to be integrated with put-unpacked
           # ../master-branch/.lake/build/bin/cache commit || true
