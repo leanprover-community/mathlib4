@@ -425,7 +425,8 @@ theorem Prime.coprime_iff_not_dvd {p n : ℕ} (pp : Prime p) : Coprime p n ↔ �
 alias ⟨Prime.dvd_or_dvd, _⟩ := Prime.dvd_mul
 
 theorem Prime.dvd_mul {p m n : ℕ} (pp : Prime p) : p ∣ m * n ↔ p ∣ m ∨ p ∣ n :=
-  ⟨dvd_or_dvd pp, Or.rec (fun h : p ∣ m => h.mul_right _) fun h : p ∣ n => h.mul_left _⟩
+  ⟨fun H => or_iff_not_imp_left.2 fun h => (pp.coprime_iff_not_dvd.2 h).dvd_of_dvd_mul_left H,
+    Or.rec (fun h : p ∣ m => h.mul_right _) fun h : p ∣ n => h.mul_left _⟩
 
 theorem prime_iff {p : ℕ} : p.Prime ↔ _root_.Prime p :=
   ⟨fun h => ⟨h.ne_zero, h.not_isUnit, fun _ _ => h.dvd_mul.mp⟩, Prime.irreducible⟩
