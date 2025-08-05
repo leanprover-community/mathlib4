@@ -84,8 +84,6 @@ def Subsemigroup.toAddSubsemigroup : Subsemigroup M ≃o AddSubsemigroup (Additi
   invFun S :=
     { carrier := Additive.ofMul ⁻¹' S
       mul_mem' := S.add_mem' }
-  left_inv _ := rfl
-  right_inv _ := rfl
   map_rel_iff' := Iff.rfl
 
 /-- Additive subsemigroups of an additive semigroup `Additive M` are isomorphic to subsemigroups
@@ -125,8 +123,6 @@ def AddSubsemigroup.toSubsemigroup : AddSubsemigroup A ≃o Subsemigroup (Multip
   invFun S :=
     { carrier := Multiplicative.ofAdd ⁻¹' S
       add_mem' := S.mul_mem' }
-  left_inv _ := rfl
-  right_inv _ := rfl
   map_rel_iff' := Iff.rfl
 
 /-- Subsemigroups of a semigroup `Multiplicative A` are isomorphic to additive subsemigroups
@@ -219,11 +215,7 @@ theorem apply_coe_mem_map (f : M →ₙ* N) (S : Subsemigroup M) (x : S) : f x �
 theorem map_map (g : N →ₙ* P) (f : M →ₙ* N) : (S.map f).map g = S.map (g.comp f) :=
   SetLike.coe_injective <| image_image _ _ _
 
--- The simpNF linter says that the LHS can be simplified via `Subsemigroup.mem_map`.
--- However this is a higher priority lemma.
--- It seems the side condition `hf` is not applied by `simpNF`.
--- https://github.com/leanprover/std4/issues/207
-@[to_additive (attr := simp, nolint simpNF)]
+@[to_additive (attr := simp high)]
 theorem mem_map_iff_mem {f : M →ₙ* N} (hf : Function.Injective f) {S : Subsemigroup M} {x : M} :
     f x ∈ S.map f ↔ x ∈ S :=
   hf.mem_set_image
@@ -429,7 +421,6 @@ def topEquiv : (⊤ : Subsemigroup M) ≃* M where
   toFun x := x
   invFun x := ⟨x, mem_top x⟩
   left_inv x := x.eta _
-  right_inv _ := rfl
   map_mul' _ _ := rfl
 
 @[to_additive (attr := simp)]
@@ -577,17 +568,12 @@ theorem srange_eq_top_iff_surjective {N} [Mul N] {f : M →ₙ* N} :
     f.srange = (⊤ : Subsemigroup N) ↔ Function.Surjective f :=
   SetLike.ext'_iff.trans <| Iff.trans (by rw [coe_srange, coe_top]) Set.range_eq_univ
 
-@[deprecated (since := "2024-11-11")]
-alias srange_top_iff_surjective := srange_eq_top_iff_surjective
-
 /-- The range of a surjective semigroup hom is the whole of the codomain. -/
 @[to_additive (attr := simp)
   "The range of a surjective `AddSemigroup` hom is the whole of the codomain."]
 theorem srange_eq_top_of_surjective {N} [Mul N] (f : M →ₙ* N) (hf : Function.Surjective f) :
     f.srange = (⊤ : Subsemigroup N) :=
   srange_eq_top_iff_surjective.2 hf
-
-@[deprecated (since := "2024-11-11")] alias srange_top_of_surjective := srange_eq_top_of_surjective
 
 @[to_additive]
 theorem mclosure_preimage_le (f : M →ₙ* N) (s : Set N) : closure (f ⁻¹' s) ≤ (closure s).comap f :=
@@ -682,8 +668,7 @@ theorem srange_snd [Nonempty M] : (snd M N).srange = ⊤ :=
 @[to_additive prod_eq_top_iff]
 theorem prod_eq_top_iff [Nonempty M] [Nonempty N] {s : Subsemigroup M} {t : Subsemigroup N} :
     s.prod t = ⊤ ↔ s = ⊤ ∧ t = ⊤ := by
-  simp only [eq_top_iff, le_prod_iff, ← (gc_map_comap _).le_iff_le, ← srange_eq_map, srange_fst,
-    srange_snd]
+  simp only [eq_top_iff, le_prod_iff, ← srange_eq_map, srange_fst, srange_snd]
 
 /-- The semigroup hom associated to an inclusion of subsemigroups. -/
 @[to_additive "The `AddSemigroup` hom associated to an inclusion of subsemigroups."]

@@ -133,16 +133,16 @@ noncomputable def invRotateIsoRotateRotateShiftFunctorNegOne :
   calc
     invRotate C ≅ invRotate C ⋙ 𝟭 _ := (Functor.rightUnitor _).symm
     _ ≅ invRotate C ⋙ Triangle.shiftFunctor C 0 :=
-          isoWhiskerLeft _ (Triangle.shiftFunctorZero C).symm
+          Functor.isoWhiskerLeft _ (Triangle.shiftFunctorZero C).symm
     _ ≅ invRotate C ⋙ Triangle.shiftFunctor C 1 ⋙ Triangle.shiftFunctor C (-1) :=
-          isoWhiskerLeft _ (Triangle.shiftFunctorAdd' C 1 (-1) 0 (add_neg_cancel 1))
+          Functor.isoWhiskerLeft _ (Triangle.shiftFunctorAdd' C 1 (-1) 0 (add_neg_cancel 1))
     _ ≅ invRotate C ⋙ (rotate C ⋙ rotate C ⋙ rotate C) ⋙ Triangle.shiftFunctor C (-1) :=
-          isoWhiskerLeft _ (isoWhiskerRight (rotateRotateRotateIso C).symm _)
+          Functor.isoWhiskerLeft _ (Functor.isoWhiskerRight (rotateRotateRotateIso C).symm _)
     _ ≅ (invRotate C ⋙ rotate C) ⋙ rotate C ⋙ rotate C ⋙ Triangle.shiftFunctor C (-1) :=
-          isoWhiskerLeft _ (Functor.associator _ _ _ ≪≫
-            isoWhiskerLeft _ (Functor.associator _ _ _)) ≪≫ (Functor.associator _ _ _).symm
+          Functor.isoWhiskerLeft _ (Functor.associator _ _ _ ≪≫
+            Functor.isoWhiskerLeft _ (Functor.associator _ _ _)) ≪≫ (Functor.associator _ _ _).symm
     _ ≅ 𝟭 _ ⋙ rotate C ⋙ rotate C ⋙ Triangle.shiftFunctor C (-1) :=
-          isoWhiskerRight (triangleRotation C).counitIso _
+          Functor.isoWhiskerRight (triangleRotation C).counitIso _
     _ ≅ _ := Functor.leftUnitor _
 
 namespace Triangle

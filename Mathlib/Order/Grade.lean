@@ -344,9 +344,9 @@ lemma coe_wcovBy_coe : (a : α) ⩿ b ↔ a ⩿ b := by
   refine and_congr_right' ⟨fun h c hac ↦ h hac, fun h c hac hcb ↦
     @h ⟨c, mem_iff_forall_le_or_ge.2 fun d hd ↦ ?_⟩ hac hcb⟩
   classical
-  obtain hda | had := le_or_lt (⟨d, hd⟩ : s) a
+  obtain hda | had := le_or_gt (⟨d, hd⟩ : s) a
   · exact .inr ((Subtype.coe_le_coe.2 hda).trans hac.le)
-  obtain hbd | hdb := le_or_lt b ⟨d, hd⟩
+  obtain hbd | hdb := le_or_gt b ⟨d, hd⟩
   · exact .inl (hcb.le.trans hbd)
   · cases h had hdb
 

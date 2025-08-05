@@ -31,7 +31,7 @@ CategoryStruct's are given by oplax transformations and strong transformations r
 
 We also provide API for going between oplax transformations and strong transformations:
 * `Oplax.StrongCore F G`: a structure on an oplax transformation between oplax functors that
-promotes it to a strong transformation.
+  promotes it to a strong transformation.
 * `Oplax.mkOfOplax η η'`: given an oplax transformation `η` such that each component
   2-morphism is an isomorphism, `mkOfOplax` gives the corresponding strong transformation.
 
@@ -95,7 +95,7 @@ variable {a b c : B} {a' : C}
 theorem whiskerLeft_naturality_naturality (f : a' ⟶ G.obj a) {g h : a ⟶ b} (β : g ⟶ h) :
     f ◁ G.map₂ β ▷ θ.app b ≫ f ◁ θ.naturality h =
       f ◁ θ.naturality g ≫ f ◁ θ.app a ◁ H.map₂ β := by
-  simp_rw [← Bicategory.whiskerLeft_comp, naturality_naturality]
+  simp_rw [← whiskerLeft_comp, naturality_naturality]
 
 @[reassoc (attr := simp)]
 theorem whiskerRight_naturality_naturality {f g : a ⟶ b} (β : f ⟶ g) (h : G.obj b ⟶ a') :
@@ -110,7 +110,7 @@ theorem whiskerLeft_naturality_comp (f : a' ⟶ G.obj a) (g : a ⟶ b) (h : b �
         f ◁ (α_ _ _ _).hom ≫
           f ◁ G.map g ◁ θ.naturality h ≫
             f ◁ (α_ _ _ _).inv ≫ f ◁ θ.naturality g ▷ H.map h ≫ f ◁ (α_ _ _ _).hom := by
-  simp_rw [← Bicategory.whiskerLeft_comp, naturality_comp]
+  simp_rw [← whiskerLeft_comp, naturality_comp]
 
 @[reassoc (attr := simp)]
 theorem whiskerRight_naturality_comp (f : a ⟶ b) (g : b ⟶ c) (h : G.obj c ⟶ a') :
@@ -128,7 +128,7 @@ theorem whiskerRight_naturality_comp (f : a ⟶ b) (g : b ⟶ c) (h : G.obj c �
 theorem whiskerLeft_naturality_id (f : a' ⟶ G.obj a) :
     f ◁ θ.naturality (𝟙 a) ≫ f ◁ θ.app a ◁ H.mapId a =
       f ◁ G.mapId a ▷ θ.app a ≫ f ◁ (λ_ (θ.app a)).hom ≫ f ◁ (ρ_ (θ.app a)).inv := by
-  simp_rw [← Bicategory.whiskerLeft_comp, naturality_id]
+  simp_rw [← whiskerLeft_comp, naturality_id]
 
 @[reassoc (attr := simp)]
 theorem whiskerRight_naturality_id (f : G.obj a ⟶ a') :
@@ -185,7 +185,7 @@ that is "natural up to 2-isomorphisms".
 More precisely, it consists of the following:
 * a 1-morphism `η.app a : F.obj a ⟶ G.obj a` for each object `a : B`.
 * a 2-isomorphism `η.naturality f : F.map f ≫ app b ⟶ app a ≫ G.map f` for each 1-morphism
-`f : a ⟶ b`.
+  `f : a ⟶ b`.
 * These 2-isomorphisms satisfy the naturality condition, and preserve the identities and the
   compositions modulo some adjustments of domains and codomains of 2-morphisms.
 -/
@@ -275,7 +275,7 @@ def vcomp : StrongTrans F H :=
 /-- `CategoryStruct` on `OplaxFunctor B C` where the (1-)morphisms are given by strong
 transformations. -/
 @[simps! id_app id_naturality comp_app comp_naturality]
-scoped instance : CategoryStruct (OplaxFunctor B C) where
+scoped instance OplaxFunctor.instCategoryStruct : CategoryStruct (OplaxFunctor B C) where
   Hom := StrongTrans
   id := StrongTrans.id
   comp := StrongTrans.vcomp

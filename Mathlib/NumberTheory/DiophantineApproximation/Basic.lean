@@ -47,7 +47,7 @@ Both statements are combined to give an equivalence,
 There are two versions of Legendre's Theorem. One, `Real.exists_rat_eq_convergent`, uses
 `Real.convergent`, a simple recursive definition of the convergents that is also defined
 in this file, whereas the other, `Real.exists_convs_eq_rat` defined in the file
-`Mathlib.NumberTheory.DiophantineApproximation.ContinuedFraction`, uses
+`Mathlib/NumberTheory/DiophantineApproximation/ContinuedFraction.lean`, uses
 `GenContFract.convs` of `GenContFract.of ξ`.
 
 ## Implementation notes
@@ -257,12 +257,12 @@ theorem finite_rat_abs_sub_lt_one_div_den_sq (ξ : ℚ) :
     rw [← Rat.num_div_den a, ← Rat.num_div_den b, hab.1, hab.2]
   have H : f '' s ⊆ ⋃ (y : ℕ) (_ : y ∈ Ioc 0 ξ.den), Icc (⌈ξ * y⌉ - 1) (⌊ξ * y⌋ + 1) ×ˢ {y} := by
     intro xy hxy
-    simp only [mem_image, mem_setOf] at hxy
+    simp only [mem_image] at hxy
     obtain ⟨q, hq₁, hq₂⟩ := hxy
     obtain ⟨hd, hn⟩ := den_le_and_le_num_le_of_sub_lt_one_div_den_sq hq₁
     simp_rw [mem_iUnion]
     refine ⟨q.den, Set.mem_Ioc.mpr ⟨q.pos, hd⟩, ?_⟩
-    simp only [prod_singleton, mem_image, mem_Icc, (congr_arg Prod.snd (Eq.symm hq₂)).trans rfl]
+    simp only [prod_singleton, mem_image, mem_Icc]
     exact ⟨q.num, hn, hq₂⟩
   refine (Finite.subset ?_ H).of_finite_image hinj.injOn
   exact Finite.biUnion (finite_Ioc _ _) fun x _ => Finite.prod (finite_Icc _ _) (finite_singleton _)
@@ -478,11 +478,8 @@ private theorem invariant : ContfracLegendre.Ass (fract ξ)⁻¹ v (u - ⌊ξ⌋
   · obtain hv₀' := (aux₀ (zero_lt_two.trans_le hv)).2
     have Hv : (v * (2 * v - 1) : ℝ)⁻¹ + (v : ℝ)⁻¹ = 2 / (2 * v - 1) := by
       field_simp; ring
-    #adaptation_note
-    /-- `_root_` can be removed again after
-    https://github.com/leanprover/lean4/pull/7359 lands in nightly-2025-03-06. -/
     have Huv : (u / v : ℝ) = ⌊ξ⌋ + (v : ℝ)⁻¹ := by
-      rw [_root_.sub_eq_iff_eq_add'.mp huv]; field_simp
+      rw [sub_eq_iff_eq_add'.mp huv]; field_simp
     have h' := (abs_sub_lt_iff.mp h.2.2).1
     rw [Huv, ← sub_sub, sub_lt_iff_lt_add, self_sub_floor, Hv] at h'
     rwa [lt_sub_iff_add_lt', (by ring : (v : ℝ) + -(1 / 2) = (2 * v - 1) / 2),
@@ -506,7 +503,7 @@ theorem exists_rat_eq_convergent' {v : ℕ} (h : ContfracLegendre.Ass ξ u v) :
     exact False.elim (lt_irrefl _ <| (abs_nonneg ξ).trans_lt h)
   · rw [Nat.cast_one, div_one]
     obtain ⟨_, h₁, h₂⟩ := h
-    rcases le_or_lt (u : ℝ) ξ with ht | ht
+    rcases le_or_gt (u : ℝ) ξ with ht | ht
     · use 0
       rw [convergent_zero, Rat.coe_int_inj, eq_comm, floor_eq_iff]
       convert And.intro ht (sub_lt_iff_lt_add'.mp (abs_lt.mp h₂).2) <;> norm_num

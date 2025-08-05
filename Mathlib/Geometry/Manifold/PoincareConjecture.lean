@@ -31,11 +31,11 @@ variable (M : Type*) [TopologicalSpace M]
 open ContinuousMap
 
 /-- The generalized topological Poincaré conjecture.
- - For n = 2 it follows from the classification of surfaces.
- - For n ≥ 5 it was proven by Stephen Smale in 1961 assuming M admits a smooth structure;
-   Newman (1966) and Connell (1967) proved it without the condition.
- - For n = 4 it was proven by Michael Freedman in 1982.
- - For n = 3 it was proven by Grigori Perelman in 2003. -/
+- For n = 2 it follows from the classification of surfaces.
+- For n ≥ 5 it was proven by Stephen Smale in 1961 assuming M admits a smooth structure;
+  Newman (1966) and Connell (1967) proved it without the condition.
+- For n = 4 it was proven by Michael Freedman in 1982.
+- For n = 3 it was proven by Grigori Perelman in 2003. -/
 proof_wanted ContinuousMap.HomotopyEquiv.nonempty_homeomorph_sphere [T2Space M]
     (n : ℕ) [ChartedSpace ℝⁿ M] : M ≃ₕ 𝕊ⁿ → Nonempty (M ≃ₜ 𝕊ⁿ)
 

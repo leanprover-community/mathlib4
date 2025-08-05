@@ -19,12 +19,12 @@ then any injective polynomial map `K^n → K^n` is also surjective.
 ## Main results
 
 * `ax_grothendieck_zeroLocus`: If `K` is algebraically closed, `ι` is a finite type, and
-`S : Set (ι → K)` is the `zeroLocus` of some ideal of `MvPolynomial ι K`, then any injective
-polynomial map `S → S` is also surjective on `S`.
+  `S : Set (ι → K)` is the `zeroLocus` of some ideal of `MvPolynomial ι K`, then any injective
+  polynomial map `S → S` is also surjective on `S`.
 * `ax_grothendieck_univ`: Any injective polynomial map `K^n → K^n` is also surjective if `K` is an
   algebraically closed field.
 * `ax_grothendieck_of_definable`: Any injective polynomial map `S → S` is also surjective on `S` if
-`K` is an algebraically closed field and `S` is a definable subset of `K^n`.
+  `K` is an algebraically closed field and `S` is a definable subset of `K^n`.
 * `ax_grothendieck_of_locally_finite`: any injective polynomial map `R^n → R^n` is also surjective
   whenever `R` is an algebraic extension of a finite field.
 
@@ -145,7 +145,7 @@ theorem realize_genericPolyMapSurjOnOfInjOn
     (K ⊨ genericPolyMapSurjOnOfInjOn φ mons) ↔
       ∀ (v : α → K) (p : { p : ι → MvPolynomial ι K // (∀ i, (p i).support ⊆ mons i) }),
         let f : (ι → K) → (ι → K) := fun v i => eval v (p.1 i)
-        let S : Set (ι → K) := fun x => φ.Realize (Sum.elim v x)
+        let S : Set (ι → K) := {x | φ.Realize (Sum.elim v x)}
         S.MapsTo f S → S.InjOn f → S.SurjOn f S := by
   classical
   have injOnAlt : ∀ {S : Set (ι → K)} (f : (ι → K) → (ι → K)),
@@ -154,10 +154,10 @@ theorem realize_genericPolyMapSurjOnOfInjOn
   simp only [Sentence.Realize, Formula.Realize, genericPolyMapSurjOnOfInjOn, Formula.relabel,
     Function.comp_def, Sum.map, id_eq, Equiv.sumAssoc, Equiv.coe_fn_symm_mk, Sum.elim_inr,
     realize_iAlls, realize_imp, realize_relabel, Fin.natAdd_zero, realize_subst, realize_iInf,
-    Finset.mem_univ, realize_bdEqual, Term.realize_relabel, true_imp_iff,
-    Equiv.forall_congr_left (Equiv.curry (Fin 2) ι K), Equiv.curry_symm_apply, Function.uncurry,
+    realize_bdEqual, Term.realize_relabel,
+    Equiv.forall_congr_left (Equiv.curry (Fin 2) ι K), Equiv.curry_symm_apply,
     Fin.forall_fin_succ_pi, Fin.forall_fin_zero_pi, realize_iExs, realize_inf, Sum.forall_sum,
-    Set.MapsTo, Set.mem_def, injOnAlt, funext_iff, Set.SurjOn, Set.image, setOf,
+    Set.MapsTo, Set.mem_setOf_eq, injOnAlt, funext_iff, Set.SurjOn, Set.image,
     Set.subset_def, Equiv.forall_congr_left (mvPolynomialSupportLEEquiv mons)]
   simp +singlePass only [← Sum.elim_comp_inl_inr]
   -- was `simp` and very slow (https://github.com/leanprover-community/mathlib4/issues/19751)
@@ -242,7 +242,7 @@ theorem ax_grothendieck_zeroLocus
 /-- A special case of the **Ax-Grothendieck** theorem
 
 Any injective polynomial map `K^n → K^n` is also surjective if `K` is an
-algberaically closed field. -/
+algebraically closed field. -/
 theorem ax_grothendieck_univ (p : ι → MvPolynomial ι K) :
     (fun v i => eval v (p i)).Injective →
     (fun v i => eval v (p i)).Surjective := by

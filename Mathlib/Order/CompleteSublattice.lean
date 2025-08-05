@@ -15,12 +15,12 @@ under arbitrary suprema and infima. As a standard example one could take the com
 invariant submodules of some module with respect to a linear map.
 
 ## Main definitions:
-  * `CompleteSublattice`: the definition of a complete sublattice
-  * `CompleteSublattice.mk'`: an alternate constructor for a complete sublattice, demanding fewer
-    hypotheses
-  * `CompleteSublattice.instCompleteLattice`: a complete sublattice is a complete lattice
-  * `CompleteSublattice.map`: complete sublattices push forward under complete lattice morphisms.
-  * `CompleteSublattice.comap`: complete sublattices pull back under complete lattice morphisms.
+* `CompleteSublattice`: the definition of a complete sublattice
+* `CompleteSublattice.mk'`: an alternate constructor for a complete sublattice, demanding fewer
+  hypotheses
+* `CompleteSublattice.instCompleteLattice`: a complete sublattice is a complete lattice
+* `CompleteSublattice.map`: complete sublattices push forward under complete lattice morphisms.
+* `CompleteSublattice.comap`: complete sublattices pull back under complete lattice morphisms.
 
 -/
 
@@ -43,16 +43,16 @@ under binary `Sup` since this follows from the stronger `sSup` condition. Likewi
 @[simps] def mk' (carrier : Set α)
     (sSupClosed' : ∀ ⦃s : Set α⦄, s ⊆ carrier → sSup s ∈ carrier)
     (sInfClosed' : ∀ ⦃s : Set α⦄, s ⊆ carrier → sInf s ∈ carrier) :
-  CompleteSublattice α where
-    carrier := carrier
-    sSupClosed' := sSupClosed'
-    sInfClosed' := sInfClosed'
-    supClosed' := fun x hx y hy ↦ by
-      suffices x ⊔ y = sSup {x, y} by exact this ▸ sSupClosed' (fun z hz ↦ by aesop)
-      simp [sSup_singleton]
-    infClosed' := fun x hx y hy ↦ by
-      suffices x ⊓ y = sInf {x, y} by exact this ▸ sInfClosed' (fun z hz ↦ by aesop)
-      simp [sInf_singleton]
+    CompleteSublattice α where
+  carrier := carrier
+  sSupClosed' := sSupClosed'
+  sInfClosed' := sInfClosed'
+  supClosed' := fun x hx y hy ↦ by
+    suffices x ⊔ y = sSup {x, y} by exact this ▸ sSupClosed' (fun z hz ↦ by aesop)
+    simp [sSup_singleton]
+  infClosed' := fun x hx y hy ↦ by
+    suffices x ⊓ y = sInf {x, y} by exact this ▸ sInfClosed' (fun z hz ↦ by aesop)
+    simp [sInf_singleton]
 
 variable {L : CompleteSublattice α}
 

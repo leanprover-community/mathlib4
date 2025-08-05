@@ -60,7 +60,7 @@ theorem disjoint_bot_left : Disjoint ⊥ a := fun _ hbot _ ↦ hbot
 @[simp]
 theorem disjoint_bot_right : Disjoint a ⊥ := fun _ _ hbot ↦ hbot
 
-theorem Disjoint.mono (h₁ : a ≤ b) (h₂ : c ≤ d) : Disjoint b d → Disjoint a c :=
+@[gcongr] theorem Disjoint.mono (h₁ : a ≤ b) (h₂ : c ≤ d) : Disjoint b d → Disjoint a c :=
   fun h _ ha hc ↦ h (ha.trans h₁) (hc.trans h₂)
 
 theorem Disjoint.mono_left (h : a ≤ b) : Disjoint b c → Disjoint a c :=
@@ -208,8 +208,6 @@ def Codisjoint (a b : α) : Prop :=
 theorem codisjoint_comm : Codisjoint a b ↔ Codisjoint b a :=
   forall_congr' fun _ ↦ forall_swap
 
-@[deprecated (since := "2024-11-23")] alias Codisjoint_comm := codisjoint_comm
-
 @[symm]
 theorem Codisjoint.symm ⦃a b : α⦄ : Codisjoint a b → Codisjoint b a :=
   codisjoint_comm.1
@@ -223,7 +221,7 @@ theorem codisjoint_top_left : Codisjoint ⊤ a := fun _ htop _ ↦ htop
 @[simp]
 theorem codisjoint_top_right : Codisjoint a ⊤ := fun _ _ htop ↦ htop
 
-theorem Codisjoint.mono (h₁ : a ≤ b) (h₂ : c ≤ d) : Codisjoint a c → Codisjoint b d :=
+@[gcongr] theorem Codisjoint.mono (h₁ : a ≤ b) (h₂ : c ≤ d) : Codisjoint a c → Codisjoint b d :=
   fun h _ ha hc ↦ h (h₁.trans ha) (h₂.trans hc)
 
 theorem Codisjoint.mono_left (h : a ≤ b) : Codisjoint a c → Codisjoint b c :=
@@ -598,7 +596,9 @@ lemma complementedLattice_iff (α) [Lattice α] [BoundedOrder α] :
 
 export ComplementedLattice (exists_isCompl)
 
-instance Subsingleton.instComplementedLattice
+-- This was previously a global instance,
+-- but it doesn't appear to be used and has been implicated in slow typeclass resolutions.
+lemma Subsingleton.instComplementedLattice
     [Lattice α] [BoundedOrder α] [Subsingleton α] : ComplementedLattice α := by
   refine ⟨fun a ↦ ⟨⊥, disjoint_bot_right, ?_⟩⟩
   rw [Subsingleton.elim ⊥ ⊤]
