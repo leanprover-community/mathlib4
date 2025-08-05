@@ -270,8 +270,8 @@ noncomputable def liftStructEquiv (α : Arrow.mk sq₁₂.ι ⟶ Arrow.mk f₃) 
           Arrow.mk_right] at this
         rw [← adj₂.homEquiv_symm_naturality_three, this,
           Equiv.symm_apply_apply] }
-  left_inv _ := by aesop
-  right_inv _ := by aesop
+  left_inv _ := by simp
+  right_inv _ := by simp
 
 include adj₂ in
 lemma hasLiftingProperty_iff :

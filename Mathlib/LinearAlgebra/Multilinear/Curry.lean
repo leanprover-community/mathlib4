@@ -237,8 +237,8 @@ def currySum (f : MultilinearMap R N M₂) :
     MultilinearMap R (fun i : ι ↦ N (.inl i)) (MultilinearMap R (fun i : ι' ↦ N (.inr i)) M₂) where
   toFun u :=
     { toFun v := f (Sum.rec u v)
-      map_update_add' := by letI := Classical.decEq ι; aesop
-      map_update_smul' := by letI := Classical.decEq ι; aesop }
+      map_update_add' := by letI := Classical.decEq ι; simp
+      map_update_smul' := by letI := Classical.decEq ι; simp }
   map_update_add' u i x y :=
     ext fun _ ↦ by letI := Classical.decEq ι'; simp
   map_update_smul' u i c x :=
@@ -328,8 +328,8 @@ def currySumEquiv : MultilinearMap R N M₂ ≃ₗ[R]
   toFun := currySum
   invFun := uncurrySum
   left_inv _ := by simp
-  map_add' := by aesop
-  map_smul' := by aesop
+  map_add' := by simp
+  map_smul' := by simp
 
 @[simp]
 theorem coe_currySumEquiv : ⇑(currySumEquiv (R := R) (N := N) (M₂ := M₂)) = currySum :=

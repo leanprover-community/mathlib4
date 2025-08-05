@@ -47,7 +47,7 @@ def initialSegIicIicOfLE {i j : α} (h : i ≤ j) :
     Set.Iic i ≤i Set.Iic j where
   toFun := fun ⟨k, hk⟩ ↦ ⟨k, hk.trans h⟩
   inj' _ _ _ := by aesop
-  map_rel_iff' := by aesop
+  map_rel_iff' := by simp
   mem_range_of_rel' x k h := ⟨⟨k.1, (Subtype.coe_le_coe.2 h.le).trans x.2⟩, rfl⟩
 
 /-- If `i ≤ j`, then `Set.Iio i` is a principal segment of `Set.Iic j`. -/
@@ -57,8 +57,8 @@ def principalSegIioIicOfLE {i j : α} (h : i ≤ j) :
   top := ⟨i, h⟩
   toFun := fun ⟨k, hk⟩ ↦ ⟨k, hk.le.trans h⟩
   inj' _ _ _ := by aesop
-  map_rel_iff' := by aesop
-  mem_range_iff_rel' := by aesop
+  map_rel_iff' := by simp
+  mem_range_iff_rel' := by simp
 
 @[simp]
 lemma principalSegIioIicOfLE_toRelEmbedding {i j : α} (h : i ≤ j)
