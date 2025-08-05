@@ -22,9 +22,9 @@ if `ϕₜ s ⊆ s` for all `t`. In many cases `ϕ` will be a flow on
 commutative) monoid, we additionally define forward invariance, where
 `t` ranges over those elements which are nonnegative.
 
-Additionally, we define such constructions as the restriction of a
-flow onto an invariant subset, and the time-reversal of a flow by a
-group.
+Additionally, we define such constructions as semiconjugacies between flows,
+factors of a flow, the restriction of a flow onto an invariant subset, and
+the time-reversal of a flow by a group.
 -/
 
 
@@ -88,6 +88,7 @@ namespace Flow
 
 variable {τ : Type*} [AddMonoid τ] [TopologicalSpace τ] [ContinuousAdd τ]
   {α : Type*} [TopologicalSpace α] (ϕ : Flow τ α)
+  {β : Type*} [TopologicalSpace β] (ψ : Flow τ β)
 
 instance : Inhabited (Flow τ α) :=
   ⟨{  toFun := fun _ x => x
@@ -132,6 +133,21 @@ def restrict {s : Set α} (h : IsInvariant ϕ s) : Flow τ (↥s) where
   cont' := (ϕ.continuous continuous_fst continuous_subtype_val.snd').subtype_mk _
   map_add' _ _ _ := Subtype.ext (map_add _ _ _ _)
   map_zero' _ := Subtype.ext (map_zero_apply _ _)
+
+/-- The orbit of a point under a flow. -/
+def orbit (ϕ : Flow τ α) (x : α) : Set α :=
+  {y | ∃ t : τ, ϕ t x = y}
+
+/-- Given flow `ϕ` of `τ` on `α` and flow `ψ` of `τ` on `β`, a continuous map `π : α → β` is
+called a *semiconjugacy* from `ϕ` to `ψ` if `π` is surjective and `π ∘ (ϕ t) = (ψ t) ∘ π` for
+all `t : τ`. -/
+structure IsSemiconjugacy (π : ContinuousMap α β) (ϕ : Flow τ α) (ψ : Flow τ β) : Prop where
+  surj : Function.Surjective π
+  semiconj : ∀ t, Function.Semiconj π (ϕ t) (ψ t)
+
+/-- A flow `ψ` is called a *factor* of `ϕ` if there exists a semiconjugacy from `ϕ` to `ψ`. -/
+def IsFactorOf (ψ : Flow τ β) (ϕ : Flow τ α) : Prop :=
+  ∃ π : ContinuousMap α β, IsSemiconjugacy π ϕ ψ
 
 end Flow
 
