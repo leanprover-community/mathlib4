@@ -56,9 +56,7 @@ variable (R : Type*) [SeminormedCommRing R]
 variable (M : Type*) [TopologicalSpace M] [AddCommGroup M] [Module R M]
 
 theorem dualPairing_separatingLeft : (strongDualPairing R M).SeparatingLeft := by
-  rw [LinearMap.separatingLeft_iff_ker_eq_bot]
-  unfold strongDualPairing
-  rw [LinearMap.ker_eq_bot]
+  rw [LinearMap.separatingLeft_iff_ker_eq_bot, LinearMap.ker_eq_bot]
   exact ContinuousLinearMap.coe_injective
 
 @[deprecated (since := "2025-08-3")] alias NormedSpace.dualPairing_separatingLeft :=
