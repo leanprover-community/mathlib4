@@ -172,7 +172,7 @@ section Injective
 variable {R A : Type*} [Semiring R] [NonAssocSemiring A] [Module R A]
 
 lemma mulLeft_injective [SMulCommClass R A A] :
-    Function.Injective (mulLeft R (A := A)):= fun a b h => by
+    Function.Injective (mulLeft R (A := A)) := fun a b h => by
   simpa using LinearMap.ext_iff.mp h 1
 
 lemma mulLeft_inj [SMulCommClass R A A] {a b : A} :
