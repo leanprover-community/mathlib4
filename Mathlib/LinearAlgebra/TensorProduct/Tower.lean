@@ -735,23 +735,35 @@ lemma baseChange_span (s : Set M) :
 
 end Submodule
 
-variable {R A B C D : Type*} [CommSemiring R] [AddCommMonoid A]
-  [AddCommMonoid B] [AddCommMonoid C] [AddCommMonoid D]
-  [Module R A] [Module R B] [Module R C] [Module R D]
+variable {R A B C D : Type*} [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B]
+  [AddCommMonoid C] [AddCommMonoid D] [Module R A] [Module R B] [Module R C] [Module R D]
 
-open LinearMap
+open LinearEquiv
 open scoped TensorProduct
 
 lemma TensorProduct.assoc_tensor :
-    (TensorProduct.assoc R A B (C ⊗[R] D)).symm.toLinearMap
-    = (TensorProduct.assoc R _ _ _).toLinearMap
-    ∘ₗ (rTensor _ (TensorProduct.assoc R _ _ _).symm.toLinearMap)
-    ∘ₗ (TensorProduct.assoc R _ _ _).symm.toLinearMap
-    ∘ₗ (lTensor _ (TensorProduct.assoc R _ _ _).symm.toLinearMap) := by
+    TensorProduct.assoc R (A ⊗[R] B) C D = rTensor D (TensorProduct.assoc R A B C)
+    ≪≫ₗ TensorProduct.assoc R A (B ⊗[R] C) D ≪≫ₗ lTensor A (TensorProduct.assoc R B C D)
+    ≪≫ₗ (TensorProduct.assoc R A B (C ⊗[R] D)).symm := by
+  rw [← LinearEquiv.toLinearMap_inj]
+  ext; simp
+
+lemma TensorProduct.assoc_tensor' :
+    TensorProduct.assoc R A (B ⊗[R] C) D = rTensor D (TensorProduct.assoc R A B C).symm
+    ≪≫ₗ (TensorProduct.assoc R (A ⊗[R] B) C D) ≪≫ₗ TensorProduct.assoc R A B (C ⊗[R] D)
+    ≪≫ₗ lTensor A (TensorProduct.assoc R B C D).symm := by
+  rw [← LinearEquiv.toLinearMap_inj]
+  ext; simp
+
+lemma TensorProduct.assoc_tensor'' :
+    TensorProduct.assoc R A B (C ⊗[R] D) = (TensorProduct.assoc R (A ⊗[R] B) C D).symm
+    ≪≫ₗ rTensor D (TensorProduct.assoc R A B C) ≪≫ₗ TensorProduct.assoc R A (B ⊗[R] C) D
+    ≪≫ₗ lTensor A (TensorProduct.assoc R B C D) := by
+  rw [assoc_tensor]
   ext; simp
 
 lemma TensorProduct.lid_tensor :
-    (TensorProduct.lid R (A ⊗[R] B)).toLinearMap
-      = rTensor _ (TensorProduct.lid R _).toLinearMap
-      ∘ₗ (TensorProduct.assoc R _ _ _).symm.toLinearMap := by
+    TensorProduct.lid R (A ⊗[R] B)
+    = (TensorProduct.assoc R R A B).symm ≪≫ₗ rTensor B (TensorProduct.lid R A) := by
+  rw [← LinearEquiv.toLinearMap_inj]
   ext; simp

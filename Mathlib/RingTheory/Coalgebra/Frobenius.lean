@@ -69,7 +69,8 @@ theorem LinearMap.lTensor_mul'_comp_assoc_comp_rTensor_comul_of
         rw [← h]
         simp_rw [← comp_assoc]
         congr 2
-        simp_rw [← rTensor_comp, lid_tensor]
+        simp_rw [← rTensor_comp, lid_tensor, ← LinearEquiv.comp_coe,
+          LinearEquiv.coe_rTensor]
         symm
         nth_rw 3 [comp_assoc]
         simp only [rTensor_tensor, ← comp_assoc _ _ (ϰ _ _ _).symm.toLinearMap,
@@ -107,9 +108,9 @@ theorem LinearMap.lTensor_mul'_comp_assoc_comp_rTensor_comul_of
         simp only [← comp_assoc _ _ (ϰ _ _ _).symm.toLinearMap, LinearEquiv.symm_comp, id_comp]
     _ = (τ (A ⊗[R] A)).toLinearMap ∘ₗ rTensor _ counit ∘ₗ rTensor _ (mul' R A)
       ∘ₗ ((ϰ _ _ _).symm.toLinearMap ∘ₗ lTensor _ (lTensor A comul)) ∘ₗ lTensor _ comul := by
-        symm
-        rw [assoc_tensor]
-        simp_rw [comp_assoc]
+        rw [assoc_tensor'']
+        simp_rw [LinearEquiv.trans_symm, ← LinearEquiv.comp_coe, LinearEquiv.symm_symm, comp_assoc]
+        rfl
     _ = (τ (A ⊗[R] A)).toLinearMap ∘ₗ rTensor _ counit ∘ₗ (rTensor _ (mul' R A)
       ∘ₗ lTensor _ comul) ∘ₗ (ϰ _ _ _).symm.toLinearMap ∘ₗ lTensor _ comul := by
         simp_rw [lTensor_tensor, comp_assoc]
