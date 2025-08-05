@@ -59,12 +59,6 @@ Note: This linter can be disabled with `set_option linter.style.docString false`
  with odd indentation -/
 example : Nat := 0
 
--- TODO! why does this not error?
-#guard_msgs in
-/-- A doc-string
-  indented with a tab -/
-example : Nat := 37
-
 /--
 warning: error: line 'with odd indentation' is indented by 3 spaces, which is an odd number
 
@@ -81,12 +75,7 @@ Note: This linter can be disabled with `set_option linter.style.docString false`
      and even odder. -/
 example : Nat := 0
 
-/--
-warning: error: line 'objects in `C`. ' is indented by 4 spaces, expected at most 2.
-the previous line had 0.
-
-Note: This linter can be disabled with `set_option linter.style.docString false`
--/
+-- FUTURE: this should also error
 #guard_msgs in
 /-- The realization function sends the abstract maxima and weak coequalizers to the corresponding
     objects in `C`. -/
@@ -139,13 +128,7 @@ A list
 -/
 example : Nat := 1
 
--- Future: lint against this in a principled way!
-/--
-warning: error: line '- over-indented second item' is indented by 4 spaces, expected at most 2.
-the previous line had 0.
-
-Note: This linter can be disabled with `set_option linter.style.docString false`
--/
+-- Future: lint against this!
 #guard_msgs in
 /--
 A list
@@ -154,14 +137,9 @@ A list
 -/
 example : Nat := 1
 
--- Future: lint against this in a principled way!
+-- Future: lint against this!
 /--
 warning: error: line '- an odd item' is indented by 3 spaces, which is an odd number
-
-Note: This linter can be disabled with `set_option linter.style.docString false`
----
-warning: error: line '- another' is indented by 6 spaces, expected at most 5.
-the previous line had 3.
 
 Note: This linter can be disabled with `set_option linter.style.docString false`
 -/

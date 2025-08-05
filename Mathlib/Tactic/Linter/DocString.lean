@@ -73,19 +73,13 @@ def checkFormatting (str : String) : Array MessageData := Id.run do
   if lines.any (·.trimLeft.startsWith "```") then return #[]
   let mut msgs := #[]
   -- Each line should be indented by an even number of spaces (and no tabs).
-  -- Indentation should not increase by more than two spaces.
-  let mut prev_indent := 0
   for line in lines do
     let indent := line.takeWhile Char.isWhitespace
     if indent.contains '\t' then
-      msgs := msgs.push m!"error: line '{line.trimLeft}' starts with a tab; use spaces instead"
+      msgs := msgs.push m!"error: line '{line}' starts with a tab; use spaces instead"
     else if indent.length.mod 2 == 1 then
       msgs := msgs.push m!"error: line '{line.trimLeft}' is indented by {indent.length} \
         space{if indent.length == 1 then "" else "s"}, which is an odd number"
-    else if indent.length > prev_indent + 2 then
-      msgs := msgs.push m!"error: line '{line.trimLeft}' is indented by {indent.length} spaces, \
-        expected at most {prev_indent + 2}.\nthe previous line had {prev_indent}."
-    prev_indent := indent.length
   return msgs
 
 @[inherit_doc Mathlib.Linter.linter.style.docString]
