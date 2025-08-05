@@ -116,4 +116,9 @@ theorem intDegree_add_le {x y : RatFunc K} (hy : y ≠ 0) (hxy : x + y ≠ 0) :
 
 end IntDegree
 
+open _root_.WithZero in
+/-- The degree valuation on `K(X)` sending `X` to `exp 1 : ℤᵐ⁰`. -/
+noncomputable def degreeValuation (K : Type*) [Field K] : Valuation (RatFunc K) (ℤᵐ⁰) :=
+  .mkAdd intDegree intDegree_one intDegree_mul fun _ ↦ intDegree_add_le
+
 end RatFunc
