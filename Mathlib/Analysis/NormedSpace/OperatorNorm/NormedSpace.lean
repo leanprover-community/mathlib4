@@ -6,7 +6,6 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 import Mathlib.Analysis.Normed.Module.Span
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Bilinear
 import Mathlib.Analysis.NormedSpace.OperatorNorm.NNNorm
-import Mathlib.Topology.MetricSpace.Injection
 
 /-!
 # Operator norm for maps on normed spaces
@@ -356,24 +355,21 @@ end Equicontinuous
 
 section single
 
-variable {ι 𝕜 : Type*} [Fintype ι] [DecidableEq ι] [NontriviallyNormedField 𝕜] {E : ι → Type*}
+variable {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : ι → Type*)
+
+protected def LinearIsometry.single [∀ i, SeminormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
+    (i : ι) : E i →ₗᵢ[𝕜] Π j, E j :=
+  (LinearMap.single 𝕜 E i).toLinearIsometry (.single i)
 
 lemma ContinuousLinearMap.norm_single_le_one [∀ i, SeminormedAddCommGroup (E i)]
     [∀ i, NormedSpace 𝕜 (E i)] (i : ι) :
-    ‖ContinuousLinearMap.single 𝕜 E i‖ ≤ 1 := by
-  have : Isometry (ContinuousLinearMap.single 𝕜 E i).toLinearMap := Isometry.single i
-  change
-    ‖((ContinuousLinearMap.single 𝕜 E i).toLinearMap.toLinearIsometry
-      this).toContinuousLinearMap‖ ≤ 1
-  exact LinearIsometry.norm_toContinuousLinearMap_le _
+    ‖ContinuousLinearMap.single 𝕜 E i‖ ≤ 1 :=
+  (LinearIsometry.single 𝕜 E i).norm_toContinuousLinearMap_le
 
 lemma ContinuousLinearMap.norm_single [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
     (i : ι) [Nontrivial (E i)] :
-    ‖ContinuousLinearMap.single 𝕜 E i‖ = 1 := by
-  have : Isometry (ContinuousLinearMap.single 𝕜 E i).toLinearMap := Isometry.single i
-  change
-    ‖((ContinuousLinearMap.single 𝕜 E i).toLinearMap.toLinearIsometry
-      this).toContinuousLinearMap‖ = 1
-  exact LinearIsometry.norm_toContinuousLinearMap _
+    ‖ContinuousLinearMap.single 𝕜 E i‖ = 1 :=
+  (LinearIsometry.single 𝕜 E i).norm_toContinuousLinearMap
 
 end single
