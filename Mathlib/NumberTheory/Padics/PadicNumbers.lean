@@ -62,6 +62,11 @@ noncomputable section
 
 open Nat padicNorm CauSeq CauSeq.Completion Metric
 
+open WithZero padicValRat in
+/-- The p-adic valuation on rationals, sending `p` to `(exp (-1) : ℤᵐ⁰)` -/
+noncomputable def Rat.padicValuation (p : ℕ) [Fact p.Prime] : Valuation ℚ ℤᵐ⁰ :=
+  .mkNeg (padicValRat p) padicValRat.one padicValRat.mul fun _ _ ↦ min_le_padicValRat_add
+
 /-- The type of Cauchy sequences of rationals with respect to the `p`-adic norm. -/
 abbrev PadicSeq (p : ℕ) :=
   CauSeq _ (padicNorm p)
