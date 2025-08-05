@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johan Commelin
 -/
 import Mathlib.Algebra.Group.Defs
+import Mathlib.Data.Option.Basic
 import Mathlib.Logic.Nontrivial.Basic
 import Mathlib.Tactic.Common
 
@@ -154,7 +155,7 @@ theorem coe_inj {a b : α} : (a : WithOne α) = b ↔ a = b :=
 
 @[to_additive]
 lemma coe_injective : Function.Injective (coe : α → WithOne α) :=
-  fun _ _ ↦ coe_inj.mp
+  Option.some_injective _
 
 @[to_additive (attr := elab_as_elim)]
 protected theorem cases_on {P : WithOne α → Prop} : ∀ x : WithOne α, P 1 → (∀ a : α, P a) → P x :=

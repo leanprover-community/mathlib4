@@ -132,20 +132,6 @@ lemma isCyclic_iff_exists_natCard_le_orderOf [Finite α] :
   intro g
   exact ⟨Eq.ge, le_antisymm orderOf_le_card⟩
 
-@[deprecated (since := "2024-12-20")]
-alias isCyclic_iff_exists_ofOrder_eq_natCard := isCyclic_iff_exists_orderOf_eq_natCard
-
-@[deprecated (since := "2024-12-20")]
-alias isAddCyclic_iff_exists_ofOrder_eq_natCard := isAddCyclic_iff_exists_addOrderOf_eq_natCard
-
-@[deprecated (since := "2024-12-20")]
-alias IsCyclic.iff_exists_ofOrder_eq_natCard_of_Fintype :=
-  isCyclic_iff_exists_orderOf_eq_natCard
-
-@[deprecated (since := "2024-12-20")]
-alias IsAddCyclic.iff_exists_ofOrder_eq_natCard_of_Fintype :=
-  isAddCyclic_iff_exists_addOrderOf_eq_natCard
-
 @[to_additive]
 theorem isCyclic_of_orderOf_eq_card [Finite α] (x : α) (hx : orderOf x = Nat.card α) :
     IsCyclic α :=
@@ -226,12 +212,6 @@ theorem MulEquiv.isCyclic (e : G ≃* G') :
 theorem orderOf_eq_card_of_forall_mem_zpowers {g : α} (hx : ∀ x, x ∈ zpowers g) :
     orderOf g = Nat.card α := by
   rw [← Nat.card_zpowers, (zpowers g).eq_top_iff'.mpr hx, card_top]
-
-@[deprecated (since := "2024-11-15")]
-alias orderOf_generator_eq_natCard := orderOf_eq_card_of_forall_mem_zpowers
-
-@[deprecated (since := "2024-11-15")]
-alias addOrderOf_generator_eq_natCard := addOrderOf_eq_card_of_forall_mem_zmultiples
 
 @[to_additive]
 theorem orderOf_eq_card_of_zpowers_eq_top {g : G} (h : Subgroup.zpowers g = ⊤) :
@@ -1027,7 +1007,7 @@ end prod
 section WithZero
 
 instance (G : Type*) [Group G] [IsCyclic G] : IsCyclic (WithZero G)ˣ := by
-    apply isCyclic_of_injective (G := (WithZero G)ˣ) (WithZero.unitsWithZeroEquiv).toMonoidHom
-    apply Equiv.injective
+  apply isCyclic_of_injective (G := (WithZero G)ˣ) (WithZero.unitsWithZeroEquiv).toMonoidHom
+  apply Equiv.injective
 
 end WithZero

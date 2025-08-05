@@ -133,6 +133,9 @@ theorem map_comm {f₁ : α → β} {f₂ : α → γ} {g₁ : β → δ} {g₂ 
     map g₁ (map f₁ a) = map g₂ (map f₂ a) :=
   Option.map_comm h _
 
+theorem map_injective {f : α → β} (Hf : Injective f) : Injective (WithBot.map f) :=
+  Option.map_injective Hf
+
 /-- The image of a binary function `f : α → β → γ` as a function
 `WithBot α → WithBot β → WithBot γ`.
 
@@ -626,6 +629,9 @@ theorem some_eq_map_iff {f : α → β} {y : β} {v : WithTop α} :
 theorem map_comm {f₁ : α → β} {f₂ : α → γ} {g₁ : β → δ} {g₂ : γ → δ}
     (h : g₁ ∘ f₁ = g₂ ∘ f₂) (a : α) : map g₁ (map f₁ a) = map g₂ (map f₂ a) :=
   Option.map_comm h _
+
+theorem map_injective {f : α → β} (Hf : Injective f) : Injective (WithTop.map f) :=
+  Option.map_injective Hf
 
 /-- The image of a binary function `f : α → β → γ` as a function
 `WithTop α → WithTop β → WithTop γ`.

@@ -21,7 +21,7 @@ import Mathlib.RingTheory.Noetherian.Defs
 
 ## Main Definitions
 * `IsSimpleModule` indicates that a module has no proper submodules
-(the only submodules are `⊥` and `⊤`).
+  (the only submodules are `⊥` and `⊤`).
 * `IsSemisimpleModule` indicates that every submodule has a complement, or equivalently,
   the module is a direct sum of simple modules.
 * A `DivisionRing` structure on the endomorphism ring of a simple module.
@@ -224,9 +224,6 @@ theorem exists_sSupIndep_sSup_simples_eq_top :
   have := sSup_simples_eq_top R M
   simp_rw [isSimpleModule_iff_isAtom] at this ⊢
   exact exists_sSupIndep_of_sSup_atoms_eq_top this
-
-@[deprecated (since := "2024-11-24")]
-alias exists_setIndependent_sSup_simples_eq_top := exists_sSupIndep_sSup_simples_eq_top
 
 /-- The annihilator of a semisimple module over a commutative ring is a radical ideal. -/
 theorem annihilator_isRadical (R) [CommRing R] [Module R M] [IsSemisimpleModule R M] :

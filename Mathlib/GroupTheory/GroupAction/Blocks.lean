@@ -706,8 +706,6 @@ theorem eq_univ_of_card_lt [hX : Finite X] (hB : IsBlock G B) (hB' : Nat.card X 
   · rw [mul_one, ← Set.ncard_univ] at key
     rw [Set.eq_of_subset_of_ncard_le (Set.subset_univ B) key.ge]
 
-@[deprecated (since := "2024-10-29")] alias eq_univ_card_lt := eq_univ_of_card_lt
-
 /-- If a block has too many translates, then it is a (sub)singleton -/
 @[to_additive "If a block has too many translates, then it is a (sub)singleton"]
 theorem subsingleton_of_card_lt [Finite X] (hB : IsBlock G B)
