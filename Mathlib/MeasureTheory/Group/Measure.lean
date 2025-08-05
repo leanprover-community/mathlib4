@@ -567,7 +567,7 @@ instance (priority := 80) isOpenPosMeasure_of_mulLeftInvariant_of_innerRegular
 @[to_additive]
 theorem null_iff_of_isMulLeftInvariant [Regular μ] {s : Set G} (hs : IsOpen s) :
     μ s = 0 ↔ s = ∅ ∨ μ = 0 := by
-  rcases eq_zero_or_neZero μ with rfl|hμ
+  rcases eq_zero_or_neZero μ with rfl | hμ
   · simp
   · simp only [or_false, hs.measure_eq_zero_iff μ, NeZero.ne μ]
 

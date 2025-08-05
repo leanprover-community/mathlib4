@@ -156,7 +156,7 @@ instance instBaseSMul {V} [Monoid R] [AddMonoid V] [DistribMulAction R V] :
 
 @[simp] theorem of_symm_zero : (of R).symm (0 : HahnModule Γ R V) = 0 := rfl
 @[simp] theorem of_symm_add (x y : HahnModule Γ R V) :
-  (of R).symm (x + y) = (of R).symm x + (of R).symm y := rfl
+    (of R).symm (x + y) = (of R).symm x + (of R).symm y := rfl
 
 variable [PartialOrder Γ'] [VAdd Γ Γ'] [IsOrderedCancelVAdd Γ Γ']
 
@@ -537,7 +537,7 @@ theorem order_mul_of_nonzero {x y : HahnSeries Γ R}
 
 theorem order_single_mul_of_isRegular {g : Γ} {r : R} (hr : IsRegular r)
     {x : HahnSeries Γ R} (hx : x ≠ 0) : (((single g) r) * x).order = g + x.order := by
-  obtain _|_ := subsingleton_or_nontrivial R
+  obtain _ | _ := subsingleton_or_nontrivial R
   · exact (hx <| Subsingleton.eq_zero x).elim
   have hrx : ((single g) r).leadingCoeff * x.leadingCoeff ≠ 0 := by
     rwa [leadingCoeff_of_single, ne_eq, hr.left.mul_left_eq_zero_iff, leadingCoeff_eq_iff]

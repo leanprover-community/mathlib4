@@ -148,11 +148,11 @@ lemma ι_mapTrifunctorMapMap {X₁ Y₁ : GradedObject I₁ C₁} (f₁ : X₁ �
     [HasMap ((((mapTrifunctor F I₁ I₂ I₃).obj X₁).obj X₂).obj X₃) p]
     [HasMap ((((mapTrifunctor F I₁ I₂ I₃).obj Y₁).obj Y₂).obj Y₃) p]
     (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J) (h : p ⟨i₁, i₂, i₃⟩ = j) :
-  ιMapTrifunctorMapObj F p X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ mapTrifunctorMapMap F p f₁ f₂ f₃ j =
-    ((F.map (f₁ i₁)).app (X₂ i₂)).app (X₃ i₃) ≫
-      ((F.obj (Y₁ i₁)).map (f₂ i₂)).app (X₃ i₃) ≫
-      ((F.obj (Y₁ i₁)).obj (Y₂ i₂)).map (f₃ i₃) ≫
-      ιMapTrifunctorMapObj F p Y₁ Y₂ Y₃ i₁ i₂ i₃ j h := by
+    ιMapTrifunctorMapObj F p X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ mapTrifunctorMapMap F p f₁ f₂ f₃ j =
+      ((F.map (f₁ i₁)).app (X₂ i₂)).app (X₃ i₃) ≫
+        ((F.obj (Y₁ i₁)).map (f₂ i₂)).app (X₃ i₃) ≫
+        ((F.obj (Y₁ i₁)).obj (Y₂ i₂)).map (f₃ i₃) ≫
+        ιMapTrifunctorMapObj F p Y₁ Y₂ Y₃ i₁ i₂ i₃ j h := by
   dsimp only [ιMapTrifunctorMapObj, mapTrifunctorMapMap]
   rw [ι_mapMap]
   dsimp
@@ -291,8 +291,8 @@ lemma ιMapBifunctor₁₂BifunctorMapObj_eq (i₁ : I₁) (i₂ : I₂) (i₃ :
     (h : r (i₁, i₂, i₃) = j) (i₁₂ : ρ₁₂.I₁₂) (h₁₂ : ρ₁₂.p ⟨i₁, i₂⟩ = i₁₂) :
     ιMapBifunctor₁₂BifunctorMapObj F₁₂ G ρ₁₂ X₁ X₂ X₃ i₁ i₂ i₃ j h =
       (G.map (ιMapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂ i₁ i₂ i₁₂ h₁₂)).app (X₃ i₃) ≫
-    ιMapBifunctorMapObj G ρ₁₂.q (mapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂) X₃ i₁₂ i₃ j
-      (by rw [← h₁₂, ← h, ← ρ₁₂.hpq]) := by
+      ιMapBifunctorMapObj G ρ₁₂.q (mapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂) X₃ i₁₂ i₃ j
+        (by rw [← h₁₂, ← h, ← ρ₁₂.hpq]) := by
   subst h₁₂
   rfl
 
