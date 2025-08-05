@@ -120,6 +120,43 @@ theorem add_num_den (q r : ℚ) :
   conv_lhs => rw [← num_divInt_den q, ← num_divInt_den r, divInt_add_divInt _ _ hqd hrd]
   rw [mul_comm r.num q.den]
 
+theorem add_num_eq {q r : ℚ} : (q + r).num =
+  (q.num * r.den + r.num * q.den) / (q.num * r.den + r.num * q.den).natAbs.gcd (q.den * r.den) := by
+  rw [Rat.add_def]
+  simp [Rat.normalize]
+
+theorem add_den_eq {q r : ℚ} : (q + r).den =
+  (q.den * r.den)  / (q.num * r.den + r.num * q.den).natAbs.gcd (q.den * r.den) := by
+  rw [Rat.add_def]
+  simp [Rat.normalize]
+
+private lemma num_add_int_gcd_den_eq_one {q : ℚ} {z : ℤ} :
+    (q.num + z * ↑q.den).natAbs.gcd q.den = 1 := by
+  have : q.den = ((q.den):Int).natAbs := by exact rfl
+  rw [this, ← Int.gcd_eq_natAbs_gcd_natAbs]
+  have : (q.den:Int).natAbs = (q.den:Int) := by rfl
+  rw [this]
+  have : q.num.gcd q.den = 1 := q.reduced
+  rw [← this]
+  exact Int.gcd_add_mul_right_left (↑q.den) q.num z
+
+theorem add_int_den {q : ℚ} {z : ℤ} : (q+z).den = q.den := by
+  simp [add_den_eq]
+  rw [num_add_int_gcd_den_eq_one]
+  simp
+
+theorem add_int_num {q : ℚ} {z : ℤ} : (q+z).num = q.num + z * q.den := by
+  simp [add_num_eq]
+  rw [num_add_int_gcd_den_eq_one]
+  simp
+
+theorem den_eq_of_add_den_eq_one {q r : ℚ} (h : (q + r).den = 1) : q.den = r.den := by
+  have hnum : q + r = (q + r).num := ((fun r ↦ (den_eq_one_iff r).mp) (q + r) h).symm
+  calc
+    q.den = (q + r + -r).den := by rw [add_assoc, add_neg_cancel, add_zero]
+    _ = (-r).den := by
+      rw [hnum, add_comm (b:=-r)]
+      exact add_int_den
 
 theorem isSquare_iff {q : ℚ} : IsSquare q ↔ IsSquare q.num ∧ IsSquare q.den := by
   constructor
