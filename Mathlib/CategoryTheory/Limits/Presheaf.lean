@@ -631,9 +631,9 @@ noncomputable def isColimitTautologicalCocone' (P : Cᵒᵖ ⥤ Type max w v₁)
 
 
 /-- For a presheaf `P`, consider the forgetful functor from the category of representable
-    presheaves over `P` to the category of presheaves. There is a tautological cocone over this
-    functor whose leg for a natural transformation `V ⟶ P` with `V` representable is just that
-    natural transformation. -/
+presheaves over `P` to the category of presheaves. There is a tautological cocone over this
+functor whose leg for a natural transformation `V ⟶ P` with `V` representable is just that
+natural transformation. -/
 @[simps]
 def tautologicalCocone (P : Cᵒᵖ ⥤ Type v₁) :
     Cocone (CostructuredArrow.proj yoneda P ⋙ yoneda) where
@@ -641,27 +641,42 @@ def tautologicalCocone (P : Cᵒᵖ ⥤ Type v₁) :
   ι := { app X := X.hom }
 
 /-- The tautological cocone with point `P` is a colimit cocone, exhibiting `P` as a colimit of
-    representables.
+representables.
 
-    Proposition 2.6.3(i) in [Kashiwara2006] -/
-noncomputable def isColimitTautologicalCocone (P : Cᵒᵖ ⥤ Type v₁) :
-    IsColimit (tautologicalCocone P) :=
-  let e : functorToRepresentables.{v₁} P ≅
-    ((CategoryOfElements.costructuredArrowYonedaEquivalence P).functor ⋙
-      CostructuredArrow.proj yoneda P ⋙ yoneda) :=
-    NatIso.ofComponents (fun e ↦ NatIso.ofComponents (fun X ↦ Equiv.ulift.toIso))
-  (IsColimit.whiskerEquivalenceEquiv
-    (CategoryOfElements.costructuredArrowYonedaEquivalence P)).2
-      ((IsColimit.precomposeHomEquiv e _).1 (colimitOfRepresentable.{v₁} P))
+Proposition 2.6.3(i) in [Kashiwara2006] -/
+def isColimitTautologicalCocone : IsColimit (tautologicalCocone P) where
+  desc := fun s => by
+    refine ⟨fun X t => yonedaEquiv (s.ι.app (CostructuredArrow.mk (yonedaEquiv.symm t))), ?_⟩
+    intros X Y f
+    ext t
+    dsimp
+    rw [yonedaEquiv_naturality', yonedaEquiv_symm_map]
+    simpa using (s.ι.naturality
+      (CostructuredArrow.homMk' (CostructuredArrow.mk (yonedaEquiv.symm t)) f.unop)).symm
+  fac := by
+    intro s t
+    dsimp
+    apply yonedaEquiv.injective
+    rw [yonedaEquiv_comp]
+    dsimp only
+    rw [Equiv.symm_apply_apply]
+    rfl
+  uniq := by
+    intro s j h
+    ext V x
+    obtain ⟨t, rfl⟩ := yonedaEquiv.surjective x
+    dsimp
+    rw [Equiv.symm_apply_apply, ← yonedaEquiv_comp]
+    exact congr_arg _ (h (CostructuredArrow.mk t))
 
 variable {I : Type v₁} [SmallCategory I] (F : I ⥤ C)
 
 /-- Given a functor `F : I ⥤ C`, a cocone `c` on `F ⋙ yoneda : I ⥤ Cᵒᵖ ⥤ Type v₁` induces a
-    functor `I ⥤ CostructuredArrow yoneda c.pt` which maps `i : I` to the leg
-    `yoneda.obj (F.obj i) ⟶ c.pt`. If `c` is a colimit cocone, then that functor is
-    final.
+functor `I ⥤ CostructuredArrow yoneda c.pt` which maps `i : I` to the leg
+`yoneda.obj (F.obj i) ⟶ c.pt`. If `c` is a colimit cocone, then that functor is
+final.
 
-    Proposition 2.6.3(ii) in [Kashiwara2006] -/
+Proposition 2.6.3(ii) in [Kashiwara2006] -/
 theorem final_toCostructuredArrow_comp_pre {c : Cocone (F ⋙ yoneda)} (hc : IsColimit c) :
     Functor.Final (c.toCostructuredArrow ⋙ CostructuredArrow.pre F yoneda c.pt) := by
   apply Functor.final_of_isTerminal_colimit_comp_yoneda
