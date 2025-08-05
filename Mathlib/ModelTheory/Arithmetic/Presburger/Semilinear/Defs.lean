@@ -151,14 +151,12 @@ theorem Semilinear.vadd (hs : s.Semilinear) : (a +ᵥ s).Semilinear := by
 /-- Semilinear sets are closed under set addition. -/
 theorem Semilinear.add (hs₁ : s₁.Semilinear) (hs₂ : s₂.Semilinear) :
     (s₁ + s₂).Semilinear := by
-  classical
   rcases hs₁ with ⟨S₁, hS₁, rfl⟩
   rcases hs₂ with ⟨S₂, hS₂, rfl⟩
   simp_rw [sUnion_add, add_sUnion, Finset.mem_coe]
   exact biUnion fun s₁ hs₁ => biUnion fun s₂ hs₂ => ((hS₁ s₁ hs₁).add (hS₂ s₂ hs₂)).semilinear
 
 theorem Semilinear.image (hs : s.Semilinear) (f : α →ₗ[ℕ] β) : (f '' s).Semilinear := by
-  classical
   rcases hs with ⟨S, hS, rfl⟩
   simp_rw [sUnion_eq_biUnion, Finset.mem_coe, image_iUnion]
   exact biUnion fun s hs => ((hS s hs).image f).semilinear
