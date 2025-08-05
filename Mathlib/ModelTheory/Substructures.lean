@@ -528,7 +528,7 @@ theorem map_id (S : L.Substructure M) : S.map (Hom.id L M) = S :=
 
 theorem map_closure (f : M →[L] N) (s : Set M) : (closure L s).map f = closure L (f '' s) :=
   Eq.symm <|
-    closure_eq_of_le (Set.image_subset f subset_closure) <|
+    closure_eq_of_le (Set.image_mono subset_closure) <|
       map_le_iff_le_comap.2 <| closure_le.2 fun x hx => subset_closure ⟨x, hx, rfl⟩
 
 @[simp]
