@@ -422,8 +422,7 @@ theorem Prime.coprime_iff_not_dvd {p n : ℕ} (pp : Prime p) : Coprime p n ↔ �
   ⟨fun co d => pp.not_dvd_one <| co.dvd_of_dvd_mul_left (by simp [d]), fun nd =>
     coprime_of_dvd fun _ m2 mp => ((prime_dvd_prime_iff_eq m2 pp).1 mp).symm ▸ nd⟩
 
-theorem Prime.dvd_or_dvd {p m n : ℕ} (pp : Prime p) (h : p ∣ m * n) : p ∣ m ∨ p ∣ n :=
-  or_iff_not_imp_left.2 fun h2 => (pp.coprime_iff_not_dvd.2 h2).dvd_of_dvd_mul_left h
+alias ⟨Prime.dvd_or_dvd, _⟩ := Prime.dvd_mul
 
 theorem Prime.dvd_mul {p m n : ℕ} (pp : Prime p) : p ∣ m * n ↔ p ∣ m ∨ p ∣ n :=
   ⟨dvd_or_dvd pp, Or.rec (fun h : p ∣ m => h.mul_right _) fun h : p ∣ n => h.mul_left _⟩
