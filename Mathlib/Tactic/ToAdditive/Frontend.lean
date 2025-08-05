@@ -1034,6 +1034,12 @@ Todo: A lot of abbreviations here are manual fixes and there might be room to
       improve the naming logic to reduce the size of `fixAbbreviation`.
 -/
 def fixAbbreviation : List String → List String
+  | "is" :: "Cancel" :: "Add" :: s    => "isCancelAdd" :: fixAbbreviation s
+  | "Is" :: "Cancel" :: "Add" :: s    => "IsCancelAdd" :: fixAbbreviation s
+  | "is" :: "Left" :: "Cancel" :: "Add" :: s  => "isLeftCancelAdd" :: fixAbbreviation s
+  | "Is" :: "Left" :: "Cancel" :: "Add" :: s  => "IsLeftCancelAdd" :: fixAbbreviation s
+  | "is" :: "Right" :: "Cancel" :: "Add" :: s => "isRightCancelAdd" :: fixAbbreviation s
+  | "Is" :: "Right" :: "Cancel" :: "Add" :: s => "IsRightCancelAdd" :: fixAbbreviation s
   | "cancel" :: "Add" :: s            => "addCancel" :: fixAbbreviation s
   | "Cancel" :: "Add" :: s            => "AddCancel" :: fixAbbreviation s
   | "left" :: "Cancel" :: "Add" :: s  => "addLeftCancel" :: fixAbbreviation s
@@ -1244,7 +1250,7 @@ def elabToAdditive : Syntax → CoreM Config
 mutual
 /-- Apply attributes to the multiplicative and additive declarations. -/
 partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr src tgt : Name) :
-  TermElabM (Array Name) := do
+    TermElabM (Array Name) := do
   -- we only copy the `instance` attribute, since `@[to_additive] instance` is nice to allow
   copyInstanceAttribute src tgt
   -- Warn users if the multiplicative version has an attribute
@@ -1360,7 +1366,7 @@ See the attribute implementation for more details.
 It returns an array with names of additive declarations (usually 1, but more if there are nested
 `to_additive` calls. -/
 partial def addToAdditiveAttr (src : Name) (cfg : Config) (kind := AttributeKind.global) :
-  AttrM (Array Name) := do
+    AttrM (Array Name) := do
   if (kind != AttributeKind.global) then
     throwError "`to_additive` can only be used as a global attribute"
   withOptions (· |>.updateBool `trace.to_additive (cfg.trace || ·)) <| do

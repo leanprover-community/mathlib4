@@ -248,6 +248,19 @@ theorem isAdjointPair_inner (A : E →L[𝕜] F) :
   intro x y
   simp only [sesqFormOfInner_apply_apply, adjoint_inner_left]
 
+theorem adjoint_innerSL_apply (x : E) :
+    adjoint (innerSL 𝕜 x) = (lsmul 𝕜 𝕜).flip x :=
+  ext_ring <| ext_inner_left 𝕜 <| fun _ => by simp [adjoint_inner_right]
+
+theorem innerSL_apply_comp (x : F) (f : E →L[𝕜] F) :
+    innerSL 𝕜 x ∘L f = innerSL 𝕜 (adjoint f x) := by
+  ext; simp [adjoint_inner_left]
+
+omit [CompleteSpace E] in
+theorem innerSL_apply_comp_of_isSymmetric (x : E) {f : E →L[𝕜] E} (hf : f.IsSymmetric) :
+    innerSL 𝕜 x ∘L f = innerSL 𝕜 (f x) := by
+  ext; simp [hf]
+
 end ContinuousLinearMap
 
 /-! ### Self-adjoint operators -/
@@ -353,11 +366,12 @@ theorem isStarProjection_iff_isIdempotentElem_and_isStarNormal :
   rw [isStarProjection_iff, and_congr_right_iff]
   exact fun h => IsIdempotentElem.isSelfAdjoint_iff_isStarNormal h
 
+open ContinuousLinearMap in
 omit [CompleteSpace E] in
 /-- An idempotent operator `T` is symmetric iff `(range T)ᗮ = ker T`. -/
 theorem IsIdempotentElem.isSymmetric_iff_orthogonal_range (h : IsIdempotentElem T) :
     T.IsSymmetric ↔ (LinearMap.range T)ᗮ = LinearMap.ker T :=
-  LinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range congr(LinearMapClass.linearMap $h.eq)
+  LinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range h.toLinearMap
 
 open ContinuousLinearMap in
 /-- Star projection operators are equal iff their range are. -/
@@ -590,8 +604,8 @@ theorem _root_.ContinuousLinearMap.isSelfAdjoint_toLinearMap_iff (T : E →L[�
 theorem isStarProjection_toContinuousLinearMap_iff {T : E →ₗ[𝕜] E} :
     have := FiniteDimensional.complete 𝕜 E
     IsStarProjection (toContinuousLinearMap T) ↔ IsStarProjection T := by
-  simp [isStarProjection_iff, isSelfAdjoint_toContinuousLinearMap_iff, IsIdempotentElem,
-    ContinuousLinearMap.ext_iff, LinearMap.ext_iff, ← Module.End.mul_apply]
+  simp [isStarProjection_iff, isSelfAdjoint_toContinuousLinearMap_iff,
+    ← ContinuousLinearMap.isIdempotentElem_toLinearMap_iff]
 
 open LinearMap in
 /-- Star projection operators are equal iff their range are. -/
