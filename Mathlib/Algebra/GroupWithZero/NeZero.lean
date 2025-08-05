@@ -37,8 +37,6 @@ theorem domain_nontrivial [Zero M₀'] [One M₀'] (f : M₀' → M₀) (zero : 
     rw [zero, one]
     exact zero_ne_one⟩⟩
 
-@[deprecated (since := "2024-12-07")] alias pullback_nonzero := domain_nontrivial
-
 section GroupWithZero
 
 variable {G₀ : Type*} [GroupWithZero G₀] {a : G₀}

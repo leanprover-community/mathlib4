@@ -435,8 +435,6 @@ theorem entries_insert_of_notMem {a : α} {b : β a} {s : Finmap β} :
 
 @[deprecated (since := "2025-05-23")] alias entries_insert_of_not_mem := entries_insert_of_notMem
 
-@[deprecated (since := "2024-12-14")] alias insert_entries_of_neg := entries_insert_of_not_mem
-
 @[simp]
 theorem mem_insert {a a' : α} {b' : β a'} {s : Finmap β} : a ∈ insert a' b' s ↔ a = a' ∨ a ∈ s :=
   induction_on s AList.mem_insert

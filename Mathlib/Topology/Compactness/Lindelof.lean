@@ -604,24 +604,16 @@ theorem Topology.IsInducing.isLindelof_iff {f : X → Y} (hf : IsInducing f) :
     hs ((map_mono F_le).trans_eq map_principal)
   exact ⟨x, x_in, hf.mapClusterPt_iff.1 hx⟩
 
-@[deprecated (since := "2024-10-28")] alias Inducing.isLindelof_iff := IsInducing.isLindelof_iff
-
 /-- If `f : X → Y` is an embedding, the image `f '' s` of a set `s` is Lindelöf
 if and only if `s` is Lindelöf. -/
 theorem Topology.IsEmbedding.isLindelof_iff {f : X → Y} (hf : IsEmbedding f) :
     IsLindelof s ↔ IsLindelof (f '' s) := hf.isInducing.isLindelof_iff
-
-@[deprecated (since := "2024-10-26")]
-alias Embedding.isLindelof_iff := IsEmbedding.isLindelof_iff
 
 /-- The preimage of a Lindelöf set under an inducing map is a Lindelöf set. -/
 theorem Topology.IsInducing.isLindelof_preimage {f : X → Y} (hf : IsInducing f)
     (hf' : IsClosed (range f)) {K : Set Y} (hK : IsLindelof K) : IsLindelof (f ⁻¹' K) := by
   replace hK := hK.inter_right hf'
   rwa [hf.isLindelof_iff, image_preimage_eq_inter_range]
-
-@[deprecated (since := "2024-10-28")]
-alias Inducing.isLindelof_preimage := IsInducing.isLindelof_preimage
 
 /-- The preimage of a Lindelöf set under a closed embedding is a Lindelöf set. -/
 theorem Topology.IsClosedEmbedding.isLindelof_preimage {f : X → Y} (hf : IsClosedEmbedding f)

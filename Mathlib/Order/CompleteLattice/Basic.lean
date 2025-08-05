@@ -319,12 +319,6 @@ theorem iInf_le (f : ι → α) (i : ι) : iInf f ≤ f i :=
 lemma iInf_le_iSup [Nonempty ι] : ⨅ i, f i ≤ ⨆ i, f i :=
   (iInf_le _ (Classical.arbitrary _)).trans <| le_iSup _ (Classical.arbitrary _)
 
-@[deprecated le_iSup (since := "2024-12-13")]
-theorem le_iSup' (f : ι → α) (i : ι) : f i ≤ iSup f := le_iSup f i
-
-@[deprecated iInf_le (since := "2024-12-13")]
-theorem iInf_le' (f : ι → α) (i : ι) : iInf f ≤ f i := iInf_le f i
-
 theorem isLUB_iSup : IsLUB (range f) (⨆ j, f j) :=
   isLUB_sSup _
 

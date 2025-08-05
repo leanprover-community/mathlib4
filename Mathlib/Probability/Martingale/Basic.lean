@@ -277,9 +277,6 @@ theorem submartingale_of_condExp_sub_nonneg [SigmaFiniteFiltration μ ℱ]
   rw [← condExp_of_stronglyMeasurable (ℱ.le _) (hadp _) (hint _), ← eventually_sub_nonneg]
   exact EventuallyLE.trans (hf i j hij) (condExp_sub (hint _) (hint _) _).le
 
-@[deprecated (since := "2025-01-21")]
-alias submartingale_of_condexp_sub_nonneg := submartingale_of_condExp_sub_nonneg
-
 theorem Submartingale.condExp_sub_nonneg {f : ι → Ω → ℝ} (hf : Submartingale f ℱ μ) {i j : ι}
     (hij : i ≤ j) : 0 ≤ᵐ[μ] μ[f j - f i|ℱ i] := by
   by_cases h : SigmaFinite (μ.trim (ℱ.le i))
@@ -289,17 +286,11 @@ theorem Submartingale.condExp_sub_nonneg {f : ι → Ω → ℝ} (hf : Submartin
     condExp_of_stronglyMeasurable (ℱ.le _) (hf.adapted _) (hf.integrable _)]
   exact hf.2.1 i j hij
 
-@[deprecated (since := "2025-01-21")]
-alias Submartingale.condexp_sub_nonneg := Submartingale.condExp_sub_nonneg
-
 theorem submartingale_iff_condExp_sub_nonneg [SigmaFiniteFiltration μ ℱ] {f : ι → Ω → ℝ} :
     Submartingale f ℱ μ ↔
       Adapted ℱ f ∧ (∀ i, Integrable (f i) μ) ∧ ∀ i j, i ≤ j → 0 ≤ᵐ[μ] μ[f j - f i|ℱ i] :=
   ⟨fun h => ⟨h.adapted, h.integrable, fun _ _ => h.condExp_sub_nonneg⟩, fun ⟨hadp, hint, h⟩ =>
     submartingale_of_condExp_sub_nonneg hadp hint h⟩
-
-@[deprecated (since := "2025-01-21")]
-alias submartingale_iff_condexp_sub_nonneg := submartingale_iff_condExp_sub_nonneg
 
 end Submartingale
 
@@ -412,18 +403,12 @@ theorem submartingale_of_condExp_sub_nonneg_nat [IsFiniteMeasure μ] {f : ℕ �
   rw [← condExp_of_stronglyMeasurable (𝒢.le _) (hadp _) (hint _), ← eventually_sub_nonneg]
   exact EventuallyLE.trans (hf i) (condExp_sub (hint _) (hint _) _).le
 
-@[deprecated (since := "2025-01-21")]
-alias submartingale_of_condexp_sub_nonneg_nat := submartingale_of_condExp_sub_nonneg_nat
-
 theorem supermartingale_of_condExp_sub_nonneg_nat [IsFiniteMeasure μ] {f : ℕ → Ω → ℝ}
     (hadp : Adapted 𝒢 f) (hint : ∀ i, Integrable (f i) μ)
     (hf : ∀ i, 0 ≤ᵐ[μ] μ[f i - f (i + 1)|𝒢 i]) : Supermartingale f 𝒢 μ := by
   rw [← neg_neg f]
   refine (submartingale_of_condExp_sub_nonneg_nat hadp.neg (fun i => (hint i).neg) ?_).neg
   simpa only [Pi.zero_apply, Pi.neg_apply, neg_sub_neg]
-
-@[deprecated (since := "2025-01-21")]
-alias supermartingale_of_condexp_sub_nonneg_nat := supermartingale_of_condExp_sub_nonneg_nat
 
 theorem martingale_of_condExp_sub_eq_zero_nat [IsFiniteMeasure μ] {f : ℕ → Ω → ℝ}
     (hadp : Adapted 𝒢 f) (hint : ∀ i, Integrable (f i) μ)
@@ -434,9 +419,6 @@ theorem martingale_of_condExp_sub_eq_zero_nat [IsFiniteMeasure μ] {f : ℕ → 
   refine (EventuallyEq.trans ?_ (condExp_neg ..).symm).le
   filter_upwards [hf i] with x hx
   simpa only [Pi.zero_apply, Pi.neg_apply, zero_eq_neg]
-
-@[deprecated (since := "2025-01-21")]
-alias martingale_of_condexp_sub_eq_zero_nat := martingale_of_condExp_sub_eq_zero_nat
 
 -- Note that one cannot use `Submartingale.zero_le_of_predictable` to prove the other two
 -- corresponding lemmas without imposing more restrictions to the ordering of `E`

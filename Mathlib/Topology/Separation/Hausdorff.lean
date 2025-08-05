@@ -361,9 +361,6 @@ theorem Topology.IsEmbedding.t2Space [TopologicalSpace Y] [T2Space Y] {f : X →
     (hf : IsEmbedding f) : T2Space X :=
   .of_injective_continuous hf.injective hf.continuous
 
-@[deprecated (since := "2024-10-26")]
-alias Embedding.t2Space := IsEmbedding.t2Space
-
 protected theorem Homeomorph.t2Space [TopologicalSpace Y] [T2Space X] (h : X ≃ₜ Y) : T2Space Y :=
   h.symm.isEmbedding.t2Space
 
@@ -669,9 +666,6 @@ theorem Continuous.isClosedEmbedding [CompactSpace X] [T2Space Y] {f : X → Y} 
 theorem IsQuotientMap.of_surjective_continuous [CompactSpace X] [T2Space Y] {f : X → Y}
     (hsurj : Surjective f) (hcont : Continuous f) : IsQuotientMap f :=
   hcont.isClosedMap.isQuotientMap hcont hsurj
-
-@[deprecated (since := "2024-10-22")]
-alias QuotientMap.of_surjective_continuous := IsQuotientMap.of_surjective_continuous
 
 theorem isPreirreducible_iff_subsingleton [T2Space X] {S : Set X} :
     IsPreirreducible S ↔ S.Subsingleton := by

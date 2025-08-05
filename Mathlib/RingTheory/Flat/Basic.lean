@@ -226,8 +226,6 @@ instance of_projective [Projective R M] : Flat R M :=
   have ⟨e, he⟩:= Module.projective_def'.mp ‹_›
   of_retract _ _ he
 
-@[deprecated (since := "2024-12-26")] alias of_projective_surjective := of_projective
-
 instance of_free [Free R M] : Flat R M := inferInstance
 
 instance {S} [CommSemiring S] [Algebra R S] [Module S M] [IsScalarTower R S M]

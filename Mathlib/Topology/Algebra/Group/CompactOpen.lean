@@ -30,15 +30,10 @@ instance : TopologicalSpace (ContinuousMonoidHom A B) :=
 theorem isInducing_toContinuousMap :
     IsInducing (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) := ⟨rfl⟩
 
-@[deprecated (since := "2024-10-28")] alias inducing_toContinuousMap := isInducing_toContinuousMap
-
 @[to_additive]
 theorem isEmbedding_toContinuousMap :
     IsEmbedding (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) :=
   ⟨isInducing_toContinuousMap A B, toContinuousMap_injective⟩
-
-@[deprecated (since := "2024-10-26")]
-alias embedding_toContinuousMap := isEmbedding_toContinuousMap
 
 @[to_additive]
 instance instContinuousEvalConst : ContinuousEvalConst (ContinuousMonoidHom A B) A B :=

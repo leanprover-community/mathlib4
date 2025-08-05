@@ -42,9 +42,6 @@ namespace MeasureTheory
 lemma lintegral_enorm_eq_lintegral_edist (f : α → β) :
     ∫⁻ a, ‖f a‖ₑ ∂μ = ∫⁻ a, edist (f a) 0 ∂μ := by simp only [edist_zero_eq_enorm]
 
-@[deprecated (since := "2025-01-20")]
-alias lintegral_nnnorm_eq_lintegral_edist := lintegral_enorm_eq_lintegral_edist
-
 theorem lintegral_norm_eq_lintegral_edist (f : α → β) :
     ∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ = ∫⁻ a, edist (f a) 0 ∂μ := by
   simp only [ofReal_norm_eq_enorm, edist_zero_eq_enorm]
@@ -90,9 +87,6 @@ theorem hasFiniteIntegral_def {_ : MeasurableSpace α} (f : α → ε) (μ : Mea
 
 theorem hasFiniteIntegral_iff_enorm {f : α → ε} : HasFiniteIntegral f μ ↔ ∫⁻ a, ‖f a‖ₑ ∂μ < ∞ := by
   simp only [HasFiniteIntegral]
-
-@[deprecated (since := "2025-01-20")]
-alias hasFiniteIntegral_iff_nnnorm := hasFiniteIntegral_iff_enorm
 
 theorem hasFiniteIntegral_iff_norm (f : α → β) :
     HasFiniteIntegral f μ ↔ (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ) < ∞ := by

@@ -86,8 +86,6 @@ theorem toFractionRing_injective : Function.Injective (toFractionRing : _ → Fr
     toFractionRing x = toFractionRing y ↔ x = y :=
   toFractionRing_injective.eq_iff
 
-@[deprecated (since := "2024-12-29")] alias toFractionRing_eq_iff := toFractionRing_inj
-
 /-- Non-dependent recursion principle for `RatFunc K`:
 To construct a term of `P : Sort*` out of `x : RatFunc K`,
 it suffices to provide a constructor `f : Π (p q : K[X]), P`

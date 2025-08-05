@@ -141,8 +141,6 @@ lemma inv_atBot₀ : (atBot : Filter 𝕜)⁻¹ = 𝓝[<] 0 :=
 @[simp]
 lemma inv_nhdsGT_zero : (𝓝[>] (0 : 𝕜))⁻¹ = atTop := by rw [← inv_atTop₀, inv_inv]
 
-@[deprecated (since := "2024-12-22")] alias inv_nhdsWithin_Ioi_zero := inv_nhdsGT_zero
-
 @[simp]
 lemma inv_nhdsLT_zero : (𝓝[<] (0 : 𝕜))⁻¹ = atBot := by
   rw [← inv_atBot₀, inv_inv]
@@ -151,15 +149,9 @@ lemma inv_nhdsLT_zero : (𝓝[<] (0 : 𝕜))⁻¹ = atBot := by
 theorem tendsto_inv_nhdsGT_zero : Tendsto (fun x : 𝕜 => x⁻¹) (𝓝[>] (0 : 𝕜)) atTop :=
   inv_nhdsGT_zero.le
 
-@[deprecated (since := "2024-12-22")]
-alias tendsto_inv_zero_atTop := tendsto_inv_nhdsGT_zero
-
 /-- The function `r ↦ r⁻¹` tends to `0` on the right as `r → +∞`. -/
 theorem tendsto_inv_atTop_nhdsGT_zero : Tendsto (fun r : 𝕜 => r⁻¹) atTop (𝓝[>] (0 : 𝕜)) :=
   inv_atTop₀.le
-
-@[deprecated (since := "2024-12-22")]
-alias tendsto_inv_atTop_zero' := tendsto_inv_atTop_nhdsGT_zero
 
 theorem tendsto_inv_atTop_zero : Tendsto (fun r : 𝕜 => r⁻¹) atTop (𝓝 0) :=
   tendsto_inv_atTop_nhdsGT_zero.mono_right inf_le_left
@@ -207,9 +199,6 @@ theorem Filter.Tendsto.inv_tendsto_atBot (h : Tendsto f l atBot) : Tendsto f⁻�
 
 theorem Filter.Tendsto.inv_tendsto_nhdsGT_zero (h : Tendsto f l (𝓝[>] 0)) : Tendsto f⁻¹ l atTop :=
   tendsto_inv_nhdsGT_zero.comp h
-
-@[deprecated (since := "2024-12-22")]
-alias Filter.Tendsto.inv_tendsto_zero := Filter.Tendsto.inv_tendsto_nhdsGT_zero
 
 theorem Filter.Tendsto.inv_tendsto_nhdsLT_zero (h : Tendsto f l (𝓝[<] 0)) : Tendsto f⁻¹ l atBot :=
   tendsto_inv_nhdsLT_zero.comp h
@@ -321,13 +310,7 @@ theorem comap_mulLeft_nhdsGT_zero {x : 𝕜} (hx : 0 < x) : comap (x * ·) (𝓝
   refine ((Homeomorph.mulLeft₀ x hx.ne').comap_nhds_eq _).trans ?_
   simp
 
-@[deprecated (since := "2024-12-22")]
-alias nhdsWithin_pos_comap_mul_left := comap_mulLeft_nhdsGT_zero
-
 theorem eventually_nhdsGT_zero_mul_left {x : 𝕜} (hx : 0 < x) {p : 𝕜 → Prop}
     (h : ∀ᶠ ε in 𝓝[>] 0, p ε) : ∀ᶠ ε in 𝓝[>] 0, p (x * ε) := by
   rw [← comap_mulLeft_nhdsGT_zero hx]
   exact h.comap fun ε => x * ε
-
-@[deprecated (since := "2024-12-22")]
-alias eventually_nhdsWithin_pos_mul_left := eventually_nhdsGT_zero_mul_left

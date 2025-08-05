@@ -154,9 +154,6 @@ theorem Topology.IsInducing.continuousConstSMul {N β : Type*} [SMul N β] [Topo
   continuous_const_smul c := by
     simpa only [Function.comp_def, hf, hg.continuous_iff] using hg.continuous.const_smul (f c)
 
-@[deprecated (since := "2024-10-28")]
-alias Inducing.continuousConstSMul := IsInducing.continuousConstSMul
-
 end SMul
 
 section Monoid

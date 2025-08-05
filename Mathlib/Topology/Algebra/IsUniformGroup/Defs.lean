@@ -389,18 +389,6 @@ theorem IsUniformGroup.uniformContinuous_iff_isOpen_ker {hom : Type*} [UniformSp
     rw [ContinuousAt, nhds_discrete β, map_one, tendsto_pure]
     exact hf.mem_nhds (map_one f)
 
-@[deprecated (since := "2024-11-18")] alias UniformAddGroup.uniformContinuous_iff_open_ker :=
-  IsUniformAddGroup.uniformContinuous_iff_isOpen_ker
-@[to_additive existing UniformAddGroup.uniformContinuous_iff_open_ker,
-deprecated (since := "2024-11-18")] alias UniformGroup.uniformContinuous_iff_open_ker :=
-  IsUniformGroup.uniformContinuous_iff_isOpen_ker
-@[deprecated (since := "2025-03-30")] alias UniformAddGroup.uniformContinuous_iff_isOpen_ker :=
-  IsUniformAddGroup.uniformContinuous_iff_isOpen_ker
-@[to_additive existing UniformAddGroup.uniformContinuous_iff_isOpen_ker,
-deprecated (since := "2025-03-30")] alias UniformGroup.uniformContinuous_iff_isOpen_ker :=
-  IsUniformGroup.uniformContinuous_iff_isOpen_ker
-
-
 @[to_additive]
 theorem uniformContinuous_monoidHom_of_continuous {hom : Type*} [UniformSpace β] [Group β]
     [IsUniformGroup β] [FunLike hom α β] [MonoidHomClass hom α β] {f : hom} (h : Continuous f) :

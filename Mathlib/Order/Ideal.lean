@@ -484,9 +484,6 @@ structure Cofinal (P) [Preorder P] where
   /-- The `Cofinal` contains arbitrarily large elements. -/
   isCofinal : IsCofinal carrier
 
-@[deprecated Cofinal.isCofinal (since := "2024-12-02")]
-alias Cofinal.mem_gt := Cofinal.isCofinal
-
 namespace Cofinal
 
 variable [Preorder P]

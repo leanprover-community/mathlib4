@@ -72,11 +72,6 @@ Some discussion is [on Zulip here](https://leanprover.zulipchat.com/#narrow/stre
 @[simp, norm_cast] theorem Nat.cast_ofNat {n : ℕ} [NatCast R] [Nat.AtLeastTwo n] :
     (Nat.cast ofNat(n) : R) = ofNat(n) := rfl
 
-@[deprecated Nat.cast_ofNat (since := "2024-12-22")]
-theorem Nat.cast_eq_ofNat {n : ℕ} [NatCast R] [Nat.AtLeastTwo n] :
-    (Nat.cast n : R) = OfNat.ofNat n :=
-  rfl
-
 /-! ### Additive monoids with one -/
 
 /-- An `AddMonoidWithOne` is an `AddMonoid` with a `1`.

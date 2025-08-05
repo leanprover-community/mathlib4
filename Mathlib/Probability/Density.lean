@@ -105,8 +105,6 @@ theorem HasPDF.congr (hXY : X =ᵐ[ℙ] Y) [hX : HasPDF X ℙ μ] : HasPDF Y ℙ
 theorem HasPDF.congr_iff (hXY : X =ᵐ[ℙ] Y) : HasPDF X ℙ μ ↔ HasPDF Y ℙ μ :=
   ⟨fun _ ↦ HasPDF.congr hXY, fun _ ↦ HasPDF.congr hXY.symm⟩
 
-@[deprecated (since := "2024-10-28")] alias HasPDF.congr' := HasPDF.congr_iff
-
 /-- X `HasPDF` if there is a pdf `f` such that `map X ℙ = μ.withDensity f`. -/
 theorem hasPDF_of_map_eq_withDensity (hX : AEMeasurable X ℙ) (f : E → ℝ≥0∞) (hf : AEMeasurable f μ)
     (h : map X ℙ = μ.withDensity f) : HasPDF X ℙ μ := by

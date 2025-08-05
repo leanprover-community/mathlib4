@@ -339,17 +339,11 @@ namespace Function.Embedding
 noncomputable def equivOfFiniteSelfEmbedding [Finite α] (e : α ↪ α) : α ≃ α :=
   Equiv.ofBijective e e.2.bijective_of_finite
 
-@[deprecated (since := "2024-12-05")]
-alias equivOfFintypeSelfEmbedding := equivOfFiniteSelfEmbedding
-
 @[simp]
 theorem toEmbedding_equivOfFiniteSelfEmbedding [Finite α] (e : α ↪ α) :
     e.equivOfFiniteSelfEmbedding.toEmbedding = e := by
   ext
   rfl
-
-@[deprecated (since := "2024-12-05")]
-alias equiv_of_fintype_self_embedding_to_embedding := toEmbedding_equivOfFiniteSelfEmbedding
 
 /-- On a finite type, equivalence between the self-embeddings and the bijections. -/
 @[simps] noncomputable def _root_.Equiv.embeddingEquivOfFinite (α : Type*) [Finite α] :

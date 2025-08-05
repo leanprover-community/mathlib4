@@ -37,9 +37,6 @@ noncomputable def _root_.Topology.IsEmbedding.toHomeomorph {f : X → Y} (hf : I
 @[deprecated (since := "2025-04-16")]
 alias ofIsEmbedding := IsEmbedding.toHomeomorph
 
-@[deprecated (since := "2024-10-26")]
-alias ofEmbedding := IsEmbedding.toHomeomorph
-
 /-- A surjective embedding is a homeomorphism. -/
 @[simps! apply]
 noncomputable def _root_.Topology.IsEmbedding.toHomeomorphOfSurjective {f : X → Y}
@@ -49,9 +46,6 @@ noncomputable def _root_.Topology.IsEmbedding.toHomeomorphOfSurjective {f : X �
 @[deprecated (since := "2025-04-16")]
 alias _root_.Topology.IsEmbedding.toHomeomorph_of_surjective :=
   IsEmbedding.toHomeomorphOfSurjective
-
-@[deprecated (since := "2024-10-26")]
-alias _root_.Embedding.toHomeomeomorph_of_surjective := IsEmbedding.toHomeomorphOfSurjective
 
 protected theorem secondCountableTopology [SecondCountableTopology Y]
     (h : X ≃ₜ Y) : SecondCountableTopology X :=
@@ -488,14 +482,6 @@ lemma isOpenEmbedding : IsOpenEmbedding f := (hf.homeomorph f).isOpenEmbedding
 lemma isClosedEmbedding : IsClosedEmbedding f := (hf.homeomorph f).isClosedEmbedding
 lemma isDenseEmbedding : IsDenseEmbedding f := (hf.homeomorph f).isDenseEmbedding
 
-@[deprecated (since := "2024-10-28")] alias inducing := isInducing
-
-@[deprecated (since := "2024-10-26")]
-alias embedding := isEmbedding
-
-@[deprecated (since := "2024-10-22")]
-alias quotientMap := isQuotientMap
-
 end IsHomeomorph
 
 /-- A map is a homeomorphism iff it is the map underlying a bundled homeomorphism `h : X ≃ₜ Y`. -/
@@ -515,9 +501,6 @@ lemma isHomeomorph_iff_isEmbedding_surjective : IsHomeomorph f ↔ IsEmbedding f
   mp hf := ⟨hf.isEmbedding, hf.surjective⟩
   mpr h := ⟨h.1.continuous, ((isOpenEmbedding_iff f).2 ⟨h.1, h.2.range_eq ▸ isOpen_univ⟩).isOpenMap,
     h.1.injective, h.2⟩
-
-@[deprecated (since := "2024-10-26")]
-alias isHomeomorph_iff_embedding_surjective := isHomeomorph_iff_isEmbedding_surjective
 
 /-- A map is a homeomorphism iff it is continuous, closed and bijective. -/
 lemma isHomeomorph_iff_continuous_isClosedMap_bijective : IsHomeomorph f ↔

@@ -264,9 +264,6 @@ theorem surjective_restrictDomain_of_isAlgebraic {E : Type*}
   fun f ↦ IntermediateField.exists_algHom_of_splits'
     (E := E) f fun s ↦ ⟨Algebra.IsIntegral.isIntegral s, IsAlgClosed.splits_codomain _⟩
 
-@[deprecated (since := "2024-11-15")]
-alias surjective_comp_algebraMap_of_isAlgebraic := surjective_restrictDomain_of_isAlgebraic
-
 variable [Algebra.IsAlgebraic K L] (K L M)
 
 /-- Less general version of `lift`. -/

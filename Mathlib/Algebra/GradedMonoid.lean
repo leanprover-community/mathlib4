@@ -653,21 +653,14 @@ theorem SetLike.isHomogeneousElem_coe {A : ι → S} {i} (x : A i) :
     SetLike.IsHomogeneousElem A (x : R) :=
   ⟨i, x.prop⟩
 
-@[deprecated (since := "2025-01-31")] alias SetLike.homogeneous_coe :=
-  SetLike.isHomogeneousElem_coe
-
 theorem SetLike.isHomogeneousElem_one [Zero ι] [One R] (A : ι → S) [SetLike.GradedOne A] :
     SetLike.IsHomogeneousElem A (1 : R) :=
   ⟨0, SetLike.one_mem_graded _⟩
-
-@[deprecated (since := "2025-01-31")] alias SetLike.homogeneous_one := SetLike.isHomogeneousElem_one
 
 theorem SetLike.IsHomogeneousElem.mul [Add ι] [Mul R] {A : ι → S} [SetLike.GradedMul A] {a b : R} :
     SetLike.IsHomogeneousElem A a → SetLike.IsHomogeneousElem A b →
     SetLike.IsHomogeneousElem A (a * b)
   | ⟨i, hi⟩, ⟨j, hj⟩ => ⟨i + j, SetLike.mul_mem_graded hi hj⟩
-
-@[deprecated (since := "2025-01-31")] alias SetLike.homogeneous_mul := SetLike.IsHomogeneousElem.mul
 
 /-- When `A` is a `SetLike.GradedMonoid A`, then the homogeneous elements forms a submonoid. -/
 def SetLike.homogeneousSubmonoid [AddMonoid ι] [Monoid R] (A : ι → S) [SetLike.GradedMonoid A] :

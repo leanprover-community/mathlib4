@@ -149,9 +149,6 @@ theorem emultiplicity_pow_sub_pow_of_prime {p : R} (hp : Prime p) {x y : R}
   rw [← geom_sum₂_mul, emultiplicity_mul hp,
     emultiplicity_eq_zero.2 (not_dvd_geom_sum₂ hp hxy hx hn), zero_add]
 
-@[deprecated (since := "2024-11-30")]
-alias multiplicity.pow_sub_pow_of_prime := emultiplicity_pow_sub_pow_of_prime
-
 variable (hp : Prime (p : R)) (hp1 : Odd p) (hxy : ↑p ∣ x - y) (hx : ¬↑p ∣ x)
 include hp hp1 hxy hx
 
@@ -168,15 +165,9 @@ theorem emultiplicity_geom_sum₂_eq_one :
   rw [pow_two, mul_dvd_mul_iff_left hp.ne_zero]
   exact mt hp.dvd_of_dvd_pow hx
 
-@[deprecated (since := "2024-11-30")]
-alias multiplicity.geom_sum₂_eq_one := emultiplicity_geom_sum₂_eq_one
-
 theorem emultiplicity_pow_prime_sub_pow_prime :
     emultiplicity (↑p) (x ^ p - y ^ p) = emultiplicity (↑p) (x - y) + 1 := by
   rw [← geom_sum₂_mul, emultiplicity_mul hp, emultiplicity_geom_sum₂_eq_one hp hp1 hxy hx, add_comm]
-
-@[deprecated (since := "2024-11-30")]
-alias multiplicity.pow_prime_sub_pow_prime := emultiplicity_pow_prime_sub_pow_prime
 
 theorem emultiplicity_pow_prime_pow_sub_pow_prime_pow (a : ℕ) :
     emultiplicity (↑p) (x ^ p ^ a - y ^ p ^ a) = emultiplicity (↑p) (x - y) + a := by
@@ -188,9 +179,6 @@ theorem emultiplicity_pow_prime_pow_sub_pow_prime_pow (a : ℕ) :
     · rw [← geom_sum₂_mul]
       exact dvd_mul_of_dvd_right hxy _
     · exact fun h => hx (hp.dvd_of_dvd_pow h)
-
-@[deprecated (since := "2024-11-30")]
-alias multiplicity.pow_prime_pow_sub_pow_prime_pow := emultiplicity_pow_prime_pow_sub_pow_prime_pow
 
 end IntegralDomain
 
@@ -219,18 +207,12 @@ theorem Int.emultiplicity_pow_sub_pow {x y : ℤ} (hxy : ↑p ∣ x - y) (hx : �
     refine hpn ⟨c, ?_⟩
     rwa [pow_succ, mul_assoc]
 
-@[deprecated (since := "2024-11-30")]
-alias multiplicity.Int.pow_sub_pow := Int.emultiplicity_pow_sub_pow
-
 theorem Int.emultiplicity_pow_add_pow {x y : ℤ} (hxy : ↑p ∣ x + y) (hx : ¬↑p ∣ x)
     {n : ℕ} (hn : Odd n) :
     emultiplicity (↑p) (x ^ n + y ^ n) = emultiplicity (↑p) (x + y) + emultiplicity p n := by
   rw [← sub_neg_eq_add] at hxy
   rw [← sub_neg_eq_add, ← sub_neg_eq_add, ← Odd.neg_pow hn]
   exact Int.emultiplicity_pow_sub_pow hp hp1 hxy hx n
-
-@[deprecated (since := "2024-11-30")]
-alias multiplicity.Int.pow_add_pow := Int.emultiplicity_pow_add_pow
 
 theorem Nat.emultiplicity_pow_sub_pow {x y : ℕ} (hxy : p ∣ x - y) (hx : ¬p ∣ x) (n : ℕ) :
     emultiplicity p (x ^ n - y ^ n) = emultiplicity p (x - y) + emultiplicity p n := by
@@ -244,9 +226,6 @@ theorem Nat.emultiplicity_pow_sub_pow {x y : ℕ} (hxy : p ∣ x - y) (hx : ¬p 
   · simp only [Nat.sub_eq_zero_iff_le.mpr (Nat.pow_le_pow_left hyx n), emultiplicity_zero,
     Nat.sub_eq_zero_iff_le.mpr hyx, top_add]
 
-@[deprecated (since := "2024-11-30")]
-alias multiplicity.Nat.pow_sub_pow := Nat.emultiplicity_pow_sub_pow
-
 theorem Nat.emultiplicity_pow_add_pow {x y : ℕ} (hxy : p ∣ x + y) (hx : ¬p ∣ x)
     {n : ℕ} (hn : Odd n) :
     emultiplicity p (x ^ n + y ^ n) = emultiplicity p (x + y) + emultiplicity p n := by
@@ -254,9 +233,6 @@ theorem Nat.emultiplicity_pow_add_pow {x y : ℕ} (hxy : p ∣ x + y) (hx : ¬p 
   rw [← Int.natCast_dvd_natCast] at hxy hx
   push_cast at *
   exact Int.emultiplicity_pow_add_pow hp hp1 hxy hx hn
-
-@[deprecated (since := "2024-11-30")]
-alias multiplicity.Nat.pow_add_pow := Nat.emultiplicity_pow_add_pow
 
 end LiftingTheExponent
 

@@ -884,9 +884,6 @@ lemma enorm_inv' (a : E) : ‖a⁻¹‖ₑ = ‖a‖ₑ := by simp [enorm]
 @[to_additive ofReal_norm_eq_enorm]
 lemma ofReal_norm_eq_enorm' (a : E) : .ofReal ‖a‖ = ‖a‖ₑ := ENNReal.ofReal_eq_coe_nnreal _
 
-@[deprecated (since := "2025-01-17")] alias ofReal_norm_eq_coe_nnnorm := ofReal_norm_eq_enorm
-@[deprecated (since := "2025-01-17")] alias ofReal_norm_eq_coe_nnnorm' := ofReal_norm_eq_enorm'
-
 instance : ENorm ℝ≥0∞ where
   enorm x := x
 
@@ -896,14 +893,8 @@ instance : ENorm ℝ≥0∞ where
 theorem edist_eq_enorm_div (a b : E) : edist a b = ‖a / b‖ₑ := by
   rw [edist_dist, dist_eq_norm_div, ofReal_norm_eq_enorm']
 
-@[deprecated (since := "2025-01-17")] alias edist_eq_coe_nnnorm_sub := edist_eq_enorm_sub
-@[deprecated (since := "2025-01-17")] alias edist_eq_coe_nnnorm_div := edist_eq_enorm_div
-
 @[to_additive]
 theorem edist_one_eq_enorm (x : E) : edist x 1 = ‖x‖ₑ := by rw [edist_eq_enorm_div, div_one]
-
-@[deprecated (since := "2025-01-17")] alias edist_eq_coe_nnnorm := edist_zero_eq_enorm
-@[deprecated (since := "2025-01-17")] alias edist_eq_coe_nnnorm' := edist_one_eq_enorm
 
 @[to_additive]
 theorem mem_emetric_ball_one_iff {r : ℝ≥0∞} : a ∈ EMetric.ball 1 r ↔ ‖a‖ₑ < r := by
@@ -1083,12 +1074,8 @@ lemma enorm_ofReal_of_nonneg {a : ℝ} (ha : 0 ≤ a) : ‖ENNReal.ofReal a‖�
 theorem enorm_eq_ofReal (hr : 0 ≤ r) : ‖r‖ₑ = .ofReal r := by
   rw [← ofReal_norm_eq_enorm, norm_of_nonneg hr]
 
-@[deprecated (since := "2025-01-17")] alias ennnorm_eq_ofReal := enorm_eq_ofReal
-
 theorem enorm_eq_ofReal_abs (r : ℝ) : ‖r‖ₑ = ENNReal.ofReal |r| := by
   rw [← enorm_eq_ofReal (abs_nonneg _), enorm_abs]
-
-@[deprecated (since := "2025-01-17")] alias ennnorm_eq_ofReal_abs := enorm_eq_ofReal_abs
 
 theorem toNNReal_eq_nnnorm_of_nonneg (hr : 0 ≤ r) : r.toNNReal = ‖r‖₊ := by
   rw [Real.toNNReal_of_nonneg hr]
@@ -1098,8 +1085,6 @@ theorem toNNReal_eq_nnnorm_of_nonneg (hr : 0 ≤ r) : r.toNNReal = ‖r‖₊ :=
 
 theorem ofReal_le_enorm (r : ℝ) : ENNReal.ofReal r ≤ ‖r‖ₑ := by
   rw [enorm_eq_ofReal_abs]; gcongr; exact le_abs_self _
-
-@[deprecated (since := "2025-01-17")] alias ofReal_le_ennnorm := ofReal_le_enorm
 
 end Real
 
@@ -1287,12 +1272,6 @@ lemma norm_eq_zero' : ‖a‖ = 0 ↔ a = 1 := (norm_nonneg' a).ge_iff_eq'.symm.
 
 @[to_additive norm_ne_zero_iff]
 lemma norm_ne_zero_iff' : ‖a‖ ≠ 0 ↔ a ≠ 1 := norm_eq_zero'.not
-
-@[deprecated (since := "2024-11-24")] alias norm_le_zero_iff'' := norm_le_zero_iff'
-@[deprecated (since := "2024-11-24")] alias norm_le_zero_iff''' := norm_le_zero_iff'
-@[deprecated (since := "2024-11-24")] alias norm_pos_iff'' := norm_pos_iff'
-@[deprecated (since := "2024-11-24")] alias norm_eq_zero'' := norm_eq_zero'
-@[deprecated (since := "2024-11-24")] alias norm_eq_zero''' := norm_eq_zero'
 
 @[to_additive]
 theorem norm_div_eq_zero_iff : ‖a / b‖ = 0 ↔ a = b := by rw [norm_eq_zero', div_eq_one]

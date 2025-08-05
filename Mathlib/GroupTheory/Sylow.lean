@@ -385,23 +385,14 @@ theorem card_eq_card_quotient_normalizer [Fact p.Prime] [Finite (Sylow p G)]
     (P : Sylow p G) : Nat.card (Sylow p G) = Nat.card (G ⧸ P.normalizer) :=
   Nat.card_congr P.equivQuotientNormalizer
 
-@[deprecated (since := "2024-11-07")]
-alias _root_.card_sylow_eq_card_quotient_normalizer := card_eq_card_quotient_normalizer
-
 theorem card_eq_index_normalizer [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G) :
     Nat.card (Sylow p G) = P.normalizer.index :=
   P.card_eq_card_quotient_normalizer
-
-@[deprecated (since := "2024-11-07")]
-alias _root_.card_sylow_eq_index_normalizer := card_eq_index_normalizer
 
 theorem card_dvd_index [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G) :
     Nat.card (Sylow p G) ∣ P.index :=
   ((congr_arg _ P.card_eq_index_normalizer).mp dvd_rfl).trans
     (index_dvd_of_le le_normalizer)
-
-@[deprecated (since := "2024-11-07")]
-alias _root_.card_sylow_dvd_index := card_dvd_index
 
 /-- Auxiliary lemma for `Sylow.not_dvd_index` which is strictly stronger. -/
 private theorem not_dvd_index_aux [hp : Fact p.Prime] (P : Sylow p G) [P.Normal]
@@ -431,16 +422,10 @@ theorem not_dvd_index' [hp : Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
   replace hP := not_dvd_index_aux (P.subtype le_normalizer)
   exact hp.1.not_dvd_mul hP (not_dvd_card_sylow p G)
 
-@[deprecated (since := "2024-11-03")]
-alias _root_.not_dvd_index_sylow := not_dvd_index'
-
 /-- A Sylow p-subgroup has index indivisible by `p`. -/
 theorem not_dvd_index [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G) [P.FiniteIndex] :
     ¬ p ∣ P.index :=
   P.not_dvd_index' Nat.card_pos.ne'
-
-@[deprecated (since := "2024-11-03")]
-alias _root_.not_dvd_index_sylow' := not_dvd_index
 
 section mapSurjective
 

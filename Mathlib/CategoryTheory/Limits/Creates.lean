@@ -335,33 +335,16 @@ instance (priority := 100) preservesLimit_of_createsLimit_and_hasLimit (K : J �
     ((liftedLimitMapsToOriginal (limit.isLimit _)).symm ≪≫
       (Cones.functoriality K F).mapIso ((liftedLimitIsLimit (limit.isLimit _)).uniqueUpToIso t))⟩
 
-@[deprecated "No deprecation message was provided." (since := "2024-11-19")]
-lemma preservesLimitOfCreatesLimitAndHasLimit (K : J ⥤ C) (F : C ⥤ D)
-    [CreatesLimit K F] [HasLimit (K ⋙ F)] : PreservesLimit K F :=
-  preservesLimit_of_createsLimit_and_hasLimit _ _
-
 -- see Note [lower instance priority]
 /-- `F` preserves the limit of shape `J` if it creates these limits and `D` has them. -/
 instance (priority := 100) preservesLimitOfShape_of_createsLimitsOfShape_and_hasLimitsOfShape
     (F : C ⥤ D) [CreatesLimitsOfShape J F] [HasLimitsOfShape J D] : PreservesLimitsOfShape J F where
-
-@[deprecated "No deprecation message was provided." (since := "2024-11-19")]
-lemma preservesLimitOfShapeOfCreatesLimitsOfShapeAndHasLimitsOfShape
-    (F : C ⥤ D) [CreatesLimitsOfShape J F] [HasLimitsOfShape J D] :
-    PreservesLimitsOfShape J F :=
-  preservesLimitOfShape_of_createsLimitsOfShape_and_hasLimitsOfShape _
 
 -- see Note [lower instance priority]
 /-- `F` preserves limits if it creates limits and `D` has limits. -/
 instance (priority := 100) preservesLimits_of_createsLimits_and_hasLimits (F : C ⥤ D)
     [CreatesLimitsOfSize.{w, w'} F] [HasLimitsOfSize.{w, w'} D] :
     PreservesLimitsOfSize.{w, w'} F where
-
-@[deprecated "No deprecation message was provided." (since := "2024-11-19")]
-lemma preservesLimitsOfCreatesLimitsAndHasLimits (F : C ⥤ D)
-    [CreatesLimitsOfSize.{w, w'} F] [HasLimitsOfSize.{w, w'} D] :
-    PreservesLimitsOfSize.{w, w'} F :=
-  preservesLimits_of_createsLimits_and_hasLimits _
 
 /-- If `F` reflects isomorphisms and we can lift any colimit cocone to a colimit cocone,
 then `F` creates colimits.
@@ -469,34 +452,17 @@ instance (priority := 100) preservesColimit_of_createsColimit_and_hasColimit (K 
         (Cocones.functoriality K F).mapIso
           ((liftedColimitIsColimit (colimit.isColimit _)).uniqueUpToIso t))⟩
 
-@[deprecated "No deprecation message was provided." (since := "2024-11-19")]
-lemma preservesColimitOfCreatesColimitAndHasColimit (K : J ⥤ C) (F : C ⥤ D)
-    [CreatesColimit K F] [HasColimit (K ⋙ F)] : PreservesColimit K F :=
-  preservesColimit_of_createsColimit_and_hasColimit _ _
-
 -- see Note [lower instance priority]
 /-- `F` preserves the colimit of shape `J` if it creates these colimits and `D` has them. -/
 instance (priority := 100) preservesColimitOfShape_of_createsColimitsOfShape_and_hasColimitsOfShape
     (F : C ⥤ D) [CreatesColimitsOfShape J F] [HasColimitsOfShape J D] :
     PreservesColimitsOfShape J F where
 
-@[deprecated "No deprecation message was provided." (since := "2024-11-19")]
-lemma preservesColimitOfShapeOfCreatesColimitsOfShapeAndHasColimitsOfShape
-    (F : C ⥤ D) [CreatesColimitsOfShape J F] [HasColimitsOfShape J D] :
-    PreservesColimitsOfShape J F :=
-  preservesColimitOfShape_of_createsColimitsOfShape_and_hasColimitsOfShape _
-
 -- see Note [lower instance priority]
 /-- `F` preserves limits if it creates limits and `D` has limits. -/
 instance (priority := 100) preservesColimits_of_createsColimits_and_hasColimits (F : C ⥤ D)
     [CreatesColimitsOfSize.{w, w'} F] [HasColimitsOfSize.{w, w'} D] :
     PreservesColimitsOfSize.{w, w'} F where
-
-@[deprecated "No deprecation message was provided." (since := "2024-11-19")]
-lemma preservesColimitsOfCreatesColimitsAndHasColimits (F : C ⥤ D)
-    [CreatesColimitsOfSize.{w, w'} F] [HasColimitsOfSize.{w, w'} D] :
-    PreservesColimitsOfSize.{w, w'} F :=
-  preservesColimits_of_createsColimits_and_hasColimits _
 
 /-- Transfer creation of limits along a natural isomorphism in the diagram. -/
 def createsLimitOfIsoDiagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ ≅ K₂) [CreatesLimit K₁ F] :

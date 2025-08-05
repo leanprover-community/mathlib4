@@ -161,14 +161,10 @@ def fdifferential (f : C^∞⟮I, M; I', M'⟯) (x : M) :
 theorem fdifferential_apply (f : C^∞⟮I, M; I', M'⟯) {x : M} (v : PointDerivation I x)
     (g : C^∞⟮I', M'; 𝕜⟯) : 𝒅 f x v g = v (g.comp f) :=
   rfl
-@[deprecated (since := "2024-11-11")] alias apply_fdifferential := fdifferential_apply
-
 @[simp]
 theorem hfdifferential_apply {f : C^∞⟮I, M; I', M'⟯} {x : M} {y : M'} (h : f x = y)
     (v : PointDerivation I x) (g : C^∞⟮I', M'; 𝕜⟯) : 𝒅ₕ h v g = 𝒅 f x v g :=
   rfl
-@[deprecated (since := "2024-11-11")] alias apply_hfdifferential := hfdifferential_apply
-
 variable {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] {H'' : Type*}
   [TopologicalSpace H''] {I'' : ModelWithCorners 𝕜 E'' H''} {M'' : Type*} [TopologicalSpace M'']
   [ChartedSpace H'' M'']

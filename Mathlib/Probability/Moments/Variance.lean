@@ -147,9 +147,6 @@ lemma variance_of_integral_eq_zero (hX : AEMeasurable X μ) (hXint : μ[X] = 0) 
   simp [variance_eq_integral hX, hXint]
 
 @[deprecated (since := "2025-01-23")]
-alias _root_.MeasureTheory.Memℒp.variance_eq := variance_eq_integral
-
-@[deprecated (since := "2025-01-23")]
 alias _root_.MeasureTheory.Memℒp.variance_eq_of_integral_eq_zero := variance_of_integral_eq_zero
 
 @[simp]

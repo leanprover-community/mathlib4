@@ -125,9 +125,6 @@ theorem exists_eq_iff_rel (f : r ≼i s) {a : α} {b : β} : s b (f a) ↔ ∃ a
 def _root_.RelIso.toInitialSeg (f : r ≃r s) : r ≼i s :=
   ⟨f, by simp⟩
 
-@[deprecated (since := "2024-10-22")]
-alias ofIso := RelIso.toInitialSeg
-
 /-- The identity function shows that `≼i` is reflexive -/
 @[refl]
 protected def refl (r : α → α → Prop) : r ≼i r :=

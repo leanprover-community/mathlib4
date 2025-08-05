@@ -137,9 +137,6 @@ theorem get_eq_get_toList (v : Vector α n) (i : Fin n) :
     v.get i = v.toList.get (Fin.cast v.toList_length.symm i) :=
   rfl
 
-@[deprecated (since := "2024-12-20")]
-alias get_eq_get := get_eq_get_toList
-
 @[simp]
 theorem get_replicate (a : α) (i : Fin n) : (Vector.replicate n a).get i = a := by
   apply List.getElem_replicate

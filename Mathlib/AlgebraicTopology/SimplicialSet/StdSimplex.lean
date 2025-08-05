@@ -31,8 +31,6 @@ Yoneda embedding). -/
 def stdSimplex : CosimplicialObject SSet.{u} :=
   yoneda ⋙ uliftFunctor
 
-@[deprecated (since := "2025-01-23")] alias standardSimplex := stdSimplex
-
 @[inherit_doc SSet.stdSimplex]
 scoped[Simplicial] notation3 "Δ[" n "]" => SSet.stdSimplex.obj (SimplexCategory.mk n)
 
@@ -297,7 +295,5 @@ noncomputable def stdSimplex : SimplexCategory ⥤ SSet.Augmented.{u} where
       right := terminal.from _ }
 
 end Augmented
-
-@[deprecated (since := "2025-01-26")] alias asOrderHom := stdSimplex.asOrderHom
 
 end SSet

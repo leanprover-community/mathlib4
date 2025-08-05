@@ -83,10 +83,6 @@ lemma extensiveTopology.surjective_of_isLocallySurjective_sheaf_of_types [Finita
   erw [IsLimit.map_π]
   rfl
 
-@[deprecated (since := "2024-11-26")]
-alias extensiveTopology.surjective_of_isLocallySurjective_sheafOfTypes :=
-  extensiveTopology.surjective_of_isLocallySurjective_sheaf_of_types
-
 lemma extensiveTopology.presheafIsLocallySurjective_iff [FinitaryPreExtensive C] {F G : Cᵒᵖ ⥤ D}
     (f : F ⟶ G) [PreservesFiniteProducts F] [PreservesFiniteProducts G]
       [PreservesFiniteProducts (forget D)] : Presheaf.IsLocallySurjective (extensiveTopology C) f ↔
@@ -140,9 +136,6 @@ lemma regularTopology.isLocallySurjective_sheaf_of_types [Preregular C] [Finitar
       simp only [types_comp_apply, inv_hom_id_apply, congrFun this x]
     · change G.map _ (G.map _ _) = _
       simp only [← FunctorToTypes.map_comp_apply, ← op_comp, Sigma.ι_desc]
-
-@[deprecated (since := "2024-11-26")] alias regularTopology.isLocallySurjective_sheafOfTypes :=
-regularTopology.isLocallySurjective_sheaf_of_types
 
 lemma coherentTopology.presheafIsLocallySurjective_iff {F G : Cᵒᵖ ⥤ D} (f : F ⟶ G)
     [Preregular C] [FinitaryPreExtensive C] [PreservesFiniteProducts F] [PreservesFiniteProducts G]

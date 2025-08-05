@@ -262,9 +262,6 @@ note [Design choices about smooth algebraic structures]. -/
 theorem hasContinuousInv₀_of_hasContMDiffInv₀ : HasContinuousInv₀ G :=
   { continuousAt_inv₀ := fun _ hx ↦ (contMDiffAt_inv₀ (I := I) (n := n) hx).continuousAt }
 
-@[deprecated (since := "2025-01-09")]
-alias hasContinuousInv₀_of_hasSmoothInv₀ := hasContinuousInv₀_of_hasContMDiffInv₀
-
 theorem contMDiffOn_inv₀ : ContMDiffOn I I n (Inv.inv : G → G) {0}ᶜ := fun _x hx =>
   (contMDiffAt_inv₀ hx).contMDiffWithinAt
 

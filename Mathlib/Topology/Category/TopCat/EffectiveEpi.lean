@@ -66,7 +66,4 @@ theorem effectiveEpi_iff_isQuotientMap {B X : TopCat.{u}} (π : X ⟶ B) :
   have hπ : RegularEpi π := inferInstance
   exact isQuotientMap_of_isColimit_cofork _ hπ.isColimit
 
-@[deprecated (since := "2024-10-22")]
-alias effectiveEpi_iff_quotientMap := effectiveEpi_iff_isQuotientMap
-
 end TopCat

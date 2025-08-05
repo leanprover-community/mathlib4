@@ -39,9 +39,6 @@ lemma mk_iUnion_Ordinal_le_of_le {β : Type*} {o : Ordinal} {c : Cardinal}
 
 end Cardinal
 
-@[deprecated mk_iUnion_Ordinal_le_of_le (since := "2024-11-02")]
-alias Ordinal.Cardinal.mk_iUnion_Ordinal_le_of_le := mk_iUnion_Ordinal_le_of_le
-
 /-! ### Cardinality of ordinals -/
 
 namespace Ordinal
@@ -181,9 +178,5 @@ theorem IsInitial.principal_mul {o : Ordinal} (h : IsInitial o) (ho : ω ≤ o) 
 
 theorem principal_mul_omega (o : Ordinal) : Principal (· * ·) (ω_ o) :=
   (isInitial_omega o).principal_mul (omega0_le_omega o)
-
-@[deprecated principal_add_omega (since := "2024-11-08")]
-theorem _root_.Cardinal.principal_add_aleph (o : Ordinal) : Principal (· + ·) (ℵ_ o).ord :=
-  principal_add_ord <| aleph0_le_aleph o
 
 end Ordinal

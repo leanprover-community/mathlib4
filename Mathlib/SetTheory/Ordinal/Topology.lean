@@ -54,25 +54,17 @@ theorem isOpen_singleton_iff : IsOpen ({a} : Set Ordinal) ↔ ¬ IsSuccLimit a :
 @[deprecated SuccOrder.nhdsGT (since := "2025-01-05")]
 protected theorem nhdsGT (a : Ordinal) : 𝓝[>] a = ⊥ := SuccOrder.nhdsGT
 
-@[deprecated (since := "2024-12-22")] alias nhds_right' := Ordinal.nhdsGT
-
 @[deprecated SuccOrder.nhdsLT_eq_nhdsNE (since := "2025-01-05")]
 theorem nhdsLT_eq_nhdsNE (a : Ordinal) : 𝓝[<] a = 𝓝[≠] a :=
   SuccOrder.nhdsLT_eq_nhdsNE a
-
-@[deprecated (since := "2024-12-22")] alias nhds_left'_eq_nhds_ne := nhdsLT_eq_nhdsNE
 
 @[deprecated SuccOrder.nhdsLE_eq_nhds (since := "2025-01-05")]
 theorem nhdsLE_eq_nhds (a : Ordinal) : 𝓝[≤] a = 𝓝 a :=
   SuccOrder.nhdsLE_eq_nhds a
 
-@[deprecated (since := "2024-12-22")] alias nhds_left_eq_nhds := nhdsLE_eq_nhds
-
 @[deprecated SuccOrder.hasBasis_nhds_Ioc_of_exists_lt (since := "2025-01-05")]
 theorem hasBasis_nhds_Ioc (h : a ≠ 0) : (𝓝 a).HasBasis (· < a) (Set.Ioc · a) :=
   SuccOrder.hasBasis_nhds_Ioc_of_exists_lt ⟨0, Ordinal.pos_iff_ne_zero.2 h⟩
-
-@[deprecated (since := "2024-12-22")] alias nhdsBasis_Ioc := hasBasis_nhds_Ioc
 
 -- todo: generalize to a `SuccOrder`
 theorem nhds_eq_pure : 𝓝 a = pure a ↔ ¬ IsSuccLimit a :=

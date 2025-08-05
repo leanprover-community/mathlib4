@@ -77,9 +77,6 @@ theorem finiteMultiplicity_of_degree_pos_of_monic (hp : (0 : WithBot ℕ) < degr
           (add_pos_of_pos_of_nonneg (by rwa [one_mul]) (Nat.zero_le _)))
         this⟩
 
-@[deprecated (since := "2024-11-30")]
-alias multiplicity_finite_of_degree_pos_of_monic := finiteMultiplicity_of_degree_pos_of_monic
-
 end Semiring
 
 section Ring
@@ -472,9 +469,6 @@ theorem finiteMultiplicity_X_sub_C (a : R) (h0 : p ≠ 0) : FiniteMultiplicity (
   refine finiteMultiplicity_of_degree_pos_of_monic ?_ (monic_X_sub_C _) h0
   rw [degree_X_sub_C]
   decide
-
-@[deprecated (since := "2024-11-30")]
-alias multiplicity_X_sub_C_finite := finiteMultiplicity_X_sub_C
 
 /- Porting note: stripping out classical for decidability instance parameter might
 make for better ergonomics -/
