@@ -185,18 +185,12 @@ theorem sSup_unitClosedBall_eq_nnnorm {𝕜 𝕜₂ E F : Type*} [NormedAddCommG
   exact csSup_le_csSup ⟨‖f‖₊, hbdd⟩ ((nonempty_ball.2 zero_lt_one).image _)
     (Set.image_mono ball_subset_closedBall)
 
-@[deprecated (since := "2024-12-01")]
-alias sSup_closed_unit_ball_eq_nnnorm := sSup_unitClosedBall_eq_nnnorm
-
 theorem sSup_unitClosedBall_eq_norm {𝕜 𝕜₂ E F : Type*} [NormedAddCommGroup E]
     [SeminormedAddCommGroup F] [DenselyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
     [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [RingHomIsometric σ₁₂] (f : E →SL[σ₁₂] F) :
     sSup ((fun x => ‖f x‖) '' closedBall 0 1) = ‖f‖ := by
   simpa only [NNReal.coe_sSup, Set.image_image] using
     NNReal.coe_inj.2 f.sSup_unitClosedBall_eq_nnnorm
-
-@[deprecated (since := "2024-12-01")]
-alias sSup_closed_unit_ball_eq_norm := sSup_unitClosedBall_eq_norm
 
 theorem exists_nnnorm_eq_one_lt_apply_of_lt_opNNNorm {𝕜 𝕜₂ E F : Type*}
     [NormedAddCommGroup E] [SeminormedAddCommGroup F]
