@@ -237,7 +237,7 @@ lemma ProjectiveResolution.iso_inv_naturality {X Y : C} (f : X ⟶ Y)
   apply HomotopyCategory.eq_of_homotopy
   apply liftHomotopy f
   all_goals
-    aesop_cat
+    cat_disch
 
 @[reassoc]
 lemma ProjectiveResolution.iso_hom_naturality {X Y : C} (f : X ⟶ Y)
