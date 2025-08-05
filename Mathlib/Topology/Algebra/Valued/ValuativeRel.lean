@@ -71,14 +71,19 @@ lemma of_hasBasis_compatible {Γ₀ : Type*} [LinearOrderedCommMonoidWithZero Γ
     (h : (𝓝 (0 : R)).HasBasis (fun rs : R × R ↦ v' rs.1 ≠ 0 ∧ v' rs.2 ≠ 0)
     fun rs : R × R ↦ { x | v' x * v' rs.2 < v' rs.1 }) :
     IsValuativeTopology R := by
-  have : v'.IsEquiv v := isEquiv _ _
-  refine of_hasBasis_pair (h.to_hasBasis ?_ ?_) <;>
-  · simp only [this.ne_zero, ne_eq, valuation_eq_zero_iff, posSubmonoid_def, setOf_subset_setOf,
-    and_imp, Prod.exists, Prod.forall]
-    intro r s hr hs
-    refine ⟨r, s, ⟨hr, hs⟩, fun x ↦ ?_⟩
-    rw [← map_mul v', ← Valuation.Compatible.rel_lt_iff_lt]
-    grind
+  refine of_hasBasis_pair ?_
+  convert h <;>
+  simp [Valuation.Compatible.rel_iff_le («v» := v'), Valuation.Compatible.rel_lt_iff_lt («v» := v')]
+
+lemma of_hasBasis_ne_zero
+    {F : Type*} [Field F] [ValuativeRel F] [TopologicalSpace F] [ContinuousConstVAdd F F]
+    {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
+    {v' : Valuation F Γ₀} [v'.Compatible]
+    (h : (𝓝 (0 : F)).HasBasis (fun r ↦ v' r ≠ 0) fun r ↦ { x | v' x < v' r }) :
+    IsValuativeTopology F :=
+  of_hasBasis_compatible (v' := v') <| h.to_hasBasis
+    (fun x hx ↦ ⟨(x, 1), (by simp [hx]), by simp⟩)
+    fun ⟨x, y⟩ hxy ↦ ⟨x / y, by simpa using hxy, by simp [lt_div_iff₀ (zero_lt_iff.2 hxy.right)]⟩
 
 end
 
@@ -151,16 +156,18 @@ lemma hasBasis_nhds_zero_pair :
 
 lemma hasBasis_nhds_zero_compatible {Γ₀ : Type*} [LinearOrderedCommMonoidWithZero Γ₀]
     (v' : Valuation R Γ₀) [v'.Compatible] :
-    (𝓝 (0 : R)).HasBasis (fun rs : R × R ↦ v rs.1 ≠ 0 ∧ v rs.2 ≠ 0)
-      fun rs : R × R ↦ { x | v x * v rs.2 < v rs.1 } := by
-  have : v'.IsEquiv v := isEquiv _ _
-  refine ((hasBasis_nhds_zero_pair R).to_hasBasis ?_ ?_) <;>
-  · simp only [ne_eq, valuation_eq_zero_iff, posSubmonoid_def, setOf_subset_setOf,
-    and_imp, Prod.exists, Prod.forall]
-    intro r s hr hs
-    refine ⟨r, s, ⟨hr, hs⟩, fun x ↦ ?_⟩
-    rw [← map_mul v, ← Valuation.Compatible.rel_lt_iff_lt]
-    grind
+    (𝓝 (0 : R)).HasBasis (fun rs : R × R ↦ v' rs.1 ≠ 0 ∧ v' rs.2 ≠ 0)
+      fun rs : R × R ↦ { x | v' x * v' rs.2 < v' rs.1 } := by
+  convert hasBasis_nhds_zero_pair R <;>
+  simp [Valuation.Compatible.rel_iff_le («v» := v'), Valuation.Compatible.rel_lt_iff_lt («v» := v')]
+
+lemma hasBasis_nhds_zero_ne_zero
+    {F : Type*} [Field F] [ValuativeRel F] [TopologicalSpace F] [IsValuativeTopology F]
+    {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] (v' : Valuation F Γ₀) [v'.Compatible] :
+    (𝓝 (0 : F)).HasBasis (fun r ↦ v' r ≠ 0) fun r ↦ { x | v' x < v' r } :=
+  (hasBasis_nhds_zero_compatible v').to_hasBasis
+    (fun ⟨x, y⟩ hxy ↦ ⟨x / y, by simpa using hxy, by simp [lt_div_iff₀ (zero_lt_iff.2 hxy.2)]⟩)
+    fun x hx ↦ ⟨(x, 1), by simp [hx], by simp⟩
 
 variable (R) in
 instance (priority := low) isTopologicalAddGroup : IsTopologicalAddGroup R := by
