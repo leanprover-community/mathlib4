@@ -793,9 +793,9 @@ instance (priority := 100) hasStrongEpiImages_of_hasStrongEpiMonoFactorizations
 
 /-- Having strong epi images induces an strong epi-mono factorization -/
 instance (priority := 100) hasStrongEpiMonoFactorizations_of_hasStrongEpiImages
-    [HasImages C] [HasStrongEpiImages C] : HasStrongEpiMonoFactorizations C := .mk fun f ↦ {
-      __ := Image.MonoFactorization f
-      e_strong_epi := HasStrongEpiImages.strong_factorThruImage f
+    [HasImages C] [HasStrongEpiImages C] : HasStrongEpiMonoFactorizations C := .mk fun f ↦
+      { __ := Image.MonoFactorization f
+        e_strong_epi := HasStrongEpiImages.strong_factorThruImage f }
     }
 
 end HasStrongEpiImages
