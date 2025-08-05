@@ -706,9 +706,7 @@ lemma hom_ext_uliftYoneda {P Q : Cᵒᵖ ⥤ Type max w v₁} {f g : P ⟶ Q}
     (h : ∀ (X : C) (p : uliftYoneda.{w}.obj X ⟶ P), p ≫ f = p ≫ g) :
     f = g := by
   ext X x
-  have := congr_arg uliftYonedaEquiv.{w} (h _ (uliftYonedaEquiv.symm x))
-  simp only [uliftYonedaEquiv_comp] at this
-  simpa using this
+  simpa [uliftYonedaEquiv] using congr_arg uliftYonedaEquiv.{w} (h _ (uliftYonedaEquiv.symm x))
 
 end YonedaLemma
 
