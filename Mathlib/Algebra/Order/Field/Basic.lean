@@ -557,12 +557,10 @@ theorem one_div_le_neg_one (h1 : a < 0) (h2 : -1 ≤ a) : 1 / a ≤ -1 :=
 
 
 theorem sub_self_div_two (a : α) : a - a / 2 = a / 2 := by
-  suffices a / 2 + a / 2 - a / 2 = a / 2 by rwa [add_halves] at this
-  rw [add_sub_cancel_right]
+  grind
 
 theorem div_two_sub_self (a : α) : a / 2 - a = -(a / 2) := by
-  suffices a / 2 - (a / 2 + a / 2) = -(a / 2) by rwa [add_halves] at this
-  rw [sub_add_eq_sub_sub, sub_self, zero_sub]
+  grind
 
 theorem add_sub_div_two_lt (h : a < b) : a + (b - a) / 2 < b := by
   rwa [← div_sub_div_same, sub_eq_add_neg, add_comm (b / 2), ← add_assoc, ← sub_eq_add_neg, ←
@@ -643,10 +641,7 @@ lemma mul_le_of_forall_lt_of_nonneg {a b c : α} (ha : 0 ≤ a) (hc : 0 ≤ c)
 
 theorem mul_self_inj_of_nonneg (a0 : 0 ≤ a) (b0 : 0 ≤ b) : a * a = b * b ↔ a = b :=
   mul_self_eq_mul_self_iff.trans <|
-    or_iff_left_of_imp fun h => by
-      subst a
-      have : b = 0 := le_antisymm (neg_nonneg.1 a0) b0
-      rw [this, neg_zero]
+    or_iff_left_of_imp fun h => by grind
 
 theorem min_div_div_right_of_nonpos (hc : c ≤ 0) (a b : α) : min (a / c) (b / c) = max a b / c :=
   Eq.symm <| Antitone.map_max fun _ _ => div_le_div_of_nonpos_of_le hc

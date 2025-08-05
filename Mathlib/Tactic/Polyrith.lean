@@ -75,7 +75,7 @@ inductive Poly
   | div : Poly → Poly → Poly
   | pow : Poly → Poly → Poly
   | neg : Poly → Poly
-  deriving BEq, Repr
+  deriving BEq
 
 /--
 This converts a poly object into a string representing it. The string

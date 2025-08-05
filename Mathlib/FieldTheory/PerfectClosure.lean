@@ -350,9 +350,7 @@ theorem natCast (n x : ℕ) : (x : PerfectClosure K p) = mk K p (n, x) := by
   | zero =>
     induction x with
     | zero => simp
-    | succ x ih =>
-      rw [Nat.cast_succ, Nat.cast_succ, ih]
-      rfl
+    | succ x ih => simp [Nat.cast_succ, ih, one_def]
   | succ n ih =>
     rw [ih]; apply Quot.sound
     suffices R K p (n, (x : K)) (Nat.succ n, frobenius K p (x : K)) by

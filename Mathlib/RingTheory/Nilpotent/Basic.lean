@@ -118,7 +118,9 @@ theorem IsRadical.of_dvd [CancelCommMonoidWithZero R] {x y : R} (hy : IsRadical 
     (hxy : x ∣ y) : IsRadical x := (isRadical_iff_pow_one_lt 2 one_lt_two).2 <| by
   obtain ⟨z, rfl⟩ := hxy
   refine fun w dvd ↦ ((mul_dvd_mul_iff_right <| right_ne_zero_of_mul h0).mp <| hy 2 _ ?_)
-  rw [mul_pow, sq z]; exact mul_dvd_mul dvd (dvd_mul_left z z)
+  rw [mul_pow]
+  gcongr
+  exact dvd_pow_self _ two_ne_zero
 
 namespace Commute
 

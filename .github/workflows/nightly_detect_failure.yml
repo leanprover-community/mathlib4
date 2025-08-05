@@ -188,7 +188,7 @@ jobs:
           try {
             const branchResponse = await github.rest.repos.getBranch({
               owner: 'leanprover-community',
-              repo: 'mathlib4-nightly-testing'
+              repo: 'mathlib4-nightly-testing',
               branch: branchName
             });
             sha = branchResponse.data.commit.sha;

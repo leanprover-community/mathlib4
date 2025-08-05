@@ -115,14 +115,14 @@ alias not_lt_of_gt := lt_asymm
 lemma le_of_lt_or_eq (h : a < b ∨ a = b) : a ≤ b := h.elim le_of_lt le_of_eq
 lemma le_of_eq_or_lt (h : a = b ∨ a < b) : a ≤ b := h.elim le_of_eq le_of_lt
 
-instance (priority := 900) : @Trans α α α LE.le LE.le LE.le := ⟨le_trans⟩
-instance (priority := 900) : @Trans α α α LT.lt LT.lt LT.lt := ⟨lt_trans⟩
-instance (priority := 900) : @Trans α α α LT.lt LE.le LT.lt := ⟨lt_of_lt_of_le⟩
-instance (priority := 900) : @Trans α α α LE.le LT.lt LT.lt := ⟨lt_of_le_of_lt⟩
-instance (priority := 900) : @Trans α α α GE.ge GE.ge GE.ge := ⟨ge_trans⟩
-instance (priority := 900) : @Trans α α α GT.gt GT.gt GT.gt := ⟨gt_trans⟩
-instance (priority := 900) : @Trans α α α GT.gt GE.ge GT.gt := ⟨lt_of_lt_of_le'⟩
-instance (priority := 900) : @Trans α α α GE.ge GT.gt GT.gt := ⟨lt_of_le_of_lt'⟩
+instance : @Trans α α α LE.le LE.le LE.le := ⟨le_trans⟩
+instance : @Trans α α α LT.lt LT.lt LT.lt := ⟨lt_trans⟩
+instance : @Trans α α α LT.lt LE.le LT.lt := ⟨lt_of_lt_of_le⟩
+instance : @Trans α α α LE.le LT.lt LT.lt := ⟨lt_of_le_of_lt⟩
+instance : @Trans α α α GE.ge GE.ge GE.ge := ⟨ge_trans⟩
+instance : @Trans α α α GT.gt GT.gt GT.gt := ⟨gt_trans⟩
+instance : @Trans α α α GT.gt GE.ge GT.gt := ⟨lt_of_lt_of_le'⟩
+instance : @Trans α α α GE.ge GT.gt GT.gt := ⟨lt_of_le_of_lt'⟩
 
 /-- `<` is decidable if `≤` is. -/
 def decidableLTOfDecidableLE [DecidableLE α] : DecidableLT α

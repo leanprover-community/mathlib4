@@ -30,7 +30,7 @@ variable (K : Type u) [Field K] [NumberField K]
 theorem three_pid [IsCyclotomicExtension {3} ℚ K] : IsPrincipalIdealRing (𝓞 K) := by
   apply RingOfIntegers.isPrincipalIdealRing_of_abs_discr_lt
   rw [absdiscr_prime 3 K, IsCyclotomicExtension.finrank (n := 3) K
-    (irreducible_rat (by norm_num)), nrComplexPlaces_eq_totient_div_two 3, totient_prime
+    (irreducible_rat (by simp)), nrComplexPlaces_eq_totient_div_two 3, totient_prime
       Nat.prime_three]
   simp only [Int.reduceNeg, succ_sub_succ_eq_sub, tsub_zero, zero_lt_two, Nat.div_self, pow_one,
     cast_ofNat, neg_mul, one_mul, abs_neg, Int.cast_abs, Int.cast_ofNat,

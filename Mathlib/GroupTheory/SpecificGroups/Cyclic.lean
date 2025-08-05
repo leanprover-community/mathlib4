@@ -1027,7 +1027,7 @@ end prod
 section WithZero
 
 instance (G : Type*) [Group G] [IsCyclic G] : IsCyclic (WithZero G)ˣ := by
-    apply isCyclic_of_injective (G := (WithZero G)ˣ) (WithZero.unitsWithZeroEquiv).toMonoidHom
-    apply Equiv.injective
+  apply isCyclic_of_injective (G := (WithZero G)ˣ) (WithZero.unitsWithZeroEquiv).toMonoidHom
+  apply Equiv.injective
 
 end WithZero

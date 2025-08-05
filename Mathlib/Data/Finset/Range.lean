@@ -53,7 +53,7 @@ def range (n : ℕ) : Finset ℕ :=
 theorem range_val (n : ℕ) : (range n).1 = Multiset.range n :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem mem_range : m ∈ range n ↔ m < n :=
   Multiset.mem_range
 
