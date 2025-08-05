@@ -106,10 +106,8 @@ lemma polarSubmodule_eq_setOf {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] 
   polarSubmodule_eq_setOf
 
 lemma mem_polarSubmodule {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] (m : S)
-    (y : StrongDual 𝕜 E) : y ∈ polarSubmodule 𝕜 m ↔ ∀ x ∈ m, y x = 0 := by
-  have := polarSubmodule_eq_setOf 𝕜 m
-  apply_fun (y ∈ ·) at this
-  rwa [propext_iff] at this
+    (y : StrongDual 𝕜 E) : y ∈ polarSubmodule 𝕜 m ↔ ∀ x ∈ m, y x = 0 :=
+  propext_iff.mp congr($(polarSubmodule_eq_setOf 𝕜 m) y)
 
 @[deprecated (since := "2025-08-3")] alias _root_.NormedSpace.mem_polarSubmodule :=
   mem_polarSubmodule
