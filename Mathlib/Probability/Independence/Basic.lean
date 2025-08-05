@@ -700,33 +700,18 @@ variable {ι : Type*} [Fintype ι] {Ω : ι → Type*} {mΩ : ∀ i, MeasurableS
     {μ : (i : ι) → Measure (Ω i)} [∀ i, IsProbabilityMeasure (μ i)]
     {𝒳 : ι → Type*} [∀ i, MeasurableSpace (𝒳 i)] {X : Π i, Ω i → 𝒳 i}
 
-lemma iIndepFun_pi (mX : ∀ i, Measurable (X i)) :
+lemma iIndepFun_pi (mX : ∀ i, AEMeasurable (X i) (μ i)) :
     iIndepFun (fun i ω ↦ X i (ω i)) (Measure.pi μ) := by
-  refine @iIndepFun_iff_map_fun_eq_pi_map (Π i, Ω i) ι _ (Measure.pi μ) _ 𝒳 _
-    (fun i x ↦ X i (x i)) _ ?_ |>.2 ?_
-  · exact fun i ↦ Measurable.aemeasurable (by fun_prop)
-  · symm
-    refine Measure.pi_eq fun s hs ↦ ?_
-    rw [Measure.map_apply (by fun_prop) (.univ_pi hs)]
-    have : (fun (ω : Π i, Ω i) i ↦ X i (ω i)) ⁻¹' (Set.univ.pi s) =
-        Set.univ.pi (fun i ↦ (X i) ⁻¹' (s i)) := by ext x; simp
-    rw [this, Measure.pi_pi]
-    congr with i
-    rw [Measure.map_apply (by fun_prop) (hs i)]
-    change _ = (Measure.pi μ) (((X i) ∘ (fun x ↦ x i)) ⁻¹' s i)
-    rw [Set.preimage_comp, ← Measure.map_apply (measurable_pi_apply i) (mX i (hs i)),
-      (measurePreserving_eval _ i).map_eq]
-
-lemma iIndepFun_pi₀ (mX : ∀ i, AEMeasurable (X i) (μ i)) :
-    iIndepFun (fun i ω ↦ X i (ω i)) (Measure.pi μ) := by
-  have : iIndepFun (fun i ω ↦ (mX i).mk (X i) (ω i)) (Measure.pi μ) :=
-    iIndepFun_pi fun i ↦ (mX i).measurable_mk
-  refine this.congr fun i ↦ ?_
-  change ((mX i).mk (X i)) ∘ Function.eval i =ᶠ[_] (X i) ∘ Function.eval i
-  apply ae_eq_comp
+  refine iIndepFun_iff_map_fun_eq_pi_map ?_ |>.2 ?_
+  · exact fun i ↦ (mX i).comp_quasiMeasurePreserving (Measure.quasiMeasurePreserving_eval _ i)
+  rw [Measure.pi_map_pi mX]
+  congr
+  ext i : 1
+  rw [← (measurePreserving_eval μ i).map_eq, AEMeasurable.map_map_of_aemeasurable]
+  · rfl
+  · rw [(measurePreserving_eval μ i).map_eq]
+    exact mX i
   · exact (measurable_pi_apply i).aemeasurable
-  · rw [(measurePreserving_eval _ i).map_eq]
-    exact (AEMeasurable.ae_eq_mk (mX i)).symm
 
 end Prod
 
