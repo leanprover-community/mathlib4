@@ -221,9 +221,9 @@ def isTerminalOfEqEmpty (F : X.Sheaf C) {U : Opens X} (h : U = ⊥) :
   convert F.isTerminalOfEmpty
 
 /-- If a family `B` of open sets forms a basis of the topology on `X`, and if `F'`
-    is a sheaf on `X`, then a homomorphism between a presheaf `F` on `X` and `F'`
-    is equivalent to a homomorphism between their restrictions to the indexing type
-    `ι` of `B`, with the induced category structure on `ι`. -/
+is a sheaf on `X`, then a homomorphism between a presheaf `F` on `X` and `F'`
+is equivalent to a homomorphism between their restrictions to the indexing type
+`ι` of `B`, with the induced category structure on `ι`. -/
 def restrictHomEquivHom (h : Opens.IsBasis (Set.range B)) :
     ((inducedFunctor B).op ⋙ F ⟶ (inducedFunctor B).op ⋙ F'.1) ≃ (F ⟶ F'.1) :=
   @Functor.IsCoverDense.restrictHomEquivHom _ _ _ _ _ _ _ _
