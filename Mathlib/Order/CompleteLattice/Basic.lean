@@ -486,9 +486,18 @@ theorem OrderIso.map_iSup [CompleteLattice β] (f : α ≃o β) (x : ι → α) 
   eq_of_forall_ge_iff <| f.surjective.forall.2
   fun x => by simp only [f.le_iff_le, iSup_le_iff]
 
+lemma OrderIso.map_iSup₂ [CompleteLattice β] (f : α ≃o β) (x : ∀ i, κ i → α) :
+    f (⨆ i, ⨆ j, x i j) = ⨆ i, ⨆ j, f (x i j) :=
+  eq_of_forall_ge_iff <| f.surjective.forall.2
+  fun x => by simp only [f.le_iff_le, iSup_le_iff]
+
 theorem OrderIso.map_iInf [CompleteLattice β] (f : α ≃o β) (x : ι → α) :
     f (⨅ i, x i) = ⨅ i, f (x i) :=
   OrderIso.map_iSup f.dual _
+
+theorem OrderIso.map_iInf₂ [CompleteLattice β] (f : α ≃o β) (x : ∀ i, κ i → α) :
+    f (⨅ i, ⨅ j, x i j) = ⨅ i, ⨅ j, f (x i j) :=
+  OrderIso.map_iSup₂ f.dual _
 
 theorem OrderIso.map_sSup [CompleteLattice β] (f : α ≃o β) (s : Set α) :
     f (sSup s) = ⨆ a ∈ s, f a := by
