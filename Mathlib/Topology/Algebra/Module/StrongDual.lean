@@ -52,8 +52,7 @@ end
 
 section
 
-variable (R : Type*) [SeminormedCommRing R]
-variable (M : Type*) [TopologicalSpace M] [AddCommGroup M] [Module R M]
+variable (R M : Type*) [SeminormedCommRing R] [TopologicalSpace M] [AddCommGroup M] [Module R M]
 
 theorem dualPairing_separatingLeft : (strongDualPairing R M).SeparatingLeft := by
   rw [LinearMap.separatingLeft_iff_ker_eq_bot, LinearMap.ker_eq_bot]
