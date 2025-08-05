@@ -20,10 +20,10 @@ in terms of `ContinuousMap.abs`.
 
 namespace ContinuousMap
 
-section Lattice
-
 variable {α : Type*} [TopologicalSpace α]
 variable {β : Type*} [TopologicalSpace β]
+
+section Lattice
 
 /-! `C(α, β)`is a lattice ordered group -/
 
@@ -46,5 +46,14 @@ lemma coe_mabs (f : C(α, β)) : ⇑|f|ₘ = |⇑f|ₘ := rfl
 lemma mabs_apply (f : C(α, β)) (x : α) : |f|ₘ x = |f x|ₘ := rfl
 
 end Lattice
+
+section IsOrderedAddMonoid
+
+variable [AddCommMonoid β] [ContinuousAdd β] [PartialOrder β] [IsOrderedAddMonoid β]
+
+instance : IsOrderedAddMonoid C(α, β) where
+  add_le_add_left _ _ hfg c := add_le_add_left hfg c
+
+end IsOrderedAddMonoid
 
 end ContinuousMap
