@@ -104,7 +104,7 @@ lemma symm_p [HasBinaryProducts C] :
 end PrepathObject
 
 /-- In a category with weak equivalences, a path object is the
-data of a weak equivalence `ι : P ⟶ A` equipped with two retractions. -/
+data of a weak equivalence `ι : A ⟶ P` equipped with two retractions. -/
 structure PathObject [CategoryWithWeakEquivalences C] (A : C) extends PrepathObject A where
   weakEquivalence_ι : WeakEquivalence ι := by infer_instance
 
