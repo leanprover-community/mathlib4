@@ -186,7 +186,7 @@ def awayι : Spec(Away 𝒜 f) ⟶ Proj 𝒜 :=
 
 @[reassoc]
 lemma basicOpenIsoSpec_inv_ι :
-  (basicOpenIsoSpec 𝒜 f f_deg hm).inv ≫ (Proj.basicOpen 𝒜 f).ι = awayι 𝒜 f f_deg hm := rfl
+    (basicOpenIsoSpec 𝒜 f f_deg hm).inv ≫ (Proj.basicOpen 𝒜 f).ι = awayι 𝒜 f f_deg hm := rfl
 
 instance : IsOpenImmersion (Proj.awayι 𝒜 f f_deg hm) :=
   IsOpenImmersion.comp _ _

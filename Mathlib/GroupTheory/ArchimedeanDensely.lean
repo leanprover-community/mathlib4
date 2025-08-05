@@ -7,6 +7,7 @@ import Mathlib.Algebra.Order.Group.Units
 import Mathlib.Data.Int.Interval
 import Mathlib.GroupTheory.Archimedean
 import Mathlib.GroupTheory.OrderOfElement
+import Mathlib.Order.Interval.Finset.DenselyOrdered
 
 /-!
 # Archimedean groups are either discrete or densely ordered
@@ -555,3 +556,55 @@ lemma WithZero.mulArchimedean_iff {α} [CommGroup α] [PartialOrder α] :
   constructor <;> intro _
   · exact OrderMonoidIso.unitsWithZero.mulArchimedean
   · infer_instance
+
+section LocallyFiniteOrder
+
+variable {X : Type*} [Preorder X] [LocallyFiniteOrder X]
+
+instance : LocallyFiniteOrder (Multiplicative X) :=
+  OrderIso.locallyFiniteOrder (⟨Multiplicative.toAdd, by simp⟩ : Multiplicative X ≃o X)
+instance : LocallyFiniteOrder (Additive X) :=
+  OrderIso.locallyFiniteOrder (⟨Additive.toMul, by simp⟩ : Additive X ≃o X)
+
+noncomputable
+instance [Monoid X] : LocallyFiniteOrder (Units X) :=
+  OrderEmbedding.locallyFiniteOrder (⟨⟨Units.val, Units.val_injective⟩, by simp⟩ : Units X ↪o X)
+
+instance [Group X] : LocallyFiniteOrder (WithZero X)ˣ :=
+  OrderIso.locallyFiniteOrder (OrderMonoidIso.unitsWithZero (α := X) : (WithZero X)ˣ ≃o X)
+
+end LocallyFiniteOrder
+
+section DenselyOrdered
+
+variable {X : Type*} [LT X]
+
+lemma denselyOrdered_additive_iff : DenselyOrdered (Additive X) ↔ DenselyOrdered X := Iff.rfl
+lemma denselyOrdered_multiplicative_iff : DenselyOrdered (Multiplicative X) ↔ DenselyOrdered X :=
+  Iff.rfl
+
+instance [DenselyOrdered X] : DenselyOrdered (Multiplicative X) :=
+  denselyOrdered_multiplicative_iff.2 ‹_›
+instance [DenselyOrdered X] : DenselyOrdered (Additive X) :=
+  denselyOrdered_additive_iff.2 ‹_›
+
+lemma WithZero.denselyOrdered_iff {M : Type*} [Preorder M] [NoMinOrder M] :
+    DenselyOrdered (WithZero M) ↔ DenselyOrdered M :=
+  WithBot.denselyOrdered_iff
+
+instance {X : Type*} [Preorder X] [NoMinOrder X] [DenselyOrdered X] :
+    DenselyOrdered (WithZero X) :=
+  WithZero.denselyOrdered_iff.mpr inferInstance
+
+lemma Int.not_denselyOrdered : ¬ DenselyOrdered ℤ :=
+  (LinearOrderedAddCommGroup.discrete_iff_not_denselyOrdered ℤ).mp ⟨.refl _⟩
+
+lemma not_denselyOrdered_withZero_int : ¬ DenselyOrdered ℤᵐ⁰ :=
+  (LinearOrderedCommGroupWithZero.discrete_iff_not_denselyOrdered _).mp ⟨.refl _⟩
+
+lemma WithZero.denselyOrdered_set_iff_subsingleton {X : Type*} [LinearOrder X]
+    [LocallyFiniteOrder X] {s : Set (WithZero X)} :
+    DenselyOrdered s ↔ s.Subsingleton :=
+  WithBot.denselyOrdered_set_iff_subsingleton
+
+end DenselyOrdered

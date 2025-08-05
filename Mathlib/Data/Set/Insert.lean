@@ -420,14 +420,6 @@ theorem powerset_singleton (x : α) : 𝒫({x} : Set α) = {∅, {x}} := by
   ext y
   rw [mem_powerset_iff, subset_singleton_iff_eq, mem_insert_iff, mem_singleton_iff]
 
-end Set
-
-open Set
-
-open Function
-
-namespace Set
-
 section
 variable {α β : Type*} {a : α} {b : β}
 
@@ -441,11 +433,7 @@ end
 
 /-! ### Lemmas about `inclusion`, the injection of subtypes induced by `⊆` -/
 
-end Set
-
 /-! ### Decidability instances for sets -/
-
-namespace Set
 
 variable {α : Type u} (s t : Set α) (a b : α)
 
@@ -453,6 +441,8 @@ instance decidableSingleton [Decidable (a = b)] : Decidable (a ∈ ({b} : Set α
   inferInstanceAs (Decidable (a = b))
 
 end Set
+
+open Set
 
 @[simp] theorem Prop.compl_singleton (p : Prop) : ({p}ᶜ : Set Prop) = {¬p} :=
   ext fun q ↦ by simpa [@Iff.comm q] using not_iff

@@ -91,7 +91,6 @@ instance PiLp.innerProductSpace {ι : Type*} [Fintype ι] (f : ι → Type*)
     show (∑ i : ι, ⟪r • x i, y i⟫ = conj r * ∑ i, ⟪x i, y i⟫) by
       simp only [Finset.mul_sum, inner_smul_left]
 
-@[simp]
 theorem PiLp.inner_apply {ι : Type*} [Fintype ι] {f : ι → Type*} [∀ i, NormedAddCommGroup (f i)]
     [∀ i, InnerProductSpace 𝕜 (f i)] (x y : PiLp 2 f) : ⟪x, y⟫ = ∑ i, ⟪x i, y i⟫ :=
   rfl
@@ -284,10 +283,11 @@ theorem EuclideanSpace.single_eq_zero_iff {i : ι} {a : 𝕜} :
 variable [Fintype ι]
 
 theorem EuclideanSpace.inner_single_left (i : ι) (a : 𝕜) (v : EuclideanSpace 𝕜 ι) :
-    ⟪EuclideanSpace.single i (a : 𝕜), v⟫ = conj a * v i := by simp [apply_ite conj, mul_comm]
+    ⟪EuclideanSpace.single i (a : 𝕜), v⟫ = conj a * v i := by
+  simp [PiLp.inner_apply, apply_ite conj, mul_comm]
 
 theorem EuclideanSpace.inner_single_right (i : ι) (a : 𝕜) (v : EuclideanSpace 𝕜 ι) :
-    ⟪v, EuclideanSpace.single i (a : 𝕜)⟫ = a * conj (v i) := by simp
+    ⟪v, EuclideanSpace.single i (a : 𝕜)⟫ = a * conj (v i) := by simp [PiLp.inner_apply]
 
 @[simp]
 theorem EuclideanSpace.norm_single (i : ι) (a : 𝕜) :
@@ -557,7 +557,7 @@ def _root_.Module.Basis.toOrthonormalBasis (v : Basis ι 𝕜 E) (hv : Orthonorm
         let p : EuclideanSpace 𝕜 ι := v.equivFun x
         let q : EuclideanSpace 𝕜 ι := v.equivFun y
         have key : ⟪p, q⟫ = ⟪∑ i, p i • v i, ∑ i, q i • v i⟫ := by
-          simp [inner_sum, inner_smul_right, hv.inner_left_fintype]
+          simp [inner_sum, inner_smul_right, hv.inner_left_fintype, PiLp.inner_apply]
         convert key
         · rw [← v.equivFun.symm_apply_apply x, v.equivFun_symm_apply]
         · rw [← v.equivFun.symm_apply_apply y, v.equivFun_symm_apply])
@@ -730,6 +730,15 @@ theorem basisFun_apply [DecidableEq ι] (i : ι) : basisFun ι 𝕜 i = Euclidea
 
 @[simp]
 theorem basisFun_repr (x : EuclideanSpace 𝕜 ι) (i : ι) : (basisFun ι 𝕜).repr x i = x i := rfl
+
+@[simp]
+theorem basisFun_inner (x : EuclideanSpace 𝕜 ι) (i : ι) : ⟪basisFun ι 𝕜 i, x⟫ = x i := by
+  simp [← OrthonormalBasis.repr_apply_apply]
+
+@[simp]
+theorem inner_basisFun_real (x : EuclideanSpace ℝ ι) (i : ι) :
+    inner ℝ x (basisFun ι ℝ i) = x i := by
+  rw [real_inner_comm, basisFun_inner]
 
 theorem basisFun_toBasis : (basisFun ι 𝕜).toBasis = PiLp.basisFun _ 𝕜 ι := rfl
 
@@ -1196,11 +1205,11 @@ local notation "⟪" x ", " y "⟫ₑ" => inner 𝕜 (toLp 2 x) (toLp 2 y)
 /-- The inner product of a row of `A` and a row of `B` is an entry of `B * Aᴴ`. -/
 theorem inner_matrix_row_row [Fintype n] (A B : Matrix m n 𝕜) (i j : m) :
     ⟪A i, B j⟫ₑ = (B * Aᴴ) j i := by
-  simp [dotProduct, mul_apply']
+  simp [PiLp.inner_apply, dotProduct, mul_apply']
 
 /-- The inner product of a column of `A` and a column of `B` is an entry of `Aᴴ * B`. -/
 theorem inner_matrix_col_col [Fintype m] (A B : Matrix m n 𝕜) (i j : n) :
     ⟪Aᵀ i, Bᵀ j⟫ₑ = (Aᴴ * B) i j := by
-  simp [dotProduct, mul_apply', mul_comm]
+  simp [PiLp.inner_apply, dotProduct, mul_apply', mul_comm]
 
 end Matrix

@@ -37,9 +37,6 @@ see `Fintype.card_powersetCard` in `Mathlib/Data/Finset/Powerset.lean`.
 binomial coefficient, combination, multicombination, stars and bars
 -/
 
-
-open Nat
-
 namespace Nat
 
 /-- `choose n k` is the number of `k`-element subsets in an `n`-element set. Also known as binomial

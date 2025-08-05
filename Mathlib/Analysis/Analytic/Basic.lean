@@ -341,6 +341,87 @@ theorem radius_smul_eq (p : FormalMultilinearSeries 𝕜 E F) {c : 𝕜} (hc : c
   apply eq_of_le_of_ge _ radius_le_smul
   exact radius_le_smul.trans_eq (congr_arg _ <| inv_smul_smul₀ hc p)
 
+lemma norm_compContinuousLinearMap_le (p : FormalMultilinearSeries 𝕜 F G) (u : E →L[𝕜] F) (n : ℕ) :
+    ‖p.compContinuousLinearMap u n‖ ≤ ‖p n‖ * ‖u‖ ^ n := by
+  simp only [compContinuousLinearMap]
+  apply le_trans (ContinuousMultilinearMap.norm_compContinuousLinearMap_le _ _)
+  simp
+
+lemma enorm_compContinuousLinearMap_le (p : FormalMultilinearSeries 𝕜 F G)
+    (u : E →L[𝕜] F) (n : ℕ) : ‖p.compContinuousLinearMap u n‖ₑ ≤ ‖p n‖ₑ * ‖u‖ₑ ^ n := by
+  rw [← ofReal_norm, ← ofReal_norm, ← ofReal_norm,
+    ← ENNReal.ofReal_pow (by simp), ← ENNReal.ofReal_mul (by simp)]
+  gcongr
+  apply norm_compContinuousLinearMap_le
+
+lemma nnnorm_compContinuousLinearMap_le (p : FormalMultilinearSeries 𝕜 F G)
+    (u : E →L[𝕜] F) (n : ℕ) : ‖p.compContinuousLinearMap u n‖₊ ≤ ‖p n‖₊ * ‖u‖₊ ^ n :=
+  norm_compContinuousLinearMap_le p u n
+
+theorem div_le_radius_compContinuousLinearMap (p : FormalMultilinearSeries 𝕜 F G) (u : E →L[𝕜] F) :
+    p.radius / ‖u‖ₑ ≤ (p.compContinuousLinearMap u).radius := by
+  obtain (rfl | h_zero) := eq_zero_or_nnnorm_pos u
+  · simp
+  rw [ENNReal.div_le_iff (by simpa using h_zero) (by simp)]
+  refine le_of_forall_nnreal_lt fun r hr ↦ ?_
+  rw [← ENNReal.div_le_iff (by simpa using h_zero) (by simp), enorm_eq_nnnorm, ← coe_div h_zero.ne']
+  obtain ⟨C, hC_pos, hC⟩ := p.norm_mul_pow_le_of_lt_radius hr
+  refine le_radius_of_bound _ C fun n ↦ ?_
+  calc
+    ‖p.compContinuousLinearMap u n‖ * ↑(r / ‖u‖₊) ^ n ≤ ‖p n‖ * ‖u‖ ^ n * ↑(r / ‖u‖₊) ^ n := by
+      gcongr
+      exact nnnorm_compContinuousLinearMap_le p u n
+    _ = ‖p n‖ * r ^ n := by
+      simp only [NNReal.coe_div, coe_nnnorm, div_pow, mul_assoc]
+      rw [mul_div_cancel₀]
+      rw [← NNReal.coe_pos] at h_zero
+      positivity
+    _ ≤ C := hC n
+
+theorem le_radius_compContinuousLinearMap (p : FormalMultilinearSeries 𝕜 F G) (u : E →ₗᵢ[𝕜] F) :
+    p.radius ≤ (p.compContinuousLinearMap u.toContinuousLinearMap).radius := by
+  obtain (h | h) := subsingleton_or_nontrivial E
+  · simp [Subsingleton.elim u.toContinuousLinearMap 0]
+  · simpa [u.norm_toContinuousLinearMap]
+      using div_le_radius_compContinuousLinearMap p u.toContinuousLinearMap
+
+theorem radius_compContinuousLinearMap_le [Nontrivial F]
+    (p : FormalMultilinearSeries 𝕜 F G) (u : E ≃L[𝕜] F) :
+    (p.compContinuousLinearMap u.toContinuousLinearMap).radius ≤
+    ‖u.symm.toContinuousLinearMap‖ₑ * p.radius := by
+  have := (p.compContinuousLinearMap u.toContinuousLinearMap).div_le_radius_compContinuousLinearMap
+    u.symm.toContinuousLinearMap
+  simp only [compContinuousLinearMap_comp, ContinuousLinearEquiv.coe_comp_coe_symm,
+    compContinuousLinearMap_id] at this
+  rwa [ENNReal.div_le_iff' (by simpa [DFunLike.ext_iff] using exists_ne 0) (by simp)] at this
+
+@[simp]
+theorem radius_compContinuousLinearMap_linearIsometryEquiv_eq [Nontrivial E]
+    (p : FormalMultilinearSeries 𝕜 F G) (u : E ≃ₗᵢ[𝕜] F) :
+    (p.compContinuousLinearMap u.toLinearIsometry.toContinuousLinearMap).radius = p.radius := by
+  refine le_antisymm ?_ <| le_radius_compContinuousLinearMap _ _
+  have _ : Nontrivial F := u.symm.toEquiv.nontrivial
+  convert radius_compContinuousLinearMap_le p u.toContinuousLinearEquiv
+  have : u.toContinuousLinearEquiv.symm.toContinuousLinearMap =
+    u.symm.toLinearIsometry.toContinuousLinearMap := rfl
+  simp [this]
+
+/-- This is a version of `radius_compContinuousLinearMap_linearIsometryEquiv_eq` with better
+opportunity for unification, at the cost of manually supplying some hypotheses. -/
+theorem radius_compContinuousLinearMap_eq [Nontrivial E]
+    (p : FormalMultilinearSeries 𝕜 F G) (u : E →L[𝕜] F) (hu_iso : Isometry u)
+    (hu_surj : Function.Surjective u) :
+    (p.compContinuousLinearMap u).radius = p.radius :=
+  let v : E ≃ₗᵢ[𝕜] F :=
+    { LinearEquiv.ofBijective u.toLinearMap ⟨hu_iso.injective, hu_surj⟩ with
+      norm_map' := hu_iso.norm_map_of_map_zero (map_zero u) }
+  radius_compContinuousLinearMap_linearIsometryEquiv_eq p v
+
+@[simp]
+theorem radius_compNeg [Nontrivial E] (p : FormalMultilinearSeries 𝕜 E F) :
+    (p.compContinuousLinearMap (-(.id _ _))).radius = p.radius :=
+  radius_compContinuousLinearMap_linearIsometryEquiv_eq _ (.neg 𝕜)
+
 @[simp]
 theorem radius_shift (p : FormalMultilinearSeries 𝕜 E F) : p.shift.radius = p.radius := by
   simp only [radius, shift, Nat.succ_eq_add_one, ContinuousMultilinearMap.curryRight_norm]
@@ -1456,3 +1537,5 @@ theorem hasFPowerSeriesAt_iff' :
   simp_rw [add_sub_cancel_left]
 
 end
+
+set_option linter.style.longFile 1700

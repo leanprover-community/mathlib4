@@ -1023,3 +1023,11 @@ theorem Group.isCyclic_prod_iff {M N : Type*} [Group M] [Group N] :
     exact isCyclic_of_coprime_card_ker f h Prod.snd_surjective
 
 end prod
+
+section WithZero
+
+instance (G : Type*) [Group G] [IsCyclic G] : IsCyclic (WithZero G)ˣ := by
+    apply isCyclic_of_injective (G := (WithZero G)ˣ) (WithZero.unitsWithZeroEquiv).toMonoidHom
+    apply Equiv.injective
+
+end WithZero
