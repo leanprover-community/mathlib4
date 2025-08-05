@@ -395,7 +395,7 @@ Also verify that module names contain no forbidden characters such as `*` or `!`
 
 Source: https://learn.microsoft.com/en-gb/windows/win32/fileio/naming-a-file.
 Return the number of module names violating this rule. -/
-def modulesForbiddenWindows (opts : LinterOptions) (modules : Array Lean.Name) : IO Nat := do
+def modulesOSForbidden (opts : LinterOptions) (modules : Array Lean.Name) : IO Nat := do
   unless getLinterValue linter.modulesUpperCamelCase opts do return 0
   let forbiddenNames := [
     "CON", "PRN", "AUX", "NUL", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8",
