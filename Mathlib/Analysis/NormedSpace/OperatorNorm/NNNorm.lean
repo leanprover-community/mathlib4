@@ -205,13 +205,11 @@ theorem exists_nnnorm_eq_one_lt_apply_of_lt_opNNNorm {𝕜 𝕜₂ E F : Type*}
     {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂] (f : E →SL[σ₁₂] F) {r : ℝ≥0} (hr : r < ‖f‖₊) :
     ∃ x : E, ‖x‖₊ = 1 ∧ r < ‖f x‖₊ := by
   obtain ⟨x, hlt, hr⟩ := exists_lt_apply_of_lt_opNNNorm f hr
-  have hx0 : ‖x‖₊ ≠ 0 := by
-    rw [nnnorm_ne_zero_iff]
-    rintro rfl
-    simp at hr
+  obtain rfl | hx0 := eq_zero_or_nnnorm_pos x
+  · simp at hr
   use algebraMap ℝ 𝕜 ‖x‖⁻¹ • x
   suffices r < ‖x‖₊⁻¹ * ‖f x‖₊ by
-    simpa [nnnorm_smul, inv_mul_cancel₀ hx0] using this
+    simpa [nnnorm_smul, inv_mul_cancel₀ hx0.ne'] using this
   refine hr.trans (lt_mul_of_one_lt_left ?_ ?_)
   · exact zero_le _ |>.trans_lt hr
   · exact one_lt_inv_iff₀.mpr ⟨by simpa using hx0, hlt⟩
