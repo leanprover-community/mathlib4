@@ -695,7 +695,7 @@ namespace MulEquiv
 variable [Mul M] [Mul N] {S T : Subsemigroup M}
 
 /-- Makes the identity isomorphism from a proof that two subsemigroups of a multiplicative
-    semigroup are equal. -/
+semigroup are equal. -/
 @[to_additive
       "Makes the identity additive isomorphism from a proof two
       subsemigroups of an additive semigroup are equal."]

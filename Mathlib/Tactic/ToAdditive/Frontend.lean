@@ -477,9 +477,9 @@ structure Config : Type where
   which we need for adding definition ranges. -/
   ref : Syntax
   /-- An optional flag stating that the additive declaration already exists.
-    If this flag is wrong about whether the additive declaration exists, `to_additive` will
-    raise a linter error.
-    Note: the linter will never raise an error for inductive types and structures. -/
+  If this flag is wrong about whether the additive declaration exists, `to_additive` will
+  raise a linter error.
+  Note: the linter will never raise an error for inductive types and structures. -/
   existing : Bool := false
   /-- An optional flag stating that the target of the translation is the target itself.
   This can be used to reorder arguments, such as in
@@ -1032,7 +1032,7 @@ There are a few abbreviations we use. For example "Nonneg" instead of "ZeroLE"
 or "addComm" instead of "commAdd".
 Note: The input to this function is case sensitive!
 Todo: A lot of abbreviations here are manual fixes and there might be room to
-      improve the naming logic to reduce the size of `fixAbbreviation`.
+improve the naming logic to reduce the size of `fixAbbreviation`.
 -/
 def fixAbbreviation : List String → List String
   | "cancel" :: "Add" :: s            => "addCancel" :: fixAbbreviation s

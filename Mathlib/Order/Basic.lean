@@ -1220,8 +1220,8 @@ lemma mk_lt_mk_of_le_of_lt (h₁ : a₁ ≤ a₂) (h₂ : b₁ < b₂) : (a₁, 
 end Preorder
 
 /-- The pointwise partial order on a product.
-    (The lexicographic ordering is defined in `Order.Lexicographic`, and the instances are
-    available via the type synonym `α ×ₗ β = α × β`.) -/
+(The lexicographic ordering is defined in `Order.Lexicographic`, and the instances are
+available via the type synonym `α ×ₗ β = α × β`.) -/
 instance instPartialOrder (α β : Type*) [PartialOrder α] [PartialOrder β] :
     PartialOrder (α × β) where
   __ := inferInstanceAs (Preorder (α × β))
