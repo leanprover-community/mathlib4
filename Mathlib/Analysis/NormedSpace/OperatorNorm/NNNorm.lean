@@ -213,6 +213,11 @@ theorem sSup_sphere_eq_nnnorm [NormedAlgebra ℝ 𝕜] (f : E →SL[σ₁₂] F)
   cases subsingleton_or_nontrivial E
   · simp [sphere_eq_empty_of_subsingleton one_ne_zero]
   have : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E
+  by_cases h : ∃ x : E, ‖x‖₊ ≠ 0; swap
+  · push_neg at h
+    simp_rw [fun x => nnnorm_map_eq_zero f (h x)]
+    simp
+
   refine csSup_eq_of_forall_le_of_forall_lt_exists_gt
       ((NormedSpace.sphere_nonempty.mpr zero_le_one).image _) ?_ fun ub hub => ?_
   · rintro - ⟨x, hx, rfl⟩
