@@ -20,7 +20,7 @@ lemma IsEquiv.isNontrivial (hv : v₁.IsEquiv v₂) [v₁.IsNontrivial] : v₂.I
   hv.isNontrivial_iff_isNontrivial.mp ‹_›
 
 lemma IsEquiv.isNontrivial' (hv : v₁.IsEquiv v₂) [v₂.IsNontrivial] : v₁.IsNontrivial :=
-  hv.isNontrivial_iff_isNontrivial.mpr ‹_›
+  hv.symm.isNontrivial
 
 end Valuation
 
