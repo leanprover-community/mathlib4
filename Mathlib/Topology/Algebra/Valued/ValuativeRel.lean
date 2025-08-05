@@ -126,6 +126,9 @@ theorem hasBasis_nhds_zero :
       fun γ : (ValueGroupWithZero R)ˣ => { x | v x < γ } := by
   convert hasBasis_nhds (0 : R); rw [sub_zero]
 
+@[deprecated (since := "2025-08-01")]
+alias _root_.ValuativeTopology.hasBasis_nhds_zero := hasBasis_nhds_zero
+
 variable (R) in
 lemma hasBasis_nhds_zero_pair :
     (𝓝 (0 : R)).HasBasis (fun rs : R × R ↦ rs.1 ∈ posSubmonoid R ∧ rs.2 ∈ posSubmonoid R)
