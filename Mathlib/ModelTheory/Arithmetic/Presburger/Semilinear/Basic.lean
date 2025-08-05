@@ -137,7 +137,6 @@ theorem Semilinear.compl [Module.Finite ℕ α] (hs : s.Semilinear) : sᶜ.Semil
   rw [compl_eq_univ_diff]
   exact univ.diff hs
 
-example [Fintype ι] {s : Set (ι → ℕ)} (hs : s.Semilinear) : sᶜ.Semilinear := hs.compl
 example [Fintype ι] {s : Set (ι → ℤ)} (hs : s.Semilinear) : sᶜ.Semilinear := hs.compl
 
 end Set
