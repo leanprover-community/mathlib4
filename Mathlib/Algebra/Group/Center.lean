@@ -190,8 +190,8 @@ theorem prod_centralizer_subset_centralizer_prod {N : Type*} [Mul N] (S : Set M)
   exact fun a b ha hb c d hc hd => ⟨ha c hc, hb d hd⟩
 
 @[to_additive addCenter_prod]
-theorem center_prod {A B : Type*} [Mul A] [Mul B] :
-    center (A × B) = center A ×ˢ center B := by
+theorem center_prod {N : Type*} [Mul N] :
+    center (M × N) = center M ×ˢ center N := by
   ext x
   simp only [mem_prod, mem_center_iff, isMulCentral_iff, commute_iff_eq, Prod.mul_def,
     Prod.eq_iff_fst_eq_snd_eq]
