@@ -41,6 +41,14 @@ instance : SetLike (Subalgebra R A) A where
 
 initialize_simps_projections Subalgebra (carrier → coe, as_prefix coe)
 
+@[simp]
+theorem coe_mk (s : Subsemiring A) (h) : (Subalgebra.mk (R := R) s h : Set A) = s :=
+  rfl
+
+@[simp]
+theorem mem_mk (s : Subsemiring A) (h) (x) : x ∈ Subalgebra.mk (R := R) s h ↔ x ∈ s :=
+  .rfl
+
 /-- The actual `Subalgebra` obtained from an element of a type satisfying `SubsemiringClass` and
 `SMulMemClass`. -/
 @[simps]
