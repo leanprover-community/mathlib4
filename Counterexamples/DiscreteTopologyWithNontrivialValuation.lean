@@ -2,7 +2,7 @@ import Mathlib.FieldTheory.RatFunc.AsPolynomial
 import Mathlib.RingTheory.Valuation.RankOne
 import Mathlib.Topology.Algebra.Valued.ValuativeRel
 
--- MOVE
+-- Do these belong to another file?
 namespace Valuation
 
 variable {R Γ₀ Γ'₀ : Type*} [Ring R]
@@ -35,8 +35,46 @@ sending `X` to `WithZero.exp 1`. -/
 noncomputable def infinityValuation : Valuation K[X] ℤᵐ⁰ :=
   ((idealX K).valuation (RatFunc K)).comap <| RingHomClass.toRingHom <| aeval .X⁻¹
 
+-- There seems to be another pathway via more API on `X ↦ X⁻¹`.
+-- using `valuation_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X`.
+
+variable {K}
+
+@[simp] lemma valuation_C (I : IsDedekindDomain.HeightOneSpectrum K[X]) {a : K} (ha : a ≠ 0) :
+    I.valuation (RatFunc K) (C a) = 1 :=
+  eq_of_le_of_not_lt (I.valuation_le_one _) <| (I.valuation_lt_one_iff_mem _).not.2 fun hai ↦
+    I.2.ne_top <| I.1.eq_top_of_isUnit_mem hai <| isUnit_C.mpr <| .mk0 _ ha
+
+@[simp] lemma valuation_C' (I : IsDedekindDomain.HeightOneSpectrum K[X]) {a : K} (ha : a ≠ 0) :
+    I.valuation (RatFunc K) (RatFunc.C a) = 1 :=
+  valuation_C I ha
+
+@[simp] lemma infinityValuation_C {a : K} (ha : a ≠ 0) : infinityValuation K (C a) = 1 := by
+  simp [infinityValuation, ha]
+
 @[simp] lemma infinityValuation_X : infinityValuation K X = exp 1 := by
   simp [infinityValuation, exp]
+
+@[simp] lemma infinityValuation_monomial {n : ℕ} {a : K} (ha : a ≠ 0) :
+    infinityValuation K (monomial n a) = exp (n : ℤ) := by
+  simp [← C_mul_X_pow_eq_monomial, ← exp_nsmul, ha]
+
+theorem one_le_valuation (p : K[X]) (hp : p ≠ 0) : 1 ≤ infinityValuation K p := by
+  have mem_support : p.natDegree ∈ p.support :=
+    natDegree_mem_support_of_nonzero hp
+  have coeff_natDegree : p.coeff p.natDegree ≠ 0 := leadingCoeff_ne_zero.mpr hp
+  rw [p.as_sum_support, (infinityValuation K).map_sum_eq_of_lt mem_support,
+    infinityValuation_monomial coeff_natDegree, ← exp_zero, exp_le_exp]
+  · exact Nat.cast_nonneg _
+  · rw [infinityValuation_monomial coeff_natDegree]; exact exp_ne_zero
+  · intro i hip
+    simp_rw [Finset.mem_sdiff] at hip
+    rw [infinityValuation_monomial (mem_support_iff.mp hip.left),
+      infinityValuation_monomial coeff_natDegree, exp_lt_exp, Nat.cast_lt]
+    exact lt_natDegree_of_mem_eraseLead_support <|
+      by simpa [-mem_support_iff, eraseLead_support, Finset.mem_erase, and_comm] using hip
+
+variable (K)
 
 /-- The valuative relation defined by `infinityValuation K`. -/
 def infinityValuativeRel : ValuativeRel K[X] :=
@@ -69,8 +107,8 @@ nonrec theorem isEquiv : (valuation K[X]).IsEquiv (infinityValuation K) :=
   isEquiv _ _
 
 @[simp] theorem valuation_lt_one_iff (p : K[X]) : valuation K[X] p < 1 ↔ p = 0 := by
-  rw [(isEquiv K).lt_one_iff_lt_one, infinityValuation, Valuation.comap_apply]
-  sorry
+  rw [(isEquiv K).lt_one_iff_lt_one]
+  exact ⟨fun hp ↦ by_contra fun hp0 ↦ not_le_of_gt hp (one_le_valuation p hp0), (· ▸ by simp)⟩
 
 theorem isValuativeTopology : IsValuativeTopology K[X] where
   mem_nhds_iff {s x} := ⟨fun hsx ↦ ⟨1, by simp [mem_of_mem_nhds hsx]⟩,
