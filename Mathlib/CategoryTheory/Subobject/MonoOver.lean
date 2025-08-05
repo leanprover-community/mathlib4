@@ -136,7 +136,7 @@ def isoMk {f g : MonoOver X} (h : f.obj.left ≅ g.obj.left)
   inv := homMk h.inv (by rw [h.inv_comp_eq, w])
 
 /-- If `f : MonoOver X`, then `mk' f.arrow` is of course just `f`, but not definitionally, so we
-    package it as an isomorphism. -/
+package it as an isomorphism. -/
 @[simps!]
 def mk'ArrowIso {X : C} (f : MonoOver X) : mk' f.arrow ≅ f :=
   isoMk (Iso.refl _)
@@ -305,7 +305,7 @@ section
 variable (X)
 
 /-- An equivalence of categories `e` between `C` and `D` induces an equivalence between
-    `MonoOver X` and `MonoOver (e.functor.obj X)` whenever `X` is an object of `C`. -/
+`MonoOver X` and `MonoOver (e.functor.obj X)` whenever `X` is an object of `C`. -/
 @[simps]
 def congr (e : C ≌ D) : MonoOver X ≌ MonoOver (e.functor.obj X) where
   functor :=
