@@ -11,12 +11,12 @@ import Mathlib.CategoryTheory.Limits.Shapes.Products
 
 # Computing Colimits Fiberwise
 
-In this file, we consider category `J` equipped with a functor `F : J ⥤ D` to a discrete category
+In this file, we consider a category `J` equipped with a functor `F : J ⥤ D` to a discrete category
 `D`. Then the colimit of any diagram `diagram : J ⥤ C` can be computed fiberwise, using the
 following algorithm:
 
-1. For each `d : D`, construct a cocone over the restricted diagram `fiberInclusion F d ⋙ diagram`.
-2. Take a cofan of the values of these cocones over all `d : D`.
+1. For each `d : D`, construct a colimit cocone over the restricted diagram `fiberInclusion F d ⋙ diagram`.
+2. Take a colimit cofan of the values of these cocones over all `d : D`.
 
 ## Main Results
 
@@ -86,12 +86,7 @@ we can construct a cocone over `diagram` using the following algorithm:
       rw [← (fiberwiseCocone (F.obj j₁.1)).w (F.fiberPreimage (.mk rfl)
         (.mk (j₂.2.trans j₁.2.symm)) f.1), Functor.comp_map, assoc]
       congr 1
-      suffices h : (fiberwiseCocone d).ι.app (mk j₂.2) ≫ cofan.inj d =
-          (fiberwiseCocone d).ι.app (mk j₂.2) ≫ cofan.inj d by
-        convert h using 1
-        · obtain ⟨_, rfl⟩ := j₂; rfl
-        · obtain ⟨_, rfl⟩ := j₁; rfl
-      rfl }
+      grind }
 
 variable (fiberwiseColimit : ∀ d : D, IsColimit (fiberwiseCocone d))
   (colimitCofan : IsColimit cofan)
@@ -115,7 +110,7 @@ be computed using this algorithm:
 
 -- Not an instance because `D` cannot be inferred.
 theorem hasColimit_of_fiber [∀ d, HasColimit (fiberInclusion (p := F) (S := d) ⋙ diagram)]
-    [h : HasColimit (Discrete.functor fun d ↦
+    [HasColimit (Discrete.functor fun d ↦
       colimit (fiberInclusion (p := F) (S := d) ⋙ diagram))] :
     HasColimit diagram :=
   ⟨⟨⟨_, colimitOfFiber F diagram _ _
