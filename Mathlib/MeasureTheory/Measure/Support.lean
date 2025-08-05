@@ -230,20 +230,6 @@ lemma mem_support_restrict {s : Set X} {x : X} :
   rw [(nhdsWithin_basis_open x s).frequently_smallSets μ.pos_mono]
   grind [IsOpen.measurableSet, restrict_apply]
 
-lemma support_restrict_subset_closure {s : Set X} :
-    (μ.restrict s).support ⊆ closure s :=
-  fun x hx ↦
-    ((mem_closure_iff_nhds.mpr) ∘ (nhds_basis_opens x |>.forall_iff <| fun _ _ h
-       ↦ Set.Nonempty.mono <| by gcongr).mpr)
-  fun U ⟨hxU, hU⟩ ↦ by
-  by_cases H : (s ∩ U).Nonempty
-  · exact Set.inter_nonempty_iff_exists_right.mpr H
-  · have h_restr : (μ.restrict s) U = μ (U ∩ s) := by
-      simp only [Measure.restrict_apply hU.measurableSet, Set.inter_comm]
-    rw [nhds_basis_opens x |>.mem_measureSupport] at hx
-    exact MeasureTheory.nonempty_of_measure_ne_zero
-      (ne_of_gt <| h_restr ▸ hx U ⟨hxU, hU⟩)
-
 lemma interior_inter_support {s : Set X} :
     interior s ∩ μ.support ⊆ (μ.restrict s).support := by
   rintro x ⟨hxs, hxμ⟩
