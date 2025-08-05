@@ -81,17 +81,10 @@ variables defined on the product space `Π i, Ω i`. -/
 lemma iIndepFun_infinitePi (mX : ∀ i, Measurable (X i)) :
     iIndepFun (fun i ω ↦ X i (ω i)) (infinitePi μ) := by
   refine iIndepFun_iff_map_fun_eq_infinitePi_map (by fun_prop) |>.2 ?_
-  have (i : ι) : IsProbabilityMeasure ((infinitePi μ).map (fun ω ↦ X i (ω i))) :=
-    isProbabilityMeasure_map (Measurable.aemeasurable (by fun_prop))
-  refine eq_infinitePi _ fun s t ht ↦ ?_
-  rw [map_apply (by fun_prop) (.pi s.countable_toSet ht)]
-  have : (fun (ω : Π i, Ω i) i ↦ X i (ω i)) ⁻¹' ((s : Set ι).pi t) =
-      (s : Set ι).pi (fun i ↦ (X i) ⁻¹' (t i)) := by ext x; simp
-  rw [this, infinitePi_pi _ (fun i hi ↦ mX i (ht i hi))]
-  refine Finset.prod_congr rfl fun i hi ↦ ?_
-  rw [map_apply (by fun_prop) (ht i hi)]
-  change _ = (infinitePi μ) (((X i) ∘ (fun x ↦ x i)) ⁻¹' t i)
-  rw [Set.preimage_comp, ← map_apply (measurable_pi_apply i) (mX i (ht i hi)),
-    (measurePreserving_eval_infinitePi _ i).map_eq]
+  rw [infinitePi_map_pi _ mX]
+  congr
+  ext i : 1
+  rw [← (measurePreserving_eval_infinitePi μ i).map_eq, map_map (mX i) (by fun_prop)]
+  rfl
 
 end ProbabilityTheory
