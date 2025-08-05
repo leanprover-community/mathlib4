@@ -655,9 +655,6 @@ theorem contMDiffOn_contMDiffCoordChange (he : e ∈ a.pretrivializationAtlas)
       (e.baseSet ∩ e'.baseSet) :=
   (Classical.choose_spec (ha.exists_contMDiffCoordChange e he e' he')).1
 
-@[deprecated (since := "2025-01-09")]
-alias contMDiffOn_smoothCoordChange := contMDiffOn_contMDiffCoordChange
-
 theorem contMDiffCoordChange_apply (he : e ∈ a.pretrivializationAtlas)
     (he' : e' ∈ a.pretrivializationAtlas) {b : B} (hb : b ∈ e.baseSet ∩ e'.baseSet) (v : F) :
     a.contMDiffCoordChange n IB he he' b v = (e' ⟨b, e.symm b v⟩).2 :=
