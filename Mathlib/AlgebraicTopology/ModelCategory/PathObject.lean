@@ -84,7 +84,7 @@ section
 
 variable [HasBinaryProduct A A]
 
-/-- the map from `P.P` to the product of two copies of `A`, when `P` is
+/-- The map from `P.P` to the product of two copies of `A`, when `P` is
 a pre-path object for `A`. `P` shall be a *good* path object
 when this morphism is a fibration. -/
 noncomputable def p : P.P ⟶ A ⨯ A := prod.lift P.p₀ P.p₁
