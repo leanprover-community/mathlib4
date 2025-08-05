@@ -380,8 +380,6 @@ lemma haarScalarFactor_eq_mul (μ' μ ν : Measure G)
     (haarScalarFactor μ' μ * haarScalarFactor μ ν : ℝ≥0) * ∫ (x : G), g x ∂ν at Z
   simpa only [mul_eq_mul_right_iff (M₀ := ℝ), int_g_pos.ne', or_false, ← NNReal.eq_iff] using Z
 
-@[deprecated (since := "2024-11-05")] alias addHaarScalarFactor_eq_add := addHaarScalarFactor_eq_mul
-
 /-- The scalar factor between two left-invariant measures is non-zero when both measures are
 positive on open sets. -/
 @[to_additive]
@@ -732,7 +730,7 @@ theorem measure_isHaarMeasure_eq_smul_of_isEverywherePos [LocallyCompactSpace G]
           (Set.inv_mem_inv.mpr ((mem_leftCoset_iff y).mp zy))
         exact mem_leftCoset x this
       exact mem_biUnion xm this
-  rcases eq_empty_or_nonempty m with rfl|hm
+  rcases eq_empty_or_nonempty m with rfl | hm
   · simp only [mem_empty_iff_false, iUnion_of_empty, iUnion_empty, subset_empty_iff] at sm
     simp [sm]
   by_cases h'm : Set.Countable m

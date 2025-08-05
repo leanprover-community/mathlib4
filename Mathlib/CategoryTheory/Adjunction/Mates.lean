@@ -275,12 +275,7 @@ def conjugateEquiv : (L₂ ⟶ L₁) ≃ (R₁ ⟶ R₂) :=
 theorem conjugateEquiv_counit (α : L₂ ⟶ L₁) (d : D) :
     L₂.map ((conjugateEquiv adj₁ adj₂ α).app _) ≫ adj₂.counit.app d =
       α.app _ ≫ adj₁.counit.app d := by
-  dsimp [conjugateEquiv]
-  rw [id_comp, comp_id]
-  have := mateEquiv_counit adj₁ adj₂ (L₂.leftUnitor.hom ≫ α ≫ L₁.rightUnitor.inv) d
-  dsimp at this
-  rw [this]
-  simp only [comp_id, id_comp]
+  simp
 
 /-- A component of a transposed form of the inverse conjugation definition. -/
 theorem conjugateEquiv_counit_symm (α : R₁ ⟶ R₂) (d : D) :
@@ -433,7 +428,7 @@ variable {F₁ : A ⥤ C} {U₁ : C ⥤ A} {F₂ : B ⥤ D} {U₂ : D ⥤ B}
 variable {L₁ : A ⥤ B} {R₁ : B ⥤ A} {L₂ : C ⥤ D} {R₂ : D ⥤ C}
 variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : F₁ ⊣ U₁) (adj₄ : F₂ ⊣ U₂)
 
-/-- When all four functors in a sequare are left adjoints, the mates operation can be iterated:
+/-- When all four functors in a square are left adjoints, the mates operation can be iterated:
 
 ```
          L₁                  R₁                  R₁
