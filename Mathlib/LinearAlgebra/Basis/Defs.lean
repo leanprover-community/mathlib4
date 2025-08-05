@@ -257,6 +257,7 @@ theorem Basis.sum_equivFun [Fintype ι] (b : Basis ι R M) (u : M) :
     ∑ i, b.equivFun u i • b i = u := by
   rw [← b.equivFun_symm_apply, b.equivFun.symm_apply_apply]
 
+@[simp]
 theorem Basis.sum_repr [Fintype ι] (b : Basis ι R M) (u : M) : ∑ i, b.repr u i • b i = u :=
   b.sum_equivFun u
 

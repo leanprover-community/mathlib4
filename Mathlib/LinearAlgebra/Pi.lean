@@ -603,6 +603,22 @@ def finTwoArrow : (Fin 2 → M) ≃ₗ[R] M × M :=
 
 end LinearEquiv
 
+lemma Pi.mem_span_range_single_inl_iff
+    [DecidableEq ι] [DecidableEq ι'] [Fintype ι] [Semiring R] {x : ι ⊕ ι' → R} :
+    x ∈ span R (Set.range fun i ↦ single (Sum.inl i) 1) ↔ ∀ k, x (Sum.inr k) = 0 := by
+  refine ⟨fun hx k ↦ ?_, fun hx ↦ ?_⟩
+  · induction hx using span_induction with
+    | mem x h => obtain ⟨i, rfl⟩ := h; simp
+    | zero => simp
+    | add u v _ _ hu hv => simp [hu, hv]
+    | smul t u _ hu => simp [hu]
+  · suffices x = ∑ i : ι, x (Sum.inl i) • Pi.single (M := fun _ ↦ R) (Sum.inl i) (1 : R) by
+      rw [this]
+      exact sum_mem <| fun i _ ↦ SMulMemClass.smul_mem _ <| subset_span <| Set.mem_range_self i
+    ext (i | i)
+    · simp [single_apply]
+    · simp [hx i]
+
 section Extend
 
 variable (R) {η : Type x} [Semiring R] (s : ι → η)
