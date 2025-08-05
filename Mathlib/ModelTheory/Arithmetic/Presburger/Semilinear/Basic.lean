@@ -38,13 +38,13 @@ variable {α : Type u} [AddCommMonoid α] {β : Type v} [AddCommMonoid β] {ι :
 open Pointwise Submodule
 
 theorem Linear.exists_submodule_fg (hs : s.Linear) :
-    ∃ (M : Submodule ℕ α) (s' : Set M), M.FG ∧ s'.Linear ∧ s = M.subtype '' s' := by
+    ∃ (M : Submodule ℕ α) (s' : Set M), M.FG ∧ s'.Linear ∧ s = Subtype.val '' s' := by
   classical
   rcases hs with ⟨a, t, rfl⟩
   refine ⟨_, _, ⟨insert a t, rfl⟩,
     ⟨⟨a, mem_span_of_mem (Finset.mem_insert_self a t)⟩,
       t.attach.image fun ⟨b, hb⟩ => ⟨b, mem_span_of_mem (Finset.mem_insert_of_mem hb)⟩, rfl⟩, ?_⟩
-  rw [image_vadd_distrib, subtype_apply, ← map_coe, ← span_image]
+  rw [← coe_subtype, image_vadd_distrib, subtype_apply, ← map_coe, ← span_image]
   congr!
   ext b
   simp only [Finset.mem_coe, subtype_apply, Finset.coe_image, Finset.coe_attach, image_univ,
@@ -61,7 +61,7 @@ theorem Semilinear.exists_submodule_fg (hs : s.Semilinear) :
   refine ⟨S.sup M, ⋃ (t : S), Submodule.inclusion (Finset.le_sup t.2) '' S' t.1,
     fg_finset_sup _ _ hM, iUnion fun t => (hS' t.1 t.2).semilinear.image _, ?_⟩
   simp_rw [sUnion_eq_iUnion, image_iUnion, image_image, Submodule.coe_inclusion,
-    ← coe_subtype, ← fun t : S => hM' t.1 t.2]
+    ← fun t : S => hM' t.1 t.2]
   rfl
 
 theorem Semilinear.exists_submodule_fg₂ (hs₁ : s₁.Semilinear) (hs₂ : s₂.Semilinear) :
