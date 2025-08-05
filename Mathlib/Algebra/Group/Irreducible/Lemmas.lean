@@ -106,6 +106,34 @@ set_option linter.existingAttributeWarning false in
 alias Irreducible.not_square := Irreducible.not_isSquare
 
 @[to_additive]
-lemma IsSquare.not_irreducible (ha : IsSquare x) : ¬Irreducible x := fun h => h.not_isSquare ha
+lemma IsSquare.not_irreducible (ha : IsSquare x) : ¬Irreducible x := fun h ↦ h.not_isSquare ha
+
+variable {z : Additive M}
+
+lemma isAddUnit_ofMul_iff : IsAddUnit (Additive.ofMul x) ↔ IsUnit x := by
+  rw [isAddUnit_iff_exists, isUnit_iff_exists]; rfl
+
+lemma isUnit_toMul_iff : IsUnit z.toMul ↔ IsAddUnit z := isAddUnit_ofMul_iff.symm
+
+lemma addIrreducible_ofMul_iff : AddIrreducible (Additive.ofMul x) ↔ Irreducible x := by
+  simp_rw [addIrreducible_iff, isAddUnit_ofMul_iff, ← isUnit_toMul_iff, irreducible_iff]; rfl
+
+lemma irreducible_toMul_iff : Irreducible z.toMul ↔ AddIrreducible z :=
+  addIrreducible_ofMul_iff.symm
 
 end Monoid
+
+section AddMonoid
+
+variable [AddMonoid M] {x : M} {y : Multiplicative M}
+
+lemma isUnit_ofAdd_iff : IsUnit (Multiplicative.ofAdd x) ↔ IsAddUnit x := isUnit_toMul_iff
+
+lemma isAddUnit_toAdd_iff : IsAddUnit y.toAdd ↔ IsUnit y := isAddUnit_ofMul_iff
+
+lemma irreducible_ofAdd_iff : Irreducible (Multiplicative.ofAdd x) ↔ AddIrreducible x :=
+  irreducible_toMul_iff
+
+lemma addIrreducible_toAdd_iff : AddIrreducible y.toAdd ↔ Irreducible y := addIrreducible_ofMul_iff
+
+end AddMonoid

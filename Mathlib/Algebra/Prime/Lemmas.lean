@@ -171,3 +171,80 @@ theorem pow_inj_of_not_isUnit [CancelCommMonoidWithZero M] {q : M} (hq : ¬IsUni
   (pow_injective_of_not_isUnit hq hq').eq_iff
 
 end CancelCommMonoidWithZero
+
+section Semigroup
+
+variable [Semigroup M] {x : M} {z : Additive M}
+
+lemma isAddPrimal_ofMul_iff : IsAddPrimal (Additive.ofMul x) ↔ IsPrimal x := .rfl
+
+lemma isPrimal_toMul_iff : IsPrimal z.toMul ↔ IsAddPrimal z := .rfl
+
+lemma decompositionAddMonoid_additive_iff :
+    DecompositionAddMonoid (Additive M) ↔ DecompositionMonoid M := by
+  rw [decompositionAddMonoid_iff, decompositionMonoid_iff]; rfl
+
+end Semigroup
+
+section AddSemigroup
+
+variable [AddSemigroup M] {x : M} {z : Multiplicative M}
+
+lemma isPrimal_ofAdd_iff : IsPrimal (Multiplicative.ofAdd x) ↔ IsAddPrimal x := .rfl
+
+lemma isAddPrimal_toAdd_iff : IsAddPrimal z.toAdd ↔ IsPrimal z := .rfl
+
+lemma decompositionMonoid_multiplicative_iff :
+    DecompositionMonoid (Multiplicative M) ↔ DecompositionAddMonoid M :=
+  decompositionAddMonoid_additive_iff.symm
+
+end AddSemigroup
+
+section Monoid
+
+variable [Monoid M]
+
+lemma isAddRelPrime_ofMul_iff {x y : M} :
+    IsAddRelPrime (Additive.ofMul x) (Additive.ofMul y) ↔ IsRelPrime x y := by
+  simp_rw [IsAddRelPrime, ← isUnit_toMul_iff]; rfl
+
+lemma isRelPrime_toMul_iff {x y : Additive M} : IsRelPrime x.toMul y.toMul ↔ IsAddRelPrime x y :=
+  isAddRelPrime_ofMul_iff.symm
+
+end Monoid
+
+section AddMonoid
+
+variable [AddMonoid M]
+
+lemma isRelPrime_ofAdd_iff {x y : M} :
+    IsRelPrime (Multiplicative.ofAdd x) y ↔ IsAddRelPrime x y := isRelPrime_toMul_iff
+
+lemma isAddRelPrime_toAdd_iff {x y : Multiplicative M} :
+    IsAddRelPrime x.toAdd y.toAdd ↔ IsRelPrime x y := isAddRelPrime_ofMul_iff
+
+end AddMonoid
+
+section CommMonoid
+
+variable [CommMonoid M]
+
+lemma addPrime_ofMul_iff {x : M} : AddPrime (Additive.ofMul x) ↔ Preprime x := by
+  rw [AddPrime, Preprime, isAddUnit_ofMul_iff]; rfl
+
+lemma preprime_toMul_iff {x : Additive M} : Preprime x.toMul ↔ AddPrime x :=
+  addPrime_ofMul_iff.symm
+
+end CommMonoid
+
+section AddCommMonoid
+
+variable [AddCommMonoid M]
+
+lemma preprime_ofAdd_iff {x : M} : Preprime (Multiplicative.ofAdd x) ↔ AddPrime x :=
+  preprime_toMul_iff
+
+lemma addPrime_toAdd_iff {x : Multiplicative M} : AddPrime x.toAdd ↔ Preprime x :=
+  addPrime_ofMul_iff
+
+end AddCommMonoid
