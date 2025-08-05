@@ -159,6 +159,20 @@ theorem divRight_eq_mulRight_inv (a : G) : Equiv.divRight a = Equiv.mulRight a�
 
 end Group
 
+section CommGroup
+
+variable [CommGroup G]
+
+@[to_additive]
+lemma symm_divLeft (a : G) : (Equiv.divLeft a).symm = Equiv.divLeft a :=
+  ext fun _ ↦ inv_mul_eq_div _ _
+
+@[to_additive (attr := simp)]
+lemma divLeft_involutive (a : G) : Function.Involutive (Equiv.divLeft a) :=
+  fun _ ↦ div_div_cancel ..
+
+end CommGroup
+
 end Equiv
 
 variable (α) in

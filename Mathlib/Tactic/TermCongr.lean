@@ -255,10 +255,10 @@ which can happen for user-supplied congruence holes.
 
 This complexity is to support two features:
 
-1. The user is free to supply Iff, Eq, and HEq lemmas in congurence holes,
+1. The user is free to supply Iff, Eq, and HEq lemmas in congruence holes,
    and we're able to transform them into whatever is appropriate for a
    given congruence lemma.
-2. If the congrence hole is a metavariable, then we can specialize that
+2. If the congruence hole is a metavariable, then we can specialize that
    hole to an Iff, Eq, or HEq depending on what's necessary at that site. -/
 structure CongrResult where
   /-- The left-hand side of the congruence result. -/

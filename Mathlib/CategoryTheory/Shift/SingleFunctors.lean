@@ -85,8 +85,8 @@ lemma shiftIso_add'_hom_app (n m mn : A) (hnm : m + n = mn) (a a' a'' : A)
 lemma shiftIso_add'_inv_app (n m mn : A) (hnm : m + n = mn) (a a' a'' : A)
     (ha' : n + a = a') (ha'' : m + a' = a'') (X : C) :
     (F.shiftIso mn a a'' (by rw [← hnm, ← ha'', ← ha', add_assoc])).inv.app X =
-        (F.shiftIso n a a' ha').inv.app X ≫
-        ((F.shiftIso m a' a'' ha'').inv.app X)⟦n⟧' ≫
+      (F.shiftIso n a a' ha').inv.app X ≫
+      ((F.shiftIso m a' a'' ha'').inv.app X)⟦n⟧' ≫
       (shiftFunctorAdd' D m n mn hnm).inv.app ((F.functor a'').obj X) := by
   simp [F.shiftIso_add' n m mn hnm a a' a'' ha' ha'']
 
