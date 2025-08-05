@@ -60,15 +60,15 @@ lemma eq_mul_mul_of_aroots_quadratic_eq_pair [CommRing T] [CommRing S] [IsDomain
 lemma quadratic_eq_of_vieta [CommRing R] {a b c x1 x2 : R}
     (hsum : b = -a * (x1 + x2)) (hprod : c = a * x1 * x2) :
     C a * X ^ 2 + C b * X + C c = C a * (X - C x1) * (X - C x2) := by
-  simpa [hvieta.1, hvieta.2] using by ring
+  simpa [hsum, hprod] using by ring
 
 lemma roots_of_ne_zero_of_vieta [CommRing R] [IsDomain R] {a b c x1 x2 : R} (ha : a ≠ 0)
-    (hvieta : b = -a * (x1 + x2) ∧ c = a * x1 * x2) :
+    (hsum : b = -a * (x1 + x2)) (hprod : c = a * x1 * x2) :
     (C a * X ^ 2 + C b * X + C c).roots = {x1, x2} := by
   have e1 : C a * (X - C x1) * (X - C x2) ≠ 0 := by
-    rw [← quadratic_eq_of_vieta hvieta]
+    rw [← quadratic_eq_of_vieta hsum hprod]
     exact not_zero_iff.mpr ⟨2, by simp [ha]⟩
-  simp [quadratic_eq_of_vieta hvieta, Polynomial.roots_mul e1, roots_C_mul _ ha]
+  simp [quadratic_eq_of_vieta hsum hprod, Polynomial.roots_mul e1, roots_C_mul _ ha]
 
 /-- **Vieta's formula** for quadratics as an iff. -/
 lemma roots_quadratic_eq_pair_iff_of_ne_zero [CommRing R] [IsDomain R] {a b c x1 x2 : R}
@@ -76,7 +76,7 @@ lemma roots_quadratic_eq_pair_iff_of_ne_zero [CommRing R] [IsDomain R] {a b c x1
     (C a * X ^ 2 + C b * X + C c).roots = {x1, x2} ↔
       b = -a * (x1 + x2) ∧ c = a * x1 * x2 :=
   ⟨fun h => ⟨eq_neg_mul_add_of_roots_quadratic_eq_pair h, eq_mul_mul_of_roots_quadratic_eq_pair h⟩,
-    roots_of_ne_zero_of_vieta ha⟩
+    fun h => roots_of_ne_zero_of_vieta ha h.1 h.2⟩
 
 /-- **Vieta's formula** for quadratics as an iff (`aroots` version). -/
 lemma aroots_quadratic_eq_pair_iff_of_ne_zero [CommRing T] [CommRing S] [IsDomain S]
@@ -147,7 +147,7 @@ theorem vieta_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0) {s : R} (h : disc
 theorem quadratic_eq_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0) {s : R}
     (h : discrim a b c = s * s) : C a * X ^ 2 + C b * X + C c =
       C a * (X - C ((-b + s) / (2 * a))) * (X - C ((-b - s) / (2 * a))) :=
-  quadratic_eq_of_vieta (vieta_of_discrim_eq_sq ha h)
+  quadratic_eq_of_vieta (vieta_of_discrim_eq_sq ha h).1 (vieta_of_discrim_eq_sq ha h).2
 
 theorem roots_quadratic_of_discrim_ne_sq (h : ∀ s : R, discrim a b c ≠ s^2) :
     (C a * X ^ 2 + C b * X + C c).roots = ∅ :=
@@ -157,7 +157,7 @@ theorem roots_quadratic_of_discrim_ne_sq (h : ∀ s : R, discrim a b c ≠ s^2) 
 theorem roots_quadratic_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0) {s : R}
     (h : discrim a b c = s * s) :
     (C a * X ^ 2 + C b * X + C c).roots = {(-b + s) / (2 * a), (-b - s) / (2 * a)} :=
-  roots_of_ne_zero_of_vieta ha (vieta_of_discrim_eq_sq ha h)
+  roots_of_ne_zero_of_vieta ha (vieta_of_discrim_eq_sq ha h).1 (vieta_of_discrim_eq_sq ha h).2
 
 end QuadraticDiscriminant
 
