@@ -585,13 +585,13 @@ section convergenceCriterion
 
 open scoped Finset
 
-variable {α ι : Type*} [MeasurableSpace α]
+variable {Ω ι : Type*} [MeasurableSpace Ω]
 
 /-- Given a π-system, if a sequence of measures converges along all elements of the π-system, then
 it also converges along finite unions of elements of the π-system. -/
 lemma _root_.IsPiSystem.tendsto_measureReal_biUnion
-    {S : Set (Set α)} (hS : IsPiSystem S) {μ : ι → Measure α} {ν : Measure α} {l : Filter ι}
-    {t : Finset (Set α)} (ht : ∀ s ∈ t, s ∈ S)
+    {S : Set (Set Ω)} (hS : IsPiSystem S) {μ : ι → Measure Ω} {ν : Measure Ω} {l : Filter ι}
+    {t : Finset (Set Ω)} (ht : ∀ s ∈ t, s ∈ S)
     (hmeas : ∀ s ∈ S, MeasurableSet s)
     (h : ∀ s ∈ S, Tendsto (fun i ↦ (μ i).real s) l (𝓝 (ν.real s)))
     (hν : ∀ s ∈ S, ν s ≠ ∞ := by finiteness)
@@ -609,7 +609,7 @@ lemma _root_.IsPiSystem.tendsto_measureReal_biUnion
   refine tendsto_finset_sum _ (fun u hu ↦ ?_)
   simp only [Finset.mem_filter, Finset.mem_powerset] at hu
   apply Filter.Tendsto.const_mul
-  rcases eq_empty_or_nonempty (⋂ s ∈ u, (s : Set α)) with h'u | h'u
+  rcases eq_empty_or_nonempty (⋂ s ∈ u, (s : Set Ω)) with h'u | h'u
   · simpa [h'u] using tendsto_const_nhds
   apply h
   exact hS.biInter_mem hu.2 (fun s hs ↦ ht _ (hu.1 hs)) h'u
@@ -617,29 +617,33 @@ lemma _root_.IsPiSystem.tendsto_measureReal_biUnion
 /-- Given a π-system, if a sequence of probability measures converges along all elements of
 the π-system, then it also converges along finite unions of elements of the π-system. -/
 lemma _root_.IsPiSystem.tendsto_probabilityMeasure_biUnion
-    {S : Set (Set α)} (hS : IsPiSystem S) {μ : ι → ProbabilityMeasure α} {ν : ProbabilityMeasure α}
-    {l : Filter ι} {t : Finset (Set α)} (ht : ∀ s ∈ t, s ∈ S)
-    (hmeas : ∀ s ∈ S, MeasurableSet s)
+    {S : Set (Set Ω)} (hS : IsPiSystem S) {μ : ι → ProbabilityMeasure Ω} {ν : ProbabilityMeasure Ω}
+    {l : Filter ι} {t : Finset (Set Ω)} (ht : ∀ s ∈ t, s ∈ S) (hmeas : ∀ s ∈ S, MeasurableSet s)
     (h : ∀ s ∈ S, Tendsto (fun i ↦ μ i s) l (𝓝 (ν s))) :
     Tendsto (fun i ↦ μ i (⋃ s ∈ t, s)) l (𝓝 (ν (⋃ s ∈ t, s))) := by
-  have : Tendsto (fun i ↦ (μ i : Measure α).real (⋃ s ∈ t, s)) l
-      (𝓝 ((ν : Measure α).real (⋃ s ∈ t, s))) := by
+  have : Tendsto (fun i ↦ (μ i : Measure Ω).real (⋃ s ∈ t, s)) l
+      (𝓝 ((ν : Measure Ω).real (⋃ s ∈ t, s))) := by
     apply hS.tendsto_measureReal_biUnion ht hmeas
     simpa using h
   simpa using this
 
 /-- Consider a set of sets `S` containing arbitrarily small neighborhoods of any point, and a
 probability measure. Then any open set can be approximated arbitrarily well in measure from inside
-by a finite union of elements of `S`. -/
+by a finite union of elements of `S`.
+
+This is a technical lemma for `IsPiSystem.tendsto_probabilityMeasure_of_tendsto_of_mem`, which is
+why it is formulated for a `ProbabilityMeasure`. If needed, this could be generalized to finite
+measures or to general measures.
+-/
 lemma ProbabilityMeasure.exists_lt_measure_biUnion_of_isOpen
-    [TopologicalSpace α] [SecondCountableTopology α]
-    {S : Set (Set α)} (ν : ProbabilityMeasure α)
-    (h : ∀ (u : Set α), IsOpen u → ∀ x ∈ u, ∃ s ∈ S, s ∈ 𝓝 x ∧ s ⊆ u)
-    {G : Set α} (hG : IsOpen G) {r : ℝ≥0} (hr : r < ν G) :
-    ∃ T : Finset (Set α), (∀ t ∈ T, t ∈ S) ∧ (r < ν (⋃ t ∈ T, t)) ∧ (⋃ t ∈ T, t) ⊆ G := by
+    [TopologicalSpace Ω] [SecondCountableTopology Ω]
+    {S : Set (Set Ω)} (ν : ProbabilityMeasure Ω)
+    (h : ∀ (u : Set Ω), IsOpen u → ∀ x ∈ u, ∃ s ∈ S, s ∈ 𝓝 x ∧ s ⊆ u)
+    {G : Set Ω} (hG : IsOpen G) {r : ℝ≥0} (hr : r < ν G) :
+    ∃ T : Finset (Set Ω), (∀ t ∈ T, t ∈ S) ∧ (r < ν (⋃ t ∈ T, t)) ∧ (⋃ t ∈ T, t) ⊆ G := by
   classical
-  obtain ⟨T, TS, T_count, hT⟩ : ∃ T : Set (Set α), T ⊆ S ∧ T.Countable ∧ ⋃ t ∈ T, t = G := by
-    have : ∀ (x : G), ∃ s ∈ S, s ∈ 𝓝 (x : α) ∧ s ⊆ G := fun x ↦ h G x x.2 hG
+  obtain ⟨T, TS, T_count, hT⟩ : ∃ T : Set (Set Ω), T ⊆ S ∧ T.Countable ∧ ⋃ t ∈ T, t = G := by
+    have : ∀ (x : G), ∃ s ∈ S, s ∈ 𝓝 (x : Ω) ∧ s ⊆ G := fun x ↦ h G hG x x.2
     choose! s hsS hs_nhds hsG using this
     rcases TopologicalSpace.isOpen_iUnion_countable (fun i ↦ interior (s i))
       (fun i ↦ isOpen_interior) with ⟨T₀, T₀_count, hT₀⟩
@@ -674,11 +678,11 @@ converges to a limiting probability measure. Assume also that the π-system cont
 small neighborhoods of any point. Then the sequence of probability measures converges for the
 weak topology. -/
 lemma _root_.IsPiSystem.tendsto_probabilityMeasure_of_tendsto_of_mem
-    [TopologicalSpace α] [SecondCountableTopology α] [OpensMeasurableSpace α]
-    {S : Set (Set α)} (hS : IsPiSystem S) {μ : ι → ProbabilityMeasure α} {ν : ProbabilityMeasure α}
+    [TopologicalSpace Ω] [SecondCountableTopology Ω] [OpensMeasurableSpace Ω]
+    {S : Set (Set Ω)} (hS : IsPiSystem S) {μ : ι → ProbabilityMeasure Ω} {ν : ProbabilityMeasure Ω}
     {l : Filter ι} [l.IsCountablyGenerated]
     (hmeas : ∀ s ∈ S, MeasurableSet s)
-    (h : ∀ (u : Set α), ∀ x ∈ u, IsOpen u → ∃ s ∈ S, s ∈ 𝓝 x ∧ s ⊆ u)
+    (h : ∀ (u : Set Ω), IsOpen u → ∀ x ∈ u, ∃ s ∈ S, s ∈ 𝓝 x ∧ s ⊆ u)
     (h' : ∀ s ∈ S, Tendsto (fun i ↦ μ i s) l (𝓝 (ν s))) :
     Tendsto μ l (𝓝 ν) := by
   /- We apply the portmanteau theorem: it suffices to show that, given an open set `G`
@@ -696,16 +700,14 @@ lemma _root_.IsPiSystem.tendsto_probabilityMeasure_of_tendsto_of_mem
   · simp
   apply tendsto_of_forall_isOpen_le_liminf
   intro G hG
-  refine (le_liminf_iff ?_ (by isBoundedDefault)).2 (fun r hr ↦ ?_)
-  · exact isCoboundedUnder_ge_of_le (x := 1) l (by simp)
-  · exact isBoundedUnder_of ⟨0, by simp⟩
+  refine (le_liminf_iff (isCoboundedUnder_ge_of_le (x := 1) l (by simp)) (by isBoundedDefault)).2
+    (fun r hr ↦ ?_)
   obtain ⟨T, TS, T_meas, TG⟩ :
-      ∃ T : Finset (Set α), (∀ t ∈ T, t ∈ S) ∧ (r < ν (⋃ t ∈ T, t)) ∧ (⋃ t ∈ T, t) ⊆ G :=
+      ∃ T : Finset (Set Ω), (∀ t ∈ T, t ∈ S) ∧ (r < ν (⋃ t ∈ T, t)) ∧ (⋃ t ∈ T, t) ⊆ G :=
     ν.exists_lt_measure_biUnion_of_isOpen h hG hr
   have : Tendsto (fun i ↦ μ i (⋃ t ∈ T, t)) l (𝓝 (ν (⋃ t ∈ T, t))) :=
     hS.tendsto_probabilityMeasure_biUnion TS hmeas h'
   filter_upwards [(tendsto_order.1 this).1 r T_meas] with i hi
-  apply hi.trans_le
   exact hi.trans_le <| ProbabilityMeasure.apply_mono _ TG
 
 end convergenceCriterion
