@@ -87,11 +87,7 @@ theorem Linear.of_homogeneous_equation_nat [Fintype β] (A B : Matrix α β ℕ)
       carrier := setOf _
       add_mem' h₁ h₂ := ?_
       zero_mem' := ?_
-    } fun _ h₁ _ h₂ => ?_
-  · simp only [mem_setOf_eq] at h₁ h₂; simp [mulVec_add, h₁, h₂]
-  · simp
-  · simp only [AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, mem_setOf_eq] at *
-    simpa [mulVec_add, h₁] using h₂
+    } fun _ h₁ _ h₂ => ?_ <;> simp_all [mulVec_add]
 
 lemma Linear.iff_eq_setOf_vadd_mulVec_nat :
     s.Linear ↔ ∃ (v : α → ℕ) (n : ℕ) (A : Matrix α (Fin n) ℕ), s = { v + A *ᵥ x | x } := by
