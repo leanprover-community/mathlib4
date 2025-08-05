@@ -651,10 +651,7 @@ theorem not_summable_of_ratio_norm_eventually_ge {α : Type*} [SeminormedAddComm
     specialize hN₀ N hNN₀
     simp only [comp_apply, zero_add] at h''
     exact hN h''.symm
-  · intro i
-    dsimp only [comp_apply]
-    convert hN₀ (i + N) (hNN₀.trans (N.le_add_left i)) using 3
-    ac_rfl
+  · grind
 
 theorem not_summable_of_ratio_test_tendsto_gt_one {α : Type*} [SeminormedAddCommGroup α]
     {f : ℕ → α} {l : ℝ} (hl : 1 < l) (h : Tendsto (fun n ↦ ‖f (n + 1)‖ / ‖f n‖) atTop (𝓝 l)) :

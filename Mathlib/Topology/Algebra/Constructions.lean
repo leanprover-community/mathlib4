@@ -102,14 +102,9 @@ instance instTopologicalSpaceUnits : TopologicalSpace Mˣ :=
 @[to_additive]
 theorem isInducing_embedProduct : IsInducing (embedProduct M) := ⟨rfl⟩
 
-@[deprecated (since := "2024-10-28")] alias inducing_embedProduct := isInducing_embedProduct
-
 @[to_additive]
 theorem isEmbedding_embedProduct : IsEmbedding (embedProduct M) :=
   ⟨isInducing_embedProduct, embedProduct_injective M⟩
-
-@[deprecated (since := "2024-10-26")]
-alias embedding_embedProduct := isEmbedding_embedProduct
 
 @[to_additive]
 instance instT2Space [T2Space M] : T2Space Mˣ := isEmbedding_embedProduct.t2Space
@@ -131,15 +126,12 @@ topological embedding. Use `AddUnits.isEmbedding_val` or `toAddUnits_homeomorph`
 lemma isEmbedding_val_mk' {M : Type*} [Monoid M] [TopologicalSpace M] {f : M → M}
     (hc : ContinuousOn f {x : M | IsUnit x}) (hf : ∀ u : Mˣ, f u.1 = ↑u⁻¹) :
     IsEmbedding (val : Mˣ → M) := by
-  refine ⟨⟨?_⟩, ext⟩
+  refine ⟨⟨?_⟩, val_injective⟩
   rw [topology_eq_inf, inf_eq_left, ← continuous_iff_le_induced,
     @continuous_iff_continuousAt _ _ (.induced _ _)]
   intros u s hs
   simp only [← hf, nhds_induced, Filter.mem_map] at hs ⊢
   exact ⟨_, mem_inf_principal.1 (hc u u.isUnit hs), fun u' hu' ↦ hu' u'.isUnit⟩
-
-@[deprecated (since := "2024-10-26")]
-alias embedding_val_mk' := isEmbedding_val_mk'
 
 /-- An auxiliary lemma that can be used to prove that coercion `Mˣ → M` is a topological embedding.
 Use `Units.isEmbedding_val₀`, `Units.isEmbedding_val`, or `toUnits_homeomorph` instead. -/

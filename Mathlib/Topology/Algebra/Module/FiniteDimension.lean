@@ -416,9 +416,7 @@ def ContinuousLinearEquiv.ofFinrankEq (cond : finrank 𝕜 E = finrank 𝕜 F) :
 
 end
 
-namespace Basis
-
-
+namespace Module.Basis
 variable {ι : Type*} [Finite ι] [T2Space E]
 
 /-- Construct a continuous linear map given the value at a finite basis. -/
@@ -456,7 +454,7 @@ theorem constrL_apply {ι : Type*} [Fintype ι] (v : Basis ι 𝕜 E) (f : ι �
 theorem constrL_basis (v : Basis ι 𝕜 E) (f : ι → F) (i : ι) : v.constrL f (v i) = f i :=
   v.constr_basis 𝕜 _ _
 
-end Basis
+end Module.Basis
 
 namespace ContinuousLinearMap
 
