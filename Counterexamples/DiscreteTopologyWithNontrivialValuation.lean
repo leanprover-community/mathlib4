@@ -1,6 +1,23 @@
+/-
+Copyright (c) 2025 Kenny Lau. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kenny Lau
+-/
+
 import Mathlib.FieldTheory.RatFunc.AsPolynomial
 import Mathlib.RingTheory.Valuation.RankOne
 import Mathlib.Topology.Algebra.Valued.ValuativeRel
+
+/-!
+# A Non-Trivial Valuation with a Discrete Topology
+
+In this file we construct a valuation on `K[X]` satisfying `1 < v(X)`, and show that this valuation
+is non-trivial (and even rank one), but has a discrete topology.
+
+At the end, the `example` shows that this is not possible for fields.
+
+-/
+
 
 -- Do these belong to another file?
 namespace Valuation
