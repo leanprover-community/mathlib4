@@ -698,7 +698,7 @@ lemma indepFun_prod₀ (mX : AEMeasurable X μ) (mY : AEMeasurable Y ν) :
 
 variable {ι : Type*} [Fintype ι] {Ω : ι → Type*} {mΩ : ∀ i, MeasurableSpace (Ω i)}
     {μ : (i : ι) → Measure (Ω i)} [∀ i, IsProbabilityMeasure (μ i)]
-    {𝓧 : ι → Type*} [∀ i, MeasurableSpace (𝓧 i)] {X : Π i, Ω i → 𝓧 i}
+    {𝓧 : ι → Type*} [∀ i, MeasurableSpace (𝓧 i)] {X : (i : ι) → Ω i → 𝓧 i}
 
 lemma iIndepFun_pi (mX : ∀ i, AEMeasurable (X i) (μ i)) :
     iIndepFun (fun i ω ↦ X i (ω i)) (Measure.pi μ) := by
