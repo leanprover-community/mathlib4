@@ -505,7 +505,7 @@ instance toAddCommGroup : AddCommGroup (NormedAddGroupHom V₁ V₂) :=
     fun _ _ => rfl
 
 /-- Normed group homomorphisms themselves form a seminormed group with respect to
-    the operator norm. -/
+the operator norm. -/
 instance toSeminormedAddCommGroup : SeminormedAddCommGroup (NormedAddGroupHom V₁ V₂) :=
   AddGroupSeminorm.toSeminormedAddCommGroup
     { toFun := opNorm
@@ -514,7 +514,7 @@ instance toSeminormedAddCommGroup : SeminormedAddCommGroup (NormedAddGroupHom V�
       add_le' := opNorm_add_le }
 
 /-- Normed group homomorphisms themselves form a normed group with respect to
-    the operator norm. -/
+the operator norm. -/
 instance toNormedAddCommGroup {V₁ V₂ : Type*} [NormedAddCommGroup V₁] [NormedAddCommGroup V₂] :
     NormedAddCommGroup (NormedAddGroupHom V₁ V₂) :=
   AddGroupNorm.toNormedAddCommGroup
@@ -644,7 +644,7 @@ theorem mem_ker (v : V₁) : v ∈ f.ker ↔ f v = 0 := by
   rw [ker, f.toAddMonoidHom.mem_ker, coe_toAddMonoidHom]
 
 /-- Given a normed group hom `f : V₁ → V₂` satisfying `g.comp f = 0` for some `g : V₂ → V₃`,
-    the corestriction of `f` to the kernel of `g`. -/
+the corestriction of `f` to the kernel of `g`. -/
 @[simps]
 def ker.lift (h : g.comp f = 0) : NormedAddGroupHom V₁ g.ker where
   toFun v := ⟨f v, by rw [g.mem_ker, ← comp_apply g f, h, zero_apply]⟩

@@ -71,8 +71,8 @@ instance [Inhabited C] : Inhabited (PresheafedSpace C) :=
   ⟨const (TopCat.of PEmpty) default⟩
 
 /-- A morphism between presheafed spaces `X` and `Y` consists of a continuous map
-    `f` between the underlying topological spaces, and a (notice contravariant!) map
-    from the presheaf on `Y` to the pushforward of the presheaf on `X` via `f`. -/
+`f` between the underlying topological spaces, and a (notice contravariant!) map
+from the presheaf on `Y` to the pushforward of the presheaf on `X` via `f`. -/
 structure Hom (X Y : PresheafedSpace C) where
   base : (X : TopCat) ⟶ (Y : TopCat)
   c : Y.presheaf ⟶ base _* X.presheaf
@@ -120,7 +120,7 @@ section
 attribute [local simp] id comp
 
 /-- The category of PresheafedSpaces. Morphisms are pairs, a continuous map and a presheaf map
-    from the presheaf on the target to the pushforward of the presheaf on the source. -/
+from the presheaf on the target to the pushforward of the presheaf on the source. -/
 instance categoryOfPresheafedSpaces : Category (PresheafedSpace C) where
   Hom := Hom
   id := id
@@ -389,7 +389,7 @@ variable {D : Type*} [Category D]
 namespace Functor
 
 /-- We can apply a functor `F : C ⥤ D` to the values of the presheaf in any `PresheafedSpace C`,
-    giving a functor `PresheafedSpace C ⥤ PresheafedSpace D` -/
+giving a functor `PresheafedSpace C ⥤ PresheafedSpace D` -/
 def mapPresheaf (F : C ⥤ D) : PresheafedSpace C ⥤ PresheafedSpace D where
   obj X :=
     { carrier := X.carrier
