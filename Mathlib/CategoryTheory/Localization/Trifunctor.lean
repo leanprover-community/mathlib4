@@ -145,8 +145,8 @@ and `Lifting₃ L₁ L₂ L₃ W₁ W₂ W₃ F₂ F₂'` hold. -/
 noncomputable def lift₃NatIso : F₁' ≅ F₂' where
   hom := lift₃NatTrans L₁ L₂ L₃ W₁ W₂ W₃ F₁ F₂ F₁' F₂' e.hom
   inv := lift₃NatTrans L₁ L₂ L₃ W₁ W₂ W₃ F₂ F₁ F₂' F₁' e.inv
-  hom_inv_id := natTrans₃_ext L₁ L₂ L₃ W₁ W₂ W₃ (by cat_disch)
-  inv_hom_id := natTrans₃_ext L₁ L₂ L₃ W₁ W₂ W₃ (by cat_disch)
+  hom_inv_id := natTrans₃_ext L₁ L₂ L₃ W₁ W₂ W₃ (by simp)
+  inv_hom_id := natTrans₃_ext L₁ L₂ L₃ W₁ W₂ W₃ (by simp)
 
 end
 
