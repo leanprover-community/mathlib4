@@ -218,20 +218,8 @@ variable [OpensMeasurableSpace X]
 lemma mem_support_restrict {s : Set X} {x : X} :
     x ∈ (μ.restrict s).support ↔ ∃ᶠ u in (𝓝[s] x).smallSets, 0 < μ u := by
   rw [nhds_basis_opens x |>.mem_measureSupport,
-    Filter.HasBasis.frequently_smallSets (hl := nhdsWithin_basis_open x s) (hq := pos_mono μ)] at *
-  constructor
-  all_goals
-  · intro h i hi
-    have D := h i hi
-    rw [restrict_apply] at *
-    · exact D
-    · exact IsOpen.measurableSet hi.2
-
--- The following application of `grind` doesn't work. Not sure how to troubleshoot...
---lemma mem_support_restrict {s : Set X} {x : X} :
---    x ∈ (μ.restrict s).support ↔ ∃ᶠ u in (𝓝[s] x).smallSets, 0 < μ u := by
---  rw [(nhdsWithin_basis_open x s).frequently_smallSets μ.pos_mono]
---  grind [IsOpen.measurableSet, restrict_apply]
+    (nhdsWithin_basis_open x s).frequently_smallSets μ.pos_mono]
+  grind [IsOpen.measurableSet, restrict_apply]
 
 lemma interior_inter_support {s : Set X} :
     interior s ∩ μ.support ⊆ (μ.restrict s).support := by
