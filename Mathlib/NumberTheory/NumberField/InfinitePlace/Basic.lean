@@ -93,9 +93,8 @@ theorem norm_embedding_eq (w : InfinitePlace K) (x : K) :
   rfl
 
 variable (K) in
-theorem embedding_injective : (embedding (K := K)).Injective := by
-  intro v₁ v₂ h
-  rw [← mk_embedding v₁, h, mk_embedding]
+theorem embedding_injective : (embedding (K := K)).Injective :=
+  fun _ _ h ↦ by simpa using congr_arg mk h
 
 @[simp]
 theorem embedding_inj {v₁ v₂ : InfinitePlace K} : v₁.embedding = v₂.embedding ↔ v₁ = v₂ :=
@@ -103,7 +102,7 @@ theorem embedding_inj {v₁ v₂ : InfinitePlace K} : v₁.embedding = v₂.embe
 
 variable (K) in
 theorem conjugate_embedding_injective :
-    (fun (v : InfinitePlace K) => ComplexEmbedding.conjugate v.embedding).Injective :=
+    (fun (v : InfinitePlace K) ↦ ComplexEmbedding.conjugate v.embedding).Injective :=
   star_injective.comp <| embedding_injective K
 
 variable (K) in
