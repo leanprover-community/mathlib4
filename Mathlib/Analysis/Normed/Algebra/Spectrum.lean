@@ -65,26 +65,45 @@ section SpectrumCompact
 
 open Filter
 
-variable [NormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A]
+variable [NormedField 𝕜]
 
 local notation "σ" => spectrum 𝕜
 local notation "ρ" => resolventSet 𝕜
 local notation "↑ₐ" => algebraMap 𝕜 A
 
 @[simp]
-theorem SpectralRadius.of_subsingleton [Subsingleton A] (a : A) : spectralRadius 𝕜 a = 0 := by
+theorem SpectralRadius.of_subsingleton [Ring A] [Algebra 𝕜 A] [Subsingleton A] (a : A) :
+    spectralRadius 𝕜 a = 0 := by
   simp [spectralRadius]
 
 @[simp]
-theorem spectralRadius_zero : spectralRadius 𝕜 (0 : A) = 0 := by
+theorem spectralRadius_zero [Ring A] [Algebra 𝕜 A] : spectralRadius 𝕜 (0 : A) = 0 := by
   nontriviality A
   simp [spectralRadius]
 
-theorem mem_resolventSet_of_spectralRadius_lt {a : A} {k : 𝕜} (h : spectralRadius 𝕜 a < ‖k‖₊) :
-    k ∈ ρ a :=
+@[simp]
+theorem spectralRadius_one [Ring A] [Algebra 𝕜 A] [Nontrivial A] :
+    spectralRadius 𝕜 (1 : A) = 1 := by
+  simp [spectralRadius, spectrum.one_eq]
+
+theorem mem_resolventSet_of_spectralRadius_lt [Ring A] [Algebra 𝕜 A] {a : A} {k : 𝕜}
+    (h : spectralRadius 𝕜 a < ‖k‖₊) : k ∈ ρ a :=
   Classical.not_not.mp fun hn => h.not_ge <| le_iSup₂ (α := ℝ≥0∞) k hn
 
-variable [CompleteSpace A]
+lemma spectralRadius_pow_le [Ring A] [Algebra 𝕜 A] (a : A) (n : ℕ) (hn : n ≠ 0) :
+    (spectralRadius 𝕜 a) ^ n ≤ spectralRadius 𝕜 (a ^ n) := by
+  simp only [spectralRadius, ENNReal.iSup₂_pow_of_ne_zero _ hn]
+  refine iSup₂_le fun x hx ↦ ?_
+  apply le_iSup₂_of_le (x ^ n) (spectrum.pow_mem_pow a n hx)
+  simp
+
+lemma spectralRadius_pow_le' [Ring A] [Algebra 𝕜 A] [Nontrivial A] (a : A) (n : ℕ) :
+    (spectralRadius 𝕜 a) ^ n ≤ spectralRadius 𝕜 (a ^ n) := by
+  cases n
+  · simp
+  · exact spectralRadius_pow_le a _ (by simp)
+
+variable [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
 
 theorem isOpen_resolventSet (a : A) : IsOpen (ρ a) :=
   Units.isOpen.preimage ((continuous_algebraMap 𝕜 A).sub continuous_const)
