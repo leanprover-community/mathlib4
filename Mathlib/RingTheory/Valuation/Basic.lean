@@ -127,7 +127,9 @@ section
 
 open WithZero
 
-noncomputable def mk₀ {R Γ : Type*} [Ring R] [IsDomain R]
+/-- An alternative constructor that takes a function `R → Γ` satisfying certain axioms and outputs
+a `Valuation R (WithZero Γ)`. -/
+@[simps] noncomputable def mk₀ {R Γ : Type*} [Ring R] [IsDomain R]
     [CommMonoid Γ] [LinearOrder Γ] [IsOrderedMonoid Γ]
     (v : R → Γ) (one : v 1 = 1)
     (mul : ∀ {x y}, x ≠ 0 → y ≠ 0 → v (x * y) = v x * v y)
@@ -151,7 +153,9 @@ noncomputable def mk₀ {R Γ : Type*} [Ring R] [IsDomain R]
         · rw [hxy0, if_pos rfl]; exact zero_le'
         · rw [if_neg hx0, if_neg hy0, if_neg hxy0, WithZero.le_max_iff]; exact add hx0 hy0 hxy0
 
-noncomputable def mkAdd {R Γ : Type*} [Ring R] [IsDomain R]
+/-- An alternative constructor that takes an (additive) function `R → Γ` satisfying certain axioms
+and outputs a `Valuation R Γᵐ⁰`. -/
+@[simps!] noncomputable def mkAdd {R Γ : Type*} [Ring R] [IsDomain R]
     [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedAddMonoid Γ]
     (v : R → Γ) (one : v 1 = 0)
     (mul : ∀ {x y}, x ≠ 0 → y ≠ 0 → v (x * y) = v x + v y)
@@ -161,7 +165,10 @@ noncomputable def mkAdd {R Γ : Type*} [Ring R] [IsDomain R]
     (fun hx0 hy0 ↦ by simp [mul hx0 hy0])
     (fun hx0 hy0 hxy0 ↦ by simpa using add hx0 hy0 hxy0)
 
-noncomputable def mkNeg {R Γ : Type*} [Ring R] [IsDomain R]
+/-- An alternative constructor that takes an (additive) function `R → Γ` satisfying certain axioms
+but with `min` instead of `max` in the ultrametric inequality and outputs a `Valuation R Γᵐ⁰`. This
+is useful for constructing a valuation in terms of `multiplicity`. -/
+@[simps!] noncomputable def mkNeg {R Γ : Type*} [Ring R] [IsDomain R]
     [AddCommGroup Γ] [LinearOrder Γ] [IsOrderedAddMonoid Γ]
     (v : R → Γ) (one : v 1 = 0)
     (mul : ∀ {x y}, x ≠ 0 → y ≠ 0 → v (x * y) = v x + v y)
