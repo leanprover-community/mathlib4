@@ -188,7 +188,7 @@ theorem image_le_of_deriv_right_lt_deriv_boundary {f f' : ℝ → ℝ} {a b : �
 Let `f` and `B` be continuous functions on `[a, b]` such that
 
 * `f a ≤ B a`;
-* `B` has derivative `B'` everywhere on `ℝ`;
+* `B` has right derivative `B'` at every point of `[a, b)`;
 * `f` has right derivative `f'` at every point of `[a, b)`;
 * we have `f' x ≤ B' x` on `[a, b)`.
 
