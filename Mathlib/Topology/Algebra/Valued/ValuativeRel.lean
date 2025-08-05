@@ -47,41 +47,104 @@ end Valuation
 
 namespace IsValuativeTopology
 
+section
+
+/-! # Alternate constructors -/
+
+variable {R : Type*} [CommRing R] [ValuativeRel R] [TopologicalSpace R]
+
+open ValuativeRel TopologicalSpace Filter Topology Set
+
+local notation "v" => valuation R
+
+/-- Assuming `ContinuousConstVAdd R R`, we only need to check the neighbourhood of `0` in order to
+prove `IsValuativeTopology R`. -/
+theorem of_zero [ContinuousConstVAdd R R]
+    (h₀ : ∀ s : Set R, s ∈ 𝓝 0 ↔ ∃ γ : (ValueGroupWithZero R)ˣ, { z | v z < γ } ⊆ s) :
+    IsValuativeTopology R where
+  mem_nhds_iff {s x} := by
+    simpa [← vadd_mem_nhds_vadd_iff (t := s) (-x), ← image_vadd, ← image_subset_iff] using
+      h₀ ((x + ·) ⁻¹' s)
+
+/-- Assuming `ContinuousConstVAdd R R`, we only need to check the neighbourhood of `0` in order to
+prove `IsValuativeTopology R`. -/
+lemma of_hasBasis_zero [ContinuousConstVAdd R R]
+    (h : (𝓝 (0 : R)).HasBasis (fun _ ↦ True) fun γ : (ValueGroupWithZero R)ˣ ↦ { x | v x < γ }) :
+    IsValuativeTopology R :=
+  .of_zero <| by simp [h.mem_iff]
+
+end
+
 variable {R : Type*} [CommRing R] [ValuativeRel R] [TopologicalSpace R]
 
 open ValuativeRel TopologicalSpace Filter Topology Set Uniformity
 
 local notation "v" => valuation R
 
-lemma of_hasBasis (h : (𝓝 (0 : R)).HasBasis (fun _ ↦ True)
-    fun γ : (ValueGroupWithZero R)ˣ ↦ { x | v x < γ }) :
-    IsValuativeTopology R :=
-  ⟨by simp [h.mem_iff]⟩
-
 variable [IsValuativeTopology R]
+/-- A version mentioning subtraction. -/
+lemma mem_nhds_iff' {s : Set R} {x : R} :
+    s ∈ 𝓝 (x : R) ↔
+    ∃ γ : (ValueGroupWithZero R)ˣ, { z | v (z - x) < γ } ⊆ s := by
+  convert mem_nhds_iff (s := s) using 4
+  ext z
+  simp [neg_add_eq_sub]
+
+@[deprecated (since := "2025-08-01")]
+alias _root_.ValuativeTopology.mem_nhds := mem_nhds_iff'
+
+lemma mem_nhds_zero_iff (s : Set R) : s ∈ 𝓝 (0 : R) ↔
+    ∃ γ : (ValueGroupWithZero R)ˣ, { x | v x < γ } ⊆ s := by
+  convert IsValuativeTopology.mem_nhds_iff' (x := (0 : R))
+  rw [sub_zero]
+
+@[deprecated (since := "2025-08-04")]
+alias _root_.ValuativeTopology.mem_nhds_iff := mem_nhds_zero_iff
+
+/-- Helper `Valued` instance when `ValuativeTopology R` over a `UniformSpace R`,
+for use in porting files from `Valued` to `ValuativeRel`. -/
+instance (priority := low) {R : Type*} [CommRing R] [ValuativeRel R] [UniformSpace R]
+    [IsUniformAddGroup R] [IsValuativeTopology R] :
+    Valued R (ValueGroupWithZero R) where
+  «v» := valuation R
+  is_topological_valuation := mem_nhds_zero_iff
+
+theorem hasBasis_nhds (x : R) :
+    (𝓝 x).HasBasis (fun _ => True)
+      fun γ : (ValueGroupWithZero R)ˣ => { z | v (z - x) < γ } := by
+  simp [Filter.hasBasis_iff, mem_nhds_iff']
 
 variable (R) in
 theorem hasBasis_nhds_zero :
-    (𝓝 (0 : R)).HasBasis (fun _ ↦ True)
-      fun γ : (ValueGroupWithZero R)ˣ ↦ { x | v x < γ } := by
-  simp [Filter.hasBasis_iff, mem_nhds_iff]
+    (𝓝 (0 : R)).HasBasis (fun _ => True)
+      fun γ : (ValueGroupWithZero R)ˣ => { x | v x < γ } := by
+  convert hasBasis_nhds (0 : R); rw [sub_zero]
 
 @[deprecated (since := "2025-08-01")]
 alias _root_.ValuativeTopology.hasBasis_nhds_zero := hasBasis_nhds_zero
 
-variable [IsTopologicalAddGroup R]
+variable (R) in
+instance (priority := low) isTopologicalAddGroup : IsTopologicalAddGroup R := by
+  have cts_add : ContinuousConstVAdd R R :=
+    ⟨fun x ↦ continuous_iff_continuousAt.2 fun z ↦
+      ((hasBasis_nhds z).tendsto_iff (hasBasis_nhds (x + z))).2 fun γ _ ↦
+        ⟨γ, trivial, fun y hy ↦ by simpa using hy⟩⟩
+  have basis := hasBasis_nhds_zero R
+  refine .of_comm_of_nhds_zero ?_ ?_ fun x₀ ↦ (map_eq_of_inverse (-x₀ + ·) ?_ ?_ ?_).symm
+  · exact (basis.prod_self.tendsto_iff basis).2 fun γ _ ↦
+      ⟨γ, trivial, fun ⟨_, _⟩ hx ↦ (v).map_add_lt hx.left hx.right⟩
+  · exact (basis.tendsto_iff basis).2 fun γ _ ↦ ⟨γ, trivial, fun y hy ↦ by simpa using hy⟩
+  · ext; simp
+  · simpa [ContinuousAt] using (cts_add.1 x₀).continuousAt (x := (0 : R))
+  · simpa [ContinuousAt] using (cts_add.1 (-x₀)).continuousAt (x := x₀)
 
-theorem mem_nhds {s : Set R} {x : R} :
-    s ∈ 𝓝 x ↔ ∃ γ : (ValueGroupWithZero R)ˣ, { y | v (y - x) < γ } ⊆ s := by
-  simp only [← nhds_translation_add_neg x, ← sub_eq_add_neg, preimage_setOf_eq, true_and,
-    ((hasBasis_nhds_zero R).comap fun y => y - x).mem_iff]
-
-instance : IsTopologicalRing R := by
+instance (priority := low) : IsTopologicalRing R := by
   convert (valuation R).subgroups_basis.toRingFilterBasis.isTopologicalRing
   rw [TopologicalSpace.ext_iff_nhds]
   intro x
   ext s
-  simp [(RingSubgroupsBasis.hasBasis_nhds _ _).mem_iff, mem_nhds, Valuation.ltAddSubgroup]
+  simp [(RingSubgroupsBasis.hasBasis_nhds _ _).mem_iff, mem_nhds_iff, Valuation.ltAddSubgroup,
+    neg_add_eq_sub]
 
 /-- A ring with a topological additive structure and a valuative relationship is
 a uniform space made up of entourages of the form `{ (x, y) | v (y - x) < γ }`.
@@ -95,8 +158,8 @@ theorem hasBasis_uniformity : (𝓤 R).HasBasis (fun _ => True)
   rw [uniformity_eq_comap_nhds_zero']
   exact (hasBasis_nhds_zero R).comap _
 
-instance : IsUniformAddGroup R := isUniformAddGroup_of_addCommGroup
-instance : IsUltraUniformity R := by
+instance (priority := low) : IsUniformAddGroup R := isUniformAddGroup_of_addCommGroup
+instance (priority := low) : IsUltraUniformity R := by
   refine .mk_of_hasBasis hasBasis_uniformity ?_ ?_
   · intros
     ext ⟨x, y⟩
@@ -173,7 +236,7 @@ theorem isClosed_closedBall (r : ValueGroupWithZero R) :
   rw [← isOpen_compl_iff, isOpen_iff_mem_nhds]
   intro x hx
   simp only [mem_compl_iff, mem_setOf_eq, not_le] at hx
-  rw [mem_nhds]
+  rw [mem_nhds_iff']
   have hx' : v x ≠ 0 := ne_of_gt <| lt_of_le_of_lt zero_le' <| hx
   refine ⟨Units.mk0 _ hx', fun y hy hy' => ne_of_lt hy <| Valuation.map_sub_swap v x y ▸
       (Valuation.map_sub_eq_of_lt_left _ <| lt_of_le_of_lt hy' hx)⟩
@@ -208,26 +271,13 @@ alias _root_.ValuativeTopology.isOpen_sphere := isOpen_sphere
 
 end IsValuativeTopology
 
-namespace Valued
-
-variable {R : Type*} [CommRing R] [ValuativeRel R] [UniformSpace R]
-  [IsUniformAddGroup R] [IsValuativeTopology R]
-
-/-- Helper `Valued` instance when `ValuativeTopology R` over a `UniformSpace R`,
-for use in porting files from `Valued` to `ValuativeRel`. -/
-scoped instance : Valued R (ValuativeRel.ValueGroupWithZero R) where
-  v := ValuativeRel.valuation R
-  is_topological_valuation := IsValuativeTopology.mem_nhds_iff
-
-end Valued
-
 namespace ValuativeRel
 
 variable {R : Type*} [CommRing R]
 
 instance [UniformSpace R] [IsUniformAddGroup R] [ValuativeRel R] [IsValuativeTopology R] :
     Valued R (ValueGroupWithZero R) :=
-  .mk (valuation R) IsValuativeTopology.mem_nhds_iff
+  .mk (valuation R) IsValuativeTopology.mem_nhds_zero_iff
 
 @[inherit_doc]
 scoped notation "𝒪[" R "]" => Valuation.integer (valuation R)
