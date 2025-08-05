@@ -151,7 +151,6 @@ theorem toStrongDual_inj (x' y' : WeakDual 𝕜 E) : toStrongDual x' = toStrongD
   (LinearEquiv.injective toStrongDual).eq_iff
 
 @[deprecated (since := "2025-08-03")] alias toNormedDual_inj := toStrongDual_inj
-@[deprecated (since := "2024-12-29")] alias toNormedDual_eq_iff := toNormedDual_inj
 
 variable (𝕜)
 
@@ -186,8 +185,6 @@ variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 namespace NormedSpace
 
 namespace Dual
-
-@[deprecated (since := "2024-12-29")] alias toWeakDual_eq_iff := toWeakDual_inj
 
 theorem toWeakDual_continuous : Continuous fun x' : StrongDual 𝕜 E => StrongDual.toWeakDual x' :=
   WeakBilin.continuous_of_continuous_eval _ fun z => (inclusionInDoubleDual 𝕜 E z).continuous
