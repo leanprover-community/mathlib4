@@ -107,14 +107,6 @@ lemma mem_nhds_zero_iff (s : Set R) : s ∈ 𝓝 (0 : R) ↔
 @[deprecated (since := "2025-08-04")]
 alias _root_.ValuativeTopology.mem_nhds_iff := mem_nhds_zero_iff
 
-/-- Helper `Valued` instance when `ValuativeTopology R` over a `UniformSpace R`,
-for use in porting files from `Valued` to `ValuativeRel`. -/
-instance (priority := low) {R : Type*} [CommRing R] [ValuativeRel R] [UniformSpace R]
-    [IsUniformAddGroup R] [IsValuativeTopology R] :
-    Valued R (ValueGroupWithZero R) where
-  «v» := valuation R
-  is_topological_valuation := mem_nhds_zero_iff
-
 theorem hasBasis_nhds (x : R) :
     (𝓝 x).HasBasis (fun _ => True)
       fun γ : (ValueGroupWithZero R)ˣ => { z | v (z - x) < γ } := by
@@ -158,6 +150,17 @@ lemma hasBasis_nhds_zero_compatible {Γ₀ : Type*} [LinearOrderedCommMonoidWith
     refine ⟨r, s, ⟨hr, hs⟩, fun x ↦ ?_⟩
     rw [← map_mul v, ← Valuation.Compatible.rel_lt_iff_lt]
     grind
+
+/-- Helper `Valued` instance when `ValuativeTopology R` over a `UniformSpace R`,
+for use in porting files from `Valued` to `ValuativeRel`. -/
+instance (priority := low) {R : Type*} [CommRing R] [ValuativeRel R] [UniformSpace R]
+    [IsUniformAddGroup R] [IsValuativeTopology R] :
+    Valued R (ValueGroupWithZero R) where
+  «v» := valuation R
+  is_topological_valuation s := by
+    simp only [(hasBasis_nhds_zero_pair _).mem_iff, valuation, Subtype.exists]
+    refine (Equiv.prodComm R R).exists_congr' ?_
+    simp [and_comm]
 
 variable (R) in
 instance (priority := low) isTopologicalAddGroup : IsTopologicalAddGroup R := by
