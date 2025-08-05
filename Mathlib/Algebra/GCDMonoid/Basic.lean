@@ -848,15 +848,15 @@ namespace Prime
 variable [GCDMonoid α] {p a b : α} (hp : Prime p)
 include hp
 
-/-- Adapted from and similar to `Prime.dvd_or_dvd`. -/
+/-- adapted from and similar to `Prime.dvd_or_dvd` -/
 theorem dvd_or_dvd_of_dvd_lcm (h : p ∣ lcm a b) : p ∣ a ∨ p ∣ b :=
   dvd_or_dvd hp (h.trans (lcm_dvd_mul a b))
 
-/-- Adapted from and similar to `Prime.dvd_mul`. -/
+/-- adapted from and similar to `Prime.dvd_mul` -/
 theorem dvd_lcm : p ∣ lcm a b ↔ p ∣ a ∨ p ∣ b :=
   ⟨hp.dvd_or_dvd_of_dvd_lcm, (Or.elim · (dvd_lcm_of_dvd_left · _) (dvd_lcm_of_dvd_right · _))⟩
 
-/-- Adapted from and similar to `Prime.not_dvd_mul`. -/
+/-- adapted from and similar to `Prime.not_dvd_mul` -/
 theorem not_dvd_lcm (ha : ¬ p ∣ a) (hb : ¬ p ∣ b) : ¬ p ∣ lcm a b :=
   hp.dvd_lcm.not.mpr <| not_or.mpr ⟨ha, hb⟩
 
