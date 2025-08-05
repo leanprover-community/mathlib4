@@ -662,9 +662,7 @@ auxiliary universe `w`. -/
 def uliftYonedaEquiv {X : C} {F : Cᵒᵖ ⥤ Type (max w v₁)} :
     (uliftYoneda.{w}.obj X ⟶ F) ≃ F.obj (op X) where
   toFun τ := τ.app (op X) (ULift.up (𝟙 _))
-  invFun x :=
-    { app Y y := F.map y.down.op x
-      naturality Y₁ Y₂ f := by ext; simp [uliftYoneda] }
+  invFun x := { app Y y := F.map y.down.op x }
   left_inv τ := by
     ext ⟨Y⟩ ⟨y⟩
     dsimp [uliftYoneda]
