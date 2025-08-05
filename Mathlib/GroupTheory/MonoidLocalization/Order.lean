@@ -19,7 +19,8 @@ variable {α : Type*}
 
 section OrderedCancelCommMonoid
 
-variable [OrderedCancelCommMonoid α] {s : Submonoid α} {a₁ b₁ : α} {a₂ b₂ : s}
+variable [CommMonoid α] [PartialOrder α] [IsOrderedCancelMonoid α] {s : Submonoid α}
+  {a₁ b₁ : α} {a₂ b₂ : s}
 
 @[to_additive]
 instance le : LE (Localization s) :=
@@ -70,16 +71,16 @@ instance partialOrder : PartialOrder (Localization s) where
       refine (mul_le_mul_left' hab _).trans ?_
       rwa [mul_left_comm, mul_left_comm (b.2 : α), mul_le_mul_iff_left]
   le_antisymm a b := by
-    induction' a using Localization.rec with a₁ a₂
+    induction a using Localization.rec
     on_goal 1 =>
-      induction' b using Localization.rec with b₁ b₂
+      induction b using Localization.rec
       · simp_rw [mk_le_mk, mk_eq_mk_iff, r_iff_exists]
         exact fun hab hba => ⟨1, by rw [hab.antisymm hba]⟩
     all_goals rfl
-  lt_iff_le_not_le a b := Localization.induction_on₂ a b fun _ _ => lt_iff_le_not_le
+  lt_iff_le_not_ge a b := Localization.induction_on₂ a b fun _ _ => lt_iff_le_not_ge
 
 @[to_additive]
-instance orderedCancelCommMonoid : OrderedCancelCommMonoid (Localization s) where
+instance isOrderedCancelMonoid : IsOrderedCancelMonoid (Localization s) where
   mul_le_mul_left := fun a b =>
     Localization.induction_on₂ a b fun a b hab c =>
       Localization.induction_on c fun c => by
@@ -109,15 +110,14 @@ def mkOrderEmbedding (b : s) : α ↪o Localization s where
 end OrderedCancelCommMonoid
 
 @[to_additive]
-instance [LinearOrderedCancelCommMonoid α] {s : Submonoid α} :
-    LinearOrderedCancelCommMonoid (Localization s) :=
-  { Localization.orderedCancelCommMonoid with
-    le_total := fun a b =>
+instance [CommMonoid α] [LinearOrder α] [IsOrderedCancelMonoid α] {s : Submonoid α} :
+    LinearOrder (Localization s) :=
+  { le_total := fun a b =>
       Localization.induction_on₂ a b fun _ _ => by
         simp_rw [mk_le_mk]
         exact le_total _ _
-    decidableLE := Localization.decidableLE
-    decidableLT := Localization.decidableLT
-    decidableEq := Localization.decidableEq }
+    toDecidableLE := Localization.decidableLE
+    toDecidableLT := Localization.decidableLT
+    toDecidableEq := Localization.decidableEq }
 
 end Localization

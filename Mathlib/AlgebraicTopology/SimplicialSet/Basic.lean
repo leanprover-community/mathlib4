@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison, Adam Topaz
 -/
 import Mathlib.AlgebraicTopology.SimplicialObject.Basic
+import Mathlib.CategoryTheory.Limits.Types.Colimits
 import Mathlib.CategoryTheory.Yoneda
 import Mathlib.Tactic.FinCases
 
@@ -252,12 +253,12 @@ open Opposite
 
 lemma δ_naturality_apply {n : ℕ} (i : Fin (n + 2)) (x : S _⦋n + 1⦌) :
     f.app (op ⦋n⦌) (S.δ i x) = T.δ i (f.app (op ⦋n + 1⦌) x) := by
-  show (S.δ i ≫ f.app (op ⦋n⦌)) x = (f.app (op ⦋n + 1⦌) ≫ T.δ i) x
+  change (S.δ i ≫ f.app (op ⦋n⦌)) x = (f.app (op ⦋n + 1⦌) ≫ T.δ i) x
   exact congr_fun (SimplicialObject.δ_naturality f i) x
 
 lemma σ_naturality_apply {n : ℕ} (i : Fin (n + 1)) (x : S _⦋n⦌) :
     f.app (op ⦋n + 1⦌) (S.σ i x) = T.σ i (f.app (op ⦋n⦌) x) := by
-  show (S.σ i ≫ f.app (op ⦋n + 1⦌)) x = (f.app (op ⦋n⦌) ≫ T.σ i) x
+  change (S.σ i ≫ f.app (op ⦋n + 1⦌)) x = (f.app (op ⦋n⦌) ≫ T.σ i) x
   exact congr_fun (SimplicialObject.σ_naturality f i) x
 
 end applications

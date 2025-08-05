@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
 import Mathlib.Topology.Algebra.MulAction
+import Mathlib.Topology.Algebra.Order.Field
 import Mathlib.Topology.Algebra.SeparationQuotient.Basic
 import Mathlib.Topology.Algebra.UniformMulAction
 import Mathlib.Topology.MetricSpace.Lipschitz
@@ -89,7 +90,7 @@ instance MulOpposite.lipschitzMul : LipschitzMul βᵐᵒᵖ where
 -- separately here so that it is available earlier in the hierarchy
 instance Real.hasLipschitzAdd : LipschitzAdd ℝ where
   lipschitz_add := ⟨2, LipschitzWith.of_dist_le_mul fun p q => by
-    simp only [Real.dist_eq, Prod.dist_eq, Prod.fst_sub, Prod.snd_sub, NNReal.coe_ofNat,
+    simp only [Real.dist_eq, Prod.dist_eq, NNReal.coe_ofNat,
       add_sub_add_comm, two_mul]
     refine le_trans (abs_add (p.1 - q.1) (p.2 - q.2)) ?_
     exact add_le_add (le_max_left _ _) (le_max_right _ _)⟩
@@ -110,7 +111,11 @@ variable [Zero α] [Zero β] [SMul α β]
 /-- Mixin typeclass on a scalar action of a metric space `α` on a metric space `β` both with
 distinguished points `0`, requiring compatibility of the action in the sense that
 `dist (x • y₁) (x • y₂) ≤ dist x 0 * dist y₁ y₂` and
-`dist (x₁ • y) (x₂ • y) ≤ dist x₁ x₂ * dist y 0`. -/
+`dist (x₁ • y) (x₂ • y) ≤ dist x₁ x₂ * dist y 0`.
+
+If `[NormedDivisionRing α] [SeminormedAddCommGroup β] [Module α β]` are assumed, then prefer writing
+`[NormSMulClass α β]` instead of using `[IsBoundedSMul α β]`, since while equivalent, typeclass
+search can only infer the latter from the former and not vice versa. -/
 class IsBoundedSMul : Prop where
   dist_smul_pair' : ∀ x : α, ∀ y₁ y₂ : β, dist (x • y₁) (x • y₂) ≤ dist x 0 * dist y₁ y₂
   dist_pair_smul' : ∀ x₁ x₂ : α, ∀ y : β, dist (x₁ • y) (x₂ • y) ≤ dist x₁ x₂ * dist y 0

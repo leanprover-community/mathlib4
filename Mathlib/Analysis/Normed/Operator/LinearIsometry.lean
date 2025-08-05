@@ -197,13 +197,14 @@ theorem norm_map (x : E) : ‖f x‖ = ‖x‖ :=
 theorem nnnorm_map (x : E) : ‖f x‖₊ = ‖x‖₊ :=
   NNReal.eq <| norm_map f x
 
+@[simp] -- Should be replaced with `SemilinearIsometryClass.enorm_map` when https://github.com/leanprover/lean4/issues/3107 is fixed.
+theorem enorm_map (x : E) : ‖f x‖ₑ = ‖x‖ₑ := by
+  simp [enorm]
+
 protected theorem isometry : Isometry f :=
   AddMonoidHomClass.isometry_of_norm f.toLinearMap (norm_map _)
 
 lemma isEmbedding (f : F →ₛₗᵢ[σ₁₂] E₂) : IsEmbedding f := f.isometry.isEmbedding
-
-@[deprecated (since := "2024-10-26")]
-alias embedding := isEmbedding
 
 -- Should be `@[simp]` but it doesn't fire due to https://github.com/leanprover/lean4/issues/3107.
 theorem isComplete_image_iff [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) {s : Set E} :
@@ -486,7 +487,7 @@ instance instSemilinearIsometryEquivClass :
   norm_map e := e.norm_map'
 
 /-- Shortcut instance, saving 8.5% of compilation time in
-`Mathlib.Analysis.InnerProductSpace.Adjoint`.
+`Mathlib/Analysis/InnerProductSpace/Adjoint.lean`.
 
 (This instance was pinpointed by benchmarks; we didn't do an in depth investigation why it is
 specifically needed.)
@@ -649,16 +650,33 @@ theorem symm_bijective : Function.Bijective (symm : (E₂ ≃ₛₗᵢ[σ₂₁]
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 @[simp]
-theorem toLinearEquiv_symm : e.toLinearEquiv.symm = e.symm.toLinearEquiv :=
+theorem toLinearEquiv_symm : e.symm.toLinearEquiv = e.toLinearEquiv.symm :=
   rfl
 
 @[simp]
-theorem toIsometryEquiv_symm : e.toIsometryEquiv.symm = e.symm.toIsometryEquiv :=
+theorem coe_symm_toLinearEquiv : ⇑e.toLinearEquiv.symm = e.symm := rfl
+
+@[simp]
+theorem toContinuousLinearEquiv_symm :
+    e.symm.toContinuousLinearEquiv = e.toContinuousLinearEquiv.symm := rfl
+
+@[simp]
+theorem coe_symm_toContinuousLinearEquiv : ⇑e.toContinuousLinearEquiv.symm = e.symm :=
   rfl
 
 @[simp]
-theorem toHomeomorph_symm : e.toHomeomorph.symm = e.symm.toHomeomorph :=
+theorem toIsometryEquiv_symm : e.symm.toIsometryEquiv = e.toIsometryEquiv.symm :=
   rfl
+
+@[simp]
+theorem coe_symm_toIsometryEquiv : ⇑e.toIsometryEquiv.symm = e.symm := rfl
+
+@[simp]
+theorem toHomeomorph_symm : e.symm.toHomeomorph = e.toHomeomorph.symm :=
+  rfl
+
+@[simp]
+theorem coe_symm_toHomeomorph : ⇑e.toHomeomorph.symm = e.symm := rfl
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
   because it is a composition of multiple projections. -/
@@ -691,6 +709,16 @@ theorem trans_apply (e₁ : E ≃ₛₗᵢ[σ₁₂] E₂) (e₂ : E₂ ≃ₛ�
 @[simp]
 theorem toLinearEquiv_trans (e' : E₂ ≃ₛₗᵢ[σ₂₃] E₃) :
     (e.trans e').toLinearEquiv = e.toLinearEquiv.trans e'.toLinearEquiv :=
+  rfl
+
+@[simp]
+theorem toIsometryEquiv_trans (e' : E₂ ≃ₛₗᵢ[σ₂₃] E₃) :
+    (e.trans e').toIsometryEquiv = e.toIsometryEquiv.trans e'.toIsometryEquiv :=
+  rfl
+
+@[simp]
+theorem toHomeomorph_trans (e' : E₂ ≃ₛₗᵢ[σ₂₃] E₃) :
+    (e.trans e').toHomeomorph = e.toHomeomorph.trans e'.toHomeomorph :=
   rfl
 
 @[simp]
@@ -913,7 +941,8 @@ theorem coe_ofSurjective (f : F →ₛₗᵢ[σ₁₂] E₂) (hfr : Function.Sur
 def ofLinearIsometry (f : E →ₛₗᵢ[σ₁₂] E₂) (g : E₂ →ₛₗ[σ₂₁] E)
     (h₁ : f.toLinearMap.comp g = LinearMap.id) (h₂ : g.comp f.toLinearMap = LinearMap.id) :
     E ≃ₛₗᵢ[σ₁₂] E₂ :=
-  { LinearEquiv.ofLinear f.toLinearMap g h₁ h₂ with norm_map' := fun x => f.norm_map x }
+  { toLinearEquiv := LinearEquiv.ofLinear f.toLinearMap g h₁ h₂
+    norm_map' := fun x => f.norm_map x }
 
 @[simp]
 theorem coe_ofLinearIsometry (f : E →ₛₗᵢ[σ₁₂] E₂) (g : E₂ →ₛₗ[σ₂₁] E)
@@ -990,12 +1019,12 @@ theorem ofEq_rfl : ofEq p p rfl = LinearIsometryEquiv.refl R' p := rfl
 end LinearIsometryEquiv
 
 /-- Two linear isometries are equal if they are equal on basis vectors. -/
-theorem Basis.ext_linearIsometry {ι : Type*} (b : Basis ι R E) {f₁ f₂ : E →ₛₗᵢ[σ₁₂] E₂}
+theorem Module.Basis.ext_linearIsometry {ι : Type*} (b : Basis ι R E) {f₁ f₂ : E →ₛₗᵢ[σ₁₂] E₂}
     (h : ∀ i, f₁ (b i) = f₂ (b i)) : f₁ = f₂ :=
   LinearIsometry.toLinearMap_injective <| b.ext h
 
 /-- Two linear isometric equivalences are equal if they are equal on basis vectors. -/
-theorem Basis.ext_linearIsometryEquiv {ι : Type*} (b : Basis ι R E) {f₁ f₂ : E ≃ₛₗᵢ[σ₁₂] E₂}
+theorem Module.Basis.ext_linearIsometryEquiv {ι : Type*} (b : Basis ι R E) {f₁ f₂ : E ≃ₛₗᵢ[σ₁₂] E₂}
     (h : ∀ i, f₁ (b i) = f₂ (b i)) : f₁ = f₂ :=
   LinearIsometryEquiv.toLinearEquiv_injective <| b.ext' h
 

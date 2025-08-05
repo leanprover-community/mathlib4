@@ -18,10 +18,10 @@ and take a fixed point again.
 
 ## Main definitions
 
- * `Cofix.mk`     - constructor
- * `Cofix.dest`   - destructor
- * `Cofix.corec`  - corecursor: useful for formulating infinite, productive computations
- * `Cofix.bisim`  - bisimulation: proof technique to show the equality of possibly infinite values
+* `Cofix.mk`     - constructor
+* `Cofix.dest`   - destructor
+* `Cofix.corec`  - corecursor: useful for formulating infinite, productive computations
+* `Cofix.bisim`  - bisimulation: proof technique to show the equality of possibly infinite values
                     of `Cofix F α`
 
 ## Implementation notes
@@ -34,8 +34,8 @@ We define the relation `Mcongr` and take its quotient as the definition of `Cofi
 
 ## Reference
 
- * Jeremy Avigad, Mario M. Carneiro and Simon Hudon.
-   [*Data Types as Quotients of Polynomial Functors*][avigad-carneiro-hudon2019]
+* Jeremy Avigad, Mario M. Carneiro and Simon Hudon.
+  [*Data Types as Quotients of Polynomial Functors*][avigad-carneiro-hudon2019]
 -/
 
 
@@ -181,9 +181,9 @@ specific values of type `Cofix F α`.
 
 A bisimulation relation `R` for values `x y : Cofix F α`:
 
- * holds for `x y`: `R x y`
- * for any values `x y` that satisfy `R`, their root has the same shape
-   and their children can be paired in such a way that they satisfy `R`.
+* holds for `x y`: `R x y`
+* for any values `x y` that satisfy `R`, their root has the same shape
+  and their children can be paired in such a way that they satisfy `R`.
 
 -/
 
@@ -218,7 +218,7 @@ private theorem Cofix.bisim_aux {α : TypeVec n} (r : Cofix F α → Cofix F α 
           intro c
           apply Quot.inductionOn
             (motive := fun c =>
-              ∀b, r c b → Quot.lift (Quot.mk r') h₁ c = Quot.lift (Quot.mk r') h₁ b) c
+              ∀ b, r c b → Quot.lift (Quot.mk r') h₁ c = Quot.lift (Quot.mk r') h₁ b) c
           clear c
           intro c d
           apply Quot.inductionOn
@@ -258,11 +258,11 @@ theorem Cofix.bisim_rel {α : TypeVec n} (r : Cofix F α → Cofix F α → Prop
 
 /-- Bisimulation principle using `LiftR` to match and relate children of two trees. -/
 theorem Cofix.bisim {α : TypeVec n} (r : Cofix F α → Cofix F α → Prop)
-    (h : ∀ x y, r x y → LiftR (RelLast α r (i := _)) (Cofix.dest x) (Cofix.dest y)) :
+    (h : ∀ x y, r x y → LiftR (RelLast α r) (Cofix.dest x) (Cofix.dest y)) :
     ∀ x y, r x y → x = y := by
   apply Cofix.bisim_rel
   intro x y rxy
-  rcases (liftR_iff (fun a b => RelLast α r a b) (dest x) (dest y)).mp (h x y rxy)
+  rcases (liftR_iff (fun a b => RelLast α r b) (dest x) (dest y)).mp (h x y rxy)
     with ⟨a, f₀, f₁, dxeq, dyeq, h'⟩
   rw [dxeq, dyeq, ← abs_map, ← abs_map, MvPFunctor.map_eq, MvPFunctor.map_eq]
   rw [← split_dropFun_lastFun f₀, ← split_dropFun_lastFun f₁]
@@ -273,8 +273,6 @@ theorem Cofix.bisim {α : TypeVec n} (r : Cofix F α → Cofix F α → Prop)
     apply h' _ j
   · change f₀ _ j = f₁ _ j
     apply h' _ j
-
-open MvFunctor
 
 /-- Bisimulation principle using `LiftR'` to match and relate children of two trees. -/
 theorem Cofix.bisim₂ {α : TypeVec n} (r : Cofix F α → Cofix F α → Prop)

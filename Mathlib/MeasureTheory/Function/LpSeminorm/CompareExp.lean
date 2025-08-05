@@ -6,7 +6,6 @@ Authors: Rémy Degenne, Eric Wieser
 import Mathlib.Data.ENNReal.Holder
 import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
 import Mathlib.MeasureTheory.Integral.MeanInequalities
-import Mathlib.Tactic.Finiteness
 
 /-!
 # Compare Lp seminorms for different values of `p`
@@ -22,7 +21,9 @@ namespace MeasureTheory
 
 section SameSpace
 
-variable {α E : Type*} {m : MeasurableSpace α} [NormedAddCommGroup E] {μ : Measure α} {f : α → E}
+variable {α ε ε' : Type*} {m : MeasurableSpace α} {μ : Measure α} {f : α → ε}
+  [TopologicalSpace ε] [ContinuousENorm ε]
+  [TopologicalSpace ε'] [ENormedAddMonoid ε']
 
 theorem eLpNorm'_le_eLpNorm'_mul_rpow_measure_univ {p q : ℝ} (hp0_lt : 0 < p) (hpq : p ≤ q)
     (hf : AEStronglyMeasurable f μ) :
@@ -39,10 +40,10 @@ theorem eLpNorm'_le_eLpNorm'_mul_rpow_measure_univ {p q : ℝ} (hp0_lt : 0 < p) 
   let r := p * q / (q - p)
   have hpqr : 1 / p = 1 / q + 1 / r := by field_simp [r, hp0_lt.ne', hq0_lt.ne']
   calc
-    (∫⁻ a : α, (↑‖f a‖₊ * g a) ^ p ∂μ) ^ (1 / p) ≤
-        (∫⁻ a : α, ↑‖f a‖₊ ^ q ∂μ) ^ (1 / q) * (∫⁻ a : α, g a ^ r ∂μ) ^ (1 / r) :=
+    (∫⁻ a : α, (‖f a‖ₑ * g a) ^ p ∂μ) ^ (1 / p) ≤
+        (∫⁻ a : α, ‖f a‖ₑ ^ q ∂μ) ^ (1 / q) * (∫⁻ a : α, g a ^ r ∂μ) ^ (1 / r) :=
       ENNReal.lintegral_Lp_mul_le_Lq_mul_Lr hp0_lt hpq hpqr μ hf.enorm aemeasurable_const
-    _ = (∫⁻ a : α, ↑‖f a‖₊ ^ q ∂μ) ^ (1 / q) * μ Set.univ ^ (1 / p - 1 / q) := by
+    _ = (∫⁻ a : α, ‖f a‖ₑ ^ q ∂μ) ^ (1 / q) * μ Set.univ ^ (1 / p - 1 / q) := by
       rw [hpqr]; simp [r, g]
 
 theorem eLpNorm'_le_eLpNormEssSup_mul_rpow_measure_univ {q : ℝ} (hq_pos : 0 < q) :
@@ -66,12 +67,9 @@ theorem eLpNorm_le_eLpNorm_mul_rpow_measure_univ {p q : ℝ≥0∞} (hpq : p ≤
   have hp0_lt : 0 < p := lt_of_le_of_ne (zero_le _) hp0.symm
   have hq0_lt : 0 < q := lt_of_lt_of_le hp0_lt hpq
   by_cases hq_top : q = ∞
-  · simp only [hq_top, _root_.div_zero, one_div, ENNReal.toReal_top, sub_zero, eLpNorm_exponent_top,
-      GroupWithZero.inv_zero]
+  · simp only [hq_top, _root_.div_zero, one_div, ENNReal.toReal_top, sub_zero, eLpNorm_exponent_top]
     by_cases hp_top : p = ∞
-    · simp only [hp_top, ENNReal.rpow_zero, mul_one, ENNReal.toReal_top, sub_zero,
-        GroupWithZero.inv_zero, eLpNorm_exponent_top]
-      exact le_rfl
+    · simp [hp_top]
     rw [eLpNorm_eq_eLpNorm' hp0 hp_top]
     have hp_pos : 0 < p.toReal := ENNReal.toReal_pos hp0_lt.ne' hp_top
     refine (eLpNorm'_le_eLpNormEssSup_mul_rpow_measure_univ hp_pos).trans (le_of_eq ?_)
@@ -100,7 +98,7 @@ theorem eLpNorm_le_eLpNorm_of_exponent_le {p q : ℝ≥0∞} (hpq : p ≤ q) [Is
 theorem eLpNorm'_lt_top_of_eLpNorm'_lt_top_of_exponent_le {p q : ℝ} [IsFiniteMeasure μ]
     (hf : AEStronglyMeasurable f μ) (hfq_lt_top : eLpNorm' f q μ < ∞) (hp_nonneg : 0 ≤ p)
     (hpq : p ≤ q) : eLpNorm' f p μ < ∞ := by
-  rcases le_or_lt p 0 with hp_nonpos | hp_pos
+  rcases le_or_gt p 0 with hp_nonpos | hp_pos
   · rw [le_antisymm hp_nonpos hp_nonneg]
     simp
   have hq_pos : 0 < q := lt_of_lt_of_le hp_pos hpq
@@ -112,7 +110,7 @@ theorem eLpNorm'_lt_top_of_eLpNorm'_lt_top_of_exponent_le {p q : ℝ} [IsFiniteM
       refine Or.inl ⟨hfq_lt_top, ENNReal.rpow_lt_top_of_nonneg ?_ (measure_ne_top μ Set.univ)⟩
       rwa [le_sub_comm, sub_zero, one_div, one_div, inv_le_inv₀ hq_pos hp_pos]
 
-theorem MemLp.mono_exponent {p q : ℝ≥0∞} [IsFiniteMeasure μ] {f : α → E} (hfq : MemLp f q μ)
+theorem MemLp.mono_exponent {p q : ℝ≥0∞} [IsFiniteMeasure μ] (hfq : MemLp f q μ)
     (hpq : p ≤ q) : MemLp f p μ := by
   obtain ⟨hfq_m, hfq_lt_top⟩ := hfq
   by_cases hp0 : p = 0
@@ -147,7 +145,7 @@ alias Memℒp.mono_exponent := MemLp.mono_exponent
 
 /-- If a function is supported on a finite-measure set and belongs to `ℒ^p`, then it belongs to
 `ℒ^q` for any `q ≤ p`. -/
-lemma MemLp.mono_exponent_of_measure_support_ne_top {p q : ℝ≥0∞} {f : α → E} (hfq : MemLp f q μ)
+lemma MemLp.mono_exponent_of_measure_support_ne_top {p q : ℝ≥0∞} {f : α → ε'} (hfq : MemLp f q μ)
     {s : Set α} (hf : ∀ x, x ∉ s → f x = 0) (hs : μ s ≠ ∞) (hpq : p ≤ q) : MemLp f p μ := by
   have : (toMeasurable μ s).indicator f = f := by
     apply Set.indicator_eq_self.2

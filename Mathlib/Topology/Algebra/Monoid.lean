@@ -57,8 +57,8 @@ instance ContinuousMul.to_continuousSMul_op : ContinuousSMul Mᵐᵒᵖ M :=
         continuous_swap.comp <| Continuous.prodMap MulOpposite.continuous_unop continuous_id⟩
 
 @[to_additive]
-theorem ContinuousMul.induced {α : Type*} {β : Type*} {F : Type*} [FunLike F α β] [MulOneClass α]
-    [MulOneClass β] [MonoidHomClass F α β] [tβ : TopologicalSpace β] [ContinuousMul β] (f : F) :
+theorem ContinuousMul.induced {α : Type*} {β : Type*} {F : Type*} [FunLike F α β] [Mul α]
+    [Mul β] [MulHomClass F α β] [tβ : TopologicalSpace β] [ContinuousMul β] (f : F) :
     @ContinuousMul α (tβ.induced f) _ := by
   let tα := tβ.induced f
   refine ⟨continuous_induced_rng.2 ?_⟩
@@ -221,7 +221,7 @@ theorem ContinuousMul.of_nhds_one {M : Type u} [Monoid M] [TopologicalSpace M]
         -- Now it fails with `failed to rewrite using equation theorems for 'Function.uncurry'`
         -- and `failed to rewrite using equation theorems for 'Function.comp'`.
         -- Removing those two lemmas, the `rw` would succeed, but then needs a `rfl`.
-        simp (config := { unfoldPartialApp := true }) only [uncurry]
+        simp +unfoldPartialApp only [uncurry]
         simp_rw [hleft x₀, hright y₀, prod_map_map_eq, Filter.map_map, Function.comp_def]
       _ = map ((fun x => x₀ * x) ∘ fun x => x * y₀) (map (uncurry (· * ·)) (𝓝 1 ×ˢ 𝓝 1)) := by
         rw [key, ← Filter.map_map]
@@ -331,8 +331,6 @@ theorem Topology.IsInducing.continuousMul {M N F : Type*} [Mul M] [Mul N] [FunLi
     (hf : IsInducing f) : ContinuousMul M :=
   ⟨(hf.continuousSMul hf.continuous (map_mul f _ _)).1⟩
 
-@[deprecated (since := "2024-10-28")] alias Inducing.continuousMul := IsInducing.continuousMul
-
 @[to_additive]
 theorem continuousMul_induced {M N F : Type*} [Mul M] [Mul N] [FunLike F M N] [MulHomClass F M N]
     [TopologicalSpace N] [ContinuousMul N] (f : F) : @ContinuousMul M (induced f ‹_›) _ :=
@@ -437,7 +435,7 @@ Let `f : α → M` and `g : α → M` be functions. If `g` tends to zero on a fi
 and the image of `l` under `f` is disjoint from the cocompact filter on `M`, then
 `fun x : α ↦ f x * g x` also tends to zero on `l`. -/
 theorem Tendsto.tendsto_mul_zero_of_disjoint_cocompact_left {f g : α → M} {l : Filter α}
-    (hf : Disjoint (map f l) (cocompact M)) (hg : Tendsto g l (𝓝 0)):
+    (hf : Disjoint (map f l) (cocompact M)) (hg : Tendsto g l (𝓝 0)) :
     Tendsto (fun x ↦ f x * g x) l (𝓝 0) :=
   tendsto_mul_prod_nhds_zero_of_disjoint_cocompact hf |>.comp (tendsto_map.prodMk hg)
 
@@ -652,7 +650,7 @@ theorem tendsto_list_prod {f : ι → α → M} {x : Filter α} {a : ι → M} :
   | f::l, h => by
     simp only [List.map_cons, List.prod_cons]
     exact
-      (h f (List.mem_cons_self _ _)).mul
+      (h f List.mem_cons_self).mul
         (tendsto_list_prod l fun c hc => h c (List.mem_cons_of_mem _ hc))
 
 @[to_additive (attr := continuity)]
@@ -753,7 +751,7 @@ continuous affine addition by constants."]
 instance (priority := 100) IsScalarTower.continuousConstSMul {R A : Type*} [Monoid A] [SMul R A]
     [IsScalarTower R A A] [TopologicalSpace A] [ContinuousMul A] : ContinuousConstSMul R A where
   continuous_const_smul q := by
-    simp (config := { singlePass := true }) only [← smul_one_mul q (_ : A)]
+    simp +singlePass only [← smul_one_mul q (_ : A)]
     exact continuous_const.mul continuous_id
 
 /-- If the action of `R` on `A` commutes with left-multiplication, then continuous multiplication
@@ -767,7 +765,7 @@ Notably, this instances applies when `R = Aᵃᵒᵖ`."]
 instance (priority := 100) SMulCommClass.continuousConstSMul {R A : Type*} [Monoid A] [SMul R A]
     [SMulCommClass R A A] [TopologicalSpace A] [ContinuousMul A] : ContinuousConstSMul R A where
   continuous_const_smul q := by
-    simp (config := { singlePass := true }) only [← mul_smul_one q (_ : A)]
+    simp +singlePass only [← mul_smul_one q (_ : A)]
     exact continuous_id.mul continuous_const
 
 end ContinuousMul
@@ -862,7 +860,7 @@ theorem eventuallyEq_prod {X M : Type*} [CommMonoid M] {s : Finset ι} {l : Filt
 open Function
 
 @[to_additive]
-theorem LocallyFinite.exists_finset_mulSupport {M : Type*} [CommMonoid M] {f : ι → X → M}
+theorem LocallyFinite.exists_finset_mulSupport {M : Type*} [One M] {f : ι → X → M}
     (hf : LocallyFinite fun i => mulSupport <| f i) (x₀ : X) :
     ∃ I : Finset ι, ∀ᶠ x in 𝓝 x₀, (mulSupport fun i => f i x) ⊆ I := by
   rcases hf x₀ with ⟨U, hxU, hUf⟩

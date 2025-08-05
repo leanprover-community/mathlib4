@@ -69,22 +69,33 @@ theorem map_centralizer_le_centralizer_image (s : Set G) (f : G →* G') :
   rw [← map_mul, ← map_mul, hg h hh]
 
 @[to_additive]
-instance Centralizer.characteristic [hH : H.Characteristic] :
+instance normal_centralizer [H.Normal] : (centralizer H : Subgroup G).Normal where
+  conj_mem g hg i h hh := by
+    simpa [-mul_left_inj, -mul_right_inj, mul_assoc]
+      using congr(i * $(hg _ <| ‹H.Normal›.conj_mem _ hh i⁻¹) * i⁻¹)
+
+@[to_additive]
+instance characteristic_centralizer [hH : H.Characteristic] :
     (centralizer (H : Set G)).Characteristic := by
   refine Subgroup.characteristic_iff_comap_le.mpr fun ϕ g hg h hh => ϕ.injective ?_
   rw [map_mul, map_mul]
   exact hg (ϕ h) (Subgroup.characteristic_iff_le_comap.mp hH ϕ hh)
 
 @[to_additive]
-theorem le_centralizer_iff_isCommutative : K ≤ centralizer K ↔ K.IsCommutative :=
+theorem le_centralizer_iff_isMulCommutative : K ≤ centralizer K ↔ IsMulCommutative K :=
   ⟨fun h => ⟨⟨fun x y => Subtype.ext (h y.2 x x.2)⟩⟩,
     fun h x hx y hy => congr_arg Subtype.val (h.1.1 ⟨y, hy⟩ ⟨x, hx⟩)⟩
+
+@[deprecated (since := "2025-04-09")] alias le_centralizer_iff_isCommutative :=
+  le_centralizer_iff_isMulCommutative
+@[deprecated (since := "2025-04-09")] alias _root_.AddSubgroup.le_centralizer_iff_isCommutative :=
+  AddSubgroup.le_centralizer_iff_isAddCommutative
 
 variable (H)
 
 @[to_additive]
-theorem le_centralizer [h : H.IsCommutative] : H ≤ centralizer H :=
-  le_centralizer_iff_isCommutative.mpr h
+theorem le_centralizer [h : IsMulCommutative H] : H ≤ centralizer H :=
+  le_centralizer_iff_isMulCommutative.mpr h
 
 variable {H} in
 @[to_additive]

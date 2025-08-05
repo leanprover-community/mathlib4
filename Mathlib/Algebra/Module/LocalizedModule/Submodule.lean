@@ -86,10 +86,11 @@ def localized'gi : GaloisInsertion (localized' S p f) (comap f <| ·.restrictSca
     rw [mem_comap, restrictScalars_mem, ← IsLocalizedModule.mk'_cancel' _ _ s,
       Submonoid.smul_def, ← algebraMap_smul S]
     exact smul_mem _ _ hn
+  choice x _ := localized' S p f x
   choice_eq _ _ := rfl
 
 /-- The localization of an `R`-submodule of `M` at `p` viewed as an `Rₚ`-submodule of `Mₚ`. -/
-abbrev localized : Submodule (Localization p) (LocalizedModule p M) :=
+noncomputable abbrev localized : Submodule (Localization p) (LocalizedModule p M) :=
   M'.localized' (Localization p) p (LocalizedModule.mkLinearMap p M)
 
 @[simp]
@@ -155,12 +156,12 @@ def toLocalized₀ : M' →ₗ[R] M'.localized₀ p f := f.restrict fun x hx ↦
 def toLocalized' : M' →ₗ[R] M'.localized' S p f := toLocalized₀ p f M'
 
 /-- The localization map of a submodule. -/
-abbrev toLocalized : M' →ₗ[R] M'.localized p :=
+noncomputable abbrev toLocalized : M' →ₗ[R] M'.localized p :=
   M'.toLocalized' (Localization p) p (LocalizedModule.mkLinearMap p M)
 
 instance : IsLocalizedModule p (M'.toLocalized₀ p f) where
   map_units x := by
-    simp_rw [Module.End_isUnit_iff]
+    simp_rw [Module.End.isUnit_iff]
     constructor
     · exact fun _ _ e ↦ Subtype.ext
         (IsLocalizedModule.smul_injective f x (congr_arg Subtype.val e))
@@ -211,7 +212,8 @@ def Submodule.toLocalizedQuotient' : M ⧸ M' →ₗ[R] N ⧸ M'.localized' S p 
   Submodule.mapQ M' ((M'.localized' S p f).restrictScalars R) f (fun x hx ↦ ⟨x, hx, 1, by simp⟩)
 
 /-- The localization map of a quotient module. -/
-abbrev Submodule.toLocalizedQuotient : M ⧸ M' →ₗ[R] LocalizedModule p M ⧸ M'.localized p :=
+noncomputable abbrev Submodule.toLocalizedQuotient :
+    M ⧸ M' →ₗ[R] LocalizedModule p M ⧸ M'.localized p :=
   M'.toLocalizedQuotient' (Localization p) p (LocalizedModule.mkLinearMap p M)
 
 @[simp]
@@ -222,7 +224,7 @@ open Submodule Submodule.Quotient IsLocalization in
 instance IsLocalizedModule.toLocalizedQuotient' (M' : Submodule R M) :
     IsLocalizedModule p (M'.toLocalizedQuotient' S p f) where
   map_units x := by
-    refine (Module.End_isUnit_iff _).mpr ⟨fun m n e ↦ ?_, fun m ↦ ⟨(IsLocalization.mk' S 1 x) • m,
+    refine (Module.End.isUnit_iff _).mpr ⟨fun m n e ↦ ?_, fun m ↦ ⟨(IsLocalization.mk' S 1 x) • m,
         by rw [Module.algebraMap_end_apply, ← smul_assoc, smul_mk'_one, mk'_self', one_smul]⟩⟩
     obtain ⟨⟨m, rfl⟩, n, rfl⟩ := PProd.mk (mk_surjective _ m) (mk_surjective _ n)
     simp only [Module.algebraMap_end_apply, ← mk_smul, Submodule.Quotient.eq, ← smul_sub] at e

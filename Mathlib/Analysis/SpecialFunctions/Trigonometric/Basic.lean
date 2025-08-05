@@ -111,7 +111,7 @@ end Real
 namespace Real
 
 theorem exists_cos_eq_zero : 0 ∈ cos '' Icc (1 : ℝ) 2 :=
-  intermediate_value_Icc' (by norm_num) continuousOn_cos
+  intermediate_value_Icc' (by simp) continuousOn_cos
     ⟨le_of_lt cos_two_neg, le_of_lt cos_one_pos⟩
 
 /-- The number π = 3.14159265... Defined here using choice as twice a zero of cos in [1,2], from
@@ -138,7 +138,7 @@ theorem pi_div_two_le_two : π / 2 ≤ 2 := by
   exact (Classical.choose_spec exists_cos_eq_zero).1.2
 
 theorem two_le_pi : (2 : ℝ) ≤ π :=
-  (div_le_div_iff_of_pos_right (show (0 : ℝ) < 2 by norm_num)).1
+  (div_le_div_iff_of_pos_right (show (0 : ℝ) < 2 by simp)).1
     (by rw [div_self (two_ne_zero' ℝ)]; exact one_le_pi_div_two)
 
 theorem pi_le_four : π ≤ 4 :=
@@ -414,8 +414,11 @@ theorem sin_nonneg_of_nonneg_of_le_pi {x : ℝ} (h0x : 0 ≤ x) (hxp : x ≤ π)
 theorem sin_neg_of_neg_of_neg_pi_lt {x : ℝ} (hx0 : x < 0) (hpx : -π < x) : sin x < 0 :=
   neg_pos.1 <| sin_neg x ▸ sin_pos_of_pos_of_lt_pi (neg_pos.2 hx0) (neg_lt.1 hpx)
 
-theorem sin_nonpos_of_nonnpos_of_neg_pi_le {x : ℝ} (hx0 : x ≤ 0) (hpx : -π ≤ x) : sin x ≤ 0 :=
+theorem sin_nonpos_of_nonpos_of_neg_pi_le {x : ℝ} (hx0 : x ≤ 0) (hpx : -π ≤ x) : sin x ≤ 0 :=
   neg_nonneg.1 <| sin_neg x ▸ sin_nonneg_of_nonneg_of_le_pi (neg_nonneg.2 hx0) (neg_le.1 hpx)
+
+@[deprecated (since := "2025-07-27")]
+alias sin_nonpos_of_nonnpos_of_neg_pi_le := sin_nonpos_of_nonpos_of_neg_pi_le
 
 @[simp]
 theorem sin_pi_div_two : sin (π / 2) = 1 :=
@@ -464,27 +467,27 @@ theorem cos_eq_sqrt_one_sub_sin_sq {x : ℝ} (hl : -(π / 2) ≤ x) (hu : x ≤ 
     cos x = √(1 - sin x ^ 2) := by
   rw [← abs_cos_eq_sqrt_one_sub_sin_sq, abs_of_nonneg (cos_nonneg_of_mem_Icc ⟨hl, hu⟩)]
 
-lemma cos_half {x : ℝ} (hl : -π ≤ x) (hr : x ≤ π) : cos (x / 2) = sqrt ((1 + cos x) / 2) := by
+lemma cos_half {x : ℝ} (hl : -π ≤ x) (hr : x ≤ π) : cos (x / 2) = √((1 + cos x) / 2) := by
   have : 0 ≤ cos (x / 2) := cos_nonneg_of_mem_Icc <| by constructor <;> linarith
   rw [← sqrt_sq this, cos_sq, add_div, two_mul, add_halves]
 
-lemma abs_sin_half (x : ℝ) : |sin (x / 2)| = sqrt ((1 - cos x) / 2) := by
+lemma abs_sin_half (x : ℝ) : |sin (x / 2)| = √((1 - cos x) / 2) := by
   rw [← sqrt_sq_eq_abs, sin_sq_eq_half_sub, two_mul, add_halves, sub_div]
 
 lemma sin_half_eq_sqrt {x : ℝ} (hl : 0 ≤ x) (hr : x ≤ 2 * π) :
-    sin (x / 2) = sqrt ((1 - cos x) / 2) := by
+    sin (x / 2) = √((1 - cos x) / 2) := by
   rw [← abs_sin_half, abs_of_nonneg]
   apply sin_nonneg_of_nonneg_of_le_pi <;> linarith
 
 lemma sin_half_eq_neg_sqrt {x : ℝ} (hl : -(2 * π) ≤ x) (hr : x ≤ 0) :
-    sin (x / 2) = -sqrt ((1 - cos x) / 2) := by
+    sin (x / 2) = -√((1 - cos x) / 2) := by
   rw [← abs_sin_half, abs_of_nonpos, neg_neg]
-  apply sin_nonpos_of_nonnpos_of_neg_pi_le <;> linarith
+  apply sin_nonpos_of_nonpos_of_neg_pi_le <;> linarith
 
 theorem sin_eq_zero_iff_of_lt_of_lt {x : ℝ} (hx₁ : -π < x) (hx₂ : x < π) : sin x = 0 ↔ x = 0 :=
   ⟨fun h => by
     contrapose! h
-    cases h.lt_or_lt with
+    cases h.lt_or_gt with
     | inl h0 => exact (sin_neg_of_neg_of_neg_pi_lt h0 hx₁).ne
     | inr h0 => exact (sin_pos_of_pos_of_lt_pi h0 hx₂).ne',
   fun h => by simp [h]⟩
@@ -857,12 +860,12 @@ theorem tan_pi_div_four : tan (π / 4) = 1 := by
 theorem tan_pi_div_two : tan (π / 2) = 0 := by simp [tan_eq_sin_div_cos]
 
 @[simp]
-theorem tan_pi_div_six : tan (π / 6) = 1 / sqrt 3 := by
+theorem tan_pi_div_six : tan (π / 6) = 1 / √3 := by
   rw [tan_eq_sin_div_cos, sin_pi_div_six, cos_pi_div_six]
   ring
 
 @[simp]
-theorem tan_pi_div_three : tan (π / 3) = sqrt 3 := by
+theorem tan_pi_div_three : tan (π / 3) = √3 := by
   rw [tan_eq_sin_div_cos, sin_pi_div_three, cos_pi_div_three]
   ring
 
@@ -1193,17 +1196,10 @@ theorem exp_two_pi_mul_I : exp (2 * π * I) = 1 :=
 lemma exp_pi_div_two_mul_I : exp (π / 2 * I) = I := by
   rw [← cos_add_sin_I, cos_pi_div_two, sin_pi_div_two, one_mul, zero_add]
 
-lemma circleMap_pi_div_two (c : ℂ) (R : ℝ) : circleMap c R (π / 2) = c + R * I := by
-  simp only [circleMap, ofReal_div, ofReal_ofNat, exp_pi_div_two_mul_I]
-
 @[simp]
 lemma exp_neg_pi_div_two_mul_I : exp (-π / 2 * I) = -I := by
   rw [← cos_add_sin_I, neg_div, cos_neg, cos_pi_div_two, sin_neg, sin_pi_div_two, zero_add, neg_mul,
     one_mul]
-
-lemma circleMap_neg_pi_div_two (c : ℂ) (R : ℝ) : circleMap c R (-π / 2) = c - R * I := by
-  simp only [circleMap, ofReal_div, ofReal_neg, ofReal_ofNat, exp_neg_pi_div_two_mul_I, mul_neg]
-  rfl
 
 @[simp]
 theorem exp_nat_mul_two_pi_mul_I (n : ℕ) : exp (n * (2 * π * I)) = 1 :=
@@ -1243,13 +1239,3 @@ theorem norm_exp_mul_exp_add_exp_neg_le_of_abs_im_le {a b : ℝ} (ha : a ≤ 0) 
   norm_exp_mul_exp_add_exp_neg_le_of_abs_im_le
 
 end Complex
-
-section circleMap
-
-open Function Complex Real
-
-/-- `circleMap` is `2π`-periodic. -/
-theorem periodic_circleMap (c : ℂ) (R : ℝ) : Periodic (circleMap c R) (2 * π) := fun θ => by
-  simp [circleMap, add_mul, exp_periodic _]
-
-end circleMap

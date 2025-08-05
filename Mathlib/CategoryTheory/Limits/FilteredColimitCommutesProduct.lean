@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Filtered
-import Mathlib.CategoryTheory.Limits.Shapes.Types
-import Mathlib.CategoryTheory.Limits.TypesFiltered
+import Mathlib.CategoryTheory.Limits.Types.Filtered
+import Mathlib.CategoryTheory.Limits.Types.Shapes
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Products
 
 /-!

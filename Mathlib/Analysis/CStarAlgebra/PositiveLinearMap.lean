@@ -21,7 +21,7 @@ This file develops the API for positive linear maps over C⋆-algebras.
 ## References
 
 * The proof that positive maps are bounded was taken from
-https://math.stackexchange.com/questions/426487/why-is-every-positive-linear-map-between-c-algebras-bounded
+  https://math.stackexchange.com/questions/426487/why-is-every-positive-linear-map-between-c-algebras-bounded
 -/
 
 open scoped NNReal
@@ -52,21 +52,20 @@ namespace PositiveLinearMap
 variable [NonUnitalCStarAlgebra A₁] [NonUnitalCStarAlgebra A₂] [PartialOrder A₁]
   [StarOrderedRing A₁] [PartialOrder A₂] [StarOrderedRing A₂]
   [CStarAlgebra B₁] [CStarAlgebra B₂] [PartialOrder B₁] [PartialOrder B₂]
-  [StarOrderedRing B₁] [StarOrderedRing B₂]
+  [StarOrderedRing B₁]
 
 lemma apply_le_of_isSelfAdjoint (f : B₁ →ₚ[ℂ] B₂) (x : B₁) (hx : IsSelfAdjoint x) :
     f x ≤ f (algebraMap ℝ B₁ ‖x‖) := by
   gcongr
   exact IsSelfAdjoint.le_algebraMap_norm_self hx
 
-lemma norm_apply_le_of_nonneg (f : B₁ →ₚ[ℂ] B₂) (x : B₁) (hx : 0 ≤ x) :
+lemma norm_apply_le_of_nonneg [StarOrderedRing B₂] (f : B₁ →ₚ[ℂ] B₂) (x : B₁) (hx : 0 ≤ x) :
     ‖f x‖ ≤ ‖f 1‖ * ‖x‖ := by
   have h : ‖‖x‖‖ = ‖x‖ := by simp
   rw [mul_comm, ← h, ← norm_smul ‖x‖ (f 1)]
   clear h
   refine CStarAlgebra.norm_le_norm_of_nonneg_of_le (f.map_nonneg hx) ?_
-  change f x ≤ (‖x‖ : ℂ) • f 1
-  rw [← LinearMapClass.map_smul f]
+  rw [← Complex.coe_smul, ← LinearMapClass.map_smul f]
   gcongr
   rw [← Algebra.algebraMap_eq_smul_one]
   exact IsSelfAdjoint.le_algebraMap_norm_self <| .of_nonneg hx
@@ -83,7 +82,7 @@ lemma exists_norm_apply_le (f : A₁ →ₚ[ℂ] A₂) : ∃ C : ℝ≥0, ∀ a,
     refine ⟨4 * C, fun x ↦ ?_⟩
     obtain ⟨y, hy_nonneg, hy_norm, hy⟩ := CStarAlgebra.exists_sum_four_nonneg x
     conv_lhs => rw [hy]
-    simp only [map_sum, map_smul, NNReal.coe_add]
+    simp only [map_sum, map_smul]
     apply norm_sum_le _ _ |>.trans
     simp only [norm_smul, norm_pow, norm_I, one_pow, one_mul]
     apply Finset.sum_le_sum (g := fun _ ↦ C * ‖x‖) (fun i _ ↦ ?_) |>.trans <| by simp [mul_assoc]
@@ -112,10 +111,10 @@ lemma exists_norm_apply_le (f : A₁ →ₚ[ℂ] A₂) : ∃ C : ℝ≥0, ∀ a,
     simp [norm_smul, hx_norm, ← inv_pow, this]
   -- There is some `n` such that `‖f (∑' m, 2 ^ (-m) • x m)‖ < 2 ^ n`
   obtain ⟨n, hn⟩ : ∃ n : ℕ, ‖f (∑' (n : ℕ), (2 : ℝ) ^ (-(n : ℤ)) • x n)‖ < (2 : ℝ) ^ n :=
-    tendsto_pow_atTop_atTop_of_one_lt (show (1 : ℝ) < 2 by norm_num) |>.eventually_gt_atTop _
+    tendsto_pow_atTop_atTop_of_one_lt one_lt_two |>.eventually_gt_atTop _
       |>.exists
   -- But `2 ^ n ≤ ‖f (2 ^ (-n) • x n)‖ ≤ ‖f (∑' m, 2 ^ (-m) • x m)‖`, which is a contradiction.
-  apply hn.not_le
+  apply hn.not_ge
   trans ‖f ((2 : ℝ) ^ (-n : ℤ) • x n)‖
   · have := hx n |>.le
     rw [pow_mul', sq] at this
@@ -123,9 +122,9 @@ lemma exists_norm_apply_le (f : A₁ →ₚ[ℂ] A₂) : ∃ C : ℝ≥0, ∀ a,
   · have (m : ℕ) : 0 ≤ ((2 : ℝ) ^ (-(m : ℤ)) • x m) := smul_nonneg (by positivity) (hx_nonneg m)
     refine CStarAlgebra.norm_le_norm_of_nonneg_of_le (f.map_nonneg (this n)) ?_
     gcongr
-    exact le_tsum x_summable n fun m _ ↦ this m
+    exact x_summable.le_tsum n fun m _ ↦ this m
 
-instance {F : Type*} [FunLike F A₁ A₂] [PositiveLinearMapClass F ℂ A₁ A₂] :
+instance {F : Type*} [FunLike F A₁ A₂] [LinearMapClass F ℂ A₁ A₂] [OrderHomClass F A₁ A₂] :
     ContinuousLinearMapClass F ℂ A₁ A₂ where
   map_continuous f := by
     have hbound : ∃ C : ℝ, ∀ a, ‖f a‖ ≤ C * ‖a‖ := by
@@ -133,7 +132,7 @@ instance {F : Type*} [FunLike F A₁ A₂] [PositiveLinearMapClass F ℂ A₁ A�
       exact ⟨C, h⟩
     exact (LinearMap.mkContinuousOfExistsBound (f : A₁ →ₗ[ℂ] A₂) hbound).continuous
 
-instance {F : Type*} [FunLike F A₁ A₂] [PositiveLinearMapClass F ℂ A₁ A₂] :
+instance {F : Type*} [FunLike F A₁ A₂] [LinearMapClass F ℂ A₁ A₂] [OrderHomClass F A₁ A₂] :
     StarHomClass F A₁ A₂ where
   map_star f a := by
     obtain ⟨y, hy_nonneg, hy_norm, hy⟩ := CStarAlgebra.exists_sum_four_nonneg a

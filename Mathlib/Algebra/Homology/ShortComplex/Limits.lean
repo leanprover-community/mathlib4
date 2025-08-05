@@ -18,7 +18,7 @@ of a certain shape `J`, then it is also the case of the category `ShortComplex C
 
 namespace CategoryTheory
 
-open Category Limits
+open Category Limits Functor
 
 variable {J C : Type*} [Category J] [Category C] [HasZeroMorphisms C]
   {F : J ⥤ ShortComplex C}
@@ -68,10 +68,7 @@ noncomputable def limitCone : Cone F :=
     { app := fun j => Hom.mk (limit.π _ _) (limit.π _ _) (limit.π _ _)
         (by simp) (by simp)
       naturality := fun _ _ f => by
-        ext
-        all_goals
-          dsimp
-          erw [id_comp, limit.w] }
+        ext <;> simp [← limit.w _ f] }
 
 /-- `limitCone F` becomes limit after the application of `π₁ : ShortComplex C ⥤ C`. -/
 noncomputable def isLimitπ₁MapConeLimitCone : IsLimit (π₁.mapCone (limitCone F)) :=
@@ -202,9 +199,9 @@ noncomputable def colimitCocone : Cocone F :=
         (colimit.ι (F ⋙ π₃) _) (by simp) (by simp)
       naturality := fun _ _ f => by
         ext
-        · dsimp; erw [comp_id, colimit.w (F ⋙ π₁)]
-        · dsimp; erw [comp_id, colimit.w (F ⋙ π₂)]
-        · dsimp; erw [comp_id, colimit.w (F ⋙ π₃)] }
+        · simp [← colimit.w (F ⋙ π₁) f]
+        · simp [← colimit.w (F ⋙ π₂) f]
+        · simp [← colimit.w (F ⋙ π₃) f] }
 
 /-- `colimitCocone F` becomes colimit after the application of `π₁ : ShortComplex C ⥤ C`. -/
 noncomputable def isColimitπ₁MapCoconeColimitCocone :

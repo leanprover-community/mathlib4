@@ -100,7 +100,7 @@ variable [Field K]
 
 theorem eval_indicator_apply_eq_zero (a b : σ → K) (h : a ≠ b) : eval a (indicator b) = 0 := by
   obtain ⟨i, hi⟩ : ∃ i, a i ≠ b i := by rwa [Ne, funext_iff, not_forall] at h
-  simp only [indicator, map_prod, map_sub, map_one, map_pow, eval_X, eval_C, sub_self,
+  simp only [indicator, map_prod, map_sub, map_one, map_pow, eval_X, eval_C,
     Finset.prod_eq_zero_iff]
   refine ⟨i, Finset.mem_univ _, ?_⟩
   rw [FiniteField.pow_card_sub_one_eq_one, sub_self]
@@ -128,14 +128,9 @@ theorem map_restrict_dom_evalₗ : (restrictDegree σ K (Fintype.card K - 1)).ma
   refine ⟨∑ n : σ → K, e n • indicator n, ?_, ?_⟩
   · exact sum_mem fun c _ => smul_mem _ _ (indicator_mem_restrictDegree _)
   · ext n
-    simp only [_root_.map_sum, @Finset.sum_apply (σ → K) (fun _ => K) _ _ _ _ _, Pi.smul_apply,
-      map_smul]
-    simp only [evalₗ_apply]
-    trans
-    · refine Finset.sum_eq_single n (fun b _ h => ?_) ?_
-      · rw [eval_indicator_apply_eq_zero _ _ h.symm, smul_zero]
-      · exact fun h => (h <| Finset.mem_univ n).elim
-    · rw [eval_indicator_apply_eq_one, smul_eq_mul, mul_one]
+    simp only [evalₗ_apply, map_sum, smul_eval]
+    rw [Finset.sum_eq_single n] <;>
+      aesop (add simp [eval_indicator_apply_eq_zero, eval_indicator_apply_eq_one, eq_comm])
 
 end
 
@@ -168,7 +163,7 @@ noncomputable instance [CommRing K] : Inhabited (R σ K) :=
   inferInstanceAs (Inhabited (restrictDegree σ K (Fintype.card K - 1)))
 
 /-- Evaluation in the `MvPolynomial.R` subtype. -/
-def evalᵢ [CommRing K] : R σ K →ₗ[K] (σ → K) → K :=
+noncomputable def evalᵢ [CommRing K] : R σ K →ₗ[K] (σ → K) → K :=
   (evalₗ K σ).comp (restrictDegree σ K (Fintype.card K - 1)).subtype
 
 -- TODO: would be nice to replace this by suitable decidability assumptions

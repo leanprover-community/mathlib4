@@ -182,7 +182,7 @@ and this array has the same length as the one returned by `Lean.Expr.getAppArgs`
 def getAppApps (e : Expr) : Array Expr :=
   let dummy := mkSort levelZero
   let nargs := e.getAppNumArgs
-  getAppAppsAux e (mkArray nargs dummy) (nargs-1)
+  getAppAppsAux e (.replicate nargs dummy) (nargs-1)
 
 /-- Erase proofs in an expression by replacing them with `sorry`s.
 
@@ -242,7 +242,7 @@ def ofNat (α : Expr) (n : Nat) : MetaM Expr := do
 (doing typeclass search for the `OfNat` and `Neg` instances required). -/
 def ofInt (α : Expr) : Int → MetaM Expr
   | Int.ofNat n => Expr.ofNat α n
-  | Int.negSucc n => do mkAppM ``Neg.neg #[← Expr.ofNat α (n+1)]
+  | Int.negSucc n => do mkAppM ``Neg.neg #[← Expr.ofNat α (n + 1)]
 
 section recognizers
 

@@ -5,7 +5,7 @@ Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.Filtered.Basic
 import Mathlib.CategoryTheory.Limits.HasLimits
-import Mathlib.CategoryTheory.Limits.Types
+import Mathlib.CategoryTheory.Limits.Types.Yoneda
 
 /-!
 # Filtered categories and limits

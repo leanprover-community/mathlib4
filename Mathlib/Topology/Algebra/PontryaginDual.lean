@@ -63,8 +63,9 @@ instance [LocallyCompactSpace H] : LocallyCompactSpace (PontryaginDual H) := by
       ← two_mul, abs_mul, abs_two, ← lt_div_iff₀' two_pos, div_div, ← pow_succ] at h2
     apply Set.Ioo_subset_Ioc_self
     rw [← two_mul, Set.mem_Ioo, ← abs_lt, abs_mul, abs_two, ← lt_div_iff₀' two_pos]
-    exact h1.trans_le
-      (div_le_div_of_nonneg_left Real.pi_nonneg two_pos (le_self_pow₀ one_le_two n.succ_ne_zero))
+    refine h1.trans_le ?_
+    gcongr
+    exact le_self_pow₀ one_le_two n.succ_ne_zero
   · rw [← Circle.exp_zero, ← isLocalHomeomorph_circleExp.map_nhds_eq 0]
     refine ((nhds_basis_zero_abs_lt ℝ).to_hasBasis
         (fun x hx ↦ ⟨Nat.ceil (Real.pi / x), trivial, fun t ht ↦ ?_⟩)
@@ -89,6 +90,10 @@ noncomputable instance instContinuousMapClass : ContinuousMapClass (PontryaginDu
 
 noncomputable instance instMonoidHomClass : MonoidHomClass (PontryaginDual A) A Circle :=
   ContinuousMonoidHom.instMonoidHomClass
+
+/-- A discrete monoid has compact Pontryagin dual. -/
+instance [DiscreteTopology A] : CompactSpace (PontryaginDual A) :=
+  ContinuousMonoidHom.instCompactSpace
 
 /-- `PontryaginDual` is a contravariant functor. -/
 noncomputable def map (f : A →ₜ* B) :

@@ -8,7 +8,6 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Data.Rat.Init
 import Mathlib.Order.Basic
 import Mathlib.Tactic.Common
-import Mathlib.Data.Int.Init
 import Mathlib.Data.Nat.Basic
 
 /-!
@@ -17,8 +16,8 @@ import Mathlib.Data.Nat.Basic
 ## Summary
 
 We define the integral domain structure on `ℚ` and prove basic lemmas about it.
-The definition of the field structure on `ℚ` will be done in `Mathlib.Data.Rat.Basic` once the
-`Field` class has been defined.
+The definition of the field structure on `ℚ` will be done in `Mathlib/Algebra/Field/Rat.lean`
+once the `Field` class has been defined.
 
 ## Main Definitions
 
@@ -32,7 +31,7 @@ The definition of the field structure on `ℚ` will be done in `Mathlib.Data.Rat
 
 -- TODO: If `Inv` was defined earlier than `Algebra.Group.Defs`, we could have
 -- assert_not_exists Monoid
-assert_not_exists MonoidWithZero Lattice PNat Nat.dvd_mul
+assert_not_exists MonoidWithZero Lattice PNat Nat.gcd_greatest
 
 open Function
 
@@ -178,7 +177,7 @@ lemma mk'_mul_mk' (n₁ n₂ : ℤ) (d₁ d₂ : ℕ) (hd₁ hd₂ hnd₁ hnd₂
     (h₂₁ : n₂.natAbs.Coprime d₁) :
     mk' n₁ d₁ hd₁ hnd₁ * mk' n₂ d₂ hd₂ hnd₂ = mk' (n₁ * n₂) (d₁ * d₂) (Nat.mul_ne_zero hd₁ hd₂) (by
       rw [Int.natAbs_mul]; exact (hnd₁.mul h₂₁).mul_right (h₁₂.mul hnd₂)) := by
-  rw [mul_def]; dsimp; simp [mk_eq_normalize]
+  rw [mul_def]; simp [mk_eq_normalize]
 
 lemma mul_eq_mkRat (q r : ℚ) : q * r = mkRat (q.num * r.num) (q.den * r.den) := by
   rw [mul_def, normalize_eq_mkRat]
@@ -232,7 +231,7 @@ protected lemma add_zero : a + 0 = a := by simp [add_def, normalize_eq_mkRat]
 protected lemma zero_add : 0 + a = a := by simp [add_def, normalize_eq_mkRat]
 
 protected lemma add_comm : a + b = b + a := by
-  simp [add_def, Int.add_comm, Int.mul_comm, Nat.mul_comm]
+  simp [add_def, Int.add_comm, Nat.mul_comm]
 
 protected theorem add_assoc : a + b + c = a + (b + c) :=
   numDenCasesOn' a fun n₁ d₁ h₁ ↦ numDenCasesOn' b fun n₂ d₂ h₂ ↦ numDenCasesOn' c fun n₃ d₃ h₃ ↦ by
@@ -254,7 +253,7 @@ protected theorem mul_assoc : a * b * c = a * (b * c) :=
   numDenCasesOn' a fun n₁ d₁ h₁ =>
     numDenCasesOn' b fun n₂ d₂ h₂ =>
       numDenCasesOn' c fun n₃ d₃ h₃ => by
-        simp [h₁, h₂, h₃, Int.mul_comm, Nat.mul_assoc, Int.mul_left_comm]
+        simp [Int.mul_comm, Nat.mul_assoc, Int.mul_left_comm]
 
 protected theorem add_mul : (a + b) * c = a * c + b * c :=
   numDenCasesOn' a fun n₁ d₁ h₁ ↦ numDenCasesOn' b fun n₂ d₂ h₂ ↦ numDenCasesOn' c fun n₃ d₃ h₃ ↦ by
@@ -274,7 +273,7 @@ attribute [simp] mkRat_eq_zero
 protected theorem mul_inv_cancel : a ≠ 0 → a * a⁻¹ = 1 :=
   numDenCasesOn' a fun n d hd hn ↦ by
     simp only [divInt_ofNat, ne_eq, hd, not_false_eq_true, mkRat_eq_zero] at hn
-    simp [-divInt_ofNat, mkRat_eq_divInt, Int.mul_comm, Int.mul_ne_zero hn (Int.ofNat_ne_zero.2 hd)]
+    simp [-divInt_ofNat, Int.mul_comm, Int.mul_ne_zero hn (Int.ofNat_ne_zero.2 hd)]
 
 protected theorem inv_mul_cancel (h : a ≠ 0) : a⁻¹ * a = 1 :=
   Eq.trans (Rat.mul_comm _ _) (Rat.mul_inv_cancel _ h)
@@ -322,7 +321,6 @@ instance commMonoid : CommMonoid ℚ where
   npow n q := q ^ n
   npow_zero := by intros; apply Rat.ext <;> simp [Int.pow_zero]
   npow_succ n q := by
-    dsimp
     rw [← q.mk'_num_den, mk'_pow, mk'_mul_mk']
     · congr
     · rw [mk'_pow, Int.natAbs_pow]

@@ -34,11 +34,12 @@ both for itself and all its minors.
 
 It is not (provably) the case that all matroids are `InvariantCardinalRank`,
 since the equicardinality of bases in general matroids is independent of ZFC
-(see the module docstring of `Mathlib.Data.Matroid.Basic`).
+(see the module docstring of `Mathlib/Data/Matroid/Basic.lean`).
 Lemmas like `Matroid.Base.cardinalMk_diff_comm` become true for all matroids
 only if they are weakened by replacing `Cardinal.mk` with the cruder `ℕ∞`-valued `Set.encard`.
 The `ℕ∞`-valued rank and rank functions `Matroid.eRank` and `Matroid.eRk`,
-which have a more unconditionally strong API, are developed in `Data.Matroid.Rank.ENat`.
+which have a more unconditionally strong API,
+are developed in `Mathlib/Data/Matroid/Rank/ENat.lean`.
 
 # Implementation Details
 
@@ -241,7 +242,7 @@ theorem IsBase.cardinalMk_eq_cRank (hB : M.IsBase B) : #B = M.cRank := by
   have hrw : ∀ B' : {B : Set α // M.IsBase B}, #B' = #B := fun B' ↦ B'.2.cardinalMk_eq hB
   simp [cRank, hrw]
 
-/-- Restrictions of matroids with cardinal rank functions have cardinal rank functions- -/
+/-- Restrictions of matroids with cardinal rank functions have cardinal rank functions. -/
 instance invariantCardinalRank_restrict [InvariantCardinalRank M] :
     InvariantCardinalRank (M ↾ X) := by
   refine ⟨fun I J Y hI hJ ↦ ?_⟩

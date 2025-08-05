@@ -107,7 +107,7 @@ theorem ZMod.isSquare_neg_one_iff {n : ℕ} (hn : Squarefree n) :
     haveI : Fact p.Prime := ⟨hpp⟩
     have hcp : p.Coprime n := by
       by_contra hc
-      exact hpp.not_unit (hn p <| mul_dvd_mul_left p <| hpp.dvd_iff_not_coprime.mpr hc)
+      exact hpp.not_isUnit (hn p <| mul_dvd_mul_left p <| hpp.dvd_iff_not_coprime.mpr hc)
     have hp₁ := ZMod.exists_sq_eq_neg_one_iff.mpr (H hpp (dvd_mul_right p n))
     exact ZMod.isSquare_neg_one_mul hcp hp₁
       (ih hn.of_mul_right fun hqp hqd => H hqp <| dvd_mul_of_dvd_right hqd _)
@@ -121,11 +121,11 @@ theorem ZMod.isSquare_neg_one_iff' {n : ℕ} (hn : Squarefree n) :
   refine ⟨?_, fun H q _ => H⟩
   intro H
   refine @induction_on_primes _ ?_ ?_ (fun p q hp hq hpq => ?_)
-  · exact fun _ => by norm_num
-  · exact fun _ => by norm_num
+  · exact fun _ => by simp
+  · exact fun _ => by simp
   · replace hp := H hp (dvd_of_mul_right_dvd hpq)
     replace hq := hq (dvd_of_mul_left_dvd hpq)
-    rw [show 3 = 3 % 4 by norm_num, Ne, ← ZMod.natCast_eq_natCast_iff'] at hp hq ⊢
+    rw [show 3 = 3 % 4 by simp, Ne, ← ZMod.natCast_eq_natCast_iff'] at hp hq ⊢
     rw [Nat.cast_mul]
     exact help p q hp hq
 

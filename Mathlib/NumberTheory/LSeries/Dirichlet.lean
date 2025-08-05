@@ -83,7 +83,7 @@ end Moebius
 open Nat
 
 open scoped ArithmeticFunction.zeta in
-lemma ArithmeticFunction.const_one_eq_zeta {R : Type*} [Semiring R] {n : ℕ} (hn : n ≠ 0) :
+lemma ArithmeticFunction.const_one_eq_zeta {R : Type*} [AddMonoidWithOne R] {n : ℕ} (hn : n ≠ 0) :
     (1 : ℕ → R) n = (ζ ·) n := by
   simp [hn]
 
@@ -153,7 +153,7 @@ lemma modZero_eq_delta {χ : DirichletCharacter ℂ 0} : ↗χ = δ := by
   simp_all [χ.map_nonunit this, delta]
 
 /-- The Dirichlet character mod `1` corresponds to the constant function `1`. -/
-lemma modOne_eq_one {R : Type*} [CommSemiring R] {χ : DirichletCharacter R 1} :
+lemma modOne_eq_one {R : Type*} [CommMonoidWithZero R] {χ : DirichletCharacter R 1} :
     ((χ ·) : ℕ → R) = 1 := by
   ext
   rw [χ.level_one, MulChar.one_apply (isUnit_of_subsingleton _), Pi.one_apply]
@@ -366,7 +366,7 @@ lemma LSeriesSummable_twist_vonMangoldt {N : ℕ} (χ : DirichletCharacter ℂ N
 /-- The L-series of the twist of the von Mangoldt function `Λ` by a Dirichlet character `χ` at `s`
 equals the negative logarithmic derivative of the L-series of `χ` when `re s > 1`. -/
 lemma LSeries_twist_vonMangoldt_eq {N : ℕ} (χ : DirichletCharacter ℂ N) {s : ℂ} (hs : 1 < s.re) :
-    L (↗χ * ↗Λ) s = - deriv (L ↗χ) s / L ↗χ s := by
+    L (↗χ * ↗Λ) s = -deriv (L ↗χ) s / L ↗χ s := by
   rcases eq_or_ne N 0 with rfl | hN
   · simp [modZero_eq_delta, delta_mul_eq_smul_delta, LSeries_delta]
   -- now `N ≠ 0`

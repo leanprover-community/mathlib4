@@ -53,6 +53,7 @@ variable {L : Language.{u, v}} (T : L.Theory) (α : Type w)
 /-- A complete type over a given theory in a certain type of variables is a maximally
   consistent (with the theory) set of formulas in that type. -/
 structure CompleteType where
+  /-- The underlying theory -/
   toTheory : L[[α]].Theory
   subset' : (L.lhomWithConstants α).onTheory T ⊆ toTheory
   isMaximal' : toTheory.IsMaximal
@@ -84,7 +85,7 @@ theorem mem_of_models (p : T.CompleteType α) {φ : L[[α]].Sentence}
     ((models_iff_not_satisfiable _).1 h)
       (p.isMaximal.1.mono (union_subset p.subset (singleton_subset_iff.2 con)))
 
-theorem not_mem_iff (p : T.CompleteType α) (φ : L[[α]].Sentence) : φ.not ∈ p ↔ ¬φ ∈ p :=
+theorem not_mem_iff (p : T.CompleteType α) (φ : L[[α]].Sentence) : φ.not ∈ p ↔ φ ∉ p :=
   ⟨fun hf ht => by
     have h : ¬IsSatisfiable ({φ, φ.not} : L[[α]].Theory) := by
       rintro ⟨@⟨_, _, h, _⟩⟩

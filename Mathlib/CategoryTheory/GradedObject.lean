@@ -210,8 +210,8 @@ theorem shiftFunctor_map_apply {β : Type*} [AddCommGroup β] (s : β)
     (shiftFunctor (GradedObjectWithShift s C) n).map f t = f (t + n • s) :=
   rfl
 
-instance [HasZeroMorphisms C] (β : Type w) (X Y : GradedObject β C) :
-  Zero (X ⟶ Y) := ⟨fun _ => 0⟩
+instance [HasZeroMorphisms C] (β : Type w) (X Y : GradedObject β C) : Zero (X ⟶ Y) :=
+  ⟨fun _ => 0⟩
 
 @[simp]
 theorem zero_apply [HasZeroMorphisms C] (β : Type w) (X Y : GradedObject β C) (b : β) :
@@ -302,7 +302,7 @@ for all `j : J`, the coproduct of all `X i` such `p i = j` exists. -/
 abbrev HasMap : Prop := ∀ (j : J), HasCoproduct (X.mapObjFun p j)
 
 variable {X Y} in
-lemma hasMap_of_iso (e : X ≅ Y) (p: I → J) [HasMap X p] : HasMap Y p := fun j => by
+lemma hasMap_of_iso (e : X ≅ Y) (p : I → J) [HasMap X p] : HasMap Y p := fun j => by
   have α : Discrete.functor (X.mapObjFun p j) ≅ Discrete.functor (Y.mapObjFun p j) :=
     Discrete.natIso (fun ⟨i, _⟩ => (GradedObject.eval i).mapIso e)
   exact hasColimit_of_iso α.symm
@@ -483,10 +483,6 @@ lemma hasMap_comp [(X.mapObj p).HasMap q] : X.HasMap r :=
     (fun j _ => X.isColimitCofanMapObj p j) _ ((X.mapObj p).isColimitCofanMapObj q k)⟩
 
 end
-
-section HasZeroMorphisms
-
-end HasZeroMorphisms
 
 variable [HasZeroMorphisms C] [DecidableEq J] (i : I) (j : J)
 

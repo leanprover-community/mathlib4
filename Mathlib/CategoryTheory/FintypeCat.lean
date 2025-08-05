@@ -213,7 +213,7 @@ universe v
 noncomputable def uSwitch : FintypeCat.{u} ⥤ FintypeCat.{v} where
   obj X := FintypeCat.of <| ULift.{v} (Fin (Fintype.card X))
   map {X Y} f x := ULift.up <| (Fintype.equivFin Y) (f ((Fintype.equivFin X).symm x.down))
-  map_comp {X Y Z} f g := by ext; simp
+  map_comp {X Y Z} f g := by funext; simp
 
 /-- Switching the universe of an object `X : FintypeCat.{u}` does not change `X` up to equivalence
 of types. This is natural in the sense that it commutes with `uSwitch.map f` for

@@ -20,10 +20,10 @@ scalar multiplication as a homomorphism from `α × β` to `β`.
 
 ## See also
 
-* `Mathlib.Algebra.Group.Action.Option`
-* `Mathlib.Algebra.Group.Action.Pi`
-* `Mathlib.Algebra.Group.Action.Sigma`
-* `Mathlib.Algebra.Group.Action.Sum`
+* `Mathlib/Algebra/Group/Action/Option.lean`
+* `Mathlib/Algebra/Group/Action/Pi.lean`
+* `Mathlib/Algebra/Group/Action/Sigma.lean`
+* `Mathlib/Algebra/Group/Action/Sum.lean`
 
 # Porting notes
 
@@ -43,7 +43,7 @@ namespace Prod
 section
 variable [SMul M α] [SMul M β] [SMul N α] [SMul N β] (a : M) (x : α × β)
 
-@[to_additive vaddAssocClass]
+@[to_additive]
 instance isScalarTower [SMul M N] [IsScalarTower M N α] [IsScalarTower M N β] :
     IsScalarTower M N (α × β) where
   smul_assoc _ _ _ := by ext <;> exact smul_assoc ..

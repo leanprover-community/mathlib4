@@ -151,8 +151,8 @@ theorem isInvariant_iff_image_eq (s : Set α) : IsInvariant ϕ s ↔ ∀ t, ϕ t
 def reverse : Flow τ α where
   toFun t := ϕ (-t)
   cont' := ϕ.continuous continuous_fst.neg continuous_snd
-  map_add' _ _ _ := by dsimp; rw [neg_add, map_add]
-  map_zero' _ := by dsimp; rw [neg_zero, map_zero_apply]
+  map_add' _ _ _ := by rw [neg_add, map_add]
+  map_zero' _ := by rw [neg_zero, map_zero_apply]
 
 @[continuity, fun_prop]
 theorem continuous_toFun (t : τ) : Continuous (ϕ.toFun t) := by

@@ -40,7 +40,7 @@ lemma toFinset_eq_singleton_iff (s : Multiset α) (a : α) :
       rw [← mem_toFinset, H, Finset.mem_singleton] at hy
       exact hy.symm
     have hx' : x ∉ s := fun h' ↦ hx <| by rwa [← mem_toFinset, H, Finset.mem_singleton] at h'
-    simp_rw [count_eq_zero_of_not_mem hx', hx, ite_false, Nat.mul_zero]
+    simp_rw [count_eq_zero_of_notMem hx', hx, ite_false, Nat.mul_zero]
   simpa only [toFinset_nsmul _ _ H.1, toFinset_singleton] using congr($(H.2).toFinset)
 
 lemma toFinset_card_eq_one_iff (s : Multiset α) :
@@ -82,7 +82,7 @@ lemma mul_sup' [MulLeftMono G] (s : Finset ι) (f : ι → G) (a : G) (hs) :
 end Group
 
 section CanonicallyLinearOrderedAddCommMonoid
-variable [LinearOrderedAddCommMonoid M] [CanonicallyOrderedAdd M]
+variable [AddCommMonoid M] [LinearOrder M] [CanonicallyOrderedAdd M]
   [Sub M] [AddLeftReflectLE M] [OrderedSub M] {s : Finset ι} {t : Finset κ}
 
 /-- Also see `Finset.sup'_add` that works for ordered groups. -/
@@ -97,6 +97,8 @@ lemma sup'_add' (s : Finset ι) (f : ι → M) (a : M) (hs : s.Nonempty) :
 /-- Also see `Finset.add_sup'` that works for ordered groups. -/
 lemma add_sup'' (hs : s.Nonempty) (f : ι → M) (a : M) :
     a + s.sup' hs f = s.sup' hs fun i ↦ a + f i := by simp_rw [add_comm a, Finset.sup'_add']
+
+variable [OrderBot M]
 
 protected lemma sup_add (hs : s.Nonempty) (f : ι → M) (a : M) :
     s.sup f + a = s.sup fun i ↦ f i + a := by

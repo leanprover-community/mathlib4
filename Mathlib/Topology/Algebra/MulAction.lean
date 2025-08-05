@@ -3,10 +3,11 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Algebra.Constructions
-import Mathlib.GroupTheory.GroupAction.SubMulAction
-import Mathlib.Topology.Algebra.ConstMulAction
 import Mathlib.Algebra.AddTorsor.Defs
+import Mathlib.GroupTheory.GroupAction.SubMulAction
+import Mathlib.Topology.Algebra.Constructions
+import Mathlib.Topology.Algebra.ConstMulAction
+import Mathlib.Topology.Connected.Basic
 
 /-!
 # Continuous monoid action
@@ -177,8 +178,6 @@ lemma Topology.IsInducing.continuousSMul {N : Type*} [SMul N Y] [TopologicalSpac
   continuous_smul := by
     simpa only [hg.continuous_iff, Function.comp_def, hsmul]
       using (hf.comp continuous_fst).smul <| hg.continuous.comp continuous_snd
-
-@[deprecated (since := "2024-10-28")] alias Inducing.continuousSMul := IsInducing.continuousSMul
 
 @[to_additive]
 instance SMulMemClass.continuousSMul {S : Type*} [SetLike S X] [SMulMemClass S M X] (s : S) :

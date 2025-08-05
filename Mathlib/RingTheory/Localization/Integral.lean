@@ -5,7 +5,6 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 -/
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Algebra.Polynomial.Lifts
-import Mathlib.GroupTheory.MonoidLocalization.Basic
 import Mathlib.RingTheory.Algebraic.Integral
 import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 import Mathlib.RingTheory.Localization.FractionRing
@@ -47,10 +46,13 @@ noncomputable def coeffIntegerNormalization (p : S[X]) (i : ℕ) : R :=
         (p.coeff i) (Finset.mem_image.mpr ⟨i, hi, rfl⟩))
   else 0
 
-theorem coeffIntegerNormalization_of_not_mem_support (p : S[X]) (i : ℕ) (h : coeff p i = 0) :
+theorem coeffIntegerNormalization_of_coeff_zero (p : S[X]) (i : ℕ) (h : coeff p i = 0) :
     coeffIntegerNormalization M p i = 0 := by
-  simp only [coeffIntegerNormalization, h, mem_support_iff, eq_self_iff_true, not_true, Ne,
+  simp only [coeffIntegerNormalization, h, mem_support_iff, not_true, Ne,
     dif_neg, not_false_iff]
+
+@[deprecated (since := "2025-05-23")]
+alias coeffIntegerNormalization_of_not_mem_support := coeffIntegerNormalization_of_coeff_zero
 
 theorem coeffIntegerNormalization_mem_support (p : S[X]) (i : ℕ)
     (h : coeffIntegerNormalization M p i ≠ 0) : i ∈ p.support := by
@@ -66,7 +68,7 @@ noncomputable def integerNormalization (p : S[X]) : R[X] :=
 theorem integerNormalization_coeff (p : S[X]) (i : ℕ) :
     (integerNormalization M p).coeff i = coeffIntegerNormalization M p i := by
   simp +contextual [integerNormalization, coeff_monomial,
-    coeffIntegerNormalization_of_not_mem_support]
+    coeffIntegerNormalization_of_coeff_zero]
 
 theorem integerNormalization_spec (p : S[X]) :
     ∃ b : M, ∀ i, algebraMap R S ((integerNormalization M p).coeff i) = (b : R) • p.coeff i := by
@@ -79,7 +81,7 @@ theorem integerNormalization_spec (p : S[X]) :
       Classical.choose_spec
         (Classical.choose_spec (exist_integer_multiples_of_finset M (p.support.image p.coeff))
           (p.coeff i) (Finset.mem_image.mpr ⟨i, hi, rfl⟩))
-  · rw [RingHom.map_zero, not_mem_support_iff.mp hi, smul_zero]
+  · rw [RingHom.map_zero, notMem_support_iff.mp hi, smul_zero]
     -- Porting note: was `convert (smul_zero _).symm, ...`
 
 theorem integerNormalization_map_to_map (p : S[X]) :
@@ -167,8 +169,8 @@ variable {M}
 
 open Polynomial
 
-theorem RingHom.isIntegralElem_localization_at_leadingCoeff {R S : Type*} [CommRing R] [CommRing S]
-    (f : R →+* S) (x : S) (p : R[X]) (hf : p.eval₂ f x = 0) (M : Submonoid R)
+theorem RingHom.isIntegralElem_localization_at_leadingCoeff {R S : Type*} [CommSemiring R]
+    [CommSemiring S] (f : R →+* S) (x : S) (p : R[X]) (hf : p.eval₂ f x = 0) (M : Submonoid R)
     (hM : p.leadingCoeff ∈ M) {Rₘ Sₘ : Type*} [CommRing Rₘ] [CommRing Sₘ] [Algebra R Rₘ]
     [IsLocalization M Rₘ] [Algebra S Sₘ] [IsLocalization (M.map f : Submonoid S) Sₘ] :
     (map Sₘ f M.le_comap_map : Rₘ →+* _).IsIntegralElem (algebraMap S Sₘ x) := by
@@ -253,7 +255,7 @@ theorem IsLocalization.scaleRoots_commonDenom_mem_lifts (p : Rₘ[X])
     · exact RingHom.mem_range_self _ _
     · rw [← Algebra.smul_def]
       exact ⟨_, IsLocalization.map_integerMultiple M p.support p.coeff ⟨n, h₁⟩⟩
-  · rw [Polynomial.not_mem_support_iff] at h₁
+  · rw [Polynomial.notMem_support_iff] at h₁
     rw [h₁, zero_mul]
     exact zero_mem (algebraMap R Rₘ).range
 
@@ -346,12 +348,13 @@ namespace IsFractionRing
 variable (R S K)
 
 /-- `S` is algebraic over `R` iff a fraction ring of `S` is algebraic over `R` -/
-theorem isAlgebraic_iff' [Field K] [IsDomain R] [IsDomain S] [Algebra R K] [Algebra S K]
+theorem isAlgebraic_iff' [Field K] [IsDomain R] [Algebra R K] [Algebra S K]
     [NoZeroSMulDivisors R K] [IsFractionRing S K] [IsScalarTower R S K] :
     Algebra.IsAlgebraic R S ↔ Algebra.IsAlgebraic R K := by
   simp only [Algebra.isAlgebraic_def]
   constructor
   · intro h x
+    letI := MulActionWithZero.nontrivial S K
     letI := FractionRing.liftAlgebra R K
     have := FractionRing.isScalarTower_liftAlgebra R K
     rw [IsFractionRing.isAlgebraic_iff R (FractionRing R) K, isAlgebraic_iff_isIntegral]
@@ -444,7 +447,7 @@ lemma isAlgebraic_of_isFractionRing {R S} (K L) [CommRing R] [CommRing S] [Field
   · apply IsIntegral.tower_top (R := R)
     apply IsIntegral.map (IsScalarTower.toAlgHom R S L)
     exact Algebra.IsIntegral.isIntegral x
-  · show IsIntegral _ _
+  · change IsIntegral _ _
     rw [← isAlgebraic_iff_isIntegral, ← IsAlgebraic.invOf_iff, isAlgebraic_iff_isIntegral]
     apply IsIntegral.tower_top (R := R)
     apply IsIntegral.map (IsScalarTower.toAlgHom R S L)

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Module.Defs
+import Mathlib.Algebra.Order.Sub.Basic
 import Mathlib.Data.DFinsupp.Module
 
 /-!
@@ -122,18 +123,16 @@ end Zero
 
 /-! ### Algebraic order structures -/
 
+instance (α : ι → Type*) [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)]
+    [∀ i, IsOrderedAddMonoid (α i)] : IsOrderedAddMonoid (Π₀ i, α i) :=
+  { add_le_add_left := fun _ _ h c i ↦ add_le_add_left (h i) (c i) }
 
-instance (α : ι → Type*) [∀ i, OrderedAddCommMonoid (α i)] : OrderedAddCommMonoid (Π₀ i, α i) :=
-  { (inferInstance : AddCommMonoid (DFinsupp α)),
-    (inferInstance : PartialOrder (DFinsupp α)) with
-    add_le_add_left := fun _ _ h c i ↦ add_le_add_left (h i) (c i) }
+instance (α : ι → Type*) [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)]
+    [∀ i, IsOrderedCancelAddMonoid (α i)] :
+    IsOrderedCancelAddMonoid (Π₀ i, α i) :=
+  { le_of_add_le_add_left := fun _ _ _ H i ↦ le_of_add_le_add_left (H i) }
 
-instance (α : ι → Type*) [∀ i, OrderedCancelAddCommMonoid (α i)] :
-    OrderedCancelAddCommMonoid (Π₀ i, α i) :=
-  { (inferInstance : OrderedAddCommMonoid (DFinsupp α)) with
-    le_of_add_le_add_left := fun _ _ _ H i ↦ le_of_add_le_add_left (H i) }
-
-instance [∀ i, OrderedAddCommMonoid (α i)] [∀ i, AddLeftReflectLE (α i)] :
+instance [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)] [∀ i, AddLeftReflectLE (α i)] :
     AddLeftReflectLE (Π₀ i, α i) :=
   ⟨fun _ _ _ H i ↦ le_of_add_le_add_left (H i)⟩
 
@@ -200,7 +199,7 @@ variable [∀ (i) (x : α i), Decidable (x ≠ 0)] {f g : Π₀ i, α i} {s : Fi
 
 theorem le_iff' (hf : f.support ⊆ s) : f ≤ g ↔ ∀ i ∈ s, f i ≤ g i :=
   ⟨fun h s _ ↦ h s, fun h s ↦
-    if H : s ∈ f.support then h s (hf H) else (not_mem_support_iff.1 H).symm ▸ zero_le (g s)⟩
+    if H : s ∈ f.support then h s (hf H) else (notMem_support_iff.1 H).symm ▸ zero_le (g s)⟩
 
 theorem le_iff : f ≤ g ↔ ∀ i ∈ f.support, f i ≤ g i :=
   le_iff' <| Subset.refl _
@@ -286,8 +285,8 @@ theorem support_inf : (f ⊓ g).support = f.support ∩ g.support := by
 @[simp]
 theorem support_sup : (f ⊔ g).support = f.support ∪ g.support := by
   ext
-  simp only [Finset.mem_union, mem_support_iff, sup_apply, Ne, ← bot_eq_zero]
-  rw [_root_.sup_eq_bot_iff, not_and_or]
+  simp only [Finset.mem_union, mem_support_iff, sup_apply, Ne, ← nonpos_iff_eq_zero, sup_le_iff,
+    Classical.not_and_iff_not_or_not]
 
 nonrec theorem disjoint_iff : Disjoint f g ↔ Disjoint f.support g.support := by
   rw [disjoint_iff, disjoint_iff, DFinsupp.bot_eq_zero, ← DFinsupp.support_eq_empty,

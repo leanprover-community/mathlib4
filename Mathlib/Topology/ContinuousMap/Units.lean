@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 import Mathlib.Analysis.Normed.Ring.Units
-import Mathlib.Algebra.Algebra.Spectrum
+import Mathlib.Algebra.Algebra.Spectrum.Basic
 import Mathlib.Topology.ContinuousMap.Algebra
 
 /-!
@@ -43,8 +43,6 @@ def unitsLift : C(X, Mˣ) ≃ C(X, M)ˣ where
       continuous_toFun := continuous_induced_rng.2 <|
         (f : C(X, M)).continuous.prodMk <|
         MulOpposite.continuous_op.comp (↑f⁻¹ : C(X, M)).continuous }
-  left_inv f := by ext; rfl
-  right_inv f := by ext; rfl
 
 @[to_additive (attr := simp)]
 lemma unitsLift_apply_inv_apply (f : C(X, Mˣ)) (x : X) :
@@ -102,12 +100,12 @@ theorem spectrum_eq_preimage_range (f : C(X, R)) :
     spectrum 𝕜 f = algebraMap _ _ ⁻¹' Set.range f := by
   ext x
   simp only [spectrum.mem_iff, isUnit_iff_forall_ne_zero, not_forall, sub_apply,
-    algebraMap_apply, mul_one, Classical.not_not, Set.mem_range,
+    Classical.not_not, Set.mem_range,
     sub_eq_zero, @eq_comm _ (x • 1 : R) _, Set.mem_preimage, Algebra.algebraMap_eq_smul_one,
     smul_apply, one_apply]
 
 theorem spectrum_eq_range [CompleteSpace 𝕜] (f : C(X, 𝕜)) : spectrum 𝕜 f = Set.range f := by
-  rw [spectrum_eq_preimage_range, Algebra.id.map_eq_id]
+  rw [spectrum_eq_preimage_range, Algebra.algebraMap_self]
   exact Set.preimage_id
 
 end NormedField

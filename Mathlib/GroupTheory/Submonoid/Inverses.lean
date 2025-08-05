@@ -15,17 +15,17 @@ since the inverses are unique. When `N ≤ IsUnit.Submonoid M`, this is precisel
 the pointwise inverse of `N`, and we may define `leftInvEquiv : S.leftInv ≃* S`.
 
 For the pointwise inverse of submonoids of groups, please refer to the file
-`Mathlib.Algebra.Group.Submonoid.Pointwise`.
+`Mathlib/Algebra/Group/Submonoid/Pointwise.lean`.
 
 `N.leftInv` is distinct from `N.units`, which is the subgroup of `Mˣ` containing all units that are
-in `N`. See the implementation notes of `Mathlib.GroupTheory.Submonoid.Units` for more details on
-related constructions.
+in `N`. See the implementation notes of `Mathlib/GroupTheory/Submonoid/Units.lean` for more details
+on related constructions.
 
 ## TODO
 
 Define the submonoid of right inverses and two-sided inverses.
-See the comments of https://github.com/leanprover-community/mathlib4/pull/10679 for a possible implementation.
-
+See the comments of https://github.com/leanprover-community/mathlib4/pull/10679 for a possible
+implementation.
 -/
 
 

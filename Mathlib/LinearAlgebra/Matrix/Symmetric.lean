@@ -13,7 +13,7 @@ This file contains the definition and basic results about symmetric matrices.
 
 ## Main definition
 
- * `Matrix.isSymm`: a matrix `A : Matrix n n α` is "symmetric" if `Aᵀ = A`.
+* `Matrix.isSymm`: a matrix `A : Matrix n n α` is "symmetric" if `Aᵀ = A`.
 
 ## Tags
 

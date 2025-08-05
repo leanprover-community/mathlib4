@@ -3,10 +3,10 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Presheaf
 import Mathlib.CategoryTheory.Closed.Cartesian
+import Mathlib.CategoryTheory.Limits.Presheaf
+import Mathlib.CategoryTheory.Monoidal.Cartesian.FunctorCategory
 import Mathlib.CategoryTheory.Monoidal.Types.Basic
-import Mathlib.CategoryTheory.ChosenFiniteProducts.FunctorCategory
 
 /-!
 # Cartesian closure of Type
@@ -58,7 +58,7 @@ def cartesianClosedFunctorToTypes {C : Type u₁} [Category.{v₁} C] :
     CartesianClosed (C ⥤ Type (max u₁ v₁ u₂)) :=
   let e : (ULiftHom.{max u₁ v₁ u₂} (ULift.{max u₁ v₁ u₂} C)) ⥤ Type (max u₁ v₁ u₂) ≌
       C ⥤ Type (max u₁ v₁ u₂) :=
-      Functor.asEquivalence ((whiskeringLeft _ _ _).obj
+      Functor.asEquivalence ((Functor.whiskeringLeft _ _ _).obj
         (ULift.equivalence.trans ULiftHom.equiv).functor)
   cartesianClosedOfEquiv e
 
@@ -72,7 +72,7 @@ instance {C : Type u₁} [Category.{v₁} C] : CartesianClosed (C ⥤ Type (max 
 instance {C : Type u₁} [Category.{v₁} C] [EssentiallySmall.{v₁} C] :
     CartesianClosed (C ⥤ Type v₁) :=
   let e : (SmallModel C) ⥤ Type v₁ ≌ C ⥤ Type v₁ :=
-    Functor.asEquivalence ((whiskeringLeft _ _ _).obj (equivSmallModel _).functor)
+    Functor.asEquivalence ((Functor.whiskeringLeft _ _ _).obj (equivSmallModel _).functor)
   cartesianClosedOfEquiv e
 
 end CartesianClosed
