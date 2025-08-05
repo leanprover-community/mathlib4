@@ -168,6 +168,12 @@ theorem dense_iff (hf : IsInducing f) {s : Set X} :
 theorem of_subsingleton [Subsingleton X] (f : X → Y) : IsInducing f :=
   ⟨Subsingleton.elim _ _⟩
 
+theorem continuous_iff_of_surjective (ind : IsInducing f) (surj : Function.Surjective f) :
+    Continuous (g ∘ f) ↔ Continuous g := by
+  refine ⟨fun h ↦ ⟨fun U hU ↦ ?_⟩, (·.comp ind.continuous)⟩
+  have ⟨V, hV, (eq : _ = f ⁻¹' (g ⁻¹' U))⟩ := ind.isOpen_iff.mp (hU.preimage h)
+  rwa [← surj.preimage_injective eq]
+
 end IsInducing.IsInducing
 
 namespace IsEmbedding
