@@ -122,7 +122,7 @@ theorem Multiset.prod_primes_dvd [CancelCommMonoidWithZero M₀]
   | cons a s induct =>
     rw [Multiset.prod_cons]
     obtain ⟨k, rfl⟩ : a ∣ n := div a (Multiset.mem_cons_self a s)
-    apply mul_dvd_mul_left a
+    gcongr
     refine induct _ (fun a ha => h a (Multiset.mem_cons_of_mem ha)) (fun b b_in_s => ?_)
       fun a => (Multiset.countP_le_of_le _ (Multiset.le_cons_self _ _)).trans (uniq a)
     have b_div_n := div b (Multiset.mem_cons_of_mem b_in_s)

@@ -90,8 +90,6 @@ lemma exists_mem_image₂ {p : γ → Prop} :
     (∃ z ∈ image₂ f s t, p z) ↔ ∃ x ∈ s, ∃ y ∈ t, p (f x y) := by
   simp_rw [← mem_coe, coe_image₂, exists_mem_image2]
 
-@[deprecated (since := "2024-11-23")] alias forall_image₂_iff := forall_mem_image₂
-
 @[simp]
 theorem image₂_subset_iff : image₂ f s t ⊆ u ↔ ∀ x ∈ s, ∀ y ∈ t, f x y ∈ u :=
   forall_mem_image₂

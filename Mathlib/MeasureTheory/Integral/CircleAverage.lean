@@ -31,6 +31,7 @@ open Filter Metric Real
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
   {𝕜 : Type*} [NormedDivisionRing 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E] [SMulCommClass ℝ 𝕜 E]
   {f f₁ f₂ : ℂ → E} {c : ℂ} {R : ℝ} {a : 𝕜}
 
@@ -169,6 +170,19 @@ theorem abs_circleAverage_le_circleAverage_abs {f : ℂ → ℝ} :
   rw [circleAverage, circleAverage, smul_eq_mul, smul_eq_mul, abs_mul,
     abs_of_pos (inv_pos.2 two_pi_pos), mul_le_mul_iff_of_pos_left (inv_pos.2 two_pi_pos)]
   exact intervalIntegral.abs_integral_le_integral_abs (le_of_lt two_pi_pos)
+
+/-!
+## Commutativity with Linear Maps
+-/
+
+/-- Circle averages commute with continuous linear maps. -/
+theorem _root_.ContinuousLinearMap.circleAverage_comp_comm [CompleteSpace E] (L : E →L[ℝ] F)
+    {f : ℂ → E} (hf : CircleIntegrable f c R) :
+    circleAverage (L ∘ f) c R = L (circleAverage f c R) := by
+  unfold circleAverage
+  rw [map_smul]
+  congr
+  exact L.intervalIntegral_comp_comm hf
 
 /-!
 ## Behaviour with Respect to Arithmetic Operations
