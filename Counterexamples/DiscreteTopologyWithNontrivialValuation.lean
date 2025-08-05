@@ -91,11 +91,11 @@ theorem discreteTopology : DiscreteTopology K[X] :=
 attribute [local instance] discreteTopology
 
 /-- `X` is sent to `37`. -/
-noncomputable def rankOne' : (infinityValuation K).RankOne where
+noncomputable def rankOne : (infinityValuation K).RankOne where
   exists_val_nontrivial := ⟨X, by simpa using by decide⟩
   hom := toNNReal (e := 37) (by norm_num)
   strictMono' := toNNReal_strictMono (by norm_num)
-attribute [local instance] rankOne'
+attribute [local instance] rankOne
 
 open ValuativeRel
 
