@@ -948,7 +948,6 @@ lemma of_isLimit_binaryFan_of_isTerminal
     {X Y : C} {c : BinaryFan X Y} (hc : IsLimit c)
     {T : C} (hT : IsTerminal T) :
     IsPullback c.fst c.snd (hT.from _) (hT.from _) where
-  w := hT.hom_ext _ _
   isLimit' := ⟨PullbackCone.IsLimit.mk _
     (fun s ↦ hc.lift (BinaryFan.mk s.fst s.snd))
     (fun s ↦ hc.fac (BinaryFan.mk s.fst s.snd) ⟨.left⟩)
