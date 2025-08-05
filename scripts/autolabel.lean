@@ -115,7 +115,11 @@ def mathlibLabels : Array Label := #[
   { label := "t-geometric-group-theory",
     dirs := #["Mathlib" / "Geometry" / "Group"] },
   { label := "t-linter",
-    dirs := #["Mathlib" / "Tactic" / "Linter"] },
+    dirs := #[
+      "Mathlib" / "Tactic" / "Linter",
+      "scripts" / "lint-style.lean",
+      "scripts" / "lint-style.py",
+    ] },
   { label := "t-logic",
     dirs := #[
       "Mathlib" / "Logic",
@@ -138,7 +142,19 @@ def mathlibLabels : Array Label := #[
   { label := "t-topology",
     dirs := #["Mathlib" / "Topology"] },
   { label := "CI",
-    dirs := #[".github"] },
+    dirs := #[
+      ".github",
+      "scripts" /"bench",
+      "scripts",
+    ],
+    exclusions := #[
+      "scripts" / "lint-style.lean",
+      "scripts" / "lint-style.py",
+      "scripts" / "noshake.json",
+      "scripts" / "nolints.json",
+      "scripts" / "nolints-style.txt",
+      "scripts" / "nolints_prime_decls.txt",
+    ] },
   { label := "IMO",
     dirs := #["Archive" / "Imo"] },
   { label := "dependency-bump",
@@ -195,6 +211,13 @@ section Tests
 
 -- Test targeting a file instead of a directory
 #guard getMatchingLabels #["lake-manifest.json"] == #["dependency-bump"]
+
+-- Test linting of specific changes touching linting and CI.
+#guard getMatchingLabels #["scripts" / "add_deprecations.sh"] == #["CI"]
+#guard getMatchingLabels #["scripts" / "lint-style.lean"] == #["t-linter"]
+#guard getMatchingLabels #["Mathlib" / "Tactic" / "Linter" / "TextBased.lean",
+  "scripts" / "lint-style.lean", "scripts" / "lint-style.py"] == #["t-linter"]
+#guard getMatchingLabels #["scripts" / "noshake.json"] == #[]
 
 /-- Testing function to ensure the labels defined in `mathlibLabels` cover all
 subfolders of `Mathlib/`. -/
