@@ -397,7 +397,7 @@ lemma infinitePi_pi {s : Finset ι} {t : (i : ι) → Set (X i)}
   · exact measurable_restrict _
   · exact .univ_pi fun i ↦ mt i.1 i.2
 
-lemma iIndepFun_infinitePi {Y : ι → Type*} [∀ i, MeasurableSpace (Y i)] {f : (i : ι) → X i → Y i}
+lemma infinitePi_map_pi {Y : ι → Type*} [∀ i, MeasurableSpace (Y i)] {f : (i : ι) → X i → Y i}
     (hf : ∀ i, Measurable (f i)) :
     haveI (i : ι) : IsProbabilityMeasure ((μ i).map (f i)) :=
       isProbabilityMeasure_map (hf i).aemeasurable
