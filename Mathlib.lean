@@ -4557,6 +4557,7 @@ import Mathlib.MeasureTheory.SetAlgebra
 import Mathlib.MeasureTheory.SetSemiring
 import Mathlib.MeasureTheory.SpecificCodomains.ContinuousMap
 import Mathlib.MeasureTheory.SpecificCodomains.ContinuousMapZero
+import Mathlib.MeasureTheory.SpecificCodomains.Pi
 import Mathlib.MeasureTheory.Topology
 import Mathlib.MeasureTheory.VectorMeasure.Basic
 import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Hahn
@@ -6470,7 +6471,6 @@ import Mathlib.Topology.MetricSpace.HausdorffDistance
 import Mathlib.Topology.MetricSpace.Holder
 import Mathlib.Topology.MetricSpace.HolderNorm
 import Mathlib.Topology.MetricSpace.Infsep
-import Mathlib.Topology.MetricSpace.Injection
 import Mathlib.Topology.MetricSpace.IsometricSMul
 import Mathlib.Topology.MetricSpace.Isometry
 import Mathlib.Topology.MetricSpace.Kuratowski
