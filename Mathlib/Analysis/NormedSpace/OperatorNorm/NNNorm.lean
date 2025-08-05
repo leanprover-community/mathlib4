@@ -215,11 +215,14 @@ theorem sSup_sphere_eq_nnnorm [NormedAlgebra ℝ 𝕜] (f : E →SL[σ₁₂] F)
   have : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E
   by_cases h : ∃ x : E, ‖x‖₊ ≠ 0; swap
   · push_neg at h
-    simp_rw [fun x => nnnorm_map_eq_zero f (h x)]
+    simp_rw [nnnorm_def, fun x => nnnorm_map_eq_zero f (h x), zero_le]
     simp
-
-  refine csSup_eq_of_forall_le_of_forall_lt_exists_gt
-      ((NormedSpace.sphere_nonempty.mpr zero_le_one).image _) ?_ fun ub hub => ?_
+    rw [Set.image]
+    simp_rw [exists_and_right, setOf_and]
+    simp [← coe_nnnorm, h]
+  obtain ⟨x, hx⟩ := h
+  have : (Metric.sphere (0 : E) 1).Nonempty := ⟨‖x‖⁻¹ • x, by simp [norm_smul]; sorry⟩
+  refine csSup_eq_of_forall_le_of_forall_lt_exists_gt (this.image _) ?_ fun ub hub => ?_
   · rintro - ⟨x, hx, rfl⟩
     simpa only [mul_one] using f.le_opNorm_of_le (mem_sphere_zero_iff_norm.1 hx).le
   · obtain ⟨x, hx, hxf⟩ := f.exists_nnnorm_eq_one_lt_apply_of_lt_opNNNorm hub
