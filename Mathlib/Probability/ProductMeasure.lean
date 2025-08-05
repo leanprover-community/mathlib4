@@ -397,8 +397,6 @@ lemma infinitePi_pi {s : Finset ι} {t : (i : ι) → Set (X i)}
   · exact measurable_restrict _
   · exact .univ_pi fun i ↦ mt i.1 i.2
 
-/-- Given random variables `X i : Ω i → 𝓧 i`, they are independent when viewed as random
-variables defined on the product space `Π i, Ω i`. -/
 lemma iIndepFun_infinitePi {Y : ι → Type*} [∀ i, MeasurableSpace (Y i)] {f : (i : ι) → X i → Y i}
     (hf : ∀ i, Measurable (f i)) :
     haveI (i : ι) : IsProbabilityMeasure ((μ i).map (f i)) :=
