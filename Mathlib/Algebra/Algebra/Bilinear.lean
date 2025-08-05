@@ -169,7 +169,6 @@ theorem map_mul_iff (f : A →ₗ[R] B) :
 end NonUnital
 
 section Injective
-
 variable {R A : Type*} [Semiring R] [NonAssocSemiring A] [Module R A]
 
 lemma mulLeft_injective [SMulCommClass R A A] :
