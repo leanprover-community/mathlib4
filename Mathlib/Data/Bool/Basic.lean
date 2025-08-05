@@ -135,7 +135,7 @@ theorem eq_true_of_not_eq_false' {a : Bool} : !a = false → a = true := by
 theorem eq_false_of_not_eq_true' {a : Bool} : !a = true → a = false := by
   cases a <;> decide
 
-theorem bne_eq_xor : bne = xor := by funext a b; revert a b; decide
+theorem bne_eq_xor : bne = xor := by constructor
 
 attribute [simp] xor_assoc
 
@@ -151,7 +151,7 @@ instance linearOrder : LinearOrder Bool where
   toDecidableLE := inferInstance
   toDecidableEq := inferInstance
   toDecidableLT := inferInstance
-  lt_iff_le_not_le := by decide
+  lt_iff_le_not_ge := by decide
   max_def := by decide
   min_def := by decide
 

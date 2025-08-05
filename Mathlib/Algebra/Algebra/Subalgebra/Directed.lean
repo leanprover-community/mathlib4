@@ -12,9 +12,9 @@ import Mathlib.Data.Set.UnionLift
 
 ## Main results
 
- * `Subalgebra.coe_iSup_of_directed`: a directed supremum consists of the union of the algebras
- * `Subalgebra.iSupLift`: define an algebra homomorphism on a directed supremum of subalgebras by
-   defining it on each subalgebra, and proving that it agrees on the intersection of subalgebras.
+* `Subalgebra.coe_iSup_of_directed`: a directed supremum consists of the union of the algebras
+* `Subalgebra.iSupLift`: define an algebra homomorphism on a directed supremum of subalgebras by
+  defining it on each subalgebra, and proving that it agrees on the intersection of subalgebras.
 -/
 
 namespace Subalgebra
@@ -44,7 +44,7 @@ variable (K)
 it on each subalgebra, and proving that it agrees on the intersection of subalgebras. -/
 noncomputable def iSupLift (dir : Directed (· ≤ ·) K) (f : ∀ i, K i →ₐ[R] B)
     (hf : ∀ (i j : ι) (h : K i ≤ K j), f i = (f j).comp (inclusion h))
-    (T : Subalgebra R A) (hT : T = iSup K): ↥T →ₐ[R] B :=
+    (T : Subalgebra R A) (hT : T = iSup K) : ↥T →ₐ[R] B :=
   { toFun := Set.iUnionLift (fun i => ↑(K i)) (fun i x => f i x)
         (fun i j x hxi hxj => by
           let ⟨k, hik, hjk⟩ := dir i j

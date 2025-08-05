@@ -5,7 +5,6 @@ Authors: Chris Hughes
 -/
 import Mathlib.Data.Nat.Prime.Factorial
 import Mathlib.NumberTheory.LegendreSymbol.Basic
-import Mathlib.Analysis.Normed.Ring.Lemmas
 
 /-!
 # Lemmas of Gauss and Eisenstein
@@ -122,8 +121,8 @@ private theorem eisenstein_lemma_aux₁ (p : ℕ) [Fact p.Prime] [hp2 : Fact (p 
       simp only [val_natCast]
       simp [sum_add_distrib, ← mul_sum, Nat.cast_add, Nat.cast_mul, Nat.cast_sum, hp2]
     _ = _ :=
-      congr_arg₂ (· + ·)
-        (calc
+      congr_arg (· + _) <|
+        calc
           ((∑ x ∈ Ico 1 (p / 2).succ, ((a * x : ℕ) : ZMod p).val : ℕ) : ZMod 2) =
               ∑ x ∈ Ico 1 (p / 2).succ, (((a * x : ZMod p).valMinAbs +
                 if (a * x : ZMod p).val ≤ p / 2 then 0 else p : ℤ) : ZMod 2) := by
@@ -133,8 +132,7 @@ private theorem eisenstein_lemma_aux₁ (p : ℕ) [Fact p.Prime] [hp2 : Fact (p 
             simp [add_comm, sum_add_distrib, Finset.sum_ite, hp2, Nat.cast_sum]
           _ = _ := by
             rw [Finset.sum_eq_multiset_sum, Ico_map_valMinAbs_natAbs_eq_Ico_map_id p a hap, ←
-              Finset.sum_eq_multiset_sum])
-        rfl
+              Finset.sum_eq_multiset_sum]
 
 theorem eisenstein_lemma_aux (p : ℕ) [Fact p.Prime] [Fact (p % 2 = 1)] {a : ℕ} (ha2 : a % 2 = 1)
     (hap : (a : ZMod p) ≠ 0) :
@@ -160,7 +158,7 @@ theorem div_eq_filter_card {a b c : ℕ} (hb0 : 0 < b) (hc : a / b ≤ c) :
 private theorem sum_Ico_eq_card_lt {p q : ℕ} :
     ∑ a ∈ Ico 1 (p / 2).succ, a * q / p =
       #{x ∈ Ico 1 (p / 2).succ ×ˢ Ico 1 (q / 2).succ | x.2 * p ≤ x.1 * q} :=
-  if hp0 : p = 0 then by simp [hp0, Finset.ext_iff]
+  if hp0 : p = 0 then by simp [hp0]
   else
     calc
       ∑ a ∈ Ico 1 (p / 2).succ, a * q / p =
@@ -169,13 +167,7 @@ private theorem sum_Ico_eq_card_lt {p q : ℕ} :
           calc
             x * q / p ≤ p / 2 * q / p := by have := le_of_lt_succ (mem_Ico.mp hx).2; gcongr
             _ ≤ _ := Nat.div_mul_div_le_div _ _ _
-      _ = _ := by
-        rw [← card_sigma]
-        exact card_nbij' (fun a ↦ ⟨a.1, a.2⟩) (fun a ↦ ⟨a.1, a.2⟩)
-          (by simp +contextual only [mem_filter, mem_sigma, and_self_iff,
-            forall_true_iff, mem_product])
-          (by simp +contextual only [mem_filter, mem_sigma, and_self_iff,
-            forall_true_iff, mem_product]) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+      _ = _ := by simp only [card_eq_sum_ones, sum_filter, sum_product]
 
 /-- Each of the sums in this lemma is the cardinality of the set of integer points in each of the
   two triangles formed by the diagonal of the rectangle `(0, p/2) × (0, q/2)`. Adding them
@@ -188,8 +180,8 @@ theorem sum_mul_div_add_sum_mul_div_eq_mul (p q : ℕ) [hp : Fact p.Prime] (hq0 
       #{x ∈ Ico 1 (p / 2).succ ×ˢ Ico 1 (q / 2).succ | x.1 * q ≤ x.2 * p} :=
     card_equiv (Equiv.prodComm _ _)
       (fun ⟨_, _⟩ => by
-        simp +contextual only [mem_filter, and_self_iff, Prod.swap_prod_mk,
-          forall_true_iff, mem_product, Equiv.prodComm_apply, and_assoc, and_left_comm])
+        simp +contextual only [mem_filter, Prod.swap_prod_mk,
+          mem_product, Equiv.prodComm_apply, and_assoc, and_left_comm])
   have hdisj :
     Disjoint {x ∈ Ico 1 (p / 2).succ ×ˢ Ico 1 (q / 2).succ | x.2 * p ≤ x.1 * q}
       {x ∈ Ico 1 (p / 2).succ ×ˢ Ico 1 (q / 2).succ | x.1 * q ≤ x.2 * p} := by

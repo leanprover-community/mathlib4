@@ -224,7 +224,7 @@ lemma integral_const_mul_of_integrable {A : Type*} [NonUnitalNormedRing A] [Norm
     [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] {f : X → A} (hf : Integrable f μ) {c : A} :
     ∫ x, c * f x ∂μ = c * ∫ x, f x ∂μ := by
   by_cases hA : CompleteSpace A
-  · show ∫ x, ContinuousLinearMap.mul ℝ _ c (f x) ∂μ = ContinuousLinearMap.mul ℝ _ c (∫ x, f x ∂μ)
+  · change ∫ x, ContinuousLinearMap.mul ℝ _ c (f x) ∂μ = ContinuousLinearMap.mul ℝ _ c (∫ x, f x ∂μ)
     rw [ContinuousLinearMap.integral_comp_comm _ hf]
   · simp [integral, hA]
 
@@ -232,7 +232,7 @@ lemma integral_mul_const_of_integrable {A : Type*} [NonUnitalNormedRing A] [Norm
     [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] {f : X → A} (hf : Integrable f μ) {c : A} :
     ∫ x, f x * c ∂μ = (∫ x, f x ∂μ) * c := by
   by_cases hA : CompleteSpace A
-  · show ∫ x, (ContinuousLinearMap.mul ℝ _).flip c (f x) ∂μ
+  · change ∫ x, (ContinuousLinearMap.mul ℝ _).flip c (f x) ∂μ
       = (ContinuousLinearMap.mul ℝ _).flip c (∫ x, f x ∂μ)
     rw [ContinuousLinearMap.integral_comp_comm _ hf]
   · simp [integral, hA]

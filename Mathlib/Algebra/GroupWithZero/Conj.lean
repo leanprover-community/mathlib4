@@ -10,7 +10,7 @@ import Mathlib.Algebra.GroupWithZero.Units.Basic
 # Conjugacy in a group with zero
 -/
 
-assert_not_exists Multiset
+assert_not_exists Multiset Ring
 -- TODO
 -- assert_not_exists DenselyOrdered
 

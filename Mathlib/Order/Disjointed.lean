@@ -118,7 +118,7 @@ theorem partialSups_disjointed (f : ι → α) :
   intro r i hi
   induction r generalizing i with
   | zero =>
-   -- Base case: `n` is minimal, so `partialSups f i = partialSups (disjointed f) n = f i`.
+    -- Base case: `n` is minimal, so `partialSups f i = partialSups (disjointed f) n = f i`.
     simp only [Nat.le_zero, card_eq_zero] at hi
     simp only [partialSups_apply, Iic_eq_cons_Iio, hi, disjointed_apply, sup'_eq_sup, sup_cons,
       sup_empty, sdiff_bot]
@@ -293,7 +293,7 @@ section Nat
 /-!
 ### Functions on `ℕ`
 
-(See also `Mathlib.Algebra.Order.Disjointed` for results with more algebra pre-requsisites.)
+(See also `Mathlib/Algebra/Order/Disjointed.lean` for results with more algebra pre-requsisites.)
 -/
 
 variable [GeneralizedBooleanAlgebra α]

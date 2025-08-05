@@ -119,7 +119,7 @@ theorem convexHull_convexHull_union_right (s t : Set E) :
     convexHull 𝕜 (s ∪ convexHull 𝕜 t) = convexHull 𝕜 (s ∪ t) :=
   ClosureOperator.closure_sup_closure_right _ _ _
 
-theorem Convex.convex_remove_iff_not_mem_convexHull_remove {s : Set E} (hs : Convex 𝕜 s) (x : E) :
+theorem Convex.convex_remove_iff_notMem_convexHull_remove {s : Set E} (hs : Convex 𝕜 s) (x : E) :
     Convex 𝕜 (s \ {x}) ↔ x ∉ convexHull 𝕜 (s \ {x}) := by
   constructor
   · rintro hsx hx
@@ -135,13 +135,17 @@ theorem Convex.convex_remove_iff_not_mem_convexHull_remove {s : Set E} (hs : Con
         rintro (rfl : y = x)
         exact hx hy⟩
 
+@[deprecated (since := "2025-05-23")]
+alias Convex.convex_remove_iff_not_mem_convexHull_remove :=
+  Convex.convex_remove_iff_notMem_convexHull_remove
+
 theorem IsLinearMap.image_convexHull {f : E → F} (hf : IsLinearMap 𝕜 f) (s : Set E) :
     f '' convexHull 𝕜 s = convexHull 𝕜 (f '' s) :=
   Set.Subset.antisymm
     (image_subset_iff.2 <|
       convexHull_min (image_subset_iff.1 <| subset_convexHull 𝕜 _)
         ((convex_convexHull 𝕜 _).is_linear_preimage hf))
-    (convexHull_min (image_subset _ (subset_convexHull 𝕜 s)) <|
+    (convexHull_min (image_mono (subset_convexHull 𝕜 s)) <|
       (convex_convexHull 𝕜 s).is_linear_image hf)
 
 theorem LinearMap.image_convexHull (f : E →ₗ[𝕜] F) (s : Set E) :
@@ -181,7 +185,7 @@ theorem AffineMap.image_convexHull (f : E →ᵃ[𝕜] F) (s : Set E) :
     refine convexHull_min ?_ ((convex_convexHull 𝕜 (f '' s)).affine_preimage f)
     rw [← Set.image_subset_iff]
     exact subset_convexHull 𝕜 (f '' s)
-  · exact convexHull_min (Set.image_subset _ (subset_convexHull 𝕜 s))
+  · exact convexHull_min (Set.image_mono (subset_convexHull 𝕜 s))
       ((convex_convexHull 𝕜 s).affine_image f)
 
 theorem convexHull_subset_affineSpan (s : Set E) : convexHull 𝕜 s ⊆ (affineSpan 𝕜 s : Set E) :=

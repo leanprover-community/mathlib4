@@ -66,7 +66,7 @@ theorem exp_eq_sum {a : A} {k : ℕ} (h : a ^ k = 0) :
 theorem exp_smul_eq_sum {M : Type*} [AddCommGroup M] [Module A M] [Module ℚ M] {a : A} {m : M}
     {k : ℕ} (h : (a ^ k) • m = 0) (hn : IsNilpotent a) :
     exp a • m = ∑ i ∈ range k, (i.factorial : ℚ)⁻¹ • (a ^ i) • m := by
-  rcases le_or_lt (nilpotencyClass a) k with h₀ | h₀
+  rcases le_or_gt (nilpotencyClass a) k with h₀ | h₀
   · simp_rw [exp_eq_sum (pow_eq_zero_of_le h₀ (pow_nilpotencyClass hn)), sum_smul, smul_assoc]
   rw [exp, sum_smul, ← sum_range_add_sum_Ico _ (Nat.le_of_succ_le h₀)]
   suffices ∑ i ∈ Ico k (nilpotencyClass a), ((i.factorial : ℚ)⁻¹ • (a ^ i)) • m = 0 by
@@ -122,7 +122,7 @@ theorem exp_add_of_commute {a b : A} (h₁ : Commute a b) (h₂ : IsNilpotent a)
       ((ij.1 ! : ℚ)⁻¹ * (ij.2 ! : ℚ)⁻¹) • (a ^ ij.1 * b ^ ij.2) = 0 :=
     sum_eq_zero fun i hi ↦ by
       rw [mem_filter] at hi
-      cases le_or_lt (N + 1) i.1 with
+      cases le_or_gt (N + 1) i.1 with
         | inl h => rw [pow_eq_zero_of_le h h₄, zero_mul, smul_zero]
         | inr _ => rw [pow_eq_zero_of_le (by linarith) h₅, mul_zero, smul_zero]
   have split₁ := sum_filter_add_sum_filter_not (R2N ×ˢ R2N)
@@ -134,7 +134,7 @@ theorem exp_add_of_commute {a b : A} (h₁ : Commute a b) (h₂ : IsNilpotent a)
       ((ij.1 ! : ℚ)⁻¹ * (ij.2 ! : ℚ)⁻¹) • (a ^ ij.1 * b ^ ij.2) = 0 :=
     sum_eq_zero fun i hi ↦ by
     simp only [not_and, not_le, mem_filter] at hi
-    cases le_or_lt (N + 1) i.1 with
+    cases le_or_gt (N + 1) i.1 with
       | inl h => rw [pow_eq_zero_of_le h h₄, zero_mul, smul_zero]
       | inr h => rw [pow_eq_zero_of_le (hi.2 (Nat.le_of_lt_succ h)) h₅, mul_zero, smul_zero]
   have split₂ := sum_filter_add_sum_filter_not (R2N ×ˢ R2N)
