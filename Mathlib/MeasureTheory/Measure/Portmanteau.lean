@@ -609,7 +609,7 @@ lemma _root_.IsPiSystem.tendsto_measureReal_biUnion
   refine tendsto_finset_sum _ (fun u hu ↦ ?_)
   simp only [Finset.mem_filter, Finset.mem_powerset] at hu
   apply Filter.Tendsto.const_mul
-  rcases eq_empty_or_nonempty (⋂ s ∈ u, (s : Set Ω)) with h'u | h'u
+  rcases eq_empty_or_nonempty (⋂ s ∈ u, s) with h'u | h'u
   · simpa [h'u] using tendsto_const_nhds
   apply h
   exact hS.biInter_mem hu.2 (fun s hs ↦ ht _ (hu.1 hs)) h'u
@@ -651,10 +651,7 @@ lemma ProbabilityMeasure.exists_lt_measure_biUnion_of_isOpen
     refine Subset.antisymm (by simp; grind) ?_
     have : G ⊆ ⋃ i, interior (s i) := by
       intro y hy
-      simp only [iUnion_coe_set, mem_iUnion]
-      refine ⟨y, hy, ?_⟩
-      apply mem_interior_iff_mem_nhds.2
-      exact hs_nhds ⟨y, hy⟩
+      simpa using ⟨y, hy, mem_interior_iff_mem_nhds.2 (hs_nhds ⟨y, hy⟩)⟩
     apply this.trans
     rw [← hT₀, biUnion_image]
     exact iUnion₂_mono fun i j ↦ interior_subset
