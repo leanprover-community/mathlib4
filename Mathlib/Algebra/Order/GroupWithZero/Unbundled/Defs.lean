@@ -27,7 +27,7 @@ For right multiplication (`a ↦ a * b`) we define the following typeclasses:
 
 We then provide statements and instances about these typeclasses not requiring `MulZeroClass`
 or higher on the underlying type – those that do can be found in
-`Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic`.
+`Mathlib/Algebra/Order/GroupWithZero/Unbundled/Basic.lean`.
 
 Less granular typeclasses like `OrderedAddCommMonoid` and `LinearOrderedField` should be enough for
 most purposes, and the system is set up so that they imply the correct granular typeclasses here.
@@ -36,7 +36,7 @@ most purposes, and the system is set up so that they imply the correct granular 
 
 As the underlying type `α` gets more structured, some of the above typeclasses become equivalent.
 The commonly used implications are:
-* When `α` is a partial order (in `Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic`):
+* When `α` is a partial order (in `Mathlib/Algebra/Order/GroupWithZero/Unbundled/Basic.lean`):
   * `PosMulStrictMono.toPosMulMono`
   * `MulPosStrictMono.toMulPosMono`
   * `PosMulReflectLE.toPosMulReflectLT`
@@ -181,16 +181,16 @@ instance (priority := 100) MulRightStrictMono.toMulPosStrictMono [MulRightStrict
     MulPosStrictMono α where elim _ _ := ‹MulRightStrictMono α›.elim _
 
 instance (priority := 100) MulLeftMono.toPosMulReflectLT [MulLeftReflectLT α] :
-   PosMulReflectLT α where elim _ _ := ‹MulLeftReflectLT α›.elim _
+    PosMulReflectLT α where elim _ _ := ‹MulLeftReflectLT α›.elim _
 
 instance (priority := 100) MulRightMono.toMulPosReflectLT [MulRightReflectLT α] :
-   MulPosReflectLT α where elim _ _ := ‹MulRightReflectLT α›.elim _
+    MulPosReflectLT α where elim _ _ := ‹MulRightReflectLT α›.elim _
 
 instance (priority := 100) MulLeftStrictMono.toPosMulReflectLE [MulLeftReflectLE α] :
-   PosMulReflectLE α where elim _ _ := ‹MulLeftReflectLE α›.elim _
+    PosMulReflectLE α where elim _ _ := ‹MulLeftReflectLE α›.elim _
 
 instance (priority := 100) MulRightStrictMono.toMulPosReflectLE [MulRightReflectLE α] :
-   MulPosReflectLE α where elim _ _ := ‹MulRightReflectLE α›.elim _
+    MulPosReflectLE α where elim _ _ := ‹MulRightReflectLE α›.elim _
 
 @[gcongr]
 theorem mul_le_mul_of_nonneg_left [PosMulMono α] (h : b ≤ c) (a0 : 0 ≤ a) : a * b ≤ a * c :=

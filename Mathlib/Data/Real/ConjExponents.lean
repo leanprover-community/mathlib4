@@ -117,7 +117,7 @@ lemma inv_sub_inv_eq_inv : r⁻¹ - q⁻¹ = p⁻¹ := sub_eq_of_eq_add h.inv_eq
 
 lemma holderConjugate_div_div : (p / r).HolderConjugate (q / r) where
   inv_add_inv_eq_inv := by
-    simp [inv_div, div_eq_mul_inv, ← mul_add, h.inv_add_inv_eq_inv, h.ne_zero']
+    simp [div_eq_mul_inv, ← mul_add, h.inv_add_inv_eq_inv, h.ne_zero']
   left_pos := by have := h.left_pos; have := h.pos'; positivity
   right_pos := by have := h.right_pos; have := h.pos'; positivity
 
@@ -296,7 +296,7 @@ lemma inv_sub_inv_eq_inv : r⁻¹ - q⁻¹ = p⁻¹ := by
 
 lemma holderConjugate_div_div : (p / r).HolderConjugate (q / r) where
   inv_add_inv_eq_inv := by
-    simp [inv_div, div_eq_mul_inv, ← mul_add, h.inv_add_inv_eq_inv, h.ne_zero']
+    simp [div_eq_mul_inv, ← mul_add, h.inv_add_inv_eq_inv, h.ne_zero']
   left_pos := by have := h.left_pos; have := h.pos'; positivity
   right_pos := by have := h.right_pos; have := h.pos'; positivity
 
@@ -515,7 +515,7 @@ protected lemma conjExponent {p : ℝ≥0∞} (hp : 1 ≤ p) : p.HolderConjugate
   refine (AddLECancellable.eq_tsub_iff_add_eq_of_le (α := ℝ≥0∞) (by simpa) (by simpa)).1 ?_
   rw [inv_eq_iff_eq_inv]
   obtain rfl | hp₁ := hp.eq_or_lt
-  · simp [tsub_eq_zero_of_le]
+  · simp
   obtain rfl | hp := eq_or_ne p ∞
   · simp
   calc

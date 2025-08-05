@@ -30,12 +30,11 @@ of formally unramified algebras which are essentially of finite type.
 
 -/
 
-variable {R S} [CommRing R] [CommRing S] [Algebra R S]
-variable (M : Type*) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
-
-open Algebra
-
+open Algebra Module
 open scoped TensorProduct
+
+variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+variable (M : Type*) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
 
 namespace Algebra.FormallyUnramified
 
@@ -84,7 +83,7 @@ lemma finite_of_free_aux (I) [DecidableEq I] (b : Basis I R S)
     (f : I →₀ S) (x : S) (a : I → I →₀ R) (ha : a = fun i ↦ b.repr (b i * x)) :
     (1 ⊗ₜ[R] x * Finsupp.sum f fun i y ↦ y ⊗ₜ[R] b i) =
       Finset.sum (f.support.biUnion fun i ↦ (a i).support) fun k ↦
-    Finsupp.sum (b.repr (f.sum fun i y ↦ a i k • y)) fun j c ↦ c • b j ⊗ₜ[R] b k := by
+      Finsupp.sum (b.repr (f.sum fun i y ↦ a i k • y)) fun j c ↦ c • b j ⊗ₜ[R] b k := by
   rw [Finsupp.sum, Finset.mul_sum]
   subst ha
   let a i := b.repr (b i * x)
@@ -173,7 +172,7 @@ lemma finite_of_free [Module.Free R S] : Module.Finite R S := by
   let a : I → I →₀ R := fun i ↦ b.repr (b i * x)
   -- Consider `F` such that `fⱼx = ∑ Fᵢⱼbⱼ`.
   let F : I →₀ I →₀ R := Finsupp.onFinset f.support (fun j ↦ b.repr (x * f j))
-    (fun j ↦ not_imp_comm.mp fun hj ↦ by simp [Finsupp.not_mem_support_iff.mp hj])
+    (fun j ↦ not_imp_comm.mp fun hj ↦ by simp [Finsupp.notMem_support_iff.mp hj])
   have hG : ∀ j ∉ (Finset.biUnion f.support fun i ↦ (a i).support),
       b.repr (f.sum (fun i y ↦ a i j • y)) = 0 := by
     intros j hj
@@ -263,10 +262,10 @@ lemma comp_sec :
     Function.comp_apply, LinearMap.flip_apply, TensorProduct.AlgebraTensorModule.mapBilinear_apply,
     TensorProduct.AlgebraTensorModule.lift_apply, LinearMap.id_coe, id_eq]
   trans (TensorProduct.lmul' R (elem R S)) • x
-  · induction' elem R S using TensorProduct.induction_on with r s y z hy hz
-    · simp
-    · simp [mul_smul, smul_comm r s]
-    · simp [hy, hz, add_smul]
+  · induction elem R S using TensorProduct.induction_on with
+    | zero => simp
+    | tmul r s => simp [mul_smul, smul_comm r s]
+    | add y z hy hz => simp [hy, hz, add_smul]
   · rw [lmul_elem, one_smul]
 
 /-- If `S` is an unramified `R`-algebra, then `R`-flat implies `S`-flat. Iversen I.2.7 -/

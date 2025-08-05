@@ -38,7 +38,7 @@ variable {X Y Z W : C} (f : X ⟶ Y) (g : Y ⟶ Z)
 #guard_expr normalize% (α_ X Y Z).hom = (α_ _ _ _).hom
 #guard_expr normalize% (α_ X Y Z).inv = ((α_ X Y Z).symm).hom
 #guard_expr normalize% 𝟙 (X ⊗ Y) = (Iso.refl (X ⊗ Y)).hom
-#guard_expr normalize% f ⊗ g = _ ≫ (f ⊗ g) ≫ _
+#guard_expr normalize% f ⊗ₘ g = _ ≫ (f ⊗ₘ g) ≫ _
 variable {V₁ V₂ V₃ : C} (R : ∀ V₁ V₂ : C, V₁ ⊗ V₂ ⟶ V₂ ⊗ V₁) in
 #guard_expr normalize% R V₁ V₂ ▷ V₃ ⊗≫ V₂ ◁ R V₁ V₃ = _ ≫ R V₁ V₂ ▷ V₃ ≫ _ ≫ V₂ ◁ R V₁ V₃ ≫ _
 

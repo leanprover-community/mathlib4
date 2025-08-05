@@ -116,7 +116,7 @@ theorem singleton_div_ball_one : {x} / ball 1 δ = ball x δ := by
   rw [singleton_div_ball, div_one]
 
 @[to_additive]
-theorem ball_one_mul_singleton : ball 1 δ * {x} = ball x δ := by simp [ball_mul_singleton]
+theorem ball_one_mul_singleton : ball 1 δ * {x} = ball x δ := by simp
 
 @[to_additive]
 theorem ball_one_div_singleton : ball 1 δ / {x} = ball x⁻¹ δ := by
@@ -195,8 +195,8 @@ theorem IsCompact.mul_closedBall_one (hs : IsCompact s) (hδ : 0 ≤ δ) :
     s * closedBall (1 : E) δ = cthickening δ s := by
   rw [hs.cthickening_eq_biUnion_closedBall hδ]
   ext x
-  simp only [mem_mul, dist_eq_norm_div, exists_prop, mem_iUnion, mem_closedBall, exists_and_left,
-    mem_closedBall_one_iff, ← eq_div_iff_mul_eq'', div_one, exists_eq_right]
+  simp only [mem_mul, dist_eq_norm_div, exists_prop, mem_iUnion, mem_closedBall,
+    ← eq_div_iff_mul_eq'', div_one, exists_eq_right]
 
 @[to_additive]
 theorem IsCompact.div_closedBall_one (hs : IsCompact s) (hδ : 0 ≤ δ) :
@@ -219,7 +219,7 @@ theorem IsCompact.mul_closedBall (hs : IsCompact s) (hδ : 0 ≤ δ) (x : E) :
 @[to_additive]
 theorem IsCompact.div_closedBall (hs : IsCompact s) (hδ : 0 ≤ δ) (x : E) :
     s / closedBall x δ = x⁻¹ • cthickening δ s := by
-  simp [div_eq_mul_inv, mul_comm, hs.mul_closedBall hδ]
+  simp [div_eq_mul_inv, hs.mul_closedBall hδ]
 
 @[to_additive]
 theorem IsCompact.closedBall_mul (hs : IsCompact s) (hδ : 0 ≤ δ) (x : E) :
@@ -228,6 +228,6 @@ theorem IsCompact.closedBall_mul (hs : IsCompact s) (hδ : 0 ≤ δ) (x : E) :
 @[to_additive]
 theorem IsCompact.closedBall_div (hs : IsCompact s) (hδ : 0 ≤ δ) (x : E) :
     closedBall x δ * s = x • cthickening δ s := by
-  simp [div_eq_mul_inv, hs.closedBall_mul hδ]
+  simp [hs.closedBall_mul hδ]
 
 end SeminormedCommGroup
