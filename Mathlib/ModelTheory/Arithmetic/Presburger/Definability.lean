@@ -6,7 +6,7 @@ Authors: Dexin Zhang
 import Mathlib.Algebra.GCDMonoid.Finset
 import Mathlib.Algebra.GCDMonoid.Nat
 import Mathlib.ModelTheory.Arithmetic.Presburger.Basic
-import Mathlib.ModelTheory.Arithmetic.Presburger.Semilinear.FinitelyGenerated
+import Mathlib.ModelTheory.Arithmetic.Presburger.Semilinear.Basic
 import Mathlib.ModelTheory.Definability
 
 /-!
