@@ -129,7 +129,7 @@ end Pi
 /-- A generalized Heyting algebra is a lattice with an additional binary operation `⇨` called
 Heyting implication such that `(a ⇨ ·)` is right adjoint to `(a ⊓ ·)`.
 
- This generalizes `HeytingAlgebra` by not requiring a bottom element. -/
+This generalizes `HeytingAlgebra` by not requiring a bottom element. -/
 class GeneralizedHeytingAlgebra (α : Type*) extends Lattice α, OrderTop α, HImp α where
   /-- `(a ⇨ ·)` is right adjoint to `(a ⊓ ·)` -/
   le_himp_iff (a b c : α) : a ≤ b ⇨ c ↔ a ⊓ b ≤ c
@@ -503,11 +503,9 @@ theorem sup_sdiff_right_self : (a ⊔ b) \ b = a \ b := by rw [sup_sdiff, sdiff_
 @[simp]
 theorem sup_sdiff_left_self : (a ⊔ b) \ a = b \ a := by rw [sup_comm, sup_sdiff_right_self]
 
-@[gcongr]
 theorem sdiff_le_sdiff_right (h : a ≤ b) : a \ c ≤ b \ c :=
   sdiff_le_iff.2 <| h.trans <| le_sup_sdiff
 
-@[gcongr]
 theorem sdiff_le_sdiff_left (h : a ≤ b) : c \ b ≤ c \ a :=
   sdiff_le_iff.2 <| le_sup_sdiff.trans <| sup_le_sup_right h _
 

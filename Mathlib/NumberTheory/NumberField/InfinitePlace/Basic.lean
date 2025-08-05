@@ -61,8 +61,7 @@ instance {K : Type*} [Field K] : FunLike (InfinitePlace K) K ℝ where
   coe w x := w.1 x
   coe_injective' _ _ h := Subtype.eq (AbsoluteValue.ext fun x => congr_fun h x)
 
-lemma coe_apply {K : Type*} [Field K] (v : InfinitePlace K) (x : K) :
-  v x = v.1 x := rfl
+lemma coe_apply {K : Type*} [Field K] (v : InfinitePlace K) (x : K) : v x = v.1 x := rfl
 
 @[ext]
 lemma ext {K : Type*} [Field K] (v₁ v₂ : InfinitePlace K) (h : ∀ k, v₁ k = v₂ k) : v₁ = v₂ :=
@@ -356,7 +355,7 @@ theorem _root_.NumberField.is_primitive_element_of_infinitePlace_lt {x : 𝓞 K}
       rw [conjugate_embedding_eq_of_isReal hw, or_self] at main
       exact congr_arg RingHom.toRatAlgHom main
     | inr hw =>
-      refine congr_arg RingHom.toRatAlgHom (main.resolve_right fun h' ↦ hw.not_le ?_)
+      refine congr_arg RingHom.toRatAlgHom (main.resolve_right fun h' ↦ hw.not_ge ?_)
       have : (embedding w x).im = 0 := by
         rw [← Complex.conj_eq_iff_im]
         have := RingHom.congr_fun h' x
@@ -380,13 +379,9 @@ open scoped Classical in
 /-- The number of infinite real places of the number field `K`. -/
 noncomputable abbrev nrRealPlaces := card { w : InfinitePlace K // IsReal w }
 
-@[deprecated (since := "2024-10-24")] alias NrRealPlaces := nrRealPlaces
-
 open scoped Classical in
 /-- The number of infinite complex places of the number field `K`. -/
 noncomputable abbrev nrComplexPlaces := card { w : InfinitePlace K // IsComplex w }
-
-@[deprecated (since := "2024-10-24")] alias NrComplexPlaces := nrComplexPlaces
 
 open scoped Classical in
 theorem card_real_embeddings :

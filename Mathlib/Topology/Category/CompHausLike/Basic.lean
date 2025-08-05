@@ -258,8 +258,6 @@ of topological spaces. -/
 def isoEquivHomeo {X Y : CompHausLike.{u} P} : (X ≅ Y) ≃ (X ≃ₜ Y) where
   toFun := homeoOfIso
   invFun := isoOfHomeo
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- A constant map as a morphism in `CompHausLike` -/
 def const {P : TopCat.{u} → Prop}

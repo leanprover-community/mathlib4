@@ -39,6 +39,12 @@ lemma lintegral_le_const [IsProbabilityMeasure μ] {f : α → ℝ≥0∞} {c : 
     (hf : ∀ᵐ x ∂μ, f x ≤ c) : ∫⁻ x, f x ∂μ ≤ c :=
   (lintegral_mono_ae hf).trans_eq (by simp)
 
+lemma iInf_le_lintegral [IsProbabilityMeasure μ] (f : α → ℝ≥0∞) : ⨅ x, f x ≤ ∫⁻ x, f x ∂μ :=
+  le_trans (by simp) (iInf_mul_le_lintegral f)
+
+lemma lintegral_le_iSup [IsProbabilityMeasure μ] (f : α → ℝ≥0∞) : ∫⁻ x, f x ∂μ ≤ ⨆ x, f x :=
+  le_trans (lintegral_le_iSup_mul f) (by simp)
+
 variable (μ) in
 theorem _root_.IsFiniteMeasure.lintegral_lt_top_of_bounded_to_ennreal
     [IsFiniteMeasure μ] {f : α → ℝ≥0∞} (f_bdd : ∃ c : ℝ≥0, ∀ x, f x ≤ c) : ∫⁻ x, f x ∂μ < ∞ := by
@@ -190,7 +196,7 @@ theorem exists_measurable_le_forall_setLIntegral_eq [SFinite μ] (f : α → ℝ
   -- Let `φ` be the pointwise supremum of the functions $g_{n}$.
   -- Clearly, `φ` is a measurable function and `φ ≤ f`.
   set φ : α → ℝ≥0∞ := fun x ↦ ⨆ n, g n x
-  have hφm : Measurable φ := by measurability
+  have hφm : Measurable φ := by fun_prop
   have hφle : φ ≤ f := fun x ↦ iSup_le (hgf · x)
   refine ⟨φ, hφm, hφle, fun s ↦ ?_⟩
   -- Now we show the inequality between set integrals.

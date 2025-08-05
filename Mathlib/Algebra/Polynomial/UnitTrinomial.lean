@@ -212,7 +212,7 @@ theorem irreducible_aux1 {k m n : ℕ} (hkm : k < m) (hmn : m < n) (u v w : Unit
   rw [Finsupp.filter_single_of_neg, Finsupp.filter_single_of_neg, Finsupp.filter_single_of_neg,
     Finsupp.filter_single_of_neg, Finsupp.filter_single_of_neg, Finsupp.filter_single_of_pos,
     Finsupp.filter_single_of_neg, Finsupp.filter_single_of_pos, Finsupp.filter_single_of_neg]
-  · simp only [add_zero, zero_add, ofFinsupp_add, ofFinsupp_single]
+  · simp only [add_zero, zero_add]
     -- Porting note: added next two lines (less powerful `simp`).
     rw [ofFinsupp_add]
     simp only [ofFinsupp_single]
@@ -224,10 +224,7 @@ theorem irreducible_aux1 {k m n : ℕ} (hkm : k < m) (hmn : m < n) (u v w : Unit
   · exact ⟨add_lt_add_right hkm n, add_lt_add_right hmn n⟩
   · rw [← add_assoc, add_tsub_cancel_of_le hmn.le, add_comm]
     exact fun h => h.1.ne rfl
-  · intro h
-    have := h.1
-    rw [add_comm, add_lt_add_iff_right] at this
-    exact asymm this hmn
+  · grind
   · exact fun h => h.1.ne rfl
   · exact fun h => asymm ((add_lt_add_iff_left k).mp h.1) key
   · exact fun h => asymm ((add_lt_add_iff_left k).mp h.1) (hkm.trans hmn)
@@ -241,14 +238,13 @@ theorem irreducible_aux2 {k m m' n : ℕ} (hkm : k < m) (hmn : m < n) (hkm' : k 
   replace h := h.trans (irreducible_aux1 hkm' hmn' u v w hq).symm
   rw [(isUnit_C.mpr v.isUnit).mul_right_inj] at h
   rw [binomial_eq_binomial u.ne_zero w.ne_zero] at h
-  simp only [add_left_inj, Units.eq_iff] at h
+  simp only [add_left_inj, Units.val_inj] at h
   rcases h with (⟨rfl, -⟩ | ⟨rfl, rfl, h⟩ | ⟨-, hm, hm'⟩)
   · exact Or.inl (hq.trans hp.symm)
   · refine Or.inr ?_
     rw [← trinomial_mirror hkm' hmn' u.ne_zero u.ne_zero, eq_comm, mirror_eq_iff] at hp
     exact hq.trans hp
-  · obtain rfl : m = m' := by omega
-    exact Or.inl (hq.trans hp.symm)
+  · grind
 
 theorem irreducible_aux3 {k m m' n : ℕ} (hkm : k < m) (hmn : m < n) (hkm' : k < m') (hmn' : m' < n)
     (u v w x z : Units ℤ) (hp : p = trinomial k m n (u : ℤ) v w)
@@ -268,7 +264,7 @@ theorem irreducible_aux3 {k m m' n : ℕ} (hkm : k < m) (hmn : m < n) (hkm' : k 
     mul_right_inj' (show 2 * (v : ℤ) ≠ 0 from mul_ne_zero two_ne_zero v.ne_zero)] at hadd
   replace hadd :=
     (Int.isUnit_add_isUnit_eq_isUnit_add_isUnit w.isUnit u.isUnit z.isUnit x.isUnit).mp hadd
-  simp only [Units.eq_iff] at hadd
+  simp only [Units.val_inj] at hadd
   rcases hadd with (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩)
   · exact irreducible_aux2 hkm hmn hkm' hmn' u v w hp hq h
   · rw [← mirror_inj, trinomial_mirror hkm' hmn' w.ne_zero u.ne_zero] at hq

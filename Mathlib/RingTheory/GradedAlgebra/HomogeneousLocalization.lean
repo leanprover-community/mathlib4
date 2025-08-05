@@ -7,7 +7,7 @@ import Mathlib.Algebra.Group.Submonoid.Finsupp
 import Mathlib.Order.Filter.AtTopBot.Defs
 import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.RingTheory.GradedAlgebra.FiniteType
-import Mathlib.RingTheory.Localization.AtPrime
+import Mathlib.RingTheory.Localization.AtPrime.Basic
 import Mathlib.RingTheory.Localization.Away.Basic
 
 /-!
@@ -240,7 +240,7 @@ instance : Pow (NumDenSameDeg 𝒜 x) ℕ where
     ⟨n • c.deg, @GradedMonoid.GMonoid.gnpow _ (fun i => ↥(𝒜 i)) _ _ n _ c.num,
       @GradedMonoid.GMonoid.gnpow _ (fun i => ↥(𝒜 i)) _ _ n _ c.den, by
         induction' n with n ih
-        · simpa only [coe_gnpow, pow_zero] using Submonoid.one_mem _
+        · simp only [coe_gnpow, pow_zero, one_mem]
         · simpa only [pow_succ, coe_gnpow] using x.mul_mem ih c.den_mem⟩
 
 @[simp]
@@ -365,7 +365,7 @@ instance : Add (HomogeneousLocalization 𝒜 x) where
       fun c1 c2 (h : Localization.mk _ _ = Localization.mk _ _) c3 c4
         (h' : Localization.mk _ _ = Localization.mk _ _) => by
       change Localization.mk _ _ = Localization.mk _ _
-      simp only [num_add, den_add, ← Localization.add_mk]
+      simp only [num_add, den_add]
       convert congr_arg₂ (· + ·) h h' <;> rw [Localization.add_mk] <;> rfl
 
 @[simp] lemma mk_add (i j : NumDenSameDeg 𝒜 x) : mk (i + j) = mk i + mk j := rfl
@@ -478,6 +478,9 @@ instance : Algebra (𝒜 0) (HomogeneousLocalization 𝒜 x) :=
 
 lemma algebraMap_eq : algebraMap (𝒜 0) (HomogeneousLocalization 𝒜 x) = fromZeroRingHom 𝒜 x := rfl
 
+instance : IsScalarTower (𝒜 0) (HomogeneousLocalization 𝒜 x) (Localization x) :=
+  .of_algebraMap_eq' rfl
+
 end HomogeneousLocalization
 
 namespace HomogeneousLocalization
@@ -543,7 +546,7 @@ theorem isUnit_iff_isUnit_val (f : HomogeneousLocalization.AtPrime 𝒜 𝔭) :
       (hc ▸ Ideal.mul_mem_left _ c.1 (Ideal.mul_mem_right b _ h))
   refine isUnit_of_mul_eq_one _ (Quotient.mk'' ⟨f.1, f.3, f.2, this⟩) ?_
   rw [← mk_mul, ext_iff_val, val_mk]
-  simp [mul_comm f.den.1, Localization.mk_eq_monoidOf_mk']
+  simp [mul_comm f.den.1]
 
 instance : Nontrivial (HomogeneousLocalization.AtPrime 𝒜 𝔭) :=
   ⟨⟨0, 1, fun r => by simp [ext_iff_val, val_zero, val_one, zero_ne_one] at r⟩⟩
@@ -613,8 +616,8 @@ def map (g : A →+* B)
     simp only [← mk_mul, Quotient.map'_mk'', num_mul, map_mul, den_mul]; rfl
   map_zero' := by simp only [← mk_zero (𝒜 := 𝒜), Quotient.map'_mk'', deg_zero,
     num_zero, ZeroMemClass.coe_zero, map_zero, den_zero, map_one]; rfl
-  map_one' := by simp only [← mk_one (𝒜 := 𝒜), Quotient.map'_mk'', deg_zero,
-    num_one, ZeroMemClass.coe_zero, map_zero, den_one, map_one]; rfl
+  map_one' := by simp only [← mk_one (𝒜 := 𝒜), Quotient.map'_mk'',
+    num_one, den_one, map_one]; rfl
 
 /--
 Let `A` be a graded algebra and `P ≤ Q` be two submonoids, then the homogeneous localization of `A`
@@ -795,7 +798,7 @@ theorem Away.isLocalization_mul (hd : d ≠ 0) :
     obtain ⟨⟨_, k, rfl⟩, hc⟩ := e
     refine ⟨⟨_, k + m + n, rfl⟩, ?_⟩
     ext
-    simp only [OneMemClass.coe_one, one_mul, val_mul, val_pow, val_mk, Localization.mk_pow,
+    simp only [val_mul, val_pow, val_mk, Localization.mk_pow,
       Localization.mk_eq_mk_iff, Localization.r_iff_exists, Submonoid.coe_mul, Localization.mk_mul,
       SubmonoidClass.coe_pow, Subtype.exists, exists_prop]
     refine ⟨_, ⟨k, rfl⟩, ?_⟩
@@ -877,7 +880,7 @@ theorem Away.adjoin_mk_prod_pow_eq_top_of_pos {f : A} {d : ℕ} (hf : f ∈ 𝒜
       (hai ▸ SetLike.prod_pow_mem_graded _ _ _ _ fun i _ ↦ hxd i) |
         (a : ℕ) (ai : ι' → ℕ) (hai : ∑ i, ai i • dv i = a • d) (_ : ∀ i, ai i ≤ d) } = ⊤ := by
   rw [← top_le_iff]
-  show ⊤ ≤ (Algebra.adjoin (𝒜 0) _).toSubmodule
+  change ⊤ ≤ (Algebra.adjoin (𝒜 0) _).toSubmodule
   rw [← HomogeneousLocalization.Away.span_mk_prod_pow_eq_top hf v hx dv hxd, Submodule.span_le]
   rintro _ ⟨a, ai, hai, rfl⟩
   have H₀ : (a - ∑ i : ι', dv i * (ai i / d)) • d = ∑ k : ι', (ai k % d) • dv k := by
@@ -885,7 +888,7 @@ theorem Away.adjoin_mk_prod_pow_eq_top_of_pos {f : A} {d : ℕ} (hf : f ∈ 𝒜
     conv => enter [1, 1, 2, i]; rw [← Nat.mod_add_div (ai i) d]
     simp_rw [smul_eq_mul, add_mul, Finset.sum_add_distrib,
       mul_assoc, ← Finset.mul_sum, mul_comm d, mul_comm (_ / _)]
-    simp only [add_tsub_cancel_right, smul_eq_mul]
+    simp only [add_tsub_cancel_right]
   have H : Away.mk 𝒜 hf a (∏ i, v i ^ ai i)
       (hai ▸ SetLike.prod_pow_mem_graded _ _ _ _ fun i _ ↦ hxd i) =
       Away.mk 𝒜 hf (a - ∑ i : ι', dv i * (ai i / d)) (∏ i, v i ^ (ai i % d))
@@ -901,7 +904,7 @@ theorem Away.adjoin_mk_prod_pow_eq_top_of_pos {f : A} {d : ℕ} (hf : f ∈ 𝒜
     · ext i
       congr
       exact Eq.symm (Nat.mod_add_div (ai i) d)
-    · simp only [SubmonoidClass.mk_pow, SubmonoidClass.coe_finset_prod, ← pow_add, ← pow_mul,
+    · simp only [SubmonoidClass.coe_finset_prod, ← pow_add, ← pow_mul,
         Finset.prod_pow_eq_pow_sum, SubmonoidClass.coe_pow]
       rw [tsub_add_cancel_of_le]
       rcases d.eq_zero_or_pos with hd | hd
@@ -959,7 +962,7 @@ theorem Away.adjoin_mk_prod_pow_eq_top {f : A} {d : ℕ} (hf : f ∈ 𝒜 d)
   · simpa [Finset.sum_attach_eq_sum_dite] using hai
   · simp [apply_dite, dite_apply, h]
   · congr 1
-    show _ = ∏ x ∈ s.attach, _
+    change _ = ∏ x ∈ s.attach, _
     simp [Finset.prod_attach_eq_prod_dite]
 
 variable {𝒜 : ℕ → Submodule R A} [GradedAlgebra 𝒜] [Algebra.FiniteType (𝒜 0) A] in

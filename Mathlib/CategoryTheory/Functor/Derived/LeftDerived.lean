@@ -23,7 +23,7 @@ Given `LF : D ⥤ H` and `α : L ⋙ RF ⟶ F`, we also introduce a type class
 along the localization functor `L`.
 
 (This file was obtained by dualizing the results in the file
-`CategoryTheory.Functor.Derived.RightDerived`.)
+`Mathlib.CategoryTheory.Functor.Derived.RightDerived`.)
 
 ## References
 
