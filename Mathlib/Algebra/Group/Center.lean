@@ -182,7 +182,7 @@ theorem centralizer_prod {N : Type*} [Mul N] {S : Set M} {T : Set N}
   exact ⟨fun h => ⟨fun y hy => (h y c hy hc).1, fun y hy => (h b y hb hy).2⟩,
     fun h y z hy hz => ⟨h.1 _ hy, h.2 _ hz⟩⟩
 
-@[to_additive addCentralizer_prod_centralizer_subset_centralizer_prod]
+@[to_additive prod_addCentralizer_subset_addCentralizer_prod]
 theorem prod_centralizer_subset_centralizer_prod {N : Type*} [Mul N] (S : Set M) (T : Set N) :
     S.centralizer ×ˢ T.centralizer ⊆ (S ×ˢ T).centralizer := by
   rw [subset_def]
