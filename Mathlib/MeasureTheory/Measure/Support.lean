@@ -40,13 +40,6 @@ and various descriptions of the complement of the support are provided.
 * `μ.support` : the support of measure `μ`.
 * `(𝓝 x).smallSets` : the frequently-small-sets filter used in the filter-theoretic definition.
 
-## Implementation notes
-
-Have to go through and resolve some of these, and remove the associated bullets!
-
-* TO DO: Rename `MeasureTheory.measure_mono_null` as `MeasureTheory.Measure.mono_null`
-  to enable dot notation. (In a separate PR?)
-
 ## Tags
 
 measure theory, support, filter, Lindelöf, hereditarily Lindelöf,
