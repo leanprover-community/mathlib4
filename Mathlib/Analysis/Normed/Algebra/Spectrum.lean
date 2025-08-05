@@ -84,7 +84,7 @@ theorem spectralRadius_zero [Ring A] [Algebra 𝕜 A] : spectralRadius 𝕜 (0 :
 @[simp]
 theorem spectralRadius_one [Ring A] [Algebra 𝕜 A] [Nontrivial A] :
     spectralRadius 𝕜 (1 : A) = 1 := by
-  simp [spectralRadius, spectrum.one_eq]
+  simp [spectralRadius]
 
 theorem mem_resolventSet_of_spectralRadius_lt [Ring A] [Algebra 𝕜 A] {a : A} {k : 𝕜}
     (h : spectralRadius 𝕜 a < ‖k‖₊) : k ∈ ρ a :=
