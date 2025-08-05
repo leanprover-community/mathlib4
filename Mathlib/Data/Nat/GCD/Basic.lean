@@ -7,7 +7,7 @@ import Batteries.Data.Nat.Gcd
 import Mathlib.Algebra.Group.Nat.Units
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.GroupWithZero.Nat
-import Mathlib.Data.Nat.Prime.Basic
+import Mathlib.Data.Nat.Prime.Defs
 
 /-!
 # Properties of `Nat.gcd`, `Nat.lcm`, and `Nat.Coprime`
