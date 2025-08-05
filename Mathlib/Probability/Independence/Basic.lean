@@ -680,7 +680,7 @@ lemma indepFun_prod (mX : Measurable X) (mY : Measurable Y) :
   · change Measure.map (Y ∘ _) _ = _
     rw [← Measure.map_map mY measurable_snd, Measure.map_snd_prod, measure_univ, one_smul]
 
-lemma iIndepFun_prod₀ (mX : AEMeasurable X μ) (mY : AEMeasurable Y ν) :
+lemma indepFun_prod₀ (mX : AEMeasurable X μ) (mY : AEMeasurable Y ν) :
     IndepFun (fun ω ↦ X ω.1) (fun ω ↦ Y ω.2) (μ.prod ν) := by
   have : IndepFun (fun ω ↦ mX.mk X ω.1) (fun ω ↦ mY.mk Y ω.2) (μ.prod ν) :=
     indepFun_prod mX.measurable_mk mY.measurable_mk
