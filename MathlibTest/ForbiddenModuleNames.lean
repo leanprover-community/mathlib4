@@ -1,27 +1,27 @@
 import Mathlib.Tactic.Linter.TextBased
 
 /-!
-# Unit tests for the module name Windows-compatibility check in the text-based linters
+# Unit tests for the module name compatibility checks in the text-based linter
 -/
 
 open Lean.Linter Mathlib.Linter.TextBased
 
-/-- Some unit tests for `modulesForbiddenWindows` -/
-def testModulesForbiddenWindows : IO Unit := do
+/-- Some unit tests for `modulesOSForbidden` -/
+def testModulesOSForbidden : IO Unit := do
   -- Explicitly enable the linter, although it is enabled by default.
   let opts : LinterOptions := {
     toOptions := linter.modulesUpperCamelCase.set {} true
     linterSets := {}
   }
 
-  assert!((← modulesForbiddenWindows opts #[]) == 0)
-  assert!((← modulesForbiddenWindows opts #[`Mathlib.Aux.Foo, `Mathlib.Algebra.Con]) == 2)
-  assert!((← modulesForbiddenWindows opts #[`Mathlib.Foo.Bar, `Aux.Algebra.Con.Bar]) == 1)
-  assert!((← modulesForbiddenWindows opts #[`Com1.prn.Aux, `LPT.Aux]) == 2)
-  assert!((← modulesForbiddenWindows opts #[`Mathlib.Foo.«Foo*»]) == 1)
-  assert!((← modulesForbiddenWindows opts #[`Mathlib.«B>ar<»]) == 1)
-  assert!((← modulesForbiddenWindows opts #[`Mathlib.«Bar!»]) == 1)
-  assert!((← modulesForbiddenWindows opts #[`Mathlib.«Qu<x!!»]) == 1)
+  assert!((← modulesOSForbidden opts #[]) == 0)
+  assert!((← modulesOSForbidden opts #[`Mathlib.Aux.Foo, `Mathlib.Algebra.Con]) == 2)
+  assert!((← modulesOSForbidden opts #[`Mathlib.Foo.Bar, `Aux.Algebra.Con.Bar]) == 1)
+  assert!((← modulesOSForbidden opts #[`Com1.prn.Aux, `LPT.Aux]) == 2)
+  assert!((← modulesOSForbidden opts #[`Mathlib.Foo.«Foo*»]) == 1)
+  assert!((← modulesOSForbidden opts #[`Mathlib.«B>ar<»]) == 1)
+  assert!((← modulesOSForbidden opts #[`Mathlib.«Bar!»]) == 1)
+  assert!((← modulesOSForbidden opts #[`Mathlib.«Qu<x!!»]) == 1)
 
 /--
 info: error: module name 'Mathlib.Aux.Foo' contains component '[Aux]', which is forbidden in Windows filenames.
@@ -36,4 +36,4 @@ error: module name 'Mathlib.«Qu<x!!»' contains forbidden character '!'
 error: module name 'Mathlib.«Qu<x!!»' contains character '[<]', which is forbidden in Windows filenames.
 -/
 #guard_msgs in
-#eval testModulesForbiddenWindows
+#eval testModulesOSForbidden
