@@ -665,10 +665,7 @@ def uliftYonedaEquiv {X : C} {F : Cᵒᵖ ⥤ Type (max w v₁)} :
   invFun x := { app Y y := F.map y.down.op x }
   left_inv τ := by
     ext ⟨Y⟩ ⟨y⟩
-    dsimp [uliftYoneda]
-    rw [← FunctorToTypes.naturality]
-    dsimp
-    rw [Category.comp_id]
+    simp [uliftYoneda, ← FunctorToTypes.naturality]
   right_inv x := by simp
 
 @[deprecated (since := "2025-08-04")] alias yonedaCompUliftFunctorEquiv :=
