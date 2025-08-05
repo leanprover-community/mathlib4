@@ -298,9 +298,8 @@ lemma iIndepFun.integral_fun_prod_comp (hX : iIndepFun X μ)
     rw [integral_map (mX i) (hf i)]
   · fun_prop
   rw [(iIndepFun_iff_map_fun_eq_pi_map mX).1 hX]
-  convert Finset.aestronglyMeasurable_prod Finset.univ fun i _ ↦
-    (hf i).comp_quasiMeasurePreserving (Measure.quasiMeasurePreserving_eval (fun i ↦ μ.map (X i)) i)
-  simp
+  exact Finset.aestronglyMeasurable_fun_prod Finset.univ fun i _ ↦
+    (hf i).comp_quasiMeasurePreserving (Measure.quasiMeasurePreserving_eval _ i)
 
 lemma iIndepFun.integral_prod_comp (hX : iIndepFun X μ)
     (mX : ∀ i, AEMeasurable (X i) μ) (hf : ∀ i, AEStronglyMeasurable (f i) (μ.map (X i))) :
