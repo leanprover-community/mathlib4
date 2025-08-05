@@ -133,8 +133,8 @@ lemma IsPiSystem.biInter_mem {S : Set (Set α)} (h_pi : IsPiSystem S) {t : Finse
   | singleton a => simpa using ht
   | cons a t hat t_ne ih =>
     simp only [Finset.cons_eq_insert, Finset.mem_insert, iInter_iInter_eq_or_left] at h' ht ⊢
-    apply h_pi _ (ht a (Or.inl rfl)) _ _ h'
-    apply ih (fun s hs ↦ ?_) h'.right
+    refine h_pi _ (ht a (Or.inl rfl)) _ ?_ h'
+    refine ih (fun s hs ↦ ?_) h'.right
     exact ht s (Or.inr hs)
 
 section Order
