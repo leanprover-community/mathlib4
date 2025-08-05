@@ -130,7 +130,7 @@ theorem mapHom_comp (f : M →* N) {P : Type w} [Monoid P] (g : N →* P) :
 variable {C : Type v} [Category.{w} C]
 
 /-- Given a function `f : C → G` from a category to a group, we get a functor
-    `C ⥤ G` sending any morphism `x ⟶ y` to `f y * (f x)⁻¹`. -/
+`C ⥤ G` sending any morphism `x ⟶ y` to `f y * (f x)⁻¹`. -/
 @[simps]
 def differenceFunctor (f : C → G) : C ⥤ SingleObj G where
   obj _ := ()

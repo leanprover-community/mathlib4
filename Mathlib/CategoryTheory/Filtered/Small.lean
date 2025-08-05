@@ -70,17 +70,18 @@ private inductive InductiveStep (n : ℕ) (X : ∀ (k : ℕ), k < n → Σ t : T
       ((X _ hk).2 j ⟶ (X _ hk').2 j') → ((X _ hk).2 j ⟶ (X _ hk').2 j') → InductiveStep n X
 
 /-- The realization function sends the abstract maxima and weak coequalizers to the corresponding
-    objects in `C`. -/
+objects in `C`. -/
 private noncomputable def inductiveStepRealization (n : ℕ)
     (X : ∀ (k : ℕ), k < n → Σ t : Type (max v w), t → C) : InductiveStep.{w} n X → C
   | (InductiveStep.max hk hk' x y) => max ((X _ hk).2 x) ((X _ hk').2 y)
   | (InductiveStep.coeq _ _ _ _ f g) => coeq f g
 
-/-- All steps of building the abstract filtered closure together with the realization function,
-    as a function of `ℕ`.
+/--
+All steps of building the abstract filtered closure together with the realization function,
+as a function of `ℕ`.
 
-   The function is defined by well-founded recursion, but we really want to use its
-   definitional equalities in the proofs below, so lets make it semireducible. -/
+The function is defined by well-founded recursion, but we really want to use its
+definitional equalities in the proofs below, so lets make it semireducible. -/
 @[semireducible] private noncomputable def bundledAbstractFilteredClosure :
     ℕ → Σ t : Type (max v w), t → C
   | 0 => ⟨ULift.{v} α, f ∘ ULift.down⟩

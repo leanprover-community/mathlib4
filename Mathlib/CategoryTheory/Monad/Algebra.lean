@@ -34,7 +34,7 @@ variable {C : Type u₁} [Category.{v₁} C]
 namespace Monad
 
 /-- An Eilenberg-Moore algebra for a monad `T`.
-    cf Definition 5.2.3 in [Riehl][riehl2017]. -/
+cf Definition 5.2.3 in [Riehl][riehl2017]. -/
 structure Algebra (T : Monad C) : Type max u₁ v₁ where
   /-- The underlying object associated to an algebra. -/
   A : C
@@ -104,7 +104,7 @@ theorem comp_f {A A' A'' : Algebra T} (f : A ⟶ A') (g : A' ⟶ A'') : (f ≫ g
   rfl
 
 /-- The category of Eilenberg-Moore algebras for a monad.
-    cf Definition 5.2.4 in [Riehl][riehl2017]. -/
+cf Definition 5.2.4 in [Riehl][riehl2017]. -/
 instance eilenbergMoore : Category (Algebra T) where
 
 /--

@@ -394,8 +394,8 @@ end Coev
 section Curry
 
 /-- The curried form of a continuous map `α × β → γ` as a continuous map `α → C(β, γ)`.
-    If `a × β` is locally compact, this is continuous. If `α` and `β` are both locally
-    compact, then this is a homeomorphism, see `Homeomorph.curry`. -/
+If `a × β` is locally compact, this is continuous. If `α` and `β` are both locally
+compact, then this is a homeomorphism, see `Homeomorph.curry`. -/
 def curry (f : C(X × Y, Z)) : C(X, C(Y, Z)) where
   toFun a := ⟨Function.curry f a, f.continuous.comp <| by fun_prop⟩
   continuous_toFun := (continuous_postcomp f).comp continuous_coev
@@ -405,7 +405,7 @@ theorem curry_apply (f : C(X × Y, Z)) (a : X) (b : Y) : f.curry a b = f (a, b) 
   rfl
 
 /-- To show continuity of a map `α → C(β, γ)`, it suffices to show that its uncurried form
-    `α × β → γ` is continuous. -/
+α × β → γ` is continuous. -/
 theorem continuous_of_continuous_uncurry (f : X → C(Y, Z))
     (h : Continuous (Function.uncurry fun x y => f x y)) : Continuous f :=
   (curry ⟨_, h⟩).2
@@ -429,8 +429,8 @@ theorem continuous_uncurry_of_continuous [LocallyCompactSpace Y] (f : C(X, C(Y, 
   continuous_eval.comp <| f.continuous.prodMap continuous_id
 
 /-- The uncurried form of a continuous map `X → C(Y, Z)` as a continuous map `X × Y → Z` (if `Y` is
-    locally compact). If `X` is also locally compact, then this is a homeomorphism between the two
-    function spaces, see `Homeomorph.curry`. -/
+locally compact). If `X` is also locally compact, then this is a homeomorphism between the two
+function spaces, see `Homeomorph.curry`. -/
 @[simps]
 def uncurry [LocallyCompactSpace Y] (f : C(X, C(Y, Z))) : C(X × Y, Z) :=
   ⟨_, continuous_uncurry_of_continuous f⟩

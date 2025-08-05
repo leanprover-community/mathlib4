@@ -43,7 +43,7 @@ instance (priority := 100) {K} [DivisionRing K] [TopologicalSpace K]
 variable (K)
 
 /-- A topological division ring is a division ring with a topology where all operations are
-    continuous, including inversion. -/
+continuous, including inversion. -/
 class IsTopologicalDivisionRing : Prop extends IsTopologicalRing K, HasContinuousInv₀ K
 
 @[deprecated (since := "2025-03-25")] alias TopologicalDivisionRing := IsTopologicalDivisionRing

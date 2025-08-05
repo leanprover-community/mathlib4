@@ -55,8 +55,7 @@ lemma Functor.Elements.ext {F : C ⥤ Type w} (x y : F.Elements) (h₁ : x.fst =
   simp [h₂]
 
 /-- The category structure on `F.Elements`, for `F : C ⥤ Type`.
-    A morphism `(X, x) ⟶ (Y, y)` is a morphism `f : X ⟶ Y` in `C`, so `F.map f` takes `x` to `y`.
--/
+A morphism `(X, x) ⟶ (Y, y)` is a morphism `f : X ⟶ Y` in `C`, so `F.map f` takes `x` to `y`. -/
 instance categoryOfElements (F : C ⥤ Type w) : Category.{v} F.Elements where
   Hom p q := { f : p.1 ⟶ q.1 // (F.map f) p.2 = q.2 }
   id p := ⟨𝟙 p.1, by simp⟩
@@ -185,7 +184,7 @@ theorem fromStructuredArrow_map {X Y} (f : X ⟶ Y) :
   rfl
 
 /-- The equivalence between the category of elements `F.Elements`
-    and the comma category `(*, F)`. -/
+and the comma category `(*, F)`. -/
 @[simps]
 def structuredArrowEquivalence : F.Elements ≌ StructuredArrow PUnit F where
   functor := toStructuredArrow F
