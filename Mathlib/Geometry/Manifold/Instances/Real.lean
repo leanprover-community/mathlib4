@@ -80,9 +80,9 @@ instance [NeZero n] : Inhabited (EuclideanHalfSpace n) :=
 instance : Inhabited (EuclideanQuadrant n) :=
   ⟨⟨0, fun _ => le_rfl⟩⟩
 
-instance {n : ℕ} [NeZero n] : Zero (EuclideanHalfSpace n) := ⟨⟨fun _ ↦ 0, by norm_num⟩⟩
+instance {n : ℕ} [NeZero n] : Zero (EuclideanHalfSpace n) := ⟨⟨fun _ ↦ 0, by simp⟩⟩
 
-instance {n : ℕ} : Zero (EuclideanQuadrant n) := ⟨⟨fun _ ↦ 0, by norm_num⟩⟩
+instance {n : ℕ} : Zero (EuclideanQuadrant n) := ⟨⟨fun _ ↦ 0, by simp⟩⟩
 
 @[ext]
 theorem EuclideanQuadrant.ext (x y : EuclideanQuadrant n) (h : x.1 = y.1) : x = y :=
@@ -428,12 +428,12 @@ lemma Icc_chartedSpaceChartAt_of_top_le {z : Set.Icc x y} (h : y ≤ z.val) :
 
 lemma Icc_isBoundaryPoint_bot : (𝓡∂ 1).IsBoundaryPoint (⊥ : Set.Icc x y) := by
   rw [ModelWithCorners.isBoundaryPoint_iff, extChartAt,
-    Icc_chartedSpaceChartAt_of_le_top (by norm_num [hxy.out])]
+    Icc_chartedSpaceChartAt_of_le_top (by simp [hxy.out])]
   exact IccLeftChart_extend_bot_mem_frontier
 
 lemma Icc_isBoundaryPoint_top : (𝓡∂ 1).IsBoundaryPoint (⊤ : Set.Icc x y) := by
   rw [ModelWithCorners.isBoundaryPoint_iff, extChartAt,
-    Icc_chartedSpaceChartAt_of_top_le (by norm_num)]
+    Icc_chartedSpaceChartAt_of_top_le (by simp)]
   exact IccRightChart_extend_top_mem_frontier
 
 lemma Icc_isInteriorPoint_interior {p : Set.Icc x y} (hp : x < p.val ∧ p.val < y) :

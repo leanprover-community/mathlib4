@@ -33,7 +33,7 @@ The case of prime numbers is also an instance:
 * `ZMod.not_isCyclic_units_eight`: `(ZMod 8)ˣ` is not cyclic
 
 * `ZMod.orderOf_one_add_mul_prime`: the order of `1 + a * p`
-modulo `p ^ (n + 1)` is `p ^ n` when `p` does not divide `a`.
+  modulo `p ^ (n + 1)` is `p ^ n` when `p` does not divide `a`.
 
 * `ZMod.orderOf_five` : the order of `5` modulo `2 ^ (n + 3)` is `2 ^ (n + 1)`.
 

@@ -72,14 +72,6 @@ with appropriate conditions on the various parameters.
 
 namespace AkraBazziRecurrence
 
-section min_max
-
-variable {α : Type*} [Finite α] [Nonempty α]
-
-
-end min_max
-
-
 variable {α : Type*} [Fintype α] {T : ℕ → ℝ} {g : ℝ → ℝ} {a b : α → ℝ} {r : α → ℕ → ℕ}
 variable [Nonempty α] (R : AkraBazziRecurrence T g a b r)
 

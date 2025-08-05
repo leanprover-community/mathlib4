@@ -3,7 +3,6 @@ Copyright (c) 2021 Aaron Anderson, Jesse Michael Han, Floris van Doorn. All righ
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
 -/
-import Mathlib.Data.Fin.VecNotation
 import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
@@ -69,8 +68,7 @@ abbrev IsRelational : Prop := ∀ n, IsEmpty (L.Functions n)
 abbrev IsAlgebraic : Prop := ∀ n, IsEmpty (L.Relations n)
 
 /-- The empty language has no symbols. -/
-protected def empty : Language :=
-  ⟨fun _ => Empty, fun _ => Empty⟩
+protected def empty : Language := ⟨fun _ => Empty, fun _ => Empty⟩
   deriving IsAlgebraic, IsRelational
 
 instance : Inhabited Language :=

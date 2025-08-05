@@ -25,7 +25,7 @@ for every `m` in `Π i, Eᵢ` is bounded above by the projective seminorm.
 ## Main results
 
 * `PiTensorProduct.norm_eval_le_projectiveSeminorm`: If `f` is a continuous multilinear map on
-`E = Π i, Eᵢ` and `x` is in `⨂[𝕜] i, Eᵢ`, then `‖f.lift x‖ ≤ projectiveSeminorm x * ‖f‖`.
+  `E = Π i, Eᵢ` and `x` is in `⨂[𝕜] i, Eᵢ`, then `‖f.lift x‖ ≤ projectiveSeminorm x * ‖f‖`.
 
 ## TODO
 * If the base field is `ℝ` or `ℂ` (or more generally if the injection of `Eᵢ` into its bidual is

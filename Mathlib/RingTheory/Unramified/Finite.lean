@@ -83,7 +83,7 @@ lemma finite_of_free_aux (I) [DecidableEq I] (b : Basis I R S)
     (f : I →₀ S) (x : S) (a : I → I →₀ R) (ha : a = fun i ↦ b.repr (b i * x)) :
     (1 ⊗ₜ[R] x * Finsupp.sum f fun i y ↦ y ⊗ₜ[R] b i) =
       Finset.sum (f.support.biUnion fun i ↦ (a i).support) fun k ↦
-    Finsupp.sum (b.repr (f.sum fun i y ↦ a i k • y)) fun j c ↦ c • b j ⊗ₜ[R] b k := by
+      Finsupp.sum (b.repr (f.sum fun i y ↦ a i k • y)) fun j c ↦ c • b j ⊗ₜ[R] b k := by
   rw [Finsupp.sum, Finset.mul_sum]
   subst ha
   let a i := b.repr (b i * x)

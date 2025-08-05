@@ -38,7 +38,7 @@ assert_not_exists Field
 
 deriving instance Zero, CommSemiring, Nontrivial,
   LinearOrder, Bot, Sub,
-  LinearOrderedAddCommMonoidWithTop, WellFoundedRelation
+  LinearOrderedAddCommMonoidWithTop
   for ENat
 -- The `CanonicallyOrderedAdd, OrderBot, OrderTop, OrderedSub, SuccOrder, WellFoundedLT, CharZero`
 -- instances should be constructed by a deriving handler.
@@ -317,6 +317,11 @@ theorem nat_induction {P : ℕ∞ → Prop} (a : ℕ∞) (h0 : P 0) (hsuc : ∀ 
 
 lemma add_one_pos : 0 < n + 1 :=
   succ_def n ▸ Order.bot_lt_succ n
+
+lemma natCast_lt_succ {n : ℕ} :
+    (n : ℕ∞) < (n : ℕ∞) + 1 := by
+  rw [← Nat.cast_one, ← Nat.cast_add, coe_lt_coe]
+  exact lt_add_one n
 
 lemma add_lt_add_iff_right {k : ℕ∞} (h : k ≠ ⊤) : n + k < m + k ↔ n < m :=
   WithTop.add_lt_add_iff_right h

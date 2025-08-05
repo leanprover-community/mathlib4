@@ -39,7 +39,7 @@ open Real goldenRatio
 
 /-- The inverse of the golden ratio is the opposite of its conjugate. -/
 theorem inv_gold : φ⁻¹ = -ψ := by
-  have : 1 + √5 ≠ 0 := ne_of_gt (add_pos (by norm_num) <| Real.sqrt_pos.mpr (by norm_num))
+  have : 1 + √5 ≠ 0 := by positivity
   field_simp [sub_mul, mul_add]
   norm_num
 

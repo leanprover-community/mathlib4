@@ -268,7 +268,7 @@ def comap {β} (f : α → β) : OuterMeasure β →ₗ[ℝ≥0∞] OuterMeasure
   toFun m :=
     { measureOf := fun s => m (f '' s)
       empty := by simp
-      mono := fun {_ _} h => m.mono <| image_subset f h
+      mono := fun {_ _} h => by gcongr
       iUnion_nat := fun s _ => by simpa only [image_iUnion] using measure_iUnion_le _ }
   map_add' _ _ := rfl
   map_smul' _ _ := rfl

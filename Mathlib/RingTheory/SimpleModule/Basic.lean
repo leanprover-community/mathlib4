@@ -21,7 +21,7 @@ import Mathlib.RingTheory.Noetherian.Defs
 
 ## Main Definitions
 * `IsSimpleModule` indicates that a module has no proper submodules
-(the only submodules are `⊥` and `⊤`).
+  (the only submodules are `⊥` and `⊤`).
 * `IsSemisimpleModule` indicates that every submodule has a complement, or equivalently,
   the module is a direct sum of simple modules.
 * A `DivisionRing` structure on the endomorphism ring of a simple module.

@@ -72,7 +72,7 @@ In particular, `Nat.toDigits b 0 = ['0']`, while `digits b 0 = []`.
 def digits : ℕ → ℕ → List ℕ
   | 0 => digitsAux0
   | 1 => digitsAux1
-  | b + 2 => digitsAux (b + 2) (by norm_num)
+  | b + 2 => digitsAux (b + 2) (by simp)
 
 @[simp]
 theorem digits_zero (b : ℕ) : digits b 0 = [] := by

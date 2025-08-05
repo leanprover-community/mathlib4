@@ -63,12 +63,12 @@ statements of results and match our definition of `IsFiveWheelLikeFree`.
 
 ## References
 
-* B. Andrasfái, P Erdős, V. T. Sós
+* [B. Andrasfái, P Erdős, V. T. Sós
   **On the connection between chromatic number, maximal clique, and minimal degree of a graph**
-  https://doi.org/10.1016/0012-365X(74)90133-2
+  https://doi.org/10.1016/0012-365X(74)90133-2][andrasfaiErdosSos1974]
 
-* S. Brandt **On the structure of graphs with bounded clique number**
-  https://doi.org/10.1007/s00493-003-0042-z
+* [S. Brandt **On the structure of graphs with bounded clique number**
+  https://doi.org/10.1007/s00493-003-0042-z][brandt2003]
 -/
 open Finset SimpleGraph
 
@@ -125,7 +125,7 @@ lemma exists_isFiveWheelLike_of_maximal_cliqueFree_not_isCompleteMultipartite
 
 /-- `G.FiveWheelLikeFree r k` means there is no `IsFiveWheelLike r k` structure in `G`. -/
 def FiveWheelLikeFree (G : SimpleGraph α) (r k : ℕ) : Prop :=
-    ∀ {v w₁ w₂ s t}, ¬ G.IsFiveWheelLike r k v w₁ w₂ s t
+  ∀ {v w₁ w₂ s t}, ¬ G.IsFiveWheelLike r k v w₁ w₂ s t
 
 namespace IsFiveWheelLike
 
