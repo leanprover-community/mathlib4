@@ -31,7 +31,7 @@ CategoryStruct's are given by oplax transformations and strong transformations r
 
 We also provide API for going between oplax transformations and strong transformations:
 * `Oplax.StrongCore F G`: a structure on an oplax transformation between oplax functors that
-promotes it to a strong transformation.
+  promotes it to a strong transformation.
 * `Oplax.mkOfOplax η η'`: given an oplax transformation `η` such that each component
   2-morphism is an isomorphism, `mkOfOplax` gives the corresponding strong transformation.
 
@@ -185,7 +185,7 @@ that is "natural up to 2-isomorphisms".
 More precisely, it consists of the following:
 * a 1-morphism `η.app a : F.obj a ⟶ G.obj a` for each object `a : B`.
 * a 2-isomorphism `η.naturality f : F.map f ≫ app b ⟶ app a ≫ G.map f` for each 1-morphism
-`f : a ⟶ b`.
+  `f : a ⟶ b`.
 * These 2-isomorphisms satisfy the naturality condition, and preserve the identities and the
   compositions modulo some adjustments of domains and codomains of 2-morphisms.
 -/

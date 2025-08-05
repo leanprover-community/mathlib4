@@ -31,7 +31,7 @@ saying that `R` is endowed with an equivalence class of valuations.
   ensures that the relation `x ≤ᵥ y` is equivalent to `v x ≤ v y`. Note that
   it is possible to have `[v.Compatible]` and `[w.Compatible]` for two different valuations on `R`.
 - If we have both `[ValuativeRel R]` and `[TopologicalSpace R]`, then writing
-  `[ValuativeTopology R]` ensures that the topology on `R` agrees with the one induced by the
+  `[IsValuativeTopology R]` ensures that the topology on `R` agrees with the one induced by the
   valuation.
 - Given `[ValuativeRel A]`, `[ValuativeRel B]` and `[Algebra A B]`, the class
   `[ValuativeExtension A B]` ensures that the algebra map `A → B` is compatible with the valuations
@@ -679,9 +679,11 @@ end ValuativeRel
 open Topology ValuativeRel in
 /-- We say that a topology on `R` is valuative if the neighborhoods of `0` in `R`
 are determined by the relation `· ≤ᵥ ·`. -/
-class ValuativeTopology (R : Type*) [CommRing R] [ValuativeRel R] [TopologicalSpace R] where
-  mem_nhds_iff : ∀ s : Set R, s ∈ 𝓝 (0 : R) ↔
-    ∃ γ : (ValueGroupWithZero R)ˣ, { x | valuation _ x < γ } ⊆ s
+class IsValuativeTopology (R : Type*) [CommRing R] [ValuativeRel R] [TopologicalSpace R] where
+  mem_nhds_iff {s : Set R} {x : R} : s ∈ 𝓝 (x : R) ↔
+    ∃ γ : (ValueGroupWithZero R)ˣ, (x + ·) '' { z | valuation _ z < γ } ⊆ s
+
+@[deprecated (since := "2025-08-01")] alias ValuativeTopology := IsValuativeTopology
 
 namespace ValuativeRel
 
@@ -784,7 +786,7 @@ variable {R : Type*} [CommRing R] [ValuativeRel R]
 
 /-- Any rank-at-most-one valuation has a mularchimedean value group.
 The converse (for any compatible valuation) is `ValuativeRel.isRankLeOne_iff_mulArchimedean`
-which is in a later file since it requires a larget theory of reals. -/
+which is in a later file since it requires a larger theory of reals. -/
 instance [IsRankLeOne R] : MulArchimedean (ValueGroupWithZero R) := by
   obtain ⟨⟨f, hf⟩⟩ := IsRankLeOne.nonempty (R := R)
   exact .comap f.toMonoidHom hf
