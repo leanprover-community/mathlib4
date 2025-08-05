@@ -238,7 +238,7 @@ theorem isClosed_closedBall (r : ValueGroupWithZero R) :
   simp only [mem_compl_iff, mem_setOf_eq, not_le] at hx
   rw [mem_nhds_iff']
   have hx' : v x ≠ 0 := ne_of_gt <| lt_of_le_of_lt zero_le' <| hx
-  refine ⟨Units.mk0 _ hx', fun y hy hy' => ne_of_lt hy <| Valuation.map_sub_swap v x y ▸
+  exact ⟨Units.mk0 _ hx', fun y hy hy' => ne_of_lt hy <| Valuation.map_sub_swap v x y ▸
       (Valuation.map_sub_eq_of_lt_left _ <| lt_of_le_of_lt hy' hx)⟩
 
 @[deprecated (since := "2025-08-01")]
@@ -274,10 +274,6 @@ end IsValuativeTopology
 namespace ValuativeRel
 
 variable {R : Type*} [CommRing R]
-
-instance [UniformSpace R] [IsUniformAddGroup R] [ValuativeRel R] [IsValuativeTopology R] :
-    Valued R (ValueGroupWithZero R) :=
-  .mk (valuation R) IsValuativeTopology.mem_nhds_zero_iff
 
 @[inherit_doc]
 scoped notation "𝒪[" R "]" => Valuation.integer (valuation R)
