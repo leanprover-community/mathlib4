@@ -63,7 +63,7 @@ namespace AbsolutelyContinuous
 theorem mk (h : ∀ ⦃s : Set α⦄, MeasurableSet s → ν s = 0 → μ s = 0) : μ ≪ ν := by
   intro s hs
   rcases exists_measurable_superset_of_null hs with ⟨t, h1t, h2t, h3t⟩
-  exact measure_mono_null h1t (h h2t h3t)
+  exact Measure.mono_null h1t (h h2t h3t)
 
 @[refl]
 protected theorem refl {_m0 : MeasurableSpace α} (μ : Measure α) : μ ≪ μ :=
