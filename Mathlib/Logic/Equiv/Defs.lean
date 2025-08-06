@@ -218,15 +218,6 @@ protected def inhabited [Inhabited β] (e : α ≃ β) : Inhabited α := ⟨e.sy
 /-- If `α ≃ β` and `β` is a singleton type, then so is `α`. -/
 protected def unique [Unique β] (e : α ≃ β) : Unique α := e.symm.surjective.unique
 
-lemma Subtype.exists_congr {α β : Type*} {p : α → Prop} {q : β → Prop}
-    (e : {a // p a} ≃ {b // q b}) : (∃ a, p a) ↔ ∃ b, q b := by
-  simp [← nonempty_subtype, nonempty_congr e]
-
-lemma Subtype.existsUnique_congr {α β : Type*} {p : α → Prop} {q : β → Prop}
-    (e : {a // p a} ≃ {b // q b}) : (∃! a, p a) ↔ ∃! b, q b := by
-  simp [← unique_subtype_iff_existsUnique, unique_iff_subsingleton_and_nonempty,
-        nonempty_congr e, subsingleton_congr e]
-
 /-- Equivalence between equal types. -/
 protected def cast {α β : Sort _} (h : α = β) : α ≃ β :=
   ⟨cast h, cast h.symm, fun _ => by cases h; rfl, fun _ => by cases h; rfl⟩
@@ -751,6 +742,9 @@ protected lemma exists_congr (h : ∀ a, p a ↔ q (e a)) : (∃ a, p a) ↔ ∃
 protected lemma exists_congr' (h : ∀ b, p (e.symm b) ↔ q b) : (∃ a, p a) ↔ ∃ b, q b :=
   e.exists_congr_left.trans <| by simp [h]
 
+protected lemma exists_subtype_congr (e : {a // p a} ≃ {b // q b}) : (∃ a, p a) ↔ ∃ b, q b := by
+  simp [← nonempty_subtype, nonempty_congr e]
+
 protected lemma existsUnique_congr_right : (∃! a, q (e a)) ↔ ∃! b, q b :=
   e.exists_congr <| by simpa using fun _ _ ↦ e.forall_congr (by simp)
 
@@ -762,6 +756,11 @@ protected lemma existsUnique_congr (h : ∀ a, p a ↔ q (e a)) : (∃! a, p a) 
 
 protected lemma existsUnique_congr' (h : ∀ b, p (e.symm b) ↔ q b) : (∃! a, p a) ↔ ∃! b, q b :=
   e.existsUnique_congr_left.trans <| by simp [h]
+
+protected lemma existsUnique_subtype_congr (e : {a // p a} ≃ {b // q b}) :
+    (∃! a, p a) ↔ ∃! b, q b := by
+  simp [← unique_subtype_iff_existsUnique, unique_iff_subsingleton_and_nonempty,
+        nonempty_congr e, subsingleton_congr e]
 
 -- We next build some higher arity versions of `Equiv.forall_congr`.
 -- Although they appear to just be repeated applications of `Equiv.forall_congr`,
