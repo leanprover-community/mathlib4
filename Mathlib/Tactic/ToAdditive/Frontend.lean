@@ -477,9 +477,9 @@ structure Config : Type where
   which we need for adding definition ranges. -/
   ref : Syntax
   /-- An optional flag stating that the additive declaration already exists.
-    If this flag is wrong about whether the additive declaration exists, `to_additive` will
-    raise a linter error.
-    Note: the linter will never raise an error for inductive types and structures. -/
+  If this flag is wrong about whether the additive declaration exists, `to_additive` will
+  raise a linter error.
+  Note: the linter will never raise an error for inductive types and structures. -/
   existing : Bool := false
   /-- An optional flag stating that the target of the translation is the target itself.
   This can be used to reorder arguments, such as in
@@ -1032,9 +1032,15 @@ There are a few abbreviations we use. For example "Nonneg" instead of "ZeroLE"
 or "addComm" instead of "commAdd".
 Note: The input to this function is case sensitive!
 Todo: A lot of abbreviations here are manual fixes and there might be room to
-      improve the naming logic to reduce the size of `fixAbbreviation`.
+improve the naming logic to reduce the size of `fixAbbreviation`.
 -/
 def fixAbbreviation : List String → List String
+  | "is" :: "Cancel" :: "Add" :: s    => "isCancelAdd" :: fixAbbreviation s
+  | "Is" :: "Cancel" :: "Add" :: s    => "IsCancelAdd" :: fixAbbreviation s
+  | "is" :: "Left" :: "Cancel" :: "Add" :: s  => "isLeftCancelAdd" :: fixAbbreviation s
+  | "Is" :: "Left" :: "Cancel" :: "Add" :: s  => "IsLeftCancelAdd" :: fixAbbreviation s
+  | "is" :: "Right" :: "Cancel" :: "Add" :: s => "isRightCancelAdd" :: fixAbbreviation s
+  | "Is" :: "Right" :: "Cancel" :: "Add" :: s => "IsRightCancelAdd" :: fixAbbreviation s
   | "cancel" :: "Add" :: s            => "addCancel" :: fixAbbreviation s
   | "Cancel" :: "Add" :: s            => "AddCancel" :: fixAbbreviation s
   | "left" :: "Cancel" :: "Add" :: s  => "addLeftCancel" :: fixAbbreviation s

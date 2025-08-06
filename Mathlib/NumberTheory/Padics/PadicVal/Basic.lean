@@ -45,8 +45,8 @@ by taking `[Fact p.Prime]` as a type class argument.
   the same result but stated in the language of prime multiplicity.
 
 * `sub_one_mul_padicValNat_choose_eq_sub_sum_digits`: Kummer's Theorem. Taking (`p - 1`) times the
-  `p`-adic valuation of the binomial `n` over `k` equals the sum of the digits of `k` plus the sum of
-  the digits of `n - k` minus the sum of digits of `n`, all base `p`.
+  `p`-adic valuation of the binomial `n` over `k` equals the sum of the digits of `k` plus the sum
+  of the digits of `n - k` minus the sum of digits of `n`, all base `p`.
 
 ## References
 
@@ -493,7 +493,7 @@ lemma padicValNat_le_nat_log (n : ℕ) : padicValNat p n ≤ Nat.log p n := by
   exact Nat.le_log_of_pow_le p.one_lt_succ_succ (le_of_dvd n.succ_pos pow_padicValNat_dvd)
 
 /-- The p-adic valuation of `n` is equal to the logarithm w.r.t `p` iff
-    `n` is less than `p` raised to one plus the p-adic valuation of `n`. -/
+`n` is less than `p` raised to one plus the p-adic valuation of `n`. -/
 lemma nat_log_eq_padicValNat_iff {n : ℕ} [hp : Fact (Nat.Prime p)] (hn : n ≠ 0) :
     Nat.log p n = padicValNat p n ↔ n < p ^ (padicValNat p n + 1) := by
   rw [Nat.log_eq_iff (Or.inr ⟨(Nat.Prime.one_lt' p).out, by omega⟩), and_iff_right_iff_imp]
