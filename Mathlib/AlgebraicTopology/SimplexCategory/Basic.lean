@@ -687,10 +687,6 @@ instance : Balanced SimplexCategory where
     rw [isIso_iff_of_epi]
     exact le_antisymm (len_le_of_mono f) (len_le_of_epi f)
 
-instance {n : ℕ} {i : Fin (n + 2)} : Mono (δ i) := by
-  rw [mono_iff_injective]
-  exact Fin.succAbove_right_injective
-
 /-- An isomorphism in `SimplexCategory` induces an `OrderIso`. -/
 @[simp]
 def orderIsoOfIso {x y : SimplexCategory} (e : x ≅ y) : Fin (x.len + 1) ≃o Fin (y.len + 1) :=
@@ -804,9 +800,7 @@ theorem eq_id_of_epi {x : SimplexCategory} (i : x ⟶ x) [Epi i] : i = 𝟙 _ :=
 theorem eq_σ_of_epi {n : ℕ} (θ : ⦋n + 1⦌ ⟶ ⦋n⦌) [Epi θ] : ∃ i : Fin (n + 1), θ = σ i := by
   obtain ⟨i, θ', h⟩ := eq_σ_comp_of_not_injective θ (by
     rw [← mono_iff_injective]
-    intro
-    have := le_of_mono θ
-    omega)
+    grind [→ le_of_mono])
   use i
   haveI : Epi (σ i ≫ θ') := by
     rw [← h]
@@ -817,9 +811,7 @@ theorem eq_σ_of_epi {n : ℕ} (θ : ⦋n + 1⦌ ⟶ ⦋n⦌) [Epi θ] : ∃ i :
 theorem eq_δ_of_mono {n : ℕ} (θ : ⦋n⦌ ⟶ ⦋n + 1⦌) [Mono θ] : ∃ i : Fin (n + 2), θ = δ i := by
   obtain ⟨i, θ', h⟩ := eq_comp_δ_of_not_surjective θ (by
     rw [← epi_iff_surjective]
-    intro
-    have := le_of_epi θ
-    omega)
+    grind [→ le_of_epi])
   use i
   haveI : Mono (θ' ≫ δ i) := by
     rw [← h]
@@ -829,10 +821,7 @@ theorem eq_δ_of_mono {n : ℕ} (θ : ⦋n⦌ ⟶ ⦋n + 1⦌) [Mono θ] : ∃ i
 
 theorem len_lt_of_mono {Δ' Δ : SimplexCategory} (i : Δ' ⟶ Δ) [Mono i] (hi' : Δ ≠ Δ') :
     Δ'.len < Δ.len := by
-  rcases lt_or_eq_of_le (len_le_of_mono i) with (h | h)
-  · exact h
-  · exfalso
-    exact hi' (by ext; exact h.symm)
+  grind [→ len_le_of_mono, SimplexCategory.ext]
 
 noncomputable instance : SplitEpiCategory SimplexCategory :=
   skeletalEquivalence.inverse.splitEpiCategoryImpOfIsEquivalence
@@ -895,14 +884,12 @@ lemma δ_injective {n : ℕ} : Function.Injective (δ (n := n)) := by
   intro i j hij
   rw [← Fin.succAbove_left_inj]
   ext k : 1
-  change δ _ _ = δ _ _
-  rw [hij]
+  exact congr($hij k)
 
 lemma σ_injective {n : ℕ} : Function.Injective (σ (n := n)) := by
   intro i j hij
   rw [← Fin.predAbove_left_inj]
   ext k : 1
-  change σ _ _ = σ _ _
-  rw [hij]
+  exact congr($hij k)
 
 end SimplexCategory
