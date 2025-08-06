@@ -25,7 +25,7 @@ variable [MonoidWithZero M₀]
 namespace Units
 
 /-- An element of the unit group of a nonzero monoid with zero represented as an element
-    of the monoid is nonzero. -/
+of the monoid is nonzero. -/
 @[simp]
 theorem ne_zero [Nontrivial M₀] (u : M₀ˣ) : (u : M₀) ≠ 0 :=
   left_ne_zero_of_mul_eq_one u.mul_inv

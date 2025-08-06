@@ -53,7 +53,7 @@ namespace CategoryTheory
 variable (C : Type u) [Category.{v} C]
 
 /-- A category is called preadditive if `P ⟶ Q` is an abelian group such that composition is
-    linear in both variables. -/
+linear in both variables. -/
 @[stacks 00ZY]
 class Preadditive where
   homGroup : ∀ P Q : C, AddCommGroup (P ⟶ Q) := by infer_instance

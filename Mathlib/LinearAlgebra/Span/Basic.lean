@@ -676,7 +676,7 @@ section
 variable (R) (M) [Semiring R] [AddCommMonoid M] [Module R M]
 
 /-- Given an element `x` of a module `M` over `R`, the natural map from
-    `R` to scalar multiples of `x`. See also `LinearMap.ringLmapEquivSelf`. -/
+`R` to scalar multiples of `x`. See also `LinearMap.ringLmapEquivSelf`. -/
 @[simps!]
 def toSpanSingleton (x : M) : R →ₗ[R] M :=
   LinearMap.id.smulRight x

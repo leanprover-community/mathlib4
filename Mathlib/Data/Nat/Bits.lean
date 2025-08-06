@@ -152,7 +152,7 @@ def size : ℕ → ℕ :=
   binaryRec 0 fun _ _ => succ
 
 /-- `bits n` returns a list of Bools which correspond to the binary representation of n, where
-    the head of the list represents the least significant bit -/
+the head of the list represents the least significant bit -/
 def bits : ℕ → List Bool :=
   binaryRec [] fun b _ IH => b :: IH
 

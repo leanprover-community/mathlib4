@@ -43,10 +43,10 @@ instance map_epi (F : C ⥤ D) [PreservesEpimorphisms F] {X Y : C} (f : X ⟶ Y)
   PreservesEpimorphisms.preserves f
 
 /-- A functor reflects monomorphisms if morphisms that are mapped to monomorphisms are themselves
-    monomorphisms. -/
+monomorphisms. -/
 class ReflectsMonomorphisms (F : C ⥤ D) : Prop where
-   /-- A functor reflects monomorphisms if morphisms that are mapped to monomorphisms are themselves
-    monomorphisms. -/
+  /-- A functor reflects monomorphisms if morphisms that are mapped to monomorphisms are themselves
+  monomorphisms. -/
   reflects : ∀ {X Y : C} (f : X ⟶ Y), Mono (F.map f) → Mono f
 
 theorem mono_of_mono_map (F : C ⥤ D) [ReflectsMonomorphisms F] {X Y : C} {f : X ⟶ Y}
@@ -54,10 +54,10 @@ theorem mono_of_mono_map (F : C ⥤ D) [ReflectsMonomorphisms F] {X Y : C} {f : 
   ReflectsMonomorphisms.reflects f h
 
 /-- A functor reflects epimorphisms if morphisms that are mapped to epimorphisms are themselves
-    epimorphisms. -/
+epimorphisms. -/
 class ReflectsEpimorphisms (F : C ⥤ D) : Prop where
   /-- A functor reflects epimorphisms if morphisms that are mapped to epimorphisms are themselves
-      epimorphisms. -/
+  epimorphisms. -/
   reflects : ∀ {X Y : C} (f : X ⟶ Y), Epi (F.map f) → Epi f
 
 theorem epi_of_epi_map (F : C ⥤ D) [ReflectsEpimorphisms F] {X Y : C} {f : X ⟶ Y}

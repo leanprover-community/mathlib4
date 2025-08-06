@@ -75,7 +75,7 @@ def mk {X Y : T} (f : Y ⟶ X) : Over X :=
   CostructuredArrow.mk f
 
 /-- We can set up a coercion from arrows with codomain `X` to `over X`. This most likely should not
-    be a global instance, but it is sometimes useful. -/
+be a global instance, but it is sometimes useful. -/
 def coeFromHom {X Y : T} : CoeOut (Y ⟶ X) (Over X) where coe := mk
 
 section
@@ -89,7 +89,7 @@ theorem coe_hom {X Y : T} (f : Y ⟶ X) : (f : Over X).hom = f :=
 end
 
 /-- To give a morphism in the over category, it suffices to give an arrow fitting in a commutative
-    triangle. -/
+triangle. -/
 @[simps! left]
 def homMk {U V : Over X} (f : U.left ⟶ V.left) (w : f ≫ V.hom = U.hom := by cat_disch) : U ⟶ V :=
   CostructuredArrow.homMk f w

@@ -79,7 +79,7 @@ instance Comma.inhabited [Inhabited T] : Inhabited (Comma (𝟭 T) (𝟭 T)) whe
 variable {L : A ⥤ T} {R : B ⥤ T}
 
 /-- A morphism between two objects in the comma category is a commutative square connecting the
-    morphisms coming from the two objects using morphisms in the image of the functors `L` and `R`.
+morphisms coming from the two objects using morphisms in the image of the functors `L` and `R`.
 -/
 @[ext]
 structure CommaMorphism (X Y : Comma L R) where
@@ -148,9 +148,9 @@ def snd : Comma L R ⥤ B where
   map f := f.right
 
 /-- We can interpret the commutative square constituting a morphism in the comma category as a
-    natural transformation between the functors `fst ⋙ L` and `snd ⋙ R` from the comma category
-    to `T`, where the components are given by the morphism that constitutes an object of the comma
-    category. -/
+natural transformation between the functors `fst ⋙ L` and `snd ⋙ R` from the comma category
+to `T`, where the components are given by the morphism that constitutes an object of the comma
+category. -/
 @[simps]
 def natTrans : fst L R ⋙ L ⟶ snd L R ⋙ R where app X := X.hom
 
@@ -322,27 +322,27 @@ def mapLeft (l : L₁ ⟶ L₂) : Comma L₂ R ⥤ Comma L₁ R where
       right := f.right }
 
 /-- The functor `Comma L R ⥤ Comma L R` induced by the identity natural transformation on `L` is
-    naturally isomorphic to the identity functor. -/
+naturally isomorphic to the identity functor. -/
 @[simps!]
 def mapLeftId : mapLeft R (𝟙 L) ≅ 𝟭 _ :=
   NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
 
 /-- The functor `Comma L₁ R ⥤ Comma L₃ R` induced by the composition of two natural transformations
-    `l : L₁ ⟶ L₂` and `l' : L₂ ⟶ L₃` is naturally isomorphic to the composition of the two functors
-    induced by these natural transformations. -/
+`l : L₁ ⟶ L₂` and `l' : L₂ ⟶ L₃` is naturally isomorphic to the composition of the two functors
+induced by these natural transformations. -/
 @[simps!]
 def mapLeftComp (l : L₁ ⟶ L₂) (l' : L₂ ⟶ L₃) :
     mapLeft R (l ≫ l') ≅ mapLeft R l' ⋙ mapLeft R l :=
   NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
 
 /-- Two equal natural transformations `L₁ ⟶ L₂` yield naturally isomorphic functors
-    `Comma L₁ R ⥤ Comma L₂ R`. -/
+`Comma L₁ R ⥤ Comma L₂ R`. -/
 @[simps!]
 def mapLeftEq (l l' : L₁ ⟶ L₂) (h : l = l') : mapLeft R l ≅ mapLeft R l' :=
   NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
 
 /-- A natural isomorphism `L₁ ≅ L₂` induces an equivalence of categories
-    `Comma L₁ R ≌ Comma L₂ R`. -/
+`Comma L₁ R ≌ Comma L₂ R`. -/
 @[simps!]
 def mapLeftIso (i : L₁ ≅ L₂) : Comma L₁ R ≌ Comma L₂ R where
   functor := mapLeft _ i.inv
@@ -362,27 +362,27 @@ def mapRight (r : R₁ ⟶ R₂) : Comma L R₁ ⥤ Comma L R₂ where
       right := f.right }
 
 /-- The functor `Comma L R ⥤ Comma L R` induced by the identity natural transformation on `R` is
-    naturally isomorphic to the identity functor. -/
+naturally isomorphic to the identity functor. -/
 @[simps!]
 def mapRightId : mapRight L (𝟙 R) ≅ 𝟭 _ :=
   NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
 
 /-- The functor `Comma L R₁ ⥤ Comma L R₃` induced by the composition of the natural transformations
-    `r : R₁ ⟶ R₂` and `r' : R₂ ⟶ R₃` is naturally isomorphic to the composition of the functors
-    induced by these natural transformations. -/
+`r : R₁ ⟶ R₂` and `r' : R₂ ⟶ R₃` is naturally isomorphic to the composition of the functors
+induced by these natural transformations. -/
 @[simps!]
 def mapRightComp (r : R₁ ⟶ R₂) (r' : R₂ ⟶ R₃) :
     mapRight L (r ≫ r') ≅ mapRight L r ⋙ mapRight L r' :=
   NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
 
 /-- Two equal natural transformations `R₁ ⟶ R₂` yield naturally isomorphic functors
-    `Comma L R₁ ⥤ Comma L R₂`. -/
+`Comma L R₁ ⥤ Comma L R₂`. -/
 @[simps!]
 def mapRightEq (r r' : R₁ ⟶ R₂) (h : r = r') : mapRight L r ≅ mapRight L r' :=
   NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
 
 /-- A natural isomorphism `R₁ ≅ R₂` induces an equivalence of categories
-    `Comma L R₁ ≌ Comma L R₂`. -/
+`Comma L R₁ ≌ Comma L R₂`. -/
 @[simps!]
 def mapRightIso (i : R₁ ≅ R₂) : Comma L R₁ ≌ Comma L R₂ where
   functor := mapRight _ i.hom

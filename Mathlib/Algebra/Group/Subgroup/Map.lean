@@ -516,7 +516,7 @@ namespace MulEquiv
 variable {H K : Subgroup G}
 
 /-- Makes the identity isomorphism from a proof two subgroups of a multiplicative
-    group are equal. -/
+group are equal. -/
 @[to_additive
       "Makes the identity additive isomorphism from a proof
       two subgroups of an additive group are equal."]

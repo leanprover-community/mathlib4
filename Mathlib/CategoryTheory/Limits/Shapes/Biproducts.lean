@@ -1002,9 +1002,9 @@ theorem biproduct.conePointUniqueUpToIso_inv (f : J → C) [HasBiproduct f] {b :
     biproduct.bicone_π, biproduct.ι_desc, biproduct.ι_π, b.toCone_π_app, b.ι_π]
 
 /-- Biproducts are unique up to isomorphism. This already follows because bilimits are limits,
-    but in the case of biproducts we can give an isomorphism with particularly nice definitional
-    properties, namely that `biproduct.lift b.π` and `biproduct.desc b.ι` are inverses of each
-    other. -/
+but in the case of biproducts we can give an isomorphism with particularly nice definitional
+properties, namely that `biproduct.lift b.π` and `biproduct.desc b.ι` are inverses of each
+other. -/
 @[simps]
 def biproduct.uniqueUpToIso (f : J → C) [HasBiproduct f] {b : Bicone f} (hb : b.IsBilimit) :
     b.pt ≅ ⨁ f where

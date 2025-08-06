@@ -68,7 +68,7 @@ theorem multiset_prod_mem {M} [CommMonoid M] [SetLike B M] [SubmonoidClass B M] 
   exact m.prod.coe_prop
 
 /-- Product of elements of a submonoid of a `CommMonoid` indexed by a `Finset` is in the
-    submonoid. -/
+submonoid. -/
 @[to_additive
       "Sum of elements in an `AddSubmonoid` of an `AddCommMonoid` indexed by a `Finset`
       is in the `AddSubmonoid`."]
@@ -123,7 +123,7 @@ theorem multiset_noncommProd_mem (S : Submonoid M) (m : Multiset M) (comm) (h : 
   exact Submonoid.list_prod_mem _ h
 
 /-- Product of elements of a submonoid of a `CommMonoid` indexed by a `Finset` is in the
-    submonoid. -/
+submonoid. -/
 @[to_additive
       "Sum of elements in an `AddSubmonoid` of an `AddCommMonoid` indexed by a `Finset`
       is in the `AddSubmonoid`."]

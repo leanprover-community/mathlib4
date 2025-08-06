@@ -412,7 +412,7 @@ theorem mul_pp_pf_overlap {ea eb e : ℕ} (x : R) (_ : ea + eb = e) (_ : a₂ * 
 * `x * (b₁ * b₂) = b₁ * (b₂ * x)` (for `x` coefficient)
 * `(a₁ * a₂) * y = a₁ * (a₂ * y)` (for `y` coefficient)
 * `(x ^ ea * a₂) * (x ^ eb * b₂) = x ^ (ea + eb) * (a₂ * b₂)`
-    (if `ea` and `eb` are identical except coefficient)
+  (if `ea` and `eb` are identical except coefficient)
 * `(a₁ * a₂) * (b₁ * b₂) = a₁ * (a₂ * (b₁ * b₂))` (if `a₁.lt b₁`)
 * `(a₁ * a₂) * (b₁ * b₂) = b₁ * ((a₁ * a₂) * b₂)` (if not `a₁.lt b₁`)
 -/
