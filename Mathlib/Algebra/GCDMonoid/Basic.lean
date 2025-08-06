@@ -816,20 +816,20 @@ variable (m n) in
 @[simp] theorem lcm_dvd_mul : lcm m n ∣ m * n :=
   lcm_dvd (by simp) (by simp)
 
-theorem dvd_lcm_of_dvd_left [GCDMonoid α] {a b : α} (h : a ∣ b) (c : α) : a ∣ lcm b c :=
+theorem dvd_lcm_of_dvd_left (h : a ∣ b) (c : α) : a ∣ lcm b c :=
   h.trans (dvd_lcm_left b c)
 
 alias Dvd.dvd.lcm_right := dvd_lcm_of_dvd_left
 
-theorem dvd_of_lcm_right_dvd [GCDMonoid α] {a b c : α} (h : lcm a b ∣ c) : a ∣ c :=
+theorem dvd_of_lcm_right_dvd (h : lcm a b ∣ c) : a ∣ c :=
   (dvd_lcm_left a b).trans h
 
-theorem dvd_lcm_of_dvd_right [GCDMonoid α] {a b : α} (h : a ∣ b) (c : α) : a ∣ lcm c b :=
+theorem dvd_lcm_of_dvd_right (h : a ∣ b) (c : α) : a ∣ lcm c b :=
   h.trans (dvd_lcm_right c b)
 
 alias Dvd.dvd.lcm_left := dvd_lcm_of_dvd_right
 
-theorem dvd_of_lcm_left_dvd [GCDMonoid α] {a b c : α} (h : lcm a b ∣ c) : b ∣ c :=
+theorem dvd_of_lcm_left_dvd (h : lcm a b ∣ c) : b ∣ c :=
   (dvd_lcm_right a b).trans h
 
 end Divisibility
