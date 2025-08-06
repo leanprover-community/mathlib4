@@ -84,9 +84,8 @@ theorem slope_comm (f : k → PE) (a b : k) : slope f a b = slope f b a := by
   ext x y; exact slope_neg f x y
 
 lemma slope_eq_zero_iff {f : k → E} {a b : k} : slope f a b = 0 ↔ f a = f b := by
-  rw [slope, smul_eq_zero, inv_eq_zero, sub_eq_zero, vsub_eq_zero_iff_eq, @eq_comm _ (f a),
-    or_iff_right_of_imp]
-  exact congr_arg _
+  simp only [slope, vsub_eq_sub, smul_eq_zero, inv_eq_zero, sub_eq_zero, eq_comm,
+    or_iff_right_of_imp (congr_arg _)]
 
 /-- `slope f a c` is a linear combination of `slope f a b` and `slope f b c`. This version
 explicitly provides coefficients. If `a ≠ c`, then the sum of the coefficients is `1`, so it is
