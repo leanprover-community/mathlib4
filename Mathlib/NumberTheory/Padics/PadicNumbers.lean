@@ -859,6 +859,24 @@ theorem norm_int_lt_one_iff_dvd (k : ℤ) : ‖(k : ℚ_[p])‖ < 1 ↔ ↑p ∣
         rw [mul_one, padicNormE.norm_p]
         exact inv_lt_one_of_one_lt₀ <| mod_cast hp.1.one_lt
 
+lemma norm_intCast_lt_one_iff {z : ℤ} :
+    ‖(z : ℚ_[p])‖ < 1 ↔ (p : ℤ) ∣ z :=
+  padicNormE.norm_int_lt_one_iff_dvd _
+
+lemma norm_natCast_lt_one_iff {n : ℕ} :
+    ‖(n : ℚ_[p])‖ < 1 ↔ p ∣ n := by
+  simpa [Int.natCast_dvd_natCast] using norm_intCast_lt_one_iff (p := p) (z := n)
+
+lemma norm_intCast_eq_one_iff {z : ℤ} :
+    ‖(z : ℚ_[p])‖ = 1 ↔ IsCoprime z p := by
+  rw [← not_iff_not]
+  simp [Int.isCoprime_iff_nat_coprime, Nat.coprime_comm, ← norm_natCast_lt_one_iff,
+    ← hp.out.dvd_iff_not_coprime, norm_natAbs, - cast_natAbs, IsUltrametricDist.norm_intCast_le_one]
+
+lemma norm_natCast_eq_one_iff {n : ℕ} :
+    ‖(n : ℚ_[p])‖ = 1 ↔ p.Coprime n := by
+  simpa [p.coprime_comm] using norm_intCast_eq_one_iff (p := p) (z := n)
+
 theorem norm_int_le_pow_iff_dvd (k : ℤ) (n : ℕ) :
     ‖(k : ℚ_[p])‖ ≤ (p : ℝ) ^ (-n : ℤ) ↔ (p ^ n : ℤ) ∣ k := by
   have : (p : ℝ) ^ (-n : ℤ) = (p : ℚ) ^ (-n : ℤ) := by simp
@@ -1093,27 +1111,6 @@ theorem addValuation.apply {x : ℚ_[p]} (hx : x ≠ 0) :
     Padic.addValuation x = (x.valuation : WithTop ℤ) := by
   simp only [Padic.addValuation, AddValuation.of_apply, addValuationDef, if_neg hx]
 
-lemma norm_natCast_eq_one_iff {n : ℕ} :
-    ‖(n : ℚ_[p])‖ = 1 ↔ p.Coprime n := by
-  rcases eq_or_ne n 0 with rfl | hn
-  · simp [hp.out.ne_one]
-  rw [norm_eq_zpow_neg_valuation (by exact_mod_cast hn), zpow_neg]
-  rw [inv_eq_one, zpow_eq_one_iff_right₀ (by simp) (by simp [hp.out.ne_one])]
-  simp [hp.out.ne_one, hn, hp.out.coprime_iff_not_dvd]
-
-lemma norm_natCast_lt_one_iff {n : ℕ} :
-    ‖(n : ℚ_[p])‖ < 1 ↔ p ∣ n := by
-  simp [hp.out.dvd_iff_not_coprime, ← norm_natCast_eq_one_iff, lt_iff_le_and_ne,
-    IsUltrametricDist.norm_natCast_le_one]
-
-lemma norm_intCast_eq_one_iff {z : ℤ} :
-    ‖(z : ℚ_[p])‖ = 1 ↔ IsCoprime z p := by
-  rw [Int.isCoprime_iff_nat_coprime, Nat.coprime_comm, Int.natAbs_cast, ← norm_natCast_eq_one_iff,
-    norm_natAbs]
-
-lemma norm_intCast_lt_one_iff {z : ℤ} :
-    ‖(z : ℚ_[p])‖ < 1 ↔ (p : ℤ) ∣ z := by
-  rw [Int.natCast_dvd, ← norm_natAbs, norm_natCast_lt_one_iff]
 
 section NormLEIff
 
