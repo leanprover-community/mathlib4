@@ -821,21 +821,16 @@ variable [GCDMonoid α] {m n a b c : α}
 theorem dvd_lcm_of_dvd_left [GCDMonoid α] {a b : α} (h : a ∣ b) (c : α) : a ∣ lcm b c :=
   h.trans (dvd_lcm_left b c)
 
-/-- adapted from and similar to `Dvd.dvd.mul_right` -/
 alias Dvd.dvd.lcm_right := dvd_lcm_of_dvd_left
 
-/-- adapted from and similar to `dvd_of_mul_right_dvd` -/
 theorem dvd_of_lcm_right_dvd [GCDMonoid α] {a b c : α} (h : lcm a b ∣ c) : a ∣ c :=
   (dvd_lcm_left a b).trans h
 
-/-- adapted from and similar to `dvd_mul_of_dvd_right` -/
 theorem dvd_lcm_of_dvd_right [GCDMonoid α] {a b : α} (h : a ∣ b) (c : α) : a ∣ lcm c b :=
   h.trans (dvd_lcm_right c b)
 
-/-- adapted from and similar to `Dvd.dvd.mul_left` -/
 alias Dvd.dvd.lcm_left := dvd_lcm_of_dvd_right
 
-/-- adapted from and similar to `dvd_of_mul_left_dvd` -/
 theorem dvd_of_lcm_left_dvd [GCDMonoid α] {a b c : α} (h : lcm a b ∣ c) : b ∣ c :=
   (dvd_lcm_right a b).trans h
 
@@ -846,15 +841,12 @@ namespace Prime
 variable [GCDMonoid α] {p a b : α} (hp : Prime p)
 include hp
 
-/-- adapted from and similar to `Prime.dvd_or_dvd` -/
 theorem dvd_or_dvd_of_dvd_lcm (h : p ∣ lcm a b) : p ∣ a ∨ p ∣ b :=
   dvd_or_dvd hp (h.trans (lcm_dvd_mul a b))
 
-/-- adapted from and similar to `Prime.dvd_mul` -/
 theorem dvd_lcm : p ∣ lcm a b ↔ p ∣ a ∨ p ∣ b :=
   ⟨hp.dvd_or_dvd_of_dvd_lcm, (Or.elim · (dvd_lcm_of_dvd_left · _) (dvd_lcm_of_dvd_right · _))⟩
 
-/-- adapted from and similar to `Prime.not_dvd_mul` -/
 theorem not_dvd_lcm (ha : ¬ p ∣ a) (hb : ¬ p ∣ b) : ¬ p ∣ lcm a b :=
   hp.dvd_lcm.not.mpr <| not_or.mpr ⟨ha, hb⟩
 
