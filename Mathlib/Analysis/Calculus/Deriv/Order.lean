@@ -24,12 +24,10 @@ This file contains lemmas relating the derivative of functions in one variable a
 derivative
 -/
 
-universe u
+variable {𝕜 : Type*}  [NontriviallyNormedField 𝕜] [LinearOrder 𝕜]
+  [IsStrictOrderedRing 𝕜] [OrderTopology 𝕜] {f : 𝕜 → 𝕜} {x y f' : 𝕜} {S : Set 𝕜}
 
-variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] [LinearOrder 𝕜]
-  [IsStrictOrderedRing 𝕜] [OrderTopology 𝕜] {f : 𝕜 → 𝕜}
-
-lemma exists_gt_of_hasDerivWithinAt_pos {x f' : 𝕜} {S : Set 𝕜} (f'_pos : 0 < f')
+lemma exists_gt_of_hasDerivWithinAt_pos (f'_pos : 0 < f')
     (hx : HasDerivWithinAt f f' S x) : ∃ z > x, ∀ y ∈ Set.Ioc x z ∩ S, f x < f y := by
   rw [hasDerivWithinAt_iff_tendsto_slope, tendsto_nhds] at hx
   have : slope f x ⁻¹' Set.Ioi 0 ∈ nhdsWithin x (S \ {x}) := hx (Set.Ioi 0) isOpen_Ioi f'_pos
@@ -39,55 +37,51 @@ lemma exists_gt_of_hasDerivWithinAt_pos {x f' : 𝕜} {S : Set 𝕜} (f'_pos : 0
   rcases exists_Icc_mem_subset_of_mem_nhds (mem_nhds_iff.2 ⟨U, Set.Subset.refl _, U_open, x_mem_U⟩)
     with ⟨a, b, hab⟩
   simp only [Set.mem_Icc, Icc_mem_nhds_iff, Set.mem_Ioo] at hab
-  use ((x + b) / 2), by linarith
-  intro y hy
+  refine ⟨b, by tauto, fun y hy => ?_⟩
   simp only [Set.mem_inter_iff, Set.mem_Ioc] at hy
   have slope_pos : 0 < slope f x y :=
     hU y (hab.2.2 ⟨le_trans hab.1.1 (le_of_lt hy.1.1), by linarith⟩) hy.2 (ne_of_gt hy.1.1)
   rwa [slope, vsub_eq_sub, smul_eq_mul, mul_pos_iff_of_pos_left (inv_pos.2 (sub_pos.2 hy.1.1)),
     sub_pos] at slope_pos
 
-lemma exists_lt_of_hasDerivWithinAt_neg {x f' : 𝕜} {S : Set 𝕜} (f'_neg : f' < 0)
+lemma exists_lt_of_hasDerivWithinAt_neg (f'_neg : f' < 0)
     (hx : HasDerivWithinAt f f' S x) : ∃ z > x, ∀ y ∈ Set.Ioc x z ∩ S, f y < f x := by
-  simpa using exists_gt_of_hasDerivWithinAt_pos (f := -f) (x := x) (S := S) (f' := -f')
+  simpa using exists_gt_of_hasDerivWithinAt_pos (f := -f) (f' := -f')
     (by simp [f'_neg]) (by simpa using hx.const_smul (-1 : 𝕜))
 
 open scoped Pointwise in
-lemma exists_gt_of_hasDerivWithinAt_neg {x f' : 𝕜} {S : Set 𝕜} (f'_neg : f' < 0)
+lemma exists_gt_of_hasDerivWithinAt_neg (f'_neg : f' < 0)
     (hx : HasDerivWithinAt f f' S x) : ∃ z < x, ∀ y ∈ Set.Ico z x ∩ S, f x < f y := by
   have := exists_gt_of_hasDerivWithinAt_pos (S := -S)
-    (f := fun x => f ((-1 : 𝕜) * x)) (x := (-1 : 𝕜) • x)
-    (f' := (-1 : 𝕜) • f') (by simp [f'_neg]) (by
+    (f := fun x => f ((-1 : 𝕜) * x)) (x := -x) (f' := (-1 : 𝕜) • f') (by simp [f'_neg]) (by
       rw [hasDerivWithinAt_comp_mul_left_smul_iff]
       simpa)
-  simp only [smul_eq_mul, neg_mul, one_mul, gt_iff_lt, Set.mem_inter_iff, Set.mem_Ioc, Set.mem_neg,
-    mul_neg, neg_neg, and_imp, Set.mem_Ico] at this ⊢
+  simp only [gt_iff_lt, Set.mem_inter_iff, Set.mem_Ioc, Set.mem_neg, mul_neg, neg_mul, one_mul,
+    neg_neg, and_imp, Set.mem_Ico] at this ⊢
   rcases this with ⟨z, hzx, hz⟩
   use -z, by linarith
   intro y hxy hyz hyS
   simpa using hz (-y) (by linarith) (by linarith) (by simpa using hyS)
 
-lemma exists_lt_of_hasDerivWithinAt_pos {x f' : 𝕜} {S : Set 𝕜} (f'_pos : 0 < f')
+lemma exists_lt_of_hasDerivWithinAt_pos (f'_pos : 0 < f')
     (hx : HasDerivWithinAt f f' S x) : ∃ z < x, ∀ y ∈ Set.Ico z x ∩ S, f y < f x := by
-  simpa using exists_gt_of_hasDerivWithinAt_neg (f := -f) (x := x) (S := S) (f' := -f')
+  simpa using exists_gt_of_hasDerivWithinAt_neg (f := -f) (f' := -f')
     (by simp [f'_pos]) (by simpa using hx.const_smul (-1 : 𝕜))
 
-lemma exists_gt_of_deriv_pos {x : 𝕜} (hx : 0 < deriv f x) :
+lemma exists_gt_of_deriv_pos (hx : 0 < deriv f x) :
     ∃ z > x, ∀ y ∈ Set.Ioc x z, f x < f y := by
-  simpa only [Set.inter_univ] using exists_gt_of_hasDerivWithinAt_pos
-    (f := f) (x := x) (S := Set.univ) hx (hasDerivAt_deriv_iff.2
-      (differentiableAt_of_deriv_ne_zero (ne_of_gt hx))).hasDerivWithinAt
+  simpa only [Set.inter_univ] using exists_gt_of_hasDerivWithinAt_pos (S := Set.univ) hx
+    (hasDerivAt_deriv_iff.2 (differentiableAt_of_deriv_ne_zero (ne_of_gt hx))).hasDerivWithinAt
 
-lemma exists_lt_of_deriv_neg {x : 𝕜} (hx : deriv f x < 0) :
+lemma exists_lt_of_deriv_neg (hx : deriv f x < 0) :
     ∃ z > x, ∀ y ∈ Set.Ioc x z, f y < f x := by
-  simpa using exists_gt_of_deriv_pos (f := fun y => - f y) (x := x) (by simp [hx])
+  simpa using exists_gt_of_deriv_pos (f := -f) (by simp [hx])
 
-lemma exists_lt_of_deriv_pos {x : 𝕜} (hx : 0 < deriv f x) :
+lemma exists_lt_of_deriv_pos (hx : 0 < deriv f x) :
     ∃ z < x, ∀ y ∈ Set.Ico z x, f y < f x := by
-  simpa only [Set.inter_univ] using exists_lt_of_hasDerivWithinAt_pos
-    (f := f) (x := x) (S := Set.univ) hx (hasDerivAt_deriv_iff.2
-      (differentiableAt_of_deriv_ne_zero (ne_of_gt hx))).hasDerivWithinAt
+  simpa only [Set.inter_univ] using exists_lt_of_hasDerivWithinAt_pos (S := Set.univ) hx
+    (hasDerivAt_deriv_iff.2 (differentiableAt_of_deriv_ne_zero (ne_of_gt hx))).hasDerivWithinAt
 
-lemma exists_gt_of_deriv_neg {x : 𝕜} (hx : deriv f x < 0) :
+lemma exists_gt_of_deriv_neg (hx : deriv f x < 0) :
     ∃ z < x, ∀ y ∈ Set.Ico z x, f x < f y := by
-  simpa using exists_lt_of_deriv_pos (f := fun y => - f y) (x := x) (by simp [hx])
+  simpa using exists_lt_of_deriv_pos (f := -f) (by simp [hx])
