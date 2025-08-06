@@ -237,7 +237,7 @@ section Semiring
 
 variable {R : Type u} [Semiring R] {I J K L : Ideal R}
 
-@[simp]
+@[simp, grind =]
 theorem one_eq_top : (1 : Ideal R) = ⊤ := by
   rw [Submodule.one_eq_span, ← Ideal.span, Ideal.span_singleton_one]
 
@@ -397,14 +397,8 @@ theorem prod_mem_prod {ι : Type*} {s : Finset ι} {I : ι → Ideal R} {x : ι 
     (∀ i ∈ s, x i ∈ I i) → (∏ i ∈ s, x i) ∈ ∏ i ∈ s, I i := by
   classical
     refine Finset.induction_on s ?_ ?_
-    · intro
-      rw [Finset.prod_empty, Finset.prod_empty, one_eq_top]
-      exact Submodule.mem_top
-    · intro a s ha IH h
-      rw [Finset.prod_insert ha, Finset.prod_insert ha]
-      exact
-        mul_mem_mul (h a <| Finset.mem_insert_self a s)
-          (IH fun i hi => h i <| Finset.mem_insert_of_mem hi)
+    · grind [Submodule.mem_top]
+    · grind [mul_mem_mul]
 
 lemma sup_pow_add_le_pow_sup_pow {n m : ℕ} : (I ⊔ J) ^ (n + m) ≤ I ^ n ⊔ J ^ m := by
   rw [← Ideal.add_eq_sup, ← Ideal.add_eq_sup, add_pow, Ideal.sum_eq_sup]
