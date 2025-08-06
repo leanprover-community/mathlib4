@@ -28,9 +28,8 @@ This file deals with prime numbers: natural numbers `p ≥ 2` whose only divisor
 
 assert_not_exists Ring
 
-open Bool Subtype Nat
-
 namespace Nat
+
 variable {n : ℕ}
 
 /-- `Nat.Prime p` means that `p` is a prime number, that is, a natural number
@@ -101,9 +100,6 @@ theorem prime_def {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, m ∣ p → m = 1 �
   simp only [Nat.isUnit_iff]
   refine (h.2 a <| dvd_mul_right ..).imp_right fun hab ↦ ?_
   rw [← mul_right_inj' (Nat.ne_zero_of_lt h1), ← hab, ← hab, mul_one]
-
-@[deprecated (since := "2024-11-19")]
-alias prime_def_lt'' := prime_def
 
 theorem prime_def_lt {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m < p, m ∣ p → m = 1 :=
   prime_def.trans <|
@@ -296,7 +292,7 @@ theorem minFac_prime {n : ℕ} (n1 : n ≠ 1) : Prime (minFac n) :=
 theorem minFac_prime_iff {n : ℕ} : Prime (minFac n) ↔ n ≠ 1 := by
   refine ⟨?_, minFac_prime⟩
   rintro h rfl
-  exact prime_one_false h
+  simp only [minFac_one, not_prime_one] at h
 
 theorem minFac_le_of_dvd {n : ℕ} : ∀ {m : ℕ}, 2 ≤ m → m ∣ n → minFac n ≤ m := by
   by_cases n1 : n = 1
@@ -461,10 +457,6 @@ end Primes
 
 instance monoid.primePow {α : Type*} [Monoid α] : Pow α Primes :=
   ⟨fun x p => x ^ (p : ℕ)⟩
-
-end Nat
-
-namespace Nat
 
 instance fact_prime_two : Fact (Prime 2) :=
   ⟨prime_two⟩

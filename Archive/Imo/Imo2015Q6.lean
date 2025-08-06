@@ -5,6 +5,7 @@ Authors: Jeremy Tan
 -/
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.Order.Group.Int.Sum
+import Mathlib.Algebra.Order.Ring.Int
 
 /-!
 # IMO 2015 Q6

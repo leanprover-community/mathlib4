@@ -70,18 +70,12 @@ lemma eLpNorm'_eq_lintegral_enorm {_ : MeasurableSpace α} (f : α → ε) (q : 
     eLpNorm' f q μ = (∫⁻ a, ‖f a‖ₑ ^ q ∂μ) ^ (1 / q) :=
   rfl
 
-@[deprecated (since := "2025-01-17")]
-alias eLpNorm'_eq_lintegral_nnnorm := eLpNorm'_eq_lintegral_enorm
-
 /-- seminorm for `ℒ∞`, equal to the essential supremum of `‖f‖`. -/
 def eLpNormEssSup {_ : MeasurableSpace α} (f : α → ε) (μ : Measure α) :=
   essSup (fun x => ‖f x‖ₑ) μ
 
 lemma eLpNormEssSup_eq_essSup_enorm {_ : MeasurableSpace α} (f : α → ε) (μ : Measure α) :
     eLpNormEssSup f μ = essSup (‖f ·‖ₑ) μ := rfl
-
-@[deprecated (since := "2025-01-17")]
-alias eLpNormEssSup_eq_essSup_nnnorm := eLpNormEssSup_eq_essSup_enorm
 
 /-- `ℒp` seminorm, equal to `0` for `p=0`, to `(∫ ‖f a‖^p ∂μ) ^ (1/p)` for `0 < p < ∞` and to
 `essSup ‖f‖ μ` for `p = ∞`. -/
@@ -102,9 +96,6 @@ theorem eLpNorm_eq_lintegral_rpow_enorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p �
     eLpNorm f p μ = (∫⁻ x, ‖f x‖ₑ ^ p.toReal ∂μ) ^ (1 / p.toReal) := by
   rw [eLpNorm_eq_eLpNorm' hp_ne_zero hp_ne_top, eLpNorm'_eq_lintegral_enorm]
 
-@[deprecated (since := "2025-01-17")]
-alias eLpNorm_eq_lintegral_rpow_nnnorm := eLpNorm_eq_lintegral_rpow_enorm
-
 lemma eLpNorm_nnreal_eq_lintegral {f : α → ε} {p : ℝ≥0} (hp : p ≠ 0) :
     eLpNorm f p μ = (∫⁻ x, ‖f x‖ₑ ^ (p : ℝ) ∂μ) ^ (1 / (p : ℝ)) :=
   eLpNorm_nnreal_eq_eLpNorm' hp
@@ -112,9 +103,6 @@ lemma eLpNorm_nnreal_eq_lintegral {f : α → ε} {p : ℝ≥0} (hp : p ≠ 0) :
 theorem eLpNorm_one_eq_lintegral_enorm {f : α → ε} : eLpNorm f 1 μ = ∫⁻ x, ‖f x‖ₑ ∂μ := by
   simp_rw [eLpNorm_eq_lintegral_rpow_enorm one_ne_zero ENNReal.coe_ne_top, ENNReal.toReal_one,
     one_div_one, ENNReal.rpow_one]
-
-@[deprecated (since := "2025-01-17")]
-alias eLpNorm_one_eq_lintegral_nnnorm := eLpNorm_one_eq_lintegral_enorm
 
 @[simp]
 theorem eLpNorm_exponent_top {f : α → ε} : eLpNorm f ∞ μ = eLpNormEssSup f μ := by simp [eLpNorm]
@@ -134,13 +122,16 @@ theorem MemLp.aestronglyMeasurable [TopologicalSpace ε] {f : α → ε} {p : �
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.aestronglyMeasurable := MemLp.aestronglyMeasurable
 
+lemma MemLp.aemeasurable [MeasurableSpace ε] [TopologicalSpace ε]
+    [TopologicalSpace.PseudoMetrizableSpace ε] [BorelSpace ε]
+    {f : α → ε} {p : ℝ≥0∞} (hf : MemLp f p μ) :
+    AEMeasurable f μ :=
+  hf.aestronglyMeasurable.aemeasurable
+
 theorem lintegral_rpow_enorm_eq_rpow_eLpNorm' {f : α → ε} (hq0_lt : 0 < q) :
     ∫⁻ a, ‖f a‖ₑ ^ q ∂μ = eLpNorm' f q μ ^ q := by
   rw [eLpNorm'_eq_lintegral_enorm, ← ENNReal.rpow_mul, one_div, inv_mul_cancel₀, ENNReal.rpow_one]
   exact hq0_lt.ne'
-
-@[deprecated (since := "2025-01-17")]
-alias lintegral_rpow_nnnorm_eq_rpow_eLpNorm' := lintegral_rpow_enorm_eq_rpow_eLpNorm'
 
 lemma eLpNorm_nnreal_pow_eq_lintegral {f : α → ε} {p : ℝ≥0} (hp : p ≠ 0) :
     eLpNorm f p μ ^ (p : ℝ) = ∫⁻ x, ‖f x‖ₑ ^ (p : ℝ) ∂μ := by

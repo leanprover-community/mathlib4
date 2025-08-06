@@ -54,13 +54,17 @@ def TendstoInMeasure [EDist E] {_ : MeasurableSpace α} (μ : Measure α) (f : �
     (l : Filter ι) (g : α → E) : Prop :=
   ∀ ε, 0 < ε → Tendsto (fun i => μ { x | ε ≤ edist (f i x) (g x) }) l (𝓝 0)
 
-lemma tendstoInMeasure_of_ne_top [PseudoMetricSpace E] {f : ι → α → E} {l : Filter ι} {g : α → E}
+lemma tendstoInMeasure_of_ne_top [EDist E] {f : ι → α → E} {l : Filter ι} {g : α → E}
     (h : ∀ ε, 0 < ε → ε ≠ ∞ → Tendsto (fun i => μ { x | ε ≤ edist (f i x) (g x) }) l (𝓝 0)) :
     TendstoInMeasure μ f l g := by
   intro ε hε
   by_cases hε_top : ε = ∞
-  · simp only [hε_top, top_le_iff, edist_ne_top, Set.setOf_false, measure_empty]
-    exact tendsto_const_nhds
+  · have h1 : Tendsto (fun n ↦ μ {ω | 1 ≤ edist (f n ω) (g ω)}) l (𝓝 0) := h 1 (by simp) (by simp)
+    refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds h1 (fun _ ↦ zero_le') ?_
+    intro n
+    simp only [hε_top]
+    gcongr
+    simp
   · exact h ε hε hε_top
 
 theorem tendstoInMeasure_iff_enorm [SeminormedAddCommGroup E] {l : Filter ι} {f : ι → α → E}
@@ -142,7 +146,7 @@ end TendstoInMeasure
 
 section ExistsSeqTendstoAe
 
-variable [EMetricSpace E]
+variable [PseudoEMetricSpace E]
 variable {f : ℕ → α → E} {g : α → E}
 
 /-- Auxiliary lemma for `tendstoInMeasure_of_tendsto_ae`. -/
@@ -229,11 +233,10 @@ theorem TendstoInMeasure.exists_seq_tendsto_ae (hfg : TendstoInMeasure μ f atTo
 
     On the other hand, as `s` is precisely the set for which `f (ns k)`
     doesn't converge to `g`, `f (ns k)` converges almost everywhere to `g` as required. -/
-  have h_lt_ε_real : ∀ (ε : ℝ≥0∞) (_ : 0 < ε), ∃ k : ℕ, 2 * (2 : ℝ≥0∞)⁻¹ ^ k < ε := by
-    intro ε hε
+  have h_lt_ε_real (ε : ℝ≥0∞) (hε : 0 < ε) : ∃ k : ℕ, 2 * (2 : ℝ≥0∞)⁻¹ ^ k < ε := by
     obtain ⟨k, h_k⟩ : ∃ k : ℕ, (2 : ℝ≥0∞)⁻¹ ^ k < ε := ENNReal.exists_inv_two_pow_lt hε.ne'
-    refine ⟨k + 1, (le_of_eq ?_).trans_lt h_k⟩
-    rw [pow_add, pow_one, mul_comm, mul_assoc, ENNReal.inv_mul_cancel, mul_one]
+    refine ⟨k + 1, lt_of_eq_of_lt ?_ h_k⟩
+    rw [pow_succ', ← mul_assoc, ENNReal.mul_inv_cancel, one_mul]
     · positivity
     · simp
   set ns := ExistsSeqTendstoAe.seqTendstoAeSeq hfg

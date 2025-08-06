@@ -251,7 +251,7 @@ of `M ⊗[R] P` to `A`. This is simply the isomorphism
 `A ⊗[S] (M ⊗[R] P) ≃ₗ[A] (A ⊗[S] M) ⊗[R] P`. -/
 lemma isBaseChange_tensorProduct_map {f : M →ₗ[S] N} (hf : IsBaseChange A f) :
     IsBaseChange A (AlgebraTensorModule.map f (LinearMap.id (R := R) (M := P))) := by
-  let e : A ⊗[S] M ⊗[R] P ≃ₗ[A] N ⊗[R] P := (AlgebraTensorModule.assoc R S A A M P).symm.trans
+  let e : A ⊗[S] (M ⊗[R] P) ≃ₗ[A] N ⊗[R] P := (AlgebraTensorModule.assoc R S A A M P).symm.trans
     (AlgebraTensorModule.congr hf.equiv (LinearEquiv.refl R P))
   refine IsBaseChange.of_equiv e (fun x ↦ ?_)
   induction x with

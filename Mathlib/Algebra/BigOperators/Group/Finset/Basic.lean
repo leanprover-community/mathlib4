@@ -369,19 +369,9 @@ lemma prod_congr_of_eq_on_inter {ι M : Type*} {s₁ s₂ : Finset ι} {f g : ι
 theorem prod_eq_mul_of_mem {s : Finset ι} {f : ι → M} (a b : ι) (ha : a ∈ s) (hb : b ∈ s)
     (hn : a ≠ b) (h₀ : ∀ c ∈ s, c ≠ a ∧ c ≠ b → f c = 1) : ∏ x ∈ s, f x = f a * f b := by
   haveI := Classical.decEq ι; let s' := ({a, b} : Finset ι)
-  have hu : s' ⊆ s := by
-    refine insert_subset_iff.mpr ?_
-    apply And.intro ha
-    apply singleton_subset_iff.mpr hb
-  have hf : ∀ c ∈ s, c ∉ s' → f c = 1 := by
-    intro c hc hcs
-    apply h₀ c hc
-    apply not_or.mp
-    intro hab
-    apply hcs
-    rw [mem_insert, mem_singleton]
-    exact hab
-  rw [← prod_subset hu hf]
+  have hu : s' ⊆ s := by grind
+  have hf : ∀ c ∈ s, c ∉ s' → f c = 1 := by grind
+  rw [← Finset.prod_subset hu hf]
   exact Finset.prod_pair hn
 
 @[to_additive]
@@ -491,8 +481,7 @@ theorem prod_bij_ne_one {s : Finset ι} {t : Finset κ} {f : ι → M} {g : κ �
       prod_bij (fun a ha => i a (mem_filter.mp ha).1 <| by simpa using (mem_filter.mp ha).2)
         ?_ ?_ ?_ ?_
     _ = ∏ x ∈ t, g x := prod_filter_ne_one _
-  · simp only [ne_eq, mem_filter]
-    grind
+  · grind [mem_filter]
   · solve_by_elim
   · intros b hb
     refine (mem_filter.mp hb).elim fun h₁ h₂ ↦ ?_
@@ -559,11 +548,7 @@ theorem prod_list_map_count [DecidableEq ι] (l : List ι) (f : ι → M) :
     refine prod_congr rfl fun x hx => ?_
     rw [count_cons_of_ne (ne_of_mem_erase hx).symm]
   rw [prod_insert has, count_cons_self, count_eq_zero_of_not_mem (mt mem_toFinset.2 has), pow_one]
-  congr 1
-  refine prod_congr rfl fun x hx => ?_
-  rw [count_cons_of_ne]
-  rintro rfl
-  exact has hx
+  grind [Finset.prod_congr]
 
 @[to_additive]
 theorem prod_list_count [DecidableEq M] (s : List M) :
@@ -671,8 +656,7 @@ lemma prod_involution (g : ∀ a ∈ s, ι) (hg₁ : ∀ a ha, f a * f (g a ha) 
   suffices h₃ : ∀ a (ha : a ∈ s \ {x, g x hx}), g a (sdiff_subset ha) ∈ s \ {x, g x hx} from
     ih (s \ {x, g x hx}) (ssubset_iff.2 ⟨x, by simp [insert_subset_iff, hx]⟩) _
       (by simp [hg₁]) (fun _ _ => hg₃ _ _) h₃ (fun _ _ => hg₄ _ _)
-  simp only [mem_sdiff, mem_insert, mem_singleton, not_or]
-  grind
+  grind [mem_sdiff, mem_insert, mem_singleton]
 
 /-- The difference with `Finset.prod_involution` is that the involution is a non-dependent function,
 rather than being allowed to use membership of the domain of the product. -/
@@ -827,17 +811,12 @@ lemma prod_image_of_disjoint [DecidableEq ι] [PartialOrder ι] [OrderBot ι] {f
 
 @[to_additive]
 theorem prod_unique_nonempty [Unique ι] (s : Finset ι) (f : ι → M) (h : s.Nonempty) :
-   ∏ x ∈ s, f x = f default := by
+    ∏ x ∈ s, f x = f default := by
   rw [h.eq_singleton_default, Finset.prod_singleton]
 
 lemma prod_dvd_prod_of_dvd (f g : ι → M) (h : ∀ i ∈ s, f i ∣ g i) :
-    ∏ i ∈ s, f i ∣ ∏ i ∈ s, g i := by
-  induction s using Finset.cons_induction with
-  | empty => simp
-  | cons a T haT IH =>
-    rw [Finset.prod_cons, Finset.prod_cons]
-    rw [Finset.forall_mem_cons] at h
-    exact mul_dvd_mul h.1 <| IH h.2
+    ∏ i ∈ s, f i ∣ ∏ i ∈ s, g i :=
+  Multiset.prod_dvd_prod_of_dvd _ _ h
 
 end CommMonoid
 
