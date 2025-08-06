@@ -247,7 +247,7 @@ lemma measurableSet_isProbabilityMeasure :
 /-- The monoidal product is a measurable function from the product of probability spaces over
 `α` and `β` into the type of probability spaces over `α × β`. Lemma 4.1 of [A synthetic approach to
 Markov kernels, conditional independence and theorems on sufficient statistics][fritz2020]. -/
-theorem measurable_prod {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
+theorem measurable_fun_prod {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
     Measurable (fun (μ : ProbabilityMeasure α × ProbabilityMeasure β)
       ↦ μ.1.toMeasure.prod μ.2.toMeasure) := by
   apply Measurable.measure_of_isPiSystem_of_isProbabilityMeasure generateFrom_prod.symm

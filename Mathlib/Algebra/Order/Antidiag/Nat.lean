@@ -15,9 +15,9 @@ This file defines the finite set of `d`-tuples of natural numbers with a fixed p
 
 ## Main Results
 * There are `d^(ω n)` ways to write `n` as a product of `d` natural numbers, when `n` is squarefree
-(`card_finMulAntidiag_of_squarefree`)
+  (`card_finMulAntidiag_of_squarefree`)
 * There are `3^(ω n)` pairs of natural numbers whose `lcm` is `n`, when `n` is squarefree
-(`card_pair_lcm_eq`)
+  (`card_pair_lcm_eq`)
 -/
 
 open Finset
@@ -161,9 +161,6 @@ lemma finMulAntidiag_existsUnique_prime_dvd {d n p : ℕ} (hn : Squarefree n)
   rw [← hf.1, ← Finset.mul_prod_erase _ _ his,
     ← Finset.mul_prod_erase _ _ (mem_erase.mpr ⟨hij, mem_univ _⟩), ← mul_assoc]
   apply Nat.dvd_mul_right
-
-@[deprecated (since := "2024-12-17")]
-alias finMulAntidiag_exists_unique_prime_dvd := finMulAntidiag_existsUnique_prime_dvd
 
 private def primeFactorsPiBij (d n : ℕ) :
     ∀ f ∈ (n.primeFactors.pi fun _ => (univ : Finset <| Fin d)), Fin d → ℕ :=

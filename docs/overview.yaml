@@ -499,7 +499,7 @@ Combinatorics:
     Behrend's construction: 'Behrend.roth_lower_bound'
     # Growth:
     doubling constant: 'Finset.addConst'
-    Ruzsa covering lemma: 'Finset.exists_subset_add_sub'
+    Ruzsa covering lemma: 'Set.ruzsa_covering_add'
     Ruzsa triangle inequality: 'Finset.ruzsa_triangle_inequality_sub_sub_sub'
     Plünnecke-Petridis inequality: 'Finset.pluennecke_petridis_inequality_add'
     Small tripling implies small powers: 'Finset.small_pow_of_small_tripling'

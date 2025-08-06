@@ -591,15 +591,9 @@ theorem beth_mono : Monotone beth :=
 theorem beth_lt_beth {o₁ o₂ : Ordinal} : ℶ_ o₁ < ℶ_ o₂ ↔ o₁ < o₂ :=
   beth_strictMono.lt_iff_lt
 
-@[deprecated beth_lt_beth (since := "2025-01-14")]
-alias beth_lt := beth_lt_beth
-
 @[simp]
 theorem beth_le_beth {o₁ o₂ : Ordinal} : ℶ_ o₁ ≤ ℶ_ o₂ ↔ o₁ ≤ o₂ :=
   beth_strictMono.le_iff_le
-
-@[deprecated beth_le_beth (since := "2025-01-14")]
-alias beth_le := beth_le_beth
 
 @[simp]
 theorem beth_zero : ℶ_ 0 = ℵ₀ := by

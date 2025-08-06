@@ -299,7 +299,7 @@ lemma measurableSet_isFiniteMeasure : MeasurableSet { μ : Measure Ω | IsFinite
 
 /-- The monoidal product is a measurable function from the product of finite measures over
 `α` and `β` into the type of finite measures over `α × β`. -/
-theorem measurable_prod {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
+theorem measurable_fun_prod {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
     Measurable (fun (μ : FiniteMeasure α × FiniteMeasure β)
       ↦ μ.1.toMeasure.prod μ.2.toMeasure) := by
   have Heval {u v} (Hu : MeasurableSet u) (Hv : MeasurableSet v) :

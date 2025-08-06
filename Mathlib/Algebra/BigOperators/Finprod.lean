@@ -409,7 +409,7 @@ theorem finprod_cond_ne (f : α → M) (a : α) [DecidableEq α] (hf : (mulSuppo
   apply finprod_cond_eq_prod_of_cond_iff
   intro x hx
   rw [Finset.mem_erase, Finite.mem_toFinset, mem_mulSupport]
-  exact ⟨fun h => And.intro h hx, fun h => h.1⟩
+  grind
 
 @[to_additive]
 theorem finprod_mem_eq_prod_of_inter_mulSupport_eq (f : α → M) {s : Set α} {t : Finset α}
@@ -545,7 +545,7 @@ equals the product of `f i` divided by the product of `g i`. -/
       equals the sum of `f i` minus the sum of `g i`."]
 theorem finprod_div_distrib [DivisionCommMonoid G] {f g : α → G} (hf : (mulSupport f).Finite)
     (hg : (mulSupport g).Finite) : ∏ᶠ i, f i / g i = (∏ᶠ i, f i) / ∏ᶠ i, g i := by
-  simp only [div_eq_mul_inv, finprod_mul_distrib hf ((mulSupport_inv g).symm.rec hg),
+  simp only [div_eq_mul_inv, finprod_mul_distrib hf ((mulSupport_fun_inv g).symm.rec hg),
     finprod_inv_distrib]
 
 /-- A more general version of `finprod_mem_mul_distrib` that only requires `s ∩ mulSupport f` and
@@ -978,7 +978,7 @@ theorem mul_finprod_cond_ne (a : α) (hf : (mulSupport f).Finite) :
     have h : ∀ x : α, f x ≠ 1 → (x ≠ a ↔ x ∈ hf.toFinset \ {a}) := by
       intro x hx
       rw [Finset.mem_sdiff, Finset.mem_singleton, Finite.mem_toFinset, mem_mulSupport]
-      exact ⟨fun h => And.intro hx h, fun h => h.2⟩
+      grind
     rw [finprod_cond_eq_prod_of_cond_iff f (fun hx => h _ hx), Finset.sdiff_singleton_eq_erase]
     by_cases ha : a ∈ mulSupport f
     · apply Finset.mul_prod_erase _ _ ((Finite.mem_toFinset _).mpr ha)
