@@ -176,7 +176,7 @@ lemma fermat_primeFactors_one_lt (n p : ℕ) (hn : 1 < n) (hp : p.Prime)
     obtain ⟨k, rfl⟩ := pow_pow_add_primeFactors_one_lt hp hp2 hpdvd
     obtain ⟨n, rfl⟩ := Nat.exists_eq_add_of_le' hn
     rw [add_assoc, pow_add, ← mul_assoc, ← mod_add_mod, mul_mod]
-    norm_num
+    simp
   obtain ⟨a, ha⟩ := (exists_sq_eq_two_iff hp2).mpr (Or.inl hp8)
   suffices h : p ∣ a.val ^ (2 ^ (n + 1)) + 1 by
     exact pow_pow_add_primeFactors_one_lt hp hp2 h

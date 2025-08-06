@@ -34,7 +34,7 @@ namespace UpperHalfPlane
 def J : GL (Fin 2) ℝ := .mkOfDetNeZero !![1, 0; 0, -1] (by simp)
 
 lemma coe_J_smul (τ : ℍ) : (↑(J • τ) : ℂ) = -conj ↑τ := by
-  simp [UpperHalfPlane.coe_smul, σ, J, if_neg (show ¬(1 : ℝ) < 0 by norm_num), num, denom, div_neg]
+  simp [UpperHalfPlane.coe_smul, σ, J, if_neg (show ¬(1 : ℝ) < 0 by simp), num, denom, div_neg]
 
 lemma J_smul (τ : ℍ) : J • τ = ofComplex (-(conj ↑τ)) := by
   ext
@@ -66,7 +66,7 @@ private lemma MDifferentiable.slash_of_pos {f : ℍ → ℂ} (hf : MDifferentiab
 
 private lemma slash_J (f : ℍ → ℂ) (k : ℤ) :
     f ∣[k] J = fun τ : ℍ ↦ -conj (f <| ofComplex <| -(conj ↑τ)) := by
-  simp [slash_def, J_smul, mul_assoc, ← zpow_add₀ (by norm_num : (-1 : ℂ) ≠ 0),
+  simp [slash_def, J_smul, mul_assoc, ← zpow_add₀ (by simp : (-1 : ℂ) ≠ 0),
     (by ring : k - 1 + -k = -1), -zpow_neg, zpow_neg_one]
 
 /-- The weight `k` slash action of the negative-determinant matrix `J` preserves holomorphic

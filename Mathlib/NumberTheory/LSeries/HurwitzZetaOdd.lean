@@ -303,7 +303,7 @@ def hurwitzOddFEPair (a : UnitAddCircle) : StrongFEPair ℂ where
   hg_int := (continuous_ofReal.comp_continuousOn (continuousOn_sinKernel a)).locallyIntegrableOn
     measurableSet_Ioi
   k := 3 / 2
-  hk := by norm_num
+  hk := by simp
   ε := 1
   hε := one_ne_zero
   f₀ := 0

@@ -92,7 +92,7 @@ theorem sign_mul_pos_of_ne_zero (r : ℝ) (hr : r ≠ 0) : 0 < sign r * r := by
 theorem inv_sign (r : ℝ) : (sign r)⁻¹ = sign r := by
   obtain hn | hz | hp := sign_apply_eq r
   · rw [hn]
-    norm_num
+    simp
   · rw [hz]
     exact inv_zero
   · rw [hp]

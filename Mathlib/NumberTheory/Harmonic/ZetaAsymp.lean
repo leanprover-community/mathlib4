@@ -415,7 +415,7 @@ lemma _root_.riemannZeta_one_ne_zero : riemannZeta 1 ≠ 0 := by
   · exact Real.eulerMascheroniConstant_lt_two_thirds.trans (by norm_num)
   · rw [lt_log_iff_exp_lt (by positivity)]
     exact (lt_trans Real.exp_one_lt_d9 (by norm_num)).trans_le
-      <| mul_le_mul_of_nonneg_left two_le_pi (by norm_num)
+      <| mul_le_mul_of_nonneg_left two_le_pi (by simp)
 
 end val_at_one
 

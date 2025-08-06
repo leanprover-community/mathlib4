@@ -45,7 +45,7 @@ theorem sin_lt (h : 0 < x) : sin x < x := by
   rw [sub_add, sub_lt_self_iff, sub_pos, div_eq_mul_inv (x ^ 3)]
   refine mul_lt_mul' ?_ (by norm_num) (by norm_num) (pow_pos h 3)
   apply pow_le_pow_of_le_one h.le h'
-  norm_num
+  simp
 
 lemma sin_le (hx : 0 ≤ x) : sin x ≤ x := by
   obtain rfl | hx := hx.eq_or_lt
@@ -153,7 +153,7 @@ theorem sin_gt_sub_cube {x : ℝ} (h : 0 < x) (h' : x ≤ 1) : x - x ^ 3 / 4 < s
   rw [add_comm, sub_add, sub_neg_eq_add, sub_lt_sub_iff_left, ← lt_sub_iff_add_lt', this]
   refine mul_lt_mul' ?_ (by norm_num) (by norm_num) (pow_pos h 3)
   apply pow_le_pow_of_le_one h.le h'
-  norm_num
+  simp
 
 /-- The derivative of `tan x - x` is `1/(cos x)^2 - 1` away from the zeroes of cos. -/
 theorem deriv_tan_sub_id (x : ℝ) (h : cos x ≠ 0) :

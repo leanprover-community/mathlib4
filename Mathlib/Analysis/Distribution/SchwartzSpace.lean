@@ -595,7 +595,7 @@ instance _root_.MeasureTheory.Measure.IsFiniteMeasure.instHasTemperateGrowth {μ
 variable [NormedSpace ℝ D] [FiniteDimensional ℝ D] [BorelSpace D] in
 instance _root_.MeasureTheory.Measure.IsAddHaarMeasure.instHasTemperateGrowth {μ : Measure D}
     [h : μ.IsAddHaarMeasure] : μ.HasTemperateGrowth :=
-  ⟨⟨finrank ℝ D + 1, by apply integrable_one_add_norm; norm_num⟩⟩
+  ⟨⟨finrank ℝ D + 1, by apply integrable_one_add_norm; simp⟩⟩
 
 /-- Pointwise inequality to control `x ^ k * f` in terms of `1 / (1 + x) ^ l` if one controls both
 `f` (with a bound `C₁`) and `x ^ (k + l) * f` (with a bound `C₂`). This will be used to check
