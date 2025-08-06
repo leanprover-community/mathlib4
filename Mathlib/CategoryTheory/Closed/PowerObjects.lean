@@ -3,7 +3,9 @@ Copyright (c) 2025 Klaus Gy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Klaus Gy
 -/
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
 import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
+import Mathlib.CategoryTheory.Subobject.Basic
 import Mathlib.CategoryTheory.Topos.Classifier
 /-!
 # Elementary Topos (in Elementary Form)
@@ -17,64 +19,69 @@ This ongoing work formalizes the elementary definition of a topos and the direct
 
 universe u v
 
-open CategoryTheory Functor MonoidalCategory Opposite
+open CategoryTheory
+open CartesianMonoidalCategory Functor Limits MonoidalCategory Opposite
 
 variable {ℰ : Type u} [Category.{v} ℰ] [CartesianMonoidalCategory ℰ]
 
-/-- The covariant functor `B ⊗ [] ⟶ C` from `ℰᵒᵖ` to `Type`. -/
-def WhiskeredHom (B C : ℰ) : ℰᵒᵖ ⥤ Type v :=
-  ⟨ ⟨ fun A ↦ B ⊗ unop A ⟶ C, fun f g ↦ (B ◁ unop f) ≫ g ⟩,
-    fun A ↦ by
-      have : unop (𝟙 A) = 𝟙 (unop A) := by rfl
-      ext; simp[this],
-    fun f f' ↦ by
-      have : B ◁ unop (f ≫ f') = B ◁ unop f' ≫ B ◁ unop f := by aesop_cat
-      ext; simp[this] ⟩
+private lemma isPullback_equalizer_prod' {X Y : ℰ}
+      (f g : X ⟶ Y) {e : Fork f g} (he : IsLimit e) :
+    IsPullback e.ι (e.ι ≫ f) (lift f g) (CartesianMonoidalCategory.diag Y) :=
+  isPullback_equalizer_prod_exp _ f g _ he
+
+private lemma pullback_of_diag {B X : ℰ} (b : X ⟶ B) :
+    IsPullback b (lift b (𝟙 X)) (CartesianMonoidalCategory.diag B) (B ◁ b) :=
+  let eq : lift b (𝟙 X) ≫ fst B X = lift b (𝟙 X) ≫ snd B X ≫ b := by simp
+  let lim : IsLimit (Fork.ofι (lift b (𝟙 X)) eq) :=
+    Fork.IsLimit.mk _
+      (fun s => s.ι ≫ (snd B X))
+      (fun s => by simp[← s.condition])
+      (fun s m eq => by simp[← eq])
+  IsPullback.flip
+    (by simpa using isPullback_equalizer_prod' (fst B X) (snd B X ≫ b) lim)
+
+variable [HasPullbacks ℰ]
+
+noncomputable def subobjTensorLeft (B : ℰ) : ℰᵒᵖ ⥤ Type (max u v) where
+  obj A := Subobject (B ⊗ unop A)
+  map f := (Subobject.pullback (B ◁ unop f)).obj
+  map_id A := by
+    ext1 x
+    simp [show unop (𝟙 A) = 𝟙 (unop _) from rfl, Subobject.pullback_id]
+  map_comp f f' := by
+    ext1 x
+    simp [show unop (f ≫ f') = unop f' ≫ unop f from rfl, Subobject.pullback_comp]
 
 /-- `P` is a power object of `B` if it represents the functor `WhiskeredHom B hc.Ω`. -/
-def IsPowerObjectOf (sc : Classifier ℰ (𝟙_ ℰ)) (B P : ℰ) :=
-  (WhiskeredHom B sc.Ω).RepresentableBy P
+def IsPowerObjectOf (B P : ℰ) :=
+  (subobjTensorLeft B).RepresentableBy P
 
 namespace PowerObject
 
-variable {sc : Classifier ℰ (𝟙_ ℰ)} {B PB : ℰ} (hPB : IsPowerObjectOf sc B PB)
+variable {B PB : ℰ} (hPB : IsPowerObjectOf B PB)
 
-/-- The P-transpose of a morphism `g : A ⟶ P B`. -/
-def hat {A : ℰ} (g : A ⟶ PB) : B ⊗ A ⟶ sc.Ω :=
-  hPB.homEquiv.toFun g
+def diagSubobject (B : ℰ) := Subobject.mk (CartesianMonoidalCategory.diag B)
 
-/-- The P-transpose of a morphism `f : B × A ⟶ Ω`. -/
-def unhat {A : ℰ} (f : B ⊗ A ⟶ sc.Ω) : (A ⟶ PB) :=
-  hPB.homEquiv.invFun f
+/-- The singleton morphism from `B` to `PB`. -/
+def singleton : B ⟶ PB :=
+  hPB.homEquiv.invFun (diagSubobject B)
 
-@[simp]
-lemma hat_unhat {A : ℰ} (f : B ⊗ A ⟶ sc.Ω) :
-  hat hPB (unhat hPB f) = f := hPB.homEquiv.apply_symm_apply f
+noncomputable instance singleton_is_mono : Mono (singleton hPB) :=
+  ⟨ fun {X} (f f' : X ⟶ B) eq ↦ by
+    let P : Subobject (B ⊗ X) := hPB.homEquiv (f ≫ singleton hPB)
+    let P' : Subobject (B ⊗ X) := hPB.homEquiv (f' ≫ singleton hPB)
+    have : P = P' := by unfold P; rw[eq]
+    have : P = (Subobject.pullback (B ◁ f)).obj (diagSubobject B) := sorry
+    have : P = (subobjTensorLeft B).map f.op (diagSubobject B) := by
+      unfold P; rw[hPB.homEquiv_comp f (singleton hPB)]; unfold singleton; simp
 
-@[simp]
-lemma unhat_hat {A : ℰ} (g : A ⟶ PB) :
-  unhat hPB (hat hPB g) = g := hPB.homEquiv.symm_apply_apply g
+    sorry ⟩
 
-/-- The element relation as a subobject of `B ⨯ (P B)`. -/
-def ε : B ⊗ (PB) ⟶ sc.Ω := hPB.homEquiv.toFun (𝟙 (PB))
-
-lemma hatAsComp {A : ℰ} (g : A ⟶ PB) : hat hPB g = B ◁ g ≫ ε hPB := hPB.homEquiv_eq g
-
-@[simp]
-lemma comm {A : ℰ} (f : B ⊗ A ⟶ sc.Ω) : B ◁ (unhat hPB f) ≫ ε hPB = f := by
-  have : hPB.homEquiv (unhat hPB f) = f := by unfold unhat; simp
-  simpa [this] using Eq.symm (RepresentableBy.homEquiv_eq hPB (unhat hPB f))
-
-lemma uniq {A : ℰ} (f : B ⊗ A ⟶ sc.Ω) (g : A ⟶ PB)
-    (h : f = B ◁ g ≫ ε hPB) : g = unhat hPB f := by
-  have : hat hPB g = f := by rw [← comm hPB (hat hPB g)]; simp [h]
-  simpa using congr(unhat hPB $this)
-
-variable {C PC : ℰ} (hPC : IsPowerObjectOf sc C PC)
+variable {C PC : ℰ} (hPC : IsPowerObjectOf C PC)
 
 /-- The morphism `map h` is the functorial action on a morphism `h : B ⟶ C`,
     defined as the P-transpose of `εC ∘ (h ⨯ 𝟙)`. -/
-def map (h : B ⟶ C) : PC ⟶ PB := unhat hPB ((h ▷ PC) ≫ ε hPC)
+def map (h : B ⟶ C) : PC ⟶ PB := hPB.homEquiv.invFun (Subobject.mk ((𝟙 B) ⊗ₘ (singleton hPB)))
 
 /-- Naturality (dinaturality) of `ε`. This corresponds to the naturality square of ε
     in MM92 diagram (5). -/

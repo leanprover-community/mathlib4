@@ -305,10 +305,8 @@ abbrev inl (t : PushoutCocone f g) : Y ⟶ t.pt :=
 abbrev inr (t : PushoutCocone f g) : Z ⟶ t.pt :=
   t.ι.app WalkingSpan.right
 
-@[simp]
 theorem ι_app_left (c : PushoutCocone f g) : c.ι.app WalkingSpan.left = c.inl := rfl
 
-@[simp]
 theorem ι_app_right (c : PushoutCocone f g) : c.ι.app WalkingSpan.right = c.inr := rfl
 
 @[simp]

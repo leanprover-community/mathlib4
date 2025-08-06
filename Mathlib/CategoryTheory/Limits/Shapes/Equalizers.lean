@@ -722,17 +722,21 @@ def Cofork.isColimitOfIsos {X' Y' : C} (c : Cofork f g) (hc : IsColimit c)
     (comm₃ : e₁.inv ≫ c.π ≫ e.hom = c'.π := by aesop_cat) : IsColimit c' :=
   (Cofork.isColimitEquivOfIsos c c' e₀ e₁ e) hc
 
-lemma eq_of_lift_eq_diag [HasBinaryProduct Z Z] {e : X ⟶ Y} {f g : Y ⟶ Z} {h : X ⟶ Z}
-    (eq : e ≫ prod.lift f g = h ≫ diag Z) : e ≫ f = e ≫ g :=
+lemma eq_of_lift_eq_diag (p : BinaryFan Z Z) (hp : IsLimit p)
+      {e : X ⟶ Y} {f g : Y ⟶ Z} {h : X ⟶ Z}
+      (eq : e ≫ hp.lift (BinaryFan.mk f g) = h ≫ (hp.lift (BinaryFan.mk (𝟙 Z) (𝟙 Z)))) :
+    e ≫ f = e ≫ g :=
   by calc
-    e ≫ f = h     := by simpa using congr($eq ≫ prod.fst)
-    _     = e ≫ g := by simpa using congr($eq.symm ≫ prod.snd)
+    e ≫ f = h     := by simpa using congr($eq ≫ p.fst)
+    _     = e ≫ g := by simpa using congr($eq.symm ≫ p.snd)
 
-lemma eq_of_desc_eq_codiag [HasBinaryCoproduct X X] {e : Y ⟶ Z} {f g : X ⟶ Y} {h : X ⟶ Z}
-    (eq : coprod.desc f g ≫ e = codiag X ≫ h) : f ≫ e = g ≫ e :=
+lemma eq_of_desc_eq_codiag (p : BinaryCofan X X) (hp : IsColimit p)
+      {e : Y ⟶ Z} {f g : X ⟶ Y} {h : X ⟶ Z}
+      (eq : (hp.desc (BinaryCofan.mk f g)) ≫ e = (hp.desc (BinaryCofan.mk (𝟙 X) (𝟙 X))) ≫ h) :
+    f ≫ e = g ≫ e :=
   by calc
-    f ≫ e = h     := by simpa using congr(coprod.inl ≫ $eq)
-    _     = g ≫ e := by simpa using congr(coprod.inr ≫ $eq.symm)
+    f ≫ e = h     := by simpa using congr(p.inl ≫ $eq)
+    _     = g ≫ e := by simpa using congr(p.inr ≫ $eq.symm)
 
 variable (f g)
 
