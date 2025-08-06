@@ -98,7 +98,7 @@ instance : (inverse T L R B).IsEquivalence :=
 they satisfy. -/
 @[simps!]
 def precomposeEquivalenceInverseIsoDefault :
-    (CatCommSqOver.precompose R B (equivalence T L R B).inverse).obj
+    (CatCommSqOver.precompose R B|>.obj (equivalence T L R B).inverse).obj
       (.ofSquare T L R B) ≅
     default :=
   mkIso (Iso.inverseCompIso (.refl _)) (Iso.inverseCompIso (.refl _))
