@@ -117,7 +117,7 @@ instance instInnerProductSpace : InnerProductSpace 𝕜 (lp G 2) :=
         _ = ∑' i, ‖f i‖ ^ (2 : ℕ) := by norm_cast
         _ = ∑' i, re ⟪f i, f i⟫ := by simp [norm_sq_eq_re_inner (𝕜 := 𝕜)]
         _ = re (∑' i, ⟪f i, f i⟫) := (RCLike.reCLM.map_tsum ?_).symm
-      · simp
+      · norm_num
       · exact summable_inner f f
     conj_inner_symm := fun f g => by
       calc
@@ -179,7 +179,7 @@ protected theorem summable_of_lp (f : lp G 2) :
   rw [hV.summable_iff_norm_sq_summable]
   convert (lp.memℓp f).summable _
   · norm_cast
-  · simp
+  · norm_num
 
 /-- A mutually orthogonal family of subspaces of `E` induce a linear isometry from `lp 2` of the
 subspaces into `E`. -/
