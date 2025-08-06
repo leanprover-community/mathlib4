@@ -815,11 +815,9 @@ section Divisibility
 variable [GCDMonoid α] {m n a b c : α}
  -/
 
--- adapted from `Nat.lcm_dvd_mul` in Lean 4's source
 @[simp] theorem lcm_dvd_mul [GCDMonoid α] (m n : α) : lcm m n ∣ m * n :=
   lcm_dvd (by simp) (by simp)
 
-/-- adapted from and similar to `dvd_mul_of_dvd_left` -/
 theorem dvd_lcm_of_dvd_left [GCDMonoid α] {a b : α} (h : a ∣ b) (c : α) : a ∣ lcm b c :=
   h.trans (dvd_lcm_left b c)
 

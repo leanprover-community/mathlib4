@@ -63,7 +63,6 @@ theorem pow_sub_one_gcd_pow_sub_one (a b c : ℕ) :
 
 /-! ### `lcm` and divisibility -/
 
-/-- adapted from and similar to `dvd_mul_of_dvd_left` -/
 theorem dvd_lcm_of_dvd_left (h : a ∣ b) (c : ℕ) : a ∣ lcm b c :=
   h.trans (dvd_lcm_left b c)
 
