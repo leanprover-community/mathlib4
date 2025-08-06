@@ -220,8 +220,11 @@ protected def inhabited [Inhabited β] (e : α ≃ β) : Inhabited α := ⟨e.sy
 protected def unique [Unique β] (e : α ≃ β) : Unique α := e.symm.surjective.unique
 
 /-- Equivalence between equal types. -/
-protected def cast {α β : Sort _} (h : α = β) : α ≃ β :=
-  ⟨cast h, cast h.symm, by grind, by grind⟩
+protected def cast {α β : Sort _} (h : α = β) : α ≃ β where
+  toFun := cast h
+  invFun := cast h.symm
+  left_inv := by grind
+  right_inv := by grind
 
 @[simp] theorem coe_fn_symm_mk (f : α → β) (g l r) : ((Equiv.mk f g l r).symm : β → α) = g := rfl
 
