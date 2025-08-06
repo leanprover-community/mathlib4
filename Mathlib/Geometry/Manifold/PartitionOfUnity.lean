@@ -644,8 +644,7 @@ theorem exists_contMDiffOn_section_forall_mem_convex_of_local
   -- Define the global section `s` by taking a weighted sum of the local sections.
   let s x : V x := ∑ᶠ j, (ρ j x) • s_loc j x
   -- Prove that `s`, when viewed as a map to the total space, is smooth.
-  have s_smooth : ContMDiff I (I.prod 𝓘(ℝ, F_fiber)) n
-      (fun x ↦ TotalSpace.mk' F_fiber x (s x)) :=
+  have s_smooth : ContMDiff I (I.prod 𝓘(ℝ, F_fiber)) n (fun x ↦ TotalSpace.mk' F_fiber x (s x)) :=
     ρ.contMDiff_totalSpace_weighted_sum_of_local_sections
       I V s_loc U (fun x ↦ isOpen_interior) hρU fun j ↦ (s_smooth j).mono interior_subset
   -- Construct the smooth section and prove it lies in the convex sets `t x`.
