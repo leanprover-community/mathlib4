@@ -3,6 +3,8 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.LinearAlgebra.RootSystem.Base
+import Mathlib.LinearAlgebra.RootSystem.Chain
 import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 
 /-!
@@ -123,6 +125,71 @@ lemma IsG2.pairingIn_mem_zero_one_three [P.IsG2]
   omega
 
 end IsG2
+
+section IsNotG2
+
+variable {P}
+variable [Finite ι] [CharZero R] [IsDomain R] {i j : ι}
+
+variable (i j) in
+lemma chainBotCoeff_add_chainTopCoeff_le_two [P.IsNotG2] :
+    P.chainBotCoeff i j + P.chainTopCoeff i j ≤ 2 := by
+  by_cases h : LinearIndependent R ![P.root i, P.root j]
+  swap; · simp [chainTopCoeff_of_not_linearIndependent, chainBotCoeff_of_not_linearIndependent, h]
+  rw [← Int.ofNat_le, Nat.cast_add, Nat.cast_ofNat,
+    chainBotCoeff_add_chainTopCoeff_eq_pairingIn_chainTopIdx h]
+  have := IsNotG2.pairingIn_mem_zero_one_two (P := P) (P.chainTopIdx i j) i
+  aesop
+
+/-- For a reduced, crystallographic, irreducible root pairing other than `𝔤₂`, if the sum of two
+roots is a root, they cannot make an acute angle.
+
+To see that this lemma fails for `𝔤₂`, let `α` (short) and `β` (long) be a base. Then the roots
+`α + β` and `2α + β` make an angle `π / 3` even though `3α + 2β` is a root. We can even witness as:
+```lean
+example (P : RootPairing ι R M N) [P.EmbeddedG2] :
+    P.pairingIn ℤ (EmbeddedG2.shortAddLong P) (EmbeddedG2.twoShortAddLong P) = 1 := by
+  simp
+```
+-/
+lemma pairingIn_le_zero_of_root_add_mem [P.IsNotG2] (h : P.root i + P.root j ∈ range P.root) :
+    P.pairingIn ℤ i j ≤ 0 := by
+  have aux₁ := P.linearIndependent_of_add_mem_range_root' <| add_comm (P.root i) (P.root j) ▸ h
+  have aux₂ := P.chainBotCoeff_add_chainTopCoeff_le_two j i
+  have aux₃ : 1 ≤ P.chainTopCoeff j i := by
+    rwa [← root_add_nsmul_mem_range_iff_le_chainTopCoeff aux₁, one_smul]
+  rw [← P.chainBotCoeff_sub_chainTopCoeff aux₁]
+  omega
+
+lemma zero_le_pairingIn_of_root_sub_mem [P.IsNotG2] (h : P.root i - P.root j ∈ range P.root) :
+    0 ≤ P.pairingIn ℤ i j := by
+  replace h : P.root i + P.root (P.reflectionPerm j j) ∈ range P.root := by simpa [← sub_eq_add_neg]
+  simpa using P.pairingIn_le_zero_of_root_add_mem h
+
+/-- For a reduced, crystallographic, irreducible root pairing other than `𝔤₂`, if the sum of two
+roots is a root, the bottom chain coefficient is either one or zero according to whether they are
+perpendicular.
+
+To see that this lemma fails for `𝔤₂`, let `α` (short) and `β` (long) be a base. Then the roots
+`α` and `α + β` provide a counterexample. -/
+lemma chainBotCoeff_if_one_zero [P.IsNotG2] (h : P.root i + P.root j ∈ range P.root) :
+    P.chainBotCoeff i j = if P.pairingIn ℤ i j = 0 then 1 else 0 := by
+  have _i := P.reflexive_left
+  have aux₁ := P.linearIndependent_of_add_mem_range_root' h
+  have aux₂ := P.chainBotCoeff_add_chainTopCoeff_le_two i j
+  have aux₃ : 1 ≤ P.chainTopCoeff i j := P.one_le_chainTopCoeff_of_root_add_mem h
+  rcases eq_or_ne (P.chainBotCoeff i j) (P.chainTopCoeff i j) with aux₄ | aux₄ <;>
+  simp_rw [P.pairingIn_eq_zero_iff (i := i) (j := j), ← P.chainBotCoeff_sub_chainTopCoeff aux₁,
+    sub_eq_zero, Nat.cast_inj, aux₄, reduceIte] <;>
+  omega
+
+lemma chainTopCoeff_if_one_zero [P.IsNotG2] (h : P.root i - P.root j ∈ range P.root) :
+    P.chainTopCoeff i j = if P.pairingIn ℤ i j = 0 then 1 else 0 := by
+  letI := P.indexNeg
+  replace h : P.root i + P.root (-j) ∈ range P.root := by simpa [← sub_eq_add_neg] using h
+  simpa using P.chainBotCoeff_if_one_zero h
+
+end IsNotG2
 
 namespace EmbeddedG2
 
@@ -546,5 +613,35 @@ lemma setOf_index_eq_univ :
 end IsIrreducible
 
 end EmbeddedG2
+
+namespace IsG2
+
+variable {P}
+variable [P.IsG2] (b : P.Base) [Finite ι] [CharZero R] [IsDomain R]
+
+@[simp] lemma card_base_support_eq_two :
+    b.support.card = 2 := by
+  have _i := toEmbeddedG2 P
+  have _i : Nonempty ι := IsG2.nonempty P
+  let _i : Fintype b.support := Fintype.ofFinite b.support
+  let b' : P.toRootSystem.Base := b
+  rw [← Fintype.card_fin 2, ← Module.finrank_eq_card_basis (EmbeddedG2.basis P),
+    Module.finrank_eq_card_basis b'.toWeightBasis, Fintype.card_coe]
+
+variable {b}
+variable {i j : ι} (hi : i ∈ b.support) (hj : j ∈ b.support) (h_ne : i ≠ j)
+include hi hj h_ne
+
+lemma span_eq_rootSpan_int :
+    Submodule.span ℤ {P.root i, P.root j} = P.rootSpan ℤ := by
+  classical
+  suffices {i, j} = b.support by rw [← image_pair, ← Finset.coe_pair, this, b.span_int_root_support]
+  have : {i, j} ⊆ b.support := by
+    rw [← Finset.coe_subset, Finset.coe_pair, pair_subset_iff]
+    exact ⟨hi, hj⟩
+  apply Finset.eq_of_subset_of_card_le this
+  aesop
+
+end IsG2
 
 end RootPairing
