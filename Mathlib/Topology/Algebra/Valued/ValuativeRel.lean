@@ -17,25 +17,63 @@ to facilitate a refactor.
 
 -/
 
+open ValuativeRel TopologicalSpace Filter Topology Set
+
 namespace IsValuativeTopology
 
-section
-
-/-! # Results assuming IsValuativeTopology -/
-
-variable {R : Type*} [CommRing R] [ValuativeRel R] [TopologicalSpace R] [IsValuativeTopology R]
-
-open ValuativeRel TopologicalSpace Filter Topology Set
+variable {R : Type*} [CommRing R] [ValuativeRel R]
 
 local notation "v" => valuation R
 
 /-- A version mentioning subtraction. -/
-lemma mem_nhds_iff' {s : Set R} {x : R} :
+lemma mem_nhds_iff' [TopologicalSpace R] [IsValuativeTopology R] {s : Set R} {x : R} :
     s ∈ 𝓝 (x : R) ↔
     ∃ γ : (ValueGroupWithZero R)ˣ, { z | v (z - x) < γ } ⊆ s := by
   convert mem_nhds_iff (s := s) using 4
   ext z
   simp [neg_add_eq_sub]
+
+section
+
+variable [TopologicalSpace R] [ContinuousConstVAdd R R]
+
+/-- Assuming `ContinuousConstVAdd R R`, we only need to check the neighbourhood of `0` in order to
+prove `IsValuativeTopology R`. -/
+theorem of_zero
+    (h₀ : ∀ s : Set R, s ∈ 𝓝 0 ↔ ∃ γ : (ValueGroupWithZero R)ˣ, { z | v z < γ } ⊆ s) :
+    IsValuativeTopology R where
+  mem_nhds_iff {s x} := by
+    simpa [← vadd_mem_nhds_vadd_iff (t := s) (-x), ← image_vadd, ← image_subset_iff] using
+      h₀ ((x + ·) ⁻¹' s)
+
+/-- Assuming `ContinuousConstVAdd R R`, we only need to check the neighbourhood of `0` in order to
+prove `IsValuativeTopology R`. -/
+lemma of_hasBasis_zero (h : (𝓝 (0 : R)).HasBasis (fun _ ↦ True)
+    fun γ : (ValueGroupWithZero R)ˣ ↦ { x | (valuation R) x < γ }) :
+    IsValuativeTopology R :=
+  .of_zero <| by simp [h.mem_iff]
+
+end
+
+instance of_mk' :
+    letI := Valued.mk' (valuation R)
+    IsValuativeTopology R :=
+  letI := Valued.mk' (valuation R)
+  of_hasBasis_zero (Valued.hasBasis_nhds_zero R _)
+
+/-- The correctness result. -/
+lemma _root_.isValuativeTopology_iff_mk'_toTopologicalSpace_eq [t : TopologicalSpace R] :
+    IsValuativeTopology R ↔ (Valued.mk' (valuation R)).toTopologicalSpace = t := by
+  letI val := Valued.mk' (valuation R)
+  refine ⟨fun _ ↦ ext_nhds fun x ↦ Filter.ext fun s ↦ ?_, ?_⟩
+  · rw [@mem_nhds_iff' _ _ _ val.toTopologicalSpace, mem_nhds_iff']
+  · rintro rfl; infer_instance
+
+section
+
+/-! # Results assuming IsValuativeTopology -/
+
+variable [TopologicalSpace R] [IsValuativeTopology R]
 
 @[deprecated (since := "2025-08-01")]
 alias _root_.ValuativeTopology.mem_nhds := mem_nhds_iff'
@@ -261,35 +299,7 @@ section
 
 /-! # Alternate constructors -/
 
-variable {R : Type*} [CommRing R] [ValuativeRel R] [TopologicalSpace R]
-
-open ValuativeRel TopologicalSpace Filter Topology Set
-
-local notation "v" => valuation R
-
-variable [ContinuousConstVAdd R R]
-
-/-- Assuming `ContinuousConstVAdd R R`, we only need to check the neighbourhood of `0` in order to
-prove `IsValuativeTopology R`. -/
-theorem of_zero
-    (h₀ : ∀ s : Set R, s ∈ 𝓝 0 ↔ ∃ γ : (ValueGroupWithZero R)ˣ, { z | v z < γ } ⊆ s) :
-    IsValuativeTopology R where
-  mem_nhds_iff {s x} := by
-    simpa [← vadd_mem_nhds_vadd_iff (t := s) (-x), ← image_vadd, ← image_subset_iff] using
-      h₀ ((x + ·) ⁻¹' s)
-
-/-- Assuming `ContinuousConstVAdd R R`, we only need to check the neighbourhood of `0` in order to
-prove `IsValuativeTopology R`. -/
-lemma of_hasBasis_zero (h : (𝓝 (0 : R)).HasBasis (fun _ ↦ True)
-    fun γ : (ValueGroupWithZero R)ˣ ↦ { x | (valuation R) x < γ }) :
-    IsValuativeTopology R :=
-  .of_zero <| by simp [h.mem_iff]
-
-instance of_mk' {R : Type*} [CommRing R] [ValuativeRel R] :
-    letI := Valued.mk' (valuation R)
-    IsValuativeTopology R :=
-  letI := Valued.mk' (valuation R)
-  of_hasBasis_zero (Valued.hasBasis_nhds_zero R _)
+variable [TopologicalSpace R] [ContinuousConstVAdd R R]
 
 /-- A "metatheorem" saying that if we proved that a valuative topology has a certain basis of
 `nhds 0`, then any topology having the same basis of `nhds 0` which is also `ContinuousConstVAdd` is
@@ -297,17 +307,15 @@ automatically an `IsValuativeTopology`. -/
 theorem of_hasBasis {R : Type*} [CommRing R] [ValuativeRel R]
     {ι : Type*} (p : ι → Prop) (s : ι → Set R)
     (ih : ∀ [TopologicalSpace R] [IsValuativeTopology R], (nhds 0).HasBasis p s)
-    [t : TopologicalSpace R] [ContinuousConstVAdd R R] (h : (nhds 0).HasBasis p s) :
+    [τ : TopologicalSpace R] [ContinuousConstVAdd R R] (h : (nhds 0).HasBasis p s) :
     IsValuativeTopology R := by
+  refine isValuativeTopology_iff_mk'_toTopologicalSpace_eq.mpr ?_
   letI := Valued.mk' (valuation R)
   specialize @ih this.toTopologicalSpace of_mk'
-  have : t = this.toTopologicalSpace := by
-    refine ext_nhds fun x ↦ Filter.ext fun t ↦ ?_
-    rw [← vadd_mem_nhds_vadd_iff (g := -x),
-      ← @vadd_mem_nhds_vadd_iff _ _ this.toTopologicalSpace _ _ _ _ (-x) (x),
-      vadd_eq_add, neg_add_cancel, h.mem_iff, ih.mem_iff]
-  subst this
-  infer_instance
+  refine ext_nhds fun x ↦ Filter.ext fun t ↦ ?_
+  rw [← @vadd_mem_nhds_vadd_iff _ _ this.toTopologicalSpace _ _ _ _ (-x),
+    ← @vadd_mem_nhds_vadd_iff _ _ τ _ _ _ _ (-x),
+    vadd_eq_add, neg_add_cancel, h.mem_iff, ih.mem_iff]
 
 lemma of_hasBasis_ne_zero
     (h : (𝓝 (0 : R)).HasBasis (· ≠ 0) fun γ ↦ { x | (valuation R) x < γ }) :
