@@ -4,15 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Category.ULift
-import Mathlib.CategoryTheory.EqToHom
-import Mathlib.CategoryTheory.Functor.Const
-import Mathlib.Order.Fin.Basic
+import Mathlib.CategoryTheory.EpiMono
+import Mathlib.Data.Fintype.Basic
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.SuppressCompilation
-
 /-!
 # Composable arrows
 
