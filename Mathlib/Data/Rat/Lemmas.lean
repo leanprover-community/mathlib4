@@ -121,11 +121,12 @@ theorem add_num_den (q r : ℚ) :
   rw [mul_comm r.num q.den]
 
 theorem add_num_eq {q r : ℚ} : (q + r).num =
-  (q.num * r.den + r.num * q.den) / (q.num * r.den + r.num * q.den).natAbs.gcd (q.den * r.den) := by
+    (q.num * r.den + r.num * q.den) /
+    (q.num * r.den + r.num * q.den).natAbs.gcd (q.den * r.den) := by
   simp [Rat.add_def, Rat.normalize]
 
 theorem add_den_eq {q r : ℚ} : (q + r).den =
-  (q.den * r.den)  / (q.num * r.den + r.num * q.den).natAbs.gcd (q.den * r.den) := by
+    (q.den * r.den) / (q.num * r.den + r.num * q.den).natAbs.gcd (q.den * r.den) := by
   simp [Rat.add_def, Rat.normalize]
 
 private lemma num_add_int_gcd_den_eq_one {q : ℚ} {z : ℤ} :
