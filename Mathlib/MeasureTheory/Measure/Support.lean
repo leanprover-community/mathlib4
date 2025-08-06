@@ -4,12 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Bannon, Jireh Loreaux
 -/
 
-import Mathlib.MeasureTheory.OuterMeasure.Basic
-import Mathlib.MeasureTheory.Measure.MeasureSpace
 import Mathlib.MeasureTheory.Measure.OpenPos
-import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
-import Mathlib.Topology.Defs.Filter
-import Mathlib.Order.Filter.SmallSets
 
 /-!
 # Support of a Measure
@@ -61,7 +56,7 @@ variable {μ : Measure X}
 theorem _root_.Filter.HasBasis.mem_measureSupport {ι : Sort*} {p : ι → Prop}
     {s : ι → Set X} {x : X} (hl : (𝓝 x).HasBasis p s) :
     x ∈ μ.support ↔ ∀ (i : ι), p i → 0 < μ (s i) :=
-  Filter.HasBasis.frequently_smallSets (hl := hl) μ.pos_mono
+  Filter.HasBasis.frequently_smallSets (hl := hl) pos_mono
 
 /-- A point `x` is in the support of measure `μ` iff any neighborhood of `x` contains a
 subset with positive measure. -/
@@ -150,7 +145,7 @@ lemma support_mem_ae : μ.support ∈ ae μ :=
   support_mem_ae_of_isLindelof <| HereditarilyLindelof_LindelofSets μ.supportᶜ
 
 @[simp]
-lemma measure_compl_support : μ (μ.support)ᶜ = 0 := support_mem_ae
+lemma measure_compl_support : μ μ.supportᶜ = 0 := support_mem_ae
 
 open Set
 
@@ -170,10 +165,6 @@ the support is closed, and therefore measurable. -/
 lemma nullMeasurableSet_support : NullMeasurableSet μ.support μ :=
   NullMeasurableSet.compl_iff.mp nullMeasurableSet_compl_support
 
-@[simp]
-lemma measure_support : μ μ.support = μ Set.univ :=
-  measure_of_measure_compl_eq_zero measure_compl_support
-
 lemma nonempty_support (hμ : μ ≠ 0) : μ.support.Nonempty :=
    Nonempty.right <| nonempty_inter_support_of_pos <| measure_univ_pos.mpr hμ
 
@@ -190,13 +181,13 @@ variable [OpensMeasurableSpace X]
 lemma mem_support_restrict {s : Set X} {x : X} :
     x ∈ (μ.restrict s).support ↔ ∃ᶠ u in (𝓝[s] x).smallSets, 0 < μ u := by
   rw [nhds_basis_opens x |>.mem_measureSupport,
-    (nhdsWithin_basis_open x s).frequently_smallSets μ.pos_mono]
+    (nhdsWithin_basis_open x s).frequently_smallSets pos_mono]
   grind [IsOpen.measurableSet, restrict_apply]
 
 lemma interior_inter_support {s : Set X} :
     interior s ∩ μ.support ⊆ (μ.restrict s).support := by
   rintro x ⟨hxs, hxμ⟩
-  rw [mem_support_restrict, (nhdsWithin_basis_open x s).frequently_smallSets μ.pos_mono]
+  rw [mem_support_restrict, (nhdsWithin_basis_open x s).frequently_smallSets pos_mono]
   rw [(nhds_basis_opens x).mem_measureSupport] at hxμ
   rintro u ⟨hxu, hu⟩
   apply hxμ (u ∩ interior s) ⟨⟨hxu, hxs⟩, hu.inter isOpen_interior⟩ |>.trans_le
