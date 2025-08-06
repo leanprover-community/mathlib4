@@ -125,6 +125,8 @@ elab:max "T% " t:term:arg : term => do
     trace[TotalSpaceMk] "Section of a trivial bundle as a non-dependent function"
     let us ← src.getUniverse
     let ut ← tgt.getUniverse
+    -- TODO: can `tgt` depend on `x` in a way that is not a function application?
+    -- Check that `x` is not a bound variable in `tgt`!
     let triv_bundle := mkAppN (.const `Bundle.Trivial [us, ut]) #[src, tgt]
     return ← withLocalDecl x BinderInfo.default src fun x ↦ do
       let body := mkAppN (.const ``Bundle.TotalSpace.mk' [us, ut, ut])
