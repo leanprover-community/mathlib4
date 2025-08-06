@@ -24,7 +24,7 @@ This file contains lemmas relating the derivative of functions in one variable a
 derivative
 -/
 
-variable {𝕜 : Type*}  [NontriviallyNormedField 𝕜] [LinearOrder 𝕜]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [LinearOrder 𝕜]
   [IsStrictOrderedRing 𝕜] [OrderTopology 𝕜] {f : 𝕜 → 𝕜} {x y f' : 𝕜} {S : Set 𝕜}
 
 lemma exists_gt_of_hasDerivWithinAt_pos (f'_pos : 0 < f')
@@ -41,8 +41,7 @@ lemma exists_gt_of_hasDerivWithinAt_pos (f'_pos : 0 < f')
   simp only [Set.mem_inter_iff, Set.mem_Ioc] at hy
   have slope_pos : 0 < slope f x y :=
     hU y (hab2 ⟨le_trans hax (le_of_lt hy.1.1), by linarith⟩) hy.2 (ne_of_gt hy.1.1)
-  rwa [slope, vsub_eq_sub, smul_eq_mul, mul_pos_iff_of_pos_left (inv_pos.2 (sub_pos.2 hy.1.1)),
-    sub_pos] at slope_pos
+  exact (slope_pos_iff_of_le (le_of_lt hy.1.1)).1 slope_pos
 
 lemma exists_lt_of_hasDerivWithinAt_neg (f'_neg : f' < 0)
     (hx : HasDerivWithinAt f f' S x) : ∃ z > x, ∀ y ∈ Set.Ioc x z ∩ S, f y < f x := by
