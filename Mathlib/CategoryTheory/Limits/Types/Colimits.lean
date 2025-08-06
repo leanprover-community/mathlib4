@@ -90,7 +90,7 @@ noncomputable abbrev colimitCocone (F : J ⥤ Type u) [Small.{u} F.ColimitType] 
 noncomputable def colimitCoconeIsColimit (F : J ⥤ Type u) [Small.{u} F.ColimitType] :
     IsColimit (colimitCocone F) :=
   Nonempty.some ((isColimit_iff_coconeTypesIsColimit _).2
-    (F.isColimit_coconeTypes.of_equiv (equivShrink.{u} F.ColimitType) (by simp)))
+    (F.isColimit_coconeTypes.of_equiv (equivShrink.{u} F.ColimitType) (by aesop)))
 
 theorem hasColimit_iff_small_colimitType (F : J ⥤ Type u) :
     HasColimit F ↔ Small.{u} F.ColimitType :=

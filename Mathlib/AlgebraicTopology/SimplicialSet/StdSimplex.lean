@@ -233,7 +233,7 @@ def faceRepresentableBy {n : ℕ} (S : Finset (Fin (n + 1)))
     { toFun f := ⟨objMk ((OrderHom.Subtype.val S.toSet).comp
           (e.toOrderEmbedding.toOrderHom.comp f.toOrderHom)), fun _ ↦ by aesop⟩
       invFun := fun ⟨x, hx⟩ ↦ SimplexCategory.Hom.mk
-        { toFun i := e.symm ⟨(objEquiv x).toOrderHom i, hx (by simp)⟩
+        { toFun i := e.symm ⟨(objEquiv x).toOrderHom i, hx (by aesop)⟩
           monotone' i₁ i₂ h := e.symm.monotone (by
             simp only [Subtype.mk_le_mk]
             exact OrderHom.monotone _ h) }
