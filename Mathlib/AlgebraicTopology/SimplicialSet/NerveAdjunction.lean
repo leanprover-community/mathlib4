@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Emily Riehl, Joël Riou
 import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
 import Mathlib.AlgebraicTopology.SimplexCategory.MorphismProperty
 import Mathlib.CategoryTheory.MorphismProperty.Composition
+import Mathlib.Tactic.DepRewrite
 
 /-!
 
@@ -169,7 +170,7 @@ lemma toStrictSegal₂.mk_naturality_δ1i (i : Fin 3) :
       simp only [spine_vertex]
       congr!
       apply δ_zero_δ_zero_eq_const
-    · simp only [Nat.reduceAdd, len_mk, id_eq, Fin.isValue, Fin.castSucc_one, spine_vertex,
+    · simp only [Nat.reduceAdd, Fin.isValue, Fin.castSucc_one, spine_vertex,
       Fin.succ_one_eq_two, spine_arrow, OneTruncation₂.Quiver_homOfEq]
       congr!
       exact δ_zero_eq_mkOfSucc
@@ -199,7 +200,7 @@ lemma toStrictSegal₂.mk_naturality_δ1i (i : Fin 3) :
       simp only [spine_vertex]
       congr!
       apply δ_zero_δ_two_eq_const
-    · simp only [Nat.reduceAdd, len_mk, id_eq, Fin.isValue, Fin.castSucc_zero, spine_vertex,
+    · simp only [Nat.reduceAdd, Fin.isValue, Fin.castSucc_zero, spine_vertex,
       Fin.succ_zero_eq_one, OneTruncation₂.Quiver_homOfEq, spine_arrow]
       congr!
       exact δ_two_eq_mkOfSucc
@@ -315,14 +316,11 @@ constructed from a refl prefunctor `F : SSet.oneTruncation₂.obj X ⟶ ReflQuiv
   unfold δ₂ nerveFunctor₂ nerveFunctor
   simp only [comp_obj, Cat.of_α]
   erw [Nerve.mkOfObjOfMapSucc₂_δ_one]
-  simp only [ReflQuiv.of_val, oneTruncation₂_obj, ReflQuiv.forget_obj,
-    Iso.app_inv, ReflPrefunctor.comp_obj, ReflPrefunctor.comp_map,
-    OneTruncation₂.ofNerve₂.natIso_inv_app_map,
+  simp only [ReflQuiv.of_val, oneTruncation₂_obj, ReflQuiv.forget_obj, Iso.app_inv,
+    ReflPrefunctor.comp_obj, ReflPrefunctor.comp_map, OneTruncation₂.ofNerve₂.natIso_inv_app_map,
     oneTruncation₂.pathMap_vertex, Truncated.spine_vertex,
-    OneTruncation₂.ofNerve₂.natIso_inv_app_obj_obj,
-    oneTruncation₂.pathMap_arrow, Truncated.spine_arrow, toCat_map,
-    ComposableArrows.whiskerLeft_obj, eqToHom_refl, comp_id, id_comp, Fin.castSucc_zero,
-    Fin.succ_one_eq_two]
+    OneTruncation₂.ofNerve₂.natIso_inv_app_obj_obj, oneTruncation₂.pathMap_arrow,
+    Truncated.spine_arrow, eqToHom_refl, comp_id, id_comp, Fin.castSucc_zero, Fin.succ_one_eq_two]
   unfold OneTruncation₂.nerveHomEquiv
   simp only [OneTruncation₂.nerveEquiv_apply, ComposableArrows.mk₀_obj, Equiv.coe_fn_symm_mk]
   fapply ComposableArrows.ext₁ <;> simp only [ComposableArrows.mk₁_obj, ComposableArrows.Mk₁.obj]
@@ -333,9 +331,8 @@ constructed from a refl prefunctor `F : SSet.oneTruncation₂.obj X ⟶ ReflQuiv
     congr!
     exact δ_zero_δ_one_eq_const
   · rw [hyp]
-    simp only [oneTruncation₂_obj, ReflQuiv.of_val, Nat.reduceAdd,
-      Fin.zero_eta, Fin.isValue, Fin.mk_one, ComposableArrows.mk₁_map,
-      ComposableArrows.Mk₁.map, len_mk, homOfLE_leOfHom]
+    simp only [oneTruncation₂_obj, ReflQuiv.of_val, Nat.reduceAdd, Fin.zero_eta, Fin.isValue,
+      Fin.mk_one, ComposableArrows.mk₁_map, ComposableArrows.Mk₁.map, len_mk]
     have zero_eq : ev0₂ φ = (X.spine 2 _ φ).vertex 0 := by
       unfold ev0₂ ι0₂
       simp only [Truncated.spine_vertex]
@@ -361,6 +358,7 @@ constructed from a refl prefunctor `F : SSet.oneTruncation₂.obj X ⟶ ReflQuiv
       ⟨(X.spine 2 _ φ).arrow 1, (X.spine 2 _ φ).arrow_src 1, (X.spine 2 _ φ).arrow_tgt 1⟩ := by
       unfold ev12₂ δ0₂
       simp [OneTruncation₂.Quiver_homOfEq]
+      rw! [δ_zero_eq_mkOfSucc]
       congr!
       exact δ_zero_eq_mkOfSucc
     erw [← left, ← right]
