@@ -98,7 +98,7 @@ theorem measure_diff_null (ht : μ t = 0) : μ (s \ t) = μ s :=
 
 theorem measure_biUnion_null_iff {I : Set ι} (hI : I.Countable) {s : ι → Set α} :
     μ (⋃ i ∈ I, s i) = 0 ↔ ∀ i ∈ I, μ (s i) = 0 := by
-  refine ⟨fun h i hi ↦ measure_mono_null (subset_biUnion_of_mem hi) h, fun h ↦ ?_⟩
+  refine ⟨fun h i hi ↦ Measure.mono_null (subset_biUnion_of_mem hi) h, fun h ↦ ?_⟩
   have _ := hI.to_subtype
   simpa [h] using measure_iUnion_le (μ := μ) fun x : I ↦ s x
 
@@ -144,7 +144,7 @@ theorem measure_null_of_locally_null [TopologicalSpace α] [SecondCountableTopol
   choose! u hxu hu₀ using hs
   choose t ht using TopologicalSpace.countable_cover_nhdsWithin hxu
   rcases ht with ⟨ts, t_count, ht⟩
-  apply measure_mono_null ht
+  apply Measure.mono_null ht
   exact (measure_biUnion_null_iff t_count).2 fun x hx => hu₀ x (ts hx)
 
 /-- If `m s ≠ 0`, then for some point `x ∈ s` and any `t ∈ 𝓝[s] x` we have `0 < m t`. -/
