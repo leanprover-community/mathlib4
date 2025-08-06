@@ -121,7 +121,7 @@ theorem exists_disjoint_diff (h : AEDisjoint μ s t) :
       simpa using ⟨hx.1, fun hxt => hx.2 <| subset_toMeasurable _ _ ⟨hx.1, hxt⟩⟩⟩
 
 theorem of_null_right (h : μ t = 0) : AEDisjoint μ s t :=
-  measure_mono_null inter_subset_right h
+  Measure.mono_null inter_subset_right h
 
 theorem of_null_left (h : μ s = 0) : AEDisjoint μ s t :=
   AEDisjoint.symm (of_null_right h)
