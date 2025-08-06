@@ -169,4 +169,23 @@ noncomputable def liftOfLTSeries [Algebra.HasGoingDown R S]
   ⟨fun i => (liftOfLTSeries_toFun L q ⟨i, _⟩).val,
     ⟨fun i => (liftOfLTSeries_toFun L q ⟨i, _⟩).property, liftOfLTSeries_step L q⟩⟩
 
+/-- If `Spec S → Spec R` is surjective and `S` has the going down property over `R`, then
+`ringKrullDim R ≤ ringKrullDim S`. -/
+theorem ringKrullDim_le_of_surjective_spec [Algebra.HasGoingDown R S]
+    (h : Function.Surjective (RingHom.specComap (algebraMap R S))) :
+    ringKrullDim R ≤ ringKrullDim S := by
+  refine iSup_le fun L => ?_
+  suffices ∃ L' : LTSeries (PrimeSpectrum S), L.length ≤ L'.length by
+    obtain ⟨L, hL⟩:= this
+    exact le_trans (WithBot.coe_le_coe.mpr (WithTop.coe_le_coe.mpr hL))
+      (le_iSup (fun A => (A.length : WithBot ℕ∞)) L)
+  obtain ⟨q, hq⟩ := h L.last
+  by_cases L.length = 0
+  · exact ⟨⟨0, fun _ => q, fun i => i.elim0⟩, (by simpa)⟩
+  · haveI : q.asIdeal.LiesOver L.last.asIdeal :=
+      ((PrimeSpectrum.specComap_asIdeal (algebraMap R S) q) ▸ PrimeSpectrum.ext_iff.mp hq)
+        ▸ inferInstance
+    refine ⟨⟨L.length, fun i => (liftOfLTSeries L q).fst ⟨i, by omega⟩,
+      fun j => (liftOfLTSeries L q).snd.right j⟩, by rfl⟩
+
 end Algebra.HasGoingDown
