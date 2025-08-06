@@ -29,6 +29,8 @@ Introduces notations
 
 -/
 
+set_option mathlib.tactic.category.grind true
+
 namespace CategoryTheory
 
 -- declare the `v`'s first; see note [CategoryTheory universes].

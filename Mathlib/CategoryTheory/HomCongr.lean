@@ -22,6 +22,8 @@ which can be found in  `CategoryTheory.Conj`.
 -/
 
 
+set_option mathlib.tactic.category.grind true
+
 universe v u
 
 namespace CategoryTheory

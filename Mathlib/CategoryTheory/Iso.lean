@@ -31,6 +31,8 @@ This file defines isomorphisms between objects of a category.
 category, category theory, isomorphism
 -/
 
+set_option mathlib.tactic.category.grind true
+
 universe v u
 
 -- morphism levels before object levels. See note [CategoryTheory universes].
