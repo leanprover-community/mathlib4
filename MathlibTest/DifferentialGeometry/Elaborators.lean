@@ -44,6 +44,15 @@ variable {σ : Π x : M, V x}
 #guard_msgs in
 #check T% σ
 
+variable {x : M}
+/-- info: (fun x ↦ TotalSpace.mk' F x (σ x)) x : TotalSpace F V -/
+#guard_msgs in
+#check (T% σ) x
+-- XXX: precendence is surprising, as this does nothing
+/-- info: σ x : V x -/
+#guard_msgs in
+#check T% σ x
+
 -- Note how the name of the bound variable `x` resp. `y` is preserved.
 /-- info: fun x ↦ TotalSpace.mk' E' x (σ' x) : E → TotalSpace E' (Trivial E E') -/
 #guard_msgs in
@@ -98,7 +107,7 @@ variable {f : M → M'} {s : Set M} {m : M}
 #guard_msgs in
 #check MDiff[s] f
 
--- XXX: is this expected behaviour or should it be a bug?
+-- Testing an error message.
 /--
 error: Function expected at
   MDifferentiableOn I I' f s
@@ -110,6 +119,18 @@ Note: Expected a function because this term is being applied to the argument
 -/
 #guard_msgs in
 #check MDiff[s] f m
+
+/--
+error: Function expected at
+  MDifferentiableOn I I' f s
+but this term has type
+  Prop
+
+Note: Expected a function because this term is being applied to the argument
+  m
+-/
+#guard_msgs in
+#check MDifferentiableOn I I' f s m
 
 /-- info: MDifferentiable I I' f : Prop -/
 #guard_msgs in
