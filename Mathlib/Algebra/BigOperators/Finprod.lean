@@ -80,7 +80,6 @@ open Function Set
 ### Definition and relation to `Finset.sum` and `Finset.prod`
 -/
 
--- Porting note: Used to be section Sort
 section sort
 
 variable {G M N : Type*} {α β ι : Sort*} [CommMonoid M] [CommMonoid N]
@@ -316,7 +315,6 @@ theorem finprod_inv_distrib [DivisionCommMonoid G] (f : α → G) : (∏ᶠ x, (
 
 end sort
 
--- Porting note: Used to be section Type
 section type
 
 variable {α β ι G M N : Type*} [CommMonoid M] [CommMonoid N]

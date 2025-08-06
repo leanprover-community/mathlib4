@@ -72,6 +72,13 @@ instance [IsZeroOrProbabilityMeasure μ] [IsZeroOrMarkovKernel κ] :
     IsZeroOrProbabilityMeasure (κ ∘ₘ μ) := by
   rw [← snd_compProd]; infer_instance
 
+@[simp]
+lemma _root_.ProbabilityTheory.Kernel.comp_const (κ : Kernel β γ) (μ : Measure β) :
+    κ ∘ₖ Kernel.const α μ = Kernel.const α (κ ∘ₘ μ) := by
+  ext x s hs
+  rw [Kernel.comp_apply, bind_apply hs (by fun_prop), Kernel.const_apply, Kernel.const_apply,
+    bind_apply hs (by fun_prop)]
+
 lemma map_comp (μ : Measure α) (κ : Kernel α β) {f : β → γ} (hf : Measurable f) :
     (κ ∘ₘ μ).map f = (κ.map f) ∘ₘ μ := by
   ext s hs

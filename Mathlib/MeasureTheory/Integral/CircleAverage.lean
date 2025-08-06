@@ -27,7 +27,7 @@ Implementation Note: Like `circleMap`, `circleAverage`s are defined for negative
 `circleAverage_congr_negRadius` shows that the average is independent of the radius' sign.
 -/
 
-open Filter Metric Real
+open Complex Filter Metric Real
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -79,13 +79,31 @@ lemma circleAverage_fun_add :
   congr 1
   ring
 
+/--
+Expression of the `circleAverage` in terms of a `circleIntegral`.
+-/
+theorem circleAverage_eq_circleIntegral {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F]
+    {f : ℂ → F} (h : R ≠ 0) :
+    circleAverage f c R = (2 * π * I)⁻¹ • (∮ z in C(c, R), (z - c)⁻¹ • f z) := by
+  calc circleAverage f c R
+  _ = (↑(2 * π) : ℂ)⁻¹ • ∫ θ in 0..2 * π, f (circleMap c R θ) := by
+    simp [circleAverage, ← coe_smul]
+  _ = (2 * π * I)⁻¹ • ∫ θ in 0..2 * π, I • f (circleMap c R θ) := by
+    rw [intervalIntegral.integral_smul, mul_inv_rev, smul_smul]
+    field_simp
+  _ = (2 * π * I)⁻¹ • (∮ z in C(c, R), (z - c)⁻¹ • f z) := by
+    unfold circleIntegral
+    congr with θ
+    simp [deriv_circleMap, circleMap_sub_center, smul_smul]
+    field_simp [circleMap_ne_center h]
+
 /-!
 ## Congruence Lemmata
 -/
 
 /-- Circle averages do not change when shifting the angle. -/
 lemma circleAverage_eq_integral_add (η : ℝ) :
-    circleAverage f c R = (2 * π)⁻¹ • ∫ (θ : ℝ) in (0)..2 * π, f (circleMap c R (θ + η)) := by
+    circleAverage f c R = (2 * π)⁻¹ • ∫ θ in (0)..2 * π, f (circleMap c R (θ + η)) := by
   rw [intervalIntegral.integral_comp_add_right (fun θ ↦ f (circleMap c R θ))]
   have t₀ : (fun θ ↦ f (circleMap c R θ)).Periodic (2 * π) :=
     fun x ↦ by simp [periodic_circleMap c R x]
@@ -129,7 +147,7 @@ theorem circleAverage_const [CompleteSpace E] (a : E) (c : ℂ) (R : ℝ) :
     circleAverage (fun _ ↦ a) c R = a := by
   simp only [circleAverage, intervalIntegral.integral_const, ← smul_assoc, sub_zero, smul_eq_mul]
   ring_nf
-  simp [mul_inv_cancel₀ pi_ne_zero]
+  simp
 
 /--
 If `f x` equals `a` on for every point of the circle, then the circle average of `f` equals `a`.
