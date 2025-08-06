@@ -242,6 +242,13 @@ def find_model (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM
 
     throwError "Couldn’t find models with corners"
 
+/-- Check if an expression `e` is like a dependent function:
+we also allow partial homeomorphisms or partial equivalences. -/
+def isFunction? (e : Expr) : TermElabM (Option (Expr × Expr)) := do
+  match e with
+  | .forallE _ src tgt _ => return some (src, tgt)
+  | _ => return none
+
 /-- `MDiffAt[s] f x` elaborates to `MDifferentiableWithinAt I J f s x`,
 trying to determine `I` and `J` from the local context.
 The argument x can be omitted. -/
@@ -250,13 +257,13 @@ elab:max "MDiffAt[" s:term:arg "]" f:term:arg : term => do
   let ef ← Term.elabTerm f none
   let etype ← inferType ef >>= instantiateMVars
   let _estype ← inferType ef >>= instantiateMVars
-  match etype with
-  | .forallE _ src tgt _ =>
+  match ← isFunction? etype with
+  | some (src, tgt) =>
     let srcI ← find_model src
     let tgtI ← find_model tgt (src, srcI)
     -- TODO: check that `estype` and src are compatible/the same!
     return ← mkAppM ``MDifferentiableWithinAt #[srcI, tgtI, ef, es]
-  | _ => throwError m!"Term {ef} is not a function."
+  | none => throwError m!"Term {ef} is not a function."
 
 /-- `MDiffAt f x` elaborates to `MDifferentiableAt I J f x`,
 trying to determine `I` and `J` from the local context.
