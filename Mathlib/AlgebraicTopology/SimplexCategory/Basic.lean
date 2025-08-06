@@ -891,8 +891,7 @@ lemma δ_injective {n : ℕ} : Function.Injective (δ (n := n)) := by
   intro i j hij
   rw [← Fin.succAbove_left_inj]
   ext k : 1
-  change δ _ _ = δ _ _
-  rw [hij]
+  exact congr($hij k)
 
 lemma σ_injective {n : ℕ} : Function.Injective (σ (n := n)) := by
   intro i j hij
