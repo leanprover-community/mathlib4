@@ -117,9 +117,6 @@ theorem iSupIndep.linearIndependent' {ι R M : Type*} {v : ι → M} [Ring R]
   rw [← Submodule.mem_bot R, ← h_ne_zero i]
   simpa using this
 
-@[deprecated (since := "2024-11-24")]
-alias CompleteLattice.Independent.linear_independent' := iSupIndep.linearIndependent'
-
 end TorsionOf
 
 section
