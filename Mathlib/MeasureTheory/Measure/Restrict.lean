@@ -391,7 +391,7 @@ theorem QuasiMeasurePreserving.restrict {ν : Measure β} {f : α → β}
   absolutelyContinuous := by
     refine AbsolutelyContinuous.mk fun u hum ↦ ?_
     suffices ν (u ∩ t) = 0 → μ (f ⁻¹' u ∩ s) = 0 by simpa [hum, hf.measurable, hf.measurable hum]
-    refine fun hu ↦ measure_mono_null ?_ (hf.preimage_null hu)
+    refine fun hu ↦ Measure.mono_null ?_ (hf.preimage_null hu)
     rw [preimage_inter]
     gcongr
     assumption
