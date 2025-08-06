@@ -56,8 +56,7 @@ theorem PInfty_comp_map_mono_eq_zero (X : SimplicialObject C) {n : ℕ} {Δ' : S
     obtain ⟨j₁ : Fin (_ + 1), i, rfl⟩ :=
       eq_comp_δ_of_not_surjective i fun h => by
         rw [← SimplexCategory.epi_iff_surjective] at h
-        have := le_of_epi i
-        omega
+        grind [→ le_of_epi]
     obtain ⟨j₂, i, rfl⟩ :=
       eq_comp_δ_of_not_surjective i fun h => by
         rw [← SimplexCategory.epi_iff_surjective] at h
