@@ -644,13 +644,10 @@ which corresponds to `Set.subset_range_iff_exists_image_eq` for `Set`.
 theorem subset_univ_image_iff [Fintype α] [DecidableEq β] {t : Finset β} {f : α → β} :
     t ⊆ univ.image f ↔ ∃ s' : Finset α, s'.image f = t :=
   have ⟨mp, mpr⟩ := subset_image_iff (s := univ)
-  ⟨
-    fun t_subset =>
+  ⟨fun t_subset =>
       have ⟨s', _, s'_image_eq_t⟩ := mp t_subset
-      ⟨s', s'_image_eq_t⟩
-    ,
-    fun ⟨s', s'_image_eq_t⟩ => mpr ⟨s', subset_univ s', s'_image_eq_t⟩
-  ⟩
+      ⟨s', s'_image_eq_t⟩,
+    fun ⟨s', s'_image_eq_t⟩ => mpr ⟨s', subset_univ s', s'_image_eq_t⟩⟩
 
 theorem range_sdiff_zero {n : ℕ} : range (n + 1) \ {0} = (range n).image Nat.succ := by
   induction' n with k hk
