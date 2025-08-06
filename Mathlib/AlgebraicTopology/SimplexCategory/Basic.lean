@@ -804,9 +804,7 @@ theorem eq_id_of_epi {x : SimplexCategory} (i : x ⟶ x) [Epi i] : i = 𝟙 _ :=
 theorem eq_σ_of_epi {n : ℕ} (θ : ⦋n + 1⦌ ⟶ ⦋n⦌) [Epi θ] : ∃ i : Fin (n + 1), θ = σ i := by
   obtain ⟨i, θ', h⟩ := eq_σ_comp_of_not_injective θ (by
     rw [← mono_iff_injective]
-    intro
-    have := le_of_mono θ
-    omega)
+    grind [→ le_of_mono])
   use i
   haveI : Epi (σ i ≫ θ') := by
     rw [← h]
