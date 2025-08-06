@@ -160,7 +160,7 @@ example : Baz 0 3 := by use 4
 
 -- Could not apply constructor due to defeq check
 /--
-error: type mismatch
+error: Type mismatch
   3
 has type
   Nat
