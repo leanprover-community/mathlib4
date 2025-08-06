@@ -283,6 +283,44 @@ lemma ContMDiff.sum_section_of_locallyFinite (ht : LocallyFinite fun i ↦ {x : 
     ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (∑' i, (t i x))) :=
   fun x ↦ .sum_section_of_locallyFinite ht fun i ↦ ht' i x
 
+section
+
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*}
+  [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {E' : Type*}
+  [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
+  {I' : ModelWithCorners 𝕜 E' H'}
+  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
+  {e : PartialHomeomorph M H} {e' : PartialHomeomorph M' H'} {f f₁ : M → M'} {n : WithTop ℕ∞}
+
+theorem ContMDiff.congr (h : ContMDiff I I' n f) (h₁ : ∀ y, f₁ y = f y) :
+    ContMDiff I I' n f₁ := by
+  rw [← contMDiffOn_univ] at h ⊢
+  exact (contMDiffOn_congr fun y a ↦ h₁ y).mpr h
+
+theorem contMDiff_congr (h₁ : ∀ y, f₁ y = f y) :
+    ContMDiff I I' n f₁ ↔ ContMDiff I I' n f := by
+  simp_rw [← contMDiffOn_univ]
+  exact contMDiffOn_congr fun y a ↦ h₁ y
+
+end
+
+-- Future: this lemma can presumably be generalised, but some hypotheses on the supports of
+-- the sections `t i` are necessary.
+lemma ContMDiff.finsum_section_of_locallyFinite (ht : LocallyFinite fun i ↦ {x : M | t i x ≠ 0})
+    (ht' : ∀ i, ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t i x))) :
+    ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (∑ᶠ i, (t i x))) := by
+  apply (ContMDiff.sum_section_of_locallyFinite ht ht').congr fun y ↦ ?_
+  rw [← tsum_eq_finsum]
+  choose U hu hfin using ht y
+  have : {x | t x y ≠ 0} ⊆ {i | ((fun i ↦ {x | t i x ≠ 0}) i ∩ U).Nonempty} := by
+    intro x hx
+    rw [Set.mem_setOf] at hx ⊢
+    use y
+    simpa using ⟨hx, mem_of_mem_nhds hu⟩
+  exact Set.Finite.subset hfin this
+
 end operations
 
 /-- Bundled `n` times continuously differentiable sections of a vector bundle.
