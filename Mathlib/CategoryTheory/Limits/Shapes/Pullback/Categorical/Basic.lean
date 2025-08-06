@@ -60,8 +60,6 @@ universe u₁ u₂ u₃ u₄ u₅ u₆ u₇ u₈ u₉ u₁₀ u₁₁ u₁₂ u�
 
 namespace CategoryTheory.Limits
 
-attribute [local simp] CatCommSq.iso_hom_naturality  CatCommSq.iso_inv_naturality
-
 section
 
 variable {A : Type u₁} {B : Type u₂} {C : Type u₃}
@@ -98,8 +96,8 @@ structure Hom (x y : F ⊡ G) where
   /-- the second component of `f : Hom x y` is a morphism `x.snd ⟶ y.snd` -/
   snd : x.snd ⟶ y.snd
   /-- the compatibility condition on `fst` and `snd` with respect to the structure
-  isompophisms -/
-  w : F.map fst ≫ y.iso.hom = x.iso.hom ≫ G.map snd := by aesop_cat
+  isomorphisms -/
+  w : F.map fst ≫ y.iso.hom = x.iso.hom ≫ G.map snd := by cat_disch
 
 attribute [reassoc (attr := simp)] Hom.w
 
@@ -153,7 +151,7 @@ variable {F G} in
 @[simps!]
 def mkIso {x y : F ⊡ G}
     (eₗ : x.fst ≅ y.fst) (eᵣ : x.snd ≅ y.snd)
-    (w : F.map eₗ.hom ≫ y.iso.hom = x.iso.hom ≫ G.map eᵣ.hom := by aesop_cat) :
+    (w : F.map eₗ.hom ≫ y.iso.hom = x.iso.hom ≫ G.map eᵣ.hom := by cat_disch) :
     x ≅ y where
   hom := ⟨eₗ.hom, eᵣ.hom, w⟩
   inv := ⟨eₗ.inv, eᵣ.inv, by simpa using F.map eₗ.inv ≫= w.symm =≫ G.map eᵣ.inv⟩
@@ -185,7 +183,7 @@ end
 lemma isIso_iff {x y : F ⊡ G} (f : x ⟶ y) :
     IsIso f ↔ (IsIso f.fst ∧ IsIso f.snd) where
   mp h := ⟨inferInstance, inferInstance⟩
-  mpr | ⟨h₁, h₂⟩ => ⟨⟨inv f.fst, inv f.snd, by aesop_cat⟩, by aesop_cat⟩
+  mpr | ⟨h₁, h₂⟩ => ⟨⟨inv f.fst, inv f.snd, by cat_disch⟩, by cat_disch⟩
 
 end
 
@@ -214,8 +212,8 @@ instance asSquare (S : CatCommSqOver F G X) : CatCommSq S.fst S.snd F G where
 
 @[reassoc (attr := simp)]
 lemma iso_hom_naturality (S : CatCommSqOver F G X) {x x' : X} (f : x ⟶ x') :
-   F.map (S.fst.map f) ≫ S.iso.hom.app x' =
-   S.iso.hom.app x ≫ G.map (S.snd.map f) :=
+    F.map (S.fst.map f) ≫ S.iso.hom.app x' =
+    S.iso.hom.app x ≫ G.map (S.snd.map f) :=
   S.iso.hom.naturality f
 
 @[reassoc (attr := simp)]
@@ -232,7 +230,7 @@ abbrev fstFunctor : CatCommSqOver F G X ⥤ X ⥤ A := π₁ _ _
 /-- The "second projection" of a CatCommSqOver as a functor. -/
 abbrev sndFunctor : CatCommSqOver F G X ⥤ X ⥤ C := π₂ _ _
 
-/-- The structure isompophism of a `CatCommSqOver` as a natural transformation. -/
+/-- The structure isomorphism of a `CatCommSqOver` as a natural transformation. -/
 abbrev e :
     fstFunctor F G X ⋙ (whiskeringRight X A B).obj F ≅
     sndFunctor F G X ⋙ (whiskeringRight X C B).obj G :=
@@ -308,7 +306,7 @@ def mkNatIso {J K : X ⥤ F ⊡ G}
       (associator _ _ _).hom ≫
         whiskerLeft J (CatCommSq.iso (π₁ F G) (π₂ F G) F G).hom ≫
         (associator _ _ _).inv ≫
-        whiskerRight e₂.hom G := by aesop_cat) :
+        whiskerRight e₂.hom G := by cat_disch) :
     J ≅ K :=
   NatIso.ofComponents
     (fun x ↦ CategoricalPullback.mkIso (e₁.app x) (e₂.app x)
@@ -341,7 +339,7 @@ variable {J K : X ⥤ F ⊡ G}
       (associator _ _ _).hom ≫
         whiskerLeft J (CatCommSq.iso (π₁ F G) (π₂ F G) F G).hom ≫
         (associator _ _ _).inv ≫
-        whiskerRight e₂.hom G := by aesop_cat)
+        whiskerRight e₂.hom G := by cat_disch)
 
 @[simp]
 lemma toCatCommSqOver_mapIso_mkNatIso_eq_mkIso :
@@ -359,7 +357,7 @@ lemma mkNatIso_eq :
         (by simpa [functorEquiv, toCatCommSqOver] using coh)) := by
   rw [← toCatCommSqOver_mapIso_mkNatIso_eq_mkIso e₁ e₂ coh]
   dsimp [Equivalence.fullyFaithfulFunctor]
-  aesop_cat
+  cat_disch
 
 end
 
