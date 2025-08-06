@@ -3,10 +3,9 @@ Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-import Mathlib.Analysis.Normed.Field.Lemmas
-import Mathlib.NumberTheory.Padics.PadicNorm
-import Mathlib.RingTheory.Int.Basic
 import Mathlib.RingTheory.Valuation.Basic
+import Mathlib.NumberTheory.Padics.PadicNorm
+import Mathlib.Analysis.Normed.Field.Lemmas
 import Mathlib.Tactic.Peel
 import Mathlib.Topology.MetricSpace.Ultra.Basic
 
@@ -870,7 +869,8 @@ lemma norm_natCast_lt_one_iff {n : ℕ} :
 lemma norm_intCast_eq_one_iff {z : ℤ} :
     ‖(z : ℚ_[p])‖ = 1 ↔ IsCoprime z p := by
   rw [← not_iff_not]
-  simp [Int.isCoprime_iff_nat_coprime, Nat.coprime_comm, ← norm_natCast_lt_one_iff,
+  simp [Nat.coprime_comm, ← norm_natCast_lt_one_iff,
+    Int.isCoprime_iff_gcd_eq_one, Nat.coprime_iff_gcd_eq_one, Int.gcd,
     ← hp.out.dvd_iff_not_coprime, norm_natAbs, - cast_natAbs, padicNormE.norm_int_le_one]
 
 lemma norm_natCast_eq_one_iff {n : ℕ} :
