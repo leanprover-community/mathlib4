@@ -630,8 +630,7 @@ variable {b} in
 lemma span_eq_rootSpan_int {i j : ι} (hi : i ∈ b.support) (hj : j ∈ b.support) (h_ne : i ≠ j) :
     Submodule.span ℤ {P.root i, P.root j} = P.rootSpan ℤ := by
   classical
-  have : {i, j} ⊆ b.support := by
-    simpa only [← Finset.coe_subset, Finset.coe_pair, pair_subset_iff] using ⟨hi, hj⟩
+  have : {i, j} ⊆ b.support := by grind
   rw [← image_pair, ← Finset.coe_pair, Finset.eq_of_subset_of_card_le this (by aesop),
     b.span_int_root_support]
 
