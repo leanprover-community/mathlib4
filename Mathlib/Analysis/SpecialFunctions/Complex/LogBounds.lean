@@ -261,7 +261,7 @@ lemma hasSum_taylorSeries_log {z : ℂ} (hz : ‖z‖ < 1) :
             rw [mul_comm, ← div_one ((max _ _) * _)]
             gcongr
             · exact le_max_right ..
-            · linarith
+            · simp
       exact (isBigOWith_of_le' atTop this).isBigO
     refine IsBigO.trans_isLittleO H ?_
     convert isLittleO_pow_pow_of_lt_left (norm_nonneg z) hz

@@ -189,7 +189,7 @@ lemma eventually_atTop_nonneg_or_nonpos (hf : GrowsPolynomially f) :
         intro x ⟨hxlb, hxub⟩
         have h₁ := calc n₀ ≤ 1 * max n₀ 2 := by simp
                         _ ≤ 2 * max n₀ 2 := by gcongr; norm_num
-        have h₂ := hn₀ (2 * max n₀ 2) h₁ (max n₀ 2) ⟨by simp, by linarith⟩
+        have h₂ := hn₀ (2 * max n₀ 2) h₁ (max n₀ 2) ⟨by simp, by simp⟩
         rw [h₂]
         exact hn₀ (2 * max n₀ 2) h₁ x ⟨by simp [hxlb], le_of_lt hxub⟩
       case step =>

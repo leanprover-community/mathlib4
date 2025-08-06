@@ -96,7 +96,7 @@ theorem evariance_eq_top [IsFiniteMeasure μ] (hXm : AEStronglyMeasurable X μ) 
     refine ⟨by fun_prop, ?_⟩
     rw [eLpNorm_eq_lintegral_rpow_enorm two_ne_zero ENNReal.ofNat_ne_top]
     simp only [ENNReal.toReal_ofNat, ENNReal.rpow_two]
-    exact ENNReal.rpow_lt_top_of_nonneg (by linarith) h.ne
+    exact ENNReal.rpow_lt_top_of_nonneg (by simp) h.ne
   refine hX ?_
   convert this.add (memLp_const μ[X])
   ext ω

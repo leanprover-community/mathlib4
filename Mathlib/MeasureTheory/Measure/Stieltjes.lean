@@ -504,7 +504,7 @@ lemma isProbabilityMeasure (hf_bot : Tendsto f atBot (𝓝 0)) (hf_top : Tendsto
     IsProbabilityMeasure f.measure := ⟨by simp [f.measure_univ hf_bot hf_top]⟩
 
 instance instIsLocallyFiniteMeasure : IsLocallyFiniteMeasure f.measure :=
-  ⟨fun x => ⟨Ioo (x - 1) (x + 1), Ioo_mem_nhds (by linarith) (by linarith), by simp⟩⟩
+  ⟨fun x => ⟨Ioo (x - 1) (x + 1), Ioo_mem_nhds (by simp) (by linarith), by simp⟩⟩
 
 lemma eq_of_measure_of_tendsto_atBot (g : StieltjesFunction) {l : ℝ}
     (hfg : f.measure = g.measure) (hfl : Tendsto f atBot (𝓝 l)) (hgl : Tendsto g atBot (𝓝 l)) :

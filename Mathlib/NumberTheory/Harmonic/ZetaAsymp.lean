@@ -57,7 +57,7 @@ lemma term_nonneg (n : ℕ) (s : ℝ) : 0 ≤ term n s := by
 
 lemma term_welldef {n : ℕ} (hn : 0 < n) {s : ℝ} (hs : 0 < s) :
     IntervalIntegrable (fun x : ℝ ↦ (x - n) / x ^ (s + 1)) volume n (n + 1) := by
-  rw [intervalIntegrable_iff_integrableOn_Icc_of_le (by linarith)]
+  rw [intervalIntegrable_iff_integrableOn_Icc_of_le (by simp)]
   refine (continuousOn_of_forall_continuousAt fun x hx ↦ ContinuousAt.div ?_ ?_ ?_).integrableOn_Icc
   · fun_prop
   · apply continuousAt_id.rpow_const (Or.inr <| by linarith)
@@ -222,7 +222,7 @@ lemma term_tsum_of_lt {s : ℝ} (hs : 1 < s) :
         dsimp only
         transitivity (n + 1) / (n + 1) ^ s
         · gcongr
-          linarith
+          simp
         · apply le_of_eq
           rw [rpow_sub_one, ← div_mul, div_one, mul_comm, one_div, inv_rpow, ← div_eq_mul_inv]
           · norm_cast
@@ -249,7 +249,7 @@ lemma continuousOn_term (n : ℕ) :
     ContinuousOn (fun x ↦ term (n + 1) x) (Ici 1) := by
   -- TODO: can this be shortened using the lemma
   -- `continuous_parametric_intervalIntegral_of_continuous'` from https://github.com/leanprover-community/mathlib4/pull/11185?
-  simp only [term, intervalIntegral.integral_of_le (by linarith : (↑(n + 1) : ℝ) ≤ ↑(n + 1) + 1)]
+  simp only [term, intervalIntegral.integral_of_le (by simp : (↑(n + 1) : ℝ) ≤ ↑(n + 1) + 1)]
   apply continuousOn_of_dominated (bound := fun x ↦ (x - ↑(n + 1)) / x ^ (2 : ℝ))
   · exact fun s hs ↦ (term_welldef (by simp) (zero_lt_one.trans_le hs)).1.1
   · intro s (hs : 1 ≤ s)
@@ -261,7 +261,7 @@ lemma continuousOn_term (n : ℕ) :
     · exact_mod_cast sub_nonneg.mpr hx.1.le
     · exact this.le
     · linarith
-  · rw [← IntegrableOn, ← intervalIntegrable_iff_integrableOn_Ioc_of_le (by linarith)]
+  · rw [← IntegrableOn, ← intervalIntegrable_iff_integrableOn_Ioc_of_le (by simp)]
     exact_mod_cast term_welldef (by omega : 0 < (n + 1)) zero_lt_one
   · rw [ae_restrict_iff' measurableSet_Ioc]
     filter_upwards with x hx
@@ -274,7 +274,7 @@ lemma continuousOn_term_tsum : ContinuousOn term_tsum (Ici 1) := by
   -- monotone decreasing in `s`.)
   refine continuousOn_tsum (fun i ↦ continuousOn_term _) term_tsum_one.summable (fun n s hs ↦ ?_)
   rw [term, term, norm_of_nonneg]
-  · simp_rw [intervalIntegral.integral_of_le (by linarith : (↑(n + 1) : ℝ) ≤ ↑(n + 1) + 1)]
+  · simp_rw [intervalIntegral.integral_of_le (by simp : (↑(n + 1) : ℝ) ≤ ↑(n + 1) + 1)]
     refine setIntegral_mono_on ?_ ?_ measurableSet_Ioc (fun x hx ↦ ?_)
     · exact (term_welldef n.succ_pos (zero_lt_one.trans_le hs)).1
     · exact (term_welldef n.succ_pos zero_lt_one).1
@@ -283,7 +283,7 @@ lemma continuousOn_term_tsum : ContinuousOn term_tsum (Ici 1) := by
       · exact sub_nonneg.mpr hx.1.le
       · assumption
       · exact hs
-  · rw [intervalIntegral.integral_of_le (by linarith)]
+  · rw [intervalIntegral.integral_of_le (by simp)]
     refine setIntegral_nonneg measurableSet_Ioc (fun x hx ↦ div_nonneg ?_ (rpow_nonneg ?_ _))
     all_goals linarith [hx.1]
 

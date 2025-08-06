@@ -294,7 +294,7 @@ lemma one_sub_inv_le_log_of_pos (hx : 0 < x) : 1 - x⁻¹ ≤ log x := by
 lemma log_le_self (hx : 0 ≤ x) : log x ≤ x := by
   obtain rfl | hx := hx.eq_or_lt
   · simp
-  · exact (log_le_sub_one_of_pos hx).trans (by linarith)
+  · exact (log_le_sub_one_of_pos hx).trans (by simp)
 
 /-- See `Real.one_sub_inv_le_log_of_pos` for the stronger version when `x ≠ 0`. -/
 lemma neg_inv_le_log (hx : 0 ≤ x) : -x⁻¹ ≤ log x := by

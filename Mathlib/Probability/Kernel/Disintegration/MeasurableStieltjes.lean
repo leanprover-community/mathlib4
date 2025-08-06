@@ -185,7 +185,7 @@ lemma tendsto_defaultRatCDF_atBot : Tendsto defaultRatCDF atBot (𝓝 0) := by
   refine (tendsto_congr' ?_).mp tendsto_const_nhds
   rw [EventuallyEq, eventually_atBot]
   refine ⟨-1, fun q hq => (if_pos (hq.trans_lt ?_)).symm⟩
-  linarith
+  simp
 
 lemma iInf_rat_gt_defaultRatCDF (t : ℚ) :
     ⨅ r : Ioi t, defaultRatCDF r = defaultRatCDF t := by

@@ -357,7 +357,7 @@ theorem digits_lt_base' {b m : ℕ} : ∀ {d}, d ∈ digits (b + 2) m → d < b 
   -- base b+2 expansion of 0 has no digits
   rw [digits_add_two_add_one] at hd
   cases hd
-  · exact n.succ.mod_lt (by linarith)
+  · exact n.succ.mod_lt (by simp)
   · apply IH ((n + 1) / (b + 2))
     · apply Nat.div_lt_self <;> omega
     · assumption
