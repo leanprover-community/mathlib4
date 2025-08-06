@@ -102,7 +102,7 @@ theorem aeSeq_eq_fun_ae [Countable ι] (hf : ∀ i, AEMeasurable (f i) μ)
     (hp : ∀ᵐ x ∂μ, p x fun n => f n x) : ∀ᵐ a : α ∂μ, ∀ i : ι, aeSeq hf p i a = f i a :=
   haveI h_ss : { a : α | ¬∀ i : ι, aeSeq hf p i a = f i a } ⊆ (aeSeqSet hf p)ᶜ := fun _ =>
     mt fun hx i => aeSeq_eq_fun_of_mem_aeSeqSet hf hx i
-  measure_mono_null h_ss (measure_compl_aeSeqSet_eq_zero hf hp)
+  Measure.mono_null h_ss (measure_compl_aeSeqSet_eq_zero hf hp)
 
 theorem aeSeq_n_eq_fun_n_ae [Countable ι] (hf : ∀ i, AEMeasurable (f i) μ)
     (hp : ∀ᵐ x ∂μ, p x fun n => f n x) (n : ι) : aeSeq hf p n =ᵐ[μ] f n :=
@@ -115,7 +115,7 @@ theorem iSup [SupSet β] [Countable ι] (hf : ∀ i, AEMeasurable (f i) μ)
     intro x hx
     congr
     exact funext fun i => aeSeq_eq_fun_of_mem_aeSeqSet hf hx i
-  exact measure_mono_null (Set.compl_subset_compl.mpr h_ss) (measure_compl_aeSeqSet_eq_zero hf hp)
+  exact Measure.mono_null (Set.compl_subset_compl.mpr h_ss) (measure_compl_aeSeqSet_eq_zero hf hp)
 
 theorem iInf [InfSet β] [Countable ι] (hf : ∀ i, AEMeasurable (f i) μ)
     (hp : ∀ᵐ x ∂μ, p x fun n ↦ f n x) : ⨅ n, aeSeq hf p n =ᵐ[μ] ⨅ n, f n :=

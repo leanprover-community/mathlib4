@@ -45,7 +45,7 @@ namespace MutuallySingular
 theorem mk {s t : Set α} (hs : μ s = 0) (ht : ν t = 0) (hst : univ ⊆ s ∪ t) :
     MutuallySingular μ ν := by
   use toMeasurable μ s, measurableSet_toMeasurable _ _, (measure_toMeasurable _).trans hs
-  refine measure_mono_null (fun x hx => (hst trivial).resolve_left fun hxs => hx ?_) ht
+  refine Measure.mono_null (fun x hx => (hst trivial).resolve_left fun hxs => hx ?_) ht
   exact subset_toMeasurable _ _ hxs
 
 /-- A set such that `μ h.nullSet = 0` and `ν h.nullSetᶜ = 0`. -/
@@ -110,7 +110,7 @@ theorem sum_left {ι : Type*} [Countable ι] {μ : ι → Measure α} : sum μ �
   choose s hsm hsμ hsν using H
   refine ⟨⋂ i, s i, MeasurableSet.iInter hsm, ?_, ?_⟩
   · rw [sum_apply _ (MeasurableSet.iInter hsm), ENNReal.tsum_eq_zero]
-    exact fun i => measure_mono_null (iInter_subset _ _) (hsμ i)
+    exact fun i => Measure.mono_null (iInter_subset _ _) (hsμ i)
   · rwa [compl_iInter, measure_iUnion_null_iff]
 
 @[simp]
@@ -140,7 +140,7 @@ theorem smul_nnreal (r : ℝ≥0) (h : ν ⟂ₘ μ) : r • ν ⟂ₘ μ :=
 lemma restrict (h : μ ⟂ₘ ν) (s : Set α) : μ.restrict s ⟂ₘ ν := by
   refine ⟨h.nullSet, h.measurableSet_nullSet, ?_, h.measure_compl_nullSet⟩
   rw [Measure.restrict_apply h.measurableSet_nullSet]
-  exact measure_mono_null Set.inter_subset_left h.measure_nullSet
+  exact Measure.mono_null Set.inter_subset_left h.measure_nullSet
 
 end MutuallySingular
 

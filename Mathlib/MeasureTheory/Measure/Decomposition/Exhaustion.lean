@@ -245,7 +245,7 @@ lemma measure_eq_top_of_subset_compl_sigmaFiniteSetWRT' [IsFiniteMeasure ν]
       (ht.inter measurableSet_sigmaFiniteSetWRT'.compl)
   intro t ht_subset hst ht
   refine measure_eq_top_of_subset_compl_sigmaFiniteSetWRT'_of_measurableSet ht ht_subset ?_
-  exact fun hνt ↦ hνs (measure_mono_null hst hνt)
+  exact fun hνt ↦ hνs (Measure.mono_null hst hνt)
 
 end IsFiniteMeasure
 

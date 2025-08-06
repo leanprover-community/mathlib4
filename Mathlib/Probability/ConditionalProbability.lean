@@ -235,7 +235,7 @@ lemma cond_cond_eq_cond_inter' (hms : MeasurableSet s) (hmt : MeasurableSet t) (
   ext u
   rw [cond_apply hmt, cond_apply hms, cond_apply hms, cond_apply (hms.inter hmt)]
   obtain hst | hst := eq_or_ne (μ (s ∩ t)) 0
-  · have : μ (s ∩ t ∩ u) = 0 := measure_mono_null Set.inter_subset_left hst
+  · have : μ (s ∩ t ∩ u) = 0 := Measure.mono_null Set.inter_subset_left hst
     simp [this, ← Set.inter_assoc]
   · have hcs' : μ s ≠ 0 :=
       (measure_pos_of_superset Set.inter_subset_left hst).ne'

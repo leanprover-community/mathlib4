@@ -116,7 +116,7 @@ theorem measureReal_restrict_apply_self (s : Set α) : (μ.restrict s).real s = 
 theorem measureReal_mono_null (h : s₁ ⊆ s₂) (h₂ : μ.real s₂ = 0) (h'₂ : μ s₂ ≠ ∞ := by finiteness) :
     μ.real s₁ = 0 := by
   rw [measureReal_eq_zero_iff h'₂] at h₂
-  simp [Measure.real, measure_mono_null h h₂]
+  simp [Measure.real, Measure.mono_null h h₂]
 
 theorem measureReal_le_measureReal_union_left (h : μ t ≠ ∞ := by finiteness) :
     μ.real s ≤ μ.real (s ∪ t) := by

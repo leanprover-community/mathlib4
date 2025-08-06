@@ -45,9 +45,9 @@ theorem Measure.restrict_singleton' {a : α} : μ.restrict {a} = 0 := by
 instance Measure.restrict.instNoAtoms (s : Set α) : NoAtoms (μ.restrict s) := by
   refine ⟨fun x => ?_⟩
   obtain ⟨t, hxt, ht1, ht2⟩ := exists_measurable_superset_of_null (measure_singleton x : μ {x} = 0)
-  apply measure_mono_null hxt
+  apply Measure.mono_null hxt
   rw [Measure.restrict_apply ht1]
-  apply measure_mono_null inter_subset_left ht2
+  apply Measure.mono_null inter_subset_left ht2
 
 theorem _root_.Set.Countable.measure_zero (h : s.Countable) (μ : Measure α) [NoAtoms μ] :
     μ s = 0 := by
@@ -76,7 +76,7 @@ theorem _root_.Finset.measure_zero (s : Finset α) (μ : Measure α) [NoAtoms μ
   s.finite_toSet.measure_zero μ
 
 theorem insert_ae_eq_self (a : α) (s : Set α) : (insert a s : Set α) =ᵐ[μ] s :=
-  union_ae_eq_right.2 <| measure_mono_null diff_subset (measure_singleton _)
+  union_ae_eq_right.2 <| Measure.mono_null diff_subset (measure_singleton _)
 
 section
 
