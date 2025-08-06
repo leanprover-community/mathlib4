@@ -81,7 +81,7 @@ def multiforkEvaluationCone (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPreshe
           Category.assoc, Presheaf.IsSheaf.amalgamate_map]
         dsimp [Multifork.ofι]
         erw [Category.assoc, ← E.w f]
-        aesop_cat }
+        cat_disch }
 
 variable [HasLimitsOfShape K D]
 
