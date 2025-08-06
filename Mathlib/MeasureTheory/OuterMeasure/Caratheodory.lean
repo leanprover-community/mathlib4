@@ -53,7 +53,7 @@ def IsCaratheodory (s : Set α) : Prop :=
 
 theorem isCaratheodory_iff_le' {s : Set α} :
     IsCaratheodory m s ↔ ∀ t, m (t ∩ s) + m (t \ s) ≤ m t :=
-  forall_congr' fun _ => le_antisymm_iff.trans <| and_iff_right <| measure_le_inter_add_diff _ _ _
+  forall_congr' fun _ => le_antisymm_iff.trans <| and_iff_right <| Measure.le_inter_add_diff _ _ _
 
 @[simp]
 theorem isCaratheodory_empty : IsCaratheodory m ∅ := by simp [IsCaratheodory, diff_empty]
@@ -132,7 +132,7 @@ theorem isCaratheodory_iUnion_of_disjoint {s : ℕ → Set α} (h : ∀ i, IsCar
       apply (isCaratheodory_iff_le' m).mpr
       intro t
       have hp : m (t ∩ ⋃ i, s i) ≤ ⨆ n, m (t ∩ ⋃ i < n, s i) := by
-        convert measure_iUnion_le (μ := m) fun i => t ∩ s i using 1
+        convert Measure.iUnion_le (μ := m) fun i => t ∩ s i using 1
         · simp [inter_iUnion]
         · simp [ENNReal.tsum_eq_iSup_nat, isCaratheodory_sum m h hd]
       refine le_trans (add_le_add_right hp _) ?_
@@ -150,7 +150,7 @@ lemma isCaratheodory_iUnion {s : ℕ → Set α} (h : ∀ i, m.IsCaratheodory (s
 
 theorem f_iUnion {s : ℕ → Set α} (h : ∀ i, IsCaratheodory m (s i)) (hd : Pairwise (Disjoint on s)) :
     m (⋃ i, s i) = ∑' i, m (s i) := by
-  refine le_antisymm (measure_iUnion_le s) ?_
+  refine le_antisymm (Measure.iUnion_le s) ?_
   rw [ENNReal.tsum_eq_iSup_nat]
   refine iSup_le fun n => ?_
   have := @isCaratheodory_sum _ m _ h hd univ n
