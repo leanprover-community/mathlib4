@@ -616,12 +616,12 @@ theorem measure_Icc_lt_top : μ (Icc a b) < ∞ :=
   isCompact_Icc.measure_lt_top
 
 theorem measure_Ico_lt_top : μ (Ico a b) < ∞ :=
-  (Measure.measure_mono Ico_subset_Icc_self).trans_lt measure_Icc_lt_top
+  (measure_mono Ico_subset_Icc_self).trans_lt measure_Icc_lt_top
 
 theorem measure_Ioc_lt_top : μ (Ioc a b) < ∞ :=
-  (Measure.measure_mono Ioc_subset_Icc_self).trans_lt measure_Icc_lt_top
+  (measure_mono Ioc_subset_Icc_self).trans_lt measure_Icc_lt_top
 
 theorem measure_Ioo_lt_top : μ (Ioo a b) < ∞ :=
-  (Measure.measure_mono Ioo_subset_Icc_self).trans_lt measure_Icc_lt_top
+  (measure_mono Ioo_subset_Icc_self).trans_lt measure_Icc_lt_top
 
 end MeasureIxx
