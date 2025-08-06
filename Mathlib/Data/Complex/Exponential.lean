@@ -492,10 +492,7 @@ lemma norm_exp_sub_sum_le_norm_mul_exp (x : ℂ) (n : ℕ) :
     _ = ‖x‖ ^ n * ∑ m ∈ range (j - n), (‖x‖ ^ m / m.factorial) := by
       congr 1
       refine (sum_bij (fun m hm ↦ m + n) ?_ ?_ ?_ ?_).symm
-      · intro a ha
-        simp only [mem_filter, mem_range, le_add_iff_nonneg_left, zero_le, and_true]
-        simp only [mem_range] at ha
-        rwa [← lt_tsub_iff_right]
+      · grind [Finset.mem_range, Finset.mem_filter]
       · intro a ha b hb hab
         simpa using hab
       · intro b hb

@@ -282,7 +282,7 @@ section Atoms
 
 variable [MeasurableSpace β]
 
-/-- The *measurable atom* of `x` is the intersection of all the measurable sets countaining `x`.
+/-- The *measurable atom* of `x` is the intersection of all the measurable sets containing `x`.
 It is measurable when the space is countable (or more generally when the measurable space is
 countably generated). -/
 def measurableAtom (x : β) : Set β :=
@@ -403,7 +403,7 @@ theorem Measurable.of_uncurry_right {f : α → β → γ} (hf : Measurable (unc
     Measurable fun x => f x y :=
   hf.comp measurable_prodMk_right
 
-theorem measurable_prod {f : α → β × γ} :
+theorem measurable_fun_prod {f : α → β × γ} :
     Measurable f ↔ (Measurable fun a => (f a).1) ∧ Measurable fun a => (f a).2 :=
   ⟨fun hf => ⟨measurable_fst.comp hf, measurable_snd.comp hf⟩, fun h => Measurable.prod h.1 h.2⟩
 
@@ -758,7 +758,7 @@ theorem measurableSet_sum_iff {s : Set (α ⊕ β)} :
     MeasurableSet s ↔ MeasurableSet (Sum.inl ⁻¹' s) ∧ MeasurableSet (Sum.inr ⁻¹' s) :=
   Iff.rfl
 
-theorem measurable_sum {_ : MeasurableSpace γ} {f : α ⊕ β → γ} (hl : Measurable (f ∘ Sum.inl))
+theorem measurable_fun_sum {_ : MeasurableSpace γ} {f : α ⊕ β → γ} (hl : Measurable (f ∘ Sum.inl))
     (hr : Measurable (f ∘ Sum.inr)) : Measurable f :=
   Measurable.of_comap_le <|
     le_inf (MeasurableSpace.comap_le_iff_le_map.2 <| hl)
@@ -767,7 +767,7 @@ theorem measurable_sum {_ : MeasurableSpace γ} {f : α ⊕ β → γ} (hl : Mea
 @[measurability]
 theorem Measurable.sumElim {_ : MeasurableSpace γ} {f : α → γ} {g : β → γ} (hf : Measurable f)
     (hg : Measurable g) : Measurable (Sum.elim f g) :=
-  measurable_sum hf hg
+  measurable_fun_sum hf hg
 
 theorem Measurable.sumMap {_ : MeasurableSpace γ} {_ : MeasurableSpace δ} {f : α → β} {g : γ → δ}
     (hf : Measurable f) (hg : Measurable g) : Measurable (Sum.map f g) :=

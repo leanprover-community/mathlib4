@@ -98,4 +98,8 @@ def OrderIso.withZeroUnits : WithZero αˣ ≃o α where
   __ := withZeroUnitsEquiv
   map_rel_iff' := WithZero.withZeroUnitsEquiv_strictMono.le_iff_le
 
+lemma WithZero.withZeroUnitsEquiv_symm_strictMono :
+    StrictMono (withZeroUnitsEquiv (G := α)).symm :=
+  OrderIso.withZeroUnits.symm.strictMono
+
 end Units

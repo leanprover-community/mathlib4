@@ -218,9 +218,6 @@ protected theorem lt_iSup_iff {ι} {f : ι → Ordinal.{u}} {a : Ordinal.{u}} [S
     a < iSup f ↔ ∃ i, a < f i :=
   lt_ciSup_iff' (bddAbove_of_small _)
 
-@[deprecated "No deprecation message was provided." (since := "2024-11-12")]
-alias lt_iSup := lt_iSup_iff
-
 -- FIXME There is undeprecated material below still depending on this?!
 @[deprecated "No deprecation message was provided." (since := "2024-08-27")]
 theorem ne_iSup_iff_lt_iSup {ι : Type u} {f : ι → Ordinal.{max u v}} :
@@ -684,7 +681,7 @@ theorem lsub_unique {ι} [Unique ι] (f : ι → Ordinal) : lsub f = succ (f def
 set_option linter.deprecated false in
 theorem lsub_le_of_range_subset {ι ι'} {f : ι → Ordinal} {g : ι' → Ordinal}
     (h : Set.range f ⊆ Set.range g) : lsub.{u, max v w} f ≤ lsub.{v, max u w} g :=
-  sup_le_of_range_subset.{u, v, w} (by convert Set.image_subset succ h <;> apply Set.range_comp)
+  sup_le_of_range_subset.{u, v, w} (by convert Set.image_mono h <;> apply Set.range_comp)
 
 theorem lsub_eq_of_range_eq {ι ι'} {f : ι → Ordinal} {g : ι' → Ordinal}
     (h : Set.range f = Set.range g) : lsub.{u, max v w} f = lsub.{v, max u w} g :=
@@ -928,15 +925,15 @@ theorem IsNormal.bsup_eq {f : Ordinal.{u} → Ordinal.{max u v}} (H : IsNormal f
 theorem IsNormal.blsub_eq {f : Ordinal.{u} → Ordinal.{max u v}} (H : IsNormal f) {o : Ordinal.{u}}
     (h : IsSuccLimit o) : (blsub.{_, v} o fun x _ => f x) = f o := by
   rw [← IsNormal.bsup_eq.{u, v} H h, bsup_eq_blsub_of_lt_succ_limit h]
-  exact fun a _ => H.1 a
+  exact fun a _ => H.strictMono (lt_succ a)
 
 theorem isNormal_iff_lt_succ_and_bsup_eq {f : Ordinal.{u} → Ordinal.{max u v}} :
     IsNormal f ↔ (∀ a, f a < f (succ a)) ∧
       ∀ o, IsSuccLimit o → (bsup.{_, v} o fun x _ => f x) = f o :=
-  ⟨fun h => ⟨h.1, @IsNormal.bsup_eq f h⟩, fun ⟨h₁, h₂⟩ =>
-    ⟨h₁, fun o ho a => by
-      rw [← h₂ o ho]
-      exact bsup_le_iff⟩⟩
+  ⟨fun h => ⟨fun a ↦ h.strictMono (lt_succ a), @IsNormal.bsup_eq f h⟩, fun ⟨h₁, h₂⟩ =>
+    .of_succ_lt h₁ fun ho ↦ by
+      rw [← h₂ _ ho]
+      simpa [IsLUB, upperBounds, lowerBounds, IsLeast, bsup_le_iff] using le_bsup _⟩
 
 theorem isNormal_iff_lt_succ_and_blsub_eq {f : Ordinal.{u} → Ordinal.{max u v}} :
     IsNormal f ↔ (∀ a, f a < f (succ a)) ∧
@@ -995,13 +992,6 @@ theorem Ordinal.not_bddAbove_compl_of_small (s : Set Ordinal.{u}) [hs : Small.{u
   exact not_small_ordinal this
 
 namespace Ordinal
-
-/-! ### Properties of ω -/
-
-theorem lt_add_of_limit {a b c : Ordinal.{u}} (h : IsSuccLimit c) :
-    a < b + c ↔ ∃ c' < c, a < b + c' := by
-  -- Porting note: `bex_def` is required.
-  rw [← IsNormal.bsup_eq.{u, u} (isNormal_add_right b) h, lt_bsup, bex_def]
 
 /-! ### Casting naturals into ordinals, compatibility with operations -/
 
