@@ -147,7 +147,7 @@ theorem ext_iff' : μ₁ = μ₂ ↔ ∀ s, μ₁ s = μ₂ s :=
 theorem outerMeasure_le_iff {m : OuterMeasure α} : m ≤ μ.1 ↔ ∀ s, MeasurableSet s → m s ≤ μ s := by
   simpa only [μ.trimmed] using OuterMeasure.le_trim_iff (m₂ := μ.1)
 
-lemma measure_mono {μ : Measure α} (h : s ⊆ t) : μ s ≤ μ t := OuterMeasureClass.measure_mono μ h
+lemma mono_null {μ : Measure α} (h : s ⊆ t) (ht : μ t = 0) : μ s = 0 := measure_mono_null h ht
 
 end Measure
 
