@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
 import Mathlib.Analysis.Normed.Lp.PiLp
-import Mathlib.MeasureTheory.Integral.Eval.Basic
+import Mathlib.MeasureTheory.SpecificCodomains.Pi
 
 /-!
 # Integrability in `WithLp`
@@ -24,7 +24,7 @@ section Pi
 variable {ι : Type*} [Fintype ι] {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)] {f : X → PiLp q E}
 
 lemma memLp_piLp_iff : MemLp f p μ ↔ ∀ i, MemLp (f · i) p μ := by
-  simp_rw [← memLp_pi_iff, ← PiLp.ofLp_apply, ← Function.comp_apply (f := WithLp.ofLp)]
+  simp_rw [← PiLp.ofLp_apply, ← memLp_pi_iff, ← Function.comp_apply (f := WithLp.ofLp)]
   exact (PiLp.lipschitzWith_ofLp q E).memLp_comp_iff_of_antilipschitz
     (PiLp.antilipschitzWith_ofLp q E) (by simp) |>.symm
 
