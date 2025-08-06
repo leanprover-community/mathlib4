@@ -341,7 +341,7 @@ theorem IsEquivalent.add_add_of_nonneg {α : Type*} {u v t w : α → ℝ} {l : 
     u + t ~[l] v + w := by
   simp only [IsEquivalent, add_sub_add_comm]
   change (fun x ↦ (u - v) x + (t - w) x) =o[l] (fun x ↦ v x + w x)
-  conv => enter [3, x]; rw [← (abs_eq_self).mpr (hu x), ← (abs_eq_self).mpr (hw x)]
+  conv => enter [3, x]; rw [← abs_eq_self.mpr (hu x), ← abs_eq_self.mpr (hw x)]
   simpa [← Real.norm_eq_abs] using .add_add htu hvw
 
 end Real
