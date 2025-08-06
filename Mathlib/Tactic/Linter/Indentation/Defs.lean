@@ -209,7 +209,7 @@ partial def SyntaxTreeInfo.updateNextTokenIdx (treeInfo : SyntaxTreeInfo) :
   let treeInfo := { treeInfo with nextTokenIdx? := (← get).snd }
   match treeInfo with
   | { childrenInfo? := .none, .. } =>
-    modify <| Prod.map (·.set! treeInfo.idx (.leaf treeInfo)) id
+    modify (·.fst.set! treeInfo.idx (.leaf treeInfo), .some treeInfo.idx)
     pure treeInfo
   | { childrenInfo? := .some childrenInfo@{ outIdx := outIdx, ..}, idx := idx, .. } =>
     -- it could be more directly and effectly if there were `Array.mapRevM`
@@ -228,9 +228,10 @@ partial def SyntaxTreeInfo.updateNextTokenIdx (treeInfo : SyntaxTreeInfo) :
     modify <| Prod.map (·.set! idx (.into treeInfo) |>.set! outIdx (.out treeInfo)) id
     pure treeInfo
 
+open SyntaxTreeInfo in
 /-- docstring TODO -/
 def SyntaxTreeInfo.ofSyntax (stx : Syntax) : SyntaxTreeInfo × FlattenSyntaxTreeInfo :=
-  let go := SyntaxTreeInfo.ofSyntaxAux stx.updateLeading none >>= SyntaxTreeInfo.updateNextTokenIdx
+  let go := ofSyntaxAux stx.updateLeading none <* modify (·.fst, .none) >>= updateNextTokenIdx
   let ⟨info, flatten, _⟩ := go.run (#[], .none)
   (info, flatten)
 
@@ -258,10 +259,11 @@ def SyntaxTreeInfo.needUpdatingIndentation {m} [Monad m] [MonadEnv m]
   categoriesContain treeInfo.stx
 
 instance : ToString ChildrenHeadTail where
-  toString x := s!"({x.head.idx} → {x.headToken.idx}) : ({x.tail.idx} → {x.tailToken.idx}))"
+  toString x := s!"head {x.head.idx}, headToken {x.headToken.idx}, " ++
+    s!"tail {x.tail.idx}, tailToken {x.tailToken.idx}"
 
 instance : ToString ParentInfo where
-  toString x := s!"({x.parentIdx}.{x.idxInChildren})"
+  toString x := s!"{x.parentIdx}[{x.idxInChildren}]"
 
 open MessageData in
 partial instance : ToMessageData SyntaxTreeInfo where
@@ -271,11 +273,13 @@ where
     let indentation := toMessageData <| "".pushn ' ' (2 * n)
     let name := match i.stx with
       | .node _ kind _ => MessageData.ofConstName kind
-      | .ident _ _ v _ => m!"{i.stx.getKind} {ofConstName v}"
-      | .atom _ v => m!"{i.stx.getKind} {repr v}"
-      | .missing => m!"{i.stx.getKind}"
-    let parent := i.parentInfo?.elim "" fun p => s!"({p})"
-    let mut msg := m!"{indentation}\{{i.idx}: {name} {parent}"
+      | .ident _ _ v _ => m!"ident({ofConstName v})"
+      | .atom _ v => m!"atom({repr v})"
+      | .missing => m!"missing"
+    let parentInfo := i.parentInfo?.elim m!"" fun p => m!" ({p})"
+    let tokens := i.prevTokenIdx?.map (m!" prevToken: {·}") |>.merge (m!"{·},{·}")
+      (i.nextTokenIdx?.map (m!" nextToken: {·}"))
+    let mut msg := m!"{indentation}\{{i.idx}{parentInfo}: {name}{tokens.getD ""}"
     if let .some childrenInfo := i.childrenInfo? then
       msg := msg ++ m!"\n{indentation} ["
       if let some headTail := childrenInfo.headTail? then
