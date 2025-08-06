@@ -26,9 +26,10 @@ In other words, for a linearly ordered monoid with zero `M` with a "groupificati
 is dense in `G`.
 
 See `ValuativeRel.exists_min_le` for an application. -/
-lemma min_sq_sq_inv_le_div {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
-    (x : Γ₀) {y : Γ₀} (hy : y ≠ 0) :
+lemma min_sq_sq_inv_le_div {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] (x y : Γ₀) :
     min (x * x) (y⁻¹ * y⁻¹) ≤ x / y := by
+  by_cases hy : y = 0
+  · simp [hy]
   obtain hxy | hxy := le_total (x * y) 1
   · calc
     _ ≤ x * x := min_le_left _ _
@@ -50,7 +51,7 @@ lemma ValuativeRel.exists_min_le {R : Type*} [CommRing R] [ValuativeRel R]
   by_cases hx : valuation R x = 0
   · exact (γ.ne_zero <| by rw [← hxy, hx, zero_div, eq_comm]).elim
   have hy : valuation R y ≠ 0 := valuation_eq_zero_iff.not.mpr y.prop
-  obtain hxx | hyy := min_le_iff.1 <| min_sq_sq_inv_le_div (valuation R x) hy
+  obtain hxx | hyy := min_le_iff.1 <| min_sq_sq_inv_le_div (valuation R x) (valuation R y)
   · exact ⟨x * x, by simp [hx], min_le_of_left_le <| by simpa [← hxy] using hxx⟩
   · exact ⟨y * y, by simp [hy], min_le_of_right_le <| by simpa [← hxy] using hyy⟩
 
