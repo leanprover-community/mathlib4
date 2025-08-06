@@ -441,7 +441,7 @@ lemma IsNontrivial.nontrivial_codomain [hv : IsNontrivial v] :
   obtain ⟨x, hx0, hx1⟩ := hv.exists_val_nontrivial
   exact ⟨v x, 1, hx1⟩
 
-lemma not_isNontrivial_one [Nontrivial R] [NoZeroDivisors R] [DecidablePred fun x : R ↦ x = 0] :
+lemma not_isNontrivial_one  [IsDomain R] [DecidablePred fun x : R ↦ x = 0] :
     ¬(1 : Valuation R Γ₀).IsNontrivial := by
   rintro ⟨⟨x, hx, hx'⟩⟩
   rcases eq_or_ne x 0 with rfl | hx0 <;>
