@@ -72,7 +72,7 @@ structure MonoFactorisation (f : X ⟶ Y) where
   m : I ⟶ Y
   [m_mono : Mono m]
   e : X ⟶ I
-  fac : e ≫ m = f := by aesop_cat
+  fac : e ≫ m = f := by cat_disch
 
 attribute [inherit_doc MonoFactorisation] MonoFactorisation.I MonoFactorisation.m
   MonoFactorisation.m_mono MonoFactorisation.e MonoFactorisation.fac
@@ -160,7 +160,7 @@ variable {f}
 /-- Data exhibiting that a given factorisation through a mono is initial. -/
 structure IsImage (F : MonoFactorisation f) where
   lift : ∀ F' : MonoFactorisation f, F.I ⟶ F'.I
-  lift_fac : ∀ F' : MonoFactorisation f, lift F' ≫ F'.m = F.m := by aesop_cat
+  lift_fac : ∀ F' : MonoFactorisation f, lift F' ≫ F'.m = F.m := by cat_disch
 
 attribute [inherit_doc IsImage] IsImage.lift IsImage.lift_fac
 
@@ -443,20 +443,20 @@ instance (h : f = f') : IsIso (image.eqToHom h) :=
       ⟨(cancel_mono (image.ι f)).1 (by
           -- Porting note: added let's for used to be a simp [image.eqToHom]
           let F : MonoFactorisation f' :=
-            ⟨image f, image.ι f, factorThruImage f, (by aesop_cat)⟩
+            ⟨image f, image.ι f, factorThruImage f, (by cat_disch)⟩
           dsimp [image.eqToHom]
           rw [Category.id_comp,Category.assoc,image.lift_fac F]
           let F' : MonoFactorisation f :=
-            ⟨image f', image.ι f', factorThruImage f', (by aesop_cat)⟩
+            ⟨image f', image.ι f', factorThruImage f', (by cat_disch)⟩
           rw [image.lift_fac F'] ),
         (cancel_mono (image.ι f')).1 (by
           -- Porting note: added let's for used to be a simp [image.eqToHom]
           let F' : MonoFactorisation f :=
-            ⟨image f', image.ι f', factorThruImage f', (by aesop_cat)⟩
+            ⟨image f', image.ι f', factorThruImage f', (by cat_disch)⟩
           dsimp [image.eqToHom]
           rw [Category.id_comp,Category.assoc,image.lift_fac F']
           let F : MonoFactorisation f' :=
-            ⟨image f, image.ι f, factorThruImage f, (by aesop_cat)⟩
+            ⟨image f, image.ι f, factorThruImage f, (by cat_disch)⟩
           rw [image.lift_fac F])⟩⟩⟩
 
 /-- An equation between morphisms gives an isomorphism between the images. -/
@@ -678,7 +678,7 @@ attribute [local ext] ImageMap
 We make a replacement -/
 theorem ImageMap.map_uniq_aux {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] {sq : f ⟶ g}
     (map : image f.hom ⟶ image g.hom)
-    (map_ι : map ≫ image.ι g.hom = image.ι f.hom ≫ sq.right := by aesop_cat)
+    (map_ι : map ≫ image.ι g.hom = image.ι f.hom ≫ sq.right := by cat_disch)
     (map' : image f.hom ⟶ image g.hom)
     (map_ι' : map' ≫ image.ι g.hom = image.ι f.hom ≫ sq.right) : (map = map') := by
   have : map ≫ image.ι g.hom = map' ≫ image.ι g.hom := by rw [map_ι,map_ι']
@@ -692,7 +692,7 @@ theorem ImageMap.map_uniq {f g : Arrow C} [HasImage f.hom] [HasImage g.hom]
 @[simp]
 theorem ImageMap.mk.injEq' {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] {sq : f ⟶ g}
     (map : image f.hom ⟶ image g.hom)
-    (map_ι : map ≫ image.ι g.hom = image.ι f.hom ≫ sq.right := by aesop_cat)
+    (map_ι : map ≫ image.ι g.hom = image.ι f.hom ≫ sq.right := by cat_disch)
     (map' : image f.hom ⟶ image g.hom)
     (map_ι' : map' ≫ image.ι g.hom = image.ι f.hom ≫ sq.right) : (map = map') = True := by
   simp only [Functor.id_obj, eq_iff_iff, iff_true]

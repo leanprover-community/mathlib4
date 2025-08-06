@@ -133,13 +133,6 @@ def sectR {C : Type u₁} [Category.{v₁} C] (Z : C) (D : Type u₂) [Category.
   obj X := (Z, X)
   map f := (𝟙 Z, f)
 
-@[deprecated (since := "2024-11-12")] alias sectl := sectL
-@[deprecated (since := "2024-11-12")] alias sectr := sectR
-@[deprecated (since := "2024-11-12")] alias sectl_obj := sectL_obj
-@[deprecated (since := "2024-11-12")] alias sectr_obj := sectR_obj
-@[deprecated (since := "2024-11-12")] alias sectl_map := sectL_map
-@[deprecated (since := "2024-11-12")] alias sectr_map := sectR_map
-
 variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
 
 /-- `fst` is the functor `(X, Y) ↦ X`. -/

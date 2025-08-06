@@ -254,7 +254,7 @@ end LeftCancelMonoid
 
 section RightCancelMonoid
 
-variable [RightCancelMonoid M] {a b : M}
+variable [Monoid M] [IsRightCancelMul M] {a b : M}
 
 @[to_additive (attr := simp)]
 theorem mul_eq_right : a * b = b ↔ a = 1 := calc
@@ -1012,6 +1012,10 @@ theorem inv_mul_eq_inv_mul_iff_mul_eq_mul : b⁻¹ * a = d⁻¹ * c ↔ a * d = 
 @[to_additive]
 theorem div_eq_div_iff_div_eq_div : a / b = c / d ↔ a / c = b / d := by
   rw [div_eq_iff_eq_mul, div_mul_eq_mul_div, div_eq_iff_eq_mul', mul_div_assoc]
+
+@[to_additive (attr := simp)]
+lemma const_div_involutive (a : G) : Function.Involutive (a / ·) :=
+  fun _ ↦ div_div_cancel ..
 
 end CommGroup
 
