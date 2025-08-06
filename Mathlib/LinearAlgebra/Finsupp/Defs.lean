@@ -165,7 +165,7 @@ def mapDomain.linearEquiv (f : α ≃ α') : (α →₀ M) ≃ₗ[R] (α' →₀
     simp [← mapDomain_comp]
 
 @[simp] theorem mapDomain.linearEquiv_coe (f : α ≃ α') :
-    (linearEquiv M R f : _ → _) = mapDomain f := rfl
+    ⇑(linearEquiv M R f) = mapDomain f := rfl
 
 @[simp] theorem mapDomain.linearEquiv_toLinearMap (f : α ≃ α') :
     (linearEquiv M R f : _ →ₗ[R] _) = lmapDomain M R f := rfl
