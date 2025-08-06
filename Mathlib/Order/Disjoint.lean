@@ -208,8 +208,6 @@ def Codisjoint (a b : α) : Prop :=
 theorem codisjoint_comm : Codisjoint a b ↔ Codisjoint b a :=
   forall_congr' fun _ ↦ forall_swap
 
-@[deprecated (since := "2024-11-23")] alias Codisjoint_comm := codisjoint_comm
-
 @[symm]
 theorem Codisjoint.symm ⦃a b : α⦄ : Codisjoint a b → Codisjoint b a :=
   codisjoint_comm.1

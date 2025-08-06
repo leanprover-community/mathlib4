@@ -32,13 +32,13 @@ section
 variable (X Y : C)
 
 /-- `f +ₗ g` is the composite `X ⟶ Y ⊞ Y ⟶ Y`, where the first map is `(f, g)` and the second map
-    is `(𝟙 𝟙)`. -/
+is `(𝟙 𝟙)`. -/
 @[simp]
 def leftAdd (f g : X ⟶ Y) : X ⟶ Y :=
   biprod.lift f g ≫ biprod.desc (𝟙 Y) (𝟙 Y)
 
 /-- `f +ᵣ g` is the composite `X ⟶ X ⊞ X ⟶ Y`, where the first map is `(𝟙, 𝟙)` and the second map
-    is `(f g)`. -/
+is `(f g)`. -/
 @[simp]
 def rightAdd (f g : X ⟶ Y) : X ⟶ Y :=
   biprod.lift (𝟙 X) (𝟙 X) ≫ biprod.desc f g

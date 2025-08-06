@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johan Commelin
 -/
 import Mathlib.Algebra.Group.Defs
+import Mathlib.Data.Option.Basic
 import Mathlib.Logic.Nontrivial.Basic
 import Mathlib.Tactic.Common
 
@@ -151,6 +152,10 @@ instance instCanLift : CanLift (WithOne α) α (↑) fun a => a ≠ 1 where
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_inj {a b : α} : (a : WithOne α) = b ↔ a = b :=
   Option.some_inj
+
+@[to_additive]
+lemma coe_injective : Function.Injective (coe : α → WithOne α) :=
+  Option.some_injective _
 
 @[to_additive (attr := elab_as_elim)]
 protected theorem cases_on {P : WithOne α → Prop} : ∀ x : WithOne α, P 1 → (∀ a : α, P a) → P x :=

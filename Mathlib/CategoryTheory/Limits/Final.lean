@@ -481,8 +481,8 @@ theorem final_of_colimit_comp_coyoneda_iso_pUnit
     exact Final.zigzag_of_eqvGen_colimitTypeRel t⟩
 
 /-- A variant of `final_of_colimit_comp_coyoneda_iso_pUnit` where we bind the various claims
-    about `colimit (F ⋙ coyoneda.obj (Opposite.op d))` for each `d : D` into a single claim about
-    the presheaf `colimit (F ⋙ yoneda)`. -/
+about `colimit (F ⋙ coyoneda.obj (Opposite.op d))` for each `d : D` into a single claim about
+the presheaf `colimit (F ⋙ yoneda)`. -/
 theorem final_of_isTerminal_colimit_comp_yoneda
     (h : IsTerminal (colimit (F ⋙ yoneda))) : Final F := by
   refine final_of_colimit_comp_coyoneda_iso_pUnit _ (fun d => ?_)

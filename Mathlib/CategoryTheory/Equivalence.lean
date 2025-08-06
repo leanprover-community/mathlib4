@@ -44,7 +44,7 @@ if it is full, faithful and essentially surjective.
 
 * `Equivalence.mk`: upgrade an equivalence to a (half-)adjoint equivalence
 * `isEquivalence_iff_of_iso`: when `F` and `G` are isomorphic functors,
-`F` is an equivalence iff `G` is.
+  `F` is an equivalence iff `G` is.
 * `Functor.asEquivalenceFunctor`: construction of an equivalence of categories from
   a functor `F` which satisfies the property `F.IsEquivalence` (i.e. `F` is full, faithful
   and essentially surjective).
