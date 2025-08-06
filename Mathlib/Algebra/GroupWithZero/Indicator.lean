@@ -158,7 +158,7 @@ lemma mulSupport_add_one' [AddRightCancelMonoid R] (f : ι → R) : mulSupport (
   mulSupport_add_one f
 
 lemma mulSupport_one_sub' [AddGroup R] (f : ι → R) : mulSupport (1 - f) = support f := by
-  rw [sub_eq_add_neg, mulSupport_one_add', support_neg']
+  rw [sub_eq_add_neg, mulSupport_one_add', support_neg]
 
 lemma mulSupport_one_sub [AddGroup R] (f : ι → R) :
     mulSupport (fun x ↦ 1 - f x) = support f := mulSupport_one_sub' f

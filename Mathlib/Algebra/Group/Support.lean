@@ -138,12 +138,15 @@ lemma range_eq_image_or_of_mulSupport_subset {f : α → M} {k : Set α} (h : mu
   grind
 
 @[to_additive (attr := simp)]
-theorem mulSupport_one' : mulSupport (1 : α → M) = ∅ :=
+theorem mulSupport_one : mulSupport (1 : α → M) = ∅ :=
   mulSupport_eq_empty_iff.2 rfl
 
 @[to_additive (attr := simp)]
-theorem mulSupport_one : (mulSupport fun _ : α => (1 : M)) = ∅ :=
-  mulSupport_one'
+theorem mulSupport_fun_one : (mulSupport fun _ : α => (1 : M)) = ∅ :=
+  mulSupport_one
+
+@[deprecated (since := "2025-07-31")] alias support_zero' := support_zero
+@[deprecated (since := "2025-07-31")] alias mulSupport_one' := mulSupport_one
 
 @[to_additive]
 theorem mulSupport_const {c : M} (hc : c ≠ 1) : (mulSupport fun _ : α => c) = Set.univ := by
@@ -179,16 +182,21 @@ theorem mulSupport_comp_eq_preimage (g : β → M) (f : α → β) :
     mulSupport (g ∘ f) = f ⁻¹' mulSupport g :=
   rfl
 
-@[to_additive support_prod_mk]
-theorem mulSupport_prod_mk (f : α → M) (g : α → N) :
+@[to_additive support_prodMk]
+theorem mulSupport_prodMk (f : α → M) (g : α → N) :
     (mulSupport fun x => (f x, g x)) = mulSupport f ∪ mulSupport g :=
   Set.ext fun x => by
     simp only [mulSupport, not_and_or, mem_union, mem_setOf_eq, Prod.mk_eq_one, Ne]
 
-@[to_additive support_prod_mk']
-theorem mulSupport_prod_mk' (f : α → M × N) :
+@[to_additive support_prodMk']
+theorem mulSupport_prodMk' (f : α → M × N) :
     mulSupport f = (mulSupport fun x => (f x).1) ∪ mulSupport fun x => (f x).2 := by
-  simp only [← mulSupport_prod_mk]
+  simp only [← mulSupport_prodMk]
+
+@[deprecated (since := "2025-07-31")] alias support_prod_mk := support_prodMk
+@[deprecated (since := "2025-07-31")] alias mulSupport_prod_mk := mulSupport_prodMk
+@[deprecated (since := "2025-07-31")] alias support_prod_mk' := support_prodMk'
+@[deprecated (since := "2025-07-31")] alias mulSupport_prod_mk' := mulSupport_prodMk'
 
 @[to_additive]
 theorem mulSupport_along_fiber_subset (f : α × β → M) (a : α) :
@@ -201,22 +209,25 @@ theorem mulSupport_curry (f : α × β → M) :
   simp [mulSupport, funext_iff, image]
 
 @[to_additive]
-theorem mulSupport_curry' (f : α × β → M) :
+theorem mulSupport_fun_curry (f : α × β → M) :
     (mulSupport fun a b ↦ f (a, b)) = (mulSupport f).image Prod.fst :=
   mulSupport_curry f
+
+@[deprecated (since := "2025-07-31")] alias support_curry' := support_fun_curry
+@[deprecated (since := "2025-07-31")] alias mulSupport_curry' := mulSupport_fun_curry
 
 end One
 
 @[to_additive]
 theorem mulSupport_mul [MulOneClass M] (f g : α → M) :
-    (mulSupport fun x => f x * g x) ⊆ mulSupport f ∪ mulSupport g :=
+    (mulSupport fun x ↦ f x * g x) ⊆ mulSupport f ∪ mulSupport g :=
   mulSupport_binop_subset (· * ·) (one_mul _) f g
 
 @[to_additive]
 theorem mulSupport_pow [Monoid M] (f : α → M) (n : ℕ) :
     (mulSupport fun x => f x ^ n) ⊆ mulSupport f := by
   induction n with
-  | zero => simp [pow_zero, mulSupport_one]
+  | zero => simp [pow_zero]
   | succ n hfn =>
     simpa only [pow_succ'] using (mulSupport_mul f _).trans (union_subset Subset.rfl hfn)
 
@@ -225,12 +236,15 @@ section DivisionMonoid
 variable [DivisionMonoid G] (f g : α → G)
 
 @[to_additive (attr := simp)]
-theorem mulSupport_inv : (mulSupport fun x => (f x)⁻¹) = mulSupport f :=
+theorem mulSupport_fun_inv : (mulSupport fun x => (f x)⁻¹) = mulSupport f :=
   ext fun _ => inv_ne_one
 
 @[to_additive (attr := simp)]
-theorem mulSupport_inv' : mulSupport f⁻¹ = mulSupport f :=
-  mulSupport_inv f
+theorem mulSupport_inv : mulSupport f⁻¹ = mulSupport f :=
+  mulSupport_fun_inv f
+
+@[deprecated (since := "2025-07-31")] alias support_neg' := support_neg
+@[deprecated (since := "2025-07-31")] alias mulSupport_inv' := mulSupport_inv
 
 @[to_additive]
 theorem mulSupport_mul_inv : (mulSupport fun x => f x * (g x)⁻¹) ⊆ mulSupport f ∪ mulSupport g :=

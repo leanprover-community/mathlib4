@@ -343,7 +343,7 @@ instance : Neg (HahnSeries Γ R) where
   neg x :=
     { coeff := fun a => -x.coeff a
       isPWO_support' := by
-        rw [Function.support_neg]
+        rw [Function.support_fun_neg]
         exact x.isPWO_support }
 
 @[simp]
