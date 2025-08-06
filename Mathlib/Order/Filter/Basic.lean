@@ -988,6 +988,8 @@ theorem EventuallyEq.fun_pow_const {γ} [Pow β γ] {f g : α → β} {l : Filte
     (c : γ) : (fun x => f x ^ c) =ᶠ[l] fun x => g x ^ c :=
   h.pow_const c
 
+attribute [to_additive] EventuallyEq.const_smul EventuallyEq.fun_const_smul
+
 @[to_additive]
 theorem EventuallyEq.inv [Inv β] {f g : α → β} {l : Filter α} (h : f =ᶠ[l] g) : f⁻¹ =ᶠ[l] g⁻¹ :=
   h.fun_comp Inv.inv
@@ -1006,8 +1008,6 @@ theorem EventuallyEq.div [Div β] {f f' g g' : α → β} {l : Filter α} (h : f
 theorem EventuallyEq.fun_div [Div β] {f f' g g' : α → β} {l : Filter α} (h : f =ᶠ[l] g)
     (h' : f' =ᶠ[l] g') : (fun x => f x / f' x) =ᶠ[l] fun x => g x / g' x :=
   h.div h'
-
-attribute [to_additive] EventuallyEq.const_smul EventuallyEq.fun_const_smul
 
 @[to_additive]
 theorem EventuallyEq.smul {𝕜} [SMul 𝕜 β] {l : Filter α} {f f' : α → 𝕜} {g g' : α → β}
