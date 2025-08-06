@@ -281,26 +281,6 @@ instance [W.IsMultiplicative] [W.RespectsIso]
     W.IsStableUnderTransfiniteCompositionOfShape J :=
   .of_isStableUnderColimitsOfShape (fun _ _ _ _ _ ↦ by infer_instance)
 
-section isomorphisms
-
-example : (isomorphisms C).IsStableUnderTransfiniteCompositionOfShape J := inferInstance
-
-namespace TransfiniteCompositionOfShape
-
-variable {X Y : C} {f : X ⟶ Y} (h : (isomorphisms C).TransfiniteCompositionOfShape J f)
-
-include h in
-lemma isIso : IsIso f :=
-  (isomorphisms C).transfiniteCompositionsOfShape_le _ _ h.mem
-
-instance {i j : J} (f : i ⟶ j) : IsIso (h.F.map f) := ((h.iic j).ici (⟨i, leOfHom f⟩)).isIso
-
-instance (j : J) : IsIso (h.incl.app j) := (h.ici j).isIso
-
-end TransfiniteCompositionOfShape
-
-end isomorphisms
-
 end
 
 /-- A class of morphisms `W : MorphismProperty C` is stable under infinite composition
@@ -400,6 +380,43 @@ lemma transfiniteCompositions_le_iff {P Q : MorphismProperty C}
   · exact (le_transfiniteCompositions P).trans
   · intro h
     exact (transfiniteCompositions_monotone.{w} h).trans Q.transfiniteCompositions_le
+
+namespace TransfiniteCompositionOfShape
+
+variable {W} {J : Type w} [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J]
+
+section
+
+variable [IsStableUnderTransfiniteComposition.{w} W]
+  {X Y : C} {f : X ⟶ Y} (h : W.TransfiniteCompositionOfShape J f)
+
+lemma mem_map {i j : J} (φ : i ⟶ j) :
+    W (h.F.map φ) :=
+  W.transfiniteCompositionsOfShape_le _ _ ((h.iic j).ici (⟨i, leOfHom φ⟩)).mem
+
+lemma mem_incl_app (j : J) :
+    W (h.incl.app j) :=
+  W.transfiniteCompositionsOfShape_le _ _ (h.ici j).mem
+
+end
+
+section isomorphisms
+
+example : (isomorphisms C).IsStableUnderTransfiniteCompositionOfShape J := inferInstance
+
+variable {X Y : C} {f : X ⟶ Y} (h : (isomorphisms C).TransfiniteCompositionOfShape J f)
+
+include h in
+lemma isIso : IsIso f :=
+  (isomorphisms C).transfiniteCompositionsOfShape_le _ _ h.mem
+
+instance {i j : J} (f : i ⟶ j) : IsIso (h.F.map f) := h.mem_map f
+
+instance (j : J) : IsIso (h.incl.app j) := h.mem_incl_app j
+
+end isomorphisms
+
+end TransfiniteCompositionOfShape
 
 end MorphismProperty
 
