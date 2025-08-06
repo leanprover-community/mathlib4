@@ -445,9 +445,6 @@ lemma RingHom.pi_bijective_of_isIdempotentElem (e : I → R)
   (CompleteOrthogonalIdempotents.of_prod_one_sub
       ⟨fun i ↦ (he i).one_sub, he₁⟩ (by simpa using he₂)).bijective_pi'
 
-@[deprecated (since := "2025-01-05")]
-alias bijective_pi_of_isIdempotentElem := RingHom.pi_bijective_of_isIdempotentElem
-
 lemma RingHom.prod_bijective_of_isIdempotentElem {e f : R} (he : IsIdempotentElem e)
     (hf : IsIdempotentElem f) (hef₁ : e + f = 1) (hef₂ : e * f = 0) :
     Function.Bijective ((Ideal.Quotient.mk <| Ideal.span {e}).prod
