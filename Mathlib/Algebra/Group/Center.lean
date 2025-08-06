@@ -186,18 +186,18 @@ theorem prod_centralizer_subset_centralizer_prod {N : Type*} [Mul N] (S : Set M)
   simp only [mem_prod, and_imp, Prod.forall, mem_centralizer_iff, Prod.mk_mul_mk, Prod.mk.injEq]
   exact fun a b ha hb c d hc hd => ⟨ha c hc, hb d hd⟩
 
+open Function in
 @[to_additive addCenter_pi]
 theorem center_pi {ι : Type*} {A : ι → Type*} [Π i, Mul (A i)] [DecidableEq ι] :
     center (Π i, A i) = univ.pi (fun i => center (A i)) := by
   ext x
-  simp only [Set.mem_pi, Set.mem_center_iff, isMulCentral_iff, Set.mem_univ, forall_true_left,
+  simp only [mem_pi, mem_center_iff, isMulCentral_iff, mem_univ, forall_true_left,
     commute_iff_eq, funext_iff, Pi.mul_def]
-  let f {i : ι} (a : A i) := fun j => if h : j = i then h ▸ a else x j
   exact ⟨
     fun ⟨h1, h2, h3⟩ i => ⟨
-      fun a => by simpa [f] using h1 (f a) i,
-      fun b c => by simpa [f] using h2 (f b) (f c) i,
-      fun a b => by simpa [f] using h3 (f a) (f b) i⟩,
+      fun a => by simpa using h1 (update x i a) i,
+      fun b c => by simpa using h2 (update x i b) (update x i c) i,
+      fun a b => by simpa using h3 (update x i a) (update x i b) i⟩,
     fun h => ⟨
       fun a i => (h i).1 (a i),
       fun b c i => (h i).2.1 (b i) (c i),
