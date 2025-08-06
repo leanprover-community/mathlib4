@@ -45,7 +45,7 @@ def fintypeDiagram : DiscreteQuotient X ⥤ FintypeCat where
   map f := DiscreteQuotient.ofLE f.le
   -- Porting note: `map_comp` used to be proved by default by `cat_disch`.
   -- once `cat_disch` can prove this again, remove the entire `map_comp` here.
-  map_comp _ _ := by funext; simp
+  map_comp _ _ := by funext; cat_disch
 
 /-- An abbreviation for `X.fintypeDiagram ⋙ FintypeCat.toProfinite`. -/
 abbrev diagram : DiscreteQuotient X ⥤ Profinite :=
