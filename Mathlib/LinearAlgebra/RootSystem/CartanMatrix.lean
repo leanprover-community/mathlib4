@@ -201,8 +201,8 @@ lemma induction_on_cartanMatrix [P.IsReduced] [P.IsIrreducible]
 
 -- TODO Turn `RootSystem` into `RootPairing`?
 open scoped Matrix in
-lemma injective_pairingIn_of_mem_support {P : RootSystem ι R M N} [Nonempty ι]
-    [P.IsCrystallographic] (b : P.Base) :
+lemma injective_pairingIn_of_mem_support {P : RootSystem ι R M N} [P.IsCrystallographic]
+    (b : P.Base) :
     Injective (fun i (k : b.support) ↦ P.pairingIn ℤ i k) := by
   intro i j hij
   replace hij : ∀ k ∈ b.support, P.pairingIn ℤ i k = P.pairingIn ℤ j k :=
