@@ -379,6 +379,14 @@ theorem exists_of_card_le_finset [Fintype α] {s : Finset β} (h : Fintype.card 
   rcases nonempty_of_card_le h with ⟨f⟩
   exact ⟨f.trans (Embedding.subtype _), by simp [Set.range_subset_iff]⟩
 
+lemma exists_of_card_eq_finset [Fintype α] {s : Finset β} (hsn : Fintype.card α = s.card) :
+    ∃ f : α ↪ β, Finset.univ.map f = s := by
+  obtain ⟨f : α ↪ β, hf⟩ := exists_of_card_le_finset (Nat.le_of_eq hsn)
+  use f
+  apply Finset.eq_of_subset_of_card_le
+  · simp [← coe_subset, hf]
+  · simp [← hsn]
+
 end Function.Embedding
 
 @[simp]
