@@ -462,5 +462,3 @@ theorem Algebra.dvd_algebraMap_intNorm_self [Algebra.IsSeparable (FractionRing A
     exact IsIntegral.isIntegral x
   · have := NoZeroSMulDivisors.trans_faithfulSMul B L E
     exact (map_ne_zero_iff _ (FaithfulSMul.algebraMap_injective B E)).mpr hx
-
-#lint
