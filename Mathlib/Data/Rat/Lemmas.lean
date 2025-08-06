@@ -122,35 +122,25 @@ theorem add_num_den (q r : ℚ) :
 
 theorem add_num_eq {q r : ℚ} : (q + r).num =
   (q.num * r.den + r.num * q.den) / (q.num * r.den + r.num * q.den).natAbs.gcd (q.den * r.den) := by
-  rw [Rat.add_def]
-  simp [Rat.normalize]
+  simp [Rat.add_def, Rat.normalize]
 
 theorem add_den_eq {q r : ℚ} : (q + r).den =
   (q.den * r.den)  / (q.num * r.den + r.num * q.den).natAbs.gcd (q.den * r.den) := by
-  rw [Rat.add_def]
-  simp [Rat.normalize]
+  simp [Rat.add_def, Rat.normalize]
 
 private lemma num_add_int_gcd_den_eq_one {q : ℚ} {z : ℤ} :
     (q.num + z * ↑q.den).natAbs.gcd q.den = 1 := by
-  have : q.den = ((q.den):Int).natAbs := by exact rfl
-  rw [this, ← Int.gcd_eq_natAbs_gcd_natAbs]
-  have : (q.den:Int).natAbs = (q.den:Int) := by rfl
-  rw [this]
-  have : q.num.gcd q.den = 1 := q.reduced
-  rw [← this]
+  have : q.den = ((q.den):Int).natAbs := rfl
+  rw [this, ← Int.gcd_eq_natAbs_gcd_natAbs, ← q.reduced]
   exact Int.gcd_add_mul_right_left (↑q.den) q.num z
 
 theorem add_int_den {q : ℚ} {z : ℤ} : (q+z).den = q.den := by
-  simp [add_den_eq]
-  rw [num_add_int_gcd_den_eq_one]
-  simp
+  simp [add_den_eq, num_add_int_gcd_den_eq_one]
 
 theorem add_int_num {q : ℚ} {z : ℤ} : (q+z).num = q.num + z * q.den := by
-  simp [add_num_eq]
-  rw [num_add_int_gcd_den_eq_one]
-  simp
+  simp [add_num_eq, num_add_int_gcd_den_eq_one]
 
-theorem den_eq_of_add_den_eq_one {q r : ℚ} (h : (q + r).den = 1) : q.den = r.den := by
+theorem den_eq_of_add_den_eq_one {q r : ℚ} (h : (q + r).den = 1) : q.den = r.den :=
   have hnum : q + r = (q + r).num := ((fun r ↦ (den_eq_one_iff r).mp) (q + r) h).symm
   calc
     q.den = (q + r + -r).den := by rw [add_assoc, add_neg_cancel, add_zero]
