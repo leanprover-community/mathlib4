@@ -93,11 +93,11 @@ theorem relindex_mul_index (h : H ≤ K) : H.relindex K * K.index = H.index :=
   ((mul_comm _ _).trans (Cardinal.toNat_mul _ _).symm).trans
     (congr_arg Cardinal.toNat (Equiv.cardinal_eq (quotientEquivProdOfLE h))).symm
 
-@[to_additive]
+@[to_additive index_dvd_of_le]
 theorem index_dvd_of_le (h : H ≤ K) : K.index ∣ H.index :=
   dvd_of_mul_left_eq (H.relindex K) (relindex_mul_index h)
 
-@[to_additive]
+@[to_additive relindex_dvd_index_of_le]
 theorem relindex_dvd_index_of_le (h : H ≤ K) : H.relindex K ∣ H.index :=
   dvd_of_mul_right_eq K.index (relindex_mul_index h)
 
@@ -135,13 +135,13 @@ theorem relindex_sup_right [K.Normal] : K.relindex (H ⊔ K) = K.relindex H :=
 theorem relindex_sup_left [K.Normal] : K.relindex (K ⊔ H) = K.relindex H := by
   rw [sup_comm, relindex_sup_right]
 
-@[to_additive]
+@[to_additive relindex_dvd_index_of_normal]
 theorem relindex_dvd_index_of_normal [H.Normal] : H.relindex K ∣ H.index :=
   relindex_sup_right K H ▸ relindex_dvd_index_of_le le_sup_right
 
 variable {H K}
 
-@[to_additive]
+@[to_additive relindex_dvd_of_le_left]
 theorem relindex_dvd_of_le_left (hHK : H ≤ K) : K.relindex L ∣ H.relindex L :=
   inf_of_le_left hHK ▸ dvd_of_mul_left_eq _ (relindex_inf_mul_relindex _ _ _)
 
@@ -219,17 +219,17 @@ theorem card_mul_index : Nat.card H * H.index = Nat.card G := by
   rw [← relindex_bot_left, ← index_bot]
   exact relindex_mul_index bot_le
 
-@[to_additive]
+@[to_additive card_dvd_of_surjective]
 theorem card_dvd_of_surjective (f : G →* G') (hf : Function.Surjective f) :
     Nat.card G' ∣ Nat.card G := by
   rw [← Nat.card_congr (QuotientGroup.quotientKerEquivOfSurjective f hf).toEquiv]
   exact Dvd.intro_left (Nat.card f.ker) f.ker.card_mul_index
 
-@[to_additive]
+@[to_additive card_range_dvd]
 theorem card_range_dvd (f : G →* G') : Nat.card f.range ∣ Nat.card G :=
   card_dvd_of_surjective f.rangeRestrict f.rangeRestrict_surjective
 
-@[to_additive]
+@[to_additive card_map_dvd]
 theorem card_map_dvd (f : G →* G') : Nat.card (H.map f) ∣ Nat.card H :=
   card_dvd_of_surjective (f.subgroupMap H) (f.subgroupMap_surjective H)
 
@@ -238,13 +238,13 @@ theorem index_map (f : G →* G') :
     (H.map f).index = (H ⊔ f.ker).index * f.range.index := by
   rw [← comap_map_eq, index_comap, relindex_mul_index (H.map_le_range f)]
 
-@[to_additive]
+@[to_additive index_map_dvd]
 theorem index_map_dvd {f : G →* G'} (hf : Function.Surjective f) :
     (H.map f).index ∣ H.index := by
   rw [index_map, f.range_eq_top_of_surjective hf, index_top, mul_one]
   exact index_dvd_of_le le_sup_left
 
-@[to_additive]
+@[to_additive dvd_index_map]
 theorem dvd_index_map {f : G →* G'} (hf : f.ker ≤ H) :
     H.index ∣ (H.map f).index := by
   rw [index_map, sup_of_le_left hf]
@@ -479,7 +479,7 @@ lemma exists_pow_mem_of_relindex_ne_zero (h : H.relindex K ≠ 0) {a : G} (ha : 
   refine ⟨n, hlt, hle, ?_⟩
   simpa [pow_mem ha, mem_subgroupOf] using he
 
-@[to_additive]
+@[to_additive nsmul_mem_of_index_ne_zero_of_dvd]
 lemma pow_mem_of_index_ne_zero_of_dvd (h : H.index ≠ 0) (a : G) {n : ℕ}
     (hn : ∀ m, 0 < m → m ≤ H.index → m ∣ n) : a ^ n ∈ H := by
   rcases exists_pow_mem_of_index_ne_zero h a with ⟨m, hlt, hle, he⟩
@@ -487,7 +487,7 @@ lemma pow_mem_of_index_ne_zero_of_dvd (h : H.index ≠ 0) (a : G) {n : ℕ}
   rw [pow_mul]
   exact pow_mem he _
 
-@[to_additive]
+@[to_additive nsmul_mem_of_relindex_ne_zero_of_dvd]
 lemma pow_mem_of_relindex_ne_zero_of_dvd (h : H.relindex K ≠ 0) {a : G} (ha : a ∈ K) {n : ℕ}
     (hn : ∀ m, 0 < m → m ≤ H.relindex K → m ∣ n) : a ^ n ∈ H ⊓ K := by
   convert pow_mem_of_index_ne_zero_of_dvd h ⟨a, ha⟩ hn

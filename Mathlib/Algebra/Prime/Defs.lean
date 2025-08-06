@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Jens Wagemaker
 -/
 import Mathlib.Algebra.Group.Irreducible.Defs
 import Mathlib.Algebra.GroupWithZero.Divisibility
+import Mathlib.Algebra.Regular.Basic
 
 /-!
 # Prime elements
@@ -30,6 +31,61 @@ assert_not_exists OrderedCommMonoid Multiset
 
 variable {M : Type*}
 
+section Preprime
+
+variable [CommMonoid M]
+
+/-- An element `p` of a commutative monoid with zero (e.g., a ring) is called "preprime",
+if it's not a unit, and `p ∣ a * b → p ∣ a ∨ p ∣ b` for all `a`, `b`.
+It is the same as `Prime` except that a preprime element can be zero. -/
+@[to_additive] abbrev Preprime (p : M) : Prop :=
+  ¬IsUnit p ∧ ∀ a b, p ∣ a * b → p ∣ a ∨ p ∣ b
+
+namespace Preprime
+
+variable {p : M} (hp : Preprime p)
+include hp
+
+@[to_additive] theorem not_unit : ¬IsUnit p := hp.1
+
+@[to_additive] theorem not_dvd_one : ¬p ∣ 1 := mt (isUnit_of_dvd_one ·) hp.not_unit
+
+@[to_additive] theorem ne_one : p ≠ 1 := fun h ↦ hp.1 (h.symm ▸ isUnit_one)
+
+@[to_additive] theorem dvd_or_dvd {a b : M} (h : p ∣ a * b) : p ∣ a ∨ p ∣ b := hp.2 a b h
+
+@[to_additive] theorem dvd_mul {a b : M} : p ∣ a * b ↔ p ∣ a ∨ p ∣ b :=
+  ⟨hp.dvd_or_dvd, (Or.elim · (dvd_mul_of_dvd_left · _) (dvd_mul_of_dvd_right · _))⟩
+
+@[to_additive] theorem isPrimal : IsPrimal p := fun _a _b dvd ↦ (hp.dvd_or_dvd dvd).elim
+  (fun h ↦ ⟨p, 1, h, one_dvd _, (mul_one p).symm⟩) fun h ↦ ⟨1, p, one_dvd _, h, (one_mul p).symm⟩
+
+@[to_additive] theorem not_dvd_mul {a b : M} (ha : ¬ p ∣ a) (hb : ¬ p ∣ b) : ¬ p ∣ a * b :=
+  hp.dvd_mul.not.mpr <| not_or.mpr ⟨ha, hb⟩
+
+@[to_additive] theorem dvd_of_dvd_pow {a : M} {n : ℕ} (h : p ∣ a ^ n) : p ∣ a := by
+  induction n with
+  | zero =>
+    rw [pow_zero] at h
+    have := isUnit_of_dvd_one h
+    have := not_unit hp
+    contradiction
+  | succ n ih =>
+    rw [pow_succ'] at h
+    rcases dvd_or_dvd hp h with dvd_a | dvd_pow
+    · assumption
+    · exact ih dvd_pow
+
+@[to_additive] theorem dvd_pow_iff_dvd {a : M} {n : ℕ} (hn : n ≠ 0) : p ∣ a ^ n ↔ p ∣ a :=
+  ⟨hp.dvd_of_dvd_pow, (dvd_pow · hn)⟩
+
+end Preprime
+
+@[to_additive (attr := simp)]
+theorem not_preprime_one : ¬Preprime (1 : M) := fun h ↦ h.not_unit isUnit_one
+
+end Preprime
+
 section Prime
 
 variable [CommMonoidWithZero M]
@@ -37,7 +93,7 @@ variable [CommMonoidWithZero M]
 /-- An element `p` of a commutative monoid with zero (e.g., a ring) is called *prime*,
 if it's not zero, not a unit, and `p ∣ a * b → p ∣ a ∨ p ∣ b` for all `a`, `b`. -/
 def Prime (p : M) : Prop :=
-  p ≠ 0 ∧ ¬IsUnit p ∧ ∀ a b, p ∣ a * b → p ∣ a ∨ p ∣ b
+  p ≠ 0 ∧ Preprime p
 
 namespace Prime
 
@@ -51,48 +107,37 @@ theorem not_unit : ¬IsUnit p :=
   hp.2.1
 
 theorem not_dvd_one : ¬p ∣ 1 :=
-  mt (isUnit_of_dvd_one ·) hp.not_unit
+  hp.2.not_dvd_one
 
-theorem ne_one : p ≠ 1 := fun h => hp.2.1 (h.symm ▸ isUnit_one)
+theorem ne_one : p ≠ 1 := hp.2.ne_one
 
 theorem dvd_or_dvd {a b : M} (h : p ∣ a * b) : p ∣ a ∨ p ∣ b :=
   hp.2.2 a b h
 
 theorem dvd_mul {a b : M} : p ∣ a * b ↔ p ∣ a ∨ p ∣ b :=
-  ⟨hp.dvd_or_dvd, (Or.elim · (dvd_mul_of_dvd_left · _) (dvd_mul_of_dvd_right · _))⟩
+  hp.2.dvd_mul
 
-theorem isPrimal : IsPrimal p := fun _a _b dvd ↦ (hp.dvd_or_dvd dvd).elim
-  (fun h ↦ ⟨p, 1, h, one_dvd _, (mul_one p).symm⟩) fun h ↦ ⟨1, p, one_dvd _, h, (one_mul p).symm⟩
+theorem isPrimal : IsPrimal p := hp.2.isPrimal
 
 theorem not_dvd_mul {a b : M} (ha : ¬ p ∣ a) (hb : ¬ p ∣ b) : ¬ p ∣ a * b :=
-  hp.dvd_mul.not.mpr <| not_or.mpr ⟨ha, hb⟩
+  hp.2.not_dvd_mul ha hb
 
-theorem dvd_of_dvd_pow {a : M} {n : ℕ} (h : p ∣ a ^ n) : p ∣ a := by
-  induction n with
-  | zero =>
-    rw [pow_zero] at h
-    have := isUnit_of_dvd_one h
-    have := not_unit hp
-    contradiction
-  | succ n ih =>
-    rw [pow_succ'] at h
-    rcases dvd_or_dvd hp h with dvd_a | dvd_pow
-    · assumption
-    · exact ih dvd_pow
+theorem dvd_of_dvd_pow {a : M} {n : ℕ} (h : p ∣ a ^ n) : p ∣ a := hp.2.dvd_of_dvd_pow h
 
 theorem dvd_pow_iff_dvd {a : M} {n : ℕ} (hn : n ≠ 0) : p ∣ a ^ n ↔ p ∣ a :=
-  ⟨hp.dvd_of_dvd_pow, (dvd_pow · hn)⟩
+  hp.2.dvd_pow_iff_dvd hn
 
 end Prime
 
 @[simp]
-theorem not_prime_zero : ¬Prime (0 : M) := fun h => h.ne_zero rfl
+theorem not_prime_zero : ¬Prime (0 : M) := fun h ↦ h.ne_zero rfl
 
 @[simp]
-theorem not_prime_one : ¬Prime (1 : M) := fun h => h.not_unit isUnit_one
+theorem not_prime_one : ¬Prime (1 : M) := fun h ↦ not_preprime_one h.2
 
 end Prime
 
+@[to_additive]
 theorem Irreducible.not_dvd_one [CommMonoid M] {p : M} (hp : Irreducible p) : ¬p ∣ 1 :=
   mt (isUnit_of_dvd_one ·) hp.not_isUnit
 
@@ -106,14 +151,54 @@ theorem Irreducible.ne_zero [MonoidWithZero M] : ∀ {p : M}, Irreducible p → 
   | _, hp, rfl => not_irreducible_zero hp
 
 /-- If `p` and `q` are irreducible, then `p ∣ q` implies `q ∣ p`. -/
+@[to_additive]
 theorem Irreducible.dvd_symm [Monoid M] {p q : M} (hp : Irreducible p) (hq : Irreducible q) :
     p ∣ q → q ∣ p := by
   rintro ⟨q', rfl⟩
   rw [IsUnit.mul_right_dvd (Or.resolve_left (of_irreducible_mul hq) hp.not_isUnit)]
 
+@[to_additive]
 theorem Irreducible.dvd_comm [Monoid M] {p q : M} (hp : Irreducible p) (hq : Irreducible q) :
     p ∣ q ↔ q ∣ p :=
   ⟨hp.dvd_symm hq, hq.dvd_symm hp⟩
+
+section CommMonoid
+
+variable [CommMonoid M]
+
+@[to_additive] theorem Irreducible.preprime_of_isPrimal {a : M}
+    (irr : Irreducible a) (primal : IsPrimal a) : Preprime a :=
+  ⟨irr.not_isUnit, fun a b dvd ↦ by
+    obtain ⟨d₁, d₂, h₁, h₂, rfl⟩ := primal dvd
+    exact (of_irreducible_mul irr).symm.imp (·.mul_right_dvd.mpr h₁) (·.mul_left_dvd.mpr h₂)⟩
+
+@[to_additive] theorem Irreducible.preprime [DecompositionMonoid M] {a : M}
+    (irr : Irreducible a) : Preprime a :=
+  irr.preprime_of_isPrimal (DecompositionMonoid.primal a)
+
+@[to_additive] theorem IsRegular.irreducible_of_preprime {a : M}
+    (reg : IsRegular a) (preprime : Preprime a) : Irreducible a :=
+  ⟨preprime.not_unit, fun a b ↦ by
+    rintro rfl
+    rw [isRegular_mul_iff] at reg
+    exact (preprime.dvd_or_dvd dvd_rfl).symm.imp
+      (isUnit_of_dvd_one <| reg.2.dvd_cancel_right.mp <| dvd_mul_of_dvd_right · _)
+      (isUnit_of_dvd_one <| reg.1.dvd_cancel_left.mp <| dvd_mul_of_dvd_left · _)⟩
+
+end CommMonoid
+
+section CancelCommMonoid
+
+variable [CancelCommMonoid M] {p : M}
+
+@[to_additive] protected theorem Preprime.irreducible (hp : Preprime p) : Irreducible p :=
+  (IsRegular.all p).irreducible_of_preprime hp
+
+@[to_additive]
+theorem irreducible_iff_preprime [DecompositionMonoid M] {a : M} : Irreducible a ↔ Preprime a :=
+  ⟨Irreducible.preprime, Preprime.irreducible⟩
+
+end CancelCommMonoid
 
 section CommMonoidWithZero
 
@@ -121,9 +206,7 @@ variable [CommMonoidWithZero M]
 
 theorem Irreducible.prime_of_isPrimal {a : M}
     (irr : Irreducible a) (primal : IsPrimal a) : Prime a :=
-  ⟨irr.ne_zero, irr.not_isUnit, fun a b dvd ↦ by
-    obtain ⟨d₁, d₂, h₁, h₂, rfl⟩ := primal dvd
-    exact (of_irreducible_mul irr).symm.imp (·.mul_right_dvd.mpr h₁) (·.mul_left_dvd.mpr h₂)⟩
+  ⟨irr.ne_zero, irr.preprime_of_isPrimal primal⟩
 
 theorem Irreducible.prime [DecompositionMonoid M] {a : M} (irr : Irreducible a) : Prime a :=
   irr.prime_of_isPrimal (DecompositionMonoid.primal a)
@@ -135,13 +218,7 @@ section CancelCommMonoidWithZero
 variable [CancelCommMonoidWithZero M] {p : M}
 
 protected theorem Prime.irreducible (hp : Prime p) : Irreducible p :=
-  ⟨hp.not_unit, fun a b ↦ by
-    rintro rfl
-    exact (hp.dvd_or_dvd dvd_rfl).symm.imp
-      (isUnit_of_dvd_one <| (mul_dvd_mul_iff_right <| right_ne_zero_of_mul hp.ne_zero).mp <|
-        dvd_mul_of_dvd_right · _)
-      (isUnit_of_dvd_one <| (mul_dvd_mul_iff_left <| left_ne_zero_of_mul hp.ne_zero).mp <|
-        dvd_mul_of_dvd_left · _)⟩
+  (isCancelMulZero_iff_forall_isRegular.mp inferInstance hp.1).irreducible_of_preprime hp.2
 
 theorem irreducible_iff_prime [DecompositionMonoid M] {a : M} : Irreducible a ↔ Prime a :=
   ⟨Irreducible.prime, Prime.irreducible⟩

@@ -5,6 +5,7 @@ Authors: Damiano Testa
 -/
 import Mathlib.Algebra.Group.UniqueProds.Basic
 import Mathlib.Algebra.MonoidAlgebra.Defs
+import Mathlib.Algebra.Prime.Defs
 
 /-!
 # Variations on non-zero divisors in `AddMonoidAlgebra`s
@@ -79,6 +80,12 @@ theorem mul_apply_mul_eq_mul_of_uniqueMul [Mul A] {f g : MonoidAlgebra R A} {a0 
     · rw [notMem_support_iff.mp af, zero_mul]
     · rw [notMem_support_iff.mp bg, mul_zero]
 
+theorem mul_mem_support_mul_of_uniqueMul [NoZeroDivisors R] [Mul A] {f g : MonoidAlgebra R A}
+    {a0 b0 : A} (h : UniqueMul f.support g.support a0 b0)
+    (ha : a0 ∈ f.support) (hb : b0 ∈ g.support) : a0 * b0 ∈ (f * g).support :=
+  mem_support_iff.mpr <| mul_apply_mul_eq_mul_of_uniqueMul h ▸
+    mul_ne_zero (mem_support_iff.mp ha) (mem_support_iff.mp hb)
+
 instance [NoZeroDivisors R] [Mul A] [UniqueProds A] : NoZeroDivisors (MonoidAlgebra R A) where
   eq_zero_or_eq_zero_of_mul_eq_zero {a b} ab := by
     contrapose! ab
@@ -127,6 +134,11 @@ theorem mul_apply_add_eq_mul_of_uniqueAdd [Add A] {f g : R[A]} {a0 b0 : A}
     (h : UniqueAdd f.support g.support a0 b0) :
     (f * g) (a0 + b0) = f a0 * g b0 :=
   MonoidAlgebra.mul_apply_mul_eq_mul_of_uniqueMul (A := Multiplicative A) h
+
+theorem add_mem_support_mul_of_uniqueAdd [NoZeroDivisors R] [Add A] {f g : R[A]}
+    {a0 b0 : A} (h : UniqueAdd f.support g.support a0 b0)
+    (ha : a0 ∈ f.support) (hb : b0 ∈ g.support) : a0 + b0 ∈ (f * g).support :=
+  MonoidAlgebra.mul_mem_support_mul_of_uniqueMul (A := Multiplicative A) h ha hb
 
 instance [NoZeroDivisors R] [Add A] [UniqueSums A] : NoZeroDivisors R[A] :=
   inferInstanceAs (NoZeroDivisors (MonoidAlgebra R (Multiplicative A)))

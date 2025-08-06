@@ -991,6 +991,9 @@ def nameDict : String → List String
   | "npow"          => ["nsmul"]
   | "zpow"          => ["zsmul"]
   | "mabs"          => ["abs"]
+  | "dvd"           => ["add", "Dvd"]
+  | "preprime"      => ["add", "Prime"]
+  | "primal"        => ["add", "Primal"]
   | "monoid"        => ["add", "Monoid"]
   | "submonoid"     => ["add", "Submonoid"]
   | "group"         => ["add", "Group"]
@@ -1072,8 +1075,8 @@ def fixAbbreviation : List String → List String
   | "Add" :: "Indicator" :: s         => "Indicator" :: fixAbbreviation s
   | "add" :: "Indicator" :: s         => "indicator" :: fixAbbreviation s
   | "add" :: "_" :: "indicator" :: s  => "indicator" :: fixAbbreviation s
-  | "is" :: "Even" :: s             => "even" :: fixAbbreviation s
-  | "Is" :: "Even" :: s             => "Even" :: fixAbbreviation s
+  | "is" :: "Even" :: s               => "even" :: fixAbbreviation s
+  | "Is" :: "Even" :: s               => "Even" :: fixAbbreviation s
   -- "Regular" is well-used in mathlib with various meanings (e.g. in
   -- measure theory) and a direct translation
   -- "regular" --> ["add", "Regular"] in `nameDict` above seems error-prone.
@@ -1104,14 +1107,15 @@ def fixAbbreviation : List String → List String
   | "Is" :: "Central" :: "Scalar" :: s  => "IsCentralVAdd" :: fixAbbreviation s
   | "is" :: "Scalar" :: "Tower" :: s  => "vaddAssocClass" :: fixAbbreviation s
   | "Is" :: "Scalar" :: "Tower" :: s  => "VAddAssocClass" :: fixAbbreviation s
+  | "Rel" :: "Prime" :: s             => "AddRelPrime" :: fixAbbreviation s
   | "function" :: "_" :: "add" :: "Semiconj" :: s
                                       => "function" :: "_" :: "semiconj" :: fixAbbreviation s
   | "function" :: "_" :: "add" :: "Commute" :: s
                                       => "function" :: "_" :: "commute" :: fixAbbreviation s
-  | "Zero" :: "Le" :: "Part" :: s         => "PosPart" :: fixAbbreviation s
-  | "Le" :: "Zero" :: "Part" :: s         => "NegPart" :: fixAbbreviation s
-  | "zero" :: "Le" :: "Part" :: s         => "posPart" :: fixAbbreviation s
-  | "le" :: "Zero" :: "Part" :: s         => "negPart" :: fixAbbreviation s
+  | "Zero" :: "Le" :: "Part" :: s     => "PosPart" :: fixAbbreviation s
+  | "Le" :: "Zero" :: "Part" :: s     => "NegPart" :: fixAbbreviation s
+  | "zero" :: "Le" :: "Part" :: s     => "posPart" :: fixAbbreviation s
+  | "le" :: "Zero" :: "Part" :: s     => "negPart" :: fixAbbreviation s
   | "Division" :: "Add" :: "Monoid" :: s => "SubtractionMonoid" :: fixAbbreviation s
   | "division" :: "Add" :: "Monoid" :: s => "subtractionMonoid" :: fixAbbreviation s
   | "Sub" :: "Neg" :: "Zero" :: "Add" :: "Monoid" :: s => "SubNegZeroMonoid" :: fixAbbreviation s

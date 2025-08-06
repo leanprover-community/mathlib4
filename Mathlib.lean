@@ -724,6 +724,7 @@ import Mathlib.Algebra.Module.ZMod
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Algebra.MonoidAlgebra.Defs
 import Mathlib.Algebra.MonoidAlgebra.Degree
+import Mathlib.Algebra.MonoidAlgebra.Divisibility
 import Mathlib.Algebra.MonoidAlgebra.Division
 import Mathlib.Algebra.MonoidAlgebra.Grading
 import Mathlib.Algebra.MonoidAlgebra.Ideal
@@ -1020,6 +1021,7 @@ import Mathlib.Algebra.Polynomial.Taylor
 import Mathlib.Algebra.Polynomial.UnitTrinomial
 import Mathlib.Algebra.PresentedMonoid.Basic
 import Mathlib.Algebra.Prime.Defs
+import Mathlib.Algebra.Prime.Prod
 import Mathlib.Algebra.Prime.Lemmas
 import Mathlib.Algebra.QuadraticDiscriminant
 import Mathlib.Algebra.Quandle

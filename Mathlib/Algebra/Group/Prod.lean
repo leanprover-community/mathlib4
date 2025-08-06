@@ -81,6 +81,7 @@ instance instMonoid [Monoid M] [Monoid N] : Monoid (M × N) :=
     one_mul := by simp,
     mul_one := by simp }
 
+@[to_additive]
 instance instIsMulTorsionFree [Monoid M] [Monoid N] [IsMulTorsionFree M] [IsMulTorsionFree N] :
     IsMulTorsionFree (M × N) where
   pow_left_injective n hn a b hab := by
@@ -540,7 +541,7 @@ theorem prodProdProdComm_toEquiv :
     (prodProdProdComm M N M' N' : _ ≃ _) = Equiv.prodProdProdComm M N M' N' :=
   rfl
 
-@[simp]
+@[to_additive (attr := simp) prodProdProdComm_symm]
 theorem prodProdProdComm_symm : (prodProdProdComm M N M' N').symm = prodProdProdComm M M' N N' :=
   rfl
 

@@ -102,6 +102,10 @@ lemma two_mul_ne_two_mul_add_one : 2 * n ≠ 2 * m + 1 :=
 @[deprecated (since := "2025-06-05")] alias mul_left_eq_self_iff := mul_eq_right
 @[deprecated (since := "2025-06-05")] alias eq_zero_of_double_le := eq_zero_of_two_mul_le
 
+lemma mul_eq_one_iff : m * n = 1 ↔ m = 1 ∧ n = 1 where
+  mp h := ⟨Nat.eq_one_of_mul_eq_one_right h, Nat.eq_one_of_mul_eq_one_left h⟩
+  mpr := by rintro ⟨rfl, rfl⟩; rfl
+
 /-! ### `div` -/
 
 lemma le_div_two_iff_mul_two_le {n m : ℕ} : m ≤ n / 2 ↔ (m : ℤ) * 2 ≤ n := by

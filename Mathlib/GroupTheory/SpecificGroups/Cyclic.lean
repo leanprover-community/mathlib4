@@ -185,7 +185,7 @@ theorem isCyclic_of_prime_card {p : ℕ} [hp : Fact p.Prime]
   exact ⟨g, fun g' ↦ mem_zpowers_of_prime_card h hg⟩
 
 /-- A finite group of order dividing a prime is cyclic. -/
-@[to_additive "A finite group of order dividing a prime is cyclic."]
+@[to_additive isAddCyclic_of_card_dvd_prime "A finite group of order dividing a prime is cyclic."]
 theorem isCyclic_of_card_dvd_prime {p : ℕ} [hp : Fact p.Prime]
     (h : Nat.card α ∣ p) : IsCyclic α := by
   rcases (Nat.dvd_prime hp.out).mp h with h | h
