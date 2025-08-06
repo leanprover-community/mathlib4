@@ -77,7 +77,7 @@ section RootPairing
 
 variable {P : RootPairing ι R M N} (b : P.Base)
 
-instance [Nonempty ι] [NeZero (2 : R)] : Nonempty b.support := by
+lemma support_nonempty [Nonempty ι] [NeZero (2 : R)] : b.support.Nonempty := by
   by_contra! contra
   replace contra : b.support = ∅ := by aesop
   obtain ⟨i⟩ := inferInstanceAs (Nonempty ι)

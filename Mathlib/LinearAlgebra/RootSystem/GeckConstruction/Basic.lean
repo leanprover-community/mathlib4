@@ -539,8 +539,8 @@ lemma span_range_h'_eq_top [Nonempty ι] [DecidableEq ι] :
     rintro - ⟨i, rfl⟩; simpa using h_mem_lieAlgebra i
   rw [map_span]
   change span R ((cartanSubalgebra' b).subtype '' _) = _
-  obtain ⟨i : b.support⟩ := inferInstanceAs (Nonempty b.support)
-  rw [h₁, span_preimage_eq ⟨h i, mem_range_self _⟩ h₂]
+  obtain ⟨i, hi⟩ : ∃ i, i ∈ b.support := b.support_nonempty
+  rw [h₁, span_preimage_eq ⟨h ⟨i, hi⟩, mem_range_self _⟩ h₂]
   rfl
 
 section lie_e_f_ne

@@ -148,11 +148,6 @@ theorem mem_mk_iff (S : Set L) (h₁ h₂ h₃ h₄) {x : L} :
   Iff.rfl
 
 @[simp]
-theorem mem_mk_iff' (p : Submodule R L) (h) {x : L} :
-    x ∈ (⟨p, h⟩ : LieSubalgebra R L) ↔ x ∈ p :=
-  Iff.rfl
-
-@[simp]
 theorem mem_toSubmodule {x : L} : x ∈ (L' : Submodule R L) ↔ x ∈ L' :=
   Iff.rfl
 
