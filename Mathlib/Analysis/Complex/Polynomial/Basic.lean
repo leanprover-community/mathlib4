@@ -64,7 +64,7 @@ attribute [local instance] splits_ℚ_ℂ
 attribute [local ext] Complex.ext
 
 /-- The number of complex roots equals the number of real roots plus
-    the number of roots not fixed by complex conjugation (i.e. with some imaginary component). -/
+the number of roots not fixed by complex conjugation (i.e. with some imaginary component). -/
 theorem card_complex_roots_eq_card_real_add_card_not_gal_inv (p : ℚ[X]) :
     (p.rootSet ℂ).toFinset.card =
       (p.rootSet ℝ).toFinset.card +
