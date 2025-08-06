@@ -165,6 +165,9 @@ than `a`. If `a` is maximal, then `succ a = a`. -/
 def succ : α → α :=
   SuccOrder.succ
 
+@[simp]
+theorem _root_.SuccOrder.succ_eq_succ : @SuccOrder.succ α _ _ = Order.succ := rfl
+
 theorem le_succ : ∀ a : α, a ≤ succ a :=
   SuccOrder.le_succ
 
@@ -563,6 +566,9 @@ variable [Preorder α] [PredOrder α] {a b : α}
 than `a`. If `a` is minimal, then `pred a = a`. -/
 def pred : α → α :=
   PredOrder.pred
+
+@[simp]
+theorem _root_.PredOrder.pred_eq_pred : @PredOrder.pred α _ _ = Order.pred := rfl
 
 theorem pred_le : ∀ a : α, pred a ≤ a :=
   PredOrder.pred_le
