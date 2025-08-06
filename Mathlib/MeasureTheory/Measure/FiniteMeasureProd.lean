@@ -154,8 +154,7 @@ theorem continuous_prod [TopologicalSpace α] [TopologicalSpace β] [SecondCount
     ∧ t = a ×ˢ b}
   have : IsPiSystem S := by
     rintro s ⟨a, b, ameas, ha, bmeas, hb, rfl⟩ s' ⟨a', b', a'meas, ha', b'meas, hb', rfl⟩ -
-    refine ⟨a ∩ a', b ∩ b', ameas.inter a'meas, ?_,
-      bmeas.inter b'meas, ?_, prod_inter_prod⟩
+    refine ⟨a ∩ a', b ∩ b', ameas.inter a'meas, ?_, bmeas.inter b'meas, ?_, prod_inter_prod⟩
     · rw [null_iff_toMeasure_null] at ha ha' ⊢
       exact null_frontier_inter ha ha'
     · rw [null_iff_toMeasure_null] at hb hb' ⊢
@@ -165,20 +164,17 @@ theorem continuous_prod [TopologicalSpace α] [TopologicalSpace β] [SecondCount
     exact ameas.prod bmeas
   · letI : PseudoMetricSpace α := TopologicalSpace.pseudoMetrizableSpacePseudoMetric α
     letI : PseudoMetricSpace β := TopologicalSpace.pseudoMetrizableSpacePseudoMetric β
-    intro u x xu u_open
+    intro u u_open x xu
     obtain ⟨ε, εpos, hε⟩ : ∃ ε > 0, ball x ε ⊆ u := Metric.isOpen_iff.1 u_open x xu
     rcases exists_null_frontier_thickening (μ.1 : Measure α) {x.1} εpos with ⟨r, hr, μr⟩
     rcases exists_null_frontier_thickening (μ.2 : Measure β) {x.2} εpos with ⟨r', hr', μr'⟩
     simp only [thickening_singleton] at μr μr'
     refine ⟨ball x.1 r ×ˢ ball x.2 r', ⟨ball x.1 r, ball x.2 r', measurableSet_ball,
-      by simp [coeFn_def, μr], measurableSet_ball, by simp [coeFn_def, μr'], rfl⟩, ?_, ?_, ?_⟩
-    · simp [hr.1, hr'.1]
-    · apply (isOpen_ball.prod isOpen_ball).mem_nhds (by simp [hr.1, hr'.1])
+      by simp [coeFn_def, μr], measurableSet_ball, by simp [coeFn_def, μr'], rfl⟩, ?_, ?_⟩
+    · exact (isOpen_ball.prod isOpen_ball).mem_nhds (by simp [hr.1, hr'.1])
     · calc ball x.1 r ×ˢ ball x.2 r'
       _ ⊆ ball x.1 ε ×ˢ ball x.2 ε := by gcongr; exacts [hr.2.le, hr'.2.le]
-      _ ⊆ _ := by
-        rw [ball_prod_same]
-        exact hε
+      _ ⊆ _ := by rwa [ball_prod_same]
   · rintro s ⟨a, b, ameas, ha, bmeas, hb, rfl⟩
     simp only [prod_prod]
     apply Filter.Tendsto.mul
