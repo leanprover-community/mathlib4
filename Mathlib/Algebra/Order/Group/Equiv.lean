@@ -13,7 +13,7 @@ import Mathlib.Algebra.Order.Group.Synonym
 variable (α : Type*)
 
 /-- `toLex` as a `MulEquiv`. -/
-@[to_additive "`toLex` as a `AddEquiv`."]
+@[to_additive (attr := simps toEquiv) "`toLex` as a `AddEquiv`."]
 def toLexMulEquiv [Mul α] : α ≃* Lex α where
   toEquiv := toLex
   map_mul' _ _ := by simp
@@ -25,7 +25,7 @@ theorem coe_toLexMulEquiv [Mul α] : ⇑(toLexMulEquiv α) = toLex := rfl
 theorem coe_symm_toLexMulEquiv [Mul α] : ⇑(toLexMulEquiv α).symm = ofLex := rfl
 
 /-- `ofLex` as a `MulEquiv`. -/
-@[to_additive "`ofLex` as a `AddEquiv`."]
+@[to_additive (attr := simps toEquiv) "`ofLex` as a `AddEquiv`."]
 def ofLexMulEquiv [Mul α] : Lex α ≃* α where
   toEquiv := ofLex
   map_mul' _ _ := by simp
@@ -35,11 +35,6 @@ theorem coe_ofLexMulEquiv [Mul α] : ⇑(ofLexMulEquiv α) = ofLex := rfl
 
 @[to_additive (attr := simp)]
 theorem coe_symm_ofLexMulEquiv [Mul α] : ⇑(ofLexMulEquiv α).symm = toLex := rfl
-
-@[to_additive (attr := simp)]
-lemma toEquiv_toLexMulEquiv [Mul α] :
-    (toLexMulEquiv α : α ≃ Lex α) = toLex :=
-  rfl
 
 @[to_additive (attr := simp)]
 lemma symm_toLexMulEquiv [Mul α] :
