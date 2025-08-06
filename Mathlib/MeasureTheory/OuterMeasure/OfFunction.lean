@@ -137,7 +137,7 @@ theorem le_ofFunction {μ : OuterMeasure α} :
   ⟨fun H s => le_trans (H s) (ofFunction_le s), fun H _ =>
     le_iInf fun f =>
       le_iInf fun hs =>
-        le_trans (μ.mono hs) <| le_trans (measure_iUnion_le f) <| ENNReal.tsum_le_tsum fun _ => H _⟩
+        le_trans (μ.mono hs) <| le_trans (Measure.iUnion_le f) <| ENNReal.tsum_le_tsum fun _ => H _⟩
 
 theorem isGreatest_ofFunction :
     IsGreatest { μ : OuterMeasure α | ∀ s, μ s ≤ m s } (OuterMeasure.ofFunction m m_empty) :=
@@ -156,7 +156,7 @@ theorem ofFunction_union_of_top_of_nonempty_inter {s t : Set α}
     (h : ∀ u, (s ∩ u).Nonempty → (t ∩ u).Nonempty → m u = ∞) :
     OuterMeasure.ofFunction m m_empty (s ∪ t) =
       OuterMeasure.ofFunction m m_empty s + OuterMeasure.ofFunction m m_empty t := by
-  refine le_antisymm (measure_union_le _ _) (le_iInf₂ fun f hf ↦ ?_)
+  refine le_antisymm (Measure.union_le _ _) (le_iInf₂ fun f hf ↦ ?_)
   set μ := OuterMeasure.ofFunction m m_empty
   rcases Classical.em (∃ i, (s ∩ f i).Nonempty ∧ (t ∩ f i).Nonempty) with (⟨i, hs, ht⟩ | he)
   · calc
@@ -171,7 +171,7 @@ theorem ofFunction_union_of_top_of_nonempty_inter {s t : Set α}
         μ.mono fun x hx =>
           let ⟨i, hi⟩ := mem_iUnion.1 (hf (hu hx))
           mem_iUnion.2 ⟨⟨i, ⟨x, hx, hi⟩⟩, hi⟩
-      _ ≤ ∑' i : I u, μ (f i) := measure_iUnion_le _
+      _ ≤ ∑' i : I u, μ (f i) := Measure.iUnion_le _
   calc
     μ s + μ t ≤ (∑' i : I s, μ (f i)) + ∑' i : I t, μ (f i) :=
       add_le_add (hI _ subset_union_left) (hI _ subset_union_right)
@@ -267,7 +267,7 @@ theorem boundedBy_eq (s : Set α) (m_empty : m ∅ = 0) (m_mono : ∀ ⦃t : Set
 
 @[simp]
 theorem boundedBy_eq_self (m : OuterMeasure α) : boundedBy m = m :=
-  ext fun _ => boundedBy_eq _ measure_empty (fun _ ht => measure_mono ht) measure_iUnion_le
+  ext fun _ => boundedBy_eq _ Measure.empty (fun _ ht => Measure.mono ht) Measure.iUnion_le
 
 theorem le_boundedBy {μ : OuterMeasure α} : μ ≤ boundedBy m ↔ ∀ s, μ s ≤ m s := by
   rw [boundedBy , le_ofFunction, forall_congr']; intro s
