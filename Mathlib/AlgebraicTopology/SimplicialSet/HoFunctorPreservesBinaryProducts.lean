@@ -74,7 +74,7 @@ product functors on both categories.
 Using the colimit `Presheaf.colimitOfRepresentable (C := SimplexCategory) X` this reduces to
 the result proven in `hoFunctor.binarySimplexProductIsIso`.
 -/
-lemma hoFunctor.binaryProductWithSimplexIsIso (D X : SSet.{u})
+lemma hoFunctor.binaryProductWithSimplexIsIso {D : SSet.{u}} (X : SSet.{u})
     (H : ∀ m, IsIso (prodComparison hoFunctor D Δ[m])) :
     IsIso (prodComparison hoFunctor D X) := by
   have : (prod.functor.obj D).IsLeftAdjoint := by
@@ -100,15 +100,12 @@ Using the colimit `Presheaf.colimitOfRepresentable (C := SimplexCategory) Y` thi
 the result proven in `hoFunctor.binaryProductWithSimplexIsIso`.
 -/
 instance hoFunctor.binaryProductIsIso (X Y : SSet) :
-    IsIso (prodComparison hoFunctor X Y) := by
-  apply hoFunctor.binaryProductWithSimplexIsIso
-  intro m
+    IsIso (prodComparison hoFunctor X Y) := hoFunctor.binaryProductWithSimplexIsIso _ fun m ↦ by
   convert_to IsIso (hoFunctor.map (prod.braiding _ _).hom ≫
     prodComparison hoFunctor Δ[m] X ≫ (prod.braiding _ _).hom)
   · ext <;> simp [← Functor.map_comp]
   suffices IsIso (prodComparison hoFunctor Δ[m] X) by infer_instance
-  apply hoFunctor.binaryProductWithSimplexIsIso
-  exact fun _ ↦ hoFunctor.binarySimplexProductIsIso _ _
+  exact hoFunctor.binaryProductWithSimplexIsIso _ (hoFunctor.binarySimplexProductIsIso _)
 
 /-- The functor `hoFunctor : SSet ⥤ Cat` preserves binary products of simplicial sets
 `X` and `Y`. -/
