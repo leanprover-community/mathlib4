@@ -184,7 +184,7 @@ noncomputable def map (f : R →+* S) : W'.CoordinateRing →+* (W'.map f).toAff
 
 lemma map_mk (f : R →+* S) (x : R[X][Y]) :
     map W' f (mk W' x) = mk (W'.map f) (x.map <| mapRingHom f) := by
-  rw [map, AdjoinRoot.lift_mk, ← eval₂_map]
+  rw [map, RingHom.coe_coe, AdjoinRoot.lift_mk, ← eval₂_map]
   exact AdjoinRoot.aeval_eq <| x.map <| mapRingHom f
 
 protected lemma map_smul (f : R →+* S) (x : R[X]) (y : W'.CoordinateRing) :
@@ -302,10 +302,11 @@ lemma XYIdeal_neg_mul {x y : F} (h : W.Nonsingular x y) :
         W.polynomial * 1 := by
     linear_combination (norm := (rw [negY, polynomial]; C_simp; ring1))
       congr_arg C (congr_arg C ((equation_iff ..).mp h.left).symm)
-  simp_rw [XYIdeal, XClass, YClass, span_pair_mul_span_pair, mul_comm, ← map_mul,
+  simp_rw [XYIdeal, XClass, YClass, span_pair_mul_span_pair, mul_comm, ← map_mul, RingHom.coe_coe,
     AdjoinRoot.mk_eq_mk.mpr ⟨1, Y_rw⟩, map_mul, span_insert, ← span_singleton_mul_span_singleton,
     ← Ideal.mul_sup, ← span_insert]
   convert mul_top (_ : Ideal W.CoordinateRing) using 2
+  rw [← RingHom.coe_coe]
   simp_rw [← Set.image_singleton (f := mk W), ← Set.image_insert_eq, ← map_span]
   convert map_top (R := F[X][Y]) (mk W) using 1
   apply congr_arg
@@ -345,9 +346,9 @@ lemma XYIdeal_mul_XYIdeal [DecidableEq F] {x₁ x₂ y₁ y₂ : F}
     ← span_singleton_mul_span_singleton, ← sup_rw, ← Ideal.sup_mul, ← Ideal.sup_mul]
   apply congr_arg (_ ∘ _)
   convert top_mul (_ : Ideal W.CoordinateRing)
-  simp_rw [XClass, ← Set.image_singleton (f := mk W), ← map_span, ← Ideal.map_sup, eq_top_iff_one,
-    mem_map_iff_of_surjective _ AdjoinRoot.mk_surjective, ← span_insert, mem_span_insert',
-    mem_span_singleton']
+  simp_rw [XClass, ← Set.image_singleton (f := mk W), ← map_span, ← Ideal.map_sup, eq_top_iff_one]
+  rw [mem_map_iff_of_surjective (RingHomClass.toRingHom _) AdjoinRoot.mk_surjective]
+  simp_rw [← span_insert, mem_span_insert', mem_span_singleton']
   by_cases hx : x₁ = x₂
   · have hy : y₁ ≠ W.negY x₂ y₂ := fun h => hxy ⟨hx, h⟩
     rcases hx, Y_eq_of_Y_ne h₁ h₂ hx hy with ⟨rfl, rfl⟩
@@ -356,7 +357,8 @@ lemma XYIdeal_mul_XYIdeal [DecidableEq F] {x₁ x₂ y₁ y₂ : F}
     refine ⟨1 + C (C <| y⁻¹ * 4) * W.polynomial,
       ⟨C <| C y⁻¹ * (C 4 * X ^ 2 + C (4 * x₁ + W.b₂) * X + C (4 * x₁ ^ 2 + W.b₂ * x₁ + 2 * W.b₄)),
         0, C (C y⁻¹) * (Y - W.negPolynomial), ?_⟩, by
-      rw [map_add, map_one, map_mul <| mk W, AdjoinRoot.mk_self, mul_zero, add_zero]⟩
+      rw [map_add, map_one, map_mul <| mk W, RingHom.coe_coe, AdjoinRoot.mk_self, mul_zero,
+          add_zero]⟩
     rw [polynomial, negPolynomial, ← mul_right_inj' <| C_ne_zero.mpr <| C_ne_zero.mpr hxy]
     simp only [y, mul_add, ← mul_assoc, ← C_mul, mul_inv_cancel₀ hxy]
     linear_combination (norm := (rw [b₂, b₄, negY]; C_simp; ring1))

@@ -95,7 +95,8 @@ noncomputable instance (p : F[X]) [Fact (Irreducible p)] [Fact p.Monic] :
     (d := implicitDeriv <| AdjoinRoot.modByMonicHom Fact.out <|
       - (aeval (AdjoinRoot.root p) (mapCoeffs p)) / (aeval (AdjoinRoot.root p) (derivative p))) (by
       rintro x hx
-      simp_all only [RingHom.toIntAlgHom_apply, AdjoinRoot.mk_eq_zero]
+      simp_all only [AlgHom.toRingHom_eq_coe, RingHom.toIntAlgHom_apply, RingHom.coe_coe,
+        AdjoinRoot.mk_eq_zero]
       obtain ⟨q, rfl⟩ := hx
       simp only [Derivation.leibniz, smul_eq_mul]
       apply dvd_add (dvd_mul_right ..)
