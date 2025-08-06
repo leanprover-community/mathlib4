@@ -75,13 +75,13 @@ theorem biUnion_le {I : Set ι} (μ : F) (hI : I.Countable) (s : ι → Set α) 
   rw [biUnion_eq_iUnion]
   apply iUnion_le
 
-theorem measure_biUnion_finset_le (I : Finset ι) (s : ι → Set α) :
+theorem biUnion_finset_le (I : Finset ι) (s : ι → Set α) :
     μ (⋃ i ∈ I, s i) ≤ ∑ i ∈ I, μ (s i) :=
   (biUnion_le μ I.countable_toSet s).trans_eq <| I.tsum_subtype (μ <| s ·)
 
 theorem iUnion_fintype_le [Fintype ι] (μ : F) (s : ι → Set α) :
     μ (⋃ i, s i) ≤ ∑ i, μ (s i) := by
-  simpa using measure_biUnion_finset_le Finset.univ s
+  simpa using biUnion_finset_le Finset.univ s
 
 theorem measure_union_le (s t : Set α) : μ (s ∪ t) ≤ μ s + μ t := by
   simpa [union_eq_iUnion] using iUnion_fintype_le μ (cond · s t)
