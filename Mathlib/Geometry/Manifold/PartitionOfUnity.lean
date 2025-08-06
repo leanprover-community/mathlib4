@@ -590,22 +590,16 @@ theorem contMDiff_totalSpace_weighted_sum_of_local_sections
       (fun x ↦ TotalSpace.mk' F_fiber x (s_loc i x)) (U i)) :
     ContMDiff I (I.prod 𝓘(ℝ, F_fiber)) n
       (fun x ↦ TotalSpace.mk' F_fiber x (∑ᶠ (j : ι), (ρ j x) • (s_loc j x))) := by
-  intro x₀
-  apply (Bundle.contMDiffAt_section x₀).mpr
-  let e₀ := trivializationAt F_fiber V x₀
-  apply ContMDiffAt.congr_of_eventuallyEq
-  · apply ρ.contMDiffAt_finsum
-    · intro j hx₀
-      have := h_smooth_s_loc j |>.contMDiffAt <| (hU_isOpen j).mem_nhds <| hρ_subord j hx₀
-      rwa [Bundle.contMDiffAt_section] at this
-  · have h_base : {x : M | x ∈ e₀.baseSet} ∈ 𝓝 x₀ :=
-      e₀.open_baseSet.mem_nhds (FiberBundle.mem_baseSet_trivializationAt' x₀)
-    filter_upwards [ρ.eventually_fintsupport_subset x₀, h_base] with x _ hx_base
-    have hfin : {i : ι | (ρ i x • s_loc i x) ≠ 0}.Finite := by
-      refine (ρ.locallyFinite.point_finite x).subset fun i hi_smul_ne_zero => ?_
-      have : ρ i x ≠ 0 ∧ s_loc i x ≠ 0 := by simpa using hi_smul_ne_zero
-      exact this.1
-    simpa using e₀.linearEquivAt ℝ x hx_base |>.toAddMonoidHom.map_finsum hfin
+  have (j : ι) : ContMDiff I (I.prod 𝓘(ℝ, F_fiber)) n
+      (fun x ↦ TotalSpace.mk' F_fiber x ((ρ j x) • (s_loc j x))) := by
+    apply ContMDiffOn.smul_section_of_tsupport ?_ (hU_isOpen j) (hρ_subord j) (h_smooth_s_loc j)
+    exact ((ρ j).contMDiff).of_le (sup_eq_left.mp rfl) |>.contMDiffOn
+  apply ContMDiff.finsum_section_of_locallyFinite ?_ this
+  -- Future: can grind do this?
+  apply ρ.locallyFinite.subset fun i x hx ↦ ?_
+  rw [support]
+  rw [mem_setOf_eq] at hx ⊢
+  exact left_ne_zero_of_smul hx
 
 end SmoothPartitionOfUnity
 
