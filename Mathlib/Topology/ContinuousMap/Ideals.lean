@@ -84,7 +84,7 @@ variable (R)
 which vanish on the complement of `s`. -/
 def idealOfSet (s : Set X) : Ideal C(X, R) where
   carrier := {f : C(X, R) | ∀ x ∈ sᶜ, f x = 0}
-  add_mem' {f g} hf hg x hx := by simp [hf x hx, hg x hx, coe_add, Pi.add_apply, add_zero]
+  add_mem' {f g} hf hg x hx := by simp [hf x hx, hg x hx, add_zero]
   zero_mem' _ _ := rfl
   smul_mem' c _ hf x hx := mul_zero (c x) ▸ congr_arg (fun y => c x * y) (hf x hx)
 
@@ -271,7 +271,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
       ext
       simp only [comp_apply, ContinuousMap.coe_coe, coe_mk, algebraMapCLM_apply, map_pow,
         mul_apply, star_apply, star_def]
-      simp only [normSq_eq_def', RCLike.conj_mul, ofReal_pow]
+      simp only [RCLike.conj_mul]
       rfl
   /- Get the function `g'` which is guaranteed to exist above. By the extreme value theorem and
     compactness of `t`, there is some `0 < c` such that `c ≤ g' x` for all `x ∈ t`. Then by

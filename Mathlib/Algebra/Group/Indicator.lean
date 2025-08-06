@@ -151,11 +151,7 @@ theorem mulIndicator_range_comp {ι : Sort*} (f : ι → α) (g : α → M) :
 
 @[to_additive]
 theorem mulIndicator_congr (h : EqOn f g s) : mulIndicator s f = mulIndicator s g :=
-  funext fun x => by
-    simp only [mulIndicator]
-    split_ifs with h_1
-    · exact h h_1
-    rfl
+  funext fun x => by grind [Set.mulIndicator]
 
 @[to_additive]
 theorem mulIndicator_eq_mulIndicator {t : Set β} {g : β → M} {b : β}
@@ -213,8 +209,7 @@ theorem comp_mulIndicator (h : M → β) (f : α → M) {s : Set α} {x : α} [D
 @[to_additive]
 theorem mulIndicator_comp_right {s : Set α} (f : β → α) {g : α → M} {x : β} :
     mulIndicator (f ⁻¹' s) (g ∘ f) x = mulIndicator s g (f x) := by
-  simp only [mulIndicator, Function.comp]
-  split_ifs with h h' h'' <;> first | rfl | contradiction
+  tauto
 
 @[to_additive]
 theorem mulIndicator_image {s : Set α} {f : β → M} {g : α → β} (hg : Injective g) {x : α} :

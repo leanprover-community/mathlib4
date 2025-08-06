@@ -67,13 +67,13 @@ structure BinaryBiconeMorphism {P Q : C} (A B : BinaryBicone P Q) where
   /-- A morphism between the two vertex objects of the bicones -/
   hom : A.pt ⟶ B.pt
   /-- The triangle consisting of the two natural transformations and `hom` commutes -/
-  wfst : hom ≫ B.fst = A.fst := by aesop_cat
+  wfst : hom ≫ B.fst = A.fst := by cat_disch
   /-- The triangle consisting of the two natural transformations and `hom` commutes -/
-  wsnd : hom ≫ B.snd = A.snd := by aesop_cat
+  wsnd : hom ≫ B.snd = A.snd := by cat_disch
   /-- The triangle consisting of the two natural transformations and `hom` commutes -/
-  winl : A.inl ≫ hom = B.inl := by aesop_cat
+  winl : A.inl ≫ hom = B.inl := by cat_disch
   /-- The triangle consisting of the two natural transformations and `hom` commutes -/
-  winr : A.inr ≫ hom = B.inr := by aesop_cat
+  winr : A.inr ≫ hom = B.inr := by cat_disch
 
 attribute [reassoc (attr := simp)] BinaryBiconeMorphism.wfst BinaryBiconeMorphism.wsnd
 attribute [reassoc (attr := simp)] BinaryBiconeMorphism.winl BinaryBiconeMorphism.winr
@@ -102,10 +102,10 @@ namespace BinaryBicones
   maps. -/
 @[aesop apply safe (rule_sets := [CategoryTheory]), simps]
 def ext {P Q : C} {c c' : BinaryBicone P Q} (φ : c.pt ≅ c'.pt)
-    (winl : c.inl ≫ φ.hom = c'.inl := by aesop_cat)
-    (winr : c.inr ≫ φ.hom = c'.inr := by aesop_cat)
-    (wfst : φ.hom ≫ c'.fst = c.fst := by aesop_cat)
-    (wsnd : φ.hom ≫ c'.snd = c.snd := by aesop_cat) : c ≅ c' where
+    (winl : c.inl ≫ φ.hom = c'.inl := by cat_disch)
+    (winr : c.inr ≫ φ.hom = c'.inr := by cat_disch)
+    (wfst : φ.hom ≫ c'.fst = c.fst := by cat_disch)
+    (wsnd : φ.hom ≫ c'.snd = c.snd := by cat_disch) : c ≅ c' where
   hom := { hom := φ.hom }
   inv :=
     { hom := φ.inv
@@ -143,7 +143,7 @@ instance functoriality_full [F.Full] [F.Faithful] : (functoriality P Q F).Full w
       winl := F.map_injective (by simpa using t.winl)
       winr := F.map_injective (by simpa using t.winr)
       wfst := F.map_injective (by simpa using t.wfst)
-      wsnd := F.map_injective (by simpa using t.wsnd) }, by aesop_cat⟩
+      wsnd := F.map_injective (by simpa using t.wsnd) }, by cat_disch⟩
 
 instance functoriality_faithful [F.Faithful] : (functoriality P Q F).Faithful where
   map_injective {_X} {_Y} f g h :=
@@ -260,10 +260,10 @@ def toBinaryBiconeFunctor {X Y : C} : Bicone (pairFunction X Y) ⥤ BinaryBicone
       snd := b.π WalkingPair.right
       inl := b.ι WalkingPair.left
       inr := b.ι WalkingPair.right
-      inl_fst := by simp [Bicone.ι_π]
-      inr_fst := by simp [Bicone.ι_π]
-      inl_snd := by simp [Bicone.ι_π]
-      inr_snd := by simp [Bicone.ι_π] }
+      inl_fst := by simp
+      inr_fst := by simp
+      inl_snd := by simp
+      inr_snd := by simp }
   map f :=
     { hom := f.hom }
 
@@ -556,21 +556,21 @@ theorem biprod_isoCoprod_hom {X Y : C} [HasBinaryBiproduct X Y] :
 theorem biprod.map_eq_map' {W X Y Z : C} [HasBinaryBiproduct W X] [HasBinaryBiproduct Y Z]
     (f : W ⟶ Y) (g : X ⟶ Z) : biprod.map f g = biprod.map' f g := by
   ext
-  · simp only [mapPair_left, IsColimit.ι_map, IsLimit.map_π, biprod.inl_fst_assoc,
-      Category.assoc, ← BinaryBicone.toCone_π_app_left, ← BinaryBiproduct.bicone_fst, ←
-      BinaryBicone.toCocone_ι_app_left, ← BinaryBiproduct.bicone_inl]
+  · simp only [mapPair_left, IsColimit.ι_map, IsLimit.map_π,
+      Category.assoc, ← BinaryBicone.toCone_π_app_left, ←
+      BinaryBicone.toCocone_ι_app_left]
     simp
-  · simp only [mapPair_left, IsColimit.ι_map, IsLimit.map_π, zero_comp, biprod.inl_snd_assoc,
-      Category.assoc, ← BinaryBicone.toCone_π_app_right, ← BinaryBiproduct.bicone_snd, ←
-      BinaryBicone.toCocone_ι_app_left, ← BinaryBiproduct.bicone_inl]
+  · simp only [mapPair_left, IsColimit.ι_map, IsLimit.map_π,
+      Category.assoc, ← BinaryBicone.toCone_π_app_right, ←
+      BinaryBicone.toCocone_ι_app_left]
     simp
-  · simp only [mapPair_right, biprod.inr_fst_assoc, IsColimit.ι_map, IsLimit.map_π, zero_comp,
-      Category.assoc, ← BinaryBicone.toCone_π_app_left, ← BinaryBiproduct.bicone_fst, ←
-      BinaryBicone.toCocone_ι_app_right, ← BinaryBiproduct.bicone_inr]
+  · simp only [mapPair_right, IsColimit.ι_map, IsLimit.map_π,
+      Category.assoc, ← BinaryBicone.toCone_π_app_left, ←
+      BinaryBicone.toCocone_ι_app_right]
     simp
-  · simp only [mapPair_right, IsColimit.ι_map, IsLimit.map_π, biprod.inr_snd_assoc,
-      Category.assoc, ← BinaryBicone.toCone_π_app_right, ← BinaryBiproduct.bicone_snd, ←
-      BinaryBicone.toCocone_ι_app_right, ← BinaryBiproduct.bicone_inr]
+  · simp only [mapPair_right, IsColimit.ι_map, IsLimit.map_π,
+      Category.assoc, ← BinaryBicone.toCone_π_app_right, ←
+      BinaryBicone.toCocone_ι_app_right]
     simp
 
 instance biprod.inl_mono {X Y : C} [HasBinaryBiproduct X Y] :
@@ -907,23 +907,23 @@ def biprod.braiding' (P Q : C) : P ⊞ Q ≅ Q ⊞ P where
   inv := biprod.desc biprod.inr biprod.inl
 
 theorem biprod.braiding'_eq_braiding {P Q : C} : biprod.braiding' P Q = biprod.braiding P Q := by
-  aesop_cat
+  cat_disch
 
 /-- The braiding isomorphism can be passed through a map by swapping the order. -/
 @[reassoc]
 theorem biprod.braid_natural {W X Y Z : C} (f : X ⟶ Y) (g : Z ⟶ W) :
     biprod.map f g ≫ (biprod.braiding _ _).hom = (biprod.braiding _ _).hom ≫ biprod.map g f := by
-  aesop_cat
+  cat_disch
 
 @[reassoc]
 theorem biprod.braiding_map_braiding {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) :
     (biprod.braiding X W).hom ≫ biprod.map f g ≫ (biprod.braiding Y Z).hom = biprod.map g f := by
-  aesop_cat
+  cat_disch
 
 @[reassoc (attr := simp)]
 theorem biprod.symmetry' (P Q : C) :
     biprod.lift biprod.snd biprod.fst ≫ biprod.lift biprod.snd biprod.fst = 𝟙 (P ⊞ Q) := by
-  aesop_cat
+  cat_disch
 
 /-- The braiding isomorphism is symmetric. -/
 @[reassoc]
@@ -941,14 +941,14 @@ def biprod.associator (P Q R : C) : (P ⊞ Q) ⊞ R ≅ P ⊞ (Q ⊞ R) where
 theorem biprod.associator_natural {U V W X Y Z : C} (f : U ⟶ X) (g : V ⟶ Y) (h : W ⟶ Z) :
     biprod.map (biprod.map f g) h ≫ (biprod.associator _ _ _).hom
       = (biprod.associator _ _ _).hom ≫ biprod.map f (biprod.map g h) := by
-  aesop_cat
+  cat_disch
 
 /-- The associator isomorphism can be passed through a map by swapping the order. -/
 @[reassoc]
 theorem biprod.associator_inv_natural {U V W X Y Z : C} (f : U ⟶ X) (g : V ⟶ Y) (h : W ⟶ Z) :
     biprod.map f (biprod.map g h) ≫ (biprod.associator _ _ _).inv
       = (biprod.associator _ _ _).inv ≫ biprod.map (biprod.map f g) h := by
-  aesop_cat
+  cat_disch
 
 end
 

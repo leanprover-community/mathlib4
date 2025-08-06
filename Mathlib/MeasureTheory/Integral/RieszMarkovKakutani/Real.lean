@@ -141,7 +141,7 @@ omit [LocallyCompactSpace X] in
 /-- Given a set `E`, a function `f : C_c(X, ℝ)`, `0 < ε` and `∀ x ∈ E, f x < c`, there exists an
 open set `V` such that `E ⊆ V` and the sets are similar in measure and `∀ x ∈ V, f x < c`. -/
 lemma exists_open_approx (f : C_c(X, ℝ)) {ε : ℝ} (hε : 0 < ε) (E : Set X) {μ : Content X}
-    (hμ : μ.outerMeasure E ≠ ∞) (hμ' : MeasurableSet E) {c : ℝ} (hfE : ∀ x ∈ E, f x < c):
+    (hμ : μ.outerMeasure E ≠ ∞) (hμ' : MeasurableSet E) {c : ℝ} (hfE : ∀ x ∈ E, f x < c) :
     ∃ (V : Opens X), E ⊆ V ∧ (∀ x ∈ V, f x < c) ∧ μ.measure V ≤ μ.measure E + ENNReal.ofReal ε := by
   have hε' := ne_of_gt <| Real.toNNReal_pos.mpr hε
   obtain ⟨V₁ : Opens X, hV₁⟩ := Content.outerMeasure_exists_open μ hμ hε'
@@ -166,7 +166,7 @@ private lemma exists_nat_large (a' b' : ℝ) {ε : ℝ} (hε : 0 < ε) : ∃ (N 
     · exact Tendsto.add tendsto_const_nhds (Tendsto.div_atTop tendsto_const_nhds tendsto_id)
   have B := A.comp tendsto_natCast_atTop_atTop
   simp only [add_zero, zero_mul] at B
-  obtain ⟨N, hN, h'N⟩ := (((tendsto_order.1 B).2 _ hε ).and (Ici_mem_atTop 1)).exists
+  obtain ⟨N, hN, h'N⟩ := (((tendsto_order.1 B).2 _ hε).and (Ici_mem_atTop 1)).exists
   exact ⟨N, h'N, hN.le⟩
 
 /-- The main estimate in the proof of the Riesz-Markov-Kakutani: `Λ f` is bounded above by the
@@ -237,8 +237,8 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
     _ ≤ ∫ (x : X), f x ∂μ + ε := by simp [hε'.2]
   · -- Equality since `∑ i : Fin N, (g i)` is equal to unity on the support of `f`
     congr; ext x
-    simp only [coe_sum, coe_smulc, smul_eq_mul, Finset.sum_apply, coe_mul, Pi.mul_apply,
-      ← Finset.sum_mul, ← Finset.sum_apply]
+    simp only [coe_sum, smul_eq_mul, coe_mul, Pi.mul_apply,
+      ← Finset.sum_mul]
     by_cases hx : x ∈ tsupport f
     · simp [hg.2.1 hx]
     · simp [image_eq_zero_of_notMem_tsupport hx]
@@ -317,7 +317,7 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
         _ = b := by field_simp [ε', ← mul_div_assoc, mul_div_cancel_left₀]
       have : ∑ n, y n ≤ ∑ n, b := Finset.sum_le_sum (fun n ↦ fun _ ↦ this n)
       simp_all
-    simp only [add_assoc, add_le_add_iff_left, Finset.sum_add_distrib, Finset.sum_add_distrib,
+    simp only [Finset.sum_add_distrib, Finset.sum_add_distrib,
                Fin.sum_const, Fin.sum_const, nsmul_eq_mul, ← add_assoc, mul_add, ← mul_assoc]
     simpa [show (N : ℝ) ≠ 0 by simp [hN.ne.symm], mul_comm _ ε', div_eq_mul_inv, mul_assoc]
       using (mul_le_mul_iff_of_pos_left hε'.1).mpr <| (inv_mul_le_iff₀ (Nat.cast_pos'.mpr hN)).mpr h

@@ -642,9 +642,21 @@ variable {R₁ R₂ : Type*}
 for a continuous semilinear map to be bounded and this is the main use for this typeclass. -/
 class RingHomIsometric [Semiring R₁] [Semiring R₂] [Norm R₁] [Norm R₂] (σ : R₁ →+* R₂) : Prop where
   /-- The ring homomorphism is an isometry. -/
-  is_iso : ∀ {x : R₁}, ‖σ x‖ = ‖x‖
+  norm_map : ∀ {x : R₁}, ‖σ x‖ = ‖x‖
 
-attribute [simp] RingHomIsometric.is_iso
+@[deprecated (since := "2025-08-03")] alias RingHomIsometric.is_iso := RingHomIsometric.norm_map
+
+attribute [simp] RingHomIsometric.norm_map
+
+@[simp]
+theorem RingHomIsometric.nnnorm_map [SeminormedRing R₁] [SeminormedRing R₂] (σ : R₁ →+* R₂)
+    [RingHomIsometric σ] (x : R₁) : ‖σ x‖₊ = ‖x‖₊ :=
+  NNReal.eq norm_map
+
+@[simp]
+theorem RingHomIsometric.enorm_map [SeminormedRing R₁] [SeminormedRing R₂] (σ : R₁ →+* R₂)
+    [RingHomIsometric σ] (x : R₁) : ‖σ x‖ₑ = ‖x‖ₑ :=
+  congrArg ENNReal.ofNNReal <| nnnorm_map σ x
 
 variable [SeminormedRing R₁]
 
@@ -879,12 +891,11 @@ noncomputable def toNormedRing {R : Type*} [Ring R] (v : AbsoluteValue R ℝ) : 
   norm := v
   dist x y := v (x - y)
   dist_eq _ _ := rfl
-  dist_self x := by simp only [sub_self, MulHom.toFun_eq_coe, AbsoluteValue.coe_toMulHom, map_zero]
+  dist_self x := by simp only [sub_self, map_zero]
   dist_comm := v.map_sub
   dist_triangle := v.sub_le
   edist_dist x y := rfl
   norm_mul_le x y := (v.map_mul x y).le
-  eq_of_dist_eq_zero := by simp only [MulHom.toFun_eq_coe, AbsoluteValue.coe_toMulHom,
-    AbsoluteValue.map_sub_eq_zero_iff, imp_self, implies_true]
+  eq_of_dist_eq_zero := by simp only [AbsoluteValue.map_sub_eq_zero_iff, imp_self, implies_true]
 
 end AbsoluteValue

@@ -174,7 +174,7 @@ theorem Submartingale.upcrossings_ae_lt_top' [IsFiniteMeasure μ] (hf : Submarti
           exact norm_nonneg _
       · finiteness
     · simp only [hab, Ne, ENNReal.ofReal_eq_zero, sub_nonpos, not_le]
-  · left;simp only [hab, Ne, ENNReal.ofReal_eq_zero, sub_nonpos, not_le, true_or]
+  · left; simp only [hab, Ne, ENNReal.ofReal_eq_zero, sub_nonpos, not_le]
   · left; finiteness
 
 theorem Submartingale.upcrossings_ae_lt_top [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
@@ -341,9 +341,6 @@ theorem Martingale.eq_condExp_of_tendsto_eLpNorm {μ : Measure Ω} (hf : Marting
     simp only [hx, Pi.sub_apply]
   exact tendsto_nhds_unique (tendsto_atTop_of_eventually_const hev) ht
 
-@[deprecated (since := "2025-01-21")]
-alias Martingale.eq_condexp_of_tendsto_eLpNorm := Martingale.eq_condExp_of_tendsto_eLpNorm
-
 /-- Part b of the **L¹ martingale convergence theorem**: if `f` is a uniformly integrable martingale
 adapted to the filtration `ℱ`, then for all `n`, `f n` is almost everywhere equal to the conditional
 expectation of its limiting process wrt. `ℱ n`. -/
@@ -352,9 +349,6 @@ theorem Martingale.ae_eq_condExp_limitProcess (hf : Martingale f ℱ μ)
   let ⟨_, hR⟩ := hbdd.2.2
   hf.eq_condExp_of_tendsto_eLpNorm ((memLp_limitProcess_of_eLpNorm_bdd hbdd.1 hR).integrable le_rfl)
     (hf.submartingale.tendsto_eLpNorm_one_limitProcess hbdd) n
-
-@[deprecated (since := "2025-01-21")]
-alias Martingale.ae_eq_condexp_limitProcess := Martingale.ae_eq_condExp_limitProcess
 
 /-- Part c of the **L¹ martingale convergence theorem**: Given an integrable function `g` which
 is measurable with respect to `⨆ n, ℱ n` where `ℱ` is a filtration, the martingale defined by
@@ -391,7 +385,7 @@ theorem Integrable.tendsto_ae_condExp (hg : Integrable g μ)
   induction s, hs
     using MeasurableSpace.induction_on_inter (MeasurableSpace.measurableSpace_iSup_eq ℱ) hpi with
   | empty =>
-    simp only [measure_empty, Measure.restrict_empty, integral_zero_measure]
+    simp only [Measure.restrict_empty, integral_zero_measure]
   | basic s hs =>
     rcases hs with ⟨n, hn⟩
     exact this n _ hn
@@ -410,9 +404,6 @@ theorem Integrable.tendsto_ae_condExp (hg : Integrable g μ)
       integral_iUnion (fun n => hle _ (hfmeas n)) hf hlimint.integrableOn]
     exact tsum_congr fun n => heq _ (measure_lt_top _ _)
 
-@[deprecated (since := "2025-01-21")]
-alias Integrable.tendsto_ae_condexp := Integrable.tendsto_ae_condExp
-
 /-- Part c of the **L¹ martingale convergence theorem**: Given an integrable function `g` which
 is measurable with respect to `⨆ n, ℱ n` where `ℱ` is a filtration, the martingale defined by
 `𝔼[g | ℱ n]` converges in L¹ to `g`.
@@ -428,9 +419,6 @@ theorem Integrable.tendsto_eLpNorm_condExp (hg : Integrable g μ)
     (tendstoInMeasure_of_tendsto_ae
       (fun n => (stronglyMeasurable_condExp.mono (ℱ.le n)).aestronglyMeasurable)
       (hg.tendsto_ae_condExp hgmeas))
-
-@[deprecated (since := "2025-01-21")]
-alias Integrable.tendsto_eLpNorm_condexp := Integrable.tendsto_eLpNorm_condExp
 
 /-- **Lévy's upward theorem**, almost everywhere version: given a function `g` and a filtration
 `ℱ`, the sequence defined by `𝔼[g | ℱ n]` converges almost everywhere to `𝔼[g | ⨆ n, ℱ n]`. -/

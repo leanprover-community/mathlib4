@@ -250,11 +250,7 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
   let N := Nat.find exists_N
   have hN : N ≤ n ∧ x < u N := Nat.find_spec exists_N
   let w : ℕ → α := fun i => if i < N then u i else if i = N then x else u (i - 1)
-  have ws : ∀ i, w i ∈ s := by
-    dsimp only [w]
-    intro i
-    split_ifs
-    exacts [us _, hx, us _]
+  have ws : ∀ i, w i ∈ s := by grind
   have hw : Monotone w := by
     apply monotone_nat_of_le_succ fun i => ?_
     dsimp only [w]
@@ -281,12 +277,7 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
   rcases eq_or_lt_of_le (zero_le N) with (Npos | Npos)
   · calc
       (∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i))) =
-          ∑ i ∈ Finset.range n, edist (f (w (1 + i + 1))) (f (w (1 + i))) := by
-        apply Finset.sum_congr rfl fun i _hi => ?_
-        dsimp only [w]
-        simp only [← Npos, Nat.not_lt_zero, Nat.add_succ_sub_one, add_zero, if_false,
-          add_eq_zero, Nat.one_ne_zero, false_and, Nat.succ_add_sub_one, zero_add]
-        rw [add_comm 1 i]
+          ∑ i ∈ Finset.range n, edist (f (w (1 + i + 1))) (f (w (1 + i))) := by grind
       _ = ∑ i ∈ Finset.Ico 1 (n + 1), edist (f (w (i + 1))) (f (w i)) := by
         rw [Finset.range_eq_Ico]
         exact Finset.sum_Ico_add (fun i => edist (f (w (i + 1))) (f (w i))) 0 n 1
@@ -309,34 +300,16 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
             ∑ i ∈ Finset.Ico N n, edist (f (w (1 + i + 1))) (f (w (1 + i))) := by
         congr 1
         · congr 1
-          · apply Finset.sum_congr rfl fun i hi => ?_
-            simp only [Finset.mem_Ico, zero_le', true_and] at hi
-            dsimp only [w]
-            have A : i + 1 < N := Nat.lt_pred_iff.1 hi
-            have B : i < N := Nat.lt_of_succ_lt A
-            rw [if_pos A, if_pos B]
+          · grind [Finset.mem_Ico, Finset.sum_congr]
           · have A : N - 1 + 1 = N := Nat.succ_pred_eq_of_pos Npos
             have : Finset.Ico (N - 1) N = {N - 1} := by rw [← Nat.Ico_succ_singleton, A]
             simp only [this, A, Finset.sum_singleton]
-        · apply Finset.sum_congr rfl fun i hi => ?_
-          rw [Finset.mem_Ico] at hi
-          dsimp only [w]
-          have A : ¬1 + i + 1 < N := by omega
-          have B : ¬1 + i + 1 = N := by omega
-          have C : ¬1 + i < N := by omega
-          have D : ¬1 + i = N := by omega
-          rw [if_neg A, if_neg B, if_neg C, if_neg D]
-          congr 3 <;> · rw [add_comm, Nat.sub_one]; apply Nat.pred_succ
+        · grind [Finset.sum_congr, Finset.mem_Ico]
       _ = (∑ i ∈ Finset.Ico 0 (N - 1), edist (f (w (i + 1))) (f (w i))) +
               edist (f (w (N + 1))) (f (w (N - 1))) +
             ∑ i ∈ Finset.Ico (N + 1) (n + 1), edist (f (w (i + 1))) (f (w i)) := by
         congr 1
-        · congr 1
-          · dsimp only [w]
-            have A : ¬N + 1 < N := Nat.not_succ_lt_self
-            have B : N - 1 < N := Nat.pred_lt Npos.ne'
-            simp only [A, not_and, not_lt, Nat.succ_ne_self, Nat.add_succ_sub_one, add_zero,
-              if_false, B, if_true]
+        · grind
         · exact Finset.sum_Ico_add (fun i => edist (f (w (i + 1))) (f (w i))) N n 1
       _ ≤ ((∑ i ∈ Finset.Ico 0 (N - 1), edist (f (w (i + 1))) (f (w i))) +
               ∑ i ∈ Finset.Ico (N - 1) (N + 1), edist (f (w (i + 1))) (f (w i))) +
@@ -393,19 +366,8 @@ theorem add_le_union (f : α → E) {s t : Set α} (h : ∀ x ∈ s, ∀ y ∈ t
           ∑ i ∈ Finset.range m, edist (f (w (n + 1 + i + 1))) (f (w (n + 1 + i))) := by
       dsimp only [w]
       congr 1
-      · refine Finset.sum_congr rfl fun i hi => ?_
-        simp only [Finset.mem_range] at hi
-        have : i + 1 ≤ n := Nat.succ_le_of_lt hi
-        simp [hi.le, this]
-      · refine Finset.sum_congr rfl fun i hi => ?_
-        simp only [Finset.mem_range] at hi
-        have B : ¬n + 1 + i ≤ n := by omega
-        have A : ¬n + 1 + i + 1 ≤ n := fun h => B ((n + 1 + i).le_succ.trans h)
-        have C : n + 1 + i - n = i + 1 := by
-          rw [tsub_eq_iff_eq_add_of_le]
-          · abel
-          · exact n.le_succ.trans (n.succ.le_add_right i)
-        simp only [A, B, C, Nat.succ_sub_succ_eq_sub, if_false, add_tsub_cancel_left]
+      · grind [Finset.mem_range, Finset.sum_congr]
+      · grind
     _ = (∑ i ∈ Finset.range n, edist (f (w (i + 1))) (f (w i))) +
           ∑ i ∈ Finset.Ico (n + 1) (n + 1 + m), edist (f (w (i + 1))) (f (w i)) := by
       congr 1
@@ -417,9 +379,7 @@ theorem add_le_union (f : α → E) {s t : Set α} (h : ∀ x ∈ s, ∀ y ∈ t
       · gcongr
         rintro i hi
         simp only [Finset.mem_union, Finset.mem_range, Finset.mem_Ico] at hi ⊢
-        rcases hi with hi | hi
-        · exact lt_of_lt_of_le hi (n.le_succ.trans (n.succ.le_add_right m))
-        · exact hi.2
+        omega
       · refine Finset.disjoint_left.2 fun i hi h'i => ?_
         simp only [Finset.mem_Ico, Finset.mem_range] at hi h'i
         exact hi.not_gt (Nat.lt_of_succ_le h'i.left)
@@ -606,7 +566,7 @@ protected theorem eq_neg_swap (a b : α) :
   rcases lt_trichotomy a b with (ab | rfl | ba)
   · simp only [variationOnFromTo, if_pos ab.le, if_neg ab.not_ge, neg_neg]
   · simp only [variationOnFromTo.self, neg_zero]
-  · simp only [variationOnFromTo, if_pos ba.le, if_neg ba.not_ge, neg_neg]
+  · simp only [variationOnFromTo, if_pos ba.le, if_neg ba.not_ge]
 
 protected theorem nonpos_of_ge {a b : α} (h : b ≤ a) : variationOnFromTo f s a b ≤ 0 := by
   rw [variationOnFromTo.eq_neg_swap]
@@ -626,8 +586,7 @@ protected theorem add {f : α → E} {s : Set α} (hf : LocallyBoundedVariationO
   symm
   refine additive_of_isTotal ((· : α) ≤ ·) (variationOnFromTo f s) (· ∈ s) ?_ ?_ ha hb hc
   · rintro x y _xs _ys
-    simp only [variationOnFromTo.eq_neg_swap f s y x, Subtype.coe_mk, add_neg_cancel,
-      forall_true_left]
+    simp only [variationOnFromTo.eq_neg_swap f s y x, add_neg_cancel]
   · rintro x y z xy yz xs ys zs
     rw [variationOnFromTo.eq_of_le f s xy, variationOnFromTo.eq_of_le f s yz,
       variationOnFromTo.eq_of_le f s (xy.trans yz),

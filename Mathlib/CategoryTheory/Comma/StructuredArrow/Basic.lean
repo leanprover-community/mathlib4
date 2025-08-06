@@ -74,7 +74,7 @@ theorem mk_hom_eq_self (f : S ⟶ T.obj Y) : (mk f).hom = f :=
 
 @[reassoc (attr := simp)]
 theorem w {A B : StructuredArrow S T} (f : A ⟶ B) : A.hom ≫ T.map f.right = B.hom := by
-  have := f.w; aesop_cat
+  have := f.w; cat_disch
 
 @[simp]
 theorem comp_right {X Y Z : StructuredArrow S T} (f : X ⟶ Y) (g : Y ⟶ Z) :
@@ -98,7 +98,7 @@ and to check that the triangle commutes.
 -/
 @[simps right]
 def homMk {f f' : StructuredArrow S T} (g : f.right ⟶ f'.right)
-    (w : f.hom ≫ T.map g = f'.hom := by aesop_cat) : f ⟶ f' where
+    (w : f.hom ≫ T.map g = f'.hom := by cat_disch) : f ⟶ f' where
   left := 𝟙 f.left
   right := g
   w := by
@@ -117,7 +117,7 @@ def homMk' (f : StructuredArrow S T) (g : f.right ⟶ Y') : f ⟶ mk (f.hom ≫ 
   left := 𝟙 _
   right := g
 
-lemma homMk'_id (f : StructuredArrow S T) : homMk' f (𝟙 f.right) = eqToHom (by aesop_cat) := by
+lemma homMk'_id (f : StructuredArrow S T) : homMk' f (𝟙 f.right) = eqToHom (by cat_disch) := by
   ext
   simp [eqToHom_right]
 
@@ -150,7 +150,7 @@ and to check that the triangle commutes.
 -/
 @[simps! hom_right inv_right]
 def isoMk {f f' : StructuredArrow S T} (g : f.right ≅ f'.right)
-    (w : f.hom ≫ T.map g.hom = f'.hom := by aesop_cat) :
+    (w : f.hom ≫ T.map g.hom = f'.hom := by cat_disch) :
     f ≅ f' :=
   Comma.isoMk (eqToIso (by ext)) g (by simpa using w.symm)
 
@@ -159,7 +159,7 @@ theorem obj_ext (x y : StructuredArrow S T) (hr : x.right = y.right)
   cases x
   cases y
   cases hr
-  aesop_cat
+  cat_disch
 
 theorem ext {A B : StructuredArrow S T} (f g : A ⟶ B) : f.right = g.right → f = g :=
   CommaMorphism.ext (Subsingleton.elim _ _)
@@ -327,8 +327,8 @@ def map₂CompMap₂Iso {C' : Type u₆} [Category.{v₆} C'] {D' : Type u₅} [
     (β' : R'' ⋙ G' ⟶ F' ⋙ R) :
     map₂ α' β' ⋙ map₂ α β ≅
     map₂ (α ≫ G.map α')
-      ((Functor.associator _ _ _).inv ≫ whiskerRight β' _ ≫ (Functor.associator _ _ _).hom ≫
-        whiskerLeft _ β ≫ (Functor.associator _ _ _).inv) :=
+      ((Functor.associator _ _ _).inv ≫ Functor.whiskerRight β' _ ≫ (Functor.associator _ _ _).hom ≫
+        Functor.whiskerLeft _ β ≫ (Functor.associator _ _ _).inv) :=
   NatIso.ofComponents (fun X => isoMk (Iso.refl _))
 
 end
@@ -455,7 +455,7 @@ and to check that the triangle commutes.
 -/
 @[simps! left]
 def homMk {f f' : CostructuredArrow S T} (g : f.left ⟶ f'.left)
-    (w : S.map g ≫ f'.hom = f.hom := by aesop_cat) : f ⟶ f' where
+    (w : S.map g ≫ f'.hom = f.hom := by cat_disch) : f ⟶ f' where
   left := g
   right := 𝟙 f.right
 
@@ -471,7 +471,7 @@ def homMk' (f : CostructuredArrow S T) (g : Y' ⟶ f.left) : mk (S.map g ≫ f.h
   left := g
   right := 𝟙 _
 
-lemma homMk'_id (f : CostructuredArrow S T) : homMk' f (𝟙 f.left) = eqToHom (by aesop_cat) := by
+lemma homMk'_id (f : CostructuredArrow S T) : homMk' f (𝟙 f.left) = eqToHom (by cat_disch) := by
   ext
   simp [eqToHom_left]
 
@@ -504,7 +504,7 @@ and to check that the triangle commutes.
 -/
 @[simps! hom_left inv_left]
 def isoMk {f f' : CostructuredArrow S T} (g : f.left ≅ f'.left)
-    (w : S.map g.hom ≫ f'.hom = f.hom := by aesop_cat) : f ≅ f' :=
+    (w : S.map g.hom ≫ f'.hom = f.hom := by cat_disch) : f ≅ f' :=
   Comma.isoMk g (eqToIso (by ext)) (by simpa using w)
 
 theorem obj_ext (x y : CostructuredArrow S T) (hl : x.left = y.left)
@@ -512,7 +512,7 @@ theorem obj_ext (x y : CostructuredArrow S T) (hl : x.left = y.left)
   cases x
   cases y
   cases hl
-  aesop_cat
+  cat_disch
 
 theorem ext {A B : CostructuredArrow S T} (f g : A ⟶ B) (h : f.left = g.left) : f = g :=
   CommaMorphism.ext h (Subsingleton.elim _ _)
@@ -634,7 +634,7 @@ instance isEquivalence_pre (F : B ⥤ C) (G : C ⥤ D) (S : D) [F.IsEquivalence]
 def post (F : B ⥤ C) (G : C ⥤ D) (S : C) :
     CostructuredArrow F S ⥤ CostructuredArrow (F ⋙ G) (G.obj S) where
   obj X := CostructuredArrow.mk (G.map X.hom)
-  map f := CostructuredArrow.homMk f.left (by simp [Functor.comp_map, ← G.map_comp, ← f.w])
+  map f := CostructuredArrow.homMk f.left (by simp [Functor.comp_map, ← G.map_comp])
 
 instance (F : B ⥤ C) (G : C ⥤ D) (S : C) : (post F G S).Faithful where
   map_injective {_ _} _ _ h := by simpa [ext_iff] using h

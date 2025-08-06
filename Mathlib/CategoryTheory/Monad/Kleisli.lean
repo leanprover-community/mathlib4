@@ -40,7 +40,7 @@ instance [Inhabited C] (T : Monad C) : Inhabited (Kleisli T) :=
   ⟨(default : C)⟩
 
 /-- The Kleisli category on a monad `T`.
-    cf Definition 5.2.9 in [Riehl][riehl2017]. -/
+cf Definition 5.2.9 in [Riehl][riehl2017]. -/
 instance category : Category (Kleisli T) where
   Hom := fun X Y : C => X ⟶ (T : C ⥤ C).obj Y
   id X := T.η.app X
@@ -77,7 +77,7 @@ def fromKleisli : Kleisli T ⥤ C where
     rfl
 
 /-- The Kleisli adjunction which gives rise to the monad `(T, η_ T, μ_ T)`.
-    cf Lemma 5.2.11 of [Riehl][riehl2017]. -/
+cf Lemma 5.2.11 of [Riehl][riehl2017]. -/
 def adj : toKleisli T ⊣ fromKleisli T :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun X Y => Equiv.refl (X ⟶ T.obj Y)
@@ -125,7 +125,7 @@ def toCokleisli : C ⥤ Cokleisli U where
   map_comp {X} {Y} {_} f g := by
     -- Porting note: working around lack of unfold_projs
     change U.ε.app X ≫ f ≫ g = U.δ.app X ≫ U.map (U.ε.app X ≫ f) ≫ U.ε.app Y ≫ g
-    simp [← U.ε.naturality g]
+    simp
 
 /-- The left adjoint of the adjunction which induces the comonad `(U, ε_ U, δ_ U)`. -/
 @[simps]

@@ -62,7 +62,7 @@ def integer : Subalgebra R K :=
   {
     (⨅ (v) (_ : v ∉ S), (v.valuation K).valuationSubring.toSubring).copy
         {x : K | ∀ (v) (_ : v ∉ S), v.valuation K x ≤ 1} <|
-      Set.ext fun _ => by simp [SetLike.mem_coe, Subring.mem_iInf] with
+      Set.ext fun _ => by simp [SetLike.mem_coe] with
     algebraMap_mem' := fun x v _ => v.valuation_le_one x }
 
 theorem integer_eq :

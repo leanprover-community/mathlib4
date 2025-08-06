@@ -217,7 +217,7 @@ additional properties to `AddMonoid.Coprod M N →+ P`.
 
 Compared to `AddMonoid.Coprod.lift`,
 this definition allows a user to provide a custom computational behavior.
-Also, it only needs `AddZeroclass` assumptions
+Also, it only needs `AddZeroClass` assumptions
 while `AddMonoid.Coprod.lift` needs an `AddMonoid` structure. "]
 def clift (f : FreeMonoid (M ⊕ N) →* P)
     (hM₁ : f (of (.inl 1)) = 1) (hN₁ : f (of (.inr 1)) = 1)
@@ -613,7 +613,7 @@ theorem con_inv_mul_cancel (x : FreeMonoid (G ⊕ H)) :
   induction x using FreeMonoid.inductionOn' with
   | one => simp
   | mul_of x xs ihx =>
-    simp only [toList_of_mul, map_cons, reverse_cons, ofList_append, map_mul, ihx, ofList_singleton]
+    simp only [toList_of_mul, map_cons, reverse_cons, ofList_append, map_mul, ofList_singleton]
     rwa [mul_assoc, ← mul_assoc (mk (of _)), mk_of_inv_mul, one_mul]
 
 @[to_additive]

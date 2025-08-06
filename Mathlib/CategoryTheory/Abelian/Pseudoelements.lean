@@ -90,7 +90,7 @@ variable {C : Type u} [Category.{v} C]
 attribute [local instance] Over.coeFromHom
 
 /-- This is just composition of morphisms in `C`. Another way to express this would be
-    `(Over.map f).obj a`, but our definition has nicer definitional properties. -/
+`(Over.map f).obj a`, but our definition has nicer definitional properties. -/
 def app {P Q : C} (f : P ⟶ Q) (a : Over P) : Over Q :=
   a.hom ≫ f
 
@@ -98,7 +98,7 @@ def app {P Q : C} (f : P ⟶ Q) (a : Over P) : Over Q :=
 theorem app_hom {P Q : C} (f : P ⟶ Q) (a : Over P) : (app f a).hom = a.hom ≫ f := rfl
 
 /-- Two arrows `f : X ⟶ P` and `g : Y ⟶ P` are called pseudo-equal if there is some object
-    `R` and epimorphisms `p : R ⟶ X` and `q : R ⟶ Y` such that `p ≫ f = q ≫ g`. -/
+`R` and epimorphisms `p : R ⟶ X` and `q : R ⟶ Y` such that `p ≫ f = q ≫ g`. -/
 def PseudoEqual (P : C) (f g : Over P) : Prop :=
   ∃ (R : C) (p : R ⟶ f.1) (q : R ⟶ g.1) (_ : Epi p) (_ : Epi q), p ≫ f.hom = q ≫ g.hom
 
@@ -113,7 +113,7 @@ variable [Abelian.{v} C]
 section
 
 /-- Pseudoequality is transitive: Just take the pullback. The pullback morphisms will
-    be epimorphisms since in an abelian category, pullbacks of epimorphisms are epimorphisms. -/
+be epimorphisms since in an abelian category, pullbacks of epimorphisms are epimorphisms. -/
 theorem pseudoEqual_trans {P : C} : Transitive (PseudoEqual P) := by
   intro f g h ⟨R, p, q, ep, Eq, comm⟩ ⟨R', p', q', ep', eq', comm'⟩
   refine ⟨pullback q p', pullback.fst _ _ ≫ p, pullback.snd _ _ ≫ q',
@@ -130,7 +130,7 @@ def Pseudoelement.setoid (P : C) : Setoid (Over P) :=
 attribute [local instance] Pseudoelement.setoid
 
 /-- A `Pseudoelement` of `P` is just an equivalence class of arrows ending in `P` by being
-    pseudo-equal. -/
+pseudo-equal. -/
 def Pseudoelement (P : C) : Type max u v :=
   Quotient (Pseudoelement.setoid P)
 
@@ -172,8 +172,7 @@ scoped[Pseudoelement] attribute [instance] CategoryTheory.Abelian.Pseudoelement.
 theorem pseudoApply_mk' {P Q : C} (f : P ⟶ Q) (a : Over P) : f ⟦a⟧ = ⟦↑(a.hom ≫ f)⟧ := rfl
 
 /-- Applying a pseudoelement to a composition of morphisms is the same as composing
-    with each morphism. Sadly, this is not a definitional equality, but at least it is
-    true. -/
+with each morphism. Sadly, this is not a definitional equality, but at least it is true. -/
 theorem comp_apply {P Q R : C} (f : P ⟶ Q) (g : Q ⟶ R) (a : P) : (f ≫ g) a = g (f a) :=
   Quotient.inductionOn a fun x =>
     Quotient.sound <| by
@@ -345,7 +344,7 @@ theorem pseudo_exact_of_exact {S : ShortComplex C} (hS : S.Exact) :
 end
 
 theorem apply_eq_zero_of_comp_eq_zero {P Q R : C} (f : Q ⟶ R) (a : P ⟶ Q) : a ≫ f = 0 → f a = 0 :=
-  fun h => by simp [over_coe_def, pseudoApply_mk', Over.coe_hom, h]
+  fun h => by simp [over_coe_def, pseudoApply_mk', h]
 
 section
 
@@ -383,8 +382,8 @@ theorem exact_of_pseudo_exact (S : ShortComplex C)
 end
 
 /-- If two pseudoelements `x` and `y` have the same image under some morphism `f`, then we can form
-    their "difference" `z`. This pseudoelement has the properties that `f z = 0` and for all
-    morphisms `g`, if `g y = 0` then `g z = g x`. -/
+their "difference" `z`. This pseudoelement has the properties that `f z = 0` and for all
+morphisms `g`, if `g y = 0` then `g z = g x`. -/
 theorem sub_of_eq_image {P Q : C} (f : P ⟶ Q) (x y : P) :
     f x = f y → ∃ z, f z = 0 ∧ ∀ (R : C) (g : P ⟶ R), (g : P ⟶ R) y = 0 → g z = g x :=
   Quotient.inductionOn₂ x y fun a a' h =>
@@ -408,10 +407,10 @@ theorem sub_of_eq_image {P Q : C} (f : P ⟶ Q) (x y : P) :
 variable [Limits.HasPullbacks C]
 
 /-- If `f : P ⟶ R` and `g : Q ⟶ R` are morphisms and `p : P` and `q : Q` are pseudoelements such
-    that `f p = g q`, then there is some `s : pullback f g` such that `fst s = p` and `snd s = q`.
+that `f p = g q`, then there is some `s : pullback f g` such that `fst s = p` and `snd s = q`.
 
-    Remark: Borceux claims that `s` is unique, but this is false. See
-    `Counterexamples/Pseudoelement.lean` for details. -/
+Remark: Borceux claims that `s` is unique, but this is false. See
+`Counterexamples/Pseudoelement.lean` for details. -/
 theorem pseudo_pullback {P Q R : C} {f : P ⟶ R} {g : Q ⟶ R} {p : P} {q : Q} :
     f p = g q →
       ∃ s, pullback.fst f g s = p ∧ pullback.snd f g s = q :=
