@@ -570,37 +570,6 @@ theorem exists_isSubordinate_chartAt_source :
   apply exists_isSubordinate _ isClosed_univ _ (fun i ↦ (chartAt H _).open_source) (fun x _ ↦ ?_)
   exact mem_iUnion_of_mem x (mem_chart_source H x)
 
-/--
-Let `ρ` be a smooth partition of unity subordinate to an open cover `U`.
-Let `s_loc` be a family of local sections, where each `s_loc i` is $C^n$ smooth on `U i`
-(when viewed as a map to the total space of the bundle).
-Then the global section `x ↦ ∑ᶠ i, ρ i x • s_loc i x`, when viewed as a map to the total space,
-is $C^n$ smooth.
--/
-theorem contMDiff_totalSpace_weighted_sum_of_local_sections
-    {E : Type uE} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    {H : Type uH} [TopologicalSpace H] (I : ModelWithCorners ℝ E H) {M : Type uM}
-      [TopologicalSpace M] [ChartedSpace H M]
-    {F_fiber : Type*} [NormedAddCommGroup F_fiber] [NormedSpace ℝ F_fiber]
-    (V : M → Type*) [∀ x, NormedAddCommGroup (V x)] [∀ x, Module ℝ (V x)]
-    [TopologicalSpace (TotalSpace F_fiber V)] [FiberBundle F_fiber V] [VectorBundle ℝ F_fiber V]
-    {n : ℕ∞} {ι : Type*} (ρ : SmoothPartitionOfUnity ι I M univ) (s_loc : ι → ((x : M) → V x))
-    (U : ι → Set M) (hU_isOpen : ∀ i, IsOpen (U i)) (hρ_subord : ρ.IsSubordinate U)
-    (h_smooth_s_loc : ∀ i, ContMDiffOn I (I.prod 𝓘(ℝ, F_fiber)) n
-      (fun x ↦ TotalSpace.mk' F_fiber x (s_loc i x)) (U i)) :
-    ContMDiff I (I.prod 𝓘(ℝ, F_fiber)) n
-      (fun x ↦ TotalSpace.mk' F_fiber x (∑ᶠ (j : ι), (ρ j x) • (s_loc j x))) := by
-  have (j : ι) : ContMDiff I (I.prod 𝓘(ℝ, F_fiber)) n
-      (fun x ↦ TotalSpace.mk' F_fiber x ((ρ j x) • (s_loc j x))) := by
-    apply ContMDiffOn.smul_section_of_tsupport ?_ (hU_isOpen j) (hρ_subord j) (h_smooth_s_loc j)
-    exact ((ρ j).contMDiff).of_le (sup_eq_left.mp rfl) |>.contMDiffOn
-  apply ContMDiff.finsum_section_of_locallyFinite ?_ this
-  -- Future: can grind do this?
-  apply ρ.locallyFinite.subset fun i x hx ↦ ?_
-  rw [support]
-  rw [mem_setOf_eq] at hx ⊢
-  exact left_ne_zero_of_smul hx
-
 end SmoothPartitionOfUnity
 
 variable [SigmaCompactSpace M] [T2Space M] {t : M → Set F} {n : ℕ∞}
@@ -638,11 +607,20 @@ theorem exists_contMDiffOn_section_forall_mem_convex_of_local
   -- Define the global section `s` by taking a weighted sum of the local sections.
   let s x : V x := ∑ᶠ j, (ρ j x) • s_loc j x
   -- Prove that `s`, when viewed as a map to the total space, is smooth.
-  have s_smooth : ContMDiff I (I.prod 𝓘(ℝ, F_fiber)) n (fun x ↦ TotalSpace.mk' F_fiber x (s x)) :=
-    ρ.contMDiff_totalSpace_weighted_sum_of_local_sections
-      I V s_loc U (fun x ↦ isOpen_interior) hρU fun j ↦ (s_smooth j).mono interior_subset
+  have (j : M) : ContMDiff I (I.prod 𝓘(ℝ, F_fiber)) n
+      (fun x ↦ TotalSpace.mk' F_fiber x ((ρ j x) • (s_loc j x))) := by
+    refine ContMDiffOn.smul_section_of_tsupport ?_ isOpen_interior (hρU j)
+      ((s_smooth j).mono interior_subset)
+    exact ((ρ j).contMDiff).of_le (sup_eq_left.mp rfl) |>.contMDiffOn
+  have hs : ContMDiff I (I.prod 𝓘(ℝ, F_fiber)) n (fun x ↦ TotalSpace.mk' F_fiber x (s x)) := by
+    apply ContMDiff.finsum_section_of_locallyFinite ?_ this
+    -- Future: can grind do this?
+    apply ρ.locallyFinite.subset fun i x hx ↦ ?_
+    rw [support]
+    rw [mem_setOf_eq] at hx ⊢
+    exact left_ne_zero_of_smul hx
   -- Construct the smooth section and prove it lies in the convex sets `t x`.
-  refine ⟨⟨s, s_smooth⟩, fun x ↦ ?_⟩
+  refine ⟨⟨s, hs⟩, fun x ↦ ?_⟩
   apply (ht_conv x).finsum_mem (ρ.nonneg · x) (ρ.sum_eq_one (mem_univ x))
   intro j h_ρjx_ne_zero
   have h_x_in_tsupport_ρj : x ∈ tsupport (ρ j) := subset_closure (mem_support.mpr h_ρjx_ne_zero)
