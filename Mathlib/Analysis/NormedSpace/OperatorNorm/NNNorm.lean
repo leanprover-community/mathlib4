@@ -186,8 +186,8 @@ theorem exists_nnnorm_eq_one_lt_apply_of_lt_opNNNorm [NormedAlgebra ℝ 𝕜]
     r < 1⁻¹ * ‖f x‖₊ := by simpa
     _ < ‖x‖₊⁻¹ * ‖f x‖₊ := by gcongr; exact (zero_le r).trans_lt hr
 
-/-- When the domain is a real normed space, `sSup_unitClosedBall_eq_norm` can be tightened to take
-the supremum over only the `Metric.sphere`. -/
+/-- When the domain is a real normed space, `ContinuousLinearMap.sSup_unitClosedBall_eq_nnnorm` can
+be tightened to take the supremum over only the `Metric.sphere`. -/
 theorem sSup_sphere_eq_nnnorm [NormedAlgebra ℝ 𝕜] (f : E →SL[σ₁₂] F) :
     sSup ((fun x => ‖f x‖₊) '' Metric.sphere 0 1) = ‖f‖₊ := by
   cases subsingleton_or_nontrivial E
@@ -199,6 +199,12 @@ theorem sSup_sphere_eq_nnnorm [NormedAlgebra ℝ 𝕜] (f : E →SL[σ₁₂] F)
     simpa only [mul_one] using f.le_opNorm_of_le (mem_sphere_zero_iff_norm.1 hx).le
   · obtain ⟨x, hx, hxf⟩ := f.exists_nnnorm_eq_one_lt_apply_of_lt_opNNNorm hub
     exact ⟨_, ⟨x, by simpa using congrArg NNReal.toReal hx, rfl⟩, hxf⟩
+
+/-- When the domain is a real normed space, `ContinuousLinearMap.sSup_unitClosedBall_eq_norm` can be
+tightened to take the supremum over only the `Metric.sphere`. -/
+theorem sSup_sphere_eq_norm [NormedAlgebra ℝ 𝕜] (f : E →SL[σ₁₂] F) :
+    sSup ((fun x => ‖f x‖) '' Metric.sphere 0 1) = ‖f‖ := by
+  simpa only [NNReal.coe_sSup, Set.image_image] using NNReal.coe_inj.2 f.sSup_sphere_eq_nnnorm
 
 end ContinuousLinearMap
 
