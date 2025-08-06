@@ -125,20 +125,14 @@ variable [LinearOrder k] [IsStrictOrderedRing k] [LinearOrder E] [IsOrderedAddMo
   [PosSMulStrictMono k E] {f : k → E} {x y : k}
 
 lemma slope_nonneg_iff_of_le (hxy : x ≤ y) : 0 ≤ slope f x y ↔ f x ≤ f y := by
-  rw [slope, vsub_eq_sub, smul_nonneg_iff]
-  simp only [inv_nonneg, sub_nonneg, hxy, true_and, inv_nonpos, tsub_le_iff_right, zero_add,
-    or_iff_left_iff_imp, and_imp]
-  intro hyx
-  rw [le_antisymm hxy hyx]
-  exact id
+  simp +contextual only [slope, vsub_eq_sub, smul_nonneg_iff, inv_nonneg, sub_nonneg, hxy, true_and,
+    inv_nonpos, tsub_le_iff_right, zero_add, Iff.intro (le_antisymm · hxy) le_of_eq,
+    or_iff_left_iff_imp, le_refl, implies_true]
 
 lemma slope_nonpos_iff_of_le (hxy : x ≤ y) : slope f x y ≤ 0 ↔ f y ≤ f x := by
-  rw [slope, vsub_eq_sub, smul_nonpos_iff]
-  simp only [inv_nonneg, sub_nonneg, hxy, true_and, inv_nonpos, tsub_le_iff_right, zero_add,
-    or_iff_left_iff_imp, and_imp]
-  intro hyx
-  rw [le_antisymm hxy hyx]
-  exact id
+  simp +contextual only [slope, vsub_eq_sub, smul_nonpos_iff, inv_nonneg, sub_nonneg, hxy,
+    tsub_le_iff_right, zero_add, true_and, inv_nonpos, Iff.intro (le_antisymm · hxy) le_of_eq,
+    or_iff_left_iff_imp, le_refl, implies_true]
 
 lemma slope_pos_iff_of_le (hxy : x ≤ y) : 0 < slope f x y ↔ f x < f y := by
   rw [← not_le, slope_nonpos_iff_of_le hxy, not_le]
