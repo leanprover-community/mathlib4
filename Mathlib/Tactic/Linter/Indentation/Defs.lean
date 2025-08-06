@@ -14,19 +14,24 @@ register_option linter.indentation : Bool := {
 }
 
 /-- docstring TODO -/
-register_option linter.indentation.debug : Bool := {
-  defValue := false
-}
+initialize registerTraceClass `Indentation
+initialize registerTraceClass `Indentation.run
 
 namespace Indentation
 
 section SyntaxTreeInfo
 
 mutual
+  structure ChildrenHeadTail where
+    head : SyntaxTreeInfo
+    headToken : SyntaxTreeInfo
+    tail : SyntaxTreeInfo
+    tailToken : SyntaxTreeInfo
+
   /-- docstring TODO -/
   structure ChildrenInfo where
     children : Array SyntaxTreeInfo
-    headTailIdxInChildren : Option (Nat × Nat)
+    headTail? : Option ChildrenHeadTail
     outIdx : Nat
 
   /-- docstring TODO -/
@@ -41,7 +46,9 @@ mutual
     idx : Nat
     childrenInfo? : Option ChildrenInfo
     parentInfo? : Option ParentInfo
-  deriving Repr, Inhabited
+    prevTokenIdx? : Option Nat
+    nextTokenIdx? : Option Nat
+  deriving Inhabited
 end
 
 /-- docstring TODO -/
@@ -49,6 +56,7 @@ inductive FlattenSyntaxTreeInfoElement
   | leaf (info : SyntaxTreeInfo) : FlattenSyntaxTreeInfoElement
   | into (info : SyntaxTreeInfo) : FlattenSyntaxTreeInfoElement
   | out (info : SyntaxTreeInfo) : FlattenSyntaxTreeInfoElement
+deriving Inhabited
 
 /-- docstring TODO -/
 abbrev FlattenSyntaxTreeInfo := Array FlattenSyntaxTreeInfoElement
@@ -63,20 +71,91 @@ def FlattenSyntaxTreeInfoElement.info : FlattenSyntaxTreeInfoElement → SyntaxT
 def SyntaxTreeInfo.children? (treeInfo : SyntaxTreeInfo) : Option (Array SyntaxTreeInfo) :=
   treeInfo.childrenInfo?.map (·.children)
 
+def SyntaxTreeInfo.isToken (treeInfo : SyntaxTreeInfo) : Bool := treeInfo.childrenInfo?.isNone
+
+def SyntaxTreeInfo.headToken? (treeInfo : SyntaxTreeInfo) : Option SyntaxTreeInfo :=
+  match treeInfo.childrenInfo? with
+  | .none => treeInfo
+  | .some { headTail? := .some { headToken := headToken, .. }, .. } => headToken
+  | _ => .none
+
+def SyntaxTreeInfo.headTokenIdx? (treeInfo : SyntaxTreeInfo) : Option Nat :=
+  treeInfo.headToken?.map (·.idx)
+
+def SyntaxTreeInfo.tailToken? (treeInfo : SyntaxTreeInfo) : Option SyntaxTreeInfo :=
+  match treeInfo.childrenInfo? with
+  | .none => treeInfo
+  | .some { headTail? := .some { tailToken := tailToken, .. }, .. } => tailToken
+  | _ => .none
+
+def SyntaxTreeInfo.tailTokenIdx? (treeInfo : SyntaxTreeInfo) : Option Nat :=
+  treeInfo.tailToken?.map (·.idx)
+
+def FlattenSyntaxTreeInfoElement.nextTokenIdx? : FlattenSyntaxTreeInfoElement → Option Nat
+  | .out i
+  | .leaf i => i.nextTokenIdx?
+  | .into i => i.headTokenIdx? <|> i.nextTokenIdx?
+
+class ForInTokens where
+  subarray : Subarray FlattenSyntaxTreeInfoElement
+
+def forInTokens (subarray : Subarray FlattenSyntaxTreeInfoElement) : ForInTokens := ⟨subarray⟩
+
+def FlattenSyntaxTreeInfo.forInTokens (array : FlattenSyntaxTreeInfo) : ForInTokens :=
+  ⟨array.toSubarray⟩
+
+partial instance {m} : ForIn m ForInTokens FlattenSyntaxTreeInfoElement where
+  forIn {β} [Monad m] subarray (init : β) f : m β := do
+    let subarray := subarray.subarray
+    let start := subarray.start
+    let stop := subarray.stop
+    let array := subarray.array
+    let .some start_ := array[start]? | return init
+    let .some start := if start_.info.isToken then .some start else start_.nextTokenIdx? |
+      return init
+    let rec @[specialize] loop (i : Nat) (state : β) : m β := do
+      if i >= stop then return state
+      let i := array[i]!
+      match (← f i state) with
+      | ForInStep.yield state =>
+        match i.nextTokenIdx? with
+        | .some next => loop next state
+        | .none => pure state
+      | ForInStep.done state => pure state
+    loop start init
+
+def ChildrenHeadTail.getInfo (headTail : ChildrenHeadTail) : SourceInfo :=
+  .synthetic headTail.head.stx.getPos?.get! headTail.tail.stx.getTailPos?.get!
+
+def ChildrenHeadTail.getHeadIdxInChildren (headTail : ChildrenHeadTail) : Nat :=
+  headTail.head.parentInfo?.get!.idxInChildren
+
+def ChildrenHeadTail.getTailIdxInChildren (headTail : ChildrenHeadTail) : Nat :=
+  headTail.tail.parentInfo?.get!.idxInChildren
+
+def SyntaxTreeInfo.hasToken (treeInfo : SyntaxTreeInfo) : Bool :=
+  treeInfo.isToken || treeInfo.childrenInfo?.elim false (·.headTail?.isSome)
+
 /-- docstring TODO -/
 def SyntaxTreeInfo.getInfo? (treeInfo : SyntaxTreeInfo) : Option SourceInfo :=
-  treeInfo.stx.getInfo?
+  if treeInfo.isToken then
+    treeInfo.stx.getInfo?
+  else
+    (·.getInfo) <$> (treeInfo.childrenInfo? >>= (·.headTail?))
 
 /-- docstring TODO -/
 def SyntaxTreeInfo.getPos? (treeInfo : SyntaxTreeInfo) : Option String.Pos :=
-  treeInfo.getInfo?.map (·.getPos?) |>.getD .none
+  treeInfo.getInfo?.map (·.getPos?.get!)
 
 /-- docstring TODO -/
 def SyntaxTreeInfo.getTailPos? (treeInfo : SyntaxTreeInfo) : Option String.Pos :=
-  treeInfo.getInfo?.map (·.getTailPos?) |>.getD .none
+  treeInfo.getInfo?.map (·.getTailPos?.get!)
 
-def SyntaxTreeInfo.getSubstring? (src : String) (treeInfo : SyntaxTreeInfo) : Option Substring :=
-  treeInfo.getPos?.map (⟨src, ·, treeInfo.getTailPos?.get!⟩)
+def SyntaxTreeInfo.getSrc? (treeInfo : SyntaxTreeInfo) : Option String :=
+  treeInfo.headToken?.map (·.stx.getInfo?.get!.getTrailing?.get!.str)
+
+def SyntaxTreeInfo.getSubstring? (treeInfo : SyntaxTreeInfo) : Option Substring :=
+  treeInfo.getPos?.map (⟨treeInfo.getSrc?.get!, ·, treeInfo.getTailPos?.get!⟩)
 
 /-- docstringTODO -/
 def SyntaxTreeInfo.headTailOfChildren (children : Array SyntaxTreeInfo) :
@@ -88,47 +167,72 @@ def SyntaxTreeInfo.headTailOfChildren (children : Array SyntaxTreeInfo) :
         children.findRev? (·.getPos?.isSome) |>.map (·.parentInfo?.get!.idxInChildren) |>.get!)
 
 /-- docstring TODO -/
-def SyntaxTreeInfo.ofSyntaxAux (stx : Syntax) (flatten : FlattenSyntaxTreeInfo) (nextLinterIdx : Nat)
-    (parentInfo : Option ParentInfo) :
-    SyntaxTreeInfo × FlattenSyntaxTreeInfo × Nat :=
+partial def SyntaxTreeInfo.ofSyntaxAux (stx : Syntax) (parentInfo : Option ParentInfo) :
+    StateM (FlattenSyntaxTreeInfo × Option Nat) SyntaxTreeInfo := do
+  let idx := (← get).fst.size
+  let newTreeInfo : SyntaxTreeInfo :=
+    { stx := stx, idx := idx, nextTokenIdx? := .none, prevTokenIdx? := (← get).snd,
+      parentInfo? := parentInfo,
+      childrenInfo? := .none /- to be updated in node -/ }
   match stx with
   | .atom s ..
   | .ident s .. =>
     assert! match s with | .original .. => true | _ => false
-    let leaf : SyntaxTreeInfo :=
-      { stx := stx, idx := nextLinterIdx, childrenInfo? := .none, parentInfo? := parentInfo}
-    (leaf, flatten.push (.leaf leaf), nextLinterIdx + 1)
-  | .node _ kind args =>
-    let intoIdx := nextLinterIdx
-    let flatten := flatten.push (.into default)
-    let ⟨children, flatten, outIdx, _⟩ : _ × _ × _ × ParentInfo :=
-      args.foldl
-        (fun (arr, flatten, idx, parentInfo) stx ↦
-          let ⟨treeInfo, flatten, idx⟩ := SyntaxTreeInfo.ofSyntaxAux stx flatten idx parentInfo
-          ⟨arr.push treeInfo, flatten, idx,
-            { parentInfo with idxInChildren := parentInfo.idxInChildren + 1}⟩)
-        (#[], flatten, intoIdx + 1, { parentIdx := intoIdx, idxInChildren := 0})
-    let headTail := SyntaxTreeInfo.headTailOfChildren children
-    let info := (headTail.map · |>.getD SourceInfo.none) <| fun ⟨h, t⟩ ↦
-      SourceInfo.synthetic (children[h]!.getPos?.get!) (children[t]!.getTailPos?.get!)
-    let stx : Syntax := .node info kind <| children.map (·.stx)
+    modify <| (·.fst.push (.leaf newTreeInfo), Option.some idx)
+    pure newTreeInfo
+  | .node _ _ args =>
+    modify <| Prod.map (·.push (.into default)) id
+    let children ←
+      args.mapIdxM
+        (Option.some { parentIdx := idx, idxInChildren := · } |> SyntaxTreeInfo.ofSyntaxAux ·)
+    let headTail? : Option ChildrenHeadTail :=
+      match children.find? (·.hasToken) |>.map (·, children.findRev? (·.hasToken) |>.get!) with
+      | .some (head, tail) => .some <|
+        { head := head, headToken := head.headToken?.get!,
+          tail := tail, tailToken := tail.tailToken?.get! }
+      | .none => .none
     let childrenInfo : ChildrenInfo :=
-      { children := children, outIdx := outIdx, headTailIdxInChildren := headTail}
-    let node : SyntaxTreeInfo :=
-      { stx := stx, idx := intoIdx, childrenInfo? := childrenInfo, parentInfo? := parentInfo }
-    let flatten := (flatten.set! intoIdx <| .into node).push <| .out node
-    (node, flatten, outIdx + 1)
+      { children := children, outIdx := (← get).fst.size, headTail? := headTail? }
+    let node : SyntaxTreeInfo := { newTreeInfo with childrenInfo? := childrenInfo }
+    modify <| Prod.map (·.set! idx (.into node) |>.push (.out node)) id
+    pure node
   | .missing => -- It should not happen?
-    let childrenInfo : ChildrenInfo:=
-      { children := #[], outIdx := nextLinterIdx + 1, headTailIdxInChildren := .none }
-    let node :=
-      { stx := stx, idx := nextLinterIdx, childrenInfo? := childrenInfo, parentInfo? := parentInfo }
-    (node, flatten.push (.into node) |>.push (.out node), nextLinterIdx + 2)
+    let idx := (← get).fst.size
+    let childrenInfo : ChildrenInfo := { children := #[], outIdx := idx + 1, headTail? := .none }
+    let pseudoNode : SyntaxTreeInfo := { newTreeInfo with childrenInfo? := childrenInfo }
+    modify <| Prod.map (·.push (.into pseudoNode) |>.push (.out pseudoNode)) id
+    pure pseudoNode
+
+/-- docstring TODO -/
+partial def SyntaxTreeInfo.updateNextTokenIdx (treeInfo : SyntaxTreeInfo) :
+    StateM (FlattenSyntaxTreeInfo × Option Nat) SyntaxTreeInfo := do
+  let treeInfo := { treeInfo with nextTokenIdx? := (← get).snd }
+  match treeInfo with
+  | { childrenInfo? := .none, .. } =>
+    modify <| Prod.map (·.set! treeInfo.idx (.leaf treeInfo)) id
+    pure treeInfo
+  | { childrenInfo? := .some childrenInfo@{ outIdx := outIdx, ..}, idx := idx, .. } =>
+    -- it could be more directly and effectly if there were `Array.mapRevM`
+    let children :=
+      (← childrenInfo.children.reverse.mapM (SyntaxTreeInfo.updateNextTokenIdx ·)).reverse
+    let flatten := (← get).fst
+    let headTail? : Option ChildrenHeadTail := childrenInfo.headTail?.map fun x => {
+      head := flatten[x.head.idx]!.info,
+      headToken := flatten[x.headToken.idx]!.info,
+      tail := flatten[x.tail.idx]!.info,
+      tailToken := flatten[x.tailToken.idx]!.info
+    }
+    let childrenInfo : ChildrenInfo :=
+      { childrenInfo with children := children, headTail? := headTail? }
+    let treeInfo := { treeInfo with childrenInfo? := .some childrenInfo }
+    modify <| Prod.map (·.set! idx (.into treeInfo) |>.set! outIdx (.out treeInfo)) id
+    pure treeInfo
 
 /-- docstring TODO -/
 def SyntaxTreeInfo.ofSyntax (stx : Syntax) : SyntaxTreeInfo × FlattenSyntaxTreeInfo :=
-  let ⟨treeInfo, flatten, _⟩ := SyntaxTreeInfo.ofSyntaxAux stx.updateLeading #[] 0 .none
-  ⟨treeInfo, flatten⟩
+  let go := SyntaxTreeInfo.ofSyntaxAux stx.updateLeading none >>= SyntaxTreeInfo.updateNextTokenIdx
+  let ⟨info, flatten, _⟩ := go.run (#[], .none)
+  (info, flatten)
 
 /-- docstring TODO -/
 def indentationOfPos (str : String) (pos : String.Pos) : Option Nat :=
@@ -140,10 +244,10 @@ def indentationBeforePos (str : String) (pos : String.Pos) : Nat :=
   let beforePos : Substring := ⟨str, str.findLineStart pos, pos⟩
   beforePos.takeWhile (· == ' ') |>.bsize
 
-def SyntaxTreeInfo.getIndentation? (treeInfo : SyntaxTreeInfo) (src : String) : Option Nat := do
-  treeInfo.getPos?.map (indentationOfPos src ·) |>.getD .none
+def SyntaxTreeInfo.getIndentation? (treeInfo : SyntaxTreeInfo) : Option Nat :=
+  treeInfo.getPos?.bind (indentationOfPos treeInfo.getSrc?.get! ·)
 
-def isInCategories {m} [Monad m] [MonadEnv m] (stx : Syntax) : m Bool := do
+def categoriesContain {m} [Monad m] [MonadEnv m] (stx : Syntax) : m Bool := do
   for ⟨_, cat⟩ in (parserExtension.getState (← getEnv)).categories do
     if cat.kinds.contains stx.getKind then
       return true
@@ -151,10 +255,36 @@ def isInCategories {m} [Monad m] [MonadEnv m] (stx : Syntax) : m Bool := do
 
 def SyntaxTreeInfo.needUpdatingIndentation {m} [Monad m] [MonadEnv m]
     (treeInfo : SyntaxTreeInfo) : m Bool :=
-  isInCategories treeInfo.stx
+  categoriesContain treeInfo.stx
 
-#eval do assert! (← SyntaxTreeInfo.needUpdatingIndentation
-  { (default : SyntaxTreeInfo) with stx := .node .none ``declaration #[]})
+instance : ToString ChildrenHeadTail where
+  toString x := s!"({x.head.idx} → {x.headToken.idx}) : ({x.tail.idx} → {x.tailToken.idx}))"
+
+instance : ToString ParentInfo where
+  toString x := s!"({x.parentIdx}.{x.idxInChildren})"
+
+open MessageData in
+partial instance : ToMessageData SyntaxTreeInfo where
+  toMessageData i := go i 0
+where
+  go (i : SyntaxTreeInfo) (n : Nat) : Id MessageData := do
+    let indentation := toMessageData <| "".pushn ' ' (2 * n)
+    let name := match i.stx with
+      | .node _ kind _ => MessageData.ofConstName kind
+      | .ident _ _ v _ => m!"{i.stx.getKind} {ofConstName v}"
+      | .atom _ v => m!"{i.stx.getKind} {repr v}"
+      | .missing => m!"{i.stx.getKind}"
+    let parent := i.parentInfo?.elim "" fun p => s!"({p})"
+    let mut msg := m!"{indentation}\{{i.idx}: {name} {parent}"
+    if let .some childrenInfo := i.childrenInfo? then
+      msg := msg ++ m!"\n{indentation} ["
+      if let some headTail := childrenInfo.headTail? then
+        msg := msg ++ m!" {headTail}"
+      for c in childrenInfo.children do
+        msg := msg ++ m!"\n{← go c (n+1)}"
+      msg := msg ++ m!"]"
+    msg := msg ++ m!"}"
+    pure msg
 
 end SyntaxTreeInfo
 
@@ -162,13 +292,12 @@ section IndentationLinter
 
 /-- docstring TODO -/
 structure Limitation where
-  src : String
   indentation : Nat := 0
   additionalIndentation : Nat := 0
   oneAdditionalIndentation := 2
-  isExactIndentation : Bool
+  isExactIndentation : Bool := false
   atMost : Option Nat := .none
-  flatten : FlattenSyntaxTreeInfo
+deriving Repr
 
 structure IndentationError where
   msg : MessageData
@@ -179,20 +308,25 @@ inductive Result
   | finished
 deriving Inhabited
 
-abbrev LinterM := ExceptT IndentationError CommandElabM
+abbrev LinterM := ReaderT (FlattenSyntaxTreeInfo × String) <| ExceptT IndentationError CommandElabM
+
+def getFlatten : LinterM FlattenSyntaxTreeInfo := Prod.fst <$> read
+
+def getSrc : LinterM String := Prod.snd <$> read
 
 /-- docstring TODO -/
-def throwIndentationError (stx : Syntax) (msg : MessageData) (limit : Limitation)
-    (range : Option String.Range := stx.getPos?.map fun p => ⟨limit.src.findLineStart p, p⟩) :
+def throwIndentationError (info : SyntaxTreeInfo) (msg : MessageData)
+    (range : Option String.Range :=
+      info.getPos?.map fun p => ⟨info.getSrc?.get!.findLineStart p, p⟩) :
     LinterM Unit :=
   let stx :=
     match range with
-    | .some range => stx.setInfo <| .synthetic range.start range.stop
-    | _ => stx
+    | .some range => info.stx.setInfo <| .synthetic range.start range.stop
+    | _ => info.stx
   throwThe IndentationError { msg := msg, stx := stx }
 
 /-- docstring TODO -/
-abbrev IndentationLinter :=
+def IndentationLinter :=
   (treeInfo : SyntaxTreeInfo) → (limit : Limitation) → LinterM Result
 
 instance : AndThen IndentationLinter where
@@ -252,21 +386,36 @@ initialize indentationLinterRef : IO.Ref IndentationLinters ←
 def addIndentationLinters (linter : IndentationLinters) (ref := indentationLinterRef) : IO Unit :=
   ref.modify (·.add linter)
 
-def runLinterOn (ref := indentationLinterRef) : IndentationLinter :=
-  fun info limit ↦ do
-    let linters ← ref.get
-    let result ← match info.stx with
-      | .node (kind := kind) .. => linters.nodeLinters.find? kind |>.mapM (· info limit)
-      | .atom (val := val) .. => linters.atomLinters.get? val |>.mapM (· info limit)
-      | .ident (val := val) .. => linters.identLinters.find? val |>.mapM (· info limit)
-      | _ => pure .none
-    let mut result := result.getD <| .nextLinter limit
-    for (_, i) in linters.linters do
-      match result with
-      | .finished => return result
-      | .nextLinter newLimit =>
-        result ← i info newLimit
-    pure result
+open MessageData in
+def runLinterOn (ref := indentationLinterRef) : IndentationLinter := fun info limit ↦ do
+  trace[Indentation.run]
+  m!"runLintersOn {info.idx} with {repr limit}"
+  let linters ← ref.get
+  let result ← match info.stx with
+    | .node (kind := kind) .. =>
+      linters.nodeLinters.find? kind |>.mapM (do
+        trace[Indentation.run] m!"on {info.idx} with linter for node kind {.ofConstName kind}"
+        · info limit)
+    | .atom (val := val) .. =>
+      linters.atomLinters.get? val |>.mapM (do
+        trace[Indentation.run] m!"on {info.idx}  with linter for node atom {val}"
+        · info limit)
+    | .ident (val := val) .. =>
+      linters.identLinters.find? val |>.mapM (do
+        trace[Indentation.run] m!"on {info.idx} with linter for node ident {.ofConstName val}"
+        · info limit)
+    | _ => pure .none
+  let mut result := result.getD <| .nextLinter limit
+  for (priority, i) in linters.linters do
+    match result with
+    | .finished =>
+      trace[Indentation.run] m!"finished on {info.idx}"
+      return result
+    | .nextLinter newLimit =>
+      trace[Indentation.run] m!"on {info.idx} with linter with priority {priority}"
+      result ← i info newLimit
+  trace[Indentation.run] m!"finished on {info.idx}"
+  pure result
 
 abbrev ensure (treeInfo : SyntaxTreeInfo) (limit : Limitation)
     (linter : IndentationLinter := runLinterOn) : LinterM Unit := do
@@ -282,19 +431,17 @@ partial def indentationLinter : Linter where run := withSetOptionIn fun stx => d
     return
   if (← get).messages.hasErrors then
     return
-  let debug := getLinterValue Mathlib.Linter.linter.indentation.debug (← getLinterOptions)
-  if debug then
-    IO.println (repr stx)
+  trace[Indentation] stx
   let ⟨treeInfo, flatten⟩ := SyntaxTreeInfo.ofSyntax stx
+  trace[Indentation] m!"syntax tree: {treeInfo}"
   let .some initialPos := treeInfo.getPos? | return
   let src := (← getFileMap).source
+  trace[Indentation] s!"initial indentation : {treeInfo.getIndentation?}"
   let result ← ensure treeInfo {
-      src := src,
       indentation := 0,
       additionalIndentation := 0,
       isExactIndentation := false,
-      atMost := .some 0,
-      flatten := flatten }
+      atMost := .some 0 } |>.run (flatten, src)
   if let .error e := result then
     logLint Mathlib.Linter.linter.indentation e.stx e.msg
 

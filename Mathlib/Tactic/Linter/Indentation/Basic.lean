@@ -12,33 +12,32 @@ def ensureIndentationAt (treeInfo : SyntaxTreeInfo) (limit : Limitation)
     (msgGtAtMost : Option (Nat → MessageData) :=
       .some (m!"too many spaces, which should be at most {·}")) :
     LinterM Unit := do
-  let .some pos := treeInfo.getPos? | return
-  let .some spaces := indentationOfPos limit.src pos | return
+  let .some indent := treeInfo.getIndentation? | return
   let checkAddition :=
     if let .some c := checkAddition? then c
-    else treeInfo.stx.isAtom || treeInfo.stx.isIdent || (← isInCategories treeInfo.stx)
+    else treeInfo.stx.isAtom || treeInfo.stx.isIdent || (← categoriesContain treeInfo.stx)
   let atLeast := limit.indentation + if checkAddition then limit.additionalIndentation else 0
-  if spaces < atLeast then
+  if indent < atLeast then
     if let .some msg := msgLtAtLeast then
-      throwIndentationError treeInfo.stx (msg atLeast) limit
+      throwIndentationError treeInfo (msg atLeast)
   else if let .some atMost := limit.atMost then
-    if spaces > atMost then
+    if indent > atMost then
       if let .some msg := msgGtAtMost then
-        throwIndentationError treeInfo.stx (msg atMost) limit
+        throwIndentationError treeInfo (msg atMost)
 
-def limitForChildren (treeInfo : SyntaxTreeInfo) (limit : Limitation) (updateIndentation : Bool) :
+def Limitation.forChildren (treeInfo : SyntaxTreeInfo) (limit : Limitation) (updateIndentation : Bool) :
     CommandElabM Limitation := do
   let limit := { limit with atMost := .none }
   if !updateIndentation then return limit
-  if let .some indent := treeInfo.getIndentation? limit.src then
+  if let .some indent := treeInfo.getIndentation? then
     pure { limit with indentation := indent, additionalIndentation := 0, isExactIndentation := true}
   else
     pure { limit with isExactIndentation := false }
 
-def limitForHead (treeInfo : SyntaxTreeInfo) (limit : Limitation) (updateIndentation : Bool) :
+def Limitation.forHead (treeInfo : SyntaxTreeInfo) (limit : Limitation) (updateIndentation : Bool) :
     CommandElabM Limitation := do
   if updateIndentation then
-    if let .some indent := treeInfo.getIndentation? limit.src then
+    if let .some indent := treeInfo.getIndentation? then
       return { limit with
         indentation := indent,
         additionalIndentation := limit.indentation + limit.additionalIndentation - indent,
@@ -58,15 +57,15 @@ def ensureIndentationAtNode (treeInfo : SyntaxTreeInfo) (limit : Limitation)
   let updateIndentation ← match updateIndentation? with
     | .some updateIndentation => pure updateIndentation
     | _ => treeInfo.needUpdatingIndentation
-  let childrenLimit ← limitForChildren treeInfo limit updateIndentation
-  let headLimit ← limitForHead treeInfo limit updateIndentation
+  let childrenLimit ← limit.forChildren treeInfo updateIndentation
+  let headLimit ← limit.forHead treeInfo updateIndentation
   pure (headLimit, childrenLimit)
 
 def defaultLinter : IndentationLinter := fun treeInfo limit ↦ do
   match treeInfo.childrenInfo? with
-  | .some { children := children, headTailIdxInChildren := headTailIdxInChildren, ..} =>
+  | .some { children := children, headTail? := headTail, ..} =>
     let (headLimit, childrenLimit) ← ensureIndentationAtNode treeInfo limit
-    let afterHead := headTailIdxInChildren.map (·.fst + 1) |>.getD children.size
+    let afterHead := headTail.elim children.size (·.getHeadIdxInChildren + 1)
     for child in children[:afterHead] do
       ensure child headLimit
     for child in children[afterHead:] do

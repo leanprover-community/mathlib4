@@ -31,26 +31,14 @@ def _root_.Subarray.find? {α : Type} (as : Subarray α) (p : α → Bool) :
 
 namespace Mathlib.Linter.Indentation
 
-/--
-from https://github.com/leanprover/vscode-lean4/blob/v0.0.209/vscode-lean4/language-configuration.json
--/
-def brackets : Std.HashMap String (String × Nat) := .ofList [
-  ("(", ")", 2), ("`(", ")", 2), ("``(", ")", 2), ("[", "]", 2), ("#[", "]", 2), ("@[", "]", 2),
-  ("%[", "]", 2), ("{", "}", 2), ("⁅", "⁆", 2), ("⁽", "⁾", 2), ("₍", "₎", 2), ("〈", "〉", 2),
-  ("⟮", "⟯", 2), ("⎴", "⎵", 2), ("⟅", "⟆", 2), ("⟦", "⟧", 2), ("⟨", "⟩", 1), ("⟪", "⟫", 2),
-  ("⦃", "⦄", 2), ("〈", "〉", 2), ("《", "》", 2), ("‹", "›", 2), ("«", "»", 2), ("「", "」", 2),
-  ("『", "』", 2), ("【", "】", 2), ("〔", "〕", 2), ("〖", "〗", 2), ("〚", "〛", 2),
-  ("︵", "︶", 2), ("︷", "︸", 2), ("︹", "︺", 2), ("︻", "︼", 2), ("︽", "︾", 2),
-  ("︿", "﹀", 2), ("﹁", "﹂", 2), ("﹃", "﹄", 2), ("﹙", "﹚", 2), ("﹛", "﹜", 2),
-  ("﹝", "﹞", 2), ("（", "）", 2), ("［", "］", 2), ("｛", "｝", 2), ("｢", "｣", 2)]
-
 /-- docstring TODO.
 https://leanprover-community.github.io/contribute/style.html#structuring-definitions-and-theorems -/
 def declarationLinter : IndentationLinter := fun treeInfo limit ↦ do
   let next := Result.nextLinter limit
   let { stx := stx, childrenInfo? := .some childrenInfo, .. } := treeInfo | unreachable!
-  let .some indent := treeInfo.getIndentation? limit.src | return next
-  let (_, limit) ← ensureIndentationAtNode treeInfo limit true true
+  let .some indent := treeInfo.getIndentation? | return next
+  let _ ← ensureIndentationAtNode treeInfo limit true true
+  let limit := { indentation := indent, isExactIndentation := true }
   let kind := stx.getKind
   match kind with
     | ``declaration | `«lemma» => pure ()
@@ -64,8 +52,9 @@ def declarationLinter : IndentationLinter := fun treeInfo limit ↦ do
   | ``«structure» => return next -- TODO
   | ``«classInductive» => return next -- TODO
   | _ => panic! s!"unknown declaration `{name}`, please send us feedback"
-  -- check indentation of modifiers
-  ensure modifiers { limit with atMost := indent }
+  -- check indentation of modifiers. `atMost` isn't set here since it will be applied in
+  -- `declModifiers` instead.
+  ensure modifiers limit
   /- `idxOfDeclHead` is the index of the head (such as `theorem` and `instance`) in
   `declArgs.children`. It is not 0 in instance declaration, where the first (index 0) node is a
   `Lean.Parser.Term.attrKind`. -/
@@ -84,19 +73,17 @@ def declarationLinter : IndentationLinter := fun treeInfo limit ↦ do
   for child in declArgs.children[: idxOfDeclHead + 1] do
     ensure child limit
   for child in declArgs.children[idxOfDeclHead + 1 : idxOfValue.getD declArgs.children.size] do
-      -- + 2 instead of + 4 to allow something like:
+      -- + 2 instead of + 4 to allow something ignoring `additionalIndentation` like:
       -- example : by
       --     exact True := by trivial
     ensure child { limit with indentation := indent + 2, additionalIndentation := 2 }
     -- text-based check, since some nodes aren't enforced by `additionalIndentation`
-    let .some (first, last) := child.childrenInfo?.map (·.headTailIdxInChildren) |>.getD none |
-      continue
-    for i in limit.flatten[child.idx + first : child.idx + last + 1] do
-      let .leaf i := i | continue
-      let .some tokenIndent := i.getIndentation? limit.src | continue
-      if tokenIndent < tokenIndent + 4 then
-        throwIndentationError stx
-          m!"too few spaces, which should be at least {tokenIndent + 4}" limit
+    let .some headTail := child.childrenInfo?.bind (·.headTail?) | continue
+    for i in forInTokens (← getFlatten)[headTail.headToken.idx : headTail.tailToken.idx + 1] do
+      let .some tokenIndent := i.info.getIndentation? | continue
+      if tokenIndent < indent + 4 then
+        throwIndentationError i.info
+          m!"too few spaces, which should be at least {indent + 4}"
   if let .some idxOfValue := idxOfValue then
     -- check the declaration value (`:= ...`, `| ...`, and `where ...`)
     ensure declArgs.children[idxOfValue]!
@@ -107,19 +94,6 @@ def declarationLinter : IndentationLinter := fun treeInfo limit ↦ do
     for child in declArgs.children[idxOfValue + 1 : ] do
       ensure child { limit with atMost := .some (indent + limit.oneAdditionalIndentation) }
   return .finished
-
-def stringLinter : IndentationLinter :=
-  fun treeInfo limit ↦ do
-    let .some indent := treeInfo.getIndentation? limit.src | return .nextLinter limit
-    if treeInfo.getSubstring? limit.src |>.get!.contains '\n' then
-      if indent = 0 then return .finished
-      ensureIndentationAt treeInfo limit (msgLtAtLeast := .some
-        (m!"multi-line literal here should be \
-          either at the beginning of a line without indentation or \
-          indented by at least {·} spaces"))
-      return .finished
-    else
-      return .nextLinter limit
 
 /-- docstring TODO. -/
 partial def passToChildren
@@ -132,52 +106,66 @@ partial def passToChildren
       return .finished
     | _ => return .nextLinter limit
 
+def stringLinter : IndentationLinter :=
+  fun treeInfo limit ↦ do
+    let .some indent := treeInfo.getIndentation? | return .nextLinter limit
+    if treeInfo.getSubstring?.get!.contains '\n' then
+      if indent = 0 then return .finished
+      ensureIndentationAt treeInfo limit (msgLtAtLeast := .some
+        (m!"multi-line literal here should be \
+          either at the beginning of a line without indentation or \
+          indented by at least {·} spaces"))
+      passToChildren (treeInfo := treeInfo) (limit := {})
+    else
+      return .nextLinter limit
+
 def notAfterLineBreakLinter : IndentationLinter := fun treeInfo limit ↦ do
-  if (treeInfo.getIndentation? limit.src).isSome then
-    throwIndentationError treeInfo.stx "should not be at the beginning of a line" limit
+  if treeInfo.getIndentation?.isSome then
+    throwIndentationError treeInfo "should not be at the beginning of a line"
   return .nextLinter limit
 
 /-- docstring TODO. -/
-def deeperIndentationLinter (childrenLinter : IndentationLinter := runLinterOn)
+def additionalIndentationLinter (childrenLinter : IndentationLinter := runLinterOn)
     (additionalIndentation? : Option Nat := .none) (strict := false) :
     IndentationLinter := fun treeInfo limit ↦ do
   match treeInfo.childrenInfo? with
-  | .some { children := children, headTailIdxInChildren := headTailIdxInChildren, ..} =>
+  | .some { children := children, headTail? := headTail, ..} =>
     let additionalIndentation := additionalIndentation?.getD limit.additionalIndentation
     let atMost : Option Nat :=
-      match strict, treeInfo.getIndentation? limit.src with
+      match strict, treeInfo.getIndentation? with
       | true, .some indent => .some <| indent + additionalIndentation
       | _, _ => .none
     let (headLimit, limit) ← ensureIndentationAtNode treeInfo limit (updateIndentation? := true)
-    let afterHead := headTailIdxInChildren.map (·.fst + 1) |>.getD children.size
+    let afterHead := headTail.elim children.size (·.getHeadIdxInChildren + 1)
     for child in children[:afterHead] do
       ensure (linter := childrenLinter) child headLimit
     for child in children[afterHead:children.size] do
       ensure (linter := childrenLinter) child
-        { limit with
-          additionalIndentation := limit.oneAdditionalIndentation, atMost := atMost }
+        { limit with additionalIndentation := additionalIndentation, atMost := atMost }
     return .finished
   | _ => return .nextLinter limit
 
-partial def strictDeeperIndentationLinter (childrenLinter : IndentationLinter := runLinterOn)
+partial def strictAdditionalIndentationLinter (childrenLinter : IndentationLinter := runLinterOn)
     (additionalIndentation? : Option Nat := .none) :
-    IndentationLinter := deeperIndentationLinter childrenLinter additionalIndentation? true
+    IndentationLinter :=
+  additionalIndentationLinter childrenLinter additionalIndentation? true
 
+partial def aligningIndentationLinter (childrenLinter : IndentationLinter := runLinterOn) :
+    IndentationLinter :=
+  additionalIndentationLinter childrenLinter (additionalIndentation? := .some 0) true
 
 def byLinter : IndentationLinter := fun treeInfo limit ↦ do
-  let lastToken? := limit.flatten[0:treeInfo.idx].findRev?
-    (match · with | .leaf { stx := stx, ..} => stx.isAtom || stx.isIdent | _ => false)
-  match lastToken? with
-  | .some (.leaf { stx := .atom (val := ":=") .., .. }) =>
+  match treeInfo.prevTokenIdx?.map ((← getFlatten)[·]!)  with
+  | .some (FlattenSyntaxTreeInfoElement.leaf { stx := .atom (val := ":=") .., .. }) =>
     (notAfterLineBreakLinter >> passToChildren runLinterOn) treeInfo limit
-  | _ => strictDeeperIndentationLinter (treeInfo := treeInfo) (limit := limit)
+  | _ => strictAdditionalIndentationLinter (treeInfo := treeInfo) (limit := limit)
 
 /-- docstring TODO. -/
 def termAppLinter : IndentationLinter := fun treeInfo limit ↦ do
   match treeInfo.childrenInfo? with
-  | .some { children := children, headTailIdxInChildren := headTailIdxInChildren, ..} =>
+  | .some { children := children, headTail? := headTail?..} =>
     let (headLimit, limit) ← ensureIndentationAtNode treeInfo limit (updateIndentation? := true)
-    let afterHead := headTailIdxInChildren.map (·.fst + 1) |>.getD children.size -- should be 1
+    let afterHead := headTail?.elim children.size (·.getHeadIdxInChildren + 1) -- should be 1
     for child in children[:afterHead] do
       ensure child headLimit
     for child in children[afterHead:children.size - 1] do
@@ -200,24 +188,24 @@ def ignoringAdditionalIndentationLinter : IndentationLinter :=
 -/
 def nodeLinters : NameMap IndentationLinter :=
     .ofList [
-    (``declModifiers, passToChildren),
+    (``declModifiers, aligningIndentationLinter),
     (``declaration, declarationLinter), (`«lemma», declarationLinter),
     (`str, stringLinter), (``termS!_, stringLinter), (``termM!_, stringLinter),
     (``Std.termF!_, stringLinter), (interpolatedStrKind, stringLinter),
     (``Term.typeSpec, notAfterLineBreakLinter),
     (``Term.byTactic, byLinter), (``Term.byTactic', byLinter),
-    (``Tactic.tacticSeq, passToChildren),
+    (``Tactic.tacticSeq, aligningIndentationLinter),
     (``Term.app, termAppLinter),
-    (``whereStructInst, ignoringAdditionalIndentationLinter >> strictDeeperIndentationLinter),
-    (``Term.structInstField, strictDeeperIndentationLinter),
+    (``whereStructInst, ignoringAdditionalIndentationLinter >> strictAdditionalIndentationLinter),
+    -- (``Term.structInstField, strictAdditionalIndentationLinter),
     (``Term.whereDecls, ignoringAdditionalIndentationLinter),
-    (``Termination.partialFixpoint, strictDeeperIndentationLinter),
-    (``Termination.terminationBy, strictDeeperIndentationLinter),
-    (``Termination.coinductiveFixpoint, strictDeeperIndentationLinter),
-    (``Termination.inductiveFixpoint, strictDeeperIndentationLinter),
+    (``Termination.partialFixpoint, strictAdditionalIndentationLinter),
+    (``Termination.terminationBy, strictAdditionalIndentationLinter),
+    (``Termination.coinductiveFixpoint, strictAdditionalIndentationLinter),
+    (``Termination.inductiveFixpoint, strictAdditionalIndentationLinter),
     (``Termination.suffix, ignoringAdditionalIndentationLinter),
     (``ctor, ignoringAdditionalIndentationLinter),
-    (``Term.matchAlts, passToChildren),
+    (``Term.matchAlts, aligningIndentationLinter),
     (``Term.matchAlt, ignoringAdditionalIndentationLinter),
     (``declValSimple, notAfterLineBreakLinter >> passToChildren)
   ]
@@ -228,58 +216,68 @@ def atomLinters : Std.HashMap String IndentationLinter :=
     ("where", ignoringAdditionalIndentationLinter)
   ]
 
-def bracketPairLinter : IndentationLinter := fun treeInfo limit ↦ do
+/--
+from https://github.com/leanprover/vscode-lean4/blob/v0.0.209/vscode-lean4/language-configuration.json
+-/
+def brackets : Std.HashMap String (String × Nat) := .ofList [
+  ("(", ")", 2), ("`(", ")", 2), ("``(", ")", 2), ("[", "]", 2), ("#[", "]", 2), ("@[", "]", 2),
+  ("%[", "]", 2), ("{", "}", 2), ("⁅", "⁆", 2), ("⁽", "⁾", 2), ("₍", "₎", 2), ("〈", "〉", 2),
+  ("⟮", "⟯", 2), ("⎴", "⎵", 2), ("⟅", "⟆", 2), ("⟦", "⟧", 2), ("⟨", "⟩", 1), ("⟪", "⟫", 2),
+  ("⦃", "⦄", 2), ("〈", "〉", 2), ("《", "》", 2), ("‹", "›", 2), ("«", "»", 2), ("「", "」", 2),
+  ("『", "』", 2), ("【", "】", 2), ("〔", "〕", 2), ("〖", "〗", 2), ("〚", "〛", 2),
+  ("︵", "︶", 2), ("︷", "︸", 2), ("︹", "︺", 2), ("︻", "︼", 2), ("︽", "︾", 2),
+  ("︿", "﹀", 2), ("﹁", "﹂", 2), ("﹃", "﹄", 2), ("﹙", "﹚", 2), ("﹛", "﹜", 2),
+  ("﹝", "﹞", 2), ("（", "）", 2), ("［", "］", 2), ("｛", "｝", 2), ("｢", "｣", 2)]
+
+def bracketPairLinter (allowRightBracketDeeper := false) :
+    IndentationLinter := fun treeInfo limit ↦ do
   match treeInfo.childrenInfo? with
-  | .some { children := children, headTailIdxInChildren := .some (headIdx, tailIdx), ..} =>
-    let head := children[headIdx]!
-    let headStr := head.getSubstring? limit.src |>.get!.toString
-    let tail := children[tailIdx]!
-    let tailStr := tail.getSubstring? limit.src |>.get!.toString
+  | .some { children := children, headTail? := .some headTail, ..} =>
+    let head := headTail.head
+    let headStr := head.getSubstring?.get!.toString
+    let tail := headTail.tail
+    let tailStr := tail.getSubstring?.get!.toString
     let .some ⟨pairTailStr, indentInside⟩ := brackets.get? headStr | return .nextLinter limit
-    let isPairOfBrackets := headIdx != tailIdx && pairTailStr = tailStr
+    let isPairOfBrackets := head.idx != tail.idx && pairTailStr = tailStr
     if !isPairOfBrackets then return .nextLinter limit
     let (headLimit, childrenLimit) ←
       ensureIndentationAtNode treeInfo limit (updateIndentation? := true)
-    let .some contentHead := children[headIdx+1:tailIdx].find? (·.getPos?.isSome) |
-      if (treeInfo.getSubstring? limit.src).get!.contains '\n' then
-        throwIndentationError treeInfo.stx
-          m!"`{(head.getSubstring? limit.src).get!}` and \
-            `{(tail.getSubstring? limit.src).get!}` without content \
-            should not be splitted into two lines."
-          limit .none
+    let headIdx' := headTail.getHeadIdxInChildren
+    let tailIdx' := headTail.getTailIdxInChildren
+    let .some contentHead := children[headIdx' + 1 : tailIdx'].find? (·.getPos?.isSome) |
+      if treeInfo.getSubstring?.get!.contains '\n' then
+        throwIndentationError treeInfo
+          m!"`{head.getSubstring?.get!}` and `{tail.getSubstring?.get!}` without content \
+            bracketed should not be splitted into two lines."
+          .none
       return .nextLinter limit
     let newOneAdditionalIndent := min indentInside limit.oneAdditionalIndentation
     let headLimit := { headLimit with oneAdditionalIndentation := newOneAdditionalIndent }
     let childrenLimit := { childrenLimit with oneAdditionalIndentation := newOneAdditionalIndent }
     let headIsEndOfLine :=
-      Substring.contains ⟨limit.src, head.getPos?.get!, contentHead.getPos?.get!⟩ '\n'
+      Substring.contains ⟨(← getSrc), head.getPos?.get!, contentHead.getPos?.get!⟩ '\n'
     let addition := if headIsEndOfLine then newOneAdditionalIndent else 0
-    for child in children[: headIdx + 1] do
+    for child in children[: headIdx' + 1] do
       ensure child headLimit
-    for child in children[headIdx + 1 : tailIdx] do
+    for child in children[headIdx' + 1 : tailIdx'] do
       ensure child { childrenLimit with additionalIndentation := addition }
-    let tailAtMost : Option Nat :=
-      if let .some indent := head.getIndentation? limit.src then
-        .some indent
+    let tailAtMost : Option Nat ←
+      if allowRightBracketDeeper then
+        pure .none
       else
-        -- the minimum indentation in content
-        children[contentHead.parentInfo?.get!.idxInChildren : tailIdx].foldl
-          (fun m ↦ (·.getIndentation? limit.src |>.map fun i ↦ min i <| m.getD i))
-          .none
-    let tailAdditionalIndentation :=
-      if head.getIndentation? limit.src |>.isSome then limit.additionalIndentation
-      else 0
-    for child in children[tailIdx : ] do
-      ensure child
-        { childrenLimit with
-          additionalIndentation := tailAdditionalIndentation, atMost := tailAtMost }
+        pure <| head.getIndentation? <|>
+        (← forIn (forInTokens (← getFlatten)[contentHead.idx : tail.idx]) (none : Option Nat)
+          (return ForInStep.yield <| Option.merge min ·.info.getIndentation? ·))
+    trace[Indentation] repr (contentHead.idx, tail.idx, tailAtMost)
+    for child in children[tailIdx' : ] do
+      ensure child { childrenLimit with additionalIndentation := 0, atMost := tailAtMost }
     return .finished
   | _ => return .nextLinter limit
 
 initialize addIndentationLinters {
   nodeLinters := nodeLinters,
   atomLinters := atomLinters,
-  linters := #[(1, bracketPairLinter)]
+  linters := #[(2, bracketPairLinter)]
 }
 
 end Mathlib.Linter.Indentation
