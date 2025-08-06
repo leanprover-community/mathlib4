@@ -118,3 +118,32 @@ theorem lineMap_slope_lineMap_slope_lineMap (f : k → PE) (a b r : k) :
   convert lineMap_slope_slope_sub_div_sub f b (lineMap a b r) a hab.symm using 2
   rw [lineMap_apply_ring, eq_div_iff (sub_ne_zero.2 hab), sub_mul, one_mul, mul_sub, ← sub_sub,
     sub_sub_cancel]
+
+section Order
+
+variable [LinearOrder k] [IsStrictOrderedRing k] [LinearOrder E] [IsOrderedAddMonoid E]
+  [PosSMulStrictMono k E] {f : k → E} {x y : k}
+
+lemma slope_nonneg_iff_of_le (hxy : x ≤ y) : 0 ≤ slope f x y ↔ f x ≤ f y := by
+  rw [slope, vsub_eq_sub, smul_nonneg_iff]
+  simp only [inv_nonneg, sub_nonneg, hxy, true_and, inv_nonpos, tsub_le_iff_right, zero_add,
+    or_iff_left_iff_imp, and_imp]
+  intro hyx
+  rw [le_antisymm hxy hyx]
+  exact id
+
+lemma slope_nonpos_iff_of_le (hxy : x ≤ y) : slope f x y ≤ 0 ↔ f y ≤ f x := by
+  rw [slope, vsub_eq_sub, smul_nonpos_iff]
+  simp only [inv_nonneg, sub_nonneg, hxy, true_and, inv_nonpos, tsub_le_iff_right, zero_add,
+    or_iff_left_iff_imp, and_imp]
+  intro hyx
+  rw [le_antisymm hxy hyx]
+  exact id
+
+lemma slope_pos_iff_of_le (hxy : x ≤ y) : 0 < slope f x y ↔ f x < f y := by
+  rw [← not_le, slope_nonpos_iff_of_le hxy, not_le]
+
+lemma slope_neg_iff_of_le (hxy : x ≤ y) : slope f x y < 0 ↔ f y < f x := by
+  rw [← not_le, slope_nonneg_iff_of_le hxy, not_le]
+
+end Order
