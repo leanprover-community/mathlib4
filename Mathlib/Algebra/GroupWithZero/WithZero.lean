@@ -358,6 +358,11 @@ def exp (a : M) : Mᵐ⁰ := coe <| .ofAdd a
 
 @[simp] lemma exp_ne_zero {a : M} : exp a ≠ 0 := by simp [exp]
 
+lemma exp_injective : Injective (exp : M → Mᵐ⁰) :=
+  Multiplicative.ofAdd.injective.comp WithZero.coe_injective
+
+@[simp] lemma exp_inj {x y : M} : exp x = exp y ↔ x = y := exp_injective.eq_iff
+
 variable [AddMonoid M]
 
 /-- The logarithm as a function `Mᵐ⁰ → M` with junk value `log 0 = 0`. -/
@@ -370,6 +375,9 @@ def log (x : Mᵐ⁰) : M := x.recZeroCoe 0 Multiplicative.toAdd
 @[simp] lemma log_zero : log 0 = (0 : M) := rfl
 
 @[simp] lemma exp_zero : exp (0 : M) = 1 := rfl
+@[simp] lemma exp_eq_one {x : M} : exp x = 1 ↔ x = 0 := by
+  rw [← exp_zero, exp_inj]
+
 @[simp] lemma log_one : log 1 = (0 : M) := rfl
 
 lemma exp_add (a b : M) : exp (a + b) = exp a * exp b := rfl
