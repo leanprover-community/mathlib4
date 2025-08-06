@@ -142,8 +142,8 @@ open TopologicalSpace
 /-- The map associating to two probability measures their product is a continuous map. -/
 @[fun_prop]
 theorem continuous_prod [TopologicalSpace α] [TopologicalSpace β] [SecondCountableTopology α]
-  [SecondCountableTopology β] [PseudoMetrizableSpace α] [PseudoMetrizableSpace β]
-  [OpensMeasurableSpace α] [OpensMeasurableSpace β] :
+    [SecondCountableTopology β] [PseudoMetrizableSpace α] [PseudoMetrizableSpace β]
+    [OpensMeasurableSpace α] [OpensMeasurableSpace β] :
     Continuous (fun (μ : ProbabilityMeasure α × ProbabilityMeasure β) ↦ μ.1.prod μ.2) := by
   apply continuous_iff_continuousAt.2 (fun μ ↦ ?_)
   /- It suffices to check the convergence along elements of a π-system containing arbitrarily

@@ -459,9 +459,8 @@ theorem null_frontier_inter {μ : Measure α'} {s s' : Set α'}
   calc μ (frontier (s ∩ s'))
   _ ≤ μ (frontier s ∪ frontier s') := by
     apply measure_mono
-    apply (frontier_inter_subset _ _).trans (by grind)
-  _ ≤ μ (frontier s) + μ (frontier s') := by
-    apply measure_union_le
+    exact (frontier_inter_subset _ _).trans (by grind)
+  _ ≤ μ (frontier s) + μ (frontier s') := measure_union_le
   _ = 0 := by simp [h, h']
 
 instance separatesPointsOfOpensMeasurableSpaceOfT0Space [T0Space α] :
