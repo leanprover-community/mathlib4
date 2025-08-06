@@ -632,8 +632,8 @@ theorem exists_measure_iInter_lt {α ι : Type*} {_ : MeasurableSpace α} {μ : 
   have hFAnti : Antitone F :=
       fun i j hij => measure_mono (biInter_subset_biInter_left fun k hki => le_trans hki hij)
   suffices Filter.Tendsto F Filter.atTop (𝓝 0) by
-    rw [@ENNReal.tendsto_atTop_zero_iff_lt_of_antitone
-         _ hfin.nonempty _ _ hFAnti] at this
+    let _ := hfin.nonempty
+    rw [ENNReal.tendsto_atTop_zero_iff_lt_of_antitone hFAnti] at this
     exact this ε hε
   have hzero : μ (⋂ n, f n) = 0 := by
     simp only [hfem, measure_empty]
@@ -727,6 +727,12 @@ theorem measure_inter_eq_of_measure_eq {s t u : Set α} (hs : MeasurableSet s) (
       _ ≤ μ (t ∩ s) + μ (u \ s) := by gcongr
   have B : μ (u \ s) ≠ ∞ := (lt_of_le_of_lt (measure_mono diff_subset) ht_ne_top.lt_top).ne
   exact ENNReal.le_of_add_le_add_right B A
+
+lemma measure_inter_eq_of_ae {s t : Set α} (h : ∀ᵐ a ∂μ, a ∈ t) :
+    μ (t ∩ s) = μ s := by
+  refine le_antisymm (measure_mono inter_subset_right) ?_
+  apply EventuallyLE.measure_le
+  filter_upwards [h] with x hx h'x using ⟨hx, h'x⟩
 
 /-- The measurable superset `toMeasurable μ t` of `t` (which has the same measure as `t`)
 satisfies, for any measurable set `s`, the equality `μ (toMeasurable μ t ∩ s) = μ (u ∩ s)`.
@@ -885,7 +891,7 @@ theorem coe_nnreal_smul_apply {_m : MeasurableSpace α} (c : ℝ≥0) (μ : Meas
 
 @[simp]
 theorem nnreal_smul_coe_apply {_m : MeasurableSpace α} (c : ℝ≥0) (μ : Measure α) (s : Set α) :
-    c • μ s = c * μ s := by
+    c • μ s = c * μ s :=
   rfl
 
 theorem ae_smul_measure {p : α → Prop} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
@@ -1116,7 +1122,7 @@ protected theorem zero_le {_m0 : MeasurableSpace α} (μ : Measure α) : 0 ≤ �
   bot_le
 
 theorem nonpos_iff_eq_zero' : μ ≤ 0 ↔ μ = 0 :=
-  μ.zero_le.le_iff_eq
+  μ.zero_le.ge_iff_eq'
 
 @[simp]
 theorem measure_univ_eq_zero : μ univ = 0 ↔ μ = 0 :=

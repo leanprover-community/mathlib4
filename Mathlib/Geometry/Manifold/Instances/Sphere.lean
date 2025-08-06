@@ -205,8 +205,9 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
   set a : ℝ := innerSL _ v x
   set y := (ℝ ∙ v)ᗮ.orthogonalProjection x
   have split : ↑x = a • v + ↑y := by
-    convert ((ℝ ∙ v).orthogonalProjection_add_orthogonalProjection_orthogonal x).symm
-    exact (Submodule.orthogonalProjection_unit_singleton ℝ hv x).symm
+    rw [← ((ℝ ∙ v).starProjection_add_starProjection_orthogonal x),
+      Submodule.starProjection_unit_singleton ℝ hv x]
+    rfl
   have hvy : ⟪v, y⟫_ℝ = 0 := Submodule.mem_orthogonal_singleton_iff_inner_right.mp y.2
   have pythag : 1 = a ^ 2 + ‖y‖ ^ 2 := by
     have hvy' : ⟪a • v, y⟫_ℝ = 0 := by simp only [inner_smul_left, hvy, mul_zero]
@@ -332,7 +333,7 @@ private theorem findim (n : ℕ) [Fact (finrank ℝ E = n + 1)] : FiniteDimensio
 
 /-- Variant of the stereographic projection, for the sphere in an `n + 1`-dimensional inner product
 space `E`.  This version has codomain the Euclidean space of dimension `n`, and is obtained by
-composing the original sterographic projection (`stereographic`) with an arbitrary linear isometry
+composing the original stereographic projection (`stereographic`) with an arbitrary linear isometry
 from `(ℝ ∙ v)ᗮ` to the Euclidean space. -/
 def stereographic' (n : ℕ) [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
     PartialHomeomorph (sphere (0 : E) 1) (EuclideanSpace ℝ (Fin n)) :=

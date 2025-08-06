@@ -24,7 +24,7 @@ variable {α β : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α] [R
 lemma of_abv_le (n : ℕ) (hm : ∀ m, n ≤ m → abv (f m) ≤ a m) :
     IsCauSeq abs (fun n ↦ ∑ i ∈ range n, a i) → IsCauSeq abv fun n ↦ ∑ i ∈ range n, f i := by
   intro hg ε ε0
-  obtain ⟨i, hi⟩ := hg (ε / 2) (div_pos ε0 (by norm_num))
+  obtain ⟨i, hi⟩ := hg (ε / 2) (div_pos ε0 (by simp))
   exists max n i
   intro j ji
   have hi₁ := hi j (le_trans (le_max_right n i) ji)
@@ -60,10 +60,10 @@ theorem _root_.cauchy_product (ha : IsCauSeq abs fun m ↦ ∑ n ∈ range m, ab
   let ⟨P, hP⟩ := ha.bounded
   let ⟨Q, hQ⟩ := hb.bounded
   have hP0 : 0 < P := lt_of_le_of_lt (abs_nonneg _) (hP 0)
-  have hPε0 : 0 < ε / (2 * P) := div_pos ε0 (mul_pos (show (2 : α) > 0 by norm_num) hP0)
+  have hPε0 : 0 < ε / (2 * P) := div_pos ε0 (mul_pos (show (2 : α) > 0 by simp) hP0)
   let ⟨N, hN⟩ := hb.cauchy₂ hPε0
   have hQε0 : 0 < ε / (4 * Q) :=
-    div_pos ε0 (mul_pos (show (0 : α) < 4 by norm_num) (lt_of_le_of_lt (abv_nonneg _ _) (hQ 0)))
+    div_pos ε0 (mul_pos (show (0 : α) < 4 by simp) (lt_of_le_of_lt (abv_nonneg _ _) (hQ 0)))
   let ⟨M, hM⟩ := ha.cauchy₂ hQε0
   refine ⟨2 * (max N M + 1), fun K hK ↦ ?_⟩
   have h₁ :

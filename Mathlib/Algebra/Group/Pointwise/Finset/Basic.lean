@@ -206,7 +206,7 @@ theorem card_inv_le : #s⁻¹ ≤ #s :=
 
 @[to_additive (attr := simp)]
 theorem inv_empty : (∅ : Finset α)⁻¹ = ∅ :=
-  image_empty _
+  rfl
 
 @[to_additive (attr := simp)]
 theorem inv_nonempty_iff : s⁻¹.Nonempty ↔ s.Nonempty := image_nonempty
@@ -374,11 +374,11 @@ theorem singleton_mul_singleton (a b : α) : ({a} : Finset α) * {b} = {a * b} :
 theorem mul_subset_mul : s₁ ⊆ s₂ → t₁ ⊆ t₂ → s₁ * t₁ ⊆ s₂ * t₂ :=
   image₂_subset
 
-@[to_additive (attr := gcongr)]
+@[to_additive]
 theorem mul_subset_mul_left : t₁ ⊆ t₂ → s * t₁ ⊆ s * t₂ :=
   image₂_subset_left
 
-@[to_additive (attr := gcongr)]
+@[to_additive]
 theorem mul_subset_mul_right : s₁ ⊆ s₂ → s₁ * t ⊆ s₂ * t :=
   image₂_subset_right
 
@@ -550,8 +550,10 @@ theorem div_mem_div : a ∈ s → b ∈ t → a / b ∈ s / t :=
   mem_image₂_of_mem
 
 @[to_additive]
-theorem div_card_le : #(s / t) ≤ #s * #t :=
+theorem card_div_le : #(s / t) ≤ #s * #t :=
   card_image₂_le _ _ _
+
+@[deprecated (since := "2025-07-02")] alias div_card_le := card_div_le
 
 @[to_additive (attr := simp)]
 theorem empty_div (s : Finset α) : ∅ / s = ∅ :=
@@ -597,11 +599,11 @@ theorem singleton_div_singleton (a b : α) : ({a} : Finset α) / {b} = {a / b} :
 theorem div_subset_div : s₁ ⊆ s₂ → t₁ ⊆ t₂ → s₁ / t₁ ⊆ s₂ / t₂ :=
   image₂_subset
 
-@[to_additive (attr := gcongr)]
+@[to_additive]
 theorem div_subset_div_left : t₁ ⊆ t₂ → s / t₁ ⊆ s / t₂ :=
   image₂_subset_left
 
-@[to_additive (attr := gcongr)]
+@[to_additive]
 theorem div_subset_div_right : s₁ ⊆ s₂ → s₁ / t ⊆ s₂ / t :=
   image₂_subset_right
 
@@ -765,7 +767,7 @@ theorem singletonMonoidHom_apply (a : α) : singletonMonoidHom a = {a} :=
 
 /-- The coercion from `Finset` to `Set` as a `MonoidHom`. -/
 @[to_additive "The coercion from `Finset` to `set` as an `AddMonoidHom`."]
-noncomputable def coeMonoidHom : Finset α →* Set α where
+def coeMonoidHom : Finset α →* Set α where
   toFun := (↑)
   map_one' := coe_one
   map_mul' := coe_mul
@@ -797,15 +799,9 @@ theorem coe_pow (s : Finset α) (n : ℕ) : ↑(s ^ n) = (s : Set α) ^ n := by
   · rw [npowRec, pow_zero, coe_one]
   · rw [npowRec, pow_succ, coe_mul, ih]
 
-#adaptation_note /-- nightly-2025-04-07
-This now needs to be marked as noncomputable because of its dependence on `Set.monoid`.
-We should either find a way to rewrite this definition to avoid this,
-or request via @kim-em and @zwarich that changes in https://github.com/leanprover/lean4/pull/7824
-be revisited to avoid needing as many `noncomputable`s.
--/
 /-- `Finset α` is a `Monoid` under pointwise operations if `α` is. -/
 @[to_additive "`Finset α` is an `AddMonoid` under pointwise operations if `α` is. "]
-protected noncomputable def monoid : Monoid (Finset α) :=
+protected def monoid : Monoid (Finset α) :=
   coe_injective.monoid _ coe_one coe_mul coe_pow
 
 scoped[Pointwise] attribute [instance] Finset.monoid Finset.addMonoid
@@ -820,7 +816,7 @@ protected lemma pow_right_monotone (hs : 1 ∈ s) : Monotone (s ^ ·) :=
 @[to_additive (attr := gcongr)]
 lemma pow_subset_pow_left (hst : s ⊆ t) : s ^ n ⊆ t ^ n := subset_of_le (pow_left_mono n hst)
 
-@[to_additive (attr := gcongr)]
+@[to_additive]
 lemma pow_subset_pow_right (hs : 1 ∈ s) (hmn : m ≤ n) : s ^ m ⊆ s ^ n :=
   Finset.pow_right_monotone hs hmn
 
@@ -831,11 +827,6 @@ lemma pow_subset_pow (hst : s ⊆ t) (ht : 1 ∈ t) (hmn : m ≤ n) : s ^ m ⊆ 
 @[to_additive]
 lemma subset_pow (hs : 1 ∈ s) (hn : n ≠ 0) : s ⊆ s ^ n := by
   simpa using pow_subset_pow_right hs <| Nat.one_le_iff_ne_zero.2 hn
-
-@[deprecated (since := "2024-11-19")] alias pow_subset_pow_of_one_mem := pow_subset_pow_right
-
-@[deprecated (since := "2024-11-19")]
-alias nsmul_subset_nsmul_of_zero_mem := nsmul_subset_nsmul_right
 
 @[to_additive]
 lemma pow_subset_pow_mul_of_sq_subset_mul (hst : s ^ 2 ⊆ t * s) (hn : n ≠ 0) :
@@ -940,7 +931,7 @@ variable [CommMonoid α]
 
 /-- `Finset α` is a `CommMonoid` under pointwise operations if `α` is. -/
 @[to_additive "`Finset α` is an `AddCommMonoid` under pointwise operations if `α` is. "]
-protected noncomputable def commMonoid : CommMonoid (Finset α) :=
+protected def commMonoid : CommMonoid (Finset α) :=
   coe_injective.commMonoid _ coe_one coe_mul coe_pow
 
 scoped[Pointwise] attribute [instance] Finset.commMonoid Finset.addCommMonoid
@@ -965,7 +956,7 @@ protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = {a} ∧ t = {b} �
 /-- `Finset α` is a division monoid under pointwise operations if `α` is. -/
 @[to_additive
   "`Finset α` is a subtraction monoid under pointwise operations if `α` is."]
-protected noncomputable def divisionMonoid : DivisionMonoid (Finset α) :=
+protected def divisionMonoid : DivisionMonoid (Finset α) :=
   coe_injective.divisionMonoid _ coe_one coe_mul coe_inv coe_div coe_pow coe_zpow
 
 scoped[Pointwise] attribute [instance] Finset.divisionMonoid Finset.subtractionMonoid
@@ -995,7 +986,7 @@ lemma univ_div_univ [Fintype α] : (univ / univ : Finset α) = univ := by simp [
   rw [div_eq_mul_inv]; exact subset_mul_right _ hs
 
 @[to_additive (attr := simp) zsmul_empty]
-lemma empty_zpow (hn : n ≠ 0) : (∅ : Finset α) ^ n = ∅ := by cases n <;> aesop
+lemma empty_zpow (hn : n ≠ 0) : (∅ : Finset α) ^ n = ∅ := by cases n <;> simp_all
 
 @[to_additive]
 lemma Nonempty.zpow (hs : s.Nonempty) : ∀ {n : ℤ}, (s ^ n).Nonempty
@@ -1021,7 +1012,7 @@ end DivisionMonoid
 /-- `Finset α` is a commutative division monoid under pointwise operations if `α` is. -/
 @[to_additive subtractionCommMonoid
       "`Finset α` is a commutative subtraction monoid under pointwise operations if `α` is."]
-protected noncomputable def divisionCommMonoid [DivisionCommMonoid α] :
+protected def divisionCommMonoid [DivisionCommMonoid α] :
     DivisionCommMonoid (Finset α) :=
   coe_injective.divisionCommMonoid _ coe_one coe_mul coe_inv coe_div coe_pow coe_zpow
 

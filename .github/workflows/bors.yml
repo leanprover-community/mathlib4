@@ -158,6 +158,57 @@ jobs:
           ls .lake/build/bin/check-yaml
           ls .lake/packages/importGraph/.lake/build/bin/graph
 
+          # TEMPORARY: remove everything below this after #27691 is merged
+          cat << 'EOF' > scripts/lake-build-with-retry.sh
+          #!/bin/bash
+          # Script to run lake build on a target until --no-build succeeds
+          # Usage: ./lake-build-with-retry.sh <target_name> [max_tries, default: 5]
+
+          # Make this script robust against unintentional errors.
+          # See e.g. http://redsymbol.net/articles/unofficial-bash-strict-mode/ for explanation.
+          set -euo pipefail
+          IFS=$'\n\t'
+
+          TARGET_NAME="$1"
+          MAX_TRIES="${2:-5}"
+
+          if [ -z "$TARGET_NAME" ]; then
+            echo "Usage: $0 <target_name> [max_tries, default: 5]"
+            echo "Example: $0 Mathlib 5"
+            exit 1
+          fi
+
+          echo "Building $TARGET_NAME with up to $MAX_TRIES attempts..."
+
+          counter=0
+          while true; do
+            counter=$((counter + 1))
+
+            echo "::group::{lake build: attempt $counter}"
+            bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI $TARGET_NAME"
+            echo "::endgroup::"
+
+            echo "::group::{lake build --no-build: attempt $counter}"
+            set +e
+            lake build --no-build -v "$TARGET_NAME"
+            result=$?
+            set -e
+            echo "::endgroup::"
+
+            if [ $result -eq 0 ]; then
+              echo "lake build --no-build succeeded!"
+              exit 0
+            fi
+
+            if [ $counter -ge $MAX_TRIES ]; then
+              echo "Failed to build good oleans for $TARGET_NAME after $MAX_TRIES attempts!"
+              exit 1
+            fi
+          done
+          EOF
+
+          chmod 755 scripts/lake-build-with-retry.sh
+
       - name: cleanup .cache/mathlib
         # This needs write access to .cache/mathlib, so can't be run inside landrun.
         # However it is only using the `master` version of `cache`, so is safe to run outside landrun.
@@ -215,8 +266,8 @@ jobs:
         run: |
           cd pr-branch
 
-          echo "Attempting: lake build --no-build Mathlib.Init (this runs under landrun)"
-          lake build --no-build Mathlib.Init
+          echo "Attempting: lake build --no-build -v Mathlib.Init (this runs under landrun)"
+          lake build --no-build -v Mathlib.Init
 
       - name: get cache (3/3 - finalize cache operation)
         id: get
@@ -228,7 +279,7 @@ jobs:
 
             ../master-branch/.lake/build/bin/cache get
           else
-            echo "WARNING: 'lake build --no-build Mathlib.Init' failed."
+            echo "WARNING: 'lake build --no-build -v Mathlib.Init' failed."
             echo "No cache for 'Mathlib.Init' available or it could not be prepared."
           fi
 
@@ -250,6 +301,7 @@ jobs:
         id: build
         run: |
           cd pr-branch
+          echo "::group::{test curl}"
           # Test curl - should fail when landrun network isolation is working
           if curl --silent --head --fail https://www.example.com/ >/dev/null 2>&1; then
             echo "ERROR: curl to example.com succeeded, but it should fail when landrun is working correctly!"
@@ -257,7 +309,9 @@ jobs:
           else
             echo "curl to example.com failed as expected - landrun network isolation is working"
           fi
-          bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
+          echo "::endgroup::"
+
+          ../master-branch/scripts/lake-build-with-retry.sh Mathlib
       - name: end gh-problem-match-wrap for build step
         uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
         with:
@@ -290,26 +344,6 @@ jobs:
           MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
           MATHLIB_CACHE_S3_TOKEN: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
 
-      - name: check the cache
-        # We need network access to download dependencies
-        # We run this inside landrun, but restrict disk access as usual.
-        shell: landrun --unrestricted-network --rox /usr --rw /dev --rox /etc --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib -rw pr-branch/.lake/ --rw pr-branch/DownstreamTest/ --env PATH --env HOME --env GITHUB_OUTPUT -- bash -euxo pipefail {0}
-        run: |
-          cd pr-branch
-
-          # Because the `lean-pr-testing-NNNN` branches use toolchains that are "updated in place"
-          # the cache mechanism is unreliable, so we don't test it if we are on such a branch.
-          if [[ ! $(cat lean-toolchain) =~ ^leanprover/lean4-pr-releases:pr-release-[0-9]+$ ]]; then
-            cd DownstreamTest
-            MATHLIB_NO_CACHE_ON_UPDATE=1 lake update
-
-            lake env ../../master-branch/.lake/build/bin/cache get || (sleep 1; lake env ../../master-branch/.lake/build/bin/cache get)
-
-            # We need to run `lake build ProofWidgets` here to retrieve ProofWidgets via Reservoir.
-            lake build ProofWidgets
-            lake build --no-build Mathlib
-          fi
-
       # Note: we should not be including `Archive` and `Counterexamples` in the cache.
       # We do this for now for the sake of not rebuilding them in every CI run
       # even when they are not touched.
@@ -327,15 +361,21 @@ jobs:
 
       - name: build archive
         id: archive
+        continue-on-error: true
         run: |
           cd pr-branch
-          bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build Archive"
+          ../master-branch/scripts/lake-build-with-retry.sh Archive
 
       - name: build counterexamples
         id: counterexamples
+        continue-on-error: true
         run: |
           cd pr-branch
-          bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build Counterexamples"
+          ../master-branch/scripts/lake-build-with-retry.sh Counterexamples
+
+      - name: Check if building Archive or Counterexamples failed
+        if: steps.archive.outcome == 'failure' || steps.counterexamples.outcome == 'failure'
+        run: exit 1
 
       # The cache secrets are available here, so we must not run any untrusted code.
       - name: put archive and counterexamples cache
@@ -472,9 +512,15 @@ jobs:
 
       - name: verify that everything was available in the cache
         run: |
-          lake build --no-build Mathlib
-          lake build --no-build Archive
-          lake build --no-build Counterexamples
+          echo "::group::{verify Mathlib cache}"
+          lake build --no-build -v Mathlib
+          echo "::endgroup::"
+          echo "::group::{verify Archive cache}"
+          lake build --no-build -v Archive
+          echo "::endgroup::"
+          echo "::group::{verify Counterexamples cache}"
+          lake build --no-build -v Counterexamples
+          echo "::endgroup::"
 
       - name: check declarations in db files
         run: |

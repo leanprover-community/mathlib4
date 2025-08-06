@@ -38,7 +38,7 @@ variable (I : IdealSheafData X)
 
 /-- `Spec (𝒪ₓ(U)/I(U))`, the object to be glued into the closed subscheme. -/
 def glueDataObj (U : X.affineOpens) : Scheme :=
-  Spec (.of (Γ(X, U) ⧸ I.ideal U))
+  Spec(Γ(X, U) ⧸ I.ideal U)
 
 /-- `Spec (𝒪ₓ(U)/I(U)) ⟶ Spec (𝒪ₓ(U)) = U`, the closed immersion into `U`. -/
 noncomputable
@@ -60,7 +60,7 @@ lemma ker_glueDataObjι_appTop (U : X.affineOpens) :
     RingHom.ker (I.glueDataObjι U).appTop.hom = (I.ideal U).comap U.1.topIso.hom.hom := by
   let φ := CommRingCat.ofHom (Ideal.Quotient.mk (I.ideal U))
   rw [← Ideal.mk_ker (I := I.ideal _)]
-  show RingHom.ker (Spec.map φ ≫ _).appTop.hom = (RingHom.ker φ.hom).comap _
+  change RingHom.ker (Spec.map φ ≫ _).appTop.hom = (RingHom.ker φ.hom).comap _
   rw [← RingHom.ker_equiv_comp _ (Scheme.ΓSpecIso _).commRingCatIsoToRingEquiv, RingHom.comap_ker,
     RingEquiv.toRingHom_eq_coe, Iso.commRingCatIsoToRingEquiv_toRingHom, ← CommRingCat.hom_comp,
     ← CommRingCat.hom_comp]
@@ -342,7 +342,7 @@ private lemma gluedTo_injective :
     I.glueData.toGlueData.ι_jointly_surjective forget a
   obtain ⟨ib, b : I.glueDataObj ib, rfl⟩ :=
     I.glueData.toGlueData.ι_jointly_surjective forget b
-  show (I.glueData.ι ia).base a = (I.glueData.ι ib).base b
+  change (I.glueData.ι ia).base a = (I.glueData.ι ib).base b
   have : ((I.glueDataObjι ia).base a).1 = ((I.glueDataObjι ib).base b).1 := by
     have : (I.glueData.ι ia ≫ I.gluedTo).base a =
       (I.glueData.ι ib ≫ I.gluedTo).base b := e
@@ -354,7 +354,7 @@ private lemma gluedTo_injective :
       b ∈ Set.range (I.glueDataObjMap (hW.trans_le (X.affineBasicOpen_le g))).base := by
     subst hW
     refine (I.opensRange_glueDataObjMap g).ge ?_
-    show ((I.glueDataObjι ib).base b).1 ∈ X.basicOpen g
+    change ((I.glueDataObjι ib).base b).1 ∈ X.basicOpen g
     rwa [← this, ← hfg]
   obtain ⟨a, rfl⟩ := (I.opensRange_glueDataObjMap f).ge H
   obtain ⟨b, rfl⟩ := hmem (X.affineBasicOpen f) (Subtype.ext hfg)
@@ -373,7 +373,7 @@ private lemma range_gluedTo :
   refine subset_antisymm (Set.range_subset_iff.mpr fun x ↦ ?_) ?_
   · obtain ⟨ix, x : I.glueDataObj ix, rfl⟩ :=
       I.glueData.toGlueData.ι_jointly_surjective forget x
-    show (I.glueData.ι _ ≫ I.gluedTo).base x ∈ I.support
+    change (I.glueData.ι _ ≫ I.gluedTo).base x ∈ I.support
     rw [ι_gluedTo]
     exact ((I.range_glueDataObjι_ι_eq_support_inter ix).le ⟨_, rfl⟩).1
   · intro x hx
@@ -445,7 +445,7 @@ noncomputable
 def subschemeι : I.subscheme ⟶ X :=
   (I.subschemeIso.hom ≫ I.gluedTo).copyBase Subtype.val <| by
     ext x
-    show (I.gluedHomeo (I.gluedHomeo.symm x)).1 = x.1
+    change (I.gluedHomeo (I.gluedHomeo.symm x)).1 = x.1
     rw [I.gluedHomeo.apply_symm_apply]
 
 lemma subschemeι_apply (x : I.subscheme) : I.subschemeι.base x = x.1 := rfl
@@ -533,7 +533,7 @@ lemma ker_subschemeι_app (U : X.affineOpens) :
   let e : CommRingCat.of (Γ(X, U) ⧸ I.ideal U) ≅ Γ(I.subscheme, I.subschemeι ⁻¹ᵁ U) :=
     (Scheme.ΓSpecIso _).symm ≪≫ ((I.subschemeCover.map U).appIso _).symm ≪≫
       I.subscheme.presheaf.mapIso (eqToIso (by simp)).op
-  show RingHom.ker (e.commRingCatIsoToRingEquiv.toRingHom.comp
+  change RingHom.ker (e.commRingCatIsoToRingEquiv.toRingHom.comp
     (Ideal.Quotient.mk (I.ideal U))) = _
   rw [RingHom.ker_equiv_comp, Ideal.mk_ker]
 

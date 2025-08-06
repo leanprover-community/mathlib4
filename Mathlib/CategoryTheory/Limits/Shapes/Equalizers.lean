@@ -116,7 +116,7 @@ def walkingParallelPairOp : WalkingParallelPair ⥤ WalkingParallelPairᵒᵖ wh
   map f := by
     cases f <;> apply Quiver.Hom.op
     exacts [left, right, WalkingParallelPairHom.id _]
-  map_comp := by rintro _ _ _ (_|_|_) g <;> cases g <;> rfl
+  map_comp := by rintro _ _ _ (_ | _ | _) g <;> cases g <;> rfl
 
 @[simp]
 theorem walkingParallelPairOp_zero : walkingParallelPairOp.obj zero = op one := rfl
@@ -213,7 +213,7 @@ theorem parallelPair_functor_obj {F : WalkingParallelPair ⥤ C} (j : WalkingPar
 @[simps!]
 def diagramIsoParallelPair (F : WalkingParallelPair ⥤ C) :
     F ≅ parallelPair (F.map left) (F.map right) :=
-  NatIso.ofComponents (fun j => eqToIso <| by cases j <;> rfl) (by rintro _ _ (_|_|_) <;> simp)
+  NatIso.ofComponents (fun j => eqToIso <| by cases j <;> rfl) (by rintro _ _ (_ | _ | _) <;> simp)
 
 /-- Construct a morphism between parallel pairs. -/
 def parallelPairHom {X' Y' : C} (f g : X ⟶ Y) (f' g' : X' ⟶ Y') (p : X ⟶ X') (q : Y ⟶ Y')
@@ -392,6 +392,9 @@ def Fork.IsLimit.lift' {s : Fork f g} (hs : IsLimit s) {W : C} (k : W ⟶ X) (h 
     { l : W ⟶ s.pt // l ≫ Fork.ι s = k } :=
   ⟨Fork.IsLimit.lift hs k h, by simp⟩
 
+lemma Fork.IsLimit.mono {s : Fork f g} (hs : IsLimit s) : Mono s.ι where
+  right_cancellation _ _ h := hom_ext hs h
+
 -- Porting note: `Cofork.IsColimit.desc` was added in order to ease the port
 /-- If `s` is a colimit cofork over `f` and `g`, then a morphism `k : Y ⟶ W` satisfying
     `f ≫ k = g ≫ k` induces a morphism `l : s.pt ⟶ W` such that `cofork.π s ≫ l = k`. -/
@@ -409,6 +412,9 @@ lemma Cofork.IsColimit.π_desc' {s : Cofork f g} (hs : IsColimit s) {W : C} (k :
 def Cofork.IsColimit.desc' {s : Cofork f g} (hs : IsColimit s) {W : C} (k : Y ⟶ W)
     (h : f ≫ k = g ≫ k) : { l : s.pt ⟶ W // Cofork.π s ≫ l = k } :=
   ⟨Cofork.IsColimit.desc hs k h, by simp⟩
+
+lemma Cofork.IsColimit.epi {s : Cofork f g} (hs : IsColimit s) : Epi s.π where
+  left_cancellation _ _ h := hom_ext hs h
 
 theorem Fork.IsLimit.existsUnique {s : Fork f g} (hs : IsLimit s) {W : C} (k : W ⟶ X)
     (h : k ≫ f = k ≫ g) : ∃! l : W ⟶ s.pt, l ≫ Fork.ι s = k :=
@@ -446,8 +452,7 @@ def Cofork.IsColimit.mk (t : Cofork f g) (desc : ∀ s : Cofork f g, t.pt ⟶ s.
     (uniq : ∀ (s : Cofork f g) (m : t.pt ⟶ s.pt) (_ : t.π ≫ m = s.π), m = desc s) : IsColimit t :=
   { desc
     fac := fun s j =>
-      WalkingParallelPair.casesOn j (by erw [← s.w left, ← t.w left, Category.assoc, fac]; rfl)
-        (fac s)
+      WalkingParallelPair.casesOn j (by simp_all) (fac s)
     uniq := by aesop }
 
 /-- This is another convenient method to verify that a fork is a limit cone. It
@@ -522,7 +527,7 @@ def Cone.ofFork {F : WalkingParallelPair ⥤ C} (t : Fork (F.map left) (F.map ri
   pt := t.pt
   π :=
     { app := fun X => t.π.app X ≫ eqToHom (by simp)
-      naturality := by rintro _ _ (_|_|_) <;> simp [t.condition]}
+      naturality := by rintro _ _ (_ | _ | _) <;> simp [t.condition]}
 
 /-- This is a helper construction that can be useful when verifying that a category has all
     coequalizers. Given `F : WalkingParallelPair ⥤ C`, which is really the same as
@@ -537,7 +542,7 @@ def Cocone.ofCofork {F : WalkingParallelPair ⥤ C} (t : Cofork (F.map left) (F.
   pt := t.pt
   ι :=
     { app := fun X => eqToHom (by simp) ≫ t.ι.app X
-      naturality := by rintro _ _ (_|_|_) <;> simp [t.condition]}
+      naturality := by rintro _ _ (_ | _ | _) <;> simp [t.condition]}
 
 @[simp]
 theorem Cone.ofFork_π {F : WalkingParallelPair ⥤ C} (t : Fork (F.map left) (F.map right)) (j) :
@@ -553,7 +558,7 @@ theorem Cocone.ofCofork_ι {F : WalkingParallelPair ⥤ C} (t : Cofork (F.map le
 def Fork.ofCone {F : WalkingParallelPair ⥤ C} (t : Cone F) : Fork (F.map left) (F.map right) where
   pt := t.pt
   π := { app := fun X => t.π.app X ≫ eqToHom (by simp)
-         naturality := by rintro _ _ (_|_|_) <;> simp}
+         naturality := by rintro _ _ (_ | _ | _) <;> simp}
 
 /-- Given `F : WalkingParallelPair ⥤ C`, which is really the same as
     `parallelPair (F.map left) (F.map right)` and a cocone on `F`, we get a cofork on
@@ -562,7 +567,7 @@ def Cofork.ofCocone {F : WalkingParallelPair ⥤ C} (t : Cocone F) :
     Cofork (F.map left) (F.map right) where
   pt := t.pt
   ι := { app := fun X => eqToHom (by simp) ≫ t.ι.app X
-         naturality := by rintro _ _ (_|_|_) <;> simp}
+         naturality := by rintro _ _ (_ | _ | _) <;> simp}
 
 @[simp]
 theorem Fork.ofCone_π {F : WalkingParallelPair ⥤ C} (t : Cone F) (j) :
@@ -598,7 +603,7 @@ it suffices to give an isomorphism between the cone points
 and check that it commutes with the `ι` morphisms.
 -/
 @[simps]
-def Fork.ext {s t : Fork f g} (i : s.pt ≅ t.pt) (w : i.hom ≫ t.ι = s.ι := by aesop_cat) :
+def Fork.ext {s t : Fork f g} (i : s.pt ≅ t.pt) (w : i.hom ≫ t.ι = s.ι := by cat_disch) :
     s ≅ t where
   hom := Fork.mkHom i.hom w
   inv := Fork.mkHom i.inv (by rw [← w, Iso.inv_hom_id_assoc])
@@ -620,9 +625,9 @@ def Fork.isLimitEquivOfIsos {X Y : C} {f g : X ⟶ Y} {X' Y' : C}
     (c : Fork f g)
     {f' g' : X' ⟶ Y'} (c' : Fork f' g')
     (e₀ : X ≅ X') (e₁ : Y ≅ Y') (e : c.pt ≅ c'.pt)
-    (comm₁ : e₀.hom ≫ f' = f ≫ e₁.hom := by aesop_cat)
-    (comm₂ : e₀.hom ≫ g' = g ≫ e₁.hom := by aesop_cat)
-    (comm₃ : e.hom ≫ c'.ι = c.ι ≫ e₀.hom := by aesop_cat) :
+    (comm₁ : e₀.hom ≫ f' = f ≫ e₁.hom := by cat_disch)
+    (comm₂ : e₀.hom ≫ g' = g ≫ e₁.hom := by cat_disch)
+    (comm₃ : e.hom ≫ c'.ι = c.ι ≫ e₀.hom := by cat_disch) :
     IsLimit c ≃ IsLimit c' :=
   let i : parallelPair f g ≅ parallelPair f' g' := parallelPair.ext e₀ e₁ comm₁.symm comm₂.symm
   IsLimit.equivOfNatIsoOfIso i c c' (Fork.ext e comm₃)
@@ -634,9 +639,9 @@ one is a limit, then the other one is as well.
 def Fork.isLimitOfIsos {X' Y' : C} (c : Fork f g) (hc : IsLimit c)
     {f' g' : X' ⟶ Y'} (c' : Fork f' g')
     (e₀ : X ≅ X') (e₁ : Y ≅ Y') (e : c.pt ≅ c'.pt)
-    (comm₁ : e₀.hom ≫ f' = f ≫ e₁.hom := by aesop_cat)
-    (comm₂ : e₀.hom ≫ g' = g ≫ e₁.hom := by aesop_cat)
-    (comm₃ : e.hom ≫ c'.ι = c.ι ≫ e₀.hom := by aesop_cat) : IsLimit c' :=
+    (comm₁ : e₀.hom ≫ f' = f ≫ e₁.hom := by cat_disch)
+    (comm₂ : e₀.hom ≫ g' = g ≫ e₁.hom := by cat_disch)
+    (comm₃ : e.hom ≫ c'.ι = c.ι ≫ e₀.hom := by cat_disch) : IsLimit c' :=
   (Fork.isLimitEquivOfIsos c c' e₀ e₁ e) hc
 
 /-- Helper function for constructing morphisms between coequalizer coforks.
@@ -662,7 +667,7 @@ it suffices to give an isomorphism between the cocone points
 and check that it commutes with the `π` morphisms.
 -/
 @[simps]
-def Cofork.ext {s t : Cofork f g} (i : s.pt ≅ t.pt) (w : s.π ≫ i.hom = t.π := by aesop_cat) :
+def Cofork.ext {s t : Cofork f g} (i : s.pt ≅ t.pt) (w : s.π ≫ i.hom = t.π := by cat_disch) :
     s ≅ t where
   hom := Cofork.mkHom i.hom w
   inv := Cofork.mkHom i.inv (by rw [Iso.comp_inv_eq, w])
@@ -679,9 +684,9 @@ def Cofork.isColimitEquivOfIsos {X Y : C} {f g : X ⟶ Y} {X' Y' : C}
     (c : Cofork f g)
     {f' g' : X' ⟶ Y'} (c' : Cofork f' g')
     (e₀ : X ≅ X') (e₁ : Y ≅ Y') (e : c.pt ≅ c'.pt)
-    (comm₁ : e₀.hom ≫ f' = f ≫ e₁.hom := by aesop_cat)
-    (comm₂ : e₀.hom ≫ g' = g ≫ e₁.hom := by aesop_cat)
-    (comm₃ : e₁.inv ≫ c.π ≫ e.hom = c'.π := by aesop_cat) :
+    (comm₁ : e₀.hom ≫ f' = f ≫ e₁.hom := by cat_disch)
+    (comm₂ : e₀.hom ≫ g' = g ≫ e₁.hom := by cat_disch)
+    (comm₃ : e₁.inv ≫ c.π ≫ e.hom = c'.π := by cat_disch) :
     IsColimit c ≃ IsColimit c' :=
   let i : parallelPair f g ≅ parallelPair f' g' := parallelPair.ext e₀ e₁ comm₁.symm comm₂.symm
   IsColimit.equivOfNatIsoOfIso i c c' (Cofork.ext e (by rw [← comm₃, ← Category.assoc]; rfl))
@@ -693,9 +698,9 @@ if one is a colimit, then the other one is as well.
 def Cofork.isColimitOfIsos {X' Y' : C} (c : Cofork f g) (hc : IsColimit c)
     {f' g' : X' ⟶ Y'} (c' : Cofork f' g')
     (e₀ : X ≅ X') (e₁ : Y ≅ Y') (e : c.pt ≅ c'.pt)
-    (comm₁ : e₀.hom ≫ f' = f ≫ e₁.hom := by aesop_cat)
-    (comm₂ : e₀.hom ≫ g' = g ≫ e₁.hom := by aesop_cat)
-    (comm₃ : e₁.inv ≫ c.π ≫ e.hom = c'.π := by aesop_cat) : IsColimit c' :=
+    (comm₁ : e₀.hom ≫ f' = f ≫ e₁.hom := by cat_disch)
+    (comm₂ : e₀.hom ≫ g' = g ≫ e₁.hom := by cat_disch)
+    (comm₃ : e₁.inv ≫ c.π ≫ e.hom = c'.π := by cat_disch) : IsColimit c' :=
   (Cofork.isColimitEquivOfIsos c c' e₀ e₁ e) hc
 
 variable (f g)
@@ -1083,7 +1088,7 @@ variable {C} [IsSplitMono f]
 /-- A split mono `f` equalizes `(retraction f ≫ f)` and `(𝟙 Y)`.
 Here we build the cone, and show in `isSplitMonoEqualizes` that it is a limit cone.
 -/
--- @[simps (config := { rhsMd := semireducible })] Porting note: no semireducible
+-- @[simps (rhsMd := semireducible)] Porting note: no semireducible
 @[simps!]
 noncomputable def coneOfIsSplitMono : Fork (𝟙 Y) (retraction f ≫ f) :=
   Fork.ofι f (by simp)
@@ -1157,7 +1162,7 @@ variable {C} [IsSplitEpi f]
 /-- A split epi `f` coequalizes `(f ≫ section_ f)` and `(𝟙 X)`.
 Here we build the cocone, and show in `isSplitEpiCoequalizes` that it is a colimit cocone.
 -/
--- @[simps (config := { rhsMd := semireducible })] Porting note: no semireducible
+-- @[simps (rhsMd := semireducible)] Porting note: no semireducible
 @[simps!]
 noncomputable def coconeOfIsSplitEpi : Cofork (𝟙 X) (f ≫ section_ f) :=
   Cofork.ofπ f (by simp)

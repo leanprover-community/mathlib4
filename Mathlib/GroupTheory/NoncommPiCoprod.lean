@@ -75,9 +75,6 @@ theorem eq_one_of_noncommProd_eq_one_of_iSupIndep {ι : Type*} (s : Finset ι) (
       · exact heq1i
       · refine ih hcomm hmem.2 heq1S _ h
 
-@[deprecated (since := "2024-11-24")]
-alias eq_one_of_noncommProd_eq_one_of_independent := eq_one_of_noncommProd_eq_one_of_iSupIndep
-
 end Subgroup
 
 section FamilyOfMonoids
@@ -241,9 +238,6 @@ theorem injective_noncommPiCoprod_of_iSupIndep [Fintype ι]
     ext i
     apply hinj
     simp [this i (Finset.mem_univ i)]
-
-@[deprecated (since := "2024-11-24")]
-alias injective_noncommPiCoprod_of_independent := injective_noncommPiCoprod_of_iSupIndep
 
 @[to_additive]
 theorem independent_range_of_coprime_order

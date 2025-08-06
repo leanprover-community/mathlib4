@@ -55,7 +55,7 @@ def pUnitCocone : Cocone (constPUnitFunctor.{w} C) where
   ι := { app := fun _ => id }
 
 /-- If `C` is connected, the cocone on `constPUnitFunctor` with cone point `PUnit` is a colimit
-    cocone. -/
+cocone. -/
 noncomputable def isColimitPUnitCocone [IsConnected C] : IsColimit (pUnitCocone.{w} C) where
   desc s := s.ι.app Classical.ofNonempty
   fac s j := by
@@ -86,13 +86,16 @@ noncomputable def colimitConstPUnitIsoPUnit [IsConnected C] :
 
 /-- Let `F` be a `Type`-valued functor. If two elements `a : F c` and `b : F d` represent the same
 element of `colimit F`, then `c` and `d` are related by a `Zigzag`. -/
-theorem zigzag_of_eqvGen_quot_rel (F : C ⥤ Type w) (c d : Σ j, F.obj j)
-    (h : Relation.EqvGen (Quot.Rel F) c d) : Zigzag c.1 d.1 := by
+theorem zigzag_of_eqvGen_colimitTypeRel (F : C ⥤ Type w) (c d : Σ j, F.obj j)
+    (h : Relation.EqvGen F.ColimitTypeRel c d) : Zigzag c.1 d.1 := by
   induction h with
   | rel _ _ h => exact Zigzag.of_hom <| Exists.choose h
   | refl _ => exact Zigzag.refl _
   | symm _ _ _ ih => exact zigzag_symmetric ih
   | trans _ _ _ _ _ ih₁ ih₂ => exact ih₁.trans ih₂
+
+@[deprecated (since := "2025-06-22")] alias zigzag_of_eqvGen_quot_rel :=
+  zigzag_of_eqvGen_colimitTypeRel
 
 /-- An index category is connected iff the colimit of the constant singleton-valued functor is a
 singleton. -/
@@ -102,7 +105,7 @@ theorem isConnected_iff_colimit_constPUnitFunctor_iso_pUnit
   refine ⟨fun _ => ⟨colimitConstPUnitIsoPUnit.{w} C⟩, fun ⟨h⟩ => ?_⟩
   have : Nonempty C := nonempty_of_nonempty_colimit <| Nonempty.map h.inv inferInstance
   refine zigzag_isConnected <| fun c d => ?_
-  refine zigzag_of_eqvGen_quot_rel _ (constPUnitFunctor C) ⟨c, PUnit.unit⟩ ⟨d, PUnit.unit⟩ ?_
+  refine zigzag_of_eqvGen_colimitTypeRel _ (constPUnitFunctor C) ⟨c, PUnit.unit⟩ ⟨d, PUnit.unit⟩ ?_
   exact colimit_eq <| h.toEquiv.injective rfl
 
 theorem isConnected_iff_isColimit_pUnitCocone :

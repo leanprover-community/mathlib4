@@ -81,17 +81,15 @@ theorem isLocallyFraction_pred {U : Opens (PrimeSpectrum.Top R)}
   rfl
 
 /- M_x is an O_SpecR(U)-module when x is in U -/
-noncomputable instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) (x : U.unop):
+noncomputable instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) (x : U.unop) :
     Module ((Spec.structureSheaf R).val.obj U) (Localizations M x):=
   Module.compHom (R := (Localization.AtPrime x.1.asIdeal)) _
     ((StructureSheaf.openToLocalization R U.unop x x.2).hom)
 
 @[simp]
-lemma sections_smul_localizations_def
-    {U : (Opens (PrimeSpectrum.Top R))ᵒᵖ} (x : U.unop)
-    (r : (Spec.structureSheaf R).val.obj U)
-    (m : Localizations M ↑x) :
-  r • m = r.1 x • m := rfl
+lemma sections_smul_localizations_def {U : (Opens (PrimeSpectrum.Top R))ᵒᵖ} (x : U.unop)
+    (r : (Spec.structureSheaf R).val.obj U) (m : Localizations M ↑x) :
+    r • m = r.1 x • m := rfl
 
 /--
 For any `R`-module `M` and any open subset `U ⊆ Spec R`, `M^~(U)` is an `𝒪_{Spec R}(U)`-submodule
@@ -148,20 +146,20 @@ noncomputable instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
   inferInstanceAs <| AddCommGroup (Tilde.sectionsSubmodule M U)
 
 noncomputable instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
-    Module ((Spec (.of R)).ringCatSheaf.1.obj U) (M.tildeInType.1.obj U) :=
+    Module (Spec(R).ringCatSheaf.1.obj U) (M.tildeInType.1.obj U) :=
   inferInstanceAs <| Module _ (Tilde.sectionsSubmodule M U)
 
 /--
 `M^~` as a sheaf of `𝒪_{Spec R}`-modules
 -/
-noncomputable def tilde : (Spec (CommRingCat.of R)).Modules where
+noncomputable def tilde : Spec(R).Modules where
   val :=
     { obj := fun U ↦ ModuleCat.of _ (M.tildeInType.val.obj U)
       map := fun {U V} i ↦ ofHom
         -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(Y := ...)`
         -- This suggests `restrictScalars` needs to be redesigned.
-        (Y := (restrictScalars ((Spec (CommRingCat.of R)).ringCatSheaf.val.map i).hom).obj
-          (of ((Spec (CommRingCat.of R)).ringCatSheaf.val.obj V) (M.tildeInType.val.obj V)))
+        (Y := (restrictScalars (Spec(R).ringCatSheaf.val.map i).hom).obj
+          (of (Spec(R).ringCatSheaf.val.obj V) (M.tildeInType.val.obj V)))
         { toFun := M.tildeInType.val.map i
           map_smul' := by intros; rfl
           map_add' := by intros; rfl } }
@@ -366,7 +364,7 @@ theorem localizationToStalk_mk (x : PrimeSpectrum.Top R) (f : M) (s : x.asIdeal.
   (Module.End.isUnit_iff _ |>.1 (isUnit_toStalk M x s)).injective <| by
   erw [← Module.End.mul_apply]
   simp only [IsUnit.mul_val_inv, Module.End.one_apply, Module.algebraMap_end_apply]
-  show (M.tildeInModuleCat.germ ⊤ x ⟨⟩) ((toOpen M ⊤) f) = _
+  change (M.tildeInModuleCat.germ ⊤ x ⟨⟩) ((toOpen M ⊤) f) = _
   rw [← map_smul]
   fapply TopCat.Presheaf.germ_ext (W := PrimeSpectrum.basicOpen s.1) (hxW := s.2)
     (F := M.tildeInModuleCat)
@@ -392,7 +390,7 @@ noncomputable def stalkIso (x : PrimeSpectrum.Top R) :
   inv := localizationToStalk M x
   hom_inv_id := TopCat.Presheaf.stalk_hom_ext _ fun U hxU ↦ ModuleCat.hom_ext <|
       LinearMap.ext fun s ↦ by
-    show localizationToStalk M x (stalkToFiberLinearMap M x (M.tildeInModuleCat.germ U x hxU s)) =
+    change localizationToStalk M x (stalkToFiberLinearMap M x (M.tildeInModuleCat.germ U x hxU s)) =
       M.tildeInModuleCat.germ U x hxU s
     rw [stalkToFiberLinearMap_germ]
     obtain ⟨V, hxV, iVU, f, g, (hg : V ≤ PrimeSpectrum.basicOpen _), hs⟩ :=

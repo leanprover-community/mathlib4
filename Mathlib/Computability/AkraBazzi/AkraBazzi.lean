@@ -72,14 +72,6 @@ with appropriate conditions on the various parameters.
 
 namespace AkraBazziRecurrence
 
-section min_max
-
-variable {α : Type*} [Finite α] [Nonempty α]
-
-
-end min_max
-
-
 variable {α : Type*} [Fintype α] {T : ℕ → ℝ} {g : ℝ → ℝ} {a b : α → ℝ} {r : α → ℕ → ℕ}
 variable [Nonempty α] (R : AkraBazziRecurrence T g a b r)
 
@@ -363,7 +355,7 @@ lemma rpow_p_mul_one_sub_smoothingFn_le :
     have := R.b_pos i
     simp only [q, mul_rpow (by positivity : (0 : ℝ) ≤ b i) (by positivity : (0 : ℝ) ≤ n)]
     ring
-  show q (r i n) ≤ (b i) ^ (p a b) * n ^ (p a b) * (1 - ε n)
+  change q (r i n) ≤ (b i) ^ (p a b) * n ^ (p a b) * (1 - ε n)
   rw [← h₁, ← sub_le_iff_le_add']
   exact hn
 
@@ -443,7 +435,7 @@ lemma rpow_p_mul_one_add_smoothingFn_ge :
                 refine sub_nonneg_of_le <|
                   (strictAntiOn_smoothingFn.le_iff_le ?n_gt_one ?bn_gt_one).mpr ?le
                 case n_gt_one =>
-                  show 1 < (n : ℝ)
+                  change 1 < (n : ℝ)
                   rw [Nat.one_lt_cast]
                   exact hn'
                 case bn_gt_one =>
@@ -459,7 +451,7 @@ lemma rpow_p_mul_one_add_smoothingFn_ge :
     have := R.b_pos i
     simp only [q, mul_rpow (by positivity : (0 : ℝ) ≤ b i) (by positivity : (0 : ℝ) ≤ n)]
     ring
-  show (b i) ^ (p a b) * n ^ (p a b) * (1 + ε n) ≤ q (r i n)
+  change (b i) ^ (p a b) * n ^ (p a b) * (1 + ε n) ≤ q (r i n)
   rw [← h₁, sub_le_iff_le_add', ← sub_le_iff_le_add]
   exact hn
 

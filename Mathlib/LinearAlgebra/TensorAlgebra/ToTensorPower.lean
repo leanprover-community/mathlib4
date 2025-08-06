@@ -13,8 +13,6 @@ In this file we show that `TensorAlgebra R M` is isomorphic to a direct sum of t
 `TensorAlgebra.equivDirectSum`.
 -/
 
-suppress_compilation
-
 open scoped DirectSum TensorProduct
 
 variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]

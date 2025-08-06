@@ -91,6 +91,10 @@ variable {H : Subgroup G}
 section Normalizer
 
 @[to_additive]
+instance instNormalCenter : (center G).Normal :=
+  ⟨fun a ha b ↦ by simp [mul_assoc, mem_center_iff.mp ha b, ha]⟩
+
+@[to_additive]
 theorem center_le_normalizer : center G ≤ H.normalizer := fun x hx y => by
   simp [← mem_center_iff.mp hx y, mul_assoc]
 

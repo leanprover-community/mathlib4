@@ -3,9 +3,8 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Kexing Ying
 -/
-import Mathlib.Probability.Notation
-import Mathlib.Probability.Integration
-import Mathlib.MeasureTheory.Function.L2Space
+import Mathlib.Probability.Independence.Integration
+import Mathlib.Probability.Moments.Covariance
 
 /-!
 # Variance of random variables
@@ -148,9 +147,6 @@ lemma variance_of_integral_eq_zero (hX : AEMeasurable X μ) (hXint : μ[X] = 0) 
   simp [variance_eq_integral hX, hXint]
 
 @[deprecated (since := "2025-01-23")]
-alias _root_.MeasureTheory.Memℒp.variance_eq := variance_eq_integral
-
-@[deprecated (since := "2025-01-23")]
 alias _root_.MeasureTheory.Memℒp.variance_eq_of_integral_eq_zero := variance_of_integral_eq_zero
 
 @[simp]
@@ -171,6 +167,14 @@ theorem evariance_mul (c : ℝ) (X : Ω → ℝ) (μ : Measure Ω) :
 @[simp]
 theorem variance_zero (μ : Measure Ω) : variance 0 μ = 0 := by
   simp only [variance, evariance_zero, ENNReal.toReal_zero]
+
+lemma covariance_self {X : Ω → ℝ} (hX : AEMeasurable X μ) :
+    cov[X, X; μ] = Var[X; μ] := by
+  rw [covariance, variance_eq_integral hX]
+  congr with x
+  ring
+
+@[deprecated (since := "2025-06-25")] alias covariance_same := covariance_self
 
 theorem variance_nonneg (X : Ω → ℝ) (μ : Measure Ω) : 0 ≤ variance X μ :=
   ENNReal.toReal_nonneg
@@ -236,6 +240,47 @@ lemma variance_const_sub [IsProbabilityMeasure μ] (hX : AEStronglyMeasurable X 
   simp_rw [sub_eq_add_neg]
   rw [variance_const_add (by fun_prop) c, variance_fun_neg]
 
+variable {Y : Ω → ℝ}
+
+lemma variance_sub [IsFiniteMeasure μ] (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) :
+    Var[X - Y; μ] = Var[X; μ] - 2 * cov[X, Y; μ] + Var[Y; μ] := by
+  rw [← covariance_self, covariance_sub_left hX hY (hX.sub hY), covariance_sub_right hX hX hY,
+    covariance_sub_right hY hX hY, covariance_self, covariance_self, covariance_comm]
+  · ring
+  · exact hY.aemeasurable
+  · exact hX.aemeasurable
+  · exact hX.aemeasurable.sub hY.aemeasurable
+
+lemma variance_fun_sub [IsFiniteMeasure μ] (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) :
+    Var[fun ω ↦ X ω - Y ω; μ] = Var[X; μ] - 2 * cov[X, Y; μ] + Var[Y; μ] :=
+  variance_sub hX hY
+
+variable {ι : Type*} {s : Finset ι} {X : (i : ι) → Ω → ℝ}
+
+lemma variance_sum' [IsFiniteMeasure μ] (hX : ∀ i ∈ s, MemLp (X i) 2 μ) :
+    Var[∑ i ∈ s, X i; μ] = ∑ i ∈ s, ∑ j ∈ s, cov[X i, X j; μ] := by
+  rw [← covariance_self, covariance_sum_left' (by simpa)]
+  · refine Finset.sum_congr rfl fun i hi ↦ ?_
+    rw [covariance_sum_right' (by simpa) (hX i hi)]
+  · exact memLp_finset_sum' _ (by simpa)
+  · exact (memLp_finset_sum' _ (by simpa)).aemeasurable
+
+lemma variance_sum [IsFiniteMeasure μ] [Fintype ι] (hX : ∀ i, MemLp (X i) 2 μ) :
+    Var[∑ i, X i; μ] = ∑ i, ∑ j, cov[X i, X j; μ] :=
+  variance_sum' (fun _ _ ↦ hX _)
+
+lemma variance_fun_sum' [IsFiniteMeasure μ] (hX : ∀ i ∈ s, MemLp (X i) 2 μ) :
+    Var[fun ω ↦ ∑ i ∈ s, X i ω; μ] = ∑ i ∈ s, ∑ j ∈ s, cov[X i, X j; μ] := by
+  convert variance_sum' hX
+  simp
+
+lemma variance_fun_sum [IsFiniteMeasure μ] [Fintype ι] (hX : ∀ i, MemLp (X i) 2 μ) :
+    Var[fun ω ↦ ∑ i, X i ω; μ] = ∑ i, ∑ j, cov[X i, X j; μ] := by
+  convert variance_sum hX
+  simp
+
+variable {X : Ω → ℝ}
+
 @[simp]
 lemma variance_dirac [MeasurableSingletonClass Ω] (x : Ω) : Var[X; Measure.dirac x] = 0 := by
   rw [variance_eq_integral]
@@ -251,6 +296,12 @@ lemma variance_map {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ : Measure Ω'}
   · exact hX.aestronglyMeasurable
   · refine AEStronglyMeasurable.pow ?_ _
     exact AEMeasurable.aestronglyMeasurable (by fun_prop)
+
+lemma variance_map_equiv {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ : Measure Ω'}
+    (X : Ω → ℝ) (Y : Ω' ≃ᵐ Ω) :
+    Var[X; μ.map Y] = Var[X ∘ Y; μ] := by
+  simp_rw [variance, evariance, lintegral_map_equiv, integral_map_equiv]
+  rfl
 
 lemma variance_id_map (hX : AEMeasurable X μ) : Var[id; μ.map X] = Var[X; μ] := by
   simp [variance_map measurable_id.aemeasurable hX]
@@ -342,7 +393,7 @@ theorem IndepFun.variance_add [IsProbabilityMeasure μ] {X Y : Ω → ℝ} (hX :
         exact h.integrable_mul (hX.integrable one_le_two) (hY.integrable one_le_two)
     _ = μ[X ^ 2] + μ[Y ^ 2] + 2 * (μ[X] * μ[Y]) - (μ[X] + μ[Y]) ^ 2 := by
       congr
-      exact h.integral_mul_of_integrable (hX.integrable one_le_two) (hY.integrable one_le_two)
+      exact h.integral_mul_eq_mul_integral hX.aestronglyMeasurable hY.aestronglyMeasurable
     _ = variance X μ + variance Y μ := by simp only [variance_def', hX, hY, Pi.pow_apply]; ring
 
 -- Porting note: supplied `MeasurableSpace Ω` argument of `hs`, `h` by unification
@@ -399,7 +450,7 @@ theorem IndepFun.variance_sum [IsProbabilityMeasure μ] {ι : Type*} {X : ι →
           MemLp.integrable one_le_two (hs _ (mem_insert_of_mem hi)),
         mul_sum, mul_sum, ← sum_sub_distrib]
       apply Finset.sum_eq_zero fun i hi => ?_
-      rw [integral_const_mul, IndepFun.integral_mul', sub_self]
+      rw [integral_const_mul, IndepFun.integral_fun_mul_eq_mul_integral, sub_self]
       · apply h (mem_insert_self _ _) (mem_insert_of_mem hi)
         exact fun hki => ks (hki.symm ▸ hi)
       · exact MemLp.aestronglyMeasurable (hs _ (mem_insert_self _ _))
@@ -422,13 +473,13 @@ lemma variance_le_sub_mul_sub [IsProbabilityMeasure μ] {a b : ℝ} {X : Ω → 
   have hX_int₁ : Integrable (fun ω ↦ (a + b) * X ω) μ :=
     ((integrable_const (max |a| |b|)).mono' hX.aestronglyMeasurable
       (by filter_upwards [ha, hb] with ω using abs_le_max_abs_abs)).const_mul (a + b)
-  have h0 : 0 ≤ - μ[X ^ 2] + (a + b) * μ[X] - a * b :=
+  have h0 : 0 ≤ -μ[X ^ 2] + (a + b) * μ[X] - a * b :=
     calc
       _ ≤ ∫ ω, (b - X ω) * (X ω - a) ∂μ := by
         apply integral_nonneg_of_ae
         filter_upwards [ha, hb] with ω ha' hb'
         exact mul_nonneg (by linarith : 0 ≤ b - X ω) (by linarith : 0 ≤ X ω - a)
-      _ = ∫ ω, - X ω ^ 2 + (a + b) * X ω - a * b ∂μ :=
+      _ = ∫ ω, -X ω ^ 2 + (a + b) * X ω - a * b ∂μ :=
         integral_congr_ae <| ae_of_all μ fun ω ↦ by ring
       _ = ∫ ω, - X ω ^ 2 + (a + b) * X ω ∂μ - ∫ _, a * b ∂μ :=
         integral_sub (by fun_prop) (integrable_const (a * b))

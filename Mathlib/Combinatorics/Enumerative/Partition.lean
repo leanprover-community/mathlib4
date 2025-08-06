@@ -60,10 +60,6 @@ deriving DecidableEq
 
 namespace Partition
 
-@[deprecated "Partition now derives an instance of DecidableEq." (since := "2024-12-28")]
-instance decidableEqPartition {n : ℕ} : DecidableEq (Partition n) :=
-  fun _ _ => decidable_of_iff' _ Partition.ext_iff
-
 /-- A composition induces a partition (just convert the list to a multiset). -/
 @[simps]
 def ofComposition (n : ℕ) (c : Composition n) : Partition n where
@@ -98,7 +94,7 @@ def ofSym {n : ℕ} {σ : Type*} (s : Sym σ n) [DecidableEq σ] : n.Partition w
   parts := s.1.dedup.map s.1.count
   parts_pos := by simp [Multiset.count_pos]
   parts_sum := by
-    show ∑ a ∈ s.1.toFinset, count a s.1 = n
+    change ∑ a ∈ s.1.toFinset, count a s.1 = n
     rw [toFinset_sum_count_eq]
     exact s.2
 

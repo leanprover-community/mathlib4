@@ -112,9 +112,7 @@ theorem prod_ite_eq' [DecidableEq α] (f : α →₀ M) (a : α) (b : α → M �
 /-- A restatement of `sum_ite_self_eq` with the equality test reversed. -/
 theorem sum_ite_self_eq' [DecidableEq α] {N : Type*} [AddCommMonoid N] (f : α →₀ N) (a : α) :
     (f.sum fun x v => ite (x = a) v 0) = f a := by
-  classical
-    convert f.sum_ite_eq' a fun _ => id
-    simp [ite_eq_right_iff.2 Eq.symm]
+  simp
 
 @[to_additive (attr := simp)]
 theorem prod_pow [Fintype α] (f : α →₀ ℕ) (g : α → N) :
@@ -303,7 +301,7 @@ theorem prod_inv [Zero M] [CommGroup G] {f : α →₀ M} {h : α → M → G} :
 @[simp]
 theorem sum_sub [Zero M] [SubtractionCommMonoid G] {f : α →₀ M} {h₁ h₂ : α → M → G} :
     (f.sum fun a b => h₁ a b - h₂ a b) = f.sum h₁ - f.sum h₂ :=
-  Finset.sum_sub_distrib
+  Finset.sum_sub_distrib ..
 
 /-- Taking the product under `h` is an additive-to-multiplicative homomorphism of finsupps,
 if `h` is an additive-to-multiplicative homomorphism on the support.

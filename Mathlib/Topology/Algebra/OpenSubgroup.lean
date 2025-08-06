@@ -295,7 +295,7 @@ lemma discreteTopology [ContinuousMul G] (U : Subgroup G) (h : IsOpen (U : Set G
     DiscreteTopology (G ⧸ U) := by
   refine singletons_open_iff_discrete.mp (fun g ↦ ?_)
   induction g using Quotient.inductionOn with | h g =>
-  show IsOpen (QuotientGroup.mk ⁻¹' {QuotientGroup.mk g})
+  change IsOpen (QuotientGroup.mk ⁻¹' {QuotientGroup.mk g})
   convert_to IsOpen ((g * ·) '' U)
   · ext g'
     simp only [Set.mem_preimage, Set.mem_singleton_iff, QuotientGroup.eq, Set.image_mul_left]
@@ -482,7 +482,7 @@ structure IsTopologicalAddGroup.addNegClosureNhd (T W : Set G) [AddGroup G] : Pr
   isOpen : IsOpen T
   add : W + T ⊆ W
 
-/-- For a set `W`, `T` is a neighborhood of `1` which is open, statble under inverse and satisfies
+/-- For a set `W`, `T` is a neighborhood of `1` which is open, stable under inverse and satisfies
 `T * W ⊆ W`. -/
 @[to_additive
 "For a set `W`, `T` is a neighborhood of `0` which is open, stable under negation and satisfies

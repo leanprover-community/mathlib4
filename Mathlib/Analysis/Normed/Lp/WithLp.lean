@@ -182,7 +182,7 @@ theorem equiv_neg [AddCommGroup V] (x : WithLp p V) : WithLp.equiv p V (-x) = -W
   rfl
 
 @[deprecated toLp_neg (since := "2025-06-08")]
-theorem equiv_symm_neg [AddCommGroup V] (x' : V):
+theorem equiv_symm_neg [AddCommGroup V] (x' : V) :
     (WithLp.equiv p V).symm (-x') = -(WithLp.equiv p V).symm x' :=
   rfl
 

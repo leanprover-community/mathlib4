@@ -581,10 +581,11 @@ theorem iIndepFun_iff_measure_inter_preimage_eq_mul {ι : Type*} {β : ι → Ty
 
 alias ⟨iIndepFun.measure_inter_preimage_eq_mul, _⟩ := iIndepFun_iff_measure_inter_preimage_eq_mul
 
-theorem iIndepFun.congr {β : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)}
-    {f g : Π i, Ω → β i} (hf : iIndepFun f μ) (h : ∀ i, f i =ᵐ[μ] g i) :
-    iIndepFun g μ :=
-  Kernel.iIndepFun.congr' hf (by simp [h])
+theorem iIndepFun_congr {β : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)}
+    {f g : Π i, Ω → β i} (h : ∀ i, f i =ᵐ[μ] g i) :
+    iIndepFun f μ ↔ iIndepFun g μ := Kernel.iIndepFun_congr' (by simp [h])
+
+alias ⟨iIndepFun.congr, _⟩ := iIndepFun_congr
 
 nonrec lemma iIndepFun.comp {β γ : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)}
     {mγ : ∀ i, MeasurableSpace (γ i)} {f : ∀ i, Ω → β i}
@@ -745,6 +746,15 @@ lemma iIndepFun.precomp {g : ι' → ι} (hg : g.Injective) (h : iIndepFun f μ)
   intro t s' hs'
   simpa [A] using h (t.map ⟨g, hg⟩) (f' := fun i ↦ s' (invFun g i)) (by simpa [A] using hs')
 
+lemma iIndepFun_iff_finset : iIndepFun f μ ↔ ∀ s : Finset ι, iIndepFun (s.restrict f) μ where
+  mp h s := h.precomp (g := ((↑) : s → ι)) Subtype.val_injective
+  mpr h := by
+    rw [iIndepFun_iff]
+    intro s f hs
+    have : ⋂ i ∈ s, f i = ⋂ i : s, f i := by ext; simp
+    rw [← Finset.prod_coe_sort, this]
+    exact (h s).meas_iInter fun i ↦ hs i i.2
+
 lemma iIndepFun.of_precomp {g : ι' → ι} (hg : g.Surjective)
     (h : iIndepFun (m := fun i ↦ m (g i)) (fun i ↦ f (g i)) μ) : iIndepFun f μ := by
   have : IsProbabilityMeasure μ := h.isProbabilityMeasure
@@ -761,7 +771,7 @@ lemma iIndepFun.of_precomp {g : ι' → ι} (hg : g.Surjective)
     simpa [A] using (A j).symm ▸ hs j hj
   have eq : ∏ i ∈ Finset.image (Function.invFun g) t, μ (s (g i)) = ∏ i ∈ t, μ (s i) := by
     rw [Finset.prod_image (fun x hx y hy h => ?_), Finset.prod_congr rfl (fun x _ => by rw [A])]
-    rw [←A x, ← A y, h]
+    rw [← A x, ← A y, h]
   simpa [A, eq] using h (t.image (Function.invFun g)) (f' := fun i ↦ s (g i)) this
 
 lemma iIndepFun_precomp_of_bijective {g : ι' → ι} (hg : g.Bijective) :

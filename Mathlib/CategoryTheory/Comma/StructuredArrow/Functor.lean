@@ -99,7 +99,8 @@ composed with fibers of `grothendieckProj L` are isomorphic to the projection `p
 @[simps!]
 def mapCompιCompGrothendieckProj {X Y : D} (f : X ⟶ Y) :
     CostructuredArrow.map f ⋙ Grothendieck.ι (functor L) Y ⋙ grothendieckProj L ≅ proj L X :=
-  isoWhiskerLeft (CostructuredArrow.map f) (ιCompGrothendieckPrecompFunctorToCommaCompFst L (𝟭 _) Y)
+  Functor.isoWhiskerLeft (CostructuredArrow.map f)
+    (ιCompGrothendieckPrecompFunctorToCommaCompFst L (𝟭 _) Y)
 
 /-- The functor `CostructuredArrow.pre` induces a natural transformation
 `CostructuredArrow.functor (S ⋙ T) ⟶ CostructuredArrow.functor T` for `S : C ⥤ D` and
