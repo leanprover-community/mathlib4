@@ -153,7 +153,7 @@ theorem measure_le_tsum_of_absolutelyContinuous [SecondCountableTopology X] {ρ 
     (hρ : ρ ≪ μ) : ρ s ≤ ∑' p : h.index, ρ (h.covering p) :=
   calc
     ρ s ≤ ρ ((s \ ⋃ p ∈ h.index, h.covering p) ∪ ⋃ p ∈ h.index, h.covering p) :=
-      measure_mono (by simp only [subset_union_left, diff_union_self])
+      Measure.measure_mono (by simp only [subset_union_left, diff_union_self])
     _ ≤ ρ (s \ ⋃ p ∈ h.index, h.covering p) + ρ (⋃ p ∈ h.index, h.covering p) :=
       (measure_union_le _ _)
     _ = ∑' p : h.index, ρ (h.covering p) := by
