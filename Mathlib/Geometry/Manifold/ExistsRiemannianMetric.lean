@@ -26,9 +26,28 @@ variable
 
 local notation "⟪" x ", " y "⟫" => inner ℝ x y
 
+variable (F E) in
+/-- The set of bounded bi-continuous ℝ-bilinear maps from `F` to `ℝ` which agree with the given
+inner product structure on `E`, when read through the trivialisations of `E`. -/
+def mapsMatchingInner (x : B) : Set (F →L[ℝ] F →L[ℝ] ℝ) :=
+  letI t := trivializationAt F E x
+  {φ | ∀ v w : E x, φ (t v).2 (t w).2 = ⟪v, w⟫ }
+
+omit [VectorBundle ℝ F E] in
+lemma aux (x : B) : Convex ℝ (mapsMatchingInner F E x) := by
+  intro φ hφ ψ hψ r s hr hs hrs
+  simp only [mapsMatchingInner, Set.mem_setOf] at hφ hψ ⊢
+  intro v w
+  simp [hφ v w, hψ v w]
+  grind
+
 variable (B E) in
 /-- An arbitrary choice of bundle metric on `E`, which is smooth in the fibre. -/
-def RMetric : Π (x : B), E x →L[ℝ] E x →L[ℝ] ℝ := sorry
+def RMetric : Π (x : B), E x →L[ℝ] E x →L[ℝ] ℝ := by
+
+  sorry
+
+#exit
 
 lemma rMetric_contMDiff :
     ContMDiff IB (IB.prod 𝓘(ℝ, F →L[ℝ] F →L[ℝ] ℝ)) n
