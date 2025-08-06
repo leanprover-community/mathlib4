@@ -5,7 +5,7 @@ Authors: Johan Commelin, Floris van Doorn, Yaël Dillies
 -/
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.Opposites
-import Mathlib.Algebra.Notation.Pi
+import Mathlib.Algebra.Notation.Pi.Defs
 import Mathlib.Data.Set.NAry
 
 /-!
