@@ -99,8 +99,42 @@ lemma convex_mapsMatchingInner (x : B) : Convex ℝ (mapsMatchingInner F E x) :=
   simp [hφ v w, hψ v w]
   grind
 
+noncomputable def pullback_bilinear_fn {X Y Z : Type*} (f : X → Y) (φ : Y → Y → Z) : X → X → Z :=
+  fun v w ↦ φ (f v) (f w)
+
+-- TODO: make a better identification: choose a basis, extend to a bilinear map!
+-- TODO: extend this to any trivialization at x!
+def isBilinearMap_pullback_fn (x : B) (φ : (E x) →ₗ[ℝ] (E x) →ₗ[ℝ] ℝ) :
+    letI φ' : (E x) → (E x) → ℝ := fun v ↦ (φ.toFun v).toFun
+    letI t := (trivializationAt F E x).symm x
+    IsBilinearMap ℝ (pullback_bilinear_fn t φ') where
+  add_left := by
+    intro x₁ x₂ y
+    simp [pullback_bilinear_fn]
+    have wannabe : (trivializationAt F E x).symm x (x₁ + x₂) =
+      (trivializationAt F E x).symm x x₁ + (trivializationAt F E x).symm x x₂ := sorry
+    -- sadly, wannabe is not true as-is
+    simp [wannabe]
+  smul_left := sorry
+  add_right := sorry
+  smul_right := sorry
+
+variable (F) in
+noncomputable def pullback_lm (x : B) (φ : (E x) →ₗ[ℝ] (E x) →ₗ[ℝ] ℝ) : F →ₗ[ℝ] F →ₗ[ℝ] ℝ :=
+  (isBilinearMap_pullback_fn x φ).toLinearMap
+
+noncomputable def pullback_clm (x : B) (φ : (E x) →ₗ[ℝ] (E x) →ₗ[ℝ] ℝ) : F →L[ℝ] F →L[ℝ] ℝ :=
+  sorry
+
+
+def RMetric_local_pre (x : B) : F →ₗ[ℝ] F →ₗ[ℝ] ℝ := by
+  let inn : (E x) → (E x) → ℝ := fun v w ↦ inner ℝ v w
+  --let aux := pullback_lm F x inn
+  sorry
+
 variable (F E) in
-def RMetric_local (x : B) : F →L[ℝ] F →L[ℝ] ℝ := sorry
+def RMetric_local (x : B) : F →L[ℝ] F →L[ℝ] ℝ := by
+  sorry
 
 lemma hloc (x : B) :
     ∃ U ∈ nhds x, ∃ g,
