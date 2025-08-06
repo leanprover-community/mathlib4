@@ -55,18 +55,18 @@ lemma of_hasBasis_zero (h : (𝓝 (0 : R)).HasBasis (fun _ ↦ True)
 
 end
 
-instance of_mk' :
-    letI := Valued.mk' (valuation R)
+instance of_subgroups_basis {R : Type*} [CommRing R] [ValuativeRel R] :
+    letI := ((valuation R).subgroups_basis.topology)
     IsValuativeTopology R :=
-  letI := Valued.mk' (valuation R)
-  of_hasBasis_zero (Valued.hasBasis_nhds_zero R _)
+  letI := ((valuation R).subgroups_basis.topology)
+  of_hasBasis_zero ((valuation R).subgroups_basis.hasBasis_nhds_zero)
 
 /-- The correctness result. -/
 lemma _root_.isValuativeTopology_iff_mk'_toTopologicalSpace_eq [t : TopologicalSpace R] :
-    IsValuativeTopology R ↔ (Valued.mk' (valuation R)).toTopologicalSpace = t := by
-  letI val := Valued.mk' (valuation R)
+    IsValuativeTopology R ↔ (valuation R).subgroups_basis.topology = t := by
+  let := (valuation R).subgroups_basis
   refine ⟨fun _ ↦ ext_nhds fun x ↦ Filter.ext fun s ↦ ?_, ?_⟩
-  · rw [@mem_nhds_iff' _ _ _ val.toTopologicalSpace, mem_nhds_iff']
+  · rw [(this.hasBasis_nhds _).mem_iff, mem_nhds_iff']; simp_rw [true_and]; rfl
   · rintro rfl; infer_instance
 
 section
@@ -310,10 +310,10 @@ theorem of_hasBasis {R : Type*} [CommRing R] [ValuativeRel R]
     [τ : TopologicalSpace R] [ContinuousConstVAdd R R] (h : (nhds 0).HasBasis p s) :
     IsValuativeTopology R := by
   refine isValuativeTopology_iff_mk'_toTopologicalSpace_eq.mpr ?_
-  letI := Valued.mk' (valuation R)
-  specialize @ih this.toTopologicalSpace of_mk'
+  let := (valuation R).subgroups_basis
+  specialize @ih this.topology of_subgroups_basis
   refine ext_nhds fun x ↦ Filter.ext fun t ↦ ?_
-  rw [← @vadd_mem_nhds_vadd_iff _ _ this.toTopologicalSpace _ _ _ _ (-x),
+  rw [← @vadd_mem_nhds_vadd_iff _ _ this.topology _ _ _ _ (-x),
     ← @vadd_mem_nhds_vadd_iff _ _ τ _ _ _ _ (-x),
     vadd_eq_add, neg_add_cancel, h.mem_iff, ih.mem_iff]
 
