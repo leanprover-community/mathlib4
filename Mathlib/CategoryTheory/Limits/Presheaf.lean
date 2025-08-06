@@ -644,7 +644,7 @@ def tautologicalCocone (P : Cᵒᵖ ⥤ Type v₁) :
     representables.
 
     Proposition 2.6.3(i) in [Kashiwara2006] -/
-noncomputable def isColimitTautologicalCocone (P : Cᵒᵖ ⥤ Type v₁) :
+def isColimitTautologicalCocone (P : Cᵒᵖ ⥤ Type v₁) :
     IsColimit (tautologicalCocone P) :=
   let e : functorToRepresentables.{v₁} P ≅
     ((CategoryOfElements.costructuredArrowYonedaEquivalence P).functor ⋙
