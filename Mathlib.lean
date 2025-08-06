@@ -1108,6 +1108,7 @@ import Mathlib.Algebra.Ring.Subsemiring.MulOpposite
 import Mathlib.Algebra.Ring.Subsemiring.Order
 import Mathlib.Algebra.Ring.Subsemiring.Pointwise
 import Mathlib.Algebra.Ring.SumsOfSquares
+import Mathlib.Algebra.Ring.Torsion
 import Mathlib.Algebra.Ring.TransferInstance
 import Mathlib.Algebra.Ring.ULift
 import Mathlib.Algebra.Ring.Units
@@ -5080,6 +5081,7 @@ import Mathlib.Probability.Independence.Basic
 import Mathlib.Probability.Independence.Conditional
 import Mathlib.Probability.Independence.InfinitePi
 import Mathlib.Probability.Independence.Integrable
+import Mathlib.Probability.Independence.Integration
 import Mathlib.Probability.Independence.Kernel
 import Mathlib.Probability.Independence.ZeroOne
 import Mathlib.Probability.Integration
