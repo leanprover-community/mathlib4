@@ -1,0 +1,132 @@
+/-
+Copyright (c) 2025 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
+import Mathlib.CategoryTheory.Elements
+import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
+
+/-!
+# The type of simplices of a simplicial set
+
+In this file, we define the type `X.S` of simplices of a simplicial set `X`,
+where a simplex consists of the data of `dim : ℕ` and `simplex : X _⦋dim⦌`.
+We endow this type with a preorder defined by
+`x ≤ y ↔ Subcomplex.ofSimplex x.simplex ≤ Subcomplex.ofSimplex y.simplex`.
+
+## TODO (@joelriou)
+
+* Extend the `S` structure to define the type of nondegenerate
+simplices of a simplicial set `X`, and also the type of nondegenerate
+simplices of a simplicial set `X` which do not belong to a given subcomplex.
+
+-/
+
+universe u
+
+open CategoryTheory Simplicial
+
+namespace SSet
+
+variable (X : SSet.{u})
+
+/-- The type of simplices of a simpliciat set `X`. -/
+structure S where
+  /-- the dimension of the simplex -/
+  {dim : ℕ}
+  /-- the simplex -/
+  simplex : X _⦋dim⦌
+
+variable {X}
+
+namespace S
+
+lemma mk_surjective {s : X.S} :
+    ∃ (n : ℕ) (x : X _⦋n⦌), s = mk x :=
+  ⟨s.1, s.2, rfl⟩
+
+/-- The image of a simplex by a morphism of simplicial sets. -/
+def map {Y : SSet.{u}} (f : X ⟶ Y) (s : X.S) : Y.S :=
+  S.mk (f.app _ s.2)
+
+lemma dim_eq_of_eq {s t : X.S} (h : s = t) :
+    s.dim = t.dim :=
+  congr_arg dim h
+
+lemma dim_eq_of_mk_eq {n m : ℕ} {x : X _⦋n⦌} {y : X _⦋m⦌}
+    (h : S.mk x = S.mk y) : n = m :=
+  dim_eq_of_eq h
+
+section
+
+variable (s : X.S) {d : ℕ} (hd : s.dim = d)
+
+/-- When `s : X.S` is such that `s.dim = d`, this is a term
+that is equal to `s`, but whose dimension if definitionally equal to `d`. -/
+@[simps dim]
+def cast : X.S where
+  dim := d
+  simplex := _root_.cast (by simp only [hd]) s.simplex
+
+lemma cast_eq_self : s.cast hd = s := by
+  obtain ⟨d, _, rfl⟩ := s.mk_surjective
+  obtain rfl := hd
+  rfl
+
+@[simp]
+lemma cast_simplex_rfl : (s.cast rfl).simplex = s.simplex := rfl
+
+end
+
+lemma ext_iff' (s t : X.S) :
+    s = t ↔ ∃ (h : s.dim = t.dim), (s.cast h).2 = t.2 :=
+  ⟨by rintro rfl; exact ⟨rfl, rfl⟩, fun ⟨h₁, h₂⟩ ↦ by
+    obtain ⟨_, _, rfl⟩ := s.mk_surjective
+    obtain ⟨_, _, rfl⟩ := t.mk_surjective
+    aesop⟩
+
+lemma ext_iff {n : ℕ} (x y : X _⦋n⦌) :
+    S.mk x = S.mk y ↔ x = y := by
+  simp
+
+instance : Preorder X.S where
+  le x y := Subcomplex.ofSimplex x.2 ≤ Subcomplex.ofSimplex y.2
+  le_refl _ := le_refl (α := Subcomplex X) _
+  le_trans _ _ _ := le_trans (α := Subcomplex X)
+
+lemma le_iff {x y : X.S} : x ≤ y ↔ Subcomplex.ofSimplex x.2 ≤ Subcomplex.ofSimplex y.2 :=
+  Iff.rfl
+
+lemma mk_map_le {n m : ℕ} (x : X _⦋n⦌) (f : ⦋m⦌ ⟶ ⦋n⦌) :
+    S.mk (X.map f.op x) ≤ S.mk x := by
+  rw [le_iff, Subcomplex.ofSimplex_le_iff]
+  exact ⟨f.op, rfl⟩
+
+lemma mk_map_eq_iff_of_mono {n m : ℕ} (x : X _⦋n⦌)
+    (f : ⦋m⦌ ⟶ ⦋n⦌) [Mono f] :
+    S.mk (X.map f.op x) = S.mk x ↔ IsIso f := by
+  constructor
+  · intro h
+    obtain rfl := S.dim_eq_of_mk_eq h
+    obtain rfl := SimplexCategory.eq_id_of_mono f
+    infer_instance
+  · intro hf
+    obtain rfl := SimplexCategory.eq_of_isIso f
+    obtain rfl := SimplexCategory.eq_id_of_isIso f
+    simp
+
+/-- The type of simplices of `X : SSet.{u}` identifies to the type
+of elements of `X` considered as a functor `SimplexCategoryᵒᵖ ⥤ Type u`. -/
+@[simps!]
+def equivElements : X.S ≃ X.Elements where
+  toFun s := X.elementsMk _ s.2
+  invFun := by
+    rintro ⟨⟨n⟩, x⟩
+    induction n using SimplexCategory.rec
+    exact S.mk x
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+end S
+
+end SSet
