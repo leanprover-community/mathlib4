@@ -27,8 +27,6 @@ lemma ENNReal.add_sub_add_eq_sub_left {a c b : ℝ≥0∞} (hc : c ≠ ∞) :
   simp_rw [add_comm c]
   exact ENNReal.add_sub_add_eq_sub_right hc
 
-lemma ENNReal.mul_min (a b c : ℝ≥0∞) : a * min b c = min (a * b) (a * c) := mul_left_mono.map_min
-
 -- from BrownianMotion
 theorem Set.Finite.lt_iInf_iff {α ι : Type*} [CompleteLinearOrder α]
     {s : Set ι} {f : ι → α} (h : s.Nonempty) (hs : s.Finite) {a : α} :

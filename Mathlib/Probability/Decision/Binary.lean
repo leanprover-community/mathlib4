@@ -125,7 +125,7 @@ lemma bayesBinaryRisk_le_bayesBinaryRisk_comp (μ ν : Measure 𝓧) (π : Measu
 lemma bayesBinaryRisk_self (μ : Measure 𝓧) (π : Measure Bool) :
     bayesBinaryRisk μ μ π = min (π {false}) (π {true}) * μ .univ := by
   have : boolKernel μ μ = Kernel.const Bool μ := by ext; simp
-  rw [bayesBinaryRisk, mul_comm, ENNReal.mul_min, this,
+  rw [bayesBinaryRisk, mul_comm, mul_min, this,
     bayesRiskPrior_const_of_fintype (by fun_prop)]
   simp [Bool.lintegral_bool, binaryLoss, iInf_bool_eq]
 
