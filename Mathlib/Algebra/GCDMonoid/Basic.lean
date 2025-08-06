@@ -808,14 +808,12 @@ theorem lcm_eq_of_associated_right [NormalizedGCDMonoid α] {m n : α} (h : Asso
   dvd_antisymm_of_normalize_eq (normalize_lcm _ _) (normalize_lcm _ _) (lcm_dvd_lcm dvd_rfl h.dvd)
     (lcm_dvd_lcm dvd_rfl h.symm.dvd)
 
--- TODO consider reorganizing and extracting the variables here
-/-
 section Divisibility
 
 variable [GCDMonoid α] {m n a b c : α}
- -/
 
-@[simp] theorem lcm_dvd_mul [GCDMonoid α] (m n : α) : lcm m n ∣ m * n :=
+variable (m n) in
+@[simp] theorem lcm_dvd_mul : lcm m n ∣ m * n :=
   lcm_dvd (by simp) (by simp)
 
 theorem dvd_lcm_of_dvd_left [GCDMonoid α] {a b : α} (h : a ∣ b) (c : α) : a ∣ lcm b c :=
@@ -834,7 +832,7 @@ alias Dvd.dvd.lcm_left := dvd_lcm_of_dvd_right
 theorem dvd_of_lcm_left_dvd [GCDMonoid α] {a b c : α} (h : lcm a b ∣ c) : b ∣ c :=
   (dvd_lcm_right a b).trans h
 
---end Divisibility
+end Divisibility
 
 namespace Prime
 
