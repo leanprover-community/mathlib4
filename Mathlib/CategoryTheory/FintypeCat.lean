@@ -101,8 +101,8 @@ def equivEquivIso {A B : FintypeCat} : A ≃ B ≃ (A ≅ B) where
       invFun := i.inv
       left_inv := congr_fun i.hom_inv_id
       right_inv := congr_fun i.inv_hom_id }
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
 instance (X Y : FintypeCat) : Finite (X ⟶ Y) :=
   inferInstanceAs <| Finite (X → Y)
