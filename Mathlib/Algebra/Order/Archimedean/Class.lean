@@ -462,39 +462,42 @@ theorem liftOrderHom_mk (f : M → α) (h : ∀ a b, mk a ≤ mk b → f a ≤ f
 
 end LiftHom
 
-/-- Given a non-empty `UpperSet` of `MulArchimedeanClass`,
-all group elements belonging to these classes form a subgroup. -/
-@[to_additive "Given a non-empty `UpperSet` of `ArchimedeanClass`,
-all group elements belonging to these classes form a subgroup."]
-def subgroup' {s : UpperSet (MulArchimedeanClass M)} (hs : s ≠ ⊤) : Subgroup M where
+/-- Given a `UpperSet` of `MulArchimedeanClass`,
+all group elements belonging to these classes form a subsemigroup.
+This is not yet a subgroup because it doesn't contain the identity if s = ⊤. -/
+@[to_additive "Given a `UpperSet` of `ArchimedeanClass`,
+all group elements belonging to these classes form a subsemigroup.
+This is not yet a subgroup because it doesn't contain the identity if s = ⊤."]
+def subsemigroup (s : UpperSet (MulArchimedeanClass M)) : Subsemigroup M where
   carrier := mk ⁻¹' s
   mul_mem' {a b} ha hb := by
     rw [Set.mem_preimage] at ha hb ⊢
     obtain h | h := min_le_iff.mp (min_le_mk_mul a b)
     · exact s.upper h ha
     · exact s.upper h hb
-  one_mem' := by
-    rw [Set.mem_preimage]
-    obtain ⟨u, hu⟩ := UpperSet.coe_nonempty.mpr hs
-    simpa using s.upper (by simp) hu
-  inv_mem' {a} h := by simpa using h
 
-/-- Extend `MulArchimedeanClass.subgroup'` to any `UpperSet`
-with a junk value `⊥` assigned to the empty set. -/
-@[to_additive "Extend `ArchimedeanClass.subgroup'` to any `UpperSet`
-with a junk value `⊥` assigned to the empty set."]
+/-- Make `MulArchimedeanClass.subsemigroup` a subgroup by assigning
+s = ⊤ with a junk value ⊥. -/
+@[to_additive "Make `ArchimedeanClass.subsemigroup` a subgroup by assigning
+s = ⊤ with a junk value ⊥."]
 noncomputable
 def subgroup (s : UpperSet (MulArchimedeanClass M)) : Subgroup M :=
   open Classical in
   if hs : s = ⊤ then
     ⊥
-  else
-    subgroup' hs
+  else {
+    subsemigroup s with
+    one_mem' := by
+      rw [subsemigroup, Set.mem_preimage]
+      obtain ⟨u, hu⟩ := UpperSet.coe_nonempty.mpr hs
+      simpa using s.upper (by simp) hu
+    inv_mem' := by simp [subsemigroup]
+  }
 
 variable {s : UpperSet (MulArchimedeanClass M)}
 
 @[to_additive]
-theorem subgroup_eq_of_ne_top (hs : s ≠ ⊤) : subgroup s = subgroup' hs := by
+theorem subgroup_eq_of_ne_top (hs : s ≠ ⊤) : (subgroup s : Set M) = subsemigroup s := by
   simp [subgroup, hs]
 
 variable (M) in
@@ -504,8 +507,31 @@ theorem subgroup_eq_bot : subgroup (M := M) ⊤ = ⊥ := by
 
 @[to_additive]
 theorem mem_subgroup_iff (hs : s ≠ ⊤) : a ∈ subgroup s ↔ mk a ∈ s := by
-  rw [subgroup_eq_of_ne_top hs]
+  rw [← SetLike.mem_coe, subgroup_eq_of_ne_top hs]
   exact Set.mem_preimage
+
+variable (M) in
+@[to_additive]
+theorem subgroup_strictAntiOn : StrictAntiOn (subgroup (M := M)) (Set.Iio ⊤) := by
+  intro s hs t ht hst
+  rw [← SetLike.coe_ssubset_coe]
+  rw [subgroup_eq_of_ne_top (Set.mem_Iio.mp hs).ne_top]
+  rw [subgroup_eq_of_ne_top (Set.mem_Iio.mp ht).ne_top]
+  refine Set.ssubset_iff_subset_ne.mpr ⟨by simpa [subsemigroup] using hst.le, ?_⟩
+  contrapose! hst with heq
+  apply le_of_eq
+  simpa [mk_surjective, subsemigroup] using heq
+
+variable (M) in
+@[to_additive]
+theorem subgroup_antitone : Antitone (subgroup (M := M)) := by
+  intro s t hst
+  obtain hs | rfl := ne_or_eq s ⊤
+  · obtain ht | rfl := ne_or_eq t ⊤
+    · exact ((subgroup_strictAntiOn M).le_iff_le
+        (Set.mem_Iio.mpr ht.lt_top) (Set.mem_Iio.mpr hs.lt_top)).mpr hst
+    · simp
+  · rw [eq_top_iff.mpr hst]
 
 /-- An open ball defined by `MulArchimedeanClass.subgroup` of `UpperSet.Ioi A`.
 For `A = ⊤`, we assign the junk value `⊥`. -/
@@ -545,30 +571,6 @@ variable (M) in
 theorem closedBallSubgroup_top : closedBallSubgroup (M := M) ⊤ = ⊥ := by
   ext
   simp
-
-variable (M) in
-@[to_additive]
-theorem subgroup_strictAntiOn : StrictAntiOn (subgroup (M := M)) (Set.Iio ⊤) := by
-  intro s hs t ht hst
-  rw [subgroup_eq_of_ne_top (Set.mem_Iio.mp hs).ne_top]
-  rw [subgroup_eq_of_ne_top (Set.mem_Iio.mp ht).ne_top]
-  apply lt_of_le_of_ne
-  · rw [Subgroup.mk_le_mk]
-    exact (Set.preimage_subset_preimage_iff (by simp)).mpr (by simpa [subgroup'] using hst.le)
-  · contrapose! hst with heq
-    apply le_of_eq
-    simpa [mk_surjective, subgroup'] using heq
-
-variable (M) in
-@[to_additive]
-theorem subgroup_antitone : Antitone (subgroup (M := M)) := by
-  intro s t hst
-  obtain hs | rfl := ne_or_eq s ⊤
-  · obtain ht | rfl := ne_or_eq t ⊤
-    · exact ((subgroup_strictAntiOn M).le_iff_le
-        (Set.mem_Iio.mpr ht.lt_top) (Set.mem_Iio.mpr hs.lt_top)).mpr hst
-    · simp
-  · rw [eq_top_iff.mpr hst]
 
 variable (M) in
 @[to_additive]

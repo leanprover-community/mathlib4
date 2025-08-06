@@ -33,17 +33,17 @@ def submodule (s : UpperSet (ArchimedeanClass M)) : Submodule K M where
   smul_mem' k {a} := by
     obtain rfl | hs := eq_or_ne s ⊤
     · aesop
-    · change a ∈ addSubgroup s → k • a ∈ addSubgroup s
-      simp_rw [mem_addSubgroup_iff hs]
-      intro ha
-      obtain _ | _ := subsingleton_or_nontrivial K
-      · rw [Subsingleton.eq_zero k]
-        simpa using (IsUpperSet.top_mem s.upper).mpr <| UpperSet.coe_nonempty.mpr hs
-      · obtain ⟨n, hn⟩ := Archimedean.arch |k| (show 0 < 1 by simp)
-        refine s.upper (mk_le_mk.mpr ⟨n, ?_⟩) ha
-        have : n • |a| = (n • (1 : K)) • |a| := by rw [smul_assoc, one_smul]
-        rw [this, abs_smul]
-        exact smul_le_smul_of_nonneg_right hn (by simp)
+    change a ∈ addSubgroup s → k • a ∈ addSubgroup s
+    simp_rw [mem_addSubgroup_iff hs]
+    intro ha
+    obtain _ | _ := subsingleton_or_nontrivial K
+    · rw [Subsingleton.eq_zero k]
+      simpa using (IsUpperSet.top_mem s.upper).mpr <| UpperSet.coe_nonempty.mpr hs
+    obtain ⟨n, hn⟩ := Archimedean.arch |k| (show 0 < 1 by simp)
+    refine s.upper (mk_le_mk.mpr ⟨n, ?_⟩) ha
+    have : n • |a| = (n • (1 : K)) • |a| := by rw [smul_assoc, one_smul]
+    rw [this, abs_smul]
+    exact smul_le_smul_of_nonneg_right hn (by simp)
 
 variable (K) in
 /-- `ArchimedeanClass.ballAddSubgroup` as a submodule. -/
