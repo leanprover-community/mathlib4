@@ -270,7 +270,7 @@ lemma vanishingIdeal_isIrreducible :
 lemma vanishingIdeal_isClosed_isIrreducible :
     vanishingIdeal (R := R) '' {s | IsClosed s ∧ IsIrreducible s} = {P | P.IsPrime} := by
   refine (subset_antisymm ?_ ?_).trans vanishingIdeal_isIrreducible
-  · exact Set.image_subset _ fun _ ↦ And.right
+  · exact Set.image_mono fun _ ↦ And.right
   rintro _ ⟨s, hs, rfl⟩
   exact ⟨closure s, ⟨isClosed_closure, hs.closure⟩, vanishingIdeal_closure s⟩
 
@@ -402,9 +402,6 @@ theorem localization_comap_isInducing [Algebra R S] (M : Submonoid R) [IsLocaliz
   · rintro ⟨s, rfl⟩
     exact ⟨_, rfl⟩
 
-@[deprecated (since := "2024-10-28")]
-alias localization_comap_inducing := localization_comap_isInducing
-
 theorem localization_comap_injective [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
     Function.Injective (comap (algebraMap R S)) :=
   fun _ _ h => localization_specComap_injective S M h
@@ -412,9 +409,6 @@ theorem localization_comap_injective [Algebra R S] (M : Submonoid R) [IsLocaliza
 theorem localization_comap_isEmbedding [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
     IsEmbedding (comap (algebraMap R S)) :=
   ⟨localization_comap_isInducing S M, localization_comap_injective S M⟩
-
-@[deprecated (since := "2024-10-26")]
-alias localization_comap_embedding := localization_comap_isEmbedding
 
 theorem localization_comap_range [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
     Set.range (comap (algebraMap R S)) = { p | Disjoint (M : Set R) p.asIdeal } :=
@@ -433,9 +427,6 @@ theorem comap_isInducing_of_surjective (hf : Surjective f) : IsInducing (comap f
         ?_⟩
     rintro ⟨-, ⟨F, rfl⟩, hF⟩
     exact ⟨f '' F, hF.symm.trans (preimage_comap_zeroLocus f F)⟩
-
-@[deprecated (since := "2024-10-28")]
-alias comap_inducing_of_surjective := comap_isInducing_of_surjective
 
 /-- The embedding has closed range if the domain (and therefore the codomain) is a ring,
   see `PrimeSpectrum.isClosedEmbedding_comap_of_surjective`.
@@ -1045,9 +1036,6 @@ lemma existsUnique_idempotent_basicOpen_eq_of_isClopen {s : Set (PrimeSpectrum R
   rintro x y ⟨hx, rfl⟩ ⟨hy, eq⟩
   exact basicOpen_injOn_isIdempotentElem hx hy (SetLike.ext' eq)
 
-@[deprecated (since := "2024-11-11")]
-alias exists_idempotent_basicOpen_eq_of_is_clopen := exists_idempotent_basicOpen_eq_of_isClopen
-
 open TopologicalSpace.Opens in
 lemma isClopen_iff_mul_add {s : Set (PrimeSpectrum R)} :
     IsClopen s ↔ ∃ e f : R, e * f = 0 ∧ e + f = 1 ∧ s = basicOpen e := by
@@ -1302,27 +1290,6 @@ lemma isClosed_singleton_closedPoint : IsClosed {closedPoint R} := by
   infer_instance
 
 end IsLocalRing
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.closedPoint := IsLocalRing.closedPoint
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.isLocalHom_iff_comap_closedPoint := IsLocalRing.isLocalHom_iff_comap_closedPoint
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.comap_closedPoint := IsLocalRing.comap_closedPoint
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.specializes_closedPoint := IsLocalRing.specializes_closedPoint
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.closedPoint_mem_iff := IsLocalRing.closedPoint_mem_iff
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.closed_point_mem_iff := IsLocalRing.closed_point_mem_iff
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.PrimeSpectrum.comap_residue := IsLocalRing.PrimeSpectrum.comap_residue
 
 section KrullDimension
 

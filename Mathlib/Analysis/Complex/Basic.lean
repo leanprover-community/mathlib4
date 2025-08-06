@@ -150,8 +150,6 @@ theorem continuous_re : Continuous re :=
 lemma uniformlyContinuous_re : UniformContinuous re :=
   reCLM.uniformContinuous
 
-@[deprecated (since := "2024-11-04")] alias uniformlyContinous_re := uniformlyContinuous_re
-
 @[simp]
 theorem reCLM_coe : (reCLM : ℂ →ₗ[ℝ] ℝ) = reLm :=
   rfl
@@ -170,8 +168,6 @@ theorem continuous_im : Continuous im :=
 
 lemma uniformlyContinuous_im : UniformContinuous im :=
   imCLM.uniformContinuous
-
-@[deprecated (since := "2024-11-04")] alias uniformlyContinous_im := uniformlyContinuous_im
 
 @[simp]
 theorem imCLM_coe : (imCLM : ℂ →ₗ[ℝ] ℝ) = imLm :=
@@ -585,6 +581,16 @@ open scoped ComplexOrder
 def slitPlane : Set ℂ := {z | 0 < z.re ∨ z.im ≠ 0}
 
 lemma mem_slitPlane_iff {z : ℂ} : z ∈ slitPlane ↔ 0 < z.re ∨ z.im ≠ 0 := Set.mem_setOf
+
+/- If `z` is non-zero, then either `z` or `-z` is in `slitPlane`. -/
+lemma mem_slitPlane_or_neg_mem_slitPlane {z : ℂ} (hz : z ≠ 0) :
+    z ∈ slitPlane ∨ -z ∈ slitPlane := by
+  rw [mem_slitPlane_iff, mem_slitPlane_iff]
+  rw [ne_eq, Complex.ext_iff] at hz
+  push_neg at hz
+  simp_all only [ne_eq, zero_re, zero_im, neg_re, Left.neg_pos_iff, neg_im, neg_eq_zero]
+  by_contra! contra
+  exact hz (le_antisymm contra.1.1 contra.2.1) contra.1.2
 
 lemma slitPlane_eq_union : slitPlane = {z | 0 < z.re} ∪ {z | z.im ≠ 0} := Set.setOf_or.symm
 
