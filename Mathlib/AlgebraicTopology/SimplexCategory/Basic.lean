@@ -687,10 +687,6 @@ instance : Balanced SimplexCategory where
     rw [isIso_iff_of_epi]
     exact le_antisymm (len_le_of_mono f) (len_le_of_epi f)
 
-instance {n : ℕ} {i : Fin (n + 2)} : Mono (δ i) := by
-  rw [mono_iff_injective]
-  exact Fin.succAbove_right_injective
-
 /-- An isomorphism in `SimplexCategory` induces an `OrderIso`. -/
 @[simp]
 def orderIsoOfIso {x y : SimplexCategory} (e : x ≅ y) : Fin (x.len + 1) ≃o Fin (y.len + 1) :=
