@@ -21,71 +21,7 @@ namespace IsValuativeTopology
 
 section
 
-/-! # Alternate constructors -/
-
-variable {R : Type*} [CommRing R] [ValuativeRel R] [TopologicalSpace R]
-
-open ValuativeRel TopologicalSpace Filter Topology Set
-
-local notation "v" => valuation R
-
-variable [ContinuousConstVAdd R R]
-
-/-- Assuming `ContinuousConstVAdd R R`, we only need to check the neighbourhood of `0` in order to
-prove `IsValuativeTopology R`. -/
-theorem of_zero
-    (h₀ : ∀ s : Set R, s ∈ 𝓝 0 ↔ ∃ γ : (ValueGroupWithZero R)ˣ, { z | v z < γ } ⊆ s) :
-    IsValuativeTopology R where
-  mem_nhds_iff {s x} := by
-    simpa [← vadd_mem_nhds_vadd_iff (t := s) (-x), ← image_vadd, ← image_subset_iff] using
-      h₀ ((x + ·) ⁻¹' s)
-
-/-- Assuming `ContinuousConstVAdd R R`, we only need to check the neighbourhood of `0` in order to
-prove `IsValuativeTopology R`. -/
-lemma of_hasBasis_zero (h : (𝓝 (0 : R)).HasBasis (fun _ ↦ True)
-    fun γ : (ValueGroupWithZero R)ˣ ↦ { x | (valuation R) x < γ }) :
-    IsValuativeTopology R :=
-  .of_zero <| by simp [h.mem_iff]
-
-lemma of_hasBasis_pair
-    (h : (𝓝 (0 : R)).HasBasis (fun rs : R × R ↦ rs.1 ∈ posSubmonoid R ∧ rs.2 ∈ posSubmonoid R)
-      fun rs  ↦ { x | x * rs.2 <ᵥ rs.1 }) :
-    IsValuativeTopology R := by
-  refine of_hasBasis_zero (h.to_hasBasis ?_ ?_)
-  · rintro ⟨r, s⟩ ⟨hr, hs⟩
-    refine ⟨Units.mk0 (.mk r ⟨s, hs⟩) ?_, trivial, ?_⟩
-    · simpa using hr
-    · simp [valuation]
-  · rintro γ -
-    obtain ⟨r, s, h⟩ := valuation_surjective γ.val
-    by_cases hr : valuation R r = 0
-    · simp [hr, eq_comm] at h
-    · refine ⟨⟨r, s⟩, ⟨by simpa [valuation_eq_zero_iff] using hr, s.prop⟩, ?_⟩
-      simp only [← h, Set.setOf_subset_setOf]
-      intro x hx
-      rw [lt_div_iff₀ (by simp [zero_lt_iff])]
-      simp [valuation, hx]
-
-lemma of_hasBasis_compatible {Γ₀ : Type*} [LinearOrderedCommMonoidWithZero Γ₀]
-    {v' : Valuation R Γ₀} [v'.Compatible]
-    (h : (𝓝 (0 : R)).HasBasis (fun rs : R × R ↦ v' rs.1 ≠ 0 ∧ v' rs.2 ≠ 0)
-    fun rs : R × R ↦ { x | v' x * v' rs.2 < v' rs.1 }) :
-    IsValuativeTopology R := by
-  refine of_hasBasis_pair ?_
-  convert h <;>
-  simp [Valuation.Compatible.rel_iff_le («v» := v'), Valuation.Compatible.rel_lt_iff_lt («v» := v')]
-
-lemma of_hasBasis_ne_zero
-    {F : Type*} [Field F] [ValuativeRel F] [TopologicalSpace F] [ContinuousConstVAdd F F]
-    {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
-    {v' : Valuation F Γ₀} [v'.Compatible]
-    (h : (𝓝 (0 : F)).HasBasis (fun r ↦ v' r ≠ 0) fun r ↦ { x | v' x < v' r }) :
-    IsValuativeTopology F :=
-  of_hasBasis_compatible (v' := v') <| h.to_hasBasis
-    (fun x hx ↦ ⟨(x, 1), (by simp [hx]), by simp⟩)
-    fun ⟨x, y⟩ hxy ↦ ⟨x / y, by simpa using hxy, by simp [lt_div_iff₀ (zero_lt_iff.2 hxy.right)]⟩
-
-end
+/-! # Results assuming IsValuativeTopology -/
 
 variable {R : Type*} [CommRing R] [ValuativeRel R] [TopologicalSpace R] [IsValuativeTopology R]
 
@@ -135,6 +71,21 @@ theorem hasBasis_nhds_zero :
 alias _root_.ValuativeTopology.hasBasis_nhds_zero := hasBasis_nhds_zero
 
 variable (R) in
+lemma hasBasis_nhds_zero_ne_zero :
+    (𝓝 (0 : R)).HasBasis (· ≠ 0) fun γ ↦ { x | (valuation R) x < γ } :=
+  (hasBasis_nhds_zero R).to_hasBasis
+    (fun γ _ ↦ ⟨γ, γ.ne_zero, subset_refl _⟩)
+    fun γ hγ ↦ ⟨Units.mk0 γ hγ, trivial, subset_refl _⟩
+
+variable (R) in
+lemma hasBasis_nhds_zero_ne_zero_and_le_one :
+    (𝓝 (0 : R)).HasBasis (fun γ ↦ γ ≠ 0 ∧ γ ≤ 1) fun γ ↦ { x | (valuation R) x < γ } :=
+  (hasBasis_nhds_zero_ne_zero R).to_hasBasis
+    (fun γ hγ ↦ ⟨min γ 1, ⟨zero_lt_iff.1 <| lt_min (zero_lt_iff.2 hγ) zero_lt_one,
+      min_le_right _ _⟩, fun x hx ↦ hx.trans_le (a := v x) (min_le_left _ _)⟩)
+    fun γ hγ ↦ ⟨γ, hγ.1, subset_refl _⟩
+
+variable (R) in
 lemma hasBasis_nhds_zero_pair :
     (𝓝 (0 : R)).HasBasis (fun rs : R × R ↦ rs.1 ∈ posSubmonoid R ∧ rs.2 ∈ posSubmonoid R)
       fun rs  ↦ { x | x * rs.2 <ᵥ rs.1 } := by
@@ -154,6 +105,40 @@ lemma hasBasis_nhds_zero_pair :
     · simpa using hr
     · simp [valuation]
 
+variable (R) in
+lemma hasBasis_nhds_zero_min_inv :
+    (𝓝 (0 : R)).HasBasis (fun r : R ↦ r ∈ posSubmonoid R)
+      fun r ↦ { x | x <ᵥ r ∧ x * r <ᵥ 1 } := by
+  refine (hasBasis_nhds_zero_pair R).to_hasBasis ?_ ?_
+  · rintro ⟨x, y⟩ ⟨hx, hy⟩
+    obtain hxy | hxy := rel_total (x * y) 1
+    · refine ⟨x * x, mul_mem hx hx, setOf_subset_setOf.mpr fun z hz ↦ ?_⟩
+      simp only [Valuation.Compatible.rel_iff_le («v» := v),
+        Valuation.Compatible.rel_lt_iff_lt («v» := v), map_mul] at *
+      refine ((mul_lt_mul_right (zero_lt_iff.2 (valuation_posSubmonoid_ne_zero_of_compatible _
+        ⟨y, hy⟩))).2 hz.1).trans_le ?_
+      rw [mul_assoc]
+      exact (mul_le_iff_le_one_right (zero_lt_iff.2 (valuation_posSubmonoid_ne_zero_of_compatible _
+        ⟨x, hx⟩))).2 hxy
+    · refine ⟨y * y, mul_mem hy hy, setOf_subset_setOf.mpr fun z hz ↦ ?_⟩
+      simp only [Valuation.Compatible.rel_iff_le («v» := v),
+        Valuation.Compatible.rel_lt_iff_lt («v» := v), map_mul] at *
+      rw [← mul_lt_mul_right (zero_lt_iff.2 (valuation_posSubmonoid_ne_zero_of_compatible
+        (valuation R) ⟨y, hy⟩)), mul_assoc]
+      exact hz.2.trans_le hxy
+  · rintro x hx
+    obtain hx1 | h1x := le_total (v x) 1
+    · refine ⟨(x, 1), ⟨hx, one_mem _⟩, setOf_subset_setOf.mpr fun z hz ↦ ⟨?_, ?_⟩⟩
+      · rwa [mul_one] at hz
+      · simp only [Valuation.Compatible.rel_lt_iff_lt («v» := v), map_mul, map_one, mul_one] at hz ⊢
+        rw [← mul_lt_mul_right (zero_lt_iff.2 (valuation_posSubmonoid_ne_zero_of_compatible
+          (valuation R) ⟨x, hx⟩))] at hz
+        exact hz.trans_le (mul_le_one' hx1 hx1)
+    · refine ⟨(1, x), ⟨one_mem _, hx⟩, setOf_subset_setOf.mpr fun z hz ↦ ⟨?_, hz⟩⟩
+      simp only [Valuation.Compatible.rel_lt_iff_lt («v» := v), map_mul, map_one] at hz ⊢
+      refine lt_of_lt_of_le (lt_of_le_of_lt ?_ hz) h1x
+      exact le_mul_of_one_le_right' h1x
+
 lemma hasBasis_nhds_zero_compatible {Γ₀ : Type*} [LinearOrderedCommMonoidWithZero Γ₀]
     (v' : Valuation R Γ₀) [v'.Compatible] :
     (𝓝 (0 : R)).HasBasis (fun rs : R × R ↦ v' rs.1 ≠ 0 ∧ v' rs.2 ≠ 0)
@@ -161,7 +146,7 @@ lemma hasBasis_nhds_zero_compatible {Γ₀ : Type*} [LinearOrderedCommMonoidWith
   convert hasBasis_nhds_zero_pair R <;>
   simp [Valuation.Compatible.rel_iff_le («v» := v'), Valuation.Compatible.rel_lt_iff_lt («v» := v')]
 
-lemma hasBasis_nhds_zero_ne_zero
+lemma hasBasis_nhds_zero_map_ne_zero
     {F : Type*} [Field F] [ValuativeRel F] [TopologicalSpace F] [IsValuativeTopology F]
     {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] (v' : Valuation F Γ₀) [v'.Compatible] :
     (𝓝 (0 : F)).HasBasis (fun r ↦ v' r ≠ 0) fun r ↦ { x | v' x < v' r } :=
@@ -269,6 +254,99 @@ lemma isOpen_sphere {r : ValueGroupWithZero R} (hr : r ≠ 0) :
 
 @[deprecated (since := "2025-08-01")]
 alias _root_.ValuativeTopology.isOpen_sphere := isOpen_sphere
+
+end
+
+section
+
+/-! # Alternate constructors -/
+
+variable {R : Type*} [CommRing R] [ValuativeRel R] [TopologicalSpace R]
+
+open ValuativeRel TopologicalSpace Filter Topology Set
+
+local notation "v" => valuation R
+
+variable [ContinuousConstVAdd R R]
+
+/-- Assuming `ContinuousConstVAdd R R`, we only need to check the neighbourhood of `0` in order to
+prove `IsValuativeTopology R`. -/
+theorem of_zero
+    (h₀ : ∀ s : Set R, s ∈ 𝓝 0 ↔ ∃ γ : (ValueGroupWithZero R)ˣ, { z | v z < γ } ⊆ s) :
+    IsValuativeTopology R where
+  mem_nhds_iff {s x} := by
+    simpa [← vadd_mem_nhds_vadd_iff (t := s) (-x), ← image_vadd, ← image_subset_iff] using
+      h₀ ((x + ·) ⁻¹' s)
+
+/-- Assuming `ContinuousConstVAdd R R`, we only need to check the neighbourhood of `0` in order to
+prove `IsValuativeTopology R`. -/
+lemma of_hasBasis_zero (h : (𝓝 (0 : R)).HasBasis (fun _ ↦ True)
+    fun γ : (ValueGroupWithZero R)ˣ ↦ { x | (valuation R) x < γ }) :
+    IsValuativeTopology R :=
+  .of_zero <| by simp [h.mem_iff]
+
+instance of_mk' {R : Type*} [CommRing R] [ValuativeRel R] :
+    letI := Valued.mk' (valuation R)
+    IsValuativeTopology R :=
+  letI := Valued.mk' (valuation R)
+  of_hasBasis_zero (Valued.hasBasis_nhds_zero R _)
+
+/-- A "metatheorem" saying that if we proved that a valuative topology has a certain basis of
+`nhds 0`, then any topology having the same basis of `nhds 0` which is also `ContinuousConstVAdd` is
+automatically an `IsValuativeTopology`. -/
+theorem of_hasBasis {R : Type*} [CommRing R] [ValuativeRel R]
+    {ι : Type*} (p : ι → Prop) (s : ι → Set R)
+    (ih : ∀ [TopologicalSpace R] [IsValuativeTopology R], (nhds 0).HasBasis p s)
+    [t : TopologicalSpace R] [ContinuousConstVAdd R R] (h : (nhds 0).HasBasis p s) :
+    IsValuativeTopology R := by
+  letI := Valued.mk' (valuation R)
+  specialize @ih this.toTopologicalSpace of_mk'
+  have : t = this.toTopologicalSpace := by
+    refine ext_nhds fun x ↦ Filter.ext fun t ↦ ?_
+    rw [← vadd_mem_nhds_vadd_iff (g := -x),
+      ← @vadd_mem_nhds_vadd_iff _ _ this.toTopologicalSpace _ _ _ _ (-x) (x),
+      vadd_eq_add, neg_add_cancel, h.mem_iff, ih.mem_iff]
+  subst this
+  infer_instance
+
+lemma of_hasBasis_ne_zero
+    (h : (𝓝 (0 : R)).HasBasis (· ≠ 0) fun γ ↦ { x | (valuation R) x < γ }) :
+    IsValuativeTopology R :=
+  of_hasBasis _ _ (hasBasis_nhds_zero_ne_zero R) h
+
+lemma of_hasBasis_ne_zero_and_le_one
+    (h : (𝓝 (0 : R)).HasBasis (fun γ ↦ γ ≠ 0 ∧ γ ≤ 1) fun γ ↦ { x | (valuation R) x < γ }) :
+    IsValuativeTopology R :=
+  of_hasBasis _ _ (hasBasis_nhds_zero_ne_zero_and_le_one R) h
+
+lemma of_hasBasis_pair
+    (h : (𝓝 (0 : R)).HasBasis (fun rs : R × R ↦ rs.1 ∈ posSubmonoid R ∧ rs.2 ∈ posSubmonoid R)
+      fun rs  ↦ { x | x * rs.2 <ᵥ rs.1 }) :
+    IsValuativeTopology R :=
+  of_hasBasis _ _ (hasBasis_nhds_zero_pair R) h
+
+lemma of_hasBasis_min_inv
+    (h : (𝓝 (0 : R)).HasBasis (fun r : R ↦ r ∈ posSubmonoid R)
+      fun r ↦ { x | x <ᵥ r ∧ x * r <ᵥ 1 }) :
+    IsValuativeTopology R :=
+  of_hasBasis _ _ (hasBasis_nhds_zero_min_inv R) h
+
+lemma of_hasBasis_compatible {Γ₀ : Type*} [LinearOrderedCommMonoidWithZero Γ₀]
+    {v' : Valuation R Γ₀} [v'.Compatible]
+    (h : (𝓝 (0 : R)).HasBasis (fun rs : R × R ↦ v' rs.1 ≠ 0 ∧ v' rs.2 ≠ 0)
+    fun rs : R × R ↦ { x | v' x * v' rs.2 < v' rs.1 }) :
+    IsValuativeTopology R :=
+  of_hasBasis _ _ (hasBasis_nhds_zero_compatible v') h
+
+lemma of_hasBasis_map_ne_zero
+    {F : Type*} [Field F] [ValuativeRel F] [TopologicalSpace F] [ContinuousConstVAdd F F]
+    {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
+    {v' : Valuation F Γ₀} [v'.Compatible]
+    (h : (𝓝 (0 : F)).HasBasis (fun r ↦ v' r ≠ 0) fun r ↦ { x | v' x < v' r }) :
+    IsValuativeTopology F :=
+  of_hasBasis _ _ (hasBasis_nhds_zero_map_ne_zero v') h
+
+end
 
 end IsValuativeTopology
 
