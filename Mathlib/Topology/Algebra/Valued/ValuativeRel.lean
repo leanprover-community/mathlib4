@@ -33,6 +33,9 @@ lemma mem_nhds_iff' [TopologicalSpace R] [IsValuativeTopology R] {s : Set R} {x 
   ext z
   simp [neg_add_eq_sub]
 
+@[deprecated (since := "2025-08-01")]
+alias _root_.ValuativeTopology.mem_nhds := mem_nhds_iff'
+
 section
 
 variable [TopologicalSpace R] [ContinuousConstVAdd R R]
@@ -74,9 +77,6 @@ section
 /-! # Results assuming IsValuativeTopology -/
 
 variable [TopologicalSpace R] [IsValuativeTopology R]
-
-@[deprecated (since := "2025-08-01")]
-alias _root_.ValuativeTopology.mem_nhds := mem_nhds_iff'
 
 lemma mem_nhds_zero_iff (s : Set R) : s ∈ 𝓝 (0 : R) ↔
     ∃ γ : (ValueGroupWithZero R)ˣ, { x | v x < γ } ⊆ s := by
