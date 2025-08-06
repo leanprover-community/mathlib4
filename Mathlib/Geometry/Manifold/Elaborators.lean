@@ -17,12 +17,12 @@ All these elaborators are scoped to the `Manifold` namespace. They allow writing
 - `MDiff f` for `MDifferentiable I J f`
 - `MDiffAt f x` for `MDifferentiableAt I J f x`
 - `MDiff[u] f` for `MDifferentiableOn I J f u`
-- `MDiffAt[u] f` for `DifferentiableWithinAt I J f u x`
+- `MDiffAt[u] f x` for `MDifferentiableWithinAt I J f u x`
 - `CMDiff n f` for `ContMDiff I J n f`
 - `CMDiffAt n f x` for `ContMDiffAt I J n f x`
 - `CMDiff[u] n f` for `ContMDiffOn I J n f u`
-- `CMDiffAt[u] n f` for `ContMDiffWithinAt I J n f u x`,
-- `mfderiv[u] f x` for `mfderivWithin I J f s x`,
+- `CMDiffAt[u] n f x` for `ContMDiffWithinAt I J n f u x`,
+- `mfderiv[u] f x` for `mfderivWithin I J f u x`,
 - `mfderiv% f x` for `mfderiv I J f x`.
 
 In each of these cases, the models with corners are inferred from the domain and codomain of `f`.
@@ -62,6 +62,7 @@ the following.
 - further testing and fixing of edge cases
 - add test for the difference between `CMDiff` and `ContMDiff%` (and decide on one behaviour)
 - added tests for all of the above
+- add delaborators for these elaborators
 
 -/
 
