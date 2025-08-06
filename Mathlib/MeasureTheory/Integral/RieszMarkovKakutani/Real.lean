@@ -45,10 +45,7 @@ open CompactlySupported CompactlySupportedContinuousMap Filter Function Set Topo
 namespace RealRMK
 
 variable {X : Type*} [TopologicalSpace X]
-variable (Λ : PositiveLinearMap ℝ C_c(X, ℝ) ℝ)
-
-lemma map_nonneg : ∀ (f : C_c(X, ℝ)), 0 ≤ f → 0 ≤ Λ f := by
-  intro f hf; exact PositiveLinearMap.map_nonneg Λ hf
+variable (Λ : C_c(X, ℝ) →ₚ[ℝ] ℝ)
 
 variable [T2Space X] [LocallyCompactSpace X] [MeasurableSpace X] [BorelSpace X]
 
@@ -56,25 +53,25 @@ variable [T2Space X] [LocallyCompactSpace X] [MeasurableSpace X] [BorelSpace X]
 and the `NNReal`-version of `rieszContent`. This is under the namespace `RealRMK`, while
 `rieszMeasure` without namespace is for `NNReal`-linear `Λ`. -/
 noncomputable def rieszMeasure := by
-  exact Content.measure (G := X) (rieszContent (toNNRealLinear Λ (map_nonneg Λ)))
+  exact Content.measure (G := X) (rieszContent (toNNRealLinear Λ))
 
 /-- If `f` assumes values between `0` and `1` and the support is contained in `V`, then
 `Λ f ≤ rieszMeasure V`. -/
 lemma le_rieszMeasure_tsupport_subset {f : C_c(X, ℝ)} (hf : ∀ (x : X), 0 ≤ f x ∧ f x ≤ 1)
     {V : Set X} (hV : tsupport f ⊆ V) : ENNReal.ofReal (Λ f) ≤ rieszMeasure Λ V := by
   apply le_trans _ (measure_mono hV)
-  have := Content.measure_eq_content_of_regular (rieszContent (toNNRealLinear Λ (map_nonneg Λ)))
-    (contentRegular_rieszContent (X := X) (toNNRealLinear Λ (map_nonneg Λ)))
+  have := Content.measure_eq_content_of_regular (rieszContent (toNNRealLinear Λ))
+    (contentRegular_rieszContent (X := X) (toNNRealLinear Λ))
      (⟨tsupport f, f.hasCompactSupport⟩)
   rw [← Compacts.coe_mk (tsupport f) f.hasCompactSupport, rieszMeasure, this, rieszContent,
-    ENNReal.ofReal_eq_coe_nnreal ((map_nonneg Λ) f fun x ↦ (hf x).1),
+    ENNReal.ofReal_eq_coe_nnreal (map_nonneg Λ fun x ↦ (hf x).1),
     Content.mk_apply, ENNReal.coe_le_coe]
   apply le_iff_forall_pos_le_add.mpr
   intro _ hε
-  obtain ⟨g, hg⟩ := exists_lt_rieszContentAux_add_pos (toNNRealLinear Λ (map_nonneg Λ))
+  obtain ⟨g, hg⟩ := exists_lt_rieszContentAux_add_pos (toNNRealLinear Λ)
     ⟨tsupport f, f.hasCompactSupport⟩ (Real.toNNReal_pos.mpr hε)
   simp_rw [NNReal.val_eq_coe, Real.toNNReal_coe] at hg
-  refine (monotone_of_nonneg ?_).trans hg.2.le
+  refine (Λ.mono ?_).trans hg.2.le
   intro x
   by_cases hx : x ∈ tsupport f
   · simpa using le_trans (hf x).2 (hg.1 x hx)
@@ -85,11 +82,11 @@ lemma rieszMeasure_le_of_eq_one {f : C_c(X, ℝ)} (hf : ∀ x, 0 ≤ f x) {K : S
     (hK : IsCompact K) (hfK : ∀ x ∈ K, f x = 1) : rieszMeasure Λ K ≤ ENNReal.ofReal (Λ f) := by
   rw [← Compacts.coe_mk K hK, rieszMeasure,
     Content.measure_eq_content_of_regular _
-    (contentRegular_rieszContent (X := X) (toNNRealLinear Λ (map_nonneg Λ)))]
+    (contentRegular_rieszContent (X := X) (toNNRealLinear Λ))]
   apply ENNReal.coe_le_iff.mpr
   intro p hp
   rw [← ENNReal.ofReal_coe_nnreal,
-    ENNReal.ofReal_eq_ofReal_iff ((map_nonneg Λ) f hf) NNReal.zero_le_coe] at hp
+    ENNReal.ofReal_eq_ofReal_iff (map_nonneg Λ hf) NNReal.zero_le_coe] at hp
   apply csInf_le'
   rw [Set.mem_image]
   use f.nnrealPart
@@ -218,11 +215,10 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
       μ (V n) ≤ μ (E n) + ENNReal.ofReal (ε' / N) := by
     have h_ε' := (div_pos hε'.1 (Nat.cast_pos'.mpr hN))
     have h n x (hx : x ∈ E n) := lt_add_of_le_of_pos ((hE.2.2.1 n x hx).right) hε'.1
-    have h' : ∀ (n : Fin N), (rieszContent
-      (toNNRealLinear Λ (map_nonneg Λ))).outerMeasure (E n) ≠ ⊤ := by
+    have h' : ∀ (n : Fin N), (rieszContent (toNNRealLinear Λ)).outerMeasure (E n) ≠ ⊤ := by
       intro n
       apply Eq.trans_ne
-      · exact (Content.measure_apply (G := X) (rieszContent (toNNRealLinear Λ (map_nonneg Λ)))
+      · exact (Content.measure_apply (G := X) (rieszContent (toNNRealLinear Λ))
           (hE.2.2.2 n)).symm
       · exact hE' n
     choose V hV using fun n ↦ exists_open_approx f h_ε' (E n) (h' n) (hE.2.2.2 n) (h n)
@@ -291,7 +287,7 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
     rw [← map_sum Λ g _]
     have h x : 0 ≤ (∑ n, g n) x := by simpa using Fintype.sum_nonneg fun n ↦ (hg.2.2.1 n x).1
     apply ENNReal.toReal_le_of_le_ofReal
-    · exact (map_nonneg Λ) (∑ n, g n) (fun x ↦ h x)
+    · exact map_nonneg Λ h
     · have h' x (hx : x ∈ K) : (∑ n, g n) x = 1 := by simp [hg.2.1 hx]
       refine rieszMeasure_le_of_eq_one Λ h f.2 h'
   · -- Rearrange the sums

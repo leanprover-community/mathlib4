@@ -6,7 +6,6 @@ Authors: Jesse Reimann, Kalle Kytölä
 import Mathlib.MeasureTheory.Measure.Content
 import Mathlib.Topology.ContinuousMap.CompactlySupported
 import Mathlib.Topology.PartitionOfUnity
-import Mathlib.Algebra.Order.Module.PositiveLinearMap
 
 /-!
 #  Riesz–Markov–Kakutani representation theorem
@@ -47,11 +46,6 @@ lemma CompactlySupportedContinuousMap.monotone_of_nnreal : Monotone Λ := by
   obtain ⟨g, hg⟩ := CompactlySupportedContinuousMap.exists_add_of_le h
   rw [← hg]
   simp
-
-/-- The positivity of a linear functional `Λ` implies that `Λ` is monotone. -/
-lemma CompactlySupportedContinuousMap.monotone_of_nonneg {Λ : PositiveLinearMap ℝ C_c(X, ℝ) ℝ} :
-    Monotone Λ := by
-  apply PositiveLinearMap.monotone'
 
 end Monotone
 
