@@ -20,14 +20,27 @@ variable {α : Type*}
 
 open OrderDual
 
-instance [h : NatCast α] : NatCast αᵒᵈ :=
-  h
+instance [NatCast α] : NatCast αᵒᵈ where
+  natCast n := toDual n
 
-instance [h : AddMonoidWithOne α] : AddMonoidWithOne αᵒᵈ :=
-  h
+-- maybe these algebra instances should be found by importing the
+-- Algebra.Order.Group.Synonym file? there, a bunch of to-additive things exist
+-- which allows us to not repeat these definitions
+instance [AddMonoidWithOne α] : AddMonoidWithOne αᵒᵈ where
+  add a b := toDual (a.ofDual + b.ofDual)
+  add_assoc _ _ _ := congrArg toDual (add_assoc _ _ _)
+  zero := toDual 0
+  zero_add _ := congrArg toDual (zero_add _)
+  add_zero _ := congrArg toDual (add_zero _)
+  nsmul n a := toDual (n • a.ofDual)
+  nsmul_zero _ := congrArg toDual (zero_nsmul _)
+  nsmul_succ _ _ := congrArg toDual (succ_nsmul _ _)
+  one := toDual 1
+  natCast_zero := congrArg toDual AddMonoidWithOne.natCast_zero
+  natCast_succ _ := congrArg toDual (AddMonoidWithOne.natCast_succ _)
 
-instance [h : AddCommMonoidWithOne α] : AddCommMonoidWithOne αᵒᵈ :=
-  h
+instance [AddCommMonoidWithOne α] : AddCommMonoidWithOne αᵒᵈ where
+  add_comm _ _ := congrArg toDual (add_comm _ _)
 
 @[simp]
 theorem toDual_natCast [NatCast α] (n : ℕ) : toDual (n : α) = n :=

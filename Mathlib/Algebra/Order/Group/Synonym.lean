@@ -21,82 +21,109 @@ variable {α β : Type*}
 
 
 @[to_additive]
-instance [h : One α] : One αᵒᵈ := h
+instance [h : One α] : One αᵒᵈ := ⟨toDual 1⟩
 
 @[to_additive]
-instance [h : Mul α] : Mul αᵒᵈ := h
+instance [h : Mul α] : Mul αᵒᵈ := ⟨fun a b => toDual (a.ofDual * b.ofDual)⟩
 
 @[to_additive]
-instance [h : Inv α] : Inv αᵒᵈ := h
+instance [h : Inv α] : Inv αᵒᵈ := ⟨fun a => toDual a.ofDual⁻¹⟩
 
 @[to_additive]
-instance [h : Div α] : Div αᵒᵈ := h
-
-@[to_additive (attr := to_additive) (reorder := 1 2) OrderDual.instSMul]
-instance OrderDual.instPow [h : Pow α β] : Pow αᵒᵈ β := h
-
-@[to_additive (attr := to_additive) (reorder := 1 2) OrderDual.instSMul']
-instance OrderDual.instPow' [h : Pow α β] : Pow α βᵒᵈ := h
+instance [h : Div α] : Div αᵒᵈ := ⟨fun a b => toDual (a.ofDual / b.ofDual)⟩
 
 @[to_additive]
-instance [h : Semigroup α] : Semigroup αᵒᵈ := h
+instance OrderDual.instSMul [SMul α β] : SMul α βᵒᵈ :=
+  ⟨fun a b => toDual (a • b.ofDual)⟩
+
+@[to_additive existing (reorder := 1 2) OrderDual.instSMul]
+instance OrderDual.instPow [Pow α β] : Pow αᵒᵈ β :=
+  ⟨fun a b => toDual (a.ofDual ^ b)⟩
 
 @[to_additive]
-instance [h : CommSemigroup α] : CommSemigroup αᵒᵈ := h
+instance OrderDual.instSMul' [SMul α β] : SMul αᵒᵈ β :=
+  ⟨fun a b => (a.ofDual' • b)⟩
+
+@[to_additive existing (reorder := 1 2) OrderDual.instSMul']
+instance OrderDual.instPow' [h : Pow α β] : Pow α βᵒᵈ :=
+  ⟨fun a b => (a ^ b.ofDual)⟩
 
 @[to_additive]
-instance [Mul α] [h : IsLeftCancelMul α] : IsLeftCancelMul αᵒᵈ := h
+instance [Semigroup α] : Semigroup αᵒᵈ where
+  mul_assoc _ _ _ := congrArg toDual <| mul_assoc ..
 
 @[to_additive]
-instance [Mul α] [h : IsRightCancelMul α] : IsRightCancelMul αᵒᵈ := h
+instance [CommSemigroup α] : CommSemigroup αᵒᵈ where
+  mul_comm _ _ := congrArg toDual <| mul_comm ..
 
 @[to_additive]
-instance [Mul α] [h : IsCancelMul α] : IsCancelMul αᵒᵈ := h
+instance [Mul α] [IsLeftCancelMul α] : IsLeftCancelMul αᵒᵈ where
+  mul_left_cancel _ _ _ h := (congrArg toDual <| mul_left_cancel <| congrArg ofDual h)
 
 @[to_additive]
-instance [h : LeftCancelSemigroup α] : LeftCancelSemigroup αᵒᵈ := h
+instance [Mul α] [IsRightCancelMul α] : IsRightCancelMul αᵒᵈ where
+  mul_right_cancel _ _ _ h := (congrArg toDual <| mul_right_cancel <| congrArg ofDual h)
 
 @[to_additive]
-instance [h : RightCancelSemigroup α] : RightCancelSemigroup αᵒᵈ := h
+instance [Mul α] [IsCancelMul α] : IsCancelMul αᵒᵈ where
 
 @[to_additive]
-instance [h : MulOneClass α] : MulOneClass αᵒᵈ := h
+instance [LeftCancelSemigroup α] : LeftCancelSemigroup αᵒᵈ where
+  __ := inferInstanceAs (IsLeftCancelMul αᵒᵈ)
 
 @[to_additive]
-instance [h : Monoid α] : Monoid αᵒᵈ := h
+instance [RightCancelSemigroup α] : RightCancelSemigroup αᵒᵈ where
+  __ := inferInstanceAs (IsRightCancelMul αᵒᵈ)
 
 @[to_additive]
-instance OrderDual.instCommMonoid [h : CommMonoid α] : CommMonoid αᵒᵈ := h
+instance [MulOneClass α] : MulOneClass αᵒᵈ where
+  one_mul _ := congrArg toDual (one_mul _)
+  mul_one _ := congrArg toDual (mul_one _)
 
 @[to_additive]
-instance [h : LeftCancelMonoid α] : LeftCancelMonoid αᵒᵈ := h
+instance [Monoid α] : Monoid αᵒᵈ where
 
 @[to_additive]
-instance [h : RightCancelMonoid α] : RightCancelMonoid αᵒᵈ := h
+instance OrderDual.instCommMonoid [CommMonoid α] : CommMonoid αᵒᵈ where
 
 @[to_additive]
-instance [h : CancelMonoid α] : CancelMonoid αᵒᵈ := h
+instance [LeftCancelMonoid α] : LeftCancelMonoid αᵒᵈ where
 
 @[to_additive]
-instance OrderDual.instCancelCommMonoid [h : CancelCommMonoid α] : CancelCommMonoid αᵒᵈ := h
+instance [RightCancelMonoid α] : RightCancelMonoid αᵒᵈ where
 
 @[to_additive]
-instance [h : InvolutiveInv α] : InvolutiveInv αᵒᵈ := h
+instance [CancelMonoid α] : CancelMonoid αᵒᵈ where
 
 @[to_additive]
-instance [h : DivInvMonoid α] : DivInvMonoid αᵒᵈ := h
+instance OrderDual.instCancelCommMonoid [h : CancelCommMonoid α] : CancelCommMonoid αᵒᵈ where
 
 @[to_additive]
-instance [h : DivisionMonoid α] : DivisionMonoid αᵒᵈ := h
+instance [InvolutiveInv α] : InvolutiveInv αᵒᵈ where
+  inv_inv _ := congrArg toDual (inv_inv _)
 
 @[to_additive]
-instance [h : DivisionCommMonoid α] : DivisionCommMonoid αᵒᵈ := h
+instance [DivInvMonoid α] : DivInvMonoid αᵒᵈ where
+  zpow z a := toDual (a.ofDual ^ z)
+  zpow_zero' _ := congrArg toDual (zpow_zero _)
+  zpow_succ' _ _ := congrArg toDual (DivInvMonoid.zpow_succ' _ _)
+  zpow_neg' _ _ := congrArg toDual (DivInvMonoid.zpow_neg' _ _)
+  div_eq_mul_inv _ _ := congrArg toDual (div_eq_mul_inv _ _)
 
 @[to_additive]
-instance OrderDual.instGroup [h : Group α] : Group αᵒᵈ := h
+instance [DivisionMonoid α] : DivisionMonoid αᵒᵈ where
+  mul_inv_rev _ _ := congrArg toDual (mul_inv_rev _ _)
+  inv_eq_of_mul _ _ h := congrArg toDual (DivisionMonoid.inv_eq_of_mul _ _ (congrArg ofDual h))
 
 @[to_additive]
-instance [h : CommGroup α] : CommGroup αᵒᵈ := h
+instance [DivisionCommMonoid α] : DivisionCommMonoid αᵒᵈ where
+
+@[to_additive]
+instance OrderDual.instGroup [Group α] : Group αᵒᵈ where
+  inv_mul_cancel _ := congrArg toDual (inv_mul_cancel _)
+
+@[to_additive]
+instance [CommGroup α] : CommGroup αᵒᵈ where
 
 @[to_additive (attr := simp)]
 theorem toDual_one [One α] : toDual (1 : α) = 1 := rfl

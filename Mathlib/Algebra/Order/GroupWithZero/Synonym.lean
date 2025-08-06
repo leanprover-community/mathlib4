@@ -23,25 +23,37 @@ variable {α : Type*}
 
 open OrderDual
 
-instance [h : MulZeroClass α] : MulZeroClass αᵒᵈ := h
+instance [MulZeroClass α] : MulZeroClass αᵒᵈ where
+  mul_zero _ := congrArg toDual (mul_zero _)
+  zero_mul _ := congrArg toDual (zero_mul _)
 
-instance [h : MulZeroOneClass α] : MulZeroOneClass αᵒᵈ := h
+instance [MulZeroOneClass α] : MulZeroOneClass αᵒᵈ where
+  one_mul _ := congrArg toDual (one_mul _)
+  mul_one _ := congrArg toDual (mul_one _)
 
-instance [Mul α] [Zero α] [h : NoZeroDivisors α] : NoZeroDivisors αᵒᵈ := h
+instance [Mul α] [Zero α] [NoZeroDivisors α] : NoZeroDivisors αᵒᵈ where
+  eq_zero_or_eq_zero_of_mul_eq_zero h :=
+    (eq_zero_or_eq_zero_of_mul_eq_zero (congrArg ofDual h)).imp (congrArg toDual) (congrArg toDual)
 
-instance [h : SemigroupWithZero α] : SemigroupWithZero αᵒᵈ := h
+instance [SemigroupWithZero α] : SemigroupWithZero αᵒᵈ where
 
-instance [h : MonoidWithZero α] : MonoidWithZero αᵒᵈ := h
+instance [MonoidWithZero α] : MonoidWithZero αᵒᵈ where
 
-instance [h : CancelMonoidWithZero α] : CancelMonoidWithZero αᵒᵈ := h
+instance [CancelMonoidWithZero α] : CancelMonoidWithZero αᵒᵈ where
+  mul_left_cancel_of_ne_zero hzero h :=
+    congrArg toDual (mul_left_cancel₀ (hzero ∘ congrArg toDual) (congrArg ofDual h))
+  mul_right_cancel_of_ne_zero hzero h :=
+    congrArg toDual (mul_right_cancel₀ (hzero ∘ congrArg toDual) (congrArg ofDual h))
 
-instance [h : CommMonoidWithZero α] : CommMonoidWithZero αᵒᵈ := h
+instance [CommMonoidWithZero α] : CommMonoidWithZero αᵒᵈ where
 
-instance [h : CancelCommMonoidWithZero α] : CancelCommMonoidWithZero αᵒᵈ := h
+instance [CancelCommMonoidWithZero α] : CancelCommMonoidWithZero αᵒᵈ where
 
-instance [h : GroupWithZero α] : GroupWithZero αᵒᵈ := h
+instance [GroupWithZero α] : GroupWithZero αᵒᵈ where
+  inv_zero := congrArg toDual (inv_zero)
+  mul_inv_cancel _ h := congrArg toDual (mul_inv_cancel₀ (h ∘ congrArg toDual))
 
-instance [h : CommGroupWithZero α] : CommGroupWithZero αᵒᵈ := h
+instance [CommGroupWithZero α] : CommGroupWithZero αᵒᵈ where
 
 /-! ### Lexicographic order -/
 

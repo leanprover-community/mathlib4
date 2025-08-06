@@ -92,6 +92,14 @@ theorem iterate_invariant {g : α → β} (h : g ∘ f = g) (n : ℕ) : g ∘ f^
   | 0 => by rw [iterate_zero, comp_id]
   | m + 1 => by rwa [iterate_succ, ← comp_assoc, iterate_invariant h m]
 
+theorem comp_iterate_comp {f : α → β} {g : β → α} (n : ℕ) : (f ∘ g)^[n] ∘ f = f ∘ (g ∘ f)^[n] := by
+  induction n with
+  | zero => rfl
+  | succ n ih => rw [iterate_succ,iterate_succ,← comp_assoc _ f g,ih]; rfl
+
+theorem iterate_comp {f : α → β} {g : β → α} (n : ℕ) : (f ∘ g)^[n + 1] = f ∘ (g ∘ f)^[n] ∘ g := by
+  rw [← comp_assoc,← comp_iterate_comp,comp_assoc,iterate_succ]
+
 theorem Injective.iterate (Hinj : Injective f) (n : ℕ) : Injective f^[n] :=
   Nat.recOn n injective_id fun _ ihn ↦ ihn.comp Hinj
 
