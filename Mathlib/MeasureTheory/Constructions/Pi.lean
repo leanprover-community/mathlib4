@@ -349,7 +349,7 @@ theorem pi_eval_preimage_null {i : ι} {s : Set (α i)} (hs : μ i s = 0) :
   classical
   -- WLOG, `s` is measurable
   rcases exists_measurable_superset_of_null hs with ⟨t, hst, _, hμt⟩
-  suffices Measure.pi μ (eval i ⁻¹' t) = 0 from measure_mono_null (preimage_mono hst) this
+  suffices Measure.pi μ (eval i ⁻¹' t) = 0 from Measure.mono_null (preimage_mono hst) this
   -- Now rewrite it as `Set.pi`, and apply `pi_pi`
   rw [← univ_pi_update_univ, pi_pi]
   apply Finset.prod_eq_zero (Finset.mem_univ i)
@@ -509,7 +509,7 @@ end Intervals
 /-- If one of the measures `μ i` has no atoms, them `Measure.pi µ`
 has no atoms. The instance below assumes that all `μ i` have no atoms. -/
 theorem pi_noAtoms (i : ι) [NoAtoms (μ i)] : NoAtoms (Measure.pi μ) :=
-  ⟨fun x => flip measure_mono_null (pi_hyperplane μ i (x i)) (singleton_subset_iff.2 rfl)⟩
+  ⟨fun x => flip Measure.mono_null (pi_hyperplane μ i (x i)) (singleton_subset_iff.2 rfl)⟩
 
 instance pi_noAtoms' [h : Nonempty ι] [∀ i, NoAtoms (μ i)] : NoAtoms (Measure.pi μ) :=
   h.elim fun i => pi_noAtoms i

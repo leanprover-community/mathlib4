@@ -67,7 +67,7 @@ lemma exists_isOpen_everywherePosSubset_eq_diff (μ : Measure α) (s : Set α) :
   rcases mem_nhds_iff.1 vx with ⟨w, wv, w_open, xw⟩
   have A : w ⊆ {x | ∃ n ∈ 𝓝[s] x, μ n = 0} := by
     intro y yw
-    refine ⟨s ∩ w, inter_mem_nhdsWithin _ (w_open.mem_nhds yw), measure_mono_null ?_ hx⟩
+    refine ⟨s ∩ w, inter_mem_nhdsWithin _ (w_open.mem_nhds yw), Measure.mono_null ?_ hx⟩
     rw [inter_comm]
     exact (inter_subset_inter_left _ wv).trans hv
   have B : w ∈ 𝓝 x := w_open.mem_nhds xw
@@ -99,7 +99,7 @@ lemma measure_eq_zero_of_subset_diff_everywherePosSubset
     (hk : IsCompact k) (h'k : k ⊆ s \ μ.everywherePosSubset s) : μ k = 0 := by
   apply hk.induction_on (p := fun t ↦ μ t = 0)
   · exact measure_empty
-  · exact fun s t hst ht ↦ measure_mono_null hst ht
+  · exact fun s t hst ht ↦ Measure.mono_null hst ht
   · exact fun s t hs ht ↦ measure_union_null hs ht
   · intro x hx
     obtain ⟨u, ux, hu⟩ : ∃ u ∈ 𝓝[s] x, μ u = 0 := by

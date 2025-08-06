@@ -150,7 +150,7 @@ theorem quasiMeasurePreserving_inv : QuasiMeasurePreserving (Inv.inv : G → G) 
       or_self_iff] using this
   have hsm' : MeasurableSet (s⁻¹ ×ˢ s⁻¹) := hsm.inv.prod hsm.inv
   simp_rw [map_apply hf hsm', prod_apply_symm (μ := μ) (ν := μ) (hf hsm'), preimage_preimage,
-    mk_preimage_prod, inv_preimage, inv_inv, measure_mono_null inter_subset_right hμs,
+    mk_preimage_prod, inv_preimage, inv_inv, Measure.mono_null inter_subset_right hμs,
     lintegral_zero]
 
 @[to_additive (attr := simp)]
