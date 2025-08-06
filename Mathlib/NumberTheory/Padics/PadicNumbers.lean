@@ -1111,7 +1111,6 @@ theorem addValuation.apply {x : ℚ_[p]} (hx : x ≠ 0) :
     Padic.addValuation x = (x.valuation : WithTop ℤ) := by
   simp only [Padic.addValuation, AddValuation.of_apply, addValuationDef, if_neg hx]
 
-
 section NormLEIff
 
 /-! ### Various characterizations of open unit balls -/
