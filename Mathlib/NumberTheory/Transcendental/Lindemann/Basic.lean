@@ -8,7 +8,7 @@ import Mathlib.Analysis.Complex.Polynomial.Basic
 import Mathlib.NumberTheory.Transcendental.Lindemann.AlgebraicPart
 import Mathlib.NumberTheory.Transcendental.Lindemann.AnalyticalPart
 import Mathlib.NumberTheory.Transcendental.Lindemann.SumAEvalARoots
-import Mathlib.RingTheory.AlgebraicIndependent.Basic
+import Mathlib.RingTheory.AlgebraicIndependent.Defs
 import Mathlib.Topology.Algebra.Order.Floor
 
 /-!
@@ -102,7 +102,7 @@ private theorem linearIndependent_exp' [Fintype ι] (u : ι → ℂ) (hu : ∀ i
   let t := P.natDegree * q
 
   choose sz hsz using fun j ↦
-    exists_smul_sum_map_aroots_eq (p j) k t gp (sz_h₁ j) hgp
+    exists_smul_sum_map_aroots_aeval_eq (p j) k t gp (sz_h₁ j) hgp
       (algebraMap ℤ K).injective_int (sz_h₂ j)
   replace hsz : k ^ t • ∑ j, w' j • (((p j).aroots K).map fun x => gp.aeval x).sum =
       algebraMap ℤ K (∑ j, w' j • sz j) := by
@@ -111,8 +111,7 @@ private theorem linearIndependent_exp' [Fintype ι] (u : ι → ℂ) (hu : ∀ i
   have H' :=
     calc
       (k ^ t * n * w + q * ∑ j, w' j • sz j : ℤ)
-        = algebraMap K ℂ
-            (k ^ t • n • (w : K) + q • algebraMap ℤ K (∑ j, w' j • sz j)) := by
+        = algebraMap K ℂ (k ^ t • n • (w : K) + q • algebraMap ℤ K (∑ j, w' j • sz j)) := by
         simp [mul_assoc]
       _ = algebraMap K ℂ
             (k ^ t • n • (w : K) +

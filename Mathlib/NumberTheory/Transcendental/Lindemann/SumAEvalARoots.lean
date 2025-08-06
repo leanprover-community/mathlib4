@@ -9,16 +9,19 @@ import Mathlib.RingTheory.MvPolynomial.Symmetric.Eval
 # The Lindemann-Weierstrass theorem
 -/
 
-open Finset Polynomial
+open Finset
 
-theorem exists_smul_sum_map_aroots_eq {R S : Type*} [CommRing R] [Field S] [Algebra R S] (p : R[X])
-    (k : R) (e : ℕ) (q : R[X]) (hk : p.leadingCoeff ∣ k) (he : q.natDegree ≤ e)
-    (inj : Function.Injective (algebraMap R S))
-    (card_aroots : (p.aroots S).card = p.natDegree) :
-    ∃ c, k ^ e • ((p.aroots S).map (q.aeval ·)).sum = algebraMap R S c := by
+namespace Polynomial
+
+theorem exists_smul_sum_map_aroots_aeval_eq {R A : Type*}
+    [CommRing R] [CommRing A] [IsDomain A] [Algebra R A]
+    (p : R[X]) (k : R) (e : ℕ) (q : R[X]) (hk : p.leadingCoeff ∣ k) (he : q.natDegree ≤ e)
+    (inj : Function.Injective (algebraMap R A))
+    (card_aroots : (p.aroots A).card = p.natDegree) :
+    ∃ c, k ^ e • ((p.aroots A).map (q.aeval ·)).sum = algebraMap R A c := by
   obtain ⟨k', rfl⟩ := hk; let k := p.leadingCoeff * k'
   have :
-    (fun x : S => k ^ e • q.aeval x) =
+    (fun x : A => k ^ e • q.aeval x) =
       (fun x => aeval x (∑ i ∈ range (e + 1), monomial i (k' ^ i * k ^ (e - i) * q.coeff i))) ∘
         fun x => p.leadingCoeff • x := by
     funext x; rw [Function.comp_apply]
@@ -29,11 +32,13 @@ theorem exists_smul_sum_map_aroots_eq {R S : Type*} [CommRing R] [Field S] [Alge
       add_tsub_cancel_of_le (Nat.lt_add_one_iff.mp (mem_range.mp hi))]
   rw [Multiset.smul_sum, Multiset.map_map, Function.comp_def, this,
     ← Multiset.map_map _ fun x => p.leadingCoeff • x]
-  have h1 : ((p.aroots S).map fun x => p.leadingCoeff • x).card =
-      Fintype.card (Fin (p.aroots S).card) := by
+  have h1 : ((p.aroots A).map fun x => p.leadingCoeff • x).card =
+      Fintype.card (Fin (p.aroots A).card) := by
     rw [Multiset.card_map, Fintype.card_fin]
-  have h2 : Fintype.card (Fin (p.aroots S).card) ≤ p.natDegree := by
+  have h2 : Fintype.card (Fin (p.aroots A).card) ≤ p.natDegree := by
     rw [Fintype.card_fin]; exact (card_roots' _).trans natDegree_map_le
   rw [← MvPolynomial.symmetricSubalgebra.aevalMultiset_sumPolynomial _ _ h1,
     ← MvPolynomial.symmetricSubalgebra.scaleAEvalRoots_eq_aevalMultiset _ _ inj h2 card_aroots]
   exact ⟨_, rfl⟩
+
+end Polynomial
