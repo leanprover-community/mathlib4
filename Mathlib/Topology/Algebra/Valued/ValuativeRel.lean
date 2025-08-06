@@ -59,18 +59,15 @@ alias _root_.ValuativeTopology.mem_nhds_iff := mem_nhds_zero_iff
 @[simp] lemma rel_ball_mem_nhds_zero_iff (r : R) :
     { x | x <ᵥ r } ∈ 𝓝 (0 : R) ↔ r ∈ posSubmonoid R := by
   simp_rw [Valuation.Compatible.rel_lt_iff_lt («v» := v), ball_mem_nhds_zero_iff,
-    ne_eq, valuation_eq_zero_iff, posSubmonoid_def]
+    posSubmonoid_def, ← valuation_eq_zero_iff]
 
 @[simp] lemma rel_mul_ball_mem_nhds_zero_iff (r s : R) :
     { x | x * r <ᵥ s } ∈ 𝓝 (0 : R) ↔ s ∈ posSubmonoid R := by
-  simp_rw [Valuation.Compatible.rel_lt_iff_lt («v» := v), map_mul]
+  simp_rw [Valuation.Compatible.rel_lt_iff_lt («v» := v), map_mul,
+    posSubmonoid_def, ← valuation_eq_zero_iff]
   by_cases hr : v r = 0
-  · simp_rw [hr, mul_zero]
-    by_cases hs : v s = 0
-    · simp [hs, ← valuation_eq_zero_iff]
-    · simp [zero_lt_iff, hs, ← valuation_eq_zero_iff]
-  simp_rw [← lt_div_iff₀ (zero_lt_iff.2 hr), ball_mem_nhds_zero_iff, div_ne_zero_iff]
-  simp [valuation_eq_zero_iff, hr]
+  · by_cases hs : v s = 0 <;> simp [hr, zero_lt_iff, hs]
+  simp [← lt_div_iff₀ (zero_lt_iff.2 hr), hr]
 
 /-- Helper `Valued` instance when `ValuativeTopology R` over a `UniformSpace R`,
 for use in porting files from `Valued` to `ValuativeRel`. -/
@@ -107,11 +104,11 @@ private lemma hasBasis_nhds_zero_pair_aux :
 variable (R) in
 lemma hasBasis_nhds_zero_pair :
     (𝓝 (0 : R)).HasBasis (fun rs : R × R ↦ rs.1 ∈ posSubmonoid R ∧ rs.2 ∈ posSubmonoid R)
-      fun rs ↦ { x | x * rs.2 <ᵥ rs.1 } := by
-  simp_rw [posSubmonoid_def, ← valuation_eq_zero_iff]
-  exact (hasBasis_nhds_zero_pair_aux R).to_hasBasis'
-    (fun p hp ↦ ⟨p, hp, by simp_rw [lt_div_iff₀ (zero_lt_iff.2 hp.2), ← map_mul,
-      ← Valuation.Compatible.rel_lt_iff_lt, subset_refl]⟩)
+      fun rs ↦ { x | x * rs.2 <ᵥ rs.1 } :=
+  (hasBasis_nhds_zero_pair_aux R).to_hasBasis'
+    (fun p hp ↦ ⟨p, by simpa [valuation_eq_zero_iff] using hp,
+      by simp_rw [lt_div_iff₀ (zero_lt_iff.2 hp.2), ← map_mul,
+        ← Valuation.Compatible.rel_lt_iff_lt, subset_refl]⟩)
     fun p hp ↦ by simpa [valuation_eq_zero_iff] using hp.1
 
 lemma hasBasis_nhds_zero_compatible (v' : Valuation R Γ₀) [v'.Compatible] :
