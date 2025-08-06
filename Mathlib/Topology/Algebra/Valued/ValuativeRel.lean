@@ -8,12 +8,12 @@ import Mathlib.Topology.Algebra.Valued.ValuationTopology
 
 /-!
 
-# Valuative Relations as Valued
+# Valuative Relations with a Valuative Topology are Valued
 
-In this temporary file, we provide a helper instance
-for `Valued R Γ` derived from a `ValuativeRel R`,
-so that downstream files can refer to `ValuativeRel R`,
-to facilitate a refactor.
+The `IsValuativeTopology` is described in various equivalent forms as filter bases,
+with helper lemmas to construct it under the `ContinuousConstVAdd R R` assumption.
+When present on a `ValuativeRel R`, this implies `Valued R (ValueGroupWithZero R)`,
+which is provided as an instance.
 
 -/
 
