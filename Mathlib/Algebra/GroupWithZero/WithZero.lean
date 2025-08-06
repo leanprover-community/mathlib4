@@ -373,6 +373,9 @@ def log (x : Mᵐ⁰) : M := x.recZeroCoe 0 Multiplicative.toAdd
 @[simp] lemma log_zero : log 0 = (0 : M) := rfl
 
 @[simp] lemma exp_zero : exp (0 : M) = 1 := rfl
+@[simp] lemma exp_eq_one_iff {x : M} : exp x = 1 ↔ x = 0 := by
+  rw [iff_comm, ← exp_injective.eq_iff, exp_zero]
+
 @[simp] lemma log_one : log 1 = (0 : M) := rfl
 
 lemma exp_add (a b : M) : exp (a + b) = exp a * exp b := rfl
