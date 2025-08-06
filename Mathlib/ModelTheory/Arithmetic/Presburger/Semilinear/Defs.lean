@@ -339,4 +339,3 @@ theorem Semilinear.proper_semilinear [IsCancelAdd α] (hs : s.Semilinear) : s.Pr
   exact ProperSemilinear.biUnion fun s hs => (hS s hs).proper_semilinear
 
 end Set
-#min_imports
