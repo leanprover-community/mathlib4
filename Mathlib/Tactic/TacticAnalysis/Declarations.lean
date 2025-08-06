@@ -3,7 +3,7 @@ import Mathlib.Tactic.TacticAnalysis
 open Lean
 
 @[tacticAnalysis]
-def grindReplacement : TacticAnalysis.Config := .ofComplex {
+def grindReplacement : TacticAnalysis.Config := .ofComplex `linter.tacticAnalysis.grindReplacement {
   out := (List MVarId × MessageData)
   ctx := Syntax
   trigger _ stx := if
@@ -30,6 +30,7 @@ def grindReplacement : TacticAnalysis.Config := .ofComplex {
     -/
     else none }
 
+/-
 @[tacticAnalysis]
 def rwMerge : TacticAnalysis.Config := .ofComplex {
   out := (List MVarId × Array Syntax)
@@ -96,3 +97,4 @@ def terminalToGrind : TacticAnalysis.Config where
       let stx := replaced[0]
       let seq ← `(tactic| $replaced;*)
       logWarningAt stx m!"replace the proof with 'grind': {seq}"
+-/

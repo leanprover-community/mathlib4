@@ -401,8 +401,6 @@ theorem inv_app {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U : X.Opens) :
 theorem inv_appTop {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
     (inv f).appTop = inv (f.appTop) := by simp
 
-@[deprecated (since := "2024-11-23")] alias inv_app_top := inv_appTop
-
 /-- Copies a morphism with a different underlying map -/
 def Hom.copyBase {X Y : Scheme} (f : X.Hom Y) (g : X → Y) (h : f.base = g) : X ⟶ Y where
   base := TopCat.ofHom ⟨g, h ▸ f.base.1.2⟩
@@ -410,7 +408,7 @@ def Hom.copyBase {X Y : Scheme} (f : X.Hom Y) (g : X → Y) (h : f.base = g) : X
   prop x := by
     subst h
     convert f.prop x using 4
-    aesop_cat
+    cat_disch
 
 lemma Hom.copyBase_eq {X Y : Scheme} (f : X.Hom Y) (g : X → Y) (h : f.base = g) :
     f.copyBase g h = f := by
@@ -418,7 +416,7 @@ lemma Hom.copyBase_eq {X Y : Scheme} (f : X.Hom Y) (g : X → Y) (h : f.base = g
   obtain ⟨⟨⟨f₁, f₂⟩, f₃⟩, f₄⟩ := f
   simp only [Hom.copyBase, LocallyRingedSpace.Hom.toShHom_mk]
   congr
-  aesop_cat
+  cat_disch
 
 end Scheme
 

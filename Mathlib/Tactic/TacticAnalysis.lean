@@ -325,7 +325,8 @@ def filterTactics (config : ComplexConfig) (seq : Array (ContextInfo × TacticIn
       testTacticSeq config tacticSeq ctxI i ctx
   | _ => pure ()
 
-def Config.ofComplex (config : ComplexConfig) : Config where
+def Config.ofComplex (name : Name) (config : ComplexConfig) : Config where
+  name := name
   run := filterTactics config
 
 end ComplexConfig

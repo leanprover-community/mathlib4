@@ -147,7 +147,7 @@ theorem leftInv_comp (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F)
       ext k
       simp [h]
     simp [FormalMultilinearSeries.comp, A, Finset.sum_union B,
-      applyComposition_ones, C, D, -Set.toFinset_setOf]
+      applyComposition_ones, C, D, -Set.toFinset_setOf, -Finset.union_singleton]
 
 /-! ### The right inverse of a formal multilinear series -/
 
@@ -222,7 +222,7 @@ theorem comp_rightInv_aux1 {n : ℕ} (hn : 0 < n) (p : FormalMultilinearSeries �
     apply p.congr (Composition.single_length hn) fun j hj1 _ => ?_
     simp [applyComposition_single]
   simp [FormalMultilinearSeries.comp, A, Finset.sum_union B, C, -Set.toFinset_setOf,
-    -add_right_inj, -Composition.single_length]
+    -add_right_inj, -Composition.single_length, -Finset.union_singleton]
 
 theorem comp_rightInv_aux2 (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) (x : E) (n : ℕ)
     (v : Fin (n + 2) → F) :
