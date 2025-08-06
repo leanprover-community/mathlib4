@@ -37,12 +37,14 @@ open scoped ENNReal
 
 namespace MeasureTheory
 
+open Measure
+
 variable {α β F : Type*} [FunLike F (Set α) ℝ≥0∞] [OuterMeasureClass F α] {μ : F} {s t : Set α}
 
 /-- The “almost everywhere” filter of co-null sets. -/
 def ae (μ : F) : Filter α :=
   .ofCountableUnion (μ · = 0) (fun _S hSc ↦ (measure_sUnion_null_iff hSc).2) fun _t ht _s hs ↦
-    measure_mono_null hs ht
+    mono_null hs ht
 
 /-- `∀ᵐ a ∂μ, p a` means that `p a` for a.e. `a`, i.e. `p` holds true away from a null set.
 
@@ -123,7 +125,7 @@ theorem ae_eq_trans {f g h : α → β} (h₁ : f =ᵐ[μ] g) (h₂ : g =ᵐ[μ]
   refine ⟨fun h a ha ↦ by simpa [ha] using (h {a}ᶜ).1, fun h s ↦ ⟨fun hs ↦ ?_, ?_⟩⟩
   · rw [← compl_empty_iff, ← not_nonempty_iff_eq_empty]
     rintro ⟨a, ha⟩
-    exact h _ <| measure_mono_null (singleton_subset_iff.2 ha) hs
+    exact h _ <| mono_null (singleton_subset_iff.2 ha) hs
   · rintro rfl
     simp
 
@@ -161,7 +163,7 @@ theorem diff_ae_eq_self : (s \ t : Set α) =ᵐ[μ] s ↔ μ (s ∩ t) = 0 := by
   simp [eventuallyLE_antisymm_iff, ae_le_set]
 
 theorem diff_null_ae_eq_self (ht : μ t = 0) : (s \ t : Set α) =ᵐ[μ] s :=
-  diff_ae_eq_self.mpr (measure_mono_null inter_subset_right ht)
+  diff_ae_eq_self.mpr (mono_null inter_subset_right ht)
 
 theorem ae_eq_set {s t : Set α} : s =ᵐ[μ] t ↔ μ (s \ t) = 0 ∧ μ (t \ s) = 0 := by
   simp [eventuallyLE_antisymm_iff, ae_le_set]
