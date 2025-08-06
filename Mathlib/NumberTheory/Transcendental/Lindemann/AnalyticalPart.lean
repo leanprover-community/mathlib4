@@ -35,7 +35,7 @@ theorem hasDerivAt_cexp_mul_sumIDeriv (p : ℂ[X]) (s : ℂ) (x : ℝ) :
   ring
 
 theorem integral_exp_mul_eval (p : ℂ[X]) (s : ℂ) :
-    s * ∫ x in (0)..1, exp (-(x • s)) * p.eval (x • s) =
+    s * ∫ x in 0..1, exp (-(x • s)) * p.eval (x • s) =
       -(exp (-s) * p.sumIDeriv.eval s) + p.sumIDeriv.eval 0 := by
   rw [← intervalIntegral.integral_const_mul,
     intervalIntegral.integral_eq_sub_of_hasDerivAt
@@ -136,7 +136,7 @@ private theorem exp_polynomial_approx_aux (f : ℤ[X]) (s : ℂ) :
   specialize h (max (x * ‖s‖) 1 * ‖aeval (x * s) f‖) (Set.mem_image_of_mem _ hx)
   refine le_trans ?_ (pow_le_pow_left₀ (abs_nonneg _) h _)
   simp_rw [Polynomial.map_mul, Polynomial.map_pow, map_X, eval_mul, eval_pow, eval_X, norm_mul,
-    Complex.norm_pow, real_smul, norm_mul, norm_real, ← eval₂_eq_eval_map, ← aeval_def, abs_mul,
+    Complex.norm_pow, real_smul, norm_mul, norm_real, eval_map_algebraMap, abs_mul,
     abs_norm, mul_pow, Real.norm_of_nonneg hx.1.le]
   refine mul_le_mul_of_nonneg_right ?_ (pow_nonneg (norm_nonneg _) _)
   rw [← mul_pow, abs_of_nonneg (by positivity), max_def]

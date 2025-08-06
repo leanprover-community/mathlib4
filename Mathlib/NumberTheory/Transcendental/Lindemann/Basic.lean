@@ -92,104 +92,81 @@ private theorem linearIndependent_exp' [Fintype ι] (u : ι → ℂ) (hu : ∀ i
   rw [ge_iff_le, Nat.succ_le] at hqN
   simp_rw [← mul_div_assoc] at hq
 
-  obtain ⟨n, hn, gp, hgp, hc⟩ := hc' q ((le_max_left _ _).trans_lt hqN) prime_q
+  obtain ⟨n, hn, gp, hgp, hc⟩ := hc' q (by order) prime_q
   replace hgp : gp.natDegree ≤ P.natDegree * q := by rw [mul_comm]; exact hgp.trans tsub_le_self
 
   have sz_h₁ : ∀ j, (p j).leadingCoeff ∣ k := fun j => dvd_prod_of_mem _ (mem_univ _)
   have sz_h₂ := fun j => (natDegree_eq_card_roots (splits_p j)).symm
   simp_rw [map_id, natDegree_map_eq_of_injective (algebraMap ℤ K).injective_int] at sz_h₂
 
-  choose sz hsz using fun j ↦
-    exists_sum_map_aroot_smul_eq (p j) k (P.natDegree * q) gp (sz_h₁ j) hgp
-      (algebraMap ℤ K).injective_int (sz_h₂ j)
-
   let t := P.natDegree * q
 
+  choose sz hsz using fun j ↦
+    exists_smul_sum_map_aroots_eq (p j) k t gp (sz_h₁ j) hgp
+      (algebraMap ℤ K).injective_int (sz_h₂ j)
+  replace hsz : k ^ t • ∑ j, w' j • (((p j).aroots K).map fun x => gp.aeval x).sum =
+      algebraMap ℤ K (∑ j, w' j • sz j) := by
+    simp_rw [smul_sum, smul_comm (k ^ t), hsz, map_sum, map_zsmul]
+
+  have H' :=
+    calc
+      (k ^ t * n * w + q * ∑ j, w' j • sz j : ℤ)
+        = algebraMap K ℂ
+            (k ^ t • n • (w : K) + q • algebraMap ℤ K (∑ j, w' j • sz j)) := by
+        simp [mul_assoc]
+      _ = algebraMap K ℂ
+            (k ^ t • n • (w : K) +
+              q • k ^ t • ∑ j, w' j • (((p j).aroots K).map fun x => gp.aeval x).sum) := by
+        rw [hsz]
+      _ = algebraMap K ℂ
+            (k ^ t • (n • (w : K) +
+              q • ∑ j, w' j • (((p j).aroots K).map fun x => gp.aeval x).sum)) := by
+        simp_rw [smul_add, smul_comm (k ^ t)]
+      _ = k ^ t • (n • (w : ℂ) +
+            q • ∑ j, w' j • (((p j).aroots K).map fun x => gp.aeval (algebraMap K ℂ x)).sum) := by
+        simp only [map_add, map_nsmul, map_zsmul, map_intCast, map_sum, map_multiset_sum,
+          Multiset.map_map, Function.comp, ← aeval_algebraMap_apply]
+      _ = k ^ t •
+          (q • ∑ j, w' j • (((p j).aroots K).map fun x => gp.aeval (algebraMap K ℂ x)).sum -
+            n • ∑ j, w' j • (((p j).aroots K).map fun x => exp (algebraMap K ℂ x)).sum) := by
+        rw [← eq_neg_iff_add_eq_zero] at h
+        rw [h, smul_neg, neg_add_eq_sub]
+      _ = k ^ t •
+            (∑ j, w' j • (((p j).aroots K).map fun x => q • gp.aeval (algebraMap K ℂ x)).sum -
+              ∑ j, w' j • (((p j).aroots K).map fun x => n • exp (algebraMap K ℂ x)).sum) := by
+        simp_rw [smul_sum, Multiset.smul_sum, Multiset.map_map, Function.comp,
+          smul_comm n, smul_comm q]
+      _ = k ^ t • ∑ j, w' j • (((p j).aroots K).map fun x =>
+                          q • gp.aeval (algebraMap K ℂ x) - n • exp (algebraMap K ℂ x)).sum := by
+        simp only [← smul_sub, ← sum_sub_distrib, ← Multiset.sum_map_sub]
+      _ = k ^ t • ∑ j, w' j • (((p j).aroots ℂ).map fun x => q • gp.aeval x - n • exp x).sum := by
+        congr!
+        exact aroots_K_eq_aroots_ℂ _ (fun x ↦ q • gp.aeval x - n • exp x)
   have H :=
     calc
-      ‖algebraMap K ℂ
-              ((k ^ t * n * w : ℤ) +
-                q • ∑ j, w' j • (((p j).aroots K).map fun x => k ^ t • aeval x gp).sum)‖
-        = ‖algebraMap K ℂ
-              (k ^ t • n • (w : K) +
-                q • ∑ j, w' j • (((p j).aroots K).map fun x => k ^ t • aeval x gp).sum)‖ := by
-        simp_rw [zsmul_eq_mul]; norm_cast; rw [mul_assoc]
-      _ = ‖algebraMap K ℂ
-                (k ^ t • n • (w : K) +
-                  q • ∑ j, w' j • (((p j).aroots K).map fun x => k ^ t • aeval x gp).sum) -
-              k ^ t •
-                n • (w + ∑ j, w' j • (((p j).aroots K).map fun x => exp (algebraMap K ℂ x)).sum)‖ :=
-        by rw [h, smul_zero, smul_zero, sub_zero]
-      _ = ‖algebraMap K ℂ
-                (k ^ t • n • (w : K) +
-                  k ^ t • ∑ j, w' j • (((p j).aroots K).map fun x => q • aeval x gp).sum) -
-              (k ^ t • n • (w : ℂ) +
-                k ^ t •
-                  ∑ j, w' j • (((p j).aroots K).map fun x => n • exp (algebraMap K ℂ x)).sum)‖ := by
-        simp_rw [smul_add, smul_sum, Multiset.smul_sum, Multiset.map_map, Function.comp,
-          smul_comm n, smul_comm (k ^ t), smul_comm q]
-      _ = ‖(k ^ t • n • (w : ℂ) +
-                  k ^ t •
-                    ∑ j,
-                      w' j • (((p j).aroots K).map fun x => q • algebraMap K ℂ (aeval x gp)).sum) -
-              (k ^ t • n • (w : ℂ) +
-                k ^ t •
-                  ∑ j, w' j • (((p j).aroots K).map fun x => n • exp (algebraMap K ℂ x)).sum)‖ := by
-        simp only [map_add, map_nsmul, map_zsmul, map_intCast, map_sum, map_multiset_sum,
-          Multiset.map_map, Function.comp]
-      _ = ‖k ^ t •
-              ∑ j,
-                w' j •
-                  (((p j).aroots K).map fun x =>
-                      q • algebraMap K ℂ (aeval x gp) - n • exp (algebraMap K ℂ x)).sum‖ := by
-        simp only [add_sub_add_left_eq_sub, ← smul_sub, ← sum_sub_distrib,
-          ← Multiset.sum_map_sub]
-      _ = ‖k ^ t •
-              ∑ j,
-                w' j •
-                  (((p j).aroots K).map fun x =>
-                      q • aeval (algebraMap K ℂ x) gp - n • exp (algebraMap K ℂ x)).sum‖ := by
-        simp_rw [aeval_algebraMap_apply]
-      _ = ‖k ^ t •
-              ∑ j,
-                w' j •
-                  (((p j).aroots K).map fun x =>
-                      (fun x' => q • aeval x' gp - n • exp x') (algebraMap K ℂ x)).sum‖ :=
-        rfl
-      _ = ‖k ^ t • ∑ j, w' j • (((p j).aroots ℂ).map fun x => q • aeval x gp - n • exp x).sum‖ := by
-        simp_rw [aroots_K_eq_aroots_ℂ _ (fun x ↦ q • aeval x gp - n • exp x)]
+      ‖((k ^ t * n * w + q * ∑ j, w' j • sz j : ℤ) : ℂ)‖
+        = ‖k ^ t • ∑ j, w' j • (((p j).aroots ℂ).map fun x => q • gp.aeval x - n • exp x).sum‖ := by
+        rw [H']
       _ ≤ ‖k ^ t‖ * ∑ j, W * (((p j).aroots ℂ).map fun _ => c ^ q / ↑(q - 1)!).sum := by
-        refine (norm_zsmul_le _ _).trans ?_
-        refine mul_le_mul_of_nonneg_left ?_ (norm_nonneg _)
-        refine (norm_sum_le _ _).trans ?_
-        refine sum_le_sum fun j _hj => ?_
-        refine (norm_zsmul_le _ _).trans ?_
-        refine mul_le_mul (le_sup' (‖w' ·‖) (mem_univ j)) ?_ (norm_nonneg _) W0
-        refine (norm_multiset_sum_le _).trans ?_
-        rw [Multiset.map_map]
+        grw [norm_zsmul_le, norm_sum_le]
+        gcongr
+        grw [norm_zsmul_le]
+        refine mul_le_mul (le_sup' (‖w' ·‖) (mem_univ _)) ?_ (norm_nonneg _) W0
+        grw [norm_multiset_sum_le]
+        rw [Multiset.map_map, Function.comp_def]
         refine Multiset.sum_map_le_sum_map _ _ fun x hx => ?_
-        rw [Function.comp_apply, norm_sub_rev]
-        refine hc ?_
+        rw [norm_sub_rev]
+        apply hc
         rw [mem_aroots', Polynomial.map_ne_zero_iff (algebraMap ℤ ℂ).injective_int] at hx ⊢
         rw [map_prod]
         exact ⟨P0', prod_eq_zero (mem_univ _) hx.2⟩
-  simp_rw [Int.norm_eq_abs, Int.cast_pow, _root_.abs_pow, ← Int.norm_eq_abs, Multiset.map_const',
-    Multiset.sum_replicate, ← mul_sum, ← sum_smul, nsmul_eq_mul, mul_comm (‖k‖ ^ t), mul_assoc,
-    mul_comm (_ / _ : ℝ), t, pow_mul, mul_div (_ ^ _ : ℝ), ← mul_pow, ← mul_assoc, mul_div, ←
-    pow_mul] at H
-  replace H := H.trans_lt hq
-  have : ∑ j, w' j • (((p j).aroots K).map fun x : K => k ^ (P.natDegree * q) • aeval x gp).sum =
-      algebraMap ℤ K (∑ j, w' j • sz j) := by
-    simp_rw [map_sum, map_zsmul, hsz]
-  rw [this] at H
-  have :
-    ‖algebraMap K ℂ (↑(k ^ (P.natDegree * q) * n * w) + ↑q * algebraMap ℤ K (∑ j, w' j • sz j))‖ =
-      ‖algebraMap ℤ ℂ (k ^ (P.natDegree * q) * n * w + q * ∑ j, w' j • sz j)‖ := by
-    simp_rw [IsScalarTower.algebraMap_apply ℤ K ℂ, algebraMap_int_eq, Int.coe_castRingHom]
-    norm_cast
-  rw [this, algebraMap_int_eq, Int.coe_castRingHom, norm_intCast, ← Int.cast_abs,
-    ← Int.cast_one, Int.cast_lt, Int.abs_lt_one_iff] at H
-  replace H : (k ^ (P.natDegree * q) * n * w + q * ∑ j : Fin m, w' j • sz j) % q = 0 := by
+      _ = W * (∑ i, ((p i).aroots ℂ).card) * (‖k‖ ^ P.natDegree * c) ^ q / (q - 1)! := by
+        simp_rw [norm_pow, Multiset.map_const', Multiset.sum_replicate, ← mul_sum, ← sum_smul,
+          nsmul_eq_mul]
+        ring
+      _ < 1 := hq
+  rw [norm_intCast, ← Int.cast_abs, ← Int.cast_one, Int.cast_lt, Int.abs_lt_one_iff] at H
+  replace H : (k ^ t * n * w + q * ∑ j : Fin m, w' j • sz j) % q = 0 := by
     rw [H, Int.zero_emod]
   rw [Int.add_mul_emod_self_left, ← Int.dvd_iff_emod_eq_zero] at H
   replace H :=
@@ -197,12 +174,10 @@ private theorem linearIndependent_exp' [Fintype ι] (u : ι → ℂ) (hu : ∀ i
   revert H; rw [Int.natAbs_pow, imp_false]; push_neg
   exact
     ⟨⟨fun h =>
-        Nat.not_dvd_of_pos_of_lt (Int.natAbs_pos.mpr k0)
-          (((le_max_left _ _).trans (le_max_right _ _)).trans_lt hqN)
+        Nat.not_dvd_of_pos_of_lt (Int.natAbs_pos.mpr k0) (by order)
           (Nat.Prime.dvd_of_dvd_pow prime_q h),
         fun h => hn (Int.natCast_dvd.mpr h)⟩,
-      Nat.not_dvd_of_pos_of_lt (Int.natAbs_pos.mpr w0)
-        (((le_max_right _ _).trans (le_max_right _ _)).trans_lt hqN)⟩
+      Nat.not_dvd_of_pos_of_lt (Int.natAbs_pos.mpr w0) (by order)⟩
 
 theorem linearIndependent_exp (u : ι → integralClosure ℚ ℂ) (u_inj : u.Injective) :
     LinearIndependent (integralClosure ℚ ℂ) fun i ↦ exp (u i) :=
@@ -260,6 +235,6 @@ theorem transcendental_log {u : ℂ} (hu0 : Complex.log u ≠ 0) (hu : IsAlgebra
   rw [Complex.exp_log] at this
   · apply this
     simpa using hu.algebraMap (A := ℂ)
-  · simp only [ne_eq, ofReal_eq_zero]
+  · simp only [ne_eq]
     rintro rfl
     simp at hu0

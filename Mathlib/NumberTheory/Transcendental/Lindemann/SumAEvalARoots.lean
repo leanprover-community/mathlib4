@@ -11,14 +11,14 @@ import Mathlib.RingTheory.MvPolynomial.Symmetric.Eval
 
 open Finset Polynomial
 
-theorem exists_sum_map_aroot_smul_eq {R S : Type*} [CommRing R] [Field S] [Algebra R S] (p : R[X])
+theorem exists_smul_sum_map_aroots_eq {R S : Type*} [CommRing R] [Field S] [Algebra R S] (p : R[X])
     (k : R) (e : ℕ) (q : R[X]) (hk : p.leadingCoeff ∣ k) (he : q.natDegree ≤ e)
     (inj : Function.Injective (algebraMap R S))
     (card_aroots : (p.aroots S).card = p.natDegree) :
-    ∃ c, ((p.aroots S).map fun x => k ^ e • aeval x q).sum = algebraMap R S c := by
+    ∃ c, k ^ e • ((p.aroots S).map (q.aeval ·)).sum = algebraMap R S c := by
   obtain ⟨k', rfl⟩ := hk; let k := p.leadingCoeff * k'
   have :
-    (fun x : S => k ^ e • aeval x q) =
+    (fun x : S => k ^ e • q.aeval x) =
       (fun x => aeval x (∑ i ∈ range (e + 1), monomial i (k' ^ i * k ^ (e - i) * q.coeff i))) ∘
         fun x => p.leadingCoeff • x := by
     funext x; rw [Function.comp_apply]
@@ -27,7 +27,8 @@ theorem exists_sum_map_aroot_smul_eq {R S : Type*} [CommRing R] [Field S] [Algeb
     rw [← Algebra.smul_def, smul_pow, smul_smul, smul_smul, mul_comm (_ * _) (_ ^ _), ← mul_assoc,
       ← mul_assoc, ← mul_pow, ← pow_add,
       add_tsub_cancel_of_le (Nat.lt_add_one_iff.mp (mem_range.mp hi))]
-  rw [this, ← Multiset.map_map _ fun x => p.leadingCoeff • x]
+  rw [Multiset.smul_sum, Multiset.map_map, Function.comp_def, this,
+    ← Multiset.map_map _ fun x => p.leadingCoeff • x]
   have h1 : ((p.aroots S).map fun x => p.leadingCoeff • x).card =
       Fintype.card (Fin (p.aroots S).card) := by
     rw [Multiset.card_map, Fintype.card_fin]

@@ -31,7 +31,8 @@ protected def liftFinsupp {α : Type*} {r : α → α → Prop} {β : Type*} [Ze
   refine ⟨image (mk r) f.support, Quot.lift f h, fun a => ⟨?_, ?_⟩⟩
   · rw [mem_image]; rintro ⟨b, hb, rfl⟩; exact Finsupp.mem_support_iff.mp hb
   · induction a using Quot.ind
-    rw [lift_mk _ h]; refine fun hb => mem_image_of_mem _ (Finsupp.mem_support_iff.mpr hb)
+    rw [lift_mk _ h]
+    exact fun hb => mem_image_of_mem _ (Finsupp.mem_support_iff.mpr hb)
 
 theorem liftFinsupp_mk {α : Type*} {r : α → α → Prop} {γ : Type*} [Zero γ] (f : α →₀ γ)
     (h : ∀ a₁ a₂, r a₁ a₂ → f a₁ = f a₂) (a : α) : Quot.liftFinsupp f h (Quot.mk r a) = f a :=
@@ -205,7 +206,7 @@ theorem coe_single (x : ConjRootClass F K) (a : R) :
 
 theorem sum_single (x : mapDomainFixed F R K) :
     (x : ConjRootClass F K →₀ R).sum (mapDomainFixed.single (F := F) (K := K)) = x := by
-  rw [← (toFinsupp F R K).injective.eq_iff, map_finsupp_sum,
+  rw [← (toFinsupp F R K).injective.eq_iff, map_finsuppSum,
     ← Finsupp.sum_single (toFinsupp F R K x), coe_toFinsupp]
   simp_rw [coe_single]
 
@@ -419,7 +420,7 @@ theorem linearIndependent_exp_aux_aroots_rat {F K S : Type*}
   refine ⟨q.card, fun j => (c j).minpoly, ?_, fun j => w' (c j), ?_⟩
   · intro j; specialize hc j
     suffices ((c j).minpoly.map (algebraMap F K)).eval (algebraMap F K 0) ≠ 0 by
-      rwa [eval_map, ← aeval_def, aeval_algebraMap_apply, _root_.map_ne_zero] at this
+      rwa [eval_map_algebraMap, aeval_algebraMap_apply, _root_.map_ne_zero] at this
     rw [RingHom.map_zero, ConjRootClass.minpoly.map_eq_prod, eval_prod, prod_ne_zero_iff]
     intro a ha
     rw [eval_sub, eval_X, eval_C, sub_ne_zero]
@@ -454,7 +455,7 @@ theorem linearIndependent_exp_aux_aroots_int (R : Type*) {F S : Type*}
     suffices aeval (algebraMap R F 0)
         (IsLocalization.integerNormalization (nonZeroDivisors R) (p j)) ≠ 0 by
       rwa [aeval_algebraMap_apply, map_ne_zero_iff _ (IsFractionRing.injective R F)] at this
-    rw [map_zero, aeval_def, eval₂_eq_eval_map, hb, eval_smul, smul_ne_zero_iff]
+    rw [map_zero, ← eval_map_algebraMap, hb, eval_smul, smul_ne_zero_iff]
     exact ⟨nonZeroDivisors.coe_ne_zero _, hp j⟩
   · rw [← h, add_right_inj]
     refine sum_congr rfl fun j _hj => congrArg _ (congrArg _ (Multiset.map_congr ?_ fun _ _ => rfl))
@@ -473,7 +474,7 @@ theorem linearIndependent_exp_aux {S : Type*}
     (h : ∑ i, v i * φ (.ofAdd <| u i) = 0) :
     ∃ (w : ℤ) (_w0 : w ≠ 0) (n : ℕ) (p : Fin n → ℤ[X]) (_p0 : ∀ j, (p j).eval 0 ≠ 0)
       (w' : Fin n → ℤ),
-        (w + ∑ j, w' j • (((p j).aroots S).map (φ <| .ofAdd ·)).sum) = 0 := by
+        w + ∑ j, w' j • (((p j).aroots S).map (φ <| .ofAdd ·)).sum = 0 := by
   classical
   let s := univ.image u ∪ univ.image v
   have hs : ∀ x ∈ s, IsIntegral ℚ x := by simp [s, or_imp, forall_and, hu, hv]
