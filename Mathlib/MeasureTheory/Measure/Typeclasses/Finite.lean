@@ -222,7 +222,7 @@ theorem ite_ae_eq_of_measure_zero {γ} (f : α → γ) (g : α → γ) (s : Set 
     (fun x => ite (x ∈ s) (f x) (g x)) =ᵐ[μ] g := by
   have h_ss : sᶜ ⊆ { a : α | ite (a ∈ s) (f a) (g a) = g a } := fun x hx => by
     simp [(Set.mem_compl_iff _ _).mp hx]
-  refine measure_mono_null ?_ hs_zero
+  refine Measure.mono_null ?_ hs_zero
   conv_rhs => rw [← compl_compl s]
   rwa [Set.compl_subset_compl]
 
