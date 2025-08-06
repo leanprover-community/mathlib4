@@ -34,12 +34,13 @@ lemma exists_gt_of_hasDerivWithinAt_pos (f'_pos : 0 < f')
   simp only [mem_nhdsWithin, Set.subset_def, Set.mem_inter_iff, Set.mem_diff, Set.mem_singleton_iff,
     Set.mem_preimage, Set.mem_Ioi, and_imp] at this
   rcases this with ⟨U, U_open, x_mem_U, hU⟩
-  rcases exists_Icc_mem_subset_of_mem_nhds (U_open.mem_nhds x_mem_U) with ⟨a, b, hab⟩
-  simp only [Set.mem_Icc, Icc_mem_nhds_iff, Set.mem_Ioo] at hab
+  rcases exists_Icc_mem_subset_of_mem_nhds (U_open.mem_nhds x_mem_U) with
+    ⟨a, b, ⟨hax, hbx⟩, hab1, hab2⟩
+  simp only [Icc_mem_nhds_iff, Set.mem_Ioo] at hab1
   refine ⟨b, by tauto, fun y hy => ?_⟩
   simp only [Set.mem_inter_iff, Set.mem_Ioc] at hy
   have slope_pos : 0 < slope f x y :=
-    hU y (hab.2.2 ⟨le_trans hab.1.1 (le_of_lt hy.1.1), by linarith⟩) hy.2 (ne_of_gt hy.1.1)
+    hU y (hab2 ⟨le_trans hax (le_of_lt hy.1.1), by linarith⟩) hy.2 (ne_of_gt hy.1.1)
   rwa [slope, vsub_eq_sub, smul_eq_mul, mul_pos_iff_of_pos_left (inv_pos.2 (sub_pos.2 hy.1.1)),
     sub_pos] at slope_pos
 
