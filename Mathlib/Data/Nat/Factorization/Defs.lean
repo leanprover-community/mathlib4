@@ -3,6 +3,7 @@ Copyright (c) 2021 Stuart Presnell. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stuart Presnell
 -/
+import Batteries.Data.List.Count
 import Mathlib.Data.Finsupp.Multiset
 import Mathlib.Data.Nat.PrimeFin
 import Mathlib.NumberTheory.Padics.PadicVal.Defs
@@ -82,7 +83,7 @@ theorem Prime.factorization_pos_of_dvd {n p : ℕ} (hp : p.Prime) (hn : n ≠ 0)
 
 theorem multiplicity_eq_factorization {n p : ℕ} (pp : p.Prime) (hn : n ≠ 0) :
     multiplicity p n = n.factorization p := by
-  simp [factorization, pp, padicValNat_def' pp.ne_one hn.bot_lt]
+  simp [factorization, pp, padicValNat_def' pp.ne_one hn]
 
 /-! ### Basic facts about factorization -/
 
@@ -202,6 +203,12 @@ theorem pow_succ_factorization_not_dvd {n p : ℕ} (hn : n ≠ 0) (hp : p.Prime)
   rw [← factorization_le_iff_dvd (pow_ne_zero _ hp.ne_zero) hn] at h
   simpa [hp.factorization] using h p
 
+lemma factorization_minFac_ne_zero {n : ℕ} (hn : 1 < n) :
+    n.factorization n.minFac ≠ 0 := by
+  refine mt (factorization_eq_zero_iff _ _).mp ?_
+  push_neg
+  exact ⟨minFac_prime (by omega), minFac_dvd n, Nat.ne_zero_of_lt hn⟩
+
 /-! ### Equivalence between `ℕ+` and `ℕ →₀ ℕ` with support in the primes. -/
 
 
@@ -259,8 +266,6 @@ theorem ordProj_dvd (n p : ℕ) : ordProj[p] n ∣ n := by
   rw [hp.primeFactorsList_pow, List.subperm_ext_iff]
   intro q hq
   simp [List.eq_of_mem_replicate hq]
-
-@[deprecated (since := "2024-10-24")] alias ord_proj_dvd := ordProj_dvd
 
 lemma ordProj_dvd_ordProj_iff_dvd (ha : a ≠ 0) (hb : b ≠ 0) :
     (∀ p : ℕ, ordProj[p] a ∣ ordProj[p] b) ↔ a ∣ b := by

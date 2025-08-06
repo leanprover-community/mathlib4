@@ -160,21 +160,46 @@ macro (name := aesop_cat_nonterminal) "aesop_cat_nonterminal" c:Aesop.tactic_cla
 
 attribute [aesop safe (rule_sets := [CategoryTheory])] Subsingleton.elim
 
+open Lean Elab Tactic in
+/-- A tactic for discharging easy category theory goals, widely used as an autoparameter.
+Currently this defaults to the `aesop_cat` wrapper around `aesop`, but by setting
+the option `mathlib.tactic.category.grind` to `true`, it will use the `grind` tactic instead.
+-/
+def categoryTheoryDischarger : TacticM Unit := do
+  if ← getBoolOption `mathlib.tactic.category.grind then
+    if ← getBoolOption `mathlib.tactic.category.log_grind then
+      logInfo "Category theory discharger using `grind`."
+    evalTacticSeq (← `(tacticSeq|
+      intros; (try dsimp only) <;> ((try ext); grind (gen := 20) (ematch := 20))))
+  else
+    if ← getBoolOption `mathlib.tactic.category.log_aesop then
+      logInfo "Category theory discharger using `aesop`."
+    evalTactic (← `(tactic| aesop_cat))
+
+@[inherit_doc categoryTheoryDischarger]
+elab (name := cat_disch) "cat_disch" : tactic =>
+  categoryTheoryDischarger
+
+set_option mathlib.tactic.category.grind true
+
 /-- The typeclass `Category C` describes morphisms associated to objects of type `C`.
 The universe levels of the objects and morphisms are unconstrained, and will often need to be
 specified explicitly, as `Category.{v} C`. (See also `LargeCategory` and `SmallCategory`.) -/
 @[pp_with_univ, stacks 0014]
 class Category (obj : Type u) : Type max u (v + 1) extends CategoryStruct.{v} obj where
   /-- Identity morphisms are left identities for composition. -/
-  id_comp : ∀ {X Y : obj} (f : X ⟶ Y), 𝟙 X ≫ f = f := by aesop_cat
+  id_comp : ∀ {X Y : obj} (f : X ⟶ Y), 𝟙 X ≫ f = f := by cat_disch
   /-- Identity morphisms are right identities for composition. -/
-  comp_id : ∀ {X Y : obj} (f : X ⟶ Y), f ≫ 𝟙 Y = f := by aesop_cat
+  comp_id : ∀ {X Y : obj} (f : X ⟶ Y), f ≫ 𝟙 Y = f := by cat_disch
   /-- Composition in a category is associative. -/
   assoc : ∀ {W X Y Z : obj} (f : W ⟶ X) (g : X ⟶ Y) (h : Y ⟶ Z), (f ≫ g) ≫ h = f ≫ g ≫ h := by
-    aesop_cat
+    cat_disch
 
 attribute [simp] Category.id_comp Category.comp_id Category.assoc
 attribute [trans] CategoryStruct.comp
+
+attribute [grind =] Category.id_comp Category.comp_id
+attribute [grind _=_] Category.assoc
 
 example {C} [Category C] {X Y : C} (f : X ⟶ Y) : 𝟙 X ≫ f = f := by simp
 example {C} [Category C] {X Y : C} (f : X ⟶ Y) : f ≫ 𝟙 Y = f := by simp

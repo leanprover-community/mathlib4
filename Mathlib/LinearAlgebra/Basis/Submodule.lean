@@ -10,21 +10,18 @@ import Mathlib.LinearAlgebra.Basis.Basic
 # Bases of submodules
 -/
 
+open Function Set Submodule Finsupp Module
+
 assert_not_exists Ordinal
 
 noncomputable section
 
 universe u
 
-open Function Set Submodule Finsupp
+variable {ι ι' R R₂ M M' : Type*}
 
-variable {ι : Type*} {ι' : Type*} {R : Type*} {R₂ : Type*} {M : Type*} {M' : Type*}
-
-section Module
-
+namespace Module.Basis
 variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M']
-
-namespace Basis
 
 variable (b : Basis ι R M)
 
@@ -45,10 +42,6 @@ theorem mem_submodule_iff' [Fintype ι] {P : Submodule R M} (b : Basis ι R P) {
       exists_congr fun c => by simp [Finsupp.sum_fintype, Finsupp.equivFunOnFinite]
 
 end Basis
-
-end Module
-
-section Module
 
 open LinearMap
 
@@ -114,9 +107,11 @@ def Submodule.inductionOnRankAux (b : Basis ι R M) (P : Submodule R M → Sort*
 
 end Induction
 
+namespace Module.Basis
+
 /-- An element of a non-unital-non-associative algebra is in the center exactly when it commutes
 with the basis elements. -/
-lemma Basis.mem_center_iff {A}
+lemma mem_center_iff {A}
     [Semiring R] [NonUnitalNonAssocSemiring A]
     [Module R A] [SMulCommClass R A A] [SMulCommClass R R A] [IsScalarTower R A A]
     (b : Basis ι R A) {z : A} :
@@ -167,15 +162,15 @@ open Submodule
 
 /-- Let `b` be an `S`-basis of `M`. Let `R` be a CommRing such that `Algebra R S` has no zero smul
 divisors, then the submodule of `M` spanned by `b` over `R` admits `b` as an `R`-basis. -/
-noncomputable def Basis.restrictScalars : Basis ι R (span R (Set.range b)) :=
+noncomputable def restrictScalars : Basis ι R (span R (Set.range b)) :=
   Basis.span (b.linearIndependent.restrict_scalars (smul_left_injective R one_ne_zero))
 
 @[simp]
-theorem Basis.restrictScalars_apply (i : ι) : (b.restrictScalars R i : M) = b i := by
+theorem restrictScalars_apply (i : ι) : (b.restrictScalars R i : M) = b i := by
   simp only [Basis.restrictScalars, Basis.span_apply]
 
 @[simp]
-theorem Basis.restrictScalars_repr_apply (m : span R (Set.range b)) (i : ι) :
+theorem restrictScalars_repr_apply (m : span R (Set.range b)) (i : ι) :
     algebraMap R S ((b.restrictScalars R).repr m i) = b.repr m i := by
   suffices
     Finsupp.mapRange.linearMap (Algebra.linearMap R S) ∘ₗ (b.restrictScalars R).repr.toLinearMap =
@@ -189,7 +184,7 @@ theorem Basis.restrictScalars_repr_apply (m : span R (Set.range b)) (i : ι) :
 
 /-- Let `b` be an `S`-basis of `M`. Then `m : M` lies in the `R`-module spanned by `b` iff all the
 coordinates of `m` on the basis `b` are in `R` (see `Basis.mem_span` for the case `R = S`). -/
-theorem Basis.mem_span_iff_repr_mem (m : M) :
+theorem mem_span_iff_repr_mem (m : M) :
     m ∈ span R (Set.range b) ↔ ∀ i, b.repr m i ∈ Set.range (algebraMap R S) := by
   refine
     ⟨fun hm i => ⟨(b.restrictScalars R).repr ⟨m, hm⟩ i, b.restrictScalars_repr_apply R ⟨m, hm⟩ i⟩,
@@ -211,19 +206,19 @@ variable {M R : Type*} [Ring R] [Nontrivial R] [NoZeroSMulDivisors ℤ R]
 Let `A` be an subgroup of an additive commutative group `M` that is also an `R`-module.
 Construct a basis of `A` as a `ℤ`-basis from a `R`-basis of `E` that generates `A`.
 -/
-noncomputable def Basis.addSubgroupOfClosure (h : A = .closure (Set.range b)) :
+noncomputable def addSubgroupOfClosure (h : A = .closure (Set.range b)) :
     Basis ι ℤ A.toIntSubmodule :=
   (b.restrictScalars ℤ).map <|
     LinearEquiv.ofEq _ _
       (by rw [h, ← Submodule.span_int_eq_addSubgroup_closure, toAddSubgroup_toIntSubmodule])
 
 @[simp]
-theorem Basis.addSubgroupOfClosure_apply (h : A = .closure (Set.range b)) (i : ι) :
+theorem addSubgroupOfClosure_apply (h : A = .closure (Set.range b)) (i : ι) :
     b.addSubgroupOfClosure A h i = b i := by
   simp [addSubgroupOfClosure]
 
 @[simp]
-theorem Basis.addSubgroupOfClosure_repr_apply (h : A = .closure (Set.range b)) (x : A) (i : ι) :
+theorem addSubgroupOfClosure_repr_apply (h : A = .closure (Set.range b)) (x : A) (i : ι) :
     (b.addSubgroupOfClosure A h).repr x i = b.repr x i := by
   suffices Finsupp.mapRange.linearMap (Algebra.linearMap ℤ R) ∘ₗ
       (b.addSubgroupOfClosure A h).repr.toLinearMap =
@@ -232,3 +227,5 @@ theorem Basis.addSubgroupOfClosure_repr_apply (h : A = .closure (Set.range b)) (
   exact (b.addSubgroupOfClosure A h).ext fun _ ↦ by simp
 
 end AddSubgroup
+
+end Module.Basis
