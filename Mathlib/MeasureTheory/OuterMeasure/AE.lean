@@ -41,8 +41,8 @@ variable {α β F : Type*} [FunLike F (Set α) ℝ≥0∞] [OuterMeasureClass F 
 
 /-- The “almost everywhere” filter of co-null sets. -/
 def ae (μ : F) : Filter α :=
-  .ofCountableUnion (μ · = 0) (fun _S hSc ↦ (measure_sUnion_null_iff hSc).2) fun _t ht _s hs ↦
-    measure_mono_null hs ht
+  .ofCountableUnion (μ · = 0) (fun _S hSc ↦ (Measure.sUnion_null_iff hSc).2) fun _t ht _s hs ↦
+    Measure.mono_null hs ht
 
 /-- `∀ᵐ a ∂μ, p a` means that `p a` for a.e. `a`, i.e. `p` holds true away from a null set.
 
@@ -101,7 +101,7 @@ theorem all_ae_of {ι : Sort*} {p : α → ι → Prop} (hp : ∀ᵐ a ∂μ, �
   filter_upwards [hp] with a ha using ha i
 
 lemma ae_iff_of_countable [Countable α] {p : α → Prop} : (∀ᵐ x ∂μ, p x) ↔ ∀ x, μ {x} ≠ 0 → p x := by
-  rw [ae_iff, measure_null_iff_singleton]
+  rw [ae_iff, Measure.null_iff_singleton]
   exacts [forall_congr' fun _ ↦ not_imp_comm, Set.to_countable _]
 
 theorem ae_ball_iff {ι : Type*} {S : Set ι} (hS : S.Countable) {p : α → ∀ i ∈ S, Prop} :
@@ -123,7 +123,7 @@ theorem ae_eq_trans {f g h : α → β} (h₁ : f =ᵐ[μ] g) (h₂ : g =ᵐ[μ]
   refine ⟨fun h a ha ↦ by simpa [ha] using (h {a}ᶜ).1, fun h s ↦ ⟨fun hs ↦ ?_, ?_⟩⟩
   · rw [← compl_empty_iff, ← not_nonempty_iff_eq_empty]
     rintro ⟨a, ha⟩
-    exact h _ <| measure_mono_null (singleton_subset_iff.2 ha) hs
+    exact h _ <| Measure.mono_null (singleton_subset_iff.2 ha) hs
   · rintro rfl
     simp
 
@@ -161,7 +161,7 @@ theorem diff_ae_eq_self : (s \ t : Set α) =ᵐ[μ] s ↔ μ (s ∩ t) = 0 := by
   simp [eventuallyLE_antisymm_iff, ae_le_set]
 
 theorem diff_null_ae_eq_self (ht : μ t = 0) : (s \ t : Set α) =ᵐ[μ] s :=
-  diff_ae_eq_self.mpr (measure_mono_null inter_subset_right ht)
+  diff_ae_eq_self.mpr (Measure.mono_null inter_subset_right ht)
 
 theorem ae_eq_set {s t : Set α} : s =ᵐ[μ] t ↔ μ (s \ t) = 0 ∧ μ (t \ s) = 0 := by
   simp [eventuallyLE_antisymm_iff, ae_le_set]
@@ -237,9 +237,9 @@ theorem _root_.Set.mulIndicator_ae_eq_one {M : Type*} [One M] {f : α → M} {s 
 @[mono]
 theorem measure_mono_ae (H : s ≤ᵐ[μ] t) : μ s ≤ μ t :=
   calc
-    μ s ≤ μ (s ∪ t) := measure_mono subset_union_left
+    μ s ≤ μ (s ∪ t) := Measure.mono subset_union_left
     _ = μ (t ∪ s \ t) := by rw [union_diff_self, Set.union_comm]
-    _ ≤ μ t + μ (s \ t) := measure_union_le _ _
+    _ ≤ μ t + μ (s \ t) := Measure.union_le _ _
     _ = μ t := by rw [ae_le_set.1 H, add_zero]
 
 alias _root_.Filter.EventuallyLE.measure_le := measure_mono_ae
