@@ -412,8 +412,6 @@ def ofUnique (α β : Sort _) [Unique.{u} α] [Unique.{v} β] : α ≃ β where
 
 attribute [grind =] ofUnique_apply ofUnique_symm_apply
 
-@[deprecated (since := "2024-12-26")] alias equivOfUnique := ofUnique
-
 /-- If `α` has a unique element, then it is equivalent to any `PUnit`. -/
 @[simps!]
 def equivPUnit (α : Sort u) [Unique α] : α ≃ PUnit.{v} := ofUnique α _

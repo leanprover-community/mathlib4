@@ -53,8 +53,8 @@ local notation "𝒢" => Functor.op G ⋙ Functor.op (toOver yoneda (colimit F))
 variable {K : Type v} [SmallCategory K] (H : K ⥤ Over (colimit F))
 
 /-- (implementation) Pulling out a colimit out of a hom functor is one half of the key lemma. Note
-    that all of the heavy lifting actually happens in `CostructuredArrow.toOverCompYonedaColimit`
-    and `yonedaYonedaColimit`. -/
+that all of the heavy lifting actually happens in `CostructuredArrow.toOverCompYonedaColimit`
+and `yonedaYonedaColimit`. -/
 noncomputable def compYonedaColimitIsoColimitCompYoneda :
     𝒢 ⋙ yoneda.obj (colimit H) ≅ colimit (H ⋙ yoneda ⋙ (whiskeringLeft _ _ _).obj 𝒢) := calc
   𝒢 ⋙ yoneda.obj (colimit H) ≅ 𝒢 ⋙ colimit (H ⋙ yoneda) :=

@@ -149,9 +149,6 @@ theorem LinearIndependent.iSupIndep_span_singleton (hv : LinearIndependent R v) 
   ext
   simp
 
-@[deprecated (since := "2024-11-24")]
-alias LinearIndependent.independent_span_singleton := LinearIndependent.iSupIndep_span_singleton
-
 end repr
 
 section union

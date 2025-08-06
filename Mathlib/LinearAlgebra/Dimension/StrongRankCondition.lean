@@ -530,9 +530,6 @@ lemma Module.finrank_bot_le_finrank_of_isScalarTower (S T : Type*) [Semiring S] 
   finrank_le_finrank_of_rank_le_rank (lift_rank_bot_le_lift_rank_of_isScalarTower R S T)
     (Module.rank_lt_aleph0 _ _)
 
-@[deprecated (since := "2024-11-21")]
-alias LinearMap.finrank_le_of_smul_regular := LinearMap.finrank_le_of_isSMulRegular
-
 end StrongRankCondition
 
 namespace Submodule
