@@ -313,7 +313,7 @@ theorem rank_le_rankOfDiscrBdd :
       refine lt_of_le_of_lt ?_ (mul_lt_mul_of_pos_left
         (Real.rpow_lt_rpow_of_exponent_lt h₂ h) (by positivity : (0 : ℝ) < 4 / 9))
       rw [Real.rpow_logb (lt_trans zero_lt_one h₂) (ne_of_gt h₂) (by positivity), ← mul_assoc,
-            ← inv_div, inv_mul_cancel₀ (by norm_num), one_mul, Int.cast_natCast]
+            ← inv_div, inv_mul_cancel₀ (by simp), one_mul, Int.cast_natCast]
     · refine div_nonneg (Real.log_nonneg ?_) (Real.log_nonneg (le_of_lt h₂))
       rw [mul_comm, ← mul_div_assoc, _root_.le_div_iff₀ (by positivity), one_mul,
         ← _root_.div_le_iff₀ (by positivity)]
@@ -331,7 +331,7 @@ theorem minkowskiBound_lt_boundOfDiscBdd : minkowskiBound K ↑1 < boundOfDiscBd
     ENNReal.ofReal_one, one_mul, mixedEmbedding.finrank, volume_fundamentalDomain_latticeBasis,
     coe_mul, ENNReal.coe_pow, coe_ofNat, show sqrt N = (1 : ℝ≥0∞) * sqrt N by rw [one_mul]]
   gcongr
-  · exact pow_le_one₀ (by positivity) (by norm_num)
+  · exact pow_le_one₀ (by positivity) (by simp)
   · rwa [← NNReal.coe_le_coe, coe_nnnorm, Int.norm_eq_abs, ← Int.cast_abs,
       NNReal.coe_natCast, ← Int.cast_natCast, Int.cast_le]
   · exact one_le_two

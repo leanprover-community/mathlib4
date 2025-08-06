@@ -186,7 +186,7 @@ theorem mk_real : #ℝ = 𝔠 := by
   · convert mk_le_of_injective (cantorFunction_injective _ _)
     · rw [← power_def, mk_bool, mk_nat, two_power_aleph0]
     · exact 1 / 3
-    · norm_num
+    · simp
     · norm_num
 
 /-- The cardinality of the reals, as a set. -/

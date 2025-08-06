@@ -56,13 +56,13 @@ theorem reflTransSymmAux_mem_I (x : I × I) : reflTransSymmAux x ∈ I := by
     · apply mul_nonneg
       · apply mul_nonneg
         · unit_interval
-        · norm_num
+        · simp
       · unit_interval
     · rw [mul_assoc]
       apply mul_le_one₀
       · unit_interval
       · apply mul_nonneg
-        · norm_num
+        · simp
         · unit_interval
       · linarith
   · constructor
