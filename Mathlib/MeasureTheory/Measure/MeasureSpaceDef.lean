@@ -215,7 +215,7 @@ theorem exists_measurable_superset_of_null (h : μ s = 0) : ∃ t, s ⊆ t ∧ M
 
 theorem exists_measurable_superset_iff_measure_eq_zero :
     (∃ t, s ⊆ t ∧ MeasurableSet t ∧ μ t = 0) ↔ μ s = 0 :=
-  ⟨fun ⟨_t, hst, _, ht⟩ => measure_mono_null hst ht, exists_measurable_superset_of_null⟩
+  ⟨fun ⟨_t, hst, _, ht⟩ => Measure.mono_null hst ht, exists_measurable_superset_of_null⟩
 
 theorem measure_biUnion_lt_top {s : Set β} {f : β → Set α} (hs : s.Finite)
     (hfin : ∀ i ∈ s, μ (f i) < ∞) : μ (⋃ i ∈ s, f i) < ∞ := by
@@ -262,10 +262,10 @@ theorem measure_inter_lt_top_of_right_ne_top (ht_finite : μ t ≠ ∞) : μ (s 
   measure_lt_top_of_subset inter_subset_right ht_finite
 
 theorem measure_inter_null_of_null_right (S : Set α) {T : Set α} (h : μ T = 0) : μ (S ∩ T) = 0 :=
-  measure_mono_null inter_subset_right h
+  Measure.mono_null inter_subset_right h
 
 theorem measure_inter_null_of_null_left {S : Set α} (T : Set α) (h : μ S = 0) : μ (S ∩ T) = 0 :=
-  measure_mono_null inter_subset_left h
+  Measure.mono_null inter_subset_left h
 
 /-! ### The almost everywhere filter -/
 section ae
