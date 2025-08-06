@@ -179,7 +179,7 @@ instance [Inhabited C] : Inhabited (AsSmall C) :=
   ⟨⟨default⟩⟩
 
 /-- The type-level equivalence between `C` and `ULiftHom (ULift C)`. -/
-def ULiftHomULiftCategory.objEquiv.{v', u', v, u} {C : Type u} [Category.{v} C] :
+def ULiftHomULiftCategory.objEquiv.{v', u', u} {C : Type u} :
     C ≃ ULiftHom.{v'} (ULift.{u'} C) :=
   Equiv.ulift.symm.trans ULiftHom.objEquiv
 
