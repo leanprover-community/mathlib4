@@ -52,7 +52,7 @@ theorem iterateMapComap_le_succ (K : Submodule R N) (h : K.map f ≤ K.map i) (n
     simp_rw [iterateMapComap, iterate_succ', Function.comp_apply]
     calc
       _ ≤ (f.iterateMapComap i n K).map i := map_comap_le _ _
-      _ ≤ (((f.iterateMapComap i n K).map f).comap f).map i := map_mono (le_comap_map _ _)
+      _ ≤ (((f.iterateMapComap i n K).map f).comap f).map i := by grw [← le_comap_map]
       _ ≤ _ := by gcongr; exact ih
 
 /-- If `f` is surjective, `i` is injective, and there exists some `m` such that
