@@ -55,7 +55,7 @@ def pUnitCocone : Cocone (constPUnitFunctor.{w} C) where
   ι := { app := fun _ => id }
 
 /-- If `C` is connected, the cocone on `constPUnitFunctor` with cone point `PUnit` is a colimit
-    cocone. -/
+cocone. -/
 noncomputable def isColimitPUnitCocone [IsConnected C] : IsColimit (pUnitCocone.{w} C) where
   desc s := s.ι.app Classical.ofNonempty
   fac s j := by

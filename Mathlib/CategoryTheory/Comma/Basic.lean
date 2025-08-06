@@ -87,7 +87,7 @@ structure CommaMorphism (X Y : Comma L R) where
   left : X.left ⟶ Y.left
   /-- Morphism on right objects -/
   right : X.right ⟶ Y.right
-  w : L.map left ≫ Y.hom = X.hom ≫ R.map right := by aesop_cat
+  w : L.map left ≫ Y.hom = X.hom ≫ R.map right := by cat_disch
 
 -- Satisfying the inhabited linter
 instance CommaMorphism.inhabited [Inhabited (Comma L R)] :
@@ -211,7 +211,7 @@ directions give a commutative square.
 -/
 @[simps]
 def isoMk {X Y : Comma L₁ R₁} (l : X.left ≅ Y.left) (r : X.right ≅ Y.right)
-    (h : L₁.map l.hom ≫ Y.hom = X.hom ≫ R₁.map r.hom := by aesop_cat) : X ≅ Y where
+    (h : L₁.map l.hom ≫ Y.hom = X.hom ≫ R₁.map r.hom := by cat_disch) : X ≅ Y where
   hom :=
     { left := l.hom
       right := r.hom
@@ -265,7 +265,7 @@ instance full_map [F.Faithful] [F₁.Full] [F₂.Full] [IsIso α] [IsIso β] : (
         erw [← α.naturality_assoc, β.naturality]
         dsimp
         rw [F₁.map_preimage, F₂.map_preimage]
-        simpa using φ.w) }, by aesop_cat⟩
+        simpa using φ.w) }, by cat_disch⟩
 
 instance essSurj_map [F₁.EssSurj] [F₂.EssSurj] [F.Full] [IsIso α] [IsIso β] :
     (map α β).EssSurj where

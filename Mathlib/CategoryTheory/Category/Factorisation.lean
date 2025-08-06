@@ -35,7 +35,7 @@ structure Factorisation {X Y : C} (f : X ⟶ Y) where
   /-- The morphism out of the factorisation midpoint. -/
   π   : mid ⟶ Y
   /-- The factorisation condition. -/
-  ι_π : ι ≫ π = f := by aesop_cat
+  ι_π : ι ≫ π = f := by cat_disch
 
 attribute [simp] Factorisation.ι_π
 
@@ -50,9 +50,9 @@ protected structure Hom (d e : Factorisation f) : Type (max u v) where
   /-- The morphism between the midpoints of the factorizations. -/
   h : d.mid ⟶ e.mid
   /-- The left commuting triangle of the factorization morphism. -/
-  ι_h : d.ι ≫ h = e.ι := by aesop_cat
+  ι_h : d.ι ≫ h = e.ι := by cat_disch
   /-- The right commuting triangle of the factorization morphism. -/
-  h_π : h ≫ e.π = d.π := by aesop_cat
+  h_π : h ≫ e.π = d.π := by cat_disch
 
 attribute [simp] Factorisation.Hom.ι_h Factorisation.Hom.h_π
 

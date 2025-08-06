@@ -182,17 +182,17 @@ noncomputable def functor {J K : Type u} [LinearOrder J] [LinearOrder K]
   map_id i := by
     ext
     simp only [eId, EnrichedCategory.id]
-    exact Functor.ext (by aesop_cat)
+    exact Functor.ext (by cat_disch)
   map_comp i j k := by
     ext
     simp only [eComp, EnrichedCategory.comp]
-    exact Functor.ext (by aesop_cat)
+    exact Functor.ext (by cat_disch)
 
 lemma functor_id (J : Type u) [LinearOrder J] :
     (functor (OrderHom.id (α := J))) = EnrichedFunctor.id _ _ := by
   refine EnrichedFunctor.ext _ (fun _ ↦ rfl) fun i j ↦ ?_
   ext
-  exact Functor.ext (by aesop_cat)
+  exact Functor.ext (by cat_disch)
 
 lemma functor_comp {J K L : Type u} [LinearOrder J] [LinearOrder K]
     [LinearOrder L] (f : J →o K) (g : K →o L) :
@@ -200,7 +200,7 @@ lemma functor_comp {J K L : Type u} [LinearOrder J] [LinearOrder K]
       (functor f).comp _ (functor g) := by
   refine EnrichedFunctor.ext _ (fun _ ↦ rfl) fun i j ↦ ?_
   ext
-  exact Functor.ext (by aesop_cat)
+  exact Functor.ext (by cat_disch)
 
 end SimplicialThickening
 

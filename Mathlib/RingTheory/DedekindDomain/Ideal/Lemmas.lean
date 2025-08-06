@@ -596,7 +596,7 @@ theorem idealFactorsEquivOfQuotEquiv_mem_normalizedFactors_of_mem_normalizedFact
   apply idealFactorsEquivOfQuotEquiv_is_dvd_iso f
 
 /-- The bijection between the sets of normalized factors of I and J induced by a ring
-    isomorphism `f : R/I ≅ A/J`. -/
+isomorphism `f : R/I ≅ A/J`. -/
 def normalizedFactorsEquivOfQuotEquiv (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
     { L : Ideal R | L ∈ normalizedFactors I } ≃ { M : Ideal A | M ∈ normalizedFactors J } where
   toFun j :=
@@ -895,7 +895,7 @@ section NormalizationMonoid
 variable [NormalizationMonoid R]
 
 /-- The bijection between the (normalized) prime factors of `r` and the (normalized) prime factors
-    of `span {r}` -/
+of `span {r}` -/
 noncomputable def normalizedFactorsEquivSpanNormalizedFactors {r : R} (hr : r ≠ 0) :
     { d : R | d ∈ normalizedFactors r } ≃
       { I : Ideal R | I ∈ normalizedFactors (Ideal.span ({r} : Set R)) } := by
@@ -921,8 +921,8 @@ noncomputable def normalizedFactorsEquivSpanNormalizedFactors {r : R} (hr : r �
             (mem_span_singleton.mpr (dvd_refl r)))
 
 /-- The bijection `normalizedFactorsEquivSpanNormalizedFactors` between the set of prime
-    factors of `r` and the set of prime factors of the ideal `⟨r⟩` preserves multiplicities. See
-    `count_normalizedFactorsSpan_eq_count` for the version stated in terms of multisets `count`. -/
+factors of `r` and the set of prime factors of the ideal `⟨r⟩` preserves multiplicities. See
+`count_normalizedFactorsSpan_eq_count` for the version stated in terms of multisets `count`. -/
 theorem emultiplicity_normalizedFactorsEquivSpanNormalizedFactors_eq_emultiplicity {r d : R}
     (hr : r ≠ 0) (hd : d ∈ normalizedFactors r) :
     emultiplicity d r =
@@ -932,7 +932,7 @@ theorem emultiplicity_normalizedFactorsEquivSpanNormalizedFactors_eq_emultiplici
     Subtype.coe_mk, Equiv.ofBijective_apply]
 
 /-- The bijection `normalized_factors_equiv_span_normalized_factors.symm` between the set of prime
-    factors of the ideal `⟨r⟩` and the set of prime factors of `r` preserves multiplicities. -/
+factors of the ideal `⟨r⟩` and the set of prime factors of `r` preserves multiplicities. -/
 theorem emultiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_emultiplicity {r : R}
     (hr : r ≠ 0) (I : { I : Ideal R | I ∈ normalizedFactors (Ideal.span ({r} : Set R)) }) :
     emultiplicity ((normalizedFactorsEquivSpanNormalizedFactors hr).symm I : R) r =

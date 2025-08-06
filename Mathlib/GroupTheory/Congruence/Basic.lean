@@ -44,8 +44,8 @@ variable [Mul M] [Mul N] [Mul P] (c : Con M)
 variable {c}
 
 /-- Given types with multiplications `M, N`, the product of two congruence relations `c` on `M` and
-    `d` on `N`: `(x₁, x₂), (y₁, y₂) ∈ M × N` are related by `c.prod d` iff `x₁` is related to `y₁`
-    by `c` and `x₂` is related to `y₂` by `d`. -/
+`d` on `N`: `(x₁, x₂), (y₁, y₂) ∈ M × N` are related by `c.prod d` iff `x₁` is related to `y₁`
+by `c` and `x₂` is related to `y₂` by `d`. -/
 @[to_additive prod "Given types with additions `M, N`, the product of two congruence relations
 `c` on `M` and `d` on `N`: `(x₁, x₂), (y₁, y₂) ∈ M × N` are related by `c.prod d` iff `x₁`
 is related to `y₁` by `c` and `x₂` is related to `y₂` by `d`."]
@@ -60,7 +60,7 @@ def pi {ι : Type*} {f : ι → Type*} [∀ i, Mul (f i)] (C : ∀ i, Con (f i))
     mul' := fun h1 h2 i => (C i).mul (h1 i) (h2 i) }
 
 /-- Makes an isomorphism of quotients by two congruence relations, given that the relations are
-    equal. -/
+equal. -/
 @[to_additive "Makes an additive isomorphism of quotients by two additive congruence relations,
 given that the relations are equal."]
 protected def congr {c d : Con M} (h : c = d) : c.Quotient ≃* d.Quotient :=
@@ -137,7 +137,7 @@ protected def submonoid : Submonoid (M × M) where
 variable {c}
 
 /-- The congruence relation on a monoid `M` from a submonoid of `M × M` for which membership
-    is an equivalence relation. -/
+is an equivalence relation. -/
 @[to_additive "The additive congruence relation on an `AddMonoid` `M` from
 an `AddSubmonoid` of `M × M` for which membership is an equivalence relation."]
 def ofSubmonoid (N : Submonoid (M × M)) (H : Equivalence fun x y => (x, y) ∈ N) : Con M where
@@ -146,7 +146,7 @@ def ofSubmonoid (N : Submonoid (M × M)) (H : Equivalence fun x y => (x, y) ∈ 
   mul' := N.mul_mem
 
 /-- Coercion from a congruence relation `c` on a monoid `M` to the submonoid of `M × M` whose
-    elements are `(x, y)` such that `x` is related to `y` by `c`. -/
+elements are `(x, y)` such that `x` is related to `y` by `c`. -/
 @[to_additive "Coercion from a congruence relation `c` on an `AddMonoid` `M`
 to the `AddSubmonoid` of `M × M` whose elements are `(x, y)` such that `x`
 is related to `y` by `c`."]
@@ -175,8 +175,8 @@ theorem mrange_mk' : MonoidHom.mrange c.mk' = ⊤ :=
 variable {f : M →* P}
 
 /-- Given a congruence relation `c` on a monoid and a homomorphism `f` constant on `c`'s
-    equivalence classes, `f` has the same image as the homomorphism that `f` induces on the
-    quotient. -/
+equivalence classes, `f` has the same image as the homomorphism that `f` induces on the
+quotient. -/
 @[to_additive "Given an additive congruence relation `c` on an `AddMonoid` and a homomorphism `f`
 constant on `c`'s equivalence classes, `f` has the same image as the homomorphism that `f` induces
 on the quotient."]
@@ -184,7 +184,7 @@ theorem lift_range (H : c ≤ ker f) : MonoidHom.mrange (c.lift f H) = MonoidHom
   Submonoid.ext fun x => ⟨by rintro ⟨⟨y⟩, hy⟩; exact ⟨y, hy⟩, fun ⟨y, hy⟩ => ⟨↑y, hy⟩⟩
 
 /-- Given a monoid homomorphism `f`, the induced homomorphism on the quotient by `f`'s kernel has
-    the same image as `f`. -/
+the same image as `f`. -/
 @[to_additive (attr := simp) "Given an `AddMonoid` homomorphism `f`, the induced homomorphism
 on the quotient by `f`'s kernel has the same image as `f`."]
 theorem kerLift_range_eq : MonoidHom.mrange (kerLift f) = MonoidHom.mrange f :=

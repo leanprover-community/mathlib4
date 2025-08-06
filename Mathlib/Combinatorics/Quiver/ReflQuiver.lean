@@ -44,7 +44,7 @@ instance catToReflQuiver {C : Type u} [inst : Category.{v} C] : ReflQuiver.{v+1,
 structure ReflPrefunctor (V : Type u₁) [ReflQuiver.{v₁} V] (W : Type u₂) [ReflQuiver.{v₂} W]
     extends Prefunctor V W where
   /-- A functor preserves identity morphisms. -/
-  map_id : ∀ X : V, map (𝟙rq X) = 𝟙rq (obj X) := by aesop_cat
+  map_id : ∀ X : V, map (𝟙rq X) = 𝟙rq (obj X) := by cat_disch
 
 namespace ReflPrefunctor
 

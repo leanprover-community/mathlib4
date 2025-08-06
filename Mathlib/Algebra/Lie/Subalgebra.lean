@@ -156,6 +156,11 @@ theorem mem_mk_iff' (p : Submodule R L) (h) {x : L} :
 theorem mem_toSubmodule {x : L} : x ∈ (L' : Submodule R L) ↔ x ∈ L' :=
   Iff.rfl
 
+@[simp]
+theorem mem_mk_iff' (p : Submodule R L) (h) {x : L} :
+    x ∈ (⟨p, h⟩ : LieSubalgebra R L) ↔ x ∈ p :=
+  Iff.rfl
+
 theorem mem_coe {x : L} : x ∈ (L' : Set L) ↔ x ∈ L' :=
   Iff.rfl
 

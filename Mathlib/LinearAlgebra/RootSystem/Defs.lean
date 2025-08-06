@@ -81,10 +81,10 @@ structure RootPairing extends PerfectPairing R M N where
   coroot : ι ↪ N
   root_coroot_two : ∀ i, toLinearMap (root i) (coroot i) = 2
   /-- A parametrized family of permutations, induced by reflections. This corresponds to the
-      classical requirement that the symmetry attached to each root (later defined in
-      `RootPairing.reflection`) leave the whole set of roots stable: as explained above, we
-      formalize this stability by fixing the image of the roots through each reflection (whence the
-      permutation); and similarly for coroots. -/
+  classical requirement that the symmetry attached to each root (later defined in
+  `RootPairing.reflection`) leave the whole set of roots stable: as explained above, we
+  formalize this stability by fixing the image of the roots through each reflection (whence the
+  permutation); and similarly for coroots. -/
   reflectionPerm : ι → (ι ≃ ι)
   reflectionPerm_root : ∀ i j,
     root j - toPerfectPairing (root j) (coroot i) • root i = root (reflectionPerm i j)

@@ -49,7 +49,7 @@ variable (C : Type*) [Category C]
 split as a composition `p = e ≫ i` with `i ≫ e = 𝟙 _` -/
 class IsIdempotentComplete : Prop where
   /-- A category is idempotent complete iff all idempotent endomorphisms `p`
-    split as a composition `p = e ≫ i` with `i ≫ e = 𝟙 _` -/
+  split as a composition `p = e ≫ i` with `i ≫ e = 𝟙 _` -/
   idempotents_split :
     ∀ (X : C) (p : X ⟶ X), p ≫ p = p → ∃ (Y : C) (i : Y ⟶ X) (e : X ⟶ Y), i ≫ e = 𝟙 Y ∧ e ≫ i = p
 

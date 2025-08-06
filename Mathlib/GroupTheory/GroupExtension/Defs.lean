@@ -211,7 +211,7 @@ attribute [simps! symm_apply] AddGroupExtension.Equiv.symm
 attribute [simps! symm_apply] symm
 
 /-- The composition of monoid isomorphisms associated to equivalences of group extensions gives
-    another equivalence. -/
+another equivalence. -/
 @[to_additive (attr := simps!)
       "The composition of monoid isomorphisms associated to equivalences of additive group
       extensions gives another equivalence."]

@@ -152,8 +152,8 @@ def mkIso' {G H : C} (e : G ≅ H) [Grp_Class G] [IsCommMon G] [Grp_Class H] [Is
 
 /-- Construct an isomorphism of group objects by giving an isomorphism between the underlying
 objects and checking compatibility with unit and multiplication only in the forward direction. -/
-abbrev mkIso {G H : CommGrp_ C} (e : G.X ≅ H.X) (one_f : η[G.X] ≫ e.hom = η[H.X] := by aesop_cat)
-    (mul_f : μ[G.X] ≫ e.hom = (e.hom ⊗ₘ e.hom) ≫ μ[H.X] := by aesop_cat) : G ≅ H :=
+abbrev mkIso {G H : CommGrp_ C} (e : G.X ≅ H.X) (one_f : η[G.X] ≫ e.hom = η[H.X] := by cat_disch)
+    (mul_f : μ[G.X] ≫ e.hom = (e.hom ⊗ₘ e.hom) ≫ μ[H.X] := by cat_disch) : G ≅ H :=
   have : IsMon_Hom e.hom := ⟨one_f, mul_f⟩
   mkIso' e
 
@@ -187,7 +187,7 @@ def mapCommGrp : CommGrp_ C ⥤ CommGrp_ D where
             dsimp
             rw [← Functor.LaxBraided.braided_assoc, ← Functor.map_comp, IsCommMon.mul_comm] } }
   map f := F.mapMon.map f
-  map_id X := show F.mapMon.map (𝟙 X.toGrp_.toMon_) = _ by aesop_cat
+  map_id X := show F.mapMon.map (𝟙 X.toGrp_.toMon_) = _ by cat_disch
 
 protected instance Faithful.mapCommGrp [F.Faithful] : F.mapCommGrp.Faithful where
   map_injective hfg := F.mapMon.map_injective hfg

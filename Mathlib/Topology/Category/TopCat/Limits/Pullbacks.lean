@@ -138,7 +138,7 @@ theorem range_pullback_to_prod {X Y Z : TopCat} (f : X ⟶ Z) (g : Y ⟶ Z) :
     rintro ⟨⟨⟩⟩ <;>
       rw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply, limit.lift_π] <;>
       -- This used to be `simp` before https://github.com/leanprover/lean4/pull/2644
-      aesop_cat
+      cat_disch
 
 /-- The pullback along an embedding is (isomorphic to) the preimage. -/
 noncomputable

@@ -299,7 +299,7 @@ section FromRepresentation
 variable {C : Type u} [Category.{v} C] [HasPullbacks C] (Ω : C)
 
 /-- Abbreviation to enable dot notation on the hypothesis `h` stating that the subobjects presheaf
-    is representable by some object `Ω`. -/
+is representable by some object `Ω`. -/
 abbrev SubobjectRepresentableBy := (Subobject.presheaf C).RepresentableBy Ω
 
 variable {Ω} (h : SubobjectRepresentableBy Ω)
@@ -307,17 +307,17 @@ variable {Ω} (h : SubobjectRepresentableBy Ω)
 namespace SubobjectRepresentableBy
 
 /-- `h.Ω₀` is the subobject of `Ω` which corresponds to the identity `𝟙 Ω`,
-    given `h : SubobjectRepresentableBy Ω`. -/
+given `h : SubobjectRepresentableBy Ω`. -/
 def Ω₀ : Subobject Ω := h.homEquiv (𝟙 Ω)
 
 /-- `h.homEquiv` acts like an "object comprehension" operator: it maps any characteristic map
-    `f : X ⟶ Ω` to the associated subobject of `X`, obtained by pulling back `h.Ω₀` along `f`. -/
+`f : X ⟶ Ω` to the associated subobject of `X`, obtained by pulling back `h.Ω₀` along `f`. -/
 lemma homEquiv_eq {X : C} (f : X ⟶ Ω) :
     h.homEquiv f = (Subobject.pullback f).obj h.Ω₀ := by
   simpa using h.homEquiv_comp f (𝟙 _)
 
 /-- For any subobject `x`, the pullback of `h.Ω₀` along the characteristic map of `x`
-    given by `h.homEquiv` is `x` itself. -/
+given by `h.homEquiv` is `x` itself. -/
 lemma pullback_homEquiv_symm_obj_Ω₀ {X : C} (x : Subobject X) :
     (Subobject.pullback (h.homEquiv.symm x)).obj h.Ω₀ = x := by
   rw [← homEquiv_eq, Equiv.apply_symm_apply]
@@ -330,7 +330,7 @@ variable {U X : C} (m : U ⟶ X) [Mono m]
 def χ : X ⟶ Ω := h.homEquiv.symm (Subobject.mk m)
 
 /-- `h.iso m` is the isomorphism between `m` and the pullback of `Ω₀`
-    along the characteristic map of `m`. -/
+along the characteristic map of `m`. -/
 noncomputable def iso : MonoOver.mk' m ≅
     Subobject.representative.obj ((Subobject.pullback (h.χ m)).obj h.Ω₀) :=
   (Subobject.representativeIso (.mk' m)).symm ≪≫ Subobject.representative.mapIso
@@ -403,7 +403,7 @@ noncomputable def isoΩ₀ : (h.Ω₀ : C) ≅ ⊤_ C :=
   h.isTerminalΩ₀.conePointUniqueUpToIso (limit.isLimit _)
 
 /-- Any representation `Ω` of `Subobject.presheaf C` gives a subobject classifier with truth values
-    object `Ω`. -/
+object `Ω`. -/
 noncomputable def classifier : Classifier C where
   Ω₀ := ⊤_ C
   Ω := Ω

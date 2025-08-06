@@ -103,7 +103,7 @@ noncomputable def homEquivOfIsRightKanExtension (G : D ⥤ H) :
   toFun β := whiskerLeft _ β ≫ α
   invFun β := liftOfIsRightKanExtension _ α _ β
   left_inv β := Functor.hom_ext_of_isRightKanExtension _ α _ _ (by simp)
-  right_inv := by aesop_cat
+  right_inv := by cat_disch
 
 lemma isRightKanExtension_of_iso {F' F'' : D ⥤ H} (e : F' ≅ F'') {L : C ⥤ D} {F : C ⥤ H}
     (α : L ⋙ F' ⟶ F) (α' : L ⋙ F'' ⟶ F) (comm : whiskerLeft L e.hom ≫ α' = α)
@@ -195,7 +195,7 @@ noncomputable def homEquivOfIsLeftKanExtension (G : D ⥤ H) :
   toFun β := α ≫ whiskerLeft _ β
   invFun β := descOfIsLeftKanExtension _ α _ β
   left_inv β := Functor.hom_ext_of_isLeftKanExtension _ α _ _ (by simp)
-  right_inv := by aesop_cat
+  right_inv := by cat_disch
 
 lemma isLeftKanExtension_of_iso {F' : D ⥤ H} {F'' : D ⥤ H} (e : F' ≅ F'')
     {L : C ⥤ D} {F : C ⥤ H} (α : F ⟶ L ⋙ F') (α' : F ⟶ L ⋙ F'')
@@ -609,7 +609,7 @@ noncomputable def isColimitCoconeOfIsLeftKanExtension {c : Cocone F} (hc : IsCol
   fac s := by
     have : F'.descOfIsLeftKanExtension α ((const D).obj c.pt) c.ι ≫
         (Functor.const _).map (hc.desc (Cocone.mk _ (α ≫ whiskerLeft L s.ι))) = s.ι :=
-      F'.hom_ext_of_isLeftKanExtension α _ _ (by aesop_cat)
+      F'.hom_ext_of_isLeftKanExtension α _ _ (by cat_disch)
     exact congr_app this
   uniq s m hm := hc.hom_ext (fun j ↦ by
     have := hm (L.obj j)
@@ -660,7 +660,7 @@ noncomputable def isLimitConeOfIsRightKanExtension {c : Cone F} (hc : IsLimit c)
   fac s := by
     have : (Functor.const _).map (hc.lift (Cone.mk _ (whiskerLeft L s.π ≫ α))) ≫
         F'.liftOfIsRightKanExtension α ((const D).obj c.pt) c.π = s.π :=
-      F'.hom_ext_of_isRightKanExtension α _ _ (by aesop_cat)
+      F'.hom_ext_of_isRightKanExtension α _ _ (by cat_disch)
     exact congr_app this
   uniq s m hm := hc.hom_ext (fun j ↦ by
     have := hm (L.obj j)

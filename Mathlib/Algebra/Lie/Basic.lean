@@ -3,7 +3,6 @@ Copyright (c) 2019 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Module.Submodule.Equiv
 import Mathlib.Algebra.Module.Equiv.Basic
 import Mathlib.Algebra.Module.Rat
@@ -227,6 +226,15 @@ theorem lie_jacobi : ⁅x, ⁅y, z⁆⁆ + ⁅y, ⁅z, x⁆⁆ + ⁅z, ⁅x, y�
   rw [← neg_neg ⁅x, y⁆, lie_neg z, lie_skew y x, ← lie_skew, lie_lie]
   abel
 
+variable (L M) in
+/-- The Lie bracket as a biadditive map.
+
+Usually one will have coefficients and `LieModule.toEnd` will be more useful. -/
+@[simps] def LieRingModule.toEnd : L →+ M →+ M where
+  toFun x := ⟨⟨fun m ↦ ⁅x, m⁆, lie_zero x⟩, LieRingModule.lie_add x⟩
+  map_zero' := by ext n; exact zero_lie n
+  map_add' y z := by ext n; exact add_lie y z n
+
 instance LieRing.instLieAlgebra : LieAlgebra ℤ L where lie_smul n x y := lie_zsmul x y n
 
 instance : LieModule ℤ L M where
@@ -296,20 +304,15 @@ def LieRing.toNonUnitalNonAssocRing : NonUnitalNonAssocRing L :=
 
 variable {ι κ : Type*}
 
-theorem sum_lie (s : Finset ι) (f : ι → L) (a : L) : ⁅∑ i ∈ s, f i, a⁆ = ∑ i ∈ s, ⁅f i, a⁆ :=
-  let _i := LieRing.toNonUnitalNonAssocRing L
-  s.sum_mul f a
+theorem sum_lie (s : Finset ι) (f : ι → L) (m : M) : ⁅∑ i ∈ s, f i, m⁆ = ∑ i ∈ s, ⁅f i, m⁆ :=
+  map_sum ((LieRingModule.toEnd L M).flip m) f s
 
-theorem lie_sum (s : Finset ι) (f : ι → M) (a : L) : ⁅a, ∑ i ∈ s, f i⁆ = ∑ i ∈ s, ⁅a, f i⁆ := by
-  classical
-  induction s using Finset.induction_on with
-  | empty => simp
-  | insert b s h₁ h₂ => simpa [Finset.sum_insert h₁]
+theorem lie_sum (s : Finset ι) (f : ι → M) (a : L) : ⁅a, ∑ i ∈ s, f i⁆ = ∑ i ∈ s, ⁅a, f i⁆ :=
+  map_sum (LieRingModule.toEnd L M a) f s
 
-theorem sum_lie_sum {κ : Type*} (s : Finset ι) (t : Finset κ) (f : ι → L) (g : κ → L) :
-    ⁅(∑ i ∈ s, f i), ∑ j ∈ t, g j⁆ = ∑ i ∈ s, ∑ j ∈ t, ⁅f i, g j⁆ :=
-  let _i := LieRing.toNonUnitalNonAssocRing L
-  s.sum_mul_sum t f g
+theorem sum_lie_sum {κ : Type*} (s : Finset ι) (t : Finset κ) (f : ι → L) (g : κ → M) :
+    ⁅(∑ i ∈ s, f i), ∑ j ∈ t, g j⁆ = ∑ i ∈ s, ∑ j ∈ t, ⁅f i, g j⁆ := by
+  simp_rw [sum_lie, lie_sum]
 
 end BasicProperties
 

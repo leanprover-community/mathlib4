@@ -73,7 +73,7 @@ lemma mono : Mono f := by
         rw [Category.id_comp, Category.assoc, ← Functor.map_comp]
         rfl }
   have : Mono φ := NatTrans.mono_of_mono_app φ
-  exact colim.map_mono' φ (isColimitConstCocone J X) (h.isColimit) f (by aesop_cat)
+  exact colim.map_mono' φ (isColimitConstCocone J X) (h.isColimit) f (by cat_disch)
 
 instance mono_map (j j' : J) (f : j ⟶ j') : Mono (h.F.map f) :=
   ((h.ici j).iic ⟨j', leOfHom f⟩).mono

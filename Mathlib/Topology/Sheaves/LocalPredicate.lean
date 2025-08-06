@@ -90,7 +90,7 @@ a `P : LocalPredicate T` consists of:
 -/
 structure LocalPredicate extends PrelocalPredicate T where
   /-- A local predicate must be local --- provided that it is locally satisfied, it is also globally
-    satisfied -/
+  satisfied -/
   locality :
     ∀ {U : Opens X} (f : ∀ x : U, T x)
       (_ : ∀ x : U, ∃ (V : Opens X) (_ : x.1 ∈ V) (i : V ⟶ U),
