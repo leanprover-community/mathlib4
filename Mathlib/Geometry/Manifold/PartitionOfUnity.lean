@@ -587,9 +587,9 @@ theorem contMDiff_totalSpace_weighted_sum_of_local_sections
     {n : ℕ∞} {ι : Type*} (ρ : SmoothPartitionOfUnity ι I M univ) (s_loc : ι → ((x : M) → V x))
     (U : ι → Set M) (hU_isOpen : ∀ i, IsOpen (U i)) (hρ_subord : ρ.IsSubordinate U)
     (h_smooth_s_loc : ∀ i, ContMDiffOn I (I.prod 𝓘(ℝ, F_fiber)) n
-      (fun x ↦ (TotalSpace.mk x (s_loc i x) : TotalSpace F_fiber V)) (U i)) :
+      (fun x ↦ TotalSpace.mk' F_fiber x (s_loc i x)) (U i)) :
     ContMDiff I (I.prod 𝓘(ℝ, F_fiber)) n
-      (fun x ↦ (TotalSpace.mk x (∑ᶠ (j : ι), (ρ j x) • (s_loc j x)) : TotalSpace F_fiber V)) := by
+      (fun x ↦ TotalSpace.mk' F_fiber x (∑ᶠ (j : ι), (ρ j x) • (s_loc j x))) := by
   intro x₀
   apply (Bundle.contMDiffAt_section x₀).mpr
   let e₀ := trivializationAt F_fiber V x₀
@@ -627,29 +627,27 @@ theorem exists_contMDiffOn_section_forall_mem_convex_of_local
     (Hloc :
       ∀ x₀ : M, ∃ U_x₀ ∈ 𝓝 x₀, ∃ (s_loc : (x : M) → V x),
         (ContMDiffOn I (I.prod 𝓘(ℝ, F_fiber)) n
-          (fun x ↦ (⟨x, s_loc x⟩ : TotalSpace F_fiber V)) U_x₀) ∧
+          (fun x ↦ TotalSpace.mk' F_fiber x (s_loc x)) U_x₀) ∧
         (∀ y ∈ U_x₀, s_loc y ∈ t y)) :
     ∃ s : Cₛ^n⟮I; F_fiber, V⟯, ∀ x : M, s x ∈ t x := by
   choose W h_nhds s_loc s_smooth h_mem_t using Hloc
   -- Construct an open cover from the interiors of the given neighborhoods.
   let U (x : M) : Set M := interior (W x)
-  have U_op : ∀ x, IsOpen (U x) := fun x ↦ isOpen_interior
   have hU_covers_univ : univ ⊆ ⋃ x, U x := by
     intro x_pt _
     simp only [mem_iUnion]
     exact ⟨x_pt, mem_interior_iff_mem_nhds.mpr (h_nhds x_pt)⟩
   -- Obtain a smooth partition of unity subordinate to this open cover.
-  obtain ⟨ρ, hρU⟩ : ∃ ρ : SmoothPartitionOfUnity M I M univ,
-      ρ.IsSubordinate U :=
+  obtain ⟨ρ, hρU⟩ : ∃ ρ : SmoothPartitionOfUnity M I M univ, ρ.IsSubordinate U :=
     SmoothPartitionOfUnity.exists_isSubordinate
-      I isClosed_univ U U_op hU_covers_univ
+      I isClosed_univ U (fun x ↦ isOpen_interior) hU_covers_univ
   -- Define the global section `s` by taking a weighted sum of the local sections.
   let s x : V x := ∑ᶠ j, (ρ j x) • s_loc j x
   -- Prove that `s`, when viewed as a map to the total space, is smooth.
   have s_smooth : ContMDiff I (I.prod 𝓘(ℝ, F_fiber)) n
-      (fun x ↦ (TotalSpace.mk x (s x) : TotalSpace F_fiber V)) :=
+      (fun x ↦ TotalSpace.mk' F_fiber x (s x)) :=
     ρ.contMDiff_totalSpace_weighted_sum_of_local_sections
-      I V s_loc U U_op hρU fun j ↦ (s_smooth j).mono interior_subset
+      I V s_loc U (fun x ↦ isOpen_interior) hρU fun j ↦ (s_smooth j).mono interior_subset
   -- Construct the smooth section and prove it lies in the convex sets `t x`.
   refine ⟨⟨s, s_smooth⟩, fun x ↦ ?_⟩
   apply (ht_conv x).finsum_mem (ρ.nonneg · x) (ρ.sum_eq_one (mem_univ x))
@@ -673,8 +671,7 @@ theorem exists_smooth_section_forall_mem_convex_of_local
     (t : ∀ x, Set (V x)) (ht_conv : ∀ x, Convex ℝ (t x))
     (Hloc :
       ∀ x₀ : M, ∃ U_x₀ ∈ 𝓝 x₀, ∃ (s_loc : (x : M) → V x),
-        (ContMDiffOn I (I.prod 𝓘(ℝ, F_fiber)) ∞
-          (fun x => (⟨x, s_loc x⟩ : TotalSpace F_fiber V)) U_x₀) ∧
+        (ContMDiffOn I (I.prod 𝓘(ℝ, F_fiber)) ∞ (fun x ↦ TotalSpace.mk' F_fiber x (s_loc x)) U_x₀) ∧
         (∀ y ∈ U_x₀, s_loc y ∈ t y)) :
     ∃ s : Cₛ^∞⟮I; F_fiber, V⟯, ∀ x : M, s x ∈ t x :=
       exists_contMDiffOn_section_forall_mem_convex_of_local I V t ht_conv Hloc
