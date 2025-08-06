@@ -146,8 +146,7 @@ lemma slope_nonpos_iff_of_le (hxy : x ≤ y) : slope f x y ≤ 0 ↔ f y ≤ f x
   simpa using slope_nonneg_iff_of_le (f := -f) hxy
 
 lemma slope_pos_iff_of_le (hxy : x ≤ y) : 0 < slope f x y ↔ f x < f y := by
-  rw [lt_iff_le_and_ne, slope_nonneg_iff_of_le hxy, lt_iff_le_and_ne, Ne,
-    Ne, @eq_comm _ 0, slope_eq_zero_iff]
+  simp_rw [lt_iff_le_and_ne, slope_nonneg_iff_of_le hxy, Ne, eq_comm, slope_eq_zero_iff]
 
 lemma slope_neg_iff_of_le (hxy : x ≤ y) : slope f x y < 0 ↔ f y < f x := by
   simpa using slope_pos_iff_of_le (f := -f) hxy
