@@ -804,6 +804,13 @@ theorem ContMDiffWithinAt.congr (h : ContMDiffWithinAt I I' n f s x) (h₁ : ∀
     (hx : f₁ x = f x) : ContMDiffWithinAt I I' n f₁ s x :=
   (contDiffWithinAt_localInvariantProp n).liftPropWithinAt_congr h h₁ hx
 
+/-- Version of `ContMDiffWithinAt.congr` where `x` need not be contained in `s`,
+but `f` and `f₁` are equal on a set containing both. -/
+theorem ContMDiffWithinAt.congr' (h : ContMDiffWithinAt I I' n f s x) (h₁ : ∀ y ∈ t, f₁ y = f y)
+    (hst : s ⊆ t) (hxt : x ∈ t) :
+    ContMDiffWithinAt I I' n f₁ s x :=
+  h.congr (fun _y hy ↦ h₁ _ (hst hy)) (h₁ x hxt)
+
 theorem contMDiffWithinAt_congr (h₁ : ∀ y ∈ s, f₁ y = f y) (hx : f₁ x = f x) :
     ContMDiffWithinAt I I' n f₁ s x ↔ ContMDiffWithinAt I I' n f s x :=
   (contDiffWithinAt_localInvariantProp n).liftPropWithinAt_congr_iff h₁ hx
@@ -848,6 +855,16 @@ theorem contMDiffOn_congr (h₁ : ∀ y ∈ s, f₁ y = f y) :
 theorem ContMDiffOn.congr_mono (hf : ContMDiffOn I I' n f s) (h₁ : ∀ y ∈ s₁, f₁ y = f y)
     (hs : s₁ ⊆ s) : ContMDiffOn I I' n f₁ s₁ :=
   (hf.mono hs).congr h₁
+
+theorem ContMDiff.congr (h : ContMDiff I I' n f) (h₁ : ∀ y, f₁ y = f y) :
+    ContMDiff I I' n f₁ := by
+  rw [← contMDiffOn_univ] at h ⊢
+  exact (contMDiffOn_congr fun y _ ↦ h₁ y).mpr h
+
+theorem contMDiff_congr (h₁ : ∀ y, f₁ y = f y) :
+    ContMDiff I I' n f₁ ↔ ContMDiff I I' n f := by
+  simp_rw [← contMDiffOn_univ]
+  exact contMDiffOn_congr fun y _ ↦ h₁ y
 
 /-! ### Locality -/
 
