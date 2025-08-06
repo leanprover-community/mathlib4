@@ -162,12 +162,8 @@ any prime ideal `q` in `S` lying over the last element of `L` can be extended to
 chain in `S` of the same length which ends at `q`. -/
 noncomputable def liftOfLTSeries [Algebra.HasGoingDown R S]
     (L : LTSeries (PrimeSpectrum R)) (q : PrimeSpectrum S)
-    [q.asIdeal.LiesOver L.last.asIdeal] :
-    Σ' (f : (i : Fin (L.length + 1)) → PrimeSpectrum S),
-    (∀ i, (f i).asIdeal.LiesOver (L.toFun i).asIdeal) ∧
-    (∀ j : Fin L.length, f j.castSucc < f j.succ) :=
-  ⟨fun i => (liftOfLTSeries_toFun L q i).val,
-    ⟨fun i => (liftOfLTSeries_toFun L q i).property, liftOfLTSeries_step L q⟩⟩
+    [q.asIdeal.LiesOver L.last.asIdeal] : LTSeries (PrimeSpectrum S) :=
+  ⟨L.length, fun i => (liftOfLTSeries_toFun L q i).val, liftOfLTSeries_step L q⟩
 
 /-- If `Spec S → Spec R` is surjective and `S` has the going down property over `R`, then
 `ringKrullDim R ≤ ringKrullDim S`. -/
@@ -185,6 +181,6 @@ theorem ringKrullDim_le_of_surjective_spec [Algebra.HasGoingDown R S]
   · haveI : q.asIdeal.LiesOver L.last.asIdeal :=
       ((PrimeSpectrum.specComap_asIdeal (algebraMap R S) q) ▸ PrimeSpectrum.ext_iff.mp hq)
         ▸ inferInstance
-    refine ⟨⟨L.length, fun i => (liftOfLTSeries L q).fst i, (liftOfLTSeries L q).snd.right⟩, by rfl⟩
+    exact ⟨liftOfLTSeries L q, by tauto⟩
 
 end Algebra.HasGoingDown
