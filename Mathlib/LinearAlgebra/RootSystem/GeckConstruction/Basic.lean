@@ -3,16 +3,10 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.CharZero.Infinite
-import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Algebra.Lie.Matrix
-import Mathlib.Algebra.Lie.Semisimple.Defs
-import Mathlib.Algebra.Lie.Sl2
-import Mathlib.Algebra.Lie.Weights.Linear
-import Mathlib.Algebra.Module.Submodule.Union
+import Mathlib.Algebra.Lie.Weights.Basic
 import Mathlib.LinearAlgebra.Eigenspace.Matrix
 import Mathlib.LinearAlgebra.RootSystem.CartanMatrix
-import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Lemmas
 
 /-!
 # Geck's construction of a Lie algebra associated to a root system

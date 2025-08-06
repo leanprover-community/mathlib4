@@ -4,6 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Basic
+import Mathlib.Algebra.CharZero.Infinite
+import Mathlib.Algebra.Lie.Semisimple.Defs
+import Mathlib.Algebra.Lie.Weights.Linear
+import Mathlib.Algebra.Module.Submodule.Union
 
 /-!
 # Geck's construction of a Lie algebra associated to a root system yields semisimple algebras
