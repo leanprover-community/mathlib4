@@ -443,7 +443,7 @@ theorem coeff_divByMonic_X_sub_C (p : R[X]) (a : R) (n : ℕ) :
   nontriviality R
   by_cases hp : p.natDegree = 0
   · rw [(divByMonic_eq_zero_iff <| monic_X_sub_C a).mpr, coeff_zero]
-    apply degree_lt_degree; rw [hp, natDegree_X_sub_C]; norm_num
+    apply degree_lt_degree; rw [hp, natDegree_X_sub_C]; simp
   · apply coeff_eq_zero_of_natDegree_lt
     rw [natDegree_divByMonic p (monic_X_sub_C a), natDegree_X_sub_C]
     exact (Nat.pred_lt hp).trans_le h
