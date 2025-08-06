@@ -288,34 +288,34 @@ lemma ContMDiff.sum_section_of_locallyFinite (ht : LocallyFinite fun i ↦ {x : 
 lemma ContMDiffWithinAt.finsum_section_of_locallyFinite
     (ht : LocallyFinite fun i ↦ {x : M | t i x ≠ 0})
     (ht' : ∀ i, ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t i x)) u x₀) :
-    ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (∑ᶠ i, (t i x))) u x₀ := by
+    ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (∑ᶠ i, t i x)) u x₀ := by
   apply (ContMDiffWithinAt.sum_section_of_locallyFinite ht ht').congr' (t := Set.univ)
       (fun y hy ↦ ?_) (by grind) trivial
-  · rw [← tsum_eq_finsum]
-    choose U hu hfin using ht y
-    have : {x | t x y ≠ 0} ⊆ {i | ((fun i ↦ {x | t i x ≠ 0}) i ∩ U).Nonempty} := by
-      intro x hx
-      rw [Set.mem_setOf] at hx ⊢
-      use y
-      simpa using ⟨hx, mem_of_mem_nhds hu⟩
-    exact Set.Finite.subset hfin this
+  rw [← tsum_eq_finsum]
+  choose U hu hfin using ht y
+  have : {x | t x y ≠ 0} ⊆ {i | ((fun i ↦ {x | t i x ≠ 0}) i ∩ U).Nonempty} := by
+    intro x hx
+    rw [Set.mem_setOf] at hx ⊢
+    use y
+    simpa using ⟨hx, mem_of_mem_nhds hu⟩
+  exact Set.Finite.subset hfin this
 
 lemma ContMDiffAt.finsum_section_of_locallyFinite
     (ht : LocallyFinite fun i ↦ {x : M | t i x ≠ 0})
     (ht' : ∀ i, ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t i x)) x₀) :
-    ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (∑ᶠ i, (t i x))) x₀ := by
+    ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (∑ᶠ i, t i x)) x₀ := by
   simp_rw [← contMDiffWithinAt_univ] at ht' ⊢
   exact ContMDiffWithinAt.finsum_section_of_locallyFinite ht ht'
 
 lemma ContMDiffOn.finsum_section_of_locallyFinite
     (ht : LocallyFinite fun i ↦ {x : M | t i x ≠ 0})
     (ht' : ∀ i, ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t i x)) u) :
-    ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (∑ᶠ i, (t i x))) u :=
+    ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (∑ᶠ i, t i x)) u :=
   fun x hx ↦ ContMDiffWithinAt.finsum_section_of_locallyFinite ht fun i ↦ ht' i x hx
 
 lemma ContMDiff.finsum_section_of_locallyFinite (ht : LocallyFinite fun i ↦ {x : M | t i x ≠ 0})
     (ht' : ∀ i, ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t i x))) :
-    ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (∑ᶠ i, (t i x))) :=
+    ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (∑ᶠ i, t i x)) :=
   fun x ↦ ContMDiffAt.finsum_section_of_locallyFinite ht fun i ↦ ht' i x
 
 end operations
