@@ -354,7 +354,7 @@ protected instance one : One (Valuation R Γ₀) where
 
 lemma one_apply_def (x : R) : (1 : Valuation R Γ₀) x = if x = 0 then 0 else 1 := rfl
 
-@[simp] lemma toMonoidWithZeroHome_one : ((1 : Valuation R Γ₀).toMonoidWithZeroHom) = 1 := rfl
+@[simp] lemma toMonoidWithZeroHom_one : ((1 : Valuation R Γ₀).toMonoidWithZeroHom) = 1 := rfl
 
 lemma one_apply_of_ne_zero {x : R} (hx : x ≠ 0) : (1 : Valuation R Γ₀) x = 1 := if_neg hx
 
