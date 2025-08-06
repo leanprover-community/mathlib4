@@ -832,11 +832,10 @@ alias Dvd.dvd.lcm_left := dvd_lcm_of_dvd_right
 theorem dvd_of_lcm_left_dvd (h : lcm a b ∣ c) : b ∣ c :=
   (dvd_lcm_right a b).trans h
 
-end Divisibility
 
 namespace Prime
 
-variable [GCDMonoid α] {p a b : α} (hp : Prime p)
+variable {p : α} (hp : Prime p)
 include hp
 
 theorem dvd_or_dvd_of_dvd_lcm (h : p ∣ lcm a b) : p ∣ a ∨ p ∣ b :=
@@ -849,6 +848,8 @@ theorem not_dvd_lcm (ha : ¬ p ∣ a) (hb : ¬ p ∣ b) : ¬ p ∣ lcm a b :=
   hp.dvd_lcm.not.mpr <| not_or.mpr ⟨ha, hb⟩
 
 end Prime
+
+end Divisibility
 
 end LCM
 
