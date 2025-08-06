@@ -29,7 +29,7 @@ including `AdjoinRoot f = R[X]/(f)` itself.
 
 The main definitions are in the `AdjoinRoot` namespace.
 
-*  `mk f : R[X] →+* AdjoinRoot f`, the natural ring homomorphism.
+*  `mk f : R[X] →ₐ[R] AdjoinRoot f`, the natural `R`-algebra homomorphism.
 
 *  `of f : R →+* AdjoinRoot f`, the natural ring homomorphism.
 
