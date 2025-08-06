@@ -143,8 +143,8 @@ theorem equalizer_ext (t : PullbackCone f g) {W : C} {k l : W ⟶ t.pt} (h₀ : 
 
 /-- To construct an isomorphism of pullback cones, it suffices to construct an isomorphism
 of the cone points and check it commutes with `fst` and `snd`. -/
-def ext {s t : PullbackCone f g} (i : s.pt ≅ t.pt) (w₁ : s.fst = i.hom ≫ t.fst := by aesop_cat)
-    (w₂ : s.snd = i.hom ≫ t.snd := by aesop_cat) : s ≅ t :=
+def ext {s t : PullbackCone f g} (i : s.pt ≅ t.pt) (w₁ : s.fst = i.hom ≫ t.fst := by cat_disch)
+    (w₂ : s.snd = i.hom ≫ t.snd := by cat_disch) : s ≅ t :=
   WalkingCospan.ext i w₁ w₂
 
 /-- The natural isomorphism between a pullback cone and the corresponding pullback cone
@@ -358,8 +358,8 @@ theorem coequalizer_ext (t : PushoutCocone f g) {W : C} {k l : t.pt ⟶ W}
 
 /-- To construct an isomorphism of pushout cocones, it suffices to construct an isomorphism
 of the cocone points and check it commutes with `inl` and `inr`. -/
-def ext {s t : PushoutCocone f g} (i : s.pt ≅ t.pt) (w₁ : s.inl ≫ i.hom = t.inl := by aesop_cat)
-    (w₂ : s.inr ≫ i.hom = t.inr := by aesop_cat) : s ≅ t :=
+def ext {s t : PushoutCocone f g} (i : s.pt ≅ t.pt) (w₁ : s.inl ≫ i.hom = t.inl := by cat_disch)
+    (w₂ : s.inr ≫ i.hom = t.inr := by cat_disch) : s ≅ t :=
   WalkingSpan.ext i w₁ w₂
 
 /-- The natural isomorphism between a pushout cocone and the corresponding pushout cocone

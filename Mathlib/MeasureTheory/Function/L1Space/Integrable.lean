@@ -763,11 +763,7 @@ lemma integrable_count_iff :
   · refine ⟨f '' univ, ?_, ae_of_all _ fun a ↦ ⟨a, ⟨mem_univ _, rfl⟩⟩⟩
     suffices f '' univ ⊆ (f '' f.support) ∪ {0} from
       (((hs'.image f).union (countable_singleton 0)).mono this).isSeparable
-    intro g hg
-    rcases eq_or_ne g 0 with rfl | hg'
-    · exact Or.inr (mem_singleton _)
-    · obtain ⟨x, -, rfl⟩ := (mem_image ..).mp hg
-      exact Or.inl ⟨x, hg', rfl⟩
+    grind [Function.mem_support]
 
 end count
 
@@ -951,6 +947,7 @@ end PosPart
 section IsBoundedSMul
 
 variable {𝕜 : Type*}
+  {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
 
 @[fun_prop]
 theorem Integrable.smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β] [IsBoundedSMul 𝕜 β] (c : 𝕜)
@@ -961,6 +958,17 @@ theorem Integrable.smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β] [IsBou
 theorem Integrable.fun_smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β] [IsBoundedSMul 𝕜 β] (c : 𝕜)
     {f : α → β} (hf : Integrable f μ) : Integrable (fun x ↦ c • f x) μ :=
   hf.smul c
+
+@[fun_prop]
+theorem Integrable.smul_enorm
+    [NormedAddCommGroup 𝕜] [SMul 𝕜 ε] [ContinuousConstSMul 𝕜 ε] [ENormSMulClass 𝕜 ε] (c : 𝕜)
+    {f : α → ε} (hf : Integrable f μ) : Integrable (c • f) μ := by
+  constructor <;> fun_prop
+
+theorem Integrable.fun_smul_enorm
+    [NormedAddCommGroup 𝕜] [SMul 𝕜 ε] [ContinuousConstSMul 𝕜 ε] [ENormSMulClass 𝕜 ε] (c : 𝕜)
+    {f : α → ε} (hf : Integrable f μ) : Integrable (fun x ↦ c • f x) μ :=
+  hf.smul_enorm c
 
 theorem _root_.IsUnit.integrable_smul_iff [NormedRing 𝕜] [MulActionWithZero 𝕜 β]
     [IsBoundedSMul 𝕜 β] {c : 𝕜} (hc : IsUnit c) (f : α → β) :

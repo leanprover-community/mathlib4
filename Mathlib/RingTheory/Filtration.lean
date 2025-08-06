@@ -424,18 +424,12 @@ theorem Ideal.iInf_pow_smul_eq_bot_of_isLocalRing [IsNoetherianRing R] [IsLocalR
   Ideal.iInf_pow_smul_eq_bot_of_le_jacobson _
     ((le_maximalIdeal h).trans (maximalIdeal_le_jacobson _))
 
-@[deprecated (since := "2024-11-12")]
-alias Ideal.iInf_pow_smul_eq_bot_of_localRing := Ideal.iInf_pow_smul_eq_bot_of_isLocalRing
-
 /-- **Krull's intersection theorem** for noetherian local rings. -/
 theorem Ideal.iInf_pow_eq_bot_of_isLocalRing [IsNoetherianRing R] [IsLocalRing R] (h : I ≠ ⊤) :
     ⨅ i : ℕ, I ^ i = ⊥ := by
   convert I.iInf_pow_smul_eq_bot_of_isLocalRing (M := R) h
   ext i
   rw [smul_eq_mul, ← Ideal.one_eq_top, mul_one]
-
-@[deprecated (since := "2024-11-12")]
-alias Ideal.iInf_pow_eq_bot_of_localRing := Ideal.iInf_pow_eq_bot_of_isLocalRing
 
 /-- Also see `Ideal.isIdempotentElem_iff_eq_bot_or_top` for integral domains. -/
 theorem Ideal.isIdempotentElem_iff_eq_bot_or_top_of_isLocalRing {R} [CommRing R]
@@ -447,12 +441,8 @@ theorem Ideal.isIdempotentElem_iff_eq_bot_or_top_of_isLocalRing {R} [CommRing R]
     refine Or.inl (eq_bot_iff.mpr ?_)
     rw [← Ideal.iInf_pow_eq_bot_of_isLocalRing I ‹_›]
     apply le_iInf
-    rintro (_|n) <;> simp [H.pow_succ_eq]
+    rintro (_ | n) <;> simp [H.pow_succ_eq]
   · rintro (rfl | rfl) <;> simp [IsIdempotentElem]
-
-@[deprecated (since := "2024-11-12")]
-alias Ideal.isIdempotentElem_iff_eq_bot_or_top_of_localRing :=
-  Ideal.isIdempotentElem_iff_eq_bot_or_top_of_isLocalRing
 
 open IsLocalRing in
 theorem Ideal.iInf_pow_smul_eq_bot_of_noZeroSMulDivisors

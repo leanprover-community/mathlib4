@@ -221,6 +221,8 @@ theorem lintegral_const {f : β → ℝ≥0∞} {μ : Measure β} {a : α} :
 theorem setLIntegral_const {f : β → ℝ≥0∞} {μ : Measure β} {a : α} {s : Set β} :
     ∫⁻ x in s, f x ∂const α μ a = ∫⁻ x in s, f x ∂μ := by rw [const_apply]
 
+lemma discard_eq_const : discard α = const α (Measure.dirac ()) := rfl
+
 end Const
 
 /-- In a countable space with measurable singletons, every function `α → MeasureTheory.Measure β`

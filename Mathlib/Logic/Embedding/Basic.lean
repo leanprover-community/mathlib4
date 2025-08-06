@@ -42,9 +42,6 @@ theorem exists_surjective_iff {α β : Sort*} :
   ⟨fun ⟨f, h⟩ ↦ ⟨⟨f⟩, ⟨⟨_, injective_surjInv h⟩⟩⟩, fun ⟨h, ⟨e⟩⟩ ↦ (nonempty_fun.mp h).elim
     (fun _ ↦ ⟨isEmptyElim, (isEmptyElim <| e ·)⟩) fun _ ↦ ⟨_, invFun_surjective e.inj'⟩⟩
 
-instance {α β : Sort*} : CanLift (α → β) (α ↪ β) (↑) Injective where
-  prf _ h := ⟨⟨_, h⟩, rfl⟩
-
 end Function
 
 section Equiv
@@ -255,11 +252,6 @@ def sectL (α : Sort _) {β : Sort _} (b : β) : α ↪ α × β :=
 @[simps]
 def sectR {α : Sort _} (a : α) (β : Sort _) : β ↪ α × β :=
   ⟨fun b => (a, b), fun _ _ h => congr_arg Prod.snd h⟩
-
-@[deprecated (since := "2024-11-12")] alias sectl := sectL
-@[deprecated (since := "2024-11-12")] alias sectr := sectR
-@[deprecated (since := "2024-11-12")] alias sectl_apply := sectL_apply
-@[deprecated (since := "2024-11-12")] alias sectr_apply := sectR_apply
 
 /-- If `e₁` and `e₂` are embeddings, then so is `Prod.map e₁ e₂ : (a, b) ↦ (e₁ a, e₂ b)`. -/
 def prodMap {α β γ δ : Type*} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : α × γ ↪ β × δ :=
