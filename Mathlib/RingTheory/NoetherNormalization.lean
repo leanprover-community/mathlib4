@@ -202,8 +202,8 @@ private noncomputable abbrev eqv1 :
 /- `eqv2` is the isomorphism from `k[X_0,...,X_n]/T(I)` into `k[X_0,...,X_n]/I`,
 induced by `T`. -/
 private noncomputable abbrev eqv2 :
-    (MvPolynomial (Fin (n + 1)) k ⧸ I.map (T f)) ≃ₐ[k] MvPolynomial (Fin (n + 1)) k ⧸ I
-  := quotientEquivAlg (R₁ := k) (I.map (T f)) I (T f).symm <| by
+    (MvPolynomial (Fin (n + 1)) k ⧸ I.map (T f)) ≃ₐ[k] MvPolynomial (Fin (n + 1)) k ⧸ I :=
+  quotientEquivAlg (R₁ := k) (I.map (T f)) I (T f).symm <| by
   calc
     _ = I.map ((T f).symm.toRingEquiv.toRingHom.comp (T f)) := by
       have : (T f).symm.toRingEquiv.toRingHom.comp (T f) = RingHom.id _ :=

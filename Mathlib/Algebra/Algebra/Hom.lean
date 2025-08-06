@@ -424,6 +424,7 @@ variable {R}
 
 @[simp] lemma ofId_self : ofId R R = .id R R := rfl
 
+@[simp]
 theorem ofId_apply (r) : ofId R A r = algebraMap R A r :=
   rfl
 
@@ -431,7 +432,7 @@ theorem ofId_apply (r) : ofId R A r = algebraMap R A r :=
 instance subsingleton_id : Subsingleton (R →ₐ[R] A) :=
   ⟨fun f g => AlgHom.ext fun _ => (f.commutes _).trans (g.commutes _).symm⟩
 
-/-- This ext lemma closes trivial subgoals create when chaining heterobasic ext lemmas. -/
+/-- This ext lemma closes trivial subgoals created when chaining heterobasic ext lemmas. -/
 @[ext high]
 theorem ext_id (f g : R →ₐ[R] A) : f = g := Subsingleton.elim _ _
 
