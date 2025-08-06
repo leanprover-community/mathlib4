@@ -12,12 +12,12 @@ import Mathlib.Algebra.Ring.Action.Pointwise.Set
 
 ## Relating derivative with order
 
-This files contains lemmas relating the derivative of functions in one variable and order.
+This file contains lemmas relating the derivative of functions in one variable and order.
 
-- `exists_gt_of_deriv_pos` states that if `f` has a positive derivative at `x`, then there
-is a `z > x` such that `f y > f x` for `y` in the interval `Set.Ioc x z`. There are variations
-of this theorem in terms of `HasDerivWithinAt`, and for negative derivatives, and for finding points
-such that `f y < f x`.
+* `exists_gt_of_deriv_pos` states that if `f` has a positive derivative at `x`, then there
+  is a `z > x` such that `f y > f x` for `y` in the interval `Set.Ioc x z`. There are variations
+  of this theorem in terms of `HasDerivWithinAt`, and for negative derivatives, and for finding
+  points such that `f y < f x`.
 
 ## Keywords
 
