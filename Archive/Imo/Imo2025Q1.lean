@@ -655,7 +655,7 @@ structure coverGridConfig extends coverConfig where
 
 /-- The three edge lines of a the grid point to be covered in a `coverGridConfig` -/
 noncomputable def coverGridConfig.edgeLine (C : coverGridConfig) :=
-  IMO2025P1.edgeLine C.n
+  Imo2025Q1.edgeLine C.n
 
 /-- If a `coverGridConfig` contains a line on the edge, remove the edge and shift it to a smaller
 `coverGridConfig` -/
@@ -801,7 +801,7 @@ lemma coverGridConfig.edge_point_in_grid (C : coverGridConfig) (d : Fin 3) (i : 
 lemma coverGridConfig.edge_point_on_line (C : coverGridConfig) (d : Fin 3) (i : Fin C.n) :
     C.edgePoint d i ∈ C.edgeLine d := by
   fin_cases d <;>
-  (simp only [edgeLine, IMO2025P1.edgeLine, line', edgeCoeffs, edgePoint, point_on_line])
+  (simp only [edgeLine, Imo2025Q1.edgeLine, line', edgeCoeffs, edgePoint, point_on_line])
   · simp
   · simp
   · ring_nf; simp
@@ -1015,11 +1015,6 @@ lemma coverGridNoEdgeConfig.cover_no_edge_3_lines (C : coverGridNoEdgeConfig)
   have : !₂[1, 1] ∈ C.findLineCorner 0 ∧ !₂[2, 2] ∈ C.findLineCorner 0 ∧
       !₂[1, 3] ∈ C.findLineCorner 1 ∧ !₂[2, 1] ∈ C.findLineCorner 1 ∧
       !₂[1, 2] ∈ C.findLineCorner 2 ∧ !₂[3, 1] ∈ C.findLineCorner 2 := by
-    have corner_correct := C.find_line_corner_correct
-    have edge_correct := C.find_line_edge_correct
-    have line_inj := C.cover_no_edge_line_inj
-    have line_corner_eq_edge := C.find_line_corner_eq_edge
-    have corner_inj := C.cover_no_edge_corner_inj
     rw [
       show !₂[1, 1] = C.cornerPoint 0 by
         simp [coverGridNoEdgeConfig.cornerPoint, coverGridConfig.edgePoint],
@@ -1032,9 +1027,9 @@ lemma coverGridNoEdgeConfig.cover_no_edge_3_lines (C : coverGridNoEdgeConfig)
       show !₂[3, 1] = C.cornerPoint 2 by
         simp [coverGridNoEdgeConfig.cornerPoint, coverGridConfig.edgePoint,
           coverGridNoEdgeConfig.edgeEndpointIndex, hn3]]
-    repeat' constructor <;> try exact (corner_correct _).right
+    repeat' constructor <;> try exact (C.find_line_corner_correct _).right
     all_goals
-      convert (edge_correct _ ⟨1, by omega⟩).right
+      convert (C.find_line_edge_correct _ ⟨1, by omega⟩).right
       rw [line_edge_middle]
   rw [← C.sunny_count, ← Leq, ← hn3, ← C.lines_count, ← Leq]
   congr 1
@@ -1051,13 +1046,6 @@ lemma coverGridNoEdgeConfig.cover_no_edge_3_lines (C : coverGridNoEdgeConfig)
 lemma coverGridNoEdgeConfig.cover_no_edge_4_impossible (C : coverGridNoEdgeConfig)
     (hn4 : C.n ≥ 4) : False := by
   have := eqAffSubOfPlane
-  have corner_correct := C.find_line_corner_correct
-  have edge_correct := C.find_line_edge_correct
-  have line_inj := C.cover_no_edge_line_inj
-  have line_surj := C.cover_no_edge_line_surj
-  have line_corner_eq_edge := C.find_line_corner_eq_edge
-  have corner_set_members := C.corner_set_members
-  have corner_inj := C.cover_no_edge_corner_inj
   have : #(C.lines \ C.corner_set) ≥ 1 := by
     calc
     _ = #C.lines - #(C.corner_set) := by apply Finset.card_sdiff; exact C.corner_set_subset_lines
@@ -1068,7 +1056,7 @@ lemma coverGridNoEdgeConfig.cover_no_edge_4_impossible (C : coverGridNoEdgeConfi
   simp only [Finset.mem_sdiff] at hL'
   have hL'0 (d : Fin 3) : ∃ i, (C.findLineEdge d i = L' ∧
       i ≠ C.edgeEndpointIndex 0 ∧ i ≠ C.edgeEndpointIndex 1) := by
-    rw [← line_surj d, Finset.mem_map] at hL'
+    rw [← C.cover_no_edge_line_surj d, Finset.mem_map] at hL'
     obtain ⟨⟨i, hi1⟩, hi2⟩ := hL'; simp only [Finset.mem_univ, Function.Embedding.coeFn_mk,
       true_and] at hi1
     use i; constructor; assumption
@@ -1094,17 +1082,17 @@ lemma coverGridNoEdgeConfig.cover_no_edge_4_impossible (C : coverGridNoEdgeConfi
     simp [← hC] at this
   have hi0: (!₂[1, ((iFunc 0).val + 1 : ℕ)] : Plane) ∈ L' := by
     rw [← hiFunc1 0]
-    convert (edge_correct 0 (iFunc 0)).right
+    convert (C.find_line_edge_correct 0 (iFunc 0)).right
     dsimp only [coverGridConfig.edgePoint]
     rw [vec_eq]; simp
   have hi1: (!₂[((iFunc 1).val + 1 : ℕ), 1] : Plane) ∈ L' := by
     rw [← hiFunc1 1]
-    convert (edge_correct 1 (iFunc 1)).right
+    convert (C.find_line_edge_correct 1 (iFunc 1)).right
     dsimp only [coverGridConfig.edgePoint]
     rw [vec_eq]; simp
   have hi2: (!₂[((iFunc 2).val + 1 : ℕ), (C.n - 1 - (iFunc 2).val + 1 : ℕ)] : Plane) ∈ L' := by
     rw [← hiFunc1 2]
-    convert (edge_correct 2 (iFunc 2)).right
+    convert (C.find_line_edge_correct 2 (iFunc 2)).right
     dsimp only [coverGridConfig.edgePoint]
     rw [vec_eq]; constructor
     · rfl
@@ -1121,9 +1109,6 @@ end FindLines
 
 /-- A `coverGridNoEdgeConfig` must satisfy `n = 3 ∧ nS = 3`. -/
 lemma coverGridNoEdgeConfig.cover_edge (C : coverGridNoEdgeConfig) : C.n = 3 ∧ C.nS = 3 := by
-  have := C.lines_count
-  have := C.hn
-  have := C.corner_set_subset_lines
   have : C.n ≥ 3 := by
     calc
     _ = #C.lines := by exact C.lines_count.symm
