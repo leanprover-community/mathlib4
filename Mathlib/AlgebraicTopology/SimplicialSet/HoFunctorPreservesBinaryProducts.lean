@@ -6,6 +6,7 @@ Authors: Emily Riehl, Dominic Verity
 import Mathlib.AlgebraicTopology.SimplicialSet.NerveAdjunction
 import Mathlib.CategoryTheory.Category.Cat.CartesianClosed
 import Mathlib.CategoryTheory.Closed.FunctorToTypes
+import Mathlib.CategoryTheory.Limits.Presheaf
 /-!
 
 # The homotopy category functor preserves finite products.
@@ -18,40 +19,6 @@ Both `Cat.{u, u}` and `SSet.{u}` are cartesian closed categories. This files pro
 `hoFunctor` preserves finite cartesian products; note it fails to preserve infinite products.
 
 -/
-
---Temporary code to check Joël's PR #27576
-section
-
-universe w v₁ u₁
-namespace CategoryTheory
-
-open Category Limits Opposite Functor
-
-variable {C : Type u₁} [Category.{v₁} C]
-
-/-- Variant of the Yoneda embedding which allows a raise in the universe level
-for the category of types. -/
-@[pp_with_univ, simps!]
-def uliftYoneda : C ⥤ Cᵒᵖ ⥤ Type (max w v₁) :=
-  yoneda ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{w}
-
-namespace Presheaf
-
-@[simps]
-def tautologicalCocone' (P : Cᵒᵖ ⥤ Type max w v₁) :
-    Cocone (CostructuredArrow.proj uliftYoneda.{w} P ⋙ uliftYoneda.{w}) where
-  pt := P
-  ι := { app X := X.hom }
-
-/-- The tautological cocone with point `P` is a colimit cocone, exhibiting `P` as a colimit of
-    representables. (In this version, we allow the presheaf `P` to have values in
-    a larger universe.)
-    Proposition 2.6.3(i) in [Kashiwara2006] -/
-noncomputable def isColimitTautologicalCocone' (P : Cᵒᵖ ⥤ Type max w v₁) :
-    IsColimit (tautologicalCocone'.{w} P) := sorry
-
-end CategoryTheory.Presheaf
-end
 
 namespace CategoryTheory
 
@@ -110,27 +77,19 @@ the result proven in `hoFunctor.binarySimplexProductIsIso`.
 lemma hoFunctor.binaryProductWithSimplexIsIso (D X : SSet.{u})
     (H : ∀ m, IsIso (prodComparison hoFunctor D Δ[m])) :
     IsIso (prodComparison hoFunctor D X) := by
-  letI Xcolim := CategoryTheory.Presheaf.isColimitTautologicalCocone' X
   have : (prod.functor.obj D).IsLeftAdjoint := by
     have : (MonoidalCategory.tensorLeft D).IsLeftAdjoint :=
       (CategoryTheory.FunctorToTypes.adj D).isLeftAdjoint
     exact Functor.isLeftAdjoint_of_iso (CartesianMonoidalCategory.tensorLeftIsoProd _)
-  have : (prod.functor.obj (hoFunctor.obj (D : SSet.{u}))).IsLeftAdjoint := by
-    have : (MonoidalCategory.tensorLeft (hoFunctor.obj D)).IsLeftAdjoint := by infer_instance
-    exact Functor.isLeftAdjoint_of_iso (CartesianMonoidalCategory.tensorLeftIsoProd _)
-  have : (hoFunctor).IsLeftAdjoint := nerveAdjunction.isLeftAdjoint
+  have : (prod.functor.obj (hoFunctor.obj D)).IsLeftAdjoint :=
+    Functor.isLeftAdjoint_of_iso (CartesianMonoidalCategory.tensorLeftIsoProd _)
+  have : hoFunctor.IsLeftAdjoint := nerveAdjunction.isLeftAdjoint
   have : IsIso (whiskerLeft (CostructuredArrow.proj uliftYoneda X ⋙ uliftYoneda)
       (prodComparisonNatTrans hoFunctor D)) := by
     rw [NatTrans.isIso_iff_isIso_app]
-    intro x
-    dsimp
-    exact H (x.left).len
-  exact isIso_of_colimit_of_natIso
-    (C := SSet.{u})
-    (D := Cat.{u, u})
-    (CostructuredArrow.proj uliftYoneda X ⋙ uliftYoneda)
-    (prod.functor.obj D ⋙ hoFunctor) (hoFunctor ⋙ prod.functor.obj (hoFunctor.obj D))
-    (prodComparisonNatTrans ..) _ Xcolim
+    exact fun x ↦ H (x.left).len
+  exact isIso_of_colimit_of_natIso _ _ _ (prodComparisonNatTrans ..) _
+    (Presheaf.isColimitTautologicalCocone' X)
 
 /-- The natural transformation `prodComparisonNatTrans hofunctor X` is a natural
 transformation between cocontinuous functors whose component at `Y : SSet` is
