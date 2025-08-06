@@ -363,28 +363,18 @@ def image.eqToHom (h : f = f') : image f ⟶ image f' :=
     { I := image f'
       m := image.ι f'
       e := factorThruImage f'
-      fac := by rw [h]; simp only [image.fac]}
+      fac := by rw [h]; simp}
 
 instance (h : f = f') : IsIso (image.eqToHom h) :=
+  let F : MonoFactorization f' := ⟨image f, image.ι f, factorThruImage f, _⟩
+  let F' : MonoFactorization f := ⟨image f', image.ι f', factorThruImage f', _⟩
   ⟨⟨image.eqToHom h.symm,
       ⟨(cancel_mono (image.ι f)).1 (by
-          -- Porting note: added let's for used to be a simp [image.eqToHom]
-          let F : MonoFactorization f' :=
-            ⟨image f, image.ι f, factorThruImage f, (by cat_disch)⟩
-          dsimp [image.eqToHom]
-          rw [Category.id_comp,Category.assoc,image.lift_fac F]
-          let F' : MonoFactorization f :=
-            ⟨image f', image.ι f', factorThruImage f', (by cat_disch)⟩
-          rw [image.lift_fac F'] ),
+          simp only [image.eqToHom, Category.id_comp]
+          rw [Category.assoc,image.lift_fac F, image.lift_fac F'] ),
         (cancel_mono (image.ι f')).1 (by
-          -- Porting note: added let's for used to be a simp [image.eqToHom]
-          let F' : MonoFactorization f :=
-            ⟨image f', image.ι f', factorThruImage f', (by cat_disch)⟩
-          dsimp [image.eqToHom]
-          rw [Category.id_comp,Category.assoc,image.lift_fac F']
-          let F : MonoFactorization f' :=
-            ⟨image f, image.ι f, factorThruImage f, (by cat_disch)⟩
-          rw [image.lift_fac F])⟩⟩⟩
+          simp [image.eqToHom, Category.id_comp]
+          rw [image.lift_fac F',image.lift_fac F])⟩⟩⟩
 
 /-- An equation between morphisms gives an isomorphism between the images. -/
 def image.eqToIso (h : f = f') : image f ≅ image f' :=

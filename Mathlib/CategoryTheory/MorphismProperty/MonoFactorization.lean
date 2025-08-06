@@ -32,7 +32,7 @@ structure MonoFactorization where
   m : I ⟶ Y
   [m_mono : Mono m]
   e : X ⟶ I
-  fac : e ≫ m = f := by aesop_cat
+  fac : e ≫ m = f := by cat_disch
 
 attribute [inherit_doc MonoFactorization] MonoFactorization.I MonoFactorization.m
   MonoFactorization.m_mono MonoFactorization.e MonoFactorization.fac
