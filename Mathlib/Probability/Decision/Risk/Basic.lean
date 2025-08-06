@@ -161,7 +161,7 @@ lemma bayesRiskPrior_const''' (hl : Measurable (Function.uncurry ℓ))
   · simp_rw [bayesRiskPrior, le_iInf_iff]
     intro κ hκ
     rw [bayesianRisk_const' hl]
-    refine le_trans ?_ (iInf_mul_le_lintegral (κ ∘ₘ μ) (fun y ↦ ∫⁻ θ, ℓ θ y ∂π))
+    refine le_trans ?_ (iInf_mul_le_lintegral (fun y ↦ ∫⁻ θ, ℓ θ y ∂π))
     simp only [Measure.comp_apply_univ]
     rw [ENNReal.iInf_mul' hl_pos (fun hμ ↦ h_zero (by simpa using hμ))]
     gcongr with y
@@ -215,7 +215,7 @@ lemma bayesRiskPrior_of_subsingleton [Subsingleton 𝓧] [Nonempty 𝓨] [SFinit
   refine le_antisymm (bayesRiskPrior_le_inf' hl _ _) ?_
   rw [bayesRiskPrior_eq_iInf_measure_of_subsingleton]
   simp only [bayesianRisk_const_right, le_iInf_iff]
-  refine fun μ hμ ↦ (iInf_le_lintegral μ _).trans_eq ?_
+  refine fun μ hμ ↦ (iInf_le_lintegral (μ := μ) _).trans_eq ?_
   rw [lintegral_lintegral_swap]
   · congr with θ
     rw [lintegral_mul_const _ (by fun_prop), mul_comm]
@@ -252,7 +252,7 @@ lemma bayesianRisk_le_iSup_risk (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel �
     bayesianRisk ℓ P κ π ≤ ⨆ θ, ∫⁻ y, ℓ θ y ∂((κ ∘ₖ P) θ) := by
   rw [bayesianRisk]
   calc ∫⁻ θ, ∫⁻ y, ℓ θ y ∂((κ ∘ₖ P) θ) ∂π
-  _ ≤ ⨆ θ, ∫⁻ y, ℓ θ y ∂((κ ∘ₖ P) θ) := lintegral_le_iSup _ _
+  _ ≤ ⨆ θ, ∫⁻ y, ℓ θ y ∂((κ ∘ₖ P) θ) := lintegral_le_iSup _
 
 lemma bayesRiskPrior_le_bayesianRisk (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) (κ : Kernel 𝓧 𝓨)
     (π : Measure Θ) [hκ : IsMarkovKernel κ] :

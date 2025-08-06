@@ -29,22 +29,6 @@ lemma ENNReal.add_sub_add_eq_sub_left {a c b : ℝ≥0∞} (hc : c ≠ ∞) :
 
 lemma ENNReal.mul_min (a b c : ℝ≥0∞) : a * min b c = min (a * b) (a * c) := mul_left_mono.map_min
 
-lemma iInf_mul_le_lintegral {α : Type*} {_ : MeasurableSpace α} (μ : Measure α) (f : α → ℝ≥0∞) :
-    (⨅ x, f x) * μ .univ ≤ ∫⁻ x, f x ∂μ := by
-  have : (⨅ x, f x) * μ .univ = ∫⁻ y, ⨅ x, f x ∂μ := by simp
-  rw [this]
-  gcongr
-  exact iInf_le _ _
-
-lemma iInf_le_lintegral {α : Type*} {_ : MeasurableSpace α} (μ : Measure α) [IsProbabilityMeasure μ]
-    (f : α → ℝ≥0∞) :
-    ⨅ x, f x ≤ ∫⁻ x, f x ∂μ :=
-  le_trans (by simp) (iInf_mul_le_lintegral μ f)
-
-lemma lintegral_le_iSup {α : Type*} {_ : MeasurableSpace α} (μ : Measure α) [IsProbabilityMeasure μ]
-    (f : α → ℝ≥0∞) :
-    ∫⁻ x, f x ∂μ ≤ ⨆ x, f x := sorry
-
 -- from BrownianMotion
 theorem Set.Finite.lt_iInf_iff {α ι : Type*} [CompleteLinearOrder α]
     {s : Set ι} {f : ι → α} (h : s.Nonempty) (hs : s.Finite) {a : α} :

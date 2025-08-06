@@ -77,7 +77,7 @@ lemma lintegral_iInf_posterior_le_bayesianRisk
     ∫⁻ x, ⨅ y : 𝓨, ∫⁻ θ, ℓ θ y ∂((P†π) x) ∂(P ∘ₘ π) ≤ bayesianRisk ℓ P κ π := by
   rw [bayesianRisk_eq_lintegral_lintegral_lintegral hl]
   gcongr with x
-  exact iInf_le_lintegral _ _
+  exact iInf_le_lintegral _
 
 lemma lintegral_iInf_posterior_le_bayesRiskPrior
     (hl : Measurable (Function.uncurry ℓ)) (P : Kernel Θ 𝓧) [IsFiniteKernel P]

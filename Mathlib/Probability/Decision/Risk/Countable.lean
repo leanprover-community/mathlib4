@@ -94,7 +94,7 @@ lemma bayesRiskPrior_const_of_fintype [Nonempty 𝓨] [Fintype 𝓨] [Measurable
     · congr with y
       rw [lintegral_mul_const _ (by fun_prop)]
     · rwa [← bot_eq_zero, iInf_eq_bot_iff_of_finite, bot_eq_zero] at h
-  _ ≤ ∫⁻ y, ∫⁻ θ, ℓ θ y ∂π ∂(κ ∘ₘ μ) := iInf_mul_le_lintegral (κ ∘ₘ μ) _
+  _ ≤ ∫⁻ y, ∫⁻ θ, ℓ θ y ∂π ∂(κ ∘ₘ μ) := iInf_mul_le_lintegral _
   _ = ∑ y, ∫⁻ θ, ℓ θ y * (κ ∘ₘ μ) {y} ∂π := by
     simp only [lintegral_fintype]
     congr with y
