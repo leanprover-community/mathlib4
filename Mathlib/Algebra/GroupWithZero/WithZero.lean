@@ -360,6 +360,7 @@ def exp (a : M) : Mᵐ⁰ := coe <| .ofAdd a
 
 lemma exp_injective : Injective (exp : M → Mᵐ⁰) :=
   Multiplicative.ofAdd.injective.comp WithZero.coe_injective
+
 @[simp] lemma exp_inj {x y : M} : exp x = exp y ↔ x = y := exp_injective.eq_iff
 
 variable [AddMonoid M]
