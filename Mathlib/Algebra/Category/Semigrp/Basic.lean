@@ -284,9 +284,6 @@ lemma coe_id {X : Semigrp} : (𝟙 X : X → X) = id := rfl
 @[to_additive (attr := simp)]
 lemma coe_comp {X Y Z : Semigrp} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
-@[to_additive (attr := deprecated "Use hom_comp instead" (since := "2025-01-28"))]
-lemma comp_def {X Y Z : Semigrp} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g).hom = g.hom.comp f.hom := rfl
-
 @[simp] lemma forget_map {X Y : Semigrp} (f : X ⟶ Y) : (forget Semigrp).map f = (f : X → Y) := rfl
 
 @[to_additive (attr := ext)]
