@@ -61,7 +61,7 @@ variable (n : Type u) [DecidableEq n] [Fintype n] (R : Type v) [CommRing R]
 
 /-- `SpecialLinearGroup n R` is the group of `n` by `n` `R`-matrices with determinant equal to 1.
 -/
-def SpecialLinearGroup :=
+abbrev SpecialLinearGroup :=
   { A : Matrix n n R // A.det = 1 }
 
 end
