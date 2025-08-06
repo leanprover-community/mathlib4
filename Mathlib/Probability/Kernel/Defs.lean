@@ -250,7 +250,7 @@ lemma not_isMarkovKernel_zero [Nonempty α] : ¬ IsMarkovKernel (0 : Kernel α �
   by_contra h
   let x : α := Nonempty.some inferInstance
   have h1 : (0 : Measure β) .univ = 1 := (h.isProbabilityMeasure x).measure_univ
-  simp only [Measure.coe_zero, Pi.zero_apply, zero_ne_one] at h1
+  simp at h1
 
 end IsEmptyNonempty
 
