@@ -35,7 +35,7 @@ namespace CoproductsFromFiniteFiltered
 variable [HasFiniteCoproducts C]
 
 /-- If `C` has finite coproducts, a functor `Discrete α ⥤ C` lifts to a functor
-    `Finset (Discrete α) ⥤ C` by taking coproducts. -/
+`Finset (Discrete α) ⥤ C` by taking coproducts. -/
 @[simps!]
 def liftToFinsetObj (F : Discrete α ⥤ C) : Finset (Discrete α) ⥤ C where
   obj s := ∐ fun x : s => F.obj x
@@ -43,8 +43,7 @@ def liftToFinsetObj (F : Discrete α ⥤ C) : Finset (Discrete α) ⥤ C where
     Sigma.ι (fun (x : { x // x ∈ Y }) => F.obj x) ⟨y, h.down.down y.2⟩
 
 /-- If `C` has finite coproducts and filtered colimits, we can construct arbitrary coproducts by
-    taking the colimit of the diagram formed by the coproducts of finite sets over the indexing
-    type. -/
+taking the colimit of the diagram formed by the coproducts of finite sets over the indexing type. -/
 @[simps!]
 def liftToFinsetColimitCocone [HasColimitsOfShape (Finset (Discrete α)) C]
     (F : Discrete α ⥤ C) : ColimitCocone F where
@@ -171,7 +170,7 @@ namespace ProductsFromFiniteCofiltered
 variable [HasFiniteProducts C]
 
 /-- If `C` has finite coproducts, a functor `Discrete α ⥤ C` lifts to a functor
-    `Finset (Discrete α) ⥤ C` by taking coproducts. -/
+`Finset (Discrete α) ⥤ C` by taking coproducts. -/
 @[simps!]
 def liftToFinsetObj (F : Discrete α ⥤ C) : (Finset (Discrete α))ᵒᵖ ⥤ C where
   obj s := ∏ᶜ (fun x : s.unop => F.obj x)
@@ -180,8 +179,7 @@ def liftToFinsetObj (F : Discrete α ⥤ C) : (Finset (Discrete α))ᵒᵖ ⥤ C
 
 
 /-- If `C` has finite coproducts and filtered colimits, we can construct arbitrary coproducts by
-    taking the colimit of the diagram formed by the coproducts of finite sets over the indexing
-    type. -/
+taking the colimit of the diagram formed by the coproducts of finite sets over the indexing type. -/
 @[simps!]
 def liftToFinsetLimitCone [HasLimitsOfShape (Finset (Discrete α))ᵒᵖ C]
     (F : Discrete α ⥤ C) : LimitCone F where
