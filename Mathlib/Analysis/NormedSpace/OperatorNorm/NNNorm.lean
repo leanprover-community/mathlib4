@@ -221,7 +221,8 @@ theorem sSup_sphere_eq_nnnorm [NormedAlgebra ℝ 𝕜] (f : E →SL[σ₁₂] F)
     simp_rw [exists_and_right, setOf_and]
     simp [← coe_nnnorm, h]
   obtain ⟨x, hx⟩ := h
-  have : (Metric.sphere (0 : E) 1).Nonempty := ⟨‖x‖⁻¹ • x, by simp [norm_smul]; sorry⟩
+  have : (Metric.sphere (0 : E) 1).Nonempty :=
+    (NormedSpace.sphere_nonempty_of_nontrivial_seminorm ⟨x, NNReal.ne_iff.mpr hx⟩).2 zero_le_one
   refine csSup_eq_of_forall_le_of_forall_lt_exists_gt (this.image _) ?_ fun ub hub => ?_
   · rintro - ⟨x, hx, rfl⟩
     simpa only [mul_one] using f.le_opNorm_of_le (mem_sphere_zero_iff_norm.1 hx).le
