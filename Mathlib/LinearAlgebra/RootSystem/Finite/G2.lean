@@ -621,26 +621,19 @@ variable [P.IsG2] (b : P.Base) [Finite ι] [CharZero R] [IsDomain R]
 
 @[simp] lemma card_base_support_eq_two :
     b.support.card = 2 := by
-  have _i := toEmbeddedG2 P
+  have _i : P.EmbeddedG2 := toEmbeddedG2 P
   have _i : Nonempty ι := IsG2.nonempty P
-  let _i : Fintype b.support := Fintype.ofFinite b.support
-  let b' : P.toRootSystem.Base := b
   rw [← Fintype.card_fin 2, ← Module.finrank_eq_card_basis (EmbeddedG2.basis P),
-    Module.finrank_eq_card_basis b'.toWeightBasis, Fintype.card_coe]
+    Module.finrank_eq_card_basis (b.toWeightBasis (P := P.toRootSystem)), Fintype.card_coe]
 
-variable {b}
-variable {i j : ι} (hi : i ∈ b.support) (hj : j ∈ b.support) (h_ne : i ≠ j)
-include hi hj h_ne
-
-lemma span_eq_rootSpan_int :
+variable {b} in
+lemma span_eq_rootSpan_int {i j : ι} (hi : i ∈ b.support) (hj : j ∈ b.support) (h_ne : i ≠ j) :
     Submodule.span ℤ {P.root i, P.root j} = P.rootSpan ℤ := by
   classical
-  suffices {i, j} = b.support by rw [← image_pair, ← Finset.coe_pair, this, b.span_int_root_support]
   have : {i, j} ⊆ b.support := by
-    rw [← Finset.coe_subset, Finset.coe_pair, pair_subset_iff]
-    exact ⟨hi, hj⟩
-  apply Finset.eq_of_subset_of_card_le this
-  aesop
+    simpa only [← Finset.coe_subset, Finset.coe_pair, pair_subset_iff] using ⟨hi, hj⟩
+  rw [← image_pair, ← Finset.coe_pair, Finset.eq_of_subset_of_card_le this (by aesop),
+    b.span_int_root_support]
 
 end IsG2
 
