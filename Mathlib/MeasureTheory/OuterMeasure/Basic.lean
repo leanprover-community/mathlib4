@@ -83,14 +83,14 @@ theorem iUnion_fintype_le [Fintype ι] (μ : F) (s : ι → Set α) :
     μ (⋃ i, s i) ≤ ∑ i, μ (s i) := by
   simpa using biUnion_finset_le Finset.univ s
 
-theorem measure_union_le (s t : Set α) : μ (s ∪ t) ≤ μ s + μ t := by
+theorem union_le (s t : Set α) : μ (s ∪ t) ≤ μ s + μ t := by
   simpa [union_eq_iUnion] using iUnion_fintype_le μ (cond · s t)
 
 lemma univ_le_add_compl (s : Set α) : μ univ ≤ μ s + μ sᶜ :=
-  s.union_compl_self ▸ measure_union_le s sᶜ
+  s.union_compl_self ▸ union_le s sᶜ
 
 theorem le_inter_add_diff (μ : F) (s t : Set α) : μ s ≤ μ (s ∩ t) + μ (s \ t) := by
-  simpa using measure_union_le (s ∩ t) (s \ t)
+  simpa using union_le (s ∩ t) (s \ t)
 
 theorem diff_null (ht : μ t = 0) : μ (s \ t) = μ s :=
   (mono diff_subset).antisymm <| calc
