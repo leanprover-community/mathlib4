@@ -55,7 +55,7 @@ class CatPullbackSquare
       (unitIso.hom.app X) ≫
       counitIso.hom.app
         (functorEquiv _ _ _|>.inverse.obj (.ofSquare T L R B)|>.obj X) =
-    𝟙 _ := by aesop_cat
+    𝟙 _ := by cat_disch
 
 variable {C₁ : Type u₁} {C₂ : Type u₂} {C₃ : Type u₃} {C₄ : Type u₄}
     [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} C₃] [Category.{v₄} C₄]
@@ -448,7 +448,7 @@ def mkNatIso {J K : X ⥤ C₁} (e₁ : J ⋙ T ≅ K ⋙ T) (e₂ : J ⋙ L ≅
       (associator _ _ _).hom ≫
         whiskerLeft J (CatCommSq.iso T L R B).hom ≫
         (associator _ _ _).inv ≫
-        whiskerRight e₂.hom B := by aesop_cat) :
+        whiskerRight e₂.hom B := by cat_disch) :
     J ≅ K :=
   (functorEquiv T L R B X).fullyFaithfulFunctor.preimageIso
     (CategoricalPullback.mkIso e₁ e₂
@@ -469,7 +469,7 @@ variable {J K : X ⥤ C₁} (e₁ : J ⋙ T ≅ K ⋙ T) (e₂ : J ⋙ L ≅ K �
       (associator _ _ _).hom ≫
         whiskerLeft J (CatCommSq.iso T L R B).hom ≫
         (associator _ _ _).inv ≫
-        whiskerRight e₂.hom B := by aesop_cat)
+        whiskerRight e₂.hom B := by cat_disch)
 
 @[simp]
 lemma mkNatIso_hom_app_fst (x : X) :
@@ -1227,7 +1227,7 @@ variable {J K : X ⥤ R ⊡ B}
       (associator _ _ _).hom ≫
         whiskerLeft J (CatCommSq.iso (π₁ R B) (π₂ R B) R B).hom ≫
         (associator _ _ _).inv ≫
-        whiskerRight e₂.hom B := by aesop_cat)
+        whiskerRight e₂.hom B := by cat_disch)
 
 @[simp]
 lemma mkNatIso_hom_app_fst (x : X) :

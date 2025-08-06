@@ -111,9 +111,9 @@ lemma hasProduct_of_equiv_of_iso (f : α → C) (g : β → C)
   just a convenience lemma to avoid having to go through `Discrete` -/
 @[simps]
 def mkFanLimit {f : β → C} (t : Fan f) (lift : ∀ s : Fan f, s.pt ⟶ t.pt)
-    (fac : ∀ (s : Fan f) (j : β), lift s ≫ t.proj j = s.proj j := by aesop_cat)
+    (fac : ∀ (s : Fan f) (j : β), lift s ≫ t.proj j = s.proj j := by cat_disch)
     (uniq : ∀ (s : Fan f) (m : s.pt ⟶ t.pt) (_ : ∀ j : β, m ≫ t.proj j = s.proj j),
-      m = lift s := by aesop_cat) :
+      m = lift s := by cat_disch) :
     IsLimit t :=
   { lift }
 
@@ -141,9 +141,9 @@ lemma Fan.IsLimit.hom_ext {I : Type*} {F : I → C} {c : Fan F} (hc : IsLimit c)
   just a convenience lemma to avoid having to go through `Discrete` -/
 @[simps]
 def mkCofanColimit {f : β → C} (s : Cofan f) (desc : ∀ t : Cofan f, s.pt ⟶ t.pt)
-    (fac : ∀ (t : Cofan f) (j : β), s.inj j ≫ desc t = t.inj j := by aesop_cat)
+    (fac : ∀ (t : Cofan f) (j : β), s.inj j ≫ desc t = t.inj j := by cat_disch)
     (uniq : ∀ (t : Cofan f) (m : s.pt ⟶ t.pt) (_ : ∀ j : β, s.inj j ≫ m = t.inj j),
-      m = desc t := by aesop_cat) :
+      m = desc t := by cat_disch) :
     IsColimit s :=
   { desc }
 
@@ -253,7 +253,7 @@ theorem Pi.lift_π {β : Type w} {f : β → C} [HasProduct f] {P : C} (p : ∀ 
 /-- A version of `Cones.ext` for `Fan`s. -/
 @[simps!]
 def Fan.ext {f : β → C} {c₁ c₂ : Fan f} (e : c₁.pt ≅ c₂.pt)
-    (w : ∀ (b : β), c₁.proj b = e.hom ≫ c₂.proj b := by aesop_cat) : c₁ ≅ c₂ :=
+    (w : ∀ (b : β), c₁.proj b = e.hom ≫ c₂.proj b := by cat_disch) : c₁ ≅ c₂ :=
   Cones.ext e (fun ⟨j⟩ => w j)
 
 /-- A collection of morphisms `f b ⟶ P` induces a morphism `∐ f ⟶ P`. -/
@@ -273,7 +273,7 @@ instance {f : β → C} [HasCoproduct f] : IsIso (Sigma.desc (fun a ↦ Sigma.ι
 /-- A version of `Cocones.ext` for `Cofan`s. -/
 @[simps!]
 def Cofan.ext {f : β → C} {c₁ c₂ : Cofan f} (e : c₁.pt ≅ c₂.pt)
-    (w : ∀ (b : β), c₁.inj b ≫ e.hom = c₂.inj b := by aesop_cat) : c₁ ≅ c₂ :=
+    (w : ∀ (b : β), c₁.inj b ≫ e.hom = c₂.inj b := by cat_disch) : c₁ ≅ c₂ :=
   Cocones.ext e (fun ⟨j⟩ => w j)
 
 /-- A cofan `c` on `f` such that the induced map `∐ f ⟶ c.pt` is an iso, is a coproduct. -/
@@ -371,7 +371,7 @@ lemma Pi.map_comp_map' {f g : α → C} {h : β → C} [HasProduct f] [HasProduc
 lemma Pi.map'_eq {f : α → C} {g : β → C} [HasProduct f] [HasProduct g] {p p' : β → α}
     {q : ∀ (b : β), f (p b) ⟶ g b} {q' : ∀ (b : β), f (p' b) ⟶ g b} (hp : p = p')
     (hq : ∀ (b : β), eqToHom (hp ▸ rfl) ≫ q b = q' b) : Pi.map' p q = Pi.map' p' q' := by
-  aesop_cat
+  cat_disch
 
 /-- Construct an isomorphism between categorical products (indexed by the same type)
 from a family of isomorphisms between the factors.
@@ -489,7 +489,7 @@ lemma Sigma.map'_eq {f : α → C} {g : β → C} [HasCoproduct f] [HasCoproduct
     {p p' : α → β} {q : ∀ (a : α), f a ⟶ g (p a)} {q' : ∀ (a : α), f a ⟶ g (p' a)}
     (hp : p = p') (hq : ∀ (a : α), q a ≫ eqToHom (hp ▸ rfl) = q' a) :
     Sigma.map' p q = Sigma.map' p' q' := by
-  aesop_cat
+  cat_disch
 
 /-- Construct an isomorphism between categorical coproducts (indexed by the same type)
 from a family of isomorphisms between the factors.
@@ -564,7 +564,7 @@ def Sigma.whiskerEquiv {J K : Type*} {f : J → C} {g : K → C} (e : J ≃ K) (
   inv := Sigma.map' e.symm fun k => eqToHom (by simp) ≫ (w (e.symm k)).hom
 
 #adaptation_note /-- nightly-2024-04-01
-The last proof was previously by `aesop_cat`. -/
+The last proof was previously by `cat_disch`. -/
 instance {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
     [∀ i, HasProduct (g i)] [HasProduct fun i => ∏ᶜ g i] :
     HasProduct fun p : Σ i, f i => g p.1 p.2 where
@@ -583,7 +583,7 @@ def piPiIso {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
   inv := Pi.lift fun i => Pi.lift fun x => Pi.π _ (⟨i, x⟩ : Σ i, f i)
 
 #adaptation_note /-- nightly-2024-04-01
-The last proof was previously by `aesop_cat`. -/
+The last proof was previously by `cat_disch`. -/
 instance {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
     [∀ i, HasCoproduct (g i)] [HasCoproduct fun i => ∐ g i] :
     HasCoproduct fun p : Σ i, f i => g p.1 p.2 where
@@ -706,8 +706,8 @@ def piConstAdj [Limits.HasProducts.{v} C] (X : C) :
   unit := { app n i := Limits.Pi.π (fun _ : n ↦ X) i }
   counit :=
   { app Y := (Limits.Pi.lift id).op,
-    naturality _ _ _ := by apply Quiver.Hom.unop_inj; aesop_cat }
-  left_triangle_components _ := by apply Quiver.Hom.unop_inj; aesop_cat
+    naturality _ _ _ := by apply Quiver.Hom.unop_inj; cat_disch }
+  left_triangle_components _ := by apply Quiver.Hom.unop_inj; cat_disch
 
 /-- The functor sending `(X, n)` to the coproduct of copies of `X` indexed by `n`. -/
 @[simps]
@@ -773,8 +773,7 @@ def colimitCoconeOfUnique [Unique β] (f : β → C) : ColimitCocone (Discrete.f
         apply Category.id_comp
       uniq := fun s m w => by
         specialize w default
-        erw [Category.id_comp] at w
-        exact w }
+        simp_all }
 
 instance (priority := 100) hasCoproduct_unique [Nonempty β] [Subsingleton β] (f : β → C) :
     HasCoproduct f :=

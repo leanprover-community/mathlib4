@@ -453,7 +453,7 @@ noncomputable def _root_.Polynomial.IsDistinguishedAt.algEquivQuotient :
     (A[X] ⧸ Ideal.span {g}) ≃ₐ[A] A⟦X⟧ ⧸ Ideal.span {(g : A⟦X⟧)} where
   __ := Ideal.quotientMapₐ _ (Polynomial.coeToPowerSeries.algHom A) fun a ha ↦ by
     obtain ⟨b, hb⟩ := Ideal.mem_span_singleton'.1 ha
-    simp only [Ideal.mem_comap, Polynomial.coeToPowerSeries.algHom_apply, Algebra.id.map_eq_id,
+    simp only [Ideal.mem_comap, Polynomial.coeToPowerSeries.algHom_apply, Algebra.algebraMap_self,
       map_id, id_eq, Ideal.mem_span_singleton']
     exact ⟨b, by simp [← hb]⟩
   invFun := Ideal.Quotient.mk _ ∘ H.isWeierstrassDivisorAt'.mod'
