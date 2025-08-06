@@ -22,8 +22,8 @@ This file defines the Cantor ternary set and proves a few properties.
 -/
 
 /-- The order `n` pre-Cantor set, defined starting from `[0, 1]` and successively removing the
-    middle third of each interval. Formally, the order `n + 1` pre-Cantor set is the
-    union of the images under the functions `(· / 3)` and `((2 + ·) / 3)` of `preCantorSet n`.
+middle third of each interval. Formally, the order `n + 1` pre-Cantor set is the
+union of the images under the functions `(· / 3)` and `((2 + ·) / 3)` of `preCantorSet n`.
 -/
 def preCantorSet : ℕ → Set ℝ
   | 0 => Set.Icc 0 1
@@ -35,8 +35,8 @@ def preCantorSet : ℕ → Set ℝ
   rfl
 
 /-- The Cantor set is the subset of the unit interval obtained as the intersection of all
-    pre-Cantor sets. This means that the Cantor set is obtained by iteratively removing the
-    open middle third of each subinterval, starting from the unit interval `[0, 1]`.
+pre-Cantor sets. This means that the Cantor set is obtained by iteratively removing the
+open middle third of each subinterval, starting from the unit interval `[0, 1]`.
 -/
 def cantorSet : Set ℝ := ⋂ n, preCantorSet n
 
@@ -111,7 +111,7 @@ theorem cantorSet_eq_union_halves :
 
 /-- The preCantor sets are closed. -/
 lemma isClosed_preCantorSet (n : ℕ) : IsClosed (preCantorSet n) := by
-  let f := Homeomorph.mulLeft₀ (1 / 3 : ℝ) (by norm_num)
+  let f := Homeomorph.mulLeft₀ (1 / 3 : ℝ) (by simp)
   let g := (Homeomorph.addLeft (2 : ℝ)).trans f
   induction n with
   | zero => exact isClosed_Icc
