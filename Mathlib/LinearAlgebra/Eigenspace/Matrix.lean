@@ -62,7 +62,7 @@ lemma hasEigenvalue_toLin_diagonal_iff (d : n → R) {μ : R} [NoZeroSMulDivisor
     exact this i
 
 /-- Eigenvalues of a diagonal linear operator with respect to standard basis
-    are the diagonal entries. -/
+are the diagonal entries. -/
 lemma hasEigenvalue_toLin'_diagonal_iff [NoZeroDivisors R] (d : n → R) {μ : R} :
     HasEigenvalue (toLin' (diagonal d)) μ ↔ (∃ i, d i = μ) :=
   hasEigenvalue_toLin_diagonal_iff _ <| Pi.basisFun R n

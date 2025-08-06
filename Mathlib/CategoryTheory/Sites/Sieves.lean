@@ -209,7 +209,7 @@ theorem functorPullback_id (R : Presieve X) : R.functorPullback (𝟭 _) = R :=
   rfl
 
 /-- Given a presieve `R` on `X`, the predicate `R.hasPullbacks` means that for all arrows `f` and
-    `g` in `R`, the pullback of `f` and `g` exists. -/
+`g` in `R`, the pullback of `f` and `g` exists. -/
 class hasPullbacks (R : Presieve X) : Prop where
   /-- For all arrows `f` and `g` in `R`, the pullback of `f` and `g` exists. -/
   has_pullbacks : ∀ {Y Z} {f : Y ⟶ X} (_ : R f) {g : Z ⟶ X} (_ : R g), HasPullback f g
@@ -525,8 +525,7 @@ lemma ofArrows_eq_ofObjects {X : C} (hX : IsTerminal X)
   exact ⟨i, h, hX.hom_ext _ _⟩
 
 /-- Given a morphism `h : Y ⟶ X`, send a sieve S on X to a sieve on Y
-    as the inverse image of S with `_ ≫ h`.
-    That is, `Sieve.pullback S h := (≫ h) '⁻¹ S`. -/
+as the inverse image of S with `_ ≫ h`. That is, `Sieve.pullback S h := (≫ h) '⁻¹ S`. -/
 @[simps]
 def pullback (h : Y ⟶ X) (S : Sieve X) : Sieve Y where
   arrows _ sl := S (sl ≫ h)
