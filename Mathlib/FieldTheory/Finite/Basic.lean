@@ -355,6 +355,10 @@ variable (L : Type*) [Field L] [Algebra K L]
 theorem coe_frobeniusAlgEquivOfAlgebraic [Algebra.IsAlgebraic K L] :
     ⇑(frobeniusAlgEquivOfAlgebraic K L) = (· ^ q) := rfl
 
+lemma coe_frobeniusAlgEquivOfAlgebraic_iterate [Algebra.IsAlgebraic K L] (n : ℕ) :
+    (⇑(frobeniusAlgEquivOfAlgebraic K L))^[n] = (· ^ (Fintype.card K ^ n)) :=
+  pow_iterate (Fintype.card K) n
+
 variable [Finite L]
 
 open Polynomial in
