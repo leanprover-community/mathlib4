@@ -39,7 +39,7 @@ namespace DistribLattice
 
 
 lemma mem_ideal_sup_principal (a b : α) (J : Ideal α) : b ∈ J ⊔ principal a ↔ ∃ j ∈ J, b ≤ j ⊔ a :=
-  ⟨fun ⟨j, ⟨jJ, _, ha', bja'⟩⟩ => ⟨j, jJ, by grw [bja', mem_principal.mp ha']⟩,
+  ⟨fun ⟨j, ⟨jJ, _, ha', bja'⟩⟩ => ⟨j, jJ, le_trans bja' (sup_le_sup_left ha' j)⟩,
     fun ⟨j, hj, hbja⟩ => ⟨j, hj, a, le_refl a, hbja⟩⟩
 
 theorem prime_ideal_of_disjoint_filter_ideal (hFI : Disjoint (F : Set α) (I : Set α)) :
