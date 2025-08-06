@@ -127,4 +127,46 @@ instance of_flat [Module.Flat R S] : Algebra.HasGoingDown R S := by
     Module.FaithfullyFlat.of_flat_of_isLocalHom
   apply PrimeSpectrum.specComap_surjective_of_faithfullyFlat
 
+/-- Constructs a lift of a chain of prime ideals from `R` to `S` using the going-down property. -/
+noncomputable def liftOfLTSeries_toFun [Algebra.HasGoingDown R S]
+    (L : LTSeries (PrimeSpectrum R)) (q : PrimeSpectrum S) [q.asIdeal.LiesOver L.last.asIdeal] :
+    (i : Fin (L.length + 1)) →
+    {q : PrimeSpectrum S // q.asIdeal.LiesOver (L.toFun i).asIdeal} :=
+  fun i =>
+    if h : i.val = L.length then
+      ⟨q, (congr_arg L.toFun (Fin.ext (h.trans (Fin.val_last L.length).symm))) ▸ ‹_›⟩
+    else
+      let prev := liftOfLTSeries_toFun L q ⟨i.val + 1, _⟩
+      let lift := @Ideal.exists_ideal_lt_liesOver_of_lt _ _ _ _ _ _ _ _ _ _ prev.val.asIdeal _
+        prev.property <| L.step ⟨i, by omega⟩
+      ⟨⟨lift.choose, lift.choose_spec.2.1⟩, lift.choose_spec.2.2⟩
+termination_by i => L.length - i.val
+
+/-- Shows that the lift constructed by `liftOfLTSeries_toFun` preserves the ordering of the given
+chain. -/
+lemma liftOfLTSeries_step [Algebra.HasGoingDown R S]
+    (L : LTSeries (PrimeSpectrum R)) (q : PrimeSpectrum S) [q.asIdeal.LiesOver L.last.asIdeal] :
+    ∀ (j : Fin L.length),
+    (liftOfLTSeries_toFun L q (⟨↑j.castSucc, by omega⟩)).val
+      < (liftOfLTSeries_toFun L q (⟨↑j.succ, by omega⟩)).val := by
+  intro j
+  rw [liftOfLTSeries_toFun]
+  simp only [show (↑j.castSucc ≠ L.length) from by simp; omega, dif_neg (not_false)]
+  exact (@Ideal.exists_ideal_lt_liesOver_of_lt _ _ _ _ _ _ _ _ _ _
+    (liftOfLTSeries_toFun L q ⟨j.val + 1, by omega⟩).val.asIdeal _
+      (liftOfLTSeries_toFun L q ⟨j.val + 1, _⟩).property
+        (L.step (⟨j.val, by omega⟩))).choose_spec.1
+
+/-- Given an `R`-algebra `S` with the going-down property and a chain `L` of prime ideals in `R`,
+any prime ideal `q` in `S` lying over the last element of `L` can be extended to a lift of the
+chain in `S` of the same length which ends at `q`. -/
+noncomputable def liftOfLTSeries [Algebra.HasGoingDown R S]
+    (L : LTSeries (PrimeSpectrum R)) (q : PrimeSpectrum S)
+    [q.asIdeal.LiesOver L.last.asIdeal] :
+    Σ' (f : (i : Fin (L.length + 1)) → PrimeSpectrum S),
+    (∀ i, (f i).asIdeal.LiesOver (L.toFun (⟨i, by omega⟩)).asIdeal) ∧
+    (∀ j : Fin L.length, f j.castSucc < f j.succ) :=
+  ⟨fun i => (liftOfLTSeries_toFun L q ⟨i, _⟩).val,
+    ⟨fun i => (liftOfLTSeries_toFun L q ⟨i, _⟩).property, liftOfLTSeries_step L q⟩⟩
+
 end Algebra.HasGoingDown
