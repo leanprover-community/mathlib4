@@ -36,7 +36,7 @@ set of lines, then all the n points on the same edge must be on different lines.
 open scoped Affine Finset
 open Module
 
-namespace IMO2025P1
+namespace Imo2025Q1
 
 /-- The `x`-axis, as an affine subspace. -/
 noncomputable def xAxis : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2)) where
@@ -1450,4 +1450,4 @@ theorem result (n : Set.Ici 3) :
       rw [C.g_is_grid, point_in_grid]
       omega
 
-end IMO2025P1
+end Imo2025Q1
