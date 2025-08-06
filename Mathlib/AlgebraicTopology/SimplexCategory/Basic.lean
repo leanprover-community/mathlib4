@@ -897,7 +897,6 @@ lemma σ_injective {n : ℕ} : Function.Injective (σ (n := n)) := by
   intro i j hij
   rw [← Fin.predAbove_left_inj]
   ext k : 1
-  change σ _ _ = σ _ _
-  rw [hij]
+  exact congr($hij k)
 
 end SimplexCategory
