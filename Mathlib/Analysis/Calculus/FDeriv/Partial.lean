@@ -123,9 +123,9 @@ theorem hasStrictFDerivAt_uncurry_coprod {f : E₁ → E₂ → F} {x₁ : E₁}
           _ =O[𝓝 ((x₁, x₂), (x₁, x₂))] (fun (y, z) => y - z : _ → E₁ × E₂) := by
             simp [isBigO_of_le]
 
-/-- If a bivariate function `f` has partial derivatives `f₁` at `(x₁, x₂)` and `f₂` in a
+/-- If a bivariate function `f` has partial derivatives `f₁x` at `(x₁, x₂)` and `f₂` in a
 neighbourhood of `(x₁, x₂)`, continuous there, then the uncurried function `↿f` is differentiable at
-`(x₁, x₂)` with its derivative mapping `(h₁, h₂)` to `f₁ x₁ x₂ h₁ + f₂ x₁ x₂ h₂`. -/
+`(x₁, x₂)` with its derivative mapping `(h₁, h₂)` to `f₁x h₁ + f₂ x₁ x₂ h₂`. -/
 theorem hasFDerivWithinAt_uncurry_coprod_of_continuousWithinAt_snd
     [NormedSpace ℝ E₂] {f : E₁ → E₂ → F} {x₁ : E₁} {x₂ : E₂}
     {s₁ : Set E₁} {s₂ : Set E₂} (seg : ∀ᶠ v in 𝓝[s₂] x₂, [x₂ -[ℝ] v] ⊆ s₂)
