@@ -54,7 +54,7 @@ class CatPullbackSquare
       (unitIso.hom.app X) ≫
       counitIso.hom.app
         (functorEquiv _ _ _|>.inverse.obj (.ofSquare T L R B)|>.obj X) =
-    𝟙 _ := by aesop_cat
+    𝟙 _ := by cat_disch
 
 variable {C₁ : Type u₁} {C₂ : Type u₂} {C₃ : Type u₃} {C₄ : Type u₄}
     [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} C₃] [Category.{v₄} C₄]
