@@ -34,8 +34,7 @@ lemma exists_gt_of_hasDerivWithinAt_pos (f'_pos : 0 < f')
   simp only [mem_nhdsWithin, Set.subset_def, Set.mem_inter_iff, Set.mem_diff, Set.mem_singleton_iff,
     Set.mem_preimage, Set.mem_Ioi, and_imp] at this
   rcases this with ⟨U, U_open, x_mem_U, hU⟩
-  rcases exists_Icc_mem_subset_of_mem_nhds (mem_nhds_iff.2 ⟨U, Set.Subset.refl _, U_open, x_mem_U⟩)
-    with ⟨a, b, hab⟩
+  rcases exists_Icc_mem_subset_of_mem_nhds (U_open.mem_nhds x_mem_U) with ⟨a, b, hab⟩
   simp only [Set.mem_Icc, Icc_mem_nhds_iff, Set.mem_Ioo] at hab
   refine ⟨b, by tauto, fun y hy => ?_⟩
   simp only [Set.mem_inter_iff, Set.mem_Ioc] at hy
