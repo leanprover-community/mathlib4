@@ -211,7 +211,7 @@ lemma toStrictSegal₂.mk_naturality_σ1i (i : Fin 2) :
   apply (cancel_mono (segalSpine (Z := Y)) ).1
   simp only [segalSpine, prod.comp_lift, assoc]
   congr 1 <;> rw [← map_comp]
-  · show _ ≫ _ ≫ Y.map (δ₂ _).op = _ ≫ Y.map (_ ≫ (δ₂ _).op)
+  · change _ ≫ _ ≫ Y.map (δ₂ _).op = _ ≫ Y.map (_ ≫ (δ₂ _).op)
     rw [← op_comp, ← toStrictSegal₂.mk_naturality_δ1i sy F hyp, ← assoc, ← map_comp, ← op_comp]
     change toStrictSegal₂.mk.naturalityProperty sy F (δ₂ 2 ≫ σ₂ i)
     fin_cases i
@@ -222,7 +222,7 @@ lemma toStrictSegal₂.mk_naturality_σ1i (i : Fin 2) :
     · dsimp only [Fin.mk_one]
       rw [δ₂_two_comp_σ₂_one]
       exact (toStrictSegal₂.mk.naturalityProperty sy F).id_mem _
-  · show _ ≫ _ ≫ Y.map (δ₂ _).op = _ ≫ Y.map (_ ≫ (δ₂ _).op)
+  · change _ ≫ _ ≫ Y.map (δ₂ _).op = _ ≫ Y.map (_ ≫ (δ₂ _).op)
     rw [← op_comp, ← toStrictSegal₂.mk_naturality_δ1i sy F hyp, ← assoc, ← map_comp, ← op_comp]
     change toStrictSegal₂.mk.naturalityProperty sy F (δ₂ 0 ≫ σ₂ i)
     fin_cases i <;> dsimp only [Fin.zero_eta, Fin.isValue, Fin.mk_one]
@@ -283,7 +283,7 @@ theorem toStrictSegal₂.ext (F G : X ⟶ Y) (sy : StrictSegal Y)
     have h1 := congr_fun (F.naturality (Hom.tr (mkOfSucc i)).op) x
     have h2 := congr_fun (G.naturality (Hom.tr (mkOfSucc i)).op) x
     simp only [types_comp_apply, Nat.reduceAdd] at h1 h2
-    simp only [Equiv.coe_fn_mk, spine_arrow, ← h1, ← h2, eq₁]
+    simp only [spine_arrow, ← h1, ← h2, eq₁]
 
 end
 
@@ -358,7 +358,6 @@ constructed from a refl prefunctor `F : SSet.oneTruncation₂.obj X ⟶ ReflQuiv
       ⟨(X.spine 2 _ φ).arrow 1, (X.spine 2 _ φ).arrow_src 1, (X.spine 2 _ φ).arrow_tgt 1⟩ := by
       unfold ev12₂ δ0₂
       simp [OneTruncation₂.Quiver_homOfEq]
-      rw! [δ_zero_eq_mkOfSucc]
       congr!
       exact δ_zero_eq_mkOfSucc
     erw [← left, ← right]
