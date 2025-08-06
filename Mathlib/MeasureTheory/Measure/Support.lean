@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Bannon, Jireh Loreaux
 -/
 
+import Mathlib.MeasureTheory.OuterMeasure.Basic
 import Mathlib.MeasureTheory.Measure.MeasureSpace
 import Mathlib.MeasureTheory.Measure.OpenPos
 import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
@@ -35,15 +36,9 @@ and various descriptions of the complement of the support are provided.
 * `support_mem_ae_of_isLindelof` and `support_mem_ae` : under Lindelöf (or hereditarily
   Lindelöf) hypotheses, the support is conull.
 
-## Notation
-
-* `μ.support` : the support of measure `μ`.
-* `(𝓝 x).smallSets` : the frequently-small-sets filter used in the filter-theoretic definition.
-
 ## Tags
 
-measure theory, support, filter, Lindelöf, hereditarily Lindelöf,
-absolute continuity, restriction, sum of measures, null measurable, conull
+measure, support, Lindelöf
 -/
 
 section Support
@@ -54,18 +49,7 @@ namespace Measure
 
 open scoped Topology
 
-variable {X : Type*} [MeasurableSpace X]
-
-lemma AbsolutelyContinuous.null_mono {μ ν : Measure X} (hμν : μ ≪ ν) ⦃t : Set X⦄
-    (ht : ν t = 0) : μ t = 0 :=
-  hμν ht
-
-lemma AbsolutelyContinuous.pos_mono {μ ν : Measure X} (hμν : μ ≪ ν) ⦃t : Set X⦄
-    (ht : 0 < μ t) : 0 < ν t := by
-  contrapose! ht
-  simp_all [hμν.null_mono]
-
-variable [TopologicalSpace X]
+variable {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
 
 /-- A point `x` is in the support of `μ` if any open neighborhood of `x` has positive measure.
 We provide the definition in terms of the filter-theoretic equivalent
@@ -73,11 +57,6 @@ We provide the definition in terms of the filter-theoretic equivalent
 protected def support (μ : Measure X) : Set X := {x : X | ∃ᶠ u in (𝓝 x).smallSets, 0 < μ u}
 
 variable {μ : Measure X}
-
-lemma pos_mono {α : Type*} [MeasurableSpace α]
-    (μ : Measure α) ⦃s t : Set α⦄ (h : s ⊆ t) (hs : 0 < μ s) :
-    0 < μ t :=
-  hs.trans_le <| μ.mono h
 
 theorem _root_.Filter.HasBasis.mem_measureSupport {ι : Sort*} {p : ι → Prop}
     {s : ι → Set X} {x : X} (hl : (𝓝 x).HasBasis p s) :
