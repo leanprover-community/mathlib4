@@ -48,7 +48,7 @@ theorem _root_.Algebra.adjoin_singleton_eq_range_aeval (x : A) :
 
 @[simp]
 theorem aeval_mem_adjoin_singleton : aeval x p ∈ adjoin R {x} := by
-  simpa only [adjoin_singleton_eq_range_aeval] using Set.mem_range_self p
+  simp [adjoin_singleton_eq_range_aeval]
 
 theorem _root_.Algebra.adjoin_mem_exists_aeval {a : A} (h : a ∈ Algebra.adjoin R {x}) :
     ∃ p : R[X], aeval x p = a := by
