@@ -22,7 +22,7 @@ private theorem circleAverage_of_differentiable_on_off_countable_posRadius (hR :
     (h₂f : ∀ z ∈ ball c R \ s, DifferentiableAt ℂ f z) :
     circleAverage f c R = f c := by
   calc circleAverage f c R
-  _ = (2 * π * I)⁻¹ • (∮ (z : ℂ) in C(c, R), (z - c)⁻¹ • f z) :=
+  _ = (2 * π * I)⁻¹ • (∮ z in C(c, R), (z - c)⁻¹ • f z) :=
     circleAverage_eq_circleIntegral hR.ne'
   _ = f c := by
     rw [circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable hR hs h₁f h₂f,
