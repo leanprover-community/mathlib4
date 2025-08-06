@@ -76,7 +76,7 @@ lemma rpowIntegrand₀₁_eq_pow_div (hp : p ∈ Ioo 0 1) (ht : 0 ≤ t) (hx : 0
     calc _ = (t : ℝ) ^ p * (t⁻¹ - (t + x)⁻¹) := rfl
       _ = (t : ℝ) ^ p * ((t + x - t) / (t * (t + x))) := by
           simp only [inv_eq_one_div]
-          rw [div_sub_div _ _ (by aesop) (by aesop)]
+          rw [div_sub_div _ _ (by omega) (by omega)]
           simp
       _ = t ^ p / t * x / (t + x) := by field_simp
       _ = t ^ (p - 1) * x / (t + x) := by congr; exact (Real.rpow_sub_one ht' p).symm

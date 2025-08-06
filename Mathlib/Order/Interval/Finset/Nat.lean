@@ -289,7 +289,7 @@ theorem range_add_eq_union : range (a + b) = range a ∪ (range b).map (addLeftE
   ext x
   simp only [Ico_zero_eq_range, mem_image, mem_range, addLeftEmbedding_apply, mem_Ico]
   constructor
-  · aesop
+  · omega
   · rintro h
     exact ⟨x - a, by omega⟩
 

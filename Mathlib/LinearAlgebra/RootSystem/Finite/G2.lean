@@ -91,7 +91,7 @@ lemma not_isG2_iff_isNotG2 :
     have := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed i j
     aesop
   · specialize h i j
-    aesop
+    omega
 
 lemma IsG2.pairingIn_mem_zero_one_three [P.IsG2]
     (i j : ι) (h : P.root i ≠ P.root j) (h' : P.root i ≠ -P.root j) :
