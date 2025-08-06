@@ -22,12 +22,9 @@ open ValuativeRel TopologicalSpace Filter Topology Set
 namespace IsValuativeTopology
 
 variable {R : Type*} [CommRing R] [ValuativeRel R]
-  {F : Type*} [Field F] [ValuativeRel F]
   {Γ₀ : Type*} [LinearOrderedCommMonoidWithZero Γ₀]
-  {Γ₀' : Type*} [LinearOrderedCommGroupWithZero Γ₀']
 
 local notation "v" => valuation R
-local notation "v₀" => valuation F
 
 /-- A version mentioning subtraction. -/
 lemma mem_nhds_iff' [TopologicalSpace R] [IsValuativeTopology R] {s : Set R} {x : R} :
@@ -85,7 +82,6 @@ section
 /-! # Results assuming IsValuativeTopology -/
 
 variable [TopologicalSpace R] [IsValuativeTopology R]
-  [TopologicalSpace F] [IsValuativeTopology F]
 
 lemma mem_nhds_zero_iff (s : Set R) : s ∈ 𝓝 (0 : R) ↔
     ∃ γ : (ValueGroupWithZero R)ˣ, { x | v x < γ } ⊆ s := by
@@ -272,7 +268,6 @@ section
 /-! # Alternate constructors -/
 
 variable [TopologicalSpace R] [ContinuousConstVAdd R R]
-  [TopologicalSpace F] [ContinuousConstVAdd F F]
 
 /-- A "metatheorem" saying that if we proved that a valuative topology has a certain basis of
 `nhds 0`, then any topology having the same basis of `nhds 0` which is also `ContinuousConstVAdd` is
