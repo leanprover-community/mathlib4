@@ -16,7 +16,7 @@ register_option linter.indentation : Bool := {
 /-- docstring TODO -/
 initialize registerTraceClass `Indentation
 initialize registerTraceClass `Indentation.run
-initialize registerTraceClass `Indentation
+initialize registerTraceClass `Indentation.source
 
 namespace Indentation
 
