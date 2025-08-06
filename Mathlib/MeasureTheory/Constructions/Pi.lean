@@ -372,6 +372,23 @@ lemma pi_map_eval [DecidableEq ι] (i : ι) :
    refine Finset.prod_congr rfl fun j hj ↦ ?_
    simp [Function.update, Finset.ne_of_mem_erase hj]
 
+lemma pi_map_pi {X Y : ι → Type*} {mX : ∀ i, MeasurableSpace (X i)} {μ : (i : ι) → Measure (X i)}
+    [∀ i, MeasurableSpace (Y i)] {f : (i : ι) → X i → Y i} [hμ : ∀ i, SigmaFinite ((μ i).map (f i))]
+    (hf : ∀ i, AEMeasurable (f i) (μ i)) :
+    (Measure.pi μ).map (fun x i ↦ (f i (x i))) = Measure.pi (fun i ↦ (μ i).map (f i)) := by
+  have (i : ι) := (hμ i).of_map _ (hf i)
+  refine (pi_eq fun s hs ↦ ?_).symm
+  rw [map_apply_of_aemeasurable _ (.univ_pi hs)]
+  swap
+  · exact aemeasurable_pi_lambda _
+      fun i ↦ (hf i).comp_quasiMeasurePreserving (quasiMeasurePreserving_eval _ i)
+  have : (fun (x : Π i, X i) i ↦ f i (x i)) ⁻¹' (Set.univ.pi s) =
+      Set.univ.pi (fun i ↦ (f i) ⁻¹' (s i)) := by ext x; simp
+  rw [this, pi_pi]
+  congr with i
+  rw [map_apply_of_aemeasurable (hf i) (hs i)]
+
+omit [∀ i, SigmaFinite (μ i)] in
 lemma _root_.MeasureTheory.measurePreserving_eval [∀ i, IsProbabilityMeasure (μ i)] (i : ι) :
     MeasurePreserving (Function.eval i) (Measure.pi μ) (μ i) := by
   refine ⟨measurable_pi_apply i, ?_⟩
@@ -869,18 +886,15 @@ theorem volume_preserving_piFinsetUnion {ι : Type*} [DecidableEq ι] (α : ι �
 theorem measurePreserving_pi {ι : Type*} [Fintype ι] {α : ι → Type v} {β : ι → Type*}
     [∀ i, MeasurableSpace (α i)] [∀ i, MeasurableSpace (β i)]
     (μ : (i : ι) → Measure (α i)) (ν : (i : ι) → Measure (β i))
-    {f : (i : ι) → (α i) → (β i)} [∀ i, SigmaFinite (ν i)]
+    {f : (i : ι) → (α i) → (β i)} [hν : ∀ i, SigmaFinite (ν i)]
     (hf : ∀ i, MeasurePreserving (f i) (μ i) (ν i)) :
     MeasurePreserving (fun a i ↦ f i (a i)) (Measure.pi μ) (Measure.pi ν) where
   measurable :=
     measurable_pi_iff.mpr <| fun i ↦ (hf i).measurable.comp (measurable_pi_apply i)
   map_eq := by
-    haveI : ∀ i, SigmaFinite (μ i) := fun i ↦ (hf i).sigmaFinite
-    refine (Measure.pi_eq fun s hs ↦ ?_).symm
-    rw [Measure.map_apply, Set.preimage_pi, Measure.pi_pi]
-    · simp_rw [← MeasurePreserving.measure_preimage (hf _) (hs _).nullMeasurableSet]
-    · exact measurable_pi_iff.mpr <| fun i ↦ (hf i).measurable.comp (measurable_pi_apply i)
-    · exact MeasurableSet.univ_pi hs
+    have (i : ι) : SigmaFinite ((μ i).map (f i)) := (hf i).map_eq ▸ hν i
+    rw [pi_map_pi (fun i ↦ (hf i).aemeasurable)]
+    exact congrArg _ <| funext fun i ↦ (hf i).map_eq
 
 theorem volume_preserving_pi {α' β' : ι → Type*} [∀ i, MeasureSpace (α' i)]
     [∀ i, MeasureSpace (β' i)] [∀ i, SigmaFinite (volume : Measure (β' i))]

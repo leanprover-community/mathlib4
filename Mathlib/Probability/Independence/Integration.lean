@@ -199,10 +199,10 @@ theorem IndepFun.integrable_right_of_integrable_mul {β : Type*} [MeasurableSpac
   rw [lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'' hX.enorm hY.enorm J, H] at A
   simp only [ENNReal.mul_top I, lt_self_iff_false] at A
 
-lemma IndepFun.integral_fun_comp_mul_comp {𝓧 𝓨 : Type*} [MeasurableSpace 𝓧] [MeasurableSpace 𝓨]
-    {X : Ω → 𝓧} {Y : Ω → 𝓨} {f : 𝓧 → 𝕜} {g : 𝓨 → 𝕜} (hXY : IndepFun X Y μ)
-    (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ) (hf : AEStronglyMeasurable f (μ.map X))
-    (hg : AEStronglyMeasurable g (μ.map Y)) :
+lemma IndepFun.integral_fun_comp_mul_comp {𝓧 𝓨 : Type*} {m𝓧 : MeasurableSpace 𝓧}
+    {m𝓨 : MeasurableSpace 𝓨} {X : Ω → 𝓧} {Y : Ω → 𝓨} {f : 𝓧 → 𝕜} {g : 𝓨 → 𝕜}
+    (hXY : IndepFun X Y μ) (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ)
+    (hf : AEStronglyMeasurable f (μ.map X)) (hg : AEStronglyMeasurable g (μ.map Y)) :
     ∫ ω, f (X ω) * g (Y ω) ∂μ = (∫ ω, f (X ω) ∂μ) * ∫ ω, g (Y ω) ∂μ := by
   have hfXgY := (hXY.comp₀ hX hY hf.aemeasurable hg.aemeasurable)
   have hfX := (hf.comp_aemeasurable hX)
@@ -233,10 +233,10 @@ lemma IndepFun.integral_fun_comp_mul_comp {𝓧 𝓨 : Type*} [MeasurableSpace �
       not_and_or.1 fun ⟨HX, HY⟩ ↦ h (hfXgY.integrable_mul HX HY)
     all_goals simp [integral_undef h]
 
-lemma IndepFun.integral_comp_mul_comp {𝓧 𝓨 : Type*} [MeasurableSpace 𝓧] [MeasurableSpace 𝓨]
-    {X : Ω → 𝓧} {Y : Ω → 𝓨} {f : 𝓧 → 𝕜} {g : 𝓨 → 𝕜} (hXY : IndepFun X Y μ)
-    (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ) (hf : AEStronglyMeasurable f (μ.map X))
-    (hg : AEStronglyMeasurable g (μ.map Y)) :
+lemma IndepFun.integral_comp_mul_comp {𝓧 𝓨 : Type*} {m𝓧 : MeasurableSpace 𝓧}
+    {m𝓨 : MeasurableSpace 𝓨} {X : Ω → 𝓧} {Y : Ω → 𝓨} {f : 𝓧 → 𝕜} {g : 𝓨 → 𝕜}
+    (hXY : IndepFun X Y μ) (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ)
+    (hf : AEStronglyMeasurable f (μ.map X)) (hg : AEStronglyMeasurable g (μ.map Y)) :
     μ[(f ∘ X) * (g ∘ Y)] = μ[f ∘ X] * μ[g ∘ Y] :=
   hXY.integral_fun_comp_mul_comp hX hY hf hg
 
@@ -284,7 +284,7 @@ theorem indepFun_iff_integral_comp_mul [IsFiniteMeasure μ] {β β' : Type*} {m�
     ← integral_indicator_one (hfm hA), ← integral_indicator_one (hgm hB), Set.inter_indicator_one]
   exact ENNReal.mul_ne_top (measure_ne_top μ _) (measure_ne_top μ _)
 
-variable {ι : Type*} [Fintype ι] {𝓧 : ι → Type*} [∀ i, MeasurableSpace (𝓧 i)]
+variable {ι : Type*} [Fintype ι] {𝓧 : ι → Type*} {m𝓧 : ∀ i, MeasurableSpace (𝓧 i)}
     {X : (i : ι) → Ω → 𝓧 i} {f : (i : ι) → 𝓧 i → 𝕜}
 
 lemma iIndepFun.integral_fun_prod_comp (hX : iIndepFun X μ)

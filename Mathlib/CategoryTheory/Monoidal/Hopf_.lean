@@ -32,8 +32,8 @@ A Hopf monoid in a braided category `C` is a bimonoid object in `C` equipped wit
 class Hopf_Class (X : C) extends Bimon_Class X where
   /-- The antipode is an endomorphism of the underlying object of the Hopf monoid. -/
   antipode : X ⟶ X
-  antipode_left (X) : Δ ≫ antipode ▷ X ≫ μ = ε ≫ η := by aesop_cat
-  antipode_right (X) : Δ ≫ X ◁ antipode ≫ μ = ε ≫ η := by aesop_cat
+  antipode_left (X) : Δ ≫ antipode ▷ X ≫ μ = ε ≫ η := by cat_disch
+  antipode_right (X) : Δ ≫ X ◁ antipode ≫ μ = ε ≫ η := by cat_disch
 
 namespace Hopf_Class
 
