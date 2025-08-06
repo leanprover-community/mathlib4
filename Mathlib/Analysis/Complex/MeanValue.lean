@@ -40,7 +40,7 @@ theorem circleAverage_of_differentiable_on_off_countable (hs : s.Countable)
   rcases lt_trichotomy 0 R with h | rfl | h
   · rw [← abs_of_pos h]
     exact circleAverage_of_differentiable_on_off_countable_posRadius (abs_pos_of_pos h) hs h₁f h₂f
-  · simp [h.symm]
+  · simp
   · rw [← circleAverage_neg_radius, ← abs_of_neg h]
     exact circleAverage_of_differentiable_on_off_countable_posRadius (abs_pos_of_neg h) hs h₁f h₂f
 
