@@ -155,6 +155,7 @@ theorem pi_pos : 0 < π :=
 theorem pi_nonneg : 0 ≤ π :=
   pi_pos.le
 
+@[simp]
 theorem pi_ne_zero : π ≠ 0 :=
   pi_pos.ne'
 

@@ -146,7 +146,7 @@ theorem circleAverage_const [CompleteSpace E] (a : E) (c : ℂ) (R : ℝ) :
     circleAverage (fun _ ↦ a) c R = a := by
   simp only [circleAverage, intervalIntegral.integral_const, ← smul_assoc, sub_zero, smul_eq_mul]
   ring_nf
-  simp [mul_inv_cancel₀ pi_ne_zero]
+  simp
 
 /--
 If `f x` equals `a` on for every point of the circle, then the circle average of `f` equals `a`.
