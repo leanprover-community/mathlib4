@@ -359,6 +359,12 @@ lemma cancel_left {g₁ g₂ : A →ₐ[R] B} {f : B →ₐ[R] C} (hf : Function
     f.comp g₁ = f.comp g₂ ↔ g₁ = g₂ :=
   ⟨fun h => AlgHom.ext <| fun _ ↦ hf.eq_iff.mp <| AlgHom.ext_iff.mp h _, fun h => h ▸ rfl⟩
 
+/-- `AlgHom.toLinearMap` as a `MonoidHom`. -/
+@[simps] def toEnd : (A →ₐ[R] A) →* Module.End R A where
+  toFun := toLinearMap
+  map_one' := rfl
+  map_mul' _ _ := rfl
+
 end Semiring
 end AlgHom
 
