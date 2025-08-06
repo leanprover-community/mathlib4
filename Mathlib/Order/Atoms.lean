@@ -708,7 +708,7 @@ class IsSimpleOrder (α : Type*) [LE α] [BoundedOrder α] : Prop extends Nontri
 
 export IsSimpleOrder (eq_bot_or_eq_top)
 
-lemma IsSimpleOrder.mk' {α : Type*} [LE α] [BoundedOrder α] [Nontrivial α]
+lemma IsSimpleOrder.of_forall_eq_top {α : Type*} [LE α] [BoundedOrder α] [Nontrivial α]
     (h : ∀ a : α, a ≠ ⊥ → a = ⊤) :
     IsSimpleOrder α where
   eq_bot_or_eq_top a := or_iff_not_imp_left.mpr <| h a

@@ -32,7 +32,7 @@ abbrev LieModule.IsIrreducible : Prop :=
 variable {R L M} in
 lemma LieModule.IsIrreducible.mk [Nontrivial M] (h : ∀ N : LieSubmodule R L M, N ≠ ⊥ → N = ⊤) :
     IsIrreducible R L M :=
-  IsSimpleOrder.mk' h
+  IsSimpleOrder.of_forall_eq_top h
 
 lemma LieSubmodule.eq_top_of_isIrreducible [LieModule.IsIrreducible R L M]
     (N : LieSubmodule R L M) [Nontrivial N] :
