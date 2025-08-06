@@ -326,7 +326,7 @@ theorem hom_eq_lift (g : X ⟶ widePullback _ _ arrows) :
     g = lift (g ≫ base arrows) (fun j => g ≫ π arrows j) (by simp) := by
   apply eq_lift_of_comp_eq
   · simp
-  · rfl  -- Porting note: quite a few missing refl's in aesop_cat now
+  · rfl  -- Porting note: quite a few missing refl's in cat_disch now
 
 @[ext 1100]
 theorem hom_ext (g1 g2 : X ⟶ widePullback _ _ arrows) : (∀ j : J,

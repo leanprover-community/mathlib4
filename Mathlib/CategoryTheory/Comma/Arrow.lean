@@ -154,7 +154,7 @@ theorem isIso_of_isIso_left_of_isIso_right {f g : Arrow T} (ff : f ⟶ g) [IsIso
   out := by
     let inverse : g ⟶ f := ⟨inv ff.left, inv ff.right, (by simp)⟩
     apply Exists.intro inverse
-    aesop_cat
+    cat_disch
 
 /-- Create an isomorphism between arrows,
 by providing isomorphisms between the domains and codomains,

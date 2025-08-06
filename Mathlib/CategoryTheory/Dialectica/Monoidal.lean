@@ -83,7 +83,7 @@ instance : MonoidalCategoryStruct (Dial C) where
   associator := associatorImpl
 
 theorem id_tensorHom_id (X₁ X₂ : Dial C) : (𝟙 X₁ ⊗ₘ 𝟙 X₂ : _ ⟶ _) = 𝟙 (X₁ ⊗ X₂ : Dial C) := by
-  aesop_cat
+  cat_disch
 
 @[deprecated (since := "2025-07-14")] alias tensor_id := id_tensorHom_id
 

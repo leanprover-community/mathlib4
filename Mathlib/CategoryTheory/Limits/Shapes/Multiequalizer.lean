@@ -232,7 +232,7 @@ def multicospan : WalkingMulticospan J ⥤ C where
   map_id := by
     rintro (_ | _) <;> rfl
   map_comp := by
-    rintro (_ | _) (_ | _) (_ | _) (_ | _ | _) (_ | _ | _) <;> aesop_cat
+    rintro (_ | _) (_ | _) (_ | _) (_ | _ | _) (_ | _ | _) <;> cat_disch
 
 variable [HasProduct I.left] [HasProduct I.right]
 
@@ -280,7 +280,7 @@ def multispan : WalkingMultispan J ⥤ C where
   map_id := by
     rintro (_ | _) <;> rfl
   map_comp := by
-    rintro (_ | _) (_ | _) (_ | _) (_ | _ | _) (_ | _ | _) <;> aesop_cat
+    rintro (_ | _) (_ | _) (_ | _) (_ | _ | _) (_ | _ | _) <;> cat_disch
 
 @[simp]
 theorem multispan_obj_left (a) : I.multispan.obj (WalkingMultispan.left a) = I.left a :=

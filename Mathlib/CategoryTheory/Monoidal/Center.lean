@@ -53,9 +53,9 @@ structure HalfBraiding (X : C) where
   monoidal : ∀ U U', (β (U ⊗ U')).hom =
       (α_ _ _ _).inv ≫
         ((β U).hom ▷ U') ≫ (α_ _ _ _).hom ≫ (U ◁ (β U').hom) ≫ (α_ _ _ _).inv := by
-    aesop_cat
+    cat_disch
   naturality : ∀ {U U'} (f : U ⟶ U'), (X ◁ f) ≫ (β U').hom = (β U).hom ≫ (f ▷ X) := by
-    aesop_cat
+    cat_disch
 
 attribute [reassoc, simp] HalfBraiding.monoidal -- the reassoc lemma is redundant as a simp lemma
 
@@ -340,7 +340,7 @@ def braiding (X Y : Center C) : X ⊗ Y ≅ Y ⊗ X :=
 instance braidedCategoryCenter : BraidedCategory (Center C) where
   braiding := braiding
 
--- `aesop_cat` handles the hexagon axioms
+-- `cat_disch` handles the hexagon axioms
 section
 
 variable [BraidedCategory C]

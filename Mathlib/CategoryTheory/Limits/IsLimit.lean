@@ -55,14 +55,14 @@ structure IsLimit (t : Cone F) where
   fac : ∀ (s : Cone F) (j : J), lift s ≫ t.π.app j = s.π.app j := by cat_disch
   /-- It is the unique such map to do this -/
   uniq : ∀ (s : Cone F) (m : s.pt ⟶ t.pt) (_ : ∀ j : J, m ≫ t.π.app j = s.π.app j), m = lift s := by
-    aesop_cat
+    cat_disch
 
 attribute [reassoc (attr := simp)] IsLimit.fac
 
 namespace IsLimit
 
 instance subsingleton {t : Cone F} : Subsingleton (IsLimit t) :=
-  ⟨by intro P Q; cases P; cases Q; congr; aesop_cat⟩
+  ⟨by intro P Q; cases P; cases Q; congr; cat_disch⟩
 
 /-- Given a natural transformation `α : F ⟶ G`, we give a morphism from the cone point
 of any cone over `F` to the cone point of a limit cone over `G`. -/
@@ -347,7 +347,7 @@ def conePointsIsoOfEquivalence {F : J ⥤ C} {s : Cone F} {G : K ⥤ C} {t : Con
       simp
     inv_hom_id := by
       apply hom_ext Q
-      aesop_cat }
+      cat_disch }
 
 end Equivalence
 
@@ -512,14 +512,14 @@ structure IsColimit (t : Cocone F) where
   /-- `desc` is the unique such map -/
   uniq :
     ∀ (s : Cocone F) (m : t.pt ⟶ s.pt) (_ : ∀ j : J, t.ι.app j ≫ m = s.ι.app j), m = desc s := by
-    aesop_cat
+    cat_disch
 
 attribute [reassoc (attr := simp)] IsColimit.fac
 
 namespace IsColimit
 
 instance subsingleton {t : Cocone F} : Subsingleton (IsColimit t) :=
-  ⟨by intro P Q; cases P; cases Q; congr; aesop_cat⟩
+  ⟨by intro P Q; cases P; cases Q; congr; cat_disch⟩
 
 /-- Given a natural transformation `α : F ⟶ G`, we give a morphism from the cocone point
 of a colimit cocone over `F` to the cocone point of any cocone over `G`. -/
@@ -809,7 +809,7 @@ def coconePointsIsoOfEquivalence {F : J ⥤ C} {s : Cocone F} {G : K ⥤ C} {t :
       simp
     inv_hom_id := by
       apply hom_ext Q
-      aesop_cat }
+      cat_disch }
 
 end Equivalence
 

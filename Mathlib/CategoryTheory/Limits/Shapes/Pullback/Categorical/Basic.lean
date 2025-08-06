@@ -355,7 +355,7 @@ lemma mkNatIso_eq :
         (by simpa [functorEquiv, toCatCommSqOver] using coh)) := by
   rw [← toCatCommSqOver_mapIso_mkNatIso_eq_mkIso e₁ e₂ coh]
   dsimp [Equivalence.fullyFaithfulFunctor]
-  aesop_cat
+  cat_disch
 
 end
 

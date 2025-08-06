@@ -50,23 +50,23 @@ class BraidedCategory (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C] whe
   braiding_naturality_right :
     ∀ (X : C) {Y Z : C} (f : Y ⟶ Z),
       X ◁ f ≫ (braiding X Z).hom = (braiding X Y).hom ≫ f ▷ X := by
-    aesop_cat
+    cat_disch
   braiding_naturality_left :
     ∀ {X Y : C} (f : X ⟶ Y) (Z : C),
       f ▷ Z ≫ (braiding Y Z).hom = (braiding X Z).hom ≫ Z ◁ f := by
-    aesop_cat
+    cat_disch
   /-- The first hexagon identity. -/
   hexagon_forward :
     ∀ X Y Z : C,
       (α_ X Y Z).hom ≫ (braiding X (Y ⊗ Z)).hom ≫ (α_ Y Z X).hom =
         ((braiding X Y).hom ▷ Z) ≫ (α_ Y X Z).hom ≫ (Y ◁ (braiding X Z).hom) := by
-    aesop_cat
+    cat_disch
   /-- The second hexagon identity. -/
   hexagon_reverse :
     ∀ X Y Z : C,
       (α_ X Y Z).inv ≫ (braiding (X ⊗ Y) Z).hom ≫ (α_ Z X Y).inv =
         (X ◁ (braiding Y Z).hom) ≫ (α_ X Z Y).inv ≫ ((braiding X Z).hom ▷ Y) := by
-    aesop_cat
+    cat_disch
 
 attribute [reassoc (attr := simp)]
   BraidedCategory.braiding_naturality_left
@@ -472,7 +472,7 @@ section
 
 variable {F G : LaxBraidedFunctor C D} (e : ∀ X, F.obj X ≅ G.obj X)
     (naturality : ∀ {X Y : C} (f : X ⟶ Y), F.map f ≫ (e Y).hom = (e X).hom ≫ G.map f := by
-      aesop_cat)
+      cat_disch)
     (unit : ε F.toFunctor ≫ (e (𝟙_ C)).hom = ε G.toFunctor := by cat_disch)
     (tensor : ∀ X Y, μ F.toFunctor X Y ≫ (e (X ⊗ Y)).hom =
       ((e X).hom ⊗ₘ (e Y).hom) ≫ μ G.toFunctor X Y := by cat_disch)

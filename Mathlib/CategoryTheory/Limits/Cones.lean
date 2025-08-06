@@ -126,7 +126,7 @@ instance inhabitedCone (F : Discrete PUnit ⥤ C) : Inhabited (Cone F) :=
               intro X Y f
               match X, Y, f with
               | .mk A, .mk B, .up g =>
-                aesop_cat
+                cat_disch
            }
   }⟩
 

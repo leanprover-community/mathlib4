@@ -96,8 +96,8 @@ instance : Category.{v} (WithTerminal C) where
     -- Porting note: it would be nice to automate this away as well.
     -- I tried splitting this into separate `Quiver` and `Category` instances,
     -- so the `false_of_from_star` destruct rule below can be used here.
-    -- That works, but causes mysterious failures of `aesop_cat` in `map`.
-    cases a <;> cases b <;> cases c <;> cases d <;> try aesop_cat
+    -- That works, but causes mysterious failures of `cat_disch` in `map`.
+    cases a <;> cases b <;> cases c <;> cases d <;> try cat_disch
     · exact (h : PEmpty).elim
     · exact (g : PEmpty).elim
     · exact (h : PEmpty).elim
@@ -478,7 +478,7 @@ instance : Category.{v} (WithInitial C) where
   assoc {a b c d} f g h := by
     -- Porting note: it would be nice to automate this away as well.
     -- See the note on `Category (WithTerminal C)`
-    cases a <;> cases b <;> cases c <;> cases d <;> try aesop_cat
+    cases a <;> cases b <;> cases c <;> cases d <;> try cat_disch
     · exact (g : PEmpty).elim
     · exact (f : PEmpty).elim
     · exact (f : PEmpty).elim

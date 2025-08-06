@@ -28,7 +28,7 @@ class Functorial (F : C → D) : Type max v₁ v₂ u₁ u₂ where
   map_id : ∀ {X : C}, map (𝟙 X) = 𝟙 (F X) := by cat_disch
   /-- A functorial map preserves composition of morphisms. -/
   map_comp : ∀ {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z}, map (f ≫ g) = map f ≫ map g := by
-    aesop_cat
+    cat_disch
 
 attribute [simp, grind =] Functorial.map_id Functorial.map_comp
 export Functorial (map)

@@ -81,7 +81,7 @@ an isomorphism `e ≌ f` via `inverseFunctor` with the way we get one through
 lemma inverseFunctorMapIso_symm_eq_isoInverseOfIsoFunctor {e f : C ≌ D} (α : e ≅ f) :
     Iso.unop ((inverseFunctor C D).mapIso α.symm) =
     Iso.isoInverseOfIsoFunctor ((functorFunctor _ _).mapIso α) := by
-  aesop_cat
+  cat_disch
 
 /-- An "unopped" version of the equivalence `inverseFunctorObj'. -/
 @[simps!]

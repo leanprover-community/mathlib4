@@ -86,10 +86,10 @@ structure Bimod (A B : Mon_ C) where
   actRight_one : X ◁ η ≫ actRight = (ρ_ X).hom := by cat_disch
   right_assoc :
     X ◁ μ ≫ actRight = (α_ X B.X B.X).inv ≫ actRight ▷ B.X ≫ actRight := by
-    aesop_cat
+    cat_disch
   middle_assoc :
     actLeft ▷ B.X ≫ actRight = (α_ A.X X B.X).hom ≫ A.X ◁ actRight ≫ actLeft := by
-    aesop_cat
+    cat_disch
 
 attribute [reassoc (attr := simp)] Bimod.one_actLeft Bimod.actRight_one Bimod.left_assoc
   Bimod.right_assoc Bimod.middle_assoc

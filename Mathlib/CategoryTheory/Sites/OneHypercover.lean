@@ -95,7 +95,7 @@ lemma sieve₁'_eq_sieve₁ : E.sieve₁' i₁ i₂ = E.sieve₁ (pullback.fst _
   rw [← Sieve.pullback_id (S := E.sieve₁' i₁ i₂),
     sieve₁_eq_pullback_sieve₁' _ _ _ pullback.condition]
   congr
-  aesop_cat
+  cat_disch
 
 end
 

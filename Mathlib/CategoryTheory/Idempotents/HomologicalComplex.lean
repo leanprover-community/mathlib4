@@ -69,7 +69,7 @@ def obj (P : Karoubi (HomologicalComplex C c)) : HomologicalComplex (Karoubi C) 
     ⟨P.X.X n, P.p.f n, by
       simpa only [HomologicalComplex.comp_f] using HomologicalComplex.congr_hom P.idem n⟩
   d i j := { f := P.p.f i ≫ P.X.d i j }
-  shape i j hij := by simp only [hom_eq_zero_iff]; aesop_cat
+  shape i j hij := by simp only [hom_eq_zero_iff]; cat_disch
 
 /-- The functor `Karoubi (HomologicalComplex C c) ⥤ HomologicalComplex (Karoubi C) c`,
 on morphisms. -/

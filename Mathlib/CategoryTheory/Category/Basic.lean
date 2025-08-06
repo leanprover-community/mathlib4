@@ -161,6 +161,10 @@ macro (name := aesop_cat_nonterminal) "aesop_cat_nonterminal" c:Aesop.tactic_cla
 attribute [aesop safe (rule_sets := [CategoryTheory])] Subsingleton.elim
 
 open Lean Elab Tactic in
+/-- A tactic for discharging easy category theory goals, widely used as an autoparameter.
+Currently this defaults to the `aesop_cat` wrapper around `aesop`, but by setting
+the option `mathlib.tactic.category.grind` to `true`, it will use the `grind` tactic instead.
+-/
 def categoryTheoryDischarger : TacticM Unit := do
   if ← getBoolOption `mathlib.tactic.category.grind then
     if ← getBoolOption `mathlib.tactic.category.log_grind then
@@ -172,6 +176,7 @@ def categoryTheoryDischarger : TacticM Unit := do
       logInfo "Category theory discharger using `aesop`."
     evalTactic (← `(tactic| aesop_cat))
 
+@[inherit_doc categoryTheoryDischarger]
 elab (name := cat_disch) "cat_disch" : tactic =>
   categoryTheoryDischarger
 

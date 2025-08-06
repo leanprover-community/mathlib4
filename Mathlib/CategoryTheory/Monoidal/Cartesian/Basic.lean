@@ -256,7 +256,7 @@ lemma lift_fst_snd {X Y : C} : lift (fst X Y) (snd X Y) = 𝟙 (X ⊗ Y) := by e
 @[simp]
 lemma lift_comp_fst_snd {X Y Z : C} (f : X ⟶ Y ⊗ Z) :
     lift (f ≫ fst _ _) (f ≫ snd _ _) = f := by
-  aesop_cat
+  cat_disch
 
 @[reassoc (attr := simp)]
 lemma whiskerLeft_fst (X : C) {Y Z : C} (f : Y ⟶ Z) : X ◁ f ≫ fst _ _ = fst _ _ := by
@@ -293,12 +293,12 @@ lemma lift_fst_comp_snd_comp {W X Y Z : C} (g : W ⟶ X) (g' : Y ⟶ Z) :
 @[reassoc (attr := simp)]
 lemma lift_whiskerRight {X Y Z W : C} (f : X ⟶ Y) (g : X ⟶ Z) (h : Y ⟶ W) :
     lift f g ≫ (h ▷ Z) = lift (f ≫ h) g := by
-  aesop_cat
+  cat_disch
 
 @[reassoc (attr := simp)]
 lemma lift_whiskerLeft {X Y Z W : C} (f : X ⟶ Y) (g : X ⟶ Z) (h : Z ⟶ W) :
     lift f g ≫ (Y ◁ h) = lift f (g ≫ h) := by
-  aesop_cat
+  cat_disch
 
 @[reassoc (attr := simp)]
 lemma associator_hom_fst (X Y Z : C) :
@@ -340,12 +340,12 @@ lemma associator_inv_snd (X Y Z : C) :
 @[reassoc (attr := simp)]
 lemma lift_lift_associator_hom {X Y Z W : C} (f : X ⟶ Y) (g : X ⟶ Z) (h : X ⟶ W) :
     lift (lift f g) h ≫ (α_ Y Z W).hom = lift f (lift g h) := by
-  aesop_cat
+  cat_disch
 
 @[reassoc (attr := simp)]
 lemma lift_lift_associator_inv {X Y Z W : C} (f : X ⟶ Y) (g : X ⟶ Z) (h : X ⟶ W) :
     lift f (lift g h) ≫ (α_ Y Z W).inv = lift (lift f g) h := by
-  aesop_cat
+  cat_disch
 
 lemma leftUnitor_hom (X : C) : (λ_ X).hom = snd _ _ := by simp [snd_def]
 lemma rightUnitor_hom (X : C) : (ρ_ X).hom = fst _ _ := by simp [fst_def]
@@ -378,13 +378,13 @@ lemma whiskerRight_toUnit_comp_leftUnitor_hom (X Y : C) : toUnit X ▷ Y ≫ (λ
 lemma lift_leftUnitor_hom {X Y : C} (f : X ⟶ 𝟙_ C) (g : X ⟶ Y) :
     lift f g ≫ (λ_ Y).hom = g := by
   rw [← Iso.eq_comp_inv]
-  aesop_cat
+  cat_disch
 
 @[reassoc (attr := simp)]
 lemma lift_rightUnitor_hom {X Y : C} (f : X ⟶ Y) (g : X ⟶ 𝟙_ C) :
     lift f g ≫ (ρ_ Y).hom = f := by
   rw [← Iso.eq_comp_inv]
-  aesop_cat
+  cat_disch
 
 /-- Universal property of the cartesian product: Maps to `X ⊗ Y` correspond to pairs of maps to `X`
 and to `Y`. -/
@@ -512,14 +512,14 @@ instance terminalComparison_isIso_of_preservesLimits [PreservesLimit (Functor.em
 
 @[simp]
 lemma preservesTerminalIso_id : preservesTerminalIso (𝟭 C) = .refl _ := by
-  aesop_cat
+  cat_disch
 
 @[simp]
 lemma preservesTerminalIso_comp [PreservesLimit (Functor.empty.{0} C) F]
     [PreservesLimit (Functor.empty.{0} D) G] [PreservesLimit (Functor.empty.{0} C) (F ⋙ G)] :
     preservesTerminalIso (F ⋙ G) =
       G.mapIso (preservesTerminalIso F) ≪≫ preservesTerminalIso G := by
-  aesop_cat
+  cat_disch
 
 end terminalComparison
 

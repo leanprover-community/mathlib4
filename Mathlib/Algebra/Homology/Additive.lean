@@ -167,7 +167,7 @@ theorem NatTrans.mapHomologicalComplex_comp (c : ComplexShape ι) {F G H : W₁ 
     (α : F ⟶ G) (β : G ⟶ H) :
     NatTrans.mapHomologicalComplex (α ≫ β) c =
       NatTrans.mapHomologicalComplex α c ≫ NatTrans.mapHomologicalComplex β c := by
-  aesop_cat
+  cat_disch
 
 @[reassoc]
 theorem NatTrans.mapHomologicalComplex_naturality {c : ComplexShape ι} {F G : W₁ ⥤ W₂}

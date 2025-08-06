@@ -131,7 +131,7 @@ theorem id_hcomp_app {H : E ⥤ C} (α : F ⟶ G) (X : E) : (𝟙 H ◫ α).app 
 -- but relying on the definitional equality causes bad problems with elaboration later.)
 theorem exchange {I J K : D ⥤ E} (α : F ⟶ G) (β : G ⟶ H) (γ : I ⟶ J) (δ : J ⟶ K) :
     (α ≫ β) ◫ (γ ≫ δ) = (α ◫ γ) ≫ β ◫ δ := by
-  aesop_cat
+  cat_disch
 
 end NatTrans
 

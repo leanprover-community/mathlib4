@@ -129,7 +129,7 @@ def functoriality (G : C ⥤ D) [Functor.PreservesZeroMorphisms G] :
       ι := fun j => G.map (A.ι j)
       ι_π := fun i j => (Functor.map_comp _ _ _).symm.trans <| by
         rw [A.ι_π]
-        aesop_cat }
+        cat_disch }
   map f :=
     { hom := G.map f.hom
       wπ := fun j => by simp [-BiconeMorphism.wπ, ← f.wπ j]

@@ -290,7 +290,7 @@ def productTriangle.lift {T' : Triangle C} (φ : ∀ j, T' ⟶ T j) :
   comm₃ := by
     dsimp
     rw [← cancel_mono (piComparison _ _), assoc, assoc, assoc, IsIso.inv_hom_id, comp_id]
-    aesop_cat
+    cat_disch
 
 /-- The triangle `productTriangle T` satisfies the universal property of the categorical
 product of the triangles `T`. -/

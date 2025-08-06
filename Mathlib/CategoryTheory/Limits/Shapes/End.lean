@@ -254,7 +254,7 @@ lemma end_.map_π (j : J) :
 @[reassoc (attr := simp)]
 lemma end_.map_comp {F'' : Jᵒᵖ ⥤ J ⥤ C} [HasEnd F''] (g : F' ⟶ F'') :
     end_.map f ≫ end_.map g = end_.map (f ≫ g) := by
-  aesop_cat
+  cat_disch
 
 @[simp]
 lemma end_.map_id : end_.map (𝟙 F) = 𝟙 _ := by cat_disch
@@ -327,7 +327,7 @@ lemma coend.ι_map (j : J) :
 @[reassoc (attr := simp)]
 lemma coend.map_comp {F'' : Jᵒᵖ ⥤ J ⥤ C} [HasCoend F''] (g : F' ⟶ F'') :
     coend.map f ≫ coend.map g = coend.map (f ≫ g) := by
-  aesop_cat
+  cat_disch
 
 @[simp]
 lemma coend.map_id : coend.map (𝟙 F) = 𝟙 _ := by cat_disch

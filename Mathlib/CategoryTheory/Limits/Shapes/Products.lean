@@ -371,7 +371,7 @@ lemma Pi.map_comp_map' {f g : α → C} {h : β → C} [HasProduct f] [HasProduc
 lemma Pi.map'_eq {f : α → C} {g : β → C} [HasProduct f] [HasProduct g] {p p' : β → α}
     {q : ∀ (b : β), f (p b) ⟶ g b} {q' : ∀ (b : β), f (p' b) ⟶ g b} (hp : p = p')
     (hq : ∀ (b : β), eqToHom (hp ▸ rfl) ≫ q b = q' b) : Pi.map' p q = Pi.map' p' q' := by
-  aesop_cat
+  cat_disch
 
 /-- Construct an isomorphism between categorical products (indexed by the same type)
 from a family of isomorphisms between the factors.
@@ -489,7 +489,7 @@ lemma Sigma.map'_eq {f : α → C} {g : β → C} [HasCoproduct f] [HasCoproduct
     {p p' : α → β} {q : ∀ (a : α), f a ⟶ g (p a)} {q' : ∀ (a : α), f a ⟶ g (p' a)}
     (hp : p = p') (hq : ∀ (a : α), q a ≫ eqToHom (hp ▸ rfl) = q' a) :
     Sigma.map' p q = Sigma.map' p' q' := by
-  aesop_cat
+  cat_disch
 
 /-- Construct an isomorphism between categorical coproducts (indexed by the same type)
 from a family of isomorphisms between the factors.
@@ -564,7 +564,7 @@ def Sigma.whiskerEquiv {J K : Type*} {f : J → C} {g : K → C} (e : J ≃ K) (
   inv := Sigma.map' e.symm fun k => eqToHom (by simp) ≫ (w (e.symm k)).hom
 
 #adaptation_note /-- nightly-2024-04-01
-The last proof was previously by `aesop_cat`. -/
+The last proof was previously by `cat_disch`. -/
 instance {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
     [∀ i, HasProduct (g i)] [HasProduct fun i => ∏ᶜ g i] :
     HasProduct fun p : Σ i, f i => g p.1 p.2 where
@@ -583,7 +583,7 @@ def piPiIso {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
   inv := Pi.lift fun i => Pi.lift fun x => Pi.π _ (⟨i, x⟩ : Σ i, f i)
 
 #adaptation_note /-- nightly-2024-04-01
-The last proof was previously by `aesop_cat`. -/
+The last proof was previously by `cat_disch`. -/
 instance {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
     [∀ i, HasCoproduct (g i)] [HasCoproduct fun i => ∐ g i] :
     HasCoproduct fun p : Σ i, f i => g p.1 p.2 where
@@ -706,8 +706,8 @@ def piConstAdj [Limits.HasProducts.{v} C] (X : C) :
   unit := { app n i := Limits.Pi.π (fun _ : n ↦ X) i }
   counit :=
   { app Y := (Limits.Pi.lift id).op,
-    naturality _ _ _ := by apply Quiver.Hom.unop_inj; aesop_cat }
-  left_triangle_components _ := by apply Quiver.Hom.unop_inj; aesop_cat
+    naturality _ _ _ := by apply Quiver.Hom.unop_inj; cat_disch }
+  left_triangle_components _ := by apply Quiver.Hom.unop_inj; cat_disch
 
 /-- The functor sending `(X, n)` to the coproduct of copies of `X` indexed by `n`. -/
 @[simps]

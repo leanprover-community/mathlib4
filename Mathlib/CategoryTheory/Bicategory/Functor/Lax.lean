@@ -175,7 +175,7 @@ structure PseudoCore (F : LaxFunctor B C) where
   mapIdIso_inv {a : B} : (mapIdIso a).inv = F.mapId a := by cat_disch
   /-- `mapCompIso` gives rise to the lax functoriality constraint -/
   mapCompIso_inv {a b c : B} (f : a ⟶ b) (g : b ⟶ c) : (mapCompIso f g).inv = F.mapComp f g := by
-    aesop_cat
+    cat_disch
 
 attribute [simp] PseudoCore.mapIdIso_inv PseudoCore.mapCompIso_inv
 

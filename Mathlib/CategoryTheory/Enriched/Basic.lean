@@ -279,7 +279,7 @@ structure EnrichedFunctor (C : Type u₁) [EnrichedCategory V C] (D : Type u₂)
   map_comp :
     ∀ X Y Z : C,
       eComp V X Y Z ≫ map X Z = (map X Y ⊗ₘ map Y Z) ≫ eComp V (obj X) (obj Y) (obj Z) := by
-    aesop_cat
+    cat_disch
 
 attribute [reassoc (attr := simp)] EnrichedFunctor.map_id
 

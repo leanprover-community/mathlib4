@@ -17,7 +17,8 @@ they're declared is imported, so we must put this declaration into its own file.
 
 declare_aesop_rule_sets [CategoryTheory]
 
-/-- Option to control whether the category theory library should use `grind` or `aesop`. -/
+/-- Option to control whether the category theory library should use `grind` or `aesop`
+in the `cat_disch` tactic, which is widely used as an autoparameter. -/
 register_option mathlib.tactic.category.grind : Bool := {
   defValue := false
   descr := "The category theory library should use `grind` instead of `aesop`."

@@ -103,7 +103,7 @@ Use:
 attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
   CategoryTheory.Discrete.discreteCases
 ```
-to locally gives `aesop_cat` the ability to call `cases` on
+to locally gives `cat_disch` the ability to call `cases` on
 `Discrete` and `(_ : Discrete _) ⟶ (_ : Discrete _)` hypotheses.
 -/
 def discreteCases : TacticM Unit := do

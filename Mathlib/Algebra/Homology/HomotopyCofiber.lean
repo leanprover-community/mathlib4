@@ -361,7 +361,7 @@ noncomputable def descEquiv (K : HomologicalComplex C c) (hc : ∀ j, ∃ i, c.R
   right_inv f := (eq_desc φ f hc).symm
   left_inv := fun ⟨α, hα⟩ => by
     rw [descSigma_ext_iff]
-    aesop_cat
+    cat_disch
 
 end homotopyCofiber
 

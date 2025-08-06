@@ -122,12 +122,12 @@ structure CatCospanTransformMorphism
   left_coherence :
       ψ.squareLeft.iso.hom ≫ Functor.whiskerRight left F' =
       Functor.whiskerLeft F base ≫ ψ'.squareLeft.iso.hom := by
-    aesop_cat
+    cat_disch
   /-- the coherence condition for the right square -/
   right_coherence :
       ψ.squareRight.iso.hom ≫ Functor.whiskerRight right G' =
       Functor.whiskerLeft G base ≫ ψ'.squareRight.iso.hom := by
-    aesop_cat
+    cat_disch
 
 namespace CatCospanTransform
 
@@ -214,11 +214,11 @@ def mkIso {ψ ψ' : CatCospanTransform F G F' G'}
     (left_coherence :
         ψ.squareLeft.iso.hom ≫ Functor.whiskerRight left.hom F' =
         Functor.whiskerLeft F base.hom ≫ ψ'.squareLeft.iso.hom := by
-      aesop_cat)
+      cat_disch)
     (right_coherence :
         ψ.squareRight.iso.hom ≫ Functor.whiskerRight right.hom G' =
         Functor.whiskerLeft G base.hom ≫ ψ'.squareRight.iso.hom := by
-      aesop_cat) :
+      cat_disch) :
     ψ ≅ ψ' where
   hom :=
     { left := left.hom
@@ -300,7 +300,7 @@ lemma comp_whiskerRight : (η ≫ η') ▷ φ = η ▷ φ ≫ η' ▷ φ := by c
 @[reassoc]
 lemma whiskerRight_comp :
     η ▷ (φ.comp τ) = (α_ _ _ _).inv ≫ (η ▷ φ) ▷ τ ≫ (α_ _ _ _ ).hom := by
-  aesop_cat
+  cat_disch
 
 @[simp]
 lemma whiskerleft_id : ψ ◁ 𝟙 φ = 𝟙 _ := by cat_disch
@@ -314,7 +314,7 @@ lemma whiskerLeft_comp : ψ ◁ (θ ≫ θ') = (ψ ◁ θ) ≫ (ψ ◁ θ') := b
 @[reassoc]
 lemma comp_whiskerLeft :
     (ψ.comp φ) ◁ γ = (α_ _ _ _).hom ≫ (ψ ◁ (φ ◁ γ)) ≫ (α_ _ _ _).inv := by
-  aesop_cat
+  cat_disch
 
 @[reassoc]
 lemma pentagon
@@ -324,17 +324,17 @@ lemma pentagon
     {σ : CatCospanTransform F''' G''' F'''' G''''} :
     (α_ ψ φ τ).hom ▷ σ ≫ (α_ ψ (φ.comp τ) σ).hom ≫ ψ ◁ (α_ φ τ σ).hom =
       (α_ (ψ.comp φ) τ σ).hom ≫ (α_ ψ φ (τ.comp σ)).hom := by
-  aesop_cat
+  cat_disch
 
 @[reassoc]
 lemma triangle :
     (α_ ψ (.id _ _) φ).hom ≫ ψ ◁ (λ_ φ).hom = (ρ_ ψ).hom ▷ φ := by
-  aesop_cat
+  cat_disch
 
 @[reassoc]
 lemma triangle_inv :
      (α_ ψ (.id _ _) φ).inv ≫ (ρ_ ψ).hom ▷ φ = ψ ◁ (λ_ φ).hom := by
-  aesop_cat
+  cat_disch
 
 section Isos
 
