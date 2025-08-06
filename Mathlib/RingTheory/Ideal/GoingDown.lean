@@ -147,14 +147,14 @@ chain. -/
 lemma liftOfLTSeries_step [Algebra.HasGoingDown R S]
     (L : LTSeries (PrimeSpectrum R)) (q : PrimeSpectrum S) [q.asIdeal.LiesOver L.last.asIdeal] :
     ∀ (j : Fin L.length),
-    (liftOfLTSeries_toFun L q (⟨↑j.castSucc, by omega⟩)).val
-      < (liftOfLTSeries_toFun L q (⟨↑j.succ, by omega⟩)).val := by
+    (liftOfLTSeries_toFun L q (j.castSucc)).val
+      < (liftOfLTSeries_toFun L q (j.succ)).val := by
   intro j
   rw [liftOfLTSeries_toFun]
   simp only [show (↑j.castSucc ≠ L.length) from by simp; omega, dif_neg (not_false)]
   exact (@Ideal.exists_ideal_lt_liesOver_of_lt _ _ _ _ _ _ _ _ _ _
-    (liftOfLTSeries_toFun L q ⟨j.val + 1, by omega⟩).val.asIdeal _
-      (liftOfLTSeries_toFun L q ⟨j.val + 1, _⟩).property
+    (liftOfLTSeries_toFun L q j.succ).val.asIdeal _
+      (liftOfLTSeries_toFun L q j.succ).property
         (L.step (⟨j.val, by omega⟩))).choose_spec.1
 
 /-- Given an `R`-algebra `S` with the going-down property and a chain `L` of prime ideals in `R`,
@@ -164,10 +164,10 @@ noncomputable def liftOfLTSeries [Algebra.HasGoingDown R S]
     (L : LTSeries (PrimeSpectrum R)) (q : PrimeSpectrum S)
     [q.asIdeal.LiesOver L.last.asIdeal] :
     Σ' (f : (i : Fin (L.length + 1)) → PrimeSpectrum S),
-    (∀ i, (f i).asIdeal.LiesOver (L.toFun (⟨i, by omega⟩)).asIdeal) ∧
+    (∀ i, (f i).asIdeal.LiesOver (L.toFun i).asIdeal) ∧
     (∀ j : Fin L.length, f j.castSucc < f j.succ) :=
-  ⟨fun i => (liftOfLTSeries_toFun L q ⟨i, _⟩).val,
-    ⟨fun i => (liftOfLTSeries_toFun L q ⟨i, _⟩).property, liftOfLTSeries_step L q⟩⟩
+  ⟨fun i => (liftOfLTSeries_toFun L q i).val,
+    ⟨fun i => (liftOfLTSeries_toFun L q i).property, liftOfLTSeries_step L q⟩⟩
 
 /-- If `Spec S → Spec R` is surjective and `S` has the going down property over `R`, then
 `ringKrullDim R ≤ ringKrullDim S`. -/
@@ -185,7 +185,6 @@ theorem ringKrullDim_le_of_surjective_spec [Algebra.HasGoingDown R S]
   · haveI : q.asIdeal.LiesOver L.last.asIdeal :=
       ((PrimeSpectrum.specComap_asIdeal (algebraMap R S) q) ▸ PrimeSpectrum.ext_iff.mp hq)
         ▸ inferInstance
-    refine ⟨⟨L.length, fun i => (liftOfLTSeries L q).fst ⟨i, by omega⟩,
-      fun j => (liftOfLTSeries L q).snd.right j⟩, by rfl⟩
+    refine ⟨⟨L.length, fun i => (liftOfLTSeries L q).fst i, (liftOfLTSeries L q).snd.right⟩, by rfl⟩
 
 end Algebra.HasGoingDown
