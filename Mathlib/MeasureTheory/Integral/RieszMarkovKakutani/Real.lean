@@ -59,8 +59,7 @@ lemma le_rieszMeasure_tsupport_subset {f : C_c(X, ℝ)} (hf : ∀ (x : X), 0 ≤
     {V : Set X} (hV : tsupport f ⊆ V) : ENNReal.ofReal (Λ f) ≤ rieszMeasure Λ V := by
   apply le_trans _ (measure_mono hV)
   have := Content.measure_eq_content_of_regular (rieszContent (toNNRealLinear Λ))
-    (contentRegular_rieszContent (X := X) (toNNRealLinear Λ))
-     (⟨tsupport f, f.hasCompactSupport⟩)
+    (contentRegular_rieszContent (toNNRealLinear Λ)) (⟨tsupport f, f.hasCompactSupport⟩)
   rw [← Compacts.coe_mk (tsupport f) f.hasCompactSupport, rieszMeasure, this, rieszContent,
     ENNReal.ofReal_eq_coe_nnreal (map_nonneg Λ fun x ↦ (hf x).1), Content.mk_apply,
     ENNReal.coe_le_coe]
