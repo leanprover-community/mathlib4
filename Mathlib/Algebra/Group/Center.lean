@@ -193,13 +193,19 @@ theorem prod_centralizer_subset_centralizer_prod {N : Type*} [Mul N] (S : Set M)
 theorem center_prod {N : Type*} [Mul N] :
     center (M × N) = center M ×ˢ center N := by
   ext x
-  simp only [mem_prod, mem_center_iff, isMulCentral_iff, commute_iff_eq, Prod.mul_def,
-    Prod.eq_iff_fst_eq_snd_eq]
-  exact ⟨fun ⟨h1, h2, h3⟩ => ⟨⟨fun a => (h1 (a,x.2)).1, fun b c => (h2 (b, x.2) (c, x.2)).1,
-    fun a b => (h3 (a, x.2) (b, x.2)).1⟩, fun a => (h1 (x.1, a)).2,
-    fun a b => (h2 (x.1, a) (x.1, b)).2, fun a b => (h3 (x.1, a) (x.1, b)).2⟩,
-    fun ⟨⟨h1, h2, h3⟩, ⟨h4, h5, h6⟩⟩ => ⟨fun a => ⟨h1 _, h4 _⟩, fun a c => ⟨h2 _ _, h5 _ _⟩,
-    fun a b => ⟨h3 _ _, h6 _ _⟩⟩⟩
+  simp only [mem_prod, mem_center_iff, isMulCentral_iff, commute_iff_eq, Prod.ext_iff]
+  exact ⟨
+    fun ⟨h1, h2, h3⟩ => ⟨
+      ⟨ fun a => (h1 (a,x.2)).1,
+        fun b c => (h2 (b, x.2) (c, x.2)).1,
+        fun a b => (h3 (a, x.2) (b, x.2)).1⟩,
+      ⟨ fun a => (h1 (x.1, a)).2,
+        fun a b => (h2 (x.1, a) (x.1, b)).2,
+        fun a b => (h3 (x.1, a) (x.1, b)).2⟩⟩,
+    fun ⟨⟨h1, h2, h3⟩, ⟨h4, h5, h6⟩⟩ => ⟨
+      fun _ => ⟨h1 _, h4 _⟩,
+      fun _ _ => ⟨h2 _ _, h5 _ _⟩,
+      fun _ _ => ⟨h3 _ _, h6 _ _⟩⟩⟩
 
 end Mul
 
