@@ -174,7 +174,7 @@ theorem exists_mem_range : ∃ n : ℕ, n < p ∧ x - n ∈ maximalIdeal ℤ_[p]
   constructor
   · exact mod_cast hnp
   simp only [norm_def, coe_sub, coe_natCast] at hn ⊢
-  rw [show (x - n : ℚ_[p]) = x - r + (r - n) by ring]
+  rw [show (x - n : ℚ_[p]) = x - r + (r - n) by simp]
   apply lt_of_le_of_lt (padicNormE.nonarchimedean _ _)
   apply max_lt hr
   simpa using hn

@@ -108,7 +108,7 @@ lemma hasSum_arctan_aux {z : ℂ} (hz : ‖z‖ < 1) :
   have c₁ := add_lt_add b₁.1 b₂.1
   have c₂ := add_lt_add b₁.2 b₂.2
   rw [show -(π / 2) + -(π / 2) = -π by ring] at c₁
-  rw [show π / 2 + π / 2 = π by ring] at c₂
+  rw [show π / 2 + π / 2 = π by simp] at c₂
   exact ⟨c₁, c₂.le⟩
 
 /-- The power series expansion of `Complex.arctan`, valid on the open unit disc. -/

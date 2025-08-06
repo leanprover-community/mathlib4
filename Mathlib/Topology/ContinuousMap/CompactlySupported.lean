@@ -707,7 +707,7 @@ lemma exists_add_nnrealPart_add_eq (f g : C_c(α, ℝ)) : ∃ (h : C_c(α, ℝ�
       · simp only [hfgx, sup_of_le_right, zero_add, hfx, sup_of_le_left, hgx, add_zero] at hhx
         rw [sup_of_le_right (neg_nonpos.mpr hfx), sup_of_le_left (neg_nonneg.mpr hgx),
           sup_of_le_left (neg_nonneg.mpr hfgx), hhx]
-        ring
+        simp
   · rcases le_total 0 (g x) with hgx | hgx
     · rcases le_total 0 (f x + g x) with hfgx | hfgx
       · simp only [hfgx, sup_of_le_left, add_comm, hfx, sup_of_le_right, hgx, zero_add] at hhx
@@ -717,7 +717,7 @@ lemma exists_add_nnrealPart_add_eq (f g : C_c(α, ℝ)) : ∃ (h : C_c(α, ℝ�
       · simp only [hfgx, sup_of_le_right, zero_add, hfx, hgx, sup_of_le_left] at hhx
         rw [sup_of_le_left (neg_nonneg.mpr hfx), sup_of_le_right (neg_nonpos.mpr hgx),
           sup_of_le_left (neg_nonneg.mpr hfgx), hhx]
-        ring
+        simp
     · simp only [(add_nonpos hfx hgx), sup_of_le_right, zero_add, hfx, hgx, add_zero,
         coe_eq_zero] at hhx
       rw [sup_of_le_left (neg_nonneg.mpr hfx),

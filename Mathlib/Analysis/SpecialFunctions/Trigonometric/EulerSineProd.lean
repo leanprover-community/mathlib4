@@ -178,13 +178,13 @@ theorem integral_cos_pow_eq (n : ℕ) :
   have R : IntervalIntegrable _ volume (π / 2) π := (continuous_sin.pow n).intervalIntegrable _ _
   rw [← integral_add_adjacent_intervals L R]
   congr 1
-  · nth_rw 1 [(by ring : 0 = π / 2 - π / 2)]
-    nth_rw 3 [(by ring : π / 2 = π / 2 - 0)]
+  · nth_rw 1 [(by simp : 0 = π / 2 - π / 2)]
+    nth_rw 3 [(by simp : π / 2 = π / 2 - 0)]
     rw [← integral_comp_sub_left]
     refine integral_congr fun x _ => ?_
     rw [cos_pi_div_two_sub]
-  · nth_rw 3 [(by ring : π = π / 2 + π / 2)]
-    nth_rw 2 [(by ring : π / 2 = 0 + π / 2)]
+  · nth_rw 3 [(by simp : π = π / 2 + π / 2)]
+    nth_rw 2 [(by simp : π / 2 = 0 + π / 2)]
     rw [← integral_comp_add_right]
     refine integral_congr fun x _ => ?_
     rw [sin_add_pi_div_two]

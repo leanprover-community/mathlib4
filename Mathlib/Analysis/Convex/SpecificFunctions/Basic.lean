@@ -45,7 +45,7 @@ theorem strictConvexOn_exp : StrictConvexOn ℝ univ exp := by
       exp y - exp x = exp y - exp y * exp (x - y) := by rw [← exp_add]; ring_nf
       _ = exp y * (1 - exp (x - y)) := by ring
       _ < exp y * -(x - y) := by gcongr; linarith [add_one_lt_exp h2.ne]
-      _ = exp y * (y - x) := by ring
+      _ = exp y * (y - x) := by simp
   · have h1 : 0 < z - y := by linarith
     rw [lt_div_iff₀ h1]
     calc
@@ -87,7 +87,7 @@ theorem strictConcaveOn_log_Ioi : StrictConcaveOn ℝ (Ioi 0) log := by
       y⁻¹ * (y - x) = 1 - x / y := by field_simp
       _ < -log (x / y) := by linarith [log_lt_sub_one_of_pos hxy' hxy'']
       _ = -(log x - log y) := by rw [log_div hx.ne' hy.ne']
-      _ = log y - log x := by ring
+      _ = log y - log x := by simp
 
 /-- **Bernoulli's inequality** for real exponents, strict version: for `1 < p` and `-1 ≤ s`, with
 `s ≠ 0`, we have `1 + p * s < (1 + s) ^ p`. -/

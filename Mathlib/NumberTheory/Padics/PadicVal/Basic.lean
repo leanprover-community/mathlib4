@@ -241,7 +241,7 @@ protected theorem defn (p : ℕ) [hp : Fact p.Prime] {q : ℚ} {n d : ℤ} (hqz 
     multiplicity_mul (Nat.prime_iff_prime_int.1 hp.1)]
   · rw [Nat.cast_add, Nat.cast_add]
     simp_rw [Int.natCast_multiplicity p q.den]
-    ring
+    simp
   · simpa [finite_int_prime_iff, hc2] using hd
   · simpa [finite_int_prime_iff, hqz, hc2] using hd
 

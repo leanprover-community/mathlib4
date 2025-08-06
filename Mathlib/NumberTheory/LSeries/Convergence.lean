@@ -82,7 +82,7 @@ lemma LSeries.abscissaOfAbsConv_le_of_forall_lt_LSeriesSummable' {f : ℕ → �
 of `f` is bounded by `x + 1`. -/
 lemma LSeries.abscissaOfAbsConv_le_of_le_const_mul_rpow {f : ℕ → ℂ} {x : ℝ}
     (h : ∃ C, ∀ n ≠ 0, ‖f n‖ ≤ C * n ^ x) : abscissaOfAbsConv f ≤ x + 1 := by
-  rw [show x = x + 1 - 1 by ring] at h
+  rw [show x = x + 1 - 1 by simp] at h
   by_contra! H
   obtain ⟨y, hy₁, hy₂⟩ := EReal.exists_between_coe_real H
   exact (LSeriesSummable_of_le_const_mul_rpow (s := y) (EReal.coe_lt_coe_iff.mp hy₁) h
@@ -94,7 +94,7 @@ of `f` is bounded by `x + 1`. -/
 lemma LSeries.abscissaOfAbsConv_le_of_isBigO_rpow {f : ℕ → ℂ} {x : ℝ}
     (h : f =O[atTop] fun n ↦ (n : ℝ) ^ x) :
     abscissaOfAbsConv f ≤ x + 1 := by
-  rw [show x = x + 1 - 1 by ring] at h
+  rw [show x = x + 1 - 1 by simp] at h
   by_contra! H
   obtain ⟨y, hy₁, hy₂⟩ := EReal.exists_between_coe_real H
   exact (LSeriesSummable_of_isBigO_rpow (s := y) (EReal.coe_lt_coe_iff.mp hy₁) h

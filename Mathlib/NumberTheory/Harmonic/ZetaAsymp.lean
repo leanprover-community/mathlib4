@@ -169,7 +169,7 @@ lemma term_of_lt {n : ℕ} (hn : 0 < n) {s : ℝ} (hs : 1 < s) :
       congr 1
       · rw [show -s + 1 = -(s - 1) by ring, div_neg, ← neg_div, mul_comm, mul_one_div, neg_sub,
           rpow_neg (Nat.cast_nonneg _), one_div, rpow_neg (by linarith), one_div]
-      · rw [show -(s + 1) + 1 = -s by ring, div_neg, ← neg_div, neg_sub, div_mul_eq_mul_div,
+      · rw [show -(s + 1) + 1 = -s by simp, div_neg, ← neg_div, neg_sub, div_mul_eq_mul_div,
           mul_div_assoc, rpow_neg (Nat.cast_nonneg _), one_div, rpow_neg (by linarith), one_div]
 
 lemma term_sum_of_lt (N : ℕ) {s : ℝ} (hs : 1 < s) :

@@ -401,7 +401,7 @@ private theorem lintegral_Lp_add_le_aux {p q : ℝ} (hpq : p.HolderConjugate q) 
     lintegral_rpow_add_le_add_eLpNorm_mul_lintegral_rpow_add hpq hf hf_top hg hg_top
   have h_one_div_q : 1 / q = 1 - 1 / p := by
     nth_rw 2 [← hpq.inv_add_inv_eq_one]
-    ring
+    simp
   simp_rw [h_one_div_q, sub_eq_add_neg 1 (1 / p), ENNReal.rpow_add _ _ h_add_zero h_add_top,
     rpow_one] at h
   conv_rhs at h => enter [2]; rw [mul_comm]

@@ -136,7 +136,7 @@ lemma eventually_b_le_r : ∀ᶠ (n : ℕ) in atTop, ∀ i, (b i : ℝ) * n - (n
 lemma eventually_r_le_b : ∀ᶠ (n : ℕ) in atTop, ∀ i, r i n ≤ (b i : ℝ) * n + (n / log n ^ 2) := by
   filter_upwards [R.dist_r_b'] with n hn
   intro i
-  calc r i n = b i * n + (r i n - b i * n) := by ring
+  calc r i n = b i * n + (r i n - b i * n) := by simp
              _ ≤ b i * n + ‖r i n - b i * n‖ := by gcongr; exact Real.le_norm_self _
              _ ≤ b i * n + n / log n ^ 2 := by gcongr; exact hn i
 

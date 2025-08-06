@@ -47,7 +47,7 @@ theorem intervalIntegrable_log_norm_meromorphicOn (hf : MeromorphicOn f [[a, b]]
     · apply IntervalIntegrable.finsum
       intro i
       apply IntervalIntegrable.const_mul
-      rw [(by ring : a = ((a - i) + i)), (by ring : b = ((b - i) + i))]
+      rw [(by simp : a = ((a - i) + i)), (by simp : b = ((b - i) + i))]
       apply IntervalIntegrable.comp_sub_right (f := (log ‖·‖)) _ i
       simp [norm_eq_abs, log_abs]
     · apply ContinuousOn.intervalIntegrable

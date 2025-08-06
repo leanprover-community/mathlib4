@@ -868,7 +868,7 @@ theorem tan_pi_div_six : tan (π / 6) = 1 / √3 := by
 @[simp]
 theorem tan_pi_div_three : tan (π / 3) = √3 := by
   rw [tan_eq_sin_div_cos, sin_pi_div_three, cos_pi_div_three]
-  ring
+  simp
 
 theorem tan_pos_of_pos_of_lt_pi_div_two {x : ℝ} (h0x : 0 < x) (hxp : x < π / 2) : 0 < tan x := by
   rw [tan_eq_sin_div_cos]

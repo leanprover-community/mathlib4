@@ -114,7 +114,7 @@ theorem tendsto_verticalIntegral (hb : 0 < b.re) (c : ℝ) :
       (Eventually.of_forall fun _ => norm_nonneg _)
       ((eventually_ge_atTop (0 : ℝ)).mp
         (Eventually.of_forall fun T hT => verticalIntegral_norm_le hb c hT))
-  rw [(by ring : 0 = 2 * |c| * 0)]
+  rw [(by simp : 0 = 2 * |c| * 0)]
   refine (tendsto_exp_atBot.comp (tendsto_neg_atTop_atBot.comp ?_)).const_mul _
   apply tendsto_atTop_add_const_right
   simp_rw [sq, ← mul_assoc, ← sub_mul]

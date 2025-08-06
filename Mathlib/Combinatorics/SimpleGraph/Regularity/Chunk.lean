@@ -345,7 +345,7 @@ private theorem edgeDensity_chunk_aux [Nonempty α] (hP)
   rw [← sub_nonneg] at hGε
   have : 0 ≤ ε := by sz_positivity
   calc
-    _ = G.edgeDensity U V ^ 2 - 1 * ε ^ 5 / 25 + 0 ^ 10 / 2500 := by ring
+    _ = G.edgeDensity U V ^ 2 - 1 * ε ^ 5 / 25 + 0 ^ 10 / 2500 := by simp
     _ ≤ G.edgeDensity U V ^ 2 - G.edgeDensity U V * ε ^ 5 / 25 + ε ^ 10 / 2500 := by
       gcongr; exact mod_cast G.edgeDensity_le_one ..
     _ = (G.edgeDensity U V - ε ^ 5 / 50) ^ 2 := by ring
