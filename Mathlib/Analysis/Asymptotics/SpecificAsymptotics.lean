@@ -83,7 +83,7 @@ end NormedLinearOrderedField
 
 section Real
 
-theorem Asymptotics.IsEquivalent.rpow_of_nonneg {α : Type*} {u v : α → ℝ} {l : Filter α}
+theorem Asymptotics.IsEquivalent.rpow {α : Type*} {u v : α → ℝ} {l : Filter α}
     (hv : 0 ≤ v) (h : u ~[l] v) {r : ℝ} :
     u ^ r ~[l] v ^ r := by
   obtain ⟨φ, hφ, huφv⟩ := IsEquivalent.exists_eq_mul h
