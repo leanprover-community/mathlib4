@@ -81,7 +81,7 @@ variable {C : Type*} [Category C] [MonoidalCategory C] {M W X X₁ X₂ X₃ Y Y
   [Mon_Class M]
 
 attribute [mon_tauto] Category.id_comp Category.comp_id Category.assoc
-  tensor_id tensorμ tensorδ
+  id_tensorHom_id tensorμ tensorδ
   leftUnitor_tensor_hom leftUnitor_tensor_hom_assoc
   leftUnitor_tensor_inv leftUnitor_tensor_inv_assoc
   rightUnitor_tensor_hom rightUnitor_tensor_hom_assoc
