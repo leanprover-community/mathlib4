@@ -332,7 +332,7 @@ protected theorem measurableEmbedding (e : α ≃ᵐ β) : MeasurableEmbedding e
 
 /-- Equal measurable spaces are equivalent. -/
 protected def cast {α β} [i₁ : MeasurableSpace α] [i₂ : MeasurableSpace β] (h : α = β)
-    (hi : HEq i₁ i₂) : α ≃ᵐ β where
+    (hi : i₁ ≍ i₂) : α ≃ᵐ β where
   toEquiv := Equiv.cast h
   measurable_toFun := by
     subst h
@@ -457,7 +457,7 @@ def sumProdDistrib (α β γ) [MeasurableSpace α] [MeasurableSpace β] [Measura
       refine (prodCongr Set.rangeInr (Set.univ _)).symm.measurable_comp_iff.1 ?_
       exact measurable_inr
   measurable_invFun :=
-    measurable_sum ((measurable_inl.comp measurable_fst).prodMk measurable_snd)
+    measurable_fun_sum ((measurable_inl.comp measurable_fst).prodMk measurable_snd)
       ((measurable_inr.comp measurable_fst).prodMk measurable_snd)
 
 /-- Products distribute over sums (on the left) as measurable spaces. -/
@@ -700,7 +700,7 @@ noncomputable def schroederBernstein {f : α → β} {g : β → α} (hf : Measu
   -- the crux of which is finding a fixed point of this F.
   -- However, we must find this fixed point manually instead of invoking Knaster-Tarski
   -- in order to make sure it is measurable.
-  suffices Σ'A : Set α, MeasurableSet A ∧ F A = A by
+  suffices Σ' A : Set α, MeasurableSet A ∧ F A = A by
     classical
     rcases this with ⟨A, Ameas, Afp⟩
     let B := f '' A
@@ -715,7 +715,7 @@ noncomputable def schroederBernstein {f : α → β} {g : β → α} (hf : Measu
     rw [this]
     exact (hg.equivImage _).symm
   have Fmono : ∀ {A B}, A ⊆ B → F A ⊆ F B := fun h =>
-    compl_subset_compl.mpr <| Set.image_subset _ <| compl_subset_compl.mpr <| Set.image_subset _ h
+    compl_subset_compl.mpr <| Set.image_mono <| compl_subset_compl.mpr <| Set.image_mono h
   let X : ℕ → Set α := fun n => F^[n] univ
   refine ⟨iInter X, ?_, ?_⟩
   · refine MeasurableSet.iInter fun n ↦ ?_

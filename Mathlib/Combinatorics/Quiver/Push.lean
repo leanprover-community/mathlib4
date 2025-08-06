@@ -74,7 +74,7 @@ theorem lift_comp : (of σ ⋙q lift σ φ τ h) = φ := by
     iterate 2 apply (cast_heq _ _).trans
     apply HEq.symm
     apply (eqRec_heq _ _).trans
-    have : ∀ {α γ} {β : α → γ → Sort _} {a a'} (p : a = a') g (b : β a g), HEq (p ▸ b) b := by
+    have : ∀ {α γ} {β : α → γ → Sort _} {a a'} (p : a = a') g (b : β a g), p ▸ b ≍ b := by
       intros
       subst_vars
       rfl

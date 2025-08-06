@@ -945,6 +945,18 @@ theorem affineCombination_mem_affineSpan [Nontrivial k] {s : Finset ι} {w : ι 
     rw [← vsub_vadd (s.affineCombination k p w) (p i1)]
     exact AffineSubspace.vadd_mem_of_mem_direction hv (mem_affineSpan k (Set.mem_range_self _))
 
+/-- An `affineCombination` with sum of weights 1 is in the
+`affineSpan` of an indexed family, if the family is nonempty. -/
+theorem affineCombination_mem_affineSpan_of_nonempty [Nonempty ι] {s : Finset ι} {w : ι → k}
+    (h : ∑ i ∈ s, w i = 1) (p : ι → P) :
+    s.affineCombination k p w ∈ affineSpan k (Set.range p) := by
+  rcases subsingleton_or_nontrivial k with hs | hn
+  · have hnv := Module.subsingleton k V
+    rw [AddTorsor.subsingleton_iff V P] at hnv
+    rw [(affineSpan_eq_top_iff_nonempty_of_subsingleton k).2 (Set.range_nonempty p)]
+    simp
+  · exact affineCombination_mem_affineSpan h p
+
 variable (k) in
 /-- A vector is in the `vectorSpan` of an indexed family if and only
 if it is a `weightedVSub` with sum of weights 0. -/
@@ -1030,6 +1042,20 @@ theorem eq_affineCombination_of_mem_affineSpan_of_fintype [Fintype ι] {p1 : P} 
       ⟨(s : Set ι).indicator w, ?_, Finset.affineCombination_indicator_subset w p s.subset_univ⟩
     simp only [Finset.mem_coe, Set.indicator_apply, ← hw]
     rw [Fintype.sum_extend_by_zero s w]
+
+/-- A point in the `affineSpan` of a subset of an indexed family is an
+`affineCombination` with sum of weights 1, using only points in the given subset. -/
+lemma eq_affineCombination_of_mem_affineSpan_image {p₁ : P} {p : ι → P} {s : Set ι}
+    (h : p₁ ∈ affineSpan k (p '' s)) :
+    ∃ (fs : Finset ι) (w : ι → k), ↑fs ⊆ s ∧ ∑ i ∈ fs, w i = 1 ∧
+      p₁ = fs.affineCombination k p w := by
+  classical
+  rw [Set.image_eq_range] at h
+  obtain ⟨fs', w', hw', rfl⟩ := eq_affineCombination_of_mem_affineSpan h
+  refine ⟨fs'.map (Function.Embedding.subtype _), fun i ↦ if hi : i ∈ s then w' ⟨i, hi⟩ else 0,
+    (by simp), (by simp [hw']), ?_⟩
+  simp only [Finset.affineCombination_map, Function.Embedding.coe_subtype]
+  exact fs'.affineCombination_congr (by simp) (by simp)
 
 variable (k V)
 

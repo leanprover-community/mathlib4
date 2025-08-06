@@ -204,7 +204,7 @@ lemma eq_zero_of_isNilpotent_ad_of_mem_isCartanSubalgebra {x : L} (hx : x ∈ H)
   have comm : Commute (toEnd K H L ⟨x, hx⟩) (toEnd K H L y) := by
     rw [commute_iff_lie_eq, ← LieHom.map_lie, trivial_lie_zero, LieHom.map_zero]
   rw [traceForm_apply_apply, ← Module.End.mul_eq_comp, LinearMap.zero_apply]
-  exact (LinearMap.isNilpotent_trace_of_isNilpotent (comm.isNilpotent_mul_left hx')).eq_zero
+  exact (LinearMap.isNilpotent_trace_of_isNilpotent (comm.isNilpotent_mul_right hx')).eq_zero
 
 @[simp]
 lemma corootSpace_zero_eq_bot :
@@ -606,8 +606,7 @@ lemma finrank_rootSpace_eq_one (α : Weight K H L) (hα : α.IsNonZero) :
         root_apply_coroot hα]
       lie_e := by rw [← lie_skew, hy, neg_zero] }
   obtain ⟨n, hn⟩ := P.exists_nat
-  replace hn : -2 = (n : ℤ) := by norm_cast at hn
-  omega
+  assumption_mod_cast
 
 /-- The embedded `sl₂` associated to a root. -/
 noncomputable def sl2SubalgebraOfRoot {α : Weight K H L} (hα : α.IsNonZero) :

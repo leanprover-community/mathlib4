@@ -146,9 +146,6 @@ theorem contDiffWithinAtProp_mono_of_mem_nhdsWithin
   refine inter_mem ?_ (mem_of_superset self_mem_nhdsWithin inter_subset_right)
   rwa [← Filter.mem_map, ← I.image_eq, I.symm_map_nhdsWithin_image]
 
-@[deprecated (since := "2024-10-31")]
-alias contDiffWithinAtProp_mono_of_mem := contDiffWithinAtProp_mono_of_mem_nhdsWithin
-
 theorem contDiffWithinAtProp_id (x : H) : ContDiffWithinAtProp I I n id univ x := by
   simp only [ContDiffWithinAtProp, id_comp, preimage_univ, univ_inter]
   have : ContDiffWithinAt 𝕜 n id (range I) (I x) := contDiff_id.contDiffAt.contDiffWithinAt
@@ -528,7 +525,7 @@ theorem contMDiff_iff :
           ContDiffOn 𝕜 n (extChartAt I' y ∘ f ∘ (extChartAt I x).symm)
             ((extChartAt I x).target ∩
               (extChartAt I x).symm ⁻¹' (f ⁻¹' (extChartAt I' y).source)) := by
-  simp [← contMDiffOn_univ, contMDiffOn_iff, continuous_iff_continuousOn_univ]
+  simp [← contMDiffOn_univ, contMDiffOn_iff, continuousOn_univ]
 
 /-- One can reformulate being `C^n` as continuity and being `C^n` in any extended chart in the
 target. -/
@@ -537,12 +534,12 @@ theorem contMDiff_iff_target :
       Continuous f ∧ ∀ y : M',
         ContMDiffOn I 𝓘(𝕜, E') n (extChartAt I' y ∘ f) (f ⁻¹' (extChartAt I' y).source) := by
   rw [← contMDiffOn_univ, contMDiffOn_iff_target]
-  simp [continuous_iff_continuousOn_univ]
+  simp [continuousOn_univ]
 
 /-- zero-smoothness is equivalent to continuity. -/
 theorem contMDiff_zero_iff :
     ContMDiff I I' 0 f ↔ Continuous f := by
-  rw [← contMDiffOn_univ, continuous_iff_continuousOn_univ, contMDiffOn_zero_iff]
+  rw [← contMDiffOn_univ, ← continuousOn_univ, contMDiffOn_zero_iff]
 
 end IsManifold
 
@@ -585,23 +582,15 @@ theorem contMDiffWithinAt_infty :
   ⟨fun h n => ⟨h.1, contDiffWithinAt_infty.1 h.2 n⟩, fun H =>
     ⟨(H 0).1, contDiffWithinAt_infty.2 fun n => (H n).2⟩⟩
 
-@[deprecated (since := "2025-01-09")] alias contMDiffWithinAt_top := contMDiffWithinAt_infty
-
 theorem contMDiffAt_infty : ContMDiffAt I I' ∞ f x ↔ ∀ n : ℕ, ContMDiffAt I I' n f x :=
   contMDiffWithinAt_infty
-
-@[deprecated (since := "2025-01-09")] alias contMDiffAt_top := contMDiffAt_infty
 
 theorem contMDiffOn_infty : ContMDiffOn I I' ∞ f s ↔ ∀ n : ℕ, ContMDiffOn I I' n f s :=
   ⟨fun h _ => h.of_le (mod_cast le_top),
     fun h x hx => contMDiffWithinAt_infty.2 fun n => h n x hx⟩
 
-@[deprecated (since := "2025-01-09")] alias contMDiffOn_top := contMDiffOn_infty
-
 theorem contMDiff_infty : ContMDiff I I' ∞ f ↔ ∀ n : ℕ, ContMDiff I I' n f :=
   ⟨fun h _ => h.of_le (mod_cast le_top), fun h x => contMDiffWithinAt_infty.2 fun n => h n x⟩
-
-@[deprecated (since := "2025-01-09")] alias contMDiff_top := contMDiff_infty
 
 theorem contMDiffWithinAt_iff_nat {n : ℕ∞} :
     ContMDiffWithinAt I I' n f s x ↔ ∀ m : ℕ, (m : ℕ∞) ≤ n → ContMDiffWithinAt I I' m f s x := by
@@ -642,9 +631,6 @@ theorem ContMDiffWithinAt.mono_of_mem_nhdsWithin
   StructureGroupoid.LocalInvariantProp.liftPropWithinAt_mono_of_mem_nhdsWithin
     (contDiffWithinAtProp_mono_of_mem_nhdsWithin n) hf hts
 
-@[deprecated (since := "2024-10-31")]
-alias ContMDiffWithinAt.mono_of_mem := ContMDiffWithinAt.mono_of_mem_nhdsWithin
-
 theorem ContMDiffWithinAt.mono (hf : ContMDiffWithinAt I I' n f s x) (hts : t ⊆ s) :
     ContMDiffWithinAt I I' n f t x :=
   hf.mono_of_mem_nhdsWithin <| mem_of_superset self_mem_nhdsWithin hts
@@ -656,9 +642,6 @@ theorem contMDiffWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
 theorem ContMDiffWithinAt.congr_set (h : ContMDiffWithinAt I I' n f s x) (hst : s =ᶠ[𝓝 x] t) :
     ContMDiffWithinAt I I' n f t x :=
   (contMDiffWithinAt_congr_set hst).1 h
-
-@[deprecated (since := "2024-10-23")]
-alias contMDiffWithinAt_congr_nhds := contMDiffWithinAt_congr_set
 
 theorem contMDiffWithinAt_insert_self :
     ContMDiffWithinAt I I' n f (insert x s) x ↔ ContMDiffWithinAt I I' n f s x := by

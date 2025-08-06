@@ -64,11 +64,9 @@ theorem map₂_mk_eq_prod (f : Filter α) (g : Filter β) : map₂ Prod.mk f g =
 theorem map₂_mono (hf : f₁ ≤ f₂) (hg : g₁ ≤ g₂) : map₂ m f₁ g₁ ≤ map₂ m f₂ g₂ :=
   fun _ ⟨s, hs, t, ht, hst⟩ => ⟨s, hf hs, t, hg ht, hst⟩
 
-@[gcongr]
 theorem map₂_mono_left (h : g₁ ≤ g₂) : map₂ m f g₁ ≤ map₂ m f g₂ :=
   map₂_mono Subset.rfl h
 
-@[gcongr]
 theorem map₂_mono_right (h : f₁ ≤ f₂) : map₂ m f₁ g ≤ map₂ m f₂ g :=
   map₂_mono h Subset.rfl
 

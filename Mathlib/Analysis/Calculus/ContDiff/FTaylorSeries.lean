@@ -698,7 +698,7 @@ theorem hasFTaylorSeriesUpToOn_univ_iff :
       rw [← hasFDerivWithinAt_univ]
       exact H.fderivWithin m hm x (mem_univ x)
     · intro m hm
-      rw [continuous_iff_continuousOn_univ]
+      rw [← continuousOn_univ]
       exact H.cont m hm
   · intro H
     constructor
@@ -707,7 +707,7 @@ theorem hasFTaylorSeriesUpToOn_univ_iff :
       rw [hasFDerivWithinAt_univ]
       exact H.fderiv m hm x
     · intro m hm
-      rw [← continuous_iff_continuousOn_univ]
+      rw [continuousOn_univ]
       exact H.cont m hm
 
 theorem HasFTaylorSeriesUpTo.hasFTaylorSeriesUpToOn (h : HasFTaylorSeriesUpTo n f p) (s : Set E) :
@@ -718,17 +718,14 @@ theorem HasFTaylorSeriesUpTo.of_le (h : HasFTaylorSeriesUpTo n f p) (hmn : m ≤
     HasFTaylorSeriesUpTo m f p := by
   rw [← hasFTaylorSeriesUpToOn_univ_iff] at h ⊢; exact h.of_le hmn
 
-@[deprecated (since := "2024-11-07")]
-alias HasFTaylorSeriesUpTo.ofLe := HasFTaylorSeriesUpTo.of_le
-
 theorem HasFTaylorSeriesUpTo.continuous (h : HasFTaylorSeriesUpTo n f p) : Continuous f := by
   rw [← hasFTaylorSeriesUpToOn_univ_iff] at h
-  rw [continuous_iff_continuousOn_univ]
+  rw [← continuousOn_univ]
   exact h.continuousOn
 
 theorem hasFTaylorSeriesUpTo_zero_iff :
     HasFTaylorSeriesUpTo 0 f p ↔ Continuous f ∧ ∀ x, (p x 0).curry0 = f x := by
-  simp [hasFTaylorSeriesUpToOn_univ_iff.symm, continuous_iff_continuousOn_univ,
+  simp [hasFTaylorSeriesUpToOn_univ_iff.symm, continuousOn_univ,
     hasFTaylorSeriesUpToOn_zero_iff]
 
 theorem hasFTaylorSeriesUpTo_top_iff (hN : ∞ ≤ N) :
@@ -764,9 +761,6 @@ theorem hasFTaylorSeriesUpTo_succ_nat_iff_right {n : ℕ} :
             (p x).shift := by
   simp only [hasFTaylorSeriesUpToOn_succ_nat_iff_right, ← hasFTaylorSeriesUpToOn_univ_iff, mem_univ,
     forall_true_left, hasFDerivWithinAt_univ]
-
-@[deprecated (since := "2024-11-07")]
-alias hasFTaylorSeriesUpTo_succ_iff_right := hasFTaylorSeriesUpTo_succ_nat_iff_right
 
 /-! ### Iterated derivative -/
 

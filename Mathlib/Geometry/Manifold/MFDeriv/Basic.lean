@@ -71,9 +71,6 @@ theorem UniqueMDiffWithinAt.mono_of_mem_nhdsWithin {s t : Set M} {x : M}
     (hs : UniqueMDiffWithinAt I s x) (ht : t ∈ 𝓝[s] x) : UniqueMDiffWithinAt I t x :=
   hs.mono_nhds (nhdsWithin_le_iff.2 ht)
 
-@[deprecated (since := "2024-10-31")]
-alias UniqueMDiffWithinAt.mono_of_mem := UniqueMDiffWithinAt.mono_of_mem_nhdsWithin
-
 theorem UniqueMDiffWithinAt.mono (h : UniqueMDiffWithinAt I s x) (st : s ⊆ t) :
     UniqueMDiffWithinAt I t x :=
   UniqueDiffWithinAt.mono h <| inter_subset_inter (preimage_mono st) (Subset.refl _)
@@ -444,7 +441,7 @@ theorem mdifferentiable_iff :
           DifferentiableOn 𝕜 (extChartAt I' y ∘ f ∘ (extChartAt I x).symm)
             ((extChartAt I x).target ∩
               (extChartAt I x).symm ⁻¹' (f ⁻¹' (extChartAt I' y).source)) := by
-  simp [← mdifferentiableOn_univ, mdifferentiableOn_iff, continuous_iff_continuousOn_univ]
+  simp [← mdifferentiableOn_univ, mdifferentiableOn_iff, continuousOn_univ]
 
 /-- One can reformulate smoothness as continuity and smoothness in any extended chart in the
 target. -/
@@ -453,7 +450,7 @@ theorem mdifferentiable_iff_target :
       Continuous f ∧ ∀ y : M',
         MDifferentiableOn I 𝓘(𝕜, E') (extChartAt I' y ∘ f) (f ⁻¹' (extChartAt I' y).source) := by
   rw [← mdifferentiableOn_univ, mdifferentiableOn_iff_target]
-  simp [continuous_iff_continuousOn_univ]
+  simp [continuousOn_univ]
 
 end IsManifold
 
@@ -674,9 +671,6 @@ theorem HasMFDerivWithinAt.mono_of_mem_nhdsWithin
     (h : HasMFDerivWithinAt I I' f s x f') (ht : s ∈ 𝓝[t] x) :
     HasMFDerivWithinAt I I' f t x f' :=
   (hasMFDerivWithinAt_inter' ht).1 (h.mono inter_subset_right)
-
-@[deprecated (since := "2024-10-31")]
-alias HasMFDerivWithinAt.mono_of_mem := HasMFDerivWithinAt.mono_of_mem_nhdsWithin
 
 theorem HasMFDerivWithinAt.hasMFDerivAt (h : HasMFDerivWithinAt I I' f s x f') (hs : s ∈ 𝓝 x) :
     HasMFDerivAt I I' f x f' := by
@@ -1128,7 +1122,6 @@ theorem mfderivWithin_congr_of_mem (hL : ∀ x ∈ s, f₁ x = f x) (hx : x ∈ 
 theorem tangentMapWithin_congr (h : ∀ x ∈ s, f x = f₁ x) (p : TangentBundle I M) (hp : p.1 ∈ s) :
     tangentMapWithin I I' f s p = tangentMapWithin I I' f₁ s p := by
   refine TotalSpace.ext (h p.1 hp) ?_
-  -- This used to be `simp only`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
   rw [tangentMapWithin, h p.1 hp, tangentMapWithin, mfderivWithin_congr h (h _ hp)]
 
 theorem Filter.EventuallyEq.mfderiv_eq (hL : f₁ =ᶠ[𝓝 x] f) :
