@@ -155,7 +155,7 @@ theorem TendstoLocallyUniformlyOn.comp [TopologicalSpace γ] {t : Set γ}
 theorem TendstoLocallyUniformly.comp [TopologicalSpace γ] (h : TendstoLocallyUniformly F f p)
     (g : γ → α) (cg : Continuous g) : TendstoLocallyUniformly (fun n => F n ∘ g) (f ∘ g) p := by
   rw [← tendstoLocallyUniformlyOn_univ] at h ⊢
-  rw [continuous_iff_continuousOn_univ] at cg
+  rw [← continuousOn_univ] at cg
   exact h.comp _ (mapsTo_univ _ _) cg
 
 /-- If every `x ∈ s` has a neighbourhood within `s` on which `F i` tends uniformly to `f`, then

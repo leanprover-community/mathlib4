@@ -51,7 +51,7 @@ theorem map_congr {f g : α → β} {s t : Multiset α} :
   exact congr_arg _ (List.map_congr_left h)
 
 theorem map_hcongr {β' : Type v} {m : Multiset α} {f : α → β} {f' : α → β'} (h : β = β')
-    (hf : ∀ a ∈ m, HEq (f a) (f' a)) : HEq (map f m) (map f' m) := by
+    (hf : ∀ a ∈ m, f a ≍ f' a) : map f m ≍ map f' m := by
   subst h; simp at hf
   simp [map_congr rfl hf]
 

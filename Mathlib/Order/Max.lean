@@ -122,9 +122,9 @@ instance {ι : Type u} {π : ι → Type*} [Nonempty ι] [∀ i, Preorder (π i)
 instance {ι : Type u} {π : ι → Type*} [Nonempty ι] [∀ i, Preorder (π i)] [∀ i, NoMinOrder (π i)] :
     NoMinOrder (∀ i, π i) :=
   ⟨fun a => by
-     classical
-      obtain ⟨b, hb⟩ := exists_lt (a <| Classical.arbitrary _)
-      exact ⟨_, update_lt_self_iff.2 hb⟩⟩
+    classical
+    obtain ⟨b, hb⟩ := exists_lt (a <| Classical.arbitrary _)
+    exact ⟨_, update_lt_self_iff.2 hb⟩⟩
 
 theorem NoBotOrder.to_noMinOrder (α : Type*) [LinearOrder α] [NoBotOrder α] : NoMinOrder α :=
   { exists_lt := fun a => by simpa [not_le] using exists_not_ge a }
@@ -133,20 +133,10 @@ theorem NoTopOrder.to_noMaxOrder (α : Type*) [LinearOrder α] [NoTopOrder α] :
   { exists_gt := fun a => by simpa [not_le] using exists_not_le a }
 
 theorem noBotOrder_iff_noMinOrder (α : Type*) [LinearOrder α] : NoBotOrder α ↔ NoMinOrder α :=
-  ⟨fun h =>
-    haveI := h
-    NoBotOrder.to_noMinOrder α,
-    fun h =>
-    haveI := h
-    inferInstance⟩
+  ⟨fun _ => NoBotOrder.to_noMinOrder α, fun _ => inferInstance⟩
 
 theorem noTopOrder_iff_noMaxOrder (α : Type*) [LinearOrder α] : NoTopOrder α ↔ NoMaxOrder α :=
-  ⟨fun h =>
-    haveI := h
-    NoTopOrder.to_noMaxOrder α,
-    fun h =>
-    haveI := h
-    inferInstance⟩
+  ⟨fun _ => NoTopOrder.to_noMaxOrder α, fun _ => inferInstance⟩
 
 theorem NoMinOrder.not_acc [LT α] [NoMinOrder α] (a : α) : ¬Acc (· < ·) a := fun h =>
   Acc.recOn h fun x _ => (exists_lt x).recOn

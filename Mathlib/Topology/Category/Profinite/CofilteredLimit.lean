@@ -126,9 +126,7 @@ theorem exists_locallyConstant_finite_aux {α : Type*} [Finite α] (hC : IsLimit
   choose j g h using hff
   let G : Finset J := Finset.univ.image j
   obtain ⟨j0, hj0⟩ := IsCofiltered.inf_objs_exists G
-  have hj : ∀ a, j a ∈ (Finset.univ.image j : Finset J) := by
-    intro a
-    simp only [Finset.mem_image, Finset.mem_univ, true_and, exists_apply_eq_apply]
+  have hj : ∀ a, j a ∈ (Finset.univ.image j : Finset J) := by grind
   let fs : ∀ a : α, j0 ⟶ j a := fun a => (hj0 (hj a)).some
   let gg : α → LocallyConstant (F.obj j0) (Fin 2) := fun a => (g a).comap (F.map (fs _)).hom
   let ggg := LocallyConstant.unflip gg
