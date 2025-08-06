@@ -208,7 +208,7 @@ theorem hom_eq_inv (α : X ≅ Y) (β : Y ≅ X) : α.hom = β.inv ↔ β.hom = 
   rw [← symm_inv, inv_eq_inv α.symm β, eq_comm]
   rfl
 
-attribute [grind] Function.LeftInverse Function.RightInverse
+attribute [local grind] Function.LeftInverse Function.RightInverse
 
 /-- The bijection `(Z ⟶ X) ≃ (Z ⟶ Y)` induced by `α : X ≅ Y`. -/
 @[simps]

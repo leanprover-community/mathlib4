@@ -612,10 +612,7 @@ noncomputable section image
 
 open Limits
 
-variable {X Y : Scheme.{u}} (f : X.Hom Y)
-
-section
-variable (U : Y.affineOpens)
+variable {X Y : Scheme.{u}} (f : X.Hom Y) (U : Y.affineOpens)
 
 /-- The scheme theoretic image of a morphism. -/
 abbrev Hom.image : Scheme.{u} := f.ker.subscheme
@@ -700,8 +697,6 @@ lemma Hom.toImage_app_injective [QuasiCompact f] :
   simp only [f.toImage_app U, CommRingCat.hom_comp, CommRingCat.hom_ofHom, RingHom.coe_comp]
   exact (RingHom.lift_injective_of_ker_le_ideal _ _ (by simp)).comp
     (f.ker.subschemeObjIso U).commRingCatIsoToRingEquiv.injective
-
-end
 
 lemma Hom.stalkFunctor_toImage_injective [QuasiCompact f] (x) :
     Function.Injective ((TopCat.Presheaf.stalkFunctor _ x).map f.toImage.c) := by
