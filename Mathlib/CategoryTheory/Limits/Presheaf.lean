@@ -215,7 +215,7 @@ lemma isIso_of_isLeftKanExtension : IsIso α :=
 variable (A)
 
 /-- See Property 2 of https://ncatlab.org/nlab/show/Yoneda+extension#properties. -/
-noncomputable instance preservesColimitsOfSize_leftKanExtension :
+instance preservesColimitsOfSize_leftKanExtension :
     PreservesColimitsOfSize.{v₃, u₃} (uliftYoneda.{max w v₂}.leftKanExtension A) :=
   (uliftYonedaAdjunction _ (uliftYoneda.leftKanExtensionUnit A)).leftAdjoint_preservesColimits
 
@@ -246,7 +246,7 @@ presheaf `P` as a colimit of representables.
 The construction of [MM92], Chapter I, Section 5, Corollary 3.
 -/
 @[simps]
-noncomputable def coconeOfRepresentable (P : Cᵒᵖ ⥤ Type max w v₁) :
+def coconeOfRepresentable (P : Cᵒᵖ ⥤ Type max w v₁) :
     Cocone (functorToRepresentables P) where
   pt := P
   ι :=
@@ -268,7 +268,7 @@ that is, we have exhibited an arbitrary presheaf `P` as a colimit of representab
 
 The result of [MM92], Chapter I, Section 5, Corollary 3.
 -/
-noncomputable def colimitOfRepresentable (P : Cᵒᵖ ⥤ Type max w v₁) :
+def colimitOfRepresentable (P : Cᵒᵖ ⥤ Type max w v₁) :
     IsColimit (coconeOfRepresentable P) where
   desc s :=
     { app X x := uliftYonedaEquiv (s.ι.app (Opposite.op (Functor.elementsMk P X x)))
@@ -495,7 +495,7 @@ lemma coconeApp_naturality {P : Cᵒᵖ ⥤ Type max w v₁ v₂} {x y : P.Eleme
 and a natural transformation `φ : F ⋙ uliftYoneda ⟶ uliftYoneda ⋙ G`, this is the
 (natural) morphism `P ⟶ F.op ⋙ G.obj P` for all `P : Cᵒᵖ ⥤ Type max w v₁ v₂` that is
 determined by `φ`. -/
-noncomputable def presheafHom (P : Cᵒᵖ ⥤ Type max w v₁ v₂) : P ⟶ F.op ⋙ G.obj P :=
+def presheafHom (P : Cᵒᵖ ⥤ Type max w v₁ v₂) : P ⟶ F.op ⋙ G.obj P :=
   (colimitOfRepresentable P).desc
     (Cocone.mk _ { app x := coconeApp.{w} φ x.unop })
 
@@ -623,7 +623,7 @@ def tautologicalCocone' (P : Cᵒᵖ ⥤ Type max w v₁) :
     a larger universe.)
 
     Proposition 2.6.3(i) in [Kashiwara2006] -/
-noncomputable def isColimitTautologicalCocone' (P : Cᵒᵖ ⥤ Type max w v₁) :
+def isColimitTautologicalCocone' (P : Cᵒᵖ ⥤ Type max w v₁) :
     IsColimit (tautologicalCocone'.{w} P) :=
   (IsColimit.whiskerEquivalenceEquiv
     (CategoryOfElements.costructuredArrowULiftYonedaEquivalence.{w} P)).2
