@@ -117,6 +117,31 @@ theorem circleAverage_congr_codiscreteWithin
   apply ae_restrict_le_codiscreteWithin measurableSet_uIoc
   apply codiscreteWithin.mono (by tauto) (circleMap_preimage_codiscrete hR hf)
 
+/-- If two functions agree on the circle, then their circle averages agree. -/
+theorem circleAverage_congr_sphere {f₁ f₂ : ℂ → E} (hf : Set.EqOn f₁ f₂ (sphere c |R|)) :
+    circleAverage f₁ c R = circleAverage f₂ c R := by
+  unfold circleAverage
+  congr 1
+  apply intervalIntegral.integral_congr (fun x ↦ by simp [hf (circleMap_mem_sphere' c R x)])
+
+/--
+The circle average of a function `f` on the unit sphere equals the circle average of the function
+`z ↦ f z⁻¹`.
+-/
+@[simp]
+theorem circleAverage_zero_one_congr_inv {f : ℂ → E} :
+    circleAverage (f ·⁻¹) 0 1 = circleAverage f 0 1 := by
+  unfold circleAverage
+  congr 1
+  calc ∫ (θ : ℝ) in 0..2 * π, f (circleMap 0 1 θ)⁻¹
+  _ = ∫ (θ : ℝ) in 0..2 * π, f (circleMap 0 1 (-θ)) := by
+    simp [circleMap_zero_inv]
+  _ = ∫ (θ : ℝ) in 0..2 * π, f (circleMap 0 1 θ) := by
+    rw [intervalIntegral.integral_comp_neg (fun w ↦ f (circleMap 0 1 w))]
+    have t₀ : Function.Periodic (fun w ↦ f (circleMap 0 1 w)) (2 * π) :=
+      fun x ↦ by simp [periodic_circleMap 0 1 x]
+    simpa using (t₀.intervalIntegral_add_eq_of_pos two_pi_pos (-(2 * π)) 0)
+
 /-!
 ## Constant Functions
 -/
