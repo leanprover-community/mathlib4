@@ -637,18 +637,20 @@ theorem subset_image_iff [DecidableEq β] {s : Finset α} {t : Finset β} {f : �
     t ⊆ s.image f ↔ ∃ s' : Finset α, s' ⊆ s ∧ s'.image f = t := by
   simp only [← coe_subset, coe_image, subset_set_image_iff]
 
-/-- A special case of `subset_image_iff`, which corresponds to `Set.subset_range_iff_exists_image_eq` for `Set`. -/
+/--
+A special case of `subset_image_iff`,
+which corresponds to `Set.subset_range_iff_exists_image_eq` for `Set`.
+-/
 theorem subset_univ_image_iff [Fintype α] [DecidableEq β] {t : Finset β} {f : α → β} :
     t ⊆ univ.image f ↔ ∃ s' : Finset α, s'.image f = t :=
-  have ⟨mp, mpr⟩ := subset_image_iff (s := univ) (t := t) (f := f)
+  have ⟨mp, mpr⟩ := subset_image_iff (s := univ)
   ⟨
     fun t_subset =>
-      have ⟨s', s'_subset, image_2⟩ := mp t_subset
-      sorry
+      have ⟨s', _, s'_image_eq_t⟩ := mp t_subset
+      ⟨s', s'_image_eq_t⟩
     ,
-    fun _ => mpr sorry
+    fun ⟨s', s'_image_eq_t⟩ => mpr ⟨s', subset_univ s', s'_image_eq_t⟩
   ⟩
-  sorry
 
 theorem range_sdiff_zero {n : ℕ} : range (n + 1) \ {0} = (range n).image Nat.succ := by
   induction' n with k hk
