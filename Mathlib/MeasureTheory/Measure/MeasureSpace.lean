@@ -674,12 +674,9 @@ lemma ext_of_measurableAtoms [Countable α] {μ ν : Measure α}
     intro t ht t' ht' h_eq
     obtain ⟨y, hys, hy⟩ := ht
     obtain ⟨y', hy's, hy'⟩ := ht'
-    rw [← hy, ← hy']
-    by_cases hyy' : y ∈ measurableAtom y'
-    · refine absurd ?_ h_eq
-      rw [← hy, ← hy']
-      exact measurableAtom_eq_of_mem hyy'
-    · exact disjoint_measurableAtom_of_notMem hyy'
+    rw [← hy, ← hy'] at h_eq ⊢
+    refine disjoint_measurableAtom_of_notMem fun hyy' ↦ h_eq ?_
+    exact measurableAtom_eq_of_mem hyy'
   have h_meas (t) (ht : t ∈ measurableAtom '' s) : MeasurableSet t := by
     obtain ⟨x, hxs, hx⟩ := ht
     rw [← hx]
