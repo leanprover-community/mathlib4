@@ -26,8 +26,14 @@ variable {R : Type*} [CommRing R] [ValuativeRel R]
 
 local notation "v" => valuation R
 
+section
+
+/-! # Results assuming IsValuativeTopology -/
+
+variable [TopologicalSpace R] [IsValuativeTopology R]
+
 /-- A version mentioning subtraction. -/
-lemma mem_nhds_iff' [TopologicalSpace R] [IsValuativeTopology R] {s : Set R} {x : R} :
+lemma mem_nhds_iff' {s : Set R} {x : R} :
     s ∈ 𝓝 (x : R) ↔
     ∃ γ : (ValueGroupWithZero R)ˣ, { z | v (z - x) < γ } ⊆ s := by
   convert mem_nhds_iff (s := s) using 4
@@ -36,52 +42,6 @@ lemma mem_nhds_iff' [TopologicalSpace R] [IsValuativeTopology R] {s : Set R} {x 
 
 @[deprecated (since := "2025-08-01")]
 alias _root_.ValuativeTopology.mem_nhds := mem_nhds_iff'
-
-section
-
-variable [TopologicalSpace R] [ContinuousConstVAdd R R]
-
-/-- Assuming `ContinuousConstVAdd R R`, we only need to check the neighbourhood of `0` in order to
-prove `IsValuativeTopology R`. -/
-theorem of_zero
-    (h₀ : ∀ s : Set R, s ∈ 𝓝 0 ↔ ∃ γ : (ValueGroupWithZero R)ˣ, { z | v z < γ } ⊆ s) :
-    IsValuativeTopology R where
-  mem_nhds_iff {s x} := by
-    simpa [← vadd_mem_nhds_vadd_iff (t := s) (-x), ← image_vadd, ← image_subset_iff] using
-      h₀ ((x + ·) ⁻¹' s)
-
-/-- Assuming `ContinuousConstVAdd R R`, we only need to check the neighbourhood of `0` in order to
-prove `IsValuativeTopology R`. -/
-lemma of_hasBasis_zero (h : (𝓝 (0 : R)).HasBasis (fun _ ↦ True)
-    fun γ : (ValueGroupWithZero R)ˣ ↦ { x | (valuation R) x < γ }) :
-    IsValuativeTopology R :=
-  .of_zero <| by simp [h.mem_iff]
-
-end
-
-instance of_subgroups_basis :
-    letI := (v).subgroups_basis.topology
-    IsValuativeTopology R :=
-  letI := (v).subgroups_basis.topology
-  of_hasBasis_zero <| (v).subgroups_basis.hasBasis_nhds_zero
-
-/-- The correctness result. -/
-lemma _root_.isValuativeTopology_iff_subgroups_basis_topology_eq [t : TopologicalSpace R] :
-    IsValuativeTopology R ↔ (v).subgroups_basis.topology = t := by
-  let := (valuation R).subgroups_basis
-  refine ⟨fun _ ↦ ext_nhds fun x ↦ Filter.ext fun s ↦ ?_, ?_⟩
-  · rw [(this.hasBasis_nhds _).mem_iff, mem_nhds_iff']; simp_rw [true_and]; rfl
-  · rintro rfl; infer_instance
-
-example : ∃! _ : TopologicalSpace R, IsValuativeTopology R :=
-  ⟨(v).subgroups_basis.topology, of_subgroups_basis, fun _ ht ↦
-    (isValuativeTopology_iff_subgroups_basis_topology_eq.mp ht).symm⟩
-
-section
-
-/-! # Results assuming IsValuativeTopology -/
-
-variable [TopologicalSpace R] [IsValuativeTopology R]
 
 lemma mem_nhds_zero_iff (s : Set R) : s ∈ 𝓝 (0 : R) ↔
     ∃ γ : (ValueGroupWithZero R)ˣ, { x | v x < γ } ⊆ s := by
@@ -268,6 +228,42 @@ section
 /-! # Alternate constructors -/
 
 variable [TopologicalSpace R] [ContinuousConstVAdd R R]
+
+/-- Assuming `ContinuousConstVAdd R R`, we only need to check the neighbourhood of `0` in order to
+prove `IsValuativeTopology R`. -/
+theorem of_zero
+    (h₀ : ∀ s : Set R, s ∈ 𝓝 0 ↔ ∃ γ : (ValueGroupWithZero R)ˣ, { z | v z < γ } ⊆ s) :
+    IsValuativeTopology R where
+  mem_nhds_iff {s x} := by
+    simpa [← vadd_mem_nhds_vadd_iff (t := s) (-x), ← image_vadd, ← image_subset_iff] using
+      h₀ ((x + ·) ⁻¹' s)
+
+/-- Assuming `ContinuousConstVAdd R R`, we only need to check the neighbourhood of `0` in order to
+prove `IsValuativeTopology R`. -/
+lemma of_hasBasis_zero (h : (𝓝 (0 : R)).HasBasis (fun _ ↦ True)
+    fun γ : (ValueGroupWithZero R)ˣ ↦ { x | (valuation R) x < γ }) :
+    IsValuativeTopology R :=
+  .of_zero <| by simp [h.mem_iff]
+
+omit [TopologicalSpace R] [ContinuousConstVAdd R R] in
+instance of_subgroups_basis :
+    letI := (v).subgroups_basis.topology
+    IsValuativeTopology R :=
+  letI := (v).subgroups_basis.topology
+  of_hasBasis_zero <| (v).subgroups_basis.hasBasis_nhds_zero
+
+omit [TopologicalSpace R] [ContinuousConstVAdd R R] in
+/-- The correctness result. -/
+lemma _root_.isValuativeTopology_iff_subgroups_basis_topology_eq [t : TopologicalSpace R] :
+    IsValuativeTopology R ↔ (v).subgroups_basis.topology = t := by
+  let := (valuation R).subgroups_basis
+  refine ⟨fun _ ↦ ext_nhds fun x ↦ Filter.ext fun s ↦ ?_, ?_⟩
+  · rw [(this.hasBasis_nhds _).mem_iff, mem_nhds_iff']; simp_rw [true_and]; rfl
+  · rintro rfl; infer_instance
+
+example : ∃! _ : TopologicalSpace R, IsValuativeTopology R :=
+  ⟨(v).subgroups_basis.topology, of_subgroups_basis, fun _ ht ↦
+    (isValuativeTopology_iff_subgroups_basis_topology_eq.mp ht).symm⟩
 
 /-- A "metatheorem" saying that if we proved that a valuative topology has a certain basis of
 `nhds 0`, then any topology having the same basis of `nhds 0` which is also `ContinuousConstVAdd` is
