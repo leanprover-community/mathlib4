@@ -75,13 +75,13 @@ structure ShiftMkCore where
   assoc_hom_app : ∀ (m₁ m₂ m₃ : A) (X : C),
     (add (m₁ + m₂) m₃).hom.app X ≫ (F m₃).map ((add m₁ m₂).hom.app X) =
       eqToHom (by rw [add_assoc]) ≫ (add m₁ (m₂ + m₃)).hom.app X ≫
-        (add m₂ m₃).hom.app ((F m₁).obj X) := by aesop_cat
+        (add m₂ m₃).hom.app ((F m₁).obj X) := by cat_disch
   /-- compatibility with the left addition with 0 -/
   zero_add_hom_app : ∀ (n : A) (X : C), (add 0 n).hom.app X =
-    eqToHom (by dsimp; rw [zero_add]) ≫ (F n).map (zero.inv.app X) := by aesop_cat
+    eqToHom (by dsimp; rw [zero_add]) ≫ (F n).map (zero.inv.app X) := by cat_disch
   /-- compatibility with the right addition with 0 -/
   add_zero_hom_app : ∀ (n : A) (X : C), (add n 0).hom.app X =
-    eqToHom (by dsimp; rw [add_zero]) ≫ zero.inv.app ((F n).obj X) := by aesop_cat
+    eqToHom (by dsimp; rw [add_zero]) ≫ zero.inv.app ((F n).obj X) := by cat_disch
 
 namespace ShiftMkCore
 
@@ -619,7 +619,7 @@ lemma shiftFunctorZero_hom_app_shift (n : A) :
 
 lemma shiftFunctorZero_inv_app_shift (n : A) :
     (shiftFunctorZero C A).inv.app (X⟦n⟧) =
-  ((shiftFunctorZero C A).inv.app X)⟦n⟧' ≫ (shiftFunctorComm C n 0).inv.app X := by
+      ((shiftFunctorZero C A).inv.app X)⟦n⟧' ≫ (shiftFunctorComm C n 0).inv.app X := by
   rw [← cancel_mono ((shiftFunctorZero C A).hom.app (X⟦n⟧)), Category.assoc, Iso.inv_hom_id_app,
     shiftFunctorZero_hom_app_shift, Iso.inv_hom_id_app_assoc, ← Functor.map_comp,
     Iso.inv_hom_id_app]
@@ -636,9 +636,9 @@ lemma shiftFunctorComm_zero_hom_app (a : A) :
 lemma shiftFunctorComm_hom_app_comp_shift_shiftFunctorAdd_hom_app (m₁ m₂ m₃ : A) (X : C) :
     (shiftFunctorComm C m₁ (m₂ + m₃)).hom.app X ≫
     ((shiftFunctorAdd C m₂ m₃).hom.app X)⟦m₁⟧' =
-  (shiftFunctorAdd C m₂ m₃).hom.app (X⟦m₁⟧) ≫
-    ((shiftFunctorComm C m₁ m₂).hom.app X)⟦m₃⟧' ≫
-    (shiftFunctorComm C m₁ m₃).hom.app (X⟦m₂⟧) := by
+      (shiftFunctorAdd C m₂ m₃).hom.app (X⟦m₁⟧) ≫
+        ((shiftFunctorComm C m₁ m₂).hom.app X)⟦m₃⟧' ≫
+        (shiftFunctorComm C m₁ m₃).hom.app (X⟦m₂⟧) := by
   rw [← cancel_mono ((shiftFunctorComm C m₁ m₃).inv.app (X⟦m₂⟧)),
     ← cancel_mono (((shiftFunctorComm C m₁ m₂).inv.app X)⟦m₃⟧')]
   simp only [Category.assoc, Iso.hom_inv_id_app]

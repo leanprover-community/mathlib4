@@ -42,9 +42,6 @@ theorem exists_surjective_iff {α β : Sort*} :
   ⟨fun ⟨f, h⟩ ↦ ⟨⟨f⟩, ⟨⟨_, injective_surjInv h⟩⟩⟩, fun ⟨h, ⟨e⟩⟩ ↦ (nonempty_fun.mp h).elim
     (fun _ ↦ ⟨isEmptyElim, (isEmptyElim <| e ·)⟩) fun _ ↦ ⟨_, invFun_surjective e.inj'⟩⟩
 
-instance {α β : Sort*} : CanLift (α → β) (α ↪ β) (↑) Injective where
-  prf _ h := ⟨⟨_, h⟩, rfl⟩
-
 end Function
 
 section Equiv
@@ -123,10 +120,16 @@ theorem apply_eq_iff_eq {α β} (f : α ↪ β) (x y : α) : f x = f y ↔ x = y
 protected def refl (α : Sort*) : α ↪ α :=
   ⟨id, injective_id⟩
 
+@[norm_cast]
+theorem coe_refl (α : Sort*) : ⇑(Embedding.refl α) = id := rfl
+
 /-- Composition of `f : α ↪ β` and `g : β ↪ γ`. -/
 @[trans, simps +simpRhs]
 protected def trans {α β γ} (f : α ↪ β) (g : β ↪ γ) : α ↪ γ :=
   ⟨g ∘ f, g.injective.comp f.injective⟩
+
+@[norm_cast]
+theorem coe_trans {α β γ} (f : α ↪ β) (g : β ↪ γ) : ⇑(f.trans g) = ⇑g ∘ ⇑f := rfl
 
 instance : Trans Embedding Embedding Embedding := ⟨Embedding.trans⟩
 
@@ -250,11 +253,6 @@ def sectL (α : Sort _) {β : Sort _} (b : β) : α ↪ α × β :=
 def sectR {α : Sort _} (a : α) (β : Sort _) : β ↪ α × β :=
   ⟨fun b => (a, b), fun _ _ h => congr_arg Prod.snd h⟩
 
-@[deprecated (since := "2024-11-12")] alias sectl := sectL
-@[deprecated (since := "2024-11-12")] alias sectr := sectR
-@[deprecated (since := "2024-11-12")] alias sectl_apply := sectL_apply
-@[deprecated (since := "2024-11-12")] alias sectr_apply := sectR_apply
-
 /-- If `e₁` and `e₂` are embeddings, then so is `Prod.map e₁ e₂ : (a, b) ↦ (e₁ a, e₂ b)`. -/
 def prodMap {α β γ δ : Type*} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : α × γ ↪ β × δ :=
   ⟨Prod.map e₁ e₂, e₁.injective.prodMap e₂.injective⟩
@@ -333,6 +331,27 @@ noncomputable def arrowCongrLeft {α : Sort u} {β : Sort v} {γ : Sort w} [Inha
     (α → γ) ↪ β → γ :=
   ⟨fun f => extend e f default, fun f₁ f₂ h =>
     funext fun x => by simpa only [e.injective.extend_apply] using congr_fun h (e x)⟩
+
+-- `simps` would generate this over-applied
+@[simp]
+theorem arrowCongrLeft_apply {α : Sort u} {β : Sort v} {γ : Sort w} [Inhabited γ] (e : α ↪ β)
+    (f : α → γ) :
+    arrowCongrLeft e f = extend e f default :=
+  rfl
+
+@[simp]
+theorem arrowCongrLeft_refl {α : Sort u} {γ : Sort w} [Inhabited γ] :
+    (Function.Embedding.refl α).arrowCongrLeft (γ := γ) = .refl _ := by
+  ext
+  simp [coe_refl]
+
+@[simp]
+theorem trans_arrowCongrLeft {α₁ : Sort u} {α₂ : Sort v} {α₃ : Sort x} {γ : Sort w}
+    [Inhabited γ] (e₁₂ : α₁ ↪ α₂) (e₂₃ : α₂ ↪ α₃) :
+    e₁₂.arrowCongrLeft.trans e₂₃.arrowCongrLeft = (e₁₂.trans e₂₃).arrowCongrLeft (γ := γ) := by
+  ext f a
+  simp only [trans_apply, arrowCongrLeft_apply, Pi.default_def, coe_trans]
+  rw [e₁₂.injective.extend_comp e₂₃.injective, Function.comp_def]
 
 /-- Restrict both domain and codomain of an embedding. -/
 protected def subtypeMap {α β} {p : α → Prop} {q : β → Prop} (f : α ↪ β)
