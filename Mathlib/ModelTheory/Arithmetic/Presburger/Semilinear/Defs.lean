@@ -19,8 +19,7 @@ which are linear sets with linear independent `ℕ`-submodule generators (period
 
 ## Main Definitions
 
-- `Set.Linear`: a set is linear if is a finitely generated `ℕ`-submodule added by a single element
-  (a finitely generated affine `ℕ`-submodule).
+- `Set.Linear`: a set is linear if is a finitely generated affine `ℕ`-submodule.
 - `Set.Semilinear`: a set is semilinear if it is a finite union of linear sets.
 - `Set.ProperLinear`: a linear set is proper if its `ℕ`-submodule generators (periods) are linear
   independent.
@@ -46,8 +45,7 @@ variable {α : Type u} {β : Type v} [AddCommMonoid α] [AddCommMonoid β]
 
 open Pointwise Submodule
 
-/-- A set is linear if is a finitely generated `ℕ`-submodule added by a single element (a finitely
-  generated affine `ℕ`-submodule). -/
+/-- A set is linear if is a finitely generated affine `ℕ`-submodule. -/
 def Linear (s : Set α) :=
   ∃ (a : α) (t : Finset α), s = a +ᵥ (span ℕ (t : Set α) : Set α)
 
@@ -57,8 +55,8 @@ theorem Linear.singleton (a) : ({a} : Set α).Linear :=
 theorem Linear.span_finset (s : Finset α) : (span ℕ (s : Set α) : Set α).Linear :=
   ⟨0, s, by rw [zero_vadd]⟩
 
-theorem Linear.univ [h : Module.Finite ℕ α] : (univ : Set α).Linear := by
-  obtain ⟨s, hs⟩ := h.fg_top
+theorem Linear.univ [Module.Finite ℕ α] : (univ : Set α).Linear := by
+  rcases Module.Finite.fg_top (R := ℕ) (M := α) with ⟨s, hs⟩
   refine ⟨0, s, ?_⟩
   rw [zero_vadd, hs, top_coe]
 
@@ -160,12 +158,6 @@ theorem Semilinear.image (hs : s.Semilinear) (f : α →ₗ[ℕ] β) : (f '' s).
   rcases hs with ⟨S, hS, rfl⟩
   simp_rw [sUnion_eq_biUnion, Finset.mem_coe, image_iUnion]
   exact biUnion fun s hs => ((hS s hs).image f).semilinear
-
-theorem Semilinear.image_iff (f : α ≃ₗ[ℕ] β) : (f '' s).Semilinear ↔ s.Semilinear := by
-  constructor <;> intro h
-  · convert h.image f.symm.toLinearMap
-    simp [image_image]
-  · exact h.image f.toLinearMap
 
 /-- Semilinear sets are closed under projection. -/
 theorem Semilinear.proj {s : Set (ι₁ ⊕ ι₂ → α)} (hs : s.Semilinear) :
@@ -285,13 +277,6 @@ theorem ProperSemilinear.sUnion {S : Finset (Set α)}
     simp only [Finset.mem_insert, forall_eq_or_imp] at hS
     simpa using union hS.1 (ih hS.2)
 
-theorem ProperSemilinear.iUnion [Fintype ι] {s : ι → Set α}
-    (hs : ∀ i, (s i).ProperSemilinear) : (⋃ i, s i).ProperSemilinear := by
-  classical
-  rw [← sUnion_range, ← image_univ, ← Finset.coe_univ, ← Finset.coe_image]
-  apply sUnion
-  simpa
-
 theorem ProperSemilinear.biUnion {s : Finset ι} {t : ι → Set α}
     (ht : ∀ i ∈ s, (t i).ProperSemilinear) : (⋃ i ∈ s, t i).ProperSemilinear := by
   classical
@@ -348,7 +333,7 @@ lemma Linear.proper_semilinear [IsCancelAdd α] (hs : s.Linear) : s.ProperSemili
           ih _ (Finset.card_lt_card (Finset.erase_ssubset (ht' hj))) _ _ rfl
 
 /-- The **proper decomposition** of semilinear sets: every semilinear set is a finite union of
-  proper linear sets. -/
+proper linear sets. -/
 theorem Semilinear.proper_semilinear [IsCancelAdd α] (hs : s.Semilinear) : s.ProperSemilinear := by
   rcases hs with ⟨S, hS, rfl⟩
   simp_rw [sUnion_eq_biUnion, Finset.mem_coe]
