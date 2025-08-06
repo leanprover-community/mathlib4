@@ -243,8 +243,6 @@ theorem entries_insert {a} {b : β a} {s : AList β} :
     (insert a b s).entries = Sigma.mk a b :: kerase a s.entries :=
   rfl
 
-@[deprecated (since := "2024-12-17")] alias insert_entries := entries_insert
-
 theorem entries_insert_of_notMem {a} {b : β a} {s : AList β} (h : a ∉ s) :
     (insert a b s).entries = ⟨a, b⟩ :: s.entries := by rw [entries_insert, kerase_of_notMem_keys h]
 
@@ -255,9 +253,6 @@ theorem insert_of_notMem {a} {b : β a} {s : AList β} (h : a ∉ s) :
   ext <| entries_insert_of_notMem h
 
 @[deprecated (since := "2025-05-23")] alias insert_of_not_mem := insert_of_notMem
-
-@[deprecated (since := "2024-12-14")] alias insert_entries_of_neg := entries_insert_of_notMem
-@[deprecated (since := "2024-12-14")] alias insert_of_neg := insert_of_notMem
 
 @[simp]
 theorem insert_empty (a) (b : β a) : insert a b ∅ = singleton a b :=

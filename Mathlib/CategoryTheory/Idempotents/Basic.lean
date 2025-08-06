@@ -49,7 +49,7 @@ variable (C : Type*) [Category C]
 split as a composition `p = e ≫ i` with `i ≫ e = 𝟙 _` -/
 class IsIdempotentComplete : Prop where
   /-- A category is idempotent complete iff all idempotent endomorphisms `p`
-    split as a composition `p = e ≫ i` with `i ≫ e = 𝟙 _` -/
+  split as a composition `p = e ≫ i` with `i ≫ e = 𝟙 _` -/
   idempotents_split :
     ∀ (X : C) (p : X ⟶ X), p ≫ p = p → ∃ (Y : C) (i : Y ⟶ X) (e : X ⟶ Y), i ≫ e = 𝟙 Y ∧ e ≫ i = p
 
@@ -138,9 +138,7 @@ theorem split_iff_of_iso {X X' : C} (φ : X ≅ X') (p : X ⟶ X) (p' : X' ⟶ X
   · apply split_imp_of_iso φ.symm p' p
     rw [← comp_id p, ← φ.hom_inv_id]
     slice_rhs 2 3 => rw [hpp']
-    slice_rhs 1 2 => erw [φ.inv_hom_id]
-    simp only [id_comp]
-    rfl
+    simp
 
 theorem Equivalence.isIdempotentComplete {D : Type*} [Category D] (ε : C ≌ D)
     (h : IsIdempotentComplete C) : IsIdempotentComplete D := by
