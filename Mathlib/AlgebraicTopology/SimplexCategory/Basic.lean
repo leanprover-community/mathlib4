@@ -815,9 +815,7 @@ theorem eq_σ_of_epi {n : ℕ} (θ : ⦋n + 1⦌ ⟶ ⦋n⦌) [Epi θ] : ∃ i :
 theorem eq_δ_of_mono {n : ℕ} (θ : ⦋n⦌ ⟶ ⦋n + 1⦌) [Mono θ] : ∃ i : Fin (n + 2), θ = δ i := by
   obtain ⟨i, θ', h⟩ := eq_comp_δ_of_not_surjective θ (by
     rw [← epi_iff_surjective]
-    intro
-    have := le_of_epi θ
-    omega)
+    grind [→ le_of_epi])
   use i
   haveI : Mono (θ' ≫ δ i) := by
     rw [← h]
