@@ -391,7 +391,7 @@ theorem isUnit_iff_exists_and_exists [Monoid M] {a : M} :
 protected theorem Units.isUnit [Monoid M] (u : Mˣ) : IsUnit (u : M) :=
   ⟨u, rfl⟩
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, grind)]
 theorem isUnit_one [Monoid M] : IsUnit (1 : M) :=
   ⟨1, rfl⟩
 
@@ -469,7 +469,7 @@ theorem isUnit_of_mul_isUnit_right [CommMonoid M] {x y : M} (hu : IsUnit (x * y)
 
 namespace IsUnit
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, grind =)]
 theorem mul_iff [CommMonoid M] {x y : M} : IsUnit (x * y) ↔ IsUnit x ∧ IsUnit y :=
   ⟨fun h => ⟨isUnit_of_mul_isUnit_left h, isUnit_of_mul_isUnit_right h⟩,
    fun h => IsUnit.mul h.1 h.2⟩

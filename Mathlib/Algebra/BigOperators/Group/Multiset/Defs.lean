@@ -57,7 +57,7 @@ theorem prod_toList (s : Multiset M) : s.toList.prod = s.prod := by
   conv_rhs => rw [← coe_toList s]
   rw [prod_coe]
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, grind =)]
 theorem prod_zero : @prod M _ 0 = 1 :=
   rfl
 
