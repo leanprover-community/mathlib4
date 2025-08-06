@@ -358,6 +358,7 @@ section single
 variable {ι : Type*} [Fintype ι] [DecidableEq ι]
     (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : ι → Type*)
 
+/-- The injection `x ↦ Pi.single i x` as a linear isometry. -/
 protected def LinearIsometry.single [∀ i, SeminormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
     (i : ι) : E i →ₗᵢ[𝕜] Π j, E j :=
   (LinearMap.single 𝕜 E i).toLinearIsometry (.single i)
