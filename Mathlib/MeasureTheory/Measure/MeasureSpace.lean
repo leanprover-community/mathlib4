@@ -658,6 +658,7 @@ theorem tendsto_measure_biInter_gt {ι : Type*} [LinearOrder ι] [TopologicalSpa
 theorem measure_if {x : β} {t : Set β} {s : Set α} [Decidable (x ∈ t)] :
     μ (if x ∈ t then s else ∅) = indicator t (fun _ => μ s) x := by split_ifs with h <;> simp [h]
 
+/-- On a countable space, two measures are equal if they agree on measurable atoms. -/
 lemma ext_of_measurableAtoms [Countable α] {μ ν : Measure α}
     (h : ∀ x, μ (measurableAtom x) = ν (measurableAtom x)) : μ = ν := by
   ext s hs
