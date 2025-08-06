@@ -285,11 +285,11 @@ lemma of_hasBasis_zero (h : (𝓝 (0 : R)).HasBasis (fun _ ↦ True)
     IsValuativeTopology R :=
   .of_zero <| by simp [h.mem_iff]
 
-instance of_mk' {R : Type*} [CommRing R] [ValuativeRel R] :
-    letI := Valued.mk' (valuation R)
+instance of_subgroups_basis {R : Type*} [CommRing R] [ValuativeRel R] :
+    letI := ((valuation R).subgroups_basis.topology)
     IsValuativeTopology R :=
-  letI := Valued.mk' (valuation R)
-  of_hasBasis_zero (Valued.hasBasis_nhds_zero R _)
+  letI := ((valuation R).subgroups_basis.topology)
+  of_hasBasis_zero ((valuation R).subgroups_basis.hasBasis_nhds_zero)
 
 /-- A "metatheorem" saying that if we proved that a valuative topology has a certain basis of
 `nhds 0`, then any topology having the same basis of `nhds 0` which is also `ContinuousConstVAdd` is
@@ -299,12 +299,11 @@ theorem of_hasBasis {R : Type*} [CommRing R] [ValuativeRel R]
     (ih : ∀ [TopologicalSpace R] [IsValuativeTopology R], (nhds 0).HasBasis p s)
     [t : TopologicalSpace R] [ContinuousConstVAdd R R] (h : (nhds 0).HasBasis p s) :
     IsValuativeTopology R := by
-  letI := Valued.mk' (valuation R)
-  specialize @ih this.toTopologicalSpace of_mk'
-  have : t = this.toTopologicalSpace := by
+  specialize @ih ((valuation R).subgroups_basis.topology)
+  have : t = ((valuation R).subgroups_basis.topology) := by
     refine ext_nhds fun x ↦ Filter.ext fun t ↦ ?_
     rw [← vadd_mem_nhds_vadd_iff (g := -x),
-      ← @vadd_mem_nhds_vadd_iff _ _ this.toTopologicalSpace _ _ _ _ (-x) (x),
+      ← @vadd_mem_nhds_vadd_iff _ _ ((valuation R).subgroups_basis.topology) _ _ _ _ (-x) (x),
       vadd_eq_add, neg_add_cancel, h.mem_iff, ih.mem_iff]
   subst this
   infer_instance
