@@ -44,14 +44,18 @@ variable {σ : Π x : M, V x}
 #guard_msgs in
 #check T% σ
 
+-- Testing precedence.
 variable {x : M}
 /-- info: (fun x ↦ TotalSpace.mk' F x (σ x)) x : TotalSpace F V -/
 #guard_msgs in
 #check (T% σ) x
--- XXX: precendence is surprising, as this does nothing
-/-- info: σ x : V x -/
+/-- info: (fun x ↦ TotalSpace.mk' F x (σ x)) x : TotalSpace F V -/
 #guard_msgs in
 #check T% σ x
+-- Nothing happening, as expected.
+/-- info: σ x : V x -/
+#guard_msgs in
+#check T% (σ x)
 
 -- Note how the name of the bound variable `x` resp. `y` is preserved.
 /-- info: fun x ↦ TotalSpace.mk' E' x (σ' x) : E → TotalSpace E' (Trivial E E') -/

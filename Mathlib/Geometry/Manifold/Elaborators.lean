@@ -95,7 +95,7 @@ This elaborator operates purely syntactically, by analysing the local contexts f
 hypothesis for the above cases. Therefore, it is (hopefully) fast enough to always run.
 -/
 -- TODO: document how this elaborator works, any gotchas, etc.
-elab "T% " t:term : term => do
+elab:max "T% " t:term:arg : term => do
   let e ← Term.elabTerm t none
   let etype ← inferType e >>= instantiateMVars
   match etype with
