@@ -728,7 +728,7 @@ lemma eLpNormEssSup_indicator_const_eq (s : Set α) (c : ε) (hμs : μ s ≠ 0)
   by_contra! h
   have h' := ae_iff.mp (ae_lt_of_essSup_lt h)
   push_neg at h'
-  refine hμs (measure_mono_null (fun x hx_mem => ?_) h')
+  refine hμs (Measure.mono_null (fun x hx_mem => ?_) h')
   rw [Set.mem_setOf_eq, Set.indicator_of_mem hx_mem]
 
 lemma eLpNorm_indicator_const₀ (hs : NullMeasurableSet s μ) (hp : p ≠ 0) (hp_top : p ≠ ∞) :

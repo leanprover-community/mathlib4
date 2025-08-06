@@ -151,7 +151,7 @@ theorem le_ae_join (m : Measure (Measure α)) : (ae m).bind ae ≤ ae m.join := 
   rcases exists_measurable_superset_of_null hs with ⟨t, hst, htm, ht⟩
   rw [join_apply htm, lintegral_eq_zero_iff (measurable_coe htm)] at ht
   rw [mem_bind']
-  exact ht.mono fun _ ↦ measure_mono_null hst
+  exact ht.mono fun _ ↦ Measure.mono_null hst
 
 theorem ae_ae_of_ae_join {m : Measure (Measure α)} {p : α → Prop} (h : ∀ᵐ a ∂m.join, p a) :
     ∀ᵐ μ ∂m, ∀ᵐ a ∂μ, p a :=

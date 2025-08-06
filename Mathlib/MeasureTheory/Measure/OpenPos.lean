@@ -99,7 +99,7 @@ theorem _root_.IsClosed.measure_eq_one_iff_eq_univ [OpensMeasurableSpace X] [IsP
 
 /-- A null set has empty interior. -/
 theorem interior_eq_empty_of_null (hs : μ s = 0) : interior s = ∅ :=
-  isOpen_interior.eq_empty_of_measure_zero <| measure_mono_null interior_subset hs
+  isOpen_interior.eq_empty_of_measure_zero <| Measure.mono_null interior_subset hs
 
 /-- A property satisfied almost everywhere is satisfied on a dense subset. -/
 theorem dense_of_ae {p : X → Prop} (hp : ∀ᵐ x ∂μ, p x) : Dense {x | p x} := by
@@ -263,7 +263,7 @@ lemma IsMeagre.of_isSigmaCompact_null [T2Space X] (h₁s : IsSigmaCompact s) (h�
     IsMeagre s := by
   rcases h₁s with ⟨K, hcompact, hcover⟩
   have h (n : ℕ) : IsNowhereDense (K n) := by
-    have : μ (K n) = 0 := measure_mono_null (hcover ▸ subset_iUnion K n) h₂s
+    have : μ (K n) = 0 := Measure.mono_null (hcover ▸ subset_iUnion K n) h₂s
     exact .of_isClosed_null (hcompact n).isClosed this
   rw [isMeagre_iff_countable_union_isNowhereDense]
   exact ⟨range K, fun t ⟨n, hn⟩ ↦ hn ▸ h n, countable_range K, hcover.symm.subset⟩

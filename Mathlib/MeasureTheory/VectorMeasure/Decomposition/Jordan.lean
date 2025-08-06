@@ -470,8 +470,8 @@ theorem absolutelyContinuous_ennreal_iff (s : SignedMeasure α) (μ : VectorMeas
     rw [totalVariation, Measure.add_apply, hpos, hneg, toMeasureOfZeroLE_apply _ _ _ hS₁,
       toMeasureOfLEZero_apply _ _ _ hS₁]
     rw [← VectorMeasure.AbsolutelyContinuous.ennrealToMeasure] at h
-    simp [h (measure_mono_null (i.inter_subset_right) hS₂),
-      h (measure_mono_null (iᶜ.inter_subset_right) hS₂)]
+    simp [h (Measure.mono_null (i.inter_subset_right) hS₂),
+      h (Measure.mono_null (iᶜ.inter_subset_right) hS₂)]
   · refine VectorMeasure.AbsolutelyContinuous.mk fun S hS₁ hS₂ => ?_
     rw [← VectorMeasure.ennrealToMeasure_apply hS₁] at hS₂
     exact null_of_totalVariation_zero s (h hS₂)
@@ -506,8 +506,8 @@ theorem mutuallySingular_iff (s t : SignedMeasure α) :
       simp [hu₂ _ Set.inter_subset_right]
   · rintro ⟨u, hmeas, hu₁, hu₂⟩
     exact
-      ⟨u, hmeas, fun t htu => null_of_totalVariation_zero _ (measure_mono_null htu hu₁),
-        fun t htv => null_of_totalVariation_zero _ (measure_mono_null htv hu₂)⟩
+      ⟨u, hmeas, fun t htu => null_of_totalVariation_zero _ (Measure.mono_null htu hu₁),
+        fun t htv => null_of_totalVariation_zero _ (Measure.mono_null htv hu₂)⟩
 
 theorem mutuallySingular_ennreal_iff (s : SignedMeasure α) (μ : VectorMeasure α ℝ≥0∞) :
     s ⟂ᵥ μ ↔ s.totalVariation ⟂ₘ μ.ennrealToMeasure := by
@@ -523,10 +523,10 @@ theorem mutuallySingular_ennreal_iff (s : SignedMeasure α) (μ : VectorMeasure 
   · rintro ⟨u, hmeas, hu₁, hu₂⟩
     refine
       VectorMeasure.MutuallySingular.mk u hmeas
-        (fun t htu _ => null_of_totalVariation_zero _ (measure_mono_null htu hu₁)) fun t htv hmt =>
+        (fun t htu _ => null_of_totalVariation_zero _ (Measure.mono_null htu hu₁)) fun t htv hmt =>
         ?_
     rw [← VectorMeasure.ennrealToMeasure_apply hmt]
-    exact measure_mono_null htv hu₂
+    exact Measure.mono_null htv hu₂
 
 theorem totalVariation_mutuallySingular_iff (s : SignedMeasure α) (μ : Measure α) :
     s.totalVariation ⟂ₘ μ ↔

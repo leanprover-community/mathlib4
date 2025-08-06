@@ -284,7 +284,7 @@ theorem measure_isOpen_pos_of_smulInvariant_of_compact_ne_zero (hK : IsCompact K
   let ⟨t, ht⟩ := hK.exists_finite_cover_smul G hU hne
   pos_iff_ne_zero.2 fun hμU =>
     hμK <|
-      measure_mono_null ht <|
+      Measure.mono_null ht <|
         (measure_biUnion_null_iff t.countable_toSet).2 fun _ _ => by rwa [measure_smul]
 
 /-- If measure `μ` is invariant under an additive group action and is nonzero on a compact set `K`,
