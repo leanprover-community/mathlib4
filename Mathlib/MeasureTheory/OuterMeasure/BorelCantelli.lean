@@ -46,7 +46,7 @@ theorem measure_limsup_cofinite_eq_zero {s : ι → Set α} (hs : ∑' i, μ (s 
       gcongr
       rw [hasBasis_cofinite.limsup_eq_iInf_iSup, iUnion_subtype]
       exact iInter₂_subset _ t.finite_toSet
-    _ ≤ ∑' i : {i // i ∉ t}, μ (s i) := measure_iUnion_le _
+    _ ≤ ∑' i : {i // i ∉ t}, μ (s i) := Measure.iUnion_le _
 
 /-- One direction of the **Borel-Cantelli lemma**
 (sometimes called the "*first* Borel-Cantelli lemma"):
@@ -88,7 +88,7 @@ theorem ae_eventually_notMem {s : ℕ → Set α} (hs : (∑' i, μ (s i)) ≠ �
 theorem measure_liminf_cofinite_eq_zero [Infinite ι] {s : ι → Set α} (h : ∑' i, μ (s i) ≠ ∞) :
     μ (liminf s cofinite) = 0 := by
   rw [← le_zero_iff, ← measure_limsup_cofinite_eq_zero h]
-  exact measure_mono liminf_le_limsup
+  exact Measure.mono liminf_le_limsup
 
 theorem measure_liminf_atTop_eq_zero {s : ℕ → Set α} (h : (∑' i, μ (s i)) ≠ ∞) :
     μ (liminf s atTop) = 0 := by
