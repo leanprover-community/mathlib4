@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
 import Mathlib.Analysis.Normed.Field.Lemmas
-import Mathlib.Analysis.Normed.Ring.Ultra
+import Mathlib.NumberTheory.Padics.PadicNorm
 import Mathlib.RingTheory.Int.Basic
 import Mathlib.RingTheory.Valuation.Basic
-import Mathlib.NumberTheory.Padics.PadicNorm
 import Mathlib.Tactic.Peel
+import Mathlib.Topology.MetricSpace.Ultra.Basic
 
 /-!
 # p-adic numbers
@@ -871,7 +871,7 @@ lemma norm_intCast_eq_one_iff {z : ℤ} :
     ‖(z : ℚ_[p])‖ = 1 ↔ IsCoprime z p := by
   rw [← not_iff_not]
   simp [Int.isCoprime_iff_nat_coprime, Nat.coprime_comm, ← norm_natCast_lt_one_iff,
-    ← hp.out.dvd_iff_not_coprime, norm_natAbs, - cast_natAbs, IsUltrametricDist.norm_intCast_le_one]
+    ← hp.out.dvd_iff_not_coprime, norm_natAbs, - cast_natAbs, padicNormE.norm_int_le_one]
 
 lemma norm_natCast_eq_one_iff {n : ℕ} :
     ‖(n : ℚ_[p])‖ = 1 ↔ p.Coprime n := by
