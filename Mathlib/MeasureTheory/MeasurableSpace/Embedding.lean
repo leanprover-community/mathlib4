@@ -756,16 +756,16 @@ lemma equivRange_symm_apply_mk (hf : MeasurableEmbedding f) (x : α) :
   nth_rw 3 [← hf.equivRange.symm_apply_apply x]
   rw [hf.equivRange_apply]
 
-open Classical in
 /-- The left-inverse of a `MeasurableEmbedding` -/
 protected noncomputable
 def invFun [Nonempty α] (hf : MeasurableEmbedding f) (x : β) : α :=
+  open Classical in
   if hx : x ∈ range f then hf.equivRange.symm ⟨x, hx⟩ else (Nonempty.some inferInstance)
 
-open Classical in
 @[fun_prop, measurability]
 lemma measurable_invFun [Nonempty α] (hf : MeasurableEmbedding f) :
     Measurable (hf.invFun : β → α) :=
+   open Classical in
   Measurable.dite (by fun_prop) measurable_const hf.measurableSet_range
 
 lemma leftInverse_invFun [Nonempty α] (hf : MeasurableEmbedding f) : hf.invFun.LeftInverse f := by
