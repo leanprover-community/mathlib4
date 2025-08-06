@@ -196,7 +196,7 @@ theorem center_prod {N : Type*} [Mul N] :
   simp only [mem_prod, mem_center_iff, isMulCentral_iff, commute_iff_eq, Prod.ext_iff]
   exact ⟨
     fun ⟨h1, h2, h3⟩ => ⟨
-      ⟨ fun a => (h1 (a,x.2)).1,
+      ⟨ fun a => (h1 (a, x.2)).1,
         fun b c => (h2 (b, x.2) (c, x.2)).1,
         fun a b => (h3 (a, x.2) (b, x.2)).1⟩,
       ⟨ fun a => (h1 (x.1, a)).2,
