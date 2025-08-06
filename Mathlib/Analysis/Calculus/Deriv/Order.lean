@@ -37,7 +37,7 @@ lemma exists_gt_of_hasDerivWithinAt_pos (f'_pos : 0 < f')
   rcases exists_Icc_mem_subset_of_mem_nhds (U_open.mem_nhds x_mem_U) with
     ⟨a, b, ⟨hax, hbx⟩, hab1, hab2⟩
   simp only [Icc_mem_nhds_iff, Set.mem_Ioo] at hab1
-  refine ⟨b, by tauto, fun y hy => ?_⟩
+  refine ⟨b, hab1.2, fun y hy => ?_⟩
   simp only [Set.mem_inter_iff, Set.mem_Ioc] at hy
   have slope_pos : 0 < slope f x y :=
     hU y (hab2 ⟨le_trans hax (le_of_lt hy.1.1), by linarith⟩) hy.2 (ne_of_gt hy.1.1)
@@ -59,8 +59,7 @@ lemma exists_gt_of_hasDerivWithinAt_neg (f'_neg : f' < 0)
   simp only [gt_iff_lt, Set.mem_inter_iff, Set.mem_Ioc, Set.mem_neg, mul_neg, neg_mul, one_mul,
     neg_neg, and_imp, Set.mem_Ico] at this ⊢
   rcases this with ⟨z, hzx, hz⟩
-  use -z, by linarith
-  intro y hxy hyz hyS
+  refine ⟨-z, by linarith, fun y hxy hyz hyS => ?_⟩
   simpa using hz (-y) (by linarith) (by linarith) (by simpa using hyS)
 
 lemma exists_lt_of_hasDerivWithinAt_pos (f'_pos : 0 < f')
