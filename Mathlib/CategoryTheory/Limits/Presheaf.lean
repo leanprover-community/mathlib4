@@ -215,7 +215,7 @@ lemma isIso_of_isLeftKanExtension : IsIso α :=
 variable (A)
 
 /-- See Property 2 of https://ncatlab.org/nlab/show/Yoneda+extension#properties. -/
-noncomputable instance preservesColimitsOfSize_leftKanExtension :
+instance preservesColimitsOfSize_leftKanExtension :
     PreservesColimitsOfSize.{v₃, u₃} (uliftYoneda.{max w v₂}.leftKanExtension A) :=
   (uliftYonedaAdjunction _ (uliftYoneda.leftKanExtensionUnit A)).leftAdjoint_preservesColimits
 
@@ -246,7 +246,7 @@ presheaf `P` as a colimit of representables.
 The construction of [MM92], Chapter I, Section 5, Corollary 3.
 -/
 @[simps]
-noncomputable def coconeOfRepresentable (P : Cᵒᵖ ⥤ Type max w v₁) :
+def coconeOfRepresentable (P : Cᵒᵖ ⥤ Type max w v₁) :
     Cocone (functorToRepresentables P) where
   pt := P
   ι :=
@@ -268,7 +268,7 @@ that is, we have exhibited an arbitrary presheaf `P` as a colimit of representab
 
 The result of [MM92], Chapter I, Section 5, Corollary 3.
 -/
-noncomputable def colimitOfRepresentable (P : Cᵒᵖ ⥤ Type max w v₁) :
+def colimitOfRepresentable (P : Cᵒᵖ ⥤ Type max w v₁) :
     IsColimit (coconeOfRepresentable P) where
   desc s :=
     { app X x := uliftYonedaEquiv (s.ι.app (Opposite.op (Functor.elementsMk P X x)))
@@ -495,7 +495,7 @@ lemma coconeApp_naturality {P : Cᵒᵖ ⥤ Type max w v₁ v₂} {x y : P.Eleme
 and a natural transformation `φ : F ⋙ uliftYoneda ⟶ uliftYoneda ⋙ G`, this is the
 (natural) morphism `P ⟶ F.op ⋙ G.obj P` for all `P : Cᵒᵖ ⥤ Type max w v₁ v₂` that is
 determined by `φ`. -/
-noncomputable def presheafHom (P : Cᵒᵖ ⥤ Type max w v₁ v₂) : P ⟶ F.op ⋙ G.obj P :=
+def presheafHom (P : Cᵒᵖ ⥤ Type max w v₁ v₂) : P ⟶ F.op ⋙ G.obj P :=
   (colimitOfRepresentable P).desc
     (Cocone.mk _ { app x := coconeApp.{w} φ x.unop })
 
@@ -623,7 +623,7 @@ def tautologicalCocone' (P : Cᵒᵖ ⥤ Type max w v₁) :
     a larger universe.)
 
     Proposition 2.6.3(i) in [Kashiwara2006] -/
-noncomputable def isColimitTautologicalCocone' (P : Cᵒᵖ ⥤ Type max w v₁) :
+def isColimitTautologicalCocone' (P : Cᵒᵖ ⥤ Type max w v₁) :
     IsColimit (tautologicalCocone'.{w} P) :=
   (IsColimit.whiskerEquivalenceEquiv
     (CategoryOfElements.costructuredArrowULiftYonedaEquivalence.{w} P)).2
@@ -644,30 +644,15 @@ def tautologicalCocone (P : Cᵒᵖ ⥤ Type v₁) :
 representables.
 
 Proposition 2.6.3(i) in [Kashiwara2006] -/
-def isColimitTautologicalCocone : IsColimit (tautologicalCocone P) where
-  desc := fun s => by
-    refine ⟨fun X t => yonedaEquiv (s.ι.app (CostructuredArrow.mk (yonedaEquiv.symm t))), ?_⟩
-    intros X Y f
-    ext t
-    dsimp
-    rw [yonedaEquiv_naturality', yonedaEquiv_symm_map]
-    simpa using (s.ι.naturality
-      (CostructuredArrow.homMk' (CostructuredArrow.mk (yonedaEquiv.symm t)) f.unop)).symm
-  fac := by
-    intro s t
-    dsimp
-    apply yonedaEquiv.injective
-    rw [yonedaEquiv_comp]
-    dsimp only
-    rw [Equiv.symm_apply_apply]
-    rfl
-  uniq := by
-    intro s j h
-    ext V x
-    obtain ⟨t, rfl⟩ := yonedaEquiv.surjective x
-    dsimp
-    rw [Equiv.symm_apply_apply, ← yonedaEquiv_comp]
-    exact congr_arg _ (h (CostructuredArrow.mk t))
+def isColimitTautologicalCocone (P : Cᵒᵖ ⥤ Type v₁) :
+    IsColimit (tautologicalCocone P) :=
+  let e : functorToRepresentables.{v₁} P ≅
+    ((CategoryOfElements.costructuredArrowYonedaEquivalence P).functor ⋙
+      CostructuredArrow.proj yoneda P ⋙ yoneda) :=
+    NatIso.ofComponents (fun e ↦ NatIso.ofComponents (fun X ↦ Equiv.ulift.toIso))
+  (IsColimit.whiskerEquivalenceEquiv
+    (CategoryOfElements.costructuredArrowYonedaEquivalence P)).2
+      ((IsColimit.precomposeHomEquiv e _).1 (colimitOfRepresentable.{v₁} P))
 
 variable {I : Type v₁} [SmallCategory I] (F : I ⥤ C)
 
