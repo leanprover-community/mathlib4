@@ -431,7 +431,7 @@ structure Arrow.Relation {S : J.Cover X} (I₁ I₂ : S.Arrow) where
   /-- The second arrow defining the relation. -/
   g₂ : Z ⟶ I₂.Y
   /-- The relation itself. -/
-  w : g₁ ≫ I₁.f = g₂ ≫ I₂.f := by aesop_cat
+  w : g₁ ≫ I₁.f = g₂ ≫ I₂.f := by cat_disch
 
 attribute [reassoc] Arrow.Relation.w
 

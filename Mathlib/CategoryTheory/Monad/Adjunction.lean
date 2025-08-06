@@ -335,7 +335,7 @@ instance comparison_essSurj [Reflective R] :
 
 lemma comparison_full [R.Full] {L : C ⥤ D} (adj : L ⊣ R) :
     (Monad.comparison adj).Full where
-  map_surjective f := ⟨R.preimage f.f, by aesop_cat⟩
+  map_surjective f := ⟨R.preimage f.f, by cat_disch⟩
 
 end Reflective
 
@@ -363,7 +363,7 @@ instance comparison_essSurj [Coreflective R] :
 
 lemma comparison_full [R.Full] {L : C ⥤ D} (adj : R ⊣ L) :
     (Comonad.comparison adj).Full where
-  map_surjective f := ⟨R.preimage f.f, by aesop_cat⟩
+  map_surjective f := ⟨R.preimage f.f, by cat_disch⟩
 
 end Coreflective
 

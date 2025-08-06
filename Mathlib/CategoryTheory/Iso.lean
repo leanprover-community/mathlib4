@@ -50,10 +50,10 @@ structure Iso {C : Type u} [Category.{v} C] (X Y : C) where
   /-- The backwards direction of an isomorphism. -/
   inv : Y ⟶ X
   /-- Composition of the two directions of an isomorphism is the identity on the source. -/
-  hom_inv_id : hom ≫ inv = 𝟙 X := by aesop_cat
+  hom_inv_id : hom ≫ inv = 𝟙 X := by cat_disch
   /-- Composition of the two directions of an isomorphism in reverse order
   is the identity on the target. -/
-  inv_hom_id : inv ≫ hom = 𝟙 Y := by aesop_cat
+  inv_hom_id : inv ≫ hom = 𝟙 Y := by cat_disch
 
 attribute [reassoc (attr := simp)] Iso.hom_inv_id Iso.inv_hom_id
 
@@ -211,16 +211,16 @@ theorem hom_eq_inv (α : X ≅ Y) (β : Y ≅ X) : α.hom = β.inv ↔ β.hom = 
 def homToEquiv (α : X ≅ Y) {Z : C} : (Z ⟶ X) ≃ (Z ⟶ Y) where
   toFun f := f ≫ α.hom
   invFun g := g ≫ α.inv
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
 /-- The bijection `(X ⟶ Z) ≃ (Y ⟶ Z)` induced by `α : X ≅ Y`. -/
 @[simps]
 def homFromEquiv (α : X ≅ Y) {Z : C} : (X ⟶ Z) ≃ (Y ⟶ Z) where
   toFun f := α.inv ≫ f
   invFun g := α.hom ≫ g
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
 end Iso
 
