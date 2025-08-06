@@ -1123,6 +1123,7 @@ import Mathlib.Algebra.Star.CentroidHom
 import Mathlib.Algebra.Star.Conjneg
 import Mathlib.Algebra.Star.Free
 import Mathlib.Algebra.Star.Module
+import Mathlib.Algebra.Star.MonoidHom
 import Mathlib.Algebra.Star.NonUnitalSubalgebra
 import Mathlib.Algebra.Star.NonUnitalSubsemiring
 import Mathlib.Algebra.Star.Pi
@@ -2661,6 +2662,7 @@ import Mathlib.CategoryTheory.SmallObject.TransfiniteCompositionLifting
 import Mathlib.CategoryTheory.SmallObject.TransfiniteIteration
 import Mathlib.CategoryTheory.SmallObject.WellOrderInductionData
 import Mathlib.CategoryTheory.Square
+import Mathlib.CategoryTheory.Subobject.ArtinianObject
 import Mathlib.CategoryTheory.Subobject.Basic
 import Mathlib.CategoryTheory.Subobject.Comma
 import Mathlib.CategoryTheory.Subobject.FactorThru
