@@ -217,24 +217,33 @@ def Bivariate.swap : R[X][Y] ≃ₐ[R] R[X][Y] := by
   apply AlgEquiv.ofAlgHom (aevalAeval (Y : R[X][Y]) (C X)) (aevalAeval (Y : R[X][Y]) (C X))
     <;> (ext n m <;> simp)
 
+@[simp]
+theorem Bivariate.swap_apply (p : R[X][Y]) : swap p = p.aevalAeval (A := R[X][Y]) Y (C X) := rfl
+
+theorem Bivariate.swap_X : swap (R := R) (C X) = Y := by simp
+
+theorem Bivariate.swap_Y : swap (R := R) Y = (C X) := by simp
+
+theorem Bivariate.swap_monomial_monomial (n m : ℕ) (r : R) :
+    swap (monomial n (monomial m r)) = (monomial m (monomial n r)) := by
+  simp [← C_mul_X_pow_eq_monomial]; ac_rfl
+
 /-- Evaluating `swap p` at `x`, `y` is the same as evaluating `p` at `y` `x`. -/
 theorem Bivariate.aevalAeval_swap (x y : A) (p : R[X][Y]) :
     aevalAeval x y (swap p) = aevalAeval y x p := by
-  unfold swap aevalAeval at *
   induction p using Polynomial.induction_on' with
   | add => aesop
   | monomial n a =>
-    simp_all
+    simp
     induction a using Polynomial.induction_on' <;> aesop (add norm add_mul)
 
 attribute [local instance] Polynomial.algebra in
 theorem Bivariate.aveal_eq_map_swap (x : A) (p : R[X][Y]) :
     aeval (C x) p = mapAlgHom (aeval x) (swap p) := by
-  simp only [swap, aevalAeval]
-  induction' p using Polynomial.induction_on' with p q hp hq
-  · aesop
-  · next n a =>
-      simp_all
+  induction p using Polynomial.induction_on' with
+  | add =>  aesop
+  | monomial n a =>
+      simp
       induction a using Polynomial.induction_on'
         <;> aesop (add norm [add_mul, C_mul_X_pow_eq_monomial])
 
