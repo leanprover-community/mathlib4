@@ -917,11 +917,6 @@ instance distribMulAction [AddMonoid α] [DistribMulAction R' α] (S : Subsemiri
     DistribMulAction S α :=
   inferInstance
 
-instance (priority := low) [AddCommMonoid α] [Module R' α] {S' : Type*} [SetLike S' R']
-    [SubsemiringClass S' R'] (s : S') : Module s α where
-  add_smul r₁ r₂ := add_smul (r₁ : R') r₂
-  zero_smul := zero_smul R'
-
 /-- The action by a subsemiring is the action by the underlying semiring. -/
 instance mulDistribMulAction [Monoid α] [MulDistribMulAction R' α] (S : Subsemiring R') :
     MulDistribMulAction S α :=

@@ -219,7 +219,7 @@ def pairwiseCoconeIso :
     (Pairwise.cocone U).op ≅
       (Cones.postcomposeEquivalence (NatIso.op (pairwiseDiagramIso U :) :)).functor.obj
         ((opensLeCoverCocone U).op.whisker (pairwiseToOpensLeCover U).op) :=
-  Cones.ext (Iso.refl _) (by aesop_cat)
+  Cones.ext (Iso.refl _) (by cat_disch)
 
 end SheafCondition
 
