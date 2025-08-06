@@ -114,10 +114,10 @@ variable [IsGalois K L]
 
 /-- Given a finite Galois extension `L/K`, `normalBasis K L` is a basis of `L` over `K`
 that is an orbit under the Galois group action. -/
-noncomputable def normalBasis : Basis (L ≃ₐ[K] L) K L :=
+noncomputable def normalBasis : Module.Basis (L ≃ₐ[K] L) K L :=
   basisOfLinearIndependentOfCardEqFinrank
     (exists_linearIndependent_algEquiv_apply K L).choose_spec
-    (card_aut_eq_finrank K L)
+    (Fintype.card_eq_nat_card.trans <| card_aut_eq_finrank K L)
 
 variable {K L}
 
