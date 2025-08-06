@@ -134,7 +134,7 @@ lemma integrable_eval_pi [∀ i, IsFiniteMeasure (μ i)] {i : ι} {f : X i → E
 
 lemma integral_eval_pi [NormedSpace ℝ E] [∀ i, IsProbabilityMeasure (μ i)] {i : ι} {f : X i → E}
     (hf : AEStronglyMeasurable f (μ i)) :
-    ∫ (x : Π i, X i), f (x i) ∂Measure.pi μ = ∫ x, f x ∂μ i := by
+    ∫ x : Π i, X i, f (x i) ∂Measure.pi μ = ∫ x, f x ∂μ i := by
   rw [← (measurePreserving_eval μ i).map_eq, integral_map]
   · exact Measurable.aemeasurable (by fun_prop)
   · rwa [(measurePreserving_eval μ i).map_eq]

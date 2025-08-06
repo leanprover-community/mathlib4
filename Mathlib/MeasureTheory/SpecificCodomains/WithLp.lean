@@ -61,7 +61,7 @@ lemma MemLp.prodLp_fst (h : MemLp f p μ) : MemLp (fun x ↦ (f x).fst) p μ :=
 lemma MemLp.prodLp_snd (h : MemLp f p μ) : MemLp (fun x ↦ (f x).snd) p μ :=
   memLp_prodLp_iff.1 h |>.2
 
-alias ⟨_, MemLp.of_eval_prodLp⟩ := memLp_prodLp_iff
+alias ⟨_, MemLp.of_fst_of_snd_prodLp⟩ := memLp_prodLp_iff
 
 lemma integrable_prodLp_iff :
     Integrable f μ ↔
@@ -75,12 +75,12 @@ lemma Integrable.prodLp_fst (h : Integrable f μ) : Integrable (fun x ↦ (f x).
 lemma Integrable.prodLp_snd (h : Integrable f μ) : Integrable (fun x ↦ (f x).snd) μ :=
   integrable_prodLp_iff.1 h |>.2
 
-alias ⟨_, Integrable.of_eval_prodLp⟩ := integrable_prodLp_iff
+alias ⟨_, Integrable.of_fst_of_snd_prodLp⟩ := integrable_prodLp_iff
 
 variable [NormedSpace ℝ E] [NormedSpace ℝ F]
 
 theorem fst_integral_withLp [CompleteSpace F] (hf : Integrable f μ) :
-    (∫ x, f x ∂μ).1 = ∫ x, (f x).1 ∂μ := by
+    (∫ x, f x ∂μ).fst = ∫ x, (f x).fst ∂μ := by
   rw [← WithLp.ofLp_fst]
   conv => enter [1, 1]; change WithLp.prodContinuousLinearEquiv q ℝ E F _
   rw [← ContinuousLinearEquiv.integral_comp_comm, fst_integral]
@@ -88,7 +88,7 @@ theorem fst_integral_withLp [CompleteSpace F] (hf : Integrable f μ) :
   · simpa
 
 theorem snd_integral_withLp [CompleteSpace E] (hf : Integrable f μ) :
-    (∫ x, f x ∂μ).2 = ∫ x, (f x).2 ∂μ := by
+    (∫ x, f x ∂μ).snd = ∫ x, (f x).snd ∂μ := by
   rw [← WithLp.ofLp_snd]
   conv => enter [1, 1]; change WithLp.prodContinuousLinearEquiv q ℝ E F _
   rw [← ContinuousLinearEquiv.integral_comp_comm, snd_integral]
