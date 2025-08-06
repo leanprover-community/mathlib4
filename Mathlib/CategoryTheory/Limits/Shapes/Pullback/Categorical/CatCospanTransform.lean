@@ -594,10 +594,10 @@ structure CatCospanEquivalence
   unitInv : leftAdjoint.comp rightAdjoint ⟶ CatCospanTransform.id F G
   /-- the counit morphism of `CatCospanTransform` -/
   counitInv : CatCospanTransform.id F' G' ⟶ rightAdjoint.comp leftAdjoint
-  unit_hom_inv_id : unit ≫ unitInv = 𝟙 _ := by aesop_cat
-  unit_inv_hom_id : unitInv ≫ unit = 𝟙 _ := by aesop_cat
-  counit_hom_inv_id : counit ≫ counitInv = 𝟙 _ := by aesop_cat
-  counit_inv_hom_id : counitInv ≫ counit = 𝟙 _ := by aesop_cat
+  unit_hom_inv_id : unit ≫ unitInv = 𝟙 _ := by cat_disch
+  unit_inv_hom_id : unitInv ≫ unit = 𝟙 _ := by cat_disch
+  counit_hom_inv_id : counit ≫ counitInv = 𝟙 _ := by cat_disch
+  counit_inv_hom_id : counitInv ≫ counit = 𝟙 _ := by cat_disch
 
 namespace CatCospanEquivalence
 
@@ -670,7 +670,7 @@ def mk'
     (left_triangle :
         unitIso.hom ▷ transform ≫ (α_ _ _ _).hom ≫ transform ◁ counitIso.hom =
         (λ_ _).hom ≫ (ρ_ _).inv := by
-      aesop_cat) :
+      cat_disch) :
     CatCospanEquivalence F G F' G' where
   leftAdjoint := transform
   rightAdjoint := inverse
@@ -795,7 +795,7 @@ def mk''
             Iso.inv_hom_id_app_assoc, Iso.inv_hom_id_app,
             CatCommSq.vId_iso_hom_app]
           simp [← Functor.map_comp]))
-    (left_triangle := by aesop_cat)
+    (left_triangle := by cat_disch)
 
 end CatCospanEquivalence
 
