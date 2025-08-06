@@ -188,8 +188,9 @@ theorem prod_centralizer_subset_centralizer_prod {N : Type*} [Mul N] (S : Set M)
 
 open Function in
 @[to_additive addCenter_pi]
-theorem center_pi {ι : Type*} {A : ι → Type*} [Π i, Mul (A i)] [DecidableEq ι] :
+theorem center_pi {ι : Type*} {A : ι → Type*} [Π i, Mul (A i)] :
     center (Π i, A i) = univ.pi (fun i => center (A i)) := by
+  classical
   ext x
   simp only [mem_pi, mem_center_iff, isMulCentral_iff, mem_univ, forall_true_left,
     commute_iff_eq, funext_iff, Pi.mul_def]
