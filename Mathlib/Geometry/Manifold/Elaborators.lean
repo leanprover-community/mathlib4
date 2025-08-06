@@ -247,6 +247,12 @@ we also allow partial homeomorphisms or partial equivalences. -/
 def isFunction? (e : Expr) : TermElabM (Option (Expr × Expr)) := do
   match e with
   | .forallE _ src tgt _ => return some (src, tgt)
+  | mkApp4 (.const ``PartialHomeomorph [_uX, _uY]) X Y _ _ =>
+    trace[MDiffElab] m!"found a partial homeomorphism from {X} to {Y}"
+    return some (X, Y)
+  | mkApp2 (.const ``PartialEquiv [_uα, _uβ]) α β =>
+    trace[MDiffElab] m!"found a partial equivalence from {α} to {β}"
+    return some (α, β)
   | _ => return none
 
 /-- `MDiffAt[s] f x` elaborates to `MDifferentiableWithinAt I J f s x`,

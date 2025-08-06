@@ -91,6 +91,35 @@ variable {EM' : Type*} [NormedAddCommGroup EM']
 -- General case: a function between two manifolds.
 variable {f : M → M'} {s : Set M} {m : M}
 
+variable {φ : PartialHomeomorph M E} {ψ : PartialEquiv M E}
+
+#check MDifferentiableWithinAt I 𝓘(𝕜, E) ψ
+#check MDifferentiableWithinAt I 𝓘(𝕜, E) ψ s
+/--
+error: Application type mismatch: In the application
+  MDifferentiableWithinAt I 𝓘(𝕜, E) φ
+the argument
+  φ
+has type
+  PartialHomeomorph M E : Type (max u_4 u_2)
+but is expected to have type
+  ?M → ?M' : Type (max ?u.64703 ?u.64706)
+-/
+#guard_msgs in
+#check MDiffAt[s] φ
+/--
+error: Application type mismatch: In the application
+  MDifferentiableWithinAt I 𝓘(𝕜, E) ψ
+the argument
+  ψ
+has type
+  PartialEquiv M E : Type (max u_4 u_2)
+but is expected to have type
+  ?M → ?M' : Type (max ?u.68182 ?u.68185)
+-/
+#guard_msgs in
+#check MDiffAt[s] ψ
+
 /-- info: MDifferentiableWithinAt I I' f s : M → Prop -/
 #guard_msgs in
 #check MDiffAt[s] f
