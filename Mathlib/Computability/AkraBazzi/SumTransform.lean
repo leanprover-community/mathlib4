@@ -108,7 +108,7 @@ lemma isLittleO_self_div_log_id :
                     _ = (fun (_ : ℕ) => ((1 : ℝ) ^ 2)) := by simp
                     _ =o[atTop] (fun (n : ℕ) => (log n) ^ 2) :=
                           IsLittleO.pow (IsLittleO.natCast_atTop
-                            <| isLittleO_const_log_atTop) (by norm_num)
+                            <| isLittleO_const_log_atTop) (by simp)
          _ = (fun (n : ℕ) => (n : ℝ)) := by ext; simp
 
 variable {α : Type*} [Fintype α] {T : ℕ → ℝ} {g : ℝ → ℝ} {a b : α → ℝ} {r : α → ℕ → ℕ}
@@ -165,7 +165,7 @@ lemma bi_min_div_two_lt_one : b (min_bi b) / 2 < 1 := by
   calc b (min_bi b) / 2 < b (min_bi b) := by aesop (add safe apply div_two_lt_of_pos)
                       _ < 1 := R.b_lt_one _
 
-lemma bi_min_div_two_pos : 0 < b (min_bi b) / 2 := div_pos (R.b_pos _) (by norm_num)
+lemma bi_min_div_two_pos : 0 < b (min_bi b) / 2 := div_pos (R.b_pos _) (by simp)
 
 lemma exists_eventually_const_mul_le_r :
     ∃ c ∈ Set.Ioo (0 : ℝ) 1, ∀ᶠ (n : ℕ) in atTop, ∀ i, c * n ≤ r i n := by
@@ -367,7 +367,7 @@ lemma isLittleO_deriv_smoothingFn : deriv ε =o[atTop] fun x => x⁻¹ := calc
                 (by rw [isBigO_neg_right]; aesop (add safe isBigO_refl)) ?_
               rw [isLittleO_one_left_iff]
               exact Tendsto.comp tendsto_norm_atTop_atTop
-                <| Tendsto.comp (tendsto_pow_atTop (by norm_num)) tendsto_log_atTop
+                <| Tendsto.comp (tendsto_pow_atTop (by simp)) tendsto_log_atTop
             · exact Filter.Eventually.of_forall (fun x hx => by rw [mul_one] at hx; simp [hx])
     _ = fun x => x⁻¹ := by simp
 
@@ -403,7 +403,7 @@ lemma eventually_one_add_smoothingFn_pos : ∀ᶠ (n : ℕ) in atTop, 0 < 1 + ε
   have h₁ := isLittleO_smoothingFn_one
   rw [isLittleO_iff] at h₁
   refine Eventually.natCast_atTop (p := fun n => 0 < 1 + ε n) ?_
-  filter_upwards [h₁ (by norm_num : (0 : ℝ) < 1 / 2), eventually_gt_atTop 1] with x _ hx'
+  filter_upwards [h₁ (by simp : (0 : ℝ) < 1 / 2), eventually_gt_atTop 1] with x _ hx'
   have : 0 < log x := Real.log_pos hx'
   change 0 < 1 + 1 / log x
   positivity
