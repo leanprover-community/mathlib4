@@ -47,9 +47,8 @@ instance hoFunctor.binaryProductNerveIsIso (C D : Type v) [Category.{v} C] [Cate
         nerveFunctor (hoFunctor ⋙ nerveFunctor) (A := Cat.of C) (B := Cat.of D)
       exact IsIso.of_isIso_fac_left eq.symm
     exact IsIso.of_isIso_fac_right (prodComparison_comp hoFunctor nerveFunctor).symm
-  apply isIso_of_fully_faithful nerveFunctor
+  exact isIso_of_fully_faithful nerveFunctor _
 
--- Note: `(Δ[n] : SSet.{w})` works, but I'm not sure it's the right thing to do here.
 /-- By `simplexIsNerve` this is isomorphic to a map of the form
 `hoFunctor.binaryProductNerveIsIso`. -/
 instance hoFunctor.binarySimplexProductIsIso.{w} (n m : ℕ) :
@@ -57,8 +56,7 @@ instance hoFunctor.binarySimplexProductIsIso.{w} (n m : ℕ) :
   IsIso.of_isIso_fac_right (prodComparison_natural
     hoFunctor (simplexIsNerveULiftFin.{w} n).hom (simplexIsNerveULiftFin m).hom).symm
 
-noncomputable
-def CartesianMonoidalCategory.tensorLeftIsoProd
+noncomputable def CartesianMonoidalCategory.tensorLeftIsoProd
     {C : Type*} [Category C] [CartesianMonoidalCategory C] (X : C) :
     MonoidalCategory.tensorLeft X ≅ prod.functor.obj X :=
   NatIso.ofComponents fun Y ↦
@@ -117,8 +115,7 @@ instance hoFunctor.preservesBinaryProducts (X Y : SSet) :
 out of `Discrete Limits.WalkingPair`. -/
 instance hoFunctor.preservesBinaryProducts' :
     PreservesLimitsOfShape (Discrete Limits.WalkingPair) hoFunctor where
-  preservesLimit :=
-    fun {F} ↦ preservesLimit_of_iso_diagram hoFunctor (id (diagramIsoPair F).symm)
+  preservesLimit {F} := preservesLimit_of_iso_diagram hoFunctor (id (diagramIsoPair F).symm)
 
 instance hoFunctor.preservesFiniteProducts : PreservesFiniteProducts hoFunctor :=
   Limits.PreservesFiniteProducts.of_preserves_binary_and_terminal _
