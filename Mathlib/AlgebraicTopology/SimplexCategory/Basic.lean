@@ -821,10 +821,7 @@ theorem eq_δ_of_mono {n : ℕ} (θ : ⦋n⦌ ⟶ ⦋n + 1⦌) [Mono θ] : ∃ i
 
 theorem len_lt_of_mono {Δ' Δ : SimplexCategory} (i : Δ' ⟶ Δ) [Mono i] (hi' : Δ ≠ Δ') :
     Δ'.len < Δ.len := by
-  rcases lt_or_eq_of_le (len_le_of_mono i) with (h | h)
-  · exact h
-  · exfalso
-    exact hi' (by ext; exact h.symm)
+  grind [→ len_le_of_mono, SimplexCategory.ext]
 
 noncomputable instance : SplitEpiCategory SimplexCategory :=
   skeletalEquivalence.inverse.splitEpiCategoryImpOfIsEquivalence
