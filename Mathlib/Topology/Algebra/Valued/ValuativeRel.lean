@@ -62,7 +62,7 @@ instance of_subgroups_basis {R : Type*} [CommRing R] [ValuativeRel R] :
   of_hasBasis_zero ((valuation R).subgroups_basis.hasBasis_nhds_zero)
 
 /-- The correctness result. -/
-lemma _root_.isValuativeTopology_iff_mk'_toTopologicalSpace_eq [t : TopologicalSpace R] :
+lemma _root_.isValuativeTopology_iff_subgroups_basis_topology_eq [t : TopologicalSpace R] :
     IsValuativeTopology R ↔ (valuation R).subgroups_basis.topology = t := by
   let := (valuation R).subgroups_basis
   refine ⟨fun _ ↦ ext_nhds fun x ↦ Filter.ext fun s ↦ ?_, ?_⟩
@@ -309,7 +309,7 @@ theorem of_hasBasis {R : Type*} [CommRing R] [ValuativeRel R]
     (ih : ∀ [TopologicalSpace R] [IsValuativeTopology R], (nhds 0).HasBasis p s)
     [τ : TopologicalSpace R] [ContinuousConstVAdd R R] (h : (nhds 0).HasBasis p s) :
     IsValuativeTopology R := by
-  refine isValuativeTopology_iff_mk'_toTopologicalSpace_eq.mpr ?_
+  rw [isValuativeTopology_iff_subgroups_basis_topology_eq]
   let := (valuation R).subgroups_basis
   specialize @ih this.topology of_subgroups_basis
   refine ext_nhds fun x ↦ Filter.ext fun t ↦ ?_
