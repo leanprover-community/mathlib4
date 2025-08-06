@@ -70,7 +70,7 @@ export ZeroMemClass (zero_mem)
 
 attribute [to_additive] OneMemClass
 
-attribute [aesop safe apply (rule_sets := [SetLike])] one_mem zero_mem
+attribute [simp, aesop safe (rule_sets := [SetLike])] one_mem zero_mem
 
 section
 
@@ -260,7 +260,7 @@ theorem subsingleton_iff : Subsingleton (Submonoid M) ↔ Subsingleton M :=
         mem_bot.mp <| Subsingleton.elim (⊤ : Submonoid M) ⊥ ▸ mem_top i
       (this x).trans (this y).symm⟩,
     fun _ =>
-    ⟨fun x y => Submonoid.ext fun i => Subsingleton.elim 1 i ▸ by simp [Submonoid.one_mem]⟩⟩
+    ⟨fun x y => Submonoid.ext fun i => Subsingleton.elim 1 i ▸ by simp⟩⟩
 
 @[to_additive (attr := simp)]
 theorem nontrivial_iff : Nontrivial (Submonoid M) ↔ Nontrivial M :=
@@ -457,6 +457,23 @@ instance toMonoid {M : Type*} [Monoid M] (S : Submonoid M) : Monoid S := fast_in
 @[to_additive "An `AddSubmonoid` of an `AddCommMonoid` is an `AddCommMonoid`."]
 instance toCommMonoid {M} [CommMonoid M] (S : Submonoid M) : CommMonoid S := fast_instance%
   Subtype.coe_injective.commMonoid Subtype.val rfl (fun _ _ => rfl) fun _ _ => rfl
+
+/-- A submonoid of a left cancellative unital magma inherits left cancellation. -/
+@[to_additive
+      "An `AddSubmonoid` of a left cancellative unital additive magma inherits left cancellation."]
+instance isLeftCancelMul [IsLeftCancelMul M] (S : Submonoid M) : IsLeftCancelMul S :=
+  Subtype.coe_injective.isLeftCancelMul Subtype.val fun _ _ => rfl
+
+/-- A submonoid of a right cancellative unital magma inherits right cancellation. -/
+@[to_additive
+      "An `AddSubmonoid` of a right cancellative unital additive magma inherits right
+      cancellation."]
+instance isRightCancelMul [IsRightCancelMul M] (S : Submonoid M) : IsRightCancelMul S :=
+  Subtype.coe_injective.isRightCancelMul Subtype.val fun _ _ => rfl
+
+/-- A submonoid of a cancellative unital magma inherits cancellation. -/
+@[to_additive "An `AddSubmonoid` of a cancellative unital additive magma inherits cancellation."]
+instance isCancelMul [IsCancelMul M] (S : Submonoid M) : IsCancelMul S where
 
 /-- The natural monoid hom from a submonoid of monoid `M` to `M`. -/
 @[to_additive "The natural monoid hom from an `AddSubmonoid` of `AddMonoid` `M` to `M`."]

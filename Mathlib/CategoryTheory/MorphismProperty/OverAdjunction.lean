@@ -120,7 +120,7 @@ noncomputable def Over.mapPullbackAdj [Q.HasOfPostcompProperty Q] (hPf : P f) (h
               simp only [map_obj_left, Functor.const_obj_obj, pullback_obj_left, Functor.id_obj,
                 Category.assoc, pullback.condition, map_obj_hom, ← pullback_obj_hom, Over.w_assoc])
             (Q.comp_mem _ _ h.prop_hom_left (Q.pullback_fst _ _ hQf))
-          left_inv := by aesop_cat
+          left_inv := by cat_disch
           right_inv := fun h ↦ by
             ext
             dsimp
