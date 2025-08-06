@@ -41,7 +41,7 @@ lemma norm_nnrpow (a : A) {r : ℝ≥0} (hr : 0 < r) (ha : 0 ≤ a := by cfc_tac
 
 lemma nnnorm_sqrt (a : A) (ha : 0 ≤ a := by cfc_tac) : ‖sqrt a‖₊ = NNReal.sqrt ‖a‖₊ := by
   rw [sqrt_eq_nnrpow, NNReal.sqrt_eq_rpow]
-  exact nnnorm_nnrpow a (by norm_num) ha
+  exact nnnorm_nnrpow a (by simp) ha
 
 lemma norm_sqrt (a : A) (ha : 0 ≤ a := by cfc_tac) : ‖sqrt a‖ = √‖a‖ := by
   simpa using congr(NNReal.toReal $(nnnorm_sqrt a ha))
