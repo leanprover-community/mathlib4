@@ -39,7 +39,7 @@ private theorem rexp_cexp_aux (x : ℝ) (s : ℂ) (f : E) :
   push_cast
   conv in cexp _ * _ => lhs; rw [← cpow_one (cexp _)]
   rw [← cpow_add _ _ (Complex.exp_ne_zero _), cpow_def_of_ne_zero (Complex.exp_ne_zero _),
-    Complex.log_exp (by norm_num; exact pi_pos) (by simpa using pi_nonneg)]
+    Complex.log_exp (by simp [pi_pos]) (by simpa using pi_nonneg)]
   ring_nf
 
 theorem mellin_eq_fourierIntegral (f : ℝ → E) {s : ℂ} :
@@ -73,7 +73,7 @@ theorem mellinInv_eq_fourierIntegralInv (σ : ℝ) (f : ℂ → E) {x : ℝ} (hx
   mellinInv σ f x
     = (x : ℂ) ^ (-σ : ℂ) •
       (∫ (y : ℝ), Complex.exp (2 * π * (y * (-Real.log x)) * I) • f (σ + 2 * π * y * I)) := by
-    rw [mellinInv, one_div, ← abs_of_pos (show 0 < (2 * π)⁻¹ by norm_num; exact pi_pos)]
+    rw [mellinInv, one_div, ← abs_of_pos (show 0 < (2 * π)⁻¹ by simp [pi_pos])]
     have hx0 : (x : ℂ) ≠ 0 := ofReal_ne_zero.mpr (ne_of_gt hx)
     simp_rw [neg_add, cpow_add _ _ hx0, mul_smul, integral_smul]
     rw [smul_comm, ← Measure.integral_comp_mul_left]

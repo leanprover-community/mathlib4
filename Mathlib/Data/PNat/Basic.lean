@@ -24,7 +24,7 @@ namespace PNat
 
 instance instCommMonoid : CommMonoid ℕ+ := Positive.commMonoid
 instance instIsOrderedCancelMonoid : IsOrderedCancelMonoid ℕ+ := Positive.isOrderedCancelMonoid
-instance instCancelCommMonoid : CancelCommMonoid ℕ+ := ⟨fun _ _ _ ↦ mul_left_cancel⟩
+instance instCancelCommMonoid : CancelCommMonoid ℕ+ where
 instance instWellFoundedLT : WellFoundedLT ℕ+ := WellFoundedRelation.isWellFounded
 
 @[simp]

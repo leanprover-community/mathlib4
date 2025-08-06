@@ -175,7 +175,7 @@ open Subring Algebra in
   that is separable over `L`. -/
 theorem exists_separable_and_not_isCentral' {L D : Type*} [Field L] [DivisionRing D]
     [Algebra L D] [Algebra.IsAlgebraic L D] [Algebra.IsCentral L D]
-  (hneq : (⊥ : Subalgebra L D) ≠ ⊤) :
+    (hneq : (⊥ : Subalgebra L D) ≠ ⊤) :
     ∃ x : D, x ∉ (⊥ : Subalgebra L D) ∧ IsSeparable L x := by
   have hcenter : Subalgebra.center L D = ⊥ := le_bot_iff.mp IsCentral.out
   have ntrivial : Subring.center D ≠ ⊤ :=

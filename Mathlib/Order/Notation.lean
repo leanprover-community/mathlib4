@@ -47,18 +47,6 @@ postfix:1024 "ᶜ" => compl
 
 /-! ### `Sup` and `Inf` -/
 
-/-- Typeclass for the `⊔` (`\lub`) notation -/
-@[deprecated Max (since := "2024-11-06"), notation_class, ext]
-class Sup (α : Type*) where
-  /-- Least upper bound (`\lub` notation) -/
-  sup : α → α → α
-
-/-- Typeclass for the `⊓` (`\glb`) notation -/
-@[deprecated Min (since := "2024-11-06"), notation_class, ext]
-class Inf (α : Type*) where
-  /-- Greatest lower bound (`\glb` notation) -/
-  inf : α → α → α
-
 attribute [ext] Min Max
 
 /--

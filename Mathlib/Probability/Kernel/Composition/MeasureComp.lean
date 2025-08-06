@@ -79,6 +79,10 @@ lemma map_comp (μ : Measure α) (κ : Kernel α β) {f : β → γ} (hf : Measu
     Measure.bind_apply hs (Kernel.aemeasurable _)]
   simp_rw [Kernel.map_apply' _ hf _ hs]
 
+@[simp]
+lemma discard_comp (μ : Measure α) : Kernel.discard α ∘ₘ μ = μ .univ • Measure.dirac () := by
+  ext s hs; simp [Measure.bind_apply hs (Kernel.aemeasurable _), mul_comm]
+
 section CompProd
 
 lemma compProd_eq_comp_prod (μ : Measure α) [SFinite μ] (κ : Kernel α β) [IsSFiniteKernel κ] :
