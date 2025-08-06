@@ -1356,7 +1356,7 @@ theorem tendsto_measure_Ici_atBot [Preorder α] [(atBot : Filter α).IsCountably
 variable [PartialOrder α] {a b : α}
 
 theorem Iio_ae_eq_Iic' (ha : μ {a} = 0) : Iio a =ᵐ[μ] Iic a := by
-  rw [← Iic_diff_right, diff_ae_eq_self, measure_mono_null Set.inter_subset_right ha]
+  rw [← Iic_diff_right, diff_ae_eq_self, Measure.mono_null Set.inter_subset_right ha]
 
 theorem Ioi_ae_eq_Ici' (ha : μ {a} = 0) : Ioi a =ᵐ[μ] Ici a :=
   Iio_ae_eq_Iic' (α := αᵒᵈ) ha
