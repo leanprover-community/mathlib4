@@ -16,6 +16,7 @@ register_option linter.indentation : Bool := {
 /-- docstring TODO -/
 initialize registerTraceClass `Indentation
 initialize registerTraceClass `Indentation.run
+initialize registerTraceClass `Indentation
 
 namespace Indentation
 
@@ -429,6 +430,29 @@ abbrev ensure (treeInfo : SyntaxTreeInfo) (limit : Limitation)
 
 end Meta
 
+def markSourceCode (src : Substring) (info? : Option SourceInfo) (msg : MessageData)
+    (afterError := 3) : CommandElabM MessageData := do
+  let src := { src with startPos := src.str.findLineStart src.startPos }
+  let fileMap ← getFileMap
+  let endLine := fileMap.utf8PosToLspPos src.stopPos |>.line
+  let lineNumLength := s!"{endLine}".length
+  let errorPos := info?.bind (·.getPos?) |>.getD src.stopPos
+  let mut afterErrorLine? : Option Nat := .none
+  let mut lineNum := fileMap.utf8PosToLspPos src.startPos |>.line
+  let mut outMsg := m!"{← getFileName}:{lineNum} :\n"
+  for line in src.splitOn "\n" do
+    if afterErrorLine? == .some afterError then return outMsg ++ m!"...\n"
+    afterErrorLine? := afterErrorLine?.map (· + 1)
+    let lineNumStr := "".pushn ' ' (lineNumLength - s!"{lineNum}".length) ++ s!"{lineNum}"
+    lineNum := lineNum + 1
+    if line.startPos.byteIdx - 1 ≤ errorPos.byteIdx && errorPos < line.stopPos then
+      let indent := (indentationOfPos src.str line.trimLeft.startPos).getD 0
+      outMsg := outMsg ++ m!"{lineNumStr}*|{line.toString}\n" ++
+        m!"{"".pushn ' ' lineNumStr.length}W {"".pushn '^' indent} ({indent} spaces here) {msg}\n"
+      afterErrorLine? := .some 0
+    else outMsg := outMsg ++ m!"{lineNumStr} |{line.toString}\n"
+  pure outMsg
+
 @[inherit_doc Mathlib.Linter.linter.indentation]
 partial def indentationLinter : Linter where run := withSetOptionIn fun stx => do
   unless getLinterValue Mathlib.Linter.linter.indentation (← getLinterOptions) do
@@ -448,6 +472,8 @@ partial def indentationLinter : Linter where run := withSetOptionIn fun stx => d
       atMost := .some 0 } |>.run (flatten, src)
   if let .error e := result then
     logLint Mathlib.Linter.linter.indentation e.stx e.msg
+    let .some substr := treeInfo.getSubstring? | return
+    trace[Indentation.source] ← markSourceCode substr e.stx.getInfo? e.msg
 
 initialize addLinter indentationLinter
 
