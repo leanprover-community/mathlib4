@@ -574,12 +574,12 @@ theorem CokernelCofork.π_ofπ {X Y P : C} (f : X ⟶ Y) (π : Y ⟶ P) (w : f �
 
 /-- Every cokernel cofork `s` is isomorphic (actually, equal) to `cofork.ofπ (cofork.π s) _`. -/
 def isoOfπ (s : Cofork f 0) : s ≅ Cofork.ofπ (Cofork.π s) (Cofork.condition s) :=
-  Cocones.ext (Iso.refl _) fun j => by cases j <;> aesop_cat
+  Cocones.ext (Iso.refl _) fun j => by cases j <;> cat_disch
 
 /-- If `π = π'`, then `CokernelCofork.of_π π _` and `CokernelCofork.of_π π' _` are isomorphic. -/
 def ofπCongr {P : C} {π π' : Y ⟶ P} {w : f ≫ π = 0} (h : π = π') :
     CokernelCofork.ofπ π w ≅ CokernelCofork.ofπ π' (by rw [← h, w]) :=
-  Cocones.ext (Iso.refl _) fun j => by cases j <;> aesop_cat
+  Cocones.ext (Iso.refl _) fun j => by cases j <;> cat_disch
 
 /-- If `s` is a colimit cokernel cofork, then every `k : Y ⟶ W` satisfying `f ≫ k = 0` induces
 `l : s.X ⟶ W` such that `cofork.π s ≫ l = k`. -/

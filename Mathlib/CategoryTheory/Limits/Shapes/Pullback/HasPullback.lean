@@ -123,13 +123,13 @@ abbrev pushout.inr {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] : Z 
 /-- A pair of morphisms `h : W ⟶ X` and `k : W ⟶ Y` satisfying `h ≫ f = k ≫ g` induces a morphism
 `pullback.lift : W ⟶ pullback f g`. -/
 abbrev pullback.lift {W X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g] (h : W ⟶ X)
-    (k : W ⟶ Y) (w : h ≫ f = k ≫ g := by aesop_cat) : W ⟶ pullback f g :=
+    (k : W ⟶ Y) (w : h ≫ f = k ≫ g := by cat_disch) : W ⟶ pullback f g :=
   limit.lift _ (PullbackCone.mk h k w)
 
 /-- A pair of morphisms `h : Y ⟶ W` and `k : Z ⟶ W` satisfying `f ≫ h = g ≫ k` induces a morphism
 `pushout.desc : pushout f g ⟶ W`. -/
 abbrev pushout.desc {W X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] (h : Y ⟶ W) (k : Z ⟶ W)
-    (w : f ≫ h = g ≫ k := by aesop_cat) : pushout f g ⟶ W :=
+    (w : f ≫ h = g ≫ k := by cat_disch) : pushout f g ⟶ W :=
   colimit.desc _ (PushoutCocone.mk h k w)
 
 /-- The cone associated to a pullback is a limit cone. -/
@@ -225,7 +225,7 @@ theorem pushout.hom_ext {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g]
 def pushoutIsPushout {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] :
     IsColimit (PushoutCocone.mk (pushout.inl f g) (pushout.inr _ _) pushout.condition) :=
   PushoutCocone.IsColimit.mk _ (fun s => pushout.desc s.inl s.inr s.condition) (by simp) (by simp)
-    (by aesop_cat)
+    (by cat_disch)
 
 @[simp]
 lemma pullback.lift_fst_snd {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :
@@ -318,8 +318,8 @@ instance pullback.map_isIso {W X Y Z S T : C} (f₁ : W ⟶ S) (f₂ : X ⟶ S) 
   refine ⟨⟨pullback.map _ _ _ _ (inv i₁) (inv i₂) (inv i₃) ?_ ?_, ?_, ?_⟩⟩
   · rw [IsIso.comp_inv_eq, Category.assoc, eq₁, IsIso.inv_hom_id_assoc]
   · rw [IsIso.comp_inv_eq, Category.assoc, eq₂, IsIso.inv_hom_id_assoc]
-  · aesop_cat
-  · aesop_cat
+  · cat_disch
+  · cat_disch
 
 /-- If `f₁ = f₂` and `g₁ = g₂`, we may construct a canonical
 isomorphism `pullback f₁ g₁ ≅ pullback f₂ g₂` -/
@@ -342,15 +342,15 @@ instance pushout.map_isIso {W X Y Z S T : C} (f₁ : S ⟶ W) (f₂ : S ⟶ X) [
   refine ⟨⟨pushout.map _ _ _ _ (inv i₁) (inv i₂) (inv i₃) ?_ ?_, ?_, ?_⟩⟩
   · rw [IsIso.comp_inv_eq, Category.assoc, eq₁, IsIso.inv_hom_id_assoc]
   · rw [IsIso.comp_inv_eq, Category.assoc, eq₂, IsIso.inv_hom_id_assoc]
-  · aesop_cat
-  · aesop_cat
+  · cat_disch
+  · cat_disch
 
 theorem pullback.mapDesc_comp {X Y S T S' : C} (f : X ⟶ T) (g : Y ⟶ T) (i : T ⟶ S) (i' : S ⟶ S')
     [HasPullback f g] [HasPullback (f ≫ i) (g ≫ i)] [HasPullback (f ≫ i ≫ i') (g ≫ i ≫ i')]
     [HasPullback ((f ≫ i) ≫ i') ((g ≫ i) ≫ i')] :
     pullback.mapDesc f g (i ≫ i') = pullback.mapDesc f g i ≫ pullback.mapDesc _ _ i' ≫
     (pullback.congrHom (Category.assoc _ _ _) (Category.assoc _ _ _)).hom := by
-  aesop_cat
+  cat_disch
 
 /-- If `f₁ = f₂` and `g₁ = g₂`, we may construct a canonical
 isomorphism `pushout f₁ g₁ ≅ pullback f₂ g₂` -/
@@ -372,7 +372,7 @@ theorem pushout.mapLift_comp {X Y S T S' : C} (f : T ⟶ X) (g : T ⟶ Y) (i : S
     pushout.mapLift f g (i' ≫ i) =
       (pushout.congrHom (Category.assoc _ _ _) (Category.assoc _ _ _)).hom ≫
         pushout.mapLift _ _ i' ≫ pushout.mapLift f g i := by
-  aesop_cat
+  cat_disch
 
 section
 

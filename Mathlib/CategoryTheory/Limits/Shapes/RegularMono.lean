@@ -47,7 +47,7 @@ class RegularMono (f : X ⟶ Y) where
   /-- Another map from the codomain of `f` to `Z` -/
   right : Y ⟶ Z
   /-- `f` equalizes the two maps -/
-  w : f ≫ left = f ≫ right := by aesop_cat
+  w : f ≫ left = f ≫ right := by cat_disch
   /-- `f` is the equalizer of the two maps -/
   isLimit : IsLimit (Fork.ofι f w)
 
@@ -147,8 +147,6 @@ class IsRegularMonoCategory : Prop where
   /-- Every monomorphism is a regular monomorphism -/
   regularMonoOfMono : ∀ {X Y : C} (f : X ⟶ Y) [Mono f], Nonempty (RegularMono f)
 
-@[deprecated (since := "2024-11-27")] alias RegularMonoCategory := IsRegularMonoCategory
-
 end
 
 /-- In a category in which every monomorphism is regular, we can express every monomorphism as
@@ -175,7 +173,7 @@ class RegularEpi (f : X ⟶ Y) where
   /-- Two maps to the domain of `f` -/
   (left right : W ⟶ X)
   /-- `f` coequalizes the two maps -/
-  w : left ≫ f = right ≫ f := by aesop_cat
+  w : left ≫ f = right ≫ f := by cat_disch
   /-- `f` is the coequalizer -/
   isColimit : IsColimit (Cofork.ofπ f w)
 
@@ -284,8 +282,6 @@ variable (C)
 class IsRegularEpiCategory : Prop where
   /-- Everyone epimorphism is a regular epimorphism -/
   regularEpiOfEpi : ∀ {X Y : C} (f : X ⟶ Y) [Epi f], Nonempty (RegularEpi f)
-
-@[deprecated (since := "2024-11-27")] alias RegularEpiCategory := IsRegularEpiCategory
 
 end
 

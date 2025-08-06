@@ -936,8 +936,6 @@ theorem inertiaDeg_algebra_tower (p : Ideal R) (P : Ideal S) (I : Ideal T) [p.Is
     rintro ⟨x⟩; exact congr_arg _ (IsScalarTower.algebraMap_apply R S T x)
   exact (finrank_mul_finrank (R ⧸ p) (S ⧸ P) (T ⧸ I)).symm
 
-@[deprecated (since := "2024-12-09")] alias inertiaDeg_tower := inertiaDeg_algebra_tower
-
 end tower
 
 end Ideal

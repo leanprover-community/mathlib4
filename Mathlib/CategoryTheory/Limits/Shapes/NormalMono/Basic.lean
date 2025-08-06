@@ -119,8 +119,6 @@ class IsNormalMonoCategory : Prop where
 
 attribute [inherit_doc IsNormalMonoCategory] IsNormalMonoCategory.normalMonoOfMono
 
-@[deprecated (since := "2024-11-27")] alias NormalMonoCategory := IsNormalMonoCategory
-
 end
 
 /-- In a category in which every monomorphism is normal, we can express every monomorphism as
@@ -258,8 +256,6 @@ class IsNormalEpiCategory : Prop where
   normalEpiOfEpi : ∀ {X Y : C} (f : X ⟶ Y) [Epi f], Nonempty (NormalEpi f)
 
 attribute [inherit_doc IsNormalEpiCategory] IsNormalEpiCategory.normalEpiOfEpi
-
-@[deprecated (since := "2024-11-27")] alias NormalEpiCategory := IsNormalEpiCategory
 
 end
 

@@ -602,7 +602,7 @@ it suffices to give an isomorphism between the cone points
 and check that it commutes with the `ι` morphisms.
 -/
 @[simps]
-def Fork.ext {s t : Fork f g} (i : s.pt ≅ t.pt) (w : i.hom ≫ t.ι = s.ι := by aesop_cat) :
+def Fork.ext {s t : Fork f g} (i : s.pt ≅ t.pt) (w : i.hom ≫ t.ι = s.ι := by cat_disch) :
     s ≅ t where
   hom := Fork.mkHom i.hom w
   inv := Fork.mkHom i.inv (by rw [← w, Iso.inv_hom_id_assoc])
@@ -624,9 +624,9 @@ def Fork.isLimitEquivOfIsos {X Y : C} {f g : X ⟶ Y} {X' Y' : C}
     (c : Fork f g)
     {f' g' : X' ⟶ Y'} (c' : Fork f' g')
     (e₀ : X ≅ X') (e₁ : Y ≅ Y') (e : c.pt ≅ c'.pt)
-    (comm₁ : e₀.hom ≫ f' = f ≫ e₁.hom := by aesop_cat)
-    (comm₂ : e₀.hom ≫ g' = g ≫ e₁.hom := by aesop_cat)
-    (comm₃ : e.hom ≫ c'.ι = c.ι ≫ e₀.hom := by aesop_cat) :
+    (comm₁ : e₀.hom ≫ f' = f ≫ e₁.hom := by cat_disch)
+    (comm₂ : e₀.hom ≫ g' = g ≫ e₁.hom := by cat_disch)
+    (comm₃ : e.hom ≫ c'.ι = c.ι ≫ e₀.hom := by cat_disch) :
     IsLimit c ≃ IsLimit c' :=
   let i : parallelPair f g ≅ parallelPair f' g' := parallelPair.ext e₀ e₁ comm₁.symm comm₂.symm
   IsLimit.equivOfNatIsoOfIso i c c' (Fork.ext e comm₃)
@@ -638,9 +638,9 @@ one is a limit, then the other one is as well.
 def Fork.isLimitOfIsos {X' Y' : C} (c : Fork f g) (hc : IsLimit c)
     {f' g' : X' ⟶ Y'} (c' : Fork f' g')
     (e₀ : X ≅ X') (e₁ : Y ≅ Y') (e : c.pt ≅ c'.pt)
-    (comm₁ : e₀.hom ≫ f' = f ≫ e₁.hom := by aesop_cat)
-    (comm₂ : e₀.hom ≫ g' = g ≫ e₁.hom := by aesop_cat)
-    (comm₃ : e.hom ≫ c'.ι = c.ι ≫ e₀.hom := by aesop_cat) : IsLimit c' :=
+    (comm₁ : e₀.hom ≫ f' = f ≫ e₁.hom := by cat_disch)
+    (comm₂ : e₀.hom ≫ g' = g ≫ e₁.hom := by cat_disch)
+    (comm₃ : e.hom ≫ c'.ι = c.ι ≫ e₀.hom := by cat_disch) : IsLimit c' :=
   (Fork.isLimitEquivOfIsos c c' e₀ e₁ e) hc
 
 /-- Helper function for constructing morphisms between coequalizer coforks.
@@ -666,7 +666,7 @@ it suffices to give an isomorphism between the cocone points
 and check that it commutes with the `π` morphisms.
 -/
 @[simps]
-def Cofork.ext {s t : Cofork f g} (i : s.pt ≅ t.pt) (w : s.π ≫ i.hom = t.π := by aesop_cat) :
+def Cofork.ext {s t : Cofork f g} (i : s.pt ≅ t.pt) (w : s.π ≫ i.hom = t.π := by cat_disch) :
     s ≅ t where
   hom := Cofork.mkHom i.hom w
   inv := Cofork.mkHom i.inv (by rw [Iso.comp_inv_eq, w])
@@ -683,9 +683,9 @@ def Cofork.isColimitEquivOfIsos {X Y : C} {f g : X ⟶ Y} {X' Y' : C}
     (c : Cofork f g)
     {f' g' : X' ⟶ Y'} (c' : Cofork f' g')
     (e₀ : X ≅ X') (e₁ : Y ≅ Y') (e : c.pt ≅ c'.pt)
-    (comm₁ : e₀.hom ≫ f' = f ≫ e₁.hom := by aesop_cat)
-    (comm₂ : e₀.hom ≫ g' = g ≫ e₁.hom := by aesop_cat)
-    (comm₃ : e₁.inv ≫ c.π ≫ e.hom = c'.π := by aesop_cat) :
+    (comm₁ : e₀.hom ≫ f' = f ≫ e₁.hom := by cat_disch)
+    (comm₂ : e₀.hom ≫ g' = g ≫ e₁.hom := by cat_disch)
+    (comm₃ : e₁.inv ≫ c.π ≫ e.hom = c'.π := by cat_disch) :
     IsColimit c ≃ IsColimit c' :=
   let i : parallelPair f g ≅ parallelPair f' g' := parallelPair.ext e₀ e₁ comm₁.symm comm₂.symm
   IsColimit.equivOfNatIsoOfIso i c c' (Cofork.ext e (by rw [← comm₃, ← Category.assoc]; rfl))
@@ -697,9 +697,9 @@ if one is a colimit, then the other one is as well.
 def Cofork.isColimitOfIsos {X' Y' : C} (c : Cofork f g) (hc : IsColimit c)
     {f' g' : X' ⟶ Y'} (c' : Cofork f' g')
     (e₀ : X ≅ X') (e₁ : Y ≅ Y') (e : c.pt ≅ c'.pt)
-    (comm₁ : e₀.hom ≫ f' = f ≫ e₁.hom := by aesop_cat)
-    (comm₂ : e₀.hom ≫ g' = g ≫ e₁.hom := by aesop_cat)
-    (comm₃ : e₁.inv ≫ c.π ≫ e.hom = c'.π := by aesop_cat) : IsColimit c' :=
+    (comm₁ : e₀.hom ≫ f' = f ≫ e₁.hom := by cat_disch)
+    (comm₂ : e₀.hom ≫ g' = g ≫ e₁.hom := by cat_disch)
+    (comm₃ : e₁.inv ≫ c.π ≫ e.hom = c'.π := by cat_disch) : IsColimit c' :=
   (Cofork.isColimitEquivOfIsos c c' e₀ e₁ e) hc
 
 variable (f g)

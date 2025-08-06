@@ -1035,6 +1035,12 @@ Todo: A lot of abbreviations here are manual fixes and there might be room to
 improve the naming logic to reduce the size of `fixAbbreviation`.
 -/
 def fixAbbreviation : List String → List String
+  | "is" :: "Cancel" :: "Add" :: s    => "isCancelAdd" :: fixAbbreviation s
+  | "Is" :: "Cancel" :: "Add" :: s    => "IsCancelAdd" :: fixAbbreviation s
+  | "is" :: "Left" :: "Cancel" :: "Add" :: s  => "isLeftCancelAdd" :: fixAbbreviation s
+  | "Is" :: "Left" :: "Cancel" :: "Add" :: s  => "IsLeftCancelAdd" :: fixAbbreviation s
+  | "is" :: "Right" :: "Cancel" :: "Add" :: s => "isRightCancelAdd" :: fixAbbreviation s
+  | "Is" :: "Right" :: "Cancel" :: "Add" :: s => "IsRightCancelAdd" :: fixAbbreviation s
   | "cancel" :: "Add" :: s            => "addCancel" :: fixAbbreviation s
   | "Cancel" :: "Add" :: s            => "AddCancel" :: fixAbbreviation s
   | "left" :: "Cancel" :: "Add" :: s  => "addLeftCancel" :: fixAbbreviation s
