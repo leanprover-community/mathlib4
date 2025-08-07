@@ -7,7 +7,7 @@ import Mathlib.CategoryTheory.Elements
 import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 
 /-!
-# The type of simplices of a simplicial set
+# The preordered type of simplices of a simplicial set
 
 In this file, we define the type `X.S` of simplices of a simplicial set `X`,
 where a simplex consists of the data of `dim : ℕ` and `simplex : X _⦋dim⦌`.
