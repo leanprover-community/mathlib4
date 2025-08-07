@@ -450,6 +450,11 @@ theorem exists_ne_map_eq_of_card_image_lt [DecidableEq β] {f : α → β} (hc :
   rw [← coe_image] at hf
   exact exists_ne_map_eq_of_card_lt_of_maps_to hc hf
 
+/-- a variant of `exists_ne_map_eq_of_card_image_lt` using `InjOn` -/
+theorem not_injOn_of_card_image_lt [DecidableEq β] {f : α → β} (hc : #(s.image f) < #s) :
+    ¬ Set.InjOn f s :=
+  fun injOn => hc.ne (card_image_of_injOn injOn)
+
 /--
 See also `Finset.card_le_card_of_injOn`, which is a more general version of this lemma.
 TODO: consider deprecating, since this is just a special case of `Finset.card_le_card_of_injOn`.
