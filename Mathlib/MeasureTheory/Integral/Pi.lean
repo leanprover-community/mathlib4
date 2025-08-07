@@ -123,7 +123,7 @@ theorem integral_fintype_prod_volume_eq_pow {E : Type*} (f : E → 𝕜)
 variable {X : ι → Type*} {mX : ∀ i, MeasurableSpace (X i)} {μ : (i : ι) → Measure (X i)}
     {E : Type*} [NormedAddCommGroup E]
 
-lemma integrable_eval_pi [∀ i, IsFiniteMeasure (μ i)] {i : ι} {f : X i → E}
+lemma integrable_comp_eval [∀ i, IsFiniteMeasure (μ i)] {i : ι} {f : X i → E}
     (hf : Integrable f (μ i)) :
     Integrable (fun x ↦ f (x i)) (Measure.pi μ) := by
   simp_rw [← Function.eval_apply (x := i)]
@@ -132,7 +132,7 @@ lemma integrable_eval_pi [∀ i, IsFiniteMeasure (μ i)] {i : ι} {f : X i → E
   rw [Measure.pi_map_eval]
   exact hf.smul_measure <| ENNReal.prod_ne_top (by finiteness)
 
-lemma integral_eval_pi [NormedSpace ℝ E] [∀ i, IsProbabilityMeasure (μ i)] {i : ι} {f : X i → E}
+lemma integral_comp_eval [NormedSpace ℝ E] [∀ i, IsProbabilityMeasure (μ i)] {i : ι} {f : X i → E}
     (hf : AEStronglyMeasurable f (μ i)) :
     ∫ x : Π i, X i, f (x i) ∂Measure.pi μ = ∫ x, f x ∂μ i := by
   rw [← (measurePreserving_eval μ i).map_eq, integral_map]
