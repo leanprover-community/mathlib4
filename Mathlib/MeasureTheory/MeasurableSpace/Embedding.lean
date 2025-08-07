@@ -765,7 +765,7 @@ def invFun [Nonempty α] (hf : MeasurableEmbedding f) (x : β) : α :=
 @[fun_prop, measurability]
 lemma measurable_invFun [Nonempty α] (hf : MeasurableEmbedding f) :
     Measurable (hf.invFun : β → α) :=
-   open Classical in
+  open Classical in
   Measurable.dite (by fun_prop) measurable_const hf.measurableSet_range
 
 lemma leftInverse_invFun [Nonempty α] (hf : MeasurableEmbedding f) : hf.invFun.LeftInverse f := by
