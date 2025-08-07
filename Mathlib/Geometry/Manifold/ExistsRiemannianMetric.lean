@@ -308,7 +308,86 @@ lemma convex_mapsMatchingInner2 (x : B) : Convex ℝ (mapsMatchingInner2 E x) :=
 --     -- What if that's not the case? Need to think harder!
 --     sorry
 
-variable [SigmaCompactSpace B] [T2Space B] [IsManifold IB ∞ B] [FiniteDimensional ℝ EB]
+variable [SigmaCompactSpace B] [T2Space B] [hI : IsManifold IB ∞ B] [FiniteDimensional ℝ EB]
+
+-- Consider the bundle V := Hom(E, Hom(E, ℝ)),
+-- morally, the bundle of ℝ-bilinear forms on E over B.
+
+variable (F E) in
+def V : (b : B) → Type _ := (fun b ↦ E b →L[ℝ] Trivial B F b)
+
+noncomputable instance : (x : B) → NormedAddCommGroup (V F E x) := by
+  unfold V
+  infer_instance
+
+instance : (x : B) → Module ℝ (V F E x) := by
+  unfold V
+  infer_instance
+
+noncomputable instance : TopologicalSpace (TotalSpace (F →L[ℝ] F) (V F E)) := by
+  unfold V
+  infer_instance
+
+noncomputable instance : (x : B) → TopologicalSpace (V F E x) := by
+  unfold V
+  infer_instance
+
+noncomputable instance : FiberBundle (F →L[ℝ] F) (V F E) := by
+  unfold V
+  infer_instance
+
+noncomputable instance : VectorBundle ℝ (F →L[ℝ] F) (V F E) := by
+  unfold V
+  infer_instance
+
+noncomputable instance : ContMDiffVectorBundle n (F →L[ℝ] F) (V F E) IB := by
+  unfold V
+  infer_instance
+
+instance (x : B) : ContinuousAdd (V F E x) := by
+  unfold V
+  infer_instance
+
+instance (x : B) : ContinuousSMul ℝ (V F E x) := by
+  unfold V
+  infer_instance
+
+variable (F E) in
+def W : (b : B) → Type _ := fun b ↦ E b →L[ℝ] (V F E) b
+
+-- does this also have a norm?
+noncomputable instance (x : B) : AddCommGroup (W F E x) := by
+  unfold W
+  infer_instance
+
+noncomputable instance (x : B) : Module ℝ (W F E x) := by
+  unfold W
+  infer_instance
+
+noncomputable instance : TopologicalSpace (TotalSpace (F →L[ℝ] F) (W F E)) := by
+  unfold W
+  sorry -- infer_instance
+
+noncomputable instance (x : B) : TopologicalSpace (W F E x) := by
+  unfold W
+  infer_instance
+
+noncomputable instance : FiberBundle (F →L[ℝ] F) (W F E) := by
+  unfold W
+  sorry -- infer_instance
+
+noncomputable instance : VectorBundle ℝ (F →L[ℝ] F) (W F E) := by
+  unfold W
+  sorry -- infer_instance
+
+noncomputable instance : ContMDiffVectorBundle n (F →L[ℝ] F) (W F E) IB := by
+  unfold W
+  sorry -- infer_instance
+
+#synth ContMDiffVectorBundle n (F →L[ℝ] F) (W F E) IB
+
+--abbrev Wbdl := ContMDiffVectorBundle.continuousLinearMap (IB := IB) (F₁ := F) (E₁ := E) (E₂ := V F E) (F₂ := F) (n := n)
+#exit
 
 variable (E F IB) in
 noncomputable def RMetric_aux : C^∞⟮IB, B; 𝓘(ℝ, F →L[ℝ] F →L[ℝ] ℝ), F →L[ℝ] F →L[ℝ] ℝ⟯ := by
