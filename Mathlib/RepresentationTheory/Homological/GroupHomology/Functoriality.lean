@@ -339,7 +339,7 @@ lemma H1π_comp_map :
   simp [H1π, Iso.inv_comp_eq, ← cyclesMap_comp_isoCycles₁_hom_assoc]
 
 @[simp]
-lemma map_1_one (φ : A ⟶ (Action.res _ (1 : G →* H)).obj B) :
+lemma map₁_one (φ : A ⟶ (Action.res _ (1 : G →* H)).obj B) :
     map (1 : G →* H) φ 1 = 0 := by
   simp only [← cancel_epi (H1π A), H1π_comp_map, Limits.comp_zero]
   ext x
@@ -379,9 +379,9 @@ noncomputable def H1CoresCoinfOfTrivial :
   X₃ := H1 (ofQuotient A S)
   f := map S.subtype (𝟙 _) 1
   g := map (QuotientGroup.mk' S) (resOfQuotientIso A S).inv 1
-  zero := by rw [← map_comp, congr (QuotientGroup.mk'_comp_subtype S) (map (n := 1)), map_1_one]
+  zero := by rw [← map_comp, congr (QuotientGroup.mk'_comp_subtype S) (map (n := 1)), map₁_one]
 
-instance map_1_quotientGroupMk'_epi :
+instance map₁_quotientGroupMk'_epi :
     Epi (map (QuotientGroup.mk' S) (resOfQuotientIso A S).inv 1) := by
   convert epi_of_epi (H1π A) _
   rw [H1π_comp_map]
@@ -473,7 +473,7 @@ noncomputable def H1CoresCoinf :
   X₃ := H1 (quotientToCoinvariants A S)
   f := map S.subtype (𝟙 _) 1
   g := map (QuotientGroup.mk' S) (toCoinvariantsMkQ A S) 1
-  zero := by rw [← map_comp, congr (QuotientGroup.mk'_comp_subtype S) (map (n := 1)), map_1_one]
+  zero := by rw [← map_comp, congr (QuotientGroup.mk'_comp_subtype S) (map (n := 1)), map₁_one]
 
 /-- Given a `G`-representation `A` and a normal subgroup `S ≤ G`, let `I(S)A` denote the submodule
 of `A` spanned by elements of the form `ρ(s)(a) - a` for `s : S, a : A`. Then the image of

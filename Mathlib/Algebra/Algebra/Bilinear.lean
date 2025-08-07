@@ -27,7 +27,7 @@ variable [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A]
 section left
 variable {A} [SMulCommClass R A A]
 
-/-- The multiplication on the left in a algebra is a linear map.
+/-- The multiplication on the left in an algebra is a linear map.
 
 Note that this only assumes `SMulCommClass R A A`, so that it also works for `R := Aᵐᵒᵖ`.
 
@@ -247,25 +247,5 @@ theorem toSpanSingleton_eq_algebra_linearMap : toSpanSingleton R A 1 = Algebra.l
   ext; simp
 
 end Semiring
-
-section Ring
-
-variable {R A : Type*} [CommSemiring R] [Ring A] [Algebra R A]
-
-@[deprecated mul_right_injective₀ (since := "2024-11-18")]
-theorem mulLeft_injective [NoZeroDivisors A] {x : A} (hx : x ≠ 0) :
-    Function.Injective (mulLeft R x) :=
-  mul_right_injective₀ hx
-
-@[deprecated mul_left_injective₀ (since := "2024-11-18")]
-theorem mulRight_injective [NoZeroDivisors A] {x : A} (hx : x ≠ 0) :
-    Function.Injective (mulRight R x) :=
-  mul_left_injective₀ hx
-
-@[deprecated mul_right_injective₀ (since := "2024-11-18")]
-theorem mul_injective [NoZeroDivisors A] {x : A} (hx : x ≠ 0) : Function.Injective (mul R A x) :=
-   mul_right_injective₀ hx
-
-end Ring
 
 end LinearMap
