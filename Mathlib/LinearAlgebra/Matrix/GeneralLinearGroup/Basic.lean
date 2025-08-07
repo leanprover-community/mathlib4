@@ -53,14 +53,15 @@ private theorem mat_T_mul
     _ = (f A * (LinearMap.toMatrix' T)) *ᵥ x := by
       simp_rw [← mulVec_mulVec, ← toLin'_apply (LinearMap.toMatrix' T), toLin'_toMatrix']
 
-theorem AlgEquiv.exists_generalLinearGroup_conj
+theorem AlgEquiv.exists_generalLinearGroup_eq_mulLeftRight_inv
     [Field R] (f : Matrix n n R ≃ₐ[R] Matrix n n R) :
-    ∃ T : GL n R, (∀ a, f a * T = T * a) := by
+    ∃ T : GL n R, ⇑f = (LinearMap.mulLeftRight R (↑T, ↑T⁻¹)) := by
   by_cases hn : IsEmpty n
   · use 1
-    intro
-    ext i _
+    ext a i _
     exact isEmpty_iff.mp hn i |>.elim
+  simp_rw [funext_iff, LinearMap.mulLeftRight_apply, @eq_comm _ (f _),
+    Units.mul_inv_eq_iff_eq_mul, @eq_comm _ _ (f _ * _)]
   rw [not_isEmpty_iff] at hn
   have : ∃ u : n → R, u ≠ 0 := ⟨1, one_ne_zero⟩
   have t1 := this
