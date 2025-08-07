@@ -43,7 +43,7 @@ lemma filter_exists (hf : PrimrecPred f) : PrimrecPred fun L : List α ↦ ∃ a
   exact PrimrecRel.comp .eq (comp list_length (filter hf)) (const 0)
 
 /-- Checking if every element of a list satisfies a decidable predicate is primitive recursive. -/
-lemma filter_forall (hf : PrimrecPred f) : PrimrecPred fun (L : List α) ↦ (∀ a ∈ L, f a) := by
+lemma filter_forall (hf : PrimrecPred f) : PrimrecPred fun L : List α ↦ ∀ a ∈ L, f a := by
   let g := fun L ↦ List.filter (f ·) L
   have h (L : List α): (g L).length = L.length ↔ ∀ a ∈ L, f a := by simp [g]
   apply PrimrecPred.of_eq ?_ h
