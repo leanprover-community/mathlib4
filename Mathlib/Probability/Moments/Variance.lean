@@ -316,7 +316,7 @@ lemma variance_id_map (hX : AEMeasurable X μ) : Var[id; μ.map X] = Var[X; μ] 
 theorem variance_le_expectation_sq [IsProbabilityMeasure μ] {X : Ω → ℝ}
     (hm : AEStronglyMeasurable X μ) : variance X μ ≤ μ[X ^ 2] := by
   by_cases hX : MemLp X 2 μ
-  · rw [variance_def' hX]
+  · rw [variance_eq_sub hX]
     simp only [sq_nonneg, sub_le_self_iff]
   rw [variance, evariance_eq_lintegral_ofReal, ← integral_eq_lintegral_of_nonneg_ae]
   · by_cases hint : Integrable X μ; swap
@@ -337,7 +337,7 @@ theorem variance_le_expectation_sq [IsProbabilityMeasure μ] {X : Ω → ℝ}
 theorem evariance_def' [IsProbabilityMeasure μ] {X : Ω → ℝ} (hX : AEStronglyMeasurable X μ) :
     evariance X μ = (∫⁻ ω, ‖X ω‖ₑ ^ 2 ∂μ) - ENNReal.ofReal (μ[X] ^ 2) := by
   by_cases hℒ : MemLp X 2 μ
-  · rw [← ofReal_variance hℒ, variance_def' hℒ, ENNReal.ofReal_sub _ (sq_nonneg _)]
+  · rw [← ofReal_variance hℒ, variance_eq_sub hℒ, ENNReal.ofReal_sub _ (sq_nonneg _)]
     congr
     simp_rw [← enorm_pow, enorm]
     rw [lintegral_coe_eq_integral]
@@ -449,7 +449,7 @@ lemma variance_le_sub_mul_sub [IsProbabilityMeasure μ] {a b : ℝ} {X : Ω → 
         simp [← integral_neg, ← integral_const_mul, integral_add hX_int₂ hX_int₁]
   calc
     _ ≤ (a + b) * μ[X] - a * b - μ[X] ^ 2 := by
-      rw [variance_def' (memLp_of_bounded h hX.aestronglyMeasurable 2)]
+      rw [variance_eq_sub (memLp_of_bounded h hX.aestronglyMeasurable 2)]
       linarith
     _ = (b - μ[X]) * (μ[X] - a) := by ring
 
