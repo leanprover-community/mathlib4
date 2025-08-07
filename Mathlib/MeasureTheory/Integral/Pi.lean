@@ -126,7 +126,6 @@ variable {X : ι → Type*} {mX : ∀ i, MeasurableSpace (X i)} {μ : (i : ι) �
 lemma integrable_comp_eval [∀ i, IsFiniteMeasure (μ i)] {i : ι} {f : X i → E}
     (hf : Integrable f (μ i)) :
     Integrable (fun x ↦ f (x i)) (Measure.pi μ) := by
-  simp_rw [← Function.eval_apply (x := i)]
   refine Integrable.comp_measurable ?_ (by fun_prop)
   classical
   rw [Measure.pi_map_eval]
