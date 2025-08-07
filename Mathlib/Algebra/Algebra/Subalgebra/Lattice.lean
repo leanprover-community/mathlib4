@@ -239,8 +239,6 @@ theorem _root_.AlgHom.range_eq_top (f : A →ₐ[R] B) :
     f.range = (⊤ : Subalgebra R B) ↔ Function.Surjective f :=
   Algebra.eq_top_iff
 
-@[deprecated (since := "2024-11-11")] alias range_top_iff_surjective := AlgHom.range_eq_top
-
 @[simp]
 theorem range_ofId : (Algebra.ofId R A).range = ⊥ := rfl
 
@@ -609,7 +607,6 @@ theorem adjoin_span {s : Set A} : adjoin R (Submodule.span R s : Set A) = adjoin
 theorem adjoin_image (f : A →ₐ[R] B) (s : Set A) : adjoin R (f '' s) = (adjoin R s).map f :=
   le_antisymm (adjoin_le <| Set.image_mono subset_adjoin) <|
     Subalgebra.map_le.2 <| adjoin_le <| Set.image_subset_iff.1 <| by
-      -- Porting note: I don't understand how this worked in Lean 3 with just `subset_adjoin`
       simp only [Set.image_id', coe_carrier_toSubmonoid, Subalgebra.coe_toSubsemiring,
         Subalgebra.coe_comap]
       exact fun x hx => subset_adjoin ⟨x, hx, rfl⟩
