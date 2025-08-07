@@ -257,7 +257,8 @@ instance faithful_map [F₁.Faithful] [F₂.Faithful] : (map α β).Faithful whe
 
 instance full_map [F.Faithful] [F₁.Full] [F₂.Full] [IsIso α] [IsIso β] : (map α β).Full where
   map_surjective {X Y} φ :=
-   ⟨{ left := F₁.preimage φ.left
+    ⟨{
+      left := F₁.preimage φ.left
       right := F₂.preimage φ.right
       w := F.map_injective (by
         rw [← cancel_mono (β.app _), ← cancel_epi (α.app _), F.map_comp, F.map_comp,
