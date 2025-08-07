@@ -65,7 +65,7 @@ theorem num_le_nat_mul_den [ZeroLEOneClass M] [NeZero (1 : M)]
 namespace Archimedean
 
 /-- Set of rational numbers that are less than the "number" `x / 1`.
- Formally, these are numbers `p / q` such that `p • 1 < q • x`. -/
+Formally, these are numbers `p / q` such that `p • 1 < q • x`. -/
 abbrev ratLt (x : M) : Set ℚ := {r | r.num • 1 < r.den • x}
 
 theorem mkRat_mem_ratLt {num : ℤ} {den : ℕ} (hden : den ≠ 0) {x : M} :

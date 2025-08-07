@@ -387,7 +387,7 @@ theorem IsBase.subset_ground (hB : M.IsBase B) : B ⊆ M.E :=
   M.subset_ground B hB
 
 theorem IsBase.exchange {e : α} (hB₁ : M.IsBase B₁) (hB₂ : M.IsBase B₂) (hx : e ∈ B₁ \ B₂) :
-    ∃ y ∈ B₂ \ B₁, M.IsBase (insert y (B₁ \ {e}))  :=
+    ∃ y ∈ B₂ \ B₁, M.IsBase (insert y (B₁ \ {e})) :=
   M.isBase_exchange B₁ B₂ hB₁ hB₂ _ hx
 
 theorem IsBase.exchange_mem {e : α}

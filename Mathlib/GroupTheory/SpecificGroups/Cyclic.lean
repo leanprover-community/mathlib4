@@ -695,7 +695,7 @@ lemma not_isCyclic_iff_exponent_eq_prime [Group α] {p : ℕ} (hp : p.Prime)
   interval_cases a
   · exact False.elim <| hg <| orderOf_eq_one_iff.mp <| by aesop
   · aesop
-  · exact False.elim <| h_cyc <| isCyclic_of_orderOf_eq_card g <| by aesop
+  · exact False.elim <| h_cyc <| isCyclic_of_orderOf_eq_card g <| by omega
 
 end Exponent
 

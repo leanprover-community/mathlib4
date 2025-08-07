@@ -329,7 +329,7 @@ theorem WellFoundedLT.finite_of_iSupIndep [WellFoundedLT α] {ι : Type*}
 element is the `sSup` of compact elements. -/
 class IsCompactlyGenerated (α : Type*) [CompleteLattice α] : Prop where
   /-- In a compactly generated complete lattice,
-    every element is the `sSup` of some set of compact elements. -/
+  every element is the `sSup` of some set of compact elements. -/
   exists_sSup_eq : ∀ x : α, ∃ s : Set α, (∀ x ∈ s, CompleteLattice.IsCompactElement x) ∧ sSup s = x
 
 section

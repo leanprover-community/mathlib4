@@ -334,7 +334,7 @@ instance Pi.map_mono {f g : β → C} [HasProduct f] [HasProduct g] (p : ∀ b, 
     (Discrete.natTrans fun X => p X.as) (by dsimp; infer_instance)
 
 /-- Construct a morphism between categorical products from a family of morphisms between the
-    factors. -/
+factors. -/
 def Pi.map' {f : α → C} {g : β → C} [HasProduct f] [HasProduct g] (p : β → α)
     (q : ∀ (b : β), f (p b) ⟶ g b) : ∏ᶜ f ⟶ ∏ᶜ g :=
   Pi.lift (fun a => Pi.π _ _ ≫ q a)
@@ -449,7 +449,7 @@ instance Sigma.map_epi {f g : β → C} [HasCoproduct f] [HasCoproduct g] (p : �
     (Discrete.natTrans fun X => p X.as) (by dsimp; infer_instance)
 
 /-- Construct a morphism between categorical coproducts from a family of morphisms between the
-    factors. -/
+factors. -/
 def Sigma.map' {f : α → C} {g : β → C} [HasCoproduct f] [HasCoproduct g] (p : α → β)
     (q : ∀ (a : α), f a ⟶ g (p a)) : ∐ f ⟶ ∐ g :=
   Sigma.desc (fun a => q a ≫ Sigma.ι _ _)

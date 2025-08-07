@@ -133,7 +133,7 @@ protected theorem multiset_sum_mem {R} [Ring R] (s : Subring R) (m : Multiset R)
   multiset_sum_mem _
 
 /-- Product of elements of a subring of a `CommRing` indexed by a `Finset` is in the
-    subring. -/
+subring. -/
 protected theorem prod_mem {R : Type*} [CommRing R] (s : Subring R) {ι : Type*} {t : Finset ι}
     {f : ι → R} (h : ∀ c ∈ t, f c ∈ s) : (∏ i ∈ t, f i) ∈ s :=
   prod_mem h
@@ -883,7 +883,7 @@ namespace RingEquiv
 variable {s t : Subring R}
 
 /-- Makes the identity isomorphism from a proof two subrings of a multiplicative
-    monoid are equal. -/
+monoid are equal. -/
 def subringCongr (h : s = t) : s ≃+* t :=
   { Equiv.setCongr <| congr_arg _ h with
     map_mul' := fun _ _ => rfl

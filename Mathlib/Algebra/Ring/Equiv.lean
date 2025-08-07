@@ -141,8 +141,7 @@ instance : RingEquivClass (R ≃+* S) R S where
   map_add f := f.map_add'
   map_mul f := f.map_mul'
 
-/-- Two ring isomorphisms agree if they are defined by the
-    same underlying function. -/
+/-- Two ring isomorphisms agree if they are defined by the same underlying function. -/
 @[ext]
 theorem ext {f g : R ≃+* S} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h

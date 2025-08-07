@@ -409,7 +409,7 @@ namespace LinearMap
 
 variable (R)
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to `CompatibleSMul`
+-- TODO: generalize to `CompatibleSMul`
 /-- `A`-linearly coerce an `R`-linear map from `M` to `A` to a function, given an algebra `A` over
 a commutative semiring `R` and `M` a module over `R`. -/
 def ltoFun (R : Type u) (M : Type v) (A : Type w) [CommSemiring R] [AddCommMonoid M] [Module R M]

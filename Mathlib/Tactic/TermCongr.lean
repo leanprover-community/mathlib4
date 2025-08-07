@@ -245,9 +245,9 @@ def ensureIff (pf : Expr) : MetaM Expr := do
 inductive CongrType
   | eq | heq
 
-/-- A congruence lemma between two expressions.
-The proof is generated dynamically, depending on whether the resulting lemma should be
-an `Eq` or a `HEq`.
+/--
+A congruence lemma between two expressions. The proof is generated dynamically, depending on
+whether the resulting lemma should be an `Eq` or a `HEq`.
 If generating a proof impossible, then the generator can throw an error.
 This can be due to either an `Eq` proof being impossible
 or due to the lhs/rhs not being defeq to the lhs/rhs of the generated proof,

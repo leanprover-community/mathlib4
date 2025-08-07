@@ -322,6 +322,35 @@ lemma MeasurableSet.measurableAtom_of_countable [Countable β] (x : β) :
   rw [this]
   exact MeasurableSet.biInter (to_countable (measurableAtom x)ᶜ) (fun i hi ↦ (hs i hi).2.1)
 
+/-- There is in fact equality: see `measurableAtom_eq_of_mem`. -/
+lemma measurableAtom_subset_of_mem {x y : β} (hx : x ∈ measurableAtom y) :
+    measurableAtom x ⊆ measurableAtom y := by
+  intro z hz
+  simp only [measurableAtom, mem_iInter] at hz hx ⊢
+  exact fun s hys hs ↦ hz s (hx s hys hs) hs
+
+lemma measurableAtom_eq_of_mem {x y : β} (hx : x ∈ measurableAtom y) :
+    measurableAtom x = measurableAtom y := by
+  refine subset_antisymm (measurableAtom_subset_of_mem hx) ?_
+  by_cases hy : y ∈ measurableAtom x
+  · exact measurableAtom_subset_of_mem hy
+  exfalso
+  simp only [measurableAtom, mem_iInter, not_forall] at hx hy ⊢
+  obtain ⟨s, hxs, hs, hys⟩ := hy
+  specialize hx sᶜ hys hs.compl
+  exact hx hxs
+
+lemma disjoint_measurableAtom_of_notMem {x y : β} (hx : x ∉ measurableAtom y) :
+    Disjoint (measurableAtom x) (measurableAtom y) := by
+  rw [Set.disjoint_iff_inter_eq_empty]
+  ext z
+  simp only [mem_inter_iff, mem_empty_iff_false, iff_false, not_and]
+  intro hzx hzy
+  have h1 := measurableAtom_eq_of_mem hzx
+  have h2 := measurableAtom_eq_of_mem hzy
+  rw [← h2, h1] at hx
+  exact hx (mem_measurableAtom_self x)
+
 end Atoms
 
 section Prod

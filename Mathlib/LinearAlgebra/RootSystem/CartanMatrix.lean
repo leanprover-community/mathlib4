@@ -199,53 +199,39 @@ lemma induction_on_cartanMatrix [P.IsReduced] [P.IsIrreducible]
       simp [hk]
   simp [← hq_mem, IsIrreducible.eq_top_of_invtSubmodule_reflection q hq hq₀]
 
--- TODO Turn `RootSystem` into `RootPairing`?
 open scoped Matrix in
-lemma injective_pairingIn_of_mem_support {P : RootSystem ι R M N} [P.IsCrystallographic]
-    (b : P.Base) :
+lemma injective_pairingIn {P : RootSystem ι R M N} [P.IsCrystallographic] (b : P.Base) :
     Injective (fun i (k : b.support) ↦ P.pairingIn ℤ i k) := by
+  classical
   intro i j hij
-  replace hij : ∀ k ∈ b.support, P.pairingIn ℤ i k = P.pairingIn ℤ j k :=
-    fun k hk ↦ congr_fun hij ⟨k, hk⟩
-  obtain ⟨f, hf₁, -, hf₂⟩ := b.exists_root_eq_sum_int i
-  obtain ⟨g, hg₁, -, hg₂⟩ := b.exists_root_eq_sum_int j
+  obtain ⟨f, -, -, hf⟩ := b.exists_root_eq_sum_int i
+  obtain ⟨g, -, -, hg⟩ := b.exists_root_eq_sum_int j
   let f' : b.support → ℤ := f ∘ (↑)
   let g' : b.support → ℤ := g ∘ (↑)
   suffices f' = g' by
-    rw [← P.root.apply_eq_iff_eq, hf₂, hg₂]
+    rw [← P.root.apply_eq_iff_eq, hf, hg]
     refine Finset.sum_congr rfl fun k hk ↦ ?_
     replace this : f k = g k := congr_fun this ⟨k, hk⟩
     rw [this]
-  replace hf₂ (k : ι) : P.pairingIn ℤ i k = ∑ l ∈ b.support, f l * P.pairingIn ℤ l k := by
-    apply FaithfulSMul.algebraMap_injective ℤ R
-    simp only [algebraMap_pairingIn, map_sum, map_mul, ← P.root_coroot'_eq_pairing, hf₂]
-    simp
-  replace hf₂ : (fun k : b.support ↦ P.pairingIn ℤ i k) = f' ᵥ* b.cartanMatrix := by
-    ext ⟨k, hk⟩
-    simp only [f', hf₂, Base.cartanMatrix, Base.cartanMatrixIn, Matrix.vecMul_eq_sum, comp_apply,
-      zsmul_eq_mul, Finset.sum_apply, Pi.mul_apply, Pi.intCast_apply, Int.cast_eq, Matrix.of_apply,
-      b.support.sum_subtype (fun x ↦ Iff.rfl)]
-  replace hg₂ (k : ι) : P.pairingIn ℤ j k = ∑ l ∈ b.support, g l * P.pairingIn ℤ l k := by
-    apply FaithfulSMul.algebraMap_injective ℤ R
-    simp only [algebraMap_pairingIn, map_sum, map_mul, ← P.root_coroot'_eq_pairing, hg₂]
-    simp
-  replace hg₂ : (fun k : b.support ↦ P.pairingIn ℤ j k) = g' ᵥ* b.cartanMatrix := by
-    ext ⟨k, hk⟩
-    simp only [g', hg₂, Base.cartanMatrix, Base.cartanMatrixIn, Matrix.vecMul_eq_sum, comp_apply,
-      zsmul_eq_mul, Finset.sum_apply, Pi.mul_apply, Pi.intCast_apply, Int.cast_eq, Matrix.of_apply,
-      b.support.sum_subtype (fun x ↦ Iff.rfl)]
-  replace hij :
-      (fun k : b.support ↦ P.pairingIn ℤ i k) = (fun k : b.support ↦ P.pairingIn ℤ j k) := by
-    ext ⟨k, hk⟩
-    simpa using hij k hk
-  rw [hij, hg₂] at hf₂
-  classical
-  have key : LinearIndependent ℤ b.cartanMatrix.row := by
-    apply Matrix.linearIndependent_rows_of_det_ne_zero
-    rw [← Matrix.nondegenerate_iff_det_ne_zero]
-    exact b.cartanMatrix_nondegenerate
-  rw [← Matrix.vecMul_injective_iff] at key
-  exact (key hf₂).symm
+  replace hf : (fun k : b.support ↦ P.pairingIn ℤ i k) = f' ᵥ* b.cartanMatrix := by
+    suffices ∀ k, P.pairingIn ℤ i k = ∑ l ∈ b.support, f l * P.pairingIn ℤ l k by
+      ext; simp [f', this, cartanMatrixIn, Matrix.vecMul_eq_sum, b.support.sum_subtype (by tauto)]
+    refine fun k ↦ algebraMap_injective ℤ R ?_
+    simp_rw [algebraMap_pairingIn, map_sum, map_mul, algebraMap_pairingIn,
+      ← P.root_coroot'_eq_pairing]
+    simp [hf]
+  replace hg : (fun k : b.support ↦ P.pairingIn ℤ j k) = g' ᵥ* b.cartanMatrix := by
+    suffices ∀ k, P.pairingIn ℤ j k = ∑ l ∈ b.support, g l * P.pairingIn ℤ l k by
+      ext; simp [g', this, cartanMatrixIn, Matrix.vecMul_eq_sum, b.support.sum_subtype (by tauto)]
+    refine fun k ↦ algebraMap_injective ℤ R ?_
+    simp_rw [algebraMap_pairingIn, map_sum, map_mul, algebraMap_pairingIn,
+      ← P.root_coroot'_eq_pairing]
+    simp [hg]
+  suffices Injective fun v ↦ v ᵥ* b.cartanMatrix from this <| by simpa [← hf, ← hg]
+  rw [Matrix.vecMul_injective_iff]
+  apply Matrix.linearIndependent_rows_of_det_ne_zero
+  rw [← Matrix.nondegenerate_iff_det_ne_zero]
+  exact b.cartanMatrix_nondegenerate
 
 end IsCrystallographic
 

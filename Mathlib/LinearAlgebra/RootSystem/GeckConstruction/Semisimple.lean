@@ -57,7 +57,7 @@ lemma exists_distinct_blah :
     simpa [f, ne_eq, Int.cast_eq_zero]
   · obtain ⟨k, hk, hk'⟩ : ∃ k ∈ b.support, P.pairingIn ℤ i k ≠ P.pairingIn ℤ j k := by
       contrapose! h
-      apply b.injective_pairingIn_of_mem_support
+      apply b.injective_pairingIn
       aesop
     simpa [f, p, sub_eq_zero] using
       ⟨fun i ↦ P.pairingIn ℤ i k, subset_span ⟨⟨k, hk⟩, rfl⟩, by simpa⟩

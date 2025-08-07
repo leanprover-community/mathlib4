@@ -738,7 +738,7 @@ namespace RingEquiv
 variable {R : Type u} {S : Type v} [NonUnitalRing R] [NonUnitalRing S] {s t : NonUnitalSubring R}
 
 /-- Makes the identity isomorphism from a proof two `NonUnitalSubring`s of a multiplicative
-    monoid are equal. -/
+monoid are equal. -/
 def nonUnitalSubringCongr (h : s = t) : s ≃+* t :=
   {
     Equiv.setCongr <| congr_arg _ h with

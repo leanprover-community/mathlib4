@@ -517,7 +517,6 @@ lemma IsPos.exists_mem_support_pos_pairingIn [P.IsCrystallographic] {i : ι} (h�
 
 lemma exists_mem_support_pos_pairingIn_ne_zero [P.IsCrystallographic] (i : ι) :
     ∃ j ∈ b.support, P.pairingIn ℤ j i ≠ 0 := by
-  letI := P.indexNeg
   rcases IsPos.or_neg b i with hi | hi
   · obtain ⟨j, hj, hj₀⟩ := hi.exists_mem_support_pos_pairingIn
     exact ⟨j, hj, hj₀.ne'⟩

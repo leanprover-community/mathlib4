@@ -348,7 +348,7 @@ theorem le_equalizer_of_isDPMorphism {B : Type*} [CommSemiring B] (f : A →+* B
   exact ⟨hI_le_K (mem_map_of_mem f ha), fun n ↦ by rw [hIK.2 a ha, hIK'.2 a ha]⟩
 
 /-- If there is a divided power structure on `I⬝(A/J)` such that the quotient map is
-   a dp-morphism, then `J ⊓ I` is a sub-dp-ideal of `I`. -/
+a dp-morphism, then `J ⊓ I` is a sub-dp-ideal of `I`. -/
 def subDPIdeal_inf_of_quot {A : Type*} [CommRing A] {I : Ideal A} {hI : DividedPowers I}
     {J : Ideal A} {hJ : DividedPowers (I.map (Ideal.Quotient.mk J))} {φ : DPMorphism hI hJ}
     (hφ : φ.toRingHom = Ideal.Quotient.mk J) :

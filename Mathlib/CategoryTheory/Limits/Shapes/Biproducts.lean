@@ -400,8 +400,8 @@ variable {J : Type w} {K : Type*}
 variable {C : Type u} [Category.{v} C] [HasZeroMorphisms C]
 
 /-- `biproduct f` computes the biproduct of a family of elements `f`. (It is defined as an
-   abbreviation for `limit (Discrete.functor f)`, so for most facts about `biproduct f`, you will
-   just use general facts about limits and colimits.) -/
+abbreviation for `limit (Discrete.functor f)`, so for most facts about `biproduct f`, you will
+just use general facts about limits and colimits.) -/
 abbrev biproduct (f : J → C) [HasBiproduct f] : C :=
   (biproduct.bicone f).pt
 
@@ -1002,9 +1002,9 @@ theorem biproduct.conePointUniqueUpToIso_inv (f : J → C) [HasBiproduct f] {b :
     biproduct.bicone_π, biproduct.ι_desc, biproduct.ι_π, b.toCone_π_app, b.ι_π]
 
 /-- Biproducts are unique up to isomorphism. This already follows because bilimits are limits,
-    but in the case of biproducts we can give an isomorphism with particularly nice definitional
-    properties, namely that `biproduct.lift b.π` and `biproduct.desc b.ι` are inverses of each
-    other. -/
+but in the case of biproducts we can give an isomorphism with particularly nice definitional
+properties, namely that `biproduct.lift b.π` and `biproduct.desc b.ι` are inverses of each
+other. -/
 @[simps]
 def biproduct.uniqueUpToIso (f : J → C) [HasBiproduct f] {b : Bicone f} (hb : b.IsBilimit) :
     b.pt ≅ ⨁ f where

@@ -552,12 +552,14 @@ lemma posDef_sqrt [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) :
 /--
 A matrix is positive definite if and only if it has the form `Bᴴ * B` for some invertible `B`.
 -/
-lemma posDef_iff_eq_conjTranspose_mul_self [DecidableEq n] {A : Matrix n n 𝕜} :
+lemma _root_.Matrix.posDef_iff_eq_conjTranspose_mul_self [DecidableEq n] {A : Matrix n n 𝕜} :
     PosDef A ↔ ∃ B : Matrix n n 𝕜, IsUnit B ∧ A = Bᴴ * B := by
-  classical
   refine ⟨fun hA ↦ ⟨_, hA.posDef_sqrt.isUnit, ?_⟩, fun ⟨B, hB, hA⟩ ↦ (hA ▸ ?_)⟩
   · simp [hA.posDef_sqrt.isHermitian.eq]
   · exact conjTranspose_mul_self _ (mulVec_injective_of_isUnit hB)
+
+@[deprecated (since := "07-08-2025")] alias posDef_iff_eq_conjTranspose_mul_self :=
+  Matrix.posDef_iff_eq_conjTranspose_mul_self
 
 end PosDef
 
