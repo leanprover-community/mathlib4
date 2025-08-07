@@ -171,21 +171,13 @@ end NonUnital
 section Injective
 variable {R A : Type*} [Semiring R] [NonAssocSemiring A] [Module R A]
 
-lemma mulLeft_injective [SMulCommClass R A A] :
-    Function.Injective (mulLeft R (A := A)) := fun a b h => by
-  simpa using LinearMap.ext_iff.mp h 1
-
 lemma mulLeft_inj [SMulCommClass R A A] {a b : A} :
     mulLeft R a = mulLeft R b ↔ a = b :=
-  ⟨@mulLeft_injective R A _ _ _ _ a b, fun h => h ▸ rfl⟩
-
-lemma mulRight_injective [IsScalarTower R A A] :
-    Function.Injective (mulRight R (A := A)) := fun a b h => by
-  simpa using LinearMap.ext_iff.mp h 1
+  ⟨fun h => by simpa using LinearMap.ext_iff.mp h 1, fun h => h ▸ rfl⟩
 
 lemma mulRight_inj [IsScalarTower R A A] {a b : A} :
     mulRight R a = mulRight R b ↔ a = b :=
-  ⟨@mulRight_injective R A _ _ _ _ a b, fun h => h ▸ rfl⟩
+  ⟨fun h => by simpa using LinearMap.ext_iff.mp h 1, fun h => h ▸ rfl⟩
 
 end Injective
 
