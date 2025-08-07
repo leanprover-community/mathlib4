@@ -276,15 +276,50 @@ lemma hloc (x : B) :
     -- What if that's not the case? Need to think harder!
     sorry
 
+variable (E) in
+/-- The set of bounded bi-continuous ℝ-bilinear maps from `E x` to `ℝ` which agree with the given
+inner product structure on `E`: such a map is unique, but a priori the set of these maps
+might be empty as the inner product structure a priori may not be continuous w.r.t. the given
+topology on `E x`. (In finite dimensional spaces, it will be.) -/
+def mapsMatchingInner2 (x : B) : Set (E x →L[ℝ] E x →L[ℝ] ℝ) :=
+  {φ | ∀ v w : E x, φ v w = ⟪v, w⟫}
+
+omit [TopologicalSpace B] [VectorBundle ℝ F E] in
+lemma convex_mapsMatchingInner2 (x : B) : Convex ℝ (mapsMatchingInner2 E x) := by
+  intro φ hφ ψ hψ r s hr hs hrs
+  simp only [mapsMatchingInner2, Set.mem_setOf] at hφ hψ ⊢
+  intro v w
+  simp [hφ v w, hψ v w]
+  grind
+
+-- lemma hloc2 (x : B) :
+--     ∃ U ∈ nhds x, ∃ g,
+--       ContMDiffOn IB 𝓘(ℝ, E x →L[ℝ] E x →L[ℝ] ℝ) ∞ g U ∧ ∀ y ∈ U, g y ∈ mapsMatchingInner2 E y := by
+--   letI t := trivializationAt F E x
+--   have := t.open_baseSet.mem_nhds <| FiberBundle.mem_baseSet_trivializationAt' x
+--   use t.baseSet, this, (fun x ↦ RMetric_local F E x)
+--   refine ⟨?_, ?_⟩
+--   · sorry
+--   · intro y hy
+--     simp only [mapsMatchingInner, Set.mem_setOf]
+--     intro v w
+--     simp only [RMetric_local, IsBilinearMap.pullback_clm_apply]
+--     -- IF the preimage of the basis of F is a basis of E y, prove equality on that basis
+--     -- What if that's not the case? Need to think harder!
+--     sorry
+
 variable [SigmaCompactSpace B] [T2Space B] [IsManifold IB ∞ B] [FiniteDimensional ℝ EB]
 
 variable (E F IB) in
-noncomputable def RMetric_aux : C^∞⟮IB, B; 𝓘(ℝ, F →L[ℝ] F →L[ℝ] ℝ), F →L[ℝ] F →L[ℝ] ℝ⟯ :=
-  Classical.choose <|
-    -- TODO: can one formulate a dependent version of this result, and avoid all this dance
-    -- of passing back and forth between E x and F?
-    exists_contMDiffOn_forall_mem_convex_of_local (n := (⊤ : ℕ∞)) (I := IB)
-    (t := fun x ↦ mapsMatchingInner F E x) convex_mapsMatchingInner hloc
+noncomputable def RMetric_aux : C^∞⟮IB, B; 𝓘(ℝ, F →L[ℝ] F →L[ℝ] ℝ), F →L[ℝ] F →L[ℝ] ℝ⟯ := by
+  --Classical.choose <|
+  -- TODO: need V as a bundle of continuous bilinear maps on E over B... does that exist already?
+  have aux := exists_contMDiffOn_section_forall_mem_convex_of_local IB (M := B) (V := E) (F_fiber := F) (n := (⊤ : ℕ∞))
+    --(t := fun x ↦ mapsMatchingInner2 E x) --convex_mapsMatchingInner2 sorry
+
+  sorry
+
+#exit
 
 variable (E F IB) in
 /-- An arbitrary choice of bundle metric on `E`, which is smooth in the fibre. -/
