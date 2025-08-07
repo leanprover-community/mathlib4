@@ -1,9 +1,8 @@
 /-
-Copyright (c) 2025 Evan Spotte-Smith.
+Copyright (c) 2025 Evan Spotte-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Evan Spotte-Smith
 -/
-
 import Mathlib.Data.Set.Basic
 import Mathlib.Data.Set.Card
 import Mathlib.Data.Sym.Sym2
@@ -14,13 +13,13 @@ open Set
 
 /-!
 
-# Hypergraphs
+# Undirected hypergraphs
 
-A *hypergraph* `H` is a generalization of a graph (see `Mathlib.Combinatorics.Graph`)
-and consists of a set of *vertices*, usually denoted `V` or `V(H)`, and a set of *hyperedges*,
-denoted `E` or `E(H)`. In contrast with a graph, where edges are unordered pairs of vertices,
-in hypergraphs, hyperedges are (unordered) sets of vertices of length `0 ≤ |e| ≤ |V|`, where `e`
-is some hyperedge.
+An *undirected hypergraph* (here abbreviated as *hypergraph*) `H` is a generalization of a graph
+(see `Mathlib.Combinatorics.Graph`) and consists of a set of *vertices*, usually denoted `V` or
+`V(H)`, and a set of *hyperedges*, denoted `E` or `E(H)`. In contrast with a graph, where edges are
+unordered pairs of vertices, in hypergraphs, hyperedges are (unordered) sets of vertices of length
+`0 ≤ |e| ≤ |V|`, where `e` is some hyperedge.
 
 A hypergraph where `V = ∅` and `E = ∅` is called an *empty hypergraph*. A hypergraph with a nonempty
 vertex set (`V ≠ ∅`) and empty hyperedge set is a *trivial hypergraph*. A *complete hypergraph* is
@@ -101,14 +100,14 @@ def emptyHypergraph (α β : Type*) : Hypergraph α β := Hypergraph.mk ∅ ∅ 
 /--
 Predicate to determine if a hypergraph is empty
 -/
-def isEmpty (H : Hypergraph α β) : Prop := V(H) = ∅ ∧ E(H) = ∅
+def IsEmpty (H : Hypergraph α β) : Prop := V(H) = ∅ ∧ E(H) = ∅
 
 /--
 Predicate to determine if a hypergraph is trivial
 
 A hypergraph is trivial if it has a nonempty vertex set and an empty hyperedge set
 -/
-def isTrivial (H : Hypergraph α β) : Prop := (Nonempty V(H)) ∧ (E(H) = ∅)
+def IsTrivial (H : Hypergraph α β) : Prop := Nonempty V(H) ∧ E(H) = ∅
 
 -- * `H.IsHyperedge e s` means that the hyperedge `x` contains exactly the vertices contained in
 --     `s : Set α`.
@@ -119,9 +118,8 @@ def isTrivial (H : Hypergraph α β) : Prop := (Nonempty V(H)) ∧ (E(H) = ∅)
 /--
 Predicate to determine if a hyperedge `e` contains exactly the vertex subset `s : Set α`
 -/
-def IsHyperedge (H : Hypergraph α β) (e : β) (s : Set α) : Prop := (
+def IsHyperedge (H : Hypergraph α β) (e : β) (s : Set α) : Prop :=
   (∀ x ∈ s, x ∈ V(H) ∧ H.IsIncident x e) ∧ (∀ y ∈ V(H) \ s, ¬H.IsIncident y e)
-)
 
 /--
 Predicate for adjacency. Two vertices `x` and `y` are adjacent if there is some
@@ -130,9 +128,8 @@ hyperedge `e ∈ E(H)` where `x` and `y` are both incident on `e`.
 Note that we do not need to explicitly check that x, y ∈ V(H) here because a vertex that is not in
 the vertex set cannot be incident on any hyperedge.
 -/
-def Adj (H : Hypergraph α β) (x : α) (y : α) : Prop := (
+def Adj (H : Hypergraph α β) (x : α) (y : α) : Prop :=
   ∃ e ∈ E(H), H.IsIncident x e ∧ H.IsIncident y e
-)
 
 /--
 Predicate for (hyperedge) adjacency. Analogous to `Hypergraph.Adj`, hyperedges `e` and `f` are
@@ -141,9 +138,8 @@ adjacent if there is some vertex `x ∈ V(H)` where `x` is incident on both `e` 
 Note that we do not need to explicitly check that e, f ∈ E(H) here because a vertex cannot be
 incident on a hyperedge that is not in the hyperedge set.
 -/
-def EAdj (H : Hypergraph α β) (e : β) (f : β) : Prop := (
+def EAdj (H : Hypergraph α β) (e : β) (f : β) : Prop :=
   ∃ x ∈ V(H), H.IsIncident x e ∧ H.IsIncident x f
-)
 
 /--
 Predicate to determine if a hyperedge `e` is a loop, meaning that its associated vertex subset `s`
@@ -151,9 +147,8 @@ contains only one vertex, i.e., `|s| = 1`
 
 TODO: am I using Set.encard right?
 -/
-def isLoop (H : Hypergraph α β) (e : β) (s : Set α) : Prop := (
+def IsLoop (H : Hypergraph α β) (e : β) (s : Set α) : Prop :=
   H.IsHyperedge e s ∧ (Set.encard s) = 1
-)
 
 /--
 Predicate to determine if a hypergraph is simple
@@ -161,8 +156,10 @@ Predicate to determine if a hypergraph is simple
 A simple hypergraph is one in which, for each hyperedge `e ∈ E(H)` (with associated vertex subset
 `s : Set α`), there is no other hyperedge `f ∈ E(H)` (with associated vertex subset `t : Set α`)
 such that `s ⊂ t`.
+
+TODO: define this in a sane way
 -/
-def isSimple (H : Hypergraph α β) : Prop := sorry
+def IsSimple (H : Hypergraph α β) : Prop := sorry
 
 
 
