@@ -10,6 +10,8 @@ import Mathlib.Analysis.SpecificLimits.Basic
 # Existence of minimizers (Hilbert projection theorem)
 
 This file shows the existence of minimizers (also known as the Hilbert projection theorem).
+This is the key tool that is used to define `Submodule.orthogonalProjection` in
+`Mathlib/Analysis/InnerProductSpace/Projection/Basic`.
 -/
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
