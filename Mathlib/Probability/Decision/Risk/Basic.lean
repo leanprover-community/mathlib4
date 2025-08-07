@@ -83,7 +83,7 @@ lemma bayesRiskPrior_of_nonempty_of_isEmpty (ℓ : Θ → 𝓨 → ℝ≥0∞) (
     simp only [isEmpty_subtype]
     intro κ
     rw [Subsingleton.allEq κ 0]
-    exact not_isMarkovKernel_zero
+    exact Kernel.not_isMarkovKernel_zero
   simp
 
 @[simp]

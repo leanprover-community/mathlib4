@@ -42,41 +42,6 @@ lemma iInf_eq_bot_iff_of_finite {α ι : Type*} [CompleteLinearOrder α] [Finite
   simp only [Set.mem_univ, iInf_pos] at h''
   exact h''.ne' h
 
-instance {α : Type*} [MeasurableSpace α] [Countable α] [DiscreteMeasurableSpace α]
-    {μ : Measure α} : SFinite μ := by
-  rw [← Measure.sum_smul_dirac μ]
-  infer_instance
-
-namespace ProbabilityTheory
-
-@[simp]
-lemma Kernel.comp_const {α β γ : Type*} {_ : MeasurableSpace α} {_ : MeasurableSpace β}
-    {_ : MeasurableSpace γ}
-    (κ : Kernel β γ) (μ : Measure β) : κ ∘ₖ Kernel.const α μ = Kernel.const α (κ ∘ₘ μ) := by
-  ext x s hs
-  rw [Kernel.comp_apply, Measure.bind_apply hs (by fun_prop), Kernel.const_apply,
-    Kernel.const_apply, Measure.bind_apply hs (by fun_prop)]
-
-variable {Θ Θ' 𝓧 𝓧' 𝓨 : Type*} {mΘ : MeasurableSpace Θ} {mΘ' : MeasurableSpace Θ'}
-  {m𝓧 : MeasurableSpace 𝓧} {m𝓧' : MeasurableSpace 𝓧'} {m𝓨 : MeasurableSpace 𝓨}
-  {ℓ : Θ → 𝓨 → ℝ≥0∞} {P : Kernel Θ 𝓧} {κ : Kernel 𝓧 𝓨} {π : Measure Θ}
-
-instance [Nonempty 𝓨] : Nonempty (Subtype (@IsMarkovKernel 𝓧 𝓨 m𝓧 m𝓨)) := by
-  simp only [nonempty_subtype]
-  let y : 𝓨 := Classical.ofNonempty
-  exact ⟨Kernel.const _ (Measure.dirac y), inferInstance⟩
-
-instance [IsEmpty 𝓧] (κ : Kernel 𝓧 𝓨) : IsMarkovKernel κ where
-  isProbabilityMeasure := by simp
-
-lemma not_isMarkovKernel_zero [Nonempty 𝓧] : ¬ IsMarkovKernel (0 : Kernel 𝓧 𝓨) := by
-  by_contra h
-  let x : 𝓧 := Nonempty.some inferInstance
-  have h1 : (0 : Measure 𝓨) .univ = 1 := (h.isProbabilityMeasure x).measure_univ
-  simp only [Measure.coe_zero, Pi.zero_apply, zero_ne_one] at h1
-
-end ProbabilityTheory
-
 namespace MeasureTheory
 
 variable {α : Type*} {mα : MeasurableSpace α} {μ ν : Measure α}
