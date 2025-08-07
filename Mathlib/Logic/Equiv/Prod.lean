@@ -11,7 +11,7 @@ import Mathlib.Data.Prod.PProd
 # Equivalence between product types
 
 In this file we continue the work on equivalences begun in `Mathlib/Logic/Equiv/Defs.lean`,
-focussing on product types.
+focusing on product types.
 
 ## Main definitions
 
@@ -451,7 +451,7 @@ def prodSubtypeFstEquivSubtypeProd {α β} {p : α → Prop} :
 
 /-- A subtype of a `Prod` is equivalent to a sigma type whose fibers are subtypes. -/
 def subtypeProdEquivSigmaSubtype {α β} (p : α → β → Prop) :
-    { x : α × β // p x.1 x.2 } ≃ Σa, { b : β // p a b } where
+    { x : α × β // p x.1 x.2 } ≃ Σ a, { b : β // p a b } where
   toFun x := ⟨x.1.1, x.1.2, x.property⟩
   invFun x := ⟨⟨x.1, x.2⟩, x.2.property⟩
 

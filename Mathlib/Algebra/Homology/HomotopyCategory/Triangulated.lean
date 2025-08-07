@@ -85,7 +85,7 @@ noncomputable def inv : mappingCone (mappingConeCompTriangle f g).mor₁ ⟶ map
 @[reassoc (attr := simp)]
 lemma hom_inv_id : hom f g ≫ inv f g = 𝟙 _ := by
   ext n
-  simp [hom, inv, lift_desc_f _ _ _ _ _ _ _ n (n+1) rfl, ext_from_iff _ (n + 1) _ rfl]
+  simp [hom, inv, lift_desc_f _ _ _ _ _ _ _ n (n + 1) rfl, ext_from_iff _ (n + 1) _ rfl]
 
 set_option linter.style.maxHeartbeats false in
 -- no reason was present for this heartbeat bump at the time of the creation of the linter
@@ -149,7 +149,7 @@ lemma mappingConeCompHomotopyEquiv_comm₂ :
       (mappingConeCompTriangle f g).mor₃ := by
   ext n
   simp [map, mappingConeCompHomotopyEquiv, MappingConeCompHomotopyEquiv.hom,
-    lift_f _ _ _ _ _ (n+1) rfl, ext_from_iff _ (n+1) _ rfl]
+    lift_f _ _ _ _ _ (n + 1) rfl, ext_from_iff _ (n + 1) _ rfl]
 
 @[reassoc (attr := simp)]
 lemma mappingConeCompTriangleh_comm₁ :
@@ -177,7 +177,7 @@ lemma mappingConeCompTriangleh_distinguished :
       distTriang (HomotopyCategory C (ComplexShape.up ℤ)) := by
   refine ⟨_, _, (mappingConeCompTriangle f g).mor₁, ⟨?_⟩⟩
   refine Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (isoOfHomotopyEquiv
-    (mappingConeCompHomotopyEquiv f g)) (by aesop_cat) (by simp) ?_
+    (mappingConeCompHomotopyEquiv f g)) (by cat_disch) (by simp) ?_
   dsimp [mappingConeCompTriangleh]
   rw [CategoryTheory.Functor.map_id, comp_id, ← Functor.map_comp_assoc]
   congr 2

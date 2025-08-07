@@ -40,7 +40,7 @@ variable {α 𝕜 E F G : Type*} {m : MeasurableSpace α} {μ : Measure α}
 namespace ContinuousLinearMap
 
 variable (r) in
-/-- The map between `MeasuryTheory.Lp` spaces satisfying `ENNReal.HolderTriple`
+/-- The map between `MeasureTheory.Lp` spaces satisfying `ENNReal.HolderTriple`
 induced by a continuous bilinear map on the underlying spaces. -/
 def holder (f : Lp E p μ) (g : Lp F q μ) : Lp G r μ :=
   MemLp.toLp (fun x ↦ B (f x) (g x)) <| by
@@ -188,7 +188,7 @@ protected lemma smul_add (f₁ f₂ : Lp 𝕜 p μ) (g : Lp E q μ) :
   filter_upwards [AEEqFun.coeFn_add f₁.val f₂.val] with x hx
   simp [hx, add_smul]
 
-protected lemma add_smul (f : Lp 𝕜 p μ) (g₁ g₂  : Lp E q μ) :
+protected lemma add_smul (f : Lp 𝕜 p μ) (g₁ g₂ : Lp E q μ) :
     f • (g₁ + g₂) = f • g₁ + f • g₂ := by
   simp only [smul_def, ← MemLp.toLp_add]
   apply MemLp.toLp_congr _ _ ?_

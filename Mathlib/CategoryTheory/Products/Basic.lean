@@ -66,7 +66,7 @@ variable {C D} in
 This constructor should be preferred over `Prod.mk`, because lean infers better the
 source and target of the resulting morphism. -/
 abbrev mkHom {X₁ X₂ : C} {Y₁ Y₂ : D} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) : (X₁, Y₁) ⟶ (X₂, Y₂) :=
-  ⟨f,g⟩
+  ⟨f, g⟩
 
 @[inherit_doc Prod.mkHom]
 scoped infixr:70 " ×ₘ " => Prod.mkHom
@@ -132,13 +132,6 @@ def sectL (C : Type u₁) [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D
 def sectR {C : Type u₁} [Category.{v₁} C] (Z : C) (D : Type u₂) [Category.{v₂} D] : D ⥤ C × D where
   obj X := (Z, X)
   map f := (𝟙 Z, f)
-
-@[deprecated (since := "2024-11-12")] alias sectl := sectL
-@[deprecated (since := "2024-11-12")] alias sectr := sectR
-@[deprecated (since := "2024-11-12")] alias sectl_obj := sectL_obj
-@[deprecated (since := "2024-11-12")] alias sectr_obj := sectR_obj
-@[deprecated (since := "2024-11-12")] alias sectl_map := sectL_map
-@[deprecated (since := "2024-11-12")] alias sectr_map := sectR_map
 
 variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
 

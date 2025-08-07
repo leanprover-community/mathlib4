@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Algebra.Pi
+import Mathlib.Algebra.Algebra.Shrink
 import Mathlib.Algebra.Category.AlgCat.Basic
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.Algebra.Category.ModuleCat.Limits
@@ -73,7 +74,7 @@ def limitπAlgHom (j) :
       (F ⋙ forget₂ (AlgCat R) RingCat.{w} ⋙ forget₂ RingCat SemiRingCat.{w}) j with
     toFun := (Types.Small.limitCone (F ⋙ forget (AlgCat.{w} R))).π.app j
     commutes' := fun x => by
-      simp only [Types.Small.limitCone_π_app, ← Shrink.algEquiv_apply _ R,
+      simp only [Types.Small.limitCone_π_app, ← Shrink.algEquiv_apply R,
         Types.Small.limitCone_pt, AlgEquiv.commutes]
       rfl
     }
@@ -109,20 +110,20 @@ def limitConeIsLimit : IsLimit (limitCone.{v, w} F) := by
     simp only [Functor.mapCone_π_app, forget_map, map_one, Pi.one_apply]
   · intro x y
     ext j
-    simp only [Functor.comp_obj, forget_obj, Equiv.toFun_as_coe, Functor.mapCone_pt,
+    simp only [Functor.comp_obj, forget_obj, Functor.mapCone_pt,
       Functor.mapCone_π_app, forget_map, Equiv.symm_apply_apply,
-      Types.Small.limitCone_pt, equivShrink_symm_mul]
+      Types.Small.limitCone_pt, equivShrink_symm_mul, EquivLike.coe_apply]
     apply map_mul
   · ext j
-    simp only [Functor.comp_obj, forget_obj, Equiv.toFun_as_coe, Functor.mapCone_pt,
+    simp only [Functor.comp_obj, forget_obj, Functor.mapCone_pt,
       Functor.mapCone_π_app, forget_map, Equiv.symm_apply_apply,
-      equivShrink_symm_zero]
+      equivShrink_symm_zero, EquivLike.coe_apply]
     apply map_zero
   · intro x y
     ext j
-    simp only [Functor.comp_obj, forget_obj, Equiv.toFun_as_coe, Functor.mapCone_pt,
+    simp only [Functor.comp_obj, forget_obj, Functor.mapCone_pt,
       Functor.mapCone_π_app, forget_map, Equiv.symm_apply_apply,
-      Types.Small.limitCone_pt, equivShrink_symm_add]
+      Types.Small.limitCone_pt, equivShrink_symm_add, EquivLike.coe_apply]
     apply map_add
   · intro r
     simp only [Equiv.algebraMap_def, Equiv.symm_symm]

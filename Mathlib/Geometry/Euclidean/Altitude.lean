@@ -218,7 +218,7 @@ Equivalently, neither vector is a multiple of the other; the angle between them 
 lemma abs_inner_vsub_altitudeFoot_lt_mul {i j : Fin (n + 1)} (hij : i ≠ j) (hn : 1 < n) :
     |⟪s.points i -ᵥ s.altitudeFoot i, s.points j -ᵥ s.altitudeFoot j⟫|
       < s.height i * s.height j := by
-  apply LE.le.lt_of_ne
+  apply lt_of_le_of_ne
   · convert abs_real_inner_le_norm _ _ using 1
     simp only [dist_eq_norm_vsub, height]
   · simp_rw [height, dist_eq_norm_vsub]

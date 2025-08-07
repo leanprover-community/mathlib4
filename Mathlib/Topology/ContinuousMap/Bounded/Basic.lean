@@ -78,8 +78,6 @@ instance instCoeTC [FunLike F α β] [BoundedContinuousMapClass F α β] : CoeTC
 @[simp]
 theorem coe_toContinuousMap (f : α →ᵇ β) : (f.toContinuousMap : α → β) = f := rfl
 
-@[deprecated (since := "2024-11-23")] alias coe_to_continuous_fun := coe_toContinuousMap
-
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
   because it is a composition of multiple projections. -/
 def Simps.apply (h : α →ᵇ β) : α → β := h
@@ -247,14 +245,9 @@ theorem isInducing_coeFn : IsInducing (UniformFun.ofFun ∘ (⇑) : (α →ᵇ �
     UniformFun.tendsto_iff_tendstoUniformly]
   simp [comp_def]
 
-@[deprecated (since := "2024-10-28")] alias inducing_coeFn := isInducing_coeFn
-
 -- TODO: upgrade to `IsUniformEmbedding`
 theorem isEmbedding_coeFn : IsEmbedding (UniformFun.ofFun ∘ (⇑) : (α →ᵇ β) → α →ᵤ β) :=
   ⟨isInducing_coeFn, fun _ _ h => ext fun x => congr_fun h x⟩
-
-@[deprecated (since := "2024-10-26")]
-alias embedding_coeFn := isEmbedding_coeFn
 
 variable (α) in
 /-- Constant as a continuous bounded function. -/
@@ -444,7 +437,7 @@ theorem dist_extend_extend (f : α ↪ δ) (g₁ g₂ : α →ᵇ β) (h₁ h₂
       _ ≤ _ := dist_coe_le_dist _
 
 theorem isometry_extend (f : α ↪ δ) (h : δ →ᵇ β) : Isometry fun g : α →ᵇ β => extend f g h :=
-  Isometry.of_dist_eq fun g₁ g₂ => by simp [dist_nonneg]
+  Isometry.of_dist_eq fun g₁ g₂ => by simp
 
 end Extend
 
@@ -547,7 +540,7 @@ instance instMulOneClass [MulOneClass R] [BoundedMul R] [ContinuousMul R] : MulO
 @[to_additive (attr := simps)
 "Composition on the left by a (lipschitz-continuous) homomorphism of topological `AddMonoid`s, as a
 `AddMonoidHom`. Similar to `AddMonoidHom.compLeftContinuous`."]
-protected noncomputable def _root_.MonoidHom.compLeftContinuousBounded (α : Type*)
+protected def _root_.MonoidHom.compLeftContinuousBounded (α : Type*)
     [TopologicalSpace α] [PseudoMetricSpace β] [Monoid β] [BoundedMul β] [ContinuousMul β]
     [PseudoMetricSpace γ] [Monoid γ] [BoundedMul γ] [ContinuousMul γ]
     (g : β →* γ) {C : NNReal} (hg : LipschitzWith C g) :

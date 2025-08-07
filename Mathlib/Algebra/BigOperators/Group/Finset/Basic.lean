@@ -34,9 +34,23 @@ lemma prod_eq_fold (s : Finset ι) (f : ι → M) : ∏ i ∈ s, f i = s.fold (�
 theorem prod_cons (h : a ∉ s) : ∏ x ∈ cons a s h, f x = f a * ∏ x ∈ s, f x :=
   fold_cons h
 
+/-- Variant of `prod_cons` not applied to a function. -/
+@[to_additive (attr := grind =)]
+theorem prod_cons' (h : a ∉ s) :
+    Finset.prod (cons a s h) = fun (f : ι → M) => f a * ∏ x ∈ s, f x := by
+  funext f
+  rw [Finset.prod_cons h]
+
 @[to_additive (attr := simp)]
 theorem prod_insert [DecidableEq ι] : a ∉ s → ∏ x ∈ insert a s, f x = f a * ∏ x ∈ s, f x :=
   fold_insert
+
+/-- Variant of `prod_insert` not applied to a function. -/
+@[to_additive (attr := grind =)]
+theorem prod_insert' [DecidableEq ι] (h : a ∉ s) :
+    Finset.prod (insert a s) = fun (f : ι → M) => f a * ∏ x ∈ s, f x := by
+  funext f
+  rw [Finset.prod_insert h]
 
 /-- The product of `f` over `insert a s` is the same as
 the product over `s`, as long as `a` is in `s` or `f a = 1`. -/
@@ -64,6 +78,13 @@ theorem prod_insert_one [DecidableEq ι] (h : f a = 1) : ∏ x ∈ insert a s, f
 @[to_additive (attr := simp)]
 theorem prod_singleton (f : ι → M) (a : ι) : ∏ x ∈ singleton a, f x = f a :=
   Eq.trans fold_singleton <| mul_one _
+
+/-- Variant of `prod_singleton` not applied to a function. -/
+@[to_additive (attr := grind =)]
+theorem prod_singleton' (a : ι) :
+    Finset.prod (singleton a) = fun (f : ι → M) => f a := by
+  funext f
+  simp
 
 @[to_additive]
 theorem prod_pair [DecidableEq ι] {a b : ι} (h : a ≠ b) :
@@ -212,7 +233,7 @@ variable {s : Finset ι} {t : Finset κ} {f : ι → M} {g : κ → M}
 
 @[to_additive]
 lemma prod_of_injOn (e : ι → κ) (he : Set.InjOn e s) (hest : Set.MapsTo e s t)
-    (h' : ∀ i ∈ t, i ∉ e '' s → g i = 1) (h : ∀ i ∈ s, f i = g (e i))  :
+    (h' : ∀ i ∈ t, i ∉ e '' s → g i = 1) (h : ∀ i ∈ s, f i = g (e i)) :
     ∏ i ∈ s, f i = ∏ j ∈ t, g j := by
   classical
   exact (prod_nbij e (fun a ↦ mem_image_of_mem e) he (by simp [Set.surjOn_image]) h).trans <|
@@ -369,19 +390,9 @@ lemma prod_congr_of_eq_on_inter {ι M : Type*} {s₁ s₂ : Finset ι} {f g : ι
 theorem prod_eq_mul_of_mem {s : Finset ι} {f : ι → M} (a b : ι) (ha : a ∈ s) (hb : b ∈ s)
     (hn : a ≠ b) (h₀ : ∀ c ∈ s, c ≠ a ∧ c ≠ b → f c = 1) : ∏ x ∈ s, f x = f a * f b := by
   haveI := Classical.decEq ι; let s' := ({a, b} : Finset ι)
-  have hu : s' ⊆ s := by
-    refine insert_subset_iff.mpr ?_
-    apply And.intro ha
-    apply singleton_subset_iff.mpr hb
-  have hf : ∀ c ∈ s, c ∉ s' → f c = 1 := by
-    intro c hc hcs
-    apply h₀ c hc
-    apply not_or.mp
-    intro hab
-    apply hcs
-    rw [mem_insert, mem_singleton]
-    exact hab
-  rw [← prod_subset hu hf]
+  have hu : s' ⊆ s := by grind
+  have hf : ∀ c ∈ s, c ∉ s' → f c = 1 := by grind
+  rw [← Finset.prod_subset hu hf]
   exact Finset.prod_pair hn
 
 @[to_additive]
@@ -491,12 +502,7 @@ theorem prod_bij_ne_one {s : Finset ι} {t : Finset κ} {f : ι → M} {g : κ �
       prod_bij (fun a ha => i a (mem_filter.mp ha).1 <| by simpa using (mem_filter.mp ha).2)
         ?_ ?_ ?_ ?_
     _ = ∏ x ∈ t, g x := prod_filter_ne_one _
-  · intros a ha
-    refine (mem_filter.mp ha).elim ?_
-    intros h₁ h₂
-    refine (mem_filter.mpr ⟨hi a h₁ _, ?_⟩)
-    specialize h a h₁ fun H ↦ by rw [H] at h₂; simp at h₂
-    rwa [← h]
+  · grind [mem_filter]
   · solve_by_elim
   · intros b hb
     refine (mem_filter.mp hb).elim fun h₁ h₂ ↦ ?_
@@ -563,11 +569,7 @@ theorem prod_list_map_count [DecidableEq ι] (l : List ι) (f : ι → M) :
     refine prod_congr rfl fun x hx => ?_
     rw [count_cons_of_ne (ne_of_mem_erase hx).symm]
   rw [prod_insert has, count_cons_self, count_eq_zero_of_not_mem (mt mem_toFinset.2 has), pow_one]
-  congr 1
-  refine prod_congr rfl fun x hx => ?_
-  rw [count_cons_of_ne]
-  rintro rfl
-  exact has hx
+  grind [Finset.prod_congr]
 
 @[to_additive]
 theorem prod_list_count [DecidableEq M] (s : List M) :
@@ -671,15 +673,11 @@ lemma prod_involution (g : ∀ a ∈ s, ι) (hg₁ : ∀ a ha, f a * f (g a ha) 
     rw [← prod_sdiff this, h, one_mul]
     cases eq_or_ne (g x hx) x with
     | inl hx' => simpa [hx'] using hg₃ x hx
-    | inr hx' => rw [prod_pair hx'.symm, hg₁]
+    | inr hx' => grind
   suffices h₃ : ∀ a (ha : a ∈ s \ {x, g x hx}), g a (sdiff_subset ha) ∈ s \ {x, g x hx} from
     ih (s \ {x, g x hx}) (ssubset_iff.2 ⟨x, by simp [insert_subset_iff, hx]⟩) _
       (by simp [hg₁]) (fun _ _ => hg₃ _ _) h₃ (fun _ _ => hg₄ _ _)
-  simp only [mem_sdiff, mem_insert, mem_singleton, not_or, g_mem, true_and]
-  rintro a ⟨ha₁, ha₂, ha₃⟩
-  refine ⟨fun h => by simp [← h, hg₄] at ha₃, fun h => ?_⟩
-  have : g (g a ha₁) (g_mem _ _) = g (g x hx) (g_mem _ _) := by simp only [h]
-  exact ha₂ (by simpa [hg₄] using this)
+  grind
 
 /-- The difference with `Finset.prod_involution` is that the involution is a non-dependent function,
 rather than being allowed to use membership of the domain of the product. -/
@@ -726,12 +724,7 @@ theorem eq_of_card_le_one_of_prod_eq {s : Finset ι} (hc : #s ≤ 1) {f : ι →
   · exact False.elim (card_ne_zero_of_mem hx hc0)
   · have h1 : #s = 1 := le_antisymm hc (Nat.one_le_of_lt (Nat.pos_of_ne_zero hc0))
     rw [card_eq_one] at h1
-    obtain ⟨x2, hx2⟩ := h1
-    rw [hx2, mem_singleton] at hx
-    simp_rw [hx2] at h
-    rw [hx]
-    rw [prod_singleton] at h
-    exact h
+    grind
 
 /-- Taking a product over `s : Finset ι` is the same as multiplying the value on a single element
 `f a` by the product of `s.erase a`.
@@ -758,8 +751,7 @@ theorem prod_erase [DecidableEq ι] (s : Finset ι) {f : ι → M} {a : ι} (h :
     ∏ x ∈ s.erase a, f x = ∏ x ∈ s, f x := by
   rw [← sdiff_singleton_eq_erase]
   refine prod_subset sdiff_subset fun x hx hnx => ?_
-  rw [sdiff_singleton_eq_erase] at hnx
-  rwa [eq_of_mem_of_notMem_erase hx hnx]
+  grind
 
 @[to_additive]
 theorem prod_erase_lt_of_one_lt {κ : Type*} [DecidableEq ι] [CommMonoid κ] [LT κ]
@@ -834,17 +826,12 @@ lemma prod_image_of_disjoint [DecidableEq ι] [PartialOrder ι] [OrderBot ι] {f
 
 @[to_additive]
 theorem prod_unique_nonempty [Unique ι] (s : Finset ι) (f : ι → M) (h : s.Nonempty) :
-   ∏ x ∈ s, f x = f default := by
+    ∏ x ∈ s, f x = f default := by
   rw [h.eq_singleton_default, Finset.prod_singleton]
 
 lemma prod_dvd_prod_of_dvd (f g : ι → M) (h : ∀ i ∈ s, f i ∣ g i) :
-    ∏ i ∈ s, f i ∣ ∏ i ∈ s, g i := by
-  induction s using Finset.cons_induction with
-  | empty => simp
-  | cons a T haT IH =>
-    rw [Finset.prod_cons, Finset.prod_cons]
-    rw [Finset.forall_mem_cons] at h
-    exact mul_dvd_mul h.1 <| IH h.2
+    ∏ i ∈ s, f i ∣ ∏ i ∈ s, g i :=
+  Multiset.prod_dvd_prod_of_dvd _ _ h
 
 end CommMonoid
 
@@ -961,7 +948,7 @@ theorem card_biUnion_le [DecidableEq M] {s : Finset ι} {t : ι → Finset M} :
     calc
       #((insert a s).biUnion t) ≤ #(t a) + #(s.biUnion t) := by
         rw [biUnion_insert]; exact card_union_le ..
-      _ ≤ ∑ a ∈ insert a s, #(t a) := by rw [sum_insert has]; exact Nat.add_le_add_left ih _
+      _ ≤ ∑ a ∈ insert a s, #(t a) := by grind
 
 theorem card_eq_sum_card_fiberwise [DecidableEq M] {f : ι → M} {s : Finset ι} {t : Finset M}
     (H : s.toSet.MapsTo f t) : #s = ∑ b ∈ t, #{a ∈ s | f a = b} := by
@@ -973,9 +960,7 @@ theorem card_eq_sum_card_image [DecidableEq M] (f : ι → M) (s : Finset ι) :
 
 theorem mem_sum {f : ι → Multiset M} (s : Finset ι) (b : M) :
     (b ∈ ∑ x ∈ s, f x) ↔ ∃ a ∈ s, b ∈ f a := by
-  induction s using Finset.cons_induction with
-  | empty => simp
-  | cons a t hi ih => simp [sum_cons, ih, or_and_right, exists_or]
+  induction s using Finset.cons_induction with grind
 
 end Nat
 end Finset
@@ -1088,18 +1073,14 @@ theorem exists_smul_of_dvd_count (s : Multiset ι) {k : ℕ}
 @[to_additive]
 theorem prod_sum {ι : Type*} [CommMonoid M] (f : ι → Multiset M) (s : Finset ι) :
     (∑ x ∈ s, f x).prod = ∏ x ∈ s, (f x).prod := by
-  induction s using Finset.cons_induction with
-  | empty => rw [Finset.sum_empty, Finset.prod_empty, Multiset.prod_zero]
-  | cons a s has ih => rw [Finset.sum_cons, Finset.prod_cons, Multiset.prod_add, ih]
+  induction s using Finset.cons_induction with grind
 
 end Multiset
 
 @[to_additive (attr := simp)]
 lemma IsUnit.prod_iff [CommMonoid M] {f : ι → M} :
     IsUnit (∏ a ∈ s, f a) ↔ ∀ a ∈ s, IsUnit (f a) := by
-  induction s using Finset.cons_induction with
-  | empty => simp
-  | cons a s ha hs => rw [Finset.prod_cons, IsUnit.mul_iff, hs, Finset.forall_mem_cons]
+  induction s using Finset.cons_induction with grind
 
 @[to_additive]
 lemma IsUnit.prod_univ_iff [Fintype ι] [CommMonoid M] {f : ι → M} :
@@ -1107,8 +1088,4 @@ lemma IsUnit.prod_univ_iff [Fintype ι] [CommMonoid M] {f : ι → M} :
 
 theorem nat_abs_sum_le (s : Finset ι) (f : ι → ℤ) :
     (∑ i ∈ s, f i).natAbs ≤ ∑ i ∈ s, (f i).natAbs := by
-  induction s using Finset.cons_induction with
-  | empty => simp only [Finset.sum_empty, Int.natAbs_zero, le_refl]
-  | cons i s his IH =>
-    simp only [Finset.sum_cons]
-    exact (Int.natAbs_add_le _ _).trans (Nat.add_le_add_left IH _)
+  induction s using Finset.cons_induction with grind

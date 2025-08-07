@@ -68,7 +68,7 @@ linear_map, matrix, linear_equiv, diagonal, det, trace
 
 noncomputable section
 
-open LinearMap Matrix Set Submodule
+open LinearMap Matrix Module Set Submodule
 
 section ToMatrixRight
 
@@ -335,6 +335,11 @@ theorem Matrix.toLin'_apply (M : Matrix m n R) (v : n → R) : Matrix.toLin' M v
   rfl
 
 @[simp]
+theorem LinearMap.toMatrix'_mulVec (f : (n → R) →ₗ[R] m → R) (v : n → R) :
+    LinearMap.toMatrix' f *ᵥ v = f v := by
+  rw [← toLin'_apply, toLin'_toMatrix']
+
+@[simp]
 theorem Matrix.toLin'_one : Matrix.toLin' (1 : Matrix n n R) = LinearMap.id :=
   Matrix.mulVecLin_one
 
@@ -351,6 +356,13 @@ theorem LinearMap.toMatrix'_one : LinearMap.toMatrix' (1 : (n → R) →ₗ[R] n
 theorem Matrix.toLin'_mul [Fintype m] [DecidableEq m] (M : Matrix l m R) (N : Matrix m n R) :
     Matrix.toLin' (M * N) = (Matrix.toLin' M).comp (Matrix.toLin' N) :=
   Matrix.mulVecLin_mul _ _
+
+@[simp]
+theorem Matrix.toLin'_pow (M : Matrix n n R) (k : ℕ) :
+    (M ^ k).toLin' = M.toLin' ^ k := by
+  induction k with
+  | zero => rw [pow_zero, toLin'_one]; exact rfl
+  | succ n ih => rw [pow_succ, pow_succ, toLin'_mul, ih, Module.End.mul_eq_comp]
 
 @[simp]
 theorem Matrix.toLin'_submatrix [Fintype l] [DecidableEq l] (f₁ : m → k) (e₂ : n ≃ l)
@@ -629,13 +641,20 @@ theorem Matrix.toLin_self (M : Matrix m n R) (i : n) :
     have := Finset.mem_univ i
     contradiction
 
+theorem Matrix.toLin_apply_eq_zero_iff {R M₁ M₂ : Type*} [CommRing R]
+    [AddCommGroup M₁] [AddCommGroup M₂] [Module R M₁] [Module R M₂]
+    {v₁ : Basis n R M₁} {v₂ : Basis m R M₂} {A : Matrix m n R} {x : M₁} :
+    A.toLin v₁ v₂ x = 0 ↔ ∀ j, (A *ᵥ v₁.repr x) j = 0 := by
+  rw [toLin_apply]
+  exact ⟨Fintype.linearIndependent_iff.mp v₂.linearIndependent _, fun h ↦ by simp [h]⟩
+
 variable {M₃ : Type*} [AddCommMonoid M₃] [Module R M₃] (v₃ : Basis l R M₃)
 
 theorem LinearMap.toMatrix_comp [Finite l] [DecidableEq m] (f : M₂ →ₗ[R] M₃) (g : M₁ →ₗ[R] M₂) :
     LinearMap.toMatrix v₁ v₃ (f.comp g) =
     LinearMap.toMatrix v₂ v₃ f * LinearMap.toMatrix v₁ v₂ g := by
-  simp_rw [LinearMap.toMatrix, LinearEquiv.trans_apply, LinearEquiv.arrowCongr_comp _ v₂.equivFun,
-    LinearMap.toMatrix'_comp]
+  simp_rw [LinearMap.toMatrix, LinearEquiv.trans_apply]
+  rw [LinearEquiv.arrowCongr_comp _ v₂.equivFun, LinearMap.toMatrix'_comp]
 
 theorem LinearMap.toMatrix_mul (f g : M₁ →ₗ[R] M₁) :
     LinearMap.toMatrix v₁ v₁ (f * g) = LinearMap.toMatrix v₁ v₁ f * LinearMap.toMatrix v₁ v₁ g := by
@@ -653,6 +672,13 @@ theorem Matrix.toLin_mul [Finite l] [DecidableEq m] (A : Matrix l m R) (B : Matr
   haveI : DecidableEq l := fun _ _ ↦ Classical.propDecidable _
   rw [LinearMap.toMatrix_comp v₁ v₂ v₃]
   repeat' rw [LinearMap.toMatrix_toLin]
+
+@[simp]
+theorem Matrix.toLin_pow (A : Matrix n n R) (k : ℕ) :
+    (A ^ k).toLin v₁ v₁ = (A.toLin v₁ v₁) ^ k := by
+  induction k with
+  | zero => simp only [pow_zero, toLin_one]; rfl
+  | succ n ih => rw [pow_succ, pow_succ, toLin_mul v₁ v₁, ih, Module.End.mul_eq_comp]
 
 /-- Shortcut lemma for `Matrix.toLin_mul` and `LinearMap.comp_apply`. -/
 theorem Matrix.toLin_mul_apply [Finite l] [DecidableEq m] (A : Matrix l m R) (B : Matrix m n R)
@@ -788,7 +814,7 @@ lemma LinearMap.toMatrix_prodMap [DecidableEq m] [DecidableEq (n ⊕ m)]
     (φ₁ : Module.End R M₁) (φ₂ : Module.End R M₂) :
     toMatrix (v₁.prod v₂) (v₁.prod v₂) (φ₁.prodMap φ₂) =
       Matrix.fromBlocks (toMatrix v₁ v₁ φ₁) 0 0 (toMatrix v₂ v₂ φ₂) := by
-  ext (i|i) (j|j) <;> simp [toMatrix]
+  ext (i | i) (j | j) <;> simp [toMatrix]
 
 end ToMatrix
 
@@ -828,7 +854,7 @@ noncomputable def leftMulMatrix : S →ₐ[R] Matrix m m R where
   commutes' r := by
     ext
     rw [lmul_algebraMap, toMatrix_lsmul, algebraMap_eq_diagonal, Pi.algebraMap_def,
-      Algebra.id.map_eq_self]
+      Algebra.algebraMap_self_apply]
 
 theorem leftMulMatrix_apply (x : S) : leftMulMatrix b x = LinearMap.toMatrix b b (lmul R S x) :=
   rfl
@@ -933,7 +959,7 @@ def algEquivMatrix [Fintype n] (h : Basis n R M) : Module.End R M ≃ₐ[R] Matr
 
 end
 
-namespace Basis
+namespace Module.Basis
 
 variable {R M M₁ M₂ ι ι₁ ι₂ : Type*} [CommSemiring R]
 variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂]
@@ -978,7 +1004,7 @@ where `(i, j)` indexes the linear map that sends `b j` to `b i`
 and sends all other basis vectors to `0`. -/
 @[simps! -isSimp repr_apply repr_symm_apply]
 noncomputable
-abbrev _root_.Basis.end (b : Basis ι R M) : Basis (ι × ι) R (Module.End R M) :=
+abbrev «end» (b : Basis ι R M) : Basis (ι × ι) R (Module.End R M) :=
   b.linearMap b
 
 attribute [simp] end_repr_apply
@@ -989,7 +1015,7 @@ lemma end_apply (ij : ι × ι) : (b.end ij) = (Matrix.toLin b b) (Matrix.stdBas
 lemma end_apply_apply (ij : ι × ι) (k : ι) : (b.end ij) (b k) = if ij.2 = k then b ij.1 else 0 :=
   linearMap_apply_apply b b ij k
 
-end Basis
+end Module.Basis
 
 section
 

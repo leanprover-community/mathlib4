@@ -7,7 +7,6 @@ import Mathlib.Analysis.Asymptotics.Defs
 import Mathlib.Analysis.Normed.Group.Bounded
 import Mathlib.Analysis.Normed.Group.InfiniteSum
 import Mathlib.Analysis.Normed.MulAction
-import Mathlib.Topology.Algebra.Order.LiminfLimsup
 import Mathlib.Topology.PartialHomeomorph
 
 /-!
@@ -420,8 +419,8 @@ section ExistsMulEq
 variable {u v : α → 𝕜}
 
 /-- If `‖φ‖` is eventually bounded by `c`, and `u =ᶠ[l] φ * v`, then we have `IsBigOWith c u v l`.
-    This does not require any assumptions on `c`, which is why we keep this version along with
-    `IsBigOWith_iff_exists_eq_mul`. -/
+This does not require any assumptions on `c`, which is why we keep this version along with
+`IsBigOWith_iff_exists_eq_mul`. -/
 theorem isBigOWith_of_eq_mul {u v : α → R} (φ : α → R) (hφ : ∀ᶠ x in l, ‖φ x‖ ≤ c)
     (h : u =ᶠ[l] φ * v) :
     IsBigOWith c l u v := by
