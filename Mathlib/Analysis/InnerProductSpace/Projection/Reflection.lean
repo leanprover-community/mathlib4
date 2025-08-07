@@ -8,9 +8,8 @@ import Mathlib.Analysis.InnerProductSpace.Projection.Basic
 /-!
 # Reflection
 
-A linear isometry equivalence `K.reflection : E ≃ₗᵢ[𝕜] E` is constructed, by choosing, for
-each `u : E`, the point `K.reflection u` to satisfy
-`u + (K.reflection u) = 2 • K.orthogonalProjection u`.
+A linear isometry equivalence `K.reflection : E ≃ₗᵢ[𝕜] E` in constructed, by choosing
+for each `u : E`, `K.reflection u = 2 • K.starProjection u - u`.
 -/
 
 noncomputable section
