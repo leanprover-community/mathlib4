@@ -247,7 +247,7 @@ theorem bind_apply (f : α →ₛ β) (g : β → α →ₛ γ) (a) : f.bind g a
   rfl
 
 /-- Given a function `g : β → γ` and a simple function `f : α →ₛ β`, `f.map g` return the simple
-    function `g ∘ f : α →ₛ γ` -/
+function `g ∘ f : α →ₛ γ` -/
 def map (g : β → γ) (f : α →ₛ β) : α →ₛ γ :=
   bind f (const α ∘ g)
 
@@ -983,10 +983,7 @@ theorem map_lintegral (g : β → ℝ≥0∞) (f : α →ₛ β) :
   rw [map_preimage_singleton, ← f.sum_measure_preimage_singleton, Finset.mul_sum]
   refine Finset.sum_congr ?_ ?_
   · congr
-  · intro x
-    simp only [Finset.mem_filter]
-    rintro ⟨_, h⟩
-    rw [h]
+  · grind [Finset.mem_filter]
 
 theorem add_lintegral (f g : α →ₛ ℝ≥0∞) : (f + g).lintegral μ = f.lintegral μ + g.lintegral μ :=
   calc
@@ -1088,7 +1085,6 @@ theorem restrict_const_lintegral (c : ℝ≥0∞) {s : Set α} (hs : MeasurableS
     ((const α c).restrict s).lintegral μ = c * μ s := by
   rw [restrict_lintegral_eq_lintegral_restrict _ hs, const_lintegral_restrict]
 
-@[gcongr]
 theorem lintegral_mono_fun {f g : α →ₛ ℝ≥0∞} (h : f ≤ g) : f.lintegral μ ≤ g.lintegral μ := by
   refine Monotone.of_left_le_map_sup (f := (lintegral · μ)) (fun f g ↦ ?_) h
   calc
@@ -1101,7 +1097,6 @@ theorem lintegral_mono_fun {f g : α →ₛ ℝ≥0∞} (h : f ≤ g) : f.linteg
 theorem le_sup_lintegral (f g : α →ₛ ℝ≥0∞) : f.lintegral μ ⊔ g.lintegral μ ≤ (f ⊔ g).lintegral μ :=
   Monotone.le_map_sup (fun _ _ ↦ lintegral_mono_fun) f g
 
-@[gcongr]
 theorem lintegral_mono_measure {f : α →ₛ ℝ≥0∞} (h : μ ≤ ν) : f.lintegral μ ≤ f.lintegral ν := by
   simp only [lintegral]
   gcongr
@@ -1202,7 +1197,7 @@ theorem map_iff {g : β → γ} (hg : ∀ {b}, g b = 0 ↔ b = 0) :
 protected theorem pair {g : α →ₛ γ} (hf : f.FinMeasSupp μ) (hg : g.FinMeasSupp μ) :
     (pair f g).FinMeasSupp μ :=
   calc
-    μ (support <| pair f g) = μ (support f ∪ support g) := congr_arg μ <| support_prod_mk f g
+    μ (support <| pair f g) = μ (support f ∪ support g) := congr_arg μ <| support_prodMk f g
     _ ≤ μ (support f) + μ (support g) := measure_union_le _ _
     _ < _ := add_lt_top.2 ⟨hf, hg⟩
 
