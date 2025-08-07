@@ -61,9 +61,9 @@ lemma add {f g : PowerSeries R} (hf : IsRestricted R f c) (hg : IsRestricted R g
   intro ε hε
   obtain ⟨fN, hfN⟩ := hf (ε/2) (half_pos hε)
   obtain ⟨gN, hgN⟩ := hg (ε/2) (half_pos hε)
-  simp only [sub_zero, norm_mul, norm_norm, norm_pow, Real.norm_eq_abs, abs_norm] at hfN hgN
+  simp only [sub_zero, norm_mul, norm_pow, Real.norm_eq_abs, abs_norm] at hfN hgN
   refine ⟨max fN gN, fun n hn => ?_ ⟩
-  simp only [sub_zero, norm_mul, norm_norm, norm_pow, Real.norm_eq_abs, abs_norm]
+  simp only [sub_zero, norm_mul, norm_pow, Real.norm_eq_abs, abs_norm]
   exact lt_of_le_of_lt  (by simpa only [right_distrib] using (mul_le_mul_of_nonneg_right
     (norm_add_le (coeff R n f) (coeff R n g)) (pow_nonneg (abs_nonneg c) n)))
     (by simpa only [add_halves] using (add_lt_add (hfN n (le_of_max_le_left hn))
@@ -89,7 +89,7 @@ instance IsGroup : AddGroup (SetOf R c) :=
 def convergenceSet (f : PowerSeries R) : Set ℝ :=
   {‖coeff R i f‖ * c^i | i : ℕ}
 
-lemma bddabove {f : PowerSeries R} (hf : IsRestricted R f c) : BddAbove (convergenceSet R c f) := by
+lemma BddAbove {f : PowerSeries R} (hf : IsRestricted R f c) : BddAbove (convergenceSet R c f) := by
   simp_rw [IsRestricted, NormedAddCommGroup.tendsto_atTop] at hf
   obtain ⟨N, hf⟩ := by simpa only [zero_lt_one, sub_zero, norm_mul, norm_norm, norm_pow,
     Real.norm_eq_abs, forall_const, abs_norm] using (hf 1)
@@ -129,7 +129,7 @@ lemma mul {f g : PowerSeries R} (hf : IsRestricted R f c) (hg : IsRestricted R g
   obtain ⟨b, hb, gBound1⟩ := bddabove_nneg R |c| ((Equiv_cToAbs R c g).mp hg)
   rw [NormedAddCommGroup.tendsto_atTop] at hf hg ⊢
   intro ε hε
-  simp only [sub_zero, norm_mul, norm_norm, norm_pow, Real.norm_eq_abs, abs_norm] at hf hg ⊢
+  simp only [sub_zero, norm_mul, norm_pow, Real.norm_eq_abs, abs_norm] at hf hg ⊢
   simp_rw [PowerSeries.coeff_mul]
   obtain ⟨Nf, fBound2⟩ := (hf (ε/ (max a b))) (div_pos hε (lt_sup_of_lt_left ha))
   obtain ⟨Ng, gBound2⟩ := (hg (ε/ (max a b))) (div_pos hε (lt_sup_of_lt_left ha))
@@ -145,7 +145,7 @@ lemma mul {f g : PowerSeries R} (hf : IsRestricted R f c) (hg : IsRestricted R g
       ‖(coeff R i.1) f‖ * |c|^i.1 * (‖(coeff R i.2) g‖ * |c|^i.2) := by
     ring_nf
     simp_rw [mul_assoc, ← npow_add, hi]
-  simp only [NNReal.val_eq_coe, NNReal.coe_pow, this] at InterimBound2
+  simp only [this] at InterimBound2
   have : i.1 ≥ max Nf Ng ∨ i.2 ≥ max Nf Ng := by
     omega
   rcases this with this | this
@@ -164,7 +164,7 @@ lemma mul {f g : PowerSeries R} (hf : IsRestricted R f c) (hg : IsRestricted R g
 
 /-- The set of restricted power series over `R` for a parameter `c` are a subring of power series
     over `R`. -/
-def subring: Subring (PowerSeries R) where
+def subring : Subring (PowerSeries R) where
   carrier := SetOf R c
   zero_mem' := zero R c
   add_mem' := add R c
