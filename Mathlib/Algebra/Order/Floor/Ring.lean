@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Kevin Kappelmann
 -/
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Floor.Defs
+import Mathlib.Algebra.Order.Floor.Semiring
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith
@@ -789,6 +790,23 @@ theorem map_fract (f : F) (hf : StrictMono f) (a : R) : fract (f a) = f (fract a
   simp_rw [fract, map_sub, map_intCast, map_floor _ hf]
 
 end Int
+
+namespace Nat
+
+variable [Ring R] [LinearOrder R] [FloorRing R] [IsStrictOrderedRing R] {a : R}
+
+/-- a variant of `Nat.ceil_lt_add_one` with its condition `0 ≤ a` generalized to `-1 < a` -/
+@[bound]
+lemma ceil_lt_add_one' (ha : -1 < a) : ⌈a⌉₊ < a + 1 := by
+  by_cases h : a ≥ 0
+  · exact ceil_lt_add_one h
+  · have : ⌈a⌉₊ = 0 :=
+      ceil_eq_zero.mpr (le_of_not_ge h)
+    rw [this]
+    norm_cast
+    exact neg_lt_iff_pos_add.mp ha
+
+end Nat
 
 section FloorRingToSemiring
 
