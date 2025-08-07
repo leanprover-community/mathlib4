@@ -22,19 +22,19 @@ all of the other properties appearing in the definition of an abelian category a
 structure. This is the construction we carry out in this file.
 
 The proof proceeds in roughly five steps:
-1. Prove some results (for example that all equalizers exist) that would be trivial if we already
-   had the preadditive structure but are a bit of work without it.
-2. Develop images and coimages to show that every monomorphism is the kernel of its cokernel.
+1.  Prove some results (for example that all equalizers exist) that would be trivial if we already
+    had the preadditive structure but are a bit of work without it.
+2.  Develop images and coimages to show that every monomorphism is the kernel of its cokernel.
 
 The results of the first two steps are also useful for the "normal" development of abelian
 categories, and will be used there.
 
-3. For every object `A`, define a "subtraction" morphism `σ : A ⨯ A ⟶ A` and use it to define
-   subtraction on morphisms as `f - g := prod.lift f g ≫ σ`.
-4. Prove a small number of identities about this subtraction from the definition of `σ`.
-5. From these identities, prove a large number of other identities that imply that defining
-   `f + g := f - (0 - g)` indeed gives an abelian group structure on morphisms such that composition
-   is bilinear.
+3.  For every object `A`, define a "subtraction" morphism `σ : A ⨯ A ⟶ A` and use it to define
+    subtraction on morphisms as `f - g := prod.lift f g ≫ σ`.
+4.  Prove a small number of identities about this subtraction from the definition of `σ`.
+5.  From these identities, prove a large number of other identities that imply that defining
+    `f + g := f - (0 - g)` indeed gives an abelian group structure on morphisms such that composition
+    is bilinear.
 
 The construction is non-trivial and it is quite remarkable that this abelian group structure can
 be constructed purely from the existence of a few limits and colimits. Even more remarkably,
