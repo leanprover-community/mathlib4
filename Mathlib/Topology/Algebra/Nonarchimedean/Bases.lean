@@ -37,13 +37,13 @@ structure RingSubgroupsBasis {A ι : Type*} [Ring A] (B : ι → AddSubgroup A) 
   /-- Condition for `B` to be a filter basis on `A`. -/
   inter : ∀ i j, ∃ k, B k ≤ B i ⊓ B j
   /-- For each set `B` in the submodule basis on `A`, there is another basis element `B'` such
-   that the set-theoretic product `B' * B'` is in `B`. -/
+  that the set-theoretic product `B' * B'` is in `B`. -/
   mul : ∀ i, ∃ j, (B j : Set A) * B j ⊆ B i
   /-- For any element `x : A` and any set `B` in the submodule basis on `A`,
-    there is another basis element `B'` such that `B' * x` is in `B`. -/
+  there is another basis element `B'` such that `B' * x` is in `B`. -/
   leftMul : ∀ x : A, ∀ i, ∃ j, (B j : Set A) ⊆ (x * ·) ⁻¹' B i
   /-- For any element `x : A` and any set `B` in the submodule basis on `A`,
-    there is another basis element `B'` such that `x * B'` is in `B`. -/
+  there is another basis element `B'` such that `x * B'` is in `B`. -/
   rightMul : ∀ x : A, ∀ i, ∃ j, (B j : Set A) ⊆ (· * x) ⁻¹' B i
 
 namespace RingSubgroupsBasis

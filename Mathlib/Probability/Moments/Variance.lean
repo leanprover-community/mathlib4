@@ -3,7 +3,7 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Kexing Ying
 -/
-import Mathlib.Probability.Integration
+import Mathlib.Probability.Independence.Integration
 import Mathlib.Probability.Moments.Covariance
 
 /-!
@@ -393,7 +393,7 @@ theorem IndepFun.variance_add [IsProbabilityMeasure μ] {X Y : Ω → ℝ} (hX :
         exact h.integrable_mul (hX.integrable one_le_two) (hY.integrable one_le_two)
     _ = μ[X ^ 2] + μ[Y ^ 2] + 2 * (μ[X] * μ[Y]) - (μ[X] + μ[Y]) ^ 2 := by
       congr
-      exact h.integral_mul_of_integrable (hX.integrable one_le_two) (hY.integrable one_le_two)
+      exact h.integral_mul_eq_mul_integral hX.aestronglyMeasurable hY.aestronglyMeasurable
     _ = variance X μ + variance Y μ := by simp only [variance_def', hX, hY, Pi.pow_apply]; ring
 
 -- Porting note: supplied `MeasurableSpace Ω` argument of `hs`, `h` by unification
@@ -450,7 +450,7 @@ theorem IndepFun.variance_sum [IsProbabilityMeasure μ] {ι : Type*} {X : ι →
           MemLp.integrable one_le_two (hs _ (mem_insert_of_mem hi)),
         mul_sum, mul_sum, ← sum_sub_distrib]
       apply Finset.sum_eq_zero fun i hi => ?_
-      rw [integral_const_mul, IndepFun.integral_mul', sub_self]
+      rw [integral_const_mul, IndepFun.integral_fun_mul_eq_mul_integral, sub_self]
       · apply h (mem_insert_self _ _) (mem_insert_of_mem hi)
         exact fun hki => ks (hki.symm ▸ hi)
       · exact MemLp.aestronglyMeasurable (hs _ (mem_insert_self _ _))

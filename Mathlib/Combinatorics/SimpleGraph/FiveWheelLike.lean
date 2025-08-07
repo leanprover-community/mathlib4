@@ -98,7 +98,7 @@ An `IsFiveWheelLike r k v w₁ w₂ s t` structure in `G` consists of vertices `
 `s` and `t` such that `{v, w₁, w₂}` induces the single edge `w₁w₂` (i.e. they form an
 `IsPathGraph3Compl`), `v, w₁, w₂ ∉ s ∪ t`, `s ∪ {v}, t ∪ {v}, s ∪ {w₁}, t ∪ {w₂}` are all
 `(r + 1)`- cliques and `#(s ∩ t) = k`. (If `G` is maximally `(r + 2)`-cliquefree and not complete
- multipartite then `G` will contain such a structure : see
+multipartite then `G` will contain such a structure : see
 `exists_isFiveWheelLike_of_maximal_cliqueFree_not_isCompleteMultipartite`.)
 -/
 structure IsFiveWheelLike (G : SimpleGraph α) (r k : ℕ) (v w₁ w₂ : α) (s t : Finset α) :
