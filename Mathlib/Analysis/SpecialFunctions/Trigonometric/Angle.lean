@@ -199,11 +199,11 @@ theorem cos_eq_iff_coe_eq_or_eq_neg {θ ψ : ℝ} :
       eq_false (two_ne_zero' ℝ), false_or, sin_eq_zero_iff, sin_eq_zero_iff] at Hcos
     rcases Hcos with (⟨n, hn⟩ | ⟨n, hn⟩)
     · right
-      rw [eq_div_iff_mul_eq (two_ne_zero' ℝ), ← sub_eq_iff_eq_add] at hn
+      rw [eq_div_iff (two_ne_zero' ℝ), ← sub_eq_iff_eq_add] at hn
       rw [← hn, coe_sub, eq_neg_iff_add_eq_zero, sub_add_cancel, mul_assoc, intCast_mul_eq_zsmul,
         mul_comm, coe_two_pi, zsmul_zero]
     · left
-      rw [eq_div_iff_mul_eq (two_ne_zero' ℝ), eq_sub_iff_add_eq] at hn
+      rw [eq_div_iff (two_ne_zero' ℝ), eq_sub_iff_add_eq] at hn
       rw [← hn, coe_add, mul_assoc, intCast_mul_eq_zsmul, mul_comm, coe_two_pi, zsmul_zero,
         zero_add]
   · rw [angle_eq_iff_two_pi_dvd_sub, ← coe_neg, angle_eq_iff_two_pi_dvd_sub]

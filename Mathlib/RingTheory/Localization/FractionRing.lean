@@ -81,7 +81,7 @@ theorem of_field [Field K] [Algebra R K] [FaithfulSMul R K]
     · obtain rfl : z = 0 := by simpa using eq
       exact ⟨(0, 1), by simp⟩
     exact ⟨⟨x, y, mem_nonZeroDivisors_iff_ne_zero.mpr hy⟩,
-      (eq_div_iff_mul_eq <| (map_ne_zero_iff _ inj).mpr hy).mp eq⟩
+      (eq_div_iff <| (map_ne_zero_iff _ inj).mpr hy).mp eq⟩
   exists_of_eq eq := ⟨1, by simpa using inj eq⟩ }
 
 variable {R K}

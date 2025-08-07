@@ -360,7 +360,7 @@ theorem sum_div_factorial_le {α : Type*} [Field α] [LinearOrder α] [IsStrictO
       have h₂ : (n.succ : α) ≠ 0 := by positivity
       have h₃ : (n.factorial * n : α) ≠ 0 := by positivity
       have h₄ : (n.succ - 1 : α) = n := by simp
-      rw [geom_sum_inv h₁ h₂, eq_div_iff_mul_eq h₃, mul_comm _ (n.factorial * n : α),
+      rw [geom_sum_inv h₁ h₂, eq_div_iff h₃, mul_comm _ (n.factorial * n : α),
           ← mul_assoc (n.factorial⁻¹ : α), ← mul_inv_rev, h₄, ← mul_assoc (n.factorial * n : α),
           mul_comm (n : α) n.factorial, mul_inv_cancel₀ h₃, one_mul, mul_comm]
     _ ≤ n.succ / (n.factorial * n : α) := by gcongr; apply sub_le_self; positivity
