@@ -31,33 +31,33 @@ variable {α} [Primcodable α] {f : α → Prop} [DecidablePred f]
 /-- Filtering a list for elements that satisfy a decidable predicate is primitive recursive. -/
 lemma filter (hf : PrimrecPred f) : Primrec fun L ↦ filter (f ·) L := by
   rw [← List.filterMap_eq_filter]
-  apply listFilterMap Primrec.id
+  apply listFilterMap .id
   simp only [Primrec₂, Option.guard, decide_eq_true_eq]
-  exact ite (PrimrecPred.comp hf snd) (option_some_iff.mpr snd) (const none)
+  exact ite (hf.comp snd) (option_some_iff.mpr snd) (const none)
 
 /-- Checking if any element of a list satisfies a decidable predicate is primitive recursive. -/
-lemma filter_exists (hf : PrimrecPred f) : PrimrecPred fun (L : List α) ↦ (∃ a ∈ L, f a) := by
+lemma filter_exists (hf : PrimrecPred f) : PrimrecPred fun L : List α ↦ ∃ a ∈ L, f a := by
   let g := fun L ↦ List.filter (f ·) L
-  have h (L : List α): ((g L).length ≠ 0) ↔ (∃ a ∈ L, f a) := by simp [g]
+  have h (L : List α) : (g L).length ≠ 0 ↔ ∃ a ∈ L, f a := by simp [g]
   apply PrimrecPred.of_eq (PrimrecPred.not ?_) h
-  exact PrimrecRel.comp Primrec.eq (comp list_length (filter hf)) (const 0)
+  exact PrimrecRel.comp .eq (comp list_length (filter hf)) (const 0)
 
 /-- Checking if every element of a list satisfies a decidable predicate is primitive recursive. -/
 lemma filter_forall (hf : PrimrecPred f) : PrimrecPred fun (L : List α) ↦ (∀ a ∈ L, f a) := by
   let g := fun L ↦ List.filter (f ·) L
   have h (L : List α): ((g L).length = L.length) ↔ (∀ a ∈ L, f a) := by simp [g]
   apply PrimrecPred.of_eq ?_ h
-  exact PrimrecRel.comp Primrec.eq (comp list_length (filter hf)) list_length
+  exact PrimrecRel.comp .eq (comp list_length (filter hf)) list_length
 
 variable {f : ℕ → Prop} [DecidablePred f]
 
 /-- Bounded existential quantifiers are primitive recursive. -/
 lemma bounded_exists (hf : PrimrecPred f) : PrimrecPred fun n ↦ ∃ x < n, f x :=
-  PrimrecPred.of_eq (PrimrecPred.comp (filter_exists hf) list_range) (by simp)
+  of_eq (PrimrecPred.comp (filter_exists hf) list_range) (by simp)
 
 /-- Bounded universal quantifiers are primitive recursive. -/
 lemma bounded_forall (hf : PrimrecPred f) : PrimrecPred fun n ↦ ∀ x < n, f x :=
-  PrimrecPred.of_eq (PrimrecPred.comp (filter_forall hf) list_range) (by simp)
+  of_eq (PrimrecPred.comp (filter_forall hf) list_range) (by simp)
 
 end Primrec
 
@@ -69,7 +69,8 @@ variable {α β : Type} {b : β} {f : α → β → Prop} {L : List α} [Decidab
 to filter `L` for elements `a` with `f a b` -/
 lemma list_filter [Primcodable α] [Primcodable β] (hf : PrimrecRel f) :
     Primrec₂ fun (L : List α) ↦ fun b ↦ (L.filter (fun a ↦ f a b)) := by
-  simp only [filter_eq_filterMap_ite]
+  have h1 (L) (b) := Eq.symm (filterMap_ite L fun a ↦ f a b)
+  simp only [h1]
   refine listFilterMap fst (Primrec.ite ?_ (option_some_iff.mpr snd) (Primrec.const Option.none))
   exact PrimrecRel.comp hf snd (Primrec.comp snd fst)
 
@@ -85,9 +86,9 @@ variable [Primcodable α] [Primcodable β]
 is a primitive recursive relation. -/
 lemma filter_exists (hf : PrimrecRel f) :
     PrimrecRel fun (L : List α) ↦ fun b ↦ (∃ a ∈ L, f a b) := by
-  have h (L) (b) : (filter (f · b) L).length ≠ 0 ↔ (∃ a ∈ L, f a b) := filter_ne_nil
+  have h (L) (b) : (filter (f · b) L).length ≠ 0 ↔ (∃ a ∈ L, f a b) := by simp
   apply of_eq ?_ h
-  apply PrimrecPred.not (PrimrecRel.comp Primrec.eq (Primrec.comp list_length ?_) (const 0))
+  apply PrimrecPred.not (comp Primrec.eq (Primrec.comp list_length ?_) (const 0))
   have h1 := primrec₂.list_filter hf
   unfold Primrec₂ at h1
   simp only [h1]
@@ -96,10 +97,9 @@ lemma filter_exists (hf : PrimrecRel f) :
 is a primitive recursive relation. -/
 lemma filter_forall (hf : PrimrecRel f) :
     PrimrecRel fun (L : List α) ↦ fun b ↦ (∀ a ∈ L, f a b) := by
-  have h (L) (b) : (filter (f · b) L).length = L.length ↔ (∀ a ∈ L, f a b)
-    := filter_length_eq_length_iff
-  apply PrimrecRel.of_eq ?_ h
-  apply PrimrecRel.comp Primrec.eq (Primrec.comp list_length ?_) (Primrec.comp list_length fst)
+  have h (L) (b) : (filter (f · b) L).length = L.length ↔ (∀ a ∈ L, f a b) := by simp
+  apply of_eq ?_ h
+  apply comp Primrec.eq (Primrec.comp list_length ?_) (Primrec.comp list_length fst)
   have h1 := primrec₂.list_filter hf
   unfold Primrec₂ at h1
   simp only [h1]
@@ -110,15 +110,15 @@ variable {f : ℕ → ℕ → Prop} [DecidableRel f]
 primitive recursive relation. -/
 lemma bounded_exists (hf : PrimrecRel f) : PrimrecRel (fun n ↦ (fun y ↦ (∃ x < n, f x y))) := by
   have h : PrimrecRel (fun n ↦ (fun y ↦ (∃ x ∈ range n, f x y))) :=
-    PrimrecRel.comp (filter_exists hf) (Primrec.comp list_range fst) snd
-  exact PrimrecRel.of_eq h (by simp)
+    comp (filter_exists hf) (Primrec.comp list_range fst) snd
+  exact of_eq h (by simp)
 
 /-- If `f a b` is decidable, then for any fixed `n` and `y`,  `"g n y ↔ ∀ x < n, f x y"` is a
 primitive recursive relation. -/
 lemma bounded_forall (hf : PrimrecRel f) : PrimrecRel (fun n ↦ (fun y ↦ (∀ x < n, f x y))) := by
   have h : PrimrecRel (fun n ↦ (fun y ↦ (∀ x ∈ range n, f x y))) :=
-    PrimrecRel.comp (filter_forall hf) (Primrec.comp list_range fst) snd
-  exact PrimrecRel.of_eq h (by simp)
+    comp (filter_forall hf) (Primrec.comp list_range fst) snd
+  exact of_eq h (by simp)
 
 end PrimrecRel
 
@@ -126,10 +126,11 @@ namespace Primrec
 
 /-- A helper lemma for proofs about bounded quantifiers on decidable relations. -/
 lemma nat_rel_list_filter {f : ℕ → ℕ → Prop} (s : ℕ) [DecidableRel f] (hf : PrimrecRel f) :
-    Primrec fun n ↦ ((range (s)).filter (fun y ↦ f y n)) := by
-  simp only [filter_eq_filterMap_ite]
-  refine listFilterMap (Primrec.const (range s)) ?_
-  refine Primrec.ite ?_ (option_some_iff.mpr snd) (Primrec.const Option.none)
+    Primrec fun n ↦ ((range s).filter (fun y ↦ f y n)) := by
+  have h1 (b) := Eq.symm (filterMap_ite (range s) fun a ↦ f a b)
+  simp only [h1]
+  refine listFilterMap (.const (range s)) ?_
+  refine ite ?_ (option_some_iff.mpr snd) (.const Option.none)
   exact PrimrecRel.comp hf snd fst
 
 end Primrec
@@ -141,10 +142,10 @@ variable {f : ℕ → ℕ → Prop} (s : ℕ) [DecidableRel f]
 /-- If `f a b` is decidable, then for any fixed `n` and `y`, `"∃ x < n, f x y"` is a
 primitive recursive predicate in `n`. This is sometimes easier to work with than the fully
 general case involving a primitive recursive relation. -/
-lemma bounded_exists (hf : PrimrecRel f) : PrimrecPred (fun n ↦ ∃ y < s, (f y n)) := by
+lemma bounded_exists (hf : PrimrecRel f) : PrimrecPred (fun n ↦ ∃ y < s, f y n) := by
   have h (n) : decide (∃ y < s, f y n) = decide ((List.range s).filter (f · n) ≠ []) := by simp
   simp only [PrimrecPred, h]
-  exact PrimrecPred.not (PrimrecRel.comp Primrec.eq (nat_rel_list_filter _ hf) (const []))
+  exact not (PrimrecRel.comp Primrec.eq (nat_rel_list_filter _ hf) (const []))
 
 /-- If `f a b` is decidable, then for any fixed `n` and `y`, `"∀ x < n, f x y"` is a
 primitive recursive predicate in `n`. This is sometimes easier to work with than the fully
