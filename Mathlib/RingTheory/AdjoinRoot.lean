@@ -131,6 +131,7 @@ instance [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (f : R[X]) :
 instance [CommSemiring S] [Algebra S R] : Algebra S (AdjoinRoot f) :=
   Ideal.Quotient.algebra S
 
+/- TODO : generalise base ring -/
 /-- `R`-algebra homomorphism from `R[x]` to `AdjoinRoot f` sending `X` to the `root`. -/
 def mkₐ : R[X] →ₐ[R] AdjoinRoot f :=
   Ideal.Quotient.mkₐ R _

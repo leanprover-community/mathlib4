@@ -266,9 +266,20 @@ theorem isAdjoinRootMonic_toAdjoinRoot (hf : Monic f) :
 
 theorem isAdjoinRoot_map_eq_mkₐ : (AdjoinRoot.isAdjoinRoot f).map = AdjoinRoot.mkₐ f := rfl
 
+@[deprecated (since := "2025-08-07")] alias isAdjoinRoot_map_eq_mk := isAdjoinRoot_map_eq_mkₐ
+
+@[deprecated "Use `simp` and `isAdjoinRoot_map_eq_mkₐ` instead" (since := "2025-08-07")]
+theorem isAdjoinRootMonic_map_eq_mk (hf : f.Monic) :
+    (AdjoinRoot.isAdjoinRootMonic f hf).map = AdjoinRoot.mk f := by
+  simp [isAdjoinRoot_map_eq_mkₐ]
+
 @[simp]
 theorem isAdjoinRoot_root_eq_root : (AdjoinRoot.isAdjoinRoot f).root = AdjoinRoot.root f := by
   simp [AdjoinRoot.isAdjoinRoot, IsAdjoinRoot.root]
+
+@[deprecated "Use `simp` instead" (since := "2025-08-07")]
+theorem isAdjoinRootMonic_root_eq_root (hf : Monic f) :
+    (AdjoinRoot.isAdjoinRootMonic f hf).root = AdjoinRoot.root f := by simp
 
 end AdjoinRoot
 
