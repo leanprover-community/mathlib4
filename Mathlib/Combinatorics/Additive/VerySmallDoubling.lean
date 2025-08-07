@@ -70,12 +70,12 @@ private lemma smul_stabilizer_of_no_doubling_aux (hA : #(A * A) ≤ #A) (ha : a 
     rw [← smul_A_eq_A_smul ha, inv_smul_smul]
 
 /-- A non-empty set with no doubling is the left translate of its stabilizer. -/
-@[to_additive "A non-empty set with no doubling is the left-translate of its stabilizer."]
+@[to_additive /-- A non-empty set with no doubling is the left-translate of its stabilizer. -/]
 lemma smul_stabilizer_of_no_doubling (hA : #(A * A) ≤ #A) (ha : a ∈ A) :
     a •> (stabilizer G A : Set G) = A := (smul_stabilizer_of_no_doubling_aux hA ha).1
 
 /-- A non-empty set with no doubling is the right translate of its stabilizer. -/
-@[to_additive "A non-empty set with no doubling is the right translate of its stabilizer."]
+@[to_additive /-- A non-empty set with no doubling is the right translate of its stabilizer. -/]
 lemma op_smul_stabilizer_of_no_doubling (hA : #(A * A) ≤ #A) (ha : a ∈ A) :
     (stabilizer G A : Set G) <• a = A := (smul_stabilizer_of_no_doubling_aux hA ha).2
 
