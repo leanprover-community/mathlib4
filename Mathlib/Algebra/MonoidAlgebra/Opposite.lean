@@ -28,8 +28,6 @@ namespace MonoidAlgebra
 
 variable {k G}
 
-section Opposite
-
 open Finsupp MulOpposite
 
 variable [Semiring k]
@@ -64,8 +62,6 @@ theorem opRingEquiv_single [Mul G] (r : k) (x : G) :
 theorem opRingEquiv_symm_single [Mul G] (r : kᵐᵒᵖ) (x : Gᵐᵒᵖ) :
     MonoidAlgebra.opRingEquiv.symm (single x r) = op (single x.unop r.unop) := by simp
 
-end Opposite
-
 end MonoidAlgebra
 
 /-! ### Additive monoids -/
@@ -73,12 +69,6 @@ end MonoidAlgebra
 namespace AddMonoidAlgebra
 
 variable {k G H}
-
-/-! #### Algebra structure -/
-
-section Algebra
-
-section Opposite
 
 open Finsupp MulOpposite
 
@@ -114,9 +104,5 @@ theorem opRingEquiv_single [AddCommMagma G] (r : k) (x : G) :
 
 theorem opRingEquiv_symm_single [AddCommMagma G] (r : kᵐᵒᵖ) (x : Gᵐᵒᵖ) :
     AddMonoidAlgebra.opRingEquiv.symm (single x r) = op (single x r.unop) := by simp
-
-end Opposite
-
-end Algebra
 
 end AddMonoidAlgebra
