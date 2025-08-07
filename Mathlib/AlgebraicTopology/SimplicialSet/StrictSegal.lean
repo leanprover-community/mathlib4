@@ -236,6 +236,7 @@ variable (Z) in
 noncomputable def pathToPair : Path Z 2 ⟶ Z _⦋1⦌₂ ⨯ Z _⦋1⦌₂ :=
   prod.lift (fun p ↦ p.arrow 0) (fun p ↦ p.arrow 1)
 
+@[reassoc (attr := simp)]
 lemma pathToPair_fst :
     pathToPair _ ≫ (prod.fst (X := Z _⦋1⦌₂) (Y := Z _⦋1⦌₂)) = (fun p ↦ p.arrow 0) := by
   dsimp [pathToPair]
