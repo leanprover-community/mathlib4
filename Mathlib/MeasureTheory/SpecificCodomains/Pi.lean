@@ -24,8 +24,7 @@ variable {ι : Type*} [Fintype ι] {E : ι → Type*} [∀ i, NormedAddCommGroup
     {f : X → Π i, E i}
 
 lemma memLp_pi_iff : MemLp f p μ ↔ ∀ i, MemLp (f · i) p μ where
-  mp hf i := by
-    exact (LipschitzWith.eval i).comp_memLp rfl hf
+  mp hf i := (LipschitzWith.eval (α := E) i).comp_memLp rfl hf
   mpr hf := by
     classical
     have : f = ∑ i, (Pi.single i) ∘ (f · i) := by ext; simp
