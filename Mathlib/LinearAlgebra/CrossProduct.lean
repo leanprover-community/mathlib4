@@ -134,8 +134,8 @@ theorem leibniz_cross (u v w : Fin 3 → R) : u ⨯₃ (v ⨯₃ w) = u ⨯₃ v
   apply vec3_eq <;> dsimp <;> ring
 
 /-- The three-dimensional vectors together with the operations + and ×₃ form a Lie ring.
-    Note we do not make this an instance as a conflicting one already exists
-    via `LieRing.ofAssociativeRing`. -/
+Note we do not make this an instance as a conflicting one already exists
+via `LieRing.ofAssociativeRing`. -/
 def Cross.lieRing : LieRing (Fin 3 → R) :=
   { Pi.addCommGroup with
     bracket := fun u v => u ⨯₃ v
@@ -150,7 +150,7 @@ theorem cross_cross (u v w : Fin 3 → R) : u ⨯₃ v ⨯₃ w = u ⨯₃ (v �
   lie_lie u v w
 
 /-- **Jacobi identity**: For a cross product of three vectors,
-    their sum over the three even permutations is equal to the zero vector. -/
+their sum over the three even permutations is equal to the zero vector. -/
 theorem jacobi_cross (u v w : Fin 3 → R) : u ×₃ (v ×₃ w) + v ×₃ (w ×₃ u) + w ×₃ (u ×₃ v) = 0 :=
   lie_jacobi u v w
 
