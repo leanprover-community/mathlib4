@@ -177,7 +177,7 @@ lemma mappingConeCompTriangleh_distinguished :
       distTriang (HomotopyCategory C (ComplexShape.up ℤ)) := by
   refine ⟨_, _, (mappingConeCompTriangle f g).mor₁, ⟨?_⟩⟩
   refine Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (isoOfHomotopyEquiv
-    (mappingConeCompHomotopyEquiv f g)) (by aesop_cat) (by simp) ?_
+    (mappingConeCompHomotopyEquiv f g)) (by cat_disch) (by simp) ?_
   dsimp [mappingConeCompTriangleh]
   rw [CategoryTheory.Functor.map_id, comp_id, ← Functor.map_comp_assoc]
   congr 2
