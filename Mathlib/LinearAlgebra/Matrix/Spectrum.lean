@@ -146,6 +146,13 @@ lemma rank_eq_rank_diagonal : A.rank = (Matrix.diagonal hA.eigenvalues).rank := 
 lemma rank_eq_card_non_zero_eigs : A.rank = Fintype.card {i // hA.eigenvalues i ≠ 0} := by
   rw [rank_eq_rank_diagonal hA, Matrix.rank_diagonal]
 
+/-- The eigenvalues of a Hermitian matrix `A` are all zero iff `A = 0`. -/
+theorem eigenvalues_eq_zero_iff :
+    hA.eigenvalues = 0 ↔ A = 0 := by
+  refine ⟨fun h => ?_, fun h => by ext; simp [h, eigenvalues_eq]⟩
+  rw [hA.spectral_theorem, h, Pi.comp_zero, RCLike.ofReal_zero, Function.const_zero,
+    (by exact diagonal_zero : diagonal (0 : n → 𝕜) = 0), mul_zero, zero_mul]
+
 end DecidableEq
 
 /-- A nonzero Hermitian matrix has an eigenvector with nonzero eigenvalue. -/
