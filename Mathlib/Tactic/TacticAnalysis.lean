@@ -318,7 +318,7 @@ def testTacticSeq (config : ComplexConfig) (tacticSeq : Array (TSyntax `tactic))
         return ([goal], {})
     let new ← withHeartbeats <| ctxI.runTactic i goal <| config.test ctx
     if let some msg := config.tell stx (old.1.1, old.2) new then
-      Linter.logLint linter.tacticAnalysis stx msg
+      logWarningAt stx msg
 
 /-- Run the `config` against a sequence of tactics, using the `trigger` to determine which
 subsequences should be `test`ed. -/
