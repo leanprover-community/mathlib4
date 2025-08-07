@@ -1,12 +1,19 @@
+/-
+Copyright (c) 2025 Michael Rothgang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Michael Rothgang
+-/
 import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
 import Mathlib.Geometry.Manifold.PartitionOfUnity
 
-/-! Existence of a Riemannian metric, using partitions of unity
+/-! ## Existence of a Riemannian bundle metric
 
 Using a partition of unity, we prove that every finite-dimensional smooth vector bundle
 admits a smooth Riemannian metric.
-TODO: this should work for C^n; prove the same for topological bundles and add it there
-  also deduce that every manifold can be made Riemannian...
+
+## TODO
+- this should work for C^n; prove the same for topological bundles and add it there
+- also deduce that every manifold can be made Riemannian...
 
 -/
 
