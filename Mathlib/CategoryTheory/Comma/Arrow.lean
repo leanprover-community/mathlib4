@@ -30,7 +30,7 @@ section
 variable (T)
 
 /-- The arrow category of `T` has as objects all morphisms in `T` and as morphisms commutative
-     squares in `T`. -/
+squares in `T`. -/
 def Arrow :=
   Comma.{v, v, v} (𝟭 T) (𝟭 T)
 -- The `Category` instance should be constructed by a deriving handler.
