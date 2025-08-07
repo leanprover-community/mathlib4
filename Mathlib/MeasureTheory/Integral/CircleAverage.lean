@@ -125,6 +125,19 @@ theorem circleAverage_congr_sphere {f₁ f₂ : ℂ → E} (hf : Set.EqOn f₁ f
   apply intervalIntegral.integral_congr (fun x ↦ by simp [hf (circleMap_mem_sphere' c R x)])
 
 /--
+Express the circle average over an arbitrary circle as a circle average over the unit circle.
+-/
+theorem circleAverage_eq_circleAverage_zero_one :
+    circleAverage f c R = (circleAverage (fun z ↦ f (R * z + c)) 0 1) := by
+  unfold circleAverage
+  congr
+  ext θ
+  unfold circleMap
+  congr 1
+  ring_nf
+  simp
+
+/--
 The circle average of a function `f` on the unit sphere equals the circle average of the function
 `z ↦ f z⁻¹`.
 -/
