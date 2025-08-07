@@ -80,7 +80,6 @@ lemma δ₂_zero_eq_mkOfSucc : (δ₂ (0 : Fin 3) _ _ : ⦋1⦌₂ ⟶ ⦋2⦌�
     Hom.tr (SimplexCategory.mkOfSucc (1 : Fin 2)) _ _ :=
   SimplexCategory.δ_zero_eq_mkOfSucc
 
-@[reassoc]
 lemma δ₂_two_eq_mkOfSucc : (δ₂ (2 : Fin 3) _ _ : ⦋1⦌₂ ⟶ ⦋2⦌₂) =
     Hom.tr (SimplexCategory.mkOfSucc (0 : Fin 2)) _ _ :=
   SimplexCategory.δ_two_eq_mkOfSucc
