@@ -351,7 +351,7 @@ lemma Rel.exists_graph_eq_iff (R : Rel α β) :
     (∃! f, Function.graph f = R) ↔ ∀ a, ∃! b, a ~[R] b := by
   constructor
   · rintro ⟨f, rfl, _⟩ x
-    aesop
+    simp
   intro h
   choose f hf using fun x ↦ (h x).exists
   refine ⟨f, ?_, by aesop⟩
