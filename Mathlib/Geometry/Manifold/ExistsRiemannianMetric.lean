@@ -320,6 +320,10 @@ noncomputable instance : (x : B) → NormedAddCommGroup (V F E x) := by
   unfold V
   infer_instance
 
+noncomputable instance (x : B) : NormedSpace ℝ (V F E x) := by
+  unfold V
+  infer_instance
+
 instance : (x : B) → Module ℝ (V F E x) := by
   unfold V
   infer_instance
@@ -355,8 +359,7 @@ instance (x : B) : ContinuousSMul ℝ (V F E x) := by
 variable (F E) in
 def W : (b : B) → Type _ := fun b ↦ E b →L[ℝ] (V F E) b
 
--- does this also have a norm?
-noncomputable instance (x : B) : AddCommGroup (W F E x) := by
+noncomputable instance (x : B) : NormedAddCommGroup (W F E x) := by
   unfold W
   infer_instance
 
@@ -384,21 +387,32 @@ noncomputable instance : ContMDiffVectorBundle n (F →L[ℝ] F) (W F E) IB := b
   unfold W
   sorry -- infer_instance
 
-#synth ContMDiffVectorBundle n (F →L[ℝ] F) (W F E) IB
+variable (F E) in
+def mapsMatchingInner3 (x : B) : Set (W F E x) :=
+  sorry -- {φ | ∀ v w : E x, φ v w = ⟪v, w⟫}
 
---abbrev Wbdl := ContMDiffVectorBundle.continuousLinearMap (IB := IB) (F₁ := F) (E₁ := E) (E₂ := V F E) (F₂ := F) (n := n)
-#exit
+variable (F E) in
+omit [TopologicalSpace B] [VectorBundle ℝ F E] in
+lemma convex_mapsMatchingInner3 (x : B) : Convex ℝ (mapsMatchingInner3 F E x) := by
+  sorry
+  -- intro φ hφ ψ hψ r s hr hs hrs
+  -- simp only [mapsMatchingInner2, Set.mem_setOf] at hφ hψ ⊢
+  -- intro v w
+  -- simp [hφ v w, hψ v w]
+  -- grind
 
-variable (E F IB) in
-noncomputable def RMetric_aux : C^∞⟮IB, B; 𝓘(ℝ, F →L[ℝ] F →L[ℝ] ℝ), F →L[ℝ] F →L[ℝ] ℝ⟯ := by
-  --Classical.choose <|
-  -- TODO: need V as a bundle of continuous bilinear maps on E over B... does that exist already?
-  have aux := exists_contMDiffOn_section_forall_mem_convex_of_local IB (M := B) (V := E) (F_fiber := F) (n := (⊤ : ℕ∞))
-    --(t := fun x ↦ mapsMatchingInner2 E x) --convex_mapsMatchingInner2 sorry
-
+lemma hloc3 (x₀ : B) :
+    ∃ U_x₀ ∈ nhds x₀, ∃ s_loc : (x : B) → W F E x,
+      ContMDiffOn IB (IB.prod 𝓘(ℝ, F →L[ℝ] F)) ∞ (fun x ↦ TotalSpace.mk' (F →L[ℝ] F) x (s_loc x)) U_x₀ ∧
+      ∀ y ∈ U_x₀, s_loc y ∈ (fun x ↦ mapsMatchingInner3 F E x) y :=
   sorry
 
-#exit
+variable (E F IB) in
+-- XXX: do I want this return type instead? C^∞⟮IB, B; 𝓘(ℝ, F →L[ℝ] F →L[ℝ] ℝ), F →L[ℝ] F →L[ℝ] ℝ⟯
+noncomputable def RMetric_aux : Cₛ^∞⟮IB; F →L[ℝ] F, W F E⟯ :=
+  Classical.choose <|
+    exists_contMDiffOn_section_forall_mem_convex_of_local IB (V := W F E) (n := (⊤ : ℕ∞))
+      (t := fun x ↦ mapsMatchingInner3 F E x) (convex_mapsMatchingInner3 F E) hloc3
 
 variable (E F IB) in
 /-- An arbitrary choice of bundle metric on `E`, which is smooth in the fibre. -/
