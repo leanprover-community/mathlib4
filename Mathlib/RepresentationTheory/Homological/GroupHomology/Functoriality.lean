@@ -501,8 +501,7 @@ theorem comap_coinvariantsKer_pOpcycles_range_subtype_pOpcycles_eq_top :
 
 /-- Given a `G`-representation `A` and a normal subgroup `S ≤ G`, the map
 `H₁(G, A) ⟶ H₁(G ⧸ S, A_S)` is an epimorphism. -/
-instance :
-    Epi (H1CoresCoinf A S).g := by
+instance : Epi (H1CoresCoinf A S).g := by
   rw [ModuleCat.epi_iff_surjective]
   intro x
   induction x using H1_induction_on with | @h x =>
