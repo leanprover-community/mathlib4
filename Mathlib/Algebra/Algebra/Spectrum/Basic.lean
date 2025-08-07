@@ -247,14 +247,9 @@ theorem unit_mem_mul_comm {a b : A} {r : Rˣ} : ↑r ∈ σ (a * b) ↔ ↑r ∈
   simpa only [mem_iff, not_iff_not, Algebra.algebraMap_eq_smul_one, ← Units.smul_def,
     IsUnit.smul_sub_iff_sub_inv_smul, smul_mul_assoc]
 
-@[deprecated (since := "2025-01-29")] alias unit_mem_mul_iff_mem_swap_mul := unit_mem_mul_comm
-
 theorem preimage_units_mul_comm (a b : A) :
     ((↑) : Rˣ → R) ⁻¹' σ (a * b) = (↑) ⁻¹' σ (b * a) :=
   Set.ext fun _ => unit_mem_mul_comm
-
-@[deprecated (since := "2025-01-29")]
-alias preimage_units_mul_eq_swap_mul := preimage_units_mul_comm
 
 theorem setOf_isUnit_inter_mul_comm (a b : A) :
     {r | IsUnit r} ∩ σ (a * b) = {r | IsUnit r} ∩ σ (b * a) := by

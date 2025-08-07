@@ -114,9 +114,6 @@ lemma coe_id {X : Grp} : (𝟙 X : X → X) = id := rfl
 @[to_additive (attr := simp)]
 lemma coe_comp {X Y Z : Grp} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
-@[to_additive (attr := deprecated "Use hom_comp instead" (since := "2025-01-28"))]
-lemma comp_def {X Y Z : Grp} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g).hom = g.hom.comp f.hom := rfl
-
 @[simp] lemma forget_map {X Y : Grp} (f : X ⟶ Y) : (forget Grp).map f = (f : X → Y) := rfl
 
 @[to_additive (attr := ext)]
@@ -178,12 +175,6 @@ lemma inv_hom_apply {X Y : Grp} (e : X ≅ Y) (x : X) : e.inv (e.hom x) = x := b
 @[to_additive]
 lemma hom_inv_apply {X Y : Grp} (e : X ≅ Y) (s : Y) : e.hom (e.inv s) = s := by
   simp
-
-@[to_additive (attr := deprecated "use `coe_comp` instead" (since := "2025-01-28"))]
-alias coe_comp' := coe_comp
-
-@[to_additive (attr := deprecated "use `coe_id` instead" (since := "2025-01-28"))]
-alias coe_id' := coe_id
 
 @[to_additive]
 instance : Inhabited Grp :=
@@ -335,9 +326,6 @@ lemma coe_id {X : CommGrp} : (𝟙 X : X → X) = id := rfl
 @[to_additive (attr := simp)]
 lemma coe_comp {X Y Z : CommGrp} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
-@[to_additive (attr := deprecated "Use hom_comp instead" (since := "2025-01-28"))]
-lemma comp_def {X Y Z : CommGrp} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g).hom = g.hom.comp f.hom := rfl
-
 @[to_additive (attr := simp)]
 lemma forget_map {X Y : CommGrp} (f : X ⟶ Y) :
     (forget CommGrp).map f = (f : X → Y) :=
@@ -406,12 +394,6 @@ lemma inv_hom_apply {X Y : CommGrp} (e : X ≅ Y) (x : X) : e.inv (e.hom x) = x 
 @[to_additive]
 lemma hom_inv_apply {X Y : CommGrp} (e : X ≅ Y) (s : Y) : e.hom (e.inv s) = s := by
   simp
-
-@[to_additive (attr := deprecated "use `coe_comp` instead" (since := "2025-01-28"))]
-alias coe_comp' := coe_comp
-
-@[to_additive (attr := deprecated "use `coe_id` instead" (since := "2025-01-28"))]
-alias coe_id' := coe_id
 
 @[to_additive]
 instance hasForgetToGroup : HasForget₂ CommGrp Grp where
@@ -501,7 +483,7 @@ theorem int_hom_ext {G : AddCommGrp.{0}} (f g : AddCommGrp.of ℤ ⟶ G)
 -- the forgetful functor is representable.
 theorem injective_of_mono {G H : AddCommGrp.{0}} (f : G ⟶ H) [Mono f] : Function.Injective f :=
   fun g₁ g₂ h => by
-  have t0 : asHom g₁ ≫ f = asHom g₂ ≫ f := by aesop_cat
+  have t0 : asHom g₁ ≫ f = asHom g₂ ≫ f := by cat_disch
   have t1 : asHom g₁ = asHom g₂ := (cancel_mono _).1 t0
   apply asHom_injective t1
 
@@ -651,4 +633,3 @@ theorem MonoidHom.comp_id_commGrp {G : CommGrp.{u}} {H : Type u} [Monoid H] (f :
 theorem MonoidHom.id_commGrp_comp {G : Type u} [Monoid G] {H : CommGrp.{u}} (f : G →* H) :
     MonoidHom.comp (CommGrp.Hom.hom (𝟙 H)) f = f := by
   simp
-
