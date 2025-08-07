@@ -280,12 +280,26 @@ lemma mem_specialOrthogonalGroup_fin_two_iff {M : Matrix (Fin 2) (Fin 2) R} :
 
 end specialOrthogonalGroup
 
+variable {R m : Type*} [Fintype m] [DecidableEq m]
+  [CommRing R] [StarRing R]
+
 open scoped Kronecker in
-theorem UnitaryGroup.kronecker_mem_unitaryGroup {R m : Type*} [Fintype m] [DecidableEq m]
-    [CommRing R] [StarRing R] (U₁ : unitaryGroup n R) (U₂ : unitaryGroup m R) :
+theorem UnitaryGroup.kronecker_mem_unitaryGroup (U₁ : unitaryGroup n R) (U₂ : unitaryGroup m R) :
     U₁ ⊗ₖ U₂ ∈ unitaryGroup (n × m) R := by
   simp_rw [mem_unitaryGroup_iff, star_eq_conjTranspose, conjTranspose_kronecker,
     ← mul_kronecker_mul, ← star_eq_conjTranspose, mem_unitaryGroup_iff.mp (Subtype.mem _),
     one_kronecker_one]
+
+theorem UnitaryGroup.mul_right_iff
+    (U : unitaryGroup n R) (x y : Matrix n n R) : x * U = y * U ↔ x = y := by
+  refine ⟨fun h => ?_, fun h => h ▸ rfl⟩
+  rw [← mul_one y, ← mem_unitaryGroup_iff.mp (Subtype.mem U), ← mul_assoc, ← h,
+    mul_assoc, mem_unitaryGroup_iff.mp (Subtype.mem U), mul_one]
+
+theorem UnitaryGroup.mul_left_iff
+    (U : unitaryGroup n R) (x y : Matrix n n R) : U * x = U * y ↔ x = y := by
+  refine ⟨fun h => ?_, fun h => h ▸ rfl⟩
+  rw [← one_mul y, ← mem_unitaryGroup_iff'.mp (Subtype.mem U), mul_assoc, ← h,
+    ← mul_assoc, mem_unitaryGroup_iff'.mp (Subtype.mem U), one_mul]
 
 end Matrix
