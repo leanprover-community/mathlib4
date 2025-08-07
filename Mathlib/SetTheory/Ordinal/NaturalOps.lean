@@ -8,7 +8,7 @@ import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Linter.DeprecatedModule
 
 deprecated_module
-  "This module is now at ... in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  "This module is now at `CombinatorialGames.NatOrdinal` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
   (since := "2025-08-06")
 
 /-!
