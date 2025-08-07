@@ -115,7 +115,7 @@ def wideCospan (B : C) (objs : J → C) (arrows : ∀ j : J, objs j ⟶ B) : Wid
 /-- Every diagram is naturally isomorphic (actually, equal) to a `wideCospan` -/
 def diagramIsoWideCospan (F : WidePullbackShape J ⥤ C) :
     F ≅ wideCospan (F.obj none) (fun j => F.obj (some j)) fun j => F.map (Hom.term j) :=
-  NatIso.ofComponents fun j => eqToIso <| by aesop_cat
+  NatIso.ofComponents fun j => eqToIso <| by cat_disch
 
 /-- Construct a cone over a wide cospan. -/
 @[simps]
@@ -326,7 +326,7 @@ theorem hom_eq_lift (g : X ⟶ widePullback _ _ arrows) :
     g = lift (g ≫ base arrows) (fun j => g ≫ π arrows j) (by simp) := by
   apply eq_lift_of_comp_eq
   · simp
-  · rfl  -- Porting note: quite a few missing refl's in aesop_cat now
+  · rfl  -- Porting note: quite a few missing refl's in cat_disch now
 
 @[ext 1100]
 theorem hom_ext (g1 g2 : X ⟶ widePullback _ _ arrows) : (∀ j : J,
