@@ -7,7 +7,7 @@ import Mathlib.Algebra.Order.SuccPred
 import Mathlib.Order.PartialSups
 import Mathlib.Order.SuccPred.LinearLocallyFinite
 
-/-!
+/-! TODO: explain what results to expect in them / what results should go in them in the future
 # `PartialSups` in a `SuccAddOrder`
 -/
 
