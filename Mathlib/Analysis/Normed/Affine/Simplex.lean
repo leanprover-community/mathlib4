@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
 import Mathlib.Analysis.Normed.Group.AddTorsor
-import Mathlib.LinearAlgebra.AffineSpace.Independent
+import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
 
 /-!
 # Simplices in torsors over normed spaces.
