@@ -380,7 +380,7 @@ lemma BoundedContinuousFunction.integral_le_of_levyProkhorovEDist_lt (μ ν : Me
       exact fun _ _ hst ↦ measure_mono <| thickening_subset_of_subset ε (fun _ h ↦ hst.trans h)
     · apply Eventually.of_forall <| fun t ↦ ?_
       simp only [Real.norm_eq_abs, abs_of_nonneg measureReal_nonneg]
-      exact ENNReal.toReal_mono (by finiteness) <| measure_mono (subset_univ _)
+      exact ENNReal.toReal_mono (by simp) <| measure_mono (subset_univ _)
   apply le_trans (setIntegral_mono (s := Ioc 0 ‖f‖) ?_ ?_ key)
   · rw [integral_add]
     · apply add_le_add_left
@@ -415,7 +415,7 @@ lemma tendsto_integral_meas_thickening_le (f : Ω →ᵇ ℝ)
     · apply tendsto_measure_thickening_of_isClosed ?_ ?_
       · exact ⟨1, ⟨Real.zero_lt_one, measure_ne_top _ _⟩⟩
       · exact isClosed_le continuous_const f.continuous
-    · finiteness
+    · simp
 
 /-- The identity map `LevyProkhorov (ProbabilityMeasure Ω) → ProbabilityMeasure Ω` is continuous. -/
 lemma LevyProkhorov.continuous_equiv_probabilityMeasure :
@@ -499,7 +499,7 @@ lemma ProbabilityMeasure.toMeasure_add_pos_gt_mem_nhds (P : ProbabilityMeasure �
   · simp [ε_top, measure_lt_top]
   simp only [not_lt] at easy
   have aux : P.toMeasure G - ε < liminf (fun Q ↦ Q.toMeasure G) (𝓝 P) := by
-    apply lt_of_lt_of_le (ENNReal.sub_lt_self (by finiteness) _ _)
+    apply lt_of_lt_of_le (ENNReal.sub_lt_self (by simp) _ _)
         <| ProbabilityMeasure.le_liminf_measure_open_of_tendsto tendsto_id G_open
     · exact (lt_of_lt_of_le ε_pos easy).ne.symm
     · exact ε_pos.ne.symm
