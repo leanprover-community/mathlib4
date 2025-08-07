@@ -138,7 +138,7 @@ but it holds for measures with the additional assumption that μ is finite. -/
 theorem Measure.le_of_add_le_add_left [IsFiniteMeasure μ] (A2 : μ + ν₁ ≤ μ + ν₂) : ν₁ ≤ ν₂ :=
   fun S => ENNReal.le_of_add_le_add_left (MeasureTheory.measure_ne_top μ S) (A2 S)
 
-lemma Measure.eq_of_le_of_measure_univ_eq [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+lemma Measure.eq_of_le_of_measure_univ_eq [IsFiniteMeasure μ]
     (hμν : μ ≤ ν) (h_univ : μ univ = ν univ) : μ = ν := by
   refine le_antisymm hμν (Measure.le_intro fun s hs _ ↦ ?_)
   by_contra! h_lt
