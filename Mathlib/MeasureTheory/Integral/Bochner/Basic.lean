@@ -771,7 +771,7 @@ lemma integral_tendsto_of_tendsto_of_monotone {μ : Measure α} {f : ℕ → α 
   have h_cont := ENNReal.continuousAt_toReal (x := ∫⁻ a, ENNReal.ofReal ((F - f 0) a) ∂μ) ?_
   swap
   · rw [← ofReal_integral_eq_lintegral_ofReal (hF.sub (hf 0)) hF_ge]
-    simp
+    finiteness
   refine h_cont.tendsto.comp ?_
   -- use the result for the Lebesgue integral
   refine lintegral_tendsto_of_tendsto_of_monotone ?_ ?_ ?_
@@ -1214,13 +1214,13 @@ theorem integral_mul_norm_le_Lp_mul_Lq {E} [NormedAddCommGroup E] {f g : α → 
       · rw [ENNReal.toReal_ofReal hpq.nonneg]
       · rw [Ne, ENNReal.ofReal_eq_zero, not_le]
         exact hpq.pos
-      · simp
+      · finiteness
     · convert hg.eLpNorm_ne_top
       rw [eLpNorm_eq_lintegral_rpow_enorm]
       · rw [ENNReal.toReal_ofReal hpq.symm.nonneg]
       · rw [Ne, ENNReal.ofReal_eq_zero, not_le]
         exact hpq.symm.pos
-      · simp
+      · finiteness
   · exact ENNReal.lintegral_mul_le_Lp_mul_Lq μ hpq hf.1.nnnorm.aemeasurable.coe_nnreal_ennreal
       hg.1.nnnorm.aemeasurable.coe_nnreal_ennreal
 

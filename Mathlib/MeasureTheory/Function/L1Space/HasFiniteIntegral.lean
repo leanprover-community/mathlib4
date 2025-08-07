@@ -415,7 +415,7 @@ theorem tendsto_lintegral_norm_of_dominated_convergence
     · calc
         ∫⁻ a, b a ∂μ = 2 * ∫⁻ a, ENNReal.ofReal (bound a) ∂μ := by
           rw [lintegral_const_mul']
-          simp
+          finiteness
         _ ≠ ∞ := mul_ne_top coe_ne_top bound_hasFiniteIntegral.ne
     filter_upwards [h_bound 0] with _ h using le_trans (norm_nonneg _) h
   -- Show `‖f a - F n a‖ --> 0`

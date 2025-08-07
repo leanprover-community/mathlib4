@@ -341,7 +341,7 @@ lemma condExp_generateFrom_singleton (hs : MeasurableSet s) {f : Ω → F} (hf :
       · simp only [h, Measure.restrict_univ, cond, integral_smul_measure, ENNReal.toReal_inv, ←
         measureReal_def, integral_const, MeasurableSet.univ, measureReal_restrict_apply, univ_inter]
         rw [smul_inv_smul₀]
-        exact (measureReal_ne_zero_iff (by simp)).2 hμs
+        exact (measureReal_ne_zero_iff (by finiteness)).2 hμs
 
 lemma condExp_set_generateFrom_singleton (hs : MeasurableSet s) (ht : MeasurableSet t) :
     μ⟦t | generateFrom {s}⟧ =ᵐ[μ.restrict s] fun _ ↦ μ[|s].real t := by

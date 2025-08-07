@@ -577,7 +577,7 @@ theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMea
         simp only [Finset.card_fin, Finset.sum_const, nsmul_eq_mul]
         rw [ENNReal.mul_div_cancel]
         · simp only [Npos, Ne, Nat.cast_eq_zero, not_false_iff]
-        · simp
+        · finiteness
       _ ≤ ∑ i, μ (s ∩ v i) := by
         conv_lhs => rw [A]
         apply measure_iUnion_fintype_le
@@ -587,10 +587,10 @@ theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMea
     exact ⟨⟨0, bot_lt_iff_ne_bot.2 Npos⟩, Finset.mem_univ _⟩
   replace hi : μ s / (N + 1) < μ (s ∩ v i) := by
     apply lt_of_lt_of_le _ hi
-    apply (ENNReal.mul_lt_mul_left hμs.ne' (by simp)).2
+    apply (ENNReal.mul_lt_mul_left hμs.ne' (by finiteness)).2
     rw [ENNReal.inv_lt_inv]
     conv_lhs => rw [← add_zero (N : ℝ≥0∞)]
-    exact ENNReal.add_lt_add_left (by simp) zero_lt_one
+    exact ENNReal.add_lt_add_left (by finiteness) zero_lt_one
   have B : μ (o ∩ v i) = ∑' x : u i, μ (o ∩ closedBall x (r x)) := by
     have : o ∩ v i = ⋃ (x : s) (_ : x ∈ u i), o ∩ closedBall x (r x) := by
       simp only [v, inter_iUnion]
@@ -619,7 +619,7 @@ theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMea
       rw [Finset.set_biUnion_finset_image]
       exact le_trans (measure_mono (diff_subset_diff so (Subset.refl _))) H
     rw [← diff_inter_self_eq_diff,
-      measure_diff_le_iff_le_add _ inter_subset_right (by simp)]
+      measure_diff_le_iff_le_add _ inter_subset_right (by finiteness)]
     swap
     · exact .inter
         (w.nullMeasurableSet_biUnion fun _ _ ↦ measurableSet_closedBall.nullMeasurableSet)

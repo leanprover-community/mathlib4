@@ -172,7 +172,7 @@ theorem Submartingale.upcrossings_ae_lt_top' [IsFiniteMeasure μ] (hf : Submarti
         · rw [posPart_eq_self.2 hnonneg, Real.norm_eq_abs, abs_of_nonneg hnonneg]
         · rw [posPart_eq_zero.2 (not_le.1 hnonneg).le]
           exact norm_nonneg _
-      · simp
+      · finiteness
     · simp only [hab, Ne, ENNReal.ofReal_eq_zero, sub_nonpos, not_le]
   · left; simp only [hab, Ne, ENNReal.ofReal_eq_zero, sub_nonpos, not_le]
   · left; finiteness

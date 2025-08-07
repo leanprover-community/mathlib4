@@ -284,10 +284,10 @@ theorem lintegral_rpow_add_lt_top_of_lintegral_rpow_lt_top {p : ℝ} {f g : α �
             hp1
         rw [ENNReal.div_add_div_same, one_add_one_eq_two,
           ENNReal.div_self two_ne_zero ENNReal.coe_ne_top]
-      · simp
+      · finiteness
     _ < ⊤ := by
       rw [lintegral_add_left', lintegral_const_mul'' _ (hf.pow_const p),
-        lintegral_const_mul' _ _ (by simp), ENNReal.add_lt_top]
+        lintegral_const_mul' _ _ (by finiteness), ENNReal.add_lt_top]
       · constructor <;> finiteness
       · fun_prop
 
