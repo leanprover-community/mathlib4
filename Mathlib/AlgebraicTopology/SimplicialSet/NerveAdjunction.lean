@@ -92,13 +92,14 @@ variable {X Y : SSet.Truncated 2} (sy : StrictSegal Y) (F : OneTruncation₂ X �
 
 /-- The components of a map of 2-truncated simplicial sets built from a map on underlying reflexive
 quivers, under the assumption that the codomain is `StrictSegal`. -/
-def toStrictSegal₂.mk.app (n : SimplexCategory.Truncated 2) : X.obj (op n) ⟶ Y.obj (op n) := by
-  obtain ⟨n, hn⟩ := n
-  induction' n using SimplexCategory.rec with n
-  match n with
-  | 0 => exact fun x => F.obj x
-  | 1 => exact fun f => (F.map ⟨f, rfl, rfl⟩).edge
-  | 2 => exact fun φ => StrictSegal.spineToSimplex sy _ _ (OneTruncation₂.pathMap F (X.spine _ _ φ))
+def toStrictSegal₂.mk.app (n : SimplexCategory.Truncated 2) : X.obj (op n) ⟶ Y.obj (op n) :=
+  SimplexCategory.Truncated.rec
+    (F := fun k ↦ X.obj (op k) ⟶ Y.obj (op k))
+    (fun
+      | 0 => fun x => F.obj x
+      | 1 => fun f => (F.map ⟨f, rfl, rfl⟩).edge
+      | 2 => fun φ => StrictSegal.spineToSimplex sy _ _ (OneTruncation₂.pathMap F (X.spine _ _ φ)))
+    n
 
 @[simp] theorem toStrictSegal₂.mk.app_zero (x : X _⦋0⦌₂) :
     mk.app sy F ⦋0⦌₂ x = F.obj x := rfl
@@ -271,8 +272,8 @@ theorem toStrictSegal₂.ext (F G : X ⟶ Y) (sy : StrictSegal Y)
   have eq₀ (x : X _⦋0⦌₂) : F.app (op ⦋0⦌₂) x = G.app (op ⦋0⦌₂) x := congr(($hyp).obj x)
   have eq₁ (x : X _⦋1⦌₂) : F.app (op ⦋1⦌₂) x = G.app (op ⦋1⦌₂) x :=
     congr((($hyp).map ⟨x, rfl, rfl⟩).1)
-  ext ⟨⟨n, hn⟩⟩ x
-  induction' n using SimplexCategory.rec with n
+  ext ⟨k⟩ x
+  induction' k using SimplexCategory.Truncated.rec with n
   match n with
   | 0 => apply eq₀
   | 1 => apply eq₁
@@ -284,7 +285,8 @@ theorem toStrictSegal₂.ext (F G : X ⟶ Y) (sy : StrictSegal Y)
     have h1 := congr_fun (F.naturality (Hom.tr (mkOfSucc i)).op) x
     have h2 := congr_fun (G.naturality (Hom.tr (mkOfSucc i)).op) x
     simp only [types_comp_apply, Nat.reduceAdd] at h1 h2
-    simp only [spine_arrow, ← h1, ← h2, eq₁]
+    simp only [spine_arrow, Nat.reduceAdd, Fin.isValue, Fin.coe_ofNat_eq_mod, Nat.reduceMod]
+    rw [← h1, ← h2, eq₁]
 
 end
 
