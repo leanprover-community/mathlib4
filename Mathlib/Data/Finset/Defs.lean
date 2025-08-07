@@ -130,9 +130,11 @@ instance : CoeTC (Finset α) (Set α) :=
 theorem mem_coe {a : α} {s : Finset α} : a ∈ (s : Set α) ↔ a ∈ (s : Finset α) :=
   Iff.rfl
 
+@[simp]
 theorem setOf_mem {α} {s : Finset α} : { a | a ∈ s } = s :=
   rfl
 
+@[simp]
 theorem coe_mem {s : Finset α} (x : (s : Set α)) : ↑x ∈ s :=
   x.2
 
