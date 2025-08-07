@@ -44,12 +44,12 @@ scoped notation "cov[" X ", " Y "; " μ "]" => ProbabilityTheory.covariance X Y 
 according to the volume measure. -/
 scoped notation "cov[" X ", " Y "]" => cov[X, Y; MeasureTheory.MeasureSpace.volume]
 
-lemma covariance_eq [IsProbabilityMeasure μ] (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) :
+lemma covariance_eq_sub [IsProbabilityMeasure μ] (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) :
      cov[X, Y; μ] = μ[X * Y] - μ[X] * μ[Y] := by
    simp_rw [covariance, sub_mul, mul_sub]
    repeat rw [integral_sub]
-   · simp_rw [integral_mul_const, integral_const_mul, integral_const, Measure.real, measure_univ,
-       ENNReal.toReal_one, one_smul]
+   · simp_rw [integral_mul_const, integral_const_mul, integral_const, measureReal_univ_eq_one,
+       one_smul]
      simp
    · exact hY.const_mul _ |>.integrable (by simp)
    · exact integrable_const _
@@ -286,7 +286,7 @@ lemma IndepFun.covariance_eq_zero (h : IndepFun X Y μ) (hX : MemLp X 2 μ) (hY 
      filter_upwards [h'] with ω hω
      simp [hω, integral_eq_zero_of_ae h']
    have := hX.isProbabilityMeasure_of_indepFun X Y (by simp) (by simp) h' h
-   rw [covariance_eq hX hY, h.integral_mul_eq_mul_integral
+   rw [covariance_eq_sub hX hY, h.integral_mul_eq_mul_integral
        hX.aestronglyMeasurable hY.aestronglyMeasurable, sub_self]
 
 end ProbabilityTheory
