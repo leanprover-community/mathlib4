@@ -3,8 +3,9 @@ Copyright (c) 2024 Josha Dekker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Josha Dekker
 -/
-import Mathlib.MeasureTheory.Measure.RegularityCompacts
 import Mathlib.MeasureTheory.Measure.LevyProkhorovMetric
+import Mathlib.MeasureTheory.Measure.RegularityCompacts
+
 
 /-!
 # Tight sets of measures
@@ -138,10 +139,9 @@ open Metric ENNReal NNReal ProbabilityMeasure TopologicalSpace
 
 variable {X : Type*} [MeasurableSpace X]
 
---omit [TopologicalSpace X] in
+
 lemma ENNreal_ProbMeasure_toMeasure (μ : ProbabilityMeasure X) (A : Set X) :
-    μ.toMeasure A = ((μ A) : ENNReal) := by
-    exact Eq.symm (ennreal_coeFn_eq_coeFn_toMeasure μ A)
+    μ.toMeasure A = ((μ A) : ENNReal) := Eq.symm (ennreal_coeFn_eq_coeFn_toMeasure μ A)
 
 variable [PseudoMetricSpace X] -- Could probably generalize to PseudoEMetricSpace
 
@@ -184,16 +184,22 @@ noncomputable section
 variable [SeparableSpace X]
 
 lemma MeasOpenCoverTendstoMeasUniv (U : ℕ → Set X) (O : ∀ i, IsOpen (U i))
-    (hcomp : IsCompact (closure S)) (ε : ℝ≥0∞) (hε : ε > 0) (hεbound : ε ≤ 1)
-    (Cov : ⋃ i, U i = univ) : ∃ (k : ℕ), ∀ μ ∈ S, μ (⋃ (i ≤ k), U i) > 1 - ε := by
+    (hcomp : IsCompact (closure S)) (ε : ℝ≥0∞) (hε : 0 < ε) (hεbound : ε ≤ 1)
+    (Cov : ⋃ i, U i = univ) : ∃ (k : ℕ), ∀ μ ∈ S,  1 - ε < μ (⋃ (i ≤ k), U i) := by
+  have εfin : ε ≠ ⊤ := by
+    intro h; rw [h] at hεbound
+    exact not_top_le_coe hεbound
+  lift ε to ℝ≥0 using εfin
+  obtain ⟨ε,hε'⟩ := ε
+  simp only [ENNReal.coe_pos, ← NNReal.coe_lt_coe, NNReal.coe_zero, NNReal.coe_mk, coe_le_one_iff, ←
+    NNReal.coe_le_coe, NNReal.coe_one] at hε hεbound
   by_contra! nh; choose μ hμInS hcontradiction using nh
   obtain ⟨μlim, _, sub, hsubmono, hμconverges⟩ :=
   hcomp.isSeqCompact (fun n ↦ subset_closure <| hμInS n)
   have Measurebound n := calc
     (μlim (⋃ (i ≤ n), U i) : ℝ)
     _ ≤ liminf (fun k ↦ (μ (sub k) (⋃ (i ≤ n), U i) : ℝ)) atTop := by
-      have hopen : IsOpen (⋃ i ≤ n, U i) := by
-        exact isOpen_biUnion fun i a ↦ O i
+      have hopen : IsOpen (⋃ i ≤ n, U i) := isOpen_biUnion fun i a ↦ O i
       --This is the key lemma
       have := ProbabilityMeasure.le_liminf_measure_open_of_tendsto hμconverges hopen
       simp only [Function.comp_apply] at this
@@ -221,7 +227,7 @@ lemma MeasOpenCoverTendstoMeasUniv (U : ℕ → Set X) (O : ∀ i, IsOpen (U i))
         specialize hyp d (by simp)
         apply hyp.trans; norm_cast
         exact ProbabilityMeasure.apply_le_one (μ (sub d)) (⋃ i ≤ sub d, U i)
-    _ ≤ (1 - (ε.toReal) : ℝ) := by
+    _ ≤ 1 - ε := by
       apply Filter.liminf_le_of_le
       · use 0; simp
       simp only [eventually_atTop, ge_iff_le, forall_exists_index]
@@ -229,38 +235,20 @@ lemma MeasOpenCoverTendstoMeasUniv (U : ℕ → Set X) (O : ∀ i, IsOpen (U i))
       apply le_trans (h c le_rfl)
       refine (ofReal_le_ofReal_iff ?_).mp ?_
       · rw [sub_nonneg]
-        exact toReal_le_of_le_ofReal (zero_le_one' ℝ) (by rw [ofReal_one]; exact hεbound)
+        exact hεbound
       rw [ofReal_coe_nnreal]
       apply le_trans (hcontradiction (sub c))
-      rw [← ofReal_one, ENNReal.ofReal_one_sub_toReal_eq];
-      refine le_of_eq ?_
-      norm_cast; exact hεbound
+      norm_cast
   have accumulation : Tendsto (fun n ↦ μlim (⋃ i ≤ n, U i)) atTop (𝓝 (μlim (⋃ i, U i))) := by
     simp_rw [←Set.accumulate_def]
     exact ProbabilityMeasure.tendsto_measure_iUnion_accumulate
   rw [Cov, coeFn_univ, ←NNReal.tendsto_coe] at accumulation
-  have exceeds_bound : ∀ᶠ n in atTop, μlim (⋃ i ≤ n, U i) ≥ 1 - ε / 2 :=
-    Tendsto.eventually_const_le (v := 1) (((ENNReal.sub_lt_self_iff (one_ne_top)).mpr
-    ⟨zero_lt_one' ℝ≥0∞, ENNReal.half_pos <| pos_iff_ne_zero.mp hε⟩))
-    ((tendsto_toReal_iff (by simp) (by simp)).mp accumulation)
+  have exceeds_bound : ∀ᶠ n in atTop, (1 - ε / 2 : ℝ) ≤ μlim (⋃ i ≤ n, U i) := by
+    refine Tendsto.eventually_const_le (v := 1) (by simp; positivity) (accumulation)
   suffices ∀ᶠ n : ℕ in atTop, False by exact this.exists.choose_spec
   filter_upwards [exceeds_bound] with n hn
-  have Measurebound := Measurebound n
-  have booosh : ((μlim (⋃ i, ⋃ (_ : i ≤ n), U i)) : ℝ) ≥ (1 - ε / 2).toReal := by
-    exact toReal_le_coe_of_le_coe hn
-  have := booosh.trans Measurebound
-  rw [one_sub_toReal_eq ε hεbound] at this
-  simp only [ne_eq, sub_eq_top_iff, one_ne_top, false_and,
-   not_false_eq_true, toReal_le_toReal] at this
-  have εfin : ε ≠ ⊤ := by
-    intro h; rw [h] at hεbound
-    exact not_top_le_coe hεbound
-  have half_lt : ε / 2 < ε := ENNReal.half_lt_self (pos_iff_ne_zero.mp hε) εfin
-  have half_gt : ε / 2 ≥ ε := by
-    rw [tsub_le_iff_tsub_le,
-      Eq.symm (ENNReal.eq_sub_of_add_eq' one_ne_top (add_tsub_cancel_of_le hεbound))] at this
-    exact this
-  exact not_le.mpr half_lt half_gt
+  have lim_measure_lb : (1 - ε / 2 : ℝ) ≤ 1 - ε := hn.trans <| Measurebound n
+  linarith [lim_measure_lb]
 
 
 
