@@ -30,7 +30,7 @@ namespace Multiset
 
 /-- `join S`, where `S` is a multiset of multisets, is the lift of the list join
   operation, that is, the union of all the sets.
-     join {{1, 2}, {1, 2}, {0, 1}} = {0, 1, 1, 1, 2, 2} -/
+  For example, `join {{1, 2}, {1, 2}, {0, 1}} = {0, 1, 1, 1, 2, 2}`. -/
 def join : Multiset (Multiset α) → Multiset α :=
   sum
 

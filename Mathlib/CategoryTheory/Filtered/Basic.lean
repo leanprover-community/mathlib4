@@ -417,8 +417,8 @@ theorem coeq₃_condition₂ {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) :
 theorem coeq₃_condition₃ {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) : f ≫ coeq₃Hom f g h = h ≫ coeq₃Hom f g h :=
   Eq.trans (coeq₃_condition₁ f g h) (coeq₃_condition₂ f g h)
 
-/-- For every span `j ⟵ i ⟶ j'`, there
-   exists a cocone `j ⟶ k ⟵ j'` such that the square commutes. -/
+/-- For every span `j ⟵ i ⟶ j'`, there exists a cocone `j ⟶ k ⟵ j'` such that the square
+commutes. -/
 theorem span {i j j' : C} (f : i ⟶ j) (f' : i ⟶ j') :
     ∃ (k : C) (g : j ⟶ k) (g' : j' ⟶ k), f ≫ g = f' ≫ g' :=
   let ⟨K, G, G', _⟩ := IsFilteredOrEmpty.cocone_objs j j'
@@ -475,7 +475,8 @@ end SpecialShapes
 
 end IsFiltered
 
-/-- A category `IsCofilteredOrEmpty` if
+/--
+A category `IsCofilteredOrEmpty` if
 1. for every pair of objects there exists another object "to the left", and
 2. for every pair of parallel morphisms there exists a morphism to the left so the compositions
    are equal.

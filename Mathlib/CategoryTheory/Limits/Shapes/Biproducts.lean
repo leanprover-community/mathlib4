@@ -400,8 +400,8 @@ variable {J : Type w} {K : Type*}
 variable {C : Type u} [Category.{v} C] [HasZeroMorphisms C]
 
 /-- `biproduct f` computes the biproduct of a family of elements `f`. (It is defined as an
-   abbreviation for `limit (Discrete.functor f)`, so for most facts about `biproduct f`, you will
-   just use general facts about limits and colimits.) -/
+abbreviation for `limit (Discrete.functor f)`, so for most facts about `biproduct f`, you will
+just use general facts about limits and colimits.) -/
 abbrev biproduct (f : J → C) [HasBiproduct f] : C :=
   (biproduct.bicone f).pt
 
