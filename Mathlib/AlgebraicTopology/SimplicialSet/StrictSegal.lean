@@ -239,41 +239,32 @@ noncomputable def pathToPair : Path Z 2 ⟶ Z _⦋1⦌₂ ⨯ Z _⦋1⦌₂ :=
 @[reassoc (attr := simp)]
 lemma pathToPair_fst :
     pathToPair _ ≫ (prod.fst (X := Z _⦋1⦌₂) (Y := Z _⦋1⦌₂)) = (fun p ↦ p.arrow 0) := by
-  dsimp [pathToPair]
-  simp only [limit.lift_π, BinaryFan.mk_fst]
+  simp [pathToPair, limit.lift_π, BinaryFan.mk_fst]
 
+@[reassoc (attr := simp)]
 lemma pathToPair_snd :
     pathToPair _ ≫ (prod.snd (X := Z _⦋1⦌₂) (Y := Z _⦋1⦌₂)) = (fun p ↦ p.arrow 1) := by
-  dsimp [pathToPair]
-  simp only [limit.lift_π, BinaryFan.mk_snd]
+  simp [pathToPair, limit.lift_π, BinaryFan.mk_snd]
 
+@[simp]
 lemma pathToPair_fst_apply (p : Path Z 2) :
     (prod.fst (X := Z _⦋1⦌₂) (Y := Z _⦋1⦌₂)) (pathToPair _ p) = p.arrow 0 := by
-  have := congr_fun pathToPair_fst p
-  simp only [types_comp_apply] at this
-  exact this
+  simpa using congr_fun pathToPair_fst p
 
+@[simp]
 lemma pathToPair_snd_apply (p : Path Z 2) :
     (prod.snd (X := Z _⦋1⦌₂) (Y := Z _⦋1⦌₂)) (pathToPair _ p) = p.arrow 1 := by
-  have := congr_fun pathToPair_snd p
-  simp only [types_comp_apply] at this
-  exact this
+  simpa using congr_fun pathToPair_snd p
 
 theorem segalSpine_eq : segalSpine (Z := Z) = (Z.spine 2) ≫ pathToPair _ := by
   unfold segalSpine pathToPair
   refine Limits.prod.hom_ext ?_ ?_
-  · simp only [limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_left, BinaryFan.mk_fst,
-    prod.comp_lift]
-    ext φ
-    simp only [types_comp_apply, spine_arrow]
-    rw [δ_two_eq_mkOfSucc]
-    congr!
-  · simp only [limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_right, BinaryFan.mk_snd,
-    prod.comp_lift]
-    ext φ
-    simp only [types_comp_apply, spine_arrow]
-    rw [δ_zero_eq_mkOfSucc]
-    congr!
+  · simp only [Nat.reduceAdd, Fin.isValue, limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_left,
+    BinaryFan.mk_fst, prod.comp_lift, δ_two_eq_mkOfSucc]
+    rfl
+  · simp only [Nat.reduceAdd, Fin.isValue, δ_zero_eq_mkOfSucc, limit.lift_π, BinaryFan.mk_pt,
+    BinaryFan.π_app_right, BinaryFan.mk_snd, prod.comp_lift]
+    rfl
 
 theorem StrictSegal.mono_segalSpine (sz : StrictSegal Z) : Mono (segalSpine Z) := by
   rw [CategoryTheory.mono_iff_injective, segalSpine_eq]
@@ -514,22 +505,12 @@ lemma mkOfObjOfMapSucc₂_δ_one
     (obj : Fin (2 + 1) → C) (mapSucc : ∀ (i : Fin 2), obj i.castSucc ⟶ obj i.succ) :
     (nerve C).map (δ 1).op (ComposableArrows.mkOfObjOfMapSucc obj mapSucc) =
         ComposableArrows.mk₁ (mapSucc 0 ≫ mapSucc 1) := by
-  dsimp
   refine ComposableArrows.ext₁ rfl rfl ?_
-  simp only [Fin.isValue, ComposableArrows.whiskerLeft_obj, Nat.reduceAdd, Fin.zero_eta,
-    Monotone.functor_obj, ComposableArrows.mkOfObjOfMapSucc_obj, Fin.mk_one,
-    ComposableArrows.whiskerLeft_map, homOfLE_leOfHom, ComposableArrows.mk₁_obj,
-    ComposableArrows.Mk₁.obj, eqToHom_refl, ComposableArrows.mk₁_map, ComposableArrows.Mk₁.map,
-    Category.comp_id, Category.id_comp]
-  show (ComposableArrows.mkOfObjOfMapSucc obj mapSucc).map' 0 2 = _
-  have := (ComposableArrows.mkOfObjOfMapSucc obj mapSucc).map_comp (X := 0) (Y := 1) (Z := 2)
+  dsimp
+  simp only [Fin.isValue, homOfLE_leOfHom, Category.comp_id, Category.id_comp]
+  convert (ComposableArrows.mkOfObjOfMapSucc obj mapSucc).map_comp (X := 0) (Y := 1) (Z := 2)
     (homOfLE (Fin.zero_le 1)) (homOfLE (Fin.coe_sub_iff_le.mp rfl))
-  convert this
-  · show _ = (ComposableArrows.mkOfObjOfMapSucc obj mapSucc).map' 0 1
-    erw [ComposableArrows.mkOfObjOfMapSucc_map_succ obj mapSucc 0 (by valid)]
-    simp only [Fin.zero_eta]
-  · show _ = (ComposableArrows.mkOfObjOfMapSucc obj mapSucc).map' 1 2
-    erw [ComposableArrows.mkOfObjOfMapSucc_map_succ obj mapSucc 1 (by valid)]
-    simp only [Fin.mk_one]
+  · simp [ComposableArrows.mkOfObjOfMapSucc_map_succ obj mapSucc 0 (by valid)]
+  · simp [ComposableArrows.mkOfObjOfMapSucc_map_succ obj mapSucc 1 (by valid)]
 
 end CategoryTheory.Nerve
