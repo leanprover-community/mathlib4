@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.Algebra.Lie.Sl2
 import Mathlib.LinearAlgebra.RootSystem.CartanMatrix
-import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Lemmas
 
 /-!
 # Geck's construction of a Lie algebra associated to a root system
