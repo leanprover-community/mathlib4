@@ -532,3 +532,24 @@ lemma restrictScalarsRange₂_apply_eq_zero_iff (m : M') (n : N') :
 end restrictScalarsRange₂
 
 end LinearMap
+
+variable (R) in
+structure IsBilinearMap (R : Type*) {E F G : Type*} [Semiring R]
+    [AddCommMonoid E] [AddCommMonoid F] [AddCommMonoid G]
+    [Module R E] [Module R F] [Module R G] (f : E → F → G) : Prop where
+  add_left : ∀ (x₁ x₂ : E) (y : F), f (x₁ + x₂) y = f x₁ y + f x₂ y
+  smul_left : ∀ (c : R) (x : E) (y : F), f (c • x) y = c • f x y
+  add_right : ∀ (x : E) (y₁ y₂ : F), f x (y₁ + y₂) = f x y₁ + f x y₂
+  smul_right : ∀ (c : R) (x : E) (y : F), f x (c • y) = c • f x y
+
+def IsBilinearMap.toLinearMap {R E F G : Type*} [CommSemiring R]
+    [AddCommMonoid E] [AddCommMonoid F] [AddCommMonoid G]
+    [Module R E] [Module R F] [Module R G] {f : E → F → G} (hf : IsBilinearMap R f) :
+    E →ₗ[R] F →ₗ[R] G :=
+  LinearMap.mk₂ _ f hf.add_left hf.smul_left hf.add_right hf.smul_right
+
+variable (R E F) in
+lemma isBilinearMap_eval (R : Type*) (E F : Type*) [CommSemiring R]
+    [AddCommMonoid E] [AddCommMonoid F] [Module R E] [Module R F] :
+    IsBilinearMap R (fun (e : E) (φ : E →ₗ[R] F) ↦ φ e) := by
+  constructor <;> simp
