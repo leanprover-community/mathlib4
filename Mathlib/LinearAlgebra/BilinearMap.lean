@@ -447,16 +447,16 @@ lemma BilinMap.isBilinearMap (f : LinearMap.BilinMap R M Nₗ) :
   smul_left := by intros; simp
   smul_right := by intros; simp
 
-def IsBilinearMap.toLinearMap {R E F G : Type*} [CommSemiring R]
-    [AddCommMonoid E] [AddCommMonoid F] [AddCommMonoid G]
-    [Module R E] [Module R F] [Module R G] {f : E → F → G} (hf : IsBilinearMap R f) :
-    E →ₗ[R] F →ₗ[R] G :=
+def IsBilinearMap.toLinearMap {f : M → Pₗ → Qₗ} (hf : IsBilinearMap R f) :
+    M →ₗ[R] Pₗ →ₗ[R] Qₗ :=
   LinearMap.mk₂ _ f hf.add_left hf.smul_left hf.add_right hf.smul_right
 
-variable (R E F) in
-lemma isBilinearMap_eval (R : Type*) (E F : Type*) [CommSemiring R]
-    [AddCommMonoid E] [AddCommMonoid F] [Module R E] [Module R F] :
-    IsBilinearMap R (fun (e : E) (φ : E →ₗ[R] F) ↦ φ e) := by
+def IsBilinearMap.toBilinMap {f : M → M → Mₗ} (hf : IsBilinearMap R f) :
+    LinearMap.BilinMap R M Mₗ :=
+  hf.toLinearMap
+
+variable (R M Mₗ) in
+lemma isBilinearMap_eval : IsBilinearMap R (fun (e : M) (φ : M →ₗ[R] Mₗ) ↦ φ e) := by
   constructor <;> simp
 
 variable (R M) in
