@@ -529,7 +529,7 @@ lemma IsCycles.exists_cycle_toSubgraph_verts_eq_connectedComponentSupp [Finite V
     simp_all
   use p.rotate hvp
   rw [← this]
-  exact ⟨hp.1.rotate _, by simp_all⟩
+  exact ⟨hp.1.rotate _, by simp⟩
 
 /--
 A graph `G` is alternating with respect to some other graph `G'`, if exactly every other edge in
