@@ -396,7 +396,8 @@ theorem ENNReal.tsum_geometric (r : ℝ≥0∞) : ∑' n : ℕ, r ^ n = (1 - r)�
 theorem ENNReal.tsum_geometric_add_one (r : ℝ≥0∞) : ∑' n : ℕ, r ^ (n + 1) = r * (1 - r)⁻¹ := by
   simp only [_root_.pow_succ', ENNReal.tsum_mul_left, ENNReal.tsum_geometric]
 
-lemma mul_shifted_geom_series (ε : ENNReal) : (∑' (m : ℕ), ε * 2 ^ (-(m + 1) : ℤ)) = ε := by
+lemma ENNReal.tsum_mul_two_pow_neg_add_one (ε : ENNReal) :
+    ∑' (m : ℕ), ε * 2 ^ (-(m + 1) : ℤ) = ε := by
   rw [ENNReal.tsum_mul_left]
   nth_rw 2 [←mul_one (a := ε)]
   congr
