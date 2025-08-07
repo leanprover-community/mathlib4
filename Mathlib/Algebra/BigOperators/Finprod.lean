@@ -948,7 +948,7 @@ theorem finprod_mem_sUnion {t : Set (Set α)} (h : t.PairwiseDisjoint id) (ht₀
 lemma finprod_option {f : Option α → M} (hf : (mulSupport (f ∘ some)).Finite) :
     ∏ᶠ o, f o = f none * ∏ᶠ a, f (some a) := by
   replace hf : (mulSupport f).Finite := by simpa [finite_option]
-  convert finprod_mem_insert' f (show none ∉ Set.range Option.some by aesop)
+  convert finprod_mem_insert' f (show none ∉ Set.range Option.some by simp)
     (hf.subset inter_subset_right)
   · simp
   · rw [finprod_mem_range]
