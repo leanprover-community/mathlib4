@@ -86,13 +86,15 @@ theorem vcomp_app (α : NatTrans F G) (β : NatTrans G H) (X : C) :
 end
 
 /-- The diagram
-    F(f)      F(g)      F(h)
+```
+   F(f)      F(g)      F(h)
 F X ----> F Y ----> F U ----> F U
  |         |         |         |
  | α(X)    | α(Y)    | α(U)    | α(V)
  v         v         v         v
 G X ----> G Y ----> G U ----> G V
     G(f)      G(g)      G(h)
+```
 commutes.
 -/
 example {F G : C ⥤ D} (α : NatTrans F G) {X Y U V : C} (f : X ⟶ Y) (g : Y ⟶ U) (h : U ⟶ V) :

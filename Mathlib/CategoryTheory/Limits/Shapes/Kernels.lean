@@ -313,19 +313,23 @@ abbrev kernel.map {X' Y' : C} (f' : X' ⟶ Y') [HasKernel f'] (p : X ⟶ X') (q 
   kernel.lift f' (kernel.ι f ≫ p) (by simp [← w])
 
 /-- Given a commutative diagram
+```
     X --f--> Y --g--> Z
     |        |        |
     |        |        |
     v        v        v
     X' -f'-> Y' -g'-> Z'
+```
 with horizontal arrows composing to zero,
 then we obtain a commutative square
+```
    X ---> kernel g
    |         |
    |         | kernel.map
    |         |
    v         v
    X' --> kernel g'
+```
 -/
 theorem kernel.lift_map {X Y Z X' Y' Z' : C} (f : X ⟶ Y) (g : Y ⟶ Z) [HasKernel g] (w : f ≫ g = 0)
     (f' : X' ⟶ Y') (g' : Y' ⟶ Z') [HasKernel g'] (w' : f' ≫ g' = 0) (p : X ⟶ X') (q : Y ⟶ Y')
@@ -804,19 +808,23 @@ abbrev cokernel.map {X' Y' : C} (f' : X' ⟶ Y') [HasCokernel f'] (p : X ⟶ X')
     simp [this])
 
 /-- Given a commutative diagram
+```
     X --f--> Y --g--> Z
     |        |        |
     |        |        |
     v        v        v
     X' -f'-> Y' -g'-> Z'
+```
 with horizontal arrows composing to zero,
 then we obtain a commutative square
+```
    cokernel f ---> Z
    |               |
    | cokernel.map  |
    |               |
    v               v
    cokernel f' --> Z'
+```
 -/
 theorem cokernel.map_desc {X Y Z X' Y' Z' : C} (f : X ⟶ Y) [HasCokernel f] (g : Y ⟶ Z)
     (w : f ≫ g = 0) (f' : X' ⟶ Y') [HasCokernel f'] (g' : Y' ⟶ Z') (w' : f' ≫ g' = 0) (p : X ⟶ X')
