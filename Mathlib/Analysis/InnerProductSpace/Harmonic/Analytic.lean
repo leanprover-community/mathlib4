@@ -32,7 +32,7 @@ theorem HarmonicAt.differentiableAt_complex_partial (hf : HarmonicAt f x) :
     ext; simp
   rw [this]
   have h₁f := hf.1
-  refine differentiableAt_complex_iff_differentiableAt_real.2 ⟨by fun_prop, ?_⟩ 
+  refine differentiableAt_complex_iff_differentiableAt_real.2 ⟨by fun_prop, ?_⟩
   rw [fderiv_sub (by fun_prop) (by fun_prop), fderiv_const_smul (by fun_prop)]
   repeat rw [fderiv_comp]; all_goals try fun_prop
   simp only [ContinuousLinearMap.fderiv, ContinuousLinearMap.coe_sub',
