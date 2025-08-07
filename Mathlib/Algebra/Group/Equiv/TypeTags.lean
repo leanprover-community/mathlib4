@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 import Mathlib.Algebra.Group.TypeTags.Hom
 import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Algebra.Notation.Prod
+import Mathlib.Tactic.Spread
 
 /-!
 # Additive and multiplicative equivalences associated to `Multiplicative` and `Additive`.
