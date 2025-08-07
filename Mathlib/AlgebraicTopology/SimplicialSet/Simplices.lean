@@ -13,6 +13,9 @@ In this file, we define the type `X.S` of simplices of a simplicial set `X`,
 where a simplex consists of the data of `dim : ℕ` and `simplex : X _⦋dim⦌`.
 We endow this type with a preorder defined by
 `x ≤ y ↔ Subcomplex.ofSimplex x.simplex ≤ Subcomplex.ofSimplex y.simplex`.
+In particular, as a preordered type, `X.S` is a category, but this is
+not what is called "the category of simplices of `X`" in the literature
+(and which is `X.Elementsᵒᵖ` in mathlib).
 
 ## TODO (@joelriou)
 
@@ -30,7 +33,10 @@ namespace SSet
 
 variable (X : SSet.{u})
 
-/-- The type of simplices of a simpliciat set `X`. -/
+/-- The type of simplices of a simpliciat set `X`. This type `X.S` is in bijection
+with `X.Elements` (see `SSet.equivElements`), but `X.S` is not what the literature
+names "category of simplices of `X`", as the category on `X.S` comes from
+a preorder (see `S.le_iff_nonempty_hom`). -/
 structure S where
   /-- the dimension of the simplex -/
   {dim : ℕ}
@@ -116,7 +122,9 @@ lemma mk_map_eq_iff_of_mono {n m : ℕ} (x : X _⦋n⦌)
     simp
 
 /-- The type of simplices of `X : SSet.{u}` identifies to the type
-of elements of `X` considered as a functor `SimplexCategoryᵒᵖ ⥤ Type u`. -/
+of elements of `X` considered as a functor `SimplexCategoryᵒᵖ ⥤ Type u`.
+(Note that this is not an (anti)equivalence of categories,
+see `S.le_iff_nonempty_hom`.) -/
 @[simps!]
 def equivElements : X.S ≃ X.Elements where
   toFun s := X.elementsMk _ s.2
@@ -126,6 +134,15 @@ def equivElements : X.S ≃ X.Elements where
     exact S.mk x
   left_inv _ := rfl
   right_inv _ := rfl
+
+lemma le_iff_nonempty_hom (x y : X.S) :
+    x ≤ y ↔ Nonempty (equivElements y ⟶ equivElements x) := by
+  rw [le_iff, Subcomplex.ofSimplex_le_iff, Subpresheaf.ofSection_obj, Set.mem_setOf_eq]
+  constructor
+  · rintro ⟨f, hf⟩
+    exact ⟨⟨f, hf⟩⟩
+  · rintro ⟨f, hf⟩
+    exact ⟨f, hf⟩
 
 end S
 
