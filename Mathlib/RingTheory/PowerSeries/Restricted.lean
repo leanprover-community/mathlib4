@@ -7,7 +7,6 @@ Authors: William Coram
 import Mathlib.Algebra.Group.NatPowAssoc
 import Mathlib.Analysis.Normed.Group.Ultra
 import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Data.Real.StarOrdered
 import Mathlib.RingTheory.PowerSeries.Basic
 
 /-!
