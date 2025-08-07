@@ -557,7 +557,7 @@ lemma _root_.Matrix.posDef_iff_eq_conjTranspose_mul_self [DecidableEq n] {A : Ma
   refine ⟨fun hA ↦ ⟨_, hA.posDef_sqrt.isUnit, ?_⟩, fun ⟨B, hB, hA⟩ ↦ (hA ▸ ?_)⟩
   · simp [hA.posDef_sqrt.isHermitian.eq]
   · exact conjTranspose_mul_self _ (mulVec_injective_of_isUnit hB)
-  
+
 @[deprecated (since := "07-08-2025")] alias posDef_iff_eq_conjTranspose_mul_self :=
   Matrix.posDef_iff_eq_conjTranspose_mul_self
 
