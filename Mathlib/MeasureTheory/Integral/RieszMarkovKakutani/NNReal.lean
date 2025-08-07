@@ -81,8 +81,8 @@ theorem eq_of_integral_eq_on_Cc {μ ν : Measure X} [Measure.Regular μ] [Measur
       apply integral_eq_integral_pos_part_sub_integral_neg_part
       exact Continuous.integrable_of_hasCompactSupport f.1.2 f.2
 
-/-Let μ be a measure that is finite on compact sets. Then μ induces a linear functional on
-`C_c(X, ℝ≥0)`.-/
+/-- Let μ be a measure that is finite on compact sets. Then μ induces a linear functional on
+`C_c(X, ℝ≥0)`. -/
 noncomputable def integralLinearMap (μ : Measure X) [OpensMeasurableSpace X]
     [MeasureTheory.IsFiniteMeasureOnCompacts μ] :
     C_c(X, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0 :=

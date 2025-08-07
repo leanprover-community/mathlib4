@@ -3,12 +3,13 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+import Mathlib.Algebra.Order.Group.Indicator
 import Mathlib.Analysis.Normed.Affine.AddTorsor
+import Mathlib.Analysis.Normed.Order.Lattice
 import Mathlib.Analysis.NormedSpace.FunctionSeries
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.LinearAlgebra.AffineSpace.Ordered
 import Mathlib.Topology.ContinuousMap.Algebra
-import Mathlib.Topology.ContinuousMap.CompactlySupported
 import Mathlib.Topology.GDelta.Basic
 
 /-!
@@ -82,7 +83,7 @@ Urysohn's lemma, normal topological space, locally compact topological space
 
 variable {X : Type*} [TopologicalSpace X]
 
-open Set Filter TopologicalSpace Topology Filter CompactlySupported
+open Set Filter TopologicalSpace Topology Filter
 open scoped Pointwise
 
 namespace Urysohns
@@ -527,22 +528,22 @@ contained in an open set `V`, there exists a compactly supported continuous func
 `0 ≤ f ≤ 1`, `f = 1` on K and the support of `f` is contained in `V`. -/
 lemma exists_continuous_one_of_compact_subset_open [T2Space X] [LocallyCompactSpace X]
     {K V : Set X} (hK : IsCompact K) (hV : IsOpen V) (hKV : K ⊆ V) :
-    ∃ (f : C_c(X, ℝ)), Set.EqOn (⇑f) 1 K ∧ tsupport ⇑f ⊆ V ∧ ∀ (x : X), f x ∈ Set.Icc 0 1 := by
+    ∃ f : C(X, ℝ), Set.EqOn (⇑f) 1 K ∧ IsCompact (tsupport ⇑f)
+    ∧ tsupport ⇑f ⊆ V ∧ ∀ (x : X), f x ∈ Set.Icc 0 1 := by
   rcases exists_open_between_and_isCompact_closure hK hV hKV with ⟨U, hU1, hU2, hU3, hU4⟩
   rcases exists_tsupport_one_of_isOpen_isClosed hU1 hU4 (IsCompact.isClosed hK) hU2
     with ⟨f, hf1, hf2, hf3⟩
-  have : IsCompact (tsupport ⇑f) := by
-    refine IsCompact.of_isClosed_subset hU4 ?_ ?_
+  use f
+  simp only [Set.mem_Icc]
+  refine ⟨?_, ?_, ?_, ?_⟩
+  · intro x hx
+    simp only [Pi.one_apply]
+    exact hf2 hx
+  · refine IsCompact.of_isClosed_subset hU4 ?_ ?_
     · apply isClosed_closure
     · trans U
       · exact hf1
       · apply subset_closure
-  use ⟨f, by apply hasCompactSupport_def.mpr this⟩
-  simp only [CompactlySupportedContinuousMap.coe_mk, Set.mem_Icc]
-  constructor <;> try constructor
-  · intro x hx
-    simp only [Pi.one_apply]
-    exact hf2 hx
   · trans U
     · exact hf1
     · trans closure U

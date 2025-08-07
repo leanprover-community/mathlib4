@@ -363,9 +363,11 @@ lemma compare_measure_of_compact_sets {μ ν : Measure X} [Measure.OuterRegular 
     · rw [WithTop.add_lt_top]; constructor
       · exact hν
       · exact ENNReal.coe_lt_top
-  have hf : ∃ (f : C_c(X, ℝ)), Set.EqOn (⇑f) 1 K ∧ tsupport ⇑f ⊆ V
+  have hf : ∃ f : C_c(X, ℝ), Set.EqOn (⇑f) 1 K ∧ tsupport ⇑f ⊆ V
     ∧ ∀ (x : X), f x ∈ Set.Icc 0 1 := by
-    exact exists_continuous_one_of_compact_subset_open hK pV2 pV1
+    rcases exists_continuous_one_of_compact_subset_open hK pV2 pV1 with ⟨f, hf1, hf2, hf3⟩
+    use ⟨f, hasCompactSupport_def.mpr hf2⟩
+    exact ⟨hf1, hf3⟩
   rcases hf with ⟨f, pf1, pf2, pf3⟩
   calc
     (μ K).toReal
