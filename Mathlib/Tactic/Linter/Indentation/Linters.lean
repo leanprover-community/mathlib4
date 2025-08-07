@@ -119,18 +119,18 @@ def stringLinter : IndentationLinter :=
     else
       return .nextLinter limit
 
-def notAfterLineBreakLinter : IndentationLinter := fun treeInfo limit ↦ do
+def notAfterLineBreak : IndentationLinter := fun treeInfo limit ↦ do
   if treeInfo.getIndentation?.isSome then
     throwIndentationError treeInfo "should not be at the beginning of a line"
   return .nextLinter limit
 
 /-- docstring TODO. -/
-def additionalIndentationLinter (childrenLinter : IndentationLinter := runLinterOn)
+def setAdditionalIndentation (childrenLinter : IndentationLinter := runLinterOn)
     (additionalIndentation? : Option Nat := .none) (strict := false) :
     IndentationLinter := fun treeInfo limit ↦ do
   match treeInfo.childrenInfo? with
   | .some { children := children, headTail? := headTail, ..} =>
-    let additionalIndentation := additionalIndentation?.getD limit.additionalIndentation
+    let additionalIndentation := additionalIndentation?.getD limit.oneAdditionalIndentation
     let atMost : Option Nat :=
       match strict, treeInfo.getIndentation? with
       | true, .some indent => .some <| indent + additionalIndentation
@@ -145,20 +145,31 @@ def additionalIndentationLinter (childrenLinter : IndentationLinter := runLinter
     return .finished
   | _ => return .nextLinter limit
 
-partial def strictAdditionalIndentationLinter (childrenLinter : IndentationLinter := runLinterOn)
+partial def setStrictAdditionalIndentation (childrenLinter : IndentationLinter := runLinterOn)
     (additionalIndentation? : Option Nat := .none) :
     IndentationLinter :=
-  additionalIndentationLinter childrenLinter additionalIndentation? true
+  setAdditionalIndentation childrenLinter additionalIndentation? true
 
-partial def aligningIndentationLinter (childrenLinter : IndentationLinter := runLinterOn) :
-    IndentationLinter :=
-  additionalIndentationLinter childrenLinter (additionalIndentation? := .some 0) true
+def alignToHead (childrenLinter : IndentationLinter := runLinterOn) :
+    IndentationLinter := fun treeInfo limit ↦ do
+  match treeInfo.childrenInfo? with
+  | .some { children := children, headTail? := headTail, ..} =>
+    let (headLimit, limit) ← ensureIndentationAtNode treeInfo limit (updateIndentation? := true)
+    let limit := treeInfo.getIndentation?.elim limit fun i ↦
+      { indentation := i, isExactIndentation := true, atMost := i}
+    let afterHead := headTail.elim children.size (·.getHeadIdxInChildren + 1)
+    for child in children[:afterHead] do
+      ensure (linter := childrenLinter) child headLimit
+    for child in children[afterHead:children.size] do
+      ensure (linter := childrenLinter) child limit
+    return .finished
+  | _ => return .nextLinter limit
 
 def byLinter : IndentationLinter := fun treeInfo limit ↦ do
   match treeInfo.prevTokenIdx?.map ((← getFlatten)[·]!)  with
   | .some (FlattenSyntaxTreeInfoElement.leaf { stx := .atom (val := ":=") .., .. }) =>
-    (notAfterLineBreakLinter >> passToChildren runLinterOn) treeInfo limit
-  | _ => strictAdditionalIndentationLinter (treeInfo := treeInfo) (limit := limit)
+    (notAfterLineBreak >> passToChildren runLinterOn) treeInfo limit
+  | _ => setStrictAdditionalIndentation (treeInfo := treeInfo) (limit := limit)
 
 /-- docstring TODO. -/
 def termAppLinter : IndentationLinter := fun treeInfo limit ↦ do
@@ -166,53 +177,48 @@ def termAppLinter : IndentationLinter := fun treeInfo limit ↦ do
   | .some { children := children, headTail? := headTail?..} =>
     let (headLimit, limit) ← ensureIndentationAtNode treeInfo limit (updateIndentation? := true)
     let afterHead := headTail?.elim children.size (·.getHeadIdxInChildren + 1) -- should be 1
-    for child in children[:afterHead] do
-      ensure child headLimit
-    for child in children[afterHead:children.size - 1] do
+    assert! afterHead == 1
+    assert! children.size == 2
+    assert! children[1]!.stx.isOfKind `null
+    ensure children[0]! headLimit
+    for child in children[1]!.children?.get! do
       ensure child { limit with additionalIndentation := limit.oneAdditionalIndentation }
-    if children[children.size - 1]!.stx.getKind == ``Term.namedArgument then
-      ensure children[children.size - 1]!
-        { limit with additionalIndentation := limit.oneAdditionalIndentation }
-    else
-      -- don't force the last unnamed argument to have a deeper indentation -- it can be same
-      -- with its parent's.
-      ensure children[children.size - 1]! limit
     return .finished
   | _ => return .nextLinter limit
 
 def ignoringAdditionalIndentationLinter : IndentationLinter :=
   fun _ => ( pure <| .nextLinter { · with additionalIndentation := 0 } )
 
-
 /-- docstring TODO
 -/
 def nodeLinters : NameMap IndentationLinter :=
     .ofList [
-    (``declModifiers, aligningIndentationLinter),
+    (``declModifiers, alignToHead),
     (``declaration, declarationLinter), (`«lemma», declarationLinter),
     (`str, stringLinter), (``termS!_, stringLinter), (``termM!_, stringLinter),
     (``Std.termF!_, stringLinter), (interpolatedStrKind, stringLinter),
-    (``Term.typeSpec, notAfterLineBreakLinter),
+    (``Term.typeSpec, notAfterLineBreak),
     (``Term.byTactic, byLinter), (``Term.byTactic', byLinter),
-    (``Tactic.tacticSeq, aligningIndentationLinter),
+    (``Tactic.tacticSeq, alignToHead),
+    (``Tactic.tacticSeq1Indented, alignToHead),
     (``Term.app, termAppLinter),
-    (``whereStructInst, ignoringAdditionalIndentationLinter >> strictAdditionalIndentationLinter),
+    (``whereStructInst, ignoringAdditionalIndentationLinter >> setStrictAdditionalIndentation),
     -- (``Term.structInstField, strictAdditionalIndentationLinter),
     (``Term.whereDecls, ignoringAdditionalIndentationLinter),
-    (``Termination.partialFixpoint, strictAdditionalIndentationLinter),
-    (``Termination.terminationBy, strictAdditionalIndentationLinter),
-    (``Termination.coinductiveFixpoint, strictAdditionalIndentationLinter),
-    (``Termination.inductiveFixpoint, strictAdditionalIndentationLinter),
+    (``Termination.partialFixpoint, setStrictAdditionalIndentation),
+    (``Termination.terminationBy, setStrictAdditionalIndentation),
+    (``Termination.coinductiveFixpoint, setStrictAdditionalIndentation),
+    (``Termination.inductiveFixpoint, setStrictAdditionalIndentation),
     (``Termination.suffix, ignoringAdditionalIndentationLinter),
     (``ctor, ignoringAdditionalIndentationLinter),
-    (``Term.matchAlts, aligningIndentationLinter),
+    (``Term.matchAlts, passToChildren),
     (``Term.matchAlt, ignoringAdditionalIndentationLinter),
-    (``declValSimple, notAfterLineBreakLinter >> passToChildren)
+    (``declValSimple, notAfterLineBreak >> passToChildren)
   ]
 
 def atomLinters : Std.HashMap String IndentationLinter :=
   .ofList [
-    (":=", notAfterLineBreakLinter),
+    (":=", notAfterLineBreak),
     ("where", ignoringAdditionalIndentationLinter)
   ]
 
