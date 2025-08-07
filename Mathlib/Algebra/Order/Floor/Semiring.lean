@@ -343,16 +343,19 @@ theorem ceil_lt_add_one (ha : 0 ≤ a) : (⌈a⌉₊ : R) < a + 1 :=
   lt_ceil.1 <| (Nat.lt_succ_self _).trans_le (ceil_add_one ha).ge
 
 @[bound]
-lemma ceil_lt_add_one' [Neg R] (ha : -1 < a) : ⌈a⌉₊ < a + 1 := by
+lemma ceil_lt_add_one' [AddGroup R] (ha : -1 < a) : ⌈a⌉₊ < a + 1 := by
   by_cases h : a ≥ 0
   · exact ceil_lt_add_one h
   · have : ⌈a⌉₊ = 0 :=
       ceil_eq_zero.mpr (le_of_not_ge h)
     rw [this]
     norm_cast
-    suffices -1 + 1 < a + 1 by
-      convert this
-      sorry
+    have : (0 : R) = -1 + 1 := by
+      symm
+      convert neg_add_cancel (G := R) 1 --using 2
+      · sorry
+      · sorry
+    rw [this]
     gcongr
 
 @[bound]
