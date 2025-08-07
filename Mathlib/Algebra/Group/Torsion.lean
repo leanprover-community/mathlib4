@@ -35,6 +35,9 @@ class IsMulTorsionFree where
 
 attribute [to_additive existing] isMulTorsionFree_iff
 
+instance [AddCommMonoid M] [IsAddTorsionFree M] : Lean.Grind.NoNatZeroDivisors M where
+  no_nat_zero_divisors _ _ _ hk habk := IsAddTorsionFree.nsmul_right_injective hk habk
+
 @[to_additive] instance Subsingleton.to_isMulTorsionFree [Subsingleton M] : IsMulTorsionFree M where
   pow_left_injective _ _ := injective_of_subsingleton _
 
