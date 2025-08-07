@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Lorenzo Luccioli
 -/
 
+import Mathlib.Probability.Decision.AuxLemmas
 import Mathlib.Probability.Decision.Risk.Basic
 import Mathlib.Probability.Kernel.Posterior
 

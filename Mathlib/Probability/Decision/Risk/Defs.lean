@@ -36,6 +36,7 @@ open scoped ENNReal
 namespace ProbabilityTheory
 
 variable {Θ 𝓧 𝓨 : Type*} {mΘ : MeasurableSpace Θ} {m𝓧 : MeasurableSpace 𝓧} {m𝓨 : MeasurableSpace 𝓨}
+  {ℓ : Θ → 𝓨 → ℝ≥0∞} {P : Kernel Θ 𝓧} {κ : Kernel 𝓧 𝓨} {π : Measure Θ}
 
 /-- The bayesian risk of an estimator `κ` on an estimation task with loss `ℓ` and
 data generating kernel `P` with respect to a prior `π`. -/
@@ -61,5 +62,74 @@ the estimator. -/
 noncomputable
 def minimaxRisk {𝓨 : Type*} [MeasurableSpace 𝓨] (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) : ℝ≥0∞ :=
   ⨅ (κ : Kernel 𝓧 𝓨) (_ : IsMarkovKernel κ), ⨆ θ, ∫⁻ y, ℓ θ y ∂((κ ∘ₖ P) θ)
+
+section Zero
+
+@[simp]
+lemma bayesianRisk_zero_left (ℓ : Θ → 𝓨 → ℝ≥0∞) (κ : Kernel 𝓧 𝓨) (π : Measure Θ) :
+    bayesianRisk ℓ (0 : Kernel Θ 𝓧) κ π = 0 := by simp [bayesianRisk]
+
+@[simp]
+lemma bayesianRisk_zero_right (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) (π : Measure Θ) :
+    bayesianRisk ℓ P (0 : Kernel 𝓧 𝓨) π = 0 := by simp [bayesianRisk]
+
+@[simp]
+lemma bayesianRisk_zero_prior (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) (κ : Kernel 𝓧 𝓨) :
+    bayesianRisk ℓ P κ 0 = 0 := by simp [bayesianRisk]
+
+@[simp]
+lemma bayesRiskPrior_zero_left (ℓ : Θ → 𝓨 → ℝ≥0∞) (π : Measure Θ) [Nonempty 𝓨] :
+    bayesRiskPrior ℓ (0 : Kernel Θ 𝓧) π = 0 := by simp [bayesRiskPrior, iInf_subtype']
+
+@[simp]
+lemma bayesRiskPrior_zero_right (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) [Nonempty 𝓨] :
+    bayesRiskPrior ℓ P (0 : Measure Θ) = 0 := by simp [bayesRiskPrior, iInf_subtype']
+
+@[simp]
+lemma bayesRisk_zero (ℓ : Θ → 𝓨 → ℝ≥0∞) [Nonempty 𝓨] :
+    bayesRisk ℓ (0 : Kernel Θ 𝓧) = 0 := by simp [bayesRisk]
+
+@[simp]
+lemma minimaxRisk_zero (ℓ : Θ → 𝓨 → ℝ≥0∞) [Nonempty 𝓨] :
+    minimaxRisk ℓ (0 : Kernel Θ 𝓧) = 0 := by simp [minimaxRisk, iInf_subtype']
+
+end Zero
+
+section Empty
+
+@[simp]
+lemma bayesianRisk_of_isEmpty [IsEmpty Θ] : bayesianRisk ℓ P κ π = 0 := by simp [bayesianRisk]
+
+@[simp]
+lemma bayesianRisk_of_isEmpty' [IsEmpty 𝓧] : bayesianRisk ℓ P κ π = 0 := by
+  simp [Subsingleton.elim P 0]
+
+@[simp]
+lemma bayesianRisk_of_isEmpty'' [IsEmpty 𝓨] : bayesianRisk ℓ P κ π = 0 := by
+  simp [Subsingleton.elim κ 0]
+
+@[simp]
+lemma bayesRiskPrior_of_isEmpty [IsEmpty 𝓧] : bayesRiskPrior ℓ P π = 0 := by
+  simp [bayesRiskPrior]
+
+@[simp]
+lemma bayesRiskPrior_of_nonempty_of_isEmpty [Nonempty 𝓧] [IsEmpty 𝓨] :
+    bayesRiskPrior ℓ P π = ∞ := by
+  have : IsEmpty (Subtype (@IsMarkovKernel 𝓧 𝓨 m𝓧 m𝓨)) := by
+    simp only [isEmpty_subtype]
+    intro κ
+    rw [Subsingleton.elim κ 0]
+    exact Kernel.not_isMarkovKernel_zero
+  simp [bayesRiskPrior, iInf_subtype']
+
+@[simp]
+lemma bayesRisk_of_isEmpty [IsEmpty 𝓧] : bayesRisk ℓ P = 0 := by
+  simp [bayesRisk]
+
+@[simp]
+lemma minimaxRisk_of_isEmpty [IsEmpty 𝓧] : minimaxRisk ℓ P = 0 := by
+  simp [minimaxRisk, Subsingleton.elim P 0]
+
+end Empty
 
 end ProbabilityTheory

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Lorenzo Luccioli
 -/
 
-import Mathlib.Probability.Decision.AuxLemmas
 import Mathlib.Probability.Decision.Risk.Defs
 import Mathlib.Probability.Kernel.Composition.MeasureComp
 import Mathlib.Probability.Kernel.WithDensity
@@ -34,91 +33,16 @@ variable {Θ Θ' 𝓧 𝓧' 𝓨 : Type*} {mΘ : MeasurableSpace Θ} {mΘ' : Mea
   {m𝓧 : MeasurableSpace 𝓧} {m𝓧' : MeasurableSpace 𝓧'} {m𝓨 : MeasurableSpace 𝓨}
   {ℓ : Θ → 𝓨 → ℝ≥0∞} {P : Kernel Θ 𝓧} {κ : Kernel 𝓧 𝓨} {π : Measure Θ}
 
-section Zero
-
-@[simp]
-lemma bayesianRisk_zero_left (ℓ : Θ → 𝓨 → ℝ≥0∞) (κ : Kernel 𝓧 𝓨) (π : Measure Θ) :
-    bayesianRisk ℓ (0 : Kernel Θ 𝓧) κ π = 0 := by simp [bayesianRisk]
-
-@[simp]
-lemma bayesianRisk_zero_right (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) (π : Measure Θ) :
-    bayesianRisk ℓ P (0 : Kernel 𝓧 𝓨) π = 0 := by simp [bayesianRisk]
-
-@[simp]
-lemma bayesianRisk_zero_prior (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) (κ : Kernel 𝓧 𝓨) :
-    bayesianRisk ℓ P κ 0 = 0 := by simp [bayesianRisk]
-
-instance [IsEmpty 𝓨] : Subsingleton (Kernel 𝓧 𝓨) where
-  allEq κ η := by
-    ext a s hs
-    suffices s = ∅ by simp [this]
-    exact Set.eq_empty_of_isEmpty s
-
-@[simp]
-lemma bayesianRisk_of_isEmpty [IsEmpty Θ] : bayesianRisk ℓ P κ π = 0 := by simp [bayesianRisk]
-
-@[simp]
-lemma bayesianRisk_of_isEmpty' [IsEmpty 𝓧] : bayesianRisk ℓ P κ π = 0 := by
-  have : P = 0 := Subsingleton.elim P 0
-  simp [this]
-
-@[simp]
-lemma bayesRiskPrior_of_isEmpty_of_isEmpty (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) (π : Measure Θ)
-    [IsEmpty 𝓧] [IsEmpty 𝓨] :
-    bayesRiskPrior ℓ P π = 0 := by
-  simp only [bayesRiskPrior]
-  rw [iInf_subtype']
-  have : Nonempty (Subtype (@IsMarkovKernel 𝓧 𝓨 m𝓧 m𝓨)) := by
-    simp only [nonempty_subtype]
-    exact ⟨0, inferInstance⟩
-  simp
-
-@[simp]
-lemma bayesRiskPrior_of_nonempty_of_isEmpty (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) (π : Measure Θ)
-    [Nonempty 𝓧] [IsEmpty 𝓨] :
-    bayesRiskPrior ℓ P π = ∞ := by
-  simp only [bayesRiskPrior]
-  rw [iInf_subtype']
-  have : IsEmpty (Subtype (@IsMarkovKernel 𝓧 𝓨 m𝓧 m𝓨)) := by
-    simp only [isEmpty_subtype]
-    intro κ
-    rw [Subsingleton.allEq κ 0]
-    exact Kernel.not_isMarkovKernel_zero
-  simp
-
-@[simp]
-lemma bayesRiskPrior_zero_left (ℓ : Θ → 𝓨 → ℝ≥0∞) (π : Measure Θ) [Nonempty 𝓨] :
-    bayesRiskPrior ℓ (0 : Kernel Θ 𝓧) π = 0 := by
-  simp only [bayesRiskPrior, bayesianRisk_zero_left]
-  rw [iInf_subtype']
-  simp
-
-@[simp]
-lemma bayesRiskPrior_zero_right (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) [Nonempty 𝓨] :
-    bayesRiskPrior ℓ P (0 : Measure Θ) = 0 := by
-  simp only [bayesRiskPrior, bayesianRisk_zero_prior]
-  rw [iInf_subtype']
-  simp
-
-@[simp]
-lemma bayesRiskPrior_of_isEmpty_of_nonempty (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) (π : Measure Θ)
-    [IsEmpty 𝓧] [Nonempty 𝓨] :
-    bayesRiskPrior ℓ P π = 0 := by
-  have : P = 0 := Subsingleton.elim P 0
-  simp [this]
-
-end Zero
-
 section Const
 
-lemma bayesianRisk_const (ℓ : Θ → 𝓨 → ℝ≥0∞) (μ : Measure 𝓧) (κ : Kernel 𝓧 𝓨) (π : Measure Θ) :
+lemma bayesianRisk_const_left (ℓ : Θ → 𝓨 → ℝ≥0∞) (μ : Measure 𝓧) (κ : Kernel 𝓧 𝓨) (π : Measure Θ) :
     bayesianRisk ℓ (Kernel.const Θ μ) κ π = ∫⁻ θ, ∫⁻ y, ℓ θ y ∂(κ ∘ₘ μ) ∂π := by
   simp [bayesianRisk]
 
-lemma bayesianRisk_const' (hl : Measurable (Function.uncurry ℓ)) (μ : Measure 𝓧) [SFinite μ]
+lemma bayesianRisk_const_left' (hl : Measurable (Function.uncurry ℓ)) (μ : Measure 𝓧) [SFinite μ]
     (κ : Kernel 𝓧 𝓨) [IsSFiniteKernel κ] (π : Measure Θ) [SFinite π] :
     bayesianRisk ℓ (Kernel.const Θ μ) κ π = ∫⁻ y, ∫⁻ θ, ℓ θ y ∂π ∂(κ ∘ₘ μ) := by
-  rw [bayesianRisk_const, lintegral_lintegral_swap (by fun_prop)]
+  rw [bayesianRisk_const_left, lintegral_lintegral_swap (by fun_prop)]
 
 lemma bayesianRisk_const_right (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) (ν : Measure 𝓨) (π : Measure Θ) :
     bayesianRisk ℓ P (Kernel.const 𝓧 ν) π = ∫⁻ θ, P θ .univ * ∫⁻ y, ℓ θ y ∂ν ∂π := by
@@ -160,7 +84,7 @@ lemma bayesRiskPrior_const''' (hl : Measurable (Function.uncurry ℓ))
   · exact (bayesRiskPrior_le_inf' hl _ _).trans_eq (by simp)
   · simp_rw [bayesRiskPrior, le_iInf_iff]
     intro κ hκ
-    rw [bayesianRisk_const' hl]
+    rw [bayesianRisk_const_left' hl]
     refine le_trans ?_ (iInf_mul_le_lintegral (fun y ↦ ∫⁻ θ, ℓ θ y ∂π))
     simp only [Measure.comp_apply_univ]
     rw [ENNReal.iInf_mul' hl_pos (fun hμ ↦ h_zero (by simpa using hμ))]
