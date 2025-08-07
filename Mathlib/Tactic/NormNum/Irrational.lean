@@ -183,7 +183,7 @@ private theorem irrational_rpow_rat_rat_of_num {x y : ℝ} {x_num x_den y_num y_
     rfl
   rw [h1, h2]
   refine irrational_rpow_rat_of_not_power ?_ hy_den_pos ?_
-  · simp only [div_pow, ← Nat.cast_npow]
+  · simp only [div_pow, ← Nat.cast_pow]
     apply not_power_rat_of_num
     · apply Nat.Coprime.pow _ _ hx_coprime
     · apply not_power_nat_pow_of_bounds hy_den_pos hy_coprime hn1 hn2

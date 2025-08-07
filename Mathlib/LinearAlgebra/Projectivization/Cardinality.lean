@@ -3,7 +3,7 @@ Copyright (c) 2024 Judith Ludwig, Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Judith Ludwig, Christian Merten
 -/
-import Mathlib.Algebra.GeomSum
+import Mathlib.Algebra.Ring.GeomSum
 import Mathlib.Data.Finite.Sum
 import Mathlib.Data.Fintype.Units
 import Mathlib.GroupTheory.GroupAction.Quotient
