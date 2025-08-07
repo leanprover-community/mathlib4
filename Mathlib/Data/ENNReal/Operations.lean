@@ -431,13 +431,8 @@ theorem le_toReal_sub {a b : ℝ≥0∞} (hb : b ≠ ∞) : a.toReal - b.toReal 
 
 lemma ofReal_one_sub_toReal_eq (x : ENNReal) (hx : x ≤ 1) :
     ENNReal.ofReal (1 - x.toReal) = 1 - x := by
-  have : x ≠ ⊤ := by
-    intro h
-    rw [h] at hx
-    exact not_top_le_coe hx
-  lift x to ℝ≥0 using this with p
-  rw [ENNReal.ofReal]
-  simp
+  lift x to NNReal using ne_of_lt (lt_of_le_of_lt hx ENNReal.one_lt_top)
+  simp only [ENNReal.ofReal, ENNReal.coe_toReal]
   norm_cast
 
 lemma one_sub_toReal_eq (x : ENNReal) (hx : x ≤ 1) : 1 - x.toReal = (1 - x).toReal := by
