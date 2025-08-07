@@ -172,7 +172,7 @@ lemma fromPreimage_ι (G : Subpresheaf F) (p : F' ⟶ F) :
 lemma preimage_eq_top_iff (G : Subpresheaf F) (p : F' ⟶ F) :
     G.preimage p = ⊤ ↔ range p ≤ G := by
   rw [← image_top, image_le_iff]
-  aesop
+  simp
 
 @[simp]
 lemma preimage_image_of_epi (G : Subpresheaf F) (p : F' ⟶ F) [hp : Epi p] :

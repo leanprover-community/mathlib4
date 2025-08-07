@@ -469,7 +469,7 @@ private lemma IsCycles.reachable_sdiff_toSubgraph_spanningCoe_aux [Fintype V] {v
   -- Construct the walk needed recursively by extending p
   have hle : (G \ (p.cons hw'2.symm).toSubgraph.spanningCoe) ≤ (G \ p.toSubgraph.spanningCoe) := by
     apply sdiff_le_sdiff (by rfl) ?hcd
-    aesop
+    simp
   have hp'p : (p.cons hw'2.symm).IsPath := by
     rw [Walk.cons_isPath_iff]
     refine ⟨hp, fun hw' ↦ ?_⟩

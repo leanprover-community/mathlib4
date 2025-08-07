@@ -135,7 +135,7 @@ lemma IsOpenMap.exists_opens_image_eq_of_prespectralSpace [PrespectralSpace X] {
     exact t.finite_toSet.isCompact_biUnion fun i _ ↦ hUs i.2
   · simp only [iSup_mk, carrier_eq_coe, Set.iUnion_coe_set, coe_mk, Set.image_iUnion]
     convert_to ⋃ i ∈ t, f '' i.1 = U
-    · aesop
+    · simp
     · refine subset_antisymm (fun x ↦ ?_) ht
       simp_rw [Set.mem_iUnion]
       rintro ⟨i, hi, x, hx, rfl⟩
