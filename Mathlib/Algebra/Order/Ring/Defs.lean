@@ -167,8 +167,9 @@ instance (priority := 200) IsOrderedRing.toMulPosMono : MulPosMono R where
 
 end IsOrderedRing
 
+-- see Note [lower instance priority]
 /-- Turn an ordered domain into a strict ordered ring. -/
-instance IsOrderedRing.toIsStrictOrderedRing (R : Type*)
+instance (priority := 100) IsOrderedRing.toIsStrictOrderedRing (R : Type*)
     [Ring R] [PartialOrder R] [IsOrderedRing R] [NoZeroDivisors R] [Nontrivial R] :
     IsStrictOrderedRing R :=
   .of_mul_pos fun _ _ ap bp ↦ (mul_nonneg ap.le bp.le).lt_of_ne' (mul_ne_zero ap.ne' bp.ne')
