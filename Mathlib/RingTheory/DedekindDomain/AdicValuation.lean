@@ -508,7 +508,7 @@ instance : Algebra R (v.adicCompletionIntegers K) where
     rfl
 
 @[simp]
-lemma algebraMap_adicCompletionIntegers (r : R) :
+lemma algebraMap_adicCompletionIntegers_apply (r : R) :
     algebraMap R (v.adicCompletionIntegers K) r = (algebraMap R K r : v.adicCompletion K) :=
   rfl
 
