@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Eric Wieser
 -/
 import Mathlib.Data.Real.Basic
-import Mathlib.Tactic.NormNum.Inv
 
 /-!
 # Real sign function
