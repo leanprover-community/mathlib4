@@ -41,7 +41,9 @@ lemma exists_subset_of_finite_of_subset_sUnion_of_isChain_of_nonempty {c : Set (
     ∃ t ∈ c, s ⊆ t := by
   rcases eq_empty_or_nonempty s with rfl | sne
   · exact cne.imp fun t tc ↦ ⟨tc, empty_subset t⟩
-  · choose f hf using fun (x : s) ↦ sc x.2
+  · /- For every element of the finite subset, choose an element of the chain containing it and take
+    the maximum among them. -/
+    choose f hf using fun (x : s) ↦ sc x.2
     obtain ⟨_, ⟨y, rfl⟩, max⟩ := exists_maximal (@finite_range _ _ f sfin)
       (@range_nonempty _ _ sne.coe_sort f)
     refine ⟨f y, (forall_and.mp hf).left y, fun x xs ↦ ?_⟩
@@ -52,8 +54,11 @@ lemma exists_subset_of_finite_of_subset_sUnion_of_isChain_of_nonempty {c : Set (
 /-- **Teichmuller-Tukey lemma**. Every nonempty family of finite character has a maximal element. -/
 theorem exists_maximal_of_isOfFiniteCharacter {F} (hF : IsOfFiniteCharacter F) {x : Set α}
     (xF : x ∈ F) : ∃ m, x ⊆ m ∧ Maximal (· ∈ F) m := by
+  /- Apply Zorn's lemma. Take the union of the elements of a chain is its upper bound. -/
   refine zorn_subset_nonempty F (fun c cF cch cne ↦
     ⟨sUnion c, ?_, fun s sc ↦ subset_sUnion_of_mem sc⟩) x xF
+  /- Prove that the union belongs to F. Use the finite character property and the fact that any
+  finite subset of the union is also a subset of some element of the chain. -/
   refine (hF (sUnion c)).mpr (fun s sc sfin ↦ ?_)
   obtain ⟨t, tc, st⟩ :=
     exists_subset_of_finite_of_subset_sUnion_of_isChain_of_nonempty cne cch sc sfin
