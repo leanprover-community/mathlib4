@@ -324,7 +324,14 @@ jobs:
 
       - name: Check if building Archive or Counterexamples failed
         if: steps.archive.outcome == 'failure' || steps.counterexamples.outcome == 'failure'
-        run: exit 1
+        run: |
+          if [ "${{ steps.archive.outcome }}" == "failure" ]; then
+            echo "❌ The \"build archive\" step above failed; please check its logs."
+          fi
+          if [ "${{ steps.counterexamples.outcome }}" == "failure" ]; then
+            echo "❌ The \"build counterexamples\" step above failed; please check its logs."
+          fi
+          exit 1
 
       # The cache secrets are available here, so we must not run any untrusted code.
       - name: put archive and counterexamples cache
