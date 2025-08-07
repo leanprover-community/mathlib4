@@ -168,8 +168,8 @@ def SyntaxTreeInfo.headTailOfChildren (children : Array SyntaxTreeInfo) :
         children.findRev? (·.getPos?.isSome) |>.map (·.parentInfo?.get!.idxInChildren) |>.get!)
 
 /-- docstring TODO -/
-partial def SyntaxTreeInfo.ofSyntaxAux (stx : Syntax) (parentInfo : Option ParentInfo) :
-    StateM (FlattenSyntaxTreeInfo × Option Nat) SyntaxTreeInfo := do
+partial def SyntaxTreeInfo.ofSyntaxAux (stx : Syntax) (parentInfo : Option ParentInfo := .none) :
+    EStateM (MessageData) (FlattenSyntaxTreeInfo × Option Nat) SyntaxTreeInfo := do
   let idx := (← get).fst.size
   let newTreeInfo : SyntaxTreeInfo :=
     { stx := stx, idx := idx, nextTokenIdx? := .none, prevTokenIdx? := (← get).snd,
@@ -178,7 +178,10 @@ partial def SyntaxTreeInfo.ofSyntaxAux (stx : Syntax) (parentInfo : Option Paren
   match stx with
   | .atom s ..
   | .ident s .. =>
-    assert! match s with | .original .. => true | _ => false
+    match s with
+    | .original .. => pure ()
+    | _ => -- Is it possible?
+      throw m!"There is a leaf `{repr stx}` whose info field isn't `.original`. Please report."
     modify <| (·.fst.push (.leaf newTreeInfo), Option.some idx)
     pure newTreeInfo
   | .node _ _ args =>
@@ -197,12 +200,14 @@ partial def SyntaxTreeInfo.ofSyntaxAux (stx : Syntax) (parentInfo : Option Paren
     let node : SyntaxTreeInfo := { newTreeInfo with childrenInfo? := childrenInfo }
     modify <| Prod.map (·.set! idx (.into node) |>.push (.out node)) id
     pure node
-  | .missing => -- It should not happen?
-    let idx := (← get).fst.size
-    let childrenInfo : ChildrenInfo := { children := #[], outIdx := idx + 1, headTail? := .none }
-    let pseudoNode : SyntaxTreeInfo := { newTreeInfo with childrenInfo? := childrenInfo }
-    modify <| Prod.map (·.push (.into pseudoNode) |>.push (.out pseudoNode)) id
-    pure pseudoNode
+  | .missing =>
+    -- It may happen with syntax error
+    throw m!"There is a {MessageData.ofConstName ``Syntax.missing} in the syntax tree."
+    -- let idx := (← get).fst.size
+    -- let childrenInfo : ChildrenInfo := { children := #[], outIdx := idx + 1, headTail? := .none }
+    -- let pseudoNode : SyntaxTreeInfo := { newTreeInfo with childrenInfo? := childrenInfo }
+    -- modify <| Prod.map (·.push (.into pseudoNode) |>.push (.out pseudoNode)) id
+    -- pure pseudoNode
 
 /-- docstring TODO -/
 partial def SyntaxTreeInfo.updateNextTokenIdx (treeInfo : SyntaxTreeInfo) :
@@ -231,10 +236,13 @@ partial def SyntaxTreeInfo.updateNextTokenIdx (treeInfo : SyntaxTreeInfo) :
 
 open SyntaxTreeInfo in
 /-- docstring TODO -/
-def SyntaxTreeInfo.ofSyntax (stx : Syntax) : SyntaxTreeInfo × FlattenSyntaxTreeInfo :=
-  let go := ofSyntaxAux stx.updateLeading none <* modify (·.fst, .none) >>= updateNextTokenIdx
-  let ⟨info, flatten, _⟩ := go.run (#[], .none)
-  (info, flatten)
+def SyntaxTreeInfo.ofSyntax (stx : Syntax) :
+    Except MessageData (SyntaxTreeInfo × FlattenSyntaxTreeInfo) :=
+  let stx := stx.updateLeading
+  let go := ofSyntaxAux stx <* modify (·.fst, .none) >>= (.fromStateM <| updateNextTokenIdx ·)
+  match go.run (#[], .none) with
+  | .ok info ⟨flatten, _⟩ => .ok (info, flatten)
+  | .error e .. => .error e
 
 /-- docstring TODO -/
 def indentationOfPos (str : String) (pos : String.Pos) : Option Nat :=
@@ -460,7 +468,11 @@ partial def indentationLinter : Linter where run := withSetOptionIn fun stx => d
   if (← get).messages.hasErrors then
     return
   trace[Indentation] stx
-  let ⟨treeInfo, flatten⟩ := SyntaxTreeInfo.ofSyntax stx
+  let (treeInfo, flatten) ← match SyntaxTreeInfo.ofSyntax stx with
+    | .ok r => pure r
+    | .error e => -- it is possible. (refer to the comment in `SyntaxTreeInfo.ofSyntaxAux`).
+      logLint Mathlib.Linter.linter.indentation stx  m!"Invalid syntax: {e}"
+      return
   trace[Indentation] m!"syntax tree: {treeInfo}"
   let .some initialPos := treeInfo.getPos? | return
   let src := (← getFileMap).source
