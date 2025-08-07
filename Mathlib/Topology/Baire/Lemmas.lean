@@ -169,9 +169,10 @@ theorem nonempty_interior_of_iUnion_of_closed [Nonempty X] [Countable ι] {f : �
 
 /-- In a nonempty Baire space, any dense `Gδ` set is not meagre. -/
 theorem not_isMeagre_of_isGδ_of_dense [Nonempty X] {s : Set X} (hs : IsGδ s) (hd : Dense s) :
-    ¬ IsMeagre s := fun h ↦ by
+    ¬ IsMeagre s := by
+  intro h
   rcases (mem_residual).1 h with ⟨t, hts, htG, hd'⟩
   rcases (hd.inter_of_Gδ hs htG hd').nonempty with ⟨x, hx₁, hx₂⟩
-  exact (hts hx₂) hx₁
+  exact hts hx₂ hx₁
 
 end BaireTheorem
