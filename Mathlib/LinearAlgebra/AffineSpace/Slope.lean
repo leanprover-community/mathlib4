@@ -130,16 +130,12 @@ variable [LinearOrder k] [IsStrictOrderedRing k] [PartialOrder E] [IsOrderedAddM
 
 lemma slope_nonneg_iff_of_le (hxy : x ≤ y) : 0 ≤ slope f x y ↔ f x ≤ f y := by
   by_cases hxeqy : x = y
-  · subst hxeqy; simp
-  rw [slope]
-  refine ⟨?_, ?_⟩
-  · intro h
-    have := smul_nonneg (sub_nonneg.2 hxy) h
-    rwa [← mul_smul, mul_inv_cancel₀ (mt sub_eq_zero.1 (Ne.symm hxeqy)), one_smul,
+  · simp [hxeqy]
+  refine ⟨fun h ↦ ?_, fun h ↦ smul_nonneg (inv_nonneg.2 (sub_nonneg.2 hxy)) ?_⟩
+  · have := smul_nonneg (sub_nonneg.2 hxy) h
+    rwa [slope, ← mul_smul, mul_inv_cancel₀ (mt sub_eq_zero.1 (Ne.symm hxeqy)), one_smul,
       vsub_eq_sub, sub_nonneg] at this
-  · intro h
-    apply smul_nonneg (inv_nonneg.2 (sub_nonneg.2 hxy))
-    rwa [vsub_eq_sub, sub_nonneg]
+  · rwa [vsub_eq_sub, sub_nonneg]
 
 lemma slope_nonpos_iff_of_le (hxy : x ≤ y) : slope f x y ≤ 0 ↔ f y ≤ f x := by
   simpa using slope_nonneg_iff_of_le (f := -f) hxy
