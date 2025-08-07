@@ -313,106 +313,111 @@ variable [SigmaCompactSpace B] [T2Space B] [hI : IsManifold IB ∞ B] [FiniteDim
 -- Consider the bundle V := Hom(E, Hom(E, ℝ)),
 -- morally, the bundle of ℝ-bilinear forms on E over B.
 
-variable (F E) in
-def V : (b : B) → Type _ := (fun b ↦ E b →L[ℝ] Trivial B F b)
+variable (E) in
+def V : (b : B) → Type _ := (fun b ↦ E b →L[ℝ] Trivial B ℝ b)
 
-noncomputable instance : (x : B) → NormedAddCommGroup (V F E x) := by
+noncomputable instance : (x : B) → NormedAddCommGroup (V E x) := by
   unfold V
   infer_instance
 
-noncomputable instance (x : B) : NormedSpace ℝ (V F E x) := by
+noncomputable instance (x : B) : NormedSpace ℝ (V E x) := by
   unfold V
   infer_instance
 
-instance : (x : B) → Module ℝ (V F E x) := by
+noncomputable instance : (x : B) → Module ℝ (V E x) := by
   unfold V
   infer_instance
 
-noncomputable instance : TopologicalSpace (TotalSpace (F →L[ℝ] F) (V F E)) := by
+noncomputable instance : TopologicalSpace (TotalSpace (ℝ →L[ℝ] ℝ) (V E)) := by
+  unfold V
+  sorry -- infer_instance
+
+noncomputable instance : (x : B) → TopologicalSpace (V E x) := by
   unfold V
   infer_instance
 
-noncomputable instance : (x : B) → TopologicalSpace (V F E x) := by
+noncomputable instance : FiberBundle (ℝ →L[ℝ] ℝ) (V E) := by
+  unfold V
+  sorry -- infer_instance
+
+noncomputable instance : VectorBundle ℝ (ℝ →L[ℝ] ℝ) (V E) := by
+  unfold V
+  sorry -- infer_instance
+
+noncomputable instance : ContMDiffVectorBundle n (ℝ →L[ℝ] ℝ) (V E) IB := by
+  unfold V
+  sorry -- infer_instance
+
+instance (x : B) : ContinuousAdd (V E x) := by
   unfold V
   infer_instance
 
-noncomputable instance : FiberBundle (F →L[ℝ] F) (V F E) := by
+instance (x : B) : ContinuousSMul ℝ (V E x) := by
   unfold V
   infer_instance
 
-noncomputable instance : VectorBundle ℝ (F →L[ℝ] F) (V F E) := by
-  unfold V
-  infer_instance
+variable (E) in
+def W : (b : B) → Type _ := fun b ↦ E b →L[ℝ] (V E) b
 
-noncomputable instance : ContMDiffVectorBundle n (F →L[ℝ] F) (V F E) IB := by
-  unfold V
-  infer_instance
-
-instance (x : B) : ContinuousAdd (V F E x) := by
-  unfold V
-  infer_instance
-
-instance (x : B) : ContinuousSMul ℝ (V F E x) := by
-  unfold V
-  infer_instance
-
-variable (F E) in
-def W : (b : B) → Type _ := fun b ↦ E b →L[ℝ] (V F E) b
-
-noncomputable instance (x : B) : NormedAddCommGroup (W F E x) := by
+noncomputable instance (x : B) : NormedAddCommGroup (W E x) := by
   unfold W
   infer_instance
 
-noncomputable instance (x : B) : Module ℝ (W F E x) := by
+noncomputable instance (x : B) : Module ℝ (W E x) := by
   unfold W
   infer_instance
 
-noncomputable instance : TopologicalSpace (TotalSpace (F →L[ℝ] F) (W F E)) := by
+noncomputable instance : TopologicalSpace (TotalSpace (ℝ →L[ℝ] ℝ) (W E)) := by
   unfold W
   sorry -- infer_instance
 
-noncomputable instance (x : B) : TopologicalSpace (W F E x) := by
+noncomputable instance (x : B) : TopologicalSpace (W E x) := by
   unfold W
   infer_instance
 
-noncomputable instance : FiberBundle (F →L[ℝ] F) (W F E) := by
+noncomputable instance : FiberBundle (ℝ →L[ℝ] ℝ) (W E) := by
   unfold W
   sorry -- infer_instance
 
-noncomputable instance : VectorBundle ℝ (F →L[ℝ] F) (W F E) := by
+noncomputable instance : VectorBundle ℝ (ℝ →L[ℝ] ℝ) (W E) := by
   unfold W
   sorry -- infer_instance
 
-noncomputable instance : ContMDiffVectorBundle n (F →L[ℝ] F) (W F E) IB := by
+noncomputable instance : ContMDiffVectorBundle n (ℝ →L[ℝ] ℝ) (W E) IB := by
   unfold W
   sorry -- infer_instance
 
-variable (F E) in
-def mapsMatchingInner3 (x : B) : Set (W F E x) :=
-  sorry -- {φ | ∀ v w : E x, φ v w = ⟪v, w⟫}
+variable (E) in
+def mapsMatchingInner3 (x : B) : Set (W E x) :=
+  {φ : E x →L[ℝ] E x →L[ℝ] ℝ | ∀ v w : E x, φ v w = ⟪v, w⟫}
 
-variable (F E) in
+variable (E) in
 omit [TopologicalSpace B] [VectorBundle ℝ F E] in
-lemma convex_mapsMatchingInner3 (x : B) : Convex ℝ (mapsMatchingInner3 F E x) := by
-  sorry
-  -- intro φ hφ ψ hψ r s hr hs hrs
-  -- simp only [mapsMatchingInner2, Set.mem_setOf] at hφ hψ ⊢
-  -- intro v w
+lemma convex_mapsMatchingInner3 (x : B) : Convex ℝ (mapsMatchingInner3 E x) := by
+  intro φ hφ ψ hψ r s hr hs hrs
+  simp_all only [W]
+  simp only [mapsMatchingInner3] at hφ hψ ⊢
+  erw [Set.mem_setOf] at hφ hψ ⊢
+  intro v w
+  specialize hφ v w
+  specialize hψ v w
+  sorry -- some issue is blocking the rewrites!
   -- simp [hφ v w, hψ v w]
   -- grind
 
 lemma hloc3 (x₀ : B) :
-    ∃ U_x₀ ∈ nhds x₀, ∃ s_loc : (x : B) → W F E x,
-      ContMDiffOn IB (IB.prod 𝓘(ℝ, F →L[ℝ] F)) ∞ (fun x ↦ TotalSpace.mk' (F →L[ℝ] F) x (s_loc x)) U_x₀ ∧
-      ∀ y ∈ U_x₀, s_loc y ∈ (fun x ↦ mapsMatchingInner3 F E x) y :=
+    ∃ U_x₀ ∈ nhds x₀, ∃ s_loc : (x : B) → W E x,
+      ContMDiffOn IB (IB.prod 𝓘(ℝ, ℝ →L[ℝ] ℝ)) ∞ (fun x ↦ TotalSpace.mk' (ℝ →L[ℝ] ℝ) x (s_loc x)) U_x₀ ∧
+      ∀ y ∈ U_x₀, s_loc y ∈ (fun x ↦ mapsMatchingInner3 E x) y :=
   sorry
+  -- construct a local section using a local frame?
 
 variable (E F IB) in
 -- XXX: do I want this return type instead? C^∞⟮IB, B; 𝓘(ℝ, F →L[ℝ] F →L[ℝ] ℝ), F →L[ℝ] F →L[ℝ] ℝ⟯
-noncomputable def RMetric_aux : Cₛ^∞⟮IB; F →L[ℝ] F, W F E⟯ :=
+noncomputable def RMetric_aux : Cₛ^∞⟮IB; ℝ →L[ℝ] ℝ, W E⟯ :=
   Classical.choose <|
-    exists_contMDiffOn_section_forall_mem_convex_of_local IB (V := W F E) (n := (⊤ : ℕ∞))
-      (t := fun x ↦ mapsMatchingInner3 F E x) (convex_mapsMatchingInner3 F E) hloc3
+    exists_contMDiffOn_section_forall_mem_convex_of_local IB (V := W E) (n := (⊤ : ℕ∞))
+      (t := fun x ↦ mapsMatchingInner3 E x) (convex_mapsMatchingInner3 E) hloc3
 
 variable (E F IB) in
 /-- An arbitrary choice of bundle metric on `E`, which is smooth in the fibre. -/
