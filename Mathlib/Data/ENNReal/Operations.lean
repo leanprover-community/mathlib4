@@ -435,11 +435,8 @@ lemma ofReal_one_sub_toReal_eq (x : ENNReal) (hx : x ≤ 1) :
   simp only [ENNReal.ofReal, ENNReal.coe_toReal]
   norm_cast
 
-lemma one_sub_toReal_eq (x : ENNReal) (hx : x ≤ 1) : 1 - x.toReal = (1 - x).toReal := by
-  refine (ofReal_eq_ofReal_iff (sub_nonneg.mpr <| toReal_le_of_le_ofReal
-    (by positivity) (by simp; exact hx)) (by positivity)).mp ?_
-  · simp only [ne_eq, sub_eq_top_iff, one_ne_top, false_and, not_false_eq_true, ofReal_toReal]
-    rw [(ofReal_one_sub_toReal_eq _ hx)]
+lemma one_sub_toReal_eq {x : ENNReal} (hx : x ≤ 1) : 1 - x.toReal = (1 - x).toReal := by
+  convert (ENNReal.toReal_sub_of_le hx (by norm_num)).symm
 
 @[simp]
 lemma toNNReal_sub (hb : b ≠ ∞) : (a - b).toNNReal = a.toNNReal - b.toNNReal := by
