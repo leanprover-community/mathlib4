@@ -224,7 +224,8 @@ section SMul
 
 This section collects instances needed for the algebraic structure of `Polynomial`,
 which is defined in terms of `MonoidAlgebra`.
-Further results on scalar multiplication can be found in `Mathlib/Algebra/MonoidAlgebra/Module.lean`.
+Further results on scalar multiplication can be found in
+`Mathlib/Algebra/MonoidAlgebra/Module.lean`.
 -/
 
 variable {S : Type*}
@@ -805,7 +806,8 @@ The `SMul` section for `MonoidAlgebra` collects instances needed
 for the algebraic structure of `Polynomial`, which is defined in terms
 of `MonoidAlgebra`. This section mirrors the `MonoidAlgebra` section.
 
-Further results on scalar multiplication can be found in `Mathlib/Algebra/MonoidAlgebra/Module.lean`.
+Further results on scalar multiplication can be found in
+`Mathlib/Algebra/MonoidAlgebra/Module.lean`.
 -/
 
 variable {S : Type*}
