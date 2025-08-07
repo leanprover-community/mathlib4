@@ -81,9 +81,10 @@ theorem splits_iff (f : K[X]) [IsSplittingField K L f] :
         rw [RingEquiv.toRingHom_trans]
         exact splits_comp_of_splits _ _ (splits L f)⟩
 
-theorem IsScalarTower.splits (x : K) [IsSplittingField K L (mapAlg F K (minpoly F x))] :
-    Splits (RingHom.id L) (mapAlg F L (minpoly F x)) := by
-  rw [Polynomial.mapAlg_comp K L (minpoly F x), mapAlg_eq_map, splits_map_iff,
+theorem IsScalarTower.splits (f : F[X]) (x : K) [IsSplittingField K L (mapAlg F K f)] :
+    Splits (RingHom.id L) (mapAlg F L f) := by
+  have := minpoly F x
+  rw [Polynomial.mapAlg_comp K L f, mapAlg_eq_map, splits_map_iff,
     RingHomCompTriple.comp_eq]
   exact IsSplittingField.splits _ _
 
