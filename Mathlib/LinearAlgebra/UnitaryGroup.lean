@@ -281,7 +281,7 @@ lemma mem_specialOrthogonalGroup_fin_two_iff {M : Matrix (Fin 2) (Fin 2) R} :
 end specialOrthogonalGroup
 
 open scoped Kronecker in
-theorem unitaryGroup.kronecker_mem_unitaryGroup {R m : Type*} [Fintype m] [DecidableEq m]
+theorem UnitaryGroup.kronecker_mem_unitaryGroup {R m : Type*} [Fintype m] [DecidableEq m]
     [CommRing R] [StarRing R] (U₁ : unitaryGroup n R) (U₂ : unitaryGroup m R) :
     U₁ ⊗ₖ U₂ ∈ unitaryGroup (n × m) R := by
   simp_rw [mem_unitaryGroup_iff, star_eq_conjTranspose, conjTranspose_kronecker,
