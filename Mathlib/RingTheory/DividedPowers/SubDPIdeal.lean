@@ -313,7 +313,6 @@ instance : InfSet (SubDPIdeal hI) :=
         simp only [mem_iInf] at hx ⊢
         exact fun s hs ↦ s.dpow_mem _ hn x (hx s hs) }⟩
 
-
 theorem sInf_carrier_def (S : Set (SubDPIdeal hI)) :
     (sInf S).carrier = ⨅ s ∈ Insert.insert ⊤ S, (s : hI.SubDPIdeal).carrier := rfl
 
