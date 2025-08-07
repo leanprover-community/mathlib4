@@ -132,9 +132,9 @@ export AddActionSemiHomClass (map_vaddₛₗ)
 /-- `MulActionHomClass F M X Y` states that `F` is a type of
 morphisms which are equivariant with respect to actions of `M`
 This is an abbreviation of `MulActionSemiHomClass`. -/
-@[to_additive "`MulActionHomClass F M X Y` states that `F` is a type of
+@[to_additive /-- `MulActionHomClass F M X Y` states that `F` is a type of
 morphisms which are equivariant with respect to actions of `M`
-This is an abbreviation of `MulActionSemiHomClass`."]
+This is an abbreviation of `MulActionSemiHomClass`. -/]
 abbrev MulActionHomClass (F : Type*) (M : outParam Type*)
     (X Y : outParam Type*) [SMul M X] [SMul M Y] [FunLike F X Y] :=
   MulActionSemiHomClass F (@id M) X Y
@@ -165,9 +165,9 @@ variable {F : Type*} [FunLike F X Y]
   into an actual `MulActionHom`.
   This is declared as the default coercion from `F` to `MulActionSemiHom φ X Y`. -/
 @[to_additive (attr := coe)
-  "Turn an element of a type `F` satisfying `AddActionSemiHomClass F φ X Y`
+  /-- Turn an element of a type `F` satisfying `AddActionSemiHomClass F φ X Y`
   into an actual `AddActionHom`.
-  This is declared as the default coercion from `F` to `AddActionSemiHom φ X Y`."]
+  This is declared as the default coercion from `F` to `AddActionSemiHom φ X Y`. -/]
 def _root_.MulActionSemiHomClass.toMulActionHom [MulActionSemiHomClass F φ X Y] (f : F) :
     X →ₑ[φ] Y where
   toFun := DFunLike.coe f
@@ -203,7 +203,7 @@ protected theorem congr_fun {f g : X →ₑ[φ] Y} (h : f = g) (x : X) :
   DFunLike.congr_fun h _
 
 /-- Two equal maps on scalars give rise to an equivariant map for identity -/
-@[to_additive "Two equal maps on scalars give rise to an equivariant map for identity"]
+@[to_additive /-- Two equal maps on scalars give rise to an equivariant map for identity -/]
 def ofEq {φ' : M → N} (h : φ = φ') (f : X →ₑ[φ] Y) : X →ₑ[φ'] Y where
   toFun := f.toFun
   map_smul' m a := h ▸ f.map_smul' m a
@@ -226,7 +226,7 @@ lemma _root_.FaithfulSMul.of_injective
 variable {ψ χ} (M N)
 
 /-- The identity map as an equivariant map. -/
-@[to_additive "The identity map as an equivariant map."]
+@[to_additive /-- The identity map as an equivariant map. -/]
 protected def id : X →[M] X :=
   ⟨id, fun _ _ => rfl⟩
 
@@ -247,7 +247,7 @@ variable {φ ψ χ X Y Z}
 -- attribute [instance] CompTriple.id_comp CompTriple.comp_id
 
 /-- Composition of two equivariant maps. -/
-@[to_additive "Composition of two equivariant maps."]
+@[to_additive /-- Composition of two equivariant maps. -/]
 def comp (g : Y →ₑ[ψ] Z) (f : X →ₑ[φ] Y) [κ : CompTriple φ ψ χ] :
     X →ₑ[χ] Z :=
   ⟨g ∘ f, fun m x =>
@@ -285,7 +285,7 @@ variable {φ' : N → M}
 variable {Y₁ : Type*} [SMul M Y₁]
 
 /-- The inverse of a bijective equivariant map is equivariant. -/
-@[to_additive (attr := simps) "The inverse of a bijective equivariant map is equivariant."]
+@[to_additive (attr := simps) /-- The inverse of a bijective equivariant map is equivariant. -/]
 def inverse (f : X →[M] Y₁) (g : Y₁ → X)
     (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : Y₁ →[M] X where
   toFun := g
@@ -297,7 +297,7 @@ def inverse (f : X →[M] Y₁) (g : Y₁ → X)
 
 
 /-- The inverse of a bijective equivariant map is equivariant. -/
-@[to_additive (attr := simps) "The inverse of a bijective equivariant map is equivariant."]
+@[to_additive (attr := simps) /-- The inverse of a bijective equivariant map is equivariant. -/]
 def inverse' (f : X →ₑ[φ] Y) (g : Y → X) (k : Function.RightInverse φ' φ)
     (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) :
     Y →ₑ[φ'] X where
@@ -345,8 +345,8 @@ theorem inverse'_comp {f : X →ₑ[φ] Y} {g : Y → X}
 
 /-- If actions of `M` and `N` on `α` commute,
   then for `c : M`, `(c • · : α → α)` is an `N`-action homomorphism. -/
-@[to_additive (attr := simps) "If additive actions of `M` and `N` on `α` commute,
-  then for `c : M`, `(c • · : α → α)` is an `N`-additive action homomorphism."]
+@[to_additive (attr := simps) /-- If additive actions of `M` and `N` on `α` commute,
+  then for `c : M`, `(c • · : α → α)` is an `N`-additive action homomorphism. -/]
 def _root_.SMulCommClass.toMulActionHom {M} (N α : Type*)
     [SMul M α] [SMul N α] [SMulCommClass M N α] (c : M) :
     α →[N] α where
@@ -358,7 +358,7 @@ end MulActionHom
 end MulActionHom
 
 /-- Evaluation at a point as a `MulActionHom`. -/
-@[to_additive (attr := simps) "Evaluation at a point as an `AddActionHom`."]
+@[to_additive (attr := simps) /-- Evaluation at a point as an `AddActionHom`. -/]
 def Pi.evalMulActionHom {ι M : Type*} {X : ι → Type*} [∀ i, SMul M (X i)] (i : ι) :
     (∀ i, X i) →[M] X i where
   toFun := Function.eval i
@@ -372,14 +372,14 @@ variable {M α β : Type*} [SMul M α] [SMul M β]
 
 variable (M α β) in
 /-- `Prod.fst` as a bundled `MulActionHom`. -/
-@[to_additive (attr := simps -fullyApplied) "`Prod.fst` as a bundled `AddActionHom`."]
+@[to_additive (attr := simps -fullyApplied) /-- `Prod.fst` as a bundled `AddActionHom`. -/]
 def fst : α × β →[M] α where
   toFun := Prod.fst
   map_smul' _ _ := rfl
 
 variable (M α β) in
 /-- `Prod.snd` as a bundled `MulActionHom`. -/
-@[to_additive (attr := simps -fullyApplied) "`Prod.snd` as a bundled `AddActionHom`."]
+@[to_additive (attr := simps -fullyApplied) /-- `Prod.snd` as a bundled `AddActionHom`. -/]
 def snd : α × β →[M] β where
   toFun := Prod.snd
   map_smul' _ _ := rfl
@@ -390,7 +390,7 @@ variable {M N α β γ δ : Type*} [SMul M α] [SMul M β] [SMul N γ] [SMul N �
 
 /-- If `f` and `g` are equivariant maps, then so is `x ↦ (f x, g x)`. -/
 @[to_additive (attr := simps -fullyApplied) prod
-  "If `f` and `g` are equivariant maps, then so is `x ↦ (f x, g x)`."]
+  /-- If `f` and `g` are equivariant maps, then so is `x ↦ (f x, g x)`. -/]
 def prod (f : α →ₑ[σ] γ) (g : α →ₑ[σ] δ) : α →ₑ[σ] γ × δ where
   toFun x := (f x, g x)
   map_smul' _ _ := Prod.ext (map_smulₛₗ f _ _) (map_smulₛₗ g _ _)
@@ -406,7 +406,7 @@ lemma prod_fst_snd : prod (fst M α β) (snd M α β) = .id .. := rfl
 
 /-- If `f` and `g` are equivariant maps, then so is `(x, y) ↦ (f x, g y)`. -/
 @[to_additive (attr := simps -fullyApplied) prodMap
-  "If `f` and `g` are equivariant maps, then so is `(x, y) ↦ (f x, g y)`."]
+  /-- If `f` and `g` are equivariant maps, then so is `(x, y) ↦ (f x, g y)`. -/]
 def prodMap (f : α →ₑ[σ] γ) (g : β →ₑ[σ] δ) : α × β →ₑ[σ] γ × δ where
   toFun := Prod.map f g
   __ := (f.comp (fst ..)).prod (g.comp (snd ..))
