@@ -68,6 +68,33 @@ def IsBilinearMap.toContinuousLinearMap
   IsLinearMap.mk' (fun x : E ↦ h.toLinearMap x |>.toContinuousLinearMap)
       (by constructor <;> (intros;simp)) |>.toContinuousLinearMap
 
+@[simp]
+lemma IsBilinearMap.toContinuousLinearMap_apply
+    {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+    {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+    [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E] [FiniteDimensional 𝕜 E]
+    [T2Space E]
+    {F : Type*} [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
+    [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F] [FiniteDimensional 𝕜 F]
+    [T2Space F]
+    {G : Type*} [AddCommGroup G] [Module 𝕜 G] [TopologicalSpace G]
+    [IsTopologicalAddGroup G] [ContinuousSMul 𝕜 G]
+    {f : E → F → G} (h : IsBilinearMap 𝕜 f) (e : E) (f' : F) :
+    h.toContinuousLinearMap e f' = f e f' := rfl
+
+lemma LinearMap.BilinMap.isBilinearMap
+    {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+    {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+    [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E] [FiniteDimensional 𝕜 E]
+    [T2Space E]
+    {G : Type*} [AddCommGroup G] [Module 𝕜 G] [TopologicalSpace G]
+    [IsTopologicalAddGroup G] [ContinuousSMul 𝕜 G]
+    (f : LinearMap.BilinMap 𝕜 E G) : IsBilinearMap 𝕜 (f.toFun · : E → E → G) where
+  add_left := by intros; simp
+  add_right := by intros; simp
+  smul_left := by intros; simp
+  smul_right := by intros; simp
+
 def LinearMap.BilinMap.toContinuousLinearMap
     {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
     {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
@@ -76,8 +103,17 @@ def LinearMap.BilinMap.toContinuousLinearMap
     {G : Type*} [AddCommGroup G] [Module 𝕜 G] [TopologicalSpace G]
     [IsTopologicalAddGroup G] [ContinuousSMul 𝕜 G]
     (f : LinearMap.BilinMap 𝕜 E G) : E →L[𝕜] E →L[𝕜] G :=
-  sorry--IsLinearMap.mk' (fun x : E ↦ h.toLinearMap x |>.toContinuousLinearMap)
-    --  (by constructor <;> (intros;simp)) |>.toContinuousLinearMap
+  f.isBilinearMap.toContinuousLinearMap
+
+@[simp]
+def LinearMap.BilinMap.toContinuousLinearMap_apply
+    {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+    {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+    [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E] [FiniteDimensional 𝕜 E]
+    [T2Space E]
+    {G : Type*} [AddCommGroup G] [Module 𝕜 G] [TopologicalSpace G]
+    [IsTopologicalAddGroup G] [ContinuousSMul 𝕜 G]
+    (f : LinearMap.BilinMap 𝕜 E G) (e e' : E) : f.toContinuousLinearMap e e' = f e e' := rfl
 
 def isBilinearMap_evalL
     (𝕜 : Type*) [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
@@ -123,11 +159,13 @@ noncomputable def pullback_bifunction {X Y Z : Type*} (f : X → Y) (φ : Y → 
 
 open Module
 
+section
+
+variable {ι : Type*} [Fintype ι] {x : B}
 
 -- is the wrong associativity; just prove things differently myself
 -- TODO: remove the `Fintype ι` requirement from `Basis.linearMap` and then this definition
-noncomputable def pullback_aux {ι : Type*} [Fintype ι]
-    {x : B} (φ : (E x) →ₗ[ℝ] (E x) →ₗ[ℝ] ℝ)
+noncomputable def pullback_aux (φ : (E x) →ₗ[ℝ] (E x) →ₗ[ℝ] ℝ)
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B))
     [MemTrivializationAtlas e] (b : Basis ι ℝ F) :
     (F →ₗ[ℝ] F) →ₗ[ℝ] ℝ := by
@@ -137,36 +175,74 @@ noncomputable def pullback_aux {ι : Type*} [Fintype ι]
 
 -- XXX: this can be generalised a lot, right?
 -- ??? where do we use that e.symm x is somewhat nice?
-noncomputable def IsBilinearMap.pullback {ι : Type*} [Fintype ι]
-    {x : B} {φ : (E x) → (E x) → ℝ} (_hφ : IsBilinearMap ℝ φ)
+noncomputable def IsBilinearMap.pullback {φ : (E x) → (E x) → ℝ} (_hφ : IsBilinearMap ℝ φ)
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B))
     [MemTrivializationAtlas e] (b : Basis ι ℝ F) :
     F →ₗ[ℝ] F →ₗ[ℝ] ℝ :=
   b.constr ℝ <| fun i ↦ b.constr ℝ (fun j ↦ φ (e.symm x (b i)) (e.symm x (b j)))
 
-noncomputable def LinearMap.BilinMap.pullback {ι : Type*} [Fintype ι]
-    {x : B} (φ : LinearMap.BilinMap ℝ (E x) ℝ)
+noncomputable def LinearMap.BilinMap.pullback (φ : LinearMap.BilinMap ℝ (E x) ℝ)
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B))
     [MemTrivializationAtlas e] (b : Basis ι ℝ F) :
     LinearMap.BilinMap ℝ F ℝ :=
   b.constr ℝ <| fun i ↦ b.constr ℝ (fun j ↦ φ (e.symm x (b i)) (e.symm x (b j)))
 
+lemma LinearMap.BilinMap.pullback_apply_basis (φ : LinearMap.BilinMap ℝ (E x) ℝ)
+    (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B))
+    [MemTrivializationAtlas e] (b : Basis ι ℝ F) (i j : ι) :
+    (φ.pullback e b) (b i) (b j) = φ (e.symm x (b i)) (e.symm x (b j)) := by
+  simp [LinearMap.BilinMap.pullback]
+  -- should be a standard fact, apply Finsupp.sum_single twice...
+  sorry
+
+end
+
 variable [FiniteDimensional ℝ F] [T2Space F]
 
-variable (E) in
+variable (F) in
 noncomputable def pullback_clm {x : B}
     (φ : LinearMap.BilinMap ℝ (E x) ℝ) : F →L[ℝ] F →L[ℝ] ℝ :=
   letI t := trivializationAt F E x
   letI b := Basis.ofVectorSpace ℝ F
   (φ.pullback t b).toContinuousLinearMap
 
-variable (E) in
+omit [VectorBundle ℝ F E] in
+@[simp]
+lemma pullback_clm_apply {x : B} (φ : LinearMap.BilinMap ℝ (E x) ℝ) (v w : F) :
+    pullback_clm F φ v w = φ.pullback (trivializationAt F E x) (Basis.ofVectorSpace ℝ F) v w :=
+  rfl
+
+lemma pullback_clm_apply_basis {x : B} (φ : LinearMap.BilinMap ℝ (E x) ℝ) :
+    letI ι := Basis.ofVectorSpaceIndex ℝ F;-- (v w : F)
+    letI t := (trivializationAt F E x)
+    letI b := Basis.ofVectorSpace ℝ F
+    ∀ i j : ι, pullback_clm F φ i j = φ (t.symm x (b i)) (t.symm x (b j)) := by
+  set ι := Basis.ofVectorSpaceIndex ℝ F
+  intro i j
+  simp only [pullback_clm_apply]
+
+  set t := (trivializationAt F E x)
+  set b := Basis.ofVectorSpace ℝ F
+  have := φ.pullback_apply_basis t b i j
+  convert this <;> sorry -- almost true!
+
+variable (F) in
 noncomputable def IsBilinearMap.pullback_clm {x : B}
     {φ : (E x) → (E x) → ℝ} (hφ : IsBilinearMap ℝ φ) : F →L[ℝ] F →L[ℝ] ℝ :=
   letI t := trivializationAt F E x
   letI b := Basis.ofVectorSpace ℝ F
   LinearMap.BilinMap.toContinuousLinearMap (hφ.pullback t b)
 
+@[simp]
+lemma IsBilinearMap.pullback_clm_apply {x : B}
+    {φ : (E x) → (E x) → ℝ} (hφ : IsBilinearMap ℝ φ) (f f' : F) :
+    --letI t := trivializationAt F E x
+    --letI b := Basis.ofVectorSpace ℝ F
+    hφ.pullback_clm F f f' =
+      (hφ.pullback (trivializationAt F E x) (Basis.ofVectorSpace ℝ F)) f f' := by -- (φ.pullback t b) f f', at least on basis vectors
+  simp only [IsBilinearMap.pullback_clm]
+  simp only [LinearMap.BilinMap.toContinuousLinearMap_apply]
+  -- XXX: is there further simplification?
 
 omit [TopologicalSpace B] in
 lemma foo (x : B) : IsBilinearMap ℝ (@Inner.inner ℝ (E x) _) where
@@ -175,27 +251,38 @@ lemma foo (x : B) : IsBilinearMap ℝ (@Inner.inner ℝ (E x) _) where
   smul_left c x' y := inner_smul_left_eq_smul x' y c
   smul_right c x' y := inner_smul_right_eq_smul x' y c
 
+-- unused
 noncomputable def RMetric_local_pre (x : B) : F →ₗ[ℝ] F →ₗ[ℝ] ℝ :=
   (foo x).pullback (trivializationAt F E x) (Basis.ofVectorSpace ℝ F)
 
 variable (F E) in
-noncomputable def RMetric_local (x : B) : F →L[ℝ] F →L[ℝ] ℝ := (foo x).pullback_clm E
+noncomputable def RMetric_local (x : B) : F →L[ℝ] F →L[ℝ] ℝ := (foo x).pullback_clm (E := E) F
+
+-- TODO: apply simp lemma! is just .pullback
 
 lemma hloc (x : B) :
     ∃ U ∈ nhds x, ∃ g,
       ContMDiffOn IB 𝓘(ℝ, F →L[ℝ] F →L[ℝ] ℝ) ∞ g U ∧ ∀ y ∈ U, g y ∈ mapsMatchingInner F E y := by
   letI t := trivializationAt F E x
-  have : t.baseSet ∈ nhds x := sorry
+  have := t.open_baseSet.mem_nhds <| FiberBundle.mem_baseSet_trivializationAt' x
   use t.baseSet, this, (fun x ↦ RMetric_local F E x)
   refine ⟨?_, ?_⟩
   · sorry
-  · sorry
+  · intro y hy
+    simp only [mapsMatchingInner, Set.mem_setOf]
+    intro v w
+    simp only [RMetric_local, IsBilinearMap.pullback_clm_apply]
+    -- IF the preimage of the basis of F is a basis of E y, prove equality on that basis
+    -- What if that's not the case? Need to think harder!
+    sorry
 
 variable [SigmaCompactSpace B] [T2Space B] [IsManifold IB ∞ B] [FiniteDimensional ℝ EB]
 
 variable (E F IB) in
 noncomputable def RMetric_aux : C^∞⟮IB, B; 𝓘(ℝ, F →L[ℝ] F →L[ℝ] ℝ), F →L[ℝ] F →L[ℝ] ℝ⟯ :=
   Classical.choose <|
+    -- TODO: can one formulate a dependent version of this result, and avoid all this dance
+    -- of passing back and forth between E x and F?
     exists_contMDiffOn_forall_mem_convex_of_local (n := (⊤ : ℕ∞)) (I := IB)
     (t := fun x ↦ mapsMatchingInner F E x) convex_mapsMatchingInner hloc
 
