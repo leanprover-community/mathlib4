@@ -642,6 +642,12 @@ theorem sFinite_of_absolutelyContinuous {ν : Measure α} [SFinite ν] (hμν : 
     restrict_compl_sigmaFiniteSetWRT hμν]
   infer_instance
 
+/-- In a countable space, every measure is s-finite. -/
+instance [Countable α] : SFinite μ := by
+  obtain ⟨s, h⟩ := exists_sum_smul_dirac μ
+  rw [h]
+  infer_instance
+
 end SFinite
 
 section Prod
