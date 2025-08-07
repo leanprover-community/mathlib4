@@ -1,9 +1,28 @@
+/-
+Copyright (c) 2025 Lean FRO LLC. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Anne Baanen
+-/
 import Mathlib.Tactic.TacticAnalysis
+import Mathlib.Tactic.ExtractGoal
+import Mathlib.Tactic.MinImports
 
-open Lean
+/-!
+# Tactic linters
 
-@[tacticAnalysis]
-def grindReplacement : TacticAnalysis.Config := .ofComplex `linter.tacticAnalysis.grindReplacement {
+This file defines passes to run from the tactic analysis framework.
+-/
+
+open Lean Mathlib
+
+register_option linter.tacticAnalysis.grindReplacement : Bool := {
+  defValue := false
+}
+
+/-- Debug `grind` by identifying places where it does not yet supersede `linarith`, `omega` or
+`ring`. -/
+@[tacticAnalysis linter.tacticAnalysis.grindReplacement]
+def grindReplacement : TacticAnalysis.Config := .ofComplex {
   out := (List MVarId × MessageData)
   ctx := Syntax
   trigger _ stx := if
@@ -30,8 +49,11 @@ def grindReplacement : TacticAnalysis.Config := .ofComplex `linter.tacticAnalysi
     -/
     else none }
 
-/-
-@[tacticAnalysis]
+register_option linter.tacticAnalysis.rwMerge : Bool := {
+  defValue := false
+}
+
+@[tacticAnalysis linter.tacticAnalysis.rwMerge]
 def rwMerge : TacticAnalysis.Config := .ofComplex {
   out := (List MVarId × Array Syntax)
   ctx := (Array (Array Syntax))
@@ -52,7 +74,11 @@ def rwMerge : TacticAnalysis.Config := .ofComplex {
       m!"Try this: rw {new.1.2}"
     else none }
 
-@[tacticAnalysis]
+register_option linter.tacticAnalysis.mergeWithGrind : Bool := {
+  defValue := false
+}
+
+@[tacticAnalysis linter.tacticAnalysis.mergeWithGrind]
 def mergeWithGrind : TacticAnalysis.Config where
   run seq := do
     if let #[(preCtx, preI), (_postCtx, postI)] := seq[0:2].array then
@@ -67,7 +93,11 @@ def mergeWithGrind : TacticAnalysis.Config where
             if goals.isEmpty then
               logWarningAt preI.stx m!"'{preI.stx}; grind' can be replaced with 'grind'"
 
-@[tacticAnalysis]
+register_option linter.tacticAnalysis.terminalToGrind : Bool := {
+  defValue := false
+}
+
+@[tacticAnalysis linter.tacticAnalysis.terminalToGrind]
 def terminalToGrind : TacticAnalysis.Config where
   run seq := do
     let threshold := 3
@@ -97,4 +127,3 @@ def terminalToGrind : TacticAnalysis.Config where
       let stx := replaced[0]
       let seq ← `(tactic| $replaced;*)
       logWarningAt stx m!"replace the proof with 'grind': {seq}"
--/

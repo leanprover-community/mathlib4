@@ -1,14 +1,13 @@
 /-
-Copyright (c) 2024 Damiano Testa. All rights reserved.
+Copyright (c) 2025 Lean FRO LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Damiano Testa
+Authors: Anne Baanen
 -/
 
 import Batteries.Data.Array.Merge
 import Lean.Elab.Tactic.Meta
 import Lean.Util.Heartbeats
-import Mathlib.Tactic.ExtractGoal
-import Mathlib.Tactic.MinImports
+import Lean.Server.InfoUtils
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 import Mathlib.Tactic.Linter.Header
@@ -21,13 +20,14 @@ but it can also be run in a more batch-like mode to report larger potential refa
 (for instance: report when a sequence of three or more tactics can be replaced with `grind`).
 
 ## Using the framework
+
 The framework runs, but does nothing by default (`set_option linter.tacticAnalysis false`
 to turn it off completely). Enable specific analysis rounds by enabling their corresponding options:
-`set_option linter.tacticAnalysis.roundName true`, or
-`lake build -D linter.tacticAnalysis.roundName=true`.
+`set_option linter.tacticAnalysis.roundName true`.
 
 To add a round of analysis, make a definition of type `Mathlib.TacticAnalysis.Config`,
-give it the `@[tacticAnalysis]` attribute, then enable the option named in the `Config.name` field.
+give it the `@[tacticAnalysis linter.tacticAnalysis.roundName]` attribute, and don't forget to
+enable the option.
 
 ## Warning
 
@@ -98,51 +98,86 @@ def runTactic (ctx : ContextInfo) (i : TacticInfo) (goal : MVarId) (x : MVarId �
 
 end Lean.Elab.ContextInfo
 
-namespace TacticAnalysis
+namespace Mathlib.TacticAnalysis
 
-/-- -/
+/-- Stores the configuration for a tactic analysis pass. -/
 structure Config where
-  name : Name
+  /-- The function that runs this pass. Takes an array of infotree nodes corresponding
+  to a sequence of tactics from the source file. Should do all reporting itself,
+  for example by `Lean.Linter.logLint`.
+  -/
   run : Array (ContextInfo × TacticInfo) → CommandElabM Unit
 
-/-- Read a configuration from a declaration of the right type. -/
-def mkConfig (n : Name) : ImportM Config := do
-  let { env, opts, .. } ← read
-  IO.ofExcept <| unsafe env.evalConstCheck Config opts ``Config n
+abbrev BoolOption := Lean.Option Bool
 
-/-- Each `tacticAnalysis` extension is represented by the declaration name. -/
-abbrev Entry := Name
+structure Pass extends Config where
+  /-- The option corresponding to this pass, used to enable it.
+
+  Example: `linter.tacticAnalysis.grindReplacement`.
+  -/
+  opt : Option BoolOption
+
+/-- Each `tacticAnalysis` extension is represented by the declaration name for the `Config`. -/
+structure Entry where
+  declName : Name
+  optionName : Name
+
+/-- Read a configuration from a declaration of the right type. -/
+def Entry.import (e : Entry) : ImportM Pass := do
+  let { env, opts, .. } ← read
+  let cfg ← IO.ofExcept <|
+    unsafe env.evalConstCheck Config opts ``Config e.declName
+  -- This next line can fail in the file where the option is declared:
+  let opt := (unsafe env.evalConst (Lean.Option Bool) opts e.optionName).toOption
+  return { cfg with opt }
+
+instance : Ord Entry where
+  compare a b := (@lexOrd _ _ ⟨Lean.Name.cmp⟩ ⟨Lean.Name.cmp⟩).compare (a.1, a.2) (b.1, b.2)
 
 /-- Environment extensions for `tacticAnalysis` declarations -/
-initialize tacticAnalysisExt : PersistentEnvExtension Entry (Entry × Config)
-    (Array (Entry × Config)) ←
+initialize tacticAnalysisExt : PersistentEnvExtension Entry (Entry × Pass)
+    (Array (Entry × Pass)) ←
   registerPersistentEnvExtension {
     mkInitial := pure #[]
-    addImportedFn s := (s.flatten.sortDedup (ord := ⟨fun n1 n2 => n1.cmp n2⟩)).mapM fun n => do
-      return (n, ← mkConfig n)
+    addImportedFn s := s.flatten.sortDedup.mapM fun e => do
+      return (e, ← e.import)
     addEntryFn := Array.push
     exportEntriesFn s := s.map (· |>.1)
   }
 
+/-- Attribute adding a tactic analysis pass from a `Config` structure. -/
 initialize registerBuiltinAttribute {
   name := `tacticAnalysis
-  descr := "adds a tacticAnalysis extension"
+  descr := "adds a tacticAnalysis pass"
   applicationTime := .afterCompilation
   add declName stx kind := match stx with
     | `(attr| tacticAnalysis) => do
+      throwError m!"tacticAnalysis: missing option name."
+    | `(attr| tacticAnalysis $optionName) => do
       unless kind == AttributeKind.global do
         throwError "invalid attribute 'tacticAnalysis', must be global"
       let env ← getEnv
       unless (env.getModuleIdxFor? declName).isNone do
         throwError "invalid attribute 'tacticAnalysis', declaration is in an imported module"
       if (IR.getSorryDep env declName).isSome then return -- ignore in progress definitions
-      let ext ← mkConfig declName
-      setEnv <| tacticAnalysisExt.addEntry env (declName, ext)
+      let entry := {
+        declName
+        optionName := Syntax.getId optionName
+      }
+      let ext ← entry.import
+      setEnv <| tacticAnalysisExt.addEntry env (entry, ext)
     | _ => throwUnsupportedSyntax
 }
 
-def findTacticSeqs (stx : Syntax) (tree : InfoTree) : CommandElabM (Array (Array (ContextInfo × TacticInfo))) := do
-  let some enclosingRange := stx.getRange? | throw (Exception.error stx m!"operating on syntax without range")
+/-- Parse an infotree to find all the sequences of tactics contained within `stx`.
+
+We consider a sequence here to be a maximal interval of tactics joined by `;` or newlines.
+This function returns an array of sequences, to reflect e.g. occurrences of `· tac1; tac2`.
+-/
+def findTacticSeqs (stx : Syntax) (tree : InfoTree) :
+    CommandElabM (Array (Array (ContextInfo × TacticInfo))) := do
+  let some enclosingRange := stx.getRange? |
+    throw (Exception.error stx m!"operating on syntax without range")
   -- Turn the CommandElabM into a surrounding context for traversing the tree.
   let ctx ← read
   let state ← get
@@ -165,38 +200,35 @@ def findTacticSeqs (stx : Syntax) (tree : InfoTree) : CommandElabM (Array (Array
         if stx.getKind ∈ [``Lean.Parser.Tactic.withAnnotateState] then
           return (childTactics[0]?, childSequences)
         -- Tactic sequencing operators: collect all the child tactics into a new sequence.
-        if stx.getKind ∈ [``Lean.Parser.Tactic.tacticSeq, ``Lean.Parser.Tactic.tacticSeq1Indented, ``Lean.Parser.Term.byTactic] then
-          return (none, if childTactics.isEmpty then childSequences else childSequences.push childTactics)
+        if stx.getKind ∈ [``Lean.Parser.Tactic.tacticSeq, ``Lean.Parser.Tactic.tacticSeq1Indented,
+            ``Lean.Parser.Term.byTactic] then
+          return (none, if childTactics.isEmpty then
+              childSequences
+            else
+              childSequences.push childTactics)
+
+        -- Remaining options: plain pieces of syntax.
+        -- We discard `childTactics` here, because those are either already picked up by a
+        -- sequencing operator, or come from macros.
         if let .ofTacticInfo i := i then
-          /-
-          if !childTactics.isEmpty then
-            logInfoAt stx m!"at {i.stx.getKind}: discarding child tactics {childTactics.map fun i => i.2.stx.getKind}"
-          -/
           return ((ctx, i), childSequences)
-        /-
-        if !childTactics.isEmpty then
-          logInfoAt stx m!"at {i.stx.getKind}: discarding child tactics {childTactics.map fun i => i.2.stx.getKind}"
-        -/
         return (none, childSequences)
       else
         return (none, childSequences))
   return (out.map Prod.snd).getD #[]
 
-def filterTacticsList (configs : Array Config) (stx : Syntax)
-    (trees : PersistentArray InfoTree) : CommandElabM Unit :=
+/-- Run the tactic analysis passes from `configs` on the tactic sequences in `stx`,
+using `trees` to get the infotrees. -/
+def runPasses (configs : Array Pass) (stx : Syntax)
+    (trees : PersistentArray InfoTree) : CommandElabM Unit := do
+  let opts ← getLinterOptions
+  let enabledConfigs := configs.filter fun config =>
+    -- This can be `none` in the file where the option is declared.
+    if let some opt := config.opt then getLinterValue opt opts else false
   for i in trees do
     for seq in (← findTacticSeqs stx i) do
-      for config in configs do
+      for config in enabledConfigs do
         config.run seq
-
-/-- Run a tactic, returning any new messages rather than adding them to the message log.
-
-Copied from `Mathlib.Tactic.Hint.withMessageLog`.
--/
-def withMessageLog (t : MetaM Unit) : MetaM MessageLog := do
-  let initMsgs ← modifyGetThe Core.State fun st => (st.messages, { st with messages := {} })
-  t
-  modifyGetThe Core.State fun st => (st.messages, { st with messages := initMsgs })
 
 /-- A tactic analysis framework.
 It is aimed at allowing developers to specify refactoring patterns,
@@ -217,13 +249,8 @@ def tacticAnalysis : Linter where run := withSetOptionIn fun stx => do
     return
   let env ← getEnv
   let configs := (tacticAnalysisExt.getState env).map (· |>.snd)
-  let cats := (Parser.parserExtension.getState env).categories
-  -- These lookups may fail when the linter is run in a fresh, empty environment
-  let some tactics := Parser.ParserCategory.kinds <$> cats.find? `tactic
-    | return
   let trees ← getInfoTrees
-  -- filterTacticsList grindReplacement stx trees
-  filterTacticsList configs stx trees
+  runPasses configs stx trees
 
 initialize addLinter tacticAnalysis
 
@@ -235,8 +262,8 @@ section ComplexConfig
 In this section we define `ComplexConfig` which is supposed to make it easier to build standard
 analysis rounds.
 
-This interface does not feel intuitive yet and might be redesigned. Please do not rely on it too
-much!
+**Work in progress** note: This interface does not feel intuitive yet and might be redesigned.
+Please do not rely on it being stable!
 -/
 
 /--
@@ -295,7 +322,7 @@ def testTacticSeq (config : ComplexConfig) (tacticSeq : Array (TSyntax `tactic))
 
 /-- Run the `config` against a sequence of tactics, using the `trigger` to determine which
 subsequences should be `test`ed. -/
-def filterTactics (config : ComplexConfig) (seq : Array (ContextInfo × TacticInfo)) :
+def runPass (config : ComplexConfig) (seq : Array (ContextInfo × TacticInfo)) :
     CommandElabM Unit := do
   let mut acc := none
   let mut firstInfo := none
@@ -325,10 +352,10 @@ def filterTactics (config : ComplexConfig) (seq : Array (ContextInfo × TacticIn
       testTacticSeq config tacticSeq ctxI i ctx
   | _ => pure ()
 
-def Config.ofComplex (name : Name) (config : ComplexConfig) : Config where
-  name := name
-  run := filterTactics config
+/-- Constructor for a `Config` which breaks the pass up into multiple pieces. -/
+def Config.ofComplex (config : ComplexConfig) : Config where
+  run := runPass config
 
 end ComplexConfig
 
-end TacticAnalysis
+end Mathlib.TacticAnalysis
