@@ -331,14 +331,14 @@ lemma measurableAtom_subset_of_mem {x y : β} (hx : x ∈ measurableAtom y) :
 
 lemma measurableAtom_eq_of_mem {x y : β} (hx : x ∈ measurableAtom y) :
     measurableAtom x = measurableAtom y := by
-refine subset_antisymm (measurableAtom_subset_of_mem hx) ?_
-by_cases hy : y ∈ measurableAtom x
-· exact measurableAtom_subset_of_mem hy
-exfalso
-simp only [measurableAtom, mem_iInter, not_forall] at hx hy ⊢
-obtain ⟨s, hxs, hs, hys⟩ := hy
-specialize hx sᶜ hys hs.compl
-exact hx hxs
+  refine subset_antisymm (measurableAtom_subset_of_mem hx) ?_
+  by_cases hy : y ∈ measurableAtom x
+  · exact measurableAtom_subset_of_mem hy
+  exfalso
+  simp only [measurableAtom, mem_iInter, not_forall] at hx hy ⊢
+  obtain ⟨s, hxs, hs, hys⟩ := hy
+  specialize hx sᶜ hys hs.compl
+  exact hx hxs
 
 lemma disjoint_measurableAtom_of_notMem {x y : β} (hx : x ∉ measurableAtom y) :
     Disjoint (measurableAtom x) (measurableAtom y) := by
