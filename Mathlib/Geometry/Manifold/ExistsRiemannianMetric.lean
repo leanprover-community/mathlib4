@@ -68,6 +68,17 @@ def IsBilinearMap.toContinuousLinearMap
   IsLinearMap.mk' (fun x : E ↦ h.toLinearMap x |>.toContinuousLinearMap)
       (by constructor <;> (intros;simp)) |>.toContinuousLinearMap
 
+def LinearMap.BilinMap.toContinuousLinearMap
+    {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+    {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+    [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E] [FiniteDimensional 𝕜 E]
+    [T2Space E]
+    {G : Type*} [AddCommGroup G] [Module 𝕜 G] [TopologicalSpace G]
+    [IsTopologicalAddGroup G] [ContinuousSMul 𝕜 G]
+    (f : LinearMap.BilinMap 𝕜 E G) : E →L[𝕜] E →L[𝕜] G :=
+  sorry--IsLinearMap.mk' (fun x : E ↦ h.toLinearMap x |>.toContinuousLinearMap)
+    --  (by constructor <;> (intros;simp)) |>.toContinuousLinearMap
+
 def isBilinearMap_evalL
     (𝕜 : Type*) [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
     (E : Type*) [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
@@ -112,8 +123,10 @@ noncomputable def pullback_bifunction {X Y Z : Type*} (f : X → Y) (φ : Y → 
 
 open Module
 
+
+-- is the wrong associativity; just prove things differently myself
 -- TODO: remove the `Fintype ι` requirement from `Basis.linearMap` and then this definition
-noncomputable def IsBilinearMap.pullback_aux {ι : Type*} [Fintype ι]
+noncomputable def pullback_aux {ι : Type*} [Fintype ι]
     {x : B} (φ : (E x) →ₗ[ℝ] (E x) →ₗ[ℝ] ℝ)
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B))
     [MemTrivializationAtlas e] (b : Basis ι ℝ F) :
@@ -122,50 +135,58 @@ noncomputable def IsBilinearMap.pullback_aux {ι : Type*} [Fintype ι]
   letI g : ι × ι → ℝ := fun (i, j) ↦ φ (e.symm x (b i)) (e.symm x (b j))
   exact (b.linearMap b).constr ℝ g
 
-#exit
-
--- TODO: make a better identification: choose a basis, extend to a bilinear map!
--- TODO: extend this to any trivialization at x!
-def isBilinearMap_pullback_fn {ι : Type*} {x : B} (φ : (E x) →ₗ[ℝ] (E x) →ₗ[ℝ] ℝ)
+-- XXX: this can be generalised a lot, right?
+-- ??? where do we use that e.symm x is somewhat nice?
+noncomputable def IsBilinearMap.pullback {ι : Type*} [Fintype ι]
+    {x : B} {φ : (E x) → (E x) → ℝ} (_hφ : IsBilinearMap ℝ φ)
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B))
-    [MemTrivializationAtlas e] (b : Module.Basis ι ℝ F) (hx : x ∈ e.baseSet) :
-    letI φ' : (E x) → (E x) → ℝ := fun v ↦ (φ.toFun v).toFun
+    [MemTrivializationAtlas e] (b : Basis ι ℝ F) :
+    F →ₗ[ℝ] F →ₗ[ℝ] ℝ :=
+  b.constr ℝ <| fun i ↦ b.constr ℝ (fun j ↦ φ (e.symm x (b i)) (e.symm x (b j)))
 
-    IsBilinearMap ℝ (pullback_bifunction (e.symm x) φ') where
-  add_left := by
-    intro x₁ x₂ y
-    simp [pullback_bifunction]
-    have wannabe : (trivializationAt F E x).symm x (x₁ + x₂) =
-      (trivializationAt F E x).symm x x₁ + (trivializationAt F E x).symm x x₂ := sorry
-    -- sadly, wannabe is not true as-is
-    simp [wannabe]
-  smul_left := sorry
-  add_right := sorry
-  smul_right := sorry
+noncomputable def LinearMap.BilinMap.pullback {ι : Type*} [Fintype ι]
+    {x : B} (φ : LinearMap.BilinMap ℝ (E x) ℝ)
+    (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B))
+    [MemTrivializationAtlas e] (b : Basis ι ℝ F) :
+    LinearMap.BilinMap ℝ F ℝ :=
+  b.constr ℝ <| fun i ↦ b.constr ℝ (fun j ↦ φ (e.symm x (b i)) (e.symm x (b j)))
 
-variable (F) in
-noncomputable def pullback_lm (x : B) (φ : (E x) →ₗ[ℝ] (E x) →ₗ[ℝ] ℝ) : F →ₗ[ℝ] F →ₗ[ℝ] ℝ :=
-  (isBilinearMap_pullback_fn x φ).toLinearMap
+variable [FiniteDimensional ℝ F] [T2Space F]
 
-noncomputable def pullback_clm (x : B) (φ : (E x) →ₗ[ℝ] (E x) →ₗ[ℝ] ℝ) : F →L[ℝ] F →L[ℝ] ℝ :=
-  sorry
+variable (E) in
+noncomputable def pullback_clm {x : B}
+    (φ : LinearMap.BilinMap ℝ (E x) ℝ) : F →L[ℝ] F →L[ℝ] ℝ :=
+  letI t := trivializationAt F E x
+  letI b := Basis.ofVectorSpace ℝ F
+  (φ.pullback t b).toContinuousLinearMap
+
+variable (E) in
+noncomputable def IsBilinearMap.pullback_clm {x : B}
+    {φ : (E x) → (E x) → ℝ} (hφ : IsBilinearMap ℝ φ) : F →L[ℝ] F →L[ℝ] ℝ :=
+  letI t := trivializationAt F E x
+  letI b := Basis.ofVectorSpace ℝ F
+  LinearMap.BilinMap.toContinuousLinearMap (hφ.pullback t b)
 
 
-def RMetric_local_pre (x : B) : F →ₗ[ℝ] F →ₗ[ℝ] ℝ := by
-  let inn : (E x) → (E x) → ℝ := fun v w ↦ inner ℝ v w
-  --let aux := pullback_lm F x inn
-  sorry
+omit [TopologicalSpace B] in
+lemma foo (x : B) : IsBilinearMap ℝ (@Inner.inner ℝ (E x) _) where
+  add_left := InnerProductSpace.add_left
+  add_right := inner_add_right
+  smul_left c x' y := inner_smul_left_eq_smul x' y c
+  smul_right c x' y := inner_smul_right_eq_smul x' y c
+
+noncomputable def RMetric_local_pre (x : B) : F →ₗ[ℝ] F →ₗ[ℝ] ℝ :=
+  (foo x).pullback (trivializationAt F E x) (Basis.ofVectorSpace ℝ F)
 
 variable (F E) in
-def RMetric_local (x : B) : F →L[ℝ] F →L[ℝ] ℝ := by
-  sorry
+noncomputable def RMetric_local (x : B) : F →L[ℝ] F →L[ℝ] ℝ := (foo x).pullback_clm E
 
 lemma hloc (x : B) :
     ∃ U ∈ nhds x, ∃ g,
       ContMDiffOn IB 𝓘(ℝ, F →L[ℝ] F →L[ℝ] ℝ) ∞ g U ∧ ∀ y ∈ U, g y ∈ mapsMatchingInner F E y := by
   letI t := trivializationAt F E x
   have : t.baseSet ∈ nhds x := sorry
-  use t.baseSet, this, (fun x ↦ RMetric_local F x)
+  use t.baseSet, this, (fun x ↦ RMetric_local F E x)
   refine ⟨?_, ?_⟩
   · sorry
   · sorry
