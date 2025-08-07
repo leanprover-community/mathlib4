@@ -4209,6 +4209,7 @@ import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 import Mathlib.LinearAlgebra.RootSystem.Finite.Nondegenerate
 import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Basic
 import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Lemmas
+import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Relations
 import Mathlib.LinearAlgebra.RootSystem.Hom
 import Mathlib.LinearAlgebra.RootSystem.Irreducible
 import Mathlib.LinearAlgebra.RootSystem.IsValuedIn
