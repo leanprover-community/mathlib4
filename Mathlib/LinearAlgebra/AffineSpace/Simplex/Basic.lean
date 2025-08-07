@@ -338,6 +338,25 @@ lemma closedInterior_subset_affineSpan {n : ℕ} {s : Simplex k P n} :
   rintro p ⟨w, hw, hi, rfl⟩
   exact affineCombination_mem_affineSpan_of_nonempty hw _
 
+@[simp] lemma interior_eq_empty (s : Simplex k P 0) : s.interior = ∅ := by
+  ext p
+  simp only [Simplex.interior, Nat.reduceAdd, univ_unique, Fin.default_eq_zero, Fin.isValue,
+    sum_singleton, Set.mem_Ioo, Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false, not_exists,
+    not_and]
+  intro w h hi
+  simpa [h] using hi 0
+
+@[simp] lemma closedInterior_eq_singleton [ZeroLEOneClass k] (s : Simplex k P 0) :
+    s.closedInterior = {s.points 0} := by
+  ext p
+  simp only [Simplex.closedInterior, Nat.reduceAdd, univ_unique, Fin.default_eq_zero, Fin.isValue,
+    sum_singleton, Set.mem_Icc, Set.mem_setOf_eq, Set.mem_singleton_iff]
+  constructor
+  · rintro ⟨w, h0, hi, rfl⟩
+    simp [affineCombination_apply, h0]
+  · rintro rfl
+    exact ⟨1, by simp [affineCombination_apply]⟩
+
 lemma affineCombination_mem_interior_face_iff_mem_Ioo {n : ℕ} (s : Simplex k P n)
     {fs : Finset (Fin (n + 1))} {m : ℕ} (h : #fs = m + 1) {w : Fin (n + 1) → k}
     (hw : ∑ i, w i = 1) : Finset.univ.affineCombination k s.points w ∈ (s.face h).interior ↔
