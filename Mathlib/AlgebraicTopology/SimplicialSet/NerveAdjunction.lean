@@ -129,12 +129,10 @@ lemma toStrictSegal₂.mk_naturality_σ00 :
   dsimp
   rw [← OneTruncation₂.id_edge (F.obj x), ← ReflPrefunctor.map_id F x]
   fapply ReflPrefunctor.congr_map_edge (G := F) (g := 𝟙rq x)
-  · simp [← FunctorToTypes.map_comp_apply, ← op_comp]
-    rw [δ₂_one_comp_σ₂_zero]
-    simp only [op_id, FunctorToTypes.map_id_apply]
-  · simp [← FunctorToTypes.map_comp_apply, ← op_comp]
-    rw [δ₂_zero_comp_σ₂_zero]
-    simp only [op_id, FunctorToTypes.map_id_apply]
+  · haveI := congr_arg (fun t ↦ X.map t.op x) δ₂_one_comp_σ₂_zero
+    simpa [-δ₂_one_comp_σ₂_zero] using this
+  · haveI := congr_arg (fun t ↦ X.map t.op x) δ₂_zero_comp_σ₂_zero
+    simpa [-δ₂_zero_comp_σ₂_zero] using this
   · aesop
 
 lemma toStrictSegal₂.mk_naturality_δ0i (i : Fin 2) :
@@ -184,9 +182,7 @@ lemma toStrictSegal₂.mk_naturality_δ1i (i : Fin 3) :
     · unfold ev2₂
       rw [← FunctorToTypes.map_comp_apply, ← op_comp]
       dsimp [ι2₂]
-    · unfold ev02₂
-      simp only [Fin.isValue, OneTruncation₂.Quiver_homOfEq]
-      dsimp [δ1₂]
+    · simp only [ev02₂, Fin.isValue, OneTruncation₂.Quiver_homOfEq, δ1₂]
   · simp only [Fin.reduceFinMk]
     have :=
       StrictSegal.spineToSimplex_arrow sy 2 (by omega) 0 (OneTruncation₂.pathMap F (X.spine 2 _ φ))
@@ -255,13 +251,13 @@ def toStrictSegal₂.mk : X ⟶ Y where
 
 /-- A computation about `toStrictSegal₂.mk`. -/
 theorem oneTruncation₂_toStrictSegal₂Mk :
-    oneTruncation₂.map (toStrictSegal₂.mk sy F hyp) = F := by
-  refine ReflPrefunctor.ext' (fun _ ↦ rfl) (fun X Y f ↦ ?_)
-  · dsimp [oneTruncation₂]
-    ext
-    dsimp
-    exact ReflPrefunctor.congr_map_edge F { edge := f.edge, src_eq := rfl, tgt_eq := rfl }
-      f f.src_eq f.tgt_eq (by simp only [OneTruncation₂.Quiver_homOfEq]; rfl)
+    oneTruncation₂.map (toStrictSegal₂.mk sy F hyp) = F :=
+  ReflPrefunctor.ext'
+    (fun _ ↦ rfl)
+    (fun X Y f ↦
+      OneTruncation₂.Hom.ext <|
+        ReflPrefunctor.congr_map_edge F { edge := f.edge, src_eq := rfl, tgt_eq := rfl }
+        f f.src_eq f.tgt_eq (by aesop))
 
 end
 
@@ -336,31 +332,24 @@ constructed from a refl prefunctor `F : SSet.oneTruncation₂.obj X ⟶ ReflQuiv
   · rw [hyp]
     simp only [oneTruncation₂_obj, ReflQuiv.of_val, Nat.reduceAdd, Fin.zero_eta, Fin.isValue,
       Fin.mk_one, ComposableArrows.mk₁_map, ComposableArrows.Mk₁.map, len_mk]
-    have zero_eq : ev0₂ φ = (X.spine 2 _ φ).vertex 0 := by
-      unfold ev0₂ ι0₂
-      simp only [Truncated.spine_vertex]
-      congr!
-      exact δ_one_δ_one_eq_const
-    have one_eq : ev1₂ φ = (X.spine 2 _ φ).vertex 1 := by
-      unfold ev1₂ ι1₂
-      simp only [Truncated.spine_vertex]
-      congr!
-      exact δ_zero_δ_two_eq_const
-    have two_eq : ev2₂ φ = (X.spine 2 _ φ).vertex 2 := by
-      unfold ev2₂ ι2₂
-      simp only [Truncated.spine_vertex]
-      congr!
-      exact δ_zero_δ_one_eq_const
+    have zero_eq : ev0₂ φ = (X.spine 2 _ φ).vertex 0 :=
+      congr_arg (fun t ↦ X.map _ φ) δ_one_δ_one_eq_const
+    have one_eq : ev1₂ φ = (X.spine 2 _ φ).vertex 1 :=
+      congr_arg (fun t ↦ X.map _ φ) δ_zero_δ_two_eq_const
+    have two_eq : ev2₂ φ = (X.spine 2 _ φ).vertex 2 :=
+      congr_arg (fun t ↦ X.map _ φ) δ_zero_δ_one_eq_const
     have left : Quiver.homOfEq (ev01₂ φ) zero_eq one_eq =
       ⟨(X.spine 2 _ φ).arrow 0, (X.spine 2 _ φ).arrow_src 0, (X.spine 2 _ φ).arrow_tgt 0⟩ := by
-      unfold ev01₂ δ2₂
-      simp [OneTruncation₂.Quiver_homOfEq]
+      ext
+      simp only [Fin.isValue, Truncated.spine_vertex, Nat.reduceAdd, ev01₂, δ2₂,
+        OneTruncation₂.homOfEq_edge, Truncated.spine_arrow]
       congr!
       exact δ_two_eq_mkOfSucc
     have right : Quiver.homOfEq (ev12₂ φ) one_eq two_eq =
       ⟨(X.spine 2 _ φ).arrow 1, (X.spine 2 _ φ).arrow_src 1, (X.spine 2 _ φ).arrow_tgt 1⟩ := by
-      unfold ev12₂ δ0₂
-      simp [OneTruncation₂.Quiver_homOfEq]
+      ext
+      simp only [Fin.isValue, Truncated.spine_vertex, Nat.reduceAdd, ev12₂, δ0₂,
+        OneTruncation₂.homOfEq_edge, Truncated.spine_arrow]
       congr!
       exact δ_zero_eq_mkOfSucc
     erw [← left, ← right]
@@ -379,7 +368,7 @@ variable (hyp : (φ : X _⦋2⦌₂) →
 /-- An alternate version of `toNerve₂.mk`, which constructs a map of 2-truncated simplicial sets
 `X ⟶ nerveFunctor₂.obj (Cat.of C)` from the underlying refl prefunctor under a composition
 hypothesis, where that prefunctor the central hypothesis is conjugated by the isomorphism
-`nerve₂Adj.NatIso.app C`. The `ALT` pathway includes the new infrastructure above. -/
+`nerve₂Adj.NatIso.app C`. -/
 @[simps!] def toNerve₂.mk' : X ⟶ nerveFunctor₂.obj (Cat.of C) :=
   toNerve₂.mk (F ≫ (OneTruncation₂.ofNerve₂.natIso.app (Cat.of C)).hom) hyp
 
