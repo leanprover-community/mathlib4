@@ -444,6 +444,8 @@ end IsNontrivial
 
 namespace IsEquiv
 
+section
+
 variable [Ring R] [LinearOrderedCommMonoidWithZero Γ₀] [LinearOrderedCommMonoidWithZero Γ'₀]
   {v : Valuation R Γ₀} {v₁ : Valuation R Γ₀} {v₂ : Valuation R Γ'₀} {v₃ : Valuation R Γ''₀}
 
@@ -472,28 +474,272 @@ theorem map {v' : Valuation R Γ₀} (f : Γ₀ →*₀ Γ'₀) (hf : Monotone f
 theorem comap {S : Type*} [Ring S] (f : S →+* R) (h : v₁.IsEquiv v₂) :
     (v₁.comap f).IsEquiv (v₂.comap f) := fun r s => h (f r) (f s)
 
-theorem val_eq (h : v₁.IsEquiv v₂) {r s : R} : v₁ r = v₁ s ↔ v₂ r = v₂ s := by
-  simpa only [le_antisymm_iff] using and_congr (h r s) (h s r)
+end
 
-theorem ne_zero (h : v₁.IsEquiv v₂) {r : R} : v₁ r ≠ 0 ↔ v₂ r ≠ 0 := by
-  have : v₁ r ≠ v₁ 0 ↔ v₂ r ≠ v₂ 0 := not_congr h.val_eq
-  rwa [v₁.map_zero, v₂.map_zero] at this
+section LinearOrderedCommMonoidWithZero
 
-lemma lt_iff_lt (h : v₁.IsEquiv v₂) {x y : R} :
-    v₁ x < v₁ y ↔ v₂ x < v₂ y := by
+variable [Ring R]
+  {Γ₁ Γ₂ : Type*} [LinearOrderedCommMonoidWithZero Γ₁] [LinearOrderedCommMonoidWithZero Γ₂]
+  {v₁ : Valuation R Γ₁} {v₂ : Valuation R Γ₂}
+  (h : v₁.IsEquiv v₂)
+  {x x₁ x₂ y y₁ y₂ z w : R}
+
+/-- If `v₁.Equiv v₂`, then the value monoids of `v₁` and `v₂` are isomorphic, and this `Prop` is
+precisely the condition that the isomorphism sends `x : Γ₁` to `y : Γ₂`. -/
+inductive Associated' (h : v₁.IsEquiv v₂) : Γ₁ → Γ₂ → Prop where
+  | value {z : R} : Associated' h (v₁ z) (v₂ z)
+
+include h
+
+theorem val_eq : v₁ x = v₁ y ↔ v₂ x = v₂ y := by
+  simpa only [le_antisymm_iff] using and_congr (h x y) (h y x)
+
+theorem eq_zero : v₁ x = 0 ↔ v₂ x = 0 := by
+  rw [← v₁.map_zero, ← v₂.map_zero, h.val_eq]
+
+theorem ne_zero : v₁ x ≠ 0 ↔ v₂ x ≠ 0 := by
+  rw [not_iff_not, h.eq_zero]
+
+lemma lt_iff_lt : v₁ x < v₁ y ↔ v₂ x < v₂ y := by
   rw [← le_iff_le_iff_lt_iff_lt, h]
 
-lemma le_one_iff_le_one (h : v₁.IsEquiv v₂) {x : R} :
-    v₁ x ≤ 1 ↔ v₂ x ≤ 1 := by
+lemma le_one_iff_le_one : v₁ x ≤ 1 ↔ v₂ x ≤ 1 := by
   rw [← v₁.map_one, h, map_one]
 
-lemma eq_one_iff_eq_one (h : v₁.IsEquiv v₂) {x : R} :
-    v₁ x = 1 ↔ v₂ x = 1 := by
+lemma eq_one_iff_eq_one : v₁ x = 1 ↔ v₂ x = 1 := by
   rw [← v₁.map_one, h.val_eq, map_one]
 
-lemma lt_one_iff_lt_one (h : v₁.IsEquiv v₂) {x : R} :
-    v₁ x < 1 ↔ v₂ x < 1 := by
+lemma lt_one_iff_lt_one : v₁ x < 1 ↔ v₂ x < 1 := by
   rw [← v₁.map_one, h.lt_iff_lt, map_one]
+
+namespace Associated'
+
+variable {h} {x y : Γ₁} {z w : Γ₂} (hxz : h.Associated' x z) (hyw : h.Associated' y w)
+include hxz hyw
+
+theorem le_iff_le : x ≤ y ↔ z ≤ w := by
+  cases hxz; cases hyw; rw [h]
+
+theorem lt_iff_lt : x < y ↔ z < w := by
+  simp_rw [← not_le, hyw.le_iff_le hxz]
+
+theorem eq_iff_eq : x = y ↔ z = w := by
+  simp_rw [le_antisymm_iff, hxz.le_iff_le hyw, hyw.le_iff_le hxz]
+
+theorem ne_iff_ne : x ≠ y ↔ z ≠ w := by
+  simp_rw [not_iff_not, hxz.eq_iff_eq hyw]
+
+omit hxz hyw
+
+theorem intro {x : Γ₁} {y : Γ₂} (z : R) (h₁ : v₁ z = x) (h₂ : v₂ z = y) : h.Associated' x y := by
+  subst h₁; subst h₂; constructor
+
+theorem zero : h.Associated' 0 0 :=
+  intro 0 (by simp) (by simp)
+
+theorem one : h.Associated' 1 1 :=
+  intro 1 (by simp) (by simp)
+
+include hxz hyw
+
+theorem mul : h.Associated' (x * y) (z * w) := by
+  cases hxz; cases hyw; simp_rw [← map_mul]; constructor
+
+theorem min : h.Associated' (min x y) (min z w) := by
+  by_cases hxy : x ≤ y
+  · have hzw : z ≤ w := (hxz.le_iff_le hyw).1 hxy
+    rwa [min_eq_left hxy, min_eq_left hzw]
+  · have hzw : ¬z ≤ w := mt (hxz.le_iff_le hyw).2 hxy
+    rwa [min_eq_right (le_of_not_ge hxy), min_eq_right (le_of_not_ge hzw)]
+
+theorem max : h.Associated' (max x y) (max z w) := by
+  by_cases hxy : x ≤ y
+  · have hzw : z ≤ w := (hxz.le_iff_le hyw).1 hxy
+    rwa [max_eq_right hxy, max_eq_right hzw]
+  · have hzw : ¬z ≤ w := mt (hxz.le_iff_le hyw).2 hxy
+    rwa [max_eq_left (le_of_not_ge hxy), max_eq_left (le_of_not_ge hzw)]
+
+end Associated'
+
+/-- Monoid version of `val_equiv_tac`. Please just use `val_equiv_tac`. -/
+macro "val_equiv_tac'" h:term : tactic => `(tactic| focus
+  first
+  | refine Valuation.IsEquiv.Associated'.le_iff_le (h := $h) (z := ?_) (w := ?_) ?_ ?_
+  | refine Valuation.IsEquiv.Associated'.lt_iff_lt (h := $h) (z := ?_) (w := ?_) ?_ ?_
+  | refine Valuation.IsEquiv.Associated'.eq_iff_eq (h := $h) (z := ?_) (w := ?_) ?_ ?_
+  | refine Valuation.IsEquiv.Associated'.ne_iff_ne (h := $h) (z := ?_) (w := ?_) ?_ ?_
+  | fail "failed to recognize goal"
+  rotate_right 2
+  repeat' first
+    | exact Valuation.IsEquiv.Associated'.zero (h := $h)
+    | exact Valuation.IsEquiv.Associated'.one (h := $h)
+    | exact Valuation.IsEquiv.Associated'.value (h := $h)
+    | refine Valuation.IsEquiv.Associated'.mul (h := $h) (z := ?_) (w := ?_) ?_ ?_; rotate_right 2
+    | refine Valuation.IsEquiv.Associated'.min (h := $h) (z := ?_) (w := ?_) ?_ ?_; rotate_right 2
+    | refine Valuation.IsEquiv.Associated'.max (h := $h) (z := ?_) (w := ?_) ?_ ?_; rotate_right 2)
+
+/-- Monoid version of `rw_val_equiv`. Please just use `rw_val_equiv`. -/
+macro "rw_val_equiv'" h:term : tactic => `(tactic| focus
+  refine Iff.mpr (b := ?_) ?_ ?_
+  rotate_left 1
+  val_equiv_tac' $h)
+
+example : min (v₁ x) (max (v₁ y) (v₁ (x * z))) ≤ 1 ↔ min (v₂ x) (max (v₂ y) (v₂ (x * z))) ≤ 1 := by
+  val_equiv_tac' h
+
+example : 0 < v₁ x * v₁ x ↔ 0 < v₂ x * v₂ x := by
+  val_equiv_tac' h
+
+example : min (v₁ x) (v₁ y) ≠ 0 ↔ min (v₂ x) (v₂ y) ≠ 0 := by
+  val_equiv_tac' h
+
+example (hx : v₁ x < 1) : v₂ x < 1 := by
+  rw_val_equiv' h.symm
+  assumption
+
+end LinearOrderedCommMonoidWithZero
+
+section LinearOrderedCommGroupWithZero
+
+variable [Ring R]
+  {Γ₁ Γ₂ : Type*} [LinearOrderedCommGroupWithZero Γ₁] [LinearOrderedCommGroupWithZero Γ₂]
+  {v₁ : Valuation R Γ₁} {v₂ : Valuation R Γ₂}
+  (h : v₁.IsEquiv v₂)
+  {x x₁ x₂ y y₁ y₂ z w : R}
+
+/-- If `v₁.Equiv v₂`, then the value groups of `v₁` and `v₂` are isomorphic, and this `Prop` is
+precisely the condition that the isomorphism sends `x : Γ₁` to `y : Γ₂`. -/
+inductive Associated (h : v₁.IsEquiv v₂) : Γ₁ → Γ₂ → Prop where
+  | intro' (z w : R) : Associated h (v₁ z / v₁ w) (v₂ z / v₂ w)
+
+include h
+
+lemma div_le_div_iff_div_le_div : v₁ x / v₁ y ≤ v₁ z / v₁ w ↔ v₂ x / v₂ y ≤ v₂ z / v₂ w := by
+  by_cases hy : v₁ y = 0
+  · rw [hy, h.eq_zero.1 hy]; simp
+  by_cases hw : v₁ w = 0
+  · rw [hw, h.eq_zero.1 hw]; simp [h.eq_zero]
+  have hy₂ : v₂ y ≠ 0 := h.ne_zero.1 hy
+  have hw₂ : v₂ w ≠ 0 := h.ne_zero.1 hw
+  rw [div_le_iff₀ (zero_lt_iff.mpr hy), div_le_iff₀ (zero_lt_iff.mpr hy₂),
+    div_mul_eq_mul_div₀, div_mul_eq_mul_div₀,
+    le_div_iff₀ (zero_lt_iff.mpr hw), le_div_iff₀ (zero_lt_iff.mpr hw₂)]
+  val_equiv_tac' h
+
+namespace Associated
+
+variable {h} {x y : Γ₁} {z w : Γ₂} (hxz : h.Associated x z) (hyw : h.Associated y w)
+include hxz hyw
+
+theorem le_iff_le : x ≤ y ↔ z ≤ w := by
+  cases hxz; cases hyw; exact h.div_le_div_iff_div_le_div
+
+theorem lt_iff_lt : x < y ↔ z < w := by
+  simp_rw [← not_le, hyw.le_iff_le hxz]
+
+theorem eq_iff_eq : x = y ↔ z = w := by
+  simp_rw [le_antisymm_iff, hxz.le_iff_le hyw, hyw.le_iff_le hxz]
+
+theorem ne_iff_ne : x ≠ y ↔ z ≠ w := by
+  simp_rw [not_iff_not, hxz.eq_iff_eq hyw]
+
+omit hxz hyw
+
+theorem intro {x : Γ₁} {y : Γ₂} (z w : R) (h₁ : v₁ z / v₁ w = x) (h₂ : v₂ z / v₂ w = y) :
+    h.Associated x y := by
+  subst h₁; subst h₂; constructor
+
+theorem zero : h.Associated 0 0 :=
+  intro 0 1 (by simp) (by simp)
+
+theorem one : h.Associated 1 1 :=
+  intro 1 1 (by simp) (by simp)
+
+theorem value {z : R} : h.Associated (v₁ z) (v₂ z) :=
+  intro z 1 (by simp) (by simp)
+
+include hxz
+
+theorem inv : h.Associated (x⁻¹) (z⁻¹) := by
+  cases hxz; simp_rw [inv_div]; constructor
+
+include hyw
+
+theorem mul : h.Associated (x * y) (z * w) := by
+  cases hxz; cases hyw; simp_rw [div_mul_div_comm, ← map_mul]; constructor
+
+theorem div : h.Associated (x / y) (z / w) := by
+  cases hxz; cases hyw; simp_rw [div_div_div_eq, ← map_mul]; constructor
+
+theorem min : h.Associated (min x y) (min z w) := by
+  by_cases hxy : x ≤ y
+  · have hzw : z ≤ w := (hxz.le_iff_le hyw).1 hxy
+    rwa [min_eq_left hxy, min_eq_left hzw]
+  · have hzw : ¬z ≤ w := mt (hxz.le_iff_le hyw).2 hxy
+    rwa [min_eq_right (le_of_not_ge hxy), min_eq_right (le_of_not_ge hzw)]
+
+theorem max : h.Associated (max x y) (max z w) := by
+  by_cases hxy : x ≤ y
+  · have hzw : z ≤ w := (hxz.le_iff_le hyw).1 hxy
+    rwa [max_eq_right hxy, max_eq_right hzw]
+  · have hzw : ¬z ≤ w := mt (hxz.le_iff_le hyw).2 hxy
+    rwa [max_eq_left (le_of_not_ge hxy), max_eq_left (le_of_not_ge hzw)]
+
+end Associated
+
+/-- A macro to solve equivalences of the form `v₁ x / v₁ y < v₁ z ↔ v₂ x / v₂ y < v₂ z` where the
+expressions can consist of `0`, `1`, `v₁ x`, `*`, `⁻¹`, `/`, `min`, and `max`, given
+`h : v₁.IsEquiv v₂`. -/
+macro "val_equiv_tac" h:term : tactic => `(tactic| focus
+  first
+  | refine Valuation.IsEquiv.Associated.le_iff_le (h := $h) (z := ?_) (w := ?_) ?_ ?_
+  | refine Valuation.IsEquiv.Associated.lt_iff_lt (h := $h) (z := ?_) (w := ?_) ?_ ?_
+  | refine Valuation.IsEquiv.Associated.eq_iff_eq (h := $h) (z := ?_) (w := ?_) ?_ ?_
+  | refine Valuation.IsEquiv.Associated.ne_iff_ne (h := $h) (z := ?_) (w := ?_) ?_ ?_
+  | val_equiv_tac' $h
+  | fail "failed to recognize goal"
+  rotate_right 2
+  repeat' first
+    | exact Valuation.IsEquiv.Associated.zero (h := $h)
+    | exact Valuation.IsEquiv.Associated.one (h := $h)
+    | exact Valuation.IsEquiv.Associated.value (h := $h)
+    | refine Valuation.IsEquiv.Associated.inv (h := $h) (z := ?_) ?_; rotate_right 1
+    | refine Valuation.IsEquiv.Associated.mul (h := $h) (z := ?_) (w := ?_) ?_ ?_; rotate_right 2
+    | refine Valuation.IsEquiv.Associated.div (h := $h) (z := ?_) (w := ?_) ?_ ?_; rotate_right 2
+    | refine Valuation.IsEquiv.Associated.min (h := $h) (z := ?_) (w := ?_) ?_ ?_; rotate_right 2
+    | refine Valuation.IsEquiv.Associated.max (h := $h) (z := ?_) (w := ?_) ?_ ?_; rotate_right 2)
+
+/-- A macro to rewrite expressions in a goal (e.g. `v₁ x ≤ 1`) with an equivalent one in the other
+value group (e.g. `v₂ x ≤ 1`), given `h : v₁.IsEquiv v₂`. -/
+macro "rw_val_equiv" h:term : tactic => `(tactic| focus
+  refine Iff.mpr (b := ?_) ?_ ?_
+  rotate_left 1
+  val_equiv_tac $h)
+
+-- Check that it works with `LinearOrderedCommMonoidWithZero`
+example {R Γ₁ Γ₂ : Type*} [Ring R]
+    [LinearOrderedCommMonoidWithZero Γ₁] [LinearOrderedCommMonoidWithZero Γ₂]
+    {v₁ : Valuation R Γ₁} {v₂ : Valuation R Γ₂}
+    (h : v₁.IsEquiv v₂) {x y z : R} :
+    min (v₁ x) (max (v₁ y) (v₁ (x * z))) ≤ 1 ↔ min (v₂ x) (max (v₂ y) (v₂ (x * z))) ≤ 1 := by
+  val_equiv_tac h
+
+example : v₁ x / (v₁ y)⁻¹ < v₁ z ↔ v₂ x / (v₂ y)⁻¹ < v₂ z := by
+  val_equiv_tac h
+
+theorem le_div_iff_le_div : v₁ x ≤ v₁ y / v₁ z ↔ v₂ x ≤ v₂ y / v₂ z := by
+  val_equiv_tac h
+
+theorem lt_div_iff_lt_div : v₁ x < v₁ y / v₁ z ↔ v₂ x < v₂ y / v₂ z := by
+  val_equiv_tac h
+
+theorem eq_div_iff_eq_div : v₁ x = v₁ y / v₁ z ↔ v₂ x = v₂ y / v₂ z := by
+  val_equiv_tac h
+
+theorem ne_div_iff_ne_div : v₁ x ≠ v₁ y / v₁ z ↔ v₂ x ≠ v₂ y / v₂ z := by
+  val_equiv_tac h
+
+end LinearOrderedCommGroupWithZero
 
 end IsEquiv
 
