@@ -304,7 +304,7 @@ end SyntaxTreeInfo
 section IndentationLinter
 
 /-- docstring TODO -/
-structure Limitation where
+structure Limit where
   indentation : Nat := 0
   additionalIndentation : Nat := 0
   oneAdditionalIndentation := 2
@@ -317,7 +317,7 @@ structure IndentationError where
   stx : Syntax
 
 inductive Result
-  | nextLinter (limit : Limitation)
+  | nextLinter (limit : Limit)
   | finished
 deriving Inhabited
 
@@ -340,7 +340,7 @@ def throwIndentationError (info : SyntaxTreeInfo) (msg : MessageData)
 
 /-- docstring TODO -/
 def IndentationLinter :=
-  (treeInfo : SyntaxTreeInfo) → (limit : Limitation) → LinterM Result
+  (treeInfo : SyntaxTreeInfo) → (limit : Limit) → LinterM Result
 
 instance : AndThen IndentationLinter where
   andThen (a b info limit) := do
@@ -430,7 +430,7 @@ def runLinterOn (ref := indentationLinterRef) : IndentationLinter := fun info li
   trace[Indentation.run] m!"finished on {info.idx}"
   pure result
 
-abbrev ensure (treeInfo : SyntaxTreeInfo) (limit : Limitation)
+abbrev ensure (treeInfo : SyntaxTreeInfo) (limit : Limit)
     (linter : IndentationLinter := runLinterOn) : LinterM Unit := do
   match ← linter treeInfo limit with
   | .finished => pure ()

@@ -5,7 +5,7 @@ open Lean Parser Elab Command Meta Linter
 namespace Mathlib.Linter.Indentation
 
 /-- docstring TODO -/
-def ensureIndentationAt (treeInfo : SyntaxTreeInfo) (limit : Limitation)
+def ensureIndentationAt (treeInfo : SyntaxTreeInfo) (limit : Limit)
     (checkAddition? : Option Bool := true)
     (msgLtAtLeast : Option (Nat → MessageData) :=
       .some (m!"too few spaces, which should be at least {·}"))
@@ -25,8 +25,8 @@ def ensureIndentationAt (treeInfo : SyntaxTreeInfo) (limit : Limitation)
       if let .some msg := msgGtAtMost then
         throwIndentationError treeInfo (msg atMost)
 
-def Limitation.forChildren (treeInfo : SyntaxTreeInfo) (limit : Limitation) (updateIndentation : Bool) :
-    CommandElabM Limitation := do
+def Limit.forChildren (treeInfo : SyntaxTreeInfo) (limit : Limit) (updateIndentation : Bool) :
+    CommandElabM Limit := do
   let limit := { limit with atMost := .none }
   if !updateIndentation then return limit
   if let .some indent := treeInfo.getIndentation? then
@@ -34,8 +34,8 @@ def Limitation.forChildren (treeInfo : SyntaxTreeInfo) (limit : Limitation) (upd
   else
     pure { limit with isExactIndentation := false }
 
-def Limitation.forHead (treeInfo : SyntaxTreeInfo) (limit : Limitation) (updateIndentation : Bool) :
-    CommandElabM Limitation := do
+def Limit.forHead (treeInfo : SyntaxTreeInfo) (limit : Limit) (updateIndentation : Bool) :
+    CommandElabM Limit := do
   if updateIndentation then
     if let .some indent := treeInfo.getIndentation? then
       return { limit with
@@ -46,13 +46,13 @@ def Limitation.forHead (treeInfo : SyntaxTreeInfo) (limit : Limitation) (updateI
   return limit
 
 /-- docstring TODO -/
-def ensureIndentationAtNode (treeInfo : SyntaxTreeInfo) (limit : Limitation)
+def ensureIndentationAtNode (treeInfo : SyntaxTreeInfo) (limit : Limit)
     (checkAddition? : Option Bool := .none) (updateIndentation? : Option Bool := .none)
     (msgLtAtLeast : Option (Nat → MessageData) :=
       .some (m!"too few spaces, which should be at least {·}"))
     (msgGtAtMost : Option (Nat → MessageData) :=
       .some (m!"too many spaces, which should be at most {·}")) :
-  LinterM (Limitation × Limitation) := do
+  LinterM (Limit × Limit) := do
   ensureIndentationAt treeInfo limit checkAddition? msgLtAtLeast msgGtAtMost
   let updateIndentation ← match updateIndentation? with
     | .some updateIndentation => pure updateIndentation
