@@ -200,8 +200,6 @@ theorem existsUnique_hilbertPoly (p : F[X]) (d : ℕ) :
     simp only [Set.mem_Ioi, sup_lt_iff, Set.mem_setOf_eq] at hn ⊢
     rw [← coeff_mul_invOneSubPow_eq_hilbertPoly_eval d hn.2, hhN n hn.1]
 
-@[deprecated (since := "2024-12-17")] alias exists_unique_hilbertPoly := existsUnique_hilbertPoly
-
 /--
 If `h : F[X]` and there exists some `N : ℕ` such that for any number `n : ℕ` bigger than `N`
 we have `PowerSeries.coeff F n (p * invOneSubPow F d) = h.eval (n : F)`, then `h` is exactly
@@ -234,7 +232,7 @@ lemma hilbertPoly_eq_zero_of_le_rootMultiplicity_one
   by_cases hp : p = 0
   · rw [hp, hilbertPoly_zero_left]
   · rcases exists_eq_pow_rootMultiplicity_mul_and_not_dvd p hp 1 with ⟨q, hq1, hq2⟩
-    have heq : p = q * (- 1) ^ p.rootMultiplicity 1 * (1 - X) ^ p.rootMultiplicity 1 := by
+    have heq : p = q * (-1) ^ p.rootMultiplicity 1 * (1 - X) ^ p.rootMultiplicity 1 := by
       simp only [mul_assoc, ← mul_pow, neg_mul, one_mul, neg_sub]
       exact hq1.trans (mul_comm _ _)
     rw [heq, ← zero_add d, ← Nat.sub_add_cancel hdp, pow_add (1 - X), ← mul_assoc,
@@ -244,7 +242,7 @@ theorem natDegree_hilbertPoly_of_ne_zero_of_rootMultiplicity_lt
     {p : F[X]} {d : ℕ} (hp : p ≠ 0) (hpd : p.rootMultiplicity 1 < d) :
     (hilbertPoly p d).natDegree = d - p.rootMultiplicity 1 - 1 := by
   rcases exists_eq_pow_rootMultiplicity_mul_and_not_dvd p hp 1 with ⟨q, hq1, hq2⟩
-  have heq : p = q * (- 1) ^ p.rootMultiplicity 1 * (1 - X) ^ p.rootMultiplicity 1 := by
+  have heq : p = q * (-1) ^ p.rootMultiplicity 1 * (1 - X) ^ p.rootMultiplicity 1 := by
     simp only [mul_assoc, ← mul_pow, neg_mul, one_mul, neg_sub]
     exact hq1.trans (mul_comm _ _)
   nth_rw 1 [heq, ← Nat.sub_add_cancel (le_of_lt hpd), hilbertPoly_mul_one_sub_pow_add,

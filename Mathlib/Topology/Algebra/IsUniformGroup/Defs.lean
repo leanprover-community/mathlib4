@@ -3,7 +3,7 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Topology.UniformSpace.Basic
+import Mathlib.Topology.UniformSpace.DiscreteUniformity
 import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
@@ -187,6 +187,11 @@ theorem uniformity_translate_mul (a : α) : ((𝓤 α).map fun x : α × α => (
       _ ≤ (𝓤 α).map fun x : α × α => (x.1 * a, x.2 * a) :=
         Filter.map_mono (uniformContinuous_id.mul uniformContinuous_const)
       )
+
+/-- The discrete uniformity makes a group a `IsUniformGroup. -/
+@[to_additive "The discrete uniformity makes an additive group a `IsUniformAddGroup`."]
+instance [UniformSpace β] [Group β] [DiscreteUniformity β] : IsUniformGroup β where
+  uniformContinuous_div := DiscreteUniformity.uniformContinuous (β × β) fun p ↦ p.1 / p.2
 
 namespace MulOpposite
 
@@ -383,18 +388,6 @@ theorem IsUniformGroup.uniformContinuous_iff_isOpen_ker {hom : Type*} [UniformSp
   · apply uniformContinuous_of_continuousAt_one
     rw [ContinuousAt, nhds_discrete β, map_one, tendsto_pure]
     exact hf.mem_nhds (map_one f)
-
-@[deprecated (since := "2024-11-18")] alias UniformAddGroup.uniformContinuous_iff_open_ker :=
-  IsUniformAddGroup.uniformContinuous_iff_isOpen_ker
-@[to_additive existing UniformAddGroup.uniformContinuous_iff_open_ker,
-deprecated (since := "2024-11-18")] alias UniformGroup.uniformContinuous_iff_open_ker :=
-  IsUniformGroup.uniformContinuous_iff_isOpen_ker
-@[deprecated (since := "2025-03-30")] alias UniformAddGroup.uniformContinuous_iff_isOpen_ker :=
-  IsUniformAddGroup.uniformContinuous_iff_isOpen_ker
-@[to_additive existing UniformAddGroup.uniformContinuous_iff_isOpen_ker,
-deprecated (since := "2025-03-30")] alias UniformGroup.uniformContinuous_iff_isOpen_ker :=
-  IsUniformGroup.uniformContinuous_iff_isOpen_ker
-
 
 @[to_additive]
 theorem uniformContinuous_monoidHom_of_continuous {hom : Type*} [UniformSpace β] [Group β]

@@ -128,12 +128,12 @@ open Finset Ideal
 /-- The ideal `J ⊓ I` is a sub-dp-ideal of `I` if and only if the divided powers have
   some compatibility mod `J`. (The necessity was proved as a sanity check.) -/
 theorem isSubDPIdeal_inf_iff {A : Type*} [CommRing A] {I : Ideal A} (hI : DividedPowers I)
-  {J : Ideal A} : IsSubDPIdeal hI (J ⊓ I) ↔
+    {J : Ideal A} : IsSubDPIdeal hI (J ⊓ I) ↔
     ∀ {n : ℕ} {a b : A} (_ : a ∈ I) (_ : b ∈ I) (_ : a - b ∈ J), hI.dpow n a - hI.dpow n b ∈ J := by
   refine ⟨fun hIJ n a b ha hb hab ↦ ?_, fun hIJ ↦ ?_⟩
   · have hab' : a - b ∈ I := I.sub_mem ha hb
     rw [← add_sub_cancel b a, hI.dpow_add' hb hab', range_succ, sum_insert notMem_range_self,
-      tsub_self, hI.dpow_zero hab', mul_one,add_sub_cancel_left]
+      tsub_self, hI.dpow_zero hab', mul_one, add_sub_cancel_left]
     exact J.sum_mem (fun i hi ↦  SemilatticeInf.inf_le_left J I ((J ⊓ I).smul_mem _
       (hIJ.dpow_mem _ (ne_of_gt (Nat.sub_pos_of_lt (mem_range.mp hi))) ⟨hab, hab'⟩)))
   · refine ⟨SemilatticeInf.inf_le_right J I, fun {n} hn {a} ha ↦ ⟨?_, hI.dpow_mem hn ha.right⟩⟩
@@ -509,7 +509,7 @@ theorem le_equalizer_of_isDPMorphism {B : Type*} [CommSemiring B] (f : A →+* B
   exact ⟨hI_le_K (mem_map_of_mem f ha), fun n ↦ by rw [hIK.2 a ha, hIK'.2 a ha]⟩
 
 /-- If there is a divided power structure on `I⬝(A/J)` such that the quotient map is
-   a dp-morphism, then `J ⊓ I` is a sub-dp-ideal of `I`. -/
+a dp-morphism, then `J ⊓ I` is a sub-dp-ideal of `I`. -/
 def subDPIdeal_inf_of_quot {A : Type*} [CommRing A] {I : Ideal A} {hI : DividedPowers I}
     {J : Ideal A} {hJ : DividedPowers (I.map (Ideal.Quotient.mk J))} {φ : DPMorphism hI hJ}
     (hφ : φ.toRingHom = Ideal.Quotient.mk J) :

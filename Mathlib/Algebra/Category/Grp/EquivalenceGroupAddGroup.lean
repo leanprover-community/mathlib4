@@ -42,7 +42,7 @@ end CommGrp
 
 namespace AddGrp
 
-/-- The functor `AddGrp ⥤ Grp` by sending `X ↦ Multiplicative Y` and `f ↦ f`.
+/-- The functor `AddGrp ⥤ Grp` by sending `X ↦ Multiplicative X` and `f ↦ f`.
 -/
 @[simps]
 def toGrp : AddGrp ⥤ Grp where
@@ -53,7 +53,7 @@ end AddGrp
 
 namespace AddCommGrp
 
-/-- The functor `AddCommGrp ⥤ CommGrp` by sending `X ↦ Multiplicative Y` and `f ↦ f`.
+/-- The functor `AddCommGrp ⥤ CommGrp` by sending `X ↦ Multiplicative X` and `f ↦ f`.
 -/
 @[simps]
 def toCommGrp : AddCommGrp ⥤ CommGrp where
