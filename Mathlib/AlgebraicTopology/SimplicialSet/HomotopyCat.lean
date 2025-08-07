@@ -149,23 +149,13 @@ lemma OneTruncation₂.homOfEq_edge
 
 /-- A refl prefunctor between the underlying refl quivers of a 2-truncated simplicial sets induces a
 map on paths. -/
-def oneTruncation₂.pathMap {X Y : SSet.Truncated.{u} 2} (F : OneTruncation₂ X ⥤rq OneTruncation₂ Y)
+@[simps]
+def OneTruncation₂.pathMap {X Y : SSet.Truncated.{u} 2} (F : OneTruncation₂ X ⥤rq OneTruncation₂ Y)
     {n : ℕ} (σ : Truncated.Path X n) : Truncated.Path Y n where
   vertex i := F.obj (σ.vertex i)
   arrow i := (F.map ⟨σ.arrow i, σ.arrow_src i, σ.arrow_tgt i⟩).edge
   arrow_src i := (F.map ⟨σ.arrow i, σ.arrow_src i, σ.arrow_tgt i⟩).src_eq
   arrow_tgt i := (F.map ⟨σ.arrow i, σ.arrow_src i, σ.arrow_tgt i⟩).tgt_eq
-
-@[simp]
-lemma oneTruncation₂.pathMap_vertex {X Y : SSet.Truncated.{u} 2}
-    (F : OneTruncation₂ X ⥤rq OneTruncation₂ Y) {n : ℕ} (σ : Truncated.Path X n) (i : Fin (n + 1)) :
-    (oneTruncation₂.pathMap F σ).vertex i = F.obj (σ.vertex i) := rfl
-
-@[simp]
-lemma oneTruncation₂.pathMap_arrow {X Y : SSet.Truncated.{u} 2}
-    (F : OneTruncation₂ X ⥤rq OneTruncation₂ Y) {n : ℕ} (σ : Truncated.Path X n) (i : Fin n) :
-    (oneTruncation₂.pathMap F σ).arrow i =
-      (F.map ⟨σ.arrow i, σ.arrow_src i, σ.arrow_tgt i⟩).edge := rfl
 
 section
 variable {C : Type u} [Category.{v} C]
