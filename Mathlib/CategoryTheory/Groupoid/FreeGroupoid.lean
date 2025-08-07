@@ -158,7 +158,7 @@ theorem lift_unique (φ : V ⥤q V') (Φ : FreeGroupoid V ⥤ V') (hΦ : of V �
   · rw [← Functor.toPrefunctor_comp]
     exact hΦ
   · rintro X Y f
-    simp only [← Functor.toPrefunctor_comp, Prefunctor.comp_map, Paths.of_map, inv_eq_inv]
+    simp only [← Functor.toPrefunctor_comp, Prefunctor.comp_map, Paths.of_map]
     change Φ.map (inv ((Quotient.functor redStep).toPrefunctor.map f.toPath)) =
       inv (Φ.map ((Quotient.functor redStep).toPrefunctor.map f.toPath))
     have := Functor.map_inv Φ ((Quotient.functor redStep).toPrefunctor.map f.toPath)

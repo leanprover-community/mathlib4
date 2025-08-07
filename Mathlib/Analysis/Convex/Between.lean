@@ -188,20 +188,63 @@ theorem wbtw_const_vadd_iff {x y z : P} (v : V) :
     Wbtw R (v +ᵥ x) (v +ᵥ y) (v +ᵥ z) ↔ Wbtw R x y z :=
   mem_const_vadd_affineSegment _
 
+alias ⟨_, Wbtw.const_vadd⟩ := wbtw_const_vadd_iff
+
+@[simp]
+theorem wbtw_const_add_iff {x y z : V} (v : V) :
+    Wbtw R (v + x) (v + y) (v + z) ↔ Wbtw R x y z :=
+  wbtw_const_vadd_iff v
+
+alias ⟨_, Wbtw.const_add⟩ := wbtw_const_add_iff
+
 @[simp]
 theorem wbtw_vadd_const_iff {x y z : V} (p : P) :
     Wbtw R (x +ᵥ p) (y +ᵥ p) (z +ᵥ p) ↔ Wbtw R x y z :=
   mem_vadd_const_affineSegment _
+
+alias ⟨_, Wbtw.vadd_const⟩ := wbtw_vadd_const_iff
+
+@[simp]
+theorem wbtw_add_const_iff {x y z : V} (v : V) :
+    Wbtw R (x + v) (y + v) (z + v) ↔ Wbtw R x y z :=
+  wbtw_vadd_const_iff v
+
+alias ⟨_, Wbtw.add_const⟩ := wbtw_add_const_iff
 
 @[simp]
 theorem wbtw_const_vsub_iff {x y z : P} (p : P) :
     Wbtw R (p -ᵥ x) (p -ᵥ y) (p -ᵥ z) ↔ Wbtw R x y z :=
   mem_const_vsub_affineSegment _
 
+alias ⟨_, Wbtw.const_vsub⟩ := wbtw_const_vsub_iff
+
+@[simp]
+theorem wbtw_const_sub_iff {x y z : V} (v : V) :
+    Wbtw R (v - x) (v - y) (v - z) ↔ Wbtw R x y z :=
+  wbtw_const_vsub_iff v
+
+alias ⟨_, Wbtw.const_sub⟩ := wbtw_const_sub_iff
+
+@[simp]
+theorem wbtw_neg_iff {x y z : V} :
+    Wbtw R (-x) (-y) (-z) ↔ Wbtw R x y z := by
+  simp only [← zero_sub, wbtw_const_sub_iff]
+
+alias ⟨_, Wbtw.neg⟩ := wbtw_neg_iff
+
 @[simp]
 theorem wbtw_vsub_const_iff {x y z : P} (p : P) :
     Wbtw R (x -ᵥ p) (y -ᵥ p) (z -ᵥ p) ↔ Wbtw R x y z :=
   mem_vsub_const_affineSegment _
+
+alias ⟨_, Wbtw.vsub_const⟩ := wbtw_vsub_const_iff
+
+@[simp]
+theorem wbtw_sub_const_iff {x y z : V} (v : V) :
+    Wbtw R (x - v) (y - v) (z - v) ↔ Wbtw R x y z :=
+  wbtw_vsub_const_iff v
+
+alias ⟨_, Wbtw.sub_const⟩ := wbtw_sub_const_iff
 
 @[simp]
 theorem sbtw_const_vadd_iff {x y z : P} (v : V) :
@@ -209,11 +252,29 @@ theorem sbtw_const_vadd_iff {x y z : P} (v : V) :
   rw [Sbtw, Sbtw, wbtw_const_vadd_iff, (AddAction.injective v).ne_iff,
     (AddAction.injective v).ne_iff]
 
+alias ⟨_, Sbtw.const_vadd⟩ := sbtw_const_vadd_iff
+
+@[simp]
+theorem sbtw_const_add_iff {x y z : V} (v : V) :
+    Sbtw R (v + x) (v + y) (v + z) ↔ Sbtw R x y z :=
+  sbtw_const_vadd_iff v
+
+alias ⟨_, Sbtw.const_add⟩ := sbtw_const_add_iff
+
 @[simp]
 theorem sbtw_vadd_const_iff {x y z : V} (p : P) :
     Sbtw R (x +ᵥ p) (y +ᵥ p) (z +ᵥ p) ↔ Sbtw R x y z := by
   rw [Sbtw, Sbtw, wbtw_vadd_const_iff, (vadd_right_injective p).ne_iff,
     (vadd_right_injective p).ne_iff]
+
+alias ⟨_, Sbtw.vadd_const⟩ := sbtw_vadd_const_iff
+
+@[simp]
+theorem sbtw_add_const_iff {x y z : V} (v : V) :
+    Sbtw R (x + v) (y + v) (z + v) ↔ Sbtw R x y z :=
+  sbtw_vadd_const_iff v
+
+alias ⟨_, Sbtw.add_const⟩ := sbtw_add_const_iff
 
 @[simp]
 theorem sbtw_const_vsub_iff {x y z : P} (p : P) :
@@ -221,11 +282,36 @@ theorem sbtw_const_vsub_iff {x y z : P} (p : P) :
   rw [Sbtw, Sbtw, wbtw_const_vsub_iff, (vsub_right_injective p).ne_iff,
     (vsub_right_injective p).ne_iff]
 
+alias ⟨_, Sbtw.const_vsub⟩ := sbtw_const_vsub_iff
+
+@[simp]
+theorem sbtw_const_sub_iff {x y z : V} (v : V) :
+    Sbtw R (v - x) (v - y) (v - z) ↔ Sbtw R x y z :=
+  sbtw_const_vsub_iff v
+
+alias ⟨_, Sbtw.const_sub⟩ := sbtw_const_sub_iff
+
+@[simp]
+theorem sbtw_neg_iff {x y z : V} :
+    Sbtw R (-x) (-y) (-z) ↔ Sbtw R x y z := by
+  simp only [← zero_sub, sbtw_const_sub_iff]
+
+alias ⟨_, Sbtw.neg⟩ := sbtw_neg_iff
+
 @[simp]
 theorem sbtw_vsub_const_iff {x y z : P} (p : P) :
     Sbtw R (x -ᵥ p) (y -ᵥ p) (z -ᵥ p) ↔ Sbtw R x y z := by
   rw [Sbtw, Sbtw, wbtw_vsub_const_iff, (vsub_left_injective p).ne_iff,
     (vsub_left_injective p).ne_iff]
+
+alias ⟨_, Sbtw.vsub_const⟩ := sbtw_vsub_const_iff
+
+@[simp]
+theorem sbtw_sub_const_iff {x y z : V} (v : V) :
+    Sbtw R (x - v) (y - v) (z - v) ↔ Sbtw R x y z :=
+  sbtw_vsub_const_iff v
+
+alias ⟨_, Sbtw.sub_const⟩ := sbtw_sub_const_iff
 
 theorem Sbtw.wbtw {x y z : P} (h : Sbtw R x y z) : Wbtw R x y z :=
   h.1
@@ -310,7 +396,7 @@ theorem sbtw_iff_mem_image_Ioo_and_ne [NoZeroSMulDivisors R V] {x y z : P} :
   refine ⟨⟨t, Set.mem_Icc_of_Ioo ht, rfl⟩, ?_⟩
   rw [lineMap_apply, ← @vsub_ne_zero V, ← @vsub_ne_zero V _ _ _ _ z, vadd_vsub_assoc, vsub_self,
     vadd_vsub_assoc, ← neg_vsub_eq_vsub_rev z x, ← @neg_one_smul R, ← add_smul, ← sub_eq_add_neg]
-  simp [smul_ne_zero, sub_eq_zero, ht.1.ne.symm, ht.2.ne, hxz.symm]
+  simp [sub_eq_zero, ht.1.ne.symm, ht.2.ne, hxz.symm]
 
 variable (R)
 
@@ -843,7 +929,7 @@ theorem AffineIndependent.not_wbtw_of_injective {ι} (i j k : ι)
 variable (R)
 
 theorem wbtw_pointReflection (x y : P) : Wbtw R y x (pointReflection R x y) := by
-  refine ⟨2⁻¹, ⟨by norm_num, by norm_num⟩, ?_⟩
+  refine ⟨2⁻¹, ⟨by simp, by norm_num⟩, ?_⟩
   rw [lineMap_apply, pointReflection_apply, vadd_vsub_assoc, ← two_smul R (x -ᵥ y)]
   simp
 

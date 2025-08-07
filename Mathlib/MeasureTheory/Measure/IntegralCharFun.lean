@@ -3,7 +3,7 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Analysis.SpecialFunctions.Integrals
+import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 import Mathlib.MeasureTheory.Function.SpecialFunctions.Sinc
 import Mathlib.MeasureTheory.Measure.CharacteristicFunction
 
@@ -112,7 +112,7 @@ lemma measureReal_abs_gt_le_integral_charFun [IsProbabilityMeasure μ] (hr : 0 <
     · exact MeasurableSet.preimage measurableSet_Ioi (by fun_prop)
     · have hx_ne : 2 * r⁻¹ * x ≠ 0 := by
         intro hx0
-        simp only [hx0, Set.mem_setOf_eq, mul_zero, abs_zero] at hx
+        simp only [hx0, Set.mem_setOf_eq, abs_zero] at hx
         linarith
       rw [le_sub_iff_add_le, ← le_sub_iff_add_le']
       norm_num

@@ -243,14 +243,14 @@ theorem isClosed_symm_image_closedBall :
 theorem tsupport_subset_symm_image_closedBall :
     tsupport f ⊆ (extChartAt I c).symm '' (closedBall (extChartAt I c c) f.rOut ∩ range I) := by
   rw [tsupport, support_eq_symm_image]
-  exact closure_minimal (image_subset _ <| inter_subset_inter_left _ ball_subset_closedBall)
+  exact closure_minimal (image_mono <| inter_subset_inter_left _ ball_subset_closedBall)
     f.isClosed_symm_image_closedBall
 
 theorem tsupport_subset_extChartAt_source : tsupport f ⊆ (extChartAt I c).source :=
   calc
     tsupport f ⊆ (extChartAt I c).symm '' (closedBall (extChartAt I c c) f.rOut ∩ range I) :=
       f.tsupport_subset_symm_image_closedBall
-    _ ⊆ (extChartAt I c).symm '' (extChartAt I c).target := image_subset _ f.closedBall_subset
+    _ ⊆ (extChartAt I c).symm '' (extChartAt I c).target := image_mono f.closedBall_subset
     _ = (extChartAt I c).source := (extChartAt I c).symm_image_target_eq_source
 
 theorem tsupport_subset_chartAt_source : tsupport f ⊆ (chartAt H c).source := by
@@ -293,12 +293,8 @@ protected theorem contMDiff : ContMDiff I 𝓘(ℝ) ∞ f := by
     (chartAt H c).open_source.mem_nhds this
   exact f.contDiffAt.contMDiffAt.comp _ (contMDiffAt_extChartAt' this)
 
-@[deprecated (since := "2024-11-20")] alias smooth := SmoothBumpFunction.contMDiff
-
 protected theorem contMDiffAt {x} : ContMDiffAt I 𝓘(ℝ) ∞ f x :=
   f.contMDiff.contMDiffAt
-
-@[deprecated (since := "2024-11-20")] alias smoothAt := SmoothBumpFunction.contMDiffAt
 
 protected theorem continuous : Continuous f :=
   f.contMDiff.continuous
@@ -317,7 +313,5 @@ theorem contMDiff_smul {G} [NormedAddCommGroup G] [NormedSpace ℝ G] {g : M →
   --   _ ⊆ (chart_at _ c).source := f.tsupport_subset_chartAt_source
     f.tsupport_subset_chartAt_source <| tsupport_smul_subset_left _ _ hx
   exact f.contMDiffAt.smul ((hg _ this).contMDiffAt <| (chartAt _ _).open_source.mem_nhds this)
-
-@[deprecated (since := "2024-11-20")] alias smooth_smul := contMDiff_smul
 
 end SmoothBumpFunction

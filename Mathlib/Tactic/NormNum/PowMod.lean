@@ -66,7 +66,7 @@ theorem IsNatPowModT.bit1 :
       (Nat.mod (Nat.mul c (Nat.mod (Nat.mul c a) m)) m) :=
   ⟨by
     rintro rfl
-    show a ^ (2 * b + 1) % m = (a ^ b % m) * ((a ^ b % m * a) % m) % m
+    change a ^ (2 * b + 1) % m = (a ^ b % m) * ((a ^ b % m * a) % m) % m
     rw [pow_add, two_mul, pow_add, pow_one, Nat.mul_mod (a ^ b % m) a, Nat.mod_mod,
       ← Nat.mul_mod (a ^ b) a, ← Nat.mul_mod, mul_assoc]⟩
 

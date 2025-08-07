@@ -102,11 +102,11 @@ protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
     simp only [root_reflectionPerm, reflection_apply, coroot']
     simp only [hr, he, hc']
   suffices P₁.coroot = P₂.coroot by
-    obtain ⟨p₁⟩ := P₁; obtain ⟨p₂⟩ := P₂; cases p₁; cases p₂; congr; exact hp this
+    obtain ⟨p₁⟩ := P₁; obtain ⟨p₂⟩ := P₂; grind
   have := NoZeroSMulDivisors.int_of_charZero R M
   ext i
   apply P₁.injOn_dualMap_subtype_span_root_coroot (mem_range_self i) (hc ▸ mem_range_self i)
-  simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, comp_apply]
+  simp only [LinearMap.coe_comp, comp_apply]
   apply Dual.eq_of_preReflection_mapsTo' (finite_range P₁.root)
   · exact Submodule.subset_span (mem_range_self i)
   · exact P₁.coroot_root_two i
@@ -234,7 +234,7 @@ private lemma coroot_eq_coreflection_of_root_eq_of_span_eq_top [CharZero R] [NoZ
   have hk₀ : root k ≠ 0 := fun h ↦ by simpa [h, ← PerfectPairing.toLinearMap_apply] using hp k
   apply p.bijective_right.injective
   apply Dual.eq_of_preReflection_mapsTo (finite_range root) hsp (hp k) (hs k)
-  · simp [map_sub, α, β, α', β', sα, sβ, sα', hk, preReflection_apply, hp i, hp j, mul_two,
+  · simp [map_sub, α, β, α', β', sα, hk, preReflection_apply, hp i, hp j,
       mul_comm (p α β')]
     ring -- v4.7.0-rc1 issues
   · rw [hk, hij]

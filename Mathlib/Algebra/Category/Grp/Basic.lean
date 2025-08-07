@@ -114,9 +114,6 @@ lemma coe_id {X : Grp} : (𝟙 X : X → X) = id := rfl
 @[to_additive (attr := simp)]
 lemma coe_comp {X Y Z : Grp} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
-@[to_additive (attr := deprecated "Use hom_comp instead" (since := "2025-01-28"))]
-lemma comp_def {X Y Z : Grp} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g).hom = g.hom.comp f.hom := rfl
-
 @[simp] lemma forget_map {X Y : Grp} (f : X ⟶ Y) : (forget Grp).map f = (f : X → Y) := rfl
 
 @[to_additive (attr := ext)]
@@ -179,12 +176,6 @@ lemma inv_hom_apply {X Y : Grp} (e : X ≅ Y) (x : X) : e.inv (e.hom x) = x := b
 lemma hom_inv_apply {X Y : Grp} (e : X ≅ Y) (s : Y) : e.hom (e.inv s) = s := by
   simp
 
-@[to_additive (attr := deprecated "use `coe_comp` instead" (since := "2025-01-28"))]
-alias coe_comp' := coe_comp
-
-@[to_additive (attr := deprecated "use `coe_id` instead" (since := "2025-01-28"))]
-alias coe_id' := coe_id
-
 @[to_additive]
 instance : Inhabited Grp :=
   ⟨Grp.of PUnit⟩
@@ -215,6 +206,16 @@ lemma ofHom_injective {X Y : Type u} [Group X] [Group Y] :
   intro _ _ h
   ext
   apply ConcreteCategory.congr_hom h
+
+/-- The forgetful functor from groups to monoids is fully faithful. -/
+@[to_additive fullyFaihtfulForget₂ToAddMonCat
+  "The forgetful functor from additive groups to additive monoids is fully faithful."]
+def fullyFaithfulForget₂ToMonCat : (forget₂ Grp.{u} MonCat).FullyFaithful where
+  preimage f := ofHom f.hom
+
+@[to_additive]
+instance : (forget₂ Grp.{u} MonCat).Full :=
+  fullyFaithfulForget₂ToMonCat.full
 
 -- We verify that simp lemmas apply when coercing morphisms to functions.
 @[to_additive]
@@ -325,9 +326,6 @@ lemma coe_id {X : CommGrp} : (𝟙 X : X → X) = id := rfl
 @[to_additive (attr := simp)]
 lemma coe_comp {X Y Z : CommGrp} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
-@[to_additive (attr := deprecated "Use hom_comp instead" (since := "2025-01-28"))]
-lemma comp_def {X Y Z : CommGrp} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g).hom = g.hom.comp f.hom := rfl
-
 @[to_additive (attr := simp)]
 lemma forget_map {X Y : CommGrp} (f : X ⟶ Y) :
     (forget CommGrp).map f = (f : X → Y) :=
@@ -368,8 +366,7 @@ lemma hom_ext {X Y : CommGrp} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
 
 @[to_additive (attr := simp)]
-lemma hom_ofHom {X Y : Type u} [CommGroup X] [CommGroup Y] (f : X →* Y) :
-  (ofHom f).hom = f := rfl
+lemma hom_ofHom {X Y : Type u} [CommGroup X] [CommGroup Y] (f : X →* Y) : (ofHom f).hom = f := rfl
 
 @[to_additive (attr := simp)]
 lemma ofHom_hom {X Y : CommGrp} (f : X ⟶ Y) :
@@ -398,12 +395,6 @@ lemma inv_hom_apply {X Y : CommGrp} (e : X ≅ Y) (x : X) : e.inv (e.hom x) = x 
 lemma hom_inv_apply {X Y : CommGrp} (e : X ≅ Y) (s : Y) : e.hom (e.inv s) = s := by
   simp
 
-@[to_additive (attr := deprecated "use `coe_comp` instead" (since := "2025-01-28"))]
-alias coe_comp' := coe_comp
-
-@[to_additive (attr := deprecated "use `coe_id` instead" (since := "2025-01-28"))]
-alias coe_id' := coe_id
-
 @[to_additive]
 instance hasForgetToGroup : HasForget₂ CommGrp Grp where
   forget₂.obj X := Grp.of X
@@ -415,6 +406,16 @@ instance hasForgetToGroup : HasForget₂ CommGrp Grp where
 
 @[to_additive]
 instance : Coe CommGrp.{u} Grp.{u} where coe := (forget₂ CommGrp Grp).obj
+
+/-- The forgetful functor from commutative groups to groups is fully faithful. -/
+@[to_additive fullyFaihtfulForget₂ToAddGrp
+  "The forgetful functor from additive commutative groups to additive groups is fully faithful."]
+def fullyFaithfulForget₂ToGrp : (forget₂ CommGrp.{u} Grp).FullyFaithful where
+  preimage f := ofHom f.hom
+
+@[to_additive]
+instance : (forget₂ CommGrp.{u} Grp).Full :=
+  fullyFaithfulForget₂ToGrp.full
 
 @[to_additive hasForgetToAddCommMonCat]
 instance hasForgetToCommMonCat : HasForget₂ CommGrp CommMonCat where
@@ -482,7 +483,7 @@ theorem int_hom_ext {G : AddCommGrp.{0}} (f g : AddCommGrp.of ℤ ⟶ G)
 -- the forgetful functor is representable.
 theorem injective_of_mono {G H : AddCommGrp.{0}} (f : G ⟶ H) [Mono f] : Function.Injective f :=
   fun g₁ g₂ h => by
-  have t0 : asHom g₁ ≫ f = asHom g₂ ≫ f := by aesop_cat
+  have t0 : asHom g₁ ≫ f = asHom g₂ ≫ f := by cat_disch
   have t1 : asHom g₁ = asHom g₂ := (cancel_mono _).1 t0
   apply asHom_injective t1
 

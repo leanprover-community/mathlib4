@@ -191,9 +191,11 @@ theorem le_csSup_of_le (hs : BddAbove s) (hb : b ∈ s) (h : a ≤ b) : a ≤ sS
 theorem csInf_le_of_le (hs : BddBelow s) (hb : b ∈ s) (h : b ≤ a) : sInf s ≤ a :=
   le_trans (csInf_le hs hb) h
 
+@[gcongr low]
 theorem csSup_le_csSup (ht : BddAbove t) (hs : s.Nonempty) (h : s ⊆ t) : sSup s ≤ sSup t :=
   csSup_le hs fun _ ha => le_csSup ht (h ha)
 
+@[gcongr low]
 theorem csInf_le_csInf (ht : BddBelow t) (hs : s.Nonempty) (h : s ⊆ t) : sInf t ≤ sInf s :=
   le_csInf hs fun _ ha => csInf_le ht (h ha)
 
@@ -491,10 +493,10 @@ lemma ciInf_eq_univ_of_not_bddBelow (hf : ¬BddBelow (range f)) : ⨅ i, f i = s
 theorem csSup_eq_csSup_of_forall_exists_le {s t : Set α}
     (hs : ∀ x ∈ s, ∃ y ∈ t, x ≤ y) (ht : ∀ y ∈ t, ∃ x ∈ s, y ≤ x) :
     sSup s = sSup t := by
-  rcases eq_empty_or_nonempty s with rfl|s_ne
+  rcases eq_empty_or_nonempty s with rfl | s_ne
   · have : t = ∅ := eq_empty_of_forall_notMem (fun y yt ↦ by simpa using ht y yt)
     rw [this]
-  rcases eq_empty_or_nonempty t with rfl|t_ne
+  rcases eq_empty_or_nonempty t with rfl | t_ne
   · have : s = ∅ := eq_empty_of_forall_notMem (fun x xs ↦ by simpa using hs x xs)
     rw [this]
   by_cases B : BddAbove s ∨ BddAbove t
@@ -625,9 +627,11 @@ theorem notMem_of_lt_csInf' {x : α} {s : Set α} (h : x < sInf s) : x ∉ s :=
 
 @[deprecated (since := "2025-05-23")] alias not_mem_of_lt_csInf' := notMem_of_lt_csInf'
 
+@[gcongr mid]
 theorem csInf_le_csInf' {s t : Set α} (h₁ : t.Nonempty) (h₂ : t ⊆ s) : sInf s ≤ sInf t :=
   csInf_le_csInf (OrderBot.bddBelow s) h₁ h₂
 
+@[gcongr mid]
 theorem csSup_le_csSup' {s t : Set α} (h₁ : BddAbove t) (h₂ : s ⊆ t) : sSup s ≤ sSup t := by
   rcases eq_empty_or_nonempty s with rfl | h
   · rw [csSup_empty]
@@ -646,7 +650,7 @@ theorem isLUB_sSup' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (Wit
     (hs : s.Nonempty) : IsLUB s (sSup s) := by
   classical
   constructor
-  · show ite _ _ _ ∈ _
+  · change ite _ _ _ ∈ _
     split_ifs with h₁ h₂
     · intro _ _
       exact le_top
@@ -656,7 +660,7 @@ theorem isLUB_sSup' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (Wit
       exact le_csSup h₂ ha
     · intro _ _
       exact le_top
-  · show ite _ _ _ ∈ _
+  · change ite _ _ _ ∈ _
     split_ifs with h₁ h₂
     · rintro (⟨⟩ | a) ha
       · exact le_rfl
@@ -688,7 +692,7 @@ theorem isGLB_sInf' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (Wit
     (hs : BddBelow s) : IsGLB s (sInf s) := by
   classical
   constructor
-  · show ite _ _ _ ∈ _
+  · change ite _ _ _ ∈ _
     simp only [hs, not_true_eq_false, or_false]
     split_ifs with h
     · intro a ha
@@ -705,7 +709,7 @@ theorem isGLB_sInf' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (Wit
       use b
       intro c hc
       exact coe_le_coe.1 (hb hc)
-  · show ite _ _ _ ∈ _
+  · change ite _ _ _ ∈ _
     simp only [hs, not_true_eq_false, or_false]
     split_ifs with h
     · intro _ _
@@ -796,12 +800,12 @@ lemma MonotoneOn.csInf_eq_of_subset_of_forall_exists_le
   obtain rfl | hs := Set.eq_empty_or_nonempty s
   · obtain rfl : t = ∅ := by simpa [Set.eq_empty_iff_forall_notMem] using h
     rfl
-  apply le_antisymm _ (csInf_le_csInf ht (hs.image _) (image_subset _ hst))
+  apply le_antisymm _ (csInf_le_csInf ht (hs.image _) (image_mono hst))
   refine le_csInf ((hs.mono hst).image f) ?_
   simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
   intro a ha
   obtain ⟨x, hxs, hxa⟩ := h a ha
-  exact csInf_le_of_le (ht.mono (image_subset _ hst)) ⟨x, hxs, rfl⟩ (hf (hst hxs) ha hxa)
+  exact csInf_le_of_le (ht.mono (image_mono hst)) ⟨x, hxs, rfl⟩ (hf (hst hxs) ha hxa)
 
 lemma MonotoneOn.csSup_eq_of_subset_of_forall_exists_le
     [Preorder α] [ConditionallyCompleteLattice β] {f : α → β}
@@ -809,6 +813,35 @@ lemma MonotoneOn.csSup_eq_of_subset_of_forall_exists_le
     (hst : s ⊆ t) (h : ∀ y ∈ t, ∃ x ∈ s, y ≤ x) :
     sSup (f '' s) = sSup (f '' t) :=
   MonotoneOn.csInf_eq_of_subset_of_forall_exists_le (α := αᵒᵈ) (β := βᵒᵈ) ht hf.dual hst h
+
+theorem MonotoneOn.sInf_image_Icc [Preorder α] [ConditionallyCompleteLattice β]
+    {f : α → β} {a b : α} (hab : a ≤ b)
+    (h' : MonotoneOn f (Icc a b)) : sInf (f '' Icc a b) = f a := by
+  refine IsGLB.csInf_eq ?_ ((nonempty_Icc.mpr hab).image f)
+  refine isGLB_iff_le_iff.mpr (fun b' ↦ ⟨?_, ?_⟩)
+  · intro hb'
+    rintro _ ⟨x, hx, rfl⟩
+    exact hb'.trans <| h' (left_mem_Icc.mpr hab) hx hx.1
+  · exact fun hb' ↦ hb' ⟨a, by simp [hab]⟩
+
+theorem MonotoneOn.sSup_image_Icc [Preorder α] [ConditionallyCompleteLattice β]
+    {f : α → β} {a b : α} (hab : a ≤ b)
+    (h' : MonotoneOn f (Icc a b)) : sSup (f '' Icc a b) = f b := by
+  have : Icc a b = Icc (α := αᵒᵈ) (toDual b) (toDual a) := by rw [Icc_toDual]; rfl
+  rw [this] at h' ⊢
+  exact h'.dual_right.dual_left.sInf_image_Icc (β := βᵒᵈ) (α := αᵒᵈ) hab
+
+theorem AntitoneOn.sInf_image_Icc [Preorder α] [ConditionallyCompleteLattice β]
+    {f : α → β} {a b : α} (hab : a ≤ b)
+    (h' : AntitoneOn f (Icc a b)) : sInf (f '' Icc a b) = f b := by
+  have : Icc a b = Icc (α := αᵒᵈ) (toDual b) (toDual a) := by rw [Icc_toDual]; rfl
+  rw [this] at h' ⊢
+  exact h'.dual_left.sInf_image_Icc (α := αᵒᵈ) hab
+
+theorem AntitoneOn.sSup_image_Icc [Preorder α] [ConditionallyCompleteLattice β]
+    {f : α → β} {a b : α} (hab : a ≤ b)
+    (h' : AntitoneOn f (Icc a b)) : sSup (f '' Icc a b) = f a :=
+  h'.dual_right.sInf_image_Icc hab
 
 /-!
 ### Supremum/infimum of `Set.image2`
@@ -915,7 +948,7 @@ noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
     le_sSup := fun _ a haS => (WithTop.isLUB_sSup' ⟨a, haS⟩).1 haS
     sSup_le := fun S a ha => by
       rcases S.eq_empty_or_nonempty with h | h
-      · show ite _ _ _ ≤ a
+      · change ite _ _ _ ≤ a
         simp [h]
       · exact (WithTop.isLUB_sSup' h).2 ha
     sInf_le := fun S a haS =>

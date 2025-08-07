@@ -19,18 +19,15 @@ namespace LindemannWeierstrass
 noncomputable section
 
 open scoped Nat
-
 open Complex Polynomial
-
-attribute [local fun_prop] Polynomial.differentiable Complex.continuous_abs
 
 theorem hasDerivAt_cexp_mul_sumIDeriv (p : ℂ[X]) (s : ℂ) (x : ℝ) :
     HasDerivAt (fun x : ℝ ↦ -(cexp (-(x • s)) * p.sumIDeriv.eval (x • s)))
       (s * (cexp (-(x • s)) * p.eval (x • s))) x := by
   have h₀ := (hasDerivAt_id' x).smul_const s
-  have h₁ := h₀.neg.cexp
+  have h₁ := h₀.fun_neg.cexp
   have h₂ := ((sumIDeriv p).hasDerivAt (x • s)).comp x h₀
-  convert (h₁.mul h₂).neg using 1
+  convert (h₁.mul h₂).fun_neg using 1
   nth_rw 1 [sumIDeriv_eq_self_add p]
   simp only [one_smul, eval_add, Function.comp_apply]
   ring
@@ -119,7 +116,7 @@ private theorem exp_polynomial_approx_aux (f : ℤ[X]) (s : ℂ) :
     have h :
       (fun x : ℝ ↦ max (x * ‖s‖) 1 * ‖aeval (x * s) f‖) '' Set.Ioc 0 1 ⊆
         (fun x : ℝ ↦ max (x * ‖s‖) 1 * ‖aeval (x * s) f‖) '' Set.Icc 0 1 :=
-      Set.image_subset _ Set.Ioc_subset_Icc_self
+      Set.image_mono Set.Ioc_subset_Icc_self
     refine (IsCompact.image isCompact_Icc ?_).isBounded.subset h
     fun_prop
   obtain ⟨c, h⟩ := this.exists_norm_le
