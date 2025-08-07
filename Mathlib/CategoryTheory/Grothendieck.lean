@@ -91,7 +91,7 @@ theorem ext {X Y : Grothendieck F} (f g : Hom X Y) (w_base : f.base = g.base)
   cases f; cases g
   congr
   dsimp at w_base
-  aesop_cat
+  cat_disch
 
 /-- The identity morphism in the Grothendieck category.
 -/

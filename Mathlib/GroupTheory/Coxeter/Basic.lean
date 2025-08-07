@@ -416,32 +416,8 @@ lemma getElem_alternatingWord (i j : B) (p k : ℕ) (hk : k < p) :
     (alternatingWord i j p)[k]'(by simp [hk]) = (if Even (p + k) then i else j) := by
   revert k
   induction p with
-  | zero =>
-    intro k hk
-    simp only [not_lt_zero'] at hk
-  | succ n h =>
-    intro k hk
-    simp_rw [alternatingWord_succ' i j n]
-    match k with
-    | 0 =>
-      by_cases h2 : Even n
-      · simp only [h2, ↓reduceIte, getElem_cons_zero, add_zero,
-          (by simp [Even.add_one, h2] : ¬Even (n + 1))]
-      · simp only [h2, ↓reduceIte, getElem_cons_zero, add_zero,
-          Odd.add_one (Nat.not_even_iff_odd.mp h2)]
-    | k + 1 =>
-      simp only [add_lt_add_iff_right] at hk h
-      simp only [getElem_cons_succ, h k hk]
-      ring_nf
-      have even_add_two (m : ℕ) : Even (2 + m) ↔ Even m := by
-        simp only [add_tsub_cancel_right, even_two, (Nat.even_sub (by omega : m ≤ 2 + m)).mp]
-      by_cases h_even : Even (n + k)
-      · rw [if_pos h_even]
-        rw [← even_add_two (n+k), ← Nat.add_assoc 2 n k] at h_even
-        rw [if_pos h_even]
-      · rw [if_neg h_even]
-        rw [← even_add_two (n+k), ← Nat.add_assoc 2 n k] at h_even
-        rw [if_neg h_even]
+  | zero => grind [not_lt_zero']
+  | succ n h => grind [CoxeterSystem.alternatingWord_succ']
 
 lemma getElem_alternatingWord_swapIndices (i j : B) (p k : ℕ) (h : k + 1 < p) :
      (alternatingWord i j p)[k+1]'(by simp [h]) =
