@@ -220,6 +220,13 @@ end MulOneClass
 
 section SMul
 
+/-! ### Basic scalar multiplication instances
+
+This section collects instances needed for the algebraic structure of `Polynomial`,
+which is defined in terms of `MonoidAlgebra`.
+Further results on scalar multiplication can be found in `Mathlib/Algebra/MonoidAlgebra/Module.lean`.
+-/
+
 variable {S : Type*}
 
 instance smulZeroClass [Semiring k] [SMulZeroClass R k] : SMulZeroClass R (MonoidAlgebra k G) :=
@@ -791,6 +798,15 @@ theorem natCast_def (n : ℕ) : (n : k[G]) = single (0 : G) (n : k) :=
 end MulOneClass
 
 section SMul
+
+/-! ### Basic scalar multiplication instances
+
+The `SMul` section for `MonoidAlgebra` collects instances needed 
+for the algebraic structure of `Polynomial`, which is defined in terms
+of `MonoidAlgebra`. This section mirrors the `MonoidAlgebra` section.
+
+Further results on scalar multiplication can be found in `Mathlib/Algebra/MonoidAlgebra/Module.lean`.
+-/
 
 variable {S : Type*}
 

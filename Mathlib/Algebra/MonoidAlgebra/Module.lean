@@ -12,11 +12,10 @@ import Mathlib.LinearAlgebra.Finsupp.LSum
 # Module structure on monoid algebras
 
 ## Main results
+
 * `MonoidAlgebra.module`, `AddMonoidAlgebra.module`: lift a module structure to monoid algebras
 -/
 
-assert_not_exists AlgEquiv
-assert_not_exists NonUnitalAlgHom
 assert_not_exists NonUnitalAlgHom AlgEquiv
 
 noncomputable section
@@ -121,8 +120,6 @@ theorem liftNC_smul [MulOneClass G] {R : Type*} [Semiring R] (f : k →+* R) (g 
 end MiscTheorems
 
 /-! #### Non-unital, non-associative algebra structure -/
-
-
 section NonUnitalNonAssocAlgebra
 
 variable (k) [Semiring k] [DistribSMul R k] [Mul G]
@@ -227,8 +224,6 @@ instance noZeroSMulDivisors [Zero R] [Semiring k] [SMulZeroClass R k] [NoZeroSMu
 
 end Semiring
 
-/-! #### Derived instances -/
-
 /-!
 #### Copies of `ext` lemmas and bundled `single`s from `Finsupp`
 
@@ -284,8 +279,6 @@ namespace AddMonoidAlgebra
 variable {k G H}
 
 /-! #### Non-unital, non-associative algebra structure -/
-
-
 section NonUnitalNonAssocAlgebra
 
 variable (k) [Semiring k] [DistribSMul R k] [Add G]
