@@ -108,9 +108,9 @@ lemma BddAbove {f : PowerSeries R} (hf : IsRestricted R f c) : BddAbove (converg
   · exact Or.inl (le_of_lt (lt_of_le_of_lt (mul_le_mul_of_nonneg_left
       (by simpa only [abs_pow] using le_abs_self (c ^ i)) (norm_nonneg _)) (hf i h)))
 
-lemma bddabove_nneg {f : PowerSeries R} (hf : IsRestricted R f c) :
+lemma BddAbove_nneg {f : PowerSeries R} (hf : IsRestricted R f c) :
      ∃ A, A > 0 ∧ ∀ i, ‖coeff R i f‖ * c^i ≤ A := by
-  obtain ⟨n, hn⟩ := by simpa only [bddAbove_def] using (bddabove R c hf)
+  obtain ⟨n, hn⟩ := by simpa only [bddAbove_def] using (BddAbove R c hf)
   simp_rw [convergenceSet, Set.mem_setOf_eq, forall_exists_index, forall_apply_eq_imp_iff] at hn
   rcases (eq_zero_or_neZero n) with h | h
   · refine ⟨n + 1, ⟨by simp_rw [h, zero_add, gt_iff_lt, zero_lt_one], fun i => le_trans (hn i)
@@ -125,8 +125,8 @@ open IsUltrametricDist
 lemma mul {f g : PowerSeries R} (hf : IsRestricted R f c) (hg : IsRestricted R g c) :
     IsRestricted R (f * g) c := by
   simp_rw [IsRestricted] at hf hg ⊢
-  obtain ⟨a, ha, fBound1⟩ := bddabove_nneg R |c| ((Equiv_cToAbs R c f).mp hf)
-  obtain ⟨b, hb, gBound1⟩ := bddabove_nneg R |c| ((Equiv_cToAbs R c g).mp hg)
+  obtain ⟨a, ha, fBound1⟩ := BddAbove_nneg R |c| ((Equiv_cToAbs R c f).mp hf)
+  obtain ⟨b, hb, gBound1⟩ := BddAbove_nneg R |c| ((Equiv_cToAbs R c g).mp hg)
   rw [NormedAddCommGroup.tendsto_atTop] at hf hg ⊢
   intro ε hε
   simp only [sub_zero, norm_mul, norm_pow, Real.norm_eq_abs, abs_norm] at hf hg ⊢
