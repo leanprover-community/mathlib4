@@ -244,8 +244,7 @@ theorem irreducible_aux2 {k m m' n : ℕ} (hkm : k < m) (hmn : m < n) (hkm' : k 
   · refine Or.inr ?_
     rw [← trinomial_mirror hkm' hmn' u.ne_zero u.ne_zero, eq_comm, mirror_eq_iff] at hp
     exact hq.trans hp
-  · obtain rfl : m = m' := by omega
-    exact Or.inl (hq.trans hp.symm)
+  · grind
 
 theorem irreducible_aux3 {k m m' n : ℕ} (hkm : k < m) (hmn : m < n) (hkm' : k < m') (hmn' : m' < n)
     (u v w x z : Units ℤ) (hp : p = trinomial k m n (u : ℤ) v w)
