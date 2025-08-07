@@ -67,9 +67,40 @@ lemma isIntegralWeierstrassEquation_of_val_le_one {W : WeierstrassCurve K}
 theorem exists_integralWeierstrassEquation (W : WeierstrassCurve K) :
     ∃ C : VariableChange K, IsIntegralWeierstrassEquation R (C • W) := by
   obtain ⟨ π, hπ ⟩ := valuation_exists_uniformizer K (maximalIdeal R)
-  /- let m₁ : ℕ := max 1 ((valuation_fractionRing R) W.a₁)
-  use ⟨ π ^  , 0, 0, 0 ⟩ -/
-  sorry
+  have isUnit_π : IsUnit π :=
+    IsUnit.mk0 π ((Valuation.ne_zero_iff _).mp (ne_of_eq_of_ne hπ WithZero.coe_ne_zero))
+  /- have val_π_zpow (n : ℤ) :
+      (valuation_fractionRing R) ((isUnit_π.unit : K) ^ n) =  Multiplicative.ofAdd (- (n : ℤ)) := by
+    simp only [IsUnit.unit_spec, map_zpow₀, hπ, Int.reduceNeg, ofAdd_neg, WithZero.coe_inv,
+      inv_zpow', zpow_neg, inv_inj]
+    apply WithZero.coe_inj.mpr
+    rw [← ofAdd_zsmul]
+    apply (Equiv.apply_eq_iff_eq Multiplicative.ofAdd).mpr
+    exact zsmul_int_one n -/
+  let v₁ := (valuation_fractionRing R) W.a₁
+  let v₂ := (valuation_fractionRing R) W.a₂
+  let v₃ := (valuation_fractionRing R) W.a₃
+  let v₄ := (valuation_fractionRing R) W.a₄
+  let v₆ := (valuation_fractionRing R) W.a₆
+  let large := max 1 (max v₁ (max v₂ (max v₃ (max v₄ v₆))))
+  have zero_lt_large : 0 < large := by calc
+    0 < 1 := zero_lt_one
+    1 ≤ large := le_max_left 1 _
+  let largeZ : ℤ := WithZero.unzero (zero_lt_iff.mp zero_lt_large)
+  use ⟨ isUnit_π.unit ^ (- largeZ) , 0 , 0 , 0 ⟩
+  apply isIntegralWeierstrassEquation_of_val_le_one R
+  all_goals
+    simp only [zpow_neg, variableChange_def, inv_inv, Units.val_zpow_eq_zpow_val, IsUnit.unit_spec,
+      mul_zero, add_zero, zero_mul, sub_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
+      zero_pow, map_mul, map_pow, map_zpow₀]
+    rw [hπ]; simp only [Int.reduceNeg, ofAdd_neg, WithZero.coe_inv, inv_zpow', zpow_neg, inv_pow]
+    refine inv_mul_le_one_of_le₀ ?_ zero_le'
+  any_goals rw [← WithZero.coe_zpow, ← ofAdd_zsmul, zsmul_int_one];
+  any_goals rw [← WithZero.coe_pow, ← ofAdd_nsmul]; simp only [Int.nsmul_eq_mul, Nat.cast_ofNat]
+  all_goals
+    refine (WithZero.unzero_le_unzero ?_ ?_).mp ?_
+
+  all_goals sorry
 
 omit [IsDomain R] [IsDiscreteValuationRing R] [IsFractionRing R K] in
 lemma Δ_integral_of_isIntegralWeierstrassEquation {W : WeierstrassCurve K}
