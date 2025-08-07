@@ -197,8 +197,8 @@ lemma deGrootInfo_eq_zero_iff [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsFinit
     (h_univ : π {false} * μ univ = π {true} * ν univ) :
     deGrootInfo μ ν π = 0 ↔ π {false} • μ = π {true} • ν := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · have : IsFiniteMeasure (π {false} • μ) := isFiniteMeasure_smul (by finiteness) _
-    have : IsFiniteMeasure (π {true} • ν) := isFiniteMeasure_smul (by finiteness) _
+  · have : IsFiniteMeasure (π {false} • μ) := μ.smul_finite (by finiteness)
+    have : IsFiniteMeasure (π {true} • ν) := ν.smul_finite (by finiteness)
     refine Measure.eq_of_le_of_measure_univ_eq ?_ (by simp [h_univ])
     refine Measure.le_intro fun s hs _ ↦ ?_
     rw [deGrootInfo_eq_iSup_measurableSet_of_measure_univ_le' _ _ _ h_univ.le] at h

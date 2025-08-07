@@ -63,13 +63,6 @@ lemma Measure.eq_of_le_of_isProbabilityMeasure [IsProbabilityMeasure μ] [IsProb
     (hμν : μ ≤ ν) : μ = ν :=
   eq_of_le_of_measure_univ_eq hμν (by simp)
 
-lemma isFiniteMeasure_smul {c : ℝ≥0∞} (hc : c ≠ ∞) (μ : Measure α) [IsFiniteMeasure μ] :
-    IsFiniteMeasure (c • μ) := by
-  lift c to ℝ≥0 using hc
-  have : (c : ℝ≥0∞) • μ = c • μ := rfl
-  rw [this]
-  infer_instance
-
 end MeasureTheory
 
 namespace MeasurableEmbedding
