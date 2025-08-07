@@ -327,6 +327,13 @@ jobs:
           cd pr-branch
           du .lake/build/lib/lean/Mathlib || echo "This code should be unreachable"
 
+      - name: upload artifact containing contents of pr-branch
+        # temporary measure for debugging no-build failures
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: mathlib4_artifact
+          path: pr-branch/
+
       # The cache secrets are available here, so we must not run any untrusted code.
       - name: upload cache
         # We only upload the cache if the build started (whether succeeding, failing, or cancelled)
