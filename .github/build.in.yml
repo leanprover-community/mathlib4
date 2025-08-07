@@ -267,7 +267,11 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: mathlib4_artifact
-          path: pr-branch/
+          include-hidden-files: true
+          # we exclude .git since there may be secrets in there
+          path: |
+            pr-branch/
+            !pr-branch/.git/
 
       # The cache secrets are available here, so we must not run any untrusted code.
       - name: upload cache
