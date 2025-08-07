@@ -374,6 +374,11 @@ variable [CommMonoid M]
 theorem prod_empty : ∏ x ∈ ∅, f x = 1 :=
   rfl
 
+/-- Variant of `prod_empty` not applied to a function. -/
+@[to_additive (attr := grind =)]
+theorem prod_empty' : Finset.prod (∅ : Finset ι) = fun (_ : ι → M) => 1 :=
+  rfl
+
 @[to_additive]
 theorem prod_of_isEmpty [IsEmpty ι] (s : Finset ι) : ∏ i ∈ s, f i = 1 := by
   rw [eq_empty_of_isEmpty s, prod_empty]
@@ -387,16 +392,23 @@ theorem prod_map (s : Finset ι) (e : ι ↪ κ) (f : κ → M) :
     ∏ x ∈ s.map e, f x = ∏ x ∈ s, f (e x) := by
   rw [Finset.prod, Finset.map_val, Multiset.map_map]; rfl
 
+/-- Variant of `prod_map` not applied to a function. -/
+@[to_additive (attr := grind =)]
+theorem prod_map' (s : Finset ι) (e : ι ↪ κ) :
+    Finset.prod (s.map e) = fun (f : κ → M) => ∏ x ∈ s, f (e x) := by
+  funext f
+  simp
+
 section ToList
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, grind =)]
 theorem prod_map_toList (s : Finset ι) (f : ι → M) : (s.toList.map f).prod = s.prod f := by
   rw [Finset.prod, ← Multiset.prod_coe, ← Multiset.map_coe, Finset.coe_toList]
 
 @[deprecated (since := "2025-04-09")] alias prod_to_list := prod_map_toList
 @[deprecated (since := "2025-04-09")] alias sum_to_list := sum_map_toList
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, grind =)]
 theorem prod_toList {M : Type*} [CommMonoid M] (s : Finset M) :
     s.toList.prod = ∏ x ∈ s, x := by
   simpa using s.prod_map_toList id

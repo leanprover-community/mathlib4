@@ -35,7 +35,7 @@ section Semigroup
 variable [Semigroup α] {a b c : α}
 
 /-- There are two possible conventions for divisibility, which coincide in a `CommMonoid`.
-    This matches the convention for ordinals. -/
+This matches the convention for ordinals. -/
 @[to_additive] instance (priority := 100) semigroupDvd : Dvd α :=
   Dvd.mk fun a b ↦ ∃ c, b = a * c
 

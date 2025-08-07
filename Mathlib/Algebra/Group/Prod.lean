@@ -578,7 +578,7 @@ section
 variable [Monoid M] [Monoid N]
 
 /-- The monoid equivalence between units of a product of two monoids, and the product of the
-    units of each monoid. -/
+units of each monoid. -/
 @[to_additive prodAddUnits
       "The additive monoid equivalence between additive units of a product
       of two additive monoids, and the product of the additive units of each additive monoid."]
