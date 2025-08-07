@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Kim Morrison
 -/
 import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Algebra.Group.InjSurj
+import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.Tactic.FastInstance
 

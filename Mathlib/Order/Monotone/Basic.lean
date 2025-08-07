@@ -50,33 +50,9 @@ decreasing, strictly decreasing
 
 open Function OrderDual
 
-universe u v w
+universe u v
 
-variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {δ : Type*} {π : ι → Type*}
-
-section Decidable
-
-variable [Preorder α] [Preorder β] {f : α → β} {s : Set α}
-
-instance [i : Decidable (∀ a b, a ≤ b → f a ≤ f b)] : Decidable (Monotone f) := i
-instance [i : Decidable (∀ a b, a ≤ b → f b ≤ f a)] : Decidable (Antitone f) := i
-
-instance [i : Decidable (∀ a ∈ s, ∀ b ∈ s, a ≤ b → f a ≤ f b)] :
-    Decidable (MonotoneOn f s) := i
-
-instance [i : Decidable (∀ a ∈ s, ∀ b ∈ s, a ≤ b → f b ≤ f a)] :
-    Decidable (AntitoneOn f s) := i
-
-instance [i : Decidable (∀ a b, a < b → f a < f b)] : Decidable (StrictMono f) := i
-instance [i : Decidable (∀ a b, a < b → f b < f a)] : Decidable (StrictAnti f) := i
-
-instance [i : Decidable (∀ a ∈ s, ∀ b ∈ s, a < b → f a < f b)] :
-    Decidable (StrictMonoOn f s) := i
-
-instance [i : Decidable (∀ a ∈ s, ∀ b ∈ s, a < b → f b < f a)] :
-    Decidable (StrictAntiOn f s) := i
-
-end Decidable
+variable {ι : Type*} {α : Type u} {β : Type v}
 
 /-! ### Monotonicity on the dual order
 
@@ -731,9 +707,3 @@ lemma converges_of_monotone_of_bounded {f : ℕ → ℕ} (mono_f : Monotone f)
       replace hN : f N = c + 1 := by specialize hc N; omega
       use c + 1, N; intro n hn
       specialize mono_f hn; specialize hc n; omega
-
-@[deprecated (since := "2024-11-27")]
-alias Group.card_pow_eq_card_pow_card_univ_aux := Nat.stabilises_of_monotone
-
-@[deprecated (since := "2024-11-27")]
-alias Group.card_nsmul_eq_card_nsmulpow_card_univ_aux := Nat.stabilises_of_monotone

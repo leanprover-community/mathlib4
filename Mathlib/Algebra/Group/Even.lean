@@ -101,9 +101,6 @@ end Add
 @[to_additive (attr := simp, grind)]
 lemma IsSquare.one [MulOneClass α] : IsSquare (1 : α) := ⟨1, (mul_one _).symm⟩
 
-@[deprecated (since := "2024-12-27")] alias isSquare_one := IsSquare.one
-@[deprecated (since := "2024-12-27")] alias even_zero := Even.zero
-
 section MonoidHom
 variable [MulOneClass α] [MulOneClass β] [FunLike F α β] [MonoidHomClass F α β]
 
@@ -133,19 +130,12 @@ alias ⟨IsSquare.exists_sq, _⟩ := isSquare_iff_exists_sq
 @[to_additive (attr := aesop safe) Even.two_nsmul]
 lemma IsSquare.sq (r : α) : IsSquare (r ^ 2) := ⟨r, pow_two _⟩
 
-@[deprecated (since := "2024-12-27")] alias IsSquare_sq := IsSquare.sq
-@[deprecated (since := "2024-12-27")] alias even_two_nsmul := Even.two_nsmul
-
 @[to_additive (attr := aesop unsafe 80%) Even.nsmul_right]
 lemma IsSquare.pow (n : ℕ) (ha : IsSquare a) : IsSquare (a ^ n) := by
   aesop (add simp Commute.mul_pow)
 
-@[deprecated (since := "2025-01-19")] alias Even.nsmul := Even.nsmul_right
-
 @[to_additive (attr := aesop unsafe 90%) Even.nsmul_left]
 lemma Even.isSquare_pow (hn : Even n) : ∀ a : α, IsSquare (a ^ n) := by aesop (add simp pow_add)
-
-@[deprecated (since := "2025-01-19")] alias Even.nsmul' := Even.nsmul_left
 
 end Monoid
 

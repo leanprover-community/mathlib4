@@ -111,8 +111,8 @@ theorem triple_product_permutation (u v w : Fin 3 → R) : u ⬝ᵥ v ⨯₃ w =
   ring
 
 /-- The triple product of `u`, `v`, and `w` is equal to the determinant of the matrix
-    with those vectors as its rows. -/
-theorem triple_product_eq_det (u v w : Fin 3 → R) : u ⬝ᵥ v ⨯₃ w = Matrix.det ![u, v, w] := by
+with those vectors as its rows. -/
+theorem triple_product_eq_det (u v w : Fin 3 → R) : u ⬝ᵥ v ×₃ w = Matrix.det ![u, v, w] := by
   rw [vec3_dotProduct, cross_apply, det_fin_three]
   dsimp only [Matrix.cons_val]
   ring
@@ -133,7 +133,7 @@ theorem leibniz_cross (u v w : Fin 3 → R) : u ⨯₃ (v ⨯₃ w) = u ⨯₃ v
   simp_rw [cross_apply, vec3_add]
   apply vec3_eq <;> dsimp <;> ring
 
-/-- The three-dimensional vectors together with the operations + and ⨯₃ form a Lie ring.
+/-- The three-dimensional vectors together with the operations + and ×₃ form a Lie ring.
     Note we do not make this an instance as a conflicting one already exists
     via `LieRing.ofAssociativeRing`. -/
 def Cross.lieRing : LieRing (Fin 3 → R) :=
@@ -151,7 +151,7 @@ theorem cross_cross (u v w : Fin 3 → R) : u ⨯₃ v ⨯₃ w = u ⨯₃ (v �
 
 /-- **Jacobi identity**: For a cross product of three vectors,
     their sum over the three even permutations is equal to the zero vector. -/
-theorem jacobi_cross (u v w : Fin 3 → R) : u ⨯₃ (v ⨯₃ w) + v ⨯₃ (w ⨯₃ u) + w ⨯₃ (u ⨯₃ v) = 0 :=
+theorem jacobi_cross (u v w : Fin 3 → R) : u ×₃ (v ×₃ w) + v ×₃ (w ×₃ u) + w ×₃ (u ×₃ v) = 0 :=
   lie_jacobi u v w
 
 end LeibnizProperties
