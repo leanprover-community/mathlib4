@@ -106,18 +106,35 @@ lemma convex_mapsMatchingInner (x : B) : Convex ℝ (mapsMatchingInner F E x) :=
   simp [hφ v w, hψ v w]
   grind
 
-noncomputable def pullback_bilinear_fn {X Y Z : Type*} (f : X → Y) (φ : Y → Y → Z) : X → X → Z :=
+-- probably not that useful
+noncomputable def pullback_bifunction {X Y Z : Type*} (f : X → Y) (φ : Y → Y → Z) : X → X → Z :=
   fun v w ↦ φ (f v) (f w)
+
+open Module
+
+-- TODO: remove the `Fintype ι` requirement from `Basis.linearMap` and then this definition
+noncomputable def IsBilinearMap.pullback_aux {ι : Type*} [Fintype ι]
+    {x : B} (φ : (E x) →ₗ[ℝ] (E x) →ₗ[ℝ] ℝ)
+    (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B))
+    [MemTrivializationAtlas e] (b : Basis ι ℝ F) :
+    (F →ₗ[ℝ] F) →ₗ[ℝ] ℝ := by
+  classical
+  letI g : ι × ι → ℝ := fun (i, j) ↦ φ (e.symm x (b i)) (e.symm x (b j))
+  exact (b.linearMap b).constr ℝ g
+
+#exit
 
 -- TODO: make a better identification: choose a basis, extend to a bilinear map!
 -- TODO: extend this to any trivialization at x!
-def isBilinearMap_pullback_fn (x : B) (φ : (E x) →ₗ[ℝ] (E x) →ₗ[ℝ] ℝ) :
+def isBilinearMap_pullback_fn {ι : Type*} {x : B} (φ : (E x) →ₗ[ℝ] (E x) →ₗ[ℝ] ℝ)
+    (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B))
+    [MemTrivializationAtlas e] (b : Module.Basis ι ℝ F) (hx : x ∈ e.baseSet) :
     letI φ' : (E x) → (E x) → ℝ := fun v ↦ (φ.toFun v).toFun
-    letI t := (trivializationAt F E x).symm x
-    IsBilinearMap ℝ (pullback_bilinear_fn t φ') where
+
+    IsBilinearMap ℝ (pullback_bifunction (e.symm x) φ') where
   add_left := by
     intro x₁ x₂ y
-    simp [pullback_bilinear_fn]
+    simp [pullback_bifunction]
     have wannabe : (trivializationAt F E x).symm x (x₁ + x₂) =
       (trivializationAt F E x).symm x x₁ + (trivializationAt F E x).symm x x₂ := sorry
     -- sadly, wannabe is not true as-is
