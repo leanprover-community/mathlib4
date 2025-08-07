@@ -423,7 +423,7 @@ variable (E F IB) in
 /-- An arbitrary choice of bundle metric on `E`, which is smooth in the fibre. -/
 def RMetric [SigmaCompactSpace B] [T2Space B] [IsManifold IB ∞ B] [FiniteDimensional ℝ EB] :
     Π (x : B), E x →L[ℝ] E x →L[ℝ] ℝ := by
-  let aux := RMetric_aux IB F E
+  let aux := RMetric_aux IB E
   intro x
   let aux' := aux x
   -- TODO: translate everything back (and prove this preserves smoothness...)
@@ -431,13 +431,13 @@ def RMetric [SigmaCompactSpace B] [T2Space B] [IsManifold IB ∞ B] [FiniteDimen
 
 lemma rMetric_contMDiff [FiniteDimensional ℝ EB] :
     ContMDiff IB (IB.prod 𝓘(ℝ, F →L[ℝ] F →L[ℝ] ℝ)) n
-      (fun b ↦ TotalSpace.mk' (F →L[ℝ] F →L[ℝ] ℝ) b (RMetric IB F E b)) :=
+      (fun b ↦ TotalSpace.mk' (F →L[ℝ] F →L[ℝ] ℝ) b (RMetric IB E b)) :=
   sorry
 
-lemma rMetric_eq (x : B) (v w : E x) : ⟪v, w⟫ = (RMetric IB F E) x v w := sorry
+lemma rMetric_eq (x : B) (v w : E x) : ⟪v, w⟫ = (RMetric IB E) x v w := sorry
 
 /-- Every `C^n` vector bundle whose fibre admits a `C^n` partition of unity
 is a `C^n` Riemannian vector bundle. (The Lean statement assumes an inner product on each fibre
 already, which is why there are no other assumptions yet??) -/
 lemma ContDiffVectorBundle.isContMDiffRiemannianBundle : IsContMDiffRiemannianBundle IB n F E :=
-  ⟨RMetric IB F E, rMetric_contMDiff, fun x v w ↦ rMetric_eq x v w⟩
+  ⟨RMetric IB E, rMetric_contMDiff, fun x v w ↦ rMetric_eq x v w⟩
