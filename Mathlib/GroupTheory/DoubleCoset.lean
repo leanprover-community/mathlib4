@@ -176,14 +176,14 @@ theorem mk_eq_of_doubleCoset_eq {H K : Subgroup G} {a b : G}
 @[deprecated (since := "2025-07-12")]
 alias _root_.Doset.mk_eq_of_doset_eq := mk_eq_of_doubleCoset_eq
 
-theorem mem_quotToDoset_iff (H K : Subgroup G) (i : Quotient (H : Set G) K) (a : G) :
-    a ∈ quotToDoset H K i ↔ mk H K a = i := by
+theorem mem_quotToDoubleCoset_iff (H K : Subgroup G) (i : Quotient (H : Set G) K) (a : G) :
+    a ∈ quotToDoubleCoset H K i ↔ mk H K a = i := by
    constructor
    · intro hg
-     simp_rw [mk_eq_of_doset_eq (doset_eq_of_mem hg), Quotient.out_eq]
+     simp_rw [mk_eq_of_doubleCoset_eq (doubleCoset_eq_of_mem hg), Quotient.out_eq]
    · intro hg
      rw [← out_eq' _ _ i] at hg
-     exact mem_doset.mpr ((eq _ _ _ a).mp hg.symm)
+     exact mem_doubleCoset.mpr ((eq _ _ _ a).mp hg.symm)
 
 theorem disjoint_out {H K : Subgroup G} {a b : Quotient H K} :
     a ≠ b → Disjoint (doubleCoset a.out H K) (doubleCoset b.out (H : Set G) K) := by
@@ -253,8 +253,8 @@ theorem right_bot_eq_right_quot (H : Subgroup G) :
   ext
   simp_rw [← rel_bot_eq_right_group_rel H]
 
-theorem iUnion_finset_quotToDoset (H K : Subgroup G) :
-    (∃ I : Finset (Quotient (H : Set G) K), ⋃ i ∈ I, quotToDoset H K i = .univ) ↔
+theorem iUnion_finset_quotToDoubleCoset (H K : Subgroup G) :
+    (∃ I : Finset (Quotient (H : Set G) K), ⋃ i ∈ I, quotToDoubleCoset H K i = .univ) ↔
     Finite (Quotient (H : Set G) K) := by
   constructor
   · intro ⟨I, hI⟩
@@ -263,52 +263,52 @@ theorem iUnion_finset_quotToDoset (H K : Subgroup G) :
       exact I.finite_toSet
     rw [Set.eq_univ_iff_forall] at hI ⊢
     rintro ⟨g⟩
-    obtain ⟨_, ⟨i, _, rfl⟩, T, ⟨hi, rfl⟩, hT : g ∈ quotToDoset H K i⟩ := hI g
-    rw [Doset.mem_quotToDoset_iff] at hT
+    obtain ⟨_, ⟨i, _, rfl⟩, T, ⟨hi, rfl⟩, hT : g ∈ quotToDoubleCoset H K i⟩ := hI g
+    rw [mem_quotToDoubleCoset_iff] at hT
     simpa [← hT] using hi
   · intro _
     cases nonempty_fintype (Quotient (H : Set G) K)
     use Finset.univ
-    simpa using Doset.union_quotToDoset H K
+    simpa using union_quotToDoubleCoset H K
 
 theorem union_image_mk_leftRel (H K : Subgroup G) :
-    ⋃ (q : Doset.Quotient H K), Quot.mk (QuotientGroup.leftRel K) ''
-    (Doset.doset (Quotient.out q : G) H K) = Set.univ := by
-  have Cover_Dfx := Doset.union_quotToDoset H K
+    ⋃ (q : Quotient H K), Quot.mk (QuotientGroup.leftRel K) ''
+    (doubleCoset (Quotient.out q : G) H K) = Set.univ := by
+  have Cover_Dfx := union_quotToDoubleCoset H K
   refine Eq.symm (Set.Subset.antisymm ?_ fun ⦃a⦄ a ↦ trivial)
   intro x hx
   simp only [Set.mem_iUnion, Set.mem_image]
   obtain ⟨y, hy⟩ := Quot.exists_rep x
-  have ⟨i, hi⟩ : ∃ i : Doset.Quotient H K, y ∈ Doset.doset (Quotient.out i) H K  := by
+  have ⟨i, hi⟩ : ∃ i : Quotient H K, y ∈ doubleCoset (Quotient.out i) H K  := by
     contrapose Cover_Dfx
-    refine (Set.ne_univ_iff_exists_notMem (⋃ q, quotToDoset H K q)).mpr ?_
+    refine (Set.ne_univ_iff_exists_notMem (⋃ q, quotToDoubleCoset H K q)).mpr ?_
     exact ⟨y, by simpa using Cover_Dfx⟩
   exact ⟨i, y, hi, hy⟩
 
 theorem union_image_mk_rightRel (H K : Subgroup G) :
-    ⋃ (q : Doset.Quotient H K), Quot.mk (QuotientGroup.rightRel H) ''
-    (Doset.doset (Quotient.out q : G) H K) = Set.univ := by
-  have Cover_Dfx := Doset.union_quotToDoset H K
+    ⋃ (q : Quotient H K), Quot.mk (QuotientGroup.rightRel H) ''
+    (doubleCoset (Quotient.out q : G) H K) = Set.univ := by
+  have Cover_Dfx := union_quotToDoubleCoset H K
   refine Eq.symm (Set.Subset.antisymm ?_ fun ⦃a⦄ a ↦ trivial)
   intro x hx
   simp only [Set.mem_iUnion, Set.mem_image]
   obtain ⟨y, hy⟩ := Quot.exists_rep x
-  have ⟨i, hi⟩ : ∃ i : Doset.Quotient H K, y ∈ Doset.doset (Quotient.out i) H K  := by
+  have ⟨i, hi⟩ : ∃ i : Quotient H K, y ∈ doubleCoset (Quotient.out i) H K  := by
     contrapose Cover_Dfx
-    refine (Set.ne_univ_iff_exists_notMem (⋃ q, quotToDoset H K q)).mpr ?_
+    refine (Set.ne_univ_iff_exists_notMem (⋃ q, quotToDoubleCoset H K q)).mpr ?_
     exact ⟨y, by simpa using Cover_Dfx⟩
   exact ⟨i, y, hi, hy⟩
 
 theorem union_finset_leftRel_cover (H K : Subgroup G)
-    (t : Finset (Doset.Quotient H K)) (ht : Set.univ ⊆ ⋃ i ∈ t,
-    Quot.mk ⇑(QuotientGroup.leftRel K) '' Doset.doset (Quotient.out i)
-    H K) : ⋃ q ∈ t, Doset.doset (Quotient.out q) H K = Set.univ := by
+    (t : Finset (Quotient H K)) (ht : Set.univ ⊆ ⋃ i ∈ t,
+    Quot.mk ⇑(QuotientGroup.leftRel K) '' doubleCoset (Quotient.out i)
+    H K) : ⋃ q ∈ t, doubleCoset (Quotient.out q) H K = Set.univ := by
   contrapose ht
   simp only [Set.univ_subset_iff, ← ne_eq] at ⊢ ht
   obtain ⟨x, hx⟩ := (Set.ne_univ_iff_exists_notMem
-    (⋃ q ∈ t, Doset.doset (Quotient.out q) H K)).mp ht
+    (⋃ q ∈ t, doubleCoset (Quotient.out q) H K)).mp ht
   refine (Set.ne_univ_iff_exists_notMem (⋃ i ∈ t,
-    Quot.mk ⇑(QuotientGroup.leftRel K) '' Doset.doset (Quotient.out i)
+    Quot.mk ⇑(QuotientGroup.leftRel K) '' doubleCoset (Quotient.out i)
     H K)).mpr ⟨Quot.mk (⇑(QuotientGroup.leftRel K)) x, ?_⟩
   simp only [Set.mem_iUnion, Set.mem_image, exists_prop, not_exists, not_and]
   intro y hy q hq
@@ -316,22 +316,22 @@ theorem union_finset_leftRel_cover (H K : Subgroup G)
   simp only [Set.mem_iUnion, exists_prop, not_exists, not_and, not_forall, not_not]
   simp only [not_not] at hx
   refine ⟨y, hy, ?_⟩
-  rw [← Doset.doset_eq_of_mem hq]
-  apply Doset.mem_doset.mpr
+  rw [← doubleCoset_eq_of_mem hq]
+  apply mem_doubleCoset.mpr
   obtain ⟨a', ha'⟩ := (Quotient.eq).mp hx
   refine ⟨1, one_mem H, (MulOpposite.unop a'⁻¹), Subgroup.mem_op.mp (by simp), by simpa
     using (eq_mul_inv_of_mul_eq ha')⟩
 
 theorem union_finset_rightRel_cover (H K : Subgroup G)
-    (t : Finset (Doset.Quotient H K)) (ht : Set.univ ⊆ ⋃ i ∈ t,
-    Quot.mk ⇑(QuotientGroup.rightRel H) '' Doset.doset (Quotient.out i)
-    H K) : ⋃ q ∈ t, Doset.doset (Quotient.out q) H K = Set.univ := by
+    (t : Finset (Quotient H K)) (ht : Set.univ ⊆ ⋃ i ∈ t,
+    Quot.mk ⇑(QuotientGroup.rightRel H) '' doubleCoset (Quotient.out i)
+    H K) : ⋃ q ∈ t, doubleCoset (Quotient.out q) H K = Set.univ := by
   contrapose ht
   simp only [Set.univ_subset_iff, ← ne_eq] at ⊢ ht
   obtain ⟨x, hx⟩ := (Set.ne_univ_iff_exists_notMem
-    (⋃ q ∈ t, Doset.doset (Quotient.out q) H K)).mp ht
+    (⋃ q ∈ t, doubleCoset (Quotient.out q) H K)).mp ht
   refine (Set.ne_univ_iff_exists_notMem (⋃ i ∈ t,
-    Quot.mk ⇑(QuotientGroup.rightRel H) '' Doset.doset (Quotient.out i)
+    Quot.mk ⇑(QuotientGroup.rightRel H) '' doubleCoset (Quotient.out i)
     H K)).mpr ⟨Quot.mk (⇑(QuotientGroup.rightRel H)) x, ?_⟩
   simp only [Set.mem_iUnion, Set.mem_image, exists_prop, not_exists, not_and]
   intro y hy q hq
@@ -339,8 +339,8 @@ theorem union_finset_rightRel_cover (H K : Subgroup G)
   simp only [Set.mem_iUnion, exists_prop, not_exists, not_and, not_forall, not_not]
   simp only [not_not] at hx
   refine ⟨y, hy, ?_⟩
-  rw [← Doset.doset_eq_of_mem hq]
-  apply Doset.mem_doset.mpr
+  rw [← doubleCoset_eq_of_mem hq]
+  apply mem_doubleCoset.mpr
   obtain ⟨a, ha⟩ : ∃ a : H, x = a * q := by
     obtain ⟨a, ha⟩  : ∃ a : H, a * x = q := by
       obtain ⟨a', ha'⟩ := (Quotient.eq).mp hx
@@ -350,10 +350,7 @@ theorem union_finset_rightRel_cover (H K : Subgroup G)
   simp only [Subtype.coe_prop, SetLike.mem_coe, true_and]
   exact ⟨1, Subgroup.one_mem K, by simpa using ha⟩
 
-end Doset
-
 @[deprecated (since := "2025-07-12")]
 alias _root_.Doset.right_bot_eq_right_quot := right_bot_eq_right_quot
 
 end DoubleCoset
-
