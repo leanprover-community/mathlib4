@@ -77,9 +77,6 @@ theorem finiteMultiplicity_of_degree_pos_of_monic (hp : (0 : WithBot ℕ) < degr
           (add_pos_of_pos_of_nonneg (by rwa [one_mul]) (Nat.zero_le _)))
         this⟩
 
-@[deprecated (since := "2024-11-30")]
-alias multiplicity_finite_of_degree_pos_of_monic := finiteMultiplicity_of_degree_pos_of_monic
-
 end Semiring
 
 section Ring
@@ -135,12 +132,7 @@ theorem degree_modByMonic_lt [Nontrivial R] :
       have _wf := div_wf_lemma ⟨h.1, h.2⟩ hq
       have :=
         degree_modByMonic_lt (p - q * (C (leadingCoeff p) * X ^ (natDegree p - natDegree q))) hq
-      unfold modByMonic at this ⊢
-      unfold divModByMonicAux
-      dsimp
-      rw [dif_pos hq] at this ⊢
-      rw [if_pos h]
-      exact this
+      grind [divModByMonicAux, modByMonic]
     else
       Or.casesOn (not_and_or.1 h)
         (by
@@ -167,21 +159,11 @@ theorem natDegree_modByMonic_lt (p : R[X]) {q : R[X]} (hmq : Monic q) (hq : q �
 
 @[simp]
 theorem zero_modByMonic (p : R[X]) : 0 %ₘ p = 0 := by
-  classical
-  unfold modByMonic divModByMonicAux
-  dsimp
-  by_cases hp : Monic p
-  · rw [dif_pos hp, if_neg (mt And.right (not_not_intro rfl))]
-  · rw [dif_neg hp]
+  grind [modByMonic, divModByMonicAux]
 
 @[simp]
 theorem zero_divByMonic (p : R[X]) : 0 /ₘ p = 0 := by
-  classical
-  unfold divByMonic divModByMonicAux
-  dsimp
-  by_cases hp : Monic p
-  · rw [dif_pos hp, if_neg (mt And.right (not_not_intro rfl))]
-  · rw [dif_neg hp]
+  grind [divByMonic, divModByMonicAux]
 
 @[simp]
 theorem modByMonic_zero (p : R[X]) : p %ₘ 0 = p :=
@@ -488,9 +470,6 @@ theorem finiteMultiplicity_X_sub_C (a : R) (h0 : p ≠ 0) : FiniteMultiplicity (
   rw [degree_X_sub_C]
   decide
 
-@[deprecated (since := "2024-11-30")]
-alias multiplicity_X_sub_C_finite := finiteMultiplicity_X_sub_C
-
 /- Porting note: stripping out classical for decidability instance parameter might
 make for better ergonomics -/
 /-- The largest power of `X - C a` which divides `p`.
@@ -732,7 +711,7 @@ lemma rootMultiplicity_add {p q : R[X]} (a : R) (hzero : p + q ≠ 0) :
 lemma le_rootMultiplicity_mul {p q : R[X]} (x : R) (hpq : p * q ≠ 0) :
     rootMultiplicity x p + rootMultiplicity x q ≤ rootMultiplicity x (p * q) := by
   rw [le_rootMultiplicity_iff hpq, pow_add]
-  exact mul_dvd_mul (pow_rootMultiplicity_dvd p x) (pow_rootMultiplicity_dvd q x)
+  gcongr <;> apply pow_rootMultiplicity_dvd
 
 lemma pow_rootMultiplicity_not_dvd (p0 : p ≠ 0) (a : R) :
     ¬(X - C a) ^ (rootMultiplicity a p + 1) ∣ p := by rw [← rootMultiplicity_le_iff p0]
@@ -784,11 +763,11 @@ lemma leadingCoeff_divByMonic_X_sub_C (p : R[X]) (hp : degree p ≠ 0) (a : R) :
 lemma eq_of_dvd_of_natDegree_le_of_leadingCoeff {p q : R[X]} (hpq : p ∣ q)
     (h₁ : q.natDegree ≤ p.natDegree) (h₂ : p.leadingCoeff = q.leadingCoeff) :
     p = q := by
-  by_cases hq : q = 0
-  · rwa [hq, leadingCoeff_zero, leadingCoeff_eq_zero, ← hq] at h₂
+  rcases eq_or_ne q 0 with rfl | hq
+  · simpa using h₂
   replace h₁ := (natDegree_le_of_dvd hpq hq).antisymm h₁
   obtain ⟨u, rfl⟩ := hpq
-  replace hq := mul_ne_zero_iff.mp hq
+  rw [mul_ne_zero_iff] at hq
   rw [natDegree_mul hq.1 hq.2, left_eq_add] at h₁
   rw [eq_C_of_natDegree_eq_zero h₁, leadingCoeff_mul, leadingCoeff_C,
     eq_comm, mul_eq_left₀ (leadingCoeff_ne_zero.mpr hq.1)] at h₂
