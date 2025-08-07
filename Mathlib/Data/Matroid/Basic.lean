@@ -197,10 +197,10 @@ structure Matroid (α : Type*) where
   /-- There is at least one `Base`. -/
   (exists_isBase : ∃ B, IsBase B)
   /-- For any bases `B`, `B'` and `e ∈ B \ B'`, there is some `f ∈ B' \ B` for which `B-e+f`
-    is a base. -/
+  is a base. -/
   (isBase_exchange : Matroid.ExchangeProperty IsBase)
   /-- Every independent subset `I` of a set `X` for is contained in a maximal independent
-    subset of `X`. -/
+  subset of `X`. -/
   (maximality : ∀ X, X ⊆ E → Matroid.ExistsMaximalSubsetProperty Indep X)
   /-- Every base is contained in the ground set. -/
   (subset_ground : ∀ B, IsBase B → B ⊆ E)
@@ -387,7 +387,7 @@ theorem IsBase.subset_ground (hB : M.IsBase B) : B ⊆ M.E :=
   M.subset_ground B hB
 
 theorem IsBase.exchange {e : α} (hB₁ : M.IsBase B₁) (hB₂ : M.IsBase B₂) (hx : e ∈ B₁ \ B₂) :
-    ∃ y ∈ B₂ \ B₁, M.IsBase (insert y (B₁ \ {e}))  :=
+    ∃ y ∈ B₂ \ B₁, M.IsBase (insert y (B₁ \ {e})) :=
   M.isBase_exchange B₁ B₂ hB₁ hB₂ _ hx
 
 theorem IsBase.exchange_mem {e : α}
