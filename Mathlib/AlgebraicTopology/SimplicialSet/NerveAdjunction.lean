@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Emily Riehl, Joël Riou
 import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
 import Mathlib.AlgebraicTopology.SimplexCategory.MorphismProperty
 import Mathlib.CategoryTheory.MorphismProperty.Composition
-import Mathlib.Tactic.DepRewrite
 
 /-!
 
