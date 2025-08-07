@@ -6,7 +6,7 @@ Authors: Zhouhang Zhou, Frédéric Dupuis, Heather Macbeth
 import Mathlib.Analysis.InnerProductSpace.Projection.Basic
 
 /-!
-# Subspaces with orthogonal projections
+# Subspaces associated with orthogonal projections
 
 Here, the orthogonal projection is used to prove a series of more subtle lemmas about the
 orthogonal complement of subspaces of `E` (the orthogonal complement itself was
