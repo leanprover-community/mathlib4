@@ -443,6 +443,13 @@ theorem exists_ne_map_eq_of_card_lt_of_maps_to (hc : #t < #s) {f : α → β}
   contrapose
   exact hz x hx y hy
 
+/-- a special case of `exists_ne_map_eq_of_card_lt_of_maps_to` where `t` is `s.image f` -/
+theorem exists_ne_map_eq_of_card_image_lt [DecidableEq β] {f : α → β} (hc : #(s.image f) < #s) :
+    ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ f x = f y := by
+  have hf := Set.mapsTo_image f s
+  rw [← coe_image] at hf
+  exact exists_ne_map_eq_of_card_lt_of_maps_to hc hf
+
 /--
 See also `Finset.card_le_card_of_injOn`, which is a more general version of this lemma.
 TODO: consider deprecating, since this is just a special case of `Finset.card_le_card_of_injOn`.
