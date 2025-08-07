@@ -3,6 +3,7 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
+import Mathlib.Algebra.Group.Support
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Module.LinearMap.Defs
 import Mathlib.RingTheory.HahnSeries.Basic
@@ -343,7 +344,7 @@ instance : Neg (HahnSeries Γ R) where
   neg x :=
     { coeff := fun a => -x.coeff a
       isPWO_support' := by
-        rw [Function.support_neg]
+        rw [Function.support_fun_neg]
         exact x.isPWO_support }
 
 @[simp]

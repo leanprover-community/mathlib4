@@ -947,8 +947,8 @@ def unitIso (V : Rep k G) : V ≅ (toModuleMonoidAlgebra ⋙ ofModuleMonoidAlgeb
 def equivalenceModuleMonoidAlgebra : Rep k G ≌ ModuleCat.{u} (MonoidAlgebra k G) where
   functor := toModuleMonoidAlgebra
   inverse := ofModuleMonoidAlgebra
-  unitIso := NatIso.ofComponents (fun V => unitIso V) (by aesop_cat)
-  counitIso := NatIso.ofComponents (fun M => counitIso M) (by aesop_cat)
+  unitIso := NatIso.ofComponents (fun V => unitIso V) (by cat_disch)
+  counitIso := NatIso.ofComponents (fun M => counitIso M) (by cat_disch)
 
 -- TODO Verify that the equivalence with `ModuleCat (MonoidAlgebra k G)` is a monoidal functor.
 end
