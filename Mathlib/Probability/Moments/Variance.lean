@@ -201,18 +201,11 @@ theorem variance_smul' {A : Type*} [CommSemiring A] [Algebra A ℝ] (c : A) (X :
   · congr; simp only [algebraMap_smul]
   · simp only [Algebra.smul_def, map_pow]
 
-theorem variance_def' [IsProbabilityMeasure μ] {X : Ω → ℝ} (hX : MemLp X 2 μ) :
+theorem variance_eq_sub [IsProbabilityMeasure μ] {X : Ω → ℝ} (hX : MemLp X 2 μ) :
     variance X μ = μ[X ^ 2] - μ[X] ^ 2 := by
-  simp only [variance_eq_integral hX.aestronglyMeasurable.aemeasurable, sub_sq']
-  rw [integral_sub, integral_add]; rotate_left
-  · exact hX.integrable_sq
-  · apply integrable_const
-  · apply hX.integrable_sq.add
-    apply integrable_const
-  · exact ((hX.integrable one_le_two).const_mul 2).mul_const' _
-  simp only [integral_const, measureReal_univ_eq_one, smul_eq_mul, one_mul, integral_mul_const,
-    integral_const_mul, Pi.pow_apply]
-  ring
+  rw [← covariance_self hX.aemeasurable, covariance_eq_sub hX hX, pow_two, pow_two]
+
+@[deprecated (since := "2025-08-07")] alias variance_def' := variance_eq_sub
 
 lemma variance_add_const [IsProbabilityMeasure μ] (hX : AEStronglyMeasurable X μ) (c : ℝ) :
     Var[fun ω ↦ X ω + c; μ] = Var[X; μ] := by
