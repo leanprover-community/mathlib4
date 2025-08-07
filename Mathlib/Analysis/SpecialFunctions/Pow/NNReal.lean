@@ -654,13 +654,10 @@ lemma rpow_intCast (x : ℝ≥0∞) (n : ℤ) : x ^ (n : ℝ) = x ^ n := by
   cases n <;> simp only [Int.ofNat_eq_coe, Int.cast_natCast, rpow_natCast, zpow_natCast,
     Int.cast_negSucc, rpow_neg, zpow_negSucc]
 
-lemma NNReal_pow_le_one (m : ℤ) (n : NNReal) (hn : 1 ≤ n) (hm : m ≤ 0) :
+lemma ENNReal.coe_zpow_le_one_of_nonpos (m : ℤ) (n : NNReal) (hn : 1 ≤ n) (hm : m ≤ 0) :
     (n ^ m : ENNReal) ≤ 1 := by
-  convert_to (n ^ (m : ℝ) : ENNReal) ≤ 1
-  · simp
-  rw [←ENNReal.coe_rpow_of_ne_zero (by positivity)]
-  simp only [NNReal.rpow_intCast, coe_le_one_iff]
-  exact zpow_le_one_of_nonpos₀ hn hm
+  convert ENNReal.coe_le_coe.mpr (zpow_le_one_of_nonpos₀ hn hm)
+  rw [ENNReal.coe_zpow (by positivity)]
 
 theorem rpow_two (x : ℝ≥0∞) : x ^ (2 : ℝ) = x ^ 2 := rpow_ofNat x 2
 
