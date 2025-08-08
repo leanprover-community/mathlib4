@@ -5,7 +5,7 @@ Authors: María Inés de Frutos-Fernández
 -/
 import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 import Mathlib.Data.Int.WithZero
-import Mathlib.RingTheory.DedekindDomain.Ideal
+import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 import Mathlib.RingTheory.Valuation.ExtendToLocalization
 import Mathlib.Topology.Algebra.Valued.ValuedField
 import Mathlib.Topology.Algebra.Valued.WithVal
@@ -522,6 +522,16 @@ instance : Algebra R (v.adicCompletionIntegers K) where
     simp only [Algebra.smul_def]
     rfl
 
+@[simp]
+lemma algebraMap_adicCompletionIntegers_apply (r : R) :
+    algebraMap R (v.adicCompletionIntegers K) r = (algebraMap R K r : v.adicCompletion K) :=
+  rfl
+
+instance [FaithfulSMul R K] : FaithfulSMul R (v.adicCompletionIntegers K) := by
+  rw [faithfulSMul_iff_algebraMap_injective]
+  intro x y
+  simp [Subtype.ext_iff, (FaithfulSMul.algebraMap_injective R K).eq_iff]
+
 variable {R K} in
 open scoped algebraMap in -- to make the coercions from `R` fire
 /-- The valuation on the completion agrees with the global valuation on elements of the
@@ -550,12 +560,7 @@ theorem coe_smul_adicCompletionIntegers (r : R) (x : v.adicCompletionIntegers K)
   rfl
 
 instance : NoZeroSMulDivisors R (v.adicCompletionIntegers K) where
-  eq_zero_or_eq_zero_of_smul_eq_zero {c x} hcx := by
-    rw [Algebra.smul_def, mul_eq_zero] at hcx
-    refine hcx.imp_left fun hc => ?_
-    rw [← map_zero (algebraMap R (v.adicCompletionIntegers K))] at hc
-    exact
-      IsFractionRing.injective R _ (UniformSpace.Completion.coe_injective _ (Subtype.ext_iff.mp hc))
+  eq_zero_or_eq_zero_of_smul_eq_zero {c x} := by simp
 
 instance adicCompletion.instIsScalarTower' :
     IsScalarTower R (v.adicCompletionIntegers K) (v.adicCompletion K) where
@@ -569,7 +574,7 @@ lemma adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (v : HeightOn
     (a : v.adicCompletion K) : ∃ b ∈ R⁰, a * b ∈ v.adicCompletionIntegers K := by
   by_cases ha : a ∈ v.adicCompletionIntegers K
   · use 1
-    simp [ha, Submonoid.one_mem]
+    simp [ha]
   · rw [notMem_adicCompletionIntegers] at ha
     -- Let the additive valuation of a be -d with d>0
     obtain ⟨d, hd⟩ : ∃ d : ℤ, Valued.v a = ofAdd d :=
