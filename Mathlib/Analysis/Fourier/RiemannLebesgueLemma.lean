@@ -228,11 +228,11 @@ theorem tendsto_integral_exp_smul_cocompact_of_inner_product (μ : Measure V) [�
   simp_rw [integral_smul_nnreal_measure]
   rw [← (smul_zero _ : Measure.addHaarScalarFactor μ volume • (0 : E) = 0)]
   apply Tendsto.const_smul
-  let A := (InnerProductSpace.toStrongDual ℝ V).symm
+  let A := (InnerProductSpace.toDual ℝ V).symm
   have : (fun w : V →L[ℝ] ℝ ↦ ∫ v, 𝐞 (-w v) • f v) = (fun w : V ↦ ∫ v, 𝐞 (-⟪v, w⟫) • f v) ∘ A := by
     ext1 w
     congr 1 with v : 1
-    rw [← inner_conj_symm, RCLike.conj_to_real, InnerProductSpace.toStrongDual_symm_apply]
+    rw [← inner_conj_symm, RCLike.conj_to_real, InnerProductSpace.toDual_symm_apply]
   rw [this]
   exact (tendsto_integral_exp_inner_smul_cocompact f).comp
       A.toHomeomorph.toCocompactMap.cocompact_tendsto'

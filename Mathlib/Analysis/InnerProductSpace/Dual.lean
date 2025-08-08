@@ -58,39 +58,29 @@ local postfix:90 "†" => starRingEnd _
 `StrongDual 𝕜 E`, the map `fun y => ⟪x, y⟫`; moreover this operation is a conjugate-linear isometric
 embedding of `E` into `StrongDual 𝕜 E`.
 If `E` is complete, this operation is surjective, hence a conjugate-linear isometric equivalence;
-see `toStrongDual`.
+see `toDual`.
 -/
-noncomputable def toStrongDualMap : E →ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
+noncomputable def toDualMap : E →ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
   { innerSL 𝕜 with norm_map' := innerSL_apply_norm _ }
-
-@[deprecated (since := "2025-08-3")] alias toDualMap := toStrongDualMap
 
 variable {E}
 
 @[simp]
-theorem toStrongDualMap_apply {x y : E} : toStrongDualMap 𝕜 E x y = ⟪x, y⟫ :=
+theorem toDualMap_apply {x y : E} : toDualMap 𝕜 E x y = ⟪x, y⟫ :=
   rfl
-
-@[deprecated (since := "2025-08-3")] alias toDualMap_apply := toStrongDualMap_apply
 
 section NullSubmodule
 
 open LinearMap
 
 /-- For each `x : E`, the kernel of `⟪x, ⬝⟫` includes the null space. -/
-lemma nullSubmodule_le_ker_toStrongDualMap_right (x : E) :
-    nullSubmodule 𝕜 E ≤ ker (toStrongDualMap 𝕜 E x) :=
+lemma nullSubmodule_le_ker_toDualMap_right (x : E) :
+    nullSubmodule 𝕜 E ≤ ker (toDualMap 𝕜 E x) :=
   fun _ hx ↦ inner_eq_zero_of_right x ((mem_nullSubmodule_iff).mp hx)
 
-@[deprecated (since := "2025-08-3")] alias nullSubmodule_le_ker_toDualMap_right :=
-  nullSubmodule_le_ker_toStrongDualMap_right
-
 /-- The kernel of the map `x ↦ ⟪·, x⟫` includes the null space. -/
-lemma nullSubmodule_le_ker_toStrongDualMap_left : nullSubmodule 𝕜 E ≤ ker (toStrongDualMap 𝕜 E) :=
+lemma nullSubmodule_le_ker_toDualMap_left : nullSubmodule 𝕜 E ≤ ker (toDualMap 𝕜 E) :=
   fun _ hx ↦ ContinuousLinearMap.ext <| fun y ↦ inner_eq_zero_of_left y hx
-
-@[deprecated (since := "2025-08-3")] alias nullSubmodule_le_ker_toDualMap_left :=
-  nullSubmodule_le_ker_toStrongDualMap_left
 
 end NullSubmodule
 
@@ -104,18 +94,18 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 local postfix:90 "†" => starRingEnd _
 
 theorem innerSL_norm [Nontrivial E] : ‖(innerSL 𝕜 : E →L⋆[𝕜] E →L[𝕜] 𝕜)‖ = 1 :=
-  show ‖(toStrongDualMap 𝕜 E).toContinuousLinearMap‖ = 1 from
+  show ‖(toDualMap 𝕜 E).toContinuousLinearMap‖ = 1 from
     LinearIsometry.norm_toContinuousLinearMap _
 
 variable {E 𝕜}
 
 theorem ext_inner_left_basis {ι : Type*} {x y : E} (b : Basis ι 𝕜 E)
     (h : ∀ i : ι, ⟪b i, x⟫ = ⟪b i, y⟫) : x = y := by
-  apply (toStrongDualMap 𝕜 E).map_eq_iff.mp
+  apply (toDualMap 𝕜 E).map_eq_iff.mp
   refine (Function.Injective.eq_iff ContinuousLinearMap.coe_injective).mp (b.ext ?_)
   intro i
   simp only [ContinuousLinearMap.coe_coe]
-  rw [toStrongDualMap_apply, toStrongDualMap_apply]
+  rw [toDualMap_apply, toDualMap_apply]
   rw [← inner_conj_symm]
   conv_rhs => rw [← inner_conj_symm]
   exact congr_arg conj (h i)
@@ -131,10 +121,10 @@ variable (𝕜) (E)
 variable [CompleteSpace E]
 
 /-- **Fréchet-Riesz representation**: any `ℓ` in the dual of a Hilbert space `E` is of the form
-`fun u => ⟪y, u⟫` for some `y : E`, i.e. `toStrongDualMap` is surjective.
+`fun u => ⟪y, u⟫` for some `y : E`, i.e. `toDualMap` is surjective.
 -/
-noncomputable def toStrongDual : E ≃ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
-  LinearIsometryEquiv.ofSurjective (toStrongDualMap 𝕜 E)
+noncomputable def toDual : E ≃ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
+  LinearIsometryEquiv.ofSurjective (toDualMap 𝕜 E)
     (by
       intro ℓ
       set Y := LinearMap.ker ℓ
@@ -173,30 +163,24 @@ noncomputable def toStrongDual : E ≃ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
             _ = ℓ x := by field_simp [inner_self_ne_zero.2 z_ne_0]
         exact h₄)
 
-@[deprecated (since := "2025-08-3")] alias toDual := toStrongDual
-
 variable {𝕜} {E}
 
 @[simp]
-theorem toStrongDual_apply {x y : E} : toStrongDual 𝕜 E x y = ⟪x, y⟫ :=
+theorem toDual_apply {x y : E} : toDual 𝕜 E x y = ⟪x, y⟫ :=
   rfl
 
-@[deprecated (since := "2025-08-3")] alias toDual_apply := toStrongDual_apply
-
 @[simp]
-theorem toStrongDual_symm_apply {x : E} {y : StrongDual 𝕜 E} :
-    ⟪(toStrongDual 𝕜 E).symm y, x⟫ = y x := by
-  rw [← toStrongDual_apply]
+theorem toDual_symm_apply {x : E} {y : StrongDual 𝕜 E} :
+    ⟪(toDual 𝕜 E).symm y, x⟫ = y x := by
+  rw [← toDual_apply]
   simp only [LinearIsometryEquiv.apply_symm_apply]
-
-@[deprecated (since := "2025-08-3")] alias toDual_symm_apply := toStrongDual_symm_apply
 
 /-- Maps a bounded sesquilinear form to its continuous linear map,
 given by interpreting the form as a map `B : E →L⋆[𝕜] NormedSpace.Dual 𝕜 E`
 and dualizing the result using `toStrongDual`.
 -/
 def continuousLinearMapOfBilin (B : E →L⋆[𝕜] E →L[𝕜] 𝕜) : E →L[𝕜] E :=
-  (toStrongDual 𝕜 E).symm.toContinuousLinearEquiv.toContinuousLinearMap.comp B
+  (toDual 𝕜 E).symm.toContinuousLinearEquiv.toContinuousLinearMap.comp B
 
 local postfix:1024 "♯" => continuousLinearMapOfBilin
 
@@ -205,7 +189,7 @@ variable (B : E →L⋆[𝕜] E →L[𝕜] 𝕜)
 @[simp]
 theorem continuousLinearMapOfBilin_apply (v w : E) : ⟪B♯ v, w⟫ = B v w := by
   rw [continuousLinearMapOfBilin, coe_comp', ContinuousLinearEquiv.coe_coe,
-    LinearIsometryEquiv.coe_toContinuousLinearEquiv, Function.comp_apply, toStrongDual_symm_apply]
+    LinearIsometryEquiv.coe_toContinuousLinearEquiv, Function.comp_apply, toDual_symm_apply]
 
 theorem unique_continuousLinearMapOfBilin {v f : E} (is_lax_milgram : ∀ w, ⟪f, w⟫ = B v w) :
     f = B♯ v := by
@@ -219,9 +203,9 @@ end Normed
 instance [NormedAddCommGroup E] [CompleteSpace E] [InnerProductSpace ℝ E] :
     (innerₗ E).IsContPerfPair where
   continuous_uncurry := continuous_inner
-  bijective_left := (toStrongDual ℝ E).bijective
+  bijective_left := (toDual ℝ E).bijective
   bijective_right := by
-    convert (toStrongDual ℝ E).bijective
+    convert (toDual ℝ E).bijective
     ext y
     simp
 

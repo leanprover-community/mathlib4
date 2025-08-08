@@ -48,7 +48,7 @@ variable {f : F → 𝕜} {f' x : F}
 /-- A function `f` has the gradient `f'` as derivative along the filter `L` if
   `f x' = f x + ⟨f', x' - x⟩ + o (x' - x)` when `x'` converges along the filter `L`. -/
 def HasGradientAtFilter (f : F → 𝕜) (f' x : F) (L : Filter F) :=
-  HasFDerivAtFilter f (toStrongDual 𝕜 F f') x L
+  HasFDerivAtFilter f (toDual 𝕜 F f') x L
 
 /-- `f` has the gradient `f'` at the point `x` within the subset `s` if
   `f x' = f x + ⟨f', x' - x⟩ + o (x' - x)` where `x'` converges to `x` inside `s`. -/
@@ -65,7 +65,7 @@ def HasGradientAt (f : F → 𝕜) (f' x : F) :=
 If the derivative exists (i.e., `∃ f', HasGradientWithinAt f f' s x`), then
 `f x' = f x + ⟨f', x' - x⟩ + o (x' - x)` where `x'` converges to `x` inside `s`. -/
 def gradientWithin (f : F → 𝕜) (s : Set F) (x : F) : F :=
-  (toStrongDual 𝕜 F).symm (fderivWithin 𝕜 f s x)
+  (toDual 𝕜 F).symm (fderivWithin 𝕜 f s x)
 
 /-- Gradient of `f` at the point `x`, if it exists.  Zero otherwise.
 Denoted as `∇` within the Gradient namespace.
@@ -73,7 +73,7 @@ Denoted as `∇` within the Gradient namespace.
 If the derivative exists (i.e., `∃ f', HasGradientAt f f' x`), then
 `f x' = f x + ⟨f', x' - x⟩ + o (x' - x)` where `x'` converges to `x`. -/
 def gradient (f : F → 𝕜) (x : F) : F :=
-  (toStrongDual 𝕜 F).symm (fderiv 𝕜 f x)
+  (toDual 𝕜 F).symm (fderiv 𝕜 f x)
 
 @[inherit_doc]
 scoped[Gradient] notation "∇" => gradient
@@ -85,21 +85,21 @@ open scoped Gradient
 variable {s : Set F} {L : Filter F}
 
 theorem hasGradientWithinAt_iff_hasFDerivWithinAt {s : Set F} :
-    HasGradientWithinAt f f' s x ↔ HasFDerivWithinAt f (toStrongDual 𝕜 F f') s x :=
+    HasGradientWithinAt f f' s x ↔ HasFDerivWithinAt f (toDual 𝕜 F f') s x :=
   Iff.rfl
 
 theorem hasFDerivWithinAt_iff_hasGradientWithinAt {frechet : F →L[𝕜] 𝕜} {s : Set F} :
     HasFDerivWithinAt f frechet s x ↔
-      HasGradientWithinAt f ((toStrongDual 𝕜 F).symm frechet) s x := by
-  rw [hasGradientWithinAt_iff_hasFDerivWithinAt, (toStrongDual 𝕜 F).apply_symm_apply frechet]
+      HasGradientWithinAt f ((toDual 𝕜 F).symm frechet) s x := by
+  rw [hasGradientWithinAt_iff_hasFDerivWithinAt, (toDual 𝕜 F).apply_symm_apply frechet]
 
 theorem hasGradientAt_iff_hasFDerivAt :
-    HasGradientAt f f' x ↔ HasFDerivAt f (toStrongDual 𝕜 F f') x :=
+    HasGradientAt f f' x ↔ HasFDerivAt f (toDual 𝕜 F f') x :=
   Iff.rfl
 
 theorem hasFDerivAt_iff_hasGradientAt {frechet : F →L[𝕜] 𝕜} :
-    HasFDerivAt f frechet x ↔ HasGradientAt f ((toStrongDual 𝕜 F).symm frechet) x := by
-  rw [hasGradientAt_iff_hasFDerivAt, (toStrongDual 𝕜 F).apply_symm_apply frechet]
+    HasFDerivAt f frechet x ↔ HasGradientAt f ((toDual 𝕜 F).symm frechet) x := by
+  rw [hasGradientAt_iff_hasFDerivAt, (toDual 𝕜 F).apply_symm_apply frechet]
 
 alias ⟨HasGradientWithinAt.hasFDerivWithinAt, _⟩ := hasGradientWithinAt_iff_hasFDerivWithinAt
 
@@ -115,11 +115,11 @@ theorem gradient_eq_zero_of_not_differentiableAt (h : ¬DifferentiableAt 𝕜 f 
 theorem HasGradientAt.unique {gradf gradg : F}
     (hf : HasGradientAt f gradf x) (hg : HasGradientAt f gradg x) :
     gradf = gradg :=
-  (toStrongDual 𝕜 F).injective (hf.hasFDerivAt.unique hg.hasFDerivAt)
+  (toDual 𝕜 F).injective (hf.hasFDerivAt.unique hg.hasFDerivAt)
 
 theorem DifferentiableAt.hasGradientAt (h : DifferentiableAt 𝕜 f x) :
     HasGradientAt f (∇ f x) x := by
-  rw [hasGradientAt_iff_hasFDerivAt, gradient, (toStrongDual 𝕜 F).apply_symm_apply (fderiv 𝕜 f x)]
+  rw [hasGradientAt_iff_hasFDerivAt, gradient, (toDual 𝕜 F).apply_symm_apply (fderiv 𝕜 f x)]
   exact h.hasFDerivAt
 
 theorem HasGradientAt.differentiableAt (h : HasGradientAt f f' x) :
@@ -129,7 +129,7 @@ theorem HasGradientAt.differentiableAt (h : HasGradientAt f f' x) :
 theorem DifferentiableWithinAt.hasGradientWithinAt (h : DifferentiableWithinAt 𝕜 f s x) :
     HasGradientWithinAt f (gradientWithin f s x) s x := by
   rw [hasGradientWithinAt_iff_hasFDerivWithinAt, gradientWithin,
-    (toStrongDual 𝕜 F).apply_symm_apply (fderivWithin 𝕜 f s x)]
+    (toDual 𝕜 F).apply_symm_apply (fderivWithin 𝕜 f s x)]
   exact h.hasFDerivWithinAt
 
 theorem HasGradientWithinAt.differentiableWithinAt (h : HasGradientWithinAt f f' s x) :
@@ -158,14 +158,14 @@ variable {g : 𝕜 → 𝕜} {g' u : 𝕜} {L' : Filter 𝕜}
 theorem HasGradientAtFilter.hasDerivAtFilter (h : HasGradientAtFilter g g' u L') :
     HasDerivAtFilter g (starRingEnd 𝕜 g') u L' := by
   have : ContinuousLinearMap.smulRight (1 : 𝕜 →L[𝕜] 𝕜) (starRingEnd 𝕜 g') =
-      (toStrongDual 𝕜 𝕜) g' := by
+      (toDual 𝕜 𝕜) g' := by
     ext; simp
   rwa [HasDerivAtFilter, this]
 
 theorem HasDerivAtFilter.hasGradientAtFilter (h : HasDerivAtFilter g g' u L') :
     HasGradientAtFilter g (starRingEnd 𝕜 g') u L' := by
   have : ContinuousLinearMap.smulRight (1 : 𝕜 →L[𝕜] 𝕜) g' =
-      (toStrongDual 𝕜 𝕜) (starRingEnd 𝕜 g') := by
+      (toDual 𝕜 𝕜) (starRingEnd 𝕜 g') := by
     ext; simp
   rwa [HasGradientAtFilter, ← this]
 

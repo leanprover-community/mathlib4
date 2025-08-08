@@ -121,7 +121,7 @@ theorem linearly_dependent_of_isLocalExtrOn (hT : IsSelfAdjoint T) {x₀ : F}
     IsLocalExtrOn.exists_multipliers_of_hasStrictFDerivAt_1d H (hasStrictFDerivAt_norm_sq x₀)
       (hT.isSymmetric.hasStrictFDerivAt_reApplyInnerSelf x₀)
   refine ⟨a, b, h₁, ?_⟩
-  apply (InnerProductSpace.toStrongDualMap ℝ F).injective
+  apply (InnerProductSpace.toDualMap ℝ F).injective
   simp only [LinearIsometry.map_add, LinearIsometry.map_zero]
   -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 changed `map_smulₛₗ` into `map_smulₛₗ _`
   simp only [map_smulₛₗ _, RCLike.conj_to_real]
