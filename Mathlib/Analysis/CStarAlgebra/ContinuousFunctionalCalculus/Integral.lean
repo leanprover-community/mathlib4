@@ -100,7 +100,7 @@ lemma integrable_cfc [TopologicalSpace X] [OpensMeasurableSpace X] (f : X → �
   · exact aeStronglyMeasurable_mkD_restrict_of_uncurry _ _ hf
   · refine hasFiniteIntegral_mkD_restrict_of_bound f _ ?_ bound bound_int bound_ge
     exact .of_forall fun x ↦
-      hf.comp (Continuous.prodMk_right x).continuousOn fun _ hz ↦ ⟨trivial, hz⟩
+      hf.comp (Continuous.prodMk_right x).continuousOn fun _ hz ↦ ⟨Set.mem_univ _, hz⟩
 
 open Set Function in
 /-- An integrability criterion for the continuous functional calculus.
@@ -169,7 +169,7 @@ lemma cfc_integral [NormedSpace ℝ A] [TopologicalSpace X] [OpensMeasurableSpac
     (bound_int : HasFiniteIntegral bound μ) (ha : p a := by cfc_tac) :
     cfc (fun r => ∫ x, f x r ∂μ) a = ∫ x, cfc (f x) a ∂μ := by
   have : ∀ᵐ (x : X) ∂μ, ContinuousOn (f x) (spectrum 𝕜 a) := .of_forall fun x ↦
-    hf.comp (Continuous.prodMk_right x).continuousOn fun _ hz ↦ ⟨trivial, hz⟩
+    hf.comp (Continuous.prodMk_right x).continuousOn fun _ hz ↦ ⟨Set.mem_univ _, hz⟩
   refine cfc_integral' _ _ this ⟨?_, ?_⟩ ha
   · exact aeStronglyMeasurable_mkD_restrict_of_uncurry _ _ hf
   · exact hasFiniteIntegral_mkD_restrict_of_bound f _ this bound bound_int bound_ge
@@ -256,7 +256,7 @@ lemma integrable_cfcₙ [TopologicalSpace X] [OpensMeasurableSpace X] (f : X →
   · exact aeStronglyMeasurable_mkD_restrict_of_uncurry _ _ hf f_zero
   · refine hasFiniteIntegral_mkD_restrict_of_bound f _ ?_ f_zero bound bound_int bound_ge
     exact .of_forall fun x ↦
-      hf.comp (Continuous.prodMk_right x).continuousOn fun _ hz ↦ ⟨trivial, hz⟩
+      hf.comp (Continuous.prodMk_right x).continuousOn fun _ hz ↦ ⟨Set.mem_univ _, hz⟩
 
 open Set Function in
 /-- An integrability criterion for the continuous functional calculus.
@@ -331,7 +331,7 @@ lemma cfcₙ_integral [NormedSpace ℝ A] [TopologicalSpace X] [OpensMeasurableS
     (bound_int : HasFiniteIntegral bound μ) (ha : p a := by cfc_tac) :
     cfcₙ (fun r => ∫ x, f x r ∂μ) a = ∫ x, cfcₙ (f x) a ∂μ := by
   have : ∀ᵐ (x : X) ∂μ, ContinuousOn (f x) (quasispectrum 𝕜 a) := .of_forall fun x ↦
-    hf.comp (Continuous.prodMk_right x).continuousOn fun _ hz ↦ ⟨trivial, hz⟩
+    hf.comp (Continuous.prodMk_right x).continuousOn fun _ hz ↦ ⟨Set.mem_univ _, hz⟩
   refine cfcₙ_integral' _ _ this f_zero ⟨?_, ?_⟩ ha
   · exact aeStronglyMeasurable_mkD_restrict_of_uncurry _ _ hf f_zero
   · exact hasFiniteIntegral_mkD_restrict_of_bound f _ this f_zero bound bound_int bound_ge

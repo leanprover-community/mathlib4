@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Category.MonCat.Basic
+import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Group.Shrink
 import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.CategoryTheory.Limits.Creates
@@ -17,6 +18,7 @@ the underlying types are just the limits in the category of types.
 
 -/
 
+assert_not_exists MonoidWithZero
 
 noncomputable section
 
