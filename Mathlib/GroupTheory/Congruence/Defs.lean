@@ -256,9 +256,9 @@ the elements of a quotient by an additive congruence relation. -/]
 protected theorem induction_on {C : c.Quotient → Prop} (q : c.Quotient) (H : ∀ x : M, C x) : C q :=
   Quotient.inductionOn' q H
 
-/-- A version of `Con.induction_on` for predicates which take two arguments. -/
-@[to_additive (attr := elab_as_elim) /-- A version of `AddCon.induction_on` for predicates which take
-two arguments. -/]
+/-- A version of `Con.induction_on` for predicates which takes two arguments. -/
+@[to_additive (attr := elab_as_elim)
+/-- A version of `AddCon.induction_on` for predicates which takes two arguments. -/]
 protected theorem induction_on₂ {d : Con N} {C : c.Quotient → d.Quotient → Prop} (p : c.Quotient)
     (q : d.Quotient) (H : ∀ (x : M) (y : N), C x y) : C p q :=
   Quotient.inductionOn₂' p q H

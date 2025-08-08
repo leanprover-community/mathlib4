@@ -75,7 +75,7 @@ variable [One α] {f : Filter α} {s : Set α}
 
 /-- `1 : Filter α` is defined as the filter of sets containing `1 : α` in locale `Pointwise`. -/
 @[to_additive
-      /-- `0 : Filter α` is defined as the filter of sets containing `0 : α` in locale `Pointwise`. -/]
+/-- `0 : Filter α` is defined as the filter of sets containing `0 : α` in locale `Pointwise`. -/]
 protected def instOne : One (Filter α) :=
   ⟨pure 1⟩
 
@@ -629,7 +629,7 @@ end DivisionMonoid
 
 /-- `Filter α` is a commutative division monoid under pointwise operations if `α` is. -/
 @[to_additive subtractionCommMonoid
-      /-- `Filter α` is a commutative subtraction monoid under pointwise operations if `α` is. -/]
+/-- `Filter α` is a commutative subtraction monoid under pointwise operations if `α` is. -/]
 protected def divisionCommMonoid [DivisionCommMonoid α] : DivisionCommMonoid (Filter α) :=
   { Filter.divisionMonoid, Filter.commSemigroup with }
 
@@ -1027,8 +1027,8 @@ instance isCentralScalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α 
 
 /-- A multiplicative action of a monoid `α` on a type `β` gives a multiplicative action of
 `Filter α` on `Filter β`. -/
-@[to_additive /-- An additive action of an additive monoid `α` on a type `β` gives an additive action
-of `Filter α` on `Filter β` -/]
+@[to_additive /-- An additive action of an additive monoid `α` on a type `β` gives an additive
+action of `Filter α` on `Filter β`. -/]
 protected def mulAction [Monoid α] [MulAction α β] : MulAction (Filter α) (Filter β) where
   one_smul f := map₂_pure_left.trans <| by simp_rw [one_smul, map_id']
   mul_smul _ _ _ := map₂_assoc mul_smul

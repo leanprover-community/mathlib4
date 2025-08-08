@@ -130,8 +130,8 @@ def OrderMonoidHomClass.toOrderMonoidHom [OrderHomClass F α β] [MonoidHomClass
 
 /-- Any type satisfying `OrderMonoidHomClass` can be cast into `OrderMonoidHom` via
   `OrderMonoidHomClass.toOrderMonoidHom`. -/
-@[to_additive /-- Any type satisfying `OrderAddMonoidHomClass` can be cast into `OrderAddMonoidHom` via
-  `OrderAddMonoidHomClass.toOrderAddMonoidHom` -/]
+@[to_additive /-- Any type satisfying `OrderAddMonoidHomClass` can be cast into `OrderAddMonoidHom`
+  via `OrderAddMonoidHomClass.toOrderAddMonoidHom`. -/]
 instance [OrderHomClass F α β] [MonoidHomClass F α β] : CoeTC F (α →*o β) :=
   ⟨OrderMonoidHomClass.toOrderMonoidHom⟩
 
@@ -166,8 +166,8 @@ def OrderMonoidIsoClass.toOrderMonoidIso [EquivLike F α β] [OrderIsoClass F α
 
 /-- Any type satisfying `OrderMonoidIsoClass` can be cast into `OrderMonoidIso` via
   `OrderMonoidIsoClass.toOrderMonoidIso`. -/
-@[to_additive /-- Any type satisfying `OrderAddMonoidIsoClass` can be cast into `OrderAddMonoidIso` via
-  `OrderAddMonoidIsoClass.toOrderAddMonoidIso` -/]
+@[to_additive /-- Any type satisfying `OrderAddMonoidIsoClass` can be cast into `OrderAddMonoidIso`
+  via `OrderAddMonoidIsoClass.toOrderAddMonoidIso`. -/]
 instance [EquivLike F α β] [OrderIsoClass F α β] [MulEquivClass F α β] : CoeTC F (α ≃*o β) :=
   ⟨OrderMonoidIsoClass.toOrderMonoidIso⟩
 

@@ -550,7 +550,7 @@ theorem IsBlock.of_orbit {H : Subgroup G} {a : X} (hH : stabilizer G a ≤ H) :
 
 /-- If `B` is a block containing `a`, then the stabilizer of `B` contains the stabilizer of `a` -/
 @[to_additive
-  /-- If `B` is a block containing `a`, then the stabilizer of `B` contains the stabilizer of `a` -/]
+/-- If `B` is a block containing `a`, then the stabilizer of `B` contains the stabilizer of `a` -/]
 theorem IsBlock.stabilizer_le (hB : IsBlock G B) {a : X} (ha : a ∈ B) :
     stabilizer G a ≤ stabilizer G B :=
   fun g hg ↦ hB.smul_eq_of_nonempty ⟨a, by rwa [← hg, smul_mem_smul_set_iff], ha⟩
@@ -622,9 +622,9 @@ abbrev BlockMem (a : X) : Type _ := {B : Set X // a ∈ B ∧ IsBlock G B}
 
 namespace BlockMem
 
-/-- The type of blocks for a group action containing a given element is a bounder order -/
-@[to_additive
-/-- The type of blocks for an additive group action containing a given element is a bounded order -/]
+/-- The type of blocks for a group action containing a given element is a bounded order. -/
+@[to_additive /-- The type of blocks for an additive group action containing a given element is a
+bounded order. -/]
 instance (a : X) : BoundedOrder (BlockMem G a) where
   top := ⟨Set.univ, Set.mem_univ a, .univ⟩
   le_top := by

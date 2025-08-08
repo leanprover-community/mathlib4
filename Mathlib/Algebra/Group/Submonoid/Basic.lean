@@ -139,15 +139,15 @@ open Set
 
 /-- A submonoid `S` includes `closure s` if and only if it includes `s`. -/
 @[to_additive (attr := simp)
-/-- An additive submonoid `S` includes `closure s` if and only if it includes `s` -/]
+/-- An additive submonoid `S` includes `closure s` if and only if it includes `s`. -/]
 theorem closure_le : closure s ≤ S ↔ s ⊆ S :=
   ⟨Subset.trans subset_closure, fun h => sInf_le h⟩
 
 /-- Submonoid closure of a set is monotone in its argument: if `s ⊆ t`,
 then `closure s ≤ closure t`. -/
 @[to_additive (attr := gcongr)
-      /-- Additive submonoid closure of a set is monotone in its argument: if `s ⊆ t`,
-      then `closure s ≤ closure t` -/]
+  /-- Additive submonoid closure of a set is monotone in its argument: if `s ⊆ t`,
+  then `closure s ≤ closure t`. -/]
 theorem closure_mono ⦃s t : Set M⦄ (h : s ⊆ t) : closure s ≤ closure t :=
   closure_le.2 <| Subset.trans h subset_closure
 
@@ -160,9 +160,9 @@ variable (S)
 /-- An induction principle for closure membership. If `p` holds for `1` and all elements of `s`, and
 is preserved under multiplication, then `p` holds for all elements of the closure of `s`. -/
 @[to_additive (attr := elab_as_elim)
-      /-- An induction principle for additive closure membership. If `p` holds for `0` and all
-      elements of `s`, and is preserved under addition, then `p` holds for all elements of the
-      additive closure of `s`. -/]
+  /-- An induction principle for additive closure membership. If `p` holds for `0` and all
+  elements of `s`, and is preserved under addition, then `p` holds for all elements of the
+  additive closure of `s`. -/]
 theorem closure_induction {s : Set M} {motive : (x : M) → x ∈ closure s → Prop}
     (mem : ∀ (x) (h : x ∈ s), motive x (subset_closure h)) (one : motive 1 (one_mem _))
     (mul : ∀ x y hx hy, motive x hx → motive y hy → motive (x * y) (mul_mem hx hy)) {x}
@@ -175,7 +175,7 @@ theorem closure_induction {s : Set M} {motive : (x : M) → x ∈ closure s → 
 
 /-- An induction principle for closure membership for predicates with two arguments. -/
 @[to_additive (attr := elab_as_elim)
-      /-- An induction principle for additive closure membership for predicates with two arguments. -/]
+  /-- An induction principle for additive closure membership for predicates with two arguments. -/]
 theorem closure_induction₂ {motive : (x y : M) → x ∈ closure s → y ∈ closure s → Prop}
     (mem : ∀ (x) (y) (hx : x ∈ s) (hy : y ∈ s), motive x y (subset_closure hx) (subset_closure hy))
     (one_left : ∀ x hx, motive 1 x (one_mem _) hx) (one_right : ∀ x hx, motive x 1 hx (one_mem _))
@@ -196,9 +196,9 @@ theorem closure_induction₂ {motive : (x y : M) → x ∈ closure s → y ∈ c
 some predicate `p` holds for all `x : M` it suffices to verify `p x` for `x ∈ s`, verify `p 1`,
 and verify that `p x` and `p y` imply `p (x * y)`. -/
 @[to_additive (attr := elab_as_elim)
-      /-- If `s` is a dense set in an additive monoid `M`, `AddSubmonoid.closure s = ⊤`, then in
-      order to prove that some predicate `p` holds for all `x : M` it suffices to verify `p x` for
-      `x ∈ s`, verify `p 0`, and verify that `p x` and `p y` imply `p (x + y)`. -/]
+  /-- If `s` is a dense set in an additive monoid `M`, `AddSubmonoid.closure s = ⊤`, then in
+  order to prove that some predicate `p` holds for all `x : M` it suffices to verify `p x` for
+  `x ∈ s`, verify `p 0`, and verify that `p x` and `p y` imply `p (x + y)`. -/]
 theorem dense_induction {motive : M → Prop} (s : Set M) (closure : closure s = ⊤)
     (mem : ∀ x ∈ s, motive x) (one : motive 1) (mul : ∀ x y, motive x → motive y → motive (x * y))
     (x : M) : motive x := by
@@ -327,8 +327,8 @@ open Submonoid
 
 /-- If two monoid homomorphisms are equal on a set, then they are equal on its submonoid closure. -/
 @[to_additive
-      /-- If two monoid homomorphisms are equal on a set, then they are equal on its submonoid
-      closure. -/]
+  /-- If two monoid homomorphisms are equal on a set, then they are equal on its submonoid
+  closure. -/]
 theorem eqOn_closureM {f g : M →* N} {s : Set M} (h : Set.EqOn f g s) : Set.EqOn f g (closure s) :=
   show closure s ≤ f.eqLocusM g from closure_le.2 h
 
@@ -373,9 +373,9 @@ open Submonoid
 Then `MonoidHom.ofClosureEqTopLeft` defines a monoid homomorphism from `M` asking for
 a proof of `f (x * y) = f x * f y` only for `x ∈ s`. -/
 @[to_additive
-      /-- Let `s` be a subset of an additive monoid `M` such that the closure of `s` is
-      the whole monoid. Then `AddMonoidHom.ofClosureEqTopLeft` defines an additive monoid
-      homomorphism from `M` asking for a proof of `f (x + y) = f x + f y` only for `x ∈ s`. -/]
+  /-- Let `s` be a subset of an additive monoid `M` such that the closure of `s` is
+  the whole monoid. Then `AddMonoidHom.ofClosureEqTopLeft` defines an additive monoid
+  homomorphism from `M` asking for a proof of `f (x + y) = f x + f y` only for `x ∈ s`. -/]
 def ofClosureMEqTopLeft {M N} [Monoid M] [Monoid N] {s : Set M} (f : M → N) (hs : closure s = ⊤)
     (h1 : f 1 = 1) (hmul : ∀ x ∈ s, ∀ (y), f (x * y) = f x * f y) :
     M →* N where
@@ -394,9 +394,9 @@ theorem coe_ofClosureMEqTopLeft (f : M → N) (hs : closure s = ⊤) (h1 hmul) :
 Then `MonoidHom.ofClosureEqTopRight` defines a monoid homomorphism from `M` asking for
 a proof of `f (x * y) = f x * f y` only for `y ∈ s`. -/
 @[to_additive
-      /-- Let `s` be a subset of an additive monoid `M` such that the closure of `s` is
-      the whole monoid. Then `AddMonoidHom.ofClosureEqTopRight` defines an additive monoid
-      homomorphism from `M` asking for a proof of `f (x + y) = f x + f y` only for `y ∈ s`. -/]
+  /-- Let `s` be a subset of an additive monoid `M` such that the closure of `s` is
+  the whole monoid. Then `AddMonoidHom.ofClosureEqTopRight` defines an additive monoid
+  homomorphism from `M` asking for a proof of `f (x + y) = f x + f y` only for `y ∈ s`. -/]
 def ofClosureMEqTopRight {M N} [Monoid M] [Monoid N] {s : Set M} (f : M → N) (hs : closure s = ⊤)
     (h1 : f 1 = 1) (hmul : ∀ (x), ∀ y ∈ s, f (x * y) = f x * f y) :
     M →* N where

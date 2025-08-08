@@ -101,8 +101,8 @@ theorem LipschitzWith.norm_div_le_of_le {f : E → F} {C : ℝ≥0} (h : Lipschi
 
 /-- A homomorphism `f` of seminormed groups is continuous, if there exists a constant `C` such that
 for all `x`, one has `‖f x‖ ≤ C * ‖x‖`. -/
-@[to_additive /-- A homomorphism `f` of seminormed groups is continuous, if there exists a constant `C`
-such that for all `x`, one has `‖f x‖ ≤ C * ‖x‖` -/]
+@[to_additive /-- A homomorphism `f` of seminormed groups is continuous, if there exists a constant
+`C` such that for all `x`, one has `‖f x‖ ≤ C * ‖x‖`. -/]
 theorem MonoidHomClass.continuous_of_bound [MonoidHomClass 𝓕 E F] (f : 𝓕) (C : ℝ)
     (h : ∀ x, ‖f x‖ ≤ C * ‖x‖) : Continuous f :=
   (MonoidHomClass.lipschitz_of_bound f C h).continuous

@@ -161,7 +161,8 @@ theorem properSMul_of_isClosedEmbedding {H : Type*} [Group H] [MulAction H X] [T
     rw [this]
     exact h.comp <| ProperSMul.isProperMap_smul_pair
 
-/-- If `H` is a closed subgroup of `G` and `G` acts properly on X then so does `H`. -/
-@[to_additive /-- If `H` is a closed subgroup of `G` and `G` acts properly on X then so does `H`. -/]
+/-- If `H` is a closed subgroup of `G` and `G` acts properly on `X`, then so does `H`. -/
+@[to_additive
+/-- If `H` is a closed subgroup of `G` and `G` acts properly on `X`, then so does `H`. -/]
 instance {H : Subgroup G} [ProperSMul G X] [H_closed : IsClosed (H : Set G)] : ProperSMul H X :=
   properSMul_of_isClosedEmbedding H.subtype H_closed.isClosedEmbedding_subtypeVal fun _ _ ↦ rfl
