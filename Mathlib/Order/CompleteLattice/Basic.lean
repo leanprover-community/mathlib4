@@ -637,8 +637,8 @@ theorem iInf₂_comm {ι₁ ι₂ : Sort*} {κ₁ : ι₁ → Sort*} {κ₂ : ι
     ⨅ (i₁) (j₁) (i₂) (j₂), f i₁ j₁ i₂ j₂ = ⨅ (i₂) (j₂) (i₁) (j₁), f i₁ j₁ i₂ j₂ := by
   simp only [@iInf_comm _ (κ₁ _), @iInf_comm _ ι₁]
 
-/- TODO: this is strange. In the proof below, we get exactly the desired
-   among the equalities, but close does not get it.
+/- TODO: this is strange. In the proof below, we get exactly the desired among the equalities,
+but close does not get it.
 begin
   apply @le_antisymm,
     simp, intros,
@@ -724,8 +724,7 @@ lemma biInf_le_biSup {ι : Type*} {s : Set ι} (hs : s.Nonempty) {f : ι → α}
     ⨅ i ∈ s, f i ≤ ⨆ i ∈ s, f i :=
   (biInf_le _ hs.choose_spec).trans <| le_biSup _ hs.choose_spec
 
-/- TODO: here is another example where more flexible pattern matching
-   might help.
+/- TODO: here is another example where more flexible pattern matching might help.
 
 begin
   apply @le_antisymm,
