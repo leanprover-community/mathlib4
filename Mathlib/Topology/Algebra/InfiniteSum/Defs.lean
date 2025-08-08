@@ -88,7 +88,8 @@ def HasProd (f : β → α) (a : α) : Prop :=
   Tendsto (fun s : Finset β ↦ ∏ b ∈ s, f b) atTop (𝓝 a)
 
 /-- `Multipliable f` means that `f` has some (infinite) product. Use `tprod` to get the value. -/
-@[to_additive /-- `Summable f` means that `f` has some (infinite) sum. Use `tsum` to get the value. -/]
+@[to_additive
+/-- `Summable f` means that `f` has some (infinite) sum. Use `tsum` to get the value. -/]
 def Multipliable (f : β → α) : Prop :=
   ∃ a, HasProd f a
 

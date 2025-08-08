@@ -142,8 +142,8 @@ variable [IsTopologicalGroup G]
 /-- If `K` is compact and `V` has nonempty interior, then the index `(K : V)` is well-defined,
   there is a finite set `t` satisfying the desired properties. -/
 @[to_additive addIndex_defined
-/-- If `K` is compact and `V` has nonempty interior, then the index `(K : V)` is well-defined, there is
-a finite set `t` satisfying the desired properties. -/]
+/-- If `K` is compact and `V` has nonempty interior, then the index `(K : V)` is well-defined,
+  there is a finite set `t` satisfying the desired properties. -/]
 theorem index_defined {K V : Set G} (hK : IsCompact K) (hV : (interior V).Nonempty) :
     ∃ n : ℕ, n ∈ Finset.card '' { t : Finset G | K ⊆ ⋃ g ∈ t, (fun h => g * h) ⁻¹' V } := by
   rcases compact_covered_by_mul_left_translates hK hV with ⟨t, ht⟩; exact ⟨t.card, t, ht, rfl⟩
@@ -560,8 +560,8 @@ instance sigmaFinite_haarMeasure [SecondCountableTopology G] {K₀ : PositiveCom
 /-- The Haar measure is a Haar measure, i.e., it is invariant and gives finite mass to compact
 sets and positive mass to nonempty open sets. -/
 @[to_additive
-/-- The additive Haar measure is an additive Haar measure, i.e., it is invariant and gives finite mass
-to compact sets and positive mass to nonempty open sets. -/]
+/-- The additive Haar measure is an additive Haar measure, i.e., it is invariant and gives finite
+mass to compact sets and positive mass to nonempty open sets. -/]
 instance isHaarMeasure_haarMeasure (K₀ : PositiveCompacts G) : IsHaarMeasure (haarMeasure K₀) := by
   apply
     isHaarMeasure_of_isCompact_nonempty_interior (haarMeasure K₀) K₀ K₀.isCompact
@@ -680,8 +680,8 @@ example [LocallyCompactSpace G] (μ : Measure G) [IsHaarMeasure μ] (K₀ : Posi
 /-- To show that an invariant σ-finite measure is regular it is sufficient to show that it is finite
   on some compact set with non-empty interior. -/
 @[to_additive
-/-- To show that an invariant σ-finite measure is regular it is sufficient to show that it is finite on
-some compact set with non-empty interior. -/]
+/-- To show that an invariant σ-finite measure is regular it is sufficient to show that it is
+  finite on some compact set with non-empty interior. -/]
 theorem regular_of_isMulLeftInvariant {μ : Measure G} [SigmaFinite μ] [IsMulLeftInvariant μ]
     {K : Set G} (hK : IsCompact K) (h2K : (interior K).Nonempty) (hμK : μ K ≠ ∞) : Regular μ := by
   rw [haarMeasure_unique μ ⟨⟨K, hK⟩, h2K⟩]; exact Regular.smul hμK

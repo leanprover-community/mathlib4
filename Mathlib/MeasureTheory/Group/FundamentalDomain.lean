@@ -424,9 +424,9 @@ protected theorem setIntegral_eq (hs : IsFundamentalDomain G s μ) (ht : IsFunda
 /-- If the action of a countable group `G` admits an invariant measure `μ` with a fundamental domain
 `s`, then every null-measurable set `t` such that the sets `g • t ∩ s` are pairwise a.e.-disjoint
 has measure at most `μ s`. -/
-@[to_additive /-- If the additive action of a countable group `G` admits an invariant measure `μ` with
-  a fundamental domain `s`, then every null-measurable set `t` such that the sets `g +ᵥ t ∩ s` are
-  pairwise a.e.-disjoint has measure at most `μ s`. -/]
+@[to_additive /-- If the additive action of a countable group `G` admits an invariant measure `μ`
+  with a fundamental domain `s`, then every null-measurable set `t` such that the sets `g +ᵥ t ∩ s`
+  are pairwise a.e.-disjoint has measure at most `μ s`. -/]
 theorem measure_le_of_pairwise_disjoint (hs : IsFundamentalDomain G s μ)
     (ht : NullMeasurableSet t μ) (hd : Pairwise (AEDisjoint μ on fun g : G => g • t ∩ s)) :
     μ t ≤ μ s :=
@@ -439,8 +439,8 @@ theorem measure_le_of_pairwise_disjoint (hs : IsFundamentalDomain G s μ)
 /-- If the action of a countable group `G` admits an invariant measure `μ` with a fundamental domain
 `s`, then every null-measurable set `t` of measure strictly greater than `μ s` contains two
 points `x y` such that `g • x = y` for some `g ≠ 1`. -/
-@[to_additive /-- If the additive action of a countable group `G` admits an invariant measure `μ` with
-  a fundamental domain `s`, then every null-measurable set `t` of measure strictly greater than
+@[to_additive /-- If the additive action of a countable group `G` admits an invariant measure `μ`
+  with a fundamental domain `s`, then every null-measurable set `t` of measure strictly greater than
   `μ s` contains two points `x y` such that `g +ᵥ x = y` for some `g ≠ 0`. -/]
 theorem exists_ne_one_smul_eq (hs : IsFundamentalDomain G s μ) (htm : NullMeasurableSet t μ)
     (ht : μ s < μ t) : ∃ x ∈ t, ∃ y ∈ t, ∃ g, g ≠ (1 : G) ∧ g • x = y := by
@@ -456,9 +456,9 @@ theorem exists_ne_one_smul_eq (hs : IsFundamentalDomain G s μ) (htm : NullMeasu
 /-- If `f` is invariant under the action of a countable group `G`, and `μ` is a `G`-invariant
   measure with a fundamental domain `s`, then the `essSup` of `f` restricted to `s` is the same as
   that of `f` on all of its domain. -/
-@[to_additive /-- If `f` is invariant under the action of a countable additive group `G`, and `μ` is a
-  `G`-invariant measure with a fundamental domain `s`, then the `essSup` of `f` restricted to `s`
-  is the same as that of `f` on all of its domain. -/]
+@[to_additive /-- If `f` is invariant under the action of a countable additive group `G`, and `μ`
+  is a `G`-invariant measure with a fundamental domain `s`, then the `essSup` of `f` restricted to
+  `s` is the same as that of `f` on all of its domain. -/]
 theorem essSup_measure_restrict (hs : IsFundamentalDomain G s μ) {f : α → ℝ≥0∞}
     (hf : ∀ γ : G, ∀ x : α, f (γ • x) = f x) : essSup f (μ.restrict s) = essSup f μ := by
   refine le_antisymm (essSup_mono_measure' Measure.restrict_le_self) ?_

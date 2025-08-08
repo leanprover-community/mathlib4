@@ -47,7 +47,8 @@ def Submonoid.units (S : Submonoid M) : Subgroup Mˣ where
   inv_mem' ha := ⟨ha.2, ha.1⟩
 
 /-- A subgroup of units represented as a submonoid of `M`. -/
-@[to_additive /-- A additive subgroup of additive units represented as a additive submonoid of `M`. -/]
+@[to_additive
+/-- A additive subgroup of additive units represented as a additive submonoid of `M`. -/]
 def Subgroup.ofUnits (S : Subgroup Mˣ) : Submonoid M := S.toSubmonoid.map (coeHom M)
 
 @[to_additive]

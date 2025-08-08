@@ -85,7 +85,8 @@ lemma Commute.units_zpow_left (h : Commute ↑u a) (m : ℤ) : Commute ↑(u ^ m
   (h.symm.units_zpow_right m).symm
 
 /-- If a natural power of `x` is a unit, then `x` is a unit. -/
-@[to_additive /-- If a natural multiple of `x` is an additive unit, then `x` is an additive unit. -/]
+@[to_additive
+/-- If a natural multiple of `x` is an additive unit, then `x` is an additive unit. -/]
 def Units.ofPow (u : Mˣ) (x : M) {n : ℕ} (hn : n ≠ 0) (hu : x ^ n = u) : Mˣ :=
   u.leftOfMul x (x ^ (n - 1))
     (by rwa [← _root_.pow_succ', Nat.sub_add_cancel (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn)])

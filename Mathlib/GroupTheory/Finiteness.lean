@@ -104,7 +104,7 @@ theorem Monoid.fg_def : Monoid.FG M ↔ (⊤ : Submonoid M).FG :=
 
 /-- An equivalent expression of `Monoid.FG` in terms of `Set.Finite` instead of `Finset`. -/
 @[to_additive
-      /-- An equivalent expression of `AddMonoid.FG` in terms of `Set.Finite` instead of `Finset`. -/]
+/-- An equivalent expression of `AddMonoid.FG` in terms of `Set.Finite` instead of `Finset`. -/]
 theorem Monoid.fg_iff :
     Monoid.FG M ↔ ∃ S : Set M, Submonoid.closure S = (⊤ : Submonoid M) ∧ S.Finite :=
   ⟨fun _ => (Submonoid.fg_iff ⊤).1 FG.fg_top, fun h => ⟨(Submonoid.fg_iff ⊤).2 h⟩⟩
@@ -272,7 +272,7 @@ theorem AddGroup.fg_def : AddGroup.FG H ↔ (⊤ : AddSubgroup H).FG :=
 
 /-- An equivalent expression of `Group.FG` in terms of `Set.Finite` instead of `Finset`. -/
 @[to_additive
-      /-- An equivalent expression of `AddGroup.fg` in terms of `Set.Finite` instead of `Finset`. -/]
+/-- An equivalent expression of `AddGroup.fg` in terms of `Set.Finite` instead of `Finset`. -/]
 theorem Group.fg_iff : Group.FG G ↔ ∃ S : Set G, Subgroup.closure S = (⊤ : Subgroup G) ∧ S.Finite :=
   ⟨fun h => (Subgroup.fg_iff ⊤).1 h.out, fun h => ⟨(Subgroup.fg_iff ⊤).2 h⟩⟩
 

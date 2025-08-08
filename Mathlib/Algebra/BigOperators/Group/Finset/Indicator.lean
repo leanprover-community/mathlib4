@@ -35,8 +35,8 @@ lemma prod_mulIndicator_subset_of_eq_one [One α] (f : ι → α) (g : ι → α
 
 /-- Taking the product of an indicator function over a possibly larger finset is the same as
 taking the original function over the original finset. -/
-@[to_additive /-- Summing an indicator function over a possibly larger `Finset` is the same as summing
-  the original function over the original finset. -/]
+@[to_additive /-- Summing an indicator function over a possibly larger `Finset` is the same as
+summing the original function over the original finset. -/]
 lemma prod_mulIndicator_subset (f : ι → β) {s t : Finset ι} (h : s ⊆ t) :
     ∏ i ∈ t, mulIndicator (↑s) f i = ∏ i ∈ s, f i :=
   prod_mulIndicator_subset_of_eq_one _ (fun _ ↦ id) h fun _ ↦ rfl

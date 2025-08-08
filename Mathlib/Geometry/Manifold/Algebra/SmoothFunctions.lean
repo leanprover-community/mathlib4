@@ -118,8 +118,8 @@ variable (I') {N}
 -- TODO: generalize to any `C^n` map instead of `Set.inclusion`
 /-- For a Lie group `G` and open sets `U ⊆ V` in `N`, the 'restriction' group homomorphism from
 `C^n⟮I, V; I', G⟯` to `C^n⟮I, U; I', G⟯`. -/
-@[to_additive /-- For an additive Lie group `G` and open sets `U ⊆ V` in `N`, the 'restriction' group
-homomorphism from `C^n⟮I, V; I', G⟯` to `C^n⟮I, U; I', G⟯`. -/]
+@[to_additive /-- For an additive Lie group `G` and open sets `U ⊆ V` in `N`, the 'restriction'
+group homomorphism from `C^n⟮I, V; I', G⟯` to `C^n⟮I, U; I', G⟯`. -/]
 def restrictMonoidHom (G : Type*) [Monoid G] [TopologicalSpace G] [ChartedSpace H' G]
     [ContMDiffMul I' n G] {U V : Opens N} (h : U ≤ V) : C^n⟮I, V; I', G⟯ →* C^n⟮I, U; I', G⟯ where
   toFun f := ⟨f ∘ Set.inclusion h, f.contMDiff.comp (contMDiff_inclusion h)⟩

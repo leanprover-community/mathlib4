@@ -94,8 +94,8 @@ open MulOpposite
 variable [TopologicalSpace M] [Monoid M] [TopologicalSpace X]
 
 /-- The units of a monoid are equipped with a topology, via the embedding into `M × M`. -/
-@[to_additive /-- The additive units of a monoid are equipped with a topology, via the embedding into
-`M × M`. -/]
+@[to_additive
+/-- The additive units of a monoid are equipped with a topology, via the embedding into `M × M`. -/]
 instance instTopologicalSpaceUnits : TopologicalSpace Mˣ :=
   TopologicalSpace.induced (embedProduct M) inferInstance
 

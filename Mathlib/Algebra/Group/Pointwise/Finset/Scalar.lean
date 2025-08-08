@@ -60,7 +60,8 @@ section SMul
 variable [DecidableEq β] [SMul α β] {s s₁ s₂ : Finset α} {t t₁ t₂ u : Finset β} {a : α} {b : β}
 
 /-- The pointwise product of two finsets `s` and `t`: `s • t = {x • y | x ∈ s, y ∈ t}`. -/
-@[to_additive /-- The pointwise sum of two finsets `s` and `t`: `s +ᵥ t = {x +ᵥ y | x ∈ s, y ∈ t}`. -/]
+@[to_additive
+/-- The pointwise sum of two finsets `s` and `t`: `s +ᵥ t = {x +ᵥ y | x ∈ s, y ∈ t}`. -/]
 protected def smul : SMul (Finset α) (Finset β) := ⟨image₂ (· • ·)⟩
 
 scoped[Pointwise] attribute [instance] Finset.smul Finset.vadd

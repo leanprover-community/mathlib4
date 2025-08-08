@@ -168,7 +168,8 @@ noncomputable def orbitProdStabilizerEquivGroup (b : β) : orbit α b × stabili
     Subgroup.groupEquivQuotientProdSubgroup.symm
 
 /-- Orbit-stabilizer theorem. -/
-@[to_additive AddAction.card_orbit_mul_card_stabilizer_eq_card_addGroup /-- Orbit-stabilizer theorem. -/]
+@[to_additive AddAction.card_orbit_mul_card_stabilizer_eq_card_addGroup
+/-- Orbit-stabilizer theorem. -/]
 theorem card_orbit_mul_card_stabilizer_eq_card_group (b : β) [Fintype α] [Fintype <| orbit α b]
     [Fintype <| stabilizer α b] :
     Fintype.card (orbit α b) * Fintype.card (stabilizer α b) = Fintype.card α := by
@@ -341,8 +342,8 @@ noncomputable def equivSubgroupOrbitsSetoidComap (H : Subgroup α) (ω : Ω) :
 
 /-- A bijection between the orbits under the action of a subgroup `H` on `β`, and the orbits
 under the action of `H` on each orbit under the action of `G`. -/
-@[to_additive /-- A bijection between the orbits under the action of an additive subgroup `H` on `β`,
-and the orbits under the action of `H` on each orbit under the action of `G`. -/]
+@[to_additive /-- A bijection between the orbits under the action of an additive subgroup `H` on
+`β`, and the orbits under the action of `H` on each orbit under the action of `G`. -/]
 noncomputable def equivSubgroupOrbits (H : Subgroup α) :
     orbitRel.Quotient H β ≃ Σ ω : Ω, orbitRel.Quotient H (orbitRel.Quotient.orbit ω) :=
   (Setoid.sigmaQuotientEquivOfLe (orbitRel_subgroup_le H)).symm.trans

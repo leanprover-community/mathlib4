@@ -224,7 +224,8 @@ theorem coe_zpow (x : H) (n : ℤ) : ((x ^ n : H) : G) = (x : G) ^ n :=
   rfl
 
 /-- The inclusion homomorphism from a subgroup `H` contained in `K` to `K`. -/
-@[to_additive /-- The inclusion homomorphism from an additive subgroup `H` contained in `K` to `K`. -/]
+@[to_additive
+/-- The inclusion homomorphism from an additive subgroup `H` contained in `K` to `K`. -/]
 def inclusion {H K : S} (h : H ≤ K) : H →* K :=
   MonoidHom.mk' (fun x => ⟨x, h x.prop⟩) fun _ _ => rfl
 
@@ -559,7 +560,8 @@ alias coeSubtype := coe_subtype
 alias _root_.AddSubgroup.coeSubtype := AddSubgroup.coe_subtype
 
 /-- The inclusion homomorphism from a subgroup `H` contained in `K` to `K`. -/
-@[to_additive /-- The inclusion homomorphism from an additive subgroup `H` contained in `K` to `K`. -/]
+@[to_additive
+/-- The inclusion homomorphism from an additive subgroup `H` contained in `K` to `K`. -/]
 def inclusion {H K : Subgroup G} (h : H ≤ K) : H →* K :=
   MonoidHom.mk' (fun x => ⟨x, h x.2⟩) fun _ _ => rfl
 
@@ -642,7 +644,8 @@ variable (H : Subgroup G)
 section Normalizer
 
 /-- The `normalizer` of `H` is the largest subgroup of `G` inside which `H` is normal. -/
-@[to_additive /-- The `normalizer` of `H` is the largest subgroup of `G` inside which `H` is normal. -/]
+@[to_additive
+/-- The `normalizer` of `H` is the largest subgroup of `G` inside which `H` is normal. -/]
 def normalizer : Subgroup G where
   carrier := { g : G | ∀ n, n ∈ H ↔ g * n * g⁻¹ ∈ H }
   one_mem' := by simp

@@ -93,8 +93,8 @@ namespace Red
 
 /-- Predicate asserting that the word `w₁` can be reduced to `w₂` in one step, i.e. there are words
 `w₃ w₄` and letter `x` such that `w₁ = w₃xx⁻¹w₄` and `w₂ = w₃w₄` -/
-@[to_additive /-- Predicate asserting that the word `w₁` can be reduced to `w₂` in one step, i.e. there
-  are words `w₃ w₄` and letter `x` such that `w₁ = w₃ + x + (-x) + w₄` and `w₂ = w₃w₄` -/]
+@[to_additive /-- Predicate asserting that the word `w₁` can be reduced to `w₂` in one step, i.e.
+there are words `w₃ w₄` and letter `x` such that `w₁ = w₃ + x + (-x) + w₄` and `w₂ = w₃w₄` -/]
 theorem Step.length : ∀ {L₁ L₂ : List (α × Bool)}, Step L₁ L₂ → L₂.length + 2 = L₁.length
   | _, _, @Red.Step.not _ L1 L2 x b => by rw [List.length_append, List.length_append]; rfl
 
@@ -288,8 +288,8 @@ theorem red_iff_irreducible {x1 b1 x2 b2} (h : (x1, b1) ≠ (x2, b2)) :
 
 /-- If `x` and `y` are distinct letters and `w₁ w₂` are words such that `xw₁` reduces to `yw₂`, then
 `w₁` reduces to `x⁻¹yw₂`. -/
-@[to_additive /-- If `x` and `y` are distinct letters and `w₁ w₂` are words such that `x + w₁` reduces
-  to `y + w₂`, then `w₁` reduces to `-x + y + w₂`. -/]
+@[to_additive /-- If `x` and `y` are distinct letters and `w₁ w₂` are words such that `x + w₁`
+reduces to `y + w₂`, then `w₁` reduces to `-x + y + w₂`. -/]
 theorem inv_of_red_of_ne {x1 b1 x2 b2} (H1 : (x1, b1) ≠ (x2, b2))
     (H2 : Red ((x1, b1) :: L₁) ((x2, b2) :: L₂)) : Red L₁ ((x1, not b1) :: (x2, b2) :: L₂) := by
   have : Red ((x1, b1) :: L₁) ([(x2, b2)] ++ L₂) := H2
@@ -311,8 +311,8 @@ theorem Step.sublist (H : Red.Step L₁ L₂) : L₂ <+ L₁ := by
   cases H; simp
 
 /-- If `w₁ w₂` are words such that `w₁` reduces to `w₂`, then `w₂` is a sublist of `w₁`. -/
-@[to_additive /-- If `w₁ w₂` are words such that `w₁` reduces to `w₂`, then `w₂` is a sublist of
-  `w₁`. -/]
+@[to_additive
+/-- If `w₁ w₂` are words such that `w₁` reduces to `w₂`, then `w₂` is a sublist of `w₁`. -/]
 protected theorem sublist : Red L₁ L₂ → L₂ <+ L₁ :=
   @reflTransGen_of_transitive_reflexive
     _ (fun a b => b <+ a) _ _ _
@@ -673,8 +673,8 @@ variable {β : Type v} (f : α → β) {x y : FreeGroup α}
 
 /-- Any function from `α` to `β` extends uniquely to a group homomorphism from the free group over
   `α` to the free group over `β`. -/
-@[to_additive /-- Any function from `α` to `β` extends uniquely to an additive group homomorphism from
-  the additive free group over `α` to the additive free group over `β`. -/]
+@[to_additive /-- Any function from `α` to `β` extends uniquely to an additive group homomorphism
+from the additive free group over `α` to the additive free group over `β`. -/]
 def map : FreeGroup α →* FreeGroup β :=
   MonoidHom.mk'
     (Quot.map (List.map fun x => (f x.1, x.2)) fun L₁ L₂ H => by cases H; simp)
@@ -753,8 +753,8 @@ variable [Group α] (x y : FreeGroup α)
 
 /-- If `α` is a group, then any function from `α` to `α` extends uniquely to a homomorphism from the
 free group over `α` to `α`. This is the multiplicative version of `FreeGroup.sum`. -/
-@[to_additive /-- If `α` is an additive group, then any function from `α` to `α` extends uniquely to an
-  additive homomorphism from the additive free group over `α` to `α`. -/]
+@[to_additive /-- If `α` is an additive group, then any function from `α` to `α` extends uniquely
+  to an additive homomorphism from the additive free group over `α` to `α`. -/]
 def prod : FreeGroup α →* α :=
   lift id
 
@@ -814,8 +814,8 @@ theorem sum.map_inv : sum x⁻¹ = -sum x :=
 end Sum
 
 /-- The bijection between the free group on the empty type, and a type with one element. -/
-@[to_additive /-- The bijection between the additive free group on the empty type, and a type with one
-  element. -/]
+@[to_additive /-- The bijection between the additive free group on the empty type, and a type with
+  one element. -/]
 def freeGroupEmptyEquivUnit : FreeGroup Empty ≃ Unit where
   toFun _ := ()
   invFun _ := 1

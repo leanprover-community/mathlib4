@@ -162,7 +162,8 @@ lemma norm_mk (x : M) : ‖(x : M ⧸ S)‖ = infDist x S := by
   simp
 
 /-- The norm of the projection is smaller or equal to the norm of the original element. -/
-@[to_additive /-- The norm of the projection is smaller or equal to the norm of the original element. -/]
+@[to_additive
+/-- The norm of the projection is smaller or equal to the norm of the original element. -/]
 lemma norm_mk_le_norm : ‖(m : M ⧸ S)‖ ≤ ‖m‖ :=
   (infDist_le_dist_of_mem (by simp)).trans_eq (dist_one_left _)
 
@@ -176,8 +177,8 @@ lemma norm_mk_eq_zero_iff_mem_closure : ‖(m : M ⧸ S)‖ = 0 ↔ m ∈ closur
 
 /-- The norm of the image of `m : M` in the quotient by a closed subgroup `S` is zero if and only if
 `m ∈ S`. -/
-@[to_additive /-- The norm of the image of `m : M` in the quotient by a closed subgroup `S` is zero if
-and only if `m ∈ S`. -/]
+@[to_additive /-- The norm of the image of `m : M` in the quotient by a closed subgroup `S` is zero
+if and only if `m ∈ S`. -/]
 lemma norm_mk_eq_zero [hS : IsClosed (S : Set M)] : ‖(m : M ⧸ S)‖ = 0 ↔ m ∈ S := by
   rw [norm_mk_eq_zero_iff_mem_closure, hS.closure_eq, SetLike.mem_coe]
 

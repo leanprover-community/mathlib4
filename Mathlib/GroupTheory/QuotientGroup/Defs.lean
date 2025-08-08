@@ -90,8 +90,8 @@ theorem mk'_eq_mk' {x y : G} : mk' N x = mk' N y ↔ ∃ z ∈ N, x * z = y :=
 `QuotientGroup.mk'` are equal.
 
 See note [partially-applied ext lemmas]. -/
-@[to_additive (attr := ext 1100) /-- Two `AddMonoidHom`s from an additive quotient group are equal if
-their compositions with `AddQuotientGroup.mk'` are equal.
+@[to_additive (attr := ext 1100) /-- Two `AddMonoidHom`s from an additive quotient group are equal
+if their compositions with `AddQuotientGroup.mk'` are equal.
 
 See note [partially-applied ext lemmas]. -/]
 theorem monoidHom_ext ⦃f g : G ⧸ N →* M⦄ (h : f.comp (mk' N) = g.comp (mk' N)) : f = g :=

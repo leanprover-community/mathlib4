@@ -146,8 +146,8 @@ variable {α : Type u} {β : Type v} (f : α → β)
 
 /-- The unique magma homomorphism `FreeMagma α →ₙ* FreeMagma β` that sends
 each `of x` to `of (f x)`. -/
-@[to_additive /-- The unique additive magma homomorphism `FreeAddMagma α → FreeAddMagma β` that sends
-each `of x` to `of (f x)`. -/]
+@[to_additive /-- The unique additive magma homomorphism `FreeAddMagma α → FreeAddMagma β` that
+sends each `of x` to `of (f x)`. -/]
 def map (f : α → β) : FreeMagma α →ₙ* FreeMagma β := lift (of ∘ f)
 
 @[to_additive (attr := simp)]
@@ -165,7 +165,8 @@ instance : Monad FreeMagma where
   bind x f := lift f x
 
 /-- Recursor on `FreeMagma` using `pure` instead of `of`. -/
-@[to_additive (attr := elab_as_elim) /-- Recursor on `FreeAddMagma` using `pure` instead of `of`. -/]
+@[to_additive (attr := elab_as_elim)
+/-- Recursor on `FreeAddMagma` using `pure` instead of `of`. -/]
 protected def recOnPure {C : FreeMagma α → Sort l} (x) (ih1 : ∀ x, C (pure x))
     (ih2 : ∀ x y, C x → C y → C (x * y)) : C x :=
   FreeMagma.recOnMul x ih1 ih2

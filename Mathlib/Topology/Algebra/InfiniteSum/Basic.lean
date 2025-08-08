@@ -489,8 +489,8 @@ theorem tprod_range {g : γ → β} (f : β → α) (hg : Injective g) :
 
 /-- If `f b = 1` for all `b ∈ t`, then the product of `f a` with `a ∈ s` is the same as the
 product of `f a` with `a ∈ s ∖ t`. -/
-@[to_additive /-- If `f b = 0` for all `b ∈ t`, then the sum of `f a` with `a ∈ s` is the same as the
-sum of `f a` with `a ∈ s ∖ t`. -/]
+@[to_additive /-- If `f b = 0` for all `b ∈ t`, then the sum of `f a` with `a ∈ s` is the same as
+the sum of `f a` with `a ∈ s ∖ t`. -/]
 lemma tprod_setElem_eq_tprod_setElem_diff {f : β → α} (s t : Set β)
     (hf₀ : ∀ b ∈ t, f b = 1) :
     ∏' a : s, f a = ∏' a : (s \ t : Set β), f a :=

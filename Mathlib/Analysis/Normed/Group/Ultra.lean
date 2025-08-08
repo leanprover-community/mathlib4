@@ -200,10 +200,9 @@ instance nonarchimedeanGroup : NonarchimedeanGroup M where
 
 /-- Nonarchimedean norm of a product is less than or equal the norm of any term in the product.
 This version is phrased using `Finset.sup'` and `Finset.Nonempty` due to `Finset.sup`
-operating over an `OrderBot`, which `ℝ` is not.
--/
-@[to_additive /-- Nonarchimedean norm of a sum is less than or equal the norm of any term in the sum.
-This version is phrased using `Finset.sup'` and `Finset.Nonempty` due to `Finset.sup`
+operating over an `OrderBot`, which `ℝ` is not. -/
+@[to_additive /-- Nonarchimedean norm of a sum is less than or equal the norm of any term in the
+sum. This version is phrased using `Finset.sup'` and `Finset.Nonempty` due to `Finset.sup`
 operating over an `OrderBot`, which `ℝ` is not. -/]
 lemma _root_.Finset.Nonempty.norm_prod_le_sup'_norm {s : Finset ι} (hs : s.Nonempty) (f : ι → M) :
     ‖∏ i ∈ s, f i‖ ≤ s.sup' hs (‖f ·‖) := by
@@ -219,8 +218,8 @@ lemma _root_.Finset.Nonempty.norm_prod_le_sup'_norm {s : Finset ι} (hs : s.None
 
 /-- Nonarchimedean norm of a product is less than or equal to the largest norm of a term in the
 product. -/
-@[to_additive /-- Nonarchimedean norm of a sum is less than or equal to the largest norm of a term in
-the sum. -/]
+@[to_additive /-- Nonarchimedean norm of a sum is less than or equal to the largest norm of a term
+in the sum. -/]
 lemma _root_.Finset.nnnorm_prod_le_sup_nnnorm (s : Finset ι) (f : ι → M) :
     ‖∏ i ∈ s, f i‖₊ ≤ s.sup (‖f ·‖₊) := by
   rcases s.eq_empty_or_nonempty with rfl | hs
@@ -232,8 +231,8 @@ lemma _root_.Finset.nnnorm_prod_le_sup_nnnorm (s : Finset ι) (f : ι → M) :
 Generalised ultrametric triangle inequality for finite products in commutative groups with
 an ultrametric norm.
 -/
-@[to_additive /-- Generalised ultrametric triangle inequality for finite sums in additive commutative
-groups with an ultrametric norm. -/]
+@[to_additive /-- Generalised ultrametric triangle inequality for finite sums in additive
+commutative groups with an ultrametric norm. -/]
 lemma nnnorm_prod_le_of_forall_le {s : Finset ι} {f : ι → M} {C : ℝ≥0}
     (hC : ∀ i ∈ s, ‖f i‖₊ ≤ C) : ‖∏ i ∈ s, f i‖₊ ≤ C :=
   (s.nnnorm_prod_le_sup_nnnorm f).trans <| Finset.sup_le hC
@@ -252,8 +251,8 @@ lemma norm_prod_le_of_forall_le_of_nonempty {s : Finset ι} (hs : s.Nonempty) {f
 Generalised ultrametric triangle inequality for finite products in commutative groups with
 an ultrametric norm.
 -/
-@[to_additive /-- Generalised ultrametric triangle inequality for finite sums in additive commutative
-groups with an ultrametric norm. -/]
+@[to_additive /-- Generalised ultrametric triangle inequality for finite sums in additive
+commutative groups with an ultrametric norm. -/]
 lemma norm_prod_le_of_forall_le_of_nonneg {s : Finset ι} {f : ι → M} {C : ℝ}
     (h_nonneg : 0 ≤ C) (hC : ∀ i ∈ s, ‖f i‖ ≤ C) : ‖∏ i ∈ s, f i‖ ≤ C := by
   lift C to NNReal using h_nonneg

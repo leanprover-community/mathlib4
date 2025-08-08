@@ -30,7 +30,8 @@ variable [DecidableEq α]
 
 /-- The maximal reduction of a word. It is computable
 iff `α` has decidable equality. -/
-@[to_additive /-- The maximal reduction of a word. It is computable iff `α` has decidable equality. -/]
+@[to_additive
+/-- The maximal reduction of a word. It is computable iff `α` has decidable equality. -/]
 def reduce : (L : List (α × Bool)) -> List (α × Bool) :=
   List.rec [] fun hd1 _tl1 ih =>
     List.casesOn ih [hd1] fun hd2 tl2 =>
@@ -113,8 +114,8 @@ theorem reduce.not {p : Prop} :
 
 /-- The second theorem that characterises the function `reduce`: the maximal reduction of a word
 only reduces to itself. -/
-@[to_additive /-- The second theorem that characterises the function `reduce`: the maximal reduction of
-  a word only reduces to itself. -/]
+@[to_additive /-- The second theorem that characterises the function `reduce`: the maximal
+  reduction of a word only reduces to itself. -/]
 theorem reduce.min (H : Red (reduce L₁) L₂) : reduce L₁ = L₂ := by
   induction H with
   | refl => rfl
@@ -170,15 +171,15 @@ theorem reduce.exact (H : reduce L₁ = reduce L₂) : mk L₁ = mk L₂ :=
   Red.exact.2 ⟨reduce L₂, H ▸ reduce.red, reduce.red⟩
 
 /-- A word and its maximal reduction correspond to the same element of the free group. -/
-@[to_additive /-- A word and its maximal reduction correspond to the same element of the additive free
-  group. -/]
+@[to_additive /-- A word and its maximal reduction correspond to the same element of the additive
+  free group. -/]
 theorem reduce.self : mk (reduce L) = mk L :=
   reduce.exact reduce.idem
 
 /-- If words `w₁ w₂` are such that `w₁` reduces to `w₂`, then `w₂` reduces to the maximal reduction
   of `w₁`. -/
-@[to_additive /-- If words `w₁ w₂` are such that `w₁` reduces to `w₂`, then `w₂` reduces to the maximal
-  reduction of `w₁`. -/]
+@[to_additive /-- If words `w₁ w₂` are such that `w₁` reduces to `w₂`, then `w₂` reduces to the
+  maximal reduction of `w₁`. -/]
 theorem reduce.rev (H : Red L₁ L₂) : Red L₂ (reduce L₁) :=
   (reduce.eq_of_red H).symm ▸ reduce.red
 
@@ -272,7 +273,8 @@ lemma toWord_mul_sublist (x y : FreeGroup α) : (x * y).toWord <+ x.toWord ++ y.
   exact FreeGroup.reduce.red
 
 /-- **Constructive Church-Rosser theorem** (compare `FreeGroup.Red.church_rosser`). -/
-@[to_additive /-- **Constructive Church-Rosser theorem** (compare `FreeAddGroup.Red.church_rosser`). -/]
+@[to_additive
+/-- **Constructive Church-Rosser theorem** (compare `FreeAddGroup.Red.church_rosser`). -/]
 def reduce.churchRosser (H12 : Red L₁ L₂) (H13 : Red L₁ L₃) : { L₄ // Red L₂ L₄ ∧ Red L₃ L₄ } :=
   ⟨reduce L₁, reduce.rev H12, reduce.rev H13⟩
 

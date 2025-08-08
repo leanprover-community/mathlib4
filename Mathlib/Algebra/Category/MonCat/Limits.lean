@@ -36,10 +36,9 @@ variable {J : Type v} [Category.{w} J] (F : J ⥤ MonCat.{u})
 instance monoidObj (j) : Monoid ((F ⋙ forget MonCat).obj j) :=
   inferInstanceAs <| Monoid (F.obj j)
 
-/-- The flat sections of a functor into `MonCat` form a submonoid of all sections.
--/
+/-- The flat sections of a functor into `MonCat` form a submonoid of all sections. -/
 @[to_additive
-      /-- The flat sections of a functor into `AddMonCat` form an additive submonoid of all sections. -/]
+/-- The flat sections of a functor into `AddMonCat` form an additive submonoid of all sections. -/]
 def sectionsSubmonoid : Submonoid (∀ j, F.obj j) where
   carrier := (F ⋙ forget MonCat).sections
   one_mem' {j} {j'} f := by simp

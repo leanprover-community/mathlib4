@@ -67,8 +67,8 @@ theorem mul_left (ha : SemiconjBy a y z) (hb : SemiconjBy b x y) : SemiconjBy (a
 
 /-- The relation “there exists an element that semiconjugates `a` to `b`” on a semigroup
 is transitive. -/
-@[to_additive /-- The relation “there exists an element that semiconjugates `a` to `b`” on an additive
-semigroup is transitive. -/]
+@[to_additive /-- The relation “there exists an element that semiconjugates `a` to `b`” on an
+additive semigroup is transitive. -/]
 protected theorem transitive : Transitive fun a b : S ↦ ∃ c, SemiconjBy c a b
   | _, _, _, ⟨x, hx⟩, ⟨y, hy⟩ => ⟨y * x, hy.mul_left hx⟩
 
@@ -89,8 +89,8 @@ theorem one_left (x : M) : SemiconjBy 1 x x :=
 
 /-- The relation “there exists an element that semiconjugates `a` to `b`” on a monoid (or, more
 generally, on `MulOneClass` type) is reflexive. -/
-@[to_additive /-- The relation “there exists an element that semiconjugates `a` to `b`” on an additive
-monoid (or, more generally, on an `AddZeroClass` type) is reflexive. -/]
+@[to_additive /-- The relation “there exists an element that semiconjugates `a` to `b`” on an
+additive monoid (or, more generally, on an `AddZeroClass` type) is reflexive. -/]
 protected theorem reflexive : Reflexive fun a b : M ↦ ∃ c, SemiconjBy c a b
   | a => ⟨1, one_left a⟩
 

@@ -740,9 +740,10 @@ lemma TopologicalGroup.isOpenMap_iff_nhds_one
 /-- Let `A` and `B` be topological groups, and let `φ : A → B` be a continuous surjective group
 homomorphism. Assume furthermore that `φ` is a quotient map (i.e., `V ⊆ B`
 is open iff `φ⁻¹ V` is open). Then `φ` is an open quotient map, and in particular an open map. -/
-@[to_additive /-- Let `A` and `B` be topological additive groups, and let `φ : A → B` be a continuous
-surjective additive group homomorphism. Assume furthermore that `φ` is a quotient map (i.e., `V ⊆ B`
-is open iff `φ⁻¹ V` is open). Then `φ` is an open quotient map, and in particular an open map. -/]
+@[to_additive /-- Let `A` and `B` be topological additive groups, and let `φ : A → B` be a
+continuous surjective additive group homomorphism. Assume furthermore that `φ` is a quotient map
+(i.e., `V ⊆ B` is open iff `φ⁻¹ V` is open). Then `φ` is an open quotient map, and in particular an
+open map. -/]
 lemma MonoidHom.isOpenQuotientMap_of_isQuotientMap {A : Type*} [Group A]
     [TopologicalSpace A] [ContinuousMul A] {B : Type*} [Group B] [TopologicalSpace B]
     {F : Type*} [FunLike F A B] [MonoidHomClass F A B] {φ : F}

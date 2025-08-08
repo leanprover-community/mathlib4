@@ -251,16 +251,16 @@ theorem Fintype.prod_sum_type (f : α₁ ⊕ α₂ → M) :
 
 /-- The product over a product type equals the product of the fiberwise products. For rewriting
 in the reverse direction, use `Fintype.prod_prod_type'`. -/
-@[to_additive Fintype.sum_prod_type /-- The sum over a product type equals the sum of fiberwise sums.
-For rewriting in the reverse direction, use `Fintype.sum_prod_type'`. -/]
+@[to_additive Fintype.sum_prod_type /-- The sum over a product type equals the sum of fiberwise
+sums. For rewriting in the reverse direction, use `Fintype.sum_prod_type'`. -/]
 theorem Fintype.prod_prod_type [CommMonoid γ] (f : α₁ × α₂ → γ) :
     ∏ x, f x = ∏ x, ∏ y, f (x, y) :=
   Finset.prod_product ..
 
 /-- The product over a product type equals the product of the fiberwise products. For rewriting
 in the reverse direction, use `Fintype.prod_prod_type`. -/
-@[to_additive Fintype.sum_prod_type' /-- The sum over a product type equals the sum of fiberwise sums.
-For rewriting in the reverse direction, use `Fintype.sum_prod_type`. -/]
+@[to_additive Fintype.sum_prod_type' /-- The sum over a product type equals the sum of fiberwise
+sums. For rewriting in the reverse direction, use `Fintype.sum_prod_type`. -/]
 theorem Fintype.prod_prod_type' [CommMonoid γ] (f : α₁ → α₂ → γ) :
     ∏ x : α₁ × α₂, f x.1 x.2 = ∏ x, ∏ y, f x y :=
   Finset.prod_product' ..
@@ -271,7 +271,8 @@ theorem Fintype.prod_prod_type_right [CommMonoid γ] (f : α₁ × α₂ → γ)
   Finset.prod_product_right ..
 
 /-- An uncurried version of `Finset.prod_prod_type_right`. -/
-@[to_additive Fintype.sum_prod_type_right' /-- An uncurried version of `Finset.sum_prod_type_right` -/]
+@[to_additive Fintype.sum_prod_type_right'
+/-- An uncurried version of `Finset.sum_prod_type_right` -/]
 theorem Fintype.prod_prod_type_right' [CommMonoid γ] (f : α₁ → α₂ → γ) :
     ∏ x : α₁ × α₂, f x.1 x.2 = ∏ y, ∏ x, f x y :=
   Finset.prod_product_right' ..

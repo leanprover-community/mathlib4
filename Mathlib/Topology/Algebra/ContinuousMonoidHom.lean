@@ -147,7 +147,8 @@ lemma coe_comp (g : ContinuousMonoidHom B C) (f : ContinuousMonoidHom A B) :
     ⇑(g.comp f) = ⇑g ∘ ⇑f := rfl
 
 /-- Product of two continuous homomorphisms on the same space. -/
-@[to_additive (attr := simps!) prod /-- Product of two continuous homomorphisms on the same space. -/]
+@[to_additive (attr := simps!) prod
+/-- Product of two continuous homomorphisms on the same space. -/]
 def prod (f : A →ₜ* B) (g : A →ₜ* C) : A →ₜ* (B × C) :=
   ⟨f.toMonoidHom.prod g.toMonoidHom, f.continuous_toFun.prodMk g.continuous_toFun⟩
 
@@ -335,8 +336,8 @@ instance : HomeomorphClass (M ≃ₜ* N) M N where
 
 /-- Two continuous multiplicative isomorphisms agree if they are defined by the
 same underlying function. -/
-@[to_additive (attr := ext)
-  /-- Two continuous additive isomorphisms agree if they are defined by the same underlying function. -/]
+@[to_additive (attr := ext) /-- Two continuous additive isomorphisms agree if they are defined by
+the same underlying function. -/]
 theorem ext {f g : M ≃ₜ* N} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
 
@@ -436,12 +437,14 @@ theorem symm_bijective : Function.Bijective (symm : M ≃ₜ* N → _) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 /-- `e.symm` is a right inverse of `e`, written as `e (e.symm y) = y`. -/
-@[to_additive (attr := simp) /-- `e.symm` is a right inverse of `e`, written as `e (e.symm y) = y`. -/]
+@[to_additive (attr := simp)
+/-- `e.symm` is a right inverse of `e`, written as `e (e.symm y) = y`. -/]
 theorem apply_symm_apply (e : M ≃ₜ* N) (y : N) : e (e.symm y) = y :=
   e.toEquiv.apply_symm_apply y
 
 /-- `e.symm` is a left inverse of `e`, written as `e.symm (e y) = y`. -/
-@[to_additive (attr := simp) /-- `e.symm` is a left inverse of `e`, written as `e.symm (e y) = y`. -/]
+@[to_additive (attr := simp)
+/-- `e.symm` is a left inverse of `e`, written as `e.symm (e y) = y`. -/]
 theorem symm_apply_apply (e : M ≃ₜ* N) (x : M) : e.symm (e x) = x :=
   e.toEquiv.symm_apply_apply x
 

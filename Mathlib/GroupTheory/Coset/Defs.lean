@@ -80,10 +80,10 @@ instance leftRelDecidable [DecidablePred (· ∈ s)] : DecidableRel (leftRel s).
   rw [leftRel_eq]
   exact ‹DecidablePred (· ∈ s)› _
 
-/-- `α ⧸ s` is the quotient type representing the left cosets of `s`.
-  If `s` is a normal subgroup, `α ⧸ s` is a group -/
-@[to_additive /-- `α ⧸ s` is the quotient type representing the left cosets of `s`. If `s` is a normal
-subgroup, `α ⧸ s` is a group -/]
+/-- `α ⧸ s` is the quotient type representing the left cosets of `s`. If `s` is a normal subgroup,
+`α ⧸ s` is a group -/
+@[to_additive /-- `α ⧸ s` is the quotient type representing the left cosets of `s`. If `s` is a
+normal subgroup, `α ⧸ s` is a group -/]
 instance instHasQuotientSubgroup : HasQuotient α (Subgroup α) :=
   ⟨fun s => Quotient (leftRel s)⟩
 
@@ -150,7 +150,8 @@ namespace QuotientGroup
 variable [Group α] {s : Subgroup α}
 
 /-- The canonical map from a group `α` to the quotient `α ⧸ s`. -/
-@[to_additive (attr := coe) /-- The canonical map from an `AddGroup` `α` to the quotient `α ⧸ s`. -/]
+@[to_additive (attr := coe)
+/-- The canonical map from an `AddGroup` `α` to the quotient `α ⧸ s`. -/]
 abbrev mk (a : α) : α ⧸ s :=
   Quotient.mk'' a
 
@@ -245,7 +246,8 @@ variable [Group α] {s : Subgroup α}
 variable {t : Subgroup α}
 
 /-- If two subgroups `M` and `N` of `G` are equal, their quotients are in bijection. -/
-@[to_additive /-- If two subgroups `M` and `N` of `G` are equal, their quotients are in bijection. -/]
+@[to_additive
+/-- If two subgroups `M` and `N` of `G` are equal, their quotients are in bijection. -/]
 def quotientEquivOfEq (h : s = t) : α ⧸ s ≃ α ⧸ t where
   toFun := Quotient.map' id fun _a _b h' => h ▸ h'
   invFun := Quotient.map' id fun _a _b h' => h.symm ▸ h'

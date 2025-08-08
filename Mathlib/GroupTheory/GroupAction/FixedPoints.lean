@@ -119,8 +119,8 @@ to be used effectively.
 If a set `s : Set α` is in `fixedBy (Set α) g`, then all points of `s` will stay in `s` after being
 moved by `g`.
 -/
-@[to_additive /-- If a set `s : Set α` is in `fixedBy (Set α) g`, then all points of `s` will stay in
-`s` after being moved by `g`. -/]
+@[to_additive /-- If a set `s : Set α` is in `fixedBy (Set α) g`, then all points of `s` will stay
+in `s` after being moved by `g`. -/]
 theorem set_mem_fixedBy_iff (s : Set α) (g : G) :
     s ∈ fixedBy (Set α) g ↔ ∀ x, g • x ∈ s ↔ x ∈ s := by
   simp_rw [mem_fixedBy, ← eq_inv_smul_iff, Set.ext_iff, Set.mem_inv_smul_set_iff, Iff.comm]

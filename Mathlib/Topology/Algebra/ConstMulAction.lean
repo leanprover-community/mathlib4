@@ -106,8 +106,8 @@ theorem Continuous.const_smul (hg : Continuous g) (c : M) : Continuous fun x => 
   (continuous_const_smul _).comp hg
 
 /-- If a scalar is central, then its right action is continuous when its left action is. -/
-@[to_additive /-- If an additive action is central, then its right action is continuous when its left
-action is. -/]
+@[to_additive /-- If an additive action is central, then its right action is continuous when its
+left action is. -/]
 instance ContinuousConstSMul.op [SMul Mᵐᵒᵖ α] [IsCentralScalar M α] :
     ContinuousConstSMul Mᵐᵒᵖ α :=
   ⟨MulOpposite.rec' fun c => by simpa only [op_smul_eq_smul] using continuous_const_smul c⟩
