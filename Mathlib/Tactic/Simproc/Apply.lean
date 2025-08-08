@@ -16,6 +16,7 @@ goal.
 
 open Lean Elab Tactic
 
+/-- Execute the given `Simproc` on the goal. -/
 def Lean.Meta.Simp.Simproc.apply (s : Simproc) : TacticM Unit := do
   liftMetaTactic1 fun e ↦ do
     -- `Simproc` usually does not allow arguments, so we hijacked `Simp.mainCore` to provide a
