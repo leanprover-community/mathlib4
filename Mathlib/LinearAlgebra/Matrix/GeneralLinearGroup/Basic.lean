@@ -46,6 +46,8 @@ private theorem NonUnitalAlgHom.apply_vecMulVec_mulVec_mul_comm [CommSemiring R]
     _ = (f A * (LinearMap.toMatrix' T)) *ᵥ x := by
       simp_rw [← mulVec_mulVec, ← toLin'_apply (LinearMap.toMatrix' T), toLin'_toMatrix']
 
+/-- Given an algebra automorphism `f` on `Matrix n n R`, there exists an invertible matrix `T`
+such that `f` is given by `x ↦ T * x * T⁻¹`. -/
 theorem AlgEquiv.exists_generalLinearGroup_eq_conj
     [Field R] (f : Matrix n n R ≃ₐ[R] Matrix n n R) :
     ∃ T : GL n R, f = MulSemiringAction.toAlgAut (ConjAct (GL n R)) R (Matrix n n R) T := by
