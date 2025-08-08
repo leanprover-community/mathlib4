@@ -621,15 +621,15 @@ theorem Int.ModEq.pow_card_sub_one_eq_one {p : ℕ} (hp : Nat.Prime p) {n : ℤ}
 
 /-- **Fermat's Little Theorem**: for all `n : ℕ` coprime to `p`, we have
 `n ^ (p - 1) ≡ 1 [MOD p]`. -/
-theorem Nat.ModEq.pow_card_sub_one_eq_one {p : ℕ} (hp : Nat.Prime p) {n : ℕ} (hpn : n.Coprime p) :
+theorem Nat.ModEq.pow_card_sub_one_eq_one {p : ℕ} (hp : p.Prime) {n : ℕ} (hpn : n.Coprime p) :
     n ^ (p - 1) ≡ 1 [MOD p] := by
   rw [← Int.natCast_modEq_iff, Nat.cast_pow, Nat.cast_one]
   exact Int.ModEq.pow_card_sub_one_eq_one hp (isCoprime_iff_coprime.mpr hpn)
 
 /-- **Fermat's Little Theorem**: for all `n : ℕ` coprime to `p`, we have
 `(n ^ (p - 1) - 1) % p = 0`. -/
-theorem Nat.pow_card_sub_one_sub_one_mod_card {p : ℕ} (hp : Nat.Prime p) {n : ℕ}
-    (hpn : n.Coprime p) : (n ^ (p - 1) - 1) % p = 0 :=
+theorem Nat.pow_card_sub_one_sub_one_mod_card {p : ℕ} (hp : p.Prime) {n : ℕ} (hpn : n.Coprime p) :
+    (n ^ (p - 1) - 1) % p = 0 :=
   Nat.sub_mod_eq_zero_of_mod_eq (Nat.ModEq.pow_card_sub_one_eq_one hp hpn)
 
 theorem pow_pow_modEq_one (p m a : ℕ) : (1 + p * a) ^ (p ^ m) ≡ 1 [MOD p ^ m] := by
