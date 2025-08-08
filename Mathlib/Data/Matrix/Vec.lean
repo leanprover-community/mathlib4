@@ -83,13 +83,13 @@ theorem vec_dotProduct_vec [AddCommMonoid R] [Mul R] [Fintype m] [Fintype n]
     ← Finset.univ_product_univ, Finset.sum_product]
 
 theorem star_vec [Star R] (x : Matrix m n R) :
-    star x.vec = (xᴴᵀ).vec :=
+    star x.vec = (x.map star).vec :=
   rfl
 
 theorem star_vec_dotProduct_vec [AddCommMonoid R] [Mul R] [Star R] [Fintype m] [Fintype n]
     (A B : Matrix m n R) :
     star (vec A) ⬝ᵥ vec B = (Aᴴ * B).trace := by
-  simp_rw [star_vec, vec_dotProduct_vec, transpose_transpose]
+  simp_rw [star_vec, vec_dotProduct_vec, ← conjTranspose_transpose, transpose_transpose]
 
 theorem vec_hadamard [Mul R] (A B : Matrix m n R) : vec (A ⊙ B) = vec A * vec B := rfl
 
