@@ -34,7 +34,7 @@ theorem coe_ofLexMulEquiv : ⇑(ofLexMulEquiv α) = ofLex := rfl
 lemma symm_toLexMulEquiv : (toLexMulEquiv α).symm = ofLexMulEquiv α := rfl
 
 @[to_additive (attr := simp)]
-lemma symm_ofLexMulEquiv :  (ofLexMulEquiv α).symm = toLexMulEquiv α := rfl
+lemma symm_ofLexMulEquiv : (ofLexMulEquiv α).symm = toLexMulEquiv α := rfl
 
 @[to_additive (attr := simp)]
 lemma toEquiv_toLexMulEquiv : (toLexMulEquiv α : α ≃ Lex α) = toLex := rfl
