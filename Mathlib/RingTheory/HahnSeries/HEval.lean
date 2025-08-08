@@ -8,6 +8,7 @@ import Mathlib.RingTheory.PowerSeries.Basic
 
 /-!
 # Evaluation of power series in Hahn Series
+
 We describe a class of ring homomorphisms from formal power series to Hahn series,
 given by substitution of the generating variable to an element of strictly positive order.
 
@@ -189,16 +190,14 @@ theorem heval_mul {a b : PowerSeries R} :
     heval x (a * b) = (heval x a) * heval x b :=
   map_mul (heval x) a b
 
-theorem heval_C (r : R) :
-    heval x (C R r) = r • 1 := by
+theorem heval_C (r : R) : heval x (C R r) = r • 1 := by
   ext g
-  simp only [heval_apply, coeff_hsum, smulFamily_toFun, powers_toFun, smul_ite,
-    HahnSeries.coeff_smul, HahnSeries.coeff_one, smul_eq_mul, mul_ite, mul_one, mul_zero]
+  simp only [heval_apply, coeff_hsum, smulFamily_toFun, powers_toFun, HahnSeries.coeff_smul,
+    HahnSeries.coeff_one, smul_eq_mul, mul_ite, mul_one, mul_zero]
   rw [finsum_eq_single _ 0 (fun n hn ↦ by simp [coeff_ne_zero_C hn])]
   by_cases hg : g = 0 <;> · simp
 
-theorem heval_X (hx : 0 < x.orderTop) :
-    heval x X = x := by
+theorem heval_X (hx : 0 < x.orderTop) : heval x X = x := by
   rw [X_eq, monomial_eq_mk, heval_apply, powerSeriesFamily, smulFamily]
   simp only [coeff_mk, powers_toFun, hx, ↓reduceIte, ite_smul, one_smul, zero_smul]
   ext g
