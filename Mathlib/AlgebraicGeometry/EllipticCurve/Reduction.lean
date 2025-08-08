@@ -121,8 +121,8 @@ theorem exists_integral (W : WeierstrassCurve K) :
   any_goals
     simp only [zpow_neg, variableChange_def, inv_inv, Units.val_zpow_eq_zpow_val, IsUnit.unit_spec,
       mul_zero, add_zero, zero_mul, sub_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
-      zero_pow, map_mul, map_pow, map_zpow₀]
-    rw [hπ]; simp only [Int.reduceNeg, ofAdd_neg, WithZero.coe_inv, inv_zpow', zpow_neg, inv_pow]
+      zero_pow, map_mul, map_pow, map_zpow₀, hπ, Int.reduceNeg, ofAdd_neg, WithZero.coe_inv,
+      inv_zpow', zpow_neg, inv_pow]
     refine inv_mul_le_one_of_le₀ ?_ zero_le'
   any_goals rw [← WithZero.coe_zpow, ← ofAdd_zsmul, zsmul_int_one];
   any_goals rw [← WithZero.coe_pow, ← ofAdd_nsmul]; simp only [Int.nsmul_eq_mul, Nat.cast_ofNat]
