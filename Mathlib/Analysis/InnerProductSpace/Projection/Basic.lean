@@ -560,7 +560,6 @@ theorem starProjection_orthogonalComplement_singleton_eq_zero (v : E) :
   rw [starProjection_apply, coe_eq_zero]
   exact orthogonalProjection_orthogonalComplement_singleton_eq_zero v
 
-
 /-- If the orthogonal projection to `K` is well-defined, then a vector splits as the sum of its
 orthogonal projections onto a complete submodule `K` and onto the orthogonal complement of `K`. -/
 theorem starProjection_add_starProjection_orthogonal [K.HasOrthogonalProjection]
@@ -606,7 +605,6 @@ theorem id_eq_sum_starProjection_self_orthogonalComplement [K.HasOrthogonalProje
   id_eq_sum_orthogonalProjection_self_orthogonalComplement :=
   id_eq_sum_starProjection_self_orthogonalComplement
 
--- Porting note: The priority should be higher than `Submodule.coe_inner`.
 @[simp high]
 theorem inner_orthogonalProjection_eq_of_mem_right [K.HasOrthogonalProjection] (u : K) (v : E) :
     ⟪K.orthogonalProjection v, u⟫ = ⟪v, u⟫ :=
@@ -616,7 +614,6 @@ theorem inner_orthogonalProjection_eq_of_mem_right [K.HasOrthogonalProjection] (
       rw [starProjection_inner_eq_zero _ _ (Submodule.coe_mem _), add_zero]
     _ = ⟪v, u⟫ := by rw [← inner_add_left, add_sub_cancel]
 
--- Porting note: The priority should be higher than `Submodule.coe_inner`.
 @[simp high]
 theorem inner_orthogonalProjection_eq_of_mem_left [K.HasOrthogonalProjection] (u : K) (v : E) :
     ⟪u, K.orthogonalProjection v⟫ = ⟪(u : E), v⟫ := by
