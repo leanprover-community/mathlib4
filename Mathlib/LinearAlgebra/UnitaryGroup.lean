@@ -79,6 +79,24 @@ theorem det_of_mem_unitary {A : Matrix n n α} (hA : A ∈ Matrix.unitaryGroup n
   · simpa [star, det_transpose] using congr_arg det hA.1
   · simpa [star, det_transpose] using congr_arg det hA.2
 
+open scoped Kronecker in
+/-- The kronecker product of two unitary matrices is unitary. -/
+theorem kronecker_mem_unitary {R m : Type*} [Semiring R] [StarRing R] [Fintype m]
+    [DecidableEq m] {U₁ : Matrix n n R} {U₂ : Matrix m m R}
+    (hU₁ : U₁ ∈ unitary (Matrix n n R)) (hU₂ : U₂ ∈ unitary (Matrix m m R)) :
+    U₁ ⊗ₖ U₂ ∈ unitary (Matrix (n × m) (n × m) R) := by
+  simp_rw [unitary.mem_iff, star_eq_conjTranspose, conjTranspose_kronecker']
+  constructor <;> ext <;> simp [Matrix.mul_apply, ← Matrix.star_apply, ← mul_assoc]
+  · simp_rw [mul_assoc _ (star U₁ _ _), ← Finset.univ_product_univ, Finset.sum_product]
+    rw [Finset.sum_comm]
+    simp_rw [← Finset.sum_mul, ← Finset.mul_sum, ← Matrix.mul_apply, hU₁.1, Matrix.one_apply,
+      mul_boole, ite_mul, zero_mul, Finset.sum_ite_irrel, ← Matrix.mul_apply, hU₂.1,
+      Matrix.one_apply, Finset.sum_const_zero, ← ite_and, Prod.eq_iff_fst_eq_snd_eq]
+  · simp_rw [mul_assoc _ _ (star U₂ _ _), ← Finset.univ_product_univ, Finset.sum_product,
+      ← Finset.sum_mul, ← Finset.mul_sum, ← Matrix.mul_apply, hU₂.2, Matrix.one_apply, mul_boole,
+      ite_mul, zero_mul, Finset.sum_ite_irrel, ← Matrix.mul_apply, hU₁.2, Matrix.one_apply,
+      Finset.sum_const_zero, ← ite_and, and_comm, Prod.eq_iff_fst_eq_snd_eq]
+
 namespace UnitaryGroup
 
 instance coeMatrix : Coe (unitaryGroup n α) (Matrix n n α) :=
@@ -173,24 +191,6 @@ theorem toGL_mul (A B : unitaryGroup n α) : toGL (A * B) = toGL A * toGL B := U
 `LinearMap.GeneralLinearGroup n α`. -/
 def embeddingGL : unitaryGroup n α →* GeneralLinearGroup α (n → α) :=
   ⟨⟨fun A => toGL A, toGL_one⟩, toGL_mul⟩
-
-open scoped Kronecker in
-/-- The kronecker product of two unitary matrices is unitary. -/
-theorem kronecker_mem_unitaryGroup {R m : Type*} [Semiring R] [StarRing R] [Fintype m]
-    [DecidableEq m] {U₁ : Matrix n n R} {U₂ : Matrix m m R}
-    (hU₁ : U₁ ∈ unitary (Matrix n n R)) (hU₂ : U₂ ∈ unitary (Matrix m m R)) :
-    U₁ ⊗ₖ U₂ ∈ unitary (Matrix (n × m) (n × m) R) := by
-  simp_rw [unitary.mem_iff, star_eq_conjTranspose, conjTranspose_kronecker']
-  constructor <;> ext <;> simp [Matrix.mul_apply, ← Matrix.star_apply, ← mul_assoc]
-  · simp_rw [mul_assoc _ (star U₁ _ _), ← Finset.univ_product_univ, Finset.sum_product]
-    rw [Finset.sum_comm]
-    simp_rw [← Finset.sum_mul, ← Finset.mul_sum, ← Matrix.mul_apply, hU₁.1, Matrix.one_apply,
-      mul_boole, ite_mul, zero_mul, Finset.sum_ite_irrel, ← Matrix.mul_apply, hU₂.1,
-      Matrix.one_apply, Finset.sum_const_zero, ← ite_and, Prod.eq_iff_fst_eq_snd_eq]
-  · simp_rw [mul_assoc _ _ (star U₂ _ _), ← Finset.univ_product_univ, Finset.sum_product,
-      ← Finset.sum_mul, ← Finset.mul_sum, ← Matrix.mul_apply, hU₂.2, Matrix.one_apply, mul_boole,
-      ite_mul, zero_mul, Finset.sum_ite_irrel, ← Matrix.mul_apply, hU₁.2, Matrix.one_apply,
-      Finset.sum_const_zero, ← ite_and, and_comm, Prod.eq_iff_fst_eq_snd_eq]
 
 end UnitaryGroup
 
