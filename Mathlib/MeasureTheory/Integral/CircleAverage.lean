@@ -122,18 +122,15 @@ theorem circleAverage_congr_sphere {f₁ f₂ : ℂ → E} (hf : Set.EqOn f₁ f
     circleAverage f₁ c R = circleAverage f₂ c R := by
   unfold circleAverage
   congr 1
-  apply intervalIntegral.integral_congr (fun x ↦ by simp [hf (circleMap_mem_sphere' c R x)])
+  exact intervalIntegral.integral_congr (fun x ↦ by simp [hf (circleMap_mem_sphere' c R x)])
 
 /--
 Express the circle average over an arbitrary circle as a circle average over the unit circle.
 -/
 theorem circleAverage_eq_circleAverage_zero_one :
     circleAverage f c R = (circleAverage (fun z ↦ f (R * z + c)) 0 1) := by
-  unfold circleAverage
-  congr
-  ext θ
-  unfold circleMap
-  congr 1
+  unfold circleAverage circleMap
+  congr with θ
   ring_nf
   simp
 
@@ -146,10 +143,10 @@ theorem circleAverage_zero_one_congr_inv {f : ℂ → E} :
     circleAverage (f ·⁻¹) 0 1 = circleAverage f 0 1 := by
   unfold circleAverage
   congr 1
-  calc ∫ (θ : ℝ) in 0..2 * π, f (circleMap 0 1 θ)⁻¹
-  _ = ∫ (θ : ℝ) in 0..2 * π, f (circleMap 0 1 (-θ)) := by
+  calc ∫ θ in 0..2 * π, f (circleMap 0 1 θ)⁻¹
+  _ = ∫ θ in 0..2 * π, f (circleMap 0 1 (-θ)) := by
     simp [circleMap_zero_inv]
-  _ = ∫ (θ : ℝ) in 0..2 * π, f (circleMap 0 1 θ) := by
+  _ = ∫ θ in 0..2 * π, f (circleMap 0 1 θ) := by
     rw [intervalIntegral.integral_comp_neg (fun w ↦ f (circleMap 0 1 w))]
     have t₀ : Function.Periodic (fun w ↦ f (circleMap 0 1 w)) (2 * π) :=
       fun x ↦ by simp [periodic_circleMap 0 1 x]
