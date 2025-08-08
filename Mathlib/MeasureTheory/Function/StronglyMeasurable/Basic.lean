@@ -499,6 +499,18 @@ theorem _root_.Measurable.stronglyMeasurable_add
 
 end Arithmetic
 
+section Star
+
+variable {α : Type*} [MeasurableSpace α]
+variable {R : Type*} [Star R] [TopologicalSpace R] [ContinuousStar R]
+
+@[measurability]
+protected theorem star (f : α → R) (hf : StronglyMeasurable f) :
+    StronglyMeasurable (star f) :=
+  ⟨fun n => star (hf.approx n), fun x => (hf.tendsto_approx x).star⟩
+
+end Star
+
 section MulAction
 
 variable {M G G₀ : Type*}
