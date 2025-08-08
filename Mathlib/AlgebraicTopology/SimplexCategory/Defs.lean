@@ -147,12 +147,6 @@ theorem Hom.ext {a b : SimplexCategory} (f g : a ⟶ b) :
     f.toOrderHom = g.toOrderHom → f = g :=
   Hom.ext' _ _
 
-noncomputable instance {n m : ℕ} : DecidableEq (Fin n → Fin m) :=
-  Classical.typeDecidableEq (Fin n → Fin m)
-
-noncomputable instance {n m : ℕ} : DecidableEq (⦋n⦌ ⟶ ⦋m⦌) := fun a b =>
-  decidable_of_iff (a.toOrderHom = b.toOrderHom) SimplexCategory.Hom.ext_iff.symm
-
 /-- The truncated simplex category. -/
 def Truncated (n : ℕ) :=
   ObjectProperty.FullSubcategory fun a : SimplexCategory => a.len ≤ n
