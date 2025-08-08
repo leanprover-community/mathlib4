@@ -45,11 +45,11 @@ class IsIntegralWeierstrassEquation (W : WeierstrassCurve K) : Prop where
   integral : ∃ W_int : WeierstrassCurve R, W = W_int.baseChange K
 
 lemma isIntegralWeierstrassEquation_of_val_le_one {W : WeierstrassCurve K}
-    (h₁ : (valuation K (maximalIdeal R)) W.a₁ ≤ 1)
-    (h₂ : (valuation K (maximalIdeal R)) W.a₂ ≤ 1)
-    (h₃ : (valuation K (maximalIdeal R)) W.a₃ ≤ 1)
-    (h₄ : (valuation K (maximalIdeal R)) W.a₄ ≤ 1)
-    (h₆ : (valuation K (maximalIdeal R)) W.a₆ ≤ 1) :
+    (h₁ : valuation K (maximalIdeal R) W.a₁ ≤ 1)
+    (h₂ : valuation K (maximalIdeal R) W.a₂ ≤ 1)
+    (h₃ : valuation K (maximalIdeal R) W.a₃ ≤ 1)
+    (h₄ : valuation K (maximalIdeal R) W.a₄ ≤ 1)
+    (h₆ : valuation K (maximalIdeal R) W.a₆ ≤ 1) :
     IsIntegralWeierstrassEquation R W := by
   use ⟨ (exists_lift_of_le_one h₁).choose,
       (exists_lift_of_le_one h₂).choose,
@@ -64,31 +64,52 @@ lemma isIntegralWeierstrassEquation_of_val_le_one {W : WeierstrassCurve K}
 
 theorem exists_integralWeierstrassEquation (W : WeierstrassCurve K) :
     ∃ C : VariableChange K, IsIntegralWeierstrassEquation R (C • W) := by
+  let l := [(valuation K (maximalIdeal R) W.a₁),
+    (valuation K (maximalIdeal R) W.a₂),
+    (valuation K (maximalIdeal R) W.a₃),
+    (valuation K (maximalIdeal R) W.a₄),
+    (valuation K (maximalIdeal R) W.a₆)]
+  let lmax : WithZero (Multiplicative ℤ) :=
+    l.maximum_of_length_pos (List.length_pos_of_mem (l.get_mem (0 : Fin 5)))
+  have hlmax : ∀ v ∈ l, v ≤ lmax := fun v hv ↦
+      List.le_maximum_of_length_pos_of_mem hv
+        (List.length_pos_of_mem (l.get_mem (0 : Fin 5)))
+  let lmaxZ : ℤ :=
+    if h : lmax = 0 then 0
+    else max 0 (WithZero.unzero h)
+  have zero_le_lmaxZ : 0 ≤ lmaxZ := by
+    unfold lmaxZ
+    by_cases h : lmax = 0
+    all_goals simp [h]
+  have lmax_le_lmaxZ : lmax ≤ Multiplicative.ofAdd lmaxZ := by
+    unfold lmaxZ
+    by_cases h : lmax = 0
+    all_goals simp only [h, ↓reduceDIte, ofAdd_zero, WithZero.coe_one, zero_le']
+    conv_lhs => rw [← WithZero.coe_unzero h]
+    simp only [WithZero.coe_le_coe]
+    calc
+      WithZero.unzero h = Multiplicative.ofAdd (WithZero.unzero h) := rfl
+      Multiplicative.ofAdd (WithZero.unzero h) ≤
+      Multiplicative.ofAdd (max (0 : ℤ) (WithZero.unzero h)) := by
+        apply Multiplicative.ofAdd_le.mpr; simp
+  have h (n : ℕ) (hn : 1 ≤ n): ∀ v ∈ l, v ≤ (Multiplicative.ofAdd (n * lmaxZ)) := by
+    intro v hv
+    calc
+      v ≤ lmax := hlmax v hv
+      lmax ≤ Multiplicative.ofAdd lmaxZ := lmax_le_lmaxZ
+      (((Multiplicative.ofAdd lmaxZ) : Multiplicative ℤ) : WithZero (Multiplicative ℤ)) ≤
+      (((Multiplicative.ofAdd (n * lmaxZ)) : Multiplicative ℤ) : WithZero (Multiplicative ℤ)) := by
+        simp only [WithZero.coe_le_coe, Multiplicative.ofAdd_le]
+        convert Int.mul_le_mul_of_nonneg_right (Int.ofNat_le.mpr hn) zero_le_lmaxZ
+        simp
+
   obtain ⟨ π, hπ ⟩ := valuation_exists_uniformizer K (maximalIdeal R)
   have isUnit_π : IsUnit π :=
     IsUnit.mk0 π ((Valuation.ne_zero_iff _).mp (ne_of_eq_of_ne hπ WithZero.coe_ne_zero))
-  /- have val_π_zpow (n : ℤ) :
-      (valuation K (maximalIdeal R)) ((isUnit_π.unit : K) ^ n) =
-      Multiplicative.ofAdd (- (n : ℤ)) := by
-    simp only [IsUnit.unit_spec, map_zpow₀, hπ, Int.reduceNeg, ofAdd_neg, WithZero.coe_inv,
-      inv_zpow', zpow_neg, inv_inj]
-    apply WithZero.coe_inj.mpr
-    rw [← ofAdd_zsmul]
-    apply (Equiv.apply_eq_iff_eq Multiplicative.ofAdd).mpr
-    exact zsmul_int_one n -/
-  let v₁ := (valuation K (maximalIdeal R)) W.a₁
-  let v₂ := (valuation K (maximalIdeal R)) W.a₂
-  let v₃ := (valuation K (maximalIdeal R)) W.a₃
-  let v₄ := (valuation K (maximalIdeal R)) W.a₄
-  let v₆ := (valuation K (maximalIdeal R)) W.a₆
-  let large := max 1 (max v₁ (max v₂ (max v₃ (max v₄ v₆))))
-  have zero_lt_large : 0 < large := by calc
-    0 < 1 := zero_lt_one
-    1 ≤ large := le_max_left 1 _
-  let largeZ : ℤ := WithZero.unzero (zero_lt_iff.mp zero_lt_large)
-  use ⟨ isUnit_π.unit ^ (- largeZ) , 0 , 0 , 0 ⟩
+  use ⟨ isUnit_π.unit ^ (-lmaxZ) , 0 , 0 , 0 ⟩
+
   apply isIntegralWeierstrassEquation_of_val_le_one R
-  all_goals
+  any_goals
     simp only [zpow_neg, variableChange_def, inv_inv, Units.val_zpow_eq_zpow_val, IsUnit.unit_spec,
       mul_zero, add_zero, zero_mul, sub_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
       zero_pow, map_mul, map_pow, map_zpow₀]
@@ -96,25 +117,25 @@ theorem exists_integralWeierstrassEquation (W : WeierstrassCurve K) :
     refine inv_mul_le_one_of_le₀ ?_ zero_le'
   any_goals rw [← WithZero.coe_zpow, ← ofAdd_zsmul, zsmul_int_one];
   any_goals rw [← WithZero.coe_pow, ← ofAdd_nsmul]; simp only [Int.nsmul_eq_mul, Nat.cast_ofNat]
-  all_goals
-    refine (WithZero.unzero_le_unzero ?_ ?_).mp ?_
-
-  all_goals sorry
+  any_goals convert h _ _ _ _
+  swap
+  · exact 1
+  · simp
+  any_goals linarith
+  · apply l.get_mem (0 : Fin 5)
+  · apply l.get_mem (1 : Fin 5)
+  · apply l.get_mem (2 : Fin 5)
+  · apply l.get_mem (3 : Fin 5)
+  · apply l.get_mem (4 : Fin 5)
 
 omit [IsDomain R] [IsDiscreteValuationRing R] [IsFractionRing R K] in
-lemma Δ_integral_of_isIntegralWeierstrassEquation {W : WeierstrassCurve K}
-    (hW : IsIntegralWeierstrassEquation R W) :
+lemma Δ_integral_of_isIntegralWeierstrassEquation (W : WeierstrassCurve K)
+    [IsIntegralWeierstrassEquation R W] :
     ∃ r : R, (algebraMap R K) r = W.Δ := by
-  obtain ⟨ W_int, hW_int ⟩ := hW.integral
+  obtain ⟨ W_int, hW_int ⟩ : ∃ W_int : WeierstrassCurve R, W = W_int.baseChange K :=
+    IsIntegralWeierstrassEquation.integral
   use W_int.Δ
-  rw[hW_int, map_Δ]
-
-/- lemma val_Δ_le_one_of_isIntegralWeierstrassEquation {W : WeierstrassCurve K}
-    (hW : IsIntegralWeierstrassEquation R W) :
-    (valuation K (maximalIdeal R)) W.Δ ≤ 1 := by
-  obtain ⟨ r, hr ⟩ := Δ_integral_of_isIntegralWeierstrassEquation R hW
-  rw[← hr]
-  exact valuation_le_one (maximalIdeal R) r -/
+  rw [hW_int, map_Δ]
 
 class IsMinimalWeierstrassEquation (W : WeierstrassCurve K) : Prop where
   val_Δ_minimal :
@@ -125,9 +146,8 @@ class IsMinimalWeierstrassEquation (W : WeierstrassCurve K) : Prop where
       (1 : VariableChange K)
 
 omit [IsFractionRing R K] in
-lemma isIntegralWeierstrassEquation_of_isMinimalWeierstrassEquation
-    {W : WeierstrassCurve K} (hW : IsMinimalWeierstrassEquation R W) :
-    IsIntegralWeierstrassEquation R W := by simpa using hW.val_Δ_minimal.1
+instance {W : WeierstrassCurve K} [IsMinimalWeierstrassEquation R W] :
+    IsIntegralWeierstrassEquation R W := by simpa using IsMinimalWeierstrassEquation.val_Δ_minimal.1
 
 theorem exists_minimalWeierstrassEquation (W : WeierstrassCurve K) :
     ∃ C : VariableChange K, IsMinimalWeierstrassEquation R (C • W) := by
@@ -140,11 +160,11 @@ theorem exists_minimalWeierstrassEquation (W : WeierstrassCurve K) :
   refine { val_Δ_minimal := ?_ }
   constructor
   · simp only [one_smul]; exact hC.1
-  intro j hj; rw[← smul_assoc] at hj
+  intro j hj; rw [← smul_assoc] at hj
   let h := hC.2 hj
   simp_all only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe,
     MonoidHom.toOneHom_coe, MonoidHom.coe_coe, one_smul]
-  rw[← smul_assoc]
+  rw [← smul_assoc]
   exact h
 
 end Minimal
@@ -154,10 +174,10 @@ section Reduction
 open IsLocalRing
 
 noncomputable def reduction (W : WeierstrassCurve K)
-    (hW : IsMinimalWeierstrassEquation R W) :
+    [IsMinimalWeierstrassEquation R W] :
     WeierstrassCurve (ResidueField R) :=
-  (isIntegralWeierstrassEquation_of_isMinimalWeierstrassEquation R hW).integral.choose.map
-    (residue R)
+  letI hW : IsIntegralWeierstrassEquation R W := inferInstance
+  hW.integral.choose.map (residue R)
 
 /- noncomputable def reduction (W : WeierstrassCurve K) :
     WeierstrassCurve (ResidueField R) :=
