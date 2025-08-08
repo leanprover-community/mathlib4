@@ -846,7 +846,6 @@ transport them to `Γ₂`. -/
 def equivCore (h : Q(Valuation.IsEquiv $v₁ $v₂)) : Simp.Simproc := fun e : Expr ↦ do
   match ← inferTypeQ e with
   | ⟨1, ~q(Prop), e⟩ =>
-    trace[debug] m!"Prop found: {e}"
     match ← matchAndMkProof v₁ v₂ h e with
     | .some ⟨e₂, pf⟩ => return .visit { expr := e₂, proof? := q(propext $pf) }
     | .none => return .continue
@@ -860,7 +859,6 @@ elab "rw_val_equiv" equiv:(ppSpace colGt term:max) : tactic => do
   match h' with
   | ~q(@Valuation.IsEquiv $R $Γ₁ $Γ₂ $hR $hΓ₁ $hΓ₂ $v₁ $v₂) =>
       liftMetaTactic1 fun e ↦ do
-        trace[debug] m!"Variables: {v₁}, {v₂}, {h}"
         let target ← instantiateMVars (← e.getType)
         let ctx ← Simp.mkContext (simpTheorems := #[])
         let (r, _) ← Simp.mainCore target ctx (methods := {post := equivCore v₁ v₂ h})
