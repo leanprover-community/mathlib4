@@ -68,9 +68,8 @@ variable {α β : Type} {b : β} {f : α → β → Prop} {L : List α} [Decidab
 /-- If `f a b` is decidable, then given `L : List α` and `b : β`, it is primitive recurisve
 to filter `L` for elements `a` with `f a b` -/
 lemma list_filter [Primcodable α] [Primcodable β] (hf : PrimrecRel f) :
-    Primrec₂ fun (L : List α) ↦ fun b ↦ L.filter (fun a ↦ f a b) := by
-  have h1 (L) (b) := Eq.symm (filterMap_ite L fun a ↦ f a b)
-  simp only [h1]
+    Primrec₂ fun (L : List α) b ↦ L.filter (fun a ↦ f a b) := by
+  simp only [Eq.symm (filterMap_ite _ fun a ↦ f a _)]
   refine listFilterMap fst (Primrec.ite ?_ (option_some_iff.mpr snd) (Primrec.const Option.none))
   exact PrimrecRel.comp hf snd (Primrec.comp snd fst)
 
@@ -85,7 +84,7 @@ variable [Primcodable α] [Primcodable β]
 /-- If `f a b` is decidable, then given `L : List α` and `b : β`, `"g L b ↔ ∃ a L, f a b"`
 is a primitive recursive relation. -/
 lemma filter_exists (hf : PrimrecRel f) :
-    PrimrecRel fun (L : List α) ↦ fun b ↦ ∃ a ∈ L, f a b := by
+    PrimrecRel fun (L : List α) b ↦ ∃ a ∈ L, f a b := by
   have h (L) (b) : (filter (f · b) L).length ≠ 0 ↔ ∃ a ∈ L, f a b := by simp
   apply of_eq ?_ h
   apply PrimrecPred.not (comp Primrec.eq (Primrec.comp list_length ?_) (const 0))
@@ -96,7 +95,7 @@ lemma filter_exists (hf : PrimrecRel f) :
 /-- If `f a b` is decidable, then given `L : List α` and `b : β`, `"g L b ↔ ∀ a L, f a b"`
 is a primitive recursive relation. -/
 lemma filter_forall (hf : PrimrecRel f) :
-    PrimrecRel fun (L : List α) ↦ fun b ↦ ∀ a ∈ L, f a b := by
+    PrimrecRel fun (L : List α) b ↦ ∀ a ∈ L, f a b := by
   have h (L) (b) : (filter (f · b) L).length = L.length ↔ ∀ a ∈ L, f a b := by simp
   apply of_eq ?_ h
   apply comp Primrec.eq (Primrec.comp list_length ?_) (Primrec.comp list_length fst)
@@ -108,15 +107,15 @@ variable {f : ℕ → ℕ → Prop} [DecidableRel f]
 
 /-- If `f a b` is decidable, then for any fixed `n` and `y`,  `"g n y ↔ ∃ x < n, f x y"` is a
 primitive recursive relation. -/
-lemma bounded_exists (hf : PrimrecRel f) : PrimrecRel fun n ↦ fun y ↦ ∃ x < n, f x y := by
-  have h : PrimrecRel fun n ↦ fun y ↦ ∃ x ∈ range n, f x y :=
+lemma bounded_exists (hf : PrimrecRel f) : PrimrecRel fun n y ↦ ∃ x < n, f x y := by
+  have h : PrimrecRel fun n y ↦ ∃ x ∈ range n, f x y :=
     comp (filter_exists hf) (Primrec.comp list_range fst) snd
   exact of_eq h (by simp)
 
 /-- If `f a b` is decidable, then for any fixed `n` and `y`,  `"g n y ↔ ∀ x < n, f x y"` is a
 primitive recursive relation. -/
-lemma bounded_forall (hf : PrimrecRel f) : PrimrecRel fun n ↦ fun y ↦ ∀ x < n, f x y := by
-  have h : PrimrecRel fun n ↦ fun y ↦ ∀ x ∈ range n, f x y :=
+lemma bounded_forall (hf : PrimrecRel f) : PrimrecRel fun n y ↦ ∀ x < n, f x y := by
+  have h : PrimrecRel fun n y ↦ ∀ x ∈ range n, f x y :=
     comp (filter_forall hf) (Primrec.comp list_range fst) snd
   exact of_eq h (by simp)
 
@@ -127,8 +126,7 @@ namespace Primrec
 /-- A helper lemma for proofs about bounded quantifiers on decidable relations. -/
 lemma nat_rel_list_filter {f : ℕ → ℕ → Prop} (s : ℕ) [DecidableRel f] (hf : PrimrecRel f) :
     Primrec fun n ↦ (range s).filter (fun y ↦ f y n) := by
-  have h1 (b) := Eq.symm (filterMap_ite (range s) fun a ↦ f a b)
-  simp only [h1]
+  simp only [Eq.symm (filterMap_ite (range s) fun a ↦ f a _)]
   refine listFilterMap (.const (range s)) ?_
   refine ite ?_ (option_some_iff.mpr snd) (.const Option.none)
   exact PrimrecRel.comp hf snd fst

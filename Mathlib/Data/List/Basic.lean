@@ -1026,7 +1026,7 @@ theorem filterMap_ite (l : List α) (f : α → Prop) [DecidablePred f] :
     filterMap (fun a ↦ if f a then some a else none) l = l.filter (f ·) := by
   rw [← filterMap_eq_filter]
   apply filterMap_congr
-  simp only [Option.guard, decide_eq_true_eq, implies_true]
+  simp [Option.guard]
 
 /-! ### filter -/
 
