@@ -130,6 +130,8 @@ def vecMulVecBilin : (m → A) →ₗ[R] (n → A) →ₗ[S] Matrix m n A where
   map_add' _ _ := LinearMap.ext fun _ => add_vecMulVec _ _ _
   map_smul' _ _ := LinearMap.ext fun _ => smul_vecMulVec _ _ _
 
+example {A} [Semiring A] := (vecMulVecBilin A Aᵐᵒᵖ : (m → A) →ₗ[_] (n → A) →ₗ[_] _)
+
 /-- `vecMulVec` as a bilinear map.
 
 When `A` is noncommutative, `R` and `S` can be instantiated as `vecMulVecLinear A Aᵐᵒᵖ`. -/
@@ -152,7 +154,9 @@ variable [Semiring R] [Semiring S] [NonUnitalNonAssocSemiring A]
 variable [Module R A] [Module S A]
 variable [SMulCommClass S R A] [SMulCommClass S A A] [IsScalarTower R A A]
 
-/-- `Matrix.vecMul M` is a linear map. -/
+/-- `Matrix.vecMul M` is a linear map.
+
+Note this is a special ase of `Matrix.vecMulBilin`. -/
 abbrev Matrix.vecMulLinear [Fintype m] (M : Matrix m n R) : (m → R) →ₗ[R] n → R :=
   Matrix.vecMulBilin R Rᵐᵒᵖ |>.flip M
 
@@ -271,7 +275,9 @@ section mulVec
 variable {R : Type*} [CommSemiring R]
 variable {k l m n : Type*}
 
-/-- `Matrix.mulVec M` is a linear map. -/
+/-- `Matrix.mulVec M` is a linear map.
+
+Note this is a special case of `Matrix.mulVecBilin`. -/
 abbrev Matrix.mulVecLin [Fintype n] (M : Matrix m n R) : (n → R) →ₗ[R] m → R := mulVecBilin R R M
 
 theorem Matrix.coe_mulVecLin [Fintype n] (M : Matrix m n R) :
