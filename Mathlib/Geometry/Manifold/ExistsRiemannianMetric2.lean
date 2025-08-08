@@ -120,14 +120,50 @@ end
 variable [FiniteDimensional ℝ EB] [IsManifold IB ∞ B] [SigmaCompactSpace B] [T2Space B]
 
 variable (E) in
-def condition (x : B) : Set (W E x) :=
-  Set.univ -- TODO: specify what I really want!
+def condition (x : B) : Set (W E x) := by
+  unfold W V
+  exact {φ | (∀ v w : E x, φ v w = φ w v) ∧ ∀ v : E x, v ≠ 0 → 0 < φ v v } -- TODO: specify what I really want!
   -- {φ : E x →L[ℝ] E x →L[ℝ] ℝ | ∀ v w : E x, φ v w = ⟪v, w⟫}
 
-lemma convex_condition (x : B) : Convex ℝ (condition E x) := by
-  -- TODO: once I have a real definition, there will be something to prove!
-  exact convex_univ
+variable (E) in
+private def condition1 (x : B) : Set (W E x) := by
+  unfold W V
+  exact {φ | ∀ v w : E x, φ v w = φ w v}
 
+variable (E) in
+private def condition2 (x : B) : Set (W E x) := by
+  unfold W V
+  exact {φ | ∀ v : E x, v ≠ 0 → 0 < φ v v}
+
+lemma convex_condition1 (x : B) : Convex ℝ (condition1 E x) := by
+  unfold condition1
+  intro φ hφ ψ hψ s t hs ht hst
+  simp only [id_eq] at hφ hψ ⊢
+  erw [Set.mem_setOf] at hφ hψ ⊢
+  intro v w
+  specialize hφ v w
+  specialize hψ v w
+
+
+  sorry
+
+#exit
+
+lemma convex_condition2 (x : B) : Convex ℝ (condition2 E x) := by
+  unfold condition2
+  intro v hv w hw s t hs ht hst
+  sorry
+
+#exit
+
+lemma convex_condition (x : B) : Convex ℝ (condition E x) := by
+  unfold condition
+  intro v hv w hw s t hs ht hst
+  simp only [ne_eq, id_eq]
+
+  sorry
+
+#exit
 -- copy-paste extend from my branch and its smoothness; sorry those, then use them!
 
 -- TODO: construct a local section which is smooth in my coords,
@@ -142,9 +178,16 @@ lemma contMDiff_localSection (x₀ : B) :
       (fun x ↦ TotalSpace.mk' (F →L[ℝ] F →L[ℝ] ℝ) x (local_section_at E x₀ x)) t.baseSet :=
   sorry
 
+-- MAYBE: also make a definition nhd, which is the nhd on which local_section_at stays pos. def.
 lemma is_good_localSection (x₀ : B) :
-    ∀ y ∈ (trivializationAt F E x₀).baseSet, local_section_at E x₀ y ∈ condition E y :=
-  sorry -- currently trivial; will be more interesting if I need better properties later
+    ∀ y ∈ (trivializationAt F E x₀).baseSet, local_section_at E x₀ y ∈ condition E y := by
+  intro y hy
+  unfold condition
+  simp only [ne_eq, id_eq]
+  erw [Set.mem_setOf]
+  refine ⟨?_, ?_⟩
+  · sorry -- symmetry
+  · sorry -- pos. definite
 
 lemma hloc_TODO (x₀ : B) :
     ∃ U_x₀ ∈ nhds x₀, ∃ s_loc : (x : B) → W E x,
@@ -157,15 +200,29 @@ lemma hloc_TODO (x₀ : B) :
   exact ⟨contMDiff_localSection F E x₀, is_good_localSection x₀⟩
 
 variable (E F IB) in
-/-- Key step in the construction of a Riemannian metric on `W`: we construct a smooth section
-of the bundle `W`: morally, this should be equivalent. Let's verify this next! -/
-noncomputable def RMetric_aux : Cₛ^∞⟮IB; F →L[ℝ] F →L[ℝ] ℝ, W E⟯ :=
+/-- Key step in the construction of a Riemannian metric on `E`: we construct a smooth section
+of the bundle `W = Hom(E, Hom(E, T))` with the right properties (translating into symmetric
+and positive definiteness of the resulting metric. -/
+noncomputable def foo_aux : Cₛ^∞⟮IB; F →L[ℝ] F →L[ℝ] ℝ, W E⟯ :=
   Classical.choose <|
     exists_contMDiffOn_section_forall_mem_convex_of_local IB (V := W E) (n := (⊤ : ℕ∞))
       (condition E) convex_condition hloc_TODO
 
-def foo : ContMDiffRiemannianMetric IB n F E :=
-  sorry
+variable (E F IB) in
+lemma foo_aux_prop (x₀ : B) : foo_aux IB F E x₀ ∈ condition E x₀ := by
+  apply Classical.choose_spec <|
+    exists_contMDiffOn_section_forall_mem_convex_of_local IB (V := W E) (n := (⊤ : ℕ∞))
+      (condition E) convex_condition hloc_TODO
+
+noncomputable def foo : ContMDiffRiemannianMetric IB ∞ F E where
+  inner := foo_aux IB F E
+  symm := fun b v w ↦ (foo_aux_prop IB F E b).1 _ _
+  pos := fun b v hv ↦ (foo_aux_prop IB F E b).2 v hv
+  isVonNBounded b := by
+    -- idea: φ defines a bilinear form, which is continuous (by fin-dim),
+    -- then this is automatic
+    sorry
+  contMDiff := (foo_aux IB F E).contMDiff
 
 #exit
 section -- Building continuous bilinear maps
