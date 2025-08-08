@@ -5,8 +5,6 @@ Authors: Aaron Anderson
 -/
 import Mathlib.NumberTheory.ArithmeticFunction
 import Mathlib.NumberTheory.LucasLehmer
-import Mathlib.Algebra.GeomSum
-import Mathlib.RingTheory.Multiplicity
 import Mathlib.Tactic.NormNum.Prime
 
 /-!
