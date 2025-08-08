@@ -38,7 +38,7 @@ compact open set is compact open. -/
 @[stacks 005A, stacks 08YG]
 structure IsSpectralMap (f : α → β) : Prop extends Continuous f where
   /-- A function between topological spaces is spectral if it is continuous and the preimage of
-   every compact open set is compact open. -/
+  every compact open set is compact open. -/
   isCompact_preimage_of_isOpen ⦃s : Set β⦄ : IsOpen s → IsCompact s → IsCompact (f ⁻¹' s)
 
 theorem IsCompact.preimage_of_isOpen (hf : IsSpectralMap f) (h₀ : IsCompact s) (h₁ : IsOpen s) :
