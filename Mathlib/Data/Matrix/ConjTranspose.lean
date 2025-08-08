@@ -128,6 +128,14 @@ theorem conjTranspose_apply [Star α] (M : Matrix m n α) (i j) :
 theorem conjTranspose_conjTranspose [InvolutiveStar α] (M : Matrix m n α) : Mᴴᴴ = M :=
   Matrix.ext <| by simp
 
+theorem conjTranspose_transpose [Star α] (M : Matrix m n α) :
+    Mᴴᵀ = M.map star :=
+  rfl
+
+theorem transpose_conjTranspose [Star α] (M : Matrix m n α) :
+    Mᵀᴴ = M.map star :=
+  rfl
+
 theorem conjTranspose_injective [InvolutiveStar α] :
     Function.Injective (conjTranspose : Matrix m n α → Matrix n m α) :=
   (map_injective star_injective).comp transpose_injective
