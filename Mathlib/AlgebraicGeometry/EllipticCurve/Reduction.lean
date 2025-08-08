@@ -49,6 +49,8 @@ section Minimal
 open IsDedekindDomain.HeightOneSpectrum
 open IsDiscreteValuationRing
 
+/-- A Weierstrass equation over the fraction field `K` is integral if
+it has coefficients in the DVR `R`. -/
 class IsIntegralWeierstrassEquation (W : WeierstrassCurve K) : Prop where
   integral : ∃ W_int : WeierstrassCurve R, W = W_int.baseChange K
 
@@ -138,6 +140,8 @@ lemma Δ_integral_of_isIntegralWeierstrassEquation (W : WeierstrassCurve K)
   use W_int.Δ
   rw [hW_int, map_Δ]
 
+/-- A Weierstrass equation over the fraction field `K` is minimal if the valuation
+of its discriminant is minimal among all isomorphic integral Weierstrass equations. -/
 class IsMinimalWeierstrassEquation (W : WeierstrassCurve K) : Prop where
   val_Δ_minimal :
     MinimalFor
@@ -172,6 +176,8 @@ section Reduction
 
 open IsLocalRing
 
+/-- The reduction of a Weierstrass curve over `K` given by a minimal Weierstrass equation,
+which is a Weierstrass curve over the residue field of `R`. -/
 noncomputable def reduction (W : WeierstrassCurve K) [IsMinimalWeierstrassEquation R W] :
     WeierstrassCurve (ResidueField R) :=
   letI hW : IsIntegralWeierstrassEquation R W := inferInstance
