@@ -149,10 +149,8 @@ example {A} [Semiring A] [Fintype m] := (dotProductBilin A Aᵐᵒᵖ : (m → A
 end Bilinear
 
 section ToMatrixRight
-variable {l m n R S A : Type*}
-variable [Semiring R] [Semiring S] [NonUnitalNonAssocSemiring A]
-variable [Module R A] [Module S A]
-variable [SMulCommClass S R A] [SMulCommClass S A A] [IsScalarTower R A A]
+variable {R : Type*} [Semiring R]
+variable {l m n : Type*}
 
 /-- `Matrix.vecMul M` is a linear map.
 
