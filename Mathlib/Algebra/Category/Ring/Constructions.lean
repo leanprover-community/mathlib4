@@ -26,8 +26,6 @@ In this file we provide the explicit (co)cones for various (co)limits in `CommRi
 
 -/
 
-suppress_compilation
-
 universe u u'
 
 open CategoryTheory Limits TensorProduct
@@ -306,13 +304,13 @@ def piFanIsLimit : IsLimit (piFan R) where
 /--
 The categorical product and the usual product agree
 -/
-def piIsoPi : ∏ᶜ R ≅ CommRingCat.of ((i : ι) → R i) :=
+noncomputable def piIsoPi : ∏ᶜ R ≅ CommRingCat.of ((i : ι) → R i) :=
   limit.isoLimitCone ⟨_, piFanIsLimit R⟩
 
 /--
 The categorical product and the usual product agree
 -/
-def _root_.RingEquiv.piEquivPi (R : ι → Type u) [∀ i, CommRing (R i)] :
+noncomputable def _root_.RingEquiv.piEquivPi (R : ι → Type u) [∀ i, CommRing (R i)] :
     (∏ᶜ (fun i : ι ↦ CommRingCat.of (R i)) : CommRingCat.{u}) ≃+* ((i : ι) → R i) :=
   (piIsoPi (CommRingCat.of <| R ·)).commRingCatIsoToRingEquiv
 
