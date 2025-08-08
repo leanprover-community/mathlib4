@@ -155,8 +155,8 @@ instance {W : WeierstrassCurve K} [IsMinimalWeierstrassEquation R W] :
 theorem exists_minimalWeierstrassEquation (W : WeierstrassCurve K) :
     ∃ C : VariableChange K, IsMinimalWeierstrassEquation R (C • W) := by
   obtain ⟨ C , hC ⟩ := exists_minimalFor_of_wellFoundedLT
-    (fun (C : VariableChange K) => IsIntegralWeierstrassEquation R (C • W))
-    (fun (C : VariableChange K) => addVal R ((algebraMap R K).toFun.invFun (C • W).Δ))
+    (fun (C : VariableChange K) ↦ IsIntegralWeierstrassEquation R (C • W))
+    (fun (C : VariableChange K) ↦ addVal R ((algebraMap R K).toFun.invFun (C • W).Δ))
     (exists_integralWeierstrassEquation R W)
   use C
   refine { val_Δ_minimal := ?_ }
