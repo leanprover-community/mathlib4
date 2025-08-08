@@ -18,6 +18,7 @@ Using `compute_degree` when the goal is of one of the seven forms
 *  `natDegree f = d`,
 *  `degree f = d`,
 *  `coeff f d = r`, if `d` is the degree of `f`,
+
 tries to solve the goal.
 It may leave side-goals, in case it is not entirely successful.
 
@@ -52,6 +53,7 @@ Assume that `f : R[X]` is a polynomial with coefficients in a semiring `R` and
 If the goal has the form `natDegree f < d`, then we convert it to two separate goals:
 * `natDegree f ≤ ?_`, on which we apply the following steps;
 * `?_ < d`;
+
 where `?_` is a metavariable that `compute_degree` computes in its process.
 We proceed similarly for `degree f < d`.
 
