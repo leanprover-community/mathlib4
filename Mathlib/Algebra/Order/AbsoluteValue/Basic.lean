@@ -394,10 +394,6 @@ theorem abv_nonpos_iff {x : R} : v x ≤ 0 ↔ v x = 0 := by
 theorem inv_lt_one_iff {x : R} : v x⁻¹ < 1 ↔ x = 0 ∨ 1 < v x := by
   simp only [map_inv₀, inv_lt_one_iff₀, abv_nonpos_iff, map_eq_zero]
 
-theorem mul_one_div_pow_lt_iff {n : ℕ} {y : R} (x : R) (h : 0 < v y) :
-    v (x * (1 / y ^ n)) < 1 ↔ v x < v y ^ n := by
-  rw [map_mul, one_div, map_inv₀, map_pow, mul_inv_lt_iff₀ (pow_pos h n), one_mul]
-
 variable {w : AbsoluteValue R S}
 
 theorem one_lt_of_lt_one_imp (h : ∀ x, v x < 1 → w x < 1) {x : R} (hv : 1 < v x) : 1 < w x :=

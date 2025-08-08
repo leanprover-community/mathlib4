@@ -72,8 +72,11 @@ theorem abv_lt_one_iff_of_abv_lt_one_imp [Archimedean S] [TopologicalSpace S] [O
   refine ⟨h a, fun hw ↦ ?_⟩
   by_contra! hv
   have (n : ℕ) : w x₀ < w a ^ n :=
-    (mul_one_div_pow_lt_iff _ (abv_pos_of_abv_pos w (by linarith))).1 <|
-      h _ ((mul_one_div_pow_lt_iff _ (by linarith)).2 (lt_of_lt_of_le hx₀.2 <| one_le_pow₀ hv))
+    rw [← one_mul (w _ ^ _), ← mul_inv_lt_iff₀ (pow_pos (pos_of_abv_pos w (by linarith)) _),
+      ← map_pow, ← map_inv₀, ← map_mul]
+    apply h
+    rw [map_mul, map_inv₀, map_pow, mul_inv_lt_iff₀ (pow_pos (by linarith) _), one_mul]
+    exact lt_of_lt_of_le hx₀.2 <| one_le_pow₀ hv
   have hcontr : atTop.Tendsto (fun (_ : ℕ) ↦ w x₀) (𝓝 0) := by
     let hwn := tendsto_pow_atTop_nhds_zero_iff.2 <| by convert abs_eq_self.2 (w.nonneg _) ▸ hw
     exact tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds hwn
