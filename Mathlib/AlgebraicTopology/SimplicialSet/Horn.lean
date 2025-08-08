@@ -69,10 +69,6 @@ lemma horn_obj_zero (n : ℕ) (i : Fin (n + 3)) :
   fin_cases a
   exact Ne.symm hk.2
 
-/-- The inclusion of the boundary of the `n`-th standard simplex into that standard simplex. -/
-@[deprecated horn (since := "2025-01-26")]
-abbrev hornInclusion (n : ℕ) (i : Fin (n + 1)) : (Λ[n, i] : SSet.{u}) ⟶ Δ[n] := Λ[n, i].ι
-
 namespace horn
 
 open SimplexCategory Finset Opposite

@@ -68,6 +68,7 @@ theorem IsInitial.card_lt_card {a b : Ordinal} (hb : IsInitial b) : a.card < b.c
 theorem isInitial_ord (c : Cardinal) : IsInitial c.ord := by
   rw [IsInitial, card_ord]
 
+@[simp]
 theorem isInitial_natCast (n : ℕ) : IsInitial n := by
   rw [IsInitial, card_nat, ord_nat]
 
@@ -79,6 +80,10 @@ theorem isInitial_one : IsInitial 1 := by
 
 theorem isInitial_omega0 : IsInitial ω := by
   rw [IsInitial, card_omega0, ord_aleph0]
+
+theorem isInitial_succ {o : Ordinal} : IsInitial (succ o) ↔ o < ω :=
+  ⟨Function.mtr fun hwo ↦ ne_of_lt <| by simp_all [ord_card_le],
+  fun how ↦ (Ordinal.lt_omega0.1 how).rec fun n h ↦ h ▸ isInitial_natCast (n + 1)⟩
 
 theorem not_bddAbove_isInitial : ¬ BddAbove {x | IsInitial x} := by
   rintro ⟨a, ha⟩
@@ -591,15 +596,9 @@ theorem beth_mono : Monotone beth :=
 theorem beth_lt_beth {o₁ o₂ : Ordinal} : ℶ_ o₁ < ℶ_ o₂ ↔ o₁ < o₂ :=
   beth_strictMono.lt_iff_lt
 
-@[deprecated beth_lt_beth (since := "2025-01-14")]
-alias beth_lt := beth_lt_beth
-
 @[simp]
 theorem beth_le_beth {o₁ o₂ : Ordinal} : ℶ_ o₁ ≤ ℶ_ o₂ ↔ o₁ ≤ o₂ :=
   beth_strictMono.le_iff_le
-
-@[deprecated beth_le_beth (since := "2025-01-14")]
-alias beth_le := beth_le_beth
 
 @[simp]
 theorem beth_zero : ℶ_ 0 = ℵ₀ := by
