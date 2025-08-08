@@ -5,6 +5,7 @@ Authors: Jan Förster, Leon Müller, Luis Sand, Junyan Xu
 -/
 import Mathlib.Data.Set.Card
 import Mathlib.Topology.Closure
+
 /-!
 # The Kuratowski closure-complement theorem
 
@@ -87,6 +88,9 @@ theorem IsObtainable.mem_theFourteen {s t : Set X} (h : IsObtainable s t) : t �
 theorem mem_theFourteen_iff_isObtainable {s t : Set X} :
     t ∈ theFourteen s ↔ IsObtainable s t where
   mp h := by
+    repeat
+      obtain _ | ⟨_, h⟩ := h
+      rotate_left
     all_goals
       repeat
         first

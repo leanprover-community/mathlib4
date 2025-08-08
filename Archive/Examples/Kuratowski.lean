@@ -113,11 +113,12 @@ theorem nodup_theClosedSix_theFourteen_iff : (theClosedSix s).Nodup ↔ TheSixIn
     /- Now eight other goals can be solved by simplifying
       and then using one of the six given inequalities. -/
       apply mt (congr_arg (k ·ᶜ))
-      first | (try repeat rw [kckckck_eq_kck, eq_comm]
-               assumption)
-            | (apply mt (congr_arg (k ·ᶜ))
-               try repeat rw [kckckck_eq_kck, eq_comm]
-               assumption)
+      first
+      | try repeat rw [kckckck_eq_kck, eq_comm]
+        assumption
+      | apply mt (congr_arg (k ·ᶜ))
+        try repeat rw [kckckck_eq_kck, eq_comm]
+        assumption
     -- One last goal (`k (k (k sᶜ)ᶜ)ᶜ ≠ k s`) needs some other simplifying steps:
     · apply mt (congr_arg fun s ↦ k (k sᶜ)ᶜ)
       rw [kckckck_eq_kck]
