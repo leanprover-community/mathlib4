@@ -249,9 +249,9 @@ theorem Bivariate.aveal_eq_map_swap (x : A) (p : R[X][Y]) :
   induction p using Polynomial.induction_on' with
   | add => aesop
   | monomial n a =>
-      simp
-      induction a using Polynomial.induction_on'
-        <;> aesop (add norm [add_mul, C_mul_X_pow_eq_monomial])
+    simp
+    induction a using Polynomial.induction_on' <;>
+      aesop (add norm [add_mul, C_mul_X_pow_eq_monomial])
 
 end
 
