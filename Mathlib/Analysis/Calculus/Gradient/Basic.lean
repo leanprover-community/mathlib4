@@ -89,8 +89,7 @@ theorem hasGradientWithinAt_iff_hasFDerivWithinAt {s : Set F} :
   Iff.rfl
 
 theorem hasFDerivWithinAt_iff_hasGradientWithinAt {frechet : F →L[𝕜] 𝕜} {s : Set F} :
-    HasFDerivWithinAt f frechet s x ↔
-      HasGradientWithinAt f ((toDual 𝕜 F).symm frechet) s x := by
+    HasFDerivWithinAt f frechet s x ↔ HasGradientWithinAt f ((toDual 𝕜 F).symm frechet) s x := by
   rw [hasGradientWithinAt_iff_hasFDerivWithinAt, (toDual 𝕜 F).apply_symm_apply frechet]
 
 theorem hasGradientAt_iff_hasFDerivAt :
@@ -157,15 +156,13 @@ variable {g : 𝕜 → 𝕜} {g' u : 𝕜} {L' : Filter 𝕜}
 
 theorem HasGradientAtFilter.hasDerivAtFilter (h : HasGradientAtFilter g g' u L') :
     HasDerivAtFilter g (starRingEnd 𝕜 g') u L' := by
-  have : ContinuousLinearMap.smulRight (1 : 𝕜 →L[𝕜] 𝕜) (starRingEnd 𝕜 g') =
-      (toDual 𝕜 𝕜) g' := by
+  have : ContinuousLinearMap.smulRight (1 : 𝕜 →L[𝕜] 𝕜) (starRingEnd 𝕜 g') = (toDual 𝕜 𝕜) g' := by
     ext; simp
   rwa [HasDerivAtFilter, this]
 
 theorem HasDerivAtFilter.hasGradientAtFilter (h : HasDerivAtFilter g g' u L') :
     HasGradientAtFilter g (starRingEnd 𝕜 g') u L' := by
-  have : ContinuousLinearMap.smulRight (1 : 𝕜 →L[𝕜] 𝕜) g' =
-      (toDual 𝕜 𝕜) (starRingEnd 𝕜 g') := by
+  have : ContinuousLinearMap.smulRight (1 : 𝕜 →L[𝕜] 𝕜) g' = (toDual 𝕜 𝕜) (starRingEnd 𝕜 g') := by
     ext; simp
   rwa [HasGradientAtFilter, ← this]
 
