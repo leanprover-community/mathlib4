@@ -31,8 +31,10 @@ namespace Path
 def subpathAux (t₀ t₁ s : I) : I := ⟨(1 - s) * t₀ + s * t₁,
   (convex_Icc 0 1) t₀.prop t₁.prop (one_minus_nonneg s) s.prop.left (sub_add_cancel 1 _)⟩
 
+@[simp]
 lemma subpathAux_zero (t₀ t₁ : I) : subpathAux t₀ t₁ 0 = t₀ := by simp
 
+@[simp]
 lemma subpathAux_one (t₀ t₁ : I) : subpathAux t₀ t₁ 1 = t₁ := by simp
 
 /-- `subpathAux` is continuous as an uncurried function `I × I × I → I`. -/
@@ -53,9 +55,8 @@ theorem subpath_symm (γ : Path a b) (t₀ t₁ : I) : (γ.subpath t₀ t₁).sy
   ext s
   simp [subpath, add_comm]
 
-/-- The range of a subpath is the image of the original path on the relevant interval. -/
 @[simp]
-theorem subpath_range (γ : Path a b) (t₀ t₁ : I) (h : t₀ ≤ t₁) :
+lemma subpath_range₀ (γ : Path a b) (t₀ t₁ : I) (h : t₀ ≤ t₁) :
     range (γ.subpath t₀ t₁) = γ '' (Icc t₀ t₁) := by
   ext z
   constructor
@@ -70,11 +71,20 @@ theorem subpath_range (γ : Path a b) (t₀ t₁ : I) (h : t₀ ≤ t₁) :
     use ⟨b, hb, Trans.trans (eq_sub_of_add_eq' hab) (sub_le_self 1 ha)⟩
     simp [subpath, ← eq_sub_of_add_eq hab, ht]
 
-/-- Variation of subpath_range when the arguments to subpath are in reverse order. -/
 @[simp]
-theorem subpath_range' (γ : Path a b) (t₀ t₁ : I) (h : t₁ ≤ t₀) :
+lemma subpath_range₁ (γ : Path a b) (t₀ t₁ : I) (h : t₁ ≤ t₀) :
     range (γ.subpath t₀ t₁) = γ '' (Icc t₁ t₀) := by
-  rw [← subpath_symm, symm_range, subpath_range _ _ _ h]
+  rw [← subpath_symm, symm_range, subpath_range₀ _ _ _ h]
+
+/-- The range of a subpath is the image of the original path on the relevant interval. -/
+@[simp]
+theorem subpath_range (γ : Path a b) (t₀ t₁ : I) :
+    range (γ.subpath t₀ t₁) = γ '' (uIcc t₀ t₁) := by
+  rcases le_total t₀ t₁ with h | h
+  · rw [uIcc_of_le h]
+    exact subpath_range₀ _ _ _ h
+  · rw [uIcc_of_ge h]
+    exact subpath_range₁ _ _ _ h
 
 /-- The subpath of `γ` from `t` to `t` is just the constant path at `γ t`. -/
 @[simp]
