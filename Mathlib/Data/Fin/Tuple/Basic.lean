@@ -813,13 +813,11 @@ theorem forall_fin_add {m n} (P : Fin (m + n) → Prop) :
 it holds for the concatenation of all pairs of length m sequences and length n sequences. -/
 theorem forall_fin_add_pi {γ : Fin (m + n) → Sort*} {P : (∀ i, γ i) → Prop} :
     (∀ v, P v) ↔ (∀ (vₘ : (i : Fin m) → γ (castAdd n i))
-      (vₙ : (j : Fin n) → γ (natAdd m j)), P (addCases vₘ vₙ)) := by
-  constructor
-  · -- ∀ v, P(v) → ∀ vₘ vₙ, P(addCases vₘ vₙ)
-    intro hv hvm hvn
-    exact hv fun i ↦ addCases hvm hvn i
-  · -- ∀ vₘ vₙ, P(addCases vₘ vₙ) → ∀ v, P(v)
-    intro h v
+      (vₙ : (j : Fin n) → γ (natAdd m j)), P (addCases vₘ vₙ)) where
+  -- ∀ v, P(v) → ∀ vₘ vₙ, P(addCases vₘ vₙ)
+  mp hv vm vn := hv (addCases vm vn)
+  -- ∀ vₘ vₙ, P(addCases vₘ vₙ) → ∀ v, P(v)
+  mpr h v := by
     convert h (fun i => v (castAdd n i)) (fun j => v (natAdd m j))
     exact (addCases_castAdd_natAdd v).symm
 
