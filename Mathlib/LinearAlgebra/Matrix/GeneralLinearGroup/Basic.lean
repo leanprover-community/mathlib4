@@ -14,28 +14,30 @@ see `LinearAlgebra/Matrix/GeneralLinearGroup/Defs.lean`.
 
 namespace Matrix
 
+open Matrix
+
 variable {R n : Type*} [Fintype n] [DecidableEq n]
 
-private def mat_T [Semiring R] (f : (Matrix n n R) →ₗ[R] Matrix n n R) (y z : n → R) :
+private def _root_.LinearMap.apply_vecMulVec_mulVec [Semiring R]
+    (f : (Matrix n n R) →ₗ[R] Matrix n n R) (y z : n → R) :
     (n → R) →ₗ[R] n → R where
   toFun x := f (vecMulVec x y) *ᵥ z
-  map_add' w p := by simp_rw [vecMulVec_eq (Fin 1), replicateCol_add w p,
-    Matrix.add_mul, map_add, add_mulVec]
-  map_smul' w r := by simp_rw [vecMulVec_eq (Fin 1), RingHom.id_apply,
-    replicateCol_smul, smul_mul, LinearMap.map_smul, smul_mulVec_assoc]
+  map_add' w p := by simp_rw [add_vecMulVec, map_add, add_mulVec]
+  map_smul' w r := by simp_rw [smul_vecMulVec, map_smul, smul_mulVec_assoc, RingHom.id_apply]
 
-private theorem mat_T_mul
-    [CommSemiring R] (f : Matrix n n R →ₙₐ[R] Matrix n n R)
-    (y z : n → R) (A : Matrix n n R) :
-    ((mat_T f y z).toMatrix' * A) = (f A * (mat_T f y z).toMatrix') := by
+open LinearMap in
+private theorem _root_.LinearMap.apply_vecMulVec_mulVec_mul_comm [CommSemiring R]
+    (f : Matrix n n R →ₙₐ[R] Matrix n n R) (y z : n → R) (A : Matrix n n R) :
+    (apply_vecMulVec_mulVec f y z).toMatrix' * A
+    = f A * (apply_vecMulVec_mulVec f y z).toMatrix' := by
   apply_fun toLin' using toLin'.injective
   rw [LinearMap.ext_iff]
   intro x
-  let T := mat_T f y z
+  let T := apply_vecMulVec_mulVec f y z
   calc
     ((LinearMap.toMatrix' T) * A) *ᵥ x = T (A *ᵥ x) :=
       by ext; rw [← mulVec_mulVec, LinearMap.toMatrix'_mulVec]
-    _ = (f (vecMulVec (A *ᵥ x) y)) *ᵥ z := by simp [T, mat_T]
+    _ = (f (vecMulVec (A *ᵥ x) y)) *ᵥ z := by simp [T, apply_vecMulVec_mulVec]
     _ = (f (A * vecMulVec x y)) *ᵥ z := by
       simp_rw [vecMulVec_eq (Fin 1), replicateCol_mulVec, ← Matrix.mul_assoc]
     _ = (f A * f (vecMulVec x y)) *ᵥ z := by simp_rw [map_mul]
@@ -66,17 +68,17 @@ theorem AlgEquiv.exists_generalLinearGroup_eq_mulLeftRight_inv
     simp [← ext_iff, vecMulVec_apply]
     exact ⟨Function.ne_iff.mp hu, Function.ne_iff.mp hy⟩
   obtain ⟨z, hz⟩ := this
-  let T := mat_T f.toLinearMap y z
+  let T := f.toLinearMap.apply_vecMulVec_mulVec y z
   let M := T.toMatrix'
   suffices hM : IsUnit M by
     use hM.unit
     intro A
     simp [M]
-    exact mat_T_mul f.toAlgHom.toNonUnitalAlgHom y z A |>.symm
+    exact LinearMap.apply_vecMulVec_mulVec_mul_comm f.toAlgHom.toNonUnitalAlgHom y z A |>.symm
   rw [← isUnit_toLin'_iff]
   simp_rw [M, toLin'_toMatrix', LinearMap.isUnit_iff_range_eq_top, LinearMap.range_eq_top]
   intro w
-  have hi : T u ≠ 0 := by simpa [T, mat_T]
+  have hi : T u ≠ 0 := by simpa [T, LinearMap.apply_vecMulVec_mulVec]
   have this1 : ∃ d : n → R, T u ⬝ᵥ d = 1 := by
     obtain ⟨q, hq⟩ := Function.ne_iff.mp hi
     use Pi.single q (T u q)⁻¹
@@ -93,7 +95,7 @@ theorem AlgEquiv.exists_generalLinearGroup_eq_mulLeftRight_inv
   use (toLin' B) u
   rw [← toLin'_toMatrix' T]
   have this A : (T.toMatrix' * A) = (f A * T.toMatrix') :=
-    mat_T_mul f.toAlgHom.toNonUnitalAlgHom y z A
+    LinearMap.apply_vecMulVec_mulVec_mul_comm f.toAlgHom.toNonUnitalAlgHom y z A
   simp_rw [toLin'_apply, mulVec_mulVec, this, ← mulVec_mulVec,
     ← toLin'_apply (LinearMap.toMatrix' T), toLin'_toMatrix']
   exact hB
