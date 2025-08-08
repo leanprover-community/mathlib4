@@ -556,6 +556,12 @@ theorem continuous_mk : Continuous (mk : X → SeparationQuotient X) :=
 theorem mk_eq_mk : mk x = mk y ↔ (x ~ᵢ y) :=
   Quotient.eq''
 
+protected theorem «forall» {P : SeparationQuotient X → Prop} : (∀ x, P x) ↔ ∀ x, P (.mk x) :=
+  Quotient.forall
+
+protected theorem «exists» {P : SeparationQuotient X → Prop} : (∃ x, P x) ↔ ∃ x, P (.mk x) :=
+  Quotient.exists
+
 theorem surjective_mk : Surjective (mk : X → SeparationQuotient X) :=
   Quot.mk_surjective
 
@@ -571,6 +577,14 @@ instance [Inhabited X] : Inhabited (SeparationQuotient X) :=
 
 instance [Subsingleton X] : Subsingleton (SeparationQuotient X) :=
   surjective_mk.subsingleton
+
+theorem subsingleton_separationQuotient_iff {t : TopologicalSpace α} :
+    Subsingleton (SeparationQuotient α) ↔ t = ⊤ := by
+  simp_rw [subsingleton_iff, ← forall_inseparable_iff, SeparationQuotient.forall, mk_eq_mk]
+
+theorem nontrivial_separationQuotient_iff {t : TopologicalSpace α} :
+    Nontrivial (SeparationQuotient α) ↔ t ≠ ⊤ := by
+  simpa only [not_subsingleton_iff_nontrivial] using subsingleton_separationQuotient_iff.not
 
 @[to_additive] instance [One X] : One (SeparationQuotient X) := ⟨mk 1⟩
 
