@@ -394,13 +394,6 @@ theorem abv_nonpos_iff {x : R} : v x ≤ 0 ↔ v x = 0 := by
 theorem inv_lt_one_iff {x : R} : v x⁻¹ < 1 ↔ x = 0 ∨ 1 < v x := by
   simp only [map_inv₀, inv_lt_one_iff₀, abv_nonpos_iff, map_eq_zero]
 
-theorem mul_one_div_lt_iff {y : R} (x : R) (h : 0 < v y) : v (x * (1 / y)) < 1 ↔ v x < v y := by
-  rw [map_mul, one_div, map_inv₀, mul_inv_lt_iff₀ h, one_mul]
-
-theorem mul_one_div_pow_lt_iff {n : ℕ} {y : R} (x : R) (h : 0 < v y) :
-    v (x * (1 / y ^ n)) < 1 ↔ v x < v y ^ n :=
-  map_pow v _ _ ▸ mul_one_div_lt_iff x (map_pow v _ _ ▸ pow_pos h n)
-
 variable {w : AbsoluteValue R S}
 
 theorem one_lt_of_lt_one_imp (h : ∀ x, v x < 1 → w x < 1) {x : R} (hv : 1 < v x) : 1 < w x :=
@@ -422,7 +415,7 @@ theorem eq_one_iff_of_lt_one_iff (h : ∀ x, v x < 1 ↔ w x < 1) (x : R) : v x 
 variable (w)
 
 omit [ExistsAddOfLE S] [IsStrictOrderedRing S] in
-theorem abv_pos_of_abv_pos {a : R} (hv : 0 < v a) : 0 < w a := by
+theorem pos_of_abv_pos {a : R} (hv : 0 < v a) : 0 < w a := by
   rwa [AbsoluteValue.pos_iff] at hv ⊢
 
 end LinearOrderedSemifield
