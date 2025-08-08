@@ -5,7 +5,7 @@ Authors: María Inés de Frutos-Fernández
 -/
 import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 import Mathlib.Data.Int.WithZero
-import Mathlib.RingTheory.DedekindDomain.Ideal
+import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 import Mathlib.RingTheory.Valuation.ExtendToLocalization
 import Mathlib.Topology.Algebra.Valued.ValuedField
 import Mathlib.Topology.Algebra.Valued.WithVal
@@ -508,7 +508,7 @@ instance : Algebra R (v.adicCompletionIntegers K) where
     rfl
 
 @[simp]
-lemma algebraMap_adicCompletionIntegers (r : R) :
+lemma algebraMap_adicCompletionIntegers_apply (r : R) :
     algebraMap R (v.adicCompletionIntegers K) r = (algebraMap R K r : v.adicCompletion K) :=
   rfl
 
