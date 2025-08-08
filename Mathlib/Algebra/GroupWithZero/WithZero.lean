@@ -110,11 +110,9 @@ theorem monoidWithZeroHom_ext ⦃f g : WithZero α →*₀ β⦄
 @[simps! symm_apply_apply]
 nonrec def lift' : (α →* β) ≃ (WithZero α →*₀ β) where
   toFun f :=
-    { toFun := fun
-        | 0 => 0
-        | (a : α) => f a
+    { toFun := recZeroCoe 0 f
       map_zero' := rfl
-      map_one' := map_one f
+      map_one' := by simp
       map_mul' := fun
         | 0, _ => (zero_mul _).symm
         | (_ : α), 0 => (mul_zero _).symm
@@ -127,6 +125,12 @@ lemma lift'_zero (f : α →* β) : lift' f (0 : WithZero α) = 0 := rfl
 
 lemma lift'_unique (f : WithZero α →*₀ β) : f = lift' (f.toMonoidHom.comp coeMonoidHom) :=
   (lift'.apply_symm_apply f).symm
+
+lemma lift'_surjective {f : α →* β} (hf : Surjective f) :
+    Surjective (lift' f) := by
+  intro b
+  obtain ⟨a, rfl⟩ := hf b
+  exact ⟨a, by simp⟩
 
 end lift
 
@@ -155,6 +159,19 @@ lemma map'_injective_iff {f : α →* β} : Injective (map' f) ↔ Injective f :
   simp [Injective, WithZero.forall]
 
 alias ⟨_, map'_injective⟩ := map'_injective_iff
+
+lemma map'_surjective_iff {f : α →* β} : Surjective (map' f) ↔ Surjective f := by
+  simp only [Surjective, «forall»]
+  refine ⟨fun h b ↦ ?_, fun h ↦ ⟨⟨0, by simp⟩, fun b ↦ ?_⟩⟩
+  · obtain ⟨a, hab⟩ := h.2 b
+    induction a using WithZero.recZeroCoe <;>
+    simp at hab
+    grind
+  · obtain ⟨a, ha⟩ := h b
+    use a
+    simp [ha]
+
+alias ⟨_, map'_surjective⟩ := map'_surjective_iff
 
 end MulOneClass
 
@@ -341,6 +358,11 @@ def exp (a : M) : Mᵐ⁰ := coe <| .ofAdd a
 
 @[simp] lemma exp_ne_zero {a : M} : exp a ≠ 0 := by simp [exp]
 
+lemma exp_injective : Injective (exp : M → Mᵐ⁰) :=
+  Multiplicative.ofAdd.injective.comp WithZero.coe_injective
+
+@[simp] lemma exp_inj {x y : M} : exp x = exp y ↔ x = y := exp_injective.eq_iff
+
 variable [AddMonoid M]
 
 /-- The logarithm as a function `Mᵐ⁰ → M` with junk value `log 0 = 0`. -/
@@ -353,6 +375,9 @@ def log (x : Mᵐ⁰) : M := x.recZeroCoe 0 Multiplicative.toAdd
 @[simp] lemma log_zero : log 0 = (0 : M) := rfl
 
 @[simp] lemma exp_zero : exp (0 : M) = 1 := rfl
+@[simp] lemma exp_eq_one {x : M} : exp x = 1 ↔ x = 0 := by
+  rw [← exp_zero, exp_inj]
+
 @[simp] lemma log_one : log 1 = (0 : M) := rfl
 
 lemma exp_add (a b : M) : exp (a + b) = exp a * exp b := rfl
@@ -409,7 +434,7 @@ namespace MonoidWithZeroHom
 
 protected lemma map_eq_zero_iff {G₀ G₀' : Type*} [GroupWithZero G₀]
     [MulZeroOneClass G₀'] [Nontrivial G₀']
-    {f : G₀ →*₀ G₀'} {x : G₀}:
+    {f : G₀ →*₀ G₀'} {x : G₀} :
     f x = 0 ↔ x = 0 := by
   refine ⟨?_, by simp +contextual⟩
   contrapose!

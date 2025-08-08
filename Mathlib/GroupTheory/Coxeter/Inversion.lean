@@ -428,10 +428,7 @@ theorem IsReduced.nodup_rightInvSeq {ω : List B} (rω : cs.IsReduced ω) : List
     congr 2
     show (List.take j ω ++ List.drop (j + 1) ω)[j' - 1]? = ω[j']?
     rw [getElem?_append_right (by simp [Nat.le_sub_one_of_lt j_lt_j']), getElem?_drop]
-    congr
-    show j + 1 + (j' - 1 - List.length (List.take j ω)) = j'
-    rw [length_take]
-    omega
+    grind
   have h₄ : t * t' = 1                                := by
     rw [h₁, h₃, dup]
     exact cs.getD_rightInvSeq_mul_self _ _

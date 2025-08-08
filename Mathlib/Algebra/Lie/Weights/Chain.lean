@@ -190,7 +190,7 @@ lemma trace_toEnd_genWeightSpaceChain_eq_zero
       ext
       rw [toEnd_apply_apply, LieSubmodule.coe_bracket, LieSubalgebra.coe_bracket_of_module, ← hyz]
       simp only [lie_lie, LieHom.lie_apply, LinearMap.coe_mk, AddHom.coe_mk, Module.End.lie_apply,
-      AddSubgroupClass.coe_sub, f, g]
+        AddSubgroupClass.coe_sub, f, g]
     simp [hfg]
   | zero => simp
   | add => simp_all

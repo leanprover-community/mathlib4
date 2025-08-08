@@ -203,9 +203,6 @@ theorem isBoundedLinearMap_prod_multilinear {E : ι → Type*} [∀ i, Seminorme
   (ContinuousMultilinearMap.prodL 𝕜 E F G).toContinuousLinearEquiv
     |>.toContinuousLinearMap.isBoundedLinearMap
 
-#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-we needed to add the named arguments `(ι := ι) (G := F)`
-to `ContinuousMultilinearMap.compContinuousLinearMapL`. -/
 /-- Given a fixed continuous linear map `g`, associating to a continuous multilinear map `f` the
 continuous multilinear map `f (g m₁, ..., g mₙ)` is a bounded linear operation. -/
 theorem isBoundedLinearMap_continuousMultilinearMap_comp_linear (g : G →L[𝕜] E) :

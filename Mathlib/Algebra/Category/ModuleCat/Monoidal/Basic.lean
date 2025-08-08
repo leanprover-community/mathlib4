@@ -63,11 +63,14 @@ def whiskerRight {M₁ M₂ : ModuleCat R} (f : M₁ ⟶ M₂) (N : ModuleCat R)
     tensorObj M₁ N ⟶ tensorObj M₂ N :=
   ofHom <| f.hom.rTensor N
 
-theorem tensor_id (M N : ModuleCat R) : tensorHom (𝟙 M) (𝟙 N) = 𝟙 (ModuleCat.of R (M ⊗ N)) := by
+theorem id_tensorHom_id (M N : ModuleCat R) :
+    tensorHom (𝟙 M) (𝟙 N) = 𝟙 (ModuleCat.of R (M ⊗ N)) := by
   ext : 1
   -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11041): even with high priority `ext` fails to find this.
   apply TensorProduct.ext
   rfl
+
+@[deprecated (since := "2025-07-14")] alias tensor_id := id_tensorHom_id
 
 theorem tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : ModuleCat R} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁)
     (g₂ : Y₂ ⟶ Z₂) : tensorHom (f₁ ≫ g₁) (f₂ ≫ g₂) = tensorHom f₁ f₂ ≫ tensorHom g₁ g₂ := by
@@ -156,7 +159,7 @@ end MonoidalCategory
 open MonoidalCategory
 
 instance monoidalCategory : MonoidalCategory (ModuleCat.{u} R) := MonoidalCategory.ofTensorHom
-  (tensor_id := fun M N ↦ tensor_id M N)
+  (id_tensorHom_id := fun M N ↦ id_tensorHom_id M N)
   (tensor_comp := fun f g h ↦ MonoidalCategory.tensor_comp f g h)
   (associator_naturality := fun f g h ↦ MonoidalCategory.associator_naturality f g h)
   (leftUnitor_naturality := fun f ↦ MonoidalCategory.leftUnitor_naturality f)
@@ -307,7 +310,7 @@ instance : MonoidalLinear R (ModuleCat.{u} R) := by
     erw [MonoidalCategory.whiskerRight_apply, MonoidalCategory.whiskerRight_apply]
     simp [TensorProduct.smul_tmul, TensorProduct.tmul_smul]
 
-@[simp] lemma ofHom₂_compr₂ {M N P Q : ModuleCat.{u} R} (f : M →ₗ[R] N →ₗ[R] P) (g : P →ₗ[R] Q):
+@[simp] lemma ofHom₂_compr₂ {M N P Q : ModuleCat.{u} R} (f : M →ₗ[R] N →ₗ[R] P) (g : P →ₗ[R] Q) :
     ofHom₂ (f.compr₂ g) = ofHom₂ f ≫ ofHom (Linear.rightComp R _ (ofHom g)) := rfl
 
 end ModuleCat

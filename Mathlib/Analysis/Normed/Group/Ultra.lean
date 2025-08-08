@@ -223,7 +223,7 @@ product. -/
 the sum."]
 lemma _root_.Finset.nnnorm_prod_le_sup_nnnorm (s : Finset ι) (f : ι → M) :
     ‖∏ i ∈ s, f i‖₊ ≤ s.sup (‖f ·‖₊) := by
-  rcases s.eq_empty_or_nonempty with rfl|hs
+  rcases s.eq_empty_or_nonempty with rfl | hs
   · simp only [Finset.prod_empty, nnnorm_one', Finset.sup_empty, bot_eq_zero', le_refl]
   · simpa only [← Finset.sup'_eq_sup hs, Finset.le_sup'_iff, coe_le_coe, coe_nnnorm']
       using hs.norm_prod_le_sup'_norm f
@@ -300,7 +300,7 @@ theorem exists_norm_multiset_prod_le (s : Multiset ι) [Nonempty ι] {f : ι →
         · rw [Multiset.map_cons, Multiset.prod_cons]
           exact le_trans (norm_mul_le_max _ _) (max_le (le_refl _) (le_trans hM hMa))
       · rw [not_le] at hMa
-        rcases eq_or_ne t 0 with rfl|ht
+        rcases eq_or_ne t 0 with rfl | ht
         · exact ⟨a, by simp, by simp⟩
         · refine ⟨M, ?_, ?_⟩
           · simp [hMs ht]
