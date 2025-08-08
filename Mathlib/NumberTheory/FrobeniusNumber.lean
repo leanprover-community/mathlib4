@@ -240,17 +240,10 @@ protected inductive Rel : Set ℕ → Set ℕ → Prop
       SylverCoinage.Rel (insert n s) s
 
 /-- Sylver coinage is a well-founded game, i.e. it always terminates. -/
-theorem wellFounded_rel : WellFounded SylverCoinage.Rel := by
-  let f (s : Set ℕ) : ℕ × {t : Set ℕ // t.Finite} :=
-    (setGcd s, ⟨_, finite_setOf_setGcd_dvd_and_mem_span s⟩)
-  refine Subrelation.wf ?_ (InvImage.wf f (wellFounded_dvdNotUnit.prod_lex wellFounded_lt))
-  rintro _ s ⟨_, n, hns, _⟩
-  apply Prod.lex_def.mpr
-  by_cases dvd : setGcd s ∣ n
-  · exact .inr ⟨setGcd_insert_of_dvd dvd, fun m h ↦ ⟨(setGcd_insert_of_dvd dvd).symm.dvd.trans h.1,
-      fun mem ↦ h.2 (Ideal.span_mono (Set.subset_insert ..) mem)⟩, Set.not_subset.2
-      ⟨n, ⟨dvd, hns⟩, fun mem ↦ mem.2 (Ideal.subset_span <| Set.mem_insert ..)⟩⟩
-  · exact .inl (dvdNotUnit_setGcd_insert dvd)
+theorem wellFounded_rel : WellFounded SylverCoinage.Rel :=
+  Subrelation.wf (fun {_ s} ⟨_, n, hns, _⟩ ↦ SetLike.lt_iff_le_and_exists.mpr
+      ⟨Ideal.span_mono (Set.subset_insert ..), n, Ideal.subset_span (Set.mem_insert ..), hns⟩)
+    (InvImage.wf Ideal.span wellFounded_gt)
 
 /-- A position in the game of Sylver coinage is a P-position (i.e., a win for the previous player)
 if every move leads to an N-position (i.e., a win for the next player). -/
