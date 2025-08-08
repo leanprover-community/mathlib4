@@ -441,6 +441,38 @@ theorem image_sub_const_Ioc : (fun x => x - a) '' Ioc b c = Ioc (b - a) (c - a) 
 theorem image_sub_const_Ioo : (fun x => x - a) '' Ioo b c = Ioo (b - a) (c - a) := by
   simp [sub_eq_neg_add]
 
+lemma mapsTo_const_sub_Ici : MapsTo (fun x ↦ a - x) (Ici b) (Iic (a - b)) := by
+  rw [←Set.image_const_sub_Ici]
+  apply Set.mapsTo_image
+
+lemma mapsTo_const_sub_Iic : MapsTo (fun x ↦ a - x) (Iic b) (Ici (a - b)) := by
+  rw [←Set.image_const_sub_Iic]
+  apply Set.mapsTo_image
+
+lemma mapsTo_const_sub_Ioi : MapsTo (fun x ↦ a - x) (Ioi b) (Iio (a - b)) := by
+  rw [←Set.image_const_sub_Ioi]
+  apply Set.mapsTo_image
+
+lemma mapsTo_const_sub_Iio : MapsTo (fun x ↦ a - x) (Iio b) (Ioi (a - b)) := by
+  rw [←Set.image_const_sub_Iio]
+  apply Set.mapsTo_image
+
+lemma mapsTo_const_sub_Icc : MapsTo (fun x ↦ a - x) (Icc b c) (Icc (a - c) (a - b)) := by
+  rw [←Set.image_const_sub_Icc]
+  apply Set.mapsTo_image
+
+lemma mapsTo_const_sub_Ico : MapsTo (fun x ↦ a - x) (Ico b c) (Ioc (a - c) (a - b)) := by
+  rw [←Set.image_const_sub_Ico]
+  apply Set.mapsTo_image
+
+lemma mapsTo_const_sub_Ioc : MapsTo (fun x ↦ a - x) (Ioc b c) (Ico (a - c) (a - b)) := by
+  rw [←Set.image_const_sub_Ioc]
+  apply Set.mapsTo_image
+
+lemma mapsTo_const_sub_Ioo : MapsTo (fun x ↦ a - x) (Ioo b c) (Ioo (a - c) (a - b)) := by
+  rw [←Set.image_const_sub_Ioo]
+  apply Set.mapsTo_image
+
 /-!
 ### Bijections
 -/
