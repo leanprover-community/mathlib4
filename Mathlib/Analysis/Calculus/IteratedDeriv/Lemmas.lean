@@ -57,9 +57,6 @@ theorem iteratedDerivWithin_const_sub (hn : 0 < n) (c : F) :
   rw [derivWithin.fun_neg]
   exact derivWithin_const_sub _
 
-@[deprecated (since := "2024-12-10")]
-alias iteratedDerivWithin_const_neg := iteratedDerivWithin_const_sub
-
 include h hx in
 theorem iteratedDerivWithin_const_smul (c : R) (hf : ContDiffWithinAt 𝕜 n f s x) :
     iteratedDerivWithin n (c • f) s x = c • iteratedDerivWithin n f s x := by

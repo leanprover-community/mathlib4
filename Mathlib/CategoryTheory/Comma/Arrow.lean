@@ -30,7 +30,7 @@ section
 variable (T)
 
 /-- The arrow category of `T` has as objects all morphisms in `T` and as morphisms commutative
-     squares in `T`. -/
+squares in `T`. -/
 def Arrow :=
   Comma.{v, v, v} (𝟭 T) (𝟭 T)
 -- The `Category` instance should be constructed by a deriving handler.
@@ -125,7 +125,7 @@ lemma arrow_mk_eqToHom_comp {X' X Y : T} (f : X ⟶ Y) (h : X' = X) :
     category. -/
 @[simps]
 def homMk {f g : Arrow T} (u : f.left ⟶ g.left) (v : f.right ⟶ g.right)
-    (w : u ≫ g.hom = f.hom ≫ v := by aesop_cat) : f ⟶ g where
+    (w : u ≫ g.hom = f.hom ≫ v := by cat_disch) : f ⟶ g where
   left := u
   right := v
   w := w
@@ -133,7 +133,7 @@ def homMk {f g : Arrow T} (u : f.left ⟶ g.left) (v : f.right ⟶ g.right)
 /-- We can also build a morphism in the arrow category out of any commutative square in `T`. -/
 @[simps]
 def homMk' {X Y : T} {f : X ⟶ Y} {P Q : T} {g : P ⟶ Q} (u : X ⟶ P) (v : Y ⟶ Q)
-    (w : u ≫ g = f ≫ v := by aesop_cat) :
+    (w : u ≫ g = f ≫ v := by cat_disch) :
     Arrow.mk f ⟶ Arrow.mk g where
   left := u
   right := v
@@ -154,20 +154,20 @@ theorem isIso_of_isIso_left_of_isIso_right {f g : Arrow T} (ff : f ⟶ g) [IsIso
   out := by
     let inverse : g ⟶ f := ⟨inv ff.left, inv ff.right, (by simp)⟩
     apply Exists.intro inverse
-    aesop_cat
+    cat_disch
 
 /-- Create an isomorphism between arrows,
 by providing isomorphisms between the domains and codomains,
 and a proof that the square commutes. -/
 @[simps!]
 def isoMk {f g : Arrow T} (l : f.left ≅ g.left) (r : f.right ≅ g.right)
-    (h : l.hom ≫ g.hom = f.hom ≫ r.hom := by aesop_cat) : f ≅ g :=
+    (h : l.hom ≫ g.hom = f.hom ≫ r.hom := by cat_disch) : f ≅ g :=
   Comma.isoMk l r h
 
 /-- A variant of `Arrow.isoMk` that creates an iso between two `Arrow.mk`s with a better type
 signature. -/
 abbrev isoMk' {W X Y Z : T} (f : W ⟶ X) (g : Y ⟶ Z) (e₁ : W ≅ Y) (e₂ : X ≅ Z)
-    (h : e₁.hom ≫ g = f ≫ e₂.hom := by aesop_cat) : Arrow.mk f ≅ Arrow.mk g :=
+    (h : e₁.hom ≫ g = f ≫ e₂.hom := by cat_disch) : Arrow.mk f ≅ Arrow.mk g :=
   Arrow.isoMk e₁ e₂ h
 
 theorem hom.congr_left {f g : Arrow T} {φ₁ φ₂ : f ⟶ g} (h : φ₁ = φ₂) : φ₁.left = φ₂.left := by
@@ -293,11 +293,13 @@ variable {C : Type u} [Category.{v} C]
 
 /-- A helper construction: given a square between `i` and `f ≫ g`, produce a square between
 `i` and `g`, whose top leg uses `f`:
+```
 A  → X
      ↓f
 ↓i   Y             --> A → Y
      ↓g                ↓i  ↓g
 B  → Z                 B → Z
+```
 -/
 @[simps]
 def squareToSnd {X Y Z : C} {i : Arrow C} {f : X ⟶ Y} {g : Y ⟶ Z} (sq : i ⟶ Arrow.mk (f ≫ g)) :

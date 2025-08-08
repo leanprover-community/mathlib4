@@ -228,9 +228,6 @@ theorem tendsto_approxOn_range_L1_enorm [OpensMeasurableSpace E] {f : β → E} 
   · filter_upwards with x using subset_closure (by simp)
   · simpa using hf.2
 
-@[deprecated (since := "2025-01-21")]
-alias tendsto_approxOn_range_L1_nnnorm := tendsto_approxOn_range_L1_enorm
-
 theorem integrable_approxOn_range [BorelSpace E] {f : β → E} {μ : Measure β} (fmeas : Measurable f)
     [SeparableSpace (range f ∪ {0} : Set E)] (hf : Integrable f μ) (n : ℕ) :
     Integrable (approxOn f fmeas (range f ∪ {0}) 0 (by simp) n) μ :=
@@ -382,7 +379,7 @@ variable [MeasurableSpace α] [NormedAddCommGroup E] [NormedAddCommGroup F] (p :
 variable (E)
 
 /-- `Lp.simpleFunc` is a subspace of Lp consisting of equivalence classes of an integrable simple
-    function. -/
+function. -/
 def simpleFunc : AddSubgroup (Lp E p μ) where
   carrier := { f : Lp E p μ | ∃ s : α →ₛ E, (AEEqFun.mk s s.aestronglyMeasurable : α →ₘ[μ] E) = f }
   zero_mem' := ⟨0, rfl⟩

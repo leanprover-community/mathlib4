@@ -42,7 +42,7 @@ theorem prod_map_erase [DecidableEq ι] {a : ι} (h : a ∈ m) :
   rw [← m.coe_toList, coe_erase, map_coe, map_coe, prod_coe, prod_coe,
     List.prod_map_erase f (mem_toList.2 h)]
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, grind =)]
 theorem prod_add (s t : Multiset M) : prod (s + t) = prod s * prod t :=
   Quotient.inductionOn₂ s t fun l₁ l₂ => by simp
 
@@ -129,7 +129,7 @@ lemma _root_.map_multiset_prod [FunLike F M N] [MonoidHomClass F M N] (f : F) (s
 
 @[to_additive]
 lemma _root_.map_multiset_ne_zero_prod [FunLike F M N] [MulHomClass F M N] (f : F)
-    {s : Multiset M} (hs : s ≠ 0):
+    {s : Multiset M} (hs : s ≠ 0) :
     f s.prod = (s.map f).prod := (s.prod_hom_ne_zero hs f).symm
 
 @[to_additive]

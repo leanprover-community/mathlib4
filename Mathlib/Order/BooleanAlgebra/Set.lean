@@ -246,15 +246,25 @@ theorem diff_union_inter (s t : Set α) : s \ t ∪ s ∩ t = s := by
 theorem inter_union_compl (s t : Set α) : s ∩ t ∪ s ∩ tᶜ = s :=
   inter_union_diff _ _
 
+theorem subset_inter_union_compl_left (s t : Set α) : t ⊆ s ∩ t ∪ sᶜ := by
+  simp [inter_union_distrib_right]
+
+theorem subset_inter_union_compl_right (s t : Set α) : s ⊆ s ∩ t ∪ tᶜ := by
+  simp [inter_union_distrib_right]
+
+theorem union_inter_compl_left_subset (s t : Set α) : (s ∪ t) ∩ sᶜ ⊆ t := by
+  simp [union_inter_distrib_right]
+
+theorem union_inter_compl_right_subset (s t : Set α) : (s ∪ t) ∩ tᶜ ⊆ s := by
+  simp [union_inter_distrib_right]
+
 @[gcongr]
 theorem diff_subset_diff {s₁ s₂ t₁ t₂ : Set α} : s₁ ⊆ s₂ → t₂ ⊆ t₁ → s₁ \ t₁ ⊆ s₂ \ t₂ :=
   show s₁ ≤ s₂ → t₂ ≤ t₁ → s₁ \ t₁ ≤ s₂ \ t₂ from sdiff_le_sdiff
 
-@[gcongr]
 theorem diff_subset_diff_left {s₁ s₂ t : Set α} (h : s₁ ⊆ s₂) : s₁ \ t ⊆ s₂ \ t :=
   sdiff_le_sdiff_right ‹s₁ ≤ s₂›
 
-@[gcongr]
 theorem diff_subset_diff_right {s t u : Set α} (h : t ⊆ u) : s \ u ⊆ s \ t :=
   sdiff_le_sdiff_left ‹t ≤ u›
 
@@ -419,6 +429,9 @@ alias insert_diff_self_of_not_mem := insert_diff_self_of_notMem
 
 lemma insert_diff_self_of_mem (ha : a ∈ s) : insert a (s \ {a}) = s := by
   ext; simp +contextual [or_and_left, em, ha]
+
+lemma insert_diff_subset : insert a s \ t ⊆ insert a (s \ t) := by
+  rintro b ⟨rfl | hbs, hbt⟩ <;> simp [*]
 
 lemma insert_erase_invOn :
     InvOn (insert a) (fun s ↦ s \ {a}) {s : Set α | a ∈ s} {s : Set α | a ∉ s} :=
