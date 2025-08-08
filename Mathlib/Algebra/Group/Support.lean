@@ -60,4 +60,3 @@ theorem mulSupport_div : (mulSupport fun x => f x / g x) ⊆ mulSupport f ∪ mu
 end DivisionMonoid
 
 end Function
-#min_imports
