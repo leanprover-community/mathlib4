@@ -192,7 +192,7 @@ lemma isRegular_iff_eq_zero_of_mul :
   rw [isRegular_iff, isLeftRegular_iff_right_eq_zero_of_mul, isRightRegular_iff_left_eq_zero_of_mul]
 
 /-- A (not necessarily unital or associative) ring with no zero divisors has cancellative
-multiplicative on both sides. Since either left or right cancellative multiplication implies
+multiplication on both sides. Since either left or right cancellative multiplication implies
 the absence of zero divisors, the four conditions are equivalent to each other. -/
 lemma noZeroDivisors_tfae : List.TFAE
     [NoZeroDivisors R, IsLeftCancelMulZero R, IsRightCancelMulZero R, IsCancelMulZero R] := by
