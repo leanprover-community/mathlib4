@@ -104,12 +104,12 @@ theorem multiplicative_factorization {β : Type*} [CommMonoid β] (f : ℕ → �
     (h_mult : ∀ x y : ℕ, Coprime x y → f (x * y) = f x * f y) (hf : f 1 = 1) :
     ∀ {n : ℕ}, n ≠ 0 → f n = n.factorization.prod fun p k => f (p ^ k) := by
   apply Nat.recOnPosPrimePosCoprime
+  · rintro p k hp - -
+    simp [Prime.factorization_pow hp, Finsupp.prod_single_index _, hf]
   · simp
   · rintro -
     rw [factorization_one, hf]
     simp
-  · rintro p k hp - -
-    simp [Prime.factorization_pow hp, Finsupp.prod_single_index _, hf]
   · intro a b _ _ hab ha hb hab_pos
     rw [h_mult a b hab, ha (left_ne_zero_of_mul hab_pos), hb (right_ne_zero_of_mul hab_pos),
       factorization_mul_of_coprime hab, ← prod_add_index_of_disjoint]
