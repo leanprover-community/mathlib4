@@ -513,6 +513,8 @@ theorem prod_dvd_prod_of_subset_of_dvd [Zero M] [CommMonoid N] {f1 f2 : α →�
     apply prod_dvd_prod_of_dvd
     exact h2
 
+section indicator
+
 variable [DecidableEq α] [DecidableEq M]
 
 lemma indicator_eq_sum_attach_single [AddCommMonoid M] {s : Finset α} (f : ∀ a ∈ s, M) :
@@ -535,6 +537,7 @@ lemma prod_indicator_index_eq_prod_attach [Zero M] [CommMonoid N]
   refine Finset.prod_congr rfl (fun _ _ => ?_)
   rw [indicator_of_mem]
 
+omit [DecidableEq α] [DecidableEq M] in
 @[to_additive (attr := simp)]
 lemma prod_attach_index [CommMonoid N] {s : Finset α} (f : α → M) {h : α → M → N} :
     ∏ x ∈ s.attach, h x (f x) = ∏ x ∈ s, h x (f x) :=
@@ -545,6 +548,8 @@ lemma prod_indicator_index [Zero M] [CommMonoid N]
     {s : Finset α} (f : α → M) {h : α → M → N} (h_zero : ∀ a ∈ s, h a 0 = 1) :
     (indicator s (fun x _ ↦ f x)).prod h = ∏ x ∈ s, h x (f x) := by
   simp +contextual [h_zero]
+
+end indicator
 
 @[to_additive]
 lemma prod_mul_eq_prod_mul_of_exists [Zero M] [CommMonoid N]
