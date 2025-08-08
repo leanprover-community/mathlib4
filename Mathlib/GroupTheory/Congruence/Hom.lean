@@ -163,7 +163,7 @@ def mk' : M →* c.Quotient where
 variable (x y : M)
 
 /-- The kernel of the natural homomorphism from a monoid to its quotient by a congruence
-    relation `c` equals `c`. -/
+relation `c` equals `c`. -/
 @[to_additive (attr := simp) "The kernel of the natural homomorphism from an `AddMonoid` to its
 quotient by an additive congruence relation `c` equals `c`."]
 theorem mk'_ker : ker c.mk' = c :=
@@ -172,7 +172,7 @@ theorem mk'_ker : ker c.mk' = c :=
 variable {c}
 
 /-- The natural homomorphism from a monoid to its quotient by a congruence relation is
-    surjective. -/
+surjective. -/
 @[to_additive "The natural homomorphism from an `AddMonoid` to its quotient by a congruence
 relation is surjective."]
 theorem mk'_surjective : Surjective c.mk' :=
@@ -186,8 +186,8 @@ theorem coe_mk' : (c.mk' : M → c.Quotient) = ((↑) : M → c.Quotient) :=
 theorem ker_apply {f : M →* P} {x y} : ker f x y ↔ f x = f y := Iff.rfl
 
 /-- Given a monoid homomorphism `f : N → M` and a congruence relation `c` on `M`, the congruence
-    relation induced on `N` by `f` equals the kernel of `c`'s quotient homomorphism composed with
-    `f`. -/
+relation induced on `N` by `f` equals the kernel of `c`'s quotient homomorphism composed with
+`f`. -/
 @[to_additive "Given an `AddMonoid` homomorphism `f : N → M` and an additive congruence relation
 `c` on `M`, the additive congruence relation induced on `N` by `f` equals the kernel of `c`'s
 quotient homomorphism composed with `f`."]
@@ -197,7 +197,7 @@ theorem comap_eq {f : N →* M} : comap f f.map_mul c = ker (c.mk'.comp f) :=
 variable (c) (f : M →* P)
 
 /-- The homomorphism on the quotient of a monoid by a congruence relation `c` induced by a
-    homomorphism constant on `c`'s equivalence classes. -/
+homomorphism constant on `c`'s equivalence classes. -/
 @[to_additive "The homomorphism on the quotient of an `AddMonoid` by an additive congruence
 relation `c` induced by a homomorphism constant on `c`'s equivalence classes."]
 def lift (H : c ≤ ker f) : c.Quotient →* P where
@@ -227,8 +227,8 @@ theorem lift_coe (H : c ≤ ker f) (x : M) : c.lift f H x = f x :=
 theorem lift_comp_mk' (H : c ≤ ker f) : (c.lift f H).comp c.mk' = f := by ext; rfl
 
 /-- Given a homomorphism `f` from the quotient of a monoid by a congruence relation, `f` equals the
-    homomorphism on the quotient induced by `f` composed with the natural map from the monoid to
-    the quotient. -/
+homomorphism on the quotient induced by `f` composed with the natural map from the monoid to
+the quotient. -/
 @[to_additive (attr := simp) "Given a homomorphism `f` from the quotient of an `AddMonoid` by an
 additive congruence relation, `f` equals the homomorphism on the quotient induced by `f` composed
 with the natural map from the `AddMonoid` to the quotient."]
@@ -245,7 +245,7 @@ lemma hom_ext {f g : c.Quotient →* P} (h : f.comp c.mk' = g.comp c.mk') : f = 
   congr 1
 
 /-- Homomorphisms on the quotient of a monoid by a congruence relation are equal if they
-    are equal on elements that are coercions from the monoid. -/
+are equal on elements that are coercions from the monoid. -/
 @[to_additive "Homomorphisms on the quotient of an `AddMonoid` by an additive congruence relation
 are equal if they are equal on elements that are coercions from the `AddMonoid`."]
 theorem lift_funext (f g : c.Quotient →* P) (h : ∀ a : M, f a = g a) : f = g :=
@@ -258,7 +258,7 @@ theorem lift_unique (H : c ≤ ker f) (g : c.Quotient →* P) (Hg : g.comp c.mk'
   hom_ext Hg
 
 /-- Surjective monoid homomorphisms constant on a congruence relation `c`'s equivalence classes
-    induce a surjective homomorphism on `c`'s quotient. -/
+induce a surjective homomorphism on `c`'s quotient. -/
 @[to_additive "Surjective `AddMonoid` homomorphisms constant on an additive congruence
 relation `c`'s equivalence classes induce a surjective homomorphism on `c`'s quotient."]
 theorem lift_surjective_of_surjective (h : c ≤ ker f) (hf : Surjective f) :
@@ -268,7 +268,7 @@ theorem lift_surjective_of_surjective (h : c ≤ ker f) (hf : Surjective f) :
 variable (c f)
 
 /-- Given a monoid homomorphism `f` from `M` to `P`, the kernel of `f` is the unique congruence
-    relation on `M` whose induced map from the quotient of `M` to `P` is injective. -/
+relation on `M` whose induced map from the quotient of `M` to `P` is injective. -/
 @[to_additive "Given an `AddMonoid` homomorphism `f` from `M` to `P`, the kernel of `f`
 is the unique additive congruence relation on `M` whose induced map from the quotient of `M`
 to `P` is injective."]
@@ -286,7 +286,7 @@ def kerLift : (ker f).Quotient →* P :=
 variable {f}
 
 /-- The diagram described by the universal property for quotients of monoids, when the congruence
-    relation is the kernel of the homomorphism, commutes. -/
+relation is the kernel of the homomorphism, commutes. -/
 @[to_additive (attr := simp) "The diagram described by the universal property for quotients
 of `AddMonoid`s, when the additive congruence relation is the kernel of the homomorphism,
 commutes."]
@@ -300,7 +300,7 @@ theorem kerLift_injective (f : M →* P) : Injective (kerLift f) := fun x y =>
   Quotient.inductionOn₂' x y fun _ _ => (ker f).eq.2
 
 /-- Given congruence relations `c, d` on a monoid such that `d` contains `c`, `d`'s quotient
-    map induces a homomorphism from the quotient by `c` to the quotient by `d`. -/
+map induces a homomorphism from the quotient by `c` to the quotient by `d`. -/
 @[to_additive "Given additive congruence relations `c, d` on an `AddMonoid` such that `d`
 contains `c`, `d`'s quotient map induces a homomorphism from the quotient by `c` to the quotient
 by `d`."]
@@ -308,8 +308,7 @@ def map (c d : Con M) (h : c ≤ d) : c.Quotient →* d.Quotient :=
   (c.lift d.mk') fun x y hc => show (ker d.mk') x y from (mk'_ker d).symm ▸ h hc
 
 /-- Given congruence relations `c, d` on a monoid such that `d` contains `c`, the definition of
-    the homomorphism from the quotient by `c` to the quotient by `d` induced by `d`'s quotient
-    map. -/
+the homomorphism from the quotient by `c` to the quotient by `d` induced by `d`'s quotient map. -/
 @[to_additive "Given additive congruence relations `c, d` on an `AddMonoid` such that `d`
 contains `c`, the definition of the homomorphism from the quotient by `c` to the quotient by `d`
 induced by `d`'s quotient map."]

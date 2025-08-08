@@ -263,7 +263,7 @@ theorem mem_of_mem_cons_of_ne {s : Finset α} {a : α} {has} {i : α}
 
 theorem forall_mem_cons (h : a ∉ s) (p : α → Prop) :
     (∀ x, x ∈ cons a s h → p x) ↔ p a ∧ ∀ x, x ∈ s → p x := by
-  simp only [mem_cons, or_imp, forall_and, forall_eq]
+  grind
 
 /-- Useful in proofs by induction. -/
 theorem forall_of_forall_cons {p : α → Prop} {h : a ∉ s} (H : ∀ x, x ∈ cons a s h → p x) (x)
