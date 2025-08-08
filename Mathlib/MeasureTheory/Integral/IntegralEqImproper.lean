@@ -85,14 +85,13 @@ section AECover
 variable {α ι : Type*} [MeasurableSpace α] (μ : Measure α) (l : Filter ι)
 
 /-- A sequence `φ` of subsets of `α` is a `MeasureTheory.AECover` w.r.t. a measure `μ` and a filter
-    `l` if almost every point (w.r.t. `μ`) of `α` eventually belongs to `φ n` (w.r.t. `l`), and if
-    each `φ n` is measurable.  This definition is a technical way to avoid duplicating a lot of
-    proofs.  It should be thought of as a sufficient condition for being able to interpret
-    `∫ x, f x ∂μ` (if it exists) as the limit of `∫ x in φ n, f x ∂μ` as `n` tends to `l`.
-
-    See for example `MeasureTheory.AECover.lintegral_tendsto_of_countably_generated`,
-    `MeasureTheory.AECover.integrable_of_integral_norm_tendsto` and
-    `MeasureTheory.AECover.integral_tendsto_of_countably_generated`. -/
+`l` if almost every point (w.r.t. `μ`) of `α` eventually belongs to `φ n` (w.r.t. `l`), and if
+each `φ n` is measurable.  This definition is a technical way to avoid duplicating a lot of
+proofs.  It should be thought of as a sufficient condition for being able to interpret
+`∫ x, f x ∂μ` (if it exists) as the limit of `∫ x in φ n, f x ∂μ` as `n` tends to `l`.
+See for example `MeasureTheory.AECover.lintegral_tendsto_of_countably_generated`,
+`MeasureTheory.AECover.integrable_of_integral_norm_tendsto` and
+`MeasureTheory.AECover.integral_tendsto_of_countably_generated`. -/
 structure AECover (φ : ι → Set α) : Prop where
   ae_eventually_mem : ∀ᵐ x ∂μ, ∀ᶠ i in l, x ∈ φ i
   protected measurableSet : ∀ i, MeasurableSet <| φ i
@@ -486,8 +485,7 @@ theorem AECover.integral_tendsto_of_countably_generated [l.IsCountablyGenerated]
     (Eventually.of_forall fun _ => ae_of_all _ fun _ => norm_indicator_le_norm_self _ _) hfi.norm
     (hφ.ae_tendsto_indicator f)
 
-/-- Slight reformulation of
-    `MeasureTheory.AECover.integral_tendsto_of_countably_generated`. -/
+/-- Slight reformulation of `MeasureTheory.AECover.integral_tendsto_of_countably_generated`. -/
 theorem AECover.integral_eq_of_tendsto [l.NeBot] [l.IsCountablyGenerated] {φ : ι → Set α}
     (hφ : AECover μ l φ) {f : α → E} (I : E) (hfi : Integrable f μ)
     (h : Tendsto (fun n => ∫ x in φ n, f x ∂μ) l (𝓝 I)) : ∫ x, f x ∂μ = I :=
@@ -1044,8 +1042,8 @@ theorem integral_comp_smul_deriv_Ioi {f f' : ℝ → ℝ} {g : ℝ → E} {a : �
     have i2 : [[a, b]] ⊆ Ici a := by rw [uIcc_of_le hb.le]; exact Icc_subset_Ici_self
     refine
       intervalIntegral.integral_comp_smul_deriv''' (hf.mono i2)
-        (fun x hx => hff' x <| mem_of_mem_of_subset hx i1) (hg_cont.mono <| image_subset _ ?_)
-        (hg1.mono_set <| image_subset _ ?_) (hg2.mono_set i2) <;> assumption
+        (fun x hx => hff' x <| mem_of_mem_of_subset hx i1) (hg_cont.mono <| image_mono ?_)
+        (hg1.mono_set <| image_mono ?_) (hg2.mono_set i2) <;> assumption
   rw [integrableOn_Ici_iff_integrableOn_Ioi] at hg2
   have t2 := intervalIntegral_tendsto_integral_Ioi _ hg2 tendsto_id
   have : Ioi (f a) ⊆ f '' Ici a :=

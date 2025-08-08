@@ -82,7 +82,7 @@ theorem imo2008_q4 (f : ℝ → ℝ) (H₁ : ∀ x > 0, f x > 0) :
   · rw [hab₁, div_left_inj' h2ab_ne_0] at H₂
     field_simp at H₂
     have hb₁ : b ^ 4 = 1 := by linear_combination -H₂
-    obtain hb₂ := abs_eq_one_of_pow_eq_one b 4 (show 4 ≠ 0 by norm_num) hb₁
+    obtain hb₂ := abs_eq_one_of_pow_eq_one b 4 (show 4 ≠ 0 by simp) hb₁
     rw [abs_of_pos hb] at hb₂; rw [hb₂] at hfb₁; exact hfb₁ h₁
   -- f(ab) = 1/ab → a^4 = 1 → a = 1 → f(a) = 1/a → false
   · have hb_ne_0 : b ≠ 0 := ne_of_gt hb
@@ -90,5 +90,5 @@ theorem imo2008_q4 (f : ℝ → ℝ) (H₁ : ∀ x > 0, f x > 0) :
     have H₃ : 2 * b ^ 4 * (a ^ 4 - 1) = 0 := by linear_combination H₂
     have h2b4_ne_0 : 2 * b ^ 4 ≠ 0 := mul_ne_zero two_ne_zero (pow_ne_zero 4 hb_ne_0)
     have ha₁ : a ^ 4 = 1 := by simpa [sub_eq_zero, h2b4_ne_0, hb_ne_0] using H₃
-    obtain ha₂ := abs_eq_one_of_pow_eq_one a 4 (show 4 ≠ 0 by norm_num) ha₁
+    obtain ha₂ := abs_eq_one_of_pow_eq_one a 4 (show 4 ≠ 0 by simp) ha₁
     rw [abs_of_pos ha] at ha₂; rw [ha₂] at hfa₁; norm_num at hfa₁; contradiction
