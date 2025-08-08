@@ -3,7 +3,6 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Data.Bool.Basic
 import Mathlib.Data.FunLike.Equiv
 import Mathlib.Data.Quot
 import Mathlib.Data.Subtype
@@ -413,8 +412,6 @@ def ofUnique (α β : Sort _) [Unique.{u} α] [Unique.{v} β] : α ≃ β where
   left_inv _ := Subsingleton.elim _ _
   right_inv _ := Subsingleton.elim _ _
 
-@[deprecated (since := "2024-12-26")] alias equivOfUnique := ofUnique
-
 /-- If `α` has a unique element, then it is equivalent to any `PUnit`. -/
 @[simps!]
 def equivPUnit (α : Sort u) [Unique α] : α ≃ PUnit.{v} := ofUnique α _
@@ -531,8 +528,8 @@ def punitEquivPUnit : PUnit.{v} ≃ PUnit.{w} :=
 noncomputable def propEquivBool : Prop ≃ Bool where
   toFun p := @decide p (Classical.propDecidable _)
   invFun b := b
-  left_inv p := by simp [@Bool.decide_iff p (Classical.propDecidable _)]
-  right_inv b := by cases b <;> simp
+  left_inv p := by simp
+  right_inv b := by simp
 
 section
 
