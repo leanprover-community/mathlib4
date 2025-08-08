@@ -240,13 +240,13 @@ theorem getLast?_flatten_replicate {n : ℕ} (h : n ≠ 0) (l : List α) :
 instance decidableExReplicate [DecidableEq α] :
     (l : List α) → Decidable (∃ n, ∃ (_ : 0 < n), ∃ a, l = replicate n a)
 | nil => .isFalse (by simp_all)
-| cons head tail => if h : ∀ x ∈ tail, x = head then
-    .isTrue ⟨tail.length + 1, zero_lt_succ tail.length, head,
-      congrArg (cons head) (List.eq_replicate_of_mem h)⟩
-  else .isFalse (fun ⟨n, hn, a, ha⟩ ↦ by
-    obtain ⟨j, rfl⟩ := Nat.exists_add_one_eq.mpr hn
-    obtain rfl := tail_eq_of_cons_eq ha
-    exact (show a ≠ head by simp_all) (List.head_eq_of_cons_eq ha).symm)
+| cons head tail => decidable_of_iff (∀ x ∈ tail, x = head) (by
+  refine ⟨fun h ↦ ⟨_, zero_lt_succ _, head, congrArg _ (List.eq_replicate_of_mem h)⟩,
+    fun ⟨n, hn, a, h⟩ x hx ↦ ?_⟩
+  obtain ⟨j, rfl⟩ := Nat.exists_add_one_eq.mpr hn
+  rw [tail_eq_of_cons_eq h] at hx
+  rw [List.eq_of_mem_replicate hx]
+  exact (List.head_eq_of_cons_eq h).symm)
 
 /-! ### pure -/
 
