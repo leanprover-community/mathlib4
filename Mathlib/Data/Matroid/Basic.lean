@@ -197,10 +197,10 @@ structure Matroid (α : Type*) where
   /-- There is at least one `Base`. -/
   (exists_isBase : ∃ B, IsBase B)
   /-- For any bases `B`, `B'` and `e ∈ B \ B'`, there is some `f ∈ B' \ B` for which `B-e+f`
-    is a base. -/
+  is a base. -/
   (isBase_exchange : Matroid.ExchangeProperty IsBase)
   /-- Every independent subset `I` of a set `X` for is contained in a maximal independent
-    subset of `X`. -/
+  subset of `X`. -/
   (maximality : ∀ X, X ⊆ E → Matroid.ExistsMaximalSubsetProperty Indep X)
   /-- Every base is contained in the ground set. -/
   (subset_ground : ∀ B, IsBase B → B ⊆ E)
@@ -387,7 +387,7 @@ theorem IsBase.subset_ground (hB : M.IsBase B) : B ⊆ M.E :=
   M.subset_ground B hB
 
 theorem IsBase.exchange {e : α} (hB₁ : M.IsBase B₁) (hB₂ : M.IsBase B₂) (hx : e ∈ B₁ \ B₂) :
-    ∃ y ∈ B₂ \ B₁, M.IsBase (insert y (B₁ \ {e}))  :=
+    ∃ y ∈ B₂ \ B₁, M.IsBase (insert y (B₁ \ {e})) :=
   M.isBase_exchange B₁ B₂ hB₁ hB₂ _ hx
 
 theorem IsBase.exchange_mem {e : α}
@@ -491,8 +491,6 @@ theorem ext_isBase {M₁ M₂ : Matroid α} (hE : M₁.E = M₂.E)
     fun B ↦ ⟨fun hB ↦ (h hB.subset_ground).1 hB,
       fun hB ↦ (h <| hB.subset_ground.trans_eq hE.symm).2 hB⟩
   ext <;> simp [hE, M₁.indep_iff', M₂.indep_iff', h']
-
-@[deprecated (since := "2024-12-25")] alias eq_of_isBase_iff_isBase_forall := ext_isBase
 
 theorem ext_iff_isBase {M₁ M₂ : Matroid α} :
     M₁ = M₂ ↔ M₁.E = M₂.E ∧ ∀ ⦃B⦄, B ⊆ M₁.E → (M₁.IsBase B ↔ M₂.IsBase B) :=
@@ -715,13 +713,9 @@ theorem IsBase.exists_insert_of_ssubset (hB : M.IsBase B) (hIB : I ⊂ B) (hB' :
       (fun hi ↦ hI (hi.subset_ground.trans_eq hE.symm))
   ext_isBase hE (fun B _ ↦ by simp_rw [isBase_iff_maximal_indep, h'])
 
-@[deprecated (since := "2024-12-25")] alias eq_of_indep_iff_indep_forall := ext_indep
-
 theorem ext_iff_indep {M₁ M₂ : Matroid α} :
     M₁ = M₂ ↔ (M₁.E = M₂.E) ∧ ∀ ⦃I⦄, I ⊆ M₁.E → (M₁.Indep I ↔ M₂.Indep I) :=
   ⟨fun h ↦ by (subst h; simp), fun h ↦ ext_indep h.1 h.2⟩
-
-@[deprecated (since := "2024-12-25")] alias eq_iff_indep_iff_indep_forall := ext_iff_indep
 
 /-- If every base of `M₁` is independent in `M₂` and vice versa, then `M₁ = M₂`. -/
 lemma ext_isBase_indep {M₁ M₂ : Matroid α} (hE : M₁.E = M₂.E)
