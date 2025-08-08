@@ -6,7 +6,6 @@ Authors: Yoh Tanimoto, Oliver Butterley
 import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Basic
 import Mathlib.MeasureTheory.Integral.Bochner.Set
 import Mathlib.Order.Interval.Set.Union
-import Mathlib.Algebra.Order.Module.PositiveLinearMap
 
 /-!
 # Riesz–Markov–Kakutani representation theorem for real-linear functionals
@@ -61,7 +60,7 @@ lemma le_rieszMeasure_tsupport_subset {f : C_c(X, ℝ)} (hf : ∀ (x : X), 0 ≤
   have := Content.measure_eq_content_of_regular (rieszContent (toNNRealLinear Λ))
     (contentRegular_rieszContent (toNNRealLinear Λ)) (⟨tsupport f, f.hasCompactSupport⟩)
   rw [← Compacts.coe_mk (tsupport f) f.hasCompactSupport, rieszMeasure, this, rieszContent,
-    ENNReal.ofReal_eq_coe_nnreal (map_nonneg Λ fun x ↦ (hf x).1), Content.mk_apply,
+    ENNReal.ofReal_eq_coe_nnreal (Λ.map_nonneg fun x ↦ (hf x).1), Content.mk_apply,
     ENNReal.coe_le_coe]
   apply le_iff_forall_pos_le_add.mpr
   intro _ hε
@@ -82,7 +81,7 @@ lemma rieszMeasure_le_of_eq_one {f : C_c(X, ℝ)} (hf : ∀ x, 0 ≤ f x) {K : S
   apply ENNReal.coe_le_iff.mpr
   intro p hp
   rw [← ENNReal.ofReal_coe_nnreal,
-    ENNReal.ofReal_eq_ofReal_iff (map_nonneg Λ hf) NNReal.zero_le_coe] at hp
+    ENNReal.ofReal_eq_ofReal_iff (Λ.map_nonneg hf) NNReal.zero_le_coe] at hp
   apply csInf_le'
   rw [Set.mem_image]
   use f.nnrealPart
@@ -278,7 +277,7 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
     rw [← map_sum Λ g _]
     have h x : 0 ≤ (∑ n, g n) x := by simpa using Fintype.sum_nonneg fun n ↦ (hg.2.2.1 n x).1
     apply ENNReal.toReal_le_of_le_ofReal
-    · exact map_nonneg Λ (fun x ↦ h x)
+    · exact Λ.map_nonneg (fun x ↦ h x)
     · have h' x (hx : x ∈ K) : (∑ n, g n) x = 1 := by simp [hg.2.1 hx]
       refine rieszMeasure_le_of_eq_one Λ h f.2 h'
   · -- Rearrange the sums
@@ -334,8 +333,7 @@ theorem integral_rieszMeasure (f : C_c(X, ℝ)) : ∫ x, f x ∂(rieszMeasure Λ
   · calc
       _ = - ∫ x, (-f) x ∂(rieszMeasure Λ) := by simpa using integral_neg' (-f)
       _ ≤ - Λ (-f) := neg_le_neg (integral_riesz_aux Λ (-f))
-      _ = Λ (- -f) := Eq.symm (LinearMap.map_neg Λ.toLinearMap (- f))
-      _ = _ := by rw [neg_neg]
+      _ = _ := by simp
   -- prove the inequality for `f`
   · exact integral_riesz_aux Λ f
 
