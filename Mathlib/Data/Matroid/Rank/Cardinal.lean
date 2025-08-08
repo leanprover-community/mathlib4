@@ -27,7 +27,7 @@ both for itself and all its minors.
 * `Matroid.cRank M` is the supremum of the cardinalities of the bases of matroid `M`.
 * `Matroid.cRk M X` is the supremum of the cardinalities of the bases of a set `X` in a matroid `M`.
 * `invariantCardinalRank_of_finitary` is the instance
-   showing that `Finitary` matroids are `InvariantCardinalRank`.
+  showing that `Finitary` matroids are `InvariantCardinalRank`.
 * `cRk_inter_add_cRk_union_le` states that cardinal rank is submodular.
 
 # Notes
