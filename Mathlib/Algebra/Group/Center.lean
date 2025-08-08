@@ -186,6 +186,24 @@ theorem prod_centralizer_subset_centralizer_prod {N : Type*} [Mul N] (S : Set M)
   simp only [mem_prod, and_imp, Prod.forall, mem_centralizer_iff, Prod.mk_mul_mk, Prod.mk.injEq]
   exact fun a b ha hb c d hc hd => ⟨ha c hc, hb d hd⟩
 
+open Function in
+@[to_additive addCenter_pi]
+theorem center_pi {ι : Type*} {A : ι → Type*} [Π i, Mul (A i)] :
+    center (Π i, A i) = univ.pi (fun i => center (A i)) := by
+  classical
+  ext x
+  simp only [mem_pi, mem_center_iff, isMulCentral_iff, mem_univ, forall_true_left,
+    commute_iff_eq, funext_iff, Pi.mul_def]
+  exact ⟨
+    fun ⟨h1, h2, h3⟩ i => ⟨
+      fun a => by simpa using h1 (update x i a) i,
+      fun b c => by simpa using h2 (update x i b) (update x i c) i,
+      fun a b => by simpa using h3 (update x i a) (update x i b) i⟩,
+    fun h => ⟨
+      fun a i => (h i).1 (a i),
+      fun b c i => (h i).2.1 (b i) (c i),
+      fun a b i => (h i).2.2 (a i) (b i)⟩⟩
+
 end Mul
 
 section Semigroup
