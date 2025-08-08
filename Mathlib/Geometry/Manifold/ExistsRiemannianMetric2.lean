@@ -157,26 +157,47 @@ lemma convex_condition (x : B) : Convex ℝ (condition E x) :=
 
 variable [FiniteDimensional ℝ EB] [IsManifold IB ∞ B] [SigmaCompactSpace B] [T2Space B]
 
+-- The following results are extracted from `LocalFrame.lean` in #26221.
 section extend
 
--- copy-paste extend from my branch and its smoothness; sorry those, then use them!
+-- TODO: generalise to any bundle, not just E!
 
--- Copied from #26221 (in `LocalFrame.lean`)
-noncomputable def localExtensionOn {ι : Type*} (b : Module.Basis ι ℝ F)
-    (e : Trivialization F (TotalSpace.proj : TotalSpace F E → B)) [MemTrivializationAtlas e]
-    (x : B) (v : E x) : (x' : B) → E x' :=
+open Module
+
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I 0 M]
+
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  -- `F` model fiber
+  (n : WithTop ℕ∞)
+  {V : M → Type*} [TopologicalSpace (TotalSpace F V)]
+  [∀ x, AddCommGroup (V x)] [∀ x, Module 𝕜 (V x)]
+  [∀ x : M, TopologicalSpace (V x)]
+  -- not needed in this file
+  -- [∀ x, IsTopologicalAddGroup (V x)] [∀ x, ContinuousSMul 𝕜 (V x)]
+  [FiberBundle F V] [VectorBundle 𝕜 F V] [ContMDiffVectorBundle n F V I]
+  -- `V` vector bundle
+
+variable {ι : Type*} --[Fintype ι] --{b : Basis ι 𝕜 F}
+  --{e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
+  --[MemTrivializationAtlas e] {x : M}
+
+noncomputable def localExtensionOn (b : Basis ι 𝕜 F)
+    (e : Trivialization F (TotalSpace.proj : TotalSpace F V → M)) [MemTrivializationAtlas e]
+    (x : M) (v : V x) : (x' : M) → V x' :=
   sorry
 
+variable (F) in
+lemma contMDiffOn_localExtensionOn [FiniteDimensional 𝕜 F] {ι : Type*} (b : Module.Basis ι 𝕜 F)
+    (e : Trivialization F (TotalSpace.proj : TotalSpace F V → M)) [MemTrivializationAtlas e]
+    {x : M} (hx : x ∈ e.baseSet) (v : V x) :
+    sorry := by--ContMDiffOn IB (IB.prod 𝓘(ℝ, F →L[ℝ] F →L[ℝ] ℝ)) n
+      --(fun x' ↦ TotalSpace.mk' F x' (localExtensionOn b e x v x')) [e.baseSet] := by
+  sorry
 
--- variable (F) in
--- --omit [IsManifold I 0 M] in
--- lemma contMDiffOn_localExtensionOn [FiniteDimensional ℝ F] {ι : Type*} (b : Module.Basis ι ℝ F)
---     (e : Trivialization F (TotalSpace.proj : TotalSpace F E → B)) [MemTrivializationAtlas e]
---     {x : B} (hx : x ∈ e.baseSet) (v : E x) :
---     ContMDiffOn IB (IB.prod 𝓘(ℝ, F →L[ℝ] F →L[ℝ] ℝ)) n
---       (fun x' ↦ TotalSpace.mk' F x' (localExtensionOn b e x v x')) [e.baseSet] := by
---   sorry
-
+#exit
 end extend
 
 -- TODO: construct a local section which is smooth in my coords,
