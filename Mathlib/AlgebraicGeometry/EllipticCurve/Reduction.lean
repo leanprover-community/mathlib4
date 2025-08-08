@@ -5,7 +5,6 @@ Authors: Bryan Wang
 -/
 import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
-import Mathlib.RingTheory.DiscreteValuationRing.TFAE
 import Mathlib.RingTheory.Valuation.Discrete.Basic
 
 /-!
