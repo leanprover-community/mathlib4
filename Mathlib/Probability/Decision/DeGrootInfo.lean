@@ -39,9 +39,9 @@ def deGrootInfo (μ ν : Measure 𝓧) (π : Measure Bool) : ℝ≥0∞ :=
   bayesBinaryRisk (Kernel.discard 𝓧 ∘ₘ μ) (Kernel.discard 𝓧 ∘ₘ ν) π - bayesBinaryRisk μ ν π
 
 lemma deGrootInfo_eq_riskIncrease :
-  deGrootInfo μ ν π = riskIncrease binaryLoss (boolKernel μ ν) π := by
+  deGrootInfo μ ν π = riskIncrease binaryLoss (Kernel.boolKernel μ ν) π := by
   simp only [deGrootInfo, Measure.discard_comp, riskIncrease, Kernel.comp_discard',
-    boolKernel_apply, bayesBinaryRisk]
+    Kernel.boolKernel_apply, bayesBinaryRisk]
   congr with a
   cases a <;> simp
 
@@ -78,8 +78,8 @@ lemma deGrootInfo_of_measure_false_eq_zero (μ ν : Measure 𝓧) (hπ : π {fal
 /-- **Data processing inequality** for the statistical information. -/
 lemma deGrootInfo_comp_le (μ ν : Measure 𝓧) (π : Measure Bool) (η : Kernel 𝓧 𝓨) [IsMarkovKernel η] :
     deGrootInfo (η ∘ₘ μ) (η ∘ₘ ν) π ≤ deGrootInfo μ ν π := by
-  simp_rw [deGrootInfo_eq_riskIncrease, ← comp_boolKernel]
-  exact riskIncrease_comp_le binaryLoss (boolKernel μ ν) π η
+  simp_rw [deGrootInfo_eq_riskIncrease, ← Kernel.comp_boolKernel]
+  exact riskIncrease_comp_le binaryLoss (Kernel.boolKernel μ ν) π η
 
 lemma deGrootInfo_eq_deGrootInfo_one_one :
     deGrootInfo μ ν π = deGrootInfo (π {false} • μ) (π {true} • ν) (Bool.boolMeasure 1 1) := by
@@ -107,8 +107,8 @@ lemma deGrootInfo_boolMeasure_le_deGrootInfo {E : Set 𝓧} (hE : MeasurableSet 
 lemma deGrootInfo_eq_min_sub_lintegral (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     (π : Measure Bool) [IsFiniteMeasure π] :
     deGrootInfo μ ν π = min (π {false} * μ univ) (π {true} * ν univ)
-      - ∫⁻ x, min (π {false} * μ.rnDeriv (boolKernel μ ν ∘ₘ π) x)
-      (π {true} * ν.rnDeriv (boolKernel μ ν ∘ₘ π) x) ∂(boolKernel μ ν ∘ₘ π) := by
+      - ∫⁻ x, min (π {false} * μ.rnDeriv (Kernel.boolKernel μ ν ∘ₘ π) x)
+      (π {true} * ν.rnDeriv (Kernel.boolKernel μ ν ∘ₘ π) x) ∂(Kernel.boolKernel μ ν ∘ₘ π) := by
   rw [deGrootInfo_eq_min_sub, bayesBinaryRisk_eq_lintegral_min]
 
 lemma deGrootInfo_eq_min_sub_lintegral' {ζ : Measure 𝓧} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
@@ -119,11 +119,11 @@ lemma deGrootInfo_eq_min_sub_lintegral' {ζ : Measure 𝓧} [IsFiniteMeasure μ]
   · simp [deGrootInfo, h_false, bayesBinaryRisk_of_measure_false_eq_zero]
   by_cases h_true : π {true} = 0
   · simp [deGrootInfo, h_true, bayesBinaryRisk_of_measure_true_eq_zero]
-  have hμac : μ ≪ (boolKernel μ ν ∘ₘ π) :=
+  have hμac : μ ≪ (Kernel.boolKernel μ ν ∘ₘ π) :=
     absolutelyContinuous_boolKernel_comp_measure_left μ ν h_false
-  have hνac : ν ≪ (boolKernel μ ν ∘ₘ π) :=
+  have hνac : ν ≪ (Kernel.boolKernel μ ν ∘ₘ π) :=
     absolutelyContinuous_boolKernel_comp_measure_right μ ν h_true
-  have hacζ : (boolKernel μ ν ∘ₘ π) ≪ ζ :=
+  have hacζ : (Kernel.boolKernel μ ν ∘ₘ π) ≪ ζ :=
     boolKernel_comp_measure μ ν π ▸ (hνζ.smul_left _).add_left (hμζ.smul_left _)
   rw [deGrootInfo_eq_min_sub_lintegral, ← lintegral_rnDeriv_mul hacζ (by fun_prop)]
   congr 1

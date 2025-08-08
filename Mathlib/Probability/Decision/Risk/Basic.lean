@@ -24,7 +24,7 @@ Data-processing inequalities: if we compose the data generating kernel `P` with 
 
 -/
 
-open MeasureTheory
+open MeasureTheory Function
 open scoped ENNReal NNReal
 
 namespace ProbabilityTheory
@@ -39,7 +39,7 @@ lemma bayesianRisk_const_left (ℓ : Θ → 𝓨 → ℝ≥0∞) (μ : Measure �
     bayesianRisk ℓ (Kernel.const Θ μ) κ π = ∫⁻ θ, ∫⁻ y, ℓ θ y ∂(κ ∘ₘ μ) ∂π := by
   simp [bayesianRisk]
 
-lemma bayesianRisk_const_left' (hl : Measurable (Function.uncurry ℓ)) (μ : Measure 𝓧) [SFinite μ]
+lemma bayesianRisk_const_left' (hl : Measurable (uncurry ℓ)) (μ : Measure 𝓧) [SFinite μ]
     (κ : Kernel 𝓧 𝓨) [IsSFiniteKernel κ] (π : Measure Θ) [SFinite π] :
     bayesianRisk ℓ (Kernel.const Θ μ) κ π = ∫⁻ y, ∫⁻ θ, ℓ θ y ∂π ∂(κ ∘ₘ μ) := by
   rw [bayesianRisk_const_left, lintegral_lintegral_swap (by fun_prop)]
@@ -48,7 +48,7 @@ lemma bayesianRisk_const_right (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ
     bayesianRisk ℓ P (Kernel.const 𝓧 ν) π = ∫⁻ θ, P θ .univ * ∫⁻ y, ℓ θ y ∂ν ∂π := by
   simp [bayesianRisk, Kernel.const_comp]
 
-lemma bayesRiskPrior_le_inf' (hl : Measurable (Function.uncurry ℓ)) (P : Kernel Θ 𝓧)
+lemma bayesRiskPrior_le_inf' (hl : Measurable (uncurry ℓ)) (P : Kernel Θ 𝓧)
     (π : Measure Θ) :
     bayesRiskPrior ℓ P π ≤ ⨅ y : 𝓨, ∫⁻ θ, ℓ θ y * P θ .univ ∂π := by
   simp_rw [le_iInf_iff, bayesRiskPrior]
@@ -57,12 +57,12 @@ lemma bayesRiskPrior_le_inf' (hl : Measurable (Function.uncurry ℓ)) (P : Kerne
   gcongr with θ
   rw [lintegral_dirac' _ (by fun_prop)]
 
-lemma bayesRiskPrior_le_inf (hl : Measurable (Function.uncurry ℓ)) (P : Kernel Θ 𝓧)
+lemma bayesRiskPrior_le_inf (hl : Measurable (uncurry ℓ)) (P : Kernel Θ 𝓧)
     (π : Measure Θ) [IsMarkovKernel P] :
     bayesRiskPrior ℓ P π ≤ ⨅ y : 𝓨, ∫⁻ θ, ℓ θ y ∂π :=
   (bayesRiskPrior_le_inf' hl P π).trans_eq (by simp)
 
-lemma bayesRiskPrior_lt_top [Nonempty 𝓨] (hl : Measurable (Function.uncurry ℓ)) (P : Kernel Θ 𝓧)
+lemma bayesRiskPrior_lt_top [Nonempty 𝓨] (hl : Measurable (uncurry ℓ)) (P : Kernel Θ 𝓧)
     [IsFiniteKernel P] (π : Measure Θ) [IsFiniteMeasure π] {C : ℝ≥0} (hℓC : ∀ θ y, ℓ θ y ≤ C) :
     bayesRiskPrior ℓ P π < ∞ := by
   refine (bayesRiskPrior_le_inf' hl P π).trans_lt ?_
@@ -75,7 +75,7 @@ lemma bayesRiskPrior_lt_top [Nonempty 𝓨] (hl : Measurable (Function.uncurry �
     · exact Kernel.measure_le_bound P θ Set.univ
   _ < ⊤ := by simp [ENNReal.mul_lt_top_iff, IsFiniteKernel.bound_lt_top P]
 
-lemma bayesRiskPrior_const''' (hl : Measurable (Function.uncurry ℓ))
+lemma bayesRiskPrior_const''' (hl : Measurable (uncurry ℓ))
     (μ : Measure 𝓧) [SFinite μ] (π : Measure Θ) [SFinite π]
     (hl_pos : μ .univ = ∞ → ⨅ y, ∫⁻ θ, ℓ θ y ∂π = 0 → ∃ y, ∫⁻ θ, ℓ θ y ∂π = 0)
     (h_zero : μ = 0 → Nonempty 𝓨) :
@@ -92,24 +92,24 @@ lemma bayesRiskPrior_const''' (hl : Measurable (Function.uncurry ℓ))
     rw [lintegral_mul_const]
     fun_prop
 
-lemma bayesRiskPrior_const'' (hl : Measurable (Function.uncurry ℓ))
+lemma bayesRiskPrior_const'' (hl : Measurable (uncurry ℓ))
     (μ : Measure 𝓧) [NeZero μ] [IsFiniteMeasure μ] (π : Measure Θ) [SFinite π] :
     bayesRiskPrior ℓ (Kernel.const Θ μ) π = ⨅ y : 𝓨, ∫⁻ θ, ℓ θ y * μ .univ ∂π :=
   bayesRiskPrior_const''' hl μ π (by simp) (by simp [NeZero.out])
 
-lemma bayesRiskPrior_const' [Nonempty 𝓨] (hl : Measurable (Function.uncurry ℓ))
+lemma bayesRiskPrior_const' [Nonempty 𝓨] (hl : Measurable (uncurry ℓ))
     (μ : Measure 𝓧) [IsFiniteMeasure μ] (π : Measure Θ) [SFinite π] :
     bayesRiskPrior ℓ (Kernel.const Θ μ) π = ⨅ y : 𝓨, ∫⁻ θ, ℓ θ y * μ .univ ∂π :=
   bayesRiskPrior_const''' hl μ π (by simp) (fun _ ↦ inferInstance)
 
-lemma bayesRiskPrior_const (hl : Measurable (Function.uncurry ℓ))
+lemma bayesRiskPrior_const (hl : Measurable (uncurry ℓ))
     (μ : Measure 𝓧) [IsProbabilityMeasure μ] (π : Measure Θ) [SFinite π] :
     bayesRiskPrior ℓ (Kernel.const Θ μ) π = ⨅ y : 𝓨, ∫⁻ θ, ℓ θ y ∂π := by
   simp [bayesRiskPrior_const'' hl μ π]
 
 end Const
 
-lemma bayesRiskPrior_discard (hl : Measurable (Function.uncurry ℓ)) (π : Measure Θ) [SFinite π] :
+lemma bayesRiskPrior_discard (hl : Measurable (uncurry ℓ)) (π : Measure Θ) [SFinite π] :
     bayesRiskPrior ℓ (Kernel.discard Θ) π = ⨅ y : 𝓨, ∫⁻ θ, ℓ θ y ∂π := by
   have : Kernel.discard Θ = Kernel.const Θ (Measure.dirac ()) := by ext; simp
   rw [this, bayesRiskPrior_const hl]
@@ -134,7 +134,7 @@ lemma bayesRiskPrior_eq_iInf_measure_of_subsingleton [Subsingleton 𝓧] [Nonemp
   congr with μ
 
 lemma bayesRiskPrior_of_subsingleton [Subsingleton 𝓧] [Nonempty 𝓨] [SFinite π]
-    (hl : Measurable (Function.uncurry ℓ)) :
+    (hl : Measurable (uncurry ℓ)) :
     bayesRiskPrior ℓ P π = ⨅ y : 𝓨, ∫⁻ θ, ℓ θ y * P θ .univ ∂π := by
   refine le_antisymm (bayesRiskPrior_le_inf' hl _ _) ?_
   rw [bayesRiskPrior_eq_iInf_measure_of_subsingleton]
@@ -147,11 +147,11 @@ lemma bayesRiskPrior_of_subsingleton [Subsingleton 𝓧] [Nonempty 𝓨] [SFinit
     fun_prop
 
 lemma bayesRiskPrior_eq_bayesRiskPrior_discard_of_subsingleton [Subsingleton 𝓧] [Nonempty 𝓨]
-    [IsMarkovKernel P] [SFinite π] (hl : Measurable (Function.uncurry ℓ)) :
+    [IsMarkovKernel P] [SFinite π] (hl : Measurable (uncurry ℓ)) :
     bayesRiskPrior ℓ P π = bayesRiskPrior ℓ (Kernel.discard Θ) π := by
   simp [bayesRiskPrior_of_subsingleton hl]
 
-lemma bayesianRisk_withDensity (hl : Measurable (Function.uncurry ℓ))
+lemma bayesianRisk_withDensity (hl : Measurable (uncurry ℓ))
     (P : Kernel Θ 𝓧) [IsSFiniteKernel P] (κ : Kernel 𝓧 𝓨) [IsSFiniteKernel κ]
     (π : Measure Θ) [SFinite π] {f : Θ → ℝ≥0∞} (hf : Measurable f) :
     bayesianRisk ℓ (P.withDensity (fun θ _ ↦ f θ)) κ π = bayesianRisk ℓ P κ (π.withDensity f) := by
@@ -161,7 +161,7 @@ lemma bayesianRisk_withDensity (hl : Measurable (Function.uncurry ℓ))
   rw [Kernel.comp_apply, Kernel.withDensity_apply _ (by fun_prop), Pi.mul_apply, Kernel.comp_apply]
   simp
 
-lemma bayesRiskPrior_withDensity (hl : Measurable (Function.uncurry ℓ))
+lemma bayesRiskPrior_withDensity (hl : Measurable (uncurry ℓ))
     (P : Kernel Θ 𝓧) [IsSFiniteKernel P] (π : Measure Θ) [SFinite π]
     {f : Θ → ℝ≥0∞} (hf : Measurable f) :
     bayesRiskPrior ℓ (P.withDensity (fun θ _ ↦ f θ)) π = bayesRiskPrior ℓ P (π.withDensity f) := by
@@ -214,7 +214,7 @@ lemma bayesRiskPrior_compProd_le_bayesRiskPrior (ℓ : Θ → 𝓨 → ℝ≥0�
   conv_rhs => rw [this]
   exact bayesRiskPrior_le_bayesRiskPrior_comp _ _ _ _
 
-lemma bayesianRisk_comap_measurableEquiv (hl : Measurable (Function.uncurry ℓ)) (P : Kernel Θ 𝓧)
+lemma bayesianRisk_comap_measurableEquiv (hl : Measurable (uncurry ℓ)) (P : Kernel Θ 𝓧)
     [IsSFiniteKernel P] (κ : Kernel 𝓧 𝓨) [IsSFiniteKernel κ] (π : Measure Θ) (e : Θ' ≃ᵐ Θ) :
     bayesianRisk (fun θ ↦ ℓ (e θ)) (P.comap e e.measurable) κ (π.comap e)
       = bayesianRisk ℓ P κ π := by
@@ -226,7 +226,7 @@ lemma bayesianRisk_comap_measurableEquiv (hl : Measurable (Function.uncurry ℓ)
     simp [κ.comp_apply' _ _ hs, Kernel.comap_apply]
   · simp
 
-lemma bayesRiskPrior_comap_measurableEquiv (hl : Measurable (Function.uncurry ℓ)) (P : Kernel Θ 𝓧)
+lemma bayesRiskPrior_comap_measurableEquiv (hl : Measurable (uncurry ℓ)) (P : Kernel Θ 𝓧)
     [IsSFiniteKernel P] (π : Measure Θ) (e : Θ' ≃ᵐ Θ) :
     bayesRiskPrior (fun θ ↦ ℓ (e θ)) (P.comap e e.measurable) (π.comap e)
       = bayesRiskPrior ℓ P π := by
