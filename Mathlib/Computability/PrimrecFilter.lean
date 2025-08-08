@@ -106,13 +106,13 @@ variable {f : ℕ → ℕ → Prop} [DecidableRel f]
 
 /-- If `f a b` is decidable, then for any fixed `n` and `y`,  `"g n y ↔ ∃ x < n, f x y"` is a
 primitive recursive relation. -/
-lemma bounded_exists (hf : PrimrecRel f) : PrimrecRel fun n y ↦ ∃ x < n, f x y := by
+lemma exists_lt (hf : PrimrecRel f) : PrimrecRel fun n y ↦ ∃ x < n, f x y := by
   have h := comp (filterExists hf) (Primrec.comp list_range fst) snd
   exact PrimrecPred.of_eq h (by simp)
 
 /-- If `f a b` is decidable, then for any fixed `n` and `y`,  `"g n y ↔ ∀ x < n, f x y"` is a
 primitive recursive relation. -/
-lemma bounded_forall (hf : PrimrecRel f) : PrimrecRel fun n y ↦ ∀ x < n, f x y := by
+lemma forall_lt (hf : PrimrecRel f) : PrimrecRel fun n y ↦ ∀ x < n, f x y := by
   have h := comp (filterForall hf) (Primrec.comp list_range fst) snd
   exact PrimrecPred.of_eq h (by simp)
 
@@ -137,7 +137,7 @@ variable {f : ℕ → ℕ → Prop} (s : ℕ) [DecidableRel f]
 /-- If `f a b` is decidable, then for any fixed `n` and `y`, `"∃ x < n, f x y"` is a
 primitive recursive predicate in `n`. This is sometimes easier to work with than the fully
 general case involving a primitive recursive relation. -/
-lemma bounded_exists (hf : PrimrecRel f) : PrimrecPred fun n ↦ ∃ y < s, f y n := by
+lemma exists_lt (hf : PrimrecRel f) : PrimrecPred fun n ↦ ∃ y < s, f y n := by
   have h (n) : decide (∃ y < s, f y n) = decide ((List.range s).filter (f · n) ≠ []) := by simp
   simp only [PrimrecPred, h]
   exact not (PrimrecRel.comp Primrec.eq (nat_rel_list_filter _ hf) (const []))
@@ -145,7 +145,7 @@ lemma bounded_exists (hf : PrimrecRel f) : PrimrecPred fun n ↦ ∃ y < s, f y 
 /-- If `f a b` is decidable, then for any fixed `n` and `y`, `"∀ x < n, f x y"` is a
 primitive recursive predicate in `n`. This is sometimes easier to work with than the fully
 general case involving a primitive recursive relation. -/
-lemma bounded_forall (hf : PrimrecRel f) : PrimrecPred fun n ↦ ∀ y < s, f y n := by
+lemma forall_lt (hf : PrimrecRel f) : PrimrecPred fun n ↦ ∀ y < s, f y n := by
   have h (n) : decide (∀ y < s, f y n) = decide ((range s).filter (fun y ↦ f y n) = range s) := by
     simp
   simp only [PrimrecPred, h]
