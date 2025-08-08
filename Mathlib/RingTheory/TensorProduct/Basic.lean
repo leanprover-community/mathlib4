@@ -255,7 +255,8 @@ unseal mul in
 protected theorem mul_assoc (x y z : A ⊗[R] B) : mul (mul x y) z = mul x (mul y z) := by
   -- restate as an equality of morphisms so that we can use `ext`
   suffices LinearMap.llcomp R _ _ _ mul ∘ₗ mul =
-      (LinearMap.llcomp R _ _ _ LinearMap.lflip <| LinearMap.llcomp R _ _ _ mul.flip ∘ₗ mul).flip by
+      (LinearMap.llcomp R _ _ _ LinearMap.lflip.toLinearMap <|
+        LinearMap.llcomp R _ _ _ mul.flip ∘ₗ mul).flip by
     exact DFunLike.congr_fun (DFunLike.congr_fun (DFunLike.congr_fun this x) y) z
   ext xa xb ya yb za zb
   exact congr_arg₂ (· ⊗ₜ ·) (mul_assoc xa ya za) (mul_assoc xb yb zb)
@@ -1407,3 +1408,15 @@ lemma Algebra.TensorProduct.includeLeft_surjective
   TensorProduct.flip_mk_surjective _ h
 
 end
+
+variable {R A B : Type*} [CommSemiring R] [NonUnitalNonAssocSemiring A]
+  [NonUnitalNonAssocSemiring B] [Module R A] [Module R B] [SMulCommClass R A A]
+  [SMulCommClass R B B] [IsScalarTower R A A] [IsScalarTower R B B]
+
+lemma LinearMap.mulLeft_tmul (a : A) (b : B) :
+    mulLeft R (a ⊗ₜ[R] b) = map (mulLeft R a) (mulLeft R b) := by
+  ext; simp
+
+lemma LinearMap.mulRight_tmul (a : A) (b : B) :
+    mulRight R (a ⊗ₜ[R] b) = map (mulRight R a) (mulRight R b) := by
+  ext; simp
