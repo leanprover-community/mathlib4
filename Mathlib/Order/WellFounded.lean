@@ -18,7 +18,6 @@ and provide a few new definitions: `WellFounded.min`, `WellFounded.sup`, and `We
 and an induction principle `WellFounded.induction_bot`.
 -/
 
-
 theorem acc_def {α} {r : α → α → Prop} {a : α} : Acc r a ↔ ∀ b, r b a → Acc r b where
   mp h := h.rec fun _ h _ ↦ h
   mpr := .intro a

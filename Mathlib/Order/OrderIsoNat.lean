@@ -67,7 +67,7 @@ theorem not_acc_of_decreasing_seq (f : ((· > ·) : ℕ → ℕ → Prop) ↪r r
 
 /-- A strict order relation is well-founded iff it doesn't have any infinite decreasing sequence.
 
-See `wellFounded_iff_no_descending_seq` for a version which works on any relation. -/
+See `WellFounded.wellFounded_iff_no_descending_seq` for a version which works on any relation. -/
 theorem wellFounded_iff_no_descending_seq :
     WellFounded r ↔ IsEmpty (((· > ·) : ℕ → ℕ → Prop) ↪r r) where
   mp := fun ⟨h⟩ ↦ ⟨fun f ↦ not_acc_of_decreasing_seq f 0 (h _)⟩
