@@ -73,4 +73,59 @@ lemma measurePreserving_symm : MeasurePreserving symm volume volume where
       ← map_apply (by fun_prop) (measurableSet_Icc.subtype_image hs),
       volume.measurePreserving_sub_left 1 |>.map_eq, ← volume_apply]
 
+open Set
+
+variable (x : I)
+
+@[simp]
+lemma volume_Iic : volume (Iic x) = .ofReal x := by
+  simp only [volume_apply, image_subtype_val_Icc_Iic, Real.volume_Icc, sub_zero]
+
+@[simp]
+lemma volume_Iio : volume (Iio x) = .ofReal x := by
+  simp only [← volume_image_subtype_coe measurableSet_Icc, image_subtype_val_Icc_Iio,
+    Real.volume_Ico, sub_zero]
+
+@[simp]
+lemma volume_Ici : volume (Ici x) = .ofReal (1 - x) := by
+  simp only [volume_apply, image_subtype_val_Icc_Ici, Real.volume_Icc]
+
+@[simp]
+lemma volume_Ioi : volume (Ioi x) = .ofReal (1 - x) := by
+  simp only [volume_apply, image_subtype_val_Icc_Ioi, Real.volume_Ioc]
+
+variable (y : I)
+
+@[simp]
+lemma volume_Icc : volume (Icc x y) = .ofReal (y - x) := by
+  simp only [volume_apply, image_subtype_val_Icc, Real.volume_Icc]
+
+@[simp]
+lemma volume_uIcc : volume (uIcc x y) = edist y x := by
+  simp only [uIcc, volume_apply, image_subtype_val_Icc, Icc.coe_inf, Icc.coe_sup, Real.volume_Icc,
+    max_sub_min_eq_abs, edist_dist, Subtype.dist_eq, Real.dist_eq]
+
+@[simp]
+lemma volume_Ico : volume (Ico x y) = .ofReal (y - x) := by
+  simp only [volume_apply, image_subtype_val_Ico, Real.volume_Ico]
+
+@[simp]
+lemma volume_Ioc : volume (Ioc x y) = .ofReal (y - x) := by
+  simp only [volume_apply, image_subtype_val_Ioc, Real.volume_Ioc]
+
+@[simp]
+lemma volume_uIoc : volume (uIoc x y) = edist y x := by
+  simp only [uIoc, volume_apply, image_subtype_val_Ioc, Icc.coe_inf, Icc.coe_sup, Real.volume_Ioc,
+    max_sub_min_eq_abs, edist_dist, Subtype.dist_eq, Real.dist_eq]
+
+
+@[simp]
+lemma volume_Ioo : volume (Ioo x y) = .ofReal (y - x) := by
+  simp only [volume_apply, image_subtype_val_Ioo, Real.volume_Ioo]
+
+@[simp]
+lemma volume_uIoo : volume (uIoo x y) = edist y x := by
+  simp only [uIoo, volume_apply, image_subtype_val_Ioo, Icc.coe_inf, Icc.coe_sup, Real.volume_Ioo,
+    max_sub_min_eq_abs, edist_dist, Subtype.dist_eq, Real.dist_eq]
+
 end unitInterval
