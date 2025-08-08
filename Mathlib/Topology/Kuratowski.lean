@@ -52,20 +52,18 @@ variable {X : Type*} [TopologicalSpace X]
 -/
 inductive IsObtainable (s : Set X) : Set X → Prop
   | base : IsObtainable s s
-  | closure ⦃t : Set X⦄ : IsObtainable s t → IsObtainable s (closure t)
+  | protected closure ⦃t : Set X⦄ : IsObtainable s t → IsObtainable s (closure t)
   | complement ⦃t : Set X⦄ : IsObtainable s t → IsObtainable s tᶜ
 
-local notation "k" => closure
-local notation "i" => interior
+scoped notation "k" => closure
+scoped notation "i" => interior
 
 /-- The function `kckc` is idempotent: `kckckckc s = kckc s` for any set `s`.
 This is because `ckc = i` and `ki` is idempotent. -/
-theorem kckc_idem (s : Set X) : k (k (k (k sᶜ)ᶜ)ᶜ)ᶜ = k (k sᶜ)ᶜ := by
-  simp_rw [← interior_eq_compl_closure_compl, closure_interior_idem]
+theorem kckc_idem (s : Set X) : k (k (k (k sᶜ)ᶜ)ᶜ)ᶜ = k (k sᶜ)ᶜ := by simp
 
 /-- Cancelling the first applied complement we obtain `kckckck s = kck s` for any set `s`. -/
-theorem kckckck_eq_kck (s : Set X) : k (k (k (k s)ᶜ)ᶜ)ᶜ = k (k s)ᶜ := by
-  rw [← compl_compl s, kckc_idem]
+theorem kckckck_eq_kck (s : Set X) : k (k (k (k s)ᶜ)ᶜ)ᶜ = k (k s)ᶜ := by simp
 
 /-- The at most fourteen sets that are obtainable from `s` are given by applying
 `id, c, k, ck, kc, ckc, kck, ckck, kckc, ckckc, kckck, ckckck, kckckc, ckckckc` to `s`. -/
@@ -80,48 +78,28 @@ theorem card_theFourteen (s : Set X) : (theFourteen s).card = 14 := rfl
 /-- If `t` is obtainable from `s` by the closure and complement operations,
 then it is in the multiset `theFourteen s`. -/
 theorem IsObtainable.mem_theFourteen {s t : Set X} (h : IsObtainable s t) : t ∈ theFourteen s := by
-  induction' h with t ih mem t ih mem
-  -- Base case: `s` is obtainable from `s`, so `s` is in the multiset.
-  · exact .head _
-  /-
-  Show that if `t` is in the multiset `theFourteen s`,
-  then `k t` and `tᶜ` are also in the multiset.
-  For that we do repeated case bashing of very similar cases.
-  -/
-  -- First we introduce all cases as goals.
+  induction' h with _ _ mem _ _ mem
+  case base => exact .head _
   all_goals repeat obtain _ | ⟨_, mem⟩ := mem; rotate_left
-  -- Then we normalize the expressions after applying `k` or `ᶜ` to one of the fourteen sets.
-  any_goals first -- For `k t` cases:
-                  | rw [closure_closure]
-                  | rw [kckckck_eq_kck]
-                  -- For `tᶜ` cases:
-                  | rw [compl_compl]
-  /-
-  Now all goals are of the structure `a ∈ multiset`, where `a` is syntactically equal to an element.
-  To show that, we iterate over the elements of the list underlying the multiset.
-  -/
-  all_goals
-    repeat try exact .head _
-           apply List.Mem.tail
-    exact .head _
+  all_goals simp [theFourteen]
 
 /-- A set `t` is obtainable by from `s` if and only if they are in the Multiset `theFourteen s`. -/
 theorem mem_theFourteen_iff_isObtainable {s t : Set X} :
     t ∈ theFourteen s ↔ IsObtainable s t where
   mp h := by
-    repeat obtain _ | ⟨_, h⟩ := h; rotate_left
-    all_goals (repeat first | apply IsObtainable.complement
-                            | apply IsObtainable.closure)
-              apply IsObtainable.base
+    all_goals
+      repeat
+        first
+        | apply IsObtainable.complement
+        | apply IsObtainable.closure
+      exact IsObtainable.base
   mpr := (·.mem_theFourteen)
 
 /-- **Kuratowski's closure-complement theorem**: the number of obtainable sets via closure and
 complement operations from a single set `s` is at most 14. -/
 theorem ncard_isObtainable_le_fourteen (s : Set X) : {t | IsObtainable s t}.ncard ≤ 14 := by
   classical
-  rw [← card_theFourteen s]
-  refine Eq.trans_le ?_ (Multiset.toFinset_card_le _)
-  rw [← Set.ncard_coe_finset]
-  congr; ext; simp [mem_theFourteen_iff_isObtainable]
+  convert Set.ncard_coe_finset _ ▸ (theFourteen s).toFinset_card_le
+  simp [Set.ext_iff, mem_theFourteen_iff_isObtainable]
 
 end Topology.ClosureCompl

@@ -47,8 +47,6 @@ namespace Topology.ClosureCompl
 
 variable {X : Type*} [TopologicalSpace X] {s t : Set X}
 
-local notation "k" => closure
-local notation "i" => interior
 
 /-- The six closed sets obtained from a given set `s` are given by applying
 `k, kc, kck, kckc, kckck, kckckc` to `s`. -/
@@ -107,8 +105,9 @@ theorem nodup_theClosedSix_theFourteen_iff : (theClosedSix s).Nodup ↔ TheSixIn
   · intro h -- Introduce `TheSixIneq` as an assumption.
     repeat obtain ⟨_, h⟩ := h -- Split the hypothesis into six different inequalities.
     repeat refine .symm (.intro ?_ ?_) -- Split the goal into 15 inequalities.
-    any_goals rw [ne_comm]
-              try assumption
+    any_goals
+      rw [ne_comm]
+      try assumption
     -- Solve trivial goals (the six inequalities contained in `TheSixIneq`).
     any_goals
     /- Now eight other goals can be solved by simplifying
@@ -209,11 +208,11 @@ theorem nodup_theClosedSix_fourteenSet : (theClosedSix fourteenSet).Nodup := by
   rw [nodup_theClosedSix_theFourteen_iff, TheSixIneq, kckckc_fourteenSet, kckck_fourteenSet,
     kckc_fourteenSet, kck_fourteenSet, kc_fourteenSet, k_fourteenSet]
   refine ⟨(ne_of_mem_of_not_mem' (a := 1) ?_ ?_).symm,
-          (ne_of_mem_of_not_mem' (a := 1) ?_ ?_).symm,
-           ne_of_mem_of_not_mem' (a := 4.5) ?_ ?_,
-          (ne_of_mem_of_not_mem' (a := 1) ?_ ?_).symm,
-           ne_of_mem_of_not_mem' (a := 1) ?_ ?_,
-          (ne_of_mem_of_not_mem' (a := 3) ?_ ?_).symm⟩
+    (ne_of_mem_of_not_mem' (a := 1) ?_ ?_).symm,
+    ne_of_mem_of_not_mem' (a := 4.5) ?_ ?_,
+    (ne_of_mem_of_not_mem' (a := 1) ?_ ?_).symm,
+    ne_of_mem_of_not_mem' (a := 1) ?_ ?_,
+    (ne_of_mem_of_not_mem' (a := 3) ?_ ?_).symm⟩
   all_goals norm_num
 
 /-- No set from `theClosedSix fourteenSet` is empty. -/
