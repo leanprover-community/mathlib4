@@ -114,7 +114,7 @@ theorem MonoidHom.functions_ext [Finite I] (N : Type*) [CommMonoid N] (g h : (�
 /-- This is used as the ext lemma instead of `MonoidHom.functions_ext` for reasons explained in
 note [partially-applied ext lemmas]. -/
 @[to_additive (attr := ext)
-      "\nThis is used as the ext lemma instead of `AddMonoidHom.functions_ext` for reasons
+      "This is used as the ext lemma instead of `AddMonoidHom.functions_ext` for reasons
       explained in note [partially-applied ext lemmas]."]
 theorem MonoidHom.functions_ext' [Finite I] (N : Type*) [CommMonoid N] (g h : (∀ i, M i) →* N)
     (H : ∀ i, g.comp (MonoidHom.mulSingle M i) = h.comp (MonoidHom.mulSingle M i)) : g = h :=

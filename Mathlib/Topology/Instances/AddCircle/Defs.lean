@@ -303,7 +303,7 @@ theorem coe_image_Ioc_eq : ((↑) : 𝕜 → AddCircle p) '' Ioc a (a + p) = uni
 entire space. -/
 @[simp]
 theorem coe_image_Icc_eq : ((↑) : 𝕜 → AddCircle p) '' Icc a (a + p) = univ :=
-  eq_top_mono (image_subset _ Ico_subset_Icc_self) <| coe_image_Ico_eq _ _
+  eq_top_mono (image_mono Ico_subset_Icc_self) <| coe_image_Ico_eq _ _
 
 end LinearOrderedAddCommGroup
 

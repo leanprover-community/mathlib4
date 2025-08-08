@@ -6,7 +6,7 @@ Authors: Chris Hughes, Morenikeji Neri
 import Mathlib.Algebra.EuclideanDomain.Basic
 import Mathlib.Algebra.EuclideanDomain.Field
 import Mathlib.Algebra.GCDMonoid.Basic
-import Mathlib.RingTheory.Ideal.Maps
+import Mathlib.RingTheory.Ideal.Prod
 import Mathlib.RingTheory.Ideal.Nonunits
 import Mathlib.RingTheory.Noetherian.UniqueFactorizationDomain
 
@@ -47,7 +47,7 @@ open Submodule
 
 section
 
-variable [Semiring R] [AddCommGroup M] [Module R M]
+variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 instance bot_isPrincipal : (⊥ : Submodule R M).IsPrincipal :=
   ⟨⟨0, by simp⟩⟩
@@ -65,7 +65,7 @@ class IsBezout : Prop where
 instance (priority := 100) IsBezout.of_isPrincipalIdealRing [IsPrincipalIdealRing R] : IsBezout R :=
   ⟨fun I _ => IsPrincipalIdealRing.principal I⟩
 
-instance (priority := 100) DivisionRing.isPrincipalIdealRing (K : Type u) [DivisionRing K] :
+instance (priority := 100) DivisionSemiring.isPrincipalIdealRing (K : Type u) [DivisionSemiring K] :
     IsPrincipalIdealRing K where
   principal S := by
     rcases Ideal.eq_bot_or_top S with (rfl | rfl)
@@ -217,7 +217,7 @@ instance nonemptyGCDMonoid [IsBezout R] [IsDomain R] : Nonempty (GCDMonoid R) :=
 
 theorem associated_gcd_gcd [IsDomain R] [GCDMonoid R] :
     Associated (IsBezout.gcd x y) (GCDMonoid.gcd x y) :=
-  gcd_greatest_associated (gcd_dvd_left _ _ ) (gcd_dvd_right _ _) (fun _ => dvd_gcd)
+  gcd_greatest_associated (gcd_dvd_left _ _) (gcd_dvd_right _ _) (fun _ => dvd_gcd)
 
 end IsBezout
 
@@ -350,7 +350,7 @@ section Surjective
 
 open Submodule
 
-variable {S N F : Type*} [Ring R] [AddCommGroup M] [AddCommGroup N] [Ring S]
+variable {S N F : Type*} [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [Semiring S]
 variable [Module R M] [Module R N] [FunLike F R S] [RingHomClass F R S]
 
 theorem Submodule.IsPrincipal.map (f : M →ₗ[R] N) {S : Submodule R M}
@@ -378,6 +378,19 @@ theorem Ideal.IsPrincipal.of_comap (f : F) (hf : Function.Surjective f) (I : Ide
 theorem IsPrincipalIdealRing.of_surjective [IsPrincipalIdealRing R] (f : F)
     (hf : Function.Surjective f) : IsPrincipalIdealRing S :=
   ⟨fun I => Ideal.IsPrincipal.of_comap f hf I⟩
+
+instance [IsPrincipalIdealRing R] [IsPrincipalIdealRing S] : IsPrincipalIdealRing (R × S) where
+  principal I := by
+    rw [I.ideal_prod_eq, ← (I.map _).span_singleton_generator,
+      ← (I.map (RingHom.snd R S)).span_singleton_generator,
+      ← Ideal.span_prod (iff_of_true (by simp) (by simp)), Set.singleton_prod_singleton]
+    exact ⟨_, rfl⟩
+
+theorem isPrincipalIdealRing_prod_iff :
+    IsPrincipalIdealRing (R × S) ↔ IsPrincipalIdealRing R ∧ IsPrincipalIdealRing S where
+  mp h := ⟨h.of_surjective (RingHom.fst R S) Prod.fst_surjective,
+    h.of_surjective (RingHom.snd R S) Prod.snd_surjective⟩
+  mpr := fun ⟨_, _⟩ ↦ inferInstance
 
 end Surjective
 
@@ -407,18 +420,12 @@ theorem Irreducible.coprime_iff_not_dvd {p n : R} (hp : Irreducible p) :
 theorem Irreducible.dvd_iff_not_isCoprime {p n : R} (hp : Irreducible p) : p ∣ n ↔ ¬IsCoprime p n :=
   iff_not_comm.2 hp.coprime_iff_not_dvd
 
-@[deprecated (since := "2025-01-23")]
-alias Irreducible.dvd_iff_not_coprime := Irreducible.dvd_iff_not_isCoprime
-
 theorem Irreducible.coprime_pow_of_not_dvd {p a : R} (m : ℕ) (hp : Irreducible p) (h : ¬p ∣ a) :
     IsCoprime a (p ^ m) :=
   (hp.coprime_iff_not_dvd.2 h).symm.pow_right
 
 theorem Irreducible.isCoprime_or_dvd {p : R} (hp : Irreducible p) (i : R) : IsCoprime p i ∨ p ∣ i :=
   (_root_.em _).imp_right hp.dvd_iff_not_isCoprime.2
-
-@[deprecated (since := "2025-01-23")]
-alias Irreducible.coprime_or_dvd := Irreducible.isCoprime_or_dvd
 
 variable [IsDomain R]
 
