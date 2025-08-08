@@ -363,6 +363,11 @@ def getBinderName (e : Expr) : MetaM (Option Name) := do
   | .forallE (binderName := n) .. | .lam (binderName := n) .. => pure (some n)
   | _ => pure none
 
+/-- Map binder names in a nested forall `(a₁ : α₁) → ... → (aₙ : αₙ) → _` -/
+def mapForallBinderNames : Expr → (Name → Name) → Expr
+  | .forallE n d b bi, f => .forallE (f n) d (mapForallBinderNames b f) bi
+  | e, _ => e
+
 open Lean.Elab.Term
 /-- Annotates a `binderIdent` with the binder information from an `fvar`. -/
 def addLocalVarInfoForBinderIdent (fvar : Expr) (tk : TSyntax ``binderIdent) : MetaM Unit :=
