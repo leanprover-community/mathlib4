@@ -1,4 +1,3 @@
-
 /-
 Copyright (c) 2025 Jasper Mulder-Sohn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
@@ -25,7 +24,7 @@ namespace IsChain
 include hc
 
 lemma pairwise_iUnion₂ : (⋃ s ∈ c, s).Pairwise r ↔ ∀ s ∈ c, s.Pairwise r :=
-  pairwise_iUnion₂_iff hc.directedOn r
+  pairwise_iUnion₂_iff hc.directedOn
 
 lemma pairwiseDisjoint_iUnion₂ [PartialOrder β] [OrderBot β] (f : α → β) :
     (⋃ s ∈ c, s).PairwiseDisjoint f ↔ ∀ s ∈ c, s.PairwiseDisjoint f :=
