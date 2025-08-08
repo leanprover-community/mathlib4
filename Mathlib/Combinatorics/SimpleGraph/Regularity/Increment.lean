@@ -62,7 +62,7 @@ variable {hP G ε}
 theorem card_increment (hPα : #P.parts * 16 ^ #P.parts ≤ card α) (hPG : ¬P.IsUniform G ε) :
     #(increment hP G ε).parts = stepBound #P.parts := by
   have hPα' : stepBound #P.parts ≤ card α :=
-    (mul_le_mul_left' (pow_le_pow_left' (by norm_num) _) _).trans hPα
+    (mul_le_mul_left' (pow_le_pow_left' (by simp) _) _).trans hPα
   have hPpos : 0 < stepBound #P.parts := stepBound_pos (nonempty_of_not_uniform hPG).card_pos
   rw [increment, card_bind]
   simp_rw [chunk, apply_dite Finpartition.parts, apply_dite card, sum_dite]
@@ -166,7 +166,7 @@ theorem energy_increment (hP : P.IsEquipartition) (hP₇ : 7 ≤ #P.parts)
     _ = (6/7 * #P.parts ^ 2) * ε ^ 5 * (7 / 24) := by ring
     _ ≤ #P.parts.offDiag * ε ^ 5 * (22 / 75) := by
         gcongr ?_ * _ * ?_
-        · rw [← mul_div_right_comm, div_le_iff₀ (by norm_num), offDiag_card]
+        · rw [← mul_div_right_comm, div_le_iff₀ (by simp), offDiag_card]
           norm_cast
           rw [tsub_mul]
           refine le_tsub_of_add_le_left ?_

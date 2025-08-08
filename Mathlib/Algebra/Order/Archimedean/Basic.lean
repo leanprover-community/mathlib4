@@ -146,6 +146,10 @@ theorem existsUnique_sub_zpow_mem_Ioc {a : G} (ha : 1 < a) (b c : G) :
     simpa only [Equiv.neg_apply, zpow_neg, div_inv_eq_mul] using
       existsUnique_add_zpow_mem_Ioc ha b c
 
+@[to_additive]
+theorem exists_pow_lt {a : G} (ha : a < 1) (b : G) : ∃ n : ℕ, a ^ n < b :=
+  (exists_lt_pow (one_lt_inv'.mpr ha) b⁻¹).imp <| by simp
+
 end LinearOrderedCommGroup
 
 section OrderedSemiring
@@ -446,8 +450,6 @@ theorem exists_pow_btwn {n : ℕ} (hn : n ≠ 0) {x y : K} (h : x < y) (hy : 0 <
       _ = q ^ n := sub_sub_cancel ..
   exact ⟨q, lt_of_le_of_ne (by positivity) fun q0 ↦
     (le_sup_right.trans_lt xqn).ne <| q0 ▸ (zero_pow hn).symm, le_sup_left.trans_lt xqn, qny⟩
-
-@[deprecated (since := "2024-12-26")] alias exists_rat_pow_btwn_rat := exists_pow_btwn
 
 /-- There is a rational power between any two positive elements of an archimedean ordered field. -/
 theorem exists_rat_pow_btwn {n : ℕ} (hn : n ≠ 0) {x y : K} (h : x < y) (hy : 0 < y) :

@@ -109,7 +109,7 @@ lemma exists_isTuranMaximal (hr : 0 < r) :
   classical
   let c := {H : SimpleGraph V | H.CliqueFree (r + 1)}
   have cn : c.toFinset.Nonempty := ⟨⊥, by
-    simp only [Set.toFinset_setOf, mem_filter, mem_univ, true_and, c]
+    rw [Set.toFinset_setOf, mem_filter_univ]
     exact cliqueFree_bot (by omega)⟩
   obtain ⟨S, Sm, Sl⟩ := exists_max_image c.toFinset (#·.edgeFinset) cn
   use S, inferInstance
