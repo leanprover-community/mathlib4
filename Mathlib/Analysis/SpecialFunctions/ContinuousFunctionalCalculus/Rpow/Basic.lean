@@ -440,7 +440,7 @@ lemma rpow_intCast (a : Aˣ) (n : ℤ) (ha : (0 : A) ≤ a := by cfc_tac) :
 noncomputable def _root_.Units.cfcRpow (a : Aˣ) (x : ℝ) (ha : (0 : A) ≤ a := by cfc_tac) : Aˣ :=
   ⟨(a : A) ^ x, (a : A) ^ (-x), rpow_mul_rpow_neg x (by simp), rpow_neg_mul_rpow x (by simp)⟩
 
-@[aesop safe apply]
+@[aesop safe apply, grind ←]
 lemma _root_.IsUnit.cfcRpow {a : A} (ha : IsUnit a) (x : ℝ) (ha_nonneg : 0 ≤ a := by cfc_tac) :
     IsUnit (a ^ x) :=
   ha.unit.cfcRpow x |>.isUnit
@@ -591,6 +591,7 @@ lemma rpow_sqrt_nnreal {a : A} {x : ℝ≥0}
     have h₁ : 0 ≤ (x : ℝ) := NNReal.zero_le_coe
     rw [sqrt_eq_rpow, rpow_rpow_of_exponent_nonneg _ _ _ (by simp) h₁, one_div_mul_eq_div]
 
+@[grind =]
 lemma isUnit_nnrpow_iff (a : A) (y : ℝ≥0) (hy : y ≠ 0) (ha : 0 ≤ a := by cfc_tac) :
     IsUnit (a ^ y) ↔ IsUnit a := by
   rw [nnrpow_eq_rpow (pos_of_ne_zero hy)]
@@ -602,6 +603,7 @@ lemma _root_.IsUnit.cfcNNRpow (a : A) (y : ℝ≥0) (ha_unit : IsUnit a) (hy : y
     (ha : 0 ≤ a := by cfc_tac) : IsUnit (a ^ y) :=
   (isUnit_nnrpow_iff a y hy ha).mpr ha_unit
 
+@[grind =]
 lemma isUnit_sqrt_iff (a : A) (ha : 0 ≤ a := by cfc_tac) : IsUnit (sqrt a) ↔ IsUnit a := by
   rw [sqrt_eq_rpow]
   exact isUnit_rpow_iff a _ (by norm_num) ha
