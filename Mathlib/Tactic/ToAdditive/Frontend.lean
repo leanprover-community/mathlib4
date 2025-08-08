@@ -20,6 +20,7 @@ import Batteries.Tactic.Lint -- useful to lint this file and for DiscrTree.eleme
 import Batteries.Tactic.Trans
 import Mathlib.Tactic.Eqns -- just to copy the attribute
 import Mathlib.Tactic.Simps.Basic
+import Lean.Meta.Tactic.TryThis
 
 /-!
 # The `@[to_additive]` attribute.
@@ -128,7 +129,7 @@ has a doc string, a doc string for the additive version should be passed explici
 
 ```
 /-- Multiplication is commutative -/
-@[to_additive "Addition is commutative"]
+@[to_additive /-- Addition is commutative -/]
 theorem mul_comm' {α} [CommSemigroup α] (x y : α) : x * y = y * x := CommSemigroup.mul_comm
 ```
 
@@ -1205,6 +1206,8 @@ def proceedFields (src tgt : Name) : CoreM Unit := do
         return ctors.toArray.map (.mkSimple ·.lastComponentAsString)
     | _ => pure #[]
 
+open Tactic.TryThis in
+open private addSuggestionCore in addSuggestion in
 /-- Elaboration of the configuration options for `to_additive`. -/
 def elabToAdditive : Syntax → CoreM Config
   | `(attr| to_additive%$tk $[?%$trace]? $existing?
@@ -1240,7 +1243,18 @@ def elabToAdditive : Syntax → CoreM Config
     trace[to_additive_detail] "attributes: {attrs}; reorder arguments: {reorder}"
     let doc ← doc.mapM fun
       | `(str|$doc:str) => do
-        -- TODO: deprecate `str` docstring syntax in Mathlib
+        -- Deprecate `str` docstring syntax in Mathlib
+        if (← getMainModule).getRoot == `Mathlib then
+          logWarningAt doc <| .tagged ``Linter.deprecatedAttr
+            m!"String syntax for `to_additive` docstrings is deprecated in favor of \
+              docstring syntax: `@[to_additive /-- example -/]`."
+          addSuggestionCore doc
+            (header := "Update deprecated string syntax to:\n")
+            (codeActionPrefix? := "Update to: ")
+            (isInline := true)
+            #[{
+              suggestion := "/-- " ++ doc.getString.trim ++ " -/"
+            }]
         return doc.getString
       | `(docComment|$doc:docComment) => do
         -- TODO: rely on `addDocString`s call to `validateDocComment` after removing `str` support
