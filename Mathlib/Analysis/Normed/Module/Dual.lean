@@ -12,11 +12,10 @@ import Mathlib.Analysis.Normed.Module.Convex
 import Mathlib.Topology.Algebra.Module.StrongDual
 
 /-!
-# The topological strong dual of a normed space
+# The strong dual of a normed space
 
-In this file we consider the topological dual `StrongDual` of a normed space, and the
-continuous linear map `NormedSpace.inclusionInDoubleDual` from a normed space into its double
-StrongDual.
+In this file we consider the strong dual `StrongDual` of a normed space, and the continuous linear
+map `NormedSpace.inclusionInDoubleDual` from a normed space into its double StrongDual.
 
 For base field `𝕜 = ℝ` or `𝕜 = ℂ`, this map is actually an isometric embedding; we provide a
 version `NormedSpace.inclusionInDoubleDualLi` of the map which is of type a bundled linear
@@ -28,7 +27,7 @@ theory for `SeminormedAddCommGroup` and we specialize to `NormedAddCommGroup` wh
 ## Main definitions
 
 * `inclusionInDoubleDual` and `inclusionInDoubleDualLi` are the inclusion of a normed space
-  in its double StrongDual, considered as a bounded linear map and as a linear isometry,
+  in its double `StrongDual`, considered as a bounded linear map and as a linear isometry,
   respectively.
 * `polar 𝕜 s` is the subset of `StrongDual 𝕜 E` consisting of those functionals `x'` for which
   `‖x' z‖ ≤ 1` for every `z ∈ s`.
