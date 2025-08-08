@@ -22,23 +22,23 @@ in the product space.
   continuous at `x`).
 
 * `HasFDerivWithinAt.partial_fst` , `HasFDerivWithinAt.partial_snd`: if `f` is differentiable
-   with derivative `f' z` at `z`, then the partial derivatives of `(f ∘ (z.1, ·))`
-   and `(f ∘ (·, z.2))` are respectively `(f' z) ∘L (.inl 𝕜 E F)` and
-   `(f' z) ∘L (.inr 𝕜 E F)`. If `f'` is continuous, then continuity can be obtained by
+   with derivative `f' x` at `x`, then the partial derivatives of `(f ∘ (x.1, ·))`
+   and `(f ∘ (·, x.2))` are respectively `(f' x) ∘L (.inl 𝕜 E₁ E₂)` and
+   `(f' x) ∘L (.inr 𝕜 E₁ E₂)`. If `f'` is continuous, then continuity can be obtained by
    by combining `Continuous(|At|On|WithinAt).clm_comp` and `Continuous(|At|On|WithinAt)_const`.
 
 * `hasFDerivWithinAt_of_partial_snd_continuousWithinAt_prod_open` : a weak sufficient condition
-  for differeniability of `f` at `z = (x,y)` is that, say, the first derivative (within set `s`)
-  `f'xz` exists at `z`, while the second partial derivative `f'y z` exists and is jointly
-  continuous at `z` in the product set `s ×ˢ t` where `t` is open, with the derivative given by
-  `f'z = f'xz.coprod (f'y z)`. `hasFDerivWithinAt_of_partial_fst_continuousWithinAt_prod_open` has
+  for differeniability of `f` at `x = (x₁,x₂)` is that, say, the first derivative (within set `s₁`)
+  `f₁x` exists at `x`, while the second partial derivative `f₂ x` exists and is jointly
+  continuous at `x` in the product set `s₁ ×ˢ s₂` where `s₂` is open, with the derivative given by
+  `f'x = f₁x.coprod (f₂ x)`. `hasFDerivWithinAt_of_partial_fst_continuousWithinAt_prod_open` has
   the roles of the partial derivatives reversed.
 
   The proofs follow §9.8.1 from Dieudonné's *Foundations of Modern Analysis* (1969).
 
 * `hasFDerivWithinAt_continuous(On|WithinAt)_of_partial_continuous(On|WithinAt)_open`: when
-  both partial derivatives exist and are continuous on (or at `z` in) an open set `u`, this more
-  convenient theorem directly deduces continous differentiability on (or at `z` in) `u`.
+  both partial derivatives exist and are continuous on (or at `x` in) an open set `s`, this more
+  convenient theorem directly deduces continous differentiability on (or at `x` in) `s`.
 -/
 
 open Asymptotics Filter
@@ -84,14 +84,15 @@ theorem isLittleO_sub_sub_fderiv {f : E → F → G} {f' : E → F → F →L[�
 
 end aux
 
-variable {𝕜 E₁ E₂ F : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
+variable {𝕜 E₁ E₂ F : Type*} [NontriviallyNormedField 𝕜]
 variable [NormedAddCommGroup E₁] [NormedAddCommGroup E₂] [NormedAddCommGroup F]
 variable [NormedSpace 𝕜 E₁] [NormedSpace 𝕜 E₂] [NormedSpace 𝕜 F]
 
 /-- If a bivariate function `f` has partial derivatives `f₁` and `f₂` in a neighbourhood of a point
 `(x₁, x₂)` and if they are continuous at that point then the uncurried function `↿f` is strictly
 differentiable there with its derivative mapping `(h₁, h₂)` to `f₁ x₁ x₂ h₁ + f₂ x₁ x₂ h₂`. -/
-theorem hasStrictFDerivAt_uncurry_coprod {f : E₁ → E₂ → F} {x₁ : E₁} {x₂ : E₂}
+theorem hasStrictFDerivAt_uncurry_coprod
+    [IsRCLikeNormedField 𝕜] {f : E₁ → E₂ → F} {x₁ : E₁} {x₂ : E₂}
     {f₁ : E₁ → E₂ → E₁ →L[𝕜] F} (cf₁ : ContinuousAt ↿f₁ (x₁, x₂))
     (df₁ : ∀ᶠ y in 𝓝 (x₁, x₂), HasFDerivAt (f · y.2) (f₁ y.1 y.2) y.1)
     {f₂ : E₁ → E₂ → E₂ →L[𝕜] F} (cf₂ : ContinuousAt ↿f₂ (x₁, x₂))
@@ -147,7 +148,7 @@ theorem hasStrictFDerivAt_uncurry_coprod {f : E₁ → E₂ → F} {x₁ : E₁}
 neighbourhood of `(x₁, x₂)`, continuous there, then the uncurried function `↿f` is differentiable at
 `(x₁, x₂)` with its derivative mapping `(h₁, h₂)` to `f₁x h₁ + f₂ x₁ x₂ h₂`. -/
 theorem hasFDerivWithinAt_uncurry_coprod_of_continuousWithinAt_snd
-    [NormedSpace ℝ E₂] {f : E₁ → E₂ → F} {x₁ : E₁} {x₂ : E₂}
+    [IsRCLikeNormedField 𝕜] [NormedSpace ℝ E₂] {f : E₁ → E₂ → F} {x₁ : E₁} {x₂ : E₂}
     {s₁ : Set E₁} {s₂ : Set E₂} (seg : ∀ᶠ v in 𝓝[s₂] x₂, [x₂ -[ℝ] v] ⊆ s₂)
     {f₁x : E₁ →L[𝕜] F} (df₁x : HasFDerivWithinAt (f · x₂) f₁x s₁ x₁)
     {f₂ : E₁ → E₂ → E₂ →L[𝕜] F} (cf₂ : ContinuousWithinAt ↿f₂ (s₁ ×ˢ s₂) (x₁, x₂))
@@ -193,179 +194,168 @@ section PartialFDeriv
 
 /-- Differentiable implies also that the first partial derivative exists. -/
 theorem HasFDerivWithinAt.partial_fst
-  {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-  {f : E × F → G} {f' : E × F → E × F →L[𝕜] G}
-  {s : Set E} {t : Set F}
-  {z : E × F} (hz : z ∈ s ×ˢ t)
-  (hf : HasFDerivWithinAt f (f' z) (s ×ˢ t) z) :
-      HasFDerivWithinAt (f ∘ (·, z.2)) (f' z ∘L .inl ..) s z.1 := by
-    have hleft (x:E) := HasFDerivWithinAt.prodMk
-      (hasFDerivWithinAt_id (𝕜 := 𝕜) x s)
-      (hasFDerivWithinAt_const z.2 x s)
-    convert HasFDerivWithinAt.comp z.1 (hf) (hleft z.1)
-      (fun x hx => mem_prod.mpr ⟨hx, (mem_prod.mp hz).right⟩)
+  {f : E₁ × E₂ → F} {f' : E₁ × E₂ → E₁ × E₂ →L[𝕜] F}
+  {s₁ : Set E₁} {s₂ : Set E₂}
+  {x : E₁ × E₂} (hx : x ∈ s₁ ×ˢ s₂)
+  (hf : HasFDerivWithinAt f (f' x) (s₁ ×ˢ s₂) x) :
+      HasFDerivWithinAt (f ∘ (·, x.2)) (f' x ∘L .inl ..) s₁ x.1 := by
+    have hleft (u:E₁) := HasFDerivWithinAt.prodMk
+      (hasFDerivWithinAt_id (𝕜 := 𝕜) u s₁)
+      (hasFDerivWithinAt_const x.2 u s₁)
+    convert HasFDerivWithinAt.comp x.1 (hf) (hleft x.1)
+      (fun u hu => mem_prod.mpr ⟨hu, (mem_prod.mp hx).right⟩)
 
 /-- Differentiable implies also that the second partial derivative exists. -/
 theorem HasFDerivWithinAt.partial_snd
-  {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-  {f : E × F → G} {f' : E × F → E × F →L[𝕜] G}
-  {s : Set E} {t : Set F}
-  {z : E × F} (hz : z ∈ s ×ˢ t)
-  (hf : HasFDerivWithinAt f (f' z) (s ×ˢ t) z) :
-      HasFDerivWithinAt (f ∘ (z.1, ·)) (f' z ∘L .inr ..) t z.2 := by
-    have hright (y:F) := HasFDerivWithinAt.prodMk
-      (hasFDerivWithinAt_const z.1 y t)
-      (hasFDerivWithinAt_id (𝕜 := 𝕜) y t)
-    convert HasFDerivWithinAt.comp z.2 (hf) (hright z.2)
-      (fun y hy => mem_prod.mpr ⟨(mem_prod.mp hz).left, hy⟩)
+  {f : E₁ × E₂ → F} {f' : E₁ × E₂ → E₁ × E₂ →L[𝕜] F}
+  {s₁ : Set E₁} {s₂ : Set E₂}
+  {x : E₁ × E₂} (hx : x ∈ s₁ ×ˢ s₂)
+  (hf : HasFDerivWithinAt f (f' x) (s₁ ×ˢ s₂) x) :
+      HasFDerivWithinAt (f ∘ (x.1, ·)) (f' x ∘L .inr ..) s₂ x.2 := by
+    have hright (v:E₂) := HasFDerivWithinAt.prodMk
+      (hasFDerivWithinAt_const x.1 v s₂)
+      (hasFDerivWithinAt_id (𝕜 := 𝕜) v s₂)
+    convert HasFDerivWithinAt.comp x.2 (hf) (hright x.2)
+      (fun v hv => mem_prod.mpr ⟨(mem_prod.mp hx).left, hv⟩)
 
-/-- If a function `f : E × F → G` has a first partial derivative (within set `s`) `f'xz` at `z`
-and has a second partial derivative (within open set `t`) `f'y` continuous on `s ×ˢ t`,
-then `f` has a derivative at `z`, with the derivative given by `f'z = f'xz.coprod (f'y z)`.
+/-- If a function `f : E₁ × E₂ → F` has a first partial derivative (within set `s₁`) `f₁x` at `x`
+and has a second partial derivative (within open set `s₂`) `f₂` continuous on `s₁ ×ˢ s₂`,
+then `f` has a derivative at `x`, with the derivative given by `f'x = f₁x.coprod (f₂ x)`.
 
 See `hasFDerivWithinAt_of_partial_fst_continuousWithinAt_prod_open` for the order of derivatives
 swapped.
 -/
 theorem hasFDerivWithinAt_of_partial_snd_continuousWithinAt_prod_open
-  {𝕜 : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F]
-  {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-  {f : E × F → G} {s : Set E} {t : Set F} {z : E × F}
-  (hz : z ∈ s ×ˢ t) (ht : IsOpen t)
-  {f'xz : E →L[𝕜] G} {f'y : E × F → F →L[𝕜] G}
-  (hf'y_cont : ContinuousWithinAt f'y (s ×ˢ t) z)
-  (hf'xz : HasFDerivWithinAt (f ∘ (·, z.2)) f'xz s z.1)
-  (hf'y : ∀ z' ∈ s ×ˢ t, HasFDerivAt (f ∘ (z'.1, ·)) (f'y z') z'.2) :
-    HasFDerivWithinAt f (f'xz.coprod (f'y z)) (s ×ˢ t) z := by
-  replace hz : _ ∧ _ := ⟨mem_prod.mp hz, hz⟩
-  simp only at hz
+  [IsRCLikeNormedField 𝕜] [NormedSpace ℝ E₂]
+  {f : E₁ × E₂ → F} {s₁ : Set E₁} {s₂ : Set E₂} {x : E₁ × E₂}
+  (hx : x ∈ s₁ ×ˢ s₂) (hs₂ : IsOpen s₂)
+  {f₁x : E₁ →L[𝕜] F} {f₂ : E₁ × E₂ → E₂ →L[𝕜] F}
+  (hf₂_cont : ContinuousWithinAt f₂ (s₁ ×ˢ s₂) x)
+  (hf₁x : HasFDerivWithinAt (f ∘ (·, x.2)) f₁x s₁ x.1)
+  (hf₂ : ∀ y ∈ s₁ ×ˢ s₂, HasFDerivAt (f ∘ (y.1, ·)) (f₂ y) y.2) :
+    HasFDerivWithinAt f (f₁x.coprod (f₂ x)) (s₁ ×ˢ s₂) x := by
+  replace hx : _ ∧ _ := ⟨mem_prod.mp hx, hx⟩
+  simp only at hx
   -- rewrite derivatives as limits using norms
-  simp only [hasFDerivWithinAt_iff_tendsto, tendsto_nhdsWithin_nhds, dist_eq_norm] at ⊢ hf'xz
+  simp only [hasFDerivWithinAt_iff_tendsto, tendsto_nhdsWithin_nhds, dist_eq_norm] at ⊢ hf₁x
   simp only [ContinuousLinearMap.coprod_apply, sub_zero, norm_mul, norm_inv,
-    norm_norm] at ⊢ hf'xz
-  simp only [Metric.continuousWithinAt_iff, dist_eq_norm] at hf'y_cont
+    norm_norm] at ⊢ hf₁x
+  simp only [Metric.continuousWithinAt_iff, dist_eq_norm] at hf₂_cont
   -- get a target ε' and immediately shrink it to ε for convenice
   intro ε' hε'
   rw [show ε' = (ε'/2/2/2)*2 + (ε'/2/2/2)*2 + (ε'/2/2/2)*2 + (ε'/2/2/2)*2 by ring]
   have hε := half_pos (half_pos (half_pos hε'))
   set ε := ε' / 2 / 2 / 2
-  -- get δx from x-differentiability
-  -- get δy from continuity of y-derivative
-  -- get δt is constrained by the possibly small size of t
-  replace ⟨δx, hδx, hf'xz⟩ := hf'xz ε hε
-  replace ⟨δy, hδy, hf'y_cont⟩ := hf'y_cont ε hε
-  obtain ⟨δt, hδt⟩ := isOpen_iff.mp ht z.2 hz.1.2
-  use (min δx (min δy δt)) -- derive desired δ
+  -- get δx₁ from x₁-differentiability
+  -- get δx₂ from continuity of x₂-derivative
+  -- get δs₂ is constrained by the possibly small size of s₂
+  replace ⟨δx₁, hδx₁, hf₁x⟩ := hf₁x ε hε
+  replace ⟨δx₂, hδx₂, hf₂_cont⟩ := hf₂_cont ε hε
+  obtain ⟨δs₂, hδs₂⟩ := isOpen_iff.mp hs₂ x.2 hx.1.2
+  use (min δx₁ (min δx₂ δs₂)) -- derive desired δ
   refine ⟨?pos, ?_⟩
-  case pos => exact lt_min hδx (lt_min hδy hδt.1) -- positivity of δ
-  -- get working point (x,y) ∈ E × F within δ distance of z
-  intro (x,y) hst hδ
-  replace hst : _ ∧ _ := ⟨mem_prod.mp hst, hst⟩
-  simp only at hst
+  case pos => exact lt_min hδx₁ (lt_min hδx₂ hδs₂.1) -- positivity of δ
+  -- get working point (y₁,x₂) ∈ E₁ × E₂ within δ distance of x
+  intro (y₁,y₂) hs₁s₂ hδ
+  replace hs₁s₂ : _ ∧ _ := ⟨mem_prod.mp hs₁s₂, hs₁s₂⟩
+  simp only at hs₁s₂
   simp only [Prod.fst_sub, Prod.snd_sub]
   rw [mul_comm]
-  -- simplify norm conditions into bounds on ‖x-z.1‖ and ‖y-z.2‖
+  -- simplify norm conditions into bounds on ‖y₁-x.1‖ and ‖y₂-x.2‖
   simp only [Prod.norm_def, Prod.fst_sub, Prod.snd_sub] at hδ
   simp only [lt_inf_iff, sup_lt_iff] at hδ
-  obtain ⟨⟨hxx, hyx⟩, ⟨⟨hxy, hyy⟩, ⟨hxt, hyt⟩⟩⟩ := hδ
+  obtain ⟨⟨h₁δx₁, h₂δx₁⟩, ⟨⟨h₁δx₂, h₂δx₂⟩, ⟨h₁δs₂, h₂δs₂⟩⟩⟩ := hδ
   -- rewrite desired variation in f for easier estimation
   have hf := calc
-    f (x,y) - f z - (f'xz (x - z.1) + (f'y z) (y - z.2))
-      = f (x,y) - f (x,z.2)
-      + f (x,z.2) - f (z.1,z.2) - (f'xz (x - z.1) + (f'y z) (y - z.2)) := by
+    f (y₁,y₂) - f x - (f₁x (y₁ - x.1) + (f₂ x) (y₂ - x.2))
+      = f (y₁,y₂) - f (y₁,x.2)
+      + f (y₁,x.2) - f (x.1,x.2) - (f₁x (y₁ - x.1) + (f₂ x) (y₂ - x.2)) := by
         abel
-    _ = f (x,y) - f (x,z.2) - (f'y z) (y - z.2)
-      + f (x,z.2) - f (z.1,z.2) - f'xz (x - z.1) := by
+    _ = f (y₁,y₂) - f (y₁,x.2) - (f₂ x) (y₂ - x.2)
+      + f (y₁,x.2) - f (x.1,x.2) - f₁x (y₁ - x.1) := by
         abel
-    _ = f (x,y) - f (x,z.2) - (f'y (x,z.2)) (y - z.2)
-      + (f'y (x,z.2)) (y - z.2) - (f'y z) (y - z.2)
-      + f (x,z.2) - f (z.1,z.2) - f'xz (x - z.1) := by
+    _ = f (y₁,y₂) - f (y₁,x.2) - (f₂ (y₁,x.2)) (y₂ - x.2)
+      + (f₂ (y₁,x.2)) (y₂ - x.2) - (f₂ x) (y₂ - x.2)
+      + f (y₁,x.2) - f (x.1,x.2) - f₁x (y₁ - x.1) := by
         abel
-    _ = f (x,y) - f (x,z.2) - (f'y (x,z.2)) (y - z.2)
-      + (f'y (x,z.2) - f'y z) (y - z.2)
-      + f (x,z.2) - f (z.1,z.2) - f'xz (x - z.1) := by
+    _ = f (y₁,y₂) - f (y₁,x.2) - (f₂ (y₁,x.2)) (y₂ - x.2)
+      + (f₂ (y₁,x.2) - f₂ x) (y₂ - x.2)
+      + f (y₁,x.2) - f (x.1,x.2) - f₁x (y₁ - x.1) := by
         rw [ContinuousLinearMap.sub_apply]
         abel
-    _ = f (x,y) - f (x,z.2) - (f'y (x,z.2)) (y - z.2)
-      + (f'y (x,z.2) - f'y z) (y - z.2)
-      + (f (x,z.2) - f (z.1,z.2) - f'xz (x - z.1)) := by
+    _ = f (y₁,y₂) - f (y₁,x.2) - (f₂ (y₁,x.2)) (y₂ - x.2)
+      + (f₂ (y₁,x.2) - f₂ x) (y₂ - x.2)
+      + (f (y₁,x.2) - f (x.1,x.2) - f₁x (y₁ - x.1)) := by
         abel
   -- set up the hypotheses and use the inequality version of the Mean Value Theorem
-  have mvt_diff : ∀ y ∈ ball z.2 (min δy δt),
-      HasFDerivWithinAt (f ∘ (x,·)) (f'y (x,y)) (ball z.2 (min δy δt)) y := by
-    intro y' hy'
-    rw [mem_ball_iff_norm, lt_min_iff] at hy'
-    apply (hf'y (x,y') (mem_prod.mpr ⟨hst.1.1, _⟩)).hasFDerivWithinAt.mono
+  have mvt_diff : ∀ v ∈ ball x.2 (min δx₂ δs₂),
+      HasFDerivWithinAt (f ∘ (y₁,·)) (f₂ (y₁,v)) (ball x.2 (min δx₂ δs₂)) v := by
+    intro v hv
+    rw [mem_ball_iff_norm, lt_min_iff] at hv
+    apply (hf₂ (y₁,v) (mem_prod.mpr ⟨hs₁s₂.1.1, _⟩)).hasFDerivWithinAt.mono
     · calc
-        ball z.2 (min δy δt)
-          ⊆ ball z.2 δt := ball_subset_ball (min_le_right _ _)
-        _ ⊆ t := hδt.2
-    · exact mem_of_subset_of_mem hδt.2 (mem_ball_iff_norm.mpr hy'.2)
-  have mvt_bound : ∀ y' ∈ ball z.2 (min δy δt), ‖f'y (x,y') - f'y (x,z.2)‖ ≤ ε + ε := by
-    intro y' hy'
-    rw [mem_ball_iff_norm, lt_min_iff] at hy'
+        ball x.2 (min δx₂ δs₂)
+          ⊆ ball x.2 δs₂ := ball_subset_ball (min_le_right _ _)
+        _ ⊆ s₂ := hδs₂.2
+    · exact mem_of_subset_of_mem hδs₂.2 (mem_ball_iff_norm.mpr hv.2)
+  have mvt_bound : ∀ v ∈ ball x.2 (min δx₂ δs₂), ‖f₂ (y₁,v) - f₂ (y₁,x.2)‖ ≤ ε + ε := by
+    intro v hv
+    rw [mem_ball_iff_norm, lt_min_iff] at hv
     rw [← dist_eq_norm]
-    apply (dist_triangle _ (f'y z) _).trans
-    rw [dist_eq_norm, dist_eq_norm, norm_sub_rev (f'y z) _]
-    have hxy' : ‖(x,y') - z‖ < δy := by
+    apply (dist_triangle _ (f₂ x) _).trans
+    rw [dist_eq_norm, dist_eq_norm, norm_sub_rev (f₂ x) _]
+    have hy₁v : ‖(y₁,v) - x‖ < δx₂ := by
       simp only [Prod.norm_def, Prod.fst_sub, Prod.snd_sub, sup_lt_iff]
-      exact ⟨hxy, hy'.1⟩
-    have hxz2 : ‖(x,z.2) - z‖ < δy := by
+      exact ⟨h₁δx₂, hv.1⟩
+    have hy₁x2 : ‖(y₁,x.2) - x‖ < δx₂ := by
       simp only [Prod.norm_def, Prod.fst_sub, Prod.snd_sub, sub_self, norm_zero, norm_nonneg,
         sup_of_le_left]
-      exact hxy
-    apply add_le_add (hf'y_cont _ hxy').le (hf'y_cont _ hxz2).le
-    · apply mem_prod.mpr ⟨hst.1.1, _⟩
-      exact mem_of_subset_of_mem hδt.2 (mem_ball_iff_norm.mpr hy'.2)
-    · exact mem_prod.mpr ⟨hst.1.1, hz.1.2⟩
+      exact h₁δx₂
+    apply add_le_add (hf₂_cont _ hy₁v).le (hf₂_cont _ hy₁x2).le
+    · apply mem_prod.mpr ⟨hs₁s₂.1.1, _⟩
+      exact mem_of_subset_of_mem hδs₂.2 (mem_ball_iff_norm.mpr hv.2)
+    · exact mem_prod.mpr ⟨hs₁s₂.1.1, hx.1.2⟩
   have mvt {a b} (ha : a ∈ _) (hb : b ∈ _) :=
     -- inequality version of Mean Value Theorem
     Convex.norm_image_sub_le_of_norm_hasFDerivWithin_le'
       mvt_diff
       mvt_bound
-      (convex_ball z.2 (min δy δt)) ha hb
+      (convex_ball x.2 (min δx₂ δs₂)) ha hb
   simp only [comp_apply] at mvt
   -- use the calculation above and start applying norms and estimates on the goal, term by term
   rw [hf]
   replace hf := calc
-    ‖f (x,y) - f (x,z.2) - (f'y (x,z.2)) (y - z.2)
-      + (f'y (x,z.2) - f'y z) (y - z.2)
-      + (f (x,z.2) - f (z.1,z.2) - f'xz (x - z.1))‖
-      ≤ ‖f (x,y) - f (x,z.2) - (f'y (x,z.2)) (y - z.2)‖
-      + ‖(f'y (x,z.2) - f'y z) (y - z.2)‖
-      + ‖(f (x,z.2) - f (z.1,z.2) - f'xz (x - z.1))‖ := norm_add₃_le
-    _ ≤ (ε + ε) * ‖y - z.2‖
-      + ‖(f'y (x,z.2) - f'y z)‖ * ‖y - z.2‖
-      + ε * ‖x - z.1‖ := by
+    ‖f (y₁,y₂) - f (y₁,x.2) - (f₂ (y₁,x.2)) (y₂ - x.2)
+      + (f₂ (y₁,x.2) - f₂ x) (y₂ - x.2)
+      + (f (y₁,x.2) - f (x.1,x.2) - f₁x (y₁ - x.1))‖
+      ≤ ‖f (y₁,y₂) - f (y₁,x.2) - (f₂ (y₁,x.2)) (y₂ - x.2)‖
+      + ‖(f₂ (y₁,x.2) - f₂ x) (y₂ - x.2)‖
+      + ‖(f (y₁,x.2) - f (x.1,x.2) - f₁x (y₁ - x.1))‖ := norm_add₃_le
+    _ ≤ (ε + ε) * ‖y₂ - x.2‖
+      + ‖(f₂ (y₁,x.2) - f₂ x)‖ * ‖y₂ - x.2‖
+      + ε * ‖y₁ - x.1‖ := by
         apply add_le_add (add_le_add _ _) _ -- compare term by term
         · exact mvt -- Mean Value estimate
-            (mem_ball_self (lt_min hδy hδt.1))
-            (mem_ball_iff_norm.mpr (lt_min hyy hyt))
+            (mem_ball_self (lt_min hδx₂ hδs₂.1))
+            (mem_ball_iff_norm.mpr (lt_min h₂δx₂ h₂δs₂))
         · exact ContinuousLinearMap.le_opNorm _ _ -- operator norm estimate
         · rw [mul_comm]
-          by_cases hxnz : 0 < ‖x - z.1‖
-          case neg => -- handle trivial x = z.1 case
-            replace hxnz := (not_lt.mp hxnz).antisymm (norm_nonneg _)
-            have hxnz' := eq_of_sub_eq_zero (norm_eq_zero.mp hxnz)
-            repeat rw [hxnz, hxnz']
+          by_cases hy₁nx : 0 < ‖y₁ - x.1‖
+          case neg => -- handle trivial y₁ = x.1 case
+            replace hy₁nx := (not_lt.mp hy₁nx).antisymm (norm_nonneg _)
+            have hy₁ny := eq_of_sub_eq_zero (norm_eq_zero.mp hy₁nx)
+            repeat rw [hy₁nx, hy₁ny]
             simp only [Prod.mk.eta, sub_self, map_zero, norm_zero, zero_mul, le_refl]
           case pos =>
-            apply (inv_mul_le_iff₀ hxnz).mp
-            exact (hf'xz hst.1.1 hxx).le -- apply differentiability estimate
-    _ ≤ ε * ‖y - z.2‖ + ε * ‖y - z.2‖ + ε * ‖y - z.2‖ + ε * ‖x - z.1‖ := by
+            apply (inv_mul_le_iff₀ hy₁nx).mp
+            exact (hf₁x hs₁s₂.1.1 h₁δx₁).le -- apply differentiability estimate
+    _ ≤ ε * ‖y₂ - x.2‖ + ε * ‖y₂ - x.2‖ + ε * ‖y₂ - x.2‖ + ε * ‖y₁ - x.1‖ := by
         rw [add_mul]
         apply add_le_add (add_le_add le_rfl _) le_rfl
-        apply mul_le_mul (hf'y_cont _ _).le le_rfl (norm_nonneg (y - z.2)) hε.le
-        · exact (mem_prod.mpr ⟨hst.1.1, hz.1.2⟩)
+        apply mul_le_mul (hf₂_cont _ _).le le_rfl (norm_nonneg (y₂ - x.2)) hε.le
+        · exact (mem_prod.mpr ⟨hs₁s₂.1.1, hx.1.2⟩)
         · simp only [Prod.norm_def, Prod.fst_sub, Prod.snd_sub, sub_self, norm_zero, norm_nonneg,
-          sup_of_le_left, hxy]
+          sup_of_le_left, h₁δx₂]
   -- now apply the estimate hf to the goal
   apply (mul_le_mul_of_nonneg_right hf (by simp only [inv_nonneg, norm_nonneg])).trans_lt _
   -- it remains only to simplify the inequality term by term and compare coefficients
@@ -379,111 +369,102 @@ theorem hasFDerivWithinAt_of_partial_snd_continuousWithinAt_prod_open
     simp only [mul_one, Prod.norm_def, Prod.fst_sub, Prod.snd_sub]
     first | exact le_max_right _ _ | exact le_max_left _ _
 
-/-- If a function `f : E × F → G` has a second partial derivative (within set `t`) `f'yz` at `z`
-and has a first partial derivative (within open set `s`) `f'x` continuous on `s ×ˢ t`,
-then `f` has a derivative at `z`, with the derivative given by `f'z = (f'x z).coprod f'yz`.
+/-- If a function `f : E₁ × E₂ → F` has a second partial derivative (within set `s₂`) `f₂x` at `x`
+and has a first partial derivative (within open set `s₁`) `f₁` continuous on `s₁ ×ˢ s₂`,
+then `f` has a derivative at `x`, with the derivative given by `f'x = (f₁ x).coprod f₂x`.
 
 See `hasFDerivWithinAt_of_partial_snd_continuousWithinAt_prod_open` for the order of derivatives
 swapped.
 -/
 theorem hasFDerivWithinAt_of_partial_fst_continuousWithinAt_prod_open
-  {𝕜 : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-  {f : E × F → G} {s : Set E} {t : Set F} {z : E × F}
-  (hz : z ∈ s ×ˢ t) (hs : IsOpen s)
-  {f'x : E × F → E →L[𝕜] G} {f'yz : F →L[𝕜] G}
-  (hf'x_cont : ContinuousWithinAt f'x (s ×ˢ t) z)
-  (hf'x : ∀ z' ∈ s ×ˢ t, HasFDerivAt (f ∘ (·, z'.2)) (f'x z') z'.1)
-  (hf'yz : HasFDerivWithinAt (f ∘ (z.1, ·)) f'yz t z.2) :
-    HasFDerivWithinAt f ((f'x z).coprod f'yz) (s ×ˢ t) z := by
-  have hmt_st := mapsTo_swap_prod s t
-  have hmt_ts := mapsTo_swap_prod t s
-  have hf'x_swap_cont := (z.swap_swap ▸ hf'x_cont).comp
+  [IsRCLikeNormedField 𝕜] [NormedSpace ℝ E₁]
+  {f : E₁ × E₂ → F} {s₁ : Set E₁} {s₂ : Set E₂} {x : E₁ × E₂}
+  (hx : x ∈ s₁ ×ˢ s₂) (hs₁ : IsOpen s₁)
+  {f₁ : E₁ × E₂ → E₁ →L[𝕜] F} {f₂x : E₂ →L[𝕜] F}
+  (hf₁_cont : ContinuousWithinAt f₁ (s₁ ×ˢ s₂) x)
+  (hf₁ : ∀ y ∈ s₁ ×ˢ s₂, HasFDerivAt (f ∘ (·, y.2)) (f₁ y) y.1)
+  (hf₂x : HasFDerivWithinAt (f ∘ (x.1, ·)) f₂x s₂ x.2) :
+    HasFDerivWithinAt f ((f₁ x).coprod f₂x) (s₁ ×ˢ s₂) x := by
+  have hmt_s₁s₂ := mapsTo_swap_prod s₁ s₂
+  have hmt_s₂s₁ := mapsTo_swap_prod s₂ s₁
+  have hf₁_swap_cont := (x.swap_swap ▸ hf₁_cont).comp
     continuous_swap.continuousWithinAt
-    hmt_ts
-  -- exchange `E` and `F` to use a previous result
+    hmt_s₂s₁
+  -- exchange `E₁` and `E₂` to use a previous result
   have hswap := hasFDerivWithinAt_of_partial_snd_continuousWithinAt_prod_open
     (f := f ∘ Prod.swap)
-    (z := z.swap)
-    hz.symm hs
-    hf'x_swap_cont
-    hf'yz
-    (fun z' hz' => (hf'x z'.swap (hmt_ts hz')))
-  -- exchange `E` and `F` back in the result to satisfy the goal
-  let cle_swap := ContinuousLinearEquiv.prodComm 𝕜 E F
-  convert hswap.comp z (cle_swap.hasFDerivWithinAt) hmt_st
+    (x := x.swap)
+    hx.symm hs₁
+    hf₁_swap_cont
+    hf₂x
+    (fun y hy => (hf₁ y.swap (hmt_s₂s₁ hy)))
+  -- exchange `E₁` and `E₂` back in the result to satisfy the goal
+  let cle_swap := ContinuousLinearEquiv.prodComm 𝕜 E₁ E₂
+  convert hswap.comp x (cle_swap.hasFDerivWithinAt) hmt_s₁s₂
   unfold cle_swap
   simp only [Prod.swap_swap, comp_apply, ContinuousLinearMap.coprod_comp_prodComm]
 
-/-- If a function `f : E × F → G` has partial derivative `f'x` or `f'y` on an open set `u`,
-and they are continuous at `z ∈ u`, then `f` is continously differentiable at `z`, with
-the derivative given by `f' z = (f'x z).coprod (f'y z)`.
+/-- If a function `f : E₁ × E₂ → F` has partial derivative `f₁` or `f₂` on an open set `s`,
+and they are continuous at `x ∈ s`, then `f` is continously differentiable at `x`, with
+the derivative given by `f' x = (f₁ x).coprod (f₂ x)`.
 -/
 theorem hasFDerivWithinAt_continuousWithinAt_of_partial_continuousWithinAt_open
-  {𝕜 : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
-  --NB: [NormedSpace ℝ E] is not needed because the proof eventually applies
-  --    the Mean Value Theorem only in the F direction. But it could have been
+  --NB: [NormedSpace ℝ E₁] is not needed because the proof eventually applies
+  --    the Mean Value Theorem only in the E₂ direction. But it could have been
   --    the other way around and it is odd to not have symmetry in the hypotheses
-  {E : Type*} [NormedAddCommGroup E] /-[NormedSpace ℝ E]-/ [NormedSpace 𝕜 E]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F]
-  {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-  {f : E × F → G} {u : Set (E × F)} (hu : IsOpen u) {z : E × F} (hz : z ∈ u)
-  {f'x : E × F → E →L[𝕜] G} {f'y : E × F → F →L[𝕜] G}
-  (hf'x_cont : ContinuousWithinAt f'x u z) (hf'y_cont : ContinuousWithinAt f'y u z)
-  (hf'x : ∀ z ∈ u, HasFDerivAt (f ∘ (·, z.2)) (f'x z) z.1)
-  (hf'y : ∀ z ∈ u, HasFDerivAt (f ∘ (z.1, ·)) (f'y z) z.2) :
-    ContinuousWithinAt (fun z => (f'x z).coprod (f'y z)) u z
-    ∧ HasFDerivAt f ((f'x z).coprod (f'y z)) z := by
+  [IsRCLikeNormedField 𝕜] /-[NormedSpace ℝ E₁]-/ [NormedSpace ℝ E₂]
+  {f : E₁ × E₂ → F} {s : Set (E₁ × E₂)} (hs : IsOpen s) {x : E₁ × E₂} (hx : x ∈ s)
+  {f₁ : E₁ × E₂ → E₁ →L[𝕜] F} {f₂ : E₁ × E₂ → E₂ →L[𝕜] F}
+  (hf₁_cont : ContinuousWithinAt f₁ s x) (hf₂_cont : ContinuousWithinAt f₂ s x)
+  (hf₁ : ∀ y ∈ s, HasFDerivAt (f ∘ (·, y.2)) (f₁ y) y.1)
+  (hf₂ : ∀ y ∈ s, HasFDerivAt (f ∘ (y.1, ·)) (f₂ y) y.2) :
+    ContinuousWithinAt (fun y => (f₁ y).coprod (f₂ y)) s x
+    ∧ HasFDerivAt f ((f₁ x).coprod (f₂ x)) x := by
   refine ⟨?cont, ?diff⟩
   case cont =>
     -- combine continuity of partial to get continuity of total derivative
-    exact hf'x_cont.continuousLinearMapCoprod hf'y_cont
+    exact hf₁_cont.continuousLinearMapCoprod hf₂_cont
   case diff =>
-    -- first restrict all properties to a product neighborhood of z
-    obtain ⟨s,t,hs,ht,hz1,hz2,hst⟩ := isOpen_prod_iff.mp hu z.1 z.2 hz
-    have hstn : s ×ˢ t ∈ nhds z := IsOpen.mem_nhds (hs.prod ht) (mem_prod.mpr ⟨hz1, hz2⟩)
-    have hsu (z : E × F) (hz : z ∈ s ×ˢ t) : s ⊆ ((·,z.2) ⁻¹' u) := by
-      apply HasSubset.Subset.trans _ (preimage_mono hst)
-      rw [mk_preimage_prod_left (mem_prod.mpr hz).2]
-    have htu (z : E × F) (hz : z ∈ s ×ˢ t) : t ⊆ ((z.1,·) ⁻¹' u) := by
-      apply HasSubset.Subset.trans _ (preimage_mono hst)
-      rw [mk_preimage_prod_right (mem_prod.mpr hz).1]
-    replace hf'y_cont := hf'y_cont.mono hst
+    -- first restrict all properties to a product neighborhood of x
+    obtain ⟨s₁,s₂,hs₁,hs₂,hx1,hx2,hs₁s₂⟩ := isOpen_prod_iff.mp hs x.1 x.2 hx
+    have hs₁s₂n : s₁ ×ˢ s₂ ∈ nhds x := IsOpen.mem_nhds (hs₁.prod hs₂) (mem_prod.mpr ⟨hx1, hx2⟩)
+    have hs₁s (y : E₁ × E₂) (hy : y ∈ s₁ ×ˢ s₂) : s₁ ⊆ ((·,y.2) ⁻¹' s) := by
+      apply HasSubset.Subset.trans _ (preimage_mono hs₁s₂)
+      rw [mk_preimage_prod_left (mem_prod.mpr hy).2]
+    have hs₂s (y : E₁ × E₂) (hy : y ∈ s₁ ×ˢ s₂) : s₂ ⊆ ((y.1,·) ⁻¹' s) := by
+      apply HasSubset.Subset.trans _ (preimage_mono hs₁s₂)
+      rw [mk_preimage_prod_right (mem_prod.mpr hy).1]
+    replace hf₂_cont := hf₂_cont.mono hs₁s₂
     -- now apply the weaker criteria to get differentiability
-    apply HasFDerivWithinAt.hasFDerivAt _ hstn
+    apply HasFDerivWithinAt.hasFDerivAt _ hs₁s₂n
     apply hasFDerivWithinAt_of_partial_snd_continuousWithinAt_prod_open
-      ⟨hz1,hz2⟩ ht
-      hf'y_cont
+      ⟨hx1,hx2⟩ hs₂
+      hf₂_cont
       _ _
-    · exact (hf'x z hz).hasFDerivWithinAt.mono (hsu z ⟨hz1,hz2⟩)
-    · exact (fun z hz => (hf'y z (mem_of_subset_of_mem hst hz)))
+    · exact (hf₁ x hx).hasFDerivWithinAt.mono (hs₁s x ⟨hx1,hx2⟩)
+    · exact (fun y hy => (hf₂ y (mem_of_subset_of_mem hs₁s₂ hy)))
 
-/-- If a function `f : E × F → G` has partial derivative `f'x` or `f'y` continuous
-on an open set `u`, then `f` is continously differentiable on this set, with
-the derivative given by `f' = f'x.coprod f'y`.
+/-- If a function `f : E₁ × E₂ → F` has partial derivative `f₁` or `f₂` continuous
+on an open set `s`, then `f` is continously differentiable on this set, with
+the derivative given by `f' = f₁.coprod f₂`.
 -/
 theorem hasFDerivWithinAt_continuousOn_of_partial_continuousOn_open
-  {𝕜 : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
-  --NB: [NormedSpace ℝ E] is not needed because the proof eventually applies
-  --    the Mean Value Theorem only in the F direction. But it could have been
+  --NB: [NormedSpace ℝ E₁] is not needed because the proof eventually applies
+  --    the Mean Value Theorem only in the E₂ direction. But it could have been
   --    the other way around and it is odd to not have symmetry in the hypotheses
-  {E : Type*} [NormedAddCommGroup E] /-[NormedSpace ℝ E]-/ [NormedSpace 𝕜 E]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F]
-  {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-  {f : E × F → G} {u : Set (E × F)} (hu : IsOpen u)
-  {f'x : E × F → E →L[𝕜] G} {f'y : E × F → F →L[𝕜] G}
-  (hf'x_cont : ContinuousOn f'x u) (hf'y_cont : ContinuousOn f'y u)
-  (hf'x : ∀ z ∈ u, HasFDerivAt (f ∘ (·, z.2)) (f'x z) z.1)
-  (hf'y : ∀ z ∈ u, HasFDerivAt (f ∘ (z.1, ·)) (f'y z) z.2) :
-    ContinuousOn (fun z => (f'x z).coprod (f'y z)) u
-    ∧ ∀ z ∈ u, HasFDerivAt f ((f'x z).coprod (f'y z)) z := by
+  [IsRCLikeNormedField 𝕜] /-[NormedSpace ℝ E₁]-/ [NormedSpace ℝ E₂]
+  {f : E₁ × E₂ → F} {s : Set (E₁ × E₂)} (hs : IsOpen s)
+  {f₁ : E₁ × E₂ → E₁ →L[𝕜] F} {f₂ : E₁ × E₂ → E₂ →L[𝕜] F}
+  (hf₁_cont : ContinuousOn f₁ s) (hf₂_cont : ContinuousOn f₂ s)
+  (hf₁ : ∀ y ∈ s, HasFDerivAt (f ∘ (·, y.2)) (f₁ y) y.1)
+  (hf₂ : ∀ y ∈ s, HasFDerivAt (f ∘ (y.1, ·)) (f₂ y) y.2) :
+    ContinuousOn (fun y => (f₁ y).coprod (f₂ y)) s
+    ∧ ∀ y ∈ s, HasFDerivAt f ((f₁ y).coprod (f₂ y)) y := by
   simp only [ContinuousOn, ← forall₂_and]
-  intro z hz
+  intro y hy
   apply hasFDerivWithinAt_continuousWithinAt_of_partial_continuousWithinAt_open
-    hu hz
-    (hf'x_cont.continuousWithinAt hz) (hf'y_cont.continuousWithinAt hz)
-    hf'x hf'y
+    hs hy
+    (hf₁_cont.continuousWithinAt hy) (hf₂_cont.continuousWithinAt hy)
+    hf₁ hf₂
 
 end PartialFDeriv
