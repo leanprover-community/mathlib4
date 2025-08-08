@@ -30,8 +30,7 @@ variable {J : Type} [SmallCategory J] [FinCategory J] {k : Type u} [Ring k]
 instance {J : Type} [Finite J] (Z : J → ModuleCat.{v} k) [∀ j, Module.Finite k (Z j)] :
     Module.Finite k (∐ fun j => Z j : ModuleCat.{v} k) := by
   classical
-  haveI : Module.Finite k (ModuleCat.of k (∀ j, Z j)) := by unfold ModuleCat.of; infer_instance
-  exact (Module.Finite.equiv_iff (ModuleCat.coprodIsoDirectSum Z).toLinearEquiv).mpr inferInstance
+exact (Module.Finite.equiv_iff (ModuleCat.coprodIsoDirectSum Z).toLinearEquiv).mpr inferInstance
 
 /-- Finite colimits of finite modules are finite, because we can realise them as quotients
 of a finite coproduct. -/
