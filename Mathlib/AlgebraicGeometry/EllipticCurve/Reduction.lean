@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bryan Wang
 -/
 import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
-import Mathlib.RingTheory.DiscreteValuationRing.TFAE
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
+import Mathlib.RingTheory.DiscreteValuationRing.TFAE
 import Mathlib.RingTheory.Valuation.Discrete.Basic
 
 /-!
@@ -16,11 +16,19 @@ fraction fields of discrete valuation rings.
 
 ## Main definitions
 
-* TODO
+* `IsIntegralWeierstrassEquation`: a predicate expressing that a given Weierstrass equation
+  has integral coefficients.
+* `IsMinimalWeierstrassEquation`: a predicate expressing that a given Weierstrass equation
+  has minimal valuation of discriminant among all isomorphic integral Weierstrass equations.
+* `reduction`: the reduction of a Weierstrass curve given by a minimal Weierstrass equation,
+  which is a Weierstrass curve over the residue field. 
 
 ## Main statements
 
-* TODO
+* `exists_integralWeierstrassEquation`: any Weierstrass curve is isomorphic to one given by
+  an integral Weierstrass equation.
+* `exists_minimalWeierstrassEquation`: any Weierstrass curve is isomorphic to one given by
+  a minimal Weierstrass equation.
 
 ## References
 
@@ -72,18 +80,11 @@ theorem exists_integralWeierstrassEquation (W : WeierstrassCurve K) :
   let lmax : WithZero (Multiplicative ℤ) :=
     l.maximum_of_length_pos (List.length_pos_of_mem (l.get_mem (0 : Fin 5)))
   have hlmax : ∀ v ∈ l, v ≤ lmax := fun v hv ↦
-      List.le_maximum_of_length_pos_of_mem hv
-        (List.length_pos_of_mem (l.get_mem (0 : Fin 5)))
-  let lmaxZ : ℤ :=
-    if h : lmax = 0 then 0
-    else max 0 (WithZero.unzero h)
-  have zero_le_lmaxZ : 0 ≤ lmaxZ := by
-    unfold lmaxZ
-    by_cases h : lmax = 0
-    all_goals simp [h]
+      List.le_maximum_of_length_pos_of_mem hv (List.length_pos_of_mem (l.get_mem (0 : Fin 5)))
+  let lmaxZ : ℤ := if h : lmax = 0 then 0 else max 0 (WithZero.unzero h)
+  have zero_le_lmaxZ : 0 ≤ lmaxZ := by unfold lmaxZ; by_cases h : lmax = 0; all_goals simp [h]
   have lmax_le_lmaxZ : lmax ≤ Multiplicative.ofAdd lmaxZ := by
-    unfold lmaxZ
-    by_cases h : lmax = 0
+    unfold lmaxZ; by_cases h : lmax = 0
     all_goals simp only [h, ↓reduceDIte, ofAdd_zero, WithZero.coe_one, zero_le']
     conv_lhs => rw [← WithZero.coe_unzero h]
     simp only [WithZero.coe_le_coe]
@@ -92,9 +93,9 @@ theorem exists_integralWeierstrassEquation (W : WeierstrassCurve K) :
       Multiplicative.ofAdd (WithZero.unzero h) ≤
       Multiplicative.ofAdd (max (0 : ℤ) (WithZero.unzero h)) := by
         apply Multiplicative.ofAdd_le.mpr; simp
-  have h (n : ℕ) (hn : 1 ≤ n): ∀ v ∈ l, v ≤ (Multiplicative.ofAdd (n * lmaxZ)) := by
-    intro v hv
-    calc
+  have h (n : ℕ) (hn : 1 ≤ n) :
+      ∀ v ∈ l, v ≤ (Multiplicative.ofAdd (n * lmaxZ)) :=
+    fun v hv => calc
       v ≤ lmax := hlmax v hv
       lmax ≤ Multiplicative.ofAdd lmaxZ := lmax_le_lmaxZ
       (((Multiplicative.ofAdd lmaxZ) : Multiplicative ℤ) : WithZero (Multiplicative ℤ)) ≤
@@ -178,10 +179,6 @@ noncomputable def reduction (W : WeierstrassCurve K)
     WeierstrassCurve (ResidueField R) :=
   letI hW : IsIntegralWeierstrassEquation R W := inferInstance
   hW.integral.choose.map (residue R)
-
-/- noncomputable def reduction (W : WeierstrassCurve K) :
-    WeierstrassCurve (ResidueField R) :=
-  reduction_minimalWeierstrassEquation R (exists_minimalWeierstrassEquation R W).choose_spec -/
 
 end Reduction
 
