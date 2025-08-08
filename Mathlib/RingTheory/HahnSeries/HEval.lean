@@ -319,7 +319,7 @@ theorem hsum_powerSeriesFamily_mul {x : HahnSeries Γ V} (a b : PowerSeries R) :
     simp only [coeff_support, mul_toFun, smulFamily_toFun, Algebra.mul_smul_comm,
       Algebra.smul_mul_assoc, HahnSeries.coeff_smul, PowerSeries.coeff_mul, sum_smul]
     rw [sum_sigma']
-    refine (Finset.sum_of_injOn (fun x => ⟨x.1 + x.2, x⟩) (fun _ _ _ _ => by simp_all) ?_ ?_
+    refine (Finset.sum_of_injOn (fun x => ⟨x.1 + x.2, x⟩) (fun _ _ _ _ => by simp) ?_ ?_
       (fun _ _ => by simp [smul_smul, mul_comm, pow_add])).symm
     · intro ij hij
       simp only [coe_sigma, coe_image, Set.mem_sigma_iff, Set.mem_image, Prod.exists, mem_coe,
