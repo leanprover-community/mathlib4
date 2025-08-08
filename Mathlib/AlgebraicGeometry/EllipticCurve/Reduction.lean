@@ -15,18 +15,18 @@ fraction fields of discrete valuation rings.
 
 ## Main definitions
 
-* `IsIntegralWeierstrassEquation`: a predicate expressing that a given Weierstrass equation
+* `IsIntegral`: a predicate expressing that a given Weierstrass equation
   has integral coefficients.
-* `IsMinimalWeierstrassEquation`: a predicate expressing that a given Weierstrass equation
+* `IsMinimal`: a predicate expressing that a given Weierstrass equation
   has minimal valuation of discriminant among all isomorphic integral Weierstrass equations.
 * `reduction`: the reduction of a Weierstrass curve given by a minimal Weierstrass equation,
   which is a Weierstrass curve over the residue field.
 
 ## Main statements
 
-* `exists_integralWeierstrassEquation`: any Weierstrass curve is isomorphic to one given by
+* `exists_integral`: any Weierstrass curve is isomorphic to one given by
   an integral Weierstrass equation.
-* `exists_minimalWeierstrassEquation`: any Weierstrass curve is isomorphic to one given by
+* `exists_minimal`: any Weierstrass curve is isomorphic to one given by
   a minimal Weierstrass equation.
 
 ## References
@@ -50,29 +50,29 @@ open IsDiscreteValuationRing
 
 /-- A Weierstrass equation over the fraction field `K` is integral if
 it has coefficients in the DVR `R`. -/
-class IsIntegralWeierstrassEquation (W : WeierstrassCurve K) : Prop where
+class IsIntegral (W : WeierstrassCurve K) : Prop where
   integral : ∃ W_int : WeierstrassCurve R, W = W_int.baseChange K
 
-lemma isIntegralWeierstrassEquation_of_val_le_one {W : WeierstrassCurve K}
+lemma isIntegral_of_val_le_one {W : WeierstrassCurve K}
     (h₁ : valuation K (maximalIdeal R) W.a₁ ≤ 1)
     (h₂ : valuation K (maximalIdeal R) W.a₂ ≤ 1)
     (h₃ : valuation K (maximalIdeal R) W.a₃ ≤ 1)
     (h₄ : valuation K (maximalIdeal R) W.a₄ ≤ 1)
     (h₆ : valuation K (maximalIdeal R) W.a₆ ≤ 1) :
-    IsIntegralWeierstrassEquation R W := by
-  use ⟨ (exists_lift_of_le_one h₁).choose,
+    IsIntegral R W := by
+  use ⟨(exists_lift_of_le_one h₁).choose,
       (exists_lift_of_le_one h₂).choose,
       (exists_lift_of_le_one h₃).choose,
       (exists_lift_of_le_one h₄).choose,
-      (exists_lift_of_le_one h₆).choose ⟩
+      (exists_lift_of_le_one h₆).choose⟩
   ext
   all_goals
     simp only [map_a₁, map_a₂, map_a₃, map_a₄, map_a₆]
     apply (exists_lift_of_le_one _).choose_spec.symm
     assumption
 
-theorem exists_integralWeierstrassEquation (W : WeierstrassCurve K) :
-    ∃ C : VariableChange K, IsIntegralWeierstrassEquation R (C • W) := by
+theorem exists_integral (W : WeierstrassCurve K) :
+    ∃ C : VariableChange K, IsIntegral R (C • W) := by
   let l := [(valuation K (maximalIdeal R) W.a₁),
     (valuation K (maximalIdeal R) W.a₂),
     (valuation K (maximalIdeal R) W.a₃),
@@ -105,12 +105,12 @@ theorem exists_integralWeierstrassEquation (W : WeierstrassCurve K) :
         convert Int.mul_le_mul_of_nonneg_right (Int.ofNat_le.mpr hn) zero_le_lmaxZ
         simp
 
-  obtain ⟨ π, hπ ⟩ := valuation_exists_uniformizer K (maximalIdeal R)
+  obtain ⟨π, hπ⟩ := valuation_exists_uniformizer K (maximalIdeal R)
   have isUnit_π : IsUnit π :=
     IsUnit.mk0 π ((Valuation.ne_zero_iff _).mp (ne_of_eq_of_ne hπ WithZero.coe_ne_zero))
-  use ⟨ isUnit_π.unit ^ (-lmaxZ) , 0 , 0 , 0 ⟩
+  use ⟨isUnit_π.unit ^ (-lmaxZ), 0, 0, 0⟩
 
-  apply isIntegralWeierstrassEquation_of_val_le_one R
+  apply isIntegral_of_val_le_one R
   any_goals
     simp only [zpow_neg, variableChange_def, inv_inv, Units.val_zpow_eq_zpow_val, IsUnit.unit_spec,
       mul_zero, add_zero, zero_mul, sub_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
@@ -131,33 +131,33 @@ theorem exists_integralWeierstrassEquation (W : WeierstrassCurve K) :
   · apply l.get_mem (4 : Fin 5)
 
 omit [IsDomain R] [IsDiscreteValuationRing R] [IsFractionRing R K] in
-lemma Δ_integral_of_isIntegralWeierstrassEquation (W : WeierstrassCurve K)
-    [IsIntegralWeierstrassEquation R W] :
-    ∃ r : R, (algebraMap R K) r = W.Δ := by
+lemma Δ_integral_of_isIntegral (W : WeierstrassCurve K)
+    [IsIntegral R W] :
+    ∃ r : R, algebraMap R K r = W.Δ := by
   obtain ⟨W_int, hW_int⟩ : ∃ W_int : WeierstrassCurve R, W = W_int.baseChange K :=
-    IsIntegralWeierstrassEquation.integral
+    IsIntegral.integral
   use W_int.Δ
   rw [hW_int, map_Δ]
 
 /-- A Weierstrass equation over the fraction field `K` is minimal if the valuation
 of its discriminant is minimal among all isomorphic integral Weierstrass equations. -/
-class IsMinimalWeierstrassEquation (W : WeierstrassCurve K) : Prop where
+class IsMinimal (W : WeierstrassCurve K) : Prop where
   val_Δ_minimal :
     MinimalFor
-      (fun (C : VariableChange K) => IsIntegralWeierstrassEquation R (C • W))
-      (fun (C : VariableChange K) => addVal R ((algebraMap R K).toFun.invFun (C • W).Δ))
+      (fun (C : VariableChange K) ↦ IsIntegral R (C • W))
+      (fun (C : VariableChange K) ↦ addVal R ((algebraMap R K).toFun.invFun (C • W).Δ))
       (1 : VariableChange K)
 
 omit [IsFractionRing R K] in
-instance {W : WeierstrassCurve K} [IsMinimalWeierstrassEquation R W] :
-    IsIntegralWeierstrassEquation R W := by simpa using IsMinimalWeierstrassEquation.val_Δ_minimal.1
+instance {W : WeierstrassCurve K} [IsMinimal R W] :
+    IsIntegral R W := by simpa using IsMinimal.val_Δ_minimal.1
 
-theorem exists_minimalWeierstrassEquation (W : WeierstrassCurve K) :
-    ∃ C : VariableChange K, IsMinimalWeierstrassEquation R (C • W) := by
-  obtain ⟨C , hC⟩ := exists_minimalFor_of_wellFoundedLT
-    (fun (C : VariableChange K) ↦ IsIntegralWeierstrassEquation R (C • W))
+theorem exists_minimal (W : WeierstrassCurve K) :
+    ∃ C : VariableChange K, IsMinimal R (C • W) := by
+  obtain ⟨C, hC⟩ := exists_minimalFor_of_wellFoundedLT
+    (fun (C : VariableChange K) ↦ IsIntegral R (C • W))
     (fun (C : VariableChange K) ↦ addVal R ((algebraMap R K).toFun.invFun (C • W).Δ))
-    (exists_integralWeierstrassEquation R W)
+    (exists_integral R W)
   refine ⟨C, ⟨⟨by simp only [one_smul, hC.1], ?_⟩⟩⟩
   intro j hj; rw [← smul_assoc] at hj
   let h := hC.2 hj
@@ -174,9 +174,9 @@ open IsLocalRing
 
 /-- The reduction of a Weierstrass curve over `K` given by a minimal Weierstrass equation,
 which is a Weierstrass curve over the residue field of `R`. -/
-noncomputable def reduction (W : WeierstrassCurve K) [IsMinimalWeierstrassEquation R W] :
+noncomputable def reduction (W : WeierstrassCurve K) [IsMinimal R W] :
     WeierstrassCurve (ResidueField R) :=
-  letI hW : IsIntegralWeierstrassEquation R W := inferInstance
+  letI hW : IsIntegral R W := inferInstance
   hW.integral.choose.map (residue R)
 
 end Reduction
