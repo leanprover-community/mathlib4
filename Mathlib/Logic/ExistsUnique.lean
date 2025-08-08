@@ -144,7 +144,7 @@ theorem ExistsUnique.unique₂ {p : α → Sort*} [∀ x, Subsingleton (p x)]
 instance List.decidableBExU {α : Type*} [DecidableEq α] (p : α → Prop) [DecidablePred p]
     (l : List α) :
     Decidable (∃! x, x ∈ l ∧ p x) :=
-  decidable_of_iff (∃ y ∈ l, ∀ x ∈ l, p x ↔ x = y) (⟨
+  decidable_of_iff (∃ y ∈ l, ∀ x ∈ l, p x ↔ x = y) ⟨
     fun ⟨x, hx, h⟩ ↦ ⟨x, ⟨hx, (h x hx).mpr rfl⟩, fun y hy ↦ (h y hy.1).mp hy.2⟩,
     fun ⟨y, hy, h⟩ ↦ ⟨y, hy.1, fun x hx ↦ ⟨(h x ⟨hx, ·⟩), (· ▸ hy.2)⟩⟩
-  ⟩)
+  ⟩
