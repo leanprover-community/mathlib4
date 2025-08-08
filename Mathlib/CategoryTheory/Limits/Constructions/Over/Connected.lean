@@ -82,8 +82,8 @@ instance forgetCreatesConnectedLimits [IsConnected J] {B : C} :
 /-- The forgetful functor from the over category preserves any connected limit. -/
 instance forgetPreservedConnectedLimits [IsConnected J] {B : C} :
     PreservesLimitsOfShape J (forget B) where
-  preservesLimit {K} := {
-    preserves {c} hc := ⟨{
+  preservesLimit := {
+    preserves hc := ⟨{
       lift s := (forget B).map (hc.lift (CreatesConnected.raiseCone s))
       fac s j := by
         rw [Functor.mapCone_π_app, ← Functor.map_comp, hc.fac,
