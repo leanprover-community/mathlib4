@@ -187,8 +187,9 @@ theorem tendsto_div_one_add_pow_nhds_one {v : AbsoluteValue F ℝ} {a : F} (ha :
   have h_add := Tendsto.const_add 1 <| tendsto_pow_atTop_nhds_zero_of_lt_one (v.nonneg _) ha
   have h_sub := Tendsto.const_sub 1 <| tendsto_pow_atTop_nhds_zero_of_lt_one (v.nonneg _) ha
   simp only [add_zero, sub_zero] at h_add h_sub
-  exact tendsto_of_tendsto_of_tendsto_of_le_of_le h_sub h_add (v.one_sub_pow_le _)
-    (v.one_add_pow_le _)
+  exact tendsto_of_tendsto_of_tendsto_of_le_of_le h_sub h_add
+    (fun n ↦ le_trans (by rw [map_one, map_pow]) (v.le_add _ _))
+    (fun n ↦ le_trans (v.add_le _ _) (by rw [map_one, map_pow]))
 
 /--
 The limit $v \left(\frac{1}{1 + a ^ n}\right)\to 0$, for an absolute value $v$ on a field

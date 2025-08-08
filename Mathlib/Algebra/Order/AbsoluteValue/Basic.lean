@@ -351,17 +351,6 @@ lemma not_isNontrivial_apply {v : AbsoluteValue R S} (hv : ¬ v.IsNontrivial) {x
     v x = 1 :=
   v.not_isNontrivial_iff.mp hv _ hx
 
-omit [IsOrderedRing S] in
-theorem one_add_pow_le [IsDomain S] [Nontrivial R]
-    (a : R) (n : ℕ) (v : AbsoluteValue R S) :
-    v (1 + a ^ n) ≤ 1 + v a ^ n :=
-  le_trans (v.add_le _ _) (by rw [map_one, map_pow])
-
-theorem one_sub_pow_le {R S : Type*} [CommRing S] [PartialOrder S] [IsOrderedRing S] [Ring R]
-    [NoZeroDivisors S] [IsDomain S] [Nontrivial R] (a : R) (n : ℕ) (v : AbsoluteValue R S) :
-    1 - v a ^ n ≤ v (1 + a ^ n) :=
-  le_trans (by rw [map_one, map_pow]) (v.le_add 1 (a ^ n))
-
 end OrderedSemiring
 
 section LinearOrderedSemifield
