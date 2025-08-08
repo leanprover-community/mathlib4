@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Jeremy Avigad
 import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Data.Set.Lattice
 import Mathlib.Order.Filter.Defs
+import Mathlib.Algebra.Order.Star.Basic
 
 /-!
 # Theory of filters on sets
@@ -1076,6 +1077,9 @@ theorem eventuallyEq_iff_all_subsets {f g : α → β} {l : Filter α} :
     f =ᶠ[l] g ↔ ∀ s : Set α, ∀ᶠ x in l, x ∈ s → f x = g x :=
   eventually_iff_all_subsets
 
+protected theorem EventuallyEq.star {R : Type*} [Star R] {f g : α → R} {l : Filter α}
+    (h : f =ᶠ[l] g) : (fun x ↦ star (f x)) =ᶠ[l] fun x ↦ star (g x) :=
+  h.fun_comp Star.star
 section LE
 
 variable [LE β] {l : Filter α}
