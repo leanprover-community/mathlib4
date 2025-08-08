@@ -179,8 +179,6 @@ noncomputable def localExtensionOn {ι : Type*} (b : Module.Basis ι ℝ F)
 
 end extend
 
-#exit
-
 -- TODO: construct a local section which is smooth in my coords,
 -- and has all the definiteness properties I'll want later!
 variable (E) in
@@ -239,19 +237,78 @@ lemma aux_special (G : Type*) [NormedAddCommGroup G] [NormedSpace ℝ G] [Finite
   -- thus B(r, 0) is contained in the image of the unit ball under v ↦ φ v v.
   sorry
 
--- TODO: is this version also true?
-lemma aux_special2 (G : Type*) [AddCommGroup G] [TopologicalSpace G] [Module ℝ G]
-    [FiniteDimensional ℝ G]
-    (φ : G →L[ℝ] G →L[ℝ] ℝ) (hpos : ∀ v : G, v ≠ 0 → 0 < φ v v) :
-    Bornology.IsVonNBounded ℝ {v | (φ v) v < 1} := by
+section aux
+
+variable {G : Type*} [AddCommGroup G] [TopologicalSpace G] [Module ℝ G]
+  [ContinuousAdd G] [ContinuousSMul ℝ G] [FiniteDimensional ℝ G]
+
+-- XXX: this is also a norm, not just a seminorm!
+noncomputable def mynorm (φ : G →L[ℝ] G →L[ℝ] ℝ) : Seminorm ℝ G where
+  toFun v := Real.sqrt (φ v v)
+  map_zero' := by simp
+  add_le' r s := by sorry -- shouldn't be difficult
+  neg' r := by simp
+  smul' a v := by simp [← mul_assoc, ← Real.sqrt_mul_self_eq_abs, Real.sqrt_mul (mul_self_nonneg a)]
+
+-- noncomputable def mynorm_space (φ : G →L[ℝ] G →L[ℝ] ℝ) : SeminormedAddCommGroup G where
+--   norm := mynorm φ
+--   dist_self x := by simp
+--   dist_comm x y := by
+--     simp only [mynorm]
+--     change Real.sqrt (φ (x - y) (x - y)) = Real.sqrt (φ (y - x) (y - x))
+--     sorry -- is just neg, so provable
+--   dist_triangle := sorry -- follows from add_le' above (probably not difficult)
+
+-- attribute [local instance] mynorm_space
+-- noncomputable def mynorm_space2 (φ : G →L[ℝ] G →L[ℝ] ℝ) : NormedSpace ℝ G where
+
+noncomputable def aux (φ : G →L[ℝ] G →L[ℝ] ℝ) : SeminormFamily ℝ G (Fin 1) := fun _ ↦ mynorm φ
+
+lemma bar (φ : G →L[ℝ] G →L[ℝ] ℝ) : WithSeminorms (aux φ) :=
+  -- In finite dimension there is a single topological vector space structure...
+  -- and mynorm defines a norm, hence a TVS structure.
   sorry
 
+end aux
+
+lemma aux_tvs (G : Type*) [AddCommGroup G] [TopologicalSpace G] [Module ℝ G]
+    [ContinuousAdd G] [ContinuousSMul ℝ G] [FiniteDimensional ℝ G]
+    (φ : G →L[ℝ] G →L[ℝ] ℝ) (hpos : ∀ v : G, v ≠ 0 → 0 < φ v v) :
+    Bornology.IsVonNBounded ℝ {v | (φ v) v < 1} := by
+  -- Proof sketch (courtesy of Sébastien  Gouezel):
+  -- Phi gives you a norm, which defines the same topology as the initial one
+  -- (as in finite dimension there is a single topological vector space structure).
+  -- The unit ball for the norm is von Neumann bounded wrt the topology defined by the norm
+  -- (we have this in mathlib), so also for the initial topology.
+  rw [WithSeminorms.isVonNBounded_iff_finset_seminorm_bounded (p := aux φ) (bar φ)]
+  intro I
+  let J : Finset (Fin 1) := {1}
+  suffices ∃ r > 0, ∀ x ∈ {v | (φ v) v < 1}, (J.sup (aux φ)) x < r by
+    -- All other finsets of Fin 1 are the empty set, where things are boring.
+    -- XXX: can a simproc help here?
+    by_cases h : I = ∅
+    · use 1; simp [h]
+    · have h : I = J := by
+        ext a
+        apply iff_of_true ?_ (by simp [Subsingleton.eq_one a, J])
+        sorry -- mathematically obvious
+      rwa [h]
+  simp only [Set.mem_setOf_eq, Finset.sup_singleton, J]
+  refine ⟨1, by norm_num, fun x h ↦ ?_⟩
+  simp only [aux, mynorm]
+  change Real.sqrt (φ x x) < 1
+  rw [Real.sqrt_lt' (by norm_num)]
+  simp [h]
+
 -- TODO: is the finite-dimensionality actually required?
-noncomputable def foo [∀ x, FiniteDimensional ℝ (E x)] : ContMDiffRiemannianMetric IB ∞ F E where
+-- Are the TVS hypotheses actually a restriction?
+noncomputable def foo
+    [∀ x, FiniteDimensional ℝ (E x)] [∀ x, ContinuousAdd (E x)] [∀ x, ContinuousSMul ℝ (E x)] :
+    ContMDiffRiemannianMetric IB ∞ F E where
   inner := foo_aux IB F E
   symm b := (foo_aux_prop IB F E b).1
   pos b := (foo_aux_prop IB F E b).2
-  isVonNBounded b := aux_special2 (E b) (foo_aux IB F E b) (foo_aux_prop IB F E b).2
+  isVonNBounded b := aux_tvs (E b) (foo_aux IB F E b) (foo_aux_prop IB F E b).2
   contMDiff := (foo_aux IB F E).contMDiff
 
 -- /-- Every `C^n` vector bundle whose fibre admits a `C^n` partition of unity
