@@ -73,6 +73,10 @@ lemma isIntegral_of_val_le_one {W : WeierstrassCurve K}
 
 theorem exists_integral (W : WeierstrassCurve K) :
     ∃ C : VariableChange K, IsIntegral R (C • W) := by
+  /- We first show that there is a non-negative integer `lmaxZ` that is larger than
+  the valuations of all the coefficients of `W`.
+  Some extra work is needed here only because the valuation on `K` takes values
+  in `WithZero (Multiplicative ℤ)`, and not `ℤ`. -/
   let l := [(valuation K (maximalIdeal R) W.a₁),
     (valuation K (maximalIdeal R) W.a₂),
     (valuation K (maximalIdeal R) W.a₃),
@@ -104,12 +108,15 @@ theorem exists_integral (W : WeierstrassCurve K) :
         simp only [WithZero.coe_le_coe, Multiplicative.ofAdd_le]
         convert Int.mul_le_mul_of_nonneg_right (Int.ofNat_le.mpr hn) zero_le_lmaxZ
         simp
-
+  /- It suffices to take a sufficiently large (negative) power of the uniformizer `π`
+  in the `VariableChange`, to ensure that the new coefficients are all integral.
+  In this case the exponent `lmaxZ` is large enough. -/
   obtain ⟨π, hπ⟩ := valuation_exists_uniformizer K (maximalIdeal R)
   have isUnit_π : IsUnit π :=
     IsUnit.mk0 π ((Valuation.ne_zero_iff _).mp (ne_of_eq_of_ne hπ WithZero.coe_ne_zero))
   use ⟨isUnit_π.unit ^ (-lmaxZ), 0, 0, 0⟩
-
+  /- The remainder of the proof is devoted to showing that this choice of exponent `lmaxZ`,
+  i.e. this choice of `VariableChange`, works. -/
   apply isIntegral_of_val_le_one R
   any_goals
     simp only [zpow_neg, variableChange_def, inv_inv, Units.val_zpow_eq_zpow_val, IsUnit.unit_spec,
