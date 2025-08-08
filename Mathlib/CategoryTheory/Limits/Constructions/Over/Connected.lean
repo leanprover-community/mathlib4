@@ -79,6 +79,21 @@ instance forgetCreatesConnectedLimits [IsConnected J] {B : C} :
         validLift := eqToIso (CreatesConnected.raised_cone_lowers_to_original c)
         makesLimit := CreatesConnected.raisedConeIsLimit t }
 
+/-- The forgetful functor from the over category preserves any connected limit. -/
+instance forgetPreservedConnectedLimits [IsConnected J] {B : C} :
+    PreservesLimitsOfShape J (forget B) where
+  preservesLimit {K} := {
+    preserves {c} hc := ⟨{
+      lift s := (forget B).map (hc.lift (CreatesConnected.raiseCone s))
+      fac s j := by
+        rw [Functor.mapCone_π_app, ← Functor.map_comp, hc.fac,
+          CreatesConnected.raiseCone_π_app, forget_map, homMk_left _ _]
+      uniq s m fac :=
+        congrArg (forget B).map (hc.uniq (CreatesConnected.raiseCone s)
+          (Over.homMk m (by simp [← fac])) fun j => (forget B).map_injective (fac j))
+    }⟩
+  }
+
 /-- The over category has any connected limit which the original category has. -/
 instance has_connected_limits {B : C} [IsConnected J] [HasLimitsOfShape J C] :
     HasLimitsOfShape J (Over B) where
