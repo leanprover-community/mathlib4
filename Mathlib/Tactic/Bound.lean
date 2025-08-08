@@ -231,11 +231,11 @@ lemma le_sqr_add (c z : ℝ) (cz : ‖c‖ ≤ ‖z‖) (z3 : 3 ≤ ‖z‖) :
 ```
 
 `bound` is built on top of `aesop`, and uses
-1. Apply lemmas registered via the `@[bound]` attribute
-2. Forward lemmas registered via the `@[bound_forward]` attribute
-3. Local hypotheses from the context
-4. Optionally: additional hypotheses provided as `bound [h₀, h₁]` or similar. These are added to the
-   context as if by `have := hᵢ`.
+1.  Apply lemmas registered via the `@[bound]` attribute
+2.  Forward lemmas registered via the `@[bound_forward]` attribute
+3.  Local hypotheses from the context
+4.  Optionally: additional hypotheses provided as `bound [h₀, h₁]` or similar. These are added to the
+    context as if by `have := hᵢ`.
 
 The functionality of `bound` overlaps with `positivity` and `gcongr`, but can jump back and forth
 between `0 ≤ x` and `x ≤ y`-type inequalities.  For example, `bound` proves

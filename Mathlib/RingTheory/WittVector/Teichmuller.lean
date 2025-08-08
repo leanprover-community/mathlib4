@@ -48,10 +48,10 @@ But in general the ghost map is not injective.
 We follow the same strategy as for proving that the ring operations on `𝕎 R`
 satisfy the ring axioms.
 
-1. We first prove it for rings `R` where `p` is invertible,
-   because then the ghost map is in fact an isomorphism.
-2. After that, we derive the result for `MvPolynomial R ℤ`,
-3. and from that we can prove the result for arbitrary `R`.
+1.  We first prove it for rings `R` where `p` is invertible,
+    because then the ghost map is in fact an isomorphism.
+2.  After that, we derive the result for `MvPolynomial R ℤ`,
+3.  and from that we can prove the result for arbitrary `R`.
 -/
 
 

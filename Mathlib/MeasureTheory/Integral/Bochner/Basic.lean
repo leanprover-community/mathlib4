@@ -31,8 +31,8 @@ file `Mathlib/MeasureTheory/Integral/SetToL1.lean`).
 
 ## Main statements
 
-1. Basic properties of the Bochner integral on functions of type `α → E`, where `α` is a measure
-   space and `E` is a real normed space.
+1.  Basic properties of the Bochner integral on functions of type `α → E`, where `α` is a measure
+    space and `E` is a real normed space.
 
   * `integral_zero`                  : `∫ 0 ∂μ = 0`
   * `integral_add`                   : `∫ x, f x + g x ∂μ = ∫ x, f ∂μ + ∫ x, g x ∂μ`
@@ -42,8 +42,8 @@ file `Mathlib/MeasureTheory/Integral/SetToL1.lean`).
   * `integral_congr_ae`              : `f =ᵐ[μ] g → ∫ x, f x ∂μ = ∫ x, g x ∂μ`
   * `norm_integral_le_integral_norm` : `‖∫ x, f x ∂μ‖ ≤ ∫ x, ‖f x‖ ∂μ`
 
-2. Basic order properties of the Bochner integral on functions of type `α → E`, where `α` is a
-   measure space and `E` is a real ordered Banach space.
+2.  Basic order properties of the Bochner integral on functions of type `α → E`, where `α` is a
+    measure space and `E` is a real ordered Banach space.
 
   * `integral_nonneg_of_ae` : `0 ≤ᵐ[μ] f → 0 ≤ ∫ x, f x ∂μ`
   * `integral_nonpos_of_ae` : `f ≤ᵐ[μ] 0 → ∫ x, f x ∂μ ≤ 0`
@@ -52,8 +52,8 @@ file `Mathlib/MeasureTheory/Integral/SetToL1.lean`).
   * `integral_nonpos`       : `f ≤ 0 → ∫ x, f x ∂μ ≤ 0`
   * `integral_mono`         : `f ≤ᵐ[μ] g → ∫ x, f x ∂μ ≤ ∫ x, g x ∂μ`
 
-3. Propositions connecting the Bochner integral with the integral on `ℝ≥0∞`-valued functions,
-   which is called `lintegral` and has the notation `∫⁻`.
+3.  Propositions connecting the Bochner integral with the integral on `ℝ≥0∞`-valued functions,
+    which is called `lintegral` and has the notation `∫⁻`.
 
   * `integral_eq_lintegral_pos_part_sub_lintegral_neg_part` :
     `∫ x, f x ∂μ = ∫⁻ x, f⁺ x ∂μ - ∫⁻ x, f⁻ x ∂μ`,
@@ -90,19 +90,19 @@ is scattered in sections with the name `posPart`.
 Here are the usual steps of proving that a property `p`, say `∫ f = ∫⁻ f⁺ - ∫⁻ f⁻`, holds for all
 functions :
 
-1. First go to the `L¹` space.
+1.  First go to the `L¹` space.
 
-   For example, if you see `ENNReal.toReal (∫⁻ a, ENNReal.ofReal <| ‖f a‖)`, that is the norm of
-   `f` in `L¹` space. Rewrite using `L1.norm_of_fun_eq_lintegral_norm`.
+    For example, if you see `ENNReal.toReal (∫⁻ a, ENNReal.ofReal <| ‖f a‖)`, that is the norm of
+    `f` in `L¹` space. Rewrite using `L1.norm_of_fun_eq_lintegral_norm`.
 
-2. Show that the set `{f ∈ L¹ | ∫ f = ∫⁻ f⁺ - ∫⁻ f⁻}` is closed in `L¹` using `isClosed_eq`.
+2.  Show that the set `{f ∈ L¹ | ∫ f = ∫⁻ f⁺ - ∫⁻ f⁻}` is closed in `L¹` using `isClosed_eq`.
 
-3. Show that the property holds for all simple functions `s` in `L¹` space.
+3.  Show that the property holds for all simple functions `s` in `L¹` space.
 
-   Typically, you need to convert various notions to their `SimpleFunc` counterpart, using lemmas
-   like `L1.integral_coe_eq_integral`.
+    Typically, you need to convert various notions to their `SimpleFunc` counterpart, using lemmas
+    like `L1.integral_coe_eq_integral`.
 
-4. Since simple functions are dense in `L¹`,
+4.  Since simple functions are dense in `L¹`,
 ```
 univ = closure {s simple}
      = closure {s simple | ∫ s = ∫⁻ s⁺ - ∫⁻ s⁻} : the property holds for all simple functions

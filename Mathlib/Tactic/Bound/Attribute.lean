@@ -91,13 +91,13 @@ def scoreToConfig (decl : Lean.Name) (score : Nat) : Aesop.Frontend.RuleConfig :
 A lemma is appropriate for `bound` if it proves an inequality using structurally simpler
 inequalities, "recursing" on the structure of the expressions involved, assuming positivity or
 nonnegativity where useful. Examples include
-1. `gcongr`-like inequalities over `<` and `≤` such as `f x ≤ f y` where `f` is monotone (note that
-   `gcongr` supports other relations).
-2. `mul_le_mul` which proves `a * b ≤ c * d` from `a ≤ c ∧ b ≤ d ∧ 0 ≤ b ∧ 0 ≤ c`
-3. Positivity or nonnegativity inequalities such as `sub_nonneg`: `a ≤ b → 0 ≤ b - a`
-4. Inequalities involving `1` such as `one_le_div` or `Real.one_le_exp`
-5. Disjunctions where the natural recursion branches, such as `a ^ n ≤ a ^ m` when the inequality
-   for `n,m` depends on whether `1 ≤ a ∨ a ≤ 1`.
+1.  `gcongr`-like inequalities over `<` and `≤` such as `f x ≤ f y` where `f` is monotone (note that
+    `gcongr` supports other relations).
+2.  `mul_le_mul` which proves `a * b ≤ c * d` from `a ≤ c ∧ b ≤ d ∧ 0 ≤ b ∧ 0 ≤ c`
+3.  Positivity or nonnegativity inequalities such as `sub_nonneg`: `a ≤ b → 0 ≤ b - a`
+4.  Inequalities involving `1` such as `one_le_div` or `Real.one_le_exp`
+5.  Disjunctions where the natural recursion branches, such as `a ^ n ≤ a ^ m` when the inequality
+    for `n,m` depends on whether `1 ≤ a ∨ a ≤ 1`.
 
 Each `@[bound]` lemma is assigned a score based on the number and complexity of its hypotheses,
 and the `aesop` implementation chooses lemmas with lower scores first:

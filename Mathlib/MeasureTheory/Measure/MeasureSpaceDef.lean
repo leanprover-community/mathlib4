@@ -15,9 +15,9 @@ See `MeasureTheory.MeasureSpace` for their properties and for extended documenta
 
 Given a measurable space `α`, a measure on `α` is a function that sends measurable sets to the
 extended nonnegative reals that satisfies the following conditions:
-1. `μ ∅ = 0`;
-2. `μ` is countably additive. This means that the measure of a countable union of pairwise disjoint
-   sets is equal to the sum of the measures of the individual sets.
+1.  `μ ∅ = 0`;
+2.  `μ` is countably additive. This means that the measure of a countable union of pairwise disjoint
+    sets is equal to the sum of the measures of the individual sets.
 
 Every measure can be canonically extended to an outer measure, so that it assigns values to
 all subsets, not just the measurable subsets. On the other hand, an outer measure that is countably
