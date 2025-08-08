@@ -29,6 +29,7 @@ variable {R : Type*} [CommSemiring R]
 /-- A predicate `P : Ideal R → Prop` over the ideals of a ring `R` is said to be Oka if R satisfies
 it (`P ⊤`) and whenever we have `I : Ideal R`, `P (I.colon (span {a})` and `P (I ⊔ span {a})` for
 some `a : R` then `P I`. -/
+@[stacks 05K9]
 class IsOka (P : Ideal R → Prop) : Prop where
   top : P ⊤
   oka {I : Ideal R} {a : R} : P (I ⊔ span {a}) → P (I.colon (span {a})) → P I
@@ -36,6 +37,7 @@ class IsOka (P : Ideal R → Prop) : Prop where
 variable {P : Ideal R → Prop}
 
 /-- If an ideal is maximal for not satisfying an oka predicate then it is prime. -/
+@[stacks 05KE]
 theorem IsOka.isPrime_of_maximal_not_isOka (hP : IsOka P) {I : Ideal R}
     (hI : Maximal (¬P ·) I) : I.IsPrime := by
   by_contra h
