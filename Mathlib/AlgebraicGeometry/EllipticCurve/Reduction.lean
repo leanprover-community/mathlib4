@@ -21,7 +21,7 @@ fraction fields of discrete valuation rings.
 * `IsMinimalWeierstrassEquation`: a predicate expressing that a given Weierstrass equation
   has minimal valuation of discriminant among all isomorphic integral Weierstrass equations.
 * `reduction`: the reduction of a Weierstrass curve given by a minimal Weierstrass equation,
-  which is a Weierstrass curve over the residue field. 
+  which is a Weierstrass curve over the residue field.
 
 ## Main statements
 
@@ -142,8 +142,7 @@ class IsMinimalWeierstrassEquation (W : WeierstrassCurve K) : Prop where
   val_Δ_minimal :
     MinimalFor
       (fun (C : VariableChange K) => IsIntegralWeierstrassEquation R (C • W))
-      (fun (C : VariableChange K) =>
-        addVal R ((algebraMap R K).toFun.invFun (C • W).Δ))
+      (fun (C : VariableChange K) => addVal R ((algebraMap R K).toFun.invFun (C • W).Δ))
       (1 : VariableChange K)
 
 omit [IsFractionRing R K] in
@@ -154,8 +153,7 @@ theorem exists_minimalWeierstrassEquation (W : WeierstrassCurve K) :
     ∃ C : VariableChange K, IsMinimalWeierstrassEquation R (C • W) := by
   obtain ⟨ C , hC ⟩ := exists_minimalFor_of_wellFoundedLT
     (fun (C : VariableChange K) => IsIntegralWeierstrassEquation R (C • W))
-    (fun (C : VariableChange K) =>
-      addVal R ((algebraMap R K).toFun.invFun (C • W).Δ))
+    (fun (C : VariableChange K) => addVal R ((algebraMap R K).toFun.invFun (C • W).Δ))
     (exists_integralWeierstrassEquation R W)
   use C
   refine { val_Δ_minimal := ?_ }
@@ -174,8 +172,7 @@ section Reduction
 
 open IsLocalRing
 
-noncomputable def reduction (W : WeierstrassCurve K)
-    [IsMinimalWeierstrassEquation R W] :
+noncomputable def reduction (W : WeierstrassCurve K) [IsMinimalWeierstrassEquation R W] :
     WeierstrassCurve (ResidueField R) :=
   letI hW : IsIntegralWeierstrassEquation R W := inferInstance
   hW.integral.choose.map (residue R)
