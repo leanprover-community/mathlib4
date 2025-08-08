@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
 import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
+import Mathlib.Algebra.Ring.Action.ConjAct
 
 /-!
 # Basic lemmas about the general linear group $GL(n, R)$
@@ -45,14 +46,15 @@ private theorem NonUnitalAlgHom.apply_vecMulVec_mulVec_mul_comm [CommSemiring R]
     _ = (f A * (LinearMap.toMatrix' T)) *ᵥ x := by
       simp_rw [← mulVec_mulVec, ← toLin'_apply (LinearMap.toMatrix' T), toLin'_toMatrix']
 
-theorem AlgEquiv.exists_generalLinearGroup_eq_mulLeftRight_inv
+theorem AlgEquiv.exists_generalLinearGroup_eq_conj
     [Field R] (f : Matrix n n R ≃ₐ[R] Matrix n n R) :
-    ∃ T : GL n R, ⇑f = (LinearMap.mulLeftRight R (↑T, ↑T⁻¹)) := by
+    ∃ T : GL n R, f = MulSemiringAction.toAlgAut (ConjAct (GL n R)) R (Matrix n n R) T := by
   by_cases hn : IsEmpty n
   · use 1
     ext a i _
     exact isEmpty_iff.mp hn i |>.elim
-  simp_rw [funext_iff, LinearMap.mulLeftRight_apply, @eq_comm _ (f _),
+  simp_rw [AlgEquiv.ext_iff, MulSemiringAction.toAlgAut_apply,
+    MulSemiringAction.toAlgEquiv_apply, HSMul.hSMul, SMul.smul, @eq_comm _ (f _),
     Units.mul_inv_eq_iff_eq_mul, @eq_comm _ _ (f _ * _)]
   rw [not_isEmpty_iff] at hn
   have : ∃ u : n → R, u ≠ 0 := ⟨1, one_ne_zero⟩
