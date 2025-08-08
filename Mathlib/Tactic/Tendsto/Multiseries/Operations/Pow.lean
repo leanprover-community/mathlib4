@@ -6,7 +6,6 @@ Authors: Vasilii Nesterov
 import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 import Mathlib.Analysis.Analytic.Constructions
 import Mathlib.Tactic.Tendsto.Multiseries.Operations.Inv
-
 import Mathlib.Tactic.Tendsto.Multiseries.Operations.ForPow
 import Mathlib.Tactic.Tendsto.Multiseries.Trimming
 import Mathlib.Tactic.Tendsto.Multiseries.LeadingTerm

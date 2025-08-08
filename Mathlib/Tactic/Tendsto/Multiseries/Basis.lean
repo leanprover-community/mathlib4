@@ -16,7 +16,7 @@ import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 ## Main definitions
 
 * `WellFormedBasis basis` is a predicate meaning that all function from `basis` tend to `atTop`,
-and `basis` is Pairwise such that if
+and `basis` is sorted such that if
 function `g` goes after `f` in `basis`, then `log f =o[atTop] log g`.
 
 -/
@@ -26,17 +26,50 @@ open Asymptotics Filter
 namespace TendstoTactic
 
 /-- `WellFormedBasis basis` means that all function from `basis` tend to `atTop`, and
-`basis` is Pairwise such that if
+`basis` is sorted such that if
 function `g` goes after `f` in `basis`, then `log f =o[atTop] log g`. -/
 def WellFormedBasis (basis : Basis) : Prop :=
   basis.Pairwise (fun x y => (Real.log ∘ y) =o[atTop] (Real.log ∘ x)) ∧
   ∀ f ∈ basis, Tendsto f atTop atTop
 
+theorem WellFormedBasis.nil : WellFormedBasis [] := by simp [WellFormedBasis]
+
+theorem WellFormedBasis.single (f : ℝ → ℝ) (hf : Tendsto f atTop atTop) : WellFormedBasis [f] := by
+  simpa [WellFormedBasis]
+
 /-- Tail of well-formed basis is well-ordered. -/
-def WellFormedBasis.tail {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+theorem WellFormedBasis.tail {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (h : WellFormedBasis (basis_hd :: basis_tl)) : WellFormedBasis basis_tl := by
   simp [WellFormedBasis] at h ⊢
   tauto
+
+theorem WellFormedBasis.insert {left right : Basis} {f : ℝ → ℝ}
+    (h : WellFormedBasis (left ++ right))
+    (hf_tendsto : Tendsto f atTop atTop)
+    (hf_comp_left : ∀ g, left.getLast? = .some g → (Real.log ∘ f) =o[atTop] (Real.log ∘ g))
+    (hf_comp_right : ∀ g, right.head? = .some g → (Real.log ∘ g) =o[atTop] (Real.log ∘ f)) :
+    WellFormedBasis (left ++ f :: right) := by
+  simp [WellFormedBasis] at h ⊢
+  constructor
+  · rw [List.pairwise_append]
+    constructorm* _ ∧ _
+    · exact h.left.sublist (List.sublist_append_left _ _)
+    · rw [List.pairwise_cons]
+      constructor
+      · sorry
+      · apply h.left.sublist (List.sublist_append_right _ _)
+    · sorry
+  · rintro g (hg | hg | hg)
+    · exact h.right _ (.inl hg)
+    · convert hf_tendsto
+    · exact h.right _ (.inr hg)
+
+theorem WellFormedBasis.push {basis : Basis} {f : ℝ → ℝ}
+    (h : WellFormedBasis basis)
+    (hf_tendsto : Tendsto f atTop atTop)
+    (hf_comp : ∀ g, basis.getLast? = .some g → (Real.log ∘ f) =o[atTop] (Real.log ∘ g)) :
+    WellFormedBasis (basis ++ [f]) :=
+  WellFormedBasis.insert (right := []) (by simp [h]) hf_tendsto hf_comp (by simp)
 
 /-- All functions from well-formed basis tends to `atTop`. -/
 theorem basis_tendsto_top {basis : Basis} (h : WellFormedBasis basis) :
@@ -65,7 +98,6 @@ theorem basis_head_eventually_pos {basis_hd : ℝ → ℝ} {basis_tl : Basis}
   intro x h
   apply h
   simp
-
 
 /-- All functions of well-formed basis' tail are o-little of basis' head. -/
 theorem basis_IsLittleO_of_head {hd : ℝ → ℝ} {tl : Basis} (h : WellFormedBasis (hd :: tl)) :
@@ -163,5 +195,35 @@ theorem PreMS.Approximates_coef_majorated_head {fC basis_hd : ℝ → ℝ} {basi
       · simp [WellFormedBasis] at h_basis
         exact h_basis.left.left.left
       · exact h_exp
+
+inductive BasisExtension : Basis → Type
+| nil : BasisExtension []
+| keep (basis_hd : ℝ → ℝ) {basis_tl : Basis} (ex : BasisExtension basis_tl) :
+  BasisExtension (basis_hd :: basis_tl)
+| insert {basis : Basis} (f : ℝ → ℝ) (ex : BasisExtension basis) : BasisExtension basis
+
+def BasisExtension.getBasis {basis : Basis} (ex : BasisExtension basis) : Basis :=
+  match ex with
+  | nil => []
+  | keep basis_hd ex => basis_hd :: ex.getBasis
+  | insert f ex => f :: ex.getBasis
+
+example :
+  let basis := [fun x ↦ x];
+  let ex : BasisExtension basis := .keep _ .nil;
+  ex.getBasis = [fun x ↦ x] := rfl
+
+example :
+  let basis := [fun x ↦ x];
+  let ex : BasisExtension basis := .keep _ (.insert Real.log .nil);
+  ex.getBasis = [fun x ↦ x, Real.log] := rfl
+
+example :
+  let basis := [fun x ↦ x, fun x ↦ 3 * x];
+  let ex : BasisExtension basis := .keep _ (.insert Real.log (.keep _ .nil));
+  ex.getBasis = [fun x ↦ x, Real.log, fun x ↦ 3 * x] := by
+    rfl
+
+
 
 end TendstoTactic

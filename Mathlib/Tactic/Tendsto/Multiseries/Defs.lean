@@ -24,7 +24,6 @@ For details see the docs for `Approximates`.
 # Definition used inside the theory
 * `leadingExp ms` is the value of leading exponent of `ms`. Is `ms = []` then it is `⊥`.
 
-
 -/
 
 
@@ -473,7 +472,7 @@ theorem partialSumsFrom_eq_map {Cs : Seq (ℝ → ℝ)} {exps : Seq ℝ} {basis_
 
 end PartialSums
 
-def Approximates {basis : Basis} (ms : PreMS basis) (f : ℝ → ℝ)   : Prop :=
+def Approximates {basis : Basis} (ms : PreMS basis) (f : ℝ → ℝ) : Prop :=
   match basis with
   | [] => f =ᶠ[atTop] fun _ ↦ ms
   | List.cons basis_hd _ =>

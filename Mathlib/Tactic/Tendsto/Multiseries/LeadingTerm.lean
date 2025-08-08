@@ -43,6 +43,10 @@ theorem leadingTerm_length {basis : Basis} {ms : PreMS basis} :
   | List.cons basis_hd basis_tl => by
     cases ms <;> simp [leadingTerm, leadingTerm_length]
 
+theorem leadingTerm_ne_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
+    : ms.leadingTerm.exps ≠ [] := by
+  cases' ms with exp coef tl <;> simp [leadingTerm]
+
 theorem leadingTerm_cons_toFun {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ}
     {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)} (t : ℝ) :
     (leadingTerm (basis := basis_hd :: basis_tl) (Seq.cons (exp, coef) tl)).toFun
@@ -342,6 +346,18 @@ theorem tendsto_bot_of_FirstIsPos {basis : Basis} {ms : PreMS basis} {f : ℝ �
     (IsEquivalent_leadingTerm h_wo h_approx h_trimmed h_basis)).mpr
   apply Term.tendsto_bot_of_FirstIsPos h_basis leadingTerm_length
   all_goals simpa [h_eq]
+
+theorem extendBasisEnd_zero_last_exp {basis : Basis} {f b : ℝ → ℝ} {ms : PreMS basis} :
+    ∀ a, (ms.extendBasisEnd b).leadingTerm.exps.getLast? = .some a → a = 0 := by
+  intro a h
+  cases' basis with basis_hd basis_tl
+  · simp [extendBasisEnd, leadingTerm, PreMS.const] at h
+    simp [h]
+  cases' ms with exp coef tl
+  · simp [extendBasisEnd, leadingTerm, List.getLast?_replicate] at h
+    simp [h]
+  simp [extendBasisEnd, leadingTerm] at h
+  sorry
 
 end PreMS
 

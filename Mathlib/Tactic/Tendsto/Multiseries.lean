@@ -4,3 +4,4 @@ import Mathlib.Tactic.Tendsto.Multiseries.Term
 import Mathlib.Tactic.Tendsto.Multiseries.LeadingTerm
 import Mathlib.Tactic.Tendsto.Multiseries.Trimming
 import Mathlib.Tactic.Tendsto.Multiseries.Operations
+import Mathlib.Tactic.Tendsto.Multiseries.LogBasis

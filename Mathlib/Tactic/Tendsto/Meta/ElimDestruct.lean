@@ -36,10 +36,41 @@ theorem add_const (x y : PreMS []) : (PreMS.add x y) = x + y := rfl
 theorem mul_const (x y : PreMS []) : (PreMS.mul x y) = x * y := by simp [PreMS.mul]
 
 @[PreMS_const]
+theorem mulConst_const (x : PreMS []) (c : ℝ) : (PreMS.mulConst x c) = x * c := rfl
+
+@[PreMS_const]
 theorem inv_const (x : PreMS []) : (PreMS.inv x) = x⁻¹ := rfl
 
 @[PreMS_const]
 theorem pow_const (x : PreMS []) (a : ℝ) : (PreMS.pow x a) = x^a := rfl
+
+@[PreMS_const]
+theorem extendBasisEnd_const (f : ℝ → ℝ) (x : PreMS []) : (PreMS.extendBasisEnd f x) =
+    PreMS.const [f] x := rfl
+
+@[PreMS_const]
+theorem updateBasis'_const (ms : PreMS []) (ex : BasisExtension []) :
+    (PreMS.updateBasis' ex ms) = PreMS.const _ ms := by
+  cases ex with
+  | nil =>
+    simp [PreMS.updateBasis', BasisExtension.getBasis, PreMS.const]
+  | insert f ex_tl =>
+    simp [PreMS.updateBasis', BasisExtension.getBasis, PreMS.const]
+    rw [updateBasis'_const]
+
+@[PreMS_const]
+theorem updateBasis'_const_real (ms : ℝ) (ex : BasisExtension []) :
+    (PreMS.updateBasis' ex ms) = PreMS.const _ ms := by
+  cases ex with
+  | nil =>
+    simp [PreMS.updateBasis', BasisExtension.getBasis, PreMS.const]
+  | insert f ex_tl =>
+    simp [PreMS.updateBasis', BasisExtension.getBasis, PreMS.const]
+    rw [updateBasis'_const]
+
+@[PreMS_const]
+theorem log_const (x : PreMS []) (logBasis : LogBasis []) : (PreMS.log logBasis x) =
+    Real.log x := rfl
 
 end Const
 
@@ -49,6 +80,10 @@ variable {basis_hd : ℝ → ℝ} {basis_tl : Basis}
 
 theorem const_destruct (c : ℝ) : destruct (PreMS.const (basis_hd :: basis_tl) c) =
     .some ((0, PreMS.const basis_tl c), @PreMS.nil basis_hd basis_tl) := by
+  rfl
+
+theorem one_destruct : destruct (PreMS.one (basis_hd :: basis_tl)) =
+    .some ((0, PreMS.one basis_tl), @PreMS.nil basis_hd basis_tl) := by
   rfl
 
 theorem monomial_zero_destruct : destruct (PreMS.monomial (basis_hd :: basis_tl) 0) =
@@ -103,6 +138,12 @@ theorem mulMonomial_destruct (b : PreMS (basis_hd :: basis_tl)) (m_coef : PreMS 
           PreMS.mulMonomial (basis_hd := basis_hd) b_tl m_coef m_exp) := by
   cases b <;> simp
 
+theorem mulConst_destruct (x : PreMS (basis_hd :: basis_tl)) (c : ℝ) : destruct (x.mulConst c) =
+    match destruct x with
+    | none => none
+    | some ((exp, coef), tl) => .some ((exp, coef.mulConst c), (PreMS.mulConst (basis := basis_hd :: basis_tl) tl c)) := by
+  cases x <;> simp
+
 theorem apply_destruct (s : PreMS.LazySeries) (ms : PreMS (basis_hd :: basis_tl)) :
     destruct (s.apply ms) =
     match destruct s with
@@ -139,6 +180,28 @@ theorem pow_destruct (ms : PreMS (basis_hd :: basis_tl)) (a : ℝ) : destruct (m
     · simp
   · simp [PreMS.pow]
 
+theorem log_destruct (ms : PreMS (basis_hd :: basis_tl))
+    (logBasis : LogBasis (basis_hd :: basis_tl)) : destruct (ms.log logBasis) =
+    match destruct ms with
+    | none => none
+    | some ((exp, coef), tl) =>
+      match basis_tl with
+      | [] => destruct (PreMS.add (basis := [basis_hd]) (PreMS.const _ (Real.log coef)) <|
+          PreMS.logSeries.apply (PreMS.mulConst (basis := [basis_hd]) tl coef⁻¹))
+      | List.cons basis_tl_hd basis_tl_tl =>
+        let logC := PreMS.log logBasis.tail coef
+        match logBasis with
+        | .cons _ _ _ _ log_hd _ _ =>
+          destruct (PreMS.add (basis := basis_hd :: basis_tl_hd :: basis_tl_tl) ((.cons (0, logC.add <| log_hd.mulConst exp) .nil)) <|
+            PreMS.logSeries.apply (PreMS.mulMonomial tl coef.inv (-exp))) := by
+  cases' ms with exp coef tl
+  · simp [PreMS.log]
+  cases' basis_tl with basis_tl_hd basis_tl_tl
+  · simp [PreMS.log]
+  cases' logBasis with _ _ _ _ log_hd
+  conv => lhs; unfold PreMS.log; simp
+  rfl
+
 theorem invSeries_destruct : destruct PreMS.invSeries = .some (1, PreMS.invSeries) := by
   conv => lhs; rw [PreMS.invSeries_eq_cons_self]; simp
 
@@ -152,6 +215,36 @@ theorem powSeries_destruct (x : ℝ) :
   unfold PreMS.powSeries
   simp [powSeriesFrom_destruct]
 
+theorem logSeriesFrom_destruct (n : ℕ) :
+    destruct (PreMS.logSeriesFrom n) = .some (-(-1)^n / n, PreMS.logSeriesFrom (n + 1)) := by
+  rw [PreMS.logSeriesFrom_eq_cons]
+  simp
+
+theorem logSeries_destruct : destruct PreMS.logSeries = .some (0, PreMS.logSeriesFrom 1) := by
+  simp [PreMS.logSeries]
+
+theorem extendBasisEnd_destruct (f : ℝ → ℝ) (ms : PreMS (basis_hd :: basis_tl)) :
+    destruct (ms.extendBasisEnd f) =
+    match destruct ms with
+    | none => none
+    | some ((exp, coef), tl) => some ((exp, coef.extendBasisEnd f),
+        PreMS.extendBasisEnd (basis := basis_hd :: basis_tl) f tl) := by
+  cases' ms <;> simp [PreMS.extendBasisEnd]
+
+theorem updateBasis'_keep_destruct (ms : PreMS (basis_hd :: basis_tl)) (ex_tl : BasisExtension basis_tl) :
+    destruct (ms.updateBasis' (BasisExtension.keep basis_hd ex_tl)) =
+    match destruct ms with
+    | none => none
+    | some ((exp, coef), tl) =>
+      .some ((exp, PreMS.updateBasis' ex_tl coef),
+        PreMS.updateBasis' (basis := basis_hd :: basis_tl) (BasisExtension.keep basis_hd ex_tl) tl) := by
+  cases' ms with exp coef tl <;> simp [PreMS.updateBasis']
+
+theorem updateBasis'_insert_destruct (ms : PreMS (basis_hd :: basis_tl)) (f : ℝ → ℝ) (ex_tl : BasisExtension (basis_hd :: basis_tl)) :
+    destruct (ms.updateBasis' (BasisExtension.insert f ex_tl)) =
+    .some ((0, PreMS.updateBasis' ex_tl ms), PreMS.nil (basis_hd := basis_hd)) := by
+  cases' ms with exp coef tl <;> simp [PreMS.updateBasis'] <;> rfl
+
 end Destruct
 
 open Lean Elab Meta Tactic Qq
@@ -163,16 +256,35 @@ def simpWith (pf : Expr) : SimpM Simp.Step := do
 
 simproc elimDestruct (Stream'.Seq.destruct _) := fun e => do
   let (``Stream'.Seq.destruct, #[_, target]) := e.getAppFnArgs | return .continue
+  -- let ⟨1, α, e⟩ ← inferTypeQ e | return .continue
   let ⟨1, targetType, target⟩ := ← inferTypeQ target | return .continue
+  -- dbg_trace f!"destructing {← ppExpr target}"
   match targetType with
   | ~q(PreMS.LazySeries) =>
     match target with
     | ~q(PreMS.invSeries) => simpWith q(invSeries_destruct)
     | ~q(PreMS.powSeriesFrom $x $acc $n) => simpWith q(powSeriesFrom_destruct $x $acc $n)
     | ~q(PreMS.powSeries $x) => simpWith q(powSeries_destruct $x)
+    | ~q(PreMS.logSeriesFrom $n) => simpWith q(logSeriesFrom_destruct $n)
+    | ~q(PreMS.logSeries) => simpWith q(logSeries_destruct)
     | _ => return .continue
   | ~q(PreMS $basis) =>
-    let ~q(List.cons $basis_hd $basis_tl) := basis | return .continue
+    let basis' : Q(Basis) ← reduceBasis basis
+    let _ : $basis =Q $basis' := ⟨⟩
+    let ~q(List.cons $basis_hd $basis_tl) := basis' | return .continue
+    match target.getAppFnArgs with
+    | (``PreMS.extendBasisEnd, #[_, f, ms]) => -- костыль
+      simpWith (← mkAppM ``extendBasisEnd_destruct #[f, ms])
+    | (``PreMS.updateBasis', #[(oldBasis : Q(Basis)), (ex : Q(BasisExtension $oldBasis)), (ms : Q(PreMS $oldBasis))]) =>
+      let oldBasis' : Q(Basis) ← reduceBasis oldBasis
+      haveI : $oldBasis =Q $oldBasis' := ⟨⟩
+      match oldBasis, ex with
+      | ~q(List.cons $oldBasis_hd $oldBasis_tl), ~q(BasisExtension.keep _ $ex_tl) =>
+        simpWith q(updateBasis'_keep_destruct $ms $ex_tl)
+      | ~q(List.cons $oldBasis_hd $oldBasis_tl), ~q(BasisExtension.insert $f $ex_tl) =>
+        simpWith q(updateBasis'_insert_destruct $ms $f $ex_tl)
+    --   -- simpWith (← mkAppM ``updateBasis'_destruct #[ex, ms])
+    | _ =>
     match target with
     | ~q(PreMS.nil) =>
       return .done {
@@ -185,8 +297,11 @@ simproc elimDestruct (Stream'.Seq.destruct _) := fun e => do
         proof? := q(Stream'.Seq.destruct_cons $hd $tl)
       }
     | ~q(PreMS.const _ $c) => simpWith q(@const_destruct $basis_hd $basis_tl $c)
+    | ~q(PreMS.one _) => simpWith q(@one_destruct $basis_hd $basis_tl)
     | ~q(PreMS.monomial _ $n) =>
-      match (← getNatValue? n).get! with
+      -- dbg_trace f!"monomial {← ppExpr n}"
+      -- dbg_trace f!"reduced {← ppExpr (← withTransparency .all $ reduce n)}"
+      match (← getNatValue? (← withTransparency .all $ reduce n)).get! with
       | 0 => simpWith q(@monomial_zero_destruct $basis_hd $basis_tl)
       | m + 1 => simpWith q(@monomial_succ_destruct $basis_hd $basis_tl $m)
     | ~q(PreMS.neg $arg) => simpWith q(neg_destruct $arg)
@@ -194,9 +309,12 @@ simproc elimDestruct (Stream'.Seq.destruct _) := fun e => do
     | ~q(PreMS.mul $arg1 $arg2) => simpWith q(mul_destruct $arg1 $arg2)
     | ~q(PreMS.mulMonomial $b $m_coef $m_exp) =>
       simpWith q(mulMonomial_destruct $b $m_coef $m_exp)
+    | ~q(PreMS.mulConst $arg $c) => simpWith q(mulConst_destruct $arg $c)
     | ~q(PreMS.LazySeries.apply $s $ms) => simpWith q(apply_destruct $s $ms)
     | ~q(PreMS.inv $arg) => simpWith q(inv_destruct $arg)
     | ~q(PreMS.pow $arg $exp) => simpWith q(pow_destruct $arg $exp)
+    | ~q(PreMS.log $logBasis $arg) => simpWith q(log_destruct $arg $logBasis)
+    -- | ~q(PreMS.extendBasisEnd $f $arg) => simpWith q(extendBasisEnd_destruct $f $arg)
     | _ => return .continue
   | _ => return .continue
 
@@ -207,7 +325,7 @@ macro_rules
     `(tactic|
       repeat (
         norm_num1;
-        first | simp only [elimDestruct, PreMS_const] | simp only [↓reduceIte, PreMS_const]
+        first | simp only [elimDestruct, PreMS_const, LogBasis.tail] | simp only [↓reduceIte, PreMS_const] | simp only [LogBasis.insertLastLog] | rewrite [updateBasis'_const]
       ) <;> norm_num1
     )
 

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
 import Mathlib.Tactic.Tendsto.Multiseries
+import Qq
 
 /-!
 # TODO
@@ -41,5 +42,47 @@ lemma nil_tendsto_zero {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f : ℝ → 
   apply PreMS.Approximates_nil at h
   exact h.tendsto
 
+end PreMS
 
-end TendstoTactic.PreMS
+open Lean Elab Meta Qq
+
+mutual
+
+  partial def reduceAppend (left right : Q(Basis)) : MetaM Q(Basis) := do
+    match left with
+    | ~q(List.nil), _ => return right
+    | ~q(List.cons $left_hd $left_tl) =>
+      let tl ← reduceAppend left_tl right
+      return q(List.cons $left_hd $tl)
+    | _ => panic! s!"Unexpected left in reduceAppend: {← ppExpr left}"
+
+  partial def reduceBasisExtension {basis : Q(Basis)} (ex : Q(BasisExtension $basis)) :
+      MetaM Q(Basis) := do
+    match basis, ex with
+    | ~q(List.nil), ~q(BasisExtension.nil) => return q(List.nil)
+    | ~q(List.cons $basis_hd $basis_tl), ~q(BasisExtension.keep _ $ex_tl) =>
+      let tl ← reduceBasisExtension ex_tl
+      return q(List.cons $basis_hd $tl)
+    | _, ~q(BasisExtension.insert $f $ex_tl) =>
+      let tl ← reduceBasisExtension ex_tl
+      return q(List.cons $f $tl)
+    | _ => panic! s!"Unexpected ex in reduceBasisExtension: {← ppExpr ex}"
+
+  partial def reduceBasis (basis : Q(Basis)) : MetaM Q(Basis) := do
+    match basis with
+    | ~q(List.nil) => return q(List.nil)
+    | ~q(List.cons $hd $tl) =>
+      let tl' ← reduceBasis tl
+      return q(List.cons $hd $tl')
+    | ~q(@BasisExtension.getBasis $basis' $ex) =>
+      let basis'' ← reduceBasis basis'
+      haveI : $basis =Q $basis' := ⟨⟩
+      return ← @reduceBasisExtension basis'' ex
+    | ~q($left ++ $right) =>
+      let left' ← reduceBasis left
+      let right' ← reduceBasis right
+      return ← reduceAppend left' right'
+
+end
+
+end TendstoTactic

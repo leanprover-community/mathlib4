@@ -10,6 +10,8 @@ import Mathlib.Tactic.Tendsto.Multiseries.Basis
 # TODO
 -/
 
+set_option linter.style.multiGoal false
+
 namespace TendstoTactic
 
 namespace PreMS
@@ -147,13 +149,14 @@ theorem monomial_WellOrdered {basis : Basis} {n : ℕ} : (monomial basis n).Well
       · exact WellOrdered.nil
 
 /-- `monomial` approximates monomial function. -/
-theorem monomial_Approximates {basis : Basis} {n : ℕ} (h : n < basis.length)
+theorem monomial_Approximates {basis : Basis} {n : Fin (List.length basis)}
     (h_basis : WellFormedBasis basis) : (monomial basis n).Approximates basis[n] := by
   cases basis with
   | nil =>
+    cases' n with _ h
     simp at h
   | cons basis_hd basis_tl =>
-    cases n with
+    cases n using Fin.cases with
     | zero =>
       simp [monomial]
       apply Approximates.cons (fun _ ↦ 1)
@@ -168,14 +171,137 @@ theorem monomial_Approximates {basis : Basis} {n : ℕ} (h : n < basis.length)
     | succ m =>
       simp [monomial]
       apply Approximates.cons
-      · apply monomial_Approximates
-        · simpa using h
-        · exact h_basis.tail
+      · exact monomial_Approximates h_basis.tail
       · apply basis_tail_majorated_head h_basis
         apply List.getElem_mem
       · simp
         apply Approximates.nil
         rfl
+
+section BasisOperations
+
+/-- Extends basis with `f` in the middle. -/
+def extendBasisMiddle {left right : Basis} (f : ℝ → ℝ) (ms : PreMS (left ++ right)) :
+    PreMS (left ++ f :: right) :=
+  match left with
+  | [] => .cons (0, ms) .nil
+  | List.cons _ _ => ms.map (fun (exp, coef) => (exp, extendBasisMiddle f coef))
+
+theorem extendBasisMiddle_WellOrdered {left right : Basis} {b : ℝ → ℝ} {ms : PreMS (left ++ right)}
+    (h_wo : ms.WellOrdered) : (ms.extendBasisMiddle b).WellOrdered := by
+  sorry
+
+theorem extendBasisMiddle_Approximates {left right : Basis} {f b : ℝ → ℝ}
+    {ms : PreMS (left ++ right)}
+    (h_approx : ms.Approximates f) : (ms.extendBasisMiddle b).Approximates f := by
+  sorry
+
+/-- Extends basis with `f` at right end. -/
+-- TODO: it's just extendMiddle with right = [].
+def extendBasisEnd {basis : Basis} (f : ℝ → ℝ) (ms : PreMS basis) : PreMS (basis ++ [f]) :=
+  match basis with
+  | [] => const [f] ms
+  | List.cons _ _ => ms.map (fun (exp, coef) => (exp, extendBasisEnd f coef))
+
+theorem extendBasisEnd_WellOrdered {basis : Basis} {b : ℝ → ℝ} {ms : PreMS basis}
+    (h_wo : ms.WellOrdered) : (ms.extendBasisEnd b).WellOrdered := by
+  sorry
+
+theorem extendBasisEnd_Approximates {basis : Basis} {f b : ℝ → ℝ} {ms : PreMS basis}
+    (h_approx : ms.Approximates f) : (ms.extendBasisEnd b).Approximates f := by
+  sorry
+
+@[reducible]
+def updateBasis' {basis : Basis} (ex : BasisExtension basis) (ms : PreMS basis) :
+    PreMS ex.getBasis :=
+  match ex with
+  | .nil => ms
+  | .keep basis_hd ex_tl => ms.map (fun (exp, coef) => (exp, updateBasis' ex_tl coef))
+  | .insert _ ex_tl => .cons (0, updateBasis' ex_tl ms) .nil
+
+theorem updateBasis'_WellOrdered {basis : Basis} {ex : BasisExtension basis} {ms : PreMS basis}
+    (h_wo : ms.WellOrdered) :
+    (ms.updateBasis' ex).WellOrdered := by
+  sorry
+
+theorem updateBasis'_Approximates {basis : Basis} {ex : BasisExtension basis} {ms : PreMS basis}
+    {f : ℝ → ℝ}
+    (h_basis : WellFormedBasis ex.getBasis)
+    (h_wo : ms.WellOrdered)
+    (h_approx : ms.Approximates f) :
+    (ms.updateBasis' ex).Approximates f := by
+  sorry
+
+-- open Classical in
+-- noncomputable def updateBasis {basis : Basis} (basis' : Basis) (ms : PreMS basis) : PreMS basis' :=
+--   match basis, basis' with
+--   | [], [] => ms
+--   | List.cons _ _, [] => 0 -- impossible, when basis <+ basis'
+--   | [], List.cons _ _ => .const _ ms
+--   | List.cons basis_hd _, List.cons basis_hd' _ =>
+--     if basis_hd = basis_hd' then
+--       ms.map (fun (exp, coef) => (exp, updateBasis _ coef))
+--     else
+--       .cons (0, ms.updateBasis _) .nil
+
+-- theorem updateBasis_WellOrdered {basis basis' : Basis} {ms : PreMS basis}
+--     (h_wo : ms.WellOrdered) :
+--     (ms.updateBasis basis').WellOrdered := by
+--   cases' basis with basis_hd basis_tl <;> cases' basis' with basis_hd' basis_tl'
+--   · simpa [updateBasis]
+--   · simpa [updateBasis] using const_WellOrdered
+--   · simpa [updateBasis] using zero_WellOrdered
+--   simp [updateBasis]
+--   split_ifs with h_if
+--   · subst h_if
+--     let motive : (PreMS (basis_hd :: basis_tl')) → Prop := fun ms' =>
+--       ∃ ms : PreMS (basis_hd :: basis_tl),
+--         ms' = ms.map (fun (exp, coef) => (exp, updateBasis _ coef)) ∧
+--         ms.WellOrdered
+--     apply WellOrdered.coind motive
+--     · use ms
+--     intro ms' ih
+--     simp [motive] at ih
+--     obtain ⟨ms, ih, h_wo⟩ := ih
+--     subst ih
+--     cases' ms with exp coef tl
+--     · simp
+--     right
+--     obtain ⟨h_coef, h_comp, h_tl⟩ := WellOrdered_cons h_wo
+--     use ?_, ?_, ?_
+--     simp
+--     constructor
+--     · exact Eq.refl _
+--     constructor
+--     · apply updateBasis_WellOrdered h_coef
+--     constructor
+--     · cases' tl with tl_exp tl_coef tl_tl
+--       · simp
+--       simpa using h_comp
+--     · use tl
+--   · apply WellOrdered.cons
+--     · exact updateBasis_WellOrdered h_wo
+--     · simp
+--       norm_cast
+--     · exact WellOrdered.nil
+
+-- theorem updateBasis_Approximates {basis basis' : Basis} {ms : PreMS basis} {f : ℝ → ℝ}
+--     (h_basis' : WellFormedBasis basis')
+--     (h_sublist : List.Sublist basis basis')
+--     (h_wo : ms.WellOrdered)
+--     (h_approx : ms.Approximates f) :
+--     (ms.updateBasis basis').Approximates f := by
+--   have h_basis : WellFormedBasis basis := sorry
+--   cases' basis with basis_hd basis_tl <;> cases' basis' with basis_hd' basis_tl'
+--   · simpa [updateBasis]
+--   · simp [updateBasis]
+--     simp [Approximates] at h_approx
+--     apply Approximates_of_EventuallyEq h_approx.symm
+--     exact const_Approximates h_basis'
+--   · simp at h_sublist
+--   sorry -- main case
+
+end BasisOperations
 
 end PreMS
 

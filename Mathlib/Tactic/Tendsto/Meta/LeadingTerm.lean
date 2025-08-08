@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
 import Mathlib.Tactic.Tendsto.Multiseries
-import Mathlib.Tactic.Tendsto.Meta.MS
 import Mathlib.Tactic.Tendsto.Meta.ElimDestruct
 import Mathlib.Tactic.Tendsto.Meta.CompareReal
 
@@ -33,7 +32,7 @@ partial def getLeadingTerm {basis : Q(Basis)} (ms : Q(PreMS $basis)) : MetaM Q(T
         dbg_trace "Unexpected pre in getLeadingTerm"
         return q(⟨Term.coef (PreMS.leadingTerm $coef), $exp :: Term.exps (PreMS.leadingTerm $coef)⟩)
     | _ => throwError "Unexpected ms in getLeadingTerm"
-  | _ => throwError "Unexpected basis in getLeadingTerm"
+  | _ => panic! "Unexpected basis in getLeadingTerm"
 
 def getLeadingTermWithProof {basis : Q(Basis)} (ms : Q(PreMS $basis)) :
     MetaM ((t : Q(Term)) × Q(PreMS.leadingTerm $ms = $t)) := do
@@ -54,6 +53,7 @@ def getLeadingTermCoefPos {basis : Q(Basis)} (ms : Q(PreMS $basis)) :
       let ~q(⟨$coef, $exps⟩) := rhs | return .none
       let .pos pf ← compareReal coef | return .none
       return .some q(Eq.subst (motive := fun (x : Term) ↦ 0 < x.coef) (Eq.symm $h_eq) $pf)
+  | _ => panic! "Unexpected basis in getLeadingTermCoefPos"
 
 inductive FirstIsResult (x : Q(List ℝ))
 | zero (pf : Q(Term.AllZero $x))

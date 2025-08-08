@@ -128,6 +128,27 @@ example : (if (1 : ℝ) < (3/2 : ℝ) then 1 else 0) = 1 := by
   norm_num1
   simp only [↓reduceIte]
 
+
+example : destruct (TendstoTactic.PreMS.updateBasis'
+    (TendstoTactic.BasisExtension.insert (Real.log ∘ fun x => x) TendstoTactic.BasisExtension.nil) 1) =
+    some ((0, PreMS.updateBasis' BasisExtension.nil 1), nil) := by
+  simp [PreMS_const]
+
+-- #check updateBasis'_const
+
+-- example : True := by
+--   have : Stream'.Seq.destruct
+--     (TendstoTactic.PreMS.updateBasis'
+--       (TendstoTactic.BasisExtension.insert (Real.log ∘ fun x => x) TendstoTactic.BasisExtension.nil) 1) =
+--       ?_ := by
+--     elim_destruct
+--     -- sorry
+--     -- norm_num1
+--     -- rw [updateBasis'_const]
+--     -- first | simp only [elimDestruct, PreMS_const] | simp only [↓reduceIte, PreMS_const] | simp only [LogBasis.insertLastLog]
+--   sorry
+
+
 end ElimDestruct
 
 open Filter Topology
@@ -137,6 +158,91 @@ example :
   Tendsto f atTop atTop := by
   simp
   compute_asymptotics
+
+---- log testing
+
+example :
+    let f := fun (y : ℝ) ↦ Real.log y;
+    Tendsto f atTop atTop := by
+  compute_asymptotics
+
+example :
+    let f := fun (y : ℝ) ↦ y + Real.log y;
+    Tendsto f atTop atTop := by
+  compute_asymptotics
+
+example :
+    let f := fun (y : ℝ) ↦ -y + Real.log y;
+    Tendsto f atTop atBot := by
+  compute_asymptotics
+
+example :
+    let f := fun (y : ℝ) ↦ Real.log y - Real.log y;
+    Tendsto f atTop (𝓝 0) := by
+  compute_asymptotics
+
+example :
+    let f := fun (y : ℝ) ↦ Real.log (y + y);
+    Tendsto f atTop atTop := by
+  compute_asymptotics
+
+example :
+    let f := fun (y : ℝ) ↦ Real.log (y + y⁻¹);
+    Tendsto f atTop atTop := by
+  compute_asymptotics
+
+example :
+    let f := fun (y : ℝ) ↦ Real.log (2 + y - y);
+    Tendsto f atTop (𝓝 (Real.log 2)) := by
+  have : 0 < Real.log 2 := by sorry
+  compute_asymptotics
+
+example :
+    let f := fun (y : ℝ) ↦ Real.log (y⁻¹);
+    Tendsto f atTop atBot := by
+  compute_asymptotics
+
+example :
+    let f := fun (y : ℝ) ↦ y + Real.log (y⁻¹);
+    Tendsto f atTop atTop := by
+  compute_asymptotics
+
+example :
+    let f := fun (y : ℝ) ↦ Real.log y - Real.log (Real.log y);
+    Tendsto f atTop atTop := by
+  compute_asymptotics
+
+example :
+    let f := fun (y : ℝ) ↦ Real.log y - Real.log (y^2);
+    Tendsto f atTop atBot := by
+  compute_asymptotics
+
+example :
+    let f := fun (y : ℝ) ↦ Real.log (1 + y⁻¹) * y;
+    Tendsto f atTop (𝓝 1) := by
+  compute_asymptotics
+
+example :
+    let f := fun (y : ℝ) ↦ Real.log (1 + y) / y;
+    Tendsto f (𝓝[≠] 0) (𝓝 1) := by
+  compute_asymptotics
+
+example :
+    let f := fun (y : ℝ) ↦ (Real.log (1 + y) - y) / y;
+    Tendsto f (𝓝[≠] 0) (𝓝 0) := by
+  compute_asymptotics
+
+example :
+    let f := fun (y : ℝ) ↦ (Real.log (1 + y) - y) / (y^2);
+    Tendsto f (𝓝[≠] 0) (𝓝 (-1/2)) := by
+  compute_asymptotics
+
+example :
+    let f := fun (y : ℝ) ↦ (y * Real.log y) / y;
+    Tendsto f atTop atTop := by
+  compute_asymptotics
+
+--- end log testing
 
 example :
   let f := fun (y : ℝ) ↦ -y;
@@ -377,10 +483,17 @@ example :
   simp only
   compute_asymptotics
 
-lemma lol :
+example :
   let f := fun (x : ℝ) ↦ 1/(x * x);
   Tendsto f (𝓝[≠] 0) atTop := by
   simp only
   compute_asymptotics
+
+-- TODO: why two goals?
+-- example :
+--     let f := fun (y : ℝ) ↦ (1 : ℝ);
+--     Tendsto f (𝓝[≠] 0) (𝓝 2) := by
+--   compute_asymptotics
+--   all_goals sorry
 
 end DifferentFilters

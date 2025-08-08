@@ -16,7 +16,7 @@ namespace TendstoTactic
 open Asymptotics Filter Topology
 
 /-- Structure for representing monomials in some basis of functions. When some
-`basis : List (R -> R)` is given, one can interpret `<coef, exps> : Term` as function
+`basis : List (R -> R)` is given, one can interpret `⟨coef, exps⟩ : Term` as function
 `coef * basis[0]^exps[0] * basis[1]^exps[1] * ...`. -/
 structure Term where
   /-- Real coefficient of monomial. -/

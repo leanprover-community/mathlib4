@@ -28,9 +28,11 @@ def extractMS (basis : Q(Basis)) (ms : Q(PreMS $basis)) :
     let destruct_res ← mkFreshExprMVarQ q(Option (Seq1 (ℝ × PreMS $basis_tl)))
     let h_eq ← mkFreshExprMVarQ q(Stream'.Seq.destruct $ms = $destruct_res)
     try
+      -- dbg_trace f!"before {← ppExpr (← inferType h_eq)}"
       let _ ← evalTacticAt (← `(tactic| elim_destruct; exact Eq.refl _)) h_eq.mvarId!
-    catch _ =>
-      throwError "elim_destruct cannot solve the goal"
+      -- dbg_trace "after"
+    catch e =>
+      throwError f!"elim_destruct cannot solve the goal: {← e.toMessageData.toString}"
     let destruct_res' ← instantiateMVarsQ destruct_res
     haveI' : $destruct_res' =Q $destruct_res := ⟨⟩
     match destruct_res with
@@ -323,8 +325,10 @@ def trimPartial {basis : Q(Basis)} (ms : Q(PreMS $basis))
 
 def trimMS (ms : MS) : TacticM ((ms' : MS) × Q(PreMS.Trimmed $ms'.val)) := do
   let res ← trim ms.val ms.h_wo
+  -- dbg_trace (← ppExpr ms.basis)
   let newMs : MS := {
     basis := ms.basis
+    logBasis := ms.logBasis
     val := res.val
     f := ms.f
     h_wo := res.h_wo
@@ -337,6 +341,7 @@ def trimPartialMS (ms : MS) : TacticM ((ms' : MS) × Option Q(PreMS.Trimmed $ms'
   let res ← trimPartial ms.val ms.h_wo
   let newMs : MS := {
     basis := ms.basis
+    logBasis := ms.logBasis
     val := res.val
     f := ms.f
     h_wo := res.h_wo

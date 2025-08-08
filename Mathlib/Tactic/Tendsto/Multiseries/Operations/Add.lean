@@ -23,7 +23,7 @@ open Stream' Seq
 exponents. It is defined corecursively as following:
 * `add X [] = X`
 * `add [] Y = Y`
-* `
+* ```
   add ((X_exp, X_coef) :: X_tl) ((Y_exp, Y_coef) :: Y_tl) =
     if X_exp > Y_exp then
       (X_exp, X_coef) :: (X_tl.add Y)
@@ -31,7 +31,7 @@ exponents. It is defined corecursively as following:
       (Y_exp, Y_coef) :: (X.add Y_tl)
     else
       (X_exp, X_coef.add Y_coef) :: (X_tl.add Y_tl)
-  `
+  ```
 -/
 noncomputable def add {basis : Basis} (a b : PreMS basis) : PreMS basis :=
   match basis with
