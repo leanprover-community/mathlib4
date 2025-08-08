@@ -648,11 +648,12 @@ theorem ι_jointly_surjective (x : 𝖣.glued) : ∃ (i : D.J) (y : D.U i), (�
       forget TopCat.{u}) x
 
 /-- The following diagram is a pullback, i.e. `Vᵢⱼ` is the intersection of `Uᵢ` and `Uⱼ` in `X`.
-
+```
 Vᵢⱼ ⟶ Uᵢ
  |      |
  ↓      ↓
  Uⱼ ⟶ X
+```
 -/
 def vPullbackConeIsLimit (i j : D.J) : IsLimit (𝖣.vPullbackCone i j) :=
   𝖣.vPullbackConeIsLimitOfMap forgetToSheafedSpace i j

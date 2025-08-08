@@ -6,6 +6,7 @@ Authors: Andrew Yang
 import Mathlib.Algebra.Category.Ring.Constructions
 import Mathlib.Algebra.Category.Ring.Colimits
 import Mathlib.CategoryTheory.Iso
+import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.IsTensorProduct
 
@@ -209,6 +210,17 @@ lemma toMorphismProperty_respectsIso_iff :
   · intro X Y Z _ _ _ f e
     exact MorphismProperty.RespectsIso.precomp (toMorphismProperty P)
       e.toCommRingCatIso.hom (CommRingCat.ofHom f)
+
+lemma isStableUnderCobaseChange_toMorphismProperty_iff :
+    (toMorphismProperty P).IsStableUnderCobaseChange ↔ IsStableUnderBaseChange P := by
+  refine ⟨fun h R S R' S' _ _ _ _ _ _ _ _ _ _ _ hsq hRS ↦ ?_,
+      fun h ↦ ⟨fun {R} S R' S' f g f' g' hsq hf ↦ ?_⟩⟩
+  · rw [← CommRingCat.isPushout_iff_isPushout] at hsq
+    exact h.1 (f := CommRingCat.ofHom (algebraMap R S)) hsq.flip hRS
+  · algebraize [f.hom, g.hom, f'.hom, g'.hom, f'.hom.comp g.hom]
+    have : IsScalarTower R S S' := .of_algebraMap_eq fun x ↦ congr($(hsq.1.1).hom x)
+    have : Algebra.IsPushout R S R' S' := (CommRingCat.isPushout_iff_isPushout.mp hsq).symm
+    exact h (R := R) (S := S) _ _ hf
 
 /-- Variant of `MorphismProperty.arrow_mk_iso_iff` specialized to morphism properties in
 `CommRingCat` given by ring hom properties. -/
