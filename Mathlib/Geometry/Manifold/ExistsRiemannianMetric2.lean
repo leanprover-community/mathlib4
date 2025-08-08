@@ -117,53 +117,46 @@ noncomputable instance : ContMDiffVectorBundle n (F →L[ℝ] F →L[ℝ] ℝ) (
 
 end
 
-variable [FiniteDimensional ℝ EB] [IsManifold IB ∞ B] [SigmaCompactSpace B] [T2Space B]
+variable (E) in
+/-- The first condition imposed on sections of `W`: they should give rise to a symmetric
+pairing on each fibre `E x`. -/
+private def condition1 (x : B) : Set (E x →L[ℝ] E x →L[ℝ] ℝ) :=
+  {φ | ∀ v w : E x, φ v w = φ w v}
 
 variable (E) in
-def condition (x : B) : Set (W E x) := by
-  unfold W V
-  exact {φ | (∀ v w : E x, φ v w = φ w v) ∧ ∀ v : E x, v ≠ 0 → 0 < φ v v } -- TODO: specify what I really want!
-  -- {φ : E x →L[ℝ] E x →L[ℝ] ℝ | ∀ v w : E x, φ v w = ⟪v, w⟫}
+/-- The second condition imposed on sections of `W`: they should give rise to a positive definite
+pairing on each fibre `E x`. -/
+private def condition2 (x : B) : Set (E x →L[ℝ] E x →L[ℝ] ℝ) :=
+  {φ | ∀ v : E x, v ≠ 0 → 0 < φ v v}
 
-variable (E) in
-private def condition1 (x : B) : Set (W E x) := by
-  unfold W V
-  exact {φ | ∀ v w : E x, φ v w = φ w v}
-
-variable (E) in
-private def condition2 (x : B) : Set (W E x) := by
-  unfold W V
-  exact {φ | ∀ v : E x, v ≠ 0 → 0 < φ v v}
-
+omit [TopologicalSpace B] in
 lemma convex_condition1 (x : B) : Convex ℝ (condition1 E x) := by
-  unfold condition1
-  intro φ hφ ψ hψ s t hs ht hst
-  simp only [id_eq] at hφ hψ ⊢
-  erw [Set.mem_setOf] at hφ hψ ⊢
-  intro v w
-  specialize hφ v w
-  specialize hψ v w
+  intro φ hφ ψ hψ s t hs ht hst v w
+  simp [hφ v w, hψ v w]
 
-
-  sorry
-
-#exit
-
+omit [TopologicalSpace B] in
 lemma convex_condition2 (x : B) : Convex ℝ (condition2 E x) := by
   unfold condition2
-  intro v hv w hw s t hs ht hst
-  sorry
+  intro φ hφ ψ hψ s t hs ht hst
+  intro v hv
+  rw [Set.mem_setOf] at hφ hψ
+  have aux := Convex.min_le_combo ((φ v) v) ((ψ v) v) hs ht hst
+  have : 0 < min ((φ v) v) ((ψ v) v) := lt_min (hφ v hv) (hψ v hv)
+  simpa using gt_of_ge_of_gt aux this
 
-#exit
+variable (E) in
+/-- Conditions imposed on sections of `W`: they should give rise to a positive definite symmetric
+pairing on each fibre `E x`. -/
+def condition (x : B) : Set (W E x) := by
+  unfold W V Bundle.Trivial
+  exact condition1 E x ∩ condition2 E x
 
-lemma convex_condition (x : B) : Convex ℝ (condition E x) := by
-  unfold condition
-  intro v hv w hw s t hs ht hst
-  simp only [ne_eq, id_eq]
+omit [TopologicalSpace B] in
+lemma convex_condition (x : B) : Convex ℝ (condition E x) :=
+  Convex.inter (convex_condition1 x) (convex_condition2 x)
 
-  sorry
+variable [FiniteDimensional ℝ EB] [IsManifold IB ∞ B] [SigmaCompactSpace B] [T2Space B]
 
-#exit
 -- copy-paste extend from my branch and its smoothness; sorry those, then use them!
 
 -- TODO: construct a local section which is smooth in my coords,
