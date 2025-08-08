@@ -78,10 +78,14 @@ instance (x : B) : IsTopologicalAddGroup (V E x) := by
   unfold V
   infer_instance
 
-variable (E) in
+example : ContMDiffVectorBundle n (F →L[ℝ] F →L[ℝ] ℝ) (fun b ↦ E b →L[ℝ] V E b) IB :=
+  ContMDiffVectorBundle.continuousLinearMap (IB := IB) (n := n)
+    (F₁ := F) (E₁ := E) (F₂ := F →L[ℝ] ℝ) (E₂ := V E)
 
-def W : (b : B) → Type _ := fun b ↦ V E b →L[ℝ] Trivial B ℝ b
--- old definiton was: `E b →L[ℝ] (V E) b`, probably wrong!
+variable (E) in
+/-- The real vector bundle `Hom(E, Hom(E, T)) = Hom(E, V)`, whose fiber at `x` is
+(equivalent to) the space of continuous real bilinear maps `E x → E x → ℝ`. -/
+private def W : (b : B) → Type _ := fun b ↦ E b →L[ℝ] V E b
 
 noncomputable instance (x : B) : AddCommGroup (W E x) := by
   unfold W
@@ -91,34 +95,28 @@ noncomputable instance (x : B) : Module ℝ (W E x) := by
   unfold W
   infer_instance
 
-noncomputable instance : TopologicalSpace (TotalSpace ((F →L[ℝ] ℝ) →L[ℝ] ℝ) (W E)) := by
+noncomputable instance : TopologicalSpace (TotalSpace (F →L[ℝ] F →L[ℝ] ℝ) (W E)) := by
   unfold W
   infer_instance
-
-
-example : ContMDiffVectorBundle n ((F →L[ℝ] ℝ) →L[ℝ] ℝ) (fun b ↦ V E b →L[ℝ] Trivial B ℝ b) IB :=
-  ContMDiffVectorBundle.continuousLinearMap (IB := IB) (n := n) (F₁ := F →L[ℝ] ℝ) (E₁ := V E)
-    (E₂ := Bundle.Trivial B ℝ) (F₂ := ℝ)
 
 noncomputable instance (x : B) : TopologicalSpace (W E x) := by
   unfold W
   infer_instance
 
-noncomputable instance : FiberBundle ((F →L[ℝ] ℝ) →L[ℝ] ℝ) (W E) := by
+noncomputable instance : FiberBundle (F →L[ℝ] F →L[ℝ] ℝ) (W E) := by
   unfold W
   infer_instance
 
-noncomputable instance : VectorBundle ℝ ((F →L[ℝ] ℝ) →L[ℝ] ℝ) (W E) := by
+noncomputable instance : VectorBundle ℝ (F →L[ℝ] F →L[ℝ] ℝ) (W E) := by
   unfold W
   infer_instance
 
-noncomputable instance : ContMDiffVectorBundle n ((F →L[ℝ] ℝ) →L[ℝ] ℝ) (W E) IB := by
+noncomputable instance : ContMDiffVectorBundle n (F →L[ℝ] F →L[ℝ] ℝ) (W E) IB := by
   unfold W
   infer_instance
 
 end
 
-#exit
 
 /-
 
