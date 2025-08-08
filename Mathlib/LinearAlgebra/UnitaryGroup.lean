@@ -82,7 +82,8 @@ theorem det_of_mem_unitary {A : Matrix n n α} (hA : A ∈ Matrix.unitaryGroup n
 open scoped Kronecker in
 /-- The kronecker product of two unitary matrices is unitary.
 
-This is stated for `unitary` instead of `unitaryGroup` as it hold even for non-commutive coefficients. -/
+This is stated for `unitary` instead of `unitaryGroup` as it holds even for
+non-commutive coefficients. -/
 theorem kronecker_mem_unitary {R m : Type*} [Semiring R] [StarRing R] [Fintype m]
     [DecidableEq m] {U₁ : Matrix n n R} {U₂ : Matrix m m R}
     (hU₁ : U₁ ∈ unitary (Matrix n n R)) (hU₂ : U₂ ∈ unitary (Matrix m m R)) :
