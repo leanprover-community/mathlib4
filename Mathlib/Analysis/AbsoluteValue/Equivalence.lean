@@ -71,8 +71,8 @@ theorem abv_lt_one_iff_of_abv_lt_one_imp [Archimedean S] [TopologicalSpace S] [O
   let ⟨x₀, hx₀⟩ := hv.exists_abv_lt_one
   refine ⟨h a, fun hw ↦ ?_⟩
   by_contra! hv
-  have (n : ℕ) : w x₀ < w a ^ n :=
-    rw [← one_mul (w _ ^ _), ← mul_inv_lt_iff₀ (pow_pos (pos_of_abv_pos w (by linarith)) _),
+  have (n : ℕ) : w x₀ < w a ^ n := by
+    rw [← one_mul (_ ^ _), ← mul_inv_lt_iff₀ (pow_pos (pos_of_abv_pos w (by linarith)) _),
       ← map_pow, ← map_inv₀, ← map_mul]
     apply h
     rw [map_mul, map_inv₀, map_pow, mul_inv_lt_iff₀ (pow_pos (by linarith) _), one_mul]
@@ -172,7 +172,7 @@ theorem exists_abv_one_lt_abv_lt_one_of_not_isEquiv {v w : AbsoluteValue F ℝ} 
     ∃ a : F, 1 < v a ∧ w a < 1 := by
   let ⟨a, ha⟩ := exists_abv_lt_one_abv_one_le_of_not_isEquiv hv h
   let ⟨b, hb⟩ := exists_abv_lt_one_abv_one_le_of_not_isEquiv hw (mt isEquiv_symm h)
-  exact ⟨b / a, by simpa using ⟨one_lt_div (abv_pos_of_abv_pos v (by linarith)) |>.2 (by linarith),
+  exact ⟨b / a, by simpa using ⟨one_lt_div (pos_of_abv_pos v (by linarith)) |>.2 (by linarith),
     div_lt_one (by linarith) |>.2 (by linarith)⟩⟩
 
 end AbsoluteValue
