@@ -692,7 +692,7 @@ lemma valuation_surjective_unit (γ : (ValueGroupWithZero R)ˣ) :
   intro H
   suffices γ.val * (valuation R) b ≤ 0 by simp at this
   rw [← hab]
-  simp only [isUnit_iff_ne_zero, ne_eq, valuation_posSubmonoid_ne_zero_of_compatible,
+  simp only [isUnit_iff_ne_zero, ne_eq, Valuation.apply_posSubmonoid_ne_zero,
     not_false_eq_true, IsUnit.div_mul_cancel]
   rwa [← map_zero (valuation R), ← Valuation.Compatible.rel_iff_le]
 
