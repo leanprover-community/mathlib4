@@ -233,7 +233,9 @@ lemma mapEquiv_trans (f : R ≃⋆* S) (g : S ≃⋆* T) :
   rfl
 
 @[simp]
-lemma toMonoidHom_mapEquiv (f : R ≃⋆* S) : (mapEquiv f).toMonoidHom = map f.toStarMonoidHom := rfl
+lemma toMonoidHom_mapEquiv (f : R ≃⋆* S) :
+    (mapEquiv f).toStarMonoidHom = map f.toStarMonoidHom :=
+  rfl
 
 end Map
 
