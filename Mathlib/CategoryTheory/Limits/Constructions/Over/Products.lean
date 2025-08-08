@@ -56,7 +56,7 @@ variable {f : Y ⟶ X} {g : Z ⟶ X}
 def pullbackConeEquivBinaryFan : PullbackCone f g ≌ BinaryFan (Over.mk f) (.mk g) where
   functor.obj c := .mk (Over.homMk (U := .mk (c.fst ≫ f)) (V := .mk f) c.fst rfl)
       (Over.homMk (U := .mk (c.fst ≫ f)) (V := .mk g) c.snd c.condition.symm)
-  functor.map {c₁ c₂} a := { hom := Over.homMk a.hom, w := by rintro (_ | _) <;> aesop_cat }
+  functor.map {c₁ c₂} a := { hom := Over.homMk a.hom, w := by rintro (_ | _) <;> cat_disch }
   inverse.obj c := PullbackCone.mk c.fst.left c.snd.left (c.fst.w.trans c.snd.w.symm)
   inverse.map {c₁ c₂} a := {
     hom := a.hom.left
@@ -117,7 +117,7 @@ variable {f : X ⟶ Y} {g : X ⟶ Z}
 def pushoutCoconeEquivBinaryCofan : PushoutCocone f g ≌ BinaryCofan (Under.mk f) (.mk g) where
   functor.obj c := .mk (Under.homMk (U := .mk f) (V := .mk (f ≫ c.inl)) c.inl rfl)
       (Under.homMk (U := .mk g) (V := .mk (f ≫ c.inl)) c.inr c.condition.symm)
-  functor.map {c₁ c₂} a := { hom := Under.homMk a.hom, w := by rintro (_ | _) <;> aesop_cat }
+  functor.map {c₁ c₂} a := { hom := Under.homMk a.hom, w := by rintro (_ | _) <;> cat_disch }
   inverse.obj c := .mk c.inl.right c.inr.right (c.inl.w.symm.trans c.inr.w)
   inverse.map {c₁ c₂} a := {
     hom := a.hom.right
@@ -270,7 +270,7 @@ def conesEquivFunctor (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
       π :=
         { app := fun ⟨j⟩ => Over.homMk (c.π.app (some j)) (c.w (WidePullbackShape.Hom.term j))
           -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10888): added proof for `naturality`
-          naturality := fun ⟨X⟩ ⟨Y⟩ ⟨⟨f⟩⟩ => by dsimp at f ⊢; aesop_cat } }
+          naturality := fun ⟨X⟩ ⟨Y⟩ ⟨⟨f⟩⟩ => by dsimp at f ⊢; cat_disch } }
   map f := { hom := Over.homMk f.hom }
 
 -- Porting note: unfortunately `aesop` can't cope with a `cases` rule here for the type synonym
@@ -286,7 +286,7 @@ def conesEquivUnitIso (B : C) (F : Discrete J ⥤ Over B) :
   NatIso.ofComponents fun _ => Cones.ext
     { hom := 𝟙 _
       inv := 𝟙 _ }
-    (by rintro (j | j) <;> aesop_cat)
+    (by rintro (j | j) <;> cat_disch)
 
 -- TODO: Can we add `:= by aesop` to the second arguments of `NatIso.ofComponents` and
 --       `Cones.ext`?

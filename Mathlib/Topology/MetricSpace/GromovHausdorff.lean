@@ -489,8 +489,8 @@ end GHSpace --section
 end GromovHausdorff
 
 /-- In particular, nonempty compacts of a metric space map to `GHSpace`.
-    We register this in the `TopologicalSpace` namespace to take advantage
-    of the notation `p.toGHSpace`. -/
+We register this in the `TopologicalSpace` namespace to take advantage
+of the notation `p.toGHSpace`. -/
 def TopologicalSpace.NonemptyCompacts.toGHSpace {X : Type u} [MetricSpace X]
     (p : NonemptyCompacts X) : GromovHausdorff.GHSpace :=
   GromovHausdorff.toGHSpace p
