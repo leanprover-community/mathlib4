@@ -46,8 +46,8 @@ def unop (c : Con Mᵐᵒᵖ) : Con M where
 /--
 The multiplicative congruences on `M` bijects to the multiplicative congruences on `Mᵐᵒᵖ`
 -/
-@[to_additive (attr := simps) /-- The additive congruences on `M` bijects to the additive congruences
-on `Mᵃᵒᵖ` -/]
+@[to_additive (attr := simps) /-- The additive congruences on `M` bijects to the additive
+congruences on `Mᵃᵒᵖ` -/]
 def orderIsoOp : Con M ≃o Con Mᵐᵒᵖ where
   toFun := op
   invFun := unop

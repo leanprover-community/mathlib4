@@ -95,8 +95,8 @@ protected theorem isCancelMul [Mul M₂] [IsCancelMul M₂] (f : M₁ → M₂) 
 
 /-- A type endowed with `*` is a left cancel semigroup, if it admits an injective map that
 preserves `*` to a left cancel semigroup.  See note [reducible non-instances]. -/
-@[to_additive /-- A type endowed with `+` is an additive left cancel
-semigroup, if it admits an injective map that preserves `+` to an additive left cancel semigroup. -/]
+@[to_additive /-- A type endowed with `+` is an additive left cancel semigroup, if it admits an
+injective map that preserves `+` to an additive left cancel semigroup. -/]
 protected abbrev leftCancelSemigroup [LeftCancelSemigroup M₂] (f : M₁ → M₂) (hf : Injective f)
     (mul : ∀ x y, f (x * y) = f x * f y) : LeftCancelSemigroup M₁ :=
   { hf.semigroup f mul, hf.isLeftCancelMul f mul with }

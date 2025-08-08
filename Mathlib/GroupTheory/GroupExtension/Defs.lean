@@ -198,7 +198,7 @@ def symm : S'.Equiv S where
   rightHom_comm := by rw [MulEquiv.comp_symm_eq, ← equiv.rightHom_comm]
 
 /-- See Note [custom simps projection]. -/
-@[to_additive /-- See Note [custom simps projection]. -/] -- this comment fixes the syntax highlighting "
+@[to_additive /-- See Note [custom simps projection]. -/]
 def Simps.symm_apply : E' → E := equiv.symm
 
 @[to_additive (attr := simp)]
