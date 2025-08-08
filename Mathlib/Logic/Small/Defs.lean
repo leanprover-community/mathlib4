@@ -52,6 +52,7 @@ def Shrink (α : Type v) [Small.{w} α] : Type w :=
     There is also no other computable way to modify the content of a shrink
     (as it always needs `Classical.choose_spec`).
     As a consequence adding this implemented_by is safe -/
+@[inline]
 private unsafe def equivShrinkImpl (α : Type v) [Small.{u, v} α] : α ≃ Shrink.{u, v} α :=
   ⟨unsafeCast, unsafeCast, lcProof, lcProof⟩
 
