@@ -291,4 +291,3 @@ theorem emultiplicity_two_factorial_lt : ∀ {n : ℕ} (_ : n ≠ 0), emultiplic
       exact mod_cast lt_succ_self _
 
 end Nat
-#min_imports
