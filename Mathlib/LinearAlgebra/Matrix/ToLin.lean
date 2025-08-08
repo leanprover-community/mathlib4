@@ -284,11 +284,10 @@ variable (R S) in
 When `A` is noncommutative, `R` and `S` can be instantiated as `vecMulVecLinear A Aᵐᵒᵖ`. -/
 @[simps]
 def vecMulVecLinear : (m → A) →ₗ[R] (n → A) →ₗ[S] Matrix m n A where
-  toFun x := {
-    toFun y := vecMulVec x y
-    map_add' _ _ := vecMulVec_add _ _ _
-    map_smul' _ _ := vecMulVec_smul _ _ _
-  }
+  toFun x :=
+    { toFun y := vecMulVec x y
+      map_add' _ _ := vecMulVec_add _ _ _
+      map_smul' _ _ := vecMulVec_smul _ _ _ }
   map_add' _ _ := LinearMap.ext fun _ => add_vecMulVec _ _ _
   map_smul' _ _ := LinearMap.ext fun _ => smul_vecMulVec _ _ _
 
