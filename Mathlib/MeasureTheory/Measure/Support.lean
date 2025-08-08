@@ -68,9 +68,8 @@ measure. -/
 lemma mem_support_iff_forall (x : X) : x ∈ μ.support ↔ ∀ U ∈ 𝓝 x, 0 < μ U :=
   (𝓝 x).basis_sets.mem_measureSupport
 
-lemma support_eq_univ [μ.IsOpenPosMeasure] : μ.support = Set.univ :=
-  Set.ext fun _ ↦ mem_support_iff_forall _ |>.trans <| Iff.intro (fun _ ↦ trivial)
-    (fun _ _ ↦ measure_pos_of_mem_nhds μ)
+lemma support_eq_univ [μ.IsOpenPosMeasure] : μ.support = Set.univ := by
+  simpa [Set.eq_univ_iff_forall, mem_support_iff_forall] using fun _ _ ↦ μ.measure_pos_of_mem_nhds
 
 lemma AbsolutelyContinuous.support_mono {μ ν : Measure X} (hμν : μ ≪ ν) :
     μ.support ⊆ ν.support :=
