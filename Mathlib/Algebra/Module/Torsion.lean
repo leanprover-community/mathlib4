@@ -631,7 +631,7 @@ instance instModuleQuotientTorsionBy (a : R) : Module (R ⧸ R ∙ a) (torsionBy
     (Module.isTorsionBySet_span_singleton_iff a).mpr <| torsionBy_isTorsionBy a
 
 instance (a : R) : Module (R ⧸ Ideal.span {a}) (torsionBy R M a) :=
-   inferInstanceAs <| Module (R ⧸ R ∙ a) (torsionBy R M a)
+  inferInstanceAs <| Module (R ⧸ R ∙ a) (torsionBy R M a)
 
 @[simp]
 theorem torsionBy.mk_ideal_smul (a b : R) (x : torsionBy R M a) :

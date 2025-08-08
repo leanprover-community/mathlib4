@@ -71,7 +71,7 @@ taking a colimit. -/
 noncomputable def leftKanExtensionObjIsoColimit [HasLeftKanExtension L F] (X : D) :
     (L.leftKanExtension F).obj X ≅ colimit (proj L X ⋙ F) :=
   LeftExtension.IsPointwiseLeftKanExtensionAt.isoColimit (F := F)
-   (isPointwiseLeftKanExtensionLeftKanExtensionUnit L F X)
+    (isPointwiseLeftKanExtensionLeftKanExtensionUnit L F X)
 
 @[reassoc (attr := simp)]
 lemma ι_leftKanExtensionObjIsoColimit_inv [HasLeftKanExtension L F] (X : D)

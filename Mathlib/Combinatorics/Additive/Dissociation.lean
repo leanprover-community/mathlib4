@@ -133,7 +133,7 @@ lemma exists_subset_mulSpan_card_le_of_forall_mulDissociated
     ∃ s', s' ⊆ s ∧ s'.card ≤ d ∧ s ⊆ mulSpan s' := by
   classical
   obtain ⟨s', hs'⟩ :=
-   (s.powerset.filter fun s' : Finset α ↦ MulDissociated (s' : Set α)).exists_maximal
+    (s.powerset.filter fun s' : Finset α ↦ MulDissociated (s' : Set α)).exists_maximal
       ⟨∅, mem_filter.2 ⟨empty_mem_powerset _, by simp⟩⟩
   simp only [mem_filter, mem_powerset] at hs'
   refine ⟨s', hs'.1.1, hs _ hs'.1.1 hs'.1.2, fun a ha ↦ ?_⟩
