@@ -849,6 +849,18 @@ theorem coeFn_abs {β} [TopologicalSpace β] [Lattice β] [TopologicalLattice β
 
 end Abs
 
+section Star
+
+variable {R : Type*} [TopologicalSpace R] [Star R] [ContinuousStar R]
+
+instance : Star (α →ₘ[μ] R) where
+  star f := (AEEqFun.comp _ continuous_star f)
+
+lemma coeFn_star (f : α →ₘ[μ] R) : ↑(star f) =ᵐ[μ] (star f : α → R) :=
+   coeFn_comp _ (continuous_star) f
+
+end Star
+
 section PosPart
 
 variable [LinearOrder γ] [OrderClosedTopology γ] [Zero γ]
