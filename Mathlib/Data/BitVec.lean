@@ -88,8 +88,8 @@ instance : CommSemiring (BitVec w) :=
     toFin_add
     toFin_mul
     toFin_nsmul
-    (by convert toFin_pow)
-    (fun _ => rfl) /- toFin_natCast -/
+    toFin_pow
+    toFin_natCast
 -- The statement in the new API would be: `n#(k.succ) = ((n / 2)#k).concat (n % 2 != 0)`
 
 instance : CommRing (BitVec w) :=
