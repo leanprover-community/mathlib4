@@ -253,11 +253,6 @@ def sectL (α : Sort _) {β : Sort _} (b : β) : α ↪ α × β :=
 def sectR {α : Sort _} (a : α) (β : Sort _) : β ↪ α × β :=
   ⟨fun b => (a, b), fun _ _ h => congr_arg Prod.snd h⟩
 
-@[deprecated (since := "2024-11-12")] alias sectl := sectL
-@[deprecated (since := "2024-11-12")] alias sectr := sectR
-@[deprecated (since := "2024-11-12")] alias sectl_apply := sectL_apply
-@[deprecated (since := "2024-11-12")] alias sectr_apply := sectR_apply
-
 /-- If `e₁` and `e₂` are embeddings, then so is `Prod.map e₁ e₂ : (a, b) ↦ (e₁ a, e₂ b)`. -/
 def prodMap {α β γ δ : Type*} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : α × γ ↪ β × δ :=
   ⟨Prod.map e₁ e₂, e₁.injective.prodMap e₂.injective⟩
@@ -389,7 +384,7 @@ def asEmbedding {β α : Sort*} {p : β → Prop} (e : α ≃ Subtype p) : α �
   e.toEmbedding.trans (subtype p)
 
 /-- The type of embeddings `α ↪ β` is equivalent to
-    the subtype of all injective functions `α → β`. -/
+the subtype of all injective functions `α → β`. -/
 def subtypeInjectiveEquivEmbedding (α β : Sort*) :
     { f : α → β // Injective f } ≃ (α ↪ β) where
   toFun f := ⟨f.val, f.property⟩

@@ -318,13 +318,23 @@ def reorderMulThree {α : Type _} [Mul α] (x y z : α) : α := x * y * z
 /--
 error: the permutation
 [[2, 3, 50]]
-provided by the reorder config option is too large, the type
+provided by the `(reorder := ...)` option is out of bounds, the type
   {α : Type u_1} → [Mul α] → α → α → α → α
 has only 5 arguments
 -/
 #guard_msgs in
 @[to_additive (reorder := 3 4 51)]
 def reorderMulThree' {α : Type _} [Mul α] (x y z : α) : α := x * y * z
+
+/-! Test `(reorder := ...)` when the proof needs to be eta-expanded. -/
+@[to_additive (reorder := 3 4 5)]
+alias reorderMulThree_alias := reorderMulThree
+
+@[to_additive (reorder := 3 4 2)]
+alias reorderMulThree_alias' := reorderMulThree
+
+@[to_additive (reorder := 3 4 5)]
+def reorderMulThree_alias'' {α : Type _} [Mul α] (x y : α) : α → α := reorderMulThree x y
 
 /--
 error: invalid cycle `04`, a cycle must have at least 2 elements.
