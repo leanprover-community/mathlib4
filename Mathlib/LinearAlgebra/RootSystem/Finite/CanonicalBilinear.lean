@@ -238,6 +238,11 @@ lemma range_polarizationIn_le_span_coroot :
   exact (Submodule.mem_span_range_iff_exists_fun S).mpr
     (Exists.intro (fun i ↦ (P.coroot'In S i) y) hy)
 
+omit [IsScalarTower S R N] in
+lemma polarizationIn_apply_in_span_coroot (x : P.rootSpan S) :
+    P.PolarizationIn S x ∈ P.corootSpan S :=
+  P.range_polarizationIn_le_span_coroot S <| LinearMap.mem_range_self (P.PolarizationIn S) x
+
 /-- A version of SGA3 XXI Lemma 1.2.1 (10), adapted to change of rings. -/
 lemma rootFormIn_self_smul_coroot (i : ι) :
     P.RootFormIn S (P.rootSpanMem S i) (P.rootSpanMem S i) • P.coroot i =
@@ -328,9 +333,28 @@ end MoreFintype
 
 section IsValuedInOrdered
 
-variable (S : Type*) [CommRing S] [LinearOrder S] [IsStrictOrderedRing S]
-  [Algebra S R] [FaithfulSMul S R] [Module S M]
+variable (S : Type*) [CommRing S] [Algebra S R] [FaithfulSMul S R] [Module S M]
   [IsScalarTower S R M] [P.IsValuedIn S] [Fintype ι] {i j : ι}
+
+/-- A version of SGA3 XXI Lemma 1.2.1 (10), where the result is an equality in the dual module of
+`rootSpan`. -/
+lemma rootFormIn_self_smul_coroot'In (i : ι) :
+    P.RootFormIn S (P.rootSpanMem S i) (P.rootSpanMem S i) • P.coroot'In S i =
+      2 • P.RootFormIn S (P.rootSpanMem S i) := by
+  ext x
+  refine (FaithfulSMul.algebraMap_injective S R) ?_
+  simp only [LinearMap.smul_apply, smul_eq_mul, map_mul, algebraMap_rootFormIn,
+    algebraMap_coroot'In_apply, nsmul_eq_mul, Nat.cast_ofNat]
+  rw [PerfectPairing.flip_apply_apply, ← smul_eq_mul, ← map_smul, rootForm_self_smul_coroot,
+    map_nsmul, toPerfectPairing_apply_apply_Polarization, ← Algebra.smul_def, two_nsmul, two_smul]
+
+lemma rootFormIn_self_mul_rootFormIn (i j : ι) :
+    P.RootFormIn S (P.rootSpanMem S i) (P.rootSpanMem S i) * P.pairingIn S j i =
+    2 • P.RootFormIn S (P.rootSpanMem S i) (P.rootSpanMem S j) := by
+  rw [← LinearMap.smul_apply, ← rootFormIn_self_smul_coroot'In]
+  simp
+
+variable [LinearOrder S] [IsStrictOrderedRing S]
 
 /-- The bilinear form of a finite root pairing taking values in a linearly-ordered ring, as a
 root-positive form. -/

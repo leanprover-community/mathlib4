@@ -218,6 +218,25 @@ lemma zero_lt_apply_root_root_iff [IsStrictOrderedRing S]
     _ ↔ 0 < P.pairingIn S i j * B.posForm rj rj := by rw [this]
     _ ↔ 0 < P.pairingIn S i j := by rw [mul_pos_iff_of_pos_right (B.zero_lt_posForm_apply_root j)]
 
+lemma posForm_eq_zero_iff_pairing [IsStrictOrderedRing S] (i j : ι) :
+    B.posForm (P.rootSpanMem S i) (P.rootSpanMem S j) = 0 ↔ P.pairingIn S i j = 0 := by
+  have := B.two_smul_apply_rootSpanMem_rootSpanMem i j
+  have hn := ne_of_gt <| RootPositiveForm.rootLength_pos B j
+  exact ⟨fun h ↦ by simpa [h, hn] using this, fun h ↦ by simpa [h] using this⟩
+
+lemma posForm_eq_zero_iff_IsOrthogonal [IsStrictOrderedRing S] (i j : ι) :
+    B.posForm (P.rootSpanMem S i) (P.rootSpanMem S j) = 0 ↔ P.IsOrthogonal i j := by
+  refine ⟨?_, fun h ↦ (B.posForm_eq_zero_iff_pairing i j).mpr <|
+    (FaithfulSMul.algebraMap_injective S R) (by simp [algebraMap_pairingIn, h.1])⟩
+  intro h
+  have : (B.posForm (P.rootSpanMem S j)) (P.rootSpanMem S i) = 0 := by
+    rwa [← RootPositiveForm.isSymm_posForm B, RingHom.id_apply]
+  constructor
+  · rw [← P.algebraMap_pairingIn S, (B.posForm_eq_zero_iff_pairing i j).mp h,
+      algebraMap_eq_zero_iff]
+  · rw [← P.algebraMap_pairingIn S, (B.posForm_eq_zero_iff_pairing j i).mp this,
+      algebraMap_eq_zero_iff]
+
 end RootPositiveForm
 
 include B
