@@ -318,8 +318,9 @@ theorem of_prime_card [hGX : IsPretransitive G X] (hp : Nat.Prime (Nat.card X)) 
 
 variable {φ : G → H} {f : X →ₑ[φ] Y}
 
-/-- The codomain of an equivariant map of large image is preprimitive if the domain is -/
-@[to_additive /-- The codomain of an equivariant map of large image is preprimitive if the domain is -/]
+/-- The codomain of an equivariant map of large image is preprimitive if the domain is. -/
+@[to_additive
+/-- The codomain of an equivariant map of large image is preprimitive if the domain is. -/]
 theorem of_card_lt [Finite Y] [IsPretransitive H Y] [IsPreprimitive G X]
     (hf' : Nat.card Y < 2 * (Set.range f).ncard) :
     IsPreprimitive H Y :=  by

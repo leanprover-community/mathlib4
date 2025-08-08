@@ -179,10 +179,10 @@ theorem mem_nhds_one (B : GroupFilterBasis G) {U : Set G} (hU : U ∈ B) :
   exact ⟨U, hU, rfl.subset⟩
 
 -- See note [lower instance priority]
-/-- If a group is endowed with a topological structure coming from a group filter basis then it's a
+/-- If a group is endowed with a topological structure coming from a group filter basis then, it's a
 topological group. -/
-@[to_additive /-- If a group is endowed with a topological structure coming from a group filter basis
-then it's a topological group. -/]
+@[to_additive /-- If an additive group is endowed with a topological structure coming from an
+additive group filter basis, then it's an additive topological group. -/]
 instance (priority := 100) isTopologicalGroup (B : GroupFilterBasis G) :
     @IsTopologicalGroup G B.topology _ := by
   letI := B.topology

@@ -34,8 +34,8 @@ section Mul
 variable [Mul M]
 
 /-- The center of a semigroup `M` is the set of elements that commute with everything in `M` -/
-@[to_additive
-      /-- The center of a semigroup `M` is the set of elements that commute with everything in `M` -/]
+@[to_additive /-- The center of an additive semigroup `M` is the set of elements that commute with
+everything in `M` -/]
 def center : Subsemigroup M where
   carrier := Set.center M
   mul_mem' := Set.mul_mem_center

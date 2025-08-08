@@ -213,8 +213,8 @@ attribute [simps! symm_apply] symm
 /-- The composition of monoid isomorphisms associated to equivalences of group extensions gives
 another equivalence. -/
 @[to_additive (attr := simps!)
-      /-- The composition of monoid isomorphisms associated to equivalences of additive group
-      extensions gives another equivalence. -/]
+/-- The composition of monoid isomorphisms associated to equivalences of additive group
+extensions gives another equivalence. -/]
 def trans {E'' : Type*} [Group E''] {S'' : GroupExtension N E'' G} (equiv' : S'.Equiv S'') :
     S.Equiv S'' where
   __ := equiv.toMulEquiv.trans equiv'.toMulEquiv
@@ -308,8 +308,8 @@ end Splitting
 /-- A splitting of an extension `S` is `N`-conjugate to another iff there exists `n : N` such that
 the section homomorphism is a conjugate of the other section homomorphism by `S.inl n`. -/
 @[to_additive
-      /-- A splitting of an extension `S` is `N`-conjugate to another iff there exists `n : N` such
-      that the section homomorphism is a conjugate of the other section homomorphism by `S.inl n`. -/]
+/-- A splitting of an extension `S` is `N`-conjugate to another iff there exists `n : N` such
+that the section homomorphism is a conjugate of the other section homomorphism by `S.inl n`. -/]
 def IsConj (s s' : S.Splitting) : Prop := ∃ n : N, s = fun g ↦ S.inl n * s' g * (S.inl n)⁻¹
 
 end GroupExtension

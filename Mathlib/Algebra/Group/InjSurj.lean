@@ -178,11 +178,10 @@ protected abbrev commMonoid [CommMonoid M₂] (f : M₁ → M₂) (hf : Injectiv
     CommMonoid M₁ :=
   { hf.monoid f one mul npow, hf.commSemigroup f mul with }
 
-/-- A type endowed with `1` and `*` is a cancel commutative monoid, if it admits an injective map
-that preserves `1` and `*` to a cancel commutative monoid.  See note [reducible non-instances]. -/
-@[to_additive
-/-- A type endowed with `0` and `+` is an additive cancel commutative monoid,
-if it admits an injective map that preserves `0` and `+` to an additive cancel commutative monoid. -/]
+/-- A type endowed with `1` and `*` is a cancel commutative monoid if it admits an injective map
+that preserves `1` and `*` to a cancel commutative monoid. See note [reducible non-instances]. -/
+@[to_additive /-- A type endowed with `0` and `+` is an additive cancel commutative monoid if it
+admits an injective map that preserves `0` and `+` to an additive cancel commutative monoid. -/]
 protected abbrev cancelCommMonoid [CancelCommMonoid M₂] (f : M₁ → M₂) (hf : Injective f)
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) : CancelCommMonoid M₁ :=

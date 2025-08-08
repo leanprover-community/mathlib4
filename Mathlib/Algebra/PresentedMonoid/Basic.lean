@@ -56,8 +56,9 @@ def mk (rels : FreeMonoid α → FreeMonoid α → Prop) : FreeMonoid α →* Pr
 
 /-- `of` is the canonical map from `α` to a presented monoid with generators `x : α`. The term `x`
 is mapped to the equivalence class of the image of `x` in `FreeMonoid α`. -/
-@[to_additive /-- `of` is the canonical map from `α` to a presented additive monoid with generators
-`x : α`. The term `x` is mapped to the equivalence class of the image of `x` in `FreeAddMonoid α` -/]
+@[to_additive
+/-- `of` is the canonical map from `α` to a presented additive monoid with generators `x : α`. The
+term `x` is mapped to the equivalence class of the image of `x` in `FreeAddMonoid α`. -/]
 def of (rels : FreeMonoid α → FreeMonoid α → Prop) (x : α) : PresentedMonoid rels :=
   mk rels (.of x)
 
@@ -91,8 +92,9 @@ variable {α : Type*} {rels : FreeMonoid α → FreeMonoid α → Prop}
 
 /-- The generators of a presented monoid generate the presented monoid. That is, the submonoid
 closure of the set of generators equals `⊤`. -/
-@[to_additive (attr := simp) /-- The generators of a presented additive monoid generate the presented
-additive monoid. That is, the additive submonoid closure of the set of generators equals `⊤` -/]
+@[to_additive (attr := simp) /-- The generators of a presented additive monoid generate the
+presented additive monoid. That is, the additive submonoid closure of the set of generators equals
+`⊤`. -/]
 theorem closure_range_of (rels : FreeMonoid α → FreeMonoid α → Prop) :
     Submonoid.closure (Set.range (PresentedMonoid.of rels)) = ⊤ := by
   rw [Submonoid.eq_top_iff']

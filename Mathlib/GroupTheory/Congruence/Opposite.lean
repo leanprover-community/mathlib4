@@ -33,8 +33,8 @@ def op (c : Con M) : Con Mᵐᵒᵖ where
 
 /-- If `c` is a multiplicative congruence on `Mᵐᵒᵖ`, then `(a, b) ↦ c bᵒᵖ aᵒᵖ` is a multiplicative
 congruence on `M`. -/
-@[to_additive /-- If `c` is an additive congruence on `Mᵃᵒᵖ`, then `(a, b) ↦ c bᵒᵖ aᵒᵖ` is an additive
-congruence on `M` -/]
+@[to_additive /-- If `c` is an additive congruence on `Mᵃᵒᵖ`, then `(a, b) ↦ c bᵒᵖ aᵒᵖ` is an
+additive congruence on `M`. -/]
 def unop (c : Con Mᵐᵒᵖ) : Con M where
   r a b := c (.op b) (.op a)
   iseqv :=

@@ -400,7 +400,7 @@ section simps
 -- in the whole file.
 
 /-- See Note [custom simps projection] -/
-@[to_additive /-- See Note [custom simps projection] -/] -- this comment fixes the syntax highlighting "
+@[to_additive /-- See Note [custom simps projection] -/]
 def Simps.symm_apply (e : M ≃* N) : N → M :=
   e.symm
 

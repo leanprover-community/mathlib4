@@ -212,7 +212,7 @@ theorem orderOf_eq_iff {n} (h : 0 < n) :
 
 /-- A group element has finite order iff its order is positive. -/
 @[to_additive
-      /-- A group element has finite additive order iff its order is positive. -/]
+  /-- A group element has finite additive order iff its order is positive. -/]
 theorem orderOf_pos_iff : 0 < orderOf x ↔ IsOfFinOrder x := by
   rw [iff_not_comm.mp orderOf_eq_zero_iff, pos_iff_ne_zero]
 
