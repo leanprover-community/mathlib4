@@ -237,6 +237,17 @@ theorem getLast?_flatten_replicate {n : ℕ} (h : n ≠ 0) (l : List α) :
   rw [← List.head?_reverse, ← List.head?_reverse, List.reverse_flatten, List.map_replicate,
   List.reverse_replicate, head?_flatten_replicate h]
 
+instance decidableExReplicate [DecidableEq α] :
+    (l : List α) → Decidable (∃ n, ∃ (_ : 0 < n), ∃ a, l = replicate n a)
+| nil => .isFalse (by simp_all)
+| cons head tail => if h : ∀ x ∈ tail, x = head then
+    .isTrue ⟨tail.length + 1, zero_lt_succ tail.length, head,
+      congrArg (cons head) (List.eq_replicate_of_mem h)⟩
+  else .isFalse (fun ⟨n, hn, a, ha⟩ ↦ by
+    obtain ⟨j, rfl⟩ := Nat.exists_add_one_eq.mpr hn
+    obtain rfl := tail_eq_of_cons_eq ha
+    exact (show a ≠ head by simp_all) (List.head_eq_of_cons_eq ha).symm)
+
 /-! ### pure -/
 
 theorem mem_pure (x y : α) : x ∈ (pure y : List α) ↔ x = y := by simp
