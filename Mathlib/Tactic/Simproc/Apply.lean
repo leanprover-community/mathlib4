@@ -24,4 +24,4 @@ def Lean.Meta.Simp.Simproc.apply (s : Simproc) : TacticM Unit := do
     let target ← instantiateMVars (← e.getType)
     let ctx ← Simp.mkContext (simpTheorems := #[])
     let (r, _) ← Simp.mainCore target ctx (methods := {post := s})
-    return ← applySimpResultToTarget e target r
+    applySimpResultToTarget e target r
