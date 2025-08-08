@@ -157,7 +157,29 @@ lemma convex_condition (x : B) : Convex ℝ (condition E x) :=
 
 variable [FiniteDimensional ℝ EB] [IsManifold IB ∞ B] [SigmaCompactSpace B] [T2Space B]
 
+section extend
+
 -- copy-paste extend from my branch and its smoothness; sorry those, then use them!
+
+-- Copied from #26221 (in `LocalFrame.lean`)
+noncomputable def localExtensionOn {ι : Type*} (b : Module.Basis ι ℝ F)
+    (e : Trivialization F (TotalSpace.proj : TotalSpace F E → B)) [MemTrivializationAtlas e]
+    (x : B) (v : E x) : (x' : B) → E x' :=
+  sorry
+
+
+-- variable (F) in
+-- --omit [IsManifold I 0 M] in
+-- lemma contMDiffOn_localExtensionOn [FiniteDimensional ℝ F] {ι : Type*} (b : Module.Basis ι ℝ F)
+--     (e : Trivialization F (TotalSpace.proj : TotalSpace F E → B)) [MemTrivializationAtlas e]
+--     {x : B} (hx : x ∈ e.baseSet) (v : E x) :
+--     ContMDiffOn IB (IB.prod 𝓘(ℝ, F →L[ℝ] F →L[ℝ] ℝ)) n
+--       (fun x' ↦ TotalSpace.mk' F x' (localExtensionOn b e x v x')) [e.baseSet] := by
+--   sorry
+
+end extend
+
+#exit
 
 -- TODO: construct a local section which is smooth in my coords,
 -- and has all the definiteness properties I'll want later!
