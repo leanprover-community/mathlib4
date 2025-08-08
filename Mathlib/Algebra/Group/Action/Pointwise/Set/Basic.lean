@@ -215,24 +215,16 @@ theorem preimage_smul_inv (a : α) (t : Set β) : (fun x ↦ a⁻¹ • x) ⁻¹
 theorem smul_set_subset_smul_set_iff : a • A ⊆ a • B ↔ A ⊆ B :=
   image_subset_image_iff <| MulAction.injective _
 
-@[deprecated (since := "2024-12-28")]
-alias set_smul_subset_set_smul_iff := smul_set_subset_smul_set_iff
-
 @[to_additive]
 theorem smul_set_subset_iff_subset_inv_smul_set : a • A ⊆ B ↔ A ⊆ a⁻¹ • B :=
   image_subset_iff.trans <|
     iff_of_eq <| congr_arg _ <| preimage_equiv_eq_image_symm _ <| MulAction.toPerm _
-
-@[deprecated (since := "2024-12-28")]
-alias set_smul_subset_iff := smul_set_subset_iff_subset_inv_smul_set
 
 @[to_additive]
 theorem subset_smul_set_iff : A ⊆ a • B ↔ a⁻¹ • A ⊆ B :=
   Iff.symm <|
     image_subset_iff.trans <|
       Iff.symm <| iff_of_eq <| congr_arg _ <| image_equiv_eq_preimage_symm _ <| MulAction.toPerm _
-
-@[deprecated (since := "2024-12-28")] alias subset_set_smul_iff := subset_smul_set_iff
 
 @[to_additive]
 theorem smul_set_inter : a • (s ∩ t) = a • s ∩ a • t :=

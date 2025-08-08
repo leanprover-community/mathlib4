@@ -84,6 +84,7 @@ noncomputable def chooseBasis : Basis (ChooseBasisIndex R M) R M :=
   ((Module.free_iff_set R M).mp ‹_›).choose_spec.some
 
 /-- The isomorphism `M ≃ₗ[R] (ChooseBasisIndex R M →₀ R)`. -/
+@[deprecated Module.Free.chooseBasis (since := "2025-08-01")]
 noncomputable def repr : M ≃ₗ[R] ChooseBasisIndex R M →₀ R :=
   (chooseBasis R M).repr
 
@@ -110,7 +111,7 @@ theorem infinite [Infinite R] [Nontrivial M] : Infinite M :=
   (Equiv.infinite_iff (chooseBasis R M).repr.toEquiv).mpr Finsupp.infinite_of_right
 
 instance [Module.Free R M] [Nontrivial M] : FaithfulSMul R M :=
-  .of_injective _ (Module.Free.repr R M).symm.injective
+  .of_injective _ (chooseBasis R M).repr.symm.injective
 
 variable {R M N}
 

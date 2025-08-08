@@ -154,7 +154,7 @@ instance : FinCategory WalkingParallelPair where
 example [HasFiniteLimits C] : HasEqualizers C := by infer_instance
 
 /-- Coequalizers are finite colimits, of if `C` has all finite colimits, it also has all
-    coequalizers -/
+coequalizers -/
 example [HasFiniteColimits C] : HasCoequalizers C := by infer_instance
 
 variable {J : Type v}

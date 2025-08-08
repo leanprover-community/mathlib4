@@ -25,9 +25,9 @@ of sets `yoneda.obj U` to `F`.
 
 ## TODO
 * if `U` is a terminal object of `C`, define an isomorphism
-`(F.cohomologyPresheaf n).obj (Opposite.op U) ≃+ Sheaf.H F n`.
+  `(F.cohomologyPresheaf n).obj (Opposite.op U) ≃+ Sheaf.H F n`.
 * if `U : C`, define an isomorphism
-`(F.cohomologyPresheaf n).obj (Opposite.op U) ≃+ Sheaf.H (F.over U) n`.
+  `(F.cohomologyPresheaf n).obj (Opposite.op U) ≃+ Sheaf.H (F.over U) n`.
 
 -/
 
