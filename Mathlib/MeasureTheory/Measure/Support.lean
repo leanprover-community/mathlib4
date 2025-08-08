@@ -56,7 +56,7 @@ variable {μ : Measure X}
 theorem _root_.Filter.HasBasis.mem_measureSupport {ι : Sort*} {p : ι → Prop}
     {s : ι → Set X} {x : X} (hl : (𝓝 x).HasBasis p s) :
     x ∈ μ.support ↔ ∀ (i : ι), p i → 0 < μ (s i) :=
-  Filter.HasBasis.frequently_smallSets (hl := hl) pos_mono
+  hl.frequently_smallSets pos_mono
 
 /-- A point `x` is in the support of measure `μ` iff any neighborhood of `x` contains a
 subset with positive measure. -/
