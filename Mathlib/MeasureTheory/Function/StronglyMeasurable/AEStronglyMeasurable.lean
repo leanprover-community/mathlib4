@@ -340,11 +340,19 @@ protected theorem smul_const {𝕜} [TopologicalSpace 𝕜] [SMul 𝕜 β] [Cont
     (hf : AEStronglyMeasurable[m] f μ) (c : β) : AEStronglyMeasurable[m] (fun x => f x • c) μ :=
   continuous_smul.comp_aestronglyMeasurable (hf.prodMk aestronglyMeasurable_const)
 
+end Arithmetic
+
+section Star
+
+protected theorem _root_.Filter.EventuallyEq.star {R : Type*} [Star R] {f g : α → R} {l : Filter α}
+    (h : f =ᶠ[l] g) : (fun x ↦ star (f x)) =ᶠ[l] fun x ↦ star (g x) :=
+  h.fun_comp Star.star
+
 protected theorem star {R : Type*} [TopologicalSpace R] [Star R] [ContinuousStar R] {f : α → R}
     (hf : AEStronglyMeasurable f μ) : AEStronglyMeasurable (star f) μ :=
-  ⟨star (hf.mk f), hf.stronglyMeasurable_mk.star, Filter.EventuallyEq.star hf.ae_eq_mk⟩
+  ⟨star (hf.mk f), hf.stronglyMeasurable_mk.star, hf.ae_eq_mk.star⟩
 
-end Arithmetic
+end Star
 
 section Order
 
