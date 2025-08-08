@@ -8,6 +8,7 @@ import Mathlib.RingTheory.PowerSeries.Basic
 
 /-!
 # Evaluation of power series in Hahn Series
+
 We describe a class of ring homomorphisms from formal power series to Hahn series,
 given by substitution of the generating variable to an element of strictly positive order.
 
@@ -161,8 +162,7 @@ variable `X` to a positive order element `x` and extending to infinite sums. -/
 def heval : PowerSeries R →ₐ[R] HahnSeries Γ R where
   toFun f := (powerSeriesFamily x f).hsum
   map_one' := by
-    simp only [hsum, smulFamily_toFun, coeff_one, powers_toFun, smul_ite, ite_smul, one_smul,
-      zero_smul]
+    simp only [hsum, smulFamily_toFun, coeff_one, powers_toFun, ite_smul, one_smul, zero_smul]
     ext g
     simp only
     rw [finsum_eq_single _ (0 : ℕ) (fun n hn => by simp [hn])]
@@ -177,24 +177,22 @@ def heval : PowerSeries R →ₐ[R] HahnSeries Γ R where
   commutes' r := by
     simp only [algebraMap_eq]
     ext g
-    simp only [coeff_hsum, smulFamily_toFun, coeff_C, powers_toFun, smul_ite, ite_smul, zero_smul]
+    simp only [coeff_hsum, smulFamily_toFun, coeff_C, powers_toFun, ite_smul, zero_smul]
     rw [finsum_eq_single _ 0 fun n hn => by simp [hn]]
     by_cases hg : g = 0 <;> simp [hg, Algebra.algebraMap_eq_smul_one]
 
 theorem heval_mul {a b : PowerSeries R} :
-    heval x (a * b) = (heval x a) * heval x b :=
+    heval x (a * b) = heval x a * heval x b :=
   map_mul (heval x) a b
 
-theorem heval_C (r : R) :
-    heval x (C R r) = r • 1 := by
+theorem heval_C (r : R) : heval x (C R r) = r • 1 := by
   ext g
-  simp only [heval_apply, coeff_hsum, smulFamily_toFun, powers_toFun, smul_ite,
-    HahnSeries.coeff_smul, HahnSeries.coeff_one, smul_eq_mul, mul_ite, mul_one, mul_zero]
+  simp only [heval_apply, coeff_hsum, smulFamily_toFun, powers_toFun, HahnSeries.coeff_smul,
+    HahnSeries.coeff_one, smul_eq_mul, mul_ite, mul_one, mul_zero]
   rw [finsum_eq_single _ 0 (fun n hn ↦ by simp [coeff_ne_zero_C hn])]
-  by_cases hg : g = 0 <;> · simp
+  by_cases hg : g = 0 <;> simp
 
-theorem heval_X (hx : 0 < x.orderTop) :
-    heval x X = x := by
+theorem heval_X (hx : 0 < x.orderTop) : heval x X = x := by
   rw [X_eq, monomial_eq_mk, heval_apply, powerSeriesFamily, smulFamily]
   simp only [coeff_mk, powers_toFun, hx, ↓reduceIte, ite_smul, one_smul, zero_smul]
   ext g
