@@ -158,10 +158,7 @@ theorem exists_minimalWeierstrassEquation (W : WeierstrassCurve K) :
     (fun (C : VariableChange K) ↦ IsIntegralWeierstrassEquation R (C • W))
     (fun (C : VariableChange K) ↦ addVal R ((algebraMap R K).toFun.invFun (C • W).Δ))
     (exists_integralWeierstrassEquation R W)
-  use C
-  refine { val_Δ_minimal := ?_ }
-  constructor
-  · simp only [one_smul]; exact hC.1
+  refine ⟨C, ⟨⟨by simp only [one_smul, hC.1], ?_⟩⟩⟩
   intro j hj; rw [← smul_assoc] at hj
   let h := hC.2 hj
   simp_all only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe,
