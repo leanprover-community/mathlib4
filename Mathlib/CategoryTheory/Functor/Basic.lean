@@ -37,9 +37,9 @@ structure Functor (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.
     Type max v₁ v₂ u₁ u₂
     extends Prefunctor C D where
   /-- A functor preserves identity morphisms. -/
-  map_id : ∀ X : C, map (𝟙 X) = 𝟙 (obj X) := by aesop_cat
+  map_id : ∀ X : C, map (𝟙 X) = 𝟙 (obj X) := by cat_disch
   /-- A functor preserves composition. -/
-  map_comp : ∀ {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z), map (f ≫ g) = map f ≫ map g := by aesop_cat
+  map_comp : ∀ {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z), map (f ≫ g) = map f ≫ map g := by cat_disch
 
 /-- The prefunctor between the underlying quivers. -/
 add_decl_doc Functor.toPrefunctor
@@ -121,7 +121,7 @@ protected theorem id_comp (F : C ⥤ D) : 𝟭 C ⋙ F = F := by cases F; rfl
 theorem map_dite (F : C ⥤ D) {X Y : C} {P : Prop} [Decidable P]
     (f : P → (X ⟶ Y)) (g : ¬P → (X ⟶ Y)) :
     F.map (if h : P then f h else g h) = if h : P then F.map (f h) else F.map (g h) := by
-  aesop_cat
+  cat_disch
 
 @[simp]
 theorem toPrefunctor_comp (F : C ⥤ D) (G : D ⥤ E) :

@@ -134,7 +134,7 @@ def toΓSpecCApp :
       (isUnit_res_toΓSpecMapBasicOpen _ r)
 
 /-- Characterization of the sheaf hom on basic opens,
-    direction ← (next lemma) is used at various places, but → is not used in this file. -/
+direction ← (next lemma) is used at various places, but → is not used in this file. -/
 theorem toΓSpecCApp_iff
     (f :
       (structureSheaf <| Γ.obj <| op X).val.obj (op <| basicOpen r) ⟶
@@ -190,7 +190,7 @@ theorem toΓSpecSheafedSpace_app_eq :
   (X.toΓSpecSheafedSpace_app_eq r).symm ▸ X.toΓSpecCApp_spec r
 
 /-- The map on stalks induced by the unit commutes with maps from `Γ(X)` to
-    stalks (in `Spec Γ(X)` and in `X`). -/
+stalks (in `Spec Γ(X)` and in `X`). -/
 theorem toStalk_stalkMap_toΓSpec (x : X) :
     toStalk _ _ ≫ X.toΓSpecSheafedSpace.stalkMap x = X.presheaf.Γgerm x := by
   rw [PresheafedSpace.Hom.stalkMap,
@@ -437,8 +437,6 @@ theorem Scheme.toSpecΓ_appTop (X : Scheme.{u}) :
   rw [← IsIso.eq_comp_inv] at this
   simp only [Category.id_comp] at this
   rw [← Quiver.Hom.op_inj.eq_iff, this, ← op_inv, IsIso.Iso.inv_inv]
-
-@[deprecated (since := "2024-11-23")] alias Scheme.toSpecΓ_app_top := Scheme.toSpecΓ_appTop
 
 @[simp]
 theorem SpecMap_ΓSpecIso_hom (R : CommRingCat.{u}) :

@@ -929,7 +929,7 @@ theorem AffineIndependent.not_wbtw_of_injective {ι} (i j k : ι)
 variable (R)
 
 theorem wbtw_pointReflection (x y : P) : Wbtw R y x (pointReflection R x y) := by
-  refine ⟨2⁻¹, ⟨by norm_num, by norm_num⟩, ?_⟩
+  refine ⟨2⁻¹, ⟨by simp, by norm_num⟩, ?_⟩
   rw [lineMap_apply, pointReflection_apply, vadd_vsub_assoc, ← two_smul R (x -ᵥ y)]
   simp
 

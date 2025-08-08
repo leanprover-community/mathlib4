@@ -3,7 +3,7 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.Group.Support
+import Mathlib.Algebra.Notation.Support
 import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 import Mathlib.Order.WellFoundedSet
 
@@ -155,7 +155,7 @@ def toIterate [PartialOrder Γ'] (x : HahnSeries (Γ ×ₗ Γ') R) :
         (Set.PartiallyWellOrderedOn.fiberProdLex x.isPWO_support' g)) = Function.support
         fun g => fun g' => x.coeff (g, g') := by
       simp only [Function.support, ne_eq, mk_eq_zero]
-    rw [h₁, Function.support_curry' x.coeff]
+    rw [h₁, Function.support_fun_curry x.coeff]
     exact Set.PartiallyWellOrderedOn.imageProdLex x.isPWO_support'
 
 /-- The equivalence between iterated Hahn series and Hahn series on the lex product. -/
@@ -491,7 +491,7 @@ theorem forallLTEqZero_supp_BddBelow (f : Γ → R) (n : Γ) (hn : ∀ (m : Γ),
   exact not_lt.mp (mt (hn m) hm)
 
 theorem BddBelow_zero [Nonempty Γ] : BddBelow (Function.support (0 : Γ → R)) := by
-  simp only [support_zero', bddBelow_empty]
+  simp only [Function.support_zero, bddBelow_empty]
 
 variable [LocallyFiniteOrder Γ]
 
