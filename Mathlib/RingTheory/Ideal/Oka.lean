@@ -16,6 +16,10 @@ This file introduces the notion of oka predicates and standard results about the
   then it is prime.
 - `IsOka.forall_of_forall_prime`: if all prime ideals of a ring satisfy an oka predicate, then all
   its ideals also satisfy the predicate.
+
+## References
+
+- [stacks-project]: The Stacks project, [tag 05K7](https://stacks.math.columbia.edu/tag/05K7)
 -/
 
 open Ideal
