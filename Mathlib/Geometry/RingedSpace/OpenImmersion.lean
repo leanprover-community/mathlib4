@@ -173,7 +173,7 @@ theorem inv_naturality {U V : (Opens X)ᵒᵖ} (i : U ⟶ V) :
   rw [IsIso.comp_inv_eq]
   simp only [Functor.op_obj, op_unop, ← X.presheaf.map_comp, Functor.op_map, Category.assoc,
     NatTrans.naturality, Quiver.Hom.unop_op, IsIso.inv_hom_id_assoc,
-    TopCat.Presheaf.pushforward_obj_map]
+    TopCat.Presheaf.pushforward_obj_map, Functor.toPrefunctor_obj]
   congr 1
 
 instance (U : Opens X) : IsIso (invApp f U) := by delta invApp; infer_instance
