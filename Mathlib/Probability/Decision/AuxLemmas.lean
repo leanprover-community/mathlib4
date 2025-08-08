@@ -12,6 +12,7 @@ import Mathlib.Probability.Kernel.Posterior
 open MeasureTheory
 open scoped ENNReal NNReal
 
+--PRed
 lemma ENNReal.add_sub_add_eq_sub_right {a c b : ℝ≥0∞} (hc : c ≠ ∞) :
     (a + c) - (b + c) = a - b := by
   lift c to ℝ≥0 using hc
@@ -22,6 +23,7 @@ lemma ENNReal.add_sub_add_eq_sub_right {a c b : ℝ≥0∞} (hc : c ≠ ∞) :
   · norm_cast
     rw [add_tsub_add_eq_tsub_right]
 
+--PRed
 lemma ENNReal.add_sub_add_eq_sub_left {a c b : ℝ≥0∞} (hc : c ≠ ∞) :
     (c + a) - (c + b) = a - b := by
   simp_rw [add_comm c]
@@ -46,6 +48,7 @@ namespace MeasureTheory
 
 variable {α : Type*} {mα : MeasurableSpace α} {μ ν : Measure α}
 
+--PRed
 lemma Measure.eq_of_le_of_measure_univ_eq [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     (hμν : μ ≤ ν) (h_univ : μ .univ = ν .univ) : μ = ν := by
   ext s hs
@@ -59,48 +62,12 @@ lemma Measure.eq_of_le_of_measure_univ_eq [IsFiniteMeasure μ] [IsFiniteMeasure 
   push_neg
   refine ENNReal.add_lt_add_of_lt_of_le (by finiteness) h_lt (hμν sᶜ)
 
+--PRed
 lemma Measure.eq_of_le_of_isProbabilityMeasure [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
     (hμν : μ ≤ ν) : μ = ν :=
   eq_of_le_of_measure_univ_eq hμν (by simp)
 
 end MeasureTheory
-
-namespace MeasurableEmbedding
--- PRed by Gaëtan
-
-open Set
-variable {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {f : α → β}
-
-lemma equivRange_apply (hf : MeasurableEmbedding f) (x : α) :
-    hf.equivRange x = ⟨f x, mem_range_self x⟩ := by
-  suffices f x = (hf.equivRange x).1 by simp [this]
-  simp [MeasurableEmbedding.equivRange, MeasurableEquiv.cast, MeasurableEquiv.Set.univ,
-    MeasurableEmbedding.equivImage]
-
-lemma equivRange_symm_apply_mk (hf : MeasurableEmbedding f) (x : α) :
-    hf.equivRange.symm ⟨f x, mem_range_self x⟩ = x := by
-  have : x = hf.equivRange.symm (hf.equivRange x) := EquivLike.inv_apply_eq.mp rfl
-  conv_rhs => rw [this, hf.equivRange_apply]
-
-/-- The left-inverse of a MeasurableEmbedding -/
-protected noncomputable
-def invFun [Nonempty α] (hf : MeasurableEmbedding f) [∀ x, Decidable (x ∈ range f)] (x : β) : α :=
-  if hx : x ∈ range f then hf.equivRange.symm ⟨x, hx⟩ else (Nonempty.some inferInstance)
-
-@[fun_prop]
-lemma measurable_invFun [Nonempty α] [∀ x, Decidable (x ∈ range f)]
-    (hf : MeasurableEmbedding f) :
-    Measurable (hf.invFun : β → α) :=
-  Measurable.dite (by fun_prop) measurable_const hf.measurableSet_range
-
-lemma leftInverse_invFun [Nonempty α] [∀ x, Decidable (x ∈ range f)]
-    (hf : MeasurableEmbedding f) :
-    Function.LeftInverse hf.invFun f := by
-  intro x
-  simp only [MeasurableEmbedding.invFun, mem_range, exists_apply_eq_apply, ↓reduceDIte]
-  exact hf.equivRange_symm_apply_mk x
-
-end MeasurableEmbedding
 
 lemma measurable_encode {α : Type*} {_ : MeasurableSpace α} [Encodable α]
     [MeasurableSingletonClass α] :
