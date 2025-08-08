@@ -785,7 +785,6 @@ def RelType.toExpr : RelType → Expr
   | .eq => .const ``RelType.eq []
   | .ne => .const ``RelType.ne []
 
--- variable (hΓ₁) in
 /-- Convert a `RelType` to the `Prop` on `Γ₁` that it represents. -/
 def RelType.toProp {α : Q(Type u₁)} (oα : Q(PartialOrder $α)) : RelType → (x y : Q($α)) → Q(Prop)
   | .le, x, y => q($x ≤ $y)
@@ -844,27 +843,23 @@ def matchAndMkProof (h : Q(Valuation.IsEquiv $v₁ $v₂)) (e₁ : Q(Prop)) :
 /-- The core simproc of `rw_equiv_tac`. Given `h : IsEquiv v₁ v₂`, find relations in `Γ₁` and
 transport them to `Γ₂`. -/
 def equivCore (h : Q(Valuation.IsEquiv $v₁ $v₂)) : Simp.Simproc := fun e : Expr ↦ do
-  match ← inferTypeQ e with
-  | ⟨1, ~q(Prop), e⟩ =>
-    match ← matchAndMkProof v₁ v₂ h e with
-    | .some ⟨e₂, pf⟩ => return .visit { expr := e₂, proof? := q(propext $pf) }
-    | .none => return .continue
-  | _ => return .continue
+  let ⟨1, ~q(Prop), e⟩ ← inferTypeQ e | return .continue
+  let .some ⟨e₂, pf⟩ ← matchAndMkProof v₁ v₂ h e | return .continue
+  return .visit { expr := e₂, proof? := q(propext $pf) }
 
 /-- A tactic to rewrite expressions in a goal (e.g. `v₁ x ≤ 1`) with an equivalent one in the other
 value group or monoid (e.g. `v₂ x ≤ 1`), given `h : v₁.IsEquiv v₂`. -/
 elab "rw_val_equiv" equiv:(ppSpace colGt term:max) : tactic => do
   let hE : Expr ← elabTerm equiv none
   let ⟨0, h', h⟩ ← inferTypeQ hE | throwError "given term is not a proof"
-  match h' with
-  | ~q(@Valuation.IsEquiv $R $Γ₁ $Γ₂ $hR $hΓ₁ $hΓ₂ $v₁ $v₂) =>
-      liftMetaTactic1 fun e ↦ do
-        let target ← instantiateMVars (← e.getType)
-        let ctx ← Simp.mkContext (simpTheorems := #[])
-        let (r, _) ← Simp.mainCore target ctx (methods := {post := equivCore v₁ v₂ h})
-        let i ← applySimpResultToTarget e target r
-        return i
-  | _ => throwError "not Valuation.isEquiv"
+  let ~q(@Valuation.IsEquiv $R $Γ₁ $Γ₂ $hR $hΓ₁ $hΓ₂ $v₁ $v₂) := h' |
+    throwError "not Valuation.isEquiv"
+  liftMetaTactic1 fun e ↦ do
+    let target ← instantiateMVars (← e.getType)
+    let ctx ← Simp.mkContext (simpTheorems := #[])
+    let (r, _) ← Simp.mainCore target ctx (methods := {post := equivCore v₁ v₂ h})
+    let i ← applySimpResultToTarget e target r
+    return i
   evalTactic (← `(tactic| try rfl))
 
 --Check that it works with `LinearOrderedCommMonoidWithZero`
