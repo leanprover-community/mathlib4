@@ -174,6 +174,16 @@ theorem toGL_mul (A B : unitaryGroup n α) : toGL (A * B) = toGL A * toGL B := U
 def embeddingGL : unitaryGroup n α →* GeneralLinearGroup α (n → α) :=
   ⟨⟨fun A => toGL A, toGL_one⟩, toGL_mul⟩
 
+open scoped Kronecker in
+/-- The kronecker product of two unitary matrices is unitary. -/
+theorem kronecker_mem_unitaryGroup {m : Type*} [Fintype m] [DecidableEq m]
+    {U₁ : Matrix n n α} {U₂ : Matrix m m α}
+    (hU₁ : U₁ ∈ unitaryGroup n α) (hU₂ : U₂ ∈ unitaryGroup m α) :
+    U₁ ⊗ₖ U₂ ∈ unitaryGroup (n × m) α := by
+  simp_rw [mem_unitaryGroup_iff, star_eq_conjTranspose, conjTranspose_kronecker,
+    ← mul_kronecker_mul, ← star_eq_conjTranspose, mem_unitaryGroup_iff.mp hU₁,
+    mem_unitaryGroup_iff.mp hU₂, one_kronecker_one]
+
 end UnitaryGroup
 
 section specialUnitaryGroup
@@ -279,15 +289,5 @@ lemma mem_specialOrthogonalGroup_fin_two_iff {M : Matrix (Fin 2) (Fin 2) R} :
   exact of_mem_specialOrthogonalGroup_fin_two_iff
 
 end specialOrthogonalGroup
-
-open scoped Kronecker in
-/-- The kronecker product of two unitary matrices is unitary. -/
-theorem UnitaryGroup.kronecker_mem_unitaryGroup {m : Type*} [Fintype m] [DecidableEq m]
-    {U₁ : Matrix n n α} {U₂ : Matrix m m α}
-    (hU₁ : U₁ ∈ unitaryGroup n α) (hU₂ : U₂ ∈ unitaryGroup m α) :
-    U₁ ⊗ₖ U₂ ∈ unitaryGroup (n × m) α := by
-  simp_rw [mem_unitaryGroup_iff, star_eq_conjTranspose, conjTranspose_kronecker,
-    ← mul_kronecker_mul, ← star_eq_conjTranspose, mem_unitaryGroup_iff.mp hU₁,
-    mem_unitaryGroup_iff.mp hU₂, one_kronecker_one]
 
 end Matrix
