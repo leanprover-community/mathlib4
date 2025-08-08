@@ -108,16 +108,14 @@ variable {f : ℕ → ℕ → Prop} [DecidableRel f]
 /-- If `f a b` is decidable, then for any fixed `n` and `y`,  `"g n y ↔ ∃ x < n, f x y"` is a
 primitive recursive relation. -/
 lemma bounded_exists (hf : PrimrecRel f) : PrimrecRel fun n y ↦ ∃ x < n, f x y := by
-  have h : PrimrecRel fun n y ↦ ∃ x ∈ range n, f x y :=
-    comp (filter_exists hf) (Primrec.comp list_range fst) snd
-  exact of_eq h (by simp)
+  have h := comp (filter_exists hf) (Primrec.comp list_range fst) snd
+  exact PrimrecPred.of_eq h (by simp)
 
 /-- If `f a b` is decidable, then for any fixed `n` and `y`,  `"g n y ↔ ∀ x < n, f x y"` is a
 primitive recursive relation. -/
 lemma bounded_forall (hf : PrimrecRel f) : PrimrecRel fun n y ↦ ∀ x < n, f x y := by
-  have h : PrimrecRel fun n y ↦ ∀ x ∈ range n, f x y :=
-    comp (filter_forall hf) (Primrec.comp list_range fst) snd
-  exact of_eq h (by simp)
+  have h := comp (filter_forall hf) (Primrec.comp list_range fst) snd
+  exact PrimrecPred.of_eq h (by simp)
 
 end PrimrecRel
 
