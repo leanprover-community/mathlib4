@@ -782,8 +782,7 @@ def isEmptyEquiv [IsEmpty ι] : (⨂[R] i : ι, s i) ≃ₗ[R] R where
   left_inv x := by
     refine x.induction_on ?_ ?_
     · intro x y
-      -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to change `map_smulₛₗ` into `map_smulₛₗ _`
-      simp only [map_smulₛₗ _, RingHom.id_apply, lift.tprod, constOfIsEmpty_apply, const_apply,
+      simp only [map_smulₛₗ, RingHom.id_apply, lift.tprod, constOfIsEmpty_apply, const_apply,
         smul_eq_mul, mul_one]
       congr
       aesop
