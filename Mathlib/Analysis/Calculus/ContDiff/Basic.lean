@@ -1179,7 +1179,7 @@ theorem ContDiffWithinAt.hasFDerivWithinAt_nhds {f : E → F → G} {g : E → F
   · intro z hz
     have := hvf' (z, g z) hz.1
     refine this.comp _ (hasFDerivAt_prodMk_right _ _).hasFDerivWithinAt ?_
-    exact mapsTo'.mpr (image_prodMk_subset_prod_right hz.2)
+    exact mapsTo_iff_image_subset.mpr (image_prodMk_subset_prod_right hz.2)
   · exact (hf'.continuousLinearMap_comp <| (ContinuousLinearMap.compL 𝕜 F (E × F) G).flip
       (ContinuousLinearMap.inr 𝕜 E F)).comp_of_mem_nhdsWithin_image x₀
       (contDiffWithinAt_id.prodMk hg) hst
