@@ -207,14 +207,28 @@ lemma foo_aux_prop (x₀ : B) : foo_aux IB F E x₀ ∈ condition E x₀ := by
     exists_contMDiffOn_section_forall_mem_convex_of_local IB (V := W E) (n := (⊤ : ℕ∞))
       (condition E) convex_condition hloc_TODO
 
-noncomputable def foo : ContMDiffRiemannianMetric IB ∞ F E where
+-- In what generality does this hold?
+lemma aux_special (G : Type*) [NormedAddCommGroup G] [NormedSpace ℝ G] [FiniteDimensional ℝ G]
+    (φ : G →L[ℝ] G →L[ℝ] ℝ) (hpos : ∀ v : G, v ≠ 0 → 0 < φ v v) :
+    Bornology.IsVonNBounded ℝ {v | (φ v) v < 1} := by
+  -- choose a basis of G; each basis vector vi has image φ vi vi of positive norm (by hypothesis)
+  -- by finite-dimensionality, there is a minimum on these,
+  -- which implies the image of the unit ball contains some open ball; done
+  sorry
+
+-- TODO: is this version also true?
+lemma aux_special2 (G : Type*) [AddCommGroup G] [TopologicalSpace G] [Module ℝ G]
+    [FiniteDimensional ℝ G]
+    (φ : G →L[ℝ] G →L[ℝ] ℝ) (hpos : ∀ v : G, v ≠ 0 → 0 < φ v v) :
+    Bornology.IsVonNBounded ℝ {v | (φ v) v < 1} := by
+  sorry
+
+-- TODO: is the finite-dimensionality actually required?
+noncomputable def foo [∀ x, FiniteDimensional ℝ (E x)] : ContMDiffRiemannianMetric IB ∞ F E where
   inner := foo_aux IB F E
-  symm := fun b v w ↦ (foo_aux_prop IB F E b).1 _ _
-  pos := fun b v hv ↦ (foo_aux_prop IB F E b).2 v hv
-  isVonNBounded b := by
-    -- idea: φ defines a bilinear form, which is continuous (by fin-dim),
-    -- then this is automatic
-    sorry
+  symm b := (foo_aux_prop IB F E b).1
+  pos b := (foo_aux_prop IB F E b).2
+  isVonNBounded b := aux_special2 (E b) (foo_aux IB F E b) (foo_aux_prop IB F E b).2
   contMDiff := (foo_aux IB F E).contMDiff
 
 #exit
