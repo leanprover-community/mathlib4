@@ -134,7 +134,7 @@ omit [IsDomain R] [IsDiscreteValuationRing R] [IsFractionRing R K] in
 lemma Δ_integral_of_isIntegralWeierstrassEquation (W : WeierstrassCurve K)
     [IsIntegralWeierstrassEquation R W] :
     ∃ r : R, (algebraMap R K) r = W.Δ := by
-  obtain ⟨ W_int, hW_int ⟩ : ∃ W_int : WeierstrassCurve R, W = W_int.baseChange K :=
+  obtain ⟨W_int, hW_int⟩ : ∃ W_int : WeierstrassCurve R, W = W_int.baseChange K :=
     IsIntegralWeierstrassEquation.integral
   use W_int.Δ
   rw [hW_int, map_Δ]
