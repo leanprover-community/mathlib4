@@ -19,8 +19,9 @@ open Lean Elab Tactic
 /-- Execute the given `Simproc` on the goal. -/
 def Lean.Meta.Simp.Simproc.apply (s : Simproc) : TacticM Unit := do
   liftMetaTactic1 fun e ↦ do
-    -- `Simproc` usually does not allow arguments, so we hijacked `Simp.mainCore` to provide a
-    -- `Simproc` that accepts arguments (which is `equivCore` here).
+    -- `Simproc` usually does not allow arguments and can only be referred to by name, so we
+    -- hijacked `Simp.mainCore` to accept any `Simproc` term (i.e. not just a name), so that
+    -- a `Simproc` can accept arguments (by constructing a term of type `something -> Simproc`).
     let target ← instantiateMVars (← e.getType)
     let ctx ← Simp.mkContext (simpTheorems := #[])
     let (r, _) ← Simp.mainCore target ctx (methods := {post := s})
