@@ -282,10 +282,10 @@ end specialOrthogonalGroup
 
 open scoped Kronecker in
 /-- The kronecker product of two unitary matrices is unitary. -/
-theorem UnitaryGroup.kronecker_mem_unitaryGroup {R m : Type*} [Fintype m] [DecidableEq m]
-    [CommRing R] [StarRing R] {U₁ : Matrix n n R} {U₂ : Matrix m m R}
-    (hU₁ : U₁ ∈ unitaryGroup n R) (hU₂ : U₂ ∈ unitaryGroup m R) :
-    U₁ ⊗ₖ U₂ ∈ unitaryGroup (n × m) R := by
+theorem UnitaryGroup.kronecker_mem_unitaryGroup {m : Type*} [Fintype m] [DecidableEq m]
+    {U₁ : Matrix n n α} {U₂ : Matrix m m α}
+    (hU₁ : U₁ ∈ unitaryGroup n α) (hU₂ : U₂ ∈ unitaryGroup m α) :
+    U₁ ⊗ₖ U₂ ∈ unitaryGroup (n × m) α := by
   simp_rw [mem_unitaryGroup_iff, star_eq_conjTranspose, conjTranspose_kronecker,
     ← mul_kronecker_mul, ← star_eq_conjTranspose, mem_unitaryGroup_iff.mp hU₁,
     mem_unitaryGroup_iff.mp hU₂, one_kronecker_one]
