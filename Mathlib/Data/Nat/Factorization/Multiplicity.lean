@@ -3,10 +3,9 @@ Copyright (c) 2025 Qi Wen Wei. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Qi Wen Wei
 -/
-import Mathlib.Algebra.GeomSum
+import Mathlib.Algebra.Order.Ring.GeomSum
 import Mathlib.Data.Nat.Digits.Lemmas
 import Mathlib.Data.Nat.Factorization.Basic
-
 /-!
 # Natural number factorization
 

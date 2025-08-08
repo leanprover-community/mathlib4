@@ -3,11 +3,7 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Order.Ring.GeomSum
-import Mathlib.Data.Nat.Digits.Lemmas
 import Mathlib.Data.Nat.Factorization.Multiplicity
-import Mathlib.Data.Nat.Prime.Defs
-import Mathlib.RingTheory.Multiplicity
 
 /-!
 # Natural number multiplicity
@@ -295,3 +291,4 @@ theorem emultiplicity_two_factorial_lt : ∀ {n : ℕ} (_ : n ≠ 0), emultiplic
       exact mod_cast lt_succ_self _
 
 end Nat
+#min_imports
