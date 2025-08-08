@@ -41,10 +41,8 @@ theorem Ideal.isPrime_of_maximal_not_isOka (hP : IsOka P) {I : Ideal R}
   have I_ne_top : I ≠ ⊤ := fun hI' ↦ hI.1 (hI' ▸ hP.1)
   obtain ⟨a, ha, b, hb, hab⟩ := (not_isPrime_iff.1 h).resolve_left I_ne_top
   have h₁ : P (I ⊔ span {a}) := of_not_not <| hI.not_prop_of_gt (Submodule.lt_sup_iff_notMem.2 ha)
-  have h₂ : P (I.colon (span {a})) :=
-    of_not_not <| hI.not_prop_of_gt <| lt_of_le_of_ne
-      (fun _ hx ↦ mem_colon_singleton.2 <| I.mul_mem_right a hx)
-      (fun H ↦ hb <| H ▸ mem_colon_singleton.2 (mul_comm a b ▸ hab))
+  have h₂ : P (I.colon (span {a})) := of_not_not <| hI.not_prop_of_gt <| lt_of_le_of_ne le_colon
+    (fun H ↦ hb <| H ▸ mem_colon_singleton.2 (mul_comm a b ▸ hab))
   exact hI.1 (hP.2 h₁ h₂)
 
 /-- If all prime ideals of a ring satisfy an oka predicate, then all its ideals also satisfy the
