@@ -121,7 +121,7 @@ theorem hsum_powerSeriesFamily_mul {x : HahnSeries Γ V} (a b : PowerSeries R) :
     simp only [coeff_support, mul_toFun, smulFamily_toFun, Algebra.mul_smul_comm,
       Algebra.smul_mul_assoc, HahnSeries.coeff_smul, PowerSeries.coeff_mul, sum_smul]
     rw [sum_sigma']
-    refine (Finset.sum_of_injOn (fun x => ⟨x.1 + x.2, x⟩) (fun _ _ _ _ => by simp_all) ?_ ?_
+    refine (Finset.sum_of_injOn (fun x => ⟨x.1 + x.2, x⟩) (fun _ _ _ _ => by simp) ?_ ?_
       (fun _ _ => by simp [smul_smul, mul_comm, pow_add])).symm
     · intro ij hij
       simp only [coe_sigma, coe_image, Set.mem_sigma_iff, Set.mem_image, Prod.exists, mem_coe,
@@ -219,7 +219,7 @@ theorem coeff_heval_zero (f : PowerSeries R) :
     (heval x f).coeff 0 = PowerSeries.constantCoeff R f := by
   rw [coeff_heval, finsum_eq_single (fun n => ((powerSeriesFamily x f).coeff 0) n) 0,
     ← PowerSeries.coeff_zero_eq_constantCoeff_apply]
-  · simp_all
+  · simp
   · intro n hn
     simp only [coeff_toFun, smulFamily_toFun, HahnSeries.coeff_smul, smul_eq_mul]
     refine mul_eq_zero_of_right ((coeff R n) f) (coeff_eq_zero_of_lt_orderTop ?_)

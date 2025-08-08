@@ -69,7 +69,7 @@ class IsFilteredOrEmpty : Prop where
   /-- for every pair of objects there exists another object "to the right" -/
   cocone_objs : ∀ X Y : C, ∃ (Z : _) (_ : X ⟶ Z) (_ : Y ⟶ Z), True
   /-- for every pair of parallel morphisms there exists a morphism to the right
-    so the compositions are equal -/
+  so the compositions are equal -/
   cocone_maps : ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), ∃ (Z : _) (h : Y ⟶ Z), f ≫ h = g ≫ h
 
 /-- A category `IsFiltered` if
@@ -318,7 +318,7 @@ section OfCocone
 open CategoryTheory.Limits
 
 /-- If every finite diagram in `C` admits a cocone, then `C` is filtered. It is sufficient to verify
-    this for diagrams whose shape lives in any one fixed universe. -/
+this for diagrams whose shape lives in any one fixed universe. -/
 theorem of_cocone_nonempty (h : ∀ {J : Type w} [SmallCategory J] [FinCategory J] (F : J ⥤ C),
     Nonempty (Cocone F)) : IsFiltered C := by
   have : Nonempty C := by
@@ -347,7 +347,7 @@ instance (priority := 100) of_hasTerminal [HasTerminal C] : IsFiltered C :=
   of_isTerminal _ terminalIsTerminal
 
 /-- For every universe `w`, `C` is filtered if and only if every finite diagram in `C` with shape
-    in `w` admits a cocone. -/
+in `w` admits a cocone. -/
 theorem iff_cocone_nonempty : IsFiltered C ↔
     ∀ {J : Type w} [SmallCategory J] [FinCategory J] (F : J ⥤ C), Nonempty (Cocone F) :=
   ⟨fun _ _ _ _ F => cocone_nonempty F, of_cocone_nonempty C⟩
@@ -417,8 +417,8 @@ theorem coeq₃_condition₂ {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) :
 theorem coeq₃_condition₃ {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) : f ≫ coeq₃Hom f g h = h ≫ coeq₃Hom f g h :=
   Eq.trans (coeq₃_condition₁ f g h) (coeq₃_condition₂ f g h)
 
-/-- For every span `j ⟵ i ⟶ j'`, there
-   exists a cocone `j ⟶ k ⟵ j'` such that the square commutes. -/
+/-- For every span `j ⟵ i ⟶ j'`, there exists a cocone `j ⟶ k ⟵ j'` such that the square
+commutes. -/
 theorem span {i j j' : C} (f : i ⟶ j) (f' : i ⟶ j') :
     ∃ (k : C) (g : j ⟶ k) (g' : j' ⟶ k), f ≫ g = f' ≫ g' :=
   let ⟨K, G, G', _⟩ := IsFilteredOrEmpty.cocone_objs j j'
@@ -475,7 +475,8 @@ end SpecialShapes
 
 end IsFiltered
 
-/-- A category `IsCofilteredOrEmpty` if
+/--
+A category `IsCofilteredOrEmpty` if
 1. for every pair of objects there exists another object "to the left", and
 2. for every pair of parallel morphisms there exists a morphism to the left so the compositions
    are equal.
@@ -484,7 +485,7 @@ class IsCofilteredOrEmpty : Prop where
   /-- for every pair of objects there exists another object "to the left" -/
   cone_objs : ∀ X Y : C, ∃ (W : _) (_ : W ⟶ X) (_ : W ⟶ Y), True
   /-- for every pair of parallel morphisms there exists a morphism to the left
-    so the compositions are equal -/
+  so the compositions are equal -/
   cone_maps : ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), ∃ (W : _) (h : W ⟶ X), h ≫ f = h ≫ g
 
 /-- A category `IsCofiltered` if
@@ -775,7 +776,7 @@ section OfCone
 open CategoryTheory.Limits
 
 /-- If every finite diagram in `C` admits a cone, then `C` is cofiltered. It is sufficient to
-    verify this for diagrams whose shape lives in any one fixed universe. -/
+verify this for diagrams whose shape lives in any one fixed universe. -/
 theorem of_cone_nonempty (h : ∀ {J : Type w} [SmallCategory J] [FinCategory J] (F : J ⥤ C),
     Nonempty (Cone F)) : IsCofiltered C := by
   have : Nonempty C := by
@@ -804,7 +805,7 @@ instance (priority := 100) of_hasInitial [HasInitial C] : IsCofiltered C :=
   of_isInitial _ initialIsInitial
 
 /-- For every universe `w`, `C` is filtered if and only if every finite diagram in `C` with shape
-    in `w` admits a cocone. -/
+in `w` admits a cocone. -/
 theorem iff_cone_nonempty : IsCofiltered C ↔
     ∀ {J : Type w} [SmallCategory J] [FinCategory J] (F : J ⥤ C), Nonempty (Cone F) :=
   ⟨fun _ _ _ _ F => cone_nonempty F, of_cone_nonempty C⟩
