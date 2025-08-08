@@ -186,7 +186,7 @@ def flipFunctor : (C ⥤ D ⥤ E) ⥤ D ⥤ C ⥤ E where
   obj F := F.flip
   map {F₁ F₂} φ :=
     { app := fun Y =>
-      { app := fun X => (φ.app X).app Y } }
+    { app := fun X => (φ.app X).app Y } }
 
 namespace Iso
 
