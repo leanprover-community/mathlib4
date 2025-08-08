@@ -20,6 +20,7 @@ This file introduces the notion of oka predicates and standard results about the
 ## References
 
 - [stacks-project]: The Stacks project, [tag 05K7](https://stacks.math.columbia.edu/tag/05K7)
+- [lam_reyes_2009]: *Oka and Ako ideal families in commutative rings*, 2009
 -/
 
 namespace Ideal
