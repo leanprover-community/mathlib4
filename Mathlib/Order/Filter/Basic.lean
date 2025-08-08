@@ -1075,6 +1075,7 @@ theorem eventuallyEq_iff_sub [AddGroup β] {f g : α → β} {l : Filter α} :
 theorem eventuallyEq_iff_all_subsets {f g : α → β} {l : Filter α} :
     f =ᶠ[l] g ↔ ∀ s : Set α, ∀ᶠ x in l, x ∈ s → f x = g x :=
   eventually_iff_all_subsets
+
 section LE
 
 variable [LE β] {l : Filter α}
