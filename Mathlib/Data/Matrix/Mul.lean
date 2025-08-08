@@ -692,17 +692,29 @@ theorem add_vecMul [Fintype m] (A : Matrix m n α) (x y : m → α) :
   ext
   apply add_dotProduct
 
-theorem vecMul_smul [Fintype n] [NonUnitalNonAssocSemiring S] [DistribSMul R S]
-    [IsScalarTower R S S] (M : Matrix n m S) (b : R) (v : n → S) :
-    (b • v) ᵥ* M = b • v ᵥ* M := by
-  ext i
-  simp only [vecMul, dotProduct, Finset.smul_sum, Pi.smul_apply, smul_mul_assoc]
-
 theorem mulVec_smul [Fintype n] [NonUnitalNonAssocSemiring S] [DistribSMul R S]
     [SMulCommClass R S S] (M : Matrix m n S) (b : R) (v : n → S) :
     M *ᵥ (b • v) = b • M *ᵥ v := by
   ext i
   simp only [mulVec, dotProduct, Finset.smul_sum, Pi.smul_apply, mul_smul_comm]
+
+theorem smul_mulVec [Fintype n] [NonUnitalNonAssocSemiring S] [DistribSMul R S]
+    [IsScalarTower R S S] (M : Matrix m n S) (b : R) (v : n → S) :
+    (b • M) *ᵥ v = b • M *ᵥ v := by
+  ext i
+  simp only [mulVec, dotProduct, Finset.smul_sum, Pi.smul_apply, Matrix.smul_apply, smul_mul_assoc]
+
+theorem smul_vecMul [Fintype n] [NonUnitalNonAssocSemiring S] [DistribSMul R S]
+    [IsScalarTower R S S] (M : Matrix n m S) (b : R) (v : n → S) :
+    (b • v) ᵥ* M = b • v ᵥ* M := by
+  ext i
+  simp only [vecMul, dotProduct, Finset.smul_sum, Pi.smul_apply, smul_mul_assoc]
+
+theorem vecMul_smul [Fintype n] [NonUnitalNonAssocSemiring S] [DistribSMul R S]
+    [SMulCommClass R S S] (M : Matrix n m S) (b : R) (v : n → S) :
+    v ᵥ* (b • M) = b • v ᵥ* M := by
+  ext i
+  simp only [vecMul, dotProduct, Finset.smul_sum, Pi.smul_apply, Matrix.smul_apply, mul_smul_comm]
 
 @[simp]
 theorem mulVec_single [Fintype n] [DecidableEq n] [NonUnitalNonAssocSemiring R] (M : Matrix m n R)
