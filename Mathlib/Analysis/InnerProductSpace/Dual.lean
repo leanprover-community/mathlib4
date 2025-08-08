@@ -60,7 +60,7 @@ embedding of `E` into `StrongDual 𝕜 E`.
 If `E` is complete, this operation is surjective, hence a conjugate-linear isometric equivalence;
 see `toDual`.
 -/
-noncomputable def toDualMap : E →ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
+def toDualMap : E →ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
   { innerSL 𝕜 with norm_map' := innerSL_apply_norm _ }
 
 variable {E}
@@ -74,8 +74,7 @@ section NullSubmodule
 open LinearMap
 
 /-- For each `x : E`, the kernel of `⟪x, ⬝⟫` includes the null space. -/
-lemma nullSubmodule_le_ker_toDualMap_right (x : E) :
-    nullSubmodule 𝕜 E ≤ ker (toDualMap 𝕜 E x) :=
+lemma nullSubmodule_le_ker_toDualMap_right (x : E) : nullSubmodule 𝕜 E ≤ ker (toDualMap 𝕜 E x) :=
   fun _ hx ↦ inner_eq_zero_of_right x ((mem_nullSubmodule_iff).mp hx)
 
 /-- The kernel of the map `x ↦ ⟪·, x⟫` includes the null space. -/
@@ -94,8 +93,7 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 local postfix:90 "†" => starRingEnd _
 
 theorem innerSL_norm [Nontrivial E] : ‖(innerSL 𝕜 : E →L⋆[𝕜] E →L[𝕜] 𝕜)‖ = 1 :=
-  show ‖(toDualMap 𝕜 E).toContinuousLinearMap‖ = 1 from
-    LinearIsometry.norm_toContinuousLinearMap _
+  show ‖(toDualMap 𝕜 E).toContinuousLinearMap‖ = 1 from LinearIsometry.norm_toContinuousLinearMap _
 
 variable {E 𝕜}
 
@@ -123,7 +121,7 @@ variable [CompleteSpace E]
 /-- **Fréchet-Riesz representation**: any `ℓ` in the dual of a Hilbert space `E` is of the form
 `fun u => ⟪y, u⟫` for some `y : E`, i.e. `toDualMap` is surjective.
 -/
-noncomputable def toDual : E ≃ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
+def toDual : E ≃ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
   LinearIsometryEquiv.ofSurjective (toDualMap 𝕜 E)
     (by
       intro ℓ
@@ -170,14 +168,13 @@ theorem toDual_apply {x y : E} : toDual 𝕜 E x y = ⟪x, y⟫ :=
   rfl
 
 @[simp]
-theorem toDual_symm_apply {x : E} {y : StrongDual 𝕜 E} :
-    ⟪(toDual 𝕜 E).symm y, x⟫ = y x := by
+theorem toDual_symm_apply {x : E} {y : StrongDual 𝕜 E} : ⟪(toDual 𝕜 E).symm y, x⟫ = y x := by
   rw [← toDual_apply]
   simp only [LinearIsometryEquiv.apply_symm_apply]
 
 /-- Maps a bounded sesquilinear form to its continuous linear map,
 given by interpreting the form as a map `B : E →L⋆[𝕜] NormedSpace.Dual 𝕜 E`
-and dualizing the result using `toStrongDual`.
+and dualizing the result using `toDual`.
 -/
 def continuousLinearMapOfBilin (B : E →L⋆[𝕜] E →L[𝕜] 𝕜) : E →L[𝕜] E :=
   (toDual 𝕜 E).symm.toContinuousLinearEquiv.toContinuousLinearMap.comp B
