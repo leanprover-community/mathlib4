@@ -5,7 +5,6 @@ Authors: Jeremy Avigad, Mario Carneiro, Simon Hudon
 -/
 import Mathlib.Data.PFunctor.Multivariate.Basic
 import Mathlib.Data.PFunctor.Univariate.M
-import Mathlib.Tactic.DepRewrite
 
 /-!
 # The M construction as a multivariate polynomial functor.
@@ -266,11 +265,6 @@ theorem M.dest_corecU {α : TypeVec n} {β : Type v}
   dsimp
   rw [Arrow.uLift_arrow_splitFun]
   rfl
-
-
-instance heq_setoid {t : Sort u} : Setoid t :=
-  ⟨ (· ≍ ·), ⟨ HEq.refl, _root_.id ∘ HEq.symm, HEq.trans ⟩ ⟩
-
 
 theorem gen_snd {n : ℕ} (P : MvPFunctor.{u} (n + 1)) {α : TypeVec.{u} n} {β : Type u}
     (g : β → P (α ::: β)) (x : β) : (gen_fn g x).snd ≍ (P.uLift_up (g x)).snd := by
