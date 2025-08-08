@@ -396,9 +396,12 @@ theorem det_kronecker [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n] [C
   · ext i j
     exact one_mul _
 
-theorem conjTranspose_kronecker {R m₁ m₂ n₁ n₂ : Type*} [CommMagma R] [StarMul R]
-    (x : Matrix m₁ m₂ R) (y : Matrix n₁ n₂ R) :
+theorem conjTranspose_kronecker [CommMagma R] [StarMul R] (x : Matrix l m R) (y : Matrix n p R) :
     (x ⊗ₖ y)ᴴ = xᴴ ⊗ₖ yᴴ := by
+  ext; simp
+
+theorem conjTranspose_kronecker' [Mul R] [StarMul R] (x : Matrix l m R) (y : Matrix n p R) :
+    (x ⊗ₖ y)ᴴ = (yᴴ ⊗ₖ xᴴ).submatrix Prod.swap Prod.swap := by
   ext; simp
 
 end Kronecker
