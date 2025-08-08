@@ -80,7 +80,7 @@ instance forgetCreatesConnectedLimits [IsConnected J] {B : C} :
         makesLimit := CreatesConnected.raisedConeIsLimit t }
 
 /-- The forgetful functor from the over category preserves any connected limit. -/
-instance forgetPreservedConnectedLimits [IsConnected J] {B : C} :
+instance forgetPreservesConnectedLimits [IsConnected J] {B : C} :
     PreservesLimitsOfShape J (forget B) where
   preservesLimit := {
     preserves hc := ⟨{
