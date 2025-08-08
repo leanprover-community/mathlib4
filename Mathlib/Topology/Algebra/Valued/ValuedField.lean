@@ -74,7 +74,7 @@ end InversionEstimate
 open Valued
 
 /-- The topology coming from a valuation on a division ring makes it a topological division ring
-    [BouAC, VI.5.1 middle of Proposition 1] -/
+[BouAC, VI.5.1 middle of Proposition 1] -/
 instance (priority := 100) Valued.isTopologicalDivisionRing [Valued K Γ₀] :
     IsTopologicalDivisionRing K :=
   { (by infer_instance : IsTopologicalRing K) with
@@ -342,6 +342,11 @@ noncomputable instance valuedCompletion : Valued (hat K) Γ₀ where
 @[simp]
 theorem valuedCompletion_apply (x : K) : Valued.v (x : hat K) = v x :=
   extension_extends x
+
+instance {R : Type*} [CommSemiring R] [Algebra R K] [UniformContinuousConstSMul R K]
+    [FaithfulSMul R K] : FaithfulSMul R (hat K) := by
+  rw [faithfulSMul_iff_algebraMap_injective R (hat K)]
+  exact (FaithfulSMul.algebraMap_injective K (hat K)).comp (FaithfulSMul.algebraMap_injective R K)
 
 end Valued
 
