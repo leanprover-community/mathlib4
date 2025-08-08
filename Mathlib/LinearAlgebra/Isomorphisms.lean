@@ -77,7 +77,7 @@ because the former is the simp normal form (see also `Submodule.comap_inf`). -/
 def quotientInfToSupQuotient (p p' : Submodule R M) :
     (↥p) ⧸ (comap p.subtype p ⊓ comap p.subtype p') →ₗ[R]
       (↥(p ⊔ p')) ⧸ (comap (p ⊔ p').subtype p') :=
-    (comap p.subtype (p ⊓ p')).liftQ (subToSupQuotient p p') (comap_leq_ker_subToSupQuotient p p')
+  (comap p.subtype (p ⊓ p')).liftQ (subToSupQuotient p p') (comap_leq_ker_subToSupQuotient p p')
 
 theorem quotientInfEquivSupQuotient_injective (p p' : Submodule R M) :
     Function.Injective (quotientInfToSupQuotient p p') := by
