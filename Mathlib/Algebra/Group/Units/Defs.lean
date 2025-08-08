@@ -373,7 +373,8 @@ def IsUnit [Monoid M] (a : M) : Prop :=
   ∃ u : Mˣ, (u : M) = a
 
 /-- See `isUnit_iff_exists_and_exists` for a similar lemma with two existentials. -/
-@[to_additive "See `isAddUnit_iff_exists_and_exists` for a similar lemma with two existentials."]
+@[to_additive (attr := grind =)
+  "See `isAddUnit_iff_exists_and_exists` for a similar lemma with two existentials."]
 lemma isUnit_iff_exists [Monoid M] {x : M} : IsUnit x ↔ ∃ b, x * b = 1 ∧ b * x = 1 := by
   refine ⟨fun ⟨u, hu⟩ => ?_, fun ⟨b, h1b, h2b⟩ => ⟨⟨x, b, h1b, h2b⟩, rfl⟩⟩
   subst x
@@ -387,7 +388,14 @@ theorem isUnit_iff_exists_and_exists [Monoid M] {a : M} :
     ⟨fun ⟨b, hba, hab⟩ => ⟨⟨b, hba⟩, ⟨b, hab⟩⟩,
       fun ⟨⟨b, hb⟩, ⟨_, hc⟩⟩ => ⟨b, hb, left_inv_eq_right_inv hc hb ▸ hc⟩⟩
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := grind =)]
+theorem isUnit_iff_exists_comm [CommMonoid M] {a : M} : IsUnit a ↔ (∃ b, a * b = 1) := by
+  rw [isUnit_iff_exists]
+  refine ⟨fun ⟨b, hb⟩ => ⟨b, hb.1⟩, fun ⟨b, hb⟩ => ⟨b, ⟨hb, ?_⟩⟩⟩
+  rw [mul_comm]
+  exact hb
+
+@[to_additive (attr := simp, grind)]
 protected theorem Units.isUnit [Monoid M] (u : Mˣ) : IsUnit (u : M) :=
   ⟨u, rfl⟩
 
@@ -420,7 +428,7 @@ lemma IsUnit.exists_left_inv {a : M} (h : IsUnit a) : ∃ b, b * a = 1 := by
 @[to_additive] lemma IsUnit.mul : IsUnit a → IsUnit b → IsUnit (a * b) := by
   rintro ⟨x, rfl⟩ ⟨y, rfl⟩; exact ⟨x * y, rfl⟩
 
-@[to_additive] lemma IsUnit.pow (n : ℕ) : IsUnit a → IsUnit (a ^ n) := by
+@[to_additive (attr := grind ←)] lemma IsUnit.pow (n : ℕ) : IsUnit a → IsUnit (a ^ n) := by
   rintro ⟨u, rfl⟩; exact ⟨u ^ n, rfl⟩
 
 @[to_additive (attr := simp)]
@@ -490,8 +498,8 @@ protected noncomputable def unit (h : IsUnit a) : Mˣ :=
 theorem unit_of_val_units {a : Mˣ} (h : IsUnit (a : M)) : h.unit = a :=
   Units.ext rfl
 
-@[to_additive (attr := simp)]
-theorem unit_spec (h : IsUnit a) : ↑h.unit = a :=
+@[to_additive (attr := simp, grind =)]
+theorem unit_spec (h : IsUnit a) : ↑h.unit = a := by
   rfl
 
 @[to_additive (attr := simp)]
@@ -519,17 +527,25 @@ theorem mul_val_inv (h : IsUnit a) : a * ↑h.unit⁻¹ = 1 := by
 instance (x : M) [h : Decidable (∃ u : Mˣ, ↑u = x)] : Decidable (IsUnit x) :=
   h
 
+@[to_additive (attr := grind =)]
+theorem mul_isUnit (a b : M) (hb : IsUnit b) : IsUnit (a * b) ↔ IsUnit a :=
+  Units.isUnit_mul_units a hb.unit
+
+@[to_additive (attr := grind =)]
+theorem isUnit_mul (a b : M) (ha : IsUnit a) : IsUnit (a * b) ↔ IsUnit b :=
+  Units.isUnit_units_mul ha.unit b
+
 end Monoid
 
 section DivisionMonoid
 variable [DivisionMonoid α] {a b c : α}
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, grind →)]
 protected theorem inv_mul_cancel : IsUnit a → a⁻¹ * a = 1 := by
   rintro ⟨u, rfl⟩
   rw [← Units.val_inv_eq_inv_val, Units.inv_mul]
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, grind →)]
 protected theorem mul_inv_cancel : IsUnit a → a * a⁻¹ = 1 := by
   rintro ⟨u, rfl⟩
   rw [← Units.val_inv_eq_inv_val, Units.mul_inv]
@@ -557,7 +573,7 @@ protected lemma inv_mul_cancel_left (h : IsUnit a) : ∀ b, a⁻¹ * (a * b) = b
 @[to_additive]
 protected lemma div_self (h : IsUnit a) : a / a = 1 := by rw [div_eq_mul_inv, h.mul_inv_cancel]
 
-@[to_additive]
+@[to_additive (attr := grind ←)]
 lemma inv (h : IsUnit a) : IsUnit a⁻¹ := by
   obtain ⟨u, hu⟩ := h
   rw [← hu, ← Units.val_inv_eq_inv_val]
@@ -567,7 +583,7 @@ lemma inv (h : IsUnit a) : IsUnit a⁻¹ := by
 lemma unit_inv (h : IsUnit a) : h.inv.unit = h.unit⁻¹ :=
   Units.ext h.unit.val_inv_eq_inv_val.symm
 
-@[to_additive]
+@[to_additive (attr := grind ←)]
 lemma div (ha : IsUnit a) (hb : IsUnit b) : IsUnit (a / b) := by
   rw [div_eq_mul_inv]; exact ha.mul hb.inv
 
@@ -603,7 +619,7 @@ end IsUnit
 lemma divp_eq_div [DivisionMonoid α] (a : α) (u : αˣ) : a /ₚ u = a / u := by
   rw [div_eq_mul_inv, divp, u.val_inv_eq_inv_val]
 
-@[to_additive]
+@[to_additive (attr := grind)]
 lemma Group.isUnit [Group α] (a : α) : IsUnit a :=
   ⟨⟨a, a⁻¹, mul_inv_cancel _, inv_mul_cancel _⟩, rfl⟩
 

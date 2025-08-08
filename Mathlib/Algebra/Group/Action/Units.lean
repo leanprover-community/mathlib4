@@ -125,3 +125,11 @@ lemma IsUnit.smul [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M] [Is
     {m : M} (g : G) (h : IsUnit m) : IsUnit (g • m) :=
   let ⟨u, hu⟩ := h
   hu ▸ ⟨g • u, Units.val_smul _ _⟩
+
+@[to_additive (attr := grind ←)]
+lemma IsUnit.smul' [Monoid G] [Monoid M] [MulAction G M] [IsScalarTower G G M]
+    [SMulCommClass G M M] [IsScalarTower G M M]
+    {m : M} {g : G} (hm : IsUnit m) (hg : IsUnit g) : IsUnit (g • m) := by
+  rw [isUnit_iff_exists]
+  refine ⟨hg.unit⁻¹ • hm.unit⁻¹, ?_⟩
+  simp [Units.smul_def, smul_mul_smul]
