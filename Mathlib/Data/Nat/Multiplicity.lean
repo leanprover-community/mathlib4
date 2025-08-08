@@ -5,9 +5,9 @@ Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Order.Ring.GeomSum
 import Mathlib.Data.Nat.Digits.Lemmas
+import Mathlib.Data.Nat.Factorization.Multiplicity
 import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.RingTheory.Multiplicity
-import Mathlib.Data.Nat.Factorization.Multiplicity
 
 /-!
 # Natural number multiplicity
@@ -45,8 +45,6 @@ Legendre, p-adic
 
 
 open Finset Nat
-
-open Nat
 
 namespace Nat
 
