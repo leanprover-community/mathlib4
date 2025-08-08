@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Sébastien Gouëzel
 -/
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
-import Mathlib.Order.Filter.Basic
 
 /-!
 # Strongly measurable and finitely strongly measurable functions
