@@ -51,10 +51,10 @@ def tensorDistrib :
   (TensorProduct.lift.equiv A (M₁ ⊗[R] M₂) (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂)).symm.toLinearMap ∘ₗ
   ((LinearMap.llcomp A _ _ _).flip
     (TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R R A A M₁ M₂ M₁ M₂).toLinearMap)
-    ∘ₗ TensorProduct.AlgebraTensorModule.homTensorHomMap R _ _ _ _ _ _
-    ∘ₗ (TensorProduct.AlgebraTensorModule.congr
-      (TensorProduct.lift.equiv A M₁ M₁ N₁)
-      (TensorProduct.lift.equiv R _ _ _)).toLinearMap
+  ∘ₗ TensorProduct.AlgebraTensorModule.homTensorHomMap R _ _ _ _ _ _
+  ∘ₗ (TensorProduct.AlgebraTensorModule.congr
+    (TensorProduct.lift.equiv A M₁ M₁ N₁)
+    (TensorProduct.lift.equiv R _ _ _)).toLinearMap
 
 @[simp]
 theorem tensorDistrib_tmul (B₁ : BilinMap A M₁ N₁) (B₂ : BilinMap R M₂ N₂) (m₁ : M₁) (m₂ : M₂)
