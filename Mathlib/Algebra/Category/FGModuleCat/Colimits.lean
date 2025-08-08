@@ -36,8 +36,8 @@ exact (Module.Finite.equiv_iff (ModuleCat.coprodIsoDirectSum Z).toLinearEquiv).m
 of a finite coproduct. -/
 instance (F : J ⥤ FGModuleCat k) :
     Module.Finite k (colimit (F ⋙ forget₂ (FGModuleCat k) (ModuleCat.{v} k)) : ModuleCat.{v} k) :=
-  haveI : ∀ j, Module.Finite k ((F ⋙ forget₂ (FGModuleCat k) (ModuleCat.{v} k)).obj j) := by
-    intro j; change Module.Finite k (F.obj j); infer_instance
+have (j : J) : Module.Finite k ((F ⋙ forget₂ (FGModuleCat k) (ModuleCat.{v} k)).obj j) := by
+    change Module.Finite k (F.obj j); infer_instance
   Module.Finite.of_surjective
     (colimitQuotientCoproduct (F ⋙ forget₂ (FGModuleCat k) (ModuleCat.{v} k))).hom
     ((ModuleCat.epi_iff_surjective _).1 inferInstance)
