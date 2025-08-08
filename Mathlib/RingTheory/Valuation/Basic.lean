@@ -855,6 +855,8 @@ elab "rw_val_equiv" equiv:(ppSpace colGt term:max) : tactic => do
   let ~q(@Valuation.IsEquiv $R $Γ₁ $Γ₂ $hR $hΓ₁ $hΓ₂ $v₁ $v₂) := h' |
     throwError "not Valuation.isEquiv"
   liftMetaTactic1 fun e ↦ do
+    -- `Simproc` usually does not allow arguments, so we hijacked `Simp.mainCore` to provide a
+    -- `Simproc` that accepts arguments (which is `equivCore` here).
     let target ← instantiateMVars (← e.getType)
     let ctx ← Simp.mkContext (simpTheorems := #[])
     let (r, _) ← Simp.mainCore target ctx (methods := {post := equivCore v₁ v₂ h})
