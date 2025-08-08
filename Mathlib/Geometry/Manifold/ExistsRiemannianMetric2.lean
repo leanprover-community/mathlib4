@@ -117,44 +117,52 @@ noncomputable instance : ContMDiffVectorBundle n (F →L[ℝ] F →L[ℝ] ℝ) (
 
 end
 
-
-/-
-
-variable (E) in
-def mapsMatchingInner3 (x : B) : Set (W E x) :=
-  {φ : E x →L[ℝ] E x →L[ℝ] ℝ | ∀ v w : E x, φ v w = ⟪v, w⟫}
+variable [FiniteDimensional ℝ EB] [IsManifold IB ∞ B] [SigmaCompactSpace B] [T2Space B]
 
 variable (E) in
-omit [TopologicalSpace B] [VectorBundle ℝ F E] in
-lemma convex_mapsMatchingInner3 (x : B) : Convex ℝ (mapsMatchingInner3 E x) := by
-  intro φ hφ ψ hψ r s hr hs hrs
-  simp_all only [W]
-  simp only [mapsMatchingInner3] at hφ hψ ⊢
-  erw [Set.mem_setOf] at hφ hψ ⊢
-  intro v w
-  specialize hφ v w
-  specialize hψ v w
-  sorry -- some issue is blocking the rewrites!
-  -- simp [hφ v w, hψ v w]
-  -- grind
+def condition (x : B) : Set (W E x) :=
+  Set.univ -- TODO: specify what I really want!
+  -- {φ : E x →L[ℝ] E x →L[ℝ] ℝ | ∀ v w : E x, φ v w = ⟪v, w⟫}
 
-lemma hloc3 (x₀ : B) :
-    ∃ U_x₀ ∈ nhds x₀, ∃ s_loc : (x : B) → W E x,
-      ContMDiffOn IB (IB.prod 𝓘(ℝ, ℝ →L[ℝ] ℝ)) ∞ (fun x ↦ TotalSpace.mk' (ℝ →L[ℝ] ℝ) x (s_loc x)) U_x₀ ∧
-      ∀ y ∈ U_x₀, s_loc y ∈ (fun x ↦ mapsMatchingInner3 E x) y :=
+lemma convex_condition (x : B) : Convex ℝ (condition E x) := by
+  -- TODO: once I have a real definition, there will be something to prove!
+  exact convex_univ
+
+-- copy-paste extend from my branch and its smoothness; sorry those, then use them!
+
+-- TODO: construct a local section which is smooth in my coords,
+-- and has all the definiteness properties I'll want later!
+variable (E) in
+def local_section_at (x₀ : B) : (x : B) → W E x := sorry
+
+variable (E F) in
+lemma contMDiff_localSection (x₀ : B) :
+    letI t := trivializationAt F E x₀
+    ContMDiffOn IB (IB.prod 𝓘(ℝ, F →L[ℝ] F →L[ℝ] ℝ)) ∞
+      (fun x ↦ TotalSpace.mk' (F →L[ℝ] F →L[ℝ] ℝ) x (local_section_at E x₀ x)) t.baseSet :=
   sorry
-  -- construct a local section using a local frame?
+
+lemma is_good_localSection (x₀ : B) :
+    ∀ y ∈ (trivializationAt F E x₀).baseSet, local_section_at E x₀ y ∈ condition E y :=
+  sorry -- currently trivial; will be more interesting if I need better properties later
+
+lemma hloc_TODO (x₀ : B) :
+    ∃ U_x₀ ∈ nhds x₀, ∃ s_loc : (x : B) → W E x,
+      ContMDiffOn IB (IB.prod 𝓘(ℝ, F →L[ℝ] F →L[ℝ] ℝ)) ∞
+        (fun x ↦ TotalSpace.mk' (F →L[ℝ] F →L[ℝ] ℝ) x (s_loc x)) U_x₀ ∧
+      ∀ y ∈ U_x₀, s_loc y ∈ condition E y := by
+  letI t := trivializationAt F E x₀
+  have := t.open_baseSet.mem_nhds <| FiberBundle.mem_baseSet_trivializationAt' x₀
+  use t.baseSet, this, local_section_at E x₀
+  exact ⟨contMDiff_localSection F E x₀, is_good_localSection x₀⟩
 
 variable (E F IB) in
--- XXX: do I want this return type instead? C^∞⟮IB, B; 𝓘(ℝ, F →L[ℝ] F →L[ℝ] ℝ), F →L[ℝ] F →L[ℝ] ℝ⟯
-noncomputable def RMetric_aux : Cₛ^∞⟮IB; ℝ →L[ℝ] ℝ, W E⟯ :=
+/-- Key step in the construction of a Riemannian metric on `W`: we construct a smooth section
+of the bundle `W`: morally, this should be equivalent. Let's verify this next! -/
+noncomputable def RMetric_aux : Cₛ^∞⟮IB; F →L[ℝ] F →L[ℝ] ℝ, W E⟯ :=
   Classical.choose <|
     exists_contMDiffOn_section_forall_mem_convex_of_local IB (V := W E) (n := (⊤ : ℕ∞))
-      (t := fun x ↦ mapsMatchingInner3 E x) (convex_mapsMatchingInner3 E) hloc3
-
-
--/
-
+      (condition E) convex_condition hloc_TODO
 
 def foo : ContMDiffRiemannianMetric IB n F E :=
   sorry
