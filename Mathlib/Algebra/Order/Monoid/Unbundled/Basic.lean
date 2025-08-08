@@ -947,10 +947,12 @@ alias mul_lt_one' := Left.mul_lt_one'
 
 attribute [to_additive add_nonpos /-- **Alias** of `Left.add_nonpos`. -/] mul_le_one'
 
-attribute [to_additive add_neg_of_nonpos_of_neg /-- **Alias** of `Left.add_neg_of_nonpos_of_neg`. -/]
+attribute [to_additive add_neg_of_nonpos_of_neg
+/-- **Alias** of `Left.add_neg_of_nonpos_of_neg`. -/]
   mul_lt_one_of_le_of_lt
 
-attribute [to_additive add_neg_of_neg_of_nonpos /-- **Alias** of `Left.add_neg_of_neg_of_nonpos`. -/]
+attribute [to_additive add_neg_of_neg_of_nonpos
+/-- **Alias** of `Left.add_neg_of_neg_of_nonpos`. -/]
   mul_lt_one_of_lt_of_le
 
 attribute [to_additive /-- **Alias** of `Left.add_neg`. -/] mul_lt_one
@@ -969,10 +971,12 @@ alias one_lt_mul'' := Left.one_lt_mul'
 
 attribute [to_additive add_nonneg /-- **Alias** of `Left.add_nonneg`. -/] one_le_mul
 
-attribute [to_additive add_pos_of_nonneg_of_pos /-- **Alias** of `Left.add_pos_of_nonneg_of_pos`. -/]
+attribute [to_additive add_pos_of_nonneg_of_pos
+/-- **Alias** of `Left.add_pos_of_nonneg_of_pos`. -/]
   one_lt_mul_of_le_of_lt'
 
-attribute [to_additive add_pos_of_pos_of_nonneg /-- **Alias** of `Left.add_pos_of_pos_of_nonneg`. -/]
+attribute [to_additive add_pos_of_pos_of_nonneg
+/-- **Alias** of `Left.add_pos_of_pos_of_nonneg`. -/]
   one_lt_mul_of_lt_of_le'
 
 attribute [to_additive add_pos /-- **Alias** of `Left.add_pos`. -/] one_lt_mul'

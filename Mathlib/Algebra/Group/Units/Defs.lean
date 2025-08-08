@@ -152,13 +152,15 @@ instance : One αˣ where
   one := ⟨1, 1, one_mul 1, one_mul 1⟩
 
 /-- Units of a monoid have a multiplication and multiplicative identity. -/
-@[to_additive /-- Additive units of an additive monoid have an addition and an additive identity. -/]
+@[to_additive
+/-- Additive units of an additive monoid have an addition and an additive identity. -/]
 instance instMulOneClass : MulOneClass αˣ where
   one_mul u := ext <| one_mul (u : α)
   mul_one u := ext <| mul_one (u : α)
 
 /-- Units of a monoid are inhabited because `1` is a unit. -/
-@[to_additive /-- Additive units of an additive monoid are inhabited because `0` is an additive unit. -/]
+@[to_additive
+/-- Additive units of an additive monoid are inhabited because `0` is an additive unit. -/]
 instance : Inhabited αˣ :=
   ⟨1⟩
 
@@ -366,14 +368,15 @@ variable {M : Type*} {N : Type*}
 /-- An element `a : M` of a `Monoid` is a unit if it has a two-sided inverse.
 The actual definition says that `a` is equal to some `u : Mˣ`, where
 `Mˣ` is a bundled version of `IsUnit`. -/
-@[to_additive /-- An element `a : M` of an `AddMonoid` is an `AddUnit` if it has a two-sided additive
-inverse. The actual definition says that `a` is equal to some `u : AddUnits M`,
+@[to_additive /-- An element `a : M` of an `AddMonoid` is an `AddUnit` if it has a two-sided
+additive inverse. The actual definition says that `a` is equal to some `u : AddUnits M`,
 where `AddUnits M` is a bundled version of `IsAddUnit`. -/]
 def IsUnit [Monoid M] (a : M) : Prop :=
   ∃ u : Mˣ, (u : M) = a
 
 /-- See `isUnit_iff_exists_and_exists` for a similar lemma with two existentials. -/
-@[to_additive /-- See `isAddUnit_iff_exists_and_exists` for a similar lemma with two existentials. -/]
+@[to_additive
+/-- See `isAddUnit_iff_exists_and_exists` for a similar lemma with two existentials. -/]
 lemma isUnit_iff_exists [Monoid M] {x : M} : IsUnit x ↔ ∃ b, x * b = 1 ∧ b * x = 1 := by
   refine ⟨fun ⟨u, hu⟩ => ?_, fun ⟨b, h1b, h2b⟩ => ⟨⟨x, b, h1b, h2b⟩, rfl⟩⟩
   subst x
@@ -480,8 +483,8 @@ variable [Monoid M] {a b : M}
 
 /-- The element of the group of units, corresponding to an element of a monoid which is a unit. When
 `α` is a `DivisionMonoid`, use `IsUnit.unit'` instead. -/
-@[to_additive /-- The element of the additive group of additive units, corresponding to an element of
-an additive monoid which is an additive unit. When `α` is a `SubtractionMonoid`, use
+@[to_additive /-- The element of the additive group of additive units, corresponding to an element
+of an additive monoid which is an additive unit. When `α` is a `SubtractionMonoid`, use
 `IsAddUnit.addUnit'` instead. -/]
 protected noncomputable def unit (h : IsUnit a) : Mˣ :=
   (Classical.choose h).copy a (Classical.choose_spec h).symm _ rfl

@@ -64,13 +64,15 @@ lemma mconv_dirac [MeasurableMul₂ M] (μ : Measure M) [SFinite μ] (x : M) :
   simp [Function.comp_def]
 
 /-- Convolution of the dirac measure at 1 with a measure μ returns μ. -/
-@[to_additive (attr := simp) /-- Convolution of the dirac measure at 0 with a measure μ returns μ. -/]
+@[to_additive (attr := simp)
+/-- Convolution of the dirac measure at 0 with a measure μ returns μ. -/]
 theorem dirac_one_mconv [MeasurableMul₂ M] (μ : Measure M) [SFinite μ] :
     (Measure.dirac 1) ∗ₘ μ = μ := by
   simp [dirac_mconv]
 
 /-- Convolution of a measure μ with the dirac measure at 1 returns μ. -/
-@[to_additive (attr := simp) /-- Convolution of a measure μ with the dirac measure at 0 returns μ. -/]
+@[to_additive (attr := simp)
+/-- Convolution of a measure μ with the dirac measure at 0 returns μ. -/]
 theorem mconv_dirac_one [MeasurableMul₂ M]
     (μ : Measure M) [SFinite μ] : μ ∗ₘ (Measure.dirac 1) = μ := by
   simp [mconv_dirac]

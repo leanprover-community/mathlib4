@@ -51,8 +51,8 @@ open scoped Pointwise NNReal ENNReal
 section
 
 /-- Measurability of the action of the topological group `G` on the left-coset space `G / Γ`. -/
-@[to_additive /-- Measurability of the action of the additive topological group `G` on the left-coset
-  space `G / Γ`. -/]
+@[to_additive /-- Measurability of the action of the additive topological group `G` on the
+  left-coset space `G / Γ`. -/]
 instance QuotientGroup.measurableSMul {G : Type*} [Group G] {Γ : Subgroup G} [MeasurableSpace G]
     [TopologicalSpace G] [IsTopologicalGroup G] [BorelSpace G] [BorelSpace (G ⧸ Γ)] :
     MeasurableSMul G (G ⧸ Γ) where
@@ -123,8 +123,8 @@ variable (ν : Measure G) [IsMulLeftInvariant ν]
 /-- If `μ` on `G ⧸ Γ` satisfies `QuotientMeasureEqMeasurePreimage` relative to a both left- and
   right-invariant measure on `G` and `Γ` is a normal subgroup, then `μ` is a left-invariant
   measure. -/
-@[to_additive /-- If `μ` on `G ⧸ Γ` satisfies `AddQuotientMeasureEqMeasurePreimage` relative to a both
-  left- and right-invariant measure on `G` and `Γ` is a normal subgroup, then `μ` is a
+@[to_additive /-- If `μ` on `G ⧸ Γ` satisfies `AddQuotientMeasureEqMeasurePreimage` relative to a
+  both left- and right-invariant measure on `G` and `Γ` is a normal subgroup, then `μ` is a
   left-invariant measure. -/]
 lemma MeasureTheory.QuotientMeasureEqMeasurePreimage.mulInvariantMeasure_quotient
     [hasFun : HasFundamentalDomain Γ.op G ν] [QuotientMeasureEqMeasurePreimage ν μ] :

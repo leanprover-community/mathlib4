@@ -364,8 +364,9 @@ theorem Multipliable.tprod_vanishing (hf : Multipliable f) ⦃e : Set G⦄ (he :
 /-- The product over the complement of a finset tends to `1` when the finset grows to cover the
 whole space. This does not need a multipliability assumption, as otherwise all such products are
 one. -/
-@[to_additive /-- The sum over the complement of a finset tends to `0` when the finset grows to cover
-the whole space. This does not need a summability assumption, as otherwise all such sums are zero. -/]
+@[to_additive /-- The sum over the complement of a finset tends to `0` when the finset grows to
+cover the whole space. This does not need a summability assumption, as otherwise all such sums are
+zero. -/]
 theorem tendsto_tprod_compl_atTop_one (f : α → G) :
     Tendsto (fun s : Finset α ↦ ∏' a : { x // x ∉ s }, f a) atTop (𝓝 1) := by
   classical
@@ -379,8 +380,8 @@ theorem tendsto_tprod_compl_atTop_one (f : α → G) :
 
 /-- Product divergence test: if `f` is unconditionally multipliable, then `f x` tends to one along
 `cofinite`. -/
-@[to_additive /-- Series divergence test: if `f` is unconditionally summable, then `f x` tends to zero
-along `cofinite`. -/]
+@[to_additive /-- Series divergence test: if `f` is unconditionally summable, then `f x` tends to
+zero along `cofinite`. -/]
 theorem Multipliable.tendsto_cofinite_one (hf : Multipliable f) : Tendsto f cofinite (𝓝 1) := by
   intro e he
   rw [Filter.mem_map]

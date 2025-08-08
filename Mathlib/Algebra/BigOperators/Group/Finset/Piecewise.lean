@@ -272,12 +272,14 @@ lemma prod_ite_mem (s : Finset ι) (f : ι → M) : ∏ i, (if i ∈ s then f i 
   simp
 
 /-- See also `Finset.prod_dite_eq`. -/
-@[to_additive /-- See also `Finset.sum_dite_eq`. -/] lemma prod_dite_eq (i : ι) (f : ∀ j, i = j → M) :
+@[to_additive /-- See also `Finset.sum_dite_eq`. -/]
+lemma prod_dite_eq (i : ι) (f : ∀ j, i = j → M) :
     ∏ j, (if h : i = j then f j h else 1) = f i rfl := by
   rw [Finset.prod_dite_eq, if_pos (mem_univ _)]
 
 /-- See also `Finset.prod_dite_eq'`. -/
-@[to_additive /-- See also `Finset.sum_dite_eq'`. -/] lemma prod_dite_eq' (i : ι) (f : ∀ j, j = i → M) :
+@[to_additive /-- See also `Finset.sum_dite_eq'`. -/]
+lemma prod_dite_eq' (i : ι) (f : ∀ j, j = i → M) :
     ∏ j, (if h : j = i then f j h else 1) = f i rfl := by
   rw [Finset.prod_dite_eq', if_pos (mem_univ _)]
 

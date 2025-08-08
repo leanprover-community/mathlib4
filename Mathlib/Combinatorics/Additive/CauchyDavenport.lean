@@ -106,9 +106,9 @@ private lemma wellFoundedOn_devosMulRel :
 /-- A generalisation of the **Cauchy-Davenport theorem** to arbitrary groups. The size of `s * t` is
 lower-bounded by `|s| + |t| - 1` unless this quantity is greater than the size of the smallest
 subgroup. -/
-@[to_additive /-- A generalisation of the **Cauchy-Davenport theorem** to arbitrary groups. The size of
-`s + t` is lower-bounded by `|s| + |t| - 1` unless this quantity is greater than the size of the
-smallest subgroup. -/]
+@[to_additive /-- A generalisation of the **Cauchy-Davenport theorem** to arbitrary groups. The
+size of `s + t` is lower-bounded by `|s| + |t| - 1` unless this quantity is greater than the size
+of the smallest subgroup. -/]
 lemma cauchy_davenport_minOrder_mul (hs : s.Nonempty) (ht : t.Nonempty) :
     min (minOrder α) ↑(#s + #t - 1) ≤ #(s * t) := by
   -- Set up the induction on `x := (s, t)` along the `DevosMulRel` relation.
@@ -205,8 +205,8 @@ lemma ZMod.cauchy_davenport {p : ℕ} (hp : p.Prime) {s t : Finset (ZMod p)} (hs
 /-- The **Cauchy-Davenport Theorem** for linearly ordered cancellative semigroups. The size of
 `s * t` is lower-bounded by `|s| + |t| - 1`. -/
 @[to_additive
-/-- The **Cauchy-Davenport theorem** for linearly ordered additive cancellative semigroups. The size of
-`s + t` is lower-bounded by `|s| + |t| - 1`. -/]
+/-- The **Cauchy-Davenport theorem** for linearly ordered additive cancellative semigroups. The
+size of `s + t` is lower-bounded by `|s| + |t| - 1`. -/]
 lemma cauchy_davenport_mul_of_linearOrder_isCancelMul [LinearOrder α] [Mul α] [IsCancelMul α]
     [MulLeftMono α] [MulRightMono α]
     {s t : Finset α} (hs : s.Nonempty) (ht : t.Nonempty) : #s + #t - 1 ≤ #(s * t) := by

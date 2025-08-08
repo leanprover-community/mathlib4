@@ -33,9 +33,9 @@ variable [CommGroup G] [UniformSpace G] [IsUniformGroup G] [NonarchimedeanGroup 
 /-- Let `G` be a nonarchimedean multiplicative abelian group, and let `f : α → G` be a function that
 tends to one on the filter of cofinite sets. For each finite subset of `α`, consider the partial
 product of `f` on that subset. These partial products form a Cauchy filter. -/
-@[to_additive /-- Let `G` be a nonarchimedean additive abelian group, and let `f : α → G` be a function
-that tends to zero on the filter of cofinite sets. For each finite subset of `α`, consider the
-partial sum of `f` on that subset. These partial sums form a Cauchy filter. -/]
+@[to_additive /-- Let `G` be a nonarchimedean additive abelian group, and let `f : α → G` be a
+function that tends to zero on the filter of cofinite sets. For each finite subset of `α`, consider
+the partial sum of `f` on that subset. These partial sums form a Cauchy filter. -/]
 theorem cauchySeq_prod_of_tendsto_cofinite_one {f : α → G} (hf : Tendsto f cofinite (𝓝 1)) :
     CauchySeq (fun s ↦ ∏ i ∈ s, f i) := by
   /- Let `U` be a neighborhood of `1`. It suffices to show that there exists `s : Finset α` such
@@ -84,8 +84,9 @@ lemma cauchySeq_of_tendsto_div_nhds_one {f : ℕ → G}
 /-- Let `G` be a complete nonarchimedean multiplicative abelian group, and let `f : α → G` be a
 function that tends to one on the filter of cofinite sets. Then `f` is unconditionally
 multipliable. -/
-@[to_additive /-- Let `G` be a complete nonarchimedean additive abelian group, and let `f : α → G` be a
-function that tends to zero on the filter of cofinite sets. Then `f` is unconditionally summable. -/]
+@[to_additive /-- Let `G` be a complete nonarchimedean additive abelian group, and let `f : α → G`
+be a function that tends to zero on the filter of cofinite sets. Then `f` is unconditionally
+summable. -/]
 theorem multipliable_of_tendsto_cofinite_one [CompleteSpace G] {f : α → G}
     (hf : Tendsto f cofinite (𝓝 1)) : Multipliable f :=
   CompleteSpace.complete (cauchySeq_prod_of_tendsto_cofinite_one hf)

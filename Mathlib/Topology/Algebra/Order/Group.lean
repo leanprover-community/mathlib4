@@ -101,8 +101,8 @@ alias tendsto_abs_nhdsWithin_zero := tendsto_abs_nhdsNE_zero
 
 /-- In a linearly ordered multiplicative group, the integer powers of an element are dense
 iff they are the whole group. -/
-@[to_additive /-- In a linearly ordered additive group, the integer multiples of an element are dense
-iff they are the whole group. -/]
+@[to_additive /-- In a linearly ordered additive group, the integer multiples of an element are
+dense iff they are the whole group. -/]
 theorem denseRange_zpow_iff_surjective {a : G} :
     DenseRange (a ^ · : ℤ → G) ↔ Surjective (a ^ · : ℤ → G) := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.denseRange⟩

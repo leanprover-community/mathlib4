@@ -657,7 +657,8 @@ theorem finprod_mem_div_distrib [DivisionCommMonoid G] (f g : α → G) (hs : s.
 theorem finprod_mem_empty : (∏ᶠ i ∈ (∅ : Set α), f i) = 1 := by simp
 
 /-- A set `s` is nonempty if the product of some function over `s` is not equal to `1`. -/
-@[to_additive /-- A set `s` is nonempty if the sum of some function over `s` is not equal to `0`. -/]
+@[to_additive
+/-- A set `s` is nonempty if the sum of some function over `s` is not equal to `0`. -/]
 theorem nonempty_of_finprod_mem_ne_one (h : ∏ᶠ i ∈ s, f i ≠ 1) : s.Nonempty :=
   nonempty_iff_ne_empty.2 fun h' => h <| h'.symm ▸ finprod_mem_empty
 
@@ -852,7 +853,8 @@ theorem finprod_eq_of_bijective {f : α → M} {g : β → M} (e : α → β) (h
   exact finprod_mem_eq_of_bijOn _ (bijective_iff_bijOn_univ.mp he₀) fun x _ => he₁ x
 
 /-- See also `finprod_eq_of_bijective`, `Fintype.prod_bijective` and `Finset.prod_bij`. -/
-@[to_additive /-- See also `finsum_eq_of_bijective`, `Fintype.sum_bijective` and `Finset.sum_bij`. -/]
+@[to_additive
+/-- See also `finsum_eq_of_bijective`, `Fintype.sum_bijective` and `Finset.sum_bij`. -/]
 theorem finprod_comp {g : β → M} (e : α → β) (he₀ : Function.Bijective e) :
     (∏ᶠ i, g (e i)) = ∏ᶠ j, g j :=
   finprod_eq_of_bijective e he₀ fun _ => rfl

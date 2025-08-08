@@ -548,7 +548,8 @@ theorem prodProdProdComm_symm : (prodProdProdComm M N M' N').symm = prodProdProd
 end
 
 /-- Product of multiplicative isomorphisms; the maps come from `Equiv.prodCongr`. -/
-@[to_additive prodCongr /-- Product of additive isomorphisms; the maps come from `Equiv.prodCongr`. -/]
+@[to_additive prodCongr
+/-- Product of additive isomorphisms; the maps come from `Equiv.prodCongr`. -/]
 def prodCongr (f : M ≃* M') (g : N ≃* N') : M × N ≃* M' × N' :=
   { f.toEquiv.prodCongr g.toEquiv with
     map_mul' := fun _ _ => Prod.ext (map_mul f _ _) (map_mul g _ _) }

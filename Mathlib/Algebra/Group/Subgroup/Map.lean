@@ -275,7 +275,8 @@ def subgroupOf (H K : Subgroup G) : Subgroup K :=
   H.comap K.subtype
 
 /-- If `H ≤ K`, then `H` as a subgroup of `K` is isomorphic to `H`. -/
-@[to_additive (attr := simps) /-- If `H ≤ K`, then `H` as a subgroup of `K` is isomorphic to `H`. -/]
+@[to_additive (attr := simps)
+/-- If `H ≤ K`, then `H` as a subgroup of `K` is isomorphic to `H`. -/]
 def subgroupOfEquivOfLe {G : Type*} [Group G] {H K : Subgroup G} (h : H ≤ K) :
     H.subgroupOf K ≃* H where
   toFun g := ⟨g.1, g.2⟩

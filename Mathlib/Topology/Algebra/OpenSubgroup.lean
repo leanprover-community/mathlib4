@@ -154,7 +154,8 @@ section
 variable {H : Type*} [Group H] [TopologicalSpace H]
 
 /-- The product of two open subgroups as an open subgroup of the product group. -/
-@[to_additive prod /-- The product of two open subgroups as an open subgroup of the product group. -/]
+@[to_additive prod
+/-- The product of two open subgroups as an open subgroup of the product group. -/]
 def prod (U : OpenSubgroup G) (V : OpenSubgroup H) : OpenSubgroup (G × H) :=
   ⟨.prod U V, U.isOpen.prod V.isOpen⟩
 

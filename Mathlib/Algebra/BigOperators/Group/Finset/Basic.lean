@@ -609,9 +609,9 @@ theorem prod_multiset_count_of_subset [DecidableEq M] (m : Multiset M) (s : Fins
 that it's equal to a different function just by checking ratios of adjacent terms up to `n`.
 
 This is a multiplicative discrete analogue of the fundamental theorem of calculus. -/
-@[to_additive /-- For any sum along `{0, ..., n - 1}` of a commutative-monoid-valued function, we can
-verify that it's equal to a different function just by checking differences of adjacent terms up to
-`n`.
+@[to_additive /-- For any sum along `{0, ..., n - 1}` of a commutative-monoid-valued function, we
+can verify that it's equal to a different function just by checking differences of adjacent terms
+up to `n`.
 
 This is a discrete analogue of the fundamental theorem of calculus. -/]
 theorem prod_range_induction (f s : ℕ → M) (base : s 0 = 1)
@@ -658,8 +658,8 @@ theorem prod_flip {n : ℕ} (f : ℕ → M) :
 
 /-- The difference with `Finset.prod_ninvolution` is that the involution is allowed to use
 membership of the domain of the product, rather than being a non-dependent function. -/
-@[to_additive /-- The difference with `Finset.sum_ninvolution` is that the involution is allowed to use
-membership of the domain of the sum, rather than being a non-dependent function. -/]
+@[to_additive /-- The difference with `Finset.sum_ninvolution` is that the involution is allowed to
+use membership of the domain of the sum, rather than being a non-dependent function. -/]
 lemma prod_involution (g : ∀ a ∈ s, ι) (hg₁ : ∀ a ha, f a * f (g a ha) = 1)
     (hg₃ : ∀ a ha, f a ≠ 1 → g a ha ≠ a)
     (g_mem : ∀ a ha, g a ha ∈ s) (hg₄ : ∀ a ha, g (g a ha) (g_mem a ha) = a) :
@@ -681,8 +681,8 @@ lemma prod_involution (g : ∀ a ∈ s, ι) (hg₁ : ∀ a ha, f a * f (g a ha) 
 
 /-- The difference with `Finset.prod_involution` is that the involution is a non-dependent function,
 rather than being allowed to use membership of the domain of the product. -/
-@[to_additive /-- The difference with `Finset.sum_involution` is that the involution is a non-dependent
-function, rather than being allowed to use membership of the domain of the sum. -/]
+@[to_additive /-- The difference with `Finset.sum_involution` is that the involution is a
+non-dependent function, rather than being allowed to use membership of the domain of the sum. -/]
 lemma prod_ninvolution (g : ι → ι) (hg₁ : ∀ a, f a * f (g a) = 1) (hg₂ : ∀ a, f a ≠ 1 → g a ≠ a)
     (g_mem : ∀ a, g a ∈ s) (hg₃ : ∀ a, g (g a) = a) : ∏ x ∈ s, f x = 1 :=
   prod_involution (fun i _ => g i) (fun i _ => hg₁ i) (fun _ _ hi => hg₂ _ hi)
@@ -690,8 +690,9 @@ lemma prod_ninvolution (g : ι → ι) (hg₁ : ∀ a, f a * f (g a) = 1) (hg₂
 
 /-- The product of the composition of functions `f` and `g`, is the product over `b ∈ s.image g` of
 `f b` to the power of the cardinality of the fibre of `b`. See also `Finset.prod_image`. -/
-@[to_additive /-- The sum of the composition of functions `f` and `g`, is the sum over `b ∈ s.image g`
-of `f b` times of the cardinality of the fibre of `b`. See also `Finset.sum_image`. -/]
+@[to_additive /-- The sum of the composition of functions `f` and `g`, is the sum over
+`b ∈ s.image g` of `f b` times of the cardinality of the fibre of `b`. See also
+`Finset.sum_image`. -/]
 theorem prod_comp [DecidableEq κ] (f : κ → M) (g : ι → κ) :
     ∏ a ∈ s, f (g a) = ∏ b ∈ s.image g, f b ^ #{a ∈ s | g a = b} := by
   simp_rw [← prod_const, prod_fiberwise_of_maps_to' fun _ ↦ mem_image_of_mem _]
@@ -704,7 +705,8 @@ theorem prod_partition (R : Setoid ι) [DecidableRel R.r] :
   rfl
 
 /-- If we can partition a product into subsets that cancel out, then the whole product cancels. -/
-@[to_additive /-- If we can partition a sum into subsets that cancel out, then the whole sum cancels. -/]
+@[to_additive /-- If we can partition a sum into subsets that cancel out, then the whole sum
+cancels. -/]
 theorem prod_cancels_of_partition_cancels (R : Setoid ι) [DecidableRel R]
     (h : ∀ x ∈ s, ∏ a ∈ s with R a x, f a = 1) : ∏ x ∈ s, f x = 1 := by
   rw [prod_partition R, ← Finset.prod_eq_one]
@@ -730,8 +732,8 @@ theorem eq_of_card_le_one_of_prod_eq {s : Finset ι} (hc : #s ≤ 1) {f : ι →
 `f a` by the product of `s.erase a`.
 
 See `Multiset.prod_map_erase` for the `Multiset` version. -/
-@[to_additive /-- Taking a sum over `s : Finset ι` is the same as adding the value on a single element
-`f a` to the sum over `s.erase a`.
+@[to_additive /-- Taking a sum over `s : Finset ι` is the same as adding the value on a single
+element `f a` to the sum over `s.erase a`.
 
 See `Multiset.sum_map_erase` for the `Multiset` version. -/]
 theorem mul_prod_erase [DecidableEq ι] (s : Finset ι) (f : ι → M) {a : ι} (h : a ∈ s) :

@@ -307,8 +307,8 @@ variable {B : Π i, S i}
 /-- `RestrictedProduct.evalMonoidHom j` is the monoid homomorphism from the restricted
 product `Πʳ i, [R i, B i]_[𝓕]` to the component `R j`.
 -/
-@[to_additive /-- `RestrictedProduct.evalAddMonoidHom j` is the monoid homomorphism from the restricted
-product `Πʳ i, [R i, B i]_[𝓕]` to the component `R j`. -/]
+@[to_additive /-- `RestrictedProduct.evalAddMonoidHom j` is the monoid homomorphism from the
+restricted product `Πʳ i, [R i, B i]_[𝓕]` to the component `R j`. -/]
 def evalMonoidHom (j : ι) [Π i, Monoid (R i)] [∀ i, SubmonoidClass (S i) (R i)] :
     (Πʳ i, [R i, B i]_[𝓕]) →* R j where
   toFun x := x j
@@ -400,11 +400,12 @@ of monoids, `RestrictedProduct.mapAlongMonoidHom` gives a monoid homomorphism be
 The data needed is a function `f : ι₂ → ι₁` such that `𝓕₂` tends to `𝓕₁` along `f`, and monoid
 homomorphisms `φ j : R₁ (f j) → R₂ j` sending `B₁ (f j)` into `B₂ j` for an `𝓕₂`-large set of `j`'s.
 -/
-@[to_additive /-- Given two restricted products `Πʳ (i : ι₁), [R₁ i, B₁ i]_[𝓕₁]` and `Πʳ (j : ι₂), [R₂ j, B₂ j]_[𝓕₂]`
-of additive monoids, `RestrictedProduct.mapAlongAddMonoidHom` gives a additive monoid homomorphism
-between them. The data needed is a function `f : ι₂ → ι₁` such that `𝓕₂` tends to `𝓕₁` along `f`,
-and additive monoid homomorphisms `φ j : R₁ (f j) → R₂ j` sending `B₁ (f j)` into `B₂ j` for
-an `𝓕₂`-large set of `j`'s. -/]
+@[to_additive
+/-- Given two restricted products `Πʳ (i : ι₁), [R₁ i, B₁ i]_[𝓕₁]` and
+`Πʳ (j : ι₂), [R₂ j, B₂ j]_[𝓕₂]` of additive monoids, `RestrictedProduct.mapAlongAddMonoidHom`
+gives a additive monoid homomorphism between them. The data needed is a function `f : ι₂ → ι₁` such
+that `𝓕₂` tends to `𝓕₁` along `f`, and additive monoid homomorphisms `φ j : R₁ (f j) → R₂ j`
+sending `B₁ (f j)` into `B₂ j` for an `𝓕₂`-large set of `j`'s. -/]
 def mapAlongMonoidHom : Πʳ i, [R₁ i, B₁ i]_[𝓕₁] →* Πʳ j, [R₂ j, B₂ j]_[𝓕₂] where
   toFun := mapAlong R₁ R₂ f hf (fun j r ↦ φ j r) hφ
   map_one' := by

@@ -429,7 +429,8 @@ theorem topEquiv_toMulHom :
   rfl
 
 /-- A subsemigroup is isomorphic to its image under an injective function -/
-@[to_additive /-- An additive subsemigroup is isomorphic to its image under an injective function -/]
+@[to_additive
+/-- An additive subsemigroup is isomorphic to its image under an injective function -/]
 noncomputable def equivMapOfInjective (f : M →ₙ* N) (hf : Function.Injective f) : S ≃* S.map f :=
   { Equiv.Set.image f S hf with map_mul' := fun _ _ => Subtype.ext (map_mul f _ _) }
 
@@ -486,7 +487,7 @@ theorem bot_prod_bot : (⊥ : Subsemigroup M).prod (⊥ : Subsemigroup N) = ⊥ 
 
 /-- The product of subsemigroups is isomorphic to their product as semigroups. -/
 @[to_additive prodEquiv
-    /-- The product of additive subsemigroups is isomorphic to their product as additive semigroups -/]
+/-- The product of additive subsemigroups is isomorphic to their product as additive semigroups -/]
 def prodEquiv (s : Subsemigroup M) (t : Subsemigroup N) : s.prod t ≃* s × t :=
   { (Equiv.Set.prod (s : Set M) (t : Set N)) with
     map_mul' := fun _ _ => rfl }
@@ -607,7 +608,8 @@ def codRestrict [SetLike σ N] [MulMemClass σ N] (f : M →ₙ* N) (S : σ) (h 
   map_mul' x y := Subtype.eq (map_mul f x y)
 
 /-- Restriction of a semigroup hom to its range interpreted as a subsemigroup. -/
-@[to_additive /-- Restriction of an `AddSemigroup` hom to its range interpreted as a subsemigroup. -/]
+@[to_additive
+/-- Restriction of an `AddSemigroup` hom to its range interpreted as a subsemigroup. -/]
 def srangeRestrict {N} [Mul N] (f : M →ₙ* N) : M →ₙ* f.srange :=
   (f.codRestrict f.srange) fun x => ⟨x, rfl⟩
 

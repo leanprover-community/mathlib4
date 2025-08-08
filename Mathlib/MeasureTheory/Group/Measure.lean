@@ -163,8 +163,8 @@ variable [Semigroup G] [MeasurableMul G] {μ : Measure G}
 
 /-- The image of a left invariant measure under a left action is left invariant, assuming that
 the action preserves multiplication. -/
-@[to_additive /-- The image of a left invariant measure under a left additive action is left invariant,
-assuming that the action preserves addition. -/]
+@[to_additive /-- The image of a left invariant measure under a left additive action is left
+invariant, assuming that the action preserves addition. -/]
 theorem isMulLeftInvariant_map_smul
     {α} [SMul α G] [SMulCommClass α G G] [MeasurableSpace α] [MeasurableSMul α G]
     [IsMulLeftInvariant μ] (a : α) :
@@ -220,8 +220,8 @@ theorem measurePreserving_div_right (μ : Measure G) [IsMulRightInvariant μ] (g
 /-- We shorten this from `measure_preimage_mul_left`, since left invariant is the preferred option
   for measures in this formalization. -/
 @[to_additive (attr := simp)
-/-- We shorten this from `measure_preimage_add_left`, since left invariant is the preferred option for
-measures in this formalization. -/]
+/-- We shorten this from `measure_preimage_add_left`, since left invariant is the preferred option
+for measures in this formalization. -/]
 theorem measure_preimage_mul (μ : Measure G) [IsMulLeftInvariant μ] (g : G) (A : Set G) :
     μ ((fun h => g * h) ⁻¹' A) = μ A :=
   calc
@@ -481,12 +481,14 @@ instance innerRegular_map_smul {α} [Monoid α] [MulAction α G] [ContinuousCons
   InnerRegular.map_of_continuous (continuous_const_smul a)
 
 /-- The image of an inner regular measure under left multiplication is again inner regular. -/
-@[to_additive /-- The image of an inner regular measure under left addition is again inner regular. -/]
+@[to_additive
+/-- The image of an inner regular measure under left addition is again inner regular. -/]
 instance innerRegular_map_mul_left [IsTopologicalGroup G] [InnerRegular μ] (g : G) :
     InnerRegular (Measure.map (g * ·) μ) := InnerRegular.map_of_continuous (continuous_mul_left g)
 
 /-- The image of an inner regular measure under right multiplication is again inner regular. -/
-@[to_additive /-- The image of an inner regular measure under right addition is again inner regular. -/]
+@[to_additive
+/-- The image of an inner regular measure under right addition is again inner regular. -/]
 instance innerRegular_map_mul_right [IsTopologicalGroup G] [InnerRegular μ] (g : G) :
     InnerRegular (Measure.map (· * g) μ) := InnerRegular.map_of_continuous (continuous_mul_right g)
 
@@ -557,7 +559,8 @@ instance (priority := 80) isOpenPosMeasure_of_mulLeftInvariant_of_regular [Regul
   isOpenPosMeasure_of_mulLeftInvariant_of_compact K hK h2K
 
 /-- A nonzero left-invariant inner regular measure gives positive mass to any open set. -/
-@[to_additive /-- A nonzero left-invariant inner regular measure gives positive mass to any open set. -/]
+@[to_additive
+/-- A nonzero left-invariant inner regular measure gives positive mass to any open set. -/]
 instance (priority := 80) isOpenPosMeasure_of_mulLeftInvariant_of_innerRegular
     [InnerRegular μ] [NeZero μ] :
     IsOpenPosMeasure μ :=
@@ -584,8 +587,8 @@ theorem measure_pos_iff_nonempty_of_isMulLeftInvariant [Regular μ] (h3μ : μ �
 /-- If a left-invariant measure gives finite mass to a nonempty open set, then it gives finite mass
 to any compact set. -/
 @[to_additive
-/-- If a left-invariant measure gives finite mass to a nonempty open set, then it gives finite mass to
-any compact set. -/]
+/-- If a left-invariant measure gives finite mass to a nonempty open set, then it gives finite mass
+to any compact set. -/]
 theorem measure_lt_top_of_isCompact_of_isMulLeftInvariant (U : Set G) (hU : IsOpen U)
     (h'U : U.Nonempty) (h : μ U ≠ ∞) {K : Set G} (hK : IsCompact K) : μ K < ∞ := by
   rw [← hU.interior_eq] at h'U
@@ -596,8 +599,8 @@ theorem measure_lt_top_of_isCompact_of_isMulLeftInvariant (U : Set G) (hU : IsOp
 /-- If a left-invariant measure gives finite mass to a set with nonempty interior, then
 it gives finite mass to any compact set. -/
 @[to_additive
-/-- If a left-invariant measure gives finite mass to a set with nonempty interior, then it gives finite
-mass to any compact set. -/]
+/-- If a left-invariant measure gives finite mass to a set with nonempty interior, then it gives
+finite mass to any compact set. -/]
 theorem measure_lt_top_of_isCompact_of_isMulLeftInvariant' {U : Set G}
     (hU : (interior U).Nonempty) (h : μ U ≠ ∞) {K : Set G} (hK : IsCompact K) : μ K < ∞ :=
   measure_lt_top_of_isCompact_of_isMulLeftInvariant (interior U) isOpen_interior hU
@@ -606,8 +609,8 @@ theorem measure_lt_top_of_isCompact_of_isMulLeftInvariant' {U : Set G}
 /-- In a noncompact locally compact group, a left-invariant measure which is positive
 on open sets has infinite mass. -/
 @[to_additive (attr := simp)
-/-- In a noncompact locally compact additive group, a left-invariant measure which is positive on open
-sets has infinite mass. -/]
+/-- In a noncompact locally compact additive group, a left-invariant measure which is positive on
+open sets has infinite mass. -/]
 theorem measure_univ_of_isMulLeftInvariant [WeaklyLocallyCompactSpace G] [NoncompactSpace G]
     (μ : Measure G) [IsOpenPosMeasure μ] [μ.IsMulLeftInvariant] : μ univ = ∞ := by
   /- Consider a closed compact set `K` with nonempty interior. For any compact set `L`, one may
@@ -691,8 +694,8 @@ variable [CommSemigroup G]
   We don't declare the converse as an instance, since that would loop type-class inference, and
   we use `IsMulLeftInvariant` as the default hypothesis in abelian groups. -/
 @[to_additive IsAddLeftInvariant.isAddRightInvariant
-/-- In an abelian additive group every left invariant measure is also right-invariant. We don't declare
-the converse as an instance, since that would loop type-class inference, and we use
+/-- In an abelian additive group every left invariant measure is also right-invariant. We don't
+declare the converse as an instance, since that would loop type-class inference, and we use
 `IsAddLeftInvariant` as the default hypothesis in abelian groups. -/]
 instance (priority := 100) IsMulLeftInvariant.isMulRightInvariant {μ : Measure G}
     [IsMulLeftInvariant μ] : IsMulRightInvariant μ :=

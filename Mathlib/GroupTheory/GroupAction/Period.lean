@@ -53,7 +53,8 @@ theorem period_eq_one_iff {m : M} {a : α} : period m a = 1 ↔ m • a = a :=
     (period_pos_of_fixed one_pos (by simpa))⟩
 
 /-- For any non-zero `n` less than the period of `m` on `a`, `a` is moved by `m ^ n`. -/
-@[to_additive /-- For any non-zero `n` less than the period of `m` on `a`, `a` is moved by `n • m`. -/]
+@[to_additive
+/-- For any non-zero `n` less than the period of `m` on `a`, `a` is moved by `n • m`. -/]
 theorem pow_smul_ne_of_lt_period {m : M} {a : α} {n : ℕ} (n_pos : 0 < n)
     (n_lt_period : n < period m a) : m ^ n • a ≠ a := fun a_fixed =>
   not_le_of_gt n_lt_period <| period_le_of_fixed n_pos a_fixed

@@ -133,8 +133,8 @@ theorem closure_le : closure s ≤ S ↔ s ⊆ S :=
 
 /-- subsemigroup closure of a set is monotone in its argument: if `s ⊆ t`,
 then `closure s ≤ closure t`. -/
-@[to_additive (attr := gcongr) /-- Additive subsemigroup closure of a set is monotone in its argument:
-if `s ⊆ t`, then `closure s ≤ closure t` -/]
+@[to_additive (attr := gcongr) /-- Additive subsemigroup closure of a set is monotone in its
+argument: if `s ⊆ t`, then `closure s ≤ closure t` -/]
 theorem closure_mono ⦃s t : Set M⦄ (h : s ⊆ t) : closure s ≤ closure t :=
   closure_le.2 <| Subset.trans h subset_closure
 
@@ -146,8 +146,8 @@ variable (S)
 
 /-- An induction principle for closure membership. If `p` holds for all elements of `s`, and
 is preserved under multiplication, then `p` holds for all elements of the closure of `s`. -/
-@[to_additive (attr := elab_as_elim) /-- An induction principle for additive closure membership. If `p`
-  holds for all elements of `s`, and is preserved under addition, then `p` holds for all
+@[to_additive (attr := elab_as_elim) /-- An induction principle for additive closure membership. If
+  `p` holds for all elements of `s`, and is preserved under addition, then `p` holds for all
   elements of the additive closure of `s`. -/]
 theorem closure_induction {p : (x : M) → x ∈ closure s → Prop}
     (mem : ∀ (x) (h : x ∈ s), p x (subset_closure h))

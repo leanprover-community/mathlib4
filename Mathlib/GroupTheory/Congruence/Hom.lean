@@ -38,8 +38,8 @@ variable {F} [Mul M] [Mul N] [Mul P] [FunLike F M N] [MulHomClass F M N]
 
 
 /-- The natural homomorphism from a magma to its quotient by a congruence relation. -/
-@[to_additive (attr := simps)/-- The natural homomorphism from an additive magma to its quotient by an
-additive congruence relation. -/]
+@[to_additive (attr := simps)/-- The natural homomorphism from an additive magma to its quotient by
+an additive congruence relation. -/]
 def mkMulHom (c : Con M) : MulHom M c.Quotient where
   toFun := (↑)
   map_mul' _ _ := rfl
@@ -66,7 +66,8 @@ theorem ker_mkMulHom_eq (c : Con M) : ker (mkMulHom c) = c :=
   ext fun _ _ => Quotient.eq''
 
 /-- The kernel of a multiplication-preserving function as a congruence relation. -/
-@[to_additive /-- The kernel of an addition-preserving function as an additive congruence relation. -/]
+@[to_additive
+/-- The kernel of an addition-preserving function as an additive congruence relation. -/]
 abbrev mulKer (f : M → P) (h : ∀ x y, f (x * y) = f x * f y) : Con M :=
   ker <| MulHom.mk f h
 

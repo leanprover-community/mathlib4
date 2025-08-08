@@ -350,9 +350,9 @@ instance forget₂Group_preservesLimitsOfShape :
 of groups.)
 -/
 @[to_additive
-  /-- The forgetful functor from additive commutative groups to additive groups preserves all limits.
-  (That is, the underlying group could have been computed instead as limits in the category
-    of additive groups.) -/,
+  /-- The forgetful functor from additive commutative groups to additive groups preserves all
+  limits. (That is, the underlying group could have been computed instead as limits  in the
+  category of additive groups.) -/,
   to_additive_relevant_arg 2]
 instance forget₂Group_preservesLimitsOfSize :
     PreservesLimitsOfSize.{w, v} (forget₂ CommGrp.{u} Grp.{u}) where
@@ -362,8 +362,7 @@ instance forget₂Group_preservesLimits :
     PreservesLimits (forget₂ CommGrp Grp.{u}) :=
   CommGrp.forget₂Group_preservesLimitsOfSize.{u, u}
 
-/-- An auxiliary declaration to speed up typechecking.
--/
+/-- An auxiliary declaration to speed up typechecking. -/
 @[to_additive AddCommGrp.forget₂AddCommMon_preservesLimitsAux
   /-- An auxiliary declaration to speed up typechecking. -/]
 noncomputable def forget₂CommMon_preservesLimitsAux

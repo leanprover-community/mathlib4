@@ -929,9 +929,9 @@ is measure preserving, provided that the Haar measures on the domain and on the 
 have the same total mass.
 -/
 @[to_additive
-  /-- A continuous surjective additive monoid homomorphism of topological groups with compact codomain
-is measure preserving, provided that the Haar measures on the domain and on the codomain
-have the same total mass. -/]
+  /-- A continuous surjective additive monoid homomorphism of topological groups with compact
+  codomain is measure preserving, provided that the Haar measures on the domain and on the codomain
+  have the same total mass. -/]
 theorem _root_.MonoidHom.measurePreserving
     {H : Type*} [Group H] [TopologicalSpace H] [IsTopologicalGroup H] [CompactSpace H]
     [MeasurableSpace H] [BorelSpace H]
@@ -958,7 +958,8 @@ variable {G : Type*} [CommGroup G] [TopologicalSpace G] [IsTopologicalGroup G]
   [MeasurableSpace G] [BorelSpace G] (μ : Measure G) [IsHaarMeasure μ]
 
 /-- Any regular Haar measure is invariant under inversion in an abelian group. -/
-@[to_additive /-- Any regular additive Haar measure is invariant under negation in an abelian group. -/]
+@[to_additive
+/-- Any regular additive Haar measure is invariant under negation in an abelian group. -/]
 instance (priority := 100) IsHaarMeasure.isInvInvariant_of_regular
     [LocallyCompactSpace G] [Regular μ] : IsInvInvariant μ := by
   -- the image measure is a Haar measure. By uniqueness up to multiplication, it is of the form
@@ -983,7 +984,8 @@ instance (priority := 100) IsHaarMeasure.isInvInvariant_of_regular
   rw [hc, this, one_smul]
 
 /-- Any inner regular Haar measure is invariant under inversion in an abelian group. -/
-@[to_additive /-- Any regular additive Haar measure is invariant under negation in an abelian group. -/]
+@[to_additive
+/-- Any regular additive Haar measure is invariant under negation in an abelian group. -/]
 instance (priority := 100) IsHaarMeasure.isInvInvariant_of_innerRegular
     [LocallyCompactSpace G] [InnerRegular μ] : IsInvInvariant μ := by
   -- the image measure is a Haar measure. By uniqueness up to multiplication, it is of the form

@@ -124,8 +124,8 @@ theorem contMDiff_inv : ContMDiff I I n fun x : G => x⁻¹ :=
 include I n in
 /-- A Lie group is a topological group. This is not an instance for technical reasons,
 see note [Design choices about smooth algebraic structures]. -/
-@[to_additive /-- An additive Lie group is an additive topological group. This is not an instance for
-technical reasons, see note [Design choices about smooth algebraic structures]. -/]
+@[to_additive /-- An additive Lie group is an additive topological group. This is not an instance
+for technical reasons, see note [Design choices about smooth algebraic structures]. -/]
 theorem topologicalGroup_of_lieGroup : IsTopologicalGroup G :=
   { continuousMul_of_contMDiffMul I n with continuous_inv := (contMDiff_inv I n).continuous }
 

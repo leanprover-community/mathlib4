@@ -122,7 +122,7 @@ lemma recOneCoe_coe {motive : WithOne α → Sort*} (h₁ h₂) (a : α) :
 
 /-- Deconstruct an `x : WithOne α` to the underlying value in `α`, given a proof that `x ≠ 1`. -/
 @[to_additive unzero
-      /-- Deconstruct an `x : WithZero α` to the underlying value in `α`, given a proof that `x ≠ 0`. -/]
+/-- Deconstruct an `x : WithZero α` to the underlying value in `α`, given a proof that `x ≠ 0`. -/]
 def unone : ∀ {x : WithOne α}, x ≠ 1 → α | (x : α), _ => x
 
 @[to_additive (attr := simp) unzero_coe]

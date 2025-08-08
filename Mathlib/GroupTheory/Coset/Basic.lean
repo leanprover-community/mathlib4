@@ -406,7 +406,8 @@ alias AddSubgroup.quotientEquivSumOfLE_apply := AddSubgroup.quotientEquivProdOfL
 alias AddSubgroup.quotientEquivSumOfLE_symm_apply := AddSubgroup.quotientEquivProdOfLE_symm_apply
 
 /-- If `s ≤ t`, then there is an embedding `s ⧸ H.subgroupOf s ↪ t ⧸ H.subgroupOf t`. -/
-@[to_additive /-- If `s ≤ t`, there is an embedding `s ⧸ H.addSubgroupOf s ↪ t ⧸ H.addSubgroupOf t`. -/]
+@[to_additive
+/-- If `s ≤ t`, there is an embedding `s ⧸ H.addSubgroupOf s ↪ t ⧸ H.addSubgroupOf t`. -/]
 def quotientSubgroupOfEmbeddingOfLE (H : Subgroup α) (h : s ≤ t) :
     s ⧸ H.subgroupOf s ↪ t ⧸ H.subgroupOf t where
   toFun :=
@@ -424,7 +425,8 @@ theorem quotientSubgroupOfEmbeddingOfLE_apply_mk (H : Subgroup α) (h : s ≤ t)
   rfl
 
 /-- If `s ≤ t`, then there is a map `H ⧸ s.subgroupOf H → H ⧸ t.subgroupOf H`. -/
-@[to_additive /-- If `s ≤ t`, then there is a map `H ⧸ s.addSubgroupOf H → H ⧸ t.addSubgroupOf H`. -/]
+@[to_additive
+/-- If `s ≤ t`, then there is a map `H ⧸ s.addSubgroupOf H → H ⧸ t.addSubgroupOf H`. -/]
 def quotientSubgroupOfMapOfLE (H : Subgroup α) (h : s ≤ t) :
     H ⧸ s.subgroupOf H → H ⧸ t.subgroupOf H :=
   Quotient.map' id fun a b => by
@@ -486,7 +488,8 @@ namespace MonoidHom
 variable [Group α] {H : Type*} [Group H]
 
 /-- An equivalence between any non-empty fiber of a `MonoidHom` and its kernel. -/
-@[to_additive /-- An equivalence between any non-empty fiber of an `AddMonoidHom` and its kernel. -/]
+@[to_additive
+/-- An equivalence between any non-empty fiber of an `AddMonoidHom` and its kernel. -/]
 def fiberEquivKer (f : α →* H) (a : α) : f ⁻¹' {f a} ≃ f.ker :=
   .trans
     (Equiv.setCongr <| Set.ext fun _ => by
@@ -504,7 +507,8 @@ lemma fiberEquivKer_symm_apply (f : α →* H) (a : α) (g : f.ker) :
   rfl
 
 /-- An equivalence between any fiber of a surjective `MonoidHom` and its kernel. -/
-@[to_additive /-- An equivalence between any fiber of a surjective `AddMonoidHom` and its kernel. -/]
+@[to_additive
+/-- An equivalence between any fiber of a surjective `AddMonoidHom` and its kernel. -/]
 noncomputable def fiberEquivKerOfSurjective {f : α →* H} (hf : Function.Surjective f) (h : H) :
     f ⁻¹' {h} ≃ f.ker :=
   (hf h).choose_spec ▸ f.fiberEquivKer (hf h).choose
@@ -568,8 +572,8 @@ lemma univ_eq_iUnion_smul (H : Subgroup α) :
 variable (α) in
 /-- `α ⧸ ⊥` is in bijection with `α`. See `QuotientGroup.quotientBot` for a multiplicative
 version. -/
-@[to_additive /-- `α ⧸ ⊥` is in bijection with `α`. See `QuotientAddGroup.quotientBot` for an additive
-version. -/]
+@[to_additive /-- `α ⧸ ⊥` is in bijection with `α`. See `QuotientAddGroup.quotientBot` for an
+additive version. -/]
 def quotientEquivSelf : α ⧸ (⊥ : Subgroup α) ≃ α where
   toFun := Quotient.lift id <| fun x y (h : leftRel ⊥ x y) ↦
     eq_of_inv_mul_eq_one <| by rwa [leftRel_apply, Subgroup.mem_bot] at h

@@ -93,8 +93,7 @@ initialize_simps_projections Section (toFun → apply)
 
 /-- The composition of an isomorphism between equivalent group extensions and a section -/
 @[to_additive (attr := simps!)
-      /-- The composition of an isomorphism between equivalent additive group extensions and a
-      section -/]
+/-- The composition of an isomorphism between equivalent additive group extensions and a section -/]
 def equivComp : S'.Section where
   toFun := equiv ∘ σ
   rightInverse_rightHom g := by
@@ -110,8 +109,8 @@ variable {E' : Type*} [Group E'] {S' : GroupExtension N E' G}
 /-- An equivalence of group extensions from a homomorphism making a commuting diagram. Such a
 homomorphism is necessarily an isomorphism. -/
 @[to_additive
-      /-- An equivalence of additive group extensions from a homomorphism making a commuting diagram.
-      Such a homomorphism is necessarily an isomorphism. -/]
+/-- An equivalence of additive group extensions from a homomorphism making a commuting diagram.
+Such a homomorphism is necessarily an isomorphism. -/]
 noncomputable def ofMonoidHom (f : E →* E') (comp_inl : f.comp S.inl = S'.inl)
     (rightHom_comp : S'.rightHom.comp f = S.rightHom) : S.Equiv S' where
   __ := f

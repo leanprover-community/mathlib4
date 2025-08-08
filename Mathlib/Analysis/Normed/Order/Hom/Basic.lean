@@ -37,8 +37,8 @@ lemma GroupSeminormClass.toSeminormedGroup_norm_eq [Group α] [GroupSeminormClas
 
 /-- Constructs a `SeminormedCommGroup` structure from a `GroupSeminormClass` on a `CommGroup`. -/
 -- See note [reducible non-instances]
-@[to_additive /-- Constructs a `SeminormedAddCommGroup` structure from an `AddGroupSeminormClass` on an
-`AddCommGroup`. -/]
+@[to_additive /-- Constructs a `SeminormedAddCommGroup` structure from an `AddGroupSeminormClass`
+on an `AddCommGroup`. -/]
 abbrev GroupSeminormClass.toSeminormedCommGroup [CommGroup α] [GroupSeminormClass F α ℝ]
     (f : F) : SeminormedCommGroup α where
   __ := GroupSeminormClass.toSeminormedGroup f

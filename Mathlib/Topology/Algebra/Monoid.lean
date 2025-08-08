@@ -790,8 +790,8 @@ with respect to the induced topology, is continuous.
 
 Inversion is also continuous, but we register this in a later file, `Topology.Algebra.Group`,
 because the predicate `ContinuousInv` has not yet been defined. -/
-@[to_additive /-- If addition on an additive monoid is continuous, then addition on the additive units
-of the monoid, with respect to the induced topology, is continuous.
+@[to_additive /-- If addition on an additive monoid is continuous, then addition on the additive
+units of the monoid, with respect to the induced topology, is continuous.
 
 Negation is also continuous, but we register this in a later file, `Topology.Algebra.Group`, because
 the predicate `ContinuousNeg` has not yet been defined. -/]

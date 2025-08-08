@@ -275,7 +275,8 @@ instance fintypeMrange {M N : Type*} [Monoid M] [Monoid N] [Fintype M] [Decidabl
 
 Note: this instance can form a diamond with `Subtype.fintype` or `Subgroup.fintype` in the
 presence of `Fintype N`. -/
-@[to_additive /-- The range of a finite additive group under an additive group homomorphism is finite.
+@[to_additive
+/-- The range of a finite additive group under an additive group homomorphism is finite.
 
 Note: this instance can form a diamond with `Subtype.fintype` or `Subgroup.fintype` in the
 presence of `Fintype N`. -/]

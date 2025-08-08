@@ -151,7 +151,8 @@ theorem inv_le (S T : Submonoid G) : S⁻¹ ≤ T ↔ S ≤ T⁻¹ :=
   SetLike.coe_subset_coe.symm.trans Set.inv_subset
 
 /-- Pointwise inversion of submonoids as an order isomorphism. -/
-@[to_additive (attr := simps!) /-- Pointwise negation of additive submonoids as an order isomorphism -/]
+@[to_additive (attr := simps!)
+/-- Pointwise negation of additive submonoids as an order isomorphism -/]
 def invOrderIso : Submonoid G ≃o Submonoid G where
   toEquiv := Equiv.inv _
   map_rel_iff' := inv_le_inv _ _

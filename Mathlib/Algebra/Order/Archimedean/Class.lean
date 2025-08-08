@@ -393,7 +393,8 @@ section Hom
 variable {N : Type*} [CommGroup N] [LinearOrder N] [IsOrderedMonoid N]
 
 /-- An `OrderMonoidHom` can be lifted to an `OrderHom` over archimedean classes. -/
-@[to_additive /-- An `OrderAddMonoidHom` can be lifted to an `OrderHom` over archimedean classes. -/]
+@[to_additive
+/-- An `OrderAddMonoidHom` can be lifted to an `OrderHom` over archimedean classes. -/]
 noncomputable
 def orderHom (f : M →*o N) : MulArchimedeanClass M →o MulArchimedeanClass N :=
   (MulArchimedeanOrder.orderHom f).antisymmetrization

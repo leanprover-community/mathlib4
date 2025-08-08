@@ -46,7 +46,8 @@ namespace Monoid
 variable (G) [Monoid G]
 
 /-- A predicate on a monoid saying that all elements are of finite order. -/
-@[to_additive /-- A predicate on an additive monoid saying that all elements are of finite order. -/]
+@[to_additive
+/-- A predicate on an additive monoid saying that all elements are of finite order. -/]
 def IsTorsion :=
   ∀ g : G, IsOfFinOrder g
 
@@ -88,7 +89,8 @@ theorem IsTorsion.of_surjective {f : G →* H} (hf : Function.Surjective f) (tG 
   exact f.isOfFinOrder (tG g)
 
 /-- Torsion groups are closed under extensions. -/
-@[to_additive AddIsTorsion.extension_closed /-- Additive torsion groups are closed under extensions. -/]
+@[to_additive AddIsTorsion.extension_closed
+/-- Additive torsion groups are closed under extensions. -/]
 theorem IsTorsion.extension_closed {f : G →* H} (hN : N = f.ker) (tH : IsTorsion H)
     (tN : IsTorsion N) : IsTorsion G := fun g => by
   obtain ⟨ngn, ngnpos, hngn⟩ := (tH <| f g).exists_pow_eq_one
@@ -241,7 +243,8 @@ namespace Monoid.IsTorsion
 variable {G}
 
 /-- The torsion submonoid of a torsion monoid is `⊤`. -/
-@[to_additive (attr := simp) /-- The additive torsion submonoid of an additive torsion monoid is `⊤`. -/]
+@[to_additive (attr := simp)
+/-- The additive torsion submonoid of an additive torsion monoid is `⊤`. -/]
 theorem torsion_eq_top (tG : IsTorsion G) : torsion G = ⊤ := by ext; tauto
 
 /-- A torsion monoid is isomorphic to its torsion submonoid. -/

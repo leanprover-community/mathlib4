@@ -319,7 +319,8 @@ distance, with a topology defeq to the initial one. -/
 namespace MulOpposite
 
 /-- Pseudoemetric space instance on the multiplicative opposite of a pseudoemetric space. -/
-@[to_additive /-- Pseudoemetric space instance on the additive opposite of a pseudoemetric space. -/]
+@[to_additive
+/-- Pseudoemetric space instance on the additive opposite of a pseudoemetric space. -/]
 instance {α : Type*} [PseudoEMetricSpace α] : PseudoEMetricSpace αᵐᵒᵖ :=
   PseudoEMetricSpace.induced unop ‹_›
 

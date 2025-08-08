@@ -133,7 +133,8 @@ theorem ext {S T : Subsemigroup M} (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T :=
   SetLike.ext h
 
 /-- Copy a subsemigroup replacing `carrier` with a set that is equal to it. -/
-@[to_additive /-- Copy an additive subsemigroup replacing `carrier` with a set that is equal to it. -/]
+@[to_additive
+/-- Copy an additive subsemigroup replacing `carrier` with a set that is equal to it. -/]
 protected def copy (S : Subsemigroup M) (s : Set M) (hs : s = S) :
     Subsemigroup M where
   carrier := s
@@ -269,7 +270,8 @@ theorem mul_def (x y : S') : x * y = ⟨x * y, mul_mem x.2 y.2⟩ :=
   rfl
 
 /-- A subsemigroup of a semigroup inherits a semigroup structure. -/
-@[to_additive /-- An `AddSubsemigroup` of an `AddSemigroup` inherits an `AddSemigroup` structure. -/]
+@[to_additive
+/-- An `AddSubsemigroup` of an `AddSemigroup` inherits an `AddSemigroup` structure. -/]
 instance toSemigroup {M : Type*} [Semigroup M] {A : Type*} [SetLike A M] [MulMemClass A M]
     (S : A) : Semigroup S := fast_instance%
   Subtype.coe_injective.semigroup Subtype.val fun _ _ => rfl

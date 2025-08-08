@@ -113,9 +113,8 @@ theorem pow_left_surj_of_rootableBy [RootableBy A α] {n : α} (hn : n ≠ 0) :
 A `Monoid A` is `α`-rootable iff the `pow _ n` function is surjective, i.e. the constructive version
 implies the textbook approach.
 -/
-@[to_additive divisibleByOfSMulRightSurj
-      /-- An `AddMonoid A` is `α`-divisible iff `n • _` is a surjective function, i.e. the constructive
-      version implies the textbook approach. -/]
+@[to_additive divisibleByOfSMulRightSurj /-- An `AddMonoid A` is `α`-divisible iff `n • _` is a
+surjective function, i.e. the constructive version implies the textbook approach. -/]
 noncomputable def rootableByOfPowLeftSurj
     (H : ∀ {n : α}, n ≠ 0 → Function.Surjective (fun a => a ^ n : A → A)) : RootableBy A α where
   root a n := @dite _ (n = 0) (Classical.dec _) (fun _ => (1 : A)) fun hn => (H hn a).choose

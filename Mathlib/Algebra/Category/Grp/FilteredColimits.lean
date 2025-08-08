@@ -172,7 +172,8 @@ noncomputable instance colimitCommGroup : CommGroup.{max v u} (G.{v, u} F) :=
       (F ⋙ forget₂ CommGrp CommMonCat.{max v u}) with }
 
 /-- The bundled commutative group giving the filtered colimit of a diagram. -/
-@[to_additive /-- The bundled additive commutative group giving the filtered colimit of a diagram. -/]
+@[to_additive
+/-- The bundled additive commutative group giving the filtered colimit of a diagram. -/]
 noncomputable def colimit : CommGrp :=
   CommGrp.of (G.{v, u} F)
 

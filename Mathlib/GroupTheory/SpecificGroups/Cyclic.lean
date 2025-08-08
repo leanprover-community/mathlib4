@@ -980,8 +980,8 @@ theorem not_isCyclic_prod_of_infinite_nontrivial (M N : Type*) [Group M] [Group 
 
 /-- The product of two finite groups is cyclic iff
 both of them are cyclic and their orders are coprime. -/
-@[to_additive AddGroup.isAddCyclic_prod_iff /-- The product of two finite additive groups is cyclic iff
-both of them are cyclic and their orders are coprime. -/]
+@[to_additive AddGroup.isAddCyclic_prod_iff /-- The product of two finite additive groups is cyclic
+iff both of them are cyclic and their orders are coprime. -/]
 theorem Group.isCyclic_prod_iff {M N : Type*} [Group M] [Group N] :
     IsCyclic (M × N) ↔ IsCyclic M ∧ IsCyclic N ∧ (Nat.card M).Coprime (Nat.card N) := by
   refine ⟨fun h ↦ ⟨isCyclic_left_of_prod M N, isCyclic_right_of_prod M N, ?_⟩, fun ⟨hM, hN, h⟩ ↦ ?_⟩

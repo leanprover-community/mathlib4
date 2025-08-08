@@ -61,7 +61,8 @@ variable {m : MeasurableSpace α} [SMul G α]
   (μ : Measure α) [SMulInvariantMeasure G α μ] {s : Set α}
 
 /-- See also `measure_preimage_smul_of_nullMeasurableSet` and `measure_preimage_smul`. -/
-@[to_additive /-- See also `measure_preimage_smul_of_nullMeasurableSet` and `measure_preimage_smul`. -/]
+@[to_additive
+/-- See also `measure_preimage_smul_of_nullMeasurableSet` and `measure_preimage_smul`. -/]
 theorem measure_preimage_smul_le (c : G) (s : Set α) : μ ((c • ·) ⁻¹' s) ≤ μ s :=
   (outerMeasure_le_iff (m := .map (c • ·) μ.1)).2
     (fun _s hs ↦ (SMulInvariantMeasure.measure_preimage_smul _ hs).le) _

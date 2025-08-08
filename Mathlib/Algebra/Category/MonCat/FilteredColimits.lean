@@ -307,7 +307,8 @@ noncomputable instance colimitCommMonoid : CommMonoid.{max v u} (M.{v, u} F) :=
       rw [mul_comm] }
 
 /-- The bundled commutative monoid giving the filtered colimit of a diagram. -/
-@[to_additive /-- The bundled additive commutative monoid giving the filtered colimit of a diagram. -/]
+@[to_additive
+/-- The bundled additive commutative monoid giving the filtered colimit of a diagram. -/]
 noncomputable def colimit : CommMonCat.{max v u} :=
   CommMonCat.of (M.{v, u} F)
 

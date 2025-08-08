@@ -290,9 +290,9 @@ theorem ae_measure_preimage_mul_right_lt_top_of_ne_zero (h2s : ν' s ≠ 0) (h3s
   not justified. We prove this inequality for almost all `x` in
   `MeasureTheory.ae_measure_preimage_mul_right_lt_top_of_ne_zero`. -/
 @[to_additive
-/-- A technical lemma relating two different measures. This is basically [Halmos, §60 Th. A]. Note that
-if `f` is the characteristic function of a measurable set `t` this states that `μ t = c * μ s` for a
-constant `c` that does not depend on `μ`.
+/-- A technical lemma relating two different measures. This is basically [Halmos, §60 Th. A]. Note
+that if `f` is the characteristic function of a measurable set `t` this states that `μ t = c * μ s`
+for a constant `c` that does not depend on `μ`.
 
 Note: There is a gap in the last step of the proof in [Halmos]. In the last line, the equality
 `g(-x) + ν(s - x) = f(x)` holds if we can prove that `0 < ν(s - x) < ∞`. The first inequality
@@ -363,14 +363,15 @@ theorem measurePreserving_mul_prod [IsMulRightInvariant μ] :
 variable [MeasurableInv G]
 
 /-- The map `(x, y) ↦ (x, y / x)` is measure-preserving. -/
-@[to_additive measurePreserving_prod_sub /-- The map `(x, y) ↦ (x, y - x)` is measure-preserving. -/]
+@[to_additive measurePreserving_prod_sub
+/-- The map `(x, y) ↦ (x, y - x)` is measure-preserving. -/]
 theorem measurePreserving_prod_div [IsMulRightInvariant ν] :
     MeasurePreserving (fun z : G × G => (z.1, z.2 / z.1)) (μ.prod ν) (μ.prod ν) :=
   (measurePreserving_prod_mul_right μ ν).symm (MeasurableEquiv.shearDivRight G).symm
 
 /-- The map `(x, y) ↦ (y, x / y)` sends `μ × ν` to `ν × μ`. -/
 @[to_additive measurePreserving_prod_sub_swap
-      /-- The map `(x, y) ↦ (y, x - y)` sends `μ × ν` to `ν × μ`. -/]
+/-- The map `(x, y) ↦ (y, x - y)` sends `μ × ν` to `ν × μ`. -/]
 theorem measurePreserving_prod_div_swap [IsMulRightInvariant μ] :
     MeasurePreserving (fun z : G × G => (z.2, z.1 / z.2)) (μ.prod ν) (ν.prod μ) :=
   (measurePreserving_prod_div ν μ).comp measurePreserving_swap

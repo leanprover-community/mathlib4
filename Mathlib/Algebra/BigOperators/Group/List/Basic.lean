@@ -148,8 +148,8 @@ theorem getElem?_zero_mul_tail_prod (l : List M) : l[0]?.getD 1 * l.tail.prod = 
 
 /-- Same as `get?_zero_mul_tail_prod`, but avoiding the `List.headI` garbage complication by
   requiring the list to be nonempty. -/
-@[to_additive /-- Same as `get?_zero_add_tail_sum`, but avoiding the `List.headI` garbage complication
-  by requiring the list to be nonempty. -/]
+@[to_additive /-- Same as `get?_zero_add_tail_sum`, but avoiding the `List.headI` garbage
+  complication by requiring the list to be nonempty. -/]
 theorem headI_mul_tail_prod_of_ne_nil [Inhabited M] (l : List M) (h : l ≠ []) :
     l.headI * l.tail.prod = l.prod := by cases l <;> [contradiction; simp]
 
@@ -174,8 +174,8 @@ theorem _root_.Commute.list_prod_left (l : List M) (y : M) (h : ∀ x ∈ l, Com
 
 /-- A variant of `prod_range_succ` which pulls off the first term in the product rather than the
 last. -/
-@[to_additive
-/-- A variant of `sum_range_succ` which pulls off the first term in the sum rather than the last. -/]
+@[to_additive /-- A variant of `sum_range_succ` which pulls off the first term in the sum rather
+than the last. -/]
 lemma prod_range_succ' (f : ℕ → M) (n : ℕ) :
     ((range n.succ).map f).prod = f 0 * ((range n).map fun i ↦ f i.succ).prod := by
   rw [range_succ_eq_map]

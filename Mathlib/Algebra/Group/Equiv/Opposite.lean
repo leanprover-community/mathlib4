@@ -91,9 +91,9 @@ def MonoidHom.fromOpposite {M N : Type*} [MulOneClass M] [MulOneClass N] (f : M 
 /-- A semigroup homomorphism `M →ₙ* N` can equivalently be viewed as a semigroup homomorphism
 `Mᵐᵒᵖ →ₙ* Nᵐᵒᵖ`. This is the action of the (fully faithful) `ᵐᵒᵖ`-functor on morphisms. -/
 @[to_additive (attr := simps)
-/-- An additive semigroup homomorphism `AddHom M N` can equivalently be viewed as an additive semigroup
-homomorphism `AddHom Mᵃᵒᵖ Nᵃᵒᵖ`. This is the action of the
-(fully faithful)`ᵃᵒᵖ`-functor on morphisms. -/]
+/-- An additive semigroup homomorphism `AddHom M N` can equivalently be viewed as an additive
+semigroup homomorphism `AddHom Mᵃᵒᵖ Nᵃᵒᵖ`. This is the action of the (fully faithful)`ᵃᵒᵖ`-functor
+on morphisms. -/]
 def MulHom.op {M N} [Mul M] [Mul N] : (M →ₙ* N) ≃ (Mᵐᵒᵖ →ₙ* Nᵐᵒᵖ) where
   toFun f :=
     { toFun := MulOpposite.op ∘ f ∘ unop,
@@ -103,8 +103,8 @@ def MulHom.op {M N} [Mul M] [Mul N] : (M →ₙ* N) ≃ (Mᵐᵒᵖ →ₙ* Nᵐ
       map_mul' x y := congrArg unop (f.map_mul (MulOpposite.op y) (MulOpposite.op x)) }
 
 /-- The 'unopposite' of a semigroup homomorphism `Mᵐᵒᵖ →ₙ* Nᵐᵒᵖ`. Inverse to `MulHom.op`. -/
-@[to_additive (attr := simp)
-/-- The 'unopposite' of an additive semigroup homomorphism `Mᵃᵒᵖ →ₙ+ Nᵃᵒᵖ`. Inverse to `AddHom.op`. -/]
+@[to_additive (attr := simp) /-- The 'unopposite' of an additive semigroup homomorphism
+`Mᵃᵒᵖ →ₙ+ Nᵃᵒᵖ`. Inverse to `AddHom.op`. -/]
 def MulHom.unop {M N} [Mul M] [Mul N] : (Mᵐᵒᵖ →ₙ* Nᵐᵒᵖ) ≃ (M →ₙ* N) :=
   MulHom.op.symm
 
@@ -142,8 +142,8 @@ def MonoidHom.op {M N} [MulOneClass M] [MulOneClass N] : (M →* N) ≃ (Mᵐᵒ
       map_mul' x y := congrArg unop (f.map_mul (MulOpposite.op y) (MulOpposite.op x)) }
 
 /-- The 'unopposite' of a monoid homomorphism `Mᵐᵒᵖ →* Nᵐᵒᵖ`. Inverse to `MonoidHom.op`. -/
-@[to_additive (attr := simp)
-/-- The 'unopposite' of an additive monoid homomorphism `Mᵃᵒᵖ →+ Nᵃᵒᵖ`. Inverse to `AddMonoidHom.op`. -/]
+@[to_additive (attr := simp) /-- The 'unopposite' of an additive monoid homomorphism
+`Mᵃᵒᵖ →+ Nᵃᵒᵖ`. Inverse to `AddMonoidHom.op`. -/]
 def MonoidHom.unop {M N} [MulOneClass M] [MulOneClass N] : (Mᵐᵒᵖ →* Nᵐᵒᵖ) ≃ (M →* N) :=
   MonoidHom.op.symm
 

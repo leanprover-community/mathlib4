@@ -377,8 +377,8 @@ theorem MonoidHom.uniformContinuous_of_continuousAt_one [UniformSpace β] [Group
 
 /-- A homomorphism from a uniform group to a discrete uniform group is continuous if and only if
 its kernel is open. -/
-@[to_additive /-- A homomorphism from a uniform additive group to a discrete uniform additive group is
-continuous if and only if its kernel is open. -/]
+@[to_additive /-- A homomorphism from a uniform additive group to a discrete uniform additive group
+is continuous if and only if its kernel is open. -/]
 theorem IsUniformGroup.uniformContinuous_iff_isOpen_ker {hom : Type*} [UniformSpace β]
     [DiscreteTopology β] [Group β] [IsUniformGroup β] [FunLike hom α β] [MonoidHomClass hom α β]
     {f : hom} :

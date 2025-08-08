@@ -60,9 +60,9 @@ theorem Subgroup.cyclic_of_min {H : Subgroup G} {a : G}
 /-- If a nontrivial subgroup of a linear ordered commutative group is disjoint
 with the interval `Set.Ioo 1 a` for some `1 < a`, then the set of elements greater than 1 of this
 group admits the least element. -/
-@[to_additive /-- If a nontrivial additive subgroup of a linear ordered additive commutative group is
-disjoint with the interval `Set.Ioo 0 a` for some positive `a`, then the set of positive elements of
-this group admits the least element. -/]
+@[to_additive /-- If a nontrivial additive subgroup of a linear ordered additive commutative group
+is disjoint with the interval `Set.Ioo 0 a` for some positive `a`, then the set of positive
+elements of this group admits the least element. -/]
 theorem Subgroup.exists_isLeast_one_lt {H : Subgroup G} (hbot : H ≠ ⊥) {a : G} (h₀ : 1 < a)
     (hd : Disjoint (H : Set G) (Ioo 1 a)) : ∃ b, IsLeast { g : G | g ∈ H ∧ 1 < g } b := by
   -- todo: move to a lemma?

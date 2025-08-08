@@ -53,13 +53,14 @@ section Semigroup
 variable [Semigroup R] {a b : R}
 
 /-- In a semigroup, the product of left-regular elements is left-regular. -/
-@[to_additive /-- In an additive semigroup, the sum of add-left-regular elements is add-left.regular. -/]
+@[to_additive
+/-- In an additive semigroup, the sum of add-left-regular elements is add-left.regular. -/]
 theorem IsLeftRegular.mul (lra : IsLeftRegular a) (lrb : IsLeftRegular b) : IsLeftRegular (a * b) :=
   show Function.Injective (((a * b) * ·)) from comp_mul_left a b ▸ lra.comp lrb
 
 /-- In a semigroup, the product of right-regular elements is right-regular. -/
-@[to_additive /-- In an additive semigroup, the sum of add-right-regular elements is
-add-right-regular. -/]
+@[to_additive
+/-- In an additive semigroup, the sum of add-right-regular elements is add-right-regular. -/]
 theorem IsRightRegular.mul (rra : IsRightRegular a) (rrb : IsRightRegular b) :
     IsRightRegular (a * b) :=
   show Function.Injective (· * (a * b)) from comp_mul_right b a ▸ rrb.comp rra
@@ -79,8 +80,8 @@ theorem IsLeftRegular.of_mul (ab : IsLeftRegular (a * b)) : IsLeftRegular b :=
 
 /-- An element is left-regular if and only if multiplying it on the left by a left-regular element
 is left-regular. -/
-@[to_additive (attr := simp) /-- An element is add-left-regular if and only if adding to it on the left
-an add-left-regular element is add-left-regular. -/]
+@[to_additive (attr := simp) /-- An element is add-left-regular if and only if adding to it on the
+left an add-left-regular element is add-left-regular. -/]
 theorem mul_isLeftRegular_iff (b : R) (ha : IsLeftRegular a) :
     IsLeftRegular (a * b) ↔ IsLeftRegular b :=
   ⟨fun ab => IsLeftRegular.of_mul ab, fun ab => IsLeftRegular.mul ha ab⟩

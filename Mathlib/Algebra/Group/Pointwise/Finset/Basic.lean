@@ -180,7 +180,7 @@ variable [DecidableEq α] [Inv α] {s t : Finset α} {a : α}
 
 /-- The pointwise inversion of finset `s⁻¹` is defined as `{x⁻¹ | x ∈ s}` in locale `Pointwise`. -/
 @[to_additive
-      /-- The pointwise negation of finset `-s` is defined as `{-x | x ∈ s}` in locale `Pointwise`. -/]
+  /-- The pointwise negation of finset `-s` is defined as `{-x | x ∈ s}` in locale `Pointwise`. -/]
 protected def inv : Inv (Finset α) :=
   ⟨image Inv.inv⟩
 
@@ -303,8 +303,8 @@ variable [DecidableEq α] [Mul α] [Mul β] [FunLike F α β] [MulHomClass F α 
 /-- The pointwise multiplication of finsets `s * t` and `t` is defined as `{x * y | x ∈ s, y ∈ t}`
 in locale `Pointwise`. -/
 @[to_additive
-      /-- The pointwise addition of finsets `s + t` is defined as `{x + y | x ∈ s, y ∈ t}` in
-      locale `Pointwise`. -/]
+  /-- The pointwise addition of finsets `s + t` is defined as `{x + y | x ∈ s, y ∈ t}` in
+  locale `Pointwise`. -/]
 protected def mul : Mul (Finset α) :=
   ⟨image₂ (· * ·)⟩
 
@@ -416,8 +416,8 @@ theorem union_mul_inter_subset_union : (s₁ ∪ s₂) * (t₁ ∩ t₂) ⊆ s�
 /-- If a finset `u` is contained in the product of two sets `s * t`, we can find two finsets `s'`,
 `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' * t'`. -/
 @[to_additive
-      /-- If a finset `u` is contained in the sum of two sets `s + t`, we can find two finsets
-      `s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' + t'`. -/]
+  /-- If a finset `u` is contained in the sum of two sets `s + t`, we can find two finsets
+  `s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' + t'`. -/]
 theorem subset_mul {s t : Set α} :
     ↑u ⊆ s * t → ∃ s' t' : Finset α, ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ s' * t' :=
   subset_set_image₂
@@ -522,8 +522,8 @@ variable [DecidableEq α] [Div α] {s s₁ s₂ t t₁ t₂ u : Finset α} {a b 
 /-- The pointwise division of finsets `s / t` is defined as `{x / y | x ∈ s, y ∈ t}` in locale
 `Pointwise`. -/
 @[to_additive
-      /-- The pointwise subtraction of finsets `s - t` is defined as `{x - y | x ∈ s, y ∈ t}`
-      in locale `Pointwise`. -/]
+  /-- The pointwise subtraction of finsets `s - t` is defined as `{x - y | x ∈ s, y ∈ t}`
+  in locale `Pointwise`. -/]
 protected def div : Div (Finset α) :=
   ⟨image₂ (· / ·)⟩
 
@@ -638,8 +638,8 @@ theorem union_div_inter_subset_union : (s₁ ∪ s₂) / (t₁ ∩ t₂) ⊆ s�
 /-- If a finset `u` is contained in the product of two sets `s / t`, we can find two finsets `s'`,
 `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' / t'`. -/
 @[to_additive
-      /-- If a finset `u` is contained in the sum of two sets `s - t`, we can find two finsets
-      `s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' - t'`. -/]
+  /-- If a finset `u` is contained in the sum of two sets `s - t`, we can find two finsets
+  `s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' - t'`. -/]
 theorem subset_div {s t : Set α} :
     ↑u ⊆ s / t → ∃ s' t' : Finset α, ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ s' / t' :=
   subset_set_image₂
@@ -1011,7 +1011,7 @@ end DivisionMonoid
 
 /-- `Finset α` is a commutative division monoid under pointwise operations if `α` is. -/
 @[to_additive subtractionCommMonoid
-      /-- `Finset α` is a commutative subtraction monoid under pointwise operations if `α` is. -/]
+  /-- `Finset α` is a commutative subtraction monoid under pointwise operations if `α` is. -/]
 protected def divisionCommMonoid [DivisionCommMonoid α] :
     DivisionCommMonoid (Finset α) :=
   coe_injective.divisionCommMonoid _ coe_one coe_mul coe_inv coe_div coe_pow coe_zpow
@@ -1228,7 +1228,8 @@ protected lemma Nonempty.card_pow_mono (hs : s.Nonempty) : Monotone fun n : ℕ 
   monotone_nat_of_le_succ fun n ↦ by rw [pow_succ]; exact card_le_card_mul_right hs
 
 /-- See `Finset.Nonempty.card_pow_mono` for a version that works for zero powers. -/
-@[to_additive /-- See `Finset.Nonempty.card_nsmul_mono` for a version that works for zero scalars. -/]
+@[to_additive
+/-- See `Finset.Nonempty.card_nsmul_mono` for a version that works for zero scalars. -/]
 lemma card_pow_mono (hm : m ≠ 0) (hmn : m ≤ n) : #(s ^ m) ≤ #(s ^ n) := by
   obtain rfl | hs := s.eq_empty_or_nonempty
   · simp [hm]

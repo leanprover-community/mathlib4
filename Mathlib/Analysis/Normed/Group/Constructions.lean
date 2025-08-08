@@ -361,8 +361,8 @@ lemma pi_nnnorm_const' [Nonempty ι] (a : E) : ‖fun _i : ι => a‖₊ = ‖a�
   NNReal.eq <| pi_norm_const' a
 
 /-- The $L^1$ norm is less than the $L^\infty$ norm scaled by the cardinality. -/
-@[to_additive Pi.sum_norm_apply_le_norm /-- The $L^1$ norm is less than the $L^\infty$ norm scaled by
-the cardinality. -/]
+@[to_additive Pi.sum_norm_apply_le_norm /-- The $L^1$ norm is less than the $L^\infty$ norm scaled
+by the cardinality. -/]
 lemma Pi.sum_norm_apply_le_norm' : ∑ i, ‖f i‖ ≤ Fintype.card ι • ‖f‖ :=
   Finset.sum_le_card_nsmul _ _ _ fun i _hi => norm_le_pi_norm' _ i
 

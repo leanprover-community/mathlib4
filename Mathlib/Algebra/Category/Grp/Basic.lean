@@ -409,7 +409,7 @@ instance : Coe CommGrp.{u} Grp.{u} where coe := (forget₂ CommGrp Grp).obj
 
 /-- The forgetful functor from commutative groups to groups is fully faithful. -/
 @[to_additive fullyFaihtfulForget₂ToAddGrp
-  /-- The forgetful functor from additive commutative groups to additive groups is fully faithful. -/]
+/-- The forgetful functor from additive commutative groups to additive groups is fully faithful. -/]
 def fullyFaithfulForget₂ToGrp : (forget₂ CommGrp.{u} Grp).FullyFaithful where
   preimage f := ofHom f.hom
 
