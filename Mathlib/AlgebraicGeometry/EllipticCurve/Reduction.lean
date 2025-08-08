@@ -21,6 +21,8 @@ fraction fields of discrete valuation rings.
   has minimal valuation of discriminant among all isomorphic integral Weierstrass equations.
 * `reduction`: the reduction of a Weierstrass curve given by a minimal Weierstrass equation,
   which is a Weierstrass curve over the residue field.
+* `IsGoodReduction`: a predicate expressing that a given minimal Weierstrass equation
+  has valuation of its discriminant equal to zero.
 
 ## Main statements
 
@@ -146,6 +148,17 @@ lemma Δ_integral_of_isIntegral (W : WeierstrassCurve K)
   use W_int.Δ
   rw [hW_int, map_Δ]
 
+lemma Δ_integral_aux_of_isIntegral (W : WeierstrassCurve K)
+    [hW : IsIntegral R W] :
+    hW.integral.choose.Δ =
+    (algebraMap R K).toFun.invFun W.Δ := by
+  conv_rhs => simp [Function.invFun, Δ_integral_of_isIntegral R W]
+  apply (@IsFractionRing.coe_inj R _ K _ _ _ _).mp
+  unfold Algebra.cast
+  rw [← map_Δ]
+  conv_lhs => arg 1; equals W => apply hW.integral.choose_spec.symm
+  rw [(Δ_integral_of_isIntegral R W).choose_spec]
+
 /-- A Weierstrass equation over the fraction field `K` is minimal if the valuation
 of its discriminant is minimal among all isomorphic integral Weierstrass equations. -/
 class IsMinimal (W : WeierstrassCurve K) : Prop where
@@ -173,11 +186,19 @@ theorem exists_minimal (W : WeierstrassCurve K) :
   rw [← smul_assoc]
   exact h
 
+/-- A minimal Weierstrass equation for a given Weierstrass curve over `K`. -/
+noncomputable def minimal (W : WeierstrassCurve K) : WeierstrassCurve K :=
+  (W.exists_minimal R).choose • W
+
+instance {W : WeierstrassCurve K} :
+    IsMinimal R (W.minimal R) := (W.exists_minimal R).choose_spec
+
 end Minimal
 
 section Reduction
 
 open IsLocalRing
+open IsDiscreteValuationRing
 
 /-- The reduction of a Weierstrass curve over `K` given by a minimal Weierstrass equation,
 which is a Weierstrass curve over the residue field of `R`. -/
@@ -185,6 +206,19 @@ noncomputable def reduction (W : WeierstrassCurve K) [IsMinimal R W] :
     WeierstrassCurve (ResidueField R) :=
   letI hW : IsIntegral R W := inferInstance
   hW.integral.choose.map (residue R)
+
+/-- A minimal Weierstrass equation has good reduction if and only if
+the valuation of its discriminant is zero. -/
+class IsGoodReduction (W : WeierstrassCurve K) [IsMinimal R W] : Prop where
+  goodReduction : addVal R ((algebraMap R K).toFun.invFun W.Δ) = 0
+
+instance {W : WeierstrassCurve K} [IsMinimal R W] [IsGoodReduction R W] :
+    (W.reduction R).IsElliptic := by
+  letI hW : IsIntegral R W := inferInstance
+  apply (W.reduction R).isElliptic_iff.mpr
+  have h : addVal R hW.integral.choose.Δ = 0 :=
+    Δ_integral_aux_of_isIntegral R W ▸ IsGoodReduction.goodReduction
+  simp [reduction, map_Δ, addVal_eq_zero_iff.mp h]
 
 end Reduction
 
