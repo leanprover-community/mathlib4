@@ -137,7 +137,6 @@ theorem exists_rpow_of_abv_one_lt_iff {v w : AbsoluteValue F ℝ} (hv : v.IsNont
   rw [div_eq_inv_mul, Real.rpow_mul (w.nonneg _), Real.rpow_inv_log (by linarith) (by linarith),
     Real.exp_one_rpow, Real.exp_log (by linarith)]
 
-open Real in
 /--
 If $v$ and $w$ be two real absolute values on a field $F$, where $v$ is non-trivial, then $v$ and
 $w$ are equivalent if and only if $v(x) < 1$ exactly when $w(x) < 1$.
