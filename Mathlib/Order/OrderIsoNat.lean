@@ -66,6 +66,16 @@ theorem not_acc_iff_exists_nat_fun {α} {r : α → α → Prop} {x : α} :
   mpr h acc := acc.rec
     (fun _x _ ih ⟨f, hf⟩ ↦ ih (f 1) (hf.1 ▸ hf.2 0) ⟨(f <| · + 1), rfl, fun _ ↦ hf.2 _⟩) h
 
+theorem acc_iff_isEmpty_nat_fun {α} {r : α → α → Prop} {x : α} :
+    Acc r x ↔ IsEmpty { f : ℕ → α // f 0 = x ∧ ∀ n, r (f (n + 1)) (f n) } := by
+  rw [← not_iff_not, not_isEmpty_iff, nonempty_subtype]
+  exact not_acc_iff_exists_nat_fun
+
+theorem wellFounded_iff_isEmpty_nat_fun {α} {r : α → α → Prop} :
+    WellFounded r ↔ IsEmpty { f : ℕ → α // ∀ n, r (f (n + 1)) (f n) } where
+  mp := fun ⟨h⟩ ↦ ⟨fun ⟨f, hf⟩ ↦ (acc_iff_isEmpty_nat_fun.mp (h (f 0))).false ⟨f, rfl, hf⟩⟩
+  mpr h := ⟨fun _ ↦ acc_iff_isEmpty_nat_fun.mpr ⟨fun ⟨f, hf⟩ ↦ h.false ⟨f, hf.2⟩⟩⟩
+
 /-- A value is accessible iff it isn't contained in any infinite decreasing sequence. -/
 theorem acc_iff_no_decreasing_seq {x} :
     Acc r x ↔ IsEmpty { f : ((· > ·) : ℕ → ℕ → Prop) ↪r r // x ∈ Set.range f } where
