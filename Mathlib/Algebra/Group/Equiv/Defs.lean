@@ -329,12 +329,14 @@ theorem symm_mk (f : M ≃ N) (h) :
 theorem refl_symm : (refl M).symm = refl M := rfl
 
 /-- `e.symm` is a right inverse of `e`, written as `e (e.symm y) = y`. -/
-@[to_additive (attr := simp) /-- `e.symm` is a right inverse of `e`, written as `e (e.symm y) = y`. -/]
+@[to_additive (attr := simp)
+/-- `e.symm` is a right inverse of `e`, written as `e (e.symm y) = y`. -/]
 theorem apply_symm_apply (e : M ≃* N) (y : N) : e (e.symm y) = y :=
   e.toEquiv.apply_symm_apply y
 
 /-- `e.symm` is a left inverse of `e`, written as `e.symm (e y) = y`. -/
-@[to_additive (attr := simp) /-- `e.symm` is a left inverse of `e`, written as `e.symm (e y) = y`. -/]
+@[to_additive (attr := simp)
+/-- `e.symm` is a left inverse of `e`, written as `e.symm (e y) = y`. -/]
 theorem symm_apply_apply (e : M ≃* N) (x : M) : e.symm (e x) = x :=
   e.toEquiv.symm_apply_apply x
 
@@ -491,7 +493,8 @@ theorem map_ne_one_iff (h : M ≃* N) {x : M} : h x ≠ 1 ↔ x ≠ 1 :=
   EmbeddingLike.map_ne_one_iff
 
 /-- A bijective `Semigroup` homomorphism is an isomorphism -/
-@[to_additive (attr := simps! apply) /-- A bijective `AddSemigroup` homomorphism is an isomorphism -/]
+@[to_additive (attr := simps! apply)
+/-- A bijective `AddSemigroup` homomorphism is an isomorphism -/]
 noncomputable def ofBijective {M N F} [Mul M] [Mul N] [FunLike F M N] [MulHomClass F M N]
     (f : F) (hf : Bijective f) : M ≃* N :=
   { Equiv.ofBijective f hf with map_mul' := map_mul f }

@@ -424,7 +424,8 @@ end GaloisInsertion
 variable {M : Type*} [MulOneClass M] (S : Submonoid M)
 
 /-- The top submonoid is isomorphic to the monoid. -/
-@[to_additive (attr := simps) /-- The top additive submonoid is isomorphic to the additive monoid. -/]
+@[to_additive (attr := simps)
+/-- The top additive submonoid is isomorphic to the additive monoid. -/]
 def topEquiv : (⊤ : Submonoid M) ≃* M where
   toFun x := x
   invFun x := ⟨x, mem_top x⟩
@@ -437,8 +438,8 @@ theorem topEquiv_toMonoidHom : ((topEquiv : _ ≃* M) : _ →* M) = (⊤ : Submo
 
 /-- A subgroup is isomorphic to its image under an injective function. If you have an isomorphism,
 use `MulEquiv.submonoidMap` for better definitional equalities. -/
-@[to_additive /-- An additive subgroup is isomorphic to its image under an injective function. If you
-have an isomorphism, use `AddEquiv.addSubmonoidMap` for better definitional equalities. -/]
+@[to_additive /-- An additive subgroup is isomorphic to its image under an injective function. If
+you have an isomorphism, use `AddEquiv.addSubmonoidMap` for better definitional equalities. -/]
 noncomputable def equivMapOfInjective (f : M →* N) (hf : Function.Injective f) : S ≃* S.map f :=
   { Equiv.Set.image f S hf with map_mul' := fun _ _ => Subtype.ext (f.map_mul _ _) }
 
@@ -943,8 +944,8 @@ variable {S} {T : Submonoid M}
 /-- Makes the identity isomorphism from a proof that two submonoids of a multiplicative
 monoid are equal. -/
 @[to_additive
-      /-- Makes the identity additive isomorphism from a proof two
-      submonoids of an additive monoid are equal. -/]
+  /-- Makes the identity additive isomorphism from a proof two submonoids of an additive monoid are
+  equal. -/]
 def submonoidCongr (h : S = T) : S ≃* T :=
   { Equiv.setCongr <| congr_arg _ h with map_mul' := fun _ _ => rfl }
 
@@ -953,9 +954,9 @@ def submonoidCongr (h : S = T) : S ≃* T :=
 equivalence between `M` and `f.mrange`.
 This is a bidirectional version of `MonoidHom.mrange_restrict`. -/
 @[to_additive (attr := simps +simpRhs)
-      /-- An additive monoid homomorphism `f : M →+ N` with a left-inverse `g : N → M`
-      defines an additive equivalence between `M` and `f.mrange`.
-      This is a bidirectional version of `AddMonoidHom.mrange_restrict`. -/]
+  /-- An additive monoid homomorphism `f : M →+ N` with a left-inverse `g : N → M` defines an
+  additive equivalence between `M` and `f.mrange`. This is a bidirectional version of
+  `AddMonoidHom.mrange_restrict`. -/]
 def ofLeftInverse' (f : M →* N) {g : N → M} (h : Function.LeftInverse g f) :
     M ≃* MonoidHom.mrange f :=
   { f.mrangeRestrict with
@@ -1006,8 +1007,8 @@ namespace Submonoid
 
 /-- The multiplicative equivalence between the type of units of `M` and the submonoid of unit
 elements of `M`. -/
-@[to_additive (attr := simps!) /-- The additive equivalence between the type of additive units of `M`
-  and the additive submonoid whose elements are the additive units of `M`. -/]
+@[to_additive (attr := simps!) /-- The additive equivalence between the type of additive units of
+`M` and the additive submonoid whose elements are the additive units of `M`. -/]
 noncomputable def unitsTypeEquivIsUnitSubmonoid [Monoid M] : Mˣ ≃* IsUnit.submonoid M where
   toFun x := ⟨x, Units.isUnit x⟩
   invFun x := x.prop.unit

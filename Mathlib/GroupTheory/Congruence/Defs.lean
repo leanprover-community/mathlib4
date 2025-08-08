@@ -110,7 +110,8 @@ instance : Inhabited (Con M) :=
   ⟨conGen EmptyRelation⟩
 
 /-- A coercion from a congruence relation to its underlying binary relation. -/
-@[to_additive /-- A coercion from an additive congruence relation to its underlying binary relation. -/]
+@[to_additive
+/-- A coercion from an additive congruence relation to its underlying binary relation. -/]
 instance : FunLike (Con M) M (M → Prop) where
   coe c := c.r
   coe_injective' x y h := by
@@ -187,7 +188,8 @@ protected def Quotient :=
 variable {c}
 
 /-- The morphism into the quotient by a congruence relation -/
-@[to_additive (attr := coe) /-- The morphism into the quotient by an additive congruence relation -/]
+@[to_additive (attr := coe)
+/-- The morphism into the quotient by an additive congruence relation -/]
 def toQuotient : M → c.Quotient :=
   Quotient.mk''
 
@@ -204,7 +206,8 @@ instance (priority := 10) : CoeTC M c.Quotient :=
 
 -- Lower the priority since it unifies with any quotient type.
 /-- The quotient by a decidable congruence relation has decidable equality. -/
-@[to_additive /-- The quotient by a decidable additive congruence relation has decidable equality. -/]
+@[to_additive
+/-- The quotient by a decidable additive congruence relation has decidable equality. -/]
 instance (priority := 500) [∀ a b, Decidable (c a b)] : DecidableEq c.Quotient :=
   inferInstanceAs (DecidableEq (Quotient c.toSetoid))
 
@@ -287,8 +290,8 @@ theorem coe_mul (x y : M) : (↑(x * y) : c.Quotient) = ↑x * ↑y :=
 
 /-- Definition of the function on the quotient by a congruence relation `c` induced by a function
 that is constant on `c`'s equivalence classes. -/
-@[to_additive (attr := simp) /-- Definition of the function on the quotient by an additive congruence
-relation `c` induced by a function that is constant on `c`'s equivalence classes. -/]
+@[to_additive (attr := simp) /-- Definition of the function on the quotient by an additive
+congruence relation `c` induced by a function that is constant on `c`'s equivalence classes. -/]
 protected theorem liftOn_coe {β} (c : Con M) (f : M → β) (h : ∀ a b, c a b → f a = f b) (x : M) :
     Con.liftOn (x : c.Quotient) f h = f x :=
   rfl
@@ -296,8 +299,8 @@ protected theorem liftOn_coe {β} (c : Con M) (f : M → β) (h : ∀ a b, c a b
 -- The complete lattice of congruence relations on a type
 /-- For congruence relations `c, d` on a type `M` with a multiplication, `c ≤ d` iff `∀ x y ∈ M`,
 `x` is related to `y` by `d` if `x` is related to `y` by `c`. -/
-@[to_additive /-- For additive congruence relations `c, d` on a type `M` with an addition, `c ≤ d` iff
-`∀ x y ∈ M`, `x` is related to `y` by `d` if `x` is related to `y` by `c`. -/]
+@[to_additive /-- For additive congruence relations `c, d` on a type `M` with an addition, `c ≤ d`
+iff `∀ x y ∈ M`, `x` is related to `y` by `d` if `x` is related to `y` by `c`. -/]
 instance : LE (Con M) where
   le c d := ∀ ⦃x y⦄, c x y → d x y
 
@@ -318,8 +321,8 @@ instance : InfSet (Con M) where
 
 /-- The infimum of a set of congruence relations is the same as the infimum of the set's image
 under the map to the underlying equivalence relation. -/
-@[to_additive /-- The infimum of a set of additive congruence relations is the same as the infimum of
-the set's image under the map to the underlying equivalence relation. -/]
+@[to_additive /-- The infimum of a set of additive congruence relations is the same as the infimum
+of the set's image under the map to the underlying equivalence relation. -/]
 theorem sInf_toSetoid (S : Set (Con M)) : (sInf S).toSetoid = sInf (toSetoid '' S) :=
   Setoid.ext fun x y =>
     ⟨fun h r ⟨c, hS, hr⟩ => by rw [← hr]; exact h c hS, fun h c hS => h c.toSetoid ⟨c, hS, rfl⟩⟩
@@ -408,8 +411,8 @@ theorem conGen_mono {r s : M → M → Prop} (h : ∀ x y, r x y → s x y) : co
   conGen_le fun x y hr => ConGen.Rel.of _ _ <| h x y hr
 
 /-- Congruence relations equal the smallest congruence relation in which they are contained. -/
-@[to_additive (attr := simp) addConGen_of_addCon /-- Additive congruence relations equal the smallest
-additive congruence relation in which they are contained. -/]
+@[to_additive (attr := simp) addConGen_of_addCon /-- Additive congruence relations equal the
+smallest additive congruence relation in which they are contained. -/]
 theorem conGen_of_con (c : Con M) : conGen c = c :=
   le_antisymm (by rw [conGen_eq]; exact sInf_le fun _ _ => id) ConGen.Rel.of
 
@@ -437,9 +440,9 @@ theorem sup_def {c d : Con M} : c ⊔ d = conGen (⇑c ⊔ ⇑d) := by rw [sup_e
 
 /-- The supremum of a set of congruence relations `S` equals the smallest congruence relation
 containing the binary relation 'there exists `c ∈ S` such that `x` is related to `y` by `c`'. -/
-@[to_additive sSup_eq_addConGen /-- The supremum of a set of additive congruence relations `S` equals
-the smallest additive congruence relation containing the binary relation 'there exists `c ∈ S`
-such that `x` is related to `y` by `c`'. -/]
+@[to_additive sSup_eq_addConGen /-- The supremum of a set of additive congruence relations `S`
+equals the smallest additive congruence relation containing the binary relation 'there exists
+`c ∈ S` such that `x` is related to `y` by `c`'. -/]
 theorem sSup_eq_conGen (S : Set (Con M)) :
     sSup S = conGen fun x y => ∃ c : Con M, c ∈ S ∧ c x y := by
   rw [conGen_eq]
@@ -629,8 +632,8 @@ instance hasInv : Inv c.Quotient :=
 
 /-- The division induced on the quotient by a congruence relation on a type with a
 division. -/
-@[to_additive /-- The subtraction induced on the quotient by an additive congruence relation on a type
-with a subtraction. -/]
+@[to_additive /-- The subtraction induced on the quotient by an additive congruence relation on a
+type with a subtraction. -/]
 instance hasDiv : Div c.Quotient :=
   ⟨(Quotient.map₂ (· / ·)) fun _ _ h₁ _ _ h₂ => c.div h₁ h₂⟩
 

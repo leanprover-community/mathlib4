@@ -119,8 +119,8 @@ noncomputable def quotientKerEquivRange : G ⧸ ker φ ≃* range φ :=
 
 /-- The canonical isomorphism `G/(ker φ) ≃* H` induced by a homomorphism `φ : G →* H`
 with a right inverse `ψ : H → G`. -/
-@[to_additive (attr := simps) /-- The canonical isomorphism `G/(ker φ) ≃+ H` induced by a homomorphism
-`φ : G →+ H` with a right inverse `ψ : H → G`. -/]
+@[to_additive (attr := simps) /-- The canonical isomorphism `G/(ker φ) ≃+ H` induced by a
+homomorphism `φ : G →+ H` with a right inverse `ψ : H → G`. -/]
 def quotientKerEquivOfRightInverse (ψ : H → G) (hφ : RightInverse ψ φ) : G ⧸ ker φ ≃* H :=
   { kerLift φ with
     toFun := kerLift φ
@@ -157,8 +157,8 @@ theorem quotientMulEquivOfEq_mk {M N : Subgroup G} [M.Normal] [N.Normal] (h : M 
 
 /-- Let `A', A, B', B` be subgroups of `G`. If `A' ≤ B'` and `A ≤ B`,
 then there is a map `A / (A' ⊓ A) →* B / (B' ⊓ B)` induced by the inclusions. -/
-@[to_additive /-- Let `A', A, B', B` be subgroups of `G`. If `A' ≤ B'` and `A ≤ B`, then there is a map
-`A / (A' ⊓ A) →+ B / (B' ⊓ B)` induced by the inclusions. -/]
+@[to_additive /-- Let `A', A, B', B` be subgroups of `G`. If `A' ≤ B'` and `A ≤ B`, then there is a
+map `A / (A' ⊓ A) →+ B / (B' ⊓ B)` induced by the inclusions. -/]
 def quotientMapSubgroupOfOfLe {A' A B' B : Subgroup G} [_hAN : (A'.subgroupOf A).Normal]
     [_hBN : (B'.subgroupOf B).Normal] (h' : A' ≤ B') (h : A ≤ B) :
     A ⧸ A'.subgroupOf A →* B ⧸ B'.subgroupOf B :=
@@ -176,9 +176,10 @@ If `A' = B'` and `A = B`, then the quotients `A / (A' ⊓ A)` and `B / (B' ⊓ B
 Applying this equiv is nicer than rewriting along the equalities, since the type of
 `(A'.subgroupOf A : Subgroup A)` depends on `A`.
 -/
-@[to_additive /-- Let `A', A, B', B` be subgroups of `G`. If `A' = B'` and `A = B`, then the quotients
-`A / (A' ⊓ A)` and `B / (B' ⊓ B)` are isomorphic. Applying this equiv is nicer than rewriting along
-the equalities, since the type of `(A'.addSubgroupOf A : AddSubgroup A)` depends on `A`. -/]
+@[to_additive /-- Let `A', A, B', B` be subgroups of `G`. If `A' = B'` and `A = B`, then the
+quotients `A / (A' ⊓ A)` and `B / (B' ⊓ B)` are isomorphic. Applying this equiv is nicer than
+rewriting along the equalities, since the type of `(A'.addSubgroupOf A : AddSubgroup A)` depends on
+`A`. -/]
 def equivQuotientSubgroupOfOfEq {A' A B' B : Subgroup G} [hAN : (A'.subgroupOf A).Normal]
     [hBN : (B'.subgroupOf B).Normal] (h' : A' = B') (h : A = B) :
     A ⧸ A'.subgroupOf A ≃* B ⧸ B'.subgroupOf B :=
@@ -216,8 +217,8 @@ theorem homQuotientZPowOfHom_comp_of_rightInverse (i : Function.RightInverse g f
   monoidHom_ext _ <| MonoidHom.ext fun x => congrArg _ <| i x
 
 /-- The equivalence of quotients by powers of an integer induced by a group isomorphism. -/
-@[to_additive /-- The equivalence of quotients by multiples of an integer induced by an additive group
-isomorphism. -/]
+@[to_additive /-- The equivalence of quotients by multiples of an integer induced by an additive
+group isomorphism. -/]
 def equivQuotientZPowOfEquiv :
     A ⧸ (zpowGroupHom n : A →* A).range ≃* B ⧸ (zpowGroupHom n : B →* B).range :=
   MonoidHom.toMulEquiv _ _
@@ -377,8 +378,8 @@ theorem subsingleton_quotient_top : Subsingleton (G ⧸ (⊤ : Subgroup G)) := b
   exact Trunc.instSubsingletonTrunc
 
 /-- If the quotient by a subgroup gives a singleton then the subgroup is the whole group. -/
-@[to_additive /-- If the quotient by an additive subgroup gives a singleton then the additive subgroup
-is the whole additive group. -/]
+@[to_additive /-- If the quotient by an additive subgroup gives a singleton then the additive
+subgroup is the whole additive group. -/]
 theorem subgroup_eq_top_of_subsingleton (H : Subgroup G) (h : Subsingleton (G ⧸ H)) : H = ⊤ :=
   top_unique fun x _ => by
     have this : 1⁻¹ * x ∈ H := QuotientGroup.eq.1 (Subsingleton.elim _ _)
