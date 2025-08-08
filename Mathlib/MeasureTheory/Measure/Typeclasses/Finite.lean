@@ -140,14 +140,11 @@ theorem Measure.le_of_add_le_add_left [IsFiniteMeasure μ] (A2 : μ + ν₁ ≤ 
 
 lemma Measure.eq_of_le_of_measure_univ_eq [IsFiniteMeasure μ]
     (hμν : μ ≤ ν) (h_univ : μ univ = ν univ) : μ = ν := by
-  refine le_antisymm hμν (Measure.le_intro fun s hs _ ↦ ?_)
+  refine le_antisymm hμν (le_intro fun s hs _ ↦ ?_)
   by_contra! h_lt
   have h_disj : Disjoint s sᶜ := disjoint_compl_right_iff_subset.mpr subset_rfl
-  replace h_univ : ν univ ≤ μ univ := h_univ.symm.le
   rw [← union_compl_self s, measure_union h_disj hs.compl, measure_union h_disj hs.compl] at h_univ
-  refine absurd h_univ ?_
-  push_neg
-  exact ENNReal.add_lt_add_of_lt_of_le (measure_ne_top _ _) h_lt (hμν sᶜ)
+  exact ENNReal.add_lt_add_of_lt_of_le (measure_ne_top _ _) h_lt (hμν sᶜ) |>.not_ge h_univ.symm.le
 
 theorem summable_measure_toReal [hμ : IsFiniteMeasure μ] {f : ℕ → Set α}
     (hf₁ : ∀ i : ℕ, MeasurableSet (f i)) (hf₂ : Pairwise (Disjoint on f)) :
