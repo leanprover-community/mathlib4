@@ -268,13 +268,6 @@ lemma iSup₂_pow_of_ne_zero {κ : ι → Sort*} (f : (i : ι) → κ i → ℝ�
     (⨆ i, ⨆ j, f i j) ^ n = ⨆ i, ⨆ j, f i j ^ n :=
   (powOrderIso n hn).map_iSup₂ f
 
-lemma iSup₂_pow [Nonempty ι] {κ : ι → Sort*} [∀ i : ι, Nonempty (κ i)]
-    (n : ℕ) (f : (i : ι) → κ i → ℝ≥0∞) :
-    (⨆ i, ⨆ j, f i j) ^ n = ⨆ i, ⨆ j, f i j ^ n := by
-  cases n
-  · simp
-  · exact iSup₂_pow_of_ne_zero f (by simp)
-
 end ENNReal
 
 open NNReal in
