@@ -287,6 +287,9 @@ instance : Top (SubDPIdeal hI) :=
     isSubideal := le_refl _
     dpow_mem   := fun _ hn _ hx ↦ hI.dpow_mem hn hx }⟩
 
+@[simp]
+lemma carrier_top : (⊤ : SubDPIdeal hI).carrier = I := rfl
+
 instance inhabited : Inhabited hI.SubDPIdeal := ⟨⊤⟩
 
 /-- `(0)` is a sub-dp-ideal of the dp-ideal `I`. -/
@@ -294,6 +297,9 @@ instance : Bot (SubDPIdeal hI) :=
   ⟨{carrier    := ⊥
     isSubideal := bot_le
     dpow_mem   := fun _ hn x hx ↦ by rw [mem_bot.mp hx, hI.dpow_eval_zero hn, mem_bot]}⟩
+
+@[simp]
+lemma carrier_bot : (⊥ : SubDPIdeal hI).carrier = ⊥ := rfl
 
 /-- The intersection of two sub-dp-ideals is a sub-dp-ideal. -/
 instance : Min (SubDPIdeal hI) :=
@@ -349,19 +355,14 @@ instance : CompleteLattice (SubDPIdeal hI) := by
     rw [sSup_carrier_def, sSup_image, sSup_image, iSup_range]
     have (J : hI.SubDPIdeal) :
       ((⨆ (_ : J ∈ S), (J : Set.Iic I) : Set.Iic I) : Ideal A) = ⨆ (_ : J ∈ S), (J : Ideal A) := by
-      by_cases hJ : J ∈ S
-      · simp [ciSup_pos hJ]
-      · simp [hJ, not_false_eq_true, iSup_neg, Set.Iic.coe_bot]
-    simp_rw [this]
-    rfl
+      by_cases hJ : J ∈ S <;> simp [hJ]
+    simp_rw [this, DividedPowers.SubDPIdeal.coe_def]
   · conv_rhs => rw [iInf]
     rw [Subtype.ext_iff, Set.Iic.coe_sInf]
     dsimp only
     rw [sInf_carrier_def, sInf_image, iInf_range, inf_iInf, iInf_insert, inf_iInf]
     apply iInf_congr (fun J ↦ ?_)
-    by_cases hJ : J ∈ S
-    · rw [ciInf_pos hJ, ciInf_pos hJ]; rfl
-    · simp [hJ, iInf_neg, le_top, inf_of_le_left, Set.Iic.coe_top, le_refl]; rfl
+    by_cases hJ : J ∈ S <;> simp [hJ]
 
 end CompleteLattice
 
