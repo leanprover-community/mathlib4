@@ -622,9 +622,9 @@ The corresponding `bot` lemma is handled more generally by `inseparable_iff_eq`.
 @[simp]
 theorem inseparable_top (x y : α) : @Inseparable α ⊤ x y := nhds_top.trans nhds_top.symm
 
-theorem forall_inseparable_iff {t : TopologicalSpace α} : (∀ x y : α, Inseparable x y) ↔ t = ⊤ := by
-  refine ⟨fun h => ext_nhds fun x => nhds_top ▸ ?_, fun h => h ▸ inseparable_top⟩
-  exact top_unique fun s hs a =>  mem_of_mem_nhds (h x a ▸ hs)
+theorem forall_inseparable_iff {t : TopologicalSpace α} : (∀ x y : α, Inseparable x y) ↔ t = ⊤ where
+  mp h := ext_nhds fun x => nhds_top ▸ top_unique fun _ hs a => mem_of_mem_nhds <| h x a ▸ hs
+  mpr h := h ▸ inseparable_top
 
 theorem exists_not_inseparable_iff {t : TopologicalSpace α} :
     (∃ x y : α, ¬Inseparable x y) ↔ t ≠ ⊤ := by
