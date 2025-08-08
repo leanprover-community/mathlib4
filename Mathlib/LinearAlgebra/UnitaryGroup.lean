@@ -281,8 +281,9 @@ lemma mem_specialOrthogonalGroup_fin_two_iff {M : Matrix (Fin 2) (Fin 2) R} :
 end specialOrthogonalGroup
 
 open scoped Kronecker in
+/-- The kronecker product of two unitary matrices is unitary. -/
 theorem UnitaryGroup.kronecker_mem_unitaryGroup {R m : Type*} [Fintype m] [DecidableEq m]
-    [CommRing R] [StarRing R] (U₁ : Matrix n n R) (U₂ : Matrix m m R)
+    [CommRing R] [StarRing R] {U₁ : Matrix n n R} {U₂ : Matrix m m R}
     (hU₁ : U₁ ∈ unitaryGroup n R) (hU₂ : U₂ ∈ unitaryGroup m R) :
     U₁ ⊗ₖ U₂ ∈ unitaryGroup (n × m) R := by
   simp_rw [mem_unitaryGroup_iff, star_eq_conjTranspose, conjTranspose_kronecker,
