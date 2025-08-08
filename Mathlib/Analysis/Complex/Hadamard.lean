@@ -101,7 +101,7 @@ lemma sSupNormIm_nonneg (x : ℝ) : 0 ≤ sSupNormIm f x := by
 /-- `sSup` of `norm` translated by `ε > 0` is positive applied to the image of `f` on the
 vertical line `re z = x` -/
 lemma sSupNormIm_eps_pos {ε : ℝ} (hε : ε > 0) (x : ℝ) : 0 < ε + sSupNormIm f x := by
-   linarith [sSupNormIm_nonneg f x]
+  linarith [sSupNormIm_nonneg f x]
 
 /-- Useful rewrite for the absolute value of `invInterpStrip` -/
 lemma norm_invInterpStrip {ε : ℝ} (hε : ε > 0) :

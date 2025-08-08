@@ -25,7 +25,7 @@ variable [MonoidWithZero M₀]
 namespace Units
 
 /-- An element of the unit group of a nonzero monoid with zero represented as an element
-    of the monoid is nonzero. -/
+of the monoid is nonzero. -/
 @[simp]
 theorem ne_zero [Nontrivial M₀] (u : M₀ˣ) : (u : M₀) ≠ 0 :=
   left_ne_zero_of_mul_eq_one u.mul_inv
@@ -444,8 +444,6 @@ lemma div_eq_div_of_div_eq_div (hc : c ≠ 0) (hd : d ≠ 0) (h : a / b = c / d)
   (div_eq_div_iff_div_eq_div' hb hc).mp h
 
 @[simp] lemma div_div_cancel₀ (ha : a ≠ 0) : a / (a / b) = b := ha.isUnit.div_div_cancel
-
-@[deprecated (since := "2024-11-25")] alias div_div_cancel' := div_div_cancel₀
 
 lemma div_div_cancel_left' (ha : a ≠ 0) : a / b / a = b⁻¹ := ha.isUnit.div_div_cancel_left
 

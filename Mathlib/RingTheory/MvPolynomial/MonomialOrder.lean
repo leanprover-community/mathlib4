@@ -424,9 +424,6 @@ theorem leadingCoeff_mul_of_isRegular_left {f g : MvPolynomial σ R}
     m.leadingCoeff (f * g) = m.leadingCoeff f * m.leadingCoeff g := by
   simp only [leadingCoeff, degree_mul_of_isRegular_left hf hg, coeff_mul_of_degree_add]
 
-@[deprecated (since := "2025-01-31")]
-alias lCoeff_mul_of_isRegular_left := leadingCoeff_mul_of_isRegular_left
-
 /-- Monomial degree of product -/
 theorem degree_mul_of_isRegular_right {f g : MvPolynomial σ R}
     (hf : f ≠ 0) (hg : IsRegular (m.leadingCoeff g)) :
@@ -438,9 +435,6 @@ theorem leadingCoeff_mul_of_isRegular_right {f g : MvPolynomial σ R}
     (hf : f ≠ 0) (hg : IsRegular (m.leadingCoeff g)) :
     m.leadingCoeff (f * g) = m.leadingCoeff f * m.leadingCoeff g := by
   simp only [leadingCoeff, degree_mul_of_isRegular_right hf hg, coeff_mul_of_degree_add]
-
-@[deprecated (since := "2025-01-31")]
-alias lCoeff_mul_of_isRegular_right := leadingCoeff_mul_of_isRegular_right
 
 theorem Monic.mul {f g : MvPolynomial σ R} (hf : m.Monic f) (hg : m.Monic g) :
     m.Monic (f * g) := by

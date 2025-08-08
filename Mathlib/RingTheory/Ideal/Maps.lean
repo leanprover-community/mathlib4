@@ -495,10 +495,6 @@ theorem isMaximal_iff_of_bijective : (⊥ : Ideal R).IsMaximal ↔ (⊥ : Ideal 
   ⟨fun h ↦ map_bot (f := f) ▸ h.map_bijective f hf, fun h ↦ have e := RingEquiv.ofBijective f hf
     map_bot (f := e.symm) ▸ h.map_bijective _ e.symm.bijective⟩
 
-@[deprecated (since := "2024-12-07")] alias map.isMaximal := IsMaximal.map_bijective
-@[deprecated (since := "2024-12-07")] alias comap.isMaximal := IsMaximal.comap_bijective
-@[deprecated (since := "2024-12-07")] alias RingEquiv.bot_maximal_iff := isMaximal_iff_of_bijective
-
 end Bijective
 
 end Semiring
@@ -1118,13 +1114,7 @@ theorem FaithfulSMul.ker_algebraMap_eq_bot (R A : Type*) [CommSemiring R] [Semir
   ext; simp
 
 @[deprecated (since := "2025-01-31")]
-alias NoZeroSMulDivisors.iff_ker_algebraMap_eq_bot := FaithfulSMul.ker_algebraMap_eq_bot
-
-@[deprecated (since := "2025-01-31")]
 alias NoZeroSMulDivisors.of_ker_algebraMap_eq_bot := FaithfulSMul.ker_algebraMap_eq_bot
-
-@[deprecated (since := "2025-01-31")]
-alias NoZeroSMulDivisors.ker_algebraMap_eq_bot := FaithfulSMul.ker_algebraMap_eq_bot
 
 section PrincipalIdeal
 
