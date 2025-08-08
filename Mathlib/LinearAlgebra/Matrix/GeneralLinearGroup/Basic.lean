@@ -53,9 +53,8 @@ theorem AlgEquiv.exists_generalLinearGroup_eq_conj
   · use 1
     ext a i _
     exact isEmpty_iff.mp hn i |>.elim
-  simp_rw [AlgEquiv.ext_iff, MulSemiringAction.toAlgAut_apply,
-    MulSemiringAction.toAlgEquiv_apply, HSMul.hSMul, SMul.smul, @eq_comm _ (f _),
-    Units.mul_inv_eq_iff_eq_mul, @eq_comm _ _ (f _ * _)]
+  simp_rw [AlgEquiv.ext_iff, MulSemiringAction.toAlgAut_apply, MulSemiringAction.toAlgEquiv_apply,
+    HSMul.hSMul, SMul.smul, @eq_comm _ (f _), Units.mul_inv_eq_iff_eq_mul, @eq_comm _ _ (f _ * _)]
   rw [not_isEmpty_iff] at hn
   have : ∃ u : n → R, u ≠ 0 := ⟨1, one_ne_zero⟩
   have t1 := this
