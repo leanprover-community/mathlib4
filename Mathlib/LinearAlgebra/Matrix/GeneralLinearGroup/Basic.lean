@@ -14,15 +14,6 @@ see `LinearAlgebra/Matrix/GeneralLinearGroup/Defs.lean`.
 
 namespace Matrix
 
-/-- The outer product of two non-zero vectors is nonzero. -/
-theorem vecMulVec_ne_zero {R n : Type*} [MulZeroClass R] [NoZeroDivisors R]
-    {α β : n → R} (hα : α ≠ 0) (hβ : β ≠ 0) :
-    vecMulVec α β ≠ 0 := by
-  obtain ⟨i, hiy⟩ := Function.ne_iff.mp hβ
-  obtain ⟨j, hju⟩ := Function.ne_iff.mp hα
-  simp [ne_eq, ← ext_iff, vecMulVec_apply]
-  exact ⟨⟨j, hju⟩, ⟨i, hiy⟩⟩
-
 variable {R n : Type*} [Fintype n] [DecidableEq n]
 
 private def mat_T [Semiring R] (f : (Matrix n n R) →ₗ[R] Matrix n n R) (y z : n → R) :
@@ -72,7 +63,8 @@ theorem AlgEquiv.exists_generalLinearGroup_eq_mulLeftRight_inv
       rwa [← LinearMap.toMatrix'_toLin' (f _), EmbeddingLike.map_eq_zero_iff,
         LinearMap.ext_iff] at this
     rw [← ne_eq, EmbeddingLike.map_ne_zero_iff]
-    exact vecMulVec_ne_zero hu hy
+    simp [← ext_iff, vecMulVec_apply]
+    exact ⟨Function.ne_iff.mp hu, Function.ne_iff.mp hy⟩
   obtain ⟨z, hz⟩ := this
   let T := mat_T f.toLinearMap y z
   let M := T.toMatrix'
