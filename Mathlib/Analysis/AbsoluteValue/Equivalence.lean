@@ -65,18 +65,19 @@ variable {F S : Type*} [Field F] [Field S] [LinearOrder S] [IsStrictOrderedRing 
   {v w : AbsoluteValue F S}
 
 open Filter in
-theorem lt_one_iff_of_lt_one_imp [Archimedean S] [TopologicalSpace S] [OrderTopology S]
+theorem abv_lt_one_iff_of_abv_lt_one_imp [Archimedean S] [TopologicalSpace S] [OrderTopology S]
     (hv : v.IsNontrivial) (h : ∀ x, v x < 1 → w x < 1) {a : F} :
     v a < 1 ↔ w a < 1:= by
   let ⟨x₀, hx₀⟩ := hv.exists_abv_lt_one
-  refine ⟨h a, fun hw => ?_⟩
+  refine ⟨h a, fun hw ↦ ?_⟩
   by_contra! hv
-  have (n : ℕ) : w x₀ < w a ^ n := (mul_one_div_pow_lt_iff _ (pos_of_pos w (by linarith))).1 <|
-    h _ ((mul_one_div_pow_lt_iff _ (by linarith)).2 (lt_of_lt_of_le hx₀.2 <| one_le_pow₀ hv))
-  have hcontr : atTop.Tendsto (fun (_ : ℕ) => w x₀) (𝓝 0) := by
+  have (n : ℕ) : w x₀ < w a ^ n :=
+    (mul_one_div_pow_lt_iff _ (abv_pos_of_abv_pos w (by linarith))).1 <|
+      h _ ((mul_one_div_pow_lt_iff _ (by linarith)).2 (lt_of_lt_of_le hx₀.2 <| one_le_pow₀ hv))
+  have hcontr : atTop.Tendsto (fun (_ : ℕ) ↦ w x₀) (𝓝 0) := by
     let hwn := tendsto_pow_atTop_nhds_zero_iff.2 <| by convert abs_eq_self.2 (w.nonneg _) ▸ hw
     exact tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds hwn
-      (Eventually.of_forall fun _ => w.nonneg x₀) (by simpa using ⟨1, fun n _ => le_of_lt (this n)⟩)
+      (Eventually.of_forall fun _ ↦ w.nonneg x₀) (by simpa using ⟨1, fun n _ ↦ le_of_lt (this n)⟩)
   linarith [tendsto_nhds_unique hcontr tendsto_const_nhds, w.pos hx₀.1]
 
 /--
@@ -84,15 +85,15 @@ If $v$ and $w$ are two real absolute values on a field $F$, $v$ is non-trivial, 
 and only if $w(x) < 1$, then $\frac{\log (v(a))}{\log (w(a))}$ is constant for all $a ∈ F$
 with $1 < v(a)$.
 -/
-theorem log_div_image_eq_singleton_of_le_one_iff {v w : AbsoluteValue F ℝ} (hv : v.IsNontrivial)
+theorem log_div_image_eq_singleton_of_abv_lt_one_iff {v w : AbsoluteValue F ℝ} (hv : v.IsNontrivial)
     (h : ∀ x, v x < 1 ↔ w x < 1) :
-    let f : F → ℝ := fun a => Real.log (v a) / Real.log (w a)
+    let f : F → ℝ := fun a ↦ Real.log (v a) / Real.log (w a)
     ∃ (a : F) (_ : 1 < v a), ∀ (b : F) (_ : 1 < v b), f b = f a := by
   obtain ⟨a, ha⟩ := hv.exists_abv_gt_one
-  refine ⟨a, ha, fun b hb₁ => ?_⟩
+  refine ⟨a, ha, fun b hb₁ ↦ ?_⟩
   by_contra! hb₂
-  wlog hwlog : Real.log (v b) / Real.log (w b) < Real.log (v a) / Real.log (w a) generalizing a b
-  · exact this b hb₁ a ha hb₂.symm <| lt_of_le_of_ne (not_lt.1 hwlog) hb₂.symm
+  wlog h_lt : Real.log (v b) / Real.log (w b) < Real.log (v a) / Real.log (w a) generalizing a b
+  · exact this b hb₁ a ha hb₂.symm <| lt_of_le_of_ne (not_lt.1 h_lt) hb₂.symm
   have : Real.log (v b) / Real.log (v a) < Real.log (w b) / Real.log (w a) := by
     have hwa := Real.log_pos <| (one_lt_iff_of_lt_one_iff h _).1 ha
     have hwb := Real.log_pos <| (one_lt_iff_of_lt_one_iff h _).1 hb₁
@@ -114,16 +115,16 @@ theorem log_div_image_eq_singleton_of_le_one_iff {v w : AbsoluteValue F ℝ} (hv
       Real.log_lt_log_iff (zpow_pos (by linarith) _)
       (pow_pos (by linarith [(one_lt_iff_of_lt_one_iff h _).1 hb₁]) _),
       ← one_lt_div (zpow_pos (by linarith) _), ← map_pow, ← map_zpow₀, ← map_div₀] at this
-  exact not_lt_of_lt ((h _).1 h₀) h₁
+  exact not_lt_of_gt ((h _).1 h₀) h₁
 
-theorem exists_rpow_of_one_lt {v w : AbsoluteValue F ℝ} (hv : v.IsNontrivial)
+theorem exists_rpow_of_abv_one_lt_iff {v w : AbsoluteValue F ℝ} (hv : v.IsNontrivial)
     (h : ∀ x, v x < 1 ↔ w x < 1) :
     ∃ (t : ℝ) (_ : 0 < t), ∀ x, 1 < v x → w x ^ t = v x := by
-  obtain ⟨a, ha, hlog⟩ := log_div_image_eq_singleton_of_le_one_iff hv h
+  obtain ⟨a, ha, hlog⟩ := log_div_image_eq_singleton_of_abv_lt_one_iff hv h
   refine ⟨Real.log (v a) / Real.log (w a),
-    div_pos (Real.log_pos ha) (Real.log_pos ((one_lt_iff_of_lt_one_iff h a).1 ha)), fun b hb => ?_⟩
+    div_pos (Real.log_pos ha) (Real.log_pos ((one_lt_iff_of_lt_one_iff h a).1 ha)), fun b hb ↦ ?_⟩
   simp_rw [← hlog b hb]
-  letI := (one_lt_iff_of_lt_one_iff h b).1 hb
+  have := (one_lt_iff_of_lt_one_iff h b).1 hb
   rw [div_eq_inv_mul, Real.rpow_mul (w.nonneg _), Real.rpow_inv_log (by linarith) (by linarith),
     Real.exp_one_rpow, Real.exp_log (by linarith)]
 
@@ -132,11 +133,11 @@ open Real in
 If $v$ and $w$ be two real absolute values on a field $F$, where $v$ is non-trivial, then $v$ and
 $w$ are equivalent if and only if $v(x) < 1$ exactly when $w(x) < 1$.
 -/
-theorem isEquiv_iff_lt_one_iff {v : AbsoluteValue F ℝ} (w : AbsoluteValue F ℝ)
+theorem isEquiv_iff_abv_lt_one_iff {v : AbsoluteValue F ℝ} (w : AbsoluteValue F ℝ)
     (hv : v.IsNontrivial) : w.IsEquiv v ↔ (∀ x, v x < 1 ↔ w x < 1) := by
-  refine ⟨fun ⟨t, ht, h⟩ x => h ▸ (Real.rpow_lt_one_iff' (w.nonneg x) ht), fun h => ?_⟩
-  obtain ⟨t, ht, hsuff⟩ := exists_rpow_of_one_lt hv h
-  refine ⟨t, ht, funext fun x => ?_⟩
+  refine ⟨fun ⟨t, ht, h⟩ x ↦ h ▸ (Real.rpow_lt_one_iff' (w.nonneg x) ht), fun h ↦ ?_⟩
+  obtain ⟨t, ht, hsuff⟩ := exists_rpow_of_abv_one_lt_iff hv h
+  refine ⟨t, ht, funext fun x ↦ ?_⟩
   by_cases h₀ : v x = 0
   · rw [(map_eq_zero v).1 h₀, map_zero, map_zero, zero_rpow (by linarith)]
   · by_cases h₁ : v x = 1
@@ -153,23 +154,22 @@ theorem isEquiv_iff_lt_one_iff {v : AbsoluteValue F ℝ} (w : AbsoluteValue F �
 If $v$ and $w$ are inequivalent absolute values and $v$ is non-trivial, then we can find an $a ∈ F$
 such that $v(a) < 1$ while $1 ≤ w(a)$.
 -/
-theorem exists_lt_one_one_le_of_not_isEquiv {v w : AbsoluteValue F ℝ} (hv : v.IsNontrivial)
+theorem exists_abv_lt_one_abv_one_le_of_not_isEquiv {v w : AbsoluteValue F ℝ} (hv : v.IsNontrivial)
     (h : ¬w.IsEquiv v) :
     ∃ a : F, v a < 1 ∧ 1 ≤ w a := by
   contrapose! h
-  exact isEquiv_iff_lt_one_iff _ hv |>.2 <| fun  _ => lt_one_iff_of_lt_one_imp hv h
+  exact isEquiv_iff_abv_lt_one_iff _ hv |>.2 <| fun  _ ↦ abv_lt_one_iff_of_abv_lt_one_imp hv h
 
 /--
 If $v$ and $w$ are two non-trivial and inequivalent absolute values then
 we can find an $a ∈ K$ such that $1 < v a$ while $w a < 1$.
 -/
-theorem exists_one_lt_lt_one_of_not_isEquiv {v w : AbsoluteValue F ℝ} (hv : v.IsNontrivial)
+theorem exists_abv_one_lt_abv_lt_one_of_not_isEquiv {v w : AbsoluteValue F ℝ} (hv : v.IsNontrivial)
     (hw : w.IsNontrivial) (h : ¬w.IsEquiv v) :
     ∃ a : F, 1 < v a ∧ w a < 1 := by
-  let ⟨a, ha⟩ := exists_lt_one_one_le_of_not_isEquiv hv h
-  let ⟨b, hb⟩ := exists_lt_one_one_le_of_not_isEquiv hw (mt isEquiv_symm h)
-  refine ⟨b / a, ?_⟩
-  simpa using ⟨one_lt_div (pos_of_pos v (by linarith)) |>.2 (by linarith),
-    div_lt_one (by linarith) |>.2 (by linarith)⟩
+  let ⟨a, ha⟩ := exists_abv_lt_one_abv_one_le_of_not_isEquiv hv h
+  let ⟨b, hb⟩ := exists_abv_lt_one_abv_one_le_of_not_isEquiv hw (mt isEquiv_symm h)
+  exact ⟨b / a, by simpa using ⟨one_lt_div (abv_pos_of_abv_pos v (by linarith)) |>.2 (by linarith),
+    div_lt_one (by linarith) |>.2 (by linarith)⟩⟩
 
 end AbsoluteValue
