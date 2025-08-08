@@ -34,18 +34,18 @@ coefficients.
   naturals. Avoids having to provide `p ≠ 1` and other trivialities, along with translating between
   `Prime` and `Nat.Prime`.
 
+## TODO
+
+Derive results from the corresponding ones `Mathlib.Data.Nat.Factorization.Multiplicity`
+
 ## Tags
 
 Legendre, p-adic
 -/
 
-
-open Finset Nat
+open Finset
 
 namespace Nat
-
--- TODO: Would be nice to derive the results in multiplicity using theorems from
--- Mathlib.Data.Nat.Factorization.Multiplicity
 
 /-- The multiplicity of `m` in `n` is the number of positive natural numbers `i` such that `m ^ i`
 divides `n`. This set is expressed by filtering `Ico 1 b` where `b` is any bound greater than

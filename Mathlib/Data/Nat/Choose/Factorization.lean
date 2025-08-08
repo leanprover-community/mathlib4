@@ -3,10 +3,10 @@ Copyright (c) 2022 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey, Patrick Stevens, Thomas Browning
 -/
-import Mathlib.Data.Nat.Choose.Central
-import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Algebra.Order.Ring.GeomSum
+import Mathlib.Data.Nat.Choose.Central
 import Mathlib.Data.Nat.Digits.Lemmas
+import Mathlib.Data.Nat.Factorization.Basic
 
 /-!
 # Factorization of Binomial Coefficients
@@ -92,7 +92,7 @@ theorem factorization_factorial_le_div_pred {p : ℕ} (hp : p.Prime) (n : ℕ) :
   rw [factorization_factorial hp (Nat.lt_add_one (log p n))]
   exact Nat.geom_sum_Ico_le hp.two_le _ _
 
-private lemma multiplicity_choose_aux {p n b k : ℕ} (hp : p.Prime) (hkn : k ≤ n) :
+lemma multiplicity_choose_aux {p n b k : ℕ} (hp : p.Prime) (hkn : k ≤ n) :
     ∑ i ∈ Finset.Ico 1 b, n / p ^ i =
       ((∑ i ∈ Finset.Ico 1 b, k / p ^ i) + ∑ i ∈ Finset.Ico 1 b, (n - k) / p ^ i) +
         #{i ∈ Ico 1 b | p ^ i ≤ k % p ^ i + (n - k) % p ^ i} :=
