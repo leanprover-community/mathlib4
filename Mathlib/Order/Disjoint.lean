@@ -208,8 +208,6 @@ def Codisjoint (a b : α) : Prop :=
 theorem codisjoint_comm : Codisjoint a b ↔ Codisjoint b a :=
   forall_congr' fun _ ↦ forall_swap
 
-@[deprecated (since := "2024-11-23")] alias Codisjoint_comm := codisjoint_comm
-
 @[symm]
 theorem Codisjoint.symm ⦃a b : α⦄ : Codisjoint a b → Codisjoint b a :=
   codisjoint_comm.1
@@ -598,7 +596,9 @@ lemma complementedLattice_iff (α) [Lattice α] [BoundedOrder α] :
 
 export ComplementedLattice (exists_isCompl)
 
-instance Subsingleton.instComplementedLattice
+-- This was previously a global instance,
+-- but it doesn't appear to be used and has been implicated in slow typeclass resolutions.
+lemma Subsingleton.instComplementedLattice
     [Lattice α] [BoundedOrder α] [Subsingleton α] : ComplementedLattice α := by
   refine ⟨fun a ↦ ⟨⊥, disjoint_bot_right, ?_⟩⟩
   rw [Subsingleton.elim ⊥ ⊤]

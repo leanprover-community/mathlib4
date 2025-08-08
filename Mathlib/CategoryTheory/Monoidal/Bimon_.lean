@@ -38,10 +38,10 @@ A bimonoid object in a braided category `C` is a object that is simultaneously m
 objects, and structure morphisms of them satisfy appropriate consistency conditions.
 -/
 class Bimon_Class (M : C) extends Mon_Class M, Comon_Class M where
-  mul_comul (M) : μ[M] ≫ Δ[M] = (Δ[M] ⊗ₘ Δ[M]) ≫ tensorμ M M M M ≫ (μ[M] ⊗ₘ μ[M]) := by aesop_cat
-  one_comul (M) : η[M] ≫ Δ[M] = η[M ⊗ M] := by aesop_cat
-  mul_counit (M) : μ[M] ≫ ε[M] = ε[M ⊗ M] := by aesop_cat
-  one_counit (M) : η[M] ≫ ε[M] = 𝟙 (𝟙_ C) := by aesop_cat
+  mul_comul (M) : μ[M] ≫ Δ[M] = (Δ[M] ⊗ₘ Δ[M]) ≫ tensorμ M M M M ≫ (μ[M] ⊗ₘ μ[M]) := by cat_disch
+  one_comul (M) : η[M] ≫ Δ[M] = η[M ⊗ M] := by cat_disch
+  mul_counit (M) : μ[M] ≫ ε[M] = ε[M ⊗ M] := by cat_disch
+  one_counit (M) : η[M] ≫ ε[M] = 𝟙 (𝟙_ C) := by cat_disch
 
 namespace Bimon_Class
 
@@ -223,16 +223,10 @@ def trivial : Bimon_ C := Comon_.trivial (Mon_ C)
 def trivialTo (A : Bimon_ C) : trivial C ⟶ A :=
   .mk' (default : Mon_.trivial C ⟶ A.X)
 
-@[deprecated (since := "2024-12-07")] alias trivial_to := trivialTo
-@[deprecated (since := "2024-12-07")] alias trivial_to_hom := trivialTo_hom
-
 /-- The bimonoid morphism from any bimonoid to the trivial bimonoid. -/
 @[simps!]
 def toTrivial (A : Bimon_ C) : A ⟶ trivial C :=
   (default : @Quiver.Hom (Comon_ (Mon_ C)) _ A (Comon_.trivial (Mon_ C)))
-
-@[deprecated (since := "2024-12-07")] alias to_trivial := toTrivial
-@[deprecated (since := "2024-12-07")] alias to_trivial_hom := toTrivial_hom
 
 /-! # Additional lemmas -/
 
