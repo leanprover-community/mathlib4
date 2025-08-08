@@ -907,9 +907,19 @@ theorem cardFactors_multiset_prod {s : Multiset ℕ} (h0 : s.prod ≠ 0) :
 theorem cardFactors_apply_prime {p : ℕ} (hp : p.Prime) : Ω p = 1 :=
   cardFactors_eq_one_iff_prime.2 hp
 
+lemma cardFactors_pow {m k : ℕ} : Ω (m ^ k) = k * Ω m := by
+  by_cases hm : m = 0
+  · subst hm
+    cases k <;> simp
+  induction k with
+  | zero => simp
+  | succ n ih =>
+    rw [pow_succ, cardFactors_mul (pow_ne_zero n hm) hm, ih]
+    ring
+
 @[simp]
 theorem cardFactors_apply_prime_pow {p k : ℕ} (hp : p.Prime) : Ω (p ^ k) = k := by
-  rw [cardFactors_apply, hp.primeFactorsList_pow, List.length_replicate]
+  simp [cardFactors_pow, hp]
 
 /-- `ω n` is the number of distinct prime factors of `n`. -/
 def cardDistinctFactors : ArithmeticFunction ℕ :=
@@ -985,7 +995,7 @@ theorem moebius_eq_or (n : ℕ) : μ n = 0 ∨ μ n = 1 ∨ μ n = -1 := by
 
 theorem moebius_ne_zero_iff_eq_or {n : ℕ} : μ n ≠ 0 ↔ μ n = 1 ∨ μ n = -1 := by
   have := moebius_eq_or n
-  aesop
+  omega
 
 theorem moebius_sq_eq_one_of_squarefree {l : ℕ} (hl : Squarefree l) : μ l ^ 2 = 1 := by
   rw [moebius_apply_of_squarefree hl, ← pow_mul, mul_comm, pow_mul, neg_one_sq, one_pow]
@@ -998,7 +1008,7 @@ theorem moebius_sq {n : ℕ} :
   split_ifs with h
   · exact moebius_sq_eq_one_of_squarefree h
   · simp only [moebius_eq_zero_of_not_squarefree h,
-      zero_pow (show 2 ≠ 0 by norm_num)]
+      zero_pow (show 2 ≠ 0 by simp)]
 
 theorem abs_moebius {n : ℕ} :
     |μ n| = if Squarefree n then 1 else 0 := by

@@ -118,6 +118,13 @@ theorem encard_union_eq (h : Disjoint s t) : (s ∪ t).encard = s.encard + t.enc
   classical
   simp [encard, ENat.card_congr (Equiv.Set.union h)]
 
+theorem encard_ne_add_one (a : α) :
+    ({x | x ≠ a}).encard + 1 = ENat.card α := by
+  have : Disjoint {x | x ≠ a} {a} := disjoint_singleton_right.mpr <| by simp
+  replace this := (Set.encard_union_eq this).symm
+  have aux : {x | x ≠ a} ∪ {a} = univ := by ext x; simp [eq_or_ne x a]
+  rwa [encard_singleton, aux, encard_univ] at this
+
 theorem encard_insert_of_notMem {a : α} (has : a ∉ s) : (insert a s).encard = s.encard + 1 := by
   rw [← union_singleton, encard_union_eq (by simpa), encard_singleton]
 
@@ -411,6 +418,10 @@ theorem _root_.Function.Injective.encard_image (hf : f.Injective) (s : Set α) :
     (f '' s).encard = s.encard :=
   hf.injOn.encard_image
 
+theorem _root_.Function.Injective.encard_range (hf : f.Injective) :
+    ENat.card α ≤ (range f).encard := by
+  rw [← image_univ, hf.encard_image, encard_univ]
+
 theorem _root_.Function.Embedding.encard_le (e : s ↪ t) : s.encard ≤ t.encard := by
   rw [← encard_univ_coe, ← e.injective.encard_image, ← Subtype.coe_injective.encard_image]
   exact encard_mono (by simp)
@@ -480,6 +491,18 @@ theorem Finite.exists_bijOn_of_encard_eq [Nonempty β] (hs : s.Finite) (h : s.en
   convert hinj.bijOn_image
   rw [(hs.image f).eq_of_subset_of_encard_le (image_subset_iff.mpr hf)
     (h.symm.trans hinj.encard_image.symm).le]
+
+/-- A version of the pigeonhole principle for `Set`s rather than `Finset`s.
+
+See also `Finset.exists_ne_map_eq_of_card_lt_of_maps_to` and
+`Set.exists_ne_map_eq_of_ncard_lt_of_maps_to`. -/
+lemma exists_ne_map_eq_of_encard_lt_of_maps_to (hc : t.encard < s.encard) (hf : MapsTo f s t) :
+    ∃ᵉ (a₁ ∈ s) (a₂ ∈ s), a₁ ≠ a₂ ∧ f a₁ = f a₂ := by
+  contrapose! hc
+  suffices Function.Injective (hf.restrict f) by
+    let f' : s ↪ t := ⟨hf.restrict, this⟩
+    exact f'.encard_le
+  simpa only [hf.restrict_inj, not_imp_not] using hc
 
 end Function
 
@@ -782,6 +805,10 @@ theorem ncard_le_ncard_of_injOn {t : Set β} (f : α → β) (hf : ∀ a ∈ s, 
   have hle := encard_le_encard_of_injOn hf f_inj
   to_encard_tac; rwa [ht.cast_ncard_eq, (ht.finite_of_encard_le hle).cast_ncard_eq]
 
+/-- A version of the pigeonhole principle for `Set`s rather than `Finset`s.
+
+See also `Finset.exists_ne_map_eq_of_card_lt_of_maps_to` and
+`Set.exists_ne_map_eq_of_encard_lt_of_maps_to`. -/
 theorem exists_ne_map_eq_of_ncard_lt_of_maps_to {t : Set β} (hc : t.ncard < s.ncard) {f : α → β}
     (hf : ∀ a ∈ s, f a ∈ t) (ht : t.Finite := by toFinite_tac) :
     ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ f x = f y := by
@@ -897,7 +924,7 @@ theorem le_ncard_diff (s t : Set α) (hs : s.Finite := by toFinite_tac) :
   tsub_le_iff_left.mpr (by rw [add_comm]; apply ncard_le_ncard_diff_add_ncard _ _ hs)
 
 theorem ncard_diff_add_ncard (s t : Set α) (hs : s.Finite := by toFinite_tac)
-  (ht : t.Finite := by toFinite_tac) :
+    (ht : t.Finite := by toFinite_tac) :
     (s \ t).ncard + t.ncard = (s ∪ t).ncard := by
   rw [← ncard_union_eq disjoint_sdiff_left hs.diff ht, diff_union_self]
 
@@ -1037,10 +1064,7 @@ theorem ncard_le_one_iff_eq (hs : s.Finite := by toFinite_tac) :
   · exact iff_of_true (by simp) (Or.inl rfl)
   rw [ncard_le_one_iff hs]
   refine ⟨fun h ↦ Or.inr ⟨x, (singleton_subset_iff.mpr hx).antisymm' fun y hy ↦ h hy hx⟩, ?_⟩
-  rintro (rfl | ⟨a, rfl⟩)
-  · exact (notMem_empty _ hx).elim
-  simp_rw [mem_singleton_iff] at hx ⊢; subst hx
-  simp only [forall_eq_apply_imp_iff, imp_self, implies_true]
+  grind [Set.mem_empty_iff_false, Set.mem_singleton_iff]
 
 theorem ncard_le_one_iff_subset_singleton [Nonempty α]
     (hs : s.Finite := by toFinite_tac) :
