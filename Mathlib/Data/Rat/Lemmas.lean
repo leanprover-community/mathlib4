@@ -107,11 +107,11 @@ theorem num_mul_num_eq_num_mul_gcd (q₁ q₂ : ℚ) :
 
 theorem mul_self_num (q : ℚ) : (q * q).num = q.num * q.num := by
   rw [mul_num, Int.natAbs_mul, Nat.Coprime.gcd_eq_one, Int.ofNat_one, Int.ediv_one]
-  exact (q.reduced.mul_right q.reduced).mul (q.reduced.mul_right q.reduced)
+  exact (q.reduced.mul_right q.reduced).mul_left (q.reduced.mul_right q.reduced)
 
 theorem mul_self_den (q : ℚ) : (q * q).den = q.den * q.den := by
   rw [Rat.mul_den, Int.natAbs_mul, Nat.Coprime.gcd_eq_one, Nat.div_one]
-  exact (q.reduced.mul_right q.reduced).mul (q.reduced.mul_right q.reduced)
+  exact (q.reduced.mul_right q.reduced).mul_left (q.reduced.mul_right q.reduced)
 
 theorem add_num_den (q r : ℚ) :
     q + r = (q.num * r.den + q.den * r.num : ℤ) /. (↑q.den * ↑r.den : ℤ) := by
