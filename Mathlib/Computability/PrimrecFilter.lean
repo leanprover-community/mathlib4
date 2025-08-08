@@ -88,9 +88,7 @@ lemma filterExists (hf : PrimrecRel f) : PrimrecRel fun (L : List α) b ↦ ∃ 
   have h (L) (b) : (filter (f · b) L).length ≠ 0 ↔ ∃ a ∈ L, f a b := by simp
   apply of_eq ?_ h
   apply PrimrecPred.not (comp Primrec.eq (Primrec.comp list_length ?_) (const 0))
-  have h1 := Primrec₂.listFilter hf
-  unfold Primrec₂ at h1
-  simp only [h1]
+  exact Primrec₂.listFilter hf
 
 /-- If `f a b` is decidable, then given `L : List α` and `b : β`, `"g L b ↔ ∀ a L, f a b"`
 is a primitive recursive relation. -/
@@ -98,23 +96,19 @@ lemma filterForall (hf : PrimrecRel f) : PrimrecRel fun (L : List α) b ↦ ∀ 
   have h (L) (b) : (filter (f · b) L).length = L.length ↔ ∀ a ∈ L, f a b := by simp
   apply of_eq ?_ h
   apply comp Primrec.eq (Primrec.comp list_length ?_) (Primrec.comp list_length fst)
-  have h1 := Primrec₂.listFilter hf
-  unfold Primrec₂ at h1
-  simp only [h1]
+  exact Primrec₂.listFilter hf
 
 variable {f : ℕ → ℕ → Prop} [DecidableRel f]
 
 /-- If `f a b` is decidable, then for any fixed `n` and `y`,  `"g n y ↔ ∃ x < n, f x y"` is a
 primitive recursive relation. -/
-lemma exists_lt (hf : PrimrecRel f) : PrimrecRel fun n y ↦ ∃ x < n, f x y := by
-  have h := comp (filterExists hf) (Primrec.comp list_range fst) snd
-  exact PrimrecPred.of_eq h (by simp)
+lemma exists_lt (hf : PrimrecRel f) : PrimrecRel fun n y ↦ ∃ x < n, f x y :=
+  PrimrecPred.of_eq (comp (filterExists hf) (Primrec.comp list_range fst) snd) (by simp)
 
 /-- If `f a b` is decidable, then for any fixed `n` and `y`,  `"g n y ↔ ∀ x < n, f x y"` is a
 primitive recursive relation. -/
-lemma forall_lt (hf : PrimrecRel f) : PrimrecRel fun n y ↦ ∀ x < n, f x y := by
-  have h := comp (filterForall hf) (Primrec.comp list_range fst) snd
-  exact PrimrecPred.of_eq h (by simp)
+lemma forall_lt (hf : PrimrecRel f) : PrimrecRel fun n y ↦ ∀ x < n, f x y :=
+  PrimrecPred.of_eq (comp (filterForall hf) (Primrec.comp list_range fst) snd) (by simp)
 
 end PrimrecRel
 
@@ -125,8 +119,7 @@ lemma nat_rel_list_filter {f : ℕ → ℕ → Prop} (s : ℕ) [DecidableRel f] 
     Primrec fun n ↦ (range s).filter (fun y ↦ f y n) := by
   simp only [Eq.symm (filterMap_ite (range s) fun a ↦ f a _)]
   refine listFilterMap (.const (range s)) ?_
-  refine ite ?_ (option_some_iff.mpr snd) (.const Option.none)
-  exact PrimrecRel.comp hf snd fst
+  refine ite (PrimrecRel.comp hf snd fst) (option_some_iff.mpr snd) (.const Option.none)
 
 end Primrec
 
