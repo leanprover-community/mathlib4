@@ -1084,7 +1084,7 @@ theorem moebius_mul_coe_zeta : (μ * ζ : ArithmeticFunction ℤ) = 1 := by
     rw [Ne, pow_eq_one_iff]
     · exact hp.ne_one
     · exact hn.ne'
-  | mul a b _ha _hb hab ha' hb' =>
+  | coprime a b _ha _hb hab ha' hb' =>
     rw [IsMultiplicative.map_mul_of_coprime _ hab, ha', hb',
       IsMultiplicative.map_mul_of_coprime isMultiplicative_one hab]
     exact isMultiplicative_moebius.mul isMultiplicative_zeta.natCast
