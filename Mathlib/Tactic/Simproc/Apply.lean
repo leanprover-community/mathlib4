@@ -19,9 +19,9 @@ open Lean Elab Tactic
 /-- Execute the given `Simproc` on the goal. -/
 def Lean.Meta.Simp.Simproc.apply (s : Simproc) : TacticM Unit := do
   liftMetaTactic1 fun e ↦ do
-    -- `Simproc` usually does not allow arguments and can only be referred to by name, so we
-    -- hijacked `Simp.mainCore` to accept any `Simproc` term (i.e. not just a name), so that
-    -- a `Simproc` can accept arguments (by constructing a term of type `something -> Simproc`).
+    -- We cannot pass a `Simproc` object into `simp`, because `simp` only accepts names of global
+    -- constants. However, the core part of `simp`, i.e. `Simp.mainCore`, actually allows `Simproc`s
+    -- to be executed, so this code calls `Simp.mainCore` directly.
     let target ← instantiateMVars (← e.getType)
     let ctx ← Simp.mkContext (simpTheorems := #[])
     let (r, _) ← Simp.mainCore target ctx (methods := {post := s})
