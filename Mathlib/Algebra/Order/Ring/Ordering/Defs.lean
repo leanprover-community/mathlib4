@@ -90,7 +90,7 @@ theorem mem_toSubsemiring {P : RingPreordering R} {x : R} : x ∈ P.toSubsemirin
 theorem coe_toSubsemiring (P : RingPreordering R) : (P.toSubsemiring : Set R) = P := rfl
 
 @[simp]
-theorem mem_mk {toSubsemiring : Subsemiring R} (mem_of_isSquare) (neg_one_notMem) {x : R} :
+theorem mem_mk {toSubsemiring : Subsemiring R} (mem_of_isSquare neg_one_notMem) {x : R} :
     x ∈ mk toSubsemiring mem_of_isSquare neg_one_notMem ↔ x ∈ toSubsemiring := .rfl
 
 @[simp]
