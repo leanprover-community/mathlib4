@@ -289,6 +289,10 @@ variable [AddMonoid M]
 unless `F i`'s addition is commutative. -/
 instance instNatSMul : SMul ℕ (ι →₀ M) where smul n v := v.mapRange (n • ·) (nsmul_zero _)
 
+@[simp, norm_cast] lemma coe_nsmul (n : ℕ) (f : ι →₀ M) : ⇑(n • f) = n • ⇑f := rfl
+
+lemma nsmul_apply (n : ℕ) (f : ι →₀ M) (x : ι) : (n • f) x = n • f x := rfl
+
 instance instAddMonoid : AddMonoid (ι →₀ M) :=
   fast_instance% DFunLike.coe_injective.addMonoid _ coe_zero coe_add fun _ _ => rfl
 
