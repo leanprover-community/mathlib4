@@ -574,19 +574,19 @@ def barMul {β : Type} [Mul β] (x y : β) : β := fooMul instAddNat x y
 @[to_additive /-- (via `docComment` syntax) I am an additive docstring! -/]
 theorem mulTrivial : True := trivial
 
-@[to_additive "(via `str` syntax) I am an additive docstring!"]
-theorem mulTrivial' : True := trivial
-
-/--
-info: (via `docComment` syntax) I am an additive docstring! ⏎
----
-info: (via `str` syntax) I am an additive docstring!
--/
+/-- info: (via `docComment` syntax) I am an additive docstring! -/
 #guard_msgs in
 run_cmd
   let some doc  ← findDocString? (← getEnv) `addTrivial
     | throwError "no `docComment` docstring found"
-  let some doc' ← findDocString? (← getEnv) `addTrivial'
+  logInfo doc
+
+@[to_additive "(via `str` syntax) I am an additive docstring!"]
+theorem mulTrivial' : True := trivial
+
+/-- info: (via `str` syntax) I am an additive docstring! -/
+#guard_msgs in
+run_cmd
+  let some doc ← findDocString? (← getEnv) `addTrivial'
     | throwError "no `str` docstring found"
   logInfo doc
-  logInfo doc'
