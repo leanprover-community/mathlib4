@@ -157,6 +157,16 @@ theorem IsEquivalent.sub_isLittleO (huv : u ~[l] v) (hwv : w =o[l] v) : u - w ~[
 theorem IsLittleO.add_isEquivalent (hu : u =o[l] w) (hv : v ~[l] w) : u + v ~[l] w :=
   add_comm v u ▸ hv.add_isLittleO hu
 
+theorem IsEquivalent.add_const_of_norm_tendsto_atTop {c : β}
+    (huv : u ~[l] v) (hv : Tendsto (norm ∘ v) l atTop) :
+    (u · + c) ~[l] v :=
+  huv.add_isLittleO <| isLittleO_const_left.mpr (Or.inr hv)
+
+theorem IsEquivalent.const_add_of_norm_tendsto_atTop {c : β}
+    (huv : u ~[l] v) (hv : Tendsto (norm ∘ v) l atTop) :
+    (c + u ·) ~[l] v :=
+  (isLittleO_const_left.mpr (Or.inr hv)).add_isEquivalent huv
+
 theorem IsLittleO.isEquivalent (huv : (u - v) =o[l] v) : u ~[l] v := huv
 
 theorem IsEquivalent.neg (huv : u ~[l] v) : (fun x ↦ -u x) ~[l] fun x ↦ -v x := by
@@ -323,6 +333,18 @@ theorem IsEquivalent.tendsto_atBot_iff [OrderTopology β] (huv : u ~[l] v) :
   ⟨huv.tendsto_atBot, huv.symm.tendsto_atBot⟩
 
 end NormedLinearOrderedField
+
+section Real
+
+theorem IsEquivalent.add_add_of_nonneg {α : Type*} {u v t w : α → ℝ} {l : Filter α}
+    (hu : 0 ≤ v) (hw : 0 ≤ w) (htu : u ~[l] v) (hvw : t ~[l] w) :
+    u + t ~[l] v + w := by
+  simp only [IsEquivalent, add_sub_add_comm]
+  change (fun x ↦ (u - v) x + (t - w) x) =o[l] (fun x ↦ v x + w x)
+  conv => enter [3, x]; rw [← abs_eq_self.mpr (hu x), ← abs_eq_self.mpr (hw x)]
+  simpa [← Real.norm_eq_abs] using .add_add htu hvw
+
+end Real
 
 end Asymptotics
 
