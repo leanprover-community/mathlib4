@@ -49,23 +49,20 @@ namespace FirstOrder
 
 namespace Field
 
-open Ring FreeCommRing BigOperators Polynomial Language
+open Ring FreeCommRing Polynomial Language
 
 /-- A generic monic polynomial of degree `n` as an element of the
-free commutative ring in `n+1` variables, with a variable for each
+free commutative ring in `n + 1` variables, with a variable for each
 of the `n` non-leading coefficients of the polynomial and one variable (`Fin.last n`)
-for `X`.  -/
+for `X`. -/
 def genericMonicPoly (n : ℕ) : FreeCommRing (Fin (n + 1)) :=
   of (Fin.last _) ^ n + ∑ i : Fin n, of i.castSucc * of (Fin.last _) ^ (i : ℕ)
 
-theorem lift_genericMonicPoly [CommRing K] [Nontrivial K] {n : ℕ} (v : Fin (n+1) → K) :
+theorem lift_genericMonicPoly [CommRing K] [Nontrivial K] {n : ℕ} (v : Fin (n + 1) → K) :
     FreeCommRing.lift v (genericMonicPoly n) =
     (((monicEquivDegreeLT n).trans (degreeLTEquiv K n).toEquiv).symm (v ∘ Fin.castSucc)).1.eval
       (v (Fin.last _)) := by
-  simp only [genericMonicPoly, map_add, map_pow, lift_of, map_sum, map_mul, monicEquivDegreeLT,
-    degreeLTEquiv, Equiv.symm_trans_apply, LinearEquiv.coe_toEquiv_symm, EquivLike.coe_coe,
-    LinearEquiv.coe_symm_mk, Function.comp_apply, Equiv.coe_fn_symm_mk, eval_add, eval_pow, eval_X,
-    eval_finset_sum, eval_monomial]
+  simp [genericMonicPoly, monicEquivDegreeLT, degreeLTEquiv, eval_finset_sum]
 
 /-- A sentence saying every monic polynomial of degree `n` has a root. -/
 noncomputable def genericMonicPolyHasRoot (n : ℕ) : Language.ring.Sentence :=
@@ -90,8 +87,8 @@ instance [Language.ring.Structure K] (p : ℕ) [h : (Theory.ACF p).Model K] :
 instance [Field K] [CompatibleRing K] {p : ℕ} [CharP K p] [IsAlgClosed K] :
     (Theory.ACF p).Model K := by
   refine Theory.model_union_iff.2 ⟨inferInstance, ?_⟩
-  simp only [Theory.model_iff, Set.mem_image, Set.mem_singleton_iff,
-    exists_prop, forall_exists_index, and_imp]
+  simp only [Theory.model_iff, Set.mem_image,
+    forall_exists_index, and_imp]
   rintro _ n hn0 rfl
   simp only [realize_genericMonicPolyHasRoot]
   rintro ⟨p, _, rfl⟩
@@ -119,8 +116,8 @@ theorem isAlgClosed_of_model_ACF (p : ℕ) (K : Type*)
   intro p hpm hpi
   have h : K ⊨ genericMonicPolyHasRoot '' {n | 0 < n} :=
     Theory.Model.mono h (by simp [Theory.ACF])
-  simp only [Theory.model_iff, Set.mem_image, Set.mem_singleton_iff,
-    exists_prop, forall_exists_index, and_imp] at h
+  simp only [Theory.model_iff, Set.mem_image,
+    forall_exists_index, and_imp] at h
   have := h _ p.natDegree (natDegree_pos_iff_degree_pos.2
     (degree_pos_of_irreducible hpi)) rfl
   rw [realize_genericMonicPolyHasRoot] at this
@@ -146,10 +143,8 @@ theorem ACF_isSatisfiable {p : ℕ} (hp : p.Prime ∨ p = 0) :
 
 open Cardinal
 
-/-- The Theory `Theory.ACF p` is `κ`-categorical whenever `κ` is an uncountable cardinal.
-At the moment this is not as universe polymorphic as it could be,
-it currently requires `κ : Cardinal.{0}`, but it is true for any universe. -/
-theorem ACF_categorical {p : ℕ} (κ : Cardinal.{0}) (hκ : ℵ₀ < κ) :
+/-- The Theory `Theory.ACF p` is `κ`-categorical whenever `κ` is an uncountable cardinal. -/
+theorem ACF_categorical {p : ℕ} (κ : Cardinal) (hκ : ℵ₀ < κ) :
     Categorical κ (Theory.ACF p) := by
   rintro ⟨M⟩ ⟨N⟩ hM hN
   let _ := fieldOfModelACF p M
@@ -165,9 +160,9 @@ theorem ACF_categorical {p : ℕ} (κ : Cardinal.{0}) (hκ : ℵ₀ < κ) :
   constructor
   refine languageEquivEquivRingEquiv.symm ?_
   apply Classical.choice
-  refine IsAlgClosed.ringEquivOfCardinalEqOfCharEq p ?_ ?_
+  refine IsAlgClosed.ringEquiv_of_equiv_of_char_eq p ?_ ?_
   · rw [hM]; exact hκ
-  · rw [hM, hN]
+  · rw [← Cardinal.eq, hM, hN]
 
 theorem ACF_isComplete {p : ℕ} (hp : p.Prime ∨ p = 0) :
     (Theory.ACF p).IsComplete := by
@@ -208,12 +203,11 @@ theorem finite_ACF_prime_not_realize_of_ACF_zero_realize
       have := modelField_of_modelACF q K
       let _ := compatibleRingOfModelField K
       have := charP_of_model_fieldOfChar q K
-      simp only [eqZero, Term.equal, Term.relabel, BoundedFormula.realize_not,
-        BoundedFormula.realize_bdEqual, Term.realize_relabel, Sum.elim_comp_inl,
-        realize_termOfFreeCommRing, map_natCast, Term.realize_func, CompatibleRing.funMap_zero,
-        ne_eq, ← CharP.charP_iff_prime_eq_zero hp]
+      simp only [eqZero, Term.equal, BoundedFormula.realize_not, BoundedFormula.realize_bdEqual,
+        Term.realize_relabel, Sum.elim_comp_inl, realize_termOfFreeCommRing, map_natCast,
+        realize_zero, ← CharP.charP_iff_prime_eq_zero hp]
       intro _
-      exact hqp <| CharP.eq K inferInstance inferInstance
+      exact hqp <| CharP.eq K this inferInstance
   let s : Finset Nat.Primes := T0.attach.biUnion (fun φ => f φ.1 (hT0 φ.2))
   have hs : ∀ (p : Nat.Primes) ψ, ψ ∈ T0 → p ∉ s → Theory.ACF p ⊨ᵇ ψ := by
     intro p ψ hψ hpψ

@@ -1,9 +1,10 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Group.Hom.Defs
+import Mathlib.Algebra.Group.Pi.Basic
 
 /-!
 # Dependent-typed matrices
@@ -20,7 +21,7 @@ In most applications `m` and `n` are finite types. -/
 def DMatrix (m : Type u) (n : Type u') (α : m → n → Type v) : Type max u u' v :=
   ∀ i j, α i j
 
-variable {l m n o : Type*}
+variable {m n : Type*}
 variable {α : m → n → Type v}
 
 namespace DMatrix
@@ -49,7 +50,7 @@ theorem map_apply {M : DMatrix m n α} {β : m → n → Type w} {f : ∀ ⦃i j
 @[simp]
 theorem map_map {M : DMatrix m n α} {β : m → n → Type w} {γ : m → n → Type z}
     {f : ∀ ⦃i j⦄, α i j → β i j} {g : ∀ ⦃i j⦄, β i j → γ i j} :
-    (M.map f).map g = M.map fun i j x => g (f x) := by ext; simp
+    (M.map f).map g = M.map fun _ _ x => g (f x) := by ext; simp
 
 /-- The transpose of a dmatrix. -/
 def transpose (M : DMatrix m n α) : DMatrix n m fun j i => α i j
@@ -105,12 +106,7 @@ instance [∀ i j, Unique (α i j)] : Unique (DMatrix m n α) :=
 instance [∀ i j, Subsingleton (α i j)] : Subsingleton (DMatrix m n α) :=
   inferInstanceAs <| Subsingleton <| ∀ i j, α i j
 
-#adaptation_note
-/--
-After https://github.com/leanprover/lean4/pull/4481
-the `simpNF` linter incorrectly claims this lemma can't be applied by `simp`.
--/
-@[simp, nolint simpNF]
+@[simp]
 theorem zero_apply [∀ i j, Zero (α i j)] (i j) : (0 : DMatrix m n α) i j = 0 := rfl
 
 @[simp]

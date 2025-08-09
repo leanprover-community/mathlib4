@@ -3,8 +3,10 @@ Copyright (c) 2020 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou
 -/
-import Mathlib.Order.Interval.Set.Image
+import Mathlib.Data.Set.Order
 import Mathlib.Order.Bounds.Basic
+import Mathlib.Order.Interval.Set.Image
+import Mathlib.Order.Interval.Set.LinearOrder
 import Mathlib.Tactic.Common
 
 /-!
@@ -44,24 +46,29 @@ namespace Set
 
 section Lattice
 
-variable [Lattice α] [Lattice β] {a a₁ a₂ b b₁ b₂ c x : α}
+variable [Lattice α] [Lattice β] {a a₁ a₂ b b₁ b₂ x : α}
 
 /-- `uIcc a b` is the set of elements lying between `a` and `b`, with `a` and `b` included.
 Note that we define it more generally in a lattice as `Set.Icc (a ⊓ b) (a ⊔ b)`. In a product type,
 `uIcc` corresponds to the bounding box of the two elements. -/
 def uIcc (a b : α) : Set α := Icc (a ⊓ b) (a ⊔ b)
 
--- Porting note: temporarily remove `scoped[uIcc]` and use `[[]]` instead of `[]` before a
--- workaround is found.
--- Porting note 2 : now `scoped[Interval]` works again.
 /-- `[[a, b]]` denotes the set of elements lying between `a` and `b`, inclusive. -/
 scoped[Interval] notation "[[" a ", " b "]]" => Set.uIcc a b
 
 open Interval
 
-@[simp] lemma dual_uIcc (a b : α) : [[toDual a, toDual b]] = ofDual ⁻¹' [[a, b]] :=
-  -- Note: needed to hint `(α := α)` after #8386 (elaboration order?)
-  dual_Icc (α := α)
+@[simp]
+lemma uIcc_toDual (a b : α) : [[toDual a, toDual b]] = ofDual ⁻¹' [[a, b]] :=
+  -- Note: needed to hint `(α := α)` after https://github.com/leanprover-community/mathlib4/pull/8386 (elaboration order?)
+  Icc_toDual (α := α)
+
+@[deprecated (since := "2025-03-20")]
+alias dual_uIcc := uIcc_toDual
+
+@[simp]
+theorem uIcc_ofDual (a b : αᵒᵈ) : [[ofDual a, ofDual b]] = toDual ⁻¹' [[a, b]] :=
+  Icc_ofDual
 
 @[simp]
 lemma uIcc_of_le (h : a ≤ b) : [[a, b]] = Icc a b := by rw [uIcc, inf_eq_left.2 h, sup_eq_right.2 h]
@@ -74,8 +81,6 @@ lemma uIcc_comm (a b : α) : [[a, b]] = [[b, a]] := by simp_rw [uIcc, inf_comm, 
 lemma uIcc_of_lt (h : a < b) : [[a, b]] = Icc a b := uIcc_of_le h.le
 lemma uIcc_of_gt (h : b < a) : [[a, b]] = Icc b a := uIcc_of_ge h.le
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 lemma uIcc_self : [[a, a]] = {a} := by simp [uIcc]
 
 @[simp] lemma nonempty_uIcc : [[a, b]].Nonempty := nonempty_Icc.2 inf_le_sup
@@ -134,7 +139,7 @@ open Interval
 
 section DistribLattice
 
-variable [DistribLattice α] {a a₁ a₂ b b₁ b₂ c x : α}
+variable [DistribLattice α] {a b c : α}
 
 lemma eq_of_mem_uIcc_of_mem_uIcc (ha : a ∈ [[b, c]]) (hb : b ∈ [[a, c]]) : a = b :=
   eq_of_inf_eq_sup_eq (inf_congr_right ha.1 hb.1) <| sup_congr_right ha.2 hb.2
@@ -155,7 +160,7 @@ section LinearOrder
 variable [LinearOrder α]
 
 section Lattice
-variable [Lattice β] {f : α → β} {s : Set α} {a b : α}
+variable [Lattice β] {f : α → β} {a b : α}
 
 lemma _root_.MonotoneOn.mapsTo_uIcc (hf : MonotoneOn f (uIcc a b)) :
     MapsTo f (uIcc a b) (uIcc (f a) (f b)) := by
@@ -187,7 +192,7 @@ lemma _root_.Antitone.image_uIcc_subset (hf : Antitone f) : f '' uIcc a b ⊆ uI
 
 end Lattice
 
-variable [LinearOrder β] {f : α → β} {s : Set α} {a a₁ a₂ b b₁ b₂ c d x : α}
+variable [LinearOrder β] {f : α → β} {s : Set α} {a a₁ a₂ b b₁ b₂ c : α}
 
 theorem Icc_min_max : Icc (min a b) (max a b) = [[a, b]] :=
   rfl
@@ -199,11 +204,15 @@ lemma uIcc_eq_union : [[a, b]] = Icc a b ∪ Icc b a := by rw [Icc_union_Icc', m
 
 lemma mem_uIcc : a ∈ [[b, c]] ↔ b ≤ a ∧ a ≤ c ∨ c ≤ a ∧ a ≤ b := by simp [uIcc_eq_union]
 
-lemma not_mem_uIcc_of_lt (ha : c < a) (hb : c < b) : c ∉ [[a, b]] :=
-  not_mem_Icc_of_lt <| lt_min_iff.mpr ⟨ha, hb⟩
+lemma notMem_uIcc_of_lt (ha : c < a) (hb : c < b) : c ∉ [[a, b]] :=
+  notMem_Icc_of_lt <| lt_min_iff.mpr ⟨ha, hb⟩
 
-lemma not_mem_uIcc_of_gt (ha : a < c) (hb : b < c) : c ∉ [[a, b]] :=
-  not_mem_Icc_of_gt <| max_lt_iff.mpr ⟨ha, hb⟩
+@[deprecated (since := "2025-05-23")] alias not_mem_uIcc_of_lt := notMem_uIcc_of_lt
+
+lemma notMem_uIcc_of_gt (ha : a < c) (hb : b < c) : c ∉ [[a, b]] :=
+  notMem_Icc_of_gt <| max_lt_iff.mpr ⟨ha, hb⟩
+
+@[deprecated (since := "2025-05-23")] alias not_mem_uIcc_of_gt := notMem_uIcc_of_gt
 
 lemma uIcc_subset_uIcc_iff_le :
     [[a₁, b₁]] ⊆ [[a₂, b₂]] ↔ min a₂ b₂ ≤ min a₁ b₁ ∧ max a₁ b₁ ≤ max a₂ b₂ :=
@@ -222,26 +231,24 @@ lemma monotone_or_antitone_iff_uIcc :
   contrapose!
   rw [not_monotone_not_antitone_iff_exists_le_le]
   rintro ⟨a, b, c, hab, hbc, ⟨hfab, hfcb⟩ | ⟨hfba, hfbc⟩⟩
-  · exact ⟨a, c, b, Icc_subset_uIcc ⟨hab, hbc⟩, fun h => h.2.not_lt <| max_lt hfab hfcb⟩
-  · exact ⟨a, c, b, Icc_subset_uIcc ⟨hab, hbc⟩, fun h => h.1.not_lt <| lt_min hfba hfbc⟩
+  · exact ⟨a, c, b, Icc_subset_uIcc ⟨hab, hbc⟩, fun h => h.2.not_gt <| max_lt hfab hfcb⟩
+  · exact ⟨a, c, b, Icc_subset_uIcc ⟨hab, hbc⟩, fun h => h.1.not_gt <| lt_min hfba hfbc⟩
 
--- Porting note: mathport expands the syntactic sugar `∀ a b c ∈ s` differently than Lean3
 lemma monotoneOn_or_antitoneOn_iff_uIcc :
     MonotoneOn f s ∨ AntitoneOn f s ↔
       ∀ᵉ (a ∈ s) (b ∈ s) (c ∈ s), c ∈ [[a, b]] → f c ∈ [[f a, f b]] := by
   simp [monotoneOn_iff_monotone, antitoneOn_iff_antitone, monotone_or_antitone_iff_uIcc,
     mem_uIcc]
 
--- Porting note: what should the naming scheme be here? This is a term, so should be `uIoc`,
--- but we also want to match the `Ioc` convention.
 /-- The open-closed uIcc with unordered bounds. -/
 def uIoc : α → α → Set α := fun a b => Ioc (min a b) (max a b)
 
--- Porting note: removed `scoped[uIcc]` temporarily before a workaround is found
 -- Below is a capital iota
 /-- `Ι a b` denotes the open-closed interval with unordered bounds. Here, `Ι` is a capital iota,
 distinguished from a capital `i`. -/
-notation "Ι" => Set.uIoc
+scoped[Interval] notation "Ι" => Set.uIoc
+
+open scoped Interval
 
 @[simp] lemma uIoc_of_le (h : a ≤ b) : Ι a b = Ioc a b := by simp [uIoc, h]
 @[simp] lemma uIoc_of_ge (h : b ≤ a) : Ι a b = Ioc b a := by simp [uIoc, h]
@@ -252,9 +259,11 @@ lemma uIoc_eq_union : Ι a b = Ioc a b ∪ Ioc b a := by
 lemma mem_uIoc : a ∈ Ι b c ↔ b < a ∧ a ≤ c ∨ c < a ∧ a ≤ b := by
   rw [uIoc_eq_union, mem_union, mem_Ioc, mem_Ioc]
 
-lemma not_mem_uIoc : a ∉ Ι b c ↔ a ≤ b ∧ a ≤ c ∨ c < a ∧ b < a := by
-  simp only [uIoc_eq_union, mem_union, mem_Ioc, not_lt, ← not_le]
+lemma notMem_uIoc : a ∉ Ι b c ↔ a ≤ b ∧ a ≤ c ∨ c < a ∧ b < a := by
+  simp only [uIoc_eq_union, mem_union, mem_Ioc, ← not_le]
   tauto
+
+@[deprecated (since := "2025-05-23")] alias not_mem_uIoc := notMem_uIoc
 
 @[simp] lemma left_mem_uIoc : a ∈ Ι a b ↔ b < a := by simp [mem_uIoc]
 @[simp] lemma right_mem_uIoc : b ∈ Ι a b ↔ a < b := by simp [mem_uIoc]
@@ -276,35 +285,101 @@ lemma uIoc_subset_uIcc : Ι a b ⊆ uIcc a b := Ioc_subset_Icc_self
 
 lemma eq_of_mem_uIoc_of_mem_uIoc : a ∈ Ι b c → b ∈ Ι a c → a = b := by
   simp_rw [mem_uIoc]; rintro (⟨_, _⟩ | ⟨_, _⟩) (⟨_, _⟩ | ⟨_, _⟩) <;> apply le_antisymm <;>
-    first |assumption|exact le_of_lt ‹_›|exact le_trans ‹_› (le_of_lt ‹_›)
+    first | assumption | exact le_of_lt ‹_› | exact le_trans ‹_› (le_of_lt ‹_›)
 
 lemma eq_of_mem_uIoc_of_mem_uIoc' : b ∈ Ι a c → c ∈ Ι a b → b = c := by
   simpa only [uIoc_comm a] using eq_of_mem_uIoc_of_mem_uIoc
 
-lemma eq_of_not_mem_uIoc_of_not_mem_uIoc (ha : a ≤ c) (hb : b ≤ c) :
+lemma eq_of_notMem_uIoc_of_notMem_uIoc (ha : a ≤ c) (hb : b ≤ c) :
     a ∉ Ι b c → b ∉ Ι a c → a = b := by
-  simp_rw [not_mem_uIoc]
+  simp_rw [notMem_uIoc]
   rintro (⟨_, _⟩ | ⟨_, _⟩) (⟨_, _⟩ | ⟨_, _⟩) <;>
       apply le_antisymm <;>
-    first |assumption|exact le_of_lt ‹_›|
-    exact absurd hb (not_le_of_lt ‹c < b›)|exact absurd ha (not_le_of_lt ‹c < a›)
+    first | assumption | exact le_of_lt ‹_› |
+    exact absurd hb (not_le_of_gt ‹c < b›) | exact absurd ha (not_le_of_gt ‹c < a›)
+
+@[deprecated (since := "2025-05-23")]
+alias eq_of_not_mem_uIoc_of_not_mem_uIoc := eq_of_notMem_uIoc_of_notMem_uIoc
 
 lemma uIoc_injective_right (a : α) : Injective fun b => Ι b a := by
   rintro b c h
   rw [Set.ext_iff] at h
-  obtain ha | ha := le_or_lt b a
+  obtain ha | ha := le_or_gt b a
   · have hb := (h b).not
-    simp only [ha, left_mem_uIoc, not_lt, true_iff_iff, not_mem_uIoc, ← not_le,
-      and_true_iff, not_true, false_and_iff, not_false_iff, true_iff_iff, or_false_iff] at hb
+    simp only [ha, left_mem_uIoc, true_iff, notMem_uIoc, ← not_le,
+      and_true, not_true, false_and, not_false_iff, or_false] at hb
     refine hb.eq_of_not_lt fun hc => ?_
     simpa [ha, and_iff_right hc, ← @not_le _ _ _ a, iff_not_self, -not_le] using h c
   · refine
       eq_of_mem_uIoc_of_mem_uIoc ((h _).1 <| left_mem_uIoc.2 ha)
         ((h _).2 <| left_mem_uIoc.2 <| ha.trans_le ?_)
-    simpa [ha, ha.not_le, mem_uIoc] using h b
+    simpa [ha, ha.not_ge, mem_uIoc] using h b
 
 lemma uIoc_injective_left (a : α) : Injective (Ι a) := by
   simpa only [uIoc_comm] using uIoc_injective_right a
+
+lemma uIoc_union_uIoc (h : b ∈ [[a, c]]) : Ι a b ∪ Ι b c = Ι a c := by
+  wlog hac : a ≤ c generalizing a c
+  · rw [uIoc_comm, union_comm, uIoc_comm, this _ (le_of_not_ge hac), uIoc_comm]
+    rwa [uIcc_comm]
+  rw [uIcc_of_le hac] at h
+  rw [uIoc_of_le h.1, uIoc_of_le h.2, uIoc_of_le hac, Ioc_union_Ioc_eq_Ioc h.1 h.2]
+
+section uIoo
+
+/-- `uIoo a b` is the set of elements lying between `a` and `b`, with `a` and `b` not included.
+Note that we define it more generally in a lattice as `Set.Ioo (a ⊓ b) (a ⊔ b)`. In a product type,
+`uIoo` corresponds to the bounding box of the two elements. -/
+def uIoo (a b : α) : Set α := Ioo (a ⊓ b) (a ⊔ b)
+
+@[simp]
+lemma uIoo_toDual (a b : α) : uIoo (toDual a) (toDual b) = ofDual ⁻¹' uIoo a b :=
+  Ioo_toDual (α := α)
+
+@[deprecated (since := "2025-03-20")]
+alias dual_uIoo := uIoo_toDual
+
+@[simp]
+theorem uIoo_ofDual (a b : αᵒᵈ) : uIoo (ofDual a) (ofDual b) = toDual ⁻¹' uIoo a b :=
+  Ioo_ofDual
+
+@[simp] lemma uIoo_of_le (h : a ≤ b) : uIoo a b = Ioo a b := by
+  rw [uIoo, inf_eq_left.2 h, sup_eq_right.2 h]
+
+@[simp] lemma uIoo_of_ge (h : b ≤ a) : uIoo a b = Ioo b a := by
+  rw [uIoo, inf_eq_right.2 h, sup_eq_left.2 h]
+
+lemma uIoo_comm (a b : α) : uIoo a b = uIoo b a := by simp_rw [uIoo, inf_comm, sup_comm]
+
+lemma uIoo_of_lt (h : a < b) : uIoo a b = Ioo a b := uIoo_of_le h.le
+
+lemma uIoo_of_gt (h : b < a) : uIoo a b = Ioo b a := uIoo_of_ge h.le
+
+lemma uIoo_self : uIoo a a = ∅ := by simp [uIoo]
+
+lemma Ioo_subset_uIoo : Ioo a b ⊆ uIoo a b := Ioo_subset_Ioo inf_le_left le_sup_right
+
+/-- Same as `Ioo_subset_uIoo` but with `Ioo a b` replaced by `Ioo b a`. -/
+lemma Ioo_subset_uIoo' : Ioo b a ⊆ uIoo a b := Ioo_subset_Ioo inf_le_right le_sup_left
+
+variable {x : α}
+
+lemma mem_uIoo_of_lt (ha : a < x) (hb : x < b) : x ∈ uIoo a b := Ioo_subset_uIoo ⟨ha, hb⟩
+
+lemma mem_uIoo_of_gt (hb : b < x) (ha : x < a) : x ∈ uIoo a b := Ioo_subset_uIoo' ⟨hb, ha⟩
+
+variable {a b : α}
+
+theorem Ioo_min_max : Ioo (min a b) (max a b) = uIoo a b := rfl
+
+lemma uIoo_of_not_le (h : ¬a ≤ b) : uIoo a b = Ioo b a := uIoo_of_gt <| lt_of_not_ge h
+
+lemma uIoo_of_not_ge (h : ¬b ≤ a) : uIoo a b = Ioo a b := uIoo_of_lt <| lt_of_not_ge h
+
+theorem uIoo_subset_uIcc {α : Type*} [LinearOrder α] (a : α) (b : α) : uIoo a b ⊆ uIcc a b := by
+  simp [uIoo, uIcc, Ioo_subset_Icc_self]
+
+end uIoo
 
 end LinearOrder
 

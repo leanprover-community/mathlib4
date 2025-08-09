@@ -21,15 +21,23 @@ computation progresses.
 
 universe u v
 
+/-- Adds a writable output of type `ω` to a monad.
+
+The instances on this type assume that either `[Monoid ω]` or `[EmptyCollection ω] [Append ω]`.
+
+Use `WriterT.run` to obtain the final value of this output. -/
 def WriterT (ω : Type u) (M : Type u → Type v) (α : Type u) : Type v :=
   M (α × ω)
 
 abbrev Writer ω := WriterT ω Id
 
 class MonadWriter (ω : outParam (Type u)) (M : Type u → Type v) where
-  tell : ω → M PUnit
-  listen {α} : M α → M (α × ω)
-  pass {α} : M (α × (ω → ω)) → M α
+  /-- Emit an output `w`. -/
+  tell (w : ω) : M PUnit
+  /-- Capture the output produced by `f`, without intercepting. -/
+  listen {α} (f : M α) : M (α × ω)
+  /-- Buffer the output produced by `f` as `w`, then emit `(← f).2 w` in its place. -/
+  pass {α} (f : M (α × (ω → ω))) : M α
 
 export MonadWriter (tell listen pass)
 
@@ -48,7 +56,7 @@ instance [Monad M] [MonadWriter ω M] : MonadWriter ω (StateT σ M) where
 namespace WriterT
 
 @[inline]
-protected def mk {ω : Type u} (cmd :  M (α × ω)) : WriterT ω M α := cmd
+protected def mk {ω : Type u} (cmd : M (α × ω)) : WriterT ω M α := cmd
 @[inline]
 protected def run {ω : Type u} (cmd : WriterT ω M α) : M (α × ω) := cmd
 @[inline]
@@ -57,7 +65,7 @@ protected def runThe (ω : Type u) (cmd : WriterT ω M α) : M (α × ω) := cmd
 @[ext]
 protected theorem ext {ω : Type u} (x x' : WriterT ω M α) (h : x.run = x'.run) : x = x' := h
 
-variable {ω : Type u} {α β : Type u} [Monad M]
+variable [Monad M]
 
 /-- Creates an instance of `Monad`, with explicitly given `empty` and `append` operations.
 

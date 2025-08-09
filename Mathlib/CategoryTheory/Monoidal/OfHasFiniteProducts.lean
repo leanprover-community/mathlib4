@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Simon Hudon
+Authors: Kim Morrison, Simon Hudon
 -/
 import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
@@ -19,14 +19,10 @@ As this works with either products or coproducts,
 and sometimes we want to think of a different monoidal structure entirely,
 we don't set up either construct as an instance.
 
-## Implementation
-We had previously chosen to rely on `HasTerminal` and `HasBinaryProducts` instead of
-`HasBinaryProducts`, because we were later relying on the definitional form of the tensor product.
-Now that `has_limit` has been refactored to be a `Prop`,
-this issue is irrelevant and we could simplify the construction here.
+## TODO
 
-See `CategoryTheory.monoidalOfChosenFiniteProducts` for a variant of this construction
-which allows specifying a particular choice of terminal object and binary products.
+Replace `monoidalOfHasFiniteProducts` and `symmetricOfHasFiniteProducts`
+with `CartesianMonoidalCategory.ofHasFiniteProducts`.
 -/
 
 
@@ -46,8 +42,8 @@ section
 def monoidalOfHasFiniteProducts [HasTerminal C] [HasBinaryProducts C] : MonoidalCategory C :=
   letI : MonoidalCategoryStruct C := {
     tensorObj := fun X Y ↦ X ⨯ Y
-    whiskerLeft := fun X _ _ g ↦ Limits.prod.map (𝟙 _) g
-    whiskerRight := fun {_ _} f Y ↦ Limits.prod.map f (𝟙 _)
+    whiskerLeft := fun _ _ _ g ↦ Limits.prod.map (𝟙 _) g
+    whiskerRight := fun {_ _} f _ ↦ Limits.prod.map f (𝟙 _)
     tensorHom := fun f g ↦ Limits.prod.map f g
     tensorUnit := ⊤_ C
     associator := prod.associator
@@ -73,7 +69,7 @@ open scoped MonoidalCategory
 
 @[ext] theorem tensor_ext {X Y Z : C} (f g : X ⟶ Y ⊗ Z)
     (w₁ : f ≫ prod.fst = g ≫ prod.fst) (w₂ : f ≫ prod.snd = g ≫ prod.snd) : f = g :=
-  prod.hom_ext w₁ w₂
+  Limits.prod.hom_ext w₁ w₂
 
 @[simp] theorem tensorUnit : 𝟙_ C = ⊤_ C := rfl
 
@@ -82,7 +78,7 @@ theorem tensorObj (X Y : C) : X ⊗ Y = (X ⨯ Y) :=
   rfl
 
 @[simp]
-theorem tensorHom {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : f ⊗ g = Limits.prod.map f g :=
+theorem tensorHom {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : f ⊗ₘ g = Limits.prod.map f g :=
   rfl
 
 @[simp]
@@ -158,7 +154,7 @@ def symmetricOfHasFiniteProducts [HasTerminal C] [HasBinaryProducts C] : Symmetr
   braiding_naturality_right X _ _ f := by simp
   hexagon_forward X Y Z := by dsimp [monoidalOfHasFiniteProducts.associator_hom]; simp
   hexagon_reverse X Y Z := by dsimp [monoidalOfHasFiniteProducts.associator_inv]; simp
-  symmetry X Y := by dsimp; simp
+  symmetry X Y := by simp
 
 end
 
@@ -168,8 +164,8 @@ section
 def monoidalOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] : MonoidalCategory C :=
   letI : MonoidalCategoryStruct C := {
     tensorObj := fun X Y ↦ X ⨿ Y
-    whiskerLeft := fun X _ _ g ↦ Limits.coprod.map (𝟙 _) g
-    whiskerRight := fun {_ _} f Y ↦ Limits.coprod.map f (𝟙 _)
+    whiskerLeft := fun _ _ _ g ↦ Limits.coprod.map (𝟙 _) g
+    whiskerRight := fun {_ _} f _ ↦ Limits.coprod.map f (𝟙 _)
     tensorHom := fun f g ↦ Limits.coprod.map f g
     tensorUnit := ⊥_ C
     associator := coprod.associator
@@ -196,7 +192,7 @@ theorem tensorObj (X Y : C) : X ⊗ Y = (X ⨿ Y) :=
   rfl
 
 @[simp]
-theorem tensorHom {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : f ⊗ g = Limits.coprod.map f g :=
+theorem tensorHom {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : f ⊗ₘ g = Limits.coprod.map f g :=
   rfl
 
 @[simp]
@@ -254,11 +250,11 @@ def symmetricOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] :
   braiding_naturality_right f g := by simp
   hexagon_forward X Y Z := by dsimp [monoidalOfHasFiniteCoproducts.associator_hom]; simp
   hexagon_reverse X Y Z := by dsimp [monoidalOfHasFiniteCoproducts.associator_inv]; simp
-  symmetry X Y := by dsimp; simp
+  symmetry X Y := by simp
 
 end
 
-section
+namespace monoidalOfHasFiniteProducts
 
 attribute [local instance] monoidalOfHasFiniteProducts
 
@@ -266,47 +262,49 @@ variable {C}
 variable {D : Type*} [Category D] (F : C ⥤ D)
   [HasTerminal C] [HasBinaryProducts C]
   [HasTerminal D] [HasBinaryProducts D]
-  [PreservesLimit (Functor.empty.{0} C) F]
+
+attribute [local simp] associator_hom_fst
+instance : F.OplaxMonoidal where
+  η := terminalComparison F
+  δ X Y := prodComparison F X Y
+  δ_natural_left _ _ := by simp [prodComparison_natural]
+  δ_natural_right _ _ := by simp [prodComparison_natural]
+  oplax_associativity _ _ _ := by
+    dsimp
+    ext
+    · dsimp
+      simp only [Category.assoc, prod.map_fst, Category.comp_id, prodComparison_fst, ←
+        Functor.map_comp]
+      erw [associator_hom_fst, associator_hom_fst]
+      simp
+    · dsimp
+      simp only [Category.assoc, prod.map_snd, prodComparison_snd_assoc, prodComparison_fst,
+        ← Functor.map_comp]
+      erw [associator_hom_snd_fst, associator_hom_snd_fst]
+      simp
+    · dsimp
+      simp only [Category.assoc, prod.map_snd, prodComparison_snd_assoc, prodComparison_snd, ←
+        Functor.map_comp]
+      erw [associator_hom_snd_snd, associator_hom_snd_snd]
+      simp
+  oplax_left_unitality _ := by ext; simp [← Functor.map_comp]
+  oplax_right_unitality _ := by ext; simp [← Functor.map_comp]
+
+open Functor.OplaxMonoidal
+
+lemma η_eq : η F = terminalComparison F := rfl
+lemma δ_eq (X Y : C) : δ F X Y = prodComparison F X Y := rfl
+
+variable [PreservesLimit (Functor.empty.{0} C) F]
   [PreservesLimitsOfShape (Discrete WalkingPair) F]
+
+instance : IsIso (η F) := by dsimp [η_eq]; infer_instance
+instance (X Y : C) : IsIso (δ F X Y) := by dsimp [δ_eq]; infer_instance
 
 /-- Promote a finite products preserving functor to a monoidal functor between
 categories equipped with the monoidal category structure given by finite products. -/
-@[simps]
-def Functor.toMonoidalFunctorOfHasFiniteProducts : MonoidalFunctor C D where
-  toFunctor := F
-  ε := (asIso (terminalComparison F)).inv
-  μ X Y := (asIso (prodComparison F X Y)).inv
-  μ_natural_left {X Y} f X' := by simpa using (prodComparison_inv_natural F f (𝟙 X')).symm
-  μ_natural_right {X Y} X' g := by simpa using (prodComparison_inv_natural F (𝟙 X') g).symm
-  associativity X Y Z := by
-    dsimp only [monoidalOfHasFiniteProducts.associator_hom]
-    rw [← cancel_epi (prod.map (prodComparison F X Y) (𝟙 (F.obj Z)))]
-    dsimp
-    simp only [prod.map_map_assoc, IsIso.hom_inv_id, Category.comp_id, prod.map_id_id,
-      Category.id_comp, prod.lift_map_assoc, IsIso.inv_comp_eq]
-    rw [← cancel_mono (prodComparison F X (Y ⨯ Z))]
-    simp only [Category.assoc, IsIso.inv_hom_id, Category.comp_id, prod.comp_lift,
-      prod.map_fst_assoc, prodComparison_fst, prodComparison_fst_assoc]
-    ext
-    · simp [-Functor.map_comp, ← F.map_comp]
-    · rw [← cancel_mono (prodComparison F Y Z)]
-      ext
-      all_goals simp [-Functor.map_comp, ← F.map_comp]
-  left_unitality Y := by
-    rw [← cancel_epi (prod.map (terminalComparison F) (𝟙 (F.obj Y)))]
-    dsimp
-    simp only [prod.map_map_assoc, IsIso.hom_inv_id, Category.comp_id, prod.map_id_id,
-      Category.id_comp, IsIso.eq_inv_comp]
-    erw [prod.map_snd, Category.comp_id, prodComparison_snd]
-  right_unitality X := by
-    rw [← cancel_epi (prod.map (𝟙 (F.obj X)) (terminalComparison F))]
-    dsimp
-    simp only [prod.map_map_assoc, Category.comp_id, IsIso.hom_inv_id, prod.map_id_id,
-      Category.id_comp, IsIso.eq_inv_comp]
-    erw [prod.map_fst, Category.comp_id, prodComparison_fst]
+instance : F.Monoidal := .ofOplaxMonoidal F
 
-instance [F.IsEquivalence] : F.toMonoidalFunctorOfHasFiniteProducts.IsEquivalence := by assumption
-
-end
+end monoidalOfHasFiniteProducts
 
 end CategoryTheory

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Mathlib.Init
-import Lean
+import Lean.Meta.Tactic.TryThis
 
 /-!
 # Adaptation notes

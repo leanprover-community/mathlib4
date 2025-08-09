@@ -47,17 +47,17 @@ theorem cons_ne {a a' : α} {b : δ a} {f : ∀ a ∈ m, δ a} (h' : a' ∈ a ::
   dif_neg h
 
 theorem cons_swap {a a' : α} {b : δ a} {b' : δ a'} {m : Multiset α} {f : ∀ a ∈ m, δ a}
-    (h : a ≠ a') : HEq (Pi.cons (a' ::ₘ m) a b (Pi.cons m a' b' f))
-      (Pi.cons (a ::ₘ m) a' b' (Pi.cons m a b f)) := by
+    (h : a ≠ a') : Pi.cons (a' ::ₘ m) a b (Pi.cons m a' b' f) ≍
+      Pi.cons (a ::ₘ m) a' b' (Pi.cons m a b f) := by
   apply hfunext rfl
   simp only [heq_iff_eq]
   rintro a'' _ rfl
   refine hfunext (by rw [Multiset.cons_swap]) fun ha₁ ha₂ _ => ?_
-  rcases ne_or_eq a'' a with (h₁ | rfl)
-  on_goal 1 => rcases eq_or_ne a'' a' with (rfl | h₂)
+  rcases Decidable.ne_or_eq a'' a with (h₁ | rfl)
+  on_goal 1 => rcases Decidable.eq_or_ne a'' a' with (rfl | h₂)
   all_goals simp [*, Pi.cons_same, Pi.cons_ne]
 
-@[simp, nolint simpNF] -- Porting note: false positive, this lemma can prove itself
+@[simp]
 theorem cons_eta {m : Multiset α} {a : α} (f : ∀ a' ∈ a ::ₘ m, δ a') :
     (cons m a (f _ (mem_cons_self _ _)) fun a' ha' => f a' (mem_cons_of_mem ha')) = f := by
   ext a' h'
@@ -131,7 +131,7 @@ theorem pi_cons (m : Multiset α) (t : ∀ a, Multiset (β a)) (a : α) :
 
 theorem card_pi (m : Multiset α) (t : ∀ a, Multiset (β a)) :
     card (pi m t) = prod (m.map fun a => card (t a)) :=
-  Multiset.induction_on m (by simp) (by simp (config := { contextual := true }) [mul_comm])
+  Multiset.induction_on m (by simp) (by simp +contextual)
 
 protected theorem Nodup.pi {s : Multiset α} {t : ∀ a, Multiset (β a)} :
     Nodup s → (∀ a ∈ s, Nodup (t a)) → Nodup (pi s t) :=
@@ -155,9 +155,9 @@ theorem mem_pi (m : Multiset α) (t : ∀ a, Multiset (β a)) :
     ∀ f : ∀ a ∈ m, β a, f ∈ pi m t ↔ ∀ (a) (h : a ∈ m), f a h ∈ t a := by
   intro f
   induction' m using Multiset.induction_on with a m ih
-  · have : f = Pi.empty β := funext (fun _ => funext fun h => (not_mem_zero _ h).elim)
+  · have : f = Pi.empty β := funext (fun _ => funext fun h => (notMem_zero _ h).elim)
     simp only [this, pi_zero, mem_singleton, true_iff]
-    intro _ h; exact (not_mem_zero _ h).elim
+    intro _ h; exact (notMem_zero _ h).elim
   simp_rw [pi_cons, mem_bind, mem_map, ih]
   constructor
   · rintro ⟨b, hb, f', hf', rfl⟩ a' ha'

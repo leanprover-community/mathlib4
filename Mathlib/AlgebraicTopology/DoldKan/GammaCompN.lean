@@ -6,6 +6,7 @@ Authors: Joël Riou
 import Mathlib.AlgebraicTopology.DoldKan.FunctorGamma
 import Mathlib.AlgebraicTopology.DoldKan.SplitSimplicialObject
 import Mathlib.CategoryTheory.Idempotents.HomologicalComplex
+import Mathlib.Tactic.SuppressCompilation
 
 /-! The counit isomorphism of the Dold-Kan equivalence
 
@@ -17,10 +18,11 @@ and `N₂Γ₂ : Γ₂ ⋙ N₂ ≅ 𝟭 (Karoubi (ChainComplex C ℕ))`.
 
 -/
 
+suppress_compilation
 
 noncomputable section
 
-open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
+open CategoryTheory CategoryTheory.Category CategoryTheory.Functor CategoryTheory.Limits
   CategoryTheory.Idempotents Opposite SimplicialObject Simplicial
 
 namespace AlgebraicTopology
@@ -32,7 +34,7 @@ variable {C : Type*} [Category C] [Preadditive C] [HasFiniteCoproducts C]
 /-- The isomorphism `(Γ₀.splitting K).nondegComplex ≅ K` for all `K : ChainComplex C ℕ`. -/
 @[simps!]
 def Γ₀NondegComplexIso (K : ChainComplex C ℕ) : (Γ₀.splitting K).nondegComplex ≅ K :=
-  HomologicalComplex.Hom.isoOfComponents (fun n => Iso.refl _)
+  HomologicalComplex.Hom.isoOfComponents (fun _ => Iso.refl _)
     (by
       rintro _ n (rfl : n + 1 = _)
       dsimp
@@ -40,12 +42,14 @@ def Γ₀NondegComplexIso (K : ChainComplex C ℕ) : (Γ₀.splitting K).nondegC
         Preadditive.comp_sum]
       rw [Fintype.sum_eq_single (0 : Fin (n + 2))]
       · simp only [Fin.val_zero, pow_zero, one_zsmul]
-        erw [Γ₀.Obj.mapMono_on_summand_id_assoc, Γ₀.Obj.Termwise.mapMono_δ₀,
-          Splitting.cofan_inj_πSummand_eq_id, comp_id]
+        rw [δ, Γ₀.Obj.mapMono_on_summand_id_assoc, Γ₀.Obj.Termwise.mapMono_δ₀,
+          Splitting.cofan_inj_πSummand_eq_id]
+        dsimp only [Γ₀.splitting, Splitting.summand.eq_1, Splitting.IndexSet.id_fst]
+        rw [comp_id]
       · intro i hi
         dsimp
-        simp only [Preadditive.zsmul_comp, Preadditive.comp_zsmul, assoc]
-        erw [Γ₀.Obj.mapMono_on_summand_id_assoc, Γ₀.Obj.Termwise.mapMono_eq_zero, zero_comp,
+        simp only [Preadditive.zsmul_comp, Preadditive.comp_zsmul]
+        rw [δ, Γ₀.Obj.mapMono_on_summand_id_assoc, Γ₀.Obj.Termwise.mapMono_eq_zero, zero_comp,
           zsmul_zero]
         · intro h
           replace h := congr_arg SimplexCategory.len h
@@ -101,9 +105,6 @@ theorem N₁Γ₀_inv_app_f_f (K : ChainComplex C ℕ) (n : ℕ) :
   rw [N₁Γ₀_inv_app]
   apply id_comp
 
--- Porting note (#10694): added to speed up elaboration
-attribute [irreducible] N₁Γ₀
-
 /-- Compatibility isomorphism between `toKaroubi _ ⋙ Γ₂ ⋙ N₂` and `Γ₀ ⋙ N₁` which
 are functors `ChainComplex C ℕ ⥤ Karoubi (ChainComplex C ℕ)`. -/
 def N₂Γ₂ToKaroubiIso : toKaroubi (ChainComplex C ℕ) ⋙ Γ₂ ⋙ N₂ ≅ Γ₀ ⋙ N₁ :=
@@ -142,9 +143,6 @@ lemma N₂Γ₂ToKaroubiIso_inv_app (X : ChainComplex C ℕ) :
   rw [Splitting.ι_desc]
   erw [comp_id, id_comp]
 
--- Porting note (#10694): added to speed up elaboration
-attribute [irreducible] N₂Γ₂ToKaroubiIso
-
 /-- The counit isomorphism of the Dold-Kan equivalence for additive categories. -/
 def N₂Γ₂ : Γ₂ ⋙ N₂ ≅ 𝟭 (Karoubi (ChainComplex C ℕ)) :=
   ((whiskeringLeft _ _ _).obj (toKaroubi (ChainComplex C ℕ))).preimageIso
@@ -153,18 +151,16 @@ def N₂Γ₂ : Γ₂ ⋙ N₂ ≅ 𝟭 (Karoubi (ChainComplex C ℕ)) :=
 @[simp]
 theorem N₂Γ₂_inv_app_f_f (X : Karoubi (ChainComplex C ℕ)) (n : ℕ) :
     (N₂Γ₂.inv.app X).f.f n =
-      X.p.f n ≫ ((Γ₀.splitting X.X).cofan _).inj (Splitting.IndexSet.id (op [n])) := by
+      X.p.f n ≫ ((Γ₀.splitting X.X).cofan _).inj (Splitting.IndexSet.id (op ⦋n⦌)) := by
   dsimp [N₂Γ₂]
   simp only [whiskeringLeft_obj_preimage_app, NatTrans.comp_app, Functor.comp_map,
     Karoubi.comp_f, N₂Γ₂ToKaroubiIso_inv_app, HomologicalComplex.comp_f,
     N₁Γ₀_inv_app_f_f, toKaroubi_obj_X, Splitting.toKaroubiNondegComplexIsoN₁_hom_f_f,
-    Γ₀.obj_obj, PInfty_on_Γ₀_splitting_summand_eq_self, N₂_map_f_f,
-    Γ₂_map_f_app, unop_op, Karoubi.decompId_p_f, PInfty_f_idem_assoc,
+    PInfty_on_Γ₀_splitting_summand_eq_self, N₂_map_f_f, Γ₂_map_f_app, unop_op, Karoubi.decompId_p_f,
     PInfty_on_Γ₀_splitting_summand_eq_self_assoc, Splitting.IndexSet.id_fst, SimplexCategory.len_mk,
     Splitting.ι_desc]
   apply Karoubi.HomologicalComplex.p_idem_assoc
 
--- Porting note: added to ease the proof of `N₂Γ₂_compatible_with_N₁Γ₀`
 lemma whiskerLeft_toKaroubi_N₂Γ₂_hom :
     whiskerLeft (toKaroubi (ChainComplex C ℕ)) N₂Γ₂.hom = N₂Γ₂ToKaroubiIso.hom ≫ N₁Γ₀.hom := by
   let e : _ ≅ toKaroubi (ChainComplex C ℕ) ⋙ 𝟭 _ := N₂Γ₂ToKaroubiIso ≪≫ N₁Γ₀
@@ -172,9 +168,6 @@ lemma whiskerLeft_toKaroubi_N₂Γ₂_hom :
     (toKaroubi (ChainComplex C ℕ))).map_preimage e.hom
   dsimp only [whiskeringLeft, N₂Γ₂, Functor.preimageIso] at h ⊢
   exact h
-
--- Porting note (#10694): added to speed up elaboration
-attribute [irreducible] N₂Γ₂
 
 theorem N₂Γ₂_compatible_with_N₁Γ₀ (K : ChainComplex C ℕ) :
     N₂Γ₂.hom.app ((toKaroubi _).obj K) = N₂Γ₂ToKaroubiIso.hom.app K ≫ N₁Γ₀.hom.app K :=

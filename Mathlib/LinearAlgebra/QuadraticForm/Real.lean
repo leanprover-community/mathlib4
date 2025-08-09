@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Kexing Ying, Eric Wieser
 -/
 import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
-import Mathlib.Data.Sign
+import Mathlib.Data.Sign.Basic
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Data.Complex.Abs
 
 /-!
 # Real quadratic forms
@@ -17,17 +16,13 @@ A real quadratic form is equivalent to a weighted
 sum of squares with the weights being ±1 or 0.
 
 When the real quadratic form is nondegenerate we can take the weights to be ±1,
-as in `equivalent_one_zero_neg_one_weighted_sum_squared`.
+as in `QuadraticForm.equivalent_one_zero_neg_one_weighted_sum_squared`.
 
 -/
 
+open Finset Module QuadraticMap SignType
 
 namespace QuadraticForm
-
-open Finset SignType
-
-open QuadraticMap
-
 variable {ι : Type*} [Fintype ι]
 
 /-- The isometry between a weighted sum of squares with weights `u` on the
@@ -53,7 +48,7 @@ noncomputable def isometryEquivSignWeightedSumSquares (w : ι → ℝ) :
 sum of squares with the weights being ±1, `SignType` version. -/
 theorem equivalent_sign_ne_zero_weighted_sum_squared {M : Type*} [AddCommGroup M] [Module ℝ M]
     [FiniteDimensional ℝ M] (Q : QuadraticForm ℝ M) (hQ : (associated (R := ℝ) Q).SeparatingLeft) :
-    ∃ w : Fin (FiniteDimensional.finrank ℝ M) → SignType,
+    ∃ w : Fin (Module.finrank ℝ M) → SignType,
       (∀ i, w i ≠ 0) ∧ Equivalent Q (weightedSumSquares ℝ fun i ↦ (w i : ℝ)) :=
   let ⟨w, ⟨hw₁⟩⟩ := Q.equivalent_weightedSumSquares_units_of_nondegenerate' hQ
   ⟨sign ∘ ((↑) : ℝˣ → ℝ) ∘ w, fun i => sign_ne_zero.2 (w i).ne_zero,
@@ -63,7 +58,7 @@ theorem equivalent_sign_ne_zero_weighted_sum_squared {M : Type*} [AddCommGroup M
 sum of squares with the weights being ±1. -/
 theorem equivalent_one_neg_one_weighted_sum_squared {M : Type*} [AddCommGroup M] [Module ℝ M]
     [FiniteDimensional ℝ M] (Q : QuadraticForm ℝ M) (hQ : (associated (R := ℝ) Q).SeparatingLeft) :
-    ∃ w : Fin (FiniteDimensional.finrank ℝ M) → ℝ,
+    ∃ w : Fin (Module.finrank ℝ M) → ℝ,
       (∀ i, w i = -1 ∨ w i = 1) ∧ Equivalent Q (weightedSumSquares ℝ w) :=
   let ⟨w, hw₀, hw⟩ := Q.equivalent_sign_ne_zero_weighted_sum_squared hQ
   ⟨(w ·), fun i ↦ by cases hi : w i <;> simp_all, hw⟩
@@ -72,7 +67,7 @@ theorem equivalent_one_neg_one_weighted_sum_squared {M : Type*} [AddCommGroup M]
 sum of squares with the weights being ±1 or 0, `SignType` version. -/
 theorem equivalent_signType_weighted_sum_squared {M : Type*} [AddCommGroup M] [Module ℝ M]
     [FiniteDimensional ℝ M] (Q : QuadraticForm ℝ M) :
-    ∃ w : Fin (FiniteDimensional.finrank ℝ M) → SignType,
+    ∃ w : Fin (Module.finrank ℝ M) → SignType,
       Equivalent Q (weightedSumSquares ℝ fun i ↦ (w i : ℝ)) :=
   let ⟨w, ⟨hw₁⟩⟩ := Q.equivalent_weightedSumSquares
   ⟨sign ∘ w, ⟨hw₁.trans (isometryEquivSignWeightedSumSquares w)⟩⟩
@@ -81,7 +76,7 @@ theorem equivalent_signType_weighted_sum_squared {M : Type*} [AddCommGroup M] [M
 sum of squares with the weights being ±1 or 0. -/
 theorem equivalent_one_zero_neg_one_weighted_sum_squared {M : Type*} [AddCommGroup M] [Module ℝ M]
     [FiniteDimensional ℝ M] (Q : QuadraticForm ℝ M) :
-    ∃ w : Fin (FiniteDimensional.finrank ℝ M) → ℝ,
+    ∃ w : Fin (Module.finrank ℝ M) → ℝ,
       (∀ i, w i = -1 ∨ w i = 0 ∨ w i = 1) ∧ Equivalent Q (weightedSumSquares ℝ w) :=
   let ⟨w, hw⟩ := Q.equivalent_signType_weighted_sum_squared
   ⟨(w ·), fun i ↦ by cases h : w i <;> simp [h], hw⟩

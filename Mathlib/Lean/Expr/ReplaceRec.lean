@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2019 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Simon Hudon, Scott Morrison, Keeley Hoek, Robert Y. Lewis,
+Authors: Mario Carneiro, Simon Hudon, Kim Morrison, Keeley Hoek, Robert Y. Lewis,
 Floris van Doorn, Edward Ayers
 -/
 import Lean.Expr
@@ -29,6 +29,6 @@ def replaceRec (f? : (Expr → Expr) → Expr → Option Expr) : Expr → Expr :
   memoFix fun r e ↦
     match f? r e with
     | some x => x
-    | none   => traverseChildren (M := Id) r e
+    | none   => Id.run <| traverseChildren (pure <| r ·) e
 
 end Lean.Expr

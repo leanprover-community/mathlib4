@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
 import Mathlib.ModelTheory.Quotients
+import Mathlib.Order.Filter.Finite
 import Mathlib.Order.Filter.Germ.Basic
-import Mathlib.Order.Filter.Ultrafilter
+import Mathlib.Order.Filter.Ultrafilter.Defs
 
 /-!
 # Ultraproducts and Łoś's Theorem
@@ -31,8 +32,6 @@ variable {α : Type*} (M : α → Type*) (u : Ultrafilter α)
 
 open FirstOrder Filter
 
-open Filter
-
 namespace FirstOrder
 
 namespace Language
@@ -46,8 +45,8 @@ namespace Ultraproduct
 instance setoidPrestructure : L.Prestructure ((u : Filter α).productSetoid M) :=
   { (u : Filter α).productSetoid M with
     toStructure :=
-      { funMap := fun {n} f x a => funMap f fun i => x i a
-        RelMap := fun {n} r x => ∀ᶠ a : α in u, RelMap r fun i => x i a }
+      { funMap := fun {_} f x a => funMap f fun i => x i a
+        RelMap := fun {_} r x => ∀ᶠ a : α in u, RelMap r fun i => x i a }
     fun_equiv := fun {n} f x y xy => by
       refine mem_of_superset (iInter_mem.2 xy) fun a ha => ?_
       simp only [Set.mem_iInter, Set.mem_setOf_eq] at ha
@@ -99,7 +98,7 @@ theorem boundedFormula_realize_cast {β : Type*} {n : ℕ} (φ : L.BoundedFormul
   | equal =>
     have h2 : ∀ a : α, (Sum.elim (fun i : β => x i a) fun i => v i a) = fun i => Sum.elim x v i a :=
       fun a => funext fun i => Sum.casesOn i (fun i => rfl) fun i => rfl
-    simp only [BoundedFormula.Realize, h2, term_realize_cast]
+    simp only [BoundedFormula.Realize, h2]
     erw [(Sum.comp_elim ((↑) : (∀ a, M a) → (u : Filter α).Product M) x v).symm,
       term_realize_cast, term_realize_cast]
     exact Quotient.eq''
@@ -153,7 +152,7 @@ it is true in is in the ultrafilter. -/
 theorem sentence_realize (φ : L.Sentence) :
     (u : Filter α).Product M ⊨ φ ↔ ∀ᶠ a : α in u, M a ⊨ φ := by
   simp_rw [Sentence.Realize]
-  erw [← realize_formula_cast φ, iff_eq_eq]
+  rw [← realize_formula_cast φ, iff_eq_eq]
   exact congr rfl (Subsingleton.elim _ _)
 
 nonrec instance Product.instNonempty : Nonempty ((u : Filter α).Product M) :=

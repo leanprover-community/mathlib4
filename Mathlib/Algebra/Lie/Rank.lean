@@ -30,6 +30,8 @@ if the `n`-th coefficient of the characteristic polynomial of `ad R L x` is non-
 
 -/
 
+open Module
+
 variable {R A L M ι ιₘ : Type*}
 variable [CommRing R]
 variable [CommRing A] [Algebra R A]
@@ -65,13 +67,13 @@ lemma rank_eq_natTrailingDegree [Nontrivial R] [DecidableEq ι] :
     rank R L M = (polyCharpoly φ b).natTrailingDegree := by
   apply nilRank_eq_polyCharpoly_natTrailingDegree
 
-open FiniteDimensional
+open Module
 
 include bₘ in
 lemma rank_le_card [Nontrivial R] : rank R L M ≤ Fintype.card ιₘ :=
   nilRank_le_card _ bₘ
 
-open FiniteDimensional
+open Module
 lemma rank_le_finrank [Nontrivial R] : rank R L M ≤ finrank R M :=
   nilRank_le_finrank _
 
@@ -103,7 +105,7 @@ section IsDomain
 variable (L)
 variable [IsDomain R]
 
-open Cardinal FiniteDimensional MvPolynomial in
+open Cardinal Module MvPolynomial in
 lemma exists_isRegular_of_finrank_le_card (h : finrank R M ≤ #R) :
     ∃ x : L, IsRegular R M x :=
   LinearMap.exists_isNilRegular_of_finrank_le_card _ h
@@ -138,7 +140,7 @@ lemma rank_eq_natTrailingDegree [Nontrivial R] [DecidableEq ι] :
     rank R L = (polyCharpoly (ad R L).toLinearMap b).natTrailingDegree := by
   apply nilRank_eq_polyCharpoly_natTrailingDegree
 
-open FiniteDimensional
+open Module
 
 include b in
 lemma rank_le_card [Nontrivial R] : rank R L ≤ Fintype.card ι :=
@@ -175,7 +177,7 @@ section IsDomain
 variable (L)
 variable [IsDomain R]
 
-open Cardinal FiniteDimensional MvPolynomial in
+open Cardinal Module MvPolynomial in
 lemma exists_isRegular_of_finrank_le_card (h : finrank R L ≤ #R) :
     ∃ x : L, IsRegular R x :=
   LinearMap.exists_isNilRegular_of_finrank_le_card _ h
@@ -191,7 +193,7 @@ namespace LieAlgebra
 
 variable (K : Type*) {L : Type*} [Field K] [LieRing L] [LieAlgebra K L] [Module.Finite K L]
 
-open FiniteDimensional LieSubalgebra
+open Module LieSubalgebra
 
 lemma finrank_engel (x : L) :
     finrank K (engel K x) = (ad K L x).charpoly.natTrailingDegree :=

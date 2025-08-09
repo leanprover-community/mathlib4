@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bhavik Mehta, Scott Morrison
+Authors: Bhavik Mehta, Kim Morrison
 -/
 import Mathlib.CategoryTheory.Subobject.Lattice
 
@@ -132,7 +132,7 @@ variable {f} {X' Y' : C} {f' : X' ⟶ Y'} [HasKernel f']
 def kernelSubobjectMap (sq : Arrow.mk f ⟶ Arrow.mk f') :
     (kernelSubobject f : C) ⟶ (kernelSubobject f' : C) :=
   Subobject.factorThru _ ((kernelSubobject f).arrow ≫ sq.left)
-    (kernelSubobject_factors _ _ (by simp [sq.w]))
+    (kernelSubobject_factors _ _ (by simp))
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem kernelSubobjectMap_arrow (sq : Arrow.mk f ⟶ Arrow.mk f') :
@@ -140,18 +140,18 @@ theorem kernelSubobjectMap_arrow (sq : Arrow.mk f ⟶ Arrow.mk f') :
   simp [kernelSubobjectMap]
 
 @[simp]
-theorem kernelSubobjectMap_id : kernelSubobjectMap (𝟙 (Arrow.mk f)) = 𝟙 _ := by aesop_cat
+theorem kernelSubobjectMap_id : kernelSubobjectMap (𝟙 (Arrow.mk f)) = 𝟙 _ := by cat_disch
 
 @[simp]
 theorem kernelSubobjectMap_comp {X'' Y'' : C} {f'' : X'' ⟶ Y''} [HasKernel f'']
     (sq : Arrow.mk f ⟶ Arrow.mk f') (sq' : Arrow.mk f' ⟶ Arrow.mk f'') :
     kernelSubobjectMap (sq ≫ sq') = kernelSubobjectMap sq ≫ kernelSubobjectMap sq' := by
-  aesop_cat
+  cat_disch
 
 @[reassoc]
 theorem kernel_map_comp_kernelSubobjectIso_inv (sq : Arrow.mk f ⟶ Arrow.mk f') :
     kernel.map f f' sq.1 sq.2 sq.3.symm ≫ (kernelSubobjectIso _).inv =
-      (kernelSubobjectIso _).inv ≫ kernelSubobjectMap sq := by aesop_cat
+      (kernelSubobjectIso _).inv ≫ kernelSubobjectMap sq := by cat_disch
 
 @[reassoc]
 theorem kernelSubobjectIso_comp_kernel_map (sq : Arrow.mk f ⟶ Arrow.mk f') :
@@ -208,11 +208,11 @@ instance kernelSubobject_comp_mono_isIso (f : X ⟶ Y) [HasKernel f] {Z : C} (h 
   · simp
 
 /-- Taking cokernels is an order-reversing map from the subobjects of `X` to the quotient objects
-    of `X`. -/
+of `X`. -/
 @[simps]
 def cokernelOrderHom [HasCokernels C] (X : C) : Subobject X →o (Subobject (op X))ᵒᵈ where
   toFun :=
-    Subobject.lift (fun A f _ => Subobject.mk (cokernel.π f).op)
+    Subobject.lift (fun _ f _ => Subobject.mk (cokernel.π f).op)
       (by
         rintro A B f g hf hg i rfl
         refine Subobject.mk_eq_mk_of_comm _ _ (Iso.op ?_) (Quiver.Hom.unop_inj ?_)
@@ -230,11 +230,11 @@ def cokernelOrderHom [HasCokernels C] (X : C) : Subobject X →o (Subobject (op 
       · exact Quiver.Hom.unop_inj (cokernel.π_desc _ _ _)
 
 /-- Taking kernels is an order-reversing map from the quotient objects of `X` to the subobjects of
-    `X`. -/
+`X`. -/
 @[simps]
 def kernelOrderHom [HasKernels C] (X : C) : (Subobject (op X))ᵒᵈ →o Subobject X where
   toFun :=
-    Subobject.lift (fun A f _ => Subobject.mk (kernel.ι f.unop))
+    Subobject.lift (fun _ f _ => Subobject.mk (kernel.ι f.unop))
       (by
         rintro A B f g hf hg i rfl
         refine Subobject.mk_eq_mk_of_comm _ _ ?_ ?_
@@ -285,7 +285,7 @@ instance [HasEqualizers C] : Epi (factorThruImageSubobject f) := by
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem imageSubobject_arrow_comp : factorThruImageSubobject f ≫ (imageSubobject f).arrow = f := by
-  simp [factorThruImageSubobject, imageSubobject_arrow]
+  simp [factorThruImageSubobject]
 
 theorem imageSubobject_arrow_comp_eq_zero [HasZeroMorphisms C] {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z}
     [HasImage f] [Epi (factorThruImageSubobject f)] (h : f ≫ g = 0) :
@@ -337,7 +337,7 @@ variable [HasEqualizers C]
 is an epimorphism when `h` is an epimorphism.
 In general this does not imply that `imageSubobject (h ≫ f) = imageSubobject f`,
 although it will when the ambient category is abelian.
- -/
+-/
 instance imageSubobject_comp_le_epi_of_epi {X' : C} (h : X' ⟶ X) [Epi h] (f : X ⟶ Y) [HasImage f]
     [HasImage (h ≫ f)] : Epi (Subobject.ofLE _ _ (imageSubobject_comp_le h f)) := by
   rw [ofLE_mk_le_mk_of_comm (image.preComp h f)]

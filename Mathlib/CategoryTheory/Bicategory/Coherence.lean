@@ -3,7 +3,7 @@ Copyright (c) 2022 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno, Junyan Xu
 -/
-import Mathlib.CategoryTheory.PathCategory
+import Mathlib.CategoryTheory.PathCategory.Basic
 import Mathlib.CategoryTheory.Functor.FullyFaithful
 import Mathlib.CategoryTheory.Bicategory.Free
 import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
@@ -31,7 +31,7 @@ theorem follows immediately from this fact.
 ## References
 
 * [Ilya Beylin and Peter Dybjer, Extracting a proof of coherence for monoidal categories from a
-   proof of normalization for monoids][beylin1996]
+  proof of normalization for monoids][beylin1996]
 -/
 
 
@@ -156,7 +156,7 @@ theorem normalize_naturality {a b c : B} (p : Path a b) {f g : Hom b c} (η : f 
   induction η' with
   | id => simp
   | vcomp η θ ihf ihg =>
-    simp only [mk_vcomp, Bicategory.whiskerLeft_comp]
+    simp only [mk_vcomp, whiskerLeft_comp]
     slice_lhs 2 3 => rw [ihg]
     slice_lhs 1 2 => rw [ihf]
     simp
@@ -187,7 +187,7 @@ def normalize (B : Type u) [Quiver.{v + 1} B] :
   obj a := ⟨a⟩
   map f := ⟨normalizeAux nil f⟩
   map₂ η := eqToHom <| Discrete.ext <| normalizeAux_congr nil η
-  mapId a := eqToIso <| Discrete.ext rfl
+  mapId _ := eqToIso <| Discrete.ext rfl
   mapComp f g := eqToIso <| Discrete.ext <| normalizeAux_nil_comp f g
 
 /-- Auxiliary definition for `normalizeEquiv`. -/
@@ -232,7 +232,7 @@ def inclusion (B : Type u) [Quiver.{v + 1} B] :
     Pseudofunctor (LocallyDiscrete (Paths B)) (FreeBicategory B) :=
   { -- All the conditions for 2-morphisms are trivial thanks to the coherence theorem!
     preinclusion B with
-    mapId := fun a => Iso.refl _
+    mapId := fun _ => Iso.refl _
     mapComp := fun f g => inclusionMapCompAux f.as g.as }
 
 end FreeBicategory

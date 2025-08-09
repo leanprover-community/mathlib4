@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Lean.Elab.Command
+import Mathlib.Init
 
 /-!
 # The `stacks` and `kerodon` attributes
@@ -142,12 +143,22 @@ syntax (name := stacksTag) stacksTagDB stacksTagParser (ppSpace str)? : attr
 initialize Lean.registerBuiltinAttribute {
   name := `stacksTag
   descr := "Apply a Stacks or Kerodon project tag to a theorem."
-  add := fun decl stx _attrKind => match stx with
-    | `(attr| stacks $tag $[$comment]?) => do
-      addTagEntry decl .stacks (← tag.getStacksTag) <| (comment.map (·.getString)).getD ""
-    | `(attr| kerodon $tag $[$comment]?) => do
-      addTagEntry decl .kerodon (← tag.getStacksTag) <| (comment.map (·.getString)).getD ""
-    | _ => throwUnsupportedSyntax
+  add := fun decl stx _attrKind => do
+    let oldDoc := (← findDocString? (← getEnv) decl).getD ""
+    let (SorK, database, url, tag, comment) := ← match stx with
+      | `(attr| stacks $tag $[$comment]?) =>
+        return ("Stacks", Database.stacks, "https://stacks.math.columbia.edu/tag", tag, comment)
+      | `(attr| kerodon $tag $[$comment]?) =>
+        return ("Kerodon", Database.kerodon, "https://kerodon.net/tag", tag, comment)
+      | _ => throwUnsupportedSyntax
+    let tagStr ← tag.getStacksTag
+    let comment := (comment.map (·.getString)).getD ""
+    let commentInDoc := if comment = "" then "" else s!" ({comment})"
+    let newDoc := [oldDoc, s!"[{SorK} Tag {tagStr}]({url}/{tagStr}){commentInDoc}"]
+    addDocStringCore decl <| "\n\n".intercalate (newDoc.filter (· != ""))
+    addTagEntry decl database tagStr <| comment
+  -- docstrings are immutable once an asynchronous elaboration task has been started
+  applicationTime := .beforeElaboration
 }
 
 end Mathlib.StacksTag
@@ -185,14 +196,13 @@ def traceStacksTags (db : Database) (verbose : Bool := false) :
   if entries.isEmpty then logInfo "No tags found." else
   let mut msgs := #[m!""]
   for d in entries do
-    let dname ← Command.liftCoreM do realizeGlobalConstNoOverloadWithInfo (mkIdent d.declName)
     let (parL, parR) := if d.comment.isEmpty then ("", "") else (" (", ")")
     let cmt := parL ++ d.comment ++ parR
     msgs := msgs.push
       m!"[Stacks Tag {d.tag}]({databaseURL db ++ d.tag}) \
-        corresponds to declaration '{dname}'.{cmt}"
+        corresponds to declaration '{.ofConstName d.declName}'.{cmt}"
     if verbose then
-      let dType := ((env.find? dname).getD default).type
+      let dType := ((env.find? d.declName).getD default).type
       msgs := (msgs.push m!"{dType}").push ""
   let msg := MessageData.joinSep msgs.toList "\n"
   logInfo msg

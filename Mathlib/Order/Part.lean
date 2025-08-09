@@ -21,13 +21,13 @@ variable {f : α → Part β} {g : α → β → Part γ}
 lemma Monotone.partBind (hf : Monotone f) (hg : Monotone g) :
     Monotone fun x ↦ (f x).bind (g x) := by
   rintro x y h a
-  simp only [and_imp, exists_prop, Part.bind_eq_bind, Part.mem_bind_iff, exists_imp]
+  simp only [and_imp, Part.mem_bind_iff, exists_imp]
   exact fun b hb ha ↦ ⟨b, hf h _ hb, hg h _ _ ha⟩
 
 lemma Antitone.partBind (hf : Antitone f) (hg : Antitone g) :
     Antitone fun x ↦ (f x).bind (g x) := by
   rintro x y h a
-  simp only [and_imp, exists_prop, Part.bind_eq_bind, Part.mem_bind_iff, exists_imp]
+  simp only [and_imp, Part.mem_bind_iff, exists_imp]
   exact fun b hb ha ↦ ⟨b, hf h _ hb, hg h _ _ ha⟩
 
 end bind
@@ -61,7 +61,5 @@ namespace OrderHom
 def partBind (f : α →o Part β) (g : α →o β → Part γ) : α →o Part γ where
   toFun x := (f x).bind (g x)
   monotone' := f.2.partBind g.2
-
-@[deprecated (since := "2024-07-04")] alias bind := partBind
 
 end OrderHom

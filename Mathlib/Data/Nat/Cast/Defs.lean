@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Gabriel Ebner
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Tactic.SplitIfs
+import Mathlib.Tactic.OfNat
 
 /-!
 # Cast of natural numbers
@@ -34,7 +35,7 @@ protected def Nat.unaryCast [One R] [Zero R] [Add R] : ℕ → R
 
 /-- A type class for natural numbers which are greater than or equal to `2`. -/
 class Nat.AtLeastTwo (n : ℕ) : Prop where
-  prop : n ≥ 2
+  prop : 2 ≤ n
 
 instance instNatAtLeastTwo {n : ℕ} : Nat.AtLeastTwo (n + 2) where
   prop := Nat.succ_le_succ <| Nat.succ_le_succ <| Nat.zero_le _
@@ -62,15 +63,14 @@ library_note "no_index around OfNat.ofNat"
 When writing lemmas about `OfNat.ofNat` that assume `Nat.AtLeastTwo`, the term needs to be wrapped
 in `no_index` so as not to confuse `simp`, as `no_index (OfNat.ofNat n)`.
 
+Rather than referencing this library note, use `ofNat(n)` as a shorthand for
+`no_index (OfNat.ofNat n)`.
+
 Some discussion is [on Zulip here](https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.E2.9C.94.20Polynomial.2Ecoeff.20example/near/395438147).
 -/
 
 @[simp, norm_cast] theorem Nat.cast_ofNat {n : ℕ} [NatCast R] [Nat.AtLeastTwo n] :
-  (Nat.cast (no_index (OfNat.ofNat n)) : R) = OfNat.ofNat n := rfl
-
-theorem Nat.cast_eq_ofNat {n : ℕ} [NatCast R] [Nat.AtLeastTwo n] :
-    (Nat.cast n : R) = OfNat.ofNat n :=
-  rfl
+    (Nat.cast ofNat(n) : R) = ofNat(n) := rfl
 
 /-! ### Additive monoids with one -/
 
@@ -164,9 +164,13 @@ theorem binCast_eq [AddMonoidWithOne R] (n : ℕ) :
         rw [h1, Nat.add_comm 1, Nat.succ_mul, Nat.one_mul]
         simp only [Nat.cast_add, Nat.cast_one]
 
-theorem cast_two [AddMonoidWithOne R] : ((2 : ℕ) : R) = (2 : R) := rfl
+theorem cast_two [NatCast R] : ((2 : ℕ) : R) = (2 : R) := rfl
 
-attribute [simp, norm_cast] Int.natAbs_ofNat
+theorem cast_three [NatCast R] : ((3 : ℕ) : R) = (3 : R) := rfl
+
+theorem cast_four [NatCast R] : ((4 : ℕ) : R) = (4 : R) := rfl
+
+attribute [simp, norm_cast] Int.natAbs_natCast
 
 end Nat
 
@@ -178,9 +182,8 @@ protected abbrev AddMonoidWithOne.unary [AddMonoid R] [One R] : AddMonoidWithOne
 protected abbrev AddMonoidWithOne.binary [AddMonoid R] [One R] : AddMonoidWithOne R :=
   { ‹One R›, ‹AddMonoid R› with
     natCast := Nat.binCast,
-    natCast_zero := by simp only [Nat.binCast, Nat.cast],
+    natCast_zero := by simp only [Nat.binCast],
     natCast_succ := fun n => by
-      dsimp only [NatCast.natCast]
       letI : AddMonoidWithOne R := AddMonoidWithOne.unary
       rw [Nat.binCast_eq, Nat.binCast_eq, Nat.cast_succ] }
 
@@ -199,3 +202,15 @@ theorem three_add_one_eq_four [AddMonoidWithOne R] : 3 + 1 = (4 : R) := by
     ← Nat.cast_add, ← Nat.cast_add, ← Nat.cast_add]
   apply congrArg
   decide
+
+theorem two_add_two_eq_four [AddMonoidWithOne R] : 2 + 2 = (4 : R) := by
+  simp [← one_add_one_eq_two, ← Nat.cast_one, ← three_add_one_eq_four,
+    ← two_add_one_eq_three, add_assoc]
+
+section nsmul
+
+@[simp] lemma nsmul_one {A} [AddMonoidWithOne A] : ∀ n : ℕ, n • (1 : A) = n
+  | 0 => by simp [zero_nsmul]
+  | n + 1 => by simp [succ_nsmul, nsmul_one n]
+
+end nsmul

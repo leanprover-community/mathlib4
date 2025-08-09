@@ -3,11 +3,12 @@ Copyright (c) 2024 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.LinearAlgebra.Charpoly.ToMatrix
 import Mathlib.LinearAlgebra.Determinant
 import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.RingTheory.Artinian
+import Mathlib.RingTheory.Artinian.Module
 
 /-!
 # Results on the eigenvalue 0
@@ -33,9 +34,9 @@ variable {R K M : Type*} [CommRing R] [IsDomain R] [Field K] [AddCommGroup M]
 variable [Module R M] [Module.Finite R M] [Module.Free R M]
 variable [Module K M] [Module.Finite K M]
 
-open FiniteDimensional Module.Free Polynomial
+open Module Module.Free Polynomial
 
-lemma IsNilpotent.charpoly_eq_X_pow_finrank (φ : Module.End R M) (h : IsNilpotent φ) :
+lemma IsNilpotent.charpoly_eq_X_pow_finrank {φ : Module.End R M} (h : IsNilpotent φ) :
     φ.charpoly = X ^ finrank R M := by
   rw [← sub_eq_zero]
   apply IsNilpotent.eq_zero
@@ -45,6 +46,11 @@ lemma IsNilpotent.charpoly_eq_X_pow_finrank (φ : Module.End R M) (h : IsNilpote
 
 namespace LinearMap
 
+lemma isNilpotent_iff_charpoly (φ : End R M) :
+    IsNilpotent φ ↔ charpoly φ = X ^ finrank R M :=
+  ⟨IsNilpotent.charpoly_eq_X_pow_finrank,
+    fun h ↦ ⟨finrank R M, by rw [← @aeval_X_pow R, ← h, aeval_self_charpoly φ]⟩⟩
+
 open Module.Free in
 lemma charpoly_nilpotent_tfae [IsNoetherian R M] (φ : Module.End R M) :
     List.TFAE [
@@ -52,15 +58,14 @@ lemma charpoly_nilpotent_tfae [IsNoetherian R M] (φ : Module.End R M) :
       φ.charpoly = X ^ finrank R M,
       ∀ m : M, ∃ (n : ℕ), (φ ^ n) m = 0,
       natTrailingDegree φ.charpoly = finrank R M ] := by
-  tfae_have 1 → 2
-  · apply IsNilpotent.charpoly_eq_X_pow_finrank
+  tfae_have 1 → 2 := IsNilpotent.charpoly_eq_X_pow_finrank
   tfae_have 2 → 3
-  · intro h m
+  | h, m => by
     use finrank R M
     suffices φ ^ finrank R M = 0 by simp only [this, LinearMap.zero_apply]
     simpa only [h, map_pow, aeval_X] using φ.aeval_self_charpoly
   tfae_have 3 → 1
-  · intro h
+  | h => by
     obtain ⟨n, hn⟩ := Filter.eventually_atTop.mp <| φ.eventually_iSup_ker_pow_eq
     use n
     ext x
@@ -68,8 +73,8 @@ lemma charpoly_nilpotent_tfae [IsNoetherian R M] (φ : Module.End R M) :
     obtain ⟨k, hk⟩ := h x
     rw [← mem_ker] at hk
     exact Submodule.mem_iSup_of_mem _ hk
-  tfae_have 2 ↔ 4
-  · rw [← φ.charpoly_natDegree, φ.charpoly_monic.eq_X_pow_iff_natTrailingDegree_eq_natDegree]
+  tfae_have 2 ↔ 4 := by
+    rw [← φ.charpoly_natDegree, φ.charpoly_monic.eq_X_pow_iff_natTrailingDegree_eq_natDegree]
   tfae_finish
 
 lemma charpoly_eq_X_pow_iff [IsNoetherian R M] (φ : Module.End R M) :
@@ -85,27 +90,25 @@ lemma hasEigenvalue_zero_tfae (φ : Module.End K M) :
       LinearMap.det φ = 0,
       ⊥ < ker φ,
       ∃ (m : M), m ≠ 0 ∧ φ m = 0 ] := by
-  tfae_have 1 ↔ 2
-  · exact Module.End.hasEigenvalue_iff_isRoot
-  tfae_have 2 → 3
-  · obtain ⟨F, hF⟩ := minpoly_dvd_charpoly φ
+  tfae_have 1 ↔ 2 := Module.End.hasEigenvalue_iff_isRoot
+  tfae_have 2 → 3 := by
+    obtain ⟨F, hF⟩ := minpoly_dvd_charpoly φ
     simp only [IsRoot.def, constantCoeff_apply, coeff_zero_eq_eval_zero, hF, eval_mul]
     intro h; rw [h, zero_mul]
-  tfae_have 3 → 4
-  · rw [← LinearMap.det_toMatrix (chooseBasis K M), Matrix.det_eq_sign_charpoly_coeff,
+  tfae_have 3 → 4 := by
+    rw [← LinearMap.det_toMatrix (chooseBasis K M), Matrix.det_eq_sign_charpoly_coeff,
       constantCoeff_apply, charpoly]
     intro h; rw [h, mul_zero]
-  tfae_have 4 → 5
-  · exact bot_lt_ker_of_det_eq_zero
-  tfae_have 5 → 6
-  · contrapose!
+  tfae_have 4 → 5 := bot_lt_ker_of_det_eq_zero
+  tfae_have 5 → 6 := by
+    contrapose!
     simp only [not_bot_lt_iff, eq_bot_iff]
     intro h x
     simp only [mem_ker, Submodule.mem_bot]
     contrapose!
     apply h
   tfae_have 6 → 1
-  · rintro ⟨x, h1, h2⟩
+  | ⟨x, h1, h2⟩ => by
     apply Module.End.hasEigenvalue_of_hasEigenvector ⟨_, h1⟩
     simpa only [Module.End.eigenspace_zero, mem_ker] using h2
   tfae_finish
@@ -135,7 +138,7 @@ lemma finrank_maxGenEigenspace (φ : Module.End K M) :
     finrank K (φ.maxGenEigenspace 0) = natTrailingDegree (φ.charpoly) := by
   set V := φ.maxGenEigenspace 0
   have hV : V = ⨆ (n : ℕ), ker (φ ^ n) := by
-    simp [V, Module.End.maxGenEigenspace, Module.End.genEigenspace]
+    simp [V, ← Module.End.iSup_genEigenspace_eq, Module.End.genEigenspace_nat]
   let W := ⨅ (n : ℕ), LinearMap.range (φ ^ n)
   have hVW : IsCompl V W := by
     rw [hV]
@@ -145,13 +148,13 @@ lemma finrank_maxGenEigenspace (φ : Module.End K M) :
       forall_exists_index]
     intro x n hx
     use n
-    rw [← LinearMap.mul_apply, ← pow_succ, pow_succ', LinearMap.mul_apply, hx, map_zero]
+    rw [← Module.End.mul_apply, ← pow_succ, pow_succ', Module.End.mul_apply, hx, map_zero]
   have hφW : ∀ x ∈ W, φ x ∈ W := by
     simp only [W, Submodule.mem_iInf, mem_range]
     intro x H n
     obtain ⟨y, rfl⟩ := H n
     use φ y
-    rw [← LinearMap.mul_apply, ← pow_succ, pow_succ', LinearMap.mul_apply]
+    rw [← Module.End.mul_apply, ← pow_succ, pow_succ', Module.End.mul_apply]
   let F := φ.restrict hφV
   let G := φ.restrict hφW
   let ψ := F.prodMap G
@@ -163,7 +166,7 @@ lemma finrank_maxGenEigenspace (φ : Module.End K M) :
     apply b.ext
     simp only [Basis.prod_apply, coe_inl, coe_inr, prodMap_apply, LinearEquiv.conj_apply,
       LinearEquiv.symm_symm, Submodule.coe_prodEquivOfIsCompl, coe_comp, LinearEquiv.coe_coe,
-      Function.comp_apply, coprod_apply, Submodule.coeSubtype, map_add, Sum.forall, Sum.elim_inl,
+      Function.comp_apply, coprod_apply, Submodule.coe_subtype, map_add, Sum.forall, Sum.elim_inl,
       map_zero, ZeroMemClass.coe_zero, add_zero, LinearEquiv.eq_symm_apply, and_self,
       Submodule.coe_prodEquivOfIsCompl', restrict_coe_apply, implies_true, Sum.elim_inr, zero_add,
       e, V, W, ψ, F, G, b]
@@ -190,8 +193,6 @@ lemma finrank_maxGenEigenspace (φ : Module.End K M) :
   refine .trans ?_ hx
   generalize_proofs h'
   clear hx
-  induction n with
-  | zero => simp only [pow_zero, one_apply]
-  | succ n ih => simp only [pow_succ', LinearMap.mul_apply, ih, restrict_apply]
+  induction n <;> simp [pow_succ', *]
 
 end LinearMap

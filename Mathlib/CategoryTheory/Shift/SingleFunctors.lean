@@ -25,7 +25,7 @@ which sends an object `X : C` to a complex where `X` sits in a single degree.
 
 -/
 
-open CategoryTheory Category ZeroObject Limits
+open CategoryTheory Category ZeroObject Limits Functor
 
 variable (C D E E' : Type*) [Category C] [Category D] [Category E] [Category E']
   (A : Type*) [AddMonoid A] [HasShift D A] [HasShift E A] [HasShift E' A]
@@ -85,8 +85,8 @@ lemma shiftIso_add'_hom_app (n m mn : A) (hnm : m + n = mn) (a a' a'' : A)
 lemma shiftIso_add'_inv_app (n m mn : A) (hnm : m + n = mn) (a a' a'' : A)
     (ha' : n + a = a') (ha'' : m + a' = a'') (X : C) :
     (F.shiftIso mn a a'' (by rw [← hnm, ← ha'', ← ha', add_assoc])).inv.app X =
-        (F.shiftIso n a a' ha').inv.app X ≫
-        ((F.shiftIso m a' a'' ha'').inv.app X)⟦n⟧' ≫
+      (F.shiftIso n a a' ha').inv.app X ≫
+      ((F.shiftIso m a' a'' ha'').inv.app X)⟦n⟧' ≫
       (shiftFunctorAdd' D m n mn hnm).inv.app ((F.functor a'').obj X) := by
   simp [F.shiftIso_add' n m mn hnm a a' a'' ha' ha'']
 
@@ -108,7 +108,7 @@ structure Hom where
   /-- a family of natural transformations `F.functor a ⟶ G.functor a` -/
   hom (a : A) : F.functor a ⟶ G.functor a
   comm (n a a' : A) (ha' : n + a = a') : (F.shiftIso n a a' ha').hom ≫ hom a =
-    whiskerRight (hom a') (shiftFunctor D n) ≫ (G.shiftIso n a a' ha').hom := by aesop_cat
+    whiskerRight (hom a') (shiftFunctor D n) ≫ (G.shiftIso n a a' ha').hom := by cat_disch
 
 namespace Hom
 
@@ -118,7 +118,7 @@ attribute [local simp] comm comm_assoc
 /-- The identity morphism in `SingleFunctors C D A`. -/
 @[simps]
 def id : Hom F F where
-  hom a := 𝟙 _
+  hom _ := 𝟙 _
 
 variable {F G H}
 
@@ -158,7 +158,6 @@ def isoMk (iso : ∀ a, (F.functor a ≅ G.functor a))
   inv :=
     { hom := fun a => (iso a).inv
       comm := fun n a a' ha' => by
-        dsimp only
         rw [← cancel_mono (iso a).hom, assoc, assoc, Iso.inv_hom_id, comp_id, comm,
           ← whiskerRight_comp_assoc, Iso.inv_hom_id, whiskerRight_id', id_comp] }
 
@@ -168,7 +167,7 @@ variable (C D)
 @[simps]
 def evaluation (a : A) : SingleFunctors C D A ⥤ C ⥤ D where
   obj F := F.functor a
-  map {F G} φ := φ.hom a
+  map {_ _} φ := φ.hom a
 
 variable {C D}
 
@@ -237,7 +236,7 @@ variable {C E' A}
 @[simps!]
 def postcompPostcompIso (G : D ⥤ E) (G' : E ⥤ E') [G.CommShift A] [G'.CommShift A] :
     (F.postcomp G).postcomp G' ≅ F.postcomp (G ⋙ G') :=
-  isoMk (fun a => Functor.associator _ _ _) (fun n a a' ha' => by
+  isoMk (fun _ => Functor.associator _ _ _) (fun n a a' ha' => by
     ext X
     simp [Functor.commShiftIso_comp_inv_app])
 
@@ -249,8 +248,7 @@ def postcompIsoOfIso {G G' : D ⥤ E} (e : G ≅ G') [G.CommShift A] [G'.CommShi
     F.postcomp G ≅ F.postcomp G' :=
   isoMk (fun a => isoWhiskerLeft (F.functor a) e) (fun n a a' ha' => by
     ext X
-    dsimp
-    simp [NatTrans.CommShift.shift_app e.hom n])
+    simp [NatTrans.shift_app e.hom n])
 
 end SingleFunctors
 

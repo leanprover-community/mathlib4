@@ -18,6 +18,8 @@ Similarly, we define
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 universe v' u' v u
 
 open CategoryTheory Category Limits
@@ -37,11 +39,11 @@ noncomputable def singleFunctors : SingleFunctors C (CochainComplex C ℤ) ℤ w
     (fun X => Hom.isoOfComponents
       (fun i => eqToIso (by
         obtain rfl : a' = a + n := by omega
-        dsimp [CategoryTheory.shiftFunctor, shiftMonoidalFunctor, single]
         by_cases h : i = a
         · subst h
-          simp only [ite_true]
-        · rw [if_neg h, if_neg (fun h' => h (by omega))])) (by simp))
+          simp only [Functor.comp_obj, shiftFunctor_obj_X', single_obj_X_self]
+        · dsimp [single]
+          rw [if_neg h, if_neg (fun h' => h (by omega))])))
     (fun {X Y} f => by
       obtain rfl : a' = a + n := by omega
       ext
@@ -66,6 +68,12 @@ consisting of `X` in degree `n : ℤ` and zero otherwise.
 (This is definitionally equal to `HomologicalComplex.single C (up ℤ) n`,
 but `singleFunctor C n` is the preferred term when interactions with shifts are relevant.) -/
 noncomputable abbrev singleFunctor (n : ℤ) := (singleFunctors C).functor n
+
+instance (n : ℤ) : (singleFunctor C n).Full :=
+  inferInstanceAs (single _ _ _).Full
+
+instance (n : ℤ) : (singleFunctor C n).Faithful :=
+  inferInstanceAs (single _ _ _).Faithful
 
 end CochainComplex
 

@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2022 Scott Morrison. All rights reserved.
+Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.CategoryTheory.Linear.Basic
@@ -51,18 +51,9 @@ theorem isScalarTower_of_algebra_moduleCat (M : ModuleCat.{v} A) : IsScalarTower
 attribute [scoped instance] ModuleCat.isScalarTower_of_algebra_moduleCat
 
 -- We verify that the morphism spaces become `k`-modules.
-example (M N : ModuleCat.{v} A) : Module k (M ⟶ N) := LinearMap.module
--- Porting note: used to be `by infer_instance` instead of `LinearMap.module`
+example (M N : ModuleCat.{v} A) : Module k (M ⟶ N) := inferInstance
 
 instance linearOverField : Linear k (ModuleCat.{v} A) where
-  -- Porting note: used to be `by infer_instance` instead of `LinearMap.module`
-  homModule M N := LinearMap.module
-  smul_comp := by
-    -- Porting note: this was automatic by `aesop_cat`
-    intros
-    ext
-    dsimp only [coe_comp, Function.comp_apply]
-    rw [LinearMap.smul_apply, LinearMap.map_smul_of_tower]
-    rfl
+  homModule _ _ := inferInstance
 
 end ModuleCat

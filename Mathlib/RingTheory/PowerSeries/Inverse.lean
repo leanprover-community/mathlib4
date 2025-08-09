@@ -4,17 +4,19 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau, María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 
+import Mathlib.Algebra.Polynomial.FieldDivision
 import Mathlib.RingTheory.DiscreteValuationRing.Basic
 import Mathlib.RingTheory.MvPowerSeries.Inverse
-import Mathlib.RingTheory.PowerSeries.Basic
-import Mathlib.RingTheory.PowerSeries.Order
+import Mathlib.RingTheory.PowerSeries.NoZeroDivisors
 import Mathlib.RingTheory.LocalRing.ResidueField.Defs
+import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
+import Mathlib.Data.ENat.Lattice
 
 /-! # Formal power series - Inverses
 
 If the constant coefficient of a formal (univariate) power series is invertible,
 then this formal power series is invertible.
-(See the discussion in `Mathlib.RingTheory.MvPowerSeries.Inverse` for
+(See the discussion in `Mathlib/RingTheory/MvPowerSeries/Inverse.lean` for
 the construction.)
 
 Formal (univariate) power series over a local ring form a local ring.
@@ -54,8 +56,7 @@ theorem coeff_inv_aux (n : ℕ) (a : R) (φ : R⟦X⟧) :
         -a *
           ∑ x ∈ antidiagonal n,
             if x.2 < n then coeff R x.1 φ * coeff R x.2 (inv.aux a φ) else 0 := by
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-  erw [coeff, inv.aux, MvPowerSeries.coeff_inv_aux]
+  rw [coeff, inv.aux, MvPowerSeries.coeff_inv_aux]
   simp only [Finsupp.single_eq_zero]
   split_ifs; · rfl
   congr 1
@@ -67,11 +68,11 @@ theorem coeff_inv_aux (n : ℕ) (a : R) (φ : R⟦X⟧) :
   · aesop
   · aesop
   · rintro ⟨i, j⟩ _hij
-    obtain H | H := le_or_lt n j
+    obtain H | H := le_or_gt n j
     · aesop
     rw [if_pos H, if_pos]
     · rfl
-    refine ⟨?_, fun hh ↦ H.not_le ?_⟩
+    refine ⟨?_, fun hh ↦ H.not_ge ?_⟩
     · rintro ⟨⟩
       simpa [Finsupp.single_eq_same] using le_of_lt H
     · simpa [Finsupp.single_eq_same] using hh ()
@@ -151,11 +152,10 @@ theorem inv_eq_zero {φ : k⟦X⟧} : φ⁻¹ = 0 ↔ constantCoeff k φ = 0 :=
 theorem zero_inv : (0 : k⟦X⟧)⁻¹ = 0 :=
   MvPowerSeries.zero_inv
 
--- Porting note (#10618): simp can prove this.
--- @[simp]
+@[simp]
 theorem invOfUnit_eq (φ : k⟦X⟧) (h : constantCoeff k φ ≠ 0) :
     invOfUnit φ (Units.mk0 _ h) = φ⁻¹ :=
-  MvPowerSeries.invOfUnit_eq _ _
+  rfl
 
 @[simp]
 theorem invOfUnit_eq' (φ : k⟦X⟧) (u : Units k) (h : constantCoeff k φ = u) :
@@ -200,55 +200,48 @@ theorem smul_inv (r : k) (φ : k⟦X⟧) : (r • φ)⁻¹ = r⁻¹ • φ⁻¹ 
   MvPowerSeries.smul_inv _ _
 
 /-- `firstUnitCoeff` is the non-zero coefficient whose index is `f.order`, seen as a unit of the
-  field. It is obtained using `divided_by_X_pow_order`, defined in `PowerSeries.Order`-/
+  field. It is obtained using `divided_by_X_pow_order`, defined in `PowerSeries.Order`. -/
 def firstUnitCoeff {f : k⟦X⟧} (hf : f ≠ 0) : kˣ :=
-  let d := f.order.get (order_finite_iff_ne_zero.mpr hf)
-  have f_const : coeff k d f ≠ 0 := by apply coeff_order
-  have : Invertible (constantCoeff k (divided_by_X_pow_order hf)) := by
+  have : Invertible (constantCoeff k (divXPowOrder f)) := by
     apply invertibleOfNonzero
-    convert f_const using 1
-    rw [← coeff_zero_eq_constantCoeff, ← zero_add d]
-    convert (coeff_X_pow_mul (exists_eq_mul_right_of_dvd (X_pow_order_dvd
-      (order_finite_iff_ne_zero.mpr hf))).choose d 0).symm
-    exact (self_eq_X_pow_order_mul_divided_by_X_pow_order hf).symm
-  unitOfInvertible (constantCoeff k (divided_by_X_pow_order hf))
+    simpa [constantCoeff_divXPowOrder_eq_zero_iff.not]
+  unitOfInvertible (constantCoeff k (divXPowOrder f))
 
 /-- `Inv_divided_by_X_pow_order` is the inverse of the element obtained by diving a non-zero power
 series by the largest power of `X` dividing it. Useful to create a term of type `Units`, done in
 `Unit_divided_by_X_pow_order` -/
 def Inv_divided_by_X_pow_order {f : k⟦X⟧} (hf : f ≠ 0) : k⟦X⟧ :=
-  invOfUnit (divided_by_X_pow_order hf) (firstUnitCoeff hf)
+  invOfUnit (divXPowOrder f) (firstUnitCoeff hf)
 
 @[simp]
 theorem Inv_divided_by_X_pow_order_rightInv {f : k⟦X⟧} (hf : f ≠ 0) :
-    divided_by_X_pow_order hf * Inv_divided_by_X_pow_order hf = 1 :=
-  mul_invOfUnit (divided_by_X_pow_order hf) (firstUnitCoeff hf) rfl
+    divXPowOrder f * Inv_divided_by_X_pow_order hf = 1 :=
+  mul_invOfUnit (divXPowOrder f) (firstUnitCoeff hf) rfl
 
 @[simp]
 theorem Inv_divided_by_X_pow_order_leftInv {f : k⟦X⟧} (hf : f ≠ 0) :
-    (Inv_divided_by_X_pow_order hf) * (divided_by_X_pow_order hf) = 1 := by
+    Inv_divided_by_X_pow_order hf * divXPowOrder f = 1 := by
   rw [mul_comm]
-  exact mul_invOfUnit (divided_by_X_pow_order hf) (firstUnitCoeff hf) rfl
+  exact mul_invOfUnit (divXPowOrder f) (firstUnitCoeff hf) rfl
 
-open scoped Classical
-
+open scoped Classical in
 /-- `Unit_of_divided_by_X_pow_order` is the unit power series obtained by dividing a non-zero
 power series by the largest power of `X` that divides it. -/
 def Unit_of_divided_by_X_pow_order (f : k⟦X⟧) : k⟦X⟧ˣ :=
   if hf : f = 0 then 1
   else
-    { val := divided_by_X_pow_order hf
+    { val := divXPowOrder f
       inv := Inv_divided_by_X_pow_order hf
       val_inv := Inv_divided_by_X_pow_order_rightInv hf
       inv_val := Inv_divided_by_X_pow_order_leftInv hf }
 
 theorem isUnit_divided_by_X_pow_order {f : k⟦X⟧} (hf : f ≠ 0) :
-    IsUnit (divided_by_X_pow_order hf) :=
+    IsUnit (divXPowOrder f) :=
   ⟨Unit_of_divided_by_X_pow_order f,
     by simp only [Unit_of_divided_by_X_pow_order, dif_neg hf, Units.val_mk]⟩
 
 theorem Unit_of_divided_by_X_pow_order_nonzero {f : k⟦X⟧} (hf : f ≠ 0) :
-    ↑(Unit_of_divided_by_X_pow_order f) = divided_by_X_pow_order hf := by
+    ↑(Unit_of_divided_by_X_pow_order f) = divXPowOrder f := by
   simp only [Unit_of_divided_by_X_pow_order, dif_neg hf, Units.val_mk]
 
 @[simp]
@@ -256,57 +249,58 @@ theorem Unit_of_divided_by_X_pow_order_zero : Unit_of_divided_by_X_pow_order (0 
   simp only [Unit_of_divided_by_X_pow_order, dif_pos]
 
 theorem eq_divided_by_X_pow_order_Iff_Unit {f : k⟦X⟧} (hf : f ≠ 0) :
-    f = divided_by_X_pow_order hf ↔ IsUnit f :=
+    f = divXPowOrder f ↔ IsUnit f :=
   ⟨fun h ↦ by rw [h]; exact isUnit_divided_by_X_pow_order hf, fun h ↦ by
-    have : f.order.get (order_finite_iff_ne_zero.mpr hf) = 0 := by
-      simp only [order_zero_of_unit h, PartENat.get_zero]
-    convert (self_eq_X_pow_order_mul_divided_by_X_pow_order hf).symm
-    simp only [this, pow_zero, one_mul]⟩
+    have : f.order = 0 := by
+      simp [order_zero_of_unit h]
+    conv_lhs => rw [← X_pow_order_mul_divXPowOrder (f := f), this, ENat.toNat_zero,
+      pow_zero, one_mul]⟩
 
 end Field
 
-section LocalRing
+section IsLocalRing
 
-variable {S : Type*} [CommRing R] [CommRing S] (f : R →+* S) [IsLocalRingHom f]
+variable {S : Type*} [CommRing R] [CommRing S] (f : R →+* S) [IsLocalHom f]
 
-instance map.isLocalRingHom : IsLocalRingHom (map f) :=
-  MvPowerSeries.map.isLocalRingHom f
+@[instance]
+theorem map.isLocalHom : IsLocalHom (map f) :=
+  MvPowerSeries.map.isLocalHom f
 
-variable [LocalRing R] [LocalRing S]
+variable [IsLocalRing R]
 
-instance : LocalRing R⟦X⟧ :=
-  { inferInstanceAs <| LocalRing <| MvPowerSeries Unit R with }
+instance : IsLocalRing R⟦X⟧ :=
+  { inferInstanceAs <| IsLocalRing <| MvPowerSeries Unit R with }
 
 
-end LocalRing
+end IsLocalRing
 
-section DiscreteValuationRing
+section IsDiscreteValuationRing
 
 variable {k : Type*} [Field k]
 
-open DiscreteValuationRing
+open IsDiscreteValuationRing
 
 theorem hasUnitMulPowIrreducibleFactorization :
     HasUnitMulPowIrreducibleFactorization k⟦X⟧ :=
   ⟨X, And.intro X_irreducible
       (by
         intro f hf
-        use f.order.get (order_finite_iff_ne_zero.mpr hf)
+        use f.order.toNat
         use Unit_of_divided_by_X_pow_order f
         simp only [Unit_of_divided_by_X_pow_order_nonzero hf]
-        exact self_eq_X_pow_order_mul_divided_by_X_pow_order hf)⟩
+        exact X_pow_order_mul_divXPowOrder)⟩
 
 instance : UniqueFactorizationMonoid k⟦X⟧ :=
   hasUnitMulPowIrreducibleFactorization.toUniqueFactorizationMonoid
 
-instance : DiscreteValuationRing k⟦X⟧ :=
+instance : IsDiscreteValuationRing k⟦X⟧ :=
   ofHasUnitMulPowIrreducibleFactorization hasUnitMulPowIrreducibleFactorization
 
 instance isNoetherianRing : IsNoetherianRing k⟦X⟧ :=
   PrincipalIdealRing.isNoetherianRing
 
 /-- The maximal ideal of `k⟦X⟧` is generated by `X`. -/
-theorem maximalIdeal_eq_span_X : LocalRing.maximalIdeal (k⟦X⟧) = Ideal.span {X} := by
+theorem maximalIdeal_eq_span_X : IsLocalRing.maximalIdeal (k⟦X⟧) = Ideal.span {X} := by
   have hX : (Ideal.span {(X : k⟦X⟧)}).IsMaximal := by
     rw [Ideal.isMaximal_iff]
     constructor
@@ -324,7 +318,7 @@ theorem maximalIdeal_eq_span_X : LocalRing.maximalIdeal (k⟦X⟧) = Ideal.span 
         rfl
       rw [← Ideal.eq_top_iff_one]
       apply Ideal.eq_top_of_isUnit_mem I hfI0 (IsUnit.map (C k) (Ne.isUnit hfX))
-  rw [LocalRing.eq_maximalIdeal hX]
+  rw [IsLocalRing.eq_maximalIdeal hX]
 
 instance : NormalizationMonoid k⟦X⟧ where
   normUnit f := (Unit_of_divided_by_X_pow_order f)⁻¹
@@ -333,7 +327,7 @@ instance : NormalizationMonoid k⟦X⟧ where
     simp only [← mul_inv, inv_inj]
     simp only [Unit_of_divided_by_X_pow_order_nonzero (mul_ne_zero hf hg),
       Unit_of_divided_by_X_pow_order_nonzero hf, Unit_of_divided_by_X_pow_order_nonzero hg,
-      Units.ext_iff, val_unitOfInvertible, Units.val_mul, divided_by_X_pow_orderMul]
+      Units.ext_iff, Units.val_mul, divXPowOrder_mul_divXPowOrder]
   normUnit_coe_units := by
     intro u
     set u₀ := u.1 with hu
@@ -347,20 +341,21 @@ theorem normUnit_X : normUnit (X : k⟦X⟧) = 1 := by
 theorem X_eq_normalizeX : (X : k⟦X⟧) = normalize X := by
   simp only [normalize_apply, normUnit_X, Units.val_one, mul_one]
 
-open UniqueFactorizationMonoid Classical
+open UniqueFactorizationMonoid
 
+open scoped Classical in
 theorem normalized_count_X_eq_of_coe {P : k[X]} (hP : P ≠ 0) :
     Multiset.count PowerSeries.X (normalizedFactors (P : k⟦X⟧)) =
       Multiset.count Polynomial.X (normalizedFactors P) := by
   apply eq_of_forall_le_iff
-  simp only [← PartENat.coe_le_coe]
-  rw [X_eq_normalize, PowerSeries.X_eq_normalizeX, ← multiplicity_eq_count_normalizedFactors
-    irreducible_X hP, ← multiplicity_eq_count_normalizedFactors X_irreducible] <;>
-  simp only [← multiplicity.pow_dvd_iff_le_multiplicity, Polynomial.X_pow_dvd_iff,
+  simp only [← Nat.cast_le (α := ℕ∞)]
+  rw [X_eq_normalize, PowerSeries.X_eq_normalizeX, ← emultiplicity_eq_count_normalizedFactors
+    irreducible_X hP, ← emultiplicity_eq_count_normalizedFactors X_irreducible] <;>
+  simp only [← pow_dvd_iff_le_emultiplicity, Polynomial.X_pow_dvd_iff,
     PowerSeries.X_pow_dvd_iff, Polynomial.coeff_coe P, implies_true, ne_eq, coe_eq_zero_iff, hP,
     not_false_eq_true]
 
-open LocalRing
+open IsLocalRing
 
 theorem ker_coeff_eq_max_ideal : RingHom.ker (constantCoeff k) = maximalIdeal _ :=
   Ideal.ext fun _ ↦ by
@@ -372,7 +367,7 @@ def residueFieldOfPowerSeries : ResidueField k⟦X⟧ ≃+* k :=
   (Ideal.quotEquivOfEq (ker_coeff_eq_max_ideal).symm).trans
     (RingHom.quotientKerEquivOfSurjective constantCoeff_surj)
 
-end DiscreteValuationRing
+end IsDiscreteValuationRing
 
 
 end PowerSeries

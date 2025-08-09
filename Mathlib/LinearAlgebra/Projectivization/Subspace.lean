@@ -91,12 +91,10 @@ def gi : GaloisInsertion (span : Set (ℙ K V) → Subspace K V) SetLike.coe whe
   gc A B :=
     ⟨fun h => le_trans (subset_span _) h, by
       intro h x hx
-      induction' hx with y hy
-      · apply h
-        assumption
-      · apply B.mem_add
-        assumption'⟩
-  le_l_u S := subset_span _
+      induction hx with
+      | of => apply h; assumption
+      | mem_add => apply B.mem_add; assumption'⟩
+  le_l_u _ := subset_span _
   choice_eq _ _ := rfl
 
 /-- The span of a subspace is the subspace. -/
@@ -105,13 +103,11 @@ theorem span_coe (W : Subspace K V) : span ↑W = W :=
   GaloisInsertion.l_u_eq gi W
 
 /-- The infimum of two subspaces exists. -/
-instance instInf : Inf (Subspace K V) :=
+instance instInf : Min (Subspace K V) :=
   ⟨fun A B =>
     ⟨A ⊓ B, fun _v _w hv hw _hvw h1 h2 =>
       ⟨A.mem_add _ _ hv hw _ h1.1 h2.1, B.mem_add _ _ hv hw _ h1.2 h2.2⟩⟩⟩
 
--- Porting note: delete the name of this instance since it causes problem since hasInf is already
--- defined above
 /-- Infimums of arbitrary collections of subspaces exist. -/
 instance instInfSet : InfSet (Subspace K V) :=
   ⟨fun A =>
@@ -128,7 +124,7 @@ instance : CompleteLattice (Subspace K V) :=
         exact ha hE hx)
     inf_le_left := fun A B _ hx => (@inf_le_left _ _ A B) hx
     inf_le_right := fun A B _ hx => (@inf_le_right _ _ A B) hx
-    le_inf := fun A B _ h1 h2 _ hx => (le_inf h1 h2) hx }
+    le_inf := fun _ _ _ h1 h2 _ hx => (le_inf h1 h2) hx }
 
 instance subspaceInhabited : Inhabited (Subspace K V) where default := ⊤
 
@@ -153,6 +149,9 @@ span of that set. -/
 @[mono]
 theorem monotone_span : Monotone (span : Set (ℙ K V) → Subspace K V) :=
   gi.gc.monotone_l
+
+@[gcongr]
+lemma span_le_span {s t : Set (ℙ K V)} (hst : s ⊆ t) : span s ≤ span t := monotone_span hst
 
 theorem subset_span_trans {S T U : Set (ℙ K V)} (hST : S ⊆ span T) (hTU : T ⊆ span U) :
     S ⊆ span U :=

@@ -5,6 +5,7 @@ Authors: Riccardo Brasca
 -/
 import Mathlib.LinearAlgebra.Charpoly.Basic
 import Mathlib.LinearAlgebra.Matrix.Basis
+import Mathlib.RingTheory.Finiteness.Prod
 
 /-!
 
@@ -17,6 +18,9 @@ import Mathlib.LinearAlgebra.Matrix.Basis
 
 -/
 
+noncomputable section
+
+open Module Free Polynomial Matrix
 
 universe u v w
 
@@ -25,12 +29,6 @@ variable [AddCommGroup M] [Module R M] [Module.Free R M] [Module.Finite R M]
 variable [AddCommGroup M₁] [Module R M₁] [Module.Finite R M₁] [Module.Free R M₁]
 variable [AddCommGroup M₂] [Module R M₂] [Module.Finite R M₂] [Module.Free R M₂]
 variable (f : M →ₗ[R] M)
-
-open Matrix
-
-noncomputable section
-
-open Module.Free Polynomial Matrix
 
 namespace LinearMap
 
@@ -67,7 +65,8 @@ theorem charpoly_toMatrix {ι : Type w} [DecidableEq ι] [Fintype ι] (b : Basis
       rw [basis_toMatrix_mul_linearMap_toMatrix_mul_basis_toMatrix]
     _ = det (scalar ι' X - C.mapMatrix (φ₁ P * φ₂ A' * φ₃ Q)) := by
       rw [reindexLinearEquiv_mul, reindexLinearEquiv_mul]
-    _ = det (scalar ι' X - C.mapMatrix (φ₁ P) * C.mapMatrix A' * C.mapMatrix (φ₃ Q)) := by simp [φ₂]
+    _ = det (scalar ι' X - C.mapMatrix (φ₁ P) * C.mapMatrix A' * C.mapMatrix (φ₃ Q)) := by
+      simp [φ₁, φ₂, φ₃, ι']
     _ = det (scalar ι' X * C.mapMatrix (φ₁ P) * C.mapMatrix (φ₃ Q) -
           C.mapMatrix (φ₁ P) * C.mapMatrix A' * C.mapMatrix (φ₃ Q)) := by
       rw [Matrix.mul_assoc ((scalar ι') X), hPQ, Matrix.mul_one]
@@ -103,4 +102,4 @@ lemma LinearEquiv.charpoly_conj (e : M₁ ≃ₗ[R] M₂) (φ : Module.End R M�
   rw [← LinearMap.charpoly_toMatrix φ b, ← LinearMap.charpoly_toMatrix (e.conj φ) (b.map e)]
   congr 1
   ext i j : 1
-  simp [Matrix.charmatrix, LinearMap.toMatrix, Matrix.diagonal, LinearEquiv.conj_apply]
+  simp [LinearMap.toMatrix, LinearEquiv.conj_apply]

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Chris Hughes, Kevin Buzzard
 -/
 import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.Group.Units
+import Mathlib.Algebra.Group.Units.Basic
 
 /-!
 # Monoid homomorphisms and units
@@ -17,10 +17,23 @@ also contains unrelated results about `Units` that depend on `MonoidHom`.
 * `Units.map`: Turn a homomorphism from `α` to `β` monoids into a homomorphism from `αˣ` to `βˣ`.
 * `MonoidHom.toHomUnits`: Turn a homomorphism from a group `α` to `β` into a homomorphism from
   `α` to `βˣ`.
+* `IsLocalHom`: A predicate on monoid maps, requiring that it maps
+  nonunits to nonunits. For the local rings, that is, applied to their
+  multiplicative monoids, this means that the image of the unique
+  maximal ideal is again contained in the unique maximal ideal. This
+  is developed earlier, and in the generality of monoids, as it allows
+  its use in non-local-ring related contexts, but it does have the
+  strange consequence that it does not require local rings, or even rings.
+
+## TODO
+
+The results that don't mention homomorphisms should be proved (earlier?) in a different file and be
+used to golf the basic `Group` lemmas.
+
+Add a `@[to_additive]` version of `IsLocalHom`.
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 open Function
 
@@ -68,6 +81,11 @@ theorem coe_map (f : M →* N) (x : Mˣ) : ↑(map f x) = f x := rfl
 theorem coe_map_inv (f : M →* N) (u : Mˣ) : ↑(map f u)⁻¹ = f ↑u⁻¹ := rfl
 
 @[to_additive (attr := simp)]
+lemma map_mk (f : M →* N) (val inv : M) (val_inv inv_val) :
+    map f (mk val inv val_inv inv_val) = mk (f val) (f inv)
+      (by rw [← f.map_mul, val_inv, f.map_one]) (by rw [← f.map_mul, inv_val, f.map_one]) := rfl
+
+@[to_additive (attr := simp)]
 theorem map_comp (f : M →* N) (g : N →* P) : map (g.comp f) = (map g).comp (map f) := rfl
 
 @[to_additive]
@@ -88,6 +106,9 @@ variable {M}
 
 @[to_additive (attr := simp)]
 theorem coeHom_apply (x : Mˣ) : coeHom M x = ↑x := rfl
+
+@[to_additive]
+theorem coeHom_injective : Function.Injective (coeHom M) := Units.val_injective
 
 section DivisionMonoid
 
@@ -152,7 +173,7 @@ end MonoidHom
 
 namespace IsUnit
 
-variable {F G α M N : Type*} [FunLike F M N] [FunLike G N M]
+variable {F G M N : Type*} [FunLike F M N] [FunLike G N M]
 
 section Monoid
 
@@ -167,6 +188,7 @@ theorem of_leftInverse [MonoidHomClass G N M] {f : F} {x : M} (g : G)
     (hfg : Function.LeftInverse g f) (h : IsUnit (f x)) : IsUnit x := by
   simpa only [hfg x] using h.map g
 
+/-- Prefer `IsLocalHom.of_leftInverse`, but we can't get rid of this because of `ToAdditive`. -/
 @[to_additive]
 theorem _root_.isUnit_map_of_leftInverse [MonoidHomClass F M N] [MonoidHomClass G N M]
     {f : F} {x : M} (g : G) (hfg : Function.LeftInverse g f) :
@@ -194,3 +216,50 @@ theorem liftRight_inv_mul (f : M →* N) (h : ∀ x, IsUnit (f x)) (x) :
 
 end Monoid
 end IsUnit
+
+section IsLocalHom
+
+variable {G R S T F : Type*}
+
+variable [Monoid R] [Monoid S] [Monoid T] [FunLike F R S]
+
+/-- A map `f` between monoids is *local* if any `a` in the domain is a unit
+  whenever `f a` is a unit. See `IsLocalRing.local_hom_TFAE` for other equivalent
+  definitions in the local ring case - from where this concept originates, but it is useful in
+  other contexts, so we allow this generalisation in mathlib. -/
+class IsLocalHom (f : F) : Prop where
+  /-- A local homomorphism `f : R ⟶ S` will send nonunits of `R` to nonunits of `S`. -/
+  map_nonunit : ∀ a, IsUnit (f a) → IsUnit a
+
+theorem IsUnit.of_map (f : F) [IsLocalHom f] (a : R) (h : IsUnit (f a)) : IsUnit a :=
+  IsLocalHom.map_nonunit a h
+
+-- TODO : remove alias, change the parenthesis of `f` and `a`
+alias isUnit_of_map_unit := IsUnit.of_map
+
+variable [MonoidHomClass F R S]
+
+@[simp]
+theorem isUnit_map_iff (f : F) [IsLocalHom f] (a : R) : IsUnit (f a) ↔ IsUnit a :=
+  ⟨IsLocalHom.map_nonunit a, IsUnit.map f⟩
+
+theorem isLocalHom_of_leftInverse [FunLike G S R] [MonoidHomClass G S R]
+    {f : F} (g : G) (hfg : Function.LeftInverse g f) : IsLocalHom f where
+  map_nonunit a ha := by rwa [isUnit_map_of_leftInverse g hfg] at ha
+
+@[instance]
+theorem MonoidHom.isLocalHom_comp (g : S →* T) (f : R →* S) [IsLocalHom g]
+    [IsLocalHom f] : IsLocalHom (g.comp f) where
+  map_nonunit a := IsLocalHom.map_nonunit a ∘ IsLocalHom.map_nonunit (f := g) (f a)
+
+-- see note [lower instance priority]
+@[instance 100]
+theorem isLocalHom_toMonoidHom (f : F) [IsLocalHom f] :
+    IsLocalHom (f : R →* S) :=
+  ⟨IsLocalHom.map_nonunit (f := f)⟩
+
+theorem MonoidHom.isLocalHom_of_comp (f : R →* S) (g : S →* T) [IsLocalHom (g.comp f)] :
+    IsLocalHom f :=
+  ⟨fun _ ha => (isUnit_map_iff (g.comp f) _).mp (ha.map g)⟩
+
+end IsLocalHom

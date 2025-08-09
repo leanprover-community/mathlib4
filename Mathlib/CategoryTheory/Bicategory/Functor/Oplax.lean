@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
 import Mathlib.CategoryTheory.Bicategory.Functor.Prelax
+import Mathlib.Tactic.CategoryTheory.ToApp
 
 /-!
 # Oplax functors
@@ -57,36 +58,36 @@ structure OplaxFunctor (B : Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u�
   mapComp_naturality_left :
     ∀ {a b c : B} {f f' : a ⟶ b} (η : f ⟶ f') (g : b ⟶ c),
       map₂ (η ▷ g) ≫ mapComp f' g = mapComp f g ≫ map₂ η ▷ map g := by
-    aesop_cat
-  /-- Naturality of the lax functoriality constraight, on the right. -/
+    cat_disch
+  /-- Naturality of the lax functoriality constraint, on the right. -/
   mapComp_naturality_right :
     ∀ {a b c : B} (f : a ⟶ b) {g g' : b ⟶ c} (η : g ⟶ g'),
       map₂ (f ◁ η) ≫ mapComp f g' = mapComp f g ≫ map f ◁ map₂ η := by
-    aesop_cat
+    cat_disch
   /-- Oplax associativity. -/
   map₂_associator :
     ∀ {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d),
       map₂ (α_ f g h).hom ≫ mapComp f (g ≫ h) ≫ map f ◁ mapComp g h =
-    mapComp (f ≫ g) h ≫ mapComp f g ▷ map h ≫ (α_ (map f) (map g) (map h)).hom := by
-    aesop_cat
+      mapComp (f ≫ g) h ≫ mapComp f g ▷ map h ≫ (α_ (map f) (map g) (map h)).hom := by
+    cat_disch
   /-- Oplax left unity. -/
   map₂_leftUnitor :
     ∀ {a b : B} (f : a ⟶ b),
       map₂ (λ_ f).hom = mapComp (𝟙 a) f ≫ mapId a ▷ map f ≫ (λ_ (map f)).hom := by
-    aesop_cat
+    cat_disch
   /-- Oplax right unity. -/
   map₂_rightUnitor :
     ∀ {a b : B} (f : a ⟶ b),
       map₂ (ρ_ f).hom = mapComp f (𝟙 b) ≫ map f ◁ mapId b ≫ (ρ_ (map f)).hom := by
-    aesop_cat
+    cat_disch
 
 initialize_simps_projections OplaxFunctor (+toPrelaxFunctor, -obj, -map, -map₂)
 
 namespace OplaxFunctor
 
-attribute [reassoc (attr := simp)]
+attribute [reassoc (attr := simp), to_app (attr := simp)]
   mapComp_naturality_left mapComp_naturality_right map₂_associator
-attribute [simp, reassoc] map₂_leftUnitor map₂_rightUnitor
+attribute [simp, reassoc, to_app] map₂_leftUnitor map₂_rightUnitor
 
 section
 
@@ -95,7 +96,7 @@ add_decl_doc OplaxFunctor.toPrelaxFunctor
 
 variable (F : OplaxFunctor B C)
 
-@[reassoc]
+@[reassoc, to_app]
 lemma mapComp_assoc_right {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
     F.mapComp f (g ≫ h) ≫ F.map f ◁ F.mapComp g h = F.map₂ (α_ f g h).inv ≫
     F.mapComp (f ≫ g) h ≫ F.mapComp f g ▷ F.map h ≫
@@ -103,12 +104,26 @@ lemma mapComp_assoc_right {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d
   rw [← F.map₂_associator, ← F.map₂_comp_assoc]
   simp
 
-@[reassoc]
+@[reassoc, to_app]
 lemma mapComp_assoc_left {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
     F.mapComp (f ≫ g) h ≫ F.mapComp f g ▷ F.map h =
     F.map₂ (α_ f g h).hom ≫ F.mapComp f (g ≫ h) ≫ F.map f ◁ F.mapComp g h
     ≫ (α_ (F.map f) (F.map g) (F.map h)).inv := by
   simp
+
+@[reassoc]
+theorem mapComp_id_left {a b : B} (f : a ⟶ b) :
+    F.mapComp (𝟙 a) f ≫ F.mapId a ▷ F.map f = F.map₂ (λ_ f).hom ≫ (λ_ (F.map f)).inv := by
+  rw [Iso.eq_comp_inv]
+  simp only [Category.assoc]
+  rw [← F.map₂_leftUnitor]
+
+@[reassoc]
+theorem mapComp_id_right {a b : B} (f : a ⟶ b) :
+    F.mapComp f (𝟙 b) ≫ F.map f ◁ F.mapId b = F.map₂ (ρ_ f).hom ≫ (ρ_ (F.map f)).inv := by
+  rw [Iso.eq_comp_inv]
+  simp only [Category.assoc]
+  rw [← F.map₂_rightUnitor]
 
 /-- The identity oplax functor. -/
 @[simps]
@@ -153,18 +168,16 @@ def comp (F : OplaxFunctor B C) (G : OplaxFunctor C D) : OplaxFunctor B D where
 /-- A structure on an oplax functor that promotes an oplax functor to a pseudofunctor.
 
 See `Pseudofunctor.mkOfOplax`. -/
--- Porting note(#5171): linter not ported yet
--- @[nolint has_nonempty_instance]
 structure PseudoCore (F : OplaxFunctor B C) where
   /-- The isomorphism giving rise to the oplax unity constraint -/
   mapIdIso (a : B) : F.map (𝟙 a) ≅ 𝟙 (F.obj a)
   /-- The isomorphism giving rise to the oplax functoriality constraint -/
   mapCompIso {a b c : B} (f : a ⟶ b) (g : b ⟶ c) : F.map (f ≫ g) ≅ F.map f ≫ F.map g
   /-- `mapIdIso` gives rise to the oplax unity constraint -/
-  mapIdIso_hom : ∀ {a : B}, (mapIdIso a).hom = F.mapId a := by aesop_cat
+  mapIdIso_hom : ∀ {a : B}, (mapIdIso a).hom = F.mapId a := by cat_disch
   /-- `mapCompIso` gives rise to the oplax functoriality constraint -/
   mapCompIso_hom :
-    ∀ {a b c : B} (f : a ⟶ b) (g : b ⟶ c), (mapCompIso f g).hom = F.mapComp f g := by aesop_cat
+    ∀ {a b c : B} (f : a ⟶ b) (g : b ⟶ c), (mapCompIso f g).hom = F.mapComp f g := by cat_disch
 
 attribute [simp] PseudoCore.mapIdIso_hom PseudoCore.mapCompIso_hom
 

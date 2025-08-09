@@ -17,19 +17,26 @@ derivation associated to a vector field is left invariant iff the field is.
 Moreover we prove that `LeftInvariantDerivation I G` has the structure of a Lie algebra, hence
 implementing one of the possible definitions of the Lie algebra attached to a Lie group.
 
+Note that one can also define a Lie algebra on the space of left-invariant vector fields
+(see `instLieAlgebraGroupLieAlgebra`). For finite-dimensional `C^∞` real manifolds, the space of
+derivations can be canonically identified with the tangent space, and we recover the same Lie
+algebra structure (TODO: prove this). In other smoothness classes or on other
+fields, this identification is not always true, though, so the derivations point of view does not
+work in these settings. The left-invariant vector fields should
+therefore be favored to construct a theory of Lie groups in suitable generality.
 -/
 
 
 noncomputable section
 
-open scoped LieGroup Manifold Derivation
+open scoped LieGroup Manifold Derivation ContDiff
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞} {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) (G : Type*)
-  [TopologicalSpace G] [ChartedSpace H G] [Monoid G] [SmoothMul I G] (g h : G)
+  [TopologicalSpace G] [ChartedSpace H G] [Monoid G] [ContMDiffMul I ∞ G] (g h : G)
 
 -- Generate trivial has_sizeof instance. It prevents weird type class inference timeout problems
--- Porting note(#12096): removed @[nolint instance_priority], linter not ported yet
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/12096): removed @[nolint instance_priority], linter not ported yet
 -- @[local nolint instance_priority, local instance 10000]
 -- private def disable_has_sizeof {α} : SizeOf α :=
 --   ⟨fun _ => 0⟩
@@ -65,8 +72,7 @@ instance : LinearMapClass (LeftInvariantDerivation I G) 𝕜 C^∞⟮I, G; 𝕜�
   map_add f := map_add f.1
   map_smulₛₗ f := map_smul f.1.1
 
-variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {x : M} {r : 𝕜}
-  {X Y : LeftInvariantDerivation I G} {f f' : C^∞⟮I, G; 𝕜⟯}
+variable {r : 𝕜} {X Y : LeftInvariantDerivation I G} {f f' : C^∞⟮I, G; 𝕜⟯}
 
 theorem toFun_eq_coe : X.toFun = ⇑X :=
   rfl
@@ -91,27 +97,22 @@ theorem left_invariant' :
     𝒅ₕ (smoothLeftMul_one I g) (Derivation.evalAt (1 : G) ↑X) = Derivation.evalAt g ↑X :=
   left_invariant'' X g
 
--- Porting note: was `@[simp]` but `_root_.map_add` can prove it now
-protected theorem map_add : X (f + f') = X f + X f' := map_add X f f'
+protected theorem map_add : X (f + f') = X f + X f' := by simp
 
--- Porting note: was `@[simp]` but `_root_.map_zero` can prove it now
-protected theorem map_zero : X 0 = 0 := map_zero X
+protected theorem map_zero : X 0 = 0 := by simp
 
--- Porting note: was `@[simp]` but `_root_.map_neg` can prove it now
-protected theorem map_neg : X (-f) = -X f := map_neg X f
+protected theorem map_neg : X (-f) = -X f := by simp
 
--- Porting note: was `@[simp]` but `_root_.map_sub` can prove it now
-protected theorem map_sub : X (f - f') = X f - X f' := map_sub X f f'
+protected theorem map_sub : X (f - f') = X f - X f' := by simp
 
--- Porting note: was `@[simp]` but `_root_.map_smul` can prove it now
-protected theorem map_smul : X (r • f) = r • X f := map_smul X r f
+protected theorem map_smul : X (r • f) = r • X f := by simp
 
 @[simp]
 theorem leibniz : X (f * f') = f • X f' + f' • X f :=
   X.leibniz' _ _
 
 instance : Zero (LeftInvariantDerivation I G) :=
-  ⟨⟨0, fun g => by simp only [_root_.map_zero]⟩⟩
+  ⟨⟨0, fun g => by simp only [map_zero]⟩⟩
 
 instance : Inhabited (LeftInvariantDerivation I G) :=
   ⟨0⟩
@@ -119,7 +120,7 @@ instance : Inhabited (LeftInvariantDerivation I G) :=
 instance : Add (LeftInvariantDerivation I G) where
   add X Y :=
     ⟨X + Y, fun g => by
-      simp only [map_add, Derivation.coe_add, left_invariant', Pi.add_apply]⟩
+      simp only [map_add, left_invariant']⟩
 
 instance : Neg (LeftInvariantDerivation I G) where
   neg X := ⟨-X, fun g => by simp [left_invariant']⟩
@@ -205,17 +206,17 @@ theorem left_invariant : 𝒅ₕ (smoothLeftMul_one I g) (evalAt (1 : G) X) = ev
 
 theorem evalAt_mul : evalAt (g * h) X = 𝒅ₕ (L_apply I g h) (evalAt h X) := by
   ext f
-  rw [← left_invariant, apply_hfdifferential, apply_hfdifferential, L_mul, fdifferential_comp,
-    apply_fdifferential]
+  rw [← left_invariant, hfdifferential_apply, hfdifferential_apply, L_mul, fdifferential_comp,
+    fdifferential_apply]
   -- Porting note: more aggressive here
   erw [LinearMap.comp_apply]
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-  erw [apply_fdifferential, ← apply_hfdifferential, left_invariant]
+  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
+  erw [fdifferential_apply, ← hfdifferential_apply, left_invariant]
 
 theorem comp_L : (X f).comp (𝑳 I g) = X (f.comp (𝑳 I g)) := by
   ext h
-  rw [ContMDiffMap.comp_apply, L_apply, ← evalAt_apply, evalAt_mul, apply_hfdifferential,
-    apply_fdifferential, evalAt_apply]
+  rw [ContMDiffMap.comp_apply, L_apply, ← evalAt_apply, evalAt_mul, hfdifferential_apply,
+    fdifferential_apply, evalAt_apply]
 
 instance : Bracket (LeftInvariantDerivation I G) (LeftInvariantDerivation I G) where
   bracket X Y :=
@@ -223,9 +224,9 @@ instance : Bracket (LeftInvariantDerivation I G) (LeftInvariantDerivation I G) w
       ext f
       have hX := Derivation.congr_fun (left_invariant' g X) (Y f)
       have hY := Derivation.congr_fun (left_invariant' g Y) (X f)
-      rw [apply_hfdifferential, apply_fdifferential, Derivation.evalAt_apply] at hX hY ⊢
+      rw [hfdifferential_apply, fdifferential_apply, Derivation.evalAt_apply] at hX hY ⊢
       rw [comp_L] at hX hY
-      rw [Derivation.commutator_apply, SmoothMap.coe_sub, Pi.sub_apply, coe_derivation]
+      rw [Derivation.commutator_apply, ContMDiffMap.coe_sub, Pi.sub_apply, coe_derivation]
       rw [coe_derivation] at hX hY ⊢
       rw [hX, hY]
       rfl⟩
@@ -252,7 +253,7 @@ instance : LieRing (LeftInvariantDerivation I G) where
   lie_self X := by ext1; simp only [commutator_apply, sub_self]; rfl
   leibniz_lie X Y Z := by
     ext1
-    simp only [commutator_apply, coe_add, coe_sub, map_sub, Pi.add_apply]
+    simp only [commutator_apply, coe_add, map_sub, Pi.add_apply]
     ring
 
 instance : LieAlgebra 𝕜 (LeftInvariantDerivation I G) where

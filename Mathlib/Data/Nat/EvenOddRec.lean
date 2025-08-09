@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stuart Presnell
 -/
 import Mathlib.Algebra.Ring.Parity
-import Mathlib.Data.Nat.Bits
+import Mathlib.Data.Nat.BinaryRec
+
 /-! # A recursion principle based on even and odd numbers. -/
 
 namespace Nat
@@ -29,14 +30,14 @@ theorem evenOddRec_zero {P : ℕ → Sort*} (h0 : P 0) (h_even : ∀ i, P i → 
 theorem evenOddRec_even {P : ℕ → Sort*} (h0 : P 0) (h_even : ∀ i, P i → P (2 * i))
     (h_odd : ∀ i, P i → P (2 * i + 1)) (H : h_even 0 h0 = h0) (n : ℕ) :
     (2 * n).evenOddRec h0 h_even h_odd = h_even n (evenOddRec h0 h_even h_odd n) := by
-  apply binaryRec_eq' false n
+  apply binaryRec_eq false n
   simp [H]
 
 @[simp]
 theorem evenOddRec_odd {P : ℕ → Sort*} (h0 : P 0) (h_even : ∀ i, P i → P (2 * i))
     (h_odd : ∀ i, P i → P (2 * i + 1)) (H : h_even 0 h0 = h0) (n : ℕ) :
     (2 * n + 1).evenOddRec h0 h_even h_odd = h_odd n (evenOddRec h0 h_even h_odd n) := by
-  apply binaryRec_eq' true n
+  apply binaryRec_eq true n
   simp [H]
 
 /-- Strong recursion principle on even and odd numbers: if for all `i : ℕ` we can prove `P (2 * i)`

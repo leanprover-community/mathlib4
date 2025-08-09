@@ -3,11 +3,11 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+import Mathlib.Algebra.Algebra.ZMod
 import Mathlib.Data.Nat.Multiplicity
-import Mathlib.Data.ZMod.Algebra
+import Mathlib.FieldTheory.Perfect
 import Mathlib.RingTheory.WittVector.Basic
 import Mathlib.RingTheory.WittVector.IsPoly
-import Mathlib.FieldTheory.Perfect
 
 /-!
 ## The Frobenius operator
@@ -48,7 +48,7 @@ and bundle it into `WittVector.frobenius`.
 
 namespace WittVector
 
-variable {p : ℕ} {R S : Type*} [hp : Fact p.Prime] [CommRing R] [CommRing S]
+variable {p : ℕ} {R : Type*} [hp : Fact p.Prime] [CommRing R]
 
 local notation "𝕎" => WittVector p -- type as `\bbW`
 
@@ -70,32 +70,28 @@ theorem bind₁_frobeniusPolyRat_wittPolynomial (n : ℕ) :
   delta frobeniusPolyRat
   rw [← bind₁_bind₁, bind₁_xInTermsOfW_wittPolynomial, bind₁_X_right, Function.comp_apply]
 
-/-- An auxiliary definition, to avoid an excessive amount of finiteness proofs
-for `multiplicity p n`. -/
-private def pnat_multiplicity (n : ℕ+) : ℕ :=
-  (multiplicity p n).get <| multiplicity.finite_nat_iff.mpr <| ⟨ne_of_gt hp.1.one_lt, n.2⟩
-
-local notation "v" => pnat_multiplicity
+local notation "v" => multiplicity
 
 /-- An auxiliary polynomial over the integers, that satisfies
 `p * (frobeniusPolyAux p n) + X n ^ p = frobeniusPoly p n`.
 This makes it easy to show that `frobeniusPoly p n` is congruent to `X n ^ p`
 modulo `p`. -/
 noncomputable def frobeniusPolyAux : ℕ → MvPolynomial ℕ ℤ
-  | n => X (n + 1) -  ∑ i : Fin n, have _ := i.is_lt
+  | n => X (n + 1) - ∑ i : Fin n, have _ := i.is_lt
       ∑ j ∈ range (p ^ (n - i)),
         (((X (i : ℕ) ^ p) ^ (p ^ (n - (i : ℕ)) - (j + 1)) : MvPolynomial ℕ ℤ) *
         (frobeniusPolyAux i) ^ (j + 1)) *
-        C (((p ^ (n - i)).choose (j + 1) / (p ^ (n - i - v p ⟨j + 1, Nat.succ_pos j⟩))
-          * ↑p ^ (j - v p ⟨j + 1, Nat.succ_pos j⟩) : ℕ) : ℤ)
+        C (((p ^ (n - i)).choose (j + 1) / (p ^ (n - i - v p (j + 1)))
+          * ↑p ^ (j - v p (j + 1)) : ℕ) : ℤ)
 
+omit hp in
 theorem frobeniusPolyAux_eq (n : ℕ) :
     frobeniusPolyAux p n =
       X (n + 1) - ∑ i ∈ range n,
           ∑ j ∈ range (p ^ (n - i)),
             (X i ^ p) ^ (p ^ (n - i) - (j + 1)) * frobeniusPolyAux p i ^ (j + 1) *
-              C ↑((p ^ (n - i)).choose (j + 1) / p ^ (n - i - v p ⟨j + 1, Nat.succ_pos j⟩) *
-                ↑p ^ (j - v p ⟨j + 1, Nat.succ_pos j⟩) : ℕ) := by
+              C ↑((p ^ (n - i)).choose (j + 1) / p ^ (n - i - v p (j + 1)) *
+                ↑p ^ (j - v p (j + 1)) : ℕ) := by
   rw [frobeniusPolyAux, ← Fin.sum_univ_eq_sum_range]
 
 /-- The polynomials that give the coefficients of `frobenius x`,
@@ -114,22 +110,21 @@ and then using the following two key facts at the right point.
 -/
 /-- A key divisibility fact for the proof of `WittVector.map_frobeniusPoly`. -/
 theorem map_frobeniusPoly.key₁ (n j : ℕ) (hj : j < p ^ n) :
-    p ^ (n - v p ⟨j + 1, j.succ_pos⟩) ∣ (p ^ n).choose (j + 1) := by
-  apply multiplicity.pow_dvd_of_le_multiplicity
-  rw [hp.out.multiplicity_choose_prime_pow hj j.succ_ne_zero]
-  rfl
+    p ^ (n - v p (j + 1)) ∣ (p ^ n).choose (j + 1) := by
+  apply pow_dvd_of_le_emultiplicity
+  rw [hp.out.emultiplicity_choose_prime_pow hj j.succ_ne_zero]
 
 /-- A key numerical identity needed for the proof of `WittVector.map_frobeniusPoly`. -/
 theorem map_frobeniusPoly.key₂ {n i j : ℕ} (hi : i ≤ n) (hj : j < p ^ (n - i)) :
-    j - v p ⟨j + 1, j.succ_pos⟩ + n = i + j + (n - i - v p ⟨j + 1, j.succ_pos⟩) := by
-  generalize h : v p ⟨j + 1, j.succ_pos⟩ = m
+    j - v p (j + 1) + n = i + j + (n - i - v p (j + 1)) := by
+  generalize h : v p (j + 1) = m
   rsuffices ⟨h₁, h₂⟩ : m ≤ n - i ∧ m ≤ j
   · rw [tsub_add_eq_add_tsub h₂, add_comm i j, add_tsub_assoc_of_le (h₁.trans (Nat.sub_le n i)),
       add_assoc, tsub_right_comm, add_comm i,
       tsub_add_cancel_of_le (le_tsub_of_add_le_right ((le_tsub_iff_left hi).mp h₁))]
-  have hle : p ^ m ≤ j + 1 := h ▸ Nat.le_of_dvd j.succ_pos (multiplicity.pow_multiplicity_dvd _)
-  exact ⟨(pow_le_pow_iff_right hp.1.one_lt).1 (hle.trans hj),
-     Nat.le_of_lt_succ ((Nat.lt_pow_self hp.1.one_lt m).trans_le hle)⟩
+  have hle : p ^ m ≤ j + 1 := h ▸ Nat.le_of_dvd j.succ_pos (pow_multiplicity_dvd _ _)
+  exact ⟨(Nat.pow_le_pow_iff_right hp.1.one_lt).1 (hle.trans hj),
+     Nat.le_of_lt_succ ((m.lt_pow_self hp.1.one_lt).trans_le hle)⟩
 
 theorem map_frobeniusPoly (n : ℕ) :
     MvPolynomial.map (Int.castRingHom ℚ) (frobeniusPoly p n) = frobeniusPolyRat p n := by
@@ -139,7 +134,7 @@ theorem map_frobeniusPoly (n : ℕ) :
   intro n IH
   rw [xInTermsOfW_eq]
   simp only [map_sum, map_sub, map_mul, map_pow (bind₁ _), bind₁_C_right]
-  have h1 : (p : ℚ) ^ n * ⅟ (p : ℚ) ^ n = 1 := by rw [← mul_pow, mul_invOf_self, one_pow]
+  have h1 : (p : ℚ) ^ n * ⅟(p : ℚ) ^ n = 1 := by rw [← mul_pow, mul_invOf_self, one_pow]
   rw [bind₁_X_right, Function.comp_apply, wittPolynomial_eq_sum_C_mul_X_pow, sum_range_succ,
     sum_range_succ, tsub_self, add_tsub_cancel_left, pow_zero, pow_one, pow_one, sub_mul, add_mul,
     add_mul, mul_right_comm, mul_right_comm (C ((p : ℚ) ^ (n + 1))), ← C_mul, ← C_mul, pow_succ',
@@ -173,10 +168,10 @@ theorem map_frobeniusPoly (n : ℕ) :
   rw [Rat.natCast_div _ _ (map_frobeniusPoly.key₁ p (n - i) j hj)]
   simp only [Nat.cast_pow, pow_add, pow_one]
   suffices
-    (((p ^ (n - i)).choose (j + 1) : ℚ) * (p : ℚ) ^ (j - v p ⟨j + 1, j.succ_pos⟩) * p * (p ^ n : ℚ))
+    (((p ^ (n - i)).choose (j + 1) : ℚ) * (p : ℚ) ^ (j - v p (j + 1)) * p * (p ^ n : ℚ))
       = (p : ℚ) ^ j * p * ↑((p ^ (n - i)).choose (j + 1) * p ^ i) *
-        (p : ℚ) ^ (n - i - v p ⟨j + 1, j.succ_pos⟩) by
-    have aux : ∀ k : ℕ, (p : ℚ)^ k ≠ 0 := by
+        (p : ℚ) ^ (n - i - v p (j + 1)) by
+    have aux : ∀ k : ℕ, (p : ℚ) ^ k ≠ 0 := by
       intro; apply pow_ne_zero; exact mod_cast hp.1.ne_zero
     simpa [aux, -one_div, -pow_eq_zero_iff', field_simps] using this.symm
   rw [mul_comm _ (p : ℚ), mul_assoc, mul_assoc, ← pow_add,
@@ -202,20 +197,17 @@ variable {p}
 def frobeniusFun (x : 𝕎 R) : 𝕎 R :=
   mk p fun n => MvPolynomial.aeval x.coeff (frobeniusPoly p n)
 
+omit hp in
 theorem coeff_frobeniusFun (x : 𝕎 R) (n : ℕ) :
     coeff (frobeniusFun x) n = MvPolynomial.aeval x.coeff (frobeniusPoly p n) := by
   rw [frobeniusFun, coeff_mk]
 
-variable (p)
-
+variable (p) in
 /-- `frobeniusFun` is tautologically a polynomial function.
 
 See also `frobenius_isPoly`. -/
--- Porting note: replaced `@[is_poly]` with `instance`.
-instance frobeniusFun_isPoly : IsPoly p fun R _Rcr => @frobeniusFun p R _ _Rcr :=
+instance frobeniusFun_isPoly : IsPoly p fun R _ Rcr => @frobeniusFun p R _ Rcr :=
   ⟨⟨frobeniusPoly p, by intros; funext n; apply coeff_frobeniusFun⟩⟩
-
-variable {p}
 
 @[ghost_simps]
 theorem ghostComponent_frobeniusFun (n : ℕ) (x : 𝕎 R) :
@@ -261,7 +253,6 @@ theorem ghostComponent_frobenius (n : ℕ) (x : 𝕎 R) :
 variable (p)
 
 /-- `frobenius` is tautologically a polynomial function. -/
--- Porting note: replaced `@[is_poly]` with `instance`.
 instance frobenius_isPoly : IsPoly p fun R _Rcr => @frobenius p R _ _Rcr :=
   frobeniusFun_isPoly _
 
@@ -291,13 +282,13 @@ theorem frobenius_eq_map_frobenius : @frobenius p R _ _ = map (_root_.frobenius 
 
 @[simp]
 theorem frobenius_zmodp (x : 𝕎 (ZMod p)) : frobenius x = x := by
-  simp only [WittVector.ext_iff, coeff_frobenius_charP, ZMod.pow_card, eq_self_iff_true,
+  simp only [WittVector.ext_iff, coeff_frobenius_charP, ZMod.pow_card,
     forall_const]
 
 variable (R)
 
 /-- `WittVector.frobenius` as an equiv. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def frobeniusEquiv [PerfectRing R p] : WittVector p R ≃+* WittVector p R :=
   { (WittVector.frobenius : WittVector p R →+* WittVector p R) with
     toFun := WittVector.frobenius

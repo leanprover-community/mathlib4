@@ -1,9 +1,9 @@
 /-
 Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies, Scott Morrison
+Authors: Yaël Dillies, Kim Morrison
 -/
-import Mathlib.Data.Finset.Lattice
+import Mathlib.Data.Finset.Lattice.Union
 import Mathlib.Data.Finset.NAry
 import Mathlib.Data.Multiset.Functor
 
@@ -37,8 +37,8 @@ construct `Functor Finset` when working classically. -/
 protected instance functor : Functor Finset where map f s := s.image f
 
 instance lawfulFunctor : LawfulFunctor Finset where
-  id_map s := image_id
-  comp_map f g s := image_image.symm
+  id_map _ := image_id
+  comp_map _ _ _ := image_image.symm
   map_const {α} {β} := by simp only [Functor.mapConst, Functor.map]
 
 @[simp]
@@ -115,12 +115,12 @@ instance lawfulApplicative : LawfulApplicative Finset :=
         obtain ⟨_, _, rfl⟩ := hf
         exact hb
     pure_seq := fun f s => by simp only [pure_def, seq_def, sup_singleton, fmap_def]
-    map_pure := fun f a => image_singleton _ _
-    seq_pure := fun s a => sup_singleton'' _ _
+    map_pure := fun _ _ => image_singleton _ _
+    seq_pure := fun _ _ => sup_singleton_apply _ _
     seq_assoc := fun s t u => by
       ext a
       simp_rw [seq_def, fmap_def]
-      simp only [exists_prop, mem_sup, mem_image]
+      simp only [mem_sup, mem_image]
       constructor
       · rintro ⟨g, hg, b, ⟨f, hf, a, ha, rfl⟩, rfl⟩
         exact ⟨g ∘ f, ⟨comp g, ⟨g, hg, rfl⟩, f, hf, rfl⟩, a, ha, rfl⟩
@@ -153,10 +153,10 @@ theorem bind_def {α β} : (· >>= ·) = sup (α := Finset α) (β := β) :=
 
 instance : LawfulMonad Finset :=
   { Finset.lawfulApplicative with
-    bind_pure_comp := fun f s => sup_singleton'' _ _
-    bind_map := fun t s => rfl
-    pure_bind := fun t s => sup_singleton
-    bind_assoc := fun s f g => by simp only [bind, ← sup_biUnion, sup_eq_biUnion, biUnion_biUnion] }
+    bind_pure_comp := fun _ _ => sup_singleton_apply _ _
+    bind_map := fun _ _ => rfl
+    pure_bind := fun _ _ => sup_singleton
+    bind_assoc := fun s f g => by simp only [bind, sup_eq_biUnion, biUnion_biUnion] }
 
 end Monad
 
@@ -187,22 +187,28 @@ def traverse [DecidableEq β] (f : α → F β) (s : Finset α) : F (Finset β) 
   Multiset.toFinset <$> Multiset.traverse f s.1
 
 @[simp]
-theorem id_traverse [DecidableEq α] (s : Finset α) : traverse (pure : α → Id α) s = s := by
+theorem id_traverse [DecidableEq α] (s : Finset α) : traverse (pure : α → Id α) s = pure s := by
   rw [traverse, Multiset.id_traverse]
   exact s.val_toFinset
 
-open scoped Classical
-
+open scoped Classical in
 @[simp]
 theorem map_comp_coe (h : α → β) :
     Functor.map h ∘ Multiset.toFinset = Multiset.toFinset ∘ Functor.map h :=
   funext fun _ => image_toFinset
 
+open scoped Classical in
+@[simp]
+theorem map_comp_coe_apply (h : α → β) (s : Multiset α) :
+    s.toFinset.image h = (h <$> s).toFinset :=
+  congrFun (map_comp_coe h) s
+
+open scoped Classical in
 theorem map_traverse (g : α → G β) (h : β → γ) (s : Finset α) :
     Functor.map h <$> traverse g s = traverse (Functor.map h ∘ g) s := by
   unfold traverse
-  simp only [map_comp_coe, functor_norm]
-  rw [LawfulFunctor.comp_map, Multiset.map_traverse]
+  simp only [Functor.map_map, fmap_def, map_comp_coe_apply, Multiset.fmap_def, ←
+    Multiset.map_traverse]
 
 end Traversable
 

@@ -27,16 +27,16 @@ instance (i : ι) : HasBinaryBiproduct ((eval C c i).obj K) ((eval C c i).obj L)
 
 instance (i : ι) : HasLimit ((pair K L) ⋙ (eval C c i)) := by
   have e : _ ≅ pair (K.X i) (L.X i) := diagramIsoPair (pair K L ⋙ eval C c i)
-  exact hasLimitOfIso e.symm
+  exact hasLimit_of_iso e.symm
 
 instance (i : ι) : HasColimit ((pair K L) ⋙ (eval C c i)) := by
   have e : _ ≅ pair (K.X i) (L.X i) := diagramIsoPair (pair K L ⋙ eval C c i)
-  exact hasColimitOfIso e
+  exact hasColimit_of_iso e
 
 instance : HasBinaryBiproduct K L := HasBinaryBiproduct.of_hasBinaryProduct _ _
 
 instance (i : ι) : PreservesBinaryBiproduct K L (eval C c i) :=
-  preservesBinaryBiproductOfPreservesBinaryProduct _
+  preservesBinaryBiproduct_of_preservesBinaryProduct _
 
 /-- The canonical isomorphism `(K ⊞ L).X i ≅ (K.X i) ⊞ (L.X i)`. -/
 noncomputable def biprodXIso (i : ι) : (K ⊞ L).X i ≅ (K.X i) ⊞ (L.X i) :=

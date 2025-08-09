@@ -1,34 +1,61 @@
 /-
-Copyright (c) 2022 Eric Wieser. All rights reserved.
+Copyright (c) 2022 Eric Wieser, Yaël Dillies, Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Eric Wieser
+Authors: Eric Wieser, Yaël Dillies, Andrew Yang
 -/
-import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Data.Finset.Lattice
+import Mathlib.Algebra.Order.Ring.Canonical
+import Mathlib.Data.Finset.Lattice.Fold
+import Mathlib.Data.Nat.Cast.Order.Ring
 
 /-!
-# Algebraic properties of finitary supremum
+# `Finset.sup` and ring operations
 -/
 
-namespace Finset
-variable {ι R : Type*} [LinearOrderedSemiring R] {a b : ι → R}
+open Finset
 
-theorem sup_mul_le_mul_sup_of_nonneg [OrderBot R] (s : Finset ι) (ha : ∀ i ∈ s, 0 ≤ a i)
-    (hb : ∀ i ∈ s, 0 ≤ b i) : s.sup (a * b) ≤ s.sup a * s.sup b :=
-  Finset.sup_le fun _i hi ↦
-    mul_le_mul (le_sup hi) (le_sup hi) (hb _ hi) ((ha _ hi).trans <| le_sup hi)
+namespace Nat
+variable {ι R : Type*}
 
-theorem mul_inf_le_inf_mul_of_nonneg [OrderTop R] (s : Finset ι) (ha : ∀ i ∈ s, 0 ≤ a i)
-    (hb : ∀ i ∈ s, 0 ≤ b i) : s.inf a * s.inf b ≤ s.inf (a * b) :=
-  Finset.le_inf fun i hi ↦ mul_le_mul (inf_le hi) (inf_le hi) (Finset.le_inf hb) (ha i hi)
+section LinearOrderedSemiring
+variable [Semiring R] [LinearOrder R] [IsStrictOrderedRing R] {s : Finset ι}
 
-theorem sup'_mul_le_mul_sup'_of_nonneg (s : Finset ι) (H : s.Nonempty) (ha : ∀ i ∈ s, 0 ≤ a i)
-    (hb : ∀ i ∈ s, 0 ≤ b i) : s.sup' H (a * b) ≤ s.sup' H a * s.sup' H b :=
-  (sup'_le _ _) fun _i hi ↦
-    mul_le_mul (le_sup' _ hi) (le_sup' _ hi) (hb _ hi) ((ha _ hi).trans <| le_sup' _ hi)
+set_option linter.docPrime false in
+@[simp, norm_cast]
+lemma cast_finsetSup' (f : ι → ℕ) (hs) : ((s.sup' hs f : ℕ) : R) = s.sup' hs fun i ↦ (f i : R) :=
+  comp_sup'_eq_sup'_comp _ _ cast_max
 
-theorem inf'_mul_le_mul_inf'_of_nonneg (s : Finset ι) (H : s.Nonempty) (ha : ∀ i ∈ s, 0 ≤ a i)
-    (hb : ∀ i ∈ s, 0 ≤ b i) : s.inf' H a * s.inf' H b ≤ s.inf' H (a * b) :=
-  (le_inf' _ _) fun _i hi ↦ mul_le_mul (inf'_le _ hi) (inf'_le _ hi) (le_inf' _ _ hb) (ha _ hi)
+set_option linter.docPrime false in
+@[simp, norm_cast]
+lemma cast_finsetInf' (f : ι → ℕ) (hs) : (↑(s.inf' hs f) : R) = s.inf' hs fun i ↦ (f i : R) :=
+  comp_inf'_eq_inf'_comp _ _ cast_min
 
-end Finset
+@[simp, norm_cast]
+lemma cast_finsetSup [OrderBot R] [CanonicallyOrderedAdd R] (s : Finset ι) (f : ι → ℕ) :
+    (↑(s.sup f) : R) = s.sup fun i ↦ (f i : R) :=
+  comp_sup_eq_sup_comp _ cast_max (by simp)
+
+end LinearOrderedSemiring
+
+end Nat
+
+section
+
+variable {R ι : Type*} [LinearOrder R] [NonUnitalNonAssocSemiring R]
+  [CanonicallyOrderedAdd R] [OrderBot R]
+
+lemma Finset.mul_sup₀ (s : Finset ι) (f : ι → R) (a : R) :
+    a * s.sup f = s.sup (a * f ·) := by
+  classical
+  induction s using Finset.induction with
+  | empty => simp
+  | insert _ _ _ IH => simp only [sup_insert, mul_max, ← IH]
+
+/-- Also see `Finset.sup'_mul₀` for a version for `GroupWithZero`s. -/
+lemma Finset.sup_mul₀ (s : Finset ι) (f : ι → R) (a : R) :
+    s.sup f * a = s.sup (f · * a) := by
+  classical
+  induction s using Finset.induction with
+  | empty => simp
+  | insert _ _ _ IH => simp only [sup_insert, max_mul, ← IH]
+
+end

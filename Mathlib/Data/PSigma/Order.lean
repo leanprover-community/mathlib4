@@ -1,13 +1,14 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Minchao Wu
+Authors: Kim Morrison, Minchao Wu
 -/
 import Mathlib.Data.Sigma.Lex
-import Mathlib.Order.BoundedOrder
 import Mathlib.Util.Notation3
 import Init.NotationExtra
 import Mathlib.Data.Sigma.Basic
+import Mathlib.Order.Lattice
+import Mathlib.Order.BoundedOrder.Basic
 
 /-!
 # Lexicographic order on a sigma type
@@ -51,7 +52,7 @@ instance lt [LT ι] [∀ i, LT (α i)] : LT (Σₗ' i, α i) :=
 
 instance preorder [Preorder ι] [∀ i, Preorder (α i)] : Preorder (Σₗ' i, α i) :=
   { Lex.le, Lex.lt with
-    le_refl := fun ⟨i, a⟩ => Lex.right _ le_rfl,
+    le_refl := fun ⟨_, _⟩ => Lex.right _ le_rfl,
     le_trans := by
       rintro ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ ⟨a₃, b₃⟩ ⟨h₁r⟩ ⟨h₂r⟩
       · left
@@ -64,16 +65,16 @@ instance preorder [Preorder ι] [∀ i, Preorder (α i)] : Preorder (Σₗ' i, �
       · right
         apply le_trans
         repeat' assumption,
-    lt_iff_le_not_le := by
+    lt_iff_le_not_ge := by
       refine fun a b => ⟨fun hab => ⟨hab.mono_right fun i a b => le_of_lt, ?_⟩, ?_⟩
       · rintro (⟨i, a, hji⟩ | ⟨i, hba⟩) <;> obtain ⟨_, _, hij⟩ | ⟨_, hab⟩ := hab
-        · exact hij.not_lt hji
+        · exact hij.not_gt hji
         · exact lt_irrefl _ hji
         · exact lt_irrefl _ hij
-        · exact hab.not_le hba
+        · exact hab.not_ge hba
       · rintro ⟨⟨j, b, hij⟩ | ⟨i, hab⟩, hba⟩
         · exact Lex.left _ _ hij
-        · exact Lex.right _ (hab.lt_of_not_le fun h => hba <| Lex.right _ h) }
+        · exact Lex.right _ (hab.lt_of_not_ge fun h => hba <| Lex.right _ h) }
 
 /-- Dictionary / lexicographic partial_order for dependent pairs. -/
 instance partialOrder [PartialOrder ι] [∀ i, PartialOrder (α i)] : PartialOrder (Σₗ' i, α i) :=
@@ -96,8 +97,8 @@ instance linearOrder [LinearOrder ι] [∀ i, LinearOrder (α i)] : LinearOrder 
         · exact Or.inl (Lex.right _ hab)
         · exact Or.inr (Lex.right _ hba)
       · exact Or.inr (Lex.left _ _ hji),
-    decidableEq := PSigma.decidableEq, decidableLE := Lex.decidable _ _,
-    decidableLT := Lex.decidable _ _ }
+    toDecidableEq := PSigma.decidableEq, toDecidableLE := Lex.decidable _ _,
+    toDecidableLT := Lex.decidable _ _ }
 
 /-- The lexicographical linear order on a sigma type. -/
 instance orderBot [PartialOrder ι] [OrderBot ι] [∀ i, Preorder (α i)] [OrderBot (α ⊥)] :

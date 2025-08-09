@@ -41,8 +41,6 @@ namespace CategoryTheory
 
 open Category Bicategory
 
-open Bicategory
-
 universe w₁ w₂ w₃ v₁ v₂ v₃ u₁ u₂ u₃
 
 section
@@ -76,12 +74,6 @@ def mkOfHomPrefunctors (F : B → C) (F' : (a : B) → (b : B) → Prefunctor (a
   map {a b} := (F' a b).obj
   map₂ {a b} := (F' a b).map
 
-variable (F : PrelaxFunctorStruct B C)
-
--- Porting note: deleted syntactic tautologies `toPrefunctor_eq_coe : F.toPrefunctor = F`
--- and `to_prefunctor_obj : (F : Prefunctor B C).obj = F.obj`
--- and `to_prefunctor_map`
-
 /-- The identity lax prefunctor. -/
 @[simps]
 def id (B : Type u₁) [Quiver.{v₁ + 1} B] [∀ a b : B, Quiver.{w₁ + 1} (a ⟶ b)] :
@@ -107,10 +99,10 @@ This structure will be extended to define `LaxFunctor` and `OplaxFunctor`.
 structure PrelaxFunctor (B : Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u₂) [Bicategory.{w₂, v₂} C]
     extends PrelaxFunctorStruct B C where
   /-- Prelax functors preserves identity 2-morphisms. -/
-  map₂_id : ∀ {a b : B} (f : a ⟶ b), map₂ (𝟙 f) = 𝟙 (map f) := by aesop -- TODO: why not aesop_cat?
+  map₂_id : ∀ {a b : B} (f : a ⟶ b), map₂ (𝟙 f) = 𝟙 (map f) := by aesop -- TODO: why not cat_disch?
   /-- Prelax functors preserves compositions of 2-morphisms. -/
   map₂_comp : ∀ {a b : B} {f g h : a ⟶ b} (η : f ⟶ g) (θ : g ⟶ h),
-      map₂ (η ≫ θ) = map₂ η ≫ map₂ θ := by aesop_cat
+      map₂ (η ≫ θ) = map₂ η ≫ map₂ θ := by cat_disch
 
 namespace PrelaxFunctor
 

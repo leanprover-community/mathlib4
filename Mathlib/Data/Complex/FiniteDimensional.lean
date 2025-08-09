@@ -7,6 +7,7 @@ import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Data.Complex.Cardinality
 import Mathlib.Data.Complex.Module
 import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+import Mathlib.Order.Interval.Set.Infinite
 
 /-!
 # Complex number as a finite dimensional vector space over `ℝ`
@@ -15,14 +16,14 @@ This file contains the `FiniteDimensional ℝ ℂ` instance, as well as some res
 (`finrank` and `Module.rank`).
 -/
 
-open FiniteDimensional
+open Module
 
 namespace Complex
 
-instance : FiniteDimensional ℝ ℂ :=
-  of_fintype_basis basisOneI
+instance : FiniteDimensional ℝ ℂ := .of_fintype_basis basisOneI
 
-@[simp]
+/-- `ℂ` is a finite extension of `ℝ` of degree 2, i.e `[ℂ : ℝ] = 2` -/
+@[simp, stacks 09G4]
 theorem finrank_real_complex : finrank ℝ ℂ = 2 := by
   rw [finrank_eq_card_basis basisOneI, Fintype.card_fin]
 
@@ -50,8 +51,8 @@ theorem rank_real_of_complex (E : Type*) [AddCommGroup E] [Module ℂ E] :
     simp only [Cardinal.lift_id']
 
 theorem finrank_real_of_complex (E : Type*) [AddCommGroup E] [Module ℂ E] :
-    FiniteDimensional.finrank ℝ E = 2 * FiniteDimensional.finrank ℂ E := by
-  rw [← FiniteDimensional.finrank_mul_finrank ℝ ℂ E, Complex.finrank_real_complex]
+    Module.finrank ℝ E = 2 * Module.finrank ℂ E := by
+  rw [← Module.finrank_mul_finrank ℝ ℂ E, Complex.finrank_real_complex]
 
 section Rational
 
@@ -62,9 +63,10 @@ lemma Real.rank_rat_real : Module.rank ℚ ℝ = continuum := by
   refine (Free.rank_eq_mk_of_infinite_lt ℚ ℝ ?_).trans mk_real
   simpa [mk_real] using aleph0_lt_continuum
 
-@[simp]
+/-- `C` has an uncountable basis over `ℚ`. -/
+@[simp, stacks 09G0]
 lemma Complex.rank_rat_complex : Module.rank ℚ ℂ = continuum := by
-  refine (Free.rank_eq_mk_of_infinite_lt ℚ ℂ ?_).trans mk_complex
+  refine (Free.rank_eq_mk_of_infinite_lt ℚ ℂ ?_).trans Cardinal.mk_complex
   simpa using aleph0_lt_continuum
 
 /-- `ℂ` and `ℝ` are isomorphic as vector spaces over `ℚ`, or equivalently,

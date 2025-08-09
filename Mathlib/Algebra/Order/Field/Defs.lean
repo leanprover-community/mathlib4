@@ -23,15 +23,16 @@ A linear ordered (semi)field is a (semi)field equipped with a linear order such 
 -- Guard against import creep.
 assert_not_exists MonoidHom
 
-variable {α : Type*}
-
+set_option linter.deprecated false in
 /-- A linear ordered semifield is a field with a linear order respecting the operations. -/
-class LinearOrderedSemifield (α : Type*) extends LinearOrderedCommSemiring α, Semifield α
+@[deprecated "Use `[Semifield K] [LinearOrder K] [IsStrictOrderedRing K]` instead."
+  (since := "2025-04-10")]
+structure LinearOrderedSemifield (K : Type*) extends LinearOrderedCommSemiring K, Semifield K
 
+set_option linter.deprecated false in
 /-- A linear ordered field is a field with a linear order respecting the operations. -/
-class LinearOrderedField (α : Type*) extends LinearOrderedCommRing α, Field α
+@[deprecated "Use `[Field K] [LinearOrder K] [IsStrictOrderedRing K]` instead."
+  (since := "2025-04-10")]
+structure LinearOrderedField (K : Type*) extends LinearOrderedCommRing K, Field K
 
--- See note [lower instance priority]
-instance (priority := 100) LinearOrderedField.toLinearOrderedSemifield [LinearOrderedField α] :
-    LinearOrderedSemifield α :=
-  { LinearOrderedRing.toLinearOrderedSemiring, ‹LinearOrderedField α› with }
+attribute [nolint docBlame] LinearOrderedSemifield.toSemifield LinearOrderedField.toField

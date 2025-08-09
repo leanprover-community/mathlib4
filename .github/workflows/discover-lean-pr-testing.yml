@@ -1,0 +1,256 @@
+name: Discover `lean-pr-testing` branches
+
+on:
+  push:
+    branches:
+      - nightly-testing
+    paths:
+      - lean-toolchain
+
+jobs:
+  discover-lean-pr-testing:
+    runs-on: ubuntu-latest
+    if: github.repository == 'leanprover-community/mathlib4-nightly-testing'
+
+    steps:
+    - name: Checkout mathlib4 repository
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      with:
+        ref: nightly-testing
+        fetch-depth: 0  # Fetch all branches
+
+    - name: Set up Git
+      run: |
+        git config --global user.name "github-actions"
+        git config --global user.email "github-actions@github.com"
+
+    - name: Configure Lean
+      uses: leanprover/lean-action@f807b338d95de7813c5c50d018f1c23c9b93b4ec # 2025-04-24
+      with:
+        auto-config: false
+        use-github-cache: false
+        use-mathlib-cache: false
+
+    - name: Determine old and new lean-toolchain
+      id: determine-toolchains
+      run: |
+        # `lean-toolchain` contains a string of the form "leanprover/lean4:nightly-2024-11-20"
+        # We grab the part after the ":"
+        NEW=$(cut -f2 -d: lean-toolchain)
+
+        # Find the commit hash of the previous change to `lean-toolchain`
+        PREV_COMMIT=$(git log -2 --format=format:%H -- lean-toolchain | tail -1)
+
+        # Get the contents of `lean-toolchain` from the previous commit
+        # The "./" in front of the path is important for `git show`
+        OLD=$(git show "$PREV_COMMIT":./lean-toolchain | cut -f2 -d:)
+
+        echo "old=$OLD"
+        echo "new=$NEW"
+        echo "old=$OLD" >> "$GITHUB_OUTPUT"
+        echo "new=$NEW" >> "$GITHUB_OUTPUT"
+
+    - name: Clone lean4 repository and get PRs
+      id: get-prs
+      run: |
+        NIGHTLY_URL="https://github.com/leanprover/lean4-nightly.git"
+
+        # Create a temporary directory for cloning
+        cd "$(mktemp -d)" || exit 1
+
+        # Clone the repository with a depth of 1
+        git clone --depth 1 "$NIGHTLY_URL"
+
+        # Navigate to the cloned repository
+        cd lean4-nightly || exit 1
+
+        # Use the OLD and NEW toolchains determined in the previous step
+        OLD="${{ steps.determine-toolchains.outputs.old }}"
+        NEW="${{ steps.determine-toolchains.outputs.new }}"
+
+        # Fetch the $OLD tag
+        git fetch --depth=1 origin tag "$OLD" --no-tags
+        # Fetch the $NEW tag.
+        # This will only fetch commits newer than previously fetched commits (ie $OLD)
+        git fetch origin tag "$NEW" --no-tags
+
+        # Find all commits to lean4 between the $OLD and $NEW toolchains
+        # and extract the github PR numbers
+        # (drop anything that doesn't look like a PR number from the final result)
+        PRS=$(git log --oneline "$OLD..$NEW" | sed 's/.*(#\([0-9]\+\))$/\1/' | grep -E '^[0-9]+$')
+
+        # Output the PRs
+        echo "$PRS"
+        printf "prs<<EOF\n%s\nEOF" "$PRS" >> "$GITHUB_OUTPUT"
+
+    - name: Use merged PRs information
+      id: find-branches
+      run: |
+        # Use the PRs from the previous step
+        PRS="${{ steps.get-prs.outputs.prs }}"
+        echo "=== PRS ========================="
+        echo "$PRS"
+        echo "$PRS" | tr ' ' '\n' > prs.txt
+        echo "=== prs.txt ====================="
+        cat prs.txt
+        MATCHING_BRANCHES=$(git branch -r | grep -f prs.txt | grep "lean-pr-testing")
+        echo "=== MATCHING_BRANCHES ==========="
+        echo "$MATCHING_BRANCHES"
+        echo "================================="
+
+        # Initialize an empty variable to store branches with relevant diffs
+        RELEVANT_BRANCHES=""
+
+        # Loop through each matching branch
+        for BRANCH in $MATCHING_BRANCHES; do
+            echo " === Testing $BRANCH for relevance."
+            # Get the diff filenames
+            DIFF_FILES=$(git diff --name-only "origin/nightly-testing...$BRANCH")
+
+            # Check if the diff contains files other than the specified ones
+            if echo "$DIFF_FILES" | grep -v -e 'lake-manifest.json' -e 'lakefile.lean' -e 'lean-toolchain'; then
+                # Extract the actual branch name
+                ACTUAL_BRANCH=${BRANCH#origin/}
+
+                # Append the branch details to RELEVANT_BRANCHES
+                RELEVANT_BRANCHES="$RELEVANT_BRANCHES""$ACTUAL_BRANCH"$' '
+            fi
+        done
+
+        # Output the relevant branches
+        echo "=== RELEVANT_BRANCHES ==========="
+        echo "'$RELEVANT_BRANCHES'"
+        printf "branches<<EOF\n%s\nEOF" "$RELEVANT_BRANCHES" >> "$GITHUB_OUTPUT"
+
+        # Check if there are relevant branches, recording the outcome in the `branches_exist` variable
+        if [ -z "${RELEVANT_BRANCHES}" ]; then
+          echo "branches_exist=false" >> "$GITHUB_ENV"
+        else
+          echo "branches_exist=true" >> "$GITHUB_ENV"
+        fi
+
+    - name: Execute merge script for each branch
+      id: execute-merges
+      if: env.branches_exist == 'true'
+      run: |
+        BRANCHES="${{ steps.find-branches.outputs.branches }}"
+
+        # Initialize arrays to track results
+        SUCCESSFUL_MERGES=""
+        FAILED_MERGES=""
+
+        # Ensure the merge script is executable
+        chmod +x scripts/merge-lean-testing-pr.sh
+
+        # Process each branch
+        for BRANCH in $BRANCHES; do
+          # Extract PR number from branch name
+          PR_NUMBER=$(echo "$BRANCH" | grep -oP '\d+$')
+
+          # Make sure we're on nightly-testing branch before doing fetch operations
+          git checkout nightly-testing
+
+          # Fetch all tags in the repository
+          git fetch --tags
+
+          # Fetch the PR branch
+          git fetch origin "$BRANCH"
+
+          # Find the most recent nightly-testing-YYYY-MM-DD tag that is an ancestor of the branch
+          # Temporarily checkout the branch
+          git checkout origin/"$BRANCH" || {
+            echo "Failed to checkout branch origin/$BRANCH, skipping"
+            continue
+          }
+
+          # Find tags that are ancestors of this branch with the right format
+          LATEST_TAG=$(git tag --merged HEAD | grep "nightly-testing-[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}" | sort -r | head -n 1)
+          echo "Latest tag found for $BRANCH: ${LATEST_TAG:-none}"
+
+          # Return to nightly-testing branch
+          git checkout nightly-testing
+
+          # Default to nightly-testing if no tag is found
+          if [ -z "$LATEST_TAG" ]; then
+            COMPARE_BASE="nightly-testing"
+          else
+            COMPARE_BASE="$LATEST_TAG"
+          fi
+
+          GITHUB_DIFF="https://github.com/${{ github.repository }}/compare/$COMPARE_BASE...lean-pr-testing-$PR_NUMBER"
+
+          echo "Attempting to merge branch: $BRANCH (PR #$PR_NUMBER)"
+          echo "Using diff URL: $GITHUB_DIFF (comparing with $COMPARE_BASE)"
+
+          # Reset to a clean state before running merge script
+          git reset --hard HEAD
+
+          # Run the merge script and capture exit code
+          if ./scripts/merge-lean-testing-pr.sh "$PR_NUMBER"; then
+            echo "✅ Successfully merged $BRANCH"
+            SUCCESSFUL_MERGES="$SUCCESSFUL_MERGES$PR_NUMBER|$GITHUB_DIFF|$BRANCH "
+          else
+            echo "❌ Failed to merge $BRANCH"
+            FAILED_MERGES="$FAILED_MERGES$PR_NUMBER|$GITHUB_DIFF|$BRANCH "
+
+            # Clean up - reset to a clean state
+            git reset --hard HEAD
+            git checkout nightly-testing
+          fi
+        done
+
+        # Output the results
+        echo "successful_merges=$SUCCESSFUL_MERGES" >> "$GITHUB_OUTPUT"
+        echo "failed_merges=$FAILED_MERGES" >> "$GITHUB_OUTPUT"
+
+    - name: Prepare Zulip message
+      id: zulip-message
+      if: env.branches_exist == 'true'
+      run: |
+        SUCCESSFUL_MERGES="${{ steps.execute-merges.outputs.successful_merges }}"
+        FAILED_MERGES="${{ steps.execute-merges.outputs.failed_merges }}"
+
+        # Start building the message
+        MESSAGE=""
+
+        # Report successful merges
+        if [ -n "$SUCCESSFUL_MERGES" ]; then
+          MESSAGE+=$'### ✅ Successfully merged branches into \'nightly-testing\':\n\n'
+          for MERGE_INFO in $SUCCESSFUL_MERGES; do
+            IFS='|' read -r PR_NUMBER GITHUB_DIFF _ <<< "$MERGE_INFO"
+            MESSAGE+=$(printf -- '- [lean-pr-testing-%s](%s) (adaptations for lean#%s)' "$PR_NUMBER" "$GITHUB_DIFF" "$PR_NUMBER")$'\n\n'
+          done
+          MESSAGE+=$'\n'
+        else
+          MESSAGE+=$'No branches were successfully merged into \'nightly-testing\'. 🤷‍♂️\n\n'
+        fi
+
+        # Report failed merges
+        if [ -n "$FAILED_MERGES" ]; then
+          MESSAGE+=$'### ❌ Failed merges:\n\nThe following branches need to be merged manually into \'nightly-testing\':\n\n'
+          for MERGE_INFO in $FAILED_MERGES; do
+            IFS='|' read -r PR_NUMBER GITHUB_DIFF _ <<< "$MERGE_INFO"
+            MESSAGE+=$(printf '- [lean-pr-testing-%s](%s) (adaptations for lean#%s)' "$PR_NUMBER" "$GITHUB_DIFF" "$PR_NUMBER")$'\n\n'
+            MESSAGE+=$'```bash\n'
+            MESSAGE+=$(printf 'scripts/merge-lean-testing-pr.sh %s' "$PR_NUMBER")$'\n'
+            MESSAGE+=$'```\n\n'
+          done
+        else
+          MESSAGE+=$'All branches were successfully merged! 🎉\n'
+        fi
+
+        # Output the message using the correct GitHub Actions syntax
+        printf 'msg<<EOF\n%s\nEOF' "$MESSAGE" | tee "$GITHUB_OUTPUT"
+
+    - name: Send message on Zulip
+      if: env.branches_exist == 'true'
+      uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
+      with:
+        api-key: ${{ secrets.ZULIP_API_KEY }}
+        email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+        organization-url: 'https://leanprover.zulipchat.com'
+        to: 'nightly-testing'
+        type: 'stream'
+        topic: 'Mergeable lean testing PRs'
+        content: |
+          ${{ steps.zulip-message.outputs.msg }}

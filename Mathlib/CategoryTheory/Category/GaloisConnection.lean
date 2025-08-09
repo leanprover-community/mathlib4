@@ -1,11 +1,11 @@
 /-
-Copyright (c) 2017 Scott Morrison. All rights reserved.
+Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Stephen Morgan, Scott Morrison, Johannes Hölzl, Reid Barton
+Authors: Stephen Morgan, Kim Morrison, Johannes Hölzl, Reid Barton
 -/
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Adjunction.Basic
-import Mathlib.Order.GaloisConnection
+import Mathlib.Order.GaloisConnection.Defs
 
 /-!
 
@@ -30,8 +30,8 @@ def GaloisConnection.adjunction {l : X → Y} {u : Y → X} (gc : GaloisConnecti
     { homEquiv := fun X Y =>
         { toFun := fun f => CategoryTheory.homOfLE (gc.le_u f.le)
           invFun := fun f => CategoryTheory.homOfLE (gc.l_le f.le)
-          left_inv := by aesop_cat
-          right_inv := by aesop_cat } }
+          left_inv := by cat_disch
+          right_inv := by cat_disch } }
 
 end
 

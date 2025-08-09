@@ -31,7 +31,7 @@ def Semiconj (f : α → β) (ga : α → α) (gb : β → β) : Prop :=
 
 namespace Semiconj
 
-variable {f fab : α → β} {fbc : β → γ} {ga ga' : α → α} {gb gb' : β → β} {gc gc' : γ → γ}
+variable {f fab : α → β} {fbc : β → γ} {ga ga' : α → α} {gb gb' : β → β} {gc : γ → γ}
 
 /-- Definition of `Function.Semiconj` in terms of functional equality. -/
 lemma _root_.Function.semiconj_iff_comp_eq : Semiconj f ga gb ↔ f ∘ ga = gb ∘ f := funext_iff.symm

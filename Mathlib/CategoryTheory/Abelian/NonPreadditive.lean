@@ -64,9 +64,9 @@ universe v u
 variable (C : Type u) [Category.{v} C]
 
 /-- We call a category `NonPreadditiveAbelian` if it has a zero object, kernels, cokernels, binary
-    products and coproducts, and every monomorphism and every epimorphism is normal. -/
-class NonPreadditiveAbelian extends HasZeroMorphisms C, NormalMonoCategory C,
-    NormalEpiCategory C where
+products and coproducts, and every monomorphism and every epimorphism is normal. -/
+class NonPreadditiveAbelian extends HasZeroMorphisms C, IsNormalMonoCategory C,
+    IsNormalEpiCategory C where
   [has_zero_object : HasZeroObject C]
   [has_kernels : HasKernels C]
   [has_cokernels : HasCokernels C]
@@ -180,8 +180,8 @@ section CokernelOfKernel
 variable {X Y : C} {f : X ⟶ Y}
 
 /-- In a `NonPreadditiveAbelian` category, an epi is the cokernel of its kernel. More precisely:
-    If `f` is an epimorphism and `s` is some limit kernel cone on `f`, then `f` is a cokernel
-    of `Fork.ι s`. -/
+If `f` is an epimorphism and `s` is some limit kernel cone on `f`, then `f` is a cokernel
+of `Fork.ι s`. -/
 def epiIsCokernelOfKernel [Epi f] (s : Fork f 0) (h : IsLimit s) :
     IsColimit (CokernelCofork.ofπ f (KernelFork.condition s)) :=
   IsCokernel.cokernelIso _ _
@@ -190,8 +190,8 @@ def epiIsCokernelOfKernel [Epi f] (s : Fork f 0) (h : IsLimit s) :
     (asIso <| Abelian.factorThruCoimage f) (Abelian.coimage.fac f)
 
 /-- In a `NonPreadditiveAbelian` category, a mono is the kernel of its cokernel. More precisely:
-    If `f` is a monomorphism and `s` is some colimit cokernel cocone on `f`, then `f` is a kernel
-    of `Cofork.π s`. -/
+If `f` is a monomorphism and `s` is some colimit cokernel cocone on `f`, then `f` is a kernel
+of `Cofork.π s`. -/
 def monoIsKernelOfCokernel [Mono f] (s : Cofork f 0) (h : IsColimit s) :
     IsLimit (KernelFork.ofι f (CokernelCofork.condition s)) :=
   IsKernel.isoKernel _ _
@@ -204,7 +204,7 @@ end CokernelOfKernel
 section
 
 /-- The composite `A ⟶ A ⨯ A ⟶ cokernel (Δ A)`, where the first map is `(𝟙 A, 0)` and the second map
-    is the canonical projection into the cokernel. -/
+is the canonical projection into the cokernel. -/
 abbrev r (A : C) : A ⟶ cokernel (diag A) :=
   prod.lift (𝟙 A) 0 ≫ cokernel.π (diag A)
 
@@ -232,12 +232,12 @@ instance epi_r {A : C} : Epi (r A) := by
   let hp1 : IsLimit (KernelFork.ofι (prod.lift (𝟙 A) (0 : A ⟶ A)) hlp) := by
     refine Fork.IsLimit.mk _ (fun s => Fork.ι s ≫ Limits.prod.fst) ?_ ?_
     · intro s
-      apply prod.hom_ext <;> simp
+      apply Limits.prod.hom_ext <;> simp
     · intro s m h
       haveI : Mono (prod.lift (𝟙 A) (0 : A ⟶ A)) := mono_of_mono_fac (prod.lift_fst _ _)
       apply (cancel_mono (prod.lift (𝟙 A) (0 : A ⟶ A))).1
       convert h
-      apply prod.hom_ext <;> simp
+      apply Limits.prod.hom_ext <;> simp
   let hp2 : IsColimit (CokernelCofork.ofπ (Limits.prod.snd : A ⨯ A ⟶ A) hlp) :=
     epiIsCokernelOfKernel _ hp1
   apply NormalMonoCategory.epi_of_zero_cancel
@@ -257,15 +257,13 @@ instance isIso_r {A : C} : IsIso (r A) :=
   isIso_of_mono_of_epi _
 
 /-- The composite `A ⨯ A ⟶ cokernel (diag A) ⟶ A` given by the natural projection into the cokernel
-    followed by the inverse of `r`. In the category of modules, using the normal kernels and
-    cokernels, this map is equal to the map `(a, b) ↦ a - b`, hence the name `σ` for
-    "subtraction". -/
+followed by the inverse of `r`. In the category of modules, using the normal kernels and
+cokernels, this map is equal to the map `(a, b) ↦ a - b`, hence the name `σ` for "subtraction". -/
 abbrev σ {A : C} : A ⨯ A ⟶ A :=
   cokernel.π (diag A) ≫ inv (r A)
 
 end
 
--- Porting note (#10618): simp can prove these
 @[reassoc]
 theorem diag_σ {X : C} : diag X ≫ σ = 0 := by rw [cokernel.condition_assoc, zero_comp]
 

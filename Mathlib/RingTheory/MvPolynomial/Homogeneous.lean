@@ -8,8 +8,9 @@ import Mathlib.Algebra.GradedMonoid
 import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Algebra.MvPolynomial.Equiv
 import Mathlib.Algebra.MvPolynomial.Variables
-import Mathlib.RingTheory.MvPolynomial.WeightedHomogeneous
 import Mathlib.Algebra.Polynomial.Roots
+import Mathlib.RingTheory.MvPolynomial.WeightedHomogeneous
+import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # Homogeneous polynomials
@@ -52,6 +53,14 @@ theorem weightedTotalDegree_one (φ : MvPolynomial σ R) :
     linearCombination, Pi.one_apply, Finsupp.coe_lsum, LinearMap.coe_smulRight, LinearMap.id_coe,
     id, Algebra.id.smul_eq_mul, mul_one]
 
+theorem weightedTotalDegree_rename_of_injective {σ τ : Type*} {e : σ → τ}
+    {w : τ → ℕ} {P : MvPolynomial σ R} (he : Function.Injective e) :
+    weightedTotalDegree w (rename e P) = weightedTotalDegree (w ∘ e) P := by
+  classical
+  unfold weightedTotalDegree
+  rw [support_rename_of_injective he, Finset.sup_image]
+  congr; ext; unfold weight; simp
+
 variable (σ R)
 
 /-- The submodule of homogeneous `MvPolynomial`s of degree `n`. -/
@@ -64,7 +73,7 @@ def homogeneousSubmodule (n : ℕ) : Submodule R (MvPolynomial σ R) where
     apply hc
     rw [h]
     exact smul_zero r
-  zero_mem' d hd := False.elim (hd <| coeff_zero _)
+  zero_mem' _ hd := False.elim (hd <| coeff_zero _)
   add_mem' {a b} ha hb c hc := by
     rw [coeff_add] at hc
     obtain h | h : coeff c a ≠ 0 ∨ coeff c b ≠ 0 := by
@@ -171,9 +180,8 @@ theorem prod {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) (n : �
     simp only [isHomogeneous_one, Finset.sum_empty, Finset.prod_empty]
   · intro i s his IH h
     simp only [his, Finset.prod_insert, Finset.sum_insert, not_false_iff]
-    apply (h i (Finset.mem_insert_self _ _)).mul (IH _)
-    intro j hjs
-    exact h j (Finset.mem_insert_of_mem hjs)
+    apply (h i (by grind)).mul (IH _)
+    grind
 
 lemma C_mul (hφ : φ.IsHomogeneous m) (r : R) :
     (C r * φ).IsHomogeneous m := by
@@ -182,9 +190,6 @@ lemma C_mul (hφ : φ.IsHomogeneous m) (r : R) :
 lemma _root_.MvPolynomial.isHomogeneous_C_mul_X (r : R) (i : σ) :
     (C r * X i).IsHomogeneous 1 :=
   (isHomogeneous_X _ _).C_mul _
-
-@[deprecated (since := "2024-03-21")]
-alias _root_.MvPolynomial.C_mul_X := _root_.MvPolynomial.isHomogeneous_C_mul_X
 
 lemma pow (hφ : φ.IsHomogeneous m) (n : ℕ) : (φ ^ n).IsHomogeneous (m * n) := by
   rw [show φ ^ n = ∏ _i ∈ Finset.range n, φ by simp]
@@ -270,7 +275,7 @@ theorem rename_isHomogeneous_iff {f : σ → τ} (hf : f.Injective) :
     exact Finsupp.sum_mapDomain_index_inj (h := fun _ ↦ id) hf
   · rwa [coeff_rename_mapDomain f hf]
 
-lemma finSuccEquiv_coeff_isHomogeneous {N : ℕ} {φ : MvPolynomial (Fin (N+1)) R} {n : ℕ}
+lemma finSuccEquiv_coeff_isHomogeneous {N : ℕ} {φ : MvPolynomial (Fin (N + 1)) R} {n : ℕ}
     (hφ : φ.IsHomogeneous n) (i j : ℕ) (h : i + j = n) :
     ((finSuccEquiv _ _ φ).coeff i).IsHomogeneous j := by
   intro d hd
@@ -363,7 +368,7 @@ lemma exists_eval_ne_zero_of_totalDegree_le_card_aux {N : ℕ} {F : MvPolynomial
     obtain hFn | hFn := ne_or_eq ((finSuccEquiv R N F).coeff n) 0
     · exact hF.exists_eval_ne_zero_of_coeff_finSuccEquiv_ne_zero_aux hFn
     have hin : i < n := hin.lt_or_eq.elim id <| by aesop
-    obtain ⟨j, hj⟩ : ∃ j, i + (j + 1) = n := (Nat.exists_eq_add_of_lt hin).imp <| by intros; omega
+    obtain ⟨j, hj⟩ : ∃ j, i + (j + 1) = n := (Nat.exists_eq_add_of_lt hin).imp <| by omega
     obtain ⟨r, hr⟩ : ∃ r, (eval r) (Polynomial.coeff ((finSuccEquiv R N) F) i) ≠ 0 :=
       IH (hF.finSuccEquiv_coeff_isHomogeneous _ _ hj) hi (.trans (by norm_cast; omega) hnR)
     set φ : R[X] := Polynomial.map (eval r) (finSuccEquiv _ _ F) with hφ
@@ -372,7 +377,7 @@ lemma exists_eval_ne_zero_of_totalDegree_le_card_aux {N : ℕ} {F : MvPolynomial
     have hφR : φ.natDegree < #R := by
       refine lt_of_lt_of_le ?_ hnR
       norm_cast
-      refine lt_of_le_of_lt (natDegree_map_le _ _) ?_
+      refine lt_of_le_of_lt natDegree_map_le ?_
       suffices (finSuccEquiv _ _ F).natDegree ≠ n by omega
       rintro rfl
       refine leadingCoeff_ne_zero.mpr ?_ hFn
@@ -447,7 +452,7 @@ open Finset Finsupp
 
 variable (n : ℕ) (φ ψ : MvPolynomial σ R)
 
-theorem homogeneousComponent_mem  :
+theorem homogeneousComponent_mem :
     homogeneousComponent n φ ∈ homogeneousSubmodule σ R n :=
   weightedHomogeneousComponent_mem _ φ n
 
@@ -457,8 +462,7 @@ theorem coeff_homogeneousComponent (d : σ →₀ ℕ) :
   convert coeff_weightedHomogeneousComponent n φ d
 
 theorem homogeneousComponent_apply :
-    homogeneousComponent n φ =
-      ∑ d ∈ φ.support.filter fun d => d.degree = n, monomial d (coeff d φ) := by
+    homogeneousComponent n φ = ∑ d ∈ φ.support with d.degree = n, monomial d (coeff d φ) := by
   simp_rw [degree_eq_weight_one]
   convert weightedHomogeneousComponent_apply n φ
 

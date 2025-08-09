@@ -20,7 +20,7 @@ variable {R : Type*} [CommRing R]
 attribute [local instance] AdjoinRoot.algHom_subsingleton
 
 /-- The `R`-`AlgEquiv` between the localization of `R` away from `r` and
-    `R` with an inverse of `r` adjoined. -/
+`R` with an inverse of `r` adjoined. -/
 noncomputable def Localization.awayEquivAdjoin (r : R) : Away r ≃ₐ[R] AdjoinRoot (C r * X - 1) :=
   AlgEquiv.ofAlgHom
     { awayLift _ r
@@ -28,7 +28,7 @@ noncomputable def Localization.awayEquivAdjoin (r : R) : Away r ≃ₐ[R] Adjoin
       (isUnit_of_mul_eq_one ((algebraMap R (AdjoinRoot (C r * X - 1))) r) (root (C r * X - 1))
         (root_isInv r)) with
       commutes' :=
-        IsLocalization.Away.AwayMap.lift_eq r (isUnit_of_mul_eq_one _ _ <| root_isInv r) }
+        IsLocalization.Away.lift_eq r (isUnit_of_mul_eq_one _ _ <| root_isInv r) }
     (liftHom _ (IsLocalization.Away.invSelf r) <| by
       simp only [map_sub, map_mul, aeval_C, aeval_X, IsLocalization.Away.mul_invSelf, aeval_one,
         sub_self])

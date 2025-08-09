@@ -43,7 +43,7 @@ instance : Star (CentroidHom α) where
 instance instStarAddMonoid : StarAddMonoid (CentroidHom α) where
   star_involutive f := ext (fun _ => by
     rw [star_apply, star_apply, star_star, star_star])
-  star_add f g := ext fun _ => star_add _ _
+  star_add _ _ := ext fun _ => star_add _ _
 
 instance : Star (Subsemiring.center (CentroidHom α)) where
   star f := ⟨star (f : CentroidHom α), Subsemiring.mem_center_iff.mpr (fun g => ext (fun a =>
@@ -124,7 +124,7 @@ variable [NonAssocSemiring α] [StarRing α]
 def starCenterIsoCentroid : StarSubsemiring.center α ≃⋆+* CentroidHom α where
   __ := starCenterToCentroid
   invFun T :=
-    ⟨T 1, by refine ⟨?_, ?_, ?_, ?_⟩; all_goals simp [← map_mul_left, ← map_mul_right]⟩
+    ⟨T 1, by constructor <;> simp [commute_iff_eq, ← map_mul_left, ← map_mul_right]⟩
   left_inv z := Subtype.ext <| by simp only [MulHom.toFun_eq_coe,
     NonUnitalRingHom.coe_toMulHom, NonUnitalStarRingHom.coe_toNonUnitalRingHom,
     starCenterToCentroid_apply, mul_one]

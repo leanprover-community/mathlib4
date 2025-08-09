@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Homology.Homotopy
 import Mathlib.Algebra.Homology.Linear
@@ -83,13 +83,17 @@ instance [HasZeroObject V] : HasZeroObject (HomotopyCategory V c) :=
   ⟨(quotient V c).obj 0, by
     rw [IsZero.iff_id_eq_zero, ← (quotient V c).map_id, id_zero, Functor.map_zero]⟩
 
-instance {D : Type*} [Category D] : ((whiskeringLeft _ _ D).obj (quotient V c)).Full :=
+instance {D : Type*} [Category D] : ((Functor.whiskeringLeft _ _ D).obj (quotient V c)).Full :=
   Quotient.full_whiskeringLeft_functor _ _
 
-instance {D : Type*} [Category D] : ((whiskeringLeft _ _ D).obj (quotient V c)).Faithful :=
+instance {D : Type*} [Category D] : ((Functor.whiskeringLeft _ _ D).obj (quotient V c)).Faithful :=
   Quotient.faithful_whiskeringLeft_functor _ _
 
 variable {V c}
+
+lemma quotient_obj_surjective (X : HomotopyCategory V c) :
+    ∃ (K : HomologicalComplex V c), (quotient _ _).obj K = X :=
+  ⟨_, rfl⟩
 
 -- Porting note: removed @[simp] attribute because it hinders the automatic application of the
 -- more useful `quotient_map_out`
@@ -121,7 +125,6 @@ def homotopyOutMap {C D : HomologicalComplex V c} (f : C ⟶ D) :
   apply homotopyOfEq
   simp
 
-@[simp 1100]
 theorem quotient_map_out_comp_out {C D E : HomotopyCategory V c} (f : C ⟶ D) (g : D ⟶ E) :
     (quotient V c).map (Quot.out f ≫ Quot.out g) = f ≫ g := by simp
 
@@ -242,12 +245,12 @@ def NatTrans.mapHomotopyCategory {F G : V ⥤ W} [F.Additive] [G.Additive] (α :
 
 @[simp]
 theorem NatTrans.mapHomotopyCategory_id (c : ComplexShape ι) (F : V ⥤ W) [F.Additive] :
-    NatTrans.mapHomotopyCategory (𝟙 F) c = 𝟙 (F.mapHomotopyCategory c) := by aesop_cat
+    NatTrans.mapHomotopyCategory (𝟙 F) c = 𝟙 (F.mapHomotopyCategory c) := by cat_disch
 
 @[simp]
 theorem NatTrans.mapHomotopyCategory_comp (c : ComplexShape ι) {F G H : V ⥤ W} [F.Additive]
     [G.Additive] [H.Additive] (α : F ⟶ G) (β : G ⟶ H) :
     NatTrans.mapHomotopyCategory (α ≫ β) c =
-      NatTrans.mapHomotopyCategory α c ≫ NatTrans.mapHomotopyCategory β c := by aesop_cat
+      NatTrans.mapHomotopyCategory α c ≫ NatTrans.mapHomotopyCategory β c := by cat_disch
 
 end CategoryTheory

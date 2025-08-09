@@ -10,8 +10,9 @@ import Mathlib.Algebra.Ring.Defs
 # Centralizers of rings
 -/
 
+assert_not_exists RelIso
 
-variable {M : Type*} {S T : Set M}
+variable {M : Type*} {S : Set M}
 
 namespace Set
 

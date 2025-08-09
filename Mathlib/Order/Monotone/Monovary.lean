@@ -31,7 +31,7 @@ variable {ι ι' α β γ : Type*}
 
 section Preorder
 
-variable [Preorder α] [Preorder β] [Preorder γ] {f : ι → α} {f' : α → γ} {g : ι → β} {g' : β → γ}
+variable [Preorder α] [Preorder β] [Preorder γ] {f : ι → α} {f' : α → γ} {g : ι → β}
   {s t : Set ι}
 
 /-- `f` monovaries with `g` if `g i < g j` implies `f i ≤ f j`. -/
@@ -69,6 +69,12 @@ theorem monovaryOn_univ : MonovaryOn f g univ ↔ Monovary f g :=
 @[simp]
 theorem antivaryOn_univ : AntivaryOn f g univ ↔ Antivary f g :=
   ⟨fun h _ _ => h trivial trivial, fun h _ _ _ _ hij => h hij⟩
+
+lemma monovaryOn_iff_monovary : MonovaryOn f g s ↔ Monovary (fun i : s ↦ f i) fun i ↦ g i := by
+  simp [Monovary, MonovaryOn]
+
+lemma antivaryOn_iff_antivary : AntivaryOn f g s ↔ Antivary (fun i : s ↦ f i) fun i ↦ g i := by
+  simp [Antivary, AntivaryOn]
 
 protected theorem MonovaryOn.subset (hst : s ⊆ t) (h : MonovaryOn f g t) : MonovaryOn f g s :=
   fun _ hi _ hj => h (hst hi) (hst hj)
@@ -244,12 +250,33 @@ theorem monovaryOn_id_iff : MonovaryOn f id s ↔ MonotoneOn f s :=
 theorem antivaryOn_id_iff : AntivaryOn f id s ↔ AntitoneOn f s :=
   antitoneOn_iff_forall_lt.symm
 
+lemma StrictMono.trans_monovary (hf : StrictMono f) (h : Monovary g f) : Monotone g :=
+  monotone_iff_forall_lt.2 fun _a _b hab ↦ h <| hf hab
+
+lemma StrictMono.trans_antivary (hf : StrictMono f) (h : Antivary g f) : Antitone g :=
+  antitone_iff_forall_lt.2 fun _a _b hab ↦ h <| hf hab
+
+lemma StrictAnti.trans_monovary (hf : StrictAnti f) (h : Monovary g f) : Antitone g :=
+  antitone_iff_forall_lt.2 fun _a _b hab ↦ h <| hf hab
+
+lemma StrictAnti.trans_antivary (hf : StrictAnti f) (h : Antivary g f) : Monotone g :=
+  monotone_iff_forall_lt.2 fun _a _b hab ↦ h <| hf hab
+
+lemma StrictMonoOn.trans_monovaryOn (hf : StrictMonoOn f s) (h : MonovaryOn g f s) :
+    MonotoneOn g s := monotoneOn_iff_forall_lt.2 fun _a ha _b hb hab ↦ h ha hb <| hf ha hb hab
+
+lemma StrictMonoOn.trans_antivaryOn (hf : StrictMonoOn f s) (h : AntivaryOn g f s) :
+    AntitoneOn g s := antitoneOn_iff_forall_lt.2 fun _a ha _b hb hab ↦ h ha hb <| hf ha hb hab
+
+lemma StrictAntiOn.trans_monovaryOn (hf : StrictAntiOn f s) (h : MonovaryOn g f s) :
+    AntitoneOn g s := antitoneOn_iff_forall_lt.2 fun _a ha _b hb hab ↦ h hb ha <| hf ha hb hab
+
+lemma StrictAntiOn.trans_antivaryOn (hf : StrictAntiOn f s) (h : AntivaryOn g f s) :
+    MonotoneOn g s := monotoneOn_iff_forall_lt.2 fun _a ha _b hb hab ↦ h hb ha <| hf ha hb hab
+
 end PartialOrder
 
 variable [LinearOrder ι]
-
-/- Porting note: Due to a bug in `alias`, many of the below lemmas have dot notation removed in the
-proof -/
 
 protected theorem Monotone.monovary (hf : Monotone f) (hg : Monotone g) : Monovary f g :=
   fun _ _ hij => hf (hg.reflect_lt hij).le
@@ -282,7 +309,7 @@ end Preorder
 
 section LinearOrder
 
-variable [Preorder α] [LinearOrder β] [Preorder γ] {f : ι → α} {f' : α → γ} {g : ι → β} {g' : β → γ}
+variable [Preorder α] [LinearOrder β] [Preorder γ] {f : ι → α} {g : ι → β} {g' : β → γ}
   {s : Set ι}
 
 theorem MonovaryOn.comp_monotoneOn_right (h : MonovaryOn f g s) (hg : MonotoneOn g' (g '' s)) :
@@ -303,19 +330,19 @@ theorem AntivaryOn.comp_antitoneOn_right (h : AntivaryOn f g s) (hg : AntitoneOn
 
 @[symm]
 protected theorem Monovary.symm (h : Monovary f g) : Monovary g f := fun _ _ hf =>
-  le_of_not_lt fun hg => hf.not_le <| h hg
+  le_of_not_gt fun hg => hf.not_ge <| h hg
 
 @[symm]
 protected theorem Antivary.symm (h : Antivary f g) : Antivary g f := fun _ _ hf =>
-  le_of_not_lt fun hg => hf.not_le <| h hg
+  le_of_not_gt fun hg => hf.not_ge <| h hg
 
 @[symm]
 protected theorem MonovaryOn.symm (h : MonovaryOn f g s) : MonovaryOn g f s := fun _ hi _ hj hf =>
-  le_of_not_lt fun hg => hf.not_le <| h hj hi hg
+  le_of_not_gt fun hg => hf.not_ge <| h hj hi hg
 
 @[symm]
 protected theorem AntivaryOn.symm (h : AntivaryOn f g s) : AntivaryOn g f s := fun _ hi _ hj hf =>
-  le_of_not_lt fun hg => hf.not_le <| h hi hj hg
+  le_of_not_gt fun hg => hf.not_ge <| h hi hj hg
 
 end LinearOrder
 
