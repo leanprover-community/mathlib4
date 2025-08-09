@@ -41,7 +41,7 @@ lemma LocalizedModule.map_exact (g : M₀ →ₗ[R] M₁) (h : M₁ →ₗ[R] M�
         rw [smul_zero, mk_smul, ← LinearMap.map_smul, ex (a • m)] at ha
         rcases ha with ⟨x, hx⟩
         use mk x (⟨a, aS⟩ * s)
-        rw [map_LocalizedModules, hx, ← mk_cancel_common_left ⟨a, aS⟩ s m, mk_smul])
+        rw [map_LocalizedModules, hx, ← mk_cancel_common_left ⟨a, aS⟩ s m])
       y)
     fun ⟨x, hx⟩ ↦ by
       revert hx

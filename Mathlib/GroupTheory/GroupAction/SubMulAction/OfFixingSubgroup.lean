@@ -149,7 +149,7 @@ theorem fixingSubgroup_of_insert (a : α) (s : Set (ofStabilizer M a)) :
     fixingSubgroup M (insert a ((fun x ↦ x.val) '' s)) =
       (fixingSubgroup (↥(stabilizer M a)) s).map (stabilizer M a).subtype := by
   ext m
-  simp [mem_fixingSubgroup_iff, mem_ofStabilizer_iff, subgroup_smul_def, and_comm]
+  simp [mem_fixingSubgroup_iff, mem_ofStabilizer_iff, and_comm]
 
 @[to_additive]
 theorem mem_ofFixingSubgroup_insert_iff {a : α} {s : Set (ofStabilizer M a)} {x : α} :
@@ -338,9 +338,7 @@ def map_ofFixingSubgroupUnion :
         fun hx => x.prop (by
           apply Set.mem_union_right s
           simpa only [Set.mem_preimage, Subtype.coe_mk] using hx)⟩
-  map_smul' := fun ⟨m, hm⟩ ⟨x, hx⟩ => by
-    rw [← SetLike.coe_eq_coe, ← SetLike.coe_eq_coe]
-    exact subgroup_smul_def ⟨m, hm⟩ x
+  map_smul' _ _ := rfl
 
 @[to_additive]
 theorem map_ofFixingSubgroupUnion_def (x : SubMulAction.ofFixingSubgroup M (s ∪ t)) :

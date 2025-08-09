@@ -426,7 +426,7 @@ theorem eq_top_if_isMultiplyPretransitive [Finite α] {G : Subgroup (Equiv.Perm 
   obtain ⟨i, rfl⟩ := (hx x) a
   specialize hgk i
   simp only [Function.Embedding.smul_apply, Equiv.Perm.smul_def] at hgk
-  simp [← hgk, Subgroup.smul_def, Perm.smul_def]
+  simp [← hgk, Perm.smul_def]
 
 end Equiv.Perm
 
@@ -486,8 +486,8 @@ theorem isMultiplyPretransitive [IsPretransitive G α] {n : ℕ} {a : α} :
     simp only [← smul_apply _ _ i, hgy, hgx]
     simp [smul_apply]
     rcases Fin.eq_castSucc_or_eq_last i with ⟨i, rfl⟩ | ⟨rfl⟩
-    · simp [snoc_castSucc, ← hg, subgroup_smul_def]
-    · simpa only [snoc_last, ← hg, subgroup_smul_def] using g.prop
+    · simp [snoc_castSucc, ← hg]
+    · simpa only [snoc_last, ← hg] using g.prop
 
 end SubMulAction.ofStabilizer
 
