@@ -146,18 +146,8 @@ instance List.decidableBExistUnique {α : Type*} [DecidableEq α] (p : α → Pr
   | [] => .isFalse <| by simp
   | x :: xs =>
     if hx : p x then
-      decidable_of_iff (∀ y ∈ xs, p y → x = y) (by
-        refine ⟨fun h ↦ ⟨x, ⟨⟨mem_cons_self, hx⟩, fun y hy ↦ ?_⟩⟩, fun ⟨z, h⟩ y hy hp ↦ ?_⟩
-        · rcases List.eq_or_mem_of_mem_cons hy.1 with (rfl | hxs)
-          · rfl
-          · exact (h y hxs hy.2).symm
-        · exact (h.2 x ⟨mem_cons_self, hx⟩).trans (h.2 y ⟨mem_cons_of_mem x hy, hp⟩).symm)
+      decidable_of_iff (∀ y ∈ xs, p y → x = y) (⟨fun h ↦ ⟨x, by grind⟩,
+        fun ⟨z, h⟩ y hy hp ↦ (h.2 x ⟨mem_cons_self, hx⟩).trans (by grind)⟩)
     else
-      letI := List.decidableBExistUnique p xs
-      decidable_of_iff (∃! x, x ∈ xs ∧ p x) (by
-        refine ⟨fun ⟨z, h⟩ ↦ ⟨z, ⟨mem_cons_of_mem x h.1.1, h.1.2⟩, fun y hy ↦ h.2 y ⟨?_, hy.2⟩⟩,
-          fun ⟨z, hy, h⟩ ↦ ⟨z, ⟨?_, hy.2⟩, fun y hy ↦ h y ⟨mem_cons_of_mem x hy.1, hy.2⟩⟩⟩
-        all_goals
-          rcases List.eq_or_mem_of_mem_cons hy.1 with (rfl | hxs)
-          · exact hx.elim hy.2
-          · exact hxs)
+      have := List.decidableBExistUnique p xs
+      decidable_of_iff (∃! x, x ∈ xs ∧ p x) (by grind)
