@@ -438,8 +438,8 @@ lemma toNNReal_sub (hb : b ≠ ∞) : (a - b).toNNReal = a.toNNReal - b.toNNReal
 lemma toReal_sub_of_le (hba : b ≤ a) (ha : a ≠ ∞) : (a - b).toReal = a.toReal - b.toReal := by
   simp [ENNReal.toReal, ne_top_of_le_ne_top ha hba, toNNReal_mono ha hba]
 
-lemma one_sub_toReal_eq {x : ENNReal} (hx : x ≤ 1) : 1 - x.toReal = (1 - x).toReal := by
-  convert (toReal_sub_of_le hx one_ne_top).symm
+lemma one_sub_toReal_eq {x : ENNReal} (hx : x ≤ 1) : (1 - x).toReal = 1 - x.toReal := by
+  convert (toReal_sub_of_le hx one_ne_top)
 
 lemma ofReal_one_sub_toReal_eq (x : ENNReal) (hx : x ≤ 1) :
     ENNReal.ofReal (1 - x.toReal) = 1 - x := by
