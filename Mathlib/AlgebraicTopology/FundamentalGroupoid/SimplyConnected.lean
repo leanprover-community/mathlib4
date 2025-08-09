@@ -90,8 +90,7 @@ constant loop. -/
 theorem simply_connected_iff_loops_trivial {Y : Type*} [TopologicalSpace Y] :
     SimplyConnectedSpace Y ↔
       PathConnectedSpace Y ∧ ∀ {x : Y} (p : Path x x), p.Homotopic (Path.refl x) := by
-  trans
-  · exact simply_connected_iff_paths_homotopic'
+  apply Iff.trans simply_connected_iff_paths_homotopic'
   rw [and_congr_right_iff]
   intro _
   constructor
