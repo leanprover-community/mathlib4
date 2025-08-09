@@ -622,7 +622,7 @@ theorem forallLTEqZero_supp_BddBelow [LinearOrder Γ] (f : Γ → R) (n : Γ)
   exact not_lt.mp (mt (hn m) hm)
 
 theorem BddBelow_zero [Preorder Γ] [Nonempty Γ] : BddBelow (Function.support (0 : Γ → R)) := by
-  simp only [support_zero', bddBelow_empty]
+  simp
 
 /-- Construct a Hahn series from any function whose support is bounded below. -/
 @[simps]
