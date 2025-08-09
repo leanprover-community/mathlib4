@@ -49,29 +49,17 @@ def natGT (f : ℕ → α) (H : ∀ n : ℕ, r (f (n + 1)) (f n)) : ((· > ·) :
 theorem coe_natGT {f : ℕ → α} {H : ∀ n : ℕ, r (f (n + 1)) (f n)} : ⇑(natGT f H) = f :=
   rfl
 
-theorem exists_not_acc_lt_of_not_acc {a : α} {r} (h : ¬Acc r a) : ∃ b, ¬Acc r b ∧ r b a := by
-  contrapose! h
-  refine ⟨_, fun b hr => ?_⟩
-  by_contra hb
-  exact h b hb hr
+@[deprecated (since := "2025-08-08")]
+alias exists_not_acc_lt_of_not_acc := exists_not_acc_lt_of_not_acc
 
 /-- A value is accessible iff it isn't contained in any infinite decreasing sequence. -/
 theorem acc_iff_no_decreasing_seq {x} :
-    Acc r x ↔ IsEmpty { f : ((· > ·) : ℕ → ℕ → Prop) ↪r r // x ∈ Set.range f } := by
-  constructor
-  · refine fun h => h.recOn fun x _ IH => ?_
-    constructor
-    rintro ⟨f, k, hf⟩
-    exact IsEmpty.elim' (IH (f (k + 1)) (hf ▸ f.map_rel_iff.2 (Nat.lt_succ_self _))) ⟨f, _, rfl⟩
-  · have : ∀ x : { a // ¬Acc r a }, ∃ y : { a // ¬Acc r a }, r y.1 x.1 := by
-      rintro ⟨x, hx⟩
-      cases exists_not_acc_lt_of_not_acc hx with
-      | intro w h => exact ⟨⟨w, h.1⟩, h.2⟩
-    choose f h using this
-    refine fun E =>
-      by_contradiction fun hx => E.elim' ⟨natGT (fun n => (f^[n] ⟨x, hx⟩).1) fun n => ?_, 0, rfl⟩
-    simp only [Function.iterate_succ']
-    apply h
+    Acc r x ↔ IsEmpty { f : ((· > ·) : ℕ → ℕ → Prop) ↪r r // x ∈ Set.range f } where
+  mp acc := .mk fun ⟨f, k, hk⟩ ↦ not_acc_iff_exists_nat_fun.mpr
+    ⟨(f <| k + ·), hk, fun _n ↦ f.map_rel_iff.2 (Nat.lt_succ_self _)⟩ acc
+  mpr h := of_not_not fun nacc ↦
+    have ⟨f, hf⟩ := not_acc_iff_exists_nat_fun.mp nacc
+    h.elim ⟨natGT f hf.2, 0, hf.1⟩
 
 theorem not_acc_of_decreasing_seq (f : ((· > ·) : ℕ → ℕ → Prop) ↪r r) (k : ℕ) : ¬Acc r (f k) := by
   rw [acc_iff_no_decreasing_seq, not_isEmpty_iff]
@@ -79,14 +67,11 @@ theorem not_acc_of_decreasing_seq (f : ((· > ·) : ℕ → ℕ → Prop) ↪r r
 
 /-- A strict order relation is well-founded iff it doesn't have any infinite decreasing sequence.
 
-See `wellFounded_iff_no_descending_seq` for a version which works on any relation. -/
+See `WellFounded.wellFounded_iff_no_descending_seq` for a version which works on any relation. -/
 theorem wellFounded_iff_no_descending_seq :
-    WellFounded r ↔ IsEmpty (((· > ·) : ℕ → ℕ → Prop) ↪r r) := by
-  constructor
-  · rintro ⟨h⟩
-    exact ⟨fun f => not_acc_of_decreasing_seq f 0 (h _)⟩
-  · intro h
-    exact ⟨fun x => acc_iff_no_decreasing_seq.2 inferInstance⟩
+    WellFounded r ↔ IsEmpty (((· > ·) : ℕ → ℕ → Prop) ↪r r) where
+  mp := fun ⟨h⟩ ↦ ⟨fun f ↦ not_acc_of_decreasing_seq f 0 (h _)⟩
+  mpr _ := ⟨fun _x ↦ acc_iff_no_decreasing_seq.2 inferInstance⟩
 
 theorem not_wellFounded_of_decreasing_seq (f : ((· > ·) : ℕ → ℕ → Prop) ↪r r) : ¬WellFounded r := by
   rw [wellFounded_iff_no_descending_seq, not_isEmpty_iff]
