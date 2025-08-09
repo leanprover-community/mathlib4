@@ -51,6 +51,20 @@ theorem congr_arg_heq {β : α → Sort*} (f : ∀ a, β a) :
     ∀ {a₁ a₂ : α}, a₁ = a₂ → f a₁ ≍ f a₂
   | _, _, rfl => HEq.rfl
 
+theorem dcongr_heq
+    {α₁ α₂ : Sort _}
+    {β₁ : α₁ → Sort _} {β₂ : α₂ → Sort _}
+    {f₁ : ∀ a, β₁ a} {f₂ : ∀ a, β₂ a}
+    {a₁ : α₁} {a₂ : α₂}
+    (hargs : a₁ ≍ a₂)
+    (ht : ∀ a₁ a₂, a₁ ≍ a₂ → β₁ a₁ = β₂ a₂)
+    (hf : α₁ = α₂ → β₁ ≍ β₂ → f₁ ≍ f₂) :
+    f₁ a₁ ≍ f₂ a₂ := by
+  cases hargs
+  cases funext fun v => ht v v .rfl
+  cases hf rfl .rfl
+  rfl
+
 @[simp] theorem eq_iff_eq_cancel_left {b c : α} : (∀ {a}, a = b ↔ a = c) ↔ b = c :=
   ⟨fun h ↦ by rw [← h], fun h a ↦ by rw [h]⟩
 
