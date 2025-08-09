@@ -80,22 +80,17 @@ lemma projection {f : ℕ →. ℕ} (hf : Nat.Partrec f)
     induction n generalizing a
     case zero => simp
     case succ n ih =>
-        cases hC :
-          @Nat.rec (fun _ ↦ Option ℕ) Option.none
-            (fun x ih ↦ ih.rec (cf.evaln s (m.pair x)) Option.some) n <;> simp [hC]
-        · constructor
-          · intro h; exact ⟨n, by simp, h⟩
-          · rintro ⟨x, hx, Hx⟩
-            rcases eq_or_lt_of_le (le_of_lt_succ hx) with (rfl | hx)
-            · exact Hx
-            · exfalso; simpa using ((ih _).mpr ⟨x, hx, Hx⟩).symm.trans hC
-        · constructor
-          · rintro rfl;
-            rcases (ih _).mp hC with ⟨x, hx, Hx⟩
-            exact ⟨x, lt_trans hx (by simp), Hx⟩
-          · rintro ⟨x, _, Hx⟩
-            rcases (ih _).mp hC with ⟨y, _, Hy⟩
-            exact unif (Nat.Partrec.Code.evaln_sound Hy) (Nat.Partrec.Code.evaln_sound Hx)
+      cases hC :
+        @Nat.rec (fun _ ↦ Option ℕ) Option.none
+          (fun x ih ↦ ih.rec (cf.evaln s (m.pair x)) Option.some) n
+      · simp only [hC]
+        grind
+      · simp only [hC, Option.some.injEq]
+        constructor
+        · grind
+        · rintro ⟨x, _, Hx⟩
+          rcases (ih _).mp hC with ⟨y, _, Hy⟩
+          exact unif (Nat.Partrec.Code.evaln_sound Hy) (Nat.Partrec.Code.evaln_sound Hx)
   have mono : ∀ {a m n₁ n₂ : ℕ}, n₁ ≤ n₂ → a ∈ F m n₁ → a ∈ F m n₂ := by
     intro a m n₁ n₂ hn h₁
     rcases hF.mp h₁ with ⟨x, hx, H⟩
@@ -191,12 +186,7 @@ lemma projection {f : α → β →. γ} (hf : Partrec₂ f)
     (unif : ∀ {a b₁ b₂ c₁ c₂}, c₁ ∈ f a b₁ → c₂ ∈ f a b₂ → c₁ = c₂) :
     ∃ g : α →. γ, Partrec g ∧ ∀ c a, c ∈ g a ↔ ∃ b, c ∈ f a b := by
   have := Nat.Partrec.projection (Partrec.bind_decode₂_iff.mp hf)
-    (by intro m n₁ n₂ c₁ c₂; simp only [Part.mem_bind_iff, Part.mem_ofOption,
-          Option.mem_def, decode₂_eq_some, Part.mem_map_iff, Prod.exists, encode_prod_val,
-          Nat.pair_eq_pair, forall_exists_index, and_imp]
-        rintro a b₁ rfl rfl c₁ h₁ rfl a b₂ e rfl c₂ h₂ rfl
-        rcases Encodable.encode_inj.mp e
-        rw [unif h₁ h₂])
+    (by intro m n₁ n₂ c₁ c₂; simp [decode₂_eq_some]; aesop)
   rcases this with ⟨g, hg, H⟩
   let g' : α →. γ := fun a ↦ (g (encode a)).bind fun n ↦ decode (α := γ) n
   refine ⟨g',
@@ -206,11 +196,8 @@ lemma projection {f : α → β →. γ} (hf : Partrec₂ f)
     have H : ∀ c a : ℕ,
       c ∈ g a ↔ ∃ z a' b, (encode a' = a ∧ encode b = z) ∧ ∃ c' ∈ f a' b, encode c' = c := by
       simpa [Encodable.decode₂_eq_some] using H
-    intro c a; constructor
-    · intro h; rcases (H c a).mp h with ⟨b, a, b, ⟨rfl, rfl⟩, ⟨c, H, rfl⟩⟩
-      exact ⟨a, b, rfl, c, H, rfl⟩
-    · rintro ⟨a, b, rfl, c, hc, rfl⟩
-      exact (H _ _).mpr ⟨encode b, a, b, ⟨rfl, rfl⟩, c, hc, rfl⟩
+    intro c a
+    constructor <;> grind
   intro c a
   suffices (∃ c' ∈ g (encode a), decode c' = Option.some c) ↔ ∃ b, c ∈ f a b by simpa [g']
   constructor
@@ -254,9 +241,9 @@ namespace REPred
 variable {α β : Type*} [Primcodable α] [Primcodable β] {p q : α → Prop}
 
 @[simp] protected lemma const (p : Prop) : REPred fun _ : α ↦ p := by
-  by_cases h : p <;> simp [h]
-  · simpa using Partrec.some.dom_re
-  · simpa using (Partrec.none (α := α) (σ := α)).dom_re
+  by_cases h : p
+  · simpa [h] using Partrec.some.dom_re
+  · simpa [h] using (Partrec.none (α := α) (σ := α)).dom_re
 
 lemma re_iff : REPred p ↔ ∃ f : α →. Unit, Partrec f ∧ p = fun x ↦ (f x).Dom :=
   ⟨fun h ↦ ⟨_, h, by ext x; simp [Part.assert]⟩, by rintro ⟨f, hf, rfl⟩; exact hf.dom_re⟩
