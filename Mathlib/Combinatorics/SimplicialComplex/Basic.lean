@@ -1,7 +1,6 @@
 /-
-Copyright (c) 2025 Sebastian Kumar, Xiangyu Li. All rights
-reserved. Released under Apache 2.0 license as described in the file
-LICENSE.
+Copyright (c) 2025 Sebastian Kumar, Xiangyu Li. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Kumar, Xiangyu Li
 -/
 import Mathlib.Data.Finset.Image
