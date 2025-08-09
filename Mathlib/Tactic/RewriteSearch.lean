@@ -310,7 +310,7 @@ elab_rules : tactic |
     `(tactic| rw_search%$tk $[[ $[-$forbidden],* ]]?) => withMainContext do
   let forbidden : NameSet :=
     ((forbidden.getD #[]).map Syntax.getId).foldl (init := ∅) fun s n => s.insert n
-  let .some init ← SearchNode.init (← getMainGoal) | throwError "Goal is not an equality."
+  let some init ← SearchNode.init (← getMainGoal) | throwError "Goal is not an equality."
   let results := init.search (forbidden := forbidden) |>.whileAtLeastHeartbeatsPercent 20
   let results ← results.force
   let min ← match results with
