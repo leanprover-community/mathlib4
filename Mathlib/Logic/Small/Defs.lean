@@ -41,7 +41,14 @@ theorem Small.mk' {α : Type v} {S : Type w} (e : α ≃ S) : Small.{w} α :=
 def Shrink (α : Type v) [Small.{w} α] : Type w :=
   Classical.choose (@Small.equiv_small α _)
 
-/-- A computable implementation of `equivShrink` -/
+/-- A computable implementation of `equivShrink`
+
+  Justification of safeness:
+    `Shrink α` has no memory layout in the compiler that needs to be conformed to.
+    There is no other computable way to construct or destructure an object of type `Shrink α`.
+    There is also no other computable way to modify the content of a shrink
+    (as it always needs `Classical.choose_spec`).
+    As a consequence adding this implemented_by is safe -/
 @[inline]
 private unsafe def equivShrinkImpl (α : Type v) [Small.{u, v} α] : α ≃ Shrink.{u, v} α :=
   ⟨unsafeCast, unsafeCast, lcProof, lcProof⟩
