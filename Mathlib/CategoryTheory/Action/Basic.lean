@@ -112,6 +112,9 @@ instance : Category (Action V G) where
   id M := Hom.id M
   comp f g := Hom.comp f g
 
+lemma hom_injective {M N : Action V G} : Function.Injective (Hom.hom : (M ⟶ N) → (M.V ⟶ N.V)) :=
+  fun _ _ ↦ Hom.ext
+
 @[ext]
 lemma hom_ext {M N : Action V G} (φ₁ φ₂ : M ⟶ N) (h : φ₁.hom = φ₂.hom) : φ₁ = φ₂ :=
   Hom.ext h
