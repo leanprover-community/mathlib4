@@ -5,6 +5,7 @@ import Counterexamples.CliffordAlgebraNotInjective
 import Counterexamples.Cyclotomic105
 import Counterexamples.DirectSumIsInternal
 import Counterexamples.DiscreteTopologyNonDiscreteUniformity
+import Counterexamples.DiscreteTopologyWithNontrivialValuation
 import Counterexamples.GameMultiplication
 import Counterexamples.Girard
 import Counterexamples.HomogeneousPrimeNotPrime
