@@ -92,6 +92,24 @@ theorem norm_embedding_eq (w : InfinitePlace K) (x : K) :
   nth_rewrite 2 [← mk_embedding w]
   rfl
 
+variable (K) in
+theorem embedding_injective : (embedding (K := K)).Injective :=
+  fun _ _ h ↦ by simpa using congr_arg mk h
+
+@[simp]
+theorem embedding_inj {v₁ v₂ : InfinitePlace K} : v₁.embedding = v₂.embedding ↔ v₁ = v₂ :=
+  (embedding_injective _).eq_iff
+
+variable (K) in
+theorem conjugate_embedding_injective :
+    (fun (v : InfinitePlace K) ↦ ComplexEmbedding.conjugate v.embedding).Injective :=
+  star_injective.comp <| embedding_injective K
+
+variable (K) in
+theorem eq_of_embedding_eq_conjugate {v₁ v₂ : InfinitePlace K}
+    (h : v₁.embedding = ComplexEmbedding.conjugate v₂.embedding) : v₁ = v₂ := by
+  rw [← mk_embedding v₁, h, mk_conjugate_eq, mk_embedding]
+
 theorem eq_iff_eq (x : K) (r : ℝ) : (∀ w : InfinitePlace K, w x = r) ↔ ∀ φ : K →+* ℂ, ‖φ x‖ = r :=
   ⟨fun hw φ => hw (mk φ), by rintro hφ ⟨w, ⟨φ, rfl⟩⟩; exact hφ φ⟩
 
