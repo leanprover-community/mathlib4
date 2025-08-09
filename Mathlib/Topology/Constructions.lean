@@ -377,6 +377,14 @@ theorem Continuous.subtype_map {f : X → Y} (h : Continuous f) {q : Y → Prop}
 theorem continuous_inclusion {s t : Set X} (h : s ⊆ t) : Continuous (inclusion h) :=
   continuous_id.subtype_map h
 
+theorem continuous_rangeFactorization_iff {f : X → Y} :
+    Continuous (rangeFactorization f) ↔ Continuous f :=
+  IsInducing.subtypeVal.continuous_iff
+
+theorem Continuous.rangeFactorization {f : X → Y} (hf : Continuous f) :
+    Continuous (rangeFactorization f) :=
+  continuous_rangeFactorization_iff.mpr hf
+
 theorem continuousAt_subtype_val {p : X → Prop} {x : Subtype p} :
     ContinuousAt ((↑) : Subtype p → X) x :=
   continuous_subtype_val.continuousAt
@@ -384,6 +392,10 @@ theorem continuousAt_subtype_val {p : X → Prop} {x : Subtype p} :
 theorem Subtype.dense_iff {s : Set X} {t : Set s} : Dense t ↔ s ⊆ closure ((↑) '' t) := by
   rw [IsInducing.subtypeVal.dense_iff, SetCoe.forall]
   rfl
+
+theorem denseRange_inclusion_iff {s t : Set X} (hst : s ⊆ t) :
+    DenseRange (inclusion hst) ↔ t ⊆ closure s := by
+  rw [DenseRange, Subtype.dense_iff, ← range_comp, val_comp_inclusion, Subtype.range_coe]
 
 theorem map_nhds_subtype_val {s : Set X} (x : s) : map ((↑) : s → X) (𝓝 x) = 𝓝[s] ↑x := by
   rw [IsInducing.subtypeVal.map_nhds_eq, Subtype.range_val]
