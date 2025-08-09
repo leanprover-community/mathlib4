@@ -23,18 +23,18 @@ variable {G G' : Type*} [Group G] [AddGroup G'] [DecidableEq G] [DecidableEq G']
 
 The notation `σₘ[A, B]` is available in scope `Combinatorics.Additive`. -/
 @[to_additive
-"The doubling constant `σ[A, B]` of two finsets `A` and `B` in a group is `|A + B| / |A|`.
+/-- The doubling constant `σ[A, B]` of two finsets `A` and `B` in a group is `|A + B| / |A|`.
 
-The notation `σ[A, B]` is available in scope `Combinatorics.Additive`."]
+The notation `σ[A, B]` is available in scope `Combinatorics.Additive`. -/]
 def mulConst (A B : Finset G) : ℚ≥0 := #(A * B) / #A
 
 /-- The difference constant `δₘ[A, B]` of two finsets `A` and `B` in a group is `|A / B| / |A|`.
 
 The notation `δₘ[A, B]` is available in scope `Combinatorics.Additive`. -/
 @[to_additive
-"The difference constant `σ[A, B]` of two finsets `A` and `B` in a group is `|A - B| / |A|`.
+/-- The difference constant `σ[A, B]` of two finsets `A` and `B` in a group is `|A - B| / |A|`.
 
-The notation `δ[A, B]` is available in scope `Combinatorics.Additive`."]
+The notation `δ[A, B]` is available in scope `Combinatorics.Additive`. -/]
 def divConst (A B : Finset G) : ℚ≥0 := #(A / B) / #A
 
 /-- The doubling constant `σₘ[A, B]` of two finsets `A` and `B` in a group is `|A * B| / |A|`. -/
@@ -138,12 +138,12 @@ section Fintype
 variable [Fintype G]
 
 /-- Dense sets have small doubling. -/
-@[to_additive addConst_le_inv_dens "Dense sets have small doubling."]
+@[to_additive addConst_le_inv_dens /-- Dense sets have small doubling. -/]
 lemma mulConst_le_inv_dens : σₘ[A, B] ≤ A.dens⁻¹ := by
   rw [dens, inv_div, mulConst]; gcongr; exact card_le_univ _
 
 /-- Dense sets have small difference constant. -/
-@[to_additive subConst_le_inv_dens "Dense sets have small difference constant."]
+@[to_additive subConst_le_inv_dens /-- Dense sets have small difference constant. -/]
 lemma divConst_le_inv_dens : δₘ[A, B] ≤ A.dens⁻¹ := by
   rw [dens, inv_div, divConst]; gcongr; exact card_le_univ _
 
@@ -194,9 +194,9 @@ lemma card_mul_cast_divConst (A B : Finset G) : (#A * δₘ[A, B] : 𝕜) = #(A 
 
 This is a consequence of the Ruzsa triangle inequality. -/
 @[to_additive
-"If `A` has small doubling, then it has small difference, with the constant squared.
+/-- If `A` has small doubling, then it has small difference, with the constant squared.
 
-This is a consequence of the Ruzsa triangle inequality."]
+This is a consequence of the Ruzsa triangle inequality. -/]
 lemma divConst_le_mulConst_sq : δₘ[A] ≤ σₘ[A] ^ 2 := by
   obtain rfl | hA' := A.eq_empty_or_nonempty
   · simp
@@ -225,9 +225,9 @@ lemma divConst_inv_left (A B : Finset G) : δₘ[A⁻¹, B] = σₘ[A, B] := by
 
 This is a consequence of the Ruzsa triangle inequality. -/
 @[to_additive
-"If `A` has small difference, then it has small doubling, with the constant squared.
+/-- If `A` has small difference, then it has small doubling, with the constant squared.
 
-This is a consequence of the Ruzsa triangle inequality."]
+This is a consequence of the Ruzsa triangle inequality. -/]
 lemma mulConst_le_divConst_sq : σₘ[A] ≤ δₘ[A] ^ 2 := by
   obtain rfl | hA' := A.eq_empty_or_nonempty
   · simp

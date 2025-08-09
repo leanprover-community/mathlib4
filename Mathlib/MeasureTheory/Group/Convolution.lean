@@ -27,7 +27,7 @@ open scoped ENNReal
 variable {M : Type*} [Monoid M] [MeasurableSpace M]
 
 /-- Multiplicative convolution of measures. -/
-@[to_additive "Additive convolution of measures."]
+@[to_additive /-- Additive convolution of measures. -/]
 noncomputable def mconv (μ : Measure M) (ν : Measure M) :
     Measure M := Measure.map (fun x : M × M ↦ x.1 * x.2) (μ.prod ν)
 
@@ -64,27 +64,29 @@ lemma mconv_dirac [MeasurableMul₂ M] (μ : Measure M) [SFinite μ] (x : M) :
   simp [Function.comp_def]
 
 /-- Convolution of the dirac measure at 1 with a measure μ returns μ. -/
-@[to_additive (attr := simp) "Convolution of the dirac measure at 0 with a measure μ returns μ."]
+@[to_additive (attr := simp)
+/-- Convolution of the dirac measure at 0 with a measure μ returns μ. -/]
 theorem dirac_one_mconv [MeasurableMul₂ M] (μ : Measure M) [SFinite μ] :
     (Measure.dirac 1) ∗ₘ μ = μ := by
   simp [dirac_mconv]
 
 /-- Convolution of a measure μ with the dirac measure at 1 returns μ. -/
-@[to_additive (attr := simp) "Convolution of a measure μ with the dirac measure at 0 returns μ."]
+@[to_additive (attr := simp)
+/-- Convolution of a measure μ with the dirac measure at 0 returns μ. -/]
 theorem mconv_dirac_one [MeasurableMul₂ M]
     (μ : Measure M) [SFinite μ] : μ ∗ₘ (Measure.dirac 1) = μ := by
   simp [mconv_dirac]
 
 /-- Convolution of the zero measure with a measure μ returns the zero measure. -/
-@[to_additive (attr := simp) "Convolution of the zero measure with a measure μ returns
-the zero measure."]
+@[to_additive (attr := simp) /-- Convolution of the zero measure with a measure μ returns
+the zero measure. -/]
 theorem zero_mconv (μ : Measure M) : (0 : Measure M) ∗ₘ μ = (0 : Measure M) := by
   unfold mconv
   simp
 
 /-- Convolution of a measure μ with the zero measure returns the zero measure. -/
-@[to_additive (attr := simp) "Convolution of a measure μ with the zero measure returns the zero
-measure."]
+@[to_additive (attr := simp) /-- Convolution of a measure μ with the zero measure returns the zero
+measure. -/]
 theorem mconv_zero (μ : Measure M) : μ ∗ₘ (0 : Measure M) = (0 : Measure M) := by
   unfold mconv
   simp
@@ -104,7 +106,7 @@ theorem add_mconv [MeasurableMul₂ M] (μ : Measure M) (ν : Measure M) (ρ : M
   fun_prop
 
 /-- To get commutativity, we need the underlying multiplication to be commutative. -/
-@[to_additive "To get commutativity, we need the underlying addition to be commutative."]
+@[to_additive /-- To get commutativity, we need the underlying addition to be commutative. -/]
 theorem mconv_comm {M : Type*} [CommMonoid M] [MeasurableSpace M] [MeasurableMul₂ M] (μ : Measure M)
     (ν : Measure M) [SFinite μ] [SFinite ν] : μ ∗ₘ ν = ν ∗ₘ μ := by
   unfold mconv
@@ -113,7 +115,7 @@ theorem mconv_comm {M : Type*} [CommMonoid M] [MeasurableSpace M] [MeasurableMul
   fun_prop
 
 /-- The convolution of s-finite measures is s-finite. -/
-@[to_additive "The convolution of s-finite measures is s-finite."]
+@[to_additive /-- The convolution of s-finite measures is s-finite. -/]
 instance sfinite_mconv_of_sfinite (μ : Measure M) (ν : Measure M) [SFinite μ] [SFinite ν] :
     SFinite (μ ∗ₘ ν) := inferInstanceAs <| SFinite ((μ.prod ν).map fun (x : M × M) ↦ x.1 * x.2)
 
@@ -126,7 +128,7 @@ instance finite_of_finite_mconv (μ : Measure M) (ν : Measure M) [IsFiniteMeasu
   exact {measure_univ_lt_top := h}
 
 /-- Convolution is associative. -/
-@[to_additive "Convolution is associative."]
+@[to_additive /-- Convolution is associative. -/]
 theorem mconv_assoc [MeasurableMul₂ M] (μ ν ρ : Measure M)
     [SFinite ν] [SFinite ρ] :
     (μ ∗ₘ ν) ∗ₘ ρ = μ ∗ₘ (ν ∗ₘ ρ) := by

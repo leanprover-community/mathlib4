@@ -40,8 +40,8 @@ variable [One α] [TopologicalSpace X]
 
 /-- The topological support of a function is the closure of its support, i.e. the closure of the
 set of all elements where the function is not equal to 1. -/
-@[to_additive "The topological support of a function is the closure of its support. i.e. the
-closure of the set of all elements where the function is nonzero."]
+@[to_additive /-- The topological support of a function is the closure of its support. i.e. the
+closure of the set of all elements where the function is nonzero. -/]
 def mulTSupport (f : X → α) : Set X := closure (mulSupport f)
 
 @[to_additive]
@@ -141,9 +141,9 @@ variable [TopologicalSpace α] [TopologicalSpace α'] [One β] [One γ] [One δ]
 /-- A function `f` *has compact multiplicative support* or is *compactly supported* if the closure
 of the multiplicative support of `f` is compact. In a T₂ space this is equivalent to `f` being equal
 to `1` outside a compact set. -/
-@[to_additive "A function `f` *has compact support* or is *compactly supported* if the closure of
+@[to_additive /-- A function `f` *has compact support* or is *compactly supported* if the closure of
 the support of `f` is compact. In a T₂ space this is equivalent to `f` being equal to `0` outside a
-compact set."]
+compact set. -/]
 def HasCompactMulSupport (f : α → β) : Prop :=
   IsCompact (mulTSupport f)
 
@@ -281,7 +281,7 @@ theorem continuous_extend_one [TopologicalSpace β] {U : Set α'} (hU : IsOpen U
     exact cont.continuousAt
 
 /-- If `f` has compact multiplicative support, then `f` tends to 1 at infinity. -/
-@[to_additive "If `f` has compact support, then `f` tends to zero at infinity."]
+@[to_additive /-- If `f` has compact support, then `f` tends to zero at infinity. -/]
 theorem is_one_at_infty {f : α → γ} [TopologicalSpace γ]
     (h : HasCompactMulSupport f) : Tendsto f (cocompact α) (𝓝 1) := by
   intro N hN
@@ -403,9 +403,9 @@ variable {ι : Type*} [TopologicalSpace X]
 /-- If a family of functions `f` has locally-finite multiplicative support, subordinate to a family
 of open sets, then for any point we can find a neighbourhood on which only finitely-many members of
 `f` are not equal to 1. -/
-@[to_additive "If a family of functions `f` has locally-finite support, subordinate to a family of
-open sets, then for any point we can find a neighbourhood on which only finitely-many members of `f`
-are non-zero."]
+@[to_additive /-- If a family of functions `f` has locally-finite support, subordinate to a family
+of open sets, then for any point we can find a neighbourhood on which only finitely-many members of
+`f` are non-zero. -/]
 theorem LocallyFinite.exists_finset_nhds_mulSupport_subset {U : ι → Set X} [One R] {f : ι → X → R}
     (hlf : LocallyFinite fun i => mulSupport (f i)) (hso : ∀ i, mulTSupport (f i) ⊆ U i)
     (ho : ∀ i, IsOpen (U i)) (x : X) :

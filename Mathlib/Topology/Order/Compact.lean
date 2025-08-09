@@ -336,7 +336,7 @@ theorem Continuous.exists_forall_ge [ClosedIciTopology α] [Nonempty β] {f : β
   Continuous.exists_forall_le (α := αᵒᵈ) hf hlim
 
 /-- A continuous function with compact support has a global minimum. -/
-@[to_additive "A continuous function with compact support has a global minimum."]
+@[to_additive /-- A continuous function with compact support has a global minimum. -/]
 theorem Continuous.exists_forall_le_of_hasCompactMulSupport [ClosedIicTopology α] [Nonempty β]
     [One α] {f : β → α} (hf : Continuous f) (h : HasCompactMulSupport f) :
     ∃ x : β, ∀ y : β, f x ≤ f y := by
@@ -345,7 +345,7 @@ theorem Continuous.exists_forall_le_of_hasCompactMulSupport [ClosedIicTopology �
   exact ⟨x, hx⟩
 
 /-- A continuous function with compact support has a global maximum. -/
-@[to_additive "A continuous function with compact support has a global maximum."]
+@[to_additive /-- A continuous function with compact support has a global maximum. -/]
 theorem Continuous.exists_forall_ge_of_hasCompactMulSupport [ClosedIciTopology α] [Nonempty β]
     [One α] {f : β → α} (hf : Continuous f) (h : HasCompactMulSupport f) :
     ∃ x : β, ∀ y : β, f y ≤ f x :=
@@ -375,13 +375,13 @@ theorem IsCompact.bddAbove_image [ClosedIciTopology α] [Nonempty α] {f : β �
   IsCompact.bddBelow_image (α := αᵒᵈ) hK hf
 
 /-- A continuous function with compact support is bounded below. -/
-@[to_additive "A continuous function with compact support is bounded below."]
+@[to_additive /-- A continuous function with compact support is bounded below. -/]
 theorem Continuous.bddBelow_range_of_hasCompactMulSupport [ClosedIicTopology α] [One α]
     {f : β → α} (hf : Continuous f) (h : HasCompactMulSupport f) : BddBelow (range f) :=
   (h.isCompact_range hf).bddBelow
 
 /-- A continuous function with compact support is bounded above. -/
-@[to_additive "A continuous function with compact support is bounded above."]
+@[to_additive /-- A continuous function with compact support is bounded above. -/]
 theorem Continuous.bddAbove_range_of_hasCompactMulSupport [ClosedIciTopology α] [One α]
     {f : β → α} (hf : Continuous f) (h : HasCompactMulSupport f) : BddAbove (range f) :=
   Continuous.bddBelow_range_of_hasCompactMulSupport (α := αᵒᵈ) hf h

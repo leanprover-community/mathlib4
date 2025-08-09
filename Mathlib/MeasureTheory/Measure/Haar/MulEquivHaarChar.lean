@@ -31,8 +31,8 @@ variable {G : Type*} [Group G] [TopologicalSpace G] [MeasurableSpace G]
 
 /-- If `φ : G ≃ₜ* G` then `mulEquivHaarChar φ` is the positive real factor by which
 `φ` scales Haar measures on `G`. -/
-@[to_additive "If `φ : A ≃ₜ+ A` then `addEquivAddHaarChar φ` is the positive
-real factor by which `φ` scales Haar measures on `A`."]
+@[to_additive /-- If `φ : A ≃ₜ+ A` then `addEquivAddHaarChar φ` is the positive
+real factor by which `φ` scales Haar measures on `A`. -/]
 noncomputable def mulEquivHaarChar (φ : G ≃ₜ* G) : ℝ≥0 :=
   haarScalarFactor haar (haar.map φ)
 
