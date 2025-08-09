@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov
+Authors: Yury Kudryashov, Lua Viana Reis, Oliver Butterley
 -/
 import Mathlib.Dynamics.BirkhoffSum.Basic
 import Mathlib.Algebra.Module.Basic
@@ -74,7 +74,28 @@ theorem Function.IsFixedPt.birkhoffAverage_eq [CharZero R] {f : α → α} {x : 
   rw [birkhoffAverage, h.birkhoffSum_eq, ← Nat.cast_smul_eq_nsmul R, inv_smul_smul₀]
   rwa [Nat.cast_ne_zero]
 
+lemma birkhoffAverage_add {f : α → α} {g g' : α → M} :
+    birkhoffAverage R f (g + g') = birkhoffAverage R f g + birkhoffAverage R f g' := by
+  funext n x
+  simp [birkhoffAverage, birkhoffSum, sum_add_distrib, smul_add]
+
 end birkhoffAverage
+
+section AddCommGroup
+
+variable (R : Type*) {α M : Type*} [DivisionSemiring R] [AddCommGroup M] [Module R M]
+
+lemma birkhoffAverage_neg {f : α → α} {g : α → M} :
+    birkhoffAverage R f (-g) = - birkhoffAverage R f g := by
+  funext n x
+  simp [birkhoffAverage, birkhoffSum]
+
+lemma birkhoffAverage_sub {f : α → α} {g g' : α → M} :
+    birkhoffAverage R f (g - g') = birkhoffAverage R f g - birkhoffAverage R f g' := by
+  funext n x
+  simp [birkhoffAverage, birkhoffSum, smul_sub]
+
+end AddCommGroup
 
 /-- Birkhoff average is "almost invariant" under `f`:
 the difference between `birkhoffAverage R f g n (f x)` and `birkhoffAverage R f g n x`
@@ -84,3 +105,13 @@ theorem birkhoffAverage_apply_sub_birkhoffAverage {α M : Type*} (R : Type*) [Di
     birkhoffAverage R f g n (f x) - birkhoffAverage R f g n x =
       (n : R)⁻¹ • (g (f^[n] x) - g x) := by
   simp only [birkhoffAverage, birkhoffSum_apply_sub_birkhoffSum, ← smul_sub]
+
+/-- If a function `g` is invariant under a function `f` (i.e., `g ∘ f = g`), then the Birkhoff
+average of `g` over `f` for `n` iterations is equal to `g`. Requires that `0 < n`. -/
+theorem birkhoffAverage_of_invariant {α M : Type*} (R : Type*) [DivisionRing R] [AddCommMonoid M]
+    [Module R M] [CharZero R] {f : α → α} {g : α → M} (h : g ∘ f = g) {n : ℕ} (hn : 0 < n) :
+    birkhoffAverage R f g n = g := by
+  funext x
+  suffices (n : R)⁻¹ • n • g x = g x by simpa [birkhoffAverage, birkhoffSum_of_invariant h]
+  refine (inv_smul_eq_iff₀ ?_).mpr (by norm_cast)
+  exact Nat.cast_ne_zero.mpr <| Nat.ne_zero_of_lt hn
