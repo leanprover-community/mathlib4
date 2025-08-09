@@ -74,7 +74,7 @@ theorem val_map_lt_iff (x y : R) : vA (algebraMap R A x) < vA (algebraMap R A y)
   simpa only [not_le] using ((val_map_le_iff vR vA _ _).not)
 
 theorem val_map_eq_iff (x y : R) : vA (algebraMap R A x) = vA (algebraMap R A y) ↔ vR x = vR y :=
-  (IsEquiv.val_eq val_isEquiv_comap).symm
+  (IsEquiv.eq_iff_eq val_isEquiv_comap).symm
 
 theorem val_map_le_one_iff (x : R) : vA (algebraMap R A x) ≤ 1 ↔ vR x ≤ 1 := by
   simpa only [map_one] using val_map_le_iff vR vA x 1
