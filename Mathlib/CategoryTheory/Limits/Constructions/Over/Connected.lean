@@ -12,6 +12,8 @@ import Mathlib.CategoryTheory.IsConnected
 
 Shows that the forgetful functor `Over B ⥤ C` creates connected limits, in particular `Over B` has
 any connected limit which `C` has.
+Shows that the forgetful functor `Over B ⥤ C` preserves connected limits, without having to assume
+that `C` has any limits.
 -/
 
 
