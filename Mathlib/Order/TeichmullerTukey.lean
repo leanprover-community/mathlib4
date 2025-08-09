@@ -51,14 +51,15 @@ subset of $X$ is in $F$ -/
 def IsOfFiniteCharacter := ∀ x, x ∈ F ↔ ∀ y ⊆ x, y.Finite → y ∈ F
 
 /-- **Teichmuller-Tukey lemma**. Every nonempty family of finite character has a maximal element. -/
-theorem exists_maximal_of_isOfFiniteCharacter {F} (hF : IsOfFiniteCharacter F) {x : Set α}
+theorem IsOfFiniteCharacter.exists_maximal {F} (hF : IsOfFiniteCharacter F) {x : Set α}
     (xF : x ∈ F) : ∃ m, x ⊆ m ∧ Maximal (· ∈ F) m := by
   /- Apply Zorn's lemma. Take the union of the elements of a chain as its upper bound. -/
   refine zorn_subset_nonempty F (fun c cF cch cne ↦
     ⟨sUnion c, ?_, fun s sc ↦ subset_sUnion_of_mem sc⟩) x xF
-  /- Prove that the union belongs to F. Use the finite character property and the fact that any
-  finite subset of the union is also a subset of some element of the chain. -/
-  refine (hF (sUnion c)).mpr (fun s sc sfin ↦ ?_)
+  /- Prove that the union belongs to `F`. -/
+  refine (hF (sUnion c)).mpr fun s sc sfin ↦ ?_
+  /- Use the finite character property and the fact that any finite subset of the union is also a
+  subset of some element of the chain. -/
   obtain ⟨t, tc, st⟩ := cch.exists_mem_subset_of_finite_of_subset_sUnion cne sc sfin
   exact (hF t).mp (cF tc) s st sfin
 
