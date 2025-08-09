@@ -879,6 +879,25 @@ namespace Padic
 
 variable {p : ℕ} [hp : Fact p.Prime]
 
+lemma norm_intCast_lt_one_iff {z : ℤ} :
+    ‖(z : ℚ_[p])‖ < 1 ↔ (p : ℤ) ∣ z :=
+  padicNormE.norm_int_lt_one_iff_dvd _
+
+lemma norm_natCast_lt_one_iff {n : ℕ} :
+    ‖(n : ℚ_[p])‖ < 1 ↔ p ∣ n := by
+  simpa [Int.natCast_dvd_natCast] using norm_intCast_lt_one_iff (p := p) (z := n)
+
+lemma norm_intCast_eq_one_iff {z : ℤ} :
+    ‖(z : ℚ_[p])‖ = 1 ↔ IsCoprime z p := by
+  rw [← not_iff_not]
+  simp [Nat.coprime_comm, ← norm_natCast_lt_one_iff,
+    Int.isCoprime_iff_gcd_eq_one, Nat.coprime_iff_gcd_eq_one, Int.gcd,
+    ← hp.out.dvd_iff_not_coprime, norm_natAbs, - cast_natAbs, padicNormE.norm_int_le_one]
+
+lemma norm_natCast_eq_one_iff {n : ℕ} :
+    ‖(n : ℚ_[p])‖ = 1 ↔ p.Coprime n := by
+  simpa [p.coprime_comm] using norm_intCast_eq_one_iff (p := p) (z := n)
+
 instance complete : CauSeq.IsComplete ℚ_[p] norm where
   isComplete f := by
     have cau_seq_norm_e : IsCauSeq padicNormE f := fun ε hε => by
