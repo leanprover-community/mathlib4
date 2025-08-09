@@ -1021,13 +1021,6 @@ theorem filterMap_eq_map_iff_forall_eq_some {f : α → Option β} {g : α → �
       exact ⟨rfl, ih h⟩
   mpr h := Eq.trans (filterMap_congr <| by simpa) (congr_fun filterMap_eq_map _)
 
-@[simp]
-theorem filterMap_ite (l : List α) (f : α → Prop) [DecidablePred f] :
-    filterMap (fun a ↦ if f a then some a else none) l = l.filter (f ·) := by
-  rw [← filterMap_eq_filter]
-  apply filterMap_congr
-  simp [Option.guard]
-
 /-! ### filter -/
 
 section Filter
