@@ -86,7 +86,7 @@ instance forgetPreservesConnectedLimits [IsConnected J] {B : C} :
   preservesLimit := {
     preserves hc := ⟨{
       lift s := (forget B).map (hc.lift (CreatesConnected.raiseCone s))
-      fac s j := by
+      fac _ _ := by
         rw [Functor.mapCone_π_app, ← Functor.map_comp, hc.fac,
           CreatesConnected.raiseCone_π_app, forget_map, homMk_left _ _]
       uniq s m fac :=
