@@ -149,5 +149,5 @@ instance List.decidableBExistsUnique {α : Type*} [DecidableEq α] (p : α → P
       decidable_of_iff (∀ y ∈ xs, p y → x = y) (⟨fun h ↦ ⟨x, by grind⟩,
         fun ⟨z, h⟩ y hy hp ↦ (h.2 x ⟨mem_cons_self, hx⟩).trans (by grind)⟩)
     else
-      have := List.decidableBExistUnique p xs
+      have := List.decidableBExistsUnique p xs
       decidable_of_iff (∃! x, x ∈ xs ∧ p x) (by grind)
