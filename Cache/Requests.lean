@@ -117,6 +117,28 @@ def extractPRNumber (ref : String) : Option Nat := do
   else
     none
 
+/-- Check if we're in a detached HEAD state at a nightly-testing tag -/
+def isDetachedAtNightlyTesting (mathlibDepPath : FilePath) : IO Bool := do
+  -- Get the current commit hash and check if it's a nightly-testing tag
+  let currentCommit ← IO.Process.output
+    {cmd := "git", args := #["rev-parse", "HEAD"], cwd := mathlibDepPath}
+  if currentCommit.exitCode == 0 then
+    let commitHash := currentCommit.stdout.trim
+    let tagInfo ← IO.Process.output
+      {cmd := "git", args := #["name-rev", "--tags", commitHash], cwd := mathlibDepPath}
+    if tagInfo.exitCode == 0 then
+      let parts := tagInfo.stdout.trim.splitOn " "
+      -- git name-rev returns "commit_hash tags/tag_name" or just "commit_hash" if no tag
+      if parts.length >= 2 && parts[1]!.startsWith "tags/" then
+        let tagName := parts[1]!.drop 5  -- Remove "tags/" prefix
+        return tagName.startsWith "nightly-testing-"
+      else
+        return false
+    else
+      return false
+  else
+    return false
+
 /--
 Attempts to determine the GitHub repository of a version of Mathlib from its Git remote.
 If the current commit coincides with a PR ref, it will determine the source fork
@@ -134,11 +156,19 @@ def getRemoteRepo (mathlibDepPath : FilePath) : IO RepoInfo := do
   if currentBranch.exitCode == 0 then
     let branchName := currentBranch.stdout.trim.stripPrefix "heads/"
     IO.println s!"Current branch: {branchName}"
+
+    -- Check if we're in a detached HEAD state at a nightly-testing tag
+    let isDetachedAtNightlyTesting ← if branchName == "HEAD" then
+      isDetachedAtNightlyTesting mathlibDepPath
+    else
+      pure false
+
     -- Check if we're on a branch that should use nightly-testing remote
     let shouldUseNightlyTesting := branchName == "nightly-testing" ||
                                   branchName.startsWith "lean-pr-testing-" ||
                                   branchName.startsWith "batteries-pr-testing-" ||
-                                  branchName.startsWith "bump/"
+                                  branchName.startsWith "bump/" ||
+                                  isDetachedAtNightlyTesting
 
     if shouldUseNightlyTesting then
       -- Try to use nightly-testing remote
