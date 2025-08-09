@@ -61,12 +61,12 @@ lemma deriv_Gamma_nat (n : ℕ) :
   -- Use convexity to show derivative of `f` at `n + 1` is between `log n` and `log (n + 1)`
   have derivLB (n : ℕ) (hn : 0 < n) : log n ≤ deriv f (n + 1) := by
     refine (le_of_eq ?_).trans <| hc.slope_le_deriv (mem_Ioi.mpr <| Nat.cast_pos.mpr hn)
-      (by positivity : _ < (_ : ℝ)) (by linarith) (hder <| by positivity)
+      (by positivity : _ < (_ : ℝ)) (by simp) (hder <| by positivity)
     rw [slope_def_field, show n + 1 - n = (1 : ℝ) by ring, div_one, h_rec n (by positivity),
       add_sub_cancel_left]
   have derivUB (n : ℕ) : deriv f (n + 1) ≤ log (n + 1) := by
     refine (hc.deriv_le_slope (by positivity : (0 : ℝ) < n + 1) (by positivity : (0 : ℝ) < n + 2)
-        (by linarith) (hder <| by positivity)).trans (le_of_eq ?_)
+        (by simp) (hder <| by positivity)).trans (le_of_eq ?_)
     rw [slope_def_field, show n + 2 - (n + 1) = (1 : ℝ) by ring, div_one,
       show n + 2 = (n + 1) + (1 : ℝ) by ring, h_rec (n + 1) (by positivity), add_sub_cancel_left]
   -- deduce `-deriv f 1` is bounded above + below by sequences which both tend to `γ`

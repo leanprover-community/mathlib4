@@ -120,7 +120,7 @@ private theorem LSeries_eq_mul_integral_aux {f : ℕ → ℂ} (hf : f 0 = 0) {r 
       (tendsto_rpow_neg_atTop (by rwa [sub_pos])).comp tendsto_natCast_atTop_atTop
     refine (IsBigO.mul_atTop_rpow_natCast_of_isBigO_rpow (-s.re) _ _ ?_ hO ?_).trans_tendsto hlim
     · exact isBigO_norm_left.mp <| (norm_ofReal_cpow_eventually_eq_atTop _).isBigO.natCast_atTop
-    · linarith
+    · simp
   · refine .mul_atTop_rpow_of_isBigO_rpow (-(s + 1).re) r _ ?_ ?_ (by rw [← neg_re, neg_add'])
     · simpa [-neg_add_rev, neg_add'] using isBigO_deriv_ofReal_cpow_const_atTop _
     · exact (hO.comp_tendsto tendsto_nat_floor_atTop).trans <|
@@ -183,7 +183,7 @@ private theorem lemma₁ (hlim : Tendsto (fun n : ℕ ↦ (∑ k ∈ Icc 1 n, f 
     simpa using (isBigO_atTop_natCast_rpow_of_tendsto_div_rpow this).comp_tendsto
         tendsto_nat_floor_atTop
   refine h₁.integrableOn_of_isBigO_atTop (g := fun t ↦ t ^ (-s)) ?_ ?_
-  · refine IsBigO.mul_atTop_rpow_of_isBigO_rpow 1 (-s - 1) _ h₂ ?_ (by linarith)
+  · refine IsBigO.mul_atTop_rpow_of_isBigO_rpow 1 (-s - 1) _ h₂ ?_ (by simp)
     exact (norm_ofReal_cpow_eventually_eq_atTop _).isBigO.of_norm_left
   · rwa [integrableAtFilter_rpow_atTop_iff, neg_lt_neg_iff]
 

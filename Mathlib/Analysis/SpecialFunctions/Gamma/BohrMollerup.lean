@@ -170,7 +170,7 @@ theorem f_add_nat_le (hf_conv : ConvexOn ℝ (Ioi 0) f)
   have : f n + x * log n = (1 - x) * f n + x * f (n + 1) := by rw [hf_feq hn']; ring
   rw [this, (by ring : (n : ℝ) + x = (1 - x) * n + x * (n + 1))]
   simpa only [smul_eq_mul] using
-    hf_conv.2 hn' (by linarith : 0 < (n + 1 : ℝ)) (by linarith : 0 ≤ 1 - x) hx.le (by linarith)
+    hf_conv.2 hn' (by linarith : 0 < (n + 1 : ℝ)) (by linarith : 0 ≤ 1 - x) hx.le (by simp)
 
 /-- Linear lower bound for `f (x + n)` on unit interval -/
 theorem f_add_nat_ge (hf_conv : ConvexOn ℝ (Ioi 0) f)
@@ -179,7 +179,7 @@ theorem f_add_nat_ge (hf_conv : ConvexOn ℝ (Ioi 0) f)
   have npos : 0 < (n : ℝ) - 1 := by rw [← Nat.cast_one, sub_pos, Nat.cast_lt]; omega
   have c :=
     (convexOn_iff_slope_mono_adjacent.mp <| hf_conv).2 npos (by linarith : 0 < (n : ℝ) + x)
-      (by linarith : (n : ℝ) - 1 < (n : ℝ)) (by linarith)
+      (by simp : (n : ℝ) - 1 < (n : ℝ)) (by linarith)
   rw [add_sub_cancel_left, sub_sub_cancel, div_one] at c
   have : f (↑n - 1) = f n - log (↑n - 1) := by
     rw [eq_sub_iff_add_eq, ← hf_feq npos, sub_add_cancel]

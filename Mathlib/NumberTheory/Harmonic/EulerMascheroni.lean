@@ -115,7 +115,7 @@ lemma eulerMascheroniSeq_lt_eulerMascheroniSeq' (m n : ℕ) :
     · simp [eulerMascheroniSeq, eulerMascheroniSeq']
     simp only [eulerMascheroniSeq, eulerMascheroniSeq', hr.ne', if_false]
     gcongr
-    linarith
+    simp
   apply (strictMono_eulerMascheroniSeq.monotone (le_max_left m n)).trans_lt
   exact (this _).trans_le (strictAnti_eulerMascheroniSeq'.antitone (le_max_right m n))
 

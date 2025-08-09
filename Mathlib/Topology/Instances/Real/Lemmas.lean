@@ -110,7 +110,7 @@ theorem closure_of_rat_image_lt {q : ℚ} :
   convert closure_ordConnected_inter_rat (ordConnected_Ioi (a := (q : ℝ))) _ using 1
   · congr!; aesop
   · exact (closure_Ioi _).symm
-  · exact ⟨q + 1, show (q : ℝ) < _ by linarith, q + 2, show (q : ℝ) < _ by linarith, by simp⟩
+  · exact ⟨q + 1, show (q : ℝ) < _ by simp, q + 2, show (q : ℝ) < _ by simp, by simp⟩
 
 /- TODO(Mario): Put these back only if needed later
 lemma closure_of_rat_image_le_eq {q : ℚ} : closure ((coe : ℚ → ℝ) '' {x | q ≤ x}) = {r | ↑q ≤ r} :=

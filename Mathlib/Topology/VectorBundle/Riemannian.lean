@@ -238,7 +238,7 @@ lemma eventually_norm_trivializationAt_lt (x : B) :
   rw [this]
   apply (opNorm_comp_le _ _).trans_lt
   gcongr
-  linarith
+  simp
 
 /-- In a continuous Riemannian bundle, local changes of coordinates given by the trivialization at
 a point distort the norm by a factor arbitrarily close to 1. -/
@@ -350,7 +350,7 @@ lemma eventually_norm_symmL_trivializationAt_lt (x : B) :
   rw [this]
   apply (opNorm_comp_le _ _).trans_lt
   gcongr
-  linarith
+  simp
 
 end Continuous
 
