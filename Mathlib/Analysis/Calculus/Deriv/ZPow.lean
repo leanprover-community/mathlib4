@@ -94,10 +94,11 @@ theorem derivWithin_zpow (hxs : UniqueDiffWithinAt 𝕜 s x) (h : x ≠ 0 ∨ 0 
 theorem iter_deriv_zpow' (m : ℤ) (k : ℕ) :
     (deriv^[k] fun x : 𝕜 => x ^ m) =
       fun x => (∏ i ∈ Finset.range k, ((m : 𝕜) - i)) * x ^ (m - k) := by
-  induction' k with k ihk
-  · simp only [one_mul, Int.ofNat_zero, id, sub_zero, Finset.prod_range_zero,
-      Function.iterate_zero]
-  · simp only [Function.iterate_succ_apply', ihk, deriv_const_mul_field', deriv_zpow',
+  induction k with
+  | zero =>
+    simp only [one_mul, Int.ofNat_zero, id, sub_zero, Finset.prod_range_zero, Function.iterate_zero]
+  | succ k ihk =>
+    simp only [Function.iterate_succ_apply', ihk, deriv_const_mul_field', deriv_zpow',
       Finset.prod_range_succ, Int.natCast_succ, ← sub_sub, Int.cast_sub, Int.cast_natCast,
       mul_assoc]
 
