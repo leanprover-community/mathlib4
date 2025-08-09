@@ -187,7 +187,7 @@ theorem heval_of_orderTop_not_pos (hx : ¬ 0 < x.orderTop) (a : PowerSeries R) :
   simp [powerSeriesFamily_of_not_orderTop_pos hx]
 
 theorem heval_mul {a b : PowerSeries R} :
-    heval x (a * b) = (heval x a) * heval x b :=
+    heval x (a * b) = heval x a * heval x b :=
   map_mul (heval x) a b
 
 theorem heval_C (r : R) : heval x (C R r) = r • 1 := by
@@ -195,7 +195,7 @@ theorem heval_C (r : R) : heval x (C R r) = r • 1 := by
   simp only [heval_apply, coeff_hsum, smulFamily_toFun, powers_toFun, HahnSeries.coeff_smul,
     HahnSeries.coeff_one, smul_eq_mul, mul_ite, mul_one, mul_zero]
   rw [finsum_eq_single _ 0 (fun n hn ↦ by simp [coeff_ne_zero_C hn])]
-  by_cases hg : g = 0 <;> · simp
+  by_cases hg : g = 0 <;> simp
 
 theorem heval_X (hx : 0 < x.orderTop) : heval x X = x := by
   rw [X_eq, monomial_eq_mk, heval_apply, powerSeriesFamily, smulFamily]
