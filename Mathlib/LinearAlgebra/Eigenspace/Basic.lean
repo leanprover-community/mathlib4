@@ -253,7 +253,7 @@ lemma genEigenrange_nat {f : End R M} {μ : R} {k : ℕ} :
 lemma HasUnifEigenvalue.exp_ne_zero {f : End R M} {μ : R} {k : ℕ}
     (h : f.HasUnifEigenvalue μ k) : k ≠ 0 := by
   rintro rfl
-  simp [HasUnifEigenvalue, Nat.cast_zero, genEigenspace_zero] at h
+  simp [HasUnifEigenvalue, genEigenspace_zero] at h
 
 /-- If there exists a natural number `k` such that the kernel of `(f - μ • id) ^ k` is the
 maximal generalized eigenspace, then this value is the least such `k`. If not, this value is not
