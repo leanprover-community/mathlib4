@@ -262,6 +262,7 @@ theorem relNorm_algebraMap (I : Ideal R) :
 
 variable (R)
 
+/-- A version of `relNorm_algebraMap` involving a tower of algebras `S/R/R'`. -/
 theorem relNorm_algebraMap' {R'} [CommRing R'] (I : Ideal R') [Algebra R' R]
     [Algebra R' S] [IsScalarTower R' R S] : relNorm R (I.map (algebraMap R' S)) =
       I.map (algebraMap R' R) ^ Module.finrank (FractionRing R) (FractionRing S) := by
