@@ -549,7 +549,7 @@ def heval : PowerSeries R →ₐ[R] HahnSeries Γ R where
   map_mul' a b := by
     simp only [← hsum_mul, hsum_powerSeriesFamily_mul]
   map_zero' := by
-    simp only [hsum, smulFamily_toFun, map_zero, powers_toFun, smul_ite, zero_smul, ite_self,
+    simp only [hsum, smulFamily_toFun, map_zero, powers_toFun, zero_smul,
       coeff_zero, finsum_zero, mk_eq_zero, Pi.zero_def]
   map_add' a b := by
     simp only [powerSeriesFamily_add, hsum_add]
@@ -564,10 +564,24 @@ theorem heval_of_orderTop_not_pos (hx : ¬ 0 < x.orderTop) (a : PowerSeries R) :
     heval x a = (constantCoeff R) a • 1 := by
   simp [powerSeriesFamily_of_not_orderTop_pos hx]
 
-theorem heval_mul {a b : PowerSeries R} : heval hx (a * b) = (heval hx a) * heval hx b :=
-  map_mul (heval hx) a b
+theorem heval_mul {a b : PowerSeries R} : heval x (a * b) = heval x a * heval x b :=
+  map_mul (heval x) a b
 
-theorem heval_unit (u : (PowerSeries R)ˣ) : IsUnit (heval hx u) := by
+theorem heval_C (r : R) : heval x (C R r) = r • 1 := by
+  ext g
+  simp only [heval_apply, coeff_hsum, smulFamily_toFun, powers_toFun, HahnSeries.coeff_smul,
+    HahnSeries.coeff_one, smul_eq_mul, mul_ite, mul_one, mul_zero]
+  rw [finsum_eq_single _ 0 (fun n hn ↦ by simp [coeff_ne_zero_C hn])]
+  by_cases hg : g = 0 <;> · simp
+
+theorem heval_X (hx : 0 < x.orderTop) : heval x X = x := by
+  rw [X_eq, monomial_eq_mk, heval_apply, powerSeriesFamily, smulFamily]
+  simp only [coeff_mk, powers_toFun, hx, ↓reduceIte, ite_smul, one_smul, zero_smul]
+  ext g
+  rw [coeff_hsum, finsum_eq_single _ 1 (fun n hn ↦ (by simp [hn]))]
+  simp
+
+theorem heval_unit (u : (PowerSeries R)ˣ) : IsUnit (heval x u) := by
   refine isUnit_iff_exists_inv.mpr ?_
   use heval x u.inv
   rw [← heval_mul, Units.val_inv, map_one]
