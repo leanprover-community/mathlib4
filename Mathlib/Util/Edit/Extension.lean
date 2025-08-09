@@ -93,3 +93,48 @@ def showEdits (env : Environment) (root : Name) : IO Unit := do
       out := out ++ text.extract pos text.endPos
       IO.println <| s!"-----\n" ++ out ++ s!"-----"
       -- IO.FS.writeFile path out
+
+
+/-! Utilities -/
+
+-- Heuristic; may have false positives (and negatives)
+def removeBadNewlines (s : String) (stop : String.Pos := s.endPos) : List Edit := Id.run <| do
+  let mut i : String.Pos := 0
+  let mut numConsecNewlines := 0
+  let mut startConsecNewline : String.Pos := 0
+  let mut mostRecentNewline : String.Pos := 0
+  let mut edits : List Edit := []
+  while i < stop do
+    let c := s.get i
+    if c == '\n' then
+      if numConsecNewlines == 0 then
+        startConsecNewline := i
+      mostRecentNewline := i
+      numConsecNewlines := numConsecNewlines + 1
+    else if !c.isWhitespace then
+      if !c.isUpper && numConsecNewlines >= 2 then
+        edits := {
+            range := { start := startConsecNewline, stop := mostRecentNewline },
+            replacement := ""
+          } :: edits
+      numConsecNewlines := 0
+    i := s.next i
+  if numConsecNewlines >= 2 then
+    edits := {
+        range := { start := startConsecNewline, stop := mostRecentNewline },
+        replacement := ""
+      } :: edits
+  return edits.reverse
+
+instance : HAdd (String.Range) (String.Pos) (String.Range) where
+  hAdd := fun range offset => ⟨range.1 + offset, range.2 + offset⟩
+
+def Edit.shiftEdit (e : Edit) (offset : String.Pos) : Edit :=
+  { e with range := e.range + offset }
+
+open Parser.Command in
+def removeBadNewlinesFromDocstring (doc : TSyntax ``docComment) : List Edit :=
+  match doc.raw[1] with
+  | .atom (.original _ start _ _) val =>
+    removeBadNewlines val (stop := val.endPos - ⟨2⟩) |>.map (·.shiftEdit start)
+  | _ => []
