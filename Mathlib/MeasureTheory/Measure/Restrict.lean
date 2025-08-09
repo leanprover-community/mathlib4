@@ -1085,9 +1085,9 @@ lemma MeasureTheory.Measure.sum_restrict_le {_ : MeasurableSpace α}
         _ = C.toSet.ncard := (ncard_coe_finset C).symm
         _ ≤ M             := ENat.toNat_le_of_le_coe hCM
     _ = M • (μ.restrict (⋃ C ∈ Cs, (P C)) t) := by
-      have : ⋃ C ∈ Cs, P C = ⋃ (C : Cs), P C := Set.biUnion_eq_iUnion _ _
+      have : ⋃ C ∈ Cs, P C = ⋃ (C : Cs), P C.val := Set.biUnion_eq_iUnion _ _
       rw [← smul_sum, this, μ.restrict_iUnion _ fun C ↦ P_meas _ C.coe_prop,
-        Measure.sum_apply _ ht, ← Finset.tsum_subtype _ fun C ↦ μ.restrict (P C) t]
+        Measure.sum_coe_finset (μ := (μ.restrict <| P ·)), finset_sum_apply]
       have C_subset_C {C₁ C₂ : Cs} {x : α} (hx : x ∈ P C₁.val ∩ P C₂.val) : C₁.val ⊆ C₂.val :=
         have {i : ι} (h : i ∈ C₁.val) : i ∈ F := mem_powerset.mp (sdiff_subset C₁.coe_prop) h
         fun i hi ↦ mem_C (this hi) hx.2 <| P_subset_s (this hi) hi hx.1
