@@ -56,6 +56,14 @@ instance Obj.inhabited {α : TypeVec n} [Inhabited P.A] [∀ i, Inhabited (α i)
 instance : MvFunctor.{u} P.Obj :=
   ⟨@MvPFunctor.map n P⟩
 
+@[simp]
+theorem map_fst {α : TypeVec n} {β : TypeVec n} {arr : α ⟹ β} {z : P α}
+    : (arr <$$> z).fst = z.fst := rfl
+
+@[simp]
+theorem map_snd {α : TypeVec n} {β : TypeVec n} {arr : α ⟹ β} {z : P α}
+    : (arr <$$> z).snd = arr ⊚ z.snd := rfl
+
 theorem map_eq {α β : TypeVec n} (g : α ⟹ β) (a : P.A) (f : P.B a ⟹ α) :
     @MvFunctor.map _ P.Obj _ _ _ g ⟨a, f⟩ = ⟨a, g ⊚ f⟩ :=
   rfl
@@ -219,5 +227,16 @@ def last : PFunctor where
 abbrev appendContents {α : TypeVec n} {β : Type*} {a : P.A} (f' : P.drop.B a ⟹ α)
     (f : P.last.B a → β) : P.B a ⟹ (α ::: β) :=
   splitFun f' f
+
+@[pp_with_univ]
+def uLift (P : MvPFunctor.{u} n) : MvPFunctor.{max u v} n where
+  A := ULift P.A
+  B := fun v => (P.B v.down).uLift
+
+def uLift_down {α : TypeVec.{u} n.succ} (h : (uLift.{u, v} P) (TypeVec.uLift.{u, v} α)) : P α :=
+  ⟨h.fst.down, h.snd.uLift_arrow⟩
+
+def uLift_up {α : TypeVec.{u} n.succ} (h : P α) : (uLift.{u, v} P) (TypeVec.uLift.{u, v} α) :=
+  ⟨.up h.fst, h.snd.arrow_uLift⟩
 
 end MvPFunctor
