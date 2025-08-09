@@ -185,6 +185,15 @@ lemma Preconnected.support_eq_univ [Nontrivial V] {G : SimpleGraph V}
   | nil => contradiction
   | @cons _ w => exact ⟨w, ‹_›⟩
 
+lemma Preconnected.degree_pos [Nontrivial V] {G : SimpleGraph V} (h : G.Preconnected)
+    (v : V) [Fintype (G.neighborSet v)] : 0 < G.degree v := by
+  simp [degree_pos_iff_mem_support, h.support_eq_univ]
+
+lemma Preconnected.minDegree_pos [Nontrivial V] [Fintype V] {G : SimpleGraph V}
+    [DecidableRel G.Adj] (h : G.Preconnected) : 0 < G.minDegree := by
+  rw [G.exists_minimal_degree_vertex.choose_spec]
+  exact degree_pos h G.exists_minimal_degree_vertex.choose
+
 lemma adj_of_mem_walk_support {G : SimpleGraph V} {u v : V} (p : G.Walk u v) (hp : ¬p.Nil) {x : V}
     (hx : x ∈ p.support) : ∃ y ∈ p.support, G.Adj x y := by
   induction p with
