@@ -16,11 +16,11 @@ def String.Range.cmp (r₁ r₂ : String.Range) : Ordering :=
 def Edit.cmp (e₁ e₂ : Edit) : Ordering :=
   e₁.range.cmp e₂.range
 
-initialize editExt : PersistentEnvExtension Edit Edit (List Edit) ←
+initialize editExt : PersistentEnvExtension Edit (List Edit) (List Edit) ←
   registerPersistentEnvExtension {
     mkInitial       := pure {}
     addImportedFn   := fun _ _ => pure {}
-    addEntryFn      := fun edits e => e :: edits
+    addEntryFn      := fun edits newEdits => newEdits ++ edits
     exportEntriesFn := fun edits =>
       edits.toArray.qsort fun e₁ e₂ => e₁.cmp e₂ |>.isLT
     statsFn         := fun s => "edits added: " ++ f!"{repr s}"
