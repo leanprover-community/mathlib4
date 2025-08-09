@@ -689,6 +689,8 @@ namespace EquivTac
 
 open Lean Elab Meta Tactic Qq
 
+initialize registerTraceClass `rw_equiv_tac
+
 variable {u₁ u₂ u₃ : Level}
   {R : Q(Type u₁)} {Γ₁ : Q(Type u₂)} {Γ₂ : Q(Type u₃)} {hR : Q(Ring $R)}
   {hΓ₁ : Q(LinearOrderedCommMonoidWithZero $Γ₁)} {hΓ₂ : Q(LinearOrderedCommMonoidWithZero $Γ₂)}
@@ -811,7 +813,7 @@ def mkProof (h : Q(Valuation.IsEquiv $v₁ $v₂)) (rel : RelType) (x y : Q($Γ�
     let @MaybeDefEq.defEq u₃ _ _ _ d₂ ← isDefEqQ hΓ₂ mΓ₂ | return .none
     let .some ⟨z, hxz⟩ ← mkAssociated v₁ v₂ h x | return .none
     let .some ⟨w, hyw⟩ ← mkAssociated v₁ v₂ h y | return .none
-    trace[debug] m!"Transformed:\n({rel.toProp (α := Γ₁) q(inferInstance) x y})
+    trace[rw_equiv_tac] m!"Transformed:\n({rel.toProp (α := Γ₁) q(inferInstance) x y})
 to:\n({rel.toProp (α := Γ₂) q(inferInstance) z w})"
     match rel with
     | .le => return .some ⟨q($z ≤ $w), q(Associated.le_iff_le (h := $h) $hxz $hyw)⟩
@@ -821,7 +823,7 @@ to:\n({rel.toProp (α := Γ₂) q(inferInstance) z w})"
   | _, _ =>
     let .some ⟨z, hxz⟩ ← mkAssociatedₘ v₁ v₂ h x | return .none
     let .some ⟨w, hyw⟩ ← mkAssociatedₘ v₁ v₂ h y | return .none
-    trace[debug] m!"Transformed:\n({rel.toProp (α := Γ₁) q(inferInstance) x y})
+    trace[rw_equiv_tac] m!"Transformed:\n({rel.toProp (α := Γ₁) q(inferInstance) x y})
 to:\n({rel.toProp (α := Γ₂) q(inferInstance) z w})"
     match rel with
     | .le => return .some ⟨q($z ≤ $w), q(Associatedₘ.le_iff_le (h := $h) $hxz $hyw)⟩
@@ -875,7 +877,7 @@ example {R Γ₁ Γ₂ : Type} [Ring R]
 end EquivTac
 
 section testcases
-
+set_option trace.rw_equiv_tac true
 example {x : R} : v₁ x ^ (-3 : ℤ) ≤ 1 ↔ v₂ x ^ (-3 : ℤ) ≤ 1 := by
   rw_val_equiv h
 
