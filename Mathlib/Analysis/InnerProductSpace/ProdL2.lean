@@ -69,7 +69,8 @@ def prod (v : OrthonormalBasis ι₁ 𝕜 E) (w : OrthonormalBasis ι₂ 𝕜 F)
 
 @[simp] theorem prod_apply (v : OrthonormalBasis ι₁ 𝕜 E) (w : OrthonormalBasis ι₂ 𝕜 F) :
     ∀ i : ι₁ ⊕ ι₂, v.prod w i =
-      Sum.elim ((LinearMap.inl 𝕜 E F) ∘ v) ((LinearMap.inr 𝕜 E F) ∘ w) i := by
+      Sum.elim ((WithLp.toLp 2) ∘ (LinearMap.inl 𝕜 E F) ∘ v)
+        ((WithLp.toLp 2) ∘ (LinearMap.inr 𝕜 E F) ∘ w) i := by
   rw [Sum.forall]
   unfold OrthonormalBasis.prod
   aesop

@@ -30,7 +30,7 @@ embeddings. Once this is done,
   with the projection `ℝ → Icc x y` is
 -/
 
-open Set
+open Set WithLp
 open scoped Manifold Topology
 
 noncomputable section
@@ -78,14 +78,14 @@ lemma contMDiff_subtype_coe_Icc :
   split_ifs with hz
   · simp? [IccLeftChart, Function.comp_def, modelWithCornersEuclideanHalfSpace] says
       simp only [IccLeftChart, Fin.isValue, PartialHomeomorph.mk_coe_symm, PartialEquiv.coe_symm_mk,
-      modelWithCornersEuclideanHalfSpace, ModelWithCorners.mk_symm, Function.comp_def,
-      Function.update_self, ModelWithCorners.mk_coe, PartialHomeomorph.mk_coe]
+        modelWithCornersEuclideanHalfSpace, ModelWithCorners.mk_symm, Function.comp_def,
+        PiLp.toLp_apply, Function.update_self, ModelWithCorners.mk_coe, PartialHomeomorph.mk_coe]
     rw [Subtype.range_val_subtype]
     have : ContDiff ℝ n (fun (z : EuclideanSpace ℝ (Fin 1)) ↦ z 0 + x) := by fun_prop
     apply this.contDiffWithinAt.congr_of_eventuallyEq_of_mem; swap
     · simpa using z.2.1
-    have : {w : EuclideanSpace ℝ (Fin 1) | w 0 < y - x} ∈ 𝓝 (fun i ↦ z - x) := by
-      apply (isOpen_lt (continuous_apply 0) continuous_const).mem_nhds
+    have : {w : EuclideanSpace ℝ (Fin 1) | w 0 < y - x} ∈ 𝓝 (toLp 2 fun i ↦ z - x) := by
+      apply (isOpen_lt (PiLp.continuous_apply 2 _ 0) continuous_const).mem_nhds
       simpa using hz
     filter_upwards [self_mem_nhdsWithin, nhdsWithin_le_nhds this] with w hw h'w
     rw [max_eq_left hw, min_eq_left]
@@ -94,13 +94,14 @@ lemma contMDiff_subtype_coe_Icc :
     simp? [IccRightChart, Function.comp_def, modelWithCornersEuclideanHalfSpace] says
       simp only [IccRightChart, Fin.isValue, PartialHomeomorph.mk_coe_symm,
         PartialEquiv.coe_symm_mk, modelWithCornersEuclideanHalfSpace, ModelWithCorners.mk_symm,
-        Function.comp_def, Function.update_self, ModelWithCorners.mk_coe, PartialHomeomorph.mk_coe]
+        Function.comp_def, PiLp.toLp_apply, Function.update_self, ModelWithCorners.mk_coe,
+        PartialHomeomorph.mk_coe]
     rw [Subtype.range_val_subtype]
     have : ContDiff ℝ n (fun (z : EuclideanSpace ℝ (Fin 1)) ↦ y - z 0) := by fun_prop
     apply this.contDiffWithinAt.congr_of_eventuallyEq_of_mem; swap
     · simpa using z.2.2
-    have : {w : EuclideanSpace ℝ (Fin 1) | w 0 < y - x} ∈ 𝓝 (fun i ↦ y - z) := by
-      apply (isOpen_lt (continuous_apply 0) continuous_const).mem_nhds
+    have : {w : EuclideanSpace ℝ (Fin 1) | w 0 < y - x} ∈ 𝓝 (toLp 2 fun i ↦ y - z) := by
+      apply (isOpen_lt (PiLp.continuous_apply 2 _ 0) continuous_const).mem_nhds
       simpa using h.out.trans_le hz
     filter_upwards [self_mem_nhdsWithin, nhdsWithin_le_nhds this] with w hw h'w
     rw [max_eq_left hw, max_eq_left]
@@ -127,26 +128,26 @@ lemma contMDiffOn_projIcc :
       simp only [modelWithCornersEuclideanHalfSpace, Fin.isValue, ModelWithCorners.mk_coe,
         IccLeftChart, PartialHomeomorph.mk_coe, Function.comp_def, projIcc]
     have : ContDiff ℝ n (fun (w : ℝ) ↦
-        (show EuclideanSpace ℝ (Fin 1) from fun (_ : Fin 1) ↦ w - x)) := by
+        (show EuclideanSpace ℝ (Fin 1) from toLp 2 fun (_ : Fin 1) ↦ w - x)) := by
       dsimp
       apply contDiff_euclidean.2 (fun i ↦ by fun_prop)
     apply this.contDiffWithinAt.congr_of_eventuallyEq_of_mem _ hz
     filter_upwards [self_mem_nhdsWithin] with w hw
     ext i
-    simp only [sub_left_inj]
+    simp only [PiLp.toLp_apply, sub_left_inj]
     rw [max_eq_right, min_eq_right hw.2]
     simp [hw.1, h.out.le]
   · simp? [IccRightChart, Function.comp_def, modelWithCornersEuclideanHalfSpace, projIcc] says
       simp only [modelWithCornersEuclideanHalfSpace, Fin.isValue, ModelWithCorners.mk_coe,
         IccRightChart, PartialHomeomorph.mk_coe, Function.comp_def, projIcc]
     have : ContDiff ℝ n (fun (w : ℝ) ↦
-        (show EuclideanSpace ℝ (Fin 1) from fun (_ : Fin 1) ↦ y - w)) := by
+        (show EuclideanSpace ℝ (Fin 1) from toLp 2 fun (_ : Fin 1) ↦ y - w)) := by
       dsimp
       apply contDiff_euclidean.2 (fun i ↦ by fun_prop)
     apply this.contDiffWithinAt.congr_of_eventuallyEq_of_mem _ hz
     filter_upwards [self_mem_nhdsWithin] with w hw
     ext i
-    simp only [sub_right_inj]
+    simp only [PiLp.toLp_apply, sub_right_inj]
     rw [max_eq_right, min_eq_right hw.2]
     simp [hw.1, h.out.le]
 
