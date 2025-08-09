@@ -345,7 +345,7 @@ theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div
     rw [show 𝓝 l = 𝓝 (0 + 1 * l) by congr; ring]
     have h₃ : Tendsto (fun s : ℝ ↦ s * l) (𝓝[>] 1) (𝓝 (1 * l)) :=
       tendsto_nhdsWithin_of_tendsto_nhds (ContinuousAt.tendsto (by fun_prop))
-    exact (this.add h₃).congr fun _ ↦ by ring
+    exact (this.add h₃).congr fun _ ↦ by simp
   refine tendsto_zero_iff_norm_tendsto_zero.mpr <| tendsto_of_le_liminf_of_limsup_le ?_ ?_ h₂ ?_
   · exact le_liminf_of_le h₂.isCoboundedUnder_ge (univ_mem' (fun _ ↦ norm_nonneg _))
   · refine le_of_forall_pos_le_add fun ε hε ↦ ?_

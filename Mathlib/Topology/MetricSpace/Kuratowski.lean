@@ -49,7 +49,7 @@ theorem embeddingOfSubset_dist_le (a b : α) :
   refine lp.norm_le_of_forall_le dist_nonneg fun n => ?_
   simp only [lp.coeFn_sub, Pi.sub_apply, embeddingOfSubset_coe]
   convert abs_dist_sub_le a b (x n) using 2
-  ring
+  simp
 
 /-- When the reference set is dense, the embedding map is an isometry on its image. -/
 theorem embeddingOfSubset_isometry (H : DenseRange x) : Isometry (embeddingOfSubset x) := by

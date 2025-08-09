@@ -80,7 +80,7 @@ private lemma lambda_sq : λ ^ 2 = -3 * η := by
   calc (λ ^ 2 : K) = η ^ 2 + η + 1 - 3 * η := by
         simp only [RingOfIntegers.map_mk, IsUnit.unit_spec]; ring
   _ = 0 - 3 * η := by simpa using hζ.isRoot_cyclotomic (by decide)
-  _ = -3 * η := by ring
+  _ = -3 * η := by simp
 
 /-- We have that `η ^ 2 = -η - 1`. -/
 lemma eta_sq : (η ^ 2 : 𝓞 K) = -η - 1 := by
@@ -157,7 +157,7 @@ lemma cube_sub_one_eq_mul : x ^ 3 - 1 = (x - 1) * (x - η) * (x - η ^ 2) := by
   calc _ = x ^ 3 - x ^ 2 * (η ^ 2 + η + 1) + x * (η ^ 2 + η + η ^ 3) - η ^ 3 := by ring
   _ = x ^ 3 - x ^ 2 * (η ^ 2 + η + 1) + x * (η ^ 2 + η + 1) - 1 := by
     simp [hζ.toInteger_cube_eq_one]
-  _ = x ^ 3 - 1 := by rw [eta_sq_add_eta_add_one hζ]; ring
+  _ = x ^ 3 - 1 := by rw [eta_sq_add_eta_add_one hζ]; simp
 
 variable [NumberField K] [IsCyclotomicExtension {3} ℚ K]
 

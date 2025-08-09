@@ -53,7 +53,7 @@ theorem galois_poly_separable {K : Type*} [CommRing K] (p q : ℕ) [CharP K p] (
   use 1, X ^ q - X - 1
   rw [← CharP.cast_eq_zero_iff K[X] p] at h
   rw [derivative_sub, derivative_X_pow, derivative_X, C_eq_natCast, h]
-  ring
+  simp
 
 variable (p : ℕ) [Fact p.Prime] (n : ℕ)
 

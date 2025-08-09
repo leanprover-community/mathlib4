@@ -406,7 +406,7 @@ lemma lambda_sq_not_dvd_a_add_eta_sq_mul_b : ¬ λ ^ 2 ∣ (S.a + η ^ 2 * S.b) 
   intro ⟨k, hk⟩
   rcases S.hab with ⟨k', hk'⟩
   refine S.hb ⟨(k - k') * (-η), ?_⟩
-  rw [show S.a + η ^ 2 * S.b = S.a + S.b - S.b + η ^ 2 * S.b by ring, hk',
+  rw [show S.a + η ^ 2 * S.b = S.a + S.b - S.b + η ^ 2 * S.b by simp, hk',
     show λ ^ 2 * k' - S.b + η ^ 2 * S.b = λ * (S.b * (η +1) + λ * k') by rw [coe_eta]; ring,
     pow_two, mul_assoc] at hk
   simp only [mul_eq_mul_left_iff, hζ.zeta_sub_one_prime'.ne_zero, or_false] at hk

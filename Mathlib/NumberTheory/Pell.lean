@@ -118,10 +118,10 @@ theorem prop (a : Solution₁ d) : a.x ^ 2 - d * a.y ^ 2 = 1 :=
   is_pell_solution_iff_mem_unitary.mpr a.property
 
 /-- An alternative form of the equation, suitable for rewriting `x^2`. -/
-theorem prop_x (a : Solution₁ d) : a.x ^ 2 = 1 + d * a.y ^ 2 := by rw [← a.prop]; ring
+theorem prop_x (a : Solution₁ d) : a.x ^ 2 = 1 + d * a.y ^ 2 := by rw [← a.prop]; simp
 
 /-- An alternative form of the equation, suitable for rewriting `d * y^2`. -/
-theorem prop_y (a : Solution₁ d) : d * a.y ^ 2 = a.x ^ 2 - 1 := by rw [← a.prop]; ring
+theorem prop_y (a : Solution₁ d) : d * a.y ^ 2 = a.x ^ 2 - 1 := by rw [← a.prop]; simp
 
 /-- Two solutions are equal if their `x` and `y` components are equal. -/
 @[ext]

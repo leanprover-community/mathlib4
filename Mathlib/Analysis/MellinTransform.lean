@@ -136,7 +136,7 @@ theorem mellin_comp_mul_left (f : ℝ → E) (s : ℂ) {a : ℝ} (ha : 0 < a) :
         (Ioi 0) := fun t ht ↦ by
     dsimp only
     rw [ofReal_mul, mul_cpow_ofReal_nonneg ha.le (le_of_lt ht), ← mul_smul,
-      (by ring : 1 - s = -(s - 1)), cpow_neg, inv_mul_cancel_left₀]
+      (by simp : 1 - s = -(s - 1)), cpow_neg, inv_mul_cancel_left₀]
     rw [Ne, cpow_eq_zero_iff, ofReal_eq_zero, not_and_or]
     exact Or.inl ha.ne'
   rw [setIntegral_congr_fun measurableSet_Ioi this, integral_smul,
@@ -388,7 +388,7 @@ theorem mellin_hasDerivAt_of_isBigO_rpow [NormedSpace ℂ E] {a b : ℝ}
     have u1 : HasDerivAt (fun z : ℂ => (t : ℂ) ^ (z - 1)) (t ^ (y - 1) * log t) y := by
       convert ((hasDerivAt_id' y).sub_const 1).const_cpow (Or.inl ht') using 1
       rw [ofReal_log (le_of_lt ht)]
-      ring
+      simp
     exact u1.smul_const (f t)
   have main := hasDerivAt_integral_of_dominated_loc_of_deriv_le hv0 h1 h2 h3 h4 h5 h6
   simpa only [F', mul_smul] using main

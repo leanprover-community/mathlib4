@@ -146,7 +146,7 @@ private theorem candidates_dist_bound (fA : f ∈ candidates X Y) :
       _ = dist (α := X ⊕ Y) (inl x) (inl y) := by
         rw [@Sum.dist_eq X Y]
         rfl
-      _ = 1 * dist (α := X ⊕ Y) (inl x) (inl y) := by ring
+      _ = 1 * dist (α := X ⊕ Y) (inl x) (inl y) := by simp
       _ ≤ maxVar X Y * dist (inl x) (inl y) := by gcongr; exact one_le_maxVar X Y
   | inl x, inr y =>
     calc
@@ -164,7 +164,7 @@ private theorem candidates_dist_bound (fA : f ∈ candidates X Y) :
       _ = dist (α := X ⊕ Y) (inr x) (inr y) := by
         rw [@Sum.dist_eq X Y]
         rfl
-      _ = 1 * dist (α := X ⊕ Y) (inr x) (inr y) := by ring
+      _ = 1 * dist (α := X ⊕ Y) (inr x) (inr y) := by simp
       _ ≤ maxVar X Y * dist (inr x) (inr y) := by gcongr; exact one_le_maxVar X Y
 
 /-- Technical lemma to prove that candidates are Lipschitz -/

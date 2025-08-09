@@ -901,7 +901,7 @@ theorem mul_imJ : (a * b).imJ = a.re * b.imJ - a.imI * b.imK + a.imJ * b.re + a.
 
 @[simp]
 theorem mul_imK : (a * b).imK = a.re * b.imK + a.imI * b.imJ - a.imJ * b.imI + a.imK * b.re :=
-  (QuaternionAlgebra.mul_imK a b).trans <| by ring
+  (QuaternionAlgebra.mul_imK a b).trans <| by simp
 
 @[simp, norm_cast]
 theorem coe_mul : ((x * y : R) : ℍ[R]) = x * y := QuaternionAlgebra.coe_mul x y

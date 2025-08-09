@@ -320,7 +320,7 @@ private theorem coprime_sq_sub_sq_add_of_even_odd {m n : ℤ} (h : Int.gcd m n =
 private theorem coprime_sq_sub_sq_add_of_odd_even {m n : ℤ} (h : Int.gcd m n = 1) (hm : m % 2 = 1)
     (hn : n % 2 = 0) : Int.gcd (m ^ 2 - n ^ 2) (m ^ 2 + n ^ 2) = 1 := by
   rw [Int.gcd, ← Int.natAbs_neg (m ^ 2 - n ^ 2)]
-  rw [(by ring : -(m ^ 2 - n ^ 2) = n ^ 2 - m ^ 2), add_comm]
+  rw [(by simp : -(m ^ 2 - n ^ 2) = n ^ 2 - m ^ 2), add_comm]
   apply coprime_sq_sub_sq_add_of_even_odd _ hn hm; rwa [Int.gcd_comm]
 
 private theorem coprime_sq_sub_mul_of_even_odd {m n : ℤ} (h : Int.gcd m n = 1) (hm : m % 2 = 0)
@@ -358,7 +358,7 @@ private theorem coprime_sq_sub_mul_of_even_odd {m n : ℤ} (h : Int.gcd m n = 1)
 private theorem coprime_sq_sub_mul_of_odd_even {m n : ℤ} (h : Int.gcd m n = 1) (hm : m % 2 = 1)
     (hn : n % 2 = 0) : Int.gcd (m ^ 2 - n ^ 2) (2 * m * n) = 1 := by
   rw [Int.gcd, ← Int.natAbs_neg (m ^ 2 - n ^ 2)]
-  rw [(by ring : 2 * m * n = 2 * n * m), (by ring : -(m ^ 2 - n ^ 2) = n ^ 2 - m ^ 2)]
+  rw [(by ring : 2 * m * n = 2 * n * m), (by simp : -(m ^ 2 - n ^ 2) = n ^ 2 - m ^ 2)]
   apply coprime_sq_sub_mul_of_even_odd _ hn hm; rwa [Int.gcd_comm]
 
 private theorem coprime_sq_sub_mul {m n : ℤ} (h : Int.gcd m n = 1)
@@ -607,7 +607,7 @@ theorem coprime_classification' {x y z : ℤ} (h : PythagoreanTriple x y z)
       apply And.intro h_odd.1
       constructor
       · rw [h_odd.2]
-        ring
+        simp
       rcases ht2 with h_pos | h_neg
       · apply And.intro h_pos
         constructor

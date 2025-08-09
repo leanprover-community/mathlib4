@@ -374,7 +374,7 @@ protected lemma GrowsPolynomially.add {f g : ℝ → ℝ} (hf : GrowsPolynomiall
   intro u hu
   have hbx : b * x ≤ x := calc
     b * x ≤ 1 * x := by gcongr; exact le_of_lt hb.2
-        _ = x := by ring
+        _ = x := by simp
   have fx_nonneg : 0 ≤ f x := hf' x hbx
   have gx_nonneg : 0 ≤ g x := hg' x hbx
   refine ⟨?lb, ?ub⟩

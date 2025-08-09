@@ -84,7 +84,7 @@ section Derivatives
 /-- The derivative of `klFun` at `x ≠ 0` is `log x`. -/
 lemma hasDerivAt_klFun (hx : x ≠ 0) : HasDerivAt klFun (log x) x := by
   convert ((hasDerivAt_mul_log hx).add (hasDerivAt_const x 1)).sub (hasDerivAt_id x) using 1
-  ring
+  simp
 
 lemma not_differentiableAt_klFun_zero : ¬ DifferentiableAt ℝ klFun 0 := by
   unfold klFun; simpa using not_DifferentiableAt_log_mul_zero

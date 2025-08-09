@@ -136,7 +136,7 @@ theorem integral_cpow {r : ℂ} (h : -1 < r.re ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[
     · rcases le_total c 0 with (hc | hc)
       · rw [max_eq_left hc] at hx; exact hx.2.ne
       · rw [min_eq_left hc] at hx; exact hx.1.ne'
-    · contrapose! hr; rw [hr]; ring
+    · contrapose! hr; rw [hr]; simp
   · exact intervalIntegrable_cpow' h
 
 theorem integral_rpow {r : ℝ} (h : -1 < r ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[a, b]]) :

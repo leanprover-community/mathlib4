@@ -220,6 +220,6 @@ theorem cot_series_rep (hz : x ∈ ℂ_ℤ) :
   have h1 := cot_series_rep' hz
   simp only [one_div, Nat.cast_add, Nat.cast_one] at *
   rw [h0, ← h1]
-  ring
+  simp
 
 end MittagLeffler

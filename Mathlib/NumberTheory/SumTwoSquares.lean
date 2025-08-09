@@ -91,7 +91,7 @@ theorem ZMod.isSquare_neg_one_mul {m n : ℕ} (hc : m.Coprime n) (hm : IsSquare 
 theorem Nat.Prime.mod_four_ne_three_of_dvd_isSquare_neg_one {p n : ℕ} (hpp : p.Prime) (hp : p ∣ n)
     (hs : IsSquare (-1 : ZMod n)) : p % 4 ≠ 3 := by
   obtain ⟨y, h⟩ := ZMod.isSquare_neg_one_of_dvd hp hs
-  rw [← sq, eq_comm, show (-1 : ZMod p) = -1 ^ 2 by ring] at h
+  rw [← sq, eq_comm, show (-1 : ZMod p) = -1 ^ 2 by simp] at h
   haveI : Fact p.Prime := ⟨hpp⟩
   exact ZMod.mod_four_ne_three_of_sq_eq_neg_sq' one_ne_zero h
 

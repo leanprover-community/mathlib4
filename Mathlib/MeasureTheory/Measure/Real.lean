@@ -314,7 +314,7 @@ theorem measureReal_diff' (hm : MeasurableSet t)
     (h₁ : μ s ≠ ∞ := by finiteness) (h₂ : μ t ≠ ∞ := by finiteness) :
     μ.real (s \ t) = μ.real (s ∪ t) - μ.real t := by
   rw [union_comm, ← measureReal_add_diff hm h₂ h₁]
-  ring
+  simp
 
 theorem measureReal_diff (h : s₂ ⊆ s₁) (h₂ : MeasurableSet s₂) (h₁ : μ s₁ ≠ ∞ := by finiteness) :
     μ.real (s₁ \ s₂) = μ.real s₁ - μ.real s₂ := by

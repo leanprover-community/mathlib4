@@ -176,7 +176,7 @@ theorem betaIntegral_recurrence {u v : ℂ} (hu : 0 < re u) (hv : 0 < re v) :
       have B : HasDerivAt (fun y : ℂ => 1 - y) (-1) ↑x := by
         apply HasDerivAt.const_sub; apply hasDerivAt_id
       convert HasDerivAt.comp (↑x) A B using 1
-      ring
+      simp
     convert (U.mul V).comp_ofReal using 1
     ring
   have h_int := ((betaIntegral_convergent hu hv').const_mul u).sub
@@ -196,9 +196,9 @@ theorem betaIntegral_recurrence {u v : ℂ} (hu : 0 < re u) (hv : 0 < re v) :
   · rw [betaIntegral, betaIntegral, ← sub_eq_zero]
     convert int_ev <;> ring
   · apply IntervalIntegrable.const_mul
-    convert betaIntegral_convergent hu hv'; ring
+    convert betaIntegral_convergent hu hv'; simp
   · apply IntervalIntegrable.const_mul
-    convert betaIntegral_convergent hu' hv; ring
+    convert betaIntegral_convergent hu' hv; simp
 
 /-- Explicit formula for the Beta function when second argument is a positive integer. -/
 theorem betaIntegral_eval_nat_add_one_right {u : ℂ} (hu : 0 < re u) (n : ℕ) :
@@ -265,7 +265,7 @@ theorem GammaSeq_eq_approx_Gamma_integral {s : ℂ} (hs : 0 < re s) {n : ℕ} (h
   push_cast
   have hn' : (n : ℂ) ≠ 0 := Nat.cast_ne_zero.mpr hn
   have A : (n : ℂ) ^ s = (n : ℂ) ^ (s - 1) * n := by
-    conv_lhs => rw [(by ring : s = s - 1 + 1), cpow_add _ _ hn']
+    conv_lhs => rw [(by simp : s = s - 1 + 1), cpow_add _ _ hn']
     simp
   have B : ((x : ℂ) * ↑n) ^ (s - 1) = (x : ℂ) ^ (s - 1) * (n : ℂ) ^ (s - 1) := by
     rw [← ofReal_natCast,

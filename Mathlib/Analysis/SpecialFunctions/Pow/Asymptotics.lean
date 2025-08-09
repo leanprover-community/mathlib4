@@ -106,12 +106,12 @@ theorem tendsto_rpow_div_mul_add (a b c : ℝ) (hb : 0 ≠ b) :
 /-- The function `x ^ (1 / x)` tends to `1` at `+∞`. -/
 theorem tendsto_rpow_div : Tendsto (fun x => x ^ ((1 : ℝ) / x)) atTop (𝓝 1) := by
   convert tendsto_rpow_div_mul_add (1 : ℝ) _ (0 : ℝ) zero_ne_one
-  ring
+  simp
 
 /-- The function `x ^ (-1 / x)` tends to `1` at `+∞`. -/
 theorem tendsto_rpow_neg_div : Tendsto (fun x => x ^ (-(1 : ℝ) / x)) atTop (𝓝 1) := by
   convert tendsto_rpow_div_mul_add (-(1 : ℝ)) _ (0 : ℝ) zero_ne_one
-  ring
+  simp
 
 /-- The function `exp(x) / x ^ s` tends to `+∞` at `+∞`, for any real number `s`. -/
 theorem tendsto_exp_div_rpow_atTop (s : ℝ) : Tendsto (fun x : ℝ => exp x / x ^ s) atTop atTop := by

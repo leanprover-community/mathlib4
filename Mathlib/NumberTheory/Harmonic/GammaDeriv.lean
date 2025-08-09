@@ -62,7 +62,7 @@ lemma deriv_Gamma_nat (n : ℕ) :
   have derivLB (n : ℕ) (hn : 0 < n) : log n ≤ deriv f (n + 1) := by
     refine (le_of_eq ?_).trans <| hc.slope_le_deriv (mem_Ioi.mpr <| Nat.cast_pos.mpr hn)
       (by positivity : _ < (_ : ℝ)) (by linarith) (hder <| by positivity)
-    rw [slope_def_field, show n + 1 - n = (1 : ℝ) by ring, div_one, h_rec n (by positivity),
+    rw [slope_def_field, show n + 1 - n = (1 : ℝ) by simp, div_one, h_rec n (by positivity),
       add_sub_cancel_left]
   have derivUB (n : ℕ) : deriv f (n + 1) ≤ log (n + 1) := by
     refine (hc.deriv_le_slope (by positivity : (0 : ℝ) < n + 1) (by positivity : (0 : ℝ) < n + 2)
