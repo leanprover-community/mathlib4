@@ -20,15 +20,15 @@ open Topology
 
 variable {X Y : Type*} [TopologicalSpace X]
 
-theorem rtendsto_nhds {r : Rel Y X} {l : Filter Y} {x : X} :
+theorem rtendsto_nhds {r : Set.Rel Y X} {l : Filter Y} {x : X} :
     RTendsto r l (𝓝 x) ↔ ∀ s, IsOpen s → x ∈ s → r.core s ∈ l :=
   all_mem_nhds_filter _ _ (fun _s _t => id) _
 
-theorem rtendsto'_nhds {r : Rel Y X} {l : Filter Y} {x : X} :
+theorem rtendsto'_nhds {r : Set.Rel Y X} {l : Filter Y} {x : X} :
     RTendsto' r l (𝓝 x) ↔ ∀ s, IsOpen s → x ∈ s → r.preimage s ∈ l := by
   rw [rtendsto'_def]
   apply all_mem_nhds_filter
-  apply Rel.preimage_mono
+  apply Set.Rel.preimage_mono
 
 theorem ptendsto_nhds {f : Y →. X} {l : Filter Y} {x : X} :
     PTendsto f l (𝓝 x) ↔ ∀ s, IsOpen s → x ∈ s → f.core s ∈ l :=
