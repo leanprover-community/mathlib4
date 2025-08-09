@@ -85,7 +85,7 @@ commuting with the action of `G`.
 structure Hom (M N : Action V G) where
   /-- The morphism between the underlying objects of this action -/
   hom : M.V ⟶ N.V
-  comm : ∀ g : G, M.ρ g ≫ hom = hom ≫ N.ρ g := by aesop_cat
+  comm : ∀ g : G, M.ρ g ≫ hom = hom ≫ N.ρ g := by cat_disch
 
 namespace Hom
 
@@ -111,6 +111,9 @@ instance : Category (Action V G) where
   Hom M N := Hom M N
   id M := Hom.id M
   comp f g := Hom.comp f g
+
+lemma hom_injective {M N : Action V G} : Function.Injective (Hom.hom : (M ⟶ N) → (M.V ⟶ N.V)) :=
+  fun _ _ ↦ Hom.ext
 
 @[ext]
 lemma hom_ext {M N : Action V G} (φ₁ φ₂ : M ⟶ N) (h : φ₁.hom = φ₂.hom) : φ₁ = φ₂ :=
@@ -140,7 +143,7 @@ from an isomorphism of the underlying objects,
 where the forward direction commutes with the group action. -/
 @[simps]
 def mkIso {M N : Action V G} (f : M.V ≅ N.V)
-    (comm : ∀ g : G, M.ρ g ≫ f.hom = f.hom ≫ N.ρ g := by aesop_cat) : M ≅ N where
+    (comm : ∀ g : G, M.ρ g ≫ f.hom = f.hom ≫ N.ρ g := by cat_disch) : M ≅ N where
   hom :=
     { hom := f.hom
       comm := comm }

@@ -45,7 +45,4 @@ alias forall_mem_enumFrom := forall_mem_zipIdx
 alias forall_mem_enum := forall_mem_zipIdx'
 @[deprecated (since := "2025-01-28")]
 alias exists_mem_enumFrom := exists_mem_zipIdx
-@[deprecated (since := "2025-01-28")]
-alias exists_mem_enum := exists_mem_zipIdx'
-
 end List

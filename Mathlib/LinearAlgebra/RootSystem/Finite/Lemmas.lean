@@ -6,6 +6,7 @@ Authors: Oliver Nash
 import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
 import Mathlib.LinearAlgebra.RootSystem.Reduced
 import Mathlib.LinearAlgebra.RootSystem.Irreducible
+import Mathlib.Algebra.Ring.Torsion
 
 /-!
 # Structural lemmas about finite crystallographic root pairings

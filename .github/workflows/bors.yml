@@ -215,8 +215,8 @@ jobs:
         run: |
           cd pr-branch
 
-          echo "Attempting: lake build --no-build Mathlib.Init (this runs under landrun)"
-          lake build --no-build Mathlib.Init
+          echo "Attempting: lake build --no-build -v Mathlib.Init (this runs under landrun)"
+          lake build --no-build -v Mathlib.Init
 
       - name: get cache (3/3 - finalize cache operation)
         id: get
@@ -228,7 +228,7 @@ jobs:
 
             ../master-branch/.lake/build/bin/cache get
           else
-            echo "WARNING: 'lake build --no-build Mathlib.Init' failed."
+            echo "WARNING: 'lake build --no-build -v Mathlib.Init' failed."
             echo "No cache for 'Mathlib.Init' available or it could not be prepared."
           fi
 
@@ -250,6 +250,7 @@ jobs:
         id: build
         run: |
           cd pr-branch
+          echo "::group::{test curl}"
           # Test curl - should fail when landrun network isolation is working
           if curl --silent --head --fail https://www.example.com/ >/dev/null 2>&1; then
             echo "ERROR: curl to example.com succeeded, but it should fail when landrun is working correctly!"
@@ -257,7 +258,9 @@ jobs:
           else
             echo "curl to example.com failed as expected - landrun network isolation is working"
           fi
-          bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
+          echo "::endgroup::"
+
+          ../master-branch/scripts/lake-build-with-retry.sh Mathlib
       - name: end gh-problem-match-wrap for build step
         uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
         with:
@@ -268,6 +271,17 @@ jobs:
         run: |
           cd pr-branch
           du .lake/build/lib/lean/Mathlib || echo "This code should be unreachable"
+
+      - name: upload artifact containing contents of pr-branch
+        # temporary measure for debugging no-build failures
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: mathlib4_artifact
+          include-hidden-files: true
+          # we exclude .git since there may be secrets in there
+          path: |
+            pr-branch/
+            !pr-branch/.git/
 
       # The cache secrets are available here, so we must not run any untrusted code.
       - name: upload cache
@@ -307,15 +321,28 @@ jobs:
 
       - name: build archive
         id: archive
+        continue-on-error: true
         run: |
           cd pr-branch
-          bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build Archive"
+          ../master-branch/scripts/lake-build-with-retry.sh Archive
 
       - name: build counterexamples
         id: counterexamples
+        continue-on-error: true
         run: |
           cd pr-branch
-          bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build Counterexamples"
+          ../master-branch/scripts/lake-build-with-retry.sh Counterexamples
+
+      - name: Check if building Archive or Counterexamples failed
+        if: steps.archive.outcome == 'failure' || steps.counterexamples.outcome == 'failure'
+        run: |
+          if [ "${{ steps.archive.outcome }}" == "failure" ]; then
+            echo "❌ The \"build archive\" step above failed; please check its logs."
+          fi
+          if [ "${{ steps.counterexamples.outcome }}" == "failure" ]; then
+            echo "❌ The \"build counterexamples\" step above failed; please check its logs."
+          fi
+          exit 1
 
       # The cache secrets are available here, so we must not run any untrusted code.
       - name: put archive and counterexamples cache
@@ -452,9 +479,15 @@ jobs:
 
       - name: verify that everything was available in the cache
         run: |
-          lake build --no-build Mathlib
-          lake build --no-build Archive
-          lake build --no-build Counterexamples
+          echo "::group::{verify Mathlib cache}"
+          lake build --no-build -v Mathlib
+          echo "::endgroup::"
+          echo "::group::{verify Archive cache}"
+          lake build --no-build -v Archive
+          echo "::endgroup::"
+          echo "::group::{verify Counterexamples cache}"
+          lake build --no-build -v Counterexamples
+          echo "::endgroup::"
 
       - name: check declarations in db files
         run: |
