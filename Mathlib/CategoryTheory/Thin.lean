@@ -31,7 +31,7 @@ section
 variable [CategoryStruct.{v₁} C] [Quiver.IsThin C]
 
 /-- Construct a category instance from a category_struct, using the fact that
-    hom spaces are subsingletons to prove the axioms. -/
+hom spaces are subsingletons to prove the axioms. -/
 def thin_category : Category C where
 
 end

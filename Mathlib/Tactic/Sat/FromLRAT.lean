@@ -290,33 +290,33 @@ structure LClause where
 
 /-- Construct an individual proof step `⊢ ctx.proof c`.
 
-  * `db`: the current global context
-  * `ns`, `clause`: the new clause
-  * `pf`: the LRAT proof trace
-  * `ctx`: the main formula
+* `db`: the current global context
+* `ns`, `clause`: the new clause
+* `pf`: the LRAT proof trace
+* `ctx`: the main formula
 
-  The proof has three steps:
+The proof has three steps:
 
-  1. Introduce local assumptions `have h1 : ctx.proof c1 := p1` for each clause `c1`
-     referenced in the proof. We actually do all the introductions at once,
-     as in `(fun h1 h2 h3 ↦ ...) p1 p2 p3`, because we want `p_i` to not be under any binders
-     to avoid the cost of `instantiate` during typechecking and get the benefits of dag-like
-     sharing in the `pi` (which are themselves previous proof steps which may be large terms).
-     The hypotheses are in `gctx`, keyed on the clause ID.
+1. Introduce local assumptions `have h1 : ctx.proof c1 := p1` for each clause `c1`
+  referenced in the proof. We actually do all the introductions at once,
+  as in `(fun h1 h2 h3 ↦ ...) p1 p2 p3`, because we want `p_i` to not be under any binders
+  to avoid the cost of `instantiate` during typechecking and get the benefits of dag-like
+  sharing in the `pi` (which are themselves previous proof steps which may be large terms).
+  The hypotheses are in `gctx`, keyed on the clause ID.
 
-  2. Unfold `⊢ ctx.proof [a, b, c]` to
-     `∀ v, v.satisfies_fmla ctx → v.neg a → v.neg b → v.neg c → False` and `intro v hv ha hb hc`,
-     storing each `ha : v.neg a` in `lctx`, keyed on the literal `a`.
+2. Unfold `⊢ ctx.proof [a, b, c]` to
+  `∀ v, v.satisfies_fmla ctx → v.neg a → v.neg b → v.neg c → False` and `intro v hv ha hb hc`,
+  storing each `ha : v.neg a` in `lctx`, keyed on the literal `a`.
 
-  3. For each LRAT step `hc : ctx.proof [x, y]`, `hc v hv : v.neg x → v.neg y → False`.
-     We look for a literal that is not falsified in the clause. Since it is a unit propagation
-     step, there can be at most one such literal.
-     * If `x` is the non-falsified clause, let `x'` denote the negated literal of `x`.
-       Then `x'.negate` reduces to `x`, so `hnx : v.neg x'.negate |- hc v hv hnx hy : False`,
-       so we construct the term
-         `by_cases (fun hnx : v.neg x'.negate ↦ hc v hv hnx hy) (fun hx : v.neg x ↦ ...)`
-       and `hx` is added to the local context.
-     * If all clauses are falsified, then we are done: `hc v hv hx hy : False`.
+3. For each LRAT step `hc : ctx.proof [x, y]`, `hc v hv : v.neg x → v.neg y → False`.
+  We look for a literal that is not falsified in the clause. Since it is a unit propagation
+  step, there can be at most one such literal.
+  * If `x` is the non-falsified clause, let `x'` denote the negated literal of `x`.
+    Then `x'.negate` reduces to `x`, so `hnx : v.neg x'.negate |- hc v hv hnx hy : False`,
+    so we construct the term
+      `by_cases (fun hnx : v.neg x'.negate ↦ hc v hv hnx hy) (fun hx : v.neg x ↦ ...)`
+    and `hx` is added to the local context.
+  * If all clauses are falsified, then we are done: `hc v hv hx hy : False`.
 -/
 partial def buildProofStep (db : HashMap Nat Clause)
     (ns pf : Array Int) (ctx clause : Expr) : Except String Expr := Id.run do
@@ -421,11 +421,11 @@ arithmetic by hand.
   1. First, we call `reifyFormula ctx'` which returns `a` and `pr : reify v ctx' a`
   2. Then we build `fun (v : Valuation) (h1 : v 0 ↔ a1) ... (hn : v (n-1) ↔ an) ↦ pr`
   3. We have to lower expression `a` from step 1 out of the quantifiers by lowering all variable
-     indices by `nvars+1`. This is okay because `v` and `h1..hn` do not appear in `a`.
+    indices by `nvars+1`. This is okay because `v` and `h1..hn` do not appear in `a`.
   4. We construct the expression `ps`, which is `a1 .. an : Prop ⊢ [a1, ..., an] : List Prop`
   5. `refute ctx (hf : ctx.proof []) (fun v h1 .. hn ↦ pr) : a` forces some definitional unfolding
-     since `fun h1 .. hn ↦ pr` should have type `implies v (reify v ctx a) [a1, ..., an] a`,
-     which involves unfolding `implies` n times as well as `ctx ↦ ctx'`.
+    since `fun h1 .. hn ↦ pr` should have type `implies v (reify v ctx a) [a1, ..., an] a`,
+    which involves unfolding `implies` n times as well as `ctx ↦ ctx'`.
   6. Finally, we `intro a1 ... an` so that we have a proof of `∀ a1 ... an, a`.
 -/
 partial def buildReify (ctx ctx' proof : Expr) (nvars : Nat) : Expr × Expr := Id.run do

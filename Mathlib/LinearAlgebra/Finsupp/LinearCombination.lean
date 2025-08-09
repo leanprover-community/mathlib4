@@ -46,7 +46,7 @@ variable (R)
 variable {α' : Type*} {M' : Type*} [AddCommMonoid M'] [Module R M'] (v : α → M) {v' : α' → M'}
 
 /-- Interprets (l : α →₀ R) as a linear combination of the elements in the family (v : α → M) and
-    evaluates this linear combination. -/
+evaluates this linear combination. -/
 def linearCombination : (α →₀ R) →ₗ[R] M :=
   Finsupp.lsum ℕ fun i => LinearMap.id.smulRight (v i)
 

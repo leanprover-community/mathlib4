@@ -226,7 +226,7 @@ def addProperties (t : Array Expr) : TacticM Unit := withMainContext do
 /-- Configuration for `algebraize`. -/
 structure Config where
   /-- If true (default), the tactic will search the local context for `RingHom` properties
-    that can be converted to `Algebra` properties. -/
+  that can be converted to `Algebra` properties. -/
   properties : Bool := true
 deriving Inhabited
 

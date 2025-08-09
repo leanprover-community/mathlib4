@@ -122,7 +122,7 @@ lemma arrow_mk_eqToHom_comp {X' X Y : T} (f : X ⟶ Y) (h : X' = X) :
   ext h rfl (by simp)
 
 /-- A morphism in the arrow category is a commutative square connecting two objects of the arrow
-    category. -/
+category. -/
 @[simps]
 def homMk {f g : Arrow T} (u : f.left ⟶ g.left) (v : f.right ⟶ g.right)
     (w : u ≫ g.hom = f.hom ≫ v := by cat_disch) : f ⟶ g where

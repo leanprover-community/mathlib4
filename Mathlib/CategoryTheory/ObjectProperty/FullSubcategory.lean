@@ -112,7 +112,7 @@ variable {D : Type u'} [Category.{v'} D] (P Q : ObjectProperty D)
   (F : C ⥤ D) (hF : ∀ X, P (F.obj X))
 
 /-- A functor which maps objects to objects satisfying a certain property induces a lift through
-    the full subcategory of objects satisfying that property. -/
+the full subcategory of objects satisfying that property. -/
 @[simps]
 def lift : C ⥤ FullSubcategory P where
   obj X := ⟨F.obj X, hF X⟩
@@ -124,7 +124,7 @@ theorem FullSubcategory.lift_comp_inclusion_eq :
   rfl
 
 /-- Composing the lift of a functor through a full subcategory with the inclusion yields the
-    original functor. This is actually true definitionally. -/
+original functor. This is actually true definitionally. -/
 def liftCompιIso : P.lift F hF ⋙ P.ι ≅ F := Iso.refl _
 
 @[simp]

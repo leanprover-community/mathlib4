@@ -61,23 +61,23 @@ namespace CategoryTheory
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 /-- We say that `𝒢` is a separating set if the functors `C(G, -)` for `G ∈ 𝒢` are collectively
-    faithful, i.e., if `h ≫ f = h ≫ g` for all `h` with domain in `𝒢` implies `f = g`. -/
+faithful, i.e., if `h ≫ f = h ≫ g` for all `h` with domain in `𝒢` implies `f = g`. -/
 def IsSeparating (𝒢 : Set C) : Prop :=
   ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), (∀ G ∈ 𝒢, ∀ (h : G ⟶ X), h ≫ f = h ≫ g) → f = g
 
 /-- We say that `𝒢` is a coseparating set if the functors `C(-, G)` for `G ∈ 𝒢` are collectively
-    faithful, i.e., if `f ≫ h = g ≫ h` for all `h` with codomain in `𝒢` implies `f = g`. -/
+faithful, i.e., if `f ≫ h = g ≫ h` for all `h` with codomain in `𝒢` implies `f = g`. -/
 def IsCoseparating (𝒢 : Set C) : Prop :=
   ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), (∀ G ∈ 𝒢, ∀ (h : Y ⟶ G), f ≫ h = g ≫ h) → f = g
 
 /-- We say that `𝒢` is a detecting set if the functors `C(G, -)` collectively reflect isomorphisms,
-    i.e., if any `h` with domain in `𝒢` uniquely factors through `f`, then `f` is an isomorphism. -/
+i.e., if any `h` with domain in `𝒢` uniquely factors through `f`, then `f` is an isomorphism. -/
 def IsDetecting (𝒢 : Set C) : Prop :=
   ∀ ⦃X Y : C⦄ (f : X ⟶ Y), (∀ G ∈ 𝒢, ∀ (h : G ⟶ Y), ∃! h' : G ⟶ X, h' ≫ f = h) → IsIso f
 
 /-- We say that `𝒢` is a codetecting set if the functors `C(-, G)` collectively reflect
-    isomorphisms, i.e., if any `h` with codomain in `G` uniquely factors through `f`, then `f` is
-    an isomorphism. -/
+isomorphisms, i.e., if any `h` with codomain in `G` uniquely factors through `f`, then `f` is
+an isomorphism. -/
 def IsCodetecting (𝒢 : Set C) : Prop :=
   ∀ ⦃X Y : C⦄ (f : X ⟶ Y), (∀ G ∈ 𝒢, ∀ (h : X ⟶ G), ∃! h' : Y ⟶ G, f ≫ h' = h) → IsIso f
 
@@ -285,10 +285,10 @@ theorem isCoseparating_iff_mono (𝒢 : Set C)
     simpa using hh j.as.1.1 j.as.1.2 j.as.2
 
 /-- An ingredient of the proof of the Special Adjoint Functor Theorem: a complete well-powered
-    category with a small coseparating set has an initial object.
+category with a small coseparating set has an initial object.
 
-    In fact, it follows from the Special Adjoint Functor Theorem that `C` is already cocomplete,
-    see `hasColimits_of_hasLimits_of_isCoseparating`. -/
+In fact, it follows from the Special Adjoint Functor Theorem that `C` is already cocomplete,
+see `hasColimits_of_hasLimits_of_isCoseparating`. -/
 theorem hasInitial_of_isCoseparating [LocallySmall.{w} C] [WellPowered.{w} C]
     [HasLimitsOfSize.{w, w} C] {𝒢 : Set C} [Small.{w} 𝒢]
     (h𝒢 : IsCoseparating 𝒢) : HasInitial C := by
@@ -312,10 +312,10 @@ theorem hasInitial_of_isCoseparating [LocallySmall.{w} C] [WellPowered.{w} C]
       simp⟩
 
 /-- An ingredient of the proof of the Special Adjoint Functor Theorem: a cocomplete well-copowered
-    category with a small separating set has a terminal object.
+category with a small separating set has a terminal object.
 
-    In fact, it follows from the Special Adjoint Functor Theorem that `C` is already complete, see
-    `hasLimits_of_hasColimits_of_isSeparating`. -/
+In fact, it follows from the Special Adjoint Functor Theorem that `C` is already complete, see
+`hasLimits_of_hasColimits_of_isSeparating`. -/
 theorem hasTerminal_of_isSeparating [LocallySmall.{w} Cᵒᵖ] [WellPowered.{w} Cᵒᵖ]
     [HasColimitsOfSize.{w, w} C] {𝒢 : Set C} [Small.{w} 𝒢]
     (h𝒢 : IsSeparating 𝒢) : HasTerminal C := by

@@ -52,7 +52,7 @@ theorem prod_mono_right {I : Ideal R} {J₁ J₂ : Ideal S} (hJ : J₁ ≤ J₂)
   Set.prod_mono_right hJ
 
 /-- Every ideal of the product ring is of the form `I × J`, where `I` and `J` can be explicitly
-    given as the image under the projection maps. -/
+given as the image under the projection maps. -/
 theorem ideal_prod_eq (I : Ideal (R × S)) :
     I = Ideal.prod (map (RingHom.fst R S) I : Ideal R) (map (RingHom.snd R S) I) := by
   apply Ideal.ext
@@ -177,7 +177,7 @@ theorem ideal_prod_prime_aux {I : Ideal R} {J : Ideal S} :
   exact fun ⟨hI, hJ⟩ _ => ⟨⟨0, 1⟩, ⟨1, 0⟩, by simp, by simp [hJ], by simp [hI]⟩
 
 /-- Classification of prime ideals in product rings: the prime ideals of `R × S` are precisely the
-    ideals of the form `p × S` or `R × p`, where `p` is a prime ideal of `R` or `S`. -/
+ideals of the form `p × S` or `R × p`, where `p` is a prime ideal of `R` or `S`. -/
 theorem ideal_prod_prime (I : Ideal (R × S)) :
     I.IsPrime ↔
       (∃ p : Ideal R, p.IsPrime ∧ I = Ideal.prod p ⊤) ∨

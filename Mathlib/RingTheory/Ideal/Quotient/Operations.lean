@@ -844,7 +844,7 @@ theorem quotQuotEquivComm_symm : (quotQuotEquivComm I J).symm = quotQuotEquivCom
 variable {I J}
 
 /-- **The Third Isomorphism theorem** for rings. See `quotQuotEquivQuotSup` for a version
-    that does not assume an inclusion of ideals. -/
+that does not assume an inclusion of ideals. -/
 def quotQuotEquivQuotOfLE (h : I ≤ J) : (R ⧸ I) ⧸ J.map (Ideal.Quotient.mk I) ≃+* R ⧸ J :=
   (quotQuotEquivQuotSup I J).trans (Ideal.quotEquivOfEq <| sup_eq_right.mpr h)
 
@@ -1014,7 +1014,7 @@ theorem quotQuotEquivComm_comp_quotQuotMkₐ :
 variable {I J}
 
 /-- The **third isomorphism theorem** for algebras. See `quotQuotEquivQuotSupₐ` for version
-    that does not assume an inclusion of ideals. -/
+that does not assume an inclusion of ideals. -/
 def quotQuotEquivQuotOfLEₐ (h : I ≤ J) : ((A ⧸ I) ⧸ J.map (Quotient.mkₐ R I)) ≃ₐ[R] A ⧸ J :=
   AlgEquiv.ofRingEquiv (f := quotQuotEquivQuotOfLE h) fun _ => rfl
 

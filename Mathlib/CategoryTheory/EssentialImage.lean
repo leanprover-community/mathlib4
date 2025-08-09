@@ -121,13 +121,13 @@ variable (F)
 variable [F.EssSurj]
 
 /-- Given an essentially surjective functor, we can find a preimage for every object `Y` in the
-    codomain. Applying the functor to this preimage will yield an object isomorphic to `Y`, see
-    `obj_obj_preimage_iso`. -/
+codomain. Applying the functor to this preimage will yield an object isomorphic to `Y`, see
+`obj_obj_preimage_iso`. -/
 def objPreimage (Y : D) : C :=
   essImage.witness (@EssSurj.mem_essImage _ _ _ _ F _ Y)
 
 /-- Applying an essentially surjective functor to a preimage of `Y` yields an object that is
-    isomorphic to `Y`. -/
+isomorphic to `Y`. -/
 def objObjPreimageIso (Y : D) : F.obj (F.objPreimage Y) ≅ Y :=
   Functor.essImage.getIso _
 

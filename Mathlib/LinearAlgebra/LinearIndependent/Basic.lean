@@ -83,7 +83,7 @@ theorem LinearIndependent.restrict_scalars' [Semiring K] [SMulWithZero R K] [Mod
   restrict_scalars ((faithfulSMul_iff_injective_smul_one R K).mp inferInstance) li
 
 /-- If `v` is an injective family of vectors such that `f ∘ v` is linearly independent, then `v`
-    spans a submodule disjoint from the kernel of `f`.
+spans a submodule disjoint from the kernel of `f`.
 TODO : `LinearIndepOn` version. -/
 theorem Submodule.range_ker_disjoint {f : M →ₗ[R] M'}
     (hv : LinearIndependent R (f ∘ v)) :

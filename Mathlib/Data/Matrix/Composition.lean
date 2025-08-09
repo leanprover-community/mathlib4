@@ -28,7 +28,7 @@ namespace Matrix
 variable (I J K L R R' : Type*)
 
 /-- I by J matrix where each entry is a K by L matrix is equivalent to
-    I × K by J × L matrix -/
+I × K by J × L matrix -/
 @[simps]
 def comp : Matrix I J (Matrix K L R) ≃ Matrix (I × K) (J × L) R where
   toFun m ik jl := m ik.1 jl.1 ik.2 jl.2

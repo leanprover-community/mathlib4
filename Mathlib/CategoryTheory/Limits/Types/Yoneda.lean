@@ -75,7 +75,7 @@ noncomputable def limitCompCoyonedaIsoCone (F : J ⥤ C) (X : C) :
   ((Types.limitEquivSections _).trans (compCoyonedaSectionsEquiv F X)).toIso
 
 /-- A cone on `F` with cone point `X` is the same as an element of `lim Hom(X, F·)`,
-    naturally in `X`. -/
+naturally in `X`. -/
 @[simps!]
 noncomputable def coyonedaCompLimIsoCones (F : J ⥤ C) :
     coyoneda ⋙ (whiskeringLeft _ _ _).obj F ⋙ lim ≅ F.cones :=
@@ -83,7 +83,7 @@ noncomputable def coyonedaCompLimIsoCones (F : J ⥤ C) :
 
 variable (J) (C) in
 /-- A cone on `F` with cone point `X` is the same as an element of `lim Hom(X, F·)`,
-    naturally in `F` and `X`. -/
+naturally in `F` and `X`. -/
 @[simps!]
 noncomputable def whiskeringLimYonedaIsoCones : whiskeringLeft _ _ _ ⋙
     (whiskeringRight _ _ _).obj lim ⋙ (whiskeringLeft _ _ _).obj coyoneda ≅ cones J C :=
@@ -96,7 +96,7 @@ noncomputable def limitCompYonedaIsoCocone (F : J ⥤ C) (X : C) :
   ((Types.limitEquivSections _).trans (opCompYonedaSectionsEquiv F X)).toIso
 
 /-- A cocone on `F` with cocone point `X` is the same as an element of `lim Hom(F·, X)`,
-    naturally in `X`. -/
+naturally in `X`. -/
 @[simps!]
 noncomputable def yonedaCompLimIsoCocones (F : J ⥤ C) :
     yoneda ⋙ (whiskeringLeft _ _ _).obj F.op ⋙ lim ≅ F.cocones :=
@@ -104,7 +104,7 @@ noncomputable def yonedaCompLimIsoCocones (F : J ⥤ C) :
 
 variable (J) (C) in
 /-- A cocone on `F` with cocone point `X` is the same as an element of `lim Hom(F·, X)`,
-    naturally in `F` and `X`. -/
+naturally in `F` and `X`. -/
 @[simps!]
 noncomputable def opHomCompWhiskeringLimYonedaIsoCocones : opHom _ _ ⋙ whiskeringLeft _ _ _ ⋙
       (whiskeringRight _ _ _).obj lim ⋙ (whiskeringLeft _ _ _).obj yoneda ≅ cocones J C :=

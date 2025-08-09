@@ -23,7 +23,7 @@ open List
 variable {α β : Type*}
 
 /-- The antidiagonal of a multiset `s` consists of all pairs `(t₁, t₂)`
-    such that `t₁ + t₂ = s`. These pairs are counted with multiplicities. -/
+such that `t₁ + t₂ = s`. These pairs are counted with multiplicities. -/
 def antidiagonal (s : Multiset α) : Multiset (Multiset α × Multiset α) :=
   Quot.liftOn s (fun l ↦ (revzip (powersetAux l) : Multiset (Multiset α × Multiset α)))
     fun _ _ h ↦ Quot.sound (revzip_powersetAux_perm h)
@@ -35,8 +35,7 @@ theorem antidiagonal_coe (l : List α) : @antidiagonal α l = revzip (powersetAu
 theorem antidiagonal_coe' (l : List α) : @antidiagonal α l = revzip (powersetAux' l) :=
   Quot.sound revzip_powersetAux_perm_aux'
 
-/-- A pair `(t₁, t₂)` of multisets is contained in `antidiagonal s`
-    if and only if `t₁ + t₂ = s`. -/
+/-- A pair `(t₁, t₂)` of multisets is contained in `antidiagonal s` if and only if `t₁ + t₂ = s`. -/
 @[simp]
 theorem mem_antidiagonal {s : Multiset α} {x : Multiset α × Multiset α} :
     x ∈ antidiagonal s ↔ x.1 + x.2 = s :=
