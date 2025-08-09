@@ -496,7 +496,7 @@ theorem restrict_iUnion_le [Countable ι] {s : ι → Set α} :
     μ.restrict (⋃ i, s i) ≤ sum fun i => μ.restrict (s i) :=
   le_iff.2 fun t ht ↦ by simpa [ht, inter_iUnion] using measure_iUnion_le (t ∩ s ·)
 
-theorem restrict_biUnion_le {s : ι → Set α} (T : Set ι) [hT : Countable T] :
+theorem restrict_biUnion_le {s : ι → Set α} {T : Set ι} (hT : Countable T) :
     μ.restrict (⋃ i ∈ T, s i) ≤ sum fun (i : T) => μ.restrict (s i) :=
   le_iff.2 fun t ht ↦ by simpa [ht, inter_iUnion] using measure_biUnion_le μ hT (t ∩ s ·)
 
@@ -1065,7 +1065,7 @@ lemma MeasureTheory.Measure.sum_restrict_le {α ι : Type*} {_ : MeasurableSpace
   calc ∑ i ∈ F, (μ.restrict (s i)) t
     _ ≤ ∑ i ∈ F, Measure.sum (fun (C : G i) ↦ μ.restrict (P C)) t :=
       F.sum_le_sum fun i hi ↦
-        le_trans (restrict_mono_set μ (P_cover hi) t) (restrict_biUnion_le (G i) t)
+        le_trans (restrict_mono_set μ (P_cover hi) t) (restrict_biUnion_le Finite.to_countable t)
     _ = ∑ i ∈ F, ∑' (C : G i), μ.restrict (P C) t := by simp_rw [Measure.sum_apply _ ht]
     _ = ∑' C, ∑ i ∈ F, (G i).indicator (fun C ↦ μ.restrict (P C) t) C := by
       rw [Summable.tsum_finsetSum (fun _ _ ↦ ENNReal.summable)]; simp_rw [← tsum_subtype (G _)]
