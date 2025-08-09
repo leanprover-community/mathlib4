@@ -195,7 +195,7 @@ theorem order_dvd_exponent (g : G) : orderOf g ∣ exponent G :=
 theorem orderOf_le_exponent (h : ExponentExists G) (g : G) : orderOf g ≤ exponent G :=
   Nat.le_of_dvd h.exponent_pos (order_dvd_exponent g)
 
-@[to_additive]
+@[to_additive exponent_dvd_iff_forall_nsmul_eq_zero]
 theorem exponent_dvd_iff_forall_pow_eq_one {n : ℕ} : exponent G ∣ n ↔ ∀ g : G, g ^ n = 1 := by
   rcases n.eq_zero_or_pos with (rfl | hpos)
   · simp
@@ -213,16 +213,16 @@ theorem exponent_dvd_iff_forall_pow_eq_one {n : ℕ} : exponent G ∣ n ↔ ∀ 
       exact hG
     exact h₂.not_ge h₃
 
-@[to_additive]
+@[to_additive exponent_dvd_of_forall_nsmul_eq_zero]
 alias ⟨_, exponent_dvd_of_forall_pow_eq_one⟩ := exponent_dvd_iff_forall_pow_eq_one
 
-@[to_additive]
+@[to_additive exponent_dvd]
 theorem exponent_dvd {n : ℕ} : exponent G ∣ n ↔ ∀ g : G, orderOf g ∣ n := by
   simp_rw [exponent_dvd_iff_forall_pow_eq_one, orderOf_dvd_iff_pow_eq_one]
 
 variable (G)
 
-@[to_additive]
+@[to_additive lcm_addOrderOf_dvd_exponent]
 theorem lcm_orderOf_dvd_exponent [Fintype G] :
     (Finset.univ : Finset G).lcm orderOf ∣ exponent G := by
   apply Finset.lcm_dvd
@@ -351,8 +351,8 @@ variable {H : Type*} [Monoid H]
 If there exists an injective, multiplication-preserving map from `G` to `H`,
 then the exponent of `G` divides the exponent of `H`.
 -/
-@[to_additive "If there exists an injective, addition-preserving map from `G` to `H`,
-then the exponent of `G` divides the exponent of `H`."]
+@[to_additive exponent_dvd_of_addMonoidHom "If there exists an injective, addition-preserving map
+from `G` to `H`, then the exponent of `G` divides the exponent of `H`."]
 theorem exponent_dvd_of_monoidHom (e : G →* H) (e_inj : Function.Injective e) :
     Monoid.exponent G ∣ Monoid.exponent H :=
   exponent_dvd_of_forall_pow_eq_one fun g => e_inj (by
@@ -509,11 +509,11 @@ section Group
 
 variable [Group G] {n m : ℤ}
 
-@[to_additive]
+@[to_additive AddGroup.exponent_dvd_card]
 theorem Group.exponent_dvd_card [Fintype G] : Monoid.exponent G ∣ Fintype.card G :=
   Monoid.exponent_dvd.mpr <| fun _ => orderOf_dvd_card
 
-@[to_additive]
+@[to_additive AddGroup.exponent_dvd_nat_card]
 theorem Group.exponent_dvd_nat_card : Monoid.exponent G ∣ Nat.card G :=
   Monoid.exponent_dvd.mpr orderOf_dvd_natCard
 
@@ -530,12 +530,12 @@ theorem Subgroup.exponent_top : Monoid.exponent (⊤ : Subgroup G) = Monoid.expo
 theorem Subgroup.pow_exponent_eq_one {H : Subgroup G} {g : G} (g_in_H : g ∈ H) :
     g ^ Monoid.exponent H = 1 := exponent_toSubmonoid H ▸ Submonoid.pow_exponent_eq_one g_in_H
 
-@[to_additive]
+@[to_additive AddGroup.exponent_dvd_iff_forall_zsmul_eq_zero]
 theorem Group.exponent_dvd_iff_forall_zpow_eq_one :
     (Monoid.exponent G : ℤ) ∣ n ↔ ∀ g : G, g ^ n = 1 := by
   simp_rw [Int.natCast_dvd, Monoid.exponent_dvd_iff_forall_pow_eq_one, pow_natAbs_eq_one]
 
-@[to_additive]
+@[to_additive AddGroup.exponent_dvd_sub_iff_zsmul_eq_zsmul]
 theorem Group.exponent_dvd_sub_iff_zpow_eq_zpow :
     (Monoid.exponent G : ℤ) ∣ n - m ↔ ∀ g : G, g ^ n = g ^ m := by
   simp_rw [Group.exponent_dvd_iff_forall_zpow_eq_one, zpow_sub, mul_inv_eq_one]
@@ -558,7 +558,7 @@ theorem Monoid.exponent_pi_eq_zero {ι : Type*} {M : ι → Type*} [∀ i, Monoi
   simpa using congr_fun h j
 
 /-- If `f : M₁ →⋆ M₂` is surjective, then the exponent of `M₂` divides the exponent of `M₁`. -/
-@[to_additive]
+@[to_additive AddMonoidHom.exponent_dvd]
 theorem MonoidHom.exponent_dvd {F M₁ M₂ : Type*} [Monoid M₁] [Monoid M₂]
     [FunLike F M₁ M₂] [MonoidHomClass F M₁ M₂]
     {f : F} (hf : Function.Surjective f) : exponent M₂ ∣ exponent M₁ := by
@@ -612,7 +612,7 @@ lemma orderOf_eq_two_iff (hG : Monoid.exponent G = 2) {x : G} :
     orderOf x = 2 ↔ x ≠ 1 :=
   ⟨by rintro hx rfl; norm_num at hx, orderOf_eq_prime (hG ▸ Monoid.pow_exponent_eq_one x)⟩
 
-@[to_additive]
+@[to_additive AddCommute.of_addOrderOf_dvd_two]
 theorem Commute.of_orderOf_dvd_two [IsCancelMul G] (h : ∀ g : G, orderOf g ∣ 2) (a b : G) :
     Commute a b := by
   simp_rw [orderOf_dvd_iff_pow_eq_one] at h

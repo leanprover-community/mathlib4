@@ -687,7 +687,8 @@ theorem ncard_block_mul_ncard_orbit_eq (hB : IsBlock G B) (hB_ne : B.Nonempty) :
       Subgroup.relindex_mul_index (hB.stabilizer_le hx), index_stabilizer_of_transitive]
 
 /-- The cardinality of a block divides the cardinality of the ambient type -/
-@[to_additive "The cardinality of a block divides the cardinality of the ambient type"]
+@[to_additive ncard_dvd_card
+"The cardinality of a block divides the cardinality of the ambient type"]
 theorem ncard_dvd_card (hB : IsBlock G B) (hB_ne : B.Nonempty) :
     Set.ncard B ∣ Nat.card X :=
   Dvd.intro _ (hB.ncard_block_mul_ncard_orbit_eq hB_ne)

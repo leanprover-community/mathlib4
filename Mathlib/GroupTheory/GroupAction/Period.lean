@@ -83,7 +83,7 @@ section MonoidExponent
 The period of a given element `m : M` can be bounded by the `Monoid.exponent M` or `orderOf m`.
 -/
 
-@[to_additive]
+@[to_additive period_dvd_addOrderOf]
 theorem period_dvd_orderOf (m : M) (a : α) : period m a ∣ orderOf m := by
   rw [← pow_smul_eq_iff_period_dvd, pow_orderOf_eq_one, one_smul]
 
@@ -97,7 +97,7 @@ theorem period_le_orderOf {m : M} (order_pos : 0 < orderOf m) (a : α) :
     period m a ≤ orderOf m :=
   Nat.le_of_dvd order_pos (period_dvd_orderOf m a)
 
-@[to_additive]
+@[to_additive period_dvd_exponent]
 theorem period_dvd_exponent (m : M) (a : α) : period m a ∣ Monoid.exponent M := by
   rw [← pow_smul_eq_iff_period_dvd, Monoid.pow_exponent_eq_one, one_smul]
 

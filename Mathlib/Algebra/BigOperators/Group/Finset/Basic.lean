@@ -829,7 +829,7 @@ theorem prod_unique_nonempty [Unique ι] (s : Finset ι) (f : ι → M) (h : s.N
     ∏ x ∈ s, f x = f default := by
   rw [h.eq_singleton_default, Finset.prod_singleton]
 
-lemma prod_dvd_prod_of_dvd (f g : ι → M) (h : ∀ i ∈ s, f i ∣ g i) :
+@[to_additive] lemma prod_dvd_prod_of_dvd (f g : ι → M) (h : ∀ i ∈ s, f i ∣ g i) :
     ∏ i ∈ s, f i ∣ ∏ i ∈ s, g i :=
   Multiset.prod_dvd_prod_of_dvd _ _ h
 

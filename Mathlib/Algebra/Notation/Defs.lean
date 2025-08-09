@@ -156,3 +156,14 @@ instance (priority := 20) One.instNonempty [One α] : Nonempty α := ⟨1⟩
 @[to_additive]
 theorem Subsingleton.eq_one [One α] [Subsingleton α] (a : α) : a = 1 :=
   Subsingleton.elim _ _
+
+/-- Notation typeclass for the `∣ₐ` operation (typed as `\|\_a`),
+which represents additive divisibility. -/
+class AddDvd (α : Type _) where
+  /-- Additive divisibility. `a ∣ₐ b` (typed as `\|\_a`) means that there is some `c`
+    such that `b = a + c`. -/
+  dvd : α → α → Prop
+
+@[inherit_doc] infix:50  " ∣ₐ " => AddDvd.dvd
+
+attribute [to_additive existing] Dvd
