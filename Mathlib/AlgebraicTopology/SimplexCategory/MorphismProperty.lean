@@ -62,7 +62,8 @@ lemma Truncated.morphismProperty_eq_top
         exact W.comp_mem _ _ (σ_mem _ (by omega) _) (hc _ _ _ _ _ (by omega))
     rw [← epi_iff_surjective] at h₁
     rw [← mono_iff_injective] at h₂
-    obtain rfl : a = b := le_antisymm (len_le_of_mono h₂) (len_le_of_epi h₁)
+    have := isIso_of_mono_of_epi f'
+    obtain rfl : a = b := len_eq_of_isIso f'
     obtain rfl : f = 𝟙 _ := eq_id_of_mono f'
     apply W.id_mem
 
