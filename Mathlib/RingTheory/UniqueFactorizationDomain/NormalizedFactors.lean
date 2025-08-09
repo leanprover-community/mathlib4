@@ -35,7 +35,7 @@ noncomputable def normalizedFactors (a : α) : Multiset α :=
 if `M` has a trivial group of units. -/
 @[simp]
 theorem factors_eq_normalizedFactors {M : Type*} [CancelCommMonoidWithZero M]
-    [UniqueFactorizationMonoid M] [Subsingleton Mˣ] (x : M) : factors x = normalizedFactors x := by
+    [UniqueFactorizationMonoid M] [IsSharpMonoid M] (x : M) : factors x = normalizedFactors x := by
   unfold normalizedFactors
   convert (Multiset.map_id (factors x)).symm
   ext p
@@ -226,7 +226,7 @@ theorem dvd_of_mem_normalizedFactors {a p : α} (H : p ∈ normalizedFactors a) 
     exact dvd_zero p
   · exact dvd_trans (Multiset.dvd_prod H) (Associated.dvd (prod_normalizedFactors hcases))
 
-theorem mem_normalizedFactors_iff [Subsingleton αˣ] {p x : α} (hx : x ≠ 0) :
+theorem mem_normalizedFactors_iff [IsSharpMonoid α] {p x : α} (hx : x ≠ 0) :
     p ∈ normalizedFactors x ↔ Prime p ∧ p ∣ x := by
   constructor
   · intro h
@@ -259,7 +259,7 @@ theorem exists_associated_prime_pow_of_unique_normalized_factor {p r : α}
   have := UniqueFactorizationMonoid.prod_normalizedFactors hr
   rwa [Multiset.eq_replicate_of_mem fun b => h, Multiset.prod_replicate] at this
 
-theorem normalizedFactors_prod_of_prime [Subsingleton αˣ] {m : Multiset α}
+theorem normalizedFactors_prod_of_prime [IsSharpMonoid α] {m : Multiset α}
     (h : ∀ p ∈ m, Prime p) : normalizedFactors m.prod = m := by
   cases subsingleton_or_nontrivial α
   · obtain rfl : m = 0 := by
