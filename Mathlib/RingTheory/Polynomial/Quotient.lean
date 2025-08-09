@@ -3,12 +3,14 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, David Kurniadi Angdinata, Devon Tuma, Riccardo Brasca
 -/
+import Mathlib.Algebra.Field.Equiv
 import Mathlib.Algebra.Polynomial.Div
 import Mathlib.Algebra.Polynomial.Eval.SMul
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.RingTheory.Polynomial.Ideal
+import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # Quotients of polynomial rings
@@ -182,6 +184,15 @@ theorem eq_zero_of_polynomial_mem_map_range (I : Ideal R[X]) (x : ((Quotient.mk 
     refine sub_add_cancel (C y) f ▸ I.add_mem (hi' ?_ : C y - f ∈ I) hf.1
     rw [RingHom.mem_ker, RingHom.map_sub, hf.2, sub_eq_zero, coe_mapRingHom, map_C]
   exact hx
+
+/-- Given a domain `R`, if `R[X]` is a prinicpal ideal ring, then `R` is a field. -/
+lemma IsField.of_isPrincipalIdealRing_polynomial [IsDomain R] [IsPrincipalIdealRing R[X]] :
+    IsField R := by
+  have h : IsField (R[X] ⧸ span ({X - C 0} : Set R[X])) :=
+    (Quotient.maximal_ideal_iff_isField_quotient (span ({X - C 0} : Set R[X]))).mp
+    (PrincipalIdealRing.isMaximal_of_irreducible (irreducible_X_sub_C 0))
+  apply MulEquiv.isField (R[X] ⧸ span ({X - C 0} : Set R[X])) h
+  exact (quotientSpanXSubCAlgEquiv (0 : R)).symm.toMulEquiv
 
 end
 
