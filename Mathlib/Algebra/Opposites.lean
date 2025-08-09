@@ -57,8 +57,8 @@ structure PreOpposite (α : Type*) : Type _ where
 /-- Multiplicative opposite of a type. This type inherits all additive structures on `α` and
 reverses left and right in multiplication. -/
 @[to_additive
-      "Additive opposite of a type. This type inherits all multiplicative structures on `α` and
-      reverses left and right in addition."]
+      /-- Additive opposite of a type. This type inherits all multiplicative structures on `α` and
+      reverses left and right in addition. -/]
 def MulOpposite (α : Type*) : Type _ := PreOpposite α
 
 /-- Multiplicative opposite of a type. -/
@@ -70,12 +70,12 @@ postfix:max "ᵃᵒᵖ" => AddOpposite
 namespace MulOpposite
 
 /-- The element of `MulOpposite α` that represents `x : α`. -/
-@[to_additive "The element of `αᵃᵒᵖ` that represents `x : α`."]
+@[to_additive /-- The element of `αᵃᵒᵖ` that represents `x : α`. -/]
 def op : α → αᵐᵒᵖ :=
   PreOpposite.op'
 
 /-- The element of `α` represented by `x : αᵐᵒᵖ`. -/
-@[to_additive (attr := pp_nodot) "The element of `α` represented by `x : αᵃᵒᵖ`."]
+@[to_additive (attr := pp_nodot) /-- The element of `α` represented by `x : αᵃᵒᵖ`. -/]
 def unop : αᵐᵒᵖ → α :=
   PreOpposite.unop'
 
@@ -96,12 +96,12 @@ theorem unop_comp_op : (unop : αᵐᵒᵖ → α) ∘ op = id :=
 
 /-- A recursor for `MulOpposite`. Use as `induction x`. -/
 @[to_additive (attr := simp, elab_as_elim, induction_eliminator, cases_eliminator)
-  "A recursor for `AddOpposite`. Use as `induction x`."]
+  /-- A recursor for `AddOpposite`. Use as `induction x`. -/]
 protected def rec' {F : αᵐᵒᵖ → Sort*} (h : ∀ X, F (op X)) : ∀ X, F X := fun X ↦ h (unop X)
 
 /-- The canonical bijection between `α` and `αᵐᵒᵖ`. -/
 @[to_additive (attr := simps -fullyApplied apply symm_apply)
-  "The canonical bijection between `α` and `αᵃᵒᵖ`."]
+  /-- The canonical bijection between `α` and `αᵃᵒᵖ`. -/]
 def opEquiv : α ≃ αᵐᵒᵖ :=
   ⟨op, unop, unop_op, op_unop⟩
 

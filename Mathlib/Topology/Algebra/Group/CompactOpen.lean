@@ -104,7 +104,7 @@ theorem continuous_comp_right (f : ContinuousMonoidHom B C) :
 
 variable (E) in
 /-- `ContinuousMonoidHom _ f` is a functor. -/
-@[to_additive "`ContinuousAddMonoidHom _ f` is a functor."]
+@[to_additive /-- `ContinuousAddMonoidHom _ f` is a functor. -/]
 def compLeft (f : ContinuousMonoidHom A B) :
     ContinuousMonoidHom (ContinuousMonoidHom B E) (ContinuousMonoidHom A E) where
   toFun g := g.comp f
@@ -114,7 +114,7 @@ def compLeft (f : ContinuousMonoidHom A B) :
 
 variable (A) in
 /-- `ContinuousMonoidHom f _` is a functor. -/
-@[to_additive "`ContinuousAddMonoidHom f _` is a functor."]
+@[to_additive /-- `ContinuousAddMonoidHom f _` is a functor. -/]
 def compRight {B : Type*} [CommGroup B] [TopologicalSpace B] [IsTopologicalGroup B]
     (f : ContinuousMonoidHom B E) :
     ContinuousMonoidHom (ContinuousMonoidHom A B) (ContinuousMonoidHom A E) where

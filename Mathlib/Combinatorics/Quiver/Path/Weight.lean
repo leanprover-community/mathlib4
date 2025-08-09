@@ -48,8 +48,8 @@ def addWeight {R : Type*} [AddMonoid R] (w : ∀ {i j : V}, (i ⟶ j) → R) : �
 attribute [to_additive existing addWeight] weight
 
 /-- The weight of a path, where the weight of an edge is defined by a function on its endpoints. -/
-@[to_additive addWeightOfEPs "The additive weight of a path, where the weight of an edge is defined
-by a function on its endpoints."]
+@[to_additive addWeightOfEPs /-- The additive weight of a path, where the weight of an edge is
+defined by a function on its endpoints. -/]
 def weightOfEPs (w : V → V → R) : ∀ {i j : V}, Path i j → R :=
   weight (fun {i j} (_ : i ⟶ j) => w i j)
 
