@@ -129,6 +129,9 @@ def constantCoeff : R[X] →+* R where
   map_zero' := coeff_zero 0
   map_add' p q := coeff_add p q 0
 
+lemma constantCoeff_surjective : Function.Surjective (constantCoeff (R := R)) :=
+  fun x ↦ ⟨C x, by simp⟩
+
 theorem isUnit_C {x : R} : IsUnit (C x) ↔ IsUnit x :=
   ⟨fun h => (congr_arg IsUnit coeff_C_zero).mp (h.map <| @constantCoeff R _), fun h => h.map C⟩
 
