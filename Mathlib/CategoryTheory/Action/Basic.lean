@@ -125,12 +125,12 @@ theorem comp_hom {M N K : Action V G} (f : M ⟶ N) (g : N ⟶ K) :
     (f ≫ g : Hom M K).hom = f.hom ≫ g.hom :=
   rfl
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem hom_inv_hom {M N : Action V G} (f : M ≅ N) :
     f.hom.hom ≫ f.inv.hom = 𝟙 M.V := by
   rw [← comp_hom, Iso.hom_inv_id, id_hom]
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem inv_hom_hom {M N : Action V G} (f : M ≅ N) :
     f.inv.hom ≫ f.hom.hom = 𝟙 N.V := by
   rw [← comp_hom, Iso.inv_hom_id, id_hom]
