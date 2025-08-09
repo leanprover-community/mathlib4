@@ -265,6 +265,7 @@ section
 variable (C)
 
 /-- The forgetful functor from group objects to monoid objects. -/
+@[simps! obj_X]
 def forget₂Mon_ : Grp_ C ⥤ Mon_ C :=
   inducedFunctor Grp_.toMon_
 

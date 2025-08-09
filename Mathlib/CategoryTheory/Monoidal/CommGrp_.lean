@@ -78,6 +78,7 @@ section
 variable (C)
 
 /-- The forgetful functor from commutative group objects to group objects. -/
+@[simps! obj_X]
 def forget₂Grp_ : CommGrp_ C ⥤ Grp_ C :=
   inducedFunctor CommGrp_.toGrp_
 
@@ -101,6 +102,7 @@ theorem forget₂Grp_map_hom {A B : CommGrp_ C} (f : A ⟶ B) : ((forget₂Grp_ 
   rfl
 
 /-- The forgetful functor from commutative group objects to commutative monoid objects. -/
+@[simps! obj_X]
 def forget₂CommMon_ : CommGrp_ C ⥤ CommMon_ C :=
   inducedFunctor CommGrp_.toCommMon_
 

@@ -74,6 +74,7 @@ section
 variable (C)
 
 /-- The forgetful functor from commutative monoid objects to monoid objects. -/
+@[simps! obj_X]
 def forget₂Mon_ : CommMon_ C ⥤ Mon_ C :=
   inducedFunctor CommMon_.toMon_
 
