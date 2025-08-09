@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Order.Group.Indicator
 import Mathlib.Analysis.Normed.Affine.AddTorsor
+import Mathlib.Analysis.Normed.Order.Lattice
 import Mathlib.Analysis.NormedSpace.FunctionSeries
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.LinearAlgebra.AffineSpace.Ordered
@@ -521,6 +522,34 @@ lemma exists_tsupport_one_of_isOpen_isClosed [T2Space X] {s t : Set X}
   · intro x hx
     apply Urysohns.CU.lim_of_notMem_U
     exact notMem_compl_iff.mpr hx
+
+/-- A variation of Urysohn's lemma. In a Hausdorff locally compact space, for a compact set `K`
+contained in an open set `V`, there exists a compactly supported continuous function `f` such that
+`0 ≤ f ≤ 1`, `f = 1` on K and the support of `f` is contained in `V`. -/
+lemma exists_continuous_one_of_compact_subset_open [T2Space X] [LocallyCompactSpace X]
+    {K V : Set X} (hK : IsCompact K) (hV : IsOpen V) (hKV : K ⊆ V) :
+    ∃ f : C(X, ℝ), Set.EqOn (⇑f) 1 K ∧ IsCompact (tsupport ⇑f)
+    ∧ tsupport ⇑f ⊆ V ∧ ∀ (x : X), f x ∈ Set.Icc 0 1 := by
+  rcases exists_open_between_and_isCompact_closure hK hV hKV with ⟨U, hU1, hU2, hU3, hU4⟩
+  rcases exists_tsupport_one_of_isOpen_isClosed hU1 hU4 (IsCompact.isClosed hK) hU2
+    with ⟨f, hf1, hf2, hf3⟩
+  use f
+  simp only [Set.mem_Icc]
+  refine ⟨?_, ?_, ?_, ?_⟩
+  · intro x hx
+    simp only [Pi.one_apply]
+    exact hf2 hx
+  · refine IsCompact.of_isClosed_subset hU4 ?_ ?_
+    · apply isClosed_closure
+    · trans U
+      · exact hf1
+      · apply subset_closure
+  · trans U
+    · exact hf1
+    · trans closure U
+      · apply subset_closure
+      · exact hU3
+  · simp only [Set.mem_Icc] at hf3; intro x; exact hf3 x
 
 theorem exists_continuous_nonneg_pos [RegularSpace X] [LocallyCompactSpace X] (x : X) :
     ∃ f : C(X, ℝ), HasCompactSupport f ∧ 0 ≤ (f : X → ℝ) ∧ f x ≠ 0 := by
