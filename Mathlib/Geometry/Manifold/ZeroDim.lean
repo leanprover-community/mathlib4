@@ -1,8 +1,9 @@
 /-
-Copyright (c) 2025 Yueqing Feng. All rights reserved.
+Copyright (c) 2025 Yueqing Feng, Lucy Horowitz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yueqing Feng, Lucy Horowitz
 -/
+
 import Mathlib.Geometry.Manifold.ChartedSpace
 import Mathlib.Topology.Constructions
 
@@ -75,39 +76,4 @@ theorem zero_dim_manifold_countable [SecondCountableTopology M] : Countable M :=
 
 end ZeroDimCharts
 
-section DiscreteManifold
-
-variable {M : Type} [TopologicalSpace M] [DiscreteTopology M] [Countable M]
-
-open PUnit
-
-/-- Construction of a zero-dimensional manifold structure on any discrete countable space. -/
-
-def zeroDimMfd : ChartedSpace ZeroDimModel M :=
-{ atlas       := Set.univ,
-  chartAt     := fun x ↦
-  { toFun              := fun _ ↦ (default : ZeroDimModel),
-    invFun             := fun _ ↦ x,
-    source             := {x},
-    target             := Set.univ,
-    continuousOn_toFun := by
-      simp,
-    continuousOn_invFun := by
-      exact continuousOn_const,
-    left_inv'          := by
-      intro y hy; rcases hy with rfl; rfl,
-    right_inv'         := by
-      intro u hu; simpa using Subsingleton.elim (default : ZeroDimModel) u,
-    open_source        := isOpen_discrete _,
-    open_target        := isOpen_univ,
-    map_source'        := by
-      intro y hy; simp,
-    map_target'        := by
-      intro u hu; simp  },
-  mem_chart_source := by
-    intro x; simp,
-  chart_mem_atlas := by
-    intro x; simp }
-
-end DiscreteManifold
 end
