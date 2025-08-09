@@ -574,4 +574,244 @@ initialize addLinter showLinter
 
 end Style.show
 
+/-! # The "declarationIndenting" linter -/
+
+/--
+The "declarationIndenting" linter emits a warning on a declaration including `def`, `theorem`,
+`example`, etc., if the type of the declaration spans multiple lines and its subsequent lines are
+indented by too few spaces (less than 4 spaces), or if `:=` is at the beginning of a line.
+-/
+register_option linter.style.declarationIndenting : Bool := {
+  defValue := false
+  descr := "enable the declarationIndenting linter"
+}
+
+register_option linter.style.declarationIndenting.debug : Bool := {
+  defValue := false
+  descr := "print some debug information of \"declarationIndenting\" linter."
+}
+
+register_option linter.style.declarationIndenting.modifiersAndFirstLine : Bool := {
+  defValue := false
+  descr := "check also declaration modifier lines and the first line."
+}
+
+namespace Style.declarationIndenting
+
+/--
+Array of `String.Range`, used for range of non-comment code. It is well-formed w.r.t. if
+- any range in such an array neither overlaps nor be adjacent with another one, and
+- the order in the array is consistent with the order in string.
+
+The following functions work with well-formed `Ranges`.
+-/
+abbrev Ranges := Array String.Range
+
+/--
+It returns `Compare.eq` if the two ranges are overlapped, and with `eqIfAdjacent := true` it returns
+`.eq` also when they are adjacent. In other cases, result is consistent with their order in string.
+Also refer to `Ranges`.
+
+`x` and `y` can be merged if and only if `compareRange x y (overlap := true) = .eq`.
+-/
+def compareRange (x y : String.Range) (eqIfAdjacent := true) :=
+  bif String.Range.overlaps x y
+      (includeFirstStop := eqIfAdjacent) (includeSecondStop := eqIfAdjacent) then
+    .eq
+  else compare x.start.byteIdx y.start.byteIdx
+
+/--
+Expand a range in the string until non-space character is reached, and continue to expand the right
+side if there are newline characters.
+-/
+def auxExpandRange (str : String) (range : String.Range) : String.Range where
+  start := str.revFindAux (· != ' ') range.start |>.map (str.next ·) |>.getD 0
+  stop :=
+    let stop := str.findAux (· != ' ') str.endPos range.stop
+    -- We don't want it to extend to a comment-only line so `· != ' '` instead of
+    -- `!·.isWhitespace` has been used, but we still want it to merge continuous lines where there
+    -- isn't comment, so we extend it again with only `'\n'`
+    str.findAux (· != '\n') str.endPos stop
+
+/--
+Assuming `x y : String.Range` can be merged, merge them.
+
+(For more details, also refer to `compareRange`)
+-/
+def _root_.String.Range.mergeRange (x y : String.Range) : String.Range where
+  start := min x.start y.start
+  stop := max x.stop y.stop
+
+/--
+`O(|xs| + |ys|)`. Merge arrays `xs` and `ys`, which must be sorted according to `compare` and must
+not contain duplicates. Equal elements are merged using `merge`. If `merge` respects the order
+(i.e. for all `x`, `y`, `y'`, `z`, if `x < y < z` and `x < y' < z` then `x < merge y y' < z`)
+then the resulting array is again sorted.
+
+Copied from `Array.mergeDedupWith` in `Batteries/Data/Array/Merge.lean`.
+-/
+def mergeDedupWith {α} [ord : Ord α] (xs ys : Array α) (merge : α → α → α) : Array α :=
+  go (Array.mkEmpty (xs.size + ys.size)) 0 0
+where
+  /-- Auxiliary definition for `mergeDedupWith`. -/
+  go (acc : Array α) (i j : Nat) : Array α :=
+    if hi : i ≥ xs.size then
+      acc ++ ys[j:]
+    else if hj : j ≥ ys.size then
+      acc ++ xs[i:]
+    else
+      let x := xs[i]
+      let y := ys[j]
+      match compare x y with
+      | .lt => go (acc.push x) (i + 1) j
+      | .gt => go (acc.push y) i (j + 1)
+      | .eq => go (acc.push (merge x y)) (i + 1) (j + 1)
+  termination_by xs.size + ys.size - (i + j)
+
+/--
+Merge an array of `Ranges`' into one `Ranges`.
+-/
+def mergeRanges (ranges : Array Ranges) : Ranges :=
+  ranges.foldl (mergeDedupWith (ord := ⟨compareRange⟩) (merge := String.Range.mergeRange)) #[]
+
+/--
+Determine whether `range : String.Range` overlaps of `ranges : Ranges`.
+-/
+def overlapsWithRange (ranges : Ranges) (range : String.Range) :=
+  ranges.binSearch range (compareRange · · false |>.isLT) |>.isSome
+
+/--
+The non-comment range of `stx : Syntax`.
+-/
+def rangesOfSyntax (stx : Syntax) : Ranges :=
+  match stx with
+  | .node _ _ args => mergeRanges <| args.map rangesOfSyntax
+  | .atom (.original _ start t stop) ..
+  | .ident (.original _ start t stop) .. => #[auxExpandRange t.str ⟨start, stop⟩]
+  | _ => #[]
+
+/--
+The range of a substring.
+-/
+def _root_.Substring.range (s : Substring) : String.Range := ⟨s.startPos, s.stopPos⟩
+
+/--
+A substring in a range
+-/
+def _root_.String.toSubstringWithRange (s : String) (r : String.Range) : Substring :=
+  ⟨s, r.start, r.stop⟩
+
+open Lean.Parser.Command in
+@[inherit_doc Mathlib.Linter.linter.style.declarationIndenting]
+def declarationIndentingLinter : Linter where run := withSetOptionIn fun stx => do
+  unless getLinterValue linter.style.declarationIndenting (← getLinterOptions) do
+    return
+  if (← get).messages.hasErrors then
+    return
+  let debug := getLinterValue linter.style.declarationIndenting.debug (← getLinterOptions)
+  let checkModifiers :=
+    getLinterValue linter.style.declarationIndenting.modifiersAndFirstLine (← getLinterOptions)
+  match stx with
+  | decl@(.node _ ``declaration #[modifiers@(_), .node _ name decl_args])
+  | decl@(.node _ `«lemma» #[modifiers@(_), .node _ name@(`group) decl_args]) =>
+    let mut declHead_ : Option Syntax := .none -- the atom `def`, `lemma`, `theorem`, etc.
+    let mut declSplit_ : Option Syntax := .none -- the atom `:=`
+    -- parts before declaration value
+    let mut beforeVal : Array Syntax := #[]
+    match name with
+    | ``«abbrev» | ``definition | ``«theorem» | ``«opaque» | ``«axiom» | ``«example»
+    | ``«instance» | `group =>
+      for arg in decl_args do
+        if declHead_.isNone then
+          beforeVal := beforeVal ++ #[arg]
+          if let .atom .. := arg then
+            declHead_ := .some arg
+        else
+          match arg with
+          | .node _ ``declValSimple _
+          | .node _ ``declValEqns _
+          | .node _ ``whereStructInst _ =>
+            declSplit_ := .some arg
+            break
+          | _ => beforeVal := beforeVal ++ #[arg]
+    | _ => return
+    let .some declSplit := declSplit_ | return
+    let .original _ splitPos ⟨src, _, _⟩ splitEndPos := declSplit.getHeadInfo | return
+    let .some <| .atom head_src@(.original _ headStartPos ⟨_, _, _⟩ _) headStr := declHead_ |
+      unreachable!
+
+    let fileMap ← getFileMap
+    let posDbg (p : String.Pos) := s!"{fileMap.toPosition p}"
+    let rangeDbg (r : String.Range) := s!"[{posDbg r.start}, {posDbg r.stop})"
+    let rangesDbg (ranges : Ranges) := s!"{ranges.map rangeDbg}"
+
+    -- non-comments range before declaration value
+    let mut declRangesBeforeVal := mergeRanges <| beforeVal.map rangesOfSyntax
+
+    if checkModifiers then
+      match modifiers with -- find the first parts of kinds of modifiers
+      | .node _ ``declModifiers args =>
+        for arg in args do
+          match arg with
+          | .node _ `null args =>
+            if let #[modifier] := args then
+              for s in modifier.topDown do
+                match s with
+                | .ident info _ v _
+                | .atom info v => -- the first part of a kind of modifiers
+                  if let .original _ start _ stop := info then
+                    if debug then dbg_trace s!"found a modifier `{v}` in {rangeDbg ⟨start, stop⟩}"
+                    declRangesBeforeVal := mergeRanges #[declRangesBeforeVal, #[⟨start, stop⟩]]
+                  break
+                | _ => pure ()
+          | _ => unreachable!
+      | _ => unreachable!
+
+    if debug then
+      dbg_trace s!"Range of declaration before value: \
+        {rangesDbg declRangesBeforeVal}.\n\
+        Position of the head `{headStr}`: {posDbg headStartPos}"
+
+    let warn (highlightText : String.Range) :=
+      logLint linter.style.declarationIndenting
+        (decl.setInfo <| .synthetic highlightText.start highlightText.stop)
+
+    -- check indenting of head and type
+    let mut inModifier := true
+    for line in Substring.splitOn ⟨src, declRangesBeforeVal[0]!.start, splitPos⟩ "\n" do
+      if line.trimLeft.isEmpty then continue
+      let spaces := line.takeWhile (·=' ')
+      if inModifier then
+        if overlapsWithRange declRangesBeforeVal line.range then -- this line is not comment
+          if checkModifiers && spaces.bsize != 0 then
+            warn spaces.range m!"Here should not be spaces at the beginning of this line"
+          if line.range.contains headStartPos then
+            if debug then
+              dbg_trace s!"Here ends the declaration modifier: {rangeDbg line.range}"
+            inModifier := false
+          else if debug then
+            dbg_trace s!"Line of modifiers: {rangeDbg line.range}"
+        else if debug then
+          dbg_trace s!"Comment line {rangeDbg line.range} in declaration modifiers."
+      else if !overlapsWithRange declRangesBeforeVal line.range then -- this line is comment
+        if spaces.bsize < 2 then
+          warn spaces.range m!"There are too few spaces at the beginning of \
+          the line. Please use at least 2 spaces."
+      else if spaces.bsize < 4 then
+        warn spaces.range m!"There are too few spaces at the beginning of the \
+          line. It should be indented by at least 4 spaces."
+    assert! !inModifier
+
+    -- check `:=`
+    unless declSplit.getKind = ``declValSimple do return
+    let beforeSplit : Substring := ⟨src, src.findLineStart splitPos, splitPos⟩
+    if beforeSplit.trimLeft.isEmpty then
+      warn ⟨beforeSplit.startPos, splitEndPos⟩ "':=' should be put before a line break rather than \
+      at the beginning of the next line."
+  | _ => pure ()
+
+initialize addLinter declarationIndentingLinter
+
+end Style.declarationIndenting
+
 end Mathlib.Linter
