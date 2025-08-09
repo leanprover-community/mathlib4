@@ -238,6 +238,11 @@ lemma range_polarizationIn_le_span_coroot :
   exact (Submodule.mem_span_range_iff_exists_fun S).mpr
     (Exists.intro (fun i ↦ (P.coroot'In S i) y) hy)
 
+omit [IsScalarTower S R N] in
+lemma polarizationIn_apply_in_span_coroot (x : P.rootSpan S) :
+    P.PolarizationIn S x ∈ P.corootSpan S :=
+  P.range_polarizationIn_le_span_coroot S <| LinearMap.mem_range_self (P.PolarizationIn S) x
+
 /-- A version of SGA3 XXI Lemma 1.2.1 (10), adapted to change of rings. -/
 lemma rootFormIn_self_smul_coroot (i : ι) :
     P.RootFormIn S (P.rootSpanMem S i) (P.rootSpanMem S i) • P.coroot i =
@@ -328,9 +333,28 @@ end MoreFintype
 
 section IsValuedInOrdered
 
-variable (S : Type*) [CommRing S] [LinearOrder S] [IsStrictOrderedRing S]
-  [Algebra S R] [FaithfulSMul S R] [Module S M]
+variable (S : Type*) [CommRing S] [Algebra S R] [FaithfulSMul S R] [Module S M]
   [IsScalarTower S R M] [P.IsValuedIn S] [Fintype ι] {i j : ι}
+
+/-- A version of SGA3 XXI Lemma 1.2.1 (10), where the result is an equality in the dual module of
+`rootSpan`. -/
+lemma rootFormIn_self_smul_coroot'In (i : ι) :
+    P.RootFormIn S (P.rootSpanMem S i) (P.rootSpanMem S i) • P.coroot'In S i =
+      2 • P.RootFormIn S (P.rootSpanMem S i) := by
+  ext x
+  refine (FaithfulSMul.algebraMap_injective S R) ?_
+  simp only [LinearMap.smul_apply, smul_eq_mul, map_mul, algebraMap_rootFormIn,
+    algebraMap_coroot'In_apply, nsmul_eq_mul, Nat.cast_ofNat]
+  rw [PerfectPairing.flip_apply_apply, ← smul_eq_mul, ← map_smul, rootForm_self_smul_coroot,
+    map_nsmul, toPerfectPairing_apply_apply_Polarization, ← Algebra.smul_def, two_nsmul, two_smul]
+
+lemma rootFormIn_self_mul_rootFormIn (i j : ι) :
+    P.RootFormIn S (P.rootSpanMem S i) (P.rootSpanMem S i) * P.pairingIn S j i =
+    2 • P.RootFormIn S (P.rootSpanMem S i) (P.rootSpanMem S j) := by
+  rw [← LinearMap.smul_apply, ← rootFormIn_self_smul_coroot'In]
+  simp
+
+variable [LinearOrder S] [IsStrictOrderedRing S]
 
 /-- The bilinear form of a finite root pairing taking values in a linearly-ordered ring, as a
 root-positive form. -/
@@ -398,6 +422,39 @@ lemma pairingIn_le_zero_iff [NeZero (2 : R)] [NoZeroSMulDivisors R M] :
   · rw [hji, P.pairingIn_eq_zero_iff.mp hji]
   · rw [le_iff_eq_or_lt, le_iff_eq_or_lt, or_iff_right hij, or_iff_right hji]
     exact P.pairingIn_lt_zero_iff S
+
+lemma coxeterWeightIn_nonneg : 0 ≤ P.coxeterWeightIn S i j := by
+  have : Fintype ι := Fintype.ofFinite ι
+  simpa only [P.algebraMap_coxeterWeightIn] using P.coxeterWeight_nonneg (P.posRootForm S) i j
+
+/-- SGA3 XXI Prop. 2.3.1 -/
+lemma coxeterWeightIn_le_four (i j : ι) :
+    P.coxeterWeightIn S i j ≤ 4 := by
+  have : Fintype ι := Fintype.ofFinite ι
+  set li := (P.posRootForm S).rootLength i
+  set lj := (P.posRootForm S).rootLength j
+  set lij := (P.posRootForm S).posForm (P.rootSpanMem S i) (P.rootSpanMem S j)
+  obtain ⟨si, hsi, hsi'⟩ := (P.posRootForm S).exists_pos_eq i
+  obtain ⟨sj, hsj, hsj'⟩ := (P.posRootForm S).exists_pos_eq j
+  replace hsi' : si = li := FaithfulSMul.algebraMap_injective S R <| by simpa [li] using hsi'
+  replace hsj' : sj = lj := FaithfulSMul.algebraMap_injective S R <| by simpa [lj] using hsj'
+  rw [hsi'] at hsi
+  rw [hsj'] at hsj
+  have cs : 4 * lij ^ 2 ≤ 4 * (li * lj) := by
+    rw [mul_le_mul_left four_pos]
+    refine (P.posRootForm S).posForm.apply_sq_le_of_symm ?_ (P.posRootForm S).isSymm_posForm
+      (P.rootSpanMem S i) (P.rootSpanMem S j)
+    intro x
+    obtain ⟨s, hs, hs'⟩ := P.exists_ge_zero_eq_rootForm S x x.property
+    change _ = (P.posRootForm S).form x x at hs'
+    rw [(P.posRootForm S).algebraMap_apply_eq_form_iff] at hs'
+    rwa [← hs']
+  have key : 4 • lij ^ 2 = P.coxeterWeightIn S i j • (li * lj) := by
+    apply FaithfulSMul.algebraMap_injective S R
+    simpa [map_ofNat, lij, posRootForm, li, lj] using
+      P.four_smul_rootForm_sq_eq_coxeterWeight_smul i j
+  simp only [nsmul_eq_mul, smul_eq_mul, Nat.cast_ofNat] at key
+  rwa [key, mul_le_mul_right (by positivity)] at cs
 
 end IsValuedInOrdered
 

@@ -383,7 +383,7 @@ private lemma lie_e_f_ne_aux₁ :
     · obtain ⟨m, hm⟩ := hij_mem
       rw [Finset.sum_eq_single_of_mem m (Finset.mem_univ _) (by rintro x - hx; simp [← hm, hx]),
         b.abs_cartanMatrix_apply, Base.cartanMatrix, Base.cartanMatrixIn_def]
-      have aux₁ := b.chainTopCoeff_eq_of_ne hij.symm
+      have aux₁ := b.chainTopCoeff_eq_of_ne j i hij.symm
       have aux₂ := chainTopCoeff_of_add (b.linearIndependent_pair_of_ne hij.symm) hm
       norm_cast
       aesop
