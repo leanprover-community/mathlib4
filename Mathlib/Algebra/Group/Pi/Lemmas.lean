@@ -149,6 +149,9 @@ def Pi.evalMonoidHom (i : I) : (∀ i, f i) →* f i where
   map_one' := Pi.one_apply i
   map_mul' _ _ := Pi.mul_apply _ _ i
 
+@[simp, norm_cast]
+lemma Pi.coe_evalMonoidHom (i : I) : ⇑(evalMonoidHom f i) = Function.eval i := rfl
+
 /-- `Function.const` as a `MonoidHom`. -/
 @[to_additive (attr := simps) "`Function.const` as an `AddMonoidHom`."]
 def Pi.constMonoidHom (α β : Type*) [MulOneClass β] : β →* α → β where
