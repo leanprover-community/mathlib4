@@ -52,6 +52,7 @@ open IsDiscreteValuationRing
 
 /-- A Weierstrass equation over the fraction field `K` is integral if
 it has coefficients in the DVR `R`. -/
+@[mk_iff]
 class IsIntegral (W : WeierstrassCurve K) : Prop where
   integral : ∃ W_int : WeierstrassCurve R, W = W_int.baseChange K
 
@@ -161,6 +162,7 @@ lemma Δ_integral_aux_of_isIntegral (W : WeierstrassCurve K)
 
 /-- A Weierstrass equation over the fraction field `K` is minimal if the valuation
 of its discriminant is minimal among all isomorphic integral Weierstrass equations. -/
+@[mk_iff]
 class IsMinimal (W : WeierstrassCurve K) : Prop where
   val_Δ_minimal :
     MinimalFor
@@ -209,16 +211,18 @@ noncomputable def reduction (W : WeierstrassCurve K) [IsMinimal R W] :
 
 /-- A minimal Weierstrass equation has good reduction if and only if
 the valuation of its discriminant is zero. -/
+@[mk_iff]
 class IsGoodReduction (W : WeierstrassCurve K) [IsMinimal R W] : Prop where
   goodReduction : addVal R ((algebraMap R K).toFun.invFun W.Δ) = 0
 
-instance {W : WeierstrassCurve K} [IsMinimal R W] [IsGoodReduction R W] :
-    (W.reduction R).IsElliptic := by
-  letI hW : IsIntegral R W := inferInstance
-  apply (W.reduction R).isElliptic_iff.mpr
-  have h : addVal R hW.integral.choose.Δ = 0 :=
-    Δ_integral_aux_of_isIntegral R W ▸ IsGoodReduction.goodReduction
-  simp [reduction, map_Δ, addVal_eq_zero_iff.mp h]
+lemma isGoodReduction_iff_reduction_isElliptic {W : WeierstrassCurve K} [IsMinimal R W] :
+    IsGoodReduction R W ↔ (W.reduction R).IsElliptic := by
+  refine Iff.trans ?_ (W.reduction R).isElliptic_iff.symm
+  simp only [reduction, map_Δ, isUnit_iff_ne_zero, ne_eq, residue_eq_zero_iff, mem_maximalIdeal,
+    mem_nonunits_iff, not_not]
+  refine Iff.trans ?_ addVal_eq_zero_iff
+  rw [Δ_integral_aux_of_isIntegral R W]
+  exact isGoodReduction_iff _ _
 
 end Reduction
 
