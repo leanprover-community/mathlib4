@@ -141,7 +141,7 @@ theorem coe_supportAddSubgroup : P.supportAddSubgroup = (P : Set R) ∩ -(P : Se
 end supportAddSubgroup
 
 /-- Typeclass to track whether the support of a preordering forms an ideal. -/
-class HasIdealSupport (P : RingPreordering R) :  Prop where
+class HasIdealSupport (P : RingPreordering R) : Prop where
   smul_mem_support (P) (x : R) {a : R} (ha : a ∈ P.supportAddSubgroup) :
     x * a ∈ P.supportAddSubgroup
 
