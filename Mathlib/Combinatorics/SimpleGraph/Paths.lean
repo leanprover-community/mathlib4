@@ -191,6 +191,13 @@ protected lemma IsPath.cons {p : Walk G v w} (hp : p.IsPath) (hu : u ∉ p.suppo
     (cons h p).IsPath :=
   (cons_isPath_iff _ _).2 ⟨hp, hu⟩
 
+theorem IsPath.isPath_concat {p : G.Walk u v} (hp : p.IsPath) (hw : w ∉ p.support)
+    (hadj : G.Adj v w) : (p.concat hadj).IsPath := by
+  apply Walk.IsPath.mk'
+  rw [Walk.support_concat, List.nodup_concat]
+  rw [isPath_def] at hp
+  exact And.intro hw hp
+
 @[simp]
 theorem isPath_iff_eq_nil {u : V} (p : G.Walk u u) : p.IsPath ↔ p = nil := by
   cases p <;> simp [IsPath.nil]
