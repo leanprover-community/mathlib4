@@ -1107,9 +1107,11 @@ theorem integral_map_equiv {β} [MeasurableSpace β] (e : α ≃ᵐ β) (f : β 
     ∫ y, f y ∂Measure.map e μ = ∫ x, f (e x) ∂μ :=
   e.measurableEmbedding.integral_map f
 
+attribute [-instance] Measure.instDistribMulActionDomMulAct in
 omit hE in
-lemma integral_domSMul {G A : Type*} [Group G] [AddCommGroup A] [DistribMulAction G A]
-    [MeasurableSpace A] [MeasurableConstSMul G A] {μ : Measure A} (g : Gᵈᵐᵃ) (f : A → E) :
+@[to_additive]
+lemma integral_domSMul {G A : Type*} [Group G] [MeasurableSpace A] [MulAction G A]
+    [MeasurableConstSMul G A] {μ : Measure A} (g : Gᵈᵐᵃ) (f : A → E) :
     ∫ x, f x ∂g • μ = ∫ x, f ((DomMulAct.mk.symm g)⁻¹ • x) ∂μ :=
   integral_map_equiv (MeasurableEquiv.smul ((DomMulAct.mk.symm g : G)⁻¹)) f
 
