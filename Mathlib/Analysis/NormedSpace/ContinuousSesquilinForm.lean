@@ -21,8 +21,10 @@ and linear in the second coordinate.
 
 ## Implementation notes
 
-We choose to redefine `ContinuousSesquilinForm.toMatrix` on top of `SesquilinForm.toMatrix`
-to allow for dot notation.
+We choose to redefine `ContinuousSesquilinForm.toMatrix` on top of `SesquilinForm.toMatrix` and
+`ContinuousSesquilinForm.IsPosSemidef` on top of `SesquilinForm.IsPosSemidef` to avoid using
+`ContinuousSesquilinForm.toSesquilinForm` in contexts where we are only interested in continuous
+sesquilinear forms.
 
 ## Tags
 
@@ -33,13 +35,13 @@ open Module (Basis)
 
 open scoped Matrix ComplexOrder
 
-namespace ContinuousSesquilinForm
-
 variable {𝕜 E n : Type*} [NormedAddCommGroup E] [RCLike 𝕜] [NormedSpace 𝕜 E]
 
 variable (𝕜 E) in
 /-- The type of continuous sesquilinear forms. -/
 abbrev _root_.ContinuousSesquilinForm := E →L⋆[𝕜] E →L[𝕜] 𝕜
+
+namespace ContinuousSesquilinForm
 
 variable (b : Basis n 𝕜 E) (f : ContinuousSesquilinForm 𝕜 E)
 
