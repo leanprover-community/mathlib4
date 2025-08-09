@@ -216,6 +216,13 @@ theorem IsPath.of_append_right {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
 lemma IsPath.of_adj {G : SimpleGraph V} {u v : V} (h : G.Adj u v) : h.toWalk.IsPath := by
   aesop
 
+lemma IsPath.ne_of_mem_support_of_append {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
+    (hpq : (p.append q).IsPath) {x y : V} (hyv : y ≠ v) (hx : x ∈ p.support) (hy : y ∈ q.support) :
+    x ≠ y := by
+  rw [isPath_def, support_append, List.nodup_append] at hpq
+  have hy' : y ∈ q.support.tail := (q.mem_support_iff.mp hy).resolve_left hyv
+  exact hpq.right.right x hx y hy'
+
 @[simp]
 theorem IsCycle.not_of_nil {u : V} : ¬(nil : G.Walk u u).IsCycle := fun h => h.ne_nil rfl
 
