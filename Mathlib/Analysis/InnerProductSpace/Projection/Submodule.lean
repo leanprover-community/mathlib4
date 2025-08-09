@@ -10,7 +10,7 @@ import Mathlib.Analysis.InnerProductSpace.Projection.Basic
 
 Here, the orthogonal projection is used to prove a series of more subtle lemmas about the
 orthogonal complement of subspaces of `E` (the orthogonal complement itself was
-defined in `Analysis.InnerProductSpace.Orthogonal`) such that they admit
+defined in `Mathlib/Analysis/InnerProductSpace/Orthogonal.lean`) such that they admit
 orthogonal projections; the lemma
 `Submodule.sup_orthogonal_of_hasOrthogonalProjection`,
 stating that for a subspace `K` of `E` such that `K` admits an orthogonal projection we have
@@ -177,7 +177,6 @@ theorem topologicalClosure_eq_top_iff [CompleteSpace E] :
   constructor <;> intro h
   · rw [← Submodule.triorthogonal_eq_orthogonal, h, Submodule.top_orthogonal_eq_bot]
   · rw [h, Submodule.bot_orthogonal_eq_top]
-
 
 theorem orthogonalProjection_eq_linearProjOfIsCompl [K.HasOrthogonalProjection] (x : E) :
     K.orthogonalProjection x =
