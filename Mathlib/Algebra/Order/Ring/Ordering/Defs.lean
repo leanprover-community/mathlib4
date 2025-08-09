@@ -148,9 +148,9 @@ class HasIdealSupport (P : RingPreordering R) : Prop where
 export HasIdealSupport (smul_mem_support)
 
 theorem hasIdealSupport_iff :
-    P.HasIdealSupport ↔ ∀ x a : R, a ∈ P → -a ∈ P → x * a ∈ P ∧ -(x * a) ∈ P :=
-  ⟨fun _ => by simpa [mem_supportAddSubgroup] using P.smul_mem_support,
-  fun _ => ⟨by simpa [mem_supportAddSubgroup]⟩⟩
+    P.HasIdealSupport ↔ ∀ x a : R, a ∈ P → -a ∈ P → x * a ∈ P ∧ -(x * a) ∈ P where
+  mp _ := by simpa [mem_supportAddSubgroup] using P.smul_mem_support
+  mpr _ := ⟨by simpa [mem_supportAddSubgroup]⟩
 
 instance [HasMemOrNegMem P] : P.HasIdealSupport where
   smul_mem_support x a ha :=
