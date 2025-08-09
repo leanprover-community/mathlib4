@@ -2870,7 +2870,6 @@ import Mathlib.Computability.Partrec
 import Mathlib.Computability.PartrecCode
 import Mathlib.Computability.PostTuringMachine
 import Mathlib.Computability.Primrec
-import Mathlib.Computability.PrimrecFilter
 import Mathlib.Computability.Reduce
 import Mathlib.Computability.RegularExpressions
 import Mathlib.Computability.TMComputable
