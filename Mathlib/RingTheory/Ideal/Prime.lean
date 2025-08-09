@@ -101,6 +101,16 @@ def primeCompl (P : Ideal α) [hp : P.IsPrime] : Submonoid α where
   one_mem' := P.one_notMem
   mul_mem' {_ _} hnx hny hxy := Or.casesOn (hp.mem_or_mem hxy) hnx hny
 
+@[simp]
+theorem mem_primeCompl_iff {P : Ideal α} [hp : P.IsPrime] {x : α} :
+    x ∈ P.primeCompl ↔ x ∉ P := Iff.rfl
+
+theorem zero_notMem_primeCompl (P : Ideal α) [P.IsPrime] :
+    0 ∉ P.primeCompl := by simp
+
+theorem not_zero_of_mem_primeCompl {P : Ideal α} [hp : P.IsPrime] {x : α} (hx : x ∈ P.primeCompl) :
+    x ≠ 0 := by aesop
+
 end Ideal
 
 end Semiring
