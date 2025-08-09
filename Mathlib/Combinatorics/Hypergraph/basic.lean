@@ -7,9 +7,9 @@ import Mathlib.Data.Set.Basic
 import Mathlib.Data.Set.Card
 import Mathlib.Data.Sym.Sym2
 
-variable {α β : Type*} {x y z : α} {s t : Set α} {e f g : β}
-
 open Set
+
+variable {α β : Type*} {x y z : α} {s t : Set α} {e f g : β} {l m : Set β}
 
 /-!
 
@@ -73,6 +73,7 @@ TODO:
   - Should Hypergraph carry around a "hyperlink" set, where a hyperlink is a pair of type
   (β, Set α)?
     - Would sort of bypass the need for IsHyperedge
+    - But then, how do you define the hyperlink set?
 -/
 
 structure Hypergraph (α β : Type*) where
@@ -107,10 +108,28 @@ def IsHyperedge (H : Hypergraph α β) (e : β) (s : Set α) : Prop :=
   (∀ x ∈ s, x ∈ V(H) ∧ H.IsIncident x e) ∧ (∀ y ∈ V(H) \ s, ¬H.IsIncident y e)
 
 /--
+The set of all hyperedges `e ∈ E(H)` that a given vertex `x` is incident on
+-/
+def hyperedgesIncVertex (H : Hypergraph α β) (x : α) : Set β := {e | e ∈ E(H) ∧ H.IsIncident x e}
+
+/--
+We define the *vertex hyperedge set* as the set of subsets of `E(H)` that each vertex in `V(H)` is
+incident upon
+-/
+def hyperedgesIncVertices (H : Hypergraph α β) : Set (Set β) :=
+  { H.hyperedgesIncVertex x | x ∈ V(H) }
+
+/--
+The set of all vertices `x ∈ V(H)` that are incident on a hyperedge `e`
+-/
+def verticesIncHyperedge (H : Hypergraph α β) (e : β) : Set α := { x | x ∈ V(H) ∧ H.IsIncident x e}
+
+/--
 We define the *hyperedge vertex set* as the set of all subsets of `V(H)` that represent real
 hyperedges in `E(H)`
 -/
-def hyperedgeVertexSet (H : Hypergraph α β) := {s | ∃ e, H.IsHyperedge e s}
+def verticesIncHyperedges (H : Hypergraph α β) : Set (Set α) :=
+  {H.verticesIncHyperedge e | e ∈ E(H)}
 
 /--
 Predicate for adjacency. Two vertices `x` and `y` are adjacent if there is some
@@ -161,7 +180,6 @@ associated vertex subset `{x}`
 def IsIsolated (H : Hypergraph α β) (x : α) : Prop :=
   ∀ e ∈ E(H), ¬H.IsIncident x e
 
-
 /--
 Predicate to determine if a hyperedge `e` is a loop, meaning that its associated vertex subset `s`
 contains only one vertex, i.e., `|s| = 1`
@@ -196,13 +214,80 @@ Predicate to determine if a hypergraph is simple
 A simple hypergraph is one in which, for each hyperedge `e ∈ E(H)` (with associated vertex subset
 `s : Set α`), there is no other hyperedge `f ∈ E(H)` (with associated vertex subset `t : Set α`)
 such that `s ⊂ t`.
-
-TODO: define this in a sane way
 -/
-def IsSimple (H : Hypergraph α β) : Prop := sorry
+def IsSimple (H : Hypergraph α β) : Prop :=
+  ∀ s ∈ H.verticesIncHyperedges, ∀ t ∈ H.verticesIncHyperedges \ {s}, ¬s ⊆ t
 
 
-/-! Cardinality -/
+/-! ## Cardinality -/
 
+/--
+The *order* of a hypergraph `H` is defined as the number of vertices contained in `H`
+-/
+noncomputable def order (H : Hypergraph α β) : ENat := Set.encard V(H)
+
+/--
+The *size* of a hypergraph `H` is defined as the number of hyperedges contained in `H`
+-/
+noncomputable def size (H : Hypergraph α β) : ENat := Set.encard E(H)
+
+/--
+The set of vertex *degrees* of a hypergraph `H`.
+
+A vertex `x` has degree `n`, where `n` is the number of hyperedges in `E(H)` that `x` is incident
+on.
+-/
+noncomputable def vertexDegrees (H : Hypergraph α β) : Set ENat :=
+  {Set.encard l | l ∈ H.hyperedgesIncVertices}
+
+/--
+The set of hyperedge *degrees* of a hypergraph `H`.
+
+A hyperedge `e` has degree `n`, where `n` is the number of vertices in `V(H)` that are incident on
+`e`.
+-/
+noncomputable def hyperedgeDegrees (H : Hypergraph α β) : Set ENat :=
+  {Set.encard s | s ∈ H.verticesIncHyperedges}
+
+
+/-! ## Hypergraph Dual -/
+
+/--
+The *dual* of a hypergraph `H` is the hypergraph `H*`, where
+  - `H*.vertexSet = H.hyperedgeSet`
+  - `H*.hyperedgeSet = H.vertexSet`
+  - `H*.IsIncident e x ↔ H.IsIncident x e` (this will be proven)
+-/
+def dual (H : Hypergraph α β) : Hypergraph β α :=
+  Hypergraph.mk H.hyperedgeSet H.vertexSet (fun e x => H.IsIncident x e)
+
+/-- `H*` denotes the `dual` of a hypergraph `H` -/
+scoped notation H "*" => Hypergraph.hyperedgeSet H
+
+/-! ## Subhypergraphs, Partial Hypergraphs, and Section Hypergraphs -/
+
+/--
+Given a subset of the vertex set `V(H)` of a hypergraph `H` (`s : Set α`), the
+*subhypergraph* `Hₛ` has `V(Hₛ) = s ∩ V(H)`, `E(Hₛ)` is the subset of `E(H)` for which all incident
+vertices are included in `s`, and the incidence relation is the same as `H.IsIncident`
+-/
+def subHypergraph (H : Hypergraph α β) (s : Set α) :=
+  Hypergraph.mk (s ∩ V(H)) {e | e ∈ E(H) ∧ H.verticesIncHyperedge e ⊆ s} H.IsIncident
+
+-- TODO: induced subhypergraph (see Bretto pg. 2)
+-- Definition is kind of messy, since you take subsets of each hyperedge, rather than only keeping
+-- Allowed hyperedges
+
+
+/--
+Given a subset of the hyperedge set `E(H)` of a hypergraph `H` (`l : Set β`), the
+*partial hypergraph* `Hˡ` has `E(Hˡ) = l ∩ E(H)`, `E(Hˡ)` is the subset of `V(H)` which is incident
+on at least one hyperedge in `E(Hˡ)`, and the incidence relation is the same as `H.IsIncident`
+
+Note: alternative definition of `vertexSet` of a partial hypergraph:
+  {x | x ∈ V(H) ∧ Set.encard (H.hyperedgesIncVertex x ∩ l) ≥ 1}
+-/
+def partialHypergraph (H : Hypergraph α β) (l : Set β) :=
+  Hypergraph.mk {x | x ∈ V(H) ∧ ∃ e ∈ l, H.IsIncident x e} (l ∩ E(H)) H.IsIncident
 
 end Hypergraph
