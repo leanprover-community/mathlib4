@@ -396,6 +396,12 @@ theorem ENNReal.tsum_geometric (r : ℝ≥0∞) : ∑' n : ℕ, r ^ n = (1 - r)�
 theorem ENNReal.tsum_geometric_add_one (r : ℝ≥0∞) : ∑' n : ℕ, r ^ (n + 1) = r * (1 - r)⁻¹ := by
   simp only [_root_.pow_succ', ENNReal.tsum_mul_left, ENNReal.tsum_geometric]
 
+lemma ENNReal.tsum_mul_two_pow_neg_add_one (ε : ENNReal) :
+    (∑' (m : ℕ), ε * 2 ^ (-(m + 1) : ℤ)) = ε := by
+  simp_rw [ENNReal.tsum_mul_left, ENNReal.zpow_neg (x := 2) (by norm_num) (by norm_num),
+    ← Nat.cast_add_one, zpow_natCast, ENNReal.inv_pow, ENNReal.tsum_geometric_add_one]
+  norm_num [ENNReal.inv_mul_cancel]
+
 end Geometric
 
 /-!
