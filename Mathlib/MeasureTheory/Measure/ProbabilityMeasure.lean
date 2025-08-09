@@ -244,7 +244,7 @@ theorem measurable_prod {α β : Type*} [MeasurableSpace α] [MeasurableSpace β
   · exact (Measure.measurable_coe Hu).comp (measurable_subtype_coe.comp measurable_fst)
   · exact (Measure.measurable_coe Hv).comp (measurable_subtype_coe.comp measurable_snd)
 
-lemma prob_measure_iUnion_le {μ : ProbabilityMeasure Ω} (f : ℕ → Set Ω)
+lemma apply_iUnion_le {μ : ProbabilityMeasure Ω} (f : ℕ → Set Ω)
     (hf : Summable fun n ↦ μ (f n)) :
     μ (⋃ n, f n) ≤ ∑' n, μ (f n) := by
   simpa [← ENNReal.coe_le_coe, ENNReal.coe_tsum hf] using MeasureTheory.measure_iUnion_le f
