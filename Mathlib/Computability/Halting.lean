@@ -268,7 +268,7 @@ lemma projection {p : α × β → Prop} (hp : REPred p) : REPred fun x ↦ ∃ 
   obtain ⟨g, hg, Hg⟩ := Partrec.projection this (by simp)
   exact re_iff.mpr ⟨g, hg, by funext x; simp [Part.dom_iff_mem, exists_comm (β := Unit), Hg]⟩
 
-lemma comp_computable {f : α → β} (hf : Computable f) {p : β → Prop} (hp : REPred p) :
+lemma comp {f : α → β} (hf : Computable f) {p : β → Prop} (hp : REPred p) :
     REPred fun x ↦ p (f x) := by
   rcases re_iff.mp hp with ⟨p, pp, rfl⟩
   exact re_iff.mpr ⟨_, pp.comp hf, by ext x; simp⟩
