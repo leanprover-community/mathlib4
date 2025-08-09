@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison
+Authors: Kim Morrison, William Sørensen, Robin Arnez
 -/
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Tactic.MkIffOfInductiveProp
@@ -12,7 +12,7 @@ import Mathlib.Tactic.PPWithUniv
 
 A type is `w`-small if there exists an equivalence to some `S : Type w`.
 
-We provide a noncomputable model `Shrink α : Type w`, and `equivShrink α : α ≃ Shrink α`.
+We provide a model `Shrink α : Type w`, and `equivShrink α : α ≃ Shrink α`.
 
 A subsingleton type is `w`-small for any `w`.
 
@@ -41,9 +41,15 @@ theorem Small.mk' {α : Type v} {S : Type w} (e : α ≃ S) : Small.{w} α :=
 def Shrink (α : Type v) [Small.{w} α] : Type w :=
   Classical.choose (@Small.equiv_small α _)
 
-/-- The noncomputable equivalence between a `w`-small type and a model.
+/-- A computable implementation of `equivShrink` -/
+@[inline]
+private unsafe def equivShrinkImpl (α : Type v) [Small.{u, v} α] : α ≃ Shrink.{u, v} α :=
+  ⟨unsafeCast, unsafeCast, lcProof, lcProof⟩
+
+/-- The equivalence between a `w`-small type and a model.
 -/
-noncomputable def equivShrink (α : Type v) [Small.{w} α] : α ≃ Shrink α :=
+@[implemented_by equivShrinkImpl]
+def equivShrink (α : Type v) [Small.{w} α] : α ≃ Shrink α :=
   Nonempty.some (Classical.choose_spec (@Small.equiv_small α _))
 
 @[ext]
@@ -55,7 +61,7 @@ theorem Shrink.ext {α : Type v} [Small.{w} α] {x y : Shrink α}
 -- https://github.com/JLimperg/aesop/issues/59
 -- is resolved.
 @[induction_eliminator]
-protected noncomputable def Shrink.rec {α : Type*} [Small.{w} α] {F : Shrink α → Sort v}
+protected def Shrink.rec {α : Type*} [Small.{w} α] {F : Shrink α → Sort v}
     (h : ∀ X, F (equivShrink _ X)) : ∀ X, F X :=
   fun X => ((equivShrink _).apply_symm_apply X) ▸ (h _)
 
