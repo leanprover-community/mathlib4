@@ -3,7 +3,7 @@ Copyright (c) 2024 Edward Watine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Edward Watine
 -/
-import Mathlib.Analysis.Analytic.Basic
+import Mathlib.Analysis.Analytic.ConvergenceRadius
 
 /-!
 # Scalar series
