@@ -497,6 +497,11 @@ def prodContinuousLinearEquiv : WithLp p (α × β) ≃L[𝕜] α × β where
   continuous_toFun := continuous_id
   continuous_invFun := continuous_id
 
+@[simp]
+theorem prodContinuousLinearEquiv_apply (x : WithLp p (α × β)) :
+    prodContinuousLinearEquiv p 𝕜 α β x = WithLp.linearEquiv p 𝕜 _ x :=
+  rfl
+
 end ContinuousLinearEquiv
 
 /-! Throughout the rest of the file, we assume `1 ≤ p` -/
