@@ -150,7 +150,7 @@ def pushforward {X Y : TopCat.{w}} (f : X ⟶ Y) : X.Presheaf C ⥤ Y.Presheaf C
 
 /-- push forward of a presheaf -/
 scoped[AlgebraicGeometry] notation f:80 " _* " P:81 =>
-  Prefunctor.obj (Functor.toPrefunctor (TopCat.Presheaf.pushforward _ f)) P
+  Functor.obj (TopCat.Presheaf.pushforward _ f) P
 
 @[simp]
 theorem pushforward_map_app' {X Y : TopCat.{w}} (f : X ⟶ Y) {ℱ 𝒢 : X.Presheaf C} (α : ℱ ⟶ 𝒢)

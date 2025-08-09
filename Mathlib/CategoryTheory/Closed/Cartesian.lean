@@ -98,18 +98,15 @@ set_option quotPrecheck false in
 notation:20 A " ⟹ " B:19 => (exp A).obj B
 
 open Lean PrettyPrinter.Delaborator SubExpr in
-/-- Delaborator for `Prefunctor.obj` -/
-@[app_delab Prefunctor.obj]
-def delabPrefunctorObjExp : Delab := whenPPOption getPPNotation <| withOverApp 6 <| do
+/-- Delaborator for `Functor.obj` -/
+@[app_delab Functor.obj]
+def delabFunctorObjExp : Delab := whenPPOption getPPNotation <| withOverApp 6 <| do
   let e ← getExpr
-  guard <| e.isAppOfArity' ``Prefunctor.obj 6
+  guard <| e.isAppOfArity' ``Functor.obj 6
   let A ← withNaryArg 4 do
     let e ← getExpr
-    guard <| e.isAppOfArity' ``Functor.toPrefunctor 5
-    withNaryArg 4 do
-      let e ← getExpr
-      guard <| e.isAppOfArity' ``exp 5
-      withNaryArg 3 delab
+    guard <| e.isAppOfArity' ``exp 5
+    withNaryArg 3 delab
   let B ← withNaryArg 5 delab
   `($A ⟹ $B)
 
