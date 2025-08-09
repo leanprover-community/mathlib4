@@ -578,13 +578,13 @@ instance [Inhabited X] : Inhabited (SeparationQuotient X) :=
 instance [Subsingleton X] : Subsingleton (SeparationQuotient X) :=
   surjective_mk.subsingleton
 
-theorem subsingleton_separationQuotient_iff {t : TopologicalSpace α} :
+theorem subsingleton_iff {t : TopologicalSpace α} :
     Subsingleton (SeparationQuotient α) ↔ t = ⊤ := by
   simp_rw [subsingleton_iff, ← forall_inseparable_iff, SeparationQuotient.forall, mk_eq_mk]
 
-theorem nontrivial_separationQuotient_iff {t : TopologicalSpace α} :
+theorem nontrivial_iff {t : TopologicalSpace α} :
     Nontrivial (SeparationQuotient α) ↔ t ≠ ⊤ := by
-  simpa only [not_subsingleton_iff_nontrivial] using subsingleton_separationQuotient_iff.not
+  simpa only [not_subsingleton_iff_nontrivial] using subsingleton_iff.not
 
 @[to_additive] instance [One X] : One (SeparationQuotient X) := ⟨mk 1⟩
 
