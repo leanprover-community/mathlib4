@@ -791,6 +791,9 @@ theorem HasDerivWithinAt.continuousWithinAt (h : HasDerivWithinAt f f' s x) :
 theorem HasDerivAt.continuousAt (h : HasDerivAt f f' x) : ContinuousAt f x :=
   HasDerivAtFilter.tendsto_nhds le_rfl h
 
+theorem HasDerivWithinAt.continuousOn {f f' : 𝕜 → F} (h : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) :
+    ContinuousOn f s := fun x hx => (h x hx).continuousWithinAt
+
 protected theorem HasDerivAt.continuousOn {f f' : 𝕜 → F} (hderiv : ∀ x ∈ s, HasDerivAt f (f' x) x) :
     ContinuousOn f s := fun x hx => (hderiv x hx).continuousAt.continuousWithinAt
 
