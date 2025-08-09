@@ -17,34 +17,20 @@ to facilitate a refactor.
 
 -/
 
+open ValuativeRel TopologicalSpace Filter Topology Set
+
 namespace IsValuativeTopology
+
+variable {R : Type*} [CommRing R] [ValuativeRel R]
+  {Γ₀ : Type*} [LinearOrderedCommMonoidWithZero Γ₀]
+
+local notation "v" => valuation R
 
 section
 
-/-! # Alternate constructors -/
+/-! # Results assuming IsValuativeTopology -/
 
-variable {R : Type*} [CommRing R] [ValuativeRel R] [TopologicalSpace R]
-
-open ValuativeRel TopologicalSpace Filter Topology Set
-
-local notation "v" => valuation R
-
-/-- Assuming `ContinuousConstVAdd R R`, we only need to check the neighbourhood of `0` in order to
-prove `IsValuativeTopology R`. -/
-theorem of_zero [ContinuousConstVAdd R R]
-    (h₀ : ∀ s : Set R, s ∈ 𝓝 0 ↔ ∃ γ : (ValueGroupWithZero R)ˣ, { z | v z < γ } ⊆ s) :
-    IsValuativeTopology R where
-  mem_nhds_iff {s x} := by
-    simpa [← vadd_mem_nhds_vadd_iff (t := s) (-x), ← image_vadd, ← image_subset_iff] using
-      h₀ ((x + ·) ⁻¹' s)
-
-end
-
-variable {R : Type*} [CommRing R] [ValuativeRel R] [TopologicalSpace R] [IsValuativeTopology R]
-
-open ValuativeRel TopologicalSpace Filter Topology Set
-
-local notation "v" => valuation R
+variable [TopologicalSpace R] [IsValuativeTopology R]
 
 /-- A version mentioning subtraction. -/
 lemma mem_nhds_iff' {s : Set R} {x : R} :
@@ -64,6 +50,24 @@ lemma mem_nhds_zero_iff (s : Set R) : s ∈ 𝓝 (0 : R) ↔
 
 @[deprecated (since := "2025-08-04")]
 alias _root_.ValuativeTopology.mem_nhds_iff := mem_nhds_zero_iff
+
+@[simp] lemma ball_mem_nhds_zero_iff (γ : ValueGroupWithZero R) :
+    { x | v x < γ } ∈ 𝓝 (0 : R) ↔ γ ≠ 0 :=
+  ⟨fun h hγ0 ↦ by simpa [hγ0] using mem_of_mem_nhds h,
+  fun hγ0 ↦ (mem_nhds_zero_iff _).mpr ⟨Units.mk0 _ hγ0, subset_refl _⟩⟩
+
+@[simp] lemma rel_ball_mem_nhds_zero_iff (r : R) :
+    { x | x <ᵥ r } ∈ 𝓝 (0 : R) ↔ r ∈ posSubmonoid R := by
+  simp_rw [Valuation.Compatible.rel_lt_iff_lt («v» := v), ball_mem_nhds_zero_iff,
+    posSubmonoid_def, ← valuation_eq_zero_iff]
+
+@[simp] lemma rel_mul_ball_mem_nhds_zero_iff (r s : R) :
+    { x | x * r <ᵥ s } ∈ 𝓝 (0 : R) ↔ s ∈ posSubmonoid R := by
+  simp_rw [Valuation.Compatible.rel_lt_iff_lt («v» := v), map_mul,
+    posSubmonoid_def, ← valuation_eq_zero_iff]
+  by_cases hr : v r = 0
+  · by_cases hs : v s = 0 <;> simp [hr, zero_lt_iff, hs]
+  simp [← lt_div_iff₀ (zero_lt_iff.2 hr), hr]
 
 /-- Helper `Valued` instance when `ValuativeTopology R` over a `UniformSpace R`,
 for use in porting files from `Valued` to `ValuativeRel`. -/
@@ -86,6 +90,32 @@ theorem hasBasis_nhds_zero :
 
 @[deprecated (since := "2025-08-01")]
 alias _root_.ValuativeTopology.hasBasis_nhds_zero := hasBasis_nhds_zero
+
+variable (R) in
+private lemma hasBasis_nhds_zero_pair_aux :
+    (𝓝 (0 : R)).HasBasis (fun rs : R × R ↦ v rs.1 ≠ 0 ∧ v rs.2 ≠ 0)
+      fun rs ↦ { x | v x < v rs.1 / v rs.2 } := by
+  refine (hasBasis_nhds_zero R).to_hasBasis' (fun γ hγ ↦ ?_) (by simp)
+  obtain ⟨r, s, h⟩ := valuation_surjective γ.val
+  by_cases hr : v r = 0
+  · exact (γ.ne_zero <| by simp [← h, hr]).elim
+  · exact ⟨(r, s), ⟨hr, valuation_eq_zero_iff.not.mpr s.prop⟩, by simp [← h]⟩
+
+variable (R) in
+lemma hasBasis_nhds_zero_pair :
+    (𝓝 (0 : R)).HasBasis (fun rs : R × R ↦ rs.1 ∈ posSubmonoid R ∧ rs.2 ∈ posSubmonoid R)
+      fun rs ↦ { x | x * rs.2 <ᵥ rs.1 } :=
+  (hasBasis_nhds_zero_pair_aux R).to_hasBasis'
+    (fun p hp ↦ ⟨p, by simpa [valuation_eq_zero_iff] using hp,
+      by simp_rw [lt_div_iff₀ (zero_lt_iff.2 hp.2), ← map_mul,
+        ← Valuation.Compatible.rel_lt_iff_lt, subset_refl]⟩)
+    fun p hp ↦ by simpa [valuation_eq_zero_iff] using hp.1
+
+lemma hasBasis_nhds_zero_compatible (v' : Valuation R Γ₀) [v'.Compatible] :
+    (𝓝 (0 : R)).HasBasis (fun rs : R × R ↦ v' rs.1 ≠ 0 ∧ v' rs.2 ≠ 0)
+      fun rs : R × R ↦ { x | v' x * v' rs.2 < v' rs.1 } := by
+  convert hasBasis_nhds_zero_pair R <;>
+  simp [Valuation.Compatible.rel_iff_le («v» := v'), Valuation.Compatible.rel_lt_iff_lt («v» := v')]
 
 variable (R) in
 instance (priority := low) isTopologicalAddGroup : IsTopologicalAddGroup R := by
@@ -187,6 +217,80 @@ lemma isOpen_sphere {r : ValueGroupWithZero R} (hr : r ≠ 0) :
 
 @[deprecated (since := "2025-08-01")]
 alias _root_.ValuativeTopology.isOpen_sphere := isOpen_sphere
+
+end
+
+section
+
+/-! # Alternate constructors -/
+
+variable [TopologicalSpace R] [ContinuousConstVAdd R R]
+
+/-- Assuming `ContinuousConstVAdd R R`, we only need to check the neighbourhood of `0` in order to
+prove `IsValuativeTopology R`. -/
+theorem of_zero
+    (h₀ : ∀ s : Set R, s ∈ 𝓝 0 ↔ ∃ γ : (ValueGroupWithZero R)ˣ, { z | v z < γ } ⊆ s) :
+    IsValuativeTopology R where
+  mem_nhds_iff {s x} := by
+    simpa [← vadd_mem_nhds_vadd_iff (t := s) (-x), ← image_vadd, ← image_subset_iff] using
+      h₀ ((x + ·) ⁻¹' s)
+
+/-- Assuming `ContinuousConstVAdd R R`, we only need to check the neighbourhood of `0` in order to
+prove `IsValuativeTopology R`. -/
+lemma of_hasBasis_zero (h : (𝓝 (0 : R)).HasBasis (fun _ ↦ True)
+    fun γ : (ValueGroupWithZero R)ˣ ↦ { x | (valuation R) x < γ }) :
+    IsValuativeTopology R :=
+  .of_zero <| by simp [h.mem_iff]
+
+omit [TopologicalSpace R] [ContinuousConstVAdd R R] in
+instance of_subgroups_basis :
+    letI := (v).subgroups_basis.topology
+    IsValuativeTopology R :=
+  letI := (v).subgroups_basis.topology
+  of_hasBasis_zero <| (v).subgroups_basis.hasBasis_nhds_zero
+
+omit [TopologicalSpace R] [ContinuousConstVAdd R R] in
+/-- The correctness result. -/
+lemma _root_.isValuativeTopology_iff_subgroups_basis_topology_eq [t : TopologicalSpace R] :
+    IsValuativeTopology R ↔ (v).subgroups_basis.topology = t := by
+  let := (valuation R).subgroups_basis
+  refine ⟨fun _ ↦ ext_nhds fun x ↦ Filter.ext fun s ↦ ?_, ?_⟩
+  · rw [(this.hasBasis_nhds _).mem_iff, mem_nhds_iff']; simp_rw [true_and]; rfl
+  · rintro rfl; infer_instance
+
+example : ∃! _ : TopologicalSpace R, IsValuativeTopology R :=
+  ⟨(v).subgroups_basis.topology, of_subgroups_basis, fun _ ht ↦
+    (isValuativeTopology_iff_subgroups_basis_topology_eq.mp ht).symm⟩
+
+/-- A "metatheorem" saying that if we proved that a valuative topology has a certain basis of
+`nhds 0`, then any topology having the same basis of `nhds 0` which is also `ContinuousConstVAdd` is
+automatically an `IsValuativeTopology`. -/
+theorem of_hasBasis {R : Type*} [CommRing R] [ValuativeRel R]
+    {ι : Type*} (p : ι → Prop) (s : ι → Set R)
+    (ih : ∀ [TopologicalSpace R] [IsValuativeTopology R], (nhds 0).HasBasis p s)
+    [τ : TopologicalSpace R] [ContinuousConstVAdd R R] (h : (nhds 0).HasBasis p s) :
+    IsValuativeTopology R := by
+  rw [isValuativeTopology_iff_subgroups_basis_topology_eq]
+  let := (valuation R).subgroups_basis
+  specialize @ih this.topology of_subgroups_basis
+  refine ext_nhds fun x ↦ Filter.ext fun t ↦ ?_
+  rw [← @vadd_mem_nhds_vadd_iff _ _ this.topology _ _ _ _ (-x),
+    ← @vadd_mem_nhds_vadd_iff _ _ τ _ _ _ _ (-x),
+    vadd_eq_add, neg_add_cancel, h.mem_iff, ih.mem_iff]
+
+lemma of_hasBasis_pair
+    (h : (𝓝 (0 : R)).HasBasis (fun rs : R × R ↦ rs.1 ∈ posSubmonoid R ∧ rs.2 ∈ posSubmonoid R)
+      fun rs  ↦ { x | x * rs.2 <ᵥ rs.1 }) :
+    IsValuativeTopology R :=
+  of_hasBasis _ _ (hasBasis_nhds_zero_pair R) h
+
+lemma of_hasBasis_compatible {v' : Valuation R Γ₀} [v'.Compatible]
+    (h : (𝓝 (0 : R)).HasBasis (fun rs : R × R ↦ v' rs.1 ≠ 0 ∧ v' rs.2 ≠ 0)
+    fun rs : R × R ↦ { x | v' x * v' rs.2 < v' rs.1 }) :
+    IsValuativeTopology R :=
+  of_hasBasis _ _ (hasBasis_nhds_zero_compatible v') h
+
+end
 
 end IsValuativeTopology
 
