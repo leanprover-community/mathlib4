@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
 import Mathlib.CategoryTheory.CatCommSq
+import Mathlib.CategoryTheory.Adjunction.Mates
 
 /-! # Morphisms of categorical cospans.
 
@@ -237,6 +238,76 @@ def mkIso {ψ ψ' : CatCospanTransform F G F' G'}
           IsIso.inv_eq_inv.mpr right_coherence =≫
           ψ.squareRight.iso.hom }
 
+section Iso
+
+variable {ψ ψ' : CatCospanTransform F G F' G'}
+  (f : ψ' ⟶ ψ') [IsIso f] (e : ψ ≅ ψ')
+
+instance isIso_left : IsIso f.left :=
+  ⟨(inv f).left, by simp [← CatCospanTransform.category_comp_left]⟩
+
+instance isIso_right : IsIso f.right :=
+  ⟨(inv f).right, by simp [← CatCospanTransform.category_comp_right]⟩
+
+instance isIso_base : IsIso f.base :=
+  ⟨(inv f).base, by simp [← CatCospanTransform.category_comp_base]⟩
+
+@[simp]
+lemma inv_left : inv f.left = (inv f).left := by
+  symm
+  apply IsIso.eq_inv_of_inv_hom_id
+  simp [← CatCospanTransform.category_comp_left]
+
+@[simp]
+lemma inv_right : inv f.right = (inv f).right := by
+  symm
+  apply IsIso.eq_inv_of_inv_hom_id
+  simp [← CatCospanTransform.category_comp_right]
+
+@[simp]
+lemma inv_base : inv f.base = (inv f).base := by
+  symm
+  apply IsIso.eq_inv_of_inv_hom_id
+  simp [← CatCospanTransform.category_comp_base]
+
+/-- Extract an isomorphism between left components from an isomorphism in
+`CatCospanTransform F G F' G'`. -/
+@[simps]
+def leftIso : ψ.left ≅ ψ'.left where
+  hom := e.hom.left
+  inv := e.inv.left
+  hom_inv_id := by simp [← category_comp_left]
+  inv_hom_id := by simp [← category_comp_left]
+
+/-- Extract an isomorphism between right components from an isomorphism in
+`CatCospanTransform F G F' G'`. -/
+@[simps]
+def rightIso : ψ.right ≅ ψ'.right where
+  hom := e.hom.right
+  inv := e.inv.right
+  hom_inv_id := by simp [← category_comp_right]
+  inv_hom_id := by simp [← category_comp_right]
+
+/-- Extract an isomorphism between base components from an isomorphism in
+`CatCospanTransform F G F' G'`. -/
+@[simps]
+def baseIso : ψ.base ≅ ψ'.base where
+  hom := e.hom.base
+  inv := e.inv.base
+  hom_inv_id := by simp [← category_comp_base]
+  inv_hom_id := by simp [← category_comp_base]
+
+omit [IsIso f] in
+lemma isIso_iff : IsIso f ↔ IsIso f.left ∧ IsIso f.base ∧ IsIso f.right where
+  mp h := ⟨inferInstance, inferInstance, inferInstance⟩
+  mpr h := by
+    obtain ⟨_, _, _⟩ := h
+    use mkIso (asIso f.left) (asIso f.right) (asIso f.base)
+      f.left_coherence f.right_coherence|>.inv
+    cat_disch
+
+end Iso
+
 /-- The left unitor isomorphism for categorical cospan transformations. -/
 @[simps!]
 def leftUnitor (φ : CatCospanTransform F G F' G') :
@@ -360,5 +431,139 @@ end Isos
 end lemmas
 
 end CatCospanTransform
+
+open scoped CatCospanTransform
+
+/--
+A `CatCospanAdjunction F G F' G'` is the data of a
+`ψ : CatCospanTransform F G F' G'`, a `φ CatCospanTransform F' G' F G`, along
+with unit and counit morphisms satisfying the triangle identities
+It can be thought of as a diagram
+```
+    F     G
+ A = ⥤ B ⥢ = C
+| ^   | ^   | ^
+|⊣|   |⊣|   |⊣|
+v |   v |   v |
+ A'= ⥤ B'⥢ = C'
+    F'    G'
+
+```
+with suitable CatCommSq between the lefts and right adjoints, where the square between
+the left and right adjoints are related through `mateEquiv`.
+-/
+structure CatCospanAdjunction
+    {A B C : Type*} [Category A] [Category B] [Category C]
+    (F : A ⥤ B) (G : C ⥤ B)
+    {A' B' C' : Type*} [Category A'] [Category B'] [Category C']
+    (F' : A' ⥤ B') (G' : C' ⥤ B') where
+  /-- the left adjoint transformation -/
+  leftAdjoint : CatCospanTransform F G F' G'
+  /-- the right adjoint transformation -/
+  rightAdjoint : CatCospanTransform F' G' F G
+  /-- the unit morphism of `CatCospanTransform` -/
+  unit : CatCospanTransform.id F G ⟶ leftAdjoint.comp rightAdjoint
+  /-- the counit morphism of `CatCospanTransform` -/
+  counit : rightAdjoint.comp leftAdjoint ⟶ CatCospanTransform.id F' G'
+  /-- the left triangle identitiy -/
+  left_triangle :
+      unit ▷ leftAdjoint ≫ (α_ _ _ _).hom ≫ leftAdjoint ◁ counit =
+      (λ_ _).hom ≫ (ρ_ _).inv := by
+    cat_disch
+  /-- the right triangle identitiy -/
+  right_triangle :
+      rightAdjoint ◁ unit ≫ (α_ _ _ _).inv ≫ counit ▷ rightAdjoint =
+      (ρ_ _).hom ≫ (λ_ _).inv := by
+    cat_disch
+
+namespace CatCospanAdjunction
+
+variable {A B C : Type*} [Category A] [Category B] [Category C]
+    {F : A ⥤ B} {G : C ⥤ B}
+    {A' B' C' : Type*} [Category A'] [Category B'] [Category C']
+    {F' : A' ⥤ B'} {G' : C' ⥤ B'}
+    (𝔄 : CatCospanAdjunction F G F' G')
+
+/-- The adjunction on the left components of a `CatCospanAdjunction`. -/
+@[simps]
+def leftAdjunction : 𝔄.leftAdjoint.left ⊣ 𝔄.rightAdjoint.left where
+  unit := 𝔄.unit.left
+  counit := 𝔄.counit.left
+  left_triangle_components x := by
+    simpa using congr_arg (fun t ↦ t.left.app x) 𝔄.left_triangle
+  right_triangle_components x := by
+    simpa using congr_arg (fun t ↦ t.left.app x) 𝔄.right_triangle
+
+/-- The adjunction on the right components of a `CatCospanAdjunction`. -/
+@[simps]
+def rightAdjunction : 𝔄.leftAdjoint.right ⊣ 𝔄.rightAdjoint.right where
+  unit := 𝔄.unit.right
+  counit := 𝔄.counit.right
+  left_triangle_components x := by
+    simpa using congr_arg (fun t ↦ t.right.app x) 𝔄.left_triangle
+  right_triangle_components x := by
+    simpa using congr_arg (fun t ↦ t.right.app x) 𝔄.right_triangle
+
+/-- The adjunction on the base components of a `CatCospanAdjunction`. -/
+@[simps]
+def baseAdjunction : 𝔄.leftAdjoint.base ⊣ 𝔄.rightAdjoint.base where
+  unit := 𝔄.unit.base
+  counit := 𝔄.counit.base
+  left_triangle_components x := by
+    simpa using congr_arg (fun t ↦ t.base.app x) 𝔄.left_triangle
+  right_triangle_components x := by
+    simpa using congr_arg (fun t ↦ t.base.app x) 𝔄.right_triangle
+
+/-- In a `CatCospanAdjunction`, the left square on the right adjoints is
+related to the left square on the left adjoints via the calculus of mates. -/
+lemma mateEquivLeftAdjointSquaresHom :
+    mateEquiv 𝔄.leftAdjunction 𝔄.baseAdjunction
+      (TwoSquare.mk _ _ _ _ 𝔄.leftAdjoint.squareLeft.iso.hom) =
+    TwoSquare.mk _ _ _ _ (𝔄.rightAdjoint.squareLeft.iso.inv) := by
+  ext x
+  dsimp [TwoSquare.mk, TwoSquare.natTrans]
+  simp only [Category.id_comp, Category.comp_id]
+  -- Collecting some facts
+  have h₁ := 𝔄.unit.left_coherence_app (𝔄.rightAdjoint.left.obj x) =≫
+    (𝔄.rightAdjoint.squareLeft.iso).inv.app
+        (𝔄.leftAdjoint.left.obj (𝔄.rightAdjoint.left.obj x))
+  have h₂ := 𝔄.rightAdjoint.squareLeft.iso_inv_naturality
+    (f := 𝔄.counit.left.app x)
+  have := 𝔄.leftAdjunction.right_triangle_components x
+  dsimp at h₁ this
+  simp only [CatCommSq.vId_iso_hom_app, Category.id_comp,
+    CatCommSq.vComp_iso_hom_app, Category.assoc, Iso.hom_inv_id_app,
+    Functor.comp_obj, Category.comp_id] at h₁
+  simp only [CatCospanTransform.comp_left, Functor.comp_obj,
+    CatCospanTransform.id_left, Functor.id_obj] at h₂
+  rw [← reassoc_of% h₁, ← h₂, ← Functor.map_comp_assoc, this]
+  simp
+
+/-- In a `CatCospanAdjunction`, the right square on the right adjoints is
+related to the right square on the left adjoints via the calculus of mates. -/
+lemma mateEquivRightAdjointSquaresHom :
+    mateEquiv 𝔄.rightAdjunction 𝔄.baseAdjunction
+      (TwoSquare.mk _ _ _ _ 𝔄.leftAdjoint.squareRight.iso.hom) =
+    TwoSquare.mk _ _ _ _ (𝔄.rightAdjoint.squareRight.iso.inv) := by
+  ext x
+  dsimp [TwoSquare.mk, TwoSquare.natTrans]
+  simp only [Category.id_comp, Category.comp_id]
+  -- Collecting some facts
+  have h₁ := 𝔄.unit.right_coherence_app (𝔄.rightAdjoint.right.obj x) =≫
+    (𝔄.rightAdjoint.squareRight.iso).inv.app
+        (𝔄.leftAdjoint.right.obj (𝔄.rightAdjoint.right.obj x))
+  have h₂ := 𝔄.rightAdjoint.squareRight.iso_inv_naturality
+    (f := 𝔄.counit.right.app x)
+  have := 𝔄.rightAdjunction.right_triangle_components x
+  dsimp at h₁ this
+  simp only [CatCommSq.vId_iso_hom_app, Category.id_comp,
+    CatCommSq.vComp_iso_hom_app, Category.assoc, Iso.hom_inv_id_app,
+    Functor.comp_obj, Category.comp_id] at h₁
+  simp only [CatCospanTransform.comp_right, Functor.comp_obj,
+    CatCospanTransform.id_right, Functor.id_obj] at h₂
+  rw [← reassoc_of% h₁, ← h₂, ← Functor.map_comp_assoc, this]
+  simp
+
+end CatCospanAdjunction
 
 end CategoryTheory.Limits
