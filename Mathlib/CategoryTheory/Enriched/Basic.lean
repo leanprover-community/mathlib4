@@ -63,7 +63,7 @@ class EnrichedCategory (C : Type u₁) where
   assoc (W X Y Z : C) : (α_ _ _ _).inv ≫ comp W X Y ▷ _ ≫ comp W Y Z =
     _ ◁ comp X Y Z ≫ comp W X Z := by cat_disch
 
-@[inherit_doc EnrichedCategory.Hom] notation X " ⟶[" V "] " Y:10 => (EnrichedCategory.Hom X Y : V)
+@[inherit_doc EnrichedCategory.Hom] notation3 X " ⟶[" V "] " Y:10 => (EnrichedCategory.Hom X Y : V)
 
 variable {C : Type u₁} [EnrichedCategory V C]
 
@@ -246,21 +246,23 @@ theorem ForgetEnrichment.homOf_homTo {X Y : ForgetEnrichment W C} (f : X ⟶ Y) 
 
 /-- The identity in the "underlying" category of an enriched category. -/
 @[simp]
-theorem forgetEnrichment_id (X : ForgetEnrichment W C) :
+theorem ForgetEnrichment.homTo_id (X : ForgetEnrichment W C) :
     ForgetEnrichment.homTo W (𝟙 X) = eId W (ForgetEnrichment.to W X : C) :=
   Category.id_comp _
 
 @[simp]
-theorem forgetEnrichment_id' (X : C) :
-    ForgetEnrichment.homOf W (eId W X) = 𝟙 (ForgetEnrichment.of W X : C) :=
-  (forgetEnrichment_id W (ForgetEnrichment.of W X)).symm
+theorem ForgetEnrichment.homOf_eid (X : C) :
+    ForgetEnrichment.homOf W (eId W X) = 𝟙 (of W X : C) :=
+  (homTo_id W (ForgetEnrichment.of W X)).symm
 
 /-- Composition in the "underlying" category of an enriched category. -/
 @[simp]
-theorem forgetEnrichment_comp {X Y Z : ForgetEnrichment W C} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    ForgetEnrichment.homTo W (f ≫ g) =
-      ((λ_ (𝟙_ W)).inv ≫ (ForgetEnrichment.homTo W f ⊗ₘ ForgetEnrichment.homTo W g)) ≫
-        eComp W _ _ _ :=
+theorem ForgetEnrichment.homTo_comp {X Y Z : ForgetEnrichment W C} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    homTo W (f ≫ g) = ((λ_ (𝟙_ W)).inv ≫ (homTo W f ⊗ₘ homTo W g)) ≫ eComp W _ _ _ :=
+  rfl
+
+theorem ForgetEnrichment.homOf_comp {X Y Z : C} (f : 𝟙_ W ⟶ (X ⟶[W] Y)) (g : 𝟙_ W ⟶ (Y ⟶[W] Z)) :
+    homOf W (((λ_ _).inv ≫ (f ⊗ₘ g)) ≫ eComp W ..) = homOf W f ≫ homOf W g :=
   rfl
 
 end
@@ -329,7 +331,7 @@ def EnrichedFunctor.forget {C : Type u₁} {D : Type u₂} [EnrichedCategory W C
     dsimp
     apply_fun ForgetEnrichment.homTo W
     · simp only [Iso.cancel_iso_inv_left, Category.assoc, tensor_comp,
-        ForgetEnrichment.homTo_homOf, EnrichedFunctor.map_comp, forgetEnrichment_comp]
+        ForgetEnrichment.homTo_homOf, EnrichedFunctor.map_comp, ForgetEnrichment.homTo_comp]
       rfl
     · intro f g w; apply_fun ForgetEnrichment.homOf W at w; simpa using w
 
@@ -420,6 +422,14 @@ def id : EnrichedNatTrans F F where
 
 variable {F} {G H : EnrichedFunctor V C D}
 
+@[ext]
+def ext {α β : EnrichedNatTrans F G} (h : ∀ X, α.app X = β.app X) : α = β := by
+  cases α
+  cases β
+  congr
+  funext
+  apply h
+
 /-- The naturality condition of an enriched natural transformation from `F` to `G` as an equality
 of morphisms `Hom X Y ⟶ Hom (F.obj X) (G.obj Y)` for `X, Y : C`. -/
 @[reassoc]
@@ -483,6 +493,69 @@ instance category : Category (EnrichedFunctor V C D) where
     monoidal
 
 end EnrichedNatTrans
+
+open EnrichedCategory
+
+#check ForgetEnrichment.homTo
+
+@[simps]
+def EnrichedFunctor.isoOfComponents {F G : EnrichedFunctor V C D}
+    (app : ∀ (X : C), ForgetEnrichment.of V (F.obj X) ≅ ForgetEnrichment.of V (G.obj X))
+    (naturality :
+      ∀ X Y, (ρ_ _).inv ≫ (F.map X Y ⊗ₘ ForgetEnrichment.homTo _ (app Y).hom) ≫ eComp V .. =
+      (λ_ _).inv ≫ (ForgetEnrichment.homTo _ (app X).hom ⊗ₘ G.map X Y) ≫ eComp V ..) : F ≅ G where
+  hom := { app X := ForgetEnrichment.homTo _ (app X).hom
+           naturality X Y := by simpa using (Iso.eq_inv_comp _).mp (naturality X Y) }
+  inv := { app X := ForgetEnrichment.homTo _ (app X).inv
+           naturality X Y := by
+             simp only [Center.tensorUnit_fst, Center.tensorUnit_snd_β, Iso.trans_hom, Iso.symm_hom,
+               Category.assoc]
+             have := congr_arg ((ForgetEnrichment.homTo _ (app X).inv ⊗ₘ · ⊗ₘ ForgetEnrichment.homTo _ (app Y).inv))  (naturality X Y)
+             have := congr_arg ((ρ_ _).inv ≫ (λ_ _).inv ≫ · ≫ _ ◁ eComp V .. ≫ eComp V ..) this
+             dsimp at this
+             rw [← Iso.eq_inv_comp]
+             refine Eq.trans (Eq.trans (?_) this.symm) ?_
+             · have h := (Iso.inv_comp_eq _).mp (app X).inv_hom_id
+
+               rw [← e_assoc, ← whiskerRight_comp_tensorHom, ← tensorHom_comp_whiskerRight,
+                 ← whiskerLeft_comp_tensorHom, ← tensorHom_comp_whiskerLeft,
+                 Category.assoc, Category.assoc, associator_inv_naturality_middle_assoc,
+                 ← comp_whiskerRight_assoc, ← e_assoc, comp_whiskerRight, comp_whiskerRight,
+                 associator_inv_naturality_assoc, Category.assoc,
+                 tensorHom_comp_whiskerRight_assoc, associator_inv_naturality, Category.assoc,
+                 ← whiskerRight_comp_tensorHom, Category.assoc, tensorHom_comp_whiskerRight_assoc,
+                 tensorHom_comp_whiskerRight_assoc, tensorHom_comp_whiskerRight,
+                 h, tensorHom_def' _ (G.map X Y),
+                 Category.assoc, comp_whiskerRight, Category.assoc,
+                 ]
+
+               sorry -- monoidal
+             · rw [← tensorHom_comp_whiskerRight, ← tensorHom_comp_whiskerLeft,
+                 Category.assoc, ← whiskerLeft_comp_assoc, comp_whiskerRight, Category.assoc,
+                 ← e_assoc', tensorHom_def, Category.assoc, tensorHom_def, whiskerLeft_comp,
+                 tensorHom_def, ← whiskerLeft_comp, ← whiskerLeft_comp_assoc, Category.assoc,
+                 comp_whiskerRight, Category.assoc, associator_naturality_middle_assoc,
+                 associator_naturality_left_assoc, associator_naturality_right_assoc,
+                 whisker_exchange_assoc, ← whiskerLeft_comp_assoc, ← tensorHom_def',
+                 ← whiskerLeft_comp_assoc]
+               --rw [(Iso.inv_comp_eq _).mp (app Y).hom_inv_id]
+               sorry
+                --  rw [whiskerLeft_comp (Hom (F.obj X) (F.obj Y)), Category.assoc,
+                --    (Iso.inv_comp_eq _).mp (e_comp_id V _ _)]
+                --  simp only [whiskerRight_tensor, whiskerRight_id, Category.assoc,
+                --    Iso.hom_inv_id_assoc, Category.comp_id, triangle_assoc, Iso.hom_inv_id,
+                --    Iso.inv_hom_id_assoc, Iso.inv_hom_id, whiskerLeft_comp, whiskerLeft_rightUnitor, ←
+                --    tensorHom_def_assoc]
+                --  monoidal
+                }
+  hom_inv_id := by
+    refine EnrichedNatTrans.ext fun X => ?_
+    simp [← unitors_inv_equal, (app X).hom_inv_id, ForgetEnrichment.homTo]
+    sorry
+  inv_hom_id := by
+    refine EnrichedNatTrans.ext fun X => ?_
+    simp [← unitors_inv_equal, (app X).inv_hom_id]
+    sorry
 
 variable [BraidedCategory V]
 
