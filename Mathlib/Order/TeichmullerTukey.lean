@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ansar Azhdarov
 -/
 import Mathlib.Data.Set.Finite.Range
-import Mathlib.Order.Preorder.Finite
+import Mathlib.Data.Set.Finite.Lattice
 import Mathlib.Order.Zorn
 
 /-!
@@ -36,20 +36,17 @@ variable {α : Type*} (F : Set (Set α))
 subset of $X$ is in $F$ -/
 def IsOfFiniteCharacter := ∀ x, x ∈ F ↔ ∀ y ⊆ x, y.Finite → y ∈ F
 
-lemma exists_subset_of_finite_of_subset_sUnion_of_isChain_of_nonempty {c : Set (Set α)}
+lemma DirectedOn.exists_mem_subset_of_finite_of_subset_sUnion {c : Set (Set α)}
+    (cne : c.Nonempty) (cdir : DirectedOn (· ⊆ ·) c) {s : Set α} (sc : s ⊆ sUnion c)
+    (sfin : s.Finite) : ∃ t ∈ c, s ⊆ t := by
+  rw [← sfin.coe_toFinset, sUnion_eq_biUnion] at sc
+  have := DirectedOn.exists_mem_subset_of_finset_subset_biUnion cne cdir sc
+  exact sfin.coe_toFinset ▸ this
+
+lemma IsChain.exists_mem_subset_of_finite_of_subset_sUnion {c : Set (Set α)}
     (cne : c.Nonempty) (cch : IsChain (· ⊆ ·) c) {s : Set α} (sc : s ⊆ sUnion c) (sfin : s.Finite) :
-    ∃ t ∈ c, s ⊆ t := by
-  rcases eq_empty_or_nonempty s with rfl | sne
-  · exact cne.imp fun t tc ↦ ⟨tc, empty_subset t⟩
-  · /- For every element of the finite subset, choose an element of the chain containing it and take
-    the maximum among them. -/
-    choose f hf using fun (x : s) ↦ sc x.2
-    obtain ⟨_, ⟨y, rfl⟩, max⟩ := exists_maximal (@finite_range _ _ f sfin)
-      (@range_nonempty _ _ sne.coe_sort f)
-    refine ⟨f y, (forall_and.mp hf).left y, fun x xs ↦ ?_⟩
-    rcases (cch.total (hf ⟨x, xs⟩).left (hf y).left) with h | h
-    · exact h (hf ⟨x, xs⟩).right
-    · exact max ⟨⟨x, xs⟩, rfl⟩ h (hf ⟨x, xs⟩).right
+    ∃ t ∈ c, s ⊆ t := DirectedOn.exists_mem_subset_of_finite_of_subset_sUnion
+      cne cch.directedOn sc sfin
 
 /-- **Teichmuller-Tukey lemma**. Every nonempty family of finite character has a maximal element. -/
 theorem exists_maximal_of_isOfFiniteCharacter {F} (hF : IsOfFiniteCharacter F) {x : Set α}
@@ -60,6 +57,5 @@ theorem exists_maximal_of_isOfFiniteCharacter {F} (hF : IsOfFiniteCharacter F) {
   /- Prove that the union belongs to F. Use the finite character property and the fact that any
   finite subset of the union is also a subset of some element of the chain. -/
   refine (hF (sUnion c)).mpr (fun s sc sfin ↦ ?_)
-  obtain ⟨t, tc, st⟩ :=
-    exists_subset_of_finite_of_subset_sUnion_of_isChain_of_nonempty cne cch sc sfin
+  obtain ⟨t, tc, st⟩ := cch.exists_mem_subset_of_finite_of_subset_sUnion cne sc sfin
   exact (hF t).mp (cF tc) s st sfin
