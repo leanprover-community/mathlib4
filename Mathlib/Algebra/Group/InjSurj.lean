@@ -110,6 +110,22 @@ protected abbrev rightCancelSemigroup [RightCancelSemigroup M₂] (f : M₁ → 
     (mul : ∀ x y, f (x * y) = f x * f y) : RightCancelSemigroup M₁ :=
   { hf.semigroup f mul, hf.isRightCancelMul f mul with }
 
+@[to_additive]
+protected lemma isLeftCancelMul [Mul M₂] [IsLeftCancelMul M₂] (f : M₁ → M₂) (hf : Injective f)
+    (mul : ∀ x y, f (x * y) = f x * f y) : IsLeftCancelMul M₁ where
+  mul_left_cancel _ _ _ := by simp_rw [← hf.eq_iff, mul]; exact mul_left_cancel
+
+@[to_additive]
+protected lemma isRightCancelMul [Mul M₂] [IsRightCancelMul M₂] (f : M₁ → M₂) (hf : Injective f)
+    (mul : ∀ x y, f (x * y) = f x * f y) : IsRightCancelMul M₁ where
+  mul_right_cancel _ _ _ := by simp_rw [← hf.eq_iff, mul]; exact mul_right_cancel
+
+@[to_additive]
+protected lemma isCancelMul [Mul M₂] [IsCancelMul M₂] (f : M₁ → M₂) (hf : Injective f)
+    (mul : ∀ x y, f (x * y) = f x * f y) : IsCancelMul M₁ where
+  __ := hf.isLeftCancelMul f mul
+  __ := hf.isRightCancelMul f mul
+
 variable [One M₁]
 
 /-- A type endowed with `1` and `*` is a `MulOneClass`, if it admits an injective map that
