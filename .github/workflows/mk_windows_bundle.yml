@@ -1,0 +1,29 @@
+name: create-windows-bundle
+on:
+    schedule:
+        - cron: "0 0 * * *"
+    workflow_dispatch:
+
+jobs:
+    mk-windows-bundle:
+        runs-on: windows-2022
+        steps:
+            - name: Checkout Repo
+              uses: actions/checkout@v3
+
+            - name: BundleCreate
+              run: cmd /c "windowsBundle.bat"
+
+            - name: showPath
+              run: cmd /c "echo ${{github.workspace}};"
+
+            - name: showFiles
+              run: cmd /c "dir"
+
+            - name: Release for Windows
+              uses: "marvinpinto/action-automatic-releases@latest"
+              with:
+                repo_token: "${{ secrets.GITHUB_TOKEN }}"
+                automatic_release_tag: "latest"
+                prerelease: true
+                files: TryLean4Bundle*.exe
