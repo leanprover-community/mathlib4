@@ -136,6 +136,10 @@ theorem isSheaf_pretopology [HasPullbacks C] (K : Pretopology C) :
 theorem isSheaf_bot : IsSheaf (⊥ : GrothendieckTopology C) P := fun X => by
   simp [isSheafFor_top_sieve]
 
+/-- The composition of a sheaf with a ULift functor is still a sheaf. -/
+theorem isSheaf_comp_uliftFunctor (h : IsSheaf J P) : IsSheaf J (P ⋙ uliftFunctor.{w'}) :=
+  isSheaf_of_nat_equiv (fun _ => Equiv.ulift.symm) (fun _ _ _ _ => rfl) h
+
 /--
 For a presheaf of the form `yoneda.obj W`, a compatible family of elements on a sieve
 is the same as a co-cone over the sieve. Constructing a co-cone from a compatible family works for
