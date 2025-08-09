@@ -452,3 +452,127 @@ theorem liftOrderHom_mk (f : M → α) (h : ∀ a b, mk a ≤ mk b → f a ≤ f
 end LiftHom
 
 end MulArchimedeanClass
+
+variable (M) in
+/-- Subtype of `MulArchimedeanClass` that removes the top element. -/
+@[to_additive ArchimedeanClass₀ "Subtype of `ArchimedeanClass` that removes the top element."]
+abbrev MulArchimedeanClass₁ := {A : MulArchimedeanClass M // A ≠ ⊤}
+
+namespace MulArchimedeanClass₁
+
+/-- Create a `MulArchimedeanClass₁` from a non-one element. -/
+@[to_additive "Create an `ArchimedeanClass₀` from a non-zero element."]
+def mk {a : M} (h : a ≠ 1) : MulArchimedeanClass₁ M :=
+  ⟨MulArchimedeanClass.mk a, MulArchimedeanClass.mk_eq_top_iff.not.mpr h⟩
+
+@[to_additive (attr := simp)]
+theorem val_mk {a : M} (h : a ≠ 1) : (mk h).val = MulArchimedeanClass.mk a := rfl
+
+@[to_additive]
+theorem mk_le_mk {a : M} (ha : a ≠ 1) {b : M} (hb : b ≠ 1) :
+    mk ha ≤ mk hb ↔ MulArchimedeanClass.mk a ≤ MulArchimedeanClass.mk b := .rfl
+
+@[to_additive]
+theorem mk_lt_mk {a : M} (ha : a ≠ 1) {b : M} (hb : b ≠ 1) :
+    mk ha < mk hb ↔ MulArchimedeanClass.mk a < MulArchimedeanClass.mk b := .rfl
+
+/-- An induction principle for `MulArchimedeanClass₁`. -/
+@[to_additive (attr := elab_as_elim) "An induction principle for `ArchimedeanClass₀`."]
+theorem ind {motive : MulArchimedeanClass₁ M → Prop}
+    (mk : ∀ a, (ha : a ≠ 1) → motive (.mk ha)) : ∀ x, motive x := by
+  intro ⟨A, hA⟩
+  induction A using MulArchimedeanClass.ind with | mk a
+  exact mk _ <| MulArchimedeanClass.mk_eq_top_iff.not.mp hA
+
+@[to_additive]
+instance [MulArchimedean M] : Subsingleton (MulArchimedeanClass₁ M) where
+  allEq A B := by
+    induction A using ind with | mk a ha
+    induction B using ind with | mk b hb
+    simpa [mk] using MulArchimedeanClass.mk_eq_mk_of_mulArchimedean ha hb
+
+@[to_additive]
+instance [Nontrivial M] : Nonempty (MulArchimedeanClass₁ M) := by
+  obtain ⟨x, hx⟩ := exists_ne (1 : M)
+  exact ⟨mk hx, by simpa using hx⟩
+
+/-- Lift a `f : {a : M // a ≠ 1} → α` function to `MulArchimedeanClass₁ M → α`. -/
+@[to_additive "Lift a `f : {a : M // a ≠ 0} → α` function to `ArchimedeanClass₀ M → α`."]
+def lift {α : Type*} (f : {a : M // a ≠ 1} → α)
+    (h : ∀ (a b : {a : M // a ≠ 1}), mk a.prop = mk b.prop → f a = f b) :
+    MulArchimedeanClass₁ M → α := fun ⟨A, hA⟩ ↦ by
+  refine (MulArchimedeanClass.lift
+    (fun b ↦ if h : b = 1 then ⊤ else WithTop.some (f ⟨b, h⟩)) ?_ A).untop ?_
+  · intro a b h'
+    simp only
+    split_ifs with ha hb hb
+    · rfl
+    · rw [ha] at h'
+      exact (hb (MulArchimedeanClass.mk_eq_top_iff.mp h'.symm)).elim
+    · rw [hb] at h'
+      exact (ha (MulArchimedeanClass.mk_eq_top_iff.mp h')).elim
+    · exact WithTop.coe_eq_coe.mpr <| h ⟨a, ha⟩ ⟨b, hb⟩ (by simpa [mk] using h')
+  · induction A using MulArchimedeanClass.ind with | mk a
+    simpa using MulArchimedeanClass.mk_eq_top_iff.not.mp hA
+
+@[to_additive (attr := simp)]
+theorem lift_mk {α : Type*} (f : {a : M // a ≠ 1} → α)
+    (h : ∀ (a b : {a : M // a ≠ 1}), mk a.prop = mk b.prop → f a = f b) {a : M} (ha : a ≠ 1) :
+    lift f h (mk ha) = f ⟨a, ha⟩ := by simp [lift, mk, ha]
+
+/-- Lift a function `{a : M // a ≠ 1} → α` that's monotone along archimedean classes to a
+monotone function `MulArchimedeanClass₁ M →o α`. -/
+@[to_additive "Lift a function `{a : M // a ≠ 1} → α` that's monotone along archimedean classes to a
+monotone function `ArchimedeanClass₀ M₁ →o α`."]
+noncomputable
+def liftOrderHom {α : Type*} [PartialOrder α]
+    (f : {a : M // a ≠ 1} → α) (h : ∀ (a b : {a : M // a ≠ 1}), mk a.prop ≤ mk b.prop → f a ≤ f b) :
+    MulArchimedeanClass₁ M →o α where
+  toFun := lift f fun a b heq ↦ le_antisymm (h a b heq.le) (h b a heq.ge)
+  monotone' A B hAB := by
+    induction A using ind with | mk a ha
+    induction B using ind with | mk b hb
+    simpa using h ⟨a, ha⟩ ⟨b, hb⟩ hAB
+
+@[to_additive (attr := simp)]
+theorem liftOrderHom_mk {α : Type*} [PartialOrder α]
+    (f : {a : M // a ≠ 1} → α) (h : ∀ (a b : {a : M // a ≠ 1}), mk a.prop ≤ mk b.prop → f a ≤ f b)
+    {a : M} (ha : a ≠ 1) : liftOrderHom f h (mk ha) = f ⟨a, ha⟩ :=
+  lift_mk f (fun a b heq ↦ le_antisymm (h a b heq.le) (h b a heq.ge)) ha
+
+variable (M) in
+/-- Adding top to the type of non-top classes yields the type of all classes. -/
+@[to_additive "Adding top to the type of non-top classes yields the type of all classes."]
+noncomputable
+def withTopOrderIso : WithTop (MulArchimedeanClass₁ M) ≃o MulArchimedeanClass M where
+  toFun
+    | WithTop.some A => A.val
+    | ⊤ => ⊤
+  invFun A := if h : A = ⊤ then ⊤ else WithTop.some ⟨A, h⟩
+  left_inv
+    | WithTop.some A => by simpa using A.prop
+    | ⊤ => by simp
+  right_inv A := by
+    simp only
+    split_ifs with h
+    · simp [h]
+    · simp
+  map_rel_iff' {A B} := match A with
+  | WithTop.some A => match B with
+    | WithTop.some B => by simp
+    | ⊤ => by simp
+  | ⊤ => match B with
+    | WithTop.some B => by simpa using B.prop
+    | ⊤ => by simp
+
+@[to_additive (attr := simp)]
+theorem withTopOrderIso_apply_coe (A : MulArchimedeanClass₁ M) :
+    withTopOrderIso M (A : WithTop (MulArchimedeanClass₁ M)) = A.val := rfl
+
+@[to_additive]
+theorem withTopOrderIso_symm_apply {a : M} (h : a ≠ 1) :
+    (withTopOrderIso M).symm (MulArchimedeanClass.mk a) = mk h := by
+  rw [OrderIso.symm_apply_eq]
+  rfl
+
+end MulArchimedeanClass₁
