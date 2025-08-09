@@ -140,9 +140,9 @@ theorem blimsup_cthickening_ae_le_of_eventually_mul_le_aux (p : ℕ → Prop) {s
     rw [ENNReal.coe_inv hC, ← ENNReal.div_eq_inv_mul]
     exact ENNReal.div_le_of_le_mul' hj₂
   have hj₃ : ↑C⁻¹ * μ (B j) + μ (W ∩ B j) ≤ μ (B j) := by
-    refine le_trans (add_le_add_right hj₂ _) ?_
+    grw [hj₂]
     rw [← measure_union' hj₁ measurableSet_closedBall]
-    exact measure_mono (union_subset (h₁ j) (h₂ j))
+    grw [union_subset (h₁ j) (h₂ j)]
   replace hj₃ := tsub_le_tsub_right hj₃ (↑C⁻¹ * μ (B j))
   rwa [ENNReal.add_sub_cancel_left hB] at hj₃
 

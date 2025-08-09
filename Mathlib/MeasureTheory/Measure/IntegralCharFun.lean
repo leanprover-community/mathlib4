@@ -120,9 +120,7 @@ lemma measureReal_abs_gt_le_integral_charFun [IsProbabilityMeasure μ] (hr : 0 <
       refine (sinc_le_inv_abs hx_ne).trans ?_
       exact (inv_le_inv₀ (by positivity) (by positivity)).mpr (le_of_lt hx)
   _ ≤ 2 * ∫ x, 1 - sinc (2 * r⁻¹ * x) ∂μ := by
-    gcongr
-    refine setIntegral_le_integral ((integrable_const _).sub (integrable_sinc_const_mul _))
-      <| ae_of_all _ fun x ↦ ?_
+    grw [setIntegral_le_integral (by fun_prop) <| ae_of_all _ fun x ↦ ?_]
     simp only [Pi.zero_apply, sub_nonneg]
     exact sinc_le_one (2 * r⁻¹ * x)
   _ ≤ 2 * ‖∫ x, 1 - sinc (2 * r⁻¹ * x) ∂μ‖ := by
