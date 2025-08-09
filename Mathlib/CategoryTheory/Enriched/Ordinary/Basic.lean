@@ -199,25 +199,6 @@ noncomputable def TransportEnrichment.enrichedOrdinaryCategory
   homEquiv_comp f g := by
     simp [eHomEquiv_comp, eComp_eq, tensorHom_def (Functor.LaxMonoidal.ε F), unitors_inv_equal]
 
-
-/-
-TODO: Prove that applying the above construction to the result of `ForgetEnrichment V D` results in
-an enriched ordinary category "equal" to `ForgetEnrichment W (TransportEnrichment F D)`.
--/
-set_option pp.universes true in
-noncomputable def TransportEnrichment.def
-    {W : Type u'} [Category.{v'} W] [MonoidalCategory W]
-    (F : V ⥤ W) [F.LaxMonoidal]
-    (D : Type u) [EnrichedCategory V D]
-    (h : ∀ v : V, Function.Bijective fun (f : 𝟙_ V ⟶ v) => Functor.LaxMonoidal.ε F ≫ F.map f) :
-    sorry := by
-  let A : EnrichedOrdinaryCategory W (TransportEnrichment F (ForgetEnrichment V D)) :=
-    TransportEnrichment.enrichedOrdinaryCategory (ForgetEnrichment V D) F h
-  let B : EnrichedOrdinaryCategory W (ForgetEnrichment W (TransportEnrichment F D)) :=
-    inferInstance
-  have : A = B := sorry
-  sorry
-
 end TransportEnrichment
 
 end CategoryTheory
