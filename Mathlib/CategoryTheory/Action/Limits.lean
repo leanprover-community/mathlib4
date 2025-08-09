@@ -295,13 +295,16 @@ end HasZeroMorphisms
 
 section Preadditive
 
-variable [Preadditive V]
+variable [Preadditive V] {X Y : Action V G}
 
-instance {X Y : Action V G} : Add (X ⟶ Y) where
+instance : Add (X ⟶ Y) where
   add f g := ⟨f.hom + g.hom, by simp [f.comm, g.comm]⟩
 
-instance {X Y : Action V G} : Neg (X ⟶ Y) where
+instance : Neg (X ⟶ Y) where
   neg f := ⟨-f.hom, by simp [f.comm]⟩
+
+instance : Sub (X ⟶ Y) where
+  sub f g := ⟨f.hom - g.hom, by simp [f.comm, g.comm]⟩
 
 instance : Preadditive (Action V G) where
   homGroup X Y :=
@@ -311,6 +314,7 @@ instance : Preadditive (Action V G) where
       add_zero := by intros; ext; exact add_zero _
       add_assoc := by intros; ext; exact add_assoc _ _ _
       neg_add_cancel := by intros; ext; exact neg_add_cancel _
+      sub_eq_add_neg := by intros; ext; exact sub_eq_add_neg ..
       add_comm := by intros; ext; exact add_comm _ _ }
   add_comp := by intros; ext; exact Preadditive.add_comp _ _ _ _ _ _
   comp_add := by intros; ext; exact Preadditive.comp_add _ _ _ _ _ _
@@ -322,16 +326,12 @@ instance forget₂_additive [HasForget V] : Functor.Additive (forget₂ (Action 
 instance functorCategoryEquivalence_additive :
     Functor.Additive (functorCategoryEquivalence V G).functor where
 
-@[simp]
-theorem neg_hom {X Y : Action V G} (f : X ⟶ Y) : (-f).hom = -f.hom :=
-  rfl
+@[simp] lemma add_hom (f g : X ⟶ Y) : (f + g).hom = f.hom + g.hom := rfl
+@[simp] lemma neg_hom (f : X ⟶ Y) : (-f).hom = -f.hom := rfl
+@[simp] lemma sub_hom (f g : X ⟶ Y) : (f - g).hom = f.hom - g.hom := rfl
 
 @[simp]
-theorem add_hom {X Y : Action V G} (f g : X ⟶ Y) : (f + g).hom = f.hom + g.hom :=
-  rfl
-
-@[simp]
-theorem sum_hom {X Y : Action V G} {ι : Type*} (f : ι → (X ⟶ Y)) (s : Finset ι) :
+theorem sum_hom {ι : Type*} (f : ι → (X ⟶ Y)) (s : Finset ι) :
     (s.sum f).hom = s.sum fun i => (f i).hom :=
   (forget V G).map_sum f s
 
