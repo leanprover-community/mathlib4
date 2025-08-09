@@ -203,22 +203,23 @@ lemma projection {f : α → β →. γ} (hf : Partrec₂ f)
     ((nat_iff.2 hg).comp Computable.encode).bind
     (Computable.decode.ofOption.comp Computable.snd).to₂, ?_⟩
   have H : ∀ {c a : ℕ}, c ∈ g a ↔ ∃ a' b, encode a' = a ∧ ∃ c' ∈ f a' b, encode c' = c := by
-    simp [Encodable.decode₂_eq_some] at H
+    have H : ∀ c a : ℕ,
+      c ∈ g a ↔ ∃ z a' b, (encode a' = a ∧ encode b = z) ∧ ∃ c' ∈ f a' b, encode c' = c := by
+      simpa [Encodable.decode₂_eq_some] using H
     intro c a; constructor
     · intro h; rcases (H c a).mp h with ⟨b, a, b, ⟨rfl, rfl⟩, ⟨c, H, rfl⟩⟩
       exact ⟨a, b, rfl, c, H, rfl⟩
     · rintro ⟨a, b, rfl, c, hc, rfl⟩
       exact (H _ _).mpr ⟨encode b, a, b, ⟨rfl, rfl⟩, c, hc, rfl⟩
   intro c a
+  suffices (∃ c' ∈ g (encode a), decode c' = Option.some c) ↔ ∃ b, c ∈ f a b by simpa [g']
   constructor
-  · simp [g']
-    intro c' h hc
+  · rintro ⟨c', h, hc⟩
     rcases H.mp h with ⟨a, b, ae, c, habc, rfl⟩;
     rcases by simpa using hc
     rcases Encodable.encode_inj.mp ae
     exact ⟨b, habc⟩
-  · simp [g']
-    rintro b habc
+  · rintro ⟨b, habc⟩
     exact ⟨encode c, H.mpr ⟨a, b, rfl, c, habc, rfl⟩, by simp⟩
 
 end Partrec
