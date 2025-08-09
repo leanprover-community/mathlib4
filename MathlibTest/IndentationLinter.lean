@@ -357,6 +357,138 @@ end By
 
 section Brackets
 
--- TODO
+/-
+allow the right bracket to ignore the additional indentation, if the left bracket isn't the first
+token of a line.
+-/
+/-- -/
+#guard_msgs in
+#check
+  Nat.add 1 (
+    1
+  )
+
+/-
+The right bracket can also follow the additional indentation.
+-/
+/-- -/
+#guard_msgs in
+#check
+  Nat.add 1 (
+      1
+    )
+
+/-
+The right bracket should not have a deeper indentation than content bracketed.
+-/
+/--
+warning: too many spaces, which should be at most 6
+Note: This linter can be disabled with `set_option linter.indentation false`
+-/
+#guard_msgs in
+#check
+  Nat.add 1 (
+      1
+        )
+
+/--
+warning: too few spaces, which should be at least 2
+Note: This linter can be disabled with `set_option linter.indentation false`
+-/
+#guard_msgs in
+#check
+  Nat.add 1 (
+    1
+)
+
+-- TODO: can the right bracket have the same indentation with bracketed content?
+-- #check
+--   Nat.add 1 (
+--     1
+--     )
+
+/-- -/
+#guard_msgs in
+#check
+  Nat.add 1
+    (
+      1 + 1
+    )
+
+/-
+If the left bracket is the first token in its line, it should follow the additional indentation if
+that is set
+-/
+/--
+warning: too few spaces, which should be at least 4
+Note: This linter can be disabled with `set_option linter.indentation false`
+-/
+#guard_msgs in
+#check
+  Nat.add 1
+  (
+    1 + 1
+  )
+
+/-
+the content should have deeper indentation than the left bracket, it the left bracket is on its own
+line.
+-/
+/--
+warning: too few spaces, which should be at least 4
+Note: This linter can be disabled with `set_option linter.indentation false`
+-/
+#guard_msgs in
+#check Nat.add 1
+  (
+  1
+  )
+
+-- TODO: should this be allowed?
+-- #check
+--   Nat.add 1
+--     (1 +
+--     1
+--     )
+
+-- TODO: should 1 space indentation step be allowed in `⟨...⟩`?
+/-- -/
+#guard_msgs in
+#check show Prod Nat Nat from
+  ⟨
+   1,
+   1
+  ⟩
+
+/-- -/
+#guard_msgs in
+#check show Prod Nat Nat from
+  ⟨
+    1,
+    1
+  ⟩
+
+-- TODO: is mixing 1 space and 2 spaces be allowed?
+-- #guard_msgs in
+-- #check show Fin 3 from
+--   ⟨
+--    1, -- 1 space
+--    by
+--      simp -- 2 spaces
+--   ⟩
+
+-- TODO:
+-- /-- -/
+-- #guard_msgs in
+-- #check show Fin 2 from
+--   id
+--   -- other kinds of syntax should be indented with 2 spaces additional indentation
+--   -- is `⟨` an exception?
+--    ⟨
+--     1,
+--     by simp
+--    ⟩
+
+-- TODOs
 
 end Brackets
