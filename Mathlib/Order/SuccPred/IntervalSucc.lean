@@ -28,6 +28,37 @@ open Set Order
 
 variable {α β : Type*} [LinearOrder α]
 
+theorem biUnion_Ici_Ico_map_succ [SuccOrder α] [IsSuccArchimedean α] [LinearOrder β] {f : α → β}
+    {a : α} (hf : ∀ i ∈ Ici a, f a ≤ f i) (h2f : ¬BddAbove (f '' Ici a)) :
+    ⋃ i ∈ Ici a, Ico (f i) (f (succ i)) = Ici (f a) := by
+  apply subset_antisymm <| iUnion₂_subset fun i hi ↦ Ico_subset_Ici (hf i hi)
+  intro b hb
+  rw [mem_iUnion₂]
+  by_contra! hcontra
+  simp_rw [mem_Ico] at hcontra
+  apply h2f
+  rw [bddAbove_def]
+  use b
+  simp_rw [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, mem_Ici]
+  apply Succ.rec (P := fun i ↦ f i ≤ b) hb
+  exact fun i hi h2i ↦ le_of_not_gt <| fun h2b ↦ hcontra i hi ⟨h2i, h2b⟩
+
+theorem biUnion_Ici_Ioc_map_succ [SuccOrder α] [IsSuccArchimedean α] [LinearOrder β] {f : α → β}
+    {a : α} (hf : ∀ i ∈ Ici a, f a ≤ f i) (h2f : ¬BddAbove (f '' Ici a)) :
+    ⋃ i ∈ Ici a, Ioc (f i) (f (succ i)) = Ioi (f a) := by
+  apply subset_antisymm <| iUnion₂_subset fun i hi ↦ Ioc_subset_Ioi (hf i hi)
+  intro b hb
+  rw [mem_iUnion₂]
+  by_contra! hcontra
+  simp_rw [mem_Ioc] at hcontra
+  apply h2f
+  rw [bddAbove_def]
+  use b
+  simp_rw [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, mem_Ici]
+  suffices ∀i, a ≤ i → f i < b by exact fun i hi ↦ this i hi |>.le
+  apply Succ.rec (P := fun i ↦ f i < b) hb
+  exact fun i hi h2i ↦ lt_of_not_ge <| fun h2b ↦ hcontra i hi ⟨h2i, h2b⟩
+
 namespace Monotone
 
 /-- If `α` is a linear archimedean succ order and `β` is a linear order, then for any monotone
