@@ -302,6 +302,21 @@ theorem append_right (u : Fin m → α) (v : Fin n → α) (i : Fin n) :
     append u v (natAdd m i) = v i :=
   addCases_right _
 
+/-- Appending two sequences v and w, and then extracting the initial part
+(i.e., the less than part), gives back the original first sequence v. -/
+theorem append_apply_lt (v : Fin m → α) (w : Fin n → α) (i : Fin (m + n)) (h : ↑i < m) :
+    append v w i = v ⟨↑i, h⟩ := by
+  rw [← append_left v w]
+  rfl
+
+/-- Appending two sequences v and w, and then extracting final part
+(i.e., the greater than or equal part), gives back the original second sequence w. -/
+theorem append_apply_ge (v : Fin m → α) (w : Fin n → α) (i : Fin (m + n)) (h : m ≤ ↑i) :
+    append v w i = w ⟨↑i - m, Nat.sub_lt_left_of_lt_add h i.isLt⟩ := by
+  rw [← append_right v w]
+  congr!
+  exact Fin.ext (Nat.add_sub_of_le h).symm
+
 theorem append_right_nil (u : Fin m → α) (v : Fin n → α) (hv : n = 0) :
     append u v = u ∘ Fin.cast (by rw [hv, Nat.add_zero]) := by
   refine funext (Fin.addCases (fun l => ?_) fun r => ?_)
@@ -385,6 +400,13 @@ theorem append_castAdd_natAdd {f : Fin (m + n) → α} :
     append (fun i ↦ f (castAdd n i)) (fun i ↦ f (natAdd m i)) = f := by
   unfold append addCases
   simp
+
+/-- Splitting a dependent finite sequence v into an initial part and a final part,
+and then concatenating these components, produces an identical sequence. -/
+theorem addCases_apply_pi {γ : Fin (m + n) → Sort*} (v : (i : Fin (m + n)) → γ i) :
+    addCases (fun i ↦ v (castAdd n i)) (fun j ↦ v (natAdd m j)) = v := by
+  ext i
+  cases i using addCases <;> simp
 
 theorem append_comp_sumElim {xs : Fin m → α} {ys : Fin n → α} :
     Fin.append xs ys ∘ Sum.elim (Fin.castAdd _) (Fin.natAdd _) = Sum.elim xs ys := by
@@ -780,6 +802,26 @@ alias exists_iff_succ := exists_fin_succ
 lemma forall_iff_castSucc {P : Fin (n + 1) → Prop} :
     (∀ i, P i) ↔ P (last n) ∧ ∀ i : Fin n, P i.castSucc :=
   ⟨fun h ↦ ⟨h _, fun _ ↦ h _⟩, fun h ↦ lastCases h.1 h.2⟩
+
+/-- A finite sequence of properties P holds for {0 , ... , m + n - 1} iff
+it holds separately for both {0 , ... , m - 1} and {m, ..., m + n - 1}. -/
+theorem forall_fin_add {m n} (P : Fin (m + n) → Prop) :
+    (∀ i, P i) ↔ (∀ i, P (castAdd _ i)) ∧ (∀ i, P (natAdd _ i)) :=
+  ⟨fun h => ⟨fun _ => h _, fun _ => h _⟩, fun ⟨hm, hn⟩ => Fin.addCases hm hn⟩
+
+/-- A property holds for all dependent finite sequence of length m + n iff
+it holds for the concatenation of all pairs of length m sequences and length n sequences. -/
+theorem forall_fin_add_pi {γ : Fin (m + n) → Sort*} {P : ((i : Fin (m + n)) → γ i) → Prop} :
+    (∀ v, P v) ↔ (∀ (vₘ : (i : Fin m) → γ (castAdd n i))
+      (vₙ : (j : Fin n) → γ (natAdd m j)), P (addCases vₘ vₙ)) := by
+  constructor
+  · -- ∀ v, P(v) → ∀ vₘ vₙ, P(addCases vₘ vₙ)
+    intro hv hvm hvn
+    exact hv fun i ↦ addCases hvm hvn i
+  · -- ∀ vₘ vₙ, P(addCases vₘ vₙ) → ∀ v, P(v)
+    intro h v
+    convert h (fun i => v (castAdd n i)) (fun j => v (natAdd m j))
+    exact (addCases_apply_pi v).symm
 
 lemma exists_iff_castSucc {P : Fin (n + 1) → Prop} :
     (∃ i, P i) ↔ P (last n) ∨ ∃ i : Fin n, P i.castSucc where
