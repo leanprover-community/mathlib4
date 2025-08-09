@@ -6,7 +6,6 @@ Authors: Mantas Bakšys, Yaël Dillies
 import Mathlib.Algebra.Order.Monovary
 import Mathlib.Algebra.Order.Rearrangement
 import Mathlib.GroupTheory.Perm.Cycle.Basic
-import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.Positivity
 
 /-!

@@ -13,7 +13,6 @@ import Mathlib.Order.Booleanisation
 import Mathlib.Order.Sublattice
 import Mathlib.Tactic.Positivity.Basic
 import Mathlib.Tactic.Ring
-import Mathlib.Tactic.GCongr
 
 /-!
 # The four functions theorem and corollaries
