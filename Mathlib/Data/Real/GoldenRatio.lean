@@ -214,7 +214,7 @@ theorem fib_golden_conj_exp (n : ℕ) : Nat.fib (n + 1) - φ * Nat.fib n = ψ ^ 
 /-- Relationship between the Fibonacci Sequence, Golden Ratio and its exponents -/
 theorem fib_golden_exp' (n : ℕ) : φ * Nat.fib (n + 1) + Nat.fib n = φ ^ (n + 1) := by
   induction n with
-  | zero => norm_num
+  | zero => simp
   | succ n ih =>
     calc
       _ = φ * (Nat.fib n) + φ ^ 2 * (Nat.fib (n + 1)) := by

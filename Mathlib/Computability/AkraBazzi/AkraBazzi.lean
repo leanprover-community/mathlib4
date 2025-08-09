@@ -139,7 +139,7 @@ lemma isEquivalent_deriv_rpow_p_mul_one_sub_smoothingFn {p : ℝ} (hp : p ≠ 0)
                       rw [isLittleO_const_left]
                       refine Or.inr <| Tendsto.comp tendsto_norm_atTop_atTop ?_
                       exact Tendsto.comp (g := fun z => z ^ 2)
-                        (tendsto_pow_atTop (by norm_num)) tendsto_log_atTop
+                        (tendsto_pow_atTop (by simp)) tendsto_log_atTop
           _ = fun z => z ^ (p-1) := by ext; simp
           _ =Θ[atTop] fun z => p * z ^ (p-1) := by
                       exact IsTheta.const_mul_right hp <| isTheta_refl _ _
@@ -163,7 +163,7 @@ lemma isEquivalent_deriv_rpow_p_mul_one_add_smoothingFn {p : ℝ} (hp : p ≠ 0)
                       rw [isLittleO_const_left]
                       refine Or.inr <| Tendsto.comp tendsto_norm_atTop_atTop ?_
                       exact Tendsto.comp (g := fun z => z ^ 2)
-                        (tendsto_pow_atTop (by norm_num)) tendsto_log_atTop
+                        (tendsto_pow_atTop (by simp)) tendsto_log_atTop
           _ = fun z => z ^ (p-1) := by ext; simp
           _ =Θ[atTop] fun z => p * z ^ (p-1) := by
                       exact IsTheta.const_mul_right hp <| isTheta_refl _ _
@@ -596,7 +596,7 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
             refine mul_nonpos_of_nonpos_of_nonneg ?_ g_pos
             rw [sub_nonpos]
             calc 1 ≤ 2 * (c₁⁻¹ * c₁) * (1/2) := by
-                    rw [inv_mul_cancel₀ (by positivity : c₁ ≠ 0)]; norm_num
+                    rw [inv_mul_cancel₀ (by positivity : c₁ ≠ 0)]; simp
                  _ = (2 * c₁⁻¹) * c₁ * (1/2) := by ring
                  _ ≤ C * c₁ * (1 - ε n) := by gcongr
                                               · rw [hC]; exact le_max_left _ _
