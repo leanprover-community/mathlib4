@@ -58,7 +58,7 @@ theorem mul_left_eq_zero {a b : M₀} (hb : IsUnit b) : a * b = 0 ↔ a = 0 :=
 
 end IsUnit
 
-@[simp]
+@[simp, grind =]
 theorem isUnit_zero_iff : IsUnit (0 : M₀) ↔ (0 : M₀) = 1 :=
   ⟨fun ⟨⟨_, a, (a0 : 0 * a = 1), _⟩, rfl⟩ => by rwa [zero_mul] at a0, fun h =>
     @isUnit_of_subsingleton _ _ (subsingleton_of_zero_eq_one h) 0⟩
@@ -78,10 +78,11 @@ Note that while this is in the `Ring` namespace for brevity, it requires the wea
 noncomputable def inverse : M₀ → M₀ := fun x => if h : IsUnit x then ((h.unit⁻¹ : M₀ˣ) : M₀) else 0
 
 /-- By definition, if `x` is invertible then `inverse x = x⁻¹`. -/
-@[simp]
+@[simp, grind =]
 theorem inverse_unit (u : M₀ˣ) : inverse (u : M₀) = (u⁻¹ : M₀ˣ) := by
   rw [inverse, dif_pos u.isUnit, IsUnit.unit_of_val_units]
 
+@[grind =]
 theorem inverse_of_isUnit {x : M₀} (h : IsUnit x) : inverse x = ((h.unit⁻¹ : M₀ˣ) : M₀) := dif_pos h
 
 /-- By definition, if `x` is not invertible then `inverse x = 0`. -/
@@ -96,6 +97,9 @@ theorem mul_inverse_cancel (x : M₀) (h : IsUnit x) : x * inverse x = 1 := by
 theorem inverse_mul_cancel (x : M₀) (h : IsUnit x) : inverse x * x = 1 := by
   rcases h with ⟨u, rfl⟩
   rw [inverse_unit, Units.inv_mul]
+
+grind_pattern mul_inverse_cancel => inverse x
+grind_pattern inverse_mul_cancel => inverse x
 
 theorem mul_inverse_cancel_right (x y : M₀) (h : IsUnit x) : y * x * inverse x = y := by
   rw [mul_assoc, mul_inverse_cancel x h, mul_one]
@@ -119,11 +123,11 @@ theorem eq_mul_inverse_iff_mul_eq (x y z : M₀) (h : IsUnit z) : x = y * invers
 
 variable (M₀)
 
-@[simp]
+@[simp, grind =]
 theorem inverse_one : inverse (1 : M₀) = 1 :=
   inverse_unit 1
 
-@[simp]
+@[simp, grind =]
 theorem inverse_zero : inverse (0 : M₀) = 0 := by
   nontriviality
   exact inverse_non_unit _ not_isUnit_zero
@@ -138,7 +142,7 @@ theorem IsUnit.ringInverse {a : M₀} : IsUnit a → IsUnit (Ring.inverse a)
 @[deprecated (since := "2025-04-22")] alias IsUnit.ring_inverse := IsUnit.ringInverse
 @[deprecated (since := "2025-04-22")] protected alias Ring.IsUnit.ringInverse := IsUnit.ringInverse
 
-@[simp]
+@[simp, grind =]
 theorem isUnit_ringInverse {a : M₀} : IsUnit (Ring.inverse a) ↔ IsUnit a :=
   ⟨fun h => by
     cases subsingleton_or_nontrivial M₀
@@ -211,7 +215,7 @@ variable [GroupWithZero G₀] {a b c : G₀} {m n : ℕ}
 theorem IsUnit.mk0 (x : G₀) (hx : x ≠ 0) : IsUnit x :=
   (Units.mk0 x hx).isUnit
 
-@[simp]
+@[simp, grind =]
 theorem isUnit_iff_ne_zero : IsUnit a ↔ a ≠ 0 :=
   (Units.exists_iff_ne_zero (p := (· = a))).trans (by simp)
 
