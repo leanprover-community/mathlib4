@@ -614,6 +614,12 @@ lemma aut_inv (ϕ : A₁ ≃ₐ[R] A₁) : ϕ⁻¹ = ϕ.symm := rfl
 @[simp] theorem coe_pow (e : A₁ ≃ₐ[R] A₁) (n : ℕ) : ⇑(e ^ n) = e^[n] :=
   n.rec (by ext; simp) fun _ ih ↦ by ext; simp [pow_succ, ih]
 
+@[simp] lemma apply_inv_self (e : A₁ ≃ₐ[R] A₁) (x : A₁) : e (e⁻¹ x) = x :=
+  e.toEquiv.apply_symm_apply _
+
+@[simp] lemma inv_apply_self (e : A₁ ≃ₐ[R] A₁) (x : A₁) : e⁻¹ (e x) = x :=
+  e.toEquiv.symm_apply_apply _
+
 /-- An algebra isomorphism induces a group isomorphism between automorphism groups.
 
 This is a more bundled version of `AlgEquiv.equivCongr`. -/
