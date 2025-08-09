@@ -20,10 +20,10 @@ import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 
 In the literature, two conventions exist:
 
-1. The `k`ᵗʰ Grassmannian parametrises `k`-dimensional **subspaces** of a given finite dimensional
-   vector space over a field.
-2. The `k`ᵗʰ Grassmannian parametrises **quotients** that are locally free of rank `k`, of a given
-   module over a ring.
+1.  The `k`ᵗʰ Grassmannian parametrises `k`-dimensional **subspaces** of a given finite dimensional
+    vector space over a field.
+2.  The `k`ᵗʰ Grassmannian parametrises **quotients** that are locally free of rank `k`, of a given
+    module over a ring.
 
 For the purposes of Algebraic Geometry, the first definition here cannot be generalised to obtain
 a scheme to represent the functor, which is why the second definition is the one chosen by

@@ -237,7 +237,7 @@ theorem isEmbedding_restrictScalars :
 theorem continuous_restrictScalars :
     Continuous
       (restrictScalars 𝕜' : ContinuousMultilinearMap 𝕜 E F → ContinuousMultilinearMap 𝕜' E F) :=
-   isEmbedding_restrictScalars.continuous
+  isEmbedding_restrictScalars.continuous
 
 variable (𝕜') in
 /-- `ContinuousMultilinearMap.restrictScalars` as a `ContinuousLinearMap`. -/

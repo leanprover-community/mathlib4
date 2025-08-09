@@ -614,11 +614,11 @@ instance [Semiring β] : Semiring (α →ₛ β) :=
 
 instance [NonUnitalRing β] : NonUnitalRing (α →ₛ β) :=
   fast_instance% Function.Injective.nonUnitalRing (fun f => show α → β from f) coe_injective
-   coe_zero coe_add coe_mul coe_neg coe_sub coe_smul coe_smul
+    coe_zero coe_add coe_mul coe_neg coe_sub coe_smul coe_smul
 
 instance [Ring β] : Ring (α →ₛ β) :=
   fast_instance% Function.Injective.ring (fun f => show α → β from f) coe_injective coe_zero
-   coe_one coe_add coe_mul coe_neg coe_sub coe_smul coe_smul coe_pow coe_natCast coe_intCast
+    coe_one coe_add coe_mul coe_neg coe_sub coe_smul coe_smul coe_pow coe_natCast coe_intCast
 
 instance [SMul K γ] [SMul γ β] [SMul K β] [IsScalarTower K γ β] : IsScalarTower K γ (α →ₛ β) where
   smul_assoc _ _ _ := ext fun _ ↦ smul_assoc ..
