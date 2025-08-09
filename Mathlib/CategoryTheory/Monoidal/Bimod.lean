@@ -760,10 +760,7 @@ theorem id_whiskerLeft_bimod {X Y : Mon_ C} {M N : Bimod X Y} (f : M ⟶ N) :
   slice_rhs 5 7 => rw [← Category.assoc, ← coequalizer.condition]
   slice_rhs 3 4 => rw [associator_inv_naturality_left]
   slice_rhs 4 5 => rw [← comp_whiskerRight, Mon_Class.one_mul]
-  have : (λ_ (X.X ⊗ N.X)).inv ≫ (α_ (𝟙_ C) X.X N.X).inv ≫ ((λ_ X.X).hom ▷ N.X) = 𝟙 _ := by
-    monoidal
-  slice_rhs 2 4 => rw [this]
-  slice_rhs 1 2 => rw [Category.comp_id]
+  simp
 
 theorem comp_whiskerLeft_bimod {W X Y Z : Mon_ C} (M : Bimod W X) (N : Bimod X Y)
     {P P' : Bimod Y Z} (f : P ⟶ P') :
@@ -867,9 +864,7 @@ theorem whisker_assoc_bimod {W X Y Z : Mon_ C} (M : Bimod W X) {N N' : Bimod X Y
   dsimp [AssociatorBimod.invAux]
   slice_rhs 2 2 => rw [whiskerLeft_comp]
   slice_rhs 3 5 => rw [id_tensor_π_preserves_coequalizer_inv_desc]
-  slice_rhs 2 3 => rw [associator_inv_naturality_middle]
-  slice_rhs 1 3 => rw [Iso.hom_inv_id_assoc]
-  slice_lhs 1 1 => rw [comp_whiskerRight]
+  simp
 
 theorem whisker_exchange_bimod {X Y Z : Mon_ C} {M N : Bimod X Y} {P Q : Bimod Y Z} (f : M ⟶ N)
     (g : P ⟶ Q) : whiskerLeft M g ≫ whiskerRight f Q =
@@ -880,9 +875,7 @@ theorem whisker_exchange_bimod {X Y Z : Mon_ C} {M N : Bimod X Y} {P Q : Bimod Y
   slice_lhs 1 2 => rw [ι_colimMap, parallelPairHom_app_one]
   slice_lhs 2 3 => rw [ι_colimMap, parallelPairHom_app_one]
   slice_lhs 1 2 => rw [whisker_exchange]
-  slice_rhs 1 2 => rw [ι_colimMap, parallelPairHom_app_one]
-  slice_rhs 2 3 => rw [ι_colimMap, parallelPairHom_app_one]
-  simp only [Category.assoc]
+  simp
 
 theorem pentagon_bimod {V W X Y Z : Mon_ C} (M : Bimod V W) (N : Bimod W X) (P : Bimod X Y)
     (Q : Bimod Y Z) :
