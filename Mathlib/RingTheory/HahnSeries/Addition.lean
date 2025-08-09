@@ -315,6 +315,17 @@ theorem embDomain_add (f : Γ ↪o Γ') (x y : HahnSeries Γ R) :
 
 end Domain
 
+/-- `HahnSeries.trunc` as an additive monoid/group homomorphism. -/
+def truncAddMonoidHom [DecidableLE Γ] (c : Γ) : HahnSeries Γ R →+ HahnSeries Γ R where
+  __ := trunc c
+  map_add' x y := by
+    ext i
+    by_cases h : c ≤ i <;> simp [h]
+
+@[simp]
+theorem truncAddMonoidHom_apply [DecidableLE Γ] (c : Γ) (x : HahnSeries Γ R) :
+  truncAddMonoidHom c x = trunc c x := rfl
+
 end AddMonoid
 
 section AddCommMonoid
@@ -527,6 +538,17 @@ def embDomainLinearMap (f : Γ ↪o Γ') : HahnSeries Γ R →ₗ[R] HahnSeries 
   map_smul' := embDomain_smul f
 
 end Domain
+
+variable (R) in
+/-- `HahnSeries.trunc` as a linear map. -/
+def truncLinearMap [DecidableLE Γ] (c : Γ) : HahnSeries Γ V →ₗ[R] HahnSeries Γ V where
+  __ := truncAddMonoidHom c
+  map_smul' s x := by ext; simp
+
+variable (R) in
+@[simp]
+theorem truncLinearMap_apply [DecidableLE Γ] (c : Γ) (x : HahnSeries Γ V) :
+    truncLinearMap R c x = trunc c x := rfl
 
 end Module
 
