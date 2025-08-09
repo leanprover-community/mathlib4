@@ -95,7 +95,7 @@ noncomputable def ofMatrix : ContinuousSesquilinForm 𝕜 E :=
       let b := Basis.ofVectorSpace 𝕜 E
       have (x : E) : f.toFun x = ∑ i, star (b.equivFun x i) • (f (b i)) := by
         nth_rw 1 [← b.sum_repr x]
-        simp
+        simp [-Basis.sum_repr]
       change Continuous (fun x ↦ f.toFun x)
       simp_rw [this]
       refine continuous_finset_sum _ fun i _ ↦ (continuous_star.comp ?_).smul continuous_const
