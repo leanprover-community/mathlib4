@@ -309,11 +309,11 @@ theorem coe_inj {s t : NonemptyInterval α} : (s : Interval α) = t ↔ s = t :=
 
 protected
 theorem «forall» {p : Interval α → Prop} : (∀ s, p s) ↔ p ⊥ ∧ ∀ s : NonemptyInterval α, p s :=
-  Option.forall
+  WithBot.forall
 
 protected
 theorem «exists» {p : Interval α → Prop} : (∃ s, p s) ↔ p ⊥ ∨ ∃ s : NonemptyInterval α, p s :=
-  Option.exists
+  WithBot.exists
 
 instance [IsEmpty α] : Unique (Interval α) :=
   inferInstanceAs <| Unique (Option _)
@@ -355,7 +355,7 @@ theorem bot_ne_pure {a : α} : ⊥ ≠ pure a :=
   WithBot.bot_ne_coe
 
 instance [Nonempty α] : Nontrivial (Interval α) :=
-  Option.nontrivial
+  WithBot.nontrivial
 
 /-- Pushforward of intervals. -/
 def map (f : α →o β) : Interval α → Interval β :=

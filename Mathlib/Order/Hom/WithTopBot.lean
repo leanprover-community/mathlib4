@@ -147,7 +147,7 @@ protected def withTopMap (f : α ↪o β) : WithTop α ↪o WithTop β :=
 @[simps -fullyApplied]
 protected def withBotCoe : α ↪o WithBot α where
   toFun := .some
-  inj' := Option.some_injective _
+  inj' := WithBot.coe_injective
   map_rel_iff' := WithBot.coe_le_coe
 
 /-- Coercion `α → WithTop α` as an `OrderEmbedding`. -/
@@ -229,7 +229,7 @@ theorem withTop_comp (f : SupHom β γ) (g : SupHom α β) :
 /-- Adjoins a `⊥` to the domain and codomain of a `SupHom`. -/
 @[simps]
 protected def withBot (f : SupHom α β) : SupBotHom (WithBot α) (WithBot β) where
-  toFun := Option.map f
+  toFun := WithBot.map f
   map_sup' a b :=
     match a, b with
     | ⊥, ⊥ => rfl
@@ -278,7 +278,7 @@ variable [SemilatticeInf α] [SemilatticeInf β] [SemilatticeInf γ]
 /-- Adjoins a `⊤` to the domain and codomain of an `InfHom`. -/
 @[simps]
 protected def withTop (f : InfHom α β) : InfTopHom (WithTop α) (WithTop β) where
-  toFun := Option.map f
+  toFun := WithTop.map f
   map_inf' a b :=
     match a, b with
     | ⊤, ⊤ => rfl
@@ -298,7 +298,7 @@ theorem withTop_comp (f : InfHom β γ) (g : InfHom α β) :
 /-- Adjoins a `⊥` to the domain and codomain of an `InfHom`. -/
 @[simps]
 protected def withBot (f : InfHom α β) : InfHom (WithBot α) (WithBot β) where
-  toFun := Option.map f
+  toFun := WithBot.map f
   map_inf' a b :=
     match a, b with
     | ⊥, ⊥ => rfl
