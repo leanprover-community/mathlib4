@@ -342,6 +342,18 @@ protected theorem smul_const {𝕜} [TopologicalSpace 𝕜] [SMul 𝕜 β] [Cont
 
 end Arithmetic
 
+section Star
+
+protected theorem _root_.Filter.EventuallyEq.star {R : Type*} [Star R] {f g : α → R} {l : Filter α}
+    (h : f =ᶠ[l] g) : (fun x ↦ star (f x)) =ᶠ[l] fun x ↦ star (g x) :=
+  h.fun_comp Star.star
+
+protected theorem star {R : Type*} [TopologicalSpace R] [Star R] [ContinuousStar R] {f : α → R}
+    (hf : AEStronglyMeasurable f μ) : AEStronglyMeasurable (star f) μ :=
+  ⟨star (hf.mk f), hf.stronglyMeasurable_mk.star, hf.ae_eq_mk.star⟩
+
+end Star
+
 section Order
 
 @[fun_prop, aesop safe 20 apply (rule_sets := [Measurable])]
