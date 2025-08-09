@@ -183,9 +183,7 @@ theorem natDegree_iterate_derivative (p : R[X]) (k : ℕ) :
     (derivative^[k] p).natDegree ≤ p.natDegree - k := by
   induction k with
   | zero => rw [Function.iterate_zero_apply, Nat.sub_zero]
-  | succ d hd =>
-      rw [Function.iterate_succ_apply', Nat.sub_succ']
-      exact (natDegree_derivative_le _).trans <| Nat.sub_le_sub_right hd 1
+  | succ d hd => grw [Function.iterate_succ_apply', natDegree_derivative_le, hd, Nat.sub_add_eq]
 
 @[simp]
 theorem derivative_natCast {n : ℕ} : derivative (n : R[X]) = 0 := by
