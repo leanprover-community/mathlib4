@@ -141,6 +141,7 @@ theorem ExistsUnique.unique₂ {p : α → Sort*} [∀ x, Subsingleton (p x)]
   simp only [existsUnique_iff_exists] at h
   exact h.unique ⟨hpy₁, hqy₁⟩ ⟨hpy₂, hqy₂⟩
 
+/-- This invokes the two `Decidable` arguments $O(n)$ times. -/
 instance List.decidableBExistsUnique {α : Type*} [DecidableEq α] (p : α → Prop) [DecidablePred p] :
     (l : List α) → Decidable (∃! x, x ∈ l ∧ p x)
   | [] => .isFalse <| by simp
