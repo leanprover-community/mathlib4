@@ -220,8 +220,8 @@ theorem idealX_span : (idealX K).asIdeal = Ideal.span {X} := rfl
 
 @[simp]
 theorem valuation_X_eq_neg_one :
-    (idealX K).valuation (RatFunc K) RatFunc.X = Multiplicative.ofAdd (-1 : ℤ) := by
-  rw [← RatFunc.algebraMap_X, valuation_of_algebraMap, intValuation_singleton]
+    (idealX K).valuation (RatFunc K) RatFunc.X = WithZero.exp (-1 : ℤ) := by
+  rw [← RatFunc.algebraMap_X, valuation_of_algebraMap, intValuation_singleton, WithZero.exp]
   · exact Polynomial.X_ne_zero
   · exact idealX_span K
 

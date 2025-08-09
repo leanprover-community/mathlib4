@@ -224,8 +224,8 @@ lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X :=
   · intro w
     simp only [U]
     split_ifs with hw
-    · exact Valued.isOpen_closedball _ z0.ne'
-    · refine Valued.isOpen_sphere _ ?_
+    · exact Valued.isOpen_closedBall' ⟨a, a0.ne', ha.le⟩
+    · refine Valued.isOpen_sphere ?_
       push_neg at hw
       refine (hw.trans' ?_).ne'
       simp [z0]

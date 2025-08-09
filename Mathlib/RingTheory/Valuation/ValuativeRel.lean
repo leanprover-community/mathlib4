@@ -100,6 +100,15 @@ namespace ValuativeRel
 
 variable {R : Type*} [CommRing R] [ValuativeRel R]
 
+/-- The strict version of the valuative relation. -/
+def rel_lt (x y : R) : Prop := x ≤ᵥ y ∧ ¬ y ≤ᵥ x
+
+@[inherit_doc] infix:50 " <ᵥ " => ValuativeRel.rel_lt
+
+macro_rules | `($a <ᵥ $b) => `(binrel% ValuativeRel.rel_lt $a $b)
+
+lemma rel_lt_iff (x y : R) : x <ᵥ y ↔ x ≤ᵥ y ∧ ¬ y ≤ᵥ x := Iff.rfl
+
 @[simp]
 lemma rel_refl (x : R) : x ≤ᵥ x := by
   cases rel_total x x <;> assumption
@@ -151,6 +160,14 @@ def posSubmonoid : Submonoid R where
 lemma posSubmonoid_def (x : R) : x ∈ posSubmonoid R ↔ ¬ x ≤ᵥ 0 := Iff.refl _
 
 @[simp]
+lemma val_posSubmonoid_ne_zero (x : posSubmonoid R) :
+    (x : R) ≠ 0 := by
+  have := x.prop
+  rw [posSubmonoid_def] at this
+  contrapose! this
+  simp [this]
+
+@[simp]
 lemma right_cancel_posSubmonoid (x y : R) (u : posSubmonoid R) :
     x * u ≤ᵥ y * u ↔ x ≤ᵥ y := ⟨rel_mul_cancel u.prop, rel_mul_right _⟩
 
@@ -158,14 +175,6 @@ lemma right_cancel_posSubmonoid (x y : R) (u : posSubmonoid R) :
 lemma left_cancel_posSubmonoid (x y : R) (u : posSubmonoid R) :
     u * x ≤ᵥ u * y ↔ x ≤ᵥ y := by
   simp only [← right_cancel_posSubmonoid x y u, mul_comm]
-
-@[simp]
-lemma val_posSubmonoid_ne_zero (x : posSubmonoid R) :
-    (x : R) ≠ 0 := by
-  have := x.prop
-  rw [posSubmonoid_def] at this
-  contrapose! this
-  simp [this]
 
 variable (R) in
 /-- The setoid used to construct `ValueGroupWithZero R`. -/
@@ -420,8 +429,7 @@ instance : LinearOrder (ValueGroupWithZero R) where
 
 @[simp]
 theorem ValueGroupWithZero.mk_lt_mk (x y : R) (t s : posSubmonoid R) :
-    ValueGroupWithZero.mk x t < ValueGroupWithZero.mk y s ↔
-      x * s ≤ᵥ y * t ∧ ¬ y * t ≤ᵥ x * s :=
+    ValueGroupWithZero.mk x t < ValueGroupWithZero.mk y s ↔ x * s <ᵥ y * t :=
   Iff.rfl
 
 instance : Bot (ValueGroupWithZero R) where
@@ -495,13 +503,6 @@ def valuation : Valuation R (ValueGroupWithZero R) where
 instance : (valuation R).Compatible where
   rel_iff_le _ _ := by simp [valuation]
 
-@[simp]
-lemma ValueGroupWithZero.lift_valuation {α : Sort*} (f : R → posSubmonoid R → α)
-    (hf : ∀ (x y : R) (t s : posSubmonoid R), x * t ≤ᵥ y * s → y * s ≤ᵥ x * t → f x s = f y t)
-    (x : R) :
-    ValueGroupWithZero.lift f hf (valuation R x) = f x 1 :=
-  rfl
-
 lemma valuation_eq_zero_iff {x : R} :
     valuation R x = 0 ↔ x ≤ᵥ 0 :=
   ValueGroupWithZero.mk_eq_zero _ _
@@ -510,6 +511,13 @@ lemma valuation_posSubmonoid_ne_zero (x : posSubmonoid R) :
     valuation R (x : R) ≠ 0 := by
   rw [ne_eq, valuation_eq_zero_iff]
   exact x.prop
+
+@[simp]
+lemma ValueGroupWithZero.lift_valuation {α : Sort*} (f : R → posSubmonoid R → α)
+    (hf : ∀ (x y : R) (t s : posSubmonoid R), x * t ≤ᵥ y * s → y * s ≤ᵥ x * t → f x s = f y t)
+    (x : R) :
+    ValueGroupWithZero.lift f hf (valuation R x) = f x 1 :=
+  rfl
 
 lemma ValueGroupWithZero.mk_eq_div (r : R) (s : posSubmonoid R) :
     ValueGroupWithZero.mk r s = valuation R r / valuation R (s : R) := by
@@ -550,6 +558,11 @@ lemma isEquiv {Γ₁ Γ₂ : Type*}
     v₁.IsEquiv v₂ := by
   intro x y
   simp_rw [← Valuation.Compatible.rel_iff_le]
+
+lemma _root_.Valuation.Compatible.rel_lt_iff_lt {Γ₀ : Type*}
+    [LinearOrderedCommMonoidWithZero Γ₀] {v : Valuation R Γ₀} [v.Compatible] {x y : R} :
+    x <ᵥ y ↔ v x < v y := by
+  simp [lt_iff_le_not_ge, ← Valuation.Compatible.rel_iff_le, rel_lt_iff]
 
 @[simp]
 lemma _root_.Valuation.apply_posSubmonoid_ne_zero {Γ : Type*} [LinearOrderedCommMonoidWithZero Γ]
