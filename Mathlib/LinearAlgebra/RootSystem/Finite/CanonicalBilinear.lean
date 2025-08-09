@@ -131,7 +131,7 @@ lemma ker_copolarization_eq_ker_corootForm :
 
 lemma rootForm_symmetric :
     LinearMap.IsSymm P.RootForm := by
-  simp [LinearMap.IsSymm, mul_comm, rootForm_apply_apply]
+  simp [LinearMap.isSymm_def, mul_comm, rootForm_apply_apply]
 
 @[simp]
 lemma rootForm_reflection_reflection_apply (i : ι) (x y : M) :
@@ -307,7 +307,7 @@ lemma four_smul_rootForm_sq_eq_coxeterWeight_smul (i j : ι) :
   have hji : 2 • (P.RootForm (P.root i)) (P.root j) =
       P.toPerfectPairing (P.root i) (2 • P.Polarization (P.root j)) := by
     rw [show (P.RootForm (P.root i)) (P.root j) = (P.RootForm (P.root j)) (P.root i) by
-      apply rootForm_symmetric, ← toPerfectPairing_apply_apply_Polarization,
+      apply (rootForm_symmetric P).eq, ← toPerfectPairing_apply_apply_Polarization,
       LinearMap.map_smul_of_tower]
   rw [sq, nsmul_eq_mul, ← mul_assoc, ← nsmul_eq_mul, hij, ← rootForm_self_smul_coroot,
     smul_mul_assoc 2, ← mul_smul_comm, hji, ← rootForm_self_smul_coroot, map_smul, ← pairing,
