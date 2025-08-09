@@ -141,10 +141,23 @@ theorem ExistsUnique.unique₂ {p : α → Sort*} [∀ x, Subsingleton (p x)]
   simp only [existsUnique_iff_exists] at h
   exact h.unique ⟨hpy₁, hqy₁⟩ ⟨hpy₂, hqy₂⟩
 
-instance List.decidableBExU {α : Type*} [DecidableEq α] (p : α → Prop) [DecidablePred p]
-    (l : List α) :
-    Decidable (∃! x, x ∈ l ∧ p x) :=
-  decidable_of_iff (∃ y ∈ l, ∀ x ∈ l, p x ↔ x = y) ⟨
-    fun ⟨x, hx, h⟩ ↦ ⟨x, ⟨hx, (h x hx).mpr rfl⟩, fun y hy ↦ (h y hy.1).mp hy.2⟩,
-    fun ⟨y, hy, h⟩ ↦ ⟨y, hy.1, fun x hx ↦ ⟨(h x ⟨hx, ·⟩), (· ▸ hy.2)⟩⟩
-  ⟩
+instance List.decidableBExistUnique {α : Type*} [DecidableEq α] (p : α → Prop) [DecidablePred p] :
+    (l : List α) → Decidable (∃! x, x ∈ l ∧ p x)
+  | [] => .isFalse <| by simp
+  | x :: xs =>
+    if hx : p x then
+      decidable_of_iff (∀ y ∈ xs, p y → x = y) (by
+        refine ⟨fun h ↦ ⟨x, ⟨⟨mem_cons_self, hx⟩, fun y hy ↦ ?_⟩⟩, fun ⟨z, h⟩ y hy hp ↦ ?_⟩
+        · rcases List.eq_or_mem_of_mem_cons hy.1 with (rfl | hxs)
+          · rfl
+          · exact (h y hxs hy.2).symm
+        · exact (h.2 x ⟨mem_cons_self, hx⟩).trans (h.2 y ⟨mem_cons_of_mem x hy, hp⟩).symm)
+    else
+      letI := List.decidableBExistUnique p xs
+      decidable_of_iff (∃! x, x ∈ xs ∧ p x) (by
+        refine ⟨fun ⟨z, h⟩ ↦ ⟨z, ⟨mem_cons_of_mem x h.1.1, h.1.2⟩, fun y hy ↦ h.2 y ⟨?_, hy.2⟩⟩,
+          fun ⟨z, hy, h⟩ ↦ ⟨z, ⟨?_, hy.2⟩, fun y hy ↦ h y ⟨mem_cons_of_mem x hy.1, hy.2⟩⟩⟩
+        all_goals
+          rcases List.eq_or_mem_of_mem_cons hy.1 with (rfl | hxs)
+          · exact hx.elim hy.2
+          · exact hxs)
