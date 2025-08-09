@@ -27,6 +27,7 @@ objects, and we provide a translation of the main constrcutions on augmented (co
 
 open CategoryTheory
 
+set_option linter.style.indentation false in -- TODO: disable on deriving indentation
 /-- The `AugmentedSimplexCategory` is the category obtained from `SimplexCategory` by adjoining an
 initial object. -/
 def AugmentedSimplexCategory := WithInitial SimplexCategory

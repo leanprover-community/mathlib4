@@ -241,6 +241,7 @@ macro "frac_tac" : tactic => `(tactic|
       add_comm, add_left_comm, mul_comm, mul_left_comm, sub_eq_add_neg, div_eq_mul_inv,
       add_mul, zero_mul, one_mul, neg_mul, mul_neg, add_neg_cancel])
 
+set_option linter.style.indentation false in -- linter false positive
 /-- Solve equations for `RatFunc K` by applying `RatFunc.induction_on`. -/
 macro "smul_tac" : tactic => `(tactic|
     repeat

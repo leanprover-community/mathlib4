@@ -93,6 +93,7 @@ open Function Set NNReal
 
 variable {α : Type*}
 
+set_option linter.style.indentation false in -- TODO: disable on deriving indentation
 /-- The extended nonnegative real numbers. This is usually denoted [0, ∞],
   and is relevant as the codomain of a measure. -/
 def ENNReal := WithTop ℝ≥0
