@@ -5,7 +5,6 @@ Authors: Kenny Lau
 -/
 
 import Mathlib.Data.Matrix.Reflection
-import Mathlib.Tactic.HaveI
 
 /-!
 # Simprocs for matrices
@@ -70,47 +69,43 @@ def mkMatrixLit {u : Level} {m n : ℕ} {R : Q(Type u)} (M : Matrix (Fin m) (Fin
 
 end Qq
 
-/-- A simproc for terms of the form `Matrix.diagonal _`. -/
-simproc matrix_diagonal (Matrix.diagonal _) := .ofQ fun u α M? ↦ do
-  -- trace[debug] m!"{M?}"
-  -- haveI' : $α =Q Matrix (Fin (OfNat.ofNat $k?)) (Fin (OfNat.ofNat $k?)) $R := ⟨⟩
-  -- let .some _ ← trySynthInstanceQ q(Zero ($R)) | return .continue
-  -- match M? with
+-- Here we adopt the convention that `eM` refers to the matrix expression, and `M` refers to the
+-- matrix of expressions.
+/-- A simproc for terms of the form `Matrix.diagonal ![a₀, a₁, ⋯]`. -/
+simproc matrix_diagonal (Matrix.diagonal _) := .ofQ fun u α eM ↦ do
   let .succ _ := u | return .continue
-  let ~q(@Matrix (Fin (OfNat.ofNat $k?)) (Fin (OfNat.ofNat $k?)) $R) := α | return .continue
-  trace[debug] m!"{R}, {α}, {M?}, {k?}"
-  let ~q(@diagonal (Fin (OfNat.ofNat $k?)) $R $dF $zR $v) := M? | return .continue
-  return .continue
-  -- | _ => return .continue
-  -- let ~q(diagonal $v) := M? | return .continue
-  -- let ~q(@Nat.cast (Matrix (Fin $k) (Fin $k) $R) (@instNatCastOfZero $_ $R $_ $_ $inst) $n) := M? | return .continue
-  -- return .continue
-  -- let ~q(transpose $M?) := MT? | return .continue
-  -- let m := m?.natLit!
-  -- let n := n?.natLit!
-  -- let .some M ← matrixLit! (m := m) (n := n) (R := R) M? | return .continue
-  -- return .visit { expr := mkMatrixLit (Mᵀ), proof? := .some q(Eq.symm (etaExpand_eq $MT?)) }
+  let ~q(Matrix (Fin (OfNat.ofNat $ek)) (Fin (OfNat.ofNat $ek)) $R) := α | return .continue
+  let ~q(@diagonal _ _ _ $zR $ev) := eM | return .continue
+  let .some v ← piFinLit! (n := ek.natLit!) (R := R) ev | return .continue
+  let _ : Zero Q($R) := ⟨q(0)⟩
+  return .visit { expr := mkMatrixLit (diagonal v), proof? := .some q(Eq.symm (etaExpand_eq $eM)) }
 
-set_option trace.debug true
-
-example (n : ℤ) : (diagonal ![37, -1] : Matrix (Fin 2) (Fin 2) ℤ) = !![37, 0; 0, -1] := by
+example : (diagonal ![37, -1] : Matrix (Fin 2) (Fin 2) ℤ) = !![37, 0; 0, -1] := by
   simp
+
+/-
+# TODO: Simplify the examples below
+
+The examples below can be simplified using the appropriate lemmas for diagonal matrices, after using
+another (yet to be written) simproc to expand the constant vectors (e.g. `37 : Fin 2 → α` expands to
+`![37, 37]`).
 
 example {α : Type*} [Zero α] :
     (0 : Matrix (Fin 2) (Fin 2) α) = !![0, 0; 0, 0] := by
-  simp
+  simp [← diagonal_zero]
 
 example {α : Type*} [Zero α] [One α] :
     (1 : Matrix (Fin 2) (Fin 2) α) = !![1, 0; 0, 1] := by
-  simp
+  simp [← diagonal_one]
 
 example {α : Type*} [Zero α] [NatCast α] :
     (37 : Matrix (Fin 2) (Fin 2) α) = !![37, 0; 0, 37] := by
-  simp
+  simp [← diagonal_ofNat]
 
 example {α : Type*} [Zero α] [NatCast α] (n : ℕ) :
     (n : Matrix (Fin 2) (Fin 2) α) = !![(n : α), 0; 0, n] := by
-  simp
+  simp [← diagonal_natCast]
 
-example (n : ℤ) : (n : Matrix (Fin 2) (Fin 2) ℤ) = !![-3, 0; 0, -3] := by
-  simp
+example (n : ℤ) : (n : Matrix (Fin 2) (Fin 2) ℤ) = !![n, 0; 0, n] := by
+  simp [← diagonal_intCast]
+-/
