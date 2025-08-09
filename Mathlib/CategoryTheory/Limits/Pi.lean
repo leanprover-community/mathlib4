@@ -10,10 +10,10 @@ import Mathlib.CategoryTheory.Limits.HasLimits
 # Limits in the category of indexed families of objects.
 
 Given a functor `F : J ⥤ Π i, C i` into a category of indexed families,
-1. we can assemble a collection of cones over `F ⋙ Pi.eval C i` into a cone over `F`
-2. if all those cones are limit cones, the assembled cone is a limit cone, and
-3. if we have limits for each of `F ⋙ Pi.eval C i`, we can produce a
-   `HasLimit F` instance
+1.  we can assemble a collection of cones over `F ⋙ Pi.eval C i` into a cone over `F`
+2.  if all those cones are limit cones, the assembled cone is a limit cone, and
+3.  if we have limits for each of `F ⋙ Pi.eval C i`, we can produce a
+    `HasLimit F` instance
 -/
 
 
