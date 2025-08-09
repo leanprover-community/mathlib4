@@ -853,14 +853,13 @@ lemma eq_toNNRealLinear_toRealPositiveLinear (Λ : C_c(α, ℝ≥0) →ₗ[ℝ�
   ext f
   simp
 
-/-- For a positive linear functional `Λ : C_c(α, ℝ≥0) → ℝ≥0`, define a `ℝ`-linear map. -/
 @[deprecated (since := "2025-08-08")]
 alias toRealLinear := toRealPositiveLinear
 
 @[deprecated (since := "2025-08-08")]
 alias toRealLinear_apply := toRealPositiveLinear_apply
 
-@[deprecated "Use `map_nonneg` instead" (since := "2025-08-08")]
+@[deprecated map_nonneg (since := "2025-08-08")]
 lemma toRealLinear_nonneg (Λ : C_c(α, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0) (g : C_c(α, ℝ)) (hg : 0 ≤ g) :
     0 ≤ toRealPositiveLinear Λ g := map_nonneg _ hg
 

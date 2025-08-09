@@ -48,7 +48,7 @@ lemma CompactlySupportedContinuousMap.monotone_of_nnreal : Monotone Λ := by
   simp
 
 /-- The positivity of a linear functional `Λ` implies that `Λ` is monotone. -/
-@[deprecated "Use `PositiveLinearMap.mk₀` instead" (since := "2025-08-08")]
+@[deprecated PositiveLinearMap.mk₀ (since := "2025-08-08")]
 lemma CompactlySupportedContinuousMap.monotone_of_nonneg {Λ : C_c(X, ℝ) →ₗ[ℝ] ℝ}
     (hΛ : ∀ f, 0 ≤ f → 0 ≤ Λ f) : Monotone Λ :=
   (PositiveLinearMap.mk₀ Λ hΛ).monotone
