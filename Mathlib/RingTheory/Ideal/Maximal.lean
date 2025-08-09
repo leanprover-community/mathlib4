@@ -177,7 +177,7 @@ lemma isPrime_of_maximally_disjoint (I : Ideal α)
   ne_top' := by
     rintro rfl
     have : 1 ∈ (S : Set α) := S.one_mem
-    aesop
+    simp_all
   mem_or_mem' {x y} hxy := by
     by_contra! rid
     have hx := maximally_disjoint (I ⊔ span {x}) (Submodule.lt_sup_iff_notMem.mpr rid.1)

@@ -382,8 +382,8 @@ lemma prod_congr_of_eq_on_inter {ι M : Type*} {s₁ s₂ : Finset ι} {f g : ι
     (h : ∀ a ∈ s₁, a ∈ s₂ → f a = g a) :
     ∏ a ∈ s₁, f a = ∏ a ∈ s₂, g a := by
   classical
-  conv_lhs => rw [← sdiff_union_inter s₁ s₂, prod_union_eq_right (by aesop)]
-  conv_rhs => rw [← sdiff_union_inter s₂ s₁, prod_union_eq_right (by aesop), inter_comm]
+  conv_lhs => rw [← sdiff_union_inter s₁ s₂, prod_union_eq_right (by simp_all)]
+  conv_rhs => rw [← sdiff_union_inter s₂ s₁, prod_union_eq_right (by simp_all), inter_comm]
   exact prod_congr rfl (by simpa)
 
 @[to_additive]

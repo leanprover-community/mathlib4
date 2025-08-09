@@ -254,7 +254,7 @@ theorem le_sdiff_right : x ≤ y \ x ↔ x = ⊥ :=
   ⟨fun h => disjoint_self.1 (disjoint_sdiff_self_right.mono_right h), fun h => h.le.trans bot_le⟩
 
 @[simp] lemma sdiff_eq_right : x \ y = y ↔ x = ⊥ ∧ y = ⊥ := by
-  rw [disjoint_sdiff_self_left.eq_iff]; aesop
+  rw [disjoint_sdiff_self_left.eq_iff]; simp_all
 
 lemma sdiff_ne_right : x \ y ≠ y ↔ x ≠ ⊥ ∨ y ≠ ⊥ := sdiff_eq_right.not.trans not_and_or
 
