@@ -15,9 +15,9 @@ such as splittings and equivalences.
 
 ## Main definitions
 
-- `(Add?)GroupExtension N E G`: structure for extensions of `G` by `N` as short exact sequences
+- `(Add)?GroupExtension N E G`: structure for extensions of `G` by `N` as short exact sequences
   `1 → N → E → G → 1` (`0 → N → E → G → 0` for additive groups)
-- `(Add?)GroupExtension.Equiv S S'`: structure for equivalences of two group extensions `S` and `S'`
+- `(Add)?GroupExtension.Equiv S S'`: structure for equivalences of two group extensions `S` and `S'`
   as specific homomorphisms `E → E'` such that each diagram below is commutative
 
 ```text
@@ -32,22 +32,12 @@ For additive groups:
       ↘︎ E' ↗︎️
 ```
 
-- `(Add?)GroupExtension.Section S`: structure for right inverses to `rightHom` of a group extension
+- `(Add)?GroupExtension.Section S`: structure for right inverses to `rightHom` of a group extension
   `S` of `G` by `N`
-- `(Add?)GroupExtension.Splitting S`: structure for section homomorphisms of a group extension `S`
+- `(Add)?GroupExtension.Splitting S`: structure for section homomorphisms of a group extension `S`
   of `G` by `N`
 - `SemidirectProduct.toGroupExtension φ`: the multiplicative group extension associated to the
   semidirect product coming from `φ : G →* MulAut N`, `1 → N → N ⋊[φ] G → G → 1`
-
-## TODO
-
-If `N` is abelian,
-
-- there is a bijection between `N`-conjugacy classes of
-  `(SemidirectProduct.toGroupExtension φ).Splitting` and `groupCohomology.H1`
-  (which will be available in `GroupTheory/GroupExtension/Abelian.lean` to be added in a later PR).
-- there is a bijection between equivalence classes of group extensions and `groupCohomology.H2`
-  (which is also stated as a TODO in `RepresentationTheory/GroupCohomology/LowDegree.lean`).
 -/
 
 variable (N E G : Type*)
