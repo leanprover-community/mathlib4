@@ -32,10 +32,6 @@ open Set Finite
 
 variable {α : Type*} (F : Set (Set α))
 
-/-- A family of sets $F$ is of finite character iff for every set $X$, $X ∈ F$ iff every finite
-subset of $X$ is in $F$ -/
-def IsOfFiniteCharacter := ∀ x, x ∈ F ↔ ∀ y ⊆ x, y.Finite → y ∈ F
-
 lemma DirectedOn.exists_mem_subset_of_finite_of_subset_sUnion {c : Set (Set α)}
     (cne : c.Nonempty) (cdir : DirectedOn (· ⊆ ·) c) {s : Set α} (sc : s ⊆ sUnion c)
     (sfin : s.Finite) : ∃ t ∈ c, s ⊆ t := by
@@ -48,6 +44,12 @@ lemma IsChain.exists_mem_subset_of_finite_of_subset_sUnion {c : Set (Set α)}
     ∃ t ∈ c, s ⊆ t := DirectedOn.exists_mem_subset_of_finite_of_subset_sUnion
       cne cch.directedOn sc sfin
 
+namespace Order
+
+/-- A family of sets $F$ is of finite character iff for every set $X$, $X ∈ F$ iff every finite
+subset of $X$ is in $F$ -/
+def IsOfFiniteCharacter := ∀ x, x ∈ F ↔ ∀ y ⊆ x, y.Finite → y ∈ F
+
 /-- **Teichmuller-Tukey lemma**. Every nonempty family of finite character has a maximal element. -/
 theorem exists_maximal_of_isOfFiniteCharacter {F} (hF : IsOfFiniteCharacter F) {x : Set α}
     (xF : x ∈ F) : ∃ m, x ⊆ m ∧ Maximal (· ∈ F) m := by
@@ -59,3 +61,5 @@ theorem exists_maximal_of_isOfFiniteCharacter {F} (hF : IsOfFiniteCharacter F) {
   refine (hF (sUnion c)).mpr (fun s sc sfin ↦ ?_)
   obtain ⟨t, tc, st⟩ := cch.exists_mem_subset_of_finite_of_subset_sUnion cne sc sfin
   exact (hF t).mp (cF tc) s st sfin
+
+end Order
