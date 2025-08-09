@@ -104,7 +104,7 @@ instance (priority := 100) toCommRing : CommRing α :=
 end BooleanRing
 
 instance : BooleanRing PUnit :=
-  ⟨fun _ => Subsingleton.elim _ _⟩
+  ⟨fun _ => ⟨Subsingleton.elim _ _⟩⟩
 
 /-! ### Turning a Boolean ring into a Boolean algebra -/
 
@@ -412,7 +412,7 @@ abbrev BooleanAlgebra.toBooleanRing : BooleanRing α where
   one := ⊤
   one_mul := top_inf_eq
   mul_one := inf_top_eq
-  isIdempotentElem := inf_idem
+  isIdempotentElem _ := ⟨inf_idem _⟩
 
 scoped[BooleanRingOfBooleanAlgebra]
   attribute [instance] GeneralizedBooleanAlgebra.toNonUnitalCommRing BooleanAlgebra.toBooleanRing
@@ -531,7 +531,7 @@ instance : BooleanRing Bool where
   mul_one := Bool.and_true
   left_distrib := and_xor_distrib_left
   right_distrib := and_xor_distrib_right
-  isIdempotentElem := Bool.and_self
+  isIdempotentElem _ := ⟨Bool.and_self _⟩
   zero_mul _ := rfl
   mul_zero a := by cases a <;> rfl
   nsmul := nsmulRec
