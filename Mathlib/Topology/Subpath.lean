@@ -54,7 +54,7 @@ theorem subpath_symm (γ : Path a b) (t₀ t₁ : I) : (γ.subpath t₀ t₁).sy
   simp [subpath, add_comm]
 
 @[simp]
-lemma subpath_range₀ (γ : Path a b) (t₀ t₁ : I) (h : t₀ ≤ t₁) :
+lemma subpath_range_of_le (γ : Path a b) (t₀ t₁ : I) (h : t₀ ≤ t₁) :
     range (γ.subpath t₀ t₁) = γ '' (Icc t₀ t₁) := by
   ext z
   constructor
@@ -70,7 +70,7 @@ lemma subpath_range₀ (γ : Path a b) (t₀ t₁ : I) (h : t₀ ≤ t₁) :
     simp [subpath, ← eq_sub_of_add_eq hab, ht]
 
 @[simp]
-lemma subpath_range₁ (γ : Path a b) (t₀ t₁ : I) (h : t₁ ≤ t₀) :
+lemma subpath_range_of_ge (γ : Path a b) (t₀ t₁ : I) (h : t₁ ≤ t₀) :
     range (γ.subpath t₀ t₁) = γ '' (Icc t₁ t₀) := by
   rw [← subpath_symm, symm_range, subpath_range₀ _ _ _ h]
 
@@ -80,9 +80,9 @@ theorem subpath_range (γ : Path a b) (t₀ t₁ : I) :
     range (γ.subpath t₀ t₁) = γ '' (uIcc t₀ t₁) := by
   rcases le_total t₀ t₁ with h | h
   · rw [uIcc_of_le h]
-    exact subpath_range₀ _ _ _ h
+    exact subpath_range_of_le _ _ _ h
   · rw [uIcc_of_ge h]
-    exact subpath_range₁ _ _ _ h
+    exact subpath_range_of_ge _ _ _ h
 
 /-- The subpath of `γ` from `t` to `t` is just the constant path at `γ t`. -/
 @[simp]
