@@ -496,7 +496,7 @@ theorem restrict_iUnion_le [Countable ι] {s : ι → Set α} :
     μ.restrict (⋃ i, s i) ≤ sum fun i => μ.restrict (s i) :=
   le_iff.2 fun t ht ↦ by simpa [ht, inter_iUnion] using measure_iUnion_le (t ∩ s ·)
 
-theorem restrict_biUnion_le {s : ι → Set α} {T : Set ι} (hT : T.Countable) :
+theorem restrict_biUnion_le {s : ι → Set α} {T : Set ι} (hT : Countable T) :
     μ.restrict (⋃ i ∈ T, s i) ≤ sum fun (i : T) => μ.restrict (s i) :=
   le_iff.2 fun t ht ↦ by simpa [ht, inter_iUnion] using measure_biUnion_le μ hT (t ∩ s ·)
 
@@ -1089,7 +1089,7 @@ lemma MeasureTheory.Measure.sum_restrict_le {_ : MeasurableSpace α}
       rw [← smul_sum, this, μ.restrict_iUnion _ fun C ↦ P_meas _ C.coe_prop,
         Measure.sum_coe_finset (μ := (μ.restrict <| P ·)), finset_sum_apply]
       have C_subset_C {C₁ C₂ : Cs} {x : α} (hx : x ∈ P C₁.val ∩ P C₂.val) : C₁.val ⊆ C₂.val :=
-        have {i : ι} (h : i ∈ C₁.val) : i ∈ F := mem_powerset.mp (sdiff_subset C₁.coe_prop) h
+        have {i : ι} (hi : i ∈ C₁.val) : i ∈ F := mem_powerset.mp (sdiff_subset C₁.coe_prop) hi
         fun i hi ↦ mem_C (this hi) hx.2 <| P_subset_s (this hi) hi hx.1
       refine fun C₁ C₂ hC ↦ Set.disjoint_iff.mpr fun x hx ↦ hC <| Subtype.eq ?_
       exact subset_antisymm (C_subset_C hx) (C_subset_C (Set.inter_comm _ _ ▸ hx))
