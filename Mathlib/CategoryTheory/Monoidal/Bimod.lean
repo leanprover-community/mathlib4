@@ -762,8 +762,7 @@ theorem id_whiskerLeft_bimod {X Y : Mon_ C} {M N : Bimod X Y} (f : M ⟶ N) :
   slice_rhs 4 5 => rw [← comp_whiskerRight, Mon_Class.one_mul]
   have : (λ_ (X.X ⊗ N.X)).inv ≫ (α_ (𝟙_ C) X.X N.X).inv ≫ ((λ_ X.X).hom ▷ N.X) = 𝟙 _ := by
     monoidal
-  slice_rhs 2 4 => rw [this]
-  slice_rhs 1 2 => rw [Category.comp_id]
+  grind
 
 theorem comp_whiskerLeft_bimod {W X Y Z : Mon_ C} (M : Bimod W X) (N : Bimod X Y)
     {P P' : Bimod Y Z} (f : P ⟶ P') :
