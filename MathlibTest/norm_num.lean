@@ -570,6 +570,13 @@ example : 3 ^ 3 + 4 = 31 := by
   guard_target =ₛ 3 ^ 3 + 4 = 31
   rfl
 
+set_option linter.unusedTactic false in
+set_option linter.unusedVariables false in
+example {a b : ℚ} (h : a = b) : True := by
+  norm_num [*] at h
+  guard_hyp h : a = b
+  exact trivial
+
 /- Check that the scoping above works: -/
 example : 3 ^ 3 + 4 = 31 := by norm_num1
 
