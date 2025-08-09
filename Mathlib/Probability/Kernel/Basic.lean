@@ -413,5 +413,35 @@ lemma exists_ae_eq_isMarkovKernel {μ : Measure α}
     · simpa [hb, piecewise] using hs _ ha
     · simpa [hb, piecewise] using hs _ hb
 
+section Bool
+
+variable {μ ν : Measure α}
+
+/-- The kernel from `Bool` that sends `false` to `μ` and `true` to `ν`. -/
+def boolKernel (μ ν : Measure α) : Kernel Bool α where
+  toFun := fun b ↦ if b then ν else μ
+  measurable' := .of_discrete
+
+@[simp] lemma boolKernel_false : boolKernel μ ν false = μ := rfl
+
+@[simp] lemma boolKernel_true : boolKernel μ ν true = ν := rfl
+
+@[simp] lemma boolKernel_apply (b : Bool) : boolKernel μ ν b = if b then ν else μ := rfl
+
+instance [IsFiniteMeasure μ] [IsFiniteMeasure ν] : IsFiniteKernel (boolKernel μ ν) :=
+  ⟨max (μ .univ) (ν .univ), max_lt (measure_lt_top _ _) (measure_lt_top _ _),
+    fun b ↦ by cases b <;> simp⟩
+
+instance [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] : IsMarkovKernel (boolKernel μ ν) where
+  isProbabilityMeasure b := by
+    cases b
+      <;> simp only [boolKernel_apply, Bool.false_eq_true, ↓reduceIte]
+      <;> infer_instance
+
+lemma eq_boolKernel (κ : Kernel Bool α) : κ = boolKernel (κ false) (κ true) := by
+  ext (_ | _) <;> simp
+
+end Bool
+
 end Kernel
 end ProbabilityTheory
