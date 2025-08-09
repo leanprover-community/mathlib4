@@ -6,6 +6,11 @@ Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Kim Morrison, Apurva Na
 import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.SetTheory.PGame.Algebra
 import Mathlib.Tactic.Abel
+import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.Game.Basic` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 # Combinatorial games.

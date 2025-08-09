@@ -6,6 +6,11 @@ Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Kim Morrison, Yuyang Zh
 import Mathlib.Logic.Small.Defs
 import Mathlib.Order.GameAdd
 import Mathlib.SetTheory.PGame.Basic
+import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.Game.IGame` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 # Order properties of pregames
