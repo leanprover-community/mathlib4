@@ -196,7 +196,7 @@ instance : SplitEpiCategory NonemptyFinLinOrd.{u} :=
       have H : f (φ b) ≤ f (φ a) := f.hom.monotone (le_of_lt h)
       simpa only [hφ] using H⟩
 
-instance : HasStrongEpiMonoFactorisations NonemptyFinLinOrd.{u} :=
+instance : HasStrongEpiMonoFactorizations NonemptyFinLinOrd.{u} :=
   ⟨fun {X Y} f => by
     let I := of (Set.image f ⊤)
     let e : X ⟶ I := ofHom ⟨fun x => ⟨f x, ⟨x, by tauto⟩⟩, fun x₁ x₂ h => f.hom.monotone h⟩
