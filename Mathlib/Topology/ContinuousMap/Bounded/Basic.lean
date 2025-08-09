@@ -156,7 +156,7 @@ theorem dist_le_iff_of_nonempty [Nonempty α] : dist f g ≤ C ↔ ∀ x, dist (
 
 theorem dist_lt_of_nonempty_compact [Nonempty α] [CompactSpace α]
     (w : ∀ x : α, dist (f x) (g x) < C) : dist f g < C := by
-  have c : Continuous fun x => dist (f x) (g x) := by continuity
+  have c : Continuous fun x => dist (f x) (g x) := by fun_prop
   obtain ⟨x, -, le⟩ :=
     IsCompact.exists_isMaxOn isCompact_univ Set.univ_nonempty (Continuous.continuousOn c)
   exact lt_of_le_of_lt (dist_le_iff_of_nonempty.mpr fun y => le trivial) (w x)
