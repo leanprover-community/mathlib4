@@ -6,6 +6,7 @@ Authors: Kexing Ying, Kevin Buzzard, Yury Kudryashov
 import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.Group.FiniteSupport
+import Mathlib.Algebra.Group.Support
 import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Ring.Defs
@@ -80,7 +81,6 @@ open Function Set
 ### Definition and relation to `Finset.sum` and `Finset.prod`
 -/
 
--- Porting note: Used to be section Sort
 section sort
 
 variable {G M N : Type*} {α β ι : Sort*} [CommMonoid M] [CommMonoid N]
@@ -316,7 +316,6 @@ theorem finprod_inv_distrib [DivisionCommMonoid G] (f : α → G) : (∏ᶠ x, (
 
 end sort
 
--- Porting note: Used to be section Type
 section type
 
 variable {α β ι G M N : Type*} [CommMonoid M] [CommMonoid N]
@@ -409,7 +408,7 @@ theorem finprod_cond_ne (f : α → M) (a : α) [DecidableEq α] (hf : (mulSuppo
   apply finprod_cond_eq_prod_of_cond_iff
   intro x hx
   rw [Finset.mem_erase, Finite.mem_toFinset, mem_mulSupport]
-  exact ⟨fun h => And.intro h hx, fun h => h.1⟩
+  grind
 
 @[to_additive]
 theorem finprod_mem_eq_prod_of_inter_mulSupport_eq (f : α → M) {s : Set α} {t : Finset α}
@@ -545,7 +544,7 @@ equals the product of `f i` divided by the product of `g i`. -/
       equals the sum of `f i` minus the sum of `g i`."]
 theorem finprod_div_distrib [DivisionCommMonoid G] {f g : α → G} (hf : (mulSupport f).Finite)
     (hg : (mulSupport g).Finite) : ∏ᶠ i, f i / g i = (∏ᶠ i, f i) / ∏ᶠ i, g i := by
-  simp only [div_eq_mul_inv, finprod_mul_distrib hf ((mulSupport_inv g).symm.rec hg),
+  simp only [div_eq_mul_inv, finprod_mul_distrib hf ((mulSupport_fun_inv g).symm.rec hg),
     finprod_inv_distrib]
 
 /-- A more general version of `finprod_mem_mul_distrib` that only requires `s ∩ mulSupport f` and
@@ -949,7 +948,7 @@ theorem finprod_mem_sUnion {t : Set (Set α)} (h : t.PairwiseDisjoint id) (ht₀
 lemma finprod_option {f : Option α → M} (hf : (mulSupport (f ∘ some)).Finite) :
     ∏ᶠ o, f o = f none * ∏ᶠ a, f (some a) := by
   replace hf : (mulSupport f).Finite := by simpa [finite_option]
-  convert finprod_mem_insert' f (show none ∉ Set.range Option.some by aesop)
+  convert finprod_mem_insert' f (show none ∉ Set.range Option.some by simp)
     (hf.subset inter_subset_right)
   · simp
   · rw [finprod_mem_range]
@@ -978,7 +977,7 @@ theorem mul_finprod_cond_ne (a : α) (hf : (mulSupport f).Finite) :
     have h : ∀ x : α, f x ≠ 1 → (x ≠ a ↔ x ∈ hf.toFinset \ {a}) := by
       intro x hx
       rw [Finset.mem_sdiff, Finset.mem_singleton, Finite.mem_toFinset, mem_mulSupport]
-      exact ⟨fun h => And.intro hx h, fun h => h.2⟩
+      grind
     rw [finprod_cond_eq_prod_of_cond_iff f (fun hx => h _ hx), Finset.sdiff_singleton_eq_erase]
     by_cases ha : a ∈ mulSupport f
     · apply Finset.mul_prod_erase _ _ ((Finite.mem_toFinset _).mpr ha)

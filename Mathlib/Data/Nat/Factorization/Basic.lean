@@ -244,7 +244,7 @@ theorem dvd_iff_div_factorization_eq_tsub {d n : ℕ} (hd : d ≠ 0) (hdn : d �
   by_contra h2
   obtain ⟨p, hp⟩ := exists_factorization_lt_of_lt (mul_ne_zero h1 hd) (not_le.mp h2)
   rwa [factorization_mul h1 hd, add_apply, ← lt_tsub_iff_right, h, tsub_apply,
-   lt_self_iff_false] at hp
+    lt_self_iff_false] at hp
 
 theorem ordProj_dvd_ordProj_of_dvd {a b : ℕ} (hb0 : b ≠ 0) (hab : a ∣ b) (p : ℕ) :
     ordProj[p] a ∣ ordProj[p] b := by
@@ -252,12 +252,6 @@ theorem ordProj_dvd_ordProj_of_dvd {a b : ℕ} (hb0 : b ≠ 0) (hab : a ∣ b) (
   rcases eq_or_ne a 0 with (rfl | ha0); · simp
   rw [pow_dvd_pow_iff_le_right pp.one_lt]
   exact (factorization_le_iff_dvd ha0 hb0).2 hab p
-
-@[deprecated (since := "2024-10-24")]
-alias ord_proj_dvd_ord_proj_of_dvd := ordProj_dvd_ordProj_of_dvd
-
-@[deprecated (since := "2024-10-24")]
-alias ord_proj_dvd_ord_proj_iff_dvd := ordProj_dvd_ordProj_iff_dvd
 
 theorem ordCompl_dvd_ordCompl_of_dvd {a b : ℕ} (hab : a ∣ b) (p : ℕ) :
     ordCompl[p] a ∣ ordCompl[p] b := by
@@ -276,9 +270,6 @@ theorem ordCompl_dvd_ordCompl_of_dvd {a b : ℕ} (hab : a ∣ b) (p : ℕ) :
   simp_rw [erase_ne hqp]
   exact (factorization_le_iff_dvd ha0 hb0).2 hab q
 
-@[deprecated (since := "2024-10-24")]
-alias ord_compl_dvd_ord_compl_of_dvd := ordCompl_dvd_ordCompl_of_dvd
-
 theorem ordCompl_dvd_ordCompl_iff_dvd (a b : ℕ) :
     (∀ p : ℕ, ordCompl[p] a ∣ ordCompl[p] b) ↔ a ∣ b := by
   refine ⟨fun h => ?_, fun hab p => ordCompl_dvd_ordCompl_of_dvd hab p⟩
@@ -291,9 +282,6 @@ theorem ordCompl_dvd_ordCompl_iff_dvd (a b : ℕ) :
   apply pa.ne_one
   rw [← Nat.dvd_one, ← Nat.mul_dvd_mul_iff_left hb0.bot_lt, mul_one]
   simpa [Prime.factorization_self pb, Prime.factorization pa, hab] using h b
-
-@[deprecated (since := "2024-10-24")]
-alias ord_compl_dvd_ord_compl_iff_dvd := ordCompl_dvd_ordCompl_iff_dvd
 
 theorem dvd_iff_prime_pow_dvd_dvd (n d : ℕ) :
     d ∣ n ↔ ∀ p k : ℕ, Prime p → p ^ k ∣ d → p ^ k ∣ n := by
