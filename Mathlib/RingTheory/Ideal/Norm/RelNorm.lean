@@ -3,10 +3,7 @@ Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Alex J. Best
 -/
-import Mathlib.LinearAlgebra.FreeModule.PID
-import Mathlib.RingTheory.DedekindDomain.PID
 import Mathlib.RingTheory.DedekindDomain.Instances
-import Mathlib.RingTheory.Localization.NormTrace
 import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
 
 /-!
@@ -177,10 +174,9 @@ theorem spanNorm_mul_of_bot_or_top (eq_bot_or_top : ∀ I : Ideal R, I = ⊥ ∨
   rw [hJ]
   exact le_top
 
-variable [IsDedekindDomain R] [IsDedekindDomain S]
-
 /-- Multiplicativity of `Ideal.spanNorm`. simp-normal form is `map_mul (Ideal.relNorm R)`. -/
-theorem spanNorm_mul (I J : Ideal S) : spanNorm R (I * J) = spanNorm R I * spanNorm R J := by
+theorem spanNorm_mul [IsDedekindDomain R] [IsDedekindDomain S] (I J : Ideal S) :
+    spanNorm R (I * J) = spanNorm R I * spanNorm R J := by
   nontriviality R
   cases subsingleton_or_nontrivial S
   · have : ∀ I : Ideal S, I = ⊤ := fun I ↦ Subsingleton.elim I ⊤
@@ -198,6 +194,85 @@ theorem spanNorm_mul (I J : Ideal S) : spanNorm R (I * J) = spanNorm R I * spanN
   rw [← (I.map _).span_singleton_generator, ← (J.map _).span_singleton_generator,
     span_singleton_mul_span_singleton, spanNorm_singleton, spanNorm_singleton,
     spanNorm_singleton, span_singleton_mul_span_singleton, map_mul]
+
+section spanNorm_spanNorm
+
+variable (T : Type*) [CommRing T] [IsDomain T] [IsIntegrallyClosed T] [Algebra R T] [Algebra T S]
+  [Module.Finite R T] [Module.Finite T S] [NoZeroSMulDivisors R T] [NoZeroSMulDivisors T S]
+  [IsScalarTower R T S] [Algebra.IsSeparable (FractionRing R) (FractionRing T)]
+  [Algebra.IsSeparable (FractionRing T) (FractionRing S)]
+
+open _root_.Algebra
+
+theorem le_spanNorm_spanNorm (I : Ideal S) : spanNorm R I ≤ spanNorm R (spanNorm T I) := by
+  simp_rw [spanNorm, map]
+  refine span_mono ?_
+  rintro _ ⟨x, hx, rfl⟩
+  exact ⟨intNorm T S x, subset_span <| Set.mem_image_of_mem _ hx, by rw [intNorm_intNorm]⟩
+
+/--
+This condition `eq_bot_or_top` is equivalent to being a field. However,
+`Ideal.spanNorm_spanNorm_of_field` would be harder to apply since we'd need to upgrade
+a `CommRing R` instance to a `Field R` instance.
+-/
+theorem spanNorm_spanNorm_of_bot_or_top (eq_bot_or_top : ∀ I : Ideal R, I = ⊥ ∨ I = ⊤)
+    (I : Ideal S) : spanNorm R (spanNorm T I) = spanNorm R I := by
+  obtain h | h := eq_bot_or_top (spanNorm R I)
+  · rw [h, spanNorm_eq_bot_iff, spanNorm_eq_bot_iff, spanNorm_eq_bot_iff.mp h]
+  · exact h ▸ (eq_top_iff_one _).mpr <| le_spanNorm_spanNorm R T I <| (eq_top_iff_one _).mp h
+
+theorem spanNorm_spanNorm [IsDedekindDomain R] [IsDedekindDomain T] [IsDedekindDomain S]
+    (I : Ideal S) : spanNorm R (spanNorm T I) = spanNorm R I := by
+  refine eq_of_localization_maximal fun P hP ↦ ?_
+  by_cases hP : P = ⊥
+  · subst hP
+    rw [spanNorm_spanNorm_of_bot_or_top]
+    exact fun I ↦ or_iff_not_imp_right.mpr fun hI ↦ (hP.eq_of_le hI bot_le).symm
+  let Mₜ := Algebra.algebraMapSubmonoid T P.primeCompl
+  let Mₛ := Algebra.algebraMapSubmonoid S P.primeCompl
+  let Rₚ := Localization.AtPrime P
+  let Tₚ := Localization Mₜ
+  let Sₚ := Localization Mₛ
+  have h : Mₜ ≤ T⁰ :=
+    algebraMapSubmonoid_le_nonZeroDivisors_of_faithfulSMul _ (primeCompl_le_nonZeroDivisors P)
+  -- We need to register some instances
+  have : IsLocalization (algebraMapSubmonoid S Mₜ) Sₚ := by
+    rw [show algebraMapSubmonoid S Mₜ = Mₛ by simp [Mₛ, Mₜ]]
+    exact Localization.isLocalization
+  let _ : Algebra Tₚ Sₚ := localizationAlgebra Mₜ S
+  have : IsScalarTower T Tₚ Sₚ := by
+    refine IsScalarTower.of_algebraMap_eq' ?_
+    rw [RingHom.algebraMap_toAlgebra, IsLocalization.map_comp, ← IsScalarTower.algebraMap_eq]
+  have : NoZeroSMulDivisors Tₚ Sₚ := NoZeroSMulDivisors_of_isLocalization T S Tₚ Sₚ h
+  have : FaithfulSMul Tₚ Sₚ := NoZeroSMulDivisors.iff_faithfulSMul.mp this
+  have : Module.Finite Tₚ Sₚ := Module.Finite.of_isLocalization T S Mₜ
+  have : Algebra.IsSeparable (FractionRing Tₚ) (FractionRing Sₚ) :=
+    FractionRing.isSeparable_of_isLocalization S Tₚ Sₚ h
+  have : NoZeroSMulDivisors R Sₚ := NoZeroSMulDivisors.trans_faithfulSMul R Rₚ _
+  have : IsScalarTower R Tₚ Sₚ := by
+    refine IsScalarTower.of_algebraMap_eq' ?_
+    rw [IsScalarTower.algebraMap_eq R T Tₚ, ← RingHom.comp_assoc,
+      ← IsScalarTower.algebraMap_eq T Tₚ Sₚ, ← IsScalarTower.algebraMap_eq]
+  have : IsScalarTower Rₚ Tₚ Sₚ := by
+    refine ⟨fun a b c ↦ a.ind fun ⟨a₁, a₂⟩ ↦ ?_⟩
+    have : a₂.val ≠ 0 := nonZeroDivisors.ne_zero <| primeCompl_le_nonZeroDivisors P <| a₂.prop
+    rw [← smul_right_inj this, ← smul_assoc (M := R) (N := Tₚ), ← smul_assoc (M := R) (α := Tₚ),
+      ← smul_assoc (M := R) (α := Sₚ), Localization.smul_mk, smul_eq_mul, Localization.mk_eq_mk',
+      IsLocalization.mk'_mul_cancel_left, algebraMap_smul, algebraMap_smul, smul_assoc]
+  have : Submodule.IsPrincipal (map (algebraMap S Sₚ) I) := by
+    have : IsPrincipalIdealRing Sₚ :=
+      IsDedekindDomain.isPrincipalIdealRing_localization_over_prime S P hP
+    exact IsPrincipalIdealRing.principal _
+  let _ : Algebra (FractionRing Tₚ) (FractionRing Sₚ) := by
+    exact FractionRing.liftAlgebra Tₚ (FractionRing Sₚ)
+  rw [← spanIntNorm_localization R (spanNorm T I) _ (primeCompl_le_nonZeroDivisors P) Tₚ,
+    ← spanIntNorm_localization T (Rₘ := Tₚ) I _ h Sₚ, ← spanIntNorm_localization R (Rₘ := Rₚ) I _
+    (primeCompl_le_nonZeroDivisors P) Sₚ, ← (I.map _).span_singleton_generator, spanNorm_singleton,
+    spanNorm_singleton, intNorm_intNorm, spanNorm_singleton]
+
+end spanNorm_spanNorm
+
+variable [IsDedekindDomain R] [IsDedekindDomain S]
 
 /-- The relative norm `Ideal.relNorm R (I : Ideal S)`, where `R` and `S` are Dedekind domains,
 and `S` is an extension of `R` that is finite and free as a module. -/
@@ -242,6 +317,14 @@ theorem map_relNorm (I : Ideal S) {T : Type*} [Semiring T] (f : R →+* T) :
 @[mono]
 theorem relNorm_mono {I J : Ideal S} (h : I ≤ J) : relNorm R I ≤ relNorm R J :=
   spanNorm_mono R h
+
+theorem relNorm_relNorm (T : Type*) [CommRing T] [IsDedekindDomain T] [IsIntegrallyClosed T]
+    [Algebra R T] [Algebra T S] [IsScalarTower R T S] [Module.Finite R T] [Module.Finite T S]
+    [NoZeroSMulDivisors R T] [NoZeroSMulDivisors T S]
+    [Algebra.IsSeparable (FractionRing R) (FractionRing T)]
+    [Algebra.IsSeparable (FractionRing T) (FractionRing S)]
+    (I : Ideal S) : relNorm R (relNorm T I) = relNorm R I :=
+  spanNorm_spanNorm _ _ _
 
 end Ideal
 
