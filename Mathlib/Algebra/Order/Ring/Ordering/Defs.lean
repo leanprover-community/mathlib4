@@ -66,10 +66,10 @@ variable {R}
 protected theorem mem_of_isSquare (P : RingPreordering R) {x : R} (hx : IsSquare x) : x ∈ P :=
   RingPreordering.mem_of_isSquare' _ hx
 
-@[simp, aesop safe (rule_sets := [SetLike])]
+@[simp]
 protected theorem mul_self_mem (P : RingPreordering R) (x : R) : x * x ∈ P := by aesop
 
-@[simp, aesop safe (rule_sets := [SetLike])]
+@[simp]
 protected theorem pow_two_mem (P : RingPreordering R) (x : R) : x ^ 2 ∈ P := by aesop
 
 @[aesop unsafe 20% forward (rule_sets := [SetLike])]
