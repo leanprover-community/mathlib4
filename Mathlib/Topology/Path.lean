@@ -617,7 +617,7 @@ theorem range_reparam (γ : Path x y) {f : I → I} (hfcont : Continuous f) (hf�
   have : range f = univ := by
     rw [range_eq_univ]
     intro t
-    have h₁ : Continuous (Set.IccExtend (zero_le_one' ℝ) f) := by continuity
+    have h₁ : Continuous (Set.IccExtend (zero_le_one' ℝ) f) := by fun_prop
     have := intermediate_value_Icc (zero_le_one' ℝ) h₁.continuousOn
     · rw [IccExtend_left, IccExtend_right, Icc.mk_zero, Icc.mk_one, hf₀, hf₁] at this
       rcases this t.2 with ⟨w, hw₁, hw₂⟩
