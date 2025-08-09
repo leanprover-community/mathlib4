@@ -370,7 +370,7 @@ theorem iSupIndep.injOn (ht : iSupIndep t) : InjOn t {i | t i ≠ ⊥} := by
 
 theorem iSupIndep.injective (ht : iSupIndep t) (h_ne_bot : ∀ i, t i ≠ ⊥) : Injective t := by
   suffices univ = {i | t i ≠ ⊥} by rw [injective_iff_injOn_univ, this]; exact ht.injOn
-  aesop
+  simp_all
 
 theorem iSupIndep_pair {i j : ι} (hij : i ≠ j) (huniv : ∀ k, k = i ∨ k = j) :
     iSupIndep t ↔ Disjoint (t i) (t j) := by

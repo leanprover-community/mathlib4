@@ -156,7 +156,7 @@ private theorem sum_filter_pairs_eq_sum_powersetCard_mem_filter_antidiagonal_sum
   apply sum_finset_product
   simp only [mem_filter, mem_powersetCard_univ, mem_univ, and_true, and_iff_right_iff_imp]
   rintro p hp
-  have : #p.fst ≤ k := by apply le_of_lt; aesop
+  have : #p.fst ≤ k := by apply le_of_lt; simp_all
   aesop
 
 private lemma filter_pairs_lt (k : ℕ) :
