@@ -5,7 +5,6 @@ Authors: Kenny Lau
 -/
 
 import Mathlib.Data.Matrix.Reflection
-import Mathlib.Tactic.HaveI
 
 /-!
 # Simprocs for matrices
