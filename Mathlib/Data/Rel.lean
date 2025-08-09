@@ -3,7 +3,9 @@ Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Data.Set.BooleanAlgebra
+import Mathlib.Data.Set.Prod
+import Mathlib.Order.RelIso.Basic
+import Mathlib.Order.SetNotation
 
 /-!
 # Relations as sets of pairs
@@ -64,7 +66,7 @@ Simultaneously, uniform spaces need a theory of relations on a type `α` as elem
 `Set (α × α)`, and the new definition of `Rel` fulfills this role quite well.
 -/
 
-variable {α β γ δ : Type*}
+variable {α β γ δ : Type*} {ι : Sort*}
 
 /-- A relation on `α` and `β`, aka a set-valued function, aka a partial multifunction.
 
@@ -72,7 +74,7 @@ We represent them as sets due to how relations are used in the context of unifor
 abbrev Rel (α β : Type*) := Set (α × β)
 
 namespace Rel
-variable {R r₁ r₂ : Rel α β} {S : Rel β γ} {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {u : Set γ}
+variable {R R₁ R₂ : Rel α β} {S : Rel β γ} {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {u : Set γ}
   {a a₁ a₂ : α} {b : β} {c : γ}
 
 /-- Notation for apply a relation `R : Rel α β` to `a : α`, `b : β`, scoped to the `Rel` namespace.
@@ -91,7 +93,7 @@ def inv (R : Rel α β) : Rel β α := Prod.swap ⁻¹' R
 
 @[simp] lemma inv_inv : R.inv.inv = R := rfl
 
-@[gcongr] lemma inv_mono (h : r₁ ⊆ r₂) : r₁.inv ⊆ r₂.inv := fun (_a, _b) hab ↦ h hab
+@[gcongr] lemma inv_mono (h : R₁ ⊆ R₂) : R₁.inv ⊆ R₂.inv := fun (_a, _b) hab ↦ h hab
 
 @[simp] lemma inv_empty : (∅ : Rel α β).inv = ∅ := rfl
 @[simp] lemma inv_univ : inv (.univ : Rel α β) = .univ := rfl
@@ -111,8 +113,8 @@ def cod : Set β := {b | ∃ a, a ~[R] b}
 @[simp] lemma mem_dom : a ∈ R.dom ↔ ∃ b, a ~[R] b := .rfl
 @[simp] lemma mem_cod : b ∈ R.cod ↔ ∃ a, a ~[R] b := .rfl
 
-@[gcongr] lemma dom_mono (h : r₁ ≤ r₂) : r₁.dom ⊆ r₂.dom := fun _a ⟨b, hab⟩ ↦ ⟨b, h hab⟩
-@[gcongr] lemma cod_mono (h : r₁ ≤ r₂) : r₁.cod ⊆ r₂.cod := fun _b ⟨a, hab⟩ ↦ ⟨a, h hab⟩
+@[gcongr] lemma dom_mono (h : R₁ ≤ R₂) : R₁.dom ⊆ R₂.dom := fun _a ⟨b, hab⟩ ↦ ⟨b, h hab⟩
+@[gcongr] lemma cod_mono (h : R₁ ≤ R₂) : R₁.cod ⊆ R₂.cod := fun _b ⟨a, hab⟩ ↦ ⟨a, h hab⟩
 
 @[simp] lemma dom_empty : (∅ : Rel α β).dom = ∅ := by aesop
 @[simp] lemma cod_empty : (∅ : Rel α β).cod = ∅ := by aesop
@@ -141,6 +143,8 @@ def comp (R : Rel α β) (S : Rel β γ) : Rel α γ := {(a, c) | ∃ b, a ~[R] 
 
 @[simp] lemma mem_comp : a ~[R ○ S] c ↔ ∃ b, a ~[R] b ∧ b ~[S] c := .rfl
 
+lemma prodMk_mem_comp (hab : a ~[R] b) (hbc : b ~[S] c) : a ~[R ○ S] c := ⟨b, hab, hbc⟩
+
 lemma comp_assoc (R : Rel α β) (S : Rel β γ) (t : Rel γ δ) : (R ○ S) ○ t = R ○ (S ○ t) := by aesop
 
 @[simp] lemma comp_id (R : Rel α β) : R ○ .id = R := by aesop
@@ -156,6 +160,40 @@ lemma comp_assoc (R : Rel α β) (S : Rel β γ) (t : Rel γ δ) : (R ○ S) ○
 
 @[simp] lemma univ_comp (S : Rel β γ) : (.univ : Rel α β) ○ S = {(_b, c) : α × γ | c ∈ S.cod} := by
   aesop
+
+lemma comp_iUnion (R : Rel α β) (S : ι → Rel β γ) : R ○ ⋃ i, S i = ⋃ i, R ○ S i := by aesop
+lemma iUnion_comp (R : ι → Rel α β) (S : Rel β γ) : (⋃ i, R i) ○ S = ⋃ i, R i ○ S := by aesop
+lemma comp_sUnion (R : Rel α β) (𝒮 : Set (Rel β γ)) : R ○ ⋃₀ 𝒮 = ⋃ S ∈ 𝒮, R ○ S := by aesop
+lemma sUnion_comp (ℛ : Set (Rel α β)) (S : Rel β γ) : ⋃₀ ℛ ○ S = ⋃ R ∈ ℛ, R ○ S := by aesop
+
+@[gcongr]
+lemma comp_subset_comp {S₁ S₂ : Rel β γ} (hR : R₁ ⊆ R₂) (hS : S₁ ⊆ S₂) : R₁ ○ S₁ ⊆ R₂ ○ S₂ :=
+  fun _ ↦ .imp fun _ ↦ .imp (@hR _) (@hS _)
+
+@[gcongr]
+lemma comp_subset_comp_left {S : Rel β γ} (hR : R₁ ⊆ R₂) : R₁ ○ S ⊆ R₂ ○ S :=
+  comp_subset_comp hR .rfl
+
+lemma prod_comp_prod_of_inter_nonempty (ht : (t₁ ∩ t₂).Nonempty) (s : Set α) (u : Set γ) :
+    s ×ˢ t₁ ○ t₂ ×ˢ u = s ×ˢ u := by aesop
+
+lemma prod_comp_prod_of_disjoint (ht : Disjoint t₁ t₂) (s : Set α) (u : Set γ) :
+    s ×ˢ t₁ ○ t₂ ×ˢ u = ∅ :=
+  Set.eq_empty_of_forall_notMem fun _ ⟨_z, ⟨_, hzs⟩, hzu, _⟩ ↦ Set.disjoint_left.1 ht hzs hzu
+
+lemma prod_comp_prod (s : Set α) (t₁ t₂ : Set β) (u : Set γ) [Decidable (Disjoint t₁ t₂)] :
+    s ×ˢ t₁ ○ t₂ ×ˢ u = if Disjoint t₁ t₂ then ∅ else s ×ˢ u := by
+  split_ifs with hst
+  · exact prod_comp_prod_of_disjoint hst ..
+  · rw [prod_comp_prod_of_inter_nonempty <| Set.not_disjoint_iff_nonempty_inter.1 hst]
+
+@[gcongr]
+lemma comp_subset_comp_right {S₁ S₂ : Rel β γ} (hS : S₁ ⊆ S₂) : R ○ S₁ ⊆ R ○ S₂ :=
+  comp_subset_comp .rfl hS
+
+protected lemma _root_.Monotone.relComp {ι : Type*} [Preorder ι] {f : ι → Rel α β} {g : ι → Rel β γ}
+    (hf : Monotone f) (hg : Monotone g) : Monotone fun x ↦ f x ○ g x :=
+  fun _i _j hij ⟨_a, _c⟩ ⟨b, hab, hbc⟩ ↦ ⟨b, hf hij hab, hg hij hbc⟩
 
 @[deprecated (since := "2025-07-06")] alias comp_right_top := comp_univ
 @[deprecated (since := "2025-07-06")] alias comp_left_top := univ_comp
@@ -288,7 +326,101 @@ variable (R s) in
 /-- Restrict the domain of a relation to a subtype. -/
 def restrictDomain : Rel s β := {(a, b) | ↑a ~[R] b}
 
-variable {R : Rel α α} {S : Rel β β} {a b c : α}
+variable {R R₁ R₂ : Rel α α} {S : Rel β β} {a b c : α}
+
+/-! ### Reflexive relations -/
+
+variable (R) in
+/-- A relation `R` is reflexive if `a ~[R] a`. -/
+protected abbrev IsRefl : Prop := IsRefl α (· ~[R] ·)
+
+variable (R) in
+protected lemma refl [R.IsRefl] (a : α) : a ~[R] a := refl_of (· ~[R] ·) a
+
+variable (R) in
+protected lemma rfl [R.IsRefl] : a ~[R] a := R.refl a
+
+lemma id_subset [R.IsRefl] : .id ⊆ R := by rintro ⟨_, _⟩ rfl; exact R.rfl
+
+instance isRefl_inter [R₁.IsRefl] [R₂.IsRefl] : (R₁ ∩ R₂).IsRefl where
+  refl _ := ⟨R₁.rfl, R₂.rfl⟩
+
+protected lemma IsRefl.sInter {ℛ : Set <| Rel α α} (hℛ : ∀ R ∈ ℛ, R.IsRefl) :
+    Rel.IsRefl (⋂₀ ℛ) where
+  refl _a R hR := (hℛ R hR).refl _
+
+instance isRefl_iInter {ι : Sort*} {R : ι → Rel α α} [∀ i, (R i).IsRefl] :
+    Rel.IsRefl (⋂ i, R i) := .sInter <| by simpa
+
+instance isRefl_preimage {f : β → α} [R.IsRefl] : Rel.IsRefl (Prod.map f f ⁻¹' R) where
+  refl _ := R.rfl
+
+lemma id_subset_iff : .id ⊆ R ↔ R.IsRefl where
+  mp h := ⟨fun _ ↦ h rfl⟩
+  mpr _ := id_subset
+
+lemma left_subset_comp {R : Rel α β} [S.IsRefl] : R ⊆ R ○ S := by
+  simpa using comp_subset_comp_right id_subset
+
+lemma right_subset_comp [R.IsRefl] {S : Rel α β} : S ⊆ R ○ S := by
+  simpa using comp_subset_comp_left id_subset
+
+lemma subset_iterate_comp [R.IsRefl] {S : Rel α β} : ∀ n : ℕ, S ⊆ (R ○ ·)^[n] S
+  | 0 => .rfl
+  | _n + 1 => right_subset_comp.trans <| subset_iterate_comp _
+
+lemma exists_eq_singleton_of_prod_subset_id {s t : Set α} (hs : s.Nonempty) (ht : t.Nonempty)
+    (hst : s ×ˢ t ⊆ Rel.id) : ∃ x, s = {x} ∧ t = {x} := by
+  obtain ⟨a, ha⟩ := hs
+  obtain ⟨b, hb⟩ := ht
+  simp only [Set.prod_subset_iff, mem_id] at hst
+  obtain rfl := hst _ ha _ hb
+  simp only [Set.eq_singleton_iff_unique_mem, and_assoc]
+  exact ⟨a, ha, (hst · · _ hb), hb, (hst _ ha · · |>.symm)⟩
+
+/-! ### Symmetric relations -/
+
+variable (R) in
+/-- A relation `R` is symmetric if `a ~[R] b ↔ b ~[R] a`. -/
+protected abbrev IsSymm : Prop := IsSymm α (· ~[R] ·)
+
+variable (R) in
+protected lemma symm [R.IsSymm] (hab : a ~[R] b) : b ~[R] a := symm_of (· ~[R] ·) hab
+
+variable (R) in
+protected lemma comm [R.IsSymm] : a ~[R] b ↔ b ~[R] a := comm_of (· ~[R] ·)
+
+variable (R) in
+@[simp] lemma inv_eq_self [R.IsSymm] : R.inv = R := by ext; exact R.comm
+
+instance isSymm_inter [R₁.IsSymm] [R₂.IsSymm] : (R₁ ∩ R₂).IsSymm where
+  symm _ _ := .imp R₁.symm R₂.symm
+
+protected lemma IsSymm.sInter {ℛ : Set <| Rel α α} (hℛ : ∀ R ∈ ℛ, R.IsSymm) :
+    Rel.IsSymm (⋂₀ ℛ) where
+  symm _a _b hab R hR := (hℛ R hR).symm _ _ <| hab R hR
+
+instance isSymm_iInter {ι : Sort*} {R : ι → Rel α α} [∀ i, (R i).IsSymm] :
+    Rel.IsSymm (⋂ i, R i) := .sInter <| by simpa
+
+instance isSymm_preimage {f : β → α} [R.IsSymm] : Rel.IsSymm (Prod.map f f ⁻¹' R) where
+  symm _ _ := R.symm
+
+variable (R) in
+/-- The maximal symmetric relation contained in a given relation. -/
+def symmetrize : Rel α α := R ∩ R.inv
+
+instance isSymm_symmetrize : R.symmetrize.IsSymm where symm _ _ := .symm
+
+lemma symmetrize_subset_self : R.symmetrize ⊆ R := Set.inter_subset_left
+lemma symmetrize_subset_inv : R.symmetrize ⊆ R.inv := Set.inter_subset_right
+lemma subset_symmetrize {S : Rel α α} : S ⊆ R.symmetrize ↔ S ⊆ R ∧ S ⊆ R.inv := Set.subset_inter_iff
+
+@[gcongr]
+lemma symmetrize_mono (h : R₁ ⊆ R₂) : R₁.symmetrize ⊆ R₂.symmetrize :=
+  Set.inter_subset_inter h <| Set.preimage_mono h
+
+/-! ### Transitive relations -/
 
 variable (R) in
 /-- A relation `R` is transitive if `a ~[R] b` and `b ~[R] c` together imply `a ~[R] c`. -/
@@ -299,6 +431,35 @@ protected lemma trans [R.IsTrans] (hab : a ~[R] b) (hbc : b ~[R] c) : a ~[R] c :
   trans_of (· ~[R] ·) hab hbc
 
 instance {R : α → α → Prop} [IsTrans α R] : Rel.IsTrans {(a, b) | R a b} := ‹_›
+
+lemma comp_subset_self [R.IsTrans] : R ○ R ⊆ R := fun ⟨_, _⟩ ⟨_, hab, hbc⟩ ↦ R.trans hab hbc
+
+lemma comp_eq_self [R.IsRefl] [R.IsTrans] : R ○ R = R :=
+  subset_antisymm comp_subset_self left_subset_comp
+
+lemma isTrans_iff_comp_subset_self : R.IsTrans ↔ R ○ R ⊆ R where
+  mp _ := comp_subset_self
+  mpr h := ⟨fun _ _ _ hx hy ↦ h ⟨_, hx, hy⟩⟩
+
+lemma isTrans_empty : (∅ : Rel α α).IsTrans where trans _ _ _ := by simp
+lemma isTrans_univ : Rel.IsTrans (Set.univ : Rel α α) where trans _ _ _ := by simp
+lemma isTrans_singleton (x : α × α) : Rel.IsTrans {x} where trans _ _ _ := by aesop
+
+instance isTrans_inter [R₁.IsTrans] [R₂.IsTrans] : (R₁ ∩ R₂).IsTrans where
+  trans _a _b _c hab hbc := ⟨R₁.trans hab.1 hbc.1, R₂.trans hab.2 hbc.2⟩
+
+protected lemma IsTrans.sInter {ℛ : Set <| Rel α α} (hℛ : ∀ R ∈ ℛ, R.IsTrans) :
+    Rel.IsTrans (⋂₀ ℛ) where
+  trans _a _b _c hab hbc R hR := (hℛ R hR).trans _ _ _ (hab R hR) <| hbc R hR
+
+instance isTrans_iInter {ι : Sort*} {R : ι → Rel α α} [∀ i, (R i).IsTrans] :
+    Rel.IsTrans (⋂ i, R i) := .sInter <| by simpa
+
+instance isTrans_preimage {f : β → α} [R.IsTrans] : Rel.IsTrans (Prod.map f f ⁻¹' R) where
+  trans _ _ _ := R.trans
+
+instance isTrans_symmetrize [R.IsTrans] : R.symmetrize.IsTrans where
+  trans _a _b _c hab hbc := ⟨R.trans hab.1 hbc.1, R.trans hbc.2 hab.2⟩
 
 variable (R) in
 /-- A relation `R` is irreflexive if `¬ a ~[R] a`. -/
