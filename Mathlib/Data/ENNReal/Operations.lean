@@ -429,11 +429,6 @@ theorem le_toReal_sub {a b : ℝ≥0∞} (hb : b ≠ ∞) : a.toReal - b.toReal 
   · simp only [← coe_sub, NNReal.sub_def, Real.coe_toNNReal', coe_toReal]
     exact le_max_left _ _
 
-lemma ofReal_one_sub_toReal_eq (x : ENNReal) (hx : x ≤ 1) :
-    ENNReal.ofReal (1 - x.toReal) = 1 - x := by
-  lift x to NNReal using ne_of_lt (lt_of_le_of_lt hx ENNReal.one_lt_top)
-  simp only [ENNReal.ofReal, ENNReal.coe_toReal]
-  norm_cast
 
 @[simp]
 lemma toNNReal_sub (hb : b ≠ ∞) : (a - b).toNNReal = a.toNNReal - b.toNNReal := by
