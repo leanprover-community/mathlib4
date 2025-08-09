@@ -190,11 +190,11 @@ theorem null_iff_toMeasure_null (ν : ProbabilityMeasure Ω) (s : Set Ω) :
 
 theorem apply_mono (μ : ProbabilityMeasure Ω) {s₁ s₂ : Set Ω} (h : s₁ ⊆ s₂) : μ s₁ ≤ μ s₂ := by
   rw [← coeFn_comp_toFiniteMeasure_eq_coeFn]
-  exact MeasureTheory.FiniteMeasure.apply_mono _ h
+  exact FiniteMeasure.apply_mono _ h
 
 theorem apply_union_le (μ : ProbabilityMeasure Ω) {s₁ s₂ : Set Ω} : μ (s₁ ∪ s₂) ≤ μ s₁ + μ s₂ := by
   rw [← coeFn_comp_toFiniteMeasure_eq_coeFn]
-  exact MeasureTheory.FiniteMeasure.apply_union_le _
+  exact FiniteMeasure.apply_union_le _
 
 /-- Continuity from below: the measure of the union of a sequence of (not necessarily measurable)
 sets is the limit of the measures of the partial unions. -/

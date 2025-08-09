@@ -145,7 +145,7 @@ theorem continuous_prod [TopologicalSpace α] [TopologicalSpace β] [SecondCount
     [SecondCountableTopology β] [PseudoMetrizableSpace α] [PseudoMetrizableSpace β]
     [OpensMeasurableSpace α] [OpensMeasurableSpace β] :
     Continuous (fun (μ : ProbabilityMeasure α × ProbabilityMeasure β) ↦ μ.1.prod μ.2) := by
-  apply continuous_iff_continuousAt.2 (fun μ ↦ ?_)
+  refine continuous_iff_continuousAt.2 (fun μ ↦ ?_)
   /- It suffices to check the convergence along elements of a π-system containing arbitrarily
   small neighborhoods of any point, by `tendsto_probabilityMeasure_of_tendsto_of_mem`.
   We take as a π-system the sets of the form `a ×ˢ b` where `a` and `b` have null frontier. -/
@@ -153,7 +153,7 @@ theorem continuous_prod [TopologicalSpace α] [TopologicalSpace β] [SecondCount
     MeasurableSet a ∧ μ.1 (frontier a) = 0 ∧ MeasurableSet b ∧ μ.2 (frontier b) = 0
     ∧ t = a ×ˢ b}
   have : IsPiSystem S := by
-    rintro s ⟨a, b, ameas, ha, bmeas, hb, rfl⟩ s' ⟨a', b', a'meas, ha', b'meas, hb', rfl⟩ -
+    rintro - ⟨a, b, ameas, ha, bmeas, hb, rfl⟩ - ⟨a', b', a'meas, ha', b'meas, hb', rfl⟩ -
     refine ⟨a ∩ a', b ∩ b', ameas.inter a'meas, ?_, bmeas.inter b'meas, ?_, prod_inter_prod⟩
     · rw [null_iff_toMeasure_null] at ha ha' ⊢
       exact null_frontier_inter ha ha'

@@ -455,7 +455,7 @@ theorem measure_closure_of_null_frontier {μ : Measure α'} {s : Set α'} (h : �
 theorem null_frontier_inter {μ : Measure α'} {s s' : Set α'}
     (h : μ (frontier s) = 0) (h' : μ (frontier s') = 0) :
     μ (frontier (s ∩ s')) = 0 := by
-  apply le_antisymm ?_ bot_le
+  apply bot_unique
   calc μ (frontier (s ∩ s'))
   _ ≤ μ (frontier s ∪ frontier s') := measure_mono <| (frontier_inter_subset _ _).trans (by grind)
   _ ≤ μ (frontier s) + μ (frontier s') := measure_union_le _ _
