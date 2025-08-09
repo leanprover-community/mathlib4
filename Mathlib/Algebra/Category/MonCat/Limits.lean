@@ -129,8 +129,8 @@ instance hasLimits : HasLimits MonCat.{u} :=
   MonCat.hasLimitsOfSize.{u, u}
 
 /-- If `J` is `u`-small, the forgetful functor from `MonCat.{u}` preserves limits of shape `J`. -/
-@[to_additive /-- If `J` is `u`-small, the forgetful functor from `AddMonCat.{u}`
-preserves limits of shape `J`. -/]
+@[to_additive /-- If `J` is `u`-small, the forgetful functor from `AddMonCat.{u}` preserves limits
+of shape `J`. -/]
 noncomputable instance forget_preservesLimitsOfShape [Small.{u} J] :
     PreservesLimitsOfShape J (forget MonCat.{u}) where
   preservesLimit {F} := preservesLimit_of_preserves_limit_cone (limitConeIsLimit F)

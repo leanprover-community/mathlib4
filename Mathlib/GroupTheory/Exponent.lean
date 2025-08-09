@@ -54,19 +54,19 @@ section Monoid
 variable (G) [Monoid G]
 
 /-- A predicate on a monoid saying that there is a positive integer `n` such that `g ^ n = 1`
-  for all `g`. -/
+for all `g`. -/
 @[to_additive
-      /-- A predicate on an additive monoid saying that there is a positive integer `n` such
-      that `n • g = 0` for all `g`. -/]
+/-- A predicate on an additive monoid saying that there is a positive integer `n` such that
+`n • g = 0` for all `g`. -/]
 def ExponentExists :=
   ∃ n, 0 < n ∧ ∀ g : G, g ^ n = 1
 
 open scoped Classical in
 /-- The exponent of a group is the smallest positive integer `n` such that `g ^ n = 1` for all
-  `g ∈ G` if it exists, otherwise it is zero by convention. -/
+`g ∈ G` if it exists, otherwise it is zero by convention. -/
 @[to_additive
-      /-- The exponent of an additive group is the smallest positive integer `n` such that
-      `n • g = 0` for all `g ∈ G` if it exists, otherwise it is zero by convention. -/]
+/-- The exponent of an additive group is the smallest positive integer `n` such that
+`n • g = 0` for all `g ∈ G` if it exists, otherwise it is zero by convention. -/]
 noncomputable def exponent :=
   if h : ExponentExists G then Nat.find h else 0
 
