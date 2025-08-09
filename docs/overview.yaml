@@ -303,7 +303,7 @@ Analysis:
     Leibniz formula: 'fderiv_mul'
     local extrema: 'IsLocalMin.fderiv_eq_zero'
     inverse function theorem: 'HasStrictFDerivAt.to_localInverse'
-    implicit function theorem: 'ImplicitFunctionData.implicitFunction'
+    implicit function theorem: 'ImplicitFunData.implicitFun'
     analytic function: 'AnalyticAt'
 
   Convexity:
