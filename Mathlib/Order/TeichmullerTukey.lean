@@ -54,7 +54,7 @@ lemma exists_subset_of_finite_of_subset_sUnion_of_isChain_of_nonempty {c : Set (
 /-- **Teichmuller-Tukey lemma**. Every nonempty family of finite character has a maximal element. -/
 theorem exists_maximal_of_isOfFiniteCharacter {F} (hF : IsOfFiniteCharacter F) {x : Set α}
     (xF : x ∈ F) : ∃ m, x ⊆ m ∧ Maximal (· ∈ F) m := by
-  /- Apply Zorn's lemma. Take the union of the elements of a chain is its upper bound. -/
+  /- Apply Zorn's lemma. Take the union of the elements of a chain as its upper bound. -/
   refine zorn_subset_nonempty F (fun c cF cch cne ↦
     ⟨sUnion c, ?_, fun s sc ↦ subset_sUnion_of_mem sc⟩) x xF
   /- Prove that the union belongs to F. Use the finite character property and the fact that any
