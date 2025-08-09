@@ -173,11 +173,6 @@ lemma Ideal.primeHeight_eq_zero_iff {I : Ideal R} [I.IsPrime] :
 lemma Ideal.height_of_subsingleton [Subsingleton R] : I.height = ⊤ := by
   rw [Subsingleton.elim I ⊤, Ideal.height_top]
 
-/-- In a nontrivial commutative ring, the height of the zero ideal is zero. -/
-lemma Ideal.height_bot_eq_zero [Nontrivial R] : (⊥ : Ideal R).height = 0 := by
-  obtain ⟨P⟩ := Ideal.nonempty_minimalPrimes (R := R) bot_ne_top
-  refine ENat.iInf_eq_zero.mpr ⟨P.val, by simp [Ideal.primeHeight_eq_zero_iff.mpr]⟩
-
 theorem Ideal.isMaximal_of_primeHeight_eq_ringKrullDim {I : Ideal R} [I.IsPrime]
     [FiniteRingKrullDim R] (e : I.primeHeight = ringKrullDim R) : I.IsMaximal := by
   have h : I ≠ ⊤ := by
