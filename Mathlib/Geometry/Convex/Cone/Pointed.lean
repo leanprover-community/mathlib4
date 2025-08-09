@@ -34,7 +34,7 @@ open Function
 section Definitions
 
 variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommMonoid E] [Module R E]
-  {C C₁ C₂ : PointedCone R E} {x : E} {r : R}
+  {C C₁ C₂ : PointedCone R E} {S : Set E} {x : E} {r : R}
 
 /-- Every pointed cone is a convex cone. -/
 @[coe]
@@ -95,6 +95,15 @@ lemma _root_.ConvexCone.toPointedCone_top : (⊤ : ConvexCone R E).toPointedCone
 
 instance canLift : CanLift (ConvexCone R E) (PointedCone R E) (↑) ConvexCone.Pointed where
   prf C hC := ⟨C.toPointedCone hC, rfl⟩
+
+variable (R S) in
+/-- The span of a set `S` is the smallest pointed cone that contains `S`.
+
+Pointed cones being defined as submodules over nonnegative scalars, this is exactly the
+submodule span of `S` w.r.t. nonnegative scalars. -/
+abbrev span : PointedCone R E := Submodule.span _ S
+
+lemma subset_span : S ⊆ PointedCone.span R S := Submodule.subset_span
 
 end Definitions
 
