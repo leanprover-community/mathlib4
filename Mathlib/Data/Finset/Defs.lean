@@ -7,6 +7,7 @@ import Aesop
 import Mathlib.Data.Multiset.Defs
 import Mathlib.Data.Set.Pairwise.Basic
 import Mathlib.Order.Hom.Basic
+import Mathlib.Data.SetLike.Basic
 
 /-!
 # Finite sets
@@ -155,6 +156,11 @@ theorem coe_inj {s₁ s₂ : Finset α} : (s₁ : Set α) = s₂ ↔ s₁ = s₂
   Set.ext_iff.trans Finset.ext_iff.symm
 
 theorem coe_injective {α} : Injective ((↑) : Finset α → Set α) := fun _s _t => coe_inj.1
+
+/-- `SetLike` instance for `Finset` -/
+instance (α : Type*) : SetLike (Finset α) α where
+  coe s := s
+  coe_injective' := Finset.coe_injective
 
 /-! ### type coercion -/
 
