@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison
+Authors: Kim Morrison, William Sørensen, Robin Arnez
 -/
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Tactic.MkIffOfInductiveProp
@@ -41,17 +41,7 @@ theorem Small.mk' {α : Type v} {S : Type w} (e : α ≃ S) : Small.{w} α :=
 def Shrink (α : Type v) [Small.{w} α] : Type w :=
   Classical.choose (@Small.equiv_small α _)
 
-/-- A computable implementation of `equivShrink`
-
-  Thanks @Rob23oba
-  https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/Making.20Shrink.20computable/near/522918952
-
-  Justification of safeness:
-    `Shrink α` has no memory layout in the compiler that needs to be conformed to.
-    There is no other computable way to construct or destructure an object of type `Shrink α`.
-    There is also no other computable way to modify the content of a shrink
-    (as it always needs `Classical.choose_spec`).
-    As a consequence adding this implemented_by is safe -/
+/-- A computable implementation of `equivShrink` -/
 @[inline]
 private unsafe def equivShrinkImpl (α : Type v) [Small.{u, v} α] : α ≃ Shrink.{u, v} α :=
   ⟨unsafeCast, unsafeCast, lcProof, lcProof⟩
