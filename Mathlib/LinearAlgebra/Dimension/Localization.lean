@@ -163,7 +163,7 @@ theorem lift_rank_eq :
   have : IsLocalizedModule R⁰ (TensorProduct.mk R FR FT 1) := inferInstance
   let _ : Algebra FT (FR ⊗[R] FT) := Algebra.TensorProduct.rightAlgebra
   let _ := isLocalizedModule_iff_isLocalization.mp this |>.atUnits _ _ ?_ |>.symm.isField
-    _ (Field.toIsField FT) |>.toField
+    (Field.toIsField FT) |>.toField
   on_goal 2 => rintro _ ⟨_, mem, rfl⟩; exact (map_ne_zero_of_mem_nonZeroDivisors _ inj mem).isUnit
   have := bc.comp_iff.2 ((isLocalizedModule_iff_isBaseChange T⁰ FT g).1 inferInstance)
   rw [← lift_inj.{_, max uT uP}, lift_lift, lift_lift, ← lift_lift.{max uT uP, uM},
