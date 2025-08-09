@@ -1430,6 +1430,8 @@ end Nat.Primrec'
 theorem Primrec.nat_sqrt : Primrec Nat.sqrt :=
   Nat.Primrec'.prim_iff₁.1 Nat.Primrec'.sqrt
 
+open List Primrec
+
 namespace Primrec
 
 variable {α} [Primcodable α] {p : α → Prop} [DecidablePred p]
@@ -1460,6 +1462,8 @@ lemma forall_lt (hf : PrimrecPred p) : PrimrecPred fun n ↦ ∀ x < n, p x :=
   of_eq (PrimrecPred.comp (forall_mem_list hf) list_range) (by simp)
 
 end Primrec
+
+
 
 namespace Primrec₂
 
