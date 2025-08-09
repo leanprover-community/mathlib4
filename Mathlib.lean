@@ -4016,6 +4016,7 @@ import Mathlib.LinearAlgebra.BilinearForm.Hom
 import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
 import Mathlib.LinearAlgebra.BilinearForm.Properties
 import Mathlib.LinearAlgebra.BilinearForm.TensorProduct
+import Mathlib.LinearAlgebra.BilinearForm.Trace
 import Mathlib.LinearAlgebra.BilinearMap
 import Mathlib.LinearAlgebra.Charpoly.BaseChange
 import Mathlib.LinearAlgebra.Charpoly.Basic
