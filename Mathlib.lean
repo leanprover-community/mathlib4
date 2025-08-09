@@ -3066,6 +3066,7 @@ import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Finset.Range
 import Mathlib.Data.Finset.SDiff
+import Mathlib.Data.Finset.SetLike
 import Mathlib.Data.Finset.SMulAntidiagonal
 import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Finset.Slice
@@ -3865,6 +3866,7 @@ import Mathlib.GroupTheory.GroupAction.Primitive
 import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.GroupTheory.GroupAction.SubMulAction
+import Mathlib.GroupTheory.GroupAction.SubMulAction.Combination
 import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
 import Mathlib.GroupTheory.GroupAction.SubMulAction.OfStabilizer
 import Mathlib.GroupTheory.GroupAction.SubMulAction.Pointwise
