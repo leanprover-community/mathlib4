@@ -175,7 +175,6 @@ instance forget₂Mon_preservesLimits : PreservesLimits (forget₂ Grp.{u} MonCa
 
 /-- If `J` is `u`-small, the forgetful functor from `Grp.{u}` preserves limits of shape `J`. -/
 @[to_additive /-- If `J` is `u`-small, the forgetful functor from `AddGrp.{u}`
-
 preserves limits of shape `J`. -/]
 instance forget_preservesLimitsOfShape [Small.{u} J] :
     PreservesLimitsOfShape J (forget Grp.{u}) where
@@ -397,7 +396,6 @@ instance forget₂CommMon_preservesLimitsOfSize [UnivLE.{v, u}] :
 /-- If `J` is `u`-small, the forgetful functor from `CommGrp.{u}` preserves limits of
 shape `J`. -/
 @[to_additive /-- If `J` is `u`-small, the forgetful functor from `AddCommGrp.{u}`
-
 preserves limits of shape `J`. -/]
 instance forget_preservesLimitsOfShape [Small.{u} J] :
     PreservesLimitsOfShape J (forget CommGrp.{u}) where

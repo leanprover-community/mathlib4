@@ -95,7 +95,6 @@ graph of an isomorphism `G ⧸ M ≃ H ⧸ N'`.
 If `I` is a subgroup of `G × H` which projects fully on both factors, then there exist normal
 subgroups `M ≤ G` and `N ≤ H` such that `G' × H' ≤ I` and the image of `I` in `G ⧸ M × H ⧸ N` is the
 graph of an isomorphism `G ⧸ M ≃ H ⧸ N'`.
-
 `G'` and `H'` can be explicitly constructed as `I.goursatFst` and `I.goursatSnd` respectively. -/]
 lemma goursat_surjective :
     have := normal_goursatFst hI₁

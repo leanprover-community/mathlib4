@@ -57,7 +57,6 @@ variable (G) [Monoid G]
   for all `g`. -/
 @[to_additive
       /-- A predicate on an additive monoid saying that there is a positive integer `n` such
-
       that `n • g = 0` for all `g`. -/]
 def ExponentExists :=
   ∃ n, 0 < n ∧ ∀ g : G, g ^ n = 1
@@ -67,7 +66,6 @@ open scoped Classical in
   `g ∈ G` if it exists, otherwise it is zero by convention. -/
 @[to_additive
       /-- The exponent of an additive group is the smallest positive integer `n` such that
-
       `n • g = 0` for all `g ∈ G` if it exists, otherwise it is zero by convention. -/]
 noncomputable def exponent :=
   if h : ExponentExists G then Nat.find h else 0
