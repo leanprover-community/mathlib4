@@ -302,21 +302,6 @@ def coeff.addMonoidHom (g : Γ) : HahnSeries Γ R →+ R where
   map_zero' := coeff_zero
   map_add' _ _ := coeff_add
 
-section Finsupp
-
-/-- `ofFinsupp` as an additive monoid/group homomorphism. -/
-def ofFinsuppAddMonoidHom : (Γ →₀ R) →+ HahnSeries Γ R where
-  __ := ofFinsupp
-  map_add' _ _ := by
-    ext
-    simp
-
-@[simp]
-theorem coeff_ofFinsuppAddMonoidHom (f : Γ →₀ R) (a : Γ) :
-    (ofFinsuppAddMonoidHom f).coeff a = f a := rfl
-
-end Finsupp
-
 section Domain
 
 variable [PartialOrder Γ']
@@ -528,7 +513,10 @@ section Finsupp
 variable (R) in
 /-- `ofFinsupp` as a linear map. -/
 def ofFinsuppLinearMap : (Γ →₀ V) →ₗ[R] HahnSeries Γ V where
-  __ := ofFinsuppAddMonoidHom
+  __ := ofFinsupp
+  map_add' _ _ := by
+    ext
+    simp
   map_smul' _ _ := by
     ext
     simp
