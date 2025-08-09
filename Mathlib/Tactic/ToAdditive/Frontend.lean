@@ -20,6 +20,7 @@ import Batteries.Tactic.Lint -- useful to lint this file and for DiscrTree.eleme
 import Batteries.Tactic.Trans
 import Mathlib.Tactic.Eqns -- just to copy the attribute
 import Mathlib.Tactic.Simps.Basic
+import Mathlib.Util.Edit.Extension
 
 /-!
 # The `@[to_additive]` attribute.
@@ -1245,6 +1246,8 @@ def elabToAdditive : Syntax → CoreM Config
       | `(docComment|$doc:docComment) => do
         -- TODO: rely on `addDocString`s call to `validateDocComment` after removing `str` support
         validateDocComment doc
+        let newlineRemovals := removeBadNewlinesFromDocstring doc
+        modifyEnv fun env => editExt.addEntry env newlineRemovals
         return (← getDocStringText doc).removeLeadingSpaces
       | _ => throwUnsupportedSyntax
     return {
