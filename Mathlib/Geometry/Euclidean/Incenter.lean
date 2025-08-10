@@ -353,6 +353,12 @@ lemma touchpoint_mem_affineSpan (signs : Finset (Fin (n + 1))) (i : Fin (n + 1))
     s.touchpoint signs i ∈ affineSpan ℝ (Set.range (s.faceOpposite i).points) :=
   orthogonalProjection_mem _
 
+/-- A weaker version of `touchpoint_mem_affineSpan`. -/
+lemma touchpoint_mem_affineSpan_simplex (signs : Finset (Fin (n + 1))) (i : Fin (n + 1)) :
+    s.touchpoint signs i ∈ affineSpan ℝ (Set.range s.points) := by
+  refine SetLike.le_def.1 (affineSpan_mono _ ?_) (s.touchpoint_mem_affineSpan signs i)
+  simp
+
 lemma touchpoint_eq_point_rev (s : Simplex ℝ P 1) (signs : Finset (Fin 2)) (i : Fin 2) :
     s.touchpoint signs i = s.points i.rev :=
   s.orthogonalProjectionSpan_faceOpposite_eq_point_rev _ _
@@ -509,9 +515,8 @@ lemma ExcenterExists.touchpoint_injective {signs : Finset (Fin (n + 1))}
   · suffices s.excenter signs -ᵥ s.touchpoint signs i ∈ (vectorSpan ℝ (Set.range s.points))ᗮ by
       have h' : s.excenter signs -ᵥ s.touchpoint signs i ∈ (vectorSpan ℝ (Set.range s.points)) := by
         rw [← direction_affineSpan]
-        refine AffineSubspace.vsub_mem_direction h.excenter_mem_affineSpan_range
-          (SetLike.le_def.1 (affineSpan_mono _ ?_) (s.touchpoint_mem_affineSpan signs i))
-        simp
+        exact AffineSubspace.vsub_mem_direction h.excenter_mem_affineSpan_range
+          (s.touchpoint_mem_affineSpan_simplex _ _)
       have h0 : s.excenter signs -ᵥ s.touchpoint signs i = 0 := by
         rw [← Submodule.mem_bot ℝ,
           ← Submodule.inf_orthogonal_eq_bot (vectorSpan ℝ (Set.range s.points))]
@@ -573,9 +578,8 @@ lemma ExcenterExists.sign_signedInfDist_lineMap_excenter_touchpoint {signs : Fin
           rw [abs_lt]
           rcases ht with ⟨ht0, ht1'⟩
           exact ⟨by linarith, ht1'.lt_of_ne ht1⟩
-      · refine AffineMap.lineMap_mem _ h.excenter_mem_affineSpan_range
-          (SetLike.le_def.1 (affineSpan_mono _ ?_) (s.touchpoint_mem_affineSpan signs i))
-        simp
+      · exact AffineMap.lineMap_mem _ h.excenter_mem_affineSpan_range
+          (s.touchpoint_mem_affineSpan_simplex _ _)
     · rw [← ContinuousAffineMap.lineMap_toAffineMap]
       exact ContinuousAffineMap.cont _
   refine ((isConnected_Icc zero_le_one).image _ hc).isPreconnected.subsingleton
@@ -603,32 +607,57 @@ lemma sign_signedInfDist_touchpoint_empty {i j : Fin (n + 1)} (hne : i ≠ j) :
       SignType.sign (s.signedInfDist j s.incenter) :=
   s.excenterExists_empty.sign_signedInfDist_touchpoint hne
 
+/-- The unique weights of the vertices in an affine combination equal to the given touchpoint. -/
+def touchpointWeights (signs : Finset (Fin (n + 1))) (i : Fin (n + 1)) : Fin (n + 1) → ℝ :=
+  (eq_affineCombination_of_mem_affineSpan_of_fintype
+    (s.touchpoint_mem_affineSpan_simplex signs i)).choose
+
+@[simp] lemma sum_touchpointWeights (signs : Finset (Fin (n + 1))) (i : Fin (n + 1)) :
+    ∑ j, s.touchpointWeights signs i j = 1 :=
+  (eq_affineCombination_of_mem_affineSpan_of_fintype
+    (s.touchpoint_mem_affineSpan_simplex signs i)).choose_spec.1
+
+@[simp] lemma affineCombination_touchpointWeights (signs : Finset (Fin (n + 1))) (i : Fin (n + 1)) :
+    Finset.univ.affineCombination ℝ s.points (s.touchpointWeights signs i) = s.touchpoint signs i :=
+  (eq_affineCombination_of_mem_affineSpan_of_fintype
+    (s.touchpoint_mem_affineSpan_simplex signs i)).choose_spec.2.symm
+
 variable {s} in
-lemma ExcenterExists.sign_of_affineCombination_eq_touchpoint {signs : Finset (Fin (n + 1))}
-    (h : s.ExcenterExists signs) {i j : Fin (n + 1)} (hne : i ≠ j) {w : Fin (n + 1) → ℝ}
-    (hw : ∑ i, w i = 1) (hc : Finset.univ.affineCombination ℝ s.points w = s.touchpoint signs i) :
-    SignType.sign (w j) = SignType.sign (s.excenterWeights signs j) := by
+@[simp] lemma affineCombination_eq_touchpoint_iff {signs : Finset (Fin (n + 1))} {i : Fin (n + 1)}
+    {w : Fin (n + 1) → ℝ} (hw : ∑ j, w j = 1) :
+    Finset.univ.affineCombination ℝ s.points w = s.touchpoint signs i ↔
+      w = s.touchpointWeights signs i := by
+  constructor
+  · rw [← s.affineCombination_touchpointWeights]
+    exact fun h ↦ (affineIndependent_iff_eq_of_fintype_affineCombination_eq ℝ s.points).1
+      s.independent _ _ hw (s.sum_touchpointWeights _ _) h
+  · rintro rfl
+    simp
+
+variable {s} in
+lemma ExcenterExists.sign_touchpointWeights {signs : Finset (Fin (n + 1))}
+    (h : s.ExcenterExists signs) {i j : Fin (n + 1)} (hne : i ≠ j) :
+    SignType.sign (s.touchpointWeights signs i j) = SignType.sign (s.excenterWeights signs j) := by
   have hs := h.sign_signedInfDist_touchpoint hne
-  rw [← hc, h.sign_signedInfDist_excenter, s.signedInfDist_affineCombination j hw] at hs
+  rw [← s.affineCombination_touchpointWeights signs i, h.sign_signedInfDist_excenter,
+    s.signedInfDist_affineCombination j (by simp)] at hs
   rw [← hs, sign_mul]
   convert (mul_one _).symm
   rw [sign_eq_one_iff, ← dist_eq_norm_vsub]
   exact s.height_pos _
 
-lemma sign_of_affineCombination_eq_touchpoint_empty {i j : Fin (n + 1)} (hne : i ≠ j)
-    {w : Fin (n + 1) → ℝ} (hw : ∑ i, w i = 1)
-    (hc : Finset.univ.affineCombination ℝ s.points w = s.touchpoint ∅ i) :
-    SignType.sign (w j) = 1 := by
-  rw [s.excenterExists_empty.sign_of_affineCombination_eq_touchpoint hne hw hc]
+lemma sign_touchpointWeights_empty {i j : Fin (n + 1)} (hne : i ≠ j) :
+    SignType.sign (s.touchpointWeights ∅ i j) = 1 := by
+  rw [s.excenterExists_empty.sign_touchpointWeights hne]
   simp
 
 variable {s} in
-lemma eq_zero_of_affineCombination_eq_touchpoint {signs : Finset (Fin (n + 1))} (i : Fin (n + 1))
-    {w : Fin (n + 1) → ℝ} (hw : ∑ i, w i = 1)
-    (hc : Finset.univ.affineCombination ℝ s.points w = s.touchpoint signs i) : w i = 0 := by
-  refine s.independent.eq_zero_of_affineCombination_mem_affineSpan hw ?_ (Finset.mem_univ _)
+lemma touchpointWeights_eq_zero {signs : Finset (Fin (n + 1))} (i : Fin (n + 1)) :
+    s.touchpointWeights signs i i = 0 := by
+  refine s.independent.eq_zero_of_affineCombination_mem_affineSpan
+    (s.sum_touchpointWeights signs i) ?_ (Finset.mem_univ _)
     (Set.notMem_compl_iff.2 (Set.mem_singleton _))
-  rw [hc]
+  rw [s.affineCombination_touchpointWeights]
   convert s.touchpoint_mem_affineSpan _ _
   simp
 
