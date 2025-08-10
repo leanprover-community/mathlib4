@@ -8,7 +8,6 @@ import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Nat.Cast.Order.Basic
 import Mathlib.Data.Set.Countable
-import Mathlib.Logic.Equiv.Fin.Basic
 import Mathlib.Logic.Small.Set
 import Mathlib.Logic.UnivLE
 import Mathlib.SetTheory.Cardinal.Order
@@ -16,7 +15,7 @@ import Mathlib.SetTheory.Cardinal.Order
 /-!
 # Basic results on cardinal numbers
 
-We provide a collection of basic results on cardinal numbers, in particular focussing on
+We provide a collection of basic results on cardinal numbers, in particular focusing on
 finite/countable/small types and sets.
 
 ## Main definitions
@@ -98,9 +97,6 @@ theorem mk_le_one_iff_set_subsingleton {s : Set α} : #s ≤ 1 ↔ s.Subsingleto
   le_one_iff_subsingleton.trans s.subsingleton_coe
 
 alias ⟨_, _root_.Set.Subsingleton.cardinalMk_le_one⟩ := mk_le_one_iff_set_subsingleton
-
-@[deprecated (since := "2024-11-10")]
-alias _root_.Set.Subsingleton.cardinal_mk_le_one := Set.Subsingleton.cardinalMk_le_one
 
 private theorem cast_succ (n : ℕ) : ((n + 1 : ℕ) : Cardinal.{u}) = n + 1 := by
   change #(ULift.{u} _) = #(ULift.{u} _) + 1
