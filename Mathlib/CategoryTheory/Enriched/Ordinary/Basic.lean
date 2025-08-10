@@ -234,12 +234,6 @@ noncomputable def TransportEnrichment.enrichedOrdinaryCategory
   homEquiv_comp f g := by
     simp [eHomEquiv_comp, eComp_eq, tensorHom_def (Functor.LaxMonoidal.ε F), unitors_inv_equal]
 
-attribute [local instance] TransportEnrichment.enrichedOrdinaryCategory
-
-/-
-TODO: Prove that applying the above construction to the result of `ForgetEnrichment V D` results in
-an enriched ordinary category "equal" to `ForgetEnrichment W (TransportEnrichment F D)`.
--/
 noncomputable section Equiv
 
 variable {W : Type u''} [Category.{v''} W] [MonoidalCategory W]
@@ -253,9 +247,7 @@ def TransportEnrichment.forgetEnrichmentEquivFunctor :
     TransportEnrichment F (ForgetEnrichment V D) ⥤
       ForgetEnrichment W (TransportEnrichment F D) where
   obj X := ForgetEnrichment.of W X
-  map {X} {Y} f := ForgetEnrichment.homOf _ <|
-      Equiv.ofBijective _ (h (Hom (C := D) (ForgetEnrichment.to V X) (ForgetEnrichment.to V Y))) <|
-      ForgetEnrichment.homTo V f
+  map f := ForgetEnrichment.homOf _ (Equiv.ofBijective _ (h _) (ForgetEnrichment.homTo V f))
   map_id X := by
     simp only [Equiv.ofBijective_apply]
     erw [forgetEnrichment_id, ← TransportEnrichment.eId_eq, forgetEnrichment_id']
@@ -273,16 +265,13 @@ def TransportEnrichment.forgetEnrichmentEquivInverse :
     ForgetEnrichment W (TransportEnrichment F D) ⥤ TransportEnrichment F (ForgetEnrichment V D)
       where
   obj X := ForgetEnrichment.of V (ForgetEnrichment.to (C := TransportEnrichment F D) W X)
-  map {X Y} f := ForgetEnrichment.homOf V <|
-    (Equiv.ofBijective _
-      (h (Hom (C := D) (ForgetEnrichment.to V X) (ForgetEnrichment.to V Y)))).symm <|
-    ForgetEnrichment.homTo W f
+  map f := ForgetEnrichment.homOf V ((Equiv.ofBijective _ (h _)).symm (ForgetEnrichment.homTo W f))
   map_id X := by
     rw [← forgetEnrichment_id']
     congr 1
     apply Equiv.injective (Equiv.ofBijective _ (h _))
     simp [TransportEnrichment.eId_eq]
-  map_comp {X} {Y} {Z} f g := by
+  map_comp f g := by
     rw [← ForgetEnrichment.homOf_comp]
     congr
     apply Equiv.injective (Equiv.ofBijective _ (h _))
@@ -302,14 +291,14 @@ def TransportEnrichment.forgetEnrichmentEquiv : TransportEnrichment F (ForgetEnr
     ForgetEnrichment W (TransportEnrichment F D) where
   functor := forgetEnrichmentEquivFunctor _ _ h
   inverse := forgetEnrichmentEquivInverse _ _ h
-  unitIso := NatIso.ofComponents (fun X => Iso.refl _)
-  counitIso := NatIso.ofComponents (fun X => Iso.refl _) (fun f => by
+  unitIso := NatIso.ofComponents (fun _ => Iso.refl _)
+  counitIso := NatIso.ofComponents (fun _ => Iso.refl _) fun f => by
     simp only [Functor.comp_obj, forgetEnrichmentEquivInverse_obj, forgetEnrichmentEquivFunctor_obj,
       Functor.id_obj, Functor.comp_map, forgetEnrichmentEquivInverse_map,
-      forgetEnrichmentEquivFunctor_map, ForgetEnrichment.to_of, ForgetEnrichment.homTo_homOf,
+      forgetEnrichmentEquivFunctor_map, ForgetEnrichment.homTo_homOf,
       Equiv.ofBijective_apply, Iso.refl_hom, Category.comp_id, Functor.id_map, Category.id_comp]
     erw [← Equiv.ofBijective_apply _ (h _), Equiv.apply_symm_apply]
-    simp)
+    simp
   functor_unitIso_comp X := by
     simp only [Functor.id_obj, forgetEnrichmentEquivFunctor_obj, Functor.comp_obj,
       forgetEnrichmentEquivInverse_obj, ForgetEnrichment.to_of, NatIso.ofComponents_hom_app,
