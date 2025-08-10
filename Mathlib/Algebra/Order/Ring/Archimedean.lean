@@ -255,5 +255,9 @@ theorem mk_map_of_archimedean {R : Type*}
     · rw [abs_of_pos hx] at hr
       exact hf _ ▸ hm hr
 
+@[simp]
+theorem mk_eq_zero_of_archimedean [Archimedean M] {x : M} (h : x ≠ 0) : mk x = 0 :=
+  mk_map_of_archimedean h .id fun _ ↦ rfl
+
 end Field
 end ArchimedeanClass
