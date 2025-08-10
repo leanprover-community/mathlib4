@@ -155,16 +155,10 @@ theorem IsSymmetric.coe_re_inner_self_apply {T : E →ₗ[𝕜] E} (hT : T.IsSym
   simp [← hT x x, hT]
 
 /-- A symmetric projection is a symmetric idempotent. -/
-def IsSymmetricProjection (T : E →ₗ[𝕜] E) : Prop :=
-  IsIdempotentElem T ∧ T.IsSymmetric
-
-theorem IsSymmetricProjection.isIdempotentElem {T : E →ₗ[𝕜] E} (hT : T.IsSymmetricProjection) :
-    IsIdempotentElem T :=
-  hT.1
-
-theorem IsSymmetricProjection.isSymmetric {T : E →ₗ[𝕜] E} (hT : T.IsSymmetricProjection) :
-    T.IsSymmetric :=
-  hT.2
+@[mk_iff]
+structure IsSymmetricProjection (T : E →ₗ[𝕜] E) : Prop where
+  isIdempotentElem : IsIdempotentElem T
+  isSymmetric : T.IsSymmetric
 
 section Complex
 
@@ -281,7 +275,7 @@ open Submodule in
 theorem _root_.Submodule.IsCompl.projection_isSymmetricProjection_iff
     {U V : Submodule 𝕜 E} (hUV : IsCompl U V) :
     hUV.projection.IsSymmetricProjection ↔ U ⟂ V := by
-  simp [IsSymmetricProjection, hUV.projection_isSymmetric_iff, hUV.projection_isIdempotentElem]
+  simp [isSymmetricProjection_iff, hUV.projection_isSymmetric_iff, hUV.projection_isIdempotentElem]
 
 alias ⟨_, _root_.Submodule.IsCompl.projection_isSymmetricProjection_of_isOrtho⟩ :=
   _root_.Submodule.IsCompl.projection_isSymmetricProjection_iff

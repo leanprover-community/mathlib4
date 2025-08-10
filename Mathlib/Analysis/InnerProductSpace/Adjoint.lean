@@ -368,7 +368,7 @@ theorem isStarProjection_iff_isIdempotentElem_and_isStarNormal :
 
 theorem isStarProjection_iff_isSymmetricProjection :
     IsStarProjection T ↔ T.IsSymmetricProjection := by
-  simp [isStarProjection_iff, LinearMap.IsSymmetricProjection,
+  simp [isStarProjection_iff, LinearMap.isSymmetricProjection_iff,
     isSelfAdjoint_iff_isSymmetric, IsIdempotentElem, End.mul_eq_comp, ← coe_comp, mul_def]
 
 open ContinuousLinearMap in
@@ -396,7 +396,7 @@ theorem isStarProjection_iff_eq_starProjection_range [CompleteSpace E] {p : E �
     IsStarProjection p ↔ ∃ (_ : (LinearMap.range p).HasOrthogonalProjection),
     p = (LinearMap.range p).starProjection := by
   simp_rw [← p.isStarProjection_iff_isSymmetricProjection.symm.eq,
-    LinearMap.isSymmetricProjection_iff_eq_starProjection_range, coe_inj]
+    LinearMap.isSymmetricProjection_iff_eq_coe_starProjection_range, coe_inj]
   rfl
 
 lemma isStarProjection_iff_eq_starProjection [CompleteSpace E] {p : E →L[𝕜] E} :
