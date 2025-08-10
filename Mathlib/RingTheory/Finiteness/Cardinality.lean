@@ -26,14 +26,8 @@ variable (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
 open Module in
 theorem Submodule.fg_iff_exists_fin_linearMap {N : Submodule R M} :
     N.FG ↔ ∃ (n : ℕ) (f : (Fin n → R) →ₗ[R] M), LinearMap.range f = N := by
-  rw [fg_iff_exists_fin_generating_family]
-  congr! with n
-  constructor
-  · rintro ⟨s, rfl⟩
-    exact ⟨Basis.constr (Pi.basisFun R _) ℕ s, Basis.constr_range _ _⟩
-  · rintro ⟨f, rfl⟩
-    refine ⟨f ∘ Pi.basisFun R (Fin n), ?_⟩
-    rw [Set.range_comp, ← map_span, (Pi.basisFun R _).span_eq, LinearMap.range_eq_map]
+  simp_rw [fg_iff_exists_fin_generating_family, ← ((Pi.basisFun R _).constr ℕ).exists_congr_right]
+  simp [Basis.constr_range]
 
 namespace Module
 
@@ -42,10 +36,9 @@ namespace Finite
 open Submodule Set
 
 /-- A finite module admits a surjective linear map from a finite free module. -/
-lemma exists_fin' [Module.Finite R M] : ∃ (n : ℕ) (f : (Fin n → R) →ₗ[R] M), Surjective f := by
+lemma exists_fin' [Module.Finite R M] : ∃ (n : ℕ) (f : (Fin n → R) →ₗ[R] M), Surjective f :=
   have ⟨n, f, hf⟩ := (Submodule.fg_iff_exists_fin_linearMap R M).mp fg_top
-  refine ⟨n, f, ?_⟩
-  rw [← LinearMap.range_eq_top, hf]
+  ⟨n, f, by rw [← LinearMap.range_eq_top, hf]⟩
 
 /-- A finite module can be realised as a quotient of `Fin n → R` (i.e. `R^n`). -/
 theorem exists_fin_quot_equiv (R M : Type*) [Ring R] [AddCommGroup M] [Module R M]
