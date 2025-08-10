@@ -246,7 +246,6 @@ instance : OrderTop (MulArchimedeanClass M) where
     rw [mk_le_mk]
     exact ⟨1, by simp⟩
 
-variable (M) in
 @[to_additive (attr := simp)]
 theorem mk_one : mk 1 = (⊤ : MulArchimedeanClass M) := rfl
 
@@ -260,19 +259,16 @@ theorem mk_eq_top_iff : mk a = ⊤ ↔ a = 1 := by
 theorem top_eq_mk_iff : ⊤ = mk a ↔ a = 1 := by
   rw [eq_comm, mk_eq_top_iff]
 
-variable (M) in
 @[to_additive (attr := simp)]
 theorem out_top : (⊤ : MulArchimedeanClass M).out = 1 := by
   rw [← mk_eq_top_iff, mk_out]
 
-variable (M) in
 @[to_additive]
 instance [Nontrivial M] : Nontrivial (MulArchimedeanClass M) where
   exists_pair_ne := by
     obtain ⟨x, hx⟩ := exists_ne (1 : M)
     exact ⟨mk x, ⊤, mk_eq_top_iff.ne.mpr hx⟩
 
-variable (M) in
 @[to_additive]
 theorem mk_antitoneOn : AntitoneOn mk (Set.Ici (1 : M)) := by
   intro a ha b hb hab
@@ -282,7 +278,6 @@ theorem mk_antitoneOn : AntitoneOn mk (Set.Ici (1 : M)) := by
   rw [mabs_eq_self.mpr ha, mabs_eq_self.mpr hb] at h
   simpa using h
 
-variable (M) in
 @[to_additive]
 theorem mk_monotoneOn : MonotoneOn mk (Set.Iic (1 : M)) := by
   intro a ha b hb hab

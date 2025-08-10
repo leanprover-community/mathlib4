@@ -211,42 +211,50 @@ theorem mk_lt_mk_iff_ratCast {x y : M} :
   simp_rw [ArchimedeanOrder.val_of, nsmul_eq_mul]
   exact mul_le_mul_of_nonneg_right (mod_cast hn.le) (abs_nonneg y)
 
+@[simp]
+theorem mk_ratCast {q : ℚ} (h : q ≠ 0) : mk (q : M) = 0 := by
+  apply le_antisymm
+  · obtain ⟨n, hn⟩ := exists_nat_gt |q|⁻¹
+    use n
+    simp_rw [ArchimedeanOrder.val_of, abs_one, nsmul_eq_mul]
+    exact_mod_cast ((inv_lt_iff_one_lt_mul₀ (abs_pos.2 h)).1 hn).le
+  · obtain ⟨n, hn⟩ := exists_nat_gt |q|
+    use n
+    simp_rw [ArchimedeanOrder.val_of, abs_one, nsmul_one]
+    exact_mod_cast hn.le
+
+theorem mk_eq_zero_of_rat_btwn_pos {R : Type*} [Field R] [LinearOrder R] [IsStrictOrderedRing R]
+    {x : R} {q r : ℚ} (hq₀ : 0 < q) (hq : q < x) (hr : x < r) : mk x = 0 := by
+  have hx₀ : 0 < x := hq.trans' (mod_cast hq₀)
+  have hr₀ : 0 < r := mod_cast hx₀.trans hr
+  apply le_antisymm
+  on_goal 1 => rw [← mk_ratCast hq₀.ne']
+  on_goal 2 => rw [← mk_ratCast hr₀.ne']
+  all_goals apply mk_antitoneOn _ _ _ <;> apply le_of_lt <;> simpa
+
+theorem mk_eq_zero_of_rat_btwn_neg {R : Type*} [Field R] [LinearOrder R] [IsStrictOrderedRing R]
+    {x : R} {q r : ℚ} (hr₀ : r < 0) (hq : q < x) (hr : x < r) : mk x = 0 := by
+  rw [← mk_neg]
+  apply mk_eq_zero_of_rat_btwn_pos (q := -r) (r := -q) <;> simpa
+
 theorem mk_map_of_archimedean {R : Type*}
     [Field R] [LinearOrder R] [IsStrictOrderedRing R] [Archimedean R] {x : R} (h : x ≠ 0)
     (f : R →o M) (hf : ∀ q : ℚ, f q = q) : mk (f x) = 0 := by
-  have hfp {y} (hy : 0 < y) : |f y| = f y := abs_of_pos <| by
-    rw [← Rat.cast_zero, ← hf]
-    exact strictMono_of_map_ratCast f.mono hf (mod_cast hy)
-  have hfn {y} (hy : y < 0) : |f y| = -f y := abs_of_neg <| by
-    rw [← Rat.cast_zero, ← hf]
-    exact strictMono_of_map_ratCast f.mono hf (mod_cast hy)
-  apply le_antisymm
-  · obtain ⟨q, hq, hq'⟩ := exists_rat_btwn (abs_pos.2 h)
-    refine mk_le_mk_iff_ratCast.2 ⟨q, mod_cast hq, ?_⟩
-    rw [abs_one, mul_one, ← hf]
-    obtain hx | hx := h.lt_or_gt
-    · rw [hfn hx, le_neg, hf, ← Rat.cast_neg, ← hf]
-      rw [abs_of_neg hx, lt_neg] at hq'
-      exact f.mono (mod_cast hq'.le)
-    · rw [hfp hx]
-      rw [abs_of_pos hx] at hq'
-      exact f.mono (mod_cast hq'.le)
-  · obtain ⟨q, hq⟩ := exists_rat_gt |x|
-    have hq' := (abs_nonneg x).trans_lt hq
-    apply mk_le_mk_iff_ratCast.2
-    refine ⟨q⁻¹, by simpa using hq', ?_⟩
-    rw [abs_one, Rat.cast_inv, inv_mul_le_iff₀ (mod_cast hq'), mul_one]
-    obtain hx | hx := h.lt_or_gt
-    · rw [hfn hx, neg_le, ← Rat.cast_neg, ← hf]
-      rw [abs_of_neg hx, neg_lt] at hq
-      exact f.mono (mod_cast hq.le)
-    · rw [hfp hx, ← hf]
-      rw [abs_of_pos hx] at hq
-      exact f.mono (mod_cast hq.le)
-
-@[simp]
-theorem mk_ratCast {q : ℚ} (h : q ≠ 0) : mk (q : M) = 0 :=
-  mk_map_of_archimedean h ⟨_, Rat.cast_mono⟩ fun _ ↦ rfl
+  have hm := strictMono_of_map_ratCast f.mono hf
+  obtain ⟨q, hq₀, hq⟩ := exists_rat_btwn (abs_pos.2 h)
+  obtain ⟨r, hr⟩ := exists_rat_gt |x|
+  obtain hx | hx := h.lt_or_gt
+  · apply mk_eq_zero_of_rat_btwn_neg (q := -r) (r := -q)
+    · simpa using hq₀
+    · rw [abs_of_neg hx, neg_lt, ← Rat.cast_neg] at hr
+      exact hf _ ▸ hm hr
+    · rw [abs_of_neg hx, lt_neg, ← Rat.cast_neg] at hq
+      exact hf _ ▸ hm hq
+  · apply mk_eq_zero_of_rat_btwn_pos (r := r) (mod_cast hq₀)
+    · rw [abs_of_pos hx] at hq
+      exact hf _ ▸ hm hq
+    · rw [abs_of_pos hx] at hr
+      exact hf _ ▸ hm hr
 
 end Field
 end ArchimedeanClass
