@@ -39,6 +39,8 @@ theorem IsPreconnected.infinite_of_nontrivial [T1Space X] {s : Set X} (h : IsPre
 theorem PreconnectedSpace.infinite [PreconnectedSpace X] [Nontrivial X] [T1Space X] : Infinite X :=
   infinite_univ_iff.mp <| isPreconnected_univ.infinite_of_nontrivial nontrivial_univ
 
+instance [PreconnectedSpace X] [Nontrivial X] [T1Space X] : Infinite X := PreconnectedSpace.infinite
+
 @[deprecated (since := "2025-03-21")]
 alias ConnectedSpace.infinite := PreconnectedSpace.infinite
 
@@ -51,4 +53,3 @@ instance (priority := 100) ConnectedSpace.neBot_nhdsWithin_compl_of_nontrivial_o
   replace contra := nonempty_inter isOpen_compl_singleton
     contra (compl_union_self _) (Set.nonempty_compl_of_nontrivial _) (singleton_nonempty _)
   simp [compl_inter_self {x}] at contra
-
