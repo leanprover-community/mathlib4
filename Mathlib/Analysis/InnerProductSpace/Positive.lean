@@ -182,7 +182,7 @@ theorem IsSymmetricProjection.sub_of_mul_eq_right {p q : E →ₗ[𝕜] E}
 theorem IsSymmetricProjection.le_iff_comp_eq_right {p q : E →ₗ[𝕜] E}
     (hp : p.IsSymmetricProjection) (hq : q.IsSymmetricProjection) : p ≤ q ↔ q ∘ₗ p = p := by
   refine ⟨fun ⟨h1, h2⟩ => ?_, fun hpq ↦
-    IsPositive.of_isSymmetricProjection (hp.sub_of_mul_eq_right hq hpq)⟩
+    IsPositive.of_isSymmetricProjection <| hp.sub_of_mul_eq_right hq hpq⟩
   rw [hq.isIdempotentElem.comp_eq_right_iff]
   intro a ha
   specialize h2 a
@@ -192,7 +192,7 @@ theorem IsSymmetricProjection.le_iff_comp_eq_right {p q : E →ₗ[𝕜] E}
     exact inner_self_eq_norm_sq _
   simp_rw [sub_apply, inner_sub_left, map_sub, hh hq, hh hp,
     hp.isIdempotentElem.mem_range_iff.mp ha, sub_nonneg, sq_le_sq, abs_norm] at h2
-  obtain ⟨U, _, rfl⟩ := isSymmetricProjection_iff_eq_starProjection.mp hq
+  obtain ⟨U, _, rfl⟩ := isSymmetricProjection_iff_eq_coe_starProjection.mp hq
   simpa [Submodule.starProjection_coe_eq_isCompl_projection] using
     U.mem_iff_norm_starProjection _ |>.mpr <| le_antisymm (U.norm_starProjection_apply_le a) h2
 
@@ -202,9 +202,7 @@ theorem _root_.Submodule.coe_starProjection_le_coe_starProjection_iff (U V : Sub
     U.starProjection.toLinearMap ≤ V.starProjection ↔ U ≤ V := by
   simp_rw [starProjection_isSymmetricProjection.le_iff_comp_eq_right
     starProjection_isSymmetricProjection, starProjection_coe_eq_isCompl_projection,
-    IsCompl.projection_isIdempotentElem _ |>.comp_eq_right_iff]
-  simp
-
+    IsCompl.projection_isIdempotentElem _ |>.comp_eq_right_iff, IsCompl.projection_range]
 
 end LinearMap
 
