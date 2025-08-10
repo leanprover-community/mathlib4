@@ -464,10 +464,10 @@ end LiftHom
 
 /-- Given a `UpperSet` of `MulArchimedeanClass`,
 all group elements belonging to these classes form a subsemigroup.
-This is not yet a subgroup because it doesn't contain the identity if s = ⊤. -/
+This is not yet a subgroup because it doesn't contain the identity if `s = ⊤`. -/
 @[to_additive "Given a `UpperSet` of `ArchimedeanClass`,
 all group elements belonging to these classes form a subsemigroup.
-This is not yet a subgroup because it doesn't contain the identity if s = ⊤."]
+This is not yet a subgroup because it doesn't contain the identity if `s = ⊤`."]
 def subsemigroup (s : UpperSet (MulArchimedeanClass M)) : Subsemigroup M where
   carrier := mk ⁻¹' s
   mul_mem' {a b} ha hb := by
@@ -497,7 +497,8 @@ def subgroup (s : UpperSet (MulArchimedeanClass M)) : Subgroup M :=
 variable {s : UpperSet (MulArchimedeanClass M)}
 
 @[to_additive]
-theorem subgroup_eq_of_ne_top (hs : s ≠ ⊤) : (subgroup s : Set M) = subsemigroup s := by
+theorem subsemigroup_eq_subgroup_of_ne_top (hs : s ≠ ⊤) :
+    subsemigroup s = (subgroup s : Set M)  := by
   simp [subgroup, hs]
 
 variable (M) in
@@ -505,18 +506,17 @@ variable (M) in
 theorem subgroup_eq_bot : subgroup (M := M) ⊤ = ⊥ := by
   simp [subgroup]
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem mem_subgroup_iff (hs : s ≠ ⊤) : a ∈ subgroup s ↔ mk a ∈ s := by
-  rw [← SetLike.mem_coe, subgroup_eq_of_ne_top hs]
-  exact Set.mem_preimage
+  simp [subgroup, subsemigroup, hs]
 
 variable (M) in
 @[to_additive]
 theorem subgroup_strictAntiOn : StrictAntiOn (subgroup (M := M)) (Set.Iio ⊤) := by
   intro s hs t ht hst
   rw [← SetLike.coe_ssubset_coe]
-  rw [subgroup_eq_of_ne_top (Set.mem_Iio.mp hs).ne_top]
-  rw [subgroup_eq_of_ne_top (Set.mem_Iio.mp ht).ne_top]
+  rw [← subsemigroup_eq_subgroup_of_ne_top (Set.mem_Iio.mp hs).ne_top]
+  rw [← subsemigroup_eq_subgroup_of_ne_top (Set.mem_Iio.mp ht).ne_top]
   refine Set.ssubset_iff_subset_ne.mpr ⟨by simpa [subsemigroup] using hst.le, ?_⟩
   contrapose! hst with heq
   apply le_of_eq
@@ -526,12 +526,11 @@ variable (M) in
 @[to_additive]
 theorem subgroup_antitone : Antitone (subgroup (M := M)) := by
   intro s t hst
-  obtain hs | rfl := ne_or_eq s ⊤
-  · obtain ht | rfl := ne_or_eq t ⊤
-    · exact ((subgroup_strictAntiOn M).le_iff_le
-        (Set.mem_Iio.mpr ht.lt_top) (Set.mem_Iio.mpr hs.lt_top)).mpr hst
-    · simp
+  obtain  rfl | hs := eq_or_ne s ⊤
   · rw [eq_top_iff.mpr hst]
+  obtain rfl | ht := eq_or_ne t ⊤
+  · simp
+  rwa [(subgroup_strictAntiOn M).le_iff_le ht.lt_top hs.lt_top]
 
 /-- An open ball defined by `MulArchimedeanClass.subgroup` of `UpperSet.Ioi A`.
 For `A = ⊤`, we assign the junk value `⊥`. -/
@@ -548,17 +547,12 @@ abbrev closedBallSubgroup (A : MulArchimedeanClass M) := subgroup (UpperSet.Ici 
 @[to_additive]
 theorem mem_ballSubgroup_iff {a : M} {A : MulArchimedeanClass M} (hA : A ≠ ⊤) :
     a ∈ ballSubgroup A ↔ A < mk a := by
-  have : UpperSet.Ioi A ≠ ⊤ := by
-    contrapose! hA
-    rw [UpperSet.ext_iff] at hA
-    simpa using hA
-  simp [mem_subgroup_iff this]
+  simp [hA]
 
 @[to_additive (attr := simp)]
 theorem mem_closedBallSubgroup_iff {a : M} {A : MulArchimedeanClass M} :
     a ∈ closedBallSubgroup A ↔ A ≤ mk a := by
-  have : UpperSet.Ici A ≠ ⊤ := by simp
-  simp [mem_subgroup_iff this]
+  simp
 
 variable (M) in
 @[to_additive (attr := simp)]
