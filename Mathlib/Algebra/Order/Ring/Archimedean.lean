@@ -106,6 +106,14 @@ theorem add_right_cancel_of_ne_top {x y z : ArchimedeanClass M} (hx : x ≠ ⊤)
   simp_rw [← add_comm x] at h
   exact add_left_cancel_of_ne_top hx h
 
+variable (M) in
+/-- `ArchimedeanClass.mk` defines a `AddValuation` on ring `M`. -/
+noncomputable
+def addValuation : AddValuation M (ArchimedeanClass M) := AddValuation.of mk
+  (by simp) (by simp) min_le_mk_add mk_mul
+
+@[simp] theorem addValuation_apply (a : M) : addValuation M a = mk a := rfl
+
 end Ring
 
 section Field
