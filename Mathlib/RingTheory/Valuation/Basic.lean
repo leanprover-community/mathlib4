@@ -344,17 +344,16 @@ variable [Nontrivial R] [NoZeroDivisors R] [DecidablePred fun x : R ↦ x = 0]
 variable (R Γ₀) in
 /-- The trivial valuation, sending everything to 1 other than 0. -/
 protected instance one : One (Valuation R Γ₀) where
-  one := {
-    __ : R →*₀ Γ₀ := 1
+  one :=
+  { __ : R →*₀ Γ₀ := 1
     map_add_le_max' x y := by
       simp only [ZeroHom.toFun_eq_coe, MonoidWithZeroHom.toZeroHom_coe,
         MonoidWithZeroHom.one_apply_def, le_sup_iff]
-      split_ifs <;> simp_all
-  }
+      split_ifs <;> simp_all }
 
 lemma one_apply_def (x : R) : (1 : Valuation R Γ₀) x = if x = 0 then 0 else 1 := rfl
 
-@[simp] lemma toMonoidWithZeroHom_one : ((1 : Valuation R Γ₀).toMonoidWithZeroHom) = 1 := rfl
+@[simp] lemma toMonoidWithZeroHom_one : (1 : Valuation R Γ₀).toMonoidWithZeroHom = 1 := rfl
 
 lemma one_apply_of_ne_zero {x : R} (hx : x ≠ 0) : (1 : Valuation R Γ₀) x = 1 := if_neg hx
 
