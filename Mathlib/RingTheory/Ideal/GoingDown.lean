@@ -128,7 +128,7 @@ instance of_flat [Module.Flat R S] : Algebra.HasGoingDown R S := by
   apply PrimeSpectrum.specComap_surjective_of_faithfullyFlat
 
 /-- Constructs a lift of a chain of prime ideals from `R` to `S` using the going-down property. -/
-noncomputable def liftOfLTSeries_toFun [Algebra.HasGoingDown R S]
+noncomputable def liftOfLTSeriesToFun [Algebra.HasGoingDown R S]
     (L : LTSeries (PrimeSpectrum R)) (q : PrimeSpectrum S) [q.asIdeal.LiesOver L.last.asIdeal] :
     (i : Fin (L.length + 1)) →
     {q : PrimeSpectrum S // q.asIdeal.LiesOver (L.toFun i).asIdeal} :=
@@ -136,25 +136,25 @@ noncomputable def liftOfLTSeries_toFun [Algebra.HasGoingDown R S]
     if h : i.val = L.length then
       ⟨q, (congr_arg L.toFun (Fin.ext (h.trans (Fin.val_last L.length).symm))) ▸ ‹_›⟩
     else
-      let prev := liftOfLTSeries_toFun L q ⟨i.val + 1, _⟩
+      let prev := liftOfLTSeriesToFun L q ⟨i.val + 1, _⟩
       let lift := @Ideal.exists_ideal_lt_liesOver_of_lt _ _ _ _ _ _ _ _ _ _ prev.val.asIdeal _
         prev.property <| L.step ⟨i, by omega⟩
       ⟨⟨lift.choose, lift.choose_spec.2.1⟩, lift.choose_spec.2.2⟩
 termination_by i => L.length - i.val
 
-/-- Shows that the lift constructed by `liftOfLTSeries_toFun` preserves the ordering of the given
+/-- Shows that the lift constructed by `liftOfLTSeriesToFun` preserves the ordering of the given
 chain. -/
 lemma liftOfLTSeries_step [Algebra.HasGoingDown R S]
     (L : LTSeries (PrimeSpectrum R)) (q : PrimeSpectrum S) [q.asIdeal.LiesOver L.last.asIdeal] :
     ∀ (j : Fin L.length),
-    (liftOfLTSeries_toFun L q (j.castSucc)).val
-      < (liftOfLTSeries_toFun L q (j.succ)).val := by
+    (liftOfLTSeriesToFun L q (j.castSucc)).val
+      < (liftOfLTSeriesToFun L q (j.succ)).val := by
   intro j
-  rw [liftOfLTSeries_toFun]
+  rw [liftOfLTSeriesToFun]
   simp only [show (↑j.castSucc ≠ L.length) from by simp; omega, dif_neg (not_false)]
   exact (@Ideal.exists_ideal_lt_liesOver_of_lt _ _ _ _ _ _ _ _ _ _
-    (liftOfLTSeries_toFun L q j.succ).val.asIdeal _
-      (liftOfLTSeries_toFun L q j.succ).property
+    (liftOfLTSeriesToFun L q j.succ).val.asIdeal _
+      (liftOfLTSeriesToFun L q j.succ).property
         (L.step (⟨j.val, by omega⟩))).choose_spec.1
 
 /-- Given an `R`-algebra `S` with the going-down property and a chain `L` of prime ideals in `R`,
@@ -163,7 +163,7 @@ chain in `S` of the same length which ends at `q`. -/
 noncomputable def liftOfLTSeries [Algebra.HasGoingDown R S]
     (L : LTSeries (PrimeSpectrum R)) (q : PrimeSpectrum S)
     [q.asIdeal.LiesOver L.last.asIdeal] : LTSeries (PrimeSpectrum S) :=
-  ⟨L.length, fun i => (liftOfLTSeries_toFun L q i).val, liftOfLTSeries_step L q⟩
+  ⟨L.length, fun i => (liftOfLTSeriesToFun L q i).val, liftOfLTSeries_step L q⟩
 
 /-- If `Spec S → Spec R` is surjective and `S` has the going down property over `R`, then
 `ringKrullDim R ≤ ringKrullDim S`. -/
