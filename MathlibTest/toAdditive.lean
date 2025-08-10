@@ -587,6 +587,6 @@ theorem mulTrivial' : True := trivial
 /-- info: (via `str` syntax) I am an additive docstring! -/
 #guard_msgs in
 run_cmd
-  let some doc ← findDocString? (← getEnv) `addTrivial'
+  let some doc ← findDocString? (← getEnv) ``addTrivial'
     | throwError "no `str` docstring found"
   logInfo doc
