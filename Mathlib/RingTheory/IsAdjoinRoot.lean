@@ -628,7 +628,7 @@ variable (hα hα₂) in
 /-- If `α` generates `S` as an algebra, then `S` is given by adjoining a root of `minpoly R α`. -/
 abbrev _root_.IsAdjoinRootMonic.mkOfAdjoinEqTop : IsAdjoinRootMonic S (minpoly R α) where
   __ := IsAdjoinRoot.mkOfAdjoinEqTop hα hα₂
-  Monic := minpoly.monic hα
+  monic := minpoly.monic hα
 
 @[simp]
 theorem mkOfAdjoinEqTop_root : (IsAdjoinRoot.mkOfAdjoinEqTop hα hα₂).root = α := by
@@ -709,7 +709,7 @@ abbrev mkOfPrimitiveElement {α : E} (hα : IsIntegral F α) (hα₂ : F⟮α⟯
 abbrev _root_.IsAdjoinRootMonic.mkOfPrimitiveElement
     {α : E} (hα : IsIntegral F α) (hα₂ : F⟮α⟯ = ⊤) : IsAdjoinRootMonic E (minpoly F α) where
   __ := IsAdjoinRoot.mkOfPrimitiveElement hα hα₂
-  Monic := minpoly.monic hα
+  monic := minpoly.monic hα
 
 end IsAdjoinRoot
 
