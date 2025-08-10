@@ -427,7 +427,7 @@ theorem center_eq_scalar_image :
 
 /-- For a commutative semiring `R`, the center of `Matrix n n R` is the range of `scalar n`
 (i.e., the span of `{1}`). -/
-@[simp] protected theorem center_eq_range [CommSemiring R] :
+@[simp] theorem center_eq_range [CommSemiring R] :
     Set.center (Matrix n n R) = Set.range (scalar n) := by
   rw [center_eq_scalar_image, Set.center_eq_univ, Set.image_univ]
 
