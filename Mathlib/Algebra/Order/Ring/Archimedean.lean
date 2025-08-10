@@ -27,9 +27,9 @@ which turns them into a `LinearOrderedAddCommGroupWithTop`.
 We give Archimedean class an additive structure, rather than a multiplicative one, for the following
 reasons:
 
-* In the ring version of Hahn embedding theorem, the subtype `ArchimedeanClassₒ M` of non-top
+* In the ring version of Hahn embedding theorem, the subtype `FiniteArchimedeanClass M` of non-top
   elements in `ArchimedeanClass M` naturally becomes the additive abelian group for the ring
-  `HahnSeries (ArchimedeanClassₒ M) ℝ`.
+  `HahnSeries (FiniteArchimedeanClass M) ℝ`.
 * The order we defined on `ArchimedeanClass M` matches the order on `AddValuation`, rather than the
   one on `Valuation`.
 -/
