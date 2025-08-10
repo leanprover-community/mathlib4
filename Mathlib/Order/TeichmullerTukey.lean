@@ -32,18 +32,6 @@ open Set Finite
 
 variable {α : Type*} (F : Set (Set α))
 
-lemma DirectedOn.exists_mem_subset_of_finite_of_subset_sUnion {c : Set (Set α)}
-    (cne : c.Nonempty) (cdir : DirectedOn (· ⊆ ·) c) {s : Set α} (sc : s ⊆ sUnion c)
-    (sfin : s.Finite) : ∃ t ∈ c, s ⊆ t := by
-  rw [← sfin.coe_toFinset, sUnion_eq_biUnion] at sc
-  have := DirectedOn.exists_mem_subset_of_finset_subset_biUnion cne cdir sc
-  exact sfin.coe_toFinset ▸ this
-
-lemma IsChain.exists_mem_subset_of_finite_of_subset_sUnion {c : Set (Set α)}
-    (cne : c.Nonempty) (cch : IsChain (· ⊆ ·) c) {s : Set α} (sc : s ⊆ sUnion c) (sfin : s.Finite) :
-    ∃ t ∈ c, s ⊆ t := DirectedOn.exists_mem_subset_of_finite_of_subset_sUnion
-      cne cch.directedOn sc sfin
-
 namespace Order
 
 /-- A family of sets $F$ is of finite character iff for every set $X$, $X ∈ F$ iff every finite
@@ -60,7 +48,7 @@ theorem IsOfFiniteCharacter.exists_maximal {F} (hF : IsOfFiniteCharacter F) {x :
   refine (hF (sUnion c)).mpr fun s sc sfin ↦ ?_
   /- Use the finite character property and the fact that any finite subset of the union is also a
   subset of some element of the chain. -/
-  obtain ⟨t, tc, st⟩ := cch.exists_mem_subset_of_finite_of_subset_sUnion cne sc sfin
+  obtain ⟨t, tc, st⟩ := cch.directedOn.exists_mem_subset_of_finite_of_subset_sUnion cne sfin sc
   exact (hF t).mp (cF tc) s st sfin
 
 end Order
