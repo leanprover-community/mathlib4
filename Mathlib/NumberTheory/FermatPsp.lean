@@ -6,6 +6,7 @@ Authors: Niels Voss
 import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.Order.Filter.Cofinite
+import Mathlib.Tactic.GCongr
 
 /-!
 # Fermat Pseudoprimes
@@ -118,7 +119,7 @@ theorem coprime_of_fermatPsp {n b : ℕ} (h : FermatPsp n b) (h₁ : 1 ≤ b) : 
 -/
 theorem fermatPsp_base_one {n : ℕ} (h₁ : 1 < n) (h₂ : ¬n.Prime) : FermatPsp n 1 := by
   refine ⟨show n ∣ 1 ^ (n - 1) - 1 from ?_, h₂, h₁⟩
-  exact show 0 = 1 ^ (n - 1) - 1 by norm_num ▸ dvd_zero n
+  exact show 0 = 1 ^ (n - 1) - 1 by simp ▸ dvd_zero n
 
 -- Lemmas that are needed to prove statements in this file, but aren't directly related to Fermat
 -- pseudoprimes
@@ -329,7 +330,7 @@ theorem exists_infinite_pseudoprimes {b : ℕ} (h : 1 ≤ b) (m : ℕ) :
     obtain ⟨p, ⟨hp₁, hp₂⟩⟩ := h
     have h₁ : 0 < b := pos_of_gt (Nat.succ_le_iff.mp b_ge_two)
     have h₂ : 4 ≤ b ^ 2 := pow_le_pow_left' b_ge_two 2
-    have h₃ : 0 < b ^ 2 - 1 := tsub_pos_of_lt (lt_of_lt_of_le (by norm_num) h₂)
+    have h₃ : 0 < b ^ 2 - 1 := tsub_pos_of_lt (lt_of_lt_of_le (by simp) h₂)
     have h₄ : 0 < b * (b ^ 2 - 1) := mul_pos h₁ h₃
     have h₅ : b * (b ^ 2 - 1) < p := by omega
     have h₆ : ¬p ∣ b * (b ^ 2 - 1) := Nat.not_dvd_of_pos_of_lt h₄ h₅

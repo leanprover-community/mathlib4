@@ -39,7 +39,7 @@ scoped[MeasureTheory] infixr:80 " ∗ " => MeasureTheory.Measure.conv
 
 @[to_additive]
 theorem lintegral_mconv_eq_lintegral_prod [MeasurableMul₂ M] {μ ν : Measure M}
-    {f : M → ℝ≥0∞} (hf : Measurable f):
+    {f : M → ℝ≥0∞} (hf : Measurable f) :
     ∫⁻ z, f z ∂(μ ∗ₘ ν) = ∫⁻ z, f (z.1 * z.2) ∂(μ.prod ν) := by
   rw [mconv, lintegral_map hf measurable_mul]
 
@@ -162,8 +162,8 @@ lemma map_conv_continuousLinearMap {E F : Type*} [AddCommMonoid E] [AddCommMonoi
     [OpensMeasurableSpace E] [BorelSpace F]
     {μ ν : Measure E} [SFinite μ] [SFinite ν]
     (L : E →L[ℝ] F) :
-    (μ ∗ ν).map L = (μ.map L).conv (ν.map L) := by
-  suffices (μ ∗ ν).map (L : E →+ F) = (μ.map (L : E →+ F)).conv (ν.map (L : E →+ F)) by simpa
+    (μ ∗ ν).map L = (μ.map L) ∗ (ν.map L) := by
+  suffices (μ ∗ ν).map (L : E →+ F) = (μ.map (L : E →+ F)) ∗ (ν.map (L : E →+ F)) by simpa
   rw [map_conv_addMonoidHom]
   rw [AddMonoidHom.coe_coe]
   fun_prop

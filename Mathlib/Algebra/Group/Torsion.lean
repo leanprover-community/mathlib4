@@ -11,12 +11,6 @@ import Mathlib.Tactic.MkIffOfInductiveProp
 
 This file defines torsion-free monoids as those monoids `M` for which `n • · : M → M` is injective
 for all non-zero natural number `n`.
-
-## TODO
-
-Replace `Monoid.IsTorsionFree`, which is mathematically incorrect for monoids which are not groups.
-This probably means we also want to get rid of `NoZeroSMulDivisors`, which is mathematically
-incorrect for the same reason.
 -/
 
 open Function
@@ -40,6 +34,9 @@ class IsMulTorsionFree where
   protected pow_left_injective ⦃n : ℕ⦄ (hn : n ≠ 0) : Injective fun a : M ↦ a ^ n
 
 attribute [to_additive existing] isMulTorsionFree_iff
+
+instance [AddCommMonoid M] [IsAddTorsionFree M] : Lean.Grind.NoNatZeroDivisors M where
+  no_nat_zero_divisors _ _ _ hk habk := IsAddTorsionFree.nsmul_right_injective hk habk
 
 @[to_additive] instance Subsingleton.to_isMulTorsionFree [Subsingleton M] : IsMulTorsionFree M where
   pow_left_injective _ _ := injective_of_subsingleton _

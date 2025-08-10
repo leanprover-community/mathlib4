@@ -42,7 +42,7 @@ add_decl_doc RingCon.toAddCon
 variable {R : Type*}
 
 /-- The inductively defined smallest ring congruence relation containing a given binary
-    relation. -/
+relation. -/
 inductive RingConGen.Rel [Add R] [Mul R] (r : R → R → Prop) : R → R → Prop
   | of : ∀ x y, r x y → RingConGen.Rel r x y
   | refl : ∀ x, RingConGen.Rel r x x
@@ -54,7 +54,7 @@ inductive RingConGen.Rel [Add R] [Mul R] (r : R → R → Prop) : R → R → Pr
       RingConGen.Rel r (w * y) (x * z)
 
 /-- The inductively defined smallest ring congruence relation containing a given binary
-    relation. -/
+relation. -/
 def ringConGen [Add R] [Mul R] (r : R → R → Prop) : RingCon R where
   r := RingConGen.Rel r
   iseqv := ⟨RingConGen.Rel.refl, @RingConGen.Rel.symm _ _ _ _, @RingConGen.Rel.trans _ _ _ _⟩

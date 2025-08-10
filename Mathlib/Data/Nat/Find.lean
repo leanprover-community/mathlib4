@@ -72,7 +72,7 @@ protected theorem find_min : ∀ {m : ℕ}, m < Nat.find H → ¬p m :=
 protected theorem find_min' {m : ℕ} (h : p m) : Nat.find H ≤ m :=
   Nat.le_of_not_gt fun l => Nat.find_min H l h
 
-lemma find_eq_iff (h : ∃ n : ℕ, p n) : Nat.find h = m ↔ p m ∧ ∀ n < m, ¬ p n := by
+lemma find_eq_iff (h : ∃ n : ℕ, p n) : Nat.find h = m ↔ p m ∧ ∀ n < m, ¬p n := by
   constructor
   · rintro rfl
     exact ⟨Nat.find_spec h, fun _ ↦ Nat.find_min h⟩
@@ -84,12 +84,12 @@ lemma find_eq_iff (h : ∃ n : ℕ, p n) : Nat.find h = m ↔ p m ∧ ∀ n < m,
     fun ⟨_, hmn, hm⟩ ↦ Nat.lt_of_le_of_lt (Nat.find_min' h hm) hmn⟩
 
 @[simp] lemma find_le_iff (h : ∃ n : ℕ, p n) (n : ℕ) : Nat.find h ≤ n ↔ ∃ m ≤ n, p m := by
-  simp only [exists_prop, ← Nat.lt_succ_iff, find_lt_iff]
+  simp only [← Nat.lt_succ_iff, find_lt_iff]
 
-@[simp] lemma le_find_iff (h : ∃ n : ℕ, p n) (n : ℕ) : n ≤ Nat.find h ↔ ∀ m < n, ¬ p m := by
+@[simp] lemma le_find_iff (h : ∃ n : ℕ, p n) (n : ℕ) : n ≤ Nat.find h ↔ ∀ m < n, ¬p m := by
   simp only [← not_lt, find_lt_iff, not_exists, not_and]
 
-@[simp] lemma lt_find_iff (h : ∃ n : ℕ, p n) (n : ℕ) : n < Nat.find h ↔ ∀ m ≤ n, ¬ p m := by
+@[simp] lemma lt_find_iff (h : ∃ n : ℕ, p n) (n : ℕ) : n < Nat.find h ↔ ∀ m ≤ n, ¬p m := by
   simp only [← succ_le_iff, le_find_iff, succ_le_succ_iff]
 
 @[simp] lemma find_eq_zero (h : ∃ n : ℕ, p n) : Nat.find h = 0 ↔ p 0 := by simp [find_eq_iff]
@@ -127,7 +127,7 @@ lemma find_congr' [DecidablePred q] {hp : ∃ n, p n} {hq : ∃ n, q n} (hpq : �
 lemma find_le {h : ∃ n, p n} (hn : p n) : Nat.find h ≤ n :=
   (Nat.find_le_iff _ _).2 ⟨n, le_refl _, hn⟩
 
-lemma find_comp_succ (h₁ : ∃ n, p n) (h₂ : ∃ n, p (n + 1)) (h0 : ¬ p 0) :
+lemma find_comp_succ (h₁ : ∃ n, p n) (h₂ : ∃ n, p (n + 1)) (h0 : ¬p 0) :
     Nat.find h₁ = Nat.find h₂ + 1 := by
   refine (find_eq_iff _).2 ⟨Nat.find_spec h₂, fun n hn ↦ ?_⟩
   cases n
@@ -153,7 +153,7 @@ end Find
 
 section FindGreatest
 
-/-- `Nat.findGreatest P n` is the largest `i ≤ bound` such that `P i` holds, or `0` if no such `i`
+/-- `Nat.findGreatest P n` is the largest `i ≤ n` such that `P i` holds, or `0` if no such `i`
 exists -/
 def findGreatest (P : ℕ → Prop) [DecidablePred P] : ℕ → ℕ
   | 0 => 0
@@ -179,7 +179,7 @@ lemma findGreatest_eq_iff :
   induction k generalizing m with
   | zero =>
     rw [eq_comm, Iff.comm]
-    simp only [zero_eq, Nat.le_zero, ne_eq, findGreatest_zero, and_iff_left_iff_imp]
+    simp only [Nat.le_zero, ne_eq, findGreatest_zero, and_iff_left_iff_imp]
     rintro rfl
     exact ⟨fun h ↦ (h rfl).elim, fun n hlt heq ↦ by omega⟩
   | succ k ihk =>
@@ -189,14 +189,14 @@ lemma findGreatest_eq_iff :
       · rintro rfl
         exact ⟨le_refl _, fun _ ↦ hk, fun n hlt hle ↦ by omega⟩
       · rintro ⟨hle, h0, hm⟩
-        rcases Decidable.eq_or_lt_of_le hle with (rfl | hlt)
-        exacts [rfl, (hm hlt (le_refl _) hk).elim]
+        rcases Decidable.lt_or_eq_of_le hle with hlt | rfl
+        exacts [(hm hlt (le_refl _) hk).elim, rfl]
     · rw [findGreatest_of_not hk, ihk]
       constructor
       · rintro ⟨hle, hP, hm⟩
         refine ⟨le_trans hle k.le_succ, hP, fun n hlt hle ↦ ?_⟩
-        rcases Decidable.eq_or_lt_of_le hle with (rfl | hlt')
-        exacts [hk, hm hlt <| Nat.lt_succ_iff.1 hlt']
+        rcases Decidable.lt_or_eq_of_le hle with hlt' | rfl
+        exacts [hm hlt <| Nat.lt_succ_iff.1 hlt', hk]
       · rintro ⟨hle, hP, hm⟩
         refine ⟨Nat.lt_succ_iff.1 (lt_of_le_of_ne hle ?_), hP,
           fun n hlt hle ↦ hm hlt (le_trans hle k.le_succ)⟩

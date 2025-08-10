@@ -242,14 +242,14 @@ theorem uncurry_pre (f : B ⟶ A) [Exponentiable B] (X : C) :
 
 theorem coev_app_comp_pre_app (f : B ⟶ A) [Exponentiable B] :
     (exp.coev A).app X ≫ (pre f).app (A ⊗ X) =
-      (exp.coev B).app X ≫ (exp B).map (f ⊗ 𝟙 _) := by
+      (exp.coev B).app X ≫ (exp B).map (f ⊗ₘ 𝟙 _) := by
   rw [tensorHom_id]
   exact unit_conjugateEquiv _ _ ((tensoringLeft _).map f) X
 
 @[simp]
 theorem pre_id (A : C) [Exponentiable A] : pre (𝟙 A) = 𝟙 _ := by
   simp only [pre, Functor.map_id]
-  aesop_cat
+  cat_disch
 
 @[simp]
 theorem pre_map {A₁ A₂ A₃ : C} [Exponentiable A₁] [Exponentiable A₂] [Exponentiable A₃]

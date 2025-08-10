@@ -45,7 +45,7 @@ theorem prod_X_add_C_eq_sum_esymm (s : Multiset R) :
     rw [mem_powersetCard] at ht
     dsimp
     rw [prod_hom' s (Polynomial.C : R →+* R[X])]
-    simp [ht, map_const, prod_replicate, prod_hom', map_id', card_sub]
+    simp [ht, prod_replicate, map_id', card_sub]
 
 /-- Vieta's formula for the coefficients of the product of linear terms `X + λ` where `λ` runs
 through a multiset `s` : the `k`th coefficient is the symmetric function `esymm (card s - k) s`. -/
@@ -53,15 +53,7 @@ theorem prod_X_add_C_coeff (s : Multiset R) {k : ℕ} (h : k ≤ Multiset.card s
     (s.map fun r => X + C r).prod.coeff k = s.esymm (Multiset.card s - k) := by
   convert Polynomial.ext_iff.mp (prod_X_add_C_eq_sum_esymm s) k using 1
   simp_rw [finset_sum_coeff, coeff_C_mul_X_pow]
-  rw [Finset.sum_eq_single_of_mem (Multiset.card s - k) _]
-  · rw [if_pos (Nat.sub_sub_self h).symm]
-  · intro j hj1 hj2
-    suffices k ≠ card s - j by rw [if_neg this]
-    intro hn
-    rw [hn, Nat.sub_sub_self (Nat.lt_succ_iff.mp (Finset.mem_range.mp hj1))] at hj2
-    exact Ne.irrefl hj2
-  · rw [Finset.mem_range]
-    exact Nat.lt_succ_of_le (Nat.sub_le (Multiset.card s) k)
+  rw [Finset.sum_eq_single_of_mem (Multiset.card s - k) _] <;> grind [Finset.mem_range]
 
 theorem prod_X_add_C_coeff' {σ} (s : Multiset σ) (r : σ → R) {k : ℕ} (h : k ≤ Multiset.card s) :
     (s.map fun i => X + C (r i)).prod.coeff k = (s.map r).esymm (Multiset.card s - k) := by

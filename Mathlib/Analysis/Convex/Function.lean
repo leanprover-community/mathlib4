@@ -448,7 +448,7 @@ section Module
 
 variable [Module 𝕜 E] [Module 𝕜 F] [SMul 𝕜 β]
 
-/-- If `g` is convex on `s`, so is `(f ∘ g)` on `f ⁻¹' s` for a linear `f`. -/
+/-- If `f` is convex on `s`, so is `(f ∘ g)` on `g ⁻¹' s` for a linear `g`. -/
 theorem ConvexOn.comp_linearMap {f : F → β} {s : Set F} (hf : ConvexOn 𝕜 s f) (g : E →ₗ[𝕜] F) :
     ConvexOn 𝕜 (g ⁻¹' s) (f ∘ g) :=
   ⟨hf.1.linear_preimage _, fun x hx y hy a b ha hb hab =>
@@ -456,7 +456,7 @@ theorem ConvexOn.comp_linearMap {f : F → β} {s : Set F} (hf : ConvexOn 𝕜 s
       f (g (a • x + b • y)) = f (a • g x + b • g y) := by rw [g.map_add, g.map_smul, g.map_smul]
       _ ≤ a • f (g x) + b • f (g y) := hf.2 hx hy ha hb hab⟩
 
-/-- If `g` is concave on `s`, so is `(g ∘ f)` on `f ⁻¹' s` for a linear `f`. -/
+/-- If `f` is concave on `s`, so is `(g ∘ f)` on `g ⁻¹' s` for a linear `g`. -/
 theorem ConcaveOn.comp_linearMap {f : F → β} {s : Set F} (hf : ConcaveOn 𝕜 s f) (g : E →ₗ[𝕜] F) :
     ConcaveOn 𝕜 (g ⁻¹' s) (f ∘ g) :=
   hf.dual.comp_linearMap g
@@ -1026,7 +1026,7 @@ theorem OrderIso.convexOn_symm (f : α ≃o β) (hf : ConcaveOn 𝕜 univ f) :
   refine ⟨convex_univ, fun x _ y _ a b ha hb hab => ?_⟩
   obtain ⟨x', hx''⟩ := f.surjective.exists.mp ⟨x, rfl⟩
   obtain ⟨y', hy''⟩ := f.surjective.exists.mp ⟨y, rfl⟩
-  simp only [hx'', hy'', OrderIso.symm_apply_apply, gt_iff_lt]
+  simp only [hx'', hy'', OrderIso.symm_apply_apply]
   rw [← f.le_iff_le, OrderIso.apply_symm_apply]
   exact hf.2 (by simp : x' ∈ univ) (by simp : y' ∈ univ) ha hb hab
 
@@ -1045,7 +1045,7 @@ theorem OrderIso.concaveOn_symm (f : α ≃o β) (hf : ConvexOn 𝕜 univ f) :
   refine ⟨convex_univ, fun x _ y _ a b ha hb hab => ?_⟩
   obtain ⟨x', hx''⟩ := f.surjective.exists.mp ⟨x, rfl⟩
   obtain ⟨y', hy''⟩ := f.surjective.exists.mp ⟨y, rfl⟩
-  simp only [hx'', hy'', OrderIso.symm_apply_apply, gt_iff_lt]
+  simp only [hx'', hy'', OrderIso.symm_apply_apply]
   rw [← f.le_iff_le, OrderIso.apply_symm_apply]
   exact hf.2 (by simp : x' ∈ univ) (by simp : y' ∈ univ) ha hb hab
 
@@ -1065,7 +1065,7 @@ lemma StrictConvexOn.eq_of_isMinOn (hf : StrictConvexOn 𝕜 s f) (hfx : IsMinOn
     (hfy : IsMinOn f s y) (hx : x ∈ s) (hy : y ∈ s) : x = y := by
   by_contra hxy
   let z := (2 : 𝕜)⁻¹ • x + (2 : 𝕜)⁻¹ • y
-  have hz : z ∈ s := hf.1 hx hy (by norm_num) (by norm_num) <| by norm_num
+  have hz : z ∈ s := hf.1 hx hy (by simp) (by simp) <| by norm_num
   refine lt_irrefl (f z) ?_
   calc
     f z < _ := hf.2 hx hy hxy (by norm_num) (by norm_num) <| by norm_num

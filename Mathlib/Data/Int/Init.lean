@@ -101,12 +101,12 @@ where
   /-- The positive case of `Int.inductionOn'`. -/
   pos : ∀ n : ℕ, motive (b + n)
   | 0 => cast (by simp) zero
-  | n+1 => cast (by rw [Int.add_assoc]; rfl) <|
+  | n + 1 => cast (by rw [Int.add_assoc]; rfl) <|
     succ _ (Int.le_add_of_nonneg_right (natCast_nonneg _)) (pos n)
   /-- The negative case of `Int.inductionOn'`. -/
   neg : ∀ n : ℕ, motive (b + -[n+1])
   | 0 => pred _ Int.le_rfl zero
-  | n+1 => by
+  | n + 1 => by
     refine cast (by rw [Int.add_sub_assoc]; rfl) (pred _ (Int.le_of_lt ?_) (neg n))
     omega
 
@@ -120,7 +120,7 @@ lemma inductionOn'_sub_one (hz : z ≤ b) :
   apply cast_eq_iff_heq.mpr
   obtain ⟨n, hn⟩ := Int.eq_negSucc_of_lt_zero (show z - 1 - b < 0 by omega)
   rw [hn]
-  obtain _|n := n
+  obtain _ | n := n
   · change _ = -1 at hn
     have : z = b := by omega
     subst this; rw [inductionOn'_self]; exact heq_of_eq rfl
@@ -196,7 +196,7 @@ lemma ediv_of_neg_of_pos {a b : ℤ} (Ha : a < 0) (Hb : 0 < b) : ediv a b = -((-
 
 /-! ### mod -/
 
-@[simp, norm_cast] lemma natCast_mod (m n : ℕ) : (↑(m % n) : ℤ) = ↑m % ↑n := natCast_emod m n
+@[simp, norm_cast] lemma natCast_mod (m n : ℕ) : (↑(m % n) : ℤ) = ↑m % ↑n := rfl
 
 @[deprecated (since := "2025-04-16")] alias add_emod_eq_add_mod_right := add_emod_eq_add_emod_right
 
@@ -232,7 +232,7 @@ lemma div_le_div_iff_of_dvd_of_pos_of_neg (hb : 0 < b) (hd : d < 0) (hba : b ∣
     a / b ≤ c / d ↔ c * b ≤ d * a :=
   ediv_le_ediv_iff_of_dvd_of_pos_of_neg hb hd hba hdc
 
-lemma div_le_div_iff_of_dvd_of_neg_of_pos (hb : b < 0) (hd : 0 < d) (hba : b ∣ a)  (hdc : d ∣ c) :
+lemma div_le_div_iff_of_dvd_of_neg_of_pos (hb : b < 0) (hd : 0 < d) (hba : b ∣ a) (hdc : d ∣ c) :
     a / b ≤ c / d ↔ c * b ≤ d * a :=
   ediv_le_ediv_iff_of_dvd_of_neg_of_pos hb hd hba hdc
 
