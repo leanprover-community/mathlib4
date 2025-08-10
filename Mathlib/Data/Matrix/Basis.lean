@@ -419,16 +419,11 @@ alias mem_range_scalar_iff_commute_stdBasisMatrix' := mem_range_scalar_iff_commu
 /-- The center of `Matrix n n α` is equal to the image of the center of `α` under `scalar n`. -/
 theorem center_eq_scalar_image :
     Set.center (Matrix n n α) = scalar n '' Set.center α := Set.ext fun x ↦ by
-  obtain _ | hn := isEmpty_or_nonempty n
-  · simpa [Semigroup.mem_center_iff, nontriviality] using .intro 1 (by simp)
-  obtain ⟨i⟩ := hn
   simp_rw [Set.mem_image, Semigroup.mem_center_iff]
-  refine ⟨fun hx ↦ ?_, ?_⟩
-  · obtain ⟨x, rfl⟩ := mem_range_scalar_iff_commute_single'.mpr fun _ _ ↦ hx _
-    refine ⟨_, fun r ↦ ?_, rfl⟩
-    convert congr($(hx (single i i r)) i i) <;> simp
-  · rintro ⟨x, hx, rfl⟩
-    exact fun y ↦ scalar_commute x (fun r' ↦ (hx r').symm) y |>.symm
+  refine ⟨fun hx ↦ ?_, fun ⟨x, hx, eq⟩ y ↦ eq ▸ scalar_commute x (hx · |>.symm) y |>.symm⟩
+  refine (isEmpty_or_nonempty n).elim (fun _ ↦ ⟨1, by simp [nontriviality]⟩) (fun ⟨i⟩ ↦ ?_)
+  obtain ⟨x, rfl⟩ := mem_range_scalar_iff_commute_single'.mpr fun _ _ ↦ hx _
+  exact ⟨_, fun r ↦ by convert congr($(hx (single i i r)) i i) <;> simp, rfl⟩
 
 /-- For a commutative semiring `R`, the center of `Matrix n n R` is the range of `scalar n`
 (i.e., the span of `{1}`). -/
