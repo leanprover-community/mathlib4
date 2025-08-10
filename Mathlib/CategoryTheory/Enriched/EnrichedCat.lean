@@ -46,8 +46,6 @@ open EnrichedCategory ForgetEnrichment
 
 variable {C D E E' : EnrichedCat.{w, v, u} V}
 
-#check Functor.whiskerLeft
-
 /-- Whisker a `V`-enriched natural transformation on the left. -/
 @[simps!]
 def whiskerLeft
