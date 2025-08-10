@@ -22,9 +22,9 @@ The key point being that it reduces bounding a supremum over points "close" in `
 set of size up to `|J|²`) to bounding a supremum over a set of points with size linear in `|J|`
 (whose points are still "close").
 
-This file was written with the goal of being used in the proof of a Kolmogorov–Chentsov theorem
-for general metric spaces. In that application `f(s)` is random and our goal is to find
-an upper bound on the expectation of `sup_{s, t ∈ J : d(s, t) ≤ c} d(f(s), f(t))`.
+This file was written with the goal of being used in the proof of a Kolmogorov–Chentsov theorem.
+In that application `f(s)` is random and our goal is to find an upper bound on the expectation
+of `sup_{s, t ∈ J : d(s, t) ≤ c} d(f(s), f(t))`.
 The way we deal with the expectation of a supremum is to bound it by a sum over the pairs.
 Suppose for simplicity that for all `u`, if `d(s, t) ≤ u` then `𝔼[d(f(s), f(t))] ≤ u`.
 If we work directly on the sum over all pairs we get a final upper bound `|J|² c`.
@@ -401,13 +401,27 @@ end pairReduction
 variable [DecidableEq T]
 
 open pairReduction in
-theorem pair_reduction (hJ_card : #J ≤ a ^ n) (ha : 1 < a)
-    (E : Type*) [PseudoEMetricSpace E] :
+theorem pair_reduction (hJ_card : #J ≤ a ^ n) (E : Type*) [PseudoEMetricSpace E] :
     ∃ K : Finset (T × T), K ⊆ J.product J
       ∧ #K ≤ a * #J
       ∧ (∀ s t, (s, t) ∈ K → edist s t ≤ n * c)
       ∧ (∀ f : T → E,
         ⨆ (s : J) (t : { t : J // edist s t ≤ c}), edist (f s) (f t)
-        ≤ 2 * ⨆ p : K, edist (f p.1.1) (f p.1.2)) :=
-  ⟨pairSet J a c, pairSet_subset, card_pairSet_le ha hJ_card,
-    fun _ _ ↦ edist_le_of_mem_pairSet ha hJ_card, iSup_edist_pairSet ha⟩
+        ≤ 2 * ⨆ p : K, edist (f p.1.1) (f p.1.2)) := by
+  rcases le_or_gt a 1 with ha1 | ha1
+  · rcases isEmpty_or_nonempty J with hJ | hJ
+    · simp only [Finset.isEmpty_coe_sort] at hJ
+      simp [hJ]
+    obtain ⟨x₀, rfl⟩ : ∃ x₀, J = {x₀} := by
+      rw [← Finset.card_eq_one]
+      refine le_antisymm ?_ ?_
+      · suffices (#J : ENNReal) ≤ 1 by norm_cast at this
+        refine hJ_card.trans ?_
+        by_cases hn : n = 0
+        · simp [hn]
+        conv_rhs => rw [← one_pow n]
+        exact ENNReal.pow_le_pow_left hn ha1
+      · rwa [Finset.one_le_card, ← Finset.nonempty_coe_sort]
+    simp_all
+  · exact ⟨pairSet J a c, pairSet_subset, card_pairSet_le ha1 hJ_card,
+      fun _ _ ↦ edist_le_of_mem_pairSet ha1 hJ_card, iSup_edist_pairSet ha1⟩
