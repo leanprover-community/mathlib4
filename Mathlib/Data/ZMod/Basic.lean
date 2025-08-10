@@ -732,11 +732,8 @@ theorem mul_inv_eq_gcd {n : ℕ} (a : ZMod n) : a * a⁻¹ = Nat.gcd a.val n := 
   · simpa [ZMod.val_one'' hn] using mul_inv_eq_gcd (1 : ZMod n)
 
 @[simp]
-theorem natCast_mod (a : ℕ) (n : ℕ) : ((a % n : ℕ) : ZMod n) = a := by
-  conv =>
-      rhs
-      rw [← Nat.mod_add_div a n]
-  simp
+theorem natCast_mod (a : ℕ) (n : ℕ) : ((a % n : ℕ) : ZMod n) = a :=
+  Eq.symm (CharP.cast_eq_mod (ZMod n) n a)
 
 theorem eq_iff_modEq_nat (n : ℕ) {a b : ℕ} : (a : ZMod n) = b ↔ a ≡ b [MOD n] := by
   cases n
