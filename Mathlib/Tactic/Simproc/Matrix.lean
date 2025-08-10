@@ -120,15 +120,9 @@ example : (!![1, 2, 3; 4, 5, 6]ᵀ : Matrix (Fin (2+1)) (Fin 2) ℤ) = !![1, 4; 
   rw [transpose_of% 2 3]
 ``` -/
 elab:max (name := transpose_tac_elab)
-    "transpose_of% " mStx:term:max nStx:term:max : term => do
+    "transpose_of% " mStx:num nStx:num : term => do
   let u ← Lean.Meta.mkFreshLevelMVar
-  let m : Q(Nat) ← Term.elabTermEnsuringType mStx (mkConst ``Nat)
-  let n : Q(Nat) ← Term.elabTermEnsuringType nStx (mkConst ``Nat)
-  let some m ← (evalNat m).run
-    | throwErrorAt mStx "Expecting a natural number, have{indentD m}"
-  let some n ← (evalNat n).run
-    | throwErrorAt nStx "Expecting a natural number, have{indentD n}"
-  return mkTransposeTheorem u m n
+  return mkTransposeTheorem u mStx.getNat nStx.getNat
 
 example (u : Matrix (Fin 2) (Fin 3) ℤ) (v : Matrix (Fin 3) (Fin 2) ℤ)
     (hu : u = !![1, 2, 3; 4, 5, 6]) (hv : v = !![1, 4; 2, 5; 3, 6]) :
