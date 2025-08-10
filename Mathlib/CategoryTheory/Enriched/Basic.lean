@@ -271,6 +271,12 @@ theorem forgetEnrichment_comp {X Y Z : ForgetEnrichment W C} (f : X ⟶ Y) (g : 
         eComp W _ _ _ :=
   rfl
 
+@[simp]
+theorem ForgetEnrichment.homOf_comp {X Y Z : C} (f : 𝟙_ W ⟶ (X ⟶[W] Y)) (g : 𝟙_ W ⟶ (Y ⟶[W] Z)) :
+    homOf W ((λ_ _).inv ≫ (f ⊗ₘ g) ≫ eComp W ..) = homOf W f ≫ homOf W g := by
+  rw [← Category.assoc]
+  rfl
+
 end
 
 /-- A `V`-functor `F` between `V`-enriched categories
