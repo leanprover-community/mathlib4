@@ -342,3 +342,19 @@ There are four types of theorems that are used a bit differently.
     is used together with `aesop` to discharge the `2 ≤ ∞` subgoal.
 
 -/
+
+namespace Function
+
+/-! # Injectivity -/
+
+attribute [fun_prop] Injective injective_id Injective.comp
+
+/-! # Surjectivity -/
+
+attribute [fun_prop] Surjective surjective_id Surjective.comp
+
+/-! # Bijectivity -/
+
+attribute [fun_prop] Bijective bijective_id Bijective.comp Bijective.injective Bijective.surjective
+
+end Function
