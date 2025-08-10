@@ -6,6 +6,7 @@ Authors: Kenny Lau
 import Mathlib.LinearAlgebra.Matrix.Charpoly.LinearMap
 import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
 import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
+import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
 # Integral closure of a subring.
@@ -228,3 +229,30 @@ instance Algebra.IsIntegral.prod [Algebra.IsIntegral R A] [Algebra.IsIntegral R 
     (Algebra.isIntegral_def.mp ‹_› x.1).pair (Algebra.isIntegral_def.mp ‹_› x.2)
 
 end
+
+section BaseChange
+
+variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+variable (B : Type*) [CommRing B] [Algebra R B]
+
+open scoped TensorProduct in
+lemma IsIntegral.base_change [Algebra.IsIntegral R A] :
+    Algebra.IsIntegral B (B ⊗[R] A) := by
+  refine ⟨fun x => ?_⟩
+  induction x using TensorProduct.induction_on with
+  | zero => exact isIntegral_zero
+  | tmul b a =>
+    obtain ⟨p, hp_monic, hp_eval⟩ := Algebra.IsIntegral.isIntegral (R := R) a
+    have a_int : IsIntegral B ((1 : B) ⊗ₜ[R] a) := by
+      refine ⟨p.map (algebraMap R B), hp_monic.map (algebraMap R B), eval₂_map (p := p)
+        (algebraMap R B) _ ((1 : B) ⊗ₜ[R] a) ▸ Eq.symm ?_⟩
+      have diamond := (IsScalarTower.algebraMap_eq R B (B ⊗[R] A)) ▸
+        (@IsScalarTower.algebraMap_eq _ _ _ _ _ _ _ Algebra.TensorProduct.rightAlgebra _ _)
+      rw [diamond, ←map_zero (@algebraMap A (B ⊗[R] A) _ _ Algebra.TensorProduct.rightAlgebra),
+        ←hp_eval]
+      exact hom_eval₂ _ _ _ a
+    have b_int : IsIntegral B (b ⊗ₜ[R] (1 : A)) := isIntegral_algebraMap
+    simpa only [Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul] using b_int.mul a_int
+  | add _ _ hx hy => exact hx.add hy
+
+end BaseChange
