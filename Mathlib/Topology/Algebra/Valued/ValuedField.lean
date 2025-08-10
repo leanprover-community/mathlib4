@@ -74,7 +74,7 @@ end InversionEstimate
 open Valued
 
 /-- The topology coming from a valuation on a division ring makes it a topological division ring
-    [BouAC, VI.5.1 middle of Proposition 1] -/
+[BouAC, VI.5.1 middle of Proposition 1] -/
 instance (priority := 100) Valued.isTopologicalDivisionRing [Valued K Γ₀] :
     IsTopologicalDivisionRing K :=
   { (by infer_instance : IsTopologicalRing K) with
@@ -162,7 +162,7 @@ instance (priority := 100) completable : CompletableTopField K :=
         apply mem_of_superset (Filter.inter_mem M₀_in M₁_in)
         exact subset_preimage_image _ _
       · rintro _ ⟨x, ⟨x_in₀, x_in₁⟩, rfl⟩ _ ⟨y, ⟨_, y_in₁⟩, rfl⟩
-        simp only [mem_setOf_eq]
+        simp only
         specialize H₁ x x_in₁ y y_in₁
         replace x_in₀ := H₀ x x_in₀
         clear H₀
@@ -310,7 +310,7 @@ theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :
   let γ₀ := extensionValuation x
   suffices γ₀ ≠ 0 → (x ∈ closure ((↑) '' { x : K | v x < (γ : Γ₀) }) ↔ γ₀ < (γ : Γ₀)) by
     rcases eq_or_ne γ₀ 0 with h | h
-    · simp only [h, (Valuation.zero_iff _).mp h, mem_setOf_eq, Valuation.map_zero, Units.zero_lt,
+    · simp only [(Valuation.zero_iff _).mp h, mem_setOf_eq, Valuation.map_zero, Units.zero_lt,
         iff_true]
       apply subset_closure
       exact ⟨0, by simp only [mem_setOf_eq, Valuation.map_zero, Units.zero_lt, true_and]; rfl⟩
@@ -342,6 +342,11 @@ noncomputable instance valuedCompletion : Valued (hat K) Γ₀ where
 @[simp]
 theorem valuedCompletion_apply (x : K) : Valued.v (x : hat K) = v x :=
   extension_extends x
+
+instance {R : Type*} [CommSemiring R] [Algebra R K] [UniformContinuousConstSMul R K]
+    [FaithfulSMul R K] : FaithfulSMul R (hat K) := by
+  rw [faithfulSMul_iff_algebraMap_injective R (hat K)]
+  exact (FaithfulSMul.algebraMap_injective K (hat K)).comp (FaithfulSMul.algebraMap_injective R K)
 
 end Valued
 

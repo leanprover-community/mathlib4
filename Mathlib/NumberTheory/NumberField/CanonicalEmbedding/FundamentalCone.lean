@@ -17,7 +17,7 @@ mixed space that is a fundamental domain for the action of `(𝓞 K)ˣ` modulo t
 ## Main definitions and results
 
 * `NumberField.mixedEmbedding.unitSMul`: the action of `(𝓞 K)ˣ` on the mixed space defined, for
-`u : (𝓞 K)ˣ`, by multiplication component by component with `mixedEmbedding K u`.
+  `u : (𝓞 K)ˣ`, by multiplication component by component with `mixedEmbedding K u`.
 
 * `NumberField.mixedEmbedding.fundamentalCone`: a cone in the mixed space, ie. a subset stable
   by multiplication by a nonzero real number, see `smul_mem_of_mem`, that is also a fundamental
@@ -174,7 +174,7 @@ open Classical in
 a nonzero real number, see `smul_mem_of_mem`, that is also a fundamental domain for the action
 of `(𝓞 K)ˣ` modulo torsion, see `exists_unit_smul_mem` and `torsion_smul_mem_of_mem`. -/
 def fundamentalCone : Set (mixedSpace K) :=
-  logMap⁻¹' (ZSpan.fundamentalDomain ((basisUnitLattice K).ofZLatticeBasis ℝ _)) \
+  logMap ⁻¹' (ZSpan.fundamentalDomain ((basisUnitLattice K).ofZLatticeBasis ℝ _)) \
       {x | mixedEmbedding.norm x = 0}
 
 theorem measurableSet_fundamentalCone :
@@ -229,7 +229,7 @@ theorem exists_unit_smul_mem (hx : mixedEmbedding.norm x ≠ 0) :
   rsuffices ⟨⟨_, ⟨u, _, rfl⟩⟩, hu⟩ : ∃ e : unitLattice K, e + logMap x ∈ ZSpan.fundamentalDomain B
   · exact ⟨u, by rwa [Set.mem_preimage, logMap_unit_smul u hx], by simp [hx]⟩
   · obtain ⟨⟨e, h₁⟩, h₂, -⟩ := ZSpan.exist_unique_vadd_mem_fundamentalDomain B (logMap x)
-    exact ⟨⟨e, by rwa [← Basis.ofZLatticeBasis_span ℝ (unitLattice K)]⟩, h₂⟩
+    exact ⟨⟨e, by rwa [← Module.Basis.ofZLatticeBasis_span ℝ (unitLattice K)]⟩, h₂⟩
 
 theorem torsion_smul_mem_of_mem (hx : x ∈ fundamentalCone K) {ζ : (𝓞 K)ˣ} (hζ : ζ ∈ torsion K) :
     ζ • x ∈ fundamentalCone K := by
@@ -247,7 +247,7 @@ theorem unit_smul_mem_iff_mem_torsion (hx : x ∈ fundamentalCone K) (u : (𝓞 
   let B := (basisUnitLattice K).ofZLatticeBasis ℝ
   refine (Subtype.mk_eq_mk (h := ?_) (h' := Submodule.zero_mem _)).mp <|
     (ZSpan.exist_unique_vadd_mem_fundamentalDomain B (logMap x)).unique ?_ ?_
-  · rw [Basis.ofZLatticeBasis_span ℝ (unitLattice K)]
+  · rw [Module.Basis.ofZLatticeBasis_span ℝ (unitLattice K)]
     exact ⟨u, trivial, rfl⟩
   · rw [AddSubmonoid.mk_vadd, vadd_eq_add, ← logMap_unit_smul _ hx.2]
     exact h.1
@@ -271,9 +271,6 @@ theorem existsUnique_preimage_of_mem_integerSet {a : mixedSpace K} (ha : a ∈ i
   obtain ⟨_, ⟨x, rfl⟩⟩ := mem_integerSet.mp ha
   refine Function.Injective.existsUnique_of_mem_range ?_ (Set.mem_range_self x)
   exact (mixedEmbedding_injective K).comp RingOfIntegers.coe_injective
-
-@[deprecated (since := "2024-12-17")]
-alias exists_unique_preimage_of_mem_integerSet := existsUnique_preimage_of_mem_integerSet
 
 theorem ne_zero_of_mem_integerSet (a : integerSet K) : (a : mixedSpace K) ≠ 0 := by
   by_contra!
@@ -321,7 +318,7 @@ theorem torsion_unitSMul_mem_integerSet {x : mixedSpace K} {ζ : (𝓞 K)ˣ} (h�
 
 /-- The action of `torsion K` on `integerSet K`. -/
 @[simps]
-instance integerSetTorsionSMul: SMul (torsion K) (integerSet K) where
+instance integerSetTorsionSMul : SMul (torsion K) (integerSet K) where
   smul := fun ⟨ζ, hζ⟩ ⟨x, hx⟩ ↦ ⟨ζ • x, torsion_unitSMul_mem_integerSet hζ hx⟩
 
 instance : MulAction (torsion K) (integerSet K) where
@@ -449,7 +446,7 @@ def integerSetEquivNorm (n : ℕ) :
           torsion K := Equiv.prodSubtypeFstEquivSubtypeProd
       (p := fun I : {I : (Ideal (𝓞 K))⁰ // IsPrincipal I.1} ↦ absNorm (I : Ideal (𝓞 K)) = n)
     _ ≃ {I : (Ideal (𝓞 K))⁰ // IsPrincipal (I : Ideal (𝓞 K)) ∧
-          absNorm (I : Ideal (𝓞 K)) = n} × (torsion K) :=  Equiv.prodCongrLeft fun _ ↦
+          absNorm (I : Ideal (𝓞 K)) = n} × (torsion K) := Equiv.prodCongrLeft fun _ ↦
       (Equiv.subtypeSubtypeEquivSubtypeInter
         (fun I : (Ideal (𝓞 K))⁰ ↦ IsPrincipal I.1) (fun I ↦ absNorm I.1 = n))
 
@@ -584,7 +581,7 @@ theorem card_isPrincipal_dvd_norm_le (s : ℝ) :
     simp_rw [Subtype.mk.injEq]
     calc _ ≃ {I : {I : (Ideal (𝓞 K))⁰ // _ ∧ _ ∧ _} // absNorm I.1.1 = i} × torsion K :=
         Equiv.prodSubtypeFstEquivSubtypeProd
-      _    ≃ {I : (Ideal (𝓞 K))⁰ // (_ ∧ _ ∧ absNorm I.1 ≤ ⌊s⌋₊) ∧ absNorm I.1 = i}
+      _ ≃ {I : (Ideal (𝓞 K))⁰ // (_ ∧ _ ∧ absNorm I.1 ≤ ⌊s⌋₊) ∧ absNorm I.1 = i}
             × torsion K := Equiv.prodCongrLeft fun _ ↦ (Equiv.subtypeSubtypeEquivSubtypeInter
         (p := fun I : (Ideal (𝓞 K))⁰ ↦ J.1 ∣ I.1 ∧ IsPrincipal I.1 ∧ absNorm I.1 ≤ ⌊s⌋₊)
         (q := fun I ↦ absNorm I.1 = i))

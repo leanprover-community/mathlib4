@@ -143,7 +143,7 @@ instance addRightMono [LE α] [AddRightMono α] : AddRightMono (WithTop α) wher
 
 instance addLeftReflectLT [LT α] [AddLeftReflectLT α] : AddLeftReflectLT (WithTop α) where
   elim x y z := by
-    cases x <;> cases y <;> cases z <;> simp [← coe_add, swap]; simpa using lt_of_add_lt_add_left
+    cases x <;> cases y <;> cases z <;> simp [← coe_add]; simpa using lt_of_add_lt_add_left
 
 instance addRightReflectLT [LT α] [AddRightReflectLT α] : AddRightReflectLT (WithTop α) where
   elim x y z := by
@@ -348,13 +348,6 @@ instance existsAddOfLE [LE α] [Add α] [ExistsAddOfLE α] : ExistsAddOfLE (With
 @[to_additive (attr := simp) top_pos]
 theorem one_lt_top [One α] [LT α] : (1 : WithTop α) < ⊤ := coe_lt_top _
 
-@[deprecated top_pos (since := "2024-10-22")]
-alias zero_lt_top := top_pos
-
-@[norm_cast, deprecated coe_pos (since := "2024-10-22")]
-theorem zero_lt_coe [Zero α] [LT α] (a : α) : (0 : WithTop α) < a ↔ 0 < a :=
-  coe_lt_coe
-
 /-- A version of `WithTop.map` for `OneHom`s. -/
 @[to_additive (attr := simps -fullyApplied)
   "A version of `WithTop.map` for `ZeroHom`s"]
@@ -491,7 +484,7 @@ instance addRightMono [LE α] [AddRightMono α] : AddRightMono (WithBot α) wher
 
 instance addLeftReflectLT [LT α] [AddLeftReflectLT α] : AddLeftReflectLT (WithBot α) where
   elim x y z := by
-    cases x <;> cases y <;> cases z <;> simp [← coe_add, swap]; simpa using lt_of_add_lt_add_left
+    cases x <;> cases y <;> cases z <;> simp [← coe_add]; simpa using lt_of_add_lt_add_left
 
 instance addRightReflectLT [LT α] [AddRightReflectLT α] : AddRightReflectLT (WithBot α) where
   elim x y z := by

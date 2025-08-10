@@ -246,17 +246,17 @@ theorem withDensity_apply_eq_zero' {f : α → ℝ≥0∞} {s : Set α} (hf : AE
       EventuallyEq, ae_restrict_iff'₀, ae_iff] at A
     swap
     · simp only [measurableSet_toMeasurable, MeasurableSet.nullMeasurableSet]
-    simp only [Pi.zero_apply, mem_setOf_eq, Filter.mem_mk] at A
+    simp only [Pi.zero_apply] at A
     convert A using 2
     ext x
     simp only [and_comm, exists_prop, mem_inter_iff, mem_setOf_eq,
-      mem_compl_iff, not_forall]
+      not_forall]
   · intro hs
     let t := toMeasurable μ ({ x | f x ≠ 0 } ∩ s)
     have A : s ⊆ t ∪ { x | f x = 0 } := by
       intro x hx
       rcases eq_or_ne (f x) 0 with (fx | fx)
-      · simp only [fx, mem_union, mem_setOf_eq, eq_self_iff_true, or_true]
+      · simp only [fx, mem_union, mem_setOf_eq, or_true]
       · left
         apply subset_toMeasurable _ _
         exact ⟨fx, hx⟩
@@ -640,6 +640,12 @@ theorem sFinite_of_absolutelyContinuous {ν : Measure α} [SFinite ν] (hμν : 
     SFinite μ := by
   rw [← Measure.restrict_add_restrict_compl (μ := μ) measurableSet_sigmaFiniteSetWRT,
     restrict_compl_sigmaFiniteSetWRT hμν]
+  infer_instance
+
+/-- In a countable space, every measure is s-finite. -/
+instance [Countable α] : SFinite μ := by
+  obtain ⟨s, h⟩ := exists_sum_smul_dirac μ
+  rw [h]
   infer_instance
 
 end SFinite

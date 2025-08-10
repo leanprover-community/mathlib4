@@ -159,7 +159,7 @@ theorem lt_log_iff_exp_lt (hy : 0 < y) : x < log y ↔ exp x < y := by rw [← e
 
 theorem log_pos_iff (hx : 0 ≤ x) : 0 < log x ↔ 1 < x := by
   rcases hx.eq_or_lt with (rfl | hx)
-  · simp [le_refl, zero_le_one]
+  · simp [zero_le_one]
   rw [← log_one]
   exact log_lt_log_iff zero_lt_one hx
 
@@ -196,9 +196,6 @@ theorem log_nonpos_iff (hx : 0 ≤ x) : log x ≤ 0 ↔ x ≤ 1 := by
   rcases hx.eq_or_lt with (rfl | hx)
   · simp [le_refl, zero_le_one]
   rw [← not_lt, log_pos_iff hx.le, not_lt]
-
-@[deprecated (since := "2025-01-16")]
-alias log_nonpos_iff' := log_nonpos_iff
 
 @[bound]
 theorem log_nonpos (hx : 0 ≤ x) (h'x : x ≤ 1) : log x ≤ 0 :=

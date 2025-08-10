@@ -134,7 +134,7 @@ protected theorem intCast [StarOrderedRing R] [DecidableEq n] (d : ℤ) (hd : 0 
 protected theorem _root_.Matrix.posSemidef_intCast_iff
     [StarOrderedRing R] [DecidableEq n] [Nonempty n] [Nontrivial R] (d : ℤ) :
     PosSemidef (d : Matrix n n R) ↔ 0 ≤ d :=
-  posSemidef_diagonal_iff.trans <| by simp [Pi.le_def]
+  posSemidef_diagonal_iff.trans <| by simp
 
 protected lemma pow [StarOrderedRing R] [DecidableEq n]
     {M : Matrix n n R} (hM : M.PosSemidef) (k : ℕ) :
@@ -384,7 +384,7 @@ theorem posSemidef {M : Matrix n n R} (hM : M.PosDef) : M.PosSemidef := by
   refine ⟨hM.1, ?_⟩
   intro x
   by_cases hx : x = 0
-  · simp only [hx, zero_dotProduct, star_zero, RCLike.zero_re]
+  · simp only [hx, zero_dotProduct, star_zero]
     exact le_rfl
   · exact le_of_lt (hM.2 x hx)
 
@@ -552,12 +552,26 @@ lemma posDef_sqrt [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) :
 /--
 A matrix is positive definite if and only if it has the form `Bᴴ * B` for some invertible `B`.
 -/
-lemma posDef_iff_eq_conjTranspose_mul_self [DecidableEq n] {A : Matrix n n 𝕜} :
+lemma _root_.Matrix.posDef_iff_eq_conjTranspose_mul_self [DecidableEq n] {A : Matrix n n 𝕜} :
     PosDef A ↔ ∃ B : Matrix n n 𝕜, IsUnit B ∧ A = Bᴴ * B := by
-  classical
   refine ⟨fun hA ↦ ⟨_, hA.posDef_sqrt.isUnit, ?_⟩, fun ⟨B, hB, hA⟩ ↦ (hA ▸ ?_)⟩
   · simp [hA.posDef_sqrt.isHermitian.eq]
   · exact conjTranspose_mul_self _ (mulVec_injective_of_isUnit hB)
+
+@[deprecated (since := "07-08-2025")] alias posDef_iff_eq_conjTranspose_mul_self :=
+  Matrix.posDef_iff_eq_conjTranspose_mul_self
+
+/-- A positive semi-definite matrix is positive definite if and only if it is invertible. -/
+@[grind =]
+theorem _root_.Matrix.PosSemidef.posDef_iff_isUnit [DecidableEq n] {x : Matrix n n 𝕜}
+    (hx : x.PosSemidef) : x.PosDef ↔ IsUnit x := by
+  refine ⟨fun h => h.isUnit, fun h => ⟨hx.1, fun v hv => ?_⟩⟩
+  obtain ⟨y, rfl⟩ := posSemidef_iff_eq_conjTranspose_mul_self.mp hx
+  simp_rw [dotProduct_mulVec, ← vecMul_vecMul, ← star_mulVec, ← dotProduct_mulVec,
+    dotProduct_star_self_pos_iff]
+  contrapose! hv
+  rw [← map_eq_zero_iff (f := (yᴴ * y).mulVecLin) (mulVec_injective_iff_isUnit.mpr h),
+    mulVecLin_apply, ← mulVec_mulVec, hv, mulVec_zero]
 
 end PosDef
 
@@ -602,7 +616,7 @@ noncomputable abbrev NormedAddCommGroup.ofMatrix {M : Matrix n n 𝕜} (hM : M.P
       definite := fun x (hx : _ ⬝ᵥ _ = 0) => by
         by_contra! h
         simpa [hx, lt_irrefl, dotProduct_comm] using hM.re_dotProduct_pos h
-      add_left := by simp only [star_add, dotProduct_add, eq_self_iff_true, forall_const]
+      add_left := by simp only [star_add, dotProduct_add, forall_const]
       smul_left := fun x y r => by
         rw [← smul_eq_mul, ← dotProduct_smul, starRingEnd_apply, ← star_smul] }
 

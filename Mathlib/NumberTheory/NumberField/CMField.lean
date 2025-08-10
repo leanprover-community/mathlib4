@@ -24,6 +24,14 @@ subfield `F` is (isomorphic to) the maximal real subfield of `K`.
 * `NumberField.IsCMField`: A predicate that says that if a number field is CM, then it is a totally
   complex quadratic extension of its totally real subfield
 
+* `NumberField.CMExtension.equivMaximalRealSubfield`: Any field `F` such that `K/F` is a
+  CM-extension is isomorphic to the maximal real subfield of `K`.
+
+* `NumberField.IsCM.ofIsCMExtension`: Assume that there exists `F` such that `K/F` is a
+  CM-extension. Then `K` is CM.
+
+* `NumberField.IsCMField.of_isMulCommutative`: A totally complex abelian extension of `ℚ` is CM.
+
 ## Implementation note
 
 Most result are proved under the general hypothesis: `K/F` quadratic extension of number fields
@@ -69,9 +77,9 @@ All the conjugations of a `CM`-extension are the same.
 -/
 theorem isConj_eq_isConj {φ ψ : K →+* ℂ} {σ τ : K ≃ₐ[F] K} (hφ : IsConj φ σ) (hψ : IsConj ψ τ) :
     σ = τ := by
-  have : Fintype.card (K ≃ₐ[F] K) = 2 :=
+  have : Nat.card (K ≃ₐ[F] K) = 2 :=
     (IsQuadraticExtension.finrank_eq_two F K) ▸ IsGalois.card_aut_eq_finrank F K
-  rw [← Nat.card_eq_fintype_card, Nat.card_eq_two_iff' 1] at this
+  rw [Nat.card_eq_two_iff' 1] at this
   exact ExistsUnique.unique this
     ((isConj_ne_one_iff hφ).mpr <| IsTotallyComplex.complexEmbedding_not_isReal φ)
     ((isConj_ne_one_iff hψ).mpr <| IsTotallyComplex.complexEmbedding_not_isReal ψ)
@@ -142,7 +150,7 @@ The complex conjugation generates the Galois group of `K/F`.
 theorem zpowers_complexConj_eq_top :
     Subgroup.zpowers (complexConj F K : K ≃ₐ[F] K) = ⊤ := by
   refine Subgroup.eq_top_of_card_eq _ ?_
-  rw [Nat.card_zpowers, orderOf_complexConj, Nat.card_eq_fintype_card, IsGalois.card_aut_eq_finrank,
+  rw [Nat.card_zpowers, orderOf_complexConj, IsGalois.card_aut_eq_finrank,
     IsQuadraticExtension.finrank_eq_two]
 
 /--
@@ -205,13 +213,56 @@ def realUnits : Subgroup (𝓞 K)ˣ := (Units.map (algebraMap (𝓞 F) (𝓞 K))
 
 theorem unitsComplexConj_eq_self_iff (u : (𝓞 K)ˣ) :
     unitsComplexConj F u = u ↔ u ∈ realUnits F K := by
-  rw [← Units.eq_iff, coe_unitsComplexConj, ringOfIntegersComplexConj_eq_self_iff, realUnits,
+  rw [← Units.val_inj, coe_unitsComplexConj, ringOfIntegersComplexConj_eq_self_iff, realUnits,
     RingHom.mem_range, RingHom.toMonoidHom_eq_coe, MonoidHom.mem_range]
   refine ⟨fun ⟨x, hx⟩ ↦ ⟨((hx ▸ u.isUnit).of_map).unit, by simpa [Units.ext_iff] using hx⟩, ?_⟩
   rintro ⟨x, rfl⟩
   exact ⟨x, rfl⟩
 
 end units
+
+theorem eq_maximalRealSubfield (E : Subfield K) [IsTotallyReal E] [IsQuadraticExtension E K] :
+    E = maximalRealSubfield K := by
+  refine le_antisymm (IsTotallyReal.le_maximalRealSubfield E) ?_
+  by_contra! h
+  have h' : E ⊔ (maximalRealSubfield K) = ⊤ := by
+    let L : IntermediateField E K := (E ⊔ (maximalRealSubfield K)).toIntermediateField
+      (fun x ↦ (le_sup_left (a := E)) x.prop)
+    have := ((IntermediateField.isSimpleOrder_of_finrank_prime E K
+      (IsQuadraticExtension.finrank_eq_two E K ▸ Nat.prime_two)).eq_bot_or_eq_top L).resolve_left ?_
+    · simpa [L] using congr_arg IntermediateField.toSubfield this
+    · contrapose! h
+      rw [← SetLike.coe_set_eq, Subfield.coe_toIntermediateField] at h
+      rw [← sup_eq_left, ← SetLike.coe_set_eq, h, IntermediateField.coe_bot]
+      aesop
+  have : IsTotallyReal K := (h' ▸ isTotallyReal_sup).ofRingEquiv Subring.topEquiv
+  obtain w : InfinitePlace K := Classical.choice (inferInstance : Nonempty _)
+  exact (not_isReal_iff_isComplex.mpr (IsTotallyComplex.isComplex w)) (IsTotallyReal.isReal w)
+
+variable (K)
+
+/--
+Any field `F` such that `K/F` is a CM-extension is isomorphic to the maximal real subfield of `K`.
+-/
+noncomputable def equivMaximalRealSubfield :
+    F ≃+* maximalRealSubfield K :=
+  (algebraMap F K).rangeRestrictFieldEquiv.trans (RingEquiv.subfieldCongr (by
+    have := IsTotallyReal.ofRingEquiv (algebraMap F K).rangeRestrictFieldEquiv
+    have : IsQuadraticExtension (algebraMap F K).fieldRange K :=
+    { finrank_eq_two' :=
+        (IsQuadraticExtension.finrank_eq_two F K) ▸ Algebra.finrank_eq_of_equiv_equiv
+          (algebraMap F K).rangeRestrictFieldEquiv.symm (RingEquiv.refl K) (by ext; simp; rfl) }
+    exact eq_maximalRealSubfield (algebraMap F K).fieldRange))
+
+@[simp]
+theorem equivMaximalRealSubfield_apply (x : F) :
+    equivMaximalRealSubfield F K x = algebraMap F K x := rfl
+
+@[simp]
+theorem algebraMap_equivMaximalRealSubfield_symm_apply (x : maximalRealSubfield K) :
+    algebraMap F K ((CMExtension.equivMaximalRealSubfield F K).symm x) =
+      algebraMap (maximalRealSubfield K) K x := by
+  simpa using (equivMaximalRealSubfield_apply F K ((equivMaximalRealSubfield F K).symm x)).symm
 
 end CMExtension
 
@@ -226,16 +277,58 @@ class IsCMField (K : Type*) [Field K] [NumberField K] [IsTotallyComplex K] : Pro
 
 namespace IsCMField
 
-variable (K : Type*) [Field K] [NumberField K] [IsTotallyComplex K] [IsCMField K]
+variable (F K : Type*) [Field K] [NumberField K] [IsTotallyComplex K]
+
+theorem ofCMExtension [Field F] [NumberField F] [IsTotallyReal F] [Algebra F K]
+    [IsQuadraticExtension F K] :
+    IsCMField K where
+  is_quadratic := ⟨(IsQuadraticExtension.finrank_eq_two F K) ▸ finrank_eq_of_equiv_equiv
+      (CMExtension.equivMaximalRealSubfield F K).symm (RingEquiv.refl K) (by ext; simp)⟩
+
+open IntermediateField in
+/--
+A totally complex field that has a unique complex conjugation is CM.
+-/
+theorem of_forall_isConj {σ : K ≃ₐ[ℚ] K} (hσ : ∀ φ : K →+* ℂ, IsConj φ σ) :
+    IsCMField K := by
+  have : IsTotallyReal (fixedField (Subgroup.zpowers σ)) := ⟨fun w ↦ by
+    obtain ⟨W, rfl⟩ := w.comap_surjective (K := K)
+    let τ := subgroupEquivAlgEquiv _ ⟨σ, Subgroup.mem_zpowers σ⟩
+    have hτ : IsConj W.embedding τ := hσ _
+    simpa [← isReal_mk_iff, ← InfinitePlace.comap_mk, mk_embedding] using hτ.isReal_comp⟩
+  have : IsQuadraticExtension (fixedField (Subgroup.zpowers σ)) K := ⟨by
+    let φ : K →+* ℂ := Classical.choice (inferInstance : Nonempty _)
+    have hσ' : σ ≠ 1 :=
+      (isConj_ne_one_iff (hσ φ)).mpr <| IsTotallyComplex.complexEmbedding_not_isReal φ
+    rw [finrank_fixedField_eq_card, Nat.card_zpowers, orderOf_isConj_two_of_ne_one (hσ φ) hσ']⟩
+  exact ofCMExtension (fixedField (Subgroup.zpowers σ)) K
+
+/--
+A totally complex abelian extension of `ℚ` is CM.
+-/
+instance of_isMulCommutative [IsGalois ℚ K] [IsMulCommutative (K ≃ₐ[ℚ] K)] :
+    IsCMField K := by
+  let φ : K →+* ℂ := Classical.choice (inferInstance : Nonempty _)
+  obtain ⟨σ, hσ₁⟩ : ∃ σ : K ≃ₐ[ℚ] K, ComplexEmbedding.IsConj φ σ :=
+    exists_isConj_of_isRamified <|
+      isRamified_iff.mpr ⟨IsTotallyComplex.isComplex _, IsTotallyReal.isReal _⟩
+  have hσ₂ : ∀ (φ : K →+* ℂ), ComplexEmbedding.IsConj φ σ := by
+    intro ψ
+    obtain ⟨ν, rfl⟩ := ComplexEmbedding.exists_comp_symm_eq_of_comp_eq (k := ℚ) φ ψ (by ext; simp)
+    rw [show σ = ν.symm⁻¹ * σ * ν.symm by simp]
+    exact hσ₁.comp _
+  exact of_forall_isConj K hσ₂
+
+variable [IsCMField K]
 
 instance isQuadraticExtension : IsQuadraticExtension (maximalRealSubfield K) K :=
   IsCMField.is_quadratic
 
 noncomputable instance starRing : StarRing K where
   star := CMExtension.complexConj (maximalRealSubfield K) K
-  star_involutive := fun _ ↦ CMExtension.complexConj_apply_apply _ _
-  star_mul := fun _ _ ↦ by rw [map_mul, mul_comm]
-  star_add := fun _ _ ↦ by rw [map_add]
+  star_involutive _ := CMExtension.complexConj_apply_apply _ _
+  star_mul _ _ := by rw [map_mul, mul_comm]
+  star_add _ _ := by rw [map_add]
 
 noncomputable instance ringOfIntegersStarRing : StarRing (𝓞 K) where
   star := CMExtension.ringOfIntegersComplexConj (maximalRealSubfield K) K

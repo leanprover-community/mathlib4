@@ -168,7 +168,7 @@ lemma hasProdLocallyUniformlyOn_of_of_forall_exists_nhds
 
 @[to_additive]
 lemma HasProdUniformlyOn.hasProdLocallyUniformlyOn (h : HasProdUniformlyOn f g {s}) :
-  HasProdLocallyUniformlyOn f g s := by
+    HasProdLocallyUniformlyOn f g s := by
   simp [HasProdLocallyUniformlyOn, hasProdUniformlyOn_iff_tendstoUniformlyOn] at *
   exact TendstoUniformlyOn.tendstoLocallyUniformlyOn h
 
@@ -226,7 +226,7 @@ theorem HasProdLocallyUniformlyOn.tprod_eqOn [T2Space α]
 
 @[to_additive]
 lemma HasProdLocallyUniformlyOn.tendstoLocallyUniformlyOn_finsetRange
-    {f : ℕ → β → α} (h : HasProdLocallyUniformlyOn f g s)  :
+    {f : ℕ → β → α} (h : HasProdLocallyUniformlyOn f g s) :
     TendstoLocallyUniformlyOn (fun N b ↦ ∏ i ∈ Finset.range N, f i b) g atTop s := by
   rw [hasProdLocallyUniformlyOn_iff_tendstoLocallyUniformlyOn] at h
   intro v hv r hr

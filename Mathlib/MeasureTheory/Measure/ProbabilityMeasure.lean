@@ -143,8 +143,19 @@ lemma mk_apply (μ : Measure Ω) (hμ) (s : Set Ω) :
 theorem coeFn_univ (ν : ProbabilityMeasure Ω) : ν univ = 1 :=
   congr_arg ENNReal.toNNReal ν.prop.measure_univ
 
+@[simp]
+theorem coeFn_empty (ν : ProbabilityMeasure Ω) : ν ∅ = 0 := by simp [coeFn_def]
+
 theorem coeFn_univ_ne_zero (ν : ProbabilityMeasure Ω) : ν univ ≠ 0 := by
   simp only [coeFn_univ, Ne, one_ne_zero, not_false_iff]
+
+@[simp] theorem measureReal_eq_coe_coeFn (ν : ProbabilityMeasure Ω) (s : Set Ω) :
+    (ν : Measure Ω).real s = ν s := by
+  simp [coeFn_def, Measure.real, ENNReal.toReal]
+
+theorem toNNReal_measureReal_eq_coeFn (ν : ProbabilityMeasure Ω) (s : Set Ω) :
+    ((ν : Measure Ω).real s).toNNReal = ν s := by
+  simp
 
 /-- A probability measure can be interpreted as a finite measure. -/
 def toFiniteMeasure (μ : ProbabilityMeasure Ω) : FiniteMeasure Ω := ⟨μ, inferInstance⟩
@@ -232,7 +243,7 @@ lemma measurableSet_isProbabilityMeasure :
 /-- The monoidal product is a measurable function from the product of probability spaces over
 `α` and `β` into the type of probability spaces over `α × β`. Lemma 4.1 of [A synthetic approach to
 Markov kernels, conditional independence and theorems on sufficient statistics][fritz2020]. -/
-theorem measurable_prod {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
+theorem measurable_fun_prod {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
     Measurable (fun (μ : ProbabilityMeasure α × ProbabilityMeasure β)
       ↦ μ.1.toMeasure.prod μ.2.toMeasure) := by
   apply Measurable.measure_of_isPiSystem_of_isProbabilityMeasure generateFrom_prod.symm
@@ -290,9 +301,6 @@ theorem toFiniteMeasure_isEmbedding (Ω : Type*) [MeasurableSpace Ω] [Topologic
     IsEmbedding (toFiniteMeasure : ProbabilityMeasure Ω → FiniteMeasure Ω) where
   eq_induced := rfl
   injective _μ _ν h := Subtype.eq <| congr_arg FiniteMeasure.toMeasure h
-
-@[deprecated (since := "2024-10-26")]
-alias toFiniteMeasure_embedding := toFiniteMeasure_isEmbedding
 
 theorem tendsto_nhds_iff_toFiniteMeasure_tendsto_nhds {δ : Type*} (F : Filter δ)
     {μs : δ → ProbabilityMeasure Ω} {μ₀ : ProbabilityMeasure Ω} :
@@ -391,7 +399,7 @@ theorem self_eq_mass_mul_normalize (s : Set Ω) : μ s = μ.mass * μ.normalize 
   · simp
   have mass_nonzero : μ.mass ≠ 0 := by rwa [μ.mass_nonzero_iff]
   simp only [normalize, dif_neg mass_nonzero]
-  simp [ProbabilityMeasure.coe_mk, toMeasure_smul, mul_inv_cancel_left₀ mass_nonzero, coeFn_def]
+  simp [toMeasure_smul, mul_inv_cancel_left₀ mass_nonzero, coeFn_def]
 
 theorem self_eq_mass_smul_normalize : μ = μ.mass • μ.normalize.toFiniteMeasure := by
   apply eq_of_forall_apply_eq
@@ -454,8 +462,7 @@ theorem tendsto_testAgainstNN_of_tendsto_normalize_testAgainstNN_of_tendsto_mass
     (mass_lim : Tendsto (fun i ↦ (μs i).mass) F (𝓝 μ.mass)) (f : Ω →ᵇ ℝ≥0) :
     Tendsto (fun i ↦ (μs i).testAgainstNN f) F (𝓝 (μ.testAgainstNN f)) := by
   by_cases h_mass : μ.mass = 0
-  · simp only [μ.mass_zero_iff.mp h_mass, zero_testAgainstNN_apply, zero_mass,
-      eq_self_iff_true] at mass_lim ⊢
+  · simp only [μ.mass_zero_iff.mp h_mass, zero_testAgainstNN_apply, zero_mass] at mass_lim ⊢
     exact tendsto_zero_testAgainstNN_of_tendsto_zero_mass mass_lim f
   simp_rw [fun i ↦ (μs i).testAgainstNN_eq_mass_mul f, μ.testAgainstNN_eq_mass_mul f]
   rw [ProbabilityMeasure.tendsto_nhds_iff_toFiniteMeasure_tendsto_nhds] at μs_lim

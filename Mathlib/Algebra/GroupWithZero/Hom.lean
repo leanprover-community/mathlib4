@@ -117,8 +117,7 @@ instance coeToMonoidHom : Coe (α →*₀ β) (α →* β) :=
 attribute [coe] toZeroHom
 
 /-- `MonoidWithZeroHom` down-cast to a `ZeroHom`, forgetting the monoidal property. -/
-instance coeToZeroHom :
-  Coe (α →*₀ β) (ZeroHom α β) := ⟨toZeroHom⟩
+instance coeToZeroHom : Coe (α →*₀ β) (ZeroHom α β) := ⟨toZeroHom⟩
 
 -- This must come after the coe_toFun definitions
 initialize_simps_projections MonoidWithZeroHom (toFun → apply)
@@ -155,13 +154,13 @@ protected lemma map_mul (f : α →*₀ β) (a b : α) : f (a * b) = f a * f b :
 theorem map_ite_zero_one {F : Type*} [FunLike F α β] [MonoidWithZeroHomClass F α β] (f : F)
     (p : Prop) [Decidable p] :
     f (ite p 0 1) = ite p 0 1 := by
-  split_ifs with h <;> simp [h]
+  split_ifs with h <;> simp
 
 @[simp]
 theorem map_ite_one_zero {F : Type*} [FunLike F α β] [MonoidWithZeroHomClass F α β] (f : F)
     (p : Prop) [Decidable p] :
     f (ite p 1 0) = ite p 1 0 := by
-  split_ifs with h <;> simp [h]
+  split_ifs with h <;> simp
 
 /-- The identity map from a `MonoidWithZero` to itself. -/
 @[simps]

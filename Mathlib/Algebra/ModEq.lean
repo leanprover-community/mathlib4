@@ -68,6 +68,9 @@ attribute [symm] ModEq.symm
 theorem ModEq.trans : a ≡ b [PMOD p] → b ≡ c [PMOD p] → a ≡ c [PMOD p] := fun ⟨m, hm⟩ ⟨n, hn⟩ =>
   ⟨m + n, by simp [add_smul, ← hm, ← hn]⟩
 
+instance : IsTrans α (ModEq p) where
+  trans _ _ _ := ModEq.trans
+
 instance : IsRefl _ (ModEq p) :=
   ⟨modEq_refl⟩
 
@@ -101,13 +104,13 @@ theorem add_zsmul_modEq (z : ℤ) : a + z • p ≡ a [PMOD p] :=
   ⟨-z, by simp⟩
 
 theorem zsmul_add_modEq (z : ℤ) : z • p + a ≡ a [PMOD p] :=
-  ⟨-z, by simp [← sub_sub]⟩
+  ⟨-z, by simp⟩
 
 theorem add_nsmul_modEq (n : ℕ) : a + n • p ≡ a [PMOD p] :=
   ⟨-n, by simp⟩
 
 theorem nsmul_add_modEq (n : ℕ) : n • p + a ≡ a [PMOD p] :=
-  ⟨-n, by simp [← sub_sub]⟩
+  ⟨-n, by simp⟩
 
 namespace ModEq
 
@@ -228,18 +231,25 @@ theorem add_modEq_left : a + b ≡ a [PMOD p] ↔ b ≡ 0 [PMOD p] := by simp [�
 @[simp]
 theorem add_modEq_right : a + b ≡ b [PMOD p] ↔ a ≡ 0 [PMOD p] := by simp [← modEq_sub_iff_add_modEq]
 
+-- this matches `Int.modEq_iff_add_fac`
 theorem modEq_iff_eq_add_zsmul : a ≡ b [PMOD p] ↔ ∃ z : ℤ, b = a + z • p := by
   simp_rw [ModEq, sub_eq_iff_eq_add']
+
+-- this roughly matches `Int.modEq_zero_iff_dvd`
+theorem modEq_zero_iff_eq_zsmul : a ≡ 0 [PMOD p] ↔ ∃ z : ℤ, a = z • p := by
+  rw [modEq_comm, modEq_iff_eq_add_zsmul]
+  simp_rw [zero_add]
 
 theorem not_modEq_iff_ne_add_zsmul : ¬a ≡ b [PMOD p] ↔ ∀ z : ℤ, b ≠ a + z • p := by
   rw [modEq_iff_eq_add_zsmul, not_exists]
 
-theorem modEq_iff_eq_mod_zmultiples : a ≡ b [PMOD p] ↔ (b : α ⧸ AddSubgroup.zmultiples p) = a := by
+theorem modEq_iff_eq_mod_zmultiples : a ≡ b [PMOD p] ↔ (a : α ⧸ AddSubgroup.zmultiples p) = b := by
+  rw [modEq_comm]
   simp_rw [modEq_iff_eq_add_zsmul, QuotientAddGroup.eq_iff_sub_mem, AddSubgroup.mem_zmultiples_iff,
     eq_sub_iff_add_eq', eq_comm]
 
 theorem not_modEq_iff_ne_mod_zmultiples :
-    ¬a ≡ b [PMOD p] ↔ (b : α ⧸ AddSubgroup.zmultiples p) ≠ a :=
+    ¬a ≡ b [PMOD p] ↔ (a : α ⧸ AddSubgroup.zmultiples p) ≠ b :=
   modEq_iff_eq_mod_zmultiples.not
 
 end AddCommGroup

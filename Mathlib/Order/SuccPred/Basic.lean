@@ -645,7 +645,7 @@ theorem Icc_subset_Ioc_pred_left_of_not_isMin (ha : ¬IsMin a) : Icc a b ⊆ Ioc
   gcongr
   apply Ici_subset_Ioi_pred_of_not_isMin ha
 
-theorem Ico_subset_Ioo_pred_left_of_not_isMin (ha : ¬IsMin a) : Ico a b ⊆ Ioo (pred a) b  := by
+theorem Ico_subset_Ioo_pred_left_of_not_isMin (ha : ¬IsMin a) : Ico a b ⊆ Ioo (pred a) b := by
   rw [← Ioi_inter_Iio, ← Ici_inter_Iio]
   gcongr
   apply Ici_subset_Ioi_pred_of_not_isMin ha
@@ -970,7 +970,7 @@ theorem pred_succ [NoMaxOrder α] (a : α) : pred (succ a) = a :=
 theorem pred_succ_iterate_of_not_isMax (i : α) (n : ℕ) (hin : ¬IsMax (succ^[n - 1] i)) :
     pred^[n] (succ^[n] i) = i := by
   induction n with
-  | zero => simp only [Nat.zero_eq, Function.iterate_zero, id]
+  | zero => simp only [Function.iterate_zero, id]
   | succ n hn =>
     rw [Nat.succ_sub_succ_eq_sub, Nat.sub_zero] at hin
     have h_not_max : ¬IsMax (succ^[n - 1] i) := by
@@ -1007,8 +1007,8 @@ element to an order:
 * Adding a `⊤` to a `NoMaxOrder`: Preserves `succ`. Never preserves `pred`.
 * Adding a `⊥` to an `OrderBot`: Preserves `succ` and `pred`.
 * Adding a `⊥` to a `NoMinOrder`: Preserves `pred`. Never preserves `succ`.
-where "preserves `(succ/pred)`" means
-`(Succ/Pred)Order α → (Succ/Pred)Order ((WithTop/WithBot) α)`.
+  where "preserves `(succ/pred)`" means
+  `(Succ/Pred)Order α → (Succ/Pred)Order ((WithTop/WithBot) α)`.
 -/
 
 namespace WithTop

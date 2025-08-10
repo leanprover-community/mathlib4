@@ -41,11 +41,11 @@ theorem Equiv.Perm.decomposeFin_symm_apply_zero {n : ℕ} (p : Fin (n + 1)) (e :
 theorem Equiv.Perm.decomposeFin_symm_apply_succ {n : ℕ} (e : Perm (Fin n)) (p : Fin (n + 1))
     (x : Fin n) : Equiv.Perm.decomposeFin.symm (p, e) x.succ = swap 0 p (e x).succ := by
   refine Fin.cases ?_ ?_ p
-  · simp [Equiv.Perm.decomposeFin, EquivFunctor.map]
+  · simp [Equiv.Perm.decomposeFin]
   · intro i
     by_cases h : i = e x
-    · simp [h, Equiv.Perm.decomposeFin, EquivFunctor.map]
-    · simp [h, Equiv.Perm.decomposeFin, EquivFunctor.map, swap_apply_def, Ne.symm h]
+    · simp [h, Equiv.Perm.decomposeFin]
+    · simp [Equiv.Perm.decomposeFin, swap_apply_def, Ne.symm h]
 
 @[simp]
 theorem Equiv.Perm.decomposeFin_symm_apply_one {n : ℕ} (e : Perm (Fin (n + 1))) (p : Fin (n + 2)) :
@@ -158,7 +158,7 @@ theorem cycleRange_of_le {n : ℕ} [NeZero n] {i j : Fin n} (h : j ≤ i) :
   rw [this, cycleRange, ofLeftInverse'_eq_ofInjective, ←
     Function.Embedding.toEquivRange_eq_ofInjective, ← viaFintypeEmbedding, ← coe_castLEEmb,
     viaFintypeEmbedding_apply_image, coe_castLEEmb, coe_castLE, coe_finRotate]
-  simp only [Fin.ext_iff, val_last, val_mk, val_zero, Fin.eta, castLE_mk]
+  simp only [Fin.ext_iff, val_last, Fin.eta, castLE_mk]
   split_ifs with heq
   · rfl
   · rw [Fin.val_add_one_of_lt]
@@ -213,9 +213,6 @@ theorem cycleRange_last (n : ℕ) : cycleRange (last n) = finRotate (n + 1) := b
 theorem cycleRange_mk_zero {n : ℕ} (h : 0 < n) : cycleRange ⟨0, h⟩ = 1 :=
   have : NeZero n := .of_pos h
   cycleRange_zero n
-
-@[deprecated (since := "2025-01-28")]
-alias cycleRange_zero' := cycleRange_mk_zero
 
 @[simp]
 theorem sign_cycleRange {n : ℕ} (i : Fin n) : Perm.sign (cycleRange i) = (-1) ^ (i : ℕ) := by
@@ -299,7 +296,8 @@ theorem cycleType_cycleRange {n : ℕ} [NeZero n] {i : Fin n} (h0 : i ≠ 0) :
   exact cycleType_finRotate
 
 theorem isThreeCycle_cycleRange_two {n : ℕ} : IsThreeCycle (cycleRange 2 : Perm (Fin (n + 3))) := by
-  rw [IsThreeCycle, cycleType_cycleRange] <;> simp [Fin.ext_iff]
+  rw [IsThreeCycle, cycleType_cycleRange two_ne_zero]
+  simp
 
 end Fin
 
@@ -315,7 +313,7 @@ theorem Equiv.Perm.sign_eq_prod_prod_Iio (σ : Equiv.Perm (Fin n)) :
     rw [h, Finset.prod_sigma', Equiv.Perm.signAux]
     convert rfl using 2 with x hx
     · simp [Finset.ext_iff, Equiv.Perm.mem_finPairsLT]
-    simp [not_lt, ← ite_not (p := _ ≤ _)]
+    simp [← ite_not (p := _ ≤ _)]
   refine σ.swap_induction_on (by simp) fun π i j hne h_eq ↦ ?_
   rw [Equiv.Perm.signAux_mul, Equiv.Perm.sign_mul, h_eq, Equiv.Perm.sign_swap hne,
     Equiv.Perm.signAux_swap hne]

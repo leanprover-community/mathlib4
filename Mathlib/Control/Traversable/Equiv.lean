@@ -5,6 +5,7 @@ Authors: Simon Hudon
 -/
 import Mathlib.Control.Traversable.Lemmas
 import Mathlib.Logic.Equiv.Defs
+import Batteries.Tactic.SeqFocus
 
 /-!
 # Transferring `Traversable` instances along isomorphisms
@@ -118,13 +119,13 @@ protected theorem id_traverse (x : t' α) : Equiv.traverse eqv (pure : α → Id
 
 protected theorem traverse_eq_map_id (f : α → β) (x : t' α) :
     Equiv.traverse eqv ((pure : β → Id β) ∘ f) x = pure (Equiv.map eqv f x) := by
-  simp only [Equiv.traverse, traverse_eq_map_id, Id.run_map, Id.run_pure]; rfl
+  simp only [Equiv.traverse, traverse_eq_map_id]; rfl
 
 protected theorem comp_traverse (f : β → F γ) (g : α → G β) (x : t' α) :
     Equiv.traverse eqv (Comp.mk ∘ Functor.map f ∘ g) x =
       Comp.mk (Equiv.traverse eqv f <$> Equiv.traverse eqv g x) := by
   rw [traverse_def, comp_traverse, Comp.map_mk]
-  simp only [map_map, Function.comp_def, traverse_def, symm_apply_apply]
+  simp only [map_map, traverse_def, symm_apply_apply]
 
 protected theorem naturality (f : α → F β) (x : t' α) :
     η (Equiv.traverse eqv f x) = Equiv.traverse eqv (@η _ ∘ f) x := by

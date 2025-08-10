@@ -234,7 +234,7 @@ theorem length_eq_map (s : WSeq α) : length s = Computation.map List.length (to
               | some (some a, s') => Sum.inr (a::l, s')) (l, s)))
       ?_ ⟨[], s, rfl, rfl⟩
   intro s1 s2 h; rcases h with ⟨l, s, h⟩; rw [h.left, h.right]
-  induction' s using WSeq.recOn with a s s <;> simp [toList, nil, cons, think, length]
+  induction' s using WSeq.recOn with a s s <;> simp [nil, cons, think]
   · refine ⟨a::l, s, ?_, ?_⟩ <;> simp
   · refine ⟨l, s, ?_, ?_⟩ <;> simp
 

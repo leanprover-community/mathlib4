@@ -97,7 +97,7 @@ section BidualIsometry
 variable (𝕜 : Type v) [RCLike 𝕜] {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 /-- If one controls the norm of every `f x`, then one controls the norm of `x`.
-    Compare `ContinuousLinearMap.opNorm_le_bound`. -/
+Compare `ContinuousLinearMap.opNorm_le_bound`. -/
 theorem norm_le_dual_bound (x : E) {M : ℝ} (hMp : 0 ≤ M) (hM : ∀ f : Dual 𝕜 E, ‖f x‖ ≤ M * ‖f‖) :
     ‖x‖ ≤ M := by
   classical
@@ -220,7 +220,7 @@ theorem polar_ball_subset_closedBall_div {c : 𝕜} (hc : 1 < ‖c‖) {r : ℝ}
     polar 𝕜 (ball (0 : E) r) ⊆ closedBall (0 : Dual 𝕜 E) (‖c‖ / r) := by
   intro x' hx'
   rw [mem_polar_iff] at hx'
-  simp only [polar, mem_setOf, mem_closedBall_zero_iff, mem_ball_zero_iff] at *
+  simp only [mem_closedBall_zero_iff, mem_ball_zero_iff] at *
   have hcr : 0 < ‖c‖ / r := div_pos (zero_lt_one.trans hc) hr
   refine ContinuousLinearMap.opNorm_le_of_shell hr hcr.le hc fun x h₁ h₂ => ?_
   calc
