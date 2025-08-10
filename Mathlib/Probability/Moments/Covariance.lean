@@ -27,7 +27,6 @@ We define the covariance of two real-valued random variables.
 -/
 
 open MeasureTheory
-open scoped ENNReal
 
 namespace ProbabilityTheory
 
