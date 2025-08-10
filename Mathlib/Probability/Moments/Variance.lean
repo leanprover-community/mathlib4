@@ -3,6 +3,7 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Kexing Ying
 -/
+import Mathlib.MeasureTheory.Function.LpSeminorm.Prod
 import Mathlib.Probability.Moments.Covariance
 
 /-!
@@ -34,7 +35,7 @@ We define the variance of a real-valued random variable as `Var[X] = 𝔼[(X - �
   `a ≤ X ≤ b` almost everywhere is at most`((b - a) / 2) ^ 2`.
 -/
 
-open MeasureTheory Filter Finset
+open MeasureTheory Filter Finset NormedSpace
 
 noncomputable section
 
@@ -464,5 +465,87 @@ lemma variance_le_sq_of_bounded [IsProbabilityMeasure μ] {a b : ℝ} {X : Ω �
     _ ≤ (b - μ[X]) * (μ[X] - a) := variance_le_sub_mul_sub h hX
     _ = ((b - a) / 2) ^ 2 - (μ[X] - (b + a) / 2) ^ 2 := by ring
     _ ≤ ((b - a) / 2) ^ 2 := sub_le_self _ (sq_nonneg _)
+
+section Prod
+
+variable {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {ν : Measure Ω'}
+  [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
+  {X : Ω → ℝ} {Y : Ω' → ℝ}
+
+lemma covariance_fst_snd_prod (hfμ : MemLp X 2 μ) (hgν : MemLp Y 2 ν) :
+    cov[fun x ↦ X x.1, fun x ↦ Y x.2; μ.prod ν] = 0 := by
+  have h_map1 : (μ.prod ν).map (fun x ↦ x.1) = μ := by simp
+  rw [covariance, integral_prod]
+  swap
+  · exact MemLp.integrable_mul ((hfμ.comp_fst _).sub (memLp_const _))
+      ((hgν.comp_snd _).sub (memLp_const _))
+  simp only
+  simp_rw [integral_const_mul, integral_mul_const]
+  suffices ∫ a, X a - ∫ x, X x.1 ∂μ.prod ν ∂μ = 0 by simp [this]
+  rw [integral_sub (hfμ.integrable (by simp)) (integrable_const _)]
+  simp only [integral_const, measureReal_univ_eq_one, smul_eq_mul, one_mul]
+  nth_rw 1 [← h_map1]
+  rw [integral_map (by fun_prop)]
+  · ring
+  · simp only [Measure.map_fst_prod, measure_univ, one_smul]
+    exact hfμ.aestronglyMeasurable
+
+lemma variance_add_prod (hfμ : MemLp X 2 μ) (hgν : MemLp Y 2 ν) :
+    Var[fun x ↦ X x.1 + Y x.2; μ.prod ν] = Var[X; μ] + Var[Y; ν] := by
+  rw [variance_fun_add (hfμ.comp_fst ν) (hgν.comp_snd μ)]
+  simp only [covariance_fst_snd_prod hfμ hgν, mul_zero, add_zero]
+  have h_map1 : (μ.prod ν).map (fun x ↦ x.1) = μ := by simp
+  have h_map2 : (μ.prod ν).map (fun x ↦ x.2) = ν := by simp
+  conv_rhs => rw [← h_map1]
+              rhs
+              rw [← h_map2]
+  rw [variance_map _ (by fun_prop), variance_map _ (by fun_prop)]
+  · rfl
+  · simp only [Measure.map_snd_prod, measure_univ, one_smul]
+    exact hgν.aestronglyMeasurable.aemeasurable
+  · simp only [Measure.map_fst_prod, measure_univ, one_smul]
+    exact hfμ.aestronglyMeasurable.aemeasurable
+
+end Prod
+
+section NormedSpace
+
+variable {E F G : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {mE : MeasurableSpace E}
+  [NormedAddCommGroup F] [NormedSpace ℝ F] {mF : MeasurableSpace F}
+  [NormedAddCommGroup G] [NormedSpace ℝ G] {mG : MeasurableSpace G} [CompleteSpace G]
+  {μ : Measure E} [IsProbabilityMeasure μ] {ν : Measure F} [IsProbabilityMeasure ν]
+  {p : ℝ≥0∞}
+
+lemma integral_continuousLinearMap_prod' {L : E × F →L[ℝ] G}
+    (hLμ : MemLp (L.comp (.inl ℝ E F)) 1 μ) (hLν : MemLp (L.comp (.inr ℝ E F)) 1 ν) :
+    (μ.prod ν)[L] = μ[L.comp (.inl ℝ E F)] + ν[L.comp (.inr ℝ E F)] := by
+  simp_rw [← L.comp_inl_add_comp_inr]
+  rw [integral_add, integral_prod, integral_prod]
+  · simp
+  · exact (hLν.comp_snd μ).integrable le_rfl
+  · exact (hLμ.comp_fst ν).integrable le_rfl
+  · exact (hLμ.comp_fst ν).integrable le_rfl
+  · exact (hLν.comp_snd μ).integrable le_rfl
+
+lemma integral_continuousLinearMap_prod {L : E × F →L[ℝ] G}
+    (hμ : MemLp id 1 μ) (hν : MemLp id 1 ν) :
+    (μ.prod ν)[L] = μ[L.comp (.inl ℝ E F)] + ν[L.comp (.inr ℝ E F)] :=
+  integral_continuousLinearMap_prod' (ContinuousLinearMap.comp_memLp' _ hμ)
+    (ContinuousLinearMap.comp_memLp' _ hν)
+
+lemma variance_dual_prod' {L : Dual ℝ (E × F)}
+    (hLμ : MemLp (L.comp (.inl ℝ E F)) 2 μ) (hLν : MemLp (L.comp (.inr ℝ E F)) 2 ν) :
+    Var[L; μ.prod ν] = Var[L.comp (.inl ℝ E F); μ] + Var[L.comp (.inr ℝ E F); ν] := by
+  have : L = fun x : E × F ↦ L.comp (.inl ℝ E F) x.1 + L.comp (.inr ℝ E F) x.2 := by
+    ext; rw [L.comp_inl_add_comp_inr]
+  conv_lhs => rw [this]
+  rw [variance_add_prod hLμ hLν]
+
+lemma variance_dual_prod {L : Dual ℝ (E × F)} (hLμ : MemLp id 2 μ) (hLν : MemLp id 2 ν) :
+    Var[L; μ.prod ν] = Var[L.comp (.inl ℝ E F); μ] + Var[L.comp (.inr ℝ E F); ν] :=
+  variance_dual_prod' (ContinuousLinearMap.comp_memLp' _ hLμ)
+    (ContinuousLinearMap.comp_memLp' _ hLν)
+
+end NormedSpace
 
 end ProbabilityTheory

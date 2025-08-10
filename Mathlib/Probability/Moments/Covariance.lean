@@ -3,13 +3,7 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Etienne Marion
 -/
-<<<<<<< HEAD
-import Mathlib.MeasureTheory.Function.LpSeminorm.Prod
-import Mathlib.MeasureTheory.Integral.Prod
-import Mathlib.Probability.Moments.Variance
-=======
 import Mathlib.Probability.Independence.Integration
->>>>>>> master
 
 /-!
 # Covariance
@@ -32,7 +26,7 @@ We define the covariance of two real-valued random variables.
 
 -/
 
-open MeasureTheory NormedSpace
+open MeasureTheory
 open scoped ENNReal
 
 namespace ProbabilityTheory
@@ -125,19 +119,6 @@ lemma covariance_add_right [IsFiniteMeasure μ]
     (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) (hZ : MemLp Z 2 μ) :
     cov[X, Y + Z; μ] = cov[X, Y; μ] + cov[X, Z; μ] := by
   rw [covariance_comm, covariance_add_left hY hZ hX, covariance_comm X, covariance_comm Z]
-
-lemma variance_add [IsFiniteMeasure μ] (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) :
-    Var[X + Y; μ] = Var[X; μ] + 2 * cov[X, Y; μ] + Var[Y; μ] := by
-  rw [← covariance_self, covariance_add_left hX hY (hX.add hY), covariance_add_right hX hX hY,
-    covariance_add_right hY hX hY, covariance_self, covariance_self, covariance_comm]
-  · ring
-  · exact hY.aemeasurable
-  · exact hX.aemeasurable
-  · exact hX.aemeasurable.add hY.aemeasurable
-
-lemma variance_fun_add [IsFiniteMeasure μ] (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) :
-    Var[fun ω ↦ X ω + Y ω; μ] = Var[X; μ] + 2 * cov[X, Y; μ] + Var[Y; μ] :=
-  variance_add hX hY
 
 lemma covariance_smul_left (c : ℝ) : cov[c • X, Y; μ] = c * cov[X, Y; μ] := by
   simp_rw [covariance, Pi.smul_apply, smul_eq_mul, ← integral_const_mul, ← mul_assoc, mul_sub,
@@ -308,87 +289,5 @@ lemma IndepFun.covariance_eq_zero (h : IndepFun X Y μ) (hX : MemLp X 2 μ) (hY 
    have := hX.isProbabilityMeasure_of_indepFun X Y (by simp) (by simp) h' h
    rw [covariance_eq_sub hX hY, h.integral_mul_eq_mul_integral
        hX.aestronglyMeasurable hY.aestronglyMeasurable, sub_self]
-
-section Prod
-
-variable {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {ν : Measure Ω'}
-  [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
-  {X : Ω → ℝ} {Y : Ω' → ℝ}
-
-lemma covariance_fst_snd_prod (hfμ : MemLp X 2 μ) (hgν : MemLp Y 2 ν) :
-    cov[fun x ↦ X x.1, fun x ↦ Y x.2; μ.prod ν] = 0 := by
-  have h_map1 : (μ.prod ν).map (fun x ↦ x.1) = μ := by simp
-  rw [covariance, integral_prod]
-  swap
-  · exact MemLp.integrable_mul ((hfμ.comp_fst _).sub (memLp_const _))
-      ((hgν.comp_snd _).sub (memLp_const _))
-  simp only
-  simp_rw [integral_const_mul, integral_mul_const]
-  suffices ∫ a, X a - ∫ x, X x.1 ∂μ.prod ν ∂μ = 0 by simp [this]
-  rw [integral_sub (hfμ.integrable (by simp)) (integrable_const _)]
-  simp only [integral_const, measureReal_univ_eq_one, smul_eq_mul, one_mul]
-  nth_rw 1 [← h_map1]
-  rw [integral_map (by fun_prop)]
-  · ring
-  · simp only [Measure.map_fst_prod, measure_univ, one_smul]
-    exact hfμ.aestronglyMeasurable
-
-lemma variance_add_prod (hfμ : MemLp X 2 μ) (hgν : MemLp Y 2 ν) :
-    Var[fun x ↦ X x.1 + Y x.2; μ.prod ν] = Var[X; μ] + Var[Y; ν] := by
-  rw [variance_fun_add (hfμ.comp_fst ν) (hgν.comp_snd μ)]
-  simp only [covariance_fst_snd_prod hfμ hgν, mul_zero, add_zero]
-  have h_map1 : (μ.prod ν).map (fun x ↦ x.1) = μ := by simp
-  have h_map2 : (μ.prod ν).map (fun x ↦ x.2) = ν := by simp
-  conv_rhs => rw [← h_map1]
-              rhs
-              rw [← h_map2]
-  rw [variance_map _ (by fun_prop), variance_map _ (by fun_prop)]
-  · rfl
-  · simp only [Measure.map_snd_prod, measure_univ, one_smul]
-    exact hgν.aestronglyMeasurable.aemeasurable
-  · simp only [Measure.map_fst_prod, measure_univ, one_smul]
-    exact hfμ.aestronglyMeasurable.aemeasurable
-
-end Prod
-
-section NormedSpace
-
-variable {E F G : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {mE : MeasurableSpace E}
-  [NormedAddCommGroup F] [NormedSpace ℝ F] {mF : MeasurableSpace F}
-  [NormedAddCommGroup G] [NormedSpace ℝ G] {mG : MeasurableSpace G} [CompleteSpace G]
-  {μ : Measure E} [IsProbabilityMeasure μ] {ν : Measure F} [IsProbabilityMeasure ν]
-  {p : ℝ≥0∞}
-
-lemma integral_continuousLinearMap_prod' {L : E × F →L[ℝ] G}
-    (hLμ : MemLp (L.comp (.inl ℝ E F)) 1 μ) (hLν : MemLp (L.comp (.inr ℝ E F)) 1 ν) :
-    (μ.prod ν)[L] = μ[L.comp (.inl ℝ E F)] + ν[L.comp (.inr ℝ E F)] := by
-  simp_rw [← L.comp_inl_add_comp_inr]
-  rw [integral_add, integral_prod, integral_prod]
-  · simp
-  · exact (hLν.comp_snd μ).integrable le_rfl
-  · exact (hLμ.comp_fst ν).integrable le_rfl
-  · exact (hLμ.comp_fst ν).integrable le_rfl
-  · exact (hLν.comp_snd μ).integrable le_rfl
-
-lemma integral_continuousLinearMap_prod {L : E × F →L[ℝ] G}
-    (hμ : MemLp id 1 μ) (hν : MemLp id 1 ν) :
-    (μ.prod ν)[L] = μ[L.comp (.inl ℝ E F)] + ν[L.comp (.inr ℝ E F)] :=
-  integral_continuousLinearMap_prod' (ContinuousLinearMap.comp_memLp' _ hμ)
-    (ContinuousLinearMap.comp_memLp' _ hν)
-
-lemma variance_dual_prod' {L : Dual ℝ (E × F)}
-    (hLμ : MemLp (L.comp (.inl ℝ E F)) 2 μ) (hLν : MemLp (L.comp (.inr ℝ E F)) 2 ν) :
-    Var[L; μ.prod ν] = Var[L.comp (.inl ℝ E F); μ] + Var[L.comp (.inr ℝ E F); ν] := by
-  have : L = fun x : E × F ↦ L.comp (.inl ℝ E F) x.1 + L.comp (.inr ℝ E F) x.2 := by
-    ext; rw [L.comp_inl_add_comp_inr]
-  conv_lhs => rw [this]
-  rw [variance_add_prod hLμ hLν]
-
-lemma variance_dual_prod {L : Dual ℝ (E × F)} (hLμ : MemLp id 2 μ) (hLν : MemLp id 2 ν) :
-    Var[L; μ.prod ν] = Var[L.comp (.inl ℝ E F); μ] + Var[L.comp (.inr ℝ E F); ν] :=
-  variance_dual_prod' (ContinuousLinearMap.comp_memLp' _ hLμ)
-    (ContinuousLinearMap.comp_memLp' _ hLν)
-
-end NormedSpace
 
 end ProbabilityTheory
