@@ -591,6 +591,18 @@ lemma _root_.Matrix.posDef_iff_eq_conjTranspose_mul_self [DecidableEq n] {A : Ma
 @[deprecated (since := "07-08-2025")] alias posDef_iff_eq_conjTranspose_mul_self :=
   Matrix.posDef_iff_eq_conjTranspose_mul_self
 
+/-- A positive semi-definite matrix is positive definite if and only if it is invertible. -/
+@[grind =]
+theorem _root_.Matrix.PosSemidef.posDef_iff_isUnit [DecidableEq n] {x : Matrix n n 𝕜}
+    (hx : x.PosSemidef) : x.PosDef ↔ IsUnit x := by
+  refine ⟨fun h => h.isUnit, fun h => ⟨hx.1, fun v hv => ?_⟩⟩
+  obtain ⟨y, rfl⟩ := posSemidef_iff_eq_conjTranspose_mul_self.mp hx
+  simp_rw [dotProduct_mulVec, ← vecMul_vecMul, ← star_mulVec, ← dotProduct_mulVec,
+    dotProduct_star_self_pos_iff]
+  contrapose! hv
+  rw [← map_eq_zero_iff (f := (yᴴ * y).mulVecLin) (mulVec_injective_iff_isUnit.mpr h),
+    mulVecLin_apply, ← mulVec_mulVec, hv, mulVec_zero]
+
 open UnitaryGroup in
 theorem _root_.Matrix.UnitaryGroup.conj_posDef_iff [DecidableEq n]
     (U : unitaryGroup n R) {x : Matrix n n R} :
