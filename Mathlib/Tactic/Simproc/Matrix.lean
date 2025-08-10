@@ -28,9 +28,9 @@ def piFinLit? {u : Level} {n : ℕ} {R : Q(Type u)} (e : Q(Fin $n → $R)) :
   match n with
   | 0 => return .some ![]
   | _+1 =>
-    let ~q(vecCons $eh? $et?) := e | return .none
-    let .some et ← piFinLit? et? | return .none
-    return .some (vecCons eh? et)
+    let ~q(vecCons $h $et) := e | return .none
+    let .some t ← piFinLit? et | return .none
+    return .some (vecCons h t)
 
 /-- Decompose a "double vector" expression, i.e. `Fin m → Fin n → R`, into a double vector of
 expressions. -/
@@ -39,17 +39,17 @@ def piFinPiFinLit? {u : Level} {m n : ℕ} {R : Q(Type u)} (e : Q(Fin $m → Fin
   match m with
   | 0 => return .some ![]
   | _+1 =>
-    let ~q(vecCons $eh? $et?) := e | return .none
-    let .some eh ← piFinLit? eh? | return .none
-    let .some et ← piFinPiFinLit? et? | return .none
-    return .some (vecCons eh et)
+    let ~q(vecCons $h $et) := e | return .none
+    let .some h ← piFinLit? h | return .none
+    let .some t ← piFinPiFinLit? et | return .none
+    return .some (vecCons h t)
 
 /-- Decompose a matrix expression into a matrix of expressions. -/
-def matrixLit? {u : Level} {m n : ℕ} {R : Q(Type u)} (M : Q(Matrix (Fin $m) (Fin $n) $R)) :
+def matrixLit? {u : Level} {m n : ℕ} {R : Q(Type u)} (eM : Q(Matrix (Fin $m) (Fin $n) $R)) :
     MetaM (Option (Matrix (Fin m) (Fin n) Q($R))) := do
-  let ~q(of $M) := M | return .none
-  let .some e ← piFinPiFinLit? M | return .none
-  return of e
+  let ~q(of $eM) := eM | return .none
+  let .some M ← piFinPiFinLit? eM | return .none
+  return of M
 
 /-- Given a matrix of expressions, construct a proof of `(mkLiteralQ M)ᵀ = mkLiteralQ (Mᵀ)`. -/
 def mkTransposeProof {u : Level} {α : Q(Type u)} {m n : ℕ} (M : Matrix (Fin m) (Fin n) Q($α)) :
