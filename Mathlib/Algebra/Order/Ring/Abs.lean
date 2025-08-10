@@ -41,6 +41,7 @@ variable [Ring α] [LinearOrder α] [IsStrictOrderedRing α] {n : ℕ} {a b : α
 
 lemma abs_two : |(2 : α)| = 2 := abs_of_pos zero_lt_two
 
+@[simp]
 lemma abs_mul (a b : α) : |a * b| = |a| * |b| := by
   rw [abs_eq (mul_nonneg (abs_nonneg a) (abs_nonneg b))]
   rcases le_total a 0 with ha | ha <;> rcases le_total b 0 with hb | hb <;>
