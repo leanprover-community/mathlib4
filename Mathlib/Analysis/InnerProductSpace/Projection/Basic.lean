@@ -658,7 +658,7 @@ theorem starProjection_isSymmetricProjection
 
 open LinearMap in
 /-- An operator is a symmetric projection if and only if it is an orthogonal projection. -/
-theorem _root_.LinearMap.isSymmetricProjection_iff_eq_starProjection_range {p : E →ₗ[𝕜] E} :
+theorem _root_.LinearMap.isSymmetricProjection_iff_eq_coe_starProjection_range {p : E →ₗ[𝕜] E} :
     p.IsSymmetricProjection ↔ ∃ (_ : (LinearMap.range p).HasOrthogonalProjection),
     p = (LinearMap.range p).starProjection := by
   refine ⟨fun hp ↦ ?_, fun ⟨h, hp⟩ ↦ hp ▸ starProjection_isSymmetricProjection⟩
@@ -669,10 +669,10 @@ theorem _root_.LinearMap.isSymmetricProjection_iff_eq_starProjection_range {p : 
   rw [hp.isIdempotentElem.isSymmetric_iff_orthogonal_range.mp hp.isSymmetric]
   simpa using congr($hp.isIdempotentElem.mul_one_sub_self x)
 
-lemma _root_.LinearMap.isSymmetricProjection_iff_eq_starProjection {p : E →ₗ[𝕜] E} :
+lemma _root_.LinearMap.isSymmetricProjection_iff_eq_coe_starProjection {p : E →ₗ[𝕜] E} :
     p.IsSymmetricProjection
       ↔ ∃ (K : Submodule 𝕜 E) (_ : K.HasOrthogonalProjection), p = K.starProjection :=
-  ⟨fun h ↦ ⟨LinearMap.range p, p.isSymmetricProjection_iff_eq_starProjection_range.mp h⟩,
+  ⟨fun h ↦ ⟨LinearMap.range p, p.isSymmetricProjection_iff_eq_coe_starProjection_range.mp h⟩,
     by rintro ⟨_, _, rfl⟩; exact starProjection_isSymmetricProjection⟩
 
 theorem starProjection_apply_eq_zero_iff [K.HasOrthogonalProjection] {v : E} :
