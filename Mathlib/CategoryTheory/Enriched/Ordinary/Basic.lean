@@ -270,11 +270,6 @@ def TransportEnrichment.forgetEnrichmentEquivFunctor :
       ← TransportEnrichment.eComp_eq, ← ForgetEnrichment.homOf_comp]
     simp [ForgetEnrichment.to, tensorHom_def' (Functor.LaxMonoidal.ε F)]
 
-lemma Equiv.foo {α β : Type*} {f : α → β} (h : Function.Bijective f) (b : β) :
-    f ((Equiv.ofBijective _ h).symm b) = b := by
-  change (Equiv.ofBijective f h) ((Equiv.ofBijective _ h).symm b) = _
-  simp
-
 @[simps]
 def TransportEnrichment.forgetEnrichmentEquivInverse :
     ForgetEnrichment W (TransportEnrichment F D) ⥤ TransportEnrichment F (ForgetEnrichment V D)
@@ -301,7 +296,7 @@ def TransportEnrichment.forgetEnrichmentEquivInverse :
       rw [← Functor.LaxMonoidal.left_unitality_inv, Category.assoc, Category.assoc,
         ← Functor.LaxMonoidal.μ_natural, ← leftUnitor_inv_comp_tensorHom_assoc,
         ← tensor_comp_assoc]
-    erw [Equiv.foo (h _), Equiv.foo (h _)]
+    iterate 2 erw [← Equiv.ofBijective_apply _ (h _), Equiv.apply_symm_apply]
     simp
 
 def TransportEnrichment.forgetEnrichmentEquiv : TransportEnrichment F (ForgetEnrichment V D) ≌
@@ -314,10 +309,12 @@ def TransportEnrichment.forgetEnrichmentEquiv : TransportEnrichment F (ForgetEnr
       Functor.id_obj, Functor.comp_map, forgetEnrichmentEquivInverse_map,
       forgetEnrichmentEquivFunctor_map, ForgetEnrichment.to_of, ForgetEnrichment.homTo_homOf,
       Equiv.ofBijective_apply, Iso.refl_hom, Category.comp_id, Functor.id_map, Category.id_comp]
-    erw [Equiv.foo (h _)]
+    erw [← Equiv.ofBijective_apply _ (h _), Equiv.apply_symm_apply]
     simp)
   functor_unitIso_comp X := by
-    simp
+    simp only [Functor.id_obj, forgetEnrichmentEquivFunctor_obj, Functor.comp_obj,
+      forgetEnrichmentEquivInverse_obj, ForgetEnrichment.to_of, NatIso.ofComponents_hom_app,
+      Iso.refl_hom, forgetEnrichmentEquivFunctor_map, Equiv.ofBijective_apply, Category.comp_id]
     erw [forgetEnrichment_id, ← TransportEnrichment.eId_eq, forgetEnrichment_id']
 
 end Equiv
