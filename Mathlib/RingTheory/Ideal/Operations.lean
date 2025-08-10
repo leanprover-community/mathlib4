@@ -247,7 +247,7 @@ theorem add_eq_one_iff : I + J = 1 ↔ ∃ i ∈ I, ∃ j ∈ J, i + j = 1 := by
 theorem mul_mem_mul {r s} (hr : r ∈ I) (hs : s ∈ J) : r * s ∈ I * J :=
   Submodule.smul_mem_smul hr hs
 
-theorem pow_bot {n : ℕ} (hn : n ≠ 0) :
+theorem bot_pow {n : ℕ} (hn : n ≠ 0) :
     (⊥ : Ideal R) ^ n = ⊥ := Submodule.bot_pow hn
 
 theorem pow_mem_pow {x : R} (hx : x ∈ I) (n : ℕ) : x ^ n ∈ I ^ n :=
