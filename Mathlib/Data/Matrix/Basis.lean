@@ -353,7 +353,7 @@ variable [Fintype n] [Semiring α]
 theorem row_eq_zero_of_commute_single {i j k : n} {M : Matrix n n α}
     (hM : Commute (single i j 1) M) (hkj : k ≠ j) : M j k = 0 := by
   have := ext_iff.mpr hM i k
-  aesop
+  simp_all
 
 @[deprecated (since := "2025-05-05")]
 alias row_eq_zero_of_commute_stdBasisMatrix := row_eq_zero_of_commute_single
@@ -361,7 +361,7 @@ alias row_eq_zero_of_commute_stdBasisMatrix := row_eq_zero_of_commute_single
 theorem col_eq_zero_of_commute_single {i j k : n} {M : Matrix n n α}
     (hM : Commute (single i j 1) M) (hki : k ≠ i) : M k i = 0 := by
   have := ext_iff.mpr hM k j
-  aesop
+  simp_all
 
 @[deprecated (since := "2025-05-05")]
 alias col_eq_zero_of_commute_stdBasisMatrix := col_eq_zero_of_commute_single
@@ -369,7 +369,7 @@ alias col_eq_zero_of_commute_stdBasisMatrix := col_eq_zero_of_commute_single
 theorem diag_eq_of_commute_single {i j : n} {M : Matrix n n α}
     (hM : Commute (single i j 1) M) : M i i = M j j := by
   have := ext_iff.mpr hM i j
-  aesop
+  simp_all
 
 @[deprecated (since := "2025-05-05")]
 alias diag_eq_of_commute_stdBasisMatrix := diag_eq_of_commute_single
@@ -416,17 +416,33 @@ theorem mem_range_scalar_iff_commute_single' {M : Matrix n n α} :
 @[deprecated (since := "2025-05-05")]
 alias mem_range_scalar_iff_commute_stdBasisMatrix' := mem_range_scalar_iff_commute_single'
 
-protected theorem center [CommSemiring R] :
-    Set.center (Matrix n n R) = Submodule.span R {(1 : Matrix n n R)} := Set.ext fun x => by
-  have : x ∈ Set.range (scalar n) ↔ ∃ a : R, a • 1 = x :=
-    ⟨fun ⟨y, hy⟩ => ⟨y, hy ▸ smul_one_eq_diagonal _⟩,
-    fun ⟨y, hy⟩ => ⟨y, hy ▸ smul_one_eq_diagonal _ |>.symm⟩⟩
-  rw [SetLike.mem_coe, Submodule.mem_span_singleton, ← this, mem_range_scalar_iff_commute_single',
-    Semigroup.mem_center_iff]
-  refine ⟨fun h i j => h _, fun h g => ?_⟩
-  have (i j : n) : (g i j) • single i j 1 = single i j (g i j) := by simp
-  rw [matrix_eq_sum_single g]
-  simp_rw [Matrix.sum_mul, Matrix.mul_sum, ← this, smul_mul, mul_smul, h _ _ |>.eq]
+theorem mem_scalar_image_center_iff_commute_all {M : Matrix n n α} :
+    M ∈ scalar n '' Set.center α ↔ ∀ a, Commute a M := by
+  refine ⟨fun ⟨x, ⟨h1, h2, h3⟩, hx⟩ a => ?_, fun h => ?_⟩
+  · ext; simp [← hx, h1 _ |>.eq]
+  · by_cases h' : M = 0
+    · exact ⟨0, by rw [h']; simp⟩
+    obtain ⟨i, j, _⟩ := by simpa using ext_iff.not.mpr h'
+    have (i j : n) : Commute (single i j 1) M := h _
+    rw [← mem_range_scalar_iff_commute_single'] at this
+    obtain ⟨a, ha⟩ : ∃ a : α, M = a • 1 := by simpa [smul_one_eq_diagonal, eq_comm]
+    use a
+    simp only [scalar_apply, ha, smul_one_eq_diagonal, and_true, Semigroup.mem_center_iff]
+    simp only [ha, smul_one_eq_diagonal, commute_iff_eq, ← ext_iff, mul_apply, diagonal_apply,
+      mul_ite, mul_zero, Finset.sum_ite_eq', Finset.mem_univ, ↓reduceIte, ite_mul, zero_mul,
+      Finset.sum_ite_eq] at h
+    intro g
+    specialize h (scalar n g) i j
+    simp only [scalar_apply, diagonal_apply, ite_mul, zero_mul, mul_ite, mul_zero, ite_eq_iff,
+      right_eq_ite_iff] at h
+    split_ifs at h
+    · simp_all
+    · simp_all
+
+protected theorem center :
+    Set.center (Matrix n n α) = scalar n '' Set.center α := Set.ext fun x => by
+  rw [mem_scalar_image_center_iff_commute_all, Semigroup.mem_center_iff]
+  exact Iff.rfl
 
 end Commute
 
