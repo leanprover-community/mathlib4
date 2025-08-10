@@ -9,7 +9,10 @@ import Mathlib.Data.Matrix.Reflection
 /-!
 # Simprocs for matrices
 
-In this file we provide a simproc for transpose of explicit matrices.
+In this file we provide a simproc and a "rw proc" for transpose of explicit matrices.
+
+Existing theorems are `Matrix.cons_transpose` and a simproc `Matrix.cons_val`, but this simproc
+and rw proc aim to do it in one step to optimise the proof term and intermediate goal sizes.
 -/
 
 open Matrix
@@ -82,7 +85,12 @@ end Qq
 open Elab Tactic
 
 /-- A custom theorem for reducing transpose of explicit matrices. For example, `transpose_of% 2 3`
-is the theorem saying `!![a, b, c; d, e, f]ᵀ = !![a, d; b, e; c, f]`. -/
+is the theorem saying `!![a, b, c; d, e, f]ᵀ = !![a, d; b, e; c, f]`. Usage:
+
+```lean
+example : (!![1, 2, 3; 4, 5, 6]ᵀ : Matrix (Fin (2+1)) (Fin 2) ℤ) = !![1, 4; 2, 5; 3, 6] := by
+  rw [transpose_of% 2 3]
+``` -/
 elab:max (name := transpose_tac_elab)
     "transpose_of% " mStx:term:max nStx:term:max : term => do
   let u ← Lean.Meta.mkFreshLevelMVar
@@ -103,7 +111,13 @@ example (u : Matrix (Fin 2) (Fin 3) ℤ) (v : Matrix (Fin 3) (Fin 2) ℤ)
 
 -- Here we use the convention that `e{name}` is the expression for `{name}`, e.g. `eMT` is the
 -- expression corresponding to the transpose of the matrix `M`.
-/-- A simproc for terms of the form `Matrix.transpose (Matrix.of _)`. -/
+/-- A simproc for terms of the form `Matrix.transpose (Matrix.of _)`. Usage:
+
+```lean
+example : (!![1, 2, 3; 4, 5, 6]ᵀ : Matrix (Fin (2+1)) (Fin 2) ℤ) = !![1, 4; 2, 5; 3, 6] := by
+  simp
+```
+-/
 simproc matrix_transpose (Matrix.transpose (Matrix.of _)) := .ofQ fun u α eMT ↦ do
   let .succ _ := u | return .continue
   let ~q(@Matrix (Fin (OfNat.ofNat $en)) (Fin (OfNat.ofNat $em)) $R) := α | return .continue
