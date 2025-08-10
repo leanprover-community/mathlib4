@@ -115,6 +115,24 @@ theorem exists_eq_one_ne_zero_of_ne_zero_pair {x y : V} (hx : x ≠ 0) (hy : y �
 
 variable [IsTopologicalAddGroup V]
 
+/-- The center of continuous linear maps on a topological vector space
+with sperating dual is trivial. -/
+protected theorem _root_.ContinuousLinearMap.center [ContinuousSMul R V] :
+    Subalgebra.center R (V →L[R] V) = ⊥ := Subalgebra.ext fun T => by
+  simp only [Subalgebra.mem_center_iff, Bot.bot, AlgHom.mem_range, Algebra.ofId_apply,
+    algebraMap, Algebra.algebraMap, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
+  refine ⟨fun h => ?_, fun ⟨y, hy⟩ => by simp [← hy]⟩
+  have h' (f : V →L[R] R) (y v : V) : f (T v) • y = f v • T y := by
+    simpa [ContinuousLinearMap.ext_iff, Function.comp_apply, map_smul]
+      using congr($(h <| f.smulRight y) v)
+  by_cases H : ∀ a : V, a = 0
+  · use 0; simp [ContinuousLinearMap.ext_iff, H]
+  obtain ⟨x, hx⟩ := not_forall.mp H
+  obtain ⟨f, hf⟩ := SeparatingDual.exists_eq_one (R := R) hx
+  use f (T x)
+  ext y
+  simp [h', hf]
+
 /-- In a topological vector space with separating dual, the group of continuous linear equivalences
 acts transitively on the set of nonzero vectors: given two nonzero vectors `x` and `y`, there
 exists `A : V ≃L[R] V` mapping `x` to `y`. -/
