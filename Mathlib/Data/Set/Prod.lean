@@ -630,7 +630,10 @@ theorem pi_univ_ite (s : Set ι) [DecidablePred (· ∈ s)] (t : ∀ i, Set (α 
     (pi univ fun i => if i ∈ s then t i else univ) = s.pi t := by grind
 
 @[gcongr]
-theorem pi_mono (h : ∀ i ∈ s, t₁ i ⊆ t₂ i) : pi s t₁ ⊆ pi s t₂ := fun _ hx i hi => h i hi <| hx i hi
+theorem pi_mono' (h : ∀ i ∈ s₂, t₁ i ⊆ t₂ i) (h' : s₂ ⊆ s₁) : pi s₁ t₁ ⊆ pi s₂ t₂ :=
+  fun _ hx i hi ↦ h i hi (hx i (h' hi))
+
+theorem pi_mono (h : ∀ i ∈ s, t₁ i ⊆ t₂ i) : pi s t₁ ⊆ pi s t₂ := pi_mono' h Subset.rfl
 
 theorem pi_inter_distrib : (s.pi fun i => t i ∩ t₁ i) = s.pi t ∩ s.pi t₁ := by grind
 
