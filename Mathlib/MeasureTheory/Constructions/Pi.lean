@@ -152,7 +152,13 @@ instance sigmaFinite_tprod (l : List δ) (μ : ∀ i, Measure (X i)) [∀ i, Sig
   | nil => rw [tprod_nil]; infer_instance
   | cons i l ih => rw [tprod_cons]; exact @prod.instSigmaFinite _ _ _ _ _ _ _ ih
 
-theorem tprod_tprod (l : List δ) (μ : ∀ i, Measure (X i)) [∀ i, SigmaFinite (μ i)]
+instance sfinite_tprod (l : List δ) (μ : ∀ i, Measure (X i)) [∀ i, SFinite (μ i)] :
+    SFinite (Measure.tprod l μ) := by
+  induction l with
+  | nil => rw [tprod_nil]; infer_instance
+  | cons i l ih => rw [tprod_cons]; exact @prod.instSFinite _ _ _ _ _ _ _ ih
+
+theorem tprod_tprod (l : List δ) (μ : ∀ i, Measure (X i)) [∀ i, SFinite (μ i)]
     (s : ∀ i, Set (X i)) :
     Measure.tprod l μ (Set.tprod l s) = (l.map fun i => (μ i) (s i)).prod := by
   induction l with
@@ -177,7 +183,7 @@ open scoped Classical in
 def pi' : Measure (∀ i, α i) :=
   Measure.map (TProd.elim' mem_sortedUniv) (Measure.tprod (sortedUniv ι) μ)
 
-theorem pi'_pi [∀ i, SigmaFinite (μ i)] (s : ∀ i, Set (α i)) :
+theorem pi'_pi [∀ i, SFinite (μ i)] (s : ∀ i, Set (α i)) :
     pi' μ (pi univ s) = ∏ i, μ i (s i) := by
   classical
   rw [pi']
@@ -211,7 +217,7 @@ instance _root_.MeasureTheory.MeasureSpace.pi {α : ι → Type*} [∀ i, Measur
     MeasureSpace (∀ i, α i) :=
   ⟨Measure.pi fun _ => volume⟩
 
-theorem pi_pi_aux [∀ i, SigmaFinite (μ i)] (s : ∀ i, Set (α i)) (hs : ∀ i, MeasurableSet (s i)) :
+theorem pi_pi_aux [∀ i, SFinite (μ i)] (s : ∀ i, Set (α i)) (hs : ∀ i, MeasurableSet (s i)) :
     Measure.pi μ (pi univ s) = ∏ i, μ i (s i) := by
   refine le_antisymm ?_ ?_
   · rw [Measure.pi, toMeasure_apply _ _ (MeasurableSet.pi countable_univ fun i _ => hs i)]
@@ -289,8 +295,8 @@ theorem pi_pi [∀ i, SigmaFinite (μ i)] (s : ∀ i, Set (α i)) :
   haveI : Encodable ι := Fintype.toEncodable ι
   rw [← pi'_eq_pi, pi'_pi]
 
-nonrec theorem pi_univ [∀ i, SigmaFinite (μ i)] : Measure.pi μ univ = ∏ i, μ i univ := by
-  rw [← pi_univ, pi_pi μ]
+nonrec theorem pi_univ [∀ i, SFinite (μ i)] : Measure.pi μ univ = ∏ i, μ i univ := by
+  rw [← pi_univ, pi_pi_aux μ _ (fun i ↦ MeasurableSet.univ)]
 
 instance pi.instIsFiniteMeasure [∀ i, IsFiniteMeasure (μ i)] :
     IsFiniteMeasure (Measure.pi μ) :=
