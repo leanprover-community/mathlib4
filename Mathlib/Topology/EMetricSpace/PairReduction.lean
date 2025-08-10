@@ -387,7 +387,7 @@ lemma iSup_edist_pairSet {E : Type*} [PseudoEMetricSpace E] (ha : 1 < a) (f : T 
     simp only [iSup_subtype]
     apply le_iSup_of_le (i := (x,y))
     apply le_iSup_of_le
-    apply le_refl
+    · exact le_rfl
     refine Finset.mem_biUnion.mpr ⟨l, ?_, hxy⟩
     refine Finset.mem_range.mpr <| lt_of_le_of_lt (Nat.findGreatest_le (#J - 1)) ?_
     exact Nat.sub_lt (Finset.card_pos.mpr hJ) zero_lt_one
@@ -401,7 +401,7 @@ end pairReduction
 variable [DecidableEq T]
 
 open pairReduction in
-theorem pair_reduction (hJ_card : #J ≤ a ^ n) (E : Type*) [PseudoEMetricSpace E] :
+theorem pair_reduction (hJ_card : #J ≤ a ^ n) (c : ℝ≥0∞) (E : Type*) [PseudoEMetricSpace E] :
     ∃ K : Finset (T × T), K ⊆ J.product J
       ∧ #K ≤ a * #J
       ∧ (∀ s t, (s, t) ∈ K → edist s t ≤ n * c)
