@@ -417,7 +417,7 @@ theorem mem_range_scalar_iff_commute_single' {M : Matrix n n α} :
 alias mem_range_scalar_iff_commute_stdBasisMatrix' := mem_range_scalar_iff_commute_single'
 
 protected theorem center :
-    Set.center (Matrix n n α) = scalar n '' Set.center α := Set.ext fun x => by
+    Set.center (Matrix n n α) = scalar n '' Set.center α := Set.ext fun x ↦ by
   obtain _ | hn := isEmpty_or_nonempty n
   · simpa [Semigroup.mem_center_iff, nontriviality] using .intro 1 (by simp)
   obtain ⟨i⟩ := hn
