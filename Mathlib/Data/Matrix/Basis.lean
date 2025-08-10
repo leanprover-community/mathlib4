@@ -416,9 +416,9 @@ theorem mem_range_scalar_iff_commute_single' {M : Matrix n n α} :
 @[deprecated (since := "2025-05-05")]
 alias mem_range_scalar_iff_commute_stdBasisMatrix' := mem_range_scalar_iff_commute_single'
 
-protected theorem center {R n : Type*} [CommSemiring R] [Fintype n] [DecidableEq n] :
+protected theorem center [CommSemiring R] :
     Set.center (Matrix n n R) = Submodule.span R {(1 : Matrix n n R)} := Set.ext fun x => by
-  have : x ∈ (Set.range (scalar n)) ↔ ∃ a : R, a • 1 = x :=
+  have : x ∈ Set.range (scalar n) ↔ ∃ a : R, a • 1 = x :=
     ⟨fun ⟨y, hy⟩ => ⟨y, hy ▸ smul_one_eq_diagonal _⟩,
     fun ⟨y, hy⟩ => ⟨y, hy ▸ smul_one_eq_diagonal _ |>.symm⟩⟩
   rw [SetLike.mem_coe, Submodule.mem_span_singleton, ← this, mem_range_scalar_iff_commute_single',
