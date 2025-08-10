@@ -429,7 +429,7 @@ theorem center_eq_scalar_image :
   · rintro ⟨x, hx, rfl⟩
     exact fun y ↦ scalar_commute x (fun r' ↦ (hx r').symm) y |>.symm
 
-@[simp] protected theorem center [CommSemiring R] :
+@[simp] protected theorem center_eq_range [CommSemiring R] :
     Set.center (Matrix n n R) = Set.range (scalar n) := by
   simp only [center', Set.center_eq_univ, Set.image_univ, scalar]
 
