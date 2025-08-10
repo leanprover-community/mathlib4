@@ -238,7 +238,7 @@ theorem norm_adjoint_comp_self (A : E →L[𝕜] F) :
           Real.sqrt_mul_self (norm_nonneg x)]
 
 /-- The C⋆-algebra instance when `𝕜 := ℂ` can be found in
-`Analysis.CStarAlgebra.ContinuousLinearMap`. -/
+`Analysis/CStarAlgebra/ContinuousLinearMap`. -/
 instance : CStarRing (E →L[𝕜] E) where
   norm_mul_self_le x := le_of_eq <| Eq.symm <| norm_adjoint_comp_self x
 
@@ -247,6 +247,19 @@ theorem isAdjointPair_inner (A : E →L[𝕜] F) :
       (sesqFormOfInner : F →ₗ[𝕜] F →ₗ⋆[𝕜] 𝕜) A (A†) := by
   intro x y
   simp only [sesqFormOfInner_apply_apply, adjoint_inner_left]
+
+theorem adjoint_innerSL_apply (x : E) :
+    adjoint (innerSL 𝕜 x) = (lsmul 𝕜 𝕜).flip x :=
+  ext_ring <| ext_inner_left 𝕜 <| fun _ => by simp [adjoint_inner_right]
+
+theorem innerSL_apply_comp (x : F) (f : E →L[𝕜] F) :
+    innerSL 𝕜 x ∘L f = innerSL 𝕜 (adjoint f x) := by
+  ext; simp [adjoint_inner_left]
+
+omit [CompleteSpace E] in
+theorem innerSL_apply_comp_of_isSymmetric (x : E) {f : E →L[𝕜] E} (hf : f.IsSymmetric) :
+    innerSL 𝕜 x ∘L f = innerSL 𝕜 (f x) := by
+  ext; simp [hf]
 
 end ContinuousLinearMap
 
@@ -354,16 +367,11 @@ theorem isStarProjection_iff_isIdempotentElem_and_isStarNormal :
   exact fun h => IsIdempotentElem.isSelfAdjoint_iff_isStarNormal h
 
 open ContinuousLinearMap in
-/-- An idempotent operator `T` is self-adjoint iff `(range T)ᗮ = ker T`. -/
-theorem IsIdempotentElem.isSelfAdjoint_iff_orthogonal_range (h : IsIdempotentElem T) :
-    IsSelfAdjoint T ↔ (LinearMap.range T)ᗮ = LinearMap.ker T := by
-  refine ⟨fun hT => hT.isSymmetric.orthogonal_range, fun h1 => ?_⟩
-  rw [isSelfAdjoint_iff, h.star.ext_iff h]
-  refine ⟨?_, orthogonal_range T ▸ h1⟩
-  have := h.hasOrthogonalProjection_range
-  have := h.star.hasOrthogonalProjection_range
-  rw [← Submodule.orthogonal_orthogonal (LinearMap.range (star T)),
-    orthogonal_range, star_eq_adjoint, adjoint_adjoint, ← h1, Submodule.orthogonal_orthogonal]
+omit [CompleteSpace E] in
+/-- An idempotent operator `T` is symmetric iff `(range T)ᗮ = ker T`. -/
+theorem IsIdempotentElem.isSymmetric_iff_orthogonal_range (h : IsIdempotentElem T) :
+    T.IsSymmetric ↔ (LinearMap.range T)ᗮ = LinearMap.ker T :=
+  LinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range h.toLinearMap
 
 open ContinuousLinearMap in
 /-- Star projection operators are equal iff their range are. -/
@@ -372,8 +380,8 @@ theorem IsStarProjection.ext_iff {S : E →L[𝕜] E}
     S = T ↔ LinearMap.range S = LinearMap.range T := by
   refine ⟨fun h => h ▸ rfl, fun h => ?_⟩
   rw [hS.isIdempotentElem.ext_iff hT.isIdempotentElem,
-    ← hT.isIdempotentElem.isSelfAdjoint_iff_orthogonal_range.mp hT.isSelfAdjoint,
-    ← hS.isIdempotentElem.isSelfAdjoint_iff_orthogonal_range.mp hS.isSelfAdjoint]
+    ← hT.isIdempotentElem.isSymmetric_iff_orthogonal_range.mp hT.isSelfAdjoint.isSymmetric,
+    ← hS.isIdempotentElem.isSymmetric_iff_orthogonal_range.mp hS.isSelfAdjoint.isSymmetric]
   simp [h]
 
 alias ⟨_, IsStarProjection.ext⟩ := IsStarProjection.ext_iff
@@ -398,6 +406,12 @@ theorem isStarProjection_iff_eq_starProjection_range [CompleteSpace E] {p : E �
   refine Submodule.eq_starProjection_of_mem_orthogonal (by simp) ?_
   simpa [p.orthogonal_range, hp.isSelfAdjoint.isSymmetric]
     using congr($(hp.isIdempotentElem.mul_one_sub_self) x)
+
+lemma isStarProjection_iff_eq_starProjection [CompleteSpace E] {p : E →L[𝕜] E} :
+    IsStarProjection p
+      ↔ ∃ (K : Submodule 𝕜 E) (_ : K.HasOrthogonalProjection), p = K.starProjection :=
+  ⟨fun h ↦ ⟨LinearMap.range p, isStarProjection_iff_eq_starProjection_range.mp h⟩,
+    by rintro ⟨_, _, rfl⟩; simp⟩
 
 namespace LinearMap
 
@@ -587,18 +601,21 @@ theorem _root_.ContinuousLinearMap.isSelfAdjoint_toLinearMap_iff (T : E →L[�
     ContinuousLinearMap.toLinearMap_eq_iff_eq_toContinuousLinearMap]
   rfl
 
+theorem isStarProjection_toContinuousLinearMap_iff {T : E →ₗ[𝕜] E} :
+    have := FiniteDimensional.complete 𝕜 E
+    IsStarProjection (toContinuousLinearMap T) ↔ IsStarProjection T := by
+  simp [isStarProjection_iff, isSelfAdjoint_toContinuousLinearMap_iff,
+    ← ContinuousLinearMap.isIdempotentElem_toLinearMap_iff]
+
 open LinearMap in
 /-- Star projection operators are equal iff their range are. -/
 theorem IsStarProjection.ext_iff {S T : E →ₗ[𝕜] E}
     (hS : IsStarProjection S) (hT : IsStarProjection T) :
     S = T ↔ LinearMap.range S = LinearMap.range T := by
   have := FiniteDimensional.complete 𝕜 E
-  rw [← coe_toContinuousLinearMap S, ← coe_toContinuousLinearMap T,
-    ContinuousLinearMap.coe_inj]
-  refine ContinuousLinearMap.IsStarProjection.ext_iff ?_ ?_
-  all_goals
-    simp [isStarProjection_iff, ← ContinuousLinearMap.isSelfAdjoint_toLinearMap_iff, hS.1.eq, hS.2,
-      hT.1.eq, hT.2, IsIdempotentElem, ContinuousLinearMap.ext_iff, ← Module.End.mul_apply]
+  simpa using ContinuousLinearMap.IsStarProjection.ext_iff
+    (S.isStarProjection_toContinuousLinearMap_iff.mpr hS)
+    (T.isStarProjection_toContinuousLinearMap_iff.mpr hT)
 
 alias ⟨_, IsStarProjection.ext⟩ := IsStarProjection.ext_iff
 
