@@ -22,6 +22,9 @@ section OrderedSemiring
 we use a generic collection of instances so that it applies in other settings (e.g., in a
 `StarOrderedRing`, or the `selfAdjoint` or `StarOrderedRing.positive` parts thereof). -/
 
+variable [AddMonoidWithOne α] [PartialOrder α]
+variable [AddLeftMono α] [ZeroLEOneClass α]
+
 /-- Specialisation of `Nat.cast_nonneg'`, which seems to be easier for Lean to use. -/
 @[simp]
 theorem cast_nonneg {α} [Semiring α] [PartialOrder α] [IsOrderedRing α] (n : ℕ) : 0 ≤ (n : α) :=
@@ -42,10 +45,6 @@ theorem cast_min {α} [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] (m
 theorem cast_max {α} [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] (m n : ℕ) :
     (↑(max m n : ℕ) : α) = max (m : α) n :=
   (@mono_cast α _).map_max
-
-@[simp, norm_cast]
-theorem abs_natCast {α} [Ring α] [Lattice α] [IsOrderedRing α] (n : ℕ) : |(n : α)| = n :=
-  abs_of_nonneg n.cast_nonneg'
 
 section Nontrivial
 
