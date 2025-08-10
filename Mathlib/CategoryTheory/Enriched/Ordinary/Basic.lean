@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Enriched.Basic
 import Mathlib.CategoryTheory.Monoidal.Types.Coyoneda
-import Mathlib.Tactic.Widget.StringDiagram
 
 /-!
 # Enriched ordinary categories
