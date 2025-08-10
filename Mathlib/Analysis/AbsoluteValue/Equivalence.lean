@@ -12,8 +12,6 @@ Two absolute values `v₁, v₂ : AbsoluteValue R ℝ` are *equivalent* if there
 positive real number `c` such that `v₁ x ^ c = v₂ x` for all `x : R`.
 -/
 
-open scoped Topology
-
 namespace AbsoluteValue
 
 variable {R : Type*} [Semiring R]
@@ -70,8 +68,7 @@ theorem lt_one_iff_of_abv_lt_one_imp [Archimedean S] (hv : v.IsNontrivial)
     (h : ∀ x, v x < 1 → w x < 1) {a : R} :
     v a < 1 ↔ w a < 1 := by
   let ⟨x₀, hx₀⟩ := hv.exists_abv_lt_one
-  by_cases ha₀ : a = 0
-  · simp only [ha₀, AbsoluteValue.map_zero, zero_lt_one]
+  rcases eq_or_ne a 0 with (rfl | ha₀) <;> try simp
   refine ⟨h a, fun hw ↦ ?_⟩
   by_contra! hv
   have (n : ℕ) : w x₀ < w a ^ n := by
@@ -136,19 +133,16 @@ $w$ are equivalent if and only if $v(x) < 1$ exactly when $w(x) < 1$.
 theorem isEquiv_iff_abv_lt_one_iff {v : AbsoluteValue F ℝ} (w : AbsoluteValue F ℝ)
     (hv : v.IsNontrivial) : w.IsEquiv v ↔ (∀ x, v x < 1 ↔ w x < 1) := by
   refine ⟨fun ⟨t, ht, h⟩ x ↦ h ▸ (rpow_lt_one_iff' (w.nonneg x) ht), fun h ↦ ?_⟩
-  obtain ⟨t, ht, h_imp⟩ := exists_rpow_of_abv_one_lt_iff hv h
+  obtain ⟨t, ht, hmp⟩ := exists_rpow_of_abv_one_lt_iff hv h
   refine ⟨t, ht, funext fun x ↦ ?_⟩
-  by_cases h₀ : v x = 0
-  · rw [(map_eq_zero v).1 h₀, map_zero, map_zero, zero_rpow (by linarith)]
-  · by_cases h₁ : v x = 1
-    · rw [h₁, (v.eq_one_iff_of_lt_one_iff h x).1 h₁, one_rpow]
-    · by_cases h₂ : 0 < v x ∧ v x < 1
-      · rw [← inv_inj, ← map_inv₀ v, ← h_imp _ (map_inv₀ v _ ▸ one_lt_inv_iff₀.2 h₂), map_inv₀,
-          inv_rpow (w.nonneg _)]
-      · rw [← one_lt_inv_iff₀, ← map_inv₀, not_lt] at h₂
-        rw [← ne_eq, ← inv_ne_one, ← map_inv₀] at h₁
-        exact h_imp _ <| (v.inv_lt_one_iff.1 <| lt_of_le_of_ne h₂ h₁).resolve_left
-          ((map_ne_zero v).1 h₀)
+  rcases eq_or_ne (v x) 0 with (h₀ | h₀); · simp [(map_eq_zero v).1 h₀, zero_rpow ht.ne.symm]
+  rcases eq_or_ne (v x) 1 with (h₁ | h₁); · simp [h₁, (v.eq_one_iff_of_lt_one_iff h x).1 h₁]
+  by_cases h₂ : 0 < v x ∧ v x < 1
+  · rw [← inv_inj, ← map_inv₀ v, ← hmp _ (map_inv₀ v _ ▸ one_lt_inv_iff₀.2 h₂), map_inv₀,
+      inv_rpow (w.nonneg _)]
+  · rw [← one_lt_inv_iff₀, ← map_inv₀, not_lt] at h₂
+    rw [← inv_ne_one, ← map_inv₀] at h₁
+    exact hmp _ <| (v.inv_lt_one_iff.1 <| lt_of_le_of_ne h₂ h₁).resolve_left ((map_ne_zero v).1 h₀)
 
 /--
 If $v$ and $w$ are inequivalent absolute values and $v$ is non-trivial, then we can find an $a ∈ F$
