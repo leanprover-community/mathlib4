@@ -63,6 +63,34 @@ def coeOrderHom {α : Type*} [Preorder α] : α ↪o WithTop α where
   inj' := WithTop.coe_injective
   map_rel_iff' := WithTop.coe_le_coe
 
+/-- Removing then adding ⊤ makes the type `OrderIso` to the original type. -/
+def subtypeOrderIso [DecidableEq α] [PartialOrder α] [OrderTop α] :
+    WithTop {a : α // a ≠ ⊤} ≃o α where
+  toFun
+  | .some a => a
+  | ⊤ => ⊤
+  invFun a := if h : a = ⊤ then ⊤ else .some ⟨a, h⟩
+  left_inv
+  | .some A => by simpa using A.prop
+  | ⊤ => by simp
+  right_inv A := by simp only; split_ifs with h <;> simp [*]
+  map_rel_iff' {a b} := match a, b with
+  | .some a, .some b => by simp
+  | .some a, ⊤ => by simp
+  | ⊤, .some b => by simpa using b.prop
+  | ⊤, ⊤ => by simp
+
+@[simp]
+theorem subtypeOrderIso_apply_coe [DecidableEq α] [PartialOrder α] [OrderTop α]
+    (a : {a : α // a ≠ ⊤}) :
+  subtypeOrderIso (a : WithTop {a : α // a ≠ ⊤}) = a := rfl
+
+theorem subtypeOrderIso_symm_apply [DecidableEq α] [PartialOrder α] [OrderTop α]
+    {a : α} (h : a ≠ ⊤) :
+    (subtypeOrderIso).symm a = (⟨a, h⟩ : {a : α // a ≠ ⊤}) := by
+  rw [OrderIso.symm_apply_eq]
+  rfl
+
 end WithTop
 
 namespace WithBot
@@ -108,6 +136,21 @@ def coeOrderHom {α : Type*} [Preorder α] : α ↪o WithBot α where
   toFun := (↑)
   inj' := WithBot.coe_injective
   map_rel_iff' := WithBot.coe_le_coe
+
+/-- Removing then adding ⊥ makes the type `OrderIso` to the original type. -/
+def subtypeOrderIso [DecidableEq α] [PartialOrder α] [OrderBot α] :
+    WithBot {a : α // a ≠ ⊥} ≃o α := (WithTop.subtypeOrderIso (α := αᵒᵈ)).dual
+
+@[simp]
+theorem subtypeOrderIso_apply_coe [DecidableEq α] [PartialOrder α] [OrderBot α]
+    (a : {a : α // a ≠ ⊥}) :
+  subtypeOrderIso (a : WithTop {a : α // a ≠ ⊥}) = a := rfl
+
+theorem subtypeOrderIso_symm_apply [DecidableEq α] [PartialOrder α] [OrderBot α]
+    {a : α} (h : a ≠ ⊥) :
+    (subtypeOrderIso).symm a = (⟨a, h⟩ : {a : α // a ≠ ⊥}) := by
+  rw [OrderIso.symm_apply_eq]
+  rfl
 
 end WithBot
 
