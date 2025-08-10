@@ -22,8 +22,6 @@ section OrderedSemiring
 we use a generic collection of instances so that it applies in other settings (e.g., in a
 `StarOrderedRing`, or the `selfAdjoint` or `StarOrderedRing.positive` parts thereof). -/
 
-variable [AddMonoidWithOne α] [PartialOrder α] [AddLeftMono α] [ZeroLEOneClass α]
-
 /-- Specialisation of `Nat.cast_nonneg'`, which seems to be easier for Lean to use. -/
 @[simp]
 theorem cast_nonneg {α} [Semiring α] [PartialOrder α] [IsOrderedRing α] (n : ℕ) : 0 ≤ (n : α) :=
@@ -51,8 +49,6 @@ theorem abs_natCast {α} [Ring α] [Lattice α] [IsOrderedRing α] (n : ℕ) : |
 
 section Nontrivial
 
-variable [NeZero (1 : α)]
-
 /-- Specialisation of `Nat.cast_pos'`, which seems to be easier for Lean to use. -/
 @[simp]
 theorem cast_pos {α} [Semiring α] [PartialOrder α] [IsOrderedRing α] [Nontrivial α] {n : ℕ} :
@@ -60,7 +56,8 @@ theorem cast_pos {α} [Semiring α] [PartialOrder α] [IsOrderedRing α] [Nontri
 
 /-- See also `Nat.ofNat_pos`, specialised for an `OrderedSemiring`. -/
 @[simp low]
-theorem ofNat_pos' {n : ℕ} [n.AtLeastTwo] : 0 < (ofNat(n) : α) :=
+theorem ofNat_pos' [AddMonoidWithOne α] [PartialOrder α] [AddLeftMono α] [ZeroLEOneClass α]
+    [NeZero (1 : α)] {n : ℕ} [n.AtLeastTwo] : 0 < (ofNat(n) : α) :=
   cast_pos'.mpr (NeZero.pos n)
 
 /-- Specialisation of `Nat.ofNat_pos'`, which seems to be easier for Lean to use. -/
