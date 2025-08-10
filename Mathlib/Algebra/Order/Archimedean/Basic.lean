@@ -493,6 +493,14 @@ theorem exists_rat_near (x : K) (ε0 : 0 < ε) : ∃ q : ℚ, |x - q| < ε :=
     exists_rat_btwn <| ((sub_lt_self_iff x).2 ε0).trans ((lt_add_iff_pos_left x).2 ε0)
   ⟨q, abs_sub_lt_iff.2 ⟨sub_lt_comm.1 h₁, sub_lt_iff_lt_add.2 h₂⟩⟩
 
+theorem strictMono_of_map_ratCast {R} {f : K → R} [Field R] [LinearOrder R] [IsStrictOrderedRing R]
+    (hm : Monotone f) (hf : ∀ q : ℚ, f q = q) : StrictMono f := by
+  intro x y h
+  obtain ⟨q, hq, hq'⟩ := exists_rat_btwn h
+  obtain ⟨r, hr, hr'⟩ := exists_rat_btwn hq
+  apply (hm hr.le).trans_lt ((hm hq'.le).trans_lt' _)
+  simp_all
+
 end LinearOrderedField
 
 instance : Archimedean ℕ :=
