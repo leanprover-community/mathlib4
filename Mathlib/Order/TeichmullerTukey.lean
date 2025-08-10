@@ -20,7 +20,7 @@ Teichmuller-Tukey lemma.
 
 ## Main results
 
-- `exists_maximal_of_isOfFiniteCharacter` : Teichmuller-Tukey lemma, saying that every nonempty
+- `IsOfFiniteCharacter.exists_maximal` : Teichmuller-Tukey lemma, saying that every nonempty
   family of finite character has a maximal element.
 
 ## References
