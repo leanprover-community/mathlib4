@@ -567,7 +567,7 @@ instance (priority := 80) isOpenPosMeasure_of_mulLeftInvariant_of_innerRegular
 @[to_additive]
 theorem null_iff_of_isMulLeftInvariant [Regular μ] {s : Set G} (hs : IsOpen s) :
     μ s = 0 ↔ s = ∅ ∨ μ = 0 := by
-  rcases eq_zero_or_neZero μ with rfl|hμ
+  rcases eq_zero_or_neZero μ with rfl | hμ
   · simp
   · simp only [or_false, hs.measure_eq_zero_iff μ, NeZero.ne μ]
 
@@ -741,6 +741,10 @@ theorem IsHaarMeasure.smul {c : ℝ≥0∞} (cpos : c ≠ 0) (ctop : c ≠ ∞) 
   { lt_top_of_isCompact := fun _K hK => ENNReal.mul_lt_top ctop.lt_top hK.measure_lt_top
     toIsOpenPosMeasure := isOpenPosMeasure_smul μ cpos }
 
+@[to_additive IsAddHaarMeasure.nnreal_smul]
+lemma IsHaarMeasure.nnreal_smul {c : ℝ≥0} (hc : c ≠ 0) : IsHaarMeasure (c • μ) :=
+  .smul _ (by simp [hc]) (Option.some_ne_none _)
+
 /-- If a left-invariant measure gives positive mass to some compact set with nonempty interior, then
 it is a Haar measure. -/
 @[to_additive
@@ -822,9 +826,7 @@ nonrec theorem _root_.MulEquiv.isHaarMeasure_map [BorelSpace G] [ContinuousMul G
     [IsTopologicalGroup H] (e : G ≃* H) (he : Continuous e) (hesymm : Continuous e.symm) :
     IsHaarMeasure (Measure.map e μ) :=
   let f : G ≃ₜ H := .mk e
-  #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-  we needed to write `e.toMonoidHom` instead of just `e`, to avoid unification issues.
-  -/
+  -- We need to write `e.toMonoidHom` instead of just `e`, to avoid unification issues.
   isHaarMeasure_map μ e.toMonoidHom he e.surjective f.isClosedEmbedding.tendsto_cocompact
 
 /--

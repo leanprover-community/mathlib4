@@ -165,7 +165,7 @@ end Rec
 
 section Mem
 
-@[simp]
+@[simp, grind =]
 theorem mem_cons {a b : α} {s : Multiset α} : a ∈ b ::ₘ s ↔ a = b ∨ a ∈ s :=
   Quot.inductionOn s fun _ => List.mem_cons
 
@@ -184,7 +184,7 @@ theorem exists_cons_of_mem {s : Multiset α} {a : α} : a ∈ s → ∃ t, s = a
     let ⟨l₁, l₂, e⟩ := append_of_mem h
     e.symm ▸ ⟨(l₁ ++ l₂ : List α), Quot.sound perm_middle⟩
 
-@[simp]
+@[simp, grind]
 theorem notMem_zero (a : α) : a ∉ (0 : Multiset α) :=
   List.not_mem_nil
 

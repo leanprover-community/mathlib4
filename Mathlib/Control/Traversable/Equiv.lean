@@ -5,6 +5,7 @@ Authors: Simon Hudon
 -/
 import Mathlib.Control.Traversable.Lemmas
 import Mathlib.Logic.Equiv.Defs
+import Batteries.Tactic.SeqFocus
 
 /-!
 # Transferring `Traversable` instances along isomorphisms
