@@ -356,7 +356,7 @@ protected theorem sub_add_eq_add_sub (hab : b ≤ a) (b_ne_top : b ≠ ∞) :
   simp only [add_assoc, add_comm c b]
   simpa only [← add_assoc] using (add_left_inj c_top).mpr <| tsub_add_cancel_of_le hab
 
-lemma add_sub_add_eq_sub_right (hc : c ≠ ∞) : (a + c) - (b + c) = a - b := by
+lemma add_sub_add_eq_sub_right (hc : c ≠ ∞ := by finiteness) : (a + c) - (b + c) = a - b := by
   lift c to ℝ≥0 using hc
   cases a <;> cases b
   · simp
@@ -365,7 +365,7 @@ lemma add_sub_add_eq_sub_right (hc : c ≠ ∞) : (a + c) - (b + c) = a - b := b
   · norm_cast
     rw [add_tsub_add_eq_tsub_right]
 
-lemma add_sub_add_eq_sub_left (hc : c ≠ ∞) : (c + a) - (c + b) = a - b := by
+lemma add_sub_add_eq_sub_left (hc : c ≠ ∞ := by finiteness) : (c + a) - (c + b) = a - b := by
   simp_rw [add_comm c]
   exact ENNReal.add_sub_add_eq_sub_right hc
 
