@@ -56,7 +56,7 @@ private theorem mk_mul_le_of_le {x₁ y₁ x₂ y₂ : M} (hx : mk x₁ ≤ mk x
 
 /-- Multipilication in `M` transfers to Addition in `ArchimedeanClass M`. -/
 instance : Add (ArchimedeanClass M) where
-  add := Quotient.lift₂ (fun x y ↦ .mk <| x.val * y.val) fun _ _ _ _ hx hy ↦
+  add := lift₂ (fun x y ↦ .mk <| x * y) fun _ _ _ _ hx hy ↦
     (mk_mul_le_of_le hx.le hy.le).antisymm (mk_mul_le_of_le hx.ge hy.ge)
 
 @[simp] theorem mk_mul (x y : M) : mk (x * y) = mk x + mk y := rfl
