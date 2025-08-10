@@ -247,9 +247,6 @@ variable {W : Type u''} [Category.{v''} W] [MonoidalCategory W]
   (D : Type u) [EnrichedCategory V D]
   (h : ∀ v : V, Function.Bijective fun (f : 𝟙_ V ⟶ v) => Functor.LaxMonoidal.ε F ≫ F.map f)
 
-local instance : EnrichedOrdinaryCategory W (TransportEnrichment F (ForgetEnrichment V D)) :=
-      TransportEnrichment.enrichedOrdinaryCategory (ForgetEnrichment V D) F h
-
 /-- The functor that makes up `TransportEnrichment.forgetEnrichmentEquiv`. -/
 @[simps]
 def TransportEnrichment.forgetEnrichmentEquivFunctor :
