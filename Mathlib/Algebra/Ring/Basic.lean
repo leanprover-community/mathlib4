@@ -3,8 +3,8 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Neil Strickland
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Group.Hom.Defs
+import Mathlib.Algebra.Group.Commute.Defs
+import Mathlib.Algebra.Group.Hom.Instances
 import Mathlib.Algebra.GroupWithZero.NeZero
 import Mathlib.Algebra.Opposites
 import Mathlib.Algebra.Ring.Defs
@@ -20,7 +20,9 @@ the present file is about their interaction.
 For the definitions of semirings and rings see `Algebra.Ring.Defs`.
 -/
 
-variable {R : Type*}
+assert_not_exists Nat.cast_sub
+
+variable {R S : Type*}
 
 open Function
 
@@ -41,34 +43,82 @@ def mulRight [Distrib R] (r : R) : AddHom R R where
 end AddHom
 
 namespace AddMonoidHom
+variable [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S] {a b : R}
 
 /-- Left multiplication by an element of a (semi)ring is an `AddMonoidHom` -/
-def mulLeft [NonUnitalNonAssocSemiring R] (r : R) : R →+ R where
+def mulLeft (r : R) : R →+ R where
   toFun := (r * ·)
   map_zero' := mul_zero r
   map_add' := mul_add r
 
-@[simp]
-theorem coe_mulLeft [NonUnitalNonAssocSemiring R] (r : R) :
-    (mulLeft r : R → R) = HMul.hMul r :=
-  rfl
+@[simp, norm_cast] lemma coe_mulLeft (r : R) : (mulLeft r : R → R) = HMul.hMul r := rfl
 
 /-- Right multiplication by an element of a (semi)ring is an `AddMonoidHom` -/
-def mulRight [NonUnitalNonAssocSemiring R] (r : R) : R →+ R where
+def mulRight (r : R) : R →+ R where
   toFun a := a * r
   map_zero' := zero_mul r
   map_add' _ _ := add_mul _ _ r
 
-@[simp]
-theorem coe_mulRight [NonUnitalNonAssocSemiring R] (r : R) :
-    (mulRight r) = (· * r) :=
-  rfl
+@[simp, norm_cast] lemma coe_mulRight (r : R) : (mulRight r) = (· * r) := rfl
 
-theorem mulRight_apply [NonUnitalNonAssocSemiring R] (a r : R) :
-    mulRight r a = a * r :=
-  rfl
+lemma mulRight_apply (a r : R) : mulRight r a = a * r := rfl
+
+/-- Multiplication of an element of a (semi)ring is an `AddMonoidHom` in both arguments.
+
+This is a more-strongly bundled version of `AddMonoidHom.mulLeft` and `AddMonoidHom.mulRight`.
+
+Stronger versions of this exists for algebras as `LinearMap.mul`, `NonUnitalAlgHom.mul`
+and `Algebra.lmul`.
+-/
+def mul : R →+ R →+ R where
+  toFun := mulLeft
+  map_zero' := ext <| zero_mul
+  map_add' a b := ext <| add_mul a b
+
+lemma mul_apply (x y : R) : mul x y = x * y := rfl
+
+@[simp, norm_cast] lemma coe_mul : ⇑(mul : R →+ R →+ R) = mulLeft := rfl
+@[simp, norm_cast] lemma coe_flip_mul : ⇑(mul : R →+ R →+ R).flip = mulRight := rfl
+
+/-- An `AddMonoidHom` preserves multiplication if pre- and post- composition with
+`mul` are equivalent. By converting the statement into an equality of
+`AddMonoidHom`s, this lemma allows various specialized `ext` lemmas about `→+` to then be applied.
+-/
+lemma map_mul_iff (f : R →+ S) :
+    (∀ x y, f (x * y) = f x * f y) ↔ (mul : R →+ R →+ R).compr₂ f = (mul.comp f).compl₂ f :=
+  Iff.symm ext_iff₂
+
+lemma mulLeft_eq_mulRight_iff_forall_commute : mulLeft a = mulRight a ↔ ∀ b, Commute a b :=
+  DFunLike.ext_iff
+
+lemma mulRight_eq_mulLeft_iff_forall_commute : mulRight b = mulLeft b ↔ ∀ a, Commute a b :=
+  DFunLike.ext_iff
 
 end AddMonoidHom
+
+namespace AddMonoid.End
+section NonUnitalNonAssocSemiring
+variable [NonUnitalNonAssocSemiring R]
+
+/-- The left multiplication map: `(a, b) ↦ a * b`. See also `AddMonoidHom.mulLeft`. -/
+@[simps!]
+def mulLeft : R →+ AddMonoid.End R := .mul
+
+/-- The right multiplication map: `(a, b) ↦ b * a`. See also `AddMonoidHom.mulRight`. -/
+@[simps!]
+def mulRight : R →+ AddMonoid.End R := (.mul : R →+ AddMonoid.End R).flip
+
+end NonUnitalNonAssocSemiring
+
+section NonUnitalNonAssocCommSemiring
+variable [NonUnitalNonAssocCommSemiring R]
+
+lemma mulRight_eq_mulLeft : mulRight = (mulLeft : R →+ AddMonoid.End R) :=
+  AddMonoidHom.ext fun _ =>
+    Eq.symm <| AddMonoidHom.mulLeft_eq_mulRight_iff_forall_commute.2 (.all _)
+
+end NonUnitalNonAssocCommSemiring
+end AddMonoid.End
 
 section HasDistribNeg
 
@@ -78,21 +128,11 @@ variable {α : Type*} [Mul α] [HasDistribNeg α]
 
 open MulOpposite
 
-instance instHasDistribNeg : HasDistribNeg αᵐᵒᵖ where
+instance MulOpposite.instHasDistribNeg : HasDistribNeg αᵐᵒᵖ where
   neg_mul _ _ := unop_injective <| mul_neg _ _
   mul_neg _ _ := unop_injective <| neg_mul _ _
 
 end Mul
-
-section Group
-
-variable {α : Type*} [Group α] [HasDistribNeg α]
-
-@[simp]
-theorem inv_neg' (a : α) : (-a)⁻¹ = -a⁻¹ := by
-  rw [eq_comm, eq_inv_iff_mul_eq_one, neg_mul, mul_neg, neg_neg, inv_mul_cancel]
-
-end Group
 
 end HasDistribNeg
 
@@ -137,10 +177,10 @@ lemma IsRightCancelMulZero.to_noZeroDivisors [MulZeroClass α]
 instance (priority := 100) NoZeroDivisors.to_isCancelMulZero
     [NonUnitalNonAssocRing α] [NoZeroDivisors α] :
     IsCancelMulZero α where
-  mul_left_cancel_of_ne_zero ha h := by
+  mul_left_cancel_of_ne_zero ha _ _ h := by
     rw [← sub_eq_zero, ← mul_sub] at h
     exact sub_eq_zero.1 ((eq_zero_or_eq_zero_of_mul_eq_zero h).resolve_left ha)
-  mul_right_cancel_of_ne_zero hb h := by
+  mul_right_cancel_of_ne_zero hb _ _ h := by
     rw [← sub_eq_zero, ← sub_mul] at h
     exact sub_eq_zero.1 ((eq_zero_or_eq_zero_of_mul_eq_zero h).resolve_right hb)
 
@@ -161,8 +201,13 @@ instance Subsingleton.to_isCancelMulZero [Mul α] [Zero α] [Subsingleton α] : 
   mul_right_cancel_of_ne_zero hb := (hb <| Subsingleton.eq_zero _).elim
   mul_left_cancel_of_ne_zero hb := (hb <| Subsingleton.eq_zero _).elim
 
-instance Subsingleton.to_noZeroDivisors [Mul α] [Zero α] [Subsingleton α] : NoZeroDivisors α where
+-- This was previously a global instance,
+-- but it has been implicated in slow typeclass resolutions,
+-- so we scope it to the `Subsingleton` namespace.
+lemma Subsingleton.to_noZeroDivisors [Mul α] [Zero α] [Subsingleton α] : NoZeroDivisors α where
   eq_zero_or_eq_zero_of_mul_eq_zero _ := .inl (Subsingleton.eq_zero _)
+
+scoped[Subsingleton] attribute [instance] Subsingleton.to_noZeroDivisors
 
 lemma isDomain_iff_cancelMulZero_and_nontrivial [Semiring α] :
     IsDomain α ↔ IsCancelMulZero α ∧ Nontrivial α :=
@@ -218,7 +263,11 @@ lemma neg_inv : -a⁻¹ = (-a)⁻¹ := by rw [inv_eq_one_div, inv_eq_one_div, di
 
 lemma div_neg (a : R) : a / -b = -(a / b) := by rw [← div_neg_eq_neg_div]
 
+@[simp]
 lemma inv_neg : (-a)⁻¹ = -a⁻¹ := by rw [neg_inv]
+
+@[deprecated (since := "2025-04-24")]
+alias inv_neg' := inv_neg
 
 lemma inv_neg_one : (-1 : R)⁻¹ = -1 := by rw [← neg_inv, inv_one]
 

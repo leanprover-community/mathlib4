@@ -88,7 +88,7 @@ theorem basis_le_iff {J K : TwoSidedIdeal R} {d e : σ →₀ ℕ} (hK : K ≠ �
     intro h
     constructor
     · intro x hx
-      have (d') : coeff R d' (C σ R x) ∈ J := by
+      have (d' : _) : coeff R d' (C σ R x) ∈ J := by
         rw [coeff_C]; split_ifs <;> [exact hx; exact J.zero_mem]
       simpa using h (C σ R x) (fun _ _ ↦ this _) _ (zero_le _)
     · by_contra h'
@@ -114,6 +114,7 @@ lemma hasBasis_nhds_zero [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R] 
     (𝓝 0 : Filter (MvPowerSeries σ R)).HasBasis
       (fun Id : TwoSidedIdeal R × (σ →₀ ℕ) ↦ (Id.1 : Set R) ∈ 𝓝 0)
       (fun Id ↦ basis _ _ Id) := by
+  classical
   rw [nhds_pi]
   refine IsLinearTopology.hasBasis_twoSidedIdeal.pi_self.to_hasBasis ?_ ?_
   · intro ⟨D, I⟩ ⟨hD, hI⟩

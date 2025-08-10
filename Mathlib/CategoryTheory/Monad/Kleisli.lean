@@ -40,7 +40,7 @@ instance [Inhabited C] (T : Monad C) : Inhabited (Kleisli T) :=
   ⟨(default : C)⟩
 
 /-- The Kleisli category on a monad `T`.
-    cf Definition 5.2.9 in [Riehl][riehl2017]. -/
+cf Definition 5.2.9 in [Riehl][riehl2017]. -/
 instance category : Category (Kleisli T) where
   Hom := fun X Y : C => X ⟶ (T : C ⥤ C).obj Y
   id X := T.η.app X
@@ -49,8 +49,7 @@ instance category : Category (Kleisli T) where
     rw [← T.η.naturality_assoc f, T.left_unit]
     apply Category.comp_id
   assoc f g h := by
-    simp only [Functor.map_comp, Category.assoc, Monad.assoc]
-    erw [T.μ.naturality_assoc]
+    simp [Monad.assoc, T.mu_naturality_assoc]
 
 namespace Adjunction
 
@@ -78,7 +77,7 @@ def fromKleisli : Kleisli T ⥤ C where
     rfl
 
 /-- The Kleisli adjunction which gives rise to the monad `(T, η_ T, μ_ T)`.
-    cf Lemma 5.2.11 of [Riehl][riehl2017]. -/
+cf Lemma 5.2.11 of [Riehl][riehl2017]. -/
 def adj : toKleisli T ⊣ fromKleisli T :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun X Y => Equiv.refl (X ⟶ T.obj Y)
@@ -86,7 +85,6 @@ def adj : toKleisli T ⊣ fromKleisli T :=
         -- Porting note: used to be unfold_projs; dsimp
         change f ≫ g = (f ≫ T.η.app Y) ≫ T.map g ≫ T.μ.app Z
         rw [Category.assoc, ← T.η.naturality_assoc g, Functor.id_map]
-        dsimp
         simp [Monad.left_unit] }
 
 /-- The composition of the adjunction gives the original functor. -/
@@ -127,7 +125,7 @@ def toCokleisli : C ⥤ Cokleisli U where
   map_comp {X} {Y} {_} f g := by
     -- Porting note: working around lack of unfold_projs
     change U.ε.app X ≫ f ≫ g = U.δ.app X ≫ U.map (U.ε.app X ≫ f) ≫ U.ε.app Y ≫ g
-    simp [← U.ε.naturality g]
+    simp
 
 /-- The left adjoint of the adjunction which induces the comonad `(U, ε_ U, δ_ U)`. -/
 @[simps]

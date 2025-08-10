@@ -68,6 +68,10 @@ variable (R B) in
 instance Algebra.IsIntegral.of_finite [Module.Finite R B] : Algebra.IsIntegral R B :=
   ⟨.of_finite R⟩
 
+lemma Algebra.isIntegral_of_surjective (H : Function.Surjective (algebraMap R B)) :
+    Algebra.IsIntegral R B :=
+  .of_surjective (Algebra.ofId R B) H
+
 /-- If `S` is a sub-`R`-algebra of `A` and `S` is finitely-generated as an `R`-module,
   then all elements of `S` are integral over `R`. -/
 theorem IsIntegral.of_mem_of_fg (S : Subalgebra R B)
@@ -110,18 +114,19 @@ theorem isIntegral_of_smul_mem_submodule {M : Type*} [AddCommGroup M] [Module R 
     apply hN
     rwa [eq_bot_iff]
   have : Function.Injective f := by
-    show Function.Injective f.toLinearMap
+    change Function.Injective f.toLinearMap
     rw [← LinearMap.ker_eq_bot, eq_bot_iff]
     intro s hs
     have : s.1 • a = 0 := congr_arg Subtype.val (LinearMap.congr_fun hs ⟨a, ha₁⟩)
     exact Subtype.ext ((eq_zero_or_eq_zero_of_smul_eq_zero this).resolve_right ha₂)
-  show IsIntegral R (A'.val ⟨x, hx⟩)
+  change IsIntegral R (A'.val ⟨x, hx⟩)
   rw [isIntegral_algHom_iff A'.val Subtype.val_injective, ← isIntegral_algHom_iff f this]
   haveI : Module.Finite R N := by rwa [Module.finite_def, Submodule.fg_top]
   apply Algebra.IsIntegral.isIntegral
 
 variable {f}
 
+@[stacks 00GK]
 theorem RingHom.Finite.to_isIntegral (h : f.Finite) : f.IsIntegral :=
   letI := f.toAlgebra
   fun _ ↦ IsIntegral.of_mem_of_fg ⊤ h.1 _ trivial

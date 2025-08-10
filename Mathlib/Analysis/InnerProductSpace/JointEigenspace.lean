@@ -17,15 +17,15 @@ symmetric operators on a finite-dimensional inner product space.
 # Main Result
 
 * `LinearMap.IsSymmetric.directSum_isInternal_of_commute` establishes that in finite dimensions
-   if `{A B : E →ₗ[𝕜] E}`, then `IsSymmetric A`, `IsSymmetric B` and `Commute A B` imply that
-   `E` decomposes as an internal direct sum of the pairwise orthogonal spaces
-   `eigenspace B μ ⊓ eigenspace A ν`
+  if `{A B : E →ₗ[𝕜] E}`, then `IsSymmetric A`, `IsSymmetric B` and `Commute A B` imply that
+  `E` decomposes as an internal direct sum of the pairwise orthogonal spaces
+  `eigenspace B μ ⊓ eigenspace A ν`
 * `LinearMap.IsSymmetric.iSup_iInf_eigenspace_eq_top_of_commute` establishes that in finite
-   dimensions, the indexed supremum of the joint eigenspaces of a commuting tuple of symmetric
-   linear operators equals `⊤`
+  dimensions, the indexed supremum of the joint eigenspaces of a commuting tuple of symmetric
+  linear operators equals `⊤`
 * `LinearMap.IsSymmetric.directSum_isInternal_of_pairwise_commute` establishes the
-   analogous result to `LinearMap.IsSymmetric.directSum_isInternal_of_commute` for commuting
-   tuples of symmetric operators.
+  analogous result to `LinearMap.IsSymmetric.directSum_isInternal_of_commute` for commuting
+  tuples of symmetric operators.
 
 ## TODO
 
@@ -86,7 +86,7 @@ then the eigenspaces of the restriction of B to any eigenspace of A exhaust that
 theorem iSup_eigenspace_inf_eigenspace_of_commute (hB : B.IsSymmetric) (hAB : Commute A B) :
     (⨆ γ, eigenspace A α ⊓ eigenspace B γ) = eigenspace A α := by
   conv_rhs => rw [← (eigenspace A α).map_subtype_top]
-  simp only [← genEigenspace_eq_eigenspace (f := B), ← Submodule.map_iSup,
+  simp only [← Submodule.map_iSup,
     (eigenspace A α).inf_genEigenspace _ (mapsTo_genEigenspace_of_comm hAB α 1)]
   congr 1
   simpa only [genEigenspace_eq_eigenspace, Submodule.orthogonal_eq_bot_iff]
@@ -116,7 +116,7 @@ open scoped Function -- required for scoped `on` notation
 /-- A commuting family of symmetric linear maps on a finite dimensional inner
 product space is simultaneously diagonalizable. -/
 theorem iSup_iInf_eq_top_of_commute {ι : Type*} {T : ι → E →ₗ[𝕜] E}
-    (hT : ∀ i, (T i).IsSymmetric) (h : Pairwise (Commute on T)):
+    (hT : ∀ i, (T i).IsSymmetric) (h : Pairwise (Commute on T)) :
     ⨆ χ : ι → 𝕜, ⨅ i, eigenspace (T i) (χ i) = ⊤ :=
   calc
   _ = ⨆ χ : ι → 𝕜, ⨅ i, maxGenEigenspace (T i) (χ i) :=

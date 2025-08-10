@@ -20,7 +20,7 @@ members.
 * `CommGroupWithZero`
 -/
 
-assert_not_exists DenselyOrdered
+assert_not_exists DenselyOrdered Ring
 
 universe u
 
@@ -37,9 +37,9 @@ class MulZeroClass (M₀ : Type u) extends Mul M₀, Zero M₀ where
   mul_zero : ∀ a : M₀, a * 0 = 0
 
 /-- A mixin for left cancellative multiplication by nonzero elements. -/
-class IsLeftCancelMulZero (M₀ : Type u) [Mul M₀] [Zero M₀] : Prop where
+@[mk_iff] class IsLeftCancelMulZero (M₀ : Type u) [Mul M₀] [Zero M₀] : Prop where
   /-- Multiplication by a nonzero element is left cancellative. -/
-  protected mul_left_cancel_of_ne_zero : ∀ {a b c : M₀}, a ≠ 0 → a * b = a * c → b = c
+  protected mul_left_cancel_of_ne_zero : ∀ {a : M₀}, a ≠ 0 → IsLeftRegular a
 
 section IsLeftCancelMulZero
 
@@ -54,9 +54,9 @@ theorem mul_right_injective₀ (ha : a ≠ 0) : Function.Injective (a * ·) :=
 end IsLeftCancelMulZero
 
 /-- A mixin for right cancellative multiplication by nonzero elements. -/
-class IsRightCancelMulZero (M₀ : Type u) [Mul M₀] [Zero M₀] : Prop where
-  /-- Multiplicatin by a nonzero element is right cancellative. -/
-  protected mul_right_cancel_of_ne_zero : ∀ {a b c : M₀}, b ≠ 0 → a * b = c * b → a = c
+@[mk_iff] class IsRightCancelMulZero (M₀ : Type u) [Mul M₀] [Zero M₀] : Prop where
+  /-- Multiplication by a nonzero element is right cancellative. -/
+  protected mul_right_cancel_of_ne_zero : ∀ {a : M₀}, a ≠ 0 → IsRightRegular a
 
 section IsRightCancelMulZero
 
@@ -71,11 +71,16 @@ theorem mul_left_injective₀ (hb : b ≠ 0) : Function.Injective fun a => a * b
 end IsRightCancelMulZero
 
 /-- A mixin for cancellative multiplication by nonzero elements. -/
-class IsCancelMulZero (M₀ : Type u) [Mul M₀] [Zero M₀] : Prop
+@[mk_iff] class IsCancelMulZero (M₀ : Type u) [Mul M₀] [Zero M₀] : Prop
   extends IsLeftCancelMulZero M₀, IsRightCancelMulZero M₀
 
 export MulZeroClass (zero_mul mul_zero)
 attribute [simp] zero_mul mul_zero
+
+theorem isCancelMulZero_iff_forall_isRegular {M₀} [Mul M₀] [Zero M₀] :
+    IsCancelMulZero M₀ ↔ ∀ {a : M₀}, a ≠ 0 → IsRegular a := by
+  simp only [isCancelMulZero_iff, isLeftCancelMulZero_iff, isRightCancelMulZero_iff, ← forall_and]
+  exact forall₂_congr fun _ _ ↦ isRegular_iff.symm
 
 /-- Predicate typeclass for expressing that `a * b = 0` implies `a = 0` or `b = 0`
 for all `a` and `b` of type `G₀`. -/
@@ -136,12 +141,12 @@ variable [CommSemigroup M₀] [Zero M₀]
 lemma IsLeftCancelMulZero.to_isRightCancelMulZero [IsLeftCancelMulZero M₀] :
     IsRightCancelMulZero M₀ :=
 { mul_right_cancel_of_ne_zero :=
-    fun hb h => mul_left_cancel₀ hb <| (mul_comm _ _).trans (h.trans (mul_comm _ _)) }
+    fun hb _ _ h => mul_left_cancel₀ hb <| (mul_comm _ _).trans (h.trans (mul_comm _ _)) }
 
 lemma IsRightCancelMulZero.to_isLeftCancelMulZero [IsRightCancelMulZero M₀] :
     IsLeftCancelMulZero M₀ :=
 { mul_left_cancel_of_ne_zero :=
-    fun hb h => mul_right_cancel₀ hb <| (mul_comm _ _).trans (h.trans (mul_comm _ _)) }
+    fun hb _ _ h => mul_right_cancel₀ hb <| (mul_comm _ _).trans (h.trans (mul_comm _ _)) }
 
 lemma IsLeftCancelMulZero.to_isCancelMulZero [IsLeftCancelMulZero M₀] :
     IsCancelMulZero M₀ :=
@@ -154,8 +159,8 @@ lemma IsRightCancelMulZero.to_isCancelMulZero [IsRightCancelMulZero M₀] :
 end CommSemigroup
 
 /-- A type `M` is a `CancelCommMonoidWithZero` if it is a commutative monoid with zero element,
- `0` is left and right absorbing,
-  and left/right multiplication by a non-zero element is injective. -/
+`0` is left and right absorbing,
+and left/right multiplication by a non-zero element is injective. -/
 class CancelCommMonoidWithZero (M₀ : Type*) extends CommMonoidWithZero M₀, IsLeftCancelMulZero M₀
 
 -- See note [lower cancel priority]
@@ -205,7 +210,8 @@ variable [GroupWithZero G₀] {a : G₀}
 
 @[simp] lemma inv_zero : (0 : G₀)⁻¹ = 0 := GroupWithZero.inv_zero
 
-@[simp] lemma mul_inv_cancel₀ (h : a ≠ 0) : a * a⁻¹ = 1 := GroupWithZero.mul_inv_cancel a h
+@[simp high] -- should take priority over `IsUnit.mul_inv_cancel`
+lemma mul_inv_cancel₀ (h : a ≠ 0) : a * a⁻¹ = 1 := GroupWithZero.mul_inv_cancel a h
 
 -- See note [lower instance priority]
 instance (priority := 100) GroupWithZero.toMulDivCancelClass : MulDivCancelClass G₀ where
@@ -231,13 +237,13 @@ section GroupWithZero
 
 variable [GroupWithZero G₀] {a b : G₀}
 
-@[simp]
+@[simp high] -- should take priority over `IsUnit.mul_inv_cancel_right`
 theorem mul_inv_cancel_right₀ (h : b ≠ 0) (a : G₀) : a * b * b⁻¹ = a :=
   calc
     a * b * b⁻¹ = a * (b * b⁻¹) := mul_assoc _ _ _
     _ = a := by simp [h]
 
-@[simp]
+@[simp high] -- should take priority over `IsUnit.mul_inv_cancel_left`
 theorem mul_inv_cancel_left₀ (h : a ≠ 0) (b : G₀) : a * (a⁻¹ * b) = b :=
   calc
     a * (a⁻¹ * b) = a * a⁻¹ * b := (mul_assoc _ _ _).symm

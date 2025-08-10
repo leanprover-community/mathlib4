@@ -274,22 +274,13 @@ protected lemma IsHomeomorph.isProperMap (hf : IsHomeomorph f) : IsProperMap f :
 lemma Topology.IsClosedEmbedding.isProperMap (hf : IsClosedEmbedding f) : IsProperMap f :=
   isProperMap_of_isClosedMap_of_inj hf.continuous hf.injective hf.isClosedMap
 
-@[deprecated (since := "2024-10-20")]
-alias isProperMap_of_closedEmbedding := IsClosedEmbedding.isProperMap
-
 /-- The coercion from a closed subset is proper. -/
 lemma IsClosed.isProperMap_subtypeVal {C : Set X} (hC : IsClosed C) : IsProperMap ((↑) : C → X) :=
   hC.isClosedEmbedding_subtypeVal.isProperMap
 
-@[deprecated (since := "2024-10-20")]
-alias isProperMap_subtype_val_of_closed := IsClosed.isProperMap_subtypeVal
-
 /-- The restriction of a proper map to a closed subset is proper. -/
 lemma IsProperMap.restrict {C : Set X} (hf : IsProperMap f) (hC : IsClosed C) :
     IsProperMap fun x : C ↦ f x := hC.isProperMap_subtypeVal.comp  hf
-
-@[deprecated (since := "2024-10-20")]
-alias isProperMap_restr_of_proper_of_closed := IsProperMap.restrict
 
 /-- The range of a proper map is closed. -/
 lemma IsProperMap.isClosed_range (hf : IsProperMap f) : IsClosed (range f) :=
@@ -352,7 +343,7 @@ theorem isProperMap_iff_isClosedMap_filter {X : Type u} {Y : Type v} [Topologica
   -- We already know that `f x = y`, so to finish the proof we just have to check that `𝒰` tends
   -- to `x`. So, for `U ∈ 𝓝 x` arbitrary, let's show that `U ∈ 𝒰`. Since `𝒰` is a ultrafilter,
   -- it is enough to show that `Uᶜ` is not in `𝒰`.
-    refine ⟨x, rfl, fun U hU ↦ Ultrafilter.compl_not_mem_iff.mp fun hUc ↦ ?_⟩
+    refine ⟨x, rfl, fun U hU ↦ Ultrafilter.compl_notMem_iff.mp fun hUc ↦ ?_⟩
     rw [mem_closure_iff_nhds] at hx
   -- Indeed, if that was the case, the set `V := {𝒢 : Filter X | Uᶜ ∈ 𝒢}` would be a neighborhood
   -- of `𝒰` in `Filter X`, hence `U ×ˢ V` would be a neighborhood of `(x, 𝒰) : X × Filter X`.

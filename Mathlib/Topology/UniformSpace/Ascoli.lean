@@ -317,10 +317,6 @@ lemma EquicontinuousOn.isInducing_uniformOnFun_iff_pi [TopologicalSpace ι]
       show restrict (⋃₀ 𝔖) ∘ F = φ.symm ∘ F by rfl]
   exact ⟨fun H ↦ φ.isInducing.comp H, fun H ↦ φ.symm.isInducing.comp H⟩
 
-@[deprecated (since := "2024-10-28")]
-alias EquicontinuousOn.inducing_uniformOnFun_iff_pi :=
-  EquicontinuousOn.isInducing_uniformOnFun_iff_pi
-
 -- TODO: find a way to factor common elements of this proof and the proof of
 -- `EquicontinuousOn.comap_uniformOnFun_eq`
 /-- Let `X` be a topological space, `𝔖` a family of compact subsets of `X`,
@@ -340,7 +336,7 @@ theorem EquicontinuousOn.tendsto_uniformOnFun_iff_pi'
   -- Thus, we just have to compare the two sides of our goal when restricted to some
   -- `K ∈ 𝔖`, where we can apply `Equicontinuous.tendsto_uniformFun_iff_pi`.
   rw [← Filter.tendsto_comap_iff (g := (⋃₀ 𝔖).restrict), ← nhds_induced]
-  simp_rw [UniformOnFun.topologicalSpace_eq, Pi.induced_restrict_sUnion 𝔖 (π := fun _ ↦ α),
+  simp_rw [UniformOnFun.topologicalSpace_eq, Pi.induced_restrict_sUnion 𝔖 (A := fun _ ↦ α),
     _root_.nhds_iInf, nhds_induced, tendsto_iInf, tendsto_comap_iff]
   congrm ∀ K (hK : K ∈ 𝔖), ?_
   have : CompactSpace K := isCompact_iff_compactSpace.mp (𝔖_compact K hK)
@@ -456,9 +452,6 @@ theorem ArzelaAscoli.compactSpace_of_isClosedEmbedding [TopologicalSpace ι] {�
   compactSpace_of_closed_inducing' 𝔖_compact F_clemb.isInducing F_clemb.isClosed_range
     F_eqcont F_pointwiseCompact
 
-@[deprecated (since := "2024-10-20")]
-alias ArzelaAscoli.compactSpace_of_closedEmbedding := ArzelaAscoli.compactSpace_of_isClosedEmbedding
-
 /-- A version of the **Arzela-Ascoli theorem**.
 
 Let `X, ι` be topological spaces, `𝔖` a covering of `X` by compact subsets, `α` a T2 uniform space,
@@ -489,10 +482,6 @@ theorem ArzelaAscoli.isCompact_closure_of_isClosedEmbedding [TopologicalSpace ι
   exact ArzelaAscoli.compactSpace_of_isClosedEmbedding 𝔖_compact
     (F_clemb.comp isClosed_closure.isClosedEmbedding_subtypeVal) cls_eqcont
     fun K hK x hx ↦ (cls_pointwiseCompact K hK x hx).imp fun Q hQ ↦ ⟨hQ.1, by simpa using hQ.2⟩
-
-@[deprecated (since := "2024-10-20")]
-alias ArzelaAscoli.isCompact_closure_of_closedEmbedding :=
-  ArzelaAscoli.isCompact_closure_of_isClosedEmbedding
 
 /-- A version of the **Arzela-Ascoli theorem**.
 

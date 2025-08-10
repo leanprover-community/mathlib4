@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
-import Mathlib.RingTheory.Localization.AtPrime
+import Mathlib.RingTheory.Localization.AtPrime.Basic
 
 /-!
 
@@ -79,8 +79,8 @@ theorem Ideal.exists_mul_mem_of_mem_minimalPrimes
 /-- minimal primes are contained in zero divisors. -/
 lemma Ideal.disjoint_nonZeroDivisors_of_mem_minimalPrimes {p : Ideal R} (hp : p ∈ minimalPrimes R) :
     Disjoint (p : Set R) (nonZeroDivisors R) := by
-  simp_rw [Set.disjoint_left, SetLike.mem_coe, mem_nonZeroDivisors_iff, not_forall, exists_prop,
-    @and_comm (_ * _ = _), ← mul_comm]
+  simp_rw [Set.disjoint_left, SetLike.mem_coe, mem_nonZeroDivisors_iff_right, not_forall,
+    exists_prop, @and_comm (_ * _ = _), ← mul_comm]
   exact fun _ ↦ Ideal.exists_mul_mem_of_mem_minimalPrimes hp
 
 theorem Ideal.exists_comap_eq_of_mem_minimalPrimes {I : Ideal S} (f : R →+* S) (p)
@@ -136,6 +136,15 @@ theorem Ideal.comap_minimalPrimes_eq_of_surjective {f : R →+* S} (hf : Functio
     exact ⟨p, h, rfl⟩
   · rintro ⟨J, hJ, rfl⟩
     exact Ideal.minimal_primes_comap_of_surjective hf hJ
+
+lemma Ideal.minimalPrimes_map_of_surjective {S : Type*} [CommRing S] {f : R →+* S}
+    (hf : Function.Surjective f) (I : Ideal R) :
+    (I.map f).minimalPrimes = Ideal.map f '' (I ⊔ (RingHom.ker f)).minimalPrimes := by
+  apply Set.image_injective.mpr (Ideal.comap_injective_of_surjective f hf)
+  rw [← Ideal.comap_minimalPrimes_eq_of_surjective hf, ← Set.image_comp,
+    Ideal.comap_map_of_surjective f hf, Set.image_congr, Set.image_id, RingHom.ker]
+  intro x hx
+  exact (Ideal.comap_map_of_surjective f hf _).trans (sup_eq_left.mpr <| le_sup_right.trans hx.1.2)
 
 theorem Ideal.minimalPrimes_eq_comap :
     I.minimalPrimes = Ideal.comap (Ideal.Quotient.mk I) '' minimalPrimes (R ⧸ I) := by

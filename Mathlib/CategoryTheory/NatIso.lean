@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Iso
 For the most part, natural isomorphisms are just another sort of isomorphism.
 
 We provide some special support for extracting components:
-* if `α : F ≅ G`, then `a.app X : F.obj X ≅ G.obj X`,
+* if `α : F ≅ G`, then `α.app X : F.obj X ≅ G.obj X`,
 and building natural isomorphisms from components:
 *
 ```
@@ -29,9 +29,6 @@ Note that `NatIso` is a namespace without a corresponding definition;
 we put some declarations that are specifically about natural isomorphisms in the `Iso`
 namespace so that they are available using dot notation.
 -/
-
-
-open CategoryTheory
 
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
@@ -55,12 +52,14 @@ def app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
   hom_inv_id := by rw [← comp_app, Iso.hom_inv_id]; rfl
   inv_hom_id := by rw [← comp_app, Iso.inv_hom_id]; rfl
 
-@[reassoc (attr := simp)]
+attribute [grind =] app_hom app_inv
+
+@[reassoc (attr := simp), grind =]
 theorem hom_inv_id_app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
     α.hom.app X ≫ α.inv.app X = 𝟙 (F.obj X) :=
   congr_fun (congr_arg NatTrans.app α.hom_inv_id) X
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp), grind =]
 theorem inv_hom_id_app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
     α.inv.app X ≫ α.hom.app X = 𝟙 (G.obj X) :=
   congr_fun (congr_arg NatTrans.app α.inv_hom_id) X
@@ -162,9 +161,11 @@ theorem cancel_natIso_inv_right_assoc {W X X' : D} {Y : C} (f : W ⟶ X) (g : X 
     f ≫ g ≫ α.inv.app Y = f' ≫ g' ≫ α.inv.app Y ↔ f ≫ g = f' ≫ g' := by
   simp only [← Category.assoc, cancel_mono, refl]
 
+attribute [grind ←=] CategoryTheory.IsIso.inv_eq_of_hom_inv_id
+
 @[simp]
 theorem inv_inv_app {F G : C ⥤ D} (e : F ≅ G) (X : C) : inv (e.inv.app X) = e.hom.app X := by
-  aesop_cat
+  cat_disch
 
 end
 
@@ -203,7 +204,7 @@ theorem isIso_inv_app (α : F ⟶ G) {_ : IsIso α} (X) : (inv α).app X = inv (
 @[simp]
 theorem inv_map_inv_app (F : C ⥤ D ⥤ E) {X Y : C} (e : X ≅ Y) (Z : D) :
     inv ((F.map e.inv).app Z) = (F.map e.hom).app Z := by
-  aesop_cat
+  cat_disch
 
 /-- Construct a natural isomorphism between functors by giving object level isomorphisms,
 and checking naturality only in the forward direction.
@@ -211,14 +212,14 @@ and checking naturality only in the forward direction.
 @[simps]
 def ofComponents (app : ∀ X : C, F.obj X ≅ G.obj X)
     (naturality : ∀ {X Y : C} (f : X ⟶ Y),
-      F.map f ≫ (app Y).hom = (app X).hom ≫ G.map f := by aesop_cat) :
+      F.map f ≫ (app Y).hom = (app X).hom ≫ G.map f := by cat_disch) :
     F ≅ G where
   hom := { app := fun X => (app X).hom }
   inv :=
     { app := fun X => (app X).inv,
       naturality := fun X Y f => by
         have h := congr_arg (fun f => (app X).inv ≫ f ≫ (app Y).inv) (naturality f).symm
-        simp only [Iso.inv_hom_id_assoc, Iso.hom_inv_id, assoc, comp_id, cancel_mono] at h
+        simp only [Iso.inv_hom_id_assoc, Iso.hom_inv_id, assoc, comp_id] at h
         exact h }
 
 @[simp]

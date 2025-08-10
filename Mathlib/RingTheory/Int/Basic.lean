@@ -34,7 +34,6 @@ namespace Int
 theorem gcd_eq_one_iff_coprime {a b : ℤ} : Int.gcd a b = 1 ↔ IsCoprime a b :=
   isCoprime_iff_gcd_eq_one.symm
 
-
 theorem isCoprime_iff_nat_coprime {a b : ℤ} : IsCoprime a b ↔ Nat.Coprime a.natAbs b.natAbs := by
   rw [isCoprime_iff_gcd_eq_one, Nat.coprime_iff_gcd_eq_one, gcd_eq_natAbs]
 
@@ -67,9 +66,9 @@ theorem natAbs_euclideanDomain_gcd (a b : ℤ) :
     Int.natAbs (EuclideanDomain.gcd a b) = Int.gcd a b := by
   apply Nat.dvd_antisymm <;> rw [← Int.natCast_dvd_natCast]
   · rw [Int.natAbs_dvd]
-    exact Int.dvd_gcd (EuclideanDomain.gcd_dvd_left _ _) (EuclideanDomain.gcd_dvd_right _ _)
+    exact Int.dvd_coe_gcd (EuclideanDomain.gcd_dvd_left _ _) (EuclideanDomain.gcd_dvd_right _ _)
   · rw [Int.dvd_natAbs]
-    exact EuclideanDomain.dvd_gcd Int.gcd_dvd_left Int.gcd_dvd_right
+    exact EuclideanDomain.dvd_gcd (Int.gcd_dvd_left ..) (Int.gcd_dvd_right ..)
 
 end Int
 

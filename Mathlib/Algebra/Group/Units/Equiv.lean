@@ -20,8 +20,6 @@ variable {F α M N G : Type*}
 def toUnits [Group G] : G ≃* Gˣ where
   toFun x := ⟨x, x⁻¹, mul_inv_cancel _, inv_mul_cancel _⟩
   invFun x := x
-  left_inv _ := rfl
-  right_inv _ := Units.ext rfl
   map_mul' _ _ := Units.ext rfl
 
 @[to_additive (attr := simp)]
@@ -161,6 +159,20 @@ theorem divRight_eq_mulRight_inv (a : G) : Equiv.divRight a = Equiv.mulRight a�
 
 end Group
 
+section CommGroup
+
+variable [CommGroup G]
+
+@[to_additive]
+lemma symm_divLeft (a : G) : (Equiv.divLeft a).symm = Equiv.divLeft a :=
+  ext fun _ ↦ inv_mul_eq_div _ _
+
+@[to_additive (attr := simp)]
+lemma divLeft_involutive (a : G) : Function.Involutive (Equiv.divLeft a) :=
+  fun _ ↦ div_div_cancel ..
+
+end CommGroup
+
 end Equiv
 
 variable (α) in
@@ -169,8 +181,6 @@ variable (α) in
 def unitsEquivProdSubtype [Monoid α] : αˣ ≃ {p : α × α // p.1 * p.2 = 1 ∧ p.2 * p.1 = 1} where
   toFun u := ⟨(u, ↑u⁻¹), u.val_inv, u.inv_val⟩
   invFun p := Units.mk (p : α × α).1 (p : α × α).2 p.prop.1 p.prop.2
-  left_inv _ := Units.ext rfl
-  right_inv _ := Subtype.ext <| Prod.ext rfl rfl
 
 /-- In a `DivisionCommMonoid`, `Equiv.inv` is a `MulEquiv`. There is a variant of this
 `MulEquiv.inv' G : G ≃* Gᵐᵒᵖ` for the non-commutative case. -/
@@ -184,10 +194,17 @@ theorem MulEquiv.inv_symm (G : Type*) [DivisionCommMonoid G] :
     (MulEquiv.inv G).symm = MulEquiv.inv G :=
   rfl
 
-@[instance]
-theorem isLocalHom_equiv [Monoid M] [Monoid N] [EquivLike F M N]
-    [MulEquivClass F M N] (f : F) : IsLocalHom f where
-  map_nonunit a ha := by
-    convert ha.map (f : M ≃* N).symm
-    rw [MulEquiv.eq_symm_apply]
-    rfl -- note to reviewers: ugly `rfl`
+section EquivLike
+variable [Monoid M] [Monoid N] [EquivLike F M N] [MulEquivClass F M N] (f : F) {x : M}
+
+-- Higher priority to take over the non-additivisable `isUnit_map_iff`
+@[to_additive (attr := simp high)]
+lemma MulEquiv.isUnit_map : IsUnit (f x) ↔ IsUnit x where
+  mp hx := by
+    simpa using hx.map <| MonoidHom.mk ⟨EquivLike.inv f, EquivLike.injective f <| by simp⟩
+      fun x y ↦ EquivLike.injective f <| by simp
+  mpr := .map f
+
+@[instance] theorem isLocalHom_equiv : IsLocalHom f where map_nonunit := by simp
+
+end EquivLike

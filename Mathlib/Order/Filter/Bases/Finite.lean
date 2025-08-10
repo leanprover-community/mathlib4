@@ -27,7 +27,7 @@ variable {l l' : Filter α} {p : ι → Prop} {s : ι → Set α} {t : Set α} {
 
 theorem hasBasis_generate (s : Set (Set α)) :
     (generate s).HasBasis (fun t => Set.Finite t ∧ t ⊆ s) fun t => ⋂₀ t :=
-  ⟨fun U => by simp only [mem_generate_iff, exists_prop, and_assoc, and_left_comm]⟩
+  ⟨fun U => by simp only [mem_generate_iff, and_assoc, and_left_comm]⟩
 
 /-- The smallest filter basis containing a given collection of sets. -/
 def FilterBasis.ofSets (s : Set (Set α)) : FilterBasis α where
@@ -54,8 +54,8 @@ theorem generate_neBot_iff {s : Set (Set α)} :
     NeBot (generate s) ↔ ∀ t, t ⊆ s → t.Finite → (⋂₀ t).Nonempty :=
   (hasBasis_generate s).neBot_iff.trans <| by simp only [← and_imp, and_comm]
 
-theorem hasBasis_iInf' {ι : Type*} {ι' : ι → Type*} {l : ι → Filter α} {p : ∀ i, ι' i → Prop}
-    {s : ∀ i, ι' i → Set α} (hl : ∀ i, (l i).HasBasis (p i) (s i)) :
+protected theorem HasBasis.iInf' {ι : Type*} {ι' : ι → Type*} {l : ι → Filter α}
+    {p : ∀ i, ι' i → Prop} {s : ∀ i, ι' i → Set α} (hl : ∀ i, (l i).HasBasis (p i) (s i)) :
     (⨅ i, l i).HasBasis (fun If : Set ι × ∀ i, ι' i => If.1.Finite ∧ ∀ i ∈ If.1, p i (If.2 i))
       fun If : Set ι × ∀ i, ι' i => ⋂ i ∈ If.1, s i (If.2 i) :=
   ⟨by
@@ -69,18 +69,24 @@ theorem hasBasis_iInf' {ι : Type*} {ι' : ι → Type*} {l : ι → Filter α} 
       refine mem_of_superset ?_ hsub
       exact (biInter_mem hI₁).mpr fun i hi => mem_iInf_of_mem i <| (hl i).mem_of_mem <| hI₂ _ hi⟩
 
-theorem hasBasis_iInf {ι : Type*} {ι' : ι → Type*} {l : ι → Filter α} {p : ∀ i, ι' i → Prop}
-    {s : ∀ i, ι' i → Set α} (hl : ∀ i, (l i).HasBasis (p i) (s i)) :
+@[deprecated (since := "2025-05-05")]
+alias hasBasis_iInf' := HasBasis.iInf'
+
+protected theorem HasBasis.iInf {ι : Type*} {ι' : ι → Type*} {l : ι → Filter α}
+    {p : ∀ i, ι' i → Prop} {s : ∀ i, ι' i → Set α} (hl : ∀ i, (l i).HasBasis (p i) (s i)) :
     (⨅ i, l i).HasBasis
       (fun If : Σ I : Set ι, ∀ i : I, ι' i => If.1.Finite ∧ ∀ i : If.1, p i (If.2 i)) fun If =>
       ⋂ i : If.1, s i (If.2 i) := by
   refine ⟨fun t => ⟨fun ht => ?_, ?_⟩⟩
-  · rcases (hasBasis_iInf' hl).mem_iff.mp ht with ⟨⟨I, f⟩, ⟨hI, hf⟩, hsub⟩
+  · rcases (HasBasis.iInf' hl).mem_iff.mp ht with ⟨⟨I, f⟩, ⟨hI, hf⟩, hsub⟩
     exact ⟨⟨I, fun i => f i⟩, ⟨hI, Subtype.forall.mpr hf⟩, trans (iInter_subtype _ _) hsub⟩
   · rintro ⟨⟨I, f⟩, ⟨hI, hf⟩, hsub⟩
     refine mem_of_superset ?_ hsub
     cases hI.nonempty_fintype
     exact iInter_mem.2 fun i => mem_iInf_of_mem ↑i <| (hl i).mem_of_mem <| hf _
+
+@[deprecated (since := "2025-05-05")]
+alias hasBasis_iInf := HasBasis.iInf
 
 open scoped Function in -- required for scoped `on` notation
 theorem _root_.Pairwise.exists_mem_filter_basis_of_disjoint {I} [Finite I] {l : I → Filter α}
@@ -104,7 +110,7 @@ of `⨅ i, 𝓟 (s i)`. -/
 theorem hasBasis_iInf_principal_finite {ι : Type*} (s : ι → Set α) :
     (⨅ i, 𝓟 (s i)).HasBasis (fun t : Set ι => t.Finite) fun t => ⋂ i ∈ t, s i := by
   refine ⟨fun U => (mem_iInf_finite _).trans ?_⟩
-  simp only [iInf_principal_finset, mem_iUnion, mem_principal, exists_prop,
+  simp only [iInf_principal_finset, mem_principal,
     exists_finite_iff_finset, Finset.set_biInter_coe]
 
 end SameType

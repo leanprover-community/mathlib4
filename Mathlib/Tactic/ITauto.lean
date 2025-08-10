@@ -7,6 +7,7 @@ import Batteries.Tactic.Exact
 import Batteries.Tactic.Init
 import Mathlib.Logic.Basic
 import Mathlib.Util.AtomM
+import Std.Data.TreeMap
 import Qq
 
 /-!
@@ -79,6 +80,8 @@ grammar if it matters.)
 propositional logic, intuitionistic logic, decision procedure
 -/
 
+
+open Std (TreeMap TreeSet)
 
 namespace Mathlib.Tactic.ITauto
 
@@ -338,11 +341,11 @@ def Proof.check : Lean.NameMap IProp → Proof → Option IProp
 @[inline] def freshName : StateM Nat Name := fun n => (Name.mkSimple s!"h{n}", n + 1)
 
 /-- The context during proof search is a map from propositions to proof values. -/
-def Context := Lean.RBMap IProp Proof IProp.cmp
+abbrev Context := TreeMap IProp Proof IProp.cmp
 
 /-- Debug printer for the context. -/
 def Context.format (Γ : Context) : Std.Format :=
-  Γ.fold (init := "") fun f P p => P.format ++ " := " ++ p.format ++ ",\n" ++ f
+  Γ.foldl (init := "") fun f P p => P.format ++ " := " ++ p.format ++ ",\n" ++ f
 
 instance : Std.ToFormat Context := ⟨Context.format⟩
 
@@ -406,12 +409,12 @@ prove `A₁ → A₂`, which can be written `A₂ → C, A₁ ⊢ A₂` (where w
 potentially many implications to split like this, and we have to try all of them if we want to be
 complete. -/
 partial def search (Γ : Context) (B : IProp) : StateM Nat (Bool × Proof) := do
-  if let some p := Γ.find? B then return (true, p)
+  if let some p := Γ[B]? then return (true, p)
   fun n =>
-  let search₁ := Γ.fold (init := none) fun r A p => do
+  let search₁ := Γ.foldl (init := none) fun r A p => do
     if let some r := r then return r
     let .imp A' C := A | none
-    if let some q := Γ.find? A' then
+    if let some q := Γ[A']? then
       isOk <| Context.withAdd (Γ.erase A) C (p.app q) B prove n
     else
       let .imp A₁ A₂ := A' | none
@@ -454,7 +457,7 @@ partial def prove (Γ : Context) (B : IProp) : StateM Nat (Bool × Proof) :=
     let (ok, p) ← prove Γ A
     mapProof (p.andIntro ak) <$> whenOk ok B (prove Γ B)
   | B =>
-    Γ.fold
+    Γ.foldl
       (init := fun found Γ => bif found then prove Γ B else search Γ B)
       (f := fun IH A p found Γ => do
         if let .or A₁ A₂ := A then
@@ -639,11 +642,11 @@ partial def applyProof (g : MVarId) (Γ : NameMap Expr) (p : Proof) : MetaM Unit
 def itautoCore (g : MVarId)
     (useDec useClassical : Bool) (extraDec : Array Expr) : MetaM Unit := do
   AtomM.run (← getTransparency) do
-    let mut hs := mkRBMap ..
+    let mut hs := mkNameMap Expr
     let t ← g.getType
     let (g, t) ← if ← isProp t then pure (g, ← reify t) else pure (← g.exfalso, .false)
-    let mut Γ : Except (IProp → Proof) ITauto.Context := .ok (mkRBMap ..)
-    let mut decs := mkRBMap ..
+    let mut Γ : Except (IProp → Proof) ITauto.Context := .ok TreeMap.empty
+    let mut decs := TreeMap.empty
     for ldecl in ← getLCtx do
       if !ldecl.isImplementationDetail then
         let e := ldecl.type
@@ -658,7 +661,7 @@ def itautoCore (g : MVarId)
             if useDec then
               let A ← reify p
               decs := decs.insert A (false, Expr.fvar ldecl.fvarId)
-    let addDec (force : Bool) (decs : RBMap IProp (Bool × Expr) IProp.cmp) (e : Q(Prop)) := do
+    let addDec (force : Bool) (decs : TreeMap IProp (Bool × Expr) IProp.cmp) (e : Q(Prop)) := do
       let A ← reify e
       let dec_e := q(Decidable $e)
       let res ← trySynthInstance q(Decidable $e)
@@ -669,9 +672,9 @@ def itautoCore (g : MVarId)
         pure (decs.insert A (match res with | .some e => (false, e) | _ => (true, e)))
     decs ← extraDec.foldlM (addDec true) decs
     if useDec then
-      let mut decided := mkRBTree Nat compare
+      let mut decided := TreeSet.empty (cmp := compare)
       if let .ok Γ' := Γ then
-        decided := Γ'.fold (init := decided) fun m p _ =>
+        decided := Γ'.foldl (init := decided) fun m p _ =>
           match p with
           | .var i => m.insert i
           | .not (.var i) => m.insert i

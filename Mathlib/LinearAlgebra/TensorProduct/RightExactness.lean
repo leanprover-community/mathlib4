@@ -444,12 +444,10 @@ variable
 lemma Ideal.map_includeLeft_eq (I : Ideal A) :
     (I.map (Algebra.TensorProduct.includeLeft : A →ₐ[R] A ⊗[R] B)).restrictScalars R
       = LinearMap.range (LinearMap.rTensor B (Submodule.subtype (I.restrictScalars R))) := by
-  rw [← Submodule.carrier_inj]
+  rw [← SetLike.coe_set_eq]
   apply le_antisymm
-  · intro x
-    simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
-      Submodule.mem_toAddSubmonoid, Submodule.restrictScalars_mem, LinearMap.mem_range]
-    intro hx
+  · intro x hx
+    simp only [SetLike.mem_coe, LinearMap.mem_range]
     rw [Ideal.map, ← submodule_span_eq] at hx
     refine Submodule.span_induction ?_ ?_ ?_ ?_ hx
     · intro x
@@ -474,7 +472,7 @@ lemma Ideal.map_includeLeft_eq (I : Ideal A) :
           simp only [map_zero, smul_eq_mul, mul_zero]
         | tmul x y =>
           use (a • x) ⊗ₜ[R] (b * y)
-          simp only [LinearMap.lTensor_tmul, Submodule.coe_subtype, smul_eq_mul, tmul_mul_tmul]
+          simp only [smul_eq_mul]
           with_unfolding_all rfl
         | add x y hx hy =>
           obtain ⟨x', hx'⟩ := hx
@@ -486,7 +484,6 @@ lemma Ideal.map_includeLeft_eq (I : Ideal A) :
         obtain ⟨y', hb'⟩ := hb
         use x' + y'
         simp only [map_add, ha', add_smul, hb']
-
   · rintro x ⟨y, rfl⟩
     induction y with
     | zero =>
@@ -495,14 +492,13 @@ lemma Ideal.map_includeLeft_eq (I : Ideal A) :
     | tmul a b =>
         simp only [LinearMap.rTensor_tmul, Submodule.coe_subtype]
         suffices (a : A) ⊗ₜ[R] b = ((1 : A) ⊗ₜ[R] b) * ((a : A) ⊗ₜ[R] (1 : B)) by
-          simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
-            Submodule.mem_toAddSubmonoid, Submodule.restrictScalars_mem]
+          simp only [Submodule.coe_restrictScalars, SetLike.mem_coe]
           rw [this]
           apply Ideal.mul_mem_left
           -- Note: adding `includeLeft` as a hint fixes a timeout https://github.com/leanprover-community/mathlib4/pull/8386
           apply Ideal.mem_map_of_mem includeLeft
           exact Submodule.coe_mem a
-        simp only [Submodule.coe_restrictScalars, Algebra.TensorProduct.tmul_mul_tmul,
+        simp only [Algebra.TensorProduct.tmul_mul_tmul,
           mul_one, one_mul]
     | add x y hx hy =>
         rw [map_add]
@@ -512,12 +508,10 @@ lemma Ideal.map_includeLeft_eq (I : Ideal A) :
 lemma Ideal.map_includeRight_eq (I : Ideal B) :
     (I.map (Algebra.TensorProduct.includeRight : B →ₐ[R] A ⊗[R] B)).restrictScalars R
       = LinearMap.range (LinearMap.lTensor A (Submodule.subtype (I.restrictScalars R))) := by
-  rw [← Submodule.carrier_inj]
+  rw [← SetLike.coe_set_eq]
   apply le_antisymm
-  · intro x
-    simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
-      Submodule.mem_toAddSubmonoid, Submodule.restrictScalars_mem, LinearMap.mem_range]
-    intro hx
+  · intro x hx
+    simp only [SetLike.mem_coe, LinearMap.mem_range]
     rw [Ideal.map, ← submodule_span_eq] at hx
     refine Submodule.span_induction ?_ ?_ ?_ ?_ hx
     · intro x
@@ -554,7 +548,6 @@ lemma Ideal.map_includeRight_eq (I : Ideal B) :
         obtain ⟨y', hb'⟩ := hb
         use x' + y'
         simp only [map_add, ha', add_smul, hb']
-
   · rintro x ⟨y, rfl⟩
     induction y with
     | zero =>
@@ -564,13 +557,12 @@ lemma Ideal.map_includeRight_eq (I : Ideal B) :
         simp only [LinearMap.lTensor_tmul, Submodule.coe_subtype]
         suffices a ⊗ₜ[R] (b : B) = (a ⊗ₜ[R] (1 : B)) * ((1 : A) ⊗ₜ[R] (b : B)) by
           rw [this]
-          simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
-            Submodule.mem_toAddSubmonoid, Submodule.restrictScalars_mem]
+          simp only [Submodule.coe_restrictScalars, SetLike.mem_coe]
           apply Ideal.mul_mem_left
           -- Note: adding `includeRight` as a hint fixes a timeout https://github.com/leanprover-community/mathlib4/pull/8386
           apply Ideal.mem_map_of_mem includeRight
           exact Submodule.coe_mem b
-        simp only [Submodule.coe_restrictScalars, Algebra.TensorProduct.tmul_mul_tmul,
+        simp only [Algebra.TensorProduct.tmul_mul_tmul,
           mul_one, one_mul]
     | add x y hx hy =>
         rw [map_add]

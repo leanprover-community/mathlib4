@@ -39,6 +39,10 @@ theorem Int.isCoprime_iff_gcd_eq_one {m n : ℤ} : IsCoprime m n ↔ Int.gcd m n
     intro h
     exact ⟨_, _, h⟩
 
+instance : DecidableRel (IsCoprime : ℤ → ℤ → Prop) :=
+  fun m n => decidable_of_iff (Int.gcd m n = 1) Int.isCoprime_iff_gcd_eq_one.symm
+
+@[simp]
 theorem Nat.isCoprime_iff_coprime {m n : ℕ} : IsCoprime (m : ℤ) n ↔ Nat.Coprime m n := by
   rw [Int.isCoprime_iff_gcd_eq_one, Int.gcd_natCast_natCast]
 
@@ -167,7 +171,7 @@ theorem exists_sum_eq_one_iff_pairwise_coprime [DecidableEq I] (h : t.Nonempty) 
 theorem exists_sum_eq_one_iff_pairwise_coprime' [Fintype I] [Nonempty I] [DecidableEq I] :
     (∃ μ : I → R, (∑ i : I, μ i * ∏ j ∈ {i}ᶜ, s j) = 1) ↔ Pairwise (IsCoprime on s) := by
   convert exists_sum_eq_one_iff_pairwise_coprime Finset.univ_nonempty (s := s) using 1
-  simp only [Function.onFun, pairwise_subtype_iff_pairwise_finset', coe_univ, Set.pairwise_univ]
+  simp only [pairwise_subtype_iff_pairwise_finset', coe_univ, Set.pairwise_univ]
 
 theorem pairwise_coprime_iff_coprime_prod [DecidableEq I] :
     Pairwise (IsCoprime on fun i : t ↦ s i) ↔ ∀ i ∈ t, IsCoprime (s i) (∏ j ∈ t \ {i}, s j) := by
@@ -264,7 +268,7 @@ theorem pairwise_isRelPrime_iff_isRelPrime_prod [DecidableEq I] :
     exact @hp ⟨i, hi⟩ ⟨j, hj⟩ fun h ↦ ji (congrArg Subtype.val h).symm
   · rintro ⟨i, hi⟩ ⟨j, hj⟩ h
     apply IsRelPrime.prod_right_iff.mp (hp i hi)
-    exact Finset.mem_sdiff.mpr ⟨hj, fun f ↦ h <| Subtype.ext (Finset.mem_singleton.mp f).symm⟩
+    grind
 
 namespace IsRelPrime
 

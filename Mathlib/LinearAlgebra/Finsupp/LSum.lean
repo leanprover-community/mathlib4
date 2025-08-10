@@ -32,27 +32,35 @@ namespace Finsupp
 
 section SMul
 
-variable {α : Type*} {β : Type*} {R : Type*} {M : Type*} {M₂ : Type*}
+variable {α : Type*} {β : Type*} {R R₂ : Type*} {M M₂ : Type*}
 
 theorem smul_sum [Zero β] [AddCommMonoid M] [DistribSMul R M] {v : α →₀ β} {c : R} {h : α → β → M} :
     c • v.sum h = v.sum fun a b => c • h a b :=
   Finset.smul_sum
 
 @[simp]
-theorem sum_smul_index_linearMap' [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid M₂]
-    [Module R M₂] {v : α →₀ M} {c : R} {h : α → M →ₗ[R] M₂} :
-    ((c • v).sum fun a => h a) = c • v.sum fun a => h a := by
+theorem sum_smul_index_semilinearMap' [Semiring R] [Semiring R₂] [AddCommMonoid M] [Module R M]
+    [AddCommMonoid M₂] [Module R₂ M₂] {σ : R →+* R₂} {v : α →₀ M} {c : R} {h : α → M →ₛₗ[σ] M₂} :
+    ((c • v).sum fun a => h a) = σ c • v.sum fun a => h a := by
   rw [Finsupp.sum_smul_index', Finsupp.smul_sum]
-  · simp only [map_smul]
+  · simp only [map_smulₛₗ]
   · intro i
     exact (h i).map_zero
 
+theorem sum_smul_index_linearMap' [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid M₂]
+    [Module R M₂] {v : α →₀ M} {c : R} {h : α → M →ₗ[R] M₂} :
+    ((c • v).sum fun a => h a) = c • v.sum fun a => h a :=
+  sum_smul_index_semilinearMap'
+
 end SMul
 
-variable {α : Type*} {M : Type*} {N : Type*} {P : Type*} {R : Type*} {S : Type*}
-variable [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M]
-variable [AddCommMonoid N] [Module R N]
-variable [AddCommMonoid P] [Module R P]
+variable {α : Type*} {M N P : Type*} {R R₂ R₃ : Type*} {S : Type*}
+variable [Semiring R] [Semiring R₂] [Semiring R₃] [Semiring S]
+variable [AddCommMonoid M] [Module R M]
+variable [AddCommMonoid N] [Module R₂ N]
+variable [AddCommMonoid P] [Module R₃ P]
+
+variable {σ : R →+* R₂} {σ_inv : R₂ →+* R}
 
 section CompatibleSMul
 
@@ -75,14 +83,14 @@ end CompatibleSMul
 section LSum
 
 variable (S)
-variable [Module S N] [SMulCommClass R S N]
+variable [Module S N] [SMulCommClass R₂ S N]
 
 /-- Lift a family of linear maps `M →ₗ[R] N` indexed by `x : α` to a linear map from `α →₀ M` to
 `N` using `Finsupp.sum`. This is an upgraded version of `Finsupp.liftAddHom`.
 
 See note [bundled maps over different rings] for why separate `R` and `S` semirings are used.
 -/
-def lsum : (α → M →ₗ[R] N) ≃ₗ[S] (α →₀ M) →ₗ[R] N where
+def lsum : (α → M →ₛₗ[σ] N) ≃ₗ[S] (α →₀ M) →ₛₗ[σ] N where
   toFun F :=
     { toFun := fun d => d.sum fun i => F i
       map_add' := (liftAddHom (α := α) (M := M) (N := N) fun x => (F x).toAddMonoidHom).map_add
@@ -102,20 +110,20 @@ def lsum : (α → M →ₗ[R] N) ≃ₗ[S] (α →₀ M) →ₗ[R] N where
     simp
 
 @[simp]
-theorem coe_lsum (f : α → M →ₗ[R] N) : (lsum S f : (α →₀ M) → N) = fun d => d.sum fun i => f i :=
+theorem coe_lsum (f : α → M →ₛₗ[σ] N) : (lsum S f : (α →₀ M) → N) = fun d => d.sum fun i => f i :=
   rfl
 
-theorem lsum_apply (f : α → M →ₗ[R] N) (l : α →₀ M) : Finsupp.lsum S f l = l.sum fun b => f b :=
+theorem lsum_apply (f : α → M →ₛₗ[σ] N) (l : α →₀ M) : Finsupp.lsum S f l = l.sum fun b => f b :=
   rfl
 
-theorem lsum_single (f : α → M →ₗ[R] N) (i : α) (m : M) :
+theorem lsum_single (f : α → M →ₛₗ[σ] N) (i : α) (m : M) :
     Finsupp.lsum S f (Finsupp.single i m) = f i m :=
   Finsupp.sum_single_index (f i).map_zero
 
-@[simp] theorem lsum_comp_lsingle (f : α → M →ₗ[R] N) (i : α) :
-    Finsupp.lsum S f ∘ₗ lsingle i = f i := by ext; simp
+@[simp] theorem lsum_comp_lsingle (f : α → M →ₛₗ[σ] N) (i : α) :
+    Finsupp.lsum S f ∘ₛₗ lsingle i = f i := by ext; simp
 
-theorem lsum_symm_apply (f : (α →₀ M) →ₗ[R] N) (x : α) : (lsum S).symm f x = f.comp (lsingle x) :=
+theorem lsum_symm_apply (f : (α →₀ M) →ₛₗ[σ] N) (x : α) : (lsum S).symm f x = f.comp (lsingle x) :=
   rfl
 
 end LSum
@@ -194,30 +202,36 @@ theorem domLCongr_single {α₁ : Type*} {α₂ : Type*} (e : α₁ ≃ α₂) (
     (Finsupp.domLCongr e : _ ≃ₗ[R] _) (Finsupp.single i m) = Finsupp.single (e i) m := by
   simp
 
+section Equiv
+
+variable [RingHomInvPair σ σ_inv] [RingHomInvPair σ_inv σ]
+
 /-- An equivalence of domain and a linear equivalence of codomain induce a linear equivalence of the
 corresponding finitely supported functions. -/
-def lcongr {ι κ : Sort _} (e₁ : ι ≃ κ) (e₂ : M ≃ₗ[R] N) : (ι →₀ M) ≃ₗ[R] κ →₀ N :=
+def lcongr {ι κ : Sort _} (e₁ : ι ≃ κ) (e₂ : M ≃ₛₗ[σ] N) : (ι →₀ M) ≃ₛₗ[σ] κ →₀ N :=
   (Finsupp.domLCongr e₁).trans (mapRange.linearEquiv e₂)
 
 @[simp]
-theorem lcongr_single {ι κ : Sort _} (e₁ : ι ≃ κ) (e₂ : M ≃ₗ[R] N) (i : ι) (m : M) :
+theorem lcongr_single {ι κ : Sort _} (e₁ : ι ≃ κ) (e₂ : M ≃ₛₗ[σ] N) (i : ι) (m : M) :
     lcongr e₁ e₂ (Finsupp.single i m) = Finsupp.single (e₁ i) (e₂ m) := by simp [lcongr]
 
 @[simp]
-theorem lcongr_apply_apply {ι κ : Sort _} (e₁ : ι ≃ κ) (e₂ : M ≃ₗ[R] N) (f : ι →₀ M) (k : κ) :
+theorem lcongr_apply_apply {ι κ : Sort _} (e₁ : ι ≃ κ) (e₂ : M ≃ₛₗ[σ] N) (f : ι →₀ M) (k : κ) :
     lcongr e₁ e₂ f k = e₂ (f (e₁.symm k)) :=
   rfl
 
-theorem lcongr_symm_single {ι κ : Sort _} (e₁ : ι ≃ κ) (e₂ : M ≃ₗ[R] N) (k : κ) (n : N) :
+theorem lcongr_symm_single {ι κ : Sort _} (e₁ : ι ≃ κ) (e₂ : M ≃ₛₗ[σ] N) (k : κ) (n : N) :
     (lcongr e₁ e₂).symm (Finsupp.single k n) = Finsupp.single (e₁.symm k) (e₂.symm n) := by
   apply_fun (lcongr e₁ e₂ : (ι →₀ M) → (κ →₀ N)) using (lcongr e₁ e₂).injective
   simp
 
 @[simp]
-theorem lcongr_symm {ι κ : Sort _} (e₁ : ι ≃ κ) (e₂ : M ≃ₗ[R] N) :
+theorem lcongr_symm {ι κ : Sort _} (e₁ : ι ≃ κ) (e₂ : M ≃ₛₗ[σ] N) :
     (lcongr e₁ e₂).symm = lcongr e₁.symm e₂.symm := by
   ext
   rfl
+
+end Equiv
 
 end Finsupp
 

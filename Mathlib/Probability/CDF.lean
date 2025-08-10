@@ -18,7 +18,7 @@ Two probability measures are equal if and only if they have the same cdf.
   conditional cdf (`ProbabilityTheory.condCDF`) of the product measure
   `(Measure.dirac Unit.unit).prod μ` evaluated at `Unit.unit`.
 
-The definition could be replaced by the more elementary `cdf μ x = (μ (Iic x)).toReal`, but using
+The definition could be replaced by the more elementary `cdf μ x = μ.real (Iic x)`, but using
 `condCDF` gives us access to its API, from which most properties of the cdf follow directly.
 
 ## Main statements
@@ -45,8 +45,8 @@ open scoped Topology
 namespace ProbabilityTheory
 
 /-- Cumulative distribution function of a real measure. The definition currently makes sense only
-for probability measures. In that case, it satisfies `cdf μ x = (μ (Iic x)).toReal` (see
-`ProbabilityTheory.cdf_eq_toReal`). -/
+for probability measures. In that case, it satisfies `cdf μ x = μ.real (Iic x)` (see
+`ProbabilityTheory.cdf_eq_real`). -/
 noncomputable
 def cdf (μ : Measure ℝ) : StieltjesFunction :=
   condCDF ((Measure.dirac Unit.unit).prod μ) Unit.unit
@@ -74,8 +74,10 @@ lemma ofReal_cdf [IsProbabilityMeasure μ] (x : ℝ) : ENNReal.ofReal (cdf μ x)
   simpa only [MeasureTheory.Measure.fst_prod, Measure.prod_prod, measure_univ, one_mul,
     lintegral_dirac] using h
 
-lemma cdf_eq_toReal [IsProbabilityMeasure μ] (x : ℝ) : cdf μ x = (μ (Iic x)).toReal := by
-  rw [← ofReal_cdf μ x, ENNReal.toReal_ofReal (cdf_nonneg μ x)]
+lemma cdf_eq_real [IsProbabilityMeasure μ] (x : ℝ) : cdf μ x = μ.real (Iic x) := by
+  rw [measureReal_def, ← ofReal_cdf μ x, ENNReal.toReal_ofReal (cdf_nonneg μ x)]
+
+@[deprecated (since := "2025-04-19")] alias cdf_eq_toReal := cdf_eq_real
 
 instance instIsProbabilityMeasurecdf : IsProbabilityMeasure (cdf μ).measure := by
   constructor
@@ -96,6 +98,13 @@ lemma cdf_measure_stieltjesFunction (f : StieltjesFunction) (hf0 : Tendsto f atB
   have h_prob : IsProbabilityMeasure f.measure :=
     ⟨by rw [f.measure_univ hf0 hf1, sub_zero, ENNReal.ofReal_one]⟩
   exact measure_cdf f.measure
+
+open unitInterval in
+lemma unitInterval.cdf_eq_real (μ : Measure I) [IsProbabilityMeasure μ] (x : I) :
+    cdf (μ.map Subtype.val) x.1 = μ.real (Icc 0 x) := by
+  haveI : IsProbabilityMeasure (μ.map Subtype.val) := isProbabilityMeasure_map (by fun_prop)
+  rw [ProbabilityTheory.cdf_eq_real,
+    map_measureReal_apply measurable_subtype_coe measurableSet_Iic, subtype_Iic_eq_Icc]
 
 end ProbabilityTheory
 

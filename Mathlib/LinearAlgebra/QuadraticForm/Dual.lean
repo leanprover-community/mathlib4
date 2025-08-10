@@ -102,7 +102,7 @@ variable {R M N}
 /-- Any module isomorphism induces a quadratic isomorphism between the corresponding `dual_prod.` -/
 @[simps!]
 def dualProdIsometry (f : M ≃ₗ[R] N) : (dualProd R M).IsometryEquiv (dualProd R N) where
-  toLinearEquiv := f.dualMap.symm.prod f
+  toLinearEquiv := f.dualMap.symm.prodCongr f
   map_app' x := DFunLike.congr_arg x.fst <| f.symm_apply_apply _
 
 /-- `QuadraticForm.dualProd` commutes (isometrically) with `QuadraticForm.prod`. -/
@@ -110,7 +110,7 @@ def dualProdIsometry (f : M ≃ₗ[R] N) : (dualProd R M).IsometryEquiv (dualPro
 def dualProdProdIsometry :
     (dualProd R (M × N)).IsometryEquiv ((dualProd R M).prod (dualProd R N)) where
   toLinearEquiv :=
-    (Module.dualProdDualEquivDual R M N).symm.prod (LinearEquiv.refl R (M × N)) ≪≫ₗ
+    (Module.dualProdDualEquivDual R M N).symm.prodCongr (LinearEquiv.refl R (M × N)) ≪≫ₗ
       LinearEquiv.prodProdProdComm R _ _ M N
   map_app' m :=
     (m.fst.map_add _ _).symm.trans <| DFunLike.congr_arg m.fst <| Prod.ext (add_zero _) (zero_add _)
@@ -140,9 +140,9 @@ def toDualProd (Q : QuadraticForm R M) [Invertible (2 : R)] :
       LinearMap.coe_comp, Function.comp_apply, LinearMap.fst_apply, LinearMap.snd_apply,
       LinearMap.sub_apply, dualProd_apply, polarBilin_apply_apply, prod_apply, neg_apply]
     simp only [polar_sub_right, polar_self, nsmul_eq_mul, Nat.cast_ofNat, polar_comm _ x.1 x.2,
-      smul_sub, LinearMap.smul_def, sub_add_sub_cancel, ← sub_eq_add_neg (Q x.1) (Q x.2)]
-    rw [← LinearMap.map_sub (⅟ 2 : Module.End R R), ← mul_sub, ← LinearMap.smul_def]
-    simp only [LinearMap.smul_def, half_moduleEnd_apply_eq_half_smul, smul_eq_mul,
+      smul_sub, Module.End.smul_def, sub_add_sub_cancel, ← sub_eq_add_neg (Q x.1) (Q x.2)]
+    rw [← LinearMap.map_sub (⅟2 : Module.End R R), ← mul_sub, ← Module.End.smul_def]
+    simp only [Module.End.smul_def, half_moduleEnd_apply_eq_half_smul, smul_eq_mul,
       invOf_mul_cancel_left']
 
 /-!

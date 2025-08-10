@@ -20,13 +20,13 @@ This file defines natural or von Neumann bounded sets and proves elementary prop
 ## Main declarations
 
 * `Bornology.IsVonNBounded`: A set `s` is von Neumann-bounded if every neighborhood of zero
-absorbs `s`.
+  absorbs `s`.
 * `Bornology.vonNBornology`: The bornology made of the von Neumann-bounded sets.
 
 ## Main results
 
 * `Bornology.IsVonNBounded.of_topologicalSpace_le`: A coarser topology admits more
-von Neumann-bounded sets.
+  von Neumann-bounded sets.
 * `Bornology.IsVonNBounded.image`: A continuous linear image of a bounded set is bounded.
 * `Bornology.isVonNBounded_iff_smul_tendsto_zero`: Given any sequence `ε` of scalars which tends
   to `𝓝[≠] 0`, we have that a set `S` is bounded if and only if for any sequence `x : ℕ → S`,
@@ -193,9 +193,8 @@ variable {𝕜₁ 𝕜₂ : Type*} [NormedDivisionRing 𝕜₁] [NormedDivisionR
 /-- A continuous linear image of a bounded set is bounded. -/
 protected theorem IsVonNBounded.image {σ : 𝕜₁ →+* 𝕜₂} [RingHomSurjective σ] [RingHomIsometric σ]
     {s : Set E} (hs : IsVonNBounded 𝕜₁ s) (f : E →SL[σ] F) : IsVonNBounded 𝕜₂ (f '' s) := by
-  have σ_iso : Isometry σ := AddMonoidHomClass.isometry_of_norm σ fun x => RingHomIsometric.is_iso
   have : map σ (𝓝 0) = 𝓝 0 := by
-    rw [σ_iso.isEmbedding.map_nhds_eq, σ.surjective.range_eq, nhdsWithin_univ, map_zero]
+    rw [σ.isometry.isEmbedding.map_nhds_eq, σ.surjective.range_eq, nhdsWithin_univ, map_zero]
   have hf₀ : Tendsto f (𝓝 0) (𝓝 0) := f.continuous.tendsto' 0 0 (map_zero f)
   simp only [isVonNBounded_iff_tendsto_smallSets_nhds, ← this, tendsto_map'_iff] at hs ⊢
   simpa only [comp_def, image_smul_setₛₗ] using hf₀.image_smallSets.comp hs

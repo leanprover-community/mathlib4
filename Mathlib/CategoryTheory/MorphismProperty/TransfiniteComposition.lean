@@ -45,7 +45,7 @@ section
 variable (J : Type w) [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J]
   {J' : Type w'} [LinearOrder J'] [SuccOrder J'] [OrderBot J'] [WellFoundedLT J']
 
-/-- Structure expressing that a morpshism `f : X ⟶ Y` in a category `C`
+/-- Structure expressing that a morphism `f : X ⟶ Y` in a category `C`
 is a transfinite composition of shape `J` of morphisms in `W : MorphismProperty C`. -/
 structure TransfiniteCompositionOfShape {X Y : C} (f : X ⟶ Y) extends
     CategoryTheory.TransfiniteCompositionOfShape J f where
@@ -103,7 +103,7 @@ noncomputable def map {W : MorphismProperty D} {F : C ⥤ D}
 
 /-- A transfinite composition of shape `J` of morphisms in `W` induces a transfinite
 composition of shape `Set.Iic j` (for any `j : J`). -/
-def iic (j : J) :
+noncomputable def iic (j : J) :
     W.TransfiniteCompositionOfShape (Set.Iic j) (h.F.map (homOfLE bot_le : ⊥ ⟶ j)) where
   __ := h.toTransfiniteCompositionOfShape.iic j
   map_mem i hi := by

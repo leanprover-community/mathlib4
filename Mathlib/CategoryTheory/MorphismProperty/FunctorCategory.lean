@@ -37,39 +37,25 @@ instance [W.IsStableUnderRetracts] (J : Type u'') [Category.{v''} J] :
 
 variable {W}
 
-lemma IsStableUnderLimitsOfShape.functorCategory
-    {K : Type u'} [Category.{v'} K]
-    (hW : W.IsStableUnderLimitsOfShape K)
-    (J : Type u'') [Category.{v''} J]
-    [HasLimitsOfShape K C] :
-    (W.functorCategory J).IsStableUnderLimitsOfShape K := by
-  intro X₁ X₂ c₁ c₂ hc₁ hc₂ f hf j
-  convert hW (X₁ ⋙ (evaluation _ _ ).obj j) (X₂ ⋙ (evaluation _ _ ).obj j)
-    _ _ (isLimitOfPreserves _ hc₁) (isLimitOfPreserves _ hc₂) (whiskerRight f _)
-    (fun k ↦ hf k j)
-  apply (isLimitOfPreserves ((evaluation J C).obj j) hc₂).hom_ext
-  intro k
-  rw [IsLimit.fac]
-  dsimp
-  rw [← NatTrans.comp_app, IsLimit.fac]
-  dsimp
+instance IsStableUnderLimitsOfShape.functorCategory
+    {K : Type u'} [Category.{v'} K] [W.IsStableUnderLimitsOfShape K]
+    (J : Type u'') [Category.{v''} J] [HasLimitsOfShape K C] :
+    (W.functorCategory J).IsStableUnderLimitsOfShape K where
+  condition X₁ X₂ _ _ hc₁ hc₂ f hf φ hφ j :=
+    MorphismProperty.limitsOfShape_le _
+      (limitsOfShape.mk' (X₁ ⋙ (evaluation _ _ ).obj j) (X₂ ⋙ (evaluation _ _ ).obj j)
+      _ _ (isLimitOfPreserves _ hc₁) (isLimitOfPreserves _ hc₂) (Functor.whiskerRight f _)
+      (fun k ↦ hf k j) (φ.app j) (fun k ↦ congr_app (hφ k) j))
 
-lemma IsStableUnderColimitsOfShape.functorCategory
-    {K : Type u'} [Category.{v'} K]
-    (hW : W.IsStableUnderColimitsOfShape K)
-    (J : Type u'') [Category.{v''} J]
-    [HasColimitsOfShape K C] :
-    (W.functorCategory J).IsStableUnderColimitsOfShape K := by
-  intro X₁ X₂ c₁ c₂ hc₁ hc₂ f hf j
-  convert hW (X₁ ⋙ (evaluation _ _ ).obj j) (X₂ ⋙ (evaluation _ _ ).obj j)
-    _ _ (isColimitOfPreserves _ hc₁) (isColimitOfPreserves _ hc₂) (whiskerRight f _)
-    (fun k ↦ hf k j)
-  apply (isColimitOfPreserves ((evaluation J C).obj j) hc₁).hom_ext
-  intro k
-  rw [IsColimit.fac]
-  dsimp
-  rw [← NatTrans.comp_app, IsColimit.fac]
-  dsimp
+instance IsStableUnderColimitsOfShape.functorCategory
+    {K : Type u'} [Category.{v'} K] [W.IsStableUnderColimitsOfShape K]
+    (J : Type u'') [Category.{v''} J] [HasColimitsOfShape K C] :
+    (W.functorCategory J).IsStableUnderColimitsOfShape K where
+  condition X₁ X₂ _ _ hc₁ hc₂ f hf φ hφ j :=
+    MorphismProperty.colimitsOfShape_le _
+      (colimitsOfShape.mk' (X₁ ⋙ (evaluation _ _ ).obj j) (X₂ ⋙ (evaluation _ _ ).obj j)
+      _ _ (isColimitOfPreserves _ hc₁) (isColimitOfPreserves _ hc₂) (Functor.whiskerRight f _)
+      (fun k ↦ hf k j) (φ.app j) (fun k ↦ congr_app (hφ k) j))
 
 instance [W.IsStableUnderBaseChange] (J : Type u'') [Category.{v''} J] [HasPullbacks C] :
     (W.functorCategory J).IsStableUnderBaseChange where

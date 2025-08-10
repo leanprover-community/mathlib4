@@ -37,12 +37,14 @@ theorem norm_circleMap_zero (R : ℝ) (θ : ℝ) : ‖circleMap 0 R θ‖ = |R| 
 
 @[deprecated (since := "2025-02-17")] alias abs_circleMap_zero := norm_circleMap_zero
 
-theorem circleMap_not_mem_ball (c : ℂ) (R : ℝ) (θ : ℝ) : circleMap c R θ ∉ ball c R := by
+theorem circleMap_notMem_ball (c : ℂ) (R : ℝ) (θ : ℝ) : circleMap c R θ ∉ ball c R := by
   simp [Complex.dist_eq, le_abs_self]
+
+@[deprecated (since := "2025-05-23")] alias circleMap_not_mem_ball := circleMap_notMem_ball
 
 theorem circleMap_ne_mem_ball {c : ℂ} {R : ℝ} {w : ℂ} (hw : w ∈ ball c R) (θ : ℝ) :
     circleMap c R θ ≠ w :=
-  (ne_of_mem_of_not_mem hw (circleMap_not_mem_ball _ _ _)).symm
+  (ne_of_mem_of_not_mem hw (circleMap_notMem_ball _ _ _)).symm
 
 theorem circleMap_mem_sphere' (c : ℂ) (R : ℝ) (θ : ℝ) : circleMap c R θ ∈ sphere c |R| := by simp
 
@@ -126,6 +128,7 @@ lemma eq_of_circleMap_eq {a b R : ℝ} {c : ℂ} (h_R : R ≠ 0) (h_dist : |a - 
   norm_cast at h_dist
   simp [hn, Int.abs_lt_one_iff.mp h_dist]
 
+open scoped Interval in
 /-- `circleMap` is injective on `Ι a b` if the distance between `a` and `b` is at most `2π`. -/
 theorem injOn_circleMap_of_abs_sub_le {a b R : ℝ} {c : ℂ} (h_R : R ≠ 0) (_ : |a - b| ≤ 2 * π) :
     (Ι a b).InjOn (circleMap c R) := by

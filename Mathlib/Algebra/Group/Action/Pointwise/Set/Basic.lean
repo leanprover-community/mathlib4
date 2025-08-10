@@ -145,17 +145,17 @@ instance smulCommClass [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
     SMulCommClass (Set α) (Set β) (Set γ) :=
   ⟨fun _ _ _ ↦ image2_left_comm smul_comm⟩
 
-@[to_additive vaddAssocClass]
+@[to_additive]
 instance isScalarTower [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower α β (Set γ) where
   smul_assoc a b T := by simp only [← image_smul, image_image, smul_assoc]
 
-@[to_additive vaddAssocClass']
+@[to_additive]
 instance isScalarTower' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower α (Set β) (Set γ) :=
   ⟨fun _ _ _ ↦ image2_image_left_comm <| smul_assoc _⟩
 
-@[to_additive vaddAssocClass'']
+@[to_additive]
 instance isScalarTower'' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower (Set α) (Set β) (Set γ) where
   smul_assoc _ _ _ := image2_assoc smul_assoc
@@ -170,7 +170,7 @@ on `Set β`. -/
 @[to_additive
 "An additive action of an additive monoid `α` on a type `β` gives an additive action of `Set α`
 on `Set β`"]
-protected def mulAction [Monoid α] [MulAction α β] : MulAction (Set α) (Set β) where
+protected noncomputable def mulAction [Monoid α] [MulAction α β] : MulAction (Set α) (Set β) where
   mul_smul _ _ _ := image2_assoc mul_smul
   one_smul s := image2_singleton_left.trans <| by simp_rw [one_smul, image_id']
 
@@ -215,24 +215,16 @@ theorem preimage_smul_inv (a : α) (t : Set β) : (fun x ↦ a⁻¹ • x) ⁻¹
 theorem smul_set_subset_smul_set_iff : a • A ⊆ a • B ↔ A ⊆ B :=
   image_subset_image_iff <| MulAction.injective _
 
-@[deprecated (since := "2024-12-28")]
-alias set_smul_subset_set_smul_iff := smul_set_subset_smul_set_iff
-
 @[to_additive]
 theorem smul_set_subset_iff_subset_inv_smul_set : a • A ⊆ B ↔ A ⊆ a⁻¹ • B :=
   image_subset_iff.trans <|
     iff_of_eq <| congr_arg _ <| preimage_equiv_eq_image_symm _ <| MulAction.toPerm _
-
-@[deprecated (since := "2024-12-28")]
-alias set_smul_subset_iff := smul_set_subset_iff_subset_inv_smul_set
 
 @[to_additive]
 theorem subset_smul_set_iff : A ⊆ a • B ↔ a⁻¹ • A ⊆ B :=
   Iff.symm <|
     image_subset_iff.trans <|
       Iff.symm <| iff_of_eq <| congr_arg _ <| image_equiv_eq_preimage_symm _ <| MulAction.toPerm _
-
-@[deprecated (since := "2024-12-28")] alias subset_set_smul_iff := subset_smul_set_iff
 
 @[to_additive]
 theorem smul_set_inter : a • (s ∩ t) = a • s ∩ a • t :=
@@ -321,14 +313,6 @@ lemma disjoint_smul_set_left : Disjoint (a • s) t ↔ Disjoint s (a⁻¹ • t
 lemma disjoint_smul_set_right : Disjoint s (a • t) ↔ Disjoint (a⁻¹ • s) t := by
   simpa using disjoint_smul_set (a := a) (s := a⁻¹ • s)
 
-@[to_additive] alias smul_set_disjoint_iff := disjoint_smul_set
-
--- `alias` doesn't add the deprecation suggestion to the `to_additive` version
--- see https://github.com/leanprover-community/mathlib4/issues/19424
-attribute [deprecated disjoint_smul_set (since := "2024-10-18")] smul_set_disjoint_iff
-attribute [deprecated disjoint_vadd_set (since := "2024-10-18")] vadd_set_disjoint_iff
-
-
 /-- Any intersection of translates of two sets `s` and `t` can be covered by a single translate of
 `(s⁻¹ * s) ∩ (t⁻¹ * t)`.
 
@@ -365,8 +349,8 @@ variable [Group α] [CommGroup β] [FunLike F α β] [MonoidHomClass F α β]
 lemma smul_graphOn (x : α × β) (s : Set α) (f : F) :
     x • s.graphOn f = (x.1 • s).graphOn fun a ↦ x.2 / f x.1 * f a := by
   ext ⟨a, b⟩
-  simp [mem_smul_set_iff_inv_smul_mem, Prod.ext_iff, and_comm (a := _ = a), inv_mul_eq_iff_eq_mul,
-    mul_left_comm _ _⁻¹, eq_inv_mul_iff_mul_eq, ← mul_div_right_comm, div_eq_iff_eq_mul, mul_comm b]
+  simp [mem_smul_set_iff_inv_smul_mem, inv_mul_eq_iff_eq_mul, mul_left_comm _ _⁻¹,
+    eq_inv_mul_iff_mul_eq, ← mul_div_right_comm, div_eq_iff_eq_mul, mul_comm b]
 
 @[to_additive]
 lemma smul_graphOn_univ (x : α × β) (f : F) :

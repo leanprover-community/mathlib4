@@ -144,8 +144,8 @@ def ofMapMulInv {H : Type*} [Group H] (f : G → H)
 
 @[to_additive (attr := simp)]
 theorem coe_of_map_mul_inv {H : Type*} [Group H] (f : G → H)
-    (map_div : ∀ a b : G, f (a * b⁻¹) = f a * (f b)⁻¹) :
-  ↑(ofMapMulInv f map_div) = f := rfl
+    (map_div : ∀ a b : G, f (a * b⁻¹) = f a * (f b)⁻¹) : ↑(ofMapMulInv f map_div) = f :=
+  rfl
 
 /-- Define a morphism of additive groups given a map which respects ratios. -/
 @[to_additive "Define a morphism of additive groups given a map which respects difference."]
@@ -167,9 +167,8 @@ sending `x` to `f x * g x`. -/
 instance mul : Mul (M →* N) :=
   ⟨fun f g =>
     { toFun := fun m => f m * g m,
-      map_one' := show f 1 * g 1 = 1 by simp,
+      map_one' := by simp,
       map_mul' := fun x y => by
-        show f (x * y) * g (x * y) = f x * g x * (f y * g y)
         rw [f.map_mul, g.map_mul, ← mul_assoc, ← mul_assoc, mul_right_comm (f x)] }⟩
 
 /-- Given two additive monoid morphisms `f`, `g` to an additive commutative monoid,

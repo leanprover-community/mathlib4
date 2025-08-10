@@ -16,8 +16,8 @@ Frobenius endomorphism
 ## Implementation notes
 
 The definitions of `frobenius` and `iterateFrobenius` ring homomorphisms are in
-`Mathlib.Algebra.CharP.Lemmas` as they are needed for some results that in turn are used in files
-forbidding to import algebra-related definitions (see `Mathlib.Algebra.CharP.Two.lean`).
+`Mathlib/Algebra/CharP/Lemmas.lean` as they are needed for some results that in turn are used in
+files forbidding to import algebra-related definitions (see `Mathlib/Algebra/CharP/Two.lean`).
 -/
 
 section CommSemiring
@@ -112,13 +112,13 @@ lemma RingHom.iterateFrobenius_comm (n : ℕ) :
 
 variable (R S)
 
-/-- The frobenius map of an algebra as a frobenius-semilinear map. -/
+/-- The Frobenius map of an algebra as a Frobenius-semilinear map. -/
 nonrec def LinearMap.frobenius [Algebra R S] : S →ₛₗ[frobenius R p] S where
   __ := frobenius S p
   map_smul' r s := show frobenius S p _ = _ by
     simp_rw [Algebra.smul_def, map_mul, ← (algebraMap R S).map_frobenius]; rfl
 
-/-- The iterated frobenius map of an algebra as a iterated-frobenius-semilinear map. -/
+/-- The iterated Frobenius map of an algebra as an iterated-Frobenius-semilinear map. -/
 nonrec def LinearMap.iterateFrobenius [Algebra R S] : S →ₛₗ[iterateFrobenius R p n] S where
   __ := iterateFrobenius S p n
   map_smul' f s := show iterateFrobenius S p n _ = _ by
