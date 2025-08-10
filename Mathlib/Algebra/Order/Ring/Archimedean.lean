@@ -123,7 +123,7 @@ variable (M) in
 /-- `ArchimedeanClass.mk` defines a `AddValuation` on the ring `M`. -/
 noncomputable
 def addValuation : AddValuation M (ArchimedeanClass M) := AddValuation.of mk
-  (by simp) (by simp) min_le_mk_add mk_mul
+  rfl rfl min_le_mk_add mk_mul
 
 @[simp] theorem addValuation_apply (a : M) : addValuation M a = mk a := rfl
 
@@ -134,7 +134,7 @@ section Field
 variable [Field M] [IsStrictOrderedRing M]
 
 instance : Neg (ArchimedeanClass M) where
-  neg x := x.lift (fun x ↦ mk x⁻¹) fun x y h ↦ by
+  neg := lift (fun x ↦ mk x⁻¹) fun x y h ↦ by
     obtain rfl | hx := eq_or_ne x 0
     · simp_all
     obtain rfl | hy := eq_or_ne y 0
