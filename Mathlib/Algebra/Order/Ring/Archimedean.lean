@@ -40,11 +40,25 @@ namespace ArchimedeanClass
 section Ring
 
 variable [CommRing M] [IsStrictOrderedRing M]
+  {R : Type*} [LinearOrder R] [CommRing R] [IsStrictOrderedRing R]
 
 instance : Zero (ArchimedeanClass M) where
   zero := mk 1
 
 @[simp] theorem mk_one : mk (1 : M) = 0 := rfl
+
+@[simp]
+theorem mk_eq_zero_of_archimedean [Archimedean M] {x : M} (h : x ≠ 0) : mk x = 0 := by
+  rw [← mk_one]
+  exact mk_eq_mk_of_archimedean h one_ne_zero
+
+theorem eq_zero_or_top_of_archimedean [Archimedean M] (x : ArchimedeanClass M) : x = 0 ∨ x = ⊤ := by
+  induction x with | mk x
+  obtain rfl | h := eq_or_ne x 0 <;> simp_all
+
+@[simp]
+theorem orderHom_zero (f : M →+o R) : orderHom f 0 = mk (f 1) := by
+  rw [← mk_one, orderHom_mk]
 
 private theorem mk_mul_le_of_le {x₁ y₁ x₂ y₂ : M} (hx : mk x₁ ≤ mk x₂) (hy : mk y₁ ≤ mk y₂) :
     mk (x₁ * y₁) ≤ mk (x₂ * y₂) := by
@@ -120,6 +134,19 @@ theorem add_right_cancel_of_ne_top {x y z : ArchimedeanClass M} (hx : x ≠ ⊤)
   simp_rw [← add_comm x] at h
   exact add_left_cancel_of_ne_top hx h
 
+theorem mk_map_of_archimedean [Archimedean M] (f : M →+o R) {x : M} (h : x ≠ 0) :
+    mk (f x) = mk (f 1) := by
+  rw [← orderHom_mk, mk_eq_zero_of_archimedean h, orderHom_zero]
+
+@[simp]
+theorem mk_intCast {n : ℤ} (h : n ≠ 0) : mk (n : M) = 0 := by
+  simpa using mk_map_of_archimedean ⟨Int.castAddHom M, fun _ ↦ by simp⟩ h
+
+@[simp]
+theorem mk_natCast {n : ℕ} (h : n ≠ 0) : mk (n : M) = 0 := by
+  rw [← Int.cast_natCast]
+  exact mk_intCast (mod_cast h)
+
 variable (M) in
 /-- `ArchimedeanClass.mk` defines a `AddValuation` on the ring `M`. -/
 noncomputable
@@ -127,21 +154,6 @@ def addValuation : AddValuation M (ArchimedeanClass M) := AddValuation.of mk
   rfl rfl min_le_mk_add mk_mul
 
 @[simp] theorem addValuation_apply (a : M) : addValuation M a = mk a := rfl
-
-@[simp]
-theorem mk_intCast {n : ℤ} (h : n ≠ 0) : mk (n : M) = 0 := by
-  apply le_antisymm
-  · use 1
-    dsimp
-    rw [abs_one, one_smul]
-    exact_mod_cast Int.one_le_abs h
-  · use n.natAbs
-    simp
-
-@[simp]
-theorem mk_natCast {n : ℕ} (h : n ≠ 0) : mk (n : M) = 0 := by
-  rw [← Int.cast_natCast]
-  exact mk_intCast (mod_cast h)
 
 end Ring
 
@@ -212,56 +224,7 @@ theorem mk_lt_mk_iff_ratCast {x y : M} :
 
 @[simp]
 theorem mk_ratCast {q : ℚ} (h : q ≠ 0) : mk (q : M) = 0 := by
-  apply le_antisymm
-  · obtain ⟨n, hn⟩ := exists_nat_gt |q|⁻¹
-    use n
-    simp_rw [ArchimedeanOrder.val_of, abs_one, nsmul_eq_mul]
-    exact_mod_cast ((inv_lt_iff_one_lt_mul₀ (abs_pos.2 h)).1 hn).le
-  · obtain ⟨n, hn⟩ := exists_nat_gt |q|
-    use n
-    simp_rw [ArchimedeanOrder.val_of, abs_one, nsmul_one]
-    exact_mod_cast hn.le
-
-theorem mk_eq_zero_of_rat_btwn_pos {R : Type*} [Field R] [LinearOrder R] [IsStrictOrderedRing R]
-    {x : R} {q r : ℚ} (hq₀ : 0 < q) (hq : q < x) (hr : x < r) : mk x = 0 := by
-  have hx₀ : 0 < x := hq.trans' (mod_cast hq₀)
-  have hr₀ : 0 < r := mod_cast hx₀.trans hr
-  apply le_antisymm
-  on_goal 1 => rw [← mk_ratCast hq₀.ne']
-  on_goal 2 => rw [← mk_ratCast hr₀.ne']
-  all_goals apply mk_antitoneOn _ _ _ <;> apply le_of_lt <;> simpa
-
-theorem mk_eq_zero_of_rat_btwn_neg {R : Type*} [Field R] [LinearOrder R] [IsStrictOrderedRing R]
-    {x : R} {q r : ℚ} (hr₀ : r < 0) (hq : q < x) (hr : x < r) : mk x = 0 := by
-  rw [← mk_neg]
-  apply mk_eq_zero_of_rat_btwn_pos (q := -r) (r := -q) <;> simpa
-
-theorem mk_map_of_archimedean {R : Type*}
-    [Field R] [LinearOrder R] [IsStrictOrderedRing R] [Archimedean R] {x : R} (h : x ≠ 0)
-    (f : R →o M) (hf : ∀ q : ℚ, f q = q) : mk (f x) = 0 := by
-  have hm := strictMono_of_map_ratCast f.mono hf
-  obtain ⟨q, hq₀, hq⟩ := exists_rat_btwn (abs_pos.2 h)
-  obtain ⟨r, hr⟩ := exists_rat_gt |x|
-  obtain hx | hx := h.lt_or_gt
-  · apply mk_eq_zero_of_rat_btwn_neg (q := -r) (r := -q)
-    · simpa using hq₀
-    · rw [abs_of_neg hx, neg_lt, ← Rat.cast_neg] at hr
-      exact hf _ ▸ hm hr
-    · rw [abs_of_neg hx, lt_neg, ← Rat.cast_neg] at hq
-      exact hf _ ▸ hm hq
-  · apply mk_eq_zero_of_rat_btwn_pos (r := r) (mod_cast hq₀)
-    · rw [abs_of_pos hx] at hq
-      exact hf _ ▸ hm hq
-    · rw [abs_of_pos hx] at hr
-      exact hf _ ▸ hm hr
-
-@[simp]
-theorem mk_eq_zero_of_archimedean [Archimedean M] {x : M} (h : x ≠ 0) : mk x = 0 :=
-  mk_map_of_archimedean h .id fun _ ↦ rfl
-
-theorem eq_zero_or_top_of_archimedean [Archimedean M] (x : ArchimedeanClass M) : x = 0 ∨ x = ⊤ := by
-  induction x with | mk x
-  obtain rfl | h := eq_or_ne x 0 <;> simp_all
+  simpa using mk_map_of_archimedean ⟨(Rat.castHom M : ℚ →+ M), fun _ ↦ by simp⟩ h
 
 end Field
 end ArchimedeanClass
