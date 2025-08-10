@@ -5,6 +5,7 @@ Authors: Pierre-Alexandre Bazin
 -/
 import Mathlib.Algebra.DirectSum.Module
 import Mathlib.Algebra.Module.ZMod
+import Mathlib.Algebra.Regular.Opposite
 import Mathlib.GroupTheory.Torsion
 import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.RingTheory.Coprime.Ideal
@@ -84,8 +85,11 @@ TODO: Prove it. -/
 class IsTorsionFree where
   isSMulRegular ⦃r : R⦄ : IsRegular r → IsSMulRegular M r
 
+instance : IsTorsionFree R R where isSMulRegular _r hr := hr.1
+instance : IsTorsionFree Rᵐᵒᵖ R where isSMulRegular _r hr := hr.unop.2
+
 instance [IsAddTorsionFree M] : IsTorsionFree ℕ M where
-  isSMulRegular {n} hn := nsmul_right_injective (by simpa [isRegular_iff_ne_zero] using hn)
+  isSMulRegular n hn := nsmul_right_injective (by simpa [isRegular_iff_ne_zero] using hn)
 
 end AddCommMonoid
 
@@ -93,7 +97,7 @@ section AddCommGroup
 variable [AddCommGroup M]
 
 instance [IsAddTorsionFree M] : IsTorsionFree ℤ M where
-  isSMulRegular {n} hn := zsmul_right_injective (by simpa [isRegular_iff_ne_zero] using hn)
+  isSMulRegular n hn := zsmul_right_injective (by simpa [isRegular_iff_ne_zero] using hn)
 
 end AddCommGroup
 end Module
