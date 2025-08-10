@@ -156,7 +156,8 @@ namespace MulArchimedeanClass
 def mk (a : M) : MulArchimedeanClass M := toAntisymmetrization _ (MulArchimedeanOrder.of a)
 
 /-- An induction principle for `MulArchimedeanClass`. -/
-@[to_additive (attr := elab_as_elim) "An induction principle for `ArchimedeanClass`"]
+@[to_additive (attr := elab_as_elim, induction_eliminator)
+"An induction principle for `ArchimedeanClass`"]
 theorem ind {motive : MulArchimedeanClass M → Prop} (mk : ∀ a, motive (.mk a)) : ∀ x, motive x :=
   Antisymmetrization.ind _ mk
 
@@ -238,12 +239,12 @@ theorem mk_one : mk 1 = (⊤ : MulArchimedeanClass M) := rfl
 @[to_additive (attr := simp)]
 theorem mk_eq_top_iff : mk a = ⊤ ↔ a = 1 := by
   constructor
-  · intro h
-    obtain ⟨_, _, hm⟩ := mk_eq_mk.mp h
-    simpa using hm
-  · intro h
-    rw [h]
-    simp
+  · simp [← mk_one, mk_eq_mk]
+  · simp_all
+
+@[to_additive (attr := simp)]
+theorem top_eq_mk_iff : ⊤ = mk a ↔ a = 1 := by
+  rw [eq_comm, mk_eq_top_iff]
 
 variable (M) in
 @[to_additive (attr := simp)]
