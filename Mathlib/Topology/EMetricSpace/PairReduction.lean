@@ -22,6 +22,15 @@ The key point being that it reduces bounding a supremum over points "close" in `
 set of size up to `|J|²`) to bounding a supremum over a set of points with size linear in `|J|`
 (whose points are still "close").
 
+This file was written with the goal of being used in the proof of a Kolmogorov–Chentsov theorem
+for general metric spaces. In that application `f(s)` is random and our goal is to find
+an upper bound on the expectation of `sup_{s, t ∈ J : d(s, t) ≤ c} d(f(s), f(t))`.
+The way we deal with the expectation of a supremum is to bound it by a sum over the pairs.
+Suppose for simplicity that for all `u`, if `d(s, t) ≤ u` then `𝔼[d(f(s), f(t))] ≤ u`.
+If we work directly on the sum over all pairs we get a final upper bound `|J|² c`.
+However with the pair reduction lemma we get `2 𝔼[sup_{(s, t) ∈ K} d(f(s), f(t))] ≤ 2 a |J| c n`,
+and since `n = log|J|` we went from `|J|²` to `|J| log|J|`.
+
 -/
 
 open scoped ENNReal NNReal Finset
