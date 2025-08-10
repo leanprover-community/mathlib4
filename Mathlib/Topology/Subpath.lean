@@ -49,12 +49,12 @@ def subpath (γ : Path a b) (t₀ t₁ : I) : Path (γ t₀) (γ t₁) where
 
 /-- Reversing `γ.subpath t₀ t₁` yields `γ.subpath t₁ t₀`. -/
 @[simp]
-theorem subpath_symm (γ : Path a b) (t₀ t₁ : I) : (γ.subpath t₀ t₁).symm = γ.subpath t₁ t₀ := by
+theorem symm_subpath (γ : Path a b) (t₀ t₁ : I) : symm (γ.subpath t₀ t₁) = γ.subpath t₁ t₀ := by
   ext s
   simp [subpath, add_comm]
 
 @[simp]
-lemma subpath_range_of_le (γ : Path a b) (t₀ t₁ : I) (h : t₀ ≤ t₁) :
+lemma range_subpath_of_le (γ : Path a b) (t₀ t₁ : I) (h : t₀ ≤ t₁) :
     range (γ.subpath t₀ t₁) = γ '' (Icc t₀ t₁) := by
   ext z
   constructor
@@ -70,13 +70,13 @@ lemma subpath_range_of_le (γ : Path a b) (t₀ t₁ : I) (h : t₀ ≤ t₁) :
     simp [subpath, ← eq_sub_of_add_eq hab, ht]
 
 @[simp]
-lemma subpath_range_of_ge (γ : Path a b) (t₀ t₁ : I) (h : t₁ ≤ t₀) :
+lemma range_subpath_of_ge (γ : Path a b) (t₀ t₁ : I) (h : t₁ ≤ t₀) :
     range (γ.subpath t₀ t₁) = γ '' (Icc t₁ t₀) := by
   rw [← subpath_symm, symm_range, subpath_range_of_le _ _ _ h]
 
 /-- The range of a subpath is the image of the original path on the relevant interval. -/
 @[simp]
-theorem subpath_range (γ : Path a b) (t₀ t₁ : I) :
+theorem range_subpath (γ : Path a b) (t₀ t₁ : I) :
     range (γ.subpath t₀ t₁) = γ '' (uIcc t₀ t₁) := by
   rcases le_total t₀ t₁ with h | h
   · rw [uIcc_of_le h]
