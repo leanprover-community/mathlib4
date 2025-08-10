@@ -526,32 +526,32 @@ variable (M) in
 @[to_additive]
 theorem subgroup_antitone : Antitone (subgroup (M := M)) := by
   intro s t hst
-  obtain  rfl | hs := eq_or_ne s ⊤
+  obtain rfl | hs := eq_or_ne s ⊤
   · rw [eq_top_iff.mpr hst]
   obtain rfl | ht := eq_or_ne t ⊤
   · simp
   rwa [(subgroup_strictAntiOn M).le_iff_le ht.lt_top hs.lt_top]
 
-/-- An open ball defined by `MulArchimedeanClass.subgroup` of `UpperSet.Ioi A`.
-For `A = ⊤`, we assign the junk value `⊥`. -/
-@[to_additive "An open ball defined by `ArchimedeanClass.addSubgroup` of `UpperSet.Ioi A`.
-For `A = ⊤`, we assign the junk value `⊥`. "]
+/-- An open ball defined by `MulArchimedeanClass.subgroup` of `UpperSet.Ioi c`.
+For `c = ⊤`, we assign the junk value `⊥`. -/
+@[to_additive "An open ball defined by `ArchimedeanClass.addSubgroup` of `UpperSet.Ioi c`.
+For `c = ⊤`, we assign the junk value `⊥`. "]
 noncomputable
-abbrev ballSubgroup (A : MulArchimedeanClass M) := subgroup (UpperSet.Ioi A)
+abbrev ballSubgroup (c : MulArchimedeanClass M) := subgroup (UpperSet.Ioi c)
 
-/-- A closed ball defined by `MulArchimedeanClass.subgroup` of `UpperSet.Ici A`. -/
-@[to_additive "An closed ball defined by `ArchimedeanClass.addSubgroup` of `UpperSet.Ici A`."]
+/-- c closed ball defined by `MulArchimedeanClass.subgroup` of `UpperSet.Ici c`. -/
+@[to_additive "An closed ball defined by `ArchimedeanClass.addSubgroup` of `UpperSet.Ici c`."]
 noncomputable
-abbrev closedBallSubgroup (A : MulArchimedeanClass M) := subgroup (UpperSet.Ici A)
+abbrev closedBallSubgroup (c : MulArchimedeanClass M) := subgroup (UpperSet.Ici c)
 
 @[to_additive]
-theorem mem_ballSubgroup_iff {a : M} {A : MulArchimedeanClass M} (hA : A ≠ ⊤) :
-    a ∈ ballSubgroup A ↔ A < mk a := by
+theorem mem_ballSubgroup_iff {a : M} {c : MulArchimedeanClass M} (hA : c ≠ ⊤) :
+    a ∈ ballSubgroup c ↔ c < mk a := by
   simp [hA]
 
 @[to_additive]
-theorem mem_closedBallSubgroup_iff {a : M} {A : MulArchimedeanClass M} :
-    a ∈ closedBallSubgroup A ↔ A ≤ mk a := by
+theorem mem_closedBallSubgroup_iff {a : M} {c : MulArchimedeanClass M} :
+    a ∈ closedBallSubgroup c ↔ c ≤ mk a := by
   simp
 
 variable (M) in
@@ -569,63 +569,63 @@ theorem closedBallSubgroup_top : closedBallSubgroup (M := M) ⊤ = ⊥ := by
 variable (M) in
 @[to_additive]
 theorem ballSubgroup_antitone : Antitone (ballSubgroup (M := M)) := by
-  intro A B h
+  intro _ _ h
   exact subgroup_antitone _ <| (UpperSet.Ioi_strictMono _).monotone h
 
-/-- A subgroup `G` is called a grade at `A` iff
-`ballSubgroup A` and `G` are complements in the lattice under `closedBallSubgroup A` -/
-@[to_additive "A subgroup `G` is called a grade at `A` iff
-`ballAddSubgroup A` and `G` are complements in the lattice under `closedBallAddSubgroup A`"]
-def IsGradeSubgroup (A : MulArchimedeanClass M) (G : Subgroup M) :=
-  Disjoint (ballSubgroup A) G ∧ ballSubgroup A ⊔ G = closedBallSubgroup A
+/-- A subgroup `G` is called a grade at `c` iff
+`ballSubgroup c` and `G` are complements in the lattice under `closedBallSubgroup c` -/
+@[to_additive "A subgroup `G` is called a grade at `c` iff
+`ballAddSubgroup c` and `G` are complements in the lattice under `closedBallAddSubgroup c`"]
+def IsGradeSubgroup (c : MulArchimedeanClass M) (G : Subgroup M) :=
+  Disjoint (ballSubgroup c) G ∧ ballSubgroup c ⊔ G = closedBallSubgroup c
 
 namespace IsGradeSubgroup
-variable {A : MulArchimedeanClass M} {G : Subgroup M}
+variable {c : MulArchimedeanClass M} {G : Subgroup M}
 
 @[to_additive]
-theorem disjoint (hgrade : IsGradeSubgroup A G) : Disjoint (ballSubgroup A) G := hgrade.1
+theorem disjoint (hgrade : IsGradeSubgroup c G) : Disjoint (ballSubgroup c) G := hgrade.1
 
 @[to_additive]
-theorem sup_eq (hgrade : IsGradeSubgroup A G) : ballSubgroup A ⊔ G = closedBallSubgroup A :=
+theorem sup_eq (hgrade : IsGradeSubgroup c G) : ballSubgroup c ⊔ G = closedBallSubgroup c :=
   hgrade.2
 
 @[to_additive]
-theorem eq_bot_iff (hgrade : IsGradeSubgroup A G) : G = ⊥ ↔ A = ⊤ := by
+theorem eq_bot_iff (hgrade : IsGradeSubgroup c G) : G = ⊥ ↔ c = ⊤ := by
   obtain hsup := hgrade.sup_eq
   constructor
   · rintro rfl
-    replace hsup : A.ballSubgroup = A.closedBallSubgroup := by simpa using hsup
+    replace hsup : c.ballSubgroup = c.closedBallSubgroup := by simpa using hsup
     contrapose! hsup with h
     apply Subgroup.ext_iff.not.mpr
-    induction A using ind with | mk a
+    induction c using ind with | mk a
     rw [not_forall]
     exact ⟨a, by simp [h]⟩
   · rintro rfl
     simpa using hsup
 
 @[to_additive]
-theorem nontrivial (hgrade : IsGradeSubgroup A G) (h : A ≠ ⊤) : Nontrivial G :=
+theorem nontrivial (hgrade : IsGradeSubgroup c G) (h : c ≠ ⊤) : Nontrivial G :=
   (Subgroup.nontrivial_iff_ne_bot _).mpr (hgrade.eq_bot_iff.ne.mpr h)
 
 @[to_additive]
-theorem le_closedBallSubgroup (hgrade : IsGradeSubgroup A G) : G ≤ closedBallSubgroup A := by
+theorem le_closedBallSubgroup (hgrade : IsGradeSubgroup c G) : G ≤ closedBallSubgroup c := by
   simp [← hgrade.sup_eq]
 
 @[to_additive archimedeanClass_eq]
-theorem mulArchimedeanClass_eq (hgrade : IsGradeSubgroup A G) {a : M} (ha : a ∈ G) (h0 : a ≠ 1) :
-    mk a = A := by
+theorem mulArchimedeanClass_eq (hgrade : IsGradeSubgroup c G) {a : M} (ha : a ∈ G) (h0 : a ≠ 1) :
+    mk a = c := by
   apply le_antisymm
-  · have hA : A ≠ ⊤ := by
+  · have hA : c ≠ ⊤ := by
       contrapose! h0
       rw [hgrade.eq_bot_iff.mpr h0] at ha
       simpa using ha
     contrapose! h0 with hlt
-    have ha' : a ∈ ballSubgroup A := (mem_ballSubgroup_iff hA).mpr hlt
+    have ha' : a ∈ ballSubgroup c := (mem_ballSubgroup_iff hA).mpr hlt
     exact (Subgroup.disjoint_def.mp hgrade.disjoint) ha' ha
   · simpa using Set.mem_of_subset_of_mem hgrade.le_closedBallSubgroup ha
 
 @[to_additive archimedean]
-theorem mulArchimedean (hgrade : IsGradeSubgroup A G) : MulArchimedean G := by
+theorem mulArchimedean (hgrade : IsGradeSubgroup c G) : MulArchimedean G := by
   apply mulArchimedean_of_mk_eq_mk
   intro a ha b hb
   suffices mk a.val = mk b.val by
