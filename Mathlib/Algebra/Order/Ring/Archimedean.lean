@@ -208,8 +208,7 @@ theorem mk_lt_mk_iff_ratCast {x y : M} :
   refine ⟨fun H q ↦ ?_, fun H n ↦ by simpa using H n⟩
   obtain ⟨n, hn⟩ := exists_nat_gt q
   apply (H n).trans_le'
-  simp_rw [ArchimedeanOrder.val_of, nsmul_eq_mul]
-  exact mul_le_mul_of_nonneg_right (mod_cast hn.le) (abs_nonneg y)
+  simpa using mul_le_mul_of_nonneg_right (mod_cast hn.le) (abs_nonneg y)
 
 @[simp]
 theorem mk_ratCast {q : ℚ} (h : q ≠ 0) : mk (q : M) = 0 := by
