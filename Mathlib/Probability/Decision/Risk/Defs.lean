@@ -67,10 +67,6 @@ def minimaxRisk [MeasurableSpace 𝓨] (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : K
 variable {m𝓨 : MeasurableSpace 𝓨}
   {ℓ : Θ → 𝓨 → ℝ≥0∞} {P : Kernel Θ 𝓧} {κ : Kernel 𝓧 𝓨} {π : Measure Θ}
 
--- todo: move
-instance [h𝓨 : Nonempty 𝓨] : Nonempty {μ : Measure 𝓨 // IsProbabilityMeasure μ} :=
-  ⟨Measure.dirac h𝓨.some, inferInstance⟩
-
 section Zero
 
 @[simp]
