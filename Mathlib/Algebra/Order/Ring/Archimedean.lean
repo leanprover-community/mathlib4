@@ -10,8 +10,27 @@ import Mathlib.RingTheory.Valuation.Basic
 /-!
 # Archimedean classes of a linearly ordered ring
 
-Archimedean classes over a strictly linearly ordered ring form an abelian monoid itself.
-Moreover, we show it is a valuation of the ring.
+The archimedean classes of a strictly linearly ordered ring can be given the structure of an
+`AddCommMonoid`, by defining
+
+* `0 = mk 1`
+* `mk x + mk y = mk (x * y)`
+
+For a strictly linearly ordered field, we can define a negative as
+
+* `-mk x = mk x⁻¹`
+
+which turns them into a `LinearOrderedAddCommGroupWithTop`.
+
+## Implementation notes
+
+We give Archimedean class an additive structure, rather than a multiplicative one, for the following
+reasons:
+
+* In the ring version of Hahn embedding theorem, `ArchimedeanClassₒ M` naturally becomes
+  the additive abelian group for the ring `HahnSeries (ArchimedeanClassₒ M) ℝ`.
+* The order we defined on `ArchimedeanClass M` matches the order on `AddValuation`, instead
+  of the one on `Valuation`.
 -/
 
 variable {M : Type*} [LinearOrder M]
@@ -35,13 +54,7 @@ private theorem mk_mul_le_of_le {x₁ y₁ x₂ y₂ : M} (hx : mk x₁ ≤ mk x
     simp_rw [ArchimedeanOrder.val_of, abs_mul]
   ring
 
-/-- Multipilication in `M` transfers to Addition in `ArchimedeanClass M`.
-We denote this as an addition instead of multiplication for the following reasons:
-
-* In the ring version of Hahn embedding theorem, `ArchimedeanClassₒ M` naturally becomes
-  the additive abelian group for the ring `HahnSeries (ArchimedeanClassₒ M) ℝ`.
-* The order we defined on `ArchimedeanClass M` matches the order on `AddValuation`, instead
-  of the one on `Valuation`. -/
+/-- Multipilication in `M` transfers to Addition in `ArchimedeanClass M`. -/
 instance : Add (ArchimedeanClass M) where
   add := Quotient.lift₂ (fun x y ↦ .mk <| x.val * y.val) fun _ _ _ _ hx hy ↦
     (mk_mul_le_of_le hx.le hy.le).antisymm (mk_mul_le_of_le hx.ge hy.ge)
