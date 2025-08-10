@@ -44,7 +44,6 @@ the order.
 
 -/
 
-section ArchimedeanOrder
 variable {M : Type*}
 
 variable (M) in
@@ -97,8 +96,7 @@ theorem le_def {a b : MulArchimedeanOrder M} : a ≤ b ↔ ∃ n, |b.val|ₘ ≤
 @[to_additive]
 theorem lt_def {a b : MulArchimedeanOrder M} : a < b ↔ ∀ n, |b.val|ₘ ^ n < |a.val|ₘ := .rfl
 
-variable {M : Type*}
-variable [CommGroup M] [LinearOrder M] [IsOrderedMonoid M] {a b : M}
+variable {M : Type*} [CommGroup M] [LinearOrder M] [IsOrderedMonoid M] {a b : M}
 
 @[to_additive]
 instance : Preorder (MulArchimedeanOrder M) where
@@ -138,18 +136,14 @@ def orderHom (f : M →*o N) : MulArchimedeanOrder M →o MulArchimedeanOrder N 
 
 end MulArchimedeanOrder
 
-end ArchimedeanOrder
-
-variable {M : Type*}
-variable [CommGroup M] [LinearOrder M] [IsOrderedMonoid M] {a b : M}
-
-variable (M) in
 /-- `MulArchimedeanClass` is the antisymmetrization of `MulArchimedeanOrder`. -/
 @[to_additive ArchimedeanClass
 "`ArchimedeanClass` is the antisymmetrization of `ArchimedeanOrder`."]
-def MulArchimedeanClass := Antisymmetrization (MulArchimedeanOrder M) (· ≤ ·)
+def MulArchimedeanClass (M : Type*) [CommGroup M] [LinearOrder M] [IsOrderedMonoid M] :=
+  Antisymmetrization (MulArchimedeanOrder M) (· ≤ ·)
 
 namespace MulArchimedeanClass
+variable [CommGroup M] [LinearOrder M] [IsOrderedMonoid M] {a b : M}
 
 /-- The archimedean class of a given element. -/
 @[to_additive "The archimedean class of a given element."]
@@ -455,9 +449,14 @@ end LiftHom
 end MulArchimedeanClass
 
 namespace ArchimedeanClass
-variable {M : Type*} [LinearOrder M] [CommRing M] [IsStrictOrderedRing M]
+variable [LinearOrder M] [CommRing M] [IsStrictOrderedRing M]
 
-theorem mk_mul_le_of_le {x₁ y₁ x₂ y₂ : M} (hx : mk x₁ ≤ mk x₂) (hy : mk y₁ ≤ mk y₂) :
+instance : Zero (ArchimedeanClass M) where
+  zero := mk 1
+
+@[simp] theorem mk_one : mk (1 : M) = 0 := rfl
+
+private theorem mk_mul_le_of_le {x₁ y₁ x₂ y₂ : M} (hx : mk x₁ ≤ mk x₂) (hy : mk y₁ ≤ mk y₂) :
     mk (x₁ * y₁) ≤ mk (x₂ * y₂) := by
   obtain ⟨m, hm⟩ := hx
   obtain ⟨n, hn⟩ := hy
@@ -470,9 +469,15 @@ instance : Add (ArchimedeanClass M) where
   add := Quotient.lift₂ (fun x y ↦ .mk <| x.val * y.val) fun _ _ _ _ hx hy ↦
     (mk_mul_le_of_le hx.le hy.le).antisymm (mk_mul_le_of_le hx.ge hy.ge)
 
-@[simp]
-theorem mk_mul (x y : M) : mk (x * y) = mk x + mk y :=
-  rfl
+@[simp] theorem mk_mul (x y : M) : mk (x * y) = mk x + mk y := rfl
+
+instance : SMul ℕ (ArchimedeanClass M) where
+  smul n := lift (fun x ↦ mk (x ^ n)) fun x y h ↦ by
+    induction n with
+    | zero => simp
+    | succ n IH => simp_rw [pow_succ, mk_mul, IH, h]
+
+@[simp] theorem mk_pow (n : ℕ) (x : M) : mk (x ^ n) = n • mk x := rfl
 
 instance : AddCommMagma (ArchimedeanClass M) where
   add_comm x y := by
@@ -480,13 +485,35 @@ instance : AddCommMagma (ArchimedeanClass M) where
     induction y with | mk y =>
     rw [← mk_mul, mul_comm, mk_mul]
 
-@[simp]
-theorem top_add (x : ArchimedeanClass M) : ⊤ + x = ⊤ := by
+private theorem zero_add' (x : ArchimedeanClass M) : 0 + x = x := by
   induction x with | mk x =>
-  rw [← mk_zero, ← mk_mul, zero_mul]
+  rw [← mk_one, ← mk_mul, one_mul]
 
-@[simp]
-theorem add_top (x : ArchimedeanClass M) : x + ⊤ = ⊤ := by
-  rw [add_comm, top_add]
+private theorem add_assoc' (x y z : ArchimedeanClass M) : x + y + z = x + (y + z) := by
+  induction x with | mk x =>
+  induction y with | mk y =>
+  induction z with | mk z =>
+  simp_rw [← mk_mul, mul_assoc]
+
+instance : AddCommMonoid (ArchimedeanClass M) where
+  add_assoc := add_assoc'
+  zero_add := zero_add'
+  add_zero x := add_comm x _ ▸ zero_add' x
+  nsmul n x := n • x
+  nsmul_zero x := by induction x with | mk x => rw [← mk_pow, pow_zero, mk_one]
+  nsmul_succ n x := by induction x with | mk x => rw [← mk_pow, pow_succ, mk_mul, mk_pow]
+
+instance : IsOrderedAddMonoid (ArchimedeanClass M) where
+  add_le_add_left x y h z := by
+    induction x with | mk x =>
+    induction y with | mk y =>
+    induction z with | mk z =>
+    rw [← mk_mul, ← mk_mul]
+    exact mk_mul_le_of_le le_rfl h
+
+noncomputable instance : LinearOrderedAddCommMonoidWithTop (ArchimedeanClass M) where
+  top_add' x := by
+    induction x with | mk x =>
+    rw [← mk_zero, ← mk_mul, zero_mul]
 
 end ArchimedeanClass
