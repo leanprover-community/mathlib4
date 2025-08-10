@@ -72,7 +72,7 @@ lemma range_subpath_of_le (γ : Path a b) (t₀ t₁ : I) (h : t₀ ≤ t₁) :
 @[simp]
 lemma range_subpath_of_ge (γ : Path a b) (t₀ t₁ : I) (h : t₁ ≤ t₀) :
     range (γ.subpath t₀ t₁) = γ '' (Icc t₁ t₀) := by
-  rw [← subpath_symm, symm_range, subpath_range_of_le _ _ _ h]
+  rw [← symm_subpath, symm_range, range_subpath_of_le _ _ _ h]
 
 /-- The range of a subpath is the image of the original path on the relevant interval. -/
 @[simp]
@@ -80,9 +80,9 @@ theorem range_subpath (γ : Path a b) (t₀ t₁ : I) :
     range (γ.subpath t₀ t₁) = γ '' (uIcc t₀ t₁) := by
   rcases le_total t₀ t₁ with h | h
   · rw [uIcc_of_le h]
-    exact subpath_range_of_le _ _ _ h
+    exact range_subpath_of_le _ _ _ h
   · rw [uIcc_of_ge h]
-    exact subpath_range_of_ge _ _ _ h
+    exact range_subpath_of_ge _ _ _ h
 
 /-- The subpath of `γ` from `t` to `t` is just the constant path at `γ t`. -/
 @[simp]
