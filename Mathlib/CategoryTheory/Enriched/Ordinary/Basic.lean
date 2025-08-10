@@ -250,6 +250,7 @@ variable {W : Type u''} [Category.{v''} W] [MonoidalCategory W]
 local instance : EnrichedOrdinaryCategory W (TransportEnrichment F (ForgetEnrichment V D)) :=
       TransportEnrichment.enrichedOrdinaryCategory (ForgetEnrichment V D) F h
 
+/-- The functor that makes up `TransportEnrichment.forgetEnrichmentEquiv`. -/
 @[simps]
 def TransportEnrichment.forgetEnrichmentEquivFunctor :
     TransportEnrichment F (ForgetEnrichment V D) ⥤
@@ -269,6 +270,7 @@ def TransportEnrichment.forgetEnrichmentEquivFunctor :
       ← TransportEnrichment.eComp_eq, ← ForgetEnrichment.homOf_comp]
     simp [ForgetEnrichment.to, tensorHom_def' (Functor.LaxMonoidal.ε F)]
 
+/-- The inverse functor that makes up `TransportEnrichment.forgetEnrichmentEquiv`. -/
 @[simps]
 def TransportEnrichment.forgetEnrichmentEquivInverse :
     ForgetEnrichment W (TransportEnrichment F D) ⥤ TransportEnrichment F (ForgetEnrichment V D)
@@ -281,8 +283,7 @@ def TransportEnrichment.forgetEnrichmentEquivInverse :
   map_id X := by
     rw [← forgetEnrichment_id']
     congr 1
-    apply Equiv.injective (Equiv.ofBijective _
-      (h (Hom (C := D) (ForgetEnrichment.to V X) (ForgetEnrichment.to V X))))
+    apply Equiv.injective (Equiv.ofBijective _ (h _))
     simp [TransportEnrichment.eId_eq]
   map_comp {X} {Y} {Z} f g := by
     rw [← ForgetEnrichment.homOf_comp]
@@ -297,6 +298,9 @@ def TransportEnrichment.forgetEnrichmentEquivInverse :
     iterate 2 erw [← Equiv.ofBijective_apply _ (h _), Equiv.apply_symm_apply]
     simp
 
+/-- If `D` is a `V`-enriched category, then forgetting the enrichment and transporting the resulting
+enriched ordinary category along a functor `F : V ⥤ W` results in a category equivalent to
+transporting along `F` and then forgetting about the resulting `W`-enrichment. -/
 def TransportEnrichment.forgetEnrichmentEquiv : TransportEnrichment F (ForgetEnrichment V D) ≌
     ForgetEnrichment W (TransportEnrichment F D) where
   functor := forgetEnrichmentEquivFunctor _ _ h
