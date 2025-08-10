@@ -89,20 +89,20 @@ lemma exists_mem_interior_convexHull_affineBasis (hs : s ∈ 𝓝 x) :
 /-- We can intercalate a convex polytope between a compact convex set and one of its neighborhoods.
 -/
 theorem Convex.exists_subset_interior_convexHull_finset_of_isCompact
-    (hs₁ : Convex ℝ s) (hs₂ : IsCompact s) (ht : t ∈ 𝓝ˢ s) :
+  (hs₁ : Convex ℝ s) (hs₂ : IsCompact s) (ht : t ∈ 𝓝ˢ s) :
     ∃ u : Finset E, s ⊆ interior (convexHull ℝ u) ∧ convexHull ℝ u ⊆ t := by
-  have ⟨U, hU₁, hU₂, hU₃⟩ := mem_nhdsSet_iff_exists.mp ht
-  have ⟨V, hV₁, hV₂⟩ := compact_open_separated_add_left hs₂ hU₁ hU₂
-  have ⟨b, hb₁, hb₂⟩ := exists_mem_interior_convexHull_affineBasis hV₁
-  have ⟨u, hu₁, hu₂, hu₃⟩ := hs₂.elim_finite_subcover_image (b := s)
-    (c := fun x => interior (convexHull ℝ (Set.range b)) + {x})
-    (fun _ _ => isOpen_interior.add_right)
-    (fun x hx => Set.mem_iUnion₂_of_mem hx <| by simp_all)
-  lift u to Finset E using hu₂
   classical
-  exists Finset.univ.image b + u
-  rw [Finset.coe_add, Finset.coe_image, Finset.coe_univ, Set.image_univ, convexHull_add]
-  constructor
+  rcases mem_nhdsSet_iff_exists.1 ht with ⟨U, hU₁, hU₂, hU₃⟩
+  rcases compact_open_separated_add_left hs₂ hU₁ hU₂ with ⟨V, hV₁, hV₂⟩
+  rcases exists_mem_interior_convexHull_affineBasis hV₁ with ⟨b, hb₁, hb₂⟩
+  rcases hs₂.elim_finite_subcover_image (b := s)
+      (c := fun x => interior (convexHull ℝ (Set.range b)) + {x})
+      (fun _ _ => isOpen_interior.add_right)
+      (fun x hx => Set.mem_iUnion₂_of_mem hx <| by simpa using hb₁)
+    with ⟨u, hu₁, hu₂, hu₃⟩
+  lift u to Finset E using hu₂
+  refine ⟨Finset.univ.image b + u, ?_, ?_⟩
+  all_goals rw [Finset.coe_add, Finset.coe_image, Finset.coe_univ, Set.image_univ, convexHull_add]
   · grw [hu₃, ← subset_interior_add_left, Set.iUnion₂_subset_iff, ← subset_convexHull _ u.toSet]
     intros
     gcongr
