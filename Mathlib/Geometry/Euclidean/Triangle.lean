@@ -403,4 +403,19 @@ theorem dist_mul_of_eq_angle_of_dist_mul (a b c a' b' c' : P) (r : ℝ) (h : ∠
     have h2 : 0 ≤ r := nonneg_of_mul_nonneg_left h1 (dist_pos.mpr hab₁)
     exact (sq_eq_sq₀ dist_nonneg (mul_nonneg h2 dist_nonneg)).mp h'
 
+/-- **Exterior angle theorem**. -/
+theorem exterior_angle_eq_angle_add_angle  {p₁ p₂ p₃ : P} (p : P) (h_Sbtw : Sbtw ℝ p p₁ p₂) :
+ ∠ p₃ p₁ p = ∠ p₁ p₃ p₂ + ∠ p₃ p₂ p₁ := by
+  have h_pi : ∠ p p₁ p₂ = π := by
+    rw[Sbtw.angle₁₂₃_eq_pi]
+    assumption
+  have h1 : ∠ p₃ p₁ p + ∠ p₃ p₁ p₂ = π := by
+    rw [← EuclideanGeometry.angle_add_angle_eq_pi_of_angle_eq_pi p₃ h_pi]
+  have h₁₂ : p₁ ≠ p₂ := by
+    exact Ne.symm (Sbtw.right_ne h_Sbtw)
+  have h2 := angle_add_angle_add_angle_eq_pi p₃ h₁₂
+  rw[show ∠ p₃ p₁ p₂ = ∠ p₂ p₁ p₃ by rw[angle_comm], add_comm, ← h2, add_assoc] at h1
+  simp at h1
+  rw [h1]
+
 end EuclideanGeometry
