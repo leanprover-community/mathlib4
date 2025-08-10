@@ -368,7 +368,7 @@ theorem isStarProjection_iff_isIdempotentElem_and_isStarNormal :
 
 theorem isStarProjection_iff_isSymmetricProjection :
     IsStarProjection T ↔ T.IsSymmetricProjection := by
-  simp [isStarProjection_iff, LinearMap.IsSymmetricProjection,
+  simp [isStarProjection_iff, LinearMap.isSymmetricProjection_iff,
     isSelfAdjoint_iff_isSymmetric, IsIdempotentElem, End.mul_eq_comp, ← coe_comp, mul_def]
 
 open ContinuousLinearMap in
