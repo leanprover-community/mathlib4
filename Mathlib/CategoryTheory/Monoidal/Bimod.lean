@@ -204,13 +204,13 @@ noncomputable def actLeft : R.X ⊗ X P Q ⟶ X P Q :=
           simp only [Category.assoc]
           slice_lhs 1 2 => rw [associator_inv_naturality_middle]
           slice_rhs 3 4 => rw [← comp_whiskerRight, middle_assoc, comp_whiskerRight]
-          monoidal)
+          simp)
         (by
           dsimp
           slice_lhs 1 1 => rw [whiskerLeft_comp]
           slice_lhs 2 3 => rw [associator_inv_naturality_right]
           slice_lhs 3 4 => rw [whisker_exchange]
-          monoidal))
+          simp))
 
 theorem whiskerLeft_π_actLeft :
     (R.X ◁ coequalizer.π _ _) ≫ actLeft P Q =
@@ -526,7 +526,7 @@ noncomputable def invAux : P.X ⊗ (Q.tensorBimod L).X ⟶ ((P.tensorBimod Q).te
         slice_rhs 1 2 => rw [whiskerLeft_comp]
         slice_rhs 2 3 => rw [associator_inv_naturality_right]
         slice_rhs 3 4 => rw [whisker_exchange]
-        monoidal)
+        simp)
 
 /-- The underlying morphism of the inverse component of the associator isomorphism. -/
 noncomputable def inv :
