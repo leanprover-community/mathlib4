@@ -27,7 +27,7 @@ theorem exists_not_acc_lt_of_not_acc {α} {a : α} {r} (h : ¬Acc r a) : ∃ b, 
   push_neg at h
   simpa only [and_comm]
 
-theorem not_acc_iff_exists_nat_fun {α} {r : α → α → Prop} {x : α} :
+theorem not_acc_iff_exists_descending_chain {α} {r : α → α → Prop} {x : α} :
     ¬Acc r x ↔ ∃ f : ℕ → α, f 0 = x ∧ ∀ n, r (f (n + 1)) (f n) where
   mp hx := let f : ℕ → {a : α // ¬Acc r a} :=
       Nat.rec ⟨x, hx⟩ fun _ a ↦ ⟨_, (exists_not_acc_lt_of_not_acc a.2).choose_spec.1⟩
@@ -35,10 +35,18 @@ theorem not_acc_iff_exists_nat_fun {α} {r : α → α → Prop} {x : α} :
   mpr h acc := acc.rec
     (fun _x _ ih ⟨f, hf⟩ ↦ ih (f 1) (hf.1 ▸ hf.2 0) ⟨(f <| · + 1), rfl, fun _ ↦ hf.2 _⟩) h
 
-theorem acc_iff_isEmpty_nat_fun {α} {r : α → α → Prop} {x : α} :
+theorem acc_iff_isEmpty_descending_chain {α} {r : α → α → Prop} {x : α} :
     Acc r x ↔ IsEmpty { f : ℕ → α // f 0 = x ∧ ∀ n, r (f (n + 1)) (f n) } := by
   rw [← not_iff_not, not_isEmpty_iff, nonempty_subtype]
-  exact not_acc_iff_exists_nat_fun
+  exact not_acc_iff_exists_descending_chain
+
+/-- A relation is well-founded iff it doesn't have any infinite descending chain.
+
+See `RelEmbedding.wellFounded_iff_isEmpty` for a version on strict orders. -/
+theorem wellFounded_iff_isEmpty_descending_chain {α} {r : α → α → Prop} :
+    WellFounded r ↔ IsEmpty { f : ℕ → α // ∀ n, r (f (n + 1)) (f n) } where
+  mp := fun ⟨h⟩ ↦ ⟨fun ⟨f, hf⟩ ↦ (acc_iff_isEmpty_descending_chain.mp (h (f 0))).false ⟨f, rfl, hf⟩⟩
+  mpr h := ⟨fun _ ↦ acc_iff_isEmpty_descending_chain.mpr ⟨fun ⟨f, hf⟩ ↦ h.false ⟨f, hf.2⟩⟩⟩
 
 variable {α β γ : Type*}
 
@@ -99,13 +107,8 @@ theorem wellFounded_iff_has_min {r : α → α → Prop} :
   by_contra hy'
   exact hm' y hy' hy
 
-/-- A relation is well-founded iff it doesn't have any infinite decreasing sequence.
-
-See `RelEmbedding.wellFounded_iff_no_descending_seq` for a version on strict orders. -/
-theorem wellFounded_iff_no_descending_seq :
-    WellFounded r ↔ IsEmpty { f : ℕ → α // ∀ n, r (f (n + 1)) (f n) } where
-  mp := fun ⟨h⟩ ↦ ⟨fun ⟨f, hf⟩ ↦ (acc_iff_isEmpty_nat_fun.mp (h (f 0))).false ⟨f, rfl, hf⟩⟩
-  mpr h := ⟨fun _ ↦ acc_iff_isEmpty_nat_fun.mpr ⟨fun ⟨f, hf⟩ ↦ h.false ⟨f, hf.2⟩⟩⟩
+@[deprecated (since := "2025-08-10")]
+alias wellFounded_iff_no_descending_seq := wellFounded_iff_isEmpty_descending_chain
 
 open Set
 

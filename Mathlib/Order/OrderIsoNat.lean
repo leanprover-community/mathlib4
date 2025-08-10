@@ -53,7 +53,7 @@ theorem coe_natGT {f : ℕ → α} {H : ∀ n : ℕ, r (f (n + 1)) (f n)} : ⇑(
 alias exists_not_acc_lt_of_not_acc := exists_not_acc_lt_of_not_acc
 
 /-- A value is accessible iff it isn't contained in any infinite decreasing sequence. -/
-theorem acc_iff_no_decreasing_seq {x} :
+theorem acc_iff_isEmpty_subtype_mem_range {x} :
     Acc r x ↔ IsEmpty { f : ((· > ·) : ℕ → ℕ → Prop) ↪r r // x ∈ Set.range f } where
   mp acc := .mk fun ⟨f, k, hk⟩ ↦ not_acc_iff_exists_nat_fun.mpr
     ⟨(f <| k + ·), hk, fun _n ↦ f.map_rel_iff.2 (Nat.lt_succ_self _)⟩ acc
@@ -61,27 +61,37 @@ theorem acc_iff_no_decreasing_seq {x} :
     have ⟨f, hf⟩ := not_acc_iff_exists_nat_fun.mp nacc
     h.elim ⟨natGT f hf.2, 0, hf.1⟩
 
-theorem not_acc_of_decreasing_seq (f : ((· > ·) : ℕ → ℕ → Prop) ↪r r) (k : ℕ) : ¬Acc r (f k) := by
-  rw [acc_iff_no_decreasing_seq, not_isEmpty_iff]
+theorem not_acc (f : ((· > ·) : ℕ → ℕ → Prop) ↪r r) (k : ℕ) : ¬Acc r (f k) := by
+  rw [acc_iff_isEmpty_subtype_mem_range, not_isEmpty_iff]
   exact ⟨⟨f, k, rfl⟩⟩
 
-/-- A strict order relation is well-founded iff it doesn't have any infinite decreasing sequence.
+/-- A strict order relation is well-founded iff it doesn't have any infinite descending chain.
 
-See `WellFounded.wellFounded_iff_no_descending_seq` for a version which works on any relation. -/
-theorem wellFounded_iff_no_descending_seq :
+See `wellFounded_iff_isEmpty_descending_chain` for a version which works on any relation. -/
+theorem wellFounded_iff_isEmpty :
     WellFounded r ↔ IsEmpty (((· > ·) : ℕ → ℕ → Prop) ↪r r) where
-  mp := fun ⟨h⟩ ↦ ⟨fun f ↦ not_acc_of_decreasing_seq f 0 (h _)⟩
-  mpr _ := ⟨fun _x ↦ acc_iff_no_decreasing_seq.2 inferInstance⟩
+  mp := fun ⟨h⟩ ↦ ⟨fun f ↦ f.not_acc 0 (h _)⟩
+  mpr _ := ⟨fun _x ↦ acc_iff_isEmpty_subtype_mem_range.2 inferInstance⟩
 
-theorem not_wellFounded_of_decreasing_seq (f : ((· > ·) : ℕ → ℕ → Prop) ↪r r) : ¬WellFounded r := by
-  rw [wellFounded_iff_no_descending_seq, not_isEmpty_iff]
+theorem not_wellFounded (f : ((· > ·) : ℕ → ℕ → Prop) ↪r r) : ¬WellFounded r := by
+  rw [wellFounded_iff_isEmpty, not_isEmpty_iff]
   exact ⟨f⟩
+
+@[deprecated (since := "2025-08-10")]
+alias acc_iff_no_decreasing_seq := acc_iff_isEmpty_subtype_mem_range
+
+@[deprecated (since := "2025-08-10")] alias not_acc_of_decreasing_seq := not_acc
+
+@[deprecated (since := "2025-08-10")]
+alias wellFounded_iff_no_descending_seq := wellFounded_iff_isEmpty
+
+@[deprecated (since := "2025-08-10")] alias not_wellFounded_of_decreasing_seq := not_wellFounded
 
 end RelEmbedding
 
 theorem not_strictAnti_of_wellFoundedLT [Preorder α] [WellFoundedLT α] (f : ℕ → α) :
     ¬ StrictAnti f := fun hf ↦
-  (RelEmbedding.natGT f (fun n ↦ hf (by simp))).not_wellFounded_of_decreasing_seq wellFounded_lt
+  (RelEmbedding.natGT f (fun n ↦ hf (by simp))).not_wellFounded wellFounded_lt
 
 theorem not_strictMono_of_wellFoundedGT [Preorder α] [WellFoundedGT α] (f : ℕ → α) :
     ¬ StrictMono f :=
@@ -197,7 +207,7 @@ theorem wellFoundedGT_iff_monotone_chain_condition' [Preorder α] :
   refine ⟨fun h a => ?_, fun h => ?_⟩
   · obtain ⟨x, ⟨n, rfl⟩, H⟩ := h.wf.has_min _ (Set.range_nonempty a)
     exact ⟨n, fun m _ => H _ (Set.mem_range_self _)⟩
-  · rw [WellFoundedGT, isWellFounded_iff, RelEmbedding.wellFounded_iff_no_descending_seq]
+  · rw [WellFoundedGT, isWellFounded_iff, RelEmbedding.wellFounded_iff_isEmpty]
     refine ⟨fun a => ?_⟩
     obtain ⟨n, hn⟩ := h (a.swap : _ →r _).toOrderHom
     exact hn n.succ n.lt_succ_self.le ((RelEmbedding.map_rel_iff _).2 n.lt_succ_self)
@@ -281,7 +291,7 @@ theorem exists_covBy_seq_of_wellFoundedLT_wellFoundedGT (α) [Preorder α]
     exact hnext hn
   have H : ∃ n, IsMax (a n) := by
     by_contra!
-    exact (RelEmbedding.natGT a fun n ↦ (cov n (this n)).1).not_wellFounded_of_decreasing_seq wfg.wf
+    exact (RelEmbedding.natGT a fun n ↦ (cov n (this n)).1).not_wellFounded wfg.wf
   exact ⟨_, wellFounded_lt.min_mem _ H, fun i h ↦ cov _ fun h' ↦ wellFounded_lt.not_lt_min _ H h' h⟩
 
 theorem exists_covBy_seq_of_wellFoundedLT_wellFoundedGT_of_le {α : Type*} [PartialOrder α]
