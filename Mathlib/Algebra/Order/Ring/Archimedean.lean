@@ -180,7 +180,7 @@ noncomputable instance : LinearOrderedAddCommGroupWithTop (ArchimedeanClass M) w
   neg_top := by simp [← mk_zero, ← mk_inv]
   add_neg_cancel x h := by
     induction x with | mk x
-    simp [← mk_inv, ← mk_mul, mul_inv_cancel₀ (show x ≠ 0 by simpa using h)]
+    simp [← mk_inv, ← mk_mul, mul_inv_cancel₀ (mk_eq_top_iff.not.1 h)]
   zsmul n x := n • x
   zsmul_zero' x := by induction x with | mk x => rw [← mk_zpow, zpow_zero, mk_one]
   zsmul_succ' := zsmul_succ'
