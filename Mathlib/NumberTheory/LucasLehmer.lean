@@ -3,17 +3,11 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Alastair Irving, Kim Morrison, Ainsley Pahljina
 -/
-import Mathlib.Algebra.CharP.Lemmas
-import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.NumberTheory.Fermat
-import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
 import Mathlib.RingTheory.Fintype
-import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.Ring
-import Mathlib.Tactic.Zify
 
 /-!
-# The Lucas-Lehmer test for Mersenne primes.
+# The Lucas-Lehmer test for Mersenne primes
 
 We define `lucasLehmerResidue : Π p : ℕ, ZMod (2^p - 1)`, and
 prove `lucasLehmerResidue p = 0 ↔ Prime (mersenne p)`.
@@ -104,6 +98,41 @@ theorem one_lt_mersenne {p : ℕ} : 1 < mersenne p ↔ 1 < p :=
 theorem succ_mersenne (k : ℕ) : mersenne k + 1 = 2 ^ k := by
   rw [mersenne, tsub_add_cancel_of_le]
   exact one_le_pow₀ (by norm_num)
+
+lemma mersenne_mod_four {n : ℕ} (h : 2 ≤ n) : mersenne n % 4 = 3 := by
+  induction n, h using Nat.le_induction with
+  | base => rfl
+  | succ _ _ _ => rw [mersenne_succ]; omega
+
+lemma mersenne_mod_three {n : ℕ} (odd : Odd n) (h : 3 ≤ n) : mersenne n % 3 = 1 := by
+  obtain ⟨k, rfl⟩ := odd
+  replace h : 1 ≤ k := by omega
+  induction k, h using Nat.le_induction with
+  | base => rfl
+  | succ j _ _ =>
+    rw [mersenne_succ, show 2 * (j + 1) = 2 * j + 1 + 1 by omega, mersenne_succ]
+    omega
+
+lemma mersenne_mod_eight {n : ℕ} (h : 3 ≤ n) : mersenne n % 8 = 7 := by
+  induction n, h using Nat.le_induction with
+  | base => rfl
+  | succ _ _ _ => rw [mersenne_succ]; omega
+
+/-- If `2^p - 1` is prime then 2 is a square mod `2^p - 1`. -/
+lemma legendreSym_mersenne_two {p : ℕ} [Fact (mersenne p).Prime] (hp : 3 ≤ p) :
+    legendreSym (mersenne p) 2 = 1 := by
+  have := mersenne_mod_eight hp
+  rw [legendreSym.at_two (by omega), ZMod.χ₈_nat_eq_if_mod_eight]
+  omega
+
+/-- If `2^p - 1` is prime then 3 is not a square mod `2^p - 1`. -/
+lemma legendreSym_mersenne_three {p : ℕ} [Fact (mersenne p).Prime] (hp : 3 ≤ p) (odd : Odd p) :
+    legendreSym (mersenne p) 3 = -1 := by
+  rw [(by rfl : (3 : ℤ) = (3 : ℕ)), legendreSym.quadratic_reciprocity_three_mod_four (by norm_num)
+    (mersenne_mod_four (by omega)),
+    legendreSym.mod]
+  rw_mod_cast [mersenne_mod_three odd hp]
+  simp
 
 namespace LucasLehmer
 
@@ -208,15 +237,14 @@ def q (p : ℕ) : ℕ+ :=
 -- if it were easy to make the definition,
 -- cardinality calculations would be somewhat more involved, too.
 /-- We construct the ring `X q` as ℤ/qℤ + √3 ℤ/qℤ. -/
-def X (q : ℕ+) : Type :=
+def X (q : ℕ) : Type :=
   ZMod q × ZMod q
 
 namespace X
 
-variable {q : ℕ+}
+variable {q : ℕ}
 
 instance : Inhabited (X q) := inferInstanceAs (Inhabited (ZMod q × ZMod q))
-instance : Fintype (X q) := inferInstanceAs (Fintype (ZMod q × ZMod q))
 instance : DecidableEq (X q) := inferInstanceAs (DecidableEq (ZMod q × ZMod q))
 instance : AddCommGroup (X q) := inferInstanceAs (AddCommGroup (ZMod q × ZMod q))
 
@@ -328,28 +356,17 @@ theorem coe_mul (n m : ℤ) : ((n * m : ℤ) : X q) = (n : X q) * (m : X q) := b
 @[norm_cast]
 theorem coe_natCast (n : ℕ) : ((n : ℤ) : X q) = (n : X q) := by ext <;> simp
 
-/-- The cardinality of `X` is `q^2`. -/
-theorem card_eq : Fintype.card (X q) = q ^ 2 := by
-  dsimp [X]
-  rw [Fintype.card_prod, ZMod.card q, sq]
-
-/-- There are strictly fewer than `q^2` units, since `0` is not a unit. -/
-nonrec theorem card_units_lt (w : 1 < q) : Fintype.card (X q)ˣ < q ^ 2 := by
-  have : Fact (1 < (q : ℕ)) := ⟨w⟩
-  convert card_units_lt (X q)
-  rw [card_eq]
-
 /-- We define `ω = 2 + √3`. -/
 def ω : X q := (2, 1)
 
 /-- We define `ωb = 2 - √3`, which is the inverse of `ω`. -/
 def ωb : X q := (2, -1)
 
-theorem ω_mul_ωb (q : ℕ+) : (ω : X q) * ωb = 1 := by
+theorem ω_mul_ωb : (ω : X q) * ωb = 1 := by
   dsimp [ω, ωb]
   ext <;> simp; ring
 
-theorem ωb_mul_ω (q : ℕ+) : (ωb : X q) * ω = 1 := by
+theorem ωb_mul_ω : (ωb : X q) * ω = 1 := by
   rw [mul_comm, ω_mul_ωb]
 
 /-- A closed form for the recurrence relation. -/
@@ -390,44 +407,42 @@ instance : Coe (ZMod ↑q) (X q) where
   coe := ZMod.castHom dvd_rfl (X q)
 
 /-- If `3` is not a square mod `q` then `(1 + α) ^ q = 1 - α` -/
-lemma one_add_α_pow_q [Fact q.Prime] (odd : Odd (q : ℕ)) (leg3 : legendreSym q 3 = -1) :
-    (1 + (α : X q)) ^ (q : ℕ) = 1 - (α : X q) := by
-  rcases odd with ⟨k, hk⟩
-  have : q / 2 = k := by rw [hk, mul_add_div (by norm_num)]; simp
-  rw [add_pow_expChar, one_pow, hk, α_pow, ← this]
-  have : (3 : X q) = (3 : ZMod q) := by rw [map_ofNat]
-  rw [this, ← RingHom.map_pow]
-  have leg := legendreSym.eq_pow q 3
-  rw_mod_cast [← leg, leg3]
-  simp
-  ring
+lemma one_add_α_pow_q [Fact q.Prime] (odd : Odd q) (leg3 : legendreSym q 3 = -1) :
+    (1 + α : X q) ^ q = 1 - α := by
+  obtain ⟨k, rfl⟩ := odd
+  let q := 2 * k + 1
+  have : (3 ^ k : ZMod q) = -1 := by
+    simpa [leg3, mul_add_div, eq_comm] using legendreSym.eq_pow (2 * k + 1) 3
+  rw [add_pow_expChar, α_pow, show (3 : X q) = (3 : ZMod q) by rw [map_ofNat], ← map_pow, this,
+    map_neg]
+  simp [sub_eq_add_neg]
 
 /-- If `3` is not a square then `(1 + α) ^ (q + 1) = -2`. -/
-lemma one_add_α_pow_q_succ [Fact q.Prime] (odd : Odd (q : ℕ))
-    (leg3 : legendreSym q 3 = -1) : (1 + (α : X q)) ^ (q + 1 : ℕ) = -2 := by
+lemma one_add_α_pow_q_succ [Fact q.Prime] (odd : Odd q) (leg3 : legendreSym q 3 = -1) :
+    (1 + α : X q) ^ (q + 1) = -2 := by
   rw [pow_succ, one_add_α_pow_q odd leg3, mul_comm, ← _root_.sq_sub_sq, α_sq]
   norm_num
 
 /-- If `3` is not a square then `(2 * ω) ^ ((q + 1) / 2) = -2`. -/
-lemma two_mul_ω_pow [Fact q.Prime] (odd : Odd (q : ℕ))
-    (leg3 : legendreSym q 3 = -1) : (2 * ω : X q) ^ (((q : ℕ) + 1)/ 2) = -2 := by
+lemma two_mul_ω_pow [Fact q.Prime] (odd : Odd q) (leg3 : legendreSym q 3 = -1) :
+    (2 * ω : X q) ^ ((q + 1) / 2) = -2 := by
   rw [← one_add_α_sq, ← pow_mul]
-  have : 2 * (((q : ℕ) + 1) / 2) = q + 1 := by
+  have : 2 * ((q + 1) / 2) = q + 1 := by
     apply Nat.mul_div_cancel'
     rw [← even_iff_two_dvd]
     exact Odd.add_one odd
   rw [this, one_add_α_pow_q_succ odd leg3]
 
 /-- If 3 is not a square and 2 is square then $\omega^{(q+1)/2}=-1$. -/
-lemma pow_ω [Fact q.Prime] (odd : Odd (q : ℕ))
+lemma pow_ω [Fact q.Prime] (odd : Odd q)
     (leg3 : legendreSym q 3 = -1)
     (leg2 : legendreSym q 2 = 1) :
-    (ω : X q) ^ (((q : ℕ) + 1)/ 2) = -1 := by
-  have pow2 : (2 : ZMod q) ^ (((q : ℕ) + 1) / 2) = 2 := by
+    (ω : X q) ^ ((q + 1) / 2) = -1 := by
+  have pow2 : (2 : ZMod q) ^ ((q + 1) / 2) = 2 := by
     obtain ⟨_, _⟩ := odd
-    rw [(by omega : ((q : ℕ) + 1) / 2 = q / 2 +1), pow_succ]
+    rw [(by omega : (q + 1) / 2 = q / 2 + 1), pow_succ]
     have leg := legendreSym.eq_pow q 2
-    have : (2 : ZMod (q : ℕ)) = ((2 : ℤ) : ZMod (q : ℕ)) := by norm_cast
+    have : (2 : ZMod q) = ((2 : ℤ) : ZMod q) := by norm_cast
     rw [this, ← leg, leg2]
     ring
   have := two_mul_ω_pow odd leg3
@@ -435,39 +450,38 @@ lemma pow_ω [Fact q.Prime] (odd : Odd (q : ℕ))
   have coe : (2 : X q) = (2 : ZMod q) := by rw [map_ofNat]
   rw [coe, ← RingHom.map_pow, pow2, ← coe,
     (by ring : (-2 : X q) = 2 * -1)] at this
-  have unit : IsUnit (2 : X q) := by
-    refine ⟨⟨(2 : X q), ((((q : ℕ) + 1) / 2) : ℕ), ?_, ?_⟩, ?_⟩
-    · norm_cast
-      rw [Nat.mul_div_cancel']
-      · simp
-      · rw [← even_iff_two_dvd]
-        exact Odd.add_one odd
-    · norm_cast
-      rw [Nat.div_mul_cancel]
-      · simp
-      · rw [← even_iff_two_dvd]
-        exact Odd.add_one odd
-    · rfl
-  exact unit.mul_right_inj.mp this
+  refine (isUnit_of_mul_eq_one (2 : X q) ((q + 1) / 2 : ℕ) ?_).mul_left_cancel this
+  norm_cast
+  simp [Nat.mul_div_cancel' odd.add_one.two_dvd]
 
 /-- The final evaluation needed to establish the Lucas-Lehmer necessity. -/
-lemma ω_pow_trace [Fact q.Prime] (odd : Odd (q : ℕ))
+lemma ω_pow_trace [Fact q.Prime] (odd : Odd q)
     (leg3 : legendreSym q 3 = -1)
     (leg2 : legendreSym q 2 = 1)
-    (hq4 : 4 ∣ (q : ℕ) + 1) :
-    (ω : X q) ^ (((q : ℕ) + 1)/ 4) + (ωb : X q) ^ (((q : ℕ) + 1)/ 4) = 0 := by
-  have : (ω : X q) ^ (((q : ℕ) + 1) / 2) * ωb ^ (((q : ℕ) + 1) / 4)
-    = -ωb ^ (((q : ℕ) + 1) / 4) := by
+    (hq4 : 4 ∣ q + 1) :
+    (ω : X q) ^ ((q + 1) / 4) + ωb ^ ((q + 1) / 4) = 0 := by
+  have : (ω : X q) ^ ((q + 1) / 2) * ωb ^ ((q + 1) / 4) = -ωb ^ ((q + 1) / 4) := by
     rw [pow_ω odd leg3 leg2]
     ring
-
-  have div4 : ((q : ℕ) + 1) / 2 = ((q : ℕ) + 1) / 4 + ((q : ℕ) + 1) / 4 := by
-    rcases hq4 with ⟨k, hk⟩
-    rw [hk]
-    omega
+  have div4 : (q + 1) / 2 = (q + 1) / 4 + (q + 1) / 4 := by rcases hq4 with ⟨k, hk⟩; omega
   rw [div4, pow_add, mul_assoc, ← mul_pow, ω_mul_ωb, one_pow, mul_one] at this
   rw [this]
   ring
+
+variable [NeZero q]
+
+instance : Fintype (X q) := inferInstanceAs (Fintype (ZMod q × ZMod q))
+
+/-- The cardinality of `X` is `q^2`. -/
+theorem card_eq : Fintype.card (X q) = q ^ 2 := by
+  dsimp [X]
+  rw [Fintype.card_prod, ZMod.card q, sq]
+
+/-- There are strictly fewer than `q^2` units, since `0` is not a unit. -/
+nonrec theorem card_units_lt (w : 1 < q) : Fintype.card (X q)ˣ < q ^ 2 := by
+  have : Fact (1 < (q : ℕ)) := ⟨w⟩
+  convert card_units_lt (X q)
+  rw [card_eq]
 
 end X
 
@@ -532,8 +546,8 @@ theorem ω_pow_eq_one (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
 def ωUnit (p : ℕ) : Units (X (q p)) where
   val := ω
   inv := ωb
-  val_inv := ω_mul_ωb _
-  inv_val := ωb_mul_ω _
+  val_inv := ω_mul_ωb
+  inv_val := ωb_mul_ω
 
 @[simp]
 theorem ωUnit_coe (p : ℕ) : (ωUnit p : X (q p)) = ω :=
@@ -565,7 +579,7 @@ theorem order_ineq (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
   calc
     2 ^ (p' + 2) = orderOf (ωUnit (p' + 2)) := (order_ω p' h).symm
     _ ≤ Fintype.card (X (q (p' + 2)))ˣ := orderOf_le_card_univ
-    _ < (q (p' + 2) : ℕ) ^ 2 := card_units_lt (Nat.lt_of_succ_lt (two_lt_q _))
+    _ < q (p' + 2) ^ 2 := card_units_lt (Nat.lt_of_succ_lt (two_lt_q _))
 
 end LucasLehmer
 
@@ -574,108 +588,32 @@ export LucasLehmer (LucasLehmerTest lucasLehmerResidue)
 open LucasLehmer
 
 theorem lucas_lehmer_sufficiency (p : ℕ) (w : 1 < p) : LucasLehmerTest p → (mersenne p).Prime := by
-  let p' := p - 2
-  have z : p = p' + 2 := (tsub_eq_iff_eq_add_of_le w.nat_succ_le).mp rfl
+  set p' := p - 2 with hp'
+  clear_value p'
+  obtain rfl : p = p' + 2 := by omega
   have w : 1 < p' + 2 := Nat.lt_of_sub_eq_succ rfl
   contrapose
   intro a t
-  rw [z] at a
-  rw [z] at t
   have h₁ := order_ineq p' t
   have h₂ := Nat.minFac_sq_le_self (mersenne_pos.2 (Nat.lt_of_succ_lt w)) a
   have h := lt_of_lt_of_le h₁ h₂
   exact not_lt_of_ge (Nat.sub_le _ _) h
 
-lemma mersenne_mod_four {n : ℕ} (h : 2 ≤ n) : mersenne n % 4 = 3 := by
-  induction n, h using Nat.le_induction with
-  | base =>  rw [mersenne]; norm_num
-  | succ _ _ _ =>
-    rw [mersenne_succ]
-    omega
-
-lemma mersenne_mod_three {n : ℕ} (odd : Odd n) (h : 3 ≤ n) : mersenne n % 3 = 1 := by
-  rcases odd with ⟨i, hi⟩
-  rw [hi]
-  replace h : 1 ≤ i := by omega
-  clear hi
-  induction i, h using Nat.le_induction with
-  | base =>
-    dsimp[mersenne]
-  | succ j _ _ =>
-    rw [mersenne_succ, (by ring : 2 * (j + 1) = 2 * j + 1 + 1), mersenne_succ]
-    omega
-
-lemma mersenne_mod_eight {n : ℕ} (h : 3 ≤ n) : mersenne n % 8 = 7 := by
-  induction n, h using Nat.le_induction with
-  | base =>
-    dsimp [mersenne]
-  | succ _ _ _ =>
-    rw [mersenne_succ]
-    omega
-
-/-- If `2^p - 1` is prime then 2 is a square mod `2^p - 1`. -/
-lemma legendreSym_mersenne_two {p : ℕ} [Fact (mersenne p).Prime] (hp : 3 ≤ p) :
-    legendreSym (mersenne p) 2 = 1 := by
-  rw_mod_cast [legendreSym.at_two]
-  · rw [ZMod.χ₈_nat_eq_if_mod_eight]
-    have := mersenne_mod_eight hp
-    omega
-  · have : 7 ≤ mersenne p := mersenne_le_mersenne.mpr hp
-    omega
-
-/-- If `2^p - 1` is prime then 3 is not a square mod `2^p - 1`. -/
-lemma legendreSym_mersenne_three {p : ℕ} [Fact (mersenne p).Prime] (hp : 3 ≤ p) (odd : Odd p) :
-    legendreSym (mersenne p) 3 = -1 := by
-  have : Fact ((3 : ℕ).Prime) := ⟨Nat.prime_three⟩
-  rw [(by rfl : (3 : ℤ) = (3 : ℕ))]
-  rw [legendreSym.quadratic_reciprocity_three_mod_four (by norm_num)]
-  · rw [legendreSym.mod]
-    rw_mod_cast [mersenne_mod_three odd hp]
-    simp
-  · exact mersenne_mod_four (by omega)
-
 /-- If `2^p-1` is prime then the Lucas-Lehmer test holds, `s(p-2) % (2^p-1) = 0. -/
-theorem lucas_lehmer_necessity (p : ℕ) (w : 3 ≤ p) : (mersenne p).Prime → LucasLehmerTest p := by
-  let p' := p - 2
-  have z : p = p' + 2 := by omega
-  intro hp
-  have pprime := hp.of_mersenne
-  have odd : Odd p := by
-    rcases pprime.eq_two_or_odd' with h|h
-    · absurd w
-      omega
-    · assumption
+theorem lucas_lehmer_necessity (p : ℕ) (w : 3 ≤ p) (hp : (mersenne p).Prime) :
+    LucasLehmerTest p := by
+  have : Fact (mersenne p).Prime := ⟨‹_›⟩
+  set p' := p - 2 with hp'
+  clear_value p'
+  obtain rfl : p = p' + 2 := by omega
   dsimp [LucasLehmerTest, lucasLehmerResidue]
-  have pos : 0 < 2^(p' + 2) - 1 := by
-    rw [← z]
-    exact hp.pos
-  have := X.fst_intCast (s (p' + 2 - 2)) (q := ⟨_,pos⟩)
-  rw [z, sZMod_eq_s p', ← this, X.closed_form, add_tsub_cancel_right]
-  have : Fact (↑⟨2 ^ (p' + 2) - 1, pos⟩ : ℕ+).Prime := by
-    refine ⟨?_⟩
-    unfold PNat.Prime
-    rwa [PNat.mk_coe, ← z, ← mersenne]
-  have : Fact (mersenne (p' + 2)).Prime := by
-    refine ⟨?_⟩
-    rwa [← z]
-  rw [z] at w odd
-  have := X.ω_pow_trace (q := ⟨_, pos⟩) ?_
-    (legendreSym_mersenne_three w odd) (legendreSym_mersenne_two w) ?_
-  · simp only [PNat.mk_coe] at this
-    have other : (2 ^ (p' + 2) - 1 + 1) / 4 = 2 ^ p' := by
-      rw [Nat.sub_add_cancel, pow_add,
-        (by norm_num : 2 ^ 2 = 4), mul_div_cancel_right₀ _ (by norm_num)]
-      exact Nat.one_le_two_pow
-    rw [other] at this
-    rw [this]
-    simp
-  · simp only [PNat.mk_coe]
-    apply mersenne_odd.mpr
-    omega
-  · simp only [PNat.mk_coe]
-    use 2 ^ p'
-    rw [mul_comm, (by norm_num : 4 = 2^2), ← pow_add]
-    apply succ_mersenne
+  rw [sZMod_eq_s p', ← X.fst_intCast, X.closed_form, add_tsub_cancel_right]
+  have := X.ω_pow_trace (q := mersenne (p' + 2)) (by simp)
+    (legendreSym_mersenne_three w <| hp.of_mersenne.odd_of_ne_two (by omega))
+    (legendreSym_mersenne_two w) (by simp [pow_add])
+  rw [succ_mersenne, pow_add, show 2 ^ 2 = 4 by norm_num, mul_div_cancel_right₀ _ (by norm_num)]
+    at this
+  simp [this]
 
 namespace LucasLehmer
 
@@ -722,7 +660,7 @@ theorem sModNat_eq_sMod (p k : ℕ) (hp : 2 ≤ p) : (sModNat (2 ^ p - 1) k : �
       Int.add_emod_right, ← sub_eq_add_neg]
 
 /-- Tail-recursive version of `sModNat`. -/
-def sModNatTR (q : ℕ) (k : Nat) : ℕ :=
+def sModNatTR (q k : ℕ) : ℕ :=
   go k (4 % q)
 where
   /-- Helper function for `sMod''`. -/
@@ -734,7 +672,7 @@ where
 Generalization of `sModNat` with arbitrary base case,
 useful for proving `sModNatTR` and `sModNat` agree.
 -/
-def sModNat_aux (b : ℕ) (q : ℕ) : ℕ → ℕ
+def sModNat_aux (b q : ℕ) : ℕ → ℕ
   | 0 => b
   | i + 1 => (sModNat_aux b q i ^ 2 + (q - 2)) % q
 
@@ -743,7 +681,7 @@ theorem sModNat_aux_eq (q k : ℕ) : sModNat_aux (4 % q) q k = sModNat q k := by
   | zero => rfl
   | succ k ih => rw [sModNat_aux, ih, sModNat, ← ih]
 
-theorem sModNatTR_eq_sModNat (q : ℕ) (i : ℕ) : sModNatTR q i = sModNat q i := by
+theorem sModNatTR_eq_sModNat (q i : ℕ) : sModNatTR q i = sModNat q i := by
   rw [sModNatTR, helper, sModNat_aux_eq]
 where
   helper b q k : sModNatTR.go q k b = sModNat_aux b q k := by
