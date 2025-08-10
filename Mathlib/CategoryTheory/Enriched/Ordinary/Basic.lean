@@ -217,9 +217,12 @@ variable {V} {W : Type u''} [Category.{v''} W] [MonoidalCategory W]
 
 instance : Category (TransportEnrichment F C) := inferInstanceAs (Category C)
 
+/-- If `C` is an ordinary enriched category, the category structure on `TransportEnrichment F C`
+is trivially equivalent to the one on `C` itself. -/
+def TransportEnrichment.ofOrdinaryEnrichedCategoryEquiv : TransportEnrichment F C ≌ C :=
+  Equivalence.refl
+
 open EnrichedCategory
-
-
 
 /-- If for a lax monoidal functor `F : V ⥤ W` the canonical function
 `(𝟙_ V ⟶ v) → (𝟙_ W ⟶ F.obj v)` is bijective, and `C` is an enriched ordinary category on `V`,
@@ -232,6 +235,8 @@ noncomputable def TransportEnrichment.enrichedOrdinaryCategory
   homEquiv {X Y} := (eHomEquiv V (C := C)).trans <| Equiv.ofBijective _ (h (Hom (C := C) X Y))
   homEquiv_comp f g := by
     simp [eHomEquiv_comp, eComp_eq, tensorHom_def (Functor.LaxMonoidal.ε F), unitors_inv_equal]
+
+
 
 attribute [local instance] TransportEnrichment.enrichedOrdinaryCategory
 
