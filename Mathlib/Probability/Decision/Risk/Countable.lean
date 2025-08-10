@@ -72,6 +72,8 @@ lemma bayesRiskPrior_countable' [Countable 𝓨] [MeasurableSingletonClass 𝓨]
       = ⨅ (κ : Kernel 𝓧 𝓨) (_ : IsMarkovKernel κ), ∑' y, ∫⁻ θ, ℓ θ y * (κ ∘ₘ P θ) {y} ∂π := by
   simp [bayesRiskPrior, bayesianRisk_countable' hl]
 
+section Const
+
 lemma bayesianRisk_const_of_fintype [Fintype 𝓨] [MeasurableSingletonClass 𝓨]
     (hℓ : Measurable (Function.uncurry ℓ)) (μ : Measure 𝓧) (κ : Kernel 𝓧 𝓨) (π : Measure Θ) :
     bayesianRisk ℓ (Kernel.const Θ μ) κ π = ∑ y, ∫⁻ θ, ℓ θ y * (κ ∘ₘ μ) {y} ∂π := by
@@ -100,5 +102,7 @@ lemma bayesRiskPrior_const_of_fintype [Nonempty 𝓨] [Fintype 𝓨] [Measurable
     simp only [lintegral_fintype]
     congr with y
     rw [lintegral_mul_const _ (by fun_prop)]
+
+end Const
 
 end ProbabilityTheory
