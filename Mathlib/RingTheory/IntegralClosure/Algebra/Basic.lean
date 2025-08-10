@@ -236,14 +236,14 @@ variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
 variable (B : Type*) [CommRing B] [Algebra R B]
 
 open scoped TensorProduct in
-lemma IsIntegral.base_change [Algebra.IsIntegral R A] :
+lemma Algebra.IsIntegral.base_change [Algebra.IsIntegral R A] :
     Algebra.IsIntegral B (B ⊗[R] A) := by
   refine ⟨fun x => ?_⟩
   induction x using TensorProduct.induction_on with
   | zero => exact isIntegral_zero
   | tmul b a =>
     obtain ⟨p, hp_monic, hp_eval⟩ := Algebra.IsIntegral.isIntegral (R := R) a
-    have a_int : IsIntegral B ((1 : B) ⊗ₜ[R] a) := by
+    have ha : IsIntegral B ((1 : B) ⊗ₜ[R] a) := by
       refine ⟨p.map (algebraMap R B), hp_monic.map (algebraMap R B), eval₂_map (p := p)
         (algebraMap R B) _ ((1 : B) ⊗ₜ[R] a) ▸ Eq.symm ?_⟩
       have diamond := (IsScalarTower.algebraMap_eq R B (B ⊗[R] A)) ▸
@@ -251,8 +251,8 @@ lemma IsIntegral.base_change [Algebra.IsIntegral R A] :
       rw [diamond, ←map_zero (@algebraMap A (B ⊗[R] A) _ _ Algebra.TensorProduct.rightAlgebra),
         ←hp_eval]
       exact hom_eval₂ _ _ _ a
-    have b_int : IsIntegral B (b ⊗ₜ[R] (1 : A)) := isIntegral_algebraMap
-    simpa only [Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul] using b_int.mul a_int
+    have hb : IsIntegral B (b ⊗ₜ[R] (1 : A)) := isIntegral_algebraMap
+    simpa only [Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul] using hb.mul ha
   | add _ _ hx hy => exact hx.add hy
 
 end BaseChange
