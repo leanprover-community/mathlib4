@@ -61,7 +61,7 @@ theorem opContinuousLinearEquiv_isometry
 
 theorem opLinearEquiv_adjoint [FiniteDimensional 𝕜 H] :
     LinearMap.adjoint (MulOpposite.opLinearEquiv 𝕜 (M:=H)).toLinearMap
-      = (MulOpposite.opLinearEquiv 𝕜 (M:=H)).symm.toLinearMap := by
+      = (MulOpposite.opLinearEquiv 𝕜 (M:=H)).symm.toLinearMap :=
   have := FiniteDimensional.complete 𝕜 H
   calc _ = (ContinuousLinearMap.adjoint
       (MulOpposite.opContinuousLinearEquiv 𝕜 (M:=H)).toContinuousLinearMap).toLinearMap := rfl
