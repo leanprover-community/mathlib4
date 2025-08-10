@@ -667,15 +667,7 @@ def CokernelCofork.IsColimit.ofEpiOfIsZero {X Y : C} {f : X ⟶ Y} (c : Cokernel
     (fun _ _ _ => h.eq_of_src _ _)
 
 lemma CokernelCofork.IsColimit.isIso_π {X Y : C} {f : X ⟶ Y} (c : CokernelCofork f)
-    (hc : IsColimit c) (hf : f = 0) : IsIso c.π := by
-  let e : c.pt ≅ Y := IsColimit.coconePointUniqueUpToIso hc
-    (CokernelCofork.IsColimit.ofId (f : X ⟶ Y) hf)
-  have eq : c.π ≫ e.hom = 𝟙 Y := Cofork.IsColimit.π_desc hc
-  haveI : IsIso (c.π ≫ e.hom) := by
-    rw [eq]
-    dsimp
-    infer_instance
-  exact IsIso.of_isIso_comp_right c.π e.hom
+    (hc : IsColimit c) (hf : f = 0) : IsIso c.π := isIso_colimit_cocone_parallelPair_of_eq hf hc
 
 /-- If `c` is a colimit cokernel cofork for `f : X ⟶ Y`, `e : Y ≅ Y'` and `f' : X' ⟶ Y` is a
 morphism, then there is a colimit cokernel cofork for `f'` with the same point as `c` if for any
