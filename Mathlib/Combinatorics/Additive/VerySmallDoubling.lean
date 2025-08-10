@@ -326,15 +326,12 @@ theorem doubling_lt_three_halves (h : #(A * A) < (3 / 2 : ℚ) * #A) :
 /-! ### Doubling strictly less than `φ` -/
 
 omit [DecidableEq G] in
-private lemma rightCoset_eq_of_mem {H : Subgroup G} {c : Set G} {x : G}
-    (hc: c ∈ orbit Gᵐᵒᵖ (H : Set G)) (hx : x ∈ c) : c = H <• x := by
-  rw [mem_orbit_iff] at hc
-  obtain ⟨a', ha⟩ := hc
-  let a := a'.unop
-  have ha : c = H <• a := by exact id (Eq.symm ha)
-  rw [ha, mem_rightCoset_iff] at hx
-  rw [← rightCoset_mem_rightCoset H hx, smul_smul] at ha
-  simp_all only [op_mul, op_inv, mul_inv_cancel_left, SetLike.mem_coe]
+private lemma op_smul_eq_of_mem {H : Subgroup G} {c : Set G} {x : G}
+    (hc : c ∈ orbit Gᵐᵒᵖ (H : Set G)) (hx : x ∈ c) : H <• x = c := by
+  obtain ⟨⟨a⟩, rfl⟩ := hc
+  change _ = _ <• _
+  rw [eq_comm, smul_eq_iff_eq_inv_smul, ← op_inv, op_smul_op_smul, rightCoset_mem_rightCoset]
+  rwa [← op_smul_eq_mul, op_inv, ← SetLike.mem_coe, ← Set.mem_smul_set_iff_inv_smul_mem]
 
 /-- Underlying structure for the set of representatives of a finite set of right cosets -/
 private structure RCosRepFin (G : Type*) [Group G] [DecidableEq G] where
@@ -388,7 +385,7 @@ private noncomputable def rCosRepFin (H : Subgroup G) [Fintype H] {A : Finset G}
         apply Classical.choose_spec at hc₂
         rw [← hc₁c₂] at hc₂
         exact Set.mem_of_mem_inter_left hc₂
-      rw [rightCoset_eq_of_mem hc₁.1 s_mem_c₁, rightCoset_eq_of_mem hc₂.1 s_mem_c₂]
+      rw [← op_smul_eq_of_mem hc₁.1 s_mem_c₁, ← op_smul_eq_of_mem hc₂.1 s_mem_c₂]
 
     exact Finite.Set.finite_of_finite_image preZ inj_f_preZ
 
@@ -411,7 +408,7 @@ private noncomputable def rCosRepFin (H : Subgroup G) [Fintype H] {A : Finset G}
   have toZ_comp_chooseZ'_mem_self {c : Set G} (hc : c ∈ preZ')
       : toZ (chooseZ' c) ∈ c := by
     unfold toZ
-    nth_rw 1 [rightCoset_eq_of_mem ((Set.Finite.mem_toFinset _).mp hc).1 (chooseZ'_spec _ hc).1]
+    nth_rw 1 [← op_smul_eq_of_mem ((Set.Finite.mem_toFinset _).mp hc).1 (chooseZ'_spec _ hc).1]
     apply mem_rightCoset
     apply H.inv_mem
     exact toH_mem_H _ (mem_image_of_mem chooseZ' hc)
@@ -498,18 +495,18 @@ private lemma card_mul_rightCosetRepresentingFinset_eq_mul_card (H : Subgroup G)
   have hcz₃ : z ∈ cz := by simp only [← hz'₂, ← hcz₂, rcrf.toZ_comp_chooseZ'_mem_self hcz₁]
   change cz ∈ rcrf.fin_preZ.toFinset at hcz₁
   rw [Set.Finite.mem_toFinset rcrf.fin_preZ] at hcz₁
-  have hcz₄ := rightCoset_eq_of_mem hcz₁.1 hcz₃
+  have hcz₄ := op_smul_eq_of_mem hcz₁.1 hcz₃
 
   obtain ⟨ct, hct₁, hct₂⟩ := ht'₁
   have hct₃ : t ∈ ct := by simp only [← ht'₂, ← hct₂, rcrf.toZ_comp_chooseZ'_mem_self hct₁]
   change ct ∈ rcrf.fin_preZ.toFinset at hct₁
   rw [Set.Finite.mem_toFinset rcrf.fin_preZ] at hct₁
-  have hct₄ := rightCoset_eq_of_mem hct₁.1 hct₃
+  have hct₄ := op_smul_eq_of_mem hct₁.1 hct₃
 
   rw [← inv_mul_eq_iff_eq_mul, ← mul_assoc] at hyp
   rw [← hyp, op_mul, ← smul_smul, rightCoset_mem_rightCoset H (H.mul_mem (H.inv_mem hg) hh),
-      ← hcz₄] at hct₄
-  rw [hct₄, hcz₂] at hct₂
+      hcz₄] at hct₄
+  rw [← hct₄, hcz₂] at hct₂
   apply congr_arg rcrf.toZ at hct₂
   rw [hz'₂, ht'₂] at hct₂
   rw [hct₂, mul_eq_right, inv_mul_eq_one] at hyp
