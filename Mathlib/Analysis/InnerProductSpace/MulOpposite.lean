@@ -17,17 +17,14 @@ variable {𝕜 H : Type*}
 
 namespace MulOpposite
 
+open MulOpposite
+
 /-- The inner product of `Hᵐᵒᵖ` is given by `⟪x, y⟫ ↦ ⟪x.unop, y.unop⟫`. -/
 instance [Inner 𝕜 H] : Inner 𝕜 Hᵐᵒᵖ where inner x y := inner 𝕜 x.unop y.unop
 
-@[simp]
-theorem inner_unop [Inner 𝕜 H] (x y : Hᵐᵒᵖ) :
-    inner 𝕜 x.unop y.unop = inner 𝕜 x y := rfl
+@[simp] theorem inner_unop [Inner 𝕜 H] (x y : Hᵐᵒᵖ) : inner 𝕜 x.unop y.unop = inner 𝕜 x y := rfl
 
-open MulOpposite in
-@[simp]
-theorem inner_op [Inner 𝕜 H] (x y : H) :
-    inner 𝕜 (op x) (op y) = inner 𝕜 x y := rfl
+@[simp] theorem inner_op [Inner 𝕜 H] (x y : H) : inner 𝕜 (op x) (op y) = inner 𝕜 x y := rfl
 
 variable [RCLike 𝕜] [NormedAddCommGroup H] [InnerProductSpace 𝕜 H]
 
@@ -37,18 +34,18 @@ instance : InnerProductSpace 𝕜 Hᵐᵒᵖ where
   add_left x y z := InnerProductSpace.add_left x.unop y.unop z.unop
   smul_left x y r := InnerProductSpace.smul_left x.unop y.unop r
 
-theorem _root_.Basis.mulOpposite_is_orthonormal_iff {ι : Type*} (b : Basis ι 𝕜 H) :
+theorem _root_.Module.Basis.mulOpposite_is_orthonormal_iff {ι : Type*} (b : Module.Basis ι 𝕜 H) :
     Orthonormal 𝕜 b.mulOpposite ↔ Orthonormal 𝕜 b := Iff.rfl
 
 /-- The mulOpposite of an orthonormal basis. -/
 noncomputable def _root_.OrthonormalBasis.mulOpposite {ι : Type*}
     [Fintype ι] (b : OrthonormalBasis ι 𝕜 H) :
-    OrthonormalBasis ι 𝕜 Hᵐᵒᵖ := Basis.toOrthonormalBasis b.toBasis.mulOpposite b.orthonormal
+    OrthonormalBasis ι 𝕜 Hᵐᵒᵖ := Module.Basis.toOrthonormalBasis b.toBasis.mulOpposite b.orthonormal
 
 /-- The adjoint of `MulOpposite.opContinuousLinearEquiv` is its inverse. -/
 theorem opContinuousLinearEquiv_adjoint [CompleteSpace H] :
-    ContinuousLinearMap.adjoint (MulOpposite.opContinuousLinearEquiv 𝕜 (M:=H)).toContinuousLinearMap
-      = (MulOpposite.opContinuousLinearEquiv 𝕜 (M:=H)).symm.toContinuousLinearMap := by
+    ContinuousLinearMap.adjoint (opContinuousLinearEquiv 𝕜 (M:=H)).toContinuousLinearMap
+      = (opContinuousLinearEquiv 𝕜 (M:=H)).symm.toContinuousLinearMap := by
   ext x
   apply ext_inner_left 𝕜
   intro y
@@ -57,14 +54,14 @@ theorem opContinuousLinearEquiv_adjoint [CompleteSpace H] :
 
 theorem opContinuousLinearEquiv_isometry
     {R M : Type*} [Semiring R] [SeminormedAddCommGroup M] [Module R M] :
-    Isometry (MulOpposite.opContinuousLinearEquiv R (M:=M)) := fun _ _ => rfl
+    Isometry (opContinuousLinearEquiv R (M:=M)) := fun _ _ => rfl
 
 theorem opLinearEquiv_adjoint [FiniteDimensional 𝕜 H] :
-    LinearMap.adjoint (MulOpposite.opLinearEquiv 𝕜 (M:=H)).toLinearMap
-      = (MulOpposite.opLinearEquiv 𝕜 (M:=H)).symm.toLinearMap :=
+    LinearMap.adjoint (opLinearEquiv 𝕜 (M:=H)).toLinearMap
+      = (opLinearEquiv 𝕜 (M:=H)).symm.toLinearMap :=
   have := FiniteDimensional.complete 𝕜 H
   calc _ = (ContinuousLinearMap.adjoint
-      (MulOpposite.opContinuousLinearEquiv 𝕜 (M:=H)).toContinuousLinearMap).toLinearMap := rfl
-    _ = _ := by rw [MulOpposite.opContinuousLinearEquiv_adjoint]; rfl
+      (opContinuousLinearEquiv 𝕜 (M:=H)).toContinuousLinearMap).toLinearMap := rfl
+    _ = _ := by rw [opContinuousLinearEquiv_adjoint]; rfl
 
 end MulOpposite
