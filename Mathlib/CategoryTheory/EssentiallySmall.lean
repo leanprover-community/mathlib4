@@ -249,7 +249,7 @@ instance essentiallySmall_fullSubcategory_mem (s : Set C) [Small.{w} s] [Locally
     EssentiallySmall.{w} (ObjectProperty.FullSubcategory (· ∈ s)) :=
   suffices Small.{w} (ObjectProperty.FullSubcategory (· ∈ s)) from
     essentiallySmall_of_small_of_locallySmall _
-  small_of_injective (f := fun x => (⟨x.1, x.2⟩ : s)) (by aesop_cat)
+  small_of_injective (f := fun x => (⟨x.1, x.2⟩ : s)) (by cat_disch)
 
 end FullSubcategory
 

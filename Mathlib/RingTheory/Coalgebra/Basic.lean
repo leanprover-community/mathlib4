@@ -120,9 +120,9 @@ lemma sum_tmul_counit_eq {a : A} (repr : Coalgebra.Repr R a) :
 lemma sum_tmul_tmul_eq {a : A} (repr : Repr R a)
     (a₁ : (i : repr.ι) → Repr R (repr.left i)) (a₂ : (i : repr.ι) → Repr R (repr.right i)) :
     ∑ i ∈ repr.index, ∑ j ∈ (a₁ i).index,
-      (a₁ i).left j ⊗ₜ[R] (a₁ i).right j ⊗ₜ[R] repr.right i
+      (a₁ i).left j ⊗ₜ[R] ((a₁ i).right j ⊗ₜ[R] repr.right i)
       = ∑ i ∈ repr.index, ∑ j ∈ (a₂ i).index,
-      repr.left i ⊗ₜ[R] (a₂ i).left j ⊗ₜ[R] (a₂ i).right j := by
+      repr.left i ⊗ₜ[R] ((a₂ i).left j ⊗ₜ[R] (a₂ i).right j) := by
   simpa [(a₂ _).eq, ← (a₁ _).eq, ← TensorProduct.tmul_sum,
     TensorProduct.sum_tmul, ← repr.eq] using congr($(coassoc (R := R)) a)
 

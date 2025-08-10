@@ -38,7 +38,7 @@ namespace CategoryTheory
 class Functor.Additive {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
   (F : C ⥤ D) : Prop where
   /-- the addition of two morphisms is mapped to the sum of their images -/
-  map_add : ∀ {X Y : C} {f g : X ⟶ Y}, F.map (f + g) = F.map f + F.map g := by aesop_cat
+  map_add : ∀ {X Y : C} {f g : X ⟶ Y}, F.map (f + g) = F.map f + F.map g := by cat_disch
 
 section Preadditive
 
