@@ -177,7 +177,7 @@ instance ForgetEnrichment.enrichedOrdinaryCategory {D : Type*} [EnrichedCategory
 /-- If `D` is already an enriched ordinary category, there is a canonical functor from `D` to
 `ForgetEnrichment V D`. -/
 @[simps]
-def ForgetEnrichment.functorTo (D : Type u') [Category.{v'} D] [EnrichedOrdinaryCategory V D] :
+def ForgetEnrichment.equivInverse (D : Type u') [Category.{v'} D] [EnrichedOrdinaryCategory V D] :
     D ⥤ ForgetEnrichment V D where
   obj X := .of V X
   map f := ForgetEnrichment.homOf V (eHomEquiv V f)
@@ -186,7 +186,7 @@ def ForgetEnrichment.functorTo (D : Type u') [Category.{v'} D] [EnrichedOrdinary
 /-- If `D` is already an enriched ordinary category, there is a canonical functor from
 `ForgetEnrichment V D` to `D`. -/
 @[simps]
-def ForgetEnrichment.functorFrom (D : Type u') [Category.{v'} D] [EnrichedOrdinaryCategory V D] :
+def ForgetEnrichment.equivFunctor (D : Type u') [Category.{v'} D] [EnrichedOrdinaryCategory V D] :
     ForgetEnrichment V D ⥤ D where
   obj X := ForgetEnrichment.to V X
   map f := (eHomEquiv V).symm (ForgetEnrichment.homTo V f)
@@ -198,13 +198,12 @@ def ForgetEnrichment.functorFrom (D : Type u') [Category.{v'} D] [EnrichedOrdina
 /-- If `D` is already an enriched ordinary category, it is equivalent to `ForgetEnrichment V D`. -/
 def ForgetEnrichment.equiv {D : Type u'} [Category.{v'} D] [EnrichedOrdinaryCategory V D] :
     (ForgetEnrichment V D) ≌ D where
-  functor := functorFrom V D
-  inverse := functorTo V D
+  functor := equivFunctor V D
+  inverse := equivInverse V D
   unitIso := NatIso.ofComponents (fun X => Iso.refl _)
   counitIso := NatIso.ofComponents (fun X => Iso.refl _)
   functor_unitIso_comp X := Equiv.injective
     (eHomEquiv V (X := ForgetEnrichment.to V X) (Y := ForgetEnrichment.to V X)) (by simp)
-
 
 /-- enriched coyoneda functor `(X ⟶[V] _) : C ⥤ V`. -/
 abbrev eCoyoneda (X : C) := (eHomFunctor V C).obj (op X)
@@ -236,24 +235,52 @@ noncomputable def TransportEnrichment.enrichedOrdinaryCategory
   homEquiv_comp f g := by
     simp [eHomEquiv_comp, eComp_eq, tensorHom_def (Functor.LaxMonoidal.ε F), unitors_inv_equal]
 
-
-
 attribute [local instance] TransportEnrichment.enrichedOrdinaryCategory
 
 /-
 TODO: Prove that applying the above construction to the result of `ForgetEnrichment V D` results in
 an enriched ordinary category "equal" to `ForgetEnrichment W (TransportEnrichment F D)`.
 -/
-noncomputable example
-    {W : Type u''} [Category.{v''} W] [MonoidalCategory W]
-    (F : V ⥤ W) [F.LaxMonoidal]
-    (D : Type u) [EnrichedCategory V D]
-    (h : ∀ v : V, Function.Bijective fun (f : 𝟙_ V ⟶ v) => Functor.LaxMonoidal.ε F ≫ F.map f) :
-    letI : EnrichedOrdinaryCategory W (TransportEnrichment F (ForgetEnrichment V D)) :=
+noncomputable section Equiv
+
+variable {W : Type u''} [Category.{v''} W] [MonoidalCategory W]
+  (F : V ⥤ W) [F.LaxMonoidal]
+  (D : Type u) [EnrichedCategory V D]
+  (h : ∀ v : V, Function.Bijective fun (f : 𝟙_ V ⟶ v) => Functor.LaxMonoidal.ε F ≫ F.map f)
+
+local instance : EnrichedOrdinaryCategory W (TransportEnrichment F (ForgetEnrichment V D)) :=
       TransportEnrichment.enrichedOrdinaryCategory (ForgetEnrichment V D) F h
-    TransportEnrichment F (ForgetEnrichment V D) ≌
-      ForgetEnrichment W (TransportEnrichment F D) :=
-  sorry
+
+noncomputable example :
+    TransportEnrichment F (ForgetEnrichment V D) ⥤
+      ForgetEnrichment W (TransportEnrichment F D) where
+  obj X := ForgetEnrichment.of W X
+  map {X} {Y} f := ForgetEnrichment.homOf _ <|
+      Equiv.ofBijective _ (h (Hom (C := D) (ForgetEnrichment.to V X) (ForgetEnrichment.to V Y))) <|
+      ForgetEnrichment.homTo V f
+  map_id X := by
+    simp only [Equiv.ofBijective_apply]
+    erw [forgetEnrichment_id, ← TransportEnrichment.eId_eq, forgetEnrichment_id']
+  map_comp f g := by
+    simp only [Equiv.ofBijective_apply]
+    rw [forgetEnrichment_comp, F.map_comp, F.map_comp, ← Category.assoc,
+      ← Functor.LaxMonoidal.left_unitality_inv, Category.assoc, Category.assoc, Category.assoc,
+      Category.assoc, ← Functor.LaxMonoidal.μ_natural_assoc,
+      ← TransportEnrichment.eComp_eq, ← ForgetEnrichment.homOf_comp]
+    simp [ForgetEnrichment.to, tensorHom_def' (Functor.LaxMonoidal.ε F)]
+
+noncomputable example :
+    ForgetEnrichment W (TransportEnrichment F D) ⥤ TransportEnrichment F (ForgetEnrichment V D)
+      where
+  obj X := X
+  map {X Y} f := ((Equiv.ofBijective _
+    (h (Hom (C := D) (ForgetEnrichment.to V X) (ForgetEnrichment.to V Y)))).symm f)
+  map_id X := by
+    sorry
+  map_comp {X} {Y} {Z} f g := by
+    sorry
+
+end Equiv
 
 end TransportEnrichment
 
