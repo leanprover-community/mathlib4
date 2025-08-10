@@ -133,8 +133,8 @@ theorem mk_intCast {n : ℤ} (h : n ≠ 0) : mk (n : M) = 0 := by
   apply le_antisymm
   · use 1
     dsimp
-    rw [abs_one, one_smul, ← Int.cast_abs, ← Int.cast_one, Int.cast_le]
-    exact Int.one_le_abs h
+    rw [abs_one, one_smul]
+    exact_mod_cast Int.one_le_abs h
   · use n.natAbs
     simp
 
