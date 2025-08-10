@@ -76,17 +76,20 @@ theorem vec_sum [AddCommMonoid R] (s : Finset ι) (A : ι → Matrix m n R) :
   ext
   simp_rw [vec, Finset.sum_apply, vec, Matrix.sum_apply]
 
-theorem vec_dotProduct_vec [NonUnitalNonAssocSemiring R] [Fintype m] [Fintype n]
+theorem vec_dotProduct_vec [AddCommMonoid R] [Mul R] [Fintype m] [Fintype n]
     (A B : Matrix m n R) :
     vec A ⬝ᵥ vec B = (Aᵀ * B).trace := by
   simp_rw [Matrix.trace, Matrix.diag, Matrix.mul_apply, dotProduct, vec, transpose_apply,
     ← Finset.univ_product_univ, Finset.sum_product]
 
-theorem star_vec_dotProduct_vec [NonUnitalNonAssocSemiring R] [StarRing R] [Fintype m] [Fintype n]
+theorem star_vec [Star R] (x : Matrix m n R) :
+    star x.vec = (x.map star).vec :=
+  rfl
+
+theorem star_vec_dotProduct_vec [AddCommMonoid R] [Mul R] [Star R] [Fintype m] [Fintype n]
     (A B : Matrix m n R) :
     star (vec A) ⬝ᵥ vec B = (Aᴴ * B).trace := by
-  simp_rw [Matrix.trace, Matrix.diag, Matrix.mul_apply, dotProduct, vec, conjTranspose_apply,
-    ← Finset.univ_product_univ, Finset.sum_product, Pi.star_apply, vec]
+  simp_rw [star_vec, vec_dotProduct_vec, ← conjTranspose_transpose, transpose_transpose]
 
 theorem vec_hadamard [Mul R] (A B : Matrix m n R) : vec (A ⊙ B) = vec A * vec B := rfl
 
