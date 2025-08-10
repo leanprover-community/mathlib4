@@ -434,7 +434,7 @@ theorem center_eq_scalar_image :
 (i.e., the span of `{1}`). -/
 @[simp] protected theorem center_eq_range [CommSemiring R] :
     Set.center (Matrix n n R) = Set.range (scalar n) := by
-  simp only [center_eq_scalar_image, Set.center_eq_univ, Set.image_univ, scalar]
+  rw [center_eq_scalar_image, Set.center_eq_univ, Set.image_univ]
 
 end Commute
 
