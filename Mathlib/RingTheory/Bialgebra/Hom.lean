@@ -151,6 +151,9 @@ theorem coe_coalgHom_mk {f : A →ₗc[R] B} (h h₁) :
 @[simp, norm_cast] lemma coe_toCoalgHom (f : A →ₐc[R] B) : ⇑(f : A →ₗc[R] B) = f := rfl
 @[norm_cast] lemma coe_toAlgHom (f : A →ₐc[R] B) : ⇑(f : A →ₐ[R] B) = f := by simp
 
+@[deprecated "Use the `CoalgHom` API." (since := "2025-08-10")]
+lemma coe_toLinearMap (f : A →ₐc[R] B) : ⇑(f : A →ₗ[R] B) = f := rfl
+
 lemma toCoalgHom_apply (f : A →ₐc[R] B) (a : A) : f.toCoalgHom a = f a := rfl
 
 theorem toAlgHom_toLinearMap (f : A →ₐc[R] B) :
