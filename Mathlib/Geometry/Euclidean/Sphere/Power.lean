@@ -20,7 +20,6 @@ secants) in spheres in real inner product spaces and Euclidean affine spaces.
 * `Sphere.power`: The power of a point with respect to a sphere.
 * `Sphere.mul_dist_eq_abs_power`: The product of distances equals the absolute value of power.
 * `Sphere.dist_sq_eq_mul_dist_of_tangent_and_secant`: Tangent-Secant Theorem.
-
 -/
 
 
