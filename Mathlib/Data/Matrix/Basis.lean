@@ -416,33 +416,18 @@ theorem mem_range_scalar_iff_commute_single' {M : Matrix n n α} :
 @[deprecated (since := "2025-05-05")]
 alias mem_range_scalar_iff_commute_stdBasisMatrix' := mem_range_scalar_iff_commute_single'
 
-theorem mem_scalar_image_center_iff_commute_all {M : Matrix n n α} :
-    M ∈ scalar n '' Set.center α ↔ ∀ a, Commute a M := by
-  refine ⟨fun ⟨x, ⟨h1, h2, h3⟩, hx⟩ a => ?_, fun h => ?_⟩
-  · ext; simp [← hx, h1 _ |>.eq]
-  · by_cases h' : M = 0
-    · exact ⟨0, by rw [h']; simp⟩
-    obtain ⟨i, j, _⟩ := by simpa using ext_iff.not.mpr h'
-    have (i j : n) : Commute (single i j 1) M := h _
-    rw [← mem_range_scalar_iff_commute_single'] at this
-    obtain ⟨a, ha⟩ : ∃ a : α, M = a • 1 := by simpa [smul_one_eq_diagonal, eq_comm]
-    use a
-    simp only [scalar_apply, ha, smul_one_eq_diagonal, and_true, Semigroup.mem_center_iff]
-    simp only [ha, smul_one_eq_diagonal, commute_iff_eq, ← ext_iff, mul_apply, diagonal_apply,
-      mul_ite, mul_zero, Finset.sum_ite_eq', Finset.mem_univ, ↓reduceIte, ite_mul, zero_mul,
-      Finset.sum_ite_eq] at h
-    intro g
-    specialize h (scalar n g) i j
-    simp only [scalar_apply, diagonal_apply, ite_mul, zero_mul, mul_ite, mul_zero, ite_eq_iff,
-      right_eq_ite_iff] at h
-    split_ifs at h
-    · simp_all
-    · simp_all
-
 protected theorem center :
     Set.center (Matrix n n α) = scalar n '' Set.center α := Set.ext fun x => by
-  rw [mem_scalar_image_center_iff_commute_all, Semigroup.mem_center_iff]
-  exact Iff.rfl
+  obtain _ | hn := isEmpty_or_nonempty n
+  · simpa [Semigroup.mem_center_iff, nontriviality] using .intro 1 (by simp)
+  obtain ⟨i⟩ := hn
+  simp_rw [Set.mem_image, Semigroup.mem_center_iff]
+  refine ⟨fun hx ↦ ?_, ?_⟩
+  · obtain ⟨x, rfl⟩ := mem_range_scalar_iff_commute_single'.mpr fun _ _ ↦ hx _
+    refine ⟨_, fun r ↦ ?_, rfl⟩
+    convert congr($(hx (single i i r)) i i) <;> simp
+  · rintro ⟨x, hx, rfl⟩
+    exact fun y ↦ scalar_commute x (fun r' ↦ (hx r').symm) y |>.symm
 
 end Commute
 
