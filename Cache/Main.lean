@@ -52,7 +52,7 @@ Valid arguments are:
 def curlArgs : List String :=
   ["get", "get!", "get-", "put", "put!", "put-unpacked", "commit", "commit!"]
 
-/-- Commands which (potentially) call `leantar` for compressing or decompressing downloaded files -/
+/-- Commands which (potentially) call `leantar` for compressing or decompressing files -/
 def leanTarArgs : List String :=
   ["get", "get!", "put", "put!", "put-unpacked", "pack", "pack!", "unpack", "lookup"]
 
