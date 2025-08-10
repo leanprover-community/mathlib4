@@ -48,9 +48,8 @@ instance : Zero (ArchimedeanClass M) where
 @[simp] theorem mk_one : mk (1 : M) = 0 := rfl
 
 @[simp]
-theorem mk_eq_zero_of_archimedean [Archimedean M] {x : M} (h : x ≠ 0) : mk x = 0 := by
-  rw [← mk_one]
-  exact mk_eq_mk_of_archimedean h one_ne_zero
+theorem mk_eq_zero_of_archimedean [Archimedean M] {x : M} (h : x ≠ 0) : mk x = 0 :=
+  mk_eq_mk_of_archimedean h one_ne_zero
 
 theorem eq_zero_or_top_of_archimedean [Archimedean M] (x : ArchimedeanClass M) : x = 0 ∨ x = ⊤ := by
   induction x with | mk x
@@ -200,6 +199,10 @@ noncomputable instance : LinearOrderedAddCommGroupWithTop (ArchimedeanClass M) w
     induction x with | mk x
     rw [← mk_zpow, zpow_negSucc, pow_succ, zsmul_succ', mk_inv, mk_mul, ← zpow_natCast, mk_zpow]
 
+@[simp]
+theorem mk_ratCast {q : ℚ} (h : q ≠ 0) : mk (q : M) = 0 := by
+  simpa using mk_map_of_archimedean ⟨(Rat.castHom M : ℚ →+ M), fun _ ↦ by simp⟩ h
+
 theorem mk_le_mk_iff_ratCast {x y : M} : mk x ≤ mk y ↔ ∃ q : ℚ, 0 < q ∧ q * |y| ≤ |x| := by
   constructor
   · rintro ⟨n, hn⟩
@@ -215,16 +218,11 @@ theorem mk_le_mk_iff_ratCast {x y : M} : mk x ≤ mk y ↔ ∃ q : ℚ, 0 < q �
     rw [← le_inv_mul_iff₀ (mod_cast hq₀)] at hq
     exact hq.trans (mul_le_mul_of_nonneg_right (mod_cast hn.le) (abs_nonneg x))
 
-theorem mk_lt_mk_iff_ratCast {x y : M} :
-    mk x < mk y ↔ ∀ q : ℚ, q * |y| < |x| := by
+theorem mk_lt_mk_iff_ratCast {x y : M} : mk x < mk y ↔ ∀ q : ℚ, q * |y| < |x| := by
   refine ⟨fun H q ↦ ?_, fun H n ↦ by simpa using H n⟩
   obtain ⟨n, hn⟩ := exists_nat_gt q
   apply (H n).trans_le'
   simpa using mul_le_mul_of_nonneg_right (mod_cast hn.le) (abs_nonneg y)
-
-@[simp]
-theorem mk_ratCast {q : ℚ} (h : q ≠ 0) : mk (q : M) = 0 := by
-  simpa using mk_map_of_archimedean ⟨(Rat.castHom M : ℚ →+ M), fun _ ↦ by simp⟩ h
 
 end Field
 end ArchimedeanClass
