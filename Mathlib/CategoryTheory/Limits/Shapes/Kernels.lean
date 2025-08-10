@@ -191,14 +191,7 @@ def KernelFork.IsLimit.ofMonoOfIsZero {X Y : C} {f : X ⟶ Y} (c : KernelFork f)
     (fun _ _ _ => h.eq_of_tgt _ _)
 
 lemma KernelFork.IsLimit.isIso_ι {X Y : C} {f : X ⟶ Y} (c : KernelFork f)
-    (hc : IsLimit c) (hf : f = 0) : IsIso c.ι := by
-  let e : c.pt ≅ X := IsLimit.conePointUniqueUpToIso hc
-    (KernelFork.IsLimit.ofId (f : X ⟶ Y) hf)
-  have eq : e.inv ≫ c.ι = 𝟙 X := Fork.IsLimit.lift_ι hc
-  haveI : IsIso (e.inv ≫ c.ι) := by
-    rw [eq]
-    infer_instance
-  exact IsIso.of_isIso_comp_left e.inv c.ι
+    (hc : IsLimit c) (hf : f = 0) : IsIso c.ι := isIso_limit_cone_parallelPair_of_eq hf hc
 
 /-- If `c` is a limit kernel fork for `g : X ⟶ Y`, `e : X ≅ X'` and `g' : X' ⟶ Y` is a morphism,
 then there is a limit kernel fork for `g'` with the same point as `c` if for any
