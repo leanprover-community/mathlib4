@@ -16,23 +16,15 @@ namespace CategoryTheory
 
 open Limits
 
-variable (C : Type u) [Category.{v} C]
-
 section
 
-variable (κ : Cardinal.{w}) [Fact κ.IsRegular]
-
-class HasCardinalFilteredGenerators : Prop extends LocallySmall.{w} C where
-  exists_generators' : ∃ (ι : Type w) (G : ι → C),
+class HasCardinalFilteredGenerators (C : Type u) [hC : Category.{v} C]
+    (κ : Cardinal.{w}) [hκ : Fact κ.IsRegular] :
+    Prop extends LocallySmall.{w} C where
+  exists_generators (C κ) [hC] [hκ] : ∃ (ι : Type w) (G : ι → C),
     AreCardinalFilteredGenerators G κ
 
-namespace HasCardinalFilteredGenerators
-
-lemma exists_generators [HasCardinalFilteredGenerators.{w} C κ] :
-    ∃ (ι : Type w) (G : ι → C), AreCardinalFilteredGenerators G κ :=
-  HasCardinalFilteredGenerators.exists_generators'
-
-end HasCardinalFilteredGenerators
+variable (C : Type u) [Category.{v} C] (κ : Cardinal.{w}) [Fact κ.IsRegular]
 
 class IsCardinalLocallyPresentable : Prop
   extends HasCardinalFilteredGenerators C κ, HasColimitsOfSize.{w, w} C where
@@ -46,26 +38,18 @@ end
 
 section
 
-class IsLocallyPresentable : Prop where
-  exists_cardinal' : ∃ (κ : Cardinal.{w}) (_ : Fact κ.IsRegular),
+class IsLocallyPresentable (C : Type u) [hC : Category.{v} C] : Prop where
+  exists_cardinal (C) [hC] : ∃ (κ : Cardinal.{w}) (_ : Fact κ.IsRegular),
     IsCardinalLocallyPresentable C κ
 
-lemma IsLocallyPresentable.exists_cardinal [IsLocallyPresentable.{w} C] :
-    ∃ (κ : Cardinal.{w}) (_ : Fact κ.IsRegular),
-      IsCardinalLocallyPresentable C κ :=
-  exists_cardinal'
-
-class IsAccessibleCategory : Prop where
-  exists_cardinal' : ∃ (κ : Cardinal.{w}) (_ : Fact κ.IsRegular),
+class IsAccessibleCategory (C : Type u) [hC : Category.{v} C] : Prop where
+  exists_cardinal (C) [hC] : ∃ (κ : Cardinal.{w}) (_ : Fact κ.IsRegular),
     IsCardinalAccessibleCategory C κ
 
-lemma IsAccessibleCategory.exists_cardinal [IsAccessibleCategory.{w} C] :
-    ∃ (κ : Cardinal.{w}) (_ : Fact κ.IsRegular),
-      IsCardinalAccessibleCategory C κ :=
-  exists_cardinal'
+variable (C : Type u) [hC : Category.{v} C]
 
 instance [IsLocallyPresentable.{w} C] : IsAccessibleCategory.{w} C where
-  exists_cardinal' := by
+  exists_cardinal := by
     obtain ⟨κ, hκ, h'⟩ := IsLocallyPresentable.exists_cardinal C
     exact ⟨κ, hκ, inferInstance⟩
 

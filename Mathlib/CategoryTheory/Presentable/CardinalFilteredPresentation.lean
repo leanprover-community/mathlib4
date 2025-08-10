@@ -34,13 +34,12 @@ variable {X : C} {κ : Cardinal.{w}} [Fact κ.IsRegular]
 
 variable (p : CardinalFilteredPresentation X κ)
 
-lemma isCardinalPresentable_pt (h : ∀ (j : p.J), IsCardinalPresentable (p.F.obj j) κ)
+lemma isCardinalPresentable (h : ∀ (j : p.J), IsCardinalPresentable (p.F.obj j) κ)
     [LocallySmall.{w} C]
     (κ' : Cardinal.{w}) [Fact κ'.IsRegular] (h : κ ≤ κ')
     (hJ : HasCardinalLT (Arrow p.J) κ') :
     IsCardinalPresentable X κ' := by
-  have : ∀ (k : p.J), IsCardinalPresentable (p.F.obj k) κ' :=
-    fun _ ↦ isCardinalPresentable_of_le _ h
+  have (k : p.J) : IsCardinalPresentable (p.F.obj k) κ' := isCardinalPresentable_of_le _ h
   exact isCardinalPresentable_of_isColimit _ p.isColimit κ' hJ
 
 end CardinalFilteredPresentation
@@ -98,7 +97,7 @@ lemma presentable [LocallySmall.{w} C] (X : C) : IsPresentable.{w} X := by
     exact ⟨κ', ⟨h₁⟩,
       le_of_lt (by simpa [hasCardinalLT_iff_cardinal_mk_lt] using h₂ (Sum.inr ⟨⟩)),
       h₂ (Sum.inl ⟨⟩)⟩
-  have := (h.presentation X).isCardinalPresentable_pt (by infer_instance) κ' le hκ'
+  have := (h.presentation X).isCardinalPresentable (by infer_instance) κ' le hκ'
   exact isPresentable_of_isCardinalPresentable _ κ'
 
 end AreCardinalFilteredGenerators
