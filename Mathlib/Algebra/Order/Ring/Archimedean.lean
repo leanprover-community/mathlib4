@@ -127,21 +127,6 @@ noncomputable def addValuation : AddValuation M (ArchimedeanClass M) := AddValua
 
 @[simp] theorem addValuation_apply (a : M) : addValuation M a = mk a := rfl
 
-@[simp]
-theorem mk_intCast {n : ℤ} (h : n ≠ 0) : mk (n : M) = 0 := by
-  apply le_antisymm
-  · use 1
-    dsimp
-    rw [abs_one, one_smul]
-    exact_mod_cast Int.one_le_abs h
-  · use n.natAbs
-    simp
-
-@[simp]
-theorem mk_natCast {n : ℕ} (h : n ≠ 0) : mk (n : M) = 0 := by
-  rw [← Int.cast_natCast]
-  exact mk_intCast (mod_cast h)
-
 end Ring
 
 section Field
@@ -186,18 +171,6 @@ noncomputable instance : LinearOrderedAddCommGroupWithTop (ArchimedeanClass M) w
   zsmul_neg' n x := by
     induction x with | mk x
     rw [← mk_zpow, zpow_negSucc, pow_succ, zsmul_succ', mk_inv, mk_mul, ← zpow_natCast, mk_zpow]
-
-@[simp]
-theorem mk_ratCast {q : ℚ} (h : q ≠ 0) : mk (q : M) = 0 := by
-  apply le_antisymm
-  · obtain ⟨n, hn⟩ := exists_nat_gt |q|⁻¹
-    use n
-    simp_rw [ArchimedeanOrder.val_of, abs_one, nsmul_eq_mul]
-    exact_mod_cast ((inv_lt_iff_one_lt_mul₀ (abs_pos.2 h)).1 hn).le
-  · obtain ⟨n, hn⟩ := exists_nat_gt |q|
-    use n
-    simp_rw [ArchimedeanOrder.val_of, abs_one, nsmul_one]
-    exact_mod_cast hn.le
 
 end Field
 end ArchimedeanClass
