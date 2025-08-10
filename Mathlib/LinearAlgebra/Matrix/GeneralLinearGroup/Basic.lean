@@ -36,7 +36,7 @@ private theorem NonUnitalAlgHom.apply_vecMulVec_mulVec_mul_comm [CommSemiring R]
       ext; rw [← mulVec_mulVec, LinearMap.toMatrix'_mulVec]
     _ = (f (vecMulVec (A *ᵥ x) y)) *ᵥ z := by simp [T, NonUnitalAlgHom.apply_vecMulVec_mulVec]
     _ = (f (A * vecMulVec x y)) *ᵥ z := by
-      simp_rw [vecMulVec_eq (Fin 1), replicateCol_mulVec, ← Matrix.mul_assoc]
+      simp_rw [vecMulVec_eq Unit, replicateCol_mulVec, ← Matrix.mul_assoc]
     _ = (f A * f (vecMulVec x y)) *ᵥ z := by simp_rw [map_mul]
     _ = (f A) *ᵥ (T x) := by
       simp only [← mulVec_mulVec]; rfl
