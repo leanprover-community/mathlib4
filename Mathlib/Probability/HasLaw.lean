@@ -25,14 +25,14 @@ open scoped ENNReal
 namespace ProbabilityTheory
 
 variable {Ω 𝓧 : Type*} {mΩ : MeasurableSpace Ω} {m𝓧 : MeasurableSpace 𝓧} (X : Ω → 𝓧)
-  (μ : Measure 𝓧) (P : Measure Ω := by volume_tac)
+  (μ : Measure 𝓧)
 
 /-- The predicate `HasLaw X μ P` registers the fact that the random variable `X` has law `μ` under
 the measure `P`, in other words that `P.map X = μ`. We also require `X` to be `AEMeasurable`,
 to allow for nice interactions with operations on the codomain of `X`. See for instance
 `HasLaw.comp`, `IndepFun.hasLaw_mul` and `IndepFun.hasLaw_add`. -/
 @[fun_prop]
-structure HasLaw : Prop where
+structure HasLaw (P : Measure Ω := by volume_tac) : Prop where
   protected aemeasurable : AEMeasurable X P := by fun_prop
   protected map_eq : P.map X = μ
 
