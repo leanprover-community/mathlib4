@@ -839,7 +839,7 @@ lemma Rel.infiniteDimensional_inv : InfiniteDimensional r.inv ↔ InfiniteDimens
 alias Rel.infiniteDimensional_swap_iff := Rel.infiniteDimensional_inv
 
 lemma Rel.IsWellFounded.inv_of_finiteDimensional [r.FiniteDimensional] : r.inv.IsWellFounded := by
-  rw [IsWellFounded, WellFounded.wellFounded_iff_isEmpty]
+  rw [IsWellFounded, wellFounded_iff_isEmpty_descending_chain]
   refine ⟨fun ⟨f, hf⟩ ↦ ?_⟩
   let s := RelSeries.mk (r := r) ((RelSeries.longestOf r).length + 1) (f ·) (hf ·)
   exact (RelSeries.longestOf r).length.lt_succ_self.not_ge s.length_le_length_longestOf

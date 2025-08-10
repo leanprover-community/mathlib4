@@ -55,10 +55,10 @@ alias exists_not_acc_lt_of_not_acc := exists_not_acc_lt_of_not_acc
 /-- A value is accessible iff it isn't contained in any infinite decreasing sequence. -/
 theorem acc_iff_isEmpty_subtype_mem_range {x} :
     Acc r x ↔ IsEmpty { f : ((· > ·) : ℕ → ℕ → Prop) ↪r r // x ∈ Set.range f } where
-  mp acc := .mk fun ⟨f, k, hk⟩ ↦ not_acc_iff_exists_nat_fun.mpr
+  mp acc := .mk fun ⟨f, k, hk⟩ ↦ not_acc_iff_exists_descending_chain.mpr
     ⟨(f <| k + ·), hk, fun _n ↦ f.map_rel_iff.2 (Nat.lt_succ_self _)⟩ acc
   mpr h := of_not_not fun nacc ↦
-    have ⟨f, hf⟩ := not_acc_iff_exists_nat_fun.mp nacc
+    have ⟨f, hf⟩ := not_acc_iff_exists_descending_chain.mp nacc
     h.elim ⟨natGT f hf.2, 0, hf.1⟩
 
 theorem not_acc (f : ((· > ·) : ℕ → ℕ → Prop) ↪r r) (k : ℕ) : ¬Acc r (f k) := by

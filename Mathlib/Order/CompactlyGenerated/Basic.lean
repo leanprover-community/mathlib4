@@ -215,7 +215,7 @@ theorem IsSupFiniteCompact.isSupClosedCompact (h : IsSupFiniteCompact α) :
 theorem IsSupClosedCompact.wellFoundedGT (h : IsSupClosedCompact α) :
     WellFoundedGT α where
   wf := by
-    refine RelEmbedding.wellFounded_iff_no_isEmpty.mpr ⟨fun a => ?_⟩
+    refine RelEmbedding.wellFounded_iff_isEmpty.mpr ⟨fun a => ?_⟩
     suffices sSup (Set.range a) ∈ Set.range a by
       obtain ⟨n, hn⟩ := Set.mem_range.mp this
       have h' : sSup (Set.range a) < a (n + 1) := by
