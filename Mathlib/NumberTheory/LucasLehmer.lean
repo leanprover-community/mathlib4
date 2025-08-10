@@ -397,7 +397,7 @@ def α : X q := (0, 1)
 lemma α_pow (i : ℕ) : (α : X q) ^ (2 * i + 1) = 3 ^ i * α := by
   rw [pow_succ, pow_mul, α_sq]
 
-/-! We show that `X p` has characteristic `p`, so that we can apply the binomial theorem. -/
+/-! We show that `X q` has characteristic `q`, so that we can apply the binomial theorem. -/
 
 instance : CharP (X q) q where
   cast_eq_zero_iff x := by
