@@ -393,6 +393,11 @@ nonrec theorem IndepFun.variance_add {X Y : Ω → ℝ} (hX : MemLp X 2 μ)
   rw [variance_add hX hY, h.covariance_eq_zero hX hY]
   simp
 
+/-- The variance of the sum of two independent random variables is the sum of the variances. -/
+theorem IndepFun.variance_fun_add {X Y : Ω → ℝ} (hX : MemLp X 2 μ)
+    (hY : MemLp Y 2 μ) (h : IndepFun X Y μ) : Var[fun ω ↦ X ω + Y ω; μ] = Var[X; μ] + Var[Y; μ] :=
+  h.variance_add hX hY
+
 -- Porting note: supplied `MeasurableSpace Ω` argument of `hs`, `h` by unification
 /-- The variance of a finite sum of pairwise independent random variables is the sum of the
 variances. -/
@@ -473,22 +478,9 @@ variable {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {ν : Measure Ω'}
   {X : Ω → ℝ} {Y : Ω' → ℝ}
 
 lemma covariance_fst_snd_prod (hfμ : MemLp X 2 μ) (hgν : MemLp Y 2 ν) :
-    cov[fun x ↦ X x.1, fun x ↦ Y x.2; μ.prod ν] = 0 := by
-  have h_map1 : (μ.prod ν).map (fun x ↦ x.1) = μ := by simp
-  rw [covariance, integral_prod]
-  swap
-  · exact MemLp.integrable_mul ((hfμ.comp_fst _).sub (memLp_const _))
-      ((hgν.comp_snd _).sub (memLp_const _))
-  simp only
-  simp_rw [integral_const_mul, integral_mul_const]
-  suffices ∫ a, X a - ∫ x, X x.1 ∂μ.prod ν ∂μ = 0 by simp [this]
-  rw [integral_sub (hfμ.integrable (by simp)) (integrable_const _)]
-  simp only [integral_const, measureReal_univ_eq_one, smul_eq_mul, one_mul]
-  nth_rw 1 [← h_map1]
-  rw [integral_map (by fun_prop)]
-  · ring
-  · simp only [Measure.map_fst_prod, measure_univ, one_smul]
-    exact hfμ.aestronglyMeasurable
+    cov[fun x ↦ X x.1, fun x ↦ Y x.2; μ.prod ν] = 0 :=
+  (indepFun_prod₀ hfμ.aemeasurable hgν.aemeasurable).covariance_eq_zero
+    (hfμ.comp_fst ν) (hgν.comp_snd μ)
 
 lemma variance_add_prod (hfμ : MemLp X 2 μ) (hgν : MemLp Y 2 ν) :
     Var[fun x ↦ X x.1 + Y x.2; μ.prod ν] = Var[X; μ] + Var[Y; ν] := by
@@ -502,9 +494,9 @@ lemma variance_add_prod (hfμ : MemLp X 2 μ) (hgν : MemLp Y 2 ν) :
   rw [variance_map _ (by fun_prop), variance_map _ (by fun_prop)]
   · rfl
   · simp only [Measure.map_snd_prod, measure_univ, one_smul]
-    exact hgν.aestronglyMeasurable.aemeasurable
+    exact hgν.aemeasurable
   · simp only [Measure.map_fst_prod, measure_univ, one_smul]
-    exact hfμ.aestronglyMeasurable.aemeasurable
+    exact hfμ.aemeasurable
 
 end Prod
 
@@ -517,21 +509,19 @@ variable {E F G : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {mE : Measur
   {p : ℝ≥0∞}
 
 lemma integral_continuousLinearMap_prod' {L : E × F →L[ℝ] G}
-    (hLμ : MemLp (L.comp (.inl ℝ E F)) 1 μ) (hLν : MemLp (L.comp (.inr ℝ E F)) 1 ν) :
+    (hLμ : Integrable (L.comp (.inl ℝ E F)) μ) (hLν : Integrable (L.comp (.inr ℝ E F)) ν) :
     (μ.prod ν)[L] = μ[L.comp (.inl ℝ E F)] + ν[L.comp (.inr ℝ E F)] := by
   simp_rw [← L.comp_inl_add_comp_inr]
-  rw [integral_add, integral_prod, integral_prod]
-  · simp
-  · exact (hLν.comp_snd μ).integrable le_rfl
-  · exact (hLμ.comp_fst ν).integrable le_rfl
-  · exact (hLμ.comp_fst ν).integrable le_rfl
-  · exact (hLν.comp_snd μ).integrable le_rfl
+  replace hLμ := ((memLp_one_iff_integrable.mpr hLμ).comp_fst ν).integrable le_rfl
+  replace hLν := ((memLp_one_iff_integrable.mpr hLν).comp_snd μ).integrable le_rfl
+  rw [integral_add hLμ hLν, integral_prod _ hLμ, integral_prod _ hLν]
+  simp
 
 lemma integral_continuousLinearMap_prod {L : E × F →L[ℝ] G}
-    (hμ : MemLp id 1 μ) (hν : MemLp id 1 ν) :
+    (hμ : Integrable id μ) (hν : Integrable id ν) :
     (μ.prod ν)[L] = μ[L.comp (.inl ℝ E F)] + ν[L.comp (.inr ℝ E F)] :=
-  integral_continuousLinearMap_prod' (ContinuousLinearMap.comp_memLp' _ hμ)
-    (ContinuousLinearMap.comp_memLp' _ hν)
+  integral_continuousLinearMap_prod' (ContinuousLinearMap.integrable_comp _ hμ)
+    (ContinuousLinearMap.integrable_comp _ hν)
 
 lemma variance_dual_prod' {L : Dual ℝ (E × F)}
     (hLμ : MemLp (L.comp (.inl ℝ E F)) 2 μ) (hLν : MemLp (L.comp (.inr ℝ E F)) 2 ν) :
