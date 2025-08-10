@@ -80,7 +80,7 @@ theorem angle_eq_pi_div_two_iff_mem_sphere_of_isDiameter (p₁ p₂ p₃ : P) (s
     ∠ p₁ p₂ p₃ = π / 2 ↔ p₂ ∈ s := by
   constructor
   · intro h
-    have h_perp : ⟪p₁ -ᵥ p₂, p₃ -ᵥ p₂⟫_ℝ = 0 :=
+    have h_perp : ⟪p₁ -ᵥ p₂, p₃ -ᵥ p₂⟫ = 0 :=
       (InnerProductGeometry.inner_eq_zero_iff_angle_eq_pi_div_two (p₁ -ᵥ p₂) (p₃ -ᵥ p₂)).mpr h
     let o := midpoint ℝ p₁ p₃
     rw [← vsub_add_vsub_cancel p₁ o p₂, ← vsub_add_vsub_cancel p₃ o p₂,
@@ -92,7 +92,7 @@ theorem angle_eq_pi_div_two_iff_mem_sphere_of_isDiameter (p₁ p₂ p₃ : P) (s
         real_inner_comm (p₃ -ᵥ o) (o -ᵥ p₂)] at h_perp
     ring_nf at h_perp
     have h_eq : dist p₂ o = dist p₃ o := by
-      have : ⟪p₂ -ᵥ o, p₂ -ᵥ o⟫_ℝ = ⟪p₃ -ᵥ o, p₃ -ᵥ o⟫_ℝ := by
+      have : ⟪p₂ -ᵥ o, p₂ -ᵥ o⟫ = ⟪p₃ -ᵥ o, p₃ -ᵥ o⟫ := by
         rw [← inner_neg_neg (p₂ -ᵥ o)]
         simp only [neg_vsub_eq_vsub_rev]
         linarith
@@ -108,7 +108,7 @@ theorem angle_eq_pi_div_two_iff_mem_sphere_of_isDiameter (p₁ p₂ p₃ : P) (s
     have h_center : o = midpoint ℝ p₁ p₃ := hd.midpoint_eq_center.symm
     have h_mem1 : dist o p₂ = s.radius := mem_sphere'.mp h
     have h_mem2 : dist o p₃ = s.radius := mem_sphere'.mp hd.right_mem
-    have h_perp : ⟪p₁ -ᵥ p₂, p₃ -ᵥ p₂⟫_ℝ = 0 := by
+    have h_perp : ⟪p₁ -ᵥ p₂, p₃ -ᵥ p₂⟫ = 0 := by
       rw [← vsub_add_vsub_cancel p₁ o p₂, ← vsub_add_vsub_cancel p₃ o p₂,
           inner_add_left, inner_add_right, inner_add_right]
       have h_opp : p₁ -ᵥ o = -(p₃ -ᵥ o) := by
@@ -126,9 +126,9 @@ theorem angle_eq_pi_div_two_iff_mem_sphere_of_isDiameter (p₁ p₂ p₃ : P) (s
 is a right angle if and only if the second point lies on the sphere having the first and third
 points as diameter endpoints. -/
 theorem angle_eq_pi_div_two_iff_mem_sphere_ofDiameter (p₁ p₂ p₃ : P) :
-    ∠ p₁ p₂ p₃ = π / 2 ↔ p₂ ∈ Sphere.ofDiameter p₁ p₃ := by
-  exact angle_eq_pi_div_two_iff_mem_sphere_of_isDiameter p₁ p₂ p₃
-        (Sphere.ofDiameter p₁ p₃) (Sphere.isDiameter_ofDiameter p₁ p₃)
+    ∠ p₁ p₂ p₃ = π / 2 ↔ p₂ ∈ Sphere.ofDiameter p₁ p₃ :=
+  angle_eq_pi_div_two_iff_mem_sphere_of_isDiameter p₁ p₂ p₃ (Sphere.ofDiameter p₁ p₃)
+    (Sphere.isDiameter_ofDiameter p₁ p₃)
 
 /-- **Thales' theorem**: The angle inscribed in a semicircle is a right angle. -/
 theorem thales_theorem (p₁ p₂ p₃ : P) (s : Sphere P) (hd : s.IsDiameter p₁ p₃) :
