@@ -82,13 +82,13 @@ lemma deGrootInfo_comp_le (μ ν : Measure 𝓧) (π : Measure Bool) (η : Kerne
   exact riskIncrease_comp_le binaryLoss (Kernel.boolKernel μ ν) π η
 
 lemma deGrootInfo_eq_deGrootInfo_one_one :
-    deGrootInfo μ ν π = deGrootInfo (π {false} • μ) (π {true} • ν) (Bool.boolMeasure 1 1) := by
+    deGrootInfo μ ν π = deGrootInfo (π {false} • μ) (π {true} • ν) (boolMeasure 1 1) := by
   rw [deGrootInfo, bayesBinaryRisk_eq_bayesBinaryRisk_one_one]
   nth_rw 2 [bayesBinaryRisk_eq_bayesBinaryRisk_one_one]
   simp [deGrootInfo]
 
 lemma deGrootInfo_boolMeasure_le_deGrootInfo {E : Set 𝓧} (hE : MeasurableSet E) :
-    deGrootInfo (Bool.boolMeasure (μ Eᶜ) (μ E)) (Bool.boolMeasure (ν Eᶜ) (ν E)) π
+    deGrootInfo (boolMeasure (μ Eᶜ) (μ E)) (boolMeasure (ν Eᶜ) (ν E)) π
       ≤ deGrootInfo μ ν π := by
   have h_meas : Measurable fun x ↦ Bool.ofNat (E.indicator 1 x) :=
     (Measurable.of_discrete.comp' (measurable_one.indicator hE))
@@ -98,11 +98,9 @@ lemma deGrootInfo_boolMeasure_le_deGrootInfo {E : Set 𝓧} (hE : MeasurableSet 
   have h_true : (fun x ↦ Bool.ofNat (E.indicator 1 x)) ⁻¹' {true} = E := by
     ext x; simp [Bool.ofNat]
   convert deGrootInfo_comp_le μ ν π η <;>
-  · ext
-    · rw [Measure.deterministic_comp_eq_map, Measure.map_apply h_meas (by trivial), h_false,
-        Bool.boolMeasure_apply_false]
-    · rw [Measure.deterministic_comp_eq_map, Measure.map_apply h_meas (by trivial), h_true,
-        Bool.boolMeasure_apply_true]
+  · refine Measure.ext_of_singleton fun b ↦ ?_
+    rw [Measure.deterministic_comp_eq_map, Measure.map_apply h_meas (by trivial)]
+    cases b <;> simp [h_false, h_true]
 
 lemma deGrootInfo_eq_min_sub_lintegral (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     (π : Measure Bool) [IsFiniteMeasure π] :
@@ -116,14 +114,14 @@ lemma deGrootInfo_eq_min_sub_lintegral' {ζ : Measure 𝓧} [IsFiniteMeasure μ]
     deGrootInfo μ ν π = min (π {false} * μ univ) (π {true} * ν univ)
       - ∫⁻ x, min (π {false} * (∂μ/∂ζ) x) (π {true} * (∂ν/∂ζ) x) ∂ζ := by
   by_cases h_false : π {false} = 0
-  · simp [deGrootInfo, h_false, bayesBinaryRisk_of_measure_false_eq_zero]
+  · simp [deGrootInfo_of_measure_false_eq_zero, h_false]
   by_cases h_true : π {true} = 0
-  · simp [deGrootInfo, h_true, bayesBinaryRisk_of_measure_true_eq_zero]
-  have hμac : μ ≪ (Kernel.boolKernel μ ν ∘ₘ π) :=
+  · simp [deGrootInfo_of_measure_true_eq_zero, h_true]
+  have hμac : μ ≪ Kernel.boolKernel μ ν ∘ₘ π :=
     absolutelyContinuous_boolKernel_comp_measure_left μ ν h_false
-  have hνac : ν ≪ (Kernel.boolKernel μ ν ∘ₘ π) :=
+  have hνac : ν ≪ Kernel.boolKernel μ ν ∘ₘ π :=
     absolutelyContinuous_boolKernel_comp_measure_right μ ν h_true
-  have hacζ : (Kernel.boolKernel μ ν ∘ₘ π) ≪ ζ :=
+  have hacζ : Kernel.boolKernel μ ν ∘ₘ π ≪ ζ :=
     boolKernel_comp_measure μ ν π ▸ (hνζ.smul_left _).add_left (hμζ.smul_left _)
   rw [deGrootInfo_eq_min_sub_lintegral, ← lintegral_rnDeriv_mul hacζ (by fun_prop)]
   congr 1

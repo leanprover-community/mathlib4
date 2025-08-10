@@ -41,17 +41,8 @@ instance : IsFiniteMeasure (boolMeasure 1 1) := by constructor; simp
 lemma tvDist_nonneg : 0 ≤ tvDist μ ν := ENNReal.toReal_nonneg
 
 lemma tvDist_comm : tvDist μ ν = tvDist ν μ := by
-  rw [tvDist, deGrootInfo_comm]
-  congr
-  ext
-  · simp only [boolMeasure_apply_false]
-    rw [Measure.map_apply (by fun_prop) .of_discrete]
-    have : not ⁻¹' {false} = {true} := by ext; simp
-    simp [this]
-  · simp only [boolMeasure_apply_true]
-    rw [Measure.map_apply (by fun_prop) .of_discrete]
-    have : not ⁻¹' {true} = {false} := by ext; simp
-    simp [this]
+  rw [tvDist, tvDist, deGrootInfo_comm]
+  simp
 
 lemma tvDist_le [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     tvDist μ ν ≤ min (μ.real .univ) (ν.real .univ) := by

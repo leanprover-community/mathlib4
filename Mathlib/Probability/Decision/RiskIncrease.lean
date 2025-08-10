@@ -36,12 +36,11 @@ lemma Kernel.withDensity_comp {α β γ : Type*} {_ : MeasurableSpace α} {_ : M
     (η ∘ₖ κ).withDensity (fun a _ ↦ f a) = η ∘ₖ (κ.withDensity (fun a _ ↦ f a)) := by
   ext a s hs
   rw [Kernel.withDensity_apply _ (by fun_prop), Kernel.comp_apply, Kernel.comp_apply]
-  simp only [withDensity_const, Measure.smul_apply, smul_eq_mul]
   conv_rhs => rw [Measure.bind_apply hs (by fun_prop)]
-  rw [lintegral_withDensity _ (by fun_prop)]
-  swap; · exact η.measurable_coe hs
-  rw [Measure.bind_apply hs (Kernel.aemeasurable _), lintegral_const_mul]
-  exact η.measurable_coe hs
+  simp only [withDensity_const, Measure.smul_apply, smul_eq_mul]
+  rw [lintegral_withDensity _ (by fun_prop), Measure.bind_apply hs (Kernel.aemeasurable _),
+    lintegral_const_mul]
+  all_goals exact η.measurable_coe hs
 
 variable {Θ 𝓧 𝓧' 𝓨 : Type*} {mΘ : MeasurableSpace Θ} {m𝓧 : MeasurableSpace 𝓧}
   {m𝓧' : MeasurableSpace 𝓧'} [MeasurableSpace 𝓨]
