@@ -251,7 +251,7 @@ variable {W : Type u''} [Category.{v''} W] [MonoidalCategory W]
 local instance : EnrichedOrdinaryCategory W (TransportEnrichment F (ForgetEnrichment V D)) :=
       TransportEnrichment.enrichedOrdinaryCategory (ForgetEnrichment V D) F h
 
-noncomputable example :
+example :
     TransportEnrichment F (ForgetEnrichment V D) ⥤
       ForgetEnrichment W (TransportEnrichment F D) where
   obj X := ForgetEnrichment.of W X
@@ -269,16 +269,37 @@ noncomputable example :
       ← TransportEnrichment.eComp_eq, ← ForgetEnrichment.homOf_comp]
     simp [ForgetEnrichment.to, tensorHom_def' (Functor.LaxMonoidal.ε F)]
 
-noncomputable example :
+lemma Equiv.foo {α β : Type*} {f : α → β} (h : Function.Bijective f) (b : β) :
+    f ((Equiv.ofBijective _ h).symm b) = b := by
+  change (Equiv.ofBijective f h) ((Equiv.ofBijective _ h).symm b) = _
+  simp
+
+example :
     ForgetEnrichment W (TransportEnrichment F D) ⥤ TransportEnrichment F (ForgetEnrichment V D)
       where
-  obj X := X
-  map {X Y} f := ((Equiv.ofBijective _
-    (h (Hom (C := D) (ForgetEnrichment.to V X) (ForgetEnrichment.to V Y)))).symm f)
+  obj X := ForgetEnrichment.of V (ForgetEnrichment.to (C := TransportEnrichment F D) W X)
+  map {X Y} f := ForgetEnrichment.homOf V <|
+    (Equiv.ofBijective _
+      (h (Hom (C := D) (ForgetEnrichment.to V X) (ForgetEnrichment.to V Y)))).symm <|
+    ForgetEnrichment.homTo W f
   map_id X := by
-    sorry
+    rw [← forgetEnrichment_id']
+    congr 1
+    apply Equiv.injective (Equiv.ofBijective _
+      (h (Hom (C := D) (ForgetEnrichment.to V X) (ForgetEnrichment.to V X))))
+    simp [TransportEnrichment.eId_eq]
   map_comp {X} {Y} {Z} f g := by
-    sorry
+    rw [← ForgetEnrichment.homOf_comp]
+    congr 1
+    apply Equiv.injective (Equiv.ofBijective _
+      (h (Hom (C := D) (ForgetEnrichment.to V X) (ForgetEnrichment.to V Z))))
+    simp [TransportEnrichment.eComp_eq]
+    slice_rhs 1 3 =>
+      rw [← Functor.LaxMonoidal.left_unitality_inv, Category.assoc, Category.assoc,
+        ← Functor.LaxMonoidal.μ_natural, ← leftUnitor_inv_comp_tensorHom_assoc,
+        ← tensor_comp_assoc]
+    erw [Equiv.foo (h _), Equiv.foo (h _)]
+    simp
 
 end Equiv
 
