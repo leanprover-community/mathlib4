@@ -3,8 +3,10 @@ Copyright (c) 2021 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
+
 import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 import Mathlib.Analysis.SpecificLimits.Basic
+import Mathlib.NumberTheory.ArithmeticFunction
 
 /-!
 # A collection of specific asymptotic results
@@ -160,3 +162,30 @@ theorem Asymptotics.isEquivalent_nat_ceil :
   filter_upwards with x hx using by rw [hx, Nat.ceil_zero, Nat.cast_eq_zero]
 
 end NormedLinearOrderedField
+
+section ArithmeticFunction
+
+open ArithmeticFunction
+
+theorem ArithmeticFunction.sigma_asymptotic (k : ℕ) :
+    (fun n ↦ (σ k n : ℝ)) =O[atTop] (fun n ↦ (n ^ (k + 1) : ℝ)) := by
+  rw [isBigO_iff]
+  use 1
+  simp
+  use 1
+  intro n hn
+  rw [sigma_apply]
+  norm_cast
+  calc ∑ d ∈ n.divisors, d ^ k
+  _ ≤ ∑ d ∈ n.divisors, n ^ k := by
+      apply Finset.sum_le_sum
+      intro d hd
+      refine pow_le_pow ?_ hn le_rfl
+      exact Nat.divisor_le hd
+  _ ≤ n * n ^ k := by
+      rw [Finset.sum_const, smul_eq_mul]
+      gcongr
+      exact Nat.card_divisors_le_self n
+  _ = n ^ (k + 1) := by ring
+
+end ArithmeticFunction
