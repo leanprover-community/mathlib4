@@ -597,9 +597,9 @@ theorem eq_bot_iff (hgrade : IsGradeSubgroup A G) : G = ⊥ ↔ A = ⊤ := by
     replace hsup : A.ballSubgroup = A.closedBallSubgroup := by simpa using hsup
     contrapose! hsup with h
     apply Subgroup.ext_iff.not.mpr
-    simp_rw [mem_closedBallSubgroup_iff, mem_ballSubgroup_iff h, not_forall]
     induction A using ind with | mk a
-    exact ⟨a, by simp⟩
+    rw [not_forall]
+    exact ⟨a, by simp [h]⟩
   · rintro rfl
     simpa using hsup
 
@@ -622,8 +622,7 @@ theorem mulArchimedeanClass_eq (hgrade : IsGradeSubgroup A G) {a : M} (ha : a �
     contrapose! h0 with hlt
     have ha' : a ∈ ballSubgroup A := (mem_ballSubgroup_iff hA).mpr hlt
     exact (Subgroup.disjoint_def.mp hgrade.disjoint) ha' ha
-  · apply (mem_closedBallSubgroup_iff).mp
-    exact Set.mem_of_subset_of_mem hgrade.le_closedBallSubgroup ha
+  · simpa using Set.mem_of_subset_of_mem hgrade.le_closedBallSubgroup ha
 
 @[to_additive archimedean]
 theorem mulArchimedean (hgrade : IsGradeSubgroup A G) : MulArchimedean G := by
