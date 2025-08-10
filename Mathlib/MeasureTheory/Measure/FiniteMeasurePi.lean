@@ -18,7 +18,7 @@ the underlying space is metrizable and separable.
 ## Main definitions
 
 * `MeasureTheory.FiniteMeasure.pi`: The product of finitely many finite measures.
-* `MeasureTheory.ProbabilityMeasure.prod`: The product of finitely many probability measures.
+* `MeasureTheory.ProbabilityMeasure.pi`: The product of finitely many probability measures.
 
 ## Main results
 
@@ -39,7 +39,7 @@ section FiniteMeasure_product
 
 namespace FiniteMeasure
 
-/-- The binary product of finite measures. -/
+/-- The product of finitely many finite measures. -/
 noncomputable def pi (μ : Π i, FiniteMeasure (α i)) : FiniteMeasure (Π i, α i) :=
   ⟨Measure.pi (fun i ↦ μ i), inferInstance⟩
 
@@ -51,7 +51,7 @@ variable (μ : Π i, FiniteMeasure (α i))
     (FiniteMeasure.pi μ) (Set.pi univ s) = ∏ i, μ i (s i) := by
   simp [coeFn_def]
 
-@[simp] lemma mass_prod : (FiniteMeasure.pi μ).mass = ∏ i, (μ i).mass := by
+@[simp] lemma mass_pi : (FiniteMeasure.pi μ).mass = ∏ i, (μ i).mass := by
   simp only [mass]
   rw [← pi_univ (univ : Set ι), pi_pi]
 
@@ -71,7 +71,7 @@ section ProbabilityMeasure_product
 
 namespace ProbabilityMeasure
 
-/-- The binary product of probability measures. -/
+/-- The product of finitely many probability measures. -/
 noncomputable def pi (μ : Π i, ProbabilityMeasure (α i)) : ProbabilityMeasure (Π i, α i) :=
   ⟨Measure.pi (fun i ↦ μ i), inferInstance⟩
 
@@ -86,7 +86,7 @@ variable (μ : Π i, ProbabilityMeasure (α i))
 
 open TopologicalSpace
 
-/-- The map associating to two probability measures their product is a continuous map. -/
+/-- The map associating to finitely many probability measures their product is a continuous map. -/
 @[fun_prop]
 theorem continuous_pi [∀ i, TopologicalSpace (α i)] [∀ i, SecondCountableTopology (α i)]
     [∀ i, PseudoMetrizableSpace (α i)] [∀ i, OpensMeasurableSpace (α i)] :
@@ -94,7 +94,8 @@ theorem continuous_pi [∀ i, TopologicalSpace (α i)] [∀ i, SecondCountableTo
   refine continuous_iff_continuousAt.2 (fun μ ↦ ?_)
   /- It suffices to check the convergence along elements of a π-system containing arbitrarily
   small neighborhoods of any point, by `tendsto_probabilityMeasure_of_tendsto_of_mem`.
-  We take as a π-system the sets of the form `a ×ˢ b` where `a` and `b` have null frontier. -/
+  We take as a π-system the sets of the form `s₁ × ... × sₙ` where all the `sᵢ` have
+  null frontier. -/
   let S : Set (Set (Π i, α i)) := {t | ∃ (s : Π i, Set (α i)), t = univ.pi s ∧
     (∀ i, MeasurableSet (s i)) ∧ (∀ i, μ i (frontier (s i)) = 0)}
   have : IsPiSystem S := by
@@ -110,7 +111,7 @@ theorem continuous_pi [∀ i, TopologicalSpace (α i)] [∀ i, SecondCountableTo
       fun i ↦ TopologicalSpace.pseudoMetrizableSpacePseudoMetric (α i)
     intro u u_open x xu
     obtain ⟨ε, εpos, hε⟩ : ∃ ε > 0, ball x ε ⊆ u := Metric.isOpen_iff.1 u_open x xu
-    have A (i) : ∃ r ∈ Ioo 0 ε , (μ i : Measure (α i)) (frontier (Metric.thickening r {x i})) = 0 :=
+    have A (i) : ∃ r ∈ Ioo 0 ε, (μ i : Measure (α i)) (frontier (Metric.thickening r {x i})) = 0 :=
       exists_null_frontier_thickening _ _ εpos
     choose! r rpos hr using A
     refine ⟨univ.pi (fun i ↦ ball (x i) (r i)), ⟨fun i ↦ ball (x i) (r i), rfl,
@@ -119,10 +120,7 @@ theorem continuous_pi [∀ i, TopologicalSpace (α i)] [∀ i, SecondCountableTo
       · exact isOpen_set_pi finite_univ (by simp)
       · simpa using fun i ↦ (rpos i).1
     · calc univ.pi fun i ↦ ball (x i) (r i)
-      _ ⊆ univ.pi fun i ↦ ball (x i) ε := by
-        apply Set.pi_mono (fun i hi ↦ ?_)
-        gcongr
-        exact (rpos i).2.le
+      _ ⊆ univ.pi fun i ↦ ball (x i) ε := by gcongr with i hi; exact (rpos i).2.le
       _ ⊆ u := by rwa [← ball_pi _ εpos]
   · rintro - ⟨s, rfl, smeas, hs⟩
     simp only [pi_pi]
