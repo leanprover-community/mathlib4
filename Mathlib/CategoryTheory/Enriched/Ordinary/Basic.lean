@@ -227,7 +227,6 @@ open EnrichedCategory
 `(𝟙_ V ⟶ v) → (𝟙_ W ⟶ F.obj v)` is bijective, and `C` is an enriched ordinary category on `V`,
 then `F` induces the structure of a `W`-enriched ordinary category on `TransportEnrichment F C`,
 i.e. on the same underlying category `C`. -/
-@[simps!]
 noncomputable def TransportEnrichment.enrichedOrdinaryCategory
     (h : ∀ v : V, Function.Bijective fun (f : 𝟙_ V ⟶ v) => Functor.LaxMonoidal.ε F ≫ F.map f) :
     EnrichedOrdinaryCategory W (TransportEnrichment F C) where
@@ -287,9 +286,8 @@ def TransportEnrichment.forgetEnrichmentEquivInverse :
     simp [TransportEnrichment.eId_eq]
   map_comp {X} {Y} {Z} f g := by
     rw [← ForgetEnrichment.homOf_comp]
-    congr 1
-    apply Equiv.injective (Equiv.ofBijective _
-      (h (Hom (C := D) (ForgetEnrichment.to V X) (ForgetEnrichment.to V Z))))
+    congr
+    apply Equiv.injective (Equiv.ofBijective _ (h _))
     simp only [forgetEnrichment_comp, eComp_eq, Category.assoc, Equiv.apply_symm_apply,
       Equiv.ofBijective_apply, Functor.map_comp]
     slice_rhs 1 3 =>
