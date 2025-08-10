@@ -61,34 +61,33 @@ lemma eq_trivial_of_isEquiv_trivial [DecidablePred fun x : R ↦ x = 0] [NoZeroD
   · simp only [ne_eq, hx, not_false_eq_true, trivial_apply] at hc ⊢
     exact (Real.rpow_left_inj (f.nonneg x) zero_le_one hc₀.ne').mp <| (Real.one_rpow c).symm ▸ hc
 
-variable {F S : Type*} [Field F] [Field S] [LinearOrder S] [IsStrictOrderedRing S]
-  {v w : AbsoluteValue F S}
+section LinearOrderedField
 
-open Filter in
-theorem abv_lt_one_iff_of_abv_lt_one_imp [Archimedean S] [TopologicalSpace S] [OrderTopology S]
-    (hv : v.IsNontrivial) (h : ∀ x, v x < 1 → w x < 1) {a : F} :
-    v a < 1 ↔ w a < 1:= by
+variable {R S : Type*} [Field R] [Field S] [LinearOrder S] [IsStrictOrderedRing S]
+  {v w : AbsoluteValue R S}
+
+theorem lt_one_iff_of_abv_lt_one_imp [Archimedean S] (hv : v.IsNontrivial)
+    (h : ∀ x, v x < 1 → w x < 1) {a : R} :
+    v a < 1 ↔ w a < 1 := by
   let ⟨x₀, hx₀⟩ := hv.exists_abv_lt_one
+  by_cases ha₀ : a = 0
+  · simp only [ha₀, AbsoluteValue.map_zero, zero_lt_one]
   refine ⟨h a, fun hw ↦ ?_⟩
   by_contra! hv
   have (n : ℕ) : w x₀ < w a ^ n := by
-    rw [← one_mul (_ ^ _), ← mul_inv_lt_iff₀ (pow_pos (pos_of_abv_pos w (by linarith)) _),
+    rw [← one_mul (_ ^ _), ← mul_inv_lt_iff₀ (pow_pos (v.pos_of_abv_pos w (v.pos ha₀)) _),
       ← map_pow, ← map_inv₀, ← map_mul]
     apply h
-    rw [map_mul, map_inv₀, map_pow, mul_inv_lt_iff₀ (pow_pos (by linarith) _), one_mul]
+    rw [map_mul, map_inv₀, map_pow, mul_inv_lt_iff₀ (pow_pos (by simp_all) _), one_mul]
     exact lt_of_lt_of_le hx₀.2 <| one_le_pow₀ hv
-  have hcontr : atTop.Tendsto (fun (_ : ℕ) ↦ w x₀) (𝓝 0) := by
-    let hwn := tendsto_pow_atTop_nhds_zero_iff.2 <| by convert abs_eq_self.2 (w.nonneg _) ▸ hw
-    exact tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds hwn
-      (Eventually.of_forall fun _ ↦ w.nonneg x₀) (by simpa using ⟨1, fun n _ ↦ le_of_lt (this n)⟩)
-  linarith [tendsto_nhds_unique hcontr tendsto_const_nhds, w.pos hx₀.1]
+  obtain ⟨n, hn⟩ := exists_pow_lt_of_lt_one (w.pos hx₀.1) hw
+  linarith [this n]
 
-end AbsoluteValue
-
-namespace Real.AbsoluteValue
+end LinearOrderedField
 
 variable {F : Type*} [Field F] {v w : AbsoluteValue F ℝ}
 
+open Real in
 /--
 If $v$ and $w$ are two real absolute values on a field $F$, $v$ is non-trivial, and $v(x) < 1$ if
 and only if $w(x) < 1$, then $\frac{\log (v(a))}{\log (w(a))}$ is constant for all $a ∈ F$
@@ -96,66 +95,59 @@ with $1 < v(a)$.
 -/
 theorem log_div_image_eq_singleton_of_abv_lt_one_iff (hv : v.IsNontrivial)
     (h : ∀ x, v x < 1 ↔ w x < 1) :
-    let f : F → ℝ := fun a ↦ Real.log (v a) / Real.log (w a)
+    letI f : F → ℝ := fun a ↦ (v a).log / (w a).log
     ∃ (a : F) (_ : 1 < v a), ∀ (b : F) (_ : 1 < v b), f b = f a := by
-  obtain ⟨a, ha⟩ := hv.exists_abv_gt_one
+  let ⟨a, ha⟩ := hv.exists_abv_gt_one
   refine ⟨a, ha, fun b hb₁ ↦ ?_⟩
   by_contra! hb₂
-  wlog h_lt : Real.log (v b) / Real.log (w b) < Real.log (v a) / Real.log (w a) generalizing a b
+  wlog h_lt : (v b).log / (w b).log < (v a).log / (w a).log generalizing a b
   · exact this b hb₁ a ha hb₂.symm <| lt_of_le_of_ne (not_lt.1 h_lt) hb₂.symm
-  have : Real.log (v b) / Real.log (v a) < Real.log (w b) / Real.log (w a) := by
-    have hwa := Real.log_pos <| (v.one_lt_iff_of_lt_one_iff h _).1 ha
-    have hwb := Real.log_pos <| (v.one_lt_iff_of_lt_one_iff h _).1 hb₁
-    rwa [div_lt_div_iff₀ (Real.log_pos ha) hwa, mul_comm (Real.log (w _)),
-      ← div_lt_div_iff₀ hwb hwa]
-  let ⟨q, hq⟩ := exists_rat_btwn this
-  rw [← Rat.num_div_den q, Rat.cast_div, Rat.cast_intCast, Rat.cast_natCast] at hq
-  have h₀ : v (b ^ q.den / a ^ q.num) < 1 := by
-    have := hq.1
-    rwa [div_lt_div_iff₀ (Real.log_pos ha) (by simp only [Nat.cast_pos, q.den_pos]), mul_comm,
-      ← Real.log_pow, ← Real.log_zpow, Real.log_lt_log_iff (pow_pos (by linarith) _)
-      (zpow_pos (by linarith) _), ← div_lt_one (zpow_pos (by linarith) _),
-      ← map_pow, ← map_zpow₀, ← map_div₀] at this
-  have h₁ : 1 < w (b ^ q.den / a ^ q.num) := by
-    have hwa := (v.one_lt_iff_of_lt_one_iff h _).1 ha
-    have := hq.2
-    rwa [div_lt_div_iff₀ (by simp only [Nat.cast_pos, q.den_pos]) (Real.log_pos hwa),
-      mul_comm (Real.log (w _)), ← Real.log_pow, ← Real.log_zpow,
-      Real.log_lt_log_iff (zpow_pos (by linarith) _)
-      (pow_pos (by linarith [(v.one_lt_iff_of_lt_one_iff h _).1 hb₁]) _),
-      ← one_lt_div (zpow_pos (by linarith) _), ← map_pow, ← map_zpow₀, ← map_div₀] at this
-  exact not_lt_of_gt ((h _).1 h₀) h₁
+  have hwa := (v.one_lt_iff_of_lt_one_iff h _).1 ha
+  have hwb := (v.one_lt_iff_of_lt_one_iff h _).1 hb₁
+  rw [div_lt_div_iff₀ (log_pos hwb) (log_pos hwa), mul_comm (v a).log,
+    ← div_lt_div_iff₀ (log_pos ha) (log_pos hwa)] at h_lt
+  let ⟨q, ⟨hq₁, hq₂⟩⟩ := exists_rat_btwn h_lt
+  rw [← Rat.num_div_den q, Rat.cast_div, Rat.cast_intCast, Rat.cast_natCast] at hq₁ hq₂
+  rw [div_lt_div_iff₀ (log_pos ha) (by simp [q.den_pos]), mul_comm, ← log_pow, ← log_zpow,
+    log_lt_log_iff (pow_pos (by linarith) _) (zpow_pos (by linarith) _),
+    ← div_lt_one (zpow_pos (by linarith) _), ← map_pow, ← map_zpow₀, ← map_div₀] at hq₁
+  rw [div_lt_div_iff₀ (by simp [q.den_pos]) (log_pos hwa), mul_comm (w _).log,
+    ← log_pow, ← log_zpow, log_lt_log_iff (zpow_pos (by linarith) _) (pow_pos (by linarith) _),
+    ← one_lt_div (zpow_pos (by linarith) _), ← map_pow, ← map_zpow₀, ← map_div₀] at hq₂
+  exact not_lt_of_gt ((h _).1 hq₁) hq₂
 
+open Real in
 theorem exists_rpow_of_abv_one_lt_iff {v w : AbsoluteValue F ℝ} (hv : v.IsNontrivial)
     (h : ∀ x, v x < 1 ↔ w x < 1) :
     ∃ (t : ℝ) (_ : 0 < t), ∀ x, 1 < v x → w x ^ t = v x := by
   obtain ⟨a, ha, hlog⟩ := log_div_image_eq_singleton_of_abv_lt_one_iff hv h
-  refine ⟨Real.log (v a) / Real.log (w a),
-    div_pos (Real.log_pos ha) (Real.log_pos ((v.one_lt_iff_of_lt_one_iff h a).1 ha)), fun b hb ↦ ?_⟩
+  refine ⟨(v a).log / (w a).log,
+    div_pos (log_pos ha) (log_pos ((v.one_lt_iff_of_lt_one_iff h a).1 ha)), fun b hb ↦ ?_⟩
   simp_rw [← hlog b hb]
   have := (v.one_lt_iff_of_lt_one_iff h b).1 hb
-  rw [div_eq_inv_mul, Real.rpow_mul (w.nonneg _), Real.rpow_inv_log (by linarith) (by linarith),
-    Real.exp_one_rpow, Real.exp_log (by linarith)]
+  rw [div_eq_inv_mul, rpow_mul (w.nonneg _), rpow_inv_log (by linarith) (by linarith),
+    exp_one_rpow, exp_log (by linarith)]
 
+open Real in
 /--
 If $v$ and $w$ be two real absolute values on a field $F$, where $v$ is non-trivial, then $v$ and
 $w$ are equivalent if and only if $v(x) < 1$ exactly when $w(x) < 1$.
 -/
 theorem isEquiv_iff_abv_lt_one_iff {v : AbsoluteValue F ℝ} (w : AbsoluteValue F ℝ)
     (hv : v.IsNontrivial) : w.IsEquiv v ↔ (∀ x, v x < 1 ↔ w x < 1) := by
-  refine ⟨fun ⟨t, ht, h⟩ x ↦ h ▸ (Real.rpow_lt_one_iff' (w.nonneg x) ht), fun h ↦ ?_⟩
-  obtain ⟨t, ht, hsuff⟩ := exists_rpow_of_abv_one_lt_iff hv h
+  refine ⟨fun ⟨t, ht, h⟩ x ↦ h ▸ (rpow_lt_one_iff' (w.nonneg x) ht), fun h ↦ ?_⟩
+  obtain ⟨t, ht, h_imp⟩ := exists_rpow_of_abv_one_lt_iff hv h
   refine ⟨t, ht, funext fun x ↦ ?_⟩
   by_cases h₀ : v x = 0
   · rw [(map_eq_zero v).1 h₀, map_zero, map_zero, zero_rpow (by linarith)]
   · by_cases h₁ : v x = 1
     · rw [h₁, (v.eq_one_iff_of_lt_one_iff h x).1 h₁, one_rpow]
     · by_cases h₂ : 0 < v x ∧ v x < 1
-      · rw [← inv_inj, ← map_inv₀ v, ← hsuff _ (map_inv₀ v _ ▸ one_lt_inv_iff₀.2 h₂), map_inv₀,
+      · rw [← inv_inj, ← map_inv₀ v, ← h_imp _ (map_inv₀ v _ ▸ one_lt_inv_iff₀.2 h₂), map_inv₀,
           inv_rpow (w.nonneg _)]
       · rw [← one_lt_inv_iff₀, ← map_inv₀, not_lt] at h₂
         rw [← ne_eq, ← inv_ne_one, ← map_inv₀] at h₁
-        exact hsuff _ <| (v.inv_lt_one_iff.1 <| lt_of_le_of_ne h₂ h₁).resolve_left
+        exact h_imp _ <| (v.inv_lt_one_iff.1 <| lt_of_le_of_ne h₂ h₁).resolve_left
           ((map_ne_zero v).1 h₀)
 
 /--
@@ -166,7 +158,7 @@ theorem exists_abv_lt_one_abv_one_le_of_not_isEquiv {v w : AbsoluteValue F ℝ} 
     (h : ¬w.IsEquiv v) :
     ∃ a : F, v a < 1 ∧ 1 ≤ w a := by
   contrapose! h
-  exact isEquiv_iff_abv_lt_one_iff _ hv |>.2 <| fun  _ ↦ v.abv_lt_one_iff_of_abv_lt_one_imp hv h
+  exact isEquiv_iff_abv_lt_one_iff _ hv |>.2 <| fun  _ ↦ v.lt_one_iff_of_abv_lt_one_imp hv h
 
 /--
 If $v$ and $w$ are two non-trivial and inequivalent absolute values then
@@ -180,4 +172,4 @@ theorem exists_abv_one_lt_abv_lt_one_of_not_isEquiv {v w : AbsoluteValue F ℝ} 
   exact ⟨b / a, by simpa using ⟨one_lt_div (w.pos_of_abv_pos v (by linarith)) |>.2 (by linarith),
     div_lt_one (by linarith) |>.2 (by linarith)⟩⟩
 
-end Real.AbsoluteValue
+end AbsoluteValue
