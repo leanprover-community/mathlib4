@@ -130,13 +130,13 @@ The support of a ring preordering `P` in a commutative ring `R` is
 the set of elements `x` in `R` such that both `x` and `-x` lie in `P`.
 -/
 def supportAddSubgroup : AddSubgroup R where
-  carrier := (P : Set R) ∩ -(P : Set R)
+  carrier := P ∩ -P
   zero_mem' := by aesop
   add_mem' := by aesop
   neg_mem' := by aesop
 
 theorem mem_supportAddSubgroup {x} : x ∈ P.supportAddSubgroup ↔ x ∈ P ∧ -x ∈ P := .rfl
-theorem coe_supportAddSubgroup : P.supportAddSubgroup = (P : Set R) ∩ -(P : Set R) := rfl
+theorem coe_supportAddSubgroup : P.supportAddSubgroup = (P ∩ -P : Set R) := rfl
 
 end supportAddSubgroup
 
