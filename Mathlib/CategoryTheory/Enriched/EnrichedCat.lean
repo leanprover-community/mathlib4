@@ -5,6 +5,7 @@ Authors: Jakob von Raumer
 -/
 import Mathlib.CategoryTheory.Enriched.Basic
 import Mathlib.CategoryTheory.Bicategory.Basic
+import Mathlib.Tactic.Widget.StringDiagram
 
 /-!
 # The bicategory of `V`-enriched categories
@@ -86,6 +87,15 @@ def associator (F : EnrichedFunctor V C D) (G : EnrichedFunctor V D E)
     Functor.isoWhiskerLeft _ (G.forgetComp H).symm ≪≫
     (F.forgetComp _).symm
 
+lemma comp_whiskerRight {F G H : EnrichedFunctor V C D} (α : F ⟶ G)
+    (β : G ⟶ H) (I : EnrichedFunctor V D E) :
+    whiskerRight V (α ≫ β) I = whiskerRight V α I ≫ whiskerRight V β I := by
+  refine EnrichedFunctor.hom_ext fun X => ?_
+  simp only [EnrichedFunctor.forget, EnrichedFunctor.comp_obj, EnrichedFunctor.comp_map,
+    whiskerRight_app, to_of, NatTrans.comp_app, homTo_comp, Category.assoc,
+    EnrichedFunctor.map_comp, Category.comp_id]
+  simp [← ForgetEnrichment.homOf_comp]
+
 /-- The bicategory structure on `EnrichedCat V` for a monoidal category `V`. -/
 instance bicategory : Bicategory (EnrichedCat.{w, v, u} V) where
   Hom C D := EnrichedFunctor V C D
@@ -114,10 +124,7 @@ instance bicategory : Bicategory (EnrichedCat.{w, v, u} V) where
   id_whiskerRight F G := by
     refine EnrichedFunctor.hom_ext fun X => ?_
     simp [EnrichedFunctor.forget]
-  comp_whiskerRight α β F := by
-    refine EnrichedFunctor.hom_ext fun X => ?_
-    simp [EnrichedFunctor.forget]
-    sorry
+  comp_whiskerRight := comp_whiskerRight V
   whiskerRight_id α := by
     refine EnrichedFunctor.hom_ext fun X => ?_
     simp [EnrichedFunctor.forget]
@@ -132,8 +139,10 @@ instance bicategory : Bicategory (EnrichedCat.{w, v, u} V) where
     simp [EnrichedFunctor.forget]
   whisker_exchange {_} {_} {_} {F} {G} {H} {J} α β := by
     refine EnrichedFunctor.hom_ext fun X => ?_
-    simp [EnrichedFunctor.forget]
-    sorry
+    simp only [EnrichedFunctor.forget, EnrichedFunctor.comp_obj, EnrichedFunctor.comp_map,
+      EnrichedFunctor.category_comp, NatTrans.comp_app, whiskerRight_app, to_of, Category.comp_id,
+      whiskerLeft_app]
+    exact (β.naturality (α.app (ForgetEnrichment.of V X))).symm
 
 end EnrichedCat
 
