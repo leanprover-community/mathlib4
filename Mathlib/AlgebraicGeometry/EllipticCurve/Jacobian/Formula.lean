@@ -735,7 +735,7 @@ lemma map_dblX : (W'.map f).toJacobian.dblX (f ∘ P) = f (W'.dblX P) := by
 @[simp]
 lemma map_negDblY : (W'.map f).toJacobian.negDblY (f ∘ P) = f (W'.negDblY P) := by
   simp only [negDblY, map_dblU, map_dblX, map_negY]
-  map_simp
+  simp
 
 @[simp]
 lemma map_dblY : (W'.map f).toJacobian.dblY (f ∘ P) = f (W'.dblY P) := by
