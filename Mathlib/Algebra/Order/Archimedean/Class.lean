@@ -44,6 +44,7 @@ the order.
 
 -/
 
+section ArchimedeanOrder
 variable {M : Type*}
 
 variable (M) in
@@ -96,7 +97,8 @@ theorem le_def {a b : MulArchimedeanOrder M} : a ≤ b ↔ ∃ n, |b.val|ₘ ≤
 @[to_additive]
 theorem lt_def {a b : MulArchimedeanOrder M} : a < b ↔ ∀ n, |b.val|ₘ ^ n < |a.val|ₘ := .rfl
 
-variable {M : Type*} [CommGroup M] [LinearOrder M] [IsOrderedMonoid M] {a b : M}
+variable {M : Type*}
+variable [CommGroup M] [LinearOrder M] [IsOrderedMonoid M] {a b : M}
 
 @[to_additive]
 instance : Preorder (MulArchimedeanOrder M) where
@@ -136,22 +138,25 @@ def orderHom (f : M →*o N) : MulArchimedeanOrder M →o MulArchimedeanOrder N 
 
 end MulArchimedeanOrder
 
+end ArchimedeanOrder
+
+variable {M : Type*}
+variable [CommGroup M] [LinearOrder M] [IsOrderedMonoid M] {a b : M}
+
+variable (M) in
 /-- `MulArchimedeanClass` is the antisymmetrization of `MulArchimedeanOrder`. -/
 @[to_additive ArchimedeanClass
 "`ArchimedeanClass` is the antisymmetrization of `ArchimedeanOrder`."]
-def MulArchimedeanClass (M : Type*) [CommGroup M] [LinearOrder M] [IsOrderedMonoid M] :=
-  Antisymmetrization (MulArchimedeanOrder M) (· ≤ ·)
+def MulArchimedeanClass := Antisymmetrization (MulArchimedeanOrder M) (· ≤ ·)
 
 namespace MulArchimedeanClass
-variable [CommGroup M] [LinearOrder M] [IsOrderedMonoid M] {a b : M}
 
 /-- The archimedean class of a given element. -/
 @[to_additive "The archimedean class of a given element."]
 def mk (a : M) : MulArchimedeanClass M := toAntisymmetrization _ (MulArchimedeanOrder.of a)
 
 /-- An induction principle for `MulArchimedeanClass`. -/
-@[to_additive (attr := elab_as_elim, induction_eliminator)
-"An induction principle for `ArchimedeanClass`"]
+@[to_additive (attr := elab_as_elim) "An induction principle for `ArchimedeanClass`"]
 theorem ind {motive : MulArchimedeanClass M → Prop} (mk : ∀ a, motive (.mk a)) : ∀ x, motive x :=
   Antisymmetrization.ind _ mk
 
