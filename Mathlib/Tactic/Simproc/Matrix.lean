@@ -22,63 +22,91 @@ attribute [-simp] cons_transpose
 
 namespace Qq
 
-/-- Decompose a vector expression into a vector of expressions. -/
+/-- Decompose a vector expression into a vector of expressions.
+
+Partial inverse of `PiFin.mkLiteralQ` in `Mathlib/Data/Fin/VecNotation.lean`.
+
+E.g. `q(![a, b, c])` becomes `![q(a), q(b), q(c)]`. -/
 def piFinLit? {u : Level} {n : ℕ} {R : Q(Type u)} (e : Q(Fin $n → $R)) :
     MetaM (Option (Fin n → Q($R))) := do
   match n with
-  | 0 => return .some ![]
+  | 0 =>
+    let ~q(![]) := e | return .none
+    return .some ![]
   | _+1 =>
     let ~q(vecCons $h $et) := e | return .none
     let .some t ← piFinLit? et | return .none
     return .some (vecCons h t)
 
 /-- Decompose a "double vector" expression, i.e. `Fin m → Fin n → R`, into a double vector of
-expressions. -/
+expressions.
+
+Partial inverse of two applications of `PiFin.mkLiteralQ` in `Mathlib/Data/Fin/VecNotation.lean`.
+
+E.g. `q(![![a, b], ![c, d]])` becomes `![![q(a), q(b)], ![q(c), q(d)]]`. -/
 def piFinPiFinLit? {u : Level} {m n : ℕ} {R : Q(Type u)} (e : Q(Fin $m → Fin $n → $R)) :
     MetaM (Option (Fin m → Fin n → Q($R))) := do
   match m with
-  | 0 => return .some ![]
+  | 0 =>
+    let ~q(![]) := e | return .none
+    return .some ![]
   | _+1 =>
     let ~q(vecCons $h $et) := e | return .none
     let .some h ← piFinLit? h | return .none
     let .some t ← piFinPiFinLit? et | return .none
     return .some (vecCons h t)
 
-/-- Decompose a matrix expression into a matrix of expressions. -/
+/-- Decompose a matrix expression into a matrix of expressions.
+
+Partial inverse of `Matrix.mkLiteralQ` in `Mathlib/Data/Matrix/Notation.lean`.
+
+E.g. `q(!![a, b; c, d])` becomes `!![q(a), q(b); q(c), q(d)]`. -/
 def matrixLit? {u : Level} {m n : ℕ} {R : Q(Type u)} (eM : Q(Matrix (Fin $m) (Fin $n) $R)) :
     MetaM (Option (Matrix (Fin m) (Fin n) Q($R))) := do
   let ~q(of $eM) := eM | return .none
   let .some M ← piFinPiFinLit? eM | return .none
   return of M
 
-/-- Given a matrix of expressions, construct a proof of `(mkLiteralQ M)ᵀ = mkLiteralQ (Mᵀ)`. -/
+/-- Converts `f a₀ a₁ a₂` to `fun a₀ a₁ a₂ ↦ f a₀ a₁ a₂`.
+
+This assumes they are all explicit variables with the same type.
+
+This does not substitute the variables with their de Bruijn indices. To do so, call
+`Lean.Expr.abstract` on the result of this function. -/
+def mkLambdas (names : Array Name) (type : Expr) (body : Expr) : Expr :=
+  names.foldr (fun n b' ↦ .lam n type b' .default) body
+
+/-- Given a matrix of expressions `M`, construct the proposition saying `q(M)ᵀ = q(Mᵀ)`. -/
+def mkTransposeProp {u : Level} {α : Q(Type u)} {m n : ℕ} (M : Matrix (Fin m) (Fin n) Q($α)) :
+    Q(Prop) :=
+  q($(mkLiteralQ M)ᵀ = $(mkLiteralQ Mᵀ))
+
+/-- Given a matrix of expressions, construct a proof of `q(M)ᵀ = q(Mᵀ)`. -/
 def mkTransposeProof {u : Level} {α : Q(Type u)} {m n : ℕ} (M : Matrix (Fin m) (Fin n) Q($α)) :
-    (P : Q(Prop)) × Q($P) :=
-  ⟨q($(mkLiteralQ M)ᵀ = $(mkLiteralQ Mᵀ)),
-  cast (by rfl) q((etaExpand_eq $(mkLiteralQ M)ᵀ).symm)⟩
+    Quoted (mkTransposeProp M) :=
+  -- we want `$lhs = $rhs`, but our proof is `pf' : $lhs = $rhs'`, where we know that `$rhs'` will
+  -- be defeq to `$rhs`, therefore we construct the proof `@id ($lhs = $rhs) pf' : $lhs = $rhs`.
+  -- This proof cannot be `q()` quoted because it won't compile in compilation time, it will only
+  -- make sense in runtime.
+  have pf' := q((etaExpand_eq $(mkLiteralQ M)ᵀ).symm)
+  mkApp2 (.const ``id [.zero]) (mkTransposeProp M) pf'
 
 /-- Prove a statement of the form
-```
+```lean
 theorem Matrix.transpose₂₃ {α : Type*} (a₀₀ a₀₁ a₀₂ a₁₀ a₁₁ a₁₂ : α) :
     !![a₀₀, a₀₁, a₀₂; a₁₀, a₁₁, a₁₂]ᵀ = !![a₀₀, a₁₀; a₀₁, a₁₁; a₀₂, a₁₂] :=
   (etaExpand_eq _).symm
 ```
-Returns the type of this statement and its proof. -/
-def mkTransposeProp (u : Level) (m n : ℕ) : (P : Q(Prop)) × Q($P) :=
-  let α : Q(Type u) := Expr.fvar ⟨`α⟩
-  let varName (i : Fin m) (j : Fin n) : Name :=
-    ("a_" ++ i.val.repr ++ "_" ++ j.val.repr).toName
-  let var (i : Fin m) (j : Fin n) : Q($α) :=
-    .fvar ⟨varName i j⟩
-  let ⟨P', pf'⟩ := mkTransposeProof (of var)
-  let argsE : List Expr :=
-    [α] ++ (List.finRange m).flatMap fun i : Fin m ↦ List.ofFn fun j : Fin n ↦ by exact var i j
-  let argsD : List LocalDecl :=
-    [.cdecl 0 ⟨`α⟩ `α (.sort u.succ) .implicit .default] ++
-    (List.finRange m).flatMap fun i : Fin m ↦ List.ofFn fun j : Fin n ↦
-      .cdecl (finProdFinEquiv (i, j) + 1) ⟨varName i j⟩ (varName i j) α .default .default
-  ⟨Closure.mkForall argsD.toArray (P'.abstract argsE.toArray),
-  Closure.mkLambda argsD.toArray (pf'.abstract argsE.toArray)⟩
+-/
+def mkTransposeTheorem (u : Level) (m n : Nat) : Q(Prop) :=
+  have α : Q(Type u) := .fvar ⟨.anonymous⟩
+  have nameE (i j : Nat) : Q($α) := .fvar ⟨.num (.num .anonymous i) j⟩
+  have namesA : Array Name := .ofFn fun t : Fin (m * n) ↦ s!"r{t/n}c{t%n}".toName
+  have argsA : Array Q($α) := .ofFn fun t : Fin (m * n) ↦ nameE (t/n) (t%n)
+  have M : Matrix (Fin m) (Fin n) Q($α) := of fun i j ↦ nameE i j
+  have pf' := mkTransposeProof M
+  have pf_α := mkLambdas namesA q($α) (pf'.abstract argsA)
+  .lam `α q(Type u) (pf_α.abstract #[α]) .implicit
 
 end Qq
 
@@ -100,9 +128,7 @@ elab:max (name := transpose_tac_elab)
     | throwErrorAt mStx "Expecting a natural number, have{indentD m}"
   let some n ← (evalNat n).run
     | throwErrorAt nStx "Expecting a natural number, have{indentD n}"
-  let ⟨P, h⟩ := mkTransposeProp u m n
-  let .some h ← checkTypeQ h P | throwError m!"Wrong proof generated for {m}, {n}."
-  mkExpectedTypeHint h P
+  return mkTransposeTheorem u m n
 
 example (u : Matrix (Fin 2) (Fin 3) ℤ) (v : Matrix (Fin 3) (Fin 2) ℤ)
     (hu : u = !![1, 2, 3; 4, 5, 6]) (hv : v = !![1, 4; 2, 5; 3, 6]) :
@@ -123,8 +149,8 @@ simproc matrix_transpose (Matrix.transpose (Matrix.of _)) := .ofQ fun u α eMT �
   let ~q(@Matrix (Fin (OfNat.ofNat $en)) (Fin (OfNat.ofNat $em)) $R) := α | return .continue
   let ~q(transpose $eM) := eMT | return .continue
   let .some M ← matrixLit? (m := em.natLit!) (n := en.natLit!) (R := R) eM | return .continue
-  let ⟨P, h⟩ := mkTransposeProof M
-  let ~q($lhs = $rhs) := P | return .continue
+  let h := mkTransposeProof M
+  let ⟨0, ~q($lhs = $rhs), h⟩ ← inferTypeQ h | return .continue
   return .visit { expr := rhs, proof? := .some h }
 
 example (u : Matrix (Fin 2) (Fin 3) ℤ) (v : Matrix (Fin 3) (Fin 2) ℤ)
