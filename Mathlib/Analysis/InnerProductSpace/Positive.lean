@@ -187,7 +187,7 @@ theorem IsSymmetricProjection.le_iff_comp_eq_right {p q : E →ₗ[𝕜] E}
   intro a ha
   specialize h2 a
   have hh {T : E →ₗ[𝕜] E} (hT : T.IsSymmetricProjection) : RCLike.re ⟪T a, a⟫_𝕜 = ‖T a‖ ^ 2 := by
-    nth_rw 1 [← hT.isIdempotentElem]
+    conv_lhs => rw [← hT.isIdempotentElem]
     rw [Module.End.mul_apply, hT.isSymmetric]
     exact inner_self_eq_norm_sq _
   simp_rw [sub_apply, inner_sub_left, map_sub, hh hq, hh hp,
