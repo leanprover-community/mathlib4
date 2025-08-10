@@ -358,7 +358,7 @@ lemma one_apply_def (x : R) : (1 : Valuation R Γ₀) x = if x = 0 then 0 else 1
 lemma one_apply_of_ne_zero {x : R} (hx : x ≠ 0) : (1 : Valuation R Γ₀) x = 1 := if_neg hx
 
 @[simp]
-lemma one_apply_eq_zero_iff [NeZero (1 : Γ₀)] {x : R} : (1 : Valuation R Γ₀) x = 0 ↔ x = 0 :=
+lemma one_apply_eq_zero_iff [Nontrivial Γ₀] {x : R} : (1 : Valuation R Γ₀) x = 0 ↔ x = 0 :=
   MonoidWithZeroHom.one_apply_eq_zero_iff
 
 lemma one_apply_le_one (x : R) : (1 : Valuation R Γ₀) x ≤ 1 := by
@@ -366,7 +366,7 @@ lemma one_apply_le_one (x : R) : (1 : Valuation R Γ₀) x ≤ 1 := by
   split_ifs <;> simp_all
 
 @[simp]
-lemma one_apply_lt_one_iff [NeZero (1 : Γ₀)] {x : R} : (1 : Valuation R Γ₀) x < 1 ↔ x = 0 := by
+lemma one_apply_lt_one_iff [Nontrivial Γ₀] {x : R} : (1 : Valuation R Γ₀) x < 1 ↔ x = 0 := by
   rw [one_apply_def]
   split_ifs <;> simp_all
 
