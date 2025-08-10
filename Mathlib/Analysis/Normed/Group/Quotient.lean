@@ -220,7 +220,7 @@ example :
       (instSeminormedCommGroup S).toUniformSpace.toTopologicalSpace := rfl
 
 example [IsClosed (S : Set M)] :
-   (instSeminormedCommGroup S) = NormedCommGroup.toSeminormedCommGroup := rfl
+    (instSeminormedCommGroup S) = NormedCommGroup.toSeminormedCommGroup := rfl
 
 end QuotientGroup
 

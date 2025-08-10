@@ -410,10 +410,12 @@ lemma H1π_comp_map :
 alias H1π_comp_H1Map := H1π_comp_map
 
 @[simp]
-theorem map_1_one (φ : (Action.res _ 1).obj A ⟶ B) :
+theorem map₁_one (φ : (Action.res _ 1).obj A ⟶ B) :
     map 1 φ 1 = 0 := by
   simp [← cancel_epi (H1π _)]
 
+@[deprecated (since := "2025-07-31")]
+alias map_1_one := map₁_one
 @[deprecated (since := "2025-06-09")]
 alias H1Map_one := map_1_one
 
@@ -431,7 +433,7 @@ noncomputable def H1InfRes :
   f := map (QuotientGroup.mk' S) (subtype _ _ <| le_comap_invariants A.ρ S) 1
   g := map S.subtype (𝟙 _) 1
   zero := by rw [← map_comp, Category.comp_id, congr (QuotientGroup.mk'_comp_subtype S)
-    (fun f φ => map f φ 1), map_1_one]
+    (fun f φ => map f φ 1), map₁_one]
 
 /-- The inflation map `H¹(G ⧸ S, A^S) ⟶ H¹(G, A)` is a monomorphism. -/
 instance : Mono (H1InfRes A S).f := by
@@ -588,8 +590,8 @@ alias H2π_comp_H2Map := H2π_comp_map
 
 end H2
 
+variable (k G)
 
-variable (k G) in
 /-- The functor sending a representation to its complex of inhomogeneous cochains. -/
 @[simps]
 noncomputable def cochainsFunctor : Rep k G ⥤ CochainComplex (ModuleCat k) ℕ where
@@ -601,7 +603,6 @@ noncomputable def cochainsFunctor : Rep k G ⥤ CochainComplex (ModuleCat k) ℕ
 instance : (cochainsFunctor k G).PreservesZeroMorphisms where
 instance : (cochainsFunctor k G).Additive where
 
-variable (k G) in
 /-- The functor sending a `G`-representation `A` to `Hⁿ(G, A)`. -/
 @[simps]
 noncomputable def functor (n : ℕ) : Rep k G ⥤ ModuleCat k where
@@ -614,5 +615,30 @@ noncomputable def functor (n : ℕ) : Rep k G ⥤ ModuleCat k where
 
 instance (n : ℕ) : (functor k G n).PreservesZeroMorphisms where
   map_zero _ _ := by simp [map]
+
+variable {G}
+
+/-- Given a group homomorphism `f : G →* H`, this is a natural transformation between the functors
+sending `A : Rep k H` to `Hⁿ(H, A)` and to `Hⁿ(G, Res(f)(A))`. -/
+@[simps]
+noncomputable def resNatTrans (n : ℕ) :
+    functor k H n ⟶ Action.res (ModuleCat k) f ⋙ functor k G n where
+  app X := map f (𝟙 _) n
+  naturality {X Y} φ := by simp [← cancel_epi (groupCohomology.π _ n),
+    ← HomologicalComplex.cyclesMap_comp_assoc, ← cochainsMap_comp, congr (MonoidHom.id_comp _)
+    cochainsMap, congr (MonoidHom.comp_id _) cochainsMap, Category.id_comp
+    (X := (Action.res _ _).obj _)]
+
+/-- Given a normal subgroup `S ≤ G`, this is a natural transformation between the functors
+sending `A : Rep k G` to `Hⁿ(G ⧸ S, A^S)` and to `Hⁿ(G, A)`. -/
+@[simps]
+noncomputable def infNatTrans (S : Subgroup G) [S.Normal] (n : ℕ) :
+    quotientToInvariantsFunctor k S ⋙ functor k (G ⧸ S) n ⟶ functor k G n where
+  app A := map (QuotientGroup.mk' S) (subtype _ _ <| le_comap_invariants A.ρ S) n
+  naturality {X Y} φ := by
+    simp only [Functor.comp_map, functor_map, ← cancel_epi (groupCohomology.π _ n),
+      HomologicalComplex.homologyπ_naturality_assoc, HomologicalComplex.homologyπ_naturality,
+      ← HomologicalComplex.cyclesMap_comp_assoc, ← cochainsMap_comp]
+    congr 1
 
 end groupCohomology

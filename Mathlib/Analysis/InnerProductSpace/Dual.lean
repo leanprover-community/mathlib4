@@ -3,7 +3,7 @@ Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
-import Mathlib.Analysis.InnerProductSpace.Projection
+import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
 import Mathlib.Analysis.Normed.Module.Dual
 import Mathlib.Analysis.Normed.Group.NullSubmodule
 import Mathlib.Topology.Algebra.Module.PerfectPairing
@@ -37,7 +37,7 @@ dual, Fréchet-Riesz
 
 noncomputable section
 
-open ComplexConjugate
+open ComplexConjugate Module
 
 universe u v
 
@@ -101,7 +101,7 @@ variable {E 𝕜}
 theorem ext_inner_left_basis {ι : Type*} {x y : E} (b : Basis ι 𝕜 E)
     (h : ∀ i : ι, ⟪b i, x⟫ = ⟪b i, y⟫) : x = y := by
   apply (toDualMap 𝕜 E).map_eq_iff.mp
-  refine (Function.Injective.eq_iff ContinuousLinearMap.coe_injective).mp (Basis.ext b ?_)
+  refine (Function.Injective.eq_iff ContinuousLinearMap.coe_injective).mp (b.ext ?_)
   intro i
   simp only [ContinuousLinearMap.coe_coe]
   rw [toDualMap_apply, toDualMap_apply]
