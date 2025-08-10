@@ -636,17 +636,6 @@ theorem mkOfAdjoinEqTop_root : (IsAdjoinRoot.mkOfAdjoinEqTop hα hα₂).root = 
 
 end mkOfAdjoinEqTop
 
-section lift
-
-@[simp]
-theorem lift_self_apply (x : S) : h.lift (algebraMap R S) h.root h.aeval_root_self x = x := by
-  rw [← h.map_repr x, lift_map, ← aeval_def, h.aeval_root_eq_map]
-
-theorem lift_self : h.lift (algebraMap R S) h.root h.aeval_root_self = RingHom.id S :=
-  RingHom.ext h.lift_self_apply
-
-end lift
-
 section Equiv
 
 variable {T : Type*} [CommRing T] [Algebra R T] (h' : IsAdjoinRoot T f) {U : Type*} [CommRing U]
