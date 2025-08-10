@@ -126,7 +126,7 @@ lemma bayesRiskPrior_of_nonempty_of_isEmpty [Nonempty 𝓧] [IsEmpty 𝓨] :
   simp [bayesRiskPrior, iInf_subtype']
 
 @[simp]
-lemma bayesRiskPrior_of_isEmpty_of_nonempty_of_nonempty [IsEmpty Θ] [Nonempty 𝓧] [Nonempty 𝓨] :
+lemma bayesRiskPrior_of_isEmpty_of_nonempty [IsEmpty Θ] [Nonempty 𝓨] :
     bayesRiskPrior ℓ P π = 0 := by
   simp [bayesRiskPrior, iInf_subtype']
 
