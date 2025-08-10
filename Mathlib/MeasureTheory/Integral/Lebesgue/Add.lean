@@ -222,7 +222,7 @@ theorem lintegral_eq_iSup_eapprox_lintegral {f : α → ℝ≥0∞} (hf : Measur
       congr; ext a; rw [iSup_eapprox_apply hf]
     _ = ⨆ n, ∫⁻ a, (eapprox f n : α → ℝ≥0∞) a ∂μ := by
       apply lintegral_iSup
-      · measurability
+      · fun_prop
       · intro i j h
         exact monotone_eapprox f h
     _ = ⨆ n, (eapprox f n).lintegral μ := by
