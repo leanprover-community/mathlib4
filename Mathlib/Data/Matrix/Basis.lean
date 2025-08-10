@@ -416,6 +416,7 @@ theorem mem_range_scalar_iff_commute_single' {M : Matrix n n α} :
 @[deprecated (since := "2025-05-05")]
 alias mem_range_scalar_iff_commute_stdBasisMatrix' := mem_range_scalar_iff_commute_single'
 
+/-- The center of `Matrix n n α` is equal to the image of the center of `α` under `scalar n`. -/
 theorem center_eq_scalar_image :
     Set.center (Matrix n n α) = scalar n '' Set.center α := Set.ext fun x ↦ by
   obtain _ | hn := isEmpty_or_nonempty n
@@ -429,9 +430,11 @@ theorem center_eq_scalar_image :
   · rintro ⟨x, hx, rfl⟩
     exact fun y ↦ scalar_commute x (fun r' ↦ (hx r').symm) y |>.symm
 
+/-- For a commutative semiring `R`, the center of `Matrix n n R` is the range of `scalar n`
+(i.e., the span of `{1}`). -/
 @[simp] protected theorem center_eq_range [CommSemiring R] :
     Set.center (Matrix n n R) = Set.range (scalar n) := by
-  simp only [center', Set.center_eq_univ, Set.image_univ, scalar]
+  simp only [center_eq_scalar_image, Set.center_eq_univ, Set.image_univ, scalar]
 
 end Commute
 
