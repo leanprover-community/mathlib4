@@ -354,7 +354,7 @@ theorem range_ofIsCompl (hpq : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[
 
 theorem ofIsCompl_subtype_zero_eq (hpq : IsCompl p q) :
     ofIsCompl hpq p.subtype 0 = hpq.projection := by
-  simp [ofIsCompl_eq_add]; rfl
+  simp only [ofIsCompl_eq_add, zero_comp, add_zero, IsCompl.projection]
 
 theorem ofIsCompl_symm (hpq : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} :
     ofIsCompl hpq.symm ψ φ = ofIsCompl hpq φ ψ := by

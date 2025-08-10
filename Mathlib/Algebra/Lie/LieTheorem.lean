@@ -180,14 +180,14 @@ theorem exists_nontrivial_weightSpace_of_lieIdeal [LieModule.IsTriangularizable 
   refine nontrivial_of_ne ⟨v, ?_⟩ 0 ?_
   · rw [mem_weightSpace]
     intro x
-    have hπ := hA.projection_add_projection_eq_self x
+    have hπ : (π₁ x : L) + π₂ x = x := hA.projection_add_projection_eq_self x
     suffices ⁅hA.symm.projection x, v⁆ = (c • e (π₂ x)) • v by
       calc ⁅x, v⁆
           = ⁅π₁ x, v⁆       + ⁅hA.symm.projection x, v⁆ := congr(⁅$hπ.symm, v⁆) ▸ add_lie _ _ _
-        _ =  χ₀ (π₁ x) • v  + (c • e (π₂ x)) • v := by rw [hv' (π₁ x), this]
+        _ =  χ₀ (π₁ x) • v  + (c • e (π₂ x)) • v        := by rw [hv' (π₁ x), this]
         _ = _ := by simp [add_smul]
     calc ⁅hA.symm.projection x, v⁆
-        = e (π₂ x) • ↑(c • ⟨v, hv⟩ : W) := by rw [IsCompl.projection_apply,
+        = e (π₂ x) • ↑(c • ⟨v, hv⟩ : W)   := by rw [IsCompl.projection_apply,
           ← he, smul_lie, ← hvc.apply_eq_smul]; rfl
       _ = (c • e (π₂ x)) • v              := by rw [smul_assoc, smul_comm]; rfl
   · simpa [ne_eq, LieSubmodule.mk_eq_zero] using hvc.right
