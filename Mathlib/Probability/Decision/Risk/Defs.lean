@@ -67,6 +67,10 @@ def minimaxRisk [MeasurableSpace 𝓨] (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : K
 variable {m𝓨 : MeasurableSpace 𝓨}
   {ℓ : Θ → 𝓨 → ℝ≥0∞} {P : Kernel Θ 𝓧} {κ : Kernel 𝓧 𝓨} {π : Measure Θ}
 
+-- todo: move
+instance [h𝓨 : Nonempty 𝓨] : Nonempty {μ : Measure 𝓨 // IsProbabilityMeasure μ} :=
+  ⟨Measure.dirac h𝓨.some, inferInstance⟩
+
 section Zero
 
 @[simp]
@@ -130,9 +134,27 @@ lemma bayesRisk_of_isEmpty [IsEmpty 𝓧] : bayesRisk ℓ P = 0 := by
   simp [bayesRisk]
 
 @[simp]
+lemma bayesRisk_of_isEmpty' [Nonempty 𝓧] [Nonempty Θ] [IsEmpty 𝓨] : bayesRisk ℓ P = ∞ := by
+  simp [bayesRisk, iSup_subtype']
+
+@[simp]
+lemma bayesRisk_of_isEmpty'' [Nonempty 𝓧] [IsEmpty Θ] [Nonempty 𝓨] : bayesRisk ℓ P = 0 := by
+  simp [bayesRisk, Subsingleton.elim (α := Measure Θ) _ 0]
+
+@[simp]
 lemma minimaxRisk_of_isEmpty [IsEmpty 𝓧] : minimaxRisk ℓ P = 0 := by
   simp [minimaxRisk, Subsingleton.elim P 0]
 
+@[simp]
+lemma minimaxRisk_of_isEmpty' [Nonempty 𝓧] [IsEmpty 𝓨] : minimaxRisk ℓ P = ∞ := by
+  have : IsEmpty (Subtype (@IsMarkovKernel 𝓧 𝓨 m𝓧 m𝓨)) := by
+    simp only [isEmpty_subtype]
+    exact fun κ ↦ Subsingleton.elim κ 0 ▸ Kernel.not_isMarkovKernel_zero
+  simp [minimaxRisk, iInf_subtype']
+
+@[simp]
+lemma minimaxRisk_of_isEmpty'' [Nonempty 𝓨] [IsEmpty Θ] : minimaxRisk ℓ P = 0 := by
+  simp [minimaxRisk, iInf_subtype']
 end Empty
 
 end ProbabilityTheory
