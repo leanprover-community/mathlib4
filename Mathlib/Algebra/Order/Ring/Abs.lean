@@ -72,8 +72,7 @@ omit [IsStrictOrderedRing α] in
 @[simp] lemma abs_mul_abs_self (a : α) : |a| * |a| = a * a :=
   abs_by_cases (fun x => x * x = a * a) rfl (neg_mul_neg a a)
 
-@[simp]
-lemma abs_mul_self (a : α) : |a * a| = a * a := by rw [abs_mul, abs_mul_abs_self]
+lemma abs_mul_self (a : α) : |a * a| = a * a := by simp
 
 lemma abs_eq_iff_mul_self_eq : |a| = |b| ↔ a * a = b * b := by
   rw [← abs_mul_abs_self, ← abs_mul_abs_self b]
