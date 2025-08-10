@@ -237,7 +237,7 @@ instance : Inhabited (FqtInfty Fq) :=
 
 /-- The valuation at infinity on `k(t)` extends to a valuation on `FqtInfty`. -/
 instance valuedFqtInfty : Valued (FqtInfty Fq) ℤᵐ⁰ :=
-  @Valued.valuedCompletion _ _ _ _ (inftyValuedFqt Fq)
+  @Valued.valuedCompletion _ _ _ _ (inftyValuedFqt Fq) _
 
 theorem valuedFqtInfty.def {x : FqtInfty Fq} :
     Valued.v x = @Valued.extension (RatFunc Fq) _ _ _ (inftyValuedFqt Fq) x :=

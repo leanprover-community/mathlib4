@@ -3,7 +3,7 @@ Copyright (c) 2024 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Analysis.Normed.Field.Lemmas
 import Mathlib.Analysis.Normed.Group.Ultra
 import Mathlib.RingTheory.Valuation.RankOne
 import Mathlib.Topology.Algebra.Valued.ValuationTopology
@@ -53,11 +53,26 @@ def toValued : Valued K ℝ≥0 :=
     inferInstanceAs (IsUniformAddGroup K) with
     v := valuation
     is_topological_valuation := fun U => by
-      rw [Metric.mem_nhds_iff]
-      exact ⟨fun ⟨ε, hε, h⟩  =>
-          ⟨Units.mk0 ⟨ε, le_of_lt hε⟩ (ne_of_gt hε), fun x hx ↦ h (mem_ball_zero_iff.mpr hx)⟩,
-        fun ⟨ε, hε⟩ => ⟨(ε : ℝ), NNReal.coe_pos.mpr (Units.zero_lt _),
-          fun x hx ↦ hε (mem_ball_zero_iff.mp hx)⟩⟩ }
+      simp only [Metric.mem_nhds_iff, gt_iff_lt, valuation_apply, ne_eq, Subtype.exists,
+        nnnorm_eq_zero, exists_prop, Prod.exists]
+      constructor
+      · rintro ⟨ε, hε, h⟩
+        rcases discreteTopology_or_nontriviallyNormedField K with _ | ⟨⟨hK, rfl⟩⟩
+        · use 1, 1
+          simp only [one_ne_zero, not_false_eq_true, and_self, nnnorm_one, mul_one, true_and]
+          refine h.trans' fun _ ↦ ?_
+          simp +contextual [← NNReal.coe_lt_coe,
+            NormedDivisionRing.norm_lt_one_iff_eq_zero_of_discrete, hε]
+        · obtain ⟨x, hx, hx'⟩ := exists_norm_lt K hε
+          use 1, x
+          simp only [one_ne_zero, not_false_eq_true, norm_pos_iff.mp hx, and_self, nnnorm_one,
+            mul_one, true_and]
+          refine h.trans' fun _ ↦ ?_
+          simpa [← NNReal.coe_lt_coe] using hx'.trans'
+      · rintro ⟨r, s, ⟨hr, hs⟩, h⟩
+        refine ⟨‖s‖ / ‖r‖, ?_, h.trans' fun x ↦ ?_⟩
+        · simp [hr, hs]
+        · simp [lt_div_iff₀ (norm_pos_iff.mpr hr), ← NNReal.coe_lt_coe] }
 
 instance {K : Type*} [NontriviallyNormedField K] [IsUltrametricDist K] :
     Valuation.RankOne (valuation (K := K)) where
@@ -117,28 +132,44 @@ def toNormedField : NormedField L :=
       haveI : Nonempty { ε : ℝ // ε > 0 } := nonempty_Ioi_subtype
       ext U
       rw [hasBasis_iff.mp (Valued.hasBasis_uniformity L Γ₀), iInf_subtype', mem_iInf_of_directed]
-      · simp only [true_and, mem_principal, Subtype.exists, gt_iff_lt, exists_prop]
-        refine ⟨fun ⟨ε, hε⟩ => ?_, fun ⟨r, hr_pos, hr⟩ => ?_⟩
-        · set δ : ℝ≥0 := hv.hom ε with hδ
+      · simp only [ne_eq, map_eq_zero, Prod.exists, mem_principal, Subtype.exists, gt_iff_lt,
+        exists_prop]
+        refine ⟨fun ⟨r, s, ⟨hr, hs⟩, hε⟩ => ?_, fun ⟨r, hr_pos, hr⟩ => ?_⟩
+        · set δ : ℝ≥0 := hv.hom (v s / v r) with hδ
           have hδ_pos : 0 < δ := by
-            rw [hδ, ← map_zero hv.hom]
-            exact hv.strictMono _ (Units.zero_lt ε)
+            rw [hδ, ← map_zero hv.hom, map_div₀, lt_div_iff₀] <;>
+            simp [zero_lt_iff, hr, hs]
           use δ, hδ_pos
           apply subset_trans _ hε
           intro x hx
           simp only [mem_setOf_eq, norm, hδ, NNReal.coe_lt_coe] at hx
-          rw [mem_setOf, ← neg_sub, Valuation.map_neg]
+          rw [mem_setOf, ← neg_sub, Valuation.map_neg, ← lt_div_iff₀ (by simp [zero_lt_iff, hr])]
           exact (RankOne.strictMono Valued.v).lt_iff_lt.mp hx
         · haveI : Nontrivial Γ₀ˣ := (nontrivial_iff_exists_ne (1 : Γ₀ˣ)).mpr
             ⟨RankOne.unit val.v, RankOne.unit_ne_one val.v⟩
           obtain ⟨u, hu⟩ := Real.exists_lt_of_strictMono hv.strictMono hr_pos
-          use u
-          apply subset_trans _ hr
-          intro x hx
-          simp only [norm, mem_setOf_eq]
-          apply lt_trans _ hu
-          rw [NNReal.coe_lt_coe, ← neg_sub, Valuation.map_neg]
-          exact (RankOne.strictMono Valued.v).lt_iff_lt.mpr hx
+          by_cases H : ∃ x : L, x ≠ 0 ∧ v x < 1
+          · obtain ⟨x, hx0, hx⟩ := H
+            have : MulArchimedean Γ₀ := .comap hv.hom.toMonoidHom hv.strictMono
+            rw [← Units.val_one, ← Units.val_mk0 (a := v x) (by simp [hx0]), Units.val_lt_val] at hx
+            obtain ⟨y, hy⟩ := exists_pow_lt hx u
+            use 1, x ^ y
+            simp only [one_ne_zero, not_false_eq_true, pow_eq_zero_iff', hx0, ne_eq, false_and,
+              and_self, map_one, mul_one, map_pow, true_and]
+            apply subset_trans _ hr
+            intro x hx
+            simp only [norm, mem_setOf_eq]
+            apply lt_trans _ hu
+            rw [NNReal.coe_lt_coe, ← neg_sub, Valuation.map_neg]
+            exact (RankOne.strictMono Valued.v).lt_iff_lt.mpr (hx.trans hy)
+          · simp_rw [not_exists, not_and'] at H
+            push_neg at H
+            use 1, 1
+            simp only [one_ne_zero, not_false_eq_true, and_self, map_one, mul_one, true_and]
+            apply subset_trans _ hr
+            intro x hx
+            rw [mem_setOf_eq, ← neg_sub, norm, v.map_neg, H _ hx]
+            simp [hr_pos]
       · simp only [Directed]
         intro x y
         use min x y

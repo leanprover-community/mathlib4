@@ -134,6 +134,9 @@ lemma norm_le_one_of_discrete
   · simp
   · simp [norm_eq_one_iff_ne_zero_of_discrete.mpr hx]
 
+lemma norm_lt_one_iff_eq_zero_of_discrete {x : 𝕜} : ‖x‖ < 1 ↔ x = 0 := by
+  simp [lt_iff_le_and_ne, norm_eq_one_iff_ne_zero_of_discrete]
+
 lemma unitClosedBall_eq_univ_of_discrete : (Metric.closedBall 0 1 : Set 𝕜) = Set.univ := by
   ext
   simp
