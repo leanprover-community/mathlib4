@@ -429,6 +429,10 @@ alias mem_range_scalar_iff_commute_stdBasisMatrix' := mem_range_scalar_iff_commu
   · rintro ⟨x, hx, rfl⟩
     exact fun y ↦ scalar_commute x (fun r' ↦ (hx r').symm) y |>.symm
 
+theorem center' [CommSemiring R] :
+    Set.center (Matrix n n R) = Set.range (scalar n) := by
+  simp only [Matrix.center, Set.center_eq_univ, Set.image_univ, scalar]
+
 end Commute
 
 end Matrix
