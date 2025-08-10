@@ -111,6 +111,11 @@ theorem vecMul_conjTranspose [Fintype n] [StarRing α] (A : Matrix m n α) (x : 
 
 end NonUnitalSemiring
 
+@[simp]
+theorem conjTranspose_vecMulVec [Mul α] [StarMul α] (w : m → α) (v : n → α) :
+    (vecMulVec w v)ᴴ = vecMulVec (star v) (star w) :=
+  ext fun _ _ => star_mul _ _
+
 section ConjTranspose
 
 open Matrix
@@ -127,6 +132,14 @@ theorem conjTranspose_apply [Star α] (M : Matrix m n α) (i j) :
 @[simp]
 theorem conjTranspose_conjTranspose [InvolutiveStar α] (M : Matrix m n α) : Mᴴᴴ = M :=
   Matrix.ext <| by simp
+
+theorem conjTranspose_transpose [Star α] (M : Matrix m n α) :
+    Mᴴᵀ = M.map star :=
+  rfl
+
+theorem transpose_conjTranspose [Star α] (M : Matrix m n α) :
+    Mᵀᴴ = M.map star :=
+  rfl
 
 theorem conjTranspose_injective [InvolutiveStar α] :
     Function.Injective (conjTranspose : Matrix m n α → Matrix n m α) :=
