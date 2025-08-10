@@ -48,6 +48,8 @@ theorem cast_max {α} [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] (m
 
 section Nontrivial
 
+variable [NeZero (1 : α)]
+
 /-- Specialisation of `Nat.cast_pos'`, which seems to be easier for Lean to use. -/
 @[simp]
 theorem cast_pos {α} [Semiring α] [PartialOrder α] [IsOrderedRing α] [Nontrivial α] {n : ℕ} :
@@ -55,8 +57,7 @@ theorem cast_pos {α} [Semiring α] [PartialOrder α] [IsOrderedRing α] [Nontri
 
 /-- See also `Nat.ofNat_pos`, specialised for an `OrderedSemiring`. -/
 @[simp low]
-theorem ofNat_pos' [AddMonoidWithOne α] [PartialOrder α] [AddLeftMono α] [ZeroLEOneClass α]
-    [NeZero (1 : α)] {n : ℕ} [n.AtLeastTwo] : 0 < (ofNat(n) : α) :=
+theorem ofNat_pos' {n : ℕ} [n.AtLeastTwo] : 0 < (ofNat(n) : α) :=
   cast_pos'.mpr (NeZero.pos n)
 
 /-- Specialisation of `Nat.ofNat_pos'`, which seems to be easier for Lean to use. -/
