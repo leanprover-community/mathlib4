@@ -549,7 +549,7 @@ theorem mem_ballSubgroup_iff {a : M} {A : MulArchimedeanClass M} (hA : A ≠ ⊤
     a ∈ ballSubgroup A ↔ A < mk a := by
   simp [hA]
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem mem_closedBallSubgroup_iff {a : M} {A : MulArchimedeanClass M} :
     a ∈ closedBallSubgroup A ↔ A ≤ mk a := by
   simp
