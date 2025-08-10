@@ -259,5 +259,9 @@ theorem mk_map_of_archimedean {R : Type*}
 theorem mk_eq_zero_of_archimedean [Archimedean M] {x : M} (h : x ≠ 0) : mk x = 0 :=
   mk_map_of_archimedean h .id fun _ ↦ rfl
 
+theorem eq_zero_or_top_of_archimedean [Archimedean M] (x : ArchimedeanClass M) : x = 0 ∨ x = ⊤ := by
+  induction x with | mk x
+  obtain rfl | h := eq_or_ne x 0 <;> simp_all
+
 end Field
 end ArchimedeanClass
