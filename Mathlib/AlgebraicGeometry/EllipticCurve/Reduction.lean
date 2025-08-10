@@ -149,7 +149,7 @@ lemma Δ_integral_of_isIntegral (W : WeierstrassCurve K)
   use W_int.Δ
   rw [hW_int, map_Δ]
 
-lemma Δ_integral_aux_of_isIntegral (W : WeierstrassCurve K)
+lemma integral_Δ_eq_of_isIntegral (W : WeierstrassCurve K)
     [hW : IsIntegral R W] :
     hW.integral.choose.Δ =
     (algebraMap R K).toFun.invFun W.Δ := by
@@ -221,7 +221,7 @@ lemma isGoodReduction_iff_reduction_isElliptic {W : WeierstrassCurve K} [IsMinim
   simp only [reduction, map_Δ, isUnit_iff_ne_zero, ne_eq, residue_eq_zero_iff, mem_maximalIdeal,
     mem_nonunits_iff, not_not]
   refine Iff.trans ?_ addVal_eq_zero_iff
-  rw [Δ_integral_aux_of_isIntegral R W]
+  rw [integral_Δ_eq_of_isIntegral R W]
   exact isGoodReduction_iff _ _
 
 end Reduction
