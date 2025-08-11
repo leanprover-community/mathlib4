@@ -239,9 +239,10 @@ lemma even_xor_odd' (n : ℕ) : ∃ k, Xor' (n = 2 * k) (n = 2 * k + 1) := by
   · use k
     grind
   · use k
-    -- Adaptation note: this was `by grind`, but this fails after a regression introduced in
-    -- https://github.com/leanprover/lean4/pull/9776
-    -- Reported as https://github.com/leanprover/lean4/pull/9828
+    #adaptation_note
+    /-- 2025-08-11: this was `by grind`, but this fails after a regression introduced in
+    https://github.com/leanprover/lean4/pull/9776
+    Reported as https://github.com/leanprover/lean4/pull/9828 -/
     simpa only [xor_true, xor_comm] using (succ_ne_self _)
 
 lemma odd_add_one {n : ℕ} : Odd (n + 1) ↔ ¬ Odd n := by grind
