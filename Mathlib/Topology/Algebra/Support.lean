@@ -333,7 +333,7 @@ section DivisionMonoid
 protected lemma HasCompactMulSupport.inv {α β : Type*} [TopologicalSpace α] [DivisionMonoid β]
     {f : α → β} (hf : HasCompactMulSupport f) :
     HasCompactMulSupport (f⁻¹) := by
-  simpa only [HasCompactMulSupport, mulTSupport, mulSupport_inv'] using hf
+  simpa only [HasCompactMulSupport, mulTSupport, mulSupport_inv] using hf
 
 @[deprecated (since := "2025-07-31")] alias HasCompactSupport.neg' := HasCompactSupport.neg
 @[deprecated (since := "2025-07-31")] alias HasCompactMulSupport.inv' := HasCompactMulSupport.inv

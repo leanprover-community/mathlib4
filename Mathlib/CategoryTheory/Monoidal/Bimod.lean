@@ -204,13 +204,13 @@ noncomputable def actLeft : R.X ⊗ X P Q ⟶ X P Q :=
           simp only [Category.assoc]
           slice_lhs 1 2 => rw [associator_inv_naturality_middle]
           slice_rhs 3 4 => rw [← comp_whiskerRight, middle_assoc, comp_whiskerRight]
-          monoidal)
+          simp)
         (by
           dsimp
           slice_lhs 1 1 => rw [whiskerLeft_comp]
           slice_lhs 2 3 => rw [associator_inv_naturality_right]
           slice_lhs 3 4 => rw [whisker_exchange]
-          monoidal))
+          simp))
 
 theorem whiskerLeft_π_actLeft :
     (R.X ◁ coequalizer.π _ _) ≫ actLeft P Q =
@@ -526,7 +526,7 @@ noncomputable def invAux : P.X ⊗ (Q.tensorBimod L).X ⟶ ((P.tensorBimod Q).te
         slice_rhs 1 2 => rw [whiskerLeft_comp]
         slice_rhs 2 3 => rw [associator_inv_naturality_right]
         slice_rhs 3 4 => rw [whisker_exchange]
-        monoidal)
+        simp)
 
 /-- The underlying morphism of the inverse component of the associator isomorphism. -/
 noncomputable def inv :
@@ -762,8 +762,7 @@ theorem id_whiskerLeft_bimod {X Y : Mon_ C} {M N : Bimod X Y} (f : M ⟶ N) :
   slice_rhs 4 5 => rw [← comp_whiskerRight, Mon_Class.one_mul]
   have : (λ_ (X.X ⊗ N.X)).inv ≫ (α_ (𝟙_ C) X.X N.X).inv ≫ ((λ_ X.X).hom ▷ N.X) = 𝟙 _ := by
     monoidal
-  slice_rhs 2 4 => rw [this]
-  slice_rhs 1 2 => rw [Category.comp_id]
+  grind
 
 theorem comp_whiskerLeft_bimod {W X Y Z : Mon_ C} (M : Bimod W X) (N : Bimod X Y)
     {P P' : Bimod Y Z} (f : P ⟶ P') :

@@ -31,6 +31,8 @@ This file defines isomorphisms between objects of a category.
 category, category theory, isomorphism
 -/
 
+set_option mathlib.tactic.category.grind true
+
 universe v u
 
 -- morphism levels before object levels. See note [CategoryTheory universes].
@@ -55,7 +57,7 @@ structure Iso {C : Type u} [Category.{v} C] (X Y : C) where
   is the identity on the target. -/
   inv_hom_id : inv ≫ hom = 𝟙 Y := by cat_disch
 
-attribute [reassoc (attr := simp)] Iso.hom_inv_id Iso.inv_hom_id
+attribute [reassoc (attr := simp), grind =] Iso.hom_inv_id Iso.inv_hom_id
 
 /-- Notation for an isomorphism in a category. -/
 infixr:10 " ≅ " => Iso -- type as \cong or \iso
@@ -73,9 +75,9 @@ theorem ext ⦃α β : X ≅ Y⦄ (w : α.hom = β.hom) : α = β :=
     cases this
     rfl
   calc
-    α.inv = α.inv ≫ β.hom ≫ β.inv   := by rw [Iso.hom_inv_id, Category.comp_id]
-    _     = (α.inv ≫ α.hom) ≫ β.inv := by rw [Category.assoc, ← w]
-    _     = β.inv                    := by rw [Iso.inv_hom_id, Category.id_comp]
+    α.inv = α.inv ≫ β.hom ≫ β.inv   := by grind
+    _     = (α.inv ≫ α.hom) ≫ β.inv := by grind
+    _     = β.inv                    := by grind
 
 /-- Inverse isomorphism. -/
 @[symm]
@@ -205,6 +207,8 @@ theorem comp_inv_eq_id (α : X ≅ Y) {f : X ⟶ Y} : f ≫ α.inv = 𝟙 X ↔ 
 theorem hom_eq_inv (α : X ≅ Y) (β : Y ≅ X) : α.hom = β.inv ↔ β.hom = α.inv := by
   rw [← symm_inv, inv_eq_inv α.symm β, eq_comm]
   rfl
+
+attribute [local grind] Function.LeftInverse Function.RightInverse
 
 /-- The bijection `(Z ⟶ X) ≃ (Z ⟶ Y)` induced by `α : X ≅ Y`. -/
 @[simps]
@@ -499,12 +503,12 @@ section
 
 variable {D : Type*} [Category D] {X Y : C} (e : X ≅ Y)
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp), grind =]
 lemma map_hom_inv_id (F : C ⥤ D) :
     F.map e.hom ≫ F.map e.inv = 𝟙 _ := by
   rw [← F.map_comp, e.hom_inv_id, F.map_id]
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp), grind =]
 lemma map_inv_hom_id (F : C ⥤ D) :
     F.map e.inv ≫ F.map e.hom = 𝟙 _ := by
   rw [← F.map_comp, e.inv_hom_id, F.map_id]
