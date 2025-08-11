@@ -189,7 +189,7 @@ lemma isOpen_sphere {r : ValueGroupWithZero R} (hr : r ≠ 0) :
 @[deprecated (since := "2025-08-01")]
 alias _root_.ValuativeTopology.isOpen_sphere := isOpen_sphere
 
-open WithZeroTopology
+open WithZeroTopology in
 lemma continuous_valuation : Continuous v where
   isOpen_preimage s hs := by
     rw [WithZeroTopology.isOpen_iff] at hs
