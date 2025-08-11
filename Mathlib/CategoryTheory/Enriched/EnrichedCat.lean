@@ -5,7 +5,6 @@ Authors: Jakob von Raumer
 -/
 import Mathlib.CategoryTheory.Enriched.Basic
 import Mathlib.CategoryTheory.Bicategory.Basic
-import Mathlib.Tactic.Widget.StringDiagram
 
 /-!
 # The bicategory of `V`-enriched categories
