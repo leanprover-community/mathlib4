@@ -185,15 +185,6 @@ An ordering `O` on a ring `R` is a preordering such that
 (i) `O` contains either `x` or `-x` for each `x` in `R` and
 (ii) the support of `O` is a prime ideal.
 -/
-class IsOrdering (P : RingPreordering R) extends HasMemOrNegMem P where
-  mem_or_mem {x y} (h : x * y ∈ P.support) : x ∈ P.support ∨ y ∈ P.support
-
-instance [P.IsOrdering] : P.support.IsPrime where
-  ne_top' h := RingPreordering.neg_one_notMem P (by aesop : 1 ∈ P.support).2
-  mem_or_mem' := IsOrdering.mem_or_mem
-
-instance [HasMemOrNegMem P] [P.support.IsPrime] : P.IsOrdering where
-  mem_or_neg_mem := mem_or_neg_mem P
-  mem_or_mem := ‹P.support.IsPrime›.mem_or_mem
+class IsOrdering (P : RingPreordering R) extends HasMemOrNegMem P, P.support.IsPrime
 
 end RingPreordering
