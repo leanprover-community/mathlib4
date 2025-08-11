@@ -221,7 +221,7 @@ theorem aequiv_apply_map (z : R[X]) : h.aequiv h' (h.map z) = h'.map z := by
 
 @[simp]
 theorem aequiv_aequiv {U : Type*} [Ring U] [Algebra R U] (h'' : IsAdjoinRoot U f) (x) :
-    (h'.aequiv h'') (h.aequiv h' x) = h.aequiv h'' x := by simp [aequiv_def]
+    h'.aequiv h'' (h.aequiv h' x) = h.aequiv h'' x := by simp [aequiv_def]
 
 @[simp]
 theorem aequiv_trans {U : Type*} [Ring U] [Algebra R U] (h'' : IsAdjoinRoot U f) :
