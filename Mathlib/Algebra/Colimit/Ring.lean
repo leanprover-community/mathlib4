@@ -171,6 +171,10 @@ theorem lift_unique (F : DirectLimit G f →+* P) (x) :
     F x = lift G f P (fun i ↦ F.comp <| of G f i) (fun i j hij x ↦ by simp) x := by
   rw [lift_comp_of]
 
+@[simp]
+theorem lift_of' : lift G f _ (of G f) (fun i j hij x ↦ by simp) = .id _ := by
+  ext; simp
+
 lemma lift_injective [Nonempty ι] [IsDirected ι (· ≤ ·)]
     (injective : ∀ i, Function.Injective <| g i) :
     Function.Injective (lift G f P g Hg) := by
