@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.Analysis.LocallyConvex.ContinuousOfBounded
+import Mathlib.Analysis.NormedSpace.ContinuousBilinForm
 import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
 import Mathlib.Probability.Moments.Variance
 
@@ -161,7 +162,7 @@ variable [NormedSpace ℝ E] [OpensMeasurableSpace E]
 /-- Continuous bilinear form with value `∫ x, L₁ x * L₂ x ∂μ` on `(L₁, L₂)`.
 This is equal to the covariance only if `μ` is centered. -/
 noncomputable
-def uncenteredCovarianceBilin (μ : Measure E) : Dual ℝ E →L[ℝ] Dual ℝ E →L[ℝ] ℝ :=
+def uncenteredCovarianceBilin (μ : Measure E) : ContinuousBilinForm ℝ (Dual ℝ E) :=
   ContinuousLinearMap.bilinearComp (isBoundedBilinearMap_inner (𝕜 := ℝ)).toContinuousLinearMap
     (Dual.toLp μ 2) (Dual.toLp μ 2)
 
@@ -221,7 +222,7 @@ open Classical in
 /-- Continuous bilinear form with value `∫ x, (L₁ x - μ[L₁]) * (L₂ x - μ[L₂]) ∂μ` on `(L₁, L₂)`
 if `MemLp id 2 μ`. If not, we set it to zero. -/
 noncomputable
-def covarianceBilin (μ : Measure E) : Dual ℝ E →L[ℝ] Dual ℝ E →L[ℝ] ℝ :=
+def covarianceBilin (μ : Measure E) : ContinuousBilinForm ℝ (Dual ℝ E) :=
   uncenteredCovarianceBilin (μ.map (fun x ↦ x - ∫ x, x ∂μ))
 
 @[simp]
@@ -269,6 +270,14 @@ lemma covarianceBilin_eq_covariance (h : MemLp id 2 μ) (L₁ L₂ : Dual ℝ E)
 lemma covarianceBilin_self_eq_variance (h : MemLp id 2 μ) (L : Dual ℝ E) :
     covarianceBilin μ L L = Var[L; μ] := by
   rw [covarianceBilin_eq_covariance h, covariance_self (by fun_prop)]
+
+@[simp]
+lemma covarianceBilin_self_nonneg (L : Dual ℝ E) :
+    0 ≤ covarianceBilin μ L L := by
+  by_cases h : MemLp id 2 μ
+  · rw [covarianceBilin_self_eq_variance h]
+    exact variance_nonneg ..
+  · simp [h]
 
 @[deprecated (since := "2025-07-16")] alias covarianceBilin_same_eq_variance :=
   covarianceBilin_self_eq_variance

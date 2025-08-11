@@ -1785,6 +1785,7 @@ import Mathlib.Analysis.NormedSpace.Alternating.Curry
 import Mathlib.Analysis.NormedSpace.BallAction
 import Mathlib.Analysis.NormedSpace.ConformalLinearMap
 import Mathlib.Analysis.NormedSpace.Connected
+import Mathlib.Analysis.NormedSpace.ContinuousBilinForm
 import Mathlib.Analysis.NormedSpace.DualNumber
 import Mathlib.Analysis.NormedSpace.ENormedSpace
 import Mathlib.Analysis.NormedSpace.Extend
@@ -4018,6 +4019,7 @@ import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.LinearAlgebra.BilinearForm.Basic
 import Mathlib.LinearAlgebra.BilinearForm.DualLattice
 import Mathlib.LinearAlgebra.BilinearForm.Hom
+import Mathlib.LinearAlgebra.BilinearForm.IsPosSemidef
 import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
 import Mathlib.LinearAlgebra.BilinearForm.Properties
 import Mathlib.LinearAlgebra.BilinearForm.TensorProduct
@@ -4442,6 +4444,8 @@ import Mathlib.MeasureTheory.Integral.CircleIntegral
 import Mathlib.MeasureTheory.Integral.CircleTransform
 import Mathlib.MeasureTheory.Integral.DivergenceTheorem
 import Mathlib.MeasureTheory.Integral.DominatedConvergence
+import Mathlib.MeasureTheory.Integral.Eval.Basic
+import Mathlib.MeasureTheory.Integral.Eval.WithLp
 import Mathlib.MeasureTheory.Integral.ExpDecay
 import Mathlib.MeasureTheory.Integral.FinMeasAdditive
 import Mathlib.MeasureTheory.Integral.FundThmCalculus
@@ -5156,6 +5160,7 @@ import Mathlib.Probability.Martingale.OptionalStopping
 import Mathlib.Probability.Martingale.Upcrossing
 import Mathlib.Probability.Moments.Basic
 import Mathlib.Probability.Moments.ComplexMGF
+import Mathlib.Probability.Moments.CovInnerBilin
 import Mathlib.Probability.Moments.Covariance
 import Mathlib.Probability.Moments.CovarianceBilin
 import Mathlib.Probability.Moments.IntegrableExpMul
