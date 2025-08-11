@@ -41,7 +41,7 @@ section
 variable {C : Type u} [Category.{v} C]
 
 /-- Given an object `X` in a category `C` and a regular
-cardinal `κ` (in the unverse `w`), this is a presentation of `X` as the colimit
+cardinal `κ` (in the universe `w`), this is a presentation of `X` as the colimit
 of a functor `J ⥤ C` where `J` is a `κ`-filtered category. -/
 structure CardinalFilteredPresentation (X : C) (κ : Cardinal.{w}) [Fact κ.IsRegular] where
   /-- the index category of the presentation -/
