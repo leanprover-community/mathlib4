@@ -948,8 +948,8 @@ namespace IsEquiv
 variable [LinearOrderedAddCommMonoidWithTop Γ₀] [LinearOrderedAddCommMonoidWithTop Γ'₀]
   [Ring R]
   {Γ''₀ : Type*} [LinearOrderedAddCommMonoidWithTop Γ''₀]
-  {v : AddValuation R Γ₀}
-   {v₁ : AddValuation R Γ₀} {v₂ : AddValuation R Γ'₀} {v₃ : AddValuation R Γ''₀}
+  {v : AddValuation R Γ₀} {v₁ : AddValuation R Γ₀}
+  {v₂ : AddValuation R Γ'₀} {v₃ : AddValuation R Γ''₀}
 
 @[refl]
 theorem refl : v.IsEquiv v :=

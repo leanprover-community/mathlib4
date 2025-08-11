@@ -511,10 +511,10 @@ theorem Submodule.complete_of_finiteDimensional (s : Submodule 𝕜 E) [FiniteDi
 end IsUniformAddGroup
 
 variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
-   [AddCommGroup E] [TopologicalSpace E] [IsTopologicalAddGroup E] [Module 𝕜 E]
-   [ContinuousSMul 𝕜 E]
-   [AddCommGroup F] [TopologicalSpace F] [T2Space F] [IsTopologicalAddGroup F] [Module 𝕜 F]
-   [ContinuousSMul 𝕜 F]
+  [AddCommGroup E] [TopologicalSpace E] [IsTopologicalAddGroup E] [Module 𝕜 E]
+  [ContinuousSMul 𝕜 E]
+  [AddCommGroup F] [TopologicalSpace F] [T2Space F] [IsTopologicalAddGroup F] [Module 𝕜 F]
+  [ContinuousSMul 𝕜 F]
 
 /-- A finite-dimensional subspace is closed. -/
 theorem Submodule.closed_of_finiteDimensional
