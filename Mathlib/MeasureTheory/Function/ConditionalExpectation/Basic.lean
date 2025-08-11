@@ -422,7 +422,7 @@ lemma eLpNorm_condExp_le : eLpNorm (μ[f|m]) 2 μ ≤ eLpNorm f 2 μ := by
     simp
   obtain hf | hf := eq_or_ne (eLpNorm f 2 μ) ∞
   · simp [hf]
-  replace hf : MemLp f 2 μ := ⟨hfi.1, Ne.lt_top' fun a ↦ hf (id (Eq.symm a))⟩
+  replace hf : MemLp f 2 μ := ⟨hfi.1, Ne.lt_top' fun a ↦ hf a.symm⟩
   rw [← eLpNorm_congr_ae (hf.condExpL2_ae_eq_condExp' (𝕜 := ℝ) hm hfi)]
   refine le_trans (eLpNorm_condExpL2_le hm _) ?_
   rw [eLpNorm_congr_ae hf.coeFn_toLp]

@@ -278,7 +278,7 @@ lemma equiv_compl_fromCols_mul_fromRows_eq_one_comm
     (A₁ : Matrix n {i // p i} R) (A₂ : Matrix n {i // ¬p i} R)
     (B₁ : Matrix {i // p i} n R) (B₂ : Matrix {i // ¬p i} n R) :
     fromCols A₁ A₂ * fromRows B₁ B₂ = 1 ↔ fromRows B₁ B₂ * fromCols A₁ A₂ = 1 :=
-  fromCols_mul_fromRows_eq_one_comm (id (Equiv.sumCompl p).symm) A₁ A₂ B₁ B₂
+  fromCols_mul_fromRows_eq_one_comm (Equiv.sumCompl p).symm A₁ A₂ B₁ B₂
 
 end CommRing
 
