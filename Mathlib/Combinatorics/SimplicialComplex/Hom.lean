@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Kumar, Xiangyu Li
 -/
 import Mathlib.Combinatorics.SimplicialComplex.Basic
+import Mathlib.Data.Finset.Image
 
 /-!
 # Morphisms of simplicial complexes
