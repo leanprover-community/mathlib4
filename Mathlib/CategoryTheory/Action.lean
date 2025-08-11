@@ -169,7 +169,7 @@ lemma cases' ⦃a' b' : ActionCategory G X⦄ (f : a' ⟶ b') :
 variable {H : Type*} [Group H]
 
 /-- Given `G` acting on `X`, a functor from the corresponding action groupoid to a group `H`
-    can be curried to a group homomorphism `G →* (X → H) ⋊ G`. -/
+can be curried to a group homomorphism `G →* (X → H) ⋊ G`. -/
 @[simps]
 def curry (F : ActionCategory G X ⥤ SingleObj H) : G →* (X → H) ⋊[mulAutArrow] G :=
   have F_map_eq : ∀ {a b} {f : a ⟶ b}, F.map f = (F.map (homOfPair b.back f.val) : H) := by
@@ -190,7 +190,7 @@ def curry (F : ActionCategory G X ⥤ SingleObj H) : G →* (X → H) ⋊[mulAut
       rfl }
 
 /-- Given `G` acting on `X`, a group homomorphism `φ : G →* (X → H) ⋊ G` can be uncurried to
-    a functor from the action groupoid to `H`, provided that `φ g = (_, g)` for all `g`. -/
+a functor from the action groupoid to `H`, provided that `φ g = (_, g)` for all `g`. -/
 @[simps]
 def uncurry (F : G →* (X → H) ⋊[mulAutArrow] G) (sane : ∀ g, (F g).right = g) :
     ActionCategory G X ⥤ SingleObj H where
