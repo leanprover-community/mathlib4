@@ -13,7 +13,7 @@ import Mathlib.Order.SuccPred.LinearLocallyFinite
 For related results, see also:
 
 - `Mathlib/Order/PartialSups.lean`
-- `Mathlib/Algebra/Order/PartialSups.lean`
+- `Mathlib/Algebra/Order/SuccPred/PartialSups.lean`
 - `Mathlib/Algebra/Order/AddGroup/PartialSups.lean`
 
 -/
