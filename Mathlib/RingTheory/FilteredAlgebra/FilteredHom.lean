@@ -229,7 +229,7 @@ lemma AssociatedGradedAddMonoidHom_apply_of [DecidableEq ι] {i : ι} (x : Grade
     (Gr+[f] (AssociatedGraded.of x)) = AssociatedGraded.of (Gr+(i)[f] x) :=
   DirectSum.map_of (GradedPieceHom f) i x
 
-theorem AssociatedGradedAddMonoidHom_comp_eq_comp: Gr+[g].comp Gr+[f] = Gr+[g.comp f] := by
+theorem AssociatedGradedAddMonoidHom_comp_eq_comp : Gr+[g].comp Gr+[f] = Gr+[g.comp f] := by
   apply Eq.trans (DirectSum.map_comp (GradedPieceHom f) (GradedPieceHom g)).symm
   simp only [GradedPieceHom_comp, AssociatedGradedAddMonoidHom]
 
@@ -307,7 +307,7 @@ lemma GradedPieceHom_apply_mk_eq_mk_piece_wise_hom {i : ι} (x : FR i) :
     Gr+*(i)[f] (GradedPiece.mk FR FR_lt x) = (GradedPiece.mk FS FS_lt (f.piece_wise_hom i x)) :=
   rfl
 
-lemma GradedPieceHom_comp_apply (i : ι) (x : GradedPiece FR FR_lt i):
+lemma GradedPieceHom_comp_apply (i : ι) (x : GradedPiece FR FR_lt i) :
     Gr+*(i)[g] (Gr+*(i)[f] x) = Gr+*(i)[g.comp f] x :=
   FilteredAddGroupHom.GradedPieceHom_comp_apply g.1 f.1 i x
 
@@ -443,7 +443,7 @@ abbrev GradedPieceHom (i : ι) : GradedPiece FA FA_lt i →ₗ[R] GradedPiece FB
 @[inherit_doc]
 scoped[FilteredAlgHom] notation:9000 "Grₐ(" i ")[" f "]" => GradedPieceHom f i
 
-lemma GradedPieceHom_comp_apply (i : ι) (x : GradedPiece FA FA_lt i):
+lemma GradedPieceHom_comp_apply (i : ι) (x : GradedPiece FA FA_lt i) :
     Grₐ(i)[g] (Grₐ(i)[f] x) = Grₐ(i)[g.comp f] x :=
   FilteredRingHom.GradedPieceHom_comp_apply g.1 f.1 i x
 
@@ -474,10 +474,10 @@ scoped[FilteredAlgHom] notation:9000 "Grₐ[" f "]" => AssociatedGradedAlgHom f
 variable [DecidableEq ι]
 
 @[simp]
-theorem AssociatedGradedRingHom_apply (x : AssociatedGraded FA FA_lt) (i : ι) :
+theorem AssociatedGradedAlgHom_apply (x : AssociatedGraded FA FA_lt) (i : ι) :
     (Grₐ[f] x) i = Grₐ(i)[f] (x i) := rfl
 
-theorem AssociatedGradedRingHom_comp: Grₐ[g].comp Grₐ[f] = Grₐ[g.comp f] :=
+theorem AssociatedGradedAlgHom_comp : Grₐ[g].comp Grₐ[f] = Grₐ[g.comp f] :=
   AlgHom.ext <| fun x ↦ congrFun
     (congrArg DFunLike.coe (FilteredRingHom.AssociatedGradedRingHom_comp_eq_comp g.1 f.1)) x
 
