@@ -91,8 +91,8 @@ variable [CommGroup G] [LinearOrder G] [IsOrderedMonoid G] [MulArchimedean G]
 
 /-- An archimedean decidable linearly ordered `CommGroup` has a version of the floor: for
 `a > 1`, any `g` in the group lies between some two consecutive powers of `a`. -/
-@[to_additive "An archimedean decidable linearly ordered `AddCommGroup` has a version of the floor:
-for `a > 0`, any `g` in the group lies between some two consecutive multiples of `a`. -/"]
+@[to_additive /-- An archimedean decidable linearly ordered `AddCommGroup` has a version of the
+floor: for `a > 0`, any `g` in the group lies between some two consecutive multiples of `a`. -/]
 theorem existsUnique_zpow_near_of_one_lt {a : G} (ha : 1 < a) (g : G) :
     ∃! k : ℤ, a ^ k ≤ g ∧ g < a ^ (k + 1) := by
   let s : Set ℤ := { n : ℤ | a ^ n ≤ g }

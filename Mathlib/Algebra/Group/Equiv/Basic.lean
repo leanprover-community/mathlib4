@@ -42,13 +42,13 @@ variable [Mul M] [Mul N] [Mul P]
 section unique
 
 /-- The `MulEquiv` between two monoids with a unique element. -/
-@[to_additive "The `AddEquiv` between two `AddMonoid`s with a unique element."]
+@[to_additive /-- The `AddEquiv` between two `AddMonoid`s with a unique element. -/]
 def ofUnique {M N} [Unique M] [Unique N] [Mul M] [Mul N] : M ≃* N :=
   { Equiv.ofUnique M N with map_mul' := fun _ _ => Subsingleton.elim _ _ }
 
 /-- There is a unique monoid homomorphism between two monoids with a unique element. -/
-@[to_additive "There is a unique additive monoid homomorphism between two additive monoids with
-  a unique element."]
+@[to_additive /-- There is a unique additive monoid homomorphism between two additive monoids with
+  a unique element. -/]
 instance {M N} [Unique M] [Unique N] [Mul M] [Mul N] : Unique (M ≃* N) where
   default := ofUnique
   uniq _ := ext fun _ => Subsingleton.elim _ _
@@ -64,8 +64,8 @@ end Mul
 /-- A multiplicative analogue of `Equiv.arrowCongr`,
 where the equivalence between the targets is multiplicative.
 -/
-@[to_additive (attr := simps apply) "An additive analogue of `Equiv.arrowCongr`,
-  where the equivalence between the targets is additive."]
+@[to_additive (attr := simps apply) /-- An additive analogue of `Equiv.arrowCongr`,
+  where the equivalence between the targets is additive. -/]
 def arrowCongr {M N P Q : Type*} [Mul P] [Mul Q] (f : M ≃ N) (g : P ≃* Q) :
     (M → P) ≃* (N → Q) where
   toFun h n := g (h (f.symm n))
@@ -78,8 +78,8 @@ def arrowCongr {M N P Q : Type*} [Mul P] [Mul Q] (f : M ≃ N) (g : P ≃* Q) :
 for multiplicative maps from a monoid to a commutative monoid.
 -/
 @[to_additive (attr := simps apply)
-  "An additive analogue of `Equiv.arrowCongr`,
-  for additive maps from an additive monoid to a commutative additive monoid."]
+  /-- An additive analogue of `Equiv.arrowCongr`,
+  for additive maps from an additive monoid to a commutative additive monoid. -/]
 def monoidHomCongr {M N P Q} [MulOneClass M] [MulOneClass N] [CommMonoid P] [CommMonoid Q]
     (f : M ≃* N) (g : P ≃* Q) : (M →* P) ≃* (N →* Q) where
   toFun h := g.toMonoidHom.comp (h.comp f.symm.toMonoidHom)
@@ -95,11 +95,11 @@ This is the `MulEquiv` version of `Equiv.piCongrRight`, and the dependent versio
 `MulEquiv.arrowCongr`.
 -/
 @[to_additive (attr := simps apply)
-  "A family of additive equivalences `Π j, (Ms j ≃+ Ns j)`
+  /-- A family of additive equivalences `Π j, (Ms j ≃+ Ns j)`
   generates an additive equivalence between `Π j, Ms j` and `Π j, Ns j`.
 
   This is the `AddEquiv` version of `Equiv.piCongrRight`, and the dependent version of
-  `AddEquiv.arrowCongr`."]
+  `AddEquiv.arrowCongr`. -/]
 def piCongrRight {η : Type*} {Ms Ns : η → Type*} [∀ j, Mul (Ms j)] [∀ j, Mul (Ns j)]
     (es : ∀ j, Ms j ≃* Ns j) : (∀ j, Ms j) ≃* ∀ j, Ns j :=
   { Equiv.piCongrRight fun j => (es j).toEquiv with
@@ -123,8 +123,8 @@ theorem piCongrRight_trans {η : Type*} {Ms Ns Ps : η → Type*} [∀ j, Mul (M
 /-- A family indexed by a type with a unique element
 is `MulEquiv` to the element at the single index. -/
 @[to_additive (attr := simps!)
-  "A family indexed by a type with a unique element
-  is `AddEquiv` to the element at the single index."]
+  /-- A family indexed by a type with a unique element
+  is `AddEquiv` to the element at the single index. -/]
 def piUnique {ι : Type*} (M : ι → Type*) [∀ j, Mul (M j)] [Unique ι] :
     (∀ j, M j) ≃* M default :=
   { Equiv.piUnique M with map_mul' := fun _ _ => Pi.mul_apply _ _ _ }
@@ -136,8 +136,8 @@ namespace MonoidHom
 /-- The equivalence `(β →* γ) ≃ (α →* γ)` obtained by precomposition with
 a multiplicative equivalence `e : α ≃* β`. -/
 @[to_additive (attr := simps)
-"The equivalence `(β →+ γ) ≃ (α →+ γ)` obtained by precomposition with
-an additive equivalence `e : α ≃+ β`."]
+/-- The equivalence `(β →+ γ) ≃ (α →+ γ)` obtained by precomposition with
+an additive equivalence `e : α ≃+ β`. -/]
 def precompEquiv {α β : Type*} [Monoid α] [Monoid β] (e : α ≃* β) (γ : Type*) [Monoid γ] :
     (β →* γ) ≃ (α →* γ) where
   toFun f := f.comp e
@@ -148,8 +148,8 @@ def precompEquiv {α β : Type*} [Monoid α] [Monoid β] (e : α ≃* β) (γ : 
 /-- The equivalence `(γ →* α) ≃ (γ →* β)` obtained by postcomposition with
 a multiplicative equivalence `e : α ≃* β`. -/
 @[to_additive (attr := simps)
-"The equivalence `(γ →+ α) ≃ (γ →+ β)` obtained by postcomposition with
-an additive equivalence `e : α ≃+ β`."]
+/-- The equivalence `(γ →+ α) ≃ (γ →+ β)` obtained by postcomposition with
+an additive equivalence `e : α ≃+ β`. -/]
 def postcompEquiv {α β : Type*} [Monoid α] [Monoid β] (e : α ≃* β) (γ : Type*) [Monoid γ] :
     (γ →* α) ≃ (γ →* β) where
   toFun f := e.toMonoidHom.comp f
@@ -167,7 +167,7 @@ variable (G) [InvolutiveInv G]
 
 /-- Inversion on a `Group` or `GroupWithZero` is a permutation of the underlying type. -/
 @[to_additive (attr := simps! -fullyApplied apply)
-    "Negation on an `AddGroup` is a permutation of the underlying type."]
+    /-- Negation on an `AddGroup` is a permutation of the underlying type. -/]
 protected def inv : Perm G :=
   inv_involutive.toPerm _
 

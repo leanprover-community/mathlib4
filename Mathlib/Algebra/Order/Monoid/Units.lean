@@ -37,7 +37,7 @@ instance [Monoid α] [LinearOrder α] : LinearOrder αˣ :=
 
 /-- `val : αˣ → α` as an order embedding. -/
 @[to_additive (attr := simps -fullyApplied)
-  "`val : add_units α → α` as an order embedding."]
+  /-- `val : add_units α → α` as an order embedding. -/]
 def orderEmbeddingVal [Monoid α] [LinearOrder α] : αˣ ↪o α :=
   ⟨⟨val, val_injective⟩, .rfl⟩
 

@@ -16,7 +16,7 @@ variable {F α M N G : Type*}
 
 /-- A group is isomorphic to its group of units. -/
 @[to_additive (attr := simps apply_val symm_apply)
-"An additive group is isomorphic to its group of additive units"]
+/-- An additive group is isomorphic to its group of additive units -/]
 def toUnits [Group G] : G ≃* Gˣ where
   toFun x := ⟨x, x⁻¹, mul_inv_cancel _, inv_mul_cancel _⟩
   invFun x := x
@@ -48,7 +48,7 @@ theorem coe_mapEquiv (h : M ≃* N) (x : Mˣ) : (mapEquiv h x : N) = h x :=
 
 /-- Left multiplication by a unit of a monoid is a permutation of the underlying type. -/
 @[to_additive (attr := simps -fullyApplied apply)
-  "Left addition of an additive unit is a permutation of the underlying type."]
+  /-- Left addition of an additive unit is a permutation of the underlying type. -/]
 def mulLeft (u : Mˣ) : Equiv.Perm M where
   toFun x := u * x
   invFun x := u⁻¹ * x
@@ -65,7 +65,7 @@ theorem mulLeft_bijective (a : Mˣ) : Function.Bijective ((a * ·) : M → M) :=
 
 /-- Right multiplication by a unit of a monoid is a permutation of the underlying type. -/
 @[to_additive (attr := simps -fullyApplied apply)
-"Right addition of an additive unit is a permutation of the underlying type."]
+/-- Right addition of an additive unit is a permutation of the underlying type. -/]
 def mulRight (u : Mˣ) : Equiv.Perm M where
   toFun x := x * u
   invFun x := x * ↑u⁻¹
@@ -89,7 +89,7 @@ section Group
 variable [Group G]
 
 /-- Left multiplication in a `Group` is a permutation of the underlying type. -/
-@[to_additive "Left addition in an `AddGroup` is a permutation of the underlying type."]
+@[to_additive /-- Left addition in an `AddGroup` is a permutation of the underlying type. -/]
 protected def mulLeft (a : G) : Perm G :=
   (toUnits a).mulLeft
 
@@ -98,7 +98,8 @@ theorem coe_mulLeft (a : G) : ⇑(Equiv.mulLeft a) = (a * ·) :=
   rfl
 
 /-- Extra simp lemma that `dsimp` can use. `simp` will never use this. -/
-@[to_additive (attr := simp) "Extra simp lemma that `dsimp` can use. `simp` will never use this."]
+@[to_additive (attr := simp)
+/-- Extra simp lemma that `dsimp` can use. `simp` will never use this. -/]
 theorem mulLeft_symm_apply (a : G) : ((Equiv.mulLeft a).symm : G → G) = (a⁻¹ * ·) :=
   rfl
 
@@ -111,7 +112,7 @@ theorem _root_.Group.mulLeft_bijective (a : G) : Function.Bijective (a * ·) :=
   (Equiv.mulLeft a).bijective
 
 /-- Right multiplication in a `Group` is a permutation of the underlying type. -/
-@[to_additive "Right addition in an `AddGroup` is a permutation of the underlying type."]
+@[to_additive /-- Right addition in an `AddGroup` is a permutation of the underlying type. -/]
 protected def mulRight (a : G) : Perm G :=
   (toUnits a).mulRight
 
@@ -124,7 +125,8 @@ theorem mulRight_symm (a : G) : (Equiv.mulRight a).symm = Equiv.mulRight a⁻¹ 
   ext fun _ => rfl
 
 /-- Extra simp lemma that `dsimp` can use. `simp` will never use this. -/
-@[to_additive (attr := simp) "Extra simp lemma that `dsimp` can use. `simp` will never use this."]
+@[to_additive (attr := simp)
+/-- Extra simp lemma that `dsimp` can use. `simp` will never use this. -/]
 theorem mulRight_symm_apply (a : G) : ((Equiv.mulRight a).symm : G → G) = fun x => x * a⁻¹ :=
   rfl
 
@@ -133,7 +135,7 @@ theorem _root_.Group.mulRight_bijective (a : G) : Function.Bijective (· * a) :=
   (Equiv.mulRight a).bijective
 
 /-- A version of `Equiv.mulLeft a b⁻¹` that is defeq to `a / b`. -/
-@[to_additive (attr := simps) " A version of `Equiv.addLeft a (-b)` that is defeq to `a - b`. "]
+@[to_additive (attr := simps) /-- A version of `Equiv.addLeft a (-b)` that is defeq to `a - b`. -/]
 protected def divLeft (a : G) : G ≃ G where
   toFun b := a / b
   invFun b := b⁻¹ * a
@@ -146,7 +148,7 @@ theorem divLeft_eq_inv_trans_mulLeft (a : G) :
   ext fun _ => div_eq_mul_inv _ _
 
 /-- A version of `Equiv.mulRight a⁻¹ b` that is defeq to `b / a`. -/
-@[to_additive (attr := simps) " A version of `Equiv.addRight (-a) b` that is defeq to `b - a`. "]
+@[to_additive (attr := simps) /-- A version of `Equiv.addRight (-a) b` that is defeq to `b - a`. -/]
 protected def divRight (a : G) : G ≃ G where
   toFun b := b / a
   invFun b := b * a
@@ -185,7 +187,7 @@ def unitsEquivProdSubtype [Monoid α] : αˣ ≃ {p : α × α // p.1 * p.2 = 1 
 /-- In a `DivisionCommMonoid`, `Equiv.inv` is a `MulEquiv`. There is a variant of this
 `MulEquiv.inv' G : G ≃* Gᵐᵒᵖ` for the non-commutative case. -/
 @[to_additive (attr := simps apply)
-  "When the `AddGroup` is commutative, `Equiv.neg` is an `AddEquiv`."]
+  /-- When the `AddGroup` is commutative, `Equiv.neg` is an `AddEquiv`. -/]
 def MulEquiv.inv (G : Type*) [DivisionCommMonoid G] : G ≃* G :=
   { Equiv.inv G with toFun := Inv.inv, invFun := Inv.inv, map_mul' := mul_inv }
 

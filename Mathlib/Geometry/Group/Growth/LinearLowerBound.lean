@@ -80,7 +80,7 @@ lemma pow_right_strictMono (hX₁ : 1 ∈ X) (hXclosure : (closure (X : Set G) :
   simpa [h] using pow_right_strictMonoOn hX₁ hX
 
 /-- The growth of a set generating an infinite group is at least linear. -/
-@[to_additive "The growth of a set generating an infinite group is at least linear."]
+@[to_additive /-- The growth of a set generating an infinite group is at least linear. -/]
 lemma add_one_le_card_pow (hX₁ : 1 ∈ X) (hXclosure : (closure (X : Set G) : Set G).Infinite) :
     ∀ n, n + 1 ≤ #(X ^ n)
   | 0 => by simp

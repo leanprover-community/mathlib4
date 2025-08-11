@@ -79,7 +79,7 @@ variable {H : Type*} [CommGroup H] [PartialOrder H] [IsOrderedMonoid H] {a : H}
 
 variable (H) in
 /-- The cone of elements that are at least 1. -/
-@[to_additive "The cone of non-negative elements."]
+@[to_additive /-- The cone of non-negative elements. -/]
 def oneLE : GroupCone H where
   __ := Submonoid.oneLE H
   eq_one_of_mem_of_inv_mem' {a} := by simpa using ge_antisymm
@@ -101,7 +101,7 @@ end GroupCone
 variable {S G : Type*} [CommGroup G] [SetLike S G] (C : S)
 
 /-- Construct a partial order by designating a cone in an abelian group. -/
-@[to_additive "Construct a partial order by designating a cone in an abelian group."]
+@[to_additive /-- Construct a partial order by designating a cone in an abelian group. -/]
 abbrev PartialOrder.mkOfGroupCone [GroupConeClass S G] : PartialOrder G where
   le a b := b / a ∈ C
   le_refl a := by simp [one_mem]
@@ -115,7 +115,7 @@ lemma PartialOrder.mkOfGroupCone_le_iff {S G : Type*} [CommGroup G] [SetLike S G
     (mkOfGroupCone C).le a b ↔ b / a ∈ C := Iff.rfl
 
 /-- Construct a linear order by designating a maximal cone in an abelian group. -/
-@[to_additive "Construct a linear order by designating a maximal cone in an abelian group."]
+@[to_additive /-- Construct a linear order by designating a maximal cone in an abelian group. -/]
 abbrev LinearOrder.mkOfGroupCone
     [GroupConeClass S G] [IsMaxMulCone C] [DecidablePred (· ∈ C)] : LinearOrder G where
   __ := PartialOrder.mkOfGroupCone C
@@ -124,7 +124,7 @@ abbrev LinearOrder.mkOfGroupCone
 
 /-- Construct a partially ordered abelian group by designating a cone in an abelian group. -/
 @[to_additive
-  "Construct a partially ordered abelian group by designating a cone in an abelian group."]
+  /-- Construct a partially ordered abelian group by designating a cone in an abelian group. -/]
 lemma IsOrderedMonoid.mkOfCone [GroupConeClass S G] :
     let _ : PartialOrder G := PartialOrder.mkOfGroupCone C
     IsOrderedMonoid G :=

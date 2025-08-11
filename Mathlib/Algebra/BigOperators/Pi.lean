@@ -43,7 +43,7 @@ theorem Finset.prod_apply {α : Type*} {M : α → Type*} [∀ a, CommMonoid (M 
   map_prod (Pi.evalMonoidHom M a) _ _
 
 /-- An 'unapplied' analogue of `Finset.prod_apply`. -/
-@[to_additive "An 'unapplied' analogue of `Finset.sum_apply`."]
+@[to_additive /-- An 'unapplied' analogue of `Finset.sum_apply`. -/]
 theorem Finset.prod_fn {α : Type*} {M : α → Type*} {ι} [∀ a, CommMonoid (M a)] (s : Finset ι)
     (g : ι → ∀ a, M a) : ∏ c ∈ s, g c = fun a ↦ ∏ c ∈ s, g c a :=
   funext fun _ ↦ Finset.prod_apply _ _ _
@@ -114,8 +114,8 @@ theorem MonoidHom.functions_ext [Finite I] (N : Type*) [CommMonoid N] (g h : (�
 /-- This is used as the ext lemma instead of `MonoidHom.functions_ext` for reasons explained in
 note [partially-applied ext lemmas]. -/
 @[to_additive (attr := ext)
-      "This is used as the ext lemma instead of `AddMonoidHom.functions_ext` for reasons
-      explained in note [partially-applied ext lemmas]."]
+      /-- This is used as the ext lemma instead of `AddMonoidHom.functions_ext` for reasons
+      explained in note [partially-applied ext lemmas]. -/]
 theorem MonoidHom.functions_ext' [Finite I] (N : Type*) [CommMonoid N] (g h : (∀ i, M i) →* N)
     (H : ∀ i, g.comp (MonoidHom.mulSingle M i) = h.comp (MonoidHom.mulSingle M i)) : g = h :=
   g.functions_ext N h fun i => DFunLike.congr_fun (H i)
@@ -155,9 +155,9 @@ section MulEquiv
 
 /-- The canonical isomorphism between the monoid of homomorphisms from a finite product of
 commutative monoids to another commutative monoid and the product of the homomorphism monoids. -/
-@[to_additive "The canonical isomorphism between the additive monoid of homomorphisms from
+@[to_additive /-- The canonical isomorphism between the additive monoid of homomorphisms from
 a finite product of additive commutative monoids to another additive commutative monoid and
-the product of the homomorphism monoids."]
+the product of the homomorphism monoids. -/]
 def Pi.monoidHomMulEquiv {ι : Type*} [Fintype ι] [DecidableEq ι] (M : ι → Type*)
     [(i : ι) → CommMonoid (M i)] (M' : Type*) [CommMonoid M'] :
     (((i : ι) → M i) →* M') ≃* ((i : ι) → (M i →* M')) where

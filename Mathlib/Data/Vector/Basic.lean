@@ -604,7 +604,7 @@ theorem prod_set [Monoid α] (v : Vector α n) (i : Fin n) (a : α) :
 
 /-- Variant of `List.Vector.prod_set` that multiplies by the inverse of the replaced element -/
 @[to_additive
-  "Variant of `List.Vector.sum_set` that subtracts the inverse of the replaced element"]
+  /-- Variant of `List.Vector.sum_set` that subtracts the inverse of the replaced element -/]
 theorem prod_set' [CommGroup α] (v : Vector α n) (i : Fin n) (a : α) :
     (v.set i a).toList.prod = v.toList.prod * (v.get i)⁻¹ * a := by
   refine (List.prod_set' v.toList i a).trans ?_

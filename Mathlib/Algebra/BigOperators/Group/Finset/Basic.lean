@@ -54,8 +54,8 @@ theorem prod_insert' [DecidableEq ι] (h : a ∉ s) :
 
 /-- The product of `f` over `insert a s` is the same as
 the product over `s`, as long as `a` is in `s` or `f a = 1`. -/
-@[to_additive (attr := simp) "The sum of `f` over `insert a s` is the same as
-the sum over `s`, as long as `a` is in `s` or `f a = 0`."]
+@[to_additive (attr := simp) /-- The sum of `f` over `insert a s` is the same as
+the sum over `s`, as long as `a` is in `s` or `f a = 0`. -/]
 theorem prod_insert_of_eq_one_if_notMem [DecidableEq ι] (h : a ∉ s → f a = 1) :
     ∏ x ∈ insert a s, f x = ∏ x ∈ s, f x := by
   by_cases hm : a ∈ s
@@ -70,8 +70,8 @@ alias prod_insert_of_eq_one_if_not_mem := prod_insert_of_eq_one_if_notMem
 
 /-- The product of `f` over `insert a s` is the same as
 the product over `s`, as long as `f a = 1`. -/
-@[to_additive "The sum of `f` over `insert a s` is the same as
-the sum over `s`, as long as `f a = 0`."]
+@[to_additive /-- The sum of `f` over `insert a s` is the same as
+the sum over `s`, as long as `f a = 0`. -/]
 theorem prod_insert_one [DecidableEq ι] (h : f a = 1) : ∏ x ∈ insert a s, f x = ∏ x ∈ s, f x := by
   simp [h]
 
@@ -111,7 +111,7 @@ theorem prod_eq_one (h : ∀ x ∈ s, f x = 1) : ∏ x ∈ s, f x = 1 := calc
 
 /-- In a monoid whose only unit is `1`, a product is equal to `1` iff all factors are `1`. -/
 @[to_additive (attr := simp)
-"In an additive monoid whose only unit is `0`, a sum is equal to `0` iff all terms are `0`."]
+/-- In an additive monoid whose only unit is `0`, a sum is equal to `0` iff all terms are `0`. -/]
 lemma prod_eq_one_iff [Subsingleton Mˣ] : ∏ i ∈ s, f i = 1 ↔ ∀ i ∈ s, f i = 1 := by
   induction' s using Finset.cons_induction with i s hi ih <;> simp [*]
 
@@ -170,8 +170,8 @@ theorem _root_.IsCompl.prod_mul_prod [Fintype ι] {s t : Finset ι} (h : IsCompl
 
 /-- Multiplying the products of a function over `s` and over `sᶜ` gives the whole product.
 For a version expressed with subtypes, see `Fintype.prod_subtype_mul_prod_subtype`. -/
-@[to_additive "Adding the sums of a function over `s` and over `sᶜ` gives the whole sum.
-For a version expressed with subtypes, see `Fintype.sum_subtype_add_sum_subtype`. "]
+@[to_additive /-- Adding the sums of a function over `s` and over `sᶜ` gives the whole sum.
+For a version expressed with subtypes, see `Fintype.sum_subtype_add_sum_subtype`. -/]
 lemma prod_mul_prod_compl [Fintype ι] [DecidableEq ι] (s : Finset ι) (f : ι → M) :
     (∏ i ∈ s, f i) * ∏ i ∈ sᶜ, f i = ∏ i, f i :=
   IsCompl.prod_mul_prod isCompl_compl f
@@ -374,9 +374,9 @@ lemma prod_union_eq_right [DecidableEq ι] (hs : ∀ a ∈ s₁, a ∉ s₂ → 
 /-- The products of two functions `f g : ι → M` over finite sets `s₁ s₂ : Finset ι`
 are equal if the functions agree on `s₁ ∩ s₂`, `f = 1` and `g = 1` on the respective
 set differences. -/
-@[to_additive "The sum of two functions `f g : ι → M` over finite sets `s₁ s₂ : Finset ι`
+@[to_additive /-- The sum of two functions `f g : ι → M` over finite sets `s₁ s₂ : Finset ι`
 are equal if the functions agree on `s₁ ∩ s₂`, `f = 0` and `g = 0` on the respective
-set differences."]
+set differences. -/]
 lemma prod_congr_of_eq_on_inter {ι M : Type*} {s₁ s₂ : Finset ι} {f g : ι → M} [CommMonoid M]
     (h₁ : ∀ a ∈ s₁, a ∉ s₂ → f a = 1) (h₂ : ∀ a ∈ s₂, a ∉ s₁ → g a = 1)
     (h : ∀ a ∈ s₁, a ∈ s₂ → f a = g a) :
@@ -416,7 +416,7 @@ theorem prod_eq_mul {s : Finset ι} {f : ι → M} (a b : ι) (hn : a ≠ b)
 
 /-- A product over `s.subtype p` equals one over `{x ∈ s | p x}`. -/
 @[to_additive (attr := simp)
-"A sum over `s.subtype p` equals one over `{x ∈ s | p x}`."]
+/-- A sum over `s.subtype p` equals one over `{x ∈ s | p x}`. -/]
 theorem prod_subtype_eq_prod_filter (f : ι → M) {p : ι → Prop} [DecidablePred p] :
     ∏ x ∈ s.subtype p, f x = ∏ x ∈ s with p x, f x := by
   have := prod_map (s.subtype p) (Function.Embedding.subtype _) f
@@ -424,8 +424,8 @@ theorem prod_subtype_eq_prod_filter (f : ι → M) {p : ι → Prop} [DecidableP
 
 /-- If all elements of a `Finset` satisfy the predicate `p`, a product
 over `s.subtype p` equals that product over `s`. -/
-@[to_additive "If all elements of a `Finset` satisfy the predicate `p`, a sum
-over `s.subtype p` equals that sum over `s`."]
+@[to_additive /-- If all elements of a `Finset` satisfy the predicate `p`, a sum
+over `s.subtype p` equals that sum over `s`. -/]
 theorem prod_subtype_of_mem (f : ι → M) {p : ι → Prop} [DecidablePred p] (h : ∀ x ∈ s, p x) :
     ∏ x ∈ s.subtype p, f x = ∏ x ∈ s, f x := by
   rw [prod_subtype_eq_prod_filter, filter_true_of_mem]
@@ -434,9 +434,9 @@ theorem prod_subtype_of_mem (f : ι → M) {p : ι → Prop} [DecidablePred p] (
 /-- A product of a function over a `Finset` in a subtype equals a
 product in the main type of a function that agrees with the first
 function on that `Finset`. -/
-@[to_additive "A sum of a function over a `Finset` in a subtype equals a
+@[to_additive /-- A sum of a function over a `Finset` in a subtype equals a
 sum in the main type of a function that agrees with the first
-function on that `Finset`."]
+function on that `Finset`. -/]
 theorem prod_subtype_map_embedding {p : ι → Prop} {s : Finset { x // p x }} {f : { x // p x } → M}
     {g : ι → M} (h : ∀ x : { x // p x }, x ∈ s → g x = f x) :
     (∏ x ∈ s.map (Function.Embedding.subtype _), g x) = ∏ x ∈ s, f x := by
@@ -469,9 +469,9 @@ theorem prod_set_coe (s : Set ι) [Fintype s] : (∏ i : s, f i) = ∏ i ∈ s.t
 /-- The product of a function `g` defined only on a set `s` is equal to
 the product of a function `f` defined everywhere,
 as long as `f` and `g` agree on `s`, and `f = 1` off `s`. -/
-@[to_additive "The sum of a function `g` defined only on a set `s` is equal to
+@[to_additive /-- The sum of a function `g` defined only on a set `s` is equal to
 the sum of a function `f` defined everywhere,
-as long as `f` and `g` agree on `s`, and `f = 0` off `s`."]
+as long as `f` and `g` agree on `s`, and `f = 0` off `s`. -/]
 theorem prod_congr_set [Fintype ι] (s : Set ι) [DecidablePred (· ∈ s)] (f : ι → M) (g : s → M)
     (w : ∀ x (hx : x ∈ s), f x = g ⟨x, hx⟩) (w' : ∀ x ∉ s, f x = 1) : ∏ i, f i = ∏ i, g i := by
   rw [← prod_subset s.toFinset.subset_univ (by simpa), prod_subtype (p := (· ∈ s)) _ (by simp)]
@@ -609,11 +609,11 @@ theorem prod_multiset_count_of_subset [DecidableEq M] (m : Multiset M) (s : Fins
 that it's equal to a different function just by checking ratios of adjacent terms up to `n`.
 
 This is a multiplicative discrete analogue of the fundamental theorem of calculus. -/
-@[to_additive "For any sum along `{0, ..., n - 1}` of a commutative-monoid-valued function, we can
-verify that it's equal to a different function just by checking differences of adjacent terms up to
-`n`.
+@[to_additive /-- For any sum along `{0, ..., n - 1}` of a commutative-monoid-valued function, we
+can verify that it's equal to a different function just by checking differences of adjacent terms
+up to `n`.
 
-This is a discrete analogue of the fundamental theorem of calculus."]
+This is a discrete analogue of the fundamental theorem of calculus. -/]
 theorem prod_range_induction (f s : ℕ → M) (base : s 0 = 1)
     (n : ℕ) (step : ∀ k < n, s (k + 1) = s k * f k) :
     ∏ k ∈ Finset.range n, f k = s n := by
@@ -658,8 +658,8 @@ theorem prod_flip {n : ℕ} (f : ℕ → M) :
 
 /-- The difference with `Finset.prod_ninvolution` is that the involution is allowed to use
 membership of the domain of the product, rather than being a non-dependent function. -/
-@[to_additive "The difference with `Finset.sum_ninvolution` is that the involution is allowed to use
-membership of the domain of the sum, rather than being a non-dependent function."]
+@[to_additive /-- The difference with `Finset.sum_ninvolution` is that the involution is allowed to
+use membership of the domain of the sum, rather than being a non-dependent function. -/]
 lemma prod_involution (g : ∀ a ∈ s, ι) (hg₁ : ∀ a ha, f a * f (g a ha) = 1)
     (hg₃ : ∀ a ha, f a ≠ 1 → g a ha ≠ a)
     (g_mem : ∀ a ha, g a ha ∈ s) (hg₄ : ∀ a ha, g (g a ha) (g_mem a ha) = a) :
@@ -681,8 +681,8 @@ lemma prod_involution (g : ∀ a ∈ s, ι) (hg₁ : ∀ a ha, f a * f (g a ha) 
 
 /-- The difference with `Finset.prod_involution` is that the involution is a non-dependent function,
 rather than being allowed to use membership of the domain of the product. -/
-@[to_additive "The difference with `Finset.sum_involution` is that the involution is a non-dependent
-function, rather than being allowed to use membership of the domain of the sum."]
+@[to_additive /-- The difference with `Finset.sum_involution` is that the involution is a
+non-dependent function, rather than being allowed to use membership of the domain of the sum. -/]
 lemma prod_ninvolution (g : ι → ι) (hg₁ : ∀ a, f a * f (g a) = 1) (hg₂ : ∀ a, f a ≠ 1 → g a ≠ a)
     (g_mem : ∀ a, g a ∈ s) (hg₃ : ∀ a, g (g a) = a) : ∏ x ∈ s, f x = 1 :=
   prod_involution (fun i _ => g i) (fun i _ => hg₁ i) (fun _ _ hi => hg₂ _ hi)
@@ -690,21 +690,23 @@ lemma prod_ninvolution (g : ι → ι) (hg₁ : ∀ a, f a * f (g a) = 1) (hg₂
 
 /-- The product of the composition of functions `f` and `g`, is the product over `b ∈ s.image g` of
 `f b` to the power of the cardinality of the fibre of `b`. See also `Finset.prod_image`. -/
-@[to_additive "The sum of the composition of functions `f` and `g`, is the sum over `b ∈ s.image g`
-of `f b` times of the cardinality of the fibre of `b`. See also `Finset.sum_image`."]
+@[to_additive /-- The sum of the composition of functions `f` and `g`, is the sum over
+`b ∈ s.image g` of `f b` times of the cardinality of the fibre of `b`. See also
+`Finset.sum_image`. -/]
 theorem prod_comp [DecidableEq κ] (f : κ → M) (g : ι → κ) :
     ∏ a ∈ s, f (g a) = ∏ b ∈ s.image g, f b ^ #{a ∈ s | g a = b} := by
   simp_rw [← prod_const, prod_fiberwise_of_maps_to' fun _ ↦ mem_image_of_mem _]
 
 /-- A product can be partitioned into a product of products, each equivalent under a setoid. -/
-@[to_additive "A sum can be partitioned into a sum of sums, each equivalent under a setoid."]
+@[to_additive /-- A sum can be partitioned into a sum of sums, each equivalent under a setoid. -/]
 theorem prod_partition (R : Setoid ι) [DecidableRel R.r] :
     ∏ x ∈ s, f x = ∏ xbar ∈ s.image (Quotient.mk _), ∏ y ∈ s with ⟦y⟧ = xbar, f y := by
   refine (Finset.prod_image' f fun x _hx => ?_).symm
   rfl
 
 /-- If we can partition a product into subsets that cancel out, then the whole product cancels. -/
-@[to_additive "If we can partition a sum into subsets that cancel out, then the whole sum cancels."]
+@[to_additive /-- If we can partition a sum into subsets that cancel out, then the whole sum
+cancels. -/]
 theorem prod_cancels_of_partition_cancels (R : Setoid ι) [DecidableRel R]
     (h : ∀ x ∈ s, ∏ a ∈ s with R a x, f a = 1) : ∏ x ∈ s, f x = 1 := by
   rw [prod_partition R, ← Finset.prod_eq_one]
@@ -715,8 +717,8 @@ theorem prod_cancels_of_partition_cancels (R : Setoid ι) [DecidableRel R]
 
 /-- If a product of a `Finset` of size at most 1 has a given value, so
 do the terms in that product. -/
-@[to_additive eq_of_card_le_one_of_sum_eq "If a sum of a `Finset` of size at most 1 has a given
-value, so do the terms in that sum."]
+@[to_additive eq_of_card_le_one_of_sum_eq /-- If a sum of a `Finset` of size at most 1 has a given
+value, so do the terms in that sum. -/]
 theorem eq_of_card_le_one_of_prod_eq {s : Finset ι} (hc : #s ≤ 1) {f : ι → M} {b : M}
     (h : ∏ x ∈ s, f x = b) : ∀ x ∈ s, f x = b := by
   intro x hx
@@ -730,23 +732,23 @@ theorem eq_of_card_le_one_of_prod_eq {s : Finset ι} (hc : #s ≤ 1) {f : ι →
 `f a` by the product of `s.erase a`.
 
 See `Multiset.prod_map_erase` for the `Multiset` version. -/
-@[to_additive "Taking a sum over `s : Finset ι` is the same as adding the value on a single element
-`f a` to the sum over `s.erase a`.
+@[to_additive /-- Taking a sum over `s : Finset ι` is the same as adding the value on a single
+element `f a` to the sum over `s.erase a`.
 
-See `Multiset.sum_map_erase` for the `Multiset` version."]
+See `Multiset.sum_map_erase` for the `Multiset` version. -/]
 theorem mul_prod_erase [DecidableEq ι] (s : Finset ι) (f : ι → M) {a : ι} (h : a ∈ s) :
     (f a * ∏ x ∈ s.erase a, f x) = ∏ x ∈ s, f x := by
   rw [← prod_insert (notMem_erase a s), insert_erase h]
 
 /-- A variant of `Finset.mul_prod_erase` with the multiplication swapped. -/
-@[to_additive "A variant of `Finset.add_sum_erase` with the addition swapped."]
+@[to_additive /-- A variant of `Finset.add_sum_erase` with the addition swapped. -/]
 theorem prod_erase_mul [DecidableEq ι] (s : Finset ι) (f : ι → M) {a : ι} (h : a ∈ s) :
     (∏ x ∈ s.erase a, f x) * f a = ∏ x ∈ s, f x := by rw [mul_comm, mul_prod_erase s f h]
 
 /-- If a function applied at a point is 1, a product is unchanged by
 removing that point, if present, from a `Finset`. -/
-@[to_additive "If a function applied at a point is 0, a sum is unchanged by
-removing that point, if present, from a `Finset`."]
+@[to_additive /-- If a function applied at a point is 0, a sum is unchanged by
+removing that point, if present, from a `Finset`. -/]
 theorem prod_erase [DecidableEq ι] (s : Finset ι) {f : ι → M} {a : ι} (h : f a = 1) :
     ∏ x ∈ s.erase a, f x = ∏ x ∈ s, f x := by
   rw [← sdiff_singleton_eq_erase]
@@ -763,8 +765,8 @@ theorem prod_erase_lt_of_one_lt {κ : Type*} [DecidableEq ι] [CommMonoid κ] [L
 
 /-- If a product is 1 and the function is 1 except possibly at one
 point, it is 1 everywhere on the `Finset`. -/
-@[to_additive "If a sum is 0 and the function is 0 except possibly at one
-point, it is 0 everywhere on the `Finset`."]
+@[to_additive /-- If a sum is 0 and the function is 0 except possibly at one
+point, it is 0 everywhere on the `Finset`. -/]
 theorem eq_one_of_prod_eq_one {s : Finset ι} {f : ι → M} {a : ι} (hp : ∏ x ∈ s, f x = 1)
     (h1 : ∀ x ∈ s, x ≠ a → f x = 1) : ∀ x ∈ s, f x = 1 := by
   intro x hx
@@ -801,9 +803,9 @@ lemma prod_filter_of_pairwise_eq_one [DecidableEq ι] {f : κ → ι} {g : ι �
 injective. Rather, we assume that the image of `f` on `I` only overlaps where `g (f i) = 1`.
 The conclusion is the same as in `prod_image`. -/
 @[to_additive (attr := simp)
-"A version of `Finset.sum_map` and `Finset.sum_image`, but we do not assume that `f` is
+/-- A version of `Finset.sum_map` and `Finset.sum_image`, but we do not assume that `f` is
 injective. Rather, we assume that the image of `f` on `I` only overlaps where `g (f i) = 0`.
-The conclusion is the same as in `sum_image`."]
+The conclusion is the same as in `sum_image`. -/]
 lemma prod_image_of_pairwise_eq_one [DecidableEq ι] {f : κ → ι} {g : ι → M} {I : Finset κ}
     (hf : (I : Set κ).Pairwise fun i j ↦ f i = f j → g (f i) = 1) :
     ∏ s ∈ I.image f, g s = ∏ i ∈ I, g (f i) := by
@@ -814,9 +816,9 @@ lemma prod_image_of_pairwise_eq_one [DecidableEq ι] {f : κ → ι} {g : ι →
 injective. Rather, we assume that the images of `f` are disjoint on `I`, and `g ⊥ = 1`. The
 conclusion is the same as in `prod_image`. -/
 @[to_additive (attr := simp)
-"A version of `Finset.sum_map` and `Finset.sum_image`, but we do not assume that `f` is
+/-- A version of `Finset.sum_map` and `Finset.sum_image`, but we do not assume that `f` is
 injective. Rather, we assume that the images of `f` are disjoint on `I`, and `g ⊥ = 0`. The
-conclusion is the same as in `sum_image`."]
+conclusion is the same as in `sum_image`. -/]
 lemma prod_image_of_disjoint [DecidableEq ι] [PartialOrder ι] [OrderBot ι] {f : κ → ι} {g : ι → M}
     (hg_bot : g ⊥ = 1) {I : Finset κ} (hf_disj : (I : Set κ).PairwiseDisjoint f) :
     ∏ s ∈ I.image f, g s = ∏ i ∈ I, g (f i) := by
@@ -865,8 +867,8 @@ theorem prod_erase_eq_div {a : ι} (h : a ∈ s) : ∏ x ∈ s.erase a, f x = (�
 
 /-- A telescoping product along `{0, ..., n - 1}` of a commutative group valued function reduces to
 the ratio of the last and first factors. -/
-@[to_additive "A telescoping sum along `{0, ..., n - 1}` of an additive commutative group valued
-function reduces to the difference of the last and first terms."]
+@[to_additive /-- A telescoping sum along `{0, ..., n - 1}` of an additive commutative group valued
+function reduces to the difference of the last and first terms. -/]
 lemma prod_range_div (f : ℕ → G) (n : ℕ) : (∏ i ∈ range n, f (i + 1) / f i) = f n / f 0 := by
   apply prod_range_induction <;> simp
 

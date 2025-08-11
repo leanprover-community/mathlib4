@@ -30,7 +30,7 @@ variable {M : Type*} [SeminormedCommGroup M]
 
 variable (M) in
 /-- The null subgroup with respect to the norm. -/
-@[to_additive "The additive null subgroup with respect to the norm."]
+@[to_additive /-- The additive null subgroup with respect to the norm. -/]
 def nullSubgroup : Subgroup M where
   carrier := {x : M | ‖x‖ = 0}
   mul_mem' {x y} (hx : ‖x‖ = 0) (hy : ‖y‖ = 0) := by

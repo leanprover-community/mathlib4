@@ -69,7 +69,7 @@ section ProdAndSum
 variable [DecidableEq ι]
 
 /-- `DFinsupp.prod f g` is the product of `g i (f i)` over the support of `f`. -/
-@[to_additive "`sum f g` is the sum of `g i (f i)` over the support of `f`."]
+@[to_additive /-- `sum f g` is the sum of `g i (f i)` over the support of `f`. -/]
 def prod [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMonoid γ] (f : Π₀ i, β i)
     (g : ∀ i, β i → γ) : γ :=
   ∏ i ∈ f.support, g i (f i)

@@ -61,14 +61,14 @@ variable [Monoid α] [Monoid β] (s t : Set α)
 
 /-- A set is **3GP-free** if it does not contain any non-trivial geometric progression of length
 three. -/
-@[to_additive "A set is **3AP-free** if it does not contain any non-trivial arithmetic progression
-of length three.
+@[to_additive /-- A set is **3AP-free** if it does not contain any non-trivial arithmetic
+progression of length three.
 
-This is also sometimes called a **non averaging set** or **Salem-Spencer set**."]
+This is also sometimes called a **non averaging set** or **Salem-Spencer set**. -/]
 def ThreeGPFree : Prop := ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → ∀ ⦃c⦄, c ∈ s → a * c = b * b → a = b
 
 /-- Whether a given finset is 3GP-free is decidable. -/
-@[to_additive "Whether a given finset is 3AP-free is decidable."]
+@[to_additive /-- Whether a given finset is 3AP-free is decidable. -/]
 instance ThreeGPFree.instDecidable [DecidableEq α] {s : Finset α} :
     Decidable (ThreeGPFree (s : Set α)) :=
   decidable_of_iff (∀ a ∈ s, ∀ b ∈ s, ∀ c ∈ s, a * c = b * b → a = b) Iff.rfl
@@ -108,7 +108,7 @@ variable [CommMonoid α] [CommMonoid β] {s A : Set α} {t : Set β} {f : α →
 
 /-- Geometric progressions of length three are reflected under `2`-Freiman homomorphisms. -/
 @[to_additive
-"Arithmetic progressions of length three are reflected under `2`-Freiman homomorphisms."]
+/-- Arithmetic progressions of length three are reflected under `2`-Freiman homomorphisms. -/]
 lemma ThreeGPFree.of_image (hf : IsMulFreimanHom 2 s t f) (hf' : s.InjOn f) (hAs : A ⊆ s)
     (hA : ThreeGPFree (f '' A)) : ThreeGPFree A :=
   fun _ ha _ hb _ hc habc ↦ hf' (hAs ha) (hAs hb) <| hA (mem_image_of_mem _ ha)
@@ -117,7 +117,7 @@ lemma ThreeGPFree.of_image (hf : IsMulFreimanHom 2 s t f) (hf' : s.InjOn f) (hAs
 
 /-- Geometric progressions of length three are unchanged under `2`-Freiman isomorphisms. -/
 @[to_additive
-"Arithmetic progressions of length three are unchanged under `2`-Freiman isomorphisms."]
+/-- Arithmetic progressions of length three are unchanged under `2`-Freiman isomorphisms. -/]
 lemma threeGPFree_image (hf : IsMulFreimanIso 2 s t f) (hAs : A ⊆ s) :
     ThreeGPFree (f '' A) ↔ ThreeGPFree A := by
   rw [ThreeGPFree, ThreeGPFree]
@@ -130,21 +130,21 @@ lemma threeGPFree_image (hf : IsMulFreimanIso 2 s t f) (hAs : A ⊆ s) :
 
 /-- Geometric progressions of length three are reflected under `2`-Freiman homomorphisms. -/
 @[to_additive
-"Arithmetic progressions of length three are reflected under `2`-Freiman homomorphisms."]
+/-- Arithmetic progressions of length three are reflected under `2`-Freiman homomorphisms. -/]
 lemma IsMulFreimanHom.threeGPFree (hf : IsMulFreimanHom 2 s t f) (hf' : s.InjOn f)
     (ht : ThreeGPFree t) : ThreeGPFree s :=
   (ht.mono hf.mapsTo.image_subset).of_image hf hf' subset_rfl
 
 /-- Geometric progressions of length three are unchanged under `2`-Freiman isomorphisms. -/
 @[to_additive
-"Arithmetic progressions of length three are unchanged under `2`-Freiman isomorphisms."]
+/-- Arithmetic progressions of length three are unchanged under `2`-Freiman isomorphisms. -/]
 lemma IsMulFreimanIso.threeGPFree_congr (hf : IsMulFreimanIso 2 s t f) :
     ThreeGPFree s ↔ ThreeGPFree t := by
   rw [← threeGPFree_image hf subset_rfl, hf.bijOn.image_eq]
 
 /-- Geometric progressions of length three are preserved under semigroup homomorphisms. -/
 @[to_additive
-"Arithmetic progressions of length three are preserved under semigroup homomorphisms."]
+/-- Arithmetic progressions of length three are preserved under semigroup homomorphisms. -/]
 theorem ThreeGPFree.image' [FunLike F α β] [MulHomClass F α β] (f : F) (hf : (s * s).InjOn f)
     (h : ThreeGPFree s) : ThreeGPFree (f '' s) := by
   rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩ _ ⟨c, hc, rfl⟩ habc
@@ -251,10 +251,10 @@ section Monoid
 variable [Monoid α] [DecidableEq β] [Monoid β] (s t : Finset α)
 
 /-- The multiplicative Roth number of a finset is the cardinality of its biggest 3GP-free subset. -/
-@[to_additive "The additive Roth number of a finset is the cardinality of its biggest 3AP-free
+@[to_additive /-- The additive Roth number of a finset is the cardinality of its biggest 3AP-free
 subset.
 
-The usual Roth number corresponds to `addRothNumber (Finset.range n)`, see `rothNumberNat`."]
+The usual Roth number corresponds to `addRothNumber (Finset.range n)`, see `rothNumberNat`. -/]
 def mulRothNumber : Finset α →o ℕ :=
   ⟨fun s ↦ Nat.findGreatest (fun m ↦ ∃ t ⊆ s, #t = m ∧ ThreeGPFree (t : Set α)) #s, by
     rintro t u htu
@@ -331,7 +331,7 @@ section CommMonoid
 variable [CommMonoid α] [CommMonoid β] [DecidableEq β] {A : Finset α} {B : Finset β} {f : α → β}
 
 /-- Arithmetic progressions can be pushed forward along bijective 2-Freiman homs. -/
-@[to_additive "Arithmetic progressions can be pushed forward along bijective 2-Freiman homs."]
+@[to_additive /-- Arithmetic progressions can be pushed forward along bijective 2-Freiman homs. -/]
 lemma IsMulFreimanHom.mulRothNumber_mono (hf : IsMulFreimanHom 2 A B f) (hf' : Set.BijOn f A B) :
     mulRothNumber B ≤ mulRothNumber A := by
   obtain ⟨s, hsB, hcard, hs⟩ := mulRothNumber_spec B
@@ -344,7 +344,7 @@ lemma IsMulFreimanHom.mulRothNumber_mono (hf : IsMulFreimanHom 2 A B f) (hf' : S
   simpa using (hf.subset hsA hfsA.bijOn_subset.mapsTo).threeGPFree (hf'.injOn.mono hsA) hs
 
 /-- Arithmetic progressions are preserved under 2-Freiman isos. -/
-@[to_additive "Arithmetic progressions are preserved under 2-Freiman isos."]
+@[to_additive /-- Arithmetic progressions are preserved under 2-Freiman isos. -/]
 lemma IsMulFreimanIso.mulRothNumber_congr (hf : IsMulFreimanIso 2 A B f) :
     mulRothNumber A = mulRothNumber B := by
   refine le_antisymm ?_ (hf.isMulFreimanHom.mulRothNumber_mono hf.bijOn)

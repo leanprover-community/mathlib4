@@ -70,9 +70,9 @@ theorem nonarchimedean_of_emb (f : G →* H) (emb : IsOpenEmbedding f) : Nonarch
 
 /-- An open neighborhood of the identity in the cartesian product of two nonarchimedean groups
 contains the cartesian product of an open neighborhood in each group. -/
-@[to_additive NonarchimedeanAddGroup.prod_subset "An open neighborhood of the identity in
+@[to_additive NonarchimedeanAddGroup.prod_subset /-- An open neighborhood of the identity in
 the cartesian product of two nonarchimedean groups contains the cartesian product of
-an open neighborhood in each group."]
+an open neighborhood in each group. -/]
 theorem prod_subset {U} (hU : U ∈ 𝓝 (1 : G × K)) :
     ∃ (V : OpenSubgroup G) (W : OpenSubgroup K), (V : Set G) ×ˢ (W : Set K) ⊆ U := by
   rw [nhds_prod_eq, Filter.mem_prod_iff] at hU
@@ -84,16 +84,16 @@ theorem prod_subset {U} (hU : U ∈ 𝓝 (1 : G × K)) :
 
 /-- An open neighborhood of the identity in the cartesian square of a nonarchimedean group
 contains the cartesian square of an open neighborhood in the group. -/
-@[to_additive NonarchimedeanAddGroup.prod_self_subset "An open neighborhood of the identity in
+@[to_additive NonarchimedeanAddGroup.prod_self_subset /-- An open neighborhood of the identity in
 the cartesian square of a nonarchimedean group contains the cartesian square of
-an open neighborhood in the group."]
+an open neighborhood in the group. -/]
 theorem prod_self_subset {U} (hU : U ∈ 𝓝 (1 : G × G)) :
     ∃ V : OpenSubgroup G, (V : Set G) ×ˢ (V : Set G) ⊆ U :=
   let ⟨V, W, h⟩ := prod_subset hU
   ⟨V ⊓ W, by refine Set.Subset.trans (Set.prod_mono ?_ ?_) ‹_› <;> simp⟩
 
 /-- The cartesian product of two nonarchimedean groups is nonarchimedean. -/
-@[to_additive "The cartesian product of two nonarchimedean groups is nonarchimedean."]
+@[to_additive /-- The cartesian product of two nonarchimedean groups is nonarchimedean. -/]
 instance Prod.instNonarchimedeanGroup : NonarchimedeanGroup (G × K) where
   is_nonarchimedean _ hU :=
     let ⟨V, W, h⟩ := prod_subset hU

@@ -106,8 +106,8 @@ theorem Continuous.const_smul (hg : Continuous g) (c : M) : Continuous fun x => 
   (continuous_const_smul _).comp hg
 
 /-- If a scalar is central, then its right action is continuous when its left action is. -/
-@[to_additive "If an additive action is central, then its right action is continuous when its left
-action is."]
+@[to_additive /-- If an additive action is central, then its right action is continuous when its
+left action is. -/]
 instance ContinuousConstSMul.op [SMul Mᵐᵒᵖ α] [IsCentralScalar M α] :
     ContinuousConstSMul Mᵐᵒᵖ α :=
   ⟨MulOpposite.rec' fun c => by simpa only [op_smul_eq_smul] using continuous_const_smul c⟩
@@ -435,7 +435,7 @@ attribute [to_additive] ProperlyDiscontinuousSMul
 variable {Γ : Type*} [Group Γ] {T : Type*} [TopologicalSpace T] [MulAction Γ T]
 
 /-- A finite group action is always properly discontinuous. -/
-@[to_additive "A finite group action is always properly discontinuous."]
+@[to_additive /-- A finite group action is always properly discontinuous. -/]
 instance (priority := 100) Finite.to_properlyDiscontinuousSMul [Finite Γ] :
     ProperlyDiscontinuousSMul Γ T where finite_disjoint_inter_image _ _ := Set.toFinite _
 
@@ -444,8 +444,8 @@ export ProperlyDiscontinuousVAdd (finite_disjoint_inter_image)
 
 /-- The quotient map by a group action is open, i.e. the quotient by a group action is an open
   quotient. -/
-@[to_additive "The quotient map by a group action is open, i.e. the quotient by a group
-action is an open quotient. "]
+@[to_additive /-- The quotient map by a group action is open, i.e. the quotient by a group
+action is an open quotient. -/]
 theorem isOpenMap_quotient_mk'_mul [ContinuousConstSMul Γ T] :
     letI := MulAction.orbitRel Γ T
     IsOpenMap (Quotient.mk' : T → Quotient (MulAction.orbitRel Γ T)) := fun U hU => by
@@ -458,8 +458,8 @@ theorem MulAction.isOpenQuotientMap_quotientMk [ContinuousConstSMul Γ T] :
   ⟨Quot.mk_surjective, continuous_quot_mk, isOpenMap_quotient_mk'_mul⟩
 
 /-- The quotient by a discontinuous group action of a locally compact t2 space is t2. -/
-@[to_additive "The quotient by a discontinuous group action of a locally compact t2
-space is t2."]
+@[to_additive /-- The quotient by a discontinuous group action of a locally compact t2
+space is t2. -/]
 instance (priority := 100) t2Space_of_properlyDiscontinuousSMul_of_t2Space [T2Space T]
     [LocallyCompactSpace T] [ContinuousConstSMul Γ T] [ProperlyDiscontinuousSMul Γ T] :
     T2Space (Quotient (MulAction.orbitRel Γ T)) := by
@@ -494,8 +494,8 @@ instance (priority := 100) t2Space_of_properlyDiscontinuousSMul_of_t2Space [T2Sp
     exact eq_empty_iff_forall_notMem.mp H (γ • x) ⟨mem_image_of_mem _ x_in_K₀, h'⟩
 
 /-- The quotient of a second countable space by a group action is second countable. -/
-@[to_additive "The quotient of a second countable space by an additive group action is second
-countable."]
+@[to_additive /-- The quotient of a second countable space by an additive group action is second
+countable. -/]
 theorem ContinuousConstSMul.secondCountableTopology [SecondCountableTopology T]
     [ContinuousConstSMul Γ T] : SecondCountableTopology (Quotient (MulAction.orbitRel Γ T)) :=
   TopologicalSpace.Quotient.secondCountableTopology isOpenMap_quotient_mk'_mul

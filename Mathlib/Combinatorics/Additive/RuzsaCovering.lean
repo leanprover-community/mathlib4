@@ -24,7 +24,7 @@ namespace Finset
 variable [DecidableEq G] {A B : Finset G}
 
 /-- **Ruzsa's covering lemma**. -/
-@[to_additive "**Ruzsa's covering lemma**"]
+@[to_additive /-- **Ruzsa's covering lemma** -/]
 theorem ruzsa_covering_mul (hB : B.Nonempty) (hK : #(A * B) ≤ K * #B) :
     ∃ F ⊆ A, #F ≤ K ∧ A ⊆ F * (B / B) := by
   haveI : ∀ F, Decidable ((F : Set G).PairwiseDisjoint (· • B)) := fun F ↦ Classical.dec _
@@ -56,7 +56,7 @@ namespace Set
 variable {A B : Set G}
 
 /-- **Ruzsa's covering lemma** for sets. See also `Finset.ruzsa_covering_mul`. -/
-@[to_additive "**Ruzsa's covering lemma** for sets. See also `Finset.ruzsa_covering_add`."]
+@[to_additive /-- **Ruzsa's covering lemma** for sets. See also `Finset.ruzsa_covering_add`. -/]
 lemma ruzsa_covering_mul (hA : A.Finite) (hB : B.Finite) (hB₀ : B.Nonempty)
     (hK : Nat.card (A * B) ≤ K * Nat.card B) :
     ∃ F ⊆ A, Nat.card F ≤ K ∧ A ⊆ F * (B / B) ∧ F.Finite := by

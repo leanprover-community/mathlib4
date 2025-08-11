@@ -49,7 +49,7 @@ theorem value_smul {α β : Type*} [SMul α β] (φ : Germ (𝓝 x) α)
   Germ.inductionOn φ fun _ ↦ Germ.inductionOn ψ fun _ ↦ rfl
 
 /-- The map `Germ (𝓝 x) E → E` into a monoid `E` as a monoid homomorphism -/
-@[to_additive "The map `Germ (𝓝 x) E → E` as an additive monoid homomorphism"]
+@[to_additive /-- The map `Germ (𝓝 x) E → E` as an additive monoid homomorphism -/]
 def valueMulHom {X E : Type*} [Monoid E] [TopologicalSpace X] {x : X} : Germ (𝓝 x) E →* E where
   toFun := Filter.Germ.value
   map_one' := rfl
