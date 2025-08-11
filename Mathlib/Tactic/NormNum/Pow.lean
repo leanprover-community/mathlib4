@@ -230,7 +230,7 @@ theorem isRat_zpow_neg {α : Type*} [DivisionRing α] {a : α} {b : ℤ} {nb : �
   rwa [pb.out, Int.cast_negOfNat, zpow_neg, zpow_natCast]
 
 #adaptation_note /-- https://github.com/leanprover/lean4/pull/4096
-the repeated
+the two
 ```
 have h : $e =Q (HPow.hPow (γ := $α) $a $b) := ⟨⟩
 h.check
@@ -247,41 +247,33 @@ def evalZPow : NormNumExt where eval {u α} e := do
   match rb with
   | .isBool .. | .isRat _ .. => failure
   | .isNat sβ nb pb =>
+    have h : $e =Q (HPow.hPow (γ := $α) $a $b) := ⟨⟩
+    h.check
     match ← derive q($a ^ $nb) with
     | .isBool .. => failure
     | .isNat sα' ne' pe' =>
-      have h : $e =Q (HPow.hPow (γ := $α) $a $b) := ⟨⟩
-      h.check
       assumeInstancesCommute
       return .isNat sα' ne' q(isNat_zpow_pos $pb $pe')
     | .isNegNat sα' ne' pe' =>
-      have h : $e =Q (HPow.hPow (γ := $α) $a $b) := ⟨⟩
-      h.check
       let _c ← synthInstanceQ q(DivisionRing $α)
       assumeInstancesCommute
       return .isNegNat sα' ne' q(isInt_zpow_pos $pb $pe')
     | .isRat sα' qe' nume' dene' pe' =>
-      have h : $e =Q (HPow.hPow (γ := $α) $a $b) := ⟨⟩
-      h.check
       assumeInstancesCommute
       return .isRat sα' qe' nume' dene' q(isRat_zpow_pos $pb $pe')
   | .isNegNat sβ nb pb =>
+    have h : $e =Q (HPow.hPow (γ := $α) $a $b) := ⟨⟩
+    h.check
     match ← derive q(($a ^ $nb)⁻¹) with
     | .isBool .. => failure
     | .isNat sα' ne' pe' =>
-      have h : $e =Q (HPow.hPow (γ := $α) $a $b) := ⟨⟩
-      h.check
       assumeInstancesCommute
       return .isNat sα' ne' q(isNat_zpow_neg $pb $pe')
     | .isNegNat sα' ne' pe' =>
-      have h : $e =Q (HPow.hPow (γ := $α) $a $b) := ⟨⟩
-      h.check
       let _c ← synthInstanceQ q(DivisionRing $α)
       assumeInstancesCommute
       return .isNegNat sα' ne' q(isInt_zpow_neg $pb $pe')
     | .isRat sα' qe' nume' dene' pe' =>
-      have h : $e =Q (HPow.hPow (γ := $α) $a $b) := ⟨⟩
-      h.check
       assumeInstancesCommute
       return .isRat sα' qe' nume' dene' q(isRat_zpow_neg $pb $pe')
 
