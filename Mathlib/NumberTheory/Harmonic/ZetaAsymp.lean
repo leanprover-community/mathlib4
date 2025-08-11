@@ -70,7 +70,7 @@ section s_eq_one
 -/
 
 lemma term_one {n : ℕ} (hn : 0 < n) :
-    term n 1 = (log (n + 1) - log n) -  1 / (n + 1) := by
+    term n 1 = (log (n + 1) - log n) - 1 / (n + 1) := by
   have hv : ∀ x ∈ uIcc (n : ℝ) (n + 1), 0 < x := by
     intro x hx
     rw [uIcc_of_le (by simp only [le_add_iff_nonneg_right, zero_le_one])] at hx
@@ -102,7 +102,7 @@ lemma term_one {n : ℕ} (hn : 0 < n) :
       rw [integral_rpow]
       · simp_rw [sub_div, (by norm_num : (-2 : ℝ) + 1 = -1), div_neg, div_one, neg_sub_neg,
           rpow_neg_one, ← one_div]
-      · refine Or.inr ⟨by norm_num, notMem_uIcc_of_lt ?_ ?_⟩
+      · refine Or.inr ⟨by simp, notMem_uIcc_of_lt ?_ ?_⟩
         all_goals positivity
     _ = log (↑n + 1) - log ↑n - 1 / (↑n + 1) := by
       congr 1
