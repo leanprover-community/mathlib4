@@ -73,14 +73,7 @@ with coefficients in the integers and variables indexed by `α`.
 -/
 def FreeCommRing (α : Type u) : Type u :=
   FreeAbelianGroup <| Multiplicative <| Multiset α
--- The `CommRing, Inhabited` instances should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-
-instance FreeCommRing.instCommRing : CommRing (FreeCommRing α) := by
-  delta FreeCommRing; infer_instance
-
-instance FreeCommRing.instInhabited : Inhabited (FreeCommRing α) := by
-  delta FreeCommRing; infer_instance
+deriving CommRing, Inhabited
 
 namespace FreeCommRing
 
