@@ -3,13 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.MorphismProperty.Composition
-import Mathlib.CategoryTheory.MorphismProperty.Limits
-import Mathlib.CategoryTheory.Limits.Shapes.Preorder.TransfiniteCompositionOfShape
 import Mathlib.CategoryTheory.Limits.Connected
-import Mathlib.Order.Shrink
+import Mathlib.CategoryTheory.Limits.Shapes.Preorder.TransfiniteCompositionOfShape
+import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.Order.Interval.Set.SuccOrder
-import Mathlib.Logic.UnivLE
+import Mathlib.Order.Shrink
 /-!
 # Classes of morphisms that are stable under transfinite composition
 
@@ -46,7 +44,7 @@ section
 variable (J : Type w) [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J]
   {J' : Type w'} [LinearOrder J'] [SuccOrder J'] [OrderBot J'] [WellFoundedLT J']
 
-/-- Structure expressing that a morpshism `f : X ⟶ Y` in a category `C`
+/-- Structure expressing that a morphism `f : X ⟶ Y` in a category `C`
 is a transfinite composition of shape `J` of morphisms in `W : MorphismProperty C`. -/
 structure TransfiniteCompositionOfShape {X Y : C} (f : X ⟶ Y) extends
     CategoryTheory.TransfiniteCompositionOfShape J f where
@@ -250,7 +248,7 @@ lemma mem_map_bot_le {j : J} (g : ⊥ ⟶ j) : W (hf.F.map g) := by
   induction j using SuccOrder.limitRecOn with
   | isMin j hj =>
     obtain rfl := hj.eq_bot
-    simpa only [homOfLE_refl, Functor.map_id] using W.id_mem _
+    simpa using W.id_mem _
   | succ j hj hj' =>
     rw [← homOfLE_comp bot_le (Order.le_succ j), hf.F.map_comp]
     exact W.comp_mem _ _ hj' (hf.map_mem j hj)
@@ -259,29 +257,13 @@ lemma mem_map_bot_le {j : J} (g : ⊥ ⟶ j) : W (hf.F.map g) := by
       { bot := ⟨⊥, Order.IsSuccLimit.bot_lt hj⟩
         bot_le j := bot_le }
     exact MorphismProperty.colimitsOfShape_le _
-      (colimitsOfShape.mk' _ _ _ _ (isColimitConstCocone (Set.Iio j) (hf.F.obj ⊥))
-        (hf.F.isColimitOfIsWellOrderContinuous j hj)
-        { app k := hf.F.map (homOfLE bot_le)
-          naturality _ _ _ := by
-            dsimp
-            rw [id_comp, ← Functor.map_comp]
-            rfl }
-        (fun k ↦ hj' _ k.2) (hf.F.map (homOfLE bot_le : ⊥ ⟶ j)) (fun ⟨k, hk⟩ ↦ by
-          dsimp
-          rw [id_comp, ← Functor.map_comp, homOfLE_comp]))
+      (.of_isColimit (hf.F.isColimitOfIsWellOrderContinuous j hj) (fun k ↦ hj' _ k.2))
 
 include hf hJ in
-lemma mem [W.RespectsIso] : W f := by
-  suffices W (hf.incl.app ⊥) from
-    (MorphismProperty.arrow_mk_iso_iff _
-      (Arrow.isoMk hf.isoBot.symm (Iso.refl _)) ).2 this
-  exact MorphismProperty.colimitsOfShape_le _
-    (colimitsOfShape.mk' _ _ _ _ (isColimitConstCocone J (hf.F.obj ⊥)) (hf.isColimit)
-        { app j := hf.F.map (homOfLE bot_le)
-          naturality _ _ _ := by
-            dsimp
-            rw [id_comp, ← Functor.map_comp]
-            rfl} (fun j ↦ mem_map_bot_le _ hJ _) _ (fun j ↦ by simp))
+lemma mem [W.RespectsIso] : W f :=
+  (MorphismProperty.arrow_mk_iso_iff _ (Arrow.isoMk hf.isoBot.symm (Iso.refl _))).2
+    (MorphismProperty.colimitsOfShape_le _
+      (.of_isColimit hf.isColimit (fun j ↦ mem_map_bot_le _ hJ _)))
 
 end IsStableUnderTransfiniteCompositionOfShape.of_isStableUnderColimitsOfShape
 
@@ -290,36 +272,14 @@ open IsStableUnderTransfiniteCompositionOfShape.of_isStableUnderColimitsOfShape 
 lemma IsStableUnderTransfiniteCompositionOfShape.of_isStableUnderColimitsOfShape
     [W.IsMultiplicative] [W.RespectsIso]
     (hJ : ∀ (J : Type w) [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J],
-    W.IsStableUnderColimitsOfShape J) :
+      W.IsStableUnderColimitsOfShape J) :
     W.IsStableUnderTransfiniteCompositionOfShape J where
-  le := by
-    rintro X Y f ⟨hf⟩
-    exact mem hf hJ
+  le _ _ _ | ⟨hf⟩ => mem hf hJ
 
 instance [W.IsMultiplicative] [W.RespectsIso]
     [MorphismProperty.IsStableUnderFilteredColimits.{w, w} W] :
     W.IsStableUnderTransfiniteCompositionOfShape J :=
   .of_isStableUnderColimitsOfShape (fun _ _ _ _ _ ↦ by infer_instance)
-
-section isomorphisms
-
-example : (isomorphisms C).IsStableUnderTransfiniteCompositionOfShape J := inferInstance
-
-namespace TransfiniteCompositionOfShape
-
-variable {X Y : C} {f : X ⟶ Y} (h : (isomorphisms C).TransfiniteCompositionOfShape J f)
-
-include h in
-lemma isIso : IsIso f :=
-  (isomorphisms C).transfiniteCompositionsOfShape_le _ _ h.mem
-
-instance {i j : J} (f : i ⟶ j) : IsIso (h.F.map f) := ((h.iic j).ici (⟨i, leOfHom f⟩)).isIso
-
-instance (j : J) : IsIso (h.incl.app j) := (h.ici j).isIso
-
-end TransfiniteCompositionOfShape
-
-end isomorphisms
 
 end
 
@@ -420,6 +380,43 @@ lemma transfiniteCompositions_le_iff {P Q : MorphismProperty C}
   · exact (le_transfiniteCompositions P).trans
   · intro h
     exact (transfiniteCompositions_monotone.{w} h).trans Q.transfiniteCompositions_le
+
+namespace TransfiniteCompositionOfShape
+
+variable {W} {J : Type w} [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J]
+
+section
+
+variable [IsStableUnderTransfiniteComposition.{w} W]
+  {X Y : C} {f : X ⟶ Y} (h : W.TransfiniteCompositionOfShape J f)
+
+lemma mem_map {i j : J} (φ : i ⟶ j) :
+    W (h.F.map φ) :=
+  W.transfiniteCompositionsOfShape_le _ _ ((h.iic j).ici (⟨i, leOfHom φ⟩)).mem
+
+lemma mem_incl_app (j : J) :
+    W (h.incl.app j) :=
+  W.transfiniteCompositionsOfShape_le _ _ (h.ici j).mem
+
+end
+
+section isomorphisms
+
+example : (isomorphisms C).IsStableUnderTransfiniteCompositionOfShape J := inferInstance
+
+variable {X Y : C} {f : X ⟶ Y} (h : (isomorphisms C).TransfiniteCompositionOfShape J f)
+
+include h in
+lemma isIso : IsIso f :=
+  (isomorphisms C).transfiniteCompositionsOfShape_le _ _ h.mem
+
+instance {i j : J} (f : i ⟶ j) : IsIso (h.F.map f) := h.mem_map f
+
+instance (j : J) : IsIso (h.incl.app j) := h.mem_incl_app j
+
+end isomorphisms
+
+end TransfiniteCompositionOfShape
 
 end MorphismProperty
 

@@ -72,7 +72,7 @@ submodule to that submodule.
 This is `LinearEquiv.ofSubmodule` but with `comap` on the left instead of `map` on the right. -/
 def ofSubmodule' [Module R M] [Module R₂ M₂] (f : M ≃ₛₗ[σ₁₂] M₂) (U : Submodule R₂ M₂) :
     U.comap (f : M →ₛₗ[σ₁₂] M₂) ≃ₛₗ[σ₁₂] U :=
-  (f.symm.ofSubmodules _ _ f.symm.map_eq_comap).symm
+  (f.symm.ofSubmodules _ _ (U.map_equiv_eq_comap_symm f.symm)).symm
 
 theorem ofSubmodule'_toLinearMap [Module R M] [Module R₂ M₂] (f : M ≃ₛₗ[σ₁₂] M₂)
     (U : Submodule R₂ M₂) :
@@ -95,9 +95,7 @@ variable (p)
 /-- The top submodule of `M` is linearly equivalent to `M`. -/
 def ofTop (h : p = ⊤) : p ≃ₗ[R] M :=
   { p.subtype with
-    invFun := fun x => ⟨x, h.symm ▸ trivial⟩
-    left_inv := fun _ => rfl
-    right_inv := fun _ => rfl }
+    invFun := fun x => ⟨x, h.symm ▸ trivial⟩ }
 
 @[simp]
 theorem ofTop_apply {h} (x : p) : ofTop p h x = x :=
@@ -217,9 +215,7 @@ def equivSubtypeMap (p : Submodule R M) (q : Submodule R p) : q ≃ₗ[R] q.map 
   { (p.subtype.domRestrict q).codRestrict _ (by rintro ⟨x, hx⟩; exact ⟨x, hx, rfl⟩) with
     invFun := by
       rintro ⟨x, hx⟩
-      refine ⟨⟨x, ?_⟩, ?_⟩ <;> rcases hx with ⟨⟨_, h⟩, _, rfl⟩ <;> assumption
-    left_inv := fun ⟨⟨_, _⟩, _⟩ => rfl
-    right_inv := fun ⟨x, ⟨_, h⟩, _, rfl⟩ => by ext; rfl }
+      refine ⟨⟨x, ?_⟩, ?_⟩ <;> rcases hx with ⟨⟨_, h⟩, _, rfl⟩ <;> assumption }
 
 @[simp]
 theorem equivSubtypeMap_apply {p : Submodule R M} {q : Submodule R p} (x : q) :

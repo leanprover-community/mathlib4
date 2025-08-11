@@ -412,7 +412,7 @@ theorem mul_pp_pf_overlap {ea eb e : ℕ} (x : R) (_ : ea + eb = e) (_ : a₂ * 
 * `x * (b₁ * b₂) = b₁ * (b₂ * x)` (for `x` coefficient)
 * `(a₁ * a₂) * y = a₁ * (a₂ * y)` (for `y` coefficient)
 * `(x ^ ea * a₂) * (x ^ eb * b₂) = x ^ (ea + eb) * (a₂ * b₂)`
-    (if `ea` and `eb` are identical except coefficient)
+  (if `ea` and `eb` are identical except coefficient)
 * `(a₁ * a₂) * (b₁ * b₂) = a₁ * (a₂ * (b₁ * b₂))` (if `a₁.lt b₁`)
 * `(a₁ * a₂) * (b₁ * b₂) = b₁ * ((a₁ * a₂) * b₂)` (if not `a₁.lt b₁`)
 -/
@@ -1186,13 +1186,13 @@ theorem of_lift {α β} [inst : CSLift α β] {a b : α} {a' b' : β}
     [h1 : CSLiftVal a a'] [h2 : CSLiftVal b b'] (h : a' = b') : a = b :=
   inst.2 <| by rwa [← h1.1, ← h2.1]
 
-open Lean Parser.Tactic Elab Command Elab.Tactic Meta Qq
+open Lean Parser.Tactic Elab Command Elab.Tactic
 
 theorem of_eq {α} {a b c : α} (_ : (a : α) = c) (_ : b = c) : a = b := by subst_vars; rfl
 
 /--
 This is a routine which is used to clean up the unsolved subgoal
-of a failed `ring1` application. It is overridden in `Mathlib.Tactic.Ring.RingNF`
+of a failed `ring1` application. It is overridden in `Mathlib/Tactic/Ring/RingNF.lean`
 to apply the `ring_nf` simp set to the goal.
 -/
 initialize ringCleanupRef : IO.Ref (Expr → MetaM Expr) ← IO.mkRef pure

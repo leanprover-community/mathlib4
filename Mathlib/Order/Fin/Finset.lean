@@ -17,8 +17,8 @@ to the finset `{a, b, c}` when `a < b` and `b < c`.
 
 * Do the same for `Set` without too much duplication of code (TODO)
 * Provide a definition which would take as an input an order
-isomorphism `e : Fin (n + 1) ≃o s` (with `s : Set α` (or `Finset α`)) and
-extend it to an order isomorphism `Fin (n + 2) ≃o Finset.insert i s` when `i < e 0` (TODO).
+  isomorphism `e : Fin (n + 1) ≃o s` (with `s : Set α` (or `Finset α`)) and
+  extend it to an order isomorphism `Fin (n + 2) ≃o Finset.insert i s` when `i < e 0` (TODO).
 
 -/
 

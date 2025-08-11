@@ -90,7 +90,7 @@ a `P : LocalPredicate T` consists of:
 -/
 structure LocalPredicate extends PrelocalPredicate T where
   /-- A local predicate must be local --- provided that it is locally satisfied, it is also globally
-    satisfied -/
+  satisfied -/
   locality :
     ∀ {U : Opens X} (f : ∀ x : U, T x)
       (_ : ∀ x : U, ∃ (V : Opens X) (_ : x.1 ∈ V) (i : V ⟶ U),
@@ -202,7 +202,6 @@ theorem isSheaf (P : LocalPredicate T) : (subpresheafToTypes P.toPrelocalPredica
       -- This follows, since our original family `sf` satisfies the predicate
       convert (sf i).property using 1
       exact gl_spec i
-
     -- It remains to show that the chosen lift is really a gluing for the subsheaf and
     -- that it is unique. Both of which follow immediately from the corresponding facts
     -- in the sheaf of functions without the local predicate.

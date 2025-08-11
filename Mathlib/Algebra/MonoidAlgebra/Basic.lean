@@ -283,6 +283,9 @@ theorem domCongr_toAlgHom (e : G ≃* H) : (domCongr k A e).toAlgHom = mapDomain
     domCongr k A e (single g a) = single (e g) a :=
   Finsupp.equivMapDomain_single _ _ _
 
+@[simp] lemma domCongr_comp_lsingle (e : G ≃* H) (g : G) :
+    (domCongr k A e).toLinearMap ∘ₗ lsingle g = lsingle (e g) := by ext; simp
+
 @[simp] theorem domCongr_refl : domCongr k A (MulEquiv.refl G) = AlgEquiv.refl :=
   AlgEquiv.ext fun _ => Finsupp.ext fun _ => rfl
 
@@ -326,7 +329,7 @@ def equivariantOfLinearOfComm
     · simp
     · intro g r c' _nm _nz w
       dsimp at *
-      simp only [add_smul, f.map_add, w, add_left_inj, single_eq_algebraMap_mul_of, ← smul_smul]
+      simp only [add_smul, f.map_add, w, single_eq_algebraMap_mul_of, ← smul_smul]
       rw [algebraMap_smul (MonoidAlgebra k G) r, algebraMap_smul (MonoidAlgebra k G) r, f.map_smul,
         of_apply, h g v]
 
@@ -570,6 +573,9 @@ theorem domCongr_toAlgHom (e : G ≃+ H) : (domCongr k A e).toAlgHom = mapDomain
 @[simp] theorem domCongr_single (e : G ≃+ H) (g : G) (a : A) :
     domCongr k A e (single g a) = single (e g) a :=
   Finsupp.equivMapDomain_single _ _ _
+
+@[simp] lemma domCongr_comp_lsingle (e : G ≃+ H) (g : G) :
+    (domCongr k A e).toLinearMap ∘ₗ lsingle g = lsingle (e g) := by ext; simp
 
 @[simp] theorem domCongr_refl : domCongr k A (AddEquiv.refl G) = AlgEquiv.refl :=
   AlgEquiv.ext fun _ => Finsupp.ext fun _ => rfl

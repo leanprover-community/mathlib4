@@ -96,6 +96,8 @@ alias ⟨_, sqrt_pos_of_pos⟩ := sqrt_pos
 
 attribute [bound] sqrt_pos_of_pos
 
+@[simp] theorem isSquare (x : ℝ≥0) : IsSquare x := ⟨_, mul_self_sqrt _ |>.symm⟩
+
 end NNReal
 
 namespace Real
@@ -135,7 +137,7 @@ theorem sqrt_mul_self (h : 0 ≤ x) : √(x * x) = x :=
 theorem sqrt_eq_cases : √x = y ↔ y * y = x ∧ 0 ≤ y ∨ x < 0 ∧ y = 0 := by
   constructor
   · rintro rfl
-    rcases le_or_lt 0 x with hle | hlt
+    rcases le_or_gt 0 x with hle | hlt
     · exact Or.inl ⟨mul_self_sqrt hle, sqrt_nonneg x⟩
     · exact Or.inr ⟨hlt, sqrt_eq_zero_of_nonpos hlt.le⟩
   · rintro (⟨rfl, hy⟩ | ⟨hx, rfl⟩)
@@ -252,8 +254,8 @@ alias ⟨_, sqrt_pos_of_pos⟩ := sqrt_pos
 
 lemma sqrt_le_sqrt_iff' (hx : 0 < x) : √x ≤ √y ↔ x ≤ y := by
   obtain hy | hy := le_total y 0
-  · exact iff_of_false ((sqrt_eq_zero_of_nonpos hy).trans_lt <| sqrt_pos.2 hx).not_le
-      (hy.trans_lt hx).not_le
+  · exact iff_of_false ((sqrt_eq_zero_of_nonpos hy).trans_lt <| sqrt_pos.2 hx).not_ge
+      (hy.trans_lt hx).not_ge
   · exact sqrt_le_sqrt_iff hy
 
 @[simp] lemma one_le_sqrt : 1 ≤ √x ↔ 1 ≤ x := by
@@ -261,6 +263,9 @@ lemma sqrt_le_sqrt_iff' (hx : 0 < x) : √x ≤ √y ↔ x ≤ y := by
 
 @[simp] lemma sqrt_le_one : √x ≤ 1 ↔ x ≤ 1 := by
   rw [← sqrt_one, sqrt_le_sqrt_iff zero_le_one, sqrt_one]
+
+@[simp] lemma isSquare_iff : IsSquare x ↔ 0 ≤ x :=
+  ⟨(·.nonneg), (⟨√x, mul_self_sqrt · |>.symm⟩)⟩
 
 end Real
 
@@ -298,6 +303,13 @@ end Mathlib.Meta.Positivity
 
 namespace Real
 
+lemma one_lt_sqrt_two : 1 < √2 := by rw [← Real.sqrt_one]; gcongr; simp
+
+lemma sqrt_two_lt_three_halves : √2 < 3 / 2 := by
+  suffices 2 * √2 < 3 by linarith
+  rw [← sq_lt_sq₀ (by positivity) (by positivity), mul_pow, Real.sq_sqrt (by positivity)]
+  norm_num
+
 @[simp]
 theorem sqrt_mul {x : ℝ} (hx : 0 ≤ x) (y : ℝ) : √(x * y) = √x * √y := by
   simp_rw [Real.sqrt, ← NNReal.coe_mul, NNReal.coe_inj, Real.toNNReal_mul hx, NNReal.sqrt_mul]
@@ -322,7 +334,7 @@ variable {x y : ℝ}
 
 @[simp]
 theorem div_sqrt : x / √x = √x := by
-  rcases le_or_lt x 0 with h | h
+  rcases le_or_gt x 0 with h | h
   · rw [sqrt_eq_zero'.mpr h, div_zero]
   · rw [div_eq_iff (sqrt_ne_zero'.mpr h), mul_self_sqrt h.le]
 

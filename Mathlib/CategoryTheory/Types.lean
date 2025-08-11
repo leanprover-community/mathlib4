@@ -6,4 +6,3 @@ Authors: Stephen Morgan, Kim Morrison, Johannes Hölzl
 import Mathlib.CategoryTheory.Types.Basic
 
 deprecated_module (since := "2025-05-10")
-

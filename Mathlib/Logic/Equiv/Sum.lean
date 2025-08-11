@@ -109,8 +109,7 @@ abbrev sumCongr {α β} (ea : Equiv.Perm α) (eb : Equiv.Perm β) : Equiv.Perm (
 
 @[simp]
 theorem sumCongr_apply {α β} (ea : Equiv.Perm α) (eb : Equiv.Perm β) (x : α ⊕ β) :
-    sumCongr ea eb x = Sum.map (⇑ea) (⇑eb) x :=
-  Equiv.sumCongr_apply ea eb x
+    sumCongr ea eb x = Sum.map (⇑ea) (⇑eb) x := rfl
 
 theorem sumCongr_trans {α β} (e : Equiv.Perm α) (f : Equiv.Perm β) (g : Equiv.Perm α)
     (h : Equiv.Perm β) : (sumCongr e f).trans (sumCongr g h) = sumCongr (e.trans g) (f.trans h) :=
@@ -200,7 +199,6 @@ def sumEmpty (α β) [IsEmpty β] : α ⊕ β ≃ α where
     rcases s with (_ | x)
     · rfl
     · exact isEmptyElim x
-  right_inv _ := rfl
 
 @[simp]
 theorem sumEmpty_apply_inl {α β} [IsEmpty β] (a : α) : sumEmpty α β (Sum.inl a) = a :=

@@ -208,10 +208,10 @@ instance (M : ModuleCat R) :
   dsimp [LightCondensed.forget, discreteUnderlyingAdj]
   rw [← constantSheafAdj_counit_w]
   refine IsIso.comp_isIso' inferInstance ?_
-  have : (constantSheaf (coherentTopology LightProfinite) (Type u)).Faithful :=
+  have : (constantSheaf (coherentTopology LightProfinite.{u}) (Type u)).Faithful :=
     inferInstanceAs (discrete _).Faithful
-  have : (constantSheaf (coherentTopology LightProfinite) (Type u)).Full :=
-    inferInstanceAs (discrete _).Full
+  have : (constantSheaf (coherentTopology LightProfinite.{u}) (Type u)).Full :=
+    inferInstanceAs (discrete (Type u)).Full
   rw [← Sheaf.isConstant_iff_isIso_counit_app]
   constructor
   change (discrete _).essImage _
@@ -275,11 +275,11 @@ instance : (constantSheaf (coherentTopology LightProfinite.{u}) (ModuleCat.{u} R
   inferInstanceAs (discrete.{u} (ModuleCat.{u} R)).Full
 
 attribute [local instance] Types.instFunLike Types.instConcreteCategory in
-instance : (constantSheaf (coherentTopology LightProfinite) (Type u)).Faithful :=
+instance : (constantSheaf (coherentTopology LightProfinite.{u}) (Type u)).Faithful :=
   inferInstanceAs (discrete (Type u)).Faithful
 
 attribute [local instance] Types.instFunLike Types.instConcreteCategory in
-instance : (constantSheaf (coherentTopology LightProfinite) (Type u)).Full :=
+instance : (constantSheaf (coherentTopology LightProfinite.{u}) (Type u)).Full :=
   inferInstanceAs (discrete (Type u)).Full
 
 end LightCondMod.LocallyConstant

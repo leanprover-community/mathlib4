@@ -71,7 +71,7 @@ def TopCat.toSSetIsoConst (X : TopCat) [TotallyDisconnectedSpace X] :
     TopCat.toSSet.obj X ≅ (Functor.const _).obj X :=
   .symm <|
   NatIso.ofComponents (fun i ↦
-    { inv v := v.1 ⟨Pi.single (I := Fin _) 0 1, (show ∑ _, _ = _ by simp)⟩
+    { inv v := v.1 ⟨Pi.single 0 1, show ∑ _, _ = _ by simp⟩
       hom x := TopCat.ofHom ⟨fun _ ↦ x, continuous_const⟩
       inv_hom_id := types_ext _ _ fun f ↦ TopCat.hom_ext (ContinuousMap.ext
         fun j ↦ TotallyDisconnectedSpace.eq_of_continuous (α := i.unop.toTopObj) _ f.1.2 _ _)

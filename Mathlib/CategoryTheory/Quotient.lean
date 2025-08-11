@@ -29,6 +29,8 @@ instance (C) [Quiver C] : Inhabited (HomRel C) where
 
 namespace CategoryTheory
 
+open Functor
+
 section
 
 variable {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
@@ -134,6 +136,12 @@ instance essSurj_functor : (functor r).EssSurj where
     ⟨Y.as, ⟨eqToIso (by
             ext
             rfl)⟩⟩
+
+instance [Unique C] : Unique (Quotient r) where
+  uniq a := by ext; subsingleton
+
+instance [∀ (x y : C), Subsingleton (x ⟶ y)] (x y : Quotient r) :
+    Subsingleton (x ⟶ y) := (full_functor r).map_surjective.subsingleton
 
 protected theorem induction {P : ∀ {a b : Quotient r}, (a ⟶ b) → Prop}
     (h : ∀ {x y : C} (f : x ⟶ y), P ((functor r).map f)) :
@@ -262,17 +270,17 @@ def natTransLift {F G : Quotient r ⥤ D} (τ : Quotient.functor r ⋙ F ⟶ Quo
 @[simp]
 lemma natTransLift_app (F G : Quotient r ⥤ D)
     (τ : Quotient.functor r ⋙ F ⟶ Quotient.functor r ⋙ G) (X : C) :
-  (natTransLift r τ).app ((Quotient.functor r).obj X) = τ.app X := rfl
+    (natTransLift r τ).app ((Quotient.functor r).obj X) = τ.app X := rfl
 
 @[reassoc]
 lemma comp_natTransLift {F G H : Quotient r ⥤ D}
     (τ : Quotient.functor r ⋙ F ⟶ Quotient.functor r ⋙ G)
     (τ' : Quotient.functor r ⋙ G ⟶ Quotient.functor r ⋙ H) :
-    natTransLift r τ ≫ natTransLift r τ' =  natTransLift r (τ ≫ τ') := by aesop_cat
+    natTransLift r τ ≫ natTransLift r τ' =  natTransLift r (τ ≫ τ') := by cat_disch
 
 @[simp]
 lemma natTransLift_id (F : Quotient r ⥤ D) :
-    natTransLift r (𝟙 (Quotient.functor r ⋙ F)) = 𝟙 _ := by aesop_cat
+    natTransLift r (𝟙 (Quotient.functor r ⋙ F)) = 𝟙 _ := by cat_disch
 
 /-- In order to define a natural isomorphism `F ≅ G` with `F G : Quotient r ⥤ D`, it suffices
 to do so after precomposing with `Quotient.functor r`. -/
@@ -288,7 +296,7 @@ variable (D)
 
 instance full_whiskeringLeft_functor :
     ((whiskeringLeft C _ D).obj (functor r)).Full where
-  map_surjective f := ⟨natTransLift r f, by aesop_cat⟩
+  map_surjective f := ⟨natTransLift r f, by cat_disch⟩
 
 instance faithful_whiskeringLeft_functor :
     ((whiskeringLeft C _ D).obj (functor r)).Faithful := ⟨by apply natTrans_ext⟩
