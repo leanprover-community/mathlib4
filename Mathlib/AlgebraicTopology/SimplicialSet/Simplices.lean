@@ -17,10 +17,13 @@ In particular, as a preordered type, `X.S` is a category, but this is
 not what is called "the category of simplices of `X`" in the literature
 (and which is `X.Elementsᵒᵖ` in mathlib).
 
+In the file `AlgebraicTopology.SimplicialSet.NonDegenerateSimplices`,
+the structure `SSet.S` is extended as `SSet.N` by adding the condition
+that the simplex is non degenerate.
+
 ## TODO (@joelriou)
 
-* Extend the `S` structure to define the type of nondegenerate
-simplices of a simplicial set `X`, and also the type of nondegenerate
+* Extend the `SSet.N` structure to define the nondegenerate
 simplices of a simplicial set `X` which do not belong to a given subcomplex.
 
 -/
@@ -100,7 +103,9 @@ instance : Preorder X.S where
   le_refl _ := le_refl (α := Subcomplex X) _
   le_trans _ _ _ := le_trans (α := Subcomplex X)
 
-lemma le_iff {x y : X.S} : x ≤ y ↔ Subcomplex.ofSimplex x.2 ≤ Subcomplex.ofSimplex y.2 :=
+abbrev subcomplex (x : X.S) : X.Subcomplex := Subcomplex.ofSimplex x.2
+
+lemma le_iff {x y : X.S} : x ≤ y ↔ x.subcomplex ≤ y.subcomplex :=
   Iff.rfl
 
 lemma mk_map_le {n m : ℕ} (x : X _⦋n⦌) (f : ⦋m⦌ ⟶ ⦋n⦌) :
