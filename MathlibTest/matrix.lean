@@ -5,6 +5,7 @@ https://github.com/leanprover-community/mathlib/blob/4f4a1c875d0baa92ab5d92f3fb1
 import Mathlib.Data.Matrix.Notation
 import Mathlib.GroupTheory.Perm.Fin
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+import Mathlib.Tactic.Simproc.Matrix
 import Qq
 
 set_option linter.style.commandStart false
@@ -166,10 +167,11 @@ example {α : Type _} [CommRing α] {a b c d e f g h i : α} :
 
 example {R : Type*} [Semiring R] {a b c d : R} :
     !![a, b] * (transpose !![c, d]) = !![a * c + b * d] := by
+  rw [transpose_of]
   ext i j
   fin_cases i
   fin_cases j
-  simp [Matrix.vecHead, Matrix.vecTail]
+  simp
 
 /- Check that matrix notation works with `row` and `col` -/
 example : Matrix.replicateRow _ ![1, 1] = !![1, 1] := by
