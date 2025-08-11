@@ -198,7 +198,7 @@ theorem comp_lsmul_flip_apply {F : Type*} [SeminormedAddCommGroup F] [NormedSpac
   ext; simp
 
 variable {𝕜} in
-theorem lsmul_flip_apply_inj {x y : E} :
+theorem lsmul_flip_inj {x y : E} :
     (lsmul 𝕜 R).flip x = (lsmul 𝕜 R).flip y ↔ x = y :=
   ⟨fun h => by simpa using congr($h 1), fun h => h ▸ rfl⟩
 

@@ -197,7 +197,7 @@ theorem innerSL_apply (v w : E) : innerSL 𝕜 v w = ⟪v, w⟫ :=
   rfl
 
 variable {𝕜} in
-theorem innerSL_apply_inj {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] {x y : E} :
+theorem innerSL_inj {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] {x y : E} :
     innerSL 𝕜 x = innerSL 𝕜 y ↔ x = y := by
   refine ⟨fun h => ?_, fun h => h ▸ rfl⟩
   rw [← sub_eq_zero]
