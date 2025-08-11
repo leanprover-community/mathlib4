@@ -81,7 +81,7 @@ lemma foldTrans_trans_trans_symm {n : ℕ} (p q : Fin (n + 1) → X)
   · simp_rw [foldTrans_zero, ← fromPath'_eq_iff_homotopic]
     aesop_cat
   · simp_rw [foldTrans_succ]
-    have := fromPath'_eq_iff_homotopic.mpr
+    have := (fromPath'_eq_iff_homotopic _ _).mpr
       (hn (p ∘ castSucc) (q ∘ castSucc) (fun k ↦ F (k.castSucc)) (fun k ↦ G (k.castSucc)))
     rw [← fromPath'_eq_iff_homotopic]
     aesop_cat
