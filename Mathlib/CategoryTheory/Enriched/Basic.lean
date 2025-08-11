@@ -347,22 +347,29 @@ def forget (F : EnrichedFunctor W C D) :
       rfl
     · intro f g w; apply_fun ForgetEnrichment.homOf W at w; simpa using w
 
+/-- `EnrichedFunctor.forget` distributes over composition of enriched functors up to isomorphism. -/
 @[simps!]
 def forgetComp (F : EnrichedFunctor W C D) (G : EnrichedFunctor W D E) :
     (F.comp W G).forget ≅ F.forget ⋙ G.forget :=
   NatIso.ofComponents (fun _ => Iso.refl _) (fun f => by simp [comp, forget])
 
 variable (W) (C) in
+/-- `EnrichedFunctor.forget` maps the identity enriched functor to a functor isomorphic to
+`Functor.id`. -/
 @[simps!]
 def forgetId : (EnrichedFunctor.id W C).forget ≅ Functor.id _ :=
   NatIso.ofComponents (fun _ => Iso.refl _) (fun f => by simp [forget])
 
+/-- Enriched functors form a category with the morphisms between functors `F` and `G` being the
+natural transformations `F.forget ⟶ G.forget`. -/
 @[simps]
 instance category : Category (EnrichedFunctor W C D) where
   Hom F G := F.forget ⟶ G.forget
   id F := 𝟙 _
   comp F G := F ≫ G
 
+/-- To construct an isomorphism between enriched functors `F` and `G`, it suffices to construct
+a natural isomorphism between `F.forget` and `G.forget`. -/
 @[simps]
 def isoMk {F G : EnrichedFunctor W C D} (h : F.forget ≅ G.forget) : F ≅ G where
   hom := h.hom
@@ -370,7 +377,7 @@ def isoMk {F G : EnrichedFunctor W C D} (h : F.forget ≅ G.forget) : F ≅ G wh
   hom_inv_id := h.hom_inv_id
   inv_hom_id := h.inv_hom_id
 
-def hom_ext {F G : EnrichedFunctor W C D} {α β : F ⟶ G}
+lemma hom_ext {F G : EnrichedFunctor W C D} {α β : F ⟶ G}
     (h : ∀ X : C, α.app X = β.app X) : α = β := by
   apply NatTrans.ext
   funext
