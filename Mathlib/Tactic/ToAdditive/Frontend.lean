@@ -1246,10 +1246,10 @@ def elabToAdditive : Syntax → CoreM Config
         -- Deprecate `str` docstring syntax in Mathlib
         if (← getMainModule).getRoot == `Mathlib then
           logWarningAt doc <| .tagged ``Linter.deprecatedAttr
-            m!"String syntax for `to_additive` docstrings is deprecated in favor of \
-              docstring syntax: `@[to_additive /-- example -/]`."
+            m!"String syntax for `to_additive` docstrings is deprecated: Use \
+              docstring syntax instead (e.g. `@[to_additive /-- example -/]`)"
           addSuggestionCore doc
-            (header := "Update deprecated string syntax to:\n")
+            (header := "Update deprecated syntax to:\n")
             (codeActionPrefix? := "Update to: ")
             (isInline := true)
             #[{
