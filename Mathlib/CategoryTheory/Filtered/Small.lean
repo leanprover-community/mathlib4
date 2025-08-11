@@ -213,10 +213,10 @@ private noncomputable def inductiveStepRealization (n : ℕ)
   | (InductiveStep.eq _ _ _ _ f g) => eq f g
 
 /-- Implementation detail for the instance
-   `EssentiallySmall.{max v w} (FullSubcategory (cofilteredClosure f))`.
+`EssentiallySmall.{max v w} (FullSubcategory (cofilteredClosure f))`.
 
-   The function is defined by well-founded recursion, but we really want to use its
-   definitional equalities in the proofs below, so lets make it semireducible. -/
+The function is defined by well-founded recursion, but we really want to use its
+definitional equalities in the proofs below, so lets make it semireducible. -/
 @[semireducible] private noncomputable def bundledAbstractCofilteredClosure :
     ℕ → Σ t : Type (max v w), t → C
   | 0 => ⟨ULift.{v} α, f ∘ ULift.down⟩
