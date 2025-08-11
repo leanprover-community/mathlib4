@@ -450,8 +450,8 @@ theorem exists_ne_map_eq_of_card_image_lt [DecidableEq β] {f : α → β} (hc :
 
 /-- a variant of `exists_ne_map_eq_of_card_image_lt` using `InjOn` -/
 theorem not_injOn_of_card_image_lt [DecidableEq β] {f : α → β} (hc : #(s.image f) < #s) :
-    ¬ Set.InjOn f s :=
-  fun injOn => hc.ne (card_image_of_injOn injOn)
+    ¬ Set.InjOn f s := fun injOn =>
+  hc.ne (card_image_of_injOn injOn)
 
 /--
 See also `Finset.card_le_card_of_injOn`, which is a more general version of this lemma.
