@@ -113,6 +113,7 @@ lemma gammaSetN_map_eq {N : ℕ} (v : gammaSetN N) : v.1 = N • (div_N_map N v)
 def gammaSetN_Equiv {N : ℕ} (hN : N ≠ 0) : gammaSetN N ≃ gammaSet 1 0 := by
   apply Set.BijOn.equiv _ (gammaSetN_to_gammaSet10_bijection hN)
 
+/-- The equivalence between `(Fin 2 → ℤ)` and `Σ  n : ℕ, gammaSetN n)` . -/
 def GammaSet_top_Equiv : (Fin 2 → ℤ) ≃ (Σ  n : ℕ, gammaSetN n) :=
   (Equiv.sigmaFiberEquiv fin_to_gcd_map).symm
 
