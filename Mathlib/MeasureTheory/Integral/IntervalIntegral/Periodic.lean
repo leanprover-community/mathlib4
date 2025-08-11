@@ -240,7 +240,7 @@ variable {f : ℝ → E} {T : ℝ}
 /-- A periodic function is interval integrable over every interval if it is interval integrable
 over one period. -/
 theorem intervalIntegrable {t : ℝ} (h₁f : Function.Periodic f T)
-    (hT : 0 < T) (hT' : ‖f (min t (t + T))‖ₑ ≠ ∞)
+    (hT : 0 < T) (hT' : ‖f (min t (t + T))‖ₑ ≠ ∞ := by finiteness)
     (h₂f : IntervalIntegrable f MeasureTheory.volume t (t + T)) (a₁ a₂ : ℝ) :
     IntervalIntegrable f MeasureTheory.volume a₁ a₂ := by
   -- Replace [a₁, a₂] by [t - n₁ * T, t + n₂ * T], where n₁ and n₂ are natural numbers

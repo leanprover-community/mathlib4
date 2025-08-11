@@ -468,7 +468,7 @@ lemma intervalIntegrable_of_even₀ (h₁f : ∀ x, f x = f (-x))
   rcases lt_trichotomy t 0 with h | h | h
   · rw [IntervalIntegrable.iff_comp_neg ht]
     conv => arg 1; intro t; rw [← h₁f]
-    simp [h₂f (-t) (by norm_num [h])]
+    simp [h₂f (-t) (by simp [h])]
   · rw [h]
   · exact h₂f t h
 
@@ -496,7 +496,7 @@ lemma intervalIntegrable_of_odd₀ (h₁f : ∀ x, -f x = f (-x))
   · rw [IntervalIntegrable.iff_comp_neg ht]
     conv => arg 1; intro t; rw [← h₁f]
     apply IntervalIntegrable.neg
-    simp [h₂f (-t) (by norm_num [h])]
+    simp [h₂f (-t) (by simp [h])]
   · rw [h]
   · exact h₂f t h
 

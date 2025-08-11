@@ -105,7 +105,7 @@ variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂]
 variable [Module R M] [Module S M₂] {σ : R →+* S} {σ' : S →+* R}
 
 instance (priority := 100) [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
-  [EquivLike F M M₂] [s : SemilinearEquivClass F σ M M₂] : SemilinearMapClass F σ M M₂ :=
+    [EquivLike F M M₂] [s : SemilinearEquivClass F σ M M₂] : SemilinearMapClass F σ M M₂ :=
   { s with }
 
 variable {F}
