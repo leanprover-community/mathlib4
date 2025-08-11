@@ -5,6 +5,7 @@ Authors: Aaron Anderson
 -/
 import Mathlib.Algebra.Notation.Support
 import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
+import Mathlib.Data.Finsupp.Defs
 import Mathlib.Order.WellFoundedSet
 
 /-!
@@ -404,6 +405,18 @@ theorem leadingCoeff_eq {x : HahnSeries Γ R} : x.leadingCoeff = x.coeff x.order
   · rw [leadingCoeff_of_ne h, order_of_ne h]
 
 end Order
+
+section Finsupp
+
+/-- Create a `HahnSeries` with a `Finsupp` as coefficients. -/
+def ofFinsupp : ZeroHom (Γ →₀ R) (HahnSeries Γ R) where
+  toFun f := { coeff := f, isPWO_support' := f.finite_support.isPWO }
+  map_zero' := by simp
+
+@[simp]
+theorem coeff_ofFinsupp (f : Γ →₀ R) (a : Γ) : (ofFinsupp f).coeff a = f a := rfl
+
+end Finsupp
 
 section Domain
 
