@@ -196,6 +196,13 @@ theorem innerSL_apply_coe (v : E) : ⇑(innerSL 𝕜 v) = fun w => ⟪v, w⟫ :=
 theorem innerSL_apply (v w : E) : innerSL 𝕜 v w = ⟪v, w⟫ :=
   rfl
 
+variable {𝕜} in
+theorem innerSL_apply_inj {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] {x y : E} :
+    innerSL 𝕜 x = innerSL 𝕜 y ↔ x = y := by
+  refine ⟨fun h => ?_, fun h => h ▸ rfl⟩
+  rw [← sub_eq_zero]
+  simpa [← sub_eq_zero (a := inner 𝕜 x _), ← inner_sub_left] using congr($h (x - y))
+
 /-- The inner product as a continuous sesquilinear map, with the two arguments flipped. -/
 def innerSLFlip : E →L[𝕜] E →L⋆[𝕜] 𝕜 :=
   @ContinuousLinearMap.flipₗᵢ' 𝕜 𝕜 𝕜 E E 𝕜 _ _ _ _ _ _ _ _ _ (RingHom.id 𝕜) (starRingEnd 𝕜) _ _
