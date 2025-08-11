@@ -287,8 +287,6 @@ protected theorem le_neg_of_le_neg {a b : EReal} (h : a ≤ -b) : b ≤ -a := ER
 /-- `-a < b` if and only if `-b < a` on `EReal`. -/
 theorem neg_lt_comm {a b : EReal} : -a < b ↔ -b < a := by rw [← neg_lt_neg_iff, neg_neg]
 
-@[deprecated (since := "2024-11-19")] alias neg_lt_iff_neg_lt := neg_lt_comm
-
 /-- If `-a < b` then `-b < a` on `EReal`. -/
 protected theorem neg_lt_of_neg_lt {a b : EReal} (h : -a < b) : -b < a := neg_lt_comm.mp h
 
@@ -539,10 +537,6 @@ lemma le_add_of_forall_gt {a b c : EReal} (h₁ : a ≠ ⊥ ∨ b ≠ ⊤) (h₂
   refine add_le_of_forall_lt fun a' ha' b' hb' ↦ EReal.le_neg_of_le_neg ?_
   rw [neg_add (.inr hb'.ne_top) (.inl ha'.ne_top)]
   exact h _ (EReal.lt_neg_of_lt_neg ha') _ (EReal.lt_neg_of_lt_neg hb')
-
-@[deprecated (since := "2024-11-19")] alias top_add_le_of_forall_add_le := add_le_of_forall_lt
-@[deprecated (since := "2024-11-19")] alias add_le_of_forall_add_le := add_le_of_forall_lt
-@[deprecated (since := "2024-11-19")] alias le_add_of_forall_le_add := le_add_of_forall_gt
 
 lemma _root_.ENNReal.toEReal_sub {x y : ℝ≥0∞} (hy_top : y ≠ ∞) (h_le : y ≤ x) :
     (x - y).toEReal = x.toEReal - y.toEReal := by

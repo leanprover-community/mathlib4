@@ -26,7 +26,7 @@ In this file we provide basic properties of the scheme.
 - `AlgebraicGeometry.Proj.stalkIso`:
   The stalk of `Proj A` at `x` is the degree `0` part of the localization of `A` at `x`.
 - `AlgebraicGeometry.Proj.fromOfGlobalSections`:
-  Given a map `f : A →+* Γ(X, ⊤)` such that the image of the irrelavent ideal under `f`
+  Given a map `f : A →+* Γ(X, ⊤)` such that the image of the irrelevant ideal under `f`
   generates the whole ring, we can construct a map `X ⟶ Proj 𝒜`.
 
 -/
@@ -432,7 +432,7 @@ def openCoverOfMapIrreleventEqTop : X.OpenCover :=
     simp)
 
 /-- Given a graded ring `A` and a map `f : A →+* Γ(X, ⊤)` such that the image of the
-irrelavent ideal under `f` generates the whole ring, we can construct a map `X ⟶ Proj 𝒜`. -/
+irrelevant ideal under `f` generates the whole ring, we can construct a map `X ⟶ Proj 𝒜`. -/
 def fromOfGlobalSections : X ⟶ Proj 𝒜 := by
   refine (openCoverOfMapIrreleventEqTop 𝒜 f hf).glueMorphisms
     (fun ri ↦ toBasicOpenOfGlobalSections 𝒜 f rfl ri.2.2.1 ri.2.2.2 ≫ Scheme.Opens.ι _) ?_

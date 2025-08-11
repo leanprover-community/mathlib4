@@ -729,7 +729,7 @@ bounded on a neighborhood of `0`, must be continuous. -/
 lemma AddMonoidHom.continuous_of_isBounded_nhds_zero (f : G →+ H) (hs : s ∈ 𝓝 (0 : G))
     (hbounded : IsBounded (f '' s)) : Continuous f := by
   obtain ⟨δ, hδ, hUε⟩ := Metric.mem_nhds_iff.mp hs
-  obtain ⟨C, hC⟩ := (isBounded_iff_subset_ball 0).1 (hbounded.subset <| image_subset f hUε)
+  obtain ⟨C, hC⟩ := (isBounded_iff_subset_ball 0).1 (hbounded.subset <| image_mono hUε)
   refine continuous_of_continuousAt_zero _ (continuousAt_iff.2 fun ε (hε : _ < _) => ?_)
   simp only [dist_zero_right, map_zero]
   simp only [subset_def, mem_image, mem_ball, dist_zero_right, forall_exists_index, and_imp,

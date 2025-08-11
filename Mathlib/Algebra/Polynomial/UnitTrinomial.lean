@@ -224,10 +224,7 @@ theorem irreducible_aux1 {k m n : ℕ} (hkm : k < m) (hmn : m < n) (u v w : Unit
   · exact ⟨add_lt_add_right hkm n, add_lt_add_right hmn n⟩
   · rw [← add_assoc, add_tsub_cancel_of_le hmn.le, add_comm]
     exact fun h => h.1.ne rfl
-  · intro h
-    have := h.1
-    rw [add_comm, add_lt_add_iff_right] at this
-    exact asymm this hmn
+  · grind
   · exact fun h => h.1.ne rfl
   · exact fun h => asymm ((add_lt_add_iff_left k).mp h.1) key
   · exact fun h => asymm ((add_lt_add_iff_left k).mp h.1) (hkm.trans hmn)
@@ -247,8 +244,7 @@ theorem irreducible_aux2 {k m m' n : ℕ} (hkm : k < m) (hmn : m < n) (hkm' : k 
   · refine Or.inr ?_
     rw [← trinomial_mirror hkm' hmn' u.ne_zero u.ne_zero, eq_comm, mirror_eq_iff] at hp
     exact hq.trans hp
-  · obtain rfl : m = m' := by omega
-    exact Or.inl (hq.trans hp.symm)
+  · grind
 
 theorem irreducible_aux3 {k m m' n : ℕ} (hkm : k < m) (hmn : m < n) (hkm' : k < m') (hmn' : m' < n)
     (u v w x z : Units ℤ) (hp : p = trinomial k m n (u : ℤ) v w)
