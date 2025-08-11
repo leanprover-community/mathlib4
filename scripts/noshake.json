@@ -391,6 +391,7 @@
   "Mathlib.Logic.Equiv.Defs":
   ["Mathlib.Data.Bool.Basic", "Mathlib.Data.Subtype"],
   "Mathlib.Logic.Basic": ["Batteries.Tactic.Trans"],
+  "Mathlib.LinearAlgebra.UnitaryGroup": ["Mathlib.Tactic.Simproc.Matrix"],
   "Mathlib.LinearAlgebra.Matrix.Transvection": ["Mathlib.Data.Matrix.DMatrix"],
   "Mathlib.LinearAlgebra.DFinsupp": ["Mathlib.LinearAlgebra.Finsupp.SumProd"],
   "Mathlib.LinearAlgebra.Basic": ["Mathlib.Algebra.BigOperators.Group.Finset"],
