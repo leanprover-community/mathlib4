@@ -8,7 +8,6 @@ import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Nat.Cast.Order.Basic
 import Mathlib.Data.Set.Countable
-import Mathlib.Logic.Equiv.Fin.Basic
 import Mathlib.Logic.Small.Set
 import Mathlib.Logic.UnivLE
 import Mathlib.SetTheory.Cardinal.Order
@@ -16,7 +15,7 @@ import Mathlib.SetTheory.Cardinal.Order
 /-!
 # Basic results on cardinal numbers
 
-We provide a collection of basic results on cardinal numbers, in particular focussing on
+We provide a collection of basic results on cardinal numbers, in particular focusing on
 finite/countable/small types and sets.
 
 ## Main definitions
@@ -98,9 +97,6 @@ theorem mk_le_one_iff_set_subsingleton {s : Set α} : #s ≤ 1 ↔ s.Subsingleto
   le_one_iff_subsingleton.trans s.subsingleton_coe
 
 alias ⟨_, _root_.Set.Subsingleton.cardinalMk_le_one⟩ := mk_le_one_iff_set_subsingleton
-
-@[deprecated (since := "2024-11-10")]
-alias _root_.Set.Subsingleton.cardinal_mk_le_one := Set.Subsingleton.cardinalMk_le_one
 
 private theorem cast_succ (n : ℕ) : ((n + 1 : ℕ) : Cardinal.{u}) = n + 1 := by
   change #(ULift.{u} _) = #(ULift.{u} _) + 1
@@ -294,7 +290,7 @@ theorem exists_finset_le_card (α : Type*) (n : ℕ) (h : n ≤ #α) :
 
 theorem card_le_of {α : Type u} {n : ℕ} (H : ∀ s : Finset α, s.card ≤ n) : #α ≤ n := by
   contrapose! H
-  apply exists_finset_le_card α (n+1)
+  apply exists_finset_le_card α (n + 1)
   simpa only [nat_succ, succ_le_iff] using H
 
 theorem cantor' (a) {b : Cardinal} (hb : 1 < b) : a < b ^ a := by
@@ -606,7 +602,7 @@ theorem mk_vector (α : Type u) (n : ℕ) : #(List.Vector α n) = #α ^ n :=
 
 theorem mk_list_eq_sum_pow (α : Type u) : #(List α) = sum fun n : ℕ => #α ^ n :=
   calc
-    #(List α) = #(Σn, List.Vector α n) := mk_congr (Equiv.sigmaFiberEquiv List.length).symm
+    #(List α) = #(Σ n, List.Vector α n) := mk_congr (Equiv.sigmaFiberEquiv List.length).symm
     _ = sum fun n : ℕ => #α ^ n := by simp
 
 theorem mk_quot_le {α : Type u} {r : α → α → Prop} : #(Quot r) ≤ #α :=
@@ -700,27 +696,27 @@ theorem mk_image_embedding (f : α ↪ β) (s : Set α) : #(f '' s) = #s := by
 
 theorem mk_iUnion_le_sum_mk {α ι : Type u} {f : ι → Set α} : #(⋃ i, f i) ≤ sum fun i => #(f i) :=
   calc
-    #(⋃ i, f i) ≤ #(Σi, f i) := mk_le_of_surjective (Set.sigmaToiUnion_surjective f)
+    #(⋃ i, f i) ≤ #(Σ i, f i) := mk_le_of_surjective (Set.sigmaToiUnion_surjective f)
     _ = sum fun i => #(f i) := mk_sigma _
 
 theorem mk_iUnion_le_sum_mk_lift {α : Type u} {ι : Type v} {f : ι → Set α} :
     lift.{v} #(⋃ i, f i) ≤ sum fun i => #(f i) :=
   calc
-    lift.{v} #(⋃ i, f i) ≤ #(Σi, f i) :=
+    lift.{v} #(⋃ i, f i) ≤ #(Σ i, f i) :=
       mk_le_of_surjective <| ULift.up_surjective.comp (Set.sigmaToiUnion_surjective f)
     _ = sum fun i => #(f i) := mk_sigma _
 
 theorem mk_iUnion_eq_sum_mk {α ι : Type u} {f : ι → Set α}
     (h : Pairwise (Disjoint on f)) : #(⋃ i, f i) = sum fun i => #(f i) :=
   calc
-    #(⋃ i, f i) = #(Σi, f i) := mk_congr (Set.unionEqSigmaOfDisjoint h)
+    #(⋃ i, f i) = #(Σ i, f i) := mk_congr (Set.unionEqSigmaOfDisjoint h)
     _ = sum fun i => #(f i) := mk_sigma _
 
 theorem mk_iUnion_eq_sum_mk_lift {α : Type u} {ι : Type v} {f : ι → Set α}
     (h : Pairwise (Disjoint on f)) :
     lift.{v} #(⋃ i, f i) = sum fun i => #(f i) :=
   calc
-    lift.{v} #(⋃ i, f i) = #(Σi, f i) :=
+    lift.{v} #(⋃ i, f i) = #(Σ i, f i) :=
       mk_congr <| .trans Equiv.ulift (Set.unionEqSigmaOfDisjoint h)
     _ = sum fun i => #(f i) := mk_sigma _
 

@@ -449,7 +449,7 @@ theorem leibniz_of_mul_eq_one {a b : A} (h : a * b = 1) : D a = -a ^ 2 • D b :
     _ = a • D (a * b) := by rw [leibniz, smul_add, add_comm]
     _ = 0 := by rw [h, map_one_eq_zero, smul_zero]
 
-theorem leibniz_invOf [Invertible a] : D (⅟ a) = -⅟ a ^ 2 • D a :=
+theorem leibniz_invOf [Invertible a] : D (⅟a) = -⅟a ^ 2 • D a :=
   D.leibniz_of_mul_eq_one <| invOf_mul_self a
 
 section Field
