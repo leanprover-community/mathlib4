@@ -273,7 +273,7 @@ over every interval if it is interval integrable over the period starting from z
 theorem intervalIntegrable₀ (h₁f : Function.Periodic f T) (hT : 0 < T)
     (h₂f : IntervalIntegrable f MeasureTheory.volume 0 T) (a₁ a₂ : ℝ) :
     IntervalIntegrable f MeasureTheory.volume a₁ a₂ := by
-  apply h₁f.intervalIntegrable hT (t := 0) (by simp)
+  apply h₁f.intervalIntegrable hT (t := 0)
   simpa
 
 /-!
