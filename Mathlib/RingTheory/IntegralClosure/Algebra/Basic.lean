@@ -232,19 +232,22 @@ end
 
 section TensorProduct
 
-variable {R A B : Type*} [CommRing R] [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
+variable {R A B : Type*} [CommRing R] [CommRing A]
 
 open TensorProduct
 
-theorem IsIntegral.tmul (x : A) {y : B} (h : IsIntegral R y) : IsIntegral A (x ⊗ₜ[R] y) := by
+theorem IsIntegral.tmul [Ring B] [Algebra R A] [Algebra R B]
+    (x : A) {y : B} (h : IsIntegral R y) : IsIntegral A (x ⊗ₜ[R] y) := by
   rw [← mul_one x, ← smul_eq_mul, ← smul_tmul']
   exact smul _ (h.map_of_comp_eq (algebraMap R A)
     (Algebra.TensorProduct.includeRight (R := R) (A := A) (B := B)).toRingHom
     Algebra.TensorProduct.includeLeftRingHom_comp_algebraMap)
 
-variable (R A B) [int : Algebra.IsIntegral R B]
+variable (R A B)
 
-instance IsIntegral.tensorProduct : Algebra.IsIntegral A (A ⊗[R] B) where
+instance Algebra.IsIntegral.tensorProduct [CommRing B]
+    [Algebra R A] [Algebra R B] [int : Algebra.IsIntegral R B] :
+    Algebra.IsIntegral A (A ⊗[R] B) where
   isIntegral p := p.induction_on isIntegral_zero (fun _ s ↦ .tmul _ <| int.1 s) (fun _ _ ↦ .add)
 
 end TensorProduct
