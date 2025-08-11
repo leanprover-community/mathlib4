@@ -191,13 +191,8 @@ def flipFunctor : (C ⥤ D ⥤ E) ⥤ D ⥤ C ⥤ E where
   obj F := F.flip
   map {F₁ F₂} φ :=
     { app := fun Y =>
-<<<<<<< HEAD
-      { app := fun X => (φ.app X).app Y }
-      naturality := by cat_disch }
+      { app := fun X => (φ.app X).app Y } }
 
-=======
-    { app := fun X => (φ.app X).app Y } }
->>>>>>> origin/flip_map_app
 namespace Iso
 
 @[reassoc (attr := simp)]
