@@ -7,6 +7,7 @@ Authors: Kenny Lau, Antoine Chambert-Loir
 import Mathlib.Algebra.Group.Hom.CompTypeclasses
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Notation.Prod
+import Mathlib.Algebra.Regular.SMul
 import Mathlib.Algebra.Ring.Action.Basic
 
 /-!
@@ -312,7 +313,7 @@ def inverse' (f : X →ₑ[φ] Y) (g : Y → X) (k : Function.RightInverse φ' �
 @[to_additive]
 lemma inverse_eq_inverse' (f : X →[M] Y₁) (g : Y₁ → X)
     (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) :
-  inverse f g h₁ h₂ = inverse' f g (congrFun rfl) h₁ h₂ := by
+    inverse f g h₁ h₂ = inverse' f g (congrFun rfl) h₁ h₂ := by
   rfl
 
 @[to_additive]
@@ -327,8 +328,7 @@ theorem inverse'_inverse'
 theorem comp_inverse' {f : X →ₑ[φ] Y} {g : Y → X}
     {k₁ : Function.LeftInverse φ' φ} {k₂ : Function.RightInverse φ' φ}
     {h₁ : Function.LeftInverse g f} {h₂ : Function.RightInverse g f} :
-    (inverse' f g k₂ h₁ h₂).comp f (κ := CompTriple.comp_inv k₁)
-      = MulActionHom.id M := by
+    (inverse' f g k₂ h₁ h₂).comp f (κ := CompTriple.comp_inv k₁) = MulActionHom.id M := by
   rw [MulActionHom.ext_iff]
   intro x
   simp only [comp_apply, id_apply]
@@ -625,12 +625,11 @@ def _root_.DistribMulActionSemiHomClass.toDistribMulActionHom
 
 /-- Any type satisfying `MulActionHomClass` can be cast into `MulActionHom`
 via `MulActionHomClass.toMulActionHom`. -/
-instance [DistribMulActionSemiHomClass F φ A B] :
-  CoeTC F (A →ₑ+[φ] B) :=
+instance [DistribMulActionSemiHomClass F φ A B] : CoeTC F (A →ₑ+[φ] B) :=
   ⟨DistribMulActionSemiHomClass.toDistribMulActionHom⟩
 
 /-- If `DistribMulAction` of `M` and `N` on `A` commute,
-  then for each `c : M`, `(c • ·)` is an `N`-action additive homomorphism. -/
+then for each `c : M`, `(c • ·)` is an `N`-action additive homomorphism. -/
 @[simps]
 def _root_.SMulCommClass.toDistribMulActionHom {M} (N A : Type*) [Monoid N] [AddMonoid A]
     [DistribSMul M A] [DistribMulAction N A] [SMulCommClass M N A] (c : M) : A →+[N] A :=
@@ -949,3 +948,9 @@ def inverse {S₁ : Type*} [Semiring S₁] [MulSemiringAction M S₁]
 end MulSemiringActionHom
 
 end DistribMulAction
+
+lemma IsSMulRegular.of_injective {R M : Type*} [SMul R M]
+    {N F} [SMul R N] [FunLike F M N] [MulActionHomClass F R M N]
+    (f : F) {r : R} (h1 : Function.Injective f) (h2 : IsSMulRegular N r) :
+    IsSMulRegular M r := fun x y h3 => h1 <| h2 <|
+  (map_smulₛₗ f r x).symm.trans ((congrArg f h3).trans (map_smulₛₗ f r y))
