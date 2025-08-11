@@ -444,7 +444,7 @@ variable (K : Type*) [NormedField K] [LinearOrder K] [IsStrictOrderedRing K]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E] [FiniteDimensional K E]
 variable [ProperSpace E] (L : Submodule ℤ E) [DiscreteTopology L]
 
-theorem Zlattice.FG [hs : IsZLattice K L] : L.FG := by
+theorem ZLattice.FG [hs : IsZLattice K L] : L.FG := by
   obtain ⟨s, ⟨h_incl, ⟨h_span, h_lind⟩⟩⟩ := exists_linearIndependent K (L : Set E)
   -- Let `s` be a maximal `K`-linear independent family of elements of `L`. We show that
   -- `L` is finitely generated (as a ℤ-module) because it fits in the exact sequence
@@ -480,7 +480,7 @@ theorem Zlattice.FG [hs : IsZLattice K L] : L.FG := by
     exact fg_span (LinearIndependent.setFinite h_lind)
 
 theorem ZLattice.module_finite [IsZLattice K L] : Module.Finite ℤ L :=
-  Module.Finite.iff_fg.mpr (Zlattice.FG K L)
+  Module.Finite.iff_fg.mpr (ZLattice.FG K L)
 
 instance instModuleFinite_of_discrete_submodule {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] [FiniteDimensional ℝ E] (L : Submodule ℤ E) [DiscreteTopology L] :
