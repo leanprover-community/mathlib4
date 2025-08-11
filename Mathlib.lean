@@ -824,6 +824,7 @@ import Mathlib.Algebra.Order.Group.Cyclic
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Group.DenselyOrdered
 import Mathlib.Algebra.Order.Group.End
+import Mathlib.Algebra.Order.Group.Equiv
 import Mathlib.Algebra.Order.Group.Finset
 import Mathlib.Algebra.Order.Group.Indicator
 import Mathlib.Algebra.Order.Group.InjSurj
@@ -879,6 +880,7 @@ import Mathlib.Algebra.Order.Kleene
 import Mathlib.Algebra.Order.Module.Algebra
 import Mathlib.Algebra.Order.Module.Basic
 import Mathlib.Algebra.Order.Module.Defs
+import Mathlib.Algebra.Order.Module.Equiv
 import Mathlib.Algebra.Order.Module.Field
 import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.Algebra.Order.Module.Pointwise
@@ -4549,6 +4551,7 @@ import Mathlib.MeasureTheory.Measure.Restrict
 import Mathlib.MeasureTheory.Measure.SeparableMeasure
 import Mathlib.MeasureTheory.Measure.Stieltjes
 import Mathlib.MeasureTheory.Measure.Sub
+import Mathlib.MeasureTheory.Measure.Support
 import Mathlib.MeasureTheory.Measure.Tight
 import Mathlib.MeasureTheory.Measure.TightNormed
 import Mathlib.MeasureTheory.Measure.Tilted
@@ -5093,6 +5096,7 @@ import Mathlib.Probability.Distributions.Geometric
 import Mathlib.Probability.Distributions.Pareto
 import Mathlib.Probability.Distributions.Poisson
 import Mathlib.Probability.Distributions.Uniform
+import Mathlib.Probability.HasLaw
 import Mathlib.Probability.IdentDistrib
 import Mathlib.Probability.Independence.Basic
 import Mathlib.Probability.Independence.Conditional
