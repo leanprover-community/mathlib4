@@ -252,7 +252,8 @@ section induction_principles
 "An induction principle on free monoids, with cases for `0`, `FreeAddMonoid.of` and `+`."]
 protected theorem inductionOn {C : FreeMonoid α → Prop} (z : FreeMonoid α) (one : C 1)
     (of : ∀ (x : α), C (FreeMonoid.of x)) (mul : ∀ (x y : FreeMonoid α), C x → C y → C (x * y)) :
-  C z := List.rec one (fun _ _ ih => mul [_] _ (of _) ih) z
+    C z :=
+  List.rec one (fun _ _ ih => mul [_] _ (of _) ih) z
 
 /-- An induction principle for free monoids which mirrors induction on lists, with cases analogous
 to the empty list and cons -/
@@ -471,7 +472,7 @@ variable {α β : Type*}
 /-- free monoids over isomorphic types are isomorphic -/
 @[to_additive "if two types are isomorphic, the additive free monoids over those types are
 isomorphic"]
-def freeMonoidCongr (e : α ≃ β) :  FreeMonoid α ≃* FreeMonoid β where
+def freeMonoidCongr (e : α ≃ β) : FreeMonoid α ≃* FreeMonoid β where
   toFun := FreeMonoid.map ⇑e
   invFun := FreeMonoid.map ⇑e.symm
   left_inv _ := map_symm_apply_map_eq e
