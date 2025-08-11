@@ -550,18 +550,18 @@ def embDomainLinearMap (f : Γ ↪o Γ') : HahnSeries Γ R →ₗ[R] HahnSeries 
 end Domain
 
 variable (R) in
-/-- `HahnSeries.trunc` as a linear map. -/
-def truncLinearMap [DecidableLE Γ] (c : Γ) : HahnSeries Γ V →ₗ[R] HahnSeries Γ V where
-  toFun := trunc c
+/-- `HahnSeries.truncLT` as a linear map. -/
+def truncLTLinearMap [DecidableLT Γ] (c : Γ) : HahnSeries Γ V →ₗ[R] HahnSeries Γ V where
+  toFun := truncLT c
   map_add' x y := by
     ext i
-    by_cases h : c ≤ i <;> simp [h]
+    by_cases h : i < c <;> simp [h]
   map_smul' s x := by ext; simp
 
 variable (R) in
 @[simp]
-theorem truncLinearMap_apply [DecidableLE Γ] (c : Γ) (x : HahnSeries Γ V) :
-    truncLinearMap R c x = trunc c x := rfl
+theorem coe_truncLTLinearMap [DecidableLT Γ] (c : Γ) :
+    (truncLTLinearMap R c : HahnSeries Γ V → HahnSeries Γ V) = truncLT c := by rfl
 
 end Module
 
