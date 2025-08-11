@@ -477,7 +477,7 @@ theorem forall_mem_iff_getElem {l : List α} {p : α → Prop} :
 theorem get_tail (l : List α) (i) (h : i < l.tail.length)
     (h' : i + 1 < l.length := (by simp only [length_tail] at h; omega)) :
     l.tail.get ⟨i, h⟩ = l.get ⟨i + 1, h'⟩ := by
-  cases l <;> [cases h; rfl]
+  simp
 
 /-! ### sublists -/
 
