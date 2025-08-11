@@ -114,6 +114,7 @@ noncomputable def addValuation : AddValuation M (ArchimedeanClass M) := AddValua
 
 @[simp] theorem addValuation_apply (a : M) : addValuation M a = mk a := rfl
 
+end IsOrderedRing
 section IsStrictOrderedRing
 variable [IsStrictOrderedRing M]
 
