@@ -501,7 +501,7 @@ def exactPairingCongrLeft {X X' Y : C} [ExactPairing X' Y] (i : X ≅ X') : Exac
         rw [Iso.inv_hom_id]; monoidal
       _ = _ := by
         rw [coevaluation_evaluation'']
-        monoidal
+        simp
 
 /-- Transport an exact pairing across an isomorphism in the second argument. -/
 def exactPairingCongrRight {X Y Y' : C} [ExactPairing X Y'] (i : Y ≅ Y') : ExactPairing X Y where
@@ -515,7 +515,7 @@ def exactPairingCongrRight {X Y Y' : C} [ExactPairing X Y'] (i : Y ≅ Y') : Exa
         rw [Iso.inv_hom_id]; monoidal
       _ = _ := by
         rw [evaluation_coevaluation'']
-        monoidal
+        simp
   coevaluation_evaluation' :=
     calc
       _ = Y ◁ η_ X Y' ⊗≫ (Y ◁ (X ◁ i.inv) ≫ i.hom ▷ (X ⊗ Y)) ⊗≫ ε_ X Y' ▷ Y := by
