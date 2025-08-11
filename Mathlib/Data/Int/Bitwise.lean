@@ -223,12 +223,9 @@ theorem bitwise_or : bitwise or = lor := by
     congr
     funext x y
     cases x <;> cases y <;> rfl
+  · simp
   · congr
-    funext x y
-    cases x <;> cases y <;> rfl
-  · congr
-    funext x y
-    cases x <;> cases y <;> rfl
+    simp
 
 -- Porting note: Was `bitwise_tac` in mathlib
 theorem bitwise_and : bitwise and = land := by
@@ -242,8 +239,7 @@ theorem bitwise_and : bitwise and = land := by
     funext x y
     cases x <;> cases y <;> rfl
   · congr
-    funext x y
-    cases x <;> cases y <;> rfl
+    simp
 
 -- Porting note: Was `bitwise_tac` in mathlib
 theorem bitwise_diff : (bitwise fun a b => a && not b) = ldiff := by
@@ -253,11 +249,9 @@ theorem bitwise_diff : (bitwise fun a b => a && not b) = ldiff := by
       cond_false, cond_true, Nat.ldiff, Bool.and_true, negSucc.injEq,
       Bool.and_false, Bool.not_true, ldiff]
   · congr
-    funext x y
-    cases x <;> cases y <;> rfl
+    simp
   · congr
-    funext x y
-    cases x <;> cases y <;> rfl
+    simp
   · rw [Nat.bitwise_swap, Function.swap]
     congr
     funext x y
