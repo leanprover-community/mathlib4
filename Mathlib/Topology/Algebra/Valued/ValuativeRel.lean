@@ -190,28 +190,14 @@ lemma isOpen_sphere {r : ValueGroupWithZero R} (hr : r ≠ 0) :
 alias _root_.ValuativeTopology.isOpen_sphere := isOpen_sphere
 
 open WithZeroTopology in
-lemma continuous_valuation : Continuous v where
-  isOpen_preimage s hs := by
-    rw [WithZeroTopology.isOpen_iff] at hs
-    have : v ⁻¹' s = ⋃ r ∈ v ⁻¹' s, {x | v x = v r} := by
-      ext
-      simp only [mem_preimage, mem_iUnion, mem_setOf_eq, exists_prop]
-      grind
-    rcases hs with hs | ⟨γ, hγ, hs⟩
-    · rw [this]
-      refine isOpen_biUnion fun _ _ ↦ isOpen_sphere ?_
-      grind
-    · have : v ⁻¹' s = {x | v x < γ} ∪ (⋃ r ∈ v ⁻¹' s, {x | v x = v r} ∩ {x | v x < γ}ᶜ) := by
-        refine (inter_union_compl (v ⁻¹' s) {x | v x < γ}).symm.trans ?_
-        rw [this]
-        congr 1 <;> ext <;> simp <;> grind
-      rw [this]
-      refine (isOpen_ball _).union (isOpen_biUnion fun i hi ↦ ?_)
-      rcases lt_or_ge (v i) γ with h | h
-      · convert isOpen_empty
-        ext; simp; grind
-      · convert isOpen_sphere (r := v i) (zero_lt_iff.mp (h.trans_lt' (zero_lt_iff.mpr hγ))) using 1
-        ext; simp; grind
+lemma continuous_valuation : Continuous v := by
+  simp only [continuous_iff_continuousAt, ContinuousAt]
+  rintro x
+  by_cases hx : v x = 0
+  · simpa [hx, (hasBasis_nhds _).tendsto_iff WithZeroTopology.hasBasis_nhds_zero,
+      Valuation.map_sub_of_right_eq_zero _ hx] using fun i hi ↦ ⟨.mk0 i hi, fun y ↦ id⟩
+  · simpa [(hasBasis_nhds _).tendsto_iff (WithZeroTopology.hasBasis_nhds_of_ne_zero hx)]
+      using ⟨.mk0 (v x) hx, fun _ ↦ Valuation.map_eq_of_sub_lt _⟩
 
 end IsValuativeTopology
 
