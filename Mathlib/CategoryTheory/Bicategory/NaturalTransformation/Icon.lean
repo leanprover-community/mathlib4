@@ -12,7 +12,7 @@ An identity-component oplax natural transformation ("icon") between
 lax functors `F` and `G` is the data of an oplax natural transformation
 `η` from `F` to `G`, along with equalities of objects `h_x : F.obj x = G.obj x`
 for every `x`, and equalities of 1-morphisms `η.app x = eqToHom h_x` for
-every `x`. In other words: an icon is an oplax natural transformatio that does
+every `x`. In other words: an icon is an oplax natural transformation that does
 nothing at the level of objects.
 
 ## References
