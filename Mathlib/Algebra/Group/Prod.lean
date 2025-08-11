@@ -36,9 +36,7 @@ We also prove trivial `simp` lemmas, and define the following operations on `Mon
 * `divMonoidHom`: Division bundled as a monoid homomorphism.
 -/
 
-assert_not_exists MonoidWithZero DenselyOrdered
--- TODO:
--- assert_not_exists AddMonoidWithOne
+assert_not_exists MonoidWithZero DenselyOrdered AddMonoidWithOne
 
 variable {G : Type*} {H : Type*} {M : Type*} {N : Type*} {P : Type*}
 
@@ -137,17 +135,17 @@ instance [RightCancelSemigroup G] [RightCancelSemigroup H] : RightCancelSemigrou
 instance [LeftCancelMonoid M] [LeftCancelMonoid N] : LeftCancelMonoid (M × N) :=
   { mul_one := by simp,
     one_mul := by simp
-    mul_left_cancel := by simp }
+    mul_left_cancel _ _ := by simp }
 
 @[to_additive]
 instance [RightCancelMonoid M] [RightCancelMonoid N] : RightCancelMonoid (M × N) :=
   { mul_one := by simp,
     one_mul := by simp
-    mul_right_cancel := by simp }
+    mul_right_cancel _ _ := by simp }
 
 @[to_additive]
 instance [CancelMonoid M] [CancelMonoid N] : CancelMonoid (M × N) :=
-  { mul_right_cancel := by simp only [mul_left_inj, imp_self, forall_const] }
+  { mul_right_cancel _ _ := by simp only [mul_left_inj, imp_self, forall_const] }
 
 @[to_additive]
 instance instCommMonoid [CommMonoid M] [CommMonoid N] : CommMonoid (M × N) :=
@@ -155,7 +153,7 @@ instance instCommMonoid [CommMonoid M] [CommMonoid N] : CommMonoid (M × N) :=
 
 @[to_additive]
 instance [CancelCommMonoid M] [CancelCommMonoid N] : CancelCommMonoid (M × N) :=
-  { mul_left_cancel := by simp }
+  { mul_left_cancel _ _ := by simp }
 
 @[to_additive]
 instance instCommGroup [CommGroup G] [CommGroup H] : CommGroup (G × H) :=
@@ -579,7 +577,7 @@ section
 variable [Monoid M] [Monoid N]
 
 /-- The monoid equivalence between units of a product of two monoids, and the product of the
-    units of each monoid. -/
+units of each monoid. -/
 @[to_additive prodAddUnits
       "The additive monoid equivalence between additive units of a product
       of two additive monoids, and the product of the additive units of each additive monoid."]

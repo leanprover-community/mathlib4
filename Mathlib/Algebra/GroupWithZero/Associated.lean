@@ -236,7 +236,7 @@ theorem prime_mul_iff [CancelCommMonoidWithZero M] {x y : M} :
 lemma prime_pow_iff [CancelCommMonoidWithZero M] {p : M} {n : ℕ} :
     Prime (p ^ n) ↔ Prime p ∧ n = 1 := by
   refine ⟨fun hp ↦ ?_, fun ⟨hp, hn⟩ ↦ by simpa [hn]⟩
-  suffices n = 1 by aesop
+  suffices n = 1 by simp_all
   rcases n with - | n
   · simp at hp
   · rw [Nat.succ.injEq]
@@ -693,7 +693,7 @@ instance instPartialOrder : PartialOrder (Associates M) where
 instance instCancelCommMonoidWithZero : CancelCommMonoidWithZero (Associates M) :=
   { (by infer_instance : CommMonoidWithZero (Associates M)) with
     mul_left_cancel_of_ne_zero := by
-      rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ ha h
+      rintro ⟨a⟩ ha ⟨b⟩ ⟨c⟩ h
       rcases Quotient.exact' h with ⟨u, hu⟩
       have hu : a * (b * ↑u) = a * c := by rwa [← mul_assoc]
       exact Quotient.sound' ⟨u, mul_left_cancel₀ (mk_ne_zero.1 ha) hu⟩ }
