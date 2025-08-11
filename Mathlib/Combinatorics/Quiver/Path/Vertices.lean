@@ -86,92 +86,54 @@ lemma vertices_length {V : Type*} [Quiver V] {a b : V} (p : Path a b) :
 lemma length_vertices_pos {a b : V} (p : Path a b) :
     0 < p.vertices.length := by simp
 
-lemma vertices_nonempty {a : V} {b : V} (p : Path a b) : p.vertices ≠ [] := by
-  rw [← List.length_pos_iff_ne_nil, vertices_length]; omega
+lemma vertices_ne_nil {a : V} {b : V} (p : Path a b) : p.vertices ≠ [] := by
+  simp [← List.length_pos_iff_ne_nil]
 
 /-- The head of the vertices list is the start vertex -/
 @[simp]
 lemma vertices_head? {a b : V} (p : Path a b) : p.vertices.head? = some a := by
   induction p with
   | nil => simp only [vertices_nil, List.head?_cons]
-  | cons p' e ih =>
-    simp only [vertices_cons]
-    have : ¬p'.vertices.isEmpty := by
-      simp_all only [List.isEmpty_iff]
-      apply Aesop.BuiltinRules.not_intro
-      intro a_1
-      simp_all only [List.head?_nil, reduceCtorEq]
-    simp
-    simp_all only [List.isEmpty_iff, Option.getD_some]
+  | cons p' e ih => simp [ih]
 
 @[simp]
-lemma length_toPath {a b : V} (e : a ⟶ b) : (e.toPath).length = 1 := rfl
+lemma length_toPath {a b : V} (e : a ⟶ b) : e.toPath.length = 1 := rfl
 
 @[simp]
-lemma vertices_getLast {a b : V} (p : Path a b) (h : p.vertices ≠ []) :
-  p.vertices.getLast h = b := by
+lemma vertices_getLast {a b : V} (p : Path a b) (h : p.vertices ≠ [] := p.vertices_ne_nil) :
+    p.vertices.getLast h = b := by
   induction p with
   | nil => simp only [vertices_nil, List.getLast_singleton]
-  | cons p' e ih =>
-    simp only [vertices_cons]
-    rw [@List.getLast_concat']
+  | cons p' e ih => simp
 
 @[simp]
 lemma vertices_comp {a b c : V} (p : Path a b) (q : Path b c) :
   (p.comp q).vertices = p.vertices.dropLast ++ q.vertices := by
   induction q with
-  | nil =>
-    simp only [comp_nil, vertices_nil]
-    have h_nonempty : p.vertices.length > 0 := by simp
-    have h_ne_nil : p.vertices ≠ [] := List.ne_nil_of_length_pos h_nonempty
-    rw [← List.dropLast_append_getLast h_ne_nil, vertices_getLast p h_ne_nil]
-    simp_all only [gt_iff_lt, ne_eq, List.cons_ne_self, not_false_eq_true,
-      List.dropLast_append_of_ne_nil, List.dropLast_singleton, List.append_nil]
-  | cons q' e ih =>
-    simp only [comp_cons, vertices_cons, ih, List.concat_eq_append]
-    rw [List.append_assoc]
+  | nil => simpa using (List.dropLast_append_getLast p.vertices_ne_nil).symm
+  | cons q' e ih => simp [ih]
 
 lemma start_mem_vertices {a b : V} (p : Path a b) : a ∈ p.vertices := by
   induction p with
-  | nil => simp only [vertices_nil, List.mem_cons, List.not_mem_nil, or_false]
-  | cons p' e ih =>
-    simp only [vertices_cons]
-    simp_all only [List.concat_eq_append, List.mem_append, List.mem_cons, List.not_mem_nil,
-      or_false, true_or]
+  | nil => simp
+  | cons p' e ih => simp [ih]
 
 @[simp] lemma length_eq_zero_iff {a : V} (p : Path a a) :
     p.length = 0 ↔ p = Path.nil := by
-  cases p
-  · simp only [length_nil]
-  · constructor
-    · intro h; cases h
-    · intro h; cases h
-
-/-- Given vertices lists from a path composition, the prefix path's vertices is a prefix of
-the full path's vertices -/
-lemma isPrefix_dropLast_of_comp_eq {V : Type*}
-    [Quiver V] {a b c : V} {p : Path a b} {p₁ : Path a c} {p₂ : Path c b}
-    (h : p.vertices = p₁.vertices.dropLast ++ p₂.vertices) :
-    p₁.vertices.dropLast.IsPrefix p.vertices := by
-  rw [h]
-  exact List.prefix_append p₁.vertices.dropLast p₂.vertices
+  cases p <;> tauto
 
 /-- The head of the vertices list is the start vertex. -/
 @[simp]
-lemma vertices_head_eq_start {a b : V} (p : Path a b) :
-    p.vertices.head (vertices_nonempty p) = a := by
+lemma vertices_head_eq {a b : V} (p : Path a b) (h : p.vertices ≠ [] := p.vertices_ne_nil) :
+    p.vertices.head h = a := by
   induction p with
   | nil => simp only [vertices_nil, List.head_cons]
-  | cons p' _ ih =>
-    simp only [vertices_cons, List.concat_eq_append]
-    have : p'.vertices ≠ [] := vertices_nonempty p'
-    simp only [List.head_append_of_ne_nil this]
-    exact ih
+  | cons p' _ ih => simp [List.head_append_of_ne_nil (vertices_ne_nil p'), ih]
 
 /-- The last element of the vertices list is the end vertex. -/
 lemma vertices_getLast_eq_end {a b : V} (p : Path a b) :
-  p.vertices.getLast (vertices_nonempty p) = b := by
-  exact vertices_getLast p (vertices_nonempty p)
+  p.vertices.getLast (vertices_ne_nil p) = b := by
+  exact vertices_getLast p (vertices_ne_nil p)
 
 lemma end_prefix_eq_get_vertices {a b c : V} (p₁ : Path a c) (p₂ : Path c b) :
     c = (p₁.comp p₂).vertices.get
@@ -181,7 +143,7 @@ lemma end_prefix_eq_get_vertices {a b c : V} (p₁ : Path a c) (p₂ : Path c b)
     Nat.lt_one_iff, pos_of_gt, or_true]⟩ := by
   simp only [List.get_eq_getElem, vertices_comp, List.length_dropLast, vertices_length,
     add_tsub_cancel_right, le_refl, List.getElem_append_right, tsub_self, List.getElem_zero,
-    vertices_head_eq_start]
+    vertices_head_eq]
 
 @[simp]
 lemma vertices_toPath {i j : V} (e : i ⟶ j) :
@@ -214,9 +176,9 @@ lemma nil_of_comp_eq_nil_right {a b : V} {p : Path a b} {q : Path b a}
 
 @[simp]
 lemma end_mem_vertices {a b : V} (p : Path a b) : b ∈ p.vertices := by
-  have h₁ : p.vertices.getLast (vertices_nonempty p) = b :=
-    vertices_getLast p (vertices_nonempty p)
-  have h₂ := List.getLast_mem (l := p.vertices) (vertices_nonempty p)
+  have h₁ : p.vertices.getLast (vertices_ne_nil p) = b :=
+    vertices_getLast p (vertices_ne_nil p)
+  have h₂ := List.getLast_mem (l := p.vertices) (vertices_ne_nil p)
   simpa [h₁] using h₂
 
 lemma mem_vertices_to_set {V : Type*} [Quiver V]
