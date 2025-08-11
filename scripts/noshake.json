@@ -479,6 +479,8 @@
   "Mathlib.CategoryTheory.Limits.IsLimit": ["Batteries.Tactic.Congr"],
   "Mathlib.CategoryTheory.Functor.Basic":
   ["Mathlib.Tactic.CategoryTheory.CheckCompositions"],
+  "Mathlib.CategoryTheory.Bicategory.Strict":
+  ["Mathlib.CategoryTheory.Bicategory.EqToHom"],
   "Mathlib.CategoryTheory.Bicategory.Functor.Oplax":
   ["Mathlib.Tactic.CategoryTheory.ToApp"],
   "Mathlib.CategoryTheory.Bicategory.Functor.Lax":
