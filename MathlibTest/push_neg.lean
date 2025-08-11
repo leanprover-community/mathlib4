@@ -136,6 +136,13 @@ example (h : p ∧ q) : ¬¬(p ∧ q) := by
   guard_target =ₛ r
   exact h
 
+-- new behaviour as of #27562 (previously the tactic succeeded as a no-op)
+/-- error: push_neg made no progress -/
+#guard_msgs in
+def inductive_proof : True := by
+  push_neg at inductive_proof
+  trivial
+
 section use_distrib
 set_option push_neg.use_distrib true
 
