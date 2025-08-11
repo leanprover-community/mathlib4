@@ -366,18 +366,18 @@ theorem encard_eq_three {α : Type u_1} {s : Set α} :
   rw [hs, encard_insert_of_notMem, encard_insert_of_notMem, encard_singleton] <;> aesop
 
 theorem encard_eq_four {α : Type u_1} {s : Set α} :
-    encard s = 4 ↔ ∃ w x y z, w ≠ x ∧ w ≠ y ∧ w ≠ z ∧ x ≠ y ∧ x ≠ z ∧ y ≠ z ∧ s = {w, x, y, z} := by
-  refine ⟨fun h ↦ ?_, fun ⟨w, x, y, z, hwx, hwy, hwz, hxy, hxz, hyz, hs⟩ ↦ ?_⟩
-  · obtain ⟨w, hw⟩ := nonempty_of_encard_ne_zero (s := s) (by rw [h]; simp)
-    rw [← insert_eq_of_mem hw, ← insert_diff_singleton,
+    encard s = 4 ↔ ∃ x y z w, x ≠ y ∧ x ≠ z ∧ x ≠ w ∧ y ≠ z ∧ y ≠ w ∧ z ≠ w ∧ s = {x, y, z, w} := by
+  refine ⟨fun h ↦ ?_, fun ⟨x, y, z, w, hxy, hxz, hxw, hyz, hyw, hzw, hs⟩ ↦ ?_⟩
+  · obtain ⟨x, hx⟩ := nonempty_of_encard_ne_zero (s := s) (by rw [h]; simp)
+    rw [← insert_eq_of_mem hx, ← insert_diff_singleton,
       encard_insert_of_notMem (fun h ↦ h.2 rfl), (by exact rfl : (4 : ℕ∞) = 3 + 1),
       WithTop.add_right_inj WithTop.one_ne_top, encard_eq_three] at h
-    obtain ⟨x, y, z, hxy, hxz, hyz, hs⟩ := h
-    refine ⟨w, x, y, z, ?_, ?_, ?_, hxy, hxz, hyz, ?_⟩
+    obtain ⟨y, z, w, hyz, hyw, hzw, hs⟩ := h
+    refine ⟨x, y, z, w, ?_, ?_, ?_, hyz, hyw, hzw, ?_⟩
     · rintro rfl; exact (hs.symm.subset (Or.inl rfl)).2 rfl
     · rintro rfl; exact (hs.symm.subset (Or.inr (Or.inl rfl))).2 rfl
     · rintro rfl; exact (hs.symm.subset (Or.inr (Or.inr rfl))).2 rfl
-    rw [← hs, insert_diff_singleton, insert_eq_of_mem hw]
+    rw [← hs, insert_diff_singleton, insert_eq_of_mem hx]
   rw [hs, encard_insert_of_notMem, encard_insert_of_notMem, encard_insert_of_notMem,
     encard_singleton] <;> aesop
 
@@ -1117,11 +1117,11 @@ theorem two_lt_ncard (hs : s.Finite := by toFinite_tac) :
   simp only [two_lt_ncard_iff hs, exists_and_left]
 
 theorem three_lt_ncard_iff (hs : s.Finite := by toFinite_tac) :
-    3 < s.ncard ↔ ∃ a b c d, a ∈ s ∧ b ∈ s ∧ c ∈ s ∧ d ∈ s ∧ a ≠ b ∧ a ≠ c ∧ a ≠ d ∧ b ≠ c ∧ b ≠ d ∧ c ≠ d := by
+    3 < s.ncard ↔ ∃ x y z w, x ∈ s ∧ y ∈ s ∧ z ∈ s ∧ w ∈ s ∧ x ≠ y ∧ x ≠ z ∧ x ≠ w ∧ y ≠ z ∧ y ≠ w ∧ z ≠ w := by
   simp_rw [ncard_eq_toFinset_card _ hs, Finset.three_lt_card_iff, Finite.mem_toFinset]
 
 theorem three_lt_ncard (hs : s.Finite := by toFinite_tac) :
-    3 < s.ncard ↔ ∃ a ∈ s, ∃ b ∈ s, ∃ c ∈ s, ∃ d ∈ s, a ≠ b ∧ a ≠ c ∧ a ≠ d ∧ b ≠ c ∧ b ≠ d ∧ c ≠ d := by
+    3 < s.ncard ↔ ∃ x ∈ s, ∃ y ∈ s, ∃ z ∈ s, ∃ w ∈ s, x ≠ y ∧ x ≠ z ∧ x ≠ w ∧ y ≠ z ∧ y ≠ w ∧ z ≠ w := by
   simp only [three_lt_ncard_iff hs, exists_and_left]
 
 theorem exists_ne_of_one_lt_ncard (hs : 1 < s.ncard) (a : α) : ∃ b, b ∈ s ∧ b ≠ a := by
@@ -1155,7 +1155,7 @@ theorem ncard_eq_three : s.ncard = 3 ↔ ∃ x y z, x ≠ y ∧ x ≠ z ∧ y �
   simp
 
 theorem ncard_eq_four : s.ncard = 4 ↔
-    ∃ w x y z, w ≠ x ∧ w ≠ y ∧ w ≠ z ∧ x ≠ y ∧ x ≠ z ∧ y ≠ z ∧ s = {w, x, y, z} := by
+    ∃ x y z w, x ≠ y ∧ x ≠ z ∧ x ≠ w ∧ y ≠ z ∧ y ≠ w ∧ z ≠ w ∧ s = {x, y, z, w} := by
   rw [← encard_eq_four, ncard_def]
   simp
 
