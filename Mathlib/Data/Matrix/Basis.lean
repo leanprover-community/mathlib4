@@ -418,17 +418,22 @@ alias mem_range_scalar_iff_commute_stdBasisMatrix' := mem_range_scalar_iff_commu
 
 /-- The center of `Matrix n n α` is equal to the image of the center of `α` under `scalar n`. -/
 theorem center_eq_scalar_image :
-    Set.center (Matrix n n α) = scalar n '' Set.center α := Set.ext fun x ↦ by
+    .center (Matrix n n α) = scalar n '' .center α := Set.ext fun x ↦ by
   simp_rw [Set.mem_image, Semigroup.mem_center_iff]
   refine ⟨fun hx ↦ ?_, fun ⟨x, hx, eq⟩ y ↦ eq ▸ scalar_commute x (hx · |>.symm) y |>.symm⟩
   refine (isEmpty_or_nonempty n).elim (fun _ ↦ ⟨1, by simp [nontriviality]⟩) (fun ⟨i⟩ ↦ ?_)
   obtain ⟨x, rfl⟩ := mem_range_scalar_iff_commute_single'.mpr fun _ _ ↦ hx _
   exact ⟨_, fun r ↦ by convert congr($(hx (single i i r)) i i) <;> simp, rfl⟩
 
+/-- The center of `Matrix n n α` is equal to the image of the center of `α` under `scalar n`. -/
+theorem center_eq_scalar_map :
+    .center (Matrix n n α) = (Submonoid.center α).map (scalar n) :=
+  SetLike.coe_injective center_eq_scalar_image
+
 /-- For a commutative semiring `R`, the center of `Matrix n n R` is the range of `scalar n`
 (i.e., the span of `{1}`). -/
 @[simp] theorem center_eq_range [CommSemiring R] :
-    Set.center (Matrix n n R) = Set.range (scalar n) := by
+    .center (Matrix n n R) = Set.range (scalar n) := by
   rw [center_eq_scalar_image, Set.center_eq_univ, Set.image_univ]
 
 end Commute
