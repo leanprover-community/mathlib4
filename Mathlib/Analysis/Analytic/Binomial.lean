@@ -19,22 +19,23 @@ and $x$ is an element of a normed algebra over $\mathbb{K}$.
 
 ## Main Statements
 
-* `binomialSeries_radius_eq_one`: The radius of convergence of the binomial series is `1`.
+* `binomialSeries_radius_eq_one`: The radius of convergence of the binomial series is `1` when `a`
+  is not a natural number.
+* `binomialSeries_radius_eq_top_of_nat`: In case `a` is natural, the series converges everywhere,
+  since it is finite.
 -/
 
 open scoped Nat
 
 universe u v
 
-/-- Binomial series:
-$$
-\sum_{k=0}^{\infty} \; \binom{a}{k} \; x^k = 1 + a x + \frac{a(a-1)}{2!} x^2 +
-  \frac{a(a-1)(a-2)}{3!} x^3 + \cdots
-$$
--/
+/-- **Binomial series**: the (scalar) formal multilinear series with coefficients given
+by `Ring.choose a`. The sum of this series is `fun x ↦ (1 + x) ^ a` within the radius
+of convergence. -/
 noncomputable def binomialSeries {𝕂 : Type u} [Field 𝕂] [CharZero 𝕂] (𝔸 : Type v)
     [Ring 𝔸] [Algebra 𝕂 𝔸] [TopologicalSpace 𝔸] [IsTopologicalRing 𝔸] (a : 𝕂) :
-    FormalMultilinearSeries 𝕂 𝔸 𝔸 := .ofScalars 𝔸 (Ring.choose a ·)
+    FormalMultilinearSeries 𝕂 𝔸 𝔸 :=
+  .ofScalars 𝔸 (Ring.choose a ·)
 
 theorem binomialSeries_eq_ordinaryHypergeometricSeries {𝕂 : Type u} [Field 𝕂] [CharZero 𝕂]
     {𝔸 : Type v} [Ring 𝔸] [Algebra 𝕂 𝔸] [TopologicalSpace 𝔸] [IsTopologicalRing 𝔸] {a b : 𝕂}
@@ -66,4 +67,4 @@ theorem binomialSeries_radius_eq_one {𝕂 : Type v} [RCLike 𝕂] {𝔸 : Type 
     [NormedAlgebra 𝕂 𝔸] {a : 𝕂} (ha : ∀ (k : ℕ), a ≠ k) : (binomialSeries 𝔸 a).radius = 1 := by
   simp [binomialSeries_eq_ordinaryHypergeometricSeries (b := (1 : 𝕂)) (by norm_cast; simp)]
   conv at ha => ext; rw [ne_comm]
-  exact ordinaryHypergeometricSeries_radius_eq_one _ _ _ _ (by norm_cast; simp [ha])
+  exact ordinaryHypergeometricSeries_radius_eq_one _ _ _ _ (by norm_cast; grind)

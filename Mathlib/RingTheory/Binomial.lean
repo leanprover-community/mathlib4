@@ -460,17 +460,10 @@ theorem choose_add_smul_choose [NatPowAssoc R] (r : R) (n k : ℕ) :
 
 end
 
-theorem choose_eq_smul [Field R] [CharZero R]
-    {a : R} {n : ℕ} :
+theorem choose_eq_smul [Field R] [CharZero R] {a : R} {n : ℕ} :
     Ring.choose a n = (n.factorial : R)⁻¹ • (descPochhammer ℤ n).smeval a := by
-  rw [Ring.descPochhammer_eq_factorial_smul_choose]
-  trans (n.factorial : R)⁻¹ • ((n.factorial : R) • Ring.choose a n)
-  · rw [smul_smul, inv_mul_cancel₀]
-    · simp
-    rw [Nat.cast_ne_zero]
-    exact Nat.factorial_ne_zero n
-  · congr
-    apply Nat.cast_smul_eq_nsmul
+  rw [Ring.descPochhammer_eq_factorial_smul_choose, ← Nat.cast_smul_eq_nsmul R, inv_smul_smul₀]
+  simpa using Nat.factorial_ne_zero n
 
 open Finset
 
