@@ -171,7 +171,7 @@ private lemma le : m₁ ≤ m₂ := by
 
 end
 
-variable {X}  in
+variable {X} in
 private lemma g_eq_id {x : X _⦋n⦌} {m : ℕ} {f₁ : ⦋n⦌ ⟶ ⦋m⦌}
     {y₁ : X.nonDegenerate m} (hy₁ : x = X.map f₁.op y₁)
     {f₂ : ⦋n⦌ ⟶ ⦋m⦌} {y₂ : X _⦋m⦌} (hy₂ : x = X.map f₂.op y₂) (hf₁ : SplitEpi f₁) :
