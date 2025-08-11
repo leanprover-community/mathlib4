@@ -474,8 +474,8 @@ instance Measure.InnerRegular.inv [ContinuousInv G] [InnerRegular μ] : InnerReg
 
 /-- The image of an inner regular measure under map of a left action is again inner regular. -/
 @[to_additive
-   "The image of a inner regular measure under map of a left additive action is again
-    inner regular"]
+"The image of a inner regular measure under map of a left additive action is again
+inner regular"]
 instance innerRegular_map_smul {α} [Monoid α] [MulAction α G] [ContinuousConstSMul α G]
     [InnerRegular μ] (a : α) : InnerRegular (Measure.map (a • · : G → G) μ) :=
   InnerRegular.map_of_continuous (continuous_const_smul a)
@@ -567,7 +567,7 @@ instance (priority := 80) isOpenPosMeasure_of_mulLeftInvariant_of_innerRegular
 @[to_additive]
 theorem null_iff_of_isMulLeftInvariant [Regular μ] {s : Set G} (hs : IsOpen s) :
     μ s = 0 ↔ s = ∅ ∨ μ = 0 := by
-  rcases eq_zero_or_neZero μ with rfl|hμ
+  rcases eq_zero_or_neZero μ with rfl | hμ
   · simp
   · simp only [or_false, hs.measure_eq_zero_iff μ, NeZero.ne μ]
 
@@ -741,6 +741,10 @@ theorem IsHaarMeasure.smul {c : ℝ≥0∞} (cpos : c ≠ 0) (ctop : c ≠ ∞) 
   { lt_top_of_isCompact := fun _K hK => ENNReal.mul_lt_top ctop.lt_top hK.measure_lt_top
     toIsOpenPosMeasure := isOpenPosMeasure_smul μ cpos }
 
+@[to_additive IsAddHaarMeasure.nnreal_smul]
+lemma IsHaarMeasure.nnreal_smul {c : ℝ≥0} (hc : c ≠ 0) : IsHaarMeasure (c • μ) :=
+  .smul _ (by simp [hc]) (Option.some_ne_none _)
+
 /-- If a left-invariant measure gives positive mass to some compact set with nonempty interior, then
 it is a Haar measure. -/
 @[to_additive
@@ -795,7 +799,7 @@ theorem isHaarMeasure_map_of_isFiniteMeasure
 
 /-- The image of a Haar measure under map of a left action is again a Haar measure. -/
 @[to_additive
-   "The image of a Haar measure under map of a left additive action is again a Haar measure"]
+"The image of a Haar measure under map of a left additive action is again a Haar measure"]
 instance isHaarMeasure_map_smul {α} [BorelSpace G] [IsTopologicalGroup G]
     [Group α] [MulAction α G] [SMulCommClass α G G] [MeasurableSpace α] [MeasurableSMul α G]
     [ContinuousConstSMul α G] (a : α) : IsHaarMeasure (Measure.map (a • · : G → G) μ) where

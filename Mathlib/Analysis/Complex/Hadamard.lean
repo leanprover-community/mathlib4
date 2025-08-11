@@ -101,7 +101,7 @@ lemma sSupNormIm_nonneg (x : ℝ) : 0 ≤ sSupNormIm f x := by
 /-- `sSup` of `norm` translated by `ε > 0` is positive applied to the image of `f` on the
 vertical line `re z = x` -/
 lemma sSupNormIm_eps_pos {ε : ℝ} (hε : ε > 0) (x : ℝ) : 0 < ε + sSupNormIm f x := by
-   linarith [sSupNormIm_nonneg f x]
+  linarith [sSupNormIm_nonneg f x]
 
 /-- Useful rewrite for the absolute value of `invInterpStrip` -/
 lemma norm_invInterpStrip {ε : ℝ} (hε : ε > 0) :
@@ -133,7 +133,7 @@ lemma norm_le_sSupNormIm (f : ℂ → E) (z : ℂ) (hD : z ∈ verticalClosedStr
     (hB : BddAbove ((norm ∘ f) '' verticalClosedStrip 0 1)) :
     ‖f z‖ ≤ sSupNormIm f (z.re) := by
   refine le_csSup ?_ ?_
-  · apply BddAbove.mono (image_subset (norm ∘ f) _) hB
+  · revert hB; gcongr
     exact preimage_mono (singleton_subset_iff.mpr hD)
   · apply mem_image_of_mem (norm ∘ f)
     simp only [mem_preimage, mem_singleton]

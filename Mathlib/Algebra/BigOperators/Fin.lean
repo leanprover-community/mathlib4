@@ -66,7 +66,7 @@ theorem prod_univ_succAbove (f : Fin (n + 1) → M) (x : Fin (n + 1)) :
   rw [univ_succAbove n x, prod_cons, Finset.prod_map, coe_succAboveEmb]
 
 /-- A product of a function `f : Fin (n + 1) → M` over all `Fin (n + 1)`
-is the product of `f 0` plus the remaining product -/
+is the product of `f 0` times the remaining product -/
 @[to_additive "A sum of a function `f : Fin (n + 1) → M` over all `Fin (n + 1)` is the sum of
 `f 0` plus the remaining sum"]
 theorem prod_univ_succ (f : Fin (n + 1) → M) :
@@ -74,7 +74,7 @@ theorem prod_univ_succ (f : Fin (n + 1) → M) :
   prod_univ_succAbove f 0
 
 /-- A product of a function `f : Fin (n + 1) → M` over all `Fin (n + 1)`
-is the product of `f (Fin.last n)` plus the remaining product -/
+is the product of `f (Fin.last n)` times the remaining product -/
 @[to_additive "A sum of a function `f : Fin (n + 1) → M` over all `Fin (n + 1)` is the sum of
 `f (Fin.last n)` plus the remaining sum"]
 theorem prod_univ_castSucc (f : Fin (n + 1) → M) :
@@ -449,6 +449,11 @@ theorem partialProd_succ' (f : Fin (n + 1) → M) (j : Fin (n + 1)) :
     partialProd f j.succ = f 0 * partialProd (Fin.tail f) j := by
   simp [partialProd]
   rfl
+
+@[to_additive]
+lemma partialProd_init {f : Fin (n + 1) → M} (i : Fin (n + 1)) :
+    partialProd (init f) i = partialProd f i.castSucc :=
+  i.inductionOn (by simp) fun i hi => by simp_all [init, partialProd_succ]
 
 @[to_additive]
 theorem partialProd_left_inv {G : Type*} [Group G] (f : Fin (n + 1) → G) :

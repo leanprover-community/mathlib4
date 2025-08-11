@@ -25,7 +25,7 @@ open Set Filter TopologicalSpace MeasureTheory Function
 
 open scoped Topology Interval Filter ENNReal MeasureTheory
 
-variable {α β ε ε' E F : Type*} [MeasurableSpace α]
+variable {α β ε ε' E F : Type*} {mα : MeasurableSpace α}
 
 section
 
@@ -73,7 +73,7 @@ namespace MeasureTheory
 section NormedAddCommGroup
 
 theorem HasFiniteIntegral.restrict_of_bounded [NormedAddCommGroup E] {f : α → E} {s : Set α}
-    {μ : Measure α} {C} (hs : μ s < ∞) (hf : ∀ᵐ x ∂μ.restrict s, ‖f x‖ ≤ C) :
+    {μ : Measure α} (C : ℝ) (hs : μ s < ∞) (hf : ∀ᵐ x ∂μ.restrict s, ‖f x‖ ≤ C) :
     HasFiniteIntegral f (μ.restrict s) :=
   haveI : IsFiniteMeasure (μ.restrict s) := ⟨by rwa [Measure.restrict_apply_univ]⟩
   .of_bounded hf
@@ -164,6 +164,13 @@ theorem Integrable.integrableOn (h : Integrable f μ) : IntegrableOn f s μ := h
 lemma IntegrableOn.of_subsingleton_codomain [Subsingleton ε'] {f : α → ε'} :
     IntegrableOn f s μ :=
   Integrable.of_subsingleton_codomain
+
+lemma Integrable.of_bound [IsFiniteMeasure μ] {f : α → E} (hf : AEStronglyMeasurable f μ) (C : ℝ)
+    (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) : Integrable f μ := ⟨hf, .of_bounded hfC⟩
+
+lemma IntegrableOn.of_bound (hs : μ s < ∞) {f : α → E} (hf : AEStronglyMeasurable f (μ.restrict s))
+    (C : ℝ) (hfC : ∀ᵐ x ∂μ.restrict s, ‖f x‖ ≤ C) : IntegrableOn f s μ :=
+  ⟨hf, .restrict_of_bounded C hs hfC⟩
 
 theorem IntegrableOn.restrict (h : IntegrableOn f s μ) : IntegrableOn f s (μ.restrict t) := by
   dsimp only [IntegrableOn] at h ⊢
@@ -522,12 +529,13 @@ theorem IntegrableAtFilter.inf_ae_iff {l : Filter α} :
 alias ⟨IntegrableAtFilter.of_inf_ae, _⟩ := IntegrableAtFilter.inf_ae_iff
 
 @[simp]
-theorem integrableAtFilter_top {f : α → E} : IntegrableAtFilter f ⊤ μ ↔ Integrable f μ := by
+theorem integrableAtFilter_top [PseudoMetrizableSpace ε'] {f : α → ε'} :
+    IntegrableAtFilter f ⊤ μ ↔ Integrable f μ := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.integrableAtFilter ⊤⟩
   obtain ⟨s, hsf, hs⟩ := h
   exact (integrableOn_iff_integrable_of_support_subset fun _ _ ↦ hsf _).mp hs
 
-theorem IntegrableAtFilter.sup_iff {f : α → E} {l l' : Filter α} :
+theorem IntegrableAtFilter.sup_iff [PseudoMetrizableSpace ε'] {f : α → ε'} {l l' : Filter α} :
     IntegrableAtFilter f (l ⊔ l') μ ↔ IntegrableAtFilter f l μ ∧ IntegrableAtFilter f l' μ := by
   constructor
   · exact fun h => ⟨h.filter_mono le_sup_left, h.filter_mono le_sup_right⟩
@@ -728,7 +736,7 @@ variable [PartialOrder α] [MeasurableSingletonClass α]
   {f : α → ε'} {μ : Measure α} {a b : α}
 
 theorem integrableOn_Icc_iff_integrableOn_Ioc'
-    (ha : μ {a} ≠ ∞) (ha' : ‖f a‖ₑ ≠ ∞ := by finiteness) :
+    (ha : μ {a} ≠ ∞ := by finiteness) (ha' : ‖f a‖ₑ ≠ ∞ := by finiteness) :
     IntegrableOn f (Icc a b) μ ↔ IntegrableOn f (Ioc a b) μ := by
   by_cases hab : a ≤ b
   · rw [← Ioc_union_left hab, integrableOn_union, eq_true (integrableOn_singleton ha'), and_true]
