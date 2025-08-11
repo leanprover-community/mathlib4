@@ -163,7 +163,7 @@ lemma nil_of_comp_eq_nil_left {a b : V} {p : Path a b} {q : Path b a}
     simpa using congrArg Path.length h
   have : p.length + q.length = 0 := by
     simpa [length_comp] using hlen
-  exact Nat.eq_zero_of_add_eq_zero_right this-- Nat.eq_zero_of_add_eq_zero_left this
+  exact Nat.eq_zero_of_add_eq_zero_right this
 
 /-- If a composition is `nil`, the right component must be `nil` -/
 lemma nil_of_comp_eq_nil_right {a b : V} {p : Path a b} {q : Path b a}
