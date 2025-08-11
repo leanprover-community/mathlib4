@@ -166,13 +166,14 @@ example : !![1, 2, 3; 4, 5, 6]ᵀ = !![1, 4; 2, 5; 3, 6] := by
 simproc matrix_transpose (Matrix.transpose (Matrix.of _)) := .ofQ fun u α eMT ↦ do
   let .succ _ := u | return .continue
   let ~q(@Matrix (Fin $en) (Fin $em) $R) := α | return .continue
+  let ~q(transpose $eM) := eMT | return .continue
   let .some m := em.nat? | return .continue
   let .some n := en.nat? | return .continue
-  let ~q(transpose $eM) := eMT | return .continue
   let .some M ← matrixLit? (m := m) (n := n) (R := R) eM | return .continue
-  have rhs := mkTranspose.rhs M
-  have h := mkTranspose.proof' M
-  return .visit <| .mk q(rhs) <| .some q($h)
+  have rhs : Q(Matrix (Fin $en) (Fin $em) $R) := mkTranspose.rhs M
+  have pf : Q($eMT = ($eMT).etaExpand) := mkTranspose.proof' M
+  have : $rhs =Q ($eMT).etaExpand := ⟨⟩
+  return .visit <| .mk q($rhs) <| .some q($pf)
 
 /-- Auxiliary tactic to generate the rw-proc `transpose_of`. -/
 elab "transpose_tac_aux" : tactic => Lean.Elab.Tactic.liftMetaFinishingTactic fun mid ↦ do
