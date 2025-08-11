@@ -892,14 +892,6 @@ def inclusion {S T : Submonoid M} (h : S ≤ T) : S →* T :=
 theorem mrange_subtype (s : Submonoid M) : mrange s.subtype = s :=
   SetLike.coe_injective <| (coe_mrange _).trans <| Subtype.range_coe
 
--- `alias` doesn't add the deprecation suggestion to the `to_additive` version
--- see https://github.com/leanprover-community/mathlib4/issues/19424
-@[to_additive] alias range_subtype := mrange_subtype
-attribute [deprecated mrange_subtype (since := "2024-11-25")] range_subtype
-attribute [deprecated AddSubmonoid.mrange_subtype (since := "2024-11-25")]
-AddSubmonoid.range_subtype
-
-
 @[to_additive]
 theorem eq_top_iff' : S = ⊤ ↔ ∀ x : M, x ∈ S :=
   eq_top_iff.trans ⟨fun h m => h <| mem_top m, fun h m _ => h m⟩

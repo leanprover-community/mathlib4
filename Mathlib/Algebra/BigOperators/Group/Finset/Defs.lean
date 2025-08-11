@@ -204,37 +204,6 @@ macro_rules (kind := bigprod)
     | some p => `(Finset.prod (Finset.filter (fun $x ↦ $p) $s) (fun $x ↦ $v))
     | none => `(Finset.prod $s (fun $x ↦ $v))
 
-section deprecated -- since 2024-30-01
-open Elab Term Tactic TryThis
-
-/-- Deprecated, use `∑ x ∈ s, f x` instead. -/
-syntax (name := bigsumin) "∑ " extBinder " in " term ", " term:67 : term
-
-/-- Deprecated, use `∏ x ∈ s, f x` instead. -/
-syntax (name := bigprodin) "∏ " extBinder " in " term ", " term:67 : term
-
-elab_rules : term
-  | `(∑%$tk $x:ident in $s, $r) => do
-    addSuggestion tk (← `(∑ $x ∈ $s, $r)) (origSpan? := ← getRef) (header :=
-      "The '∑ x in s, f x' notation is deprecated: please use '∑ x ∈ s, f x' instead:\n")
-    elabTerm (← `(∑ $x:ident ∈ $s, $r)) none
-  | `(∑%$tk $x:ident : $_t in $s, $r) => do
-    addSuggestion tk (← `(∑ $x ∈ $s, $r)) (origSpan? := ← getRef) (header :=
-      "The '∑ x : t in s, f x' notation is deprecated: please use '∑ x ∈ s, f x' instead:\n")
-    elabTerm (← `(∑ $x:ident ∈ $s, $r)) none
-
-elab_rules : term
-  | `(∏%$tk $x:ident in $s, $r) => do
-    addSuggestion tk (← `(∏ $x ∈ $s, $r)) (origSpan? := ← getRef) (header :=
-      "The '∏ x in s, f x' notation is deprecated: please use '∏ x ∈ s, f x' instead:\n")
-    elabTerm (← `(∏ $x:ident ∈ $s, $r)) none
-  | `(∏%$tk $x:ident : $_t in $s, $r) => do
-    addSuggestion tk (← `(∏ $x ∈ $s, $r)) (origSpan? := ← getRef) (header :=
-      "The '∏ x : t in s, f x' notation is deprecated: please use '∏ x ∈ s, f x' instead:\n")
-    elabTerm (← `(∏ $x:ident ∈ $s, $r)) none
-
-end deprecated
-
 open PrettyPrinter.Delaborator SubExpr
 open scoped Batteries.ExtendedBinder
 
