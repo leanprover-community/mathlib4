@@ -337,6 +337,33 @@ def congr (f : Γ₀ ≃*o Γ'₀) : Valuation R Γ₀ ≃ Valuation R Γ'₀ wh
   left_inv ν := by ext; simp
   right_inv ν := by ext; simp
 
+variable (γ : Γ₀)
+
+/-- The "valuation ball" is a valuation version of the open balls centered at 0 in a metric
+topology. This is used in `ValuativeTopology` for the statement that a valuative relation is
+compatible with a given topology -/
+def ball : Set R :=
+  { x | v x < γ }
+
+/-- The valuative version of `Metric.closedBall`. -/
+def closedBall : Set R :=
+  { x | v x ≤ γ }
+
+/-- The valuative version of `Metric.sphere`. -/
+def sphere : Set R :=
+  { x | v x = γ }
+
+variable {v γ}
+
+@[simp] lemma mem_ball_iff : x ∈ v.ball γ ↔ v x < γ :=
+  Iff.rfl
+
+@[simp] lemma mem_closedBall_iff : x ∈ v.closedBall γ ↔ v x ≤ γ :=
+  Iff.rfl
+
+@[simp] lemma mem_sphere_iff : x ∈ v.sphere γ ↔ v x = γ :=
+  Iff.rfl
+
 end Monoid
 
 section Group
