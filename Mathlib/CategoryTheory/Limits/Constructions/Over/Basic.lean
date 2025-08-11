@@ -27,10 +27,6 @@ variable {X : C}
 
 namespace CategoryTheory.Over
 
-attribute [local instance] uliftCategory
-
-variable (B : C) [HasPullbacks C]
-
 /-- Make sure we can derive pullbacks in `Over B`. -/
 instance {B : C} [HasPullbacks C] : HasPullbacks (Over B) := inferInstance
 
