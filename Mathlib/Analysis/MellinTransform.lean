@@ -266,7 +266,7 @@ theorem mellin_convergent_of_isBigO_scalar {a b : ℝ} {f : ℝ → ℝ} {s : �
     rw [union_assoc, Ioc_union_Ioi (le_max_right _ _),
       Ioc_union_Ioi ((min_le_left _ _).trans (le_max_right _ _)), min_eq_left (lt_min hc2 hc1).le]
   rw [this, integrableOn_union, integrableOn_union]
-  refine ⟨⟨hc2', integrableOn_Icc_iff_integrableOn_Ioc (by finiteness) |>.mp ?_⟩, hc1'⟩
+  refine ⟨⟨hc2', Iff.mp integrableOn_Icc_iff_integrableOn_Ioc ?_⟩, hc1'⟩
   refine
     (hfc.continuousOn_mul ?_ isOpen_Ioi.isLocallyClosed).integrableOn_compact_subset
       (fun t ht => (hc2.trans_le ht.1 : 0 < t)) isCompact_Icc
