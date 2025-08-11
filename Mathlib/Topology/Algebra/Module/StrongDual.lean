@@ -11,7 +11,7 @@ import Mathlib.Analysis.LocallyConvex.Polar
 
 ## Main definitions
 
-- `strongDualPairing`: The StrongDual pairing as a bilinear form.
+- `strongDualPairing`: The strong dual pairing as a bilinear form.
 - `StrongDual.polar`: Given a subset `s` in a monoid `M` (over a commutative ring `R`), the polar
   `polar R s` is the subset of `StrongDual R M` consisting of those functionals which evaluate to
   something of norm at most one at all points `z ∈ s`.
