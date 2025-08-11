@@ -367,8 +367,6 @@ theorem toSubmonoid_injective : Function.Injective (toSubmonoid : Subgroup G →
 theorem toSubmonoid_inj {p q : Subgroup G} : p.toSubmonoid = q.toSubmonoid ↔ p = q :=
   toSubmonoid_injective.eq_iff
 
-@[to_additive, deprecated (since := "2024-12-29")] alias toSubmonoid_eq := toSubmonoid_inj
-
 @[to_additive (attr := mono)]
 theorem toSubmonoid_strictMono : StrictMono (toSubmonoid : Subgroup G → Submonoid G) := fun _ _ =>
   id

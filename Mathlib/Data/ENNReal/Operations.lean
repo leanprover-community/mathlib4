@@ -63,15 +63,9 @@ theorem mul_left_strictMono (h0 : a ≠ 0) (hinf : a ≠ ∞) : StrictMono (a * 
 protected theorem mul_right_inj (h0 : a ≠ 0) (hinf : a ≠ ∞) : a * b = a * c ↔ b = c :=
   (mul_left_strictMono h0 hinf).injective.eq_iff
 
-@[deprecated (since := "2025-01-20")]
-alias mul_eq_mul_left := ENNReal.mul_right_inj
-
 -- TODO: generalize to `WithTop`
 protected theorem mul_left_inj (h0 : c ≠ 0) (hinf : c ≠ ∞) : a * c = b * c ↔ a = b :=
   mul_comm c a ▸ mul_comm c b ▸ ENNReal.mul_right_inj h0 hinf
-
-@[deprecated (since := "2025-01-20")]
-alias mul_eq_mul_right := ENNReal.mul_left_inj
 
 -- TODO: generalize to `WithTop`
 theorem mul_le_mul_left (h0 : a ≠ 0) (hinf : a ≠ ∞) : a * b ≤ a * c ↔ b ≤ c :=
@@ -361,6 +355,19 @@ protected theorem sub_add_eq_add_sub (hab : b ≤ a) (b_ne_top : b ≠ ∞) :
   refine ENNReal.eq_sub_of_add_eq b_ne_top ?_
   simp only [add_assoc, add_comm c b]
   simpa only [← add_assoc] using (add_left_inj c_top).mpr <| tsub_add_cancel_of_le hab
+
+lemma add_sub_add_eq_sub_right (hc : c ≠ ∞ := by finiteness) : (a + c) - (b + c) = a - b := by
+  lift c to ℝ≥0 using hc
+  cases a <;> cases b
+  · simp
+  · simp
+  · simp
+  · norm_cast
+    rw [add_tsub_add_eq_tsub_right]
+
+lemma add_sub_add_eq_sub_left (hc : c ≠ ∞ := by finiteness) : (c + a) - (c + b) = a - b := by
+  simp_rw [add_comm c]
+  exact ENNReal.add_sub_add_eq_sub_right hc
 
 protected theorem lt_add_of_sub_lt_left (h : a ≠ ∞ ∨ b ≠ ∞) : a - b < c → a < b + c := by
   obtain rfl | hb := eq_or_ne b ∞

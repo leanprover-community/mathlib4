@@ -101,7 +101,7 @@ syntax toAdditiveOption := "(" toAdditiveAttrOption <|> toAdditiveReorderOption 
 syntax toAdditiveNameHint := (ppSpace (&"existing" <|> &"self"))?
 /-- Remaining arguments of `to_additive`. -/
 syntax toAdditiveRest :=
-  toAdditiveNameHint (ppSpace toAdditiveOption)* (ppSpace ident)? (ppSpace str)?
+  toAdditiveNameHint (ppSpace toAdditiveOption)* (ppSpace ident)? (ppSpace (str <|> docComment))?
 
 /-- The attribute `to_additive` can be used to automatically transport theorems
 and definitions (but not inductive types and structures) from a multiplicative
@@ -477,9 +477,9 @@ structure Config : Type where
   which we need for adding definition ranges. -/
   ref : Syntax
   /-- An optional flag stating that the additive declaration already exists.
-    If this flag is wrong about whether the additive declaration exists, `to_additive` will
-    raise a linter error.
-    Note: the linter will never raise an error for inductive types and structures. -/
+  If this flag is wrong about whether the additive declaration exists, `to_additive` will
+  raise a linter error.
+  Note: the linter will never raise an error for inductive types and structures. -/
   existing : Bool := false
   /-- An optional flag stating that the target of the translation is the target itself.
   This can be used to reorder arguments, such as in
@@ -1031,9 +1031,15 @@ There are a few abbreviations we use. For example "Nonneg" instead of "ZeroLE"
 or "addComm" instead of "commAdd".
 Note: The input to this function is case sensitive!
 Todo: A lot of abbreviations here are manual fixes and there might be room to
-      improve the naming logic to reduce the size of `fixAbbreviation`.
+improve the naming logic to reduce the size of `fixAbbreviation`.
 -/
 def fixAbbreviation : List String → List String
+  | "is" :: "Cancel" :: "Add" :: s    => "isCancelAdd" :: fixAbbreviation s
+  | "Is" :: "Cancel" :: "Add" :: s    => "IsCancelAdd" :: fixAbbreviation s
+  | "is" :: "Left" :: "Cancel" :: "Add" :: s  => "isLeftCancelAdd" :: fixAbbreviation s
+  | "Is" :: "Left" :: "Cancel" :: "Add" :: s  => "IsLeftCancelAdd" :: fixAbbreviation s
+  | "is" :: "Right" :: "Cancel" :: "Add" :: s => "isRightCancelAdd" :: fixAbbreviation s
+  | "Is" :: "Right" :: "Cancel" :: "Add" :: s => "IsRightCancelAdd" :: fixAbbreviation s
   | "cancel" :: "Add" :: s            => "addCancel" :: fixAbbreviation s
   | "Cancel" :: "Add" :: s            => "AddCancel" :: fixAbbreviation s
   | "left" :: "Cancel" :: "Add" :: s  => "addLeftCancel" :: fixAbbreviation s
@@ -1232,10 +1238,22 @@ def elabToAdditive : Syntax → CoreM Config
         as there is only one declaration for the attributes.\n\
         Instead, you can write the attributes in the usual way."
     trace[to_additive_detail] "attributes: {attrs}; reorder arguments: {reorder}"
+    let doc ← doc.mapM fun
+      | `(str|$doc:str) => do
+        -- TODO: deprecate `str` docstring syntax in Mathlib
+        return doc.getString
+      | `(docComment|$doc:docComment) => do
+        -- TODO: rely on `addDocString`s call to `validateDocComment` after removing `str` support
+        validateDocComment doc
+        /- Note: the following replicates the behavior of `addDocString`. However, this means that
+        trailing whitespace might appear in docstrings added via `docComment` syntax when compared
+        to those added via `str` syntax. See this [Zulip thread](https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/Why.20do.20docstrings.20include.20trailing.20whitespace.3F/with/533553356). -/
+        return (← getDocStringText doc).removeLeadingSpaces
+      | _ => throwUnsupportedSyntax
     return {
       trace := trace.isSome
       tgt := match tgt with | some tgt => tgt.getId | none => Name.anonymous
-      doc := doc.bind (·.raw.isStrLit?)
+      doc
       allowAutoName := false
       attrs, reorder, existing, self
       ref := (tgt.map (·.raw)).getD tk }

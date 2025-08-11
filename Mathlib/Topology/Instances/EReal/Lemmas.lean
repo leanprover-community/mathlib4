@@ -37,9 +37,6 @@ namespace EReal
 theorem isEmbedding_coe : IsEmbedding ((↑) : ℝ → EReal) :=
   coe_strictMono.isEmbedding_of_ordConnected <| by rw [range_coe_eq_Ioo]; exact ordConnected_Ioo
 
-@[deprecated (since := "2024-10-26")]
-alias embedding_coe := isEmbedding_coe
-
 theorem isOpenEmbedding_coe : IsOpenEmbedding ((↑) : ℝ → EReal) :=
   ⟨isEmbedding_coe, by simp only [range_coe_eq_Ioo, isOpen_Ioo]⟩
 
@@ -81,9 +78,6 @@ def neBotTopHomeomorphReal : ({⊥, ⊤}ᶜ : Set EReal) ≃ₜ ℝ where
 theorem isEmbedding_coe_ennreal : IsEmbedding ((↑) : ℝ≥0∞ → EReal) :=
   coe_ennreal_strictMono.isEmbedding_of_ordConnected <| by
     rw [range_coe_ennreal]; exact ordConnected_Ici
-
-@[deprecated (since := "2024-10-26")]
-alias embedding_coe_ennreal := isEmbedding_coe_ennreal
 
 theorem isClosedEmbedding_coe_ennreal : IsClosedEmbedding ((↑) : ℝ≥0∞ → EReal) :=
   ⟨isEmbedding_coe_ennreal, by rw [range_coe_ennreal]; exact isClosed_Ici⟩
@@ -283,11 +277,6 @@ lemma liminf_add_le (h : limsup u f ≠ ⊥ ∨ liminf v f ≠ ⊤) (h' : limsup
   le_add_of_forall_gt h h' fun _ a_u _ b_v ↦ (liminf_le_iff).2 fun _ c_ab ↦
     (((frequently_lt_of_liminf_lt) b_v).and_eventually ((eventually_lt_of_limsup_lt) a_u)).mono
     fun _ ab_x ↦ (add_lt_add ab_x.2 ab_x.1).trans c_ab
-
-@[deprecated (since := "2024-11-11")] alias add_liminf_le_liminf_add := le_liminf_add
-@[deprecated (since := "2024-11-11")] alias limsup_add_le_add_limsup := limsup_add_le
-@[deprecated (since := "2024-11-11")] alias limsup_add_liminf_le_limsup_add := le_limsup_add
-@[deprecated (since := "2024-11-11")] alias liminf_add_le_limsup_add_liminf := liminf_add_le
 
 lemma limsup_add_bot_of_ne_top (h : limsup u f = ⊥) (h' : limsup v f ≠ ⊤) :
     limsup (u + v) f = ⊥ := by
