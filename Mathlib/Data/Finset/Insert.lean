@@ -219,7 +219,7 @@ instance Nontrivial.instDecidablePred : DecidablePred (Finset.Nontrivial (α := 
       (h : s.Nodup) → Decidable (Finset.Nontrivial ⟨s, h⟩))
     s.val (fun l h => match l with
       | [] => isFalse (by simp)
-      | [_] => isFalse (by simp [Finset.toSet])
+      | [_] => isFalse (by simp [SetLike.coe])
       | a :: b :: _ => isTrue ⟨a, by simp, b, by simp,
         List.ne_of_not_mem_cons (List.nodup_cons.mp h).left⟩) s.nodup
 
