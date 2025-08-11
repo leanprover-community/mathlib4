@@ -120,7 +120,7 @@ variable [IsTopologicalAddGroup V]
 with separating dual is trivial, in other words, it is a central algebra. -/
 instance _root_.Algebra.IsCentral.continuousLinearMap [ContinuousSMul R V] :
     Algebra.IsCentral R (V →L[R] V) where
-  out := fun T hT => by
+  out T hT := by
     have h' (f : V →L[R] R) (y v : V) : f (T v) • y = f v • T y := by
       simpa using congr($(Subalgebra.mem_center_iff.mp hT <| f.smulRight y) v)
     by_cases H : ∀ a : V, a = 0
