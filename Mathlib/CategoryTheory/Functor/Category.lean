@@ -138,19 +138,17 @@ end NatTrans
 namespace Functor
 
 /-- Flip the arguments of a bifunctor. See also `Currying.lean`. -/
--- @[simps] -- This produce bad lemmas with the implicit arguments expanded out.
+@[simps obj_obj obj_map]
 protected def flip (F : C ⥤ D ⥤ E) : D ⥤ C ⥤ E where
   obj k :=
     { obj := fun j => (F.obj j).obj k,
       map := fun f => (F.map f).app k, }
   map f := { app := fun j => (F.obj j).map f }
 
-@[simp] theorem flip_obj_obj (F : C ⥤ D ⥤ E) (k : D) :
-    (F.flip.obj k).obj = fun j => (F.obj j).obj k := rfl
-@[simp] theorem flip_obj_map (F : C ⥤ D ⥤ E) (k : D) {X Y : C} (f : X ⟶ Y) :
-    (F.flip.obj k).map f = (F.map f).app k := rfl
-@[simp] theorem flip_map_app (F : C ⥤ D ⥤ E) {X Y : D} (f : X ⟶ Y) (k : C) :
-    (F.flip.map f).app k = (F.obj k).map f := rfl
+-- `@[simps]` doesn't produce a nicely stated lemma here:
+-- the implicit arguments for `app` use the definition of `flip`, rather than `flip` itself.
+@[simp] theorem flip_map_app (F : C ⥤ D ⥤ E) {d d' : D} (f : d ⟶ d') (c : C) :
+    (F.flip.map f).app c = (F.obj c).map f := rfl
 
 attribute [grind =] flip_obj_obj flip_obj_map flip_map_app
 
@@ -193,8 +191,7 @@ def flipFunctor : (C ⥤ D ⥤ E) ⥤ D ⥤ C ⥤ E where
   obj F := F.flip
   map {F₁ F₂} φ :=
     { app := fun Y =>
-      { app := fun X => (φ.app X).app Y }
-      naturality := by cat_disch }
+      { app := fun X => (φ.app X).app Y } }
 
 namespace Iso
 
