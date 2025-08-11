@@ -25,7 +25,7 @@ open Set Filter TopologicalSpace MeasureTheory Function
 
 open scoped Topology Interval Filter ENNReal MeasureTheory
 
-variable {α β ε ε' E F : Type*} [MeasurableSpace α]
+variable {α β ε ε' E F : Type*} {mα : MeasurableSpace α}
 
 section
 
@@ -73,7 +73,7 @@ namespace MeasureTheory
 section NormedAddCommGroup
 
 theorem HasFiniteIntegral.restrict_of_bounded [NormedAddCommGroup E] {f : α → E} {s : Set α}
-    {μ : Measure α} {C} (hs : μ s < ∞) (hf : ∀ᵐ x ∂μ.restrict s, ‖f x‖ ≤ C) :
+    {μ : Measure α} (C : ℝ) (hs : μ s < ∞) (hf : ∀ᵐ x ∂μ.restrict s, ‖f x‖ ≤ C) :
     HasFiniteIntegral f (μ.restrict s) :=
   haveI : IsFiniteMeasure (μ.restrict s) := ⟨by rwa [Measure.restrict_apply_univ]⟩
   .of_bounded hf
@@ -164,6 +164,13 @@ theorem Integrable.integrableOn (h : Integrable f μ) : IntegrableOn f s μ := h
 lemma IntegrableOn.of_subsingleton_codomain [Subsingleton ε'] {f : α → ε'} :
     IntegrableOn f s μ :=
   Integrable.of_subsingleton_codomain
+
+lemma Integrable.of_bound [IsFiniteMeasure μ] {f : α → E} (hf : AEStronglyMeasurable f μ) (C : ℝ)
+    (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) : Integrable f μ := ⟨hf, .of_bounded hfC⟩
+
+lemma IntegrableOn.of_bound (hs : μ s < ∞) {f : α → E} (hf : AEStronglyMeasurable f (μ.restrict s))
+    (C : ℝ) (hfC : ∀ᵐ x ∂μ.restrict s, ‖f x‖ ≤ C) : IntegrableOn f s μ :=
+  ⟨hf, .restrict_of_bounded C hs hfC⟩
 
 theorem IntegrableOn.restrict (h : IntegrableOn f s μ) : IntegrableOn f s (μ.restrict t) := by
   dsimp only [IntegrableOn] at h ⊢

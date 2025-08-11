@@ -128,6 +128,18 @@ infixl:100 " ⊗ₜ " => tmul _
 /-- The canonical function `M → N → M ⊗ N`. -/
 notation:100 x:100 " ⊗ₜ[" R "] " y:101 => tmul R x y
 
+/-- Produces an arbitrary representation of the form `mₒ ⊗ₜ n₀ + ...`. -/
+unsafe instance [Repr M] [Repr N] : Repr (M ⊗[R] N) where
+  reprPrec mn p :=
+    let parts := mn.unquot.toList.map fun (mi, ni) =>
+      Std.Format.group f!"{reprPrec mi 100} ⊗ₜ {reprPrec ni 101}"
+    match parts with
+    | [] => f!"0"
+    | [part] => if p > 100 then Std.Format.bracketFill "(" part ")" else .fill part
+    | parts =>
+      (if p > 65 then (Std.Format.bracketFill "(" · ")") else (.fill ·)) <|
+        .joinSep parts f!" +{Std.Format.line}"
+
 @[elab_as_elim, induction_eliminator]
 protected theorem induction_on {motive : M ⊗[R] N → Prop} (z : M ⊗[R] N)
     (zero : motive 0)
@@ -723,13 +735,7 @@ theorem map_range_eq_span_tmul (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
     range (map f g) = Submodule.span R { t | ∃ m n, f m ⊗ₜ g n = t } := by
   simp only [← Submodule.map_top, ← span_tmul_eq_top, Submodule.map_span]
   congr; ext t
-  constructor
-  · rintro ⟨_, ⟨⟨m, n, rfl⟩, rfl⟩⟩
-    use m, n
-    simp only [map_tmul]
-  · rintro ⟨m, n, rfl⟩
-    refine ⟨_, ⟨⟨m, n, rfl⟩, ?_⟩⟩
-    simp only [map_tmul]
+  simp
 
 /-- Given submodules `p ⊆ P` and `q ⊆ Q`, this is the natural map: `p ⊗ q → P ⊗ Q`. -/
 @[simp]
