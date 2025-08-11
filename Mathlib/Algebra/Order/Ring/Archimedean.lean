@@ -10,10 +10,12 @@ import Mathlib.RingTheory.Valuation.Basic
 /-!
 # Archimedean classes of a linearly ordered ring
 
-The archimedean classes of a linearly ordered ring can be given the structure of an
-`AddCommMonoid`, by defining
+The archimedean classes of a linearly ordered ring can be given the structure of an `AddCommMonoid`,
+by defining
+
 * `0 = mk 1`
 * `mk x + mk y = mk (x * y)`
+
 For a linearly ordered field, we can define a negative as
 
 * `-mk x = mk x⁻¹`
@@ -36,8 +38,10 @@ variable {M : Type*} [LinearOrder M]
 
 namespace ArchimedeanClass
 section Ring
+variable [CommRing M]
 
-variable [CommRing M] [IsOrderedRing M]
+section IsOrderedRing
+variable [IsOrderedRing M]
 
 instance : Zero (ArchimedeanClass M) where
   zero := mk 1
@@ -103,6 +107,16 @@ instance : IsOrderedAddMonoid (ArchimedeanClass M) where
 noncomputable instance : LinearOrderedAddCommMonoidWithTop (ArchimedeanClass M) where
   top_add' x := by induction x with | mk x => rw [← mk_zero, ← mk_mul, zero_mul]
 
+variable (M) in
+/-- `ArchimedeanClass.mk` defines an `AddValuation` on the ring `M`. -/
+noncomputable def addValuation : AddValuation M (ArchimedeanClass M) := AddValuation.of mk
+  rfl rfl min_le_mk_add mk_mul
+
+@[simp] theorem addValuation_apply (a : M) : addValuation M a = mk a := rfl
+
+section IsStrictOrderedRing
+variable [IsStrictOrderedRing M]
+
 theorem add_left_cancel_of_ne_top {x y z : ArchimedeanClass M} (hx : x ≠ ⊤) (h : x + y = x + z) :
     y = z := by
   induction x with | mk x
@@ -118,17 +132,10 @@ theorem add_right_cancel_of_ne_top {x y z : ArchimedeanClass M} (hx : x ≠ ⊤)
   simp_rw [← add_comm x] at h
   exact add_left_cancel_of_ne_top hx h
 
-variable (M) in
-/-- `ArchimedeanClass.mk` defines an `AddValuation` on the ring `M`. -/
-noncomputable def addValuation : AddValuation M (ArchimedeanClass M) := AddValuation.of mk
-  rfl rfl min_le_mk_add mk_mul
-
-@[simp] theorem addValuation_apply (a : M) : addValuation M a = mk a := rfl
-
+end IsStrictOrderedRing
 end Ring
 
 section Field
-
 variable [Field M] [IsOrderedRing M]
 
 instance : Neg (ArchimedeanClass M) where
