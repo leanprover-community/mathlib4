@@ -171,10 +171,7 @@ theorem lift_comp_ι (g : CliffordAlgebra Q →ₐ[R] A) :
 @[ext high]
 theorem hom_ext {A : Type*} [Semiring A] [Algebra R A] {f g : CliffordAlgebra Q →ₐ[R] A} :
     f.toLinearMap.comp (ι Q) = g.toLinearMap.comp (ι Q) → f = g := by
-  intro h
-  apply (lift Q).symm.injective
-  rw [lift_symm_apply, lift_symm_apply]
-  simp only [h]
+  simp
 
 -- This proof closely follows `TensorAlgebra.induction`
 /-- If `C` holds for the `algebraMap` of `r : R` into `CliffordAlgebra Q`, the `ι` of `x : M`,
