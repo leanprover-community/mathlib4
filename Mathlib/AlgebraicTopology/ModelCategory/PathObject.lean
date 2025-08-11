@@ -31,7 +31,7 @@ in the lemma `PathObject.exists_very_good`.
 
 ## References
 * [Daniel G. Quillen, Homotopical algebra][Quillen1967]
-* https://ncatlab.org/nlab/show/cylinder+object
+* https://ncatlab.org/nlab/show/path+space+object
 
 -/
 
@@ -84,7 +84,7 @@ section
 
 variable [HasBinaryProduct A A]
 
-/-- the map from `P.P` to the product of two copies of `A`, when `P` is
+/-- The map from `P.P` to the product of two copies of `A`, when `P` is
 a pre-path object for `A`. `P` shall be a *good* path object
 when this morphism is a fibration. -/
 noncomputable def p : P.P ⟶ A ⨯ A := prod.lift P.p₀ P.p₁
@@ -104,7 +104,7 @@ lemma symm_p [HasBinaryProducts C] :
 end PrepathObject
 
 /-- In a category with weak equivalences, a path object is the
-data of a weak equivalence `ι : P ⟶ A` equipped with two retractions. -/
+data of a weak equivalence `ι : A ⟶ P` equipped with two retractions. -/
 structure PathObject [CategoryWithWeakEquivalences C] (A : C) extends PrepathObject A where
   weakEquivalence_ι : WeakEquivalence ι := by infer_instance
 

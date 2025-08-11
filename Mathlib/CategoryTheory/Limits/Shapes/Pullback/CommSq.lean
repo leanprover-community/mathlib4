@@ -346,7 +346,7 @@ theorem of_horiz_isIso_mono [IsIso fst] [Mono g] (sq : CommSq fst snd f g) :
     (by
       refine
         PullbackCone.IsLimit.mk _ (fun s => s.fst ≫ inv fst) (by simp)
-          (fun s => ?_) (by aesop_cat)
+          (fun s => ?_) (by cat_disch)
       simp only [← cancel_mono g, Category.assoc, ← sq.w, IsIso.inv_hom_id_assoc, s.condition])
 
 theorem of_horiz_isIso [IsIso fst] [IsIso g] (sq : CommSq fst snd f g) :
@@ -931,7 +931,6 @@ B ⨯ X ⟶ B
 lemma of_prod_fst_with_id {A B : C} (f : A ⟶ B) (X : C) [HasBinaryProduct A X]
     [HasBinaryProduct B X] :
     IsPullback prod.fst (prod.map f (𝟙 X)) f prod.fst where
-  w := by simp
   isLimit' := ⟨PullbackCone.isLimitAux' _ (fun s ↦ by
     refine ⟨prod.lift s.fst (s.snd ≫ prod.snd), ?_, ?_, ?_⟩
     · simp
@@ -948,7 +947,6 @@ lemma of_isLimit_binaryFan_of_isTerminal
     {X Y : C} {c : BinaryFan X Y} (hc : IsLimit c)
     {T : C} (hT : IsTerminal T) :
     IsPullback c.fst c.snd (hT.from _) (hT.from _) where
-  w := hT.hom_ext _ _
   isLimit' := ⟨PullbackCone.IsLimit.mk _
     (fun s ↦ hc.lift (BinaryFan.mk s.fst s.snd))
     (fun s ↦ hc.fac (BinaryFan.mk s.fst s.snd) ⟨.left⟩)
