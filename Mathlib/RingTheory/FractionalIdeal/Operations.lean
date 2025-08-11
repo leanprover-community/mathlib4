@@ -86,12 +86,7 @@ theorem map_comp (g' : P' →ₐ[R] P'') : I.map (g'.comp g) = (I.map g).map g' 
 @[simp, norm_cast]
 theorem map_coeIdeal (I : Ideal R) : (I : FractionalIdeal S P).map g = I := by
   ext x
-  simp only [mem_coeIdeal]
-  constructor
-  · rintro ⟨_, ⟨y, hy, rfl⟩, rfl⟩
-    exact ⟨y, hy, (g.commutes y).symm⟩
-  · rintro ⟨y, hy, rfl⟩
-    exact ⟨_, ⟨y, hy, rfl⟩, g.commutes y⟩
+  simp
 
 @[simp]
 protected theorem map_one : (1 : FractionalIdeal S P).map g = 1 :=

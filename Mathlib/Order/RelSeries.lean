@@ -59,14 +59,13 @@ instance [Nonempty α] : Nonempty (RelSeries r) :=
 
 variable {r}
 
-set_option backward.dsimp.proofs true in
 @[ext (iff := false)]
 lemma ext {x y : RelSeries r} (length_eq : x.length = y.length)
     (toFun_eq : x.toFun = y.toFun ∘ Fin.cast (by rw [length_eq])) : x = y := by
   rcases x with ⟨nx, fx⟩
-  dsimp only at length_eq toFun_eq
-  subst length_eq toFun_eq
-  rfl
+  dsimp only at length_eq
+  subst length_eq
+  simp_all
 
 lemma rel_of_lt [r.IsTrans] (x : RelSeries r) {i j : Fin (x.length + 1)} (h : i < j) :
     x i ~[r] x j :=
