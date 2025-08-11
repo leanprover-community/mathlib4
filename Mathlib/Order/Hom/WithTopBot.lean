@@ -63,7 +63,9 @@ def coeOrderHom {α : Type*} [Preorder α] : α ↪o WithTop α where
   inj' := WithTop.coe_injective
   map_rel_iff' := WithTop.coe_le_coe
 
-/-- Removing then adding ⊤ makes the type `OrderIso` to the original type. -/
+/-- Any `OrderTop` is equivalent to `WithTop` of the subtype excluding `⊤`.
+
+See also `Equiv.optionSubtypeNe`. -/
 def subtypeOrderIso [PartialOrder α] [OrderTop α] [DecidablePred (· = (⊤ : α))] :
     WithTop {a : α // a ≠ ⊤} ≃o α where
   toFun a := (a.map (↑)).untopD ⊤
@@ -134,7 +136,9 @@ def coeOrderHom {α : Type*} [Preorder α] : α ↪o WithBot α where
   inj' := WithBot.coe_injective
   map_rel_iff' := WithBot.coe_le_coe
 
-/-- Removing then adding ⊥ makes the type `OrderIso` to the original type. -/
+/-- Any `OrderBot` is equivalent to `WithBot` of the subtype excluding `⊥`.
+
+See also `Equiv.optionSubtypeNe`. -/
 def subtypeOrderIso [PartialOrder α] [OrderBot α] [DecidablePred (· = (⊥ : α))] :
     WithBot {a : α // a ≠ ⊥} ≃o α := (WithTop.subtypeOrderIso (α := αᵒᵈ)).dual
 
