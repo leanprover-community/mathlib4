@@ -7,6 +7,7 @@ import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Data.Int.Cast.Pi
 import Mathlib.Data.Matrix.Defs
 import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Logic.Embedding.Basic
 
 /-!
 # Diagonal matrices
@@ -192,6 +193,10 @@ instance one : One (Matrix n n α) :=
 
 @[simp]
 theorem diagonal_one : (diagonal fun _ => 1 : Matrix n n α) = 1 :=
+  rfl
+
+@[simp]
+theorem diagonal_one' : (diagonal 1 : Matrix n n α) = 1 :=
   rfl
 
 theorem one_apply {i j} : (1 : Matrix n n α) i j = if i = j then 1 else 0 :=
