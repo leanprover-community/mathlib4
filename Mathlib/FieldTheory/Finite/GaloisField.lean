@@ -167,15 +167,9 @@ theorem _root_.FiniteField.splits_X_pow_card_sub_X :
     Splits (algebraMap (ZMod p) K) (X ^ Fintype.card K - X) :=
   (FiniteField.isSplittingField_sub K (ZMod p)).splits
 
-@[deprecated (since := "2024-11-12")]
-alias splits_X_pow_card_sub_X := FiniteField.splits_X_pow_card_sub_X
-
 theorem _root_.FiniteField.isSplittingField_of_card_eq (h : Fintype.card K = p ^ n) :
     IsSplittingField (ZMod p) K (X ^ p ^ n - X) :=
   h ▸ FiniteField.isSplittingField_sub K (ZMod p)
-
-@[deprecated (since := "2024-11-12")]
-alias isSplittingField_of_card_eq := FiniteField.isSplittingField_of_card_eq
 
 /-- Any finite field is (possibly non canonically) isomorphic to some Galois field. -/
 def algEquivGaloisFieldOfFintype (h : Fintype.card K = p ^ n) : K ≃ₐ[ZMod p] GaloisField p n :=
@@ -250,7 +244,7 @@ theorem unitsMap_norm_surjective : Function.Surjective (Units.map <| Algebra.nor
     convert IsCyclic.card_pow_eq_one_le (α := K'ˣ) <| Nat.div_pos
       (Nat.sub_le_sub_right (Nat.card_le_card_of_injective _ (algebraMap K K').injective) _) <|
       Nat.sub_pos_of_lt Finite.one_lt_card
-    rw [← Set.ncard_coe_Finset, ← SetLike.coe_sort_coe, Set.Nat.card_coe_set_eq]; congr; ext
+    rw [← Set.ncard_coe_finset, ← SetLike.coe_sort_coe, Nat.card_coe_set_eq]; congr; ext
     simp [Units.ext_iff, ← (algebraMap K K').injective.eq_iff, algebraMap_norm_eq_pow]
 
 theorem norm_surjective : Function.Surjective (Algebra.norm K (S := K')) := fun k ↦ by
