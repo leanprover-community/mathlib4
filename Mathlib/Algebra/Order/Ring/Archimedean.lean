@@ -39,7 +39,7 @@ variable {M : Type*} [LinearOrder M]
 namespace ArchimedeanClass
 section Ring
 
-variable [CommRing M] [IsStrictOrderedRing M]
+variable [CommRing M] [IsOrderedRing M]
 
 instance : Zero (ArchimedeanClass M) where
   zero := mk 1
