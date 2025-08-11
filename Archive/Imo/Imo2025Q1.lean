@@ -3,7 +3,11 @@ Copyright (c) 2025 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers (Problem statement), Yizheng Zhu (Solution)
 -/
-import Mathlib
+import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+import Mathlib.Analysis.InnerProductSpace.PiL2
+import Mathlib.Data.Real.Basic
+import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
+import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
 
 /-!
 # IMO 2025 Q1
