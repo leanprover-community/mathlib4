@@ -3,8 +3,9 @@ Copyright (c) 2024 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck, David Loeffler
 -/
+import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
-import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
+import Mathlib.RingTheory.EuclideanDomain
 
 /-!
 # Eisenstein Series
@@ -58,6 +59,17 @@ open Pointwise
 equal to N. -/
 def gammaSetN (N : ℕ) : Set (Fin 2 → ℤ) := ({N} : Set ℕ) • gammaSet 1 0
 
+def fin_to_gcd_map (v : Fin 2 → ℤ) : ℕ := (v 0).gcd (v 1)
+
+def gammaSetN' (N : ℕ) : Set (Fin 2 → ℤ) := fin_to_gcd_map ⁻¹' {N}
+
+lemma test (v : Fin 2 → ℤ) :
+    v ∈ gammaSetN' N ↔ (v 0).gcd (v 1) = N := by
+  simp [gammaSetN', fin_to_gcd_map]
+
+def div_N_map (N : ℤ) (v : Fin 2 → ℤ) : Fin 2 → ℤ := fun i => v i / N
+
+
 /-- The map from `gammaSetN` to `gammaSet` given by forgetting the scalar multiple in
 `gammaSetN`. -/
 noncomputable def gammaSetN_map (N : ℕ) (v : gammaSetN N) : gammaSet 1 0 := by
@@ -67,6 +79,52 @@ noncomputable def gammaSetN_map (N : ℕ) (v : gammaSetN N) : gammaSet 1 0 := by
 
 lemma gammaSet_top_mem (v : Fin 2 → ℤ) : v ∈ gammaSet 1 0 ↔ IsCoprime (v 0) (v 1) := by
   simpa [gammaSet] using fun h ↦ Subsingleton.eq_zero (Int.cast ∘ v)
+
+lemma bij (N : ℕ) (hN : N ≠ 0) : Set.BijOn (fun (v : Fin 2 → ℤ) i => v i / N)
+    (gammaSetN' N) (gammaSet 1 0) := by
+  refine ⟨?_, ?_, ?_⟩
+  · intro x hx
+    simp [gammaSetN', fin_to_gcd_map] at *
+    rw [gammaSet_top_mem]
+    rw [← hx]
+    rw [← hx] at hN
+    apply isCoprime_div_gcd_div_gcd'
+    simpa using hN
+  · intro x hx v hv hv2
+    simp [gammaSetN', fin_to_gcd_map] at *
+    ext i
+    fin_cases i
+    · simp
+      have hi1 := congr_fun hv2 0
+      rw [Int.ediv_left_inj] at hi1
+      · apply hi1
+      · rw [← hx]
+        exact Int.gcd_dvd_left (x 0) (x 1)
+      · rw [← hv]
+        exact Int.gcd_dvd_left (v 0) (v 1)
+    simp
+    have hi1 := congr_fun hv2 1
+    rw [Int.ediv_left_inj] at hi1
+    · apply hi1
+    · rw [← hx]
+      exact Int.gcd_dvd_right (x 0) (x 1)
+    rw [← hv]
+    exact Int.gcd_dvd_right (v 0) (v 1)
+  · intro x hx
+    simp [gammaSetN']
+    use N • x
+    simp [fin_to_gcd_map]
+    constructor
+    · rw [Int.gcd_mul_left]
+      rw [gammaSet_top_mem] at hx
+      rw [Int.isCoprime_iff_gcd_eq_one] at hx
+      rw [hx]
+      simp
+    · ext i
+      aesop
+
+
+
 
 lemma gammaSetN_map_eq {N : ℕ} (v : gammaSetN N) : v.1 = N • gammaSetN_map N v := by
   have hv2 := v.2
@@ -93,6 +151,11 @@ noncomputable def gammaSetN_Equiv {N : ℕ} (hN : N ≠ 0) : gammaSetN N ≃ gam
       ext i
       simpa [hN] using (congr_fun H.choose_spec.2 i)
     simp_all only [gammaSetN_map]
+
+/-- The equivalence between `gammaSetN` and `gammaSet` for non-zero `N`. -/
+noncomputable def gammaSetN_Equiv' {N : ℕ} (hN : N ≠ 0) : gammaSetN' N ≃ gammaSet 1 0 := by
+  apply Set.BijOn.equiv _ (bij N hN)
+
 
 /-- The map from `Fin 2 → ℤ` to the union of `gammaSetN` given by dividing out by the gcd. -/
 private def fin_to_GammaSetN (v : Fin 2 → ℤ) : Σ n : ℕ, gammaSetN n := by
@@ -126,6 +189,9 @@ def GammaSet_one_Equiv : (Fin 2 → ℤ) ≃ (Σ n : ℕ, gammaSetN n) where
             · exact Int.mul_ediv_cancel' (Int.gcd_dvd_left _ _)
             · exact Int.mul_ediv_cancel' (Int.gcd_dvd_right _ _)
 
+def GammaSet_top_Equiv'' : (Fin 2 → ℤ) ≃ (Σ  n : ℕ, gammaSetN' n) := by
+  apply Equiv.symm
+  apply Equiv.sigmaFiberEquiv
 
 end gammaSet_def
 
@@ -200,3 +266,5 @@ lemma eisensteinSeries_SIF_apply (k : ℤ) (z : ℍ) :
     eisensteinSeries_SIF a k z = eisensteinSeries a k z := rfl
 
 end EisensteinSeries
+
+#min_imports
