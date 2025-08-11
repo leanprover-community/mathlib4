@@ -18,13 +18,10 @@ variable {R V : Type*} [Field R] [AddCommGroup V] [TopologicalSpace R] [Topologi
 with separating dual is trivial, in other words, it is a central algebra. -/
 instance Algebra.IsCentral.continuousLinearMap :
     Algebra.IsCentral R (V →L[R] V) where
-  out := le_bot_iff.mpr <| Subalgebra.ext fun T => by
-    simp only [Subalgebra.mem_center_iff, Bot.bot, AlgHom.mem_range, Algebra.ofId_apply,
-      algebraMap, Algebra.algebraMap, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
-    refine ⟨fun h => ?_, fun ⟨y, hy⟩ => by simp [← hy]⟩
+  out := fun T hT => by
     have h' (f : V →L[R] R) (y v : V) : f (T v) • y = f v • T y := by
       simpa [ContinuousLinearMap.ext_iff, Function.comp_apply, map_smul]
-        using congr($(h <| f.smulRight y) v)
+        using congr($(Subalgebra.mem_center_iff.mp hT <| f.smulRight y) v)
     by_cases H : ∀ a : V, a = 0
     · use 0; simp [ContinuousLinearMap.ext_iff, H]
     obtain ⟨x, hx⟩ := not_forall.mp H
