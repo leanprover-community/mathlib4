@@ -19,19 +19,6 @@ variable {R : Type u} {S : Type v}
 
 namespace Prod
 
-instance [Star R] [Star S] : Star (R × S) where star x := (star x.1, star x.2)
-
-@[simp]
-theorem fst_star [Star R] [Star S] (x : R × S) : (star x).1 = star x.1 :=
-  rfl
-
-@[simp]
-theorem snd_star [Star R] [Star S] (x : R × S) : (star x).2 = star x.2 :=
-  rfl
-
-theorem star_def [Star R] [Star S] (x : R × S) : star x = (star x.1, star x.2) :=
-  rfl
-
 instance [Star R] [Star S] [TrivialStar R] [TrivialStar S] : TrivialStar (R × S) where
   star_trivial _ := Prod.ext (star_trivial _) (star_trivial _)
 

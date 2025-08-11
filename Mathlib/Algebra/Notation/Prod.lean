@@ -16,7 +16,7 @@ We also prove trivial `simp` lemmas:
 
 assert_not_exists Monoid DenselyOrdered
 
-variable {G : Type*} {H : Type*} {M : Type*} {N : Type*} {P : Type*}
+variable {G H M N P R S : Type*}
 
 namespace Prod
 
@@ -167,5 +167,22 @@ lemma pow_def (p : α × β) (c : E) : p ^ c = (p.1 ^ c, p.2 ^ c) := rfl
 lemma pow_swap (p : α × β) (c : E) : (p ^ c).swap = p.swap ^ c := rfl
 
 end Pow
+
+section Star
+
+variable [Star R] [Star S]
+
+instance : Star (R × S) where star x := (star x.1, star x.2)
+
+@[simp]
+theorem fst_star (x : R × S) : (star x).1 = star x.1 := rfl
+
+@[simp]
+theorem snd_star (x : R × S) : (star x).2 = star x.2 := rfl
+
+theorem star_def (x : R × S) : star x = (star x.1, star x.2) := rfl
+
+end Star
+
 
 end Prod
