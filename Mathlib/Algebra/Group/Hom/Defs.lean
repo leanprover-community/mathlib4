@@ -5,7 +5,7 @@ Authors: Patrick Massot, Kevin Buzzard, Kim Morrison, Johan Commelin, Chris Hugh
   Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Algebra.Notation.Pi
+import Mathlib.Algebra.Notation.Pi.Defs
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Logic.Function.Iterate
 
@@ -952,9 +952,6 @@ theorem coe_one : ((1 : Monoid.End M) : M → M) = id := rfl
 theorem coe_mul (f g) : ((f * g : Monoid.End M) : M → M) = f ∘ g := rfl
 
 end End
-
-@[deprecated (since := "2024-11-20")] protected alias coe_one := End.coe_one
-@[deprecated (since := "2024-11-20")] protected alias coe_mul := End.coe_mul
 
 end Monoid
 

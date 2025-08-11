@@ -1212,8 +1212,8 @@ lemma mk_lt_mk_of_le_of_lt (h₁ : a₁ ≤ a₂) (h₂ : b₁ < b₂) : (a₁, 
 end Preorder
 
 /-- The pointwise partial order on a product.
-    (The lexicographic ordering is defined in `Order.Lexicographic`, and the instances are
-    available via the type synonym `α ×ₗ β = α × β`.) -/
+(The lexicographic ordering is defined in `Order.Lexicographic`, and the instances are
+available via the type synonym `α ×ₗ β = α × β`.) -/
 instance instPartialOrder (α β : Type*) [PartialOrder α] [PartialOrder β] :
     PartialOrder (α × β) where
   __ := inferInstanceAs (Preorder (α × β))
@@ -1292,16 +1292,10 @@ theorem eq_of_le_of_forall_gt_imp_ge_of_dense (h₁ : a₂ ≤ a₁) (h₂ : ∀
   (le_of_forall_lt_imp_le_of_dense h₂).antisymm h₁
 
 @[deprecated (since := "2025-01-21")]
-alias le_of_forall_le_of_dense := le_of_forall_gt_imp_ge_of_dense
-
-@[deprecated (since := "2025-01-21")]
 alias le_of_forall_ge_of_dense := le_of_forall_lt_imp_le_of_dense
 
 @[deprecated (since := "2025-01-21")] alias forall_lt_le_iff := forall_lt_imp_le_iff_le_of_dense
 @[deprecated (since := "2025-01-21")] alias forall_gt_ge_iff := forall_gt_imp_ge_iff_le_of_dense
-
-@[deprecated (since := "2025-01-21")]
-alias eq_of_le_of_forall_le_of_dense := eq_of_le_of_forall_lt_imp_le_of_dense
 
 @[deprecated (since := "2025-01-21")]
 alias eq_of_le_of_forall_ge_of_dense := eq_of_le_of_forall_gt_imp_ge_of_dense

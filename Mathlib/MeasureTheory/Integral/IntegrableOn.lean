@@ -165,6 +165,13 @@ lemma IntegrableOn.of_subsingleton_codomain [Subsingleton ε'] {f : α → ε'} 
     IntegrableOn f s μ :=
   Integrable.of_subsingleton_codomain
 
+lemma Integrable.of_bound [IsFiniteMeasure μ] {f : α → E} (hf : AEStronglyMeasurable f μ) {C : ℝ}
+    (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) : Integrable f μ := ⟨hf, .of_bounded hfC⟩
+
+lemma IntegrableOn.of_bound (hs : μ s < ∞) {f : α → E} (hf : AEStronglyMeasurable f (μ.restrict s))
+    {C : ℝ} (hfC : ∀ᵐ x ∂μ.restrict s, ‖f x‖ ≤ C) : IntegrableOn f s μ :=
+  ⟨hf, .restrict_of_bounded hs hfC⟩
+
 theorem IntegrableOn.restrict (h : IntegrableOn f s μ) : IntegrableOn f s (μ.restrict t) := by
   dsimp only [IntegrableOn] at h ⊢
   exact h.mono_measure <| Measure.restrict_mono_measure Measure.restrict_le_self _
@@ -522,12 +529,13 @@ theorem IntegrableAtFilter.inf_ae_iff {l : Filter α} :
 alias ⟨IntegrableAtFilter.of_inf_ae, _⟩ := IntegrableAtFilter.inf_ae_iff
 
 @[simp]
-theorem integrableAtFilter_top {f : α → E} : IntegrableAtFilter f ⊤ μ ↔ Integrable f μ := by
+theorem integrableAtFilter_top [PseudoMetrizableSpace ε'] {f : α → ε'} :
+    IntegrableAtFilter f ⊤ μ ↔ Integrable f μ := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.integrableAtFilter ⊤⟩
   obtain ⟨s, hsf, hs⟩ := h
   exact (integrableOn_iff_integrable_of_support_subset fun _ _ ↦ hsf _).mp hs
 
-theorem IntegrableAtFilter.sup_iff {f : α → E} {l l' : Filter α} :
+theorem IntegrableAtFilter.sup_iff [PseudoMetrizableSpace ε'] {f : α → ε'} {l l' : Filter α} :
     IntegrableAtFilter f (l ⊔ l') μ ↔ IntegrableAtFilter f l μ ∧ IntegrableAtFilter f l' μ := by
   constructor
   · exact fun h => ⟨h.filter_mono le_sup_left, h.filter_mono le_sup_right⟩
