@@ -195,7 +195,7 @@ theorem adjoinRootEquiv_symm_apply_root : h.adjoinRootEquiv.symm h.root = Adjoin
 
 variable (h' : IsAdjoinRoot T f)
 
-/-- Adjoining a root gives a unique ring up to algebra isomorphism.
+  /-- Adjoining a root gives a unique algebra up to isomorphism.
 
 This is the converse of `IsAdjoinRoot.ofEquiv`: this turns an `IsAdjoinRoot` into an
 `AlgEquiv`, and `IsAdjoinRoot.ofEquiv` turns an `AlgEquiv` into an `IsAdjoinRoot`.
