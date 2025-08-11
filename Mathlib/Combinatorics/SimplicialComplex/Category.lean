@@ -5,7 +5,6 @@ Authors: Xiangyu Li
 -/
 import Mathlib.Combinatorics.SimplicialComplex.Hom
 import Mathlib.CategoryTheory.Iso
-import Mathlib.CategoryTheory.ConcreteCategory.Basic
 
 /-!
 # The category of simplicial complexes (with varying vertex types)
