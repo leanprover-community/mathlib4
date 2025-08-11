@@ -757,8 +757,7 @@ theorem doubling_lt_golden_ratio {K : ℝ} (hK₁ : 1 < K) (hKφ : K < φ)
 
   -- now we show that H is relatively big, which will then
   --  make Z relatively small once we show that #S = #H * #Z
-  --  (which is already clear because Hz for z ∈ Z are all different
-  --  and hence disjoint cosets)
+  --  (which is already clear because Hz for z ∈ Z are all different and hence disjoint cosets)
   have big_H : Fintype.card H ≥ (φ - K) * (K - ψ) / (2 - K) * #A := by
     change Fintype.card (H: Set G) ≥ (φ - K) * (K - ψ) / (2 - K) * #A
     rw [← Set.toFinset_card]
