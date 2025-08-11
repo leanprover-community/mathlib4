@@ -598,8 +598,8 @@ theorem det_mul_det (b b' b'' : Basis ι A M) :
     b.det b' * b'.det b'' = b.det b'' := by
   have : b'' = (b'.equiv b'' (Equiv.refl ι)).toLinearMap ∘ b'  := by
     ext; simp
-  nth_rewrite 2 [this]
-  rw [Basis.det_comp, det_basis, mul_comm]
+  conv_rhs =>
+    rw [this, Basis.det_comp, det_basis, mul_comm]
 
 theorem det_inv (b : Basis ι A M) (b' : Basis ι A M) :
     (b.isUnit_det b').unit⁻¹ = b'.det b := by
