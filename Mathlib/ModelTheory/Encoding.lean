@@ -159,7 +159,7 @@ namespace BoundedFormula
 
 /-- Encodes a bounded formula as a list of symbols. -/
 def listEncode : ∀ {n : ℕ},
-    L.BoundedFormula α n → List ((Σk, L.Term (α ⊕ Fin k)) ⊕ ((Σ n, L.Relations n) ⊕ ℕ))
+    L.BoundedFormula α n → List ((Σ k, L.Term (α ⊕ Fin k)) ⊕ ((Σ n, L.Relations n) ⊕ ℕ))
   | n, falsum => [Sum.inr (Sum.inr (n + 2))]
   | _, equal t₁ t₂ => [Sum.inl ⟨_, t₁⟩, Sum.inl ⟨_, t₂⟩]
   | n, rel R ts => [Sum.inr (Sum.inl ⟨_, R⟩), Sum.inr (Sum.inr n)] ++
@@ -191,7 +191,7 @@ lemma sigmaImp_apply {n} {φ ψ : L.BoundedFormula α n} :
 
 /-- Decodes a list of symbols as a list of formulas. -/
 def listDecode :
-    List ((Σk, L.Term (α ⊕ Fin k)) ⊕ ((Σ n, L.Relations n) ⊕ ℕ)) → List (Σ n, L.BoundedFormula α n)
+    List ((Σ k, L.Term (α ⊕ Fin k)) ⊕ ((Σ n, L.Relations n) ⊕ ℕ)) → List (Σ n, L.BoundedFormula α n)
   | Sum.inr (Sum.inr (n + 2))::l => ⟨n, falsum⟩::(listDecode l)
   | Sum.inl ⟨n₁, t₁⟩::Sum.inl ⟨n₂, t₂⟩::l =>
     (if h : n₁ = n₂ then ⟨n₁, equal t₁ (Eq.mp (by rw [h]) t₂)⟩ else default)::(listDecode l)
@@ -214,7 +214,7 @@ def listDecode :
 theorem listDecode_encode_list (l : List (Σ n, L.BoundedFormula α n)) :
     listDecode (l.flatMap (fun φ => φ.2.listEncode)) = l := by
   suffices h : ∀ (φ : Σ n, L.BoundedFormula α n)
-      (l' : List ((Σk, L.Term (α ⊕ Fin k)) ⊕ ((Σ n, L.Relations n) ⊕ ℕ))),
+      (l' : List ((Σ k, L.Term (α ⊕ Fin k)) ⊕ ((Σ n, L.Relations n) ⊕ ℕ))),
       (listDecode (listEncode φ.2 ++ l')) = φ::(listDecode l') by
     induction l with
     | nil =>
@@ -275,7 +275,7 @@ theorem listDecode_encode_list (l : List (Σ n, L.BoundedFormula α n)) :
 /-- An encoding of bounded formulas as lists. -/
 @[simps]
 protected def encoding : Encoding (Σ n, L.BoundedFormula α n) where
-  Γ := (Σk, L.Term (α ⊕ Fin k)) ⊕ ((Σ n, L.Relations n) ⊕ ℕ)
+  Γ := (Σ k, L.Term (α ⊕ Fin k)) ⊕ ((Σ n, L.Relations n) ⊕ ℕ)
   encode φ := φ.2.listEncode
   decode l := (listDecode l)[0]?
   decode_encode φ := by

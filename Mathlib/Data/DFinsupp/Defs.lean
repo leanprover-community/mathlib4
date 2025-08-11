@@ -8,6 +8,7 @@ import Mathlib.Algebra.Group.InjSurj
 import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Notation.Prod
+import Mathlib.Algebra.Group.Basic
 
 /-!
 # Dependent functions with finite support
