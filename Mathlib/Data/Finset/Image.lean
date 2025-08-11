@@ -647,7 +647,7 @@ theorem subset_univ_image_iff [Fintype α] [DecidableEq β] {t : Finset β} {f :
   ⟨fun t_subset =>
     have ⟨s', _, s'_image_eq_t⟩ := mp t_subset
     ⟨s', s'_image_eq_t⟩,
-    fun ⟨s', s'_image_eq_t⟩ => mpr ⟨s', subset_univ s', s'_image_eq_t⟩⟩
+  fun ⟨s', s'_image_eq_t⟩ => mpr ⟨s', subset_univ s', s'_image_eq_t⟩⟩
 
 theorem range_sdiff_zero {n : ℕ} : range (n + 1) \ {0} = (range n).image Nat.succ := by
   induction' n with k hk
