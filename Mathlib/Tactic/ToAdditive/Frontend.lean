@@ -1242,9 +1242,9 @@ def elabToAdditive : Syntax → CoreM Config
         Instead, you can write the attributes in the usual way."
     trace[to_additive_detail] "attributes: {attrs}; reorder arguments: {reorder}"
     let doc ← doc.mapM fun
-      | `(str|$doc:str) => do
+      | `(str|$doc:str) => open Linter in do
         -- Deprecate `str` docstring syntax in Mathlib
-        if (← getMainModule).getRoot == `Mathlib then
+        if getLinterValue linter.deprecated (← getLinterOptions) then
           logWarningAt doc <| .tagged ``Linter.deprecatedAttr
             m!"String syntax for `to_additive` docstrings is deprecated: Use \
               docstring syntax instead (e.g. `@[to_additive /-- example -/]`)"
