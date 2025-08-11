@@ -2011,6 +2011,7 @@ import Mathlib.CategoryTheory.Bicategory.Kan.IsKan
 import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 import Mathlib.CategoryTheory.Bicategory.Modification.Oplax
 import Mathlib.CategoryTheory.Bicategory.Monad.Basic
+import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Icon
 import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Lax
 import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Oplax
 import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Pseudo
