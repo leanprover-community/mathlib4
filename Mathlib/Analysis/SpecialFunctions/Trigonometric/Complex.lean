@@ -132,6 +132,31 @@ theorem tan_add' {x y : ℂ}
     tan (x + y) = (tan x + tan y) / (1 - tan x * tan y) :=
   tan_add (Or.inl h)
 
+theorem tan_sub {x y : ℂ}
+    (h : ((∀ k : ℤ, x ≠ (2 * k + 1) * π / 2) ∧ ∀ l : ℤ, y ≠ (2 * l + 1) * π / 2) ∨
+      (∃ k : ℤ, x = (2 * k + 1) * π / 2) ∧ ∃ l : ℤ, y = (2 * l + 1) * π / 2) :
+    tan (x - y) = (tan x - tan y) / (1 + tan x * tan y) := by
+  have := tan_add (x := x) (y := -y) <| by
+    rcases h with ⟨x_ne, minus_y_ne⟩ | ⟨x_eq, minus_y_eq⟩
+    · refine .inl ⟨x_ne, fun l => ?_⟩
+      rw [Ne, neg_eq_iff_eq_neg]
+      convert minus_y_ne (-l - 1) using 2
+      push_cast
+      ring
+    · refine .inr ⟨x_eq, ?_⟩
+      rcases minus_y_eq with ⟨l, rfl⟩
+      use -l - 1
+      push_cast
+      ring
+  rw [tan_neg] at this
+  convert this using 2
+  ring
+
+theorem tan_sub' {x y : ℂ}
+    (h : (∀ k : ℤ, x ≠ (2 * k + 1) * π / 2) ∧ ∀ l : ℤ, y ≠ (2 * l + 1) * π / 2) :
+    tan (x - y) = (tan x - tan y) / (1 + tan x * tan y) :=
+  tan_sub (Or.inl h)
+
 theorem tan_two_mul {z : ℂ} : tan (2 * z) = (2 : ℂ) * tan z / ((1 : ℂ) - tan z ^ 2) := by
   by_cases h : ∀ k : ℤ, z ≠ (2 * k + 1) * π / 2
   · rw [two_mul, two_mul, sq, tan_add (Or.inl ⟨h, h⟩)]
