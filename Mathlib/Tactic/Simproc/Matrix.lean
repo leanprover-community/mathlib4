@@ -172,7 +172,7 @@ simproc matrix_transpose (Matrix.transpose (Matrix.of _)) := .ofQ fun u α eMT �
   let .some M ← matrixLit? (m := m) (n := n) (R := R) eM | return .continue
   have rhs := mkTranspose.rhs M
   have h := mkTranspose.proof' M
-  return .visit { expr := rhs, proof? := .some h }
+  return .visit <| .mk q(rhs) <| .some q($h)
 
 /-- Auxiliary tactic to generate the rw-proc `transpose_of`. -/
 elab "transpose_tac_aux" : tactic => Lean.Elab.Tactic.liftMetaFinishingTactic fun mid ↦ do
