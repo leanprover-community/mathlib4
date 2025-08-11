@@ -397,21 +397,29 @@ theorem lift_symm_apply (F : FreeAlgebra R X →ₐ[R] A) : (lift R).symm F = F 
 variable {R}
 
 @[simp]
-theorem ι_comp_lift (f : X → A) : (lift R f : FreeAlgebra R X → A) ∘ ι R = f := by
+theorem lift_comp_ι (f : X → A) : (lift R f : FreeAlgebra R X → A) ∘ ι R = f := by
   ext
   rw [Function.comp_apply, ι_def, lift]
   rfl
+
+@[deprecated (since := "2025-08-11")] alias ι_comp_lift := lift_comp_ι
 
 @[simp]
 theorem lift_ι_apply (f : X → A) (x) : lift R f (ι R x) = f x := by
   rw [ι_def, lift]
   rfl
 
+/-- See note [partially-applied ext lemmas]. -/
+@[ext high]
+theorem hom_ext {f g : FreeAlgebra R X →ₐ[R] A}
+    (w : (f : FreeAlgebra R X → A) ∘ ι R = (g : FreeAlgebra R X → A) ∘ ι R) : f = g := by
+  rw [← lift_symm_apply, ← lift_symm_apply] at w
+  exact (lift R).symm.injective w
+
 @[simp]
 theorem lift_unique (f : X → A) (g : FreeAlgebra R X →ₐ[R] A) :
     (g : FreeAlgebra R X → A) ∘ ι R = f ↔ g = lift R f := by
-  rw [← (lift R).symm_apply_eq, lift]
-  rfl
+  simp [FreeAlgebra.hom_ext_iff]
 
 /-!
 Since we have set the basic definitions as `@[Irreducible]`, from this point onwards one
@@ -427,13 +435,6 @@ theorem lift_comp_ι (g : FreeAlgebra R X →ₐ[R] A) :
     lift R ((g : FreeAlgebra R X → A) ∘ ι R) = g := by
   rw [← lift_symm_apply]
   exact (lift R).apply_symm_apply g
-
-/-- See note [partially-applied ext lemmas]. -/
-@[ext high]
-theorem hom_ext {f g : FreeAlgebra R X →ₐ[R] A}
-    (w : (f : FreeAlgebra R X → A) ∘ ι R = (g : FreeAlgebra R X → A) ∘ ι R) : f = g := by
-  rw [← lift_symm_apply, ← lift_symm_apply] at w
-  exact (lift R).symm.injective w
 
 /-- The free algebra on `X` is "just" the monoid algebra on the free monoid on `X`.
 

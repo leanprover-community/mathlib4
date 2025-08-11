@@ -128,21 +128,21 @@ theorem lift_symm_apply (F : UniversalEnvelopingAlgebra R L →ₐ[R] A) :
   rfl
 
 @[simp]
+theorem lift_comp_ι : (lift R f).toLieHom.comp (ι R) = f :=
+  (lift R).symm_apply_apply f
+
+@[deprecated lift_comp_ι (since := "2025-08-11")]
 theorem ι_comp_lift : lift R f ∘ ι R = f :=
   funext <| LieHom.ext_iff.mp <| (lift R).symm_apply_apply f
 
 -- Porting note: moved `@[simp]` to the next theorem (LHS simplifies)
-theorem lift_ι_apply (x : L) : lift R f (ι R x) = f x := by
-  rw [← Function.comp_apply (f := lift R f) (g := ι R) (x := x), ι_comp_lift]
+theorem lift_ι_apply (x : L) : lift R f (ι R x) = f x :=
+  DFunLike.congr_fun (lift_comp_ι _ _) x
 
 @[simp]
 theorem lift_ι_apply' (x : L) :
     lift R f ((UniversalEnvelopingAlgebra.mkAlgHom R L) (ιₜ x)) = f x := by
   simpa using lift_ι_apply R f x
-
-theorem lift_unique (g : UniversalEnvelopingAlgebra R L →ₐ[R] A) : g ∘ ι R = f ↔ g = lift R f := by
-  refine Iff.trans ?_ (lift R).symm_apply_eq
-  constructor <;> · intro h; ext; simp [← h]
 
 /-- See note [partially-applied ext lemmas]. -/
 @[ext]
@@ -153,5 +153,13 @@ theorem hom_ext {g₁ g₂ : UniversalEnvelopingAlgebra R L →ₐ[R] A}
     g₁ = g₂ :=
   have h' : (lift R).symm g₁ = (lift R).symm g₂ := by ext; simp [h]
   (lift R).symm.injective h'
+
+theorem lift_unique' (g : UniversalEnvelopingAlgebra R L →ₐ[R] A) :
+    g.toLieHom.comp (ι R) = f ↔ g = lift R f := by
+  simp [UniversalEnvelopingAlgebra.hom_ext_iff]
+
+theorem lift_unique (g : UniversalEnvelopingAlgebra R L →ₐ[R] A) : g ∘ ι R = f ↔ g = lift R f := by
+  rw [← lift_unique', ← DFunLike.coe_injective.eq_iff (b := f)]
+  simp
 
 end UniversalEnvelopingAlgebra
