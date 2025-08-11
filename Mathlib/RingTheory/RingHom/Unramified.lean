@@ -50,7 +50,7 @@ lemma isStableUnderBaseChange :
     IsStableUnderBaseChange FormallyUnramified := by
   refine .mk respectsIso ?_
   introv H
-  rw [formallyUnramified_algebraMap] at h ⊢
+  rw [formallyUnramified_algebraMap] at H ⊢
   infer_instance
 
 lemma holdsForLocalizationAway :
