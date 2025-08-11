@@ -748,8 +748,8 @@ section pnat
 
 /-- The map from `Nat.divisorsAntidiagonal n` to `ℕ+ × ℕ+` given by sending `n = a * b`
 to `(a , b)`. -/
-def mapdiv (n : ℕ+) : Nat.divisorsAntidiagonal n → ℕ+ × ℕ+ := by
-  refine fun x =>
+def divisorsAntidiagonal_factors (n : ℕ+) : Nat.divisorsAntidiagonal n → ℕ+ × ℕ+ :=
+    fun x ↦
    ⟨⟨x.1.1, Nat.pos_of_mem_divisors (Nat.fst_mem_divisors_of_mem_antidiagonal x.2)⟩,
     (⟨x.1.2, Nat.pos_of_mem_divisors (Nat.snd_mem_divisors_of_mem_antidiagonal x.2)⟩ : ℕ+),
     Nat.pos_of_mem_divisors (Nat.snd_mem_divisors_of_mem_antidiagonal x.2)⟩
@@ -757,21 +757,13 @@ def mapdiv (n : ℕ+) : Nat.divisorsAntidiagonal n → ℕ+ × ℕ+ := by
 /-- The equivalence from the union over `n` of `Nat.divisorsAntidiagonal n` to `ℕ+ × ℕ+`
 given by sending `n = a * b` to `(a , b)`. -/
 def sigmaAntidiagonalEquivProd : (Σ n : ℕ+, Nat.divisorsAntidiagonal n) ≃ ℕ+ × ℕ+ where
-  toFun x := mapdiv x.1 x.2
+  toFun x := divisorsAntidiagonal_factors x.1 x.2
   invFun x :=
-    ⟨⟨x.1.1 * x.2.1, mul_pos x.1.2 x.2.2⟩, ⟨x.1, x.2⟩, by
-      simp only [PNat.mk_coe, Nat.mem_divisorsAntidiagonal, ne_eq, mul_eq_zero, not_or]
-      refine ⟨rfl, PNat.ne_zero x.1, PNat.ne_zero x.2⟩⟩
+    ⟨⟨x.1.val * x.2.val, mul_pos x.1.2 x.2.2⟩, ⟨x.1, x.2⟩, by simp [Nat.mem_divisorsAntidiagonal]⟩
   left_inv := by
     rintro ⟨n, ⟨k, l⟩, h⟩
     rw [Nat.mem_divisorsAntidiagonal] at h
-    simp_rw [mapdiv, PNat.mk_coe]
-    ext <;> simp [h] at *
-    rfl
-  right_inv := by
-    rintro ⟨n, ⟨k, l⟩, h⟩
-    · simp_rw [mapdiv]
-      norm_cast
-    · rfl
+    ext <;> simp [divisorsAntidiagonal_factors, ← PNat.coe_injective.eq_iff, h.1]
+  right_inv _ := rfl
 
 end pnat
