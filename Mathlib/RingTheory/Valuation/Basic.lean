@@ -7,6 +7,7 @@ import Mathlib.Algebra.Order.Hom.Monoid
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.Tactic.TFAE
+import Mathlib.Topology.UniformSpace.Ultra.Basic
 
 /-!
 
@@ -336,6 +337,78 @@ def congr (f : Γ₀ ≃*o Γ'₀) : Valuation R Γ₀ ≃ Valuation R Γ'₀ wh
   invFun := map f.symm f.toOrderIso.symm.monotone
   left_inv ν := by ext; simp
   right_inv ν := by ext; simp
+
+section balls
+
+/-- The relation `v (y - x) < r` used to define `Valuation.ball`. -/
+def ltRel (γ : Γ₀) : Set (R × R) := { p | ∃ z, v z < γ ∧ p.1 + z = p.2 }
+
+/-- The relation `v (y - x) < r` used to define `Valuation.closedBall`. -/
+def leRel (γ : Γ₀) : Set (R × R) := { p | ∃ z, v z ≤ γ ∧ p.1 + z = p.2 }
+
+/-- The relation `v (y - x) < r` used to define `Valuation.sphere`. -/
+def eqRel (γ : Γ₀) : Set (R × R) := { p | ∃ z, v z = γ ∧ p.1 + z = p.2 }
+
+variable {v} {r : Γ₀} {x y : R}
+
+@[simp] lemma mem_ltRel_iff : (x, y) ∈ v.ltRel r ↔ v (y - x) < r := by
+  simp_rw [ltRel, ← eq_sub_iff_add_eq', exists_eq_right, Set.mem_setOf]
+
+@[simp] lemma mem_leRel_iff : (x, y) ∈ v.leRel r ↔ v (y - x) ≤ r := by
+  simp_rw [leRel, ← eq_sub_iff_add_eq', exists_eq_right, Set.mem_setOf]
+
+@[simp] lemma mem_eqRel_iff : (x, y) ∈ v.eqRel r ↔ v (y - x) = r := by
+  simp_rw [eqRel, ← eq_sub_iff_add_eq', exists_eq_right, Set.mem_setOf]
+
+variable (v r)
+
+lemma isSymmetricRel_ltRel : IsSymmetricRel (v.ltRel r) := by
+  ext ⟨x, y⟩; simp [v.map_sub_swap]
+
+lemma isSymmetricRel_leRel : IsSymmetricRel (v.leRel r) := by
+  ext ⟨x, y⟩; simp [v.map_sub_swap]
+
+lemma isSymmetricRel_eqRel : IsSymmetricRel (v.eqRel r) := by
+  ext ⟨x, y⟩; simp [v.map_sub_swap]
+
+lemma isTransitiveRel_ltRel : IsTransitiveRel (v.ltRel r) := by
+  intros _ _ _ hxy hyz
+  rw [mem_ltRel_iff] at hxy hyz ⊢
+  convert v.map_add_lt hxy hyz using 2
+  rw [sub_add_sub_cancel']
+
+lemma isTransitiveRel_leRel : IsTransitiveRel (v.leRel r) := by
+  intros _ _ _ hxy hyz
+  rw [mem_leRel_iff] at hxy hyz ⊢
+  convert v.map_add_le hxy hyz using 2
+  rw [sub_add_sub_cancel']
+
+/-- The "valuation ball" is a valuation version of the open balls in a metric topology. This is used
+in `IsValuativeTopology` for the statement that a valuative relation is compatible with a given
+topology. -/
+def ball (x : R) (γ : Γ₀) : Set R :=
+  UniformSpace.ball x (v.ltRel γ)
+
+/-- The valuative version of `Metric.closedBall`. -/
+def closedBall (x : R) (γ : Γ₀) : Set R :=
+  UniformSpace.ball x (v.leRel γ)
+
+/-- The valuative version of `Metric.sphere`. -/
+def sphere (x : R) (γ : Γ₀) : Set R :=
+  UniformSpace.ball x (v.eqRel γ)
+
+variable {v r}
+
+@[simp] lemma mem_ball_iff : y ∈ v.ball x r ↔ v (y - x) < r :=
+  mem_ltRel_iff
+
+@[simp] lemma mem_closedBall_iff : y ∈ v.closedBall x r ↔ v (y - x) ≤ r :=
+  mem_leRel_iff
+
+@[simp] lemma mem_sphere_iff : y ∈ v.sphere x r ↔ v (y - x) = r :=
+  mem_eqRel_iff
+
+end balls
 
 end Monoid
 
