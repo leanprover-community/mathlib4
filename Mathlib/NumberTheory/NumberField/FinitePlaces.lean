@@ -19,7 +19,7 @@ into a completion of `K` associated to a non-zero prime ideal of `𝓞 K`.
 * `NumberField.adicAbv`: a `v`-adic absolute value on `K`.
 * `NumberField.FinitePlace`: the type of finite places of a number field `K`.
 * `NumberField.FinitePlace.embedding`: the canonical embedding of a number field `K` to the
-`v`-adic completion `v.adicCompletion K` of `K`, where `v` is a non-zero prime ideal of `𝓞 K`
+  `v`-adic completion `v.adicCompletion K` of `K`, where `v` is a non-zero prime ideal of `𝓞 K`
 * `NumberField.FinitePlace.norm_def`: the norm of `embedding v x` is the same as the `v`-adic
   absolute value of `x`. See also `NumberField.FinitePlace.norm_def'` and
   `NumberField.FinitePlace.norm_def_int` for versions where the `v`-adic absolute value is
@@ -104,7 +104,7 @@ noncomputable instance instRankOneValuedAdicCompletion :
     map_mul' := MonoidWithZeroHom.map_mul (toNNReal (absNorm_ne_zero v))
   }
   strictMono' := toNNReal_strictMono (one_lt_absNorm_nnreal v)
-  nontrivial' := by
+  exists_val_nontrivial := by
     rcases Submodule.exists_mem_ne_zero_of_ne_bot v.ne_bot with ⟨x, hx1, hx2⟩
     use x
     dsimp [adicCompletion]
@@ -219,7 +219,7 @@ instance : NonnegHomClass (FinitePlace K) K ℝ where
   apply_nonneg w := w.1.nonneg
 
 @[simp]
-theorem mk_apply (v : HeightOneSpectrum (𝓞 K)) (x : K) : mk v x =  ‖embedding v x‖ := rfl
+theorem mk_apply (v : HeightOneSpectrum (𝓞 K)) (x : K) : mk v x = ‖embedding v x‖ := rfl
 
 @[deprecated (since := "2025-02-28")] alias apply := mk_apply
 

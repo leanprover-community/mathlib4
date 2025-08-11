@@ -6,6 +6,7 @@ Authors: Andrew Yang
 import Mathlib.Algebra.Category.Ring.Constructions
 import Mathlib.Algebra.Category.Ring.Colimits
 import Mathlib.CategoryTheory.Iso
+import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.IsTensorProduct
 
@@ -26,7 +27,7 @@ The following meta-properties of predicates on ring homomorphisms are defined
 
 universe u
 
-open CategoryTheory Opposite CategoryTheory.Limits
+open CategoryTheory Opposite CategoryTheory.Limits TensorProduct
 
 namespace RingHom
 
@@ -210,6 +211,17 @@ lemma toMorphismProperty_respectsIso_iff :
     exact MorphismProperty.RespectsIso.precomp (toMorphismProperty P)
       e.toCommRingCatIso.hom (CommRingCat.ofHom f)
 
+lemma isStableUnderCobaseChange_toMorphismProperty_iff :
+    (toMorphismProperty P).IsStableUnderCobaseChange ↔ IsStableUnderBaseChange P := by
+  refine ⟨fun h R S R' S' _ _ _ _ _ _ _ _ _ _ _ hsq hRS ↦ ?_,
+      fun h ↦ ⟨fun {R} S R' S' f g f' g' hsq hf ↦ ?_⟩⟩
+  · rw [← CommRingCat.isPushout_iff_isPushout] at hsq
+    exact h.1 (f := CommRingCat.ofHom (algebraMap R S)) hsq.flip hRS
+  · algebraize [f.hom, g.hom, f'.hom, g'.hom, f'.hom.comp g.hom]
+    have : IsScalarTower R S S' := .of_algebraMap_eq fun x ↦ congr($(hsq.1.1).hom x)
+    have : Algebra.IsPushout R S R' S' := (CommRingCat.isPushout_iff_isPushout.mp hsq).symm
+    exact h (R := R) (S := S) _ _ hf
+
 /-- Variant of `MorphismProperty.arrow_mk_iso_iff` specialized to morphism properties in
 `CommRingCat` given by ring hom properties. -/
 lemma RespectsIso.arrow_mk_iso_iff (hQ : RingHom.RespectsIso P) {A B A' B' : CommRingCat}
@@ -221,5 +233,49 @@ lemma RespectsIso.arrow_mk_iso_iff (hQ : RingHom.RespectsIso P) {A B A' B' : Com
   rw [MorphismProperty.arrow_mk_iso_iff (toMorphismProperty P) e]
 
 end ToMorphismProperty
+
+section Descent
+
+variable (Q : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop)
+
+variable (R S T : Type u) [CommRing R] [CommRing S] [Algebra R S] [CommRing T] [Algebra R T]
+
+variable (P) in
+/-- A property of ring homomorphisms `Q` codescends along `Q'` if whenever
+`R' →+* R' ⊗[R] S` satisfies `Q` and `R →+* R'` satisfies `Q'`, then `R →+* S` satisfies `Q`. -/
+def CodescendsAlong : Prop :=
+  ∀ (R S R' S' : Type u) [CommRing R] [CommRing S] [CommRing R'] [CommRing S'],
+  ∀ [Algebra R S] [Algebra R R'] [Algebra R S'] [Algebra S S'] [Algebra R' S'],
+    ∀ [IsScalarTower R S S'] [IsScalarTower R R' S'],
+      ∀ [Algebra.IsPushout R S R' S'],
+        Q (algebraMap R R') → P (algebraMap R' S') → P (algebraMap R S)
+
+lemma CodescendsAlong.mk (h₁ : RespectsIso P)
+    (h₂ : ∀ ⦃R S T⦄ [CommRing R] [CommRing S] [CommRing T],
+      ∀ [Algebra R S] [Algebra R T],
+        Q (algebraMap R S) → P (algebraMap S (S ⊗[R] T)) → P (algebraMap R T)) :
+    CodescendsAlong P Q := by
+  introv R h hQ H
+  let e := h.symm.equiv
+  have : (e.symm : _ →+* _).comp (algebraMap R' S') = algebraMap R' (R' ⊗[R] S) := by
+    ext r
+    simp [e]
+  apply h₂ hQ
+  rw [← this]
+  exact h₁.1 _ _ H
+
+lemma CodescendsAlong.algebraMap_tensorProduct (hPQ : CodescendsAlong P Q)
+    (h : Q (algebraMap R S)) (H : P (algebraMap S (S ⊗[R] T))) :
+    P (algebraMap R T) :=
+  let _ : Algebra T (S ⊗[R] T) := Algebra.TensorProduct.rightAlgebra
+  hPQ R T S (S ⊗[R] T) h H
+
+lemma CodescendsAlong.includeRight (hPQ : CodescendsAlong P Q) (h : Q (algebraMap R T))
+    (H : P ((Algebra.TensorProduct.includeRight.toRingHom : T →+* S ⊗[R] T))) :
+    P (algebraMap R S) := by
+  let _ : Algebra T (S ⊗[R] T) := Algebra.TensorProduct.rightAlgebra
+  apply hPQ R S T (S ⊗[R] T) h H
+
+end Descent
 
 end RingHom
