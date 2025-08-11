@@ -54,34 +54,33 @@ abbrev mk [DecidableEq ι] (s : Finset ι) :
 
 variable {F F_lt}
 
-/-- The natrual inclusion map from `GradedPiece F F_lt i` to `AssociatedGraded F F_lt`. -/
+/-- The natural inclusion map from `GradedPiece F F_lt i` to `AssociatedGraded F F_lt`. -/
 abbrev of [DecidableEq ι] {i : ι} : GradedPiece F F_lt i →+ AssociatedGraded F F_lt :=
   DirectSum.of (GradedPiece F F_lt) i
 
 @[ext]
-theorem ext {x y : AssociatedGraded F F_lt} (w : ∀ i, x i = y i) : x = y := by
-  exact DirectSum.ext (GradedPiece F F_lt) w
+theorem ext {x y : AssociatedGraded F F_lt} (w : ∀ i, x i = y i) : x = y :=
+  DirectSum.ext (GradedPiece F F_lt) w
 
 variable [DecidableEq ι]
 
 theorem of_eq_of_ne (i j : ι) (x : GradedPiece F F_lt i) (h : i ≠ j) : (of x) j = 0 :=
-  DFinsupp.single_eq_of_ne h
+  DirectSum.of_eq_of_ne i j x h
+
+theorem of_eq_same (i : ι) (x : GradedPiece F F_lt i) : (of x) i = x :=
+  DirectSum.of_eq_same i x
 
 lemma of_apply {i : ι} (j : ι) (x : GradedPiece F F_lt i) :
     of x j = if h : i = j then Eq.recOn h x else 0 :=
-  DFinsupp.single_apply
+  DirectSum.of_apply j x
 
 theorem mk_apply_of_mem {s : Finset ι} {f : ∀ i : (s : Set ι), GradedPiece F F_lt i.val}
     {n : ι} (hn : n ∈ s) : mk F F_lt s f n = f ⟨n, hn⟩ := by
-  dsimp only [Finset.coe_sort_coe, mk, AddMonoidHom.coe_mk, ZeroHom.coe_mk,
-    DFinsupp.mk_apply, DirectSum.mk]
-  rw [dif_pos hn]
+  simp [DirectSum.mk, dif_pos hn]
 
 theorem mk_apply_of_not_mem {s : Finset ι} {f : ∀ i : (s : Set ι), GradedPiece F F_lt i.val}
     {n : ι} (hn : n ∉ s) : mk F F_lt s f n = 0 := by
-  dsimp only [Finset.coe_sort_coe, mk, AddMonoidHom.coe_mk, ZeroHom.coe_mk,
-    DFinsupp.mk_apply, DirectSum.mk]
-  rw [dif_neg hn]
+  simp [DirectSum.mk, dif_neg hn]
 
 section support
 
@@ -106,10 +105,10 @@ theorem sum_univ_of [Fintype ι] (x : AssociatedGraded F F_lt) :
   simp [of_apply]
 
 theorem mk_injective (s : Finset ι) : Function.Injective (mk F F_lt s) :=
-  DFinsupp.mk_injective s
+  DirectSum.mk_injective s
 
 theorem of_injective (i : ι) : Function.Injective (of (i := i) (F := F) (F_lt := F_lt)) :=
-  DFinsupp.single_injective
+  DirectSum.of_injective i
 
 end AssociatedGraded
 
