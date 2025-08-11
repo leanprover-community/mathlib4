@@ -79,9 +79,6 @@ theorem mem_sigma {l₁ : List α} {l₂ : ∀ a, List (σ a)} {a : α} {b : σ 
 @[simp 1100]
 theorem mem_map_swap (x : α) (y : β) (xs : List (α × β)) :
     (y, x) ∈ map Prod.swap xs ↔ (x, y) ∈ xs := by
-  induction' xs with x xs xs_ih
-  · simp only [not_mem_nil, map_nil]
-  · obtain ⟨a, b⟩ := x
-    simp only [mem_cons, Prod.mk_inj, map, Prod.swap_prod_mk, xs_ih, and_comm]
+  simp
 
 end List
