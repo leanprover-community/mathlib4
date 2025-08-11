@@ -71,7 +71,7 @@ theorem toDualMap_apply {x y : E} : toDualMap 𝕜 E x y = ⟪x, y⟫ :=
   rfl
 
 variable {𝕜} in
-theorem innerSL_inj {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] {x y : E} :
+@[simp] theorem innerSL_inj {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] {x y : E} :
     innerSL 𝕜 x = innerSL 𝕜 y ↔ x = y :=
   (toDualMap 𝕜 E).injective.eq_iff
 
