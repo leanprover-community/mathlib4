@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
 import Mathlib.Data.List.Basic
-import Mathlib.Data.Prod.Basic
 
 /-!
 # Lists in product and sigma types
