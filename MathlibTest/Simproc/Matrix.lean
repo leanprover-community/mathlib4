@@ -36,3 +36,6 @@ example : !![1, 2, 3; 4, 5, 6]ᵀ = !![1, 4; 2, 5; 3, 6] := by
 #guard_msgs in
 example {n : ℕ} (u : Fin (OfNat.ofNat n) → Fin 3 → ℚ) : (of u)ᵀ = 0 := by
   simp only [matrix_transpose]
+
+example : !![1, 2, 3; 4, 5, 6]ᵀ = !![1, 4; 2, 5; 3, 6] := by
+  rw [transpose_of]
