@@ -6,7 +6,6 @@ Authors: Oliver Nash
 import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
 import Mathlib.LinearAlgebra.RootSystem.Reduced
 import Mathlib.LinearAlgebra.RootSystem.Irreducible
-import Mathlib.Algebra.Ring.Torsion
 
 /-!
 # Structural lemmas about finite crystallographic root pairings
@@ -26,6 +25,9 @@ root pairings.
   a root.
 
 -/
+
+#adaptation_note /-- 2025-08-10 add back `import Mathlib.Algebra.Ring.Torsion` after
+  https://github.com/leanprover/lean4/issues/9825 is fixed -/
 
 noncomputable section
 
