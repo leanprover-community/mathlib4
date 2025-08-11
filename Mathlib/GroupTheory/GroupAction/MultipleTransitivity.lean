@@ -57,8 +57,8 @@ variable {σ : G → H} {f : α →ₑ[σ] β} {ι : Type*}
 variable (ι) in
 /-- An injective equivariant map `α →ₑ[σ] β` induces
 an equivariant map on embedding types `(ι ↪ α) → (ι ↪ β)`. -/
-@[to_additive "An injective equivariant map `α →ₑ[σ] β` induces
-an equivariant map on embedding types `(ι ↪ α) → (ι ↪ β)`."]
+@[to_additive /-- An injective equivariant map `α →ₑ[σ] β` induces
+an equivariant map on embedding types `(ι ↪ α) → (ι ↪ β)`. -/]
 def Function.Injective.mulActionHom_embedding (hf : Function.Injective f) :
     (ι ↪ α) →ₑ[σ] (ι ↪ β) where
   toFun x := ⟨f.toFun ∘ x.toFun, hf.comp x.inj'⟩
@@ -102,8 +102,8 @@ variable {G α : Type*} [Group G] [MulAction G α]
 variable (G α) in
 /-- An action of a group on a type `α` is `n`-pretransitive
 if the associated action on `Fin n ↪ α` is pretransitive. -/
-@[to_additive "An additive action of an additive group on a type `α`
-is `n`-pretransitive if the associated action on `Fin n ↪ α` is pretransitive."]
+@[to_additive /-- An additive action of an additive group on a type `α`
+is `n`-pretransitive if the associated action on `Fin n ↪ α` is pretransitive. -/]
 abbrev IsMultiplyPretransitive (n : ℕ) := IsPretransitive G (Fin n ↪ α)
 
 @[to_additive]
@@ -161,7 +161,7 @@ section One
 variable {one : Type*} [Unique one]
 
 /-- For `Unique one`, the equivariant map from `one ↪ α` to `α`. -/
-@[to_additive "For `Unique one`, the equivariant map from `one ↪ α` to `α`"]
+@[to_additive /-- For `Unique one`, the equivariant map from `one ↪ α` to `α` -/]
 def _root_.MulActionHom.oneEmbeddingMap :
     (one ↪ α) →[G] α := {
   oneEmbeddingEquiv with
@@ -173,13 +173,13 @@ theorem _root_.MulActionHom.oneEmbeddingMap_bijective :
   oneEmbeddingEquiv.bijective
 
 /-- An action is `1`-pretransitive iff it is pretransitive. -/
-@[to_additive "An additive action is `1`-pretransitive iff it is pretransitive."]
+@[to_additive /-- An additive action is `1`-pretransitive iff it is pretransitive. -/]
 theorem oneEmbedding_isPretransitive_iff :
     IsPretransitive G (one ↪ α) ↔ IsPretransitive G α :=
   isPretransitive_congr Function.surjective_id oneEmbeddingMap_bijective
 
 /-- An action is `1`-pretransitive iff it is pretransitive. -/
-@[to_additive "An additive action is `1`-pretransitive iff it is pretransitive."]
+@[to_additive /-- An additive action is `1`-pretransitive iff it is pretransitive. -/]
 theorem is_one_pretransitive_iff :
     IsMultiplyPretransitive G α 1 ↔ IsPretransitive G α :=
   oneEmbedding_isPretransitive_iff
@@ -190,8 +190,8 @@ section Two
 
 /-- An action is `2`-pretransitive iff
 it can move any two distinct elements to any two distinct elements. -/
-@[to_additive "An additive action is `2`-pretransitive iff
-it can move any two distinct elements to any two distinct elements."]
+@[to_additive /-- An additive action is `2`-pretransitive iff
+it can move any two distinct elements to any two distinct elements. -/]
 theorem is_two_pretransitive_iff :
     IsMultiplyPretransitive G α 2 ↔
       ∀ {a b c d : α} (_ : a ≠ b) (_ : c ≠ d), ∃ g : G, g • a = c ∧ g • b = d := by
@@ -213,7 +213,7 @@ theorem is_two_pretransitive_iff :
     · simp [eq_one_of_ne_zero i hi, h']
 
 /-- A `2`-pretransitive action is pretransitive. -/
-@[to_additive "A `2`-pretransitive additive action is pretransitive."]
+@[to_additive /-- A `2`-pretransitive additive action is pretransitive. -/]
 theorem isPretransitive_of_is_two_pretransitive
     [h2 : IsMultiplyPretransitive G α 2] : IsPretransitive G α where
   exists_smul_eq a b := by
@@ -224,7 +224,7 @@ theorem isPretransitive_of_is_two_pretransitive
       exact ⟨g, h⟩
 
 /-- A `2`-transitive action is primitive. -/
-@[to_additive "A `2`-transitive additive action is primitive."]
+@[to_additive /-- A `2`-transitive additive action is primitive. -/]
 theorem isPreprimitive_of_is_two_pretransitive
     (h2 : IsMultiplyPretransitive G α 2) : IsPreprimitive G α := by
   have : IsPretransitive G α := isPretransitive_of_is_two_pretransitive
@@ -253,7 +253,7 @@ variable (G α) in
 /-- The natural equivariant map from `n ↪ α` to `m ↪ α` given by an embedding
 `e : m ↪ n`. -/
 @[to_additive
-"The natural equivariant map from `n ↪ α` to `m ↪ α` given by an embedding `e : m ↪ n`."]
+/-- The natural equivariant map from `n ↪ α` to `m ↪ α` given by an embedding `e : m ↪ n`. -/]
 def _root_.MulActionHom.embMap {m n : Type*} (e : m ↪ n) :
     (n ↪ α) →[G]  (m ↪ α) where
   toFun i := e.trans i
@@ -265,11 +265,11 @@ is `m`-pretransitive for any `m ≤ n`.
 This version allows `α` to be infinite and uses `ENat.card`.
 For `Finite α`, use `MulAction.isMultiplyPretransitive_of_le` -/
 @[to_additive
-"If `α` has at least `n` elements, then any `n`-pretransitive action on `α`
+/-- If `α` has at least `n` elements, then any `n`-pretransitive action on `α`
 is `n`-pretransitive for any `m ≤ n`.
 
 This version allows `α` to be infinite and uses `ENat.card`.
-For `Finite α`, use `AddAction.isMultiplyPretransitive_of_le`."]
+For `Finite α`, use `AddAction.isMultiplyPretransitive_of_le`. -/]
 theorem isMultiplyPretransitive_of_le' {m n : ℕ} [IsMultiplyPretransitive G α n]
     (hmn : m ≤ n) (hα : n ≤ ENat.card α) :
     IsMultiplyPretransitive G α m := by
@@ -283,10 +283,10 @@ is `m`-pretransitive for any `m ≤ n`.
 
 For an infinite `α`, use `MulAction.isMultiplyPretransitive_of_le'`. -/
 @[to_additive
-"If `α` has at least `n` elements, then an `n`-pretransitive action
+/-- If `α` has at least `n` elements, then an `n`-pretransitive action
 is `m`-pretransitive for any `m ≤ n`.
 
-For an infinite `α`, use `MulAction.isMultiplyPretransitive_of_le'`."]
+For an infinite `α`, use `MulAction.isMultiplyPretransitive_of_le'`. -/]
 theorem isMultiplyPretransitive_of_le {m n : ℕ} [IsMultiplyPretransitive G α n]
     (hmn : m ≤ n) (hα : n ≤ Nat.card α) [Finite α] :
     IsMultiplyPretransitive G α m := by
@@ -456,9 +456,9 @@ theorem isMultiplyPretransitive_iff [IsPretransitive G α] {n : ℕ} {a b : α} 
   is equivalent to one less transitivity of stabilizer of a point
   [Wielandt, th. 9.1, 1st part][Wielandt-1964]. -/
 @[to_additive
-  "Multiple transitivity of a pretransitive action
+  /-- Multiple transitivity of a pretransitive action
   is equivalent to one less transitivity of stabilizer of a point
-  [Wielandt, th. 9.1, 1st part][Wielandt-1964]."]
+  [Wielandt, th. 9.1, 1st part][Wielandt-1964]. -/]
 theorem isMultiplyPretransitive [IsPretransitive G α] {n : ℕ} {a : α} :
     IsMultiplyPretransitive G α n.succ ↔
       IsMultiplyPretransitive (stabilizer G a) (SubMulAction.ofStabilizer G a) n := by
@@ -502,8 +502,8 @@ namespace SubMulAction.ofFixingSubgroup
 /-- The fixator of a finite subset of cardinal `d` in an `n`-transitive action
 acts `(n-d)` transitively on the complement. -/
 @[to_additive
-"The fixator of a finite subset of cardinal `d` in an `n`-transitive additive action
-acts `(n-d)` transitively on the complement."]
+/-- The fixator of a finite subset of cardinal `d` in an `n`-transitive additive action
+acts `(n-d)` transitively on the complement. -/]
 theorem isMultiplyPretransitive {m n : ℕ} [Hn : IsMultiplyPretransitive G α n]
     (s : Set α) [Finite s] (hmn : s.ncard + m = n) :
     IsMultiplyPretransitive (fixingSubgroup G s) (ofFixingSubgroup G s) m where
@@ -529,8 +529,8 @@ theorem isMultiplyPretransitive {m n : ℕ} [Hn : IsMultiplyPretransitive G α n
 /-- The fixator of a finite subset of cardinal `d` in an `n`-transitive action
 acts `m` transitively on the complement if `d + m ≤ n`. -/
 @[to_additive
-"The fixator of a finite subset of cardinal `d` in an `n`-transitive additive action
-acts `m` transitively on the complement if `d + m ≤ n`."]
+/-- The fixator of a finite subset of cardinal `d` in an `n`-transitive additive action
+acts `m` transitively on the complement if `d + m ≤ n`. -/]
 theorem isMultiplyPretransitive'
     {m n : ℕ} [IsMultiplyPretransitive G α n]
     (s : Set α) [Finite s] (hmn : s.ncard + m ≤ n) (hn : (n : ENat) ≤ ENat.card α) :

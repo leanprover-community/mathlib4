@@ -64,7 +64,7 @@ run_cmd
         change (z * a).toBitVec = BitVec.ofInt _ z * a.toBitVec
         rw [toBitVec_mul]
         congr 1
-        rw[toBitVec_intCast]
+        rw [toBitVec_intCast]
         rfl
 
     end $typeName
