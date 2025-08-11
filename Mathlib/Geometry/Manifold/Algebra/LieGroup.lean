@@ -210,8 +210,6 @@ class ContMDiffInv₀ {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} 
   /-- Inversion is `C^n` away from `0`. -/
   contMDiffAt_inv₀ : ∀ ⦃x : G⦄, x ≠ 0 → ContMDiffAt I I n (fun y ↦ y⁻¹) x
 
-@[deprecated (since := "2025-01-09")] alias SmoothInv₀ := ContMDiffInv₀
-
 instance {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞} : ContMDiffInv₀ 𝓘(𝕜) n 𝕜 where
   contMDiffAt_inv₀ x hx := by
     change ContMDiffAt 𝓘(𝕜) 𝓘(𝕜) n Inv.inv x
