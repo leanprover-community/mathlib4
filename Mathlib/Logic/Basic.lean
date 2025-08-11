@@ -51,15 +51,15 @@ theorem congr_arg_heq {β : α → Sort*} (f : ∀ a, β a) :
     ∀ {a₁ a₂ : α}, a₁ = a₂ → f a₁ ≍ f a₂
   | _, _, rfl => HEq.rfl
 
-theorem dcongr_heq
+theorem dcongr_heq.{u, v}
     {α₁ α₂ : Sort u}
     {β₁ : α₁ → Sort v} {β₂ : α₂ → Sort v}
     {fn₁ : ∀ a, β₁ a} {fn₂ : ∀ a, β₂ a}
-    {arg₁ : α₁} {arg₂ : α₂}
-    (hargs : arg₁ ≍ arg₂)
-    (ht : ∀ arg₁ arg₂, arg₁ ≍ arg₂ → β₁ arg₁ = β₂ arg₂)
+    {a₁ : α₁} {a₂ : α₂}
+    (hargs : a₁ ≍ a₂)
+    (ht : ∀ t₁ t₂, t₁ ≍ t₂ → β₁ t₁ = β₂ t₂)
     (hf : α₁ = α₂ → β₁ ≍ β₂ → fn₁ ≍ fn₂) :
-    fn₁ arg₁ ≍ fn₂ arg₂ := by
+    fn₁ a₁ ≍ fn₂ a₂ := by
   cases hargs
   cases funext fun v => ht v v .rfl
   cases hf rfl .rfl
