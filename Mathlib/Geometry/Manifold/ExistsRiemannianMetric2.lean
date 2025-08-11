@@ -285,12 +285,19 @@ noncomputable def mynorm (φ : G →L[ℝ] G →L[ℝ] ℝ) : Seminorm ℝ G whe
 
 noncomputable def aux (φ : G →L[ℝ] G →L[ℝ] ℝ) : SeminormFamily ℝ G (Fin 1) := fun _ ↦ mynorm φ
 
-lemma bar (φ : G →L[ℝ] G →L[ℝ] ℝ) : WithSeminorms (aux φ) :=
+lemma bar (φ : G →L[ℝ] G →L[ℝ] ℝ) (hpos : ∀ v : G, v ≠ 0 → 0 < φ v v) : WithSeminorms (aux φ) :=
   -- In finite dimension there is a single topological vector space structure...
   -- and mynorm defines a norm, hence a TVS structure.
   sorry
 
 end aux
+
+-- golfing suggestions welcome
+lemma qux {α : Type*} [Unique α] (s : Finset α) : s = ∅ ∨ s = {default} := by
+  by_cases h : s = ∅
+  · simp [h]
+  · rw [Finset.eq_singleton_iff_nonempty_unique_mem]
+    refine Or.inr ⟨Finset.nonempty_iff_ne_empty.mpr h, fun x hx ↦ Unique.uniq _ _⟩
 
 lemma aux_tvs (G : Type*) [AddCommGroup G] [TopologicalSpace G] [Module ℝ G]
     [ContinuousAdd G] [ContinuousSMul ℝ G] [FiniteDimensional ℝ G]
@@ -301,19 +308,13 @@ lemma aux_tvs (G : Type*) [AddCommGroup G] [TopologicalSpace G] [Module ℝ G]
   -- (as in finite dimension there is a single topological vector space structure).
   -- The unit ball for the norm is von Neumann bounded wrt the topology defined by the norm
   -- (we have this in mathlib), so also for the initial topology.
-  rw [WithSeminorms.isVonNBounded_iff_finset_seminorm_bounded (p := aux φ) (bar φ)]
+  rw [WithSeminorms.isVonNBounded_iff_finset_seminorm_bounded (p := aux φ) (bar φ hpos)]
   intro I
-  let J : Finset (Fin 1) := {1}
+  letI J : Finset (Fin 1) := {1}
   suffices ∃ r > 0, ∀ x ∈ {v | (φ v) v < 1}, (J.sup (aux φ)) x < r by
-    -- All other finsets of Fin 1 are the empty set, where things are boring.
-    -- XXX: can a simproc help here?
-    by_cases h : I = ∅
-    · use 1; simp [h]
-    · have h : I = J := by
-        ext a
-        apply iff_of_true ?_ (by simp [Subsingleton.eq_one a, J])
-        sorry -- mathematically obvious
-      rwa [h]
+    obtain (rfl | h) := qux I
+    · use 1; simp
+    · convert this
   simp only [Set.mem_setOf_eq, Finset.sup_singleton, J]
   refine ⟨1, by norm_num, fun x h ↦ ?_⟩
   simp only [aux, mynorm]
