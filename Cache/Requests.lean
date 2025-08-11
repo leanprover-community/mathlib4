@@ -337,6 +337,7 @@ def downloadFiles
         IO.eprintln "This usually means that your local checkout of mathlib4 has diverged from upstream."
         IO.eprintln "If you push your commits to a branch of the mathlib4 repository, CI will build the oleans and they will be available later."
         IO.eprintln "Alternatively, if you already have pushed your commits to a branch, this may mean the CI build has failed part-way through building."
+        IO.eprintln "During August 2025, we are changing the back-end for the olean cache. If you are unexpectedly not finding oleans for your PR, please try merging `master`."
       pure failed
     else
       let r ← hashMap.foldM (init := []) fun acc _ hash => do
