@@ -213,7 +213,7 @@ lemma AssociatedGradedAddMonoidHom_apply_of [DecidableEq ι] {i : ι} (x : Grade
     (Gr+[f] (AssociatedGraded.of x)) = AssociatedGraded.of (Gr+(i)[f] x) :=
   DirectSum.map_of (GradedPieceHom f) i x
 
-theorem AssociatedGradedAddMonoidHom_comp_eq_comp: Gr+[g].comp Gr+[f] = Gr+[g.comp f] := by
+theorem AssociatedGradedAddMonoidHom_comp_eq_comp : Gr+[g].comp Gr+[f] = Gr+[g.comp f] := by
   apply Eq.trans (DirectSum.map_comp (GradedPieceHom f) (GradedPieceHom g)).symm
   simp only [GradedPieceHom_comp, AssociatedGradedAddMonoidHom]
 
