@@ -800,10 +800,7 @@ variable [Ring R] [LinearOrder R] [FloorRing R] [IsStrictOrderedRing R] {a : R}
 lemma ceil_lt_add_one' (ha : -1 < a) : ⌈a⌉₊ < a + 1 := by
   by_cases h : a ≥ 0
   · exact ceil_lt_add_one h
-  · have : ⌈a⌉₊ = 0 :=
-      ceil_eq_zero.mpr (le_of_not_ge h)
-    rw [this]
-    norm_cast
+  · rw [ceil_eq_zero.mpr (le_of_not_ge h), cast_zero]
     exact neg_lt_iff_pos_add.mp ha
 
 end Nat
