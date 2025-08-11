@@ -217,6 +217,165 @@ def vComp {F G H : LaxFunctor B C} (η : Icon F G) (θ : Icon G H) :
   naturality_comp f g := vCompNaturality_comp η θ f g
   naturality_naturality f := vCompNaturality_naturality η θ f
 
+attribute [local ext] Icon in
+theorem comp_assoc {F G H K : LaxFunctor B C}
+    (η : Icon F G) (θ : Icon G H) (τ : Icon H K) :
+    (η.vComp θ).vComp τ = η.vComp (θ.vComp τ) := by
+  ext
+  · rfl
+  · rw [heq_iff_eq]
+    ext x y f
+    dsimp [vComp, vCompApp, vCompNaturality, OplaxTrans.vComp,
+      OplaxTrans.vCompApp, OplaxTrans.vCompNaturality]
+    simp only [Category.comp_id, Category.id_comp, Category.assoc,
+      whiskerLeft_id, id_whiskerRight,
+      whiskerLeft_comp, comp_whiskerRight, Category.assoc]
+    -- The proof here is to pull the naturality 2-cells towards the
+    -- center of the expressions as much as possible, the "outer morphisms"
+    -- will then be a buch of eqToHoms that will eventually cancel out, and
+    -- we’ll be left with a simpable bicategory goal.
+    -- Abstracting away the proofs speeds up things a bit, it’s also somewhat
+    -- more convenient to give them shorter names
+    generalize_proofs t₁ t₂ t₃ oy₃ my₃ oy₁ oy₂ my₁ my₂
+      ox₂ mx₂ ox₁ mx₁ t₄ ox₃ mx₃ t₅ t₆
+    slice_lhs 12 17 =>
+      equals (α_ (η.app x ≫ θ.app x) (H.map f) (τ.app y)).hom ≫
+          _ ◁ τ.naturality f ≫ (eqToHom (congr_arg₂ (· ≫ ·) mx₁ mx₂) ≫
+            (eqToHomTransIso ox₁ ox₂).inv) ▷ _ ≫ (α_ _ _ _).inv =>
+        dsimp
+        simp only [comp_whiskerLeft,
+          whiskerRight_comp, comp_whiskerRight, assoc, Iso.hom_inv_id, comp_id]
+        rw [associator_inv_naturality_right_assoc, Iso.hom_inv_id_assoc,
+          ← associator_inv_naturality_left_assoc, whisker_exchange_assoc,
+          ← associator_inv_naturality_left, whisker_exchange_assoc]
+        simp
+    slice_rhs 4 8 =>
+      equals (F.map f ≫ η.app y) ◁ (eqToHomTransIso oy₂ oy₃).hom ≫
+          (F.map f ≫ η.app y) ◁ eqToHom (congr_arg₂ (· ≫ ·) my₂ my₃) ≫
+          η.naturality f ▷ _ ≫ (α_ _ _ _).hom =>
+        simp only [comp_whiskerLeft, whiskerRight_comp, assoc,
+          Iso.inv_hom_id_assoc]
+        rw [associator_naturality_left_assoc, Iso.inv_hom_id_assoc,
+          associator_inv_naturality_right_assoc, whisker_exchange_assoc,
+          associator_inv_naturality_right_assoc, whisker_exchange_assoc,
+          Iso.hom_inv_id_assoc]
+        simp [associator_inv_congr (f := η.app x) (g := G.map f)
+          rfl rfl (congr_arg₂ (· ≫ ·) my₂ my₃)]
+    simp only [whisker_assoc, whiskerLeft_comp, assoc, comp_whiskerLeft,
+      whiskerRight_comp, comp_whiskerRight, Iso.hom_inv_id, comp_id,
+      pentagon_inv_hom_hom_hom_hom_assoc, Iso.inv_hom_id_assoc,
+      pentagon_inv_assoc, pentagon_hom_hom_inv_hom_hom,
+      whiskerLeft_inv_hom_assoc]
+    -- Now we cancel out the outer morphisms that are jjust eqToHoms noise
+    let V : F.map f ≫ eqToHom ?_ ⟶ F.map f ≫ η.app y ≫ θ.app y ≫ τ.app y := ?_
+    slice_rhs 1 4 => change V
+    simp only [assoc]
+    rw [← cancel_epi (inv V), IsIso.inv_hom_id_assoc]
+    let W : η.app x ≫ θ.app x ≫ τ.app x ≫ K.map f ⟶ eqToHom ?_ ≫ K.map f := ?_
+    slice_rhs 9 16 => change W
+    rw [← cancel_mono (inv W)]
+    simp only [assoc, IsIso.hom_inv_id, comp_id]
+    slice_lhs 1 7 => equals 𝟙 _ =>
+      simp only [IsIso.inv_comp, inv_whiskerLeft, inv_eqToHom,
+        IsIso.Iso.inv_hom, inv_whiskerRight, assoc, V, ← whiskerLeft_comp]
+      conv_lhs => arg 2; equals 𝟙 _ =>
+        have := eqToHom oy₁ ◁ (eqToHomTransIso oy₂ oy₃).hom ≫=
+          associator_eqToHom_inv oy₁ oy₂ oy₃ =≫
+          (eqToHomTransIso oy₁ oy₂).inv ▷ eqToHom oy₃
+        simp only [assoc, hom_inv_whiskerRight, comp_id,
+          whiskerLeft_hom_inv_assoc] at this
+        simp [associator_hom_congr (f := η.app y) (h := τ.app y) rfl my₂ rfl,
+          ← reassoc_of% this,
+          associator_inv_congr my₁ my₂ my₃,
+          congr_whiskerLeft my₁ (eqToHomTransIso oy₂ oy₃).hom,
+          whiskerRight_congr my₃ (eqToHomTransIso oy₁ oy₂).inv]
+      simp
+    simp only [Category.assoc, id_comp]
+    slice_lhs 9 17 => equals 𝟙 _ =>
+      have n' := congr_arg (fun t ↦ t ▷ K.map f) <|
+        associator_eqToHom_hom ox₁ ox₂ ox₃ =≫
+          eqToHom ox₁ ◁ (eqToHomTransIso ox₂ ox₃).inv
+      simp only [comp_whiskerRight, whisker_assoc, assoc,
+        whiskerLeft_hom_inv, comp_id] at n'
+      simp only [IsIso.inv_comp, inv_whiskerRight, IsIso.Iso.inv_inv,
+        inv_eqToHom, assoc, inv_whiskerLeft, W]
+      rw [associator_naturality_left_assoc, ← whisker_exchange_assoc,
+        associator_inv_naturality_left_assoc, ← reassoc_of% n']
+      simp only [eqToHom_whiskerRight, whiskerLeft_eqToHom, assoc,
+        eqToHom_trans_assoc, eqToHom_refl, id_comp, Iso.inv_hom_id_assoc,
+        pentagon_inv_hom_hom_hom_inv_assoc, whiskerLeft_comp, eqToHom_trans,
+        pentagon_hom_hom_inv_hom_hom_assoc,
+        associator_hom_congr (g := τ.app x) (h := K.map f)
+          (congr_arg₂ (· ≫ ·) mx₁.symm mx₂.symm) rfl rfl,
+        congr_whiskerLeft mx₁.symm ((eqToHomTransIso ox₂ ox₃).inv ▷ K.map f),
+        associator_inv_congr (g := eqToHom t₆) (h := K.map f) mx₁.symm rfl rfl,
+        associator_hom_congr mx₁.symm mx₂.symm
+          (congr_arg₂ (· ≫ ·) mx₃.symm (rfl : K.map f = _)),
+        associator_inv_congr (h := K.map f) mx₂.symm mx₃.symm rfl,
+        congr_whiskerLeft mx₁.symm (α_ (θ.app x) (τ.app x) (K.map f)).inv]
+      simp [← whiskerLeft_comp_assoc,
+        associator_hom_congr (f := θ.app x) (h := K.map f)
+          rfl mx₃.symm rfl]
+    simp
+
+attribute [local ext] Icon in
+theorem comp_id {F G : LaxFunctor B C} (η : Icon F G) :
+    (η.vComp (id G)) = η := by
+  ext
+  · simp [vComp, id, vCompApp, η.app_eq_eqToHom]
+  · -- Deep in the DTT hell
+    apply Function.hfunext rfl
+    intro a a' h
+    rw [heq_iff_eq] at h
+    subst h
+    apply Function.hfunext rfl
+    intro b b' h
+    rw [heq_iff_eq] at h
+    subst h
+    apply Function.hfunext rfl
+    intro f f' h
+    rw [heq_iff_eq] at h
+    subst h
+    rw [← conj_eqToHom_iff_heq]
+    rotate_right 2
+    · simp [vComp, id, vCompApp, η.app_eq_eqToHom]
+    · simp [vComp, id, vCompApp, η.app_eq_eqToHom]
+    · simp [vComp, vCompApp, vCompNaturality, OplaxTrans.vComp,
+        OplaxTrans.vCompApp, OplaxTrans.vCompNaturality,
+        eqToHomTransIso_refl_right (η.obj_eq b),
+        eqToHomTransIso_refl_right (η.obj_eq a)];
+
+attribute [local ext] Icon in
+theorem id_comp {F G : LaxFunctor B C} (η : Icon F G) :
+    ((id F).vComp η) = η := by
+  ext
+  · simp [vComp, id, vCompApp, η.app_eq_eqToHom]
+  · apply Function.hfunext rfl
+    intro a a' h
+    rw [heq_iff_eq] at h
+    subst h
+    apply Function.hfunext rfl
+    intro b b' h
+    rw [heq_iff_eq] at h
+    subst h
+    apply Function.hfunext rfl
+    intro f f' h
+    rw [heq_iff_eq] at h
+    subst h
+    rw [← conj_eqToHom_iff_heq]
+    rotate_right 2
+    · simp [vComp, id, vCompApp, η.app_eq_eqToHom]
+    · simp [vComp, id, vCompApp, η.app_eq_eqToHom]
+    · simp [vComp, vCompApp, vCompNaturality, OplaxTrans.vComp,
+      OplaxTrans.vCompApp, OplaxTrans.vCompNaturality,
+      eqToHomTransIso_refl_left (η.obj_eq b),
+      eqToHomTransIso_refl_left (η.obj_eq a),
+      leftUnitor_inv_congr (η.app_eq_eqToHom b).symm,
+      associator_hom_congr (f := 𝟙 (F.obj a)) (h := G.map f)
+        rfl (η.app_eq_eqToHom a).symm rfl,
+      leftUnitor_hom_congr
+        (congr_arg₂ (· ≫ ·) (η.app_eq_eqToHom a).symm (rfl : G.map f = _))];
+
 end Icon
 
 end CategoryTheory.Lax
