@@ -3,10 +3,7 @@ Copyright (c) 2024 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Gaëtan Serré
 -/
-import Mathlib.Topology.UnitInterval
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.MeasureTheory.Measure.Haar.Unique
-import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 
 /-!
 # The canonical measure on the unit interval
@@ -45,7 +42,7 @@ lemma measurePreserving_coe : MeasurePreserving ((↑) : I → ℝ) volume (volu
 instance : NoAtoms (volume : Measure I) where
   measure_singleton x := by simp [volume_apply]
 
-@[measurability]
+@[fun_prop, measurability]
 theorem measurable_symm : Measurable σ := continuous_symm.measurable
 
 /-- `unitInterval.symm` bundled as a measurable equivalence. -/
