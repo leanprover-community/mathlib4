@@ -254,7 +254,12 @@ theorem mono_fun {f : ℝ → E} [NormedAddCommGroup F] {g : ℝ → F} (hf : In
     (hle : (fun x => ‖g x‖) ≤ᵐ[μ.restrict (Ι a b)] fun x => ‖f x‖) : IntervalIntegrable g μ a b :=
   intervalIntegrable_iff.2 <| hf.def'.integrable.mono hgm hle
 
--- XXX: what would an enorm version of this lemma look like?
+-- XXX: the best spelling of this lemma may look slightly different (e.gl, with different domain)
+theorem mono_fun_enorm' {f : ℝ → ε} {g : ℝ → ℝ≥0∞} (hg : IntervalIntegrable g μ a b)
+    (hfm : AEStronglyMeasurable f (μ.restrict (Ι a b)))
+    (hle : (fun x => ‖f x‖ₑ) ≤ᵐ[μ.restrict (Ι a b)] g) : IntervalIntegrable f μ a b :=
+  intervalIntegrable_iff.2 <| hg.def'.integrable.mono_enorm hfm hle
+
 theorem mono_fun' {f : ℝ → E} {g : ℝ → ℝ} (hg : IntervalIntegrable g μ a b)
     (hfm : AEStronglyMeasurable f (μ.restrict (Ι a b)))
     (hle : (fun x => ‖f x‖) ≤ᵐ[μ.restrict (Ι a b)] g) : IntervalIntegrable f μ a b :=
@@ -272,35 +277,37 @@ protected theorem aestronglyMeasurable' (h : IntervalIntegrable f μ a b) :
 
 end
 
-variable [NormedRing A] {f g : ℝ → E} {a b : ℝ} {μ : Measure ℝ}
+variable [NormedRing A] {f g : ℝ → ε} {a b : ℝ} {μ : Measure ℝ}
 
-theorem smul {R : Type*} [NormedAddCommGroup R] [SMulZeroClass R E] [IsBoundedSMul R E]
-    {a b : ℝ} {μ : Measure ℝ} (h : IntervalIntegrable f μ a b) (r : R) :
+theorem smul {R : Type*} [NormedAddCommGroup R] [SMulZeroClass R E] [IsBoundedSMul R E] {f : ℝ → E}
+    (h : IntervalIntegrable f μ a b) (r : R) :
     IntervalIntegrable (r • f) μ a b :=
   ⟨h.1.smul r, h.2.smul r⟩
 
 @[simp]
-theorem add (hf : IntervalIntegrable f μ a b) (hg : IntervalIntegrable g μ a b) :
+theorem add [ContinuousAdd ε] (hf : IntervalIntegrable f μ a b) (hg : IntervalIntegrable g μ a b) :
     IntervalIntegrable (fun x => f x + g x) μ a b :=
   ⟨hf.1.add hg.1, hf.2.add hg.2⟩
 
 @[simp]
-theorem sub (hf : IntervalIntegrable f μ a b) (hg : IntervalIntegrable g μ a b) :
+theorem sub {f g : ℝ → E} (hf : IntervalIntegrable f μ a b) (hg : IntervalIntegrable g μ a b) :
     IntervalIntegrable (fun x => f x - g x) μ a b :=
   ⟨hf.1.sub hg.1, hf.2.sub hg.2⟩
 
-theorem sum (s : Finset ι) {f : ι → ℝ → E} (h : ∀ i ∈ s, IntervalIntegrable (f i) μ a b) :
+theorem sum [ContinuousAdd ε]
+    (s : Finset ι) {f : ι → ℝ → ε} (h : ∀ i ∈ s, IntervalIntegrable (f i) μ a b) :
     IntervalIntegrable (∑ i ∈ s, f i) μ a b :=
   ⟨integrable_finset_sum' s fun i hi => (h i hi).1, integrable_finset_sum' s fun i hi => (h i hi).2⟩
 
 /-- Finsums of interval integrable functions are interval integrable. -/
 @[simp]
-protected theorem finsum {f : ι → ℝ → E} (h : ∀ i, IntervalIntegrable (f i) μ a b) :
+protected theorem finsum [ContinuousAdd ε] [PseudoMetrizableSpace ε] {f : ι → ℝ → ε}
+    (h : ∀ i, IntervalIntegrable (f i) μ a b) :
     IntervalIntegrable (∑ᶠ i, f i) μ a b := by
   by_cases h₁ : f.support.Finite
   · simp [finsum_eq_sum _ h₁, IntervalIntegrable.sum h₁.toFinset (fun i _ ↦ h i)]
   · rw [finsum_of_infinite_support h₁]
-    apply intervalIntegrable_const_iff (by finiteness) |>.2
+    apply intervalIntegrable_const_iff (c := 0) (by simp) |>.2
     tauto
 
 section Mul
@@ -348,6 +355,8 @@ theorem div_const {𝕜 : Type*} {f : ℝ → 𝕜} [NormedDivisionRing 𝕜] (h
     (c : 𝕜) : IntervalIntegrable (fun x => f x / c) μ a b := by
   simpa only [div_eq_mul_inv] using mul_const h c⁻¹
 
+variable [PseudoMetrizableSpace ε]
+
 theorem comp_mul_left (hf : IntervalIntegrable f volume a b) {c : ℝ}
     (h : ‖f (min a b)‖ₑ ≠ ∞ := by finiteness)
     (h' : ‖f (c * min (a / c) (b / c))‖ₑ ≠ ∞ := by finiteness) :
@@ -365,11 +374,12 @@ theorem comp_mul_left (hf : IntervalIntegrable f volume a b) {c : ℝ}
   · rw [preimage_mul_const_uIcc (inv_ne_zero hc)]; field_simp [hc]
 
 -- Note that `h'` is **not** implied by `h` if `c` is negative.
-theorem comp_mul_left_iff {c : ℝ} (hc : c ≠ 0) (h : ‖f (min a b)‖ₑ ≠ ∞ := by finiteness)
+-- TODO: generalise this lemma to enorms!
+theorem comp_mul_left_iff {f : ℝ → E} {c : ℝ} (hc : c ≠ 0) (h : ‖f (min a b)‖ₑ ≠ ∞ := by finiteness)
     (h' : ‖f (c * min (a / c) (b / c))‖ₑ ≠ ∞ := by finiteness) :
     IntervalIntegrable (fun x ↦ f (c * x)) volume (a / c) (b / c) ↔
       IntervalIntegrable f volume a b := by
-  exact ⟨fun h ↦ by simpa [hc] using h.comp_mul_left (c := c⁻¹) h' (by simp),
+  refine ⟨fun h ↦ by simpa [hc] using h.comp_mul_left (c := c⁻¹) h' (by simp),
     (comp_mul_left · h h')⟩
 
 theorem comp_mul_right (hf : IntervalIntegrable f volume a b) {c : ℝ}
@@ -406,16 +416,19 @@ theorem comp_sub_right (hf : IntervalIntegrable f volume a b) (c : ℝ)
     IntervalIntegrable (fun x ↦ f (x - c)) volume (a + c) (b + c) := by
   simpa only [sub_neg_eq_add] using IntervalIntegrable.comp_add_right hf (-c) h
 
-theorem iff_comp_neg (h : ‖f (min a b)‖ₑ ≠ ∞ := by finiteness) :
+-- TODO: generalise this lemma to enorms!
+theorem iff_comp_neg {f : ℝ → E} (h : ‖f (min a b)‖ₑ ≠ ∞ := by finiteness) :
     IntervalIntegrable f volume a b ↔ IntervalIntegrable (fun x ↦ f (-x)) volume (-a) (-b) := by
   rw [← comp_mul_left_iff (neg_ne_zero.2 one_ne_zero) h (by simp)]; simp [div_neg]
 
-theorem comp_sub_left (hf : IntervalIntegrable f volume a b) (c : ℝ)
+-- TODO: generalise this lemma to enorms!
+theorem comp_sub_left {f : ℝ → E} (hf : IntervalIntegrable f volume a b) (c : ℝ)
     (h : ‖f (min a b)‖ₑ ≠ ∞ := by finiteness) :
     IntervalIntegrable (fun x ↦ f (c - x)) volume (c - a) (c - b) := by
   simpa only [neg_sub, ← sub_eq_add_neg] using (iff_comp_neg (by simp)).mp (hf.comp_add_left c h)
 
-theorem comp_sub_left_iff (c : ℝ) (h : ‖f (min a b)‖ₑ ≠ ∞ := by finiteness) :
+-- TODO: generalise this lemma to enorms!
+theorem comp_sub_left_iff {f : ℝ → E} (c : ℝ) (h : ‖f (min a b)‖ₑ ≠ ∞ := by finiteness) :
     IntervalIntegrable (fun x => f (c - x)) volume (c - a) (c - b) ↔
       IntervalIntegrable f volume a b :=
   ⟨fun h ↦ by simpa using h.comp_sub_left c, (.comp_sub_left · c h)⟩
