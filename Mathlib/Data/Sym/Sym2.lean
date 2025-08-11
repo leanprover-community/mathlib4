@@ -793,7 +793,7 @@ lemma lift_smul_lift {α R N} [SMul R N] (f : { f : α → α → R // ∀ a₁ 
 /--
 Multiplication as a function from `Sym2`.
 -/
-@[to_additive "Addition as a function from `Sym2`."]
+@[to_additive /-- Addition as a function from `Sym2`. -/]
 def mul {M} [CommMagma M] : Sym2 M → M := lift ⟨(· * ·), mul_comm⟩
 
 @[to_additive (attr := simp)]

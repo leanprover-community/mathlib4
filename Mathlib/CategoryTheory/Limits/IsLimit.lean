@@ -342,8 +342,8 @@ def conePointsIsoOfEquivalence {F : J ⥤ C} {s : Cone F} {G : K ⥤ C} {t : Con
         assoc, id_comp, invFunIdAssoc_hom_app, fac_assoc, NatTrans.comp_app]
       rw [counit_app_functor, ← Functor.comp_map]
       have l :
-        NatTrans.app w.hom j = NatTrans.app w.hom (Prefunctor.obj (𝟭 J).toPrefunctor j) := by dsimp
-      rw [l,w.hom.naturality]
+        NatTrans.app w.hom j = NatTrans.app w.hom ((𝟭 J).obj j) := by dsimp
+      rw [l, w.hom.naturality]
       simp
     inv_hom_id := by
       apply hom_ext Q

@@ -227,7 +227,7 @@ the structure of a group.
 section Subtype
 
 /-- The `Submonoid` of continuous maps `α → β`. -/
-@[to_additive "The `AddSubmonoid` of continuous maps `α → β`. "]
+@[to_additive /-- The `AddSubmonoid` of continuous maps `α → β`. -/]
 def continuousSubmonoid (α : Type*) (β : Type*) [TopologicalSpace α] [TopologicalSpace β]
     [MulOneClass β] [ContinuousMul β] : Submonoid (α → β) where
   carrier := { f : α → β | Continuous f }
@@ -235,7 +235,7 @@ def continuousSubmonoid (α : Type*) (β : Type*) [TopologicalSpace α] [Topolog
   mul_mem' fc gc := fc.mul gc
 
 /-- The subgroup of continuous maps `α → β`. -/
-@[to_additive "The `AddSubgroup` of continuous maps `α → β`. "]
+@[to_additive /-- The `AddSubgroup` of continuous maps `α → β`. -/]
 def continuousSubgroup (α : Type*) (β : Type*) [TopologicalSpace α] [TopologicalSpace β] [Group β]
     [IsTopologicalGroup β] : Subgroup (α → β) :=
   { continuousSubmonoid α β with inv_mem' := fun fc => Continuous.inv fc }
@@ -290,7 +290,7 @@ instance [LocallyCompactSpace α] [Mul β] [ContinuousMul β] : ContinuousMul C(
 
 /-- Coercion to a function as a `MonoidHom`. Similar to `MonoidHom.coeFn`. -/
 @[to_additive (attr := simps)
-  "Coercion to a function as an `AddMonoidHom`. Similar to `AddMonoidHom.coeFn`."]
+  /-- Coercion to a function as an `AddMonoidHom`. Similar to `AddMonoidHom.coeFn`. -/]
 def coeFnMonoidHom [Monoid β] [ContinuousMul β] : C(α, β) →* α → β where
   toFun f := f
   map_one' := coe_one
@@ -300,8 +300,8 @@ variable (α) in
 /-- Composition on the left by a (continuous) homomorphism of topological monoids, as a
 `MonoidHom`. Similar to `MonoidHom.compLeft`. -/
 @[to_additive (attr := simps)
-"Composition on the left by a (continuous) homomorphism of topological `AddMonoid`s, as an
-`AddMonoidHom`. Similar to `AddMonoidHom.comp_left`."]
+/-- Composition on the left by a (continuous) homomorphism of topological `AddMonoid`s, as an
+`AddMonoidHom`. Similar to `AddMonoidHom.comp_left`. -/]
 protected def _root_.MonoidHom.compLeftContinuous {γ : Type*} [Monoid β] [ContinuousMul β]
     [TopologicalSpace γ] [Monoid γ] [ContinuousMul γ] (g : β →* γ) (hg : Continuous g) :
     C(α, β) →* C(α, γ) where
@@ -311,7 +311,7 @@ protected def _root_.MonoidHom.compLeftContinuous {γ : Type*} [Monoid β] [Cont
 
 /-- Composition on the right as a `MonoidHom`. Similar to `MonoidHom.compHom'`. -/
 @[to_additive (attr := simps)
-      "Composition on the right as an `AddMonoidHom`. Similar to `AddMonoidHom.compHom'`."]
+      /-- Composition on the right as an `AddMonoidHom`. Similar to `AddMonoidHom.compHom'`. -/]
 def compMonoidHom' {γ : Type*} [TopologicalSpace γ] [MulOneClass γ] [ContinuousMul γ]
     (g : C(α, β)) : C(β, γ) →* C(α, γ) where
   toFun f := f.comp g
@@ -360,8 +360,8 @@ instance [CommGroup β] [IsTopologicalGroup β] : IsTopologicalGroup C(α, β) w
 /-- If an infinite product of functions in `C(α, β)` converges to `g`
 (for the compact-open topology), then the pointwise product converges to `g x` for all `x ∈ α`. -/
 @[to_additive
-  "If an infinite sum of functions in `C(α, β)` converges to `g` (for the compact-open topology),
-then the pointwise sum converges to `g x` for all `x ∈ α`."]
+  /-- If an infinite sum of functions in `C(α, β)` converges to `g` (for the compact-open topology),
+then the pointwise sum converges to `g x` for all `x ∈ α`. -/]
 theorem hasProd_apply {γ : Type*} [CommMonoid β] [ContinuousMul β]
     {f : γ → C(α, β)} {g : C(α, β)} (hf : HasProd f g) (x : α) :
     HasProd (fun i : γ => f i x) (g x) := by
