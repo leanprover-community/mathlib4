@@ -131,7 +131,7 @@ end Ring
 
 section Field
 
-variable [Field M] [IsStrictOrderedRing M]
+variable [Field M] [IsOrderedRing M]
 
 instance : Neg (ArchimedeanClass M) where
   neg := lift (fun x ↦ mk x⁻¹) fun x y h ↦ by
