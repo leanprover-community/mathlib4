@@ -425,19 +425,19 @@ theorem center_eq_scalar_image :
   obtain ⟨x, rfl⟩ := mem_range_scalar_iff_commute_single'.mpr fun _ _ ↦ hx _
   exact ⟨_, fun r ↦ by convert congr($(hx (single i i r)) i i) <;> simp, rfl⟩
 
-theorem center_eq_scalar_submonoid_map :
+theorem submonoidCenter_eq_scalar_map :
     Submonoid.center (Matrix n n α) = (Submonoid.center α).map (scalar n) :=
   SetLike.coe_injective center_eq_scalar_image
 
-theorem center_eq_scalar_subsemigroup_map :
+theorem subsemigroupCenter_eq_scalar_map :
     Subsemigroup.center (Matrix n n α) = (Subsemigroup.center α).map (scalar n).toMulHom :=
   SetLike.coe_injective center_eq_scalar_image
 
-theorem center_eq_scalar_subsemiring_map :
+theorem subsemiringCenter_eq_scalar_map :
     Subsemiring.center (Matrix n n α) = (Subsemiring.center α).map (scalar n) :=
   SetLike.coe_injective center_eq_scalar_image
 
-theorem center_eq_scalar_subring_map [Ring R] :
+theorem subringCenter_eq_scalar_map [Ring R] :
     Subring.center (Matrix n n R) = (Subring.center R).map (scalar n) :=
   SetLike.coe_injective center_eq_scalar_image
 
