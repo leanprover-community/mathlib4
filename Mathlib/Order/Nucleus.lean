@@ -192,8 +192,8 @@ instance : HeytingAlgebra (Nucleus X) where
   himp_bot m := rfl
 
 instance : Order.Frame (Nucleus X) where
-   __ := Nucleus.instHeytingAlgebra
-   __ := Nucleus.instCompleteLattice
+  __ := Nucleus.instHeytingAlgebra
+  __ := Nucleus.instCompleteLattice
 
 lemma mem_range : x ∈ range n ↔ n x = x where
   mp := by rintro ⟨x, rfl⟩; exact idempotent
