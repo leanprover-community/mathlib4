@@ -501,11 +501,11 @@ section
 
 variable {D : Type*} [Category D] {X Y : C} (e : X ≅ Y)
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp), grind =]
 lemma map_hom_inv_id (F : C ⥤ D) :
     F.map e.hom ≫ F.map e.inv = 𝟙 _ := by grind
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp), grind =]
 lemma map_inv_hom_id (F : C ⥤ D) :
     F.map e.inv ≫ F.map e.hom = 𝟙 _ := by grind
 
