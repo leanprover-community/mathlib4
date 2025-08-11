@@ -16,7 +16,7 @@ and rw proc aim to do it in one step to optimise the proof term and intermediate
 -/
 
 open Matrix
-open Lean Meta Simp Simproc Tactic Qq
+open Lean Expr Meta Simp Simproc Tactic Qq
 
 namespace Qq
 
@@ -146,7 +146,7 @@ open Elab Tactic
 is the theorem saying `!![a, b, c; d, e, f]ᵀ = !![a, d; b, e; c, f]`. Usage:
 
 ```lean
-example : (!![1, 2, 3; 4, 5, 6]ᵀ : Matrix (Fin 3) (Fin 2) ℤ) = !![1, 4; 2, 5; 3, 6] := by
+example : !![1, 2, 3; 4, 5, 6]ᵀ = !![1, 4; 2, 5; 3, 6] := by
   rw [transpose_of% 2 3]
 ``` -/
 elab:max (name := transpose_tac_elab)
@@ -159,17 +159,45 @@ elab:max (name := transpose_tac_elab)
 /-- A simproc for terms of the form `Matrix.transpose (Matrix.of _)`. Usage:
 
 ```lean
-example : (!![1, 2, 3; 4, 5, 6]ᵀ : Matrix (Fin 3) (Fin 2) ℤ) = !![1, 4; 2, 5; 3, 6] := by
+example : !![1, 2, 3; 4, 5, 6]ᵀ = !![1, 4; 2, 5; 3, 6] := by
   simp
 ```
 -/
 simproc matrix_transpose (Matrix.transpose (Matrix.of _)) := .ofQ fun u α eMT ↦ do
   let .succ _ := u | return .continue
   let ~q(@Matrix (Fin $en) (Fin $em) $R) := α | return .continue
-  let .some m ← Nat.fromExpr? em | return .continue
-  let .some n ← Nat.fromExpr? en | return .continue
+  let .some m := em.nat? | return .continue
+  let .some n := en.nat? | return .continue
   let ~q(transpose $eM) := eMT | return .continue
   let .some M ← matrixLit? (m := m) (n := n) (R := R) eM | return .continue
   have rhs := mkTranspose.rhs M
   have h := mkTranspose.proof' M
   return .visit { expr := rhs, proof? := .some h }
+
+/-- Auxiliary tactic to generate the rw-proc `transpose_of`. -/
+elab "transpose_tac_aux" : tactic => Lean.Elab.Tactic.liftMetaFinishingTactic fun mid ↦ do
+  have h := mvar mid
+  let ⟨0, ~q(($lhs : Matrix (Fin $em) (Fin $en) $α)ᵀ = $rhs), h⟩ := ← inferTypeQ h
+    | throwError "Could not infer type for the transpose tactic"
+  let .some m := em.nat?
+    | throwError "Matrix is not of a known height"
+  let .some n := en.nat?
+    | throwError "Matrix is not of a known width"
+  let .some M ← matrixLit? (m := m) (n := n) (R := α) lhs
+    | throwError "Could not parse matrix from LHS"
+  have new_rhs : Q(Matrix (Fin $en) (Fin $em) $α) := mkTranspose.rhs M
+  commitIfNoEx do
+    let .defEq _ := ← isDefEqQ q($rhs) q($new_rhs)
+      | throwError "Could not assign RHS"
+    h.mvarId!.assignIfDefEq (mkTranspose.proof M)
+
+/-- A "magic" theorem to compute the transpose of explicit matrices. Usage:
+
+```lean
+example : !![1, 2, 3; 4, 5, 6]ᵀ = !![1, 4; 2, 5; 3, 6] := by
+  rw [transpose_of]
+```
+-/
+theorem transpose_of {α : Type*} {m n : ℕ} {M : Matrix (Fin m) (Fin n) α}
+    {N : Matrix (Fin n) (Fin m) α} (h : Mᵀ = N := by transpose_tac_aux) :
+  Mᵀ = N := h

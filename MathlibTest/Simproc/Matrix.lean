@@ -2,6 +2,19 @@ import Mathlib.Tactic.Simproc.Matrix
 
 open Matrix
 
+/-! # Three basic tests -/
+
+example : !![1, 2, 3; 4, 5, 6]ᵀ = !![1, 4; 2, 5; 3, 6] := by
+  rw [transpose_of% 2 3]
+
+example : !![1, 2, 3; 4, 5, 6]ᵀ = !![1, 4; 2, 5; 3, 6] := by
+  rw [transpose_of]
+
+example : !![1, 2, 3; 4, 5, 6]ᵀ = !![1, 4; 2, 5; 3, 6] := by
+  simp only [matrix_transpose]
+
+/-! # Other tests -/
+
 example (u : Matrix (Fin 2) (Fin 3) ℤ) (v : Matrix (Fin 3) (Fin 2) ℤ)
     (hu : u = !![1, 2, 3; 4, 5, 6]) (hv : v = !![1, 4; 2, 5; 3, 6]) :
     uᵀ = v := by
