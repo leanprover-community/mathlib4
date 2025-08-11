@@ -128,16 +128,12 @@ theorem lift_symm_apply (F : UniversalEnvelopingAlgebra R L →ₐ[R] A) :
   rfl
 
 @[simp]
-theorem lift_comp_ι : (lift R f).toLieHom.comp (ι R) = f :=
+theorem ι_comp_lift : (lift R f).toLieHom.comp (ι R) = f :=
   (lift R).symm_apply_apply f
-
-@[deprecated lift_comp_ι (since := "2025-08-11")]
-theorem ι_comp_lift : lift R f ∘ ι R = f :=
-  funext <| LieHom.ext_iff.mp <| (lift R).symm_apply_apply f
 
 -- Porting note: moved `@[simp]` to the next theorem (LHS simplifies)
 theorem lift_ι_apply (x : L) : lift R f (ι R x) = f x :=
-  DFunLike.congr_fun (lift_comp_ι _ _) x
+  DFunLike.congr_fun (ι_comp_lift _ _) x
 
 @[simp]
 theorem lift_ι_apply' (x : L) :
