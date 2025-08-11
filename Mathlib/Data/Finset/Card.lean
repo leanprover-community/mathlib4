@@ -266,6 +266,9 @@ theorem card_filter_le (s : Finset α) (p : α → Prop) [DecidablePred p] :
 theorem eq_of_subset_of_card_le {s t : Finset α} (h : s ⊆ t) (h₂ : #t ≤ #s) : s = t :=
   eq_of_veq <| Multiset.eq_of_le_of_card_le (val_le_iff.mpr h) h₂
 
+theorem eq_of_subset_of_card_eq {s t : Finset α} (h : s ⊆ t) (h₂ : #s = #t) : s = t :=
+  eq_of_subset_of_card_le h (le_of_eq h₂.symm)
+
 theorem eq_iff_card_le_of_subset (hst : s ⊆ t) : #t ≤ #s ↔ s = t :=
   ⟨eq_of_subset_of_card_le hst, (ge_of_eq <| congr_arg _ ·)⟩
 
