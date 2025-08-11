@@ -8,6 +8,7 @@ import Mathlib.Data.Matrix.Reflection
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+import Mathlib.Tactic.Simproc.Matrix
 
 /-!
 # The Unitary Group
@@ -258,10 +259,8 @@ theorem mem_specialOrthogonalGroup_iff :
 lemma of_mem_specialOrthogonalGroup_fin_two_iff {a b c d : R} :
     !![a, b; c, d] ∈ Matrix.specialOrthogonalGroup (Fin 2) R ↔
       a = d ∧ b = -c ∧ a ^ 2 + b ^ 2 = 1 := by
-  trans ((a * a + b * b = 1 ∧ a * c + b * d = 0) ∧
-    c * a + d * b = 0 ∧ c * c + d * d = 1) ∧ a * d - b * c = 1
-  · simp [Matrix.mem_specialOrthogonalGroup_iff, Matrix.mem_orthogonalGroup_iff,
-      ← Matrix.ext_iff, Fin.forall_fin_succ, Matrix.vecHead, Matrix.vecTail]
+  simp_rw [mem_specialOrthogonalGroup_iff, mem_orthogonalGroup_iff, transpose_of% 2 2, mul_fin_two,
+    one_fin_two, of.apply_eq_iff_eq, vecCons_inj, and_true, det_fin_two_of]
   refine ⟨?_, ?_⟩
   · rintro ⟨⟨⟨h₀, h₁⟩, -, h₂⟩, h₃⟩
     refine ⟨?_, ?_, ?_⟩
