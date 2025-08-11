@@ -22,6 +22,7 @@ variable {f : ι → α} {s : Set α}
 
 namespace Set
 
+-- TODO: fix naming inconsistency with the iUnion₂ theorems below.
 theorem pairwise_iUnion {f : κ → Set α} (hd : Directed (· ⊆ ·) f) :
     (⋃ n, f n).Pairwise r ↔ ∀ n, (f n).Pairwise r := by
   constructor
@@ -33,8 +34,9 @@ theorem pairwise_iUnion {f : κ → Set α} (hd : Directed (· ⊆ ·) f) :
     rcases hd m n with ⟨p, mp, np⟩
     exact H p (mp hm) (np hn) hij
 
+-- TODO: harmonize explicitness of `r`
 theorem pairwise_iUnion₂ {s : Set (Set α)} (hd : DirectedOn (· ⊆ ·) s)
-    (h : ∀ a ∈ s, a.Pairwise r) : (⋃ a ∈ s, a).Pairwise r := by
+    (r : α → α → Prop) (h : ∀ a ∈ s, a.Pairwise r) : (⋃ a ∈ s, a).Pairwise r := by
   simp only [Set.Pairwise, mem_iUnion, exists_prop, forall_exists_index, and_imp]
   intro x S hS hx y T hT hy hne
   obtain ⟨U, hU, hSU, hTU⟩ := hd S hS T hT
@@ -42,7 +44,7 @@ theorem pairwise_iUnion₂ {s : Set (Set α)} (hd : DirectedOn (· ⊆ ·) s)
 
 theorem pairwise_iUnion₂_iff {s : Set (Set α)} (hd : DirectedOn (· ⊆ ·) s) :
     (⋃ a ∈ s, a).Pairwise r ↔ ∀ a ∈ s, a.Pairwise r :=
-  ⟨fun h a ha ↦ h.mono <| subset_iUnion₂_of_subset a ha (by rfl), pairwise_iUnion₂ hd⟩
+  ⟨fun h a ha ↦ h.mono <| subset_iUnion₂_of_subset a ha (by rfl), pairwise_iUnion₂ hd _⟩
 
 theorem pairwise_sUnion {r : α → α → Prop} {s : Set (Set α)} (hd : DirectedOn (· ⊆ ·) s) :
     (⋃₀ s).Pairwise r ↔ ∀ a ∈ s, Set.Pairwise a r := by

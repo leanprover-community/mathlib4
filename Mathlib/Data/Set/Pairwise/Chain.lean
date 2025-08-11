@@ -14,8 +14,6 @@ In this file `Pairwise` results are applied to chains of sets.
 
 open Set
 
-section Pairwise
-
 variable {α β : Type*} {c : Set (Set α)} {r : α → α → Prop}
 variable (hc : IsChain (· ⊆ ·) c)
 
@@ -38,5 +36,3 @@ lemma pairwiseDisjoint_sUnion [PartialOrder β] [OrderBot β] (f : α → β) :
   hc.pairwise_sUnion
 
 end IsChain
-
-end Pairwise
