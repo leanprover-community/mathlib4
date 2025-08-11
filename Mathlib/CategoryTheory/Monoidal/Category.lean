@@ -313,7 +313,6 @@ theorem tensorHom_comp_whiskerRight {V W X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) 
 @[reassoc] lemma rightUnitor_inv_comp_tensorHom {X Y Z : C} (f : X ⟶ Y) (g : 𝟙_ C ⟶ Z) :
     (ρ_ X).inv ≫ (f ⊗ₘ g) = f ≫ (ρ_ Y).inv ≫ Y ◁ g := by simp [tensorHom_def]
 
-
 @[reassoc (attr := simp)]
 theorem whiskerLeft_hom_inv (X : C) {Y Z : C} (f : Y ≅ Z) :
     X ◁ f.hom ≫ X ◁ f.inv = 𝟙 (X ⊗ Y) := by

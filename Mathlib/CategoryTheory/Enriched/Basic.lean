@@ -250,16 +250,22 @@ theorem ForgetEnrichment.homTo_id (X : ForgetEnrichment W C) :
     ForgetEnrichment.homTo W (𝟙 X) = eId W (ForgetEnrichment.to W X : C) :=
   Category.id_comp _
 
+@[deprecated (since := "2025-08-11")] alias forgetEnrichment_id := ForgetEnrichment.homTo_id
+
 @[simp]
-theorem ForgetEnrichment.homOf_eid (X : C) :
+theorem ForgetEnrichment.homOf_eId (X : C) :
     ForgetEnrichment.homOf W (eId W X) = 𝟙 (of W X : C) :=
   (homTo_id W (ForgetEnrichment.of W X)).symm
+
+@[deprecated (since := "2025-08-11")] alias forgetEnrichment_id' := ForgetEnrichment.homOf_eId
 
 /-- Composition in the "underlying" category of an enriched category. -/
 @[simp]
 theorem ForgetEnrichment.homTo_comp {X Y Z : ForgetEnrichment W C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     homTo W (f ≫ g) = ((λ_ (𝟙_ W)).inv ≫ (homTo W f ⊗ₘ homTo W g)) ≫ eComp W _ _ _ :=
   rfl
+
+@[deprecated (since := "2025-08-11")] alias forgetEnrichment_comp := ForgetEnrichment.homTo_comp
 
 theorem ForgetEnrichment.homOf_comp {X Y Z : C} (f : 𝟙_ W ⟶ (X ⟶[W] Y)) (g : 𝟙_ W ⟶ (Y ⟶[W] Z)) :
     homOf W (((λ_ _).inv ≫ (f ⊗ₘ g)) ≫ eComp W ..) = homOf W f ≫ homOf W g :=
@@ -459,14 +465,6 @@ def id : EnrichedNatTrans F F where
 
 variable {F} {G H : EnrichedFunctor V C D}
 
-@[ext]
-def ext {α β : EnrichedNatTrans F G} (h : ∀ X, α.app X = β.app X) : α = β := by
-  cases α
-  cases β
-  congr
-  funext
-  apply h
-
 /-- The naturality condition of an enriched natural transformation from `F` to `G` as an equality
 of morphisms `Hom X Y ⟶ Hom (F.obj X) (G.obj Y)` for `X, Y : C`. -/
 @[reassoc]
@@ -505,8 +503,6 @@ def comp (α : EnrichedNatTrans F G) (β : EnrichedNatTrans G H) : EnrichedNatTr
     monoidal
 
 end EnrichedNatTrans
-
-open EnrichedCategory
 
 variable [BraidedCategory V]
 
