@@ -75,10 +75,6 @@ nonrec theorem Ici_bot [OrderBot α] : Ici (⊥ : α) = ⊥ :=
 nonrec theorem Ioi_top [OrderTop α] : Ioi (⊤ : α) = ⊤ :=
   SetLike.coe_injective Ioi_top
 
-@[simp]
-theorem Ioi_eq_top_iff {α : Type*} [PartialOrder α] [OrderTop α] {a : α} : Ioi a = ⊤ ↔ a = ⊤ := by
-  simp [UpperSet.ext_iff]
-
 @[simp] lemma Ici_ne_top : Ici a ≠ ⊤ := SetLike.coe_ne_coe.1 nonempty_Ici.ne_empty
 @[simp] lemma Ici_lt_top : Ici a < ⊤ := lt_top_iff_ne_top.2 Ici_ne_top
 @[simp] lemma le_Ici : s ≤ Ici a ↔ a ∈ s := ⟨fun h ↦ h le_rfl, fun ha ↦ s.upper.Ici_subset ha⟩
@@ -101,6 +97,10 @@ nonrec lemma Ici_injective : Injective (Ici : α → UpperSet α) := fun _a _b h
 @[simp] lemma Ici_inj : Ici a = Ici b ↔ a = b := Ici_injective.eq_iff
 
 lemma Ici_ne_Ici : Ici a ≠ Ici b ↔ a ≠ b := Ici_inj.not
+
+@[simp]
+theorem Ioi_eq_top [OrderTop α] {a : α} : Ioi a = ⊤ ↔ a = ⊤ := by
+  simp [UpperSet.ext_iff]
 
 end PartialOrder
 
@@ -179,10 +179,6 @@ nonrec theorem Iic_top [OrderTop α] : Iic (⊤ : α) = ⊤ :=
 nonrec theorem Iio_bot [OrderBot α] : Iio (⊥ : α) = ⊥ :=
   SetLike.coe_injective Iio_bot
 
-@[simp]
-theorem Iio_eq_bot_iff {α : Type*} [PartialOrder α] [OrderBot α] {a : α} : Iio a = ⊥ ↔ a = ⊥ := by
-  simp [LowerSet.ext_iff]
-
 @[simp] lemma Iic_ne_bot : Iic a ≠ ⊥ := SetLike.coe_ne_coe.1 nonempty_Iic.ne_empty
 @[simp] lemma bot_lt_Iic : ⊥ < Iic a := bot_lt_iff_ne_bot.2 Iic_ne_bot
 @[simp] lemma Iic_le : Iic a ≤ s ↔ a ∈ s := ⟨fun h ↦ h le_rfl, fun ha ↦ s.lower.Iic_subset ha⟩
@@ -204,6 +200,10 @@ nonrec lemma Iic_injective : Injective (Iic : α → LowerSet α) := fun _a _b h
 @[simp] lemma Iic_inj : Iic a = Iic b ↔ a = b := Iic_injective.eq_iff
 
 lemma Iic_ne_Iic : Iic a ≠ Iic b ↔ a ≠ b := Iic_inj.not
+
+@[simp]
+theorem Iio_eq_bot [OrderBot α] {a : α} : Iio a = ⊥ ↔ a = ⊥ := by
+  simp [LowerSet.ext_iff]
 
 end PartialOrder
 

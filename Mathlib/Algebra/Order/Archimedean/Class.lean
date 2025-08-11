@@ -33,7 +33,13 @@ is "infinitesimal" to `b` in the sense that `n • |a| < |b|` for all natural nu
 * `ArchimedeanClass.closedBallAddSubgroup` and `MulArchimedeanClass.closedBallSubgroup` are
   subgroups formed by a closed interval of archimedean classes.
 * `ArchimedeanClass.IsGradeAddSubgroup` and `MulArchimedeanClass.IsGradeSubgroup` are props stating
-  that a subgroup is a complement to the open ball under the closed ball.
+  that a subgroup is a complement to the open ball under the closed ball. For a group with finitely
+  many archimedean classes, if there exists a `IsGrade(Add)Subgroup` subgroup for each class,
+  then the whole group is a direct sum of them. As such subgroup has elements only from the
+  corresponding class (see `MulArchimedeanClass.IsGradeSubgroup.mulArchimedeanClassMk_eq` /
+  `ArchimedeanClass.IsGradeAddSubgroup.archimedeanClassMk_eq`), this is a decomposition by
+  archimedean classes. For a group with infinitely many archimedean classes, the direct sum is not
+  necessarily the whole group, but still forms subgroup with the same set of archimedean classes.
 
 ## Main statements
 
@@ -510,7 +516,6 @@ theorem subgroup_eq_bot : subgroup (M := M) ⊤ = ⊥ := by
 theorem mem_subgroup_iff (hs : s ≠ ⊤) : a ∈ subgroup s ↔ mk a ∈ s := by
   simp [subgroup, subsemigroup, hs]
 
-variable (M) in
 @[to_additive]
 theorem subgroup_strictAntiOn : StrictAntiOn (subgroup (M := M)) (Set.Iio ⊤) := by
   intro s hs t ht hst
@@ -522,7 +527,6 @@ theorem subgroup_strictAntiOn : StrictAntiOn (subgroup (M := M)) (Set.Iio ⊤) :
   apply le_of_eq
   simpa [mk_surjective, subsemigroup] using heq
 
-variable (M) in
 @[to_additive]
 theorem subgroup_antitone : Antitone (subgroup (M := M)) := by
   intro s t hst
@@ -530,7 +534,7 @@ theorem subgroup_antitone : Antitone (subgroup (M := M)) := by
   · rw [eq_top_iff.mpr hst]
   obtain rfl | ht := eq_or_ne t ⊤
   · simp
-  rwa [(subgroup_strictAntiOn M).le_iff_le ht.lt_top hs.lt_top]
+  rwa [subgroup_strictAntiOn.le_iff_le ht.lt_top hs.lt_top]
 
 /-- An open ball defined by `MulArchimedeanClass.subgroup` of `UpperSet.Ioi c`.
 For `c = ⊤`, we assign the junk value `⊥`. -/
@@ -566,17 +570,16 @@ theorem closedBallSubgroup_top : closedBallSubgroup (M := M) ⊤ = ⊥ := by
   ext
   simp
 
-variable (M) in
 @[to_additive]
 theorem ballSubgroup_antitone : Antitone (ballSubgroup (M := M)) := by
   intro _ _ h
-  exact subgroup_antitone _ <| (UpperSet.Ioi_strictMono _).monotone h
+  exact subgroup_antitone <| (UpperSet.Ioi_strictMono _).monotone h
 
 /-- A subgroup `G` is called a grade at `c` iff
 `ballSubgroup c` and `G` are complements in the lattice under `closedBallSubgroup c` -/
 @[to_additive "A subgroup `G` is called a grade at `c` iff
 `ballAddSubgroup c` and `G` are complements in the lattice under `closedBallAddSubgroup c`"]
-def IsGradeSubgroup (c : MulArchimedeanClass M) (G : Subgroup M) :=
+def IsGradeSubgroup (c : MulArchimedeanClass M) (G : Subgroup M) : Prop :=
   Disjoint (ballSubgroup c) G ∧ ballSubgroup c ⊔ G = closedBallSubgroup c
 
 namespace IsGradeSubgroup
@@ -611,8 +614,8 @@ theorem nontrivial (hgrade : IsGradeSubgroup c G) (h : c ≠ ⊤) : Nontrivial G
 theorem le_closedBallSubgroup (hgrade : IsGradeSubgroup c G) : G ≤ closedBallSubgroup c := by
   simp [← hgrade.sup_eq]
 
-@[to_additive archimedeanClass_eq]
-theorem mulArchimedeanClass_eq (hgrade : IsGradeSubgroup c G) {a : M} (ha : a ∈ G) (h0 : a ≠ 1) :
+@[to_additive archimedeanClassMk_eq]
+theorem mulArchimedeanClassMk_eq (hgrade : IsGradeSubgroup c G) {a : M} (ha : a ∈ G) (h0 : a ≠ 1) :
     mk a = c := by
   apply le_antisymm
   · have hA : c ≠ ⊤ := by
@@ -622,7 +625,7 @@ theorem mulArchimedeanClass_eq (hgrade : IsGradeSubgroup c G) {a : M} (ha : a �
     contrapose! h0 with hlt
     have ha' : a ∈ ballSubgroup c := (mem_ballSubgroup_iff hA).mpr hlt
     exact (Subgroup.disjoint_def.mp hgrade.disjoint) ha' ha
-  · simpa using Set.mem_of_subset_of_mem hgrade.le_closedBallSubgroup ha
+  · simpa using hgrade.le_closedBallSubgroup ha
 
 @[to_additive archimedean]
 theorem mulArchimedean (hgrade : IsGradeSubgroup c G) : MulArchimedean G := by
@@ -631,8 +634,8 @@ theorem mulArchimedean (hgrade : IsGradeSubgroup c G) : MulArchimedean G := by
   suffices mk a.val = mk b.val by
     rw [mk_eq_mk] at this ⊢
     exact this
-  rw [hgrade.mulArchimedeanClass_eq a.prop (by simpa using ha)]
-  rw [hgrade.mulArchimedeanClass_eq b.prop (by simpa using hb)]
+  rw [hgrade.mulArchimedeanClassMk_eq a.prop (by simpa using ha)]
+  rw [hgrade.mulArchimedeanClassMk_eq b.prop (by simpa using hb)]
 
 end IsGradeSubgroup
 
