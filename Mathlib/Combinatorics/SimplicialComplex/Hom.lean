@@ -70,7 +70,7 @@ their `toFun` agree pointwise. -/
 namespace Hom
 
 /-- Identity morphism on a simplicial complex. -/
-@[simp] protected def id (L : SimplicialComplex V) : Hom L L where
+protected def id (L : SimplicialComplex V) : Hom L L where
   toFun := id
   map_faces := by
     intro s hs; simpa using hs
@@ -105,7 +105,7 @@ under the vertex function to obtain a face of `L`. -/
 /-- The induced face map of the identity morphism is the identity on faces. -/
 @[simp] lemma image_face_id (s : K.Face) :
     (Hom.id K).image_face s = s := by
-  ext v; simp [image_face]
+  ext v; simp [image_face, SimplicialComplex.Hom.id]
 
 omit [DecidableEq U] in
 /-- Compatibility of induced face maps with composition:
@@ -118,3 +118,5 @@ mapping a face along `f ∘ g` equals first mapping along `g` then along `f`. -/
 end Hom
 
 end SimplicialComplex
+
+#lint
