@@ -363,7 +363,7 @@ theorem LineDifferentiableWithinAt.congr_of_eventuallyEq (h : LineDifferentiable
 theorem LineDifferentiableAt.congr_of_eventuallyEq
     (h : LineDifferentiableAt 𝕜 f x v) (hL : f₁ =ᶠ[𝓝 x] f) :
     LineDifferentiableAt 𝕜 f₁ x v :=
-  (EventuallyEq.lineDifferentiableAt_iff (id (EventuallyEq.symm hL))).mp h
+  (EventuallyEq.lineDifferentiableAt_iff (EventuallyEq.symm hL)).mp h
 
 theorem Filter.EventuallyEq.lineDerivWithin_eq (hs : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) :
     lineDerivWithin 𝕜 f₁ s x v = lineDerivWithin 𝕜 f s x v := by
