@@ -309,7 +309,7 @@ theorem ContinuousOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} (
   exact HasIntegral.unique (IntegrableOn.hasBoxIntegral this ⊥ rfl) (HasIntegral.mono hy bot_le)
 
 /-- If `f : ℝⁿ → E` is a.e. continuous and bounded on a rectangular box `I`, then it is Box
-    integrable on `I` w.r.t. a locally finite measure `μ` with the same integral. -/
+integrable on `I` w.r.t. a locally finite measure `μ` with the same integral. -/
 theorem AEContinuous.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} (μ : Measure (ι → ℝ))
     [IsLocallyFiniteMeasure μ] {I : Box ι} (hb : ∃ C : ℝ, ∀ x ∈ Box.Icc I, ‖f x‖ ≤ C)
     (hc : ∀ᵐ x ∂μ, ContinuousAt f x) (l : IntegrationParams) :
