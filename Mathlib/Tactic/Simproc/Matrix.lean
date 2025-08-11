@@ -166,8 +166,8 @@ example : !![1, 2, 3; 4, 5, 6]ᵀ = !![1, 4; 2, 5; 3, 6] := by
 simproc matrix_transpose (Matrix.transpose (Matrix.of _)) := .ofQ fun u α eMT ↦ do
   let .succ _ := u | return .continue
   let ~q(@Matrix (Fin $en) (Fin $em) $R) := α | return .continue
-  let .some m ← Nat.fromExpr? em | return .continue
-  let .some n ← Nat.fromExpr? en | return .continue
+  let .some m := em.nat? | return .continue
+  let .some n := en.nat? | return .continue
   let ~q(transpose $eM) := eMT | return .continue
   let .some M ← matrixLit? (m := m) (n := n) (R := R) eM | return .continue
   have rhs := mkTranspose.rhs M
@@ -178,7 +178,7 @@ simproc matrix_transpose (Matrix.transpose (Matrix.of _)) := .ofQ fun u α eMT �
 elab "transpose_tac_aux" : tactic => Lean.Elab.Tactic.liftMetaFinishingTactic fun mid ↦ do
   have h := mvar mid
   let ⟨0, ~q(($lhs : Matrix (Fin $em) (Fin $en) $α)ᵀ = $rhs), h⟩ := ← inferTypeQ h
-    | throwError "Could not infer type for eta"
+    | throwError "Could not infer type for the transpose tactic"
   let .some m := em.nat?
     | throwError "Matrix is not of a known height"
   let .some n := en.nat?
@@ -201,6 +201,3 @@ example : !![1, 2, 3; 4, 5, 6]ᵀ = !![1, 4; 2, 5; 3, 6] := by
 theorem transpose_of {α : Type*} {m n : ℕ} {M : Matrix (Fin m) (Fin n) α}
     {N : Matrix (Fin n) (Fin m) α} (h : Mᵀ = N := by transpose_tac_aux) :
   Mᵀ = N := h
-
-example : !![1, 2, 3; 4, 5, 6]ᵀ = !![1, 4; 2, 5; 3, 6] := by
-  rw [transpose_of]
