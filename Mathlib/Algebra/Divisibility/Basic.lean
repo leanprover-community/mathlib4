@@ -102,6 +102,9 @@ theorem mul_dvd_mul_left (a : α) (h : b ∣ c) : a * b ∣ a * c := by
   use d
   rw [mul_assoc]
 
+theorem IsLeftRegular.dvd_cancel_left (h : IsLeftRegular a) : a * b ∣ a * c ↔ b ∣ c :=
+  ⟨fun dvd ↦ have ⟨d, eq⟩ := dvd; ⟨d, h (eq.trans <| mul_assoc ..)⟩, mul_dvd_mul_left a⟩
+
 end Semigroup
 
 section Monoid

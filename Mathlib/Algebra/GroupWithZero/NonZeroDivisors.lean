@@ -5,6 +5,9 @@ Authors: Kenny Lau, Devon Tuma, Oliver Nash
 -/
 import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.Algebra.GroupWithZero.Associated
+import Mathlib.Algebra.GroupWithZero.Regular
+import Mathlib.Algebra.NoZeroSMulDivisors.Defs
+import Mathlib.Algebra.Regular.SMul
 
 /-!
 # Non-zero divisors and smul-divisors
@@ -90,7 +93,7 @@ lemma nonZeroDivisorsLeft_eq_right (M₀ : Type*) [CommMonoidWithZero M₀] :
 end
 
 /-- The submonoid of non-zero-divisors of a `MonoidWithZero` `M₀`. -/
-def nonZeroDivisors (M₀ : Type*) [MonoidWithZero M₀] : Submonoid M₀  :=
+def nonZeroDivisors (M₀ : Type*) [MonoidWithZero M₀] : Submonoid M₀ :=
   nonZeroDivisorsLeft M₀ ⊓ nonZeroDivisorsRight M₀
 
 /-- The notation for the submonoid of non-zero divisors. -/
@@ -205,6 +208,39 @@ theorem powers_le_nonZeroDivisors_of_noZeroDivisors (hx : x ≠ 0) : Submonoid.p
   le_nonZeroDivisors_of_noZeroDivisors fun h ↦ hx (h.recOn fun _ ↦ pow_eq_zero)
 
 end NoZeroDivisors
+
+lemma IsLeftRegular.mem_nonZeroDivisorsLeft (h : IsLeftRegular r) :
+    r ∈ nonZeroDivisorsLeft M₀ := fun _x hx ↦ h.mul_left_eq_zero_iff.mp hx
+
+lemma IsRightRegular.mem_nonZeroDivisorsRight (h : IsRightRegular r) :
+    r ∈ nonZeroDivisorsRight M₀ := fun _x hx ↦ h.mul_right_eq_zero_iff.mp hx
+
+lemma IsRegular.mem_nonZeroDivisors (h : IsRegular r) : r ∈ M₀⁰ :=
+  ⟨h.1.mem_nonZeroDivisorsLeft, h.2.mem_nonZeroDivisorsRight⟩
+
+lemma noZeroDivisors_iff_forall_mem_nonZeroDivisorsLeft :
+    NoZeroDivisors M₀ ↔ ∀ x : M₀, x ≠ 0 → x ∈ nonZeroDivisorsLeft M₀ :=
+  noZeroDivisors_iff_right_eq_zero_of_mul
+
+lemma noZeroDivisors_iff_forall_mem_nonZeroDivisorsRight :
+    NoZeroDivisors M₀ ↔ ∀ x : M₀, x ≠ 0 → x ∈ nonZeroDivisorsRight M₀ :=
+  noZeroDivisors_iff_left_eq_zero_of_mul
+
+lemma noZeroDivisors_iff_forall_mem_nonZeroDivisors :
+    NoZeroDivisors M₀ ↔ ∀ x : M₀, x ≠ 0 → x ∈ M₀⁰ :=
+  noZeroDivisors_iff_eq_zero_of_mul
+
+lemma noZeroSMulDivisors_iff_forall_mem_nonZeroSMulDivisors {M : Type*} [Zero M] [MulAction M₀ M] :
+    NoZeroSMulDivisors M₀ M ↔ ∀ x : M₀, x ≠ 0 → x ∈ nonZeroSMulDivisors M₀ M :=
+  noZeroSMulDivisors_iff_right_eq_zero_of_smul
+
+lemma IsSMulRegular.mem_nonZeroSMulDivisors {M : Type*} [Zero M] [MulActionWithZero M₀ M] {m₀ : M₀}
+    (h : IsSMulRegular M m₀) : m₀ ∈ nonZeroSMulDivisors M₀ M :=
+  fun _ ↦ h.right_eq_zero_of_smul
+
+lemma isSMulRegular_iff_mem_nonZeroSMulDivisors {M : Type*} [AddGroup M] [DistribMulAction M₀ M]
+    {m₀ : M₀} : IsSMulRegular M m₀ ↔ m₀ ∈ nonZeroSMulDivisors M₀ M :=
+  isSMulRegular_iff_right_eq_zero_of_smul
 
 variable [FunLike F M₀ M₀']
 
