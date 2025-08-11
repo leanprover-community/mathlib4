@@ -1373,7 +1373,7 @@ noncomputable def strongCoverGridConfig.extend (C : strongCoverGridConfig) :
 
 /-- It is possible to have a `strongCoverGridConfig`, whenever `nS ≤ n` and
 `nS = 0 ∨ nS = 1 ∨ nS = 3` -/
-lemma existsStrongCover' (n nS : ℕ) :
+lemma existsStrongCover (n nS : ℕ) :
     nS ≤ n → (nS = 0 ∨ nS = 1 ∨ nS = 3) →
     ∃ (C : strongCoverGridConfig), C.n = n ∧ C.nS = nS := by
   induction n with
@@ -1429,7 +1429,7 @@ theorem result (n : Set.Ici 3) :
   · intro hS
     have : n.val ≥ 3 := by exact n.property
     have : nS ≤ n.val := by omega
-    obtain ⟨C, h⟩ := existsStrongCover' n nS this hS
+    obtain ⟨C, h⟩ := existsStrongCover n nS this hS
     use C.lines
     simp only [C.lines_count, h, C.sunny_count, and_true, true_and]
     constructor
