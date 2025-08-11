@@ -303,19 +303,26 @@ lemma tsum_prod_eisSummand_eq_sigma_cexp {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k)
       (by apply summable_prod_eisSummand hk)
 
 lemma gammaSetN_eisSummand (k : ℤ) (z : ℍ) {n : ℕ} (v : gammaSetN n) : eisSummand k v z =
-  ((n : ℂ) ^ k)⁻¹ * eisSummand k (gammaSetN_map n v) z := by
-  simp only [eisSummand, gammaSetN_map_eq v, Fin.isValue, Pi.smul_apply, nsmul_eq_mul,
-    Int.cast_mul, Int.cast_natCast, zpow_neg, ← mul_inv, ← mul_zpow]
+  ((n : ℂ) ^ k)⁻¹ * eisSummand k (div_N_map n v) z := by
+  have := gammaSetN_map_eq v
+  simp_rw [eisSummand]
+  nth_rw 1 2 [this]
+  simp only [Fin.isValue, Pi.smul_apply, nsmul_eq_mul, Int.cast_mul, Int.cast_natCast, zpow_neg, ←
+    mul_inv, ← mul_zpow, inv_inj]
   ring_nf
 
 lemma tsum_prod_eisSummand_eq_riemannZeta_eisensteinSeries {k : ℕ} (hk : 3 ≤ k) (z : ℍ) :
     ∑' (x : Fin 2 → ℤ), eisSummand k x z = (riemannZeta (k)) * (eisensteinSeries 𝟙 k z) := by
-  rw [← GammaSet_one_Equiv.symm.tsum_eq]
+  rw [← GammaSet_top_Equiv.symm.tsum_eq]
   have hk1 : 1 < k := by omega
-  rw [eisensteinSeries , Summable.tsum_sigma, GammaSet_one_Equiv, zeta_nat_eq_tsum_of_gt_one hk1,
+  conv =>
+    enter [1,1]
+    ext c
+    rw [GammaSet_top_Equiv_symm_eq]
+  rw [eisensteinSeries , Summable.tsum_sigma, zeta_nat_eq_tsum_of_gt_one hk1,
     tsum_mul_tsum_of_summable_norm (by simp [hk1])
     (by apply (summable_norm_eisSummand (by omega) z).subtype)]
-  · simp only [Equiv.coe_fn_symm_mk, one_div]
+  · simp only [one_div]
     rw [Summable.tsum_prod']
     · apply tsum_congr
       intro b
@@ -329,7 +336,7 @@ lemma tsum_prod_eisSummand_eq_riemannZeta_eisensteinSeries {k : ℕ} (hk : 3 ≤
     · intro b
       simpa using (Summable.of_norm (by apply (EisensteinSeries.summable_norm_eisSummand
         (by omega) z).subtype)).mul_left (a := ((b : ℂ) ^ k)⁻¹)
-  · apply ((GammaSet_one_Equiv.symm.summable_iff (f := fun v ↦ eisSummand k v z)).mpr
+  · apply ((GammaSet_top_Equiv.symm.summable_iff (f := fun v ↦ eisSummand k v z)).mpr
       (EisensteinSeries.summable_norm_eisSummand (by omega) z).of_norm).congr
     simp
 
