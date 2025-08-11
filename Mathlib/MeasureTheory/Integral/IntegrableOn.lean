@@ -165,6 +165,13 @@ lemma IntegrableOn.of_subsingleton_codomain [Subsingleton ε'] {f : α → ε'} 
     IntegrableOn f s μ :=
   Integrable.of_subsingleton_codomain
 
+lemma Integrable.of_bound [IsFiniteMeasure μ] {f : α → E} (hf : AEStronglyMeasurable f μ) {C : ℝ}
+    (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) : Integrable f μ := ⟨hf, .of_bounded hfC⟩
+
+lemma IntegrableOn.of_bound (hs : μ s < ∞) {f : α → E} (hf : AEStronglyMeasurable f (μ.restrict s))
+    {C : ℝ} (hfC : ∀ᵐ x ∂μ.restrict s, ‖f x‖ ≤ C) : IntegrableOn f s μ :=
+  ⟨hf, .restrict_of_bounded hs hfC⟩
+
 theorem IntegrableOn.restrict (h : IntegrableOn f s μ) : IntegrableOn f s (μ.restrict t) := by
   dsimp only [IntegrableOn] at h ⊢
   exact h.mono_measure <| Measure.restrict_mono_measure Measure.restrict_le_self _
