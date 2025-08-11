@@ -127,9 +127,7 @@ instance _root_.Algebra.IsCentral.continuousLinearMap [ContinuousSMul R V] :
     · use 0; simp [ContinuousLinearMap.ext_iff, H]
     obtain ⟨x, hx⟩ := not_forall.mp H
     obtain ⟨f, hf⟩ := SeparatingDual.exists_eq_one (R := R) hx
-    use f (T x)
-    ext y
-    simp [h', hf]
+    exact ⟨f (T x), ContinuousLinearMap.ext fun _ => by simp [h', hf]⟩
 
 /-- In a topological vector space with separating dual, the group of continuous linear equivalences
 acts transitively on the set of nonzero vectors: given two nonzero vectors `x` and `y`, there
