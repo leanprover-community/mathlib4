@@ -259,7 +259,7 @@ theorem algebra_ext {R : Type*} [CommSemiring R] {A : Type*} [Semiring A] (P Q :
 
 /-- An auxiliary lemma used to prove theorems of the form
 `RingHom.X (algebraMap R S) ↔ Algebra.X R S`. -/
-lemma toAlgebra_algebraMap {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S] :
+lemma _root_.toAlgebra_algebraMap {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S] :
     (algebraMap R S).toAlgebra = ‹_› :=
   algebra_ext _ _ fun _ ↦ rfl
 
