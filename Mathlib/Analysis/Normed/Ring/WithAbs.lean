@@ -51,10 +51,6 @@ instance instInhabited : Inhabited (WithAbs v) := ⟨0⟩
 /-- The canonical (semiring) equivalence between `WithAbs v` and `R`. -/
 def equiv : WithAbs v ≃+* R := RingEquiv.refl _
 
-/-- `WithAbs.equiv` as a ring equivalence. -/
-@[deprecated equiv (since := "2025-01-13")]
-def ringEquiv : WithAbs v ≃+* R := RingEquiv.refl _
-
 end semiring
 
 section more_instances
@@ -104,54 +100,5 @@ to `R'`. -/
 def algEquiv (v : AbsoluteValue R' S) : (WithAbs v) ≃ₐ[R] R' := AlgEquiv.refl (A₁ := R')
 
 end algebra
-
-/-!
-### `WithAbs.equiv` preserves the ring structure.
-
-These are deprecated as they are special cases of the generic `map_zero` etc. lemmas
-after `WithAbs.equiv` is defined to be a ring equivalence.
--/
-
-section equiv_semiring
-
-variable [Semiring R] (v : AbsoluteValue R S) (x y : WithAbs v) (r s : R)
-
-@[deprecated map_zero (since := "2025-01-13"), simp]
-theorem equiv_zero : equiv v 0 = 0 := rfl
-
-@[deprecated map_zero (since := "2025-01-13"), simp]
-theorem equiv_symm_zero : (equiv v).symm 0 = 0 := rfl
-
-@[deprecated map_add (since := "2025-01-13"), simp]
-theorem equiv_add : equiv v (x + y) = equiv v x + equiv v y := rfl
-
-@[deprecated map_add (since := "2025-01-13"), simp]
-theorem equiv_symm_add : (equiv v).symm (r + s) = (equiv v).symm r + (equiv v).symm s := rfl
-
-@[deprecated map_mul (since := "2025-01-13"), simp]
-theorem equiv_mul : equiv v (x * y) = equiv v x * equiv v y := rfl
-
-@[deprecated map_mul (since := "2025-01-13"), simp]
-theorem equiv_symm_mul : (equiv v).symm (x * y) = (equiv v).symm x * (equiv v).symm y := rfl
-
-end equiv_semiring
-
-section equiv_ring
-
-variable [Ring R] (v : AbsoluteValue R S) (x y : WithAbs v) (r s : R)
-
-@[deprecated map_sub (since := "2025-01-13"), simp]
-theorem equiv_sub : equiv v (x - y) = equiv v x - equiv v y := rfl
-
-@[deprecated map_sub (since := "2025-01-13"), simp]
-theorem equiv_symm_sub : (equiv v).symm (r - s) = (equiv v).symm r - (equiv v).symm s := rfl
-
-@[deprecated map_neg (since := "2025-01-13"), simp]
-theorem equiv_neg : equiv v (-x) = - equiv v x := rfl
-
-@[deprecated map_neg (since := "2025-01-13"), simp]
-theorem equiv_symm_neg : (equiv v).symm (-r) = - (equiv v).symm r := rfl
-
-end equiv_ring
 
 end WithAbs

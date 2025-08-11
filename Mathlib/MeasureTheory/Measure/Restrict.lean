@@ -82,12 +82,10 @@ theorem restrict_mono {_m0 : MeasurableSpace α} ⦃s s' : Set α⦄ (hs : s ⊆
     (hμν : μ ≤ ν) : μ.restrict s ≤ ν.restrict s' :=
   restrict_mono' (ae_of_all _ hs) hμν
 
-@[gcongr]
 theorem restrict_mono_measure {_ : MeasurableSpace α} {μ ν : Measure α} (h : μ ≤ ν) (s : Set α) :
     μ.restrict s ≤ ν.restrict s :=
   restrict_mono subset_rfl h
 
-@[gcongr]
 theorem restrict_mono_set {_ : MeasurableSpace α} (μ : Measure α) {s t : Set α} (h : s ⊆ t) :
     μ.restrict s ≤ μ.restrict t :=
   restrict_mono h le_rfl
@@ -116,6 +114,9 @@ theorem restrict_le_self : μ.restrict s ≤ μ :=
   Measure.le_iff.2 fun t ht => calc
     μ.restrict s t = μ (t ∩ s) := restrict_apply ht
     _ ≤ μ t := measure_mono inter_subset_left
+
+theorem absolutelyContinuous_restrict : μ.restrict s ≪ μ :=
+  Measure.absolutelyContinuous_of_le Measure.restrict_le_self
 
 variable (μ)
 
@@ -581,7 +582,7 @@ theorem _root_.Filter.EventuallyEq.restrict {f g : α → δ} {s : Set α} (hfg 
   -- note that we cannot use `ae_restrict_iff` since we do not require measurability
   refine hfg.filter_mono ?_
   rw [Measure.ae_le_iff_absolutelyContinuous]
-  exact Measure.absolutelyContinuous_of_le Measure.restrict_le_self
+  exact absolutelyContinuous_restrict
 
 theorem ae_restrict_mem₀ (hs : NullMeasurableSet s μ) : ∀ᵐ x ∂μ.restrict s, x ∈ s :=
   (ae_restrict_iff'₀ hs).2 (Filter.Eventually.of_forall fun _ => id)
@@ -663,7 +664,7 @@ theorem ae_restrict_neBot {s} : (ae <| μ.restrict s).NeBot ↔ μ s ≠ 0 :=
   neBot_iff.trans ae_restrict_eq_bot.not
 
 theorem self_mem_ae_restrict {s} (hs : MeasurableSet s) : s ∈ ae (μ.restrict s) := by
-  simp only [ae_restrict_eq hs, exists_prop, mem_principal, mem_inf_iff]
+  simp only [ae_restrict_eq hs, mem_principal, mem_inf_iff]
   exact ⟨_, univ_mem, s, Subset.rfl, (univ_inter s).symm⟩
 
 /-- If two measurable sets are ae_eq then any proposition that is almost everywhere true on one
@@ -692,10 +693,49 @@ lemma NullMeasurable.measure_preimage_eq_measure_restrict_preimage_of_ae_compl_e
       rw [← hs]
       apply measure_mono (inter_subset_inter_left _ _)
       intro x hx hfx
-      simp only [mem_preimage, mem_setOf_eq] at hx hfx
+      simp only [mem_preimage] at hx hfx
       exact ht (hfx ▸ hx)
     simp only [obs, add_zero, le_refl]
   · exact NullMeasurableSet.of_null hs
+
+lemma nullMeasurableSet_restrict (hs : NullMeasurableSet s μ) {t : Set α} :
+    NullMeasurableSet t (μ.restrict s) ↔ NullMeasurableSet (t ∩ s) μ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · obtain ⟨t', -, ht', t't⟩ : ∃ t' ⊇ t, MeasurableSet t' ∧ t' =ᵐ[μ.restrict s] t :=
+      h.exists_measurable_superset_ae_eq
+    have A : (t' ∩ s : Set α) =ᵐ[μ] (t ∩ s : Set α) := by
+      have : ∀ᵐ x ∂μ, x ∈ s → (x ∈ t') = (x ∈ t) :=
+        (ae_restrict_iff'₀ hs).1 t't
+      filter_upwards [this] with y hy
+      change (y ∈ t' ∩ s) = (y ∈ t ∩ s)
+      simpa only [eq_iff_iff, mem_inter_iff, and_congr_left_iff] using hy
+    obtain ⟨s', -, hs', s's⟩ : ∃ s' ⊇ s, MeasurableSet s' ∧ s' =ᵐ[μ] s :=
+      hs.exists_measurable_superset_ae_eq
+    have B : (t' ∩ s' : Set α) =ᵐ[μ] (t' ∩ s : Set α) :=
+      ae_eq_set_inter (EventuallyEq.refl _ _) s's
+    exact (ht'.inter hs').nullMeasurableSet.congr (B.trans A)
+  · have A : NullMeasurableSet (t \ s) (μ.restrict s) := by
+      apply NullMeasurableSet.of_null
+      rw [Measure.restrict_apply₀' hs]
+      simp
+    have B : NullMeasurableSet (t ∩ s) (μ.restrict s) :=
+      h.mono_ac absolutelyContinuous_restrict
+    simpa using A.union B
+
+lemma nullMeasurableSet_restrict_of_subset {t : Set α} (ht : t ⊆ s) :
+    NullMeasurableSet t (μ.restrict s) ↔ NullMeasurableSet t μ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ h.mono_ac absolutelyContinuous_restrict⟩
+  obtain ⟨t', t'_subs, ht', t't⟩ : ∃ t' ⊆ t, MeasurableSet t' ∧ t' =ᵐ[μ.restrict s] t :=
+    h.exists_measurable_subset_ae_eq
+  have : ∀ᵐ x ∂μ, x ∈ s → (x ∈ t' ↔ x ∈ t) := by
+    apply ae_imp_of_ae_restrict
+    filter_upwards [t't] with x hx using by simpa using hx
+  have : t' =ᵐ[μ] t := by
+    filter_upwards [this] with x hx
+    change (x ∈ t') = (x ∈ t)
+    simp only [eq_iff_iff]
+    tauto
+  exact ht'.nullMeasurableSet.congr this
 
 namespace Measure
 
@@ -911,7 +951,7 @@ theorem mem_map_indicator_ae_iff_mem_map_restrict_ae_of_zero_mem [Zero β] {t : 
   rw [Measure.restrict_apply' hs, Set.indicator_preimage, Set.ite]
   simp_rw [Set.compl_union, Set.compl_inter]
   change μ (((f ⁻¹' t)ᶜ ∪ sᶜ) ∩ ((fun _ => (0 : β)) ⁻¹' t \ s)ᶜ) = 0 ↔ μ ((f ⁻¹' t)ᶜ ∩ s) = 0
-  simp only [ht, ← Set.compl_eq_univ_diff, compl_compl, Set.compl_union, if_true,
+  simp only [ht, ← Set.compl_eq_univ_diff, compl_compl, if_true,
     Set.preimage_const]
   simp_rw [Set.union_inter_distrib_right, Set.compl_inter_self s, Set.union_empty]
 
@@ -949,7 +989,7 @@ theorem indicator_ae_eq_of_restrict_compl_ae_eq_zero (hs : MeasurableSet s)
   filter_upwards [hf] with x hx
   by_cases hxs : x ∈ s
   · simp only [hxs, Set.indicator_of_mem]
-  · simp only [hx hxs, Pi.zero_apply, Set.indicator_apply_eq_zero, eq_self_iff_true, imp_true_iff]
+  · simp only [hx hxs, Pi.zero_apply, Set.indicator_apply_eq_zero, imp_true_iff]
 
 theorem indicator_ae_eq_zero_of_restrict_ae_eq_zero (hs : MeasurableSet s)
     (hf : f =ᵐ[μ.restrict s] 0) : s.indicator f =ᵐ[μ] 0 := by
@@ -957,7 +997,7 @@ theorem indicator_ae_eq_zero_of_restrict_ae_eq_zero (hs : MeasurableSet s)
   filter_upwards [hf] with x hx
   by_cases hxs : x ∈ s
   · simp only [hxs, hx hxs, Set.indicator_of_mem]
-  · simp [hx, hxs]
+  · simp [hxs]
 
 theorem indicator_ae_eq_of_ae_eq_set (hst : s =ᵐ[μ] t) : s.indicator f =ᵐ[μ] t.indicator f := by
   classical exact piecewise_ae_eq_of_ae_eq_set hst

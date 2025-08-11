@@ -149,6 +149,9 @@ def Pi.evalMonoidHom (i : I) : (∀ i, f i) →* f i where
   map_one' := Pi.one_apply i
   map_mul' _ _ := Pi.mul_apply _ _ i
 
+@[simp, norm_cast]
+lemma Pi.coe_evalMonoidHom (i : I) : ⇑(evalMonoidHom f i) = Function.eval i := rfl
+
 /-- `Function.const` as a `MonoidHom`. -/
 @[to_additive (attr := simps) "`Function.const` as an `AddMonoidHom`."]
 def Pi.constMonoidHom (α β : Type*) [MulOneClass β] : β →* α → β where
@@ -279,10 +282,7 @@ theorem Pi.mulSingle_commute [∀ i, MulOneClass <| f i] :
   by_cases h1 : i = k
   · subst h1
     simp [hij]
-  by_cases h2 : j = k
-  · subst h2
-    simp [hij]
-  simp [h1, h2]
+  simp_all
 
 /-- The injection into a pi group with the same values commutes. -/
 @[to_additive "The injection into an additive pi group with the same values commutes."]
@@ -310,7 +310,7 @@ theorem Pi.mulSingle_mul_mulSingle_eq_mulSingle_mul_mulSingle {M : Type*} [CommM
     have hl := congr_fun h l
     have hm := (congr_fun h m).symm
     have hn := (congr_fun h n).symm
-    simp only [mul_apply, mulSingle_apply, if_pos rfl] at hk hl hm hn
+    simp only [mul_apply, mulSingle_apply] at hk hl hm hn
     rcases eq_or_ne k m with (rfl | hkm)
     · refine Or.inl ⟨rfl, not_ne_iff.mp fun hln => (hv ?_).elim⟩
       rcases eq_or_ne k l with (rfl | hkl)

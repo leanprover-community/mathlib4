@@ -139,7 +139,7 @@ lemma goursat :
   have hI₂' : Surjective (Prod.snd ∘ I'.subtype) := by
     simp only [← MonoidHom.coe_snd, ← MonoidHom.coe_comp, ← MonoidHom.range_eq_top,
       MonoidHom.range_comp, Subgroup.range_subtype, I']
-    simp only [← MonoidHom.range_comp, MonoidHom.fst_comp_prod, MonoidHom.range_eq_top]
+    simp only [← MonoidHom.range_comp, MonoidHom.range_eq_top]
     exact (MonoidHom.snd ..).subgroupMap_surjective I
   have := normal_goursatFst hI₁'
   have := normal_goursatSnd hI₂'

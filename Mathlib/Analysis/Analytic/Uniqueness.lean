@@ -94,7 +94,7 @@ theorem HasFPowerSeriesAt.apply_eq_zero {p : FormalMultilinearSeries 𝕜 E F} {
     funext z
     refine Finset.sum_eq_single _ (fun b hb hnb => ?_) fun hn => ?_
     · have := Finset.mem_range_succ_iff.mp hb
-      simp only [hk b (this.lt_of_ne hnb), Pi.zero_apply]
+      simp only [hk b (this.lt_of_ne hnb)]
     · exact False.elim (hn (Finset.mem_range.mpr (lt_add_one k)))
   replace h := h.isBigO_sub_partialSum_pow k.succ
   simp only [psum_eq, zero_sub, Pi.zero_apply, Asymptotics.isBigO_neg_left] at h

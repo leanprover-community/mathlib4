@@ -126,7 +126,7 @@ instance inhabitedCone (F : Discrete PUnit ⥤ C) : Inhabited (Cone F) :=
               intro X Y f
               match X, Y, f with
               | .mk A, .mk B, .up g =>
-                aesop_cat
+                cat_disch
            }
   }⟩
 
@@ -177,7 +177,7 @@ namespace Cone
 
 /-- The isomorphism between a cone on `F` and an element of the functor `F.cones`. -/
 @[simps!]
-def equiv (F : J ⥤ C) : Cone F ≅ ΣX, F.cones.obj X where
+def equiv (F : J ⥤ C) : Cone F ≅ Σ X, F.cones.obj X where
   hom c := ⟨op c.pt, c.π⟩
   inv c :=
     { pt := c.1.unop
@@ -213,7 +213,7 @@ end Cone
 namespace Cocone
 
 /-- The isomorphism between a cocone on `F` and an element of the functor `F.cocones`. -/
-def equiv (F : J ⥤ C) : Cocone F ≅ ΣX, F.cocones.obj X where
+def equiv (F : J ⥤ C) : Cocone F ≅ Σ X, F.cocones.obj X where
   hom c := ⟨c.pt, c.ι⟩
   inv c :=
     { pt := c.1
@@ -254,7 +254,7 @@ structure ConeMorphism (A B : Cone F) where
   /-- A morphism between the two vertex objects of the cones -/
   hom : A.pt ⟶ B.pt
   /-- The triangle consisting of the two natural transformations and `hom` commutes -/
-  w : ∀ j : J, hom ≫ B.π.app j = A.π.app j := by aesop_cat
+  w : ∀ j : J, hom ≫ B.π.app j = A.π.app j := by cat_disch
 
 attribute [reassoc (attr := simp)] ConeMorphism.w
 
@@ -277,6 +277,18 @@ theorem ConeMorphism.ext {c c' : Cone F} (f g : c ⟶ c') (w : f.hom = g.hom) : 
   cases g
   congr
 
+@[reassoc (attr := simp)]
+lemma ConeMorphism.hom_inv_id {c d : Cone F} (f : c ≅ d) : f.hom.hom ≫ f.inv.hom = 𝟙 _ := by
+  simp [← Cone.category_comp_hom]
+
+@[reassoc (attr := simp)]
+lemma ConeMorphism.inv_hom_id {c d : Cone F} (f : c ≅ d) : f.inv.hom ≫ f.hom.hom = 𝟙 _ := by
+  simp [← Cone.category_comp_hom]
+
+instance {c d : Cone F} (f : c ≅ d) : IsIso f.hom.hom := ⟨f.inv.hom, by simp⟩
+
+instance {c d : Cone F} (f : c ≅ d) : IsIso f.inv.hom := ⟨f.hom.hom, by simp⟩
+
 namespace Cones
 
 /-- To give an isomorphism between cones, it suffices to give an
@@ -284,7 +296,7 @@ namespace Cones
   maps. -/
 @[aesop apply safe (rule_sets := [CategoryTheory]), simps]
 def ext {c c' : Cone F} (φ : c.pt ≅ c'.pt)
-    (w : ∀ j, c.π.app j = φ.hom ≫ c'.π.app j := by aesop_cat) : c ≅ c' where
+    (w : ∀ j, c.π.app j = φ.hom ≫ c'.π.app j := by cat_disch) : c ≅ c' where
   hom := { hom := φ.hom }
   inv :=
     { hom := φ.inv
@@ -300,7 +312,7 @@ isomorphism of cones.
 -/
 theorem cone_iso_of_hom_iso {K : J ⥤ C} {c d : Cone K} (f : c ⟶ d) [i : IsIso f.hom] : IsIso f :=
   ⟨⟨{   hom := inv f.hom
-        w := fun j => (asIso f.hom).inv_comp_eq.2 (f.w j).symm }, by aesop_cat⟩⟩
+        w := fun j => (asIso f.hom).inv_comp_eq.2 (f.w j).symm }, by cat_disch⟩⟩
 
 /-- There is a morphism from an extended cone to the original cone. -/
 @[simps]
@@ -325,7 +337,7 @@ def extendIso (s : Cone F) {X : C} (f : X ≅ s.pt) : s.extend f.hom ≅ s where
   inv := { hom := f.inv }
 
 instance {s : Cone F} {X : C} (f : X ⟶ s.pt) [IsIso f] : IsIso (Cones.extend s f) :=
-  ⟨(extendIso s (asIso f)).inv, by aesop_cat⟩
+  ⟨(extendIso s (asIso f)).inv, by cat_disch⟩
 
 /--
 Functorially postcompose a cone for `F` by a natural transformation `F ⟶ G` to give a cone for `G`.
@@ -420,7 +432,7 @@ def functorialityCompFunctoriality (H : D ⥤ E) :
 instance functoriality_full [G.Full] [G.Faithful] : (functoriality F G).Full where
   map_surjective t :=
     ⟨{ hom := G.preimage t.hom
-       w := fun j => G.map_injective (by simpa using t.w j) }, by aesop_cat⟩
+       w := fun j => G.map_injective (by simpa using t.w j) }, by cat_disch⟩
 
 instance functoriality_faithful [G.Faithful] : (Cones.functoriality F G).Faithful where
   map_injective {_X} {_Y} f g h :=
@@ -460,7 +472,7 @@ structure CoconeMorphism (A B : Cocone F) where
   /-- A morphism between the (co)vertex objects in `C` -/
   hom : A.pt ⟶ B.pt
   /-- The triangle made from the two natural transformations and `hom` commutes -/
-  w : ∀ j : J, A.ι.app j ≫ hom = B.ι.app j := by aesop_cat
+  w : ∀ j : J, A.ι.app j ≫ hom = B.ι.app j := by cat_disch
 
 instance inhabitedCoconeMorphism (A : Cocone F) : Inhabited (CoconeMorphism A A) :=
   ⟨{ hom := 𝟙 _ }⟩
@@ -482,6 +494,18 @@ theorem CoconeMorphism.ext {c c' : Cocone F} (f g : c ⟶ c') (w : f.hom = g.hom
   cases g
   congr
 
+@[reassoc (attr := simp)]
+lemma CoconeMorphism.hom_inv_id {c d : Cocone F} (f : c ≅ d) : f.hom.hom ≫ f.inv.hom = 𝟙 _ := by
+  simp [← Cocone.category_comp_hom]
+
+@[reassoc (attr := simp)]
+lemma CoconeMorphism.inv_hom_id {c d : Cocone F} (f : c ≅ d) : f.inv.hom ≫ f.hom.hom = 𝟙 _ := by
+  simp [← Cocone.category_comp_hom]
+
+instance {c d : Cocone F} (f : c ≅ d) : IsIso f.hom.hom := ⟨f.inv.hom, by simp⟩
+
+instance {c d : Cocone F} (f : c ≅ d) : IsIso f.inv.hom := ⟨f.hom.hom, by simp⟩
+
 namespace Cocones
 
 /-- To give an isomorphism between cocones, it suffices to give an
@@ -489,7 +513,7 @@ namespace Cocones
   maps. -/
 @[aesop apply safe (rule_sets := [CategoryTheory]), simps]
 def ext {c c' : Cocone F} (φ : c.pt ≅ c'.pt)
-    (w : ∀ j, c.ι.app j ≫ φ.hom = c'.ι.app j := by aesop_cat) : c ≅ c' where
+    (w : ∀ j, c.ι.app j ≫ φ.hom = c'.ι.app j := by cat_disch) : c ≅ c' where
   hom := { hom := φ.hom }
   inv :=
     { hom := φ.inv
@@ -506,7 +530,7 @@ isomorphism of cocones.
 theorem cocone_iso_of_hom_iso {K : J ⥤ C} {c d : Cocone K} (f : c ⟶ d) [i : IsIso f.hom] :
     IsIso f :=
   ⟨⟨{ hom := inv f.hom
-      w := fun j => (asIso f.hom).comp_inv_eq.2 (f.w j).symm }, by aesop_cat⟩⟩
+      w := fun j => (asIso f.hom).comp_inv_eq.2 (f.w j).symm }, by cat_disch⟩⟩
 
 /-- There is a morphism from a cocone to its extension. -/
 @[simps]
@@ -531,7 +555,7 @@ def extendIso (s : Cocone F) {X : C} (f : s.pt ≅ X) : s ≅ s.extend f.hom whe
   inv := { hom := f.inv }
 
 instance {s : Cocone F} {X : C} (f : s.pt ⟶ X) [IsIso f] : IsIso (Cocones.extend s f) :=
-  ⟨(extendIso s (asIso f)).inv, by aesop_cat⟩
+  ⟨(extendIso s (asIso f)).inv, by cat_disch⟩
 
 /-- Functorially precompose a cocone for `F` by a natural transformation `G ⟶ F` to give a cocone
 for `G`. -/
@@ -623,7 +647,7 @@ def functorialityCompFunctoriality (H : D ⥤ E) :
 instance functoriality_full [G.Full] [G.Faithful] : (functoriality F G).Full where
   map_surjective t :=
     ⟨{ hom := G.preimage t.hom
-       w := fun j => G.map_injective (by simpa using t.w j) }, by aesop_cat⟩
+       w := fun j => G.map_injective (by simpa using t.w j) }, by cat_disch⟩
 
 instance functoriality_faithful [G.Faithful] : (functoriality F G).Faithful where
   map_injective {_X} {_Y} f g h :=

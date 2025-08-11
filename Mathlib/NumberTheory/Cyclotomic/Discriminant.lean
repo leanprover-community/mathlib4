@@ -62,7 +62,7 @@ theorem discr_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : F
       (-1) ^ ((p ^ (k + 1)).totient / 2) * p ^ (p ^ k * ((p - 1) * (k + 1) - 1)) := by
   haveI hne := IsCyclotomicExtension.neZero' (p ^ (k + 1)) K L
   haveI mf : Module.Finite K L := finiteDimensional {p ^ (k + 1)} K L
-  haveI se : Algebra.IsSeparable K L := (isGalois (p ^ (k + 1)) K L).to_isSeparable
+  haveI se : Algebra.IsSeparable K L := isSeparable {p ^ (k + 1)} K L
   rw [discr_powerBasis_eq_norm, finrank L hirr, hζ.powerBasis_gen _,
     ← hζ.minpoly_eq_cyclotomic_of_irreducible hirr, totient_prime_pow hp.out (succ_pos k),
     Nat.add_one_sub_one]
@@ -130,19 +130,18 @@ theorem discr_prime_pow [hcycl : IsCyclotomicExtension {p ^ k} K L] [hp : Fact p
     discr K (hζ.powerBasis K).basis =
       (-1) ^ ((p ^ k).totient / 2) * p ^ (p ^ (k - 1) * ((p - 1) * k - 1)) := by
   rcases k with - | k
-  · simp only [coe_basis, _root_.pow_zero, powerBasis_gen _ hζ, totient_one, mul_zero, mul_one,
+  · simp only [coe_basis, _root_.pow_zero, powerBasis_gen _ hζ, totient_one, mul_zero,
       show 1 / 2 = 0 by rfl, discr, traceMatrix]
     have hζone : ζ = 1 := by simpa using hζ
     rw [hζ.powerBasis_dim _, hζone, ← (algebraMap K L).map_one,
       minpoly.eq_X_sub_C_of_algebraMap_inj _ (algebraMap K L).injective, natDegree_X_sub_C]
-    simp only [traceMatrix, map_one, one_pow, Matrix.det_unique, traceForm_apply, mul_one]
+    simp only [map_one, one_pow, Matrix.det_unique, traceForm_apply, mul_one]
     rw [← (algebraMap K L).map_one, trace_algebraMap, finrank _ hirr]
     norm_num
   · by_cases hk : p ^ (k + 1) = 2
-    · have hp : p = 2 := by
+    · obtain rfl : p = 2 := by
         rw [← pow_one 2] at hk
         exact eq_of_prime_pow_eq (prime_iff.1 hp.out) (prime_iff.1 Nat.prime_two) (succ_pos _) hk
-      subst hp
       nth_rw 2 [← pow_one 2] at hk
       replace hk := Nat.pow_right_injective rfl.le hk
       rw [add_eq_right] at hk

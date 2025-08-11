@@ -39,7 +39,7 @@ def permsOfList : List α → List (Perm α)
 theorem length_permsOfList : ∀ l : List α, length (permsOfList l) = l.length !
   | [] => rfl
   | a :: l => by
-    simp [Nat.factorial_succ, permsOfList, length_permsOfList, comp_def, succ_mul, add_comm]
+    simp [Nat.factorial_succ, permsOfList, length_permsOfList, succ_mul, add_comm]
 
 theorem mem_permsOfList_of_mem {l : List α} {f : Perm α} (h : ∀ x, f x ≠ x → x ∈ l) :
     f ∈ permsOfList l := by
@@ -97,7 +97,7 @@ theorem nodup_permsOfList : ∀ {l : List α}, l.Nodup → (permsOfList l).Nodup
     have hln' : (permsOfList l).Nodup := nodup_permsOfList hl'
     have hmeml : ∀ {f : Perm α}, f ∈ permsOfList l → f a = a := fun {f} hf =>
       not_not.1 (mt (mem_of_mem_permsOfList hf) (nodup_cons.1 hl).1)
-    rw [permsOfList, List.nodup_append, List.nodup_flatMap, pairwise_iff_getElem]
+    rw [permsOfList, List.nodup_append', List.nodup_flatMap, pairwise_iff_getElem]
     refine ⟨?_, ⟨⟨?_,?_ ⟩, ?_⟩⟩
     · exact hln'
     · exact fun _ _ => hln'.map fun _ _ => mul_left_cancel
@@ -144,8 +144,6 @@ instance Equiv.instFintype [Fintype α] [Fintype β] : Fintype (α ≃ β) :=
         @Fintype.ofEquiv _ (Perm α) fintypePerm
           (equivCongr (Equiv.refl α) (eα.trans (Eq.recOn h eβ.symm)) : α ≃ α ≃ (α ≃ β))
   else ⟨∅, fun x => False.elim (h (Fintype.card_eq.2 ⟨x.symm⟩))⟩
-
-@[deprecated (since := "2024-11-19")] alias equivFintype := Equiv.instFintype
 
 @[to_additive]
 instance MulEquiv.instFintype

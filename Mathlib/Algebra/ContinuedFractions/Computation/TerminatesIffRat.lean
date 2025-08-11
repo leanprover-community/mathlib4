@@ -136,7 +136,7 @@ some technical translation lemmas. More precisely, in this section, we show that
 number `q : ℚ` and value `v : K` with `v = ↑q`, the continued fraction of `q` and `v` coincide.
 In particular, we show that
 ```lean
-    (↑(GenContFract.of q : GenContFract ℚ) : GenContFract K) = GenContFract.of v`
+    (↑(GenContFract.of q : GenContFract ℚ) : GenContFract K) = GenContFract.of v
 ```
 in `GenContFract.coe_of_rat_eq`.
 
@@ -210,7 +210,7 @@ theorem coe_of_rat_eq (v_eq_q : v = (↑q : K)) :
     (⟨(of q).h, (of q).s.map (Pair.map (↑))⟩ : GenContFract K) = of v := by
   rcases gcf_v_eq : of v with ⟨h, s⟩; subst v
   obtain rfl : ↑⌊(q : K)⌋ = h := by injection gcf_v_eq
-  simp [coe_of_h_rat_eq rfl, coe_of_s_rat_eq rfl, gcf_v_eq]
+  simp [coe_of_s_rat_eq rfl, gcf_v_eq]
 
 theorem of_terminates_iff_of_rat_terminates {v : K} {q : ℚ} (v_eq_q : v = (q : K)) :
     (of v).Terminates ↔ (of q).Terminates := by

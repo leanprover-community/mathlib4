@@ -18,10 +18,10 @@ and `λ = η - 1`.
 
 ## Main results
 * `IsCyclotomicExtension.Rat.Three.Units.mem`: Given a unit `u : (𝓞 K)ˣ`, we have that
-`u ∈ {1, -1, η, -η, η^2, -η^2}`.
+  `u ∈ {1, -1, η, -η, η^2, -η^2}`.
 
 * `IsCyclotomicExtension.Rat.Three.eq_one_or_neg_one_of_unit_of_congruent`: Given a unit
-`u : (𝓞 K)ˣ`, if `u` is congruent to an integer modulo `3`, then `u = 1` or `u = -1`.
+  `u : (𝓞 K)ˣ`, if `u` is congruent to an integer modulo `3`, then `u = 1` or `u = -1`.
 
 This is a special case of the so-called *Kummer's lemma* (see for example [washington_cyclotomic],
 Theorem 5.36
@@ -83,7 +83,7 @@ private lemma lambda_sq : λ ^ 2 = -3 * η := by
   _ = -3 * η := by ring
 
 /-- We have that `η ^ 2 = -η - 1`. -/
-lemma eta_sq : (η ^ 2 : 𝓞 K) = - η - 1 := by
+lemma eta_sq : (η ^ 2 : 𝓞 K) = -η - 1 := by
   rw [← neg_add', ← add_eq_zero_iff_eq_neg, ← add_assoc]
   ext; simpa using hζ.isRoot_cyclotomic (by decide)
 
@@ -175,7 +175,7 @@ lemma lambda_pow_four_dvd_cube_sub_one_of_dvd_sub_one {x : 𝓞 K} (h : λ ∣ x
     λ ^ 4 ∣ x ^ 3 - 1 := by
   obtain ⟨y, hy⟩ := h
   have : x ^ 3 - 1 = λ ^ 3 * (y * (y - 1) * (y - (η + 1))) := by
-    calc _ =  (x - 1) * (x - 1 - λ) * (x - 1 - λ * (η + 1)) := by
+    calc _ = (x - 1) * (x - 1 - λ) * (x - 1 - λ * (η + 1)) := by
           simp only [coe_eta, cube_sub_one_eq_mul hζ x]; ring
     _ = _ := by rw [hy]; ring
   rw [this, pow_succ]

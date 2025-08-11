@@ -798,7 +798,7 @@ instance sum : Primcodable (α ⊕ β) :=
         fun n =>
         show _ = encode (decodeSum n) by
           simp only [decodeSum, Nat.boddDiv2_eq]
-          cases Nat.bodd n <;> simp [decodeSum]
+          cases Nat.bodd n <;> simp
           · cases @decode α _ n.div2 <;> rfl
           · cases @decode β _ n.div2 <;> rfl⟩
 
@@ -818,7 +818,7 @@ instance list : Primcodable (List α) :=
         apply Nat.case_strong_induction_on n; · simp
         intro n IH; simp
         rcases @decode α _ n.unpair.1 with - | a; · rfl
-        simp only [decode_eq_ofNat, Option.some.injEq, Option.bind_some, Option.map_some]
+        simp only [Option.bind_some, Option.map_some]
         suffices ∀ (o : Option (List ℕ)) (p), encode o = encode p →
             encode (Option.map (List.cons (encode a)) o) = encode (Option.map (List.cons a) p) from
           this _ _ (IH _ (Nat.unpair_right_le n))
@@ -986,7 +986,7 @@ theorem nat_strong_rec (f : α → ℕ → σ) {g : α → List σ → Option σ
   suffices Primrec₂ fun a n => (List.range n).map (f a) from
     Primrec₂.option_some_iff.1 <|
       (list_getElem?.comp (this.comp fst (succ.comp snd)) snd).to₂.of_eq fun a n => by
-        simp [List.getElem?_range (Nat.lt_succ_self n)]
+        simp
   Primrec₂.option_some_iff.1 <|
     (nat_rec (const (some []))
           (to₂ <|
@@ -1007,7 +1007,7 @@ theorem listLookup [DecidableEq α] : Primrec₂ (List.lookup : α → List (α 
         (snd.comp <| snd.comp snd)).of_eq
   fun a ps => by
   induction ps with simp [List.lookup, *]
-  | cons p ps ih => cases ha : a == p.1 <;> simp [ha]
+  | cons p ps ih => cases ha : a == p.1 <;> simp
 
 theorem nat_omega_rec' (f : β → σ) {m : β → ℕ} {l : β → List β} {g : β → List σ → Option σ}
     (hm : Primrec m) (hl : Primrec l) (hg : Primrec₂ g)
@@ -1043,12 +1043,7 @@ theorem nat_omega_rec' (f : β → σ) {m : β → ℕ} {l : β → List β} {g 
         have bindList_m_lt (k : ℕ) : ∀ b' ∈ bindList b k, m b' < m b + 1 - k := by
           induction k with simp [bindList]
           | succ k ih =>
-            intro a₂ a₁ ha₁ ha₂
-            have : k ≤ m b :=
-              Nat.lt_succ.mp (by simpa using Nat.add_lt_of_lt_sub <| Nat.zero_lt_of_lt (ih a₁ ha₁))
-            have : m a₁ ≤ m b - k :=
-              Nat.lt_succ.mp (by rw [← Nat.succ_sub this]; simpa using ih a₁ ha₁)
-            exact lt_of_lt_of_le (Ord a₁ a₂ ha₂) this
+            grind
         List.eq_nil_iff_forall_not_mem.mpr
           (by intro b' ha'; by_contra; simpa using bindList_m_lt (m b + 1) b' ha')
       have mapGraph_graph {bs bs' : List β} (has : bs' ⊆ bs) :
