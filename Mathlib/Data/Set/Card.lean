@@ -365,6 +365,22 @@ theorem encard_eq_three {α : Type u_1} {s : Set α} :
     rw [← hs, insert_diff_singleton, insert_eq_of_mem hx]
   rw [hs, encard_insert_of_notMem, encard_insert_of_notMem, encard_singleton] <;> aesop
 
+theorem encard_eq_four {α : Type u_1} {s : Set α} :
+    encard s = 4 ↔ ∃ w x y z, w ≠ x ∧ w ≠ y ∧ w ≠ z ∧ x ≠ y ∧ x ≠ z ∧ y ≠ z ∧ s = {w, x, y, z} := by
+  refine ⟨fun h ↦ ?_, fun ⟨w, x, y, z, hwx, hwy, hwz, hxy, hxz, hyz, hs⟩ ↦ ?_⟩
+  · obtain ⟨w, hw⟩ := nonempty_of_encard_ne_zero (s := s) (by rw [h]; simp)
+    rw [← insert_eq_of_mem hw, ← insert_diff_singleton,
+      encard_insert_of_notMem (fun h ↦ h.2 rfl), (by exact rfl : (4 : ℕ∞) = 3 + 1),
+      WithTop.add_right_inj WithTop.one_ne_top, encard_eq_three] at h
+    obtain ⟨x, y, z, hxy, hxz, hyz, hs⟩ := h
+    refine ⟨w, x, y, z, ?_, ?_, ?_, hxy, hxz, hyz, ?_⟩
+    · rintro rfl; exact (hs.symm.subset (Or.inl rfl)).2 rfl
+    · rintro rfl; exact (hs.symm.subset (Or.inr (Or.inl rfl))).2 rfl
+    · rintro rfl; exact (hs.symm.subset (Or.inr (Or.inr rfl))).2 rfl
+    rw [← hs, insert_diff_singleton, insert_eq_of_mem hw]
+  rw [hs, encard_insert_of_notMem, encard_insert_of_notMem, encard_insert_of_notMem,
+    encard_singleton] <;> aesop
+
 theorem Nat.encard_range (k : ℕ) : {i | i < k}.encard = k := by
   convert encard_coe_eq_coe_finsetCard (Finset.range k) using 1
   · rw [Finset.coe_range, Iio_def]
@@ -1128,6 +1144,11 @@ theorem ncard_eq_two : s.ncard = 2 ↔ ∃ x y, x ≠ y ∧ s = {x, y} := by
 
 theorem ncard_eq_three : s.ncard = 3 ↔ ∃ x y z, x ≠ y ∧ x ≠ z ∧ y ≠ z ∧ s = {x, y, z} := by
   rw [← encard_eq_three, ncard_def]
+  simp
+
+theorem ncard_eq_four : s.ncard = 4 ↔
+    ∃ w x y z, w ≠ x ∧ w ≠ y ∧ w ≠ z ∧ x ≠ y ∧ x ≠ z ∧ y ≠ z ∧ s = {w, x, y, z} := by
+  rw [← encard_eq_four, ncard_def]
   simp
 
 end ncard
