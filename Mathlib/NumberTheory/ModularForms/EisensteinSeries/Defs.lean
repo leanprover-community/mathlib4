@@ -196,5 +196,3 @@ lemma eisensteinSeries_SIF_apply (k : ℤ) (z : ℍ) :
     eisensteinSeries_SIF a k z = eisensteinSeries a k z := rfl
 
 end EisensteinSeries
-
-#min_imports
