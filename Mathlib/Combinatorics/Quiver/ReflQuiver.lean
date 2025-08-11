@@ -141,7 +141,7 @@ open Opposite
 
 /-- `Vᵒᵖ` reverses the direction of all arrows of `V`. -/
 instance opposite {V} [ReflQuiver V] : ReflQuiver Vᵒᵖ where
-   id X := op (𝟙rq X.unop)
+  id X := op (𝟙rq X.unop)
 
 instance discreteReflQuiver (V : Type u) : ReflQuiver.{u+1} (Discrete V) :=
   { discreteCategory V with }
