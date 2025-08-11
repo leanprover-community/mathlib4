@@ -54,12 +54,12 @@ theorem congr_arg_heq {β : α → Sort*} (f : ∀ a, β a) :
 theorem dcongr_heq.{u, v}
     {α₁ α₂ : Sort u}
     {β₁ : α₁ → Sort v} {β₂ : α₂ → Sort v}
-    {fn₁ : ∀ a, β₁ a} {fn₂ : ∀ a, β₂ a}
+    {f₁ : ∀ a, β₁ a} {f₂ : ∀ a, β₂ a}
     {a₁ : α₁} {a₂ : α₂}
     (hargs : a₁ ≍ a₂)
     (ht : ∀ t₁ t₂, t₁ ≍ t₂ → β₁ t₁ = β₂ t₂)
-    (hf : α₁ = α₂ → β₁ ≍ β₂ → fn₁ ≍ fn₂) :
-    fn₁ a₁ ≍ fn₂ a₂ := by
+    (hf : α₁ = α₂ → β₁ ≍ β₂ → f₁ ≍ f₂) :
+    f₁ a₁ ≍ f₂ a₂ := by
   cases hargs
   cases funext fun v => ht v v .rfl
   cases hf rfl .rfl
