@@ -68,7 +68,7 @@ theorem integrableOn_exp_mul_complex_Ioi {a : ℂ} (ha : a.re < 0) (c : ℝ) :
 
 theorem integrableOn_exp_mul_complex_Iic {a : ℂ} (ha : 0 < a.re) (c : ℝ) :
     IntegrableOn (fun x : ℝ => Complex.exp (a * x)) (Iic c) := by
-  simpa using integrableOn_Iic_iff_integrableOn_Iio.mpr
+  simpa using Iff.mpr integrableOn_Iic_iff_integrableOn_Iio
     (integrableOn_exp_mul_complex_Ioi (a := -a) (by simpa) (-c)).comp_neg_Iio
 
 theorem integrableOn_exp_mul_Ioi {a : ℝ} (ha : a < 0) (c : ℝ) :

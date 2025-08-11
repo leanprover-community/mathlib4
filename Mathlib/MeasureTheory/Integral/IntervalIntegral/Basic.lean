@@ -516,7 +516,7 @@ lemma intervalIntegrable_of_odd₀ (h₁f : ∀ x, -f x = f (-x))
     (ht : ‖f (min 0 t)‖ₑ ≠ ∞ := by finiteness) :
     IntervalIntegrable f volume 0 t := by
   rcases lt_trichotomy t 0 with h | h | h
-  · rw [IntervalIntegrable.iff_comp_neg ht]
+  · rw [IntervalIntegrable.iff_comp_neg]
     conv => arg 1; intro t; rw [← h₁f]
     apply IntervalIntegrable.neg
     simp [h₂f (-t) (by simp [h])]
