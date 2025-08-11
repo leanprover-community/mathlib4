@@ -6415,6 +6415,7 @@ import Mathlib.Topology.FiberBundle.IsHomeomorphicTrivialBundle
 import Mathlib.Topology.FiberBundle.Trivialization
 import Mathlib.Topology.FiberPartition
 import Mathlib.Topology.Filter
+import Mathlib.Topology.FinalTopology
 import Mathlib.Topology.GDelta.Basic
 import Mathlib.Topology.GDelta.MetrizableSpace
 import Mathlib.Topology.GDelta.UniformSpace
