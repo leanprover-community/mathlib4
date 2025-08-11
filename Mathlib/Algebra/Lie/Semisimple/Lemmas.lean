@@ -73,14 +73,14 @@ theorem hasTrivialRadical_of_isIrreducible_of_isFaithful
   simpa [this, ← ht] using h
 
 variable {k L M}
-variable {R : Type*} [CommRing R] [IsReduced R] [LieAlgebra R L] [Module R M] [LieModule R L M]
+variable {R : Type*} [CommRing R] [LieAlgebra R L] [Module R M] [LieModule R L M]
 
 open LinearMap in
-lemma trace_toEnd_eq_zero {s : Set L} (hs : ∀ x ∈ s, _root_.IsNilpotent (toEnd R _ M x))
+lemma trace_toEnd_eq_zero {s : Set L} (hs : ∀ x ∈ s, LinearMap.trace R _ (toEnd R _ M x) = 0)
     {x : L} (hx : x ∈ LieSubalgebra.lieSpan R L s) :
     trace R _ (toEnd R _ M x) = 0 := by
   induction hx using LieSubalgebra.lieSpan_induction with
-  | mem u hu => simpa using isNilpotent_trace_of_isNilpotent (hs u hu)
+  | mem u hu => simpa using hs u hu
   | zero => simp
   | add u v _ _ hu hv => simp [hu, hv]
   | smul t u _ hu => simp [hu]

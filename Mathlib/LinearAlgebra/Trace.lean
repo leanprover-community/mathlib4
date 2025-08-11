@@ -83,6 +83,16 @@ theorem trace_eq_matrix_trace (f : M →ₗ[R] M) :
   rw [trace_eq_matrix_trace_of_finset R b.reindexFinsetRange, ← traceAux_def, ← traceAux_def,
     traceAux_eq R b b.reindexFinsetRange]
 
+variable {R} in
+@[simp] theorem _root_.Matrix.trace_toLin_eq (A : Matrix ι ι R) (b : Basis ι R M) :
+    LinearMap.trace R _ (Matrix.toLin b b A) = A.trace := by
+  simp [trace_eq_matrix_trace R b]
+
+variable {R} in
+@[simp] theorem _root_.Matrix.trace_toLin'_eq (A : Matrix ι ι R) :
+    LinearMap.trace R _ A.toLin' = A.trace :=
+  A.trace_toLin_eq (Pi.basisFun R ι)
+
 theorem trace_mul_comm (f g : M →ₗ[R] M) : trace R M (f * g) = trace R M (g * f) := by
   classical
   by_cases H : ∃ s : Finset M, Nonempty (Basis s R M)
