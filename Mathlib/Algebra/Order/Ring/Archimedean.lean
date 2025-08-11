@@ -10,13 +10,11 @@ import Mathlib.RingTheory.Valuation.Basic
 /-!
 # Archimedean classes of a linearly ordered ring
 
-The archimedean classes of a strictly linearly ordered ring can be given the structure of an
+The archimedean classes of a linearly ordered ring can be given the structure of an
 `AddCommMonoid`, by defining
-
 * `0 = mk 1`
 * `mk x + mk y = mk (x * y)`
-
-For a strictly linearly ordered field, we can define a negative as
+For a linearly ordered field, we can define a negative as
 
 * `-mk x = mk x⁻¹`
 
