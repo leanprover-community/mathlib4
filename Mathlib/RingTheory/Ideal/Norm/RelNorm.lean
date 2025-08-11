@@ -3,8 +3,8 @@ Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Alex J. Best
 -/
-import Mathlib.RingTheory.DedekindDomain.Instances
 import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
+import Mathlib.RingTheory.Localization.AtPrime.Extension
 
 /-!
 
@@ -221,6 +221,8 @@ theorem spanNorm_spanNorm_of_bot_or_top (eq_bot_or_top : ∀ I : Ideal R, I = �
   · rw [h, spanNorm_eq_bot_iff, spanNorm_eq_bot_iff, spanNorm_eq_bot_iff.mp h]
   · exact h ▸ (eq_top_iff_one _).mpr <| le_spanNorm_spanNorm R T I <| (eq_top_iff_one _).mp h
 
+attribute [local instance] Localization.AtPrime.algebra_localization_localization
+
 theorem spanNorm_spanNorm [IsDedekindDomain R] [IsDedekindDomain T] [IsDedekindDomain S]
     (I : Ideal S) : spanNorm R (spanNorm T I) = spanNorm R I := by
   refine eq_of_localization_maximal fun P hP ↦ ?_
@@ -233,38 +235,12 @@ theorem spanNorm_spanNorm [IsDedekindDomain R] [IsDedekindDomain T] [IsDedekindD
   let Rₚ := Localization.AtPrime P
   let Tₚ := Localization Mₜ
   let Sₚ := Localization Mₛ
+  have : NeZero P := ⟨hP⟩
   have h : Mₜ ≤ T⁰ :=
-    algebraMapSubmonoid_le_nonZeroDivisors_of_faithfulSMul _ (primeCompl_le_nonZeroDivisors P)
-  -- We need to register some instances
-  have : IsLocalization (algebraMapSubmonoid S Mₜ) Sₚ := by
-    rw [show algebraMapSubmonoid S Mₜ = Mₛ by simp [Mₛ, Mₜ]]
-    exact Localization.isLocalization
-  let _ : Algebra Tₚ Sₚ := localizationAlgebra Mₜ S
-  have : IsScalarTower T Tₚ Sₚ := by
-    refine IsScalarTower.of_algebraMap_eq' ?_
-    rw [RingHom.algebraMap_toAlgebra, IsLocalization.map_comp, ← IsScalarTower.algebraMap_eq]
-  have : NoZeroSMulDivisors Tₚ Sₚ := NoZeroSMulDivisors_of_isLocalization T S Tₚ Sₚ h
-  have : FaithfulSMul Tₚ Sₚ := NoZeroSMulDivisors.iff_faithfulSMul.mp this
-  have : Module.Finite Tₚ Sₚ := Module.Finite.of_isLocalization T S Mₜ
-  have : Algebra.IsSeparable (FractionRing Tₚ) (FractionRing Sₚ) :=
-    FractionRing.isSeparable_of_isLocalization S Tₚ Sₚ h
-  have : NoZeroSMulDivisors R Sₚ := NoZeroSMulDivisors.trans_faithfulSMul R Rₚ _
-  have : IsScalarTower R Tₚ Sₚ := by
-    refine IsScalarTower.of_algebraMap_eq' ?_
-    rw [IsScalarTower.algebraMap_eq R T Tₚ, ← RingHom.comp_assoc,
-      ← IsScalarTower.algebraMap_eq T Tₚ Sₚ, ← IsScalarTower.algebraMap_eq]
-  have : IsScalarTower Rₚ Tₚ Sₚ := by
-    refine ⟨fun a b c ↦ a.ind fun ⟨a₁, a₂⟩ ↦ ?_⟩
-    have : a₂.val ≠ 0 := nonZeroDivisors.ne_zero <| primeCompl_le_nonZeroDivisors P <| a₂.prop
-    rw [← smul_right_inj this, ← smul_assoc (M := R) (N := Tₚ), ← smul_assoc (M := R) (α := Tₚ),
-      ← smul_assoc (M := R) (α := Sₚ), Localization.smul_mk, smul_eq_mul, Localization.mk_eq_mk',
-      IsLocalization.mk'_mul_cancel_left, algebraMap_smul, algebraMap_smul, smul_assoc]
-  have : Submodule.IsPrincipal (map (algebraMap S Sₚ) I) := by
-    have : IsPrincipalIdealRing Sₚ :=
-      IsDedekindDomain.isPrincipalIdealRing_localization_over_prime S P hP
-    exact IsPrincipalIdealRing.principal _
-  let _ : Algebra (FractionRing Tₚ) (FractionRing Sₚ) := by
-    exact FractionRing.liftAlgebra Tₚ (FractionRing Sₚ)
+      algebraMapSubmonoid_le_nonZeroDivisors_of_faithfulSMul _ (primeCompl_le_nonZeroDivisors P)
+  have : IsLocalization (algebraMapSubmonoid S Mₜ) Sₚ :=
+    IsLocalization.AtPrime.isLocalization_map_map T S P Sₚ
+  have : Submodule.IsPrincipal (map (algebraMap S Sₚ) I) := IsPrincipalIdealRing.principal _
   rw [← spanIntNorm_localization R (spanNorm T I) _ (primeCompl_le_nonZeroDivisors P) Tₚ,
     ← spanIntNorm_localization T (Rₘ := Tₚ) I _ h Sₚ, ← spanIntNorm_localization R (Rₘ := Rₚ) I _
     (primeCompl_le_nonZeroDivisors P) Sₚ, ← (I.map _).span_singleton_generator, spanNorm_singleton,

@@ -108,6 +108,9 @@ theorem mem_primeCompl_iff {P : Ideal α} [P.IsPrime] {x : α} :
 theorem zero_notMem_primeCompl (P : Ideal α) [P.IsPrime] :
     0 ∉ P.primeCompl := by simp
 
+theorem not_zero_of_mem_primeCompl {P : Ideal α} [hp : P.IsPrime] {x : α} (hx : x ∈ P.primeCompl) :
+    x ≠ 0 := by aesop
+
 end Ideal
 
 end Semiring
