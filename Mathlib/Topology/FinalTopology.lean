@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xiangyu Li
 -/
 import Mathlib.Topology.Basic
-import Mathlib.Topology.Order.Basic
+import Mathlib.Topology.Order
 
 /-!
 # Final Topology
