@@ -52,10 +52,16 @@ def id (F : LaxFunctor B C) : Icon F F where
 section vComp
 variable {F G H : LaxFunctor B C} (η : Icon F G) (θ : Icon G H)
 
+/-- The app component of the vertical composition of icons. By definition, it is an
+`eqToHom` 1-cell along the equality on objects between the source and target functors
+that can be deduced from the available icons. -/
 abbrev vCompApp (x : B) :
     F.obj x ⟶ H.obj x :=
   eqToHom <| (η.obj_eq x).trans (θ.obj_eq x)
 
+/-- The naturality component 2-cell of the vertical composition of icons. Up to the equality of
+objects and morphisms at hand, this is in fact the naturality component of the underlying oplax
+natural transformation of lax functors. -/
 abbrev vCompNaturality {x y : B} (f : x ⟶ y) :
     F.map f ≫ vCompApp η θ y ⟶ vCompApp η θ x ≫ H.map f :=
   letI i₁ := eqToHomTransIso (η.obj_eq y) (θ.obj_eq y)
@@ -198,7 +204,9 @@ lemma vCompNaturality_naturality {x y : B} {u v : x ⟶ y} (f : u ⟶ v) :
 
 end vComp
 
-/-- Vertical composition of icons. -/
+/-- Vertical composition of icons. This is in fact the vertical composition of the underlying
+oplax natural transformations, with correction terms added so that the app component can be a
+single `eqToHom` morphism (rather than a composition of such). -/
 def vComp {F G H : LaxFunctor B C} (η : Icon F G) (θ : Icon G H) :
     Icon F H where
   app x := vCompApp η θ x
