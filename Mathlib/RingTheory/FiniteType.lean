@@ -218,9 +218,7 @@ def FiniteType (f : A →+* B) : Prop :=
 
 lemma finiteType_algebraMap [Algebra A B] :
     (algebraMap A B).FiniteType ↔ Algebra.FiniteType A B := by
-  delta FiniteType
-  congr!
-  exact Algebra.algebra_ext _ _ fun _ ↦ rfl
+  rw [FiniteType, toAlgebra_algebraMap]
 
 namespace Finite
 
