@@ -3,6 +3,7 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.Algebra.Lie.Matrix
 import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.LinearAlgebra.RootSystem.CartanMatrix
 
@@ -60,7 +61,7 @@ namespace RootPairing.GeckConstruction
 
 variable {ι R M N : Type*} [Finite ι] [CommRing R] [IsDomain R] [CharZero R]
   [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
-  {P : RootSystem ι R M N} [P.IsCrystallographic] {b : P.Base}
+  {P : RootPairing ι R M N} [P.IsCrystallographic] {b : P.Base}
 
 /-- Part of an `sl₂` triple used in Geck's construction of a Lie algebra from a root system. -/
 def e (i : b.support) :
@@ -139,7 +140,7 @@ variable {b}
 attribute [local simp] Ring.lie_def Matrix.mul_apply Matrix.one_apply Matrix.diagonal_apply
 
 omit [Finite ι] [IsDomain R] [CharZero R] [P.IsCrystallographic] in
-lemma ω_mul_ω [DecidableEq ι] [Fintype ι] :
+@[simp] lemma ω_mul_ω [DecidableEq ι] [Fintype ι] :
     ω b * ω b = 1 := by
   ext (k | k) (l | l) <;>
   simp [ω, -indexNeg_neg]

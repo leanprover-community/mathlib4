@@ -251,11 +251,8 @@ private lemma lie_e_f_ne_aux₂ :
       Matrix.transpose_mul, Matrix.mul_apply', lie_e_f_ne_aux₁ hij.symm]
     simp
 
-/-- Lemma 3.5 from [Geck](Geck2017).
-Note that the assumption `[P.IsNotG2]` is redundant and can be dropped by addressing:
-https://github.com/leanprover-community/mathlib4/blob/6a0a7c723bd4fdc5ca679048efb76eb2bf725b3e/Mathlib/LinearAlgebra/RootSystem/Chain.lean#L551
--/
-lemma lie_e_f_ne [P.IsNotG2] :
+/-- Lemma 3.5 from [Geck](Geck2017). -/
+lemma lie_e_f_ne [P.IsReduced] [P.IsIrreducible] :
     ⁅e i, f j⁆ = 0 := by
   letI := P.indexNeg
   classical
