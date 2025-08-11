@@ -56,10 +56,7 @@ namespace SimplicialComplex
 
 A term `φ : Hom K L` consists of a function `toFun : U → V` together with
 `map_faces`, which states: for every `s ∈ K.faces`, the image
-`Finset.image toFun s` is in `L.faces`.
-
-The `@[ext]` attribute provides extensionality: two morphisms are equal when
-their `toFun` agree pointwise. -/
+`Finset.image toFun s` is in `L.faces`. -/
 @[ext] structure Hom (K : SimplicialComplex U) (L : SimplicialComplex V) where
   /-- The underlying map on vertices. Use coercion to treat a morphism as `U → V`. -/
   toFun : U → V
@@ -118,5 +115,3 @@ mapping a face along `f ∘ g` equals first mapping along `g` then along `f`. -/
 end Hom
 
 end SimplicialComplex
-
-#lint
