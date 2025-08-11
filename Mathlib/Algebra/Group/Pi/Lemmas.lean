@@ -149,6 +149,9 @@ def Pi.evalMonoidHom (i : I) : (∀ i, f i) →* f i where
   map_one' := Pi.one_apply i
   map_mul' _ _ := Pi.mul_apply _ _ i
 
+@[simp, norm_cast]
+lemma Pi.coe_evalMonoidHom (i : I) : ⇑(evalMonoidHom f i) = Function.eval i := rfl
+
 /-- `Function.const` as a `MonoidHom`. -/
 @[to_additive (attr := simps) "`Function.const` as an `AddMonoidHom`."]
 def Pi.constMonoidHom (α β : Type*) [MulOneClass β] : β →* α → β where
@@ -279,10 +282,7 @@ theorem Pi.mulSingle_commute [∀ i, MulOneClass <| f i] :
   by_cases h1 : i = k
   · subst h1
     simp [hij]
-  by_cases h2 : j = k
-  · subst h2
-    simp [hij]
-  simp [h1, h2]
+  simp_all
 
 /-- The injection into a pi group with the same values commutes. -/
 @[to_additive "The injection into an additive pi group with the same values commutes."]

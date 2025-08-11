@@ -403,7 +403,7 @@ theorem mem_powerset : ∀ {x y : PSet}, y ∈ powerset x ↔ y ⊆ x
 
 /-- The pre-set union operator -/
 def sUnion (a : PSet) : PSet :=
-  ⟨Σx, (a.Func x).Type, fun ⟨x, y⟩ => (a.Func x).Func y⟩
+  ⟨Σ x, (a.Func x).Type, fun ⟨x, y⟩ => (a.Func x).Func y⟩
 
 @[inherit_doc]
 prefix:110 "⋃₀ " => sUnion
