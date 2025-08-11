@@ -397,12 +397,10 @@ theorem lift_symm_apply (F : FreeAlgebra R X →ₐ[R] A) : (lift R).symm F = F 
 variable {R}
 
 @[simp]
-theorem lift_comp_ι (f : X → A) : (lift R f : FreeAlgebra R X → A) ∘ ι R = f := by
+theorem ι_comp_lift (f : X → A) : (lift R f : FreeAlgebra R X → A) ∘ ι R = f := by
   ext
   rw [Function.comp_apply, ι_def, lift]
   rfl
-
-@[deprecated (since := "2025-08-11")] alias ι_comp_lift := lift_comp_ι
 
 @[simp]
 theorem lift_ι_apply (f : X → A) (x) : lift R f (ι R x) = f x := by
