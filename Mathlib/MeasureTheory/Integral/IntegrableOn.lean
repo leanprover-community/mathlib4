@@ -719,7 +719,7 @@ variable [PartialOrder α] [MeasurableSingletonClass α]
   {f : α → ε'} {μ : Measure α} {a b : α}
 
 theorem integrableOn_Icc_iff_integrableOn_Ioc'
-    (ha : μ {a} ≠ ∞) (ha' : ‖f a‖ₑ ≠ ∞ := by finiteness) :
+    (ha : μ {a} ≠ ∞ := by finiteness) (ha' : ‖f a‖ₑ ≠ ∞ := by finiteness) :
     IntegrableOn f (Icc a b) μ ↔ IntegrableOn f (Ioc a b) μ := by
   by_cases hab : a ≤ b
   · rw [← Ioc_union_left hab, integrableOn_union, eq_true (integrableOn_singleton ha'), and_true]
