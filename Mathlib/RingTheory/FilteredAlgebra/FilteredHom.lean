@@ -221,7 +221,7 @@ lemma AssociatedGradedAddMonoidHom_apply_of [DecidableEq ι] {i : ι} (x : Grade
     (Gr+[f] (AssociatedGraded.of x)) = AssociatedGraded.of (Gr+(i)[f] x) :=
   DirectSum.map_of (GradedPieceHom f) i x
 
-theorem AssociatedGradedAddMonoidHom_comp_eq_comp: Gr+[g].comp Gr+[f] = Gr+[g.comp f] := by
+theorem AssociatedGradedAddMonoidHom_comp_eq_comp : Gr+[g].comp Gr+[f] = Gr+[g.comp f] := by
   apply Eq.trans (DirectSum.map_comp (GradedPieceHom f) (GradedPieceHom g)).symm
   simp only [GradedPieceHom_comp, AssociatedGradedAddMonoidHom]
 
@@ -299,7 +299,7 @@ lemma GradedPieceHom_apply_mk_eq_mk_piece_wise_hom {i : ι} (x : FR i) :
     Gr+*(i)[f] (GradedPiece.mk FR FR_lt x) = (GradedPiece.mk FS FS_lt (f.piece_wise_hom i x)) :=
   rfl
 
-lemma GradedPieceHom_comp_apply (i : ι) (x : GradedPiece FR FR_lt i):
+lemma GradedPieceHom_comp_apply (i : ι) (x : GradedPiece FR FR_lt i) :
     Gr+*(i)[g] (Gr+*(i)[f] x) = Gr+*(i)[g.comp f] x :=
   FilteredAddGroupHom.GradedPieceHom_comp_apply g.1 f.1 i x
 
@@ -461,7 +461,7 @@ lemma GradedPieceHom_apply_mk_eq_mk_piece_wise_hom {i : ιM} (x : FM i) :
     Grₛₗ(i)[f] (GradedPiece.mk FM FM_lt x) = (GradedPiece.mk FN FN_lt (f.piece_wise_hom i x)) :=
   rfl
 
-lemma GradedPieceHom_comp_apply (i : ιM) (x : GradedPiece FM FM_lt i):
+lemma GradedPieceHom_comp_apply (i : ιM) (x : GradedPiece FM FM_lt i) :
     Grₛₗ(i)[g] (Grₛₗ(i)[f] x) = Grₛₗ(i)[g.comp f] x :=
   FilteredAddGroupHom.GradedPieceHom_comp_apply g.1 f.1 i x
 
@@ -511,15 +511,15 @@ scoped[FilteredModuleHom] notation:9000 "Grₛₗ[" f "]" => AssociatedGradedMod
 
 
 @[simp]
-theorem AssociatedGradedRingHom_apply (x : AssociatedGraded FM FM_lt) (i : ιM) :
+theorem AssociatedGradedModuleHom_apply (x : AssociatedGraded FM FM_lt) (i : ιM) :
     (Grₛₗ[f] x) i = Grₛₗ(i)[f] (x i) := rfl
 
 @[simp]
-lemma AssociatedGradedRingHom_apply_of {i : ιM} (x : GradedPiece FM FM_lt i) :
+lemma AssociatedGradedModuleHom_apply_of {i : ιM} (x : GradedPiece FM FM_lt i) :
     (Grₛₗ[f] (AssociatedGraded.of x)) = AssociatedGraded.of (Grₛₗ(i)[f] x) :=
   f.1.AssociatedGradedAddMonoidHom_apply_of x
 
-theorem AssociatedGradedRingHom_comp_eq_comp :
+theorem AssociatedGradedModuleHom_comp_eq_comp :
     letI := FilteredRingHom.AssociatedGradedRingHom_comp_eq_comp' σ₁₂ σ₂₃ σ₁₃
     Grₛₗ[g].comp Grₛₗ[f] = Grₛₗ[g.comp f] :=
   LinearMap.ext <| fun x ↦ congrFun
