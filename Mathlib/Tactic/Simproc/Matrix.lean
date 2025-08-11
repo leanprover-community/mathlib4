@@ -146,7 +146,7 @@ open Elab Tactic
 is the theorem saying `!![a, b, c; d, e, f]ᵀ = !![a, d; b, e; c, f]`. Usage:
 
 ```lean
-example : (!![1, 2, 3; 4, 5, 6]ᵀ : Matrix (Fin (2+1)) (Fin 2) ℤ) = !![1, 4; 2, 5; 3, 6] := by
+example : (!![1, 2, 3; 4, 5, 6]ᵀ : Matrix (Fin 3) (Fin 2) ℤ) = !![1, 4; 2, 5; 3, 6] := by
   rw [transpose_of% 2 3]
 ``` -/
 elab:max (name := transpose_tac_elab)
@@ -159,7 +159,7 @@ elab:max (name := transpose_tac_elab)
 /-- A simproc for terms of the form `Matrix.transpose (Matrix.of _)`. Usage:
 
 ```lean
-example : (!![1, 2, 3; 4, 5, 6]ᵀ : Matrix (Fin (2+1)) (Fin 2) ℤ) = !![1, 4; 2, 5; 3, 6] := by
+example : (!![1, 2, 3; 4, 5, 6]ᵀ : Matrix (Fin 3) (Fin 2) ℤ) = !![1, 4; 2, 5; 3, 6] := by
   simp
 ```
 -/
