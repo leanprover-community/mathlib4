@@ -319,7 +319,7 @@ theorem Faithful.div_comp (F : C ⥤ E) [F.Faithful] (G : D ⥤ E) [G.Faithful] 
     (h_obj : ∀ X, G.obj (obj X) = F.obj X) (map : ∀ {X Y}, (X ⟶ Y) → (obj X ⟶ obj Y))
     (h_map : ∀ {X Y} {f : X ⟶ Y}, G.map (map f) ≍ F.map f) :
     Faithful.div F G obj @h_obj @map @h_map ⋙ G = F := by
-  obtain ⟨⟨F_obj, _⟩, _, _⟩ := F; obtain ⟨⟨G_obj, _⟩, _, _⟩ := G
+  obtain ⟨F_obj, _, _, _⟩ := F; obtain ⟨G_obj, _, _, _⟩ := G
   unfold Faithful.div Functor.comp
   have : F_obj = G_obj ∘ obj := (funext h_obj).symm
   subst this

@@ -410,7 +410,7 @@ noncomputable def forgetToPresheafModuleCatMap
       (Y := (forgetToPresheafModuleCatObj X hX N).obj Y)
     { toFun := f.app Y
       map_add' := by simp
-      map_smul' := fun r ↦ (f.app Y).hom.map_smul (R.1.map (hX.to Y) _) }
+      map_smul' := fun r ↦ (f.app Y).hom.map_smul (R.map (hX.to Y) _) }
   naturality Y Z g := by
     ext x
     exact naturality_apply f g x

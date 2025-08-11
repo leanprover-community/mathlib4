@@ -117,10 +117,10 @@ variable (C)
 
 /-- The identity functor on `C`, viewed as a functor from `C` to its monoidal opposite. -/
 @[simps obj map] -- need to specify `obj, map` or else we generate `mopFunctor_obj_unmop`
-def mopFunctor : C ⥤ Cᴹᵒᵖ := Functor.mk ⟨mop, .mop⟩
+def mopFunctor : C ⥤ Cᴹᵒᵖ := Functor.mk mop .mop
 /-- The identity functor on `C`, viewed as a functor from the monoidal opposite of `C` to `C`. -/
 @[simps obj map] -- not necessary but the symmetry with `mopFunctor` looks nicer
-def unmopFunctor : Cᴹᵒᵖ ⥤ C := Functor.mk ⟨unmop, .unmop⟩
+def unmopFunctor : Cᴹᵒᵖ ⥤ C := Functor.mk unmop .unmop
 
 variable {C}
 

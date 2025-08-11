@@ -106,8 +106,8 @@ instance : Category Scheme where
 /-- `f ⁻¹ᵁ U` is notation for `(Opens.map f.base).obj U`,
   the preimage of an open set `U` under `f`. -/
 scoped[AlgebraicGeometry] notation3:90 f:91 " ⁻¹ᵁ " U:90 =>
-  @Prefunctor.obj (Scheme.Opens _) _ (Scheme.Opens _) _
-    (Opens.map (f : Scheme.Hom _ _).base).toPrefunctor U
+  @Functor.obj (Scheme.Opens _) _ (Scheme.Opens _) _
+    (Opens.map (f : Scheme.Hom _ _).base) U
 
 /-- `Γ(X, U)` is notation for `X.presheaf.obj (op U)`. -/
 scoped[AlgebraicGeometry] notation3 "Γ(" X ", " U ")" =>
