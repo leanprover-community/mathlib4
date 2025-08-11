@@ -549,7 +549,7 @@ def hasGSMul.gradedSMul {i : ι} {j : ιM} : GradedPiece F F_lt i → GradedPiec
     GradedPiece FM FM_lt (i +ᵥ j) :=
   Quotient.map₂ (· • ·) (hasGSMul.mul_equiv_mul F F_lt FM FM_lt)
 
-instance hSMul {i : ι} {j : ιM}:
+instance hSMul {i : ι} {j : ιM} :
     HSMul (GradedPiece F F_lt i) (GradedPiece FM FM_lt j) (GradedPiece FM FM_lt (i +ᵥ j)) where
   hSMul := hasGSMul.gradedSMul F F_lt FM FM_lt
 
