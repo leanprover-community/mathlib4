@@ -427,7 +427,7 @@ lemma insert_diff_self_of_notMem (h : a ∉ s) : insert a s \ {a} = s := by
 @[deprecated (since := "2025-05-23")]
 alias insert_diff_self_of_not_mem := insert_diff_self_of_notMem
 
-lemma insert_diff_self_of_mem (ha : a ∈ s) : insert a (s \ {a}) = s := by
+@[simp] lemma insert_diff_self_of_mem (ha : a ∈ s) : insert a (s \ {a}) = s := by
   ext; simp +contextual [or_and_left, em, ha]
 
 lemma insert_diff_subset : insert a s \ t ⊆ insert a (s \ t) := by
