@@ -101,7 +101,7 @@ syntax toAdditiveOption := "(" toAdditiveAttrOption <|> toAdditiveReorderOption 
 syntax toAdditiveNameHint := (ppSpace (&"existing" <|> &"self"))?
 /-- Remaining arguments of `to_additive`. -/
 syntax toAdditiveRest :=
-  toAdditiveNameHint (ppSpace toAdditiveOption)* (ppSpace ident)? (ppSpace str)?
+  toAdditiveNameHint (ppSpace toAdditiveOption)* (ppSpace ident)? (ppSpace (str <|> docComment))?
 
 /-- The attribute `to_additive` can be used to automatically transport theorems
 and definitions (but not inductive types and structures) from a multiplicative
@@ -1239,10 +1239,22 @@ def elabToAdditive : Syntax → CoreM Config
         as there is only one declaration for the attributes.\n\
         Instead, you can write the attributes in the usual way."
     trace[to_additive_detail] "attributes: {attrs}; reorder arguments: {reorder}"
+    let doc ← doc.mapM fun
+      | `(str|$doc:str) => do
+        -- TODO: deprecate `str` docstring syntax in Mathlib
+        return doc.getString
+      | `(docComment|$doc:docComment) => do
+        -- TODO: rely on `addDocString`s call to `validateDocComment` after removing `str` support
+        validateDocComment doc
+        /- Note: the following replicates the behavior of `addDocString`. However, this means that
+        trailing whitespace might appear in docstrings added via `docComment` syntax when compared
+        to those added via `str` syntax. See this [Zulip thread](https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/Why.20do.20docstrings.20include.20trailing.20whitespace.3F/with/533553356). -/
+        return (← getDocStringText doc).removeLeadingSpaces
+      | _ => throwUnsupportedSyntax
     return {
       trace := trace.isSome
       tgt := match tgt with | some tgt => tgt.getId | none => Name.anonymous
-      doc := doc.bind (·.raw.isStrLit?)
+      doc
       allowAutoName := false
       attrs, reorder, existing, self
       ref := (tgt.map (·.raw)).getD tk }

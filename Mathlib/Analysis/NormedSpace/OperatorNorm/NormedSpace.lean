@@ -3,9 +3,9 @@ Copyright (c) 2019 Jan-David Salchow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 -/
+import Mathlib.Analysis.Normed.Module.Span
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Bilinear
 import Mathlib.Analysis.NormedSpace.OperatorNorm.NNNorm
-import Mathlib.Analysis.Normed.Module.Span
 
 /-!
 # Operator norm for maps on normed spaces
@@ -351,3 +351,25 @@ protected theorem NormedSpace.equicontinuous_TFAE : List.TFAE
   tfae_finish
 
 end Equicontinuous
+
+section single
+
+variable {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : ι → Type*)
+
+/-- The injection `x ↦ Pi.single i x` as a linear isometry. -/
+protected def LinearIsometry.single [∀ i, SeminormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
+    (i : ι) : E i →ₗᵢ[𝕜] Π j, E j :=
+  (LinearMap.single 𝕜 E i).toLinearIsometry (.single i)
+
+lemma ContinuousLinearMap.norm_single_le_one [∀ i, SeminormedAddCommGroup (E i)]
+    [∀ i, NormedSpace 𝕜 (E i)] (i : ι) :
+    ‖ContinuousLinearMap.single 𝕜 E i‖ ≤ 1 :=
+  (LinearIsometry.single 𝕜 E i).norm_toContinuousLinearMap_le
+
+lemma ContinuousLinearMap.norm_single [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
+    (i : ι) [Nontrivial (E i)] :
+    ‖ContinuousLinearMap.single 𝕜 E i‖ = 1 :=
+  (LinearIsometry.single 𝕜 E i).norm_toContinuousLinearMap
+
+end single
