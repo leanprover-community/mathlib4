@@ -458,7 +458,7 @@ theorem infDist_empty : infDist x ∅ = 0 := by simp [infDist]
 
 lemma isGLB_infDist (hs : s.Nonempty) : IsGLB ((dist x ·) '' s) (infDist x s) := by
   simpa [infDist_eq_iInf, sInf_image']
-    using isGLB_csInf (hs.image _) ⟨0, by simp [lowerBounds, dist_nonneg]⟩
+    using isGLB_csInf (hs.image _) ⟨0, by simp [lowerBounds]⟩
 
 /-- In a metric space, the minimal edistance to a nonempty set is finite. -/
 theorem infEdist_ne_top (h : s.Nonempty) : infEdist x s ≠ ⊤ := by
@@ -557,7 +557,7 @@ theorem mem_closure_iff_infDist_zero (h : s.Nonempty) : x ∈ closure s ↔ infD
 
 theorem infDist_pos_iff_notMem_closure (hs : s.Nonempty) :
     x ∉ closure s ↔ 0 < infDist x s :=
-  (mem_closure_iff_infDist_zero hs).not.trans infDist_nonneg.gt_iff_ne.symm
+  (mem_closure_iff_infDist_zero hs).not.trans infDist_nonneg.lt_iff_ne'.symm
 
 @[deprecated (since := "2025-05-23")]
 alias infDist_pos_iff_not_mem_closure := infDist_pos_iff_notMem_closure
@@ -569,7 +569,7 @@ theorem _root_.IsClosed.mem_iff_infDist_zero (h : IsClosed s) (hs : s.Nonempty) 
 /-- Given a closed set `s`, a point belongs to `s` iff its infimum distance to this set vanishes. -/
 theorem _root_.IsClosed.notMem_iff_infDist_pos (h : IsClosed s) (hs : s.Nonempty) :
     x ∉ s ↔ 0 < infDist x s := by
-  simp [h.mem_iff_infDist_zero hs, infDist_nonneg.gt_iff_ne]
+  simp [h.mem_iff_infDist_zero hs, infDist_nonneg.lt_iff_ne']
 
 @[deprecated (since := "2025-05-23")]
 alias _root_.IsClosed.not_mem_iff_infDist_pos := _root_.IsClosed.notMem_iff_infDist_pos
