@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Kumar
 -/
 import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
+import Mathlib.Analysis.NormedSpace.Connected
 import Mathlib.Geometry.Manifold.Instances.Sphere
 import Mathlib.Tactic.DepRewrite
 import Mathlib.Topology.FoldTrans
