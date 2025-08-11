@@ -78,3 +78,28 @@ instance {α : Type*} [Mul α] [Preorder α] [MulRightMono α] :
         dsimp only at h ⊢
         norm_cast at h ⊢
         exact mul_le_mul_right' h x
+
+section Units
+
+variable {α : Type*} [LinearOrderedCommGroupWithZero α]
+
+open WithZero
+
+lemma WithZero.withZeroUnitsEquiv_strictMono :
+    StrictMono (withZeroUnitsEquiv (G := α)) := by
+  intro a b
+  cases a <;> cases b <;>
+  simp
+
+/-- Given any linearly ordered commutative group with zero `α`, this is the order isomorphism
+between `WithZero αˣ` with `α`. -/
+@[simps!]
+def OrderIso.withZeroUnits : WithZero αˣ ≃o α where
+  __ := withZeroUnitsEquiv
+  map_rel_iff' := WithZero.withZeroUnitsEquiv_strictMono.le_iff_le
+
+lemma WithZero.withZeroUnitsEquiv_symm_strictMono :
+    StrictMono (withZeroUnitsEquiv (G := α)).symm :=
+  OrderIso.withZeroUnits.symm.strictMono
+
+end Units

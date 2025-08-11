@@ -157,7 +157,7 @@ theorem Ideal.IsHomogeneous.radical_eq {I : Ideal A} (hI : I.IsHomogeneous 𝒜)
   rw [Ideal.radical_eq_sInf]
   apply le_antisymm
   · exact sInf_le_sInf fun J => And.right
-  · refine sInf_le_sInf_of_forall_exists_le ?_
+  · refine sInf_le_sInf_of_isCoinitialFor ?_
     rintro J ⟨HJ₁, HJ₂⟩
     refine ⟨(J.homogeneousCore 𝒜).toIdeal, ?_, J.toIdeal_homogeneousCore_le _⟩
     refine ⟨HomogeneousIdeal.isHomogeneous _, ?_, HJ₂.homogeneousCore⟩

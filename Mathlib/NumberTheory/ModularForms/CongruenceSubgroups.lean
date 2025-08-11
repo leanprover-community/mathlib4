@@ -38,7 +38,7 @@ modulo `N`. -/
 def Gamma : Subgroup SL(2, ℤ) :=
   SLMOD(N).ker
 
-@[inherit_doc] scoped notation  "Γ(" n ")"  => Gamma n
+@[inherit_doc] scoped notation "Γ(" n ")" => Gamma n
 
 theorem Gamma_mem' {N} {γ : SL(2, ℤ)} : γ ∈ Gamma N ↔ SLMOD(N) γ = 1 :=
   Iff.rfl
@@ -212,7 +212,7 @@ open Pointwise ConjAct
 def conjGL (Γ : Subgroup SL(2, ℤ)) (g : GL (Fin 2) ℝ) : Subgroup SL(2, ℤ) :=
   ((toConjAct g⁻¹) • (Γ.map (SpecialLinearGroup.toGL.comp
     <| SpecialLinearGroup.map (Int.castRingHom ℝ)))).comap
-    (SpecialLinearGroup.toGL.comp  <| SpecialLinearGroup.map (Int.castRingHom ℝ))
+    (SpecialLinearGroup.toGL.comp <| SpecialLinearGroup.map (Int.castRingHom ℝ))
 
 @[simp] lemma mem_conjGL {Γ : Subgroup SL(2, ℤ)} {g : GL (Fin 2) ℝ} {x : SL(2, ℤ)} :
     x ∈ conjGL Γ g ↔ ∃ y ∈ Γ, y = g * x * g⁻¹ := by

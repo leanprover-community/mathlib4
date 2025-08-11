@@ -140,7 +140,7 @@ namespace Rel
 @[mk_iff]
 class FiniteDimensional : Prop where
   /-- A relation `r` is said to be finite dimensional iff there is a relation series of `r` with the
-    maximum length. -/
+  maximum length. -/
   exists_longest_relSeries : ∃ x : RelSeries r, ∀ y : RelSeries r, y.length ≤ x.length
 
 /-- A relation `r` is said to be infinite dimensional iff there exists relation series of arbitrary
@@ -148,7 +148,7 @@ class FiniteDimensional : Prop where
 @[mk_iff]
 class InfiniteDimensional : Prop where
   /-- A relation `r` is said to be infinite dimensional iff there exists relation series of
-    arbitrary length. -/
+  arbitrary length. -/
   exists_relSeries_with_length : ∀ n : ℕ, ∃ x : RelSeries r, x.length = n
 
 end Rel
@@ -957,10 +957,10 @@ def map (p : LTSeries α) (f : α → β) (hf : StrictMono f) : LTSeries β :=
   LTSeries.mk p.length (f.comp p) (hf.comp p.strictMono)
 
 @[simp] lemma head_map (p : LTSeries α) (f : α → β) (hf : StrictMono f) :
-  (p.map f hf).head = f p.head := rfl
+    (p.map f hf).head = f p.head := rfl
 
 @[simp] lemma last_map (p : LTSeries α) (f : α → β) (hf : StrictMono f) :
-  (p.map f hf).last = f p.last := rfl
+    (p.map f hf).last = f p.last := rfl
 
 /--
 For two preorders `α, β`, if `f : α → β` is surjective and strictly comonotonic, then a
@@ -970,9 +970,10 @@ preimage of `f⁻¹ {bᵢ}`.
 -/
 @[simps!]
 noncomputable def comap (p : LTSeries β) (f : α → β)
-  (comap : ∀ ⦃x y⦄, f x < f y → x < y)
-  (surjective : Function.Surjective f) :
-  LTSeries α := mk p.length (fun i ↦ (surjective (p i)).choose)
+    (comap : ∀ ⦃x y⦄, f x < f y → x < y)
+    (surjective : Function.Surjective f) :
+    LTSeries α :=
+  mk p.length (fun i ↦ (surjective (p i)).choose)
     (fun i j h ↦ comap (by simpa only [(surjective _).choose_spec] using p.strictMono h))
 
 /-- The strict series `0 < … < n` in `ℕ`. -/

@@ -190,7 +190,7 @@ theorem continuous_extend : Continuous γ.extend :=
 
 theorem _root_.Filter.Tendsto.pathExtend
     {l r : Y → X} {y : Y} {l₁ : Filter ℝ} {l₂ : Filter X} {γ : ∀ y, Path (l y) (r y)}
-    (hγ : Tendsto (↿γ) (𝓝 y ×ˢ l₁.map (projIcc 0 1 zero_le_one)) l₂) :
+    (hγ : Tendsto ↿γ (𝓝 y ×ˢ l₁.map (projIcc 0 1 zero_le_one)) l₂) :
     Tendsto (↿fun x => ⇑(γ x).extend) (𝓝 y ×ˢ l₁) l₂ :=
   Filter.Tendsto.IccExtend _ hγ
 
@@ -198,7 +198,7 @@ theorem _root_.Filter.Tendsto.pathExtend
 alias _root_.Filter.Tendsto.path_extend := Filter.Tendsto.pathExtend
 
 theorem _root_.ContinuousAt.pathExtend {g : Y → ℝ} {l r : Y → X} (γ : ∀ y, Path (l y) (r y))
-    {y : Y} (hγ : ContinuousAt (↿γ) (y, projIcc 0 1 zero_le_one (g y))) (hg : ContinuousAt g y) :
+    {y : Y} (hγ : ContinuousAt ↿γ (y, projIcc 0 1 zero_le_one (g y))) (hg : ContinuousAt g y) :
     ContinuousAt (fun i => (γ i).extend (g i)) y :=
   hγ.IccExtend (fun x => γ x) hg
 
@@ -270,10 +270,10 @@ def trans (γ : Path x y) (γ' : Path y z) : Path x z where
   toFun := (fun t : ℝ => if t ≤ 1 / 2 then γ.extend (2 * t) else γ'.extend (2 * t - 1)) ∘ (↑)
   continuous_toFun := by
     refine
-      (Continuous.if_le ?_ ?_ continuous_id continuous_const (by norm_num)).comp
+      (Continuous.if_le ?_ ?_ continuous_id continuous_const (by simp)).comp
         continuous_subtype_val <;>
     fun_prop
-  source' := by norm_num
+  source' := by simp
   target' := by norm_num
 
 theorem trans_apply (γ : Path x y) (γ' : Path y z) (t : I) :
@@ -617,7 +617,7 @@ theorem range_reparam (γ : Path x y) {f : I → I} (hfcont : Continuous f) (hf�
   have : range f = univ := by
     rw [range_eq_univ]
     intro t
-    have h₁ : Continuous (Set.IccExtend (zero_le_one' ℝ) f) := by continuity
+    have h₁ : Continuous (Set.IccExtend (zero_le_one' ℝ) f) := by fun_prop
     have := intermediate_value_Icc (zero_le_one' ℝ) h₁.continuousOn
     · rw [IccExtend_left, IccExtend_right, Icc.mk_zero, Icc.mk_one, hf₀, hf₁] at this
       rcases this t.2 with ⟨w, hw₁, hw₂⟩
