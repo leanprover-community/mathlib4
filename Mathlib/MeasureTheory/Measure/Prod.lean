@@ -809,7 +809,7 @@ protected theorem prodMap {ω : Type*} {mω : MeasurableSpace ω} {υ : Measure 
     (hf : QuasiMeasurePreserving f μ ν) (hg : QuasiMeasurePreserving g τ υ) :
     QuasiMeasurePreserving (Prod.map f g) (μ.prod τ) (ν.prod υ) := by
   refine ⟨by fun_prop, ?_⟩
-  rw[← map_prod_map _ _ (by fun_prop) (by fun_prop)]
+  rw [← map_prod_map _ _ (by fun_prop) (by fun_prop)]
   exact hf.absolutelyContinuous.prod hg.absolutelyContinuous
 
 end QuasiMeasurePreserving
