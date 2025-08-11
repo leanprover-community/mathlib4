@@ -294,7 +294,7 @@ theorem f_squared (v : V n) : (f n) (f n v) = (n : ℝ) • v := by
 `q` the column index). -/
 
 open Classical in
-theorem f_matrix : ∀ p q : Q n, |ε q (f n (e p))| = if p ∈ q.adjacent then 1 else 0 := fun p q ↦ by
+theorem f_matrix (p q : Q n) : |ε q (f n (e p))| = if p ∈ q.adjacent then 1 else 0 := by
   induction n with
   | zero =>
     dsimp [f]

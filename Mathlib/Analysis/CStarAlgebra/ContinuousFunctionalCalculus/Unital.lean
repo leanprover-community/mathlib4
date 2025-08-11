@@ -196,9 +196,6 @@ class ContinuousMap.UniqueHom (R A : Type*) [CommSemiring R] [StarRing R]
     (h : φ (.restrict s <| .id R) = ψ (.restrict s <| .id R)) :
     φ = ψ
 
-@[deprecated (since := "2025-01-10")] alias UniqueContinuousFunctionalCalculus :=
-  ContinuousMap.UniqueHom
-
 variable {R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R] [MetricSpace R]
 variable [IsTopologicalSemiring R] [ContinuousStar R] [TopologicalSpace A] [Ring A] [StarRing A]
 variable [Algebra R A] [instCFC : ContinuousFunctionalCalculus R A p]
@@ -345,6 +342,19 @@ lemma cfcHom_eq_cfc_extend {a : A} (g : R → R) (ha : p a) (f : C(spectrum R a,
 lemma cfc_eq_cfcL {a : A} {f : R → R} (ha : p a) (hf : ContinuousOn f (spectrum R a)) :
     cfc f a = cfcL ha ⟨_, hf.restrict⟩ := by
   rw [cfc_def, dif_pos ⟨ha, hf⟩, cfcL_apply]
+
+/-- A version of `cfc_apply` in terms of `ContinuousMap.mkD` -/
+lemma cfc_apply_mkD :
+    cfc f a = cfcHom (a := a) ha (mkD ((spectrum R a).restrict f) 0) := by
+  by_cases hf : ContinuousOn f (spectrum R a)
+  · rw [cfc_apply f a, mkD_of_continuousOn hf]
+  · rw [cfc_apply_of_not_continuousOn a hf, mkD_of_not_continuousOn hf,
+      map_zero]
+
+/-- A version of `cfc_eq_cfcL` in terms of `ContinuousMapZero.mkD` -/
+lemma cfc_eq_cfcL_mkD :
+    cfc f a = cfcL (a := a) ha (mkD ((spectrum R a).restrict f) 0) :=
+  cfc_apply_mkD _ _
 
 lemma cfc_cases (P : A → Prop) (a : A) (f : R → R) (h₀ : P 0)
     (haf : (hf : ContinuousOn f (spectrum R a)) → (ha : p a) → P (cfcHom ha ⟨_, hf.restrict⟩)) :

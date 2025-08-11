@@ -53,7 +53,7 @@ section case1
 open ZMod
 
 private lemma cube_of_castHom_ne_zero {n : ZMod 9} :
-    castHom (show 3 ∣ 9 by norm_num) (ZMod 3) n ≠ 0 → n ^ 3 = 1 ∨ n ^ 3 = 8 := by
+    castHom (show 3 ∣ 9 by simp) (ZMod 3) n ≠ 0 → n ^ 3 = 1 ∨ n ^ 3 = 8 := by
   revert n; decide
 
 private lemma cube_of_not_dvd {n : ℤ} (h : ¬ 3 ∣ n) :
@@ -703,7 +703,7 @@ noncomputable def Solution'_descent : Solution' hζ where
   coprime := (isCoprime_mul_unit_left_right S.u₄.isUnit _ _).2 S.isCoprime_Y_Z
   hcdvd := by
     refine dvd_mul_of_dvd_left (dvd_pow_self _ (fun h ↦ ?_)) _
-    rw [Nat.sub_eq_iff_eq_add (le_trans (by norm_num) S.two_le_multiplicity), zero_add] at h
+    rw [Nat.sub_eq_iff_eq_add (le_trans (by simp) S.two_le_multiplicity), zero_add] at h
     simpa [h] using S.two_le_multiplicity
   H := formula3 S
 
