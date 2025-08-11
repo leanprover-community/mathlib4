@@ -345,7 +345,7 @@ theorem Filter.EventuallyEq.lineDifferentiableWithinAt_iff_of_mem
 
 lemma HasLineDerivWithinAt.congr_of_eventuallyEq (hf : HasLineDerivWithinAt 𝕜 f f' s x v)
     (h'f : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) : HasLineDerivWithinAt 𝕜 f₁ f' s x v :=
-  (EventuallyEq.hasLineDerivWithinAt_iff (id (EventuallyEq.symm h'f)) (id (Eq.symm hx))).mp hf
+  (EventuallyEq.hasLineDerivWithinAt_iff (EventuallyEq.symm h'f.eventually) hx.symm).mp hf
 
 theorem HasLineDerivAt.congr_of_eventuallyEq (h : HasLineDerivAt 𝕜 f f' x v) (h₁ : f₁ =ᶠ[𝓝 x] f) :
     HasLineDerivAt 𝕜 f₁ f' x v := by
