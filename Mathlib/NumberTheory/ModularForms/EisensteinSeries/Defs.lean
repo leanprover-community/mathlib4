@@ -100,9 +100,7 @@ lemma gammaSetN_map_eq {N : ℕ} (v : gammaSetN N) : v.1 = N • (div_N_map N v)
     simp [hN, gammaSetN, fin_to_gcd_map] at *
     ext i
     fin_cases i <;> simp [hv]
-  · have hnz : (N : ℤ) ≠ 0 := by
-      norm_cast
-    have hN2 : (v.1 0).gcd (v.1 1) = N := by
+  · have hN2 : (v.1 0).gcd (v.1 1) = N := by
       aesop
     ext i
     · simp [div_N_map]
