@@ -56,8 +56,8 @@ lemma card_mul_eq_card_subgroup_mul_card_quotient (s : Subgroup α) (t : Set α)
   aesop (add simp [Set.mem_mul])
 
 /-- **Lagrange's Theorem**: The order of a subgroup divides the order of its ambient group. -/
-@[to_additive card_addSubgroup_dvd_card "**Lagrange's Theorem**: The order of an additive subgroup
-divides the order of its ambient additive group."]
+@[to_additive card_addSubgroup_dvd_card /-- **Lagrange's Theorem**: The order of an additive
+subgroup divides the order of its ambient additive group. -/]
 theorem card_subgroup_dvd_card (s : Subgroup α) : Nat.card s ∣ Nat.card α := by
   classical simp [card_eq_card_quotient_mul_card_subgroup s, @dvd_mul_left ℕ]
 

@@ -537,18 +537,18 @@ variable {M : Type u} [Monoid M] [MulAction M α]
 The period of a multiplicative action of `g` on `a` is the smallest positive `n` such that
 `g ^ n • a = a`, or `0` if such an `n` does not exist.
 -/
-@[to_additive "The period of an additive action of `g` on `a` is the smallest positive `n`
-such that `(n • g) +ᵥ a = a`, or `0` if such an `n` does not exist."]
+@[to_additive /-- The period of an additive action of `g` on `a` is the smallest positive `n`
+such that `(n • g) +ᵥ a = a`, or `0` if such an `n` does not exist. -/]
 noncomputable def period (m : M) (a : α) : ℕ := minimalPeriod (fun x => m • x) a
 
 /-- `MulAction.period m a` is definitionally equal to `Function.minimalPeriod (m • ·) a`. -/
-@[to_additive "`AddAction.period m a` is definitionally equal to
-`Function.minimalPeriod (m +ᵥ ·) a`"]
+@[to_additive /-- `AddAction.period m a` is definitionally equal to
+`Function.minimalPeriod (m +ᵥ ·) a` -/]
 theorem period_eq_minimalPeriod {m : M} {a : α} :
     MulAction.period m a = minimalPeriod (fun x => m • x) a := rfl
 
 /-- `m ^ (period m a)` fixes `a`. -/
-@[to_additive (attr := simp) "`(period m a) • m` fixes `a`."]
+@[to_additive (attr := simp) /-- `(period m a) • m` fixes `a`. -/]
 theorem pow_period_smul (m : M) (a : α) : m ^ (period m a) • a = a := by
   rw [period_eq_minimalPeriod, ← smul_iterate_apply, iterate_minimalPeriod]
 
