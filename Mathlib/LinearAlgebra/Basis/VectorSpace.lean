@@ -28,7 +28,7 @@ basis, bases
 
 -/
 
-open Function Set Submodule
+open Function Module Set Submodule
 
 variable {ι : Type*} {ι' : Type*} {K : Type*} {V : Type*} {V' : Type*}
 
@@ -39,7 +39,7 @@ variable {v : ι → V} {s t : Set V} {x y z : V}
 
 open Submodule
 
-namespace Basis
+namespace Module.Basis
 
 section ExistsBasis
 
@@ -173,7 +173,7 @@ end
 
 end ExistsBasis
 
-end Basis
+end Module.Basis
 
 open Fintype
 
