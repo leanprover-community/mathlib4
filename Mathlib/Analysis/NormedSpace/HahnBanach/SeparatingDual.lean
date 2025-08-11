@@ -122,8 +122,7 @@ instance _root_.Algebra.IsCentral.continuousLinearMap [ContinuousSMul R V] :
     Algebra.IsCentral R (V →L[R] V) where
   out := fun T hT => by
     have h' (f : V →L[R] R) (y v : V) : f (T v) • y = f v • T y := by
-      simpa [ContinuousLinearMap.ext_iff, Function.comp_apply, map_smul]
-        using congr($(Subalgebra.mem_center_iff.mp hT <| f.smulRight y) v)
+      simpa using congr($(Subalgebra.mem_center_iff.mp hT <| f.smulRight y) v)
     by_cases H : ∀ a : V, a = 0
     · use 0; simp [ContinuousLinearMap.ext_iff, H]
     obtain ⟨x, hx⟩ := not_forall.mp H
