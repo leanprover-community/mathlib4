@@ -57,7 +57,7 @@ instance Functor.category : Category.{max u₁ v₂} (C ⥤ D) where
 
 namespace NatTrans
 
-@[ext]
+@[ext, grind ext]
 theorem ext' {α β : F ⟶ G} (w : α.app = β.app) : α = β := NatTrans.ext w
 
 @[simp]
