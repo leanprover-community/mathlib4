@@ -377,13 +377,9 @@ open scoped Classical in
 /-- The number of infinite real places of the number field `K`. -/
 noncomputable abbrev nrRealPlaces := card { w : InfinitePlace K // IsReal w }
 
-@[deprecated (since := "2024-10-24")] alias NrRealPlaces := nrRealPlaces
-
 open scoped Classical in
 /-- The number of infinite complex places of the number field `K`. -/
 noncomputable abbrev nrComplexPlaces := card { w : InfinitePlace K // IsComplex w }
-
-@[deprecated (since := "2024-10-24")] alias NrComplexPlaces := nrComplexPlaces
 
 open scoped Classical in
 theorem card_real_embeddings :

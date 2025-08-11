@@ -738,11 +738,8 @@ theorem natCast_mod (a : ℕ) (n : ℕ) : ((a % n : ℕ) : ZMod n) = a := by
       rw [← Nat.mod_add_div a n]
   simp
 
-theorem eq_iff_modEq_nat (n : ℕ) {a b : ℕ} : (a : ZMod n) = b ↔ a ≡ b [MOD n] := by
-  cases n
-  · simp [Nat.ModEq, Nat.mod_zero]
-  · rw [Fin.ext_iff, Nat.ModEq, ← val_natCast, ← val_natCast]
-    exact Iff.rfl
+theorem eq_iff_modEq_nat (n : ℕ) {a b : ℕ} : (a : ZMod n) = b ↔ a ≡ b [MOD n] :=
+  natCast_eq_natCast_iff a b n
 
 theorem eq_zero_iff_even {n : ℕ} : (n : ZMod 2) = 0 ↔ Even n :=
   (CharP.cast_eq_zero_iff (ZMod 2) 2 n).trans even_iff_two_dvd.symm
@@ -928,14 +925,16 @@ theorem neg_eq_self_mod_two (a : ZMod 2) : -a = a := by
   fin_cases a <;> apply Fin.ext <;> simp; rfl
 
 @[simp]
+theorem intCast_abs_mod_two (a : ℤ) : (↑|a| : ZMod 2) = a := by
+  cases le_total a 0 <;> simp [abs_of_nonneg, abs_of_nonpos, *]
+
 theorem natAbs_mod_two (a : ℤ) : (a.natAbs : ZMod 2) = a := by
-  cases a
-  · simp only [Int.natAbs_natCast, Int.cast_natCast, Int.ofNat_eq_coe]
-  · simp only [neg_eq_self_mod_two, Nat.cast_succ, Int.natAbs, Int.cast_negSucc]
+  simp
 
 theorem val_ne_zero {n : ℕ} (a : ZMod n) : a.val ≠ 0 ↔ a ≠ 0 :=
   (val_eq_zero a).not
 
+@[simp]
 theorem val_pos {n : ℕ} {a : ZMod n} : 0 < a.val ↔ a ≠ 0 := by
   simp [pos_iff_ne_zero]
 
