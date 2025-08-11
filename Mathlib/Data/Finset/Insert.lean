@@ -455,7 +455,7 @@ theorem insert_subset_insert (a : α) {s t : Finset α} (h : s ⊆ t) : insert a
   grind
 
 @[simp] lemma insert_subset_insert_iff (ha : a ∉ s) : insert a s ⊆ insert a t ↔ s ⊆ t := by
-  simp_rw [← coe_subset]; simp [-coe_subset, ha]
+  simp_rw [← coe_subset]; simp [ha]
 
 theorem insert_inj (ha : a ∉ s) : insert a s = insert b s ↔ a = b :=
   ⟨fun h => eq_of_mem_insert_of_notMem (h ▸ mem_insert_self _ _) ha, congr_arg (insert · s)⟩
