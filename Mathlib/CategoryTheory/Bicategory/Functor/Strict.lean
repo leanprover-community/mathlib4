@@ -158,21 +158,21 @@ variable {b₀ b₁ b₂ b₃ : B} (f₀₁ : b₀ ⟶ b₁)
   (h₀₂ : f₀₁ ≫ f₁₂ = f₀₂) (h₁₃ : f₁₂ ≫ f₂₃ = f₁₃)
 
 @[reassoc]
-lemma whiskerLeft_mapComp'_inv_comp_mapComp'_inv (hf : f₀₁ ≫ f₁₃ = f) :
-    F.map f₀₁ ◁ (F.mapComp' f₁₂ f₂₃ f₁₃ h₁₃) ≫ (F.mapComp' f₀₁ f₁₃ f hf) =
-    (α_ _ _ _).inv ≫ (F.mapComp' f₀₁ f₁₂ f₀₂ h₀₂) ▷ F.map f₂₃ ≫
-      (F.mapComp' f₀₂ f₂₃ f) := by
+lemma whiskerLeft_mapComp'_comp_mapComp' (hf : f₀₁ ≫ f₁₃ = f) :
+    F.map f₀₁ ◁ F.mapComp' f₁₂ f₂₃ f₁₃ h₁₃ ≫ F.mapComp' f₀₁ f₁₃ f hf =
+    (α_ _ _ _).inv ≫ F.mapComp' f₀₁ f₁₂ f₀₂ h₀₂ ▷ F.map f₂₃ ≫
+      F.mapComp' f₀₂ f₂₃ f := by
   subst hf h₀₂ h₁₃
   have := F.map₂_associator f₀₁ f₁₂ f₂₃
   simp only [Strict.associator_eqToIso, eqToIso.hom] at this
   simp [LaxFunctor.mapComp', this]
 
 @[reassoc]
-lemma mapComp'_inv_whiskerRight_comp_mapComp'_inv (hf : f₀₂ ≫ f₂₃ = f) :
-    (F.mapComp' f₀₁ f₁₂ f₀₂ h₀₂) ▷ F.map f₂₃ ≫ (F.mapComp' f₀₂ f₂₃ f) =
-    (α_ _ _ _).hom ≫ F.map f₀₁ ◁ (F.mapComp' f₁₂ f₂₃ f₁₃ h₁₃) ≫
-      (F.mapComp' f₀₁ f₁₃ f) := by
-  rw [whiskerLeft_mapComp'_inv_comp_mapComp'_inv _ _ _ _ _ _ f h₀₂ h₁₃,
+lemma mapComp'_whiskerRight_comp_mapComp' (hf : f₀₂ ≫ f₂₃ = f) :
+    F.mapComp' f₀₁ f₁₂ f₀₂ h₀₂ ▷ F.map f₂₃ ≫ F.mapComp' f₀₂ f₂₃ f =
+    (α_ _ _ _).hom ≫ F.map f₀₁ ◁ F.mapComp' f₁₂ f₂₃ f₁₃ h₁₃ ≫
+      F.mapComp' f₀₁ f₁₃ f := by
+  rw [whiskerLeft_mapComp'_comp_mapComp' _ _ _ _ _ _ f h₀₂ h₁₃,
     Iso.hom_inv_id_assoc]
 
 end associativity
@@ -191,10 +191,10 @@ variable {b₀ b₁ b₂ b₃ : B} (f₀₁ : b₀ ⟶ b₁)
   (h₀₂ : f₀₁ ≫ f₁₂ = f₀₂) (h₁₃ : f₁₂ ≫ f₂₃ = f₁₃)
 
 @[reassoc]
-lemma mapComp'_hom_comp_whiskerLeft_mapComp'_hom (hf : f₀₁ ≫ f₁₃ = f) :
-    (F.mapComp' f₀₁ f₁₃ f) ≫ F.map f₀₁ ◁ (F.mapComp' f₁₂ f₂₃ f₁₃ h₁₃) =
-    (F.mapComp' f₀₂ f₂₃ f) ≫
-      (F.mapComp' f₀₁ f₁₂ f₀₂ h₀₂) ▷ F.map f₂₃ ≫ (α_ _ _ _).hom := by
+lemma mapComp'_comp_whiskerLeft_mapComp' (hf : f₀₁ ≫ f₁₃ = f) :
+    F.mapComp' f₀₁ f₁₃ f ≫ F.map f₀₁ ◁ F.mapComp' f₁₂ f₂₃ f₁₃ h₁₃ =
+    F.mapComp' f₀₂ f₂₃ f ≫
+      F.mapComp' f₀₁ f₁₂ f₀₂ h₀₂ ▷ F.map f₂₃ ≫ (α_ _ _ _).hom := by
   subst h₀₂ h₁₃ hf
   have := F.map₂_associator f₀₁ f₁₂ f₂₃
   simp only [Strict.associator_eqToIso, eqToIso.hom] at this
@@ -202,11 +202,11 @@ lemma mapComp'_hom_comp_whiskerLeft_mapComp'_hom (hf : f₀₁ ≫ f₁₃ = f) 
 
 
 @[reassoc]
-lemma mapComp'_hom_comp_mapComp'_hom_whiskerRight (hf : f₀₂ ≫ f₂₃ = f) :
-    (F.mapComp' f₀₂ f₂₃ f) ≫ (F.mapComp' f₀₁ f₁₂ f₀₂ h₀₂) ▷ F.map f₂₃ =
-    (F.mapComp' f₀₁ f₁₃ f) ≫ F.map f₀₁ ◁ (F.mapComp' f₁₂ f₂₃ f₁₃ h₁₃) ≫
+lemma mapComp'_comp_mapComp'_whiskerRight (hf : f₀₂ ≫ f₂₃ = f) :
+    F.mapComp' f₀₂ f₂₃ f ≫ F.mapComp' f₀₁ f₁₂ f₀₂ h₀₂ ▷ F.map f₂₃ =
+    F.mapComp' f₀₁ f₁₃ f ≫ F.map f₀₁ ◁ F.mapComp' f₁₂ f₂₃ f₁₃ h₁₃ ≫
       (α_ _ _ _).inv := by
-  rw [F.mapComp'_hom_comp_whiskerLeft_mapComp'_hom_assoc _ _ _ _ _ f h₀₂ h₁₃ (by cat_disch)]
+  rw [F.mapComp'_comp_whiskerLeft_mapComp'_assoc _ _ _ _ _ f h₀₂ h₁₃ (by cat_disch)]
   simp
 
 end associativity
