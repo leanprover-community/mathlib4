@@ -23,6 +23,7 @@ mathematical arguments go: one doesn't change weights, but merely adds some. Thi
 lemmas unconditional on the sum of the weights being `1`.
 -/
 
+assert_not_exists Cardinal
 
 open Set Function Pointwise
 

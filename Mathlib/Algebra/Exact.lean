@@ -26,8 +26,6 @@ import Mathlib.LinearAlgebra.Quotient.Basic
 * add the multiplicative case (`Function.Exact` will become `Function.AddExact`?)
 -/
 
-
-
 variable {R M M' N N' P P' : Type*}
 
 namespace Function

@@ -24,6 +24,8 @@ it is in fact a two-sided ideal, and equals the intersection of all maximal righ
 * [F. Lorenz, *Algebra: Volume II: Fields with Structure, Algebras and Advanced Topics*][Lorenz2008]
 -/
 
+assert_not_exists Cardinal
+
 namespace Module
 
 open Submodule
