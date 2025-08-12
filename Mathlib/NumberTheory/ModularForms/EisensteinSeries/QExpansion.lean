@@ -43,8 +43,7 @@ lemma iteratedDerivWithin_cexp_mul_const (k m : ℕ) (p : ℝ) {S : Set ℂ} (hs
 private lemma aux_IsBigO_mul (k l : ℕ) (p : ℝ) {f : ℕ → ℂ}
     (hf : f =O[atTop] (fun n ↦ ((n ^ l) : ℝ))) :
     (fun n ↦ f n * (2 * ↑π * Complex.I * ↑n / p) ^ k) =O[atTop] (fun n ↦ (↑(n ^ (l + k)) : ℝ)) := by
-  have h0 : (fun n : ℕ ↦ (2 * ↑π * Complex.I * ↑n / p) ^ k) =O[atTop]
-    (fun n ↦ (↑(n ^ (k)) : ℝ)) := by
+  have h0 : (fun n : ℕ ↦ (2 * ↑π * Complex.I * ↑n / p) ^ k) =O[atTop] (fun n ↦ (↑(n ^ k) : ℝ)) := by
     have h1 : (fun n : ℕ ↦ (2 * ↑π * Complex.I * ↑n / p) ^ k) =
       (fun n : ℕ ↦ ((2 * ↑π * Complex.I / p) ^ k) * ↑n ^ k) := by
       ext z
@@ -333,14 +332,14 @@ lemma tsum_prod_eisSummand_eq_riemannZeta_eisensteinSeries {k : ℕ} (hk : 3 ≤
     · apply summable_mul_of_summable_norm (f:= fun (n : ℕ) ↦ ((n : ℂ) ^ k)⁻¹)
         (g := fun (v : gammaSet 1 0) ↦ eisSummand k v z) (by simp [hk1])
       apply (EisensteinSeries.summable_norm_eisSummand (by omega) z).subtype
-    · intro b
-      simpa using (Summable.of_norm (by apply (EisensteinSeries.summable_norm_eisSummand
-        (by omega) z).subtype)).mul_left (a := ((b : ℂ) ^ k)⁻¹)
+    · exact fun b => by simpa using (Summable.of_norm (by apply
+      (summable_norm_eisSummand (by omega) z).subtype)).mul_left (a := ((b : ℂ) ^ k)⁻¹)
   · apply ((GammaSet_top_Equiv.symm.summable_iff (f := fun v ↦ eisSummand k v z)).mpr
       (EisensteinSeries.summable_norm_eisSummand (by omega) z).of_norm).congr
     simp
 
-lemma EisensteinSeries.q_expansion {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) (z : ℍ) :
+/-- The q-Expansion of normalised Eisenstein series of level one with `riemannZeta` term. -/
+lemma EisensteinSeries.q_expansion_riemannZeta {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) (z : ℍ) :
     (E hk) z = 1 + (1 / (riemannZeta (k))) * ((-2 * ↑π * Complex.I) ^ k / (k - 1)!) *
     ∑' n : ℕ+, sigma (k - 1) n * cexp (2 * ↑π * Complex.I * z) ^ (n : ℤ) := by
   have : (eisensteinSeries_MF (k := k) (by omega) standardcongruencecondition) z =
@@ -399,9 +398,10 @@ lemma eisensteinSeries_coeff_identity {k : ℕ} (hk2 : Even k) (hkn0 : k ≠ 0) 
   rw [h2k]
   ring
 
+/-- The q-Expansion of normalised Eisenstein series of level one with `bernoulli` term. -/
 lemma EisensteinSeries.q_expansion_bernoulli {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) (z : ℍ) :
     (E hk) z = 1 + -((2 * k) / bernoulli k) *
-    ∑' n : ℕ+, sigma (k - 1) n * cexp (2 * ↑π * Complex.I * z) ^ (n : ℤ) := by
-  have h2 := EisensteinSeries.q_expansion hk hk2 z
+    ∑' n : ℕ+, σ (k - 1) n * cexp (2 * ↑π * Complex.I * z) ^ (n : ℤ) := by
+  have h2 := EisensteinSeries.q_expansion_riemannZeta hk hk2 z
   rw [eisensteinSeries_coeff_identity hk2 (by omega)] at h2
   apply h2
