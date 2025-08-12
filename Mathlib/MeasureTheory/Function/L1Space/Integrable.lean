@@ -397,9 +397,9 @@ lemma Integrable.of_subsingleton_codomain [Subsingleton ε'] {f : α → ε'} :
 
 end ESeminormedAddMonoid
 
-section ENormedAddCommMonoid
+section ESeminormedAddCommMonoid
 
-variable {ε' : Type*} [TopologicalSpace ε'] [ENormedAddCommMonoid ε'] [ContinuousAdd ε']
+variable {ε' : Type*} [TopologicalSpace ε'] [ESeminormedAddCommMonoid ε'] [ContinuousAdd ε']
 
 @[fun_prop]
 theorem integrable_finset_sum' {ι} (s : Finset ι) {f : ι → α → ε'}
@@ -412,7 +412,7 @@ theorem integrable_finset_sum {ι} (s : Finset ι) {f : ι → α → ε'}
     (hf : ∀ i ∈ s, Integrable (f i) μ) : Integrable (fun a => ∑ i ∈ s, f i a) μ := by
   simpa only [← Finset.sum_apply] using integrable_finset_sum' s hf
 
-end ENormedAddCommMonoid
+end ESeminormedAddCommMonoid
 
 /-- If `f` is integrable, then so is `-f`.
 See `Integrable.neg'` for the same statement, but formulated with `x ↦ - f x` instead of `-f`. -/

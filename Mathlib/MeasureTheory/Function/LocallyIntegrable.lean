@@ -339,13 +339,13 @@ protected theorem LocallyIntegrable.smul {f : X → E} {𝕜 : Type*} [NormedAdd
     [SMulZeroClass 𝕜 E] [IsBoundedSMul 𝕜 E] (hf : LocallyIntegrable f μ) (c : 𝕜) :
     LocallyIntegrable (c • f) μ := fun x ↦ (hf x).smul c
 
-variable {ε''' : Type*} [TopologicalSpace ε'''] [ENormedAddCommMonoid ε'''] [ContinuousAdd ε'''] in
+variable {ε''' : Type*} [TopologicalSpace ε'''] [ESeminormedAddCommMonoid ε'''] [ContinuousAdd ε'''] in
 theorem locallyIntegrable_finset_sum' {ι} (s : Finset ι) {f : ι → X → ε'''}
     (hf : ∀ i ∈ s, LocallyIntegrable (f i) μ) : LocallyIntegrable (∑ i ∈ s, f i) μ :=
   Finset.sum_induction f (fun g => LocallyIntegrable g μ) (fun _ _ => LocallyIntegrable.add)
     locallyIntegrable_zero hf
 
-variable {ε''' : Type*} [TopologicalSpace ε'''] [ENormedAddCommMonoid ε'''] [ContinuousAdd ε'''] in
+variable {ε''' : Type*} [TopologicalSpace ε'''] [ESeminormedAddCommMonoid ε'''] [ContinuousAdd ε'''] in
 theorem locallyIntegrable_finset_sum {ι} (s : Finset ι) {f : ι → X → ε'''}
     (hf : ∀ i ∈ s, LocallyIntegrable (f i) μ) : LocallyIntegrable (fun a ↦ ∑ i ∈ s, f i a) μ := by
   simpa only [← Finset.sum_apply] using locallyIntegrable_finset_sum' s hf
