@@ -689,9 +689,7 @@ theorem castSucc_pred_eq_pred_castSucc {a : Fin (n + 1)} (ha : a ≠ 0) :
 
 theorem castSucc_pred_add_one_eq {a : Fin (n + 1)} (ha : a ≠ 0) :
     (a.pred ha).castSucc + 1 = a := by
-  cases a using cases
-  · exact (ha rfl).elim
-  · rw [pred_succ, coeSucc_eq_succ]
+  simp
 
 theorem le_pred_castSucc_iff {a b : Fin (n + 1)} (ha : castSucc a ≠ 0) :
     b ≤ (castSucc a).pred ha ↔ b < a := by
