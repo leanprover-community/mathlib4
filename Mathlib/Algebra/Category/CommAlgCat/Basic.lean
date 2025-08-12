@@ -15,11 +15,9 @@ This file defines the bundled category `CommAlgCat` of commutative algebras over
 ring `R` along with the forgetful functors to `CommRingCat` and `AlgCat`.
 -/
 
-namespace CategoryTheory
+open CategoryTheory Limits
 
-open Limits
-
-universe v u
+universe w v u
 
 variable {R : Type u} [CommRing R]
 
@@ -167,6 +165,25 @@ instance reflectsIsomorphisms_forget : (forget (CommAlgCat.{u} R)).ReflectsIsomo
     let e : X ≃ₐ[R] Y := { f.hom, i.toEquiv with }
     exact (isoMk e).isIso_hom
 
+variable (R)
+
+/-- Universe lift functor for commutative algebras. -/
+def uliftFunctor : CommAlgCat.{v} R ⥤ CommAlgCat.{max v w} R where
+  obj A := .of R <| ULift A
+  map {A B} f := CommAlgCat.ofHom <|
+    ULift.algEquiv.symm.toAlgHom.comp <| f.hom.comp ULift.algEquiv.toAlgHom
+
+/-- The universe lift functor for commutative algebras is fully faithful. -/
+def fullyFaithfulUliftFunctor : (uliftFunctor R).FullyFaithful where
+  preimage {A B} f :=
+    CommAlgCat.ofHom <| ULift.algEquiv.toAlgHom.comp <| f.hom.comp ULift.algEquiv.symm.toAlgHom
+
+instance : (uliftFunctor R).Full :=
+  (fullyFaithfulUliftFunctor R).full
+
+instance : (uliftFunctor R).Faithful :=
+  (fullyFaithfulUliftFunctor R).faithful
+
 end CommAlgCat
 
 /-- The category of commutative algebras over a commutative ring `R` is the same as commutative
@@ -188,5 +205,3 @@ instance : HasColimits (CommAlgCat.{u} R) :=
 -- TODO: Generalize to `UnivLE.{u, v}` once `commAlgCatEquivUnder` is generalized.
 instance : HasLimits (CommAlgCat.{u} R) :=
   Adjunction.has_limits_of_equivalence (commAlgCatEquivUnder (.of R)).functor
-
-end CategoryTheory

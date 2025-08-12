@@ -47,7 +47,7 @@ theorem eval_eq_πJ (l : Products I) (hl : l.isGood (π C (· ∈ s))) :
   ext f
   simp only [πJ, LocallyConstant.comapₗ, LinearMap.coe_mk, AddHom.coe_mk,
     LocallyConstant.coe_comap, Function.comp_apply]
-  exact (congr_fun (Products.evalFacProp C (· ∈ s) (Products.prop_of_isGood  C (· ∈ s) hl)) _).symm
+  exact (congr_fun (Products.evalFacProp C (· ∈ s) (Products.prop_of_isGood C (· ∈ s) hl)) _).symm
 
 /-- `π C (· ∈ s)` is finite for a finite set `s`. -/
 noncomputable
@@ -87,7 +87,7 @@ product of the elements in this list is the delta function `spanFinBasis C s x`.
 -/
 def factors (x : π C (· ∈ s)) : List (LocallyConstant (π C (· ∈ s)) ℤ) :=
   List.map (fun i ↦ if x.val i = true then e (π C (· ∈ s)) i else (1 - (e (π C (· ∈ s)) i)))
-    (s.sort (·≥·))
+    (s.sort (· ≥ ·))
 
 theorem list_prod_apply {I} (C : Set (I → Bool)) (x : C) (l : List (LocallyConstant C ℤ)) :
     l.prod x = (l.map (LocallyConstant.evalMonoidHom x)).prod := by
@@ -173,7 +173,7 @@ theorem GoodProducts.spanFin [WellFoundedLT I] :
   rw [Submodule.span_le]
   rintro _ ⟨x, rfl⟩
   rw [← factors_prod_eq_basis]
-  let l := s.sort (·≥·)
+  let l := s.sort (· ≥ ·)
   dsimp [factors]
   suffices l.Chain' (· > ·) → (l.map (fun i ↦ if x.val i = true then e (π C (· ∈ s)) i
       else (1 - (e (π C (· ∈ s)) i)))).prod ∈

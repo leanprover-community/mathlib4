@@ -150,47 +150,50 @@ def getRemoteRepo (mathlibDepPath : FilePath) : IO RepoInfo := do
       return {repo := repo, useFirst := true}
 
     -- Only search for PR refs if we're not on a regular branch like master, bump/*, or nightly-testing*
-    let isSpecialBranch := branchName == "master" || branchName.startsWith "bump/" ||
-                          branchName.startsWith "nightly-testing"
+    -- let isSpecialBranch := branchName == "master" || branchName.startsWith "bump/" ||
+    --                       branchName.startsWith "nightly-testing"
 
+    -- TODO: this code is currently broken in two ways: 1. you need to write `%(refname)` in quotes and
+    -- 2. it is looking in the wrong place when in detached HEAD state.
+    -- We comment it out for now, but we should fix it later.
     -- Check if the current commit coincides with any PR ref
-    if !isSpecialBranch then
-      let mathlibRemoteName ← findMathlibRemote mathlibDepPath
-      let currentCommit ← IO.Process.output
-        {cmd := "git", args := #["rev-parse", "HEAD"], cwd := mathlibDepPath}
-
-      if currentCommit.exitCode == 0 then
-        let commit := currentCommit.stdout.trim
-        -- Get all PR refs that contain this commit
-        let prRefPattern := s!"refs/remotes/{mathlibRemoteName}/pr/*"
-        let refsInfo ← IO.Process.output
-          {cmd := "git", args := #["for-each-ref", "--contains", commit, prRefPattern, "--format=%(refname)"], cwd := mathlibDepPath}
-        -- The code below is for debugging purposes currently
-        IO.println s!"`git for-each-ref --contains {commit} {prRefPattern} --format=%(refname)` returned:
-        {refsInfo.stdout.trim} with exit code {refsInfo.exitCode} and stderr: {refsInfo.stderr.trim}."
-        let refsInfo' ← IO.Process.output
-          {cmd := "git", args := #["for-each-ref", "--contains", commit, prRefPattern, "--format=\"%(refname)\""], cwd := mathlibDepPath}
-        IO.println s!"`git for-each-ref --contains {commit} {prRefPattern} --format=\"%(refname)\"` returned:
-        {refsInfo'.stdout.trim} with exit code {refsInfo'.exitCode} and stderr: {refsInfo'.stderr.trim}."
-
-        if refsInfo.exitCode == 0 && !refsInfo.stdout.trim.isEmpty then
-          let prRefs := refsInfo.stdout.trim.split (· == '\n')
-          -- Extract PR numbers from refs like "refs/remotes/upstream/pr/1234"
-          for prRef in prRefs do
-            if let some prNumber := extractPRNumber prRef then
-              -- Get PR details using gh
-              let prInfo ← IO.Process.output
-                {cmd := "gh", args := #["pr", "view", toString prNumber, "--json", "headRefName,headRepositoryOwner,number"], cwd := mathlibDepPath}
-              if prInfo.exitCode == 0 then
-                if let .ok json := Lean.Json.parse prInfo.stdout.trim then
-                  if let .ok owner := json.getObjValAs? Lean.Json "headRepositoryOwner" then
-                    if let .ok login := owner.getObjValAs? String "login" then
-                      if let .ok repoName := json.getObjValAs? String "headRefName" then
-                        if let .ok prNum := json.getObjValAs? Nat "number" then
-                          let repo := s!"{login}/mathlib4"
-                          IO.println s!"Using cache from PR #{prNum} source: {login}/{repoName} (commit {commit.take 8} found in PR ref)"
-                          let useFirst := if login != "leanprover-community" then true else false
-                          return {repo := repo, useFirst := useFirst}
+    -- if !isSpecialBranch then
+    --   let mathlibRemoteName ← findMathlibRemote mathlibDepPath
+    --   let currentCommit ← IO.Process.output
+    --     {cmd := "git", args := #["rev-parse", "HEAD"], cwd := mathlibDepPath}
+    --
+    --   if currentCommit.exitCode == 0 then
+    --     let commit := currentCommit.stdout.trim
+    --     -- Get all PR refs that contain this commit
+    --     let prRefPattern := s!"refs/remotes/{mathlibRemoteName}/pr/*"
+    --     let refsInfo ← IO.Process.output
+    --       {cmd := "git", args := #["for-each-ref", "--contains", commit, prRefPattern, "--format=%(refname)"], cwd := mathlibDepPath}
+    --     -- The code below is for debugging purposes currently
+    --     IO.println s!"`git for-each-ref --contains {commit} {prRefPattern} --format=%(refname)` returned:
+    --     {refsInfo.stdout.trim} with exit code {refsInfo.exitCode} and stderr: {refsInfo.stderr.trim}."
+    --     let refsInfo' ← IO.Process.output
+    --       {cmd := "git", args := #["for-each-ref", "--contains", commit, prRefPattern, "--format=\"%(refname)\""], cwd := mathlibDepPath}
+    --     IO.println s!"`git for-each-ref --contains {commit} {prRefPattern} --format=\"%(refname)\"` returned:
+    --     {refsInfo'.stdout.trim} with exit code {refsInfo'.exitCode} and stderr: {refsInfo'.stderr.trim}."
+    --
+    --     if refsInfo.exitCode == 0 && !refsInfo.stdout.trim.isEmpty then
+    --       let prRefs := refsInfo.stdout.trim.split (· == '\n')
+    --       -- Extract PR numbers from refs like "refs/remotes/upstream/pr/1234"
+    --       for prRef in prRefs do
+    --         if let some prNumber := extractPRNumber prRef then
+    --           -- Get PR details using gh
+    --           let prInfo ← IO.Process.output
+    --             {cmd := "gh", args := #["pr", "view", toString prNumber, "--json", "headRefName,headRepositoryOwner,number"], cwd := mathlibDepPath}
+    --           if prInfo.exitCode == 0 then
+    --             if let .ok json := Lean.Json.parse prInfo.stdout.trim then
+    --               if let .ok owner := json.getObjValAs? Lean.Json "headRepositoryOwner" then
+    --                 if let .ok login := owner.getObjValAs? String "login" then
+    --                   if let .ok repoName := json.getObjValAs? String "headRefName" then
+    --                     if let .ok prNum := json.getObjValAs? Nat "number" then
+    --                       let repo := s!"{login}/mathlib4"
+    --                       IO.println s!"Using cache from PR #{prNum} source: {login}/{repoName} (commit {commit.take 8} found in PR ref)"
+    --                       let useFirst := if login != "leanprover-community" then true else false
+    --                       return {repo := repo, useFirst := useFirst}
 
   -- Fall back to using the remote that the current branch is tracking
   let trackingRemote ← IO.Process.output
@@ -334,6 +337,7 @@ def downloadFiles
         IO.eprintln "This usually means that your local checkout of mathlib4 has diverged from upstream."
         IO.eprintln "If you push your commits to a branch of the mathlib4 repository, CI will build the oleans and they will be available later."
         IO.eprintln "Alternatively, if you already have pushed your commits to a branch, this may mean the CI build has failed part-way through building."
+        IO.eprintln "During August 2025, we are changing the back-end for the olean cache. If you are unexpectedly not finding oleans for your PR, please try merging `master`."
       pure failed
     else
       let r ← hashMap.foldM (init := []) fun acc _ hash => do

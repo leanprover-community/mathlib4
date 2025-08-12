@@ -40,7 +40,7 @@ lemma map_mul_natCast {α : Type*} [NonAssocSemiring α] (A B : Matrix n n ℕ) 
     map (A * B) ((↑) : ℕ → α) = map A (↑) * map B (↑) :=
   Matrix.map_mul (f := Nat.castRingHom α)
 
-lemma map_mul_intCast {α : Type*} [NonAssocRing α]  (A B : Matrix n n ℤ) :
+lemma map_mul_intCast {α : Type*} [NonAssocRing α] (A B : Matrix n n ℤ) :
     map (A * B) ((↑) : ℤ → α) = map A (↑) * map B (↑) :=
   Matrix.map_mul (f := Int.castRingHom α)
 

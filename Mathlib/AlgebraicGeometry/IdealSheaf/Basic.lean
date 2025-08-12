@@ -505,6 +505,9 @@ lemma le_support_iff_le_vanishingIdeal {I : X.IdealSheafData} {Z : Closeds X} :
     Set.image_preimage_eq_inter_range, IsAffineOpen.fromSpec_image_zeroLocus,
     IsAffineOpen.range_fromSpec]
 
+@[deprecated (since := "2025-05-16")]
+alias subset_support_iff_le_vanishingIdeal := le_support_iff_le_vanishingIdeal
+
 /-- `support` and `vanishingIdeal` forms a galois connection.
 This is the global version of `PrimeSpectrum.gc`. -/
 lemma gc : @GaloisConnection X.IdealSheafData (Closeds X)ᵒᵈ _ _ (support ·) (vanishingIdeal ·) :=
@@ -762,7 +765,7 @@ lemma Hom.support_ker (f : X.Hom Y) [QuasiCompact f] :
 
 /-- The functor taking a morphism into `Y` to its kernel as an ideal sheaf on `Y`. -/
 @[simps]
-noncomputable def kerFunctor (Y : Scheme.{u}) : (Over Y)ᵒᵖ ⥤ IdealSheafData Y where
+def kerFunctor (Y : Scheme.{u}) : (Over Y)ᵒᵖ ⥤ IdealSheafData Y where
   obj f := f.unop.hom.ker
   map {f g} hfg := homOfLE <| by simpa only [Functor.id_obj, Functor.const_obj_obj,
     OrderDual.toDual_le_toDual, ← Over.w hfg.unop] using hfg.unop.left.le_ker_comp f.unop.hom

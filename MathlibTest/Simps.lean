@@ -293,7 +293,7 @@ run_cmd liftTermElabM <| do
     #[`partially_applied_term_data_fst, `partially_applied_term_data_snd]
 
 structure VeryPartiallyAppliedStr where
-  (data : ∀β, ℕ → β → MyProd ℕ β)
+  (data : ∀ β, ℕ → β → MyProd ℕ β)
 
 /- if we have a partially applied constructor, we treat it as if it were eta-expanded.
   (this is not very useful, and we could remove this behavior if convenient) -/
