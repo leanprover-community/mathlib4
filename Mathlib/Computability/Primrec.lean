@@ -645,8 +645,6 @@ theorem list_findIdx₁ {p : α → β → Bool} (hp : Primrec₂ p) :
 theorem list_idxOf₁ [DecidableEq α] (l : List α) : Primrec fun a => l.idxOf a :=
   list_findIdx₁ (.swap .beq) l
 
-@[deprecated (since := "2025-01-30")] alias list_indexOf₁ := list_idxOf₁
-
 theorem dom_fintype [Finite α] (f : α → σ) : Primrec f :=
   let ⟨l, _, m⟩ := Finite.exists_univ_list α
   option_some_iff.1 <| by
@@ -978,8 +976,6 @@ theorem list_findIdx {f : α → List β} {p : α → β → Bool}
 
 theorem list_idxOf [DecidableEq α] : Primrec₂ (@List.idxOf α _) :=
   to₂ <| list_findIdx snd <| Primrec.beq.comp₂ snd.to₂ (fst.comp fst).to₂
-
-@[deprecated (since := "2025-01-30")] alias list_indexOf := list_idxOf
 
 theorem nat_strong_rec (f : α → ℕ → σ) {g : α → List σ → Option σ} (hg : Primrec₂ g)
     (H : ∀ a n, g a ((List.range n).map (f a)) = some (f a n)) : Primrec₂ f :=

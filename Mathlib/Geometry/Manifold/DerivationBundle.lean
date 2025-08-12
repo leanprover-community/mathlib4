@@ -38,8 +38,6 @@ Denoted as `C^n⟮I, M; 𝕜⟯⟨x⟩` within the `Derivation` namespace. -/
 def PointedContMDiffMap (_ : M) :=
   C^n⟮I, M; 𝕜⟯
 
-@[deprecated (since := "2025-01-09")] alias PointedSmoothMap := PointedContMDiffMap
-
 @[inherit_doc]
 scoped[Derivation] notation "C^" n "⟮" I ", " M "; " 𝕜 "⟯⟨" x "⟩" => PointedContMDiffMap 𝕜 I M n x
 
@@ -105,8 +103,6 @@ variable (X : Derivation 𝕜 C^∞⟮I, M; 𝕜⟯ C^∞⟮I, M; 𝕜⟯) (f : 
 -/
 def ContMDiffFunction.evalAt (x : M) : C^∞⟮I, M; 𝕜⟯ →ₗ[C^∞⟮I, M; 𝕜⟯⟨x⟩] 𝕜 :=
   (PointedContMDiffMap.eval x).toLinearMap
-
-@[deprecated (since := "2025-01-09")] alias SmoothFunction.evalAt := ContMDiffFunction.evalAt
 
 namespace Derivation
 

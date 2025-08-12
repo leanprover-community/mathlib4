@@ -79,10 +79,6 @@ def sectionΓ'Bool : Γ' → Bool
 theorem sectionΓ'Bool_inclusionBoolΓ' {b} : sectionΓ'Bool (inclusionBoolΓ' b) = b := by
   cases b <;> rfl
 
-@[deprecated sectionΓ'Bool_inclusionBoolΓ' (since := "2025-01-21")]
-theorem leftInverse_section_inclusion : Function.LeftInverse sectionΓ'Bool inclusionBoolΓ' :=
-  fun x => Bool.casesOn x rfl rfl
-
 theorem inclusionBoolΓ'_injective : Function.Injective inclusionBoolΓ' :=
   Function.HasLeftInverse.injective ⟨_, (fun _ => sectionΓ'Bool_inclusionBoolΓ')⟩
 

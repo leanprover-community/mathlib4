@@ -274,8 +274,6 @@ instance rankPos_nonempty {M : Matroid α} [M.RankPos] : M.Nonempty := by
   · exact False.elim <| RankPos.empty_not_isBase hB
   exact ⟨e, M.subset_ground B hB heB ⟩
 
-@[deprecated (since := "2025-01-20")] alias rkPos_iff_empty_not_base := rankPos_iff
-
 section exchange
 namespace ExchangeProperty
 
