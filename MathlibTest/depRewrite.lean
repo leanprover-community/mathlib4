@@ -302,3 +302,10 @@ example (f : Nat → Nat → Nat) : P (f (id n) (id n)) := by
   rewrite! (occs := .neg [1]) [eq]
   guard_target =ₐ P (f (id n) (id m))
   exact test_sorry
+
+
+-- make sure `dsimp` is doing enough
+example {n m : Nat} (u : Fin (n + m + 1)) : P u := by
+  rw! (castMode := .all) [Nat.add_assoc]
+  guard_target =ₛ @P (Fin (n + (m + 1))) u
+  exact test_sorry

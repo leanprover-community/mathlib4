@@ -482,13 +482,16 @@ def _root_.Lean.MVarId.depRewrite (mvarId : MVarId) (e : Expr) (heq : Expr)
 
 /--
 The configuration used by `rw!` to call `dsimp`.
-This configuration uses only iota reduction (recursor application) to simplify terms.
+This configuration uses just enough simplification to be able to compute
+away applications of `Eq.rec` that `rw!` creates.
 -/
 private def depRwContext : MetaM Simp.Context :=
   Simp.mkContext
     {Lean.Meta.Simp.neutralConfig with
      etaStruct := .none
      iota := true
+     beta := true
+     proj := true
      failIfUnchanged := false}
 
 open Parser Elab Tactic
