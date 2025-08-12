@@ -50,17 +50,15 @@ theorem abs_le_right_of_norm (m n : ℤ) : |m| ≤ ‖![n, m]‖ := by
 
 lemma abs_norm_eq_max_natAbs (n : ℕ) :
     ‖![1, (n + 1 : ℤ)]‖ = n + 1 := by
-  simp only [Nat.succ_eq_add_one, Nat.reduceAdd, EisensteinSeries.norm_eq_max_natAbs, Fin.isValue,
-    Matrix.cons_val_zero, isUnit_one, Int.natAbs_of_isUnit, Matrix.cons_val_one,
-    Matrix.cons_val_fin_one, Nat.cast_max, Nat.cast_one]
+  simp only [EisensteinSeries.norm_eq_max_natAbs, Matrix.cons_val_zero,  Matrix.cons_val_one,
+    Matrix.cons_val_fin_one]
   norm_cast
   simp
 
 lemma abs_norm_eq_max_natAbs_neg (n : ℕ) :
     ‖![1, -(n + 1 : ℤ)]‖ = n + 1 := by
-  simp only [EisensteinSeries.norm_eq_max_natAbs, Fin.isValue, Matrix.cons_val_zero, isUnit_one,
-    Int.natAbs_of_isUnit, Matrix.cons_val_one, Matrix.cons_val_fin_one, Nat.cast_max,
-    Int.natAbs_neg]
+  simp only [EisensteinSeries.norm_eq_max_natAbs, Matrix.cons_val_zero,  Matrix.cons_val_one,
+    Matrix.cons_val_fin_one]
   norm_cast
   simp
 
