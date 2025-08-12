@@ -90,7 +90,7 @@ If $v$ and $w$ are two real absolute values on a field $F$, $v$ is non-trivial, 
 and only if $w(x) < 1$, then $\frac{\log (v(a))}{\log (w(a))}$ is constant for all $a ∈ F$
 with $1 < v(a)$.
 -/
-theorem log_div_image_eq_singleton_of_abv_lt_one_iff (hv : v.IsNontrivial)
+theorem log_div_eq_constant_of_abv_lt_one_iff (hv : v.IsNontrivial)
     (h : ∀ x, v x < 1 ↔ w x < 1) :
     letI f : F → ℝ := fun a ↦ (v a).log / (w a).log
     ∃ (a : F) (_ : 1 < v a), ∀ (b : F) (_ : 1 < v b), f b = f a := by
@@ -117,7 +117,7 @@ open Real in
 theorem exists_rpow_of_abv_one_lt_iff {v w : AbsoluteValue F ℝ} (hv : v.IsNontrivial)
     (h : ∀ x, v x < 1 ↔ w x < 1) :
     ∃ (t : ℝ) (_ : 0 < t), ∀ x, 1 < v x → w x ^ t = v x := by
-  obtain ⟨a, ha, hlog⟩ := log_div_image_eq_singleton_of_abv_lt_one_iff hv h
+  obtain ⟨a, ha, hlog⟩ := log_div_eq_constant_of_abv_lt_one_iff hv h
   refine ⟨(v a).log / (w a).log,
     div_pos (log_pos ha) (log_pos ((v.one_lt_iff_of_lt_one_iff h a).1 ha)), fun b hb ↦ ?_⟩
   simp_rw [← hlog b hb]
