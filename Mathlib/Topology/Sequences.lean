@@ -331,7 +331,7 @@ protected theorem IsSeqCompact.totallyBounded (h : IsSeqCompact s) : TotallyBoun
 
 variable [IsCountablyGenerated (𝓤 X)]
 
-/-- A sequentially compact set in a uniform set with countably generated uniformity filter
+/-- A sequentially compact set in a uniform space with countably generated uniformity filter
 is complete. -/
 protected theorem IsSeqCompact.isComplete (hs : IsSeqCompact s) : IsComplete s := fun l hl hls => by
   have := hl.1
