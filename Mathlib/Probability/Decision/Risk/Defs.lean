@@ -118,7 +118,7 @@ lemma bayesRiskPrior_of_isEmpty [IsEmpty 𝓧] : bayesRiskPrior ℓ P π = 0 := 
   simp [bayesRiskPrior]
 
 @[simp]
-lemma bayesRiskPrior_of_nonempty_of_isEmpty [Nonempty 𝓧] [IsEmpty 𝓨] :
+lemma bayesRiskPrior_of_isEmpty' [Nonempty 𝓧] [IsEmpty 𝓨] :
     bayesRiskPrior ℓ P π = ∞ := by
   have : IsEmpty (Subtype (@IsMarkovKernel 𝓧 𝓨 m𝓧 m𝓨)) := by
     simp only [isEmpty_subtype]
@@ -126,7 +126,7 @@ lemma bayesRiskPrior_of_nonempty_of_isEmpty [Nonempty 𝓧] [IsEmpty 𝓨] :
   simp [bayesRiskPrior, iInf_subtype']
 
 @[simp]
-lemma bayesRiskPrior_of_isEmpty_of_nonempty [IsEmpty Θ] [Nonempty 𝓨] :
+lemma bayesRiskPrior_of_isEmpty'' [IsEmpty Θ] [Nonempty 𝓨] :
     bayesRiskPrior ℓ P π = 0 := by
   simp [bayesRiskPrior, iInf_subtype']
 
@@ -140,7 +140,7 @@ lemma bayesRisk_of_isEmpty' [Nonempty 𝓧] [Nonempty Θ] [IsEmpty 𝓨] : bayes
 
 @[simp]
 lemma bayesRisk_of_isEmpty'' [IsEmpty Θ] [Nonempty 𝓨] : bayesRisk ℓ P = 0 := by
-  simp [bayesRisk, Subsingleton.elim (α := Measure Θ) _ 0]
+  simp [bayesRisk]
 
 @[simp]
 lemma minimaxRisk_of_isEmpty [IsEmpty 𝓧] : minimaxRisk ℓ P = 0 := by
