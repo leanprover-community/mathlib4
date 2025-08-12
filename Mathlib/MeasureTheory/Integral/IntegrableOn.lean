@@ -540,7 +540,7 @@ theorem integrableAtFilter_top [PseudoMetrizableSpace ε'] {f : α → ε'} :
     IntegrableAtFilter f ⊤ μ ↔ Integrable f μ := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.integrableAtFilter ⊤⟩
   obtain ⟨s, hsf, hs⟩ := h
-  refine (integrableOn_iff_integrable_of_support_subset fun _ _ ↦ hsf _).mp hs
+  exact (integrableOn_iff_integrable_of_support_subset fun _ _ ↦ hsf _).mp hs
 
 theorem IntegrableAtFilter.sup_iff [PseudoMetrizableSpace ε'] {f : α → ε'} {l l' : Filter α} :
     IntegrableAtFilter f (l ⊔ l') μ ↔ IntegrableAtFilter f l μ ∧ IntegrableAtFilter f l' μ := by
