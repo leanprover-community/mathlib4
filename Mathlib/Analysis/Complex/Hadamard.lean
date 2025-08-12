@@ -374,7 +374,7 @@ lemma sSupNormIm_scale_left (f : ℂ → E) {l u : ℝ} (hul : l < u) :
       constructor
       · norm_cast
         rw [Complex.div_re, Complex.normSq_ofReal, Complex.ofReal_re]
-        simp[hz₁]
+        simp [hz₁]
       · rw [div_mul_comm, div_self (by norm_cast; linarith)]
         simp [hz₂]
   rw [this]
@@ -571,7 +571,7 @@ lemma mem_verticalClosedStrip_of_scale_id_mem_verticalClosedStrip {z : ℂ} {l u
     · apply le_of_lt; simp [hul]
     · exact hz.1
   · rw [← sub_le_sub_iff_right (l / (u - l)), add_sub_assoc, sub_self, add_zero, div_sub_div_same,
-      div_le_one (by simp[hul]), sub_le_sub_iff_right l]
+      div_le_one (by simp [hul]), sub_le_sub_iff_right l]
     exact hz.2
 
 /-- The function `scale f l u` is `diffContOnCl`. -/
