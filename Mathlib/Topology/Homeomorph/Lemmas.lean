@@ -22,30 +22,12 @@ open Filter Function Set Topology
 
 variable {X Y W Z : Type*}
 
-namespace Homeomorph
+section
 
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace W] [TopologicalSpace Z]
   {X' Y' : Type*} [TopologicalSpace X'] [TopologicalSpace Y']
 
-/-- Homeomorphism given an embedding. -/
-@[simps! apply_coe]
-noncomputable def _root_.Topology.IsEmbedding.toHomeomorph {f : X → Y} (hf : IsEmbedding f) :
-    X ≃ₜ Set.range f :=
-  Equiv.ofInjective f hf.injective |>.toHomeomorphOfIsInducing <|
-    IsInducing.subtypeVal.of_comp_iff.mp hf.toIsInducing
-
-@[deprecated (since := "2025-04-16")]
-alias ofIsEmbedding := IsEmbedding.toHomeomorph
-
-/-- A surjective embedding is a homeomorphism. -/
-@[simps! apply]
-noncomputable def _root_.Topology.IsEmbedding.toHomeomorphOfSurjective {f : X → Y}
-    (hf : IsEmbedding f) (hsurj : Function.Surjective f) : X ≃ₜ Y :=
-  Equiv.ofBijective f ⟨hf.injective, hsurj⟩ |>.toHomeomorphOfIsInducing hf.toIsInducing
-
-@[deprecated (since := "2025-04-16")]
-alias _root_.Topology.IsEmbedding.toHomeomorph_of_surjective :=
-  IsEmbedding.toHomeomorphOfSurjective
+namespace Homeomorph
 
 protected theorem secondCountableTopology [SecondCountableTopology Y]
     (h : X ≃ₜ Y) : SecondCountableTopology X :=
@@ -433,6 +415,35 @@ def funSplitAt : (ι → Y) ≃ₜ Y × ({ j // j ≠ i } → Y) :=
 end
 
 end Homeomorph
+
+namespace Topology.IsEmbedding
+
+/-- Homeomorphism given an embedding. -/
+@[simps! apply_coe]
+noncomputable def toHomeomorph {f : X → Y} (hf : IsEmbedding f) :
+    X ≃ₜ Set.range f :=
+  Equiv.ofInjective f hf.injective |>.toHomeomorphOfIsInducing <|
+    IsInducing.subtypeVal.of_comp_iff.mp hf.toIsInducing
+
+@[deprecated (since := "2025-04-16")]
+alias _root_.Homeomorph.ofIsEmbedding := toHomeomorph
+
+/-- A surjective embedding is a homeomorphism. -/
+@[simps! apply]
+noncomputable def toHomeomorphOfSurjective {f : X → Y}
+    (hf : IsEmbedding f) (hsurj : Function.Surjective f) : X ≃ₜ Y :=
+  Equiv.ofBijective f ⟨hf.injective, hsurj⟩ |>.toHomeomorphOfIsInducing hf.toIsInducing
+
+@[deprecated (since := "2025-04-16")]
+alias toHomeomorph_of_surjective := toHomeomorphOfSurjective
+
+/-- A set is homeomorphic to its image under any embedding. -/
+noncomputable def homeomorphImage {f : X → Y} (hf : IsEmbedding f) (s : Set X) : s ≃ₜ f '' s :=
+  (hf.comp .subtypeVal).toHomeomorph.trans <| .setCongr <| by simp [Set.range_comp]
+
+end Topology.IsEmbedding
+
+end
 
 namespace Continuous
 
