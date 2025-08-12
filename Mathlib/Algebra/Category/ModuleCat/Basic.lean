@@ -340,6 +340,14 @@ theorem subsingleton_of_isZero (h : IsZero M) : Subsingleton M := by
   rw [← LinearMap.id_apply (R := R) x, ← ModuleCat.hom_id]
   simp only [(CategoryTheory.Limits.IsZero.iff_id_eq_zero M).mp h, hom_zero, LinearMap.zero_apply]
 
+lemma isZero_iff_subsingleton : IsZero M ↔ Subsingleton M where
+  mp := subsingleton_of_isZero
+  mpr _ := isZero_of_subsingleton M
+
+@[simp]
+lemma isZero_of_iff_subsingleton {M : Type*} [AddCommGroup M] [Module R M] :
+    IsZero (of R M) ↔ Subsingleton M := isZero_iff_subsingleton
+
 end AddCommGroup
 
 section SMul
