@@ -859,6 +859,12 @@ instance : Star (α →ₘ[μ] R) where
 lemma coeFn_star (f : α →ₘ[μ] R) : ↑(star f) =ᵐ[μ] (star f : α → R) :=
    coeFn_comp _ (continuous_star) f
 
+instance : InvolutiveStar (α →ₘ[μ] R) where
+  star_involutive f := by
+    ext
+    filter_upwards [AEEqFun.coeFn_star (star f), AEEqFun.coeFn_star f] with x hx hy
+    simp only [hx, Pi.star_apply, hy, star_star]
+
 end Star
 
 section PosPart

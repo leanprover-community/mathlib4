@@ -460,7 +460,7 @@ protected theorem smul_const {𝕜} [TopologicalSpace 𝕜] [SMul 𝕜 β] [Cont
 
 /-- Pointwise star on functions induced from continuous star preserves strong measurability. -/
 @[measurability]
-protected theorem star {α R : Type*} [MeasurableSpace α] [Star R] [TopologicalSpace R]
+protected theorem star {R : Type*} [MeasurableSpace α] [Star R] [TopologicalSpace R]
     [ContinuousStar R] (f : α → R) (hf : StronglyMeasurable f) : StronglyMeasurable (star f) :=
   ⟨fun n => star (hf.approx n), fun x => (hf.tendsto_approx x).star⟩
 

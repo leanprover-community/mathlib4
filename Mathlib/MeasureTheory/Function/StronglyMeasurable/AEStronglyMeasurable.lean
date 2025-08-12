@@ -344,10 +344,14 @@ end Arithmetic
 
 section Star
 
-protected theorem _root_.Filter.EventuallyEq.star {R : Type*} [Star R] {f g : α → R} {l : Filter α}
-    (h : f =ᶠ[l] g) : (fun x ↦ star (f x)) =ᶠ[l] fun x ↦ star (g x) :=
+protected theorem _root_.Filter.EventuallyEq.fun_star {R : Type*} [Star R] {f g : α → R}
+    {l : Filter α} (h : f =ᶠ[l] g) : (fun x ↦ star (f x)) =ᶠ[l] fun x ↦ star (g x) :=
   h.fun_comp Star.star
 
+protected theorem _root_.Filter.EventuallyEq.star {R : Type*} [Star R]
+    {f g : α → R} {l : Filter α} (h : f =ᶠ[l] g) : star f =ᶠ[l] star g := h.fun_comp Star.star
+
+@[fun_prop, measurability]
 protected theorem star {R : Type*} [TopologicalSpace R] [Star R] [ContinuousStar R] {f : α → R}
     (hf : AEStronglyMeasurable f μ) : AEStronglyMeasurable (star f) μ :=
   ⟨star (hf.mk f), hf.stronglyMeasurable_mk.star, hf.ae_eq_mk.star⟩
