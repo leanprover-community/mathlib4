@@ -331,7 +331,7 @@ private lemma iteratedDerivWithin_cotTerm_bounded_uniformly {k : ℕ} (hk : 1 �
   repeat simp only [coe_setOf, image_univ, Fin.isValue, Matrix.cons_val_zero, Int.cast_one,
     coe_mk_subtype, one_mul, Matrix.cons_val_one, Matrix.cons_val_fin_one, Int.cast_add,
     Int.cast_natCast, neg_add_rev, abs_norm_eq_max_natAbs, Int.reduceNeg, sub_eq_add_neg,
-    norm_zpow] at * ; norm_cast at *
+    norm_zpow] at *; norm_cast at *
 
 
 lemma summableLocallyUniformlyOn_iteratedDerivWithin_cotTerm {k : ℕ} (hk : 1 ≤ k) :
