@@ -334,7 +334,6 @@ theorem doubling_lt_three_halves (h : #(A * A) < (3 / 2 : ℚ) * #A) :
   · simpa [H, invMulSubgroup_eq_inv_mul, ← coe_inv, ← coe_mul, ← coe_smul_finset]
       using smul_inv_mul_eq_inv_mul_opSMul h ha
 
-
 /-! ### Doubling less than `2-ε` -/
 
 variable (ε : ℝ)
@@ -350,6 +349,7 @@ private lemma rightCoset_eq_of_mem {H : Subgroup G} {c : Set G} {x : G}
   rw [← rightCoset_mem_rightCoset H hx, smul_smul] at ha
   simp_all only [op_mul, op_inv, mul_inv_cancel_left, SetLike.mem_coe]
 
+/-- Underlying structure for the set of representatives of a finite set of right cosets -/
 private structure RCosRepFin (G : Type*) [Group G] [DecidableEq G] where
   H : Subgroup G
   A : Finset G
@@ -359,7 +359,6 @@ private structure RCosRepFin (G : Type*) [Group G] [DecidableEq G] where
   chooseZ' : Set G → G
   chooseZ'_spec : ∀ cH ∈ preZ', chooseZ' cH ∈ cH ∩ (↑H * ↑A)
   Z' : Finset G
-  --Z'_subset_HA : (Z' : Set G) ⊆ H * A
   toH : G → G
   toH_mem_H : ∀ z ∈ Z', toH z ∈ ↑H
   toA : G → G
@@ -371,6 +370,9 @@ private structure RCosRepFin (G : Type*) [Group G] [DecidableEq G] where
 
 private noncomputable def rCosRepFin (H : Subgroup G) [Fintype H] {A : Finset G}
     (hA : A.Nonempty) : RCosRepFin G := by
+  -- we first take all right cosets that intersect `A`, show that there is finitely many
+  -- of them and take for `Z'` a set of representatives of all these cosets; then we
+  -- multiply every element of `Z'` with an appropriate element of `H` to make `Z ⊆ A`
   classical
   let preZ := {cH ∈ orbit Gᵐᵒᵖ (H : Set G) | (cH ∩ (H * A)).Nonempty}
   have fin_preZ : preZ.Finite := by
@@ -431,6 +433,12 @@ private noncomputable def rCosRepFin (H : Subgroup G) [Fintype H] {A : Finset G}
   exact ⟨H, A, preZ, fin_preZ, preZ', chooseZ', chooseZ'_spec, Z', toH, toH_mem_H, toA,
           toA_mem_A, toH_mul_toA, toZ, toZ_comp_chooseZ'_mem_self, Z⟩
 
+-- TODO: Here `Z` is defined by extracting a representative from each coset and the definitional
+--  property is actually not (explicitely) proved as it is not needed here; as far as I could check,
+--  no such coset representing set is available in the library at this point, although it might be
+--  useful independently of this section
+/-- Given a finite subset `A` of group `G` and a subgroup `H ≤ G`, right coset representing set of
+`H * A` is a subset `Z` of `A` such that `H * Z = H * A` and `∀ z₁ z₂ ∈ Z → Hz₁ ≠ Hz₂` -/
 private noncomputable def rightCosetRepresentingFinset (H : Subgroup G) [Fintype H] {A : Finset G}
     (hA : A.Nonempty) : Finset G :=
   (rCosRepFin H hA).Z
@@ -519,7 +527,6 @@ private lemma card_mul_rightCosetRepresentingFinset_eq_mul_card (H : Subgroup G)
   rw [hz'₂, ht'₂] at hct₂
   rw [hct₂, mul_eq_right, inv_mul_eq_one] at hyp
   exact ⟨Eq.symm hyp, hct₂⟩
-
 
 private structure ExpansionMeasure (G : Type*) [Group G] [DecidableEq G] where
   K : ℝ
@@ -612,6 +619,8 @@ private lemma connectivity_nonneg (em : ExpansionMeasure G) : 0 ≤ connectivity
   rw [← hS₂]
   exact le_of_lt (expansionMeasure_pos em hS₁)
 
+/-- The value of connectivity is attained by an element of the image of the expansion measure
+function. -/
 private lemma connectivity_mem_expansionMeasure_image (em : ExpansionMeasure G)
     : connectivity em ∈ expansionMeasure_image em := by
   apply by_contradiction
@@ -809,11 +818,10 @@ private def atomicSubgroup_fintype {em : ExpansionMeasure G} {N : Finset G} (hN 
   exact H.mem_carrier
 )
 
--- def expansionMeasure (K : ℝ) (B : Finset G) : Finset G → ℝ := fun S => #(S * B) - K * #S
-
--- lemma expansionMeasure_left_invariant (K : ℝ) (B : Finset G) (S : Finset G) (x : G) :
---     expansionMeasure K B (x •> S) = expansionMeasure K B S := sorry
-
+/-- If `A` is such that there is `S` with `|A| ≤ |S|` such that `|S * A| ≤ (2 - ε) * |A|` for some
+`0 < ε ≤ 1`, then there is a finite subgroup `H` of `G` of size `|H| ≤ (2 / ε - 1) * |A|` such that
+`A` is covered by at most `2 / ε - 1` right cosets of `H`.
+In particular, for `S = A`, we get a characterisation of sets of doubling less than `2 - ε`. -/
 theorem doubling_lt_two {ε : ℝ} (hε₀ : 0 < ε) (hε₁ : ε ≤ 1) (hA : A.Nonempty)
     (hS : ∃ (S : Finset G) (_ : #S ≥ #A), #(S * A) ≤ (2 - ε) * #A) :
     ∃ (H : Subgroup G) (_ : Fintype H) (_ : Fintype.card H ≤ (2 / ε - 1) * #A) (Z : Finset G)
