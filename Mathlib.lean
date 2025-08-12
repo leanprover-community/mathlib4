@@ -3911,6 +3911,7 @@ import Mathlib.FieldTheory.SplittingField.Construction
 import Mathlib.FieldTheory.SplittingField.IsSplittingField
 import Mathlib.FieldTheory.Tower
 import Mathlib.Geometry.Convex.Cone.Basic
+import Mathlib.Geometry.Convex.Cone.ConicalHull
 import Mathlib.Geometry.Convex.Cone.Dual
 import Mathlib.Geometry.Convex.Cone.Pointed
 import Mathlib.Geometry.Euclidean.Altitude
