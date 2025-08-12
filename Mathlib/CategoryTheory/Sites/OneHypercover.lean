@@ -85,7 +85,7 @@ lemma sieve₁_eq_pullback_sieve₁' {W : C} (p₁ : W ⟶ E.X i₁) (p₂ : W �
   ext Z g
   constructor
   · rintro ⟨j, h, fac₁, fac₂⟩
-    exact ⟨_, h, _, ⟨j⟩, by aesop_cat⟩
+    exact ⟨_, h, _, ⟨j⟩, by cat_disch⟩
   · rintro ⟨_, h, w, ⟨j⟩, fac⟩
     exact ⟨j, h, by simpa using fac.symm =≫ pullback.fst _ _,
       by simpa using fac.symm =≫ pullback.snd _ _⟩
@@ -95,7 +95,7 @@ lemma sieve₁'_eq_sieve₁ : E.sieve₁' i₁ i₂ = E.sieve₁ (pullback.fst _
   rw [← Sieve.pullback_id (S := E.sieve₁' i₁ i₂),
     sieve₁_eq_pullback_sieve₁' _ _ _ pullback.condition]
   congr
-  aesop_cat
+  cat_disch
 
 end
 
@@ -138,8 +138,8 @@ structure Hom (E F : PreOneHypercover S) extends
   s₁ {i j : E.I₀} (k : E.I₁ i j) : F.I₁ (s₀ i) (s₀ j)
   /-- The refinement morphisms between objects in the coverings of the fibre products over `S`. -/
   h₁ {i j : E.I₀} (k : E.I₁ i j) : E.Y k ⟶ F.Y (s₁ k)
-  w₁₁ {i j : E.I₀} (k : E.I₁ i j) : h₁ k ≫ F.p₁ (s₁ k) = E.p₁ k ≫ h₀ i := by aesop_cat
-  w₁₂ {i j : E.I₀} (k : E.I₁ i j) : h₁ k ≫ F.p₂ (s₁ k) = E.p₂ k ≫ h₀ j := by aesop_cat
+  w₁₁ {i j : E.I₀} (k : E.I₁ i j) : h₁ k ≫ F.p₁ (s₁ k) = E.p₁ k ≫ h₀ i := by cat_disch
+  w₁₂ {i j : E.I₀} (k : E.I₁ i j) : h₁ k ≫ F.p₂ (s₁ k) = E.p₂ k ≫ h₀ j := by cat_disch
 
 attribute [reassoc] Hom.w₁₁ Hom.w₁₂
 
@@ -239,7 +239,7 @@ abbrev cylinderf {i : E.I₀} (k : F.I₁ (f.s₀ i) (g.s₀ i)) : cylinderX f g
 /-- Given two refinement morphisms `f, g : E ⟶ F`, this is a (pre-)`1`-hypercover `W` that
 admits a morphism `h : W ⟶ E` such that `h ≫ f` and `h ≫ g` are homotopic. Hence
 they become equal after quotienting out by homotopy.
-This is a `1`-hypercover, if `E` and `F` are (see `OneHpyercover.cylinder`). -/
+This is a `1`-hypercover, if `E` and `F` are (see `OneHypercover.cylinder`). -/
 @[simps]
 noncomputable def cylinder (f g : E.Hom F) : PreOneHypercover.{max w w'} S where
   I₀ := Σ (i : E.I₀), F.I₁ (f.s₀ i) (g.s₀ i)

@@ -117,11 +117,7 @@ lemma orthRadius_le_orthRadius_iff {s : Sphere P} {p q : P} :
   refine ⟨fun h ↦ ?_, fun h ↦ h ▸ rfl⟩
   have hpq := orthRadius_le_orthRadius_iff.1 h.le
   have hqp := orthRadius_le_orthRadius_iff.1 h.symm.le
-  by_cases he : p = q
-  · exact he
-  · simp only [he, false_or] at hpq
-    simp only [Ne.symm he, false_or] at hqp
-    rw [hpq, hqp]
+  grind
 
 /-- The affine subspace `as` is tangent to the sphere `s` at the point `p`. -/
 structure IsTangentAt (s : Sphere P) (p : P) (as : AffineSubspace ℝ P) : Prop where

@@ -28,7 +28,7 @@ When the inequalities are over a dense linear order, `linarith` is a decision pr
 prove `False` if and only if the inequalities are unsatisfiable. `linarith` will also run on some
 types like `ℤ` that are not dense orders, but it will fail to prove `False` on some unsatisfiable
 problems. It will run over concrete types like `ℕ`, `ℚ`, and `ℝ`, as well as abstract types that
-are instances of `LinearOrderedCommRing`.
+are instances of `CommRing`, `LinearOrder` and `IsStrictOrderedRing`.
 
 ## Algorithm sketch
 
@@ -200,7 +200,7 @@ def getContrLemma (e : Expr) : MetaM (Name × Expr) := do
 
 /--
 `applyContrLemma` inspects the target to see if it can be moved to a hypothesis by negation.
-For example, a goal `⊢ a ≤ b` can become `a > b ⊢ false`.
+For example, a goal `⊢ a ≤ b` can become `b < a ⊢ false`.
 If this is the case, it applies the appropriate lemma and introduces the new hypothesis.
 It returns the type of the terms in the comparison (e.g. the type of `a` and `b` above) and the
 newly introduced local constant.
@@ -374,7 +374,7 @@ Equivalently, it can prove a linear inequality by assuming its negation and prov
 In theory, `linarith` should prove any goal that is true in the theory of linear arithmetic over
 the rationals. While there is some special handling for non-dense orders like `Nat` and `Int`,
 this tactic is not complete for these theories and will not prove every true goal. It will solve
-goals over arbitrary types that instantiate `LinearOrderedCommRing`.
+goals over arbitrary types that instantiate `CommRing`, `LinearOrder` and `IsStrictOrderedRing`.
 
 An example:
 ```lean
