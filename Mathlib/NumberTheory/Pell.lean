@@ -38,8 +38,8 @@ if and only if it is fundamental, see `Pell.pos_generator_iff_fundamental`.
 
 ## References
 
-* [K. Ireland, M. Rosen, *A classical introduction to modern number theory*
-   (Section 17.5)][IrelandRosen1990]
+* [K. Ireland, M. Rosen, *A classical introduction to modern number theory* (Section 17.5)]
+  [IrelandRosen1990]
 
 ## Tags
 

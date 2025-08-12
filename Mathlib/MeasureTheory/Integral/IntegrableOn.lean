@@ -25,7 +25,7 @@ open Set Filter TopologicalSpace MeasureTheory Function
 
 open scoped Topology Interval Filter ENNReal MeasureTheory
 
-variable {α β ε ε' E F : Type*} [MeasurableSpace α]
+variable {α β ε ε' E F : Type*} {mα : MeasurableSpace α}
 
 section
 
@@ -73,7 +73,7 @@ namespace MeasureTheory
 section NormedAddCommGroup
 
 theorem HasFiniteIntegral.restrict_of_bounded [NormedAddCommGroup E] {f : α → E} {s : Set α}
-    {μ : Measure α} {C} (hs : μ s < ∞) (hf : ∀ᵐ x ∂μ.restrict s, ‖f x‖ ≤ C) :
+    {μ : Measure α} (C : ℝ) (hs : μ s < ∞) (hf : ∀ᵐ x ∂μ.restrict s, ‖f x‖ ≤ C) :
     HasFiniteIntegral f (μ.restrict s) :=
   haveI : IsFiniteMeasure (μ.restrict s) := ⟨by rwa [Measure.restrict_apply_univ]⟩
   .of_bounded hf
@@ -165,12 +165,12 @@ lemma IntegrableOn.of_subsingleton_codomain [Subsingleton ε'] {f : α → ε'} 
     IntegrableOn f s μ :=
   Integrable.of_subsingleton_codomain
 
-lemma Integrable.of_bound [IsFiniteMeasure μ] {f : α → E} (hf : AEStronglyMeasurable f μ) {C : ℝ}
+lemma Integrable.of_bound [IsFiniteMeasure μ] {f : α → E} (hf : AEStronglyMeasurable f μ) (C : ℝ)
     (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) : Integrable f μ := ⟨hf, .of_bounded hfC⟩
 
 lemma IntegrableOn.of_bound (hs : μ s < ∞) {f : α → E} (hf : AEStronglyMeasurable f (μ.restrict s))
-    {C : ℝ} (hfC : ∀ᵐ x ∂μ.restrict s, ‖f x‖ ≤ C) : IntegrableOn f s μ :=
-  ⟨hf, .restrict_of_bounded hs hfC⟩
+    (C : ℝ) (hfC : ∀ᵐ x ∂μ.restrict s, ‖f x‖ ≤ C) : IntegrableOn f s μ :=
+  ⟨hf, .restrict_of_bounded C hs hfC⟩
 
 theorem IntegrableOn.restrict (h : IntegrableOn f s μ) : IntegrableOn f s (μ.restrict t) := by
   dsimp only [IntegrableOn] at h ⊢
@@ -731,77 +731,87 @@ the unprimed ones use `[NoAtoms μ]`.
 
 section PartialOrder
 
-variable [PartialOrder α] [MeasurableSingletonClass α] {f : α → E} {μ : Measure α} {a b : α}
+variable [PartialOrder α] [MeasurableSingletonClass α]
+  [TopologicalSpace ε'] [ENormedAddMonoid ε'] [PseudoMetrizableSpace ε']
+  {f : α → ε'} {μ : Measure α} {a b : α}
 
-theorem integrableOn_Icc_iff_integrableOn_Ioc' (ha : μ {a} ≠ ∞) :
+theorem integrableOn_Icc_iff_integrableOn_Ioc'
+    (ha : μ {a} ≠ ∞ := by finiteness) (ha' : ‖f a‖ₑ ≠ ∞ := by finiteness) :
     IntegrableOn f (Icc a b) μ ↔ IntegrableOn f (Ioc a b) μ := by
   by_cases hab : a ≤ b
-  · rw [← Ioc_union_left hab, integrableOn_union, eq_true integrableOn_singleton, and_true]
+  · rw [← Ioc_union_left hab, integrableOn_union, eq_true (integrableOn_singleton ha'), and_true]
   · rw [Icc_eq_empty hab, Ioc_eq_empty]
     contrapose! hab
     exact hab.le
 
-theorem integrableOn_Icc_iff_integrableOn_Ico' (hb : μ {b} ≠ ∞) :
+theorem integrableOn_Icc_iff_integrableOn_Ico'
+    (hb : μ {b} ≠ ∞) (hb' : ‖f b‖ₑ ≠ ∞ := by finiteness) :
     IntegrableOn f (Icc a b) μ ↔ IntegrableOn f (Ico a b) μ := by
   by_cases hab : a ≤ b
-  · rw [← Ico_union_right hab, integrableOn_union, eq_true integrableOn_singleton, and_true]
+  · rw [← Ico_union_right hab, integrableOn_union, eq_true (integrableOn_singleton hb'), and_true]
   · rw [Icc_eq_empty hab, Ico_eq_empty]
     contrapose! hab
     exact hab.le
 
-theorem integrableOn_Ico_iff_integrableOn_Ioo' (ha : μ {a} ≠ ∞) :
+theorem integrableOn_Ico_iff_integrableOn_Ioo'
+    (ha : μ {a} ≠ ∞) (ha' : ‖f a‖ₑ ≠ ∞ := by finiteness) :
     IntegrableOn f (Ico a b) μ ↔ IntegrableOn f (Ioo a b) μ := by
   by_cases hab : a < b
   · rw [← Ioo_union_left hab, integrableOn_union,
-      eq_true integrableOn_singleton, and_true]
+      eq_true (integrableOn_singleton ha'), and_true]
   · rw [Ioo_eq_empty hab, Ico_eq_empty hab]
 
-theorem integrableOn_Ioc_iff_integrableOn_Ioo' (hb : μ {b} ≠ ∞) :
+theorem integrableOn_Ioc_iff_integrableOn_Ioo'
+    (hb : μ {b} ≠ ∞) (hb' : ‖f b‖ₑ ≠ ∞ := by finiteness) :
     IntegrableOn f (Ioc a b) μ ↔ IntegrableOn f (Ioo a b) μ := by
   by_cases hab : a < b
-  · rw [← Ioo_union_right hab, integrableOn_union, eq_true integrableOn_singleton, and_true]
+  · rw [← Ioo_union_right hab, integrableOn_union, eq_true (integrableOn_singleton hb'), and_true]
   · rw [Ioo_eq_empty hab, Ioc_eq_empty hab]
 
-theorem integrableOn_Icc_iff_integrableOn_Ioo' (ha : μ {a} ≠ ∞) (hb : μ {b} ≠ ∞) :
+theorem integrableOn_Icc_iff_integrableOn_Ioo' (ha : μ {a} ≠ ∞)
+    (ha' : ‖f a‖ₑ ≠ ∞ := by finiteness) (hb : μ {b} ≠ ∞) (hb' : ‖f b‖ₑ ≠ ∞ := by finiteness) :
     IntegrableOn f (Icc a b) μ ↔ IntegrableOn f (Ioo a b) μ := by
-  rw [integrableOn_Icc_iff_integrableOn_Ioc' ha, integrableOn_Ioc_iff_integrableOn_Ioo' hb]
+  rw [integrableOn_Icc_iff_integrableOn_Ioc' ha ha', integrableOn_Ioc_iff_integrableOn_Ioo' hb hb']
 
-theorem integrableOn_Ici_iff_integrableOn_Ioi' (hb : μ {b} ≠ ∞) :
+theorem integrableOn_Ici_iff_integrableOn_Ioi'
+    (hb : μ {b} ≠ ∞ := by finiteness) (hb' : ‖f b‖ₑ ≠ ∞ := by finiteness) :
     IntegrableOn f (Ici b) μ ↔ IntegrableOn f (Ioi b) μ := by
-  rw [← Ioi_union_left, integrableOn_union, eq_true integrableOn_singleton, and_true]
+  rw [← Ioi_union_left, integrableOn_union, eq_true (integrableOn_singleton hb'), and_true]
 
-theorem integrableOn_Iic_iff_integrableOn_Iio' (hb : μ {b} ≠ ∞) :
+theorem integrableOn_Iic_iff_integrableOn_Iio'
+    (hb : μ {b} ≠ ∞ := by finiteness) (hb' : ‖f b‖ₑ ≠ ∞ := by finiteness) :
     IntegrableOn f (Iic b) μ ↔ IntegrableOn f (Iio b) μ := by
-  rw [← Iio_union_right, integrableOn_union, eq_true integrableOn_singleton, and_true]
+  rw [← Iio_union_right, integrableOn_union, eq_true (integrableOn_singleton hb'), and_true]
 
 variable [NoAtoms μ]
 
-theorem integrableOn_Icc_iff_integrableOn_Ioc :
+theorem integrableOn_Icc_iff_integrableOn_Ioc (ha : ‖f a‖ₑ ≠ ∞ := by finiteness) :
     IntegrableOn f (Icc a b) μ ↔ IntegrableOn f (Ioc a b) μ :=
-  integrableOn_Icc_iff_integrableOn_Ioc' (by rw [measure_singleton]; exact ENNReal.zero_ne_top)
+  integrableOn_Icc_iff_integrableOn_Ioc' (by rw [measure_singleton]; exact ENNReal.zero_ne_top) ha
 
-theorem integrableOn_Icc_iff_integrableOn_Ico :
+theorem integrableOn_Icc_iff_integrableOn_Ico (hb : ‖f b‖ₑ ≠ ∞ := by finiteness) :
     IntegrableOn f (Icc a b) μ ↔ IntegrableOn f (Ico a b) μ :=
-  integrableOn_Icc_iff_integrableOn_Ico' (by rw [measure_singleton]; exact ENNReal.zero_ne_top)
+  integrableOn_Icc_iff_integrableOn_Ico' (by rw [measure_singleton]; exact ENNReal.zero_ne_top) hb
 
-theorem integrableOn_Ico_iff_integrableOn_Ioo :
+theorem integrableOn_Ico_iff_integrableOn_Ioo (ha : ‖f a‖ₑ ≠ ∞ := by finiteness) :
     IntegrableOn f (Ico a b) μ ↔ IntegrableOn f (Ioo a b) μ :=
-  integrableOn_Ico_iff_integrableOn_Ioo' (by rw [measure_singleton]; exact ENNReal.zero_ne_top)
+  integrableOn_Ico_iff_integrableOn_Ioo' (by rw [measure_singleton]; exact ENNReal.zero_ne_top) ha
 
-theorem integrableOn_Ioc_iff_integrableOn_Ioo :
+theorem integrableOn_Ioc_iff_integrableOn_Ioo (hb : ‖f b‖ₑ ≠ ∞ := by finiteness) :
     IntegrableOn f (Ioc a b) μ ↔ IntegrableOn f (Ioo a b) μ :=
-  integrableOn_Ioc_iff_integrableOn_Ioo' (by rw [measure_singleton]; exact ENNReal.zero_ne_top)
+  integrableOn_Ioc_iff_integrableOn_Ioo' (by rw [measure_singleton]; exact ENNReal.zero_ne_top) hb
 
-theorem integrableOn_Icc_iff_integrableOn_Ioo :
+theorem integrableOn_Icc_iff_integrableOn_Ioo
+    (ha : ‖f a‖ₑ ≠ ∞ := by finiteness) (hb : ‖f b‖ₑ ≠ ∞ := by finiteness) :
     IntegrableOn f (Icc a b) μ ↔ IntegrableOn f (Ioo a b) μ := by
-  rw [integrableOn_Icc_iff_integrableOn_Ioc, integrableOn_Ioc_iff_integrableOn_Ioo]
+  rw [integrableOn_Icc_iff_integrableOn_Ioc ha, integrableOn_Ioc_iff_integrableOn_Ioo hb]
 
-theorem integrableOn_Ici_iff_integrableOn_Ioi :
+theorem integrableOn_Ici_iff_integrableOn_Ioi (hb : ‖f b‖ₑ ≠ ∞ := by finiteness) :
     IntegrableOn f (Ici b) μ ↔ IntegrableOn f (Ioi b) μ :=
-  integrableOn_Ici_iff_integrableOn_Ioi' (by rw [measure_singleton]; exact ENNReal.zero_ne_top)
+  integrableOn_Ici_iff_integrableOn_Ioi' (by rw [measure_singleton]; exact ENNReal.zero_ne_top) hb
 
-theorem integrableOn_Iic_iff_integrableOn_Iio :
+theorem integrableOn_Iic_iff_integrableOn_Iio (hb : ‖f b‖ₑ ≠ ∞ := by finiteness) :
     IntegrableOn f (Iic b) μ ↔ IntegrableOn f (Iio b) μ :=
-  integrableOn_Iic_iff_integrableOn_Iio' (by rw [measure_singleton]; exact ENNReal.zero_ne_top)
+  integrableOn_Iic_iff_integrableOn_Iio' (by rw [measure_singleton]; exact ENNReal.zero_ne_top) hb
 
 end PartialOrder

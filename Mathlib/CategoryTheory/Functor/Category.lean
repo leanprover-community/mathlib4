@@ -57,7 +57,7 @@ instance Functor.category : Category.{max u₁ v₂} (C ⥤ D) where
 
 namespace NatTrans
 
-@[ext]
+@[ext, grind ext]
 theorem ext' {α β : F ⟶ G} (w : α.app = β.app) : α = β := NatTrans.ext w
 
 @[simp]
@@ -191,7 +191,8 @@ def flipFunctor : (C ⥤ D ⥤ E) ⥤ D ⥤ C ⥤ E where
   obj F := F.flip
   map {F₁ F₂} φ :=
     { app := fun Y =>
-    { app := fun X => (φ.app X).app Y } }
+      { app := fun X => (φ.app X).app Y } }
+
 namespace Iso
 
 @[reassoc (attr := simp)]
