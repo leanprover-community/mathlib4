@@ -250,8 +250,8 @@ lemma IsTree.minDegree_eq_one_of_nontrivial (h : G.IsTree) [Fintype V] [inst : N
 /-- A nontrivial tree has a vertex of degree one. -/
 lemma IsTree.exists_vert_degree_one_of_nontrivial [Fintype V] [Nontrivial V] [DecidableRel G.Adj]
     (h : G.IsTree) : ∃ v, G.degree v = 1 := by
-  use G.exists_minimal_degree_vertex.choose
-  rw [← G.exists_minimal_degree_vertex.choose_spec]
-  exact h.minDegree_eq_one_of_nontrivial
+  obtain ⟨v, hv⟩ := G.exists_minimal_degree_vertex
+  rw [← hv]
+  exact ⟨v, h.minDegree_eq_one_of_nontrivial⟩
 
 end SimpleGraph
