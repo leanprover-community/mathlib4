@@ -304,7 +304,7 @@ instance : LinearOrder (Products I) :=
 
 @[simp]
 theorem lt_iff_lex_lt (l m : Products I) : l < m ↔ List.Lex (· < ·) l.val m.val := by
-  cases l; cases m; rw [Subtype.mk_lt_mk]; exact Iff.rfl
+  simp
 
 instance [WellFoundedLT I] : WellFoundedLT (Products I) := by
   have : (· < · : Products I → _ → _) = (fun l m ↦ List.Lex (· < ·) l.val m.val) := by
