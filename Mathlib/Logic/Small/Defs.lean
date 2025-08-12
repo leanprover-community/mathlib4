@@ -42,7 +42,7 @@ def Shrink (α : Type v) [Small.{w} α] : Type w :=
   Classical.choose (@Small.equiv_small α _)
 
 /--
-A computable implementation of `equivShrink`
+A computable implementation of `equivShrink`.
 
 The `implemented_by` using this to implement `equivShrink` is safe because:
 * `Shrink α` has no memory layout in the compiler that needs to be conformed to.
