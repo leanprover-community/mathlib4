@@ -22,28 +22,7 @@ A binary form of degree `d` is a homogeneous polynomial in two variables of degr
 
 universe u
 
-theorem Finsupp.degree_eq_sum {ι : Type*} [DecidableEq ι] [Fintype ι]
-    {R : Type u} [AddCommMonoid R] (f : ι →₀ R) :
-    f.degree = ∑ i, f i := by
-  rw [degree, Finset.sum_congr_of_eq_on_inter] <;> simp
-
-@[simp] theorem Finsupp.mapDomain.linearEquiv_symm {α α' M R : Type*} [Semiring R] [AddCommMonoid M]
-    [Module R M] (f : α ≃ α') :
-    (mapDomain.linearEquiv M R f).symm = mapDomain.linearEquiv M R f.symm := rfl
-
-@[simp] theorem Finsupp.mapDomain.linearEquiv_single
-    {α α' M R : Type*} [Semiring R] [AddCommMonoid M]
-    [Module R M] (f : α ≃ α') (i : α) (a : M) :
-    mapDomain.linearEquiv M R f (single i a) = single (f i) a := by
-  simp [mapDomain.linearEquiv]
-
-@[simp] theorem Finsupp.supportedEquivFinsupp_symm_single
-    {α M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M] (s : Set α) (i : s) (a : M) :
-    ((supportedEquivFinsupp (R := R) s).symm (single i a) : α →₀ M) = single ↑i a := by
-  classical rw [supportedEquivFinsupp_symm_apply_coe, extendDomain_single]
-
-
-open MvPolynomial Finsupp
+open MvPolynomial Finsupp Module
 
 /-- A binary form of degree `d` is a homogeneous polynomial in two variables of degree `d`. -/
 abbrev BinaryForm (R : Type u) [CommSemiring R] (d : ℕ) : Type u :=
@@ -75,8 +54,8 @@ noncomputable def of : (Fin (d + 1) → R) ≃ₗ[R] BinaryForm R d :=
 
 @[simp] lemma of_single (i : Fin (d + 1)) :
     (of R d (Pi.single i 1) : MvPolynomial (Fin 2) R) = X 0 ^ (i : ℕ) * X 1 ^ (d - i) := by
-  simp only [of, LinearEquiv.trans_apply, linearEquivFunOnFinite_symm_single,
-    mapDomain.linearEquiv_single, Fin.isValue, X_pow_eq_monomial, monomial_mul, mul_one]
+  simp_rw [of, LinearEquiv.trans_apply, linearEquivFunOnFinite_symm_single,
+    mapDomain.coe_linearEquiv, mapDomain_single, X_pow_eq_monomial, monomial_mul, mul_one]
   convert LinearEquiv.coe_ofEq_apply ..
   convert (supportedEquivFinsupp_symm_single ..).symm
   rfl
