@@ -16,8 +16,8 @@ addition and multiplication that contains all squares, but not `-1`.
 The support of a preordering `P` is the set of elements `x` such that both `x` and `-x` lie in `P`.
 
 An ordering `O` on `R` is a preordering such that
-(i) `O` contains either `x` or `-x` for each `x` in `R` and
-(ii) the support of `O` is a prime ideal.
+1. `O` contains either `x` or `-x` for each `x` in `R` and
+2. the support of `O` is a prime ideal.
 
 We define preorderings, supports and orderings.
 
@@ -182,8 +182,8 @@ end support
 
 /--
 An ordering `O` on a ring `R` is a preordering such that
-(i) `O` contains either `x` or `-x` for each `x` in `R` and
-(ii) the support of `O` is a prime ideal.
+1. `O` contains either `x` or `-x` for each `x` in `R` and
+2. the support of `O` is a prime ideal.
 -/
 class IsOrdering (P : RingPreordering R) extends HasMemOrNegMem P, P.support.IsPrime
 
