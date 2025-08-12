@@ -393,7 +393,7 @@ theorem IsReduced.singleton {a : α × Bool} : IsReduced [a] := chain'_singleton
 
 @[to_additive (attr := simp) FreeAddGroup.isReduced_cons_cons]
 theorem isReduced_cons_cons {a b : (α × Bool)} :
-    IsReduced (a :: b :: L) ↔ (a.1 = b.1 → a.2 = b.2) ∧ IsReduced (b :: L) := chain'_cons
+    IsReduced (a :: b :: L) ↔ (a.1 = b.1 → a.2 = b.2) ∧ IsReduced (b :: L) := chain'_cons_cons
 
 @[to_additive]
 theorem IsReduced.not_step (h : IsReduced L₁) : ¬ Red.Step L₁ L₂ := fun step ↦ by
