@@ -67,11 +67,9 @@ instance WPath.inhabited (x : P.last.W) {i} [I : Inhabited (P.drop.B x.head i)] 
 
 /-- Specialized destructor on `WPath` -/
 def wPathCasesOn {α : TypeVec n} {a : P.A} {f : P.last.B a → P.last.W} (g' : P.drop.B a ⟹ α)
-    (g : ∀ j : P.last.B a, P.WPath (f j) ⟹ α) : P.WPath ⟨a, f⟩ ⟹ α := by
-  intro i x
-  match x with
-  | WPath.root _ _ i c => exact g' i c
-  | WPath.child _ _ i j c => exact g j i c
+    (g : ∀ j : P.last.B a, P.WPath (f j) ⟹ α) : P.WPath ⟨a, f⟩ ⟹ α := fun
+  | _, WPath.root _ _ i c => g' i c
+  | _, WPath.child _ _ i j c => g j i c
 
 /-- Specialized destructor on `WPath` -/
 def wPathDestLeft {α : TypeVec n} {a : P.A} {f : P.last.B a → P.last.W}
@@ -133,8 +131,9 @@ theorem wpRec_eq {α : TypeVec n} {C : Type*}
     (a : P.A) (f : P.last.B a → P.last.W) (f' : P.WPath ⟨a, f⟩ ⟹ α) :
     P.wpRec g ⟨a, f⟩ f' = g a f f' fun i => P.wpRec g (f i) (P.wPathDestRight f' i) := rfl
 
--- Note: we could replace Prop by Type* and obtain a dependent recursor
-theorem wp_ind {α : TypeVec n} {C : ∀ x : P.last.W, P.WPath x ⟹ α → Prop}
+/-- Induction principle for WPaths -/
+@[elab_as_elim]
+def wp_ind {α : TypeVec n} {C : ∀ x : P.last.W, P.WPath x ⟹ α → Sort v}
     (ih : ∀ (a : P.A) (f : P.last.B a → P.last.W) (f' : P.WPath ⟨a, f⟩ ⟹ α),
         (∀ i : P.last.B a, C (f i) (P.wPathDestRight f' i)) → C ⟨a, f⟩ f') :
     ∀ (x : P.last.W) (f' : P.WPath x ⟹ α), C x f'
@@ -167,24 +166,20 @@ def wRec {α : TypeVec n} {C : Type*}
 theorem wRec_eq {α : TypeVec n} {C : Type*}
     (g : ∀ a : P.A, P.drop.B a ⟹ α → (P.last.B a → P.W α) → (P.last.B a → C) → C) (a : P.A)
     (f' : P.drop.B a ⟹ α) (f : P.last.B a → P.W α) :
-    P.wRec g (P.wMk a f' f) = g a f' f fun i => P.wRec g (f i) := by
-  rw [wMk, wRec]; rw [wpRec_eq]
-  dsimp only [wPathDestLeft_wPathCasesOn, wPathDestRight_wPathCasesOn]
-  congr
+    P.wRec g (P.wMk a f' f) = g a f' f fun i => P.wRec g (f i) := rfl
 
 /-- Induction principle for `W` -/
-theorem w_ind {α : TypeVec n} {C : P.W α → Prop}
+@[elab_as_elim]
+def w_ind {α : TypeVec n} {C : P.W α → Sort v}
     (ih : ∀ (a : P.A) (f' : P.drop.B a ⟹ α) (f : P.last.B a → P.W α),
         (∀ i, C (f i)) → C (P.wMk a f' f)) :
-    ∀ x, C x := by
-  intro x; obtain ⟨a, f⟩ := x
-  apply @wp_ind n P α fun a f => C ⟨a, f⟩
-  intro a f f' ih'
-  dsimp [wMk] at ih
-  let ih'' := ih a (P.wPathDestLeft f') fun i => ⟨f i, P.wPathDestRight f' i⟩
-  dsimp at ih''; rw [wPathCasesOn_eta] at ih''
-  apply ih''
-  apply ih'
+    ∀ x, C x := fun ⟨hd, ch⟩ =>
+  wp_ind P
+    (fun head f f' ih' =>
+      -- This cast might be able to be removed bt a match of one of the anon args
+      cast
+        (congr rfl <| Sigma.mk.inj_iff.mpr ⟨rfl, heq_of_eq <| wPathCasesOn_eta P f'⟩)
+        <| ih head (P.wPathDestLeft f') (fun i => ⟨f i, P.wPathDestRight f' i⟩) ih') hd ch
 
 theorem w_cases {α : TypeVec n} {C : P.W α → Prop}
     (ih : ∀ (a : P.A) (f' : P.drop.B a ⟹ α) (f : P.last.B a → P.W α), C (P.wMk a f' f)) :
