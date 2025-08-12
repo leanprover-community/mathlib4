@@ -1117,7 +1117,8 @@ theorem two_lt_ncard (hs : s.Finite := by toFinite_tac) :
   simp only [two_lt_ncard_iff hs, exists_and_left]
 
 theorem three_lt_ncard_iff (hs : s.Finite := by toFinite_tac) :
-    3 < s.ncard ↔ ∃ a b c d, a ∈ s ∧ b ∈ s ∧ c ∈ s ∧ d ∈ s ∧ a ≠ b ∧ a ≠ c ∧ a ≠ d ∧ b ≠ c ∧ b ≠ d ∧ c ≠ d := by
+    3 < s.ncard ↔
+    ∃ a b c d, a ∈ s ∧ b ∈ s ∧ c ∈ s ∧ d ∈ s ∧ a ≠ b ∧ a ≠ c ∧ a ≠ d ∧ b ≠ c ∧ b ≠ d ∧ c ≠ d := by
   simp_rw [ncard_eq_toFinset_card _ hs, Finset.three_lt_card_iff, Finite.mem_toFinset]
 
 theorem three_lt_ncard (hs : s.Finite := by toFinite_tac) :
