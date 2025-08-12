@@ -68,6 +68,7 @@ lemma mulEquivHaarChar_smul_eq_comap (μ : Measure G)
     [IsHaarMeasure μ] [Regular μ] (φ : G ≃ₜ* G) :
     (mulEquivHaarChar φ) • μ = μ.comap φ := by
   let e := φ.toHomeomorph.toMeasurableEquiv
+  -- TODO rfl
   rw [show ⇑φ = ⇑e from rfl, ← e.map_symm, show ⇑e.symm = ⇑φ.symm from rfl]
   have : (map (φ.symm) μ).Regular := Regular.map φ.symm.toHomeomorph
   rw [← mulEquivHaarChar_smul_map (map φ.symm μ) φ, map_map]
@@ -87,6 +88,7 @@ lemma integral_comap_eq_mulEquivHaarChar_smul (μ : Measure G)
     [IsHaarMeasure μ] [Regular μ] {f : G → ℝ} (φ : G ≃ₜ* G) :
     ∫ a, f a ∂(μ.comap φ) = mulEquivHaarChar φ • ∫ a, f a ∂μ := by
   let e := φ.toHomeomorph.toMeasurableEquiv
+  -- TODO change
   change ∫ a, f a ∂(comap e μ) = mulEquivHaarChar φ • ∫ a, f a ∂μ
   have : (map (e.symm) μ).IsHaarMeasure := φ.symm.isHaarMeasure_map μ
   have : (map (e.symm) μ).Regular := Regular.map φ.symm.toHomeomorph
