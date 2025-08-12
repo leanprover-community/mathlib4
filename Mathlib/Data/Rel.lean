@@ -16,22 +16,22 @@ relations.
 
 ## Main declarations
 
-* `Set.Rel α β`: Type of relations between `α` and `β`.
-* `Set.Rel.inv`: Turn `R : Rel α β` into `R.inv : Rel β α` by swapping the arguments.
-* `Set.Rel.dom`: Domain of a relation. `a ∈ R.dom` iff there exists `b` such that `a ~[R] b`.
-* `Set.Rel.cod`: Codomain of a relation. `b ∈ R.cod` iff there exists `a` such that `a ~[R] b`.
-* `Set.Rel.id`: The identity relation `Set.Rel α α`.
-* `Set.Rel.comp`: Relation composition. Note that the arguments order follows the category theory
+* `SetRel α β`: Type of relations between `α` and `β`.
+* `SetRel.inv`: Turn `R : Rel α β` into `R.inv : Rel β α` by swapping the arguments.
+* `SetRel.dom`: Domain of a relation. `a ∈ R.dom` iff there exists `b` such that `a ~[R] b`.
+* `SetRel.cod`: Codomain of a relation. `b ∈ R.cod` iff there exists `a` such that `a ~[R] b`.
+* `SetRel.id`: The identity relation `SetRel α α`.
+* `SetRel.comp`: Relation composition. Note that the arguments order follows the category theory
   convention, namely `(R ○ S) a c ↔ ∃ b, a ~[R] b ∧ b ~[S] z`.
-* `Set.Rel.image`: Image of a set under a relation. `b ∈ image R s` iff there exists `a ∈ s`
+* `SetRel.image`: Image of a set under a relation. `b ∈ image R s` iff there exists `a ∈ s`
   such that `a ~[R] b`.
   If `R` is the graph of `f` (`a ~[R] b ↔ f a = b`), then `R.image = Set.image f`.
-* `Set.Rel.preimage`: Preimage of a set under a relation. `a ∈ preimage R t` iff there exists
+* `SetRel.preimage`: Preimage of a set under a relation. `a ∈ preimage R t` iff there exists
   `b ∈ t` such that `a ~[R] b`.
   If `R` is the graph of `f` (`a ~[R] b ↔ f a = b`), then `R.preimage = Set.preimage f`.
-* `Set.Rel.core`: Core of a set. For `t : Set β`, `a ∈ R.core t` iff all `b` related to `a` are in
+* `SetRel.core`: Core of a set. For `t : Set β`, `a ∈ R.core t` iff all `b` related to `a` are in
   `t`.
-* `Set.Rel.restrictDomain`: Domain-restriction of a relation to a subtype.
+* `SetRel.restrictDomain`: Domain-restriction of a relation to a subtype.
 * `Function.graph`: Graph of a function as a relation.
 
 ## Implementation notes
@@ -70,9 +70,9 @@ variable {α β γ δ : Type*}
 /-- A relation on `α` and `β`, aka a set-valued function, aka a partial multifunction.
 
 We represent them as sets due to how relations are used in the context of uniform spaces. -/
-abbrev Set.Rel (α β : Type*) := Set (α × β)
+abbrev SetRel (α β : Type*) := Set (α × β)
 
-namespace Set.Rel
+namespace SetRel
 variable {R r₁ r₂ : Rel α β} {S : Rel β γ} {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {u : Set γ}
   {a a₁ a₂ : α} {b : β} {c : γ}
 
@@ -320,10 +320,10 @@ variable (R S) in
 `f : α → β` such that `a ~[R] b → f a ~[s] f b`. -/
 abbrev Hom := (· ~[R] ·) →r (· ~[S] ·)
 
-end Set.Rel
+end SetRel
 
 open Set
-open scoped Set.Rel
+open scoped SetRel
 
 namespace Function
 variable {f : α → β} {a : α} {b : β}
@@ -379,5 +379,5 @@ end Set
 
 /-- A shorthand for `α → β → Prop`.
 
-Consider using `Set.Rel` instead if you want extra API for relations. -/
+Consider using `SetRel` instead if you want extra API for relations. -/
 abbrev Rel (α β : Type*) := α → β → Prop
