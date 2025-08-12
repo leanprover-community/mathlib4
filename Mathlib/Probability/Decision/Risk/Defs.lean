@@ -102,16 +102,16 @@ end Zero
 section Empty
 
 @[simp]
-lemma bayesianRisk_of_isEmpty [IsEmpty Θ] : bayesianRisk ℓ P κ π = 0 := by
-  simp [bayesianRisk]
-
-@[simp]
-lemma bayesianRisk_of_isEmpty' [IsEmpty 𝓧] : bayesianRisk ℓ P κ π = 0 := by
+lemma bayesianRisk_of_isEmpty [IsEmpty 𝓧] : bayesianRisk ℓ P κ π = 0 := by
   simp [Subsingleton.elim P 0]
 
 @[simp]
-lemma bayesianRisk_of_isEmpty'' [IsEmpty 𝓨] : bayesianRisk ℓ P κ π = 0 := by
+lemma bayesianRisk_of_isEmpty' [IsEmpty 𝓨] : bayesianRisk ℓ P κ π = 0 := by
   simp [Subsingleton.elim κ 0]
+
+@[simp]
+lemma bayesianRisk_of_isEmpty'' [IsEmpty Θ] : bayesianRisk ℓ P κ π = 0 := by
+  simp [bayesianRisk]
 
 @[simp]
 lemma bayesRiskPrior_of_isEmpty [IsEmpty 𝓧] : bayesRiskPrior ℓ P π = 0 := by
