@@ -119,11 +119,9 @@ theorem elementaryTensors_subset_maxTensorProduct (C₁ : PointedCone K G) (C₂
 /-- The minimal tensor product is less than or equal to the maximal tensor product. -/
 theorem minTensorProduct_le_maxTensorProduct (C₁ : PointedCone K G) (C₂ : PointedCone K H)
     : minTensorProduct C₁ C₂ ≤ maxTensorProduct C₁ C₂ := by
-  intro z hz
-  obtain ⟨n, c, v, hv, hc, rfl⟩ := hz
-  -- minTensorProduct = all conical combinations of elementary tensors
-  -- maxTensorProduct contains all elementary tensors, hence it contains all conical combinations
-  exact conical_comb_mem K (elementaryTensors C₁ C₂) c v hv hc (maxTensorProduct C₁ C₂)
+  -- minTensorProduct = conical hull of elementary tensors
+  -- maxTensorProduct contains all elementary tensors, hence it contains the conical hull
+  exact conicalHull_minimal K (elementaryTensors C₁ C₂) (maxTensorProduct C₁ C₂)
     (elementaryTensors_subset_maxTensorProduct C₁ C₂)
 
 end PointedCone
