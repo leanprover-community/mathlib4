@@ -903,7 +903,7 @@ theorem foldl_eq_foldr [Std.Commutative f] [Std.Associative f] :
 
 end FoldlEqFoldr
 
-section FoldlEqFoldlr'
+section FoldlEqFoldr'
 
 variable {f : α → β → α}
 variable (hf : ∀ a b c, f (f a b) c = f (f a c) b)
@@ -918,9 +918,9 @@ theorem foldl_eq_foldr' : ∀ a l, foldl f a l = foldr (flip f) a l
   | _, [] => rfl
   | a, b :: l => by rw [foldl_eq_of_comm' hf, foldr, foldl_eq_foldr' ..]; rfl
 
-end FoldlEqFoldlr'
+end FoldlEqFoldr'
 
-section FoldlEqFoldlr'
+section FoldlEqFoldr'
 
 variable {f : α → β → β}
 
@@ -929,7 +929,7 @@ theorem foldr_eq_of_comm' (hf : ∀ a b c, f a (f b c) = f b (f a c)) :
   | _, _, [] => rfl
   | a, b, c :: l => by rw [foldr, foldr, foldr, hf, ← foldr_eq_of_comm' hf ..]; rfl
 
-end FoldlEqFoldlr'
+end FoldlEqFoldr'
 
 section
 
@@ -1015,7 +1015,7 @@ theorem filterMap_eq_map_iff_forall_eq_some {f : α → Option β} {g : α → �
     induction l with | nil => simp | cons a l ih => ?_
     rcases ha : f a with - | b <;> simp [ha]
     · intro h
-      simpa [show (filterMap f l).length = l.length + 1 from by simp[h], Nat.add_one_le_iff]
+      simpa [show (filterMap f l).length = l.length + 1 from by simp [h], Nat.add_one_le_iff]
         using List.length_filterMap_le f l
     · rintro rfl h
       exact ⟨rfl, ih h⟩
