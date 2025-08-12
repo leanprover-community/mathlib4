@@ -48,40 +48,6 @@ lemma rankOne_apply (x : V) (y z : W) :
     rankOne 𝕜 x y z = inner 𝕜 y z • x :=
   rfl
 
-lemma rankOne_add_left (x : V) (y : V) (z : W) :
-    rankOne 𝕜 (x + y) z = rankOne 𝕜 x z + rankOne 𝕜 y z := by
-  ext
-  simp [add_apply]
-
-lemma rankOne_add_right (x : V) (y : W) (z : W) :
-    rankOne 𝕜 x (y + z) = rankOne 𝕜 x y + rankOne 𝕜 x z := by
-  ext
-  simp [add_apply]
-
-lemma rankOne_sub_left (x : W) (y : W) (z : V) :
-    rankOne 𝕜 (x - y) z = rankOne 𝕜 x z - rankOne 𝕜 y z := by
-  ext
-  simp [sub_apply]
-
-lemma rankOne_sub_right (x : V) (y : W) (z : W) :
-    rankOne 𝕜 x (y - z) = rankOne 𝕜 x y - rankOne 𝕜 x z := by
-  ext
-  simp [sub_apply]
-
-lemma rankOne_smul_left (c : 𝕜) (x : V) (y : W) :
-    rankOne 𝕜 (c • x) y = (c : 𝕜) • rankOne 𝕜 x y := by
-  ext
-  simp only [smul_apply, rankOne_apply]
-  rw [smul_algebra_smul_comm]
-
-lemma rankOne_smul_right (c : 𝕜) (x : V) (y : W) :
-    rankOne 𝕜 x (c • y) = starRingEnd 𝕜 c • rankOne 𝕜 x y := by
-  ext
-  simp only [smul_apply, rankOne_apply]
-  rw [starRingEnd_apply, smul_algebra_smul_comm, inner_smul_left, starRingEnd_apply, mul_smul]
-  simp only [RCLike.star_def]
-  rw [smul_algebra_smul_comm]
-
 lemma inner_rankOne_eq_inner_mul_inner (x : V) (y z : W) (w : V) :
     inner 𝕜 (rankOne 𝕜 x y z) w = inner 𝕜 z y * inner 𝕜 x w := by
   simp [inner_smul_left, inner_conj_symm]
@@ -91,11 +57,6 @@ lemma rankOne_comp_rankOne_eq_inner_smul_rankOne (x : V) (y z : W) (w : V) :
   ext v
   simp only [comp_apply, rankOne_apply, map_smul, smul_apply]
   rw [smul_algebra_smul_comm]
-
-lemma rankOne_mul_rankOne_eq_inner_smul_rankOne (x y z w : V) :
-    rankOne 𝕜 x y * rankOne 𝕜 z w = inner 𝕜 y z • rankOne 𝕜 x w := by
-  rw [mul_def]
-  exact rankOne_comp_rankOne_eq_inner_smul_rankOne x y z w
 
 lemma isIdempotentElem_rankOne_self_of_norm_eq_one {x : V} (h : ‖x‖ = 1) :
     IsIdempotentElem (rankOne 𝕜 x x) := by
@@ -114,16 +75,7 @@ variable [InnerProductSpace 𝕜 V] [InnerProductSpace 𝕜 W] [CompleteSpace V]
 
 lemma adjoint_rankOne (x : V) (y : W) :
     (rankOne 𝕜 x y).adjoint = rankOne 𝕜 y x := by
-  symm
-  rw [eq_adjoint_iff]
-  intro v w
-  repeat rw [rankOne_apply]
-  rw [inner_smul_left, inner_conj_symm, inner_smul_right]
-  exact mul_comm _ _
-
-lemma star_rankOne (x y : V) :
-    star (rankOne 𝕜 x y) = rankOne 𝕜 y x := by
-  rw [star_eq_adjoint, adjoint_rankOne]
+  simp [rankOne_def, adjoint_comp, ← adjoint_innerSL_apply]
 
 lemma isSelfAdjoint_rankOne_self (x : V) :
     IsSelfAdjoint (rankOne 𝕜 x x) := by
@@ -142,10 +94,8 @@ lemma isStarProjection_rankOne_self_of_norm_eq_one {x : V} (h : ‖x‖ = 1) :
   ⟨isIdempotentElem_rankOne_self_of_norm_eq_one h, isSelfAdjoint_rankOne_self x⟩
 
 lemma isSelfAdjoint_rankOne_add (x y : V) :
-    IsSelfAdjoint (rankOne 𝕜 x y + rankOne 𝕜 y x) := by
-  rw [isSelfAdjoint_iff', map_add]
-  repeat rw [adjoint_rankOne]
-  abel
+    IsSelfAdjoint (rankOne 𝕜 x y + rankOne 𝕜 y x) :=
+  (adjoint_rankOne (𝕜 := 𝕜) y x) ▸ IsSelfAdjoint.star_add_self _
 
 omit [CompleteSpace V] [CompleteSpace W]
 variable {ι : Type*} [Fintype ι]
