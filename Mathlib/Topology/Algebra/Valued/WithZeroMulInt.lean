@@ -3,8 +3,7 @@ Copyright (c) 2025 Salvatore Mercuri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Salvatore Mercuri
 -/
-import Mathlib.GroupTheory.ArchimedeanDensely
-import Mathlib.Topology.Algebra.Valued.ValuationTopology
+import Mathlib.Topology.Algebra.Valued.LocallyCompact
 
 /-!
 # Topological results for integer-valued rings
@@ -15,7 +14,7 @@ is a `Valued R ℤₘ₀` instance but no canonical base with which to embed thi
 `NNReal`.
 -/
 
-open Filter WithZero Set
+open Filter WithZero Set Multiplicative
 open scoped Topology
 
 namespace Valued
@@ -45,7 +44,7 @@ lemma exists_pow_lt_of_le_exp_neg_one [Valued R ℤᵐ⁰] {x : R} (hx : v x ≤
   rw [← exp_zero, exp_lt_exp]
   norm_num
 
-variable {K : Type*} [Field K] [Valued K ℤₘ₀]
+variable {K : Type*} [Field K] [Valued K ℤᵐ⁰]
 
 theorem irreducible_valuation_lt_one {ϖ : 𝒪[K]} (h : Irreducible ϖ) : v ϖ.1 < 1 :=
   lt_of_le_of_ne (Valuation.mem_integer_iff _ _ |>.1 ϖ.2) <|
@@ -60,27 +59,25 @@ theorem irreducible_valuation_le_ofAdd_neg_one {ϖ : 𝒪[K]} (h : Irreducible �
 theorem mem_maximalIdeal_pow_valuation [IsDiscreteValuationRing 𝒪[K]]
     {x : 𝒪[K]} {n : ℕ} (hx : x ∈ 𝓂[K] ^ n) {ϖ : 𝒪[K]} (h : Irreducible ϖ) :
     v x.val ≤ v ϖ.1 ^ n := by
-  by_cases hx₀ : x = 0
-  · simp [hx₀]
-  · simp_rw [h.maximalIdeal_eq, Ideal.span_singleton_pow, Ideal.mem_span_singleton] at hx
-    let ⟨y, hy⟩ := hx
-    simpa [hy] using le_trans (mul_le_of_le_one_right' <| (Valuation.mem_integer_iff _ _).1 y.2)
-      le_rfl
+  rcases eq_or_ne x 0 with (rfl | hx₀) <;> try simp
+  simp_rw [h.maximalIdeal_eq, Ideal.span_singleton_pow, Ideal.mem_span_singleton] at hx
+  obtain ⟨y, rfl⟩ := hx
+  simpa using le_trans (mul_le_of_le_one_right' <| (Valuation.mem_integer_iff _ _).1 y.2) le_rfl
 
 /-- The ring of integers `𝒪[K]` of a `ℤₘ₀`-valued field `K` with finite residue
 field has a finite covering by elements of the basis of uniformity of `K`, whenever
 `𝒪[K]` is a discrete valuation ring. -/
-theorem finite_cover_of_uniformity_basis [IsDiscreteValuationRing 𝒪[K]] {γ : ℤₘ₀ˣ}
+theorem finite_cover_of_uniformity_basis [IsDiscreteValuationRing 𝒪[K]] {γ : ℤᵐ⁰ˣ}
     (h : Finite 𝓀[K]) :
     ∃ t : Set K, Set.Finite t ∧
       (𝒪[K]).carrier ⊆ ⋃ y ∈ t, { x | (x, y) ∈ { p | v (p.2 - p.1) < γ.val } } := by
   classical
   let ⟨ϖ, hϖ⟩ := IsDiscreteValuationRing.exists_irreducible 𝒪[K]
-  let ⟨m, hm⟩ := exists_pow_lt_of_le_neg_one (irreducible_valuation_le_ofAdd_neg_one hϖ) γ
+  let ⟨m, hm⟩ := exists_pow_lt_of_le_exp_neg_one (irreducible_valuation_le_ofAdd_neg_one hϖ) γ
   have := integer.finite_quotient_maximalIdeal_pow_of_finite_residueField h m
   have h := Fintype.ofFinite (𝒪[K] ⧸ 𝓂[K] ^ m)
   let T := Subtype.val '' (h.elems.image Quotient.out).toSet
-  refine ⟨T, (Set.Finite.image _ (Finset.finite_toSet _)), fun x hx => ?_⟩
+  refine ⟨T, (Set.Finite.image _ (Finset.finite_toSet _)), fun x hx ↦ ?_⟩
   simp only [Set.mem_iUnion]
   let y := (Ideal.Quotient.mk (𝓂[K] ^ m) ⟨x, hx⟩).out
   exact ⟨y, Set.mem_image_of_mem _ <| Finset.mem_image_of_mem _ (h.complete _),
@@ -92,10 +89,8 @@ variable (K)
 field is compact, whenever `𝒪[K]` is a discrete valuation ring. -/
 theorem integer_compactSpace [CompleteSpace K] [IsDiscreteValuationRing 𝒪[K]] (h : Finite 𝓀[K]) :
     CompactSpace 𝒪[K] where
-   isCompact_univ :=
-     isCompact_iff_isCompact_univ.1 <|
-       isCompact_iff_totallyBounded_isComplete.2
-         ⟨(hasBasis_uniformity _ _).totallyBounded_iff.2 <| fun _ _ =>
-           finite_cover_of_uniformity_basis h, (integer_isClosed K).isComplete⟩
+   isCompact_univ := isCompact_iff_isCompact_univ.1 <| isCompact_iff_totallyBounded_isComplete.2
+      ⟨(hasBasis_uniformity _ _).totallyBounded_iff.2 fun _ _ ↦ finite_cover_of_uniformity_basis h,
+        (integer_isClosed K).isComplete⟩
 
-end Valued.WithZeroMulInt
+end Valued
