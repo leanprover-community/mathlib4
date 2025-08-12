@@ -103,8 +103,7 @@ section FiniteResidueField
 
 open Valued
 
-lemma finite_quotient_maximalIdeal_pow_of_finite_residueField {K Γ₀ : Type*} [Field K]
-    [LinearOrderedCommGroupWithZero Γ₀] [Valued K Γ₀] [IsDiscreteValuationRing 𝒪[K]]
+lemma finite_quotient_maximalIdeal_pow_of_finite_residueField [IsDiscreteValuationRing 𝒪[K]]
     (h : Finite 𝓀[K]) (n : ℕ) :
     Finite (𝒪[K] ⧸ 𝓂[K] ^ n) := by
   induction n with
