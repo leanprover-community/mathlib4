@@ -87,11 +87,17 @@ def derive {α : Q(Type u)} (e : Q($α)) (post := false) : MetaM (Result e) := d
     for ext in arr do
       if (bif post then ext.post else ext.pre) && ! normNums.erased.contains ext.name then
         try
-          let new ← withReducibleAndInstances <| ext.eval e
-          trace[Tactic.norm_num] "{ext.name}:\n{e} ==> {new}"
-          return new
-        catch err =>
-          trace[Tactic.norm_num] "{ext.name} failed {e}: {err.toMessageData}"
+          return ← withTraceNode `Tactic.norm_num
+            (fun e => return m!"{exceptEmoji e} {.ofConstName ext.name}")
+            (do
+              try
+                let new ← withReducibleAndInstances <| ext.eval e
+                trace[Tactic.norm_num] .group m!"{e}{Format.line}⇒ {.nest 2 (toMessageData new)}"
+                return new
+              catch err =>
+                trace[Tactic.norm_num] .group m!"{e}{Format.line}⇒ {.nest 2 err.toMessageData}"
+                throw err)
+        catch _ =>
           s.restore
     throwError "{e}: no norm_nums apply"
 
