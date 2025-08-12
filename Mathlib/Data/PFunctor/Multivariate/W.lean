@@ -169,7 +169,7 @@ theorem wRec_eq {α : TypeVec n} {C : Type*}
     P.wRec g (P.wMk a f' f) = g a f' f fun i => P.wRec g (f i) := rfl
 
 /-- Induction principle for `W` -/
-@[elab_as_elim]
+/- @[elab_as_elim] -- TODO: make this elab_as_elim -/
 def w_ind {α : TypeVec n} {C : P.W α → Sort v}
     (ih : ∀ (a : P.A) (f' : P.drop.B a ⟹ α) (f : P.last.B a → P.W α),
         (∀ i, C (f i)) → C (P.wMk a f' f)) :
