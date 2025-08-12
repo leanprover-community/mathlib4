@@ -1158,8 +1158,9 @@ theorem norm_multiset_prod_le (m : Multiset E) : ‖m.prod‖ ≤ (m.map fun x =
   · simp only [comp_apply, norm_one', ofAdd_zero]
   · exact norm_mul_le' x y
 
+variable {ε : Type*} [TopologicalSpace ε] [ESeminormedAddCommMonoid ε] in
 @[bound]
-theorem enorm_sum_le {ε} [TopologicalSpace ε] [ESeminormedAddCommMonoid ε] (s : Finset ι) (f : ι → ε) :
+theorem enorm_sum_le (s : Finset ι) (f : ι → ε) :
     ‖∑ i ∈ s, f i‖ₑ ≤ ∑ i ∈ s, ‖f i‖ₑ :=
   s.le_sum_of_subadditive enorm enorm_zero enorm_add_le f
 
