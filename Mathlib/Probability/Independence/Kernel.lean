@@ -1071,7 +1071,7 @@ theorem iIndepFun.indepFun_finset (S T : Finset ι) (hST : Disjoint S T)
     simp only [Set.mem_preimage, Set.mem_univ_pi, Set.mem_iInter]
     constructor <;> intro h
     · intro i hi; simp_rw [sets_t', dif_pos hi]; exact h ⟨i, hi⟩
-    · grind
+    · rintro ⟨i, hi⟩; specialize h i hi; simp_rw [sets_t', dif_pos hi] at h; exact h
   replace hf_Indep := hf_Indep.congr η_eq
   rw [iIndepFun_iff_measure_inter_preimage_eq_mul] at hf_Indep
   have h_Inter_inter :
