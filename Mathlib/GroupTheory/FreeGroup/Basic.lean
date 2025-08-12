@@ -391,8 +391,8 @@ theorem IsReduced.nil : IsReduced ([] : List (α × Bool)) := chain'_nil
 @[to_additive (attr := simp)]
 theorem IsReduced.singleton {a : α × Bool} : IsReduced [a] := chain'_singleton a
 
-@[to_additive (attr := simp) FreeAddGroup.isReduced_cons]
-theorem isReduced_cons {a b : (α × Bool)} :
+@[to_additive (attr := simp) FreeAddGroup.isReduced_cons_cons]
+theorem isReduced_cons_cons {a b : (α × Bool)} :
     IsReduced (a :: b :: L) ↔ (a.1 = b.1 → a.2 = b.2) ∧ IsReduced (b :: L) := chain'_cons
 
 @[to_additive]
@@ -406,7 +406,7 @@ lemma IsReduced.of_forall_not_step :
   | [], _ => .nil
   | [a], _ => .singleton
   | (a₁, b₁) :: (a₂, b₂) :: L₁, hL₁ => by
-    rw [isReduced_cons]
+    rw [isReduced_cons_cons]
     refine ⟨?_, .of_forall_not_step fun L₂ step ↦ hL₁ _ step.cons⟩
     rintro rfl
     symm
