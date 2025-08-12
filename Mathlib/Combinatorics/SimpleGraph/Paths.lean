@@ -216,12 +216,27 @@ theorem IsPath.of_append_right {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
 lemma IsPath.of_adj {G : SimpleGraph V} {u v : V} (h : G.Adj u v) : h.toWalk.IsPath := by
   aesop
 
+lemma IsPath.disjoint_support_of_append {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
+    (hpq : (p.append q).IsPath) (hq : ¬q.Nil) : p.support.Disjoint q.tail.support := by
+  have hpq' := hpq.support_nodup
+  rw [support_append] at hpq'
+  rw [support_tail_of_not_nil q hq]
+  exact List.disjoint_of_nodup_append hpq'
+
 lemma IsPath.ne_of_mem_support_of_append {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
     (hpq : (p.append q).IsPath) {x y : V} (hyv : y ≠ v) (hx : x ∈ p.support) (hy : y ∈ q.support) :
     x ≠ y := by
-  rw [isPath_def, support_append, List.nodup_append] at hpq
-  have hy' : y ∈ q.support.tail := (q.mem_support_iff.mp hy).resolve_left hyv
-  exact hpq.right.right x hx y hy'
+  intro hxy
+  subst hxy
+  have hq : ¬q.Nil := by
+    intro hq
+    simp only [nil_iff_support_eq.mp hq, List.mem_cons, List.not_mem_nil, or_false] at hy
+    exact hyv hy
+  have hx' : x ∈ q.tail.support := by
+    rw [support_tail_of_not_nil q hq]
+    rw [mem_support_iff] at hy
+    exact (or_iff_right hyv).mp hy
+  exact IsPath.disjoint_support_of_append hpq hq hx hx'
 
 @[simp]
 theorem IsCycle.not_of_nil {u : V} : ¬(nil : G.Walk u u).IsCycle := fun h => h.ne_nil rfl
