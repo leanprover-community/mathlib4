@@ -238,14 +238,6 @@ theorem isClosed_integer : IsClosed (_i.v.integer : Set R) :=
 theorem isClopen_integer : IsClopen (_i.v.integer : Set R) :=
   ⟨isClosed_integer _, isOpen_integer _⟩
 
-/-- The unit ball of a valued ring is closed. -/
-theorem integer_isClosed : IsClosed (_i.v.integer : Set R) := by
-  refine isClosed_iff_nhds.2 fun x hx => ?_
-  simp [Valuation.mem_integer_iff] at hx ⊢
-  contrapose! hx
-  refine ⟨{y | v y = v x}, loc_const (ne_zero_of_lt hx), subset_empty_iff.1 fun y ⟨hy₁, hy₂⟩ => ?_⟩
-  exact (not_lt_of_le <| hy₂) <| hy₁.symm ▸ hx
-
 /-- The valuation subring of a valued field is open. -/
 theorem isOpen_valuationSubring (K : Type u) [Field K] [hv : Valued K Γ₀] :
     IsOpen (hv.v.valuationSubring : Set K) :=

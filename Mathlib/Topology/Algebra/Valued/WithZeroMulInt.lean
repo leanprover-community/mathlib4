@@ -50,11 +50,12 @@ theorem irreducible_valuation_lt_one {ϖ : 𝒪[K]} (h : Irreducible ϖ) : v ϖ.
   lt_of_le_of_ne (Valuation.mem_integer_iff _ _ |>.1 ϖ.2) <|
     mt (Valuation.integer.integers _).isUnit_iff_valuation_eq_one.2 h.not_isUnit
 
-theorem irreducible_valuation_le_ofAdd_neg_one {ϖ : 𝒪[K]} (h : Irreducible ϖ) :
-    v ϖ.1 ≤ ofAdd (-1 : ℤ) := by
-  have := (lt_ofAdd_iff (show v ϖ.1 ≠ 0 by simp [h.ne_zero])).1 (irreducible_valuation_lt_one h)
-  rw [le_ofAdd_iff (show v ϖ.1 ≠ 0 by simp [h.ne_zero])]
-  omega
+theorem irreducible_valuation_le_exp_neg_one {ϖ : 𝒪[K]} (h : Irreducible ϖ) :
+    v ϖ.1 ≤ exp (-1 : ℤ) := by
+  have hϖ : v ϖ.1 ≠ 0 := by simp [h.ne_zero]
+  have := log_one (M := ℤ) ▸  (log_lt_log hϖ one_ne_zero).2 (irreducible_valuation_lt_one h)
+  rw [← log_le_iff_le_exp hϖ]
+  linarith
 
 theorem mem_maximalIdeal_pow_valuation [IsDiscreteValuationRing 𝒪[K]]
     {x : 𝒪[K]} {n : ℕ} (hx : x ∈ 𝓂[K] ^ n) {ϖ : 𝒪[K]} (h : Irreducible ϖ) :
@@ -73,7 +74,7 @@ theorem finite_cover_of_uniformity_basis [IsDiscreteValuationRing 𝒪[K]] {γ :
       (𝒪[K]).carrier ⊆ ⋃ y ∈ t, { x | (x, y) ∈ { p | v (p.2 - p.1) < γ.val } } := by
   classical
   let ⟨ϖ, hϖ⟩ := IsDiscreteValuationRing.exists_irreducible 𝒪[K]
-  let ⟨m, hm⟩ := exists_pow_lt_of_le_exp_neg_one (irreducible_valuation_le_ofAdd_neg_one hϖ) γ
+  let ⟨m, hm⟩ := exists_pow_lt_of_le_exp_neg_one (irreducible_valuation_le_exp_neg_one hϖ) γ
   have := integer.finite_quotient_maximalIdeal_pow_of_finite_residueField h m
   have h := Fintype.ofFinite (𝒪[K] ⧸ 𝓂[K] ^ m)
   let T := Subtype.val '' (h.elems.image Quotient.out).toSet
@@ -91,6 +92,6 @@ theorem integer_compactSpace [CompleteSpace K] [IsDiscreteValuationRing 𝒪[K]]
     CompactSpace 𝒪[K] where
    isCompact_univ := isCompact_iff_isCompact_univ.1 <| isCompact_iff_totallyBounded_isComplete.2
       ⟨(hasBasis_uniformity _ _).totallyBounded_iff.2 fun _ _ ↦ finite_cover_of_uniformity_basis h,
-        (integer_isClosed K).isComplete⟩
+        (isClosed_integer K).isComplete⟩
 
 end Valued
