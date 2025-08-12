@@ -31,7 +31,8 @@ variable {α β : Type*} [LinearOrder α]
 theorem biUnion_Ici_Ico_map_succ [SuccOrder α] [IsSuccArchimedean α] [LinearOrder β] {f : α → β}
     {a : α} (hf : ∀ i ∈ Ici a, f a ≤ f i) (h2f : ¬BddAbove (f '' Ici a)) :
     ⋃ i ∈ Ici a, Ico (f i) (f (succ i)) = Ici (f a) := by
-  apply subset_antisymm <| iUnion₂_subset fun i hi ↦ Ico_subset_Ici (hf i hi)
+  apply subset_antisymm <|
+    iUnion₂_subset fun i hi ↦ Ico_subset_Ico_left (hf i hi) |>.trans Ico_subset_Ici_self
   intro b hb
   rw [mem_iUnion₂]
   by_contra! hcontra
@@ -46,7 +47,8 @@ theorem biUnion_Ici_Ico_map_succ [SuccOrder α] [IsSuccArchimedean α] [LinearOr
 theorem biUnion_Ici_Ioc_map_succ [SuccOrder α] [IsSuccArchimedean α] [LinearOrder β] {f : α → β}
     {a : α} (hf : ∀ i ∈ Ici a, f a ≤ f i) (h2f : ¬BddAbove (f '' Ici a)) :
     ⋃ i ∈ Ici a, Ioc (f i) (f (succ i)) = Ioi (f a) := by
-  apply subset_antisymm <| iUnion₂_subset fun i hi ↦ Ioc_subset_Ioi (hf i hi)
+  apply subset_antisymm <|
+    iUnion₂_subset fun i hi ↦ Ioc_subset_Ioc_left (hf i hi) |>.trans Ioc_subset_Ioi_self
   intro b hb
   rw [mem_iUnion₂]
   by_contra! hcontra
