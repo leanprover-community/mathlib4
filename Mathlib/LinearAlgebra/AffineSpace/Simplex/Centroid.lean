@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
 import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
-import Mathlib.LinearAlgebra.AffineSpace.Combination
+import Mathlib.LinearAlgebra.AffineSpace.Centroid
 
 /-!
 # Centroid of a simplex in affine space
