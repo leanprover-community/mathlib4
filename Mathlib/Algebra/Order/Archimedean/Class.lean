@@ -538,13 +538,13 @@ theorem subgroup_antitone : Antitone (subgroup (M := M)) := by
 
 /-- An open ball defined by `MulArchimedeanClass.subgroup` of `UpperSet.Ioi c`.
 For `c = ⊤`, we assign the junk value `⊥`. -/
-@[to_additive "An open ball defined by `ArchimedeanClass.addSubgroup` of `UpperSet.Ioi c`.
-For `c = ⊤`, we assign the junk value `⊥`. "]
+@[to_additive /--An open ball defined by `ArchimedeanClass.addSubgroup` of `UpperSet.Ioi c`.
+For `c = ⊤`, we assign the junk value `⊥`. -/]
 noncomputable
 abbrev ballSubgroup (c : MulArchimedeanClass M) := subgroup (UpperSet.Ioi c)
 
-/-- c closed ball defined by `MulArchimedeanClass.subgroup` of `UpperSet.Ici c`. -/
-@[to_additive "An closed ball defined by `ArchimedeanClass.addSubgroup` of `UpperSet.Ici c`."]
+/-- A closed ball defined by `MulArchimedeanClass.subgroup` of `UpperSet.Ici c`. -/
+@[to_additive /-- A closed ball defined by `ArchimedeanClass.addSubgroup` of `UpperSet.Ici c`. -/]
 noncomputable
 abbrev closedBallSubgroup (c : MulArchimedeanClass M) := subgroup (UpperSet.Ici c)
 
@@ -577,8 +577,8 @@ theorem ballSubgroup_antitone : Antitone (ballSubgroup (M := M)) := by
 
 /-- A subgroup `G` is called a grade at `c` iff
 `ballSubgroup c` and `G` are complements in the lattice under `closedBallSubgroup c` -/
-@[to_additive "A subgroup `G` is called a grade at `c` iff
-`ballAddSubgroup c` and `G` are complements in the lattice under `closedBallAddSubgroup c`"]
+@[to_additive /--A subgroup `G` is called a grade at `c` iff
+`ballAddSubgroup c` and `G` are complements in the lattice under `closedBallAddSubgroup c` -/]
 def IsGradeSubgroup (c : MulArchimedeanClass M) (G : Subgroup M) : Prop :=
   Disjoint (ballSubgroup c) G ∧ ballSubgroup c ⊔ G = closedBallSubgroup c
 
