@@ -158,7 +158,7 @@ instance {α : Type u} {β : Type v} [DecidableEq β] (R : SetRel α β)
     [∀ a : α, Fintype (R.image {a})] (A : Finset α) : Fintype (R.image A) := by
   have h : R.image A = (A.biUnion fun a => (R.image {a}).toFinset : Set β) := by
     ext
-    simp [Rel.image]
+    simp [SetRel.image]
   rw [h]
   apply FinsetCoe.fintype
 
