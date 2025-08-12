@@ -576,9 +576,9 @@ theorem ballSubgroup_antitone : Antitone (ballSubgroup (M := M)) := by
   exact subgroup_antitone <| (UpperSet.Ioi_strictMono _).monotone h
 
 /-- A subgroup `G` is called a grade at `c` iff
-`ballSubgroup c` and `G` are complements in the lattice under `closedBallSubgroup c` -/
+`ballSubgroup c` and `G` are complements in the lattice under `closedBallSubgroup c`. -/
 @[to_additive /--A subgroup `G` is called a grade at `c` iff
-`ballAddSubgroup c` and `G` are complements in the lattice under `closedBallAddSubgroup c` -/]
+`ballAddSubgroup c` and `G` are complements in the lattice under `closedBallAddSubgroup c`. -/]
 def IsGradeSubgroup (c : MulArchimedeanClass M) (G : Subgroup M) : Prop :=
   Disjoint (ballSubgroup c) G ∧ ballSubgroup c ⊔ G = closedBallSubgroup c
 
