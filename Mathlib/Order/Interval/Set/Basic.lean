@@ -32,7 +32,7 @@ Most use cases can suffice with a transitive combination of those, for example:
 theorem Ico_subset_Ici (h : a₂ ≤ a₁) : Ico a₁ b₁ ⊆ Ici a₂ :=
   (Ico_subset_Ico_left h).trans Ico_subset_Ici_self
 ```
-Logical equivalences, such as `Icc_subset_Ici_iff`, are stated as well.
+Logical equivalences, such as `Icc_subset_Ici_iff`, are however stated.
 -/
 
 assert_not_exists RelIso
