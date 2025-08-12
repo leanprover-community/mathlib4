@@ -31,7 +31,7 @@ variable {R : Type*} [CommSemiring R]
 it (`P ⊤`) and whenever we have `I : Ideal R`, `P (I.colon (span {a})` and `P (I ⊔ span {a})` for
 some `a : R` then `P I`. -/
 @[stacks 05K9]
-class IsOka (P : Ideal R → Prop) : Prop where
+structure IsOka (P : Ideal R → Prop) : Prop where
   top : P ⊤
   oka {I : Ideal R} {a : R} : P (I ⊔ span {a}) → P (I.colon (span {a})) → P I
 
