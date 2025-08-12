@@ -136,7 +136,7 @@ some technical translation lemmas. More precisely, in this section, we show that
 number `q : ℚ` and value `v : K` with `v = ↑q`, the continued fraction of `q` and `v` coincide.
 In particular, we show that
 ```lean
-    (↑(GenContFract.of q : GenContFract ℚ) : GenContFract K) = GenContFract.of v`
+    (↑(GenContFract.of q : GenContFract ℚ) : GenContFract K) = GenContFract.of v
 ```
 in `GenContFract.coe_of_rat_eq`.
 
