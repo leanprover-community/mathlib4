@@ -4,10 +4,20 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Patrick Luo, Bhavik Mehta
 -/
 import Mathlib.Algebra.Group.Action.Pointwise.Finset
-import Mathlib.Algebra.Pointwise.Stabilizer
-import Mathlib.Data.Real.GoldenRatio
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Qify
+import Mathlib.Algebra.Algebra.Defs
+import Mathlib.Algebra.CharP.Defs
+import Mathlib.Algebra.EuclideanDomain.Basic
+import Mathlib.Algebra.EuclideanDomain.Field
+import Mathlib.Algebra.Ring.CharZero
+import Mathlib.Data.Finite.Set
+import Mathlib.Data.Real.Archimedean
+import Mathlib.GroupTheory.Coset.Basic
+import Mathlib.SetTheory.Cardinal.Finite
+import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.Algebra.Group.Submonoid.Pointwise
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 /-!
 # Sets with very small doubling
@@ -662,9 +672,10 @@ private lemma connectivity_mem_expansionMeasure_image (em : ExpansionMeasure G)
         rw [mem_Icc]
         exact ⟨Nat.one_le_iff_ne_zero.mpr (Nat.pos_iff_ne_zero.mp (card_pos.mpr hT₁)), hT₂⟩
     · exact lt_of_le_of_ne (connectivity_le em hT₁) (Ne.symm (h T hT₁))
-  let k := (im_smallT ∪ {κ + 1}).min' (by finiteness)
+  have : (im_smallT ∪ {κ + 1}).Nonempty := by simp
+  let k := (im_smallT ∪ {κ + 1}).min' this
   have : κ < k := by
-    rw [lt_min'_iff _ (by finiteness)]
+    rw [lt_min'_iff _ this]
     intro x hx
     rw [mem_union] at hx
     cases hx with
@@ -828,7 +839,7 @@ theorem doubling_lt_two {ε : ℝ} (hε₀ : 0 < ε) (hε₁ : ε ≤ 1) (hA : A
 
   let H := atomicSubgroup hN hn
   let fintypeH := atomicSubgroup_fintype hN hn
-  have _ : Fintype ((n⁻¹ •> N : Set G)) := by finiteness
+  have _ : Fintype ((n⁻¹ •> N : Set G)) := fintypeH
 
   obtain ⟨S, hS₁, hS₂⟩ := hS
   have calc₁ : em.toFun (Set.toFinset H) ≤ (1 - ε / 2) * #A := by
