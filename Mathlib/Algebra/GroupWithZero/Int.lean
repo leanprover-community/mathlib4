@@ -17,11 +17,11 @@ open Multiplicative
 namespace WithZero
 
 @[deprecated zpow_exp (since := "2025-05-17")]
-lemma exp_zsmul {G : Type*} [AddGroup G] (n : ℤ) (a : G) : exp a ^ n = exp (n • a) := rfl
-
-@[deprecated zpow_exp (since := "2025-05-17")]
 theorem ofAdd_zpow (a : ℤ) : (↑(ofAdd a) : ℤᵐ⁰) = ofAdd (1 : ℤ) ^ a :=
   show exp a = exp 1 ^ a by simp [zpow_exp]
+
+@[deprecated zpow_exp (since := "2025-08-12")]
+lemma exp_zsmul {G : Type*} [AddGroup G] (n : ℤ) (a : G) : exp a ^ n = exp (n • a) := rfl
 
 @[deprecated inv_exp (since := "2025-05-17")]
 theorem ofAdd_neg_one_pow_comm (a : ℤ) (n : ℕ) :
@@ -29,7 +29,7 @@ theorem ofAdd_neg_one_pow_comm (a : ℤ) (n : ℕ) :
   show (exp (-1 : ℤ) ^ (-a)) ^ n = exp (n : ℤ) ^ a by
     simp [zpow_exp, ← exp_nsmul, mul_comm, inv_exp]
 
-@[deprecated inv_exp (since := "2025-05-17")]
+@[deprecated inv_exp (since := "2025-08-12")]
 theorem exp_neg (a : ℤ) : exp (-a) = (exp a)⁻¹ := by simp [inv_exp]
 
 end WithZero
