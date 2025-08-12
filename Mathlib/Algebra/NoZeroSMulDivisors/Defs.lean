@@ -5,12 +5,19 @@ Authors: Anne Baanen, Yury Kudryashov, Joseph Myers, Heather Macbeth, Kim Morris
 -/
 import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.Group.Torsion
+import Mathlib.Tactic.Contrapose
 
 /-!
 # `NoZeroSMulDivisors`
 
 This file defines the `NoZeroSMulDivisors` class, and includes some tests
 for the vanishing of elements (especially in modules over division rings).
+
+## TODO
+
+`NoZeroSMulDivisors` is mathematically incorrect for semimodules. Replace it with a new typeclass
+`Module.IsTorsionFree`, cf https://github.com/kbuzzard/ClassFieldTheory. Torsion-free monoids have
+seen the same change happen already.
 -/
 
 assert_not_exists RelIso Multiset Set.indicator Pi.single_smul₀ Ring Module
@@ -96,3 +103,9 @@ lemma noZeroSMulDivisors_int_iff_isAddTorsionFree [AddCommGroup G] :
 
 alias ⟨IsAddTorsionFree.of_noZeroSMulDivisors_nat, _⟩ := noZeroSMulDivisors_nat_iff_isAddTorsionFree
 alias ⟨IsAddTorsionFree.of_noZeroSMulDivisors_int, _⟩ := noZeroSMulDivisors_int_iff_isAddTorsionFree
+
+instance [AddCommGroup M] [NoZeroSMulDivisors ℕ M] : Lean.Grind.NoNatZeroDivisors M := .mk'
+  (eq_zero_of_mul_eq_zero := by
+    intro k a hk h
+    rw [← smul_eq_zero_iff_right hk]
+    exact h)

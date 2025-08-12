@@ -879,12 +879,11 @@ noncomputable def toNormedRing {R : Type*} [Ring R] (v : AbsoluteValue R ℝ) : 
   norm := v
   dist x y := v (x - y)
   dist_eq _ _ := rfl
-  dist_self x := by simp only [sub_self, MulHom.toFun_eq_coe, AbsoluteValue.coe_toMulHom, map_zero]
+  dist_self x := by simp only [sub_self, map_zero]
   dist_comm := v.map_sub
   dist_triangle := v.sub_le
   edist_dist x y := rfl
   norm_mul_le x y := (v.map_mul x y).le
-  eq_of_dist_eq_zero := by simp only [MulHom.toFun_eq_coe, AbsoluteValue.coe_toMulHom,
-    AbsoluteValue.map_sub_eq_zero_iff, imp_self, implies_true]
+  eq_of_dist_eq_zero := by simp only [AbsoluteValue.map_sub_eq_zero_iff, imp_self, implies_true]
 
 end AbsoluteValue

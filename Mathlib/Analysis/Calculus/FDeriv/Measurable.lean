@@ -474,7 +474,7 @@ theorem A_mono (L : F) (r : ℝ) {ε δ : ℝ} (h : ε ≤ δ) : A f L r ε ⊆ 
 
 theorem le_of_mem_A {r ε : ℝ} {L : F} {x : ℝ} (hx : x ∈ A f L r ε) {y z : ℝ}
     (hy : y ∈ Icc x (x + r / 2)) (hz : z ∈ Icc x (x + r / 2)) :
-  ‖f z - f y - (z - y) • L‖ ≤ ε * r := by
+    ‖f z - f y - (z - y) • L‖ ≤ ε * r := by
   rcases hx with ⟨r', r'mem, hr'⟩
   have A : x + r / 2 ≤ x + r' := by linarith [r'mem.1]
   exact hr' _ ((Icc_subset_Icc le_rfl A) hy) _ ((Icc_subset_Icc le_rfl A) hz)
@@ -791,7 +791,7 @@ open Uniformity
 lemma isOpen_A_with_param {r s : ℝ} (hf : Continuous f.uncurry) (L : E →L[𝕜] F) :
     IsOpen {p : α × E | p.2 ∈ A (f p.1) L r s} := by
   have : ProperSpace E := .of_locallyCompactSpace 𝕜
-  simp only [A, half_lt_self_iff, not_lt, mem_Ioc, mem_ball, map_sub, mem_setOf_eq]
+  simp only [A, mem_Ioc, mem_ball, map_sub, mem_setOf_eq]
   apply isOpen_iff_mem_nhds.2
   rintro ⟨a, x⟩ ⟨r', ⟨Irr', Ir'r⟩, hr⟩
   have ha : Continuous (f a) := hf.uncurry_left a

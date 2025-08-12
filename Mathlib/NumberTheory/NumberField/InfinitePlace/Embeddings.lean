@@ -188,9 +188,9 @@ def IsReal.embedding {φ : K →+* ℂ} (hφ : IsReal φ) : K →+* ℝ where
   map_one' := by simp only [map_one, one_re]
   map_mul' := by
     simp only [Complex.conj_eq_iff_im.mp (RingHom.congr_fun hφ _), map_mul, mul_re,
-      mul_zero, tsub_zero, eq_self_iff_true, forall_const]
+      mul_zero, tsub_zero, forall_const]
   map_zero' := by simp only [map_zero, zero_re]
-  map_add' := by simp only [map_add, add_re, eq_self_iff_true, forall_const]
+  map_add' := by simp only [map_add, add_re, forall_const]
 
 @[simp]
 theorem IsReal.coe_embedding_apply {φ : K →+* ℂ} (hφ : IsReal φ) (x : K) :
@@ -258,5 +258,14 @@ lemma isConj_symm : IsConj φ σ.symm ↔ IsConj φ σ :=
 lemma isConj_apply_apply (hσ : IsConj φ σ) (x : K) :
     σ (σ x) = x := by
   simp [← φ.injective.eq_iff, hσ.eq]
+
+theorem IsConj.comp (hσ : IsConj φ σ) (ν : K ≃ₐ[k] K) :
+    IsConj (φ.comp ν) (ν⁻¹ * σ * ν) := by
+  ext
+  simpa [← AlgEquiv.mul_apply, ← mul_assoc] using RingHom.congr_fun hσ _
+
+lemma orderOf_isConj_two_of_ne_one (hσ : IsConj φ σ) (hσ' : σ ≠ 1) :
+    orderOf σ = 2 :=
+  orderOf_eq_prime_iff.mpr ⟨by ext; simpa using isConj_apply_apply hσ _, hσ'⟩
 
 end NumberField.ComplexEmbedding

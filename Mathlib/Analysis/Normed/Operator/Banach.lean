@@ -250,9 +250,6 @@ protected theorem isOpenMap (surj : Surjective f) : IsOpenMap f := by
 theorem isQuotientMap (surj : Surjective f) : IsQuotientMap f :=
   (f.isOpenMap surj).isQuotientMap f.continuous surj
 
-@[deprecated (since := "2024-10-22")]
-alias quotientMap := isQuotientMap
-
 end
 
 theorem _root_.AffineMap.isOpenMap {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
@@ -366,8 +363,7 @@ theorem coe_equivRange (hinj : Injective f) (hclo : IsClosed (range f)) :
 @[simp]
 lemma equivRange_symm_toLinearEquiv (hinj : Injective f) (hclo : IsClosed (range f)) :
     (f.equivRange hinj hclo).toLinearEquiv.symm =
-      (LinearEquiv.ofInjective f.toLinearMap hinj).symm := by
-  rfl
+      (LinearEquiv.ofInjective f.toLinearMap hinj).symm := rfl
 
 @[simp]
 lemma equivRange_symm_apply (hinj : Injective f) (hclo : IsClosed (range f))

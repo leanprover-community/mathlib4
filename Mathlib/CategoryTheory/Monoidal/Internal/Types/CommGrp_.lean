@@ -15,6 +15,8 @@ is equivalent to the category of "native" bundled commutative groups.
 Moreover, this equivalence is compatible with the forgetful functors to `Type`.
 -/
 
+assert_not_exists Field
+
 universe v u
 
 open CategoryTheory Mon_Class
@@ -35,7 +37,7 @@ noncomputable def inverse : CommGrp.{u} ⥤ CommGrp_ (Type u) where
   obj A :=
     { grpTypeEquivalenceGrp.inverse.obj ((forget₂ CommGrp Grp).obj A) with
       comm :=
-        { mul_comm' := by
+        { mul_comm := by
             ext ⟨x : A, y : A⟩
             exact CommMonoid.mul_comm y x } }
   map f := GrpTypeEquivalenceGrp.inverse.map ((forget₂ CommGrp Grp).map f)

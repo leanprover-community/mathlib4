@@ -39,7 +39,7 @@ attribute [local instance] endofunctorMonoidalCategory
 instance (M : Monad C) : Mon_Class (M : C ⥤ C) where
   one := M.η
   mul := M.μ
-  mul_assoc' := by ext; simp [M.assoc]
+  mul_assoc := by ext; simp [M.assoc]
 
 /-- To every `Monad C` we associated a monoid object in `C ⥤ C`. -/
 @[simps]

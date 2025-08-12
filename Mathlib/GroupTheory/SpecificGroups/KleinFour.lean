@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Newell Jensen
 -/
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
-import Mathlib.GroupTheory.SpecificGroups.Dihedral
 
 /-!
 # Klein Four Group
@@ -59,10 +58,6 @@ attribute [simp] IsKleinFour.card_four IsKleinFour.exponent_two
 instance : IsAddKleinFour (ZMod 2 × ZMod 2) where
   card_four := by simp
   exponent_two := by simp [AddMonoid.exponent_prod]
-
-instance : IsKleinFour (DihedralGroup 2) where
-  card_four := by simp only [Nat.card_eq_fintype_card]; rfl
-  exponent_two := by simp [DihedralGroup.exponent]
 
 instance {G : Type*} [Group G] [IsKleinFour G] : IsAddKleinFour (Additive G) where
   card_four := by rw [← IsKleinFour.card_four (G := G)]; congr!

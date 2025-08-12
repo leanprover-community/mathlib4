@@ -100,7 +100,7 @@ local notation "T" => @T_gen p _ F a
 variable {p F a}
 
 private theorem T_def : T = ‖F.eval a‖ / ‖F.derivative.eval a‖ ^ 2 := by
-  simp [T_gen, ← PadicInt.norm_def]
+  simp [T_gen]
 
 private theorem T_nonneg : 0 ≤ T := norm_nonneg _
 
@@ -187,7 +187,7 @@ private def calc_eval_z' {z z' z1 : ℤ_[p]} (hz' : z' = z - z1) {n} (hz : ih n 
           F.derivative.eval z * -⟨↑(F.eval z) / ↑(F.derivative.eval z), h1⟩ := by rw [hzeq]
       _ = -(F.derivative.eval z * ⟨↑(F.eval z) / ↑(F.derivative.eval z), h1⟩) := mul_neg _ _
       _ = -⟨F.derivative.eval z * (F.eval z / (F.derivative.eval z : ℤ_[p]) : ℚ_[p]), this⟩ :=
-        (Subtype.ext <| by simp only [PadicInt.coe_neg, PadicInt.coe_mul, Subtype.coe_mk])
+        (Subtype.ext <| by simp only [PadicInt.coe_neg, PadicInt.coe_mul])
       _ = -F.eval z := by simp only [mul_div_cancel₀ _ hdzne', Subtype.coe_eta]
   exact ⟨q, by simpa only [sub_eq_add_neg, this, hz', add_neg_cancel, neg_sq, zero_add] using hq⟩
 

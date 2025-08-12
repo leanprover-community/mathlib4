@@ -527,12 +527,12 @@ theorem iInter_sigma' {γ : α → Type*} (s : ∀ i, γ i → Set β) :
     ⋂ i, ⋂ a, s i a = ⋂ ia : Sigma γ, s ia.1 ia.2 :=
   iInf_sigma' _
 
-theorem iUnion₂_comm (s : ∀ i₁, κ₁ i₁ → ∀ i₂, κ₂ i₂ → Set α) :
-    ⋃ (i₁) (j₁) (i₂) (j₂), s i₁ j₁ i₂ j₂ = ⋃ (i₂) (j₂) (i₁) (j₁), s i₁ j₁ i₂ j₂ :=
+theorem iUnion₂_comm (s : ∀ i, κ i → ∀ i', κ' i' → Set α) :
+    ⋃ (i) (j) (i') (j'), s i j i' j' = ⋃ (i') (j') (i) (j), s i j i' j' :=
   iSup₂_comm _
 
-theorem iInter₂_comm (s : ∀ i₁, κ₁ i₁ → ∀ i₂, κ₂ i₂ → Set α) :
-    ⋂ (i₁) (j₁) (i₂) (j₂), s i₁ j₁ i₂ j₂ = ⋂ (i₂) (j₂) (i₁) (j₁), s i₁ j₁ i₂ j₂ :=
+theorem iInter₂_comm (s : ∀ i, κ i → ∀ i', κ' i' → Set α) :
+    ⋂ (i) (j) (i') (j'), s i j i' j' = ⋂ (i') (j') (i) (j), s i j i' j' :=
   iInf₂_comm _
 
 @[simp]
@@ -961,10 +961,10 @@ theorem range_sigma_eq_iUnion_range {γ : α → Type*} (f : Sigma γ → β) :
     range f = ⋃ a, range fun b => f ⟨a, b⟩ :=
   Set.ext <| by simp
 
-theorem iUnion_eq_range_sigma (s : α → Set β) : ⋃ i, s i = range fun a : Σi, s i => a.2 := by
+theorem iUnion_eq_range_sigma (s : α → Set β) : ⋃ i, s i = range fun a : Σ i, s i => a.2 := by
   simp [Set.ext_iff]
 
-theorem iUnion_eq_range_psigma (s : ι → Set β) : ⋃ i, s i = range fun a : Σ'i, s i => a.2 := by
+theorem iUnion_eq_range_psigma (s : ι → Set β) : ⋃ i, s i = range fun a : Σ' i, s i => a.2 := by
   simp [Set.ext_iff]
 
 theorem iUnion_image_preimage_sigma_mk_eq_self {ι : Type*} {σ : ι → Type*} (s : Set (Sigma σ)) :
@@ -978,7 +978,7 @@ theorem iUnion_image_preimage_sigma_mk_eq_self {ι : Type*} {σ : ι → Type*} 
     obtain ⟨i, a⟩ := x
     exact ⟨i, a, h, rfl⟩
 
-theorem Sigma.univ (X : α → Type*) : (Set.univ : Set (Σa, X a)) = ⋃ a, range (Sigma.mk a) :=
+theorem Sigma.univ (X : α → Type*) : (Set.univ : Set (Σ a, X a)) = ⋃ a, range (Sigma.mk a) :=
   Set.ext fun x =>
     iff_of_true trivial ⟨range (Sigma.mk x.1), Set.mem_range_self _, x.2, Sigma.eta x⟩
 
@@ -1136,8 +1136,7 @@ theorem univ_pi_eq_iInter (t : ∀ i, Set (π i)) : pi univ t = ⋂ i, eval i �
 theorem pi_diff_pi_subset (i : Set α) (s t : ∀ a, Set (π a)) :
     pi i s \ pi i t ⊆ ⋃ a ∈ i, eval a ⁻¹' (s a \ t a) := by
   refine diff_subset_comm.2 fun x hx a ha => ?_
-  simp only [mem_diff, mem_pi, mem_iUnion, not_exists, mem_preimage, not_and, not_not,
-    eval_apply] at hx
+  simp only [mem_diff, mem_pi, mem_iUnion, not_exists, mem_preimage, not_and, not_not] at hx
   exact hx.2 _ ha (hx.1 _ ha)
 
 theorem iUnion_univ_pi {ι : α → Type*} (t : (a : α) → ι a → Set (π a)) :
@@ -1145,13 +1144,18 @@ theorem iUnion_univ_pi {ι : α → Type*} (t : (a : α) → ι a → Set (π a)
   ext
   simp [Classical.skolem]
 
+theorem biUnion_univ_pi {ι : α → Type*} (s : (a : α) → Set (ι a)) (t : (a : α) → ι a → Set (π a)) :
+    ⋃ x ∈ univ.pi s, pi univ (fun a => t a (x a)) = pi univ fun a => ⋃ j ∈ s a, t a j := by
+  ext
+  simp [Classical.skolem, forall_and]
+
 end Pi
 
 section Directed
 
 theorem directedOn_iUnion {r} {f : ι → Set α} (hd : Directed (· ⊆ ·) f)
     (h : ∀ x, DirectedOn r (f x)) : DirectedOn r (⋃ x, f x) := by
-  simp only [DirectedOn, exists_prop, mem_iUnion, exists_imp]
+  simp only [DirectedOn, mem_iUnion, exists_imp]
   exact fun a₁ b₁ fb₁ a₂ b₂ fb₂ =>
     let ⟨z, zb₁, zb₂⟩ := hd b₁ b₂
     let ⟨x, xf, xa₁, xa₂⟩ := h z a₁ (zb₁ fb₁) a₂ (zb₂ fb₂)
@@ -1327,8 +1331,21 @@ noncomputable def sigmaEquiv (s : α → Set β) (hs : ∀ b, ∃! i, b ∈ s i)
 /-- Equivalence between a disjoint union and a dependent sum. -/
 noncomputable def unionEqSigmaOfDisjoint {t : α → Set β}
     (h : Pairwise (Disjoint on t)) :
-    (⋃ i, t i) ≃ Σi, t i :=
+    (⋃ i, t i) ≃ Σ i, t i :=
   (Equiv.ofBijective _ <| sigmaToiUnion_bijective t h).symm
+
+@[simp]
+lemma coe_unionEqSigmaOfDisjoint_symm_apply {α β : Type*} {t : α → Set β}
+    (h : Pairwise (Disjoint on t)) (x : (i : α) × t i) :
+    ((Set.unionEqSigmaOfDisjoint h).symm x : β) = x.2 := by
+  rfl
+
+@[simp]
+lemma coe_snd_unionEqSigmaOfDisjoint {α β : Type*} {t : α → Set β}
+    (h : Pairwise (Disjoint on t)) (x : ⋃ (i : α), t i) :
+    ((Set.unionEqSigmaOfDisjoint h x).snd : β) = x := by
+  conv => right; rw [← unionEqSigmaOfDisjoint h |>.symm_apply_apply x]
+  rfl
 
 theorem iUnion_ge_eq_iUnion_nat_add (u : ℕ → Set α) (n : ℕ) : ⋃ i ≥ n, u i = ⋃ i, u (i + n) :=
   iSup_ge_eq_iSup_nat_add u n

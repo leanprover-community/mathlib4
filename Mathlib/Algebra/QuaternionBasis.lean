@@ -19,7 +19,7 @@ import Mathlib.Tactic.Ring
 * `QuaternionAlgebra.lift`: Define an `AlgHom` out of `ℍ[R,c₁,c₂,c₃]` by its action on the basis
   elements `i`, `j`, and `k`. In essence, this is a universal property. Analogous to `Complex.lift`,
   but takes a bundled `QuaternionAlgebra.Basis` instead of just a `Subtype` as the amount of
-  data / proves is non-negligible.
+  data / proofs is non-negligible.
 -/
 
 
@@ -122,11 +122,11 @@ theorem lift_mul (x y : ℍ[R,c₁,c₂,c₃]) : q.lift (x * y) = q.lift x * q.l
   simp only [lift, Algebra.algebraMap_eq_smul_one]
   simp_rw [add_mul, mul_add, smul_mul_assoc, mul_smul_comm, one_mul, mul_one, smul_smul]
   simp only [i_mul_i, j_mul_j, i_mul_j, j_mul_i, i_mul_k, k_mul_i, k_mul_j, j_mul_k, k_mul_k]
-  simp only [smul_smul, smul_neg, sub_eq_add_neg, add_smul, ← add_assoc, mul_neg, neg_smul]
+  simp only [smul_smul, smul_neg, sub_eq_add_neg, ← add_assoc, neg_smul]
   simp only [mul_right_comm _ _ (c₁ * c₃), mul_comm _ (c₁ * c₃)]
-  simp only [mul_comm _ c₁, mul_right_comm _ _ c₁]
-  simp only [mul_comm _ c₂, mul_right_comm _ _ c₃]
-  simp only [← mul_comm c₁ c₂, ← mul_assoc]
+  simp only [mul_comm _ c₁]
+  simp only [mul_right_comm _ _ c₃]
+  simp only [← mul_assoc]
   simp only [mul_re, sub_eq_add_neg, add_smul, neg_smul, mul_imI, ← add_assoc, mul_imJ, mul_imK]
   linear_combination (norm := module)
 
@@ -180,8 +180,7 @@ def lift : Basis A c₁ c₂ c₃ ≃ (ℍ[R,c₁,c₂,c₃] →ₐ[R] A) where
     ext
     dsimp [Basis.lift]
     rw [← F.commutes]
-    simp only [← F.commutes, ← map_smul, ← map_add, mk_add_mk, smul_mk, smul_zero,
-      algebraMap_eq]
+    simp only [← map_smul, ← map_add, mk_add_mk, smul_mk, smul_zero, algebraMap_eq]
     congr <;> simp
 
 /-- Two `R`-algebra morphisms from a quaternion algebra are equal if they agree on `i` and `j`. -/

@@ -432,7 +432,7 @@ lemma zpow_add' {m n : ℤ} (h : a ≠ 0 ∨ m + n ≠ 0 ∨ m = 0 ∧ n = 0) :
   · simp [hn]
   by_cases ha : a = 0
   · subst a
-    simp only [false_or, eq_self_iff_true, not_true, Ne, hm, hn, false_and, or_false] at h
+    simp only [false_or, not_true, Ne, hm, hn, false_and, or_false] at h
     rw [zero_zpow _ h, zero_zpow _ hm, zero_mul]
   · exact zpow_add₀ ha m n
 

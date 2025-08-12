@@ -118,10 +118,11 @@ lemma lt_iff_not_ge : a < b ↔ ¬b ≤ a := ⟨not_le_of_gt, lt_of_not_ge⟩
 @[simp] lemma not_lt : ¬a < b ↔ b ≤ a := ⟨le_of_not_gt, not_lt_of_ge⟩
 @[simp] lemma not_le : ¬a ≤ b ↔ b < a := lt_iff_not_ge.symm
 
-lemma eq_or_lt_of_not_gt (h : ¬a < b) : a = b ∨ b < a :=
+lemma eq_or_gt_of_not_lt (h : ¬a < b) : a = b ∨ b < a :=
   if h₁ : a = b then Or.inl h₁ else Or.inr (lt_of_not_ge fun hge => h (lt_of_le_of_ne hge h₁))
 
-@[deprecated (since := "2025-05-11")] alias eq_or_lt_of_not_lt := eq_or_lt_of_not_gt
+@[deprecated (since := "2025-07-27")] alias eq_or_lt_of_not_gt := eq_or_gt_of_not_lt
+@[deprecated (since := "2025-05-11")] alias eq_or_lt_of_not_lt := eq_or_gt_of_not_lt
 
 /-- Perform a case-split on the ordering of `x` and `y` in a decidable linear order. -/
 @[deprecated lt_trichotomy (since := "2025-04-21")]
@@ -234,19 +235,19 @@ section Ord
 
 lemma compare_lt_iff_lt : compare a b = .lt ↔ a < b := by
   rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
-  split_ifs <;> simp only [*, lt_irrefl, reduceCtorEq]
+  split_ifs <;> simp only [*, lt_irrefl]
 
 lemma compare_gt_iff_gt : compare a b = .gt ↔ b < a := by
   rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
-  split_ifs <;> simp only [*, lt_irrefl, not_lt_of_gt, reduceCtorEq]
+  split_ifs <;> simp only [*, lt_irrefl, not_lt_of_gt]
   case _ h₁ h₂ =>
     have h : b < a := lt_trichotomy a b |>.resolve_left h₁ |>.resolve_left h₂
     rwa [true_iff]
 
 lemma compare_eq_iff_eq : compare a b = .eq ↔ a = b := by
   rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
-  split_ifs <;> try simp only [reduceCtorEq]
-  case _ h   => rw [false_iff]; exact ne_iff_lt_or_gt.2 <| .inl h
+  split_ifs <;> try simp only
+  case _ h => rw [false_iff]; exact ne_iff_lt_or_gt.2 <| .inl h
   case _ _ h => rwa [true_iff]
   case _ _ h => rwa [false_iff]
 

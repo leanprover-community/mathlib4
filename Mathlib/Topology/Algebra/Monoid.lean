@@ -437,7 +437,7 @@ Let `f : α → M` and `g : α → M` be functions. If `g` tends to zero on a fi
 and the image of `l` under `f` is disjoint from the cocompact filter on `M`, then
 `fun x : α ↦ f x * g x` also tends to zero on `l`. -/
 theorem Tendsto.tendsto_mul_zero_of_disjoint_cocompact_left {f g : α → M} {l : Filter α}
-    (hf : Disjoint (map f l) (cocompact M)) (hg : Tendsto g l (𝓝 0)):
+    (hf : Disjoint (map f l) (cocompact M)) (hg : Tendsto g l (𝓝 0)) :
     Tendsto (fun x ↦ f x * g x) l (𝓝 0) :=
   tendsto_mul_prod_nhds_zero_of_disjoint_cocompact hf |>.comp (tendsto_map.prodMk hg)
 

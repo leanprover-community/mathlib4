@@ -11,7 +11,7 @@ import Std.Data.HashMap.Basic
 # Datatypes for the Simplex Algorithm implementation
 -/
 
-namespace Linarith.SimplexAlgorithm
+namespace Mathlib.Tactic.Linarith.SimplexAlgorithm
 
 /--
 Specification for matrix types over ℚ which can be used in the Gauss Elimination and the Simplex
@@ -126,4 +126,4 @@ structure Tableau (matType : Nat → Nat → Type) [UsableInSimplexAlgorithm mat
   /-- Matrix of coefficients the basic variables expressed through the free ones. -/
   mat : matType basic.size free.size
 
-end Linarith.SimplexAlgorithm
+end Mathlib.Tactic.Linarith.SimplexAlgorithm

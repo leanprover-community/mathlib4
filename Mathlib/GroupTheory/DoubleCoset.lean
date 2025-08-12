@@ -137,25 +137,25 @@ theorem disjoint_out {H K : Subgroup G} {a b : Quotient H K} :
 
 theorem union_quotToDoset (H K : Subgroup G) : ⋃ q, quotToDoset H K q = Set.univ := by
   ext x
-  simp only [Set.mem_iUnion, quotToDoset, mem_doset, SetLike.mem_coe, exists_prop, Set.mem_univ,
+  simp only [Set.mem_iUnion, quotToDoset, mem_doset, SetLike.mem_coe, Set.mem_univ,
     iff_true]
   use mk H K x
   obtain ⟨h, k, h3, h4, h5⟩ := mk_out_eq_mul H K x
   refine ⟨h⁻¹, H.inv_mem h3, k⁻¹, K.inv_mem h4, ?_⟩
-  simp only [h5, Subgroup.coe_mk, ← mul_assoc, one_mul, inv_mul_cancel, mul_inv_cancel_right]
+  simp only [h5, ← mul_assoc, one_mul, inv_mul_cancel, mul_inv_cancel_right]
 
 theorem doset_union_rightCoset (H K : Subgroup G) (a : G) :
     ⋃ k : K, op (a * k) • ↑H = doset a H K := by
   ext x
-  simp only [mem_rightCoset_iff, exists_prop, mul_inv_rev, Set.mem_iUnion, mem_doset,
-    Subgroup.mem_carrier, SetLike.mem_coe]
+  simp only [mem_rightCoset_iff, mul_inv_rev, Set.mem_iUnion, mem_doset,
+    SetLike.mem_coe]
   constructor
   · rintro ⟨y, h_h⟩
     refine ⟨x * (y⁻¹ * a⁻¹), h_h, y, y.2, ?_⟩
-    simp only [← mul_assoc, Subgroup.coe_mk, inv_mul_cancel_right, InvMemClass.coe_inv]
+    simp only [← mul_assoc, inv_mul_cancel_right, InvMemClass.coe_inv]
   · rintro ⟨x, hx, y, hy, hxy⟩
     refine ⟨⟨y, hy⟩, ?_⟩
-    simp only [hxy, ← mul_assoc, hx, mul_inv_cancel_right, Subgroup.coe_mk]
+    simp only [hxy, ← mul_assoc, hx, mul_inv_cancel_right]
 
 theorem doset_union_leftCoset (H K : Subgroup G) (a : G) :
     ⋃ h : H, (h * a : G) • ↑K = doset a H K := by
@@ -167,7 +167,7 @@ theorem doset_union_leftCoset (H K : Subgroup G) (a : G) :
     simp only [← mul_assoc, one_mul, mul_inv_cancel, mul_inv_cancel_right, InvMemClass.coe_inv]
   · rintro ⟨x, hx, y, hy, hxy⟩
     refine ⟨⟨x, hx⟩, ?_⟩
-    simp only [hxy, ← mul_assoc, hy, one_mul, inv_mul_cancel, Subgroup.coe_mk, inv_mul_cancel_right]
+    simp only [hxy, ← mul_assoc, hy, one_mul, inv_mul_cancel, inv_mul_cancel_right]
 
 theorem left_bot_eq_left_quot (H : Subgroup G) :
     Quotient (⊥ : Subgroup G) (H : Set G) = (G ⧸ H) := by

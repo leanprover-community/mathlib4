@@ -325,7 +325,7 @@ theorem compactOpen_eq_iInf_induced :
   refine le_generateFrom <| forall_mem_image2.2 fun K (hK : IsCompact K) U hU ↦ ?_
   refine TopologicalSpace.le_def.1 (iInf₂_le K hK) _ ?_
   convert isOpen_induced (isOpen_setOf_mapsTo (isCompact_iff_isCompact_univ.1 hK) hU)
-  simp [mapsTo_univ_iff, Subtype.forall, MapsTo]
+  simp [Subtype.forall, MapsTo]
 
 theorem nhds_compactOpen_eq_iInf_nhds_induced (f : C(X, Y)) :
     𝓝 f = ⨅ (s) (_ : IsCompact s), (𝓝 (f.restrict s)).comap (ContinuousMap.restrict s) := by
@@ -415,6 +415,11 @@ theorem continuous_of_continuous_uncurry (f : X → C(Y, Z))
     (h : Continuous (Function.uncurry fun x y => f x y)) : Continuous f :=
   (curry ⟨_, h⟩).2
 
+theorem continuousOn_of_continuousOn_uncurry {s : Set X} (f : X → C(Y, Z))
+    (h : ContinuousOn (Function.uncurry fun x y => f x y) (s ×ˢ univ)) : ContinuousOn f s :=
+  continuousOn_iff_continuous_restrict.mpr <| continuous_of_continuous_uncurry _ <|
+    h.comp_continuous (continuous_subtype_val.prodMap continuous_id) (fun x ↦ ⟨x.1.2, trivial⟩)
+
 /-- The currying process is a continuous map between function spaces. -/
 theorem continuous_curry [LocallyCompactSpace (X × Y)] :
     Continuous (curry : C(X × Y, Z) → C(X, C(Y, Z))) := by
@@ -453,6 +458,58 @@ theorem coe_const' : (const' : Y → C(X, Y)) = const X :=
 
 theorem continuous_const' : Continuous (const X : Y → C(X, Y)) :=
   const'.continuous
+
+section mkD
+
+/-- A variant of `ContinuousMap.continuous_of_continuous_uncurry` in terms of
+`ContinuousMap.mkD`.
+Of course, in this particular setting, `fun x ↦ mkD (f x) g` is just `f`,
+but the `mkD` spelling appears naturally in the context of `C(α, β)`-valued integration. -/
+lemma continuous_mkD_of_uncurry
+    (f : T → X → Y) (g : C(X, Y)) (f_cont : Continuous (Function.uncurry f)) :
+    Continuous (fun x ↦ mkD (f x) g) := by
+  have (x : _) : Continuous (f x) := f_cont.comp (Continuous.prodMk_right x)
+  refine continuous_of_continuous_uncurry _ ?_
+  conv in mkD _ _ => rw [mkD_of_continuous (this x)]
+  exact f_cont
+
+open Set in
+lemma continuousOn_mkD_of_uncurry {s : Set T}
+    (f : T → X → Y) (g : C(X, Y)) (f_cont : ContinuousOn (Function.uncurry f) (s ×ˢ univ)) :
+    ContinuousOn (fun x ↦ mkD (f x) g) s := by
+  have (x) (hx : x ∈ s) : Continuous (f x) := f_cont.comp_continuous
+    (Continuous.prodMk_right x) fun _ ↦ ⟨hx, trivial⟩
+  simp_rw [continuousOn_iff_continuous_restrict, s.restrict_def]
+  refine continuous_of_continuous_uncurry _ ?_
+  conv in mkD _ _ => rw [mkD_of_continuous (this x x.2)]
+  exact f_cont.comp_continuous (.prodMap continuous_subtype_val continuous_id)
+    fun xz ↦ ⟨xz.1.2, trivial⟩
+
+open Set in
+lemma continuous_mkD_restrict_of_uncurry {t : Set X}
+    (f : T → X → Y) (g : C(t, Y)) (f_cont : ContinuousOn (Function.uncurry f) (univ ×ˢ t)) :
+    Continuous (fun x ↦ mkD (t.restrict (f x)) g) := by
+  have (x : _) : ContinuousOn (f x) t :=
+    f_cont.comp (Continuous.prodMk_right x).continuousOn fun _ hz ↦ ⟨trivial, hz⟩
+  refine continuous_of_continuous_uncurry _ ?_
+  conv in mkD _ _ => rw [mkD_of_continuousOn (this x)]
+  exact f_cont.comp_continuous (.prodMap continuous_id continuous_subtype_val)
+    fun xz ↦ ⟨trivial, xz.2.2⟩
+
+open Set in
+lemma continuousOn_mkD_restrict_of_uncurry {s : Set T} {t : Set X}
+    (f : T → X → Y) (g : C(t, Y))
+    (f_cont : ContinuousOn (Function.uncurry f) (s ×ˢ t)) :
+    ContinuousOn (fun x ↦ mkD (t.restrict (f x)) g) s := by
+  have (x) (hx : x ∈ s) : ContinuousOn (f x) t :=
+    f_cont.comp (Continuous.prodMk_right x).continuousOn fun _ hz ↦ ⟨hx, hz⟩
+  simp_rw [continuousOn_iff_continuous_restrict, s.restrict_def]
+  refine continuous_of_continuous_uncurry _ ?_
+  conv in mkD _ _ => rw [mkD_of_continuousOn (this x x.2)]
+  exact f_cont.comp_continuous (.prodMap continuous_subtype_val continuous_subtype_val)
+    fun xz ↦ ⟨xz.1.2, xz.2.2⟩
+
+end mkD
 
 end Curry
 

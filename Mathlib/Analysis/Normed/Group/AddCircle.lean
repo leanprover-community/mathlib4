@@ -43,10 +43,10 @@ theorem norm_coe_mul (x : ℝ) (t : ℝ) :
     ‖(↑(t * x) : AddCircle (t * p))‖ = |t| * ‖(x : AddCircle p)‖ := by
   obtain rfl | ht := eq_or_ne t 0
   · simp
-  simp only [norm_eq_infDist, Real.norm_eq_abs, ← Real.norm_eq_abs, ← infDist_smul₀ ht, smul_zero]
+  simp only [norm_eq_infDist, ← Real.norm_eq_abs, ← infDist_smul₀ ht, smul_zero]
   congr with m
-  simp only [zmultiples, eq_iff_sub_mem, zsmul_eq_mul, mem_mk, mem_setOf_eq,
-    mem_smul_set_iff_inv_smul_mem₀ ht, smul_eq_mul]
+  simp only [zmultiples, eq_iff_sub_mem, zsmul_eq_mul, mem_mk, AddSubmonoid.mem_mk,
+    AddSubsemigroup.mem_mk, mem_setOf_eq, mem_smul_set_iff_inv_smul_mem₀ ht]
   simp_rw [mul_left_comm, ← smul_eq_mul, Set.range_smul, mem_smul_set_iff_inv_smul_mem₀ ht]
   simp [mul_sub, ht, -mem_range]
 
@@ -61,7 +61,7 @@ theorem norm_eq_of_zero {x : ℝ} : ‖(x : AddCircle (0 : ℝ))‖ = |x| := by
   suffices { y : ℝ | (y : AddCircle (0 : ℝ)) = (x : AddCircle (0 : ℝ)) } = {x} by
     simp [norm_eq_infDist, this]
   ext y
-  simp [eq_iff_sub_mem, mem_zmultiples_iff, sub_eq_zero]
+  simp [eq_iff_sub_mem, sub_eq_zero]
 
 theorem norm_eq {x : ℝ} : ‖(x : AddCircle p)‖ = |x - round (p⁻¹ * x) * p| := by
   suffices ∀ x : ℝ, ‖(x : AddCircle (1 : ℝ))‖ = |x - round x| by
@@ -115,7 +115,7 @@ theorem norm_coe_eq_abs_iff {x : ℝ} (hp : p ≠ 0) : ‖(x : AddCircle p)‖ =
   clear hx
   intro p hp hx
   rcases eq_or_ne x (p / (2 : ℝ)) with (rfl | hx')
-  · simp [abs_div, abs_two]
+  · simp [abs_div]
   suffices round (p⁻¹ * x) = 0 by simp [norm_eq, this]
   rw [round_eq_zero_iff]
   obtain ⟨hx₁, hx₂⟩ := abs_le.mp hx
@@ -163,10 +163,10 @@ theorem coe_real_preimage_closedBall_inter_eq {x ε : ℝ} (s : Set ℝ)
       exact hs.trans (closedBall_subset_closedBall <| by simp [hε])
     simp [closedBall_eq_univ_of_half_period_le p hp (↑x) hε, not_lt.mpr hε]
   · suffices ∀ z : ℤ, closedBall (x + z • p) ε ∩ s = if z = 0 then closedBall x ε ∩ s else ∅ by
-      simp [-zsmul_eq_mul, ← QuotientAddGroup.mk_zero, coe_real_preimage_closedBall_eq_iUnion,
+      simp [-zsmul_eq_mul, coe_real_preimage_closedBall_eq_iUnion,
         iUnion_inter, iUnion_ite, this, hε]
     intro z
-    simp only [Real.closedBall_eq_Icc, zero_sub, zero_add] at hs ⊢
+    simp only [Real.closedBall_eq_Icc] at hs ⊢
     rcases eq_or_ne z 0 with (rfl | hz)
     · simp
     simp only [hz, zsmul_eq_mul, if_false, eq_empty_iff_forall_notMem]

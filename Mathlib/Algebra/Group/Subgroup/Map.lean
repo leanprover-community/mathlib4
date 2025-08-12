@@ -117,8 +117,8 @@ theorem coe_map (f : G →* N) (K : Subgroup G) : (K.map f : Set N) = f '' K :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem map_toSubmonoid (f : G →* G') (K : Subgroup G):
-  (Subgroup.map f K).toSubmonoid = Submonoid.map f K.toSubmonoid := rfl
+theorem map_toSubmonoid (f : G →* G') (K : Subgroup G) :
+    (Subgroup.map f K).toSubmonoid = Submonoid.map f K.toSubmonoid := rfl
 
 @[to_additive (attr := simp)]
 theorem mem_map {f : G →* N} {K : Subgroup G} {y : N} : y ∈ K.map f ↔ ∃ x ∈ K, f x = y := Iff.rfl

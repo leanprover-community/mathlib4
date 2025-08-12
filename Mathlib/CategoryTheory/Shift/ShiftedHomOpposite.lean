@@ -37,7 +37,7 @@ noncomputable def opEquiv (n : ℤ) :
 
 lemma opEquiv_symm_apply {n : ℤ} (f : ShiftedHom (Opposite.op Y) (Opposite.op X) n) :
     (opEquiv n).symm f =
-      ((opShiftFunctorEquivalence C n).unitIso.inv.app (Opposite.op X)).unop ≫ f.unop⟦n⟧' := by
+      ((opShiftFunctorEquivalence C n).unitIso.inv.app (Opposite.op X)).unop ≫ f.unop⟦n⟧' :=
   rfl
 
 lemma opEquiv_symm_apply_comp {X Y : C} {a : ℤ}
