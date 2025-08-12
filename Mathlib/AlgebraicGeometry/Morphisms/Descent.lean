@@ -153,7 +153,7 @@ Let `P` be the morphism property associated to the ring hom property `Q`. Suppos
 - `P'` is satisfied for all surjective, local isomorphisms, and
 - `Q` codescend along `Q'`.
 
-Then `P` descends along quasi-compact morphisms satisfiying `P'`.
+Then `P` descends along quasi-compact morphisms satisfying `P'`.
 
 Note: The second condition is in particular satisfied for faithfully flat morphisms.
 -/

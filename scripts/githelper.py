@@ -123,7 +123,7 @@ def git_ensure_installed() -> None:
     except FileNotFoundError:
         abort(f"The program {program!r} is not installed.")
     except subprocess.CalledProcessError:
-        abort(f"The program {program!r} is not installed correcty.")
+        abort(f"The program {program!r} is not installed correctly.")
 
 
 def git_ensure_in_repo() -> None:
@@ -226,7 +226,7 @@ def gh_ensure_installed() -> None:
     except FileNotFoundError:
         abort(f"The program {program!r} is not installed.")
     except subprocess.CalledProcessError:
-        abort(f"The program {program!r} is not installed correcty.")
+        abort(f"The program {program!r} is not installed correctly.")
 
 
 def gh_ensure_logged_in() -> None:
