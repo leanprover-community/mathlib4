@@ -520,11 +520,12 @@ theorem isSheafFor_iff_yonedaSheafCondition {P : Cᵒᵖ ⥤ Type v₁} :
 /--
 If `P` is a sheaf for the sieve `S` on `X`, a natural transformation from `S` (viewed as a functor)
 to `P` can be (uniquely) extended to all of `yoneda.obj X`.
-
+```
       f
    S  →  P
    ↓  ↗
    yX
+```
 -/
 noncomputable def IsSheafFor.extend {P : Cᵒᵖ ⥤ Type v₁} (h : IsSheafFor P (S : Presieve X))
     (f : S.functor ⟶ P) : yoneda.obj X ⟶ P :=
@@ -533,11 +534,12 @@ noncomputable def IsSheafFor.extend {P : Cᵒᵖ ⥤ Type v₁} (h : IsSheafFor 
 /--
 Show that the extension of `f : S.functor ⟶ P` to all of `yoneda.obj X` is in fact an extension, ie
 that the triangle below commutes, provided `P` is a sheaf for `S`
-
+```
       f
    S  →  P
    ↓  ↗
    yX
+```
 -/
 @[reassoc (attr := simp)]
 theorem IsSheafFor.functorInclusion_comp_extend {P : Cᵒᵖ ⥤ Type v₁} (h : IsSheafFor P S.arrows)

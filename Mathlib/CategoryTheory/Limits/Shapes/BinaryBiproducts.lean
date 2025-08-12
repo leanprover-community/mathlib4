@@ -242,7 +242,7 @@ def toBiconeIsLimit {X Y : C} (b : BinaryBicone X Y) :
   IsLimit.equivIsoLimit <| Cones.ext (Iso.refl _) fun ⟨as⟩ => by cases as <;> simp
 
 /-- A binary bicone is a colimit cocone if and only if the corresponding bicone is a colimit
-    cocone. -/
+cocone. -/
 def toBiconeIsColimit {X Y : C} (b : BinaryBicone X Y) :
     IsColimit b.toBicone.toCocone ≃ IsColimit b.toCocone :=
   IsColimit.equivIsoColimit <| Cocones.ext (Iso.refl _) fun ⟨as⟩ => by cases as <;> simp
@@ -272,13 +272,13 @@ abbrev toBinaryBicone {X Y : C} (b : Bicone (pairFunction X Y)) : BinaryBicone X
   toBinaryBiconeFunctor.obj b
 
 /-- A bicone over a pair is a limit cone if and only if the corresponding binary bicone is a limit
-    cone. -/
+cone. -/
 def toBinaryBiconeIsLimit {X Y : C} (b : Bicone (pairFunction X Y)) :
     IsLimit b.toBinaryBicone.toCone ≃ IsLimit b.toCone :=
   IsLimit.equivIsoLimit <| Cones.ext (Iso.refl _) fun j => by rcases j with ⟨⟨⟩⟩ <;> simp
 
 /-- A bicone over a pair is a colimit cocone if and only if the corresponding binary bicone is a
-    colimit cocone. -/
+colimit cocone. -/
 def toBinaryBiconeIsColimit {X Y : C} (b : Bicone (pairFunction X Y)) :
     IsColimit b.toBinaryBicone.toCocone ≃ IsColimit b.toCocone :=
   IsColimit.equivIsoColimit <| Cocones.ext (Iso.refl _) fun j => by rcases j with ⟨⟨⟩⟩ <;> simp
@@ -302,7 +302,7 @@ def BinaryBicone.toBiconeIsBilimit {X Y : C} (b : BinaryBicone X Y) :
   right_inv := fun ⟨h, h'⟩ => by dsimp only; simp
 
 /-- A bicone over a pair is a bilimit bicone if and only if the corresponding binary bicone is a
-    bilimit. -/
+bilimit. -/
 def Bicone.toBinaryBiconeIsBilimit {X Y : C} (b : Bicone (pairFunction X Y)) :
     b.toBinaryBicone.IsBilimit ≃ b.IsBilimit where
   toFun h := ⟨b.toBinaryBiconeIsLimit h.isLimit, b.toBinaryBiconeIsColimit h.isColimit⟩
@@ -637,9 +637,9 @@ theorem biprod.conePointUniqueUpToIso_inv (X Y : C) [HasBinaryBiproduct X Y] {b 
   all_goals simp
 
 /-- Binary biproducts are unique up to isomorphism. This already follows because bilimits are
-    limits, but in the case of biproducts we can give an isomorphism with particularly nice
-    definitional properties, namely that `biprod.lift b.fst b.snd` and `biprod.desc b.inl b.inr`
-    are inverses of each other. -/
+limits, but in the case of biproducts we can give an isomorphism with particularly nice
+definitional properties, namely that `biprod.lift b.fst b.snd` and `biprod.desc b.inl b.inr`
+are inverses of each other. -/
 @[simps]
 def biprod.uniqueUpToIso (X Y : C) [HasBinaryBiproduct X Y] {b : BinaryBicone X Y}
     (hb : b.IsBilimit) : b.pt ≅ X ⊞ Y where

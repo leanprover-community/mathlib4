@@ -30,7 +30,7 @@ section
 variable (T)
 
 /-- The arrow category of `T` has as objects all morphisms in `T` and as morphisms commutative
-     squares in `T`. -/
+squares in `T`. -/
 def Arrow :=
   Comma.{v, v, v} (𝟭 T) (𝟭 T)
 -- The `Category` instance should be constructed by a deriving handler.
@@ -293,11 +293,13 @@ variable {C : Type u} [Category.{v} C]
 
 /-- A helper construction: given a square between `i` and `f ≫ g`, produce a square between
 `i` and `g`, whose top leg uses `f`:
+```
 A  → X
      ↓f
 ↓i   Y             --> A → Y
      ↓g                ↓i  ↓g
 B  → Z                 B → Z
+```
 -/
 @[simps]
 def squareToSnd {X Y Z : C} {i : Arrow C} {f : X ⟶ Y} {g : Y ⟶ Z} (sq : i ⟶ Arrow.mk (f ≫ g)) :
