@@ -359,7 +359,7 @@ theorem hasSum_L_function_mod_four_eval_three :
     left
     congr 1
     ring
-  · have : (1 / 4 : ℝ) = (algebraMap ℚ ℝ) (1 / 4 : ℚ) := by norm_num
+  · have : (1 / 4 : ℝ) = (algebraMap ℚ ℝ) (1 / 4 : ℚ) := by simp
     rw [this, mul_pow, Polynomial.eval_map, Polynomial.eval₂_at_apply, (by decide : 2 * 1 + 1 = 3),
       Polynomial.bernoulli_three_eval_one_quarter]
     norm_num [Nat.factorial]; field_simp; ring
