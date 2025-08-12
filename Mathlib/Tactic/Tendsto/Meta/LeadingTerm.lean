@@ -31,7 +31,9 @@ partial def getLeadingTerm {basis : Q(Basis)} (ms : Q(PreMS $basis)) : MetaM Q(T
       | _ =>
         dbg_trace "Unexpected pre in getLeadingTerm"
         return q(⟨Term.coef (PreMS.leadingTerm $coef), $exp :: Term.exps (PreMS.leadingTerm $coef)⟩)
-    | _ => throwError "Unexpected ms in getLeadingTerm"
+    | _ =>
+      -- throwError f!"Unexpected ms in getLeadingTerm: {← ppExpr ms}"
+      return q(PreMS.leadingTerm $ms)
   | _ => panic! "Unexpected basis in getLeadingTerm"
 
 def getLeadingTermWithProof {basis : Q(Basis)} (ms : Q(PreMS $basis)) :

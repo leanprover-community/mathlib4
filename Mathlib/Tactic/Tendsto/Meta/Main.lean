@@ -174,7 +174,7 @@ def computeTendsto (f : Q(ℝ → ℝ)) :
   | .lam _ _ b _ =>
     let ms ← createMS b
     -- dbg_trace f!"ms created: {← ppExpr ms.val}"
-    let ⟨ms_trimmed, h_trimmed⟩ ← trimPartialMS ms
+    let ⟨ms_trimmed, h_trimmed?⟩ ← trimPartialMS ms
     -- dbg_trace "trimmed"
     let hf_eq ← mkFreshExprMVarQ q($ms.f = $f)
     hf_eq.mvarId!.applyRfl
@@ -186,24 +186,26 @@ def computeTendsto (f : Q(ℝ → ℝ)) :
     | ~q(PreMS.nil) =>
       pure (q(PreMS.nil_tendsto_zero $ms_trimmed.h_approx) : Expr)
     | ~q(PreMS.cons $hd $tl) =>
+      -- dbg_trace f!"before : {← ppExpr ms_trimmed.val}"
       let ⟨leading, h_leading_eq⟩ ← getLeadingTermWithProof ms_trimmed.val
+      -- dbg_trace "after"
       let ~q(⟨$coef, $exps⟩) := leading | panic! "Unexpected leading in computeTendsto"
       let h_tendsto ← match ← getFirstIs exps with
       | .pos h_exps =>
         match ← compareReal coef with
         | .neg h_coef =>
           pure (q(PreMS.tendsto_bot_of_FirstIsPos $ms_trimmed.h_wo $ms_trimmed.h_approx
-            $h_trimmed.get! $ms_trimmed.h_basis $h_leading_eq $h_exps $h_coef) : Expr)
+            $h_trimmed?.get! $ms_trimmed.h_basis $h_leading_eq $h_exps $h_coef) : Expr)
         | .pos h_coef =>
           pure (q(PreMS.tendsto_top_of_FirstIsPos $ms_trimmed.h_wo $ms_trimmed.h_approx
-            $h_trimmed.get! $ms_trimmed.h_basis $h_leading_eq $h_exps $h_coef) : Expr)
+            $h_trimmed?.get! $ms_trimmed.h_basis $h_leading_eq $h_exps $h_coef) : Expr)
         | .zero _ => panic! "Unexpected zero coef with FirstIsPos"
       | .neg h_exps =>
         pure (q(PreMS.tendsto_zero_of_FirstIsNeg $ms_trimmed.h_wo $ms_trimmed.h_approx
           $h_leading_eq $h_exps) : Expr)
       | .zero h_exps =>
         pure (q(PreMS.tendsto_const_of_AllZero $ms_trimmed.h_wo $ms_trimmed.h_approx
-          $h_trimmed.get! $ms_trimmed.h_basis $h_leading_eq $h_exps) : Expr)
+          $h_trimmed?.get! $ms_trimmed.h_basis $h_leading_eq $h_exps) : Expr)
     | _ => panic! "Unexpected result of trimMS"
 
     let ⟨0, t, h_tendsto⟩ ← inferTypeQ h_tendsto

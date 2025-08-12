@@ -237,9 +237,21 @@ lemma lol :
     Tendsto f (𝓝[>] 0) (𝓝 (-1/2)) := by
   compute_asymptotics
 
+#print axioms lol
+
 example :
     let f := fun (y : ℝ) ↦ (y * Real.log y) / y;
     Tendsto f atTop atTop := by
+  compute_asymptotics
+
+example :
+    let f := fun (y : ℝ) ↦ (Real.log y)^(1/2 : ℝ);
+    Tendsto f atTop atTop := by
+  compute_asymptotics
+
+example :
+    let f := fun (y : ℝ) ↦ Real.log y / y^(1/2 : ℝ);
+    Tendsto f atTop (𝓝 0) := by
   compute_asymptotics
 
 --- end log testing
