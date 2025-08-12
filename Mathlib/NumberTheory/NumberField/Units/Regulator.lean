@@ -90,9 +90,9 @@ theorem span_basisOfIsMaxRank {u : Fin (rank K) → (𝓞 K)ˣ} (hu : IsMaxRank 
 theorem finiteIndex_iff_sup_torsion_finiteIndex (s : Subgroup (𝓞 K)ˣ) :
     s.FiniteIndex ↔ (s ⊔ torsion K).FiniteIndex := by
   refine ⟨fun h ↦ Subgroup.finiteIndex_of_le le_sup_left, fun h ↦ ?_⟩
-  rw [Subgroup.finiteIndex_iff, ← Subgroup.relindex_mul_index (le_sup_left : s ≤ s ⊔ torsion K)]
+  rw [Subgroup.finiteIndex_iff, ← Subgroup.relIndex_mul_index (le_sup_left : s ≤ s ⊔ torsion K)]
   refine Nat.mul_ne_zero ?_ (Subgroup.finiteIndex_iff.mp h)
-  rw [Subgroup.relindex_sup_left]
+  rw [Subgroup.relIndex_sup_left]
   exact Subgroup.FiniteIndex.index_ne_zero
 
 open Subgroup in
