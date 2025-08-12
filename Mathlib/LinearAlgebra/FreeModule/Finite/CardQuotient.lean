@@ -107,6 +107,9 @@ theorem AddSubgroup.relIndex_eq_natAbs_det {E : Type*} [AddCommGroup E]
   rw [relIndex, index_eq_natAbs_det b₂ _ (b₁.map (addSubgroupOfEquivOfLe H).toIntLinearEquiv.symm)]
   rfl
 
+@[deprecated (since := "2025-08-12")]
+alias AddSubgroup.relindex_eq_natAbs_det := AddSubgroup.relIndex_eq_natAbs_det
+
 theorem AddSubgroup.relIndex_eq_abs_det {E : Type*} [AddCommGroup E] [Module ℚ E]
     (L₁ L₂ : AddSubgroup E) (H : L₁ ≤ L₂) {ι : Type*} [DecidableEq ι] [Fintype ι]
     (b₁ b₂ : Basis ι ℚ E) (h₁ : L₁ = .closure (Set.range b₁)) (h₂ : L₂ = .closure (Set.range b₂)) :
@@ -117,5 +120,8 @@ theorem AddSubgroup.relIndex_eq_abs_det {E : Type*} [AddCommGroup E] [Module ℚ
   rw [Basis.det_apply, Basis.det_apply, RingHom.map_det]
   congr; ext
   simp [Basis.toMatrix_apply]
+
+@[deprecated (since := "2025-08-12")]
+alias AddSubgroup.relindex_eq_abs_det := AddSubgroup.relIndex_eq_abs_det
 
 end AddSubgroup
