@@ -240,7 +240,7 @@ theorem coe_le_iff {x : WithZero α} : (a : WithZero α) ≤ x ↔ ∃ b : α, x
   lift b to α using id hb
   simp
 
-instance mulLeftMono [Mul α] [MulLeftMono α] :
+instance instMulLeftMono [Mul α] [MulLeftMono α] :
     MulLeftMono (WithZero α) := by
   refine ⟨fun a b c hbc => ?_⟩
   induction a; · exact zero_le _
