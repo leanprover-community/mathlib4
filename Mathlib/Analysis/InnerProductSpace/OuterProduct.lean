@@ -97,7 +97,20 @@ lemma isSelfAdjoint_rankOne_add (x y : V) :
     IsSelfAdjoint (rankOne 𝕜 x y + rankOne 𝕜 y x) :=
   (adjoint_rankOne (𝕜 := 𝕜) y x) ▸ IsSelfAdjoint.star_add_self _
 
-omit [CompleteSpace V] [CompleteSpace W]
+omit [CompleteSpace V]
+
+lemma rankOne_comp (x : V) (y : W) (f : W →L[𝕜] W) :
+    rankOne 𝕜 x y ∘L f = rankOne 𝕜 x (adjoint f y) := by
+  ext z
+  simp [adjoint_inner_left]
+
+omit [CompleteSpace W]
+
+lemma comp_rankOne (x : V) (y : W) (f : V →L[𝕜] V) :
+    f ∘L rankOne 𝕜 x y = rankOne 𝕜 (f x) y := by
+  ext z
+  simp
+
 variable {ι : Type*} [Fintype ι]
 
 lemma sum_rankOne_OrthonormalBasis (b : OrthonormalBasis ι 𝕜 V) :
