@@ -851,19 +851,18 @@ end Abs
 
 section Star
 
-variable {R : Type*} [TopologicalSpace R] [Star R] [ContinuousStar R]
+variable {R : Type*} [TopologicalSpace R]
 
-instance : Star (α →ₘ[μ] R) where
+instance [Star R] [ContinuousStar R] : Star (α →ₘ[μ] R) where
   star f := (AEEqFun.comp _ continuous_star f)
 
-lemma coeFn_star (f : α →ₘ[μ] R) : ↑(star f) =ᵐ[μ] (star f : α → R) :=
+lemma coeFn_star [Star R] [ContinuousStar R] (f : α →ₘ[μ] R) : ↑(star f) =ᵐ[μ] (star f : α → R) :=
    coeFn_comp _ (continuous_star) f
 
-instance : InvolutiveStar (α →ₘ[μ] R) where
+instance [InvolutiveStar R] [ContinuousStar R] : InvolutiveStar (α →ₘ[μ] R) where
   star_involutive f := by
-    ext
-    filter_upwards [AEEqFun.coeFn_star (star f), AEEqFun.coeFn_star f] with x hx hy
-    simp only [hx, Pi.star_apply, hy, star_star]
+    ext; filter_upwards [AEEqFun.coeFn_star (star f), AEEqFun.coeFn_star f] with x hx hy
+    simp [hx, Pi.star_apply, hy, star_star]
 
 end Star
 
