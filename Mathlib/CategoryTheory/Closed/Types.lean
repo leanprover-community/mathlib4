@@ -52,6 +52,7 @@ instance {C : Type v₁} [SmallCategory C] : CartesianClosed (C ⥤ Type v₁) :
 
 -- TODO: once we have `MonoidalClosed` instances for functor categories into general monoidal
 -- closed categories, replace this with that, as it will be a more explicit construction.
+attribute [local instance] uliftCategory in
 /-- This is not a good instance because of the universe levels. Below is the instance where the
 target category is `Type (max u₁ v₁)`. -/
 def cartesianClosedFunctorToTypes {C : Type u₁} [Category.{v₁} C] :
