@@ -507,7 +507,7 @@ lemma Filter.Tendsto.isBigOTVS_one [ContinuousAdd E] [ContinuousSMul 𝕜 E] {x 
     _ ≤ (r : ℝ≥0∞)⁻¹ := by
       apply max_le
       · refine (egauge_le_one _ ha).trans ?_
-        simp [one_le_inv₀ hr₀, hr₁]
+        simp [hr₁]
       · rwa [ENNReal.le_inv_iff_le_inv]
     _ ≤ egauge 𝕜 (ball (0 : 𝕜) _) 1 := by simpa using div_le_egauge_ball 𝕜 r (1 : 𝕜)
 

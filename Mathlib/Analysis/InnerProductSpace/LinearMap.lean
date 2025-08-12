@@ -56,7 +56,7 @@ theorem inner_map_polarization (T : V →ₗ[ℂ] V) (x y : V) :
         4 := by
   simp only [map_add, map_sub, inner_add_left, inner_add_right, LinearMap.map_smul, inner_smul_left,
     inner_smul_right, Complex.conj_I, ← pow_two, Complex.I_sq, inner_sub_left, inner_sub_right,
-    mul_add, ← mul_assoc, mul_neg, neg_neg, sub_neg_eq_add, one_mul, neg_one_mul, mul_sub, sub_sub]
+    mul_add, ← mul_assoc, mul_neg, neg_neg, one_mul, neg_one_mul, mul_sub, sub_sub]
   ring
 
 theorem inner_map_polarization' (T : V →ₗ[ℂ] V) (x y : V) :
@@ -67,7 +67,7 @@ theorem inner_map_polarization' (T : V →ₗ[ℂ] V) (x y : V) :
         4 := by
   simp only [map_add, map_sub, inner_add_left, inner_add_right, LinearMap.map_smul, inner_smul_left,
     inner_smul_right, Complex.conj_I, ← pow_two, Complex.I_sq, inner_sub_left, inner_sub_right,
-    mul_add, ← mul_assoc, mul_neg, neg_neg, sub_neg_eq_add, one_mul, neg_one_mul, mul_sub, sub_sub]
+    mul_add, ← mul_assoc, mul_neg, neg_neg, one_mul, neg_one_mul, mul_sub, sub_sub]
   ring
 
 end Complex_Seminormed
@@ -205,9 +205,6 @@ def innerSLFlip : E →L[𝕜] E →L⋆[𝕜] 𝕜 :=
 theorem innerSLFlip_apply (x y : E) : innerSLFlip 𝕜 x y = ⟪y, x⟫ :=
   rfl
 
-set_option linter.style.maxHeartbeats false in
--- This option was set before the `maxHeartbeats` linter existed and had no comment.
-set_option synthInstance.maxHeartbeats 40000 in
 variable (F) in
 @[simp] lemma innerSL_real_flip : (innerSL ℝ (E := F)).flip = innerSL ℝ (E := F) := by
   ext v w
@@ -249,7 +246,7 @@ variable (𝕜)
 theorem innerSL_apply_norm (x : E) : ‖innerSL 𝕜 x‖ = ‖x‖ := by
   refine
     le_antisymm ((innerSL 𝕜 x).opNorm_le_bound (norm_nonneg _) fun y => norm_inner_le_norm _ _) ?_
-  rcases (norm_nonneg x).eq_or_gt with (h | h)
+  rcases (norm_nonneg x).eq_or_lt' with (h | h)
   · simp [h]
   · refine (mul_le_mul_right h).mp ?_
     calc

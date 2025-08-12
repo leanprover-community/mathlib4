@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Field.Defs
+import Mathlib.Algebra.Ring.GrindInstances
 import Mathlib.Algebra.Ring.Commute
 import Mathlib.Algebra.Ring.Invertible
 import Mathlib.Order.Synonym
@@ -154,6 +155,10 @@ end Semifield
 section Field
 
 variable [Field K]
+
+instance (priority := 100) Field.toGrindField [Field K] : Lean.Grind.Field K :=
+  { CommRing.toGrindCommRing K, ‹Field K› with
+    zero_ne_one := zero_ne_one' K }
 
 attribute [local simp] mul_assoc mul_comm mul_left_comm
 

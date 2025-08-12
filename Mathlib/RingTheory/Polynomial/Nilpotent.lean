@@ -9,7 +9,6 @@ import Mathlib.Algebra.Polynomial.Identities
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.Nilpotent.Basic
 import Mathlib.RingTheory.Nilpotent.Lemmas
-import Mathlib.RingTheory.Polynomial.Tower
 
 /-!
 # Nilpotency in polynomial rings.
@@ -32,7 +31,7 @@ variable [Semiring R] {P : R[X]}
 
 lemma isNilpotent_C_mul_pow_X_of_isNilpotent (n : ℕ) (hnil : IsNilpotent r) :
     IsNilpotent ((C r) * X ^ n) := by
-  refine Commute.isNilpotent_mul_left (commute_X_pow _ _).symm ?_
+  refine Commute.isNilpotent_mul_right (commute_X_pow _ _).symm ?_
   obtain ⟨m, hm⟩ := hnil
   refine ⟨m, ?_⟩
   rw [← C_pow, hm, C_0]
@@ -53,7 +52,7 @@ lemma isNilpotent_pow_X_mul_C_of_isNilpotent (n : ℕ) (hnil : IsNilpotent r) :
 @[simp] lemma isNilpotent_X_mul_iff :
     IsNilpotent (X * P) ↔ IsNilpotent P := by
   refine ⟨fun h ↦ ?_, ?_⟩
-  · rwa [Commute.isNilpotent_mul_right_iff (commute_X P) (by simp)] at h
+  · rwa [Commute.isNilpotent_mul_left_iff (commute_X P) (by simp)] at h
   · rintro ⟨k, hk⟩
     exact ⟨k, by simp [(commute_X P).mul_pow, hk]⟩
 
@@ -90,7 +89,7 @@ protected lemma isNilpotent_iff :
 
 @[simp] lemma isNilpotent_reflect_iff {P : R[X]} {N : ℕ} (hN : P.natDegree ≤ N) :
     IsNilpotent (reflect N P) ↔ IsNilpotent P := by
-  simp only [Polynomial.isNilpotent_iff, coeff_reverse]
+  simp only [Polynomial.isNilpotent_iff]
   refine ⟨fun h i ↦ ?_, fun h i ↦ ?_⟩ <;> rcases le_or_gt i N with hi | hi
   · simpa [tsub_tsub_cancel_of_le hi] using h (N - i)
   · simp [coeff_eq_zero_of_natDegree_lt <| lt_of_le_of_lt hN hi]
@@ -162,7 +161,7 @@ theorem isUnit_iff_coeff_isUnit_isNilpotent :
   have : ∀ i, coeff (C r + X * P) (i + 1) = coeff P i := by simp
   simp_rw [isUnit_iff_coeff_isUnit_isNilpotent, Nat.forall_ne_zero_iff, this]
   simp only [coeff_add, coeff_C_zero, mul_coeff_zero, coeff_X_zero, zero_mul, add_zero,
-    and_congr_right_iff, ← Polynomial.isNilpotent_iff]
+    ← Polynomial.isNilpotent_iff]
 
 lemma isUnit_iff' :
     IsUnit P ↔ IsUnit (eval 0 P) ∧ IsNilpotent (P /ₘ X)  := by
@@ -195,7 +194,7 @@ lemma isNilpotent_aeval_sub_of_isNilpotent_sub (h : IsNilpotent (a - b)) :
     IsNilpotent (aeval a P - aeval b P) := by
   simp only [← eval_map_algebraMap]
   have ⟨c, hc⟩ := evalSubFactor (map (algebraMap R S) P) a b
-  exact hc ▸ (Commute.all _ _).isNilpotent_mul_right h
+  exact hc ▸ (Commute.all _ _).isNilpotent_mul_left h
 
 variable {P}
 

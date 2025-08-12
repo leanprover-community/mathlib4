@@ -23,7 +23,7 @@ Noether's generalization also holds for infinite Galois extensions.
 
 ## Main statements
 
-* `groupCohomology.isMulOneCoboundary_of_isMulOneCocycle_of_aut_to_units`: Noether's generalization
+* `groupCohomology.isMulCoboundary₁_of_isMulCocycle₁_of_aut_to_units`: Noether's generalization
   of Hilbert's Theorem 90: for all $f: Aut_K(L) \to L^\times$ satisfying the 1-cocycle
   condition, there exists `β : Lˣ` such that $g(β)/β = f(g)$ for all `g : Aut_K(L)`.
 * `groupCohomology.H1ofAutOnUnitsUnique`: Noether's generalization of Hilbert's Theorem 90:
@@ -76,9 +76,9 @@ variable {K L : Type*} [Field K] [Field L] [Algebra K L] [FiniteDimensional K L]
 /-- Noether's generalization of Hilbert's Theorem 90: given a finite extension of fields and a
 function `f : Aut_K(L) → Lˣ` satisfying `f(gh) = g(f(h)) * f(g)` for all `g, h : Aut_K(L)`, there
 exists `β : Lˣ` such that `g(β)/β = f(g)` for all `g : Aut_K(L).` -/
-theorem isMulOneCoboundary_of_isMulOneCocycle_of_aut_to_units
-    (f : (L ≃ₐ[K] L) → Lˣ) (hf : IsMulOneCocycle f) :
-    IsMulOneCoboundary f := by
+theorem isMulCoboundary₁_of_isMulCocycle₁_of_aut_to_units
+    (f : (L ≃ₐ[K] L) → Lˣ) (hf : IsMulCocycle₁ f) :
+    IsMulCoboundary₁ f := by
 /- Let `z : L` be such that `∑ f(h) * h(z) ≠ 0`, for `h ∈ Aut_K(L)` -/
   obtain ⟨z, hz⟩ : ∃ z, aux f z ≠ 0 :=
     not_forall.1 (fun H => aux_ne_zero f <| funext <| fun x => H x)
@@ -87,12 +87,16 @@ theorem isMulOneCoboundary_of_isMulOneCocycle_of_aut_to_units
   use (Units.mk0 (aux f z) hz)⁻¹
   intro g
 /- Then the equality follows from the hypothesis that `f` is a 1-cocycle. -/
-  simp only [IsMulOneCocycle, IsMulOneCoboundary, AlgEquiv.smul_units_def,
+  simp only [IsMulCocycle₁, AlgEquiv.smul_units_def,
     map_inv, div_inv_eq_mul, inv_mul_eq_iff_eq_mul, Units.ext_iff, this,
     Units.val_mul, Units.coe_map, Units.val_mk0, MonoidHom.coe_coe] at hf ⊢
   simp_rw [map_sum, map_mul, Finset.sum_mul, mul_assoc, mul_comm _ (f _ : L), ← mul_assoc, ← hf g]
   exact eq_comm.1 (Fintype.sum_bijective (fun i => g * i)
     (Group.mulLeft_bijective g) _ _ (fun i => rfl))
+
+@[deprecated (since := "2025-06-26")]
+alias isMulOneCoboundary_of_isMulOneCocycle_of_aut_to_units :=
+  isMulCoboundary₁_of_isMulCocycle₁_of_aut_to_units
 
 end
 variable (K L : Type) [Field K] [Field L] [Algebra K L] [FiniteDimensional K L]
@@ -101,10 +105,10 @@ variable (K L : Type) [Field K] [Field L] [Algebra K L] [FiniteDimensional K L]
 first group cohomology `H¹(Aut_K(L), Lˣ)` is trivial. -/
 noncomputable instance H1ofAutOnUnitsUnique : Unique (H1 (Rep.ofAlgebraAutOnUnits K L)) where
   default := 0
-  uniq := fun a => Quotient.inductionOn' a fun x => (H1π_eq_zero_iff _).2 <| by
-    refine (oneCoboundariesOfIsMulOneCoboundary ?_).2
-    rcases isMulOneCoboundary_of_isMulOneCocycle_of_aut_to_units x.1
-      (isMulOneCocycle_of_mem_oneCocycles _ x.2) with ⟨β, hβ⟩
+  uniq := fun a => H1_induction_on a fun x => (H1π_eq_zero_iff _).2 <| by
+    refine (coboundariesOfIsMulCoboundary₁ ?_).2
+    rcases isMulCoboundary₁_of_isMulCocycle₁_of_aut_to_units x.1
+      (isMulCocycle₁_of_mem_cocycles₁ _ x.2) with ⟨β, hβ⟩
     use β
 
 end groupCohomology

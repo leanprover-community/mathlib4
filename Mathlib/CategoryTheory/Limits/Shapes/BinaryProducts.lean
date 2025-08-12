@@ -139,7 +139,7 @@ def mapPair : F ⟶ G where
   app
     | ⟨left⟩ => f
     | ⟨right⟩ => g
-  naturality := fun ⟨X⟩ ⟨Y⟩ ⟨⟨u⟩⟩ => by aesop_cat
+  naturality := fun ⟨X⟩ ⟨Y⟩ ⟨⟨u⟩⟩ => by cat_disch
 
 @[simp]
 theorem mapPair_left : (mapPair f g).app ⟨left⟩ = f :=
@@ -156,7 +156,7 @@ def mapPairIso (f : F.obj ⟨left⟩ ≅ G.obj ⟨left⟩) (g : F.obj ⟨right�
   NatIso.ofComponents (fun j ↦ match j with
     | ⟨left⟩ => f
     | ⟨right⟩ => g)
-    (fun ⟨⟨u⟩⟩ => by aesop_cat)
+    (fun ⟨⟨u⟩⟩ => by cat_disch)
 
 end
 
@@ -409,9 +409,9 @@ noncomputable def BinaryFan.isLimitCompLeftIso {X Y X' : C} (c : BinaryFan X Y) 
   · exact fun s => h.lift (BinaryFan.mk (s.fst ≫ inv f) s.snd)
   · intro s -- Porting note: simp timed out here
     simp only [Category.comp_id,BinaryFan.π_app_left,IsIso.inv_hom_id,
-      BinaryFan.mk_fst,IsLimit.fac_assoc,eq_self_iff_true,Category.assoc]
+      BinaryFan.mk_fst,IsLimit.fac_assoc,Category.assoc]
   · intro s -- Porting note: simp timed out here
-    simp only [BinaryFan.π_app_right,BinaryFan.mk_snd,eq_self_iff_true,IsLimit.fac]
+    simp only [BinaryFan.π_app_right,BinaryFan.mk_snd,IsLimit.fac]
   · intro s m e₁ e₂
      -- Porting note: simpa timed out here also
     apply BinaryFan.IsLimit.hom_ext h
@@ -462,11 +462,11 @@ noncomputable def BinaryCofan.isColimitCompLeftIso {X Y X' : C} (c : BinaryCofan
   · exact fun s => h.desc (BinaryCofan.mk (inv f ≫ s.inl) s.inr)
   · intro s
     -- Porting note: simp timed out here too
-    simp only [IsColimit.fac,BinaryCofan.ι_app_left,eq_self_iff_true,
+    simp only [IsColimit.fac,BinaryCofan.ι_app_left,
       Category.assoc,BinaryCofan.mk_inl,IsIso.hom_inv_id_assoc]
   · intro s
     -- Porting note: simp timed out here too
-    simp only [IsColimit.fac,BinaryCofan.ι_app_right,eq_self_iff_true,BinaryCofan.mk_inr]
+    simp only [IsColimit.fac,BinaryCofan.ι_app_right,BinaryCofan.mk_inr]
   · intro s m e₁ e₂
     apply BinaryCofan.IsColimit.hom_ext h
     · rw [← cancel_epi f]
@@ -489,13 +489,11 @@ abbrev HasBinaryProduct (X Y : C) :=
 abbrev HasBinaryCoproduct (X Y : C) :=
   HasColimit (pair X Y)
 
-/-- If we have a product of `X` and `Y`, we can access it using `prod X Y` or
-    `X ⨯ Y`. -/
+/-- If we have a product of `X` and `Y`, we can access it using `prod X Y` or `X ⨯ Y`. -/
 noncomputable abbrev prod (X Y : C) [HasBinaryProduct X Y] :=
   limit (pair X Y)
 
-/-- If we have a coproduct of `X` and `Y`, we can access it using `coprod X Y` or
-    `X ⨿ Y`. -/
+/-- If we have a coproduct of `X` and `Y`, we can access it using `coprod X Y` or `X ⨿ Y`. -/
 noncomputable abbrev coprod (X Y : C) [HasBinaryCoproduct X Y] :=
   colimit (pair X Y)
 
@@ -550,7 +548,7 @@ theorem coprod.hom_ext {W X Y : C} [HasBinaryCoproduct X Y] {f g : X ⨿ Y ⟶ W
   BinaryCofan.IsColimit.hom_ext (colimit.isColimit _) h₁ h₂
 
 /-- If the product of `X` and `Y` exists, then every pair of morphisms `f : W ⟶ X` and `g : W ⟶ Y`
-    induces a morphism `prod.lift f g : W ⟶ X ⨯ Y`. -/
+induces a morphism `prod.lift f g : W ⟶ X ⨯ Y`. -/
 noncomputable abbrev prod.lift {W X Y : C} [HasBinaryProduct X Y]
     (f : W ⟶ X) (g : W ⟶ Y) : W ⟶ X ⨯ Y :=
   limit.lift _ (BinaryFan.mk f g)
@@ -560,7 +558,7 @@ noncomputable abbrev diag (X : C) [HasBinaryProduct X X] : X ⟶ X ⨯ X :=
   prod.lift (𝟙 _) (𝟙 _)
 
 /-- If the coproduct of `X` and `Y` exists, then every pair of morphisms `f : X ⟶ W` and
-    `g : Y ⟶ W` induces a morphism `coprod.desc f g : X ⨿ Y ⟶ W`. -/
+`g : Y ⟶ W` induces a morphism `coprod.desc f g : X ⨿ Y ⟶ W`. -/
 noncomputable abbrev coprod.desc {W X Y : C} [HasBinaryCoproduct X Y]
     (f : X ⟶ W) (g : Y ⟶ W) : X ⨿ Y ⟶ W :=
   colimit.desc _ (BinaryCofan.mk f g)
@@ -606,26 +604,26 @@ instance coprod.epi_desc_of_epi_right {W X Y : C} [HasBinaryCoproduct X Y] (f : 
   epi_of_epi_fac <| coprod.inr_desc _ _
 
 /-- If the product of `X` and `Y` exists, then every pair of morphisms `f : W ⟶ X` and `g : W ⟶ Y`
-    induces a morphism `l : W ⟶ X ⨯ Y` satisfying `l ≫ Prod.fst = f` and `l ≫ Prod.snd = g`. -/
+induces a morphism `l : W ⟶ X ⨯ Y` satisfying `l ≫ Prod.fst = f` and `l ≫ Prod.snd = g`. -/
 noncomputable def prod.lift' {W X Y : C} [HasBinaryProduct X Y] (f : W ⟶ X) (g : W ⟶ Y) :
     { l : W ⟶ X ⨯ Y // l ≫ prod.fst = f ∧ l ≫ prod.snd = g } :=
   ⟨prod.lift f g, prod.lift_fst _ _, prod.lift_snd _ _⟩
 
 /-- If the coproduct of `X` and `Y` exists, then every pair of morphisms `f : X ⟶ W` and
-    `g : Y ⟶ W` induces a morphism `l : X ⨿ Y ⟶ W` satisfying `coprod.inl ≫ l = f` and
-    `coprod.inr ≫ l = g`. -/
+`g : Y ⟶ W` induces a morphism `l : X ⨿ Y ⟶ W` satisfying `coprod.inl ≫ l = f` and
+`coprod.inr ≫ l = g`. -/
 noncomputable def coprod.desc' {W X Y : C} [HasBinaryCoproduct X Y] (f : X ⟶ W) (g : Y ⟶ W) :
     { l : X ⨿ Y ⟶ W // coprod.inl ≫ l = f ∧ coprod.inr ≫ l = g } :=
   ⟨coprod.desc f g, coprod.inl_desc _ _, coprod.inr_desc _ _⟩
 
 /-- If the products `W ⨯ X` and `Y ⨯ Z` exist, then every pair of morphisms `f : W ⟶ Y` and
-    `g : X ⟶ Z` induces a morphism `prod.map f g : W ⨯ X ⟶ Y ⨯ Z`. -/
+`g : X ⟶ Z` induces a morphism `prod.map f g : W ⨯ X ⟶ Y ⨯ Z`. -/
 noncomputable def prod.map {W X Y Z : C} [HasBinaryProduct W X] [HasBinaryProduct Y Z]
     (f : W ⟶ Y) (g : X ⟶ Z) : W ⨯ X ⟶ Y ⨯ Z :=
   limMap (mapPair f g)
 
 /-- If the coproducts `W ⨿ X` and `Y ⨿ Z` exist, then every pair of morphisms `f : W ⟶ Y` and
-    `g : W ⟶ Z` induces a morphism `coprod.map f g : W ⨿ X ⟶ Y ⨿ Z`. -/
+`g : W ⟶ Z` induces a morphism `coprod.map f g : W ⨿ X ⟶ Y ⨿ Z`. -/
 noncomputable def coprod.map {W X Y Z : C} [HasBinaryCoproduct W X] [HasBinaryCoproduct Y Z]
     (f : W ⟶ Y) (g : X ⟶ Z) : W ⨿ X ⟶ Y ⨿ Z :=
   colimMap (mapPair f g)
@@ -694,7 +692,7 @@ theorem prod.map_id_comp {X Y Z W : C} (f : X ⟶ Y) (g : Y ⟶ Z) [HasBinaryPro
     prod.map (𝟙 W) (f ≫ g) = prod.map (𝟙 W) f ≫ prod.map (𝟙 W) g := by simp
 
 /-- If the products `W ⨯ X` and `Y ⨯ Z` exist, then every pair of isomorphisms `f : W ≅ Y` and
-    `g : X ≅ Z` induces an isomorphism `prod.mapIso f g : W ⨯ X ≅ Y ⨯ Z`. -/
+`g : X ≅ Z` induces an isomorphism `prod.mapIso f g : W ⨯ X ≅ Y ⨯ Z`. -/
 @[simps]
 def prod.mapIso {W X Y Z : C} [HasBinaryProduct W X] [HasBinaryProduct Y Z] (f : W ≅ Y)
     (g : X ≅ Z) : W ⨯ X ≅ Y ⨯ Z where
@@ -799,7 +797,7 @@ theorem coprod.map_id_comp {X Y Z W : C} (f : X ⟶ Y) (g : Y ⟶ Z) [HasBinaryC
     coprod.map (𝟙 W) (f ≫ g) = coprod.map (𝟙 W) f ≫ coprod.map (𝟙 W) g := by simp
 
 /-- If the coproducts `W ⨿ X` and `Y ⨿ Z` exist, then every pair of isomorphisms `f : W ≅ Y` and
-   `g : W ≅ Z` induces an isomorphism `coprod.mapIso f g : W ⨿ X ≅ Y ⨿ Z`. -/
+`g : W ≅ Z` induces an isomorphism `coprod.mapIso f g : W ⨿ X ≅ Y ⨿ Z`. -/
 @[simps]
 def coprod.mapIso {W X Y Z : C} [HasBinaryCoproduct W X] [HasBinaryCoproduct Y Z] (f : W ≅ Y)
     (g : X ≅ Z) : W ⨿ X ≅ Y ⨿ Z where
@@ -1179,11 +1177,11 @@ def coprodComparisonNatTrans [HasBinaryCoproducts C] [HasBinaryCoproducts D] (F 
 
 @[reassoc]
 theorem map_inl_inv_coprodComparison [IsIso (coprodComparison F A B)] :
-    F.map coprod.inl ≫ inv (coprodComparison F A B) = coprod.inl := by simp [IsIso.inv_comp_eq]
+    F.map coprod.inl ≫ inv (coprodComparison F A B) = coprod.inl := by simp
 
 @[reassoc]
 theorem map_inr_inv_coprodComparison [IsIso (coprodComparison F A B)] :
-    F.map coprod.inr ≫ inv (coprodComparison F A B) = coprod.inr := by simp [IsIso.inv_comp_eq]
+    F.map coprod.inr ≫ inv (coprodComparison F A B) = coprod.inr := by simp
 
 /-- If the coproduct comparison morphism is an iso, its inverse is natural. -/
 @[reassoc]

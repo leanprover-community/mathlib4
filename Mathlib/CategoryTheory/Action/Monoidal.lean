@@ -42,12 +42,12 @@ instance instMonoidalCategory : MonoidalCategory (Action V G) :=
 
 @[simp]
 theorem tensorUnit_ρ {g : G} :
-    @DFunLike.coe (G →* End (𝟙_ V)) _ _ _ (𝟙_ (Action V G)).ρ g = 𝟙 (𝟙_ V) := by
+    @DFunLike.coe (G →* End (𝟙_ V)) _ _ _ (𝟙_ (Action V G)).ρ g = 𝟙 (𝟙_ V) :=
   rfl
 
 @[simp]
 theorem tensor_ρ {X Y : Action V G} {g : G} :
-    @DFunLike.coe (G →* End (X.V ⊗ Y.V)) _ _ _ (X ⊗ Y).ρ g = X.ρ g ⊗ Y.ρ g :=
+    @DFunLike.coe (G →* End (X.V ⊗ Y.V)) _ _ _ (X ⊗ Y).ρ g = X.ρ g ⊗ₘ Y.ρ g :=
   rfl
 
 /-- Given an object `X` isomorphic to the tensor unit of `V`, `X` equipped with the trivial action
@@ -79,8 +79,7 @@ section
 variable [BraidedCategory V]
 
 instance : BraidedCategory (Action V G) :=
-  braidedCategoryOfFaithful (Action.forget V G) (fun X Y => mkIso (β_ _ _)
-    (fun g => by simp [FunctorCategoryEquivalence.inverse])) (by simp)
+  .ofFaithful (Action.forget V G) fun X Y ↦ mkIso (β_ _ _) fun g ↦ by simp
 
 @[simp]
 theorem β_hom_hom {X Y : Action V G} : (β_ X Y).hom.hom = (β_ X.V Y.V).hom := rfl
@@ -255,7 +254,7 @@ theorem diagonalSuccIsoTensorTrivial_hom_hom_apply {n : ℕ} (f : Fin (n + 1) �
     <;> simp_all only [tensorObj_V, diagonalSuccIsoTensorTrivial, Iso.trans_hom, tensorIso_hom,
       Iso.refl_hom, id_tensorHom, comp_hom, whiskerLeft_hom, types_comp_apply, whiskerLeft_apply,
       leftRegularTensorIso_hom_hom, tensor_ρ, tensor_apply, ofMulAction_apply]
-    <;> simp [ofMulAction_V, types_tensorObj_def, Fin.tail, Fin.castSucc_fin_succ]
+    <;> simp [ofMulAction_V, types_tensorObj_def, Fin.tail]
 
 @[simp]
 theorem diagonalSuccIsoTensorTrivial_inv_hom_apply {n : ℕ} (g : G) (f : Fin n → G) :
@@ -267,7 +266,7 @@ theorem diagonalSuccIsoTensorTrivial_inv_hom_apply {n : ℕ} (g : G) (f : Fin n 
       ofMulAction_V]
   · funext x
     induction' x using Fin.cases
-    <;> simp_all only [diagonalSuccIsoTensorTrivial, Iso.trans_inv, comp_hom, mkIso_inv_hom,
+    <;> simp_all only [diagonalSuccIsoTensorTrivial, Iso.trans_inv, comp_hom,
         tensorObj_V, types_comp_apply, leftRegularTensorIso_inv_hom, tensor_ρ, tensor_apply,
         ofMulAction_apply]
     <;> simp_all [types_tensorObj_def, mul_assoc, Fin.partialProd_succ', ofMulAction_V]

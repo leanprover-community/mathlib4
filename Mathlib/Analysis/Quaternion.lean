@@ -147,8 +147,7 @@ def ofComplex : ℂ →ₐ[ℝ] ℍ where
 theorem coe_ofComplex : ⇑ofComplex = coeComplex := rfl
 
 /-- The norm of the components as a euclidean vector equals the norm of the quaternion. -/
-theorem norm_piLp_equiv_symm_equivTuple (x : ℍ) :
-    ‖(WithLp.equiv 2 (Fin 4 → _)).symm (equivTuple ℝ x)‖ = ‖x‖ := by
+lemma norm_toLp_equivTuple (x : ℍ) : ‖WithLp.toLp 2 (equivTuple ℝ x)‖ = ‖x‖ := by
   rw [norm_eq_sqrt_real_inner, norm_eq_sqrt_real_inner, inner_self, normSq_def', PiLp.inner_apply,
     Fin.sum_univ_four]
   simp_rw [RCLike.inner_apply, starRingEnd_apply, star_trivial, ← sq]
@@ -161,7 +160,7 @@ noncomputable def linearIsometryEquivTuple : ℍ ≃ₗᵢ[ℝ] EuclideanSpace �
       (WithLp.linearEquiv 2 ℝ (Fin 4 → ℝ)).symm with
     toFun := fun a => !₂[a.1, a.2, a.3, a.4]
     invFun := fun a => ⟨a 0, a 1, a 2, a 3⟩
-    norm_map' := norm_piLp_equiv_symm_equivTuple }
+    norm_map' := norm_toLp_equivTuple }
 
 @[continuity]
 theorem continuous_coe : Continuous (coe : ℝ → ℍ) :=

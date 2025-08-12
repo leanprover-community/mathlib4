@@ -3,9 +3,9 @@ Copyright (c) 2024 Brendan Murphy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Brendan Murphy
 -/
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-import Mathlib.LinearAlgebra.TensorProduct.Quotient
 import Mathlib.LinearAlgebra.DFinsupp
+import Mathlib.LinearAlgebra.TensorProduct.Quotient
+import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 
 /-!
 # Reducing a module modulo an element of the ring
@@ -35,22 +35,27 @@ namespace QuotSMulTop
 
 open Submodule Function TensorProduct
 
+/-- If `M'` is isomorphic to `M''` as `R`-modules, then `M'⧸rM'` is isomorphic to `M''⧸rM''`. -/
+protected def congr (e : M' ≃ₗ[R] M'') : QuotSMulTop r M' ≃ₗ[R] QuotSMulTop r M'' :=
+  Submodule.Quotient.equiv (r • ⊤) (r • ⊤) e <|
+    (Submodule.map_pointwise_smul r _ e.toLinearMap).trans (by simp)
+
 /-- Reducing a module modulo `r` is the same as left tensoring with `R/(r)`. -/
 noncomputable def equivQuotTensor :
     QuotSMulTop r M ≃ₗ[R] (R ⧸ Ideal.span {r}) ⊗[R] M :=
   quotEquivOfEq _ _ (ideal_span_singleton_smul _ _).symm ≪≫ₗ
-   (quotTensorEquivQuotSMul M _).symm
+    (quotTensorEquivQuotSMul M _).symm
 
 /-- Reducing a module modulo `r` is the same as right tensoring with `R/(r)`. -/
 noncomputable def equivTensorQuot :
     QuotSMulTop r M ≃ₗ[R] M ⊗[R] (R ⧸ Ideal.span {r}) :=
   quotEquivOfEq _ _ (ideal_span_singleton_smul _ _).symm ≪≫ₗ
-   (tensorQuotEquivQuotSMul M _).symm
+    (tensorQuotEquivQuotSMul M _).symm
 
 variable {M}
 
 /-- The action of the functor `QuotSMulTop r` on morphisms. -/
-def map : (M →ₗ[R] M') →ₗ[R] QuotSMulTop r M →ₗ[R] QuotSMulTop r M'  :=
+def map : (M →ₗ[R] M') →ₗ[R] QuotSMulTop r M →ₗ[R] QuotSMulTop r M' :=
   Submodule.mapQLinear _ _ ∘ₗ LinearMap.id.codRestrict _ fun _ =>
     map_le_iff_le_comap.mp <| le_of_eq_of_le (map_pointwise_smul _ _ _) <|
       smul_mono_right r le_top
@@ -126,5 +131,13 @@ noncomputable def quotSMulTopTensorEquivQuotSMulTop :
   (equivQuotTensor r M').rTensor M ≪≫ₗ
     TensorProduct.assoc R (R ⧸ Ideal.span {r}) M' M ≪≫ₗ
       (equivQuotTensor r (M' ⊗[R] M)).symm
+
+/-- Let `R` be a commutative ring, `M` be an `R`-module, `S` be an `R`-algebra, then
+  `S ⊗[R] (M/rM)` is isomorphic to `(S ⊗[R] M)⧸r(S ⊗[R] M)` as `S`-modules. -/
+noncomputable def algebraMapTensorEquivTensorQuotSMulTop (S : Type*) [CommRing S] [Algebra R S] :
+    QuotSMulTop ((algebraMap R S) r) (S ⊗[R] M) ≃ₗ[S] S ⊗[R] QuotSMulTop r M :=
+  Submodule.quotEquivOfEq _ _ (by simp [Ideal.map_span, ideal_span_singleton_smul]) ≪≫ₗ
+    tensorQuotMapSMulEquivTensorQuot M S (Ideal.span {r}) ≪≫ₗ
+      (Submodule.quotEquivOfEq _ _ (ideal_span_singleton_smul r _)).baseChange R S _ _
 
 end QuotSMulTop

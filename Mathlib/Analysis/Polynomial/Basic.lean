@@ -119,12 +119,12 @@ theorem isEquivalent_atTop_div :
   refine
     (P.isEquivalent_atTop_lead.symm.div Q.isEquivalent_atTop_lead.symm).symm.trans
       (EventuallyEq.isEquivalent ((eventually_gt_atTop 0).mono fun x hx => ?_))
-  simp [← div_mul_div_comm, hP, hQ, zpow_sub₀ hx.ne.symm]
+  simp [← div_mul_div_comm, zpow_sub₀ hx.ne.symm]
 
 theorem div_tendsto_zero_of_degree_lt (hdeg : P.degree < Q.degree) :
     Tendsto (fun x => eval x P / eval x Q) atTop (𝓝 0) := by
   by_cases hP : P = 0
-  · simp [hP, tendsto_const_nhds]
+  · simp [hP]
   rw [← natDegree_lt_natDegree_iff hP] at hdeg
   refine (isEquivalent_atTop_div P Q).symm.tendsto_nhds ?_
   rw [← mul_zero]
@@ -151,7 +151,7 @@ theorem div_tendsto_leadingCoeff_div_of_degree_eq (hdeg : P.degree = Q.degree) :
     Tendsto (fun x => eval x P / eval x Q) atTop (𝓝 <| P.leadingCoeff / Q.leadingCoeff) := by
   refine (isEquivalent_atTop_div P Q).symm.tendsto_nhds ?_
   rw [show (P.natDegree : ℤ) = Q.natDegree by simp [hdeg, natDegree]]
-  simp [tendsto_const_nhds]
+  simp
 
 theorem div_tendsto_atTop_of_degree_gt' (hdeg : Q.degree < P.degree)
     (hpos : 0 < P.leadingCoeff / Q.leadingCoeff) :

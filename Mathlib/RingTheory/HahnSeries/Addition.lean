@@ -3,8 +3,10 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
+import Mathlib.Algebra.Group.Support
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Module.LinearMap.Defs
+import Mathlib.Data.Finsupp.SMul
 import Mathlib.RingTheory.HahnSeries.Basic
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Tactic.FastInstance
@@ -151,9 +153,9 @@ lemma addOppositeEquiv_symm_support (x : (HahnSeries Γ R)ᵃᵒᵖ) :
 lemma addOppositeEquiv_orderTop (x : HahnSeries Γ (Rᵃᵒᵖ)) :
     (addOppositeEquiv x).unop.orderTop = x.orderTop := by
   classical
-  simp only [orderTop, AddOpposite.unop_op, mk_eq_zero, EmbeddingLike.map_eq_zero_iff,
-    addOppositeEquiv_support, ne_eq]
-  simp only [addOppositeEquiv_apply, AddOpposite.unop_op, mk_eq_zero, coeff_zero]
+  simp only [orderTop,
+    addOppositeEquiv_support]
+  simp only [addOppositeEquiv_apply, AddOpposite.unop_op, mk_eq_zero]
   simp_rw [HahnSeries.ext_iff, funext_iff]
   simp only [Pi.zero_apply, AddOpposite.unop_eq_zero_iff, coeff_zero]
 
@@ -166,9 +168,9 @@ lemma addOppositeEquiv_symm_orderTop (x : (HahnSeries Γ R)ᵃᵒᵖ) :
 lemma addOppositeEquiv_leadingCoeff (x : HahnSeries Γ (Rᵃᵒᵖ)) :
     (addOppositeEquiv x).unop.leadingCoeff = x.leadingCoeff.unop := by
   classical
-  simp only [leadingCoeff, AddOpposite.unop_op, mk_eq_zero, EmbeddingLike.map_eq_zero_iff,
-    addOppositeEquiv_support, ne_eq]
-  simp only [addOppositeEquiv_apply, AddOpposite.unop_op, mk_eq_zero, coeff_zero]
+  simp only [leadingCoeff,
+    addOppositeEquiv_support]
+  simp only [addOppositeEquiv_apply, AddOpposite.unop_op, mk_eq_zero]
   simp_rw [HahnSeries.ext_iff, funext_iff]
   simp only [Pi.zero_apply, AddOpposite.unop_eq_zero_iff, coeff_zero]
   split <;> rfl
@@ -261,7 +263,7 @@ theorem coeff_order_of_eq_add_single {R} [AddCancelCommMonoid R] [Zero Γ] {x y 
     nth_rw 1 [hxy, coeff_add]
   have hxx :
       (single x.order x.leadingCoeff).coeff xo = (single x.order x.leadingCoeff).leadingCoeff := by
-    simp [leadingCoeff_of_single, coeff_single, this]
+    simp [leadingCoeff_of_single, this]
   rw [← (leadingCoeff_of_ne h), hxx, leadingCoeff_of_single, right_eq_add, this] at hx
   exact hx
 
@@ -343,7 +345,7 @@ instance : Neg (HahnSeries Γ R) where
   neg x :=
     { coeff := fun a => -x.coeff a
       isPWO_support' := by
-        rw [Function.support_neg]
+        rw [Function.support_fun_neg]
         exact x.isPWO_support }
 
 @[simp]
@@ -505,6 +507,26 @@ def coeff.linearMap (g : Γ) : HahnSeries Γ V →ₗ[R] V :=
 protected lemma map_smul [AddCommMonoid U] [Module R U] (f : U →ₗ[R] V) {r : R}
     {x : HahnSeries Γ U} : (r • x).map f = r • ((x.map f) : HahnSeries Γ V) := by
   ext; simp
+
+section Finsupp
+
+variable (R) in
+/-- `ofFinsupp` as a linear map. -/
+def ofFinsuppLinearMap : (Γ →₀ V) →ₗ[R] HahnSeries Γ V where
+  toFun := ofFinsupp
+  map_add' _ _ := by
+    ext
+    simp
+  map_smul' _ _ := by
+    ext
+    simp
+
+variable (R) in
+@[simp]
+theorem coeff_ofFinsuppLinearMap (f : Γ →₀ V) (a : Γ) :
+    (ofFinsuppLinearMap R f).coeff a = f a := rfl
+
+end Finsupp
 
 section Domain
 

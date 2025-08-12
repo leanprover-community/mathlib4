@@ -255,7 +255,7 @@ def const (ι) [Finite ι] (x : HahnSeries Γ R) : SummableFamily Γ R ι where
 @[simp]
 theorem hsum_unique {ι} [Unique ι] (x : SummableFamily Γ R ι) : x.hsum = x default := by
   ext g
-  simp only [coeff_hsum, const_toFun, finsum_unique]
+  simp only [coeff_hsum, finsum_unique]
 
 /-- A summable family induced by an equivalence of the parametrizing type. -/
 @[simps]
@@ -391,7 +391,7 @@ theorem finite_co_support_prod_smul (s : SummableFamily Γ R α)
   apply ((VAddAntidiagonal s.isPWO_iUnion_support t.isPWO_iUnion_support g).finite_toSet.biUnion'
     (fun gh _ => smul_support_finite s t gh)).subset _
   exact fun ab hab => by
-    simp only [coeff_smul, ne_eq, Set.mem_setOf_eq] at hab
+    simp only [ne_eq, Set.mem_setOf_eq] at hab
     obtain ⟨ij, hij⟩ := Finset.exists_ne_zero_of_sum_ne_zero hab
     simp only [mem_coe, mem_vaddAntidiagonal, Set.mem_iUnion, mem_support, ne_eq,
       Function.mem_support, exists_prop, Prod.exists]
@@ -405,8 +405,6 @@ def smul (s : SummableFamily Γ R α) (t : SummableFamily Γ' V β) : SummableFa
   isPWO_iUnion_support' :=
     isPWO_iUnion_support_prod_smul s.isPWO_iUnion_support t.isPWO_iUnion_support
   finite_co_support' g := finite_co_support_prod_smul s t g
-
-@[deprecated (since := "2024-11-17")] noncomputable alias FamilySMul := smul
 
 theorem sum_vAddAntidiagonal_eq (s : SummableFamily Γ R α) (t : SummableFamily Γ' V β) (g : Γ')
     (a : α × β) :
@@ -437,8 +435,6 @@ theorem coeff_smul {R} {V} [Semiring R] [AddCommMonoid V] [Module R V]
     Set.mem_setOf_eq, Prod.forall, coeff_support, mem_product]
   exact hsupp ab.1 ab.2 hab
 
-@[deprecated (since := "2024-11-17")] alias family_smul_coeff := coeff_smul
-
 theorem smul_hsum {R} {V} [Semiring R] [AddCommMonoid V] [Module R V]
     (s : SummableFamily Γ R α) (t : SummableFamily Γ' V β) :
     (smul s t).hsum = (of R).symm (s.hsum • (of R) (t.hsum)) := by
@@ -457,8 +453,6 @@ theorem smul_hsum {R} {V} [Semiring R] [AddCommMonoid V] [Module R V]
     by_cases h : s.hsum.coeff gh.1 = 0
     · exact smul_eq_zero_of_left h (t.hsum.coeff gh.2)
     · simp_all
-
-@[deprecated (since := "2024-11-17")] alias hsum_family_smul := smul_hsum
 
 instance [AddCommMonoid R] [SMulWithZero R V] : SMul (HahnSeries Γ R) (SummableFamily Γ' V β) where
   smul x t := Equiv (Equiv.punitProd β) <| smul (const Unit x) t
@@ -564,8 +558,7 @@ def ofFinsupp (f : α →₀ HahnSeries Γ R) : SummableFamily Γ R α where
     exact Set.mem_biUnion haf hg
   finite_co_support' g := by
     refine f.support.finite_toSet.subset fun a ha => ?_
-    simp only [coeff.addMonoidHom_apply, mem_coe, Finsupp.mem_support_iff, Ne,
-      Function.mem_support]
+    simp only [mem_coe, Finsupp.mem_support_iff, Ne]
     contrapose! ha
     simp [ha]
 
@@ -576,11 +569,11 @@ theorem coe_ofFinsupp {f : α →₀ HahnSeries Γ R} : ⇑(SummableFamily.ofFin
 @[simp]
 theorem hsum_ofFinsupp {f : α →₀ HahnSeries Γ R} : (ofFinsupp f).hsum = f.sum fun _ => id := by
   ext g
-  simp only [coeff_hsum, coe_ofFinsupp, Finsupp.sum, Ne]
+  simp only [coeff_hsum, coe_ofFinsupp, Finsupp.sum]
   simp_rw [← coeff.addMonoidHom_apply, id]
   rw [map_sum, finsum_eq_sum_of_support_subset]
   intro x h
-  simp only [coeff.addMonoidHom_apply, mem_coe, Finsupp.mem_support_iff, Ne]
+  simp only [mem_coe, Finsupp.mem_support_iff, Ne]
   contrapose! h
   simp [h]
 
@@ -690,7 +683,7 @@ theorem pow_finite_co_support {x : HahnSeries Γ R} (hx : 0 < x.orderTop) (g : �
 return a junk value given by pretending `x = 0`. -/
 @[simps]
 def powers (x : HahnSeries Γ R) : SummableFamily Γ R ℕ where
-  toFun n := if 0 < x.orderTop then x ^ n else 0 ^ n
+  toFun n := (if 0 < x.orderTop then x else 0) ^ n
   isPWO_iUnion_support' := by
     by_cases h : 0 < x.orderTop
     · simp only [h, ↓reduceIte]
@@ -712,7 +705,7 @@ theorem powers_of_orderTop_pos {x : HahnSeries Γ R} (hx : 0 < x.orderTop) (n : 
 theorem powers_of_not_orderTop_pos {x : HahnSeries Γ R} (hx : ¬ 0 < x.orderTop) :
     powers x = .single 0 1 := by
   ext a
-  obtain rfl | ha := eq_or_ne a 0 <;> simp [hx, powers, *]
+  obtain rfl | ha := eq_or_ne a 0 <;> simp [powers, *]
 
 @[simp]
 theorem powers_zero : powers (0 : HahnSeries Γ R) = .single 0 1 := by

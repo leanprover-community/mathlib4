@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
 import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
-import Mathlib.Analysis.SpecialFunctions.Integrals
+import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
@@ -39,7 +39,7 @@ theorem integrableOn_exp_Iic (c : ℝ) : IntegrableOn exp (Iic c) := by
   exact (exp_pos _).le
 
 theorem integrableOn_exp_neg_Ioi (c : ℝ) : IntegrableOn (fun (x : ℝ) => exp (-x)) (Ioi c) :=
-  integrableOn_Ici_iff_integrableOn_Ioi.mp (integrableOn_exp_Iic (-c)).comp_neg_Ici
+  Iff.mp integrableOn_Ici_iff_integrableOn_Ioi (integrableOn_exp_Iic (-c)).comp_neg_Ici
 
 theorem integral_exp_Iic (c : ℝ) : ∫ x : ℝ in Iic c, exp x = exp c := by
   refine
@@ -68,7 +68,7 @@ theorem integrableOn_exp_mul_complex_Ioi {a : ℂ} (ha : a.re < 0) (c : ℝ) :
 
 theorem integrableOn_exp_mul_complex_Iic {a : ℂ} (ha : 0 < a.re) (c : ℝ) :
     IntegrableOn (fun x : ℝ => Complex.exp (a * x)) (Iic c) := by
-  simpa using integrableOn_Iic_iff_integrableOn_Iio.mpr
+  simpa using Iff.mpr integrableOn_Iic_iff_integrableOn_Iio
     (integrableOn_exp_mul_complex_Ioi (a := -a) (by simpa) (-c)).comp_neg_Iio
 
 theorem integrableOn_exp_mul_Ioi {a : ℝ} (ha : a < 0) (c : ℝ) :
@@ -207,7 +207,7 @@ theorem integrableOn_Ioi_deriv_ofReal_cpow {s : ℂ} {t : ℝ} (ht : 0 < t) (hs 
   refine h.congr_fun (fun x hx ↦ ?_) measurableSet_Ioi
   rw [Complex.deriv_ofReal_cpow_const (ht.trans hx).ne' (fun h ↦ (Complex.zero_re ▸ h ▸ hs).false)]
 
-theorem integrableOn_Ioi_deriv_norm_ofReal_cpow {s : ℂ} {t : ℝ} (ht : 0 < t) (hs : s.re ≤ 0):
+theorem integrableOn_Ioi_deriv_norm_ofReal_cpow {s : ℂ} {t : ℝ} (ht : 0 < t) (hs : s.re ≤ 0) :
     IntegrableOn (deriv fun x : ℝ ↦ ‖(x : ℂ) ^ s‖) (Set.Ioi t) := by
   rw [integrableOn_congr_fun (fun x hx ↦ by
     rw [deriv_norm_ofReal_cpow _ (ht.trans hx)]) measurableSet_Ioi]

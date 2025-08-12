@@ -3,7 +3,7 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Topology.UniformSpace.Basic
+import Mathlib.Topology.UniformSpace.DiscreteUniformity
 import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
@@ -117,6 +117,14 @@ theorem UniformContinuous.div_const [UniformSpace β] {f : β → α} (hf : Unif
 theorem uniformContinuous_div_const (a : α) : UniformContinuous fun b : α => b / a :=
   uniformContinuous_id.div_const _
 
+@[to_additive]
+theorem Filter.Tendsto.uniformity_mul {ι : Type*} {f g : ι → α × α} {l : Filter ι}
+    (hf : Tendsto f l (𝓤 α)) (hg : Tendsto g l (𝓤 α)) :
+    Tendsto (f * g) l (𝓤 α) :=
+  have : Tendsto (fun (p : (α × α) × (α × α)) ↦ p.1 * p.2) (𝓤 α ×ˢ 𝓤 α) (𝓤 α) := by
+    simpa [UniformContinuous, uniformity_prod_eq_prod] using uniformContinuous_mul (α := α)
+  this.comp (hf.prodMk hg)
+
 @[to_additive UniformContinuous.const_nsmul]
 theorem UniformContinuous.pow_const [UniformSpace β] {f : β → α} (hf : UniformContinuous f) :
     ∀ n : ℕ, UniformContinuous fun x => f x ^ n
@@ -179,6 +187,11 @@ theorem uniformity_translate_mul (a : α) : ((𝓤 α).map fun x : α × α => (
       _ ≤ (𝓤 α).map fun x : α × α => (x.1 * a, x.2 * a) :=
         Filter.map_mono (uniformContinuous_id.mul uniformContinuous_const)
       )
+
+/-- The discrete uniformity makes a group a `IsUniformGroup. -/
+@[to_additive /-- The discrete uniformity makes an additive group a `IsUniformAddGroup`. -/]
+instance [UniformSpace β] [Group β] [DiscreteUniformity β] : IsUniformGroup β where
+  uniformContinuous_div := DiscreteUniformity.uniformContinuous (β × β) fun p ↦ p.1 / p.2
 
 namespace MulOpposite
 
@@ -348,9 +361,9 @@ theorem uniformContinuous_of_tendsto_one {hom : Type*} [UniformSpace β] [Group 
 /-- A group homomorphism (a bundled morphism of a type that implements `MonoidHomClass`) between
 two uniform groups is uniformly continuous provided that it is continuous at one. See also
 `continuous_of_continuousAt_one`. -/
-@[to_additive "An additive group homomorphism (a bundled morphism of a type that implements
+@[to_additive /-- An additive group homomorphism (a bundled morphism of a type that implements
 `AddMonoidHomClass`) between two uniform additive groups is uniformly continuous provided that it
-is continuous at zero. See also `continuous_of_continuousAt_zero`."]
+is continuous at zero. See also `continuous_of_continuousAt_zero`. -/]
 theorem uniformContinuous_of_continuousAt_one {hom : Type*} [UniformSpace β] [Group β]
     [IsUniformGroup β] [FunLike hom α β] [MonoidHomClass hom α β]
     (f : hom) (hf : ContinuousAt f 1) :
@@ -364,8 +377,8 @@ theorem MonoidHom.uniformContinuous_of_continuousAt_one [UniformSpace β] [Group
 
 /-- A homomorphism from a uniform group to a discrete uniform group is continuous if and only if
 its kernel is open. -/
-@[to_additive "A homomorphism from a uniform additive group to a discrete uniform additive group is
-continuous if and only if its kernel is open."]
+@[to_additive /-- A homomorphism from a uniform additive group to a discrete uniform additive group
+is continuous if and only if its kernel is open. -/]
 theorem IsUniformGroup.uniformContinuous_iff_isOpen_ker {hom : Type*} [UniformSpace β]
     [DiscreteTopology β] [Group β] [IsUniformGroup β] [FunLike hom α β] [MonoidHomClass hom α β]
     {f : hom} :
@@ -375,18 +388,6 @@ theorem IsUniformGroup.uniformContinuous_iff_isOpen_ker {hom : Type*} [UniformSp
   · apply uniformContinuous_of_continuousAt_one
     rw [ContinuousAt, nhds_discrete β, map_one, tendsto_pure]
     exact hf.mem_nhds (map_one f)
-
-@[deprecated (since := "2024-11-18")] alias UniformAddGroup.uniformContinuous_iff_open_ker :=
-  IsUniformAddGroup.uniformContinuous_iff_isOpen_ker
-@[to_additive existing UniformAddGroup.uniformContinuous_iff_open_ker,
-deprecated (since := "2024-11-18")] alias UniformGroup.uniformContinuous_iff_open_ker :=
-  IsUniformGroup.uniformContinuous_iff_isOpen_ker
-@[deprecated (since := "2025-03-30")] alias UniformAddGroup.uniformContinuous_iff_isOpen_ker :=
-  IsUniformAddGroup.uniformContinuous_iff_isOpen_ker
-@[to_additive existing UniformAddGroup.uniformContinuous_iff_isOpen_ker,
-deprecated (since := "2025-03-30")] alias UniformGroup.uniformContinuous_iff_isOpen_ker :=
-  IsUniformGroup.uniformContinuous_iff_isOpen_ker
-
 
 @[to_additive]
 theorem uniformContinuous_monoidHom_of_continuous {hom : Type*} [UniformSpace β] [Group β]
@@ -410,13 +411,13 @@ Warning: in general the right and left uniformities do not coincide and so one d
 `IsUniformGroup` structure. Two important special cases where they _do_ coincide are for
 commutative groups (see `isUniformGroup_of_commGroup`) and for compact groups (see
 `topologicalGroup_is_uniform_of_compactSpace`). -/
-@[to_additive "The right uniformity on a topological additive group (as opposed to the left
+@[to_additive /-- The right uniformity on a topological additive group (as opposed to the left
 uniformity).
 
 Warning: in general the right and left uniformities do not coincide and so one does not obtain a
 `IsUniformAddGroup` structure. Two important special cases where they _do_ coincide are for
 commutative additive groups (see `isUniformAddGroup_of_addCommGroup`) and for compact
-additive groups (see `topologicalAddGroup_is_uniform_of_compactSpace`)."]
+additive groups (see `topologicalAddGroup_is_uniform_of_compactSpace`). -/]
 def IsTopologicalGroup.toUniformSpace : UniformSpace G where
   uniformity := comap (fun p : G × G => p.2 / p.1) (𝓝 1)
   symm :=
@@ -578,7 +579,7 @@ private theorem extend_Z_bilin_key (x₀ : α) (y₀ : γ) : ∃ U ∈ comap e (
   obtain ⟨x₁, x₁_in⟩ : U₁.Nonempty := (de.comap_nhds_neBot _).nonempty_of_mem U₁_nhds
   obtain ⟨y₁, y₁_in⟩ : V₁.Nonempty := (df.comap_nhds_neBot _).nonempty_of_mem V₁_nhds
   have cont_flip : Continuous fun p : δ × β => φ.flip p.1 p.2 := by
-    show Continuous ((fun p : β × δ => φ p.1 p.2) ∘ Prod.swap)
+    change Continuous ((fun p : β × δ => φ p.1 p.2) ∘ Prod.swap)
     exact hφ.comp continuous_swap
   rcases extend_Z_bilin_aux de hφ W_nhds x₀ y₁ with ⟨U₂, U₂_nhds, HU⟩
   rcases extend_Z_bilin_aux df cont_flip W_nhds y₀ x₁ with ⟨V₂, V₂_nhds, HV⟩
