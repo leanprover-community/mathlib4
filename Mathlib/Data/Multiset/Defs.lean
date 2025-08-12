@@ -230,7 +230,7 @@ theorem eq_of_le_of_card_le {s t : Multiset α} (h : s ≤ t) : card t ≤ card 
   leInductionOn h fun s h₂ => congr_arg _ <| s.eq_of_length_le h₂
 
 theorem eq_of_le_of_card_eq {s t : Multiset α} (h : s ≤ t) (h₂ : s.card = t.card) : s = t :=
-  eq_of_le_of_card_le h (le_of_eq h₂.symm)
+  eq_of_le_of_card_le h h₂.ge
 
 @[gcongr]
 theorem card_lt_card {s t : Multiset α} (h : s < t) : card s < card t :=
