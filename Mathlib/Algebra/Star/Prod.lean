@@ -7,9 +7,11 @@ import Mathlib.Algebra.Ring.Prod
 import Mathlib.Algebra.Star.Basic
 
 /-!
-# `Star` on product types
+# Basic Results about Star on Product Type
 
-We put a `Star` structure on product types that operates elementwise.
+This file provides basic results about the star on product types defined in
+`Mathlib.Algebra.Notation.Prod.lean`.
+
 -/
 
 

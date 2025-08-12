@@ -8,10 +8,10 @@ import Mathlib.Algebra.Notation.Pi.Defs
 import Mathlib.Algebra.Ring.Pi
 
 /-!
-# `star` on pi types
+# Basic Results about Star on Pi Types
 
-We put a `Star` structure on pi types that operates elementwise, such that it describes the
-complex conjugation of vectors.
+This file provides basic results about the star on product types defined in
+`Mathlib.Algebra.Notation.Pi.Defs`.
 -/
 
 
