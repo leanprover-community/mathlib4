@@ -366,7 +366,7 @@ def mkEqHtml (lhs rhs : Html) : Html :=
 /-- Given an equality between 2-morphisms, return a string diagram of the LHS and RHS.
 Otherwise `none`. -/
 def stringEqM? (e : Expr) : MetaM (Option Html) := do
-  let e ← instantiateMVars e
+  let e ← whnfR <| ← instantiateMVars e
   let some (_, lhs, rhs) := e.eq? | return none
   let some lhs ← stringM? lhs | return none
   let some rhs ← stringM? rhs | return none
@@ -375,7 +375,7 @@ def stringEqM? (e : Expr) : MetaM (Option Html) := do
 /-- Given an 2-morphism or equality between 2-morphisms, return a string diagram.
 Otherwise `none`. -/
 def stringMorOrEqM? (e : Expr) : MetaM (Option Html) := do
-  forallTelescopeReducing (← inferType e) fun xs a => do
+  forallTelescopeReducing (← whnfR <| ← inferType e) fun xs a => do
     if let some html ← stringM? (mkAppN e xs) then
       return some html
     else if let some html ← stringEqM? a then

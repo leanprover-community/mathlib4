@@ -67,12 +67,12 @@ private lemma smul_stabilizer_of_no_doubling_aux (hA : #(A * A) ≤ #A) (ha : a 
     rw [← smul_A_eq_A_smul ha, inv_smul_smul]
 
 /-- A non-empty set with no doubling is the left translate of its stabilizer. -/
-@[to_additive "A non-empty set with no doubling is the left-translate of its stabilizer."]
+@[to_additive /-- A non-empty set with no doubling is the left-translate of its stabilizer. -/]
 lemma smul_stabilizer_of_no_doubling (hA : #(A * A) ≤ #A) (ha : a ∈ A) :
     a •> (stabilizer G A : Set G) = A := (smul_stabilizer_of_no_doubling_aux hA ha).1
 
 /-- A non-empty set with no doubling is the right translate of its stabilizer. -/
-@[to_additive "A non-empty set with no doubling is the right translate of its stabilizer."]
+@[to_additive /-- A non-empty set with no doubling is the right translate of its stabilizer. -/]
 lemma op_smul_stabilizer_of_no_doubling (hA : #(A * A) ≤ #A) (ha : a ∈ A) :
     (stabilizer G A : Set G) <• a = A := (smul_stabilizer_of_no_doubling_aux hA ha).2
 
@@ -99,10 +99,11 @@ private lemma lt_card_smul_inter_smul (hA : #(B * A) < K * #A) (ha : a ∈ B) (h
 private lemma card_smul_inter_smul (A : Finset G) (x y : G) :
     #((x • A) ∩ (y • A)) = #{wz ∈ A ×ˢ A | wz.1 * wz.2⁻¹ = x⁻¹ * y} :=
   card_nbij' (fun z ↦ (x⁻¹ * z, y⁻¹ * z)) (fun zw ↦ x • zw.1)
-    (by simp +contextual [← inv_smul_mem_iff, mul_assoc])
-    (by simp +contextual [← inv_smul_mem_iff]; simp +contextual [mul_inv_eq_iff_eq_mul, mul_assoc])
-    (by simp)
-    (by simp +contextual [mul_inv_eq_iff_eq_mul, mul_assoc])
+    (by simp +contextual [Set.MapsTo, Set.mem_smul_set_iff_inv_smul_mem, mul_assoc])
+    (by simp +contextual [Set.MapsTo, Set.mem_smul_set_iff_inv_smul_mem]
+        simp +contextual [mul_inv_eq_iff_eq_mul, mul_assoc])
+    (by simp [Set.LeftInvOn])
+    (by simp +contextual [Set.LeftInvOn, mul_inv_eq_iff_eq_mul, mul_assoc])
 
 private lemma card_inter_smul (A : Finset G) (x : G) :
     #(A ∩ (x • A)) = #{yz ∈ A ×ˢ A | yz.1 * yz.2⁻¹ = x} := by simpa using card_smul_inter_smul _ 1 x
@@ -208,7 +209,9 @@ lemma invMulSubgroup_eq_mul_inv (A : Finset G) (h) : (invMulSubgroup A h : Set G
   exact mul_inv_eq_inv_mul_of_doubling_lt_two (by qify at h ⊢; linarith)
 
 instance (A : Finset G) (h) : Fintype (invMulSubgroup A h) := by
-  simp only [invMulSubgroup, ← coe_mul, Subgroup.mem_mk, mem_coe]; infer_instance
+  simp only [invMulSubgroup, ← coe_mul, Subgroup.mem_mk, Submonoid.mem_mk, Subsemigroup.mem_mk,
+    mem_coe]
+  infer_instance
 
 private lemma weak_invMulSubgroup_bound (h : #(A * A) < (3 / 2 : ℚ) * #A) :
     #(A⁻¹ * A) < 2 * #A := by
@@ -577,7 +580,8 @@ theorem doubling_lt_golden_ratio (hK₁ : 1 < K) (hKφ : K < φ)
   let r z : ℕ := #{xy ∈ A ×ˢ A | xy.1 * xy.2⁻¹ = z}
   -- `r` is invariant under inverses.
   have r_inv z : r z⁻¹ = r z := by
-    apply card_nbij' Prod.swap Prod.swap <;> simp +contextual [← inv_eq_iff_eq_inv]
+    apply card_nbij' Prod.swap Prod.swap <;>
+      simp +contextual [Set.MapsTo, Set.LeftInvOn, ← inv_eq_iff_eq_inv]
   -- We show that every `z ∈ S` with at least `(K - 1)|A|` representations lies in `H`,
   -- and that such `z` make up a proportion of at least `(2 - K) / ((φ - K) * (K - ψ))` of `S`.
   calc
