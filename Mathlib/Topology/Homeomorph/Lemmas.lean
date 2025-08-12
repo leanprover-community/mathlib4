@@ -428,9 +428,6 @@ noncomputable def toHomeomorph {f : X → Y} (hf : IsEmbedding f) :
 @[deprecated (since := "2025-04-16")]
 alias _root_.Homeomorph.ofIsEmbedding := toHomeomorph
 
-@[deprecated (since := "2024-10-26")]
-alias _root_.Homeomorph.ofEmbedding := toHomeomorph
-
 /-- A surjective embedding is a homeomorphism. -/
 @[simps! apply]
 noncomputable def toHomeomorphOfSurjective {f : X → Y}
@@ -439,9 +436,6 @@ noncomputable def toHomeomorphOfSurjective {f : X → Y}
 
 @[deprecated (since := "2025-04-16")]
 alias toHomeomorph_of_surjective := toHomeomorphOfSurjective
-
-@[deprecated (since := "2024-10-26")]
-alias _root_.Embedding.toHomeomeomorph_of_surjective := toHomeomorphOfSurjective
 
 /-- A set is homeomorphic to its image under any embedding. -/
 noncomputable def homeomorphImage {f : X → Y} (hf : IsEmbedding f) (s : Set X) : s ≃ₜ f '' s :=
