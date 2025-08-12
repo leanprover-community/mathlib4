@@ -2821,6 +2821,7 @@ import Mathlib.Combinatorics.SimpleGraph.Diam
 import Mathlib.Combinatorics.SimpleGraph.Ends.Defs
 import Mathlib.Combinatorics.SimpleGraph.Ends.Properties
 import Mathlib.Combinatorics.SimpleGraph.Extremal.Basic
+import Mathlib.Combinatorics.SimpleGraph.Extremal.TuranDensity
 import Mathlib.Combinatorics.SimpleGraph.Finite
 import Mathlib.Combinatorics.SimpleGraph.Finsubgraph
 import Mathlib.Combinatorics.SimpleGraph.FiveWheelLike
@@ -3985,6 +3986,7 @@ import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
 import Mathlib.LinearAlgebra.AffineSpace.Basis
+import Mathlib.LinearAlgebra.AffineSpace.Centroid
 import Mathlib.LinearAlgebra.AffineSpace.Combination
 import Mathlib.LinearAlgebra.AffineSpace.ContinuousAffineEquiv
 import Mathlib.LinearAlgebra.AffineSpace.Defs
@@ -4209,6 +4211,7 @@ import Mathlib.LinearAlgebra.QuadraticForm.Real
 import Mathlib.LinearAlgebra.QuadraticForm.TensorProduct
 import Mathlib.LinearAlgebra.QuadraticForm.TensorProduct.Isometries
 import Mathlib.LinearAlgebra.Quotient.Basic
+import Mathlib.LinearAlgebra.Quotient.Card
 import Mathlib.LinearAlgebra.Quotient.Defs
 import Mathlib.LinearAlgebra.Quotient.Pi
 import Mathlib.LinearAlgebra.Ray
@@ -5054,6 +5057,7 @@ import Mathlib.Order.SetIsMax
 import Mathlib.Order.SetNotation
 import Mathlib.Order.Shrink
 import Mathlib.Order.Sublattice
+import Mathlib.Order.Sublocale
 import Mathlib.Order.SuccPred.Archimedean
 import Mathlib.Order.SuccPred.Basic
 import Mathlib.Order.SuccPred.CompleteLinearOrder
@@ -6162,6 +6166,7 @@ import Mathlib.Topology.Algebra.InfiniteSum.Nonarchimedean
 import Mathlib.Topology.Algebra.InfiniteSum.Order
 import Mathlib.Topology.Algebra.InfiniteSum.Real
 import Mathlib.Topology.Algebra.InfiniteSum.Ring
+import Mathlib.Topology.Algebra.InfiniteSum.TsumUniformlyOn
 import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
 import Mathlib.Topology.Algebra.IntermediateField
 import Mathlib.Topology.Algebra.IsOpenUnits
@@ -6193,6 +6198,7 @@ import Mathlib.Topology.Algebra.Module.PerfectPairing
 import Mathlib.Topology.Algebra.Module.PerfectSpace
 import Mathlib.Topology.Algebra.Module.Simple
 import Mathlib.Topology.Algebra.Module.Star
+import Mathlib.Topology.Algebra.Module.StrongDual
 import Mathlib.Topology.Algebra.Module.StrongTopology
 import Mathlib.Topology.Algebra.Module.UniformConvergence
 import Mathlib.Topology.Algebra.Module.WeakBilin
