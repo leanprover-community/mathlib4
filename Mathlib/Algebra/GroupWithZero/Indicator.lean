@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Indicator
+import Mathlib.Algebra.Group.Support
 import Mathlib.Algebra.GroupWithZero.Basic
 
 /-!
@@ -69,8 +70,11 @@ lemma indicator_prod_one {t : Set κ} {j : κ} :
 
 variable (M₀) [Nontrivial M₀]
 
-lemma indicator_eq_zero_iff_not_mem : indicator s 1 i = (0 : M₀) ↔ i ∉ s := by
+lemma indicator_eq_zero_iff_notMem : indicator s 1 i = (0 : M₀) ↔ i ∉ s := by
   classical simp [indicator_apply, imp_false]
+
+@[deprecated (since := "2025-05-23")]
+alias indicator_eq_zero_iff_not_mem := indicator_eq_zero_iff_notMem
 
 lemma indicator_eq_one_iff_mem : indicator s 1 i = (1 : M₀) ↔ i ∈ s := by
   classical simp [indicator_apply, imp_false]
@@ -155,7 +159,7 @@ lemma mulSupport_add_one' [AddRightCancelMonoid R] (f : ι → R) : mulSupport (
   mulSupport_add_one f
 
 lemma mulSupport_one_sub' [AddGroup R] (f : ι → R) : mulSupport (1 - f) = support f := by
-  rw [sub_eq_add_neg, mulSupport_one_add', support_neg']
+  rw [sub_eq_add_neg, mulSupport_one_add', support_neg]
 
 lemma mulSupport_one_sub [AddGroup R] (f : ι → R) :
     mulSupport (fun x ↦ 1 - f x) = support f := mulSupport_one_sub' f

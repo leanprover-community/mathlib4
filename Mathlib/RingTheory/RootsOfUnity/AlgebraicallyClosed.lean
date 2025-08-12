@@ -9,23 +9,61 @@ import Mathlib.NumberTheory.Cyclotomic.Basic
 /-!
 # Instances for HasEnoughRootsOfUnity
 
-We provide an instance for `HasEnoughRootsOfUnity F n` when `F` is an algebraically closed field
+We provide an instance for `HasEnoughRootsOfUnity F n` when `F` is a separably closed field
 and `n` is not divisible by the characteristic. In particular, when `F` has characteristic zero,
 this hold for all `n ≠ 0`.
 -/
 
-namespace IsAlgClosed
+variable (F : Type*) [Field F] (n k : ℕ) [NeZero (n : F)]
 
-/-- An algebraically closed field `F` satisfies `HasEnoughRootsOfUnity F n` for all `n`
+namespace IsSepClosed
+
+variable [IsSepClosed F]
+
+/-- A separably closed field `F` satisfies `HasEnoughRootsOfUnity F n` for all `n`
 that are not divisible by the characteristic of `F`. -/
-instance hasEnoughRootsOfUnity (F : Type*) [Field F] [IsAlgClosed F] (n : ℕ) [i : NeZero (n : F)] :
-    HasEnoughRootsOfUnity F n where
+instance hasEnoughRootsOfUnity : HasEnoughRootsOfUnity F n where
   prim := by
     have : NeZero n := .of_neZero_natCast F
-    have := isCyclotomicExtension {⟨n, NeZero.pos n⟩} F fun _ h ↦ Set.mem_singleton_iff.mp h ▸ i
-    exact IsCyclotomicExtension.exists_prim_root (S := {(⟨n, NeZero.pos n⟩ : ℕ+)}) F rfl
+    have := isCyclotomicExtension {n} F fun _ h _ ↦ Set.mem_singleton_iff.mp h ▸ ‹NeZero (n : F)›
+    exact IsCyclotomicExtension.exists_isPrimitiveRoot (S := {n}) F _ rfl (NeZero.ne _)
   cyc :=
     have : NeZero n := .of_neZero_natCast F
     rootsOfUnity.isCyclic F n
 
-end IsAlgClosed
+instance hasEnoughRootsOfUnity_pow : HasEnoughRootsOfUnity F (n ^ k) :=
+  have : NeZero ((n ^ k : ℕ) : F) := by exact_mod_cast ‹NeZero (n : F)›.pow
+  inferInstance
+
+end IsSepClosed
+
+@[deprecated (since := "2025-06-22")]
+alias IsAlgClosed.hasEnoughRootsOfUnity := IsSepClosed.hasEnoughRootsOfUnity
+
+namespace AlgebraicClosure
+
+instance hasEnoughRootsOfUnity : HasEnoughRootsOfUnity (AlgebraicClosure F) n :=
+  have : NeZero (n : AlgebraicClosure F) :=
+    ‹NeZero (n : F)›.of_injective (algebraMap F (AlgebraicClosure F)).injective
+  inferInstance
+
+instance hasEnoughRootsOfUnity_pow : HasEnoughRootsOfUnity (AlgebraicClosure F) (n ^ k) :=
+  have : NeZero (n : AlgebraicClosure F) :=
+    ‹NeZero (n : F)›.of_injective (algebraMap F (AlgebraicClosure F)).injective
+  inferInstance
+
+end AlgebraicClosure
+
+namespace SeparableClosure
+
+instance hasEnoughRootsOfUnity : HasEnoughRootsOfUnity (SeparableClosure F) n :=
+  have : NeZero (n : SeparableClosure F) :=
+    ‹NeZero (n : F)›.of_injective (algebraMap F (SeparableClosure F)).injective
+  inferInstance
+
+instance hasEnoughRootsOfUnity_pow : HasEnoughRootsOfUnity (SeparableClosure F) (n ^ k) :=
+  have : NeZero (n : SeparableClosure F) :=
+    ‹NeZero (n : F)›.of_injective (algebraMap F (SeparableClosure F)).injective
+  inferInstance
+
+end SeparableClosure

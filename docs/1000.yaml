@@ -383,8 +383,15 @@ Q384142:
 
 Q386292:
   title: Prime number theorem
+  authors : Alex Kontorovich, Terry Tao, and the Prime Number Theorem + Project
+  url: https://github.com/AlexKontorovich/PrimeNumberTheoremAnd
+  date: 2025
+  # TODO: cannot display several URLs nicely yet
+  # links   :
+  #  Prime Number Theorem : https://github.com/AlexKontorovich/PrimeNumberTheoremAnd/blob/a5040887e6bb24f7c201db8568e7755c138b3878/PrimeNumberTheoremAnd/Wiener.lean#L2196-L2211
+  #  With Error Terms     : https://github.com/AlexKontorovich/PrimeNumberTheoremAnd/blob/a5040887e6bb24f7c201db8568e7755c138b3878/PrimeNumberTheoremAnd/MediumPNT.lean#L5504-L6162
+  #  website              : https://github.com/AlexKontorovich/PrimeNumberTheoremAnd
   comment: "Ongoing formalisation of various versions in https://github.com/AlexKontorovich/PrimeNumberTheoremAnd"
-  # also in 100.yaml
 
 Q388525:
   title: Bell's theorem
@@ -490,8 +497,8 @@ Q528987:
   title: Von Neumann bicommutant theorem
 
 Q530152:
-  title: Picard&ndash;Lindelöf theorem
-  decl: IsPicardLindelof.exists_forall_hasDerivWithinAt_Icc_eq
+  title: Picard–Lindelöf theorem
+  decl: IsPicardLindelof.exists_eq_forall_mem_Icc_hasDerivWithinAt
 
 Q535366:
   title: Montel's theorem
@@ -796,8 +803,8 @@ Q766722:
 
 Q776578:
   title: Artin–Wedderburn theorem
-  # using proof_wanted, in Mathlib/RingTheory/SimpleModule.lean
-  statement: isSemisimpleRing_iff_pi_matrix_divisionRing
+  # in Mathlib/RingTheory/SimpleModule/Basic.lean
+  comment: "statement is formalized using proof_wanted (isSemisimpleRing_iff_pi_matrix_divisionRing)"
   # WIP formalisation, but not complete yet (January 1, 2025)
 
 Q777924:
@@ -1617,6 +1624,9 @@ Q1530275:
 
 Q1535225:
   title: Łoś' theorem
+  decl: FirstOrder.Language.Ultraproduct.sentence_realize
+  authors: Aaron Anderson
+  date: 2022-03-09
 
 Q1542114:
   title: Bézout's theorem

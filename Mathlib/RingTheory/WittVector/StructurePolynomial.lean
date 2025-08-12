@@ -228,7 +228,7 @@ theorem C_p_pow_dvd_bind₁_rename_wittPolynomial_sub_sum (Φ : MvPolynomial idx
       bind₁ (fun b : idx => rename (fun i => (b, i)) (wittPolynomial p ℤ n)) Φ -
         ∑ i ∈ range n, C ((p : ℤ) ^ i) * wittStructureInt p Φ i ^ p ^ (n - i) := by
   rcases n with - | n
-  · simp only [isUnit_one, Int.ofNat_zero, Int.natCast_succ, zero_add, pow_zero, C_1, IsUnit.dvd,
+  · simp only [isUnit_one, pow_zero, C_1, IsUnit.dvd,
       Nat.cast_one]
   -- prepare a useful equation for rewriting
   have key := bind₁_rename_expand_wittPolynomial Φ n IH
@@ -241,9 +241,6 @@ theorem C_p_pow_dvd_bind₁_rename_wittPolynomial_sub_sum (Φ : MvPolynomial idx
   rw [bind₁, aeval_wittPolynomial, map_sum, map_sum, Finset.sum_congr rfl]
   intro k hk
   rw [Finset.mem_range, Nat.lt_succ_iff] at hk
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11083): was much slower
-  -- simp only [← sub_eq_zero, ← RingHom.map_sub, ← C_dvd_iff_zmod, C_eq_coe_nat, ← mul_sub, ←
-  --   Nat.cast_pow]
   rw [← sub_eq_zero, ← RingHom.map_sub, ← C_dvd_iff_zmod, C_eq_coe_nat, ← Nat.cast_pow,
     ← Nat.cast_pow, C_eq_coe_nat, ← mul_sub]
   have : p ^ (n + 1) = p ^ k * p ^ (n - k + 1) := by
@@ -376,8 +373,7 @@ theorem wittStructureRat_vars [Fintype idx] (Φ : MvPolynomial idx ℚ) (n : ℕ
   obtain ⟨j, hj, rfl⟩ := mem_vars_rename _ _ hx''
   rw [wittPolynomial_vars, Finset.mem_range] at hj
   replace hk := xInTermsOfW_vars_subset p _ hk
-  rw [Finset.mem_range] at hk
-  exact lt_of_lt_of_le hj hk
+  grind
 
 -- we could relax the fintype on `idx`, but then we need to cast from finset to set.
 -- for our applications `idx` is always finite.

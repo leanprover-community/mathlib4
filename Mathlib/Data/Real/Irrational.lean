@@ -32,7 +32,7 @@ def Irrational (x : ℝ) :=
   x ∉ Set.range ((↑) : ℚ → ℝ)
 
 theorem irrational_iff_ne_rational (x : ℝ) : Irrational x ↔ ∀ a b : ℤ, x ≠ a / b := by
-  simp only [Irrational, Rat.forall, cast_mk, not_exists, Set.mem_range, cast_intCast, cast_div,
+  simp only [Irrational, Rat.forall, not_exists, Set.mem_range, cast_intCast, cast_div,
     eq_comm]
 
 /-- A transcendental real number is irrational. -/
@@ -73,7 +73,7 @@ theorem irrational_nrt_of_n_not_dvd_multiplicity {x : ℝ} (n : ℕ) {m : ℤ} (
   rcases Nat.eq_zero_or_pos n with (rfl | hnpos)
   · rw [eq_comm, pow_zero, ← Int.cast_one, Int.cast_inj] at hxr
     simp [hxr, multiplicity_of_one_right (mt isUnit_iff_dvd_one.1
-      (mt Int.natCast_dvd_natCast.1 hp.1.not_dvd_one)), Nat.zero_mod] at hv
+      (mt Int.natCast_dvd_natCast.1 hp.1.not_dvd_one))] at hv
   refine irrational_nrt_of_notint_nrt _ _ hxr ?_ hnpos
   rintro ⟨y, rfl⟩
   rw [← Int.cast_pow, Int.cast_inj] at hxr
@@ -104,7 +104,7 @@ theorem irrational_sqrt_ratCast_iff_of_nonneg {q : ℚ} (hq : 0 ≤ q) :
 
 theorem irrational_sqrt_ratCast_iff {q : ℚ} :
     Irrational (√q) ↔ ¬IsSquare q ∧ 0 ≤ q := by
-  obtain hq | hq := le_or_lt 0 q
+  obtain hq | hq := le_or_gt 0 q
   · simp_rw [irrational_sqrt_ratCast_iff_of_nonneg hq, and_iff_left hq]
   · rw [sqrt_eq_zero_of_nonpos (Rat.cast_nonpos.2 hq.le)]
     simp_rw [not_irrational_zero, false_iff, not_and, not_le, hq, implies_true]

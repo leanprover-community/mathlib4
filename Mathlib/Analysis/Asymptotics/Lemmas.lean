@@ -7,7 +7,6 @@ import Mathlib.Analysis.Asymptotics.Defs
 import Mathlib.Analysis.Normed.Group.Bounded
 import Mathlib.Analysis.Normed.Group.InfiniteSum
 import Mathlib.Analysis.Normed.MulAction
-import Mathlib.Topology.Algebra.Order.LiminfLimsup
 import Mathlib.Topology.PartialHomeomorph
 
 /-!
@@ -45,7 +44,7 @@ theorem isBigO_principal {s : Set α} : f =O[𝓟 s] g ↔ ∃ c, ∀ x ∈ s, �
 @[simp]
 theorem isLittleO_principal {s : Set α} : f'' =o[𝓟 s] g' ↔ ∀ x ∈ s, f'' x = 0 := by
   refine ⟨fun h x hx ↦ norm_le_zero_iff.1 ?_, fun h ↦ ?_⟩
-  · simp only [isLittleO_iff, isBigOWith_principal] at h
+  · simp only [isLittleO_iff] at h
     have : Tendsto (fun c : ℝ => c * ‖g' x‖) (𝓝[>] 0) (𝓝 0) :=
       ((continuous_id.mul continuous_const).tendsto' _ _ (zero_mul _)).mono_left
         inf_le_left
@@ -386,7 +385,7 @@ theorem isLittleO_const_left_of_ne {c : E''} (hc : c ≠ 0) :
 theorem isLittleO_const_left {c : E''} :
     (fun _x => c) =o[l] g'' ↔ c = 0 ∨ Tendsto (norm ∘ g'') l atTop := by
   rcases eq_or_ne c 0 with (rfl | hc)
-  · simp only [isLittleO_zero, eq_self_iff_true, true_or]
+  · simp only [isLittleO_zero, true_or]
   · simp only [hc, false_or, isLittleO_const_left_of_ne hc]; rfl
 
 @[simp 1001] -- Porting note: increase priority so that this triggers before `isLittleO_const_left`
@@ -420,8 +419,8 @@ section ExistsMulEq
 variable {u v : α → 𝕜}
 
 /-- If `‖φ‖` is eventually bounded by `c`, and `u =ᶠ[l] φ * v`, then we have `IsBigOWith c u v l`.
-    This does not require any assumptions on `c`, which is why we keep this version along with
-    `IsBigOWith_iff_exists_eq_mul`. -/
+This does not require any assumptions on `c`, which is why we keep this version along with
+`IsBigOWith_iff_exists_eq_mul`. -/
 theorem isBigOWith_of_eq_mul {u v : α → R} (φ : α → R) (hφ : ∀ᶠ x in l, ‖φ x‖ ≤ c)
     (h : u =ᶠ[l] φ * v) :
     IsBigOWith c l u v := by
@@ -664,8 +663,8 @@ open Asymptotics
 
 theorem summable_of_isBigO {ι E} [SeminormedAddCommGroup E] [CompleteSpace E]
     {f : ι → E} {g : ι → ℝ} (hg : Summable g) (h : f =O[cofinite] g) : Summable f :=
-  let ⟨C, hC⟩ := h.isBigOWith
-  .of_norm_bounded_eventually (fun x => C * ‖g x‖) (hg.abs.mul_left _) hC.bound
+  let ⟨_, hC⟩ := h.isBigOWith
+  .of_norm_bounded_eventually (hg.abs.mul_left _) hC.bound
 
 theorem summable_of_isBigO_nat {E} [SeminormedAddCommGroup E] [CompleteSpace E]
     {f : ℕ → E} {g : ℕ → ℝ} (hg : Summable g) (h : f =O[atTop] g) : Summable f :=

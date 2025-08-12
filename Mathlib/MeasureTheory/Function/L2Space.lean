@@ -11,7 +11,7 @@ import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 /-! # `L^2` space
 
 If `E` is an inner product space over `𝕜` (`ℝ` or `ℂ`), then `Lp E 2 μ`
-(defined in `Mathlib.MeasureTheory.Function.LpSpace`)
+(defined in `Mathlib/MeasureTheory/Function/LpSpace.lean`)
 is also an inner product space, with inner product defined as `inner f g := ∫ a, ⟪f a, g a⟫ ∂μ`.
 
 ### Main results
@@ -117,7 +117,7 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 theorem eLpNorm_rpow_two_norm_lt_top (f : Lp F 2 μ) :
     eLpNorm (fun x => ‖f x‖ ^ (2 : ℝ)) 1 μ < ∞ := by
-  have h_two : ENNReal.ofReal (2 : ℝ) = 2 := by simp [zero_le_one]
+  have h_two : ENNReal.ofReal (2 : ℝ) = 2 := by simp
   rw [eLpNorm_norm_rpow f zero_lt_two, one_mul, h_two]
   exact ENNReal.rpow_lt_top_of_nonneg zero_le_two (Lp.eLpNorm_ne_top f)
 
@@ -234,7 +234,7 @@ theorem inner_indicatorConstLp_eq_setIntegral_inner (f : Lp E 2 μ) (hs : Measur
         simp
       exact setIntegral_congr_ae hs.compl h_ae_eq
     have h_indicator : ∀ᵐ x : α ∂μ, x ∉ s → indicatorConstLp 2 hs hμs c x = 0 :=
-      indicatorConstLp_coeFn_nmem
+      indicatorConstLp_coeFn_notMem
     refine h_indicator.mono fun x hx hxs => ?_
     rw [hx hxs]
     exact inner_zero_left _

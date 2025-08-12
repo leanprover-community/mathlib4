@@ -50,7 +50,7 @@ theorem Convex.toWeakSpace_closure {s : Set E} (hs : Convex ℝ s) :
     refine closure_minimal ?_ <| isClosed_le (by fun_prop) (by fun_prop)
     rintro - ⟨y, hy, rfl⟩
     simpa [f'] using (hus y <| subset_closure hy).le
-  exact (hux'.not_le <| hus' ·)
+  exact (hux'.not_ge <| hus' ·)
 
 /-- If `e : E →ₗ[𝕜] F` is a linear map between locally convex spaces, and `f ∘ e` is continuous
 for every continuous linear functional `f : F →L[𝕜] 𝕜`, then `e` commutes with the closure on

@@ -10,7 +10,7 @@ import Mathlib.Data.List.Infix
 # Preparations for defining operations on `Finset`.
 
 The operations here ignore multiplicities,
-and preparatory for defining the corresponding operations on `Finset`.
+and prepare for defining the corresponding operations on `Finset`.
 -/
 
 
@@ -46,8 +46,10 @@ theorem ndinsert_of_mem {a : α} {s : Multiset α} : a ∈ s → ndinsert a s = 
   Quot.inductionOn s fun _ h => congr_arg ((↑) : List α → Multiset α) <| insert_of_mem h
 
 @[simp]
-theorem ndinsert_of_not_mem {a : α} {s : Multiset α} : a ∉ s → ndinsert a s = a ::ₘ s :=
+theorem ndinsert_of_notMem {a : α} {s : Multiset α} : a ∉ s → ndinsert a s = a ::ₘ s :=
   Quot.inductionOn s fun _ h => congr_arg ((↑) : List α → Multiset α) <| insert_of_not_mem h
+
+@[deprecated (since := "2025-05-23")] alias ndinsert_of_not_mem := ndinsert_of_notMem
 
 @[simp]
 theorem mem_ndinsert {a b : α} {s : Multiset α} : a ∈ ndinsert b s ↔ a = b ∨ a ∈ s :=
@@ -65,8 +67,10 @@ theorem mem_ndinsert_of_mem {a b : α} {s : Multiset α} (h : a ∈ s) : a ∈ n
 theorem length_ndinsert_of_mem {a : α} {s : Multiset α} (h : a ∈ s) :
     card (ndinsert a s) = card s := by simp [h]
 
-theorem length_ndinsert_of_not_mem {a : α} {s : Multiset α} (h : a ∉ s) :
+theorem length_ndinsert_of_notMem {a : α} {s : Multiset α} (h : a ∉ s) :
     card (ndinsert a s) = card s + 1 := by simp [h]
+
+@[deprecated (since := "2025-05-23")] alias length_ndinsert_of_not_mem := length_ndinsert_of_notMem
 
 theorem dedup_cons {a : α} {s : Multiset α} : dedup (a ::ₘ s) = ndinsert a (dedup s) := by
   by_cases h : a ∈ s <;> simp [h]
@@ -78,7 +82,7 @@ theorem ndinsert_le {a : α} {s t : Multiset α} : ndinsert a s ≤ t ↔ s ≤ 
   ⟨fun h => ⟨le_trans (le_ndinsert_self _ _) h, mem_of_le h (mem_ndinsert_self _ _)⟩, fun ⟨l, m⟩ =>
     if h : a ∈ s then by simp [h, l]
     else by
-      rw [ndinsert_of_not_mem h, ← cons_erase m, cons_le_cons_iff, ← le_cons_of_not_mem h,
+      rw [ndinsert_of_notMem h, ← cons_erase m, cons_le_cons_iff, ← le_cons_of_notMem h,
           cons_erase m]
       exact l⟩
 
@@ -96,7 +100,7 @@ theorem attach_ndinsert (a : α) (s : Multiset α) :
     · rw [ndinsert_of_mem h] at ht
       subst ht
       rw [eq, map_id, ndinsert_of_mem (mem_attach _ _)]
-    · rw [ndinsert_of_not_mem h] at ht
+    · rw [ndinsert_of_notMem h] at ht
       subst ht
       simp [attach_cons, h]
   this _ rfl
@@ -150,7 +154,7 @@ theorem ndunion_le_add (s t : Multiset α) : ndunion s t ≤ s + t :=
 theorem ndunion_le {s t u : Multiset α} : ndunion s t ≤ u ↔ s ⊆ u ∧ t ≤ u :=
   Multiset.induction_on s (by simp [zero_ndunion])
     (fun _ _ h =>
-      by simp only [cons_ndunion, mem_ndunion, ndinsert_le, and_comm, cons_subset, and_left_comm, h,
+      by simp only [cons_ndunion, ndinsert_le, and_comm, cons_subset, and_left_comm, h,
         and_assoc])
 
 theorem subset_ndunion_left (s t : Multiset α) : s ⊆ ndunion s t := fun _ h =>
@@ -186,7 +190,7 @@ theorem Subset.ndunion_eq_right {s t : Multiset α} (h : s ⊆ t) : s.ndunion t 
 
 /-- `ndinter s t` is the lift of the list `∩` operation. This operation
   does not respect multiplicities, unlike `s ∩ t`, but it is suitable as
-  an intersection operation on `Finset`. (`s ∩ t` would also work as a union operation
+  an intersection operation on `Finset`. (`s ∩ t` would also work as an intersection operation
   on finset, but this is more efficient.) -/
 def ndinter (s t : Multiset α) : Multiset α :=
   filter (· ∈ t) s
@@ -205,8 +209,10 @@ theorem cons_ndinter_of_mem {a : α} (s : Multiset α) {t : Multiset α} (h : a 
     ndinter (a ::ₘ s) t = a ::ₘ ndinter s t := by simp [ndinter, h]
 
 @[simp]
-theorem ndinter_cons_of_not_mem {a : α} (s : Multiset α) {t : Multiset α} (h : a ∉ t) :
+theorem ndinter_cons_of_notMem {a : α} (s : Multiset α) {t : Multiset α} (h : a ∉ t) :
     ndinter (a ::ₘ s) t = ndinter s t := by simp [ndinter, h]
+
+@[deprecated (since := "2025-05-23")] alias ndinter_cons_of_not_mem := ndinter_cons_of_notMem
 
 @[simp]
 theorem mem_ndinter {s t : Multiset α} {a : α} : a ∈ ndinter s t ↔ a ∈ s ∧ a ∈ t := by

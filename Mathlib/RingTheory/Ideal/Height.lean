@@ -83,7 +83,7 @@ lemma Ideal.primeHeight_add_one_le_of_lt {I J : Ideal R} [I.IsPrime] [J.IsPrime]
 
 @[simp]
 theorem Ideal.height_top : (⊤ : Ideal R).height = ⊤ := by
-  simp [height, minimalPrimes_top, iInf₂_eq_top]
+  simp [height, minimalPrimes_top]
 
 @[gcongr]
 lemma Ideal.primeHeight_strict_mono {I J : Ideal R} [I.IsPrime] [J.IsPrime]
@@ -91,12 +91,9 @@ lemma Ideal.primeHeight_strict_mono {I J : Ideal R} [I.IsPrime] [J.IsPrime]
     I.primeHeight < J.primeHeight := by
   rw [primeHeight]
   have : I.FiniteHeight := by
-    rw [Ideal.finiteHeight_iff, ← lt_top_iff_ne_top]
+    rw [Ideal.finiteHeight_iff, ← lt_top_iff_ne_top, Ideal.height_eq_primeHeight]
     right
-    rcases (Ideal.finiteHeight_iff J).mp ‹_› with (hl | hr)
-    · exact False.elim (IsPrime.ne_top ‹_› hl)
-    · rw [Ideal.height_eq_primeHeight] at hr ⊢
-      apply lt_of_le_of_lt (Ideal.primeHeight_mono (le_of_lt h)) (by rwa [lt_top_iff_ne_top])
+    exact lt_of_le_of_lt (Ideal.primeHeight_mono h.le) (Ideal.primeHeight_lt_top J)
   exact Order.height_strictMono h (Ideal.primeHeight_lt_top _)
 
 @[gcongr]
@@ -127,9 +124,8 @@ lemma Ideal.primeHeight_le_ringKrullDim {I : Ideal R} [I.IsPrime] :
 lemma Ideal.height_le_ringKrullDim_of_ne_top {I : Ideal R} (h : I ≠ ⊤) :
     I.height ≤ ringKrullDim R := by
   rw [Ideal.height]
-  have : Nonempty (I.minimalPrimes) := Ideal.nonempty_minimalPrimes h
-  rcases this with ⟨P, hP⟩
-  have := hP.1.1
+  obtain ⟨P, hP⟩ : Nonempty (I.minimalPrimes) := Ideal.nonempty_minimalPrimes h
+  have := Ideal.minimalPrimes_isPrime hP
   refine le_trans ?_ (Ideal.primeHeight_le_ringKrullDim (I := P))
   simpa using iInf₂_le _ hP
 
@@ -183,7 +179,7 @@ theorem Ideal.isMaximal_of_primeHeight_eq_ringKrullDim {I : Ideal R} [I.IsPrime]
   rcases lt_or_eq_of_le hM' with (hM' | hM')
   · have h1 := Ideal.primeHeight_strict_mono hM'
     have h2 := e ▸ M.primeHeight_le_ringKrullDim
-    simp [WithBot.coe_le_coe, ← not_lt, h1] at h2
+    simp [← not_lt, h1] at h2
   · exact hM' ▸ hM
 
 /-- The prime height of the maximal ideal equals the Krull dimension in a local ring -/

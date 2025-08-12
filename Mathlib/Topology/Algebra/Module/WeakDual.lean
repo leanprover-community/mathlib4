@@ -10,7 +10,7 @@ import Mathlib.Topology.Algebra.Module.WeakBilin
 /-!
 # Weak dual topology
 
-We continue in the setting of `Mathlib.Topology.Algebra.Module.WeakBilin`,
+We continue in the setting of `Mathlib/Topology/Algebra/Module/WeakBilin.lean`,
 which defines the weak topology given two vector spaces `E` and `F` over a commutative semiring
 `𝕜` and a bilinear form `B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜`. The weak topology on `E` is the coarsest topology
 such that for all `y : F` every map `fun x => B x y` is continuous.
@@ -145,7 +145,7 @@ theorem continuous_of_continuous_eval [TopologicalSpace α] {g : α → WeakDual
   continuous_induced_rng.2 (continuous_pi_iff.mpr h)
 
 instance instT2Space [T2Space 𝕜] : T2Space (WeakDual 𝕜 E) :=
-   (WeakBilin.isEmbedding ContinuousLinearMap.coe_injective).t2Space
+  (WeakBilin.isEmbedding ContinuousLinearMap.coe_injective).t2Space
 
 end Semiring
 

@@ -10,11 +10,11 @@ import Mathlib.Algebra.Ring.Defs
 # Semirings and rings
 
 This file gives lemmas about semirings, rings and domains.
-This is analogous to `Mathlib.Algebra.Group.Basic`,
+This is analogous to `Mathlib/Algebra/Group/Basic.lean`,
 the difference being that the former is about `+` and `*` separately, while
 the present file is about their interaction.
 
-For the definitions of semirings and rings see `Mathlib.Algebra.Ring.Defs`.
+For the definitions of semirings and rings see `Mathlib/Algebra/Ring/Defs.lean`.
 
 -/
 

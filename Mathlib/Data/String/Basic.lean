@@ -84,7 +84,7 @@ theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList
     · rename_i c₁ cs₁ ih; apply iff_of_false
       · unfold ltb
         simp [Iterator.hasNext]
-      · apply not_lt_of_lt; apply List.nil_lt_cons
+      · apply not_lt_of_gt; apply List.nil_lt_cons
     · rename_i c₁ cs₁ ih c₂ cs₂; unfold ltb
       simp only [Iterator.hasNext, Pos.byteIdx_zero, endPos, utf8ByteSize, utf8ByteSize.go,
         add_pos_iff, Char.utf8Size_pos, or_true, decide_eq_true_eq, ↓reduceIte, Iterator.curr, get,
@@ -140,8 +140,8 @@ instance : LinearOrder String where
   le_trans a b c := by
     simp only [le_iff_toList_le]
     apply le_trans
-  lt_iff_le_not_le a b := by
-    simp only [lt_iff_toList_lt, le_iff_toList_le, lt_iff_le_not_le]
+  lt_iff_le_not_ge a b := by
+    simp only [lt_iff_toList_lt, le_iff_toList_le, lt_iff_le_not_ge]
   le_antisymm a b := by
     simp only [le_iff_toList_le, ← toList_inj]
     apply le_antisymm

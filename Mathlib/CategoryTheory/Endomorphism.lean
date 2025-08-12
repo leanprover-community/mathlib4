@@ -136,8 +136,6 @@ are (multiplicatively) equivalent to automorphisms of that object.
 def unitsEndEquivAut : (End X)ˣ ≃* Aut X where
   toFun f := ⟨f.1, f.2, f.4, f.3⟩
   invFun f := ⟨f.1, f.2, f.4, f.3⟩
-  left_inv := fun ⟨_, _, _, _⟩ => rfl
-  right_inv := fun ⟨_, _, _, _⟩ => rfl
   map_mul' f g := by cases f; cases g; rfl
 
 /-- The inclusion of `Aut X` to `End X` as a monoid homomorphism. -/
@@ -148,8 +146,8 @@ def toEnd (X : C) : Aut X →* End X := (Units.coeHom (End X)).comp (Aut.unitsEn
 def autMulEquivOfIso {X Y : C} (h : X ≅ Y) : Aut X ≃* Aut Y where
   toFun x := { hom := h.inv ≫ x.hom ≫ h.hom, inv := h.inv ≫ x.inv ≫ h.hom }
   invFun y := { hom := h.hom ≫ y.hom ≫ h.inv, inv := h.hom ≫ y.inv ≫ h.inv }
-  left_inv _ := by aesop_cat
-  right_inv _ := by aesop_cat
+  left_inv _ := by cat_disch
+  right_inv _ := by cat_disch
   map_mul' := by simp [Aut_mul_def]
 
 end Aut
