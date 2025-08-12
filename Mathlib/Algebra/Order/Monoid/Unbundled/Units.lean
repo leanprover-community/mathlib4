@@ -13,31 +13,81 @@ import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 
 variable {M : Type*} [Monoid M] [LE M]
 
-theorem Units.mulLECancellable_val [MulLeftMono M] (a : Mˣ) :
-    MulLECancellable (↑a : M) := fun _ _ h ↦ by
-  simpa using mul_le_mul_left' h ↑a⁻¹
+section MulLeftMono
 
-theorem Units.mul_le_mul_left [MulLeftMono M] (a : Mˣ) {b c : M} :
-    a * b ≤ a * c ↔ b ≤ c :=
-  a.mulLECancellable_val.mul_le_mul_iff_left
+variable [MulLeftMono M] (u : Mˣ) {a b c : M} (ha : IsUnit a)
 
-theorem IsUnit.mulLECancellable [MulLeftMono M] {a : M} (ha : IsUnit a) :
-    MulLECancellable a :=
+namespace Units
+
+theorem mulLECancellable_val : MulLECancellable (↑u : M) := fun _ _ h ↦ by
+  simpa using mul_le_mul_left' h ↑u⁻¹
+
+theorem mul_le_mul_left : u * b ≤ u * c ↔ b ≤ c :=
+  u.mulLECancellable_val.mul_le_mul_iff_left
+alias ⟨le_of_mul_le_mul_left, _⟩ := mul_le_mul_left
+
+theorem inv_mul_le_iff : u⁻¹ * a ≤ b ↔ a ≤ u * b := by
+  rw [← u.mul_le_mul_left, mul_inv_cancel_left]
+alias ⟨le_mul_of_inv_mul_le, inv_mul_le_of_le_mul⟩ := inv_mul_le_iff
+
+theorem le_inv_mul_iff : a ≤ u⁻¹ * b ↔ u * a ≤ b := by
+  rw [← u.mul_le_mul_left, mul_inv_cancel_left]
+alias ⟨mul_le_of_le_inv_mul, le_inv_mul_of_mul_le⟩ := le_inv_mul_iff
+
+theorem one_le_inv : (1 : M) ≤ u⁻¹ ↔ (u : M) ≤ 1 := by
+  rw [← u.mul_le_mul_left, mul_one, mul_inv]
+alias ⟨le_of_one_le_inv, one_le_inv_of_le⟩ := one_le_inv
+
+theorem inv_le_one : u⁻¹ ≤ (1 : M) ↔ (1 : M) ≤ u := by
+  rw [← u.mul_le_mul_left, mul_one, mul_inv]
+alias ⟨le_of_inv_le_one, inv_le_one_of_le⟩ := inv_le_one
+
+theorem one_le_inv_mul : 1 ≤ u⁻¹ * a ↔ u ≤ a := by
+  rw [u.le_inv_mul_iff, mul_one]
+alias ⟨le_of_one_le_inv_mul, one_le_inv_mul_of_le⟩ := one_le_inv_mul
+
+theorem inv_mul_le_one : u⁻¹ * a ≤ 1 ↔ a ≤ u := by
+  rw [u.inv_mul_le_iff, mul_one]
+alias ⟨le_of_inv_mul_le_one, inv_mul_le_one_of_le⟩ := inv_mul_le_one
+
+end Units
+
+namespace IsUnit
+
+include ha
+
+theorem mulLECancellable : MulLECancellable a :=
   ha.unit.mulLECancellable_val
 
-theorem IsUnit.mul_le_mul_left [MulLeftMono M] {a b c : M} (ha : IsUnit a) :
-    a * b ≤ a * c ↔ b ≤ c :=
+theorem mul_le_mul_left : a * b ≤ a * c ↔ b ≤ c :=
   ha.unit.mul_le_mul_left
+alias ⟨le_of_mul_le_mul_left, _⟩ := mul_le_mul_left
 
-theorem Units.mul_le_mul_right [MulRightMono M] (a : Mˣ) {b c : M} :
-    b * a ≤ c * a ↔ b ≤ c :=
-  ⟨(by simpa using mul_le_mul_right' · ↑a⁻¹), (mul_le_mul_right' · _)⟩
+end IsUnit
 
-theorem IsUnit.mul_le_mul_right [MulRightMono M] {a b c : M} (ha : IsUnit a) :
-    b * a ≤ c * a ↔ b ≤ c :=
-  ha.unit.mul_le_mul_right
+end MulLeftMono
 
+section MulRightMono
 
-theorem Units.mul_inv_le_iff₀ [MulRightMono M] {a b : M} (c : Mˣ) :
-    b * c⁻¹ ≤ a ↔ b ≤ a * c := by
-  rw [← c.mul_le_mul_right, c.inv_mul_cancel_right]
+variable [MulRightMono M] {a b c : M} (hc : IsUnit c) (u : Mˣ)
+
+namespace Units
+
+theorem mul_le_mul_right : a * u ≤ b * u ↔ a ≤ b :=
+  ⟨(by simpa using mul_le_mul_right' · ↑u⁻¹), (mul_le_mul_right' · _)⟩
+
+theorem mul_inv_le_iff : a * u⁻¹ ≤ b ↔ a ≤ b * u := by
+  rw [← u.mul_le_mul_right, u.inv_mul_cancel_right]
+
+end Units
+
+namespace IsUnit
+
+include hc
+
+theorem mul_le_mul_right : a * c ≤ b * c ↔ a ≤ b :=
+  hc.unit.mul_le_mul_right
+
+end IsUnit
+
+end MulRightMono
