@@ -266,12 +266,12 @@ def U : ℕ → Set E
 
 /- Lean would interpret `ball 0 n⁻¹` as ∅, so we set it to univ above -/
 lemma U0 : ball (0 : E) 0⁻¹ = ∅ := by
-  simp only [U, CharP.cast_eq_zero, inv_zero, ball_zero]
+  simp only [inv_zero, ball_zero]
 
-lemma polar_U0 : polar 𝕜 (U 0) = closedBall (0 : Dual 𝕜 E) 0 := by
+lemma polar_U0 : polar 𝕜 (U 0) = closedBall (0 : StrongDual 𝕜 E) 0 := by
   -- Should we be able to use Metric.closedBall_zero here?
   rw [closedBall_zero', closure_singleton, U, polar]
-  simp only [polar_univ]
+  simp only [StrongDual.polar_univ]
   rfl
 
 lemma test : U (E := E) 0 = univ := rfl
@@ -321,13 +321,13 @@ lemma inter_empty (h : polar 𝕜₁ s ∩ C ∩ polar 𝕜₁ (U (n+1)) = ∅) 
   simp_rw [K]
   rw [← iInter_inter, ← iInter_inter, ← inter_iInter, iInter_coe_set]
   have e1 : ⋂ i ∈ U (n + 1), polar 𝕜₁ {i} = polar 𝕜₁ (U (E := E₁) (n+1)) := by
-    simp_rw [polar, NormedSpace.polar]
-    rw [← (dualPairing 𝕜₁ E₁).flip.iInter_polar_singleton_eq_polar]
+    simp_rw [polar, StrongDual.polar]
+    rw [← (strongDualPairing 𝕜₁ E₁).flip.iInter_polar_singleton_eq_polar]
     rfl
   rw [e1, inter_assoc _ _ C, inter_comm _ C, ← inter_assoc, h, empty_inter]
 
 lemma iInter_of_empty_univ : ⋂ i ∈ (∅ : Finset (U (n + 1))), K C s n i.val = univ := by
-  simp_all only [Finset.not_mem_empty, iInter_of_empty, iInter_univ]
+  simp_all only [Finset.notMem_empty, iInter_of_empty, iInter_univ]
 
 lemma ss2 (x : U (E := E₁) (n + 1)) : (polar 𝕜₁ (U (n+2)) ∩ K C s n x ) = K C s n x := by
   rw [K, inter_comm, inter_assoc, inter_self]
