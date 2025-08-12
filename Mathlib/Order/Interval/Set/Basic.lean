@@ -25,7 +25,14 @@ This file contains basic facts on inclusion of and set operations on intervals
 (where the precise statements depend on the order's properties;
 statements requiring `LinearOrder` are in `Mathlib/Order/Interval/Set/LinearOrder.lean`).
 
-TODO: This is just the beginning; a lot of rules are missing
+A conscious decision was made not to list all possible inclusion relations.
+Monotonicity results and "self" results *are* included.
+Most use cases can suffice with a transitive combination of those, for example:
+```
+theorem Ico_subset_Ici (h : a₂ ≤ a₁) : Ico a₁ b₁ ⊆ Ici a₂ :=
+  (Ico_subset_Ico_left h).trans Ico_subset_Ici_self
+```
+Logical equivalences, such as `Icc_subset_Ici_iff`, are stated as well.
 -/
 
 assert_not_exists RelIso
@@ -444,24 +451,6 @@ theorem Icc_ssubset_Icc_right (hI : a₂ ≤ b₂) (ha : a₂ ≤ a₁) (hb : b�
     Icc a₁ b₁ ⊂ Icc a₂ b₂ :=
   (ssubset_iff_of_subset (Icc_subset_Icc ha (le_of_lt hb))).mpr
     ⟨b₂, right_mem_Icc.mpr hI, fun f => lt_irrefl b₁ (hb.trans_le f.2)⟩
-
-theorem Ico_subset_Ici (h : a₂ ≤ a₁) : Ico a₁ b₁ ⊆ Ici a₂ :=
-  (Ico_subset_Ico_left h).trans Ico_subset_Ici_self
-
-theorem Ioc_subset_Ioi (h : a₂ ≤ a₁) : Ioc a₁ b₁ ⊆ Ioi a₂ :=
-  (Ioc_subset_Ioc_left h).trans Ioc_subset_Ioi_self
-
-theorem Ioo_subset_Ioi (h : a₂ ≤ a₁) : Ioo a₁ b₁ ⊆ Ioi a₂ :=
-  (Ioo_subset_Ioo_left h).trans Ioo_subset_Ioi_self
-
-theorem Ioc_subset_Iic (h : b₁ ≤ b₂) : Ioc a₁ b₁ ⊆ Iic b₂ :=
-  (Ioc_subset_Ioc_right h).trans Ioc_subset_Iic_self
-
-theorem Ico_subset_Iio (h : b₁ ≤ b₂) : Ico a₁ b₁ ⊆ Iio b₂ :=
-  (Ico_subset_Ico_right h).trans Ico_subset_Iio_self
-
-theorem Ioo_subset_Iio (h : b₁ ≤ b₂) : Ioo a₁ b₁ ⊆ Iio b₂ :=
-  (Ioo_subset_Ioo_right h).trans Ioo_subset_Iio_self
 
 /-- If `a ≤ b`, then `(b, +∞) ⊆ (a, +∞)`. In preorders, this is just an implication. If you need
 the equivalence in linear orders, use `Ioi_subset_Ioi_iff`. -/
