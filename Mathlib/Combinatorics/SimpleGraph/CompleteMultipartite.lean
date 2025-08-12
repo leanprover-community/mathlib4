@@ -251,33 +251,31 @@ def Coloring.completeEquipartiteGraph :
 theorem completeEquipartiteGraph_colorable :
   (completeEquipartiteGraph r t).Colorable r := ⟨Coloring.completeEquipartiteGraph⟩
 
+variable [Fintype α]
+
 /-- Every `n`-colorable graph is contained in a `completeEquipartiteGraph` in `n` parts (as long
   as the parts are at least as large as the largest color class). -/
-theorem isContained_completeEquipartiteGraph_of_colorable [Fintype α]
-    {n : ℕ} (h : G.Colorable n) : ∃ t, G ⊑ completeEquipartiteGraph n t := by
-  let C := h.some
-  let t := univ.sup (fun c ↦ card (C.colorClass c))
-  use t
-  haveI (c : Fin n) : Nonempty (C.colorClass c ↪ (Fin t)) := by
-    rw [Function.Embedding.nonempty_iff_card_le, Fintype.card_fin]
-    exact @le_sup _ _ _ _ _ (fun c ↦ card (C.colorClass c)) c (mem_univ c)
-  have ι (c : Fin n) := Classical.arbitrary (C.colorClass c ↪ (Fin t))
-  have hι_ceq {c₁ c₂} {v} {w} (hc_eq : c₁ = c₂) (hι_eq : ι c₁ v = ι c₂ w) : v.val = w.val := by
-    let v' : C.colorClass c₂ := by
-      use v
-      rw [← hc_eq]
-      exact v.prop
-    have hι_eq' : ι c₁ v = ι c₂ v' := by
+theorem isContained_completeEquipartiteGraph_of_colorable {n : ℕ} (C : G.Coloring (Fin n)) :
+    G ⊑ completeEquipartiteGraph n (univ.sup fun c ↦ card (C.colorClass c)) := by
+  let f := fun c ↦ card (C.colorClass c)
+  have h (c : Fin n) : Nonempty (C.colorClass c ↪ Fin (univ.sup f)) := by
+    rw [Function.Embedding.nonempty_iff_card_le, Fintype.card_fin,
+      show card (C.colorClass c) = f c by dsimp]
+    exact le_sup (mem_univ c)
+  have F (c : Fin n) := Classical.arbitrary (C.colorClass c ↪ Fin (univ.sup f))
+  have hF {c₁ c₂ v₁ v₂} (hc : c₁ = c₂) (hv : F c₁ v₁ = F c₂ v₂) : v₁.val = v₂.val := by
+    let v₁' : C.colorClass c₂ := ⟨v₁, by simp [← hc]⟩
+    have hv' : F c₁ v₁ = F c₂ v₁' := by
       apply congr_heq
-      · rw [hc_eq]
+      · rw [hc]
       · rw [Subtype.heq_iff_coe_eq]
-        simp [hc_eq]
-    rw [hι_eq'] at hι_eq
-    simpa [Subtype.ext_iff] using (ι c₂).injective hι_eq
-  use ⟨fun v ↦ (C v, ι (C v) ⟨v, C.mem_colorClass v⟩), C.valid⟩
-  intro _ _ h_eq
-  rw [Prod.mk.injEq] at h_eq
-  exact hι_ceq h_eq.1 h_eq.2
+        simp [hc]
+    rw [hv'] at hv
+    simpa [Subtype.ext_iff] using (F c₂).injective hv
+  use ⟨fun v ↦ (C v, F (C v) ⟨v, C.mem_colorClass v⟩), C.valid⟩
+  intro v w h
+  rw [Prod.mk.injEq] at h
+  exact hF h.1 h.2
 
 end Coloring
 
