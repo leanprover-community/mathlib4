@@ -580,7 +580,8 @@ instance [Subsingleton X] : Subsingleton (SeparationQuotient X) :=
 
 theorem subsingleton_iff {t : TopologicalSpace α} :
     Subsingleton (SeparationQuotient α) ↔ t = ⊤ := by
-  simp_rw [subsingleton_iff, ← forall_inseparable_iff, SeparationQuotient.forall, mk_eq_mk]
+  simp_rw [_root_.subsingleton_iff, TopologicalSpace.eq_top_iff_forall_inseparable,
+    SeparationQuotient.forall, mk_eq_mk]
 
 theorem nontrivial_iff {t : TopologicalSpace α} :
     Nontrivial (SeparationQuotient α) ↔ t ≠ ⊤ := by
