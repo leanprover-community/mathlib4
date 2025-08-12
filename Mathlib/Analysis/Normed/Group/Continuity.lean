@@ -104,7 +104,7 @@ instance NormedGroup.toENormedMonoid {F : Type*} [NormedGroup F] : ENormedMonoid
 @[to_additive]
 instance NormedCommGroup.toENormedCommMonoid [NormedCommGroup E] : ENormedCommMonoid E where
   __ := NormedGroup.toENormedMonoid
-  mul_comm := mul_comm
+  __ := ‹NormedCommGroup E›
 
 end Instances
 
