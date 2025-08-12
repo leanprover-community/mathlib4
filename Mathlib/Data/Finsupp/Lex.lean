@@ -98,7 +98,7 @@ theorem Lex.single_lt_iff {a b : α} : toLex (single b 1) < toLex (single a 1) �
   Lex.single_strictAnti.lt_iff_lt
 
 theorem Lex.single_le_iff {a b : α} : toLex (single b 1) ≤ toLex (single a 1) ↔ a ≤ b :=
-  Lex.single_strictAnti.le_iff_le
+  Lex.single_strictAnti.le_iff_ge
 
 theorem Lex.single_antitone : Antitone (fun (a : α) ↦ toLex (single a 1)) :=
   Lex.single_strictAnti.antitone
