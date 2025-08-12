@@ -70,7 +70,7 @@ lemma Submodule.index_smul_le [Finite (R ⧸ I)]
       (quotTensorEquivQuotSMul N I).symm
   rw [Nat.card_congr e.toEquiv]
   have H : LinearMap.range (Finsupp.linearCombination R (α := s) (↑)) = N := by
-    rw [Finsupp.range_linearCombination, ← hs, Subtype.range_val]; rfl
+    rw [Finsupp.range_linearCombination, ← hs, Subtype.range_val]
   let f : (s →₀ R) →ₗ[R] N := (Finsupp.linearCombination R (↑)).codRestrict _
     (fun c => by rw [← H, LinearMap.mem_range]; exact exists_apply_eq_apply _ _)
   have hf : Function.Surjective f := fun x ↦ by
