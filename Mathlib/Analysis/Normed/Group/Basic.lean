@@ -100,7 +100,7 @@ for `ℝ≥0∞` (the motivating example behind this definition), this is not tr
 class ContinuousENorm (E : Type*) [TopologicalSpace E] extends ENorm E where
   continuous_enorm : Continuous enorm
 
-/-- An enormed monoid is an additive monoid endowed with a continuous enorm.
+/-- A e-seminormed monoid is an additive monoid endowed with a continuous enorm.
 Note that we only ask for the enorm to be positive definite:
 non-trivial elements may have enorm zero. -/
 class ESeminormedAddMonoid (E : Type*) [TopologicalSpace E]
@@ -108,29 +108,28 @@ class ESeminormedAddMonoid (E : Type*) [TopologicalSpace E]
   enorm_zero : ‖(0 : E)‖ₑ = 0
   protected enorm_add_le : ∀ x y : E, ‖x + y‖ₑ ≤ ‖x‖ₑ + ‖y‖ₑ
 
-/-- A strict enormed monoid is an additive monoid endowed with a continuous enorm,
+/-- An enormed monoid is an additive monoid endowed with a continuous enorm,
 which is positive definite: in other words, this is an `ESeminormedAddMonoid` with a positive
 definiteness condition added. -/
 class ENormedAddMonoid (E : Type*) [TopologicalSpace E]
     extends ESeminormedAddMonoid E where
   enorm_eq_zero : ∀ x : E, ‖x‖ₑ = 0 ↔ x = 0
 
-/-- An enormed monoid is a monoid endowed with a continuous enorm.
+/-- An e-seminormed monoid is a monoid endowed with a continuous enorm.
 Note that we only ask for the enorm to be a semi-norm: non-trivial elements may have enorm zero. -/
 @[to_additive]
 class ESeminormedMonoid (E : Type*) [TopologicalSpace E] extends ContinuousENorm E, Monoid E where
   enorm_zero : ‖(1 : E)‖ₑ = 0
   enorm_mul_le : ∀ x y : E, ‖x * y‖ₑ ≤ ‖x‖ₑ + ‖y‖ₑ
 
-/-- A strict enormed monoid is a monoid endowed with a continuous enorm,
+/-- An enormed monoid is a monoid endowed with a continuous enorm,
 which is positive definite: in other words, this is an `ESeminormedMonoid` with a positive
 definiteness condition added. -/
 @[to_additive]
 class ENormedMonoid (E : Type*) [TopologicalSpace E] extends ESeminormedMonoid E where
   enorm_eq_zero : ∀ x : E, ‖x‖ₑ = 0 ↔ x = 1
 
-/-- An enormed commutative monoid is an additive commutative monoid
-endowed with a continuous enorm.
+/-- An enormed commutative monoid is an additive commutative monoid endowed with a continuous enorm.
 
 We don't have `ENormedAddCommMonoid` extend `EMetricSpace`, since the canonical instance `ℝ≥0∞`
 is not an `EMetricSpace`. This is because `ℝ≥0∞` carries the order topology, which is distinct from
@@ -138,7 +137,7 @@ the topology coming from `edist`. -/
 class ENormedAddCommMonoid (E : Type*) [TopologicalSpace E]
   extends ESeminormedAddMonoid E, AddCommMonoid E where
 
-/-- A strict enormed commutative monoid is an additive commutative monoid
+/-- An enormed commutative monoid is an additive commutative monoid
 endowed with a continuous enorm which is positive definite.
 
 We don't have `ENormedAddCommMonoid` extend `EMetricSpace`, since the canonical instance `ℝ≥0∞`
@@ -149,9 +148,10 @@ class StrictENormedAddCommMonoid (E : Type*) [TopologicalSpace E]
 
 /-- An enormed commutative monoid is a commutative monoid endowed with a continuous enorm. -/
 @[to_additive]
-class ENormedCommMonoid (E : Type*) [TopologicalSpace E] extends ESeminormedMonoid E, CommMonoid E where
+class ENormedCommMonoid (E : Type*) [TopologicalSpace E]
+  extends ESeminormedMonoid E, CommMonoid E where
 
-/-- A strict enormed commutative monoid is a commutative monoid endowed with a continuous enorm
+/-- An enormed commutative monoid is a commutative monoid endowed with a continuous enorm
 which is positive definite. -/
 @[to_additive]
 class StrictENormedCommMonoid (E : Type*) [TopologicalSpace E]
