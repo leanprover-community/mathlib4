@@ -46,7 +46,6 @@ universe u v ua ub uc ud
 
 variable {α : Type ua} {β : Type ub} {γ : Type uc} {δ : Type ud} {ι : Sort*}
 
-open Set (Rel) in
 open scoped Rel in
 lemma IsOpen.relComp [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
     {s : SetRel α β} {t : SetRel β γ} (hs : IsOpen s) (ht : IsOpen t) : IsOpen (s ○ t) := by
