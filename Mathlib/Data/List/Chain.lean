@@ -270,7 +270,7 @@ theorem chain'_append :
   | [a], l => by simp [chain'_cons', and_comm]
   | a :: b :: l₁, l₂ => by
     rw [cons_append, cons_append, chain'_cons_cons, chain'_cons_cons, ← cons_append, chain'_append,
-    and_assoc]
+      and_assoc]
     simp
 
 theorem Chain'.append (h₁ : Chain' R l₁) (h₂ : Chain' R l₂)
