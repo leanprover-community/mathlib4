@@ -251,6 +251,7 @@ lemma IsTree.minDegree_eq_one_of_nontrivial (h : G.IsTree) [Fintype V] [inst : N
 lemma IsTree.exists_vert_degree_one_of_nontrivial [Fintype V] [Nontrivial V] [DecidableRel G.Adj]
     (h : G.IsTree) : ∃ v, G.degree v = 1 := by
   obtain ⟨v, hv⟩ := G.exists_minimal_degree_vertex
+  use v
   rw [← hv]
   exact ⟨v, h.minDegree_eq_one_of_nontrivial⟩
 
