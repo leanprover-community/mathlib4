@@ -10,7 +10,7 @@ import Mathlib.Topology.ContinuousMap.Algebra
 # Sums of translates of a continuous function is a period continuous function.
 
 -/
-assert_not_exists StoneCech StarModule
+assert_not_exists StoneCech dite_div_dite
 
 namespace ContinuousMap
 
