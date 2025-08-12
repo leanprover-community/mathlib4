@@ -13,7 +13,7 @@ import Mathlib.Analysis.Normed.Module.Complemented
 We prove four versions of the implicit function theorem. First we define a structure
 `ImplicitFunctionData` that holds arguments for the most general version of the implicit function
 theorem, see `ImplicitFunctionData.implicitFunction` and
-`ImplicitFunctionData.hasStrictFDerivAt_implicitFunction`. This version allows a user to choose a
+`ImplicitFunctionData.implicitFunction_hasStrictFDerivAt`. This version allows a user to choose a
 specific implicit function but provides only a little convenience over the inverse function theorem.
 
 Then we define `HasStrictFDerivAt.implicitFunctionDataOfComplemented`: implicit function defined by
@@ -211,9 +211,6 @@ theorem implicitFunction_hasStrictFDerivAt (g'inv : G →L[𝕜] E)
     ((hasStrictFDerivAt_const _ _).prodMk (hasStrictFDerivAt_id _))
   simp only [ContinuousLinearMap.ext_iff, ContinuousLinearMap.comp_apply] at hg'inv hg'invf ⊢
   simp [ContinuousLinearEquiv.eq_symm_apply, *]
-
-@[deprecated (since := "2024-09-18")]
-alias implicitFunction_hasStrictFDerivAt := hasStrictFDerivAt_implicitFunction
 
 end ImplicitFunctionData
 
