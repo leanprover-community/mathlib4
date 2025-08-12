@@ -603,6 +603,49 @@ theorem contMDiffAt_iff_nat {n : ℕ∞} :
     ContMDiffAt I I' n f x ↔ ∀ m : ℕ, (m : ℕ∞) ≤ n → ContMDiffAt I I' m f x := by
   simp [← contMDiffWithinAt_univ, contMDiffWithinAt_iff_nat]
 
+/-! ### `C^ω` functions -/
+
+section Analytic
+
+variable {E A : Type} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {F B : Type} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable [TopologicalSpace A] [TopologicalSpace B]
+variable {M : Type} {I : ModelWithCorners 𝕜 E A} [TopologicalSpace M]
+variable {N : Type} {J : ModelWithCorners 𝕜 F B} [TopologicalSpace N]
+variable [ChartedSpace A M] [ChartedSpace B N]
+
+/-- Functions are `ContMDiffAt` iff they are continuous and analytic in charts -/
+theorem mAnalyticAt_iff {f : M → N} {x : M} [CompleteSpace F] :
+    ContMDiffAt I J ω f x ↔ ContinuousAt f x ∧
+      AnalyticWithinAt 𝕜 (extChartAt J (f x) ∘ f ∘ (extChartAt I x).symm) (range I)
+      (extChartAt I x x) := by
+  rw [contMDiffAt_iff, contDiffWithinAt_omega_iff_analyticWithinAt]
+
+/-- Functions are `ContMDiffAt` iff they are continuous and analytic in charts -/
+theorem mAnalyticAt_iff_of_boundaryless [I.Boundaryless] [CompleteSpace F] {f : M → N} {x : M} :
+    ContMDiffAt I J ω f x ↔ ContinuousAt f x ∧
+      AnalyticAt 𝕜 (extChartAt J (f x) ∘ f ∘ (extChartAt I x).symm) (extChartAt I x x) := by
+  simp only [mAnalyticAt_iff, I.range_eq_univ, analyticWithinAt_univ]
+
+/-- Functions are `ContMDiff` iff they are continuous and analytic in charts everywhere -/
+theorem mAnalytic_iff {f : M → N} [CompleteSpace F] [IsManifold I ω M] [IsManifold J ω N] :
+    ContMDiff I J ω f ↔ Continuous f ∧
+      ∀ x : M, AnalyticWithinAt 𝕜 (extChartAt J (f x) ∘ f ∘ (extChartAt I x).symm)
+        (range I) (extChartAt I x x) := by
+  simp only [ContMDiff, contMDiffAt_iff, continuous_iff_continuousAt,
+    contDiffWithinAt_omega_iff_analyticWithinAt]
+  aesop
+
+/-- Functions are `ContMDiff` iff they are continuous and analytic in charts everywhere -/
+theorem mAnalytic_iff_of_boundaryless [I.Boundaryless] [IsManifold I ω M] [IsManifold J ω N]
+    [CompleteSpace F] {f : M → N} :
+    ContMDiff I J ω f ↔ Continuous f ∧
+      ∀ x : M, AnalyticAt 𝕜 (extChartAt J (f x) ∘ f ∘ (extChartAt I x).symm)
+        (extChartAt I x x) := by
+  simp only [mAnalytic_iff, I.range_eq_univ, analyticWithinAt_univ]
+
+end Analytic
+
 /-- A function is `C^n` within a set at a point iff it is `C^m` within this set at this point, for
 any `m ≤ n` which is different from `∞`. This result is useful because, when `m ≠ ∞`, being
 `C^m` extends locally to a neighborhood, giving flexibility for local proofs. -/
