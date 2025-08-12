@@ -3,22 +3,11 @@ Copyright (c) 2024 Yaël Dillies, Patrick Luo, Bhavik Mehta. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Patrick Luo, Bhavik Mehta
 -/
-import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Group.Action.Pointwise.Finset
-import Mathlib.Algebra.Group.Submonoid.Pointwise
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.GroupTheory.GroupAction.Defs
-import Mathlib.SetTheory.Cardinal.Finite
+import Mathlib.Algebra.Pointwise.Stabilizer
+import Mathlib.Data.Real.GoldenRatio
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Qify
-import Mathlib.Data.Real.Basic
---import Mathlib.Data.Real.Archimedean
---import Mathlib.Order.WellFounded
-import Mathlib.Data.Set.Lattice
-import Mathlib.Order.ConditionallyCompleteLattice.Defs
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Topology.Instances.Real.Lemmas
-import Mathlib.Data.Finite.Set
 
 /-!
 # Sets with very small doubling
@@ -434,9 +423,9 @@ private noncomputable def rCosRepFin (H : Subgroup G) [Fintype H] {A : Finset G}
           toA_mem_A, toH_mul_toA, toZ, toZ_comp_chooseZ'_mem_self, Z⟩
 
 -- TODO: Here `Z` is defined by extracting a representative from each coset and the definitional
---  property is actually not (explicitely) proved as it is not needed here; as far as I could check,
---  no such coset representing set is available in the library at this point, although it might be
---  useful independently of this section
+-- property is actually not (explicitely) proved as it is not needed here; as far as I could check,
+-- no such coset representing set is available in the library at this point, although it might be
+-- useful independently of this section
 /-- Given a finite subset `A` of group `G` and a subgroup `H ≤ G`, right coset representing set of
 `H * A` is a subset `Z` of `A` such that `H * Z = H * A` and `∀ z₁ z₂ ∈ Z → Hz₁ ≠ Hz₂` -/
 private noncomputable def rightCosetRepresentingFinset (H : Subgroup G) [Fintype H] {A : Finset G}
@@ -900,6 +889,5 @@ theorem doubling_lt_two {ε : ℝ} (hε₀ : 0 < ε) (hε₁ : ε ≤ 1) (hA : A
   case A_subset_HZ =>
     rw [mul_rightCosetRepresentingFinset_eq_mul_set H hA]
     exact Set.subset_mul_right _ H.one_mem
-
 
 end Finset
