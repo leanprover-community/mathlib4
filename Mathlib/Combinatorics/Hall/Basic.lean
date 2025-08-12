@@ -182,8 +182,8 @@ theorem Fintype.all_card_le_rel_image_card_iff_exists_injective {α : Type u} {�
     rw [← Set.toFinset_card]
     apply congr_arg
     ext b
-    simp [r', Rel.image]
-  have h' : ∀ (f : α → β) (x), x ~[R] f x ↔ f x ∈ r' x := by simp [r', Rel.image]
+    simp [r', SetRel.image]
+  have h' : ∀ (f : α → β) (x), x ~[R] f x ↔ f x ∈ r' x := by simp [r', SetRel.image]
   simp only [h, h']
   apply Finset.all_card_le_biUnion_card_iff_exists_injective
 
