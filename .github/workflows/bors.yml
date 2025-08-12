@@ -227,6 +227,9 @@ jobs:
             echo "Fetching all remaining cache..."
 
             ../master-branch/.lake/build/bin/cache get
+
+            # Run again with --repo, to ensure we actually get the oleans.
+            ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} get
           else
             echo "WARNING: 'lake build --no-build -v Mathlib.Init' failed."
             echo "No cache for 'Mathlib.Init' available or it could not be prepared."
@@ -277,7 +280,11 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: mathlib4_artifact
-          path: pr-branch/
+          include-hidden-files: true
+          # we exclude .git since there may be secrets in there
+          path: |
+            pr-branch/
+            !pr-branch/.git/
 
       # The cache secrets are available here, so we must not run any untrusted code.
       - name: upload cache
