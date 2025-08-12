@@ -228,7 +228,7 @@ lemma IsMIntegralCurveOn.hasDerivWithinAt (hγ : IsMIntegralCurveOn γ v s) {t :
     mfderiv_chartAt_eq_tangentCoordChange hsrc]
   rfl
 
-@[deprecated (since := "2025-06-29")] alias IsIntegralCurveOn.hasDerivAt :=
+@[deprecated (since := "2025-06-29")] alias IsIntegralCurveOn.hasDerivWithinAt :=
   IsMIntegralCurveOn.hasDerivWithinAt
 
 lemma IsMIntegralCurveAt.eventually_hasDerivAt (hγ : IsMIntegralCurveAt γ v t₀) :
