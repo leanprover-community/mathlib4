@@ -19,7 +19,7 @@ do so in order to minimize the necessary type class assumptions.
 When `p q : ℝ≥0∞` are Hölder conjugate (i.e., `HolderConjugate p q`), we also construct the
 natural map `ContinuousLinearMap.lpPairing : Lp E p μ →L[𝕜] Lp F q μ →L[𝕜] G` given by
 `fun f g ↦ ∫ x, B (f x) (g x) ∂μ`. When `B := (NormedSpace.inclusionInDoubleDual 𝕜 E).flip`, this
-is the natural map `Lp (Dual 𝕜 E) p μ →L[𝕜] Dual 𝕜 (Lp E q μ)`.
+is the natural map `Lp (StrongDual 𝕜 E) p μ →L[𝕜] StrongDual 𝕜 (Lp E q μ)`.
 -/
 
 open ENNReal MeasureTheory Lp
@@ -120,7 +120,7 @@ This is given by `∫ x, B (f x) (g x) ∂μ`.
 
 In the special case when `B := (NormedSpace.inclusionInDoubleDual 𝕜 E).flip`, which is
 definitionally the same as `B := ContinuousLinearMap.id 𝕜 (E →L[𝕜] 𝕜)`, this is the
-natural map `Lp (Dual 𝕜 E) p μ →L[𝕜] Dual 𝕜 (Lp E q μ)`. -/
+natural map `Lp (StrongDual 𝕜 E) p μ →L[𝕜] StrongDual 𝕜 (Lp E q μ)`. -/
 def lpPairing (B : E →L[𝕜] F →L[𝕜] G) : Lp E p μ →L[𝕜] Lp F q μ →L[𝕜] G :=
   (L1.integralCLM' 𝕜 |>.postcomp <| Lp F q μ) ∘L (B.holderL μ p q 1)
 
