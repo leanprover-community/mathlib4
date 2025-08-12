@@ -253,6 +253,6 @@ lemma IsTree.exists_vert_degree_one_of_nontrivial [Fintype V] [Nontrivial V] [De
   obtain ⟨v, hv⟩ := G.exists_minimal_degree_vertex
   use v
   rw [← hv]
-  exact ⟨v, h.minDegree_eq_one_of_nontrivial⟩
+  exact h.minDegree_eq_one_of_nontrivial
 
 end SimpleGraph
