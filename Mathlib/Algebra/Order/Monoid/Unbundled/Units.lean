@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 
-import Mathlib.Algebra.Group.Units.Defs
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-
+import Mathlib.Algebra.Group.Units.Basic
+import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 
 /-!
 # Lemmas for units in an ordered monoid
