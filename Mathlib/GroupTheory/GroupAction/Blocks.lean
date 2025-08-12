@@ -675,6 +675,8 @@ theorem ncard_block_eq_relIndex (hB : IsBlock G B) {x : X} (hx : x ∈ B) :
     ext; rfl
   rw [Subgroup.relIndex, key, index_stabilizer, hB.orbit_stabilizer_eq hx]
 
+@[deprecated (since := "2025-08-12")] alias ncard_block_eq_relindex := ncard_block_eq_relIndex
+
 /-- The cardinality of the ambient space is the product of the cardinality of a block
   by the cardinality of the set of translates of that block -/
 @[to_additive
