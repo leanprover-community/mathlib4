@@ -302,21 +302,6 @@ theorem append_right (u : Fin m → α) (v : Fin n → α) (i : Fin n) :
     append u v (natAdd m i) = v i :=
   addCases_right _
 
-/-- Appending two sequences v and w, and then extracting the initial part
-(i.e., the less than part), gives back the original first sequence v. -/
-theorem append_apply_of_lt (v : Fin m → α) (w : Fin n → α) (i : Fin (m + n)) (h : ↑i < m) :
-    append v w i = v ⟨↑i, h⟩ := by
-  rw [← append_left v w]
-  rfl
-
-/-- Appending two sequences v and w, and then extracting final part
-(i.e., the greater than or equal part), gives back the original second sequence w. -/
-theorem append_apply_of_ge (v : Fin m → α) (w : Fin n → α) (i : Fin (m + n)) (h : m ≤ ↑i) :
-    append v w i = w ⟨↑i - m, Nat.sub_lt_left_of_lt_add h i.isLt⟩ := by
-  rw [← append_right v w]
-  congr!
-  exact Fin.ext (Nat.add_sub_of_le h).symm
-
 theorem append_right_nil (u : Fin m → α) (v : Fin n → α) (hv : n = 0) :
     append u v = u ∘ Fin.cast (by rw [hv, Nat.add_zero]) := by
   refine funext (Fin.addCases (fun l => ?_) fun r => ?_)
