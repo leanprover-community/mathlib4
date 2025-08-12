@@ -174,7 +174,7 @@ def support : Ideal R where
 theorem mem_support {x} : x ∈ P.support ↔ x ∈ P ∧ -x ∈ P := .rfl
 theorem coe_support : P.support = (P : Set R) ∩ -(P : Set R) := rfl
 
-@[simp] theorem supportAddSubgroup_eq : P.supportAddSubgroup = (P.support).toAddSubgroup := rfl
+@[simp] theorem supportAddSubgroup_eq : P.supportAddSubgroup = P.support.toAddSubgroup := rfl
 theorem mem_supportAddSubgroup_iff {x} : x ∈ P.supportAddSubgroup ↔ x ∈ P.support := by simp
 theorem coe_supportAddSubgroup_eq : (P.supportAddSubgroup : Set R) = P.support := by simp
 
