@@ -523,6 +523,7 @@ import Mathlib.Algebra.Homology.DerivedCategory.ShortExact
 import Mathlib.Algebra.Homology.DerivedCategory.SingleTriangle
 import Mathlib.Algebra.Homology.DifferentialObject
 import Mathlib.Algebra.Homology.Double
+import Mathlib.Algebra.Homology.Embedding.AreComplementary
 import Mathlib.Algebra.Homology.Embedding.Basic
 import Mathlib.Algebra.Homology.Embedding.Boundary
 import Mathlib.Algebra.Homology.Embedding.CochainComplex
@@ -1284,6 +1285,7 @@ import Mathlib.AlgebraicTopology.ModelCategory.Cylinder
 import Mathlib.AlgebraicTopology.ModelCategory.Instances
 import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
 import Mathlib.AlgebraicTopology.ModelCategory.JoyalTrick
+import Mathlib.AlgebraicTopology.ModelCategory.PathObject
 import Mathlib.AlgebraicTopology.MooreComplex
 import Mathlib.AlgebraicTopology.Quasicategory.Basic
 import Mathlib.AlgebraicTopology.Quasicategory.Nerve
@@ -2375,6 +2377,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 import Mathlib.CategoryTheory.Limits.Sifted
 import Mathlib.CategoryTheory.Limits.SmallComplete
 import Mathlib.CategoryTheory.Limits.Types.ColimitType
+import Mathlib.CategoryTheory.Limits.Types.ColimitTypeFiltered
 import Mathlib.CategoryTheory.Limits.Types.Colimits
 import Mathlib.CategoryTheory.Limits.Types.Filtered
 import Mathlib.CategoryTheory.Limits.Types.Images
@@ -4222,6 +4225,8 @@ import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 import Mathlib.LinearAlgebra.RootSystem.Finite.Nondegenerate
 import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Basic
 import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Lemmas
+import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Relations
+import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Semisimple
 import Mathlib.LinearAlgebra.RootSystem.Hom
 import Mathlib.LinearAlgebra.RootSystem.Irreducible
 import Mathlib.LinearAlgebra.RootSystem.IsValuedIn
@@ -6157,6 +6162,7 @@ import Mathlib.Topology.Algebra.InfiniteSum.Nonarchimedean
 import Mathlib.Topology.Algebra.InfiniteSum.Order
 import Mathlib.Topology.Algebra.InfiniteSum.Real
 import Mathlib.Topology.Algebra.InfiniteSum.Ring
+import Mathlib.Topology.Algebra.InfiniteSum.TsumUniformlyOn
 import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
 import Mathlib.Topology.Algebra.IntermediateField
 import Mathlib.Topology.Algebra.IsOpenUnits

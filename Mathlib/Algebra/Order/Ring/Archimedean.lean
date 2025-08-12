@@ -10,13 +10,13 @@ import Mathlib.RingTheory.Valuation.Basic
 /-!
 # Archimedean classes of a linearly ordered ring
 
-The archimedean classes of a strictly linearly ordered ring can be given the structure of an
-`AddCommMonoid`, by defining
+The archimedean classes of a linearly ordered ring can be given the structure of an `AddCommMonoid`,
+by defining
 
 * `0 = mk 1`
 * `mk x + mk y = mk (x * y)`
 
-For a strictly linearly ordered field, we can define a negative as
+For a linearly ordered field, we can define a negative as
 
 * `-mk x = mk x⁻¹`
 
@@ -38,26 +38,15 @@ variable {M : Type*} [LinearOrder M]
 
 namespace ArchimedeanClass
 section Ring
+variable [CommRing M]
 
-variable [CommRing M] [IsStrictOrderedRing M]
-  {R : Type*} [LinearOrder R] [CommRing R] [IsStrictOrderedRing R]
+section IsOrderedRing
+variable [IsOrderedRing M]
 
 instance : Zero (ArchimedeanClass M) where
   zero := mk 1
 
 @[simp] theorem mk_one : mk (1 : M) = 0 := rfl
-
-@[simp]
-theorem mk_eq_zero_of_archimedean [Archimedean M] {x : M} (h : x ≠ 0) : mk x = 0 :=
-  mk_eq_mk_of_archimedean h one_ne_zero
-
-theorem eq_zero_or_top_of_archimedean [Archimedean M] (x : ArchimedeanClass M) : x = 0 ∨ x = ⊤ := by
-  induction x with | mk x
-  obtain rfl | h := eq_or_ne x 0 <;> simp_all
-
-@[simp]
-theorem orderHom_zero (f : M →+o R) : orderHom f 0 = mk (f 1) := by
-  rw [← mk_one, orderHom_mk]
 
 private theorem mk_mul_le_of_le {x₁ y₁ x₂ y₂ : M} (hx : mk x₁ ≤ mk x₂) (hy : mk y₁ ≤ mk y₂) :
     mk (x₁ * y₁) ≤ mk (x₂ * y₂) := by
@@ -118,6 +107,47 @@ instance : IsOrderedAddMonoid (ArchimedeanClass M) where
 noncomputable instance : LinearOrderedAddCommMonoidWithTop (ArchimedeanClass M) where
   top_add' x := by induction x with | mk x => rw [← mk_zero, ← mk_mul, zero_mul]
 
+variable (M) in
+/-- `ArchimedeanClass.mk` defines an `AddValuation` on the ring `M`. -/
+noncomputable def addValuation : AddValuation M (ArchimedeanClass M) := AddValuation.of mk
+  rfl rfl min_le_mk_add mk_mul
+
+@[simp] theorem addValuation_apply (a : M) : addValuation M a = mk a := rfl
+
+variable {R : Type*} [LinearOrder R] [CommRing R] [IsOrderedRing R]
+
+@[simp]
+theorem orderHom_zero (f : M →+o R) : orderHom f 0 = mk (f 1) := by
+  rw [← mk_one, orderHom_mk]
+
+variable [NeZero (1 : M)]
+
+@[simp]
+theorem mk_eq_zero_of_archimedean [Archimedean M] {x : M} (h : x ≠ 0) : mk x = 0 :=
+  mk_eq_mk_of_archimedean h one_ne_zero
+
+theorem eq_zero_or_top_of_archimedean [Archimedean M] (x : ArchimedeanClass M) : x = 0 ∨ x = ⊤ := by
+  induction x with | mk x
+  obtain rfl | h := eq_or_ne x 0 <;> simp_all
+
+theorem mk_map_of_archimedean [Archimedean M] (f : M →+o R) {x : M} (h : x ≠ 0) :
+    mk (f x) = mk (f 1) := by
+  rw [← orderHom_mk, mk_eq_zero_of_archimedean h, orderHom_zero]
+
+@[simp]
+theorem mk_intCast {n : ℤ} (h : n ≠ 0) : mk (n : M) = 0 := by
+  simpa using mk_map_of_archimedean ⟨Int.castAddHom M, fun _ ↦ by simp⟩ h
+
+@[simp]
+theorem mk_natCast {n : ℕ} (h : n ≠ 0) : mk (n : M) = 0 := by
+  rw [← Int.cast_natCast]
+  exact mk_intCast (mod_cast h)
+
+end IsOrderedRing
+
+section IsStrictOrderedRing
+variable [IsStrictOrderedRing M]
+
 theorem add_left_cancel_of_ne_top {x y z : ArchimedeanClass M} (hx : x ≠ ⊤) (h : x + y = x + z) :
     y = z := by
   induction x with | mk x
@@ -133,32 +163,13 @@ theorem add_right_cancel_of_ne_top {x y z : ArchimedeanClass M} (hx : x ≠ ⊤)
   simp_rw [← add_comm x] at h
   exact add_left_cancel_of_ne_top hx h
 
-theorem mk_map_of_archimedean [Archimedean M] (f : M →+o R) {x : M} (h : x ≠ 0) :
-    mk (f x) = mk (f 1) := by
-  rw [← orderHom_mk, mk_eq_zero_of_archimedean h, orderHom_zero]
-
-@[simp]
-theorem mk_intCast {n : ℤ} (h : n ≠ 0) : mk (n : M) = 0 := by
-  simpa using mk_map_of_archimedean ⟨Int.castAddHom M, fun _ ↦ by simp⟩ h
-
-@[simp]
-theorem mk_natCast {n : ℕ} (h : n ≠ 0) : mk (n : M) = 0 := by
-  rw [← Int.cast_natCast]
-  exact mk_intCast (mod_cast h)
-
-variable (M) in
-/-- `ArchimedeanClass.mk` defines a `AddValuation` on the ring `M`. -/
-noncomputable
-def addValuation : AddValuation M (ArchimedeanClass M) := AddValuation.of mk
-  rfl rfl min_le_mk_add mk_mul
-
-@[simp] theorem addValuation_apply (a : M) : addValuation M a = mk a := rfl
-
+end IsStrictOrderedRing
 end Ring
 
 section Field
+variable [Field M] [IsOrderedRing M]
 
-variable [Field M] [IsStrictOrderedRing M]
+attribute [local instance] IsOrderedRing.toIsStrictOrderedRing
 
 instance : Neg (ArchimedeanClass M) where
   neg := lift (fun x ↦ mk x⁻¹) fun x y h ↦ by
