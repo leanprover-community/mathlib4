@@ -35,11 +35,13 @@ structure IsOka (P : Ideal R → Prop) : Prop where
   top : P ⊤
   oka {I : Ideal R} {a : R} : P (I ⊔ span {a}) → P (I.colon (span {a})) → P I
 
+namespace IsOka
+
 variable {P : Ideal R → Prop}
 
 /-- If an ideal is maximal for not satisfying an oka predicate then it is prime. -/
 @[stacks 05KE]
-theorem IsOka.isPrime_of_maximal_not_isOka (hP : IsOka P) {I : Ideal R}
+theorem isPrime_of_maximal_not_isOka (hP : IsOka P) {I : Ideal R}
     (hI : Maximal (¬P ·) I) : I.IsPrime := by
   by_contra h
   have I_ne_top : I ≠ ⊤ := fun hI' ↦ hI.prop (hI' ▸ hP.top)
@@ -51,10 +53,12 @@ theorem IsOka.isPrime_of_maximal_not_isOka (hP : IsOka P) {I : Ideal R}
 
 /-- If all prime ideals of a ring satisfy an oka predicate, then all its ideals also satisfy the
 predicate. `hmax` is generaly obtained using Zorn's lemma. -/
-theorem IsOka.forall_of_forall_prime_isOka (hP : IsOka P)
+theorem forall_of_forall_prime_isOka (hP : IsOka P)
     (hmax : (∃ I, ¬P I) → ∃ I, Maximal (¬P ·) I) (hprime : ∀ I, I.IsPrime → P I) : ∀ I, P I := by
   by_contra!
   obtain ⟨I, hI⟩ := hmax this
   exact hI.prop <| hprime I (hP.isPrime_of_maximal_not_isOka hI)
+
+end IsOka
 
 end Ideal
