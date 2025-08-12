@@ -126,8 +126,6 @@ theorem interior_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
   rw [← (PiLp.isOpenMap_apply p _ i).preimage_interior_eq_interior_preimage, interior_Ici]
   fun_prop
 
-@[deprecated (since := "2024-11-12")] alias interior_halfspace := interior_halfSpace
-
 @[simp]
 theorem closure_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
     closure { y : PiLp p (fun _ : Fin n ↦ ℝ) | a ≤ y i } = { y | a ≤ y i } := by
@@ -135,8 +133,6 @@ theorem closure_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
   change closure (f ⁻¹' Ici a) = f ⁻¹' Ici a
   rw [← (PiLp.isOpenMap_apply p _ i).preimage_closure_eq_closure_preimage, closure_Ici]
   fun_prop
-
-@[deprecated (since := "2024-11-12")] alias closure_halfspace := closure_halfSpace
 
 @[simp]
 theorem closure_open_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
@@ -146,16 +142,12 @@ theorem closure_open_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) 
   rw [← (PiLp.isOpenMap_apply p _ i).preimage_closure_eq_closure_preimage, closure_Ioi]
   fun_prop
 
-@[deprecated (since := "2024-11-12")] alias closure_open_halfspace := closure_open_halfSpace
-
 @[simp]
 theorem frontier_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
     frontier { y : PiLp p (fun _ : Fin n ↦ ℝ) | a ≤ y i } = { y | a = y i } := by
   rw [frontier, closure_halfSpace, interior_halfSpace]
   ext y
   simpa only [mem_diff, mem_setOf_eq, not_lt] using antisymm_iff
-@[deprecated (since := "2024-11-12")] alias frontier_halfspace := frontier_halfSpace
-
 theorem range_euclideanQuadrant (n : ℕ) :
     range (Subtype.val : EuclideanQuadrant n → _) = { y | ∀ i : Fin n, 0 ≤ y i } :=
   Subtype.range_val
@@ -401,9 +393,6 @@ lemma IccRightChart_extend_top_mem_frontier :
     (IccRightChart x y).extend (𝓡∂ 1) ⊤ ∈ frontier (range (𝓡∂ 1)) := by
   rw [IccRightChart_extend_top, frontier_range_modelWithCornersEuclideanHalfSpace,
     mem_setOf, PiLp.zero_apply]
-
-@[deprecated (since := "2025-01-25")]
-alias IccRightChart_extend_right_mem_frontier := IccRightChart_extend_top_mem_frontier
 
 /-- Charted space structure on `[x, y]`, using only two charts taking values in
 `EuclideanHalfSpace 1`.

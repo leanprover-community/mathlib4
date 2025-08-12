@@ -477,7 +477,7 @@ theorem forall_mem_iff_getElem {l : List α} {p : α → Prop} :
 theorem get_tail (l : List α) (i) (h : i < l.tail.length)
     (h' : i + 1 < l.length := (by simp only [length_tail] at h; omega)) :
     l.tail.get ⟨i, h⟩ = l.get ⟨i + 1, h'⟩ := by
-  cases l <;> [cases h; rfl]
+  simp
 
 /-! ### sublists -/
 
@@ -1015,7 +1015,7 @@ theorem filterMap_eq_map_iff_forall_eq_some {f : α → Option β} {g : α → �
     induction l with | nil => simp | cons a l ih => ?_
     rcases ha : f a with - | b <;> simp [ha]
     · intro h
-      simpa [show (filterMap f l).length = l.length + 1 from by simp[h], Nat.add_one_le_iff]
+      simpa [show (filterMap f l).length = l.length + 1 from by simp [h], Nat.add_one_le_iff]
         using List.length_filterMap_le f l
     · rintro rfl h
       exact ⟨rfl, ih h⟩
