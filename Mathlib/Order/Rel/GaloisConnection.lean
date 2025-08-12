@@ -32,7 +32,7 @@ We define `R.leftFixedPoints` (resp. `R.rightFixedPoints`) as the set of fixed p
 relation, Galois connection, induced bijection, fixed points
 -/
 
-variable {α β : Type*} (R : Rel α β)
+variable {α β : Type*} (R : SetRel α β)
 
 namespace SetRel
 
