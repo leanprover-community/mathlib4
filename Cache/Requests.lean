@@ -128,7 +128,7 @@ def isDetachedAtNightlyTesting (mathlibDepPath : FilePath) : IO Bool := do
       {cmd := "git", args := #["name-rev", "--tags", commitHash], cwd := mathlibDepPath}
     if tagInfo.exitCode == 0 then
       let parts := tagInfo.stdout.trim.splitOn " "
-      -- git name-rev returns "commit_hash tags/tag_name" or just "commit_hash" if no tag
+      -- git name-rev returns "commit_hash tags/tag_name" or just "commit_hash undefined" if no tag
       if parts.length >= 2 && parts[1]!.startsWith "tags/" then
         let tagName := parts[1]!.drop 5  -- Remove "tags/" prefix
         return tagName.startsWith "nightly-testing-"
