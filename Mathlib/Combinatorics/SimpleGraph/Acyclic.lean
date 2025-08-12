@@ -5,7 +5,6 @@ Authors: Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 import Mathlib.Combinatorics.SimpleGraph.DegreeSum
-import Mathlib.Tactic.Bound
 import Mathlib.Tactic.Linarith
 
 /-!
