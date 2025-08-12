@@ -499,13 +499,13 @@ end Pi
 
 
 /-- Pointwise multiplication of paths in a topological group. -/
-@[to_additive (attr := simps!) "Pointwise addition of paths in a topological additive group."]
+@[to_additive (attr := simps!) /-- Pointwise addition of paths in a topological additive group. -/]
 protected def mul [Mul X] [ContinuousMul X] {a₁ b₁ a₂ b₂ : X} (γ₁ : Path a₁ b₁) (γ₂ : Path a₂ b₂) :
     Path (a₁ * a₂) (b₁ * b₂) :=
   (γ₁.prod γ₂).map continuous_mul
 
 /-- Pointwise inversion of paths in a topological group. -/
-@[to_additive (attr := simps!) "Pointwise negation of paths in a topological group."]
+@[to_additive (attr := simps!) /-- Pointwise negation of paths in a topological group. -/]
 def inv {a b : X} [Inv X] [ContinuousInv X] (γ : Path a b) :
     Path a⁻¹ b⁻¹ :=
   γ.map continuous_inv
@@ -617,7 +617,7 @@ theorem range_reparam (γ : Path x y) {f : I → I} (hfcont : Continuous f) (hf�
   have : range f = univ := by
     rw [range_eq_univ]
     intro t
-    have h₁ : Continuous (Set.IccExtend (zero_le_one' ℝ) f) := by continuity
+    have h₁ : Continuous (Set.IccExtend (zero_le_one' ℝ) f) := by fun_prop
     have := intermediate_value_Icc (zero_le_one' ℝ) h₁.continuousOn
     · rw [IccExtend_left, IccExtend_right, Icc.mk_zero, Icc.mk_one, hf₀, hf₁] at this
       rcases this t.2 with ⟨w, hw₁, hw₂⟩

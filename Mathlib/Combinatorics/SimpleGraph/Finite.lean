@@ -22,9 +22,9 @@ finitely many neighbors.
 
 * `SimpleGraph.edgeFinset` is the `Finset` of edges in a graph, if `edgeSet` is finite
 * `SimpleGraph.neighborFinset` is the `Finset` of vertices adjacent to a given vertex,
-   if `neighborSet` is finite
+  if `neighborSet` is finite
 * `SimpleGraph.incidenceFinset` is the `Finset` of edges containing a given vertex,
-   if `incidenceSet` is finite
+  if `incidenceSet` is finite
 
 ## Naming conventions
 

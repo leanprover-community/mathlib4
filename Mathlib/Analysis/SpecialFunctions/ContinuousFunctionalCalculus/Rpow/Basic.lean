@@ -175,7 +175,7 @@ lemma nnrpow_map_prod {a : A} {b : B} {x : ℝ≥0}
     nnrpow (a, b) x = (a ^ x, b ^ x) := by
   simp only [nnrpow_def]
   unfold nnrpow
-  refine cfcₙ_map_prod (S := ℝ) _ a b (by cfc_cont_tac) ?_
+  refine cfcₙ_map_prod (S := ℝ) _ a b (by fun_prop) ?_
   rw [Prod.le_def]
   constructor <;> simp [ha, hb]
 

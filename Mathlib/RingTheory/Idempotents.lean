@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Algebra.GeomSum
+import Mathlib.Algebra.Ring.GeomSum
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.Nilpotent.Defs
 
@@ -444,9 +444,6 @@ lemma RingHom.pi_bijective_of_isIdempotentElem (e : I → R)
     Function.Bijective (Pi.ringHom fun i ↦ Ideal.Quotient.mk (Ideal.span {e i})) :=
   (CompleteOrthogonalIdempotents.of_prod_one_sub
       ⟨fun i ↦ (he i).one_sub, he₁⟩ (by simpa using he₂)).bijective_pi'
-
-@[deprecated (since := "2025-01-05")]
-alias bijective_pi_of_isIdempotentElem := RingHom.pi_bijective_of_isIdempotentElem
 
 lemma RingHom.prod_bijective_of_isIdempotentElem {e f : R} (he : IsIdempotentElem e)
     (hf : IsIdempotentElem f) (hef₁ : e + f = 1) (hef₂ : e * f = 0) :

@@ -226,7 +226,7 @@ theorem ofFixingSubgroup.isMultiplyPreprimitive
     · apply disjoint_val_image
 
 /-- `n.succ`-pretransitivity implies `n`-preprimitivity. -/
-@[to_additive "`n.succ`-pretransitivity implies `n`-preprimitivity."]
+@[to_additive /-- `n.succ`-pretransitivity implies `n`-preprimitivity. -/]
 theorem isMultiplyPreprimitive_of_isMultiplyPretransitive_succ {n : ℕ}
     (hα : ↑n.succ ≤ ENat.card α) [IsMultiplyPretransitive M α n.succ] :
     IsMultiplyPreprimitive M α n := by
@@ -247,7 +247,7 @@ theorem isMultiplyPreprimitive_of_isMultiplyPretransitive_succ {n : ℕ}
     simp [Set.ncard, hs', hm, add_comm 1]
 
 /-- An `n`-preprimitive action is `m`-preprimitive for `m ≤ n`. -/
-@[to_additive "An `n`-preprimitive action is `m`-preprimitive for `m ≤ n`."]
+@[to_additive /-- An `n`-preprimitive action is `m`-preprimitive for `m ≤ n`. -/]
 theorem isMultiplyPreprimitive_of_le
     {n : ℕ} (hn : IsMultiplyPreprimitive M α n)
     {m : ℕ} (hmn : m ≤ n) (hα : ↑n ≤ ENat.card α) :

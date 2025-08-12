@@ -47,8 +47,8 @@ variable {G : Type*} [Group G]
 
 /-- `Finset.noncommProd` is “injective” in `f` if `f` maps into independent subgroups.  This
 generalizes (one direction of) `Subgroup.disjoint_iff_mul_eq_one`. -/
-@[to_additive "`Finset.noncommSum` is “injective” in `f` if `f` maps into independent subgroups.
-This generalizes (one direction of) `AddSubgroup.disjoint_iff_add_eq_zero`. "]
+@[to_additive /-- `Finset.noncommSum` is “injective” in `f` if `f` maps into independent subgroups.
+This generalizes (one direction of) `AddSubgroup.disjoint_iff_add_eq_zero`. -/]
 theorem eq_one_of_noncommProd_eq_one_of_iSupIndep {ι : Type*} (s : Finset ι) (f : ι → G) (comm)
     (K : ι → Subgroup G) (hind : iSupIndep K) (hmem : ∀ x ∈ s, f x ∈ K x)
     (heq1 : s.noncommProd f comm = 1) : ∀ i ∈ s, f i = 1 := by
@@ -75,9 +75,6 @@ theorem eq_one_of_noncommProd_eq_one_of_iSupIndep {ι : Type*} (s : Finset ι) (
       · exact heq1i
       · refine ih hcomm hmem.2 heq1S _ h
 
-@[deprecated (since := "2024-11-24")]
-alias eq_one_of_noncommProd_eq_one_of_independent := eq_one_of_noncommProd_eq_one_of_iSupIndep
-
 end Subgroup
 
 section FamilyOfMonoids
@@ -98,8 +95,8 @@ variable (hcomm : Pairwise fun i j => ∀ x y, Commute (ϕ i x) (ϕ j y))
 namespace MonoidHom
 
 /-- The canonical homomorphism from a family of monoids. -/
-@[to_additive "The canonical homomorphism from a family of additive monoids. See also
-`LinearMap.lsum` for a linear version without the commutativity assumption."]
+@[to_additive /-- The canonical homomorphism from a family of additive monoids. See also
+`LinearMap.lsum` for a linear version without the commutativity assumption. -/]
 def noncommPiCoprod : (∀ i : ι, N i) →* M where
   toFun f := Finset.univ.noncommProd (fun i => ϕ i (f i)) fun _ _ _ _ h => hcomm h _ _
   map_one' := by
@@ -135,11 +132,11 @@ The universal property of `MonoidHom.noncommPiCoprod`
 Given monoid morphisms `φᵢ : Nᵢ → M` whose images pairwise commute,
 there exists a unique monoid morphism `φ : Πᵢ Nᵢ → M` that induces the `φᵢ`,
 and it is given by `MonoidHom.noncommPiCoprod`. -/
-@[to_additive "The universal property of `MonoidHom.noncommPiCoprod`
+@[to_additive /-- The universal property of `MonoidHom.noncommPiCoprod`
 
 Given monoid morphisms `φᵢ : Nᵢ → M` whose images pairwise commute,
 there exists a unique monoid morphism `φ : Πᵢ Nᵢ → M` that induces the `φᵢ`,
-and it is given by `AddMonoidHom.noncommPiCoprod`."]
+and it is given by `AddMonoidHom.noncommPiCoprod`. -/]
 def noncommPiCoprodEquiv [DecidableEq ι] :
     { ϕ : ∀ i, N i →* M // Pairwise fun i j => ∀ x y, Commute (ϕ i x) (ϕ j y) } ≃
       ((∀ i, N i) →* M) where
@@ -242,9 +239,6 @@ theorem injective_noncommPiCoprod_of_iSupIndep [Fintype ι]
     apply hinj
     simp [this i (Finset.mem_univ i)]
 
-@[deprecated (since := "2024-11-24")]
-alias injective_noncommPiCoprod_of_independent := injective_noncommPiCoprod_of_iSupIndep
-
 @[to_additive]
 theorem independent_range_of_coprime_order
     (hcomm : Pairwise fun i j : ι => ∀ (x : H i) (y : H j), Commute (ϕ i x) (ϕ j y))
@@ -317,8 +311,8 @@ variable [Fintype ι]
 
 /-- The canonical homomorphism from a family of subgroups where elements from different subgroups
 commute -/
-@[to_additive "The canonical homomorphism from a family of additive subgroups where elements from
-different subgroups commute"]
+@[to_additive /-- The canonical homomorphism from a family of additive subgroups where elements from
+different subgroups commute -/]
 def noncommPiCoprod (hcomm : Pairwise fun i j : ι => ∀ x y : G, x ∈ H i → y ∈ H j → Commute x y) :
     (∀ i : ι, H i) →* G :=
   MonoidHom.noncommPiCoprod (fun i => (H i).subtype) (commute_subtype_of_commute hcomm)

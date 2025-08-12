@@ -148,11 +148,11 @@ example [CommMonoid α] (a : Fin 3 → α) : ∏ i, a i = a 0 * a 1 * a 2 :=
 ```
 -/
 @[to_additive (attr := simp)
-"This can be used to prove
+/-- This can be used to prove
 ```lean
 example [AddCommMonoid α] (a : Fin 3 → α) : ∑ i, a i = a 0 + a 1 + a 2 :=
   (sum_eq _).symm
-```"]
+``` -/]
 theorem prod_eq [CommMonoid α] : ∀ {m} (a : Fin m → α), prod a = ∏ i, a i
   | 0, _ => rfl
   | 1, a => (Fintype.prod_unique a).symm

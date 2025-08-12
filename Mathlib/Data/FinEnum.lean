@@ -25,7 +25,7 @@ class FinEnum (α : Sort*) where
   /-- `FinEnum.card` is the cardinality of the `FinEnum` -/
   card : ℕ
   /-- `FinEnum.Equiv` states that type `α` is in bijection with `Fin card`,
-    the size of the `FinEnum` -/
+  the size of the `FinEnum` -/
   equiv : α ≃ Fin card
   [decEq : DecidableEq α]
 

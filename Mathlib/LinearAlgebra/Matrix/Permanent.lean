@@ -101,9 +101,6 @@ theorem permanent_updateCol_smul (M : Matrix n n R) (j : n) (c : R) (u : n → R
   rw [Finset.prod_congr rfl (fun i hi ↦ ?_)]
   simp only [ne_eq, ne_of_mem_erase hi, not_false_eq_true, updateCol_ne]
 
-@[deprecated (since := "2024-12-11")]
-alias permanent_updateColumn_smul := permanent_updateCol_smul
-
 @[simp]
 theorem permanent_updateRow_smul (M : Matrix n n R) (j : n) (c : R) (u : n → R) :
     permanent (updateRow M j <| c • u) = c * permanent (updateRow M j u) := by

@@ -81,10 +81,10 @@ structure RootPairing extends PerfectPairing R M N where
   coroot : ι ↪ N
   root_coroot_two : ∀ i, toLinearMap (root i) (coroot i) = 2
   /-- A parametrized family of permutations, induced by reflections. This corresponds to the
-      classical requirement that the symmetry attached to each root (later defined in
-      `RootPairing.reflection`) leave the whole set of roots stable: as explained above, we
-      formalize this stability by fixing the image of the roots through each reflection (whence the
-      permutation); and similarly for coroots. -/
+  classical requirement that the symmetry attached to each root (later defined in
+  `RootPairing.reflection`) leave the whole set of roots stable: as explained above, we
+  formalize this stability by fixing the image of the roots through each reflection (whence the
+  permutation); and similarly for coroots. -/
   reflectionPerm : ι → (ι ≃ ι)
   reflectionPerm_root : ∀ i j,
     root j - toPerfectPairing (root j) (coroot i) • root i = root (reflectionPerm i j)
@@ -223,6 +223,13 @@ variable {P} in
 lemma pairing_eq_add_of_root_eq_add {i j k l : ι} (h : P.root k = P.root i + P.root j) :
     P.pairing k l = P.pairing i l + P.pairing j l := by
   simp only [← root_coroot_eq_pairing, h, map_add, LinearMap.add_apply]
+
+variable {P} in
+lemma pairing_eq_add_of_root_eq_smul_add_smul
+    {i j k l : ι} {x y : R} (h : P.root k = x • P.root i + y • P.root l) :
+    P.pairing k j = x • P.pairing i j + y • P.pairing l j := by
+  simp only [← root_coroot_eq_pairing, h, map_add, map_smul, LinearMap.add_apply,
+    LinearMap.smul_apply, smul_eq_mul]
 
 lemma coroot_root_two :
     P.toLinearMap.flip (P.coroot i) (P.root i) = 2 := by

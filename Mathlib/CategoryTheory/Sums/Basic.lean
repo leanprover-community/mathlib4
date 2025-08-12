@@ -45,7 +45,7 @@ section
 
 variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
 
-/- Porting note: `aesop_cat` not firing on `assoc` where autotac in Lean 3 did -/
+/- Porting note: `cat_disch` not firing on `assoc` where autotac in Lean 3 did -/
 
 /-- `sum C D` gives the direct sum of two categories.
 -/

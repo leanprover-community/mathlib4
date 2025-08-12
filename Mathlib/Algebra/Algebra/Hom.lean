@@ -345,7 +345,7 @@ theorem mul_apply (φ ψ : A →ₐ[R] A) (x : A) : (φ * ψ) x = φ (ψ x) :=
   rfl
 
 @[simp] theorem coe_pow (φ : A →ₐ[R] A) (n : ℕ) : ⇑(φ ^ n) = φ^[n] :=
-   n.rec (by ext; simp) fun _ ih ↦ by ext; simp [pow_succ, ih]
+  n.rec (by ext; simp) fun _ ih ↦ by ext; simp [pow_succ, ih]
 
 theorem algebraMap_eq_apply (f : A →ₐ[R] B) {y : R} {x : A} (h : algebraMap R A y = x) :
     algebraMap R B y = f x :=
@@ -358,6 +358,12 @@ lemma cancel_right {g₁ g₂ : B →ₐ[R] C} {f : A →ₐ[R] B} (hf : Functio
 lemma cancel_left {g₁ g₂ : A →ₐ[R] B} {f : B →ₐ[R] C} (hf : Function.Injective f) :
     f.comp g₁ = f.comp g₂ ↔ g₁ = g₂ :=
   ⟨fun h => AlgHom.ext <| fun _ ↦ hf.eq_iff.mp <| AlgHom.ext_iff.mp h _, fun h => h ▸ rfl⟩
+
+/-- `AlgHom.toLinearMap` as a `MonoidHom`. -/
+@[simps] def toEnd : (A →ₐ[R] A) →* Module.End R A where
+  toFun := toLinearMap
+  map_one' := rfl
+  map_mul' _ _ := rfl
 
 end Semiring
 end AlgHom

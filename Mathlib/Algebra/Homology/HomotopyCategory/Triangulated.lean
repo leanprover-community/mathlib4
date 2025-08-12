@@ -87,9 +87,6 @@ lemma hom_inv_id : hom f g ≫ inv f g = 𝟙 _ := by
   ext n
   simp [hom, inv, lift_desc_f _ _ _ _ _ _ _ n (n + 1) rfl, ext_from_iff _ (n + 1) _ rfl]
 
-set_option linter.style.maxHeartbeats false in
--- no reason was present for this heartbeat bump at the time of the creation of the linter
-set_option maxHeartbeats 400000 in
 /-- Given two composable morphisms `f` and `g` in the category of cochain complexes,
 this is the `homotopyInvHomId` field of the homotopy equivalence
 `mappingConeCompHomotopyEquiv f g` between `mappingCone g` and the mapping cone of
@@ -177,7 +174,7 @@ lemma mappingConeCompTriangleh_distinguished :
       distTriang (HomotopyCategory C (ComplexShape.up ℤ)) := by
   refine ⟨_, _, (mappingConeCompTriangle f g).mor₁, ⟨?_⟩⟩
   refine Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (isoOfHomotopyEquiv
-    (mappingConeCompHomotopyEquiv f g)) (by aesop_cat) (by simp) ?_
+    (mappingConeCompHomotopyEquiv f g)) (by cat_disch) (by simp) ?_
   dsimp [mappingConeCompTriangleh]
   rw [CategoryTheory.Functor.map_id, comp_id, ← Functor.map_comp_assoc]
   congr 2

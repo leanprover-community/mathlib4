@@ -62,7 +62,7 @@ theorem mellin_eq_fourierIntegral (f : ℝ → E) {s : ℂ} :
         ring_nf
       congr
       rw [mul_comm (-s.im : ℂ) (u : ℂ), mul_comm (-2 * π)]
-      have : 2 * (π : ℂ) ≠ 0 := by simp [pi_ne_zero]
+      have : 2 * (π : ℂ) ≠ 0 := by simp
       field_simp
     _ = 𝓕 (fun (u : ℝ) ↦ (Real.exp (-s.re * u) • f (Real.exp (-u)))) (s.im / (2 * π)) := by
       simp [fourierIntegral_eq', mul_comm (_ / _)]
@@ -98,7 +98,7 @@ theorem mellin_inversion (σ : ℝ) (f : ℝ → E) {x : ℝ} (hx : 0 < x) (hf :
       simpa [rexp_cexp_aux] using hf
     norm_cast at hf
   replace hFf : Integrable (𝓕 g) := by
-    have h2π : 2 * π ≠ 0 := by simp [pi_ne_zero]
+    have h2π : 2 * π ≠ 0 := by simp
     have : Integrable (𝓕 (fun u ↦ rexp (-(σ * u)) • f (rexp (-u)))) := by
       simpa [mellin_eq_fourierIntegral, mul_div_cancel_right₀ _ h2π] using hFf.comp_mul_right' h2π
     simp_rw [neg_mul_eq_neg_mul] at this
@@ -112,7 +112,7 @@ theorem mellin_inversion (σ : ℝ) (f : ℝ → E) {x : ℝ} (hx : 0 < x) (hf :
       simp [g, mellinInv, mellin_eq_fourierIntegral]
     _ = (x : ℂ) ^ (-σ : ℂ) • g (-Real.log x) := by
       rw [mellinInv_eq_fourierIntegralInv _ _ hx, ← hf.fourier_inversion hFf hfx]
-      simp [mul_div_cancel_left₀ _ (show 2 * π ≠ 0 by simp [pi_ne_zero])]
+      simp [mul_div_cancel_left₀ _ (show 2 * π ≠ 0 by simp)]
     _ = (x : ℂ) ^ (-σ : ℂ) • rexp (σ * Real.log x) • f (rexp (Real.log x)) := by simp [g]
     _ = f x := by
       norm_cast

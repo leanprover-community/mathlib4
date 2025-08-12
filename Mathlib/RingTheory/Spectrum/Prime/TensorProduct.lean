@@ -78,7 +78,3 @@ lemma PrimeSpectrum.isEmbedding_tensorProductTo_of_surjectiveOnStalks :
       rw [Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul, ← e]
       exact J.asIdeal.primeCompl.mul_mem ht hJ
     rwa [J.isPrime.mul_mem_iff_mem_or_mem.not, not_or] at this
-
-@[deprecated (since := "2024-10-26")]
-alias PrimeSpectrum.embedding_tensorProductTo_of_surjectiveOnStalks :=
-  PrimeSpectrum.isEmbedding_tensorProductTo_of_surjectiveOnStalks

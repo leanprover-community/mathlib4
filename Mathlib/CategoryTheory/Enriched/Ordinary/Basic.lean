@@ -37,13 +37,12 @@ variable (V : Type u') [Category.{v'} V] [MonoidalCategory V]
 over a category `V` in such a way that morphisms `X ⟶ Y` in `C` identify
 to morphisms `𝟙_ V ⟶ (X ⟶[V] Y)` in `V`. -/
 class EnrichedOrdinaryCategory extends EnrichedCategory V C where
-  /-- morphisms `X ⟶ Y` in the category identify morphisms
-    `𝟙_ V ⟶ (X ⟶[V] Y)` in `V` -/
+  /-- morphisms `X ⟶ Y` in the category identify morphisms `𝟙_ V ⟶ (X ⟶[V] Y)` in `V` -/
   homEquiv {X Y : C} : (X ⟶ Y) ≃ (𝟙_ V ⟶ (X ⟶[V] Y))
-  homEquiv_id (X : C) : homEquiv (𝟙 X) = eId V X := by aesop_cat
+  homEquiv_id (X : C) : homEquiv (𝟙 X) = eId V X := by cat_disch
   homEquiv_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     homEquiv (f ≫ g) = (λ_ _).inv ≫ (homEquiv f ⊗ₘ homEquiv g) ≫
-      eComp V X Y Z := by aesop_cat
+      eComp V X Y Z := by cat_disch
 
 variable [EnrichedOrdinaryCategory V C] {C}
 

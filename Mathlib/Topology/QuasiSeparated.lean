@@ -78,9 +78,6 @@ theorem IsQuasiSeparated.image_of_isEmbedding {s : Set α} (H : IsQuasiSeparated
     rw [Set.image_preimage_eq_inter_range, Set.inter_eq_left]
     exact hV.trans (Set.image_subset_range _ _)
 
-@[deprecated (since := "2024-10-26")]
-alias IsQuasiSeparated.image_of_embedding := IsQuasiSeparated.image_of_isEmbedding
-
 theorem Topology.IsOpenEmbedding.isQuasiSeparated_iff (h : IsOpenEmbedding f) {s : Set α} :
     IsQuasiSeparated s ↔ IsQuasiSeparated (f '' s) := by
   refine ⟨fun hs => hs.image_of_isEmbedding h.isEmbedding, ?_⟩

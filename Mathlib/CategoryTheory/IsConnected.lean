@@ -89,7 +89,7 @@ private def liftToDiscrete {α : Type u₂} (F : J ⥤ Discrete α) : J ⥤ Disc
 /-- Implementation detail of `isoConstant`. -/
 private def factorThroughDiscrete {α : Type u₂} (F : J ⥤ Discrete α) :
     liftToDiscrete F ⋙ Discrete.functor F.obj ≅ F :=
-  NatIso.ofComponents (fun _ => eqToIso Function.apply_invFun_apply) (by aesop_cat)
+  NatIso.ofComponents (fun _ => eqToIso Function.apply_invFun_apply) (by cat_disch)
 
 end IsPreconnected.IsoConstantAux
 

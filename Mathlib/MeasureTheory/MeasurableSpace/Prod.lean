@@ -90,9 +90,6 @@ lemma MeasurableEmbedding.prodMap {α β γ δ : Type*} {mα : MeasurableSpace �
     | iUnion f _ _ ihf =>
       simpa only [image_iUnion] using .iUnion ihf
 
-@[deprecated (since := "2024-12-11")]
-alias MeasurableEmbedding.prod_mk := MeasurableEmbedding.prodMap
-
 lemma MeasurableEmbedding.prodMk_left {β γ : Type*} [MeasurableSingletonClass α]
     {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
     (x : α) {f : γ → β} (hf : MeasurableEmbedding f) :

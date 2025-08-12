@@ -81,10 +81,10 @@ class ExactPairing (X Y : C) where
   evaluation' : Y ⊗ X ⟶ 𝟙_ C
   coevaluation_evaluation' :
     Y ◁ coevaluation' ≫ (α_ _ _ _).inv ≫ evaluation' ▷ Y = (ρ_ Y).hom ≫ (λ_ Y).inv := by
-    aesop_cat
+    cat_disch
   evaluation_coevaluation' :
     coevaluation' ▷ X ≫ (α_ _ _ _).hom ≫ X ◁ evaluation' = (λ_ X).hom ≫ (ρ_ X).inv := by
-    aesop_cat
+    cat_disch
 
 namespace ExactPairing
 
@@ -501,7 +501,7 @@ def exactPairingCongrLeft {X X' Y : C} [ExactPairing X' Y] (i : X ≅ X') : Exac
         rw [Iso.inv_hom_id]; monoidal
       _ = _ := by
         rw [coevaluation_evaluation'']
-        monoidal
+        simp
 
 /-- Transport an exact pairing across an isomorphism in the second argument. -/
 def exactPairingCongrRight {X Y Y' : C} [ExactPairing X Y'] (i : Y ≅ Y') : ExactPairing X Y where
@@ -515,7 +515,7 @@ def exactPairingCongrRight {X Y Y' : C} [ExactPairing X Y'] (i : Y ≅ Y') : Exa
         rw [Iso.inv_hom_id]; monoidal
       _ = _ := by
         rw [evaluation_coevaluation'']
-        monoidal
+        simp
   coevaluation_evaluation' :=
     calc
       _ = Y ◁ η_ X Y' ⊗≫ (Y ◁ (X ◁ i.inv) ≫ i.hom ▷ (X ⊗ Y)) ⊗≫ ε_ X Y' ▷ Y := by

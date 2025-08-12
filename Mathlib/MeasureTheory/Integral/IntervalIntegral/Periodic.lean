@@ -239,7 +239,8 @@ variable {f : ℝ → E} {T : ℝ}
 
 /-- A periodic function is interval integrable over every interval if it is interval integrable
 over one period. -/
-theorem intervalIntegrable {t : ℝ} (h₁f : Function.Periodic f T) (hT : 0 < T)
+theorem intervalIntegrable {t : ℝ} (h₁f : Function.Periodic f T)
+    (hT : 0 < T) (hT' : ‖f (min t (t + T))‖ₑ ≠ ∞ := by finiteness)
     (h₂f : IntervalIntegrable f MeasureTheory.volume t (t + T)) (a₁ a₂ : ℝ) :
     IntervalIntegrable f MeasureTheory.volume a₁ a₂ := by
   -- Replace [a₁, a₂] by [t - n₁ * T, t + n₂ * T], where n₁ and n₂ are natural numbers
@@ -261,7 +262,7 @@ theorem intervalIntegrable {t : ℝ} (h₁f : Function.Periodic f T) (hT : 0 < T
   apply IntervalIntegrable.trans_iterate
   -- Show integrability over a shifted period
   intro k hk
-  convert (IntervalIntegrable.comp_sub_right h₂f ((k - n₁) * T)) using 1
+  convert (IntervalIntegrable.comp_sub_right h₂f ((k - n₁) * T) hT') using 1
   · funext x
     simpa using (h₁f.sub_int_mul_eq (k - n₁)).symm
   · simp [a, Nat.cast_add]

@@ -177,7 +177,7 @@ noncomputable def evalCompCoyonedaCorepresentableBySingle (i : ι) [DecidableEq 
   homEquiv {K} :=
     { toFun g := (singleObjXSelf c i X).inv ≫ g.f i
       invFun f := mkHomFromSingle f (fun j hj ↦ (hi j hj).elim)
-      left_inv g := by aesop_cat
+      left_inv g := by cat_disch
       right_inv f := by simp }
   homEquiv_comp := by simp
 

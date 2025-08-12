@@ -283,7 +283,7 @@ instance [Monoid M] : CanLift M Mˣ Units.val IsUnit :=
   { prf := fun _ ↦ id }
 
 /-- A subsingleton `Monoid` has a unique unit. -/
-@[to_additive "A subsingleton `AddMonoid` has a unique additive unit."]
+@[to_additive /-- A subsingleton `AddMonoid` has a unique additive unit. -/]
 instance [Monoid M] [Subsingleton M] : Unique Mˣ where
   uniq _ := Units.val_eq_one.mp (by subsingleton)
 

@@ -66,7 +66,7 @@ variable {s t : LeftExtension f g}
 
 /-- To construct a morphism between left extensions, we need a 2-morphism between the extensions,
 and to check that it is compatible with the units. -/
-abbrev homMk (η : s.extension ⟶ t.extension) (w : s.unit ≫ f ◁ η = t.unit := by aesop_cat) :
+abbrev homMk (η : s.extension ⟶ t.extension) (w : s.unit ≫ f ◁ η = t.unit := by cat_disch) :
     s ⟶ t :=
   StructuredArrow.homMk η w
 
@@ -184,7 +184,7 @@ variable {s t : LeftLift f g}
 
 /-- To construct a morphism between left lifts, we need a 2-morphism between the lifts,
 and to check that it is compatible with the units. -/
-abbrev homMk (η : s.lift ⟶ t.lift) (w : s.unit ≫ η ▷ f = t.unit := by aesop_cat) :
+abbrev homMk (η : s.lift ⟶ t.lift) (w : s.unit ≫ η ▷ f = t.unit := by cat_disch) :
     s ⟶ t :=
   StructuredArrow.homMk η w
 

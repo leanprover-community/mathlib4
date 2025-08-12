@@ -222,7 +222,7 @@ theorem lintegral_eq_iSup_eapprox_lintegral {f : α → ℝ≥0∞} (hf : Measur
       congr; ext a; rw [iSup_eapprox_apply hf]
     _ = ⨆ n, ∫⁻ a, (eapprox f n : α → ℝ≥0∞) a ∂μ := by
       apply lintegral_iSup
-      · measurability
+      · fun_prop
       · intro i j h
         exact monotone_eapprox f h
     _ = ⨆ n, (eapprox f n).lintegral μ := by
@@ -298,7 +298,7 @@ theorem lintegral_add_left {f : α → ℝ≥0∞} (hf : Measurable f) (g : α �
 theorem lintegral_add_left' {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) (g : α → ℝ≥0∞) :
     ∫⁻ a, f a + g a ∂μ = ∫⁻ a, f a ∂μ + ∫⁻ a, g a ∂μ := by
   rw [lintegral_congr_ae hf.ae_eq_mk, ← lintegral_add_left hf.measurable_mk,
-    lintegral_congr_ae (hf.ae_eq_mk.add (ae_eq_refl g))]
+    lintegral_congr_ae (hf.ae_eq_mk.fun_add (ae_eq_refl g))]
 
 theorem lintegral_add_right' (f : α → ℝ≥0∞) {g : α → ℝ≥0∞} (hg : AEMeasurable g μ) :
     ∫⁻ a, f a + g a ∂μ = ∫⁻ a, f a ∂μ + ∫⁻ a, g a ∂μ := by

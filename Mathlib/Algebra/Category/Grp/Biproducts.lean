@@ -38,7 +38,7 @@ instance : HasFiniteBiproducts AddCommGrp :=
 def binaryProductLimitCone (G H : AddCommGrp.{u}) : Limits.LimitCone (pair G H) where
   cone := BinaryFan.mk (ofHom (AddMonoidHom.fst G H)) (ofHom (AddMonoidHom.snd G H))
   isLimit := BinaryFan.IsLimit.mk _ (fun l r => ofHom (AddMonoidHom.prod l.hom r.hom))
-    (fun _ _ => rfl) (fun _ _ => rfl) (by aesop_cat)
+    (fun _ _ => rfl) (fun _ _ => rfl) (by cat_disch)
 
 @[simp]
 theorem binaryProductLimitCone_cone_π_app_left (G H : AddCommGrp.{u}) :

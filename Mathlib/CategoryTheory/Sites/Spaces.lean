@@ -69,7 +69,7 @@ def pretopology : Pretopology (Opens T) where
     exact ⟨_, _, ⟨_, g, f, hf, hg, rfl⟩, hV⟩
 
 /-- The pretopology associated to a space is the largest pretopology that
-    generates the Grothendieck topology associated to the space. -/
+generates the Grothendieck topology associated to the space. -/
 @[simp]
 theorem pretopology_ofGrothendieck :
     Pretopology.ofGrothendieck _ (Opens.grothendieckTopology T) = Opens.pretopology T := by

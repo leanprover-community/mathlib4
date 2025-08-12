@@ -767,7 +767,7 @@ theorem divides_sq_eq_zero {x y} (h : x * x = d * y * y) : x = 0 ∧ y = 0 :=
           _ = g * g * (d * (n * n)) := by ring
       have co2 :=
         let co1 := co.mul_right co
-        co1.mul co1
+        co1.mul_left co1
       exact
         Nonsquare.ns d m
           (Nat.dvd_antisymm (by rw [this]; apply dvd_mul_right) <|

@@ -367,12 +367,9 @@ theorem erdos_ko_rado {𝒜 : Finset (Finset (Fin n))} {r : ℕ}
     rwa [card_compls, choose_symm_of_eq_add (tsub_add_tsub_cancel ‹r ≤ n› ‹1 ≤ r›).symm]
   -- and everything in 𝒜ᶜˢ has size n-r.
   have h𝒜bar : (𝒜ᶜˢ : Set (Finset (Fin n))).Sized (n - r) := by simpa using h₂.compls
-  have : n - 2 * r ≤ n - r := by
-    rw [tsub_le_tsub_iff_left ‹r ≤ n›]
-    exact Nat.le_mul_of_pos_left _ zero_lt_two
   -- We can use the Lovasz form of Kruskal-Katona to get |∂^[n-2k] 𝒜ᶜˢ| ≥ (n-1) choose r
-  have kk := kruskal_katona_lovasz_form ‹n - 2 * r ≤ n - r› ((tsub_le_tsub_iff_left ‹1 ≤ n›).2 h1r)
-      tsub_le_self h𝒜bar z.le
+  have kk := kruskal_katona_lovasz_form (i := n - 2 * r) (by omega)
+    ((tsub_le_tsub_iff_left ‹1 ≤ n›).2 h1r) tsub_le_self h𝒜bar z.le
   have : n - r - (n - 2 * r) = r := by omega
   rw [this] at kk
   -- But this gives a contradiction: `n choose r < |𝒜| + |∂^[n-2k] 𝒜ᶜˢ|`

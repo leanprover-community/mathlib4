@@ -276,7 +276,7 @@ theorem IndepFun.mgf_add {X Y : Ω → ℝ} (h_indep : IndepFun X Y μ)
     (hY : AEStronglyMeasurable (fun ω => exp (t * Y ω)) μ) :
     mgf (X + Y) μ t = mgf X μ t * mgf Y μ t := by
   simp_rw [mgf, Pi.add_apply, mul_add, exp_add]
-  exact (h_indep.exp_mul t t).integral_mul hX hY
+  exact (h_indep.exp_mul t t).integral_mul_eq_mul_integral hX hY
 
 theorem IndepFun.mgf_add' {X Y : Ω → ℝ} (h_indep : IndepFun X Y μ) (hX : AEStronglyMeasurable X μ)
     (hY : AEStronglyMeasurable Y μ) : mgf (X + Y) μ t = mgf X μ t * mgf Y μ t := by

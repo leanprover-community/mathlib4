@@ -47,15 +47,15 @@ open Cardinal Function
 variable {G G' : Type*} [Group G] [Group G'] (H K L : Subgroup G)
 
 /-- The index of a subgroup as a natural number. Returns `0` if the index is infinite. -/
-@[to_additive "The index of an additive subgroup as a natural number.
-Returns 0 if the index is infinite."]
+@[to_additive /-- The index of an additive subgroup as a natural number.
+Returns 0 if the index is infinite. -/]
 noncomputable def index : ℕ :=
   Nat.card (G ⧸ H)
 
 /-- If `H` and `K` are subgroups of a group `G`, then `relindex H K : ℕ` is the index
 of `H ∩ K` in `K`. The function returns `0` if the index is infinite. -/
-@[to_additive "If `H` and `K` are subgroups of an additive group `G`, then `relindex H K : ℕ`
-is the index of `H ∩ K` in `K`. The function returns `0` if the index is infinite."]
+@[to_additive /-- If `H` and `K` are subgroups of an additive group `G`, then `relindex H K : ℕ`
+is the index of `H ∩ K` in `K`. The function returns `0` if the index is infinite. -/]
 noncomputable def relindex : ℕ :=
   (H.subgroupOf K).index
 
@@ -147,8 +147,8 @@ theorem relindex_dvd_of_le_left (hHK : H ≤ K) : K.relindex L ∣ H.relindex L 
 
 /-- A subgroup has index two if and only if there exists `a` such that for all `b`, exactly one
 of `b * a` and `b` belong to `H`. -/
-@[to_additive "An additive subgroup has index two if and only if there exists `a` such that
-for all `b`, exactly one of `b + a` and `b` belong to `H`."]
+@[to_additive /-- An additive subgroup has index two if and only if there exists `a` such that
+for all `b`, exactly one of `b + a` and `b` belong to `H`. -/]
 theorem index_eq_two_iff : H.index = 2 ↔ ∃ a, ∀ b, Xor' (b * a ∈ H) (b ∈ H) := by
   simp only [index, Nat.card_eq_two_iff' ((1 : G) : G ⧸ H), ExistsUnique, inv_mem_iff,
     QuotientGroup.exists_mk, QuotientGroup.forall_mk, Ne, QuotientGroup.eq, mul_one,
@@ -299,8 +299,8 @@ theorem relindex_eq_zero_of_le_right (hKL : K ≤ L) (hHK : H.relindex K = 0) : 
   Finite.card_eq_zero_of_embedding (quotientSubgroupOfEmbeddingOfLE H hKL) hHK
 
 /-- If `J` has finite index in `K`, then the same holds for their comaps under any group hom. -/
-@[to_additive "If `J` has finite index in `K`, then the same holds for their comaps under any
-additive group hom."]
+@[to_additive /-- If `J` has finite index in `K`, then the same holds for their comaps under any
+additive group hom. -/]
 lemma relindex_comap_ne_zero (f : G →* G') {J K : Subgroup G'} (hJK : J.relindex K ≠ 0) :
     (J.comap f).relindex (K.comap f) ≠ 0 := by
   rw [relindex_comap]
@@ -340,8 +340,8 @@ theorem index_inf_ne_zero (hH : H.index ≠ 0) (hK : K.index ≠ 0) : (H ⊓ K).
   exact relindex_inf_ne_zero hH hK
 
 /-- If `J` has finite index in `K`, then `J ⊓ L` has finite index in `K ⊓ L` for any `L`. -/
-@[to_additive "If `J` has finite index in `K`, then `J ⊓ L` has finite index in `K ⊓ L` for any
-`L`."]
+@[to_additive /-- If `J` has finite index in `K`, then `J ⊓ L` has finite index in `K ⊓ L` for any
+`L`. -/]
 lemma relindex_inter_ne_zero {J K : Subgroup G} (hJK : J.relindex K ≠ 0) (L : Subgroup G) :
     (J ⊓ L).relindex (K ⊓ L) ≠ 0 := by
   rw [← range_subtype L, inf_comm, ← map_comap_eq, inf_comm, ← map_comap_eq, ← relindex_comap,
@@ -406,9 +406,6 @@ lemma inf_eq_bot_of_coprime (h : Nat.Coprime (Nat.card H) (Nat.card K)) : H ⊓ 
   card_eq_one.1 <| Nat.eq_one_of_dvd_coprimes h
     (card_dvd_of_le inf_le_left) (card_dvd_of_le inf_le_right)
 
-@[deprecated (since := "2024-12-18")]
-alias _root_.add_inf_eq_bot_of_coprime := AddSubgroup.inf_eq_bot_of_coprime
-
 @[to_additive]
 theorem index_ne_zero_of_finite [hH : Finite (G ⧸ H)] : H.index ≠ 0 := by
   cases nonempty_fintype (G ⧸ H)
@@ -416,7 +413,7 @@ theorem index_ne_zero_of_finite [hH : Finite (G ⧸ H)] : H.index ≠ 0 := by
   exact Nat.card_pos.ne'
 
 /-- Finite index implies finite quotient. -/
-@[to_additive "Finite index implies finite quotient."]
+@[to_additive /-- Finite index implies finite quotient. -/]
 noncomputable def fintypeOfIndexNeZero (hH : H.index ≠ 0) : Fintype (G ⧸ H) :=
   @Fintype.ofFinite _ (Nat.finite_of_card_ne_zero hH)
 
@@ -576,7 +573,7 @@ theorem finiteIndex_iff : H.FiniteIndex ↔ H.index ≠ 0 :=
   ⟨fun h ↦ h.index_ne_zero, fun h ↦ ⟨h⟩⟩
 
 /-- A finite index subgroup has finite quotient. -/
-@[to_additive "A finite index subgroup has finite quotient"]
+@[to_additive /-- A finite index subgroup has finite quotient -/]
 noncomputable def fintypeQuotientOfFiniteIndex [FiniteIndex H] : Fintype (G ⧸ H) :=
   fintypeOfIndexNeZero FiniteIndex.index_ne_zero
 

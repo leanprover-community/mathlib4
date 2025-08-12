@@ -93,7 +93,7 @@ lemma guitartExact_op_iff : w.op.GuitartExact ↔ w.GuitartExact := by
   · intro
     let w₁ : TwoSquare T (opOp C₁) (opOp C₂) T.op.op := 𝟙 _
     let w₂ : TwoSquare B.op.op (unopUnop C₃) (unopUnop C₄) B := 𝟙 _
-    have : w = (w₁ ≫ᵥ w.op.op) ≫ᵥ w₂ := by aesop_cat
+    have : w = (w₁ ≫ᵥ w.op.op) ≫ᵥ w₂ := by cat_disch
     rw [this]
     infer_instance
   · intro

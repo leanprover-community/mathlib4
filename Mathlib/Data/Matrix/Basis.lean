@@ -84,7 +84,7 @@ lemma map_single (i : m) (j : n) (a : α) {β : Type*} [Zero β]
 theorem single_mem_matrix {S : Set α} (hS : 0 ∈ S) {i : m} {j : n} {a : α} :
     Matrix.single i j a ∈ S.matrix ↔ a ∈ S := by
   simp only [Set.mem_matrix, single, of_apply]
-  conv_lhs => intro _ _; rw[ite_mem]
+  conv_lhs => intro _ _; rw [ite_mem]
   simp [hS]
 
 end Zero

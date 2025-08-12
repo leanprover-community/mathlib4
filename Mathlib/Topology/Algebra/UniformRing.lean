@@ -76,15 +76,6 @@ instance : ContinuousMul (Completion α) where
     have di : IsDenseInducing (toCompl : α → Completion α) := isDenseInducing_coe
     exact (di.extend_Z_bilin di this :)
 
-@[deprecated _root_.continuous_mul (since := "2024-12-21")]
-protected theorem continuous_mul : Continuous fun p : Completion α × Completion α => p.1 * p.2 :=
-  _root_.continuous_mul
-
-@[deprecated _root_.Continuous.mul (since := "2024-12-21")]
-protected theorem Continuous.mul {β : Type*} [TopologicalSpace β] {f g : β → Completion α}
-    (hf : Continuous f) (hg : Continuous g) : Continuous fun b => f b * g b :=
-  hf.mul hg
-
 instance ring : Ring (Completion α) :=
   { AddMonoidWithOne.unary, (inferInstanceAs (AddCommGroup (Completion α))),
       (inferInstanceAs (Mul (Completion α))), (inferInstanceAs (One (Completion α))) with

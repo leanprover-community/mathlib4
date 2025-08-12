@@ -348,13 +348,9 @@ instance existsAddOfLE [LE α] [Add α] [ExistsAddOfLE α] : ExistsAddOfLE (With
 @[to_additive (attr := simp) top_pos]
 theorem one_lt_top [One α] [LT α] : (1 : WithTop α) < ⊤ := coe_lt_top _
 
-@[norm_cast, deprecated coe_pos (since := "2024-10-22")]
-theorem zero_lt_coe [Zero α] [LT α] (a : α) : (0 : WithTop α) < a ↔ 0 < a :=
-  coe_lt_coe
-
 /-- A version of `WithTop.map` for `OneHom`s. -/
 @[to_additive (attr := simps -fullyApplied)
-  "A version of `WithTop.map` for `ZeroHom`s"]
+  /-- A version of `WithTop.map` for `ZeroHom`s -/]
 protected def _root_.OneHom.withTopMap {M N : Type*} [One M] [One N] (f : OneHom M N) :
     OneHom (WithTop M) (WithTop N) where
   toFun := WithTop.map f
@@ -654,7 +650,7 @@ instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne (
 
 /-- A version of `WithBot.map` for `OneHom`s. -/
 @[to_additive (attr := simps -fullyApplied)
-  "A version of `WithBot.map` for `ZeroHom`s"]
+  /-- A version of `WithBot.map` for `ZeroHom`s -/]
 protected def _root_.OneHom.withBotMap {M N : Type*} [One M] [One N] (f : OneHom M N) :
     OneHom (WithBot M) (WithBot N) where
   toFun := WithBot.map f

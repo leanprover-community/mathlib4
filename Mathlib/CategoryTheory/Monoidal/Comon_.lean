@@ -40,9 +40,9 @@ class Comon_Class (X : C) where
   counit : X ⟶ 𝟙_ C
   /-- The comultiplication morphism of a comonoid object. -/
   comul : X ⟶ X ⊗ X
-  counit_comul (X) : comul ≫ counit ▷ X = (λ_ X).inv := by aesop_cat
-  comul_counit (X) : comul ≫ X ◁ counit = (ρ_ X).inv := by aesop_cat
-  comul_assoc (X) : comul ≫ X ◁ comul = comul ≫ (comul ▷ X) ≫ (α_ X X X).hom := by aesop_cat
+  counit_comul (X) : comul ≫ counit ▷ X = (λ_ X).inv := by cat_disch
+  comul_counit (X) : comul ≫ X ◁ counit = (ρ_ X).inv := by cat_disch
+  comul_assoc (X) : comul ≫ X ◁ comul = comul ≫ (comul ▷ X) ≫ (α_ X X X).hom := by cat_disch
 
 namespace Comon_Class
 
@@ -57,7 +57,7 @@ attribute [reassoc (attr := simp)] counit_comul comul_counit comul_assoc
 instance (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C] : Comon_Class (𝟙_ C) where
   counit := 𝟙 _
   comul := (λ_ _).inv
-  counit_comul := by monoidal_coherence
+  counit_comul := by simp
   comul_counit := by monoidal_coherence
   comul_assoc := by monoidal_coherence
 
@@ -69,8 +69,8 @@ variable {M N O : C} [Comon_Class M] [Comon_Class N] [Comon_Class O]
 
 /-- The property that a morphism between comonoid objects is a comonoid morphism. -/
 class IsComon_Hom (f : M ⟶ N) : Prop where
-  hom_counit (f) : f ≫ ε = ε := by aesop_cat
-  hom_comul (f) : f ≫ Δ = Δ ≫ (f ⊗ₘ f) := by aesop_cat
+  hom_counit (f) : f ≫ ε = ε := by cat_disch
+  hom_comul (f) : f ≫ Δ = Δ ≫ (f ⊗ₘ f) := by cat_disch
 
 attribute [reassoc (attr := simp)] IsComon_Hom.hom_counit IsComon_Hom.hom_comul
 
@@ -144,8 +144,8 @@ attribute [instance] Hom.is_comon_hom
 /-- Construct a morphism `M ⟶ N` of `Comon_ C` from a map `f : M ⟶ N` and a `IsComon_Hom f`
 instance. -/
 abbrev Hom.mk' {M N : Comon_ C} (f : M.X ⟶ N.X)
-    (f_counit : f ≫ ε[N.X] = ε[M.X] := by aesop_cat)
-    (f_comul : f ≫ Δ[N.X] = Δ[M.X] ≫ (f ⊗ₘ f) := by aesop_cat) :
+    (f_counit : f ≫ ε[N.X] = ε[M.X] := by cat_disch)
+    (f_comul : f ≫ Δ[N.X] = Δ[M.X] ≫ (f ⊗ₘ f) := by cat_disch) :
     Hom M N :=
   have : IsComon_Hom f := ⟨f_counit, f_comul⟩
   .mk f
@@ -197,7 +197,7 @@ instance {A B : Comon_ C} (f : A ⟶ B) [e : IsIso ((forget C).map f)] : IsIso f
 /-- The forgetful functor from comonoid objects to the ambient category reflects isomorphisms. -/
 instance : (forget C).ReflectsIsomorphisms where
   reflects f e :=
-    ⟨⟨{ hom := inv f.hom }, by aesop_cat⟩⟩
+    ⟨⟨{ hom := inv f.hom }, by cat_disch⟩⟩
 
 /-- Construct an isomorphism of comonoids by giving an isomorphism between the underlying objects
 and checking compatibility with counit and comultiplication only in the forward direction.
@@ -211,10 +211,10 @@ def mkIso' {M N : Comon_ C} (f : M.X ≅ N.X) [IsComon_Hom f.hom] : M ≅ N wher
 and checking compatibility with counit and comultiplication only in the forward direction.
 -/
 @[simps]
-def mkIso {M N : Comon_ C} (f : M.X ≅ N.X) (f_counit : f.hom ≫ ε[N.X] = ε[M.X] := by aesop_cat)
-    (f_comul : f.hom ≫ Δ[N.X] = Δ[M.X] ≫ (f.hom ⊗ₘ f.hom) := by aesop_cat) : M ≅ N :=
+def mkIso {M N : Comon_ C} (f : M.X ≅ N.X) (f_counit : f.hom ≫ ε[N.X] = ε[M.X] := by cat_disch)
+    (f_comul : f.hom ≫ Δ[N.X] = Δ[M.X] ≫ (f.hom ⊗ₘ f.hom) := by cat_disch) : M ≅ N :=
   have : IsComon_Hom f.hom := ⟨f_counit, f_comul⟩
-  ⟨⟨f.hom⟩, ⟨f.inv⟩, by aesop_cat, by aesop_cat⟩
+  ⟨⟨f.hom⟩, ⟨f.inv⟩, by cat_disch, by cat_disch⟩
 
 @[simps]
 instance uniqueHomToTrivial (A : Comon_ C) : Unique (A ⟶ trivial C) where

@@ -326,7 +326,7 @@ theorem isBounded_Ioo (a b : α) : IsBounded (Ioo a b) :=
   (totallyBounded_Ioo a b).isBounded
 
 /-- In a pseudo metric space with a conditionally complete linear order such that the order and the
-    metric structure give the same topology, any order-bounded set is metric-bounded. -/
+metric structure give the same topology, any order-bounded set is metric-bounded. -/
 theorem isBounded_of_bddAbove_of_bddBelow {s : Set α} (h₁ : BddAbove s) (h₂ : BddBelow s) :
     IsBounded s :=
   let ⟨u, hu⟩ := h₁

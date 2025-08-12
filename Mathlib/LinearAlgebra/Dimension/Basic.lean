@@ -376,9 +376,6 @@ lemma rank_le_of_isSMulRegular {S : Type*} [CommSemiring S] [Algebra S R] [Modul
   ((Algebra.lsmul S R M s).restrict h).rank_le_of_injective <|
     fun _ _ h ↦ by simpa using hr (Subtype.ext_iff.mp h)
 
-@[deprecated (since := "2024-11-21")]
-alias rank_le_of_smul_regular := rank_le_of_isSMulRegular
-
 variable (R R' M) in
 lemma Module.rank_top_le_rank_of_isScalarTower [Module R' M]
     [SMulWithZero R R'] [IsScalarTower R R' M] [FaithfulSMul R R'] [IsScalarTower R R' R'] :

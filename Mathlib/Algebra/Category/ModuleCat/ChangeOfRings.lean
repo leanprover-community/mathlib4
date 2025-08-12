@@ -58,7 +58,7 @@ variable {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
 variable (M : ModuleCat.{v} S)
 
 /-- Any `S`-module M is also an `R`-module via a ring homomorphism `f : R ⟶ S` by defining
-    `r • m := f r • m` (`Module.compHom`). This is called restriction of scalars. -/
+`r • m := f r • m` (`Module.compHom`). This is called restriction of scalars. -/
 def obj' : ModuleCat R :=
   let _ := Module.compHom M f
   of R M
@@ -122,7 +122,7 @@ instance (priority := 100) sMulCommClass_mk {R : Type u₁} {S : Type u₂} [Rin
     haveI : SMul R M := (RestrictScalars.obj' f (ModuleCat.of S M)).isModule.toSMul
     SMulCommClass R S M :=
   @SMulCommClass.mk R S M (_) _
-   fun r s m => (by simp [← mul_smul, mul_comm] : f r • s • m = s • f r • m)
+    fun r s m => (by simp [← mul_smul, mul_comm] : f r • s • m = s • f r • m)
 
 /-- Semilinear maps `M →ₛₗ[f] N` identify to
 morphisms `M ⟶ (ModuleCat.restrictScalars f).obj N`. -/

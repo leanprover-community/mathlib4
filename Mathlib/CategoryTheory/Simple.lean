@@ -128,7 +128,7 @@ section Abelian
 variable [Abelian C]
 
 /-- In an abelian category, an object satisfying the dual of the definition of a simple object is
-    simple. -/
+simple. -/
 theorem simple_of_cosimple (X : C) (h : ∀ {Z : C} (f : X ⟶ Z) [Epi f], IsIso f ↔ f ≠ 0) :
     Simple X :=
   ⟨fun {Y} f I => by

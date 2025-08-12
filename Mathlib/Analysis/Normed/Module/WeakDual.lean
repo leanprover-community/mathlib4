@@ -122,8 +122,6 @@ theorem coe_toWeakDual (x' : Dual 𝕜 E) : toWeakDual x' = x' :=
 theorem toWeakDual_inj (x' y' : Dual 𝕜 E) : toWeakDual x' = toWeakDual y' ↔ x' = y' :=
   (LinearEquiv.injective toWeakDual).eq_iff
 
-@[deprecated (since := "2024-12-29")] alias toWeakDual_eq_iff := toWeakDual_inj
-
 theorem toWeakDual_continuous : Continuous fun x' : Dual 𝕜 E => toWeakDual x' :=
   WeakBilin.continuous_of_continuous_eval _ fun z => (inclusionInDoubleDual 𝕜 E z).continuous
 
@@ -164,8 +162,6 @@ theorem coe_toNormedDual (x' : WeakDual 𝕜 E) : toNormedDual x' = x' :=
 @[simp]
 theorem toNormedDual_inj (x' y' : WeakDual 𝕜 E) : toNormedDual x' = toNormedDual y' ↔ x' = y' :=
   (LinearEquiv.injective toNormedDual).eq_iff
-
-@[deprecated (since := "2024-12-29")] alias toNormedDual_eq_iff := toNormedDual_inj
 
 theorem isClosed_closedBall (x' : Dual 𝕜 E) (r : ℝ) : IsClosed (toNormedDual ⁻¹' closedBall x' r) :=
   isClosed_induced_iff'.2 (ContinuousLinearMap.is_weak_closed_closedBall x' r)

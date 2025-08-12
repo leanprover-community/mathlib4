@@ -57,8 +57,8 @@ def rightAdjointLiftStructEquiv : sq.LiftStruct ≃ (sq.right_adjoint adj).LiftS
       fac_right := by
         rw [← Adjunction.homEquiv_naturality_right_symm, l.fac_right]
         apply (adj.homEquiv _ _).left_inv }
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
 /-- A square has a lifting if and only if its (right) adjoint square has a lifting. -/
 theorem right_adjoint_hasLift_iff : HasLift (sq.right_adjoint adj) ↔ HasLift sq := by
@@ -102,8 +102,8 @@ def leftAdjointLiftStructEquiv :
       fac_right := by
         rw [← adj.homEquiv_naturality_right, l.fac_right]
         apply (adj.homEquiv _ _).right_inv }
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
 /-- A (left) adjoint square has a lifting if and only if the original square has a lifting. -/
 theorem left_adjoint_hasLift_iff : HasLift (sq.left_adjoint adj) ↔ HasLift sq := by

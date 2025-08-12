@@ -59,14 +59,13 @@ instance [Nonempty α] : Nonempty (RelSeries r) :=
 
 variable {r}
 
-set_option backward.dsimp.proofs true in
 @[ext (iff := false)]
 lemma ext {x y : RelSeries r} (length_eq : x.length = y.length)
     (toFun_eq : x.toFun = y.toFun ∘ Fin.cast (by rw [length_eq])) : x = y := by
   rcases x with ⟨nx, fx⟩
-  dsimp only at length_eq toFun_eq
-  subst length_eq toFun_eq
-  rfl
+  dsimp only at length_eq
+  subst length_eq
+  simp_all
 
 lemma rel_of_lt [r.IsTrans] (x : RelSeries r) {i j : Fin (x.length + 1)} (h : i < j) :
     x i ~[r] x j :=
@@ -140,7 +139,7 @@ namespace Rel
 @[mk_iff]
 class FiniteDimensional : Prop where
   /-- A relation `r` is said to be finite dimensional iff there is a relation series of `r` with the
-    maximum length. -/
+  maximum length. -/
   exists_longest_relSeries : ∃ x : RelSeries r, ∀ y : RelSeries r, y.length ≤ x.length
 
 /-- A relation `r` is said to be infinite dimensional iff there exists relation series of arbitrary
@@ -148,7 +147,7 @@ class FiniteDimensional : Prop where
 @[mk_iff]
 class InfiniteDimensional : Prop where
   /-- A relation `r` is said to be infinite dimensional iff there exists relation series of
-    arbitrary length. -/
+  arbitrary length. -/
   exists_relSeries_with_length : ∀ n : ℕ, ∃ x : RelSeries r, x.length = n
 
 end Rel

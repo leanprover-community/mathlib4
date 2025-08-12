@@ -68,9 +68,6 @@ protected theorem _root_.Topology.IsInducing.noetherianSpace [NoetherianSpace α
     (hi : IsInducing i) : NoetherianSpace β :=
   (noetherianSpace_iff_opens _).2 fun _ => hi.isCompact_iff.2 (NoetherianSpace.isCompact _)
 
-@[deprecated (since := "2024-10-28")]
-alias _root_.Inducing.noetherianSpace := IsInducing.noetherianSpace
-
 @[stacks 0052 "(1)"]
 instance NoetherianSpace.set [NoetherianSpace α] (s : Set α) : NoetherianSpace s :=
   IsInducing.subtypeVal.noetherianSpace

@@ -56,13 +56,13 @@ theorem ShortComplex.mapToComposableArrows_app_2 {S₁ S₂ : ShortComplex C} (�
 @[simp]
 theorem ShortComplex.mapToComposableArrows_id {S₁ : ShortComplex C} :
     (ShortComplex.mapToComposableArrows (𝟙 S₁)) = 𝟙 S₁.toComposableArrows := by
-  aesop_cat
+  cat_disch
 
 @[simp]
 theorem ShortComplex.mapToComposableArrows_comp {S₁ S₂ S₃ : ShortComplex C} (φ : S₁ ⟶ S₂)
     (ψ : S₂ ⟶ S₃) : ShortComplex.mapToComposableArrows (φ ≫ ψ) =
       ShortComplex.mapToComposableArrows φ ≫ ShortComplex.mapToComposableArrows ψ := by
-  aesop_cat
+  cat_disch
 
 namespace ComposableArrows
 

@@ -35,8 +35,7 @@ open Opposite
 
 namespace Functor
 
-variable {J : Type u} [LinearOrder J] [SuccOrder J]
-   (F : Jᵒᵖ ⥤ Type v)
+variable {J : Type u} [LinearOrder J] [SuccOrder J] (F : Jᵒᵖ ⥤ Type v)
 
 /-- Given a functor `F : Jᵒᵖ ⥤ Type v` where `J` is a well-ordered type, this data
 allows to construct a section of `F` from an element in `F.obj (op ⊥)`,

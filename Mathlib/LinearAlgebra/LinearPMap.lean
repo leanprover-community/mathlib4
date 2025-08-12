@@ -597,7 +597,7 @@ theorem mem_domain_sSup_iff {c : Set (E →ₗ.[R] F)} (hnonempty : c.Nonempty)
     x ∈ (LinearPMap.sSup c hc).domain ↔ ∃ f ∈ c, x ∈ f.domain := by
   rw [domain_sSup, Submodule.mem_sSup_of_directed (hnonempty.image _)
     (DirectedOn.mono_comp LinearPMap.domain_mono.monotone hc)]
-  aesop
+  simp
 
 protected theorem le_sSup {c : Set (E →ₗ.[R] F)} (hc : DirectedOn (· ≤ ·) c) {f : E →ₗ.[R] F}
     (hf : f ∈ c) : f ≤ LinearPMap.sSup c hc :=

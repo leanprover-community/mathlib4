@@ -1408,3 +1408,15 @@ lemma Algebra.TensorProduct.includeLeft_surjective
   TensorProduct.flip_mk_surjective _ h
 
 end
+
+variable {R A B : Type*} [CommSemiring R] [NonUnitalNonAssocSemiring A]
+  [NonUnitalNonAssocSemiring B] [Module R A] [Module R B] [SMulCommClass R A A]
+  [SMulCommClass R B B] [IsScalarTower R A A] [IsScalarTower R B B]
+
+lemma LinearMap.mulLeft_tmul (a : A) (b : B) :
+    mulLeft R (a ⊗ₜ[R] b) = map (mulLeft R a) (mulLeft R b) := by
+  ext; simp
+
+lemma LinearMap.mulRight_tmul (a : A) (b : B) :
+    mulRight R (a ⊗ₜ[R] b) = map (mulRight R a) (mulRight R b) := by
+  ext; simp
