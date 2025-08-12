@@ -134,8 +134,6 @@ def mk_natCast_nonneg_prf (p : Expr × Expr) : MetaM (Option Expr) :=
 def Expr.Ord : Ord Expr :=
 ⟨fun a b => if Expr.lt a b then .lt else if a.equal b then .eq else .gt⟩
 
-attribute [local instance] Expr.Ord
-
 
 /--
 If `h` is an equality or inequality between natural numbers,
@@ -161,12 +159,18 @@ def natToInt : GlobalBranchingPreprocessor where
           pure h
       else
         pure h
-    let nonnegs ← l.foldlM (init := ∅) fun (es : TreeSet (Expr × Expr) lexOrd.compare) h => do
+    withNewMCtxDepth <| AtomM.run .reducible <| do
+    let nonnegs ← l.foldlM (init := ∅) fun (es : TreeSet (Nat × Nat) lexOrd.compare) h => do
       try
         let (_, _, a, b) ← (← inferType h).ineq?
-        pure <| (es.insertMany (getNatComparisons a)).insertMany (getNatComparisons b)
+        let cmps_a ← (getNatComparisons a).mapM fun p =>
+          return ((← AtomM.addAtom p.1).1, (← AtomM.addAtom p.2).1)
+        let cmps_b ← (getNatComparisons b).mapM fun p =>
+          return ((← AtomM.addAtom p.1).1, (← AtomM.addAtom p.2).1)
+        pure <| (es.insertMany cmps_a).insertMany cmps_b
       catch _ => pure es
-    pure [(g, ((← nonnegs.toList.filterMapM mk_natCast_nonneg_prf) ++ l : List Expr))]
+    pure [(g, ((← nonnegs.toList.filterMapM fun p => do
+      mk_natCast_nonneg_prf ((← get).atoms[p.1]!, (← get).atoms[p.2]!)) ++ l : List Expr))]
 
 end natToInt
 
