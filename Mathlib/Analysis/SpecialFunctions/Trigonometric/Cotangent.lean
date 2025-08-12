@@ -345,7 +345,7 @@ lemma summableLocallyUniformlyOn_iteratedDerivWithin_cotTerm {k : ℕ} (hk : 1 �
   exact ⟨cotTermUpperBound A B hB k, Summable_cotTermUpperBound A B hB hk,
     iteratedDerivWithin_cotTerm_bounded_uniformly hk hK A B hB HABK⟩
 
-lemma DifferentiableOn_iteratedDeriv_cotTerm (n l : ℕ) :
+lemma DifferentiableOn_iteratedDerivWithin_cotTerm (n l : ℕ) :
     DifferentiableOn ℂ (iteratedDerivWithin l (fun z ↦ cotTerm z n) ℍₒ) ℍₒ := by
   suffices DifferentiableOn ℂ
     (fun z : ℂ ↦ (-1) ^ l * l ! * ((z + (n + 1)) ^ (-1 - l : ℤ) +
@@ -372,14 +372,14 @@ private lemma aux_summable_neg {k : ℕ} (hk : 1 ≤ k) (x : ℍ) :
   simp [← zpow_neg, sub_eq_add_neg]
 
 -- We have this auxilary ugly version on the lhs so the the rhs looks nicer.
-private lemma aux_iteratedDeriv_tsum_cotTerm {k : ℕ} (hk : 1 ≤ k) (x : ℍ) :
+private lemma aux_iteratedDerivWithin_tsum_cotTerm {k : ℕ} (hk : 1 ≤ k) (x : ℍ) :
     (-1) ^ k * (k !) * (x : ℂ) ^ (-1 - k : ℤ) +
     iteratedDerivWithin k (fun z ↦ ∑' n : ℕ, cotTerm z n) ℍₒ x =
     (-1) ^ k * k ! * ∑' n : ℤ, ((x : ℂ) + n) ^ (-1 - k : ℤ) := by
   rw [iteratedDerivWithin_tsum k complexUpperHalPlane_isOpen
       (by simpa using x.2) (fun t ht ↦ Summable_cotTerm (coe_mem_integerComplement ⟨t, ht⟩))
       (fun l hl hl2 ↦ summableLocallyUniformlyOn_iteratedDerivWithin_cotTerm hl)
-      (fun n l z hl hz ↦ ((DifferentiableOn_iteratedDeriv_cotTerm n l)).differentiableAt
+      (fun n l z hl hz ↦ ((DifferentiableOn_iteratedDerivWithin_cotTerm n l)).differentiableAt
       ((IsOpen.mem_nhds (complexUpperHalPlane_isOpen) hz)))]
   conv =>
     enter [1,2,1]
@@ -396,7 +396,7 @@ theorem iteratedDerivWithin_cot_sub_inv_eq_series_rep {k : ℕ} (hk : 1 ≤ k) (
     iteratedDerivWithin k (fun x ↦ π * Complex.cot (π * x) - 1 / x) ℍₒ z =
     -(-1) ^ k * (k !) * ((z : ℂ) ^ (-1 - k : ℤ)) +
     (-1) ^ (k : ℕ) * (k : ℕ)! * ∑' n : ℤ, ((z : ℂ) + n) ^ (-1 - k : ℤ):= by
-  simp only [← aux_iteratedDeriv_tsum_cotTerm hk, one_div, neg_mul, neg_add_cancel_left]
+  simp only [← aux_iteratedDerivWithin_tsum_cotTerm hk, one_div, neg_mul, neg_add_cancel_left]
   refine iteratedDerivWithin_congr ?_ z.2
   intro x hx
   simpa [cotTerm] using (cot_series_rep' (UpperHalfPlane.coe_mem_integerComplement ⟨x, hx⟩))
