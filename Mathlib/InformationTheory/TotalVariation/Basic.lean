@@ -120,6 +120,14 @@ lemma tvDist_eq_iSup_measurableSet_of_measure_univ_le' [IsFiniteMeasure μ]
   · simp
   · simpa
 
+lemma tvDist_eq_iSup_measurableSet [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] :
+    tvDist μ ν = (⨆ E, ⨆ (_ : MeasurableSet E), ν E - μ E).toReal :=
+  tvDist_eq_iSup_measurableSet_of_measure_univ_le (by simp)
+
+lemma tvDist_eq_iSup_measurableSet' [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] :
+    tvDist μ ν = (⨆ E, ⨆ (_ : MeasurableSet E), μ E - ν E).toReal :=
+  tvDist_eq_iSup_measurableSet_of_measure_univ_le' (by simp)
+
 lemma tvDist_eq_zero_of_le [IsFiniteMeasure μ] [IsFiniteMeasure ν] (hνμ : ν ≤ μ) :
     tvDist μ ν = 0 := by
   rw [tvDist, ENNReal.toReal_eq_zero_iff]

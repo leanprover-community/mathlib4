@@ -87,7 +87,7 @@ lemma bayesianRisk_const_of_countable [Countable 𝓨] [MeasurableSingletonClass
 lemma bayesRiskPrior_const_of_fintype [Nonempty 𝓨] [Fintype 𝓨] [MeasurableSingletonClass 𝓨]
     (hℓ : Measurable (uncurry ℓ)) (μ : Measure 𝓧) (π : Measure Θ) :
     bayesRiskPrior ℓ (Kernel.const Θ μ) π = ⨅ y, ∫⁻ θ, ℓ θ y * μ .univ ∂π := by
-  refine le_antisymm ((bayesRiskPrior_le_inf' hℓ _ _).trans_eq (by simp)) ?_
+  refine le_antisymm ((bayesRiskPrior_le_iInf' hℓ _ _).trans_eq (by simp)) ?_
   simp only [bayesRiskPrior, bayesianRisk_const_of_fintype hℓ, le_iInf_iff]
   intro κ hκ
   calc ⨅ y, ∫⁻ θ, ℓ θ y * μ Set.univ ∂π

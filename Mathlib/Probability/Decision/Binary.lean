@@ -226,7 +226,6 @@ lemma bayesBinaryRisk_eq_iInf_measurableSet (μ ν : Measure 𝓧) [IsFiniteMeas
     rw [bayesianRisk_binary_of_deterministic_indicator _ _ _ hE]
     exact iInf_le_of_le E (iInf_le _ hE)
 
--- todo: countable (or at least finite) extension of this Bool lemma
 lemma bayesRiskPrior_eq_of_hasGenBayesEstimator_binary {𝓨 : Type*} [MeasurableSpace 𝓨]
     {ℓ : Bool → 𝓨 → ℝ≥0∞} (hl : Measurable (Function.uncurry ℓ))
     (P : Kernel Bool 𝓧) [IsFiniteKernel P] (π : Measure Bool) [IsFiniteMeasure π]
