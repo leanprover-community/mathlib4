@@ -275,6 +275,15 @@ theorem comp_mk (g : β → γ) (hg : Continuous g) (f : α → β) (hf) :
     comp g hg (mk f hf : α →ₘ[μ] β) = mk (g ∘ f) (hg.comp_aestronglyMeasurable hf) :=
   rfl
 
+@[simp]
+theorem comp_id (f : α →ₘ[μ] β) : comp id (continuous_id) f = f := by
+  rcases f; rfl
+
+@[simp]
+theorem comp_comp (g : γ → δ) (g' : β → γ) (hg : Continuous g) (hg' : Continuous g')
+    (f : α →ₘ[μ] β) : comp g hg (comp g' hg' f) = comp (g ∘ g') (hg.comp hg') f := by
+  rcases f; rfl
+
 theorem comp_eq_mk (g : β → γ) (hg : Continuous g) (f : α →ₘ[μ] β) :
     comp g hg f = mk (g ∘ f) (hg.comp_aestronglyMeasurable f.aestronglyMeasurable) := by
   rw [← comp_mk g hg f f.aestronglyMeasurable, mk_coeFn]
@@ -857,12 +866,10 @@ instance [Star R] [ContinuousStar R] : Star (α →ₘ[μ] R) where
   star f := (AEEqFun.comp _ continuous_star f)
 
 lemma coeFn_star [Star R] [ContinuousStar R] (f : α →ₘ[μ] R) : ↑(star f) =ᵐ[μ] (star f : α → R) :=
-   coeFn_comp _ (continuous_star) f
+  coeFn_comp _ (continuous_star) f
 
 instance [InvolutiveStar R] [ContinuousStar R] : InvolutiveStar (α →ₘ[μ] R) where
-  star_involutive f := by
-    ext; filter_upwards [AEEqFun.coeFn_star (star f), AEEqFun.coeFn_star f] with x hx hy
-    simp [hx, Pi.star_apply, hy, star_star]
+  star_involutive f := comp_comp _ _ _ _ f |>.trans <| by simp [star_involutive.comp_self]
 
 end Star
 
