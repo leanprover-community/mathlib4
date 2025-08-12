@@ -3,6 +3,7 @@ Copyright (c) 2024 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
+import Mathlib.Analysis.Calculus.IteratedDeriv.WithinZpow
 import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
 import Mathlib.Analysis.Complex.IntegerCompl
 import Mathlib.Analysis.Complex.LocallyUniformLimit
@@ -10,6 +11,7 @@ import Mathlib.Analysis.PSeries
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.EulerSineProd
 import Mathlib.Analysis.NormedSpace.MultipliableUniformlyOn
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
+import Mathlib.Topology.Algebra.InfiniteSum.TsumUniformlyOn
 
 /-!
 # Cotangent
@@ -24,6 +26,17 @@ expansion): `π * cot (π * z) = 1 / z + ∑' n : ℕ+, (1 / ((z : ℂ) - n) + 1
 open Real Complex
 
 open scoped UpperHalfPlane
+
+/-- The UpperHalfPlane as a subset of `ℂ`. This is convinient for takind derivatives of functions
+on the upper half plane. -/
+abbrev complexUpperHalfPlane := {z : ℂ | 0 < z.im}
+
+local notation "ℍₒ" => complexUpperHalfPlane
+
+lemma complexUpperHalPlane_isOpen : IsOpen ℍₒ := by
+  exact (isOpen_lt continuous_const Complex.continuous_im)
+
+local notation "ℂ_ℤ" => integerComplement
 
 lemma Complex.cot_eq_exp_ratio (z : ℂ) :
     cot z = (Complex.exp (2 * I * z) + 1) / (I * (1 - Complex.exp (2 * I * z))) := by
@@ -62,8 +75,6 @@ section MittagLeffler
 open Filter Function
 
 open scoped Topology BigOperators Nat Complex
-
-local notation "ℂ_ℤ" => integerComplement
 
 variable {x : ℂ} {Z : Set ℂ}
 
@@ -134,6 +145,15 @@ theorem sin_pi_z_ne_zero (hz : x ∈ ℂ_ℤ) : Complex.sin (π * x) ≠ 0 := by
   nth_rw 2 [mul_comm]
   exact Injective.ne (mul_right_injective₀ (ofReal_ne_zero.mpr Real.pi_ne_zero)) (by aesop)
 
+theorem cot_pi_z_contDiffWithinAt (k : ℕ) (z : ℍ) :
+  ContDiffWithinAt ℂ (k) (fun x ↦ (↑π * x).cot) ℍₒ (z : ℂ) := by
+  simp_rw [Complex.cot, Complex.cos]
+  apply ContDiffWithinAt.div
+  · fun_prop
+  · simp_rw [Complex.sin]
+    fun_prop
+  · apply sin_pi_z_ne_zero (UpperHalfPlane.coe_mem_integerComplement z)
+
 theorem tendsto_logDeriv_euler_sin_div (hx : x ∈ ℂ_ℤ) :
     Tendsto (fun n : ℕ ↦ logDeriv (fun z ↦ ∏ j ∈ Finset.range n, (1 + sineTerm z j)) x)
         atTop (𝓝 <| logDeriv (fun t ↦ (Complex.sin (π * t) / (π * t))) x) := by
@@ -152,7 +172,7 @@ theorem logDeriv_sin_div_eq_cot (hz : x ∈ ℂ_ℤ) :
     logDeriv_comp (Complex.differentiableAt_sin) (by fun_prop), Complex.logDeriv_sin,
     deriv_const_mul _ (by fun_prop), deriv_id'', logDeriv_const_mul, logDeriv_id']
   · field_simp [mul_comm]
-  · simpa using Real.pi_ne_zero
+  · simp
   · simp only [ne_eq, mul_eq_zero, ofReal_eq_zero, not_or]
     exact ⟨Real.pi_ne_zero, integerComplement.ne_zero hz⟩
 
@@ -223,3 +243,193 @@ theorem cot_series_rep (hz : x ∈ ℂ_ℤ) :
   ring
 
 end MittagLeffler
+
+section iteratedDeriv
+
+open Set Complex UpperHalfPlane
+
+open scoped Nat
+
+theorem contDiffOn_inv_linear (d : ℤ) (k : ℕ) : ContDiffOn ℂ k (fun z : ℂ ↦ 1 / (z + d)) ℂ_ℤ := by
+  simpa using ContDiffOn.inv (by fun_prop) (fun x hx ↦ Complex.integerComplement_add_ne_zero hx d)
+
+theorem contDiffOn_inv_linear_sub (d : ℤ) (k : ℕ) :
+    ContDiffOn ℂ k (fun z : ℂ ↦ 1 / (z - d)) ℂ_ℤ := by
+  simpa [sub_eq_add_neg] using contDiffOn_inv_linear (-d) k
+
+lemma cotTerm_iteratedDeriv (d k : ℕ) : EqOn (iteratedDeriv k (fun (z : ℂ) ↦ cotTerm z d))
+    (fun z : ℂ ↦ (-1) ^ k * k ! * ((z + (d + 1)) ^ (-1 - k : ℤ) +
+    (z - (d + 1)) ^ (-1 - k : ℤ))) ℂ_ℤ := by
+  intro z hz
+  have h1 : (fun z : ℂ ↦ 1 / (z - (d + 1)) + 1 / (z + (d + 1))) =
+      (fun z : ℂ ↦ 1 / (z - (d + 1))) + fun z : ℂ ↦ 1 / (z + (d +1)) := by rfl
+  rw [h1, iteratedDeriv_add ?_]
+  · have h2 := iter_deriv_inv_linear_sub k 1 ((d + 1 : ℂ))
+    have h3 := iter_deriv_inv_linear k 1 (d + 1 : ℂ)
+    simp only [one_div, one_mul, one_pow, mul_one, Int.reduceNeg, iteratedDeriv_eq_iterate] at *
+    rw [h2, h3]
+    ring
+  · simpa using (contDiffOn_inv_linear (d + 1) k).contDiffAt
+      (IsOpen.mem_nhds (by apply Complex.isOpen_compl_range_intCast) hz)
+  · simpa using (contDiffOn_inv_linear_sub (d + 1) k).contDiffAt
+      (IsOpen.mem_nhds (by apply Complex.isOpen_compl_range_intCast) hz)
+
+lemma cotTerm_iteratedDerivWith (d k : ℕ) :
+    EqOn (iteratedDerivWithin k (fun (z : ℂ) ↦ cotTerm z d) ℂ_ℤ)
+    (fun z : ℂ ↦ (-1) ^ k * k ! * ((z + (d + 1)) ^ (-1 - k : ℤ) +
+    (z - (d + 1)) ^ (-1 - k : ℤ))) ℂ_ℤ := by
+  apply Set.EqOn.trans (iteratedDerivWithin_of_isOpen Complex.isOpen_compl_range_intCast)
+  apply cotTerm_iteratedDeriv
+
+lemma cotTerm_iteratedDerivWith' (d k : ℕ) :
+    EqOn (iteratedDerivWithin k (fun (z : ℂ) ↦ cotTerm z d) ℍₒ)
+    (fun z : ℂ ↦ (-1) ^ k * k ! * ((z + (d + 1)) ^ (-1 - k : ℤ) +
+    (z - (d + 1)) ^ (-1 - k : ℤ))) ℍₒ := by
+  apply Set.EqOn.trans (upperHalfPlane_inter_integerComplement ▸
+    iteratedDerivWithin_congr_right_of_isOpen (fun (z : ℂ) ↦ cotTerm z d) k
+    complexUpperHalPlane_isOpen (Complex.isOpen_compl_range_intCast))
+  intro z hz
+  simpa using cotTerm_iteratedDerivWith d k (UpperHalfPlane.coe_mem_integerComplement ⟨z, hz⟩)
+
+open EisensteinSeries in
+private noncomputable abbrev cotTermUpperBound (A B : ℝ) (hB : 0 < B) (k a : ℕ) :=
+  k ! * (2 * (r (⟨⟨A, B⟩, by simp [hB]⟩) ^ (-1 - (k : ℤ))) * ‖ ((a + 1) ^ (-1 - (k : ℤ)) : ℝ)‖)
+
+private lemma Summable_cotTermUpperBound (A B : ℝ) (hB : 0 < B) {k : ℕ} (hk : 1 ≤ k) :
+    Summable fun a : ℕ ↦ cotTermUpperBound A B hB k a := by
+  simp_rw [← mul_assoc]
+  apply Summable.mul_left
+  apply ((summable_nat_add_iff 1).mpr (summable_int_iff_summable_nat_and_neg.mp
+      (EisensteinSeries.linear_right_summable 0 1 (k := k + 1) (by omega))).1).norm.congr
+  simp only [Int.cast_one, mul_zero, Nat.cast_add, Nat.cast_one, Int.cast_add, Int.cast_natCast,
+    zero_add, ← zpow_neg, neg_add_rev, Int.reduceNeg, norm_zpow, sub_eq_add_neg, Real.norm_eq_abs]
+  norm_cast
+  exact fun n ↦ rfl
+
+open EisensteinSeries in
+private lemma iteratedDerivWithin_cotTerm_bounded_uniformly {k : ℕ} (hk : 1 ≤ k) (K : Set ℂ)
+    (hK : K ⊆ ℍₒ) (A B : ℝ) (hB : 0 < B)
+    (HABK : inclusion hK '' univ ⊆ verticalStrip A B) (n : ℕ) {a : ℂ} (ha : a ∈ K) :
+    ‖iteratedDerivWithin k (fun z ↦ cotTerm z n) ℍₒ a‖ ≤
+    cotTermUpperBound A B hB k n := by
+  simp only [cotTerm_iteratedDerivWith' n k (hK ha), Complex.norm_mul, norm_pow, norm_neg,
+    norm_one, one_pow, Complex.norm_natCast, one_mul, cotTermUpperBound, Int.reduceNeg, norm_zpow,
+    Real.norm_eq_abs, two_mul, add_mul]
+  gcongr
+  apply le_trans (norm_add_le _ _)
+  apply add_le_add
+  · have := summand_bound_of_mem_verticalStrip (k := (k + 1)) (by norm_cast; omega) ![1, n+1] hB
+      (z := ⟨a, (hK ha)⟩) (A := A) (by aesop)
+    simp only [coe_setOf, image_univ, Fin.isValue, Matrix.cons_val_zero, Int.cast_one,
+      coe_mk_subtype, one_mul, Matrix.cons_val_one, Matrix.cons_val_fin_one, Int.cast_add,
+      Int.cast_natCast, neg_add_rev, abs_norm_eq_max_natAbs, Int.reduceNeg, sub_eq_add_neg,
+      norm_zpow, ge_iff_le] at *
+    norm_cast at *
+  · have := summand_bound_of_mem_verticalStrip (k := k + 1) (by norm_cast; omega) ![1, -(n + 1)] hB
+      (z := ⟨a, (hK ha)⟩) (A := A) (by aesop)
+    rw [abs_norm_eq_max_natAbs_neg] at this
+    simp only [coe_setOf, image_univ, neg_add_rev, Int.reduceNeg, Fin.isValue, Matrix.cons_val_zero,
+      Int.cast_one, coe_mk_subtype, one_mul, Matrix.cons_val_one, Matrix.cons_val_fin_one,
+      Int.cast_add, Int.cast_neg, Int.cast_natCast, sub_eq_add_neg, norm_zpow, ge_iff_le] at *
+    norm_cast at *
+
+lemma summableLocallyUniformlyOn_iteratedDerivWithin_cotTerm (k : ℕ) (hk : 1 ≤ k) :
+    SummableLocallyUniformlyOn
+    (fun n : ℕ ↦ iteratedDerivWithin k (fun z : ℂ ↦ cotTerm z n) ℍₒ) ℍₒ := by
+  apply SummableLocallyUniformlyOn_of_locally_bounded (complexUpperHalPlane_isOpen)
+  intro K hK hKc
+  have hKK2 : IsCompact (Set.image (inclusion hK) univ) := by
+    exact (isCompact_iff_isCompact_univ.mp hKc).image_of_continuousOn
+     (continuous_inclusion hK |>.continuousOn)
+  obtain ⟨A, B, hB, HABK⟩ := subset_verticalStrip_of_isCompact hKK2
+  exact ⟨cotTermUpperBound A B hB k, Summable_cotTermUpperBound A B hB hk,
+    iteratedDerivWithin_cotTerm_bounded_uniformly hk K hK A B hB HABK⟩
+
+theorem DifferentiableOn_iteratedDeriv_cotTerm (n l : ℕ) :
+    DifferentiableOn ℂ (iteratedDerivWithin l (fun z ↦ cotTerm z n) ℍₒ) ℍₒ := by
+  suffices DifferentiableOn ℂ
+    (fun z : ℂ ↦ (-1) ^ l * l ! * ((z + (n + 1)) ^ (-1 - l : ℤ) +
+    (z - (n + 1)) ^ (-1 - l : ℤ))) ℍₒ by
+    apply this.congr
+    intro z hz
+    simpa using (cotTerm_iteratedDerivWith' n l hz)
+  apply DifferentiableOn.const_mul
+  apply DifferentiableOn.add <;> apply DifferentiableOn.zpow
+  any_goals try {fun_prop} <;> left <;> intro x hx
+  · simpa [add_eq_zero_iff_neg_eq'] using (UpperHalfPlane.ne_int ⟨x, hx⟩ (-(n+1))).symm
+  · simpa [sub_eq_zero] using (UpperHalfPlane.ne_int ⟨x, hx⟩ ((n+1)))
+
+private theorem aux_summable_add (k : ℕ) (hk : 1 ≤ k) (x : ℍ) :
+  Summable fun (n : ℕ) ↦ ((x : ℂ) + (n + 1)) ^ (-1 - k : ℤ) := by
+  apply ((summable_nat_add_iff 1).mpr (summable_int_iff_summable_nat_and_neg.mp
+        (EisensteinSeries.linear_right_summable x 1 (k := k + 1) (by omega))).1).congr
+  simp [← zpow_neg, sub_eq_add_neg]
+
+private theorem aux_summable_neg (k : ℕ) (hk : 1 ≤ k) (x : ℍ) :
+  Summable fun (n : ℕ) ↦ ((x : ℂ) - (n + 1)) ^ (-1 - k : ℤ) := by
+  apply ((summable_nat_add_iff 1).mpr (summable_int_iff_summable_nat_and_neg.mp
+        (EisensteinSeries.linear_right_summable x 1 (k := k + 1) (by omega))).2).congr
+  simp [← zpow_neg, sub_eq_add_neg]
+
+-- We have this auxilary ugly version on the lhs so the the rhs looks nicer.
+private theorem aux_iteratedDeriv_tsum_cotTerm {k : ℕ} (hk : 1 ≤ k) (x : ℍ) :
+    (-1) ^ k * (k !) * (x : ℂ) ^ (-1 - k : ℤ) + iteratedDerivWithin k
+        (fun z : ℂ ↦ ∑' n : ℕ, cotTerm z n) ℍₒ x =
+      (-1) ^ (k : ℕ) * (k : ℕ)! * ∑' n : ℤ, ((x : ℂ) + n) ^ (-1 - k : ℤ) := by
+    rw [iteratedDerivWithin_tsum k complexUpperHalPlane_isOpen
+       (by simpa using x.2) (fun t ht ↦ Summable_cotTerm (coe_mem_integerComplement ⟨t, ht⟩))
+       (fun l hl hl2 ↦ summableLocallyUniformlyOn_iteratedDerivWithin_cotTerm l hl)
+       (fun n l z hl hz ↦ ((DifferentiableOn_iteratedDeriv_cotTerm n l)).differentiableAt
+       ((IsOpen.mem_nhds (complexUpperHalPlane_isOpen) hz)))]
+    conv =>
+      enter [1,2,1]
+      ext n
+      rw [cotTerm_iteratedDerivWith' n k (by simp [UpperHalfPlane.coe])]
+    rw [tsum_of_add_one_of_neg_add_one (by simpa using aux_summable_add k hk x)
+      (by simpa [sub_eq_add_neg] using aux_summable_neg k hk x),
+      tsum_mul_left, Summable.tsum_add (aux_summable_add k hk x) (aux_summable_neg k hk x )]
+    simp only [Int.reduceNeg, sub_eq_add_neg, neg_add_rev, Int.cast_add, Int.cast_natCast,
+      Int.cast_one, Int.cast_zero, add_zero, Int.cast_neg]
+    ring
+
+theorem iteratedDerivWithin_cot_sub_inv_eq_series_rep {k : ℕ} (hk : 1 ≤ k) (z : ℍ) :
+    iteratedDerivWithin k (fun x ↦ π * Complex.cot (π * x) - 1 / x) ℍₒ z =
+    -(-1) ^ k * (k !) * ((z : ℂ) ^ (-1 - k : ℤ)) +
+    (-1) ^ (k : ℕ) * (k : ℕ)! * ∑' n : ℤ, ((z : ℂ) + n) ^ (-1 - k : ℤ):= by
+  rw [← aux_iteratedDeriv_tsum_cotTerm hk]
+  simp only [one_div, neg_mul, neg_add_cancel_left]
+  refine iteratedDerivWithin_congr ?_ z.2
+  intro x hx
+  simpa [cotTerm] using (cot_series_rep' (UpperHalfPlane.coe_mem_integerComplement ⟨x, hx⟩))
+
+theorem iteratedDerivWithin_cot_pi_z_sub_inv (k : ℕ) (z : ℍ) :
+    iteratedDerivWithin k (fun x ↦ π * Complex.cot (π * x) - 1 / x) ℍₒ z =
+    (iteratedDerivWithin k (fun x ↦ π * Complex.cot (π * x)) ℍₒ z) -
+    (-1) ^ k * (k !) * ((z : ℂ) ^ (-1 - k : ℤ)) := by
+  simp_rw [sub_eq_add_neg]
+  rw [iteratedDerivWithin_fun_add (by apply z.2) complexUpperHalPlane_isOpen.uniqueDiffOn]
+  · simpa [iteratedDerivWithin_fun_neg] using iteratedDerivWithin_one_div k
+      complexUpperHalPlane_isOpen z.2
+  · exact ContDiffWithinAt.smul (by fun_prop) (cot_pi_z_contDiffWithinAt k z)
+  · simp only [one_div]
+    apply ContDiffWithinAt.neg
+    exact ContDiffWithinAt.inv (by fun_prop) (ne_zero z)
+
+theorem iteratedDerivWithin_cot_series_rep {k : ℕ} (hk : 1 ≤ k) (z : ℍ) :
+    iteratedDerivWithin k (fun x ↦ π * Complex.cot (π * x)) ℍₒ z =
+    (-1) ^ k * (k : ℕ)! * ∑' n : ℤ, ((z : ℂ) + n) ^ (-1 - k : ℤ):= by
+  have h0 := iteratedDerivWithin_cot_pi_z_sub_inv k z
+  rw [iteratedDerivWithin_cot_sub_inv_eq_series_rep hk z, add_comm] at h0
+  rw [← add_left_inj (-(-1) ^ k * ↑k ! * (z : ℂ) ^ (-1 - k : ℤ)), h0]
+  ring
+
+theorem iteratedDerivWithin_cot_series_rep_one_div {k : ℕ} (hk : 1 ≤ k) (z : ℍ) :
+    iteratedDerivWithin k (fun x ↦ π * Complex.cot (π * x)) ℍₒ z =
+    (-1) ^ k * (k : ℕ)! * ∑' n : ℤ, 1 / ((z : ℂ) + n) ^ (k + 1) := by
+  simp only [iteratedDerivWithin_cot_series_rep hk z, Int.reduceNeg, one_div, mul_eq_mul_left_iff,
+    mul_eq_zero, pow_eq_zero_iff', neg_eq_zero, one_ne_zero, ne_eq, Nat.cast_eq_zero,
+    show -1 - (k : ℤ) = -(k + 1) by ring]
+  left
+  rfl
+
+end iteratedDeriv

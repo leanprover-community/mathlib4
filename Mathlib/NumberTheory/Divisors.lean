@@ -12,6 +12,7 @@ import Mathlib.Data.Nat.Cast.Order.Ring
 import Mathlib.Data.Nat.PrimeFin
 import Mathlib.Data.Nat.SuccPred
 import Mathlib.Order.Interval.Finset.Nat
+import Mathlib.Data.PNat.Defs
 
 /-!
 # Divisor Finsets
@@ -203,6 +204,7 @@ theorem divisor_le {m : ℕ} : n ∈ divisors m → n ≤ m := by
   · simp only [mem_divisors, Nat.succ_ne_zero m, and_true, Ne, not_false_iff]
     exact Nat.le_of_dvd (Nat.succ_pos m)
 
+@[gcongr]
 theorem divisors_subset_of_dvd {m : ℕ} (hzero : n ≠ 0) (h : m ∣ n) : divisors m ⊆ divisors n :=
   Finset.subset_iff.2 fun _x hx => Nat.mem_divisors.mpr ⟨(Nat.mem_divisors.mp hx).1.trans h, hzero⟩
 
@@ -742,3 +744,35 @@ lemma mul_mem_zero_one_two_three_four_iff {a b : ℤ} (h₀ : a = 0 ↔ b = 0) :
   aesop
 
 end Int
+
+section pnat
+
+/-- The map from `Nat.divisorsAntidiagonal n` to `ℕ+ × ℕ+` given by sending `n = a * b`
+to `(a , b)`. -/
+def mapdiv (n : ℕ+) : Nat.divisorsAntidiagonal n → ℕ+ × ℕ+ := by
+  refine fun x =>
+   ⟨⟨x.1.1, Nat.pos_of_mem_divisors (Nat.fst_mem_divisors_of_mem_antidiagonal x.2)⟩,
+    (⟨x.1.2, Nat.pos_of_mem_divisors (Nat.snd_mem_divisors_of_mem_antidiagonal x.2)⟩ : ℕ+),
+    Nat.pos_of_mem_divisors (Nat.snd_mem_divisors_of_mem_antidiagonal x.2)⟩
+
+/-- The equivalence from the union over `n` of `Nat.divisorsAntidiagonal n` to `ℕ+ × ℕ+`
+given by sending `n = a * b` to `(a , b)`. -/
+def sigmaAntidiagonalEquivProd : (Σ n : ℕ+, Nat.divisorsAntidiagonal n) ≃ ℕ+ × ℕ+ where
+  toFun x := mapdiv x.1 x.2
+  invFun x :=
+    ⟨⟨x.1.1 * x.2.1, mul_pos x.1.2 x.2.2⟩, ⟨x.1, x.2⟩, by
+      simp only [PNat.mk_coe, Nat.mem_divisorsAntidiagonal, ne_eq, mul_eq_zero, not_or]
+      refine ⟨rfl, PNat.ne_zero x.1, PNat.ne_zero x.2⟩⟩
+  left_inv := by
+    rintro ⟨n, ⟨k, l⟩, h⟩
+    rw [Nat.mem_divisorsAntidiagonal] at h
+    simp_rw [mapdiv, PNat.mk_coe]
+    ext <;> simp [h] at *
+    rfl
+  right_inv := by
+    rintro ⟨n, ⟨k, l⟩, h⟩
+    · simp_rw [mapdiv]
+      norm_cast
+    · rfl
+
+end pnat

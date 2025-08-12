@@ -10,6 +10,7 @@ import Mathlib.Analysis.Normed.Affine.Isometry
 import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
 import Mathlib.Analysis.NormedSpace.RieszLemma
 import Mathlib.Analysis.NormedSpace.Pointwise
+import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.Logic.Encodable.Pi
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 import Mathlib.Topology.Algebra.InfiniteSum.Module
@@ -61,7 +62,7 @@ variable {R₁ : Type*} [Field R₁] [Module R₁ E₁] [Module R₁ F] [FiniteD
   [FiniteDimensional R₁ F]
 
 /-- A linear isometry between finite dimensional spaces of equal dimension can be upgraded
-    to a linear isometry equivalence. -/
+to a linear isometry equivalence. -/
 def toLinearIsometryEquiv (li : E₁ →ₗᵢ[R₁] F) (h : finrank R₁ E₁ = finrank R₁ F) :
     E₁ ≃ₗᵢ[R₁] F where
   toLinearEquiv := li.toLinearMap.linearEquivOfInjective li.injective h
@@ -90,7 +91,7 @@ variable {𝕜 : Type*} {V₁ V₂ : Type*} {P₁ P₂ : Type*} [NormedField �
 variable [FiniteDimensional 𝕜 V₁] [FiniteDimensional 𝕜 V₂]
 
 /-- An affine isometry between finite dimensional spaces of equal dimension can be upgraded
-    to an affine isometry equivalence. -/
+to an affine isometry equivalence. -/
 def toAffineIsometryEquiv [Inhabited P₁] (li : P₁ →ᵃⁱ[𝕜] P₂) (h : finrank 𝕜 V₁ = finrank 𝕜 V₂) :
     P₁ ≃ᵃⁱ[𝕜] P₂ :=
   AffineIsometryEquiv.mk' li (li.linearIsometry.toLinearIsometryEquiv h)
@@ -278,7 +279,7 @@ theorem opNNNorm_le {ι : Type*} [Fintype ι] (v : Basis ι 𝕜 E) {u : E →L[
     set φ := v.equivFunL.toContinuousLinearMap
     calc
       ‖u e‖₊ = ‖u (∑ i, v.equivFun e i • v i)‖₊ := by rw [v.sum_equivFun]
-      _ = ‖∑ i, v.equivFun e i • (u <| v i)‖₊ := by simp [map_sum]
+      _ = ‖∑ i, v.equivFun e i • (u <| v i)‖₊ := by simp only [equivFun_apply, map_sum, map_smul]
       _ ≤ ∑ i, ‖v.equivFun e i • (u <| v i)‖₊ := nnnorm_sum_le _ _
       _ = ∑ i, ‖v.equivFun e i‖₊ * ‖u (v i)‖₊ := by simp only [nnnorm_smul]
       _ ≤ ∑ i, ‖v.equivFun e i‖₊ * M := by gcongr; apply hu
@@ -661,6 +662,26 @@ theorem summable_of_isBigO_nat' {E F : Type*} [NormedAddCommGroup E] [CompleteSp
     [NormedAddCommGroup F] [NormedSpace ℝ F] [FiniteDimensional ℝ F] {f : ℕ → E} {g : ℕ → F}
     (hg : Summable g) (h : f =O[atTop] g) : Summable f :=
   summable_of_isBigO_nat hg.norm h.norm_right
+
+open Nat Asymptotics in
+theorem summable_norm_mul_geometric_of_norm_lt_one' {F : Type*} [NormedRing F]
+    [NormOneClass F] [NormMulClass F] {k : ℕ} {r : F} (hr : ‖r‖ < 1) {u : ℕ → F}
+    (hu : u =O[atTop] (fun n ↦ ((n ^ k : ℕ) : F))) : Summable fun n : ℕ ↦ ‖u n * r ^ n‖ := by
+  rcases exists_between hr with ⟨r', hrr', h⟩
+  apply summable_of_isBigO_nat (summable_geometric_of_lt_one ((norm_nonneg _).trans hrr'.le) h).norm
+  calc
+  fun n ↦ ‖(u n) * r ^ n‖
+  _ =O[atTop] fun n ↦ ‖u n‖ * ‖r‖ ^ n := by
+      apply (IsBigOWith.of_bound (c := ‖(1 : ℝ)‖) ?_).isBigO
+      filter_upwards [eventually_norm_pow_le r] with n hn
+      simp
+  _ =O[atTop] fun n ↦ ‖((n : F) ^ k)‖ * ‖r‖ ^ n := by
+      simpa [Nat.cast_pow] using (isBigO_norm_left.mpr
+      (isBigO_norm_right.mpr hu)).mul (isBigO_refl (fun n => (‖r‖ ^ n)) atTop)
+  _ =O[atTop] fun n ↦ ‖r' ^ n‖ := by
+      convert isBigO_norm_right.mpr (isBigO_norm_left.mpr
+        (isLittleO_pow_const_mul_const_pow_const_pow_of_norm_lt k hrr').isBigO)
+      simp only [norm_pow, norm_mul]
 
 theorem summable_of_isEquivalent {ι E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] {f : ι → E} {g : ι → E} (hg : Summable g) (h : f ~[cofinite] g) :

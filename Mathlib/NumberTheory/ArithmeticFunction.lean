@@ -817,6 +817,9 @@ theorem sigma_one_apply_prime_pow {p i : ℕ} (hp : p.Prime) :
     σ 1 (p ^ i) = ∑ k ∈ .range (i + 1), p ^ k := by
   simp [sigma_apply_prime_pow hp]
 
+theorem sigma_eq_sum_div' (k n : ℕ) : sigma k n = ∑ d ∈ Nat.divisors n, (n / d) ^ k := by
+  rw [sigma, ArithmeticFunction.coe_mk, ← Nat.sum_div_divisors]
+
 theorem sigma_zero_apply (n : ℕ) : σ 0 n = #n.divisors := by simp [sigma_apply]
 
 theorem sigma_zero_apply_prime_pow {p i : ℕ} (hp : p.Prime) : σ 0 (p ^ i) = i + 1 := by
@@ -995,7 +998,7 @@ theorem moebius_eq_or (n : ℕ) : μ n = 0 ∨ μ n = 1 ∨ μ n = -1 := by
 
 theorem moebius_ne_zero_iff_eq_or {n : ℕ} : μ n ≠ 0 ↔ μ n = 1 ∨ μ n = -1 := by
   have := moebius_eq_or n
-  aesop
+  omega
 
 theorem moebius_sq_eq_one_of_squarefree {l : ℕ} (hl : Squarefree l) : μ l ^ 2 = 1 := by
   rw [moebius_apply_of_squarefree hl, ← pow_mul, mul_comm, pow_mul, neg_one_sq, one_pow]
@@ -1008,7 +1011,7 @@ theorem moebius_sq {n : ℕ} :
   split_ifs with h
   · exact moebius_sq_eq_one_of_squarefree h
   · simp only [moebius_eq_zero_of_not_squarefree h,
-      zero_pow (show 2 ≠ 0 by norm_num)]
+      zero_pow (show 2 ≠ 0 by simp)]
 
 theorem abs_moebius {n : ℕ} :
     |μ n| = if Squarefree n then 1 else 0 := by

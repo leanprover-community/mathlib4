@@ -142,6 +142,10 @@ theorem exp_sum {α : Type*} (s : Finset α) (f : α → ℂ) :
 lemma exp_nsmul (x : ℂ) (n : ℕ) : exp (n • x) = exp x ^ n :=
   @MonoidHom.map_pow (Multiplicative ℂ) ℂ _ _  expMonoidHom _ _
 
+lemma exp_nsmul' (x a p : ℂ) (n : ℕ) : exp (a * n * x / p) = exp (a * x / p) ^ n := by
+  rw [← Complex.exp_nsmul]
+  ring_nf
+
 theorem exp_nat_mul (x : ℂ) : ∀ n : ℕ, exp (n * x) = exp x ^ n
   | 0 => by rw [Nat.cast_zero, zero_mul, exp_zero, pow_zero]
   | Nat.succ n => by rw [pow_succ, Nat.cast_add_one, add_mul, exp_add, ← exp_nat_mul _ n, one_mul]
@@ -492,10 +496,7 @@ lemma norm_exp_sub_sum_le_norm_mul_exp (x : ℂ) (n : ℕ) :
     _ = ‖x‖ ^ n * ∑ m ∈ range (j - n), (‖x‖ ^ m / m.factorial) := by
       congr 1
       refine (sum_bij (fun m hm ↦ m + n) ?_ ?_ ?_ ?_).symm
-      · intro a ha
-        simp only [mem_filter, mem_range, le_add_iff_nonneg_left, zero_le, and_true]
-        simp only [mem_range] at ha
-        rwa [← lt_tsub_iff_right]
+      · grind [Finset.mem_range, Finset.mem_filter]
       · intro a ha b hb hab
         simpa using hab
       · intro b hb
