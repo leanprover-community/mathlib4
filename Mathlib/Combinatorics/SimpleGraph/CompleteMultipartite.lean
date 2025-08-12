@@ -181,14 +181,11 @@ abbrev completeEquipartiteGraph (r t : ℕ) : SimpleGraph (Fin r × Fin t) :=
 /-- A `completeEquipartiteGraph` is isomorphic to a corresponding `completeMultipartiteGraph`.
 
 The difference is that the former vertices are a product type whereas the latter vertices are a
-dependent product type. -/
+*dependent* product type. -/
 def completeEquipartiteGraph.completeMultipartiteGraph :
     completeEquipartiteGraph r t ≃g completeMultipartiteGraph (Function.const (Fin r) (Fin t)) where
-  toFun := fun (v₁, v₂) ↦ by
-    use v₁, v₂, v₂.is_lt
-  invFun := fun ⟨v₁, v₂⟩ ↦ by
-    rw [Function.const_apply] at v₂
-    use v₁, v₂, v₂.is_lt
+  toFun := fun (v₁, v₂) ↦ ⟨v₁, v₂, v₂.is_lt⟩
+  invFun := by simpa using fun ⟨v₁, v₂⟩ ↦ ⟨v₁, v₂, v₂.is_lt⟩
   left_inv v := by simp
   right_inv v := by simp
   map_rel_iff' := by simp
