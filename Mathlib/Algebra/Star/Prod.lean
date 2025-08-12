@@ -10,7 +10,7 @@ import Mathlib.Algebra.Star.Basic
 # Basic Results about Star on Product Type
 
 This file provides basic results about the star on product types defined in
-`Mathlib.Algebra.Notation.Prod.lean`.
+`Mathlib/Algebra/Notation/Prod.lean`.
 
 -/
 
