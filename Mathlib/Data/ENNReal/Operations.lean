@@ -39,7 +39,8 @@ protected lemma pow_le_pow_left_iff {n : ℕ} (hn : n ≠ 0) : a ^ n ≤ b ^ n �
 protected lemma pow_lt_pow_left_iff {n : ℕ} (hn : n ≠ 0) : a ^ n < b ^ n ↔ a < b :=
   (ENNReal.pow_right_strictMono hn).lt_iff_lt
 
-@[mono, gcongr] protected alias ⟨_, pow_le_pow_left⟩ := ENNReal.pow_le_pow_left_iff
+@[mono, gcongr] protected lemma pow_le_pow_left {n : ℕ} (h : a ≤ b) : a ^ n ≤ b ^ n :=
+  pow_le_pow_left' h n
 @[mono, gcongr] protected alias ⟨_, pow_lt_pow_left⟩ := ENNReal.pow_lt_pow_left_iff
 
 -- TODO: generalize to `WithTop`
