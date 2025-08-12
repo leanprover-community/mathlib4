@@ -1025,44 +1025,6 @@ theorem eLpNorm'_eq_zero_of_ae_zero' (hq0_ne : q ≠ 0) (hμ : μ ≠ 0) {f : α
     (hf_zero : f =ᵐ[μ] 0) :
     eLpNorm' f q μ = 0 := by rw [eLpNorm'_congr_ae hf_zero, eLpNorm'_zero' hq0_ne hμ]
 
-section ENormedAddMonoid
-
-variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
-
-theorem ae_eq_zero_of_eLpNorm'_eq_zero {f : α → ε} (hq0 : 0 ≤ q) (hf : AEStronglyMeasurable f μ)
-    (h : eLpNorm' f q μ = 0) : f =ᵐ[μ] 0 := by
-  simp only [eLpNorm'_eq_lintegral_enorm, lintegral_eq_zero_iff' (hf.enorm.pow_const q), one_div,
-    ENNReal.rpow_eq_zero_iff, inv_pos, inv_neg'', hq0.not_gt, and_false, or_false] at h
-  refine h.left.mono fun x hx ↦ ?_
-  simp only [Pi.ofNat_apply, ENNReal.rpow_eq_zero_iff, enorm_eq_zero, h.2.not_gt, and_false,
-    or_false] at hx
-  simp [hx.1]
-
-theorem eLpNorm'_eq_zero_iff (hq0_lt : 0 < q) {f : α → ε} (hf : AEStronglyMeasurable f μ) :
-    eLpNorm' f q μ = 0 ↔ f =ᵐ[μ] 0 :=
-  ⟨ae_eq_zero_of_eLpNorm'_eq_zero (le_of_lt hq0_lt) hf, eLpNorm'_eq_zero_of_ae_zero hq0_lt⟩
-
-variable {ε : Type*} [ENorm ε] in
-theorem enorm_ae_le_eLpNormEssSup {_ : MeasurableSpace α} (f : α → ε) (μ : Measure α) :
-    ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ eLpNormEssSup f μ :=
-  ENNReal.ae_le_essSup fun x => ‖f x‖ₑ
-
-@[deprecated (since := "2025-03-05")] alias
-coe_nnnorm_ae_le_eLpNormEssSup := enorm_ae_le_eLpNormEssSup
-
-@[simp]
-theorem eLpNormEssSup_eq_zero_iff {f : α → ε} : eLpNormEssSup f μ = 0 ↔ f =ᵐ[μ] 0 := by
-  simp [EventuallyEq, eLpNormEssSup_eq_essSup_enorm]
-
-theorem eLpNorm_eq_zero_iff {f : α → ε} (hf : AEStronglyMeasurable f μ) (h0 : p ≠ 0) :
-    eLpNorm f p μ = 0 ↔ f =ᵐ[μ] 0 := by
-  by_cases h_top : p = ∞
-  · rw [h_top, eLpNorm_exponent_top, eLpNormEssSup_eq_zero_iff]
-  rw [eLpNorm_eq_eLpNorm' h0 h_top]
-  exact eLpNorm'_eq_zero_iff (ENNReal.toReal_pos h0 h_top) hf
-
-end ENormedAddMonoid
-
 theorem eLpNorm_eq_zero_of_ae_zero {f : α → ε} (hf : f =ᵐ[μ] 0) : eLpNorm f p μ = 0 := by
   rw [← eLpNorm_zero (p := p) (μ := μ) (α := α) (ε := ε)]
   exact eLpNorm_congr_ae hf
@@ -1111,6 +1073,44 @@ alias Memℒp.of_discrete := MemLp.of_discrete
   simp [Subsingleton.elim f 0]
 
 end ESeminormedAddMonoid
+
+section ENormedAddMonoid
+
+variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
+
+theorem ae_eq_zero_of_eLpNorm'_eq_zero {f : α → ε} (hq0 : 0 ≤ q) (hf : AEStronglyMeasurable f μ)
+    (h : eLpNorm' f q μ = 0) : f =ᵐ[μ] 0 := by
+  simp only [eLpNorm'_eq_lintegral_enorm, lintegral_eq_zero_iff' (hf.enorm.pow_const q), one_div,
+    ENNReal.rpow_eq_zero_iff, inv_pos, inv_neg'', hq0.not_gt, and_false, or_false] at h
+  refine h.left.mono fun x hx ↦ ?_
+  simp only [Pi.ofNat_apply, ENNReal.rpow_eq_zero_iff, enorm_eq_zero, h.2.not_gt, and_false,
+    or_false] at hx
+  simp [hx.1]
+
+theorem eLpNorm'_eq_zero_iff (hq0_lt : 0 < q) {f : α → ε} (hf : AEStronglyMeasurable f μ) :
+    eLpNorm' f q μ = 0 ↔ f =ᵐ[μ] 0 :=
+  ⟨ae_eq_zero_of_eLpNorm'_eq_zero (le_of_lt hq0_lt) hf, eLpNorm'_eq_zero_of_ae_zero hq0_lt⟩
+
+variable {ε : Type*} [ENorm ε] in
+theorem enorm_ae_le_eLpNormEssSup {_ : MeasurableSpace α} (f : α → ε) (μ : Measure α) :
+    ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ eLpNormEssSup f μ :=
+  ENNReal.ae_le_essSup fun x => ‖f x‖ₑ
+
+@[deprecated (since := "2025-03-05")] alias
+coe_nnnorm_ae_le_eLpNormEssSup := enorm_ae_le_eLpNormEssSup
+
+@[simp]
+theorem eLpNormEssSup_eq_zero_iff {f : α → ε} : eLpNormEssSup f μ = 0 ↔ f =ᵐ[μ] 0 := by
+  simp [EventuallyEq, eLpNormEssSup_eq_essSup_enorm]
+
+theorem eLpNorm_eq_zero_iff {f : α → ε} (hf : AEStronglyMeasurable f μ) (h0 : p ≠ 0) :
+    eLpNorm f p μ = 0 ↔ f =ᵐ[μ] 0 := by
+  by_cases h_top : p = ∞
+  · rw [h_top, eLpNorm_exponent_top, eLpNormEssSup_eq_zero_iff]
+  rw [eLpNorm_eq_eLpNorm' h0 h_top]
+  exact eLpNorm'_eq_zero_iff (ENNReal.toReal_pos h0 h_top) hf
+
+end ENormedAddMonoid
 
 section MapMeasure
 
