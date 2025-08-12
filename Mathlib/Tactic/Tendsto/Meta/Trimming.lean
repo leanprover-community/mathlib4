@@ -334,6 +334,7 @@ def trimMS (ms : MS) : TacticM ((ms' : MS) × Q(PreMS.Trimmed $ms'.val)) := do
     h_wo := res.h_wo
     h_approx := q($res.h_approx _ $ms.h_approx)
     h_basis := ms.h_basis
+    h_logBasis := ms.h_logBasis
   }
   return ⟨newMs, res.h_trimmed⟩
 
@@ -347,6 +348,7 @@ def trimPartialMS (ms : MS) : TacticM ((ms' : MS) × Option Q(PreMS.Trimmed $ms'
     h_wo := res.h_wo
     h_approx := q($res.h_approx _ $ms.h_approx)
     h_basis := ms.h_basis
+    h_logBasis := ms.h_logBasis
   }
   return ⟨newMs, res.h_trimmed⟩
 

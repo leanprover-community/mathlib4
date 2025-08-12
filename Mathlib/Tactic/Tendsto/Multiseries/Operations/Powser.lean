@@ -151,6 +151,24 @@ theorem toFun_cons {s_hd : ℝ} {s_tl : LazySeries} {t : ℝ}
     h_hsum_tl
   simpa using this
 
+theorem toFun_of_HasFPowerSeriesAt {s : LazySeries} {f : ℝ → ℝ}
+    (h : HasFPowerSeriesAt f s.toFormalMultilinearSeries 0) :
+    s.toFun =ᶠ[𝓝 0] f := by
+  simp [toFun]
+  obtain ⟨r, h⟩ := h
+  rw [Filter.eventuallyEq_iff_exists_mem]
+  use EMetric.ball 0 r
+  constructor
+  · refine EMetric.ball_mem_nhds 0 h.r_pos
+  simp only [Set.EqOn]
+  intro x hx
+  rw [← HasFPowerSeriesOnBall.sum h hx]
+  simp
+
+theorem analytic_of_HasFPowerSeriesAt {s : LazySeries} {f : ℝ → ℝ}
+    (h : HasFPowerSeriesAt f s.toFormalMultilinearSeries 0) :
+    s.analytic := HasFPowerSeriesAt.radius_pos h
+
 theorem toFun_tendsto_head {s_hd : ℝ} {s_tl : LazySeries}
     (h_analytic : analytic (.cons s_hd s_tl)) :
     Tendsto (toFun (.cons s_hd s_tl)) (𝓝 0) (𝓝 s_hd) := by
@@ -179,6 +197,7 @@ theorem toFun_IsBigO_one {s : LazySeries} (h_analytic : s.analytic) {f : ℝ →
     apply Tendsto.comp _ hF
     apply toFun_tendsto_head h_analytic
 
+-- TODO: move
 theorem mul_bounded_majorated {f g basis_hd : ℝ → ℝ} {exp : ℝ} (hf : majorated f basis_hd exp)
     (hg : g =O[atTop] (fun _ ↦ (1 : ℝ))) :
     majorated (f * g) basis_hd exp := by

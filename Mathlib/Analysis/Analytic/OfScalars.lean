@@ -21,6 +21,8 @@ namespace FormalMultilinearSeries
 
 section Field
 
+open ContinuousMultilinearMap
+
 variable {𝕜 : Type*} (E : Type*) [Field 𝕜] [Ring E] [Algebra 𝕜 E] [TopologicalSpace E]
   [TopologicalRing E] (c : ℕ → 𝕜)
 
@@ -30,8 +32,70 @@ def ofScalars : FormalMultilinearSeries 𝕜 E E :=
 
 variable {E}
 
-/-- The sum of the formal power series. Takes the value `0` outside the radius of convergence. -/
-noncomputable def ofScalarsSum (x : E) := (ofScalars E c).sum x
+@[simp]
+theorem ofScalars_eq_zero [Nontrivial E] (n : ℕ) : ofScalars E c n = 0 ↔ c n = 0 := by
+  rw [ofScalars, smul_eq_zero (c := c n) (x := ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n E)]
+  refine or_iff_left (ContinuousMultilinearMap.ext_iff.1.mt <| not_forall_of_exists_not ?_)
+  use fun _ ↦ 1
+  simp
+
+@[simp]
+theorem ofScalars_eq_zero_of_scalar_zero {n : ℕ} (hc : c n = 0) : ofScalars E c n = 0 := by
+  rw [ofScalars, hc, zero_smul 𝕜 (ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n E)]
+
+@[simp]
+theorem ofScalars_series_eq_zero [Nontrivial E] : ofScalars E c = 0 ↔ c = 0 := by
+  simp [FormalMultilinearSeries.ext_iff, funext_iff]
+
+variable (𝕜) in
+@[simp]
+theorem ofScalars_series_eq_zero_of_scalar_zero : ofScalars E (0 : ℕ → 𝕜) = 0 := by
+  simp [FormalMultilinearSeries.ext_iff]
+
+@[simp]
+theorem ofScalars_series_of_subsingleton [Subsingleton E] : ofScalars E c = 0 := by
+  simp_rw [FormalMultilinearSeries.ext_iff, ofScalars, ContinuousMultilinearMap.ext_iff]
+  exact fun _ _ ↦ Subsingleton.allEq _ _
+
+variable (𝕜) in
+theorem ofScalars_series_injective [Nontrivial E] : Function.Injective (ofScalars E (𝕜 := 𝕜)) := by
+  intro _ _
+  refine Function.mtr fun h ↦ ?_
+  simp_rw [FormalMultilinearSeries.ext_iff, ofScalars, ContinuousMultilinearMap.ext_iff,
+    ContinuousMultilinearMap.smul_apply]
+  push_neg
+  obtain ⟨n, hn⟩ := Function.ne_iff.1 h
+  refine ⟨n, fun _ ↦ 1, ?_⟩
+  simp only [mkPiAlgebraFin_apply, List.ofFn_const, List.prod_replicate, one_pow, ne_eq]
+  exact (smul_left_injective 𝕜 one_ne_zero).ne hn
+
+variable (c : ℕ → 𝕜)
+
+@[simp]
+theorem ofScalars_series_eq_iff [Nontrivial E] (c' : ℕ → 𝕜) :
+    ofScalars E c = ofScalars E c' ↔ c = c' :=
+  ⟨fun e => ofScalars_series_injective 𝕜 e, _root_.congrArg _⟩
+
+theorem ofScalars_apply_zero (n : ℕ) :
+    ofScalars E c n (fun _ => 0) = Pi.single (f := fun _ => E) 0 (c 0 • 1) n := by
+  rw [ofScalars]
+  cases n <;> simp
+
+@[simp]
+lemma coeff_ofScalars {𝕜 : Type*} [NontriviallyNormedField 𝕜] {p : ℕ → 𝕜} {n : ℕ} :
+    (FormalMultilinearSeries.ofScalars 𝕜 p).coeff n = p n := by
+  simp [FormalMultilinearSeries.coeff, FormalMultilinearSeries.ofScalars, List.prod_ofFn]
+
+theorem ofScalars_add (c' : ℕ → 𝕜) : ofScalars E (c + c') = ofScalars E c + ofScalars E c' := by
+  unfold ofScalars
+  simp_rw [Pi.add_apply, Pi.add_def _ _]
+  exact funext fun n ↦ Module.add_smul (c n) (c' n) (ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n E)
+
+theorem ofScalars_smul (x : 𝕜) : ofScalars E (x • c) = x • ofScalars E c := by
+  unfold ofScalars
+  simp [Pi.smul_def x _, smul_smul]
+
+-- variable {E}
 
 theorem ofScalars_apply_eq (x : E) (n : ℕ) :
     ofScalars E c n (fun _ ↦ x) = c n • x ^ n := by
@@ -41,6 +105,18 @@ theorem ofScalars_apply_eq (x : E) (n : ℕ) :
 theorem ofScalars_apply_eq' (x : E) :
     (fun n ↦ ofScalars E c n (fun _ ↦ x)) = fun n ↦ c n • x ^ n := by
   simp [ofScalars]
+
+/-- The sum of the formal power series. Takes the value `0` outside the radius of convergence. -/
+noncomputable def ofScalarsSum (x : E) := (ofScalars E c).sum x
+
+-- theorem ofScalars_apply_eq (x : E) (n : ℕ) :
+--     ofScalars E c n (fun _ ↦ x) = c n • x ^ n := by
+--   simp [ofScalars]
+
+-- /-- This naming follows the convention of `NormedSpace.expSeries_apply_eq'`. -/
+-- theorem ofScalars_apply_eq' (x : E) :
+--     (fun n ↦ ofScalars E c n (fun _ ↦ x)) = fun n ↦ c n • x ^ n := by
+--   simp [ofScalars]
 
 theorem ofScalars_sum_eq (x : E) : ofScalarsSum c x =
     ∑' n, c n • x ^ n := tsum_congr fun n => ofScalars_apply_eq c x n
@@ -58,12 +134,12 @@ theorem ofScalars_unop [T2Space E] (x : Eᵐᵒᵖ) :
     ofScalarsSum c (MulOpposite.unop x) = MulOpposite.unop (ofScalarsSum c x) := by
   simp [ofScalars, ofScalars_sum_eq, ← MulOpposite.unop_pow, ← MulOpposite.unop_smul, tsum_unop]
 
-@[simp]
-theorem ofScalars_eq_zero [Nontrivial E] (n : ℕ) : ofScalars E c n = 0 ↔ c n = 0 := by
-  rw [ofScalars, smul_eq_zero (c := c n) (x := ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n E)]
-  refine or_iff_left (ContinuousMultilinearMap.ext_iff.1.mt <| not_forall_of_exists_not ?_)
-  use fun _ ↦ 1
-  simp
+-- @[simp]
+-- theorem ofScalars_eq_zero [Nontrivial E] (n : ℕ) : ofScalars E c n = 0 ↔ c n = 0 := by
+--   rw [ofScalars, smul_eq_zero (c := c n) (x := ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n E)]
+--   refine or_iff_left (ContinuousMultilinearMap.ext_iff.1.mt <| not_forall_of_exists_not ?_)
+--   use fun _ ↦ 1
+--   simp
 
 end Field
 

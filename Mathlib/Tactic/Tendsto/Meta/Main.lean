@@ -56,6 +56,7 @@ structure BasisState where
   basis : Q(Basis)
   logBasis : Q(LogBasis $basis)
   h_basis : Q(WellFormedBasis $basis)
+  h_logBasis : Q(LogBasis.WellFormed $logBasis)
   n_id : Q(Fin (List.length $basis))
 
 abbrev BasisM := StateT BasisState TacticM
@@ -67,7 +68,7 @@ partial def createMSImp (body : Expr) : BasisM MS := do
   if body.isBVar then
     if body.bvarIdx! != 0 then
       throwError "Unexpected bvarIdx in createMS: expected 0"
-    return MS.monomial (← get).basis (← get).logBasis (← get).n_id (← get).h_basis
+    return MS.monomial (← get).basis (← get).logBasis (← get).n_id (← get).h_basis (← get).h_logBasis
   match body.getAppFnArgs with
   | (``Neg.neg, #[_, _, arg]) => return MS.neg (← createMSImp arg)
   | (``HAdd.hAdd, #[_, _, _, _, arg1, arg2]) =>
@@ -75,7 +76,7 @@ partial def createMSImp (body : Expr) : BasisM MS := do
     let ms2 ← createMSImp arg2
     if ms1.basis != ms2.basis then
       let ex ← getBasisExtension ms1.basis ms2.basis
-      let ms1' ← ms1.updateBasis ex ms2.logBasis ms2.h_basis
+      let ms1' ← ms1.updateBasis ex ms2.logBasis ms2.h_basis ms2.h_logBasis
       return MS.add ms1' ms2 ⟨⟩
     else
       return MS.add ms1 ms2 ⟨⟩
@@ -84,7 +85,7 @@ partial def createMSImp (body : Expr) : BasisM MS := do
     let ms2 ← createMSImp arg2
     if ms1.basis != ms2.basis then
       let ex ← getBasisExtension ms1.basis ms2.basis
-      let ms1' ← ms1.updateBasis ex ms2.logBasis ms2.h_basis
+      let ms1' ← ms1.updateBasis ex ms2.logBasis ms2.h_basis ms2.h_logBasis
       return MS.sub ms1' ms2 ⟨⟩
     else
       return MS.sub ms1 ms2 ⟨⟩
@@ -93,7 +94,7 @@ partial def createMSImp (body : Expr) : BasisM MS := do
     let ms2 ← createMSImp arg2
     if ms1.basis != ms2.basis then
       let ex ← getBasisExtension ms1.basis ms2.basis
-      let ms1' ← ms1.updateBasis ex ms2.logBasis ms2.h_basis
+      let ms1' ← ms1.updateBasis ex ms2.logBasis ms2.h_basis ms2.h_logBasis
       return MS.mul ms1' ms2 ⟨⟩
     else
       return MS.mul ms1 ms2 ⟨⟩
@@ -105,7 +106,7 @@ partial def createMSImp (body : Expr) : BasisM MS := do
     let ⟨ms2, h_trimmed⟩ ← trimMS (← createMSImp arg2)
     if ms1.basis != ms2.basis then
       let ex ← getBasisExtension ms1.basis ms2.basis
-      let ms1' ← ms1.updateBasis ex ms2.logBasis ms2.h_basis
+      let ms1' ← ms1.updateBasis ex ms2.logBasis ms2.h_basis ms2.h_logBasis
       return MS.div ms1' ms2 h_trimmed ⟨⟩
     else
       return MS.div ms1 ms2 h_trimmed ⟨⟩
@@ -148,21 +149,22 @@ partial def createMSImp (body : Expr) : BasisM MS := do
         basis := ms.basis
         logBasis := ms.logBasis
         h_basis := ms.h_basis
+        h_logBasis := ms.h_logBasis
         n_id := new_n_id
-          --q(Fin.castSucc $((← get).n_id))
       }
       return MS.log ms h_trimmed h_pos h_last
   | _ =>
     if body.hasLooseBVars then
       throwError f!"Unsupported body in createMS: {body}"
     else
-      return MS.const (← get).basis (← get).logBasis body (← get).h_basis
+      return MS.const (← get).basis (← get).logBasis body (← get).h_basis (← get).h_logBasis
 
 def createMS (body : Expr) : TacticM MS := do
   return (← (createMSImp body).run {
     basis := q([fun (x : ℝ) ↦ x])
     logBasis := q(LogBasis.single _)
     h_basis := q(basis_wo)
+    h_logBasis := q(LogBasis.single_WellFormed _)
     n_id := q(⟨0, by simp⟩)
   }).fst
 

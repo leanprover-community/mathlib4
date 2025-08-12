@@ -129,9 +129,9 @@ example : (if (1 : ℝ) < (3/2 : ℝ) then 1 else 0) = 1 := by
   simp only [↓reduceIte]
 
 
-example : destruct (TendstoTactic.PreMS.updateBasis'
+example : destruct (TendstoTactic.PreMS.updateBasis
     (TendstoTactic.BasisExtension.insert (Real.log ∘ fun x => x) TendstoTactic.BasisExtension.nil) 1) =
-    some ((0, PreMS.updateBasis' BasisExtension.nil 1), nil) := by
+    some ((0, PreMS.updateBasis BasisExtension.nil 1), nil) := by
   simp [PreMS_const]
 
 -- #check updateBasis'_const
@@ -224,17 +224,17 @@ example :
 
 example :
     let f := fun (y : ℝ) ↦ Real.log (1 + y) / y;
-    Tendsto f (𝓝[≠] 0) (𝓝 1) := by
+    Tendsto f (𝓝[>] 0) (𝓝 1) := by
   compute_asymptotics
 
 example :
     let f := fun (y : ℝ) ↦ (Real.log (1 + y) - y) / y;
-    Tendsto f (𝓝[≠] 0) (𝓝 0) := by
+    Tendsto f (𝓝[>] 0) (𝓝 0) := by
   compute_asymptotics
 
-example :
+lemma lol :
     let f := fun (y : ℝ) ↦ (Real.log (1 + y) - y) / (y^2);
-    Tendsto f (𝓝[≠] 0) (𝓝 (-1/2)) := by
+    Tendsto f (𝓝[>] 0) (𝓝 (-1/2)) := by
   compute_asymptotics
 
 example :
@@ -269,7 +269,7 @@ example :
   compute_asymptotics
 
 example :
-  let f := fun (y : ℝ) ↦ (42 : ℝ);
+  let f := fun (_ : ℝ) ↦ (42 : ℝ);
   Tendsto f atTop (nhds 42) := by
   simp only
   compute_asymptotics

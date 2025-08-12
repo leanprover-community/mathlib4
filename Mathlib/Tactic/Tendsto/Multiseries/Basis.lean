@@ -43,33 +43,38 @@ theorem WellFormedBasis.tail {basis_hd : ℝ → ℝ} {basis_tl : Basis}
   simp [WellFormedBasis] at h ⊢
   tauto
 
-theorem WellFormedBasis.insert {left right : Basis} {f : ℝ → ℝ}
-    (h : WellFormedBasis (left ++ right))
-    (hf_tendsto : Tendsto f atTop atTop)
-    (hf_comp_left : ∀ g, left.getLast? = .some g → (Real.log ∘ f) =o[atTop] (Real.log ∘ g))
-    (hf_comp_right : ∀ g, right.head? = .some g → (Real.log ∘ g) =o[atTop] (Real.log ∘ f)) :
-    WellFormedBasis (left ++ f :: right) := by
-  simp [WellFormedBasis] at h ⊢
-  constructor
-  · rw [List.pairwise_append]
-    constructorm* _ ∧ _
-    · exact h.left.sublist (List.sublist_append_left _ _)
-    · rw [List.pairwise_cons]
-      constructor
-      · sorry
-      · apply h.left.sublist (List.sublist_append_right _ _)
-    · sorry
-  · rintro g (hg | hg | hg)
-    · exact h.right _ (.inl hg)
-    · convert hf_tendsto
-    · exact h.right _ (.inr hg)
+-- theorem WellFormedBasis.insert {left right : Basis} {f : ℝ → ℝ}
+--     (h : WellFormedBasis (left ++ right))
+--     (hf_tendsto : Tendsto f atTop atTop)
+--     (hf_comp_left : ∀ g, left.getLast? = .some g → (Real.log ∘ f) =o[atTop] (Real.log ∘ g))
+--     (hf_comp_right : ∀ g, right.head? = .some g → (Real.log ∘ g) =o[atTop] (Real.log ∘ f)) :
+--     WellFormedBasis (left ++ f :: right) := by
+--   simp [WellFormedBasis] at h ⊢
+--   constructor
+--   · rw [List.pairwise_append]
+--     constructorm* _ ∧ _
+--     · exact h.left.sublist (List.sublist_append_left _ _)
+--     · rw [List.pairwise_cons]
+--       constructor
+--       · sorry
+--       · apply h.left.sublist (List.sublist_append_right _ _)
+--     · intro g hg k hk
+--       simp at hk
+--       rcases hk with hk | hk
+--       · subst hk
+--         sorry
+--       · sorry
+--   · rintro g (hg | hg | hg)
+--     · exact h.right _ (.inl hg)
+--     · convert hf_tendsto
+--     · exact h.right _ (.inr hg)
 
-theorem WellFormedBasis.push {basis : Basis} {f : ℝ → ℝ}
-    (h : WellFormedBasis basis)
-    (hf_tendsto : Tendsto f atTop atTop)
-    (hf_comp : ∀ g, basis.getLast? = .some g → (Real.log ∘ f) =o[atTop] (Real.log ∘ g)) :
-    WellFormedBasis (basis ++ [f]) :=
-  WellFormedBasis.insert (right := []) (by simp [h]) hf_tendsto hf_comp (by simp)
+-- theorem WellFormedBasis.push {basis : Basis} {f : ℝ → ℝ}
+--     (h : WellFormedBasis basis)
+--     (hf_tendsto : Tendsto f atTop atTop)
+--     (hf_comp : ∀ g, basis.getLast? = .some g → (Real.log ∘ f) =o[atTop] (Real.log ∘ g)) :
+--     WellFormedBasis (basis ++ [f]) :=
+--   WellFormedBasis.insert (right := []) (by simp [h]) hf_tendsto hf_comp (by simp)
 
 /-- All functions from well-formed basis tends to `atTop`. -/
 theorem basis_tendsto_top {basis : Basis} (h : WellFormedBasis basis) :
@@ -224,6 +229,11 @@ example :
   ex.getBasis = [fun x ↦ x, Real.log, fun x ↦ 3 * x] := by
     rfl
 
-
+theorem BasisExtension.insert_WellFormedBasis_tail {basis : Basis} {f : ℝ → ℝ}
+    {ex_tl : BasisExtension basis}
+    (h_basis : WellFormedBasis <| BasisExtension.getBasis (.insert f ex_tl)) :
+    WellFormedBasis ex_tl.getBasis := by
+  simp [getBasis] at h_basis
+  exact WellFormedBasis.tail h_basis
 
 end TendstoTactic
