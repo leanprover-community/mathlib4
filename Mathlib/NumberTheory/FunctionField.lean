@@ -164,7 +164,7 @@ theorem InftyValuation.map_mul' (x y : RatFunc Fq) :
   · rw [hx, zero_mul, if_pos (Eq.refl _), zero_mul]
   · by_cases hy : y = 0
     · rw [hy, mul_zero, if_pos (Eq.refl _), mul_zero]
-    · simp_all [ RatFunc.intDegree_mul, exp_add]
+    · simp_all [RatFunc.intDegree_mul]
 
 theorem InftyValuation.map_add_le_max' (x y : RatFunc Fq) :
     inftyValuationDef Fq (x + y) ≤ max (inftyValuationDef Fq x) (inftyValuationDef Fq y) := by
@@ -200,7 +200,7 @@ theorem inftyValuation_apply {x : RatFunc Fq} : inftyValuation Fq x = inftyValua
 
 @[simp]
 theorem inftyValuation.C {k : Fq} (hk : k ≠ 0) :
-    inftyValuation Fq (RatFunc.C k) = exp 0 := by
+    inftyValuation Fq (RatFunc.C k) = 1 := by
   simp [inftyValuation_apply, hk]
 
 @[simp]
@@ -224,7 +224,7 @@ def inftyValuedFqt : Valued (RatFunc Fq) ℤᵐ⁰ :=
   Valued.mk' <| inftyValuation Fq
 
 theorem inftyValuedFqt.def {x : RatFunc Fq} :
-    Valued.v (self := inftyValuedFqt Fq) x = inftyValuationDef Fq x :=
+    (inftyValuedFqt Fq).v x = inftyValuationDef Fq x :=
   rfl
 
 /-- The completion `Fq((t⁻¹))` of `Fq(t)` with respect to the valuation at infinity. -/
@@ -239,12 +239,9 @@ instance : Inhabited (FqtInfty Fq) :=
   ⟨(0 : FqtInfty Fq)⟩
 
 /-- The valuation at infinity on `k(t)` extends to a valuation on `FqtInfty`. -/
-instance valuedFqtInfty : Valued (FqtInfty Fq) ℤᵐ⁰ :=
-  Valued.valuedCompletion (hv := inftyValuedFqt Fq)
+instance valuedFqtInfty : Valued (FqtInfty Fq) ℤᵐ⁰ := (inftyValuedFqt Fq).valuedCompletion
 
-theorem valuedFqtInfty.def {x : FqtInfty Fq} :
-    Valued.v x = Valued.extension (hv := inftyValuedFqt Fq) x :=
-  rfl
+theorem valuedFqtInfty.def {x : FqtInfty Fq} : Valued.v x = (inftyValuedFqt Fq).extension x := rfl
 
 end InftyValuation
 
