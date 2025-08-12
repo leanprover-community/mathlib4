@@ -57,7 +57,7 @@ open Finset
 let `a0 b0 : G` be two elements.  `UniqueMul A B a0 b0` asserts `a0 * b0` can be written in at
 most one way as a product of an element of `A` and an element of `B`. -/
 @[to_additive
-      /-- Let `G` be a Type with addition, let `A B : Finset G` be finite subsets and
+/-- Let `G` be a Type with addition, let `A B : Finset G` be finite subsets and
 let `a0 b0 : G` be two elements.  `UniqueAdd A B a0 b0` asserts `a0 + b0` can be written in at
 most one way as a sum of an element from `A` and an element from `B`. -/]
 def UniqueMul {G} [Mul G] (A B : Finset G) (a0 b0 : G) : Prop :=
@@ -154,7 +154,7 @@ theorem mulHom_preimage (f : G →ₙ* H) (hf : Function.Injective f) (a0 b0 : G
 
 See `UniqueMul.mulHom_map_iff` for a version with swapped bundling. -/
 @[to_additive
-      /-- `UniqueAdd` is preserved under additive maps that are injective.
+/-- `UniqueAdd` is preserved under additive maps that are injective.
 
 See `UniqueAdd.addHom_map_iff` for a version with swapped bundling. -/]
 theorem mulHom_image_iff [DecidableEq H] (f : G →ₙ* H) (hf : Function.Injective f) :
@@ -169,7 +169,7 @@ theorem mulHom_image_iff [DecidableEq H] (f : G →ₙ* H) (hf : Function.Inject
 
 See `UniqueMul.mulHom_image_iff` for a version with swapped bundling. -/
 @[to_additive
-      /-- `UniqueAdd` is preserved under embeddings that are additive.
+/-- `UniqueAdd` is preserved under embeddings that are additive.
 
 See `UniqueAdd.addHom_image_iff` for a version with swapped bundling. -/]
 theorem mulHom_map_iff (f : G ↪ H) (mul : ∀ x y, f (x * y) = f x * f y) :
@@ -570,8 +570,8 @@ theorem of_mulOpposite (h : TwoUniqueProds Gᵐᵒᵖ) : TwoUniqueProds G where
 /-- This instance asserts that if `G` has a right-cancellative multiplication, a linear order, and
   multiplication is strictly monotone w.r.t. the second argument, then `G` has `TwoUniqueProds`. -/
 @[to_additive
-  /-- This instance asserts that if `G` has a right-cancellative addition, a linear order,
-  and addition is strictly monotone w.r.t. the second argument, then `G` has `TwoUniqueSums`. -/]
+/-- This instance asserts that if `G` has a right-cancellative addition, a linear order,
+and addition is strictly monotone w.r.t. the second argument, then `G` has `TwoUniqueSums`. -/]
 instance (priority := 100) of_covariant_right [IsRightCancelMul G]
     [LinearOrder G] [MulLeftStrictMono G] :
     TwoUniqueProds G where
@@ -604,8 +604,8 @@ open MulOpposite in
 /-- This instance asserts that if `G` has a left-cancellative multiplication, a linear order, and
   multiplication is strictly monotone w.r.t. the first argument, then `G` has `TwoUniqueProds`. -/
 @[to_additive
-  /-- This instance asserts that if `G` has a left-cancellative addition, a linear order, and
-  addition is strictly monotone w.r.t. the first argument, then `G` has `TwoUniqueSums`. -/]
+/-- This instance asserts that if `G` has a left-cancellative addition, a linear order, and
+addition is strictly monotone w.r.t. the first argument, then `G` has `TwoUniqueSums`. -/]
 instance (priority := 100) of_covariant_left [IsLeftCancelMul G]
     [LinearOrder G] [MulRightStrictMono G] :
     TwoUniqueProds G :=

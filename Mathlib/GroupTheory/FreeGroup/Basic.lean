@@ -184,9 +184,9 @@ theorem Step.to_red : Step L₁ L₂ → Red L₁ L₂ :=
 to `w2` and `w3` respectively, then there is a word `w4` such that `w2` and `w3` reduce to `w4`
 respectively. This is also known as Newman's diamond lemma. -/
 @[to_additive
-  /-- **Church-Rosser theorem** for word reduction: If `w1 w2 w3` are words such that `w1` reduces
-  to `w2` and `w3` respectively, then there is a word `w4` such that `w2` and `w3` reduce to `w4`
-  respectively. This is also known as Newman's diamond lemma. -/]
+/-- **Church-Rosser theorem** for word reduction: If `w1 w2 w3` are words such that `w1` reduces
+to `w2` and `w3` respectively, then there is a word `w4` such that `w2` and `w3` reduce to `w4`
+respectively. This is also known as Newman's diamond lemma. -/]
 theorem church_rosser : Red L₁ L₂ → Red L₁ L₃ → Join Red L₂ L₃ :=
   Relation.church_rosser fun _ b c hab hac =>
     match b, c, Red.Step.diamond hab hac rfl with
@@ -261,8 +261,8 @@ theorem singleton_iff {x} : Red [x] L₁ ↔ L₁ = [x] :=
 /-- If `x` is a letter and `w` is a word such that `xw` reduces to the empty word, then `w` reduces
 to `x⁻¹` -/
 @[to_additive
-  /-- If `x` is a letter and `w` is a word such that `x + w` reduces to the empty word, then `w`
-  reduces to `-x`. -/]
+/-- If `x` is a letter and `w` is a word such that `x + w` reduces to the empty word, then `w`
+reduces to `-x`. -/]
 theorem cons_nil_iff_singleton {x b} : Red ((x, b) :: L) [] ↔ Red L [(x, not b)] :=
   Iff.intro
     (fun h => by
@@ -465,7 +465,7 @@ theorem mul_mk : mk L₁ * mk L₂ = mk (L₁ ++ L₂) :=
 
 /-- Transform a word representing a free group element into a word representing its inverse. -/
 @[to_additive /-- Transform a word representing a free group element into a word representing its
-  negative. -/]
+negative. -/]
 def invRev (w : List (α × Bool)) : List (α × Bool) :=
   (List.map (fun g : α × Bool => (g.1, not g.2)) w).reverse
 
@@ -556,7 +556,7 @@ theorem pow_mk (n : ℕ) : mk L ^ n = mk (List.flatten <| List.replicate n L) :=
 /-- `of` is the canonical injection from the type to the free group over that type by sending each
 element to the equivalence class of the letter that is the element. -/
 @[to_additive /-- `of` is the canonical injection from the type to the free group over that type
-  by sending each element to the equivalence class of the letter that is the element. -/]
+by sending each element to the equivalence class of the letter that is the element. -/]
 def of (x : α) : FreeGroup α :=
   mk [(x, true)]
 
@@ -571,7 +571,7 @@ protected lemma induction_on {C : FreeGroup α → Prop} (z : FreeGroup α) (C1 
 
 See note [partially-applied ext lemmas]. -/
 @[to_additive (attr := ext) /-- Two homomorphisms out of a free additive group are equal if they are
-  equal on generators. See note [partially-applied ext lemmas]. -/]
+equal on generators. See note [partially-applied ext lemmas]. -/]
 lemma ext_hom {M : Type*} [Monoid M] (f g : FreeGroup α →* M) (h : ∀ a, f (of a) = g (of a)) :
     f = g := by
   ext x
@@ -599,7 +599,7 @@ variable {β : Type v} [Group β] (f : α → β) {x y : FreeGroup α}
 
 /-- Given `f : α → β` with `β` a group, the canonical map `List (α × Bool) → β` -/
 @[to_additive /-- Given `f : α → β` with `β` an additive group, the canonical map
-  `List (α × Bool) → β` -/]
+`List (α × Bool) → β` -/]
 def Lift.aux : List (α × Bool) → β := fun L =>
   List.prod <| L.map fun x => cond x.2 (f x.1) (f x.1)⁻¹
 
@@ -610,8 +610,8 @@ theorem Red.Step.lift {f : α → β} (H : Red.Step L₁ L₂) : Lift.aux f L₁
 /-- If `β` is a group, then any function from `α` to `β` extends uniquely to a group homomorphism
 from the free group over `α` to `β` -/
 @[to_additive (attr := simps symm_apply)
-  /-- If `β` is an additive group, then any function from `α` to `β` extends uniquely to an
-  additive group homomorphism from the free additive group over `α` to `β` -/]
+/-- If `β` is an additive group, then any function from `α` to `β` extends uniquely to an
+additive group homomorphism from the free additive group over `α` to `β` -/]
 def lift : (α → β) ≃ (FreeGroup α →* β) where
   toFun f :=
     MonoidHom.mk' (Quot.lift (Lift.aux f) fun _ _ => Red.Step.lift) <| by
@@ -724,7 +724,7 @@ theorem map_eq_lift : map f x = lift (of ∘ f) x :=
 The converse can be found in `Mathlib/GroupTheory/FreeGroup/GeneratorEquiv.lean`, as
 `Equiv.ofFreeGroupEquiv`. -/
 @[to_additive (attr := simps apply)
-  /-- Equivalent types give rise to additively equivalent additive free groups. -/]
+/-- Equivalent types give rise to additively equivalent additive free groups. -/]
 def freeGroupCongr {α β} (e : α ≃ β) : FreeGroup α ≃* FreeGroup β where
   toFun := map e
   invFun := map e.symm
@@ -754,7 +754,7 @@ variable [Group α] (x y : FreeGroup α)
 /-- If `α` is a group, then any function from `α` to `α` extends uniquely to a homomorphism from the
 free group over `α` to `α`. This is the multiplicative version of `FreeGroup.sum`. -/
 @[to_additive /-- If `α` is an additive group, then any function from `α` to `α` extends uniquely
-  to an additive homomorphism from the additive free group over `α` to `α`. -/]
+to an additive homomorphism from the additive free group over `α` to `α`. -/]
 def prod : FreeGroup α →* α :=
   lift id
 
@@ -815,7 +815,7 @@ end Sum
 
 /-- The bijection between the free group on the empty type, and a type with one element. -/
 @[to_additive /-- The bijection between the additive free group on the empty type, and a type with
-  one element. -/]
+one element. -/]
 def freeGroupEmptyEquivUnit : FreeGroup Empty ≃ Unit where
   toFun _ := ()
   invFun _ := 1

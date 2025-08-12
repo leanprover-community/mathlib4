@@ -59,8 +59,8 @@ theorem list_prod_mem {l : List M} (hl : ∀ x ∈ l, x ∈ S) : l.prod ∈ S :=
 
 /-- Product of a multiset of elements in a submonoid of a `CommMonoid` is in the submonoid. -/
 @[to_additive
-      /-- Sum of a multiset of elements in an `AddSubmonoid` of an `AddCommMonoid` is
-      in the `AddSubmonoid`. -/]
+/-- Sum of a multiset of elements in an `AddSubmonoid` of an `AddCommMonoid` is
+in the `AddSubmonoid`. -/]
 theorem multiset_prod_mem {M} [CommMonoid M] [SetLike B M] [SubmonoidClass B M] (m : Multiset M)
     (hm : ∀ a ∈ m, a ∈ S) : m.prod ∈ S := by
   lift m to Multiset S using hm
@@ -70,8 +70,8 @@ theorem multiset_prod_mem {M} [CommMonoid M] [SetLike B M] [SubmonoidClass B M] 
 /-- Product of elements of a submonoid of a `CommMonoid` indexed by a `Finset` is in the
 submonoid. -/
 @[to_additive
-      /-- Sum of elements in an `AddSubmonoid` of an `AddCommMonoid` indexed by a `Finset`
-      is in the `AddSubmonoid`. -/]
+/-- Sum of elements in an `AddSubmonoid` of an `AddCommMonoid` indexed by a `Finset`
+is in the `AddSubmonoid`. -/]
 theorem prod_mem {M : Type*} [CommMonoid M] [SetLike B M] [SubmonoidClass B M] {ι : Type*}
     {t : Finset ι} {f : ι → M} (h : ∀ c ∈ t, f c ∈ S) : (∏ c ∈ t, f c) ∈ S :=
   multiset_prod_mem (t.1.map f) fun _x hx =>
@@ -107,8 +107,8 @@ theorem list_prod_mem {l : List M} (hl : ∀ x ∈ l, x ∈ s) : l.prod ∈ s :=
 
 /-- Product of a multiset of elements in a submonoid of a `CommMonoid` is in the submonoid. -/
 @[to_additive
-      /-- Sum of a multiset of elements in an `AddSubmonoid` of an `AddCommMonoid` is
-      in the `AddSubmonoid`. -/]
+/-- Sum of a multiset of elements in an `AddSubmonoid` of an `AddCommMonoid` is
+in the `AddSubmonoid`. -/]
 theorem multiset_prod_mem {M} [CommMonoid M] (S : Submonoid M) (m : Multiset M)
     (hm : ∀ a ∈ m, a ∈ S) : m.prod ∈ S := by
   lift m to Multiset S using hm
@@ -125,8 +125,8 @@ theorem multiset_noncommProd_mem (S : Submonoid M) (m : Multiset M) (comm) (h : 
 /-- Product of elements of a submonoid of a `CommMonoid` indexed by a `Finset` is in the
 submonoid. -/
 @[to_additive
-      /-- Sum of elements in an `AddSubmonoid` of an `AddCommMonoid` indexed by a `Finset`
-      is in the `AddSubmonoid`. -/]
+/-- Sum of elements in an `AddSubmonoid` of an `AddCommMonoid` indexed by a `Finset`
+is in the `AddSubmonoid`. -/]
 theorem prod_mem {M : Type*} [CommMonoid M] (S : Submonoid M) {ι : Type*} {t : Finset ι}
     {f : ι → M} (h : ∀ c ∈ t, f c ∈ S) : (∏ c ∈ t, f c) ∈ S :=
   S.multiset_prod_mem (t.1.map f) fun _ hx =>

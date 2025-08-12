@@ -572,7 +572,7 @@ variable [MulOneClass M]
 
 /-- Makes a group homomorphism from a proof that the map preserves multiplication. -/
 @[to_additive (attr := simps -fullyApplied)
-  /-- Makes an additive group homomorphism from a proof that the map preserves addition. -/]
+/-- Makes an additive group homomorphism from a proof that the map preserves addition. -/]
 def mk' (f : M → G) (map_mul : ∀ a b : M, f (a * b) = f a * f b) : M →* G where
   toFun := f
   map_mul' := map_mul
@@ -597,8 +597,8 @@ end Coes
 /-- Copy of a `OneHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
 @[to_additive
-  /-- Copy of a `ZeroHom` with a new `toFun` equal to the old one. Useful to fix
-  definitional equalities. -/]
+/-- Copy of a `ZeroHom` with a new `toFun` equal to the old one. Useful to fix
+definitional equalities. -/]
 protected def OneHom.copy [One M] [One N] (f : OneHom M N) (f' : M → N) (h : f' = f) :
     OneHom M N where
   toFun := f'
@@ -617,8 +617,8 @@ theorem OneHom.coe_copy_eq {_ : One M} {_ : One N} (f : OneHom M N) (f' : M → 
 /-- Copy of a `MulHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
 @[to_additive
-  /-- Copy of an `AddHom` with a new `toFun` equal to the old one. Useful to fix
-  definitional equalities. -/]
+/-- Copy of an `AddHom` with a new `toFun` equal to the old one. Useful to fix
+definitional equalities. -/]
 protected def MulHom.copy [Mul M] [Mul N] (f : M →ₙ* N) (f' : M → N) (h : f' = f) :
     M →ₙ* N where
   toFun := f'
@@ -637,8 +637,8 @@ theorem MulHom.coe_copy_eq {_ : Mul M} {_ : Mul N} (f : M →ₙ* N) (f' : M →
 /-- Copy of a `MonoidHom` with a new `toFun` equal to the old one. Useful to fix
 definitional equalities. -/
 @[to_additive
-  /-- Copy of an `AddMonoidHom` with a new `toFun` equal to the old one. Useful to fix
-  definitional equalities. -/]
+/-- Copy of an `AddMonoidHom` with a new `toFun` equal to the old one. Useful to fix
+definitional equalities. -/]
 protected def MonoidHom.copy [MulOneClass M] [MulOneClass N] (f : M →* N) (f' : M → N)
     (h : f' = f) : M →* N :=
   { f.toOneHom.copy f' h, f.toMulHom.copy f' h with }
@@ -678,8 +678,8 @@ variable [MulOneClass M] [MulOneClass N] [FunLike F M N] [MonoidHomClass F M N]
 /-- Given a monoid homomorphism `f : M →* N` and an element `x : M`, if `x` has a right inverse,
 then `f x` has a right inverse too. For elements invertible on both sides see `IsUnit.map`. -/
 @[to_additive
-  /-- Given an AddMonoid homomorphism `f : M →+ N` and an element `x : M`, if `x` has
-  a right inverse, then `f x` has a right inverse too. -/]
+/-- Given an AddMonoid homomorphism `f : M →+ N` and an element `x : M`, if `x` has
+a right inverse, then `f x` has a right inverse too. -/]
 theorem map_exists_right_inv (f : F) {x : M} (hx : ∃ y, x * y = 1) : ∃ y, f x * y = 1 :=
   let ⟨y, hy⟩ := hx
   ⟨f y, map_mul_eq_one f hy⟩
@@ -687,9 +687,9 @@ theorem map_exists_right_inv (f : F) {x : M} (hx : ∃ y, x * y = 1) : ∃ y, f 
 /-- Given a monoid homomorphism `f : M →* N` and an element `x : M`, if `x` has a left inverse,
 then `f x` has a left inverse too. For elements invertible on both sides see `IsUnit.map`. -/
 @[to_additive
-  /-- Given an AddMonoid homomorphism `f : M →+ N` and an element `x : M`, if `x` has
-  a left inverse, then `f x` has a left inverse too. For elements invertible on both sides see
-  `IsAddUnit.map`. -/]
+/-- Given an AddMonoid homomorphism `f : M →+ N` and an element `x : M`, if `x` has
+a left inverse, then `f x` has a left inverse too. For elements invertible on both sides see
+`IsAddUnit.map`. -/]
 theorem map_exists_left_inv (f : F) {x : M} (hx : ∃ y, y * x = 1) : ∃ y, y * f x = 1 :=
   let ⟨y, hy⟩ := hx
   ⟨f y, map_mul_eq_one f hy⟩
@@ -874,7 +874,7 @@ def OneHom.inverse [One M] [One N] (f : OneHom M N) (g : N → M) (h₁ : Functi
 
 /-- Makes a multiplicative inverse from a bijection which preserves multiplication. -/
 @[to_additive (attr := simps)
-  /-- Makes an additive inverse from a bijection which preserves addition. -/]
+/-- Makes an additive inverse from a bijection which preserves addition. -/]
 def MulHom.inverse [Mul M] [Mul N] (f : M →ₙ* N) (g : N → M)
     (h₁ : Function.LeftInverse g f)
     (h₂ : Function.RightInverse g f) : N →ₙ* M where
@@ -901,7 +901,7 @@ theorem Function.Surjective.mul_comm [Mul M] [Mul N] {f : M →ₙ* N}
 
 /-- The inverse of a bijective `MonoidHom` is a `MonoidHom`. -/
 @[to_additive (attr := simps)
-  /-- The inverse of a bijective `AddMonoidHom` is an `AddMonoidHom`. -/]
+/-- The inverse of a bijective `AddMonoidHom` is an `AddMonoidHom`. -/]
 def MonoidHom.inverse {A B : Type*} [Monoid A] [Monoid B] (f : A →* B) (g : B → A)
     (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : B →* A :=
   { (f : OneHom A B).inverse g h₁,

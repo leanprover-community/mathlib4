@@ -42,8 +42,8 @@ variable {J : Type v} [SmallCategory J] [IsFiltered J] (F : J ⥤ Grp.{max v u})
 In the following, we will show that this has the structure of a group.
 -/
 @[to_additive
-  /-- The colimit of `F ⋙ forget₂ AddGrp AddMonCat` in the category `AddMonCat`.
-  In the following, we will show that this has the structure of an additive group. -/]
+/-- The colimit of `F ⋙ forget₂ AddGrp AddMonCat` in the category `AddMonCat`.
+In the following, we will show that this has the structure of an additive group. -/]
 noncomputable abbrev G : MonCat :=
   MonCat.FilteredColimits.colimit.{v, u} (F ⋙ forget₂ Grp MonCat.{max v u})
 
@@ -160,8 +160,8 @@ variable {J : Type v} [SmallCategory J] [IsFiltered J] (F : J ⥤ CommGrp.{max v
 In the following, we will show that this has the structure of a _commutative_ group.
 -/
 @[to_additive
-  /-- The colimit of `F ⋙ forget₂ AddCommGrp AddGrp` in the category `AddGrp`.
-  In the following, we will show that this has the structure of a _commutative_ additive group. -/]
+/-- The colimit of `F ⋙ forget₂ AddCommGrp AddGrp` in the category `AddGrp`.
+In the following, we will show that this has the structure of a _commutative_ additive group. -/]
 noncomputable abbrev G : Grp.{max v u} :=
   Grp.FilteredColimits.colimit.{v, u} (F ⋙ forget₂ CommGrp.{max v u} Grp.{max v u})
 

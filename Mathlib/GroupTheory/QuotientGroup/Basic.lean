@@ -358,7 +358,7 @@ theorem comap_map_mk' (N H : Subgroup G) [N.Normal] :
 /-- The **correspondence theorem**, or lattice theorem,
 or fourth isomorphism theorem for multiplicative groups -/
 @[to_additive /-- The **correspondence theorem**, or lattice theorem,
-  or fourth isomorphism theorem for additive groups -/]
+or fourth isomorphism theorem for additive groups -/]
 def comapMk'OrderIso (N : Subgroup G) [hn : N.Normal] :
     Subgroup (G ⧸ N) ≃o { H : Subgroup G // N ≤ H } where
   toFun H' := ⟨Subgroup.comap (mk' N) H', le_comap_mk' N _⟩

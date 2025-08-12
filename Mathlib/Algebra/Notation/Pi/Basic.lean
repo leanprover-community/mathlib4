@@ -34,7 +34,7 @@ lemma mulSingle_eq_of_ne {i i' : ι} (h : i' ≠ i) (x : M i) : mulSingle i x i'
 
 /-- Abbreviation for `mulSingle_eq_of_ne h.symm`, for ease of use by `simp`. -/
 @[to_additive (attr := simp)
-  /-- Abbreviation for `single_eq_of_ne h.symm`, for ease of use by `simp`. -/]
+/-- Abbreviation for `single_eq_of_ne h.symm`, for ease of use by `simp`. -/]
 lemma mulSingle_eq_of_ne' {i i' : ι} (h : i ≠ i') (x : M i) : mulSingle i x i' = 1 :=
   mulSingle_eq_of_ne h.symm x
 

@@ -817,7 +817,7 @@ instance isHaarMeasure_map_smul {α} [BorelSpace G] [IsTopologicalGroup G]
 
 /-- The image of a Haar measure under right multiplication is again a Haar measure. -/
 @[to_additive isHaarMeasure_map_add_right
-  /-- The image of a Haar measure under right addition is again a Haar measure. -/]
+/-- The image of a Haar measure under right addition is again a Haar measure. -/]
 instance isHaarMeasure_map_mul_right [BorelSpace G] [IsTopologicalGroup G] (g : G) :
     IsHaarMeasure (Measure.map (· * g) μ) :=
   isHaarMeasure_map_smul μ (MulOpposite.op g)

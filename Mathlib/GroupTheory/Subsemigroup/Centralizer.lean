@@ -75,8 +75,8 @@ lemma closure_le_centralizer_centralizer (s : Set M) :
 
 /-- If all the elements of a set `s` commute, then `closure s` is a commutative semigroup. -/
 @[to_additive
-      /-- If all the elements of a set `s` commute, then `closure s` forms an additive
-      commutative semigroup. -/]
+/-- If all the elements of a set `s` commute, then `closure s` forms an additive
+commutative semigroup. -/]
 abbrev closureCommSemigroupOfComm {s : Set M} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
     CommSemigroup (closure s) :=
   { MulMemClass.toSemigroup (closure s) with

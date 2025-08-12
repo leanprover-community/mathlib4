@@ -110,9 +110,9 @@ theorem mem_sSup_of_mem {S : Set (Submonoid M)} {s : Submonoid M} (hs : s ∈ S)
 If `C` holds for `1` and all elements of `S i` for all `i`, and is preserved under multiplication,
 then it holds for all elements of the supremum of `S`. -/
 @[to_additive (attr := elab_as_elim)
-      /-- An induction principle for elements of `⨆ i, S i`.
-      If `C` holds for `0` and all elements of `S i` for all `i`, and is preserved under addition,
-      then it holds for all elements of the supremum of `S`. -/]
+/-- An induction principle for elements of `⨆ i, S i`.
+If `C` holds for `0` and all elements of `S i` for all `i`, and is preserved under addition,
+then it holds for all elements of the supremum of `S`. -/]
 theorem iSup_induction {ι : Sort*} (S : ι → Submonoid M) {motive : M → Prop} {x : M}
     (hx : x ∈ ⨆ i, S i) (mem : ∀ (i), ∀ x ∈ S i, motive x) (one : motive 1)
     (mul : ∀ x y, motive x → motive y → motive (x * y)) : motive x := by
@@ -488,8 +488,8 @@ namespace Submonoid
 /-- An element is in the closure of a two-element set if it is a linear combination of those two
 elements. -/
 @[to_additive
-      /-- An element is in the closure of a two-element set if it is a linear combination of
-      those two elements. -/]
+/-- An element is in the closure of a two-element set if it is a linear combination of
+those two elements. -/]
 theorem mem_closure_pair {A : Type*} [CommMonoid A] (a b c : A) :
     c ∈ Submonoid.closure ({a, b} : Set A) ↔ ∃ m n : ℕ, a ^ m * b ^ n = c := by
   rw [← Set.singleton_union, Submonoid.closure_union, mem_sup]

@@ -74,7 +74,7 @@ variable [MulRightMono α] {a : α}
 
 /-- `Equiv.mulRight` as an `OrderIso`. See also `OrderEmbedding.mulRight`. -/
 @[to_additive (attr := simps! +simpRhs toEquiv apply)
-  /-- `Equiv.addRight` as an `OrderIso`. See also `OrderEmbedding.addRight`. -/]
+/-- `Equiv.addRight` as an `OrderIso`. See also `OrderEmbedding.addRight`. -/]
 def OrderIso.mulRight (a : α) : α ≃o α where
   map_rel_iff' {_ _} := mul_le_mul_iff_right a
   toEquiv := Equiv.mulRight a
@@ -98,7 +98,7 @@ variable [MulLeftMono α]
 
 /-- `Equiv.mulLeft` as an `OrderIso`. See also `OrderEmbedding.mulLeft`. -/
 @[to_additive (attr := simps! +simpRhs toEquiv apply)
-  /-- `Equiv.addLeft` as an `OrderIso`. See also `OrderEmbedding.addLeft`. -/]
+/-- `Equiv.addLeft` as an `OrderIso`. See also `OrderEmbedding.addLeft`. -/]
 def OrderIso.mulLeft (a : α) : α ≃o α where
   map_rel_iff' {_ _} := mul_le_mul_iff_left a
   toEquiv := Equiv.mulLeft a

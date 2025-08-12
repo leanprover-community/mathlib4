@@ -271,9 +271,9 @@ theorem codisjoint_mrange_inl_mrange_inr :
 If two homomorphisms agree on the ranges of `Monoid.Coprod.inl` and `Monoid.Coprod.inr`,
 then they are equal. -/
 @[to_additive (attr := ext 1100)
-  /-- Extensionality lemma for additive monoid homomorphisms `AddMonoid.Coprod M N →+ P`.
-  If two homomorphisms agree on the ranges of `AddMonoid.Coprod.inl` and `AddMonoid.Coprod.inr`,
-  then they are equal. -/]
+/-- Extensionality lemma for additive monoid homomorphisms `AddMonoid.Coprod M N →+ P`.
+If two homomorphisms agree on the ranges of `AddMonoid.Coprod.inl` and `AddMonoid.Coprod.inr`,
+then they are equal. -/]
 theorem hom_ext {f g : M ∗ N →* P} (h₁ : f.comp inl = g.comp inl) (h₂ : f.comp inr = g.comp inr) :
     f = g :=
   MonoidHom.eq_of_eqOn_denseM mclosure_range_inl_union_inr <| eqOn_union.2
@@ -332,7 +332,7 @@ variable (M N)
 
 See also `MulEquiv.coprodComm` for a `MulEquiv` version. -/
 @[to_additive /-- Map `AddMonoid.Coprod M N` to `AddMonoid.Coprod N M`
-  by applying `Sum.swap` to each element of the underlying list.
+by applying `Sum.swap` to each element of the underlying list.
 
 See also `AddEquiv.coprodComm` for an `AddEquiv` version. -/]
 def swap : M ∗ N →* N ∗ M :=
@@ -685,7 +685,7 @@ variable (M N)
 
 /-- A `MulEquiv` version of `Coprod.swap`. -/
 @[to_additive (attr := simps! -fullyApplied)
-  /-- An `AddEquiv` version of `AddMonoid.Coprod.swap`. -/]
+/-- An `AddEquiv` version of `AddMonoid.Coprod.swap`. -/]
 def coprodComm : M ∗ N ≃* N ∗ M :=
   (Coprod.swap _ _).toMulEquiv (Coprod.swap _ _) (Coprod.swap_comp_swap _ _)
     (Coprod.swap_comp_swap _ _)
@@ -732,13 +732,13 @@ variable (M)
 
 /-- Isomorphism between `M ∗ PUnit` and `M`. -/
 @[to_additive (attr := simps! -fullyApplied)
-  /-- Isomorphism between `AddMonoid.Coprod M PUnit` and `M`. -/]
+/-- Isomorphism between `AddMonoid.Coprod M PUnit` and `M`. -/]
 def coprodPUnit : M ∗ PUnit ≃* M :=
   MonoidHom.toMulEquiv fst inl (hom_ext rfl <| Subsingleton.elim _ _) fst_comp_inl
 
 /-- Isomorphism between `PUnit ∗ M` and `M`. -/
 @[to_additive (attr := simps! -fullyApplied)
-  /-- Isomorphism between `AddMonoid.Coprod PUnit M` and `M`. -/]
+/-- Isomorphism between `AddMonoid.Coprod PUnit M` and `M`. -/]
 def punitCoprod : PUnit ∗ M ≃* M :=
   MonoidHom.toMulEquiv snd inr (hom_ext (Subsingleton.elim _ _) rfl) snd_comp_inr
 

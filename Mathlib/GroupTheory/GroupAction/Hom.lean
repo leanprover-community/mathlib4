@@ -166,9 +166,9 @@ variable {F : Type*} [FunLike F X Y]
   into an actual `MulActionHom`.
   This is declared as the default coercion from `F` to `MulActionSemiHom φ X Y`. -/
 @[to_additive (attr := coe)
-  /-- Turn an element of a type `F` satisfying `AddActionSemiHomClass F φ X Y`
-  into an actual `AddActionHom`.
-  This is declared as the default coercion from `F` to `AddActionSemiHom φ X Y`. -/]
+/-- Turn an element of a type `F` satisfying `AddActionSemiHomClass F φ X Y`
+into an actual `AddActionHom`.
+This is declared as the default coercion from `F` to `AddActionSemiHom φ X Y`. -/]
 def _root_.MulActionSemiHomClass.toMulActionHom [MulActionSemiHomClass F φ X Y] (f : F) :
     X →ₑ[φ] Y where
   toFun := DFunLike.coe f
@@ -347,7 +347,7 @@ theorem inverse'_comp {f : X →ₑ[φ] Y} {g : Y → X}
 /-- If actions of `M` and `N` on `α` commute,
   then for `c : M`, `(c • · : α → α)` is an `N`-action homomorphism. -/
 @[to_additive (attr := simps) /-- If additive actions of `M` and `N` on `α` commute,
-  then for `c : M`, `(c • · : α → α)` is an `N`-additive action homomorphism. -/]
+then for `c : M`, `(c • · : α → α)` is an `N`-additive action homomorphism. -/]
 def _root_.SMulCommClass.toMulActionHom {M} (N α : Type*)
     [SMul M α] [SMul N α] [SMulCommClass M N α] (c : M) :
     α →[N] α where
@@ -391,7 +391,7 @@ variable {M N α β γ δ : Type*} [SMul M α] [SMul M β] [SMul N γ] [SMul N �
 
 /-- If `f` and `g` are equivariant maps, then so is `x ↦ (f x, g x)`. -/
 @[to_additive (attr := simps -fullyApplied) prod
-  /-- If `f` and `g` are equivariant maps, then so is `x ↦ (f x, g x)`. -/]
+/-- If `f` and `g` are equivariant maps, then so is `x ↦ (f x, g x)`. -/]
 def prod (f : α →ₑ[σ] γ) (g : α →ₑ[σ] δ) : α →ₑ[σ] γ × δ where
   toFun x := (f x, g x)
   map_smul' _ _ := Prod.ext (map_smulₛₗ f _ _) (map_smulₛₗ g _ _)
@@ -407,7 +407,7 @@ lemma prod_fst_snd : prod (fst M α β) (snd M α β) = .id .. := rfl
 
 /-- If `f` and `g` are equivariant maps, then so is `(x, y) ↦ (f x, g y)`. -/
 @[to_additive (attr := simps -fullyApplied) prodMap
-  /-- If `f` and `g` are equivariant maps, then so is `(x, y) ↦ (f x, g y)`. -/]
+/-- If `f` and `g` are equivariant maps, then so is `(x, y) ↦ (f x, g y)`. -/]
 def prodMap (f : α →ₑ[σ] γ) (g : β →ₑ[σ] δ) : α × β →ₑ[σ] γ × δ where
   toFun := Prod.map f g
   __ := (f.comp (fst ..)).prod (g.comp (snd ..))

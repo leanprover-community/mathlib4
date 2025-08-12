@@ -41,8 +41,8 @@ open MulOpposite
 /-- Inversion on a group is a `MulEquiv` to the opposite group. When `G` is commutative, there is
 `MulEquiv.inv`. -/
 @[to_additive (attr := simps! -fullyApplied +simpRhs)
-      /-- Negation on an additive group is an `AddEquiv` to the opposite group. When `G`
-      is commutative, there is `AddEquiv.inv`. -/]
+/-- Negation on an additive group is an `AddEquiv` to the opposite group. When `G`
+is commutative, there is `AddEquiv.inv`. -/]
 def MulEquiv.inv' (G : Type*) [DivisionMonoid G] : G ≃* Gᵐᵒᵖ :=
   { (Equiv.inv G).trans opEquiv with map_mul' x y := unop_injective <| mul_inv_rev x y }
 
@@ -149,7 +149,7 @@ def MonoidHom.unop {M N} [MulOneClass M] [MulOneClass N] : (Mᵐᵒᵖ →* Nᵐ
 
 /-- A monoid is isomorphic to the opposite of its opposite. -/
 @[to_additive (attr := simps!)
-      /-- A additive monoid is isomorphic to the opposite of its opposite. -/]
+/-- A additive monoid is isomorphic to the opposite of its opposite. -/]
 def MulEquiv.opOp (M : Type*) [Mul M] : M ≃* Mᵐᵒᵖᵐᵒᵖ where
   __ := MulOpposite.opEquiv.trans MulOpposite.opEquiv
   map_mul' _ _ := rfl
@@ -186,7 +186,7 @@ def AddEquiv.mulUnop {α β} [Add α] [Add β] : αᵐᵒᵖ ≃+ βᵐᵒᵖ �
 
 /-- An iso `α ≃* β` can equivalently be viewed as an iso `αᵐᵒᵖ ≃* βᵐᵒᵖ`. -/
 @[to_additive (attr := simps)
-  /-- An iso `α ≃+ β` can equivalently be viewed as an iso `αᵃᵒᵖ ≃+ βᵃᵒᵖ`. -/]
+/-- An iso `α ≃+ β` can equivalently be viewed as an iso `αᵃᵒᵖ ≃+ βᵃᵒᵖ`. -/]
 def MulEquiv.op {α β} [Mul α] [Mul β] : α ≃* β ≃ (αᵐᵒᵖ ≃* βᵐᵒᵖ) where
   toFun f :=
     { toFun := MulOpposite.op ∘ f ∘ unop, invFun := MulOpposite.op ∘ f.symm ∘ unop,
@@ -201,7 +201,7 @@ def MulEquiv.op {α β} [Mul α] [Mul β] : α ≃* β ≃ (αᵐᵒᵖ ≃* β�
 
 /-- The 'unopposite' of an iso `αᵐᵒᵖ ≃* βᵐᵒᵖ`. Inverse to `MulEquiv.op`. -/
 @[to_additive (attr := simp)
-  /-- The 'unopposite' of an iso `αᵃᵒᵖ ≃+ βᵃᵒᵖ`. Inverse to `AddEquiv.op`. -/]
+/-- The 'unopposite' of an iso `αᵃᵒᵖ ≃+ βᵃᵒᵖ`. Inverse to `AddEquiv.op`. -/]
 def MulEquiv.unop {α β} [Mul α] [Mul β] : αᵐᵒᵖ ≃* βᵐᵒᵖ ≃ (α ≃* β) := MulEquiv.op.symm
 
 section Ext

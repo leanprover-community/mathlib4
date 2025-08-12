@@ -572,8 +572,8 @@ theorem IsBlock.orbit_stabilizer_eq [IsPretransitive G X] (hB : IsBlock G B) {a 
 /-- A subgroup containing the stabilizer of `a`
   is the stabilizer of the orbit of `a` under that subgroup -/
 @[to_additive
-  /-- A subgroup containing the stabilizer of `a`
-  is the stabilizer of the orbit of `a` under that subgroup -/]
+/-- A subgroup containing the stabilizer of `a`
+is the stabilizer of the orbit of `a` under that subgroup -/]
 theorem stabilizer_orbit_eq {a : X} {H : Subgroup G} (hH : stabilizer G a ≤ H) :
     stabilizer G (orbit H a) = H := by
   ext g
@@ -678,8 +678,8 @@ theorem ncard_block_eq_relindex (hB : IsBlock G B) {x : X} (hx : x ∈ B) :
 /-- The cardinality of the ambient space is the product of the cardinality of a block
   by the cardinality of the set of translates of that block -/
 @[to_additive
-  /-- The cardinality of the ambient space is the product of the cardinality of a block
-  by the cardinality of the set of translates of that block -/]
+/-- The cardinality of the ambient space is the product of the cardinality of a block
+by the cardinality of the set of translates of that block -/]
 theorem ncard_block_mul_ncard_orbit_eq (hB : IsBlock G B) (hB_ne : B.Nonempty) :
     Set.ncard B * Set.ncard (orbit G B) = Nat.card X := by
   obtain ⟨x, hx⟩ := hB_ne
@@ -731,8 +731,8 @@ theorem subsingleton_of_card_lt [Finite X] (hB : IsBlock G B)
 /-- The intersection of the translates of a *finite* subset which contain a given point
 is a block (Wielandt, th. 7.3). -/
 @[to_additive
-  /-- The intersection of the translates of a *finite* subset which contain a given point
-  is a block (Wielandt, th. 7.3). -/]
+/-- The intersection of the translates of a *finite* subset which contain a given point
+is a block (Wielandt, th. 7.3). -/]
 theorem of_subset (a : X) (hfB : B.Finite) :
     IsBlock G (⋂ (k : G) (_ : a ∈ k • B), k • B) := by
   let B' := ⋂ (k : G) (_ : a ∈ k • B), k • B

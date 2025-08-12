@@ -233,8 +233,8 @@ variable (f : A → B)
 If `f : A → B` is a surjective homomorphism and `A` is `α`-rootable, then `B` is also `α`-rootable.
 -/
 @[to_additive
-      /-- If `f : A → B` is a surjective homomorphism and `A` is `α`-divisible, then `B` is also
-      `α`-divisible. -/]
+/-- If `f : A → B` is a surjective homomorphism and `A` is `α`-divisible, then `B` is also
+`α`-divisible. -/]
 noncomputable def Function.Surjective.rootableBy (hf : Function.Surjective f)
     (hpow : ∀ (a : A) (n : α), f (a ^ n) = f a ^ n) : RootableBy B α :=
   rootableByOfPowLeftSurj _ _ fun {n} hn x =>

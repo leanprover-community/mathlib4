@@ -119,19 +119,19 @@ theorem mulSupport_mulIndicator :
 /-- If a multiplicative indicator function is not equal to `1` at a point, then that point is in the
 set. -/
 @[to_additive
-      /-- If an additive indicator function is not equal to `0` at a point, then that point is
-      in the set. -/]
+/-- If an additive indicator function is not equal to `0` at a point, then that point is
+in the set. -/]
 theorem mem_of_mulIndicator_ne_one (h : mulIndicator s f a ≠ 1) : a ∈ s :=
   not_imp_comm.1 (fun hn => mulIndicator_of_notMem hn f) h
 
 /-- See `Set.eqOn_mulIndicator'` for the version with `sᶜ`. -/
 @[to_additive
-      /-- See `Set.eqOn_indicator'` for the version with `sᶜ` -/]
+/-- See `Set.eqOn_indicator'` for the version with `sᶜ` -/]
 theorem eqOn_mulIndicator : EqOn (mulIndicator s f) f s := fun _ hx => mulIndicator_of_mem hx f
 
 /-- See `Set.eqOn_mulIndicator` for the version with `s`. -/
 @[to_additive
-      /-- See `Set.eqOn_indicator` for the version with `s`. -/]
+/-- See `Set.eqOn_indicator` for the version with `s`. -/]
 theorem eqOn_mulIndicator' : EqOn (mulIndicator s f) 1 sᶜ :=
   fun _ hx => mulIndicator_of_notMem hx f
 

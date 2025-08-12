@@ -238,7 +238,7 @@ abbrev NormedCommGroup.ofSeparation [SeminormedCommGroup E] (h : ∀ x : E, ‖x
 -- See note [reducible non-instances]
 /-- Construct a seminormed group from a multiplication-invariant distance. -/
 @[to_additive
-  /-- Construct a seminormed group from a translation-invariant distance. -/]
+/-- Construct a seminormed group from a translation-invariant distance. -/]
 abbrev SeminormedGroup.ofMulDist [Norm E] [Group E] [PseudoMetricSpace E]
     (h₁ : ∀ x : E, ‖x‖ = dist x 1) (h₂ : ∀ x y z : E, dist x y ≤ dist (x * z) (y * z)) :
     SeminormedGroup E where
@@ -250,7 +250,7 @@ abbrev SeminormedGroup.ofMulDist [Norm E] [Group E] [PseudoMetricSpace E]
 -- See note [reducible non-instances]
 /-- Construct a seminormed group from a multiplication-invariant pseudodistance. -/
 @[to_additive
-  /-- Construct a seminormed group from a translation-invariant pseudodistance. -/]
+/-- Construct a seminormed group from a translation-invariant pseudodistance. -/]
 abbrev SeminormedGroup.ofMulDist' [Norm E] [Group E] [PseudoMetricSpace E]
     (h₁ : ∀ x : E, ‖x‖ = dist x 1) (h₂ : ∀ x y z : E, dist (x * z) (y * z) ≤ dist x y) :
     SeminormedGroup E where
@@ -262,7 +262,7 @@ abbrev SeminormedGroup.ofMulDist' [Norm E] [Group E] [PseudoMetricSpace E]
 -- See note [reducible non-instances]
 /-- Construct a seminormed group from a multiplication-invariant pseudodistance. -/
 @[to_additive
-  /-- Construct a seminormed group from a translation-invariant pseudodistance. -/]
+/-- Construct a seminormed group from a translation-invariant pseudodistance. -/]
 abbrev SeminormedCommGroup.ofMulDist [Norm E] [CommGroup E] [PseudoMetricSpace E]
     (h₁ : ∀ x : E, ‖x‖ = dist x 1) (h₂ : ∀ x y z : E, dist x y ≤ dist (x * z) (y * z)) :
     SeminormedCommGroup E :=
@@ -272,7 +272,7 @@ abbrev SeminormedCommGroup.ofMulDist [Norm E] [CommGroup E] [PseudoMetricSpace E
 -- See note [reducible non-instances]
 /-- Construct a seminormed group from a multiplication-invariant pseudodistance. -/
 @[to_additive
-  /-- Construct a seminormed group from a translation-invariant pseudodistance. -/]
+/-- Construct a seminormed group from a translation-invariant pseudodistance. -/]
 abbrev SeminormedCommGroup.ofMulDist' [Norm E] [CommGroup E] [PseudoMetricSpace E]
     (h₁ : ∀ x : E, ‖x‖ = dist x 1) (h₂ : ∀ x y z : E, dist (x * z) (y * z) ≤ dist x y) :
     SeminormedCommGroup E :=
@@ -282,7 +282,7 @@ abbrev SeminormedCommGroup.ofMulDist' [Norm E] [CommGroup E] [PseudoMetricSpace 
 -- See note [reducible non-instances]
 /-- Construct a normed group from a multiplication-invariant distance. -/
 @[to_additive
-  /-- Construct a normed group from a translation-invariant distance. -/]
+/-- Construct a normed group from a translation-invariant distance. -/]
 abbrev NormedGroup.ofMulDist [Norm E] [Group E] [MetricSpace E] (h₁ : ∀ x : E, ‖x‖ = dist x 1)
     (h₂ : ∀ x y z : E, dist x y ≤ dist (x * z) (y * z)) : NormedGroup E :=
   { SeminormedGroup.ofMulDist h₁ h₂ with
@@ -291,7 +291,7 @@ abbrev NormedGroup.ofMulDist [Norm E] [Group E] [MetricSpace E] (h₁ : ∀ x : 
 -- See note [reducible non-instances]
 /-- Construct a normed group from a multiplication-invariant pseudodistance. -/
 @[to_additive
-  /-- Construct a normed group from a translation-invariant pseudodistance. -/]
+/-- Construct a normed group from a translation-invariant pseudodistance. -/]
 abbrev NormedGroup.ofMulDist' [Norm E] [Group E] [MetricSpace E] (h₁ : ∀ x : E, ‖x‖ = dist x 1)
     (h₂ : ∀ x y z : E, dist (x * z) (y * z) ≤ dist x y) : NormedGroup E :=
   { SeminormedGroup.ofMulDist' h₁ h₂ with
@@ -310,7 +310,7 @@ abbrev NormedCommGroup.ofMulDist [Norm E] [CommGroup E] [MetricSpace E]
 -- See note [reducible non-instances]
 /-- Construct a normed group from a multiplication-invariant pseudodistance. -/
 @[to_additive
-  /-- Construct a normed group from a translation-invariant pseudodistance. -/]
+/-- Construct a normed group from a translation-invariant pseudodistance. -/]
 abbrev NormedCommGroup.ofMulDist' [Norm E] [CommGroup E] [MetricSpace E]
     (h₁ : ∀ x : E, ‖x‖ = dist x 1) (h₂ : ∀ x y z : E, dist (x * z) (y * z) ≤ dist x y) :
     NormedCommGroup E :=
@@ -323,7 +323,7 @@ pseudometric space structure from the seminorm properties. Note that in most cas
 creates bad definitional equalities (e.g., it does not take into account a possibly existing
 `UniformSpace` instance on `E`). -/
 @[to_additive
-  /-- Construct a seminormed group from a seminorm, i.e., registering the pseudodistance
+/-- Construct a seminormed group from a seminorm, i.e., registering the pseudodistance
 and the pseudometric space structure from the seminorm properties. Note that in most cases this
 instance creates bad definitional equalities (e.g., it does not take into account a possibly
 existing `UniformSpace` instance on `E`). -/]
@@ -341,7 +341,7 @@ pseudometric space structure from the seminorm properties. Note that in most cas
 creates bad definitional equalities (e.g., it does not take into account a possibly existing
 `UniformSpace` instance on `E`). -/
 @[to_additive
-  /-- Construct a seminormed group from a seminorm, i.e., registering the pseudodistance
+/-- Construct a seminormed group from a seminorm, i.e., registering the pseudodistance
 and the pseudometric space structure from the seminorm properties. Note that in most cases this
 instance creates bad definitional equalities (e.g., it does not take into account a possibly
 existing `UniformSpace` instance on `E`). -/]
@@ -356,7 +356,7 @@ structure from the norm properties. Note that in most cases this instance create
 equalities (e.g., it does not take into account a possibly existing `UniformSpace` instance on
 `E`). -/
 @[to_additive
-  /-- Construct a normed group from a norm, i.e., registering the distance and the metric
+/-- Construct a normed group from a norm, i.e., registering the distance and the metric
 space structure from the norm properties. Note that in most cases this instance creates bad
 definitional equalities (e.g., it does not take into account a possibly existing `UniformSpace`
 instance on `E`). -/]
@@ -370,7 +370,7 @@ structure from the norm properties. Note that in most cases this instance create
 equalities (e.g., it does not take into account a possibly existing `UniformSpace` instance on
 `E`). -/
 @[to_additive
-  /-- Construct a normed group from a norm, i.e., registering the distance and the metric
+/-- Construct a normed group from a norm, i.e., registering the distance and the metric
 space structure from the norm properties. Note that in most cases this instance creates bad
 definitional equalities (e.g., it does not take into account a possibly existing `UniformSpace`
 instance on `E`). -/]

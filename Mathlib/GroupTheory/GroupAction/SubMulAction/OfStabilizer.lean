@@ -181,7 +181,7 @@ theorem ofStabilizer.conjMap_bijective : Function.Bijective (conjMap hg) := by
 
 /-- Append `a` to `x : Fin n ↪ ofStabilizer G a`  to get an element of `Fin n.succ ↪ α`. -/
 @[to_additive
-  /-- Append `a` to `x : Fin n ↪ ofStabilizer G a`  to get an element of `Fin n.succ ↪ α`. -/]
+/-- Append `a` to `x : Fin n ↪ ofStabilizer G a`  to get an element of `Fin n.succ ↪ α`. -/]
 def ofStabilizer.snoc {n : ℕ} (x : Fin n ↪ ofStabilizer G a) :
     Fin n.succ ↪ α :=
   Fin.Embedding.snoc (x.trans (subtype _)) (a := a) (by

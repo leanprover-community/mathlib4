@@ -79,7 +79,7 @@ theorem prod_eq_mul {f : α → M} (a b : α) (h₁ : a ≠ b) (h₂ : ∀ x, x 
 /-- If a product of a `Finset` of a subsingleton type has a given
 value, so do the terms in that product. -/
 @[to_additive /-- If a sum of a `Finset` of a subsingleton type has a given
-  value, so do the terms in that sum. -/]
+value, so do the terms in that sum. -/]
 theorem eq_of_subsingleton_of_prod_eq {ι : Type*} [Subsingleton ι] {s : Finset ι} {f : ι → M}
     {b : M} (h : ∏ i ∈ s, f i = b) : ∀ i ∈ s, f i = b :=
   Finset.eq_of_card_le_one_of_prod_eq (Finset.card_le_one_of_subsingleton s) h

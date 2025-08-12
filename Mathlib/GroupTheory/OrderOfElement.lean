@@ -161,8 +161,8 @@ end IsOfFinOrder
 /-- `orderOf x` is the order of the element `x`, i.e. the `n ≥ 1`, s.t. `x ^ n = 1` if it exists.
 Otherwise, i.e. if `x` is of infinite order, then `orderOf x` is `0` by convention. -/
 @[to_additive
-  /-- `addOrderOf a` is the order of the element `a`, i.e. the `n ≥ 1`, s.t. `n • a = 0` if it
-  exists. Otherwise, i.e. if `a` is of infinite order, then `addOrderOf a` is `0` by convention. -/]
+/-- `addOrderOf a` is the order of the element `a`, i.e. the `n ≥ 1`, s.t. `n • a = 0` if it
+exists. Otherwise, i.e. if `a` is of infinite order, then `addOrderOf a` is `0` by convention. -/]
 noncomputable def orderOf (x : G) : ℕ :=
   minimalPeriod (x * ·) 1
 
@@ -212,7 +212,7 @@ theorem orderOf_eq_iff {n} (h : 0 < n) :
 
 /-- A group element has finite order iff its order is positive. -/
 @[to_additive
-  /-- A group element has finite additive order iff its order is positive. -/]
+/-- A group element has finite additive order iff its order is positive. -/]
 theorem orderOf_pos_iff : 0 < orderOf x ↔ IsOfFinOrder x := by
   rw [iff_not_comm.mp orderOf_eq_zero_iff, pos_iff_ne_zero]
 
@@ -442,9 +442,9 @@ theorem isOfFinOrder_mul (h : Commute x y) (hx : IsOfFinOrder x) (hy : IsOfFinOr
 /-- If each prime factor of `orderOf x` has higher multiplicity in `orderOf y`, and `x` commutes
   with `y`, then `x * y` has the same order as `y`. -/
 @[to_additive addOrderOf_add_eq_right_of_forall_prime_mul_dvd
-  /-- If each prime factor of
-  `addOrderOf x` has higher multiplicity in `addOrderOf y`, and `x` commutes with `y`,
-  then `x + y` has the same order as `y`. -/]
+/-- If each prime factor of
+`addOrderOf x` has higher multiplicity in `addOrderOf y`, and `x` commutes with `y`,
+then `x + y` has the same order as `y`. -/]
 theorem orderOf_mul_eq_right_of_forall_prime_mul_dvd (h : Commute x y) (hy : IsOfFinOrder y)
     (hdvd : ∀ p : ℕ, p.Prime → p ∣ orderOf x → p * orderOf x ∣ orderOf y) :
     orderOf (x * y) = orderOf y := by
@@ -795,8 +795,8 @@ theorem mem_powers_iff_mem_range_orderOf [DecidableEq G] :
 /-- The equivalence between `Submonoid.powers` of two elements `x, y` of the same order, mapping
   `x ^ i` to `y ^ i`. -/
 @[to_additive
-  /-- The equivalence between `Submonoid.multiples` of two elements `a, b` of the same additive
-  order, mapping `i • a` to `i • b`. -/]
+/-- The equivalence between `Submonoid.multiples` of two elements `a, b` of the same additive
+order, mapping `i • a` to `i • b`. -/]
 noncomputable def powersEquivPowers (h : orderOf x = orderOf y) : powers x ≃ powers y :=
   (finEquivPowers <| isOfFinOrder_of_finite _).symm.trans <|
     (finCongr h).trans <| finEquivPowers <| isOfFinOrder_of_finite _
@@ -878,8 +878,8 @@ lemma mem_zpowers_iff_mem_range_orderOf [DecidableEq G] :
 /-- The equivalence between `Subgroup.zpowers` of two elements `x, y` of the same order, mapping
   `x ^ i` to `y ^ i`. -/
 @[to_additive
-  /-- The equivalence between `Subgroup.zmultiples` of two elements `a, b` of the same additive
-  order, mapping `i • a` to `i • b`. -/]
+/-- The equivalence between `Subgroup.zmultiples` of two elements `a, b` of the same additive
+order, mapping `i • a` to `i • b`. -/]
 noncomputable def zpowersEquivZPowers (h : orderOf x = orderOf y) :
     Subgroup.zpowers x ≃ Subgroup.zpowers y :=
   (finEquivZPowers <| isOfFinOrder_of_finite _).symm.trans <| (finCongr h).trans <|
@@ -1081,7 +1081,7 @@ def subgroupOfIdempotent {G : Type*} [Group G] [Finite G] (S : Set G) (hS1 : S.N
 
 /-- If `S` is a nonempty subset of a finite group `G`, then `S ^ |G|` is a subgroup -/
 @[to_additive (attr := simps!) smulCardAddSubgroup
-  /-- If `S` is a nonempty subset of a finite add group `G`, then `|G| • S` is a subgroup -/]
+/-- If `S` is a nonempty subset of a finite add group `G`, then `|G| • S` is a subgroup -/]
 def powCardSubgroup {G : Type*} [Group G] [Fintype G] (S : Set G) (hS : S.Nonempty) : Subgroup G :=
   have one_mem : (1 : G) ∈ S ^ Fintype.card G := by
     obtain ⟨a, ha⟩ := hS

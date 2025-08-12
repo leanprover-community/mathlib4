@@ -175,7 +175,7 @@ instance : MulEquivClass (M ≃* N) M N where
 /-- Two multiplicative isomorphisms agree if they are defined by the
 same underlying function. -/
 @[to_additive (attr := ext)
-  /-- Two additive isomorphisms agree if they are defined by the same underlying function. -/]
+/-- Two additive isomorphisms agree if they are defined by the same underlying function. -/]
 theorem ext {f g : MulEquiv M N} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
 
@@ -464,8 +464,8 @@ lemma comp_right_injective (e : M ≃* N) : Injective fun f : P →* M ↦ (e : 
 
 /-- A multiplicative isomorphism of monoids sends `1` to `1` (and is hence a monoid isomorphism). -/
 @[to_additive
-  /-- An additive isomorphism of additive monoids sends `0` to `0`
-  (and is hence an additive monoid isomorphism). -/]
+/-- An additive isomorphism of additive monoids sends `0` to `0`
+(and is hence an additive monoid isomorphism). -/]
 protected theorem map_one (h : M ≃* N) : h 1 = 1 := map_one h
 
 @[to_additive]
@@ -491,7 +491,7 @@ theorem ofBijective_apply_symm_apply {n : N} (f : M →* N) (hf : Bijective f) :
 as a multiplication-preserving function.
 -/
 @[to_additive /-- Extract the forward direction of an additive equivalence
-  as an addition-preserving function. -/]
+as an addition-preserving function. -/]
 def toMonoidHom (h : M ≃* N) : M →* N :=
   { h with map_one' := h.map_one }
 
@@ -531,10 +531,10 @@ end MulEquiv
 constructor is useful if the underlying type(s) have specialized `ext` lemmas for multiplicative
 homomorphisms. -/
 @[to_additive (attr := simps -fullyApplied)
-  /-- Given a pair of additive homomorphisms `f`, `g` such that `g.comp f = id` and
-  `f.comp g = id`, returns an additive equivalence with `toFun = f` and `invFun = g`. This
-  constructor is useful if the underlying type(s) have specialized `ext` lemmas for additive
-  homomorphisms. -/]
+/-- Given a pair of additive homomorphisms `f`, `g` such that `g.comp f = id` and
+`f.comp g = id`, returns an additive equivalence with `toFun = f` and `invFun = g`. This
+constructor is useful if the underlying type(s) have specialized `ext` lemmas for additive
+homomorphisms. -/]
 def MulHom.toMulEquiv [Mul M] [Mul N] (f : M →ₙ* N) (g : N →ₙ* M) (h₁ : g.comp f = MulHom.id _)
     (h₂ : f.comp g = MulHom.id _) : M ≃* N where
   toFun := f
@@ -547,10 +547,10 @@ def MulHom.toMulEquiv [Mul M] [Mul N] (f : M →ₙ* N) (g : N →ₙ* M) (h₁ 
 returns a multiplicative equivalence with `toFun = f` and `invFun = g`.  This constructor is
 useful if the underlying type(s) have specialized `ext` lemmas for monoid homomorphisms. -/
 @[to_additive (attr := simps -fullyApplied)
-  /-- Given a pair of additive monoid homomorphisms `f`, `g` such that `g.comp f = id`
-  and `f.comp g = id`, returns an additive equivalence with `toFun = f` and `invFun = g`.  This
-  constructor is useful if the underlying type(s) have specialized `ext` lemmas for additive
-  monoid homomorphisms. -/]
+/-- Given a pair of additive monoid homomorphisms `f`, `g` such that `g.comp f = id`
+and `f.comp g = id`, returns an additive equivalence with `toFun = f` and `invFun = g`.  This
+constructor is useful if the underlying type(s) have specialized `ext` lemmas for additive
+monoid homomorphisms. -/]
 def MonoidHom.toMulEquiv [MulOneClass M] [MulOneClass N] (f : M →* N) (g : N →* M)
     (h₁ : g.comp f = MonoidHom.id _) (h₂ : f.comp g = MonoidHom.id _) : M ≃* N where
   toFun := f

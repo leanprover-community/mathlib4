@@ -90,7 +90,7 @@ instance monoid {G : Type*} [Monoid G] [TopologicalSpace G] [ChartedSpace H' G]
 
 /-- Coercion to a function as a `MonoidHom`. Similar to `MonoidHom.coeFn`. -/
 @[to_additive (attr := simps) /-- Coercion to a function as an `AddMonoidHom`.
-  Similar to `AddMonoidHom.coeFn`. -/]
+Similar to `AddMonoidHom.coeFn`. -/]
 def coeFnMonoidHom {G : Type*} [Monoid G] [TopologicalSpace G] [ChartedSpace H' G]
     [ContMDiffMul I' n G] : C^n⟮I, N; I', G⟯ →* N → G where
   toFun := DFunLike.coe

@@ -49,7 +49,7 @@ def ofUnique {M N} [Unique M] [Unique N] [Mul M] [Mul N] : M ≃* N :=
 
 /-- There is a unique monoid homomorphism between two monoids with a unique element. -/
 @[to_additive /-- There is a unique additive monoid homomorphism between two additive monoids with
-  a unique element. -/]
+a unique element. -/]
 instance {M N} [Unique M] [Unique N] [Mul M] [Mul N] : Unique (M ≃* N) where
   default := ofUnique
   uniq _ := ext fun _ => Subsingleton.elim _ _
@@ -66,7 +66,7 @@ end Mul
 where the equivalence between the targets is multiplicative.
 -/
 @[to_additive (attr := simps apply) /-- An additive analogue of `Equiv.arrowCongr`,
-  where the equivalence between the targets is additive. -/]
+where the equivalence between the targets is additive. -/]
 def arrowCongr {M N P Q : Type*} [Mul P] [Mul Q] (f : M ≃ N) (g : P ≃* Q) :
     (M → P) ≃* (N → Q) where
   toFun h n := g (h (f.symm n))
@@ -179,8 +179,8 @@ end monoidHomCongr
 for multiplicative maps from a monoid to a commutative monoid.
 -/
 @[to_additive (attr := deprecated MulEquiv.monoidHomCongrLeft (since := "2025-08-12"))
-  /-- An additive analogue of `Equiv.arrowCongr`,
-  for additive maps from an additive monoid to a commutative additive monoid. -/]
+/-- An additive analogue of `Equiv.arrowCongr`,
+for additive maps from an additive monoid to a commutative additive monoid. -/]
 def monoidHomCongr {M N P Q} [MulOneClass M] [MulOneClass N] [CommMonoid P] [CommMonoid Q]
     (f : M ≃* N) (g : P ≃* Q) : (M →* P) ≃* (N →* Q) :=
   f.monoidHomCongrLeft.trans g.monoidHomCongrRight
@@ -192,11 +192,11 @@ This is the `MulEquiv` version of `Equiv.piCongrRight`, and the dependent versio
 `MulEquiv.arrowCongr`.
 -/
 @[to_additive (attr := simps apply)
-  /-- A family of additive equivalences `Π j, (Ms j ≃+ Ns j)`
-  generates an additive equivalence between `Π j, Ms j` and `Π j, Ns j`.
+/-- A family of additive equivalences `Π j, (Ms j ≃+ Ns j)`
+generates an additive equivalence between `Π j, Ms j` and `Π j, Ns j`.
 
-  This is the `AddEquiv` version of `Equiv.piCongrRight`, and the dependent version of
-  `AddEquiv.arrowCongr`. -/]
+This is the `AddEquiv` version of `Equiv.piCongrRight`, and the dependent version of
+`AddEquiv.arrowCongr`. -/]
 def piCongrRight {η : Type*} {Ms Ns : η → Type*} [∀ j, Mul (Ms j)] [∀ j, Mul (Ns j)]
     (es : ∀ j, Ms j ≃* Ns j) : (∀ j, Ms j) ≃* ∀ j, Ns j :=
   { Equiv.piCongrRight fun j => (es j).toEquiv with
@@ -220,8 +220,8 @@ theorem piCongrRight_trans {η : Type*} {Ms Ns Ps : η → Type*} [∀ j, Mul (M
 /-- A family indexed by a type with a unique element
 is `MulEquiv` to the element at the single index. -/
 @[to_additive (attr := simps!)
-  /-- A family indexed by a type with a unique element
-  is `AddEquiv` to the element at the single index. -/]
+/-- A family indexed by a type with a unique element
+is `AddEquiv` to the element at the single index. -/]
 def piUnique {ι : Type*} (M : ι → Type*) [∀ j, Mul (M j)] [Unique ι] :
     (∀ j, M j) ≃* M default :=
   { Equiv.piUnique M with map_mul' := fun _ _ => Pi.mul_apply _ _ _ }
@@ -267,7 +267,7 @@ variable (G) [InvolutiveInv G]
 
 /-- Inversion on a `Group` or `GroupWithZero` is a permutation of the underlying type. -/
 @[to_additive (attr := simps! -fullyApplied apply)
-    /-- Negation on an `AddGroup` is a permutation of the underlying type. -/]
+/-- Negation on an `AddGroup` is a permutation of the underlying type. -/]
 protected def inv : Perm G :=
   inv_involutive.toPerm _
 

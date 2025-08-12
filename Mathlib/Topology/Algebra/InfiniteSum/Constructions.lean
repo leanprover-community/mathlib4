@@ -93,7 +93,7 @@ lemma HasProd.sum {α β M : Type*} [CommMonoid M] [TopologicalSpace M] [Continu
   simpa [Tendsto, ← Filter.map_map] using this
 
 @[to_additive /-- For the statement that `tsum` commutes with `Finset.sum`,
-  see `Summable.tsum_finsetSum`. -/]
+see `Summable.tsum_finsetSum`. -/]
 protected lemma Multipliable.tprod_sum {α β M : Type*} [CommMonoid M] [TopologicalSpace M]
     [ContinuousMul M] [T2Space M] {f : α ⊕ β → M} (h₁ : Multipliable (f ∘ .inl))
     (h₂ : Multipliable (f ∘ .inr)) : ∏' i, f i = (∏' i, f (.inl i)) * (∏' i, f (.inr i)) :=

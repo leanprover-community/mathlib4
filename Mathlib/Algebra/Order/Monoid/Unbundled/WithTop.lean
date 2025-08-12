@@ -350,7 +350,7 @@ theorem one_lt_top [One α] [LT α] : (1 : WithTop α) < ⊤ := coe_lt_top _
 
 /-- A version of `WithTop.map` for `OneHom`s. -/
 @[to_additive (attr := simps -fullyApplied)
-  /-- A version of `WithTop.map` for `ZeroHom`s -/]
+/-- A version of `WithTop.map` for `ZeroHom`s -/]
 protected def _root_.OneHom.withTopMap {M N : Type*} [One M] [One N] (f : OneHom M N) :
     OneHom (WithTop M) (WithTop N) where
   toFun := WithTop.map f
@@ -650,7 +650,7 @@ instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne (
 
 /-- A version of `WithBot.map` for `OneHom`s. -/
 @[to_additive (attr := simps -fullyApplied)
-  /-- A version of `WithBot.map` for `ZeroHom`s -/]
+/-- A version of `WithBot.map` for `ZeroHom`s -/]
 protected def _root_.OneHom.withBotMap {M N : Type*} [One M] [One N] (f : OneHom M N) :
     OneHom (WithBot M) (WithBot N) where
   toFun := WithBot.map f

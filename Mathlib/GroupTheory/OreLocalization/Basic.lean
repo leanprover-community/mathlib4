@@ -248,7 +248,7 @@ private def smul'' (r : R) (s : S) : X[S⁻¹] → X[S⁻¹] :=
 
 /-- The scalar multiplication on the Ore localization of monoids. -/
 @[to_additive (attr := irreducible)
-  /-- the vector addition on the Ore localization of additive monoids. -/]
+/-- the vector addition on the Ore localization of additive monoids. -/]
 protected def smul : R[S⁻¹] → X[S⁻¹] → X[S⁻¹] :=
   liftExpand smul'' fun r₁ r₂ s hs => by
     ext x
@@ -308,7 +308,7 @@ theorem oreDiv_mul_char (r₁ r₂ : R) (s₁ s₂ : S) (r' : R) (s' : S) (huv :
 /-- Another characterization lemma for the scalar multiplication on the Ore localizaion delivering
 Ore witnesses and conditions bundled in a sigma type. -/
 @[to_additive /-- Another characterization lemma for the vector addition on the
-  Ore localizaion delivering Ore witnesses and conditions bundled in a sigma type. -/]
+Ore localizaion delivering Ore witnesses and conditions bundled in a sigma type. -/]
 def oreDivSMulChar' (r₁ : R) (r₂ : X) (s₁ s₂ : S) :
     Σ' r' : R, Σ' s' : S, s' * r₁ = r' * s₂ ∧ (r₁ /ₒ s₁) • (r₂ /ₒ s₂) = r' • r₂ /ₒ (s' * s₁) :=
   ⟨oreNum r₁ s₂, oreDenom r₁ s₂, ore_eq r₁ s₂, oreDiv_smul_oreDiv⟩
@@ -316,7 +316,7 @@ def oreDivSMulChar' (r₁ : R) (r₂ : X) (s₁ s₂ : S) :
 /-- Another characterization lemma for the multiplication on the Ore localizaion delivering
 Ore witnesses and conditions bundled in a sigma type. -/
 @[to_additive /-- Another characterization lemma for the addition on the Ore localizaion delivering
-  Ore witnesses and conditions bundled in a sigma type. -/]
+Ore witnesses and conditions bundled in a sigma type. -/]
 def oreDivMulChar' (r₁ r₂ : R) (s₁ s₂ : S) :
     Σ' r' : R, Σ' s' : S, s' * r₁ = r' * s₂ ∧ r₁ /ₒ s₁ * (r₂ /ₒ s₂) = r' * r₂ /ₒ (s' * s₁) :=
   ⟨oreNum r₁ s₂, oreDenom r₁ s₂, ore_eq r₁ s₂, oreDiv_mul_oreDiv⟩
@@ -446,7 +446,7 @@ def numeratorUnit (s : S) : Units R[S⁻¹] where
 /-- The multiplicative homomorphism from `R` to `R[S⁻¹]`, mapping `r : R` to the
 fraction `r /ₒ 1`. -/
 @[to_additive /-- The additive homomorphism from `R` to `AddOreLocalization R S`,
-  mapping `r : R` to the difference `r -ₒ 0`. -/]
+mapping `r : R` to the difference `r -ₒ 0`. -/]
 def numeratorHom : R →* R[S⁻¹] where
   toFun r := r /ₒ 1
   map_one' := by with_unfolding_all rfl
@@ -468,7 +468,7 @@ variable (f : R →* T) (fS : S →* Units T)
 /-- The universal lift from a morphism `R →* T`, which maps elements of `S` to units of `T`,
 to a morphism `R[S⁻¹] →* T`. -/
 @[to_additive /-- The universal lift from a morphism `R →+ T`, which maps elements of `S` to
-  additive-units of `T`, to a morphism `AddOreLocalization R S →+ T`. -/]
+additive-units of `T`, to a morphism `AddOreLocalization R S →+ T`. -/]
 def universalMulHom (hf : ∀ s : S, f s = fS s) : R[S⁻¹] →* T where
   toFun x :=
     x.liftExpand (fun r s => ((fS s)⁻¹ : Units T) * f r) fun r t s ht => by

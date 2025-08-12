@@ -121,9 +121,9 @@ variable [Preorder α] [Preorder β] [MulOneClass α] [MulOneClass β] [FunLike 
 /-- Turn an element of a type `F` satisfying `OrderHomClass F α β` and `MonoidHomClass F α β`
 into an actual `OrderMonoidHom`. This is declared as the default coercion from `F` to `α →*o β`. -/
 @[to_additive (attr := coe)
-  /-- Turn an element of a type `F` satisfying `OrderHomClass F α β` and `AddMonoidHomClass F α β`
-  into an actual `OrderAddMonoidHom`.
-  This is declared as the default coercion from `F` to `α →+o β`. -/]
+/-- Turn an element of a type `F` satisfying `OrderHomClass F α β` and `AddMonoidHomClass F α β`
+into an actual `OrderAddMonoidHom`.
+This is declared as the default coercion from `F` to `α →+o β`. -/]
 def OrderMonoidHomClass.toOrderMonoidHom [OrderHomClass F α β] [MonoidHomClass F α β] (f : F) :
     α →*o β :=
   { (f : α →* β) with monotone' := OrderHomClass.monotone f }
@@ -131,7 +131,7 @@ def OrderMonoidHomClass.toOrderMonoidHom [OrderHomClass F α β] [MonoidHomClass
 /-- Any type satisfying `OrderMonoidHomClass` can be cast into `OrderMonoidHom` via
   `OrderMonoidHomClass.toOrderMonoidHom`. -/
 @[to_additive /-- Any type satisfying `OrderAddMonoidHomClass` can be cast into `OrderAddMonoidHom`
-  via `OrderAddMonoidHomClass.toOrderAddMonoidHom`. -/]
+via `OrderAddMonoidHomClass.toOrderAddMonoidHom`. -/]
 instance [OrderHomClass F α β] [MonoidHomClass F α β] : CoeTC F (α →*o β) :=
   ⟨OrderMonoidHomClass.toOrderMonoidHom⟩
 
@@ -156,9 +156,9 @@ variable [Preorder α] [Preorder β] [MulOneClass α] [MulOneClass β] [FunLike 
 /-- Turn an element of a type `F` satisfying `OrderIsoClass F α β` and `MulEquivClass F α β`
 into an actual `OrderMonoidIso`. This is declared as the default coercion from `F` to `α ≃*o β`. -/
 @[to_additive (attr := coe)
-  /-- Turn an element of a type `F` satisfying `OrderIsoClass F α β` and `AddEquivClass F α β`
-  into an actual `OrderAddMonoidIso`.
-  This is declared as the default coercion from `F` to `α ≃+o β`. -/]
+/-- Turn an element of a type `F` satisfying `OrderIsoClass F α β` and `AddEquivClass F α β`
+into an actual `OrderAddMonoidIso`.
+This is declared as the default coercion from `F` to `α ≃+o β`. -/]
 def OrderMonoidIsoClass.toOrderMonoidIso [EquivLike F α β] [OrderIsoClass F α β]
     [MulEquivClass F α β] (f : F) :
     α ≃*o β :=
@@ -167,7 +167,7 @@ def OrderMonoidIsoClass.toOrderMonoidIso [EquivLike F α β] [OrderIsoClass F α
 /-- Any type satisfying `OrderMonoidIsoClass` can be cast into `OrderMonoidIso` via
   `OrderMonoidIsoClass.toOrderMonoidIso`. -/
 @[to_additive /-- Any type satisfying `OrderAddMonoidIsoClass` can be cast into `OrderAddMonoidIso`
-  via `OrderAddMonoidIsoClass.toOrderAddMonoidIso`. -/]
+via `OrderAddMonoidIsoClass.toOrderAddMonoidIso`. -/]
 instance [EquivLike F α β] [OrderIsoClass F α β] [MulEquivClass F α β] : CoeTC F (α ≃*o β) :=
   ⟨OrderMonoidIsoClass.toOrderMonoidIso⟩
 
@@ -454,8 +454,8 @@ variable {_ : CommGroup α} {_ : PartialOrder α} {_ : CommGroup β} {_ : Partia
 
 /-- Makes an ordered group homomorphism from a proof that the map preserves multiplication. -/
 @[to_additive
-      /-- Makes an ordered additive group homomorphism from a proof that the map preserves
-      addition. -/]
+/-- Makes an ordered additive group homomorphism from a proof that the map preserves
+addition. -/]
 def mk' (f : α → β) (hf : Monotone f) (map_mul : ∀ a b : α, f (a * b) = f a * f b) : α →*o β :=
   { MonoidHom.mk' f map_mul with monotone' := hf }
 
@@ -713,8 +713,8 @@ variable {_ : CommGroup α} {_ : PartialOrder α} {_ : CommGroup β} {_ : Partia
 
 /-- Makes an ordered group isomorphism from a proof that the map preserves multiplication. -/
 @[to_additive
-      /-- Makes an ordered additive group isomorphism from a proof that the map preserves
-      addition. -/]
+/-- Makes an ordered additive group isomorphism from a proof that the map preserves
+addition. -/]
 def mk' (f : α ≃ β) (hf : ∀ {a b}, f a ≤ f b ↔ a ≤ b) (map_mul : ∀ a b : α, f (a * b) = f a * f b) :
     α ≃*o β :=
   { MulEquiv.mk' f map_mul with map_le_map_iff' := hf }

@@ -209,7 +209,7 @@ lemma ofHom_injective {X Y : Type u} [Group X] [Group Y] :
 
 /-- The forgetful functor from groups to monoids is fully faithful. -/
 @[to_additive fullyFaihtfulForget₂ToAddMonCat
-  /-- The forgetful functor from additive groups to additive monoids is fully faithful. -/]
+/-- The forgetful functor from additive groups to additive monoids is fully faithful. -/]
 def fullyFaithfulForget₂ToMonCat : (forget₂ Grp.{u} MonCat).FullyFaithful where
   preimage f := ofHom f.hom
 
@@ -223,7 +223,7 @@ example {R S : Grp} (i : R ⟶ S) (r : R) (h : r = 1) : i r = 1 := by simp [h]
 
 /-- Universe lift functor for groups. -/
 @[to_additive (attr := simps obj map)
-  /-- Universe lift functor for additive groups. -/]
+/-- Universe lift functor for additive groups. -/]
 def uliftFunctor : Grp.{v} ⥤ Grp.{max v u} where
   obj X := Grp.of (ULift.{u, v} X)
   map {_ _} f := Grp.ofHom <|
@@ -450,7 +450,7 @@ example {R S : CommGrp} (i : R ⟶ S) (r : R) (h : r = 1) : i r = 1 := by simp [
 
 /-- Universe lift functor for commutative groups. -/
 @[to_additive (attr := simps obj map)
-  /-- Universe lift functor for additive commutative groups. -/]
+/-- Universe lift functor for additive commutative groups. -/]
 def uliftFunctor : CommGrp.{v} ⥤ CommGrp.{max v u} where
   obj X := CommGrp.of (ULift.{u, v} X)
   map {_ _} f := CommGrp.ofHom <|
@@ -592,7 +592,7 @@ instance CommGrp.forget_reflects_isos : (forget CommGrp.{u}).ReflectsIsomorphism
 
 /-- An alias for `Grp.{max u v}`, to deal around unification issues. -/
 @[to_additive (attr := nolint checkUnivs) GrpMaxAux
-  /-- An alias for `AddGrp.{max u v}`, to deal around unification issues. -/]
+/-- An alias for `AddGrp.{max u v}`, to deal around unification issues. -/]
 abbrev GrpMax.{u1, u2} := Grp.{max u1 u2}
 /-- An alias for `AddGrp.{max u v}`, to deal around unification issues. -/
 @[nolint checkUnivs]
@@ -600,7 +600,7 @@ abbrev AddGrpMax.{u1, u2} := AddGrp.{max u1 u2}
 
 /-- An alias for `CommGrp.{max u v}`, to deal around unification issues. -/
 @[to_additive (attr := nolint checkUnivs) AddCommGrpMaxAux
-  /-- An alias for `AddCommGrp.{max u v}`, to deal around unification issues. -/]
+/-- An alias for `AddCommGrp.{max u v}`, to deal around unification issues. -/]
 abbrev CommGrpMax.{u1, u2} := CommGrp.{max u1 u2}
 /-- An alias for `AddCommGrp.{max u v}`, to deal around unification issues. -/
 @[nolint checkUnivs]

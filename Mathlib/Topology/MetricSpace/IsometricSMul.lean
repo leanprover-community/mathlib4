@@ -180,7 +180,7 @@ variable [IsIsometricSMul G G] [IsIsometricSMul Gᵐᵒᵖ G]
 
 /-- Division `y ↦ x / y` as an `IsometryEquiv`. -/
 @[to_additive (attr := simps! apply symm_apply toEquiv)
-  /-- Subtraction `y ↦ x - y` as an `IsometryEquiv`. -/]
+/-- Subtraction `y ↦ x - y` as an `IsometryEquiv`. -/]
 def divLeft (c : G) : G ≃ᵢ G where
   toEquiv := Equiv.divLeft c
   isometry_toFun := edist_div_left c

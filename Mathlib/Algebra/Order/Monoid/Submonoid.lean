@@ -26,8 +26,8 @@ instance (priority := 75) toIsOrderedMonoid [CommMonoid M] [PartialOrder M] [IsO
 -- Prefer subclasses of `Monoid` over subclasses of `SubmonoidClass`.
 /-- A submonoid of an ordered cancellative monoid is an ordered cancellative monoid. -/
 @[to_additive AddSubmonoidClass.toIsOrderedCancelAddMonoid
-      /-- An `AddSubmonoid` of an ordered cancellative additive monoid is an ordered cancellative
-      additive monoid. -/]
+/-- An `AddSubmonoid` of an ordered cancellative additive monoid is an ordered cancellative
+additive monoid. -/]
 instance (priority := 75) toIsOrderedCancelMonoid
     [CommMonoid M] [PartialOrder M] [IsOrderedCancelMonoid M]
     [SubmonoidClass S M] (s : S) : IsOrderedCancelMonoid s :=
@@ -47,8 +47,8 @@ instance toIsOrderedMonoid [CommMonoid M] [PartialOrder M] [IsOrderedMonoid M]
 
 /-- A submonoid of an ordered cancellative monoid is an ordered cancellative monoid. -/
 @[to_additive AddSubmonoid.toIsOrderedCancelAddMonoid
-      /-- An `AddSubmonoid` of an ordered cancellative additive monoid is an ordered cancellative
-      additive monoid. -/]
+/-- An `AddSubmonoid` of an ordered cancellative additive monoid is an ordered cancellative
+additive monoid. -/]
 instance toIsOrderedCancelMonoid [CommMonoid M] [PartialOrder M] [IsOrderedCancelMonoid M]
     (S : Submonoid M) : IsOrderedCancelMonoid S :=
   Subtype.coe_injective.isOrderedCancelMonoid Subtype.val rfl (fun _ _ => rfl) fun _ _ => rfl

@@ -231,9 +231,9 @@ theorem mabs_eq_inv_self : |a|ₘ = a⁻¹ ↔ a ≤ 1 := by
 /-- For an element `a` of a multiplicative linear ordered group,
 either `|a|ₘ = a` and `1 ≤ a`, or `|a|ₘ = a⁻¹` and `a < 1`. -/
 @[to_additive
-  /-- For an element `a` of an additive linear ordered group,
-  either `|a| = a` and `0 ≤ a`, or `|a| = -a` and `a < 0`.
-  Use cases on this lemma to automate linarith in inequalities -/]
+/-- For an element `a` of an additive linear ordered group,
+either `|a| = a` and `0 ≤ a`, or `|a| = -a` and `a < 0`.
+Use cases on this lemma to automate linarith in inequalities -/]
 theorem mabs_cases (a : G) : |a|ₘ = a ∧ 1 ≤ a ∨ |a|ₘ = a⁻¹ ∧ a < 1 := by
   cases le_or_gt 1 a <;> simp [*, le_of_lt]
 

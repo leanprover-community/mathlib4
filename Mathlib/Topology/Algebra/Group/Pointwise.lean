@@ -333,8 +333,8 @@ theorem IsCompact.locallyCompactSpace_of_mem_nhds_of_group {K : Set G} (hK : IsC
 /-- If a function defined on a topological group has a support contained in a
 compact set, then either the function is trivial or the group is locally compact. -/
 @[to_additive
-      /-- If a function defined on a topological additive group has a support contained in a compact
-      set, then either the function is trivial or the group is locally compact. -/]
+/-- If a function defined on a topological additive group has a support contained in a compact
+set, then either the function is trivial or the group is locally compact. -/]
 theorem eq_zero_or_locallyCompactSpace_of_support_subset_isCompact_of_group
     [TopologicalSpace α] [Zero α] [T1Space α]
     {f : G → α} {k : Set G} (hk : IsCompact k) (hf : support f ⊆ k) (h'f : Continuous f) :
@@ -350,8 +350,8 @@ theorem eq_zero_or_locallyCompactSpace_of_support_subset_isCompact_of_group
 /-- If a function defined on a topological group has compact support, then either
 the function is trivial or the group is locally compact. -/
 @[to_additive
-      /-- If a function defined on a topological additive group has compact support,
-      then either the function is trivial or the group is locally compact. -/]
+/-- If a function defined on a topological additive group has compact support,
+then either the function is trivial or the group is locally compact. -/]
 theorem HasCompactSupport.eq_zero_or_locallyCompactSpace_of_group
     [TopologicalSpace α] [Zero α] [T1Space α]
     {f : G → α} (hf : HasCompactSupport f) (h'f : Continuous f) :

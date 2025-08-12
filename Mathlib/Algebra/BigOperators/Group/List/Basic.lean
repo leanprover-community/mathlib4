@@ -138,8 +138,8 @@ inhabited instance to return a garbage value on the empty list, this is not poss
 Instead, we write the statement in terms of `L[0]?.getD 1`.
 -/
 @[to_additive /-- We'd like to state this as `L.headI + L.tail.sum = L.sum`, but because `L.headI`
-  relies on an inhabited instance to return a garbage value on the empty list, this is not possible.
-  Instead, we write the statement in terms of `L[0]?.getD 0`. -/]
+relies on an inhabited instance to return a garbage value on the empty list, this is not possible.
+Instead, we write the statement in terms of `L[0]?.getD 0`. -/]
 theorem getElem?_zero_mul_tail_prod (l : List M) : l[0]?.getD 1 * l.tail.prod = l.prod := by
   cases l <;> simp
 
@@ -149,7 +149,7 @@ theorem getElem?_zero_mul_tail_prod (l : List M) : l[0]?.getD 1 * l.tail.prod = 
 /-- Same as `get?_zero_mul_tail_prod`, but avoiding the `List.headI` garbage complication by
   requiring the list to be nonempty. -/
 @[to_additive /-- Same as `get?_zero_add_tail_sum`, but avoiding the `List.headI` garbage
-  complication by requiring the list to be nonempty. -/]
+complication by requiring the list to be nonempty. -/]
 theorem headI_mul_tail_prod_of_ne_nil [Inhabited M] (l : List M) (h : l ≠ []) :
     l.headI * l.tail.prod = l.prod := by cases l <;> [contradiction; simp]
 
@@ -314,7 +314,7 @@ theorem prod_reverse_noncomm : ∀ L : List G, L.reverse.prod = (L.map fun x => 
 
 /-- Counterpart to `List.prod_take_succ` when we have an inverse operation -/
 @[to_additive (attr := simp)
-  /-- Counterpart to `List.sum_take_succ` when we have a negation operation -/]
+/-- Counterpart to `List.sum_take_succ` when we have a negation operation -/]
 theorem prod_drop_succ :
     ∀ (L : List G) (i : ℕ) (p : i < L.length), (L.drop (i + 1)).prod = L[i]⁻¹ * (L.drop i).prod
   | [], _, p => False.elim (Nat.not_lt_zero _ p)

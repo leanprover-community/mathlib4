@@ -21,8 +21,8 @@ variable (G)
 
 /-- The center of a group `G` is the set of elements that commute with everything in `G` -/
 @[to_additive
-      /-- The center of an additive group `G` is the set of elements that commute with
-      everything in `G` -/]
+/-- The center of an additive group `G` is the set of elements that commute with
+everything in `G` -/]
 def center : Subgroup G :=
   { Submonoid.center G with
     carrier := Set.center G

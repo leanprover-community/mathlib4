@@ -156,7 +156,7 @@ variable {a : FreeMonoid α}
 
 /-- The length of a free monoid element: 1.length = 0 and (a * b).length = a.length + b.length -/
 @[to_additive /-- The length of an additive free monoid element: 1.length = 0 and (a + b).length =
-  a.length + b.length -/]
+a.length + b.length -/]
 def length (a : FreeMonoid α) : ℕ := a.toList.length
 
 @[to_additive (attr := simp)]
@@ -226,8 +226,8 @@ end Mem
 
 /-- Recursor for `FreeMonoid` using `1` and `FreeMonoid.of x * xs` instead of `[]` and `x :: xs`. -/
 @[to_additive (attr := elab_as_elim, induction_eliminator)
-  /-- Recursor for `FreeAddMonoid` using `0` and
-  FreeAddMonoid.of x + xs` instead of `[]` and `x :: xs`. -/]
+/-- Recursor for `FreeAddMonoid` using `0` and
+FreeAddMonoid.of x + xs` instead of `[]` and `x :: xs`. -/]
 -- Porting note: change from `List.recOn` to `List.rec` since only the latter is computable
 def recOn {C : FreeMonoid α → Sort*} (xs : FreeMonoid α) (h0 : C 1)
     (ih : ∀ x xs, C xs → C (of x * xs)) : C xs := List.rec h0 ih xs
@@ -266,8 +266,8 @@ end induction_principles
 /-- A version of `List.cases_on` for `FreeMonoid` using `1` and `FreeMonoid.of x * xs` instead of
 `[]` and `x :: xs`. -/
 @[to_additive (attr := elab_as_elim, cases_eliminator)
-  /-- A version of `List.casesOn` for `FreeAddMonoid` using `0` and
-  `FreeAddMonoid.of x + xs` instead of `[]` and `x :: xs`. -/]
+/-- A version of `List.casesOn` for `FreeAddMonoid` using `0` and
+`FreeAddMonoid.of x + xs` instead of `[]` and `x :: xs`. -/]
 def casesOn {C : FreeMonoid α → Sort*} (xs : FreeMonoid α) (h0 : C 1)
     (ih : ∀ x xs, C (of x * xs)) : C xs := List.casesOn xs h0 ih
 

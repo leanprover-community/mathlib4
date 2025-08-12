@@ -90,7 +90,7 @@ theorem mul_eq (x y : FreeMagma α) : mul x y = x * y := rfl
 
 /-- Recursor for `FreeMagma` using `x * y` instead of `FreeMagma.mul x y`. -/
 @[to_additive (attr := elab_as_elim, induction_eliminator)
-  /-- Recursor for `FreeAddMagma` using `x + y` instead of `FreeAddMagma.add x y`. -/]
+/-- Recursor for `FreeAddMagma` using `x + y` instead of `FreeAddMagma.add x y`. -/]
 def recOnMul {C : FreeMagma α → Sort l} (x) (ih1 : ∀ x, C (of x))
     (ih2 : ∀ x y, C x → C y → C (x * y)) : C x :=
   FreeMagma.recOn x ih1 ih2
@@ -498,7 +498,7 @@ instance [Inhabited α] : Inhabited (FreeSemigroup α) := ⟨of default⟩
 
 /-- Recursor for free semigroup using `of` and `*`. -/
 @[to_additive (attr := elab_as_elim, induction_eliminator)
-  /-- Recursor for free additive semigroup using `of` and `+`. -/]
+/-- Recursor for free additive semigroup using `of` and `+`. -/]
 protected def recOnMul {C : FreeSemigroup α → Sort l} (x) (ih1 : ∀ x, C (of x))
     (ih2 : ∀ x y, C (of x) → C y → C (of x * y)) : C x :=
       FreeSemigroup.recOn x fun f s ↦

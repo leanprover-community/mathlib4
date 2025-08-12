@@ -53,7 +53,7 @@ def IsTorsion :=
 
 /-- A monoid is not a torsion monoid if it has an element of infinite order. -/
 @[to_additive (attr := simp) /-- An additive monoid is not a torsion monoid if it
-  has an element of infinite order. -/]
+has an element of infinite order. -/]
 theorem not_isTorsion_iff : ¬IsTorsion G ↔ ∃ g : G, ¬IsOfFinOrder g := by
   rw [IsTorsion, not_forall]
 
@@ -81,7 +81,7 @@ theorem IsTorsion.subgroup (tG : IsTorsion G) (H : Subgroup G) : IsTorsion H := 
 
 /-- The image of a surjective torsion group homomorphism is torsion. -/
 @[to_additive AddIsTorsion.of_surjective
-      /-- The image of a surjective additive torsion group homomorphism is torsion. -/]
+/-- The image of a surjective additive torsion group homomorphism is torsion. -/]
 theorem IsTorsion.of_surjective {f : G →* H} (hf : Function.Surjective f) (tG : IsTorsion G) :
     IsTorsion H := fun h => by
   obtain ⟨g, hg⟩ := hf h
@@ -102,21 +102,21 @@ theorem IsTorsion.extension_closed {f : G →* H} (hN : N = f.ker) (tH : IsTorsi
 
 /-- The image of a quotient is torsion iff the group is torsion. -/
 @[to_additive AddIsTorsion.quotient_iff
-      /-- The image of a quotient is additively torsion iff the group is torsion. -/]
+/-- The image of a quotient is additively torsion iff the group is torsion. -/]
 theorem IsTorsion.quotient_iff {f : G →* H} (hf : Function.Surjective f) (hN : N = f.ker)
     (tN : IsTorsion N) : IsTorsion H ↔ IsTorsion G :=
   ⟨fun tH => IsTorsion.extension_closed hN tH tN, fun tG => IsTorsion.of_surjective hf tG⟩
 
 /-- If a group exponent exists, the group is torsion. -/
 @[to_additive ExponentExists.is_add_torsion
-      /-- If a group exponent exists, the group is additively torsion. -/]
+/-- If a group exponent exists, the group is additively torsion. -/]
 theorem ExponentExists.isTorsion (h : ExponentExists G) : IsTorsion G := fun g => by
   obtain ⟨n, npos, hn⟩ := h
   exact isOfFinOrder_iff_pow_eq_one.mpr ⟨n, npos, hn g⟩
 
 /-- The group exponent exists for any bounded torsion group. -/
 @[to_additive IsAddTorsion.exponentExists
-      /-- The group exponent exists for any bounded additive torsion group. -/]
+/-- The group exponent exists for any bounded additive torsion group. -/]
 theorem IsTorsion.exponentExists (tG : IsTorsion G)
     (bounded : (Set.range fun g : G => orderOf g).Finite) : ExponentExists G :=
   exponent_ne_zero.mp <|
@@ -199,8 +199,8 @@ variable (G) (p : ℕ) [hp : Fact p.Prime]
 
 /-- The `p`-primary component is the submonoid of elements with order prime-power of `p`. -/
 @[to_additive (attr := simps)
-      /-- The `p`-primary component is the submonoid of elements with additive
-      order prime-power of `p`. -/]
+/-- The `p`-primary component is the submonoid of elements with additive
+order prime-power of `p`. -/]
 def primaryComponent : Submonoid G where
   carrier := { g | ∃ n : ℕ, orderOf g = p ^ n }
   one_mem' := ⟨0, by rw [pow_zero, orderOf_one]⟩
@@ -217,7 +217,7 @@ variable {G} {p}
 
 /-- Elements of the `p`-primary component have order `p^n` for some `n`. -/
 @[to_additive primaryComponent.exists_orderOf_eq_prime_nsmul
-  /-- Elements of the `p`-primary component have additive order `p^n` for some `n` -/]
+/-- Elements of the `p`-primary component have additive order `p^n` for some `n` -/]
 theorem primaryComponent.exists_orderOf_eq_prime_pow (g : CommMonoid.primaryComponent G p) :
     ∃ n : ℕ, orderOf g = p ^ n := by
       obtain ⟨_, hn⟩ := g.property
@@ -266,8 +266,8 @@ end Monoid.IsTorsion
 
 /-- Torsion submonoids of a torsion submonoid are isomorphic to the submonoid. -/
 @[to_additive (attr := simp) AddCommMonoid.Torsion.ofTorsion
-      /-- Additive torsion submonoids of an additive torsion submonoid are
-      isomorphic to the submonoid. -/]
+/-- Additive torsion submonoids of an additive torsion submonoid are
+isomorphic to the submonoid. -/]
 def Torsion.ofTorsion : torsion (torsion G) ≃* torsion G :=
   Monoid.IsTorsion.torsionMulEquiv CommMonoid.torsion.isTorsion
 
@@ -286,8 +286,8 @@ def torsion : Subgroup G :=
 
 /-- The torsion submonoid of an abelian group equals the torsion subgroup as a submonoid. -/
 @[to_additive add_torsion_eq_add_torsion_submonoid
-      /-- The additive torsion submonoid of an abelian group equals the torsion
-      subgroup as a submonoid. -/]
+/-- The additive torsion submonoid of an abelian group equals the torsion
+subgroup as a submonoid. -/]
 theorem torsion_eq_torsion_submonoid : CommMonoid.torsion G = (torsion G).toSubmonoid :=
   rfl
 
@@ -303,8 +303,8 @@ variable (p : ℕ) [hp : Fact p.Prime]
 
 /-- The `p`-primary component is the subgroup of elements with order prime-power of `p`. -/
 @[to_additive (attr := simps!)
-      /-- The `p`-primary component is the subgroup of elements with additive order
-      prime-power of `p`. -/]
+/-- The `p`-primary component is the subgroup of elements with additive order
+prime-power of `p`. -/]
 def primaryComponent : Subgroup G :=
   { CommMonoid.primaryComponent G p with
     inv_mem' := fun {g} ⟨n, hn⟩ => ⟨n, (orderOf_inv g).trans hn⟩ }
@@ -394,7 +394,7 @@ set_option linter.deprecated false in
 /-- Direct products of torsion free groups are torsion free. -/
 @[to_additive (attr := deprecated Pi.instIsMulTorsionFree (since := "2025-04-23"))
   AddMonoid.IsTorsionFree.prod
-      /-- Direct products of additive torsion free groups are torsion free. -/]
+/-- Direct products of additive torsion free groups are torsion free. -/]
 theorem IsTorsionFree.prod {η : Type*} {Gs : η → Type*} [∀ i, Group (Gs i)]
     (tfGs : ∀ i, IsTorsionFree (Gs i)) : IsTorsionFree <| ∀ i, Gs i := fun w hne h =>
   hne <|

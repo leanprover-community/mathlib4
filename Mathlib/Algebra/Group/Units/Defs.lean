@@ -286,7 +286,7 @@ end Units
 
 /-- For `a, b` in a `CommMonoid` such that `a * b = 1`, makes a unit out of `a`. -/
 @[to_additive
-  /-- For `a, b` in an `AddCommMonoid` such that `a + b = 0`, makes an addUnit out of `a`. -/]
+/-- For `a, b` in an `AddCommMonoid` such that `a + b = 0`, makes an addUnit out of `a`. -/]
 def Units.mkOfMulEqOne [CommMonoid α] (a b : α) (hab : a * b = 1) : αˣ :=
   ⟨a, b, hab, (mul_comm b a).trans hab⟩
 

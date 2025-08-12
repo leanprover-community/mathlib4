@@ -103,9 +103,9 @@ variable [Group G]
 /-- A homomorphism from a group to a monoid is injective iff its kernel is trivial.
 For the iff statement on the triviality of the kernel, see `injective_iff_map_eq_one'`. -/
 @[to_additive
-  /-- A homomorphism from an additive group to an additive monoid is injective iff
-  its kernel is trivial. For the iff statement on the triviality of the kernel,
-  see `injective_iff_map_eq_zero'`. -/]
+/-- A homomorphism from an additive group to an additive monoid is injective iff
+its kernel is trivial. For the iff statement on the triviality of the kernel,
+see `injective_iff_map_eq_zero'`. -/]
 theorem _root_.injective_iff_map_eq_one {G H} [Group G] [MulOneClass H]
     [FunLike F G H] [MonoidHomClass F G H]
     (f : F) : Function.Injective f ↔ ∀ a, f a = 1 → a = 1 :=
@@ -116,9 +116,9 @@ theorem _root_.injective_iff_map_eq_one {G H} [Group G] [MulOneClass H]
 stated as an iff on the triviality of the kernel.
 For the implication, see `injective_iff_map_eq_one`. -/
 @[to_additive
-  /-- A homomorphism from an additive group to an additive monoid is injective iff its
-  kernel is trivial, stated as an iff on the triviality of the kernel. For the implication, see
-  `injective_iff_map_eq_zero`. -/]
+/-- A homomorphism from an additive group to an additive monoid is injective iff its
+kernel is trivial, stated as an iff on the triviality of the kernel. For the implication, see
+`injective_iff_map_eq_zero`. -/]
 theorem _root_.injective_iff_map_eq_one' {G H} [Group G] [MulOneClass H]
     [FunLike F G H] [MonoidHomClass F G H]
     (f : F) : Function.Injective f ↔ ∀ a, f a = 1 ↔ a = 1 :=
@@ -129,9 +129,9 @@ theorem _root_.injective_iff_map_eq_one' {G H} [Group G] [MulOneClass H]
 `fun x y => x * y⁻¹`. See also `MonoidHom.of_map_div` for a version using `fun x y => x / y`.
 -/
 @[to_additive
-  /-- Makes an additive group homomorphism from a proof that the map preserves
-  the operation `fun a b => a + -b`. See also `AddMonoidHom.ofMapSub` for a version using
-  `fun a b => a - b`. -/]
+/-- Makes an additive group homomorphism from a proof that the map preserves
+the operation `fun a b => a + -b`. See also `AddMonoidHom.ofMapSub` for a version using
+`fun a b => a - b`. -/]
 def ofMapMulInv {H : Type*} [Group H] (f : G → H)
     (map_div : ∀ a b : G, f (a * b⁻¹) = f a * (f b)⁻¹) : G →* H :=
   (mk' f) fun x y =>

@@ -20,14 +20,14 @@ variable {R : Type*} [Mul R]
 /-- A left-regular element is an element `c` such that multiplication on the left by `c`
 is injective. -/
 @[to_additive /-- An add-left-regular element is an element `c` such that addition
-    on the left by `c` is injective. -/]
+on the left by `c` is injective. -/]
 def IsLeftRegular (c : R) :=
   (c * ·).Injective
 
 /-- A right-regular element is an element `c` such that multiplication on the right by `c`
 is injective. -/
 @[to_additive /-- An add-right-regular element is an element `c` such that addition
-    on the right by `c` is injective. -/]
+on the right by `c` is injective. -/]
 def IsRightRegular (c : R) :=
   (· * c).Injective
 
