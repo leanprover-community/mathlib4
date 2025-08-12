@@ -175,7 +175,7 @@ variable {r t : ℕ}
 
 /-- The **complete equipartite graph** in `r` parts each of *equal* size `t` such that two
 vertices are adjacent if and only if they are in different parts. -/
-abbrev completeEquipartiteGraph (r t : ℕ) : SimpleGraph ((Fin r) × (Fin t)) :=
+abbrev completeEquipartiteGraph (r t : ℕ) : SimpleGraph (Fin r × Fin t) :=
   (⊤ : SimpleGraph (Fin r)).comap Prod.fst
 
 /-- A `completeEquipartiteGraph` is isomorphic to a corresponding `completeMultipartiteGraph`.
@@ -234,7 +234,7 @@ theorem degree_completeEquipartiteGraph (v) :
     card_product, card_compl, card_singleton, Fintype.card_fin, card_univ, Fintype.card_fin]
 
 theorem card_edgeFinset_completeEquipartiteGraph :
-    #(completeEquipartiteGraph r t).edgeFinset = (r.choose 2) * t^2 := by
+    #(completeEquipartiteGraph r t).edgeFinset = r.choose 2 * t ^ 2 := by
   rw [← mul_right_inj' two_ne_zero, ← sum_degrees_eq_twice_card_edges]
   conv_lhs =>
     rhs; intro v
