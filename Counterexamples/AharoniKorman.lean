@@ -578,7 +578,7 @@ lemma chainBetween_isChain {a b c d : ℕ} : IsChain (· ≤ ·) (chainBetween a
 
 lemma image_chainBetween_isChain {a b c d n : ℕ} :
     IsChain (· ≤ ·) ((chainBetween a b c d).image (embed n)).toSet := by
-  rw [coe_image]
+  rw [toSet, coe_image]
   apply chainBetween_isChain.image
   simp
 
