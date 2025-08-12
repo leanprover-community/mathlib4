@@ -581,6 +581,11 @@ run_cmd
     | throwError "no `docComment` docstring found"
   logInfo doc
 
+/--
+warning: String syntax for `to_additive` docstrings is deprecated:
+Use docstring syntax instead (e.g. `@[to_additive /-- example -/]`)
+-/
+#guard_msgs in
 @[to_additive "(via `str` syntax) I am an additive docstring!"]
 theorem mulTrivial' : True := trivial
 
