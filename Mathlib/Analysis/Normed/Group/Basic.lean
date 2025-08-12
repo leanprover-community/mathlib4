@@ -1344,7 +1344,8 @@ theorem nnnorm_eq_zero' : ‖a‖₊ = 0 ↔ a = 1 := by
   rw [← NNReal.coe_eq_zero, coe_nnnorm', norm_eq_zero']
 
 @[to_additive nnnorm_ne_zero_iff]
-theorem nnnorm_ne_zero_iff' : ‖a‖₊ ≠ 0 ↔ a ≠ 1 := nnnorm_eq_zero'.not
+theorem nnnorm_ne_zero_iff' : ‖a‖₊ ≠ 0 ↔ a ≠ 1 :=
+  nnnorm_eq_zero'.not
 
 @[to_additive (attr := simp) nnnorm_pos]
 lemma nnnorm_pos' : 0 < ‖a‖₊ ↔ a ≠ 1 := pos_iff_ne_zero.trans nnnorm_ne_zero_iff'
