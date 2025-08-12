@@ -355,8 +355,8 @@ private structure RCosRepFin (G : Type*) [Group G] [DecidableEq G] where
 private noncomputable def rCosRepFin (H : Subgroup G) [Fintype H] {A : Finset G}
     (hA : A.Nonempty) : RCosRepFin G := by
   -- we first take all right cosets that intersect `A`, show that there is finitely many
-  --  of them and take for `Z'` a set of representatives of all these cosets; then we
-  --  multiply every element of `Z'` with an appropriate element of `H` to make `Z ⊆ A`
+  -- of them and take for `Z'` a set of representatives of all these cosets; then we
+  -- multiply every element of `Z'` with an appropriate element of `H` to make `Z ⊆ A`
   classical
   let preZ := {cH ∈ orbit Gᵐᵒᵖ (H : Set G) | (cH ∩ (H * A)).Nonempty}
   have fin_preZ : preZ.Finite := by
@@ -418,9 +418,9 @@ private noncomputable def rCosRepFin (H : Subgroup G) [Fintype H] {A : Finset G}
           toA_mem_A, toH_mul_toA, toZ, toZ_comp_chooseZ'_mem_self, Z⟩
 
 -- TODO: Here `Z` is defined by extracting a representative from each coset and the definitional
---  property is actually not (explicitely) proved as it is not needed here; as far as I could check,
---  no such coset representing set is available in the library at this point, although it might be
---  useful independently of this section
+-- property is actually not (explicitely) proved as it is not needed here; as far as I could check,
+-- no such coset representing set is available in the library at this point, although it might be
+-- useful independently of this section
 /-- Given a finite subset `A` of group `G` and a subgroup `H ≤ G`, right coset representing set of
 `H * A` is a subset `Z` of `A` such that `H * Z = H * A` and `∀ z₁ z₂ ∈ Z → Hz₁ ≠ Hz₂` -/
 private noncomputable def rightCosetRepresentingFinset (H : Subgroup G) [Fintype H] {A : Finset G}
@@ -704,7 +704,7 @@ theorem doubling_lt_golden_ratio {K : ℝ} (hK₁ : 1 < K) (hKφ : K < φ)
     exact ineq₃
 
   -- here we show that those z ∈ S that have "a lot of" representations
-  --  are actually in H
+  -- are actually in H
   have mem_H_of_big_z {z : G} : z ∈ S ∧ (r z) > (K - 1) * #A → (z : G) ∈ H := by
     intro hz
     obtain ⟨hz, hrz⟩ := hz
@@ -756,8 +756,8 @@ theorem doubling_lt_golden_ratio {K : ℝ} (hK₁ : 1 < K) (hKφ : K < φ)
       by simp only [mul_inv_rev, inv_inv, mul_assoc, mem_inv', ht, mul_inv_cancel_left, and_self]⟩
 
   -- now we show that H is relatively big, which will then
-  --  make Z relatively small once we show that #S = #H * #Z
-  --  (which is already clear because Hz for z ∈ Z are all different and hence disjoint cosets)
+  -- make Z relatively small once we show that #S = #H * #Z
+  -- (which is already clear because Hz for z ∈ Z are all different and hence disjoint cosets)
   have big_H : Fintype.card H ≥ (φ - K) * (K - ψ) / (2 - K) * #A := by
     change Fintype.card (H: Set G) ≥ (φ - K) * (K - ψ) / (2 - K) * #A
     rw [← Set.toFinset_card]
@@ -775,8 +775,8 @@ theorem doubling_lt_golden_ratio {K : ℝ} (hK₁ : 1 < K) (hKφ : K < φ)
     exact congr_arg _ S_eq_HZ_finset
 
   -- we have all the claims that we need in order to prove that
-  --  Z is not too large, we will just multiply both sides with #H
-  --  and use the claims
+  -- Z is not too large, we will just multiply both sides with #H
+  -- and use the claims
   apply le_of_mul_le_mul_of_pos_left ?_ (by
     change (0 : ℝ) < Fintype.card H
     rw [← Nat.cast_zero, Nat.cast_lt]
