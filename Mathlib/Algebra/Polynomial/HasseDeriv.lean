@@ -58,21 +58,13 @@ def hasseDeriv (k : ℕ) : R[X] →ₗ[R] R[X] :=
 theorem hasseDeriv_apply :
     hasseDeriv k f = f.sum fun i r => monomial (i - k) (↑(i.choose k) * r) := by
   dsimp [hasseDeriv]
-  congr; ext; congr
-  apply nsmul_eq_mul
+  simp
 
 theorem hasseDeriv_coeff (n : ℕ) :
     (hasseDeriv k f).coeff n = (n + k).choose k * f.coeff (n + k) := by
   rw [hasseDeriv_apply, coeff_sum, sum_def, Finset.sum_eq_single (n + k), coeff_monomial]
-  · simp only [if_true, add_tsub_cancel_right, eq_self_iff_true]
-  · intro i _hi hink
-    rw [coeff_monomial]
-    by_cases hik : i < k
-    · simp only [Nat.choose_eq_zero_of_lt hik, ite_self, Nat.cast_zero, zero_mul]
-    · push_neg at hik
-      rw [if_neg]
-      contrapose! hink
-      exact (tsub_eq_iff_eq_add_of_le hik).mp hink
+  · simp only [if_true, add_tsub_cancel_right]
+  · grind [coeff_monomial, Nat.choose_eq_zero_of_lt, Nat.cast_zero, zero_mul]
   · intro h
     simp only [notMem_support_iff.mp h, monomial_zero_right, mul_zero, coeff_zero]
 
@@ -104,9 +96,7 @@ theorem hasseDeriv_monomial (n : ℕ) (r : R) :
   ext i
   simp only [hasseDeriv_coeff, coeff_monomial]
   by_cases hnik : n = i + k
-  · rw [if_pos hnik, if_pos, ← hnik]
-    apply tsub_eq_of_eq_add_rev
-    rwa [add_comm]
+  · grind
   · rw [if_neg hnik, mul_zero]
     by_cases hkn : k ≤ n
     · rw [← tsub_eq_iff_eq_add_of_le hkn] at hnik
@@ -183,10 +173,7 @@ theorem natDegree_hasseDeriv_le (p : R[X]) (n : ℕ) :
         tsub_le_iff_right, mem_support_iff, Ne, Finset.mem_filter]
       intro x hx hx'
       have hxp : x ≤ p.natDegree := le_natDegree_of_ne_zero hx
-      have hxn : n ≤ x := by
-        contrapose! hx'
-        simp [Nat.choose_eq_zero_of_lt hx']
-      rwa [tsub_add_cancel_of_le (hxn.trans hxp)]
+      grind
     · simp
 
 theorem hasseDeriv_natDegree_eq_C : f.hasseDeriv f.natDegree = C f.leadingCoeff := by
@@ -217,7 +204,7 @@ theorem hasseDeriv_mul (f g : R[X]) :
     hasseDeriv k (f * g) = ∑ ij ∈ antidiagonal k, hasseDeriv ij.1 f * hasseDeriv ij.2 g := by
   let D k := (@hasseDeriv R _ k).toAddMonoidHom
   let Φ := @AddMonoidHom.mul R[X] _
-  show
+  change
     (compHom (D k)).comp Φ f g =
       ∑ ij ∈ antidiagonal k, ((compHom.comp ((compHom Φ) (D ij.1))).flip (D ij.2) f) g
   simp only [← finset_sum_apply]

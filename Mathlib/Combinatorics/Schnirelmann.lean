@@ -121,7 +121,7 @@ lemma schnirelmannDensity_eq_one_iff : schnirelmannDensity A = 1 ↔ {0}ᶜ ⊆ 
   rw [le_antisymm_iff, and_iff_right schnirelmannDensity_le_one]
   constructor
   · rw [← not_imp_not, not_le]
-    simp only [Set.not_subset, forall_exists_index, true_and, and_imp, Set.mem_singleton_iff]
+    simp only [Set.not_subset, forall_exists_index, and_imp]
     intro x hx hx'
     apply (schnirelmannDensity_le_of_notMem hx').trans_lt
     simpa only [one_div, sub_lt_self_iff, inv_pos, Nat.cast_pos, pos_iff_ne_zero] using hx

@@ -127,7 +127,7 @@ theorem induction_on {motive : HNNExtension G A B φ → Prop}
       ⟨HNNExtension.t, t⟩ (by intro a; ext; simp [equiv_eq_conj, mul_assoc])
   have hf : S.subtype.comp f = MonoidHom.id _ :=
     hom_ext (by ext; simp [f]) (by simp [f])
-  show motive (MonoidHom.id _ x)
+  change motive (MonoidHom.id _ x)
   rw [← hf]
   exact (f x).2
 
@@ -428,8 +428,8 @@ theorem unitsSMul_neg (u : ℤˣ) (w : NormalWord d) :
     | cons g u' w h1 h2 ih =>
       clear ih
       simp only [unitsSMulGroup, SetLike.coe_sort_coe, unitsSMulWithCancel, id_eq, consRecOn_cons,
-        group_smul_head, IsComplement.equiv_mul_left, map_mul, Submonoid.coe_mul, coe_toSubmonoid,
-        toSubgroupEquiv_neg_apply, mul_inv_rev]
+        group_smul_head,
+        mul_inv_rev]
       cases hcan2.2
       have : ((d.compl (-u)).equiv w.head).1 = 1 :=
         (d.compl (-u)).equiv_fst_eq_one_of_mem_of_one_mem _ h1
@@ -442,7 +442,7 @@ theorem unitsSMul_neg (u : ℤˣ) (w : NormalWord d) :
       · -- The next two lines were not needed before https://github.com/leanprover/lean4/pull/2644
         dsimp
         conv_lhs => erw [IsComplement.equiv_mul_left]
-        simp [mul_assoc, Units.ext_iff, (d.compl (-u)).equiv_snd_eq_inv_mul, this,
+        simp [Units.ext_iff, (d.compl (-u)).equiv_snd_eq_inv_mul, this,
           -SetLike.coe_sort_coe]
 
 /-- the equivalence given by multiplication on the left by `t` -/
@@ -463,7 +463,7 @@ theorem unitsSMul_one_group_smul (g : A) (w : NormalWord d) :
       group_smul_head, mul_inv_rev, dif_pos (this.2 hcan), dif_pos hcan]
     cases w using consRecOn
     · simp [Cancels] at hcan
-    · simp only [smul_cons, consRecOn_cons, mul_smul]
+    · simp only [smul_cons, consRecOn_cons]
       rw [← mul_smul, ← Subgroup.coe_mul, ← map_mul φ]
       rfl
   · rw [dif_neg (mt this.1 hcan), dif_neg hcan]
@@ -490,7 +490,7 @@ noncomputable instance : MulAction (HNNExtension G A B φ) (NormalWord d) :=
 @[simp]
 theorem prod_group_smul (g : G) (w : NormalWord d) :
     (g • w).prod φ = of g * (w.prod φ) := by
-  simp [ReducedWord.prod, smul_def, mul_assoc]
+  simp [ReducedWord.prod, mul_assoc]
 
 theorem of_smul_eq_smul (g : G) (w : NormalWord d) :
     (of g : HNNExtension G A B φ) • w = g • w := by
@@ -510,7 +510,7 @@ theorem prod_cons (g : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.head ∈ d.set 
     (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head?,
       w.head ∈ toSubgroup A B u → u = u') :
     (cons g u w h1 h2).prod φ = of g * (t ^ (u : ℤ) * w.prod φ) := by
-  simp [ReducedWord.prod, cons, smul_def, mul_assoc]
+  simp [ReducedWord.prod, cons, mul_assoc]
 
 theorem prod_unitsSMul (u : ℤˣ) (w : NormalWord d) :
     (unitsSMul φ u w).prod φ = (t^(u : ℤ) * w.prod φ : HNNExtension G A B φ) := by
@@ -527,7 +527,7 @@ theorem prod_unitsSMul (u : ℤˣ) (w : NormalWord d) :
         simp only [toSubgroup_neg_one, toSubgroupEquiv_neg_one, Units.val_neg, Units.val_one,
           Int.reduceNeg, zpow_neg, zpow_one, inv_inv]
         erw [equiv_symm_eq_conj]
-        simp [equiv_symm_eq_conj, mul_assoc]
+        simp [mul_assoc]
   · simp only [unitsSMulGroup, SetLike.coe_sort_coe, prod_cons, prod_group_smul, map_mul, map_inv]
     rcases Int.units_eq_one_or u with (rfl | rfl)
     · -- Before https://github.com/leanprover/lean4/pull/2644, this proof was just
@@ -535,13 +535,13 @@ theorem prod_unitsSMul (u : ℤˣ) (w : NormalWord d) :
       simp only [toSubgroup_neg_one, toSubgroup_one, toSubgroupEquiv_one, equiv_eq_conj, mul_assoc,
         Units.val_one, zpow_one, inv_mul_cancel_left, mul_right_inj]
       erw [(d.compl 1).equiv_snd_eq_inv_mul]
-      simp [equiv_eq_conj, mul_assoc, (d.compl _).equiv_snd_eq_inv_mul]
+      simp [mul_assoc]
     · -- Before https://github.com/leanprover/lean4/pull/2644, this proof was just
       -- simp [equiv_symm_eq_conj, mul_assoc, (d.compl _).equiv_snd_eq_inv_mul]
       simp only [toSubgroup_neg_one, toSubgroupEquiv_neg_one, Units.val_neg, Units.val_one,
         Int.reduceNeg, zpow_neg, zpow_one, mul_assoc]
       erw [equiv_symm_eq_conj, (d.compl (-1)).equiv_snd_eq_inv_mul]
-      simp [equiv_symm_eq_conj, mul_assoc, (d.compl _).equiv_snd_eq_inv_mul]
+      simp [mul_assoc]
 
 @[simp]
 theorem prod_empty : (empty : NormalWord d).prod φ = 1 := by
@@ -552,7 +552,7 @@ theorem prod_smul (g : HNNExtension G A B φ) (w : NormalWord d) :
     (g • w).prod φ = g * w.prod φ := by
   induction g using induction_on generalizing w with
   | of => simp [of_smul_eq_smul]
-  | t => simp [t_smul_eq_unitsSMul, prod_unitsSMul, mul_assoc]
+  | t => simp [t_smul_eq_unitsSMul, prod_unitsSMul]
   | mul => simp_all [mul_smul, mul_assoc]
   | inv x ih =>
     rw [← mul_right_inj x, ← ih]
@@ -633,7 +633,7 @@ theorem exists_normalWord_prod_eq
       ⟨{ head := 1
          toList := []
          mem_set := by simp
-         chain := List.chain'_nil }, by simp [prod]⟩
+         chain := List.chain'_nil }, by simp⟩
   | cons a l ih =>
     rcases ih (List.chain'_cons'.1 chain).2 with ⟨w', hw'1, hw'2, hw'3⟩
     clear ih
@@ -659,7 +659,7 @@ theorem exists_normalWord_prod_eq
         t_pow_smul_eq_unitsSMul, unitsSMul]
       erw [dif_neg this]
       rw [← hw'2]
-      simp [mul_assoc, unitsSMulGroup, (d.compl _).coe_equiv_snd_eq_one_iff_mem]
+      simp [mul_assoc, unitsSMulGroup]
 
 /-- Two reduced words representing the same element of the `HNNExtension G A B φ` have the same
 length corresponding list, with the same pattern of occurrences of `t^1` and `t^(-1)`,

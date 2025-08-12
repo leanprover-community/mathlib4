@@ -26,7 +26,7 @@ universe v u
 
 namespace CategoryTheory
 
-open Bicategory
+open Bicategory Functor
 
 -- intended to be used with explicit universe parameters
 /-- Category of categories. -/
@@ -187,6 +187,20 @@ def equivOfIso {C D : Cat} (γ : C ≅ D) : C ≌ D where
   unitIso := eqToIso <| Eq.symm γ.hom_inv_id
   counitIso := eqToIso γ.inv_hom_id
 
+/-- Under certain hypotheses, an equivalence of categories actually
+defines an isomorphism in `Cat`. -/
+@[simps]
+def isoOfEquiv {C D : Cat.{v, u}} (e : C ≌ D)
+    (h₁ : ∀ (X : C), e.inverse.obj (e.functor.obj X) = X)
+    (h₂ : ∀ (Y : D), e.functor.obj (e.inverse.obj Y) = Y)
+    (h₃ : ∀ (X : C), e.unitIso.hom.app X = eqToHom (h₁ X).symm := by cat_disch)
+    (h₄ : ∀ (Y : D), e.counitIso.hom.app Y = eqToHom (h₂ Y) := by cat_disch) :
+    C ≅ D where
+  hom := e.functor
+  inv := e.inverse
+  hom_inv_id := (Functor.ext_of_iso e.unitIso (fun X ↦ (h₁ X).symm) h₃).symm
+  inv_hom_id := (Functor.ext_of_iso e.counitIso h₂ h₄)
+
 end
 
 end Cat
@@ -203,11 +217,11 @@ def typeToCat : Type u ⥤ Cat where
     apply Functor.ext
     · intro X Y f
       cases f
-      simp only [id_eq, eqToHom_refl, Cat.id_map, Category.comp_id, Category.id_comp]
+      simp only [eqToHom_refl, Cat.id_map, Category.comp_id, Category.id_comp]
       apply ULift.ext
-      aesop_cat
+      cat_disch
     · simp
-  map_comp f g := by apply Functor.ext; aesop_cat
+  map_comp f g := by apply Functor.ext; cat_disch
 
 instance : Functor.Faithful typeToCat.{u} where
   map_injective {_X} {_Y} _f _g h :=
@@ -219,7 +233,7 @@ instance : Functor.Full typeToCat.{u} where
     · intro x y f
       dsimp
       apply ULift.ext
-      aesop_cat
+      cat_disch
     · rintro ⟨x⟩
       apply Discrete.ext
       rfl⟩

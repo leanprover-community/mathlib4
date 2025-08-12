@@ -61,10 +61,10 @@ instance : (lim (J := J) (C := C)).LaxMonoidal :=
         ← associator_naturality_right, ← tensorHom_def_assoc]
       dsimp
       conv_rhs => rw [tensorHom_def, ← whisker_exchange,
-        ← MonoidalCategory.whiskerLeft_comp_assoc, limit.lift_π,
+        ← whiskerLeft_comp_assoc, limit.lift_π,
         whisker_exchange, ← associator_naturality_left_assoc]
       dsimp only
-      conv_rhs => rw [tensorHom_def, MonoidalCategory.whiskerLeft_comp,
+      conv_rhs => rw [tensorHom_def, whiskerLeft_comp,
         ← associator_naturality_middle_assoc,
         ← associator_naturality_right, ← comp_whiskerRight_assoc,
         ← tensorHom_def, ← tensorHom_def_assoc]))
@@ -80,11 +80,10 @@ instance : (lim (J := J) (C := C)).LaxMonoidal :=
       dsimp
       simp only [id_tensorHom, limit.lift_map, Category.assoc, limit.lift_π]
       dsimp
-      simp only [tensorHom_def, ← whisker_exchange,
-        MonoidalCategory.whiskerRight_id, Category.assoc, Iso.inv_hom_id,
-        Category.comp_id, ← MonoidalCategory.whiskerLeft_comp_assoc]
+      simp only [tensorHom_def, ← whisker_exchange, whiskerRight_id, Category.assoc, Iso.inv_hom_id,
+        Category.comp_id, ← whiskerLeft_comp_assoc]
       erw [limit.lift_π]
-      rw [MonoidalCategory.whiskerLeft_id, Category.id_comp]))
+      rw [whiskerLeft_id, Category.id_comp]))
 
 @[reassoc (attr := simp)]
 lemma lim_ε_π (j : J) : ε (lim (J := J) (C := C)) ≫ limit.π _ j = 𝟙 _ :=

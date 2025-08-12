@@ -47,24 +47,6 @@ example (X : TopCat.{u₁}) (F : Presheaf CommRingCat.{u₁} X)
     F.IsSheaf :=
 (isSheaf_iff_isSheaf_comp (forget CommRingCat) F).mpr h
 
-/-- Deprecated: usage of this definition should be replaceable with `TopCat.Presheaf.restrictOpen`.
-
-Before, we had to specialze `restrictOpen` to `CommRingCat` because inferring `C := CommRingCat`
-was not reliable. Unification hints appear to solve that issue.
-
-The following still holds for `restrictOpen`: instead of unfolding the definition, rewrite with
-`restrictOpenCommRingCat_apply` to ensure the correct coercion to functions is taken.
-
-(The correct fix in the longer term is to redesign concrete categories so we don't use `forget`
-everywhere, but the correct `FunLike` instance for the morphisms of those categories.)
--/
-@[deprecated TopCat.Presheaf.restrictOpen (since := "2024-12-19")]
-abbrev restrictOpenCommRingCat {X : TopCat}
-    {F : Presheaf CommRingCat X} {V : Opens ↑X} (f : CommRingCat.carrier (F.obj (op V)))
-    (U : Opens ↑X) (e : U ≤ V := by restrict_tac) :
-    CommRingCat.carrier (F.obj (op U)) :=
-  TopCat.Presheaf.restrictOpen f U e
-
 open AlgebraicGeometry in
 /-- Unfold `restrictOpen` in the category of commutative rings (with the correct carrier type).
 
@@ -76,15 +58,6 @@ lemma restrictOpenCommRingCat_apply {X : TopCat}
     (U : Opens ↑X) (e : U ≤ V := by restrict_tac) :
     f |_ U = F.map (homOfLE e).op f :=
   rfl
-
-open AlgebraicGeometry in
-@[deprecated TopCat.Presheaf.restrict_restrict (since := "2024-12-19")]
-lemma _root_.CommRingCat.presheaf_restrict_restrict (X : TopCat)
-    {F : TopCat.Presheaf CommRingCat X}
-    {U V W : Opens ↑X} (e₁ : U ≤ V := by restrict_tac) (e₂ : V ≤ W := by restrict_tac)
-    (f : CommRingCat.carrier (F.obj (op W))) :
-    f |_ V |_ U = f |_ U :=
-  TopCat.Presheaf.restrict_restrict e₁ e₂ f
 
 section SubmonoidPresheaf
 
@@ -174,11 +147,12 @@ instance (F : X.Sheaf CommRingCat.{w}) : Mono F.presheaf.toTotalQuotientPresheaf
   set m := _
   change Function.Injective (algebraMap _ (Localization m))
   refine IsLocalization.injective (M := m) (S := Localization m) ?_
+  rw [← nonZeroDivisorsRight_eq_nonZeroDivisors]
   intro s hs t e
   apply section_ext F (unop U)
   intro x hx
   rw [RingHom.map_zero]
-  apply Submonoid.mem_iInf.mp hs ⟨x, hx⟩
+  apply (Submonoid.mem_iInf.mp hs ⟨x, hx⟩).2
   rw [← map_mul, e, map_zero]
 
 end SubmonoidPresheaf
@@ -243,8 +217,8 @@ def pullback {X Y : TopCatᵒᵖ} (f : X ⟶ Y) (R : TopCommRingCat) :
   { toFun g := f.unop ≫ g
     map_one' := rfl
     map_zero' := rfl
-    map_add' := by aesop_cat
-    map_mul' := by aesop_cat }
+    map_add' := by cat_disch
+    map_mul' := by cat_disch }
 
 /-- A homomorphism of topological rings can be postcomposed with functions from a source space `X`;
 this is a ring homomorphism (with respect to the pointwise ring operations on functions). -/
@@ -375,7 +349,7 @@ theorem objSupIsoProdEqLocus_inv_eq_iff {X : TopCat.{u}} (F : X.Sheaf CommRingCa
   constructor
   · rintro rfl
     rw [← TopCat.Sheaf.objSupIsoProdEqLocus_inv_fst, ← TopCat.Sheaf.objSupIsoProdEqLocus_inv_snd]
-    simp only [← CommRingCat.comp_apply, ← Functor.map_comp, ← op_comp, Category.assoc,
+    simp only [← CommRingCat.comp_apply, ← Functor.map_comp, ← op_comp,
       homOfLE_comp, and_self]
   · rintro ⟨e₁, e₂⟩
     refine F.eq_of_locally_eq₂
@@ -383,10 +357,10 @@ theorem objSupIsoProdEqLocus_inv_eq_iff {X : TopCat.{u}} (F : X.Sheaf CommRingCa
     · rw [← inf_sup_right]
       exact le_inf e le_rfl
     · rw [← e₁, ← TopCat.Sheaf.objSupIsoProdEqLocus_inv_fst]
-      simp only [← CommRingCat.comp_apply, ← Functor.map_comp, ← op_comp, Category.assoc,
+      simp only [← CommRingCat.comp_apply, ← Functor.map_comp, ← op_comp,
         homOfLE_comp]
     · rw [← e₂, ← TopCat.Sheaf.objSupIsoProdEqLocus_inv_snd]
-      simp only [← CommRingCat.comp_apply, ← Functor.map_comp, ← op_comp, Category.assoc,
+      simp only [← CommRingCat.comp_apply, ← Functor.map_comp, ← op_comp,
         homOfLE_comp]
 
 end TopCat.Sheaf

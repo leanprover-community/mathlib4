@@ -15,7 +15,7 @@ at position `(i, j)`, and zeroes elsewhere.
 assert_not_exists Matrix.trace
 
 variable {l m n o : Type*}
-variable {R α β : Type*}
+variable {R S α β γ : Type*}
 
 namespace Matrix
 
@@ -81,6 +81,12 @@ lemma map_single (i : m) (j : n) (a : α) {β : Type*} [Zero β]
 
 @[deprecated (since := "2025-05-05")] alias map_stdBasisMatrix := map_single
 
+theorem single_mem_matrix {S : Set α} (hS : 0 ∈ S) {i : m} {j : n} {a : α} :
+    Matrix.single i j a ∈ S.matrix ↔ a ∈ S := by
+  simp only [Set.mem_matrix, single, of_apply]
+  conv_lhs => intro _ _; rw [ite_mem]
+  simp [hS]
+
 end Zero
 
 theorem single_add [AddZeroClass α] (i : m) (j : n) (a b : α) :
@@ -96,7 +102,7 @@ theorem single_mulVec [NonUnitalNonAssocSemiring α] [Fintype m]
     mulVec (single i j c) x = Function.update (0 : n → α) i (c * x j) := by
   ext i'
   simp [single, mulVec, dotProduct]
-  rcases eq_or_ne i i' with rfl|h
+  rcases eq_or_ne i i' with rfl | h
   · simp
   simp [h, h.symm]
 
@@ -191,6 +197,36 @@ theorem ext_linearMap
   LinearMap.toAddMonoidHom_injective <| ext_addMonoidHom fun i j =>
     congrArg LinearMap.toAddMonoidHom <| h i j
 
+section liftLinear
+variable {R} (S)
+variable [Fintype m] [Fintype n] [Semiring R] [Semiring S] [AddCommMonoid α] [AddCommMonoid β]
+variable [Module R α] [Module R β] [Module S β] [SMulCommClass R S β]
+
+/-- Families of linear maps acting on each element are equivalent to linear maps from a matrix.
+
+This can be thought of as the matrix version of `LinearMap.lsum`. -/
+def liftLinear : (m → n → α →ₗ[R] β) ≃ₗ[S] (Matrix m n α →ₗ[R] β) :=
+  LinearEquiv.piCongrRight (fun _ => LinearMap.lsum R _ S) ≪≫ₗ LinearMap.lsum R _ S ≪≫ₗ
+    LinearEquiv.congrLeft _ _ (ofLinearEquiv _)
+
+@[simp]
+theorem liftLinear_piSingle (f : m → n → α →ₗ[R] β) (i : m) (j : n) (a : α) :
+    liftLinear S f (Matrix.single i j a) = f i j a := by
+  dsimp [liftLinear, -LinearMap.lsum_apply, LinearEquiv.congrLeft, LinearEquiv.piCongrRight]
+  simp_rw [of_symm_single, LinearMap.lsum_piSingle]
+
+@[simp]
+theorem liftLinear_comp_singleLinearMap (f : m → n → α →ₗ[R] β) (i : m) (j : n) :
+    liftLinear S f ∘ₗ Matrix.singleLinearMap _ i j = f i j :=
+  LinearMap.ext <| liftLinear_piSingle S f i j
+
+@[simp]
+theorem liftLinear_singleLinearMap [Module S α] [SMulCommClass R S α] :
+    liftLinear S (Matrix.singleLinearMap R) = .id (M := Matrix m n α) :=
+  ext_linearMap _ <| liftLinear_comp_singleLinearMap _ _
+
+end liftLinear
+
 end ext
 
 section
@@ -256,7 +292,7 @@ alias StdBasisMatrix.mul_left_apply_same := single_mul_apply_same
 omit [DecidableEq l] in
 @[simp]
 theorem mul_single_apply_same (i : m) (j : n) (a : l) (M : Matrix l m α) :
-    (M * single i j c) a j = M a i * c := by simp [mul_apply, single, mul_comm]
+    (M * single i j c) a j = M a i * c := by simp [mul_apply, single]
 
 @[deprecated (since := "2025-05-05")]
 alias StdBasisMatrix.mul_right_apply_same := mul_single_apply_same
@@ -281,7 +317,7 @@ alias StdBasisMatrix.mul_right_apply_of_ne := mul_single_apply_of_ne
 theorem single_mul_single_same (i : l) (j : m) (k : n) (d : α) :
     single i j c * single j k d = single i k (c * d) := by
   ext a b
-  simp only [mul_apply, single, boole_mul]
+  simp only [mul_apply, single]
   by_cases h₁ : i = a <;> by_cases h₂ : k = b <;> simp [h₁, h₂]
 
 @[deprecated (since := "2025-05-05")] alias StdBasisMatrix.mul_same := single_mul_single_same
@@ -291,7 +327,7 @@ theorem single_mul_mul_single [Fintype n]
     (i : l) (i' : m) (j' : n) (j : o) (a : α) (x : Matrix m n α) (b : α) :
     single i i' a * x * single j' j b = single i j (a * x i' j' * b) := by
   ext i'' j''
-  simp only [mul_apply, single, boole_mul]
+  simp only [mul_apply, single]
   by_cases h₁ : i = i'' <;> by_cases h₂ : j = j'' <;> simp [h₁, h₂]
 
 @[deprecated (since := "2025-05-05")]
@@ -301,7 +337,7 @@ alias StdBasisMatrix.stdBasisMatrix_mul_mul_stdBasisMatrix := single_mul_mul_sin
 theorem single_mul_single_of_ne (i : l) (j k : m) {l : n} (h : j ≠ k) (d : α) :
     single i j c * single k l d = 0 := by
   ext a b
-  simp only [mul_apply, boole_mul, single, of_apply]
+  simp only [mul_apply, single, of_apply]
   by_cases h₁ : i = a
   · simp [h₁, h, Finset.sum_eq_zero]
   · simp [h₁]
