@@ -47,7 +47,7 @@ forgets the norm structure on `V`; it is up to downstream users to implement the
 instance, on `Prod` and finite `Pi` types). -/
 @[nolint unusedArguments]
 structure WithLp (_p : ℝ≥0∞) (V : Type uV) : Type uV where
-  /-- Converts an element of `V` to an element of `WithLp p V`. One should used `toLp` instead
+  /-- Converts an element of `V` to an element of `WithLp p V`. One should use `toLp` instead
   so that `p` is explicit. -/
   toLp' ::
   /-- Converts an element of `WithLp p V` to an element of `V`. -/
@@ -59,7 +59,7 @@ namespace WithLp
 
 variable {V} in
 /-- The canonical inclusion of `V` into `WithLp p V`. -/
-def toLp : V → WithLp p V := WithLp.toLp'
+def toLp : V → WithLp p V := toLp'
 
 /-- `WithLp.ofLp` and `WithLp.toLp` as an equivalence. -/
 @[simps]
