@@ -36,3 +36,8 @@ theorem Units.mul_le_mul_right [MulRightMono M] (a : Mˣ) {b c : M} :
 theorem IsUnit.mul_le_mul_right [MulRightMono M] {a b c : M} (ha : IsUnit a) :
     b * a ≤ c * a ↔ b ≤ c :=
   ha.unit.mul_le_mul_right
+
+
+theorem Units.mul_inv_le_iff₀ [MulRightMono M] {a b : M} (c : Mˣ) :
+    b * c⁻¹ ≤ a ↔ b ≤ a * c := by
+  rw [← c.mul_le_mul_right, c.inv_mul_cancel_right]
