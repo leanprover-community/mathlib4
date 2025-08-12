@@ -66,11 +66,4 @@ lemma ruzsa_covering_mul (hA : A.Finite) (hB : B.Finite) (hB₀ : B.Nonempty)
   obtain ⟨F, hFA, hF, hAF⟩ := Finset.ruzsa_covering_mul hB₀ (by simpa [← Finset.coe_mul] using hK)
   exact ⟨F, by norm_cast; simp [*]⟩
 
--- `alias` doesn't add the deprecation suggestion to the `to_additive` version
--- see https://github.com/leanprover-community/mathlib4/issues/19424
-@[to_additive]
-alias exists_subset_mul_div := ruzsa_covering_mul
-attribute [deprecated ruzsa_covering_mul (since := "2024-11-26")] exists_subset_mul_div
-attribute [deprecated ruzsa_covering_add (since := "2024-11-26")] exists_subset_add_sub
-
 end Set
