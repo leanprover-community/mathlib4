@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Iván Renison, Jam Khan
 -/
 import Mathlib.Analysis.InnerProductSpace.Positive
-import Mathlib.Analysis.InnerProductSpace.Trace
 
 /-!
 This file defines the outer product of two vectors as a linear map,
