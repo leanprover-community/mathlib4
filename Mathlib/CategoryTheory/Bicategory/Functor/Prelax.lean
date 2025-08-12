@@ -5,7 +5,6 @@ Authors: Yuma Mizuno, Calle Sönne
 -/
 
 import Mathlib.CategoryTheory.Bicategory.Basic
-import Mathlib.CategoryTheory.Bicategory.EqToHom
 
 /-!
 
@@ -192,18 +191,6 @@ lemma map₂_inv_hom_isIso {f g : a ⟶ b} (η : f ⟶ g) [IsIso η] :
   simp
 
 end
-
-lemma map₂_eqToHom {C : Type u₂} [Bicategory.{w₂, v₂} C] (F : PrelaxFunctor B C)
-    {x y : B} (f g : x ⟶ y) (hfg : f = g) :
-    F.map₂ (eqToHom hfg) = eqToHom (by rw [← hfg]) := by
-  subst hfg
-  simp
-
-lemma map₂Iso_eqToIso {C : Type u₂} [Bicategory.{w₂, v₂} C] (F : PrelaxFunctor B C)
-    {x y : B} (f g : x ⟶ y) (hfg : f = g) :
-    F.map₂Iso (eqToIso hfg) = eqToIso (by rw [← hfg]) := by
-  subst hfg
-  simp
 
 end PrelaxFunctor
 
