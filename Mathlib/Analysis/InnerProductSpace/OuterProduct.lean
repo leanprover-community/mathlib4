@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Iván Renison, Jam Khan
 -/
 import Mathlib.Analysis.InnerProductSpace.Positive
+import Mathlib.Analysis.InnerProductSpace.Trace
 
 /-!
 This file defines the outer product of two vectors as a linear map,
@@ -64,6 +65,11 @@ lemma isIdempotentElem_rankOne_self_of_norm_eq_one {x : V} (h : ‖x‖ = 1) :
   rw [mul_def]
   simp [Function.comp_apply, rankOne_def, inner_smul_right, inner_self_eq_norm_sq_to_K, h]
 
+@[simp]
+lemma rankOne_toLinearMap_apply (x : V) (y z : W) :
+    (rankOne 𝕜 x y).toLinearMap z = inner 𝕜 y z • x :=
+  rfl
+
 end seminormed
 
 section normed
@@ -120,6 +126,18 @@ lemma sum_rankOne_OrthonormalBasis (b : OrthonormalBasis ι 𝕜 V) :
   simp only [sum_apply, rankOne_apply, one_apply]
   congr
   exact b.sum_repr' x
+
+variable [DecidableEq ι]
+
+lemma trace_toLinearMap_rankOne (x y : V) (b : OrthonormalBasis ι 𝕜 V) :
+    (rankOne 𝕜 x y).toLinearMap.trace 𝕜 V = inner 𝕜 y x := by
+  rw [(rankOne 𝕜 x y).trace_eq_sum_inner b]
+  simp +contextual [rankOne_toLinearMap_apply, inner_smul_right]
+  have : ∀i, inner 𝕜 y (b i) * inner 𝕜 (b i) x = inner 𝕜 (b i) x * inner 𝕜 y (b i) := by
+    intro i
+    apply mul_comm
+  simp +contextual [this, ← inner_smul_right, ← rankOne_apply]
+  rw [← inner_sum, ← sum_apply, sum_rankOne_OrthonormalBasis b, one_apply]
 
 end normed
 
