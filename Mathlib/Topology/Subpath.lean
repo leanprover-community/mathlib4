@@ -142,10 +142,8 @@ def subpathTransSubpathRefl (γ : Path a b) (t₀ t₁ t₂ : I) : Homotopy
 /-- Following the subpath of `γ` from `t₀` to `t₁`, and then that from `t₁` to `t₂`,
 is in natural homotopy with following the subpath of `γ` from `t₀` to `t₂`. -/
 def subpathTransSubpath (γ : Path a b) (t₀ t₁ t₂ : I) : Homotopy
-    ((γ.subpath t₀ t₁).trans (γ.subpath t₁ t₂)) (γ.subpath t₀ t₂) := by
-  apply trans
-  · exact subpathTransSubpathRefl γ t₀ t₁ t₂
-  · exact transRefl _
+    ((γ.subpath t₀ t₁).trans (γ.subpath t₁ t₂)) (γ.subpath t₀ t₂) :=
+  trans (subpathTransSubpathRefl γ t₀ t₁ t₂) (transRefl _)
 
 /- Possible extension: It may be worth proving that `Path.truncateOfLE` and `Path.subpath` are
 reparameterizations of one another. -/
