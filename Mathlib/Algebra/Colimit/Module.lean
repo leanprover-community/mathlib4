@@ -147,18 +147,16 @@ theorem hom_ext {g₁ g₂ : DirectLimit G f →ₗ[R] P}
 @[simp]
 theorem lift_comp_of (F : DirectLimit G f →ₗ[R] P) :
     lift R ι G f (fun i ↦ F.comp <| of R ι G f i) (fun i j hij x ↦ by simp) = F := by
-  ext
-  simp
-
-@[simp]
-theorem lift_of' : lift R ι G f (of R ι G f) (fun i j hij x ↦ by simp) = .id := by
-  ext
-  simp
+  ext; simp
 
 @[deprecated lift_comp_of (since := "2025-08-11")]
 theorem lift_unique (F : DirectLimit G f →ₗ[R] P) (x) :
     F x = lift R ι G f (fun i ↦ F.comp <| of R ι G f i) (fun i j hij x ↦ by simp) x := by
   rw [lift_comp_of]
+
+@[simp]
+theorem lift_of' : lift R ι G f (of R ι G f) (fun i j hij x ↦ by simp) = .id := by
+  ext; simp
 
 lemma lift_injective [IsDirected ι (· ≤ ·)]
     (injective : ∀ i, Function.Injective <| g i) :
@@ -361,16 +359,19 @@ theorem hom_ext {g₁ g₂ : DirectLimit G f →+ P} (h : ∀ i, g₁.comp (of G
     g₁ = g₂ :=
   AddCon.hom_ext <| DirectSum.addHom_ext' h
 
-
+@[simp]
 theorem lift_comp_of (F : DirectLimit G f →+ P) :
     lift G f _ (fun i ↦ F.comp <| of G f i) (fun i j hij x ↦ by simp) = F := by
-  ext
-  simp
+  ext; simp
 
 @[deprecated lift_comp_of (since := "2025-08-11")]
 theorem lift_unique (F : DirectLimit G f →+ P) (x) :
     F x = lift G f P (fun i ↦ F.comp (of G f i)) (fun i j hij x ↦ by simp) x := by
   rw [lift_comp_of]
+
+@[simp]
+theorem lift_of' : lift G f _ (of G f) (fun i j hij x ↦ by simp) = .id _ := by
+  ext; simp
 
 lemma lift_injective [IsDirected ι (· ≤ ·)]
     (injective : ∀ i, Function.Injective <| g i) :
@@ -416,8 +417,7 @@ lemma map_comp (g₁ : (i : ι) → G i →+ G' i) (g₂ : (i : ι) → G' i →
       rw [AddMonoidHom.comp_assoc, hg₁ i, ← AddMonoidHom.comp_assoc, hg₂ i,
         AddMonoidHom.comp_assoc] :
       DirectLimit G f →+ DirectLimit G'' f'') := by
-  ext i
-  simp
+  ext; simp
 
 /--
 Consider direct limits `lim G` and `lim G'` with direct system `f` and `f'` respectively, any
