@@ -148,7 +148,7 @@ theorem mem_span_iff_continuous {f : ι → E →ₗ[𝕜] 𝕜} (φ : E →ₗ[
     rw [letI := t₂ s; Seminorm.continuous_iff one_pos, nhds_iInf, iInf_subtype]
   rw [Filter.mem_iInf_finite]
 
-theorem mem_span_iff_bound [Nonempty ι] {f : ι → E →ₗ[𝕜] 𝕜} (φ : E →ₗ[𝕜] 𝕜) :
+theorem mem_span_iff_bound {f : ι → E →ₗ[𝕜] 𝕜} (φ : E →ₗ[𝕜] 𝕜) :
     φ ∈ Submodule.span 𝕜 (Set.range f) ↔
     ∃ s : Finset ι, ∃ c : ℝ≥0, φ.toSeminorm ≤
       c • (s.sup fun i ↦  (f i).toSeminorm) := by
