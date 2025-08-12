@@ -139,7 +139,7 @@ lemma bayesRisk_of_isEmpty' [Nonempty 𝓧] [Nonempty Θ] [IsEmpty 𝓨] : bayes
   simp [bayesRisk, iSup_subtype']
 
 @[simp]
-lemma bayesRisk_of_isEmpty'' [Nonempty 𝓧] [IsEmpty Θ] [Nonempty 𝓨] : bayesRisk ℓ P = 0 := by
+lemma bayesRisk_of_isEmpty'' [IsEmpty Θ] [Nonempty 𝓨] : bayesRisk ℓ P = 0 := by
   simp [bayesRisk, Subsingleton.elim (α := Measure Θ) _ 0]
 
 @[simp]
