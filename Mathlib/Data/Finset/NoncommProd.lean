@@ -102,8 +102,8 @@ variable [Monoid α] [Monoid β]
 /-- Product of a `s : Multiset α` with `[Monoid α]`, given a proof that `*` commutes
 on all elements `x ∈ s`. -/
 @[to_additive
-      "Sum of a `s : Multiset α` with `[AddMonoid α]`, given a proof that `+` commutes
-      on all elements `x ∈ s`."]
+      /-- Sum of a `s : Multiset α` with `[AddMonoid α]`, given a proof that `+` commutes
+      on all elements `x ∈ s`. -/]
 def noncommProd (s : Multiset α) (comm : { x | x ∈ s }.Pairwise Commute) : α :=
   s.noncommFold (· * ·) comm 1
 
@@ -236,8 +236,8 @@ theorem noncommProd_lemma (s : Finset α) (f : α → β)
 /-- Product of a `s : Finset α` mapped with `f : α → β` with `[Monoid β]`,
 given a proof that `*` commutes on all elements `f x` for `x ∈ s`. -/
 @[to_additive
-      "Sum of a `s : Finset α` mapped with `f : α → β` with `[AddMonoid β]`,
-given a proof that `+` commutes on all elements `f x` for `x ∈ s`."]
+      /-- Sum of a `s : Finset α` mapped with `f : α → β` with `[AddMonoid β]`,
+given a proof that `+` commutes on all elements `f x` for `x ∈ s`. -/]
 def noncommProd (s : Finset α) (f : α → β)
     (comm : (s : Set α).Pairwise (Commute on f)) : β :=
   (s.1.map f).noncommProd <| noncommProd_lemma s f comm
@@ -365,7 +365,7 @@ theorem noncommProd_eq_prod {β : Type*} [CommMonoid β] (s : Finset α) (f : α
   · simp [IH]
 
 /-- The non-commutative version of `Finset.prod_union` -/
-@[to_additive "The non-commutative version of `Finset.sum_union`"]
+@[to_additive /-- The non-commutative version of `Finset.sum_union` -/]
 theorem noncommProd_union_of_disjoint [DecidableEq α] {s t : Finset α} (h : Disjoint s t)
     (f : α → β) (comm : { x | x ∈ s ∪ t }.Pairwise (Commute on f)) :
     noncommProd (s ∪ t) f comm =
@@ -396,7 +396,7 @@ theorem noncommProd_mul_distrib_aux {s : Finset α} {f : α → β} {g : α → 
   · exact comm_gg.of_refl hx hy
 
 /-- The non-commutative version of `Finset.prod_mul_distrib` -/
-@[to_additive "The non-commutative version of `Finset.sum_add_distrib`"]
+@[to_additive /-- The non-commutative version of `Finset.sum_add_distrib` -/]
 theorem noncommProd_mul_distrib {s : Finset α} (f : α → β) (g : α → β) (comm_ff comm_gg comm_gf) :
     noncommProd s (f * g) (noncommProd_mul_distrib_aux comm_ff comm_gg comm_gf) =
       noncommProd s f comm_ff * noncommProd s g comm_gg := by
