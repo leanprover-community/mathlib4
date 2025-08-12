@@ -687,6 +687,8 @@ end Associated
 
 namespace EquivTac
 
+initialize Lean.registerTraceClass `rw_val_equiv
+
 open Lean Elab Meta Tactic Qq
 
 initialize registerTraceClass `rw_equiv_tac
@@ -706,12 +708,7 @@ partial def mkAssociatedₘ (h : Q(Valuation.IsEquiv $v₁ $v₂)) (x : Q($Γ₁
   match x with
   | ~q(0) => return .some ⟨q(0), q(Associatedₘ.zero (h := $h))⟩
   | ~q(1) => return .some ⟨q(1), q(Associatedₘ.one (h := $h))⟩
-  -- special matching for `v₁ r`
-  | mkApp6 (.const ``DFunLike.coe _) _ _ _ _ v₁? r? =>
-    let .some v₁? ← checkTypeQ v₁? q(Valuation $R $Γ₁) | return .none
-    let .defEq _ ← isDefEqQ (α := q(Valuation $R $Γ₁)) v₁ v₁? | return .none
-    let .some r ← checkTypeQ r? q($R) | return .none
-    return .some ⟨q($v₂ $r), ← do pure q(Associatedₘ.value (h := $h) (z := $r))⟩
+  | ~q(«$v₁» $r) => return .some ⟨q($v₂ $r), q(Associatedₘ.value (h := $h) (z := $r))⟩
   | ~q($x ^ $n) =>
     let .some ⟨y, hxy⟩ ← mkAssociatedₘ h x | return .none
     return .some ⟨q($y ^ $n), q(Associatedₘ.pow $hxy $n)⟩
@@ -742,12 +739,7 @@ partial def mkAssociated {R : Q(Type u₁)} {Γ₁ : Q(Type u₂)} {Γ₂ : Q(Ty
   match x with
   | ~q(0) => return .some ⟨q(0), q(Associated.zero (h := $h))⟩
   | ~q(1) => return .some ⟨q(1), q(Associated.one (h := $h))⟩
-  -- special matching for `v₁ r`
-  | mkApp6 (.const ``DFunLike.coe _) _ _ _ _ v₁? r? =>
-    let .some v₁? ← checkTypeQ v₁? q(Valuation $R $Γ₁) | return .none
-    let .defEq _ ← isDefEqQ (α := q(Valuation $R $Γ₁)) v₁ v₁? | return .none
-    let .some r ← checkTypeQ r? q($R) | return .none
-    return .some ⟨q($v₂ $r), ← do pure q(Associated.value (h := $h) (z := $r))⟩
+  | ~q(«$v₁» $r) => return .some ⟨q($v₂ $r), q(Associated.value (h := $h) (z := $r))⟩
   | ~q($x⁻¹) =>
     let .some ⟨y, hxy⟩ ← mkAssociated v₁ v₂ h x | return .none
     return .some ⟨q($y⁻¹), q(Associated.inv $hxy)⟩
@@ -813,7 +805,7 @@ def mkProof (h : Q(Valuation.IsEquiv $v₁ $v₂)) (rel : RelType) (x y : Q($Γ�
     let @MaybeDefEq.defEq u₃ _ _ _ d₂ ← isDefEqQ hΓ₂ mΓ₂ | return .none
     let .some ⟨z, hxz⟩ ← mkAssociated v₁ v₂ h x | return .none
     let .some ⟨w, hyw⟩ ← mkAssociated v₁ v₂ h y | return .none
-    trace[rw_equiv_tac] m!"Transformed:\n({rel.toProp (α := Γ₁) q(inferInstance) x y})
+    trace[rw_val_equiv] m!"Transformed:\n({rel.toProp (α := Γ₁) q(inferInstance) x y})
 to:\n({rel.toProp (α := Γ₂) q(inferInstance) z w})"
     match rel with
     | .le => return .some ⟨q($z ≤ $w), q(Associated.le_iff_le (h := $h) $hxz $hyw)⟩
@@ -823,7 +815,7 @@ to:\n({rel.toProp (α := Γ₂) q(inferInstance) z w})"
   | _, _ =>
     let .some ⟨z, hxz⟩ ← mkAssociatedₘ v₁ v₂ h x | return .none
     let .some ⟨w, hyw⟩ ← mkAssociatedₘ v₁ v₂ h y | return .none
-    trace[rw_equiv_tac] m!"Transformed:\n({rel.toProp (α := Γ₁) q(inferInstance) x y})
+    trace[rw_val_equiv] m!"Transformed:\n({rel.toProp (α := Γ₁) q(inferInstance) x y})
 to:\n({rel.toProp (α := Γ₂) q(inferInstance) z w})"
     match rel with
     | .le => return .some ⟨q($z ≤ $w), q(Associatedₘ.le_iff_le (h := $h) $hxz $hyw)⟩
@@ -842,7 +834,7 @@ def matchAndMkProof (h : Q(Valuation.IsEquiv $v₁ $v₂)) (e₁ : Q(Prop)) :
   | ~q($a ≠ $b) => mkProof v₁ v₂ h .ne a b
   | _ => return .none
 
-/-- The core simproc of `rw_equiv_tac`. Given `h : IsEquiv v₁ v₂`, find relations in `Γ₁` and
+/-- The core simproc of `rw_val_equiv`. Given `h : IsEquiv v₁ v₂`, find relations in `Γ₁` and
 transport them to `Γ₂`. -/
 def equivCore (h : Q(Valuation.IsEquiv $v₁ $v₂)) : Simp.Simproc := fun e : Expr ↦ do
   let ⟨1, ~q(Prop), e⟩ ← inferTypeQ e | return .continue
