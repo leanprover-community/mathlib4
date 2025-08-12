@@ -141,7 +141,7 @@ class ESeminormedAddCommMonoid (E : Type*) [TopologicalSpace E]
 /-- An enormed commutative monoid is an additive commutative monoid
 endowed with a continuous enorm which is positive definite.
 
-We don't have `ESeminormedAddCommMonoid` extend `EMetricSpace`, since the canonical instance `ℝ≥0∞`
+We don't have `ENormedAddCommMonoid` extend `EMetricSpace`, since the canonical instance `ℝ≥0∞`
 is not an `EMetricSpace`. This is because `ℝ≥0∞` carries the order topology, which is distinct from
 the topology coming from `edist`. -/
 class ENormedAddCommMonoid (E : Type*) [TopologicalSpace E]

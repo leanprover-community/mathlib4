@@ -102,8 +102,7 @@ instance NormedGroup.toENormedMonoid {F : Type*} [NormedGroup F] : ENormedMonoid
   enorm_mul_le := by simp [enorm_eq_nnnorm, ← coe_add, nnnorm_mul_le']
 
 @[to_additive]
-instance NormedCommGroup.toENormedCommMonoid [NormedCommGroup E] :
-    ENormedCommMonoid E where
+instance NormedCommGroup.toENormedCommMonoid [NormedCommGroup E] : ENormedCommMonoid E where
   __ := NormedGroup.toENormedMonoid
   mul_comm := mul_comm
 

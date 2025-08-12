@@ -351,7 +351,7 @@ theorem IntegrableOn.restrict_toMeasurable {f : α → ε'}
     ((tendsto_order.1 u_lim).2 _ (pos_of_ne_zero (h's x hx))).exists
   exact mem_iUnion.2 ⟨n, subset_toMeasurable _ _ hn.le⟩
 
--- TODO: generalise this to non-strict enormed comm. monoids,
+-- TODO: generalise this to e-seminormed commutative monoids,
 -- by merely assuming ‖f x‖ₑ vanishes on t \ s
 variable {ε' : Type*} [TopologicalSpace ε'] [ENormedAddMonoid ε'] in
 /-- If a function is integrable on a set `s`, and its enorm vanishes on `t \ s`,
