@@ -840,9 +840,9 @@ alias Memℒp.piecewise := MemLp.piecewise
 
 end Indicator
 
-section StrictESeminormedAddMonoid
+section ENormedAddMonoid
 
-variable {ε : Type*} [TopologicalSpace ε] [StrictESeminormedAddMonoid ε]
+variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
 
 /-- For a function `f` with support in `s`, the Lᵖ norms of `f` with respect to `μ` and
 `μ.restrict s` are the same. -/
@@ -860,7 +860,7 @@ theorem eLpNorm_restrict_eq_of_support_subset {s : Set α} {f : α → ε} (hsf 
     simp [this]
     simpa [this] using hsf
 
-end StrictESeminormedAddMonoid
+end ENormedAddMonoid
 
 section ContinuousENorm
 
@@ -1026,9 +1026,9 @@ theorem eLpNorm'_eq_zero_of_ae_zero' (hq0_ne : q ≠ 0) (hμ : μ ≠ 0) {f : α
     (hf_zero : f =ᵐ[μ] 0) :
     eLpNorm' f q μ = 0 := by rw [eLpNorm'_congr_ae hf_zero, eLpNorm'_zero' hq0_ne hμ]
 
-section StrictESeminormedAddMonoid
+section ENormedAddMonoid
 
-variable {ε : Type*} [TopologicalSpace ε] [StrictESeminormedAddMonoid ε]
+variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
 
 theorem ae_eq_zero_of_eLpNorm'_eq_zero {f : α → ε} (hq0 : 0 ≤ q) (hf : AEStronglyMeasurable f μ)
     (h : eLpNorm' f q μ = 0) : f =ᵐ[μ] 0 := by
@@ -1062,7 +1062,7 @@ theorem eLpNorm_eq_zero_iff {f : α → ε} (hf : AEStronglyMeasurable f μ) (h0
   rw [eLpNorm_eq_eLpNorm' h0 h_top]
   exact eLpNorm'_eq_zero_iff (ENNReal.toReal_pos h0 h_top) hf
 
-end StrictESeminormedAddMonoid
+end ENormedAddMonoid
 
 theorem eLpNorm_eq_zero_of_ae_zero {f : α → ε} (hf : f =ᵐ[μ] 0) : eLpNorm f p μ = 0 := by
   rw [← eLpNorm_zero (p := p) (μ := μ) (α := α) (ε := ε)]

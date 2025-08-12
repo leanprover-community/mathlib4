@@ -96,7 +96,7 @@ instance SeminormedGroup.toContinuousENorm [SeminormedGroup E] : ContinuousENorm
   continuous_enorm := ENNReal.isOpenEmbedding_coe.continuous.comp continuous_nnnorm'
 
 @[to_additive]
-instance NormedGroup.toStrictESeminormedMonoid {F : Type*} [NormedGroup F] : StrictESeminormedMonoid F where
+instance NormedGroup.toENormedMonoid {F : Type*} [NormedGroup F] : ENormedMonoid F where
   enorm_zero := by simp [enorm_eq_nnnorm]
   enorm_eq_zero := by simp [enorm_eq_nnnorm]
   enorm_mul_le := by simp [enorm_eq_nnnorm, ← coe_add, nnnorm_mul_le']
@@ -104,7 +104,7 @@ instance NormedGroup.toStrictESeminormedMonoid {F : Type*} [NormedGroup F] : Str
 @[to_additive]
 instance NormedCommGroup.toStrictENormedCommMonoid [NormedCommGroup E] :
     StrictENormedCommMonoid E where
-  __ := NormedGroup.toStrictESeminormedMonoid
+  __ := NormedGroup.toENormedMonoid
   mul_comm := mul_comm
 
 end Instances
