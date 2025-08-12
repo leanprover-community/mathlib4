@@ -142,12 +142,12 @@ variable [Field M] [IsOrderedRing M]
 
 instance : Neg (ArchimedeanClass M) where
   neg := lift (fun x ↦ mk x⁻¹) fun x y h ↦ by
+    have := IsOrderedRing.toIsStrictOrderedRing M
     obtain rfl | hx := eq_or_ne x 0
     · simp_all
     obtain rfl | hy := eq_or_ne y 0
     · simp_all
     have hx' : mk x ≠ ⊤ := by simpa using hx
-    have := IsOrderedRing.toIsStrictOrderedRing M
     apply add_left_cancel_of_ne_top hx'
     nth_rw 2 [h]
     simp [← mk_mul, hx, hy]
