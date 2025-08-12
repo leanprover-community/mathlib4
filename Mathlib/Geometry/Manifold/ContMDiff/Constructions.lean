@@ -238,13 +238,13 @@ theorem contMDiff_prod_assoc :
       fun x : (M × M') × N => (x.1.1, x.1.2, x.2) :=
   contMDiff_fst.fst.prodMk <| contMDiff_fst.snd.prodMk contMDiff_snd
 
-/-- `ContMDiffAt.comp` for a function of two arguments -/
+/-- `ContMDiffAt.comp` for a function of two arguments. -/
 theorem ContMDiffAt.comp₂ {h : M' × N' → N} {f : M → M'} {g : M → N'} {x : M}
     (ha : ContMDiffAt (I'.prod J') J n h (f x, g x)) (fa : ContMDiffAt I I' n f x)
     (ga : ContMDiffAt I J' n g x) : ContMDiffAt I J n (fun x ↦ h (f x, g x)) x :=
   ha.comp (f := fun x ↦ (f x, g x)) _ (fa.prodMk ga)
 
-/-- `ContMDiffAt.comp₂`, with a separate argument for point equality -/
+/-- `ContMDiffAt.comp₂`, with a separate argument for point equality. -/
 theorem ContMDiffAt.comp₂_of_eq {h : M' × N' → N} {f : M → M'} {g : M → N'} {x : M} {y : M' × N'}
     (ha : ContMDiffAt (I'.prod J') J n h y) (fa : ContMDiffAt I I' n f x)
     (ga : ContMDiffAt I J' n g x) (e : (f x, g x) = y) :
