@@ -421,7 +421,7 @@ def idealX : IsDedekindDomain.HeightOneSpectrum K⟦X⟧ where
   isPrime := PowerSeries.span_X_isPrime
   ne_bot  := by rw [ne_eq, Ideal.span_singleton_eq_bot]; exact X_ne_zero
 
-open RatFunc IsDedekindDomain.HeightOneSpectrum
+open IsDedekindDomain.HeightOneSpectrum
 
 variable {K}
 

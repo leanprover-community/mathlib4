@@ -730,13 +730,11 @@ As `RatFunc R` is a one-field-struct, we need to specialize the following instan
 variable (R L : Type*) [CommRing R] [Field L] [IsDomain R] [Algebra R[X] L] [FaithfulSMul R[X] L]
 
 /-- `FractionRing.liftAlgebra` specialized to `RatFunc R`. -/
-scoped instance liftAlgebra : Algebra (RatFunc R) L :=
+instance liftAlgebra : Algebra (RatFunc R) L :=
   RingHom.toAlgebra (IsFractionRing.lift (FaithfulSMul.algebraMap_injective R[X] _))
 
-attribute [local instance] liftAlgebra
-
 /-- `FractionRing.isScalarTower_liftAlgebra` specialized to `RatFunc R`. -/
-scoped instance isScalarTower_liftAlgebra :
+instance isScalarTower_liftAlgebra :
     IsScalarTower R[X] (RatFunc R) L :=
   IsScalarTower.of_algebraMap_eq fun x =>
     (IsFractionRing.lift_algebraMap (FaithfulSMul.algebraMap_injective R[X] L) x).symm
@@ -744,7 +742,7 @@ scoped instance isScalarTower_liftAlgebra :
 attribute [local instance] Polynomial.algebra
 
 /-- `FractionRing.instFaithfulSMul` specialized to `RatFunc R`. -/
-scoped instance faithfulSMul (K E : Type*) [Field K] [Field E] [Algebra K E]
+instance faithfulSMul (K E : Type*) [Field K] [Field E] [Algebra K E]
     [FaithfulSMul K E] : FaithfulSMul K[X] (RatFunc E) :=
   (faithfulSMul_iff_algebraMap_injective ..).mpr <|
     (IsFractionRing.injective E[X] _).comp
