@@ -10,7 +10,8 @@ import Mathlib.Util.AssertExists
 # Notation for algebraic operators on pi types
 
 This file provides only the notation for (pointwise) `0`, `1`, `+`, `*`, `•`, `^`, `⁻¹` on pi types.
-See `Mathlib/Algebra/Group/Pi/Basic.lean` for the `Monoid` and `Group` instances.
+See `Mathlib/Algebra/Group/Pi/Basic.lean` for the `Monoid` and `Group` instances. There is also
+an instance of the `Star` notation typeclass, but no default notation is included.
 -/
 
 assert_not_exists Set.range Monoid DenselyOrdered

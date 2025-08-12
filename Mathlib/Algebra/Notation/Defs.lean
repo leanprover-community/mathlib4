@@ -16,6 +16,9 @@ Notation typeclass for `Inv`, the multiplicative analogue of `Neg`.
 We also introduce notation classes `SMul` and `VAdd` for multiplicative and additive
 actions.
 
+We introduce the notation typeclass `Star` for algebraic structures with a star operation. Note: to
+accommodate diverse notational preferences, no default notation is provided for `Star.star`.
+
 `SMul` is typically, but not exclusively, used for scalar multiplication-like operators.
 See the module `Algebra.AddTorsor` for a motivating example for the name `VAdd` (vector addition).
 

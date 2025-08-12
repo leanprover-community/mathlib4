@@ -8,10 +8,13 @@ import Mathlib.Algebra.Notation.Defs
 import Mathlib.Data.Prod.Basic
 
 /-!
-# `Zero` and `One` instances on `M × N`
+# Arithmetic operators on (pairwise) product types
 
-In this file we define `0` and `1` on `M × N` as the pair `(0, 0)` and `(1, 1)` respectively.
-We also prove trivial `simp` lemmas:
+This file provides only the notation for (componentwise) `0`, `1`, `+`, `*`, `•`, `^`, `⁻¹` on
+(pairwise) product types. See `Mathlib/Algebra/Group/Prod.lean` for the `Monoid` and `Group`
+instances. There is also an instance of the `Star` notation typeclass, but no default notation is
+included.
+
 -/
 
 assert_not_exists Monoid DenselyOrdered
