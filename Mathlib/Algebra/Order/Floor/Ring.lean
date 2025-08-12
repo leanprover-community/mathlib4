@@ -798,7 +798,7 @@ variable [Ring R] [LinearOrder R] [FloorRing R] [IsStrictOrderedRing R] {a : R}
 /-- a variant of `Nat.ceil_lt_add_one` with its condition `0 ≤ a` generalized to `-1 < a` -/
 @[bound]
 lemma ceil_lt_add_one' (ha : -1 < a) : ⌈a⌉₊ < a + 1 := by
-  by_cases h : a ≥ 0
+  by_cases h : 0 ≤ a
   · exact ceil_lt_add_one h
   · rw [ceil_eq_zero.mpr (le_of_not_ge h), cast_zero]
     exact neg_lt_iff_pos_add.mp ha
