@@ -313,19 +313,23 @@ abbrev kernel.map {X' Y' : C} (f' : X' ⟶ Y') [HasKernel f'] (p : X ⟶ X') (q 
   kernel.lift f' (kernel.ι f ≫ p) (by simp [← w])
 
 /-- Given a commutative diagram
+```
     X --f--> Y --g--> Z
     |        |        |
     |        |        |
     v        v        v
     X' -f'-> Y' -g'-> Z'
+```
 with horizontal arrows composing to zero,
 then we obtain a commutative square
+```
    X ---> kernel g
    |         |
    |         | kernel.map
    |         |
    v         v
    X' --> kernel g'
+```
 -/
 theorem kernel.lift_map {X Y Z X' Y' Z' : C} (f : X ⟶ Y) (g : Y ⟶ Z) [HasKernel g] (w : f ≫ g = 0)
     (f' : X' ⟶ Y') (g' : Y' ⟶ Z') [HasKernel g'] (w' : f' ≫ g' = 0) (p : X ⟶ X') (q : Y ⟶ Y')
@@ -426,16 +430,13 @@ def kernelCompMono {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [HasKernel f] [Mono g
         simp)
   inv := kernel.lift _ (kernel.ι _) (by simp)
 
-#adaptation_note /-- nightly-2024-04-01
-The `symm` wasn't previously necessary. -/
 instance hasKernel_iso_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] [HasKernel g] :
     HasKernel (f ≫ g) where
   exists_limit :=
     ⟨{  cone := KernelFork.ofι (kernel.ι g ≫ inv f) (by simp)
         isLimit := isLimitAux _ (fun s => kernel.lift _ (s.ι ≫ f) (by simp))
-            (by simp) fun s m w => by
+            (by simp) fun s (m : _ ⟶ kernel _) w => by
           simp_rw [← w]
-          symm
           apply equalizer.hom_ext
           simp }⟩
 
@@ -804,19 +805,23 @@ abbrev cokernel.map {X' Y' : C} (f' : X' ⟶ Y') [HasCokernel f'] (p : X ⟶ X')
     simp [this])
 
 /-- Given a commutative diagram
+```
     X --f--> Y --g--> Z
     |        |        |
     |        |        |
     v        v        v
     X' -f'-> Y' -g'-> Z'
+```
 with horizontal arrows composing to zero,
 then we obtain a commutative square
+```
    cokernel f ---> Z
    |               |
    | cokernel.map  |
    |               |
    v               v
    cokernel f' --> Z'
+```
 -/
 theorem cokernel.map_desc {X Y Z X' Y' Z' : C} (f : X ⟶ Y) [HasCokernel f] (g : Y ⟶ Z)
     (w : f ≫ g = 0) (f' : X' ⟶ Y') [HasCokernel f'] (g' : Y' ⟶ Z') (w' : f' ≫ g' = 0) (p : X ⟶ X')
@@ -898,8 +903,6 @@ theorem cokernel_not_mono_of_nonzero (w : f ≠ 0) : ¬Mono (cokernel.π f) := f
 theorem cokernel_not_iso_of_nonzero (w : f ≠ 0) : IsIso (cokernel.π f) → False := fun _ =>
   cokernel_not_mono_of_nonzero w inferInstance
 
-#adaptation_note /-- nightly-2024-04-01
-The `symm` wasn't previously necessary. -/
 -- TODO the remainder of this section has obvious generalizations to `HasCoequalizer f g`.
 instance hasCokernel_comp_iso {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [HasCokernel f] [IsIso g] :
     HasCokernel (f ≫ g) where
@@ -909,9 +912,8 @@ instance hasCokernel_comp_iso {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [HasCokern
           isColimitAux _
             (fun s =>
               cokernel.desc _ (g ≫ s.π) (by rw [← Category.assoc, CokernelCofork.condition]))
-            (by simp) fun s m w => by
+            (by simp) fun s (m : cokernel _ ⟶ _) w => by
             simp_rw [← w]
-            symm
             apply coequalizer.hom_ext
             simp }⟩
 
