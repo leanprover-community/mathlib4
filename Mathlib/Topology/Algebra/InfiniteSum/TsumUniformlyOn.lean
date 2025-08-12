@@ -8,11 +8,10 @@ import Mathlib.Analysis.Calculus.UniformLimitsDeriv
 import Mathlib.Analysis.NormedSpace.FunctionSeries
 import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
 
-
 /-!
 # Differentiability of sum of functions
 
-We prove some HasSumUniformlyOn versions of theorems from
+We prove some `HasSumUniformlyOn` versions of theorems from
 `Mathlib.Analysis.NormedSpace.FunctionSeries`.
 
 Alongside this we prove `derivWithin_tsum` which states that the derivative of a series of functions
@@ -21,25 +20,25 @@ version.
 
 -/
 
-open Set Metric TopologicalSpace Function Filter Complex
+open Set Metric TopologicalSpace Function Filter
 
-open scoped Topology NNReal Complex
+open scoped Topology NNReal
 
 section UniformlyOn
 
 variable {α β F : Type*} [NormedAddCommGroup F] [CompleteSpace F] {u : α → ℝ}
 
-theorem HasSumUniformlyOn_of_norm_le_summable {f : α → β → F} (hu : Summable u) {s : Set β}
+theorem HasSumUniformlyOn.of_norm_le_summable {f : α → β → F} (hu : Summable u) {s : Set β}
     (hfu : ∀ n x, x ∈ s → ‖f n x‖ ≤ u n) : HasSumUniformlyOn f (fun x ↦ ∑' n, f n x) {s} :=  by
   simp [hasSumUniformlyOn_iff_tendstoUniformlyOn, tendstoUniformlyOn_tsum hu hfu]
 
-theorem HasSumUniformlyOn_of_norm_le_summable_eventually {ι : Type*} {f : ι → β → F} {u : ι → ℝ}
+theorem HasSumUniformlyOn.of_norm_le_summable_eventually {ι : Type*} {f : ι → β → F} {u : ι → ℝ}
     (hu : Summable u) {s : Set β} (hfu : ∀ᶠ n in cofinite, ∀ x ∈ s, ‖f n x‖ ≤ u n) :
     HasSumUniformlyOn f (fun x ↦ ∑' n, f n x) {s} := by
   simp [hasSumUniformlyOn_iff_tendstoUniformlyOn,
     tendstoUniformlyOn_tsum_of_cofinite_eventually hu hfu]
 
-lemma SummableLocallyUniformlyOn_of_locally_bounded_eventually [TopologicalSpace β]
+lemma SummableLocallyUniformlyOn.of_locally_bounded_eventually [TopologicalSpace β]
     [LocallyCompactSpace β] {f : α → β → F} {s : Set β} (hs : IsOpen s)
     (hu : ∀ K ⊆ s, IsCompact K → ∃ u : α → ℝ, Summable u ∧
     ∀ᶠ n in cofinite, ∀ k ∈ K, ‖f n k‖ ≤ u n) : SummableLocallyUniformlyOn f s := by
@@ -48,16 +47,16 @@ lemma SummableLocallyUniformlyOn_of_locally_bounded_eventually [TopologicalSpace
     tendstoLocallyUniformlyOn_iff_forall_isCompact hs]
   intro K hK hKc
   obtain ⟨u, hu1, hu2⟩ := hu K hK hKc
-  apply tendstoUniformlyOn_tsum_of_cofinite_eventually hu1 hu2
+  exact tendstoUniformlyOn_tsum_of_cofinite_eventually hu1 hu2
 
 lemma SummableLocallyUniformlyOn_of_locally_bounded [TopologicalSpace β] [LocallyCompactSpace β]
     {f : α → β → F} {s : Set β} (hs : IsOpen s)
     (hu : ∀ K ⊆ s, IsCompact K → ∃ u : α → ℝ, Summable u ∧ ∀ n, ∀ k ∈ K, ‖f n k‖ ≤ u n) :
     SummableLocallyUniformlyOn f s := by
-  apply SummableLocallyUniformlyOn_of_locally_bounded_eventually hs
+  apply SummableLocallyUniformlyOn.of_locally_bounded_eventually hs
   intro K hK hKc
   obtain ⟨u, hu1, hu2⟩ := hu K hK hKc
-  refine ⟨u, hu1, by filter_upwards using hu2⟩
+  exact ⟨u, hu1, by filter_upwards using hu2⟩
 
 end UniformlyOn
 

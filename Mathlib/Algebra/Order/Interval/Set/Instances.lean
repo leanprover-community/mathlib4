@@ -282,7 +282,7 @@ instance instCancelMonoid {R : Type*} [Ring R] [PartialOrder R] [IsStrictOrdered
   { Set.Ioc.instMonoid with
     mul_left_cancel := fun a _ _ h =>
       Subtype.ext <| mul_left_cancel₀ a.prop.1.ne' <| (congr_arg Subtype.val h :)
-    mul_right_cancel := fun _ b _ h =>
+    mul_right_cancel := fun b _ _ h =>
       Subtype.ext <| mul_right_cancel₀ b.prop.1.ne' <| (congr_arg Subtype.val h :) }
 
 instance instCancelCommMonoid {R : Type*} [CommRing R] [PartialOrder R] [IsStrictOrderedRing R]
