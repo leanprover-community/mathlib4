@@ -523,11 +523,11 @@ theorem eval_nodal_derivative_eval_node_eq [DecidableEq ι] {i : ι} (hi : i ∈
 
 /-- The vanishing polynomial on a multiplicative subgroup is of the form X ^ n - 1. -/
 @[simp] theorem nodal_subgroup_eq_X_pow_card_sub_one [IsDomain R]
-  (G : Subgroup Rˣ) [Fintype G] :
-  nodal (G : Set Rˣ).toFinset ((↑) : Rˣ → R) = X ^ (Fintype.card G) - 1 := by
+    (G : Subgroup Rˣ) [Fintype G] :
+    nodal (G : Set Rˣ).toFinset ((↑) : Rˣ → R) = X ^ (Fintype.card G) - 1 := by
   have h : degree (1 : R[X]) < degree ((X : R[X]) ^ Fintype.card G) := by simp [Fintype.card_pos]
   apply eq_of_degree_le_of_eval_index_eq (v := ((↑) : Rˣ → R)) (G : Set Rˣ).toFinset
-  · exact Set.injOn_of_injective Units.ext
+  · exact Units.val_injective.injOn
   · simp
   · rw [degree_sub_eq_left_of_degree_lt h, degree_nodal, Set.toFinset_card, degree_pow, degree_X,
       nsmul_eq_mul, mul_one, Nat.cast_inj]

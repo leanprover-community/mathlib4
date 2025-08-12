@@ -677,7 +677,7 @@ def piCongrLeft (R : Type*) [Semiring R] {ι ι' : Type*}
   __ := LinearEquiv.piCongrLeft R φ e
 
 /-- The product over `S ⊕ T` of a family of topological modules
-is isomorphic (topologically and alegbraically) to the product of
+is isomorphic (topologically and algebraically) to the product of
 (the product over `S`) and (the product over `T`).
 
 This is `Equiv.sumPiEquivProdPi` as a `ContinuousLinearEquiv`.
@@ -1025,8 +1025,6 @@ theorem inverse_equiv (e : M ≃L[R] M₂) : inverse (e : M →L[R] M₂) = e.sy
 @[simp] lemma inverse_of_not_isInvertible
     {f : M →L[R] M₂} (hf : ¬ f.IsInvertible) : f.inverse = 0 :=
   dif_neg hf
-
-@[deprecated (since := "2024-10-29")] alias inverse_non_equiv := inverse_of_not_isInvertible
 
 @[simp]
 theorem isInvertible_zero_iff :

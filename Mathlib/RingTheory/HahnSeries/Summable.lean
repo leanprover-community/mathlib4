@@ -406,8 +406,6 @@ def smul (s : SummableFamily Γ R α) (t : SummableFamily Γ' V β) : SummableFa
     isPWO_iUnion_support_prod_smul s.isPWO_iUnion_support t.isPWO_iUnion_support
   finite_co_support' g := finite_co_support_prod_smul s t g
 
-@[deprecated (since := "2024-11-17")] noncomputable alias FamilySMul := smul
-
 theorem sum_vAddAntidiagonal_eq (s : SummableFamily Γ R α) (t : SummableFamily Γ' V β) (g : Γ')
     (a : α × β) :
     ∑ x ∈ VAddAntidiagonal (s a.1).isPWO_support' (t a.2).isPWO_support' g, (s a.1).coeff x.1 •
@@ -437,8 +435,6 @@ theorem coeff_smul {R} {V} [Semiring R] [AddCommMonoid V] [Module R V]
     Set.mem_setOf_eq, Prod.forall, coeff_support, mem_product]
   exact hsupp ab.1 ab.2 hab
 
-@[deprecated (since := "2024-11-17")] alias family_smul_coeff := coeff_smul
-
 theorem smul_hsum {R} {V} [Semiring R] [AddCommMonoid V] [Module R V]
     (s : SummableFamily Γ R α) (t : SummableFamily Γ' V β) :
     (smul s t).hsum = (of R).symm (s.hsum • (of R) (t.hsum)) := by
@@ -457,8 +453,6 @@ theorem smul_hsum {R} {V} [Semiring R] [AddCommMonoid V] [Module R V]
     by_cases h : s.hsum.coeff gh.1 = 0
     · exact smul_eq_zero_of_left h (t.hsum.coeff gh.2)
     · simp_all
-
-@[deprecated (since := "2024-11-17")] alias hsum_family_smul := smul_hsum
 
 instance [AddCommMonoid R] [SMulWithZero R V] : SMul (HahnSeries Γ R) (SummableFamily Γ' V β) where
   smul x t := Equiv (Equiv.punitProd β) <| smul (const Unit x) t
@@ -689,7 +683,7 @@ theorem pow_finite_co_support {x : HahnSeries Γ R} (hx : 0 < x.orderTop) (g : �
 return a junk value given by pretending `x = 0`. -/
 @[simps]
 def powers (x : HahnSeries Γ R) : SummableFamily Γ R ℕ where
-  toFun n := if 0 < x.orderTop then x ^ n else 0 ^ n
+  toFun n := (if 0 < x.orderTop then x else 0) ^ n
   isPWO_iUnion_support' := by
     by_cases h : 0 < x.orderTop
     · simp only [h, ↓reduceIte]

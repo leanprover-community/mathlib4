@@ -199,8 +199,8 @@ section SMul
 variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M]
 variable {R : Type*} [Semiring R] [DistribMulAction R M] [ContinuousConstSMul R M]
 
-/-- Given a real number `r` and a signed measure `s`, `smul r s` is the signed
-measure corresponding to the function `r • s`. -/
+/-- Given a scalar `r` and a vector measure `v`, `smul r v` is the vector measure corresponding to
+the set function `s : Set α => r • (v s)`. -/
 def smul (r : R) (v : VectorMeasure α M) : VectorMeasure α M where
   measureOf' := r • ⇑v
   empty' := by rw [Pi.smul_apply, empty, smul_zero]
@@ -782,15 +782,7 @@ theorem le_restrict_empty : v ≤[∅] w := by
   rw [restrict_empty, restrict_empty]
 
 theorem le_restrict_univ_iff_le : v ≤[Set.univ] w ↔ v ≤ w := by
-  constructor
-  · intro h s hs
-    have := h s hs
-    rwa [restrict_apply _ MeasurableSet.univ hs, Set.inter_univ,
-      restrict_apply _ MeasurableSet.univ hs, Set.inter_univ] at this
-  · intro h s hs
-    rw [restrict_apply _ MeasurableSet.univ hs, Set.inter_univ,
-      restrict_apply _ MeasurableSet.univ hs, Set.inter_univ]
-    exact h s hs
+  simp
 
 end
 
