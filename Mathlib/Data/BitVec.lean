@@ -6,6 +6,7 @@ Authors: Simon Hudon, Harun Khan, Alex Keizer
 import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Data.ZMod.Defs
+import Mathlib.Data.Int.Cast.Lemmas
 
 /-!
 # Basic Theorems About Bitvectors
@@ -20,51 +21,6 @@ can either be PR'd to Lean, or kept downstream if it also relies on Mathlib.
 namespace BitVec
 
 variable {w : Nat}
-
-/-!
-## Injectivity
--/
-
-theorem toNat_injective {n : Nat} : Function.Injective (BitVec.toNat : BitVec n → _)
-  | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
-
-theorem toFin_injective {n : Nat} : Function.Injective (toFin : BitVec n → _)
-  | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
-
-/-!
-## Scalar Multiplication and Powers
-Having instance of `SMul ℕ`, `SMul ℤ` and `Pow` are prerequisites for a `CommRing` instance
--/
-
-open Fin.NatCast
-
-instance : SMul ℕ (BitVec w) := ⟨fun x y => ofFin <| x • y.toFin⟩
-instance : SMul ℤ (BitVec w) := ⟨fun x y => ofFin <| x • y.toFin⟩
-lemma toFin_nsmul (n : ℕ) (x : BitVec w) : toFin (n • x) = n • x.toFin := rfl
-lemma toFin_zsmul (z : ℤ) (x : BitVec w) : toFin (z • x) = z • x.toFin := rfl
-lemma toFin_pow (x : BitVec w) (n : ℕ) : toFin (x ^ n) = x.toFin ^ n := by
-  induction n with
-  | zero => simp
-  | succ n ih => simp [ih, BitVec.pow_succ, pow_succ]
-
-/-!
-## Ring
--/
-
--- Verify that the `HPow` instance from Lean agrees definitionally with the instance via `Monoid`.
-example : @instHPow (Fin (2 ^ w)) ℕ Monoid.toNatPow = Lean.Grind.Fin.instHPowFinNatOfNeZero := rfl
-
-instance : CommSemiring (BitVec w) :=
-  open Fin.CommRing in
-  toFin_injective.commSemiring _
-    rfl /- toFin_zero -/
-    rfl /- toFin_one -/
-    toFin_add
-    toFin_mul
-    toFin_nsmul
-    (by convert toFin_pow)
-    (fun _ => rfl) /- toFin_natCast -/
--- The statement in the new API would be: `n#(k.succ) = ((n / 2)#k).concat (n % 2 != 0)`
 
 -- TODO: move to the Lean4 repository.
 open Fin.CommRing in
@@ -83,8 +39,58 @@ theorem ofFin_intCast (z : ℤ) : ofFin (z : Fin (2^w)) = ↑z := by
       exact pow_ne_zero (w + 1) (by decide)
 
 open Fin.CommRing in
-theorem toFin_intCast (z : ℤ) : toFin (z : BitVec w) = z := by
-  apply toFin_inj.mpr <| (ofFin_intCast z).symm
+@[simp] theorem toFin_intCast (z : ℤ) : (z : BitVec w).toFin = ↑z := by
+  rw [← ofFin_intCast]
+
+/-!
+## Injectivity
+-/
+
+theorem toNat_injective {n : Nat} : Function.Injective (BitVec.toNat : BitVec n → _)
+  | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
+
+theorem toFin_injective {n : Nat} : Function.Injective (toFin : BitVec n → _)
+  | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
+
+/-!
+## Scalar Multiplication and Powers
+-/
+
+open Fin.NatCast
+
+lemma toFin_nsmul (n : ℕ) (x : BitVec w) : toFin (n • x) = n • x.toFin :=
+  toFin_mul _ _ |>.trans <| by
+    open scoped Fin.CommRing in
+    simp only [natCast_eq_ofNat, toFin_ofNat, Fin.ofNat_eq_cast, nsmul_eq_mul]
+
+lemma toFin_zsmul (z : ℤ) (x : BitVec w) : toFin (z • x) = z • x.toFin :=
+  toFin_mul _ _ |>.trans <| by
+    open scoped Fin.CommRing in
+    simp only [zsmul_eq_mul, toFin_intCast]
+
+lemma toFin_pow (x : BitVec w) (n : ℕ) : toFin (x ^ n) = x.toFin ^ n := by
+  induction n with
+  | zero => simp
+  | succ n ih => simp [ih, BitVec.pow_succ, pow_succ]
+
+/-!
+## Ring
+-/
+
+-- Verify that the `HPow` instance from Lean agrees definitionally with the instance via `Monoid`.
+example : @instHPow (Fin (2 ^ w)) ℕ Monoid.toNatPow = Lean.Grind.Fin.instHPowFinNatOfNeZero := rfl
+
+instance : CommSemiring (BitVec w) :=
+  open Fin.CommRing in
+  toFin_injective.commSemiring _
+    toFin_zero
+    toFin_one
+    toFin_add
+    toFin_mul
+    toFin_nsmul
+    toFin_pow
+    toFin_natCast
+-- The statement in the new API would be: `n#(k.succ) = ((n / 2)#k).concat (n % 2 != 0)`
 
 instance : CommRing (BitVec w) :=
   open Fin.CommRing in
@@ -97,7 +103,7 @@ instance : CommRing (BitVec w) :=
 def equivFin {m : ℕ} : BitVec m ≃+* Fin (2 ^ m) where
   toFun a := a.toFin
   invFun a := ofFin a
-  map_mul' _ _ := rfl
-  map_add' _ _ := rfl
+  map_mul' := toFin_mul
+  map_add' := toFin_add
 
 end BitVec

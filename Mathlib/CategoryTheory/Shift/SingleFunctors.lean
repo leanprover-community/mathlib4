@@ -108,7 +108,7 @@ structure Hom where
   /-- a family of natural transformations `F.functor a ⟶ G.functor a` -/
   hom (a : A) : F.functor a ⟶ G.functor a
   comm (n a a' : A) (ha' : n + a = a') : (F.shiftIso n a a' ha').hom ≫ hom a =
-    whiskerRight (hom a') (shiftFunctor D n) ≫ (G.shiftIso n a a' ha').hom := by aesop_cat
+    whiskerRight (hom a') (shiftFunctor D n) ≫ (G.shiftIso n a a' ha').hom := by cat_disch
 
 namespace Hom
 
