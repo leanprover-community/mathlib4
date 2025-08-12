@@ -3,15 +3,8 @@ Copyright (c) 2025 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Algebra.Order.Ring.Star
 import Mathlib.Analysis.Complex.SummableUniformlyOn
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Cotangent
-import Mathlib.Data.Int.Star
-import Mathlib.NumberTheory.LSeries.Dirichlet
-import Mathlib.NumberTheory.LSeries.HurwitzZetaValues
-import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
-import Mathlib.Topology.EMetricSpace.Paracompact
-import Mathlib.Topology.Separation.CompletelyRegular
 
 /-!
 # Einstein series Q-expansions
@@ -21,8 +14,8 @@ Q-expansions.
 
 -/
 
-open Set Metric TopologicalSpace Function Filter Complex UpperHalfPlane ArithmeticFunction
-  ModularForm EisensteinSeries
+open Set Metric TopologicalSpace Function Filter Complex UpperHalfPlane Set
+ EisensteinSeries
 
 open scoped Topology Real Nat Complex Pointwise
 
