@@ -66,7 +66,7 @@ def dotProduct [Mul α] [AddCommMonoid α] (v w : m → α) : α :=
   ∑ i, v i * w i
 
 /- The precedence of 72 comes immediately after ` • ` for `SMul.smul`,
-   so that `r₁ • a ⬝ᵥ r₂ • b` is parsed as `(r₁ • a) ⬝ᵥ (r₂ • b)` here. -/
+so that `r₁ • a ⬝ᵥ r₂ • b` is parsed as `(r₁ • a) ⬝ᵥ (r₂ • b)` here. -/
 @[inherit_doc]
 infixl:72 " ⬝ᵥ " => dotProduct
 
@@ -337,6 +337,11 @@ theorem diagonal_mul_diagonal' [Fintype n] [DecidableEq n] (d₁ d₂ : n → α
     diagonal d₁ * diagonal d₂ = diagonal fun i => d₁ i * d₂ i :=
   diagonal_mul_diagonal _ _
 
+theorem commute_diagonal {α : Type*} [NonUnitalNonAssocCommSemiring α]
+    [Fintype n] [DecidableEq n] (d₁ d₂ : n → α) :
+    Commute (diagonal d₁) (diagonal d₂) := by
+  simp_rw [commute_iff_eq, diagonal_mul_diagonal, mul_comm]
+
 theorem smul_eq_diagonal_mul [Fintype m] [DecidableEq m] (M : Matrix m n α) (a : α) :
     a • M = (diagonal fun _ => a) * M := by
   ext
@@ -530,6 +535,49 @@ lemma row_vecMulVec [Mul α] (w : m → α) (v : n → α) (i : m) :
 lemma col_vecMulVec [Mul α] (w : m → α) (v : n → α) (j : n) :
     (vecMulVec w v).col j = MulOpposite.op (v j) • w := rfl
 
+@[simp] theorem zero_vecMulVec [MulZeroClass α] (v : n → α) : vecMulVec (0 : m → α) v = 0 :=
+  ext fun _ _ => zero_mul _
+
+@[simp] theorem vecMulVec_zero [MulZeroClass α] (w : m → α) : vecMulVec w (0 : m → α) = 0 :=
+  ext fun _ _ => mul_zero _
+
+theorem add_vecMulVec [Mul α] [Add α] [RightDistribClass α] (w₁ w₂ : m → α) (v : n → α) :
+    vecMulVec (w₁ + w₂) v = vecMulVec w₁ v + vecMulVec w₂ v :=
+  ext fun _ _ => add_mul _ _ _
+
+theorem vecMulVec_add [Mul α] [Add α] [LeftDistribClass α] (w : m → α) (v₁ v₂ : n → α) :
+    vecMulVec w (v₁ + v₂) = vecMulVec w v₁ + vecMulVec w v₂  :=
+  ext fun _ _ => mul_add _ _ _
+
+@[simp]
+theorem neg_vecMulVec [Mul α] [HasDistribNeg α] (w : m → α) (v : n → α) :
+    vecMulVec (-w) v = -vecMulVec w v :=
+  ext fun _ _ => neg_mul _ _
+
+@[simp]
+theorem vecMulVec_neg [Mul α] [HasDistribNeg α] (w : m → α) (v : n → α) :
+    vecMulVec w (-v) = -vecMulVec w v :=
+  ext fun _ _ => mul_neg _ _
+
+@[simp]
+theorem smul_vecMulVec [Mul α] [SMul R α] [IsScalarTower R α α] (r : R) (w : m → α) (v : n → α) :
+    vecMulVec (r • w) v = r • vecMulVec w v :=
+  ext fun _ _ => smul_mul_assoc _ _ _
+
+@[simp]
+theorem vecMulVec_smul [Mul α] [SMul R α] [SMulCommClass R α α] (r : R) (w : m → α) (v : n → α) :
+    vecMulVec w (r • v) = r • vecMulVec w v :=
+  ext fun _ _ => mul_smul_comm _ _ _
+
+theorem vecMulVec_smul' [Semigroup α] (w : m → α) (r : α) (v : n → α) :
+    vecMulVec w (r • v) = vecMulVec (MulOpposite.op r • w) v :=
+  ext fun _ _ => mul_assoc _ _ _ |>.symm
+
+@[simp]
+theorem transpose_vecMulVec [CommMagma α] (w : m → α) (v : n → α) :
+    (vecMulVec w v)ᵀ = vecMulVec v w :=
+  ext fun _ _ => mul_comm _ _
+
 section NonUnitalNonAssocSemiring
 
 variable [NonUnitalNonAssocSemiring α]
@@ -711,6 +759,22 @@ theorem mul_mul_apply [Fintype n] (A B C : Matrix n n α) (i j : n) :
   simp only [mul_apply, dotProduct, mulVec]
   rfl
 
+theorem vecMul_vecMulVec [Fintype m] (u v : m → α) (w : n → α) :
+      u ᵥ* vecMulVec v w = (u ⬝ᵥ v) • w := by
+  ext i
+  simp [vecMul, dotProduct, vecMulVec, Finset.sum_mul, mul_assoc]
+
+theorem vecMulVec_mulVec [Fintype n] (u : m → α) (v w : n → α) :
+      vecMulVec u v *ᵥ w = MulOpposite.op (v ⬝ᵥ w) • u := by
+  ext i
+  simp [mulVec, dotProduct, vecMulVec, Finset.mul_sum, mul_assoc]
+
+theorem vecMulVec_mul_vecMulVec [Fintype m] (u : l → α) (v w : m → α) (x : n → α) :
+      vecMulVec u v * vecMulVec w x = vecMulVec u ((v ⬝ᵥ w) • x) := by
+  ext i j
+  simp_rw [mul_apply, dotProduct, vecMulVec, Pi.smul_apply, of_apply, mul_assoc, ← Finset.mul_sum,
+    smul_eq_mul, Finset.sum_mul, mul_assoc]
+
 end NonUnitalSemiring
 
 section NonAssocSemiring
@@ -722,8 +786,6 @@ theorem mulVec_one [Fintype n] (A : Matrix m n α) : A *ᵥ 1 = ∑ j, Aᵀ j :=
 
 theorem one_vecMul [Fintype m] (A : Matrix m n α) : 1 ᵥ* A = ∑ i, A i := by
   ext; simp [vecMul, dotProduct]
-
-@[deprecated (since := "2025-01-26")] alias vec_one_mul := one_vecMul
 
 lemma ext_of_mulVec_single [DecidableEq n] [Fintype n] {M N : Matrix m n α}
     (h : ∀ i, M *ᵥ Pi.single i 1 = N *ᵥ Pi.single i 1) :
@@ -824,6 +886,14 @@ theorem sub_vecMul [Fintype m] (A : Matrix m n α) (x y : m → α) :
   ext
   apply sub_dotProduct
 
+theorem sub_vecMulVec (w₁ w₂ : m → α) (v : n → α) :
+    vecMulVec (w₁ - w₂) v = vecMulVec w₁ v - vecMulVec w₂ v :=
+  ext fun _ _ => sub_mul _ _ _
+
+theorem vecMulVec_sub (w : m → α) (v₁ v₂ : n → α) :
+    vecMulVec w (v₁ - v₂) = vecMulVec w v₁ - vecMulVec w v₂  :=
+  ext fun _ _ => mul_sub _ _ _
+
 end NonUnitalNonAssocRing
 
 section NonUnitalCommSemiring
@@ -861,6 +931,20 @@ lemma vecMul_injective_of_isUnit [Fintype m] [DecidableEq m] {A : Matrix m m R}
   obtain ⟨B, hBl, hBr⟩ := isUnit_iff_exists.mp ha
   intro x y hxy
   simpa [hBl] using congrArg B.vecMul hxy
+
+lemma pow_row_eq_zero_of_le [Fintype n] [DecidableEq n] {M : Matrix n n R} {k l : ℕ} {i : n}
+    (h : (M ^ k).row i = 0) (h' : k ≤ l) :
+    (M ^ l).row i = 0 := by
+  replace h' : l = k + (l - k) := by omega
+  rw [← single_one_vecMul] at h ⊢
+  rw [h', pow_add, ← vecMul_vecMul, h, zero_vecMul]
+
+lemma pow_col_eq_zero_of_le [Fintype n] [DecidableEq n] {M : Matrix n n R} {k l : ℕ} {i : n}
+    (h : (M ^ k).col i = 0) (h' : k ≤ l) :
+    (M ^ l).col i = 0 := by
+  replace h' : l = (l - k) + k := by omega
+  rw [← mulVec_single_one] at h ⊢
+  rw [h', pow_add, ← mulVec_mulVec, h, mulVec_zero]
 
 end Semiring
 
