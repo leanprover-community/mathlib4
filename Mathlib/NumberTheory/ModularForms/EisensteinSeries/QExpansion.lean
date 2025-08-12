@@ -237,7 +237,7 @@ theorem summable_prod_aux (k : ℕ) (z : ℍ) : Summable fun c : ℕ+ × ℕ+ �
 
 theorem tsum_prod_pow_cexp_eq_tsum_sigma (k : ℕ) (z : ℍ) :
     ∑' d : ℕ+, ∑' (c : ℕ+), (c ^ k : ℂ) * cexp (2 * ↑π * Complex.I * d * z) ^ (c : ℕ) =
-      ∑' e : ℕ+, sigma k e * cexp (2 * ↑π * Complex.I * z) ^ (e : ℕ) := by
+    ∑' e : ℕ+, sigma k e * cexp (2 * ↑π * Complex.I * z) ^ (e : ℕ) := by
   suffices  ∑' (c : ℕ+ × ℕ+), (c.1 ^ k : ℂ) * cexp (2 * ↑π * Complex.I * c.2 * z) ^ (c.1 : ℕ) =
       ∑' e : ℕ+, sigma k e * cexp (2 * ↑π * Complex.I * z) ^ (e : ℕ) by
     rw [Summable.tsum_prod (summable_prod_aux k z), Summable.tsum_comm] at this
