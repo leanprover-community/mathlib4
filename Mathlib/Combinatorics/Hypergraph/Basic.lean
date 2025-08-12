@@ -180,28 +180,6 @@ incident on both `e` and `f`, i.e., if the two hyperedges are adjacent (see `Hyp
 def hyperedgeNeighbors (H : Hypergraph α β) (e : β) := {f | H.EAdj e f}
 
 
-/-! ## Common Example Hypergraphs -/
-
--- /--
--- The empty hypergraph
-
--- An empty hypergraph contains an empty vertex set and an empty hyperedge set
-
--- TODO:
--- -/
--- def emptyHypergraph (α β : Type*) : Hypergraph α β := Hypergraph.mk ∅ ∅ (fun _ _ => False)
-
--- /--
--- A singleton hypergraph
-
--- A singleton hypergraph contains only one vertex and an empty hyperedge set
-
--- TODO
--- -/
--- def singletonHypergraph (α β : Type*) (x : α) : Hypergraph α β :=
---   Hypergraph.mk {x} ∅ (fun _ _ => False)
-
-
 /-! ## Additional Predicates -/
 
 /--
