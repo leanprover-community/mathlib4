@@ -14,7 +14,7 @@ is a `Valued R ℤₘ₀` instance but no canonical base with which to embed thi
 `NNReal`.
 -/
 
-open Filter WithZero Set Multiplicative
+open Filter WithZero Set
 open scoped Topology
 
 namespace Valued
