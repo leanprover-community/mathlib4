@@ -288,6 +288,10 @@ theorem Group.fg_iff_monoid_fg : Group.FG G ↔ Monoid.FG G :=
   ⟨fun h => Monoid.fg_def.2 <| (Subgroup.fg_iff_submonoid_fg ⊤).1 (Group.fg_def.1 h), fun h =>
     Group.fg_def.2 <| (Subgroup.fg_iff_submonoid_fg ⊤).2 (Monoid.fg_def.1 h)⟩
 
+@[to_additive]
+instance Monoid.fg_of_group_fg [Group.FG G] : Monoid.FG G :=
+  Group.fg_iff_monoid_fg.1 ‹_›
+
 @[to_additive (attr := simp)]
 theorem Group.fg_iff_subgroup_fg (H : Subgroup G) : Group.FG H ↔ H.FG :=
   (fg_iff_monoid_fg.trans (Monoid.fg_iff_submonoid_fg _)).trans
