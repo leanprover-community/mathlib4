@@ -578,10 +578,14 @@ instance [Inhabited X] : Inhabited (SeparationQuotient X) :=
 instance [Subsingleton X] : Subsingleton (SeparationQuotient X) :=
   surjective_mk.subsingleton
 
+@[simp]
+theorem inseparableSetoid_eq_top_iff {t : TopologicalSpace α} :
+    inseparableSetoid α = ⊤ ↔ t = ⊤ :=
+  Setoid.eq_top_iff.trans TopologicalSpace.eq_top_iff_forall_inseparable.symm
+
 theorem subsingleton_iff {t : TopologicalSpace α} :
-    Subsingleton (SeparationQuotient α) ↔ t = ⊤ := by
-  simp_rw [_root_.subsingleton_iff, TopologicalSpace.eq_top_iff_forall_inseparable,
-    SeparationQuotient.forall, mk_eq_mk]
+    Subsingleton (SeparationQuotient α) ↔ t = ⊤ :=
+  Quotient.subsingleton_iff.trans inseparableSetoid_eq_top_iff
 
 theorem nontrivial_iff {t : TopologicalSpace α} :
     Nontrivial (SeparationQuotient α) ↔ t ≠ ⊤ := by
