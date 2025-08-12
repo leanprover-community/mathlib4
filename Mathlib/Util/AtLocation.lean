@@ -43,13 +43,18 @@ def atTarget (proc : String) (failIfUnchanged : Bool) : TacticM Unit := withMain
   | .noContext m => m
   | .withContext ctx m => m ctx
   let r ← m tgt
+  -- we use expression equality here (rather than defeq) to be consistent with, e.g.,
+  -- `applySimpResultToTarget`
+  let unchanged := tgt.consumeMData == r.expr.consumeMData
+  if failIfUnchanged && unchanged then throwError "{proc} made no progress"
   if r.expr.consumeMData.isConstOf ``True then
     goal.assign (← mkOfEqTrue (← r.getProof))
     replaceMainGoal []
   else
+    -- this ensures that we really get the same goal as an `MVarId`,
+    -- not a different `MVarId` for which `MVarId.getType` is the same
+    if unchanged then return
     let newGoal ← applySimpResultToTarget goal tgt r
-    if failIfUnchanged && goal == newGoal then
-      throwError "{proc} made no progress"
     replaceMainGoal [newGoal]
 
 /-- Use the procedure `m` to rewrite hypothesis `h`. -/
@@ -61,12 +66,13 @@ def atLocalDecl (proc : String) (failIfUnchanged : Bool) (mayCloseGoal : Bool) (
   | .noContext m => m
   | .withContext ctx m => m <| ctx.setSimpTheorems <| ctx.simpTheorems.eraseTheorem (.fvar fvarId)
   let myres ← m tgt
+  -- we use expression equality here (rather than defeq) to be consistent with, e.g.,
+  -- `applySimpResultToLocalDeclCore`
+  if failIfUnchanged && tgt.consumeMData == myres.expr.consumeMData then
+    throwError "{proc} made no progress"
   match ← applySimpResultToLocalDecl goal fvarId myres mayCloseGoal with
   | none => replaceMainGoal []
-  | some (_, newGoal) =>
-    if failIfUnchanged && goal == newGoal then
-      throwError "{proc} made no progress"
-    replaceMainGoal [newGoal]
+  | some (_, newGoal) => replaceMainGoal [newGoal]
 
 /-- Use the procedure `m` to rewrite at specified locations. -/
 def atLocation (proc : String) (loc : Location) (failIfUnchanged : Bool := true)

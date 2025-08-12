@@ -86,6 +86,8 @@ example [AddCommGroup α] (x y z : α) : y = x + z - (x - y + z) := by
 example [AddCommGroup α] (a b s : α) : -b + (s - a) = s - b - a := by abel_nf
 
 -- inspired by automated testing
+/-- error: abel_nf made no progress -/
+#guard_msgs in
 example : True := by
   have := 0
   abel_nf
