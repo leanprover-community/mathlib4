@@ -67,6 +67,11 @@ abbrev div_N_map (N : ℤ) {m : ℕ} (v : Fin m → ℤ) : Fin m → ℤ := fun 
 lemma gammaSet_top_mem (v : Fin 2 → ℤ) : v ∈ gammaSet 1 0 ↔ IsCoprime (v 0) (v 1) := by
   simpa [gammaSet] using fun h ↦ Subsingleton.eq_zero (Int.cast ∘ v)
 
+lemma gammaSetN_div_N {N : ℕ} {v : Fin 2 → ℤ} (hv : v ∈ gammaSetN N) (i : Fin 2) :
+   (N : ℤ) ∣ v i  := by
+  simp only [gammaSetN, mem_preimage, fin_to_gcd_map, Fin.isValue, mem_singleton_iff] at *
+  fin_cases i <;> simp [← hv, Int.gcd_dvd_left, Int.gcd_dvd_right]
+
 lemma gammaSetN_to_gammaSet10_bijection {N : ℕ} (hN : N ≠ 0) :
     Set.BijOn (div_N_map N) (gammaSetN N) (gammaSet 1 0) := by
   refine ⟨?_, ?_, ?_⟩
@@ -76,13 +81,8 @@ lemma gammaSetN_to_gammaSet10_bijection {N : ℕ} (hN : N ≠ 0) :
     rw [← hx] at hN ⊢
     apply isCoprime_div_gcd_div_gcd' (by simpa using hN)
   · intro x hx v hv hv2
-    simp only [ne_eq, gammaSetN, mem_preimage, fin_to_gcd_map, Fin.isValue, mem_singleton_iff] at *
     ext i
-    · have hi1 := congr_fun hv2 i
-      rw [Int.ediv_left_inj] at hi1
-      · apply hi1
-      · fin_cases i <;> rw [← hx] <;> simp [Int.gcd_dvd_left, Int.gcd_dvd_right]
-      · fin_cases i <;> rw [← hv] <;> simp [Int.gcd_dvd_left, Int.gcd_dvd_right]
+    · apply (Int.ediv_left_inj (gammaSetN_div_N hx i) (gammaSetN_div_N hv i)).mp (congr_fun hv2 i)
   · intro x hx
     use N • x
     simp only [gammaSetN, nsmul_eq_mul, mem_preimage, fin_to_gcd_map, Fin.isValue, Pi.mul_apply,
@@ -91,30 +91,21 @@ lemma gammaSetN_to_gammaSet10_bijection {N : ℕ} (hN : N ≠ 0) :
     · rw [gammaSet_top_mem, Int.isCoprime_iff_gcd_eq_one] at hx
       simp [Int.gcd_mul_left, hx]
     · ext i
-      rw [div_N_map]
-      aesop
+      simp_all [div_N_map]
 
 lemma gammaSetN_map_eq {N : ℕ} (v : gammaSetN N) : v.1 = N • (div_N_map N v) := by
   by_cases hN : N = 0
   · have hv := v.2
-    simp [hN, gammaSetN, fin_to_gcd_map] at *
+    simp only [hN, gammaSetN, mem_preimage, fin_to_gcd_map, Fin.isValue, mem_singleton_iff,
+      Int.gcd_eq_zero_iff, CharP.cast_eq_zero, zero_nsmul] at *
     ext i
     fin_cases i <;> simp [hv]
-  · have hnz : (N : ℤ) ≠ 0 := by
-      norm_cast
-    have hN2 : (v.1 0).gcd (v.1 1) = N := by
-      aesop
-    ext i
-    · simp [div_N_map]
-      rw [← Int.mul_ediv_assoc ]
-      · aesop
-      · simp_rw [← hN2]
-        fin_cases i <;> simp [Int.gcd_dvd_left, Int.gcd_dvd_right]
+  · ext i
+    simp_all [Pi.smul_apply, div_N_map, ← Int.mul_ediv_assoc _ (gammaSetN_div_N v.2 i)]
 
 /-- The equivalence between `gammaSetN` and `gammaSet` for non-zero `N`. -/
 def gammaSetN_Equiv {N : ℕ} (hN : N ≠ 0) : gammaSetN N ≃ gammaSet 1 0 := by
   apply Set.BijOn.equiv _ (gammaSetN_to_gammaSet10_bijection hN)
-
 
 /-- The equivalence between `(Fin 2 → ℤ)` and `Σ  n : ℕ, gammaSetN n)` . -/
 def GammaSet_top_Equiv : (Fin 2 → ℤ) ≃ (Σ  n : ℕ, gammaSetN n) :=
