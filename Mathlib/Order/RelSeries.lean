@@ -850,7 +850,7 @@ lemma SetRel.IsWellFounded.inv_of_finiteDimensional [r.FiniteDimensional] :
 alias Rel.wellFounded_swap_of_finiteDimensional :=
   SetRel.IsWellFounded.inv_of_finiteDimensional
 
-lemma SetRel.IsWellFounded.of_finiteDimensional [Rel.FiniteDimensional r] : r.IsWellFounded :=
+lemma SetRel.IsWellFounded.of_finiteDimensional [r.FiniteDimensional] : r.IsWellFounded :=
   .inv_of_finiteDimensional r.inv
 
 @[deprecated (since := "2025-07-06")]
