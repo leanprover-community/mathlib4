@@ -115,6 +115,7 @@ noncomputable def addValuation : AddValuation M (ArchimedeanClass M) := AddValua
 @[simp] theorem addValuation_apply (a : M) : addValuation M a = mk a := rfl
 
 end IsOrderedRing
+
 section IsStrictOrderedRing
 variable [IsStrictOrderedRing M]
 
@@ -146,6 +147,7 @@ instance : Neg (ArchimedeanClass M) where
     obtain rfl | hy := eq_or_ne y 0
     · simp_all
     have hx' : mk x ≠ ⊤ := by simpa using hx
+    have := IsOrderedRing.toIsStrictOrderedRing M
     apply add_left_cancel_of_ne_top hx'
     nth_rw 2 [h]
     simp [← mk_mul, hx, hy]
