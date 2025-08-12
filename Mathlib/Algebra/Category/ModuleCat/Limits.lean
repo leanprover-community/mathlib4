@@ -257,8 +257,7 @@ def directLimitIsColimit : IsColimit (directLimitCocone G f) where
       rw [← h]
       rfl
     ext
-    simp only [this]
-    apply Module.DirectLimit.lift_unique
+    simp [this]
 
 end DirectLimit
 
