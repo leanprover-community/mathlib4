@@ -337,6 +337,41 @@ def congr (f : Γ₀ ≃*o Γ'₀) : Valuation R Γ₀ ≃ Valuation R Γ'₀ wh
   left_inv ν := by ext; simp
   right_inv ν := by ext; simp
 
+section One
+
+variable [Nontrivial R] [NoZeroDivisors R] [DecidablePred fun x : R ↦ x = 0]
+
+variable (R Γ₀) in
+/-- The trivial valuation, sending everything to 1 other than 0. -/
+protected instance one : One (Valuation R Γ₀) where
+  one :=
+  { __ : R →*₀ Γ₀ := 1
+    map_add_le_max' x y := by
+      simp only [ZeroHom.toFun_eq_coe, MonoidWithZeroHom.toZeroHom_coe,
+        MonoidWithZeroHom.one_apply_def, le_sup_iff]
+      split_ifs <;> simp_all }
+
+lemma one_apply_def (x : R) : (1 : Valuation R Γ₀) x = if x = 0 then 0 else 1 := rfl
+
+@[simp] lemma toMonoidWithZeroHom_one : (1 : Valuation R Γ₀).toMonoidWithZeroHom = 1 := rfl
+
+lemma one_apply_of_ne_zero {x : R} (hx : x ≠ 0) : (1 : Valuation R Γ₀) x = 1 := if_neg hx
+
+@[simp]
+lemma one_apply_eq_zero_iff [Nontrivial Γ₀] {x : R} : (1 : Valuation R Γ₀) x = 0 ↔ x = 0 :=
+  MonoidWithZeroHom.one_apply_eq_zero_iff
+
+lemma one_apply_le_one (x : R) : (1 : Valuation R Γ₀) x ≤ 1 := by
+  rw [one_apply_def]
+  split_ifs <;> simp_all
+
+@[simp]
+lemma one_apply_lt_one_iff [Nontrivial Γ₀] {x : R} : (1 : Valuation R Γ₀) x < 1 ↔ x = 0 := by
+  rw [one_apply_def]
+  split_ifs <;> simp_all
+
+end One
+
 end Monoid
 
 section Group
@@ -362,9 +397,7 @@ theorem val_le_one_iff (v : Valuation K Γ₀) {x : K} (h : x ≠ 0) : v x ≤ 1
   simp [one_le_inv₀ (v.pos_iff.2 h)]
 
 theorem val_eq_one_iff (v : Valuation K Γ₀) {x : K} : v x = 1 ↔ v x⁻¹ = 1 := by
-  by_cases h : x = 0
-  · simp only [map_inv₀, inv_eq_one]
-  · simpa only [le_antisymm_iff, And.comm] using and_congr (one_le_val_iff v h) (val_le_one_iff v h)
+  simp
 
 theorem val_le_one_or_val_inv_lt_one (v : Valuation K Γ₀) (x : K) : v x ≤ 1 ∨ v x⁻¹ < 1 := by
   by_cases h : x = 0
@@ -381,11 +414,15 @@ theorem val_le_one_or_val_inv_le_one (v : Valuation K Γ₀) (x : K) : v x ≤ 1
   · simp only [← one_le_val_iff v h, le_total]
 
 /-- The subgroup of elements whose valuation is less than a certain unit. -/
-def ltAddSubgroup (v : Valuation R Γ₀) (γ : Γ₀ˣ) : AddSubgroup R where
+@[simps] def ltAddSubgroup (v : Valuation R Γ₀) (γ : Γ₀ˣ) : AddSubgroup R where
   carrier := { x | v x < γ }
   zero_mem' := by simp
   add_mem' {x y} x_in y_in := lt_of_le_of_lt (v.map_add x y) (max_lt x_in y_in)
   neg_mem' x_in := by rwa [Set.mem_setOf, map_neg]
+
+@[simp] lemma mem_ltAddSubgroup_iff {v : Valuation R Γ₀} {γ x} :
+    x ∈ ltAddSubgroup v γ ↔ v x < γ :=
+  Iff.rfl
 
 end Group
 
@@ -404,6 +441,12 @@ lemma IsNontrivial.nontrivial_codomain [hv : IsNontrivial v] :
     Nontrivial Γ₀ := by
   obtain ⟨x, hx0, hx1⟩ := hv.exists_val_nontrivial
   exact ⟨v x, 1, hx1⟩
+
+lemma not_isNontrivial_one [IsDomain R] [DecidablePred fun x : R ↦ x = 0] :
+    ¬(1 : Valuation R Γ₀).IsNontrivial := by
+  rintro ⟨⟨x, hx, hx'⟩⟩
+  rcases eq_or_ne x 0 with rfl | hx0 <;>
+  simp_all [one_apply_of_ne_zero]
 
 section Field
 
@@ -714,9 +757,6 @@ theorem of_apply : (of f h0 h1 hadd hmul) r = f r := rfl
 def toValuation : AddValuation R Γ₀ ≃ Valuation R (Multiplicative Γ₀ᵒᵈ) :=
   Equiv.refl _
 
-@[deprecated (since := "2024-11-09")]
-alias valuation := toValuation
-
 /-- The `AddValuation` associated to a `Valuation`.
 -/
 def ofValuation : Valuation R (Multiplicative Γ₀ᵒᵈ) ≃ AddValuation R Γ₀ :=
@@ -739,9 +779,6 @@ lemma toValuation_ofValuation (v : Valuation R (Multiplicative Γ₀ᵒᵈ)) :
 theorem toValuation_apply (r : R) :
     toValuation v r = Multiplicative.ofAdd (OrderDual.toDual (v r)) :=
   rfl
-
-@[deprecated (since := "2024-11-09")]
-alias valuation_apply := toValuation_apply
 
 @[simp]
 theorem ofValuation_apply (v : Valuation R (Multiplicative Γ₀ᵒᵈ)) (r : R) :
@@ -909,8 +946,8 @@ namespace IsEquiv
 variable [LinearOrderedAddCommMonoidWithTop Γ₀] [LinearOrderedAddCommMonoidWithTop Γ'₀]
   [Ring R]
   {Γ''₀ : Type*} [LinearOrderedAddCommMonoidWithTop Γ''₀]
-  {v : AddValuation R Γ₀}
-   {v₁ : AddValuation R Γ₀} {v₂ : AddValuation R Γ'₀} {v₃ : AddValuation R Γ''₀}
+  {v : AddValuation R Γ₀} {v₁ : AddValuation R Γ₀}
+  {v₂ : AddValuation R Γ'₀} {v₃ : AddValuation R Γ''₀}
 
 @[refl]
 theorem refl : v.IsEquiv v :=
@@ -996,8 +1033,8 @@ lemma ofAddValuation_symm_eq : ofAddValuation.symm = toAddValuation (R := R) (Γ
 lemma toAddValuation_symm_eq : toAddValuation.symm = ofAddValuation (R := R) (Γ₀ := Γ₀) := rfl
 
 @[simp]
-lemma ofAddValuation_toAddValuation (v : Valuation R Γ₀) :
-  ofAddValuation (toAddValuation v) = v := rfl
+lemma ofAddValuation_toAddValuation (v : Valuation R Γ₀) : ofAddValuation (toAddValuation v) = v :=
+  rfl
 
 @[simp]
 lemma toValuation_ofValuation (v : AddValuation R (Additive Γ₀)ᵒᵈ) :

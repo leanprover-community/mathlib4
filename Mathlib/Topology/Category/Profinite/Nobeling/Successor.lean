@@ -313,7 +313,7 @@ theorem union_succ : GoodProducts C = GoodProducts (π C (ord I · < o)) ∪ Max
     rwa [contained_eq_proj C (Order.succ o) hsC]
 
 /-- The inclusion map from the sum of `GoodProducts (π C (ord I · < o))` and
-    `(MaxProducts C ho)` to `Products I`. -/
+`(MaxProducts C ho)` to `Products I`. -/
 def sum_to : (GoodProducts (π C (ord I · < o))) ⊕ (MaxProducts C ho) → Products I :=
   Sum.elim Subtype.val Subtype.val
 
@@ -331,7 +331,7 @@ theorem sum_to_range :
   · exact ⟨fun ⟨m,hm⟩ ↦ by rw [← hm]; exact m.prop, fun hl ↦ ⟨⟨l,hl⟩, rfl⟩⟩
 
 /-- The equivalence from the sum of `GoodProducts (π C (ord I · < o))` and
-    `(MaxProducts C ho)` to `GoodProducts C`. -/
+`(MaxProducts C ho)` to `GoodProducts C`. -/
 noncomputable
 def sum_equiv (hsC : contained C (Order.succ o)) (ho : o < Ordinal.type (· < · : I → I → Prop)) :
     GoodProducts (π C (ord I · < o)) ⊕ (MaxProducts C ho) ≃ GoodProducts C :=
