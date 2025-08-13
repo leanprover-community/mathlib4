@@ -787,8 +787,6 @@ theorem mulVec_one [Fintype n] (A : Matrix m n α) : A *ᵥ 1 = ∑ j, Aᵀ j :=
 theorem one_vecMul [Fintype m] (A : Matrix m n α) : 1 ᵥ* A = ∑ i, A i := by
   ext; simp [vecMul, dotProduct]
 
-@[deprecated (since := "2025-01-26")] alias vec_one_mul := one_vecMul
-
 lemma ext_of_mulVec_single [DecidableEq n] [Fintype n] {M N : Matrix m n α}
     (h : ∀ i, M *ᵥ Pi.single i 1 = N *ᵥ Pi.single i 1) :
     M = N := by
@@ -933,6 +931,20 @@ lemma vecMul_injective_of_isUnit [Fintype m] [DecidableEq m] {A : Matrix m m R}
   obtain ⟨B, hBl, hBr⟩ := isUnit_iff_exists.mp ha
   intro x y hxy
   simpa [hBl] using congrArg B.vecMul hxy
+
+lemma pow_row_eq_zero_of_le [Fintype n] [DecidableEq n] {M : Matrix n n R} {k l : ℕ} {i : n}
+    (h : (M ^ k).row i = 0) (h' : k ≤ l) :
+    (M ^ l).row i = 0 := by
+  replace h' : l = k + (l - k) := by omega
+  rw [← single_one_vecMul] at h ⊢
+  rw [h', pow_add, ← vecMul_vecMul, h, zero_vecMul]
+
+lemma pow_col_eq_zero_of_le [Fintype n] [DecidableEq n] {M : Matrix n n R} {k l : ℕ} {i : n}
+    (h : (M ^ k).col i = 0) (h' : k ≤ l) :
+    (M ^ l).col i = 0 := by
+  replace h' : l = (l - k) + k := by omega
+  rw [← mulVec_single_one] at h ⊢
+  rw [h', pow_add, ← mulVec_mulVec, h, mulVec_zero]
 
 end Semiring
 
