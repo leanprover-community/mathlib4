@@ -541,10 +541,7 @@ lemma Measure.sigmaFinite_iff_measure_singleton_lt_top [Countable α] :
       exact ⟨⟨⟨fun n ↦ {f n}, by simp, by simpa [hf.forall] using hμ, by simp [hf.range_eq]⟩⟩⟩
 
 theorem sigmaFinite_bot_iff (μ : @Measure α ⊥) : SigmaFinite μ ↔ IsFiniteMeasure μ := by
-  refine
-    ⟨fun h => ⟨?_⟩, fun h => by
-      haveI := h
-      infer_instance⟩
+  refine ⟨fun h => ⟨?_⟩, fun h => by infer_instance⟩
   haveI : SigmaFinite μ := h
   let s := spanningSets μ
   have hs_univ : ⋃ i, s i = Set.univ := iUnion_spanningSets μ

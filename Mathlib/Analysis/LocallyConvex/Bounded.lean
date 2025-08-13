@@ -193,9 +193,8 @@ variable {𝕜₁ 𝕜₂ : Type*} [NormedDivisionRing 𝕜₁] [NormedDivisionR
 /-- A continuous linear image of a bounded set is bounded. -/
 protected theorem IsVonNBounded.image {σ : 𝕜₁ →+* 𝕜₂} [RingHomSurjective σ] [RingHomIsometric σ]
     {s : Set E} (hs : IsVonNBounded 𝕜₁ s) (f : E →SL[σ] F) : IsVonNBounded 𝕜₂ (f '' s) := by
-  have σ_iso : Isometry σ := AddMonoidHomClass.isometry_of_norm σ fun x => RingHomIsometric.is_iso
   have : map σ (𝓝 0) = 𝓝 0 := by
-    rw [σ_iso.isEmbedding.map_nhds_eq, σ.surjective.range_eq, nhdsWithin_univ, map_zero]
+    rw [σ.isometry.isEmbedding.map_nhds_eq, σ.surjective.range_eq, nhdsWithin_univ, map_zero]
   have hf₀ : Tendsto f (𝓝 0) (𝓝 0) := f.continuous.tendsto' 0 0 (map_zero f)
   simp only [isVonNBounded_iff_tendsto_smallSets_nhds, ← this, tendsto_map'_iff] at hs ⊢
   simpa only [comp_def, image_smul_setₛₗ] using hf₀.image_smallSets.comp hs

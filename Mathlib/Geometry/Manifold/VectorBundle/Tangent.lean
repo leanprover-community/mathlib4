@@ -46,8 +46,8 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞} {E :
   [NormedSpace 𝕜 E] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H : Type*}
   [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {H' : Type*} [TopologicalSpace H']
   {I' : ModelWithCorners 𝕜 E' H'} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
-   {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 /-- Auxiliary lemma for tangent spaces: the derivative of a coordinate change between two charts is
   `C^n` on its source. -/
@@ -274,7 +274,7 @@ theorem symmL_trivializationAt_eq_core {b₀ b : M} (hb : b ∈ (chartAt H b₀)
   simp [hb]
 
 @[deprecated (since := "2025-07-03")]
-alias trivializationAt_symmL  := symmL_trivializationAt_eq_core
+alias trivializationAt_symmL := symmL_trivializationAt_eq_core
 
 -- Porting note: `simp` simplifies LHS to `.id _ _`
 @[simp high, mfld_simps]
@@ -313,9 +313,6 @@ lemma tangentBundleCore.isContMDiff [h : IsManifold I (n + 1) M] :
     · exact (i.1.extend_image_source_inter j.1).subset
   · apply inter_subset_left
 
-@[deprecated (since := "2025-01-09")]
-alias tangentBundleCore.isSmooth := tangentBundleCore.isContMDiff
-
 omit [IsManifold I 1 M] in
 lemma TangentBundle.contMDiffVectorBundle [h : IsManifold I (n + 1) M] :
     haveI : IsManifold I 1 M := .of_le (n := n + 1) le_add_self
@@ -323,9 +320,6 @@ lemma TangentBundle.contMDiffVectorBundle [h : IsManifold I (n + 1) M] :
   have : IsManifold I 1 M := .of_le (n := n + 1) le_add_self
   have : (tangentBundleCore I M).IsContMDiff I n := tangentBundleCore.isContMDiff
   exact (tangentBundleCore I M).instContMDiffVectorBundle
-
-@[deprecated (since := "2025-01-09")]
-alias TangentBundle.smoothVectorBundle := TangentBundle.contMDiffVectorBundle
 
 omit [IsManifold I 1 M] in
 instance [h : IsManifold I ∞ M] :
@@ -398,14 +392,14 @@ def tangentBundleModelSpaceHomeomorph : TangentBundle I H ≃ₜ ModelProd H E :
     continuous_toFun := by
       let p : TangentBundle I H := ⟨I.symm (0 : E), (0 : E)⟩
       have : Continuous (chartAt (ModelProd H E) p) := by
-        rw [continuous_iff_continuousOn_univ]
+        rw [← continuousOn_univ]
         convert (chartAt (ModelProd H E) p).continuousOn
         simp only [TangentSpace.fiberBundle, mfld_simps]
       simpa only [mfld_simps] using this
     continuous_invFun := by
       let p : TangentBundle I H := ⟨I.symm (0 : E), (0 : E)⟩
       have : Continuous (chartAt (ModelProd H E) p).symm := by
-        rw [continuous_iff_continuousOn_univ]
+        rw [← continuousOn_univ]
         convert (chartAt (ModelProd H E) p).symm.continuousOn
         simp only [mfld_simps]
       simpa only [mfld_simps] using this }

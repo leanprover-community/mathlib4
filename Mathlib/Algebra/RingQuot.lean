@@ -20,7 +20,7 @@ definition, which is made irreducible for this purpose.
 Since everything runs in parallel for quotients of `R`-algebras, we do that case at the same time.
 -/
 
-assert_not_exists Star.star
+assert_not_exists TrivialStar
 
 universe uR uS uT uA u₄
 
@@ -355,7 +355,7 @@ instance instRing {R : Type uR} [Ring R] (r : R → R → Prop) : Ring (RingQuot
       exact congrArg (Quot.mk _) (Int.cast_negSucc n) }
 
 instance instCommSemiring {R : Type uR} [CommSemiring R] (r : R → R → Prop) :
-  CommSemiring (RingQuot r) :=
+    CommSemiring (RingQuot r) :=
   { RingQuot.instSemiring r with
     mul_comm := by
       rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
@@ -512,16 +512,10 @@ def ringQuotEquivIdealQuotient (r : B → B → Prop) : RingQuot r ≃+* B ⧸ I
   RingEquiv.ofHomInv (ringQuotToIdealQuotient r) (idealQuotientToRingQuot r)
     (by
       ext x
-      simp_rw [ringQuotToIdealQuotient, lift_def, preLift_def, mkRingHom_def]
-      change mkRingHom r x = _
-      rw [mkRingHom_def]
-      rfl)
+      simp)
     (by
       ext x
-      simp_rw [ringQuotToIdealQuotient, lift_def, preLift_def, mkRingHom_def]
-      change Quot.lift _ _ ((mkRingHom r) x).toQuot = _
-      rw [mkRingHom_def]
-      rfl)
+      simp)
 
 end CommRing
 
