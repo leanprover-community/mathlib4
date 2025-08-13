@@ -297,16 +297,6 @@ theorem card_edgeFinset_completeEquipartiteGraph :
     rw [← Nat.mul_assoc, Nat.choose_two_right, Nat.mul_div_cancel' r.even_mul_pred_self.two_dvd]
   rw [← mul_assoc, mul_comm r _, mul_assoc t _ _, mul_comm t, mul_assoc _ t, ← pow_two]
 
-section Coloring
-
-/-- The injection `(x₁, x₂) ↦ x₁` is always a `r`-coloring of a `completeEquipartiteGraph r ·`. -/
-def Coloring.completeEquipartiteGraph :
-  (completeEquipartiteGraph r t).Coloring (Fin r) := ⟨Prod.fst, id⟩
-
-/-- The `completeEquipartiteGraph r t` is always `r`-colorable. -/
-theorem completeEquipartiteGraph_colorable :
-  (completeEquipartiteGraph r t).Colorable r := ⟨Coloring.completeEquipartiteGraph⟩
-
 variable [Fintype α]
 
 /-- Every `n`-colorable graph is contained in a `completeEquipartiteGraph` in `n` parts (as long
@@ -332,8 +322,6 @@ theorem isContained_completeEquipartiteGraph_of_colorable {n : ℕ} (C : G.Color
   intro v w h
   rw [Prod.mk.injEq] at h
   exact hF h.1 h.2
-
-end Coloring
 
 end CompleteEquipartiteGraph
 
