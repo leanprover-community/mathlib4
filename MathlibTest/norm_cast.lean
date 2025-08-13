@@ -140,3 +140,16 @@ lemma b (_h g : true) : true ∧ true := by
   constructor
   assumption_mod_cast
   assumption_mod_cast
+
+-- testing division of coerced naturals/integers
+
+example (x : ℝ) (hx : x = 3 / 5) : ((3 / 5 : ℚ) : ℂ) = x := by
+  rw [hx]
+  norm_cast
+
+example (x : ℝ) (n : Int) (hx : x = n / 5) : ((n / 5 : ℚ) : ℂ) = x := by
+  rw [hx]
+  norm_cast
+
+example {x : ℚ} (h : (x : ℝ) = 1 / 2) : x = 1 / 2 := by
+  exact_mod_cast h

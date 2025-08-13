@@ -106,7 +106,7 @@ def castHom : ℚ≥0 →+* α where
 @[simp, norm_cast]
 lemma cast_zpow (q : ℚ≥0) (p : ℤ) : ↑(q ^ p) = ((q : α) ^ p : α) := map_zpow₀ (castHom α) ..
 
-@[simp]
+@[simp, norm_cast]
 lemma cast_divNat (a b : ℕ) : (divNat a b : α) = a / b := by
   rw [← cast_natCast, ← cast_natCast b, ← cast_div]
   congr
