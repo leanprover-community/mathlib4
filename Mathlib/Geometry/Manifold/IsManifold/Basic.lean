@@ -160,8 +160,8 @@ structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Ty
       Convex ℝ (range toPartialEquiv)
     else range toPartialEquiv = univ
   nonempty_interior' : (interior (range toPartialEquiv)).Nonempty
-  continuous_toFun : Continuous toFun := by aesop
-  continuous_invFun : Continuous invFun := by aesop
+  continuous_toFun : Continuous toFun := by fun_prop
+  continuous_invFun : Continuous invFun := by fun_prop
 
 lemma ModelWithCorners.range_eq_target {𝕜 E H : Type*} [NontriviallyNormedField 𝕜]
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) :
@@ -172,7 +172,7 @@ lemma ModelWithCorners.range_eq_target {𝕜 E H : Type*} [NontriviallyNormedFie
 def ModelWithCorners.of_target_univ (𝕜 : Type*) [NontriviallyNormedField 𝕜]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
     (φ : PartialEquiv H E) (hsource : φ.source = univ) (htarget : φ.target = univ)
-    (hcont : Continuous φ) (hcont_inv : Continuous φ.symm) : ModelWithCorners 𝕜 E H where
+    (hcont : Continuous φ) (hcont_inv : Continuous φ.invFun) : ModelWithCorners 𝕜 E H where
   toPartialEquiv := φ
   source_eq := hsource
   convex_range' := by
@@ -248,7 +248,7 @@ theorem mk_symm (e : PartialEquiv H E) (a b c d d') :
     (ModelWithCorners.mk e a b c d d' : ModelWithCorners 𝕜 E H).symm = e.symm :=
   rfl
 
-@[continuity, fun_prop]
+@[fun_prop]
 protected theorem continuous : Continuous I :=
   I.continuous_toFun
 
@@ -258,7 +258,7 @@ protected theorem continuousAt {x} : ContinuousAt I x :=
 protected theorem continuousWithinAt {s x} : ContinuousWithinAt I s x :=
   I.continuousAt.continuousWithinAt
 
-@[continuity, fun_prop]
+@[fun_prop]
 theorem continuous_symm : Continuous I.symm :=
   I.continuous_invFun
 
@@ -305,6 +305,7 @@ def of_convex_range
     (φ : PartialEquiv H E) (hsource : φ.source = univ) (htarget : Convex ℝ φ.target)
     (hcont : Continuous φ) (hcont_inv : Continuous φ.symm) (hint : (interior φ.target).Nonempty) :
     ModelWithCorners ℝ E H where
+  continuous_invFun := hcont_inv
   toPartialEquiv := φ
   source_eq := hsource
   convex_range' := by
