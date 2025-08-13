@@ -553,7 +553,7 @@ protected theorem coeff_truncLT [PartialOrder Γ] [DecidableLT Γ]
     (c : Γ) (x : HahnSeries Γ R) (i : Γ) :
     (truncLT c x).coeff i = if i < c then x.coeff i else 0  := rfl
 
-theorem coeff_truncLT_eq [PartialOrder Γ] [DecidableLT Γ]
+theorem coeff_truncLT_of_lt [PartialOrder Γ] [DecidableLT Γ]
     {c i : Γ} (h : i < c) (x : HahnSeries Γ R) : (truncLT c x).coeff i = x.coeff i := by
   simp [h]
 
