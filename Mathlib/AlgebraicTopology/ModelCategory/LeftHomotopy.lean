@@ -35,7 +35,7 @@ namespace Precylinder
 
 variable {X : C} (P : Precylinder X) {Y : C}
 
-/-- Given a precylinder `P` for `X`, two maps `f` and `g` in `X ⟶ Y` are homotopic
+/-- Given a precylinder `P` for `X`, two maps `f` and `g` in `X ⟶ Y` are homotopic relative to `P`
 when there is a morphism `h : P.I ⟶ Y` such that `P.i₀ ≫ h = f` and `P.i₁ ≫ h = g`. -/
 structure LeftHomotopy (f g : X ⟶ Y) where
   /-- a morphism from the (pre)cylinder object to the target -/
