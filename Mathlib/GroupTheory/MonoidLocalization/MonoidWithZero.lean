@@ -30,7 +30,7 @@ theorem LocalizationMap.subsingleton (f : LocalizationMap S N) (h : 0 ∈ S) :
   rw [← LocalizationMap.mk'_sec f a, ← LocalizationMap.mk'_sec f b, LocalizationMap.eq]
   exact ⟨⟨0, h⟩, by simp only [zero_mul]⟩
 
-protected theorem LocalizationMap.map_zero (f : LocalizationMap S N) : f.toMap 0 = 0 := by
+protected theorem LocalizationMap.map_zero (f : LocalizationMap S N) : f 0 = 0 := by
   have ⟨ms, eq⟩ := f.surj 0
   rw [← zero_mul, map_mul, ← eq, zero_mul, mul_zero]
 

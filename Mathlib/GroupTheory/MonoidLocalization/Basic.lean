@@ -52,9 +52,6 @@ a structure up to isomorphism, and reason about things that satisfy the predicat
 The infimum form of the localization congruence relation is chosen as 'canonical' here, since it
 shortens some proofs.
 
-To apply a localization map `f` as a function, we use `f.toMap`, as coercions don't work well for
-this structure.
-
 To reason about the localization as a quotient type, use `mk_eq_monoidOf_mk'` and associated
 lemmas. These show the quotient map `mk : M → S → Localization S` equals the
 surjection `LocalizationMap.mk'` induced by the map
@@ -1360,23 +1357,22 @@ namespace Submonoid.LocalizationMap
 
 variable {M N : Type*} [CommMonoid M] {S : Submonoid M} [CommMonoid N]
 
-@[to_additive] theorem toMap_injective_iff (f : LocalizationMap S N) :
-    Injective f.toMap ↔ ∀ ⦃x⦄, x ∈ S → IsRegular x := by
+@[to_additive] theorem injective_iff (f : LocalizationMap S N) :
+    Injective f ↔ ∀ ⦃x⦄, x ∈ S → IsRegular x := by
   simp_rw [Commute.isRegular_iff (Commute.all _), IsLeftRegular,
     Injective, LocalizationMap.eq_iff_exists, exists_imp, Subtype.forall]
   exact forall₂_swap
 
-@[to_additive] theorem top_toMap_injective_iff (f : (⊤ : Submonoid M).LocalizationMap N) :
-    Injective f.toMap ↔ IsCancelMul M := by
-  simp [toMap_injective_iff, isCancelMul_iff_forall_isRegular]
+@[to_additive] theorem top_injective_iff (f : (⊤ : Submonoid M).LocalizationMap N) :
+    Injective f ↔ IsCancelMul M := by
+  simp [injective_iff, isCancelMul_iff_forall_isRegular]
 
-theorem map_isRegular (f : LocalizationMap S N) {m : M} (hm : IsRegular m) :
-    IsRegular (f.toMap m) := by
+theorem map_isRegular (f : LocalizationMap S N) {m : M} (hm : IsRegular m) : IsRegular (f m) := by
   refine (Commute.isRegular_iff (Commute.all _)).mpr fun n₁ n₂ eq ↦ ?_
   have ⟨ms₁, eq₁⟩ := f.surj n₁
   have ⟨ms₂, eq₂⟩ := f.surj n₂
   rw [← (f.map_units (ms₁.2 * ms₂.2)).mul_left_inj, Submonoid.coe_mul]
-  replace eq := congr($eq * f.toMap (ms₁.2 * ms₂.2))
+  replace eq := congr($eq * f (ms₁.2 * ms₂.2))
   simp_rw [mul_assoc] at eq
   rw [map_mul, ← mul_assoc n₁, eq₁, ← mul_assoc n₂, mul_right_comm n₂, eq₂] at eq ⊢
   simp_rw [← map_mul, eq_iff_exists] at eq ⊢
