@@ -19,16 +19,12 @@ instance matrix (ι : Type*) [Fintype ι] [DecidableEq ι] :
     Algebra.IsCentral K (Matrix ι ι D) where
   out m h := by
     refine isEmpty_or_nonempty ι |>.recOn
-      (fun h => Algebra.mem_bot.2 ⟨0, Matrix.ext fun i _ => h.elim i⟩) fun ⟨i⟩ => ?_
-    obtain ⟨d, rfl⟩ := mem_range_scalar_of_commute_single (M := m) (fun _ _ _ =>
-      Subalgebra.mem_center_iff.mp h _)
-    have mem : d ∈ Subalgebra.center K D := by
-      rw [Subalgebra.mem_center_iff] at h ⊢
+      (fun h => Algebra.mem_bot.2 ⟨0, ext fun i _ => h.elim i⟩) fun ⟨i⟩ => ?_
+    obtain ⟨d, hd, rfl⟩ : m ∈ _ '' _ := by rw [← center_eq_scalar_image]; exact_mod_cast h
+    obtain ⟨r, rfl⟩ : d ∈ (⊥ : Subalgebra K D) := by
+      rw [← center_eq_bot K D, Subalgebra.mem_center_iff]
       intro d'
-      simpa using Matrix.ext_iff.2 (h (scalar ι d')) i i
-    rw [center_eq_bot, Algebra.mem_bot] at mem
-    obtain ⟨r, rfl⟩ := mem
-    rw [Algebra.mem_bot]
+      simpa using ext_iff.2 (Subalgebra.mem_center_iff.mp h (scalar ι d')) i i
     exact ⟨r, rfl⟩
 
 end Algebra.IsCentral
