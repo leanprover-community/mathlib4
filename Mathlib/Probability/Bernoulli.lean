@@ -83,12 +83,12 @@ If a random variable is ae equal to `0` or `1`, then we can compute its variance
 that it's equal to `0` times the conditional probability that it's equal to `1`. -/
 lemma variance_of_ae_eq_zero_or_one {μ : Measure Ω} [IsZeroOrProbabilityMeasure μ]
     (hXmeas : AEStronglyMeasurable X μ) (hX : ∀ᵐ ω ∂μ, X ω = 0 ∨ X ω = 1) :
-    Var[X ; μ] = (μ {ω | X ω = 0}).toReal * (μ {ω | X ω = 1}).toReal := by
+    Var[X; μ] = (μ {ω | X ω = 0}).toReal * (μ {ω | X ω = 1}).toReal := by
   wlog hXmeas : StronglyMeasurable X
   · obtain ⟨Y, hYmeas, hXY⟩ := ‹AEStronglyMeasurable X μ›
     calc
-      Var[X ; μ]
-      _ = Var[Y ; μ] := variance_congr hXY
+      Var[X; μ]
+      _ = Var[Y; μ] := variance_congr hXY
       _ = (μ {ω | Y ω = 0}).toReal * (μ {ω | Y ω = 1}).toReal := by
         refine this hYmeas.aestronglyMeasurable ?_ hYmeas
         filter_upwards [hX, hXY] with ω hXω hXYω
@@ -125,12 +125,12 @@ conditional probability that it's equal to `0` times the conditional probability
 `1`. -/
 lemma condVar_of_ae_eq_zero_or_one {m₀ : MeasurableSpace Ω} (hm : m ≤ m₀) {μ : Measure[m₀] Ω}
     [IsFiniteMeasure μ] (hXmeas : AEStronglyMeasurable[m₀] X μ) (hX : ∀ᵐ ω ∂μ, X ω = 0 ∨ X ω = 1) :
-    Var[X ; μ | m] =ᵐ[μ] μ[X | m] * μ[1 - X | m] := by
+    Var[X; μ | m] =ᵐ[μ] μ[X | m] * μ[1 - X | m] := by
   wlog hXmeas : StronglyMeasurable[m₀] X
   · obtain ⟨Y, hYmeas, hXY⟩ := ‹AEStronglyMeasurable[m₀] X μ›
     calc
-      Var[X ; μ | m]
-      _ =ᵐ[μ] Var[Y ; μ | m] := condVar_congr_ae hXY
+      Var[X; μ | m]
+      _ =ᵐ[μ] Var[Y; μ | m] := condVar_congr_ae hXY
       _ =ᵐ[μ] μ[Y | m] * μ[1 - Y | m] := by
         refine this hm hYmeas.aestronglyMeasurable ?_ hYmeas
         filter_upwards [hX, hXY] with ω hXω hXYω
