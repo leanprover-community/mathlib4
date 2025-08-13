@@ -711,8 +711,7 @@ theorem _root_.LinearMap.range_smulRight_apply {R M M₁ : Type*} [AddCommMonoid
   simp only [LinearMap.mem_range, LinearMap.smulRight_apply, Submodule.mem_span_singleton]
   refine ⟨fun ⟨w, hw⟩ => ⟨f w, hw ▸ rfl⟩, fun ⟨w, hw⟩ => ?_⟩
   obtain ⟨y, hy⟩ : ∃ y, f y ≠ 0 := by simpa [Ne, LinearMap.ext_iff] using hf
-  use (w * (f y)⁻¹) • y
-  simp [hw, mul_assoc, inv_mul_cancel₀ hy]
+  exact ⟨(w * (f y)⁻¹) • y, by simp [hw, mul_assoc, inv_mul_cancel₀ hy]⟩
 
 theorem range_smulRight_apply {R : Type*} [DivisionSemiring R] [Module R M₁] [Module R M₂]
     [TopologicalSpace R] [ContinuousSMul R M₂] {f : M₁ →L[R] R} (hf : f ≠ 0) (x : M₂) :
