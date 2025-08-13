@@ -154,24 +154,24 @@ lemma hasBasis_nhds_zero_min_inv :
     · refine ⟨x * x, mul_mem hx hx, setOf_subset_setOf.mpr fun z hz ↦ ?_⟩
       simp only [Valuation.Compatible.rel_iff_le («v» := v),
         Valuation.Compatible.rel_lt_iff_lt («v» := v), map_mul] at *
-      refine ((mul_lt_mul_right (zero_lt_iff.2 (valuation_posSubmonoid_ne_zero_of_compatible _
+      refine ((mul_lt_mul_right (zero_lt_iff.2 ((v).apply_posSubmonoid_ne_zero
         ⟨y, hy⟩))).2 hz.1).trans_le ?_
       rw [mul_assoc]
-      exact (mul_le_iff_le_one_right (zero_lt_iff.2 (valuation_posSubmonoid_ne_zero_of_compatible _
+      exact (mul_le_iff_le_one_right (zero_lt_iff.2 ((v).apply_posSubmonoid_ne_zero
         ⟨x, hx⟩))).2 hxy
     · refine ⟨y * y, mul_mem hy hy, setOf_subset_setOf.mpr fun z hz ↦ ?_⟩
       simp only [Valuation.Compatible.rel_iff_le («v» := v),
         Valuation.Compatible.rel_lt_iff_lt («v» := v), map_mul] at *
-      rw [← mul_lt_mul_right (zero_lt_iff.2 (valuation_posSubmonoid_ne_zero_of_compatible
-        (valuation R) ⟨y, hy⟩)), mul_assoc]
+      rw [← mul_lt_mul_right (zero_lt_iff.2 ((valuation R).apply_posSubmonoid_ne_zero
+         ⟨y, hy⟩)), mul_assoc]
       exact hz.2.trans_le hxy
   · rintro x hx
     obtain hx1 | h1x := le_total (v x) 1
     · refine ⟨(x, 1), ⟨hx, one_mem _⟩, setOf_subset_setOf.mpr fun z hz ↦ ⟨?_, ?_⟩⟩
       · rwa [mul_one] at hz
       · simp only [Valuation.Compatible.rel_lt_iff_lt («v» := v), map_mul, map_one, mul_one] at hz ⊢
-        rw [← mul_lt_mul_right (zero_lt_iff.2 (valuation_posSubmonoid_ne_zero_of_compatible
-          (valuation R) ⟨x, hx⟩))] at hz
+        rw [← mul_lt_mul_right (zero_lt_iff.2 ((valuation R).apply_posSubmonoid_ne_zero
+          ⟨x, hx⟩))] at hz
         exact hz.trans_le (mul_le_one' hx1 hx1)
     · refine ⟨(1, x), ⟨one_mem _, hx⟩, setOf_subset_setOf.mpr fun z hz ↦ ⟨?_, hz⟩⟩
       simp only [Valuation.Compatible.rel_lt_iff_lt («v» := v), map_mul, map_one] at hz ⊢
