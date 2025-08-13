@@ -7,6 +7,7 @@ import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
 import Mathlib.Algebra.Star.StarAlgHom
 import Mathlib.Algebra.Star.Center
 import Mathlib.Algebra.Star.SelfAdjoint
+import Mathlib.Algebra.Star.Prod
 
 /-!
 # Non-unital Star Subalgebras
