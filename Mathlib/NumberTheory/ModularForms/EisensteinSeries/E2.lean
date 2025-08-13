@@ -43,8 +43,10 @@ infinity of the partial sum of `m` in `[N,N)` of `e2Summand m`. This sum over sy
 intervals is handy in showing it is Cauchy. -/
 def G2 : ℍ → ℂ := fun z => limUnder atTop (fun N : ℕ => ∑ m ∈ Icc (-N : ℤ) N, e2Summand m z)
 
+/-- The normalised Eisenstein series of weight `2` and level `1`. -/
 def E2 : ℍ → ℂ := (1 / (2 * riemannZeta 2)) •  G2
 
+/-- This function measures the defect in `E2` being a modular form. -/
 def D2 (γ : SL(2, ℤ)) : ℍ → ℂ := fun z => (2 * π * Complex.I * γ 1 0) / (denom γ z)
 
 lemma Icc_succ_succ (n : ℕ) : Finset.Icc (-(n + 1) : ℤ) (n + 1) = Finset.Icc (-n : ℤ) n ∪
