@@ -559,6 +559,7 @@ also isomorphic.
 This `Prop` is precisely the relation saying that the isomorphism sends `x` to `y`.
 
 This is an auxiliary definition for the tactic `rw_val_equiv`. -/
+@[nolint unusedArguments]
 def Associated (h : v₁.IsEquiv v₂) (x : Γ₁) (y : Γ₂) : Prop :=
   ∃ r s : R, IsUnit (v₁ s) ∧ IsUnit (v₂ s) ∧ v₁ r = x * v₁ s ∧ v₂ r = y * v₂ s
 
