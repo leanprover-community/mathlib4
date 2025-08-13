@@ -259,7 +259,7 @@ lemma Module.length_of_free_of_finite
 lemma Module.length_eq_one_iff :
     Module.length R M = 1 ↔ IsSimpleModule R M := by
   rw [← WithBot.coe_inj, Module.coe_length, WithBot.coe_one,
-    Order.krullDim_eq_one_iff_of_boundedOrder]
+    Order.krullDim_eq_one_iff_of_boundedOrder, isSimpleModule_iff]
 
 variable (R M) in
 @[simp]

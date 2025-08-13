@@ -159,10 +159,10 @@ theorem exists_isCompl (p : Submodule (MonoidAlgebra k G) V) :
   rcases MonoidAlgebra.exists_leftInverse_of_injective p.subtype p.ker_subtype with ⟨f, hf⟩
   exact ⟨LinearMap.ker f, LinearMap.isCompl_of_proj <| DFunLike.congr_fun hf⟩
 
-/-- This also implies instances `IsSemisimpleModule (MonoidAlgebra k G) V` and
+/-- This also implies instances `ComplementedLattice (Submodule (MonoidAlgebra k G) V)` and
 `IsSemisimpleRing (MonoidAlgebra k G)`. -/
-instance complementedLattice : ComplementedLattice (Submodule (MonoidAlgebra k G) V) :=
-  ⟨exists_isCompl⟩
+instance : IsSemisimpleModule (MonoidAlgebra k G) V where
+  exists_isCompl := exists_isCompl
 
 instance [AddGroup G] : IsSemisimpleRing (AddMonoidAlgebra k G) :=
   haveI : NeZero (Fintype.card (Multiplicative G) : k) := by
