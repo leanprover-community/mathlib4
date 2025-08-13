@@ -237,9 +237,8 @@ Elaborates a call to `norm_num only? [args]` or `norm_num1`.
 * `useSimp`: false if `norm_num1` was used, in which case only the structural parts
   of `simp` will be used, not any of the post-processing that `simp only` does without lemmas
 -/
-def elabNormNum (cfg args loc : Syntax) (simpOnly := false) (useSimp := true) : TacticM Unit := do
-  let g ← getMainGoal
-  g.withContext do
+def elabNormNum (cfg args loc : Syntax) (simpOnly := false) (useSimp := true) :
+    TacticM Unit := withMainContext do
   let ctx ← getSimpContext cfg args (!useSimp || simpOnly)
   let loc := expandOptLocation loc
   Tactic.atNondepPropLocation (.withContext ctx (deriveSimp · useSimp)) "norm_num" loc
