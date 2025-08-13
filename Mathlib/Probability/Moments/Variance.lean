@@ -393,11 +393,6 @@ nonrec theorem IndepFun.variance_add {X Y : Ω → ℝ} (hX : MemLp X 2 μ)
   rw [variance_add hX hY, h.covariance_eq_zero hX hY]
   simp
 
-/-- The variance of the sum of two independent random variables is the sum of the variances. -/
-theorem IndepFun.variance_fun_add {X Y : Ω → ℝ} (hX : MemLp X 2 μ)
-    (hY : MemLp Y 2 μ) (h : IndepFun X Y μ) : Var[fun ω ↦ X ω + Y ω; μ] = Var[X; μ] + Var[Y; μ] :=
-  h.variance_add hX hY
-
 -- Porting note: supplied `MeasurableSpace Ω` argument of `hs`, `h` by unification
 /-- The variance of a finite sum of pairwise independent random variables is the sum of the
 variances. -/
@@ -523,7 +518,7 @@ lemma integral_continuousLinearMap_prod {L : E × F →L[ℝ] G}
   integral_continuousLinearMap_prod' (ContinuousLinearMap.integrable_comp _ hμ)
     (ContinuousLinearMap.integrable_comp _ hν)
 
-lemma variance_dual_prod' {L : Dual ℝ (E × F)}
+lemma variance_dual_prod' {L : StrongDual ℝ (E × F)}
     (hLμ : MemLp (L.comp (.inl ℝ E F)) 2 μ) (hLν : MemLp (L.comp (.inr ℝ E F)) 2 ν) :
     Var[L; μ.prod ν] = Var[L.comp (.inl ℝ E F); μ] + Var[L.comp (.inr ℝ E F); ν] := by
   have : L = fun x : E × F ↦ L.comp (.inl ℝ E F) x.1 + L.comp (.inr ℝ E F) x.2 := by
@@ -531,7 +526,7 @@ lemma variance_dual_prod' {L : Dual ℝ (E × F)}
   conv_lhs => rw [this]
   rw [variance_add_prod hLμ hLν]
 
-lemma variance_dual_prod {L : Dual ℝ (E × F)} (hLμ : MemLp id 2 μ) (hLν : MemLp id 2 ν) :
+lemma variance_dual_prod {L : StrongDual ℝ (E × F)} (hLμ : MemLp id 2 μ) (hLν : MemLp id 2 ν) :
     Var[L; μ.prod ν] = Var[L.comp (.inl ℝ E F); μ] + Var[L.comp (.inr ℝ E F); ν] :=
   variance_dual_prod' (ContinuousLinearMap.comp_memLp' _ hLμ)
     (ContinuousLinearMap.comp_memLp' _ hLν)
