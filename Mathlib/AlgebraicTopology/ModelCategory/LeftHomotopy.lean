@@ -192,7 +192,7 @@ lemma factorsThroughLocalization [CategoryWithWeakEquivalences C] :
   have := Localization.inverts L (weakEquivalences C) P.π (by
     rw [← weakEquivalence_iff]
     infer_instance)
-  simp only [← cancel_mono (L.map P.π), ← L.map_comp, P.i₀_π, P.i₁_π]
+  simp [← cancel_mono (L.map P.π), ← L.map_comp, P.i₀_π, P.i₁_π]
 
 variable {X Y : C}
 
