@@ -377,8 +377,8 @@ theorem eqvGen_step_iff_join_red : EqvGen Red.Step L₁ L₂ ↔ Join Red L₁ L
 
 /-- Predicate asserting that the word `L` admits no reduction steps, i.e., no two neighboring
 elements of the word cancel. -/
-@[to_additive FreeAddGroup.IsReduced "Predicate asserting the word `L` admits no reduction steps,
-i.e., no two neighboring elements of the word cancel."]
+@[to_additive FreeAddGroup.IsReduced /-- Predicate asserting the word `L` admits no reduction steps,
+i.e., no two neighboring elements of the word cancel. -/]
 def IsReduced (L : List (α × Bool)) : Prop := L.Chain' fun a b ↦ a.1 = b.1 → a.2 = b.2
 
 section IsReduced
