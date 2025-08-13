@@ -30,6 +30,23 @@ A graph is complete multipartite iff non-adjacency is transitive.
 * See also: `Mathlib/Combinatorics/SimpleGraph/FiveWheelLike.lean`
   `colorable_iff_isCompleteMultipartite_of_maximal_cliqueFree` a maximally `r + 1`- cliquefree graph
   is `r`-colorable iff it is complete-multipartite.
+
+* `SimpleGraph.completeEquipartiteGraph`: the **complete equipartite graph** in parts of *equal*
+  size such that two vertices are adjacent if and only if they are in different parts.
+
+## Implementation Notes
+
+The definition of `completeEquipartiteGraph` is similar to `completeMultipartiteGraph`
+except that `Sigma.fst` is replaced by `Prod.fst` in the definition. The difference is that the
+former vertices are a product type whereas the latter vertices are a *dependent* product type.
+
+While `completeEquipartiteGraph r t` could have been defined as the specialisation
+`completeMultipartiteGraph (const (Fin r) (Fin t))` (or `turanGraph (r * t) r`), it is convenient
+to instead have a *non-dependent* *product* type for the vertices.
+
+See `completeEquipartiteGraph.completeMultipartiteGraph`, `completeEquipartiteGraph.turanGraph`
+for the isomorphisms between a `completeEquipartiteGraph` and a corresponding
+`completeMultipartiteGraph`, `turanGraph`.
 -/
 
 open Finset Fintype
@@ -175,8 +192,14 @@ section CompleteEquipartiteGraph
 variable {r t : ℕ}
 
 /-- The **complete equipartite graph** in `r` parts each of *equal* size `t` such that two
-vertices are adjacent if and only if they are in different parts. -/
+vertices are adjacent if and only if they are in different parts, often denoted $K_r(t)$.
+
+This is isomorphic to a corresponding `completeMultipartiteGraph` and `turanGraph`. The difference
+is that the former vertices are a product type.
+
+See `completeEquipartiteGraph.completeMultipartiteGraph`, `completeEquipartiteGraph.turanGraph`. -/
 abbrev completeEquipartiteGraph (r t : ℕ) : SimpleGraph (Fin r × Fin t) :=
+  SimpleGraph.comap Prod.fst ⊤
 
 lemma completeEquipartiteGraph_adj {v w} :
   (completeEquipartiteGraph r t).Adj v w ↔ v.1 ≠ w.1 := by rfl
