@@ -5,27 +5,58 @@
 - github: https://github.com/ImperialCollegeLondon/FLT
   default_branch: main
   name: Fermat's Last Theorem
+  workflows:
+    build: blueprint.yml
+    docs: blueprint.yml
+    release-tag: create-release.yml
+    update: update.yml
 - github: https://github.com/fpvandoorn/carleson
   default_branch: master
   name: Carleson operators on doubling metric measure spaces
+  workflows:
+    build: push.yml
+    docs: push.yml
+    release-tag: create-release.yml
 - github: https://github.com/emilyriehl/infinity-cosmos
   default_branch: main
   name: ∞-Cosmos
+  workflows:
+    build: blueprint.yml
+    docs: blueprint.yml
+    release-tag: create-release.yml
+    update: update.yml
 - github: https://github.com/teorth/pfr
   default_branch: master
   name: The Polynomial Freiman-Ruzsa Conjecture
+  workflows:
+    build: push.yml
+    docs: push.yml
 - github: https://github.com/AlexKontorovich/PrimeNumberTheoremAnd
   default_branch: main
   name: Prime Number Theorem and ...
+  workflows:
+    build: push.yml
+    docs: push.yml
 - github: https://github.com/leanprover-community/sphere-eversion
   default_branch: master
   name: The sphere eversion project
+  workflows:
+    build: blueprint.yml
+    docs: blueprint.yml
 - github: https://github.com/YaelDillies/LeanCamCombi
   default_branch: master
   name: Cambridge Combinatorics in Lean
+  workflows:
+    build: push_master.yml
+    docs: push_master.yml
 - github: https://github.com/YaelDillies/add-combi
   default_branch: master
   name: add-combi
+  workflows:
+    build: build.yml
+    docs: build.yml
 - github: https://github.com/vihdzp/combinatorial-games
   default_branch: master
   name: Combinatorial Games in Lean
+  workflows:
+    build: lean_action_ci.yml
