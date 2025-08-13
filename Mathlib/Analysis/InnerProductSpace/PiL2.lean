@@ -580,12 +580,10 @@ protected noncomputable def singleton : OrthonormalBasis ι 𝕜 𝕜 :=
   (Basis.singleton ι 𝕜).toOrthonormalBasis (by simp [orthonormal_iff_ite, Unique.eq_default])
 
 @[simp]
-theorem singleton_apply (i) : OrthonormalBasis.singleton ι 𝕜 i = 1 :=
-  Basis.singleton_apply _ _ _
+theorem singleton_apply (i) : OrthonormalBasis.singleton ι 𝕜 i = 1 := Basis.singleton_apply _ _ _
 
 @[simp]
-theorem singleton_repr (x i) :
-    (OrthonormalBasis.singleton ι 𝕜).repr x i = x :=
+theorem singleton_repr (x i) : (OrthonormalBasis.singleton ι 𝕜).repr x i = x :=
   Basis.singleton_repr _ _ _ _
 
 end Singleton
