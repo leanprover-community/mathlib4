@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou
 -/
 import Mathlib.Algebra.Group.Pi.Lemmas
-import Mathlib.Algebra.Group.Support
+import Mathlib.Algebra.Notation.Support
 import Mathlib.Data.Set.SymmDiff
 
 /-!
@@ -43,7 +43,7 @@ section One
 variable [One M] [One N] {s t : Set α} {f g : α → M} {a : α}
 
 /-- `Set.mulIndicator s f a` is `f a` if `a ∈ s`, `1` otherwise. -/
-@[to_additive "`Set.indicator s f a` is `f a` if `a ∈ s`, `0` otherwise."]
+@[to_additive /-- `Set.indicator s f a` is `f a` if `a ∈ s`, `0` otherwise. -/]
 noncomputable def mulIndicator (s : Set α) (f : α → M) (x : α) : M :=
   haveI := Classical.decPred (· ∈ s)
   if x ∈ s then f x else 1
@@ -119,19 +119,19 @@ theorem mulSupport_mulIndicator :
 /-- If a multiplicative indicator function is not equal to `1` at a point, then that point is in the
 set. -/
 @[to_additive
-      "If an additive indicator function is not equal to `0` at a point, then that point is
-      in the set."]
+      /-- If an additive indicator function is not equal to `0` at a point, then that point is
+      in the set. -/]
 theorem mem_of_mulIndicator_ne_one (h : mulIndicator s f a ≠ 1) : a ∈ s :=
   not_imp_comm.1 (fun hn => mulIndicator_of_notMem hn f) h
 
 /-- See `Set.eqOn_mulIndicator'` for the version with `sᶜ`. -/
 @[to_additive
-      "See `Set.eqOn_indicator'` for the version with `sᶜ`"]
+      /-- See `Set.eqOn_indicator'` for the version with `sᶜ` -/]
 theorem eqOn_mulIndicator : EqOn (mulIndicator s f) f s := fun _ hx => mulIndicator_of_mem hx f
 
 /-- See `Set.eqOn_mulIndicator` for the version with `s`. -/
 @[to_additive
-      "See `Set.eqOn_indicator` for the version with `s`."]
+      /-- See `Set.eqOn_indicator` for the version with `s`. -/]
 theorem eqOn_mulIndicator' : EqOn (mulIndicator s f) 1 sᶜ :=
   fun _ hx => mulIndicator_of_notMem hx f
 
@@ -180,7 +180,7 @@ variable (M)
 
 @[to_additive (attr := simp)]
 theorem mulIndicator_one (s : Set α) : (mulIndicator s fun _ => (1 : M)) = fun _ => (1 : M) :=
-  mulIndicator_eq_one.2 <| by simp only [mulSupport_one, empty_disjoint]
+  mulIndicator_eq_one.2 <| by simp only [mulSupport_fun_one, empty_disjoint]
 
 @[to_additive (attr := simp)]
 theorem mulIndicator_one' {s : Set α} : s.mulIndicator (1 : α → M) = 1 :=
@@ -381,7 +381,7 @@ theorem mulIndicator_mul_compl_eq_piecewise [DecidablePred (· ∈ s)] (f g : α
       Set.mulIndicator_of_mem (Set.mem_compl h), one_mul]
 
 /-- `Set.mulIndicator` as a `monoidHom`. -/
-@[to_additive "`Set.indicator` as an `addMonoidHom`."]
+@[to_additive /-- `Set.indicator` as an `addMonoidHom`. -/]
 noncomputable def mulIndicatorHom {α} (M) [MulOneClass M] (s : Set α) : (α → M) →* α → M where
   toFun := mulIndicator s
   map_one' := mulIndicator_one M s
