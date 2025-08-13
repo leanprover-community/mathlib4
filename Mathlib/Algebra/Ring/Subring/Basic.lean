@@ -83,7 +83,7 @@ theorem toSubsemiring_mono : Monotone (toSubsemiring : Subring R → Subsemiring
 @[deprecated toSubsemiring_strictMono (since := "2025-08-13")]
 lemma toSubsemiring_lt_toSubsemiring (hst : s < t) : s.toSubsemiring < t.toSubsemiring := hst
 
-@[deprecated toSubSemiring_mono (since := "2025-08-13")]
+@[deprecated toSubsemiring_mono (since := "2025-08-13")]
 lemma toSubsemiring_le_toSubsemiring (hst : s ≤ t) : s.toSubsemiring ≤ t.toSubsemiring := hst
 
 @[gcongr, mono]
@@ -100,10 +100,10 @@ lemma toAddSubgroup_lt_toAddSubgroup (hst : s < t) : s.toAddSubgroup < t.toAddSu
 @[deprecated toAddSubgroup_mono (since := "2025-08-13")]
 lemma toAddSubgroup_le_toAddSubgroup (hst : s ≤ t) : s.toAddSubgroup ≤ t.toAddSubgroup := hst
 
-@[gcongr, mono]
+@[mono]
 theorem toSubmonoid_strictMono : StrictMono (fun s : Subring R => s.toSubmonoid) := fun _ _ => id
 
-@[gcongr, mono]
+@[mono]
 theorem toSubmonoid_mono : Monotone (fun s : Subring R => s.toSubmonoid) :=
   toSubmonoid_strictMono.monotone
 
