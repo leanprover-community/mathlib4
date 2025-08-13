@@ -24,7 +24,7 @@ namespace Function
 variable [One M] [One N] [One P] {f g : ι → M} {s : Set ι} {x : ι}
 
 /-- `mulSupport` of a function is the set of points `x` such that `f x ≠ 1`. -/
-@[to_additive "`support` of a function is the set of points `x` such that `f x ≠ 0`."]
+@[to_additive /-- `support` of a function is the set of points `x` such that `f x ≠ 0`. -/]
 def mulSupport (f : ι → M) : Set ι := {x | f x ≠ 1}
 
 @[to_additive]

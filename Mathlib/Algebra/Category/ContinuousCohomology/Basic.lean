@@ -166,9 +166,9 @@ def kerHomogeneousCochainsZeroEquiv
       subst hn
       obtain ⟨⟨x : C(G, _), hx⟩, hx'⟩ := x
       have : (X.ρ g).hom (x (g⁻¹ * 1)) = x 1 := congr(DFunLike.coe (F := C(G, _)) $(hx g) 1)
-      have hx' : x (g⁻¹ * 1) + (- x 1) = 0 :=
+      have hx' : x (g⁻¹ * 1) - x 1 = 0 :=
         congr(DFunLike.coe (F := C(G, _)) (DFunLike.coe (F := C(G, _)) ($hx').1 1) (g⁻¹ * 1))
-      rw [← sub_eq_add_neg, sub_eq_zero] at hx'
+      rw [sub_eq_zero] at hx'
       exact congr((X.ρ g).hom $hx').symm.trans this }
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
@@ -177,14 +177,14 @@ def kerHomogeneousCochainsZeroEquiv
       by subst hn; exact x.2 g⟩, ?_⟩
     subst hn
     exact Subtype.ext (ContinuousMap.ext fun a ↦
-      ContinuousMap.ext fun b ↦ show x.1 + (- x.1) = (0 : X.V) by simp)
+      ContinuousMap.ext fun b ↦ show x.1 - x.1 = (0 : X.V) by simp)
   left_inv x := by
     subst hn
     obtain ⟨⟨x : C(G, _), hx⟩, hx'⟩ := x
     refine Subtype.ext (Subtype.ext <| ContinuousMap.ext fun a ↦ ?_)
-    have hx' : x 1 + (- x a) = 0 :=
+    have hx' : x 1 - x a = 0 :=
       congr(DFunLike.coe (F := C(G, _)) (DFunLike.coe (F := C(G, _)) ($hx').1 a) 1)
-    rwa [← sub_eq_add_neg, sub_eq_zero] at hx'
+    rwa [sub_eq_zero] at hx'
   right_inv _ := rfl
   continuous_toFun := continuous_induced_rng.mpr ((continuous_eval_const (F := C(G, _)) 1).comp
       (continuous_subtype_val.comp continuous_subtype_val))
