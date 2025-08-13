@@ -1214,6 +1214,6 @@ lemma denselyOrdered_iff_of_strictAnti {X Y F : Type*} [LinearOrder X] [Preorder
   · simp only [Equiv.trans_apply, EquivLike.coe_coe, OrderDual.forall, OrderDual.ofDual_toDual,
       OrderDual.toDual_le_toDual]
     intro a b
-    rw [hf.le_iff_le]
+    rw [hf.le_iff_ge]
 
 end DenselyOrdered

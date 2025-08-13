@@ -46,7 +46,7 @@ Under various conditions, multiplication of infinite matrices makes sense.
 These have not yet been implemented.
 -/
 
-assert_not_exists Algebra Field Star
+assert_not_exists Algebra Field TrivialStar
 
 universe u u' v w
 
@@ -786,8 +786,6 @@ theorem mulVec_one [Fintype n] (A : Matrix m n α) : A *ᵥ 1 = ∑ j, Aᵀ j :=
 
 theorem one_vecMul [Fintype m] (A : Matrix m n α) : 1 ᵥ* A = ∑ i, A i := by
   ext; simp [vecMul, dotProduct]
-
-@[deprecated (since := "2025-01-26")] alias vec_one_mul := one_vecMul
 
 lemma ext_of_mulVec_single [DecidableEq n] [Fintype n] {M N : Matrix m n α}
     (h : ∀ i, M *ᵥ Pi.single i 1 = N *ᵥ Pi.single i 1) :
