@@ -137,7 +137,7 @@ example (h : p ∧ q) : ¬¬(p ∧ q) := by
   exact h
 
 -- new behaviour as of #27562 (previously the tactic succeeded as a no-op)
-/-- error: push_neg made no progress -/
+/-- error: push_neg made no progress at inductive_proof -/
 #guard_msgs in
 def inductive_proof : True := by
   push_neg at inductive_proof

@@ -46,7 +46,7 @@ def atTarget (proc : String) (failIfUnchanged : Bool) : TacticM Unit := withMain
   -- we use expression equality here (rather than defeq) to be consistent with, e.g.,
   -- `applySimpResultToTarget`
   let unchanged := tgt.consumeMData == r.expr.consumeMData
-  if failIfUnchanged && unchanged then throwError "{proc} made no progress"
+  if failIfUnchanged && unchanged then throwError "{proc} made no progress on goal"
   if r.expr.consumeMData.isConstOf ``True then
     goal.assign (← mkOfEqTrue (← r.getProof))
     replaceMainGoal []
@@ -57,7 +57,7 @@ def atTarget (proc : String) (failIfUnchanged : Bool) : TacticM Unit := withMain
     let newGoal ← applySimpResultToTarget goal tgt r
     replaceMainGoal [newGoal]
 
-/-- Use the procedure `m` to rewrite hypothesis `h`. -/
+/-- Use the procedure `m` to rewrite hypothesis `fvarId`. -/
 def atLocalDecl (proc : String) (failIfUnchanged : Bool) (mayCloseGoal : Bool) (fvarId : FVarId) :
     TacticM Unit := withMainContext do
   let tgt ← instantiateMVars (← fvarId.getType)
@@ -69,7 +69,8 @@ def atLocalDecl (proc : String) (failIfUnchanged : Bool) (mayCloseGoal : Bool) (
   -- we use expression equality here (rather than defeq) to be consistent with, e.g.,
   -- `applySimpResultToLocalDeclCore`
   if failIfUnchanged && tgt.consumeMData == myres.expr.consumeMData then
-    throwError "{proc} made no progress"
+    let hyp := (← getLCtx).get! fvarId
+    throwError "{proc} made no progress at {hyp.userName}"
   match ← applySimpResultToLocalDecl goal fvarId myres mayCloseGoal with
   | none => replaceMainGoal []
   | some (_, newGoal) => replaceMainGoal [newGoal]
@@ -80,6 +81,6 @@ def atLocation (proc : String) (loc : Location) (failIfUnchanged : Bool := true)
     TacticM Unit :=
   withLocation loc (atLocalDecl m proc failIfUnchanged mayCloseGoalFromHyp)
     (atTarget m proc failIfUnchanged)
-    fun _ ↦ throwError "{proc} made no progress"
+    fun _ ↦ throwError "{proc} made no progress anywhere"
 
 end Mathlib.Tactic
