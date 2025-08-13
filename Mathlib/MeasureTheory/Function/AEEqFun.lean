@@ -709,7 +709,7 @@ instance instMonoid : Monoid (α →ₘ[μ] γ) :=
   toGerm_injective.monoid toGerm one_toGerm mul_toGerm pow_toGerm
 
 /-- `AEEqFun.toGerm` as a `MonoidHom`. -/
-@[to_additive (attr := simps) "`AEEqFun.toGerm` as an `AddMonoidHom`."]
+@[to_additive (attr := simps) /-- `AEEqFun.toGerm` as an `AddMonoidHom`. -/]
 def toGermMonoidHom : (α →ₘ[μ] γ) →* (ae μ).Germ γ where
   toFun := toGerm
   map_one' := one_toGerm
@@ -927,8 +927,8 @@ variable [Group β] [IsTopologicalGroup β]
 
 /-- The `MulHom` from the group of continuous maps from `α` to `β` to the group of equivalence
 classes of `μ`-almost-everywhere measurable functions. -/
-@[to_additive "The `AddHom` from the group of continuous maps from `α` to `β` to the group of
-equivalence classes of `μ`-almost-everywhere measurable functions."]
+@[to_additive /-- The `AddHom` from the group of continuous maps from `α` to `β` to the group of
+equivalence classes of `μ`-almost-everywhere measurable functions. -/]
 def toAEEqFunMulHom : C(α, β) →* α →ₘ[μ] β where
   toFun := ContinuousMap.toAEEqFun μ
   map_one' := rfl

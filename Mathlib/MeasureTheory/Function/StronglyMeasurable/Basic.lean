@@ -621,7 +621,7 @@ theorem _root_.Finset.stronglyMeasurable_fun_prod {ι : Type*} {f : ι → α �
 variable {n : MeasurableSpace β} in
 /-- Compositional version of `Finset.stronglyMeasurable_prod` for use by `fun_prop`. -/
 @[to_additive (attr := measurability, fun_prop)
-"Compositional version of `Finset.stronglyMeasurable_sum` for use by `fun_prop`."]
+/-- Compositional version of `Finset.stronglyMeasurable_sum` for use by `fun_prop`. -/]
 lemma Finset.stronglyMeasurable_prod_apply {ι : Type*} {f : ι → α → β → M} {g : α → β}
     {s : Finset ι} (hf : ∀ i ∈ s, StronglyMeasurable ↿(f i)) (hg : Measurable g) :
     StronglyMeasurable fun a ↦ (∏ i ∈ s, f i a) (g a) := by
