@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
 import Mathlib.Order.Atoms
-import Mathlib.Order.OmegaCompletePartialOrder
 import Mathlib.LinearAlgebra.Span.Defs
 import Mathlib.LinearAlgebra.AffineSpace.Defs
 
