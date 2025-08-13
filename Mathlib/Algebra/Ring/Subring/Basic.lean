@@ -72,38 +72,38 @@ variable {s t : Subring R}
 -- Porting note: there is no `Subring.toSubmonoid` but we can't define it because there is a
 -- projection `s.toSubmonoid`
 
-@[mono]
+@[gcongr, mono]
 theorem toSubsemiring_strictMono : StrictMono (toSubsemiring : Subring R → Subsemiring R) :=
   fun _ _ => id
 
-@[mono]
+@[gcongr, mono]
 theorem toSubsemiring_mono : Monotone (toSubsemiring : Subring R → Subsemiring R) :=
   toSubsemiring_strictMono.monotone
 
-@[gcongr]
+@[deprecated toSubsemiring_strictMono (since := "2025-08-13")]
 lemma toSubsemiring_lt_toSubsemiring (hst : s < t) : s.toSubsemiring < t.toSubsemiring := hst
 
-@[gcongr]
+@[deprecated toSubSemiring_mono (since := "2025-08-13")]
 lemma toSubsemiring_le_toSubsemiring (hst : s ≤ t) : s.toSubsemiring ≤ t.toSubsemiring := hst
 
-@[mono]
+@[gcongr, mono]
 theorem toAddSubgroup_strictMono : StrictMono (toAddSubgroup : Subring R → AddSubgroup R) :=
   fun _ _ => id
 
-@[mono]
+@[gcongr, mono]
 theorem toAddSubgroup_mono : Monotone (toAddSubgroup : Subring R → AddSubgroup R) :=
   toAddSubgroup_strictMono.monotone
 
-@[gcongr]
+@[deprecated toAddSubgroup_strictMono (since := "2025-08-13")]
 lemma toAddSubgroup_lt_toAddSubgroup (hst : s < t) : s.toAddSubgroup < t.toAddSubgroup := hst
 
-@[gcongr]
+@[deprecated toAddSubgroup_mono (since := "2025-08-13")]
 lemma toAddSubgroup_le_toAddSubgroup (hst : s ≤ t) : s.toAddSubgroup ≤ t.toAddSubgroup := hst
 
-@[mono]
+@[gcongr, mono]
 theorem toSubmonoid_strictMono : StrictMono (fun s : Subring R => s.toSubmonoid) := fun _ _ => id
 
-@[mono]
+@[gcongr, mono]
 theorem toSubmonoid_mono : Monotone (fun s : Subring R => s.toSubmonoid) :=
   toSubmonoid_strictMono.monotone
 

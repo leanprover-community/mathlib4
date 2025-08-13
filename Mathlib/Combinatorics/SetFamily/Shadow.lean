@@ -79,11 +79,12 @@ theorem shadow_singleton (a : α) : ∂ {{a}} = {∅} := by
   simp [shadow]
 
 /-- The shadow is monotone. -/
-@[mono]
+@[gcongr, mono]
 theorem shadow_monotone : Monotone (shadow : Finset (Finset α) → Finset (Finset α)) := fun _ _ =>
   sup_mono
 
-@[gcongr] lemma shadow_mono (h𝒜ℬ : 𝒜 ⊆ ℬ) : ∂ 𝒜 ⊆ ∂ ℬ := shadow_monotone h𝒜ℬ
+@[deprecated shadow_monotone (since := "2025-08-13")]
+lemma shadow_mono (h𝒜ℬ : 𝒜 ⊆ ℬ) : ∂ 𝒜 ⊆ ∂ ℬ := shadow_monotone h𝒜ℬ
 
 /-- `t` is in the shadow of `𝒜` iff there is a `s ∈ 𝒜` from which we can remove one element to
 get `t`. -/
