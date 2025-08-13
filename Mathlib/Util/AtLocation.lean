@@ -18,6 +18,23 @@ using the metaprogram to modify the goal, a specified hypothesis, or (via `Tacti
 combination of these.
 -/
 
+/-- Runs the given `atLocal` and `atTarget` methods on each of the locations selected by the given
+`loc`.
+* If `loc` is a list of locations, runs at each specified hypothesis (and finally the goal if `⊢` is
+  included), and fails if any of the tactic applications fail.
+* If `loc` is `*`, runs at the nondependent `Prop` hypotheses and then at the target.
+
+This is a variant of `Lean.Elab.Tactic.withLocation`. -/
+def Lean.Elab.Tactic.withNondepPropLocation (loc : Location) (atLocal : FVarId → TacticM Unit)
+    (atTarget : TacticM Unit) : TacticM Unit := do
+  match loc with
+  | Location.targets hyps target => do
+    (← getFVarIds hyps).forM atLocal
+    if target then atTarget
+  | Location.wildcard => do
+    (← (← getMainGoal).getNondepPropHyps).forM atLocal
+    atTarget
+
 namespace Mathlib.Tactic
 open Lean Meta Elab.Tactic
 
@@ -80,5 +97,15 @@ def atLocation (proc : String) (loc : Location) (failIfUnchanged : Bool := true)
   withLocation loc (liftMetaTactic1 ∘ atLocalDecl m proc failIfUnchanged mayCloseGoalFromHyp)
     (liftMetaTactic1 <| atTarget m proc failIfUnchanged)
     fun _ ↦ throwError "{proc} made no progress anywhere"
+
+/-- Use the procedure `m` to rewrite at specified locations.
+
+In the wildcard case (`*`), filter out all dependent and/or non-Prop hypotheses. -/
+def atNondepPropLocation (proc : String) (loc : Location) (failIfUnchanged : Bool := true)
+    (mayCloseGoalFromHyp : Bool := false) :
+    TacticM Unit :=
+  withNondepPropLocation loc
+    (liftMetaTactic1 ∘ atLocalDecl m proc failIfUnchanged mayCloseGoalFromHyp)
+    (liftMetaTactic1 <| atTarget m proc failIfUnchanged)
 
 end Mathlib.Tactic

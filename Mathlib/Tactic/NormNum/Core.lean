@@ -242,7 +242,7 @@ def elabNormNum (cfg args loc : Syntax) (simpOnly := false) (useSimp := true) : 
   g.withContext do
   let ctx ← getSimpContext cfg args (!useSimp || simpOnly)
   let loc := expandOptLocation loc
-  Tactic.atLocation (.withContext ctx (deriveSimp · useSimp)) "norm_num" loc
+  Tactic.atNondepPropLocation (.withContext ctx (deriveSimp · useSimp)) "norm_num" loc
     (failIfUnchanged := false) (mayCloseGoalFromHyp := true)
 
 end Meta.NormNum
