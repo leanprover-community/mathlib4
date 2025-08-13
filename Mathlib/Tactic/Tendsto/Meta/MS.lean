@@ -213,6 +213,16 @@ def log (x : MS) (h_trimmed : Q(PreMS.Trimmed $x.val))
   logBasis := q($x.logBasis)
   h_logBasis := x.h_logBasis
 
+def exp (x : MS) (h_nonpos : Q(¬ Term.FirstIsPos (PreMS.leadingTerm $x.val).exps)) : MS where
+  basis := x.basis
+  logBasis := x.logBasis
+  val := q(PreMS.exp $x.val)
+  f := q(Real.exp ∘ $x.f)
+  h_wo := q(PreMS.exp_WellOrdered $x.h_wo $h_nonpos)
+  h_approx := q(PreMS.exp_Approximates $x.h_basis $x.h_wo $x.h_approx $h_nonpos)
+  h_basis := x.h_basis
+  h_logBasis := x.h_logBasis
+
 end MS
 
 end TendstoTactic

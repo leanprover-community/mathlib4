@@ -61,9 +61,6 @@ structure BasisState where
 
 abbrev BasisM := StateT BasisState TacticM
 
-example (n m : ℕ) (h : n < m) : n < m + 1 := by exact Nat.lt_add_right 1 h
-#check Fin.prop
-
 partial def createMSImp (body : Expr) : BasisM MS := do
   if body.isBVar then
     if body.bvarIdx! != 0 then
@@ -153,6 +150,18 @@ partial def createMSImp (body : Expr) : BasisM MS := do
         n_id := new_n_id
       }
       return MS.log ms h_trimmed h_pos h_last
+  | (``Real.exp, #[arg]) =>
+    let ⟨ms, h_trimmed⟩ ← trimMS (← createMSImp arg)
+    let ⟨leading, h_leading_eq⟩ ← getLeadingTermWithProof ms.val
+    let ~q(⟨$coef, $exps⟩) := leading | panic! "Unexpected leading in computeTendsto"
+    match ← getFirstIs exps with
+    | .pos h_exps => throwError "exp of function with infinite leading term is not implemented"
+    | .neg h_exps =>
+      let h_nonpos : Q(¬ Term.FirstIsPos $exps) := q(Term.not_FirstIsPos_of_FirstIsNeg $h_exps)
+      return MS.exp ms h_nonpos
+    | .zero h_exps =>
+      let h_nonpos : Q(¬ Term.FirstIsPos $exps) := q(Term.not_FirstIsPos_of_AllZero $h_exps)
+      return MS.exp ms h_nonpos
   | _ =>
     if body.hasLooseBVars then
       throwError f!"Unsupported body in createMS: {body}"

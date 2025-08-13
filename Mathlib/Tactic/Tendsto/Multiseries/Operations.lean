@@ -9,6 +9,7 @@ import Mathlib.Tactic.Tendsto.Multiseries.Operations.Mul
 import Mathlib.Tactic.Tendsto.Multiseries.Operations.Inv
 import Mathlib.Tactic.Tendsto.Multiseries.Operations.Pow
 import Mathlib.Tactic.Tendsto.Multiseries.Operations.Log
+import Mathlib.Tactic.Tendsto.Multiseries.Operations.Exp
 
 /-!
 # Operations for multiseries

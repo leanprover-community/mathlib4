@@ -256,6 +256,33 @@ example :
 
 --- end log testing
 
+--- exp testing
+
+example :
+    let f := fun (y : ℝ) ↦ Real.exp (y⁻¹);
+    Tendsto f atTop (𝓝 1) := by
+  compute_asymptotics
+
+example :
+    let f := fun (y : ℝ) ↦ Real.exp y - y;
+    Tendsto f (𝓝[≠] 0) (𝓝 1) := by
+  compute_asymptotics
+
+example :
+    let f := fun (y : ℝ) ↦ Real.exp ((1 + y⁻¹) * y);
+    Tendsto f (𝓝[≠] 0) (𝓝 (Real.exp 1)) := by
+  have : 0 < Real.exp 1 := Real.exp_pos 1
+  compute_asymptotics
+
+-- almost the second remarkable limit
+example :
+    let f := fun (y : ℝ) ↦ Real.exp (Real.log (1 + y⁻¹) * y);
+    Tendsto f atTop (𝓝 (Real.exp 1)) := by
+  have : 0 < Real.exp 1 := Real.exp_pos 1
+  compute_asymptotics
+
+--- end exp testing
+
 example :
   let f := fun (y : ℝ) ↦ -y;
   Tendsto f atTop atBot := by

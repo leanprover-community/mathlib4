@@ -72,6 +72,9 @@ theorem updateBasis_const_real (ms : ℝ) (ex : BasisExtension []) :
 theorem log_const (x : PreMS []) (logBasis : LogBasis []) : (PreMS.log logBasis x) =
     Real.log x := rfl
 
+@[PreMS_const]
+theorem exp_const (x : PreMS []) : (PreMS.exp x) = Real.exp x := rfl
+
 end Const
 
 section Destruct
@@ -202,6 +205,20 @@ theorem log_destruct (ms : PreMS (basis_hd :: basis_tl))
   conv => lhs; unfold PreMS.log; simp
   rfl
 
+theorem exp_destruct (ms : PreMS (basis_hd :: basis_tl)) : destruct ms.exp =
+    match destruct ms with
+    | .none => .some ((0, PreMS.one basis_tl), @PreMS.nil basis_hd basis_tl)
+    | .some ((exp, coef), tl) =>
+      if exp < 0 then
+        destruct (PreMS.expSeries.apply ms)
+      else
+        destruct ((PreMS.expSeries.apply tl).mulMonomial (basis_hd := basis_hd) coef.exp 0) := by
+  cases' ms with exp coef tl
+  · simp [PreMS.exp]
+    rfl
+  · simp [PreMS.exp]
+    split_ifs with h_if <;> simp [h_if]
+
 theorem invSeries_destruct : destruct PreMS.invSeries = .some (1, PreMS.invSeries) := by
   conv => lhs; rw [PreMS.invSeries_eq_cons_self]; simp
 
@@ -222,6 +239,14 @@ theorem logSeriesFrom_destruct (n : ℕ) :
 
 theorem logSeries_destruct : destruct PreMS.logSeries = .some (0, PreMS.logSeriesFrom 1) := by
   simp [PreMS.logSeries, logSeriesFrom_destruct]
+
+theorem expSeriesFrom_destruct (n : ℕ) : destruct (PreMS.expSeriesFrom n) =
+    .some ((n.factorial : ℝ)⁻¹, PreMS.expSeriesFrom (n + 1)) := by
+  rw [PreMS.expSeriesFrom_eq_cons]
+  simp
+
+theorem expSeries_destruct : destruct PreMS.expSeries = .some (1, PreMS.expSeriesFrom 1) := by
+  simp [PreMS.expSeries, expSeriesFrom_destruct]
 
 theorem extendBasisEnd_destruct (f : ℝ → ℝ) (ms : PreMS (basis_hd :: basis_tl)) :
     destruct (ms.extendBasisEnd f) =
@@ -267,6 +292,8 @@ simproc elimDestruct (Stream'.Seq.destruct _) := fun e => do
     | ~q(PreMS.powSeries $x) => simpWith q(powSeries_destruct $x)
     | ~q(PreMS.logSeriesFrom $n) => simpWith q(logSeriesFrom_destruct $n)
     | ~q(PreMS.logSeries) => simpWith q(logSeries_destruct)
+    | ~q(PreMS.expSeriesFrom $n) => simpWith q(expSeriesFrom_destruct $n)
+    | ~q(PreMS.expSeries) => simpWith q(expSeries_destruct)
     | _ => return .continue
   | ~q(PreMS $basis) =>
     let basis' : Q(Basis) ← reduceBasis basis
@@ -314,6 +341,7 @@ simproc elimDestruct (Stream'.Seq.destruct _) := fun e => do
     | ~q(PreMS.inv $arg) => simpWith q(inv_destruct $arg)
     | ~q(PreMS.pow $arg $exp) => simpWith q(pow_destruct $arg $exp)
     | ~q(PreMS.log $logBasis $arg) => simpWith q(log_destruct $arg $logBasis)
+    | ~q(PreMS.exp $arg) => simpWith q(exp_destruct $arg)
     -- | ~q(PreMS.extendBasisEnd $f $arg) => simpWith q(extendBasisEnd_destruct $f $arg)
     | _ => return .continue
   | _ => return .continue

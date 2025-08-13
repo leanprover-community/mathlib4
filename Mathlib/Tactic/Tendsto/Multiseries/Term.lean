@@ -432,6 +432,27 @@ theorem FirstIsNeg_of_tail {hd : ℝ} {tl : List ℝ} (h_hd : hd = 0) (h_tl : Fi
   simp [FirstIsNeg]
   tauto
 
+theorem not_FirstIsPos_of_AllZero {x : List ℝ} (h : AllZero x) : ¬ FirstIsPos x := by
+  cases x with
+  | nil => simp [FirstIsPos]
+  | cons hd tl =>
+    intro h'
+    simp [AllZero, FirstIsPos] at h h'
+    simp [h.left] at h'
+    exact not_FirstIsPos_of_AllZero h.right h'
+
+theorem not_FirstIsPos_of_FirstIsNeg {x : List ℝ} (h : FirstIsNeg x) : ¬ FirstIsPos x := by
+  cases x with
+  | nil => simp [FirstIsPos]
+  | cons hd tl =>
+    intro h'
+    simp [FirstIsNeg, FirstIsPos] at h h'
+    by_cases h_hd : hd = 0
+    · simp [h_hd] at h h'
+      exact not_FirstIsPos_of_FirstIsNeg h h'
+    simp [h_hd] at h h'
+    linarith
+
 theorem tendsto_const_of_AllZero {coef : ℝ} {exps : List ℝ} {basis : Basis}
     (h_length : exps.length = basis.length)
     (h_exps : AllZero exps) :
