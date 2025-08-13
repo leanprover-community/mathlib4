@@ -248,10 +248,7 @@ theorem coe_int_add_eq_ite {n : Nat} (u v : Fin n) :
 
 theorem coe_int_add_eq_mod {n : Nat} (u v : Fin n) :
     ((u + v : Fin n) : Int) = ((u : Int) + (v : Int)) % n := by
-  rw [coe_int_add_eq_ite]
-  split
-  · rw [Int.emod_eq_of_lt] <;> omega
-  · rw [Int.emod_eq_sub_self_emod, Int.emod_eq_of_lt] <;> omega
+  omega
 
 -- Write `a + b` as `if (a + b : ℕ) < n then (a + b : ℤ) else (a + b : ℤ) - n` and
 -- similarly `a - b` as `if (b : ℕ) ≤ a then (a - b : ℤ) else (a - b : ℤ) + n`.
