@@ -10,14 +10,15 @@ import Mathlib.Util.AssertExists
 # Notation for algebraic operators on pi types
 
 This file provides only the notation for (pointwise) `0`, `1`, `+`, `*`, `•`, `^`, `⁻¹` on pi types.
-See `Mathlib/Algebra/Group/Pi/Basic.lean` for the `Monoid` and `Group` instances.
+See `Mathlib/Algebra/Group/Pi/Basic.lean` for the `Monoid` and `Group` instances. There is also
+an instance of the `Star` notation typeclass, but no default notation is included.
 -/
 
 assert_not_exists Set.range Monoid DenselyOrdered
 
 open Function
 
-variable {ι α β : Type*} {G M : ι → Type*}
+variable {ι α β : Type*} {G M R : ι → Type*}
 
 namespace Pi
 
@@ -134,4 +135,19 @@ lemma _root_.Function.const_pow (a : M) (b : α) : const ι a ^ b = const ι (a 
 lemma pow_comp (f : β → M) (a : α) (g : ι → β) : (f ^ a) ∘ g = f ∘ g ^ a := rfl
 
 end Pow
+
+section Star
+
+variable [∀ i, Star (R i)]
+
+instance : Star (∀ i, R i) where star x i := star (x i)
+
+@[simp]
+theorem star_apply (x : ∀ i, R i) (i : ι) : star x i = star (x i) := rfl
+
+theorem star_def (x : ∀ i, R i) : star x = fun i => star (x i) := rfl
+
+end Star
+
+
 end Pi

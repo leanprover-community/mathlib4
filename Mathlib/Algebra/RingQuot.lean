@@ -20,7 +20,7 @@ definition, which is made irreducible for this purpose.
 Since everything runs in parallel for quotients of `R`-algebras, we do that case at the same time.
 -/
 
-assert_not_exists Star.star
+assert_not_exists TrivialStar
 
 universe uR uS uT uA u₄
 

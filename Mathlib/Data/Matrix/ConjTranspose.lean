@@ -9,7 +9,6 @@ import Mathlib.Algebra.BigOperators.RingEquiv
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Star.BigOperators
 import Mathlib.Algebra.Star.Module
-import Mathlib.Algebra.Star.Pi
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Matrix.Basis
 import Mathlib.Data.Matrix.Mul
