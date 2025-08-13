@@ -99,8 +99,8 @@ variable [CategoryWithWeakEquivalences C] (P : Cylinder X)
 abbrev refl (f : X ⟶ Y) : P.LeftHomotopy f f := Precylinder.LeftHomotopy.refl _ f
 
 variable {P} in
-/-- If `f` and `g` are homotopic relative to cylinder `P`, then `g` and `f`
-are homotopic are homotopic relative to `P.symm` -/
+/-- If `f` and `g` are homotopic relative to a cylinder `P`, then `g` and `f`
+are homotopic relative to `P.symm`. -/
 abbrev symm {f g : X ⟶ Y} (h : P.LeftHomotopy f g) : P.symm.LeftHomotopy g f :=
   Precylinder.LeftHomotopy.symm h
 
