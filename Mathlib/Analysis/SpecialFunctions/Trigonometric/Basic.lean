@@ -111,7 +111,7 @@ end Real
 namespace Real
 
 theorem exists_cos_eq_zero : 0 ∈ cos '' Icc (1 : ℝ) 2 :=
-  intermediate_value_Icc' (by norm_num) continuousOn_cos
+  intermediate_value_Icc' (by simp) continuousOn_cos
     ⟨le_of_lt cos_two_neg, le_of_lt cos_one_pos⟩
 
 /-- The number π = 3.14159265... Defined here using choice as twice a zero of cos in [1,2], from
@@ -138,7 +138,7 @@ theorem pi_div_two_le_two : π / 2 ≤ 2 := by
   exact (Classical.choose_spec exists_cos_eq_zero).1.2
 
 theorem two_le_pi : (2 : ℝ) ≤ π :=
-  (div_le_div_iff_of_pos_right (show (0 : ℝ) < 2 by norm_num)).1
+  (div_le_div_iff_of_pos_right (show (0 : ℝ) < 2 by simp)).1
     (by rw [div_self (two_ne_zero' ℝ)]; exact one_le_pi_div_two)
 
 theorem pi_le_four : π ≤ 4 :=
@@ -155,6 +155,7 @@ theorem pi_pos : 0 < π :=
 theorem pi_nonneg : 0 ≤ π :=
   pi_pos.le
 
+@[simp]
 theorem pi_ne_zero : π ≠ 0 :=
   pi_pos.ne'
 
@@ -506,8 +507,10 @@ theorem sin_ne_zero_iff {x : ℝ} : sin x ≠ 0 ↔ ∀ n : ℤ, (n : ℝ) * π 
   rw [← not_exists, not_iff_not, sin_eq_zero_iff]
 
 theorem sin_eq_zero_iff_cos_eq {x : ℝ} : sin x = 0 ↔ cos x = 1 ∨ cos x = -1 := by
-  rw [← mul_self_eq_one_iff, ← sin_sq_add_cos_sq x, sq, sq, ← sub_eq_iff_eq_add, sub_self]
-  exact ⟨fun h => by rw [h, mul_zero], eq_zero_of_mul_self_eq_zero ∘ Eq.symm⟩
+  rw [← mul_self_eq_one_iff, ← sin_sq_add_cos_sq, sq, sq, right_eq_add, mul_eq_zero, or_self]
+
+theorem cos_eq_zero_iff_sin_eq {x : ℝ} : cos x = 0 ↔ sin x = 1 ∨ sin x = -1 := by
+  rw [← mul_self_eq_one_iff, ← sin_sq_add_cos_sq, sq, sq, left_eq_add, mul_eq_zero, or_self]
 
 theorem cos_eq_one_iff (x : ℝ) : cos x = 1 ↔ ∃ n : ℤ, (n : ℝ) * (2 * π) = x :=
   ⟨fun h =>
@@ -558,7 +561,7 @@ theorem strictAntiOn_cos : StrictAntiOn cos (Icc 0 π) := fun _ hx _ hy hxy =>
 
 theorem cos_le_cos_of_nonneg_of_le_pi {x y : ℝ} (hx₁ : 0 ≤ x) (hy₂ : y ≤ π) (hxy : x ≤ y) :
     cos y ≤ cos x :=
-  (strictAntiOn_cos.le_iff_le ⟨hx₁.trans hxy, hy₂⟩ ⟨hx₁, hxy.trans hy₂⟩).2 hxy
+  (strictAntiOn_cos.le_iff_ge ⟨hx₁.trans hxy, hy₂⟩ ⟨hx₁, hxy.trans hy₂⟩).2 hxy
 
 theorem sin_le_sin_of_le_of_le_pi_div_two {x y : ℝ} (hx₁ : -(π / 2) ≤ x) (hy₂ : y ≤ π / 2)
     (hxy : x ≤ y) : sin x ≤ sin y :=
@@ -988,8 +991,10 @@ namespace Complex
 open Real
 
 theorem sin_eq_zero_iff_cos_eq {z : ℂ} : sin z = 0 ↔ cos z = 1 ∨ cos z = -1 := by
-  rw [← mul_self_eq_one_iff, ← sin_sq_add_cos_sq, sq, sq, ← sub_eq_iff_eq_add, sub_self]
-  exact ⟨fun h => by rw [h, mul_zero], eq_zero_of_mul_self_eq_zero ∘ Eq.symm⟩
+  rw [← mul_self_eq_one_iff, ← sin_sq_add_cos_sq, sq, sq, right_eq_add, mul_eq_zero, or_self]
+
+theorem cos_eq_zero_iff_sin_eq {z : ℂ} : cos z = 0 ↔ sin z = 1 ∨ sin z = -1 := by
+  rw [← mul_self_eq_one_iff, ← sin_sq_add_cos_sq, sq, sq, left_eq_add, mul_eq_zero, or_self]
 
 @[simp]
 theorem cos_pi_div_two : cos (π / 2) = 0 :=

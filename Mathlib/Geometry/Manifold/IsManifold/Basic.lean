@@ -42,6 +42,8 @@ but add these assumptions later as needed. (Quite a few results still do not req
 
 We define a few constructions of smooth manifolds:
 * every empty type is a smooth manifold
+* `IsManifold.of_discreteTopoloy`: a discrete space is a smooth manifold
+  (over the trivial model with corners on the trivial space)
 * the product of two smooth manifolds
 * the disjoint union of two manifolds (over the same charted space)
 
@@ -764,8 +766,6 @@ class IsManifold {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
     [TopologicalSpace M] [ChartedSpace H M] : Prop
     extends HasGroupoid M (contDiffGroupoid n I)
 
-@[deprecated (since := "2025-01-09")] alias SmoothManifoldWithCorners := IsManifold
-
 /-- Building a `C^n` manifold from a `HasGroupoid` assumption. -/
 theorem IsManifold.mk' {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
@@ -773,8 +773,6 @@ theorem IsManifold.mk' {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
     (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
     [gr : HasGroupoid M (contDiffGroupoid n I)] : IsManifold I n M :=
   { gr with }
-
-@[deprecated (since := "2025-01-09")] alias SmoothManifoldWithCorners.mk' := IsManifold.mk'
 
 theorem isManifold_of_contDiffOn {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
@@ -786,9 +784,6 @@ theorem isManifold_of_contDiffOn {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   compatible := by
     haveI : HasGroupoid M (contDiffGroupoid n I) := hasGroupoid_of_pregroupoid _ (h _ _)
     apply StructureGroupoid.compatible
-
-@[deprecated (since := "2025-01-09")]
-alias smoothManifoldWithCorners_of_contDiffOn := isManifold_of_contDiffOn
 
 /-- For any model with corners, the model space is a `C^n` manifold -/
 instance instIsManifoldModelSpace {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
@@ -956,20 +951,12 @@ theorem PartialHomeomorph.isManifold_singleton
   @IsManifold.mk' _ _ _ _ _ _ _ _ _ _ _ (id _) <|
     e.singleton_hasGroupoid h (contDiffGroupoid n I)
 
-@[deprecated (since := "2025-01-09")]
-alias PartialHomeomorph.singleton_smoothManifoldWithCorners :=
-  PartialHomeomorph.isManifold_singleton
-
 theorem Topology.IsOpenEmbedding.isManifold_singleton {𝕜 E H : Type*}
     [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [TopologicalSpace H]
     {I : ModelWithCorners 𝕜 E H} {n : WithTop ℕ∞}
     {M : Type*} [TopologicalSpace M] [Nonempty M] {f : M → H} (h : IsOpenEmbedding f) :
     @IsManifold 𝕜 _ E _ _ H _ I n M _ h.singletonChartedSpace :=
   (h.toPartialHomeomorph f).isManifold_singleton (by simp)
-
-@[deprecated (since := "2025-01-09")]
-alias Topology.IsOpenEmbedding.singleton_smoothManifoldWithCorners :=
-  Topology.IsOpenEmbedding.isManifold_singleton
 
 namespace TopologicalSpace.Opens
 
