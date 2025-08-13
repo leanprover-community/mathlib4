@@ -263,7 +263,7 @@ theorem mem_of_mem_cons_of_ne {s : Finset α} {a : α} {has} {i : α}
 
 theorem forall_mem_cons (h : a ∉ s) (p : α → Prop) :
     (∀ x, x ∈ cons a s h → p x) ↔ p a ∧ ∀ x, x ∈ s → p x := by
-  simp only [mem_cons, or_imp, forall_and, forall_eq]
+  grind
 
 /-- Useful in proofs by induction. -/
 theorem forall_of_forall_cons {p : α → Prop} {h : a ∉ s} (H : ∀ x, x ∈ cons a s h → p x) (x)
@@ -332,7 +332,7 @@ def consPiProdEquiv [DecidableEq α] {s : Finset α} (f : α → Type*) {a : α}
   invFun := prodPiCons f has
   left_inv _ := by grind [prodPiCons, consPiProd]
   right_inv _ := by
-    -- I'm surpised `grind` next this `ext` step: it is just `Prod.ext` and `funext`.
+    -- I'm surprised `grind` next this `ext` step: it is just `Prod.ext` and `funext`.
     ext _ hi <;> grind [prodPiCons, consPiProd]
 
 end Cons
@@ -413,8 +413,6 @@ theorem pair_eq_singleton (a : α) : ({a, a} : Finset α) = {a} :=
 
 theorem insert_comm (a b : α) (s : Finset α) : insert a (insert b s) = insert b (insert a s) := by
   grind
-
-@[deprecated (since := "2024-11-29")] alias Insert.comm := insert_comm
 
 @[norm_cast]
 theorem coe_pair {a b : α} : (({a, b} : Finset α) : Set α) = {a, b} := by grind
