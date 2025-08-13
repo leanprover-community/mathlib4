@@ -320,10 +320,19 @@ theorem map_eq_of_sub_lt (h : v (y - x) < v x) : v y = v x := by
   rw [max_eq_right (le_of_lt h)] at this
   simpa using this
 
-lemma map_sub_of_right_eq_zero (hy : v y = 0) : v (x - y) = v x := by
-  by_cases hx : v x = 0
+lemma map_sub_of_left_eq_zero (hx : v x = 0) : v (x - y) = v y := by
+  by_cases hy : v y = 0
   · simpa [*] using map_sub v x y
-  · simp [*, map_sub_eq_of_lt_left, zero_lt_iff]
+  · simp [*, map_sub_eq_of_lt_right, zero_lt_iff]
+
+lemma map_sub_of_right_eq_zero (hy : v y = 0) : v (x - y) = v x := by
+  rw [← neg_sub, map_neg, map_sub_of_left_eq_zero v hy]
+
+lemma map_add_of_left_eq_zero (hx : v x = 0) : v (x + y) = v y := by
+  rw [← neg_neg y, ← sub_eq_add_neg, map_sub_of_left_eq_zero v hx, ← map_neg]
+
+lemma map_add_of_right_eq_zero (hy : v y = 0) : v (x + y) = v x := by
+  rw [add_comm, map_add_of_left_eq_zero v hy]
 
 theorem map_one_add_of_lt (h : v x < 1) : v (1 + x) = 1 := by
   rw [← v.map_one] at h
