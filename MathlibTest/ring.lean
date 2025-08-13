@@ -69,7 +69,7 @@ end Rat
 
 example (A : ℕ) : (2 * A) ^ 2 = (2 * A) ^ 2 := by ring
 
-example (x y : ℚ) (hx : x ≠ 0) (hy : y ≠ 0) :
+example (x y z : ℚ) (hx : x ≠ 0) (hy : y ≠ 0) :
     x / (y / z) + y ⁻¹ + 1 / (y * -x) = -1/ (x * y) + (x * z + 1) / y := by
   field_simp
   ring

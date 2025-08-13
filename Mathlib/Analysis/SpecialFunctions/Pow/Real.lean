@@ -1068,11 +1068,23 @@ theorem isInt_rpow_neg {a b : ℝ} {nb ne : ℕ}
     IsInt (a ^ b) (Int.negOfNat ne) := by
   rwa [pb.out, Real.rpow_intCast]
 
+theorem isNNRat_rpow_pos {a b : ℝ} {nb : ℕ}
+    {num den : ℕ}
+    (pb : IsNat b nb) (pe' : IsNNRat (a ^ nb) num den) :
+    IsNNRat (a ^ b) num den := by
+  rwa [pb.out, rpow_natCast]
+
 theorem isRat_rpow_pos {a b : ℝ} {nb : ℕ}
     {num : ℤ} {den : ℕ}
     (pb : IsNat b nb) (pe' : IsRat (a ^ nb) num den) :
     IsRat (a ^ b) num den := by
   rwa [pb.out, rpow_natCast]
+
+theorem isNNRat_rpow_neg {a b : ℝ} {nb : ℕ}
+    {num den : ℕ}
+    (pb : IsInt b (Int.negOfNat nb)) (pe' : IsNNRat (a ^ (Int.negOfNat nb)) num den) :
+    IsNNRat (a ^ b) num den := by
+  rwa [pb.out, Real.rpow_intCast]
 
 theorem isRat_rpow_neg {a b : ℝ} {nb : ℕ}
     {num : ℤ} {den : ℕ}
@@ -1091,7 +1103,7 @@ def evalRPow : NormNumExt where eval {u α} e := do
   h.check
   let (rb : Result b) ← derive (α := q(ℝ)) b
   match rb with
-  | .isBool .. | .isRat _ .. => failure
+  | .isBool .. | .isNNRat .. | .isNegNNRat .. => failure
   | .isNat sβ nb pb =>
     match ← derive q($a ^ $nb) with
     | .isBool .. => failure
@@ -1102,9 +1114,12 @@ def evalRPow : NormNumExt where eval {u α} e := do
     | .isNegNat sα' ne' pe' =>
       assumeInstancesCommute
       return .isNegNat sα' ne' q(isInt_rpow_pos $pb $pe')
-    | .isRat sα' qe' nume' dene' pe' =>
+    | .isNNRat sα' qe' nume' dene' pe' =>
       assumeInstancesCommute
-      return .isRat sα' qe' nume' dene' q(isRat_rpow_pos $pb $pe')
+      return .isNNRat sα' qe' nume' dene' q(isNNRat_rpow_pos $pb $pe')
+    | .isNegNNRat sα' qe' nume' dene' pe' =>
+      assumeInstancesCommute
+      return .isNegNNRat sα' qe' nume' dene' q(isRat_rpow_pos $pb $pe')
   | .isNegNat sβ nb pb =>
     match ← derive q($a ^ (-($nb : ℤ))) with
     | .isBool .. => failure
@@ -1115,9 +1130,12 @@ def evalRPow : NormNumExt where eval {u α} e := do
       let _ := q(Real.instRing)
       assumeInstancesCommute
       return .isNegNat sα' ne' q(isInt_rpow_neg $pb $pe')
-    | .isRat sα' qe' nume' dene' pe' =>
+    | .isNNRat sα' qe' nume' dene' pe' =>
       assumeInstancesCommute
-      return .isRat sα' qe' nume' dene' q(isRat_rpow_neg $pb $pe')
+      return .isNNRat sα' qe' nume' dene' q(isNNRat_rpow_neg $pb $pe')
+    | .isNegNNRat sα' qe' nume' dene' pe' =>
+      assumeInstancesCommute
+      return .isNegNNRat sα' qe' nume' dene' q(isRat_rpow_neg $pb $pe')
 
 end Mathlib.Meta.NormNum
 
