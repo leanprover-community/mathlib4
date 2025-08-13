@@ -22,7 +22,7 @@ This file defines the Picard group `CommRing.Pic R` of a commutative ring `R` as
 invertible `R`-modules (in the sense that `M` is invertible if there exists another `R`-module
 `N` such that `M ⊗[R] N ≃ₗ[R] R`) up to isomorphism, equipped with tensor product as multiplication.
 
-## Main definitions
+## Main definition
 
 - `Module.Invertible R M` says that the canonical map `Mᵛ ⊗[R] M → R` is an isomorphism.
   To show that `M` is invertible, it suffices to provide an arbitrary `R`-module `N`
@@ -31,6 +31,9 @@ invertible `R`-modules (in the sense that `M` is invertible if there exists anot
 ## Main results
 
 - An invertible module is finite and projective (provided as instances).
+
+- `Module.Invertible.free_iff_linearEquiv`: an invertible module is free iff it is isomorphic to
+  the ring, i.e. its class is trivial in the Picard group.
 
 ## References
 
@@ -83,11 +86,13 @@ section LinearEquiv
 
 variable (e : M ⊗[R] N ≃ₗ[R] R)
 
-/-- Tensoring from the left by two mutually dual invertible modules does nothing. -/
+/-- The canonical isomorphism between a module and the result of tensoring it
+from the left by two mutually dual invertible modules. -/
 noncomputable abbrev leftCancelEquiv : M ⊗[R] (N ⊗[R] P) ≃ₗ[R] P :=
   (TensorProduct.assoc R M N P).symm ≪≫ₗ e.rTensor P ≪≫ₗ TensorProduct.lid R P
 
-/-- Tensoring from the right by two mutually dual invertible modules does nothing. -/
+/-- The canonical isomorphism between a module and the result of tensoring it
+from the right by two mutually dual invertible modules. -/
 noncomputable abbrev rightCancelEquiv : (P ⊗[R] M) ⊗[R] N ≃ₗ[R] P :=
   TensorProduct.assoc R P M N ≪≫ₗ e.lTensor P ≪≫ₗ TensorProduct.rid R P
 
@@ -124,9 +129,8 @@ of `R`-modules. -/
   right_inv _ := rTensorInv_injective P Q e (by rw [LinearMap.toFun_eq_coe, rTensorInv_leftInverse])
 
 open LinearMap in
-/-- If there is an `R`-isomorphism between `M ⊗[R] N` and `R`, where `M` is not assumed to be
-the dual of `N`, we show the induced map `M → Nᵛ` is in fact an isomorphism, so `M` is
-isomorphic to the dual of `N` after all. -/
+/-- If there is an `R`-isomorphism between `M ⊗[R] N` and `R`,
+the induced map `M → Nᵛ` is an isomorphism. -/
 theorem bijective_curry : Function.Bijective (curry e.toLinearMap) := by
   have : curry e.toLinearMap = ((TensorProduct.lid R N).congrLeft _ R ≪≫ₗ e.congrRight) ∘ₗ
       rTensorHom N ∘ₗ (ringLmapEquivSelf R R M).symm.toLinearMap := by
@@ -224,6 +228,8 @@ end inj_surj_bij
 
 open Finsupp in
 variable {R M} in
+/-- An invertible module is free iff it is isomorphic to the ring, i.e. its class is trivial in
+the Picard group. -/
 theorem free_iff_linearEquiv : Free R M ↔ Nonempty (M ≃ₗ[R] R) := by
   refine ⟨fun _ ↦ ?_, fun ⟨e⟩ ↦ .of_equiv e.symm⟩
   nontriviality R
@@ -235,6 +241,9 @@ theorem free_iff_linearEquiv : Free R M ↔ Nonempty (M ≃ₗ[R] R) := by
     (Fintype.card_eq_one_iff_nonempty_unique.mp (by simpa using this)).some
   exact ⟨Free.repr R M ≪≫ₗ LinearEquiv.finsuppUnique R R _⟩
 
+/- TODO: generalize ≤ to arbitrary invertible modules over any commutative semiring by considering
+the localization at a prime, once we show inverible modules over local semirings are free.
+It is not clear whether ≥ holds in general but it holds for domains. -/
 theorem finrank_eq_one [StrongRankCondition R] [Free R M] : finrank R M = 1 := by
   cases subsingleton_or_nontrivial R
   · rw [← rank_eq_one_iff_finrank_eq_one, rank_subsingleton]
@@ -265,7 +274,7 @@ variable {R M N} in
 /- Not true if `surjective` is replaced by `injective`: any nonzero element in an invertible
 module over a domain generates a submodule isomorphic to the domain, which is not the whole
 module unless the module is free. -/
-theorem bijective_of_surjective [Module.Invertible R N] (f : M →ₗ[R] N)
+theorem bijective_of_surjective [Module.Invertible R N] {f : M →ₗ[R] N}
     (hf : Function.Surjective f) : Function.Bijective f := by
   simpa [lTensor_bijective_iff] using bijective_self_of_surjective
     (f.lTensor _ ∘ₗ (linearEquiv R M).symm.toLinearMap) (by simpa [lTensor_surjective_iff] using hf)
@@ -412,7 +421,7 @@ instance [Subsingleton (Pic R)] : Free R M :=
   .of_equiv (Finite.reprEquiv R M)
 
 /- TODO: it's still true that an invertible module over a (commutative) local semiring is free;
-  in fact invertible modules over a semiring is Zariski-locally free.
+  in fact invertible modules over a semiring are Zariski-locally free.
   See [BorgerJun2024], Theorem 11.7. -/
 instance [IsLocalRing R] : Subsingleton (Pic R) :=
   subsingleton_iff.mpr fun _ _ _ _ ↦ free_of_flat_of_isLocalRing
