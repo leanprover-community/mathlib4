@@ -516,30 +516,44 @@ def algEquiv (h' : IsAdjoinRoot T f) : S ≃ₐ[R] T :=
     left_inv x := by rw [← h.map_repr x]; simp [- map_repr]
     right_inv x := by rw [← h'.map_repr x]; simp [- map_repr] }
 
+@[deprecated (since := "2025-08-13")] alias aequiv := algEquiv
+
 @[simp]
 theorem algEquiv_map (h' : IsAdjoinRoot T f) (z : R[X]) : h.algEquiv h' (h.map z) = h'.map z := by
   rw [algEquiv, AlgEquiv.coe_mk, Equiv.coe_fn_mk, liftHom_map, aeval_root_eq_map]
+
+@[deprecated (since := "2025-08-13")] alias aequiv_map := algEquiv_map
 
 @[simp]
 theorem algEquiv_root (h' : IsAdjoinRoot T f) : h.algEquiv h' h.root = h'.root := by
   rw [algEquiv, AlgEquiv.coe_mk, Equiv.coe_fn_mk, liftHom_root]
 
+@[deprecated (since := "2025-08-13")] alias aequiv_root := algEquiv_root
+
 @[simp]
 theorem algEquiv_self : h.algEquiv h = AlgEquiv.refl := by
   ext a; exact h.lift_self_apply a
 
+@[deprecated (since := "2025-08-13")] alias aequiv_self := algEquiv_self
+
 @[simp]
 theorem algEquiv_symm (h' : IsAdjoinRoot T f) : (h.algEquiv h').symm = h'.algEquiv h := rfl
+
+@[deprecated (since := "2025-08-13")] alias aequiv_symm := algEquiv_symm
 
 @[simp]
 theorem lift_algEquiv {U : Type*} [CommRing U] (h' : IsAdjoinRoot T f) (i : R →+* U) (x hx z) :
     h'.lift i x hx (h.algEquiv h' z) = h.lift i x hx z := by
   rw [← h.map_repr z, algEquiv_map, lift_map, lift_map]
 
+@[deprecated (since := "2025-08-13")] alias lift_aequiv := lift_algEquiv
+
 @[simp]
 theorem liftHom_algEquiv {U : Type*} [CommRing U] [Algebra R U] (h' : IsAdjoinRoot T f)
     (x : U) (hx z) : h'.liftHom x hx (h.algEquiv h' z) = h.liftHom x hx z :=
   h.lift_algEquiv h' _ _ hx _
+
+@[deprecated (since := "2025-08-13")] alias liftHom_aequiv := liftHom_algEquiv
 
 @[simp]
 theorem algEquiv_algEquiv {U : Type*} [CommRing U] [Algebra R U]
@@ -547,12 +561,16 @@ theorem algEquiv_algEquiv {U : Type*} [CommRing U] [Algebra R U]
     (h'.algEquiv h'') (h.algEquiv h' x) = h.algEquiv h'' x :=
   h.liftHom_algEquiv _ _ h''.aeval_root_self _
 
+@[deprecated (since := "2025-08-13")] alias aequiv_aequiv := algEquiv_algEquiv
+
 @[simp]
 theorem algEquiv_trans {U : Type*} [CommRing U] [Algebra R U]
     (h' : IsAdjoinRoot T f) (h'' : IsAdjoinRoot U f) :
     (h.algEquiv h').trans (h'.algEquiv h'') = h.algEquiv h'' := by
   ext z
   exact h.algEquiv_algEquiv h' h'' z
+
+@[deprecated (since := "2025-08-13")] alias aequiv_trans := algEquiv_trans
 
 /-- Transfer `IsAdjoinRoot` across an algebra isomorphism.
 
@@ -565,14 +583,20 @@ def ofAlgEquiv (e : S ≃ₐ[R] T) : IsAdjoinRoot T f where
   map_surjective := e.surjective.comp h.map_surjective
   ker_map := by ext; simp [Ideal.mem_span_singleton]
 
+@[deprecated (since := "2025-08-13")] alias ofEquiv := ofAlgEquiv
+
 @[simp]
 theorem ofAlgEquiv_root (e : S ≃ₐ[R] T) : (h.ofAlgEquiv e).root = e h.root := rfl
+
+@[deprecated (since := "2025-08-13")] alias ofEquiv_root := ofAlgEquiv_root
 
 @[simp]
 theorem algEquiv_ofAlgEquiv {U : Type*} [CommRing U] [Algebra R U]
     (h' : IsAdjoinRoot T f) (e : T ≃ₐ[R] U) :
     h.algEquiv (h'.ofAlgEquiv e) = (h.algEquiv h').trans e := by
   ext a; rw [← h.map_repr a, algEquiv_map, AlgEquiv.trans_apply, algEquiv_map, ofAlgEquiv_map_apply]
+
+@[deprecated (since := "2025-08-13")] alias aequiv_ofEquiv := algEquiv_ofAlgEquiv
 
 @[simp]
 theorem ofAlgEquiv_algEquiv {U : Type*} [CommRing U] [Algebra R U]
@@ -581,6 +605,8 @@ theorem ofAlgEquiv_algEquiv {U : Type*} [CommRing U] [Algebra R U]
   ext a
   rw [← (h.ofAlgEquiv e).map_repr a, algEquiv_map, AlgEquiv.trans_apply, ofAlgEquiv_map_apply,
     e.symm_apply_apply, algEquiv_map]
+
+@[deprecated (since := "2025-08-13")] alias ofEquiv_aequiv := ofAlgEquiv_algEquiv
 
 end Equiv
 
