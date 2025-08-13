@@ -37,9 +37,13 @@ in the future. Please do not rely on this interface being stable.
 
 open Lean Elab Term Command Linter
 
+/-- The tactic analysis framework hooks into the linter to run analysis rounds on sequences
+of tactics.
+This can be used for linting, or in a more batch-like mode to report potential refactors.
+-/
 register_option linter.tacticAnalysis : Bool := {
   defValue := true
-  descr := "enable transformations for tactics"
+  descr := "enable the tactic analysis framework"
 }
 
 namespace Lean.Elab.ContextInfo
@@ -100,7 +104,10 @@ end Lean.Elab.ContextInfo
 
 namespace Mathlib.TacticAnalysis
 
-/-- Stores the configuration for a tactic analysis pass. -/
+/-- Stores the configuration for a tactic analysis pass.
+
+This provides the low-level interface into the tactic analysis framework.
+-/
 structure Config where
   /-- The function that runs this pass. Takes an array of infotree nodes corresponding
   to a sequence of tactics from the source file. Should do all reporting itself,
@@ -108,18 +115,21 @@ structure Config where
   -/
   run : Array (ContextInfo × TacticInfo) → CommandElabM Unit
 
-abbrev BoolOption := Lean.Option Bool
-
+/-- The internal representation of a tactic analysis pass,
+extending `Config` with some declaration meta-information.
+-/
 structure Pass extends Config where
   /-- The option corresponding to this pass, used to enable it.
 
   Example: `linter.tacticAnalysis.grindReplacement`.
   -/
-  opt : Option BoolOption
+  opt : Option (Lean.Option Bool)
 
-/-- Each `tacticAnalysis` extension is represented by the declaration name for the `Config`. -/
+/-- Each tactic analysis round is represented by the declaration name for the `Config`. -/
 structure Entry where
+  /-- The declaration, of type `Config`, that defines this pass. -/
   declName : Name
+  /-- The option, of type `Lean.Option Bool`, that controls whether the pass is enabled. -/
   optionName : Name
 
 /-- Read a configuration from a declaration of the right type. -/
