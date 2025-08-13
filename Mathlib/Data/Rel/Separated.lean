@@ -20,18 +20,18 @@ The concept of uniformly separated sets is used to define two further notions of
 
 ## TODO
 
-* Actually use `Rel.IsSeparated` to define the above two notions.
+* Actually use `SetRel.IsSeparated` to define the above two notions.
 * Link to the notion of separation given by pairwise disjoint balls.
 -/
 
 open Set
 
-namespace Rel
-variable {X : Type*} {R S : Rel X X} {s t : Set X} {x : X}
+namespace SetRel
+variable {X : Type*} {R S : SetRel X X} {s t : Set X} {x : X}
 
 /-- Given a relation `R`, a set `s` is `R`-separated if its elements are pairwise `R`-far from
 each other. -/
-def IsSeparated (R : Rel X X) (s : Set X) : Prop := s.Pairwise fun x y ↦ ¬ x ~[R] y
+def IsSeparated (R : SetRel X X) (s : Set X) : Prop := s.Pairwise fun x y ↦ ¬ x ~[R] y
 
 protected lemma IsSeparated.empty : IsSeparated R (∅ : Set X) := pairwise_empty _
 protected lemma IsSeparated.singleton : IsSeparated R {x} := pairwise_singleton ..
@@ -62,4 +62,4 @@ protected lemma IsSeparated.insert [R.IsSymm] (hs : IsSeparated R s)
     (h : ∀ y ∈ s, x ~[R] y → x = y) : IsSeparated R (insert x s) :=
   isSeparated_insert.2 ⟨hs, h⟩
 
-end Rel
+end SetRel
