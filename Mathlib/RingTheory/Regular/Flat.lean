@@ -71,7 +71,7 @@ theorem IsWeaklyRegular.isRegular_of_isLocalizedModule_of_mem_prime
 theorem IsWeaklyRegular.isRegular_of_isLocalization_of_mem_prime
     {rs : List R} (reg : IsWeaklyRegular R rs) (mem : ∀ r ∈ rs, r ∈ p) :
     IsRegular S (rs.map (algebraMap R S)) :=
-  have : Nontrivial S := IsLocalization.AtPrime.Nontrivial S p
+  have : Nontrivial S := IsLocalization.AtPrime.nontrivial S p
   reg.isRegular_of_isLocalizedModule_of_mem_prime S p (Algebra.linearMap R S) mem
 
 variable {S} [FaithfullyFlat R S]
