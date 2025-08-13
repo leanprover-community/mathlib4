@@ -1309,15 +1309,10 @@ theorem map_update_neg [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) (x : M₁ i
   eq_neg_of_add_eq_zero_left <| by
     rw [← MultilinearMap.map_update_add, neg_add_cancel, f.map_coord_zero i (update_self i 0 m)]
 
-
-@[deprecated (since := "2024-11-03")] protected alias map_neg := MultilinearMap.map_update_neg
-
 @[simp]
 theorem map_update_sub [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) (x y : M₁ i) :
     f (update m i (x - y)) = f (update m i x) - f (update m i y) := by
   rw [sub_eq_add_neg, sub_eq_add_neg, MultilinearMap.map_update_add, map_update_neg]
-
-@[deprecated (since := "2024-11-03")] protected alias map_sub := MultilinearMap.map_update_sub
 
 lemma map_update [DecidableEq ι] (x : (i : ι) → M₁ i) (i : ι) (v : M₁ i) :
     f (update x i v) = f x - f (update x i (x i - v)) := by
