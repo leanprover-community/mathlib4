@@ -65,14 +65,8 @@ theorem continuous_inr [Zero R] : Continuous (inr : M → tsze R M) :=
 theorem IsEmbedding.inl [Zero M] : IsEmbedding (inl : R → tsze R M) :=
   .of_comp continuous_inl continuous_fst .id
 
-@[deprecated (since := "2024-10-26")]
-alias embedding_inl := IsEmbedding.inl
-
 theorem IsEmbedding.inr [Zero R] : IsEmbedding (inr : M → tsze R M) :=
   .of_comp continuous_inr continuous_snd .id
-
-@[deprecated (since := "2024-10-26")]
-alias embedding_inr := IsEmbedding.inr
 
 variable (R M)
 
@@ -161,9 +155,9 @@ instance instUniformSpace : UniformSpace (tsze R M) where
 instance [CompleteSpace R] [CompleteSpace M] : CompleteSpace (tsze R M) :=
   inferInstanceAs <| CompleteSpace (R × M)
 
-instance [AddGroup R] [AddGroup M] [UniformAddGroup R] [UniformAddGroup M] :
-    UniformAddGroup (tsze R M) :=
-  inferInstanceAs <| UniformAddGroup (R × M)
+instance [AddGroup R] [AddGroup M] [IsUniformAddGroup R] [IsUniformAddGroup M] :
+    IsUniformAddGroup (tsze R M) :=
+  inferInstanceAs <| IsUniformAddGroup (R × M)
 
 open Uniformity
 

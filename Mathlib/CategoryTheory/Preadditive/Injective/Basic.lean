@@ -68,7 +68,7 @@ Let `J` be injective and `g` a morphism into `J`, then `g` can be factored throu
 def factorThru {J X Y : C} [Injective J] (g : X ⟶ J) (f : X ⟶ Y) [Mono f] : Y ⟶ J :=
   (Injective.factors g f).choose
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem comp_factorThru {J X Y : C} [Injective J] (g : X ⟶ J) (f : X ⟶ Y) [Mono f] :
     f ≫ factorThru g f = g :=
   (Injective.factors g f).choose_spec
@@ -295,6 +295,18 @@ def injectivePresentationOfMap (adj : F ⊣ G)
   f := adj.homEquiv _ _ I.f
 
 end Adjunction
+
+namespace Functor
+
+variable {D : Type*} [Category D] (F : C ⥤ D)
+
+theorem injective_of_map_injective [F.Full] [F.Faithful]
+    [F.PreservesMonomorphisms] {I : C} (hI : Injective (F.obj I)) : Injective I where
+  factors g f _ := by
+    obtain ⟨h, fac⟩ := hI.factors (F.map g) (F.map f)
+    exact ⟨F.preimage h, F.map_injective (by simp [fac])⟩
+
+end Functor
 
 /--
 [Lemma 3.8](https://ncatlab.org/nlab/show/injective+object#preservation_of_injective_objects)

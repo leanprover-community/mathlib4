@@ -64,6 +64,8 @@ structure Config where
   zetaDelta := false
   /-- if true, atoms inside ring expressions will be reduced recursively -/
   recursive := true
+  /-- if true, then fail if no progress is made -/
+  failIfUnchanged := true
   /-- The normalization style. -/
   mode := RingMode.SOP
   deriving Inhabited, BEq, Repr
@@ -77,7 +79,7 @@ structure Context where
   ctx : Simp.Context
   /-- A cleanup routine, which simplifies normalized polynomials to a more human-friendly
   format. -/
-  simp : Simp.Result → SimpM Simp.Result
+  simp : Simp.Result → MetaM Simp.Result
 
 /-- The monad for `RingNF` contains, in addition to the `AtomM` state,
 a simp context for the main traversal and a simp function (which has another simp context)
@@ -97,9 +99,9 @@ def rewrite (parent : Expr) (root := true) : M Simp.Result :=
         let e ← withReducible <| whnf e
         guard e.isApp -- all interesting ring expressions are applications
         let ⟨u, α, e⟩ ← inferTypeQ' e
-        let sα ← synthInstanceQ (q(CommSemiring $α) : Q(Type u))
+        let sα ← synthInstanceQ q(CommSemiring $α)
         let c ← mkCache sα
-        let ⟨a, _, pa⟩ ← match ← isAtomOrDerivable sα c e rctx s with
+        let ⟨a, _, pa⟩ ← match ← isAtomOrDerivable q($sα) c q($e) rctx s with
         | none => eval sα c e rctx s -- `none` indicates that `eval` will find something algebraic.
         | some none => failure -- No point rewriting atoms
         | some (some r) => pure r -- Nothing algebraic for `eval` to use, but `norm_num` simplifies.
@@ -120,8 +122,8 @@ theorem nat_rawCast_0 : (Nat.rawCast 0 : R) = 0 := by simp
 theorem nat_rawCast_1 : (Nat.rawCast 1 : R) = 1 := by simp
 theorem nat_rawCast_2 [Nat.AtLeastTwo n] : (Nat.rawCast n : R) = OfNat.ofNat n := rfl
 theorem int_rawCast_neg {R} [Ring R] : (Int.rawCast (.negOfNat n) : R) = -Nat.rawCast n := by simp
-theorem rat_rawCast_pos {R} [DivisionRing R] :
-    (Rat.rawCast (.ofNat n) d : R) = Nat.rawCast n / Nat.rawCast d := by simp
+theorem nnrat_rawCast {R} [DivisionSemiring R] :
+    (NNRat.rawCast n d : R) = Nat.rawCast n / Nat.rawCast d := by simp
 theorem rat_rawCast_neg {R} [DivisionRing R] :
     (Rat.rawCast (.negOfNat n) d : R) = Int.rawCast (.negOfNat n) / Nat.rawCast d := by simp
 
@@ -135,9 +137,6 @@ Runs a tactic in the `RingNF.M` monad, given initial data:
 -/
 partial def M.run
     {α : Type} (s : IO.Ref AtomM.State) (cfg : RingNF.Config) (x : M α) : MetaM α := do
-  let ctx ← Simp.mkContext { singlePass := cfg.mode matches .raw, zetaDelta := cfg.zetaDelta }
-    (simpTheorems := #[← Elab.Tactic.simpOnlyBuiltins.foldlM (·.addConst ·) {}])
-    (congrTheorems := ← getSimpCongrTheorems)
   let simp ← match cfg.mode with
   | .raw => pure pure
   | .SOP =>
@@ -145,26 +144,30 @@ partial def M.run
     let thms ← [``add_zero, ``add_assoc_rev, ``_root_.mul_one, ``mul_assoc_rev,
       ``_root_.pow_one, ``mul_neg, ``add_neg].foldlM (·.addConst ·) thms
     let thms ← [``nat_rawCast_0, ``nat_rawCast_1, ``nat_rawCast_2, ``int_rawCast_neg,
-      ``rat_rawCast_neg, ``rat_rawCast_pos].foldlM (·.addConst · (post := false)) thms
-    let ctx' := ctx.setSimpTheorems #[thms]
+       ``nnrat_rawCast, ``rat_rawCast_neg].foldlM (·.addConst · (post := false)) thms
+    let ctx ← Simp.mkContext { zetaDelta := cfg.zetaDelta }
+      (simpTheorems := #[thms])
+      (congrTheorems := ← getSimpCongrTheorems)
     pure fun r' : Simp.Result ↦ do
-      r'.mkEqTrans (← Simp.main r'.expr ctx' (methods := Lean.Meta.Simp.mkDefaultMethodsCore {})).1
+      r'.mkEqTrans (← Simp.main r'.expr ctx (methods := Lean.Meta.Simp.mkDefaultMethodsCore {})).1
+  let ctx ← Simp.mkContext { zetaDelta := cfg.zetaDelta, singlePass := true }
+    (simpTheorems := #[← Elab.Tactic.simpOnlyBuiltins.foldlM (·.addConst ·) {}])
+    (congrTheorems := ← getSimpCongrTheorems)
   let nctx := { ctx, simp }
   let rec
     /-- The recursive context. -/
     rctx := { red := cfg.red, evalAtom },
     /-- The atom evaluator calls either `RingNF.rewrite` recursively,
     or nothing depending on `cfg.recursive`. -/
-    evalAtom := if cfg.recursive
-      then fun e ↦ rewrite e false nctx rctx s
-      else fun e ↦ pure { expr := e }
+    evalAtom e := if cfg.recursive
+      then rewrite e false nctx rctx s
+      else pure { expr := e }
   withConfig ({ · with zetaDelta := cfg.zetaDelta }) <| x nctx rctx s
 
 /-- Overrides the default error message in `ring1` to use a prettified version of the goal. -/
 initialize ringCleanupRef.set fun e => do
   M.run (← IO.mkRef {}) { recursive := false } fun nctx _ _ =>
-    return (← nctx.simp { expr := e } ({} : Lean.Meta.Simp.Methods).toMethodsRef nctx.ctx
-      |>.run {}).1.expr
+    return (← nctx.simp { expr := e }).expr
 
 open Elab.Tactic Parser.Tactic
 /-- Use `ring_nf` to rewrite the main goal. -/
@@ -176,7 +179,10 @@ def ringNFTarget (s : IO.Ref AtomM.State) (cfg : Config) : TacticM Unit := withM
     goal.assign (← mkOfEqTrue (← r.getProof))
     replaceMainGoal []
   else
-    replaceMainGoal [← applySimpResultToTarget goal tgt r]
+    let newGoal ← applySimpResultToTarget goal tgt r
+    if cfg.failIfUnchanged && goal == newGoal then
+      throwError "ring_nf made no progress"
+    replaceMainGoal [newGoal]
 
 /-- Use `ring_nf` to rewrite hypothesis `h`. -/
 def ringNFLocalDecl (s : IO.Ref AtomM.State) (cfg : Config) (fvarId : FVarId) :
@@ -186,7 +192,10 @@ def ringNFLocalDecl (s : IO.Ref AtomM.State) (cfg : Config) (fvarId : FVarId) :
   let myres ← M.run s cfg <| rewrite tgt
   match ← applySimpResultToLocalDecl goal fvarId myres false with
   | none => replaceMainGoal []
-  | some (_, newGoal) => replaceMainGoal [newGoal]
+  | some (_, newGoal) =>
+    if cfg.failIfUnchanged && goal == newGoal then
+      throwError "ring_nf made no progress"
+    replaceMainGoal [newGoal]
 
 /--
 Simplification tactic for expressions in the language of commutative (semi)rings,

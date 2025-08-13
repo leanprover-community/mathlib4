@@ -23,6 +23,8 @@ formulas whose realization is a property of an `MvPolynomial`
 
 -/
 
+assert_not_exists Cardinal
+
 variable {ι κ R : Type*}
 
 namespace FirstOrder
@@ -52,8 +54,8 @@ noncomputable def mvPolynomialSupportLEEquiv
   { toFun := fun p i => (p.1 i.1).coeff i.2,
     invFun := fun p => ⟨fun i =>
       { toFun := fun m => if hm : m ∈ monoms i then p ⟨i, ⟨m, hm⟩⟩ else 0
-        support := (monoms i).filter (fun m => ∃ hm : m ∈ monoms i, p ⟨i, ⟨m, hm⟩⟩ ≠ 0),
-        mem_support_toFun := by simp (config := {contextual := true}) },
+        support := {m ∈ monoms i | ∃ hm : m ∈ monoms i, p ⟨i, ⟨m, hm⟩⟩ ≠ 0},
+        mem_support_toFun := by simp },
       fun i => Finset.filter_subset _ _⟩,
     left_inv := fun p => by
       ext i m
@@ -78,8 +80,8 @@ theorem lift_genericPolyMap [DecidableEq κ] [CommRing R]
       MvPolynomial.eval (f ∘ Sum.inr)
         (((mvPolynomialSupportLEEquiv monoms).symm
           (f ∘ Sum.inl)).1 i) := by
-  simp only [genericPolyMap, Finsupp.prod_pow, map_sum, map_mul, lift_of, support,
-    mvPolynomialSupportLEEquiv, coeff, map_prod, Finset.sum_filter, MvPolynomial.eval_eq,
+  simp only [genericPolyMap, map_sum, map_mul, lift_of, support,
+    mvPolynomialSupportLEEquiv, coeff, Finset.sum_filter, MvPolynomial.eval_eq,
     ne_eq, Function.comp, Equiv.coe_fn_symm_mk, Finsupp.coe_mk]
   conv_rhs => rw [← Finset.sum_attach]
   refine Finset.sum_congr rfl ?_

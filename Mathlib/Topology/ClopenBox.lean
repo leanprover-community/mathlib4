@@ -3,6 +3,7 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
+import Mathlib.Topology.Compactness.Bases
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.Separation.Profinite
 import Mathlib.Topology.Sets.Closeds
@@ -93,8 +94,5 @@ lemma countable_iff_secondCountable [T2Space X]
       ext1; change s.carrier = t.carrier
       rw [(this s).choose_spec, (this t).choose_spec, h]
     exact hf.countable
-
-@[deprecated (since := "2024-11-12")]
-alias countable_iff_second_countable := countable_iff_secondCountable
 
 end TopologicalSpace.Clopens

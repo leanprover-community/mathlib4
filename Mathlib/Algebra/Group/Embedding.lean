@@ -19,8 +19,8 @@ section LeftOrRightCancelSemigroup
 /-- If left-multiplication by any element is cancellative, left-multiplication by `g` is an
 embedding. -/
 @[to_additive (attr := simps)
-      "If left-addition by any element is cancellative, left-addition by `g` is an
-        embedding."]
+      /-- If left-addition by any element is cancellative, left-addition by `g` is an
+        embedding. -/]
 def mulLeftEmbedding [Mul G] [IsLeftCancelMul G] (g : G) : G ↪ G where
   toFun h := g * h
   inj' := mul_right_injective g
@@ -28,14 +28,14 @@ def mulLeftEmbedding [Mul G] [IsLeftCancelMul G] (g : G) : G ↪ G where
 /-- If right-multiplication by any element is cancellative, right-multiplication by `g` is an
 embedding. -/
 @[to_additive (attr := simps)
-      "If right-addition by any element is cancellative, right-addition by `g` is an
-        embedding."]
+      /-- If right-addition by any element is cancellative, right-addition by `g` is an
+        embedding. -/]
 def mulRightEmbedding [Mul G] [IsRightCancelMul G] (g : G) : G ↪ G where
   toFun h := h * g
   inj' := mul_left_injective g
 
 @[to_additive]
-theorem mulLeftEmbedding_eq_mulRightEmbedding [CommSemigroup G] [IsCancelMul G] (g : G) :
+theorem mulLeftEmbedding_eq_mulRightEmbedding [CommMagma G] [IsCancelMul G] (g : G) :
     mulLeftEmbedding g = mulRightEmbedding g := by
   ext
   exact mul_comm _ _

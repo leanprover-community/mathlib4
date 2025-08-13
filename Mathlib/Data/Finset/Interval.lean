@@ -33,10 +33,10 @@ section Decidable
 variable [DecidableEq α] (s t : Finset α)
 
 instance instLocallyFiniteOrder : LocallyFiniteOrder (Finset α) where
-  finsetIcc s t := t.powerset.filter (s ⊆ ·)
-  finsetIco s t := t.ssubsets.filter (s ⊆ ·)
-  finsetIoc s t := t.powerset.filter (s ⊂ ·)
-  finsetIoo s t := t.ssubsets.filter (s ⊂ ·)
+  finsetIcc s t := {u ∈ t.powerset | s ⊆ u}
+  finsetIco s t := {u ∈ t.ssubsets | s ⊆ u}
+  finsetIoc s t := {u ∈ t.powerset | s ⊂ u}
+  finsetIoo s t := {u ∈ t.ssubsets | s ⊂ u}
   finset_mem_Icc s t u := by
     rw [mem_filter, mem_powerset]
     exact and_comm
@@ -50,16 +50,16 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder (Finset α) where
     rw [mem_filter, mem_ssubsets]
     exact and_comm
 
-theorem Icc_eq_filter_powerset : Icc s t = t.powerset.filter (s ⊆ ·) :=
+theorem Icc_eq_filter_powerset : Icc s t = {u ∈ t.powerset | s ⊆ u} :=
   rfl
 
-theorem Ico_eq_filter_ssubsets : Ico s t = t.ssubsets.filter (s ⊆ ·) :=
+theorem Ico_eq_filter_ssubsets : Ico s t = {u ∈ t.ssubsets | s ⊆ u} :=
   rfl
 
-theorem Ioc_eq_filter_powerset : Ioc s t = t.powerset.filter (s ⊂ ·) :=
+theorem Ioc_eq_filter_powerset : Ioc s t = {u ∈ t.powerset | s ⊂ u} :=
   rfl
 
-theorem Ioo_eq_filter_ssubsets : Ioo s t = t.ssubsets.filter (s ⊂ ·) :=
+theorem Ioo_eq_filter_ssubsets : Ioo s t = {u ∈ t.ssubsets | s ⊂ u} :=
   rfl
 
 theorem Iic_eq_powerset : Iic s = s.powerset :=

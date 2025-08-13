@@ -3,12 +3,9 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Algebra.Group.AddChar
-import Mathlib.Algebra.Group.TypeTags.Finite
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.Normed.Group.Rat
 import Mathlib.Analysis.Normed.Ring.Lemmas
-import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Topology.MetricSpace.DilationEquiv
 
 /-!
@@ -25,54 +22,35 @@ Some useful results that relate the topology of the normed field to the discrete
 -- Guard against import creep.
 assert_not_exists RestrictScalars
 
-variable {α : Type*} {β : Type*} {ι : Type*}
+variable {α β ι : Type*}
 
 open Filter Bornology
 open scoped Topology NNReal Pointwise
 
 section NormedDivisionRing
 
-variable [NormedDivisionRing α] {a : α}
-
-lemma antilipschitzWith_mul_left {a : α} (ha : a ≠ 0) : AntilipschitzWith (‖a‖₊⁻¹) (a * ·) :=
-  AntilipschitzWith.of_le_mul_dist fun _ _ ↦ by simp [dist_eq_norm, ← _root_.mul_sub, ha]
-
-lemma antilipschitzWith_mul_right {a : α} (ha : a ≠ 0) : AntilipschitzWith (‖a‖₊⁻¹) (· * a) :=
-  AntilipschitzWith.of_le_mul_dist fun _ _ ↦ by
-    simp [dist_eq_norm, ← _root_.sub_mul, ← mul_comm (‖a‖), ha]
+variable [NormedDivisionRing α]
 
 /-- Multiplication by a nonzero element `a` on the left
 as a `DilationEquiv` of a normed division ring. -/
 @[simps!]
 def DilationEquiv.mulLeft (a : α) (ha : a ≠ 0) : α ≃ᵈ α where
+  __ := Dilation.mulLeft a ha
   toEquiv := Equiv.mulLeft₀ a ha
-  edist_eq' := ⟨‖a‖₊, nnnorm_ne_zero_iff.2 ha, fun x y ↦ by
-    simp [edist_nndist, nndist_eq_nnnorm, ← mul_sub]⟩
 
 /-- Multiplication by a nonzero element `a` on the right
 as a `DilationEquiv` of a normed division ring. -/
 @[simps!]
 def DilationEquiv.mulRight (a : α) (ha : a ≠ 0) : α ≃ᵈ α where
+  __ := Dilation.mulRight a ha
   toEquiv := Equiv.mulRight₀ a ha
-  edist_eq' := ⟨‖a‖₊, nnnorm_ne_zero_iff.2 ha, fun x y ↦ by
-    simp [edist_nndist, nndist_eq_nnnorm, ← sub_mul, ← mul_comm (‖a‖₊)]⟩
 
 namespace Filter
-
-@[simp]
-lemma comap_mul_left_cobounded {a : α} (ha : a ≠ 0) :
-    comap (a * ·) (cobounded α) = cobounded α :=
-  Dilation.comap_cobounded (DilationEquiv.mulLeft a ha)
 
 @[simp]
 lemma map_mul_left_cobounded {a : α} (ha : a ≠ 0) :
     map (a * ·) (cobounded α) = cobounded α :=
   DilationEquiv.map_cobounded (DilationEquiv.mulLeft a ha)
-
-@[simp]
-lemma comap_mul_right_cobounded {a : α} (ha : a ≠ 0) :
-    comap (· * a) (cobounded α) = cobounded α :=
-  Dilation.comap_cobounded (DilationEquiv.mulRight a ha)
 
 @[simp]
 lemma map_mul_right_cobounded {a : α} (ha : a ≠ 0) :
@@ -138,21 +116,8 @@ instance (priority := 100) NormedDivisionRing.to_isTopologicalDivisionRing :
 @[deprecated (since := "2025-03-25")] alias NormedDivisionRing.to_topologicalDivisionRing :=
   NormedDivisionRing.to_isTopologicalDivisionRing
 
-protected lemma IsOfFinOrder.norm_eq_one (ha : IsOfFinOrder a) : ‖a‖ = 1 :=
-  ((normHom : α →*₀ ℝ).toMonoidHom.isOfFinOrder ha).eq_one <| norm_nonneg _
-
-example [Monoid β] (φ : β →* α) {x : β} {k : ℕ+} (h : x ^ (k : ℕ) = 1) :
-    ‖φ x‖ = 1 := (φ.isOfFinOrder <| isOfFinOrder_iff_pow_eq_one.2 ⟨_, k.2, h⟩).norm_eq_one
-
-@[simp] lemma AddChar.norm_apply {G : Type*} [AddLeftCancelMonoid G] [Finite G] (ψ : AddChar G α)
-    (x : G) : ‖ψ x‖ = 1 := (ψ.toMonoidHom.isOfFinOrder <| isOfFinOrder_of_finite _).norm_eq_one
-
 lemma NormedField.tendsto_norm_inv_nhdsNE_zero_atTop : Tendsto (fun x : α ↦ ‖x⁻¹‖) (𝓝[≠] 0) atTop :=
   (tendsto_inv_nhdsGT_zero.comp tendsto_norm_nhdsNE_zero).congr fun x ↦ (norm_inv x).symm
-
-@[deprecated (since := "2024-12-22")]
-alias NormedField.tendsto_norm_inverse_nhdsWithin_0_atTop :=
-  NormedField.tendsto_norm_inv_nhdsNE_zero_atTop
 
 lemma NormedField.tendsto_norm_zpow_nhdsNE_zero_atTop {m : ℤ} (hm : m < 0) :
     Tendsto (fun x : α ↦ ‖x ^ m‖) (𝓝[≠] 0) atTop := by
@@ -162,10 +127,6 @@ lemma NormedField.tendsto_norm_zpow_nhdsNE_zero_atTop {m : ℤ} (hm : m < 0) :
   rw [Int.natCast_pos] at hm
   simp only [norm_pow, zpow_neg, zpow_natCast, ← inv_pow]
   exact (tendsto_pow_atTop hm.ne').comp NormedField.tendsto_norm_inv_nhdsNE_zero_atTop
-
-@[deprecated (since := "2024-12-22")]
-alias NormedField.tendsto_norm_zpow_nhdsWithin_0_atTop :=
-  NormedField.tendsto_norm_zpow_nhdsNE_zero_atTop
 
 end NormedDivisionRing
 
@@ -186,7 +147,7 @@ lemma discreteTopology_or_nontriviallyNormedField (𝕜 : Type*) [h : NormedFiel
     contrapose! H
     refine H.imp ?_
     -- contextual to reuse the `a ≠ 0` hypothesis in the proof of `a ≠ 0 ∧ ‖a‖ ≠ 1`
-    simp (config := {contextual := true}) [add_comm, ne_of_lt]
+    simp +contextual [ne_of_lt]
 
 lemma discreteTopology_of_bddAbove_range_norm {𝕜 : Type*} [NormedField 𝕜]
     (h : BddAbove (Set.range fun k : 𝕜 ↦ ‖k‖)) :
@@ -195,7 +156,7 @@ lemma discreteTopology_of_bddAbove_range_norm {𝕜 : Type*} [NormedField 𝕜]
   rintro ⟨_, rfl⟩
   obtain ⟨x, h⟩ := h
   obtain ⟨k, hk⟩ := NormedField.exists_lt_norm 𝕜 x
-  exact hk.not_le (h (Set.mem_range_self k))
+  exact hk.not_ge (h (Set.mem_range_self k))
 
 section Densely
 
@@ -242,7 +203,7 @@ lemma NormedField.completeSpace_iff_isComplete_closedBall {K : Type*} [NormedFie
     CompleteSpace K ↔ IsComplete (Metric.closedBall 0 1 : Set K) := by
   constructor <;> intro h
   · exact Metric.isClosed_closedBall.isComplete
-  rcases NormedField.discreteTopology_or_nontriviallyNormedField K with _|⟨_, rfl⟩
+  rcases NormedField.discreteTopology_or_nontriviallyNormedField K with _ | ⟨_, rfl⟩
   · rwa [completeSpace_iff_isComplete_univ,
          ← NormedDivisionRing.unitClosedBall_eq_univ_of_discrete]
   refine Metric.complete_of_cauchySeq_tendsto fun u hu ↦ ?_

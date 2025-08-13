@@ -14,7 +14,7 @@ import Mathlib.Order.SuccPred.Limit
 
 open Order Set
 
-variable {ι α : Type*}
+variable {ι : Sort*} {α : Type*}
 
 section ConditionallyCompleteLinearOrder
 variable [ConditionallyCompleteLinearOrder α] [Nonempty ι] {f : ι → α} {s : Set α} {x : α}
@@ -71,7 +71,7 @@ noncomputable def ConditionallyCompleteLinearOrder.toSuccOrder [WellFoundedLT α
     by_contra h
     simp [h] at hs
     rw [not_isMax_iff] at h
-    exact hs.not_lt (csInf_mem h)
+    exact hs.not_gt (csInf_mem h)
   succ_le_of_lt {a b} ha := by
     simp [ha.not_isMax]
     exact csInf_le ⟨a, fun _ hc => hc.le⟩ ha

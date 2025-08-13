@@ -20,7 +20,8 @@ variable {ι : Sort*} {𝕜 E : Type*}
 
 section OrderedSemiring
 
-variable (𝕜) [OrderedSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] {s t s₁ s₂ t₁ t₂ u : Set E}
+variable (𝕜) [Semiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E] [Module 𝕜 E]
+  {s t s₁ s₂ t₁ t₂ u : Set E}
   {x y : E}
 
 /-- The join of two sets is the union of the segments joining them. This can be interpreted as the
@@ -85,12 +86,17 @@ theorem convexJoin_iUnion_right (s : Set E) (t : ι → Set E) :
 theorem segment_subset_convexJoin (hx : x ∈ s) (hy : y ∈ t) : segment 𝕜 x y ⊆ convexJoin 𝕜 s t :=
   subset_iUnion₂_of_subset x hx <| subset_iUnion₂ (s := fun y _ ↦ segment 𝕜 x y) y hy
 
+section
+variable [IsOrderedRing 𝕜]
+
 theorem subset_convexJoin_left (h : t.Nonempty) : s ⊆ convexJoin 𝕜 s t := fun _x hx =>
   let ⟨_y, hy⟩ := h
   segment_subset_convexJoin hx hy <| left_mem_segment _ _ _
 
 theorem subset_convexJoin_right (h : s.Nonempty) : t ⊆ convexJoin 𝕜 s t :=
   convexJoin_comm (𝕜 := 𝕜) t s ▸ subset_convexJoin_left h
+
+end
 
 theorem convexJoin_subset (hs : s ⊆ u) (ht : t ⊆ u) (hu : Convex 𝕜 u) : convexJoin 𝕜 s t ⊆ u :=
   iUnion₂_subset fun _x hx => iUnion₂_subset fun _y hy => hu.segment_subset (hs hx) (ht hy)
@@ -104,7 +110,8 @@ end OrderedSemiring
 
 section LinearOrderedField
 
-variable [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s t : Set E} {x : E}
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+  [AddCommGroup E] [Module 𝕜 E] {s t : Set E} {x : E}
 
 theorem convexJoin_assoc_aux (s t u : Set E) :
     convexJoin 𝕜 (convexJoin 𝕜 s t) u ⊆ convexJoin 𝕜 s (convexJoin 𝕜 t u) := by

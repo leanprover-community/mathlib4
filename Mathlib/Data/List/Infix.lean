@@ -17,7 +17,7 @@ This file proves properties about
 * `List.tails`: The list of prefixes of a list.
 * `insert` on lists
 
-All those (except `insert`) are defined in `Mathlib.Data.List.Defs`.
+All those (except `insert`) are defined in `Mathlib/Data/List/Defs.lean`.
 
 ## Notation
 
@@ -205,23 +205,23 @@ theorem inits_eq_tails : ∀ l : List α, l.inits = (reverse <| map reverse <| t
 
 theorem tails_eq_inits : ∀ l : List α, l.tails = (reverse <| map reverse <| inits <| reverse l)
   | [] => by simp
-  | a :: l => by simp [tails_eq_inits l, append_left_inj]
+  | a :: l => by simp [tails_eq_inits l]
 
 theorem inits_reverse (l : List α) : inits (reverse l) = reverse (map reverse l.tails) := by
   rw [tails_eq_inits l]
-  simp [reverse_involutive.comp_self, ← map_reverse]
+  simp [← map_reverse]
 
 theorem tails_reverse (l : List α) : tails (reverse l) = reverse (map reverse l.inits) := by
   rw [inits_eq_tails l]
-  simp [reverse_involutive.comp_self, ← map_reverse]
+  simp [← map_reverse]
 
 theorem map_reverse_inits (l : List α) : map reverse l.inits = (reverse <| tails <| reverse l) := by
   rw [inits_eq_tails l]
-  simp [reverse_involutive.comp_self, ← map_reverse]
+  simp [← map_reverse]
 
 theorem map_reverse_tails (l : List α) : map reverse l.tails = (reverse <| inits <| reverse l) := by
   rw [tails_eq_inits l]
-  simp [reverse_involutive.comp_self, ← map_reverse]
+  simp [← map_reverse]
 
 @[simp]
 theorem length_tails (l : List α) : length (tails l) = length l + 1 := by
@@ -265,7 +265,7 @@ lemma map_tails {β : Type*} (g : α → β) : (l.map g).tails = l.tails.map (ma
   induction' l using reverseRecOn <;> simp [*]
 
 lemma take_inits {n} : (l.take n).inits = l.inits.take (n + 1) := by
-  apply ext_getElem <;> (simp [take_take]; omega)
+  apply ext_getElem <;> (simp [take_take] <;> omega)
 
 end InitsTails
 
@@ -283,8 +283,8 @@ theorem insert_eq_ite (a : α) (l : List α) : insert a l = if a ∈ l then l el
 @[simp]
 theorem suffix_insert (a : α) (l : List α) : l <:+ l.insert a := by
   by_cases h : a ∈ l
-  · simp only [insert_of_mem h, insert, suffix_refl]
-  · simp only [insert_of_not_mem h, suffix_cons, insert]
+  · simp only [insert_of_mem h, suffix_refl]
+  · simp only [insert_of_not_mem h, suffix_cons]
 
 theorem infix_insert (a : α) (l : List α) : l <:+: l.insert a :=
   (suffix_insert a l).isInfix

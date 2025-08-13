@@ -60,8 +60,8 @@ converges to the inverse of this value.
 For the version in topological groups with zero (including topological fields)
 assuming additionally that the limit is nonzero, use `Filter.Tendsto.inv₀`. -/
 @[to_additive
-  "If a function converges to a value in an additive topological group, then its
-  negation converges to the negation of this value."]
+  /-- If a function converges to a value in an additive topological group, then its
+  negation converges to the negation of this value. -/]
 theorem Filter.Tendsto.inv {f : α → G} {l : Filter α} {y : G} (h : Tendsto f l (𝓝 y)) :
     Tendsto (fun x => (f x)⁻¹) l (𝓝 y⁻¹) :=
   (continuous_inv.tendsto y).comp h
@@ -91,8 +91,8 @@ end ContinuousInv
 continuous.
 
 When you declare an instance that does not already have a `UniformSpace` instance,
-you should also provide an instance of `UniformSpace` and `UniformAddGroup` using
-`IsTopologicalAddGroup.toUniformSpace` and `uniformAddGroup_of_addCommGroup`. -/
+you should also provide an instance of `UniformSpace` and `IsUniformAddGroup` using
+`IsTopologicalAddGroup.toUniformSpace` and `isUniformAddGroup_of_addCommGroup`. -/
 class IsTopologicalAddGroup (G : Type u) [TopologicalSpace G] [AddGroup G] : Prop
     extends ContinuousAdd G, ContinuousNeg G
 
@@ -103,8 +103,8 @@ class IsTopologicalAddGroup (G : Type u) [TopologicalSpace G] [AddGroup G] : Pro
 continuous.
 
 When you declare an instance that does not already have a `UniformSpace` instance,
-you should also provide an instance of `UniformSpace` and `UniformGroup` using
-`IsTopologicalGroup.toUniformSpace` and `uniformGroup_of_commGroup`. -/
+you should also provide an instance of `UniformSpace` and `IsUniformGroup` using
+`IsTopologicalGroup.toUniformSpace` and `isUniformGroup_of_commGroup`. -/
 @[to_additive]
 class IsTopologicalGroup (G : Type*) [TopologicalSpace G] [Group G] : Prop
     extends ContinuousMul G, ContinuousInv G

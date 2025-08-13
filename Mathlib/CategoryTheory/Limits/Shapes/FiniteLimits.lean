@@ -39,8 +39,8 @@ class HasFiniteLimits : Prop where
   and which has `FinType` objects and morphisms -/
   out (J : Type) [𝒥 : SmallCategory J] [@FinCategory J 𝒥] : @HasLimitsOfShape J 𝒥 C _
 
-instance (priority := 100) hasLimitsOfShape_of_hasFiniteLimits (J : Type w) [SmallCategory J]
-    [FinCategory J] [HasFiniteLimits C] : HasLimitsOfShape J C := by
+instance (priority := 100) hasLimitsOfShape_of_hasFiniteLimits [HasFiniteLimits C] (J : Type w)
+    [SmallCategory J] [FinCategory J] : HasLimitsOfShape J C := by
   apply @hasLimitsOfShape_of_equivalence _ _ _ _ _ _ (FinCategory.equivAsType J) ?_
   apply HasFiniteLimits.out
 
@@ -88,6 +88,7 @@ class HasFiniteColimits : Prop where
   and which has `Fintype` objects and morphisms -/
   out (J : Type) [𝒥 : SmallCategory J] [@FinCategory J 𝒥] : @HasColimitsOfShape J 𝒥 C _
 
+-- See note [instance argument order]
 instance (priority := 100) hasColimitsOfShape_of_hasFiniteColimits [HasFiniteColimits C]
     (J : Type w) [SmallCategory J] [FinCategory J] : HasColimitsOfShape J C := by
   refine @hasColimitsOfShape_of_equivalence _ _ _ _ _ _ (FinCategory.equivAsType J) ?_
@@ -141,7 +142,7 @@ instance instFintypeWalkingParallelPairHom (j j' : WalkingParallelPair) :
         [left, right].toFinset)
       (WalkingParallelPair.recOn j' ∅ [WalkingParallelPairHom.id one].toFinset)
   complete := by
-    rintro (_|_) <;> simp
+    rintro (_ | _) <;> simp
     cases j <;> simp
 end
 
@@ -153,7 +154,7 @@ instance : FinCategory WalkingParallelPair where
 example [HasFiniteLimits C] : HasEqualizers C := by infer_instance
 
 /-- Coequalizers are finite colimits, of if `C` has all finite colimits, it also has all
-    coequalizers -/
+coequalizers -/
 example [HasFiniteColimits C] : HasCoequalizers C := by infer_instance
 
 variable {J : Type v}
@@ -176,7 +177,7 @@ instance fintypeHom (j j' : WidePullbackShape J) : Fintype (j ⟶ j') where
         exact {Hom.id j}
       · exact ∅
   complete := by
-    rintro (_|_)
+    rintro (_ | _)
     · cases j <;> simp
     · simp
 
@@ -198,7 +199,7 @@ instance fintypeHom (j j' : WidePushoutShape J) : Fintype (j ⟶ j') where
         exact {Hom.id j'}
       · exact ∅
   complete := by
-    rintro (_|_)
+    rintro (_ | _)
     · cases j <;> simp
     · simp
 

@@ -8,9 +8,10 @@ import Mathlib.Init
 /-!
 # simproc for `∃ a', ... ∧ a' = a ∧ ...`
 
-This module implements the `existsAndEq` simproc that checks whether `P a'` has
-the form `... ∧ a' = a ∧ ...` or `... ∧ a = a' ∧ ...` for the goal `∃ a', P a'`.
-If so, it rewrites the latter as `P a`.
+This module implements the `existsAndEq` simproc that triggers on goals of the form `∃ a, body` and
+checks whether `body` has the form `... ∧ a = a' ∧ ...` or `... ∧ a' = a ∧ ...` for some `a'` that
+is independent of `a`. If so, it replaces all occurrences of `a` with `a'` and removes the
+quantifier.
 -/
 
 open Lean Meta
@@ -20,13 +21,7 @@ namespace existsAndEq
 universe u in
 private theorem exists_of_imp_eq {α : Sort u} {p : α → Prop} (a : α) (h : ∀ b, p b → a = b) :
     (∃ b, p b) = p a := by
-  apply propext
-  constructor
-  · intro h'
-    obtain ⟨b, hb⟩ := h'
-    rwa [h b hb]
-  · intro h'
-    exact ⟨a, h'⟩
+  grind
 
 /-- For an expression `p` of the form `fun (x : α) ↦ (body : Prop)`, checks whether
 `body` implies `x = a` for some `a`, and constructs a proof of `(∃ x, p x) = p a` using
@@ -47,9 +42,9 @@ where
     | (``Eq, #[β, a, b]) =>
       if !(← isDefEq (← inferType x) β) then
         return none
-      if ← isDefEq x a then
+      if (← isDefEq x a) && !(b.containsFVar x.fvarId!) then
         return .some ⟨b, ← mkAppM ``Eq.symm #[h]⟩
-      if ← isDefEq x b then
+      if (← isDefEq x b) && !(a.containsFVar x.fvarId!) then
         return .some ⟨a, h⟩
       else
         return .none
@@ -63,8 +58,9 @@ where
 
 end existsAndEq
 
-/-- Checks whether `P a'` has the form `... ∧ a' = a ∧ ...` or `... ∧ a = a' ∧ ...` in
-the goal `∃ a', P a'`. If so, rewrites the goal as `P a`. -/
+/-- Triggers on goals of the form `∃ a, body` and checks whether `body` has the
+form `... ∧ a = a' ∧ ...` or `... ∧ a' = a ∧ ...` for some `a'` that is independent of `a`.
+If so, it replaces all occurrences of `a` with `a'` and removes the quantifier. -/
 simproc existsAndEq (Exists (fun _ => And _ _)) := fun e => do
   match e.getAppFnArgs with
   | (``Exists, #[_, p]) =>

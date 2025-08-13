@@ -3,7 +3,6 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.Order.AddGroupWithTop
 import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
@@ -168,7 +167,7 @@ instance instPreorderTropical [Preorder R] : Preorder (Tropical R) :=
   { instLETropical, instLTTropical with
     le_refl := fun x => le_refl (untrop x)
     le_trans := fun _ _ _ h h' => le_trans (α := R) h h'
-    lt_iff_le_not_le := fun _ _ => lt_iff_le_not_le (α := R) }
+    lt_iff_le_not_ge := fun _ _ => lt_iff_le_not_ge (α := R) }
 
 /-- Reinterpret `x : R` as an element of `Tropical R`, preserving the order. -/
 def tropOrderIso [Preorder R] : R ≃o Tropical R :=
@@ -247,7 +246,9 @@ theorem trop_add_def (x y : Tropical R) : x + y = trop (min (untrop x) (untrop y
 instance instLinearOrderTropical : LinearOrder (Tropical R) :=
   { instPartialOrderTropical with
     le_total := fun a b => le_total (untrop a) (untrop b)
-    decidableLE := Tropical.decidableLE
+    toDecidableLE := Tropical.decidableLE
+    toDecidableEq := Tropical.instDecidableEq
+    toDecidableLT := Tropical.decidableLT
     max := fun a b => trop (max (untrop a) (untrop b))
     max_def := fun a b => untrop_injective (by
       simp only [max_def, untrop_le_iff, untrop_trop]; split_ifs <;> simp)
@@ -349,7 +350,7 @@ instance instAddMonoidWithOneTropical [LinearOrder R] [OrderTop R] [Zero R] :
   { instOneTropical, instAddCommMonoidTropical with
     natCast := fun n => if n = 0 then 0 else 1
     natCast_zero := rfl
-    natCast_succ := fun n => (untrop_inj_iff _ _).1 (by cases n <;> simp [Nat.cast]) }
+    natCast_succ := fun n => (untrop_inj_iff _ _).1 (by cases n <;> simp) }
 
 instance [Zero R] : Nontrivial (Tropical (WithTop R)) :=
   ⟨⟨0, 1, trop_injective.ne WithTop.top_ne_coe⟩⟩
@@ -494,10 +495,12 @@ theorem succ_nsmul {R} [LinearOrder R] [OrderTop R] (x : Tropical R) (n : ℕ) :
 -- Requires `zero_eq_bot` to be true
 -- lemma add_eq_zero_iff {a b : tropical R} :
 --   a + b = 1 ↔ a = 1 ∨ b = 1 := sorry
-theorem mul_eq_zero_iff {R : Type*} [LinearOrderedAddCommMonoid R] {a b : Tropical (WithTop R)} :
-    a * b = 0 ↔ a = 0 ∨ b = 0 := by simp [← untrop_inj_iff, WithTop.add_eq_top]
+theorem mul_eq_zero_iff {R : Type*} [AddCommMonoid R]
+    {a b : Tropical (WithTop R)} : a * b = 0 ↔ a = 0 ∨ b = 0 := by
+  simp [← untrop_inj_iff, WithTop.add_eq_top]
 
-instance {R : Type*} [LinearOrderedAddCommMonoid R] : NoZeroDivisors (Tropical (WithTop R)) :=
+instance {R : Type*} [AddCommMonoid R] :
+    NoZeroDivisors (Tropical (WithTop R)) :=
   ⟨mul_eq_zero_iff.mp⟩
 
 end Semiring

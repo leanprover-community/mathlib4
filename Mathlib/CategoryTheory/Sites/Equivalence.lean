@@ -53,8 +53,7 @@ instance (priority := 900) [G.IsEquivalence] : IsCoverDense G J where
     let e := (asEquivalence G).symm
     convert J.top_mem U
     ext Y f
-    simp only [Sieve.functorPushforward_apply, Presieve.functorPushforward, exists_and_left,
-      Sieve.top_apply, iff_true]
+    simp only [Sieve.top_apply, iff_true]
     let g : e.inverse.obj _ ⟶ U := (e.unitInv.app Y) ≫ f
     have : (Sieve.coverByImage e.inverse U).arrows g := Presieve.in_coverByImage _ g
     replace := Sieve.downward_closed _ this (e.unit.app Y)
@@ -117,10 +116,10 @@ def sheafCongr : Sheaf J A ≌ Sheaf K A where
   functor_unitIso_comp X := by
     ext
     simp only [id_obj, sheafCongr.functor_obj_val_obj, comp_obj,
-      Sheaf.instCategorySheaf_comp_val, NatTrans.comp_app, sheafCongr.inverse_obj_val_obj,
+      Sheaf.comp_val, NatTrans.comp_app, sheafCongr.inverse_obj_val_obj,
       Opposite.unop_op, sheafCongr.functor_map_val_app,
       sheafCongr.unitIso_hom_app_val_app, sheafCongr.counitIso_hom_app_val_app,
-      sheafCongr.functor_obj_val_map, Quiver.Hom.unop_op, Sheaf.instCategorySheaf_id_val,
+      sheafCongr.functor_obj_val_map, Quiver.Hom.unop_op, Sheaf.id_val,
       NatTrans.id_app]
     simp [← Functor.map_comp, ← op_comp]
 
@@ -265,8 +264,10 @@ lemma PreservesSheafification.transport
   le P Q f hf := by
     rw [← J.W_whiskerLeft_iff (G := G) (K := K)] at hf
     have := K.W_of_preservesSheafification F (whiskerLeft G.op f) hf
-    rwa [whiskerRight_left,
-      K.W_whiskerLeft_iff (G := G) (J := J) (f := whiskerRight f F)] at this
+    rw [whiskerRight_left] at this
+    haveI := K.W.of_postcomp (W' := MorphismProperty.isomorphisms _) _ _ (Iso.isIso_inv _) <|
+      K.W.of_precomp (W' := MorphismProperty.isomorphisms _) _ _ (Iso.isIso_hom _) this
+    rwa [K.W_whiskerLeft_iff (G := G) (J := J) (f := whiskerRight f F)] at this
 
 variable [Functor.IsContinuous.{v₃} G K J] [(G.sheafPushforwardContinuous A K J).EssSurj]
 variable [G.IsCocontinuous K J] {FA : A → A → Type*} {CA : A → Type*}

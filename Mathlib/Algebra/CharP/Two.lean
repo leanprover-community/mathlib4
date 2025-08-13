@@ -30,7 +30,7 @@ theorem two_eq_zero [CharP R 2] : (2 : R) = 0 := by
 
 /-- The only hypotheses required to build a `CharP R 2` instance are `1 ≠ 0` and `2 = 0`. -/
 theorem of_one_ne_zero_of_two_eq_zero (h₁ : (1 : R) ≠ 0) (h₂ : (2 : R) = 0) : CharP R 2 where
-  cast_eq_zero_iff' n := by
+  cast_eq_zero_iff n := by
     obtain hn | hn := Nat.even_or_odd n
     · simp_rw [hn.two_dvd, iff_true]
       exact natCast_eq_zero_of_even_of_two_eq_zero hn h₂
@@ -64,10 +64,6 @@ theorem neg_eq' : Neg.neg = (id : R → R) :=
 
 @[scoped simp]
 theorem sub_eq_add (x y : R) : x - y = x + y := by rw [sub_eq_add_neg, neg_eq]
-
-@[deprecated sub_eq_add (since := "2024-10-24")]
-theorem sub_eq_add' : HSub.hSub = (· + · : R → R → R) :=
-  funext₂ sub_eq_add
 
 theorem add_eq_iff_eq_add {a b c : R} : a + b = c ↔ a = c + b := by
   rw [← sub_eq_iff_eq_add, sub_eq_add]

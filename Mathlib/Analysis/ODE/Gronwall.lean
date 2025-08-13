@@ -310,15 +310,15 @@ theorem ODE_solution_unique_of_mem_Ioo
     (heq : f t₀ = g t₀) :
     EqOn f g (Ioo a b) := by
   intros t' ht'
-  rcases lt_or_le t' t₀ with (h | h)
+  rcases lt_or_ge t' t₀ with (h | h)
   · have hss : Icc t' t₀ ⊆ Ioo a b :=
       fun _ ht'' ↦ ⟨lt_of_lt_of_le ht'.1 ht''.1, lt_of_le_of_lt ht''.2 ht.2⟩
     exact ODE_solution_unique_of_mem_Icc_left
       (fun t'' ht'' ↦ hv t'' ((Ioc_subset_Icc_self.trans hss) ht''))
-      (continuousOn_of_forall_continuousAt fun _ ht'' ↦ (hf _ <| hss ht'').1.continuousAt)
+      (HasDerivAt.continuousOn fun _ ht'' ↦ (hf _ <| hss ht'').1)
       (fun _ ht'' ↦ (hf _ <| hss <| Ioc_subset_Icc_self ht'').1.hasDerivWithinAt)
       (fun _ ht'' ↦ (hf _ <| hss <| Ioc_subset_Icc_self ht'').2)
-      (continuousOn_of_forall_continuousAt fun _ ht'' ↦ (hg _ <| hss ht'').1.continuousAt)
+      (HasDerivAt.continuousOn fun _ ht'' ↦ (hg _ <| hss ht'').1)
       (fun _ ht'' ↦ (hg _ <| hss <| Ioc_subset_Icc_self ht'').1.hasDerivWithinAt)
       (fun _ ht'' ↦ (hg _ <| hss <| Ioc_subset_Icc_self ht'').2) heq
       ⟨le_rfl, le_of_lt h⟩
@@ -326,15 +326,15 @@ theorem ODE_solution_unique_of_mem_Ioo
       fun _ ht'' ↦ ⟨lt_of_lt_of_le ht.1 ht''.1, lt_of_le_of_lt ht''.2 ht'.2⟩
     exact ODE_solution_unique_of_mem_Icc_right
       (fun t'' ht'' ↦ hv t'' ((Ico_subset_Icc_self.trans hss) ht''))
-      (continuousOn_of_forall_continuousAt fun _ ht'' ↦ (hf _ <| hss ht'').1.continuousAt)
+      (HasDerivAt.continuousOn fun _ ht'' ↦ (hf _ <| hss ht'').1)
       (fun _ ht'' ↦ (hf _ <| hss <| Ico_subset_Icc_self ht'').1.hasDerivWithinAt)
       (fun _ ht'' ↦ (hf _ <| hss <| Ico_subset_Icc_self ht'').2)
-      (continuousOn_of_forall_continuousAt fun _ ht'' ↦ (hg _ <| hss ht'').1.continuousAt)
+      (HasDerivAt.continuousOn fun _ ht'' ↦ (hg _ <| hss ht'').1)
       (fun _ ht'' ↦ (hg _ <| hss <| Ico_subset_Icc_self ht'').1.hasDerivWithinAt)
       (fun _ ht'' ↦ (hg _ <| hss <| Ico_subset_Icc_self ht'').2) heq
       ⟨h, le_rfl⟩
 
-/-- Local unqueness of ODE solutions. -/
+/-- Local uniqueness of ODE solutions. -/
 theorem ODE_solution_unique_of_eventually
     (hv : ∀ᶠ t in 𝓝 t₀, LipschitzOnWith K (v t) (s t))
     (hf : ∀ᶠ t in 𝓝 t₀, HasDerivAt f (v t (f t)) t ∧ f t ∈ s t)
@@ -358,7 +358,7 @@ theorem ODE_solution_unique
     (hg' : ∀ t ∈ Ico a b, HasDerivWithinAt g (v t (g t)) (Ici t) t)
     (ha : f a = g a) :
     EqOn f g (Icc a b) :=
-  have hfs : ∀ t ∈ Ico a b, f t ∈ @univ E := fun _ _ => trivial
+  have hfs : ∀ t ∈ Ico a b, f t ∈ univ := fun _ _ => trivial
   ODE_solution_unique_of_mem_Icc_right (fun t _ => (hv t).lipschitzOnWith) hf hf' hfs hg hg'
     (fun _ _ => trivial) ha
 

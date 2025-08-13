@@ -133,18 +133,18 @@ lemma of_isSeparable [Algebra.IsSeparable K L] : FormallyEtale K L := by
     have hy : y ∈ K⟮α⟯ := e ▸ IntermediateField.subset_adjoin K {x, y} (by simp)
     exact ⟨α, hx, hy⟩
   refine ⟨⟨⟨⟨⟨fun x ↦ g x (IntermediateField.AdjoinSimple.gen K x), ?_⟩, ?_⟩, ?_, ?_⟩, ?_⟩, ?_⟩
-  · show g 1 1 = 1; rw [map_one]
+  · change g 1 1 = 1; rw [map_one]
   · intros x y
     obtain ⟨α, hx, hy⟩ := H x y
     simp only [← hg₃ _ _ hx, ← hg₃ _ _ hy, ← map_mul, ← hg₃ _ _ (mul_mem hx hy)]
     rfl
-  · show g 0 0 = 0; rw [map_zero]
+  · change g 0 0 = 0; rw [map_zero]
   · intros x y
     obtain ⟨α, hx, hy⟩ := H x y
     simp only [← hg₃ _ _ hx, ← hg₃ _ _ hy, ← map_add, ← hg₃ _ _ (add_mem hx hy)]
     rfl
   · intro r
-    show g _ (algebraMap K _ r) = _
+    change g _ (algebraMap K _ r) = _
     rw [AlgHom.commutes]
   · ext x
     simpa using AlgHom.congr_fun (hg₁ x) (IntermediateField.AdjoinSimple.gen K x)
@@ -177,14 +177,7 @@ theorem iff_exists_algEquiv_prod [EssFiniteType K A] :
     exact ⟨_, inferInstance, _, _, _, e, fun I ↦ (iff_isSeparable _ _).mp inferInstance⟩
   · intro ⟨I, _, Ai, _, _, e, _⟩
     rw [FormallyEtale.iff_of_equiv e, FormallyEtale.pi_iff]
-    have (i) : EssFiniteType K (Ai i) := by
-      letI := ((Pi.evalRingHom Ai i).comp e.toRingHom).toAlgebra
-      have : IsScalarTower K A (Ai i) :=
-        .of_algebraMap_eq fun r ↦ by simp [RingHom.algebraMap_toAlgebra]
-      have : Algebra.FiniteType A (Ai i) := .of_surjective inferInstance (Algebra.ofId _ _)
-        (RingHomSurjective.is_surjective (σ := Pi.evalRingHom Ai i).comp e.surjective)
-      exact EssFiniteType.comp K A (Ai i)
-    exact fun I ↦ (iff_isSeparable _ _).mpr inferInstance
+    exact fun I ↦ of_isSeparable K (Ai I)
 
 end Algebra.FormallyEtale
 

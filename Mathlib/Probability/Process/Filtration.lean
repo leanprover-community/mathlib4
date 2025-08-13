@@ -41,6 +41,7 @@ namespace MeasureTheory
 /-- A `Filtration` on a measurable space `Ω` with σ-algebra `m` is a monotone
 sequence of sub-σ-algebras of `m`. -/
 structure Filtration {Ω : Type*} (ι : Type*) [Preorder ι] (m : MeasurableSpace Ω) where
+  /-- The sequence of sub-σ-algebras of `m` -/
   seq : ι → MeasurableSpace Ω
   mono' : Monotone seq
   le' : ∀ i : ι, seq i ≤ m
@@ -137,7 +138,7 @@ noncomputable instance : InfSet (Filtration ι m) :=
     { seq := fun i => if Set.Nonempty s then sInf ((fun f : Filtration ι m => f i) '' s) else m
       mono' := fun i j hij => by
         by_cases h_nonempty : Set.Nonempty s
-        swap; · simp only [h_nonempty, Set.image_nonempty, if_false, le_refl]
+        swap; · simp only [h_nonempty, if_false, le_refl]
         simp only [h_nonempty, if_true, le_sInf_iff, Set.mem_image, forall_exists_index, and_imp,
           forall_apply_eq_imp_iff₂]
         refine fun f hf_mem => le_trans ?_ (f.mono hij)
@@ -279,7 +280,7 @@ theorem filtrationOfSet_eq_natural [MulZeroOneClass β] [Nontrivial β] {s : ι 
     rw [comap_eq_generateFrom]
     refine measurableSet_generateFrom ⟨{1}, measurableSet_singleton 1, ?_⟩
     ext x
-    simp [Set.indicator_const_preimage_eq_union]
+    simp
   · rintro t ⟨n, ht⟩
     suffices MeasurableSpace.generateFrom {t | n ≤ i ∧
       MeasurableSet[MeasurableSpace.comap ((s n).indicator (fun _ => 1 : Ω → β)) mβ] t} ≤

@@ -57,7 +57,7 @@ theorem equivalence : Equivalence (@Commensurable G _) :=
 
 /-- Equivalence of `K/H ⊓ K` with `gKg⁻¹/gHg⁻¹ ⊓ gKg⁻¹` -/
 def quotConjEquiv (H K : Subgroup G) (g : ConjAct G) :
-    K ⧸ H.subgroupOf K ≃ (g • K).1 ⧸ (g • H).subgroupOf (g • K) :=
+    K ⧸ H.subgroupOf K ≃ (g • K : Subgroup G) ⧸ (g • H).subgroupOf (g • K) :=
   Quotient.congr (K.equivSMul g).toEquiv fun a b => by
     dsimp
     rw [← Quotient.eq'', ← Quotient.eq'', QuotientGroup.eq, QuotientGroup.eq,

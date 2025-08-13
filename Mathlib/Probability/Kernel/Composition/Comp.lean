@@ -53,7 +53,7 @@ theorem comp_apply (η : Kernel β γ) (κ : Kernel α β) (a : α) : (η ∘ₖ
 
 theorem comp_apply' (η : Kernel β γ) (κ : Kernel α β) (a : α) {s : Set γ} (hs : MeasurableSet s) :
     (η ∘ₖ κ) a s = ∫⁻ b, η b s ∂κ a := by
-  rw [comp_apply, Measure.bind_apply hs (Kernel.measurable _)]
+  rw [comp_apply, Measure.bind_apply hs (Kernel.aemeasurable _)]
 
 theorem comp_apply_univ_le (κ : Kernel α β) (η : Kernel β γ) [IsFiniteKernel η] (a : α) :
     (η ∘ₖ κ) a Set.univ ≤ κ a Set.univ * IsFiniteKernel.bound η := by
@@ -121,7 +121,7 @@ end Restrict
 
 theorem lintegral_comp (η : Kernel β γ) (κ : Kernel α β) (a : α) {g : γ → ℝ≥0∞}
     (hg : Measurable g) : ∫⁻ c, g c ∂(η ∘ₖ κ) a = ∫⁻ b, ∫⁻ c, g c ∂η b ∂κ a := by
-  rw [comp_apply, Measure.lintegral_bind (Kernel.measurable _) hg]
+  rw [comp_apply, Measure.lintegral_bind (Kernel.aemeasurable _) hg.aemeasurable]
 
 /-- Composition of kernels is associative. -/
 theorem comp_assoc {δ : Type*} {mδ : MeasurableSpace δ} (ξ : Kernel γ δ)
@@ -129,9 +129,16 @@ theorem comp_assoc {δ : Type*} {mδ : MeasurableSpace δ} (ξ : Kernel γ δ)
   refine ext_fun fun a f hf => ?_
   simp_rw [lintegral_comp _ _ _ hf, lintegral_comp _ _ _ hf.lintegral_kernel]
 
+lemma comp_discard' (κ : Kernel α β) :
+    discard β ∘ₖ κ =
+      { toFun a := κ a .univ • Measure.dirac ()
+        measurable' := (κ.measurable_coe .univ).smul_measure _ } := by
+  ext a s hs
+  simp [comp_apply' _ _ _ hs, mul_comm]
+
 @[simp]
 lemma comp_discard (κ : Kernel α β) [IsMarkovKernel κ] : discard β ∘ₖ κ = discard α := by
-  ext a s hs; simp [comp_apply' _ _ _ hs]
+  ext; simp [comp_discard']
 
 @[simp]
 lemma swap_copy : (swap α α) ∘ₖ (copy α) = copy α := by
@@ -179,7 +186,7 @@ instance IsMarkovKernel.comp (η : Kernel β γ) [IsMarkovKernel η] (κ : Kerne
   isProbabilityMeasure a := by
     rw [comp_apply]
     constructor
-    rw [Measure.bind_apply .univ η.measurable]
+    rw [Measure.bind_apply .univ η.aemeasurable]
     simp
 
 instance IsZeroOrMarkovKernel.comp (κ : Kernel α β) [IsZeroOrMarkovKernel κ]

@@ -3,7 +3,7 @@ Copyright (c) 2025 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.AlgebraicGeometry.EllipticCurve.Affine
+import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Formula
 import Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Basic
 
 /-!
@@ -11,7 +11,7 @@ import Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Basic
 
 Let `W` be a Weierstrass curve over a field `F`. The nonsingular projective points on `W` can be
 given negation and addition operations defined by an analogue of the secant-and-tangent process in
-`Mathlib/AlgebraicGeometry/EllipticCurve/Affine.lean`, but the polynomials involved are
+`Mathlib/AlgebraicGeometry/EllipticCurve/Affine/Formula.lean`, but the polynomials involved are
 homogeneous, so any instances of division become multiplication in the `Z`-coordinate. Most
 computational proofs are immediate from their analogous proofs for affine coordinates.
 
@@ -21,15 +21,15 @@ be defined in `Mathlib/AlgebraicGeometry/EllipticCurve/Projective/Point.lean`.
 
 ## Main definitions
 
- * `WeierstrassCurve.Projective.negY`: the `Y`-coordinate of `-P`.
- * `WeierstrassCurve.Projective.dblZ`: the `Z`-coordinate of `2 • P`.
- * `WeierstrassCurve.Projective.dblX`: the `X`-coordinate of `2 • P`.
- * `WeierstrassCurve.Projective.negDblY`: the `Y`-coordinate of `-(2 • P)`.
- * `WeierstrassCurve.Projective.dblY`: the `Y`-coordinate of `2 • P`.
- * `WeierstrassCurve.Projective.addZ`: the `Z`-coordinate of `P + Q`.
- * `WeierstrassCurve.Projective.addX`: the `X`-coordinate of `P + Q`.
- * `WeierstrassCurve.Projective.negAddY`: the `Y`-coordinate of `-(P + Q)`.
- * `WeierstrassCurve.Projective.addY`: the `Y`-coordinate of `P + Q`.
+* `WeierstrassCurve.Projective.negY`: the `Y`-coordinate of `-P`.
+* `WeierstrassCurve.Projective.dblZ`: the `Z`-coordinate of `2 • P`.
+* `WeierstrassCurve.Projective.dblX`: the `X`-coordinate of `2 • P`.
+* `WeierstrassCurve.Projective.negDblY`: the `Y`-coordinate of `-(2 • P)`.
+* `WeierstrassCurve.Projective.dblY`: the `Y`-coordinate of `2 • P`.
+* `WeierstrassCurve.Projective.addZ`: the `Z`-coordinate of `P + Q`.
+* `WeierstrassCurve.Projective.addX`: the `X`-coordinate of `P + Q`.
+* `WeierstrassCurve.Projective.negAddY`: the `Y`-coordinate of `-(P + Q)`.
+* `WeierstrassCurve.Projective.addY`: the `Y`-coordinate of `P + Q`.
 
 ## Implementation notes
 
@@ -37,7 +37,7 @@ The definitions of `WeierstrassCurve.Projective.dblX`, `WeierstrassCurve.Project
 `WeierstrassCurve.Projective.addZ`, `WeierstrassCurve.Projective.addX`, and
 `WeierstrassCurve.Projective.negAddY` are given explicitly by large polynomials that are homogeneous
 of degree `4`. Clearing the denominators of their corresponding affine rational functions in
-`Mathlib/AlgebraicGeometry/EllipticCurve/Affine.lean` would give polynomials that are
+`Mathlib/AlgebraicGeometry/EllipticCurve/Affine/Formula.lean` would give polynomials that are
 homogeneous of degrees `5`, `6`, `6`, `8`, and `8` respectively, so their actual definitions are off
 by powers of certain polynomial factors that are homogeneous of degree `1` or `2`. These factors
 divide their corresponding affine polynomials only modulo the homogeneous Weierstrass equation, so
@@ -224,7 +224,8 @@ lemma isUnit_dblZ_of_Y_ne' {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equat
     IsUnit (W.dblZ P) :=
   (dblZ_ne_zero_of_Y_ne' hP hQ hPz hQz hx hy).isUnit
 
-private lemma toAffine_slope_of_eq {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q)
+private lemma toAffine_slope_of_eq [DecidableEq F]
+    {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q)
     (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z = Q x * P z) (hy : P y * Q z ≠ W.negY Q * P z) :
     W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z) =
       -eval P W.polynomialX / P z / (P y - W.negY P) := by
@@ -298,8 +299,8 @@ private lemma toAffine_addX_of_eq {P : Fin 3 → F} (hPz : P z ≠ 0) {n d : F} 
   field_simp [mul_ne_zero hPz hd]
   ring1
 
-lemma dblX_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q) (hPz : P z ≠ 0)
-    (hQz : Q z ≠ 0) (hx : P x * Q z = Q x * P z) (hy : P y * Q z ≠ W.negY Q * P z) :
+lemma dblX_of_Z_ne_zero [DecidableEq F] {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q)
+    (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z = Q x * P z) (hy : P y * Q z ≠ W.negY Q * P z) :
     W.dblX P / W.dblZ P = W.toAffine.addX (P x / P z) (Q x / Q z)
       (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)) := by
   rw [dblX_eq hP hPz, dblZ, toAffine_slope_of_eq hP hQ hPz hQz hx hy, ← (X_eq_iff hPz hQz).mp hx,
@@ -384,7 +385,7 @@ private lemma toAffine_negAddY_of_eq {P : Fin 3 → F} (hPz : P z ≠ 0) {n d : 
   field_simp [mul_ne_zero hPz <| mul_ne_zero hPz <| pow_ne_zero 3 hd]
   ring1
 
-lemma negDblY_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q)
+lemma negDblY_of_Z_ne_zero [DecidableEq F] {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q)
     (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z = Q x * P z) (hy : P y * Q z ≠ W.negY Q * P z) :
     W.negDblY P / W.dblZ P = W.toAffine.negAddY (P x / P z) (Q x / Q z) (P y / P z)
       (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)) := by
@@ -417,8 +418,8 @@ lemma dblY_of_Y_eq {P Q : Fin 3 → F} (hP : W.Equation P) (hPz : P z ≠ 0) (hQ
     W.dblY P = W.dblU P := by
   rw [dblU, ← dblY_of_Y_eq' hP hPz hQz hx hy hy', mul_div_cancel_right₀ _ <| pow_ne_zero 2 hPz]
 
-lemma dblY_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q) (hPz : P z ≠ 0)
-    (hQz : Q z ≠ 0) (hx : P x * Q z = Q x * P z) (hy : P y * Q z ≠ W.negY Q * P z) :
+lemma dblY_of_Z_ne_zero [DecidableEq F] {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q)
+    (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z = Q x * P z) (hy : P y * Q z ≠ W.negY Q * P z) :
     W.dblY P / W.dblZ P = W.toAffine.addY (P x / P z) (Q x / Q z) (P y / P z)
       (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)) := by
   erw [dblY, negY_of_Z_ne_zero <| dblZ_ne_zero_of_Y_ne' hP hQ hPz hQz hx hy,
@@ -453,8 +454,8 @@ lemma dblXYZ_of_Y_eq {P Q : Fin 3 → F} (hP : W.Equation P) (hPz : P z ≠ 0) (
   erw [dblXYZ, dblX_of_Y_eq hP hPz hQz hx hy hy', dblY_of_Y_eq hP hPz hQz hx hy hy',
     dblZ_of_Y_eq hQz hx hy hy', smul_fin3, mul_zero, mul_one]
 
-lemma dblXYZ_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q) (hPz : P z ≠ 0)
-    (hQz : Q z ≠ 0) (hx : P x * Q z = Q x * P z) (hy : P y * Q z ≠ W.negY Q * P z) :
+lemma dblXYZ_of_Z_ne_zero [DecidableEq F] {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q)
+    (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z = Q x * P z) (hy : P y * Q z ≠ W.negY Q * P z) :
     W.dblXYZ P = W.dblZ P •
       ![W.toAffine.addX (P x / P z) (Q x / Q z)
           (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)),
@@ -545,7 +546,7 @@ lemma isUnit_addZ_of_X_ne {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equati
     (hx : P x * Q z ≠ Q x * P z) : IsUnit <| W.addZ P Q :=
   (addZ_ne_zero_of_X_ne hP hQ hx).isUnit
 
-private lemma toAffine_slope_of_ne {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
+private lemma toAffine_slope_of_ne [DecidableEq F] {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
     (hx : P x * Q z ≠ Q x * P z) :
     W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z) =
       (P y * Q z - Q y * P z) / (P x * Q z - Q x * P z) := by
@@ -615,8 +616,8 @@ private lemma toAffine_addX_of_ne {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q
   field_simp [hd]
   ring1
 
-lemma addX_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q) (hPz : P z ≠ 0)
-    (hQz : Q z ≠ 0) (hx : P x * Q z ≠ Q x * P z) : W.addX P Q / W.addZ P Q =
+lemma addX_of_Z_ne_zero [DecidableEq F] {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q)
+    (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z ≠ Q x * P z) : W.addX P Q / W.addZ P Q =
     W.toAffine.addX (P x / P z) (Q x / Q z)
       (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)) := by
   rw [addX_eq hP hQ hPz hQz, addZ_eq hP hQ hPz hQz, toAffine_slope_of_ne hPz hQz hx,
@@ -696,8 +697,8 @@ private lemma toAffine_negAddY_of_ne {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz 
   field_simp [mul_ne_zero (pow_ne_zero 2 <| mul_ne_zero hPz hQz) <| pow_ne_zero 3 hd]
   ring1
 
-lemma negAddY_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q) (hPz : P z ≠ 0)
-    (hQz : Q z ≠ 0) (hx : P x * Q z ≠ Q x * P z) : W.negAddY P Q / W.addZ P Q =
+lemma negAddY_of_Z_ne_zero [DecidableEq F] {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q)
+    (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z ≠ Q x * P z) : W.negAddY P Q / W.addZ P Q =
       W.toAffine.negAddY (P x / P z) (Q x / Q z) (P y / P z)
         (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)) := by
   rw [negAddY_eq hP hQ hPz hQz, addZ_eq hP hQ hPz hQz, toAffine_slope_of_ne hPz hQz hx,
@@ -743,8 +744,8 @@ lemma addY_of_X_eq {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q) (
     ← addY_of_X_eq' hP hQ hPz hQz hx, ← pow_succ',
     mul_div_cancel_right₀ _ <| pow_ne_zero 3 <| mul_ne_zero hPz hQz]
 
-lemma addY_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q) (hPz : P z ≠ 0)
-    (hQz : Q z ≠ 0) (hx : P x * Q z ≠ Q x * P z) : W.addY P Q / W.addZ P Q =
+lemma addY_of_Z_ne_zero [DecidableEq F] {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q)
+    (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z ≠ Q x * P z) : W.addY P Q / W.addZ P Q =
       W.toAffine.addY (P x / P z) (Q x / Q z) (P y / P z)
         (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)) := by
   erw [addY, negY_of_Z_ne_zero <| addZ_ne_zero_of_X_ne hP hQ hx, addX_of_Z_ne_zero hP hQ hPz hQz hx,
@@ -789,8 +790,8 @@ lemma addXYZ_of_X_eq {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q)
   erw [addXYZ, addX_of_X_eq hP hQ hPz hQz hx, addY_of_X_eq hP hQ hPz hQz hx,
     addZ_of_X_eq hP hQ hPz hQz hx, smul_fin3, mul_zero, mul_one]
 
-lemma addXYZ_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q) (hPz : P z ≠ 0)
-    (hQz : Q z ≠ 0) (hx : P x * Q z ≠ Q x * P z) : W.addXYZ P Q = W.addZ P Q •
+lemma addXYZ_of_Z_ne_zero [DecidableEq F] {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q)
+    (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z ≠ Q x * P z) : W.addXYZ P Q = W.addZ P Q •
       ![W.toAffine.addX (P x / P z) (Q x / Q z)
           (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)),
         W.toAffine.addY (P x / P z) (Q x / Q z) (P y / P z)
@@ -821,12 +822,12 @@ lemma map_dblZ : (W'.map f).toProjective.dblZ (f ∘ P) = f (W'.dblZ P) := by
 
 @[simp]
 lemma map_dblX : (W'.map f).toProjective.dblX (f ∘ P) = f (W'.dblX P) := by
-  simp only [dblX, map_dblU, map_negY]
+  simp only [dblX]
   map_simp
 
 @[simp]
 lemma map_negDblY : (W'.map f).toProjective.negDblY (f ∘ P) = f (W'.negDblY P) := by
-  simp only [negDblY, map_dblU, map_dblX, map_negY]
+  simp only [negDblY]
   map_simp
 
 @[simp]

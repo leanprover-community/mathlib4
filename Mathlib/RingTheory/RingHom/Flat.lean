@@ -5,6 +5,7 @@ Authors: Christian Merten
 -/
 import Mathlib.RingTheory.Flat.Localization
 import Mathlib.RingTheory.LocalProperties.Basic
+import Mathlib.RingTheory.Ideal.GoingDown
 
 /-!
 # Flat ring homomorphisms
@@ -22,6 +23,12 @@ open TensorProduct
 def RingHom.Flat {R : Type u} {S : Type v} [CommRing R] [CommRing S] (f : R →+* S) : Prop :=
   letI : Algebra R S := f.toAlgebra
   Module.Flat R S
+
+lemma flat_algebraMap_iff {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] :
+    (algebraMap R S).Flat ↔ Module.Flat R S := by
+  simp only [RingHom.Flat]
+  congr!
+  exact Algebra.algebra_ext _ _ fun _ ↦ rfl
 
 namespace RingHom.Flat
 
@@ -54,7 +61,7 @@ lemma respectsIso : RespectsIso Flat := by
   exact of_bijective e.bijective
 
 lemma isStableUnderBaseChange : IsStableUnderBaseChange Flat := by
-  apply IsStableUnderBaseChange.mk _ respectsIso
+  apply IsStableUnderBaseChange.mk respectsIso
   introv h
   replace h : Module.Flat R T := by
     rw [RingHom.Flat] at h; convert h; ext; simp_rw [Algebra.smul_def]; rfl
@@ -111,5 +118,14 @@ lemma localRingHom {f : R →+* S} (hf : f.Flat)
   rw [RingHom.Flat, Module.flat_iff_of_isLocalization
     (S := (Localization.AtPrime (Ideal.comap f P))) (p := (Ideal.comap f P).primeCompl)]
   exact Module.Flat.trans R S (Localization.AtPrime P)
+
+open PrimeSpectrum
+
+/-- `Spec S → Spec R` is generalizing if `R →+* S` is flat. -/
+lemma generalizingMap_comap {f : R →+* S} (hf : f.Flat) : GeneralizingMap (comap f) := by
+  algebraize [f]
+  change GeneralizingMap (comap (algebraMap R S))
+  rw [← Algebra.HasGoingDown.iff_generalizingMap_primeSpectrumComap]
+  infer_instance
 
 end RingHom.Flat

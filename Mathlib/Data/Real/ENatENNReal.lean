@@ -57,8 +57,6 @@ theorem toENNReal_ofNat (n : ℕ) [n.AtLeastTwo] : ((ofNat(n) : ℕ∞) : ℝ≥
 theorem toENNReal_inj : (m : ℝ≥0∞) = (n : ℝ≥0∞) ↔ m = n :=
   toENNRealOrderEmbedding.eq_iff_eq
 
-@[deprecated (since := "2024-12-29")] alias toENNReal_coe_eq_iff := toENNReal_inj
-
 @[simp, norm_cast] lemma toENNReal_eq_top : (n : ℝ≥0∞) = ∞ ↔ n = ⊤ := by simp [← toENNReal_inj]
 @[norm_cast] lemma toENNReal_ne_top : (n : ℝ≥0∞) ≠ ∞ ↔ n ≠ ⊤ := by simp
 
@@ -83,7 +81,7 @@ theorem toENNReal_strictMono : StrictMono ((↑) : ℕ∞ → ℝ≥0∞) :=
 
 @[simp, norm_cast]
 theorem toENNReal_zero : ((0 : ℕ∞) : ℝ≥0∞) = 0 :=
-  _root_.map_zero toENNRealRingHom
+  map_zero toENNRealRingHom
 
 @[simp, norm_cast]
 theorem toENNReal_add (m n : ℕ∞) : ↑(m + n) = (m + n : ℝ≥0∞) :=
@@ -91,7 +89,7 @@ theorem toENNReal_add (m n : ℕ∞) : ↑(m + n) = (m + n : ℝ≥0∞) :=
 
 @[simp, norm_cast]
 theorem toENNReal_one : ((1 : ℕ∞) : ℝ≥0∞) = 1 :=
-  _root_.map_one toENNRealRingHom
+  map_one toENNRealRingHom
 
 @[simp, norm_cast]
 theorem toENNReal_mul (m n : ℕ∞) : ↑(m * n) = (m * n : ℝ≥0∞) :=

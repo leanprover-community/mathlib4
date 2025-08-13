@@ -18,7 +18,7 @@ namespace Array
 @[simp]
 theorem extract_eq_nil_of_start_eq_end {a : Array α} :
     a.extract i i = #[] := by
-  refine extract_empty_of_stop_le_start a ?h
+  refine extract_empty_of_stop_le_start ?h
   exact Nat.le_refl i
 
 /--
@@ -50,6 +50,6 @@ theorem extract_append_right' {a b : Array α} {i j : Nat} (h : a.size ≤ i) :
 
 theorem extract_eq_of_size_le_end {l p : Nat} {a : Array α} (h : a.size ≤ l) :
     a.extract p l = a.extract p a.size := by
-  simp only [extract, Nat.min_eq_right h, Nat.sub_eq, mkEmpty_eq, Nat.min_self]
+  simp only [extract, Nat.min_eq_right h, Nat.sub_eq, Nat.min_self]
 
 end Array
