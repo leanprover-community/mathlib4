@@ -631,9 +631,9 @@ def isColimitTautologicalCocone' (P : Cᵒᵖ ⥤ Type max w v₁) :
 
 
 /-- For a presheaf `P`, consider the forgetful functor from the category of representable
-presheaves over `P` to the category of presheaves. There is a tautological cocone over this
-functor whose leg for a natural transformation `V ⟶ P` with `V` representable is just that
-natural transformation. -/
+    presheaves over `P` to the category of presheaves. There is a tautological cocone over this
+    functor whose leg for a natural transformation `V ⟶ P` with `V` representable is just that
+    natural transformation. -/
 @[simps]
 def tautologicalCocone (P : Cᵒᵖ ⥤ Type v₁) :
     Cocone (CostructuredArrow.proj yoneda P ⋙ yoneda) where
@@ -641,9 +641,9 @@ def tautologicalCocone (P : Cᵒᵖ ⥤ Type v₁) :
   ι := { app X := X.hom }
 
 /-- The tautological cocone with point `P` is a colimit cocone, exhibiting `P` as a colimit of
-representables.
+    representables.
 
-Proposition 2.6.3(i) in [Kashiwara2006] -/
+    Proposition 2.6.3(i) in [Kashiwara2006] -/
 def isColimitTautologicalCocone (P : Cᵒᵖ ⥤ Type v₁) :
     IsColimit (tautologicalCocone P) :=
   let e : functorToRepresentables.{v₁} P ≅
@@ -657,11 +657,11 @@ def isColimitTautologicalCocone (P : Cᵒᵖ ⥤ Type v₁) :
 variable {I : Type v₁} [SmallCategory I] (F : I ⥤ C)
 
 /-- Given a functor `F : I ⥤ C`, a cocone `c` on `F ⋙ yoneda : I ⥤ Cᵒᵖ ⥤ Type v₁` induces a
-functor `I ⥤ CostructuredArrow yoneda c.pt` which maps `i : I` to the leg
-`yoneda.obj (F.obj i) ⟶ c.pt`. If `c` is a colimit cocone, then that functor is
-final.
+    functor `I ⥤ CostructuredArrow yoneda c.pt` which maps `i : I` to the leg
+    `yoneda.obj (F.obj i) ⟶ c.pt`. If `c` is a colimit cocone, then that functor is
+    final.
 
-Proposition 2.6.3(ii) in [Kashiwara2006] -/
+    Proposition 2.6.3(ii) in [Kashiwara2006] -/
 theorem final_toCostructuredArrow_comp_pre {c : Cocone (F ⋙ yoneda)} (hc : IsColimit c) :
     Functor.Final (c.toCostructuredArrow ⋙ CostructuredArrow.pre F yoneda c.pt) := by
   apply Functor.final_of_isTerminal_colimit_comp_yoneda
