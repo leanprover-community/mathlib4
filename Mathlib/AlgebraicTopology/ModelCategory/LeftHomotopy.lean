@@ -14,7 +14,7 @@ of homotopies between morphisms `X ⟶ Y` relative to a (pre)cylinder of `X`.
 Given two morphisms `f` and `g`, we introduce the relation `LeftHomotopyRel f g`
 asserting the existence of a cylinder object `P` and
 a left homotopy `P.LeftHomotopy f g`, and we define the quotient
-type `LeftHomotopyClass X Y`. We show that when `X` is a cofibrant
+type `LeftHomotopyClass X Y`. We show that if `X` is a cofibrant
 object in a model category, then `LeftHomotopyRel` is an equivalence
 relation on `X ⟶ Y`.
 
