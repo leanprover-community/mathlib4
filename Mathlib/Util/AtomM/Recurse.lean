@@ -38,7 +38,7 @@ structure Recurse.Config where
   red := TransparencyMode.reducible
   /-- if true, local let variables can be unfolded -/
   zetaDelta := false
-  deriving Inhabited, BEq, Repr
+deriving Inhabited, BEq, Repr
 
 /-- The read-only state of the `AtomM.Recurse` monad. -/
 structure Recurse.Context where
