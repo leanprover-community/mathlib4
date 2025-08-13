@@ -35,7 +35,7 @@ We define the variance of a real-valued random variable as `Var[X] = 𝔼[(X - �
   `a ≤ X ≤ b` almost everywhere is at most`((b - a) / 2) ^ 2`.
 -/
 
-open MeasureTheory Filter Finset NormedSpace
+open MeasureTheory Filter Finset
 
 noncomputable section
 
