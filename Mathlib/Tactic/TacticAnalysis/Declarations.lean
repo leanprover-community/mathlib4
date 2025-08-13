@@ -15,8 +15,6 @@ This file defines passes to run from the tactic analysis framework.
 
 open Lean Mathlib
 
-namespace Mathlib.TacticAnalysis
-
 /--
 Define a pass that tries replacing a specific tactic with `grind`.
 
@@ -130,20 +128,36 @@ def terminalToGrind : TacticAnalysis.Config where
   run seq := do
     let threshold := 3
     -- `replaced` will hold the terminal tactic sequence that can be replaced with `grind`.
-    -- We push each tactic in turn, starting with the last, and reverse to get to a
-    -- terminal sequence.
-    let mut replaced : Array (TSyntax `tactic) := #[]
+    -- We prepend each tactic in turn, starting with the last.
+    let mut replaced : List (TSyntax `tactic) := []
     let mut success := false
+    let mut oldHeartbeats := 0
+    let mut newHeartbeats := 0
     -- We iterate through the tactic sequence in reverse, checking at each tactic if the goal is
     -- already solved by `grind` and if so pushing that tactic onto `replaced`.
     -- By repeating this until `grind` fails for the first time, we get a terminal sequence
     -- of replaceable tactics.
     for (ctx, i) in seq.reverse do
-      if replaced.size >= threshold - 1 && i.stx.getKind != ``Lean.Parser.Tactic.grind then
+      if replaced.length >= threshold - 1 && i.stx.getKind != ``Lean.Parser.Tactic.grind then
         if let [goal] := i.goalsBefore then
+          -- Count the heartbeats of the original tactic sequence, verifying that this indeed
+          -- closes the goal like it does in userspace.
+          let suffix := ⟨i.stx⟩ :: replaced
+          let seq ← `(tactic| $suffix.toArray;*)
+          let (oldGoals, heartbeats) ← withHeartbeats <| ctx.runTactic i goal <| fun goal => do
+            let (goals, _) ←
+              try
+                Lean.Elab.runTactic goal seq
+              catch _e =>
+                pure ([goal], {})
+            return goals
+          if !oldGoals.isEmpty then
+            logWarningAt i.stx m!"Original tactics failed to solve the goal: {seq}"
+          oldHeartbeats := heartbeats
+
           -- To check if `grind` can close the goal, run `grind` on the current goal
           -- and verify that no goals remain afterwards.
-          let goals ← ctx.runTactic i goal <| fun goal => do
+          let (newGoals, heartbeats) ← withHeartbeats <| ctx.runTactic i goal <| fun goal => do
             let tac ← `(tactic| grind)
             let (goals, _) ←
               try
@@ -151,18 +165,18 @@ def terminalToGrind : TacticAnalysis.Config where
               catch _e =>
                 pure ([goal], {})
             return goals
-          if goals.isEmpty then
+          newHeartbeats := heartbeats
+          if newGoals.isEmpty then
             success := true
           else
             break
         else
           break
-      replaced := replaced.push ⟨i.stx⟩
-    replaced := replaced.reverse
+      replaced := ⟨i.stx⟩ :: replaced
 
-    if h : replaced.size >= threshold ∧ success then
+    if h : replaced.length >= threshold ∧ success then
       let stx := replaced[0]
-      let seq ← `(tactic| $replaced;*)
+      let seq ← `(tactic| $replaced.toArray;*)
       logWarningAt stx m!"replace the proof with 'grind': {seq}"
-
-end Mathlib.TacticAnalysis
+      if oldHeartbeats * 2 < newHeartbeats then
+        logWarningAt stx m!"'grind' is slower than the original: {oldHeartbeats} -> {newHeartbeats}"
