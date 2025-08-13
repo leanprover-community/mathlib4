@@ -282,7 +282,7 @@ theorem neighborFinset_completeEquipartiteGraph (v) :
   ext; simp [ne_comm]
 
 theorem degree_completeEquipartiteGraph (v) :
-    (completeEquipartiteGraph r t).degree v = (r-1) * t := by
+    (completeEquipartiteGraph r t).degree v = (r - 1) * t := by
   rw [← card_neighborFinset_eq_degree, neighborFinset_completeEquipartiteGraph v,
     card_product, card_compl, card_singleton, Fintype.card_fin, card_univ, Fintype.card_fin]
 
