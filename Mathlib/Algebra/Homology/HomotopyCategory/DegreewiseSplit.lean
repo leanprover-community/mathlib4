@@ -20,6 +20,8 @@ assert_not_exists TwoSidedIdeal
 
 open CategoryTheory Category Limits Pretriangulated Preadditive
 
+-- Explicit universe annotations were used in this file to improve perfomance #12737
+
 universe v
 
 variable {C : Type*} [Category.{v} C] [Preadditive C]

@@ -22,6 +22,8 @@ assert_not_exists TwoSidedIdeal
 
 open CategoryTheory Limits
 
+-- Explicit universe annotations were used in this file to improve perfomance #12737
+
 universe v v'
 
 variable {C D : Type*} [Category.{v} C] [Category.{v'} D] [Preadditive C] [Preadditive D]
