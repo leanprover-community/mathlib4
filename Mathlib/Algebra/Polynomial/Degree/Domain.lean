@@ -30,12 +30,6 @@ section Semiring
 
 variable [Semiring R] [NoZeroDivisors R] {p q : R[X]}
 
-instance : NoZeroDivisors R[X] where
-  eq_zero_or_eq_zero_of_mul_eq_zero h := by
-    rw [← leadingCoeff_eq_zero, ← leadingCoeff_eq_zero]
-    refine eq_zero_or_eq_zero_of_mul_eq_zero ?_
-    rw [← leadingCoeff_zero, ← leadingCoeff_mul, h]
-
 lemma natDegree_mul (hp : p ≠ 0) (hq : q ≠ 0) : (p*q).natDegree = p.natDegree + q.natDegree := by
   rw [← Nat.cast_inj (R := WithBot ℕ), ← degree_eq_natDegree (mul_ne_zero hp hq),
     Nat.cast_add, ← degree_eq_natDegree hp, ← degree_eq_natDegree hq, degree_mul]
@@ -97,11 +91,4 @@ lemma natDegree_sub_eq_of_prod_eq {p₁ p₂ q₁ q₂ : R[X]} (hp₁ : p₁ ≠
 
 end Semiring
 
-section Ring
-
-variable [Ring R] [Nontrivial R] [IsDomain R] {p q : R[X]}
-
-instance : IsDomain R[X] := NoZeroDivisors.to_isDomain _
-
-end Ring
 end Polynomial

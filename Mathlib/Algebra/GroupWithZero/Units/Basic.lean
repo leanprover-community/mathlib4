@@ -25,7 +25,7 @@ variable [MonoidWithZero M₀]
 namespace Units
 
 /-- An element of the unit group of a nonzero monoid with zero represented as an element
-    of the monoid is nonzero. -/
+of the monoid is nonzero. -/
 @[simp]
 theorem ne_zero [Nontrivial M₀] (u : M₀ˣ) : (u : M₀) ≠ 0 :=
   left_ne_zero_of_mul_eq_one u.mul_inv
@@ -78,7 +78,6 @@ Note that while this is in the `Ring` namespace for brevity, it requires the wea
 noncomputable def inverse : M₀ → M₀ := fun x => if h : IsUnit x then ((h.unit⁻¹ : M₀ˣ) : M₀) else 0
 
 /-- By definition, if `x` is invertible then `inverse x = x⁻¹`. -/
-@[simp]
 theorem inverse_unit (u : M₀ˣ) : inverse (u : M₀) = (u⁻¹ : M₀ˣ) := by
   rw [inverse, dif_pos u.isUnit, IsUnit.unit_of_val_units]
 
@@ -323,10 +322,10 @@ lemma div_mul_div_cancel₀ (hb : b ≠ 0) : a / b * (b / c) = a / c := by
   rw [← mul_div_assoc, div_mul_cancel₀ _ hb]
 
 lemma div_mul_cancel_of_imp (h : b = 0 → a = 0) : a / b * b = a := by
-  obtain rfl | hb := eq_or_ne b 0 <;>  simp [*]
+  obtain rfl | hb := eq_or_ne b 0 <;> simp [*]
 
 lemma mul_div_cancel_of_imp (h : b = 0 → a = 0) : a * b / b = a := by
-  obtain rfl | hb := eq_or_ne b 0 <;>  simp [*]
+  obtain rfl | hb := eq_or_ne b 0 <;> simp [*]
 
 @[simp] lemma divp_mk0 (a : G₀) (hb : b ≠ 0) : a /ₚ Units.mk0 b hb = a / b := divp_eq_div _ _
 
@@ -444,8 +443,6 @@ lemma div_eq_div_of_div_eq_div (hc : c ≠ 0) (hd : d ≠ 0) (h : a / b = c / d)
   (div_eq_div_iff_div_eq_div' hb hc).mp h
 
 @[simp] lemma div_div_cancel₀ (ha : a ≠ 0) : a / (a / b) = b := ha.isUnit.div_div_cancel
-
-@[deprecated (since := "2024-11-25")] alias div_div_cancel' := div_div_cancel₀
 
 lemma div_div_cancel_left' (ha : a ≠ 0) : a / b / a = b⁻¹ := ha.isUnit.div_div_cancel_left
 

@@ -383,8 +383,15 @@ Q384142:
 
 Q386292:
   title: Prime number theorem
+  authors : Alex Kontorovich, Terry Tao, and the Prime Number Theorem + Project
+  url: https://github.com/AlexKontorovich/PrimeNumberTheoremAnd
+  date: 2025
+  # TODO: cannot display several URLs nicely yet
+  # links   :
+  #  Prime Number Theorem : https://github.com/AlexKontorovich/PrimeNumberTheoremAnd/blob/a5040887e6bb24f7c201db8568e7755c138b3878/PrimeNumberTheoremAnd/Wiener.lean#L2196-L2211
+  #  With Error Terms     : https://github.com/AlexKontorovich/PrimeNumberTheoremAnd/blob/a5040887e6bb24f7c201db8568e7755c138b3878/PrimeNumberTheoremAnd/MediumPNT.lean#L5504-L6162
+  #  website              : https://github.com/AlexKontorovich/PrimeNumberTheoremAnd
   comment: "Ongoing formalisation of various versions in https://github.com/AlexKontorovich/PrimeNumberTheoremAnd"
-  # also in 100.yaml
 
 Q388525:
   title: Bell's theorem

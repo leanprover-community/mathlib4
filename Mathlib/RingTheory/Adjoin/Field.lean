@@ -36,7 +36,17 @@ def AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly {R : Type*} [CommRing R] [Alg
     refine ⟨(injective_iff_map_eq_zero _).2 fun P₁ hP₁ ↦ ?_, Minpoly.toAdjoin.surjective F x⟩
     obtain ⟨P, rfl⟩ := mk_surjective P₁
     refine AdjoinRoot.mk_eq_zero.mpr (minpoly.dvd F x ?_)
-    rwa [Minpoly.toAdjoin_apply', liftHom_mk, ← Subalgebra.coe_eq_zero, aeval_subalgebra_coe] at hP₁
+    simp_all [← Subalgebra.coe_eq_zero]
+
+@[simp]
+theorem AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly_symm_toAlgHom {R : Type*} [CommRing R]
+    [Algebra F R] (x : R) :
+    (adjoinSingletonEquivAdjoinRootMinpoly F x).symm = AdjoinRoot.Minpoly.toAdjoin F x := rfl
+
+@[simp]
+theorem AlgEquiv.coe_adjoinSingletonEquivAdjoinRootMinpoly_symm {R : Type*} [CommRing R]
+    [Algebra F R] (x : R) :
+    ⇑(adjoinSingletonEquivAdjoinRootMinpoly F x).symm = AdjoinRoot.Minpoly.toAdjoin F x := rfl
 
 /-- Produce an algebra homomorphism `Adjoin R {x} →ₐ[R] T` sending `x` to
 a root of `x`'s minimal polynomial in `T`. -/

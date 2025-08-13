@@ -109,7 +109,7 @@ def asSubtype (f : α →. β) (s : f.Dom) : β :=
 
 /-- The type of partial functions `α →. β` is equivalent to
 the type of pairs `(p : α → Prop, f : Subtype p → β)`. -/
-def equivSubtype : (α →. β) ≃ Σp : α → Prop, Subtype p → β :=
+def equivSubtype : (α →. β) ≃ Σ p : α → Prop, Subtype p → β :=
   ⟨fun f => ⟨fun a => (f a).Dom, asSubtype f⟩, fun f x => ⟨f.1 x, fun h => f.2 ⟨x, h⟩⟩, fun _ =>
     funext fun _ => Part.eta _, fun ⟨p, f⟩ => by dsimp; congr⟩
 
