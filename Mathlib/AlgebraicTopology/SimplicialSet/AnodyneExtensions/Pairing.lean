@@ -106,6 +106,23 @@ instance : IsWellFounded _ P.AncestralRel where
 
 end
 
+lemma exists_or (x : A.N) :
+    ∃ (y : P.II), x = y ∨ x = P.p y := by
+  have := Set.mem_univ x
+  rw [← P.union, Set.mem_union] at this
+  obtain h | h := this
+  · obtain ⟨y, hy⟩ := P.p.surjective ⟨x, h⟩
+    exact ⟨y, Or.inr (by rw [hy])⟩
+  · exact ⟨⟨_, h⟩, Or.inl rfl⟩
+
+lemma neq (x : P.I) (y : P.II) :
+    x.1 ≠ y.1 := by
+  obtain ⟨x, hx⟩ := x
+  obtain ⟨y, hy⟩ := y
+  rintro rfl
+  have : x ∈ P.I ∩ P.II := ⟨hx, hy⟩
+  simp [P.inter] at this
+
 end Pairing
 
 end SSet.Subcomplex
