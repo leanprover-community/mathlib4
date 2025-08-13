@@ -175,6 +175,32 @@ theorem mem_residual_iff {s : Set X} :
       ∃ S : Set (Set X), (∀ t ∈ S, IsOpen t) ∧ (∀ t ∈ S, Dense t) ∧ S.Countable ∧ ⋂₀ S ⊆ s :=
   mem_countableGenerate_iff.trans <| by simp_rw [subset_def, mem_setOf, forall_and, and_assoc]
 
+/-- Two residual sets have residual intersection. -/
+lemma inter_mem_residual {s t : Set X} (hs : s ∈ residual X) (ht : t ∈ residual X) :
+    s ∩ t ∈ residual X :=
+  (residual (X := X)).inter_mem hs ht
+
+/-- Finite intersections of residual sets are residual. -/
+lemma sInter_mem_residual {S : Set (Set X)} (hS : ∀ s ∈ S, s ∈ residual X) (hfin : S.Finite) :
+    ⋂₀ S ∈ residual X :=
+  (Filter.sInter_mem hfin).2 hS
+
+/-- Finite (indexed by a `Finset`) intersections of residual sets are residual. -/
+lemma finset_iInter_mem_residual' {ι : Type*} (S : Finset ι) (s : ι → Set X)
+  (h : ∀ i ∈ S, s i ∈ residual X) :
+    (⋂ i ∈ S, s i) ∈ residual X := by
+  classical
+  revert h
+  refine S.induction_on ?base ?step
+  · simp
+  · intro a S ha ih h
+    have ha' : s a ∈ residual X := h a (by simp)
+    have hS : ∀ i ∈ S, s i ∈ residual X := by
+      intro i hi
+      exact h i (by simp [Finset.mem_insert, hi])
+    have hS_mem : (⋂ i ∈ S, s i) ∈ residual X := ih hS
+    simpa [Finset.mem_insert, ha] using (residual (X := X)).inter_mem ha' hS_mem
+
 end residual
 
 section IsMeagre
