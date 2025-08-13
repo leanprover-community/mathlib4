@@ -114,9 +114,7 @@ theorem prime_def_lt' {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, 2 ≤ m → m <
       forall_congr' fun m =>
         ⟨fun h m2 l d => not_lt_of_ge m2 ((h l d).symm ▸ by decide), fun h l d => by
           rcases m with (_ | _ | m)
-          · rw [eq_zero_of_zero_dvd d] at p2
-            revert p2
-            decide
+          · omega
           · rfl
           · exact (h (le_add_left 2 m) l).elim d⟩
 

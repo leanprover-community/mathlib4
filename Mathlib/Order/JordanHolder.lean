@@ -213,9 +213,7 @@ theorem mem_eraseLast {s : CompositionSeries X} {x : X} (h : 0 < s.length) :
   simp only [RelSeries.mem_def, eraseLast]
   constructor
   · rintro ⟨i, rfl⟩
-    have hi : (i : ℕ) < s.length := by
-      conv_rhs => rw [← Nat.add_one_sub_one s.length, Nat.succ_sub h]
-      exact i.2
+    have hi : (i : ℕ) < s.length := by omega
     simp [last, Fin.ext_iff, ne_of_lt hi, -Set.mem_range, Set.mem_range_self]
   · intro h
     exact mem_eraseLast_of_ne_of_mem h.1 h.2
