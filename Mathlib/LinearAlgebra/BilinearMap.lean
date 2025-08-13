@@ -347,7 +347,8 @@ omit [Module R M] in
 /-- Composing a linear map `P → Q` and a bilinear map `M → N → P` to
 form a bilinear map `M → N → Q`.
 
-See `LinearMap.compr₂ₛₗ` for a semi-linear version of this. -/
+See `LinearMap.compr₂ₛₗ` for a version of this which does not support towers of scalars but which
+does support semi-linear maps. -/
 def compr₂ [Module R A] [Module A M] [Module A Qₗ]
     [SMulCommClass R A Qₗ] [IsScalarTower R A Qₗ] [IsScalarTower R A Pₗ]
     (f : M →ₗ[A] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[A] Qₗ) : M →ₗ[A] Nₗ →ₗ[R] Qₗ where
