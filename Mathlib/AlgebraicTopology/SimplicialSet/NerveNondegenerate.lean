@@ -23,7 +23,7 @@ namespace PartialOrder
 
 variable {X : Type*} [PartialOrder X] {n : ℕ}
 
-lemma mem_range_nerve_δ_iff (s : (nerve X) _⦋n + 1⦌) (i : Fin (n + 1)) :
+lemma mem_range_nerve_σ_iff (s : (nerve X) _⦋n + 1⦌) (i : Fin (n + 1)) :
     s ∈ Set.range ((nerve X).σ i) ↔
       s.obj i.castSucc = s.obj i.succ := by
   constructor
@@ -48,7 +48,7 @@ lemma mem_nerve_degenerate_of_eq (s : (nerve X) _⦋n + 1⦌) {i : Fin (n + 1)}
     (hi : s.obj i.castSucc = s.obj i.succ) :
     s ∈ (nerve X).degenerate (n + 1) := by
   simp only [nerve_obj, SSet.degenerate_eq_iUnion_range_σ, Set.mem_iUnion]
-  exact ⟨i, by rwa [mem_range_nerve_δ_iff]⟩
+  exact ⟨i, by rwa [mem_range_nerve_σ_iff]⟩
 
 lemma mem_nerve_nonDegenerate_iff_strictMono (s : (nerve X) _⦋n⦌) :
     s ∈ (nerve X).nonDegenerate n ↔ StrictMono s.obj := by
@@ -60,7 +60,7 @@ lemma mem_nerve_nonDegenerate_iff_strictMono (s : (nerve X) _⦋n⦌) :
     simp at h
   · rw [← not_iff_not, ← SSet.mem_degenerate_iff_notMem_nonDegenerate,
       Fin.strictMono_iff_lt_succ, SSet.degenerate_eq_iUnion_range_σ, Set.mem_iUnion]
-    simp only [mem_range_nerve_δ_iff, not_forall]
+    simp only [mem_range_nerve_σ_iff, not_forall]
     constructor
     · rintro ⟨i, hi⟩
       exact ⟨i, hi.not_lt⟩
