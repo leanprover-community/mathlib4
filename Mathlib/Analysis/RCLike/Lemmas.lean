@@ -61,7 +61,6 @@ This is not an instance because it would cause a search for `FiniteDimensional ?
 `RCLike ?x`. -/
 theorem proper_rclike [FiniteDimensional K E] : ProperSpace E := by
   have : NormedSpace ℝ E := RestrictScalars.normedSpace ℝ K E
-  have : IsScalarTower ℝ K E := Real.isScalarTower -- TODO Understand why we need to supply manually
   have : FiniteDimensional ℝ E := FiniteDimensional.trans ℝ K E
   infer_instance
 
