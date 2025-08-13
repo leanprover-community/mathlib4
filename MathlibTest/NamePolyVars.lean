@@ -3,10 +3,10 @@ import Mathlib.Tactic.Ring.NamePolyVars
 
 variable (R : Type) [CommRing R]
 
-name_poly_vars R [X,Y,Z]
-name_poly_vars Int [q]
-name_poly_vars R [S][T][U]
-name_poly_vars (ZMod 37) [d,e]
+name_poly_vars R[X,Y,Z]
+name_poly_vars Int[q]
+name_poly_vars R[S][T][U]
+name_poly_vars (ZMod 37)[d,e]
 
 noncomputable example : Vector (MvPolynomial (Fin 3) R) 3 :=
   have : X = MvPolynomial.X 0 := rfl
