@@ -212,7 +212,7 @@ noncomputable def LinearOrderedAddCommGroup.int_orderAddMonoidIso_of_isLeast_pos
   let g : (⊤ : AddSubgroup ℤ) ≃+o ℤ := ⟨AddSubsemigroup.topEquiv,
     (AddSubsemigroup.strictMono_topEquiv).le_iff_le⟩
   let g' : AddSubgroup.closure ({1} : Set ℤ) ≃+o (⊤ : AddSubgroup ℤ) :=
-    ⟨(.subsemigroupCongr (by simp [Int.addSubgroup_closure_one])),
+    ⟨(.subsemigroupCongr (by simp [Int.addSubgroupClosure_one])),
      (AddEquiv.strictMono_subsemigroupCongr _).le_iff_le⟩
   let f := closure_equiv_closure x (1 : ℤ) (by simp [h.left.ne'])
   exact ((((e.trans e').trans f).trans g').trans g : G ≃+o ℤ)
