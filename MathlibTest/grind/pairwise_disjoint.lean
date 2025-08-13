@@ -16,8 +16,5 @@ attribute [grind] Finset.disjoint_empty_right
 
 attribute [grind] Pairwise
 
-#adaptation_note
-/-- As of nightly-2025-08-11, this stopped working.
-Reported in https://github.com/leanprover/lean4/pull/9830 -/
--- example : Pairwise (Function.onFun Disjoint fun x ↦ S1 x) := by
---   grind
+example : Pairwise (Function.onFun Disjoint fun x ↦ S1 x) := by
+  grind
