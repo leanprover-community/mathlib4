@@ -473,16 +473,16 @@ variable {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {ν : Measure Ω'}
   {X : Ω → ℝ} {Y : Ω' → ℝ}
 
 lemma covariance_fst_snd_prod (hfμ : MemLp X 2 μ) (hgν : MemLp Y 2 ν) :
-    cov[fun x ↦ X x.1, fun x ↦ Y x.2; μ.prod ν] = 0 :=
+    cov[fun p ↦ X p.1, fun p ↦ Y p.2; μ.prod ν] = 0 :=
   (indepFun_prod₀ hfμ.aemeasurable hgν.aemeasurable).covariance_eq_zero
     (hfμ.comp_fst ν) (hgν.comp_snd μ)
 
 lemma variance_add_prod (hfμ : MemLp X 2 μ) (hgν : MemLp Y 2 ν) :
-    Var[fun x ↦ X x.1 + Y x.2; μ.prod ν] = Var[X; μ] + Var[Y; ν] := by
+    Var[fun p ↦ X p.1 + Y p.2; μ.prod ν] = Var[X; μ] + Var[Y; ν] := by
   rw [variance_fun_add (hfμ.comp_fst ν) (hgν.comp_snd μ)]
   simp only [covariance_fst_snd_prod hfμ hgν, mul_zero, add_zero]
-  have h_map1 : (μ.prod ν).map (fun x ↦ x.1) = μ := by simp
-  have h_map2 : (μ.prod ν).map (fun x ↦ x.2) = ν := by simp
+  have h_map1 : (μ.prod ν).map Prod.fst = μ := by simp
+  have h_map2 : (μ.prod ν).map Prod.snd = ν := by simp
   conv_rhs => rw [← h_map1]
               rhs
               rw [← h_map2]
