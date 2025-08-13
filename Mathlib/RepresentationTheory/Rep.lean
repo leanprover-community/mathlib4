@@ -705,7 +705,7 @@ variable (A B C : Rep k G)
 `(B, ρ₂)` to the representation `Homₖ(A, B)` that maps `g : G` and `f : A →ₗ[k] B` to
 `(ρ₂ g) ∘ₗ f ∘ₗ (ρ₁ g⁻¹)`. -/
 @[simps]
-protected def ihom (A : Rep k G) : Rep k G ⥤ Rep k G where
+protected noncomputable def ihom (A : Rep k G) : Rep k G ⥤ Rep k G where
   obj B := Rep.of (Representation.linHom A.ρ B.ρ)
   map := fun {X} {Y} f =>
     { hom := ModuleCat.ofHom (LinearMap.llcomp k _ _ _ f.hom.hom)
