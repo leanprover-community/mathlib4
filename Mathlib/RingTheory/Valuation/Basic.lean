@@ -847,6 +847,8 @@ value group or monoid (e.g. `v₂ x ≤ 1`), given `h : v₁.IsEquiv v₂`.
 One can use `← ` to rewrite in the opposite direction, and to use `at` to specify which hypotheses
 and/or goal to rewrite at, similar to the syntax of `rw`.
 
+One can also use `rwa_val_equiv` to automatically use `assumption` afterwards, similar to `rwa`.
+
 Usage:
 ```lean
 example {R Γ₁ Γ₂ : Type*} [Ring R]
@@ -865,6 +867,7 @@ elab "rw_val_equiv " symm?:(leftArrow)? e:(ppSpace colGt term:max) loc:(location
 
 open Lean.Parser.Tactic
 
+/-- An alternate version of `rw_val_equiv` that calls `assumption` afterwards. -/
 macro "rwa_val_equiv " s:(leftArrow)? e:(ppSpace colGt term:max) loc:(location)? : tactic =>
   match s with
   | .none => `(tactic| (rw_val_equiv $e $[$loc]?; assumption))
