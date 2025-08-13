@@ -320,10 +320,8 @@ end FiniteType
 
 end AlgHom
 
-theorem algebraMap_finiteType_iff_algebra_finiteType {R A : Type*} [CommRing R] [CommRing A]
-    [Algebra R A] : (algebraMap R A).FiniteType ↔ Algebra.FiniteType R A := by
-  dsimp [RingHom.FiniteType]
-  constructor <;> (intro h; convert h; apply Algebra.algebra_ext; exact congrFun rfl)
+@[deprecated (since := "2025-08-12")] alias algebraMap_finiteType_iff_algebra_finiteType :=
+  RingHom.finiteType_algebraMap
 
 section MonoidAlgebra
 
