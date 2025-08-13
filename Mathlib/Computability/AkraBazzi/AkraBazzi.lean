@@ -339,7 +339,7 @@ lemma rpow_p_mul_one_sub_smoothingFn_le :
                 have h₁ := R.b_pos i
                 have h₂ : 0 ≤ ε (b i * n) - ε n := by
                   refine sub_nonneg_of_le <|
-                    (strictAntiOn_smoothingFn.le_iff_le ?n_gt_one ?bn_gt_one).mpr ?le
+                    (strictAntiOn_smoothingFn.le_iff_ge ?n_gt_one ?bn_gt_one).mpr ?le
                   case n_gt_one =>
                     rwa [Set.mem_Ioi, Nat.one_lt_cast]
                   case bn_gt_one =>
@@ -433,7 +433,7 @@ lemma rpow_p_mul_one_add_smoothingFn_ge :
               have h₁ := R.b_pos i
               have h₂ : 0 ≤ ε (b i * n) - ε n := by
                 refine sub_nonneg_of_le <|
-                  (strictAntiOn_smoothingFn.le_iff_le ?n_gt_one ?bn_gt_one).mpr ?le
+                  (strictAntiOn_smoothingFn.le_iff_ge ?n_gt_one ?bn_gt_one).mpr ?le
                 case n_gt_one =>
                   change 1 < (n : ℝ)
                   rw [Nat.one_lt_cast]
