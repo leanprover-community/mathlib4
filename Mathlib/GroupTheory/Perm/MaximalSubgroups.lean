@@ -196,9 +196,9 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
   -- … and that every strict over-subgroup `G` is equal to `⊤`
   -- We know that `G` contains a swap
   obtain ⟨g, hg_swap, hg⟩ := has_swap_of_lt_stabilizer s G hG
-  -- By Jordan's theorem `eq_top_of_isSwap_mem`,
+  -- By Jordan's theorem `eq_top_of_isPreprimitive_of_isSwap_mem`,
   -- it suffices to prove that `G` acts primitively
-  apply eq_top_of_isSwap_mem _ g hg_swap hg
+  apply subgroup_eq_top_of_isPreprimitive_of_isSwap_mem _ g hg_swap hg
   -- First, we prove that `G` acts transitively
   have : IsPretransitive G α := by
     apply IsPretransitive.of_partition G (s := s)
@@ -206,14 +206,11 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
     · apply moves_in; rw [stabilizer_compl]; exact hG
     · intro h
       apply lt_irrefl G; apply lt_of_le_of_lt _ hG
-      --  `G ≤ stabilizer (equiv.perm α) s`
-      intro g hg
-      rw [mem_stabilizer_iff]
-      rw [← Subgroup.coe_mk G g hg]
-      change (⟨g, hg⟩ : ↥G) • s = s
-      rw [← mem_stabilizer_iff]
-      rw [h]
-      trivial
+      --  `G ≤ stabilizer (Equiv.Perm α) s`
+      have : G = Subgroup.map G.subtype ⊤ := by
+        rw [← MonoidHom.range_eq_map, Subgroup.range_subtype]
+      rw [this, Subgroup.map_le_iff_le_comap]
+      rw [show Subgroup.comap G.subtype (stabilizer (Perm α) s) = stabilizer G s from rfl, h]
   apply IsPreprimitive.mk
   -- We now have to prove that all blocks of `G` are trivial
   -- The proof needs 4 steps
@@ -402,7 +399,7 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
   -- `g • B = B`
   apply isBlock_iff_smul_eq_of_nonempty.mp hB (g := ⟨g, hg⟩)
   rw [Subgroup.mk_smul]
-  apply Set.ncard_pigeonhole
+  apply nonempty_inter_of_lt_ncard_add_ncard
   -- `card B + card (g • B) = card B + card B`
   -- ... ≥ `card sᶜ + card sᶜ`
   -- ... > `card s + card s ᶜ = card α`
