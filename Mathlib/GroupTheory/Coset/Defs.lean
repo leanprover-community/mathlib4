@@ -55,8 +55,8 @@ variable [Group α] (s : Subgroup α)
 
 /-- The equivalence relation corresponding to the partition of a group by left cosets
 of a subgroup. -/
-@[to_additive "The equivalence relation corresponding to the partition of a group by left cosets
-of a subgroup."]
+@[to_additive /-- The equivalence relation corresponding to the partition of a group by left cosets
+of a subgroup. -/]
 def leftRel : Setoid α :=
   MulAction.orbitRel s.op α
 
@@ -81,10 +81,10 @@ instance leftRelDecidable [DecidablePred (· ∈ s)] : DecidableRel (leftRel s).
   rw [leftRel_eq]
   exact ‹DecidablePred (· ∈ s)› _
 
-/-- `α ⧸ s` is the quotient type representing the left cosets of `s`.
-  If `s` is a normal subgroup, `α ⧸ s` is a group -/
-@[to_additive "`α ⧸ s` is the quotient type representing the left cosets of `s`. If `s` is a normal
-subgroup, `α ⧸ s` is a group"]
+/-- `α ⧸ s` is the quotient type representing the left cosets of `s`. If `s` is a normal subgroup,
+`α ⧸ s` is a group -/
+@[to_additive /-- `α ⧸ s` is the quotient type representing the left cosets of `s`. If `s` is a
+normal subgroup, `α ⧸ s` is a group -/]
 instance instHasQuotientSubgroup : HasQuotient α (Subgroup α) :=
   ⟨fun s => Quotient (leftRel s)⟩
 
@@ -94,8 +94,8 @@ instance [DecidablePred (· ∈ s)] : DecidableEq (α ⧸ s) :=
 
 /-- The equivalence relation corresponding to the partition of a group by right cosets of a
 subgroup. -/
-@[to_additive "The equivalence relation corresponding to the partition of a group by right cosets
-of a subgroup."]
+@[to_additive /-- The equivalence relation corresponding to the partition of a group by right cosets
+of a subgroup. -/]
 def rightRel : Setoid α :=
   MulAction.orbitRel s α
 
@@ -119,7 +119,7 @@ instance rightRelDecidable [DecidablePred (· ∈ s)] : DecidableRel (rightRel s
   exact ‹DecidablePred (· ∈ s)› _
 
 /-- Right cosets are in bijection with left cosets. -/
-@[to_additive "Right cosets are in bijection with left cosets."]
+@[to_additive /-- Right cosets are in bijection with left cosets. -/]
 def quotientRightRelEquivQuotientLeftRel : Quotient (QuotientGroup.rightRel s) ≃ α ⧸ s where
   toFun :=
     Quotient.map' (fun g => g⁻¹) fun a b => by
@@ -151,7 +151,8 @@ namespace QuotientGroup
 variable [Group α] {s : Subgroup α}
 
 /-- The canonical map from a group `α` to the quotient `α ⧸ s`. -/
-@[to_additive (attr := coe) "The canonical map from an `AddGroup` `α` to the quotient `α ⧸ s`."]
+@[to_additive (attr := coe)
+/-- The canonical map from an `AddGroup` `α` to the quotient `α ⧸ s`. -/]
 abbrev mk (a : α) : α ⧸ s :=
   Quotient.mk'' a
 
@@ -246,7 +247,8 @@ variable [Group α] {s : Subgroup α}
 variable {t : Subgroup α}
 
 /-- If two subgroups `M` and `N` of `G` are equal, their quotients are in bijection. -/
-@[to_additive "If two subgroups `M` and `N` of `G` are equal, their quotients are in bijection."]
+@[to_additive
+/-- If two subgroups `M` and `N` of `G` are equal, their quotients are in bijection. -/]
 def quotientEquivOfEq (h : s = t) : α ⧸ s ≃ α ⧸ t where
   toFun := Quotient.map' id fun _a _b h' => h ▸ h'
   invFun := Quotient.map' id fun _a _b h' => h.symm ▸ h'
