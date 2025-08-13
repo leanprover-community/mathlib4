@@ -222,9 +222,9 @@ lemma exists_very_good [ModelCategory C] {f g : X ⟶ Y} [IsFibrant Y]
       π := fac.p
       weakEquivalence_π := weakEquivalence_of_precomp_of_fac fac.fac }
   have : Cofibration P'.i := by
-    rw [show P'.i = P.i ≫ fac.i by aesop_cat]
+    rw [show P'.i = P.i ≫ fac.i by cat_disch]
     infer_instance
-  have sq : CommSq h.h fac.i (terminal.from _) (terminal.from _) := ⟨by simp⟩
+  have sq : CommSq h.h fac.i (terminal.from _) (terminal.from _) := { }
   exact ⟨P', { }, ⟨{ h := sq.lift }⟩ ⟩
 
 lemma symm [CategoryWithWeakEquivalences C]
