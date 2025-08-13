@@ -8,7 +8,7 @@ import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Algebra.CharP.Two
 import Mathlib.Algebra.Ring.Semireal.Defs
-import RealClosedField.Algebra.Order.Ring.Ordering.Defs
+import Mathlib.Algebra.Order.Ring.Ordering.Defs
 
 /-!
 
