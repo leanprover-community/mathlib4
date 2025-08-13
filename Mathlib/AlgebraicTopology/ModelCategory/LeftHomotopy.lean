@@ -214,7 +214,7 @@ lemma exists_very_good [ModelCategory C] {f g : X ⟶ Y} [IsFibrant Y]
     (h : LeftHomotopyRel f g) :
     ∃ (P : Cylinder X), P.IsVeryGood ∧ Nonempty (P.LeftHomotopy f g) := by
   obtain ⟨P, _, ⟨h⟩⟩ := h.exists_good
-  have fac := MorphismProperty.factorizationData (trivialCofibrations C) (fibrations C) P.π
+  let fac := MorphismProperty.factorizationData (trivialCofibrations C) (fibrations C) P.π
   let P' : Cylinder X :=
     { I := fac.Z
       i₀ := P.i₀ ≫ fac.i
