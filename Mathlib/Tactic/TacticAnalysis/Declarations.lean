@@ -15,20 +15,18 @@ This file defines passes to run from the tactic analysis framework.
 
 open Lean Mathlib
 
-/-- Debug `grind` by identifying places where it does not yet supersede `linarith`, `omega` or
-`ring`. -/
-register_option linter.tacticAnalysis.grindReplacement : Bool := {
-  defValue := false
-}
+namespace Mathlib.TacticAnalysis
 
-@[tacticAnalysis linter.tacticAnalysis.grindReplacement,
-  inherit_doc linter.tacticAnalysis.grindReplacement]
-def grindReplacement : TacticAnalysis.Config := .ofComplex {
+/--
+Define a pass that tries replacing a specific tactic with `grind`.
+
+`tacticKind` is the `SyntaxNodeKind` for the tactic's main parser,
+for example `Mathlib.Tactic.linarith`.
+-/
+def grindReplacementWith (tacticKind : SyntaxNodeKind) : TacticAnalysis.Config := .ofComplex {
   out := (List MVarId × MessageData)
   ctx := Syntax
-  trigger _ stx := if
-      stx.getKind ∈
-        [`Mathlib.Tactic.linarith, `Lean.Parser.Tactic.omega, `Mathlib.Tactic.RingNF.ring]
+  trigger _ stx := if stx.getKind == tacticKind
     then .accept stx else .skip
   test stx goal := withOptions (fun opts => opts.set `grind.warning false) do
     let tac ← `(tactic| grind)
@@ -49,6 +47,30 @@ def grindReplacement : TacticAnalysis.Config := .ofComplex {
         return m!"'grind' is slower than '{stx}': {new.2 / 1000} versus {old.2 / 1000} heartbeats"
     -/
     else none }
+
+/-- Debug `grind` by identifying places where it does not yet supersede `linarith`. -/
+register_option linter.tacticAnalysis.linarithToGrind : Bool := {
+  defValue := false
+}
+@[tacticAnalysis linter.tacticAnalysis.linarithToGrind,
+  inherit_doc linter.tacticAnalysis.linarithToGrind]
+def linarithToGrind := grindReplacementWith `Mathlib.Tactic.linarith
+
+/-- Debug `grind` by identifying places where it does not yet supersede `omega`. -/
+register_option linter.tacticAnalysis.omegaToGrind : Bool := {
+  defValue := false
+}
+@[tacticAnalysis linter.tacticAnalysis.omegaToGrind,
+  inherit_doc linter.tacticAnalysis.omegaToGrind]
+def omegaToGrind := grindReplacementWith `Lean.Parser.Tactic.ring
+
+/-- Debug `grind` by identifying places where it does not yet supersede `ring`. -/
+register_option linter.tacticAnalysis.ringToGrind : Bool := {
+  defValue := false
+}
+@[tacticAnalysis linter.tacticAnalysis.ringToGrind,
+  inherit_doc linter.tacticAnalysis.ringToGrind]
+def ringToGrind := grindReplacementWith `Mathlib.Tactic.RingNF.ring
 
 /-- Suggest merging two adjacent `rw` tactics if that also solves the goal. -/
 register_option linter.tacticAnalysis.rwMerge : Bool := {
@@ -142,3 +164,5 @@ def terminalToGrind : TacticAnalysis.Config where
       let stx := replaced[0]
       let seq ← `(tactic| $replaced;*)
       logWarningAt stx m!"replace the proof with 'grind': {seq}"
+
+end Mathlib.TacticAnalysis
