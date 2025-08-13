@@ -654,11 +654,6 @@ lemma rpow_intCast (x : ℝ≥0∞) (n : ℤ) : x ^ (n : ℝ) = x ^ n := by
   cases n <;> simp only [Int.ofNat_eq_coe, Int.cast_natCast, rpow_natCast, zpow_natCast,
     Int.cast_negSucc, rpow_neg, zpow_negSucc]
 
-lemma coe_zpow_le_one_of_nonpos (m : ℤ) (n : NNReal) (hn : 1 ≤ n) (hm : m ≤ 0) :
-    (n ^ m : ENNReal) ≤ 1 := by
-  convert ENNReal.coe_le_coe.mpr (zpow_le_one_of_nonpos₀ hn hm)
-  rw [ENNReal.coe_zpow (by positivity)]
-
 theorem rpow_two (x : ℝ≥0∞) : x ^ (2 : ℝ) = x ^ 2 := rpow_ofNat x 2
 
 theorem mul_rpow_eq_ite (x y : ℝ≥0∞) (z : ℝ) :
@@ -726,6 +721,51 @@ theorem inv_rpow (x : ℝ≥0∞) (y : ℝ) : x⁻¹ ^ y = (x ^ y)⁻¹ := by
   apply ENNReal.eq_inv_of_mul_eq_one_left
   rw [← mul_rpow_of_ne_zero (ENNReal.inv_ne_zero.2 h_top) h0, ENNReal.inv_mul_cancel h0 h_top,
     one_rpow]
+
+protected lemma inv_zpow (x : ℝ≥0∞) (n : ℤ) : x⁻¹ ^ n = (x ^ n)⁻¹ := by
+  field_simp
+  simp [@one_div,← rpow_intCast, ENNReal.inv_rpow]
+
+lemma zero_zpow_def (n : ℤ) : (0 : ℝ≥0∞) ^ n = if 0 < n then 0 else if n = 0 then 1 else ⊤ := by
+  rw [← rpow_intCast,zero_rpow_def]; simp
+
+lemma top_zpow (n : ℤ) : (⊤ : ℝ≥0∞) ^ n = if 0 < n then ⊤ else if n = 0 then 1
+    else 0 := by
+  rw [← inv_zero, ENNReal.inv_zpow, zero_zpow_def]; split_ifs with h; all_goals simp
+
+protected lemma inv_zpow' (x : ℝ≥0∞) (n : ℤ) : x⁻¹ ^ n = x ^ (-n) := by
+  by_cases h0 : x = 0
+  · rw[h0, zero_zpow_def]
+    simp
+    rw [top_zpow]
+    split_ifs with ha hb hc hd he hf
+    all_goals try linarith
+    all_goals try rfl
+    have : n = 0 := (Int.le_antisymm (Int.not_lt.mp ha) (Int.not_lt.mp hf))
+    contradiction
+  by_cases h1 : x = ⊤
+  · rw [h1, inv_top, zero_zpow_def, top_zpow]
+    split_ifs with a b c d e f g h
+    all_goals try simp;
+    all_goals try linarith
+    · rw [neg_eq_zero] at f
+      contradiction
+    · rw [neg_eq_zero] at h
+      contradiction
+    simp only [Int.neg_pos, not_lt] at g a
+    have : n = 0 := Eq.symm (Int.le_antisymm g a)
+    contradiction
+  rw [ENNReal.inv_zpow, ←ENNReal.eq_inv_of_mul_eq_one_left]
+  rw [←ENNReal.zpow_add]
+  · simp
+  · exact h0
+  exact h1
+
+lemma zpow_le_one_of_nonpos {n : ℤ} (hn : n ≤ 0) {x : ℝ≥0∞} (hx : 1 ≤ x) : x ^ n ≤ 1 := by
+  obtain ⟨m, rfl⟩ := neg_surjective n
+  lift m to ℕ using by simpa using hn
+  rw [← ENNReal.inv_zpow', ENNReal.inv_zpow, ENNReal.inv_le_one]
+  exact mod_cast one_le_pow₀ hx
 
 theorem div_rpow_of_nonneg (x y : ℝ≥0∞) {z : ℝ} (hz : 0 ≤ z) : (x / y) ^ z = x ^ z / y ^ z := by
   rw [div_eq_mul_inv, mul_rpow_of_nonneg _ _ hz, inv_rpow, div_eq_mul_inv]
