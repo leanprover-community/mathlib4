@@ -568,3 +568,30 @@ def fooMul {α β : Type} (_ : (no_index Add) α) [Mul β] (x y : β) : β := x 
 
 @[to_additive] -- this would not translate `fooMul`
 def barMul {β : Type} [Mul β] (x y : β) : β := fooMul instAddNat x y
+
+/-! Test that additive docstrings work -/
+
+@[to_additive /-- (via `docComment` syntax) I am an additive docstring! -/]
+theorem mulTrivial : True := trivial
+
+/-- info: (via `docComment` syntax) I am an additive docstring! -/
+#guard_msgs in
+run_cmd
+  let some doc  ← findDocString? (← getEnv) ``addTrivial
+    | throwError "no `docComment` docstring found"
+  logInfo doc
+
+/--
+warning: String syntax for `to_additive` docstrings is deprecated:
+Use docstring syntax instead (e.g. `@[to_additive /-- example -/]`)
+-/
+#guard_msgs in
+@[to_additive "(via `str` syntax) I am an additive docstring!"]
+theorem mulTrivial' : True := trivial
+
+/-- info: (via `str` syntax) I am an additive docstring! -/
+#guard_msgs in
+run_cmd
+  let some doc ← findDocString? (← getEnv) ``addTrivial'
+    | throwError "no `str` docstring found"
+  logInfo doc

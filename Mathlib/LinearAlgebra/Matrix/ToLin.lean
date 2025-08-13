@@ -522,7 +522,7 @@ def LinearMap.toMatrix : (M₁ →ₗ[R] M₂) ≃ₗ[R] Matrix m n R :=
 
 /-- `LinearMap.toMatrix'` is a particular case of `LinearMap.toMatrix`, for the standard basis
 `Pi.basisFun R n`. -/
-theorem LinearMap.toMatrix_eq_toMatrix' :
+@[simp] theorem LinearMap.toMatrix_eq_toMatrix' :
     LinearMap.toMatrix (Pi.basisFun R n) (Pi.basisFun R n) = LinearMap.toMatrix' :=
   rfl
 
