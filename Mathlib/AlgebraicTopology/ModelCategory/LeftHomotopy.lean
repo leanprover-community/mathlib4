@@ -84,7 +84,7 @@ namespace Cylinder
 
 variable {X Y : C}
 
-/-- Given a cylinder `P` for `X`, two maps `f` and `g` in `X ⟶ Y` are homotopic
+/-- Given a cylinder `P` for `X`, two maps `f` and `g` in `X ⟶ Y` are homotopic relative to `P`
 when there is a morphism `h : P.I ⟶ Y` such that `P.i₀ ≫ h = f` and `P.i₁ ≫ h = g`. -/
 abbrev LeftHomotopy [CategoryWithWeakEquivalences C] (P : Cylinder X) (f g : X ⟶ Y) : Type _ :=
   P.toPrecylinder.LeftHomotopy f g
