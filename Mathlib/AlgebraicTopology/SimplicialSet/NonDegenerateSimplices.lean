@@ -56,6 +56,12 @@ lemma mk_surjective (x : X.N) :
     ∃ (n : ℕ) (y : X.nonDegenerate n), x = N.mk _ y.2 :=
   ⟨x.1.1, ⟨_, x.nonDegenerate⟩, rfl⟩
 
+lemma ext_iff (x y : X.N) :
+    x = y ↔ x.toS = y.toS := by
+  cases x
+  cases y
+  aesop
+
 instance : Preorder X.N := Preorder.lift toS
 
 lemma le_iff {x y : X.N} : x ≤ y ↔ x.subcomplex ≤ y.subcomplex :=
