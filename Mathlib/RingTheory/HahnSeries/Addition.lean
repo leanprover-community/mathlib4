@@ -78,6 +78,9 @@ theorem le_order_smul {Γ} [Zero Γ] [LinearOrder Γ] (r : R) (x : HahnSeries Γ
     x.order ≤ (r • x).order :=
   le_of_not_gt (order_smul_not_lt r x h)
 
+theorem truncLT_smul [DecidableLT Γ] (c : Γ) (r : R) (x : HahnSeries Γ V) :
+    truncLT c (r • x) = r • truncLT c x := by ext; simp
+
 end SMulZeroClass
 
 section Addition
@@ -316,6 +319,11 @@ theorem embDomain_add (f : Γ ↪o Γ') (x y : HahnSeries Γ R) :
 
 end Domain
 
+theorem truncLT_add [DecidableLT Γ] (c : Γ) (x y : HahnSeries Γ R) :
+    truncLT c (x + y) = truncLT c x + truncLT c y := by
+  ext i
+  by_cases h : i < c <;> simp [h]
+
 end AddMonoid
 
 section AddCommMonoid
@@ -553,10 +561,8 @@ variable (R) in
 /-- `HahnSeries.truncLT` as a linear map. -/
 def truncLTLinearMap [DecidableLT Γ] (c : Γ) : HahnSeries Γ V →ₗ[R] HahnSeries Γ V where
   toFun := truncLT c
-  map_add' x y := by
-    ext i
-    by_cases h : i < c <;> simp [h]
-  map_smul' s x := by ext; simp
+  map_add' := truncLT_add c
+  map_smul' := truncLT_smul c
 
 variable (R) in
 @[simp]
