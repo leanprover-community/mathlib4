@@ -516,7 +516,7 @@ def algEquiv (h' : IsAdjoinRoot T f) : S ≃ₐ[R] T :=
     left_inv x := by rw [← h.map_repr x]; simp [- map_repr]
     right_inv x := by rw [← h'.map_repr x]; simp [- map_repr] }
 
-@[deprecated (since := "2025-08-13")] alias aequiv := algEquiv
+@[deprecated (since := "2025-08-13")] noncomputable alias aequiv := algEquiv
 
 @[simp]
 theorem algEquiv_map (h' : IsAdjoinRoot T f) (z : R[X]) : h.algEquiv h' (h.map z) = h'.map z := by
