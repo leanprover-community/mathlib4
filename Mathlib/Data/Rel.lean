@@ -135,7 +135,8 @@ protected def id : SetRel α α := {(a₁, a₂) | a₁ = a₂}
 
 @[simp] lemma mem_id : a₁ ~[SetRel.id] a₂ ↔ a₁ = a₂ := .rfl
 
-@[simp] lemma inv_id : (.id : SetRel α α).inv = .id := by aesop
+-- Not simp because `SetRel.inv_eq_self` already proves it
+lemma inv_id : (.id : SetRel α α).inv = .id := by aesop
 
 /-- Composition of relation.
 
@@ -399,6 +400,9 @@ protected lemma comm [R.IsSymm] : a ~[R] b ↔ b ~[R] a := comm_of (· ~[R] ·)
 variable (R) in
 @[simp] lemma inv_eq_self [R.IsSymm] : R.inv = R := by ext; exact R.comm
 
+instance isSymm_empty : (∅ : SetRel α α).IsSymm where symm _ _ := by simp
+instance isSymm_univ : SetRel.IsSymm (Set.univ : SetRel α α) where symm _ _ := by simp
+
 instance isSymm_inter [R₁.IsSymm] [R₂.IsSymm] : (R₁ ∩ R₂).IsSymm where
   symm _ _ := .imp R₁.symm R₂.symm
 
@@ -408,6 +412,8 @@ protected lemma IsSymm.sInter {ℛ : Set <| SetRel α α} (hℛ : ∀ R ∈ ℛ,
 
 instance isSymm_iInter {ι : Sort*} {R : ι → SetRel α α} [∀ i, (R i).IsSymm] :
     SetRel.IsSymm (⋂ i, R i) := .sInter <| by simpa
+
+instance isSymm_id : (SetRel.id : SetRel α α).IsSymm where symm _ _ := .symm
 
 instance isSymm_preimage {f : β → α} [R.IsSymm] : SetRel.IsSymm (Prod.map f f ⁻¹' R) where
   symm _ _ := R.symm
@@ -461,6 +467,8 @@ protected lemma IsTrans.sInter {ℛ : Set <| SetRel α α} (hℛ : ∀ R ∈ ℛ
 
 instance isTrans_iInter {ι : Sort*} {R : ι → SetRel α α} [∀ i, (R i).IsTrans] :
     SetRel.IsTrans (⋂ i, R i) := .sInter <| by simpa
+
+instance isTrans_id : (.id : SetRel α α).IsTrans where trans _ _ _ := .trans
 
 instance isTrans_preimage {f : β → α} [R.IsTrans] : SetRel.IsTrans (Prod.map f f ⁻¹' R) where
   trans _ _ _ := R.trans
