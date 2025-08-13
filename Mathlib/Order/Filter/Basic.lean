@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad
 -/
 import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Algebra.Star.Defs
 import Mathlib.Data.Set.Lattice
 import Mathlib.Order.Filter.Defs
 
@@ -1075,6 +1076,13 @@ theorem eventuallyEq_iff_sub [AddGroup β] {f g : α → β} {l : Filter α} :
 theorem eventuallyEq_iff_all_subsets {f g : α → β} {l : Filter α} :
     f =ᶠ[l] g ↔ ∀ s : Set α, ∀ᶠ x in l, x ∈ s → f x = g x :=
   eventually_iff_all_subsets
+
+protected theorem _root_.Filter.EventuallyEq.fun_star {R : Type*} [Star R] {f g : α → R}
+    {l : Filter α} (h : f =ᶠ[l] g) : (fun x ↦ star (f x)) =ᶠ[l] fun x ↦ star (g x) :=
+  h.fun_comp Star.star
+
+protected theorem _root_.Filter.EventuallyEq.star {R : Type*} [Star R]
+    {f g : α → R} {l : Filter α} (h : f =ᶠ[l] g) : star f =ᶠ[l] star g := h.fun_comp Star.star
 
 section LE
 
