@@ -614,7 +614,7 @@ end Group
 end Equiv
 
 /-- The group of multiplicative automorphisms. -/
-@[reducible, to_additive "The group of additive automorphisms."]
+@[reducible, to_additive /-- The group of additive automorphisms. -/]
 def MulAut (M : Type*) [Mul M] :=
   M ≃* M
 
