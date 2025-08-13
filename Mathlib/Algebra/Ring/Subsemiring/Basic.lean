@@ -69,7 +69,7 @@ protected theorem list_sum_mem {l : List R} : (∀ x ∈ l, x ∈ s) → l.sum �
   list_sum_mem
 
 /-- Product of a multiset of elements in a `Subsemiring` of a `CommSemiring`
-    is in the `Subsemiring`. -/
+is in the `Subsemiring`. -/
 protected theorem multiset_prod_mem {R} [CommSemiring R] (s : Subsemiring R) (m : Multiset R) :
     (∀ a ∈ m, a ∈ s) → m.prod ∈ s :=
   multiset_prod_mem m
@@ -800,7 +800,7 @@ namespace RingEquiv
 variable {s t : Subsemiring R}
 
 /-- Makes the identity isomorphism from a proof two subsemirings of a multiplicative
-    monoid are equal. -/
+monoid are equal. -/
 def subsemiringCongr (h : s = t) : s ≃+* t :=
   { Equiv.setCongr <| congr_arg _ h with
     map_mul' := fun _ _ => rfl
