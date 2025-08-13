@@ -125,12 +125,12 @@ terms in the product.
 When `A` is symmetric (`A⁻¹ = A`), the base of the exponential can be lowered from `K ^ 3` to `K`,
 where `K` is the tripling constant. See `Finset.small_pow_of_small_tripling`. -/
 @[to_additive
-"If `A` has small tripling, say with constant `K`, then `A` has small alternating powers, in the
+/-- If `A` has small tripling, say with constant `K`, then `A` has small alternating powers, in the
 sense that `|±A ± ... ± A|` is at most `|A|` times a constant exponential in the number of
 terms in the product.
 
 When `A` is symmetric (`-A = A`), the base of the exponential can be lowered from `K ^ 3` to `K`,
-where `K` is the tripling constant. See `Finset.small_nsmul_of_small_tripling`."]
+where `K` is the tripling constant. See `Finset.small_nsmul_of_small_tripling`. -/]
 lemma small_alternating_pow_of_small_tripling (hm : 3 ≤ m) (hA : #(A ^ 3) ≤ K * #A) (ε : Fin m → ℤ)
     (hε : ∀ i, |ε i| = 1) :
     #((finRange m).map fun i ↦ A ^ ε i).prod ≤ K ^ (3 * (m - 2)) * #A := by
@@ -170,11 +170,11 @@ in the sense that `|A ^ m|` is at most `|A|` times a constant exponential in `m`
 See also `Finset.small_alternating_pow_of_small_tripling` for a version with a weaker constant but
 which encompasses non-symmetric sets. -/
 @[to_additive
-"If `A` is symmetric (`-A = A`) and has small tripling, then `A` has small powers,
+/-- If `A` is symmetric (`-A = A`) and has small tripling, then `A` has small powers,
 in the sense that `|m • A|` is at most `|A|` times a constant exponential in `m`.
 
 See also `Finset.small_alternating_nsmul_of_small_tripling` for a version with a weaker constant but
-which encompasses non-symmetric sets."]
+which encompasses non-symmetric sets. -/]
 lemma small_pow_of_small_tripling (hm : 3 ≤ m) (hA : #(A ^ 3) ≤ K * #A) (hAsymm : A⁻¹ = A) :
     #(A ^ m) ≤ K ^ (m - 2) * #A := by
   have (ε : ℤ) (hε : |ε| = 1) : A ^ ε = A := by

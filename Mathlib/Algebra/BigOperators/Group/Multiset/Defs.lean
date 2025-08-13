@@ -34,8 +34,8 @@ variable [CommMonoid M] [CommMonoid N] {s t : Multiset M} {a : M} {m : Multiset 
 /-- Product of a multiset given a commutative monoid structure on `M`.
   `prod {a, b, c} = a * b * c` -/
 @[to_additive
-      "Sum of a multiset given a commutative additive monoid structure on `M`.
-      `sum {a, b, c} = a + b + c`"]
+      /-- Sum of a multiset given a commutative additive monoid structure on `M`.
+      `sum {a, b, c} = a + b + c` -/]
 def prod : Multiset M → M :=
   foldr (· * ·) 1
 
