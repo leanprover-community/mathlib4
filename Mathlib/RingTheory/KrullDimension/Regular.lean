@@ -33,6 +33,7 @@ theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIde
   rcases subsingleton_or_nontrivial M with h | _
   · simp [Module.supportDim_eq_bot_of_subsingleton]
   refine iSup_le_iff.mpr (fun q ↦ ?_)
+  -- Append the maximal ideal to `q`.
   classical let p : LTSeries (support R M) :=
     if h : q.last < closedPoint R then q.snoc ⟨closedPoint R, closedPoint_mem_support R M⟩ h else q
   obtain ⟨hxp, le⟩ : x ∈ p.last.1.1 ∧ q.length ≤ p.length := by
@@ -42,6 +43,7 @@ theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIde
         contrapose! lt
         exact lt_of_le_of_ne (le_maximalIdeal_of_isPrime q.last.1.1) lt
       simpa [show p = q from dif_neg lt, hq] using hx
+  -- `q` is a chain of primes such that `x ∈ q 1`, `p.length = q.length` and `p.head = q.head`.
   obtain ⟨q, hxq, hq, h0, _⟩ :=
     exist_ltSeries_mem_one_of_mem_last (p.map Subtype.val (fun ⦃_ _⦄ lt ↦ lt)) hxp
   refine (Nat.cast_le.mpr le).trans ?_
@@ -51,6 +53,7 @@ theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIde
         nontrivial_quotSMulTop_of_mem_annihilator_jacobson (maximalIdeal_le_jacobson _ hx)
     rw [h, ← WithBot.coe_unbot (supportDim R (QuotSMulTop x M)) hb]
     exact WithBot.coe_le_coe.mpr (zero_le ((supportDim R (QuotSMulTop x M)).unbot hb + 1))
+  -- Let `q' i := q (i + 1)`, then `q'` is a chain of prime ideals in `Supp(M/xM)`.
   let q' : LTSeries (support R (QuotSMulTop x M)) := {
     length := p.length - 1
     toFun := by
@@ -83,15 +86,11 @@ theorem supportDim_quotSMulTop_succ_le_of_notMem_minimalPrimes {x : R}
   apply WithBot.coe_le_coe.mpr
   simp only [ENat.iSup_add, iSup_le_iff]
   intro p
-  let q : LTSeries (support R M) := {
-    length := p.length
-    toFun := by
-      intro i
-      have hq := (p i).2
-      simp only [support_quotSMulTop, Set.mem_inter_iff] at hq
-      exact ⟨(p i).1, hq.1⟩
-    step := fun i ↦ by simpa using p.3 i
-  }
+  have le : support R (QuotSMulTop x M) ⊆ support R M := by simp
+  -- Since `Supp(M/xM) ⊆ Supp M`, `p` can be viewed as a chain of prime ideals in `Supp M`,
+  -- which we denote by `q`.
+  let q : LTSeries (support R M) :=
+    p.map (Set.MapsTo.restrict id (support R (QuotSMulTop x M)) (support R M) le) (fun _ _ h ↦ h)
   have hp := p.head.2
   simp only [support_quotSMulTop, Set.mem_inter_iff, mem_zeroLocus, Set.singleton_subset_iff,
     SetLike.mem_coe] at hp
