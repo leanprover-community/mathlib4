@@ -145,7 +145,7 @@ theorem IsLinearMap.image_convexHull {f : E → F} (hf : IsLinearMap 𝕜 f) (s 
     (image_subset_iff.2 <|
       convexHull_min (image_subset_iff.1 <| subset_convexHull 𝕜 _)
         ((convex_convexHull 𝕜 _).is_linear_preimage hf))
-    (convexHull_min (image_subset _ (subset_convexHull 𝕜 s)) <|
+    (convexHull_min (image_mono (subset_convexHull 𝕜 s)) <|
       (convex_convexHull 𝕜 s).is_linear_image hf)
 
 theorem LinearMap.image_convexHull (f : E →ₗ[𝕜] F) (s : Set E) :
@@ -185,7 +185,7 @@ theorem AffineMap.image_convexHull (f : E →ᵃ[𝕜] F) (s : Set E) :
     refine convexHull_min ?_ ((convex_convexHull 𝕜 (f '' s)).affine_preimage f)
     rw [← Set.image_subset_iff]
     exact subset_convexHull 𝕜 (f '' s)
-  · exact convexHull_min (Set.image_subset _ (subset_convexHull 𝕜 s))
+  · exact convexHull_min (Set.image_mono (subset_convexHull 𝕜 s))
       ((convex_convexHull 𝕜 s).affine_image f)
 
 theorem convexHull_subset_affineSpan (s : Set E) : convexHull 𝕜 s ⊆ (affineSpan 𝕜 s : Set E) :=

@@ -142,7 +142,7 @@ def graph (f : α →. β) : Set (α × β) :=
 
 /-- Graph of a partial function as a relation. `x` and `y` are related iff `f x` is defined and
 "equals" `y`. -/
-def graph' (f : α →. β) : Rel α β := {(x, y) : α × β | y ∈ f x}
+def graph' (f : α →. β) : SetRel α β := {(x, y) : α × β | y ∈ f x}
 
 /-- The range of a partial function is the set of values
   `f x` where `x` is in the domain of `f`. -/
@@ -352,13 +352,13 @@ theorem mem_image (y : β) (s : Set α) : y ∈ f.image s ↔ ∃ x ∈ s, y ∈
   Iff.rfl
 
 theorem image_mono {s t : Set α} (h : s ⊆ t) : f.image s ⊆ f.image t :=
-  Rel.image_mono h
+  SetRel.image_mono h
 
 theorem image_inter (s t : Set α) : f.image (s ∩ t) ⊆ f.image s ∩ f.image t :=
-  Rel.image_inter_subset _
+  SetRel.image_inter_subset _
 
 theorem image_union (s t : Set α) : f.image (s ∪ t) = f.image s ∪ f.image t :=
-  Rel.image_union _ s t
+  SetRel.image_union _ s t
 
 /-- Preimage of a set under a partial function. -/
 def preimage (s : Set β) : Set α := f.graph'.preimage s
@@ -374,13 +374,13 @@ theorem preimage_subset_dom (s : Set β) : f.preimage s ⊆ f.Dom := fun _ ⟨y,
   Part.dom_iff_mem.mpr ⟨y, fxy⟩
 
 theorem preimage_mono {s t : Set β} (h : s ⊆ t) : f.preimage s ⊆ f.preimage t :=
-  Rel.preimage_mono h
+  SetRel.preimage_mono h
 
 theorem preimage_inter (s t : Set β) : f.preimage (s ∩ t) ⊆ f.preimage s ∩ f.preimage t :=
-  Rel.preimage_inter_subset _
+  SetRel.preimage_inter_subset _
 
 theorem preimage_union (s t : Set β) : f.preimage (s ∪ t) = f.preimage s ∪ f.preimage t :=
-  Rel.preimage_union _ s t
+  SetRel.preimage_union _ s t
 
 theorem preimage_univ : f.preimage Set.univ = f.Dom := by ext; simp [mem_preimage, mem_dom]
 
@@ -402,10 +402,10 @@ theorem compl_dom_subset_core (s : Set β) : f.Domᶜ ⊆ f.core s := fun x hx y
   absurd ((mem_dom f x).mpr ⟨y, fxy⟩) hx
 
 theorem core_mono {s t : Set β} (h : s ⊆ t) : f.core s ⊆ f.core t :=
-  Rel.core_mono h
+  SetRel.core_mono h
 
 theorem core_inter (s t : Set β) : f.core (s ∩ t) = f.core s ∩ f.core t :=
-  Rel.core_inter _ s t
+  SetRel.core_inter _ s t
 
 theorem mem_core_res (f : α → β) (s : Set α) (t : Set β) (x : α) :
     x ∈ (res f s).core t ↔ x ∈ s → f x ∈ t := by simp [mem_core, mem_res]

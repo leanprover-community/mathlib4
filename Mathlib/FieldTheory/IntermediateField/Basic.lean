@@ -468,7 +468,7 @@ theorem map_map {K L₁ L₂ L₃ : Type*} [Field K] [Field L₁] [Algebra K L�
 
 theorem map_mono (f : L →ₐ[K] L') {S T : IntermediateField K L} (h : S ≤ T) :
     S.map f ≤ T.map f :=
-  SetLike.coe_mono (Set.image_subset f h)
+  SetLike.coe_mono (Set.image_mono h)
 
 theorem map_le_iff_le_comap {f : L →ₐ[K] L'}
     {s : IntermediateField K L} {t : IntermediateField K L'} :
@@ -587,8 +587,6 @@ variable {F E : IntermediateField K L}
 
 @[simp]
 theorem toSubalgebra_inj : F.toSubalgebra = E.toSubalgebra ↔ F = E := toSubalgebra_injective.eq_iff
-
-@[deprecated (since := "2024-12-29")] alias toSubalgebra_eq_iff := toSubalgebra_inj
 
 @[simp]
 theorem toSubfield_inj : F.toSubfield = E.toSubfield ↔ F = E := toSubfield_injective.eq_iff

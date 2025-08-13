@@ -39,6 +39,8 @@ In theory, we could prove these in the multiplicative version and let `to_additi
 the additive variants. But `Function.Exact` currently has no multiplicative analogue (yet).
 -/
 
+assert_not_exists Cardinal
+
 namespace AddMonoidHom
 
 variable {M₁ M₂ M₃ M₄ M₅ N₁ N₂ N₃ N₄ N₅ : Type*}

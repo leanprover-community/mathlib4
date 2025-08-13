@@ -77,7 +77,7 @@ noncomputable def unitIsoAux (F : C ⥤ AddCommGrp.{v}) [PreservesFiniteLimits F
   letI : F.Monoidal := .ofChosenFiniteProducts _
   refine CommGrp_.mkIso Multiplicative.toAdd.toIso (by
     erw [Functor.mapCommGrp_obj_grp_one]
-    aesop_cat) ?_
+    cat_disch) ?_
   dsimp [-Functor.comp_map, -ConcreteCategory.forget_map_eq_coe, -forget_map]
   have : F.Additive := Functor.additive_of_preserves_binary_products _
   simp only [Category.id_comp]
@@ -85,7 +85,7 @@ noncomputable def unitIsoAux (F : C ⥤ AddCommGrp.{v}) [PreservesFiniteLimits F
   erw [Functor.comp_map, F.map_add, Functor.Monoidal.μ_comp F (forget AddCommGrp) X X,
     Category.assoc, ← Functor.map_comp, Preadditive.comp_add, Functor.Monoidal.μ_fst,
     Functor.Monoidal.μ_snd]
-  aesop_cat
+  cat_disch
 
 /-- Implementation, see `leftExactFunctorForgetEquivalence`. -/
 noncomputable def unitIso : 𝟭 (C ⥤ₗ AddCommGrp) ≅

@@ -356,7 +356,7 @@ section FourierL2
 /-- We define `fourierBasis` to be a `ℤ`-indexed Hilbert basis for `Lp ℂ 2 haarAddCircle`,
 which by definition is an isometric isomorphism from `Lp ℂ 2 haarAddCircle` to `ℓ²(ℤ, ℂ)`. -/
 def fourierBasis : HilbertBasis ℤ ℂ (Lp ℂ 2 <| @haarAddCircle T hT) :=
-  HilbertBasis.mk orthonormal_fourier (span_fourierLp_closure_eq_top (by norm_num)).ge
+  HilbertBasis.mk orthonormal_fourier (span_fourierLp_closure_eq_top (by simp)).ge
 
 /-- The elements of the Hilbert basis `fourierBasis` are the functions `fourierLp 2`, i.e. the
 monomials `fourier n` on the circle considered as elements of `L²`. -/

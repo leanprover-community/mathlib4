@@ -21,7 +21,7 @@ instance (C : Type u) [Category.{v} C] [MonoidalCategory C] :
   Functor.LaxMonoidal.ofTensorHom
     (ε := fun _ => 𝟙 _)
     (μ := fun X Y p ↦ (λ_ (𝟙_ C)).inv ≫ (p.1 ⊗ₘ p.2))
-    (μ_natural := by aesop_cat)
+    (μ_natural := by cat_disch)
     (associativity := fun X Y Z => by
       ext ⟨⟨f, g⟩, h⟩; dsimp at f g h
       dsimp; simp only [Iso.cancel_iso_inv_left, Category.assoc]

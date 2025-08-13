@@ -104,9 +104,7 @@ theorem ofFn_getElem_eq_map {β : Type*} (l : List α) (f : α → β) :
 
 -- Note there is a now another `mem_ofFn` defined in Lean, with an existential on the RHS,
 -- which is marked as a simp lemma.
-theorem mem_ofFn' {n} (f : Fin n → α) (a : α) : a ∈ ofFn f ↔ a ∈ Set.range f := by
-  simp only [mem_iff_get, Set.mem_range, get_ofFn]
-  exact ⟨fun ⟨i, hi⟩ => ⟨Fin.cast (by simp) i, hi⟩, fun ⟨i, hi⟩ => ⟨Fin.cast (by simp) i, hi⟩⟩
+theorem mem_ofFn' {n} (f : Fin n → α) (a : α) : a ∈ ofFn f ↔ a ∈ Set.range f := by grind
 
 theorem forall_mem_ofFn_iff {n : ℕ} {f : Fin n → α} {P : α → Prop} :
     (∀ i ∈ ofFn f, P i) ↔ ∀ j : Fin n, P (f j) := by simp
@@ -132,17 +130,6 @@ theorem pairwise_ofFn {R : α → α → Prop} {n} {f : Fin n → α} :
 lemma getLast_ofFn_succ {n : ℕ} (f : Fin n.succ → α) :
     (ofFn f).getLast (mt ofFn_eq_nil_iff.1 (Nat.succ_ne_zero _)) = f (Fin.last _) :=
   getLast_ofFn _
-
-@[deprecated getLast_ofFn (since := "2024-11-06")]
-theorem last_ofFn {n : ℕ} (f : Fin n → α) (h : ofFn f ≠ [])
-    (hn : n - 1 < n := Nat.pred_lt <| ofFn_eq_nil_iff.not.mp h) :
-    getLast (ofFn f) h = f ⟨n - 1, hn⟩ := by simp [getLast_eq_getElem]
-
-@[deprecated getLast_ofFn_succ (since := "2024-11-06")]
-theorem last_ofFn_succ {n : ℕ} (f : Fin n.succ → α)
-    (h : ofFn f ≠ [] := mt ofFn_eq_nil_iff.mp (Nat.succ_ne_zero _)) :
-    getLast (ofFn f) h = f (Fin.last _) :=
-  getLast_ofFn_succ _
 
 lemma ofFn_cons {n} (a : α) (f : Fin n → α) : ofFn (Fin.cons a f) = a :: ofFn f := by
   rw [ofFn_succ]

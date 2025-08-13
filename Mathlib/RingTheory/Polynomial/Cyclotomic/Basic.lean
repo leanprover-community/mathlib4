@@ -382,25 +382,23 @@ theorem cyclotomic_dvd_geom_sum_of_dvd (R) [Ring R] {d n : ℕ} (hdn : d ∣ n) 
   simp [hd, hdn, hn.ne']
 
 theorem X_pow_sub_one_mul_prod_cyclotomic_eq_X_pow_sub_one_of_dvd (R) [CommRing R] {d n : ℕ}
-    (h : d ∈ n.properDivisors) :
+    (hdvd : d ∣ n) (hn : n ≠ 0) :
     ((X ^ d - 1) * ∏ x ∈ n.divisors \ d.divisors, cyclotomic x R) = X ^ n - 1 := by
-  obtain ⟨hd, hdn⟩ := Nat.mem_properDivisors.mp h
-  have h0n : 0 < n := pos_of_gt hdn
-  have h0d : 0 < d := Nat.pos_of_dvd_of_pos hd h0n
-  rw [← prod_cyclotomic_eq_X_pow_sub_one h0d, ← prod_cyclotomic_eq_X_pow_sub_one h0n, mul_comm,
-    Finset.prod_sdiff (Nat.divisors_subset_of_dvd h0n.ne' hd)]
+  have h0d : 0 < d := Nat.pos_of_dvd_of_pos hdvd (by positivity)
+  rw [← prod_cyclotomic_eq_X_pow_sub_one h0d,
+    ← prod_cyclotomic_eq_X_pow_sub_one (by positivity), mul_comm,
+    Finset.prod_sdiff (by gcongr)]
 
 theorem X_pow_sub_one_mul_cyclotomic_dvd_X_pow_sub_one_of_dvd (R) [CommRing R] {d n : ℕ}
     (h : d ∈ n.properDivisors) : (X ^ d - 1) * cyclotomic n R ∣ X ^ n - 1 := by
-  have hdn := (Nat.mem_properDivisors.mp h).2
+  rw [Nat.mem_properDivisors] at h
   use ∏ x ∈ n.properDivisors \ d.divisors, cyclotomic x R
-  symm
-  convert X_pow_sub_one_mul_prod_cyclotomic_eq_X_pow_sub_one_of_dvd R h using 1
-  rw [mul_assoc]
-  congr 1
-  rw [← Nat.insert_self_properDivisors hdn.ne_bot, insert_sdiff_of_notMem, prod_insert]
+  rw [← X_pow_sub_one_mul_prod_cyclotomic_eq_X_pow_sub_one_of_dvd R h.1 h.2.ne_bot,
+    ← Nat.insert_self_properDivisors, Finset.insert_sdiff_of_notMem,
+    Finset.prod_insert, mul_assoc]
   · exact Finset.notMem_sdiff_of_notMem_left Nat.self_notMem_properDivisors
-  · exact fun hk => hdn.not_ge <| Nat.divisor_le hk
+  · exact fun hk => h.2.not_ge <| Nat.divisor_le hk
+  · exact h.2.ne_bot
 
 section ArithmeticFunction
 

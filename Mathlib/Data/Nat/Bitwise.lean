@@ -6,6 +6,7 @@ Authors: Markus Himmel, Alex Keizer
 import Mathlib.Algebra.Group.Nat.Even
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Ring.Nat
+import Mathlib.Data.Bool.Basic
 import Mathlib.Data.List.GetD
 import Mathlib.Data.Nat.Bits
 import Mathlib.Order.Basic
@@ -245,7 +246,7 @@ theorem bitwise_swap {f : Bool → Bool → Bool} :
     simp [bitwise_of_ne_zero, ih]
 
 /-- If `f` is a commutative operation on bools such that `f false false = false`, then `bitwise f`
-    is also commutative. -/
+is also commutative. -/
 theorem bitwise_comm {f : Bool → Bool → Bool} (hf : ∀ b b', f b b' = f b' b) (n m : ℕ) :
     bitwise f n m = bitwise f m n :=
   suffices bitwise f = swap (bitwise f) by conv_lhs => rw [this]
@@ -362,9 +363,6 @@ theorem even_xor {m n : ℕ} : Even (m ^^^ n) ↔ (Even m ↔ Even n) := by
 
 @[simp] theorem bit_lt_two_pow_succ_iff {b x n} : bit b x < 2 ^ (n + 1) ↔ x < 2 ^ n := by
   cases b <;> simp <;> omega
-
-@[deprecated bitwise_lt_two_pow (since := "2024-12-28")]
-alias bitwise_lt := bitwise_lt_two_pow
 
 lemma shiftLeft_lt {x n m : ℕ} (h : x < 2 ^ n) : x <<< m < 2 ^ (n + m) := by
   simp only [Nat.pow_add, shiftLeft_eq, Nat.mul_lt_mul_right (Nat.two_pow_pos _), h]

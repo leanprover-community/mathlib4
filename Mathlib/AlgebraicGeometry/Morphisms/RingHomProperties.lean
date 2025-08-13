@@ -85,10 +85,6 @@ theorem IsStableUnderBaseChange.pullback_fst_appTop
     CommRingCat.hom_comp, hP'.cancel_right_isIso]
   exact hP.pushout_inl hP' _ _ H
 
-@[deprecated (since := "2024-11-23")]
-alias IsStableUnderBaseChange.pullback_fst_app_top :=
-IsStableUnderBaseChange.pullback_fst_appTop
-
 end RingHom
 
 namespace AlgebraicGeometry
@@ -285,8 +281,6 @@ theorem appLE (H : P f) (U : Y.affineOpens) (V : X.affineOpens) (e) : Q (f.appLE
 theorem appTop (H : P f) [IsAffine X] [IsAffine Y] : Q f.appTop.hom := by
   rw [Scheme.Hom.appTop, Scheme.Hom.app_eq_appLE]
   exact appLE P f H ⟨_, isAffineOpen_top _⟩ ⟨_, isAffineOpen_top _⟩ _
-
-@[deprecated (since := "2024-11-23")] alias app_top := appTop
 
 include Q in
 theorem comp_of_isOpenImmersion [IsOpenImmersion f] (H : P g) :

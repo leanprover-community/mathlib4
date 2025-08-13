@@ -110,7 +110,7 @@ variable [CatCommSq Φ.functor L₁ L₂ G]
 include W₁ W₂ Φ L₁ L₂ L₁' L₂'
 
 /-- If a localizer morphism induces an equivalence on some choice of localized categories,
-it will be so for any choice of localized categoriees. -/
+it will be so for any choice of localized categories. -/
 lemma isEquivalence_imp [G.IsEquivalence] : G'.IsEquivalence :=
   let E₁ := Localization.uniq L₁ L₁' W₁
   let E₂ := Localization.uniq L₂ L₂' W₂

@@ -34,9 +34,6 @@ of LocallyRingedSpaces
 abbrev IsOpenImmersion : MorphismProperty (Scheme.{u}) :=
   fun _ _ f ↦ LocallyRingedSpace.IsOpenImmersion f.toLRSHom
 
-instance : IsOpenImmersion.IsStableUnderComposition where
-  comp_mem f g := fun _ _ ↦ LocallyRingedSpace.IsOpenImmersion.comp f.toLRSHom g.toLRSHom
-
 instance IsOpenImmersion.comp {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
     [IsOpenImmersion f] [IsOpenImmersion g] : IsOpenImmersion (f ≫ g) :=
   LocallyRingedSpace.IsOpenImmersion.comp f.toLRSHom g.toLRSHom
@@ -361,7 +358,7 @@ lemma Scheme.ofRestrict_appIso (U) :
 @[simp]
 lemma Scheme.restrict_presheaf_map (V W) (i : V ⟶ W) :
     (X.restrict h).presheaf.map i = X.presheaf.map (homOfLE (show X.ofRestrict h ''ᵁ W.unop ≤
-      X.ofRestrict h ''ᵁ V.unop from Set.image_subset _ i.unop.le)).op := rfl
+      X.ofRestrict h ''ᵁ V.unop from Set.image_mono i.unop.le)).op := rfl
 
 end Restrict
 

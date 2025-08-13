@@ -114,6 +114,12 @@ theorem choose_pos : ∀ {n k}, k ≤ n → 0 < choose n k
 theorem choose_eq_zero_iff {n k : ℕ} : n.choose k = 0 ↔ n < k :=
   ⟨fun h => lt_of_not_ge (mt Nat.choose_pos h.symm.not_lt), Nat.choose_eq_zero_of_lt⟩
 
+theorem choose_ne_zero_iff {n k : ℕ} : n.choose k ≠ 0 ↔ k ≤ n :=
+  not_iff_not.1 <| by simp [choose_eq_zero_iff]
+
+lemma choose_ne_zero {n k : ℕ} (h : k ≤ n) : n.choose k ≠ 0 :=
+  (choose_pos h).ne'
+
 theorem succ_mul_choose_eq : ∀ n k, succ n * choose n k = choose (succ n) (succ k) * succ k
   | 0, 0 => by decide
   | 0, k + 1 => by simp [choose]

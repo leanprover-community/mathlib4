@@ -32,8 +32,6 @@ namespace Scheme
 /-- An open cover of a scheme `X` is a cover where all component maps are open immersions. -/
 abbrev OpenCover (X : Scheme.{u}) : Type _ := Cover.{v} @IsOpenImmersion X
 
-@[deprecated (since := "2024-11-06")] alias OpenCover.IsOpen := Cover.map_prop
-
 variable {X Y Z : Scheme.{u}} (𝒰 : OpenCover X) (f : X ⟶ Z) (g : Y ⟶ Z)
 variable [∀ x, HasPullback (𝒰.map x ≫ f) g]
 

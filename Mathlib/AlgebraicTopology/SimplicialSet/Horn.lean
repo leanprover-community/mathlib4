@@ -69,10 +69,6 @@ lemma horn_obj_zero (n : ℕ) (i : Fin (n + 3)) :
   fin_cases a
   exact Ne.symm hk.2
 
-/-- The inclusion of the boundary of the `n`-th standard simplex into that standard simplex. -/
-@[deprecated horn (since := "2025-01-26")]
-abbrev hornInclusion (n : ℕ) (i : Fin (n + 1)) : (Λ[n, i] : SSet.{u}) ⟶ Δ[n] := Λ[n, i].ι
-
 namespace horn
 
 open SimplexCategory Finset Opposite
@@ -134,7 +130,7 @@ def primitiveEdge {n : ℕ} {i : Fin (n + 1)}
   refine edge n i j.castSucc j.succ ?_ ?_
   · simp only [← Fin.val_fin_le, Fin.coe_castSucc, Fin.val_succ, le_add_iff_nonneg_right, zero_le]
   simp only [← Fin.val_fin_lt, Fin.val_zero, Fin.val_last] at h₀ hₙ
-  obtain rfl|hn : n = 2 ∨ 2 < n := by
+  obtain rfl | hn : n = 2 ∨ 2 < n := by
     rw [eq_comm, or_comm, ← le_iff_lt_or_eq]; omega
   · revert i j; decide
   · exact Finset.card_le_three.trans hn

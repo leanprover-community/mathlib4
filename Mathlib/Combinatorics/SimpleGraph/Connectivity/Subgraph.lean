@@ -191,8 +191,6 @@ theorem toSubgraph_map (f : G →g G') (p : G.Walk u v) :
 
 lemma adj_toSubgraph_mapLe {G' : SimpleGraph V} {w x : V} {p : G.Walk u v} (h : G ≤ G') :
     (p.mapLe h).toSubgraph.Adj w x ↔ p.toSubgraph.Adj w x := by
-  simp only [toSubgraph_map, Subgraph.map_adj]
-  nth_rewrite 1 [← Hom.ofLE_apply h w, ← Hom.ofLE_apply h x]
   simp
 
 @[simp]

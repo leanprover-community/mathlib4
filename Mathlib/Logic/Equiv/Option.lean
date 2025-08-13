@@ -65,7 +65,7 @@ section RemoveNone
 variable (e : Option α ≃ Option β)
 
 /-- If we have a value on one side of an `Equiv` of `Option`
-    we also have a value on the other side of the equivalence
+we also have a value on the other side of the equivalence
 -/
 def removeNone_aux (x : α) : β :=
   if h : (e (some x)).isSome then Option.get _ h

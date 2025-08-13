@@ -152,28 +152,20 @@ theorem map_update_add [DecidableEq ι] (i : ι) (x y : M) :
     f (update v i (x + y)) = f (update v i x) + f (update v i y) :=
   f.map_update_add' v i x y
 
-@[deprecated (since := "2024-11-03")] protected alias map_add := map_update_add
-
 @[simp]
 theorem map_update_sub [DecidableEq ι] (i : ι) (x y : M') :
     g' (update v' i (x - y)) = g' (update v' i x) - g' (update v' i y) :=
   g'.toMultilinearMap.map_update_sub v' i x y
-
-@[deprecated (since := "2024-11-03")] protected alias map_sub := map_update_sub
 
 @[simp]
 theorem map_update_neg [DecidableEq ι] (i : ι) (x : M') :
     g' (update v' i (-x)) = -g' (update v' i x) :=
   g'.toMultilinearMap.map_update_neg v' i x
 
-@[deprecated (since := "2024-11-03")] protected alias map_neg := map_update_neg
-
 @[simp]
 theorem map_update_smul [DecidableEq ι] (i : ι) (r : R) (x : M) :
     f (update v i (r • x)) = r • f (update v i x) :=
   f.map_update_smul' v i r x
-
-@[deprecated (since := "2024-11-03")] protected alias map_smul := map_update_smul
 
 -- Cannot be @[simp] because `i` and `j` can not be inferred by `simp`.
 theorem map_eq_zero_of_eq (v : ι → M) {i j : ι} (h : v i = v j) (hij : i ≠ j) : f v = 0 :=

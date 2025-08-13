@@ -122,8 +122,8 @@ theorem Continuous.smul (hf : Continuous f) (hg : Continuous g) : Continuous fun
   continuous_smul.comp (hf.prodMk hg)
 
 /-- If a scalar action is central, then its right action is continuous when its left action is. -/
-@[to_additive "If an additive action is central, then its right action is continuous when its left
-action is."]
+@[to_additive /-- If an additive action is central, then its right action is continuous when its
+left action is. -/]
 instance ContinuousSMul.op [SMul Mᵐᵒᵖ X] [IsCentralScalar M X] : ContinuousSMul Mᵐᵒᵖ X :=
   ⟨by
     suffices Continuous fun p : M × X => MulOpposite.op p.fst • p.snd from
@@ -165,21 +165,19 @@ Then the action of `N` on `X` is continuous as well.
 In many cases, `f = id` so that `g` is an action homomorphism in the sense of `MulActionHom`.
 However, this version also works for semilinear maps and `f = Units.val`. -/
 @[to_additive
-  "Suppose that `N` additively acts on `X` and `M` continuously additively acts on `Y`.
+  /-- Suppose that `N` additively acts on `X` and `M` continuously additively acts on `Y`.
 Suppose that `g : Y → X` is an additive action homomorphism in the following sense:
 there exists a continuous function `f : N → M` such that `g (c +ᵥ x) = f c +ᵥ g x`.
 Then the action of `N` on `X` is continuous as well.
 
 In many cases, `f = id` so that `g` is an action homomorphism in the sense of `AddActionHom`.
-However, this version also works for `f = AddUnits.val`."]
+However, this version also works for `f = AddUnits.val`. -/]
 lemma Topology.IsInducing.continuousSMul {N : Type*} [SMul N Y] [TopologicalSpace N] {f : N → M}
     (hg : IsInducing g) (hf : Continuous f) (hsmul : ∀ {c x}, g (c • x) = f c • g x) :
     ContinuousSMul N Y where
   continuous_smul := by
     simpa only [hg.continuous_iff, Function.comp_def, hsmul]
       using (hf.comp continuous_fst).smul <| hg.continuous.comp continuous_snd
-
-@[deprecated (since := "2024-10-28")] alias Inducing.continuousSMul := IsInducing.continuousSMul
 
 @[to_additive]
 instance SMulMemClass.continuousSMul {S : Type*} [SetLike S X] [SMulMemClass S M X] (s : S) :

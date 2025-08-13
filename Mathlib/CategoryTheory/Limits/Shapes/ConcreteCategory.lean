@@ -70,7 +70,7 @@ variable [ConcreteCategory.{max w r} D FD] (F : C ⥤ D)
   [PreservesLimit (Discrete.functor f) F]
   [HasProduct fun j => F.obj (f j)]
   [PreservesLimitsOfShape WalkingCospan (forget D)]
-  [PreservesLimit (Discrete.functor fun b ↦ F.toPrefunctor.obj (f b)) (forget D)]
+  [PreservesLimit (Discrete.functor fun b ↦ F.obj (f b)) (forget D)]
 
 lemma Pi.map_ext (x y : ToType (F.obj (∏ᶜ f : C)))
     (h : ∀ i, F.map (Pi.π f i) x = F.map (Pi.π f i) y) : x = y := by

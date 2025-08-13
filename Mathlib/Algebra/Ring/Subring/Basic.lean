@@ -133,7 +133,7 @@ protected theorem multiset_sum_mem {R} [Ring R] (s : Subring R) (m : Multiset R)
   multiset_sum_mem _
 
 /-- Product of elements of a subring of a `CommRing` indexed by a `Finset` is in the
-    subring. -/
+subring. -/
 protected theorem prod_mem {R : Type*} [CommRing R] (s : Subring R) {ι : Type*} {t : Finset ι}
     {f : ι → R} (h : ∀ c ∈ t, f c ∈ s) : (∏ i ∈ t, f i) ∈ s :=
   prod_mem h
@@ -801,15 +801,11 @@ theorem range_eq_top {f : R →+* S} :
     f.range = (⊤ : Subring S) ↔ Function.Surjective f :=
   SetLike.ext'_iff.trans <| Iff.trans (by rw [coe_range, coe_top]) Set.range_eq_univ
 
-@[deprecated (since := "2024-11-11")] alias range_top_iff_surjective := range_eq_top
-
 /-- The range of a surjective ring homomorphism is the whole of the codomain. -/
 @[simp]
 theorem range_eq_top_of_surjective (f : R →+* S) (hf : Function.Surjective f) :
     f.range = (⊤ : Subring S) :=
   range_eq_top.2 hf
-
-@[deprecated (since := "2024-11-11")] alias range_top_of_surjective := range_eq_top_of_surjective
 
 section eqLocus
 
@@ -853,6 +849,11 @@ namespace Subring
 
 open RingHom
 
+theorem mem_closure_image_of (f : R →+* S) {s : Set R} {x : R} (hx : x ∈ Subring.closure s) :
+    f x ∈ Subring.closure (f '' s) := by
+  rw [← f.map_closure, Subring.mem_map]
+  exact ⟨x, hx, rfl⟩
+
 /-- The ring homomorphism associated to an inclusion of subrings. -/
 def inclusion {S T : Subring R} (h : S ≤ T) : S →+* T :=
   S.subtype.codRestrict _ fun x => h x.2
@@ -882,7 +883,7 @@ namespace RingEquiv
 variable {s t : Subring R}
 
 /-- Makes the identity isomorphism from a proof two subrings of a multiplicative
-    monoid are equal. -/
+monoid are equal. -/
 def subringCongr (h : s = t) : s ≃+* t :=
   { Equiv.setCongr <| congr_arg _ h with
     map_mul' := fun _ _ => rfl

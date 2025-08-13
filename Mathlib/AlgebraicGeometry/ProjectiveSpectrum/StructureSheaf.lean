@@ -182,7 +182,7 @@ def structurePresheafInCommRing : Presheaf CommRingCat (ProjectiveSpectrum.top �
 valued structure presheaf. -/
 def structurePresheafCompForget :
     structurePresheafInCommRing 𝒜 ⋙ forget CommRingCat ≅ (structureSheafInType 𝒜).1 :=
-  NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat)
+  NatIso.ofComponents (fun _ => Iso.refl _) (by cat_disch)
 
 end ProjectiveSpectrum.StructureSheaf
 

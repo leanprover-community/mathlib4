@@ -193,7 +193,7 @@ lemma image_subset_closure_compl_image_compl_of_isOpen {ρ : E → A} (ρ_cont :
       zorn_subset _ (compl_ne_univ.mpr nonempty) is_open.isClosed_compl
     rcases nonempty_compl.mpr ne_univ with ⟨x, hx⟩
     -- prove $x \in N \cap (A \setminus \rho(E \setminus G))$
-    have hx' : x ∈ (ρ '' Gᶜ)ᶜ := fun h => hx <| image_subset ρ (by simp) h
+    have hx' : x ∈ (ρ '' Gᶜ)ᶜ := fun h => hx <| image_mono (by simp) h
     rcases ρ_surj x with ⟨y, rfl⟩
     have hy : y ∈ G ∩ ρ⁻¹' N := by simpa using mt (mem_image_of_mem ρ) <| mem_compl hx
     exact ⟨ρ y, mem_inter (mem_preimage.mp <| mem_of_mem_inter_right hy) hx'⟩

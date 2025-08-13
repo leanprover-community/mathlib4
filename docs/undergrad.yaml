@@ -436,7 +436,7 @@ Topology:
   Hilbert spaces:
     Hilbert projection theorem: 'exists_norm_eq_iInf_of_complete_convex'
     orthogonal projection onto closed vector subspaces: 'Submodule.orthogonalProjection'
-    dual space: 'NormedSpace.Dual'
+    dual space: 'StrongDual'
     Riesz representation theorem: 'InnerProductSpace.toDual'
     inner product space $l^2$: 'lp.instInnerProductSpace'
     completeness of $l^2$: 'lp.completeSpace'
@@ -458,7 +458,7 @@ Multivariable calculus:
     Jacobian matrix: ''
     gradient vector: ''
     Hessian matrix: ''
-    chain rule: 'fderiv.comp'
+    chain rule: 'fderiv_comp'
     mean value theorem: 'exists_ratio_deriv_eq_ratio_slope'
     differentiable functions: 'Differentiable'
     $k$-times continuously differentiable functions: 'ContDiff'

@@ -28,7 +28,7 @@ In particular, for `I` an ideal of a ring `R` extending `ℤ`, we prove several 
 instance Int.ideal_span_isMaximal_of_prime (p : ℕ) [Fact (Nat.Prime p)] :
     (Ideal.span {(p : ℤ)}).IsMaximal :=
   Ideal.Quotient.maximal_of_isField _ <|
-    (Int.quotientSpanNatEquivZMod p).toMulEquiv.isField _ (Field.toIsField _)
+    (Int.quotientSpanNatEquivZMod p).toMulEquiv.isField (Field.toIsField _)
 
 namespace Int
 

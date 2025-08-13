@@ -21,7 +21,7 @@ algebra and `B, C` nontrivial, then both `B` and `C` are central algebras.
   `C` is nontrivial and `B ⊗[K] C` is a central algebra over `K`, then `B` is a
   central algebra over `K`.
 - `Algebra.IsCentral.right_of_tensor_of_field`: If `B` `C` are `K`-algebras where `K` is a field,
-  `C` is nontrivial and `B ⊗[K] C` is a central algebra over `K`, then `B` is a
+  `B` is nontrivial and `B ⊗[K] C` is a central algebra over `K`, then `C` is a
   central algebra over `K`.
 
 ## Tags
@@ -74,8 +74,8 @@ lemma left_of_tensor_of_field (K B C : Type*) [Field K] [Ring B] [Ring C] [Nontr
     [Algebra K B] [Algebra K C] [IsCentral K (B ⊗[K] C)] : IsCentral K B :=
   left_of_tensor K B C <| FaithfulSMul.algebraMap_injective K C
 
-/-- Let `B` and `C` be two algebras over a field `K`, if `B ⊗[K] C` is central and `A` is
-  non-trivial, then `B` is central. -/
+/-- Let `B` and `C` be two algebras over a field `K`, if `B ⊗[K] C` is central and `B` is
+  non-trivial, then `C` is central. -/
 lemma right_of_tensor_of_field (K B C : Type*) [Field K] [Ring B] [Ring C] [Nontrivial B]
     [Algebra K B] [Algebra K C] [IsCentral K (B ⊗[K] C)] : IsCentral K C :=
   right_of_tensor K B C <| FaithfulSMul.algebraMap_injective K B

@@ -223,9 +223,9 @@ end const
 
 /-- `f` is continuously differentiable if it is cont. differentiable at
 each `x ∈ mulTSupport f`. -/
-@[to_additive "`f` is continuously differentiable if it is continuously
+@[to_additive /-- `f` is continuously differentiable if it is continuously
 differentiable at each `x ∈ tsupport f`. See also `contMDiff_section_of_tsupport`
-for a similar result for sections of vector bundles."]
+for a similar result for sections of vector bundles. -/]
 theorem contMDiff_of_mulTSupport [One M'] {f : M → M'}
     (hf : ∀ x ∈ mulTSupport f, ContMDiffAt I I' n f x) : ContMDiff I I' n f := by
   intro x
@@ -351,8 +351,6 @@ open TopologicalSpace
 theorem contMDiffAt_subtype_iff {n : WithTop ℕ∞} {U : Opens M} {f : M → M'} {x : U} :
     ContMDiffAt I I' n (fun x : U ↦ f x) x ↔ ContMDiffAt I I' n f x :=
   ((contDiffWithinAt_localInvariantProp n).liftPropAt_iff_comp_subtype_val _ _).symm
-
-@[deprecated (since := "2024-11-20")] alias contMdiffAt_subtype_iff := contMDiffAt_subtype_iff
 
 theorem contMDiff_subtype_val {n : WithTop ℕ∞} {U : Opens M} :
     ContMDiff I I n (Subtype.val : U → M) :=

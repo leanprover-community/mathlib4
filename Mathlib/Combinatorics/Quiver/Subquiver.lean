@@ -16,10 +16,11 @@ subquivers by definition contain all vertices.
 
 universe v u
 
-/-- A wide subquiver `H` of `G` picks out a set `H a b` of arrows from `a` to `b`
-    for every pair of vertices `a b`.
+/--
+A wide subquiver `H` of `G` picks out a set `H a b` of arrows from `a` to `b`
+for every pair of vertices `a b`.
 
-    NB: this does not work for `Prop`-valued quivers. It requires `G : Quiver.{v+1} V`. -/
+NB: this does not work for `Prop`-valued quivers. It requires `G : Quiver.{v+1} V`. -/
 def WideSubquiver (V) [Quiver.{v + 1} V] :=
   ∀ a b : V, Set (a ⟶ b)
 

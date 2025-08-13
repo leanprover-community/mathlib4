@@ -122,6 +122,6 @@ def coimageImageComparisonFunctor : Arrow C ⥤ Arrow C where
   obj f := Arrow.mk (coimageImageComparison f.hom)
   map {f g} η := Arrow.homMk
     (cokernel.map _ _ (kernel.map _ _ η.left η.right (by simp)) η.left (by simp))
-    (kernel.map _ _ η.right (cokernel.map _ _ η.left η.right (by simp)) (by simp)) (by aesop_cat)
+    (kernel.map _ _ η.right (cokernel.map _ _ η.left η.right (by simp)) (by simp)) (by cat_disch)
 
 end CategoryTheory.Abelian

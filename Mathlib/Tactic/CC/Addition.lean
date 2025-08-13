@@ -99,7 +99,7 @@ def mkSymmCongruencesKey (lhs rhs : Expr) : CCM SymmCongruencesKey := do
   if hash lhs > hash rhs then return { h₁ := rhs, h₂ := lhs } else return { h₁ := lhs, h₂ := rhs }
 
 /-- Auxiliary function for comparing `lhs₁ ~ rhs₁` and `lhs₂ ~ rhs₂`,
-    when `~` is symmetric/commutative.
+when `~` is symmetric/commutative.
 It returns `true` (equal) for `a ~ b` `b ~ a`. -/
 def compareSymmAux (lhs₁ rhs₁ lhs₂ rhs₂ : Expr) : CCM Bool := do
   let lhs₁ ← getRoot lhs₁
@@ -364,9 +364,9 @@ def collapseAC (lhs rhs : ACApps) (H : DelayedExpr) : CCM Unit := do
             ofFormat (Format.line ++ ":=" ++ .line) ++ ccs.ppACApps newRlhs)
 
 /-- Given `ra := a*r` `sb := b*s` `ts := t*s` `tr := t*r` `tsEqa : t*s = a` `trEqb : t*r = b`,
-    return a proof for `ra = sb`.
+return a proof for `ra = sb`.
 
-    We use `a*b` to denote an AC application. That is, `(a*b)*(c*a)` is the term `a*a*b*c`. -/
+We use `a*b` to denote an AC application. That is, `(a*b)*(c*a)` is the term `a*a*b*c`. -/
 def mkACSuperposeProof (ra sb a b r s ts tr : ACApps) (tsEqa trEqb : DelayedExpr) :
     MetaM DelayedExpr := do
   let .apps _ _ := tr | failure

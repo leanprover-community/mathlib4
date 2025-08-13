@@ -36,9 +36,9 @@ namespace MonoidHom
 
 See also `MonoidHom.graph` for the graph as a subgroup. -/
 @[to_additive
-"The graph of a monoid homomorphism as a submonoid.
+/-- The graph of a monoid homomorphism as a submonoid.
 
-See also `AddMonoidHom.graph` for the graph as a subgroup."]
+See also `AddMonoidHom.graph` for the graph as a subgroup. -/]
 def mgraph (f : G →* H) : Submonoid (G × H) where
   carrier := {x | f x.1 = x.2}
   one_mem' := map_one f
@@ -64,11 +64,11 @@ alias _root_.AddMonoidHom.mgraph_eq_mrange_sum := AddMonoidHom.mgraph_eq_mrange_
 Let `f : G → H × I` be a homomorphism to a product of monoids. Assume that `f` is surjective on the
 first factor and that the image of `f` intersects every "vertical line" `{(h, i) | i : I}` at most
 once. Then the image of `f` is the graph of some monoid homomorphism `f' : H → I`. -/
-@[to_additive "**Vertical line test** for monoid homomorphisms.
+@[to_additive /-- **Vertical line test** for monoid homomorphisms.
 
 Let `f : G → H × I` be a homomorphism to a product of monoids. Assume that `f` is surjective on the
-first factor and that the image of `f` intersects every \"vertical line\" `{(h, i) | i : I}` at most
-once. Then the image of `f` is the graph of some monoid homomorphism `f' : H → I`."]
+first factor and that the image of `f` intersects every "vertical line" `{(h, i) | i : I}` at most
+once. Then the image of `f` is the graph of some monoid homomorphism `f' : H → I`. -/]
 lemma exists_mrange_eq_mgraph {f : G →* H × I} (hf₁ : Surjective (Prod.fst ∘ f))
     (hf : ∀ g₁ g₂, (f g₁).1 = (f g₂).1 → (f g₁).2 = (f g₂).2) :
     ∃ f' : H →* I, mrange f = f'.mgraph := by
@@ -89,12 +89,12 @@ Let `f : G → H × I` be a homomorphism to a product of monoids. Assume that `f
 factors and that the image of `f` intersects every "vertical line" `{(h, i) | i : I}` and every
 "horizontal line" `{(h, i) | h : H}` at most once. Then the image of `f` is the graph of some monoid
 isomorphism `f' : H ≃ I`. -/
-@[to_additive "**Line test** for monoid isomorphisms.
+@[to_additive /-- **Line test** for monoid isomorphisms.
 
 Let `f : G → H × I` be a homomorphism to a product of monoids. Assume that `f` is surjective on both
-factors and that the image of `f` intersects every \"vertical line\" `{(h, i) | i : I}` and every
-\"horizontal line\" `{(h, i) | h : H}` at most once. Then the image of `f` is the graph of some
-monoid isomorphism `f' : H ≃ I`."]
+factors and that the image of `f` intersects every "vertical line" `{(h, i) | i : I}` and every
+"horizontal line" `{(h, i) | h : H}` at most once. Then the image of `f` is the graph of some
+monoid isomorphism `f' : H ≃ I`. -/]
 lemma exists_mulEquiv_mrange_eq_mgraph {f : G →* H × I} (hf₁ : Surjective (Prod.fst ∘ f))
     (hf₂ : Surjective (Prod.snd ∘ f)) (hf : ∀ g₁ g₂, (f g₁).1 = (f g₂).1 ↔ (f g₁).2 = (f g₂).2) :
     ∃ e : H ≃* I, mrange f = e.toMonoidHom.mgraph := by
@@ -117,11 +117,11 @@ end MonoidHom
 
 Let `G ≤ H × I` be a submonoid of a product of monoids. Assume that `G` maps bijectively to the
 first factor. Then `G` is the graph of some monoid homomorphism `f : H → I`. -/
-@[to_additive "**Vertical line test** for additive monoid homomorphisms.
+@[to_additive /-- **Vertical line test** for additive monoid homomorphisms.
 
 Let `G ≤ H × I` be a submonoid of a product of monoids. Assume that `G` surjects onto the first
-factor and `G` intersects every \"vertical line\" `{(h, i) | i : I}` at most once. Then `G` is the
-graph of some monoid homomorphism `f : H → I`."]
+factor and `G` intersects every "vertical line" `{(h, i) | i : I}` at most once. Then `G` is the
+graph of some monoid homomorphism `f : H → I`. -/]
 lemma Submonoid.exists_eq_mgraph {G : Submonoid (H × I)} (hG₁ : Bijective (Prod.fst ∘ G.subtype)) :
     ∃ f : H →* I, G = f.mgraph := by
   simpa using MonoidHom.exists_mrange_eq_mgraph hG₁.surjective
@@ -131,10 +131,10 @@ lemma Submonoid.exists_eq_mgraph {G : Submonoid (H × I)} (hG₁ : Bijective (Pr
 
 Let `G ≤ H × I` be a submonoid of a product of monoids. Assume that the natural maps from `G` to
 both factors are bijective. Then `G` is the graph of some isomorphism `f : H ≃* I`. -/
-@[to_additive "**Goursat's lemma** for additive monoid isomorphisms.
+@[to_additive /-- **Goursat's lemma** for additive monoid isomorphisms.
 
 Let `G ≤ H × I` be a submonoid of a product of additive monoids. Assume that the natural maps from
-`G` to both factors are bijective. Then `G` is the graph of some isomorphism `f : H ≃+ I`."]
+`G` to both factors are bijective. Then `G` is the graph of some isomorphism `f : H ≃+ I`. -/]
 lemma Submonoid.exists_mulEquiv_eq_mgraph {G : Submonoid (H × I)}
     (hG₁ : Bijective (Prod.fst ∘ G.subtype)) (hG₂ : Bijective (Prod.snd ∘ G.subtype)) :
     ∃ e : H ≃* I, G = e.toMonoidHom.mgraph := by
@@ -152,9 +152,9 @@ namespace MonoidHom
 
 See also `MonoidHom.mgraph` for the graph as a submonoid. -/
 @[to_additive
-"The graph of a group homomorphism as a subgroup.
+/-- The graph of a group homomorphism as a subgroup.
 
-See also `AddMonoidHom.mgraph` for the graph as a submonoid."]
+See also `AddMonoidHom.mgraph` for the graph as a submonoid. -/]
 def graph (f : G →* H) : Subgroup (G × H) where
   toSubmonoid := f.mgraph
   inv_mem' {x} := by simp +contextual
@@ -179,11 +179,11 @@ alias AddMonoidHom.graph_eq_range_sum := graph_eq_range_prod
 Let `f : G → H × I` be a homomorphism to a product of groups. Assume that `f` is surjective on the
 first factor and that the image of `f` intersects every "vertical line" `{(h, i) | i : I}` at most
 once. Then the image of `f` is the graph of some group homomorphism `f' : H → I`. -/
-@[to_additive "**Vertical line test** for group homomorphisms.
+@[to_additive /-- **Vertical line test** for group homomorphisms.
 
 Let `f : G → H × I` be a homomorphism to a product of groups. Assume that `f` is surjective on the
-first factor and that the image of `f` intersects every \"vertical line\" `{(h, i) | i : I}` at most
-once. Then the image of `f` is the graph of some group homomorphism `f' : H → I`."]
+first factor and that the image of `f` intersects every "vertical line" `{(h, i) | i : I}` at most
+once. Then the image of `f` is the graph of some group homomorphism `f' : H → I`. -/]
 lemma exists_range_eq_graph {f : G →* H × I} (hf₁ : Surjective (Prod.fst ∘ f))
     (hf : ∀ g₁ g₂, (f g₁).1 = (f g₂).1 → (f g₁).2 = (f g₂).2) :
     ∃ f' : H →* I, range f = f'.graph := by
@@ -195,12 +195,12 @@ Let `f : G → H × I` be a homomorphism to a product of groups. Assume that `f`
 factors and that the image of `f` intersects every "vertical line" `{(h, i) | i : I}` and every
 "horizontal line" `{(h, i) | h : H}` at most once. Then the image of `f` is the graph of some group
 isomorphism `f' : H ≃ I`. -/
-@[to_additive "**Line test** for monoid isomorphisms.
+@[to_additive /-- **Line test** for monoid isomorphisms.
 
 Let `f : G → H × I` be a homomorphism to a product of groups. Assume that `f` is surjective on both
-factors and that the image of `f` intersects every \"vertical line\" `{(h, i) | i : I}` and every
-\"horizontal line\" `{(h, i) | h : H}` at most once. Then the image of `f` is the graph of some
-group isomorphism `f' : H ≃ I`."]
+factors and that the image of `f` intersects every "vertical line" `{(h, i) | i : I}` and every
+"horizontal line" `{(h, i) | h : H}` at most once. Then the image of `f` is the graph of some
+group isomorphism `f' : H ≃ I`. -/]
 lemma exists_mulEquiv_range_eq_graph {f : G →* H × I} (hf₁ : Surjective (Prod.fst ∘ f))
     (hf₂ : Surjective (Prod.snd ∘ f)) (hf : ∀ g₁ g₂, (f g₁).1 = (f g₂).1 ↔ (f g₁).2 = (f g₂).2) :
     ∃ e : H ≃* I, range f = e.toMonoidHom.graph := by
@@ -212,11 +212,11 @@ end MonoidHom
 
 Let `G ≤ H × I` be a subgroup of a product of monoids. Assume that `G` maps bijectively to the
 first factor. Then `G` is the graph of some monoid homomorphism `f : H → I`. -/
-@[to_additive "**Vertical line test** for additive monoid homomorphisms.
+@[to_additive /-- **Vertical line test** for additive monoid homomorphisms.
 
 Let `G ≤ H × I` be a submonoid of a product of monoids. Assume that `G` surjects onto the first
-factor and `G` intersects every \"vertical line\" `{(h, i) | i : I}` at most once. Then `G` is the
-graph of some monoid homomorphism `f : H → I`."]
+factor and `G` intersects every "vertical line" `{(h, i) | i : I}` at most once. Then `G` is the
+graph of some monoid homomorphism `f : H → I`. -/]
 lemma Subgroup.exists_eq_graph {G : Subgroup (H × I)} (hG₁ : Bijective (Prod.fst ∘ G.subtype)) :
     ∃ f : H →* I, G = f.graph := by
   simpa [SetLike.ext_iff] using Submonoid.exists_eq_mgraph hG₁
@@ -225,10 +225,10 @@ lemma Subgroup.exists_eq_graph {G : Subgroup (H × I)} (hG₁ : Bijective (Prod.
 
 Let `G ≤ H × I` be a submonoid of a product of monoids. Assume that the natural maps from `G` to
 both factors are bijective. Then `G` is the graph of some isomorphism `f : H ≃* I`. -/
-@[to_additive "**Goursat's lemma** for additive monoid isomorphisms.
+@[to_additive /-- **Goursat's lemma** for additive monoid isomorphisms.
 
 Let `G ≤ H × I` be a submonoid of a product of additive monoids. Assume that the natural maps from
-`G` to both factors are bijective. Then `G` is the graph of some isomorphism `f : H ≃+ I`."]
+`G` to both factors are bijective. Then `G` is the graph of some isomorphism `f : H ≃+ I`. -/]
 lemma Subgroup.exists_mulEquiv_eq_graph {G : Subgroup (H × I)}
     (hG₁ : Bijective (Prod.fst ∘ G.subtype)) (hG₂ : Bijective (Prod.snd ∘ G.subtype)) :
     ∃ e : H ≃* I, G = e.toMonoidHom.graph := by

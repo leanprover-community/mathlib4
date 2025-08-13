@@ -218,9 +218,6 @@ protected theorem lt_iSup_iff {ι} {f : ι → Ordinal.{u}} {a : Ordinal.{u}} [S
     a < iSup f ↔ ∃ i, a < f i :=
   lt_ciSup_iff' (bddAbove_of_small _)
 
-@[deprecated "No deprecation message was provided." (since := "2024-11-12")]
-alias lt_iSup := lt_iSup_iff
-
 -- FIXME There is undeprecated material below still depending on this?!
 @[deprecated "No deprecation message was provided." (since := "2024-08-27")]
 theorem ne_iSup_iff_lt_iSup {ι : Type u} {f : ι → Ordinal.{max u v}} :
@@ -684,7 +681,7 @@ theorem lsub_unique {ι} [Unique ι] (f : ι → Ordinal) : lsub f = succ (f def
 set_option linter.deprecated false in
 theorem lsub_le_of_range_subset {ι ι'} {f : ι → Ordinal} {g : ι' → Ordinal}
     (h : Set.range f ⊆ Set.range g) : lsub.{u, max v w} f ≤ lsub.{v, max u w} g :=
-  sup_le_of_range_subset.{u, v, w} (by convert Set.image_subset succ h <;> apply Set.range_comp)
+  sup_le_of_range_subset.{u, v, w} (by convert Set.image_mono h <;> apply Set.range_comp)
 
 theorem lsub_eq_of_range_eq {ι ι'} {f : ι → Ordinal} {g : ι' → Ordinal}
     (h : Set.range f = Set.range g) : lsub.{u, max v w} f = lsub.{v, max u w} g :=

@@ -537,7 +537,7 @@ theorem order_mul_of_nonzero {x y : HahnSeries Γ R}
 
 theorem order_single_mul_of_isRegular {g : Γ} {r : R} (hr : IsRegular r)
     {x : HahnSeries Γ R} (hx : x ≠ 0) : (((single g) r) * x).order = g + x.order := by
-  obtain _|_ := subsingleton_or_nontrivial R
+  obtain _ | _ := subsingleton_or_nontrivial R
   · exact (hx <| Subsingleton.eq_zero x).elim
   have hrx : ((single g) r).leadingCoeff * x.leadingCoeff ≠ 0 := by
     rwa [leadingCoeff_of_single, ne_eq, hr.left.mul_left_eq_zero_iff, leadingCoeff_eq_iff]

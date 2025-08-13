@@ -54,14 +54,14 @@ so there may not be an "honest" underlying category at all!
 class EnrichedCategory (C : Type u₁) where
   /-- `X ⟶[V] Y` is the `V` object of morphisms from `X` to `Y`. -/
   Hom : C → C → V
-  /-- The identity morphism of this catgeory -/
+  /-- The identity morphism of this category -/
   id (X : C) : 𝟙_ V ⟶ Hom X X
   /-- Composition of two morphisms in this category -/
   comp (X Y Z : C) : Hom X Y ⊗ Hom Y Z ⟶ Hom X Z
-  id_comp (X Y : C) : (λ_ (Hom X Y)).inv ≫ id X ▷ _ ≫ comp X X Y = 𝟙 _ := by aesop_cat
-  comp_id (X Y : C) : (ρ_ (Hom X Y)).inv ≫ _ ◁ id Y ≫ comp X Y Y = 𝟙 _ := by aesop_cat
+  id_comp (X Y : C) : (λ_ (Hom X Y)).inv ≫ id X ▷ _ ≫ comp X X Y = 𝟙 _ := by cat_disch
+  comp_id (X Y : C) : (ρ_ (Hom X Y)).inv ≫ _ ◁ id Y ≫ comp X Y Y = 𝟙 _ := by cat_disch
   assoc (W X Y Z : C) : (α_ _ _ _).inv ≫ comp W X Y ▷ _ ≫ comp W Y Z =
-    _ ◁ comp X Y Z ≫ comp W X Z := by aesop_cat
+    _ ◁ comp X Y Z ≫ comp W X Z := by cat_disch
 
 @[inherit_doc EnrichedCategory.Hom] notation X " ⟶[" V "] " Y:10 => (EnrichedCategory.Hom X Y : V)
 
@@ -275,11 +275,11 @@ structure EnrichedFunctor (C : Type u₁) [EnrichedCategory V C] (D : Type u₂)
   obj : C → D
   /-- The `V`-morphism from `X ⟶[V] Y` to `F.obj X ⟶[V] F.obj Y`, for all `X Y : C` -/
   map : ∀ X Y : C, (X ⟶[V] Y) ⟶ obj X ⟶[V] obj Y
-  map_id : ∀ X : C, eId V X ≫ map X X = eId V (obj X) := by aesop_cat
+  map_id : ∀ X : C, eId V X ≫ map X X = eId V (obj X) := by cat_disch
   map_comp :
     ∀ X Y Z : C,
       eComp V X Y Z ≫ map X Z = (map X Y ⊗ₘ map Y Z) ≫ eComp V (obj X) (obj Y) (obj Z) := by
-    aesop_cat
+    cat_disch
 
 attribute [reassoc (attr := simp)] EnrichedFunctor.map_id
 
@@ -544,7 +544,7 @@ def enrichedNatTransYonedaTypeIsoYonedaNatTrans {C : Type v} [EnrichedCategory (
         inv := fun σ =>
           { app := fun X x => (σ x).app X
             naturality := fun X Y => by ext ⟨x, f⟩; exact (σ x).naturality f } })
-    (by aesop_cat)
+    (by cat_disch)
 
 end
 

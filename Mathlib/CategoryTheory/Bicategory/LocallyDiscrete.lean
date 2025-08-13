@@ -47,8 +47,8 @@ theorem mk_as (a : LocallyDiscrete C) : mk a.as = a := rfl
 def locallyDiscreteEquiv : LocallyDiscrete C ≃ C where
   toFun := LocallyDiscrete.as
   invFun := LocallyDiscrete.mk
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
 instance [DecidableEq C] : DecidableEq (LocallyDiscrete C) :=
   locallyDiscreteEquiv.decidableEq

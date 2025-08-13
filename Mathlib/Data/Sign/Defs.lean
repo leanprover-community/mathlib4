@@ -69,9 +69,6 @@ instance : LE SignType :=
 instance LE.decidableRel : DecidableRel SignType.LE := fun a b => by
   cases a <;> cases b <;> first | exact isTrue (by constructor)| exact isFalse (by rintro ⟨_⟩)
 
-instance decidableEq : DecidableEq SignType := fun a b => by
-  cases a <;> cases b <;> first | exact isTrue (by constructor)| exact isFalse (by rintro ⟨_⟩)
-
 private lemma mul_comm : ∀ (a b : SignType), a * b = b * a := by rintro ⟨⟩ ⟨⟩ <;> rfl
 private lemma mul_assoc : ∀ (a b c : SignType), (a * b) * c = a * (b * c) := by
   rintro ⟨⟩ ⟨⟩ ⟨⟩ <;> rfl
@@ -106,7 +103,6 @@ instance : LinearOrder SignType where
   le_antisymm := le_antisymm
   le_trans := le_trans
   toDecidableLE := LE.decidableRel
-  toDecidableEq := SignType.decidableEq
 
 instance : BoundedOrder SignType where
   top := 1

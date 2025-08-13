@@ -46,7 +46,7 @@ instance [Preadditive C] : Functor.Additive (inverse C) where
 /-- The unit isomorphism of the equivalence -/
 @[simps!]
 def unitIso : 𝟭 (Karoubi C) ≅ toKaroubi (Karoubi C) ⋙ inverse C :=
-  eqToIso (Functor.ext (by aesop_cat) (by simp))
+  eqToIso (Functor.ext (by cat_disch) (by simp))
 
 attribute [local simp] p_comm_f in
 /-- The counit isomorphism of the equivalence -/

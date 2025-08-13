@@ -141,8 +141,7 @@ instance : RingEquivClass (R ≃+* S) R S where
   map_add f := f.map_add'
   map_mul f := f.map_mul'
 
-/-- Two ring isomorphisms agree if they are defined by the
-    same underlying function. -/
+/-- Two ring isomorphisms agree if they are defined by the same underlying function. -/
 @[ext]
 theorem ext {f g : R ≃+* S} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
@@ -307,6 +306,12 @@ theorem symm_apply_apply (e : R ≃+* S) : ∀ x, e.symm (e x) = x :=
 theorem image_eq_preimage (e : R ≃+* S) (s : Set R) : e '' s = e.symm ⁻¹' s :=
   e.toEquiv.image_eq_preimage s
 
+theorem symm_apply_eq (e : R ≃+* S) {x : S} {y : R} :
+    e.symm x = y ↔ x = e y := Equiv.symm_apply_eq _
+
+theorem eq_symm_apply (e : R ≃+* S) {x : S} {y : R} :
+    y = e.symm x ↔ e y = x := Equiv.eq_symm_apply _
+
 end symm
 
 section simps
@@ -358,8 +363,6 @@ section unique
 /-- The `RingEquiv` between two semirings with a unique element. -/
 def ofUnique {M N} [Unique M] [Unique N] [Add M] [Mul M] [Add N] [Mul N] : M ≃+* N :=
   { AddEquiv.ofUnique, MulEquiv.ofUnique with }
-
-@[deprecated (since := "2024-12-26")] alias ringEquivOfUnique := ofUnique
 
 instance {M N} [Unique M] [Unique N] [Add M] [Mul M] [Add N] [Mul N] :
     Unique (M ≃+* N) where
