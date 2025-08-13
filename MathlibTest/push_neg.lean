@@ -136,6 +136,19 @@ example (h : p ∧ q) : ¬¬(p ∧ q) := by
   guard_target =ₛ r
   exact h
 
+-- new error message as of #27562
+/-- error: push_neg made no progress anywhere -/
+#guard_msgs in
+example {P : Prop} (h : P) : P := by push_neg at *
+
+-- new behaviour as of #27562
+-- (previously, because of a metavariable instantiation issue, the tactic succeeded as a no-op)
+/-- error: push_neg made no progress at h -/
+#guard_msgs in
+example {x y : ℕ} : True := by
+  have h : x ≤ y := test_sorry
+  push_neg at h
+
 -- new behaviour as of #27562 (previously the tactic succeeded as a no-op)
 /-- error: cannot run push_neg at inductive_proof, it is an implementation detail -/
 #guard_msgs in
