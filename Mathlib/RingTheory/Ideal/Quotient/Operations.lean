@@ -568,7 +568,7 @@ theorem quotientEquiv_mk (x : R) :
     quotientEquiv I J f hIJ (Ideal.Quotient.mk I x) = Ideal.Quotient.mk J (f x) :=
   rfl
 
-@[simp]
+-- @[simp] /- adaption note for https://github.com/leanprover/lean4/pull/8419 : the simpNF linter complained -/
 theorem quotientEquiv_symm_mk (x : S) :
     (quotientEquiv I J f hIJ).symm (Ideal.Quotient.mk J x) = Ideal.Quotient.mk I (f.symm x) :=
   rfl

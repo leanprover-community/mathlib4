@@ -195,7 +195,7 @@ theorem, and is shown by
 `MeasureTheory.SignedMeasure.toSignedMeasure_toJordanDecomposition`. -/
 def toJordanDecomposition (s : SignedMeasure α) : JordanDecomposition α :=
   let i := s.exists_compl_positive_negative.choose
-  let hi := s.exists_compl_positive_negative.choose_spec
+  have hi := s.exists_compl_positive_negative.choose_spec
   { posPart := s.toMeasureOfZeroLE i hi.1 hi.2.1
     negPart := s.toMeasureOfLEZero iᶜ hi.1.compl hi.2.2
     posPart_finite := inferInstance

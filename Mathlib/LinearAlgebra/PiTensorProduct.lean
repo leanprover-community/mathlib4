@@ -60,8 +60,6 @@ binary tensor product in `LinearAlgebra/TensorProduct.lean`.
 multilinear, tensor, tensor product
 -/
 
-suppress_compilation
-
 open Function
 
 section Semiring
@@ -103,7 +101,6 @@ def PiTensorProduct : Type _ :=
 
 variable {R}
 
-unsuppress_compilation in
 /-- This enables the notation `⨂[R] i : ι, s i` for the pi tensor product `PiTensorProduct`,
 given an indexed family of types `s : ι → Type*`. -/
 scoped[TensorProduct] notation3:100"⨂["R"] "(...)", "r:(scoped f => PiTensorProduct R f) => r
@@ -281,7 +278,6 @@ def tprod : MultilinearMap R s (⨂[R] i, s i) where
   map_update_smul' {_ f} i r x := by
     rw [smul_tprodCoeff', ← smul_tprodCoeff (1 : R) _ i, update_idem, update_self]
 
-unsuppress_compilation in
 @[inherit_doc tprod]
 notation3:100 "⨂ₜ["R"] "(...)", "r:(scoped f => tprod R f) => r
 
@@ -409,11 +405,6 @@ theorem liftAux_tprod (φ : MultilinearMap R s E) (f : Π i, s i) : liftAux φ (
   -- show _ • _ = _
   -- rw [one_smul]
   erw [AddCon.lift_coe]
-  rw [FreeAddMonoid.of]
-  dsimp [FreeAddMonoid.ofList]
-  rw [← one_smul R (φ f)]
-  erw [Equiv.refl_apply]
-  convert one_smul R (φ f)
   simp
 
 theorem liftAux_tprodCoeff (φ : MultilinearMap R s E) (z : R) (f : Π i, s i) :
@@ -556,16 +547,12 @@ protected theorem map_update_add [DecidableEq ι] (i : ι) (u v : s i →ₗ[R] 
   simp only [LinearMap.compMultilinearMap_apply, map_tprod, map_add_smul_aux, LinearMap.add_apply,
     MultilinearMap.map_update_add]
 
-@[deprecated (since := "2024-11-03")] protected alias map_add := PiTensorProduct.map_update_add
-
 open Function in
 protected theorem map_update_smul [DecidableEq ι] (i : ι) (c : R) (u : s i →ₗ[R] t i) :
     map (update f i (c • u)) = c • map (update f i u) := by
   ext x
   simp only [LinearMap.compMultilinearMap_apply, map_tprod, map_add_smul_aux, LinearMap.smul_apply,
     MultilinearMap.map_update_smul]
-
-@[deprecated (since := "2024-11-03")] protected alias map_smul := PiTensorProduct.map_update_smul
 
 variable (R s t)
 
@@ -687,12 +674,7 @@ variable (s) in
 def reindex (e : ι ≃ ι₂) : (⨂[R] i : ι, s i) ≃ₗ[R] ⨂[R] i : ι₂, s (e.symm i) :=
   let f := domDomCongrLinearEquiv' R R s (⨂[R] (i : ι₂), s (e.symm i)) e
   let g := domDomCongrLinearEquiv' R R s (⨂[R] (i : ι), s i) e
-  #adaptation_note /-- v4.7.0-rc1
-  An alternative to the last two proofs would be `aesop (simp_config := {zetaDelta := true})`
-  or a wrapper macro to that effect. -/
-  LinearEquiv.ofLinear (lift <| f.symm <| tprod R) (lift <| g <| tprod R)
-    (by aesop (add norm simp [f, g]))
-    (by aesop (add norm simp [f, g]))
+  LinearEquiv.ofLinear (lift <| f.symm <| tprod R) (lift <| g <| tprod R) (by aesop) (by aesop)
 
 end
 
@@ -756,8 +738,7 @@ theorem reindex_refl : reindex R s (Equiv.refl ι) = LinearEquiv.refl R _ := by
   simp only [Equiv.refl_symm, Equiv.refl_apply, reindex, domDomCongrLinearEquiv',
     LinearEquiv.coe_symm_mk, LinearMap.compMultilinearMap_apply, LinearEquiv.coe_coe,
     LinearEquiv.refl_toLinearMap, LinearMap.id_coe, id_eq]
-  erw [lift.tprod]
-  congr
+  simp
 
 variable {t : ι → Type*}
 variable [∀ i, AddCommMonoid (t i)] [∀ i, Module R (t i)]
@@ -796,8 +777,7 @@ def isEmptyEquiv [IsEmpty ι] : (⨂[R] i : ι, s i) ≃ₗ[R] R where
   left_inv x := by
     refine x.induction_on ?_ ?_
     · intro x y
-      -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to change `map_smulₛₗ` into `map_smulₛₗ _`
-      simp only [map_smulₛₗ _, RingHom.id_apply, lift.tprod, constOfIsEmpty_apply, const_apply,
+      simp only [map_smulₛₗ, RingHom.id_apply, lift.tprod, constOfIsEmpty_apply, const_apply,
         smul_eq_mul, mul_one]
       congr
       aesop
@@ -898,13 +878,13 @@ def tmulEquiv :
 
 @[simp]
 theorem tmulEquiv_apply (a : ι → M) (b : ι₂ → M) :
-    tmulEquiv R M ((⨂ₜ[R] i, a i) ⊗ₜ[R] ⨂ₜ[R] i, b i) = ⨂ₜ[R] i, Sum.elim a b i := by
+    tmulEquiv R M ((⨂ₜ[R] i, a i) ⊗ₜ[R] (⨂ₜ[R] i, b i)) = ⨂ₜ[R] i, Sum.elim a b i := by
   simp [tmulEquiv, Sum.elim]
 
 @[simp]
 theorem tmulEquiv_symm_apply (a : ι ⊕ ι₂ → M) :
     (tmulEquiv R M).symm (⨂ₜ[R] i, a i) =
-      (⨂ₜ[R] i, a (Sum.inl i)) ⊗ₜ[R] ⨂ₜ[R] i, a (Sum.inr i) := by
+      (⨂ₜ[R] i, a (Sum.inl i)) ⊗ₜ[R] (⨂ₜ[R] i, a (Sum.inr i)) := by
   simp [tmulEquiv]
 
 end tmulEquiv

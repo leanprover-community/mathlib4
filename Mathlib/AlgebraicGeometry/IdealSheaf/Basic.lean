@@ -322,7 +322,7 @@ def mkOfMemSupportIff
   supportSet := supportSet
   supportSet_eq_iInter_zeroLocus := by
     let I' : X.IdealSheafData := { ideal := ideal, map_ideal_basicOpen := map_ideal_basicOpen }
-    show supportSet = I'.supportSet
+    change supportSet = I'.supportSet
     ext x
     obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ :=
       (isBasis_affine_open X).exists_subset_of_mem_open (Set.mem_univ x) isOpen_univ
@@ -504,6 +504,9 @@ lemma le_support_iff_le_vanishingIdeal {I : X.IdealSheafData} {Z : Closeds X} :
   rw [coe_support_inter, ← Set.image_subset_image_iff U.2.fromSpec.isOpenEmbedding.injective,
     Set.image_preimage_eq_inter_range, IsAffineOpen.fromSpec_image_zeroLocus,
     IsAffineOpen.range_fromSpec]
+
+@[deprecated (since := "2025-05-16")]
+alias subset_support_iff_le_vanishingIdeal := le_support_iff_le_vanishingIdeal
 
 /-- `support` and `vanishingIdeal` forms a galois connection.
 This is the global version of `PrimeSpectrum.gc`. -/
@@ -748,7 +751,7 @@ lemma Hom.support_ker (f : X.Hom Y) [QuasiCompact f] :
       let 𝒰 := X.affineCover.finiteSubcover
       obtain ⟨_, ⟨i, rfl⟩, hx⟩ := (f.iUnion_support_ker_openCover_map_comp 𝒰).ge hx
       have inst : QuasiCompact (𝒰.map i ≫ f) := HasAffineProperty.iff_of_isAffine.mpr
-        (by show CompactSpace (Spec _); infer_instance)
+        (by change CompactSpace (Spec _); infer_instance)
       exact closure_mono (Set.range_comp_subset_range _ _) (this S (𝒰.map i ≫ f) ⟨_, rfl⟩ hx)
     obtain ⟨R, rfl⟩ := hX
     obtain ⟨φ, rfl⟩ := Spec.map_surjective f

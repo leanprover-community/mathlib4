@@ -8,6 +8,7 @@ import Mathlib.Algebra.Group.InjSurj
 import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Notation.Prod
+import Mathlib.Algebra.Group.Basic
 
 /-!
 # Dependent functions with finite support
@@ -172,12 +173,11 @@ def piecewise : Π₀ i, β i :=
   zipWith (fun i x y => if i ∈ s then x else y) (fun _ => ite_self 0) x y
 
 theorem piecewise_apply (i : ι) : x.piecewise y s i = if i ∈ s then x i else y i :=
-  zipWith_apply _ _ x y i
+  rfl
 
 @[simp, norm_cast]
-theorem coe_piecewise : ⇑(x.piecewise y s) = s.piecewise x y := by
-  ext
-  apply piecewise_apply
+theorem coe_piecewise : ⇑(x.piecewise y s) = s.piecewise x y :=
+  rfl
 
 end Piecewise
 
@@ -477,7 +477,7 @@ theorem single_injective {i} : Function.Injective (single i : β i → Π₀ i, 
 
 /-- Like `Finsupp.single_eq_single_iff`, but with a `HEq` due to dependent types -/
 theorem single_eq_single_iff (i j : ι) (xi : β i) (xj : β j) :
-    DFinsupp.single i xi = DFinsupp.single j xj ↔ i = j ∧ HEq xi xj ∨ xi = 0 ∧ xj = 0 := by
+    DFinsupp.single i xi = DFinsupp.single j xj ↔ i = j ∧ xi ≍ xj ∨ xi = 0 ∧ xj = 0 := by
   constructor
   · intro h
     by_cases hij : i = j
@@ -983,11 +983,8 @@ theorem erase_def (i : ι) (f : Π₀ i, β i) : f.erase i = mk (f.support.erase
 
 @[simp]
 theorem support_erase (i : ι) (f : Π₀ i, β i) : (f.erase i).support = f.support.erase i := by
-  ext j
-  by_cases h1 : j = i
-  · simp only [h1, mem_support_toFun, erase_apply, ite_true, ne_eq, not_true,
-      Finset.mem_erase, false_and]
-  by_cases h2 : f j ≠ 0 <;> simp at h2 <;> simp [h1, h2]
+  ext
+  simp
 
 theorem support_update_ne_zero (f : Π₀ i, β i) (i : ι) {b : β i} (h : b ≠ 0) :
     support (f.update i b) = insert i f.support := by

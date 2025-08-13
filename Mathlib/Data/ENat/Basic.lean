@@ -38,7 +38,7 @@ assert_not_exists Field
 
 deriving instance Zero, CommSemiring, Nontrivial,
   LinearOrder, Bot, Sub,
-  LinearOrderedAddCommMonoidWithTop, WellFoundedRelation
+  LinearOrderedAddCommMonoidWithTop
   for ENat
 -- The `CanonicallyOrderedAdd, OrderBot, OrderTop, OrderedSub, SuccOrder, WellFoundedLT, CharZero`
 -- instances should be constructed by a deriving handler.
@@ -210,22 +210,19 @@ theorem ofNat_ne_top (a : ℕ) [a.AtLeastTwo] : (ofNat(a) : ℕ∞) ≠ ⊤ :=
 
 @[simp]
 theorem top_sub_coe (a : ℕ) : (⊤ : ℕ∞) - a = ⊤ :=
-  WithTop.top_sub_coe
+  rfl
 
 @[simp]
 theorem top_sub_one : (⊤ : ℕ∞) - 1 = ⊤ :=
-  top_sub_coe 1
+  rfl
 
 @[simp]
 theorem top_sub_ofNat (a : ℕ) [a.AtLeastTwo] : (⊤ : ℕ∞) - ofNat(a) = ⊤ :=
-  top_sub_coe a
+  rfl
 
 @[simp]
 theorem top_pos : (0 : ℕ∞) < ⊤ :=
   WithTop.top_pos
-
-@[deprecated ENat.top_pos (since := "2024-10-22")]
-alias zero_lt_top := top_pos
 
 @[simp]
 theorem one_lt_top : (1 : ℕ∞) < ⊤ :=
@@ -320,6 +317,11 @@ theorem nat_induction {P : ℕ∞ → Prop} (a : ℕ∞) (h0 : P 0) (hsuc : ∀ 
 
 lemma add_one_pos : 0 < n + 1 :=
   succ_def n ▸ Order.bot_lt_succ n
+
+lemma natCast_lt_succ {n : ℕ} :
+    (n : ℕ∞) < (n : ℕ∞) + 1 := by
+  rw [← Nat.cast_one, ← Nat.cast_add, coe_lt_coe]
+  exact lt_add_one n
 
 lemma add_lt_add_iff_right {k : ℕ∞} (h : k ≠ ⊤) : n + k < m + k ↔ n < m :=
   WithTop.add_lt_add_iff_right h
@@ -430,9 +432,6 @@ lemma add_one_natCast_le_withTop_of_lt {m : ℕ} {n : WithTop ℕ∞} (h : m < n
     simp only [coe_ne_top]
 
 @[simp] lemma natCast_ne_coe_top (n : ℕ) : (n : WithTop ℕ∞) ≠ (⊤ : ℕ∞) := nofun
-
-@[deprecated (since := "2024-10-22")]
-alias nat_ne_coe_top := natCast_ne_coe_top
 
 lemma one_le_iff_ne_zero_withTop {n : WithTop ℕ∞} : 1 ≤ n ↔ n ≠ 0 :=
   ⟨fun h ↦ (zero_lt_one.trans_le h).ne',

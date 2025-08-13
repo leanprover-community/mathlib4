@@ -131,7 +131,7 @@ lemma cutExpand_closed [IsIrrefl α r] (p : α → Prop)
   classical
   rw [cutExpand_iff]
   rintro ⟨t, a, hr, ha, rfl⟩ hsp a' h'
-  obtain (h'|h') := mem_add.1 h'
+  obtain (h' | h') := mem_add.1 h'
   exacts [hsp a' (mem_of_mem_erase h'), h (hr a' h') (hsp a ha)]
 
 lemma cutExpand_double {a a₁ a₂} (h₁ : r a₁ a) (h₂ : r a₂ a) : CutExpand r {a₁, a₂} {a} :=

@@ -191,15 +191,7 @@ theorem toPlus_apply {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : Meq P S) (
   simpa using (x.condition (Cover.Relation.mk' (I.precompRelation i.f))).symm
 
 theorem toPlus_eq_mk {X : C} {P : Cᵒᵖ ⥤ D} (x : ToType (P.obj (op X))) :
-    (J.toPlus P).app _ x = mk (Meq.mk ⊤ x) := by
-  dsimp [mk, toPlus]
-  delta Cover.toMultiequalizer
-  simp only [ConcreteCategory.comp_apply]
-  apply congr_arg
-  apply (Meq.equiv P ⊤).injective
-  ext i
-  rw [Meq.equiv_apply, Equiv.apply_symm_apply, ← ConcreteCategory.comp_apply, Multiequalizer.lift_ι]
-  rfl
+    (J.toPlus P).app _ x = mk (Meq.mk ⊤ x) := toPlus_mk ⊤ x
 
 variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
 
@@ -480,7 +472,7 @@ theorem sheafification_map {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) :
 /-- The canonical map from `P` to its sheafification, as a natural transformation.
 *Note:* We only show this is a sheaf under additional hypotheses on `D`. -/
 noncomputable def toSheafification : 𝟭 _ ⟶ sheafification J D :=
-  J.toPlusNatTrans D ≫ whiskerRight (J.toPlusNatTrans D) (J.plusFunctor D)
+  J.toPlusNatTrans D ≫ Functor.whiskerRight (J.toPlusNatTrans D) (J.plusFunctor D)
 
 @[simp]
 theorem toSheafification_app (P : Cᵒᵖ ⥤ D) :

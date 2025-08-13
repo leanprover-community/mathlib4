@@ -261,7 +261,7 @@ theorem integrable_cexp_neg_mul_sq_norm_add_of_euclideanSpace
   simp only [neg_mul, Function.comp_def]
   convert integrable_cexp_neg_mul_sum_add hb (fun i ↦ c * w i) using 3 with v
   simp only [EuclideanSpace.measurableEquiv, MeasurableEquiv.symm_mk, MeasurableEquiv.coe_mk,
-    EuclideanSpace.norm_eq, WithLp.equiv_symm_pi_apply, Real.norm_eq_abs, sq_abs, PiLp.inner_apply,
+    EuclideanSpace.norm_eq, Real.norm_eq_abs, sq_abs, PiLp.inner_apply,
     RCLike.inner_apply, conj_trivial, ofReal_sum, ofReal_mul, Finset.mul_sum, neg_mul,
     Finset.sum_neg_distrib, mul_assoc]
   norm_cast
@@ -306,9 +306,8 @@ theorem integral_cexp_neg_mul_sq_norm_add_of_euclideanSpace
   rw [← this.integral_comp (MeasurableEquiv.measurableEmbedding _)]
   simp only [neg_mul]
   convert integral_cexp_neg_mul_sum_add hb (fun i ↦ c * w i) using 5 with _x y
-  · simp only [EuclideanSpace.measurableEquiv, MeasurableEquiv.symm_mk, MeasurableEquiv.coe_mk,
-      EuclideanSpace.norm_eq, WithLp.equiv_symm_pi_apply, Real.norm_eq_abs, sq_abs, neg_mul,
-      neg_inj, mul_eq_mul_left_iff]
+  · simp only [EuclideanSpace.coe_measurableEquiv_symm, EuclideanSpace.norm_eq, PiLp.toLp_apply,
+      Real.norm_eq_abs, sq_abs, neg_mul, neg_inj, mul_eq_mul_left_iff]
     norm_cast
     left
     rw [sq_sqrt]

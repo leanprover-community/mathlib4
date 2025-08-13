@@ -95,8 +95,8 @@ private lemma measure_cast {a b : ℕ} (h : a = b) (μ : (n : ℕ) → Measure (
   exact Measure.map_id
 
 private lemma heq_measurableSpace_Iic_pi {a b : ℕ} (h : a = b) :
-    HEq (inferInstance : MeasurableSpace (Π i : Iic a, X i))
-    (inferInstance : MeasurableSpace (Π i : Iic b, X i)) := by cases h; rfl
+    (inferInstance : MeasurableSpace (Π i : Iic a, X i)) ≍
+      (inferInstance : MeasurableSpace (Π i : Iic b, X i)) := by cases h; rfl
 
 end castLemmas
 
@@ -406,7 +406,7 @@ theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
   -- for any `k ≥ p` and `n`, integrating `χ n` from time `k` to time `a n`
   -- with the trajectory up to `k` being equal to `z` gives something greater than `ε`.
   choose! ind hind using
-    fun k y h ↦ le_lmarginalPartialTraj_succ χ_dep mχ (by norm_num : (1 : ℝ≥0∞) ≠ ∞)
+    fun k y h ↦ le_lmarginalPartialTraj_succ χ_dep mχ (by simp : (1 : ℝ≥0∞) ≠ ∞)
       χ_le (anti_lma (k + 1)) (hl (k + 1)) ε y h
   let z := iterateInduction x₀ ind
   have main k (hk : p ≤ k) : ∀ x n,
