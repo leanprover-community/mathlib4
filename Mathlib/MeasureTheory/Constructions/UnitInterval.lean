@@ -3,10 +3,7 @@ Copyright (c) 2024 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Gaëtan Serré
 -/
-import Mathlib.Topology.UnitInterval
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathlib.MeasureTheory.Measure.Haar.OfBasis
-import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 /-!
 # The canonical measure on the unit interval
@@ -16,8 +13,9 @@ and shows it is a probability measure with no atoms.
 
 It also contains some basic results on the volume of various interval sets.
 -/
+
 open scoped unitInterval
-open MeasureTheory
+open MeasureTheory Measure Set
 
 namespace unitInterval
 
@@ -38,11 +36,39 @@ lemma measurableEmbedding_coe : MeasurableEmbedding ((↑) : I → ℝ) where
 lemma volume_apply {s : Set I} : volume s = volume (Subtype.val '' s) :=
   measurableEmbedding_coe.comap_apply ..
 
-instance : NoAtoms (volume : Measure I) where
-  measure_singleton x := by simp only [volume_apply, Set.image_singleton, measure_singleton]
+lemma measurePreserving_coe : MeasurePreserving ((↑) : I → ℝ) volume (volume.restrict I) :=
+  measurePreserving_subtype_coe measurableSet_Icc
 
-@[measurability]
-theorem measurable_symm : Measurable symm := continuous_symm.measurable
+instance : NoAtoms (volume : Measure I) where
+  measure_singleton x := by simp [volume_apply]
+
+@[fun_prop, measurability]
+theorem measurable_symm : Measurable σ := continuous_symm.measurable
+
+/-- `unitInterval.symm` bundled as a measurable equivalence. -/
+@[simps]
+def symmMeasurableEquiv : I ≃ᵐ I where
+  toFun := σ
+  invFun := σ
+  left_inv := symm_symm
+  right_inv := symm_symm
+  measurable_toFun := measurable_symm
+  measurable_invFun := measurable_symm
+
+@[simp]
+lemma symm_symmMeasurableEquiv : symmMeasurableEquiv.symm = symmMeasurableEquiv := rfl
+
+@[simp]
+lemma coe_symmMeasurableEquiv : symmMeasurableEquiv = σ := rfl
+
+lemma measurePreserving_symm : MeasurePreserving symm volume volume where
+  measurable := measurable_symm
+  map_eq := by
+    ext s hs
+    apply symmMeasurableEquiv.map_apply _ |>.trans
+    conv_lhs => rw [coe_symmMeasurableEquiv, volume_apply, image_coe_preimage_symm,
+      ← map_apply (by fun_prop) (measurableSet_Icc.subtype_image hs),
+      volume.measurePreserving_sub_left 1 |>.map_eq, ← volume_apply]
 
 open Set
 

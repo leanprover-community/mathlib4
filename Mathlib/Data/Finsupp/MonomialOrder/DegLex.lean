@@ -157,11 +157,11 @@ theorem single_antitone : Antitone (fun (a : α) ↦ toDegLex (single a 1)) :=
 
 theorem single_lt_iff {a b : α} :
     toDegLex (Finsupp.single b 1) < toDegLex (Finsupp.single a 1) ↔ a < b :=
-  single_strictAnti.lt_iff_lt
+  single_strictAnti.lt_iff_gt
 
 theorem single_le_iff {a b : α} :
     toDegLex (Finsupp.single b 1) ≤ toDegLex (Finsupp.single a 1) ↔ a ≤ b :=
-  single_strictAnti.le_iff_le
+  single_strictAnti.le_iff_ge
 
 theorem monotone_degree :
     Monotone (fun (x : DegLex (α →₀ ℕ)) ↦ (ofDegLex x).degree) := by

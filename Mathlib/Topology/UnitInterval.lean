@@ -91,6 +91,10 @@ theorem symm_bijective : Function.Bijective (symm : I → I) := symm_involutive.
 theorem coe_symm_eq (x : I) : (σ x : ℝ) = 1 - x :=
   rfl
 
+lemma image_coe_preimage_symm {s : Set I} :
+    Subtype.val '' (σ ⁻¹' s) = (1 - ·) ⁻¹' (Subtype.val '' s) := by
+  simp [symm_involutive, ← Function.Involutive.image_eq_preimage, image_image]
+
 @[simp]
 theorem symm_projIcc (x : ℝ) :
     symm (projIcc 0 1 zero_le_one x) = projIcc 0 1 zero_le_one (1 - x) := by

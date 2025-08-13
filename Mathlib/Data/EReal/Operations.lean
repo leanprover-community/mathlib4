@@ -266,9 +266,9 @@ theorem neg_strictAnti : StrictAnti (- · : EReal → EReal) :=
     ⟨coe_strictMono.comp_strictAnti fun _ _ => neg_lt_neg, fun _ => bot_lt_coe _⟩,
       WithTop.forall.2 ⟨bot_lt_top, fun _ => coe_lt_top _⟩⟩
 
-@[simp] theorem neg_le_neg_iff {a b : EReal} : -a ≤ -b ↔ b ≤ a := neg_strictAnti.le_iff_le
+@[simp] theorem neg_le_neg_iff {a b : EReal} : -a ≤ -b ↔ b ≤ a := neg_strictAnti.le_iff_ge
 
-@[simp] theorem neg_lt_neg_iff {a b : EReal} : -a < -b ↔ b < a := neg_strictAnti.lt_iff_lt
+@[simp] theorem neg_lt_neg_iff {a b : EReal} : -a < -b ↔ b < a := neg_strictAnti.lt_iff_gt
 
 /-- `-a ≤ b` if and only if `-b ≤ a` on `EReal`. -/
 protected theorem neg_le {a b : EReal} : -a ≤ b ↔ -b ≤ a := by

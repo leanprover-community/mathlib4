@@ -22,7 +22,7 @@ As a consequence, it is a bit of a random collection of results, and is a good t
 This file uses `ℝ≥0` as a localized notation for `NNReal`.
 -/
 
-assert_not_exists Star
+assert_not_exists TrivialStar
 
 open Function
 open scoped BigOperators

@@ -188,13 +188,16 @@ theorem pow_orderOf_eq_one (x : G) : x ^ orderOf x = 1 := by
 theorem orderOf_eq_zero (h : ¬IsOfFinOrder x) : orderOf x = 0 := by
   rwa [orderOf, minimalPeriod, dif_neg]
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem orderOf_eq_zero_iff : orderOf x = 0 ↔ ¬IsOfFinOrder x :=
   ⟨fun h H ↦ H.orderOf_pos.ne' h, orderOf_eq_zero⟩
 
 @[to_additive]
 theorem orderOf_eq_zero_iff' : orderOf x = 0 ↔ ∀ n : ℕ, 0 < n → x ^ n ≠ 1 := by
   simp_rw [orderOf_eq_zero_iff, isOfFinOrder_iff_pow_eq_one, not_exists, not_and]
+
+@[to_additive]
+lemma orderOf_ne_zero_iff : orderOf x ≠ 0 ↔ IsOfFinOrder x := orderOf_eq_zero_iff.not_left
 
 @[to_additive]
 theorem orderOf_eq_iff {n} (h : 0 < n) :
@@ -211,8 +214,8 @@ theorem orderOf_eq_iff {n} (h : 0 < n) :
     exact h1 ⟨n, h, h'⟩
 
 /-- A group element has finite order iff its order is positive. -/
-@[to_additive
-  /-- A group element has finite additive order iff its order is positive. -/]
+@[to_additive (attr := simp)
+/-- A group element has finite additive order iff its order is positive. -/]
 theorem orderOf_pos_iff : 0 < orderOf x ↔ IsOfFinOrder x := by
   rw [iff_not_comm.mp orderOf_eq_zero_iff, pos_iff_ne_zero]
 

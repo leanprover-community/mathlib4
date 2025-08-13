@@ -261,6 +261,10 @@ theorem coe_copy (f : α →o β) (f' : α → β) (h : f' = f) : (f.copy f' h) 
 theorem copy_eq (f : α →o β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
   DFunLike.ext' h
 
+instance {α : Type*} (β : Type*) [PartialOrder α] [PartialOrder β] [DecidableEq (α → β)] :
+    DecidableEq (α →o β) := fun a b =>
+  decidable_of_iff (a.toFun = b.toFun) OrderHom.ext_iff.symm
+
 /-- The identity function as bundled monotone function. -/
 @[simps -fullyApplied]
 def id : α →o α :=
@@ -1214,6 +1218,6 @@ lemma denselyOrdered_iff_of_strictAnti {X Y F : Type*} [LinearOrder X] [Preorder
   · simp only [Equiv.trans_apply, EquivLike.coe_coe, OrderDual.forall, OrderDual.ofDual_toDual,
       OrderDual.toDual_le_toDual]
     intro a b
-    rw [hf.le_iff_le]
+    rw [hf.le_iff_ge]
 
 end DenselyOrdered

@@ -18,7 +18,11 @@ assert_not_exists TwoSidedIdeal
 
 open CategoryTheory Category Limits Pretriangulated ComposableArrows
 
-variable {C : Type*} [Category C] [Preadditive C] [HasBinaryBiproducts C]
+-- Explicit universe annotations were used in this file to improve perfomance #12737
+
+universe v
+
+variable {C : Type*} [Category.{v} C] [Preadditive C] [HasBinaryBiproducts C]
   {X₁ X₂ X₃ : CochainComplex C ℤ} (f : X₁ ⟶ X₂) (g : X₂ ⟶ X₃)
 
 namespace CochainComplex

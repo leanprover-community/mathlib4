@@ -118,6 +118,9 @@ theorem length_eq_two {l : List α} : l.length = 2 ↔ ∃ a b, l = [a, b] :=
 theorem length_eq_three {l : List α} : l.length = 3 ↔ ∃ a b c, l = [a, b, c] :=
   ⟨fun _ => let [a, b, c] := l; ⟨a, b, c, rfl⟩, fun ⟨_, _, _, e⟩ => e ▸ rfl⟩
 
+theorem length_eq_four {l : List α} : l.length = 4 ↔ ∃ a b c d, l = [a, b, c, d] :=
+  ⟨fun _ => let [a, b, c, d] := l; ⟨a, b, c, d, rfl⟩, fun ⟨_, _, _, _, e⟩ => e ▸ rfl⟩
+
 /-! ### set-theoretic notation of lists -/
 
 instance instSingletonList : Singleton α (List α) := ⟨fun x => [x]⟩

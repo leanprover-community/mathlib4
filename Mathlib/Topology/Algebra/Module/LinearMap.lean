@@ -18,7 +18,7 @@ modules which are continuous. The set of continuous semilinear maps between the 
 Plain linear maps are denoted by `M →L[R] M₂` and star-linear maps by `M →L⋆[R] M₂`.
 -/
 
-assert_not_exists Star.star
+assert_not_exists TrivialStar
 
 open LinearMap (ker range)
 open Topology Filter Pointwise

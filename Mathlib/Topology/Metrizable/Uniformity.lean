@@ -215,7 +215,7 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
     intro x y n
     dsimp only [d]
     split_ifs with h
-    · rw [(pow_right_strictAnti₀ hr.1 hr.2).le_iff_le, Nat.find_le_iff]
+    · rw [(pow_right_strictAnti₀ hr.1 hr.2).le_iff_ge, Nat.find_le_iff]
       exact ⟨fun ⟨m, hmn, hm⟩ hn => hm (hB.antitone hmn hn), fun h => ⟨n, le_rfl, h⟩⟩
     · push_neg at h
       simp only [h, not_true, (pow_pos hr.1 _).not_ge]

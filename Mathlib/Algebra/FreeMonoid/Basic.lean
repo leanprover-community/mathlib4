@@ -180,6 +180,10 @@ theorem length_eq_two {v : FreeMonoid α} :
 theorem length_eq_three {v : FreeMonoid α} : v.length = 3 ↔ ∃ (a b c : α), v = of a * of b * of c :=
   List.length_eq_three
 
+@[to_additive]
+theorem length_eq_four {v : FreeMonoid α} :
+    v.length = 4 ↔ ∃ (a b c d : α), v = of a * of b * of c * of d := List.length_eq_four
+
 @[to_additive (attr := simp)]
 theorem length_mul (a b : FreeMonoid α) : (a * b).length = a.length + b.length :=
   List.length_append

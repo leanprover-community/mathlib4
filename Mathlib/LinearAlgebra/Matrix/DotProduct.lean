@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
 import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Data.Matrix.RowCol
+import Mathlib.Algebra.Star.Pi
 
 /-!
 # Dot product of two vectors
