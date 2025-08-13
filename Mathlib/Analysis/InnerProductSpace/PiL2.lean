@@ -1180,7 +1180,7 @@ open ContinuousLinearMap in
 /-- The matrix representation of `(lsmul 𝕜 𝕜).flip x)` given by basis `b` is equal to the
 column `b.repr x`. -/
 theorem lsmul_flip_apply_toMatrix {𝕜 E : Type*} [NontriviallyNormedField 𝕜]
-    [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] {ι : Type*} [Fintype ι] (b : Basis ι 𝕜 E) (x : E) :
+    [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] (b : Basis ι 𝕜 E) (x : E) :
     ((lsmul 𝕜 𝕜).flip x).toMatrix (.singleton Unit 𝕜) b = replicateCol Unit (b.repr x) := by
   ext; simp [LinearMap.toMatrix_apply]
 
