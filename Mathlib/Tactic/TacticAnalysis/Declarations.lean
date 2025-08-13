@@ -107,11 +107,20 @@ register_option linter.tacticAnalysis.terminalToGrind : Bool := {
 def terminalToGrind : TacticAnalysis.Config where
   run seq := do
     let threshold := 3
+    -- `replaced` will hold the terminal tactic sequence that can be replaced with `grind`.
+    -- We push each tactic in turn, starting with the last, and reverse to get to a
+    -- terminal sequence.
     let mut replaced : Array (TSyntax `tactic) := #[]
     let mut success := false
+    -- We iterate through the tactic sequence in reverse, checking at each tactic if the goal is
+    -- already solved by `grind` and if so pushing that tactic onto `replaced`.
+    -- By repeating this until `grind` fails for the first time, we get a terminal sequence
+    -- of replaceable tactics.
     for (ctx, i) in seq.reverse do
       if replaced.size >= threshold - 1 && i.stx.getKind != ``Lean.Parser.Tactic.grind then
         if let [goal] := i.goalsBefore then
+          -- To check if `grind` can close the goal, run `grind` on the current goal
+          -- and verify that no goals remain afterwards.
           let goals ← ctx.runTactic i goal <| fun goal => do
             let tac ← `(tactic| grind)
             let (goals, _) ←

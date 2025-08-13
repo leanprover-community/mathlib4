@@ -22,12 +22,12 @@ but it can also be run in a more batch-like mode to report larger potential refa
 ## Using the framework
 
 The framework runs, but does nothing by default (`set_option linter.tacticAnalysis false`
-to turn it off completely). Enable specific analysis rounds by enabling their corresponding options:
-`set_option linter.tacticAnalysis.roundName true`.
+to turn it off completely). Enable the analysis round `roundName` by enabling its corresponding
+option: `set_option linter.tacticAnalysis.roundName true`.
 
-To add a round of analysis, make a definition of type `Mathlib.TacticAnalysis.Config`,
-give it the `@[tacticAnalysis linter.tacticAnalysis.roundName]` attribute, and don't forget to
-enable the option.
+To add a round of analysis called `roundName`, declare an option `linter.tacticAnalysis.roundName`,
+make a definition of type `Mathlib.TacticAnalysis.Config` and give the `Config` declaration the
+`@[tacticAnalysis linter.tacticAnalysis.roundName]` attribute. Don't forget to enable the option.
 
 ## Warning
 
@@ -52,9 +52,12 @@ variable {α}
 
 /-- Embeds a `CoreM` action in `CommandElabM` by supplying the information stored in `info`.
 
-Copy of `ContextInfo.runCoreM` that looks up relevant information in the `CommandElabM` context.
+Copy of `ContextInfo.runCoreM` that makes use of the `CommandElabM` context for:
+* logging messages produced by the `CoreM` action,
+* metavariable generation,
+* auxiliary declaration generation.
 -/
-def runCoreM' (info : ContextInfo) (x : CoreM α) : CommandElabM α := do
+def runCoreMWithMessages (info : ContextInfo) (x : CoreM α) : CommandElabM α := do
   -- We assume that this function is used only outside elaboration, mostly in the language server,
   -- and so we can and should provide access to information regardless whether it is exported.
   let env := info.env.setExporting false
@@ -78,10 +81,14 @@ def runCoreM' (info : ContextInfo) (x : CoreM α) : CommandElabM α := do
 
 /-- Embeds a `MetaM` action in `CommandElabM` by supplying the information stored in `info`.
 
-Copy of `ContextInfo.runMetaM` that looks up relevant information in the `CommandElabM` context.
+Copy of `ContextInfo.runMetaM` that makes use of the `CommandElabM` context for:
+* message logging (messages produced by the `CoreM` action are migrated back),
+* metavariable generation,
+* auxiliary declaration generation,
+* local instances.
 -/
-def runMetaM' (info : ContextInfo) (lctx : LocalContext) (x : MetaM α) : CommandElabM α := do
-  (·.1) <$> info.runCoreM' (Lean.Meta.MetaM.run
+def runMetaMWithMessages (info : ContextInfo) (lctx : LocalContext) (x : MetaM α) : CommandElabM α := do
+  (·.1) <$> info.runCoreMWithMessages (Lean.Meta.MetaM.run
       (ctx := { lctx := lctx }) (s := { mctx := info.mctx }) <|
     -- Update the local instances, otherwise typeclass search would fail to see anything in the
     -- local context.
@@ -90,11 +97,11 @@ def runMetaM' (info : ContextInfo) (lctx : LocalContext) (x : MetaM α) : Comman
 /-- Run a tactic computation in the context of an infotree node. -/
 def runTactic (ctx : ContextInfo) (i : TacticInfo) (goal : MVarId) (x : MVarId → MetaM α) :
     CommandElabM α := do
-  if i.goalsBefore.all fun g => g != goal then
+  if !i.goalsBefore.contains goal then
     panic!"ContextInfo.runTactic: `goal` must be an element of `i.goalsBefore`"
   let mctx := i.mctxBefore
   let lctx := (mctx.decls.find! goal).2
-  ctx.runMetaM' lctx <| do
+  ctx.runMetaMWithMessages lctx <| do
     -- Make a fresh metavariable because the original goal is already assigned.
     let type ← goal.getType
     let goal ← Meta.mkFreshExprSyntheticOpaqueMVar type
@@ -137,7 +144,7 @@ def Entry.import (e : Entry) : ImportM Pass := do
   let { env, opts, .. } ← read
   let cfg ← IO.ofExcept <|
     unsafe env.evalConstCheck Config opts ``Config e.declName
-  -- This next line can fail in the file where the option is declared:
+  -- This next line can return `none` in the file where the option is declared:
   let opt := (unsafe env.evalConst (Lean.Option Bool) opts e.optionName).toOption
   return { cfg with opt }
 
@@ -182,7 +189,20 @@ initialize registerBuiltinAttribute {
 /-- Parse an infotree to find all the sequences of tactics contained within `stx`.
 
 We consider a sequence here to be a maximal interval of tactics joined by `;` or newlines.
-This function returns an array of sequences, to reflect e.g. occurrences of `· tac1; tac2`.
+This function returns an array of sequences. For example, a proof of the form:
+```
+by
+  tac1
+  · tac2; tac3
+  · tac4; tac5
+```
+would result in three sequences:
+* `#[tac1, (· tac2; tac3), (· tac4; tac5)]`
+* `#[tac2, tac3]`
+* `#[tac4, tac5]`
+
+Similarly, a declaration with multiple `by` blocks results in each of the blocks getting its
+own sequence.
 -/
 def findTacticSeqs (stx : Syntax) (tree : InfoTree) :
     CommandElabM (Array (Array (ContextInfo × TacticInfo))) := do
@@ -235,6 +255,8 @@ def runPasses (configs : Array Pass) (stx : Syntax)
   let enabledConfigs := configs.filter fun config =>
     -- This can be `none` in the file where the option is declared.
     if let some opt := config.opt then getLinterValue opt opts else false
+  if enabledConfigs.isEmpty then
+    return
   for i in trees do
     for seq in (← findTacticSeqs stx i) do
       for config in enabledConfigs do
@@ -245,14 +267,8 @@ It is aimed at allowing developers to specify refactoring patterns,
 which will be tested against a whole project,
 to report proposed changes.
 
-The overall design will have three user-supplied components:
-
-  * **trigger** on a piece of syntax (which could contain multiple tactic calls);
-  * **test** if a suggested change is indeed an improvement;
-  * **tell** the user where changes can be made.
-
 It hooks into the linting system to move through the infotree,
-collecting tactic syntax and state to pass to the three Ts.
+collecting tactic syntax and state to call the passes on.
 -/
 def tacticAnalysis : Linter where run := withSetOptionIn fun stx => do
   if (← get).messages.hasErrors then
@@ -291,7 +307,14 @@ inductive TriggerCondition (ctx : Type _)
   | accept (context : ctx)
 deriving BEq
 
-/-- Specifies which analysis steps to take. -/
+/-- Specifies which analysis steps to take.
+
+The overall design will have three user-supplied components:
+
+  * **trigger** on a piece of syntax (which could contain multiple tactic calls);
+  * **test** if a suggested change is indeed an improvement;
+  * **tell** the user where changes can be made.
+-/
 structure ComplexConfig where
   /-- Type returned by the `.test` function. -/
   out : Type
