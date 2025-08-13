@@ -3,12 +3,13 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Algebra.Group.Support
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Module.LinearMap.Defs
 import Mathlib.Data.Finsupp.SMul
 import Mathlib.RingTheory.HahnSeries.Basic
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Tactic.FastInstance
 
 /-!
@@ -327,8 +328,6 @@ instance : AddCommMonoid (HahnSeries Γ R) :=
     add_comm := fun x y => by
       ext
       apply add_comm }
-
-open BigOperators
 
 @[simp]
 theorem coeff_sum {s : Finset α} {x : α → HahnSeries Γ R} (g : Γ) :

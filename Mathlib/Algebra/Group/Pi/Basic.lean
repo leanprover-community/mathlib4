@@ -137,21 +137,6 @@ instance cancelMonoid [∀ i, CancelMonoid (f i)] : CancelMonoid (∀ i, f i) :=
 instance cancelCommMonoid [∀ i, CancelCommMonoid (f i)] : CancelCommMonoid (∀ i, f i) :=
   { leftCancelMonoid, commMonoid with }
 
-/-- The mapping into a product type built from maps into each component. -/
-@[simp]
-protected def prod (f' : ∀ i, f i) (g' : ∀ i, g i) (i : I) : f i × g i :=
-  (f' i, g' i)
-
--- Porting note: simp now unfolds the lhs, so we are not marking these as simp.
--- @[simp]
-theorem prod_fst_snd : Pi.prod (Prod.fst : α × β → α) (Prod.snd : α × β → β) = id :=
-  rfl
-
--- Porting note: simp now unfolds the lhs, so we are not marking these as simp.
--- @[simp]
-theorem prod_snd_fst : Pi.prod (Prod.snd : α × β → β) (Prod.fst : α × β → α) = Prod.swap :=
-  rfl
-
 end Pi
 
 namespace Function

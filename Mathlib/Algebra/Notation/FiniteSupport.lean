@@ -10,6 +10,8 @@ import Mathlib.Data.Set.Finite.Basic
 # Finiteness of support
 -/
 
+assert_not_exists Monoid
+
 namespace Function
 variable {α β γ : Type*} [One γ]
 
