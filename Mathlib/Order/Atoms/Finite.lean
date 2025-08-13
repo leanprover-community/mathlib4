@@ -30,18 +30,20 @@ section DecidableEq
 
 /- It is important that `IsSimpleOrder` is the last type-class argument of this instance,
 so that type-class inference fails quickly if it doesn't apply. -/
-instance (priority := 200) [DecidableEq α] : Fintype α :=
+scoped instance (priority := 200) [DecidableEq α] : Fintype α :=
   Fintype.ofEquiv Bool equivBool.symm
 
 end DecidableEq
 
-instance (priority := 200) : Finite α := by classical infer_instance
+scoped instance (priority := 200) : Finite α := by classical infer_instance
 
 end IsSimpleOrder
 
 namespace Fintype
 
 namespace IsSimpleOrder
+
+open scoped _root_.IsSimpleOrder
 
 variable [LE α] [BoundedOrder α] [IsSimpleOrder α] [DecidableEq α]
 
