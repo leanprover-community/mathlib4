@@ -410,10 +410,6 @@ lemma factor_δ_spec {m n : ℕ} (f : ⦋m⦌ ⟶ ⦋n + 1⦌) (j : Fin (n + 2))
   ext k : 3
   cases j using Fin.cases <;> simp_all [factor_δ, δ, σ]
 
-noncomputable instance :
-    Decidable (∀ {n : ℕ} (i : Fin n), δ 0 ≫ mkOfSucc i = ⦋0⦌.const ⦋n⦌ i.succ) :=
-  Classical.propDecidable (∀ {n : ℕ} (i : Fin n), δ 0 ≫ mkOfSucc i = ⦋0⦌.const ⦋n⦌ i.succ)
-
 @[simp]
 lemma δ_zero_mkOfSucc {n : ℕ} (i : Fin n) :
     δ 0 ≫ mkOfSucc i = SimplexCategory.const _ ⦋n⦌ i.succ := by
