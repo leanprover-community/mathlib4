@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.Group.Submonoid.Operations
+import Mathlib.Algebra.MonoidAlgebra.Module
 import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
 import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 import Mathlib.Algebra.Ring.Action.Rat
