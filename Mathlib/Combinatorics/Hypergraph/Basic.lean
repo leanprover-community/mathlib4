@@ -252,21 +252,32 @@ noncomputable def hyperedgeDegrees (H : Hypergraph α β) : Set ENat :=
 
 end Card
 
--- /-! ## Hypergraph Dual -/
+  -- section Dual
+  -- /-! ## Hypergraph Dual -/
 
--- /--
--- The *dual* of a hypergraph `H` is the hypergraph `H*`, where
---   - `H*.vertexSet = H.hyperedgeSet`
---   - `H*.hyperedgeSet = H.vertexSet`
---   - `H*.IsIncident e x ↔ H.IsIncident x e` (this will be proven)
+  -- /--
+  -- The *dual* of a hypergraph `H` is the hypergraph `H*`, where
+  --   - `H*.vertexSet = H.hyperedgeSet`
+  --   - `H*.hyperedgeSet = H.vertexSet`
+  --   - `H*.IsIncident e x ↔ H.IsIncident x e` (this will be proven)
 
--- TODO
--- -/
--- def dual (H : Hypergraph α β) : Hypergraph β α :=
---   Hypergraph.mk H.hyperedgeSet H.vertexSet (fun e x => H.IsIncident x e)
+  -- TODO
+  -- -/
+  -- def dual (H : Hypergraph α β) : Hypergraph β α :=
+  --   Hypergraph.mk
+  --     H.hyperedgeSet
+  --     (fun x l => H.hyperedgesIncVertex x = l)
+  --     (fun e x => H.IsIncident x e)
+  --     H.vertexSet
+  --     (fun x l m h1 h2 => sorry )
+  --     (fun x e h => sorry )
+  --     (sorry)
+  --     (sorry)
 
--- /-- `H*` denotes the `dual` of a hypergraph `H` -/
--- scoped notation H "*" => H.dual
+  -- /-- `H*` denotes the `dual` of a hypergraph `H` -/
+  -- scoped notation H "*" => Hypergraph.dual H
+
+  -- end Dual
 
 /-! ## Subhypergraphs, Partial Hypergraphs, and Section Hypergraphs -/
 
