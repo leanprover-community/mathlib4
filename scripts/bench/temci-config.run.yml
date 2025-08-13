@@ -20,7 +20,7 @@
     perf_stat:
       properties: ['wall-clock', 'instructions:u']
     cmd: |
-      make lint
+      env LEAN_ABORT_ON_PANIC=1 lake exe runLinter Mathlib
     runs: 1
 - attributes:
     description: open Mathlib
