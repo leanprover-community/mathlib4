@@ -26,6 +26,10 @@ open Simplicial CategoryTheory Limits
 
 namespace SimplexCategory
 
+instance {a b : SimplexCategory} : Finite (a ⟶ b) :=
+  Finite.of_injective (fun f ↦ f.toOrderHom.toFun)
+    (fun _ _ _ ↦ by aesop)
+
 section Init
 
 lemma congr_toOrderHom_apply {a b : SimplexCategory} {f g : a ⟶ b} (h : f = g)

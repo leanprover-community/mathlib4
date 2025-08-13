@@ -1310,6 +1310,7 @@ import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.IsUniquelyCodim
 import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Pairing
 import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.PairingCore
 import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Rank
+import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.RankNat
 import Mathlib.AlgebraicTopology.SimplicialSet.Basic
 import Mathlib.AlgebraicTopology.SimplicialSet.Boundary
 import Mathlib.AlgebraicTopology.SimplicialSet.CategoryWithFibrations
