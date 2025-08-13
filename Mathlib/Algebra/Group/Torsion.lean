@@ -18,7 +18,7 @@ open Function
 variable {M G : Type*}
 
 variable (M) in
-/-- An additive monoid is torsion-free if scalar multiplication by every non-zero element `a : ℕ` is
+/-- An additive monoid is torsion-free if scalar multiplication by every non-zero element `n : ℕ` is
 injective. -/
 @[mk_iff]
 class IsAddTorsionFree [AddMonoid M] where
@@ -28,7 +28,7 @@ section Monoid
 variable [Monoid M]
 
 variable (M) in
-/-- A monoid is torsion-free if power by every non-zero element `a : ℕ` is injective. -/
+/-- A monoid is torsion-free if power by every non-zero element `n : ℕ` is injective. -/
 @[to_additive, mk_iff]
 class IsMulTorsionFree where
   protected pow_left_injective ⦃n : ℕ⦄ (hn : n ≠ 0) : Injective fun a : M ↦ a ^ n
@@ -66,8 +66,8 @@ lemma zpow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := (zpow_left_injec
 
 /-- Alias of `zpow_left_inj`, for ease of discovery alongside `zsmul_le_zsmul_iff'` and
 `zsmul_lt_zsmul_iff'`. -/
-@[to_additive "Alias of `zsmul_right_inj`, for ease of discovery alongside `zsmul_le_zsmul_iff'` and
-`zsmul_lt_zsmul_iff'`."]
+@[to_additive /-- Alias of `zsmul_right_inj`, for ease of discovery alongside `zsmul_le_zsmul_iff'`
+and `zsmul_lt_zsmul_iff'`. -/]
 lemma zpow_eq_zpow_iff' (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := zpow_left_inj hn
 
 end Group
