@@ -23,11 +23,13 @@ relation on `X ⟶ Y`.
 
 -/
 
+universe v u
+
 open CategoryTheory Limits
 
 namespace HomotopicalAlgebra
 
-variable {C : Type*} [Category C]
+variable {C : Type u} [Category.{v} C]
 
 namespace Precylinder
 
