@@ -14,7 +14,6 @@ import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 variable {M : Type*} [Monoid M] [LE M]
 
 section MulLeftMono
-
 variable [MulLeftMono M] (u : Mˣ) {a b c : M} (ha : IsUnit a)
 
 namespace Units
@@ -68,7 +67,6 @@ end IsUnit
 end MulLeftMono
 
 section MulRightMono
-
 variable [MulRightMono M] {a b c : M} (hc : IsUnit c) (u : Mˣ)
 
 namespace Units
