@@ -860,8 +860,7 @@ lemma measure_isMulLeftInvariant_eq_smul_of_ne_top [LocallyCompactSpace G]
     apply le_antisymm
     · exact (measure_mono inter_subset_right).trans (measure_toMeasurable s).le
     · exact measure_mono st
-  simp only [← mu'_t, ← mu_t,
-    nnreal_smul_coe_apply]
+  simp only [← mu'_t, ← mu_t, nnreal_smul_coe_apply]
   apply B
   · exact (measurableSet_toMeasurable _ _).inter (measurableSet_toMeasurable _ _)
   · exact mu_t.le.trans_lt hs.lt_top
