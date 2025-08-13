@@ -31,14 +31,13 @@ theorem star_tmul (x : A) (y : B) :
 
 noncomputable instance : InvolutiveStar (A ⊗[R] B) where
   star_involutive x := by
-    simp_rw [star, map_map]
-    conv_rhs => rw [← LinearMap.id_apply (R:=R) x, ← map_id]
-    congr <;> ext <;> simp
+    simp [star, map_map, LinearEquiv.comp_coe]
+    convert congr($map_id x) <;> ext <;> simp
 
 noncomputable instance : StarAddMonoid (A ⊗[R] B) where
-  star_add _ _ := by simp [star]
+  star_add _ _ := LinearMap.map_add _ _ _
 
 instance : StarModule R (A ⊗[R] B) where
-  star_smul _ _ := by simp [star]; rfl
+  star_smul _ _ := LinearMap.map_smulₛₗ _ _ _
 
 end TensorProduct
