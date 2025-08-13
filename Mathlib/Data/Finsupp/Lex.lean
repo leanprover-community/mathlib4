@@ -95,7 +95,7 @@ theorem Lex.single_strictAnti : StrictAnti (fun (a : α) ↦ toLex (single a 1))
   · simp [h.ne']
 
 theorem Lex.single_lt_iff {a b : α} : toLex (single b 1) < toLex (single a 1) ↔ a < b :=
-  Lex.single_strictAnti.lt_iff_lt
+  Lex.single_strictAnti.lt_iff_gt
 
 theorem Lex.single_le_iff {a b : α} : toLex (single b 1) ≤ toLex (single a 1) ↔ a ≤ b :=
   Lex.single_strictAnti.le_iff_ge

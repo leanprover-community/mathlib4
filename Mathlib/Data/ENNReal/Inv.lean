@@ -277,7 +277,7 @@ theorem inv_strictAnti : StrictAnti (Inv.inv : ℝ≥0∞ → ℝ≥0∞) := by
 
 @[simp]
 protected theorem inv_lt_inv : a⁻¹ < b⁻¹ ↔ b < a :=
-  inv_strictAnti.lt_iff_lt
+  inv_strictAnti.lt_iff_gt
 
 theorem inv_lt_iff_inv_lt : a⁻¹ < b ↔ b⁻¹ < a := by
   simpa only [inv_inv] using @ENNReal.inv_lt_inv a b⁻¹

@@ -612,13 +612,13 @@ theorem mul_le_mul_right_of_neg [ExistsAddOfLE R] [MulPosStrictMono R]
 theorem mul_lt_mul_left_of_neg [ExistsAddOfLE R] [PosMulStrictMono R]
     [AddRightStrictMono R] [AddRightReflectLT R]
     {a b c : R} (h : c < 0) : c * a < c * b ↔ b < a :=
-  (strictAnti_mul_left h).lt_iff_lt
+  (strictAnti_mul_left h).lt_iff_gt
 
 @[simp]
 theorem mul_lt_mul_right_of_neg [ExistsAddOfLE R] [MulPosStrictMono R]
     [AddRightStrictMono R] [AddRightReflectLT R]
     {a b c : R} (h : c < 0) : a * c < b * c ↔ b < a :=
-  (strictAnti_mul_right h).lt_iff_lt
+  (strictAnti_mul_right h).lt_iff_gt
 
 theorem lt_of_mul_lt_mul_of_nonpos_left [ExistsAddOfLE R] [PosMulMono R]
     [AddRightMono R] [AddRightReflectLE R]
