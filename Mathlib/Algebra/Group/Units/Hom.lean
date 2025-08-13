@@ -181,7 +181,7 @@ variable [CommMonoid M]
   ext; rfl
 
 /-- `MonoidHom.toHomUnits` as a `MulEquiv`. -/
-def toHomUnitsMulEquiv : (G →* M) ≃* (G →* Mˣ) where
+@[simps] def toHomUnitsMulEquiv : (G →* M) ≃* (G →* Mˣ) where
   toFun := toHomUnits
   invFun f := (Units.coeHom _).comp f
   map_mul' := by simp
