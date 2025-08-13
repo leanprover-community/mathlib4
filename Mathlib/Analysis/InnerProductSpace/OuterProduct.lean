@@ -15,7 +15,6 @@ namespace ContinuousLinearMap
 
 section seminormed
 
-
 variable {𝕜 V W : Type*} [RCLike 𝕜]
 variable [SeminormedAddCommGroup V] [InnerProductSpace 𝕜 V]
 variable [SeminormedAddCommGroup W] [InnerProductSpace 𝕜 W]
@@ -49,26 +48,19 @@ lemma rankOne_apply (x : V) (y z : W) :
     rankOne 𝕜 x y z = inner 𝕜 y z • x :=
   rfl
 
-lemma inner_rankOne_eq_inner_mul_inner (x : V) (y z : W) (w : V) :
+lemma inner_left_rankOne_apply (x : V) (y z : W) (w : V) :
     inner 𝕜 (rankOne 𝕜 x y z) w = inner 𝕜 z y * inner 𝕜 x w := by
   simp [inner_smul_left, inner_conj_symm]
 
-lemma rankOne_comp_rankOne_eq_inner_smul_rankOne (x : V) (y z : W) (w : V) :
+lemma rankOne_comp_rankOne (x : V) (y z : W) (w : V) :
     rankOne 𝕜 x y ∘L rankOne 𝕜 z w = inner 𝕜 y z • rankOne 𝕜 x w := by
   ext v
   simp only [comp_apply, rankOne_apply, map_smul, smul_apply]
   rw [smul_algebra_smul_comm]
 
-lemma isIdempotentElem_rankOne_self_of_norm_eq_one {x : V} (h : ‖x‖ = 1) :
+lemma isIdempotentElem_rankOne_self {x : V} (h : ‖x‖ = 1) :
     IsIdempotentElem (rankOne 𝕜 x x) := by
-  ext y
-  rw [mul_def]
-  simp [Function.comp_apply, rankOne_def, inner_smul_right, inner_self_eq_norm_sq_to_K, h]
-
-@[simp]
-lemma rankOne_toLinearMap_apply (x : V) (y z : W) :
-    (rankOne 𝕜 x y).toLinearMap z = inner 𝕜 y z • x :=
-  rfl
+  simp [IsIdempotentElem, mul_def, rankOne_comp_rankOne, inner_self_eq_norm_sq_to_K, h]
 
 end seminormed
 
@@ -84,20 +76,17 @@ lemma adjoint_rankOne (x : V) (y : W) :
   simp [rankOne_def, adjoint_comp, ← adjoint_innerSL_apply]
 
 lemma isSelfAdjoint_rankOne_self (x : V) :
-    IsSelfAdjoint (rankOne 𝕜 x x) := by
-  rw [IsSelfAdjoint, star_eq_adjoint, adjoint_rankOne]
+    IsSelfAdjoint (rankOne 𝕜 x x) :=
+  adjoint_rankOne x x
 
 lemma isPositive_rankOne_self (x : V) :
     (rankOne 𝕜 x x).IsPositive := by
-  apply And.intro (isSelfAdjoint_rankOne_self x)
-  intro y
-  simp only [reApplyInnerSelf, rankOne_apply]
-  rw [inner_smul_left, InnerProductSpace.conj_inner_symm, inner_mul_symm_re_eq_norm]
-  exact norm_nonneg (inner 𝕜 y x * inner 𝕜 x y)
+  rw [rankOne_def, ← id_comp (innerSL 𝕜 x), ← adjoint_innerSL_apply]
+  exact IsPositive.adjoint_conj isPositive_one _
 
-lemma isStarProjection_rankOne_self_of_norm_eq_one {x : V} (h : ‖x‖ = 1) :
+lemma isStarProjection_rankOne_self {x : V} (h : ‖x‖ = 1) :
     IsStarProjection (rankOne 𝕜 x x) :=
-  ⟨isIdempotentElem_rankOne_self_of_norm_eq_one h, isSelfAdjoint_rankOne_self x⟩
+  ⟨isIdempotentElem_rankOne_self h, isSelfAdjoint_rankOne_self x⟩
 
 lemma isSelfAdjoint_rankOne_add (x y : V) :
     IsSelfAdjoint (rankOne 𝕜 x y + rankOne 𝕜 y x) :=
@@ -107,37 +96,27 @@ omit [CompleteSpace V]
 
 lemma rankOne_comp (x : V) (y : W) (f : W →L[𝕜] W) :
     rankOne 𝕜 x y ∘L f = rankOne 𝕜 x (adjoint f y) := by
-  ext z
-  simp [adjoint_inner_left]
+  simp_rw [rankOne_def, comp_assoc, innerSL_apply_comp]
 
 omit [CompleteSpace W]
 
 lemma comp_rankOne (x : V) (y : W) (f : V →L[𝕜] V) :
     f ∘L rankOne 𝕜 x y = rankOne 𝕜 (f x) y := by
-  ext z
-  simp
+  simp_rw [rankOne_def, ← comp_assoc, comp_lsmul_flip_apply]
 
 variable {ι : Type*} [Fintype ι]
 
 lemma sum_rankOne_OrthonormalBasis (b : OrthonormalBasis ι 𝕜 V) :
-    ∑i, rankOne 𝕜 (b i) (b i) = 1 := by
+    ∑ i, rankOne 𝕜 (b i) (b i) = 1 := by
   ext x
-  rw [← LinearIsometryEquiv.map_eq_iff b.repr]
-  simp only [sum_apply, rankOne_apply, one_apply]
-  congr
-  exact b.sum_repr' x
+  simp only [sum_apply, rankOne_apply, one_apply, b.sum_repr' x]
 
-variable [DecidableEq ι]
-
-lemma trace_toLinearMap_rankOne (x y : V) (b : OrthonormalBasis ι 𝕜 V) :
-    (rankOne 𝕜 x y).toLinearMap.trace 𝕜 V = inner 𝕜 y x := by
-  rw [(rankOne 𝕜 x y).trace_eq_sum_inner b]
-  simp +contextual [rankOne_toLinearMap_apply, inner_smul_right]
-  have : ∀i, inner 𝕜 y (b i) * inner 𝕜 (b i) x = inner 𝕜 (b i) x * inner 𝕜 y (b i) := by
-    intro i
-    apply mul_comm
-  simp +contextual [this, ← inner_smul_right, ← rankOne_apply]
-  rw [← inner_sum, ← sum_apply, sum_rankOne_OrthonormalBasis b, one_apply]
+lemma trace_toLinearMap_rankOne (x y : V) (b : Module.Basis ι 𝕜 V) :
+    (rankOne 𝕜 x y).trace 𝕜 V = inner 𝕜 y x := by
+  have : Module.Finite 𝕜 V := Module.Finite.of_basis b
+  rw [rankOne_def, coe_comp, LinearMap.trace_comp_comm', ← coe_comp, comp_lsmul_flip_apply]
+  simp [LinearMap.trace_eq_sum_inner _ ((Module.Basis.singleton Unit 𝕜).toOrthonormalBasis
+    (by simp [orthonormal_iff_ite]))]
 
 end normed
 
