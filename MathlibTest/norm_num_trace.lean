@@ -84,6 +84,6 @@ trace: [Tactic.norm_num] ❌️ evalMul
   [Tactic.norm_num] 2 + 2 * x ⇒ 2 * x: no norm_nums apply
 -/
 #guard_msgs in
-example (x : ℕ):  2 * (1 + x) = 2 + 2 * x := by
+example (x : ℕ) : 2 * (1 + x) = 2 + 2 * x := by
   norm_num
   rw [mul_add]
