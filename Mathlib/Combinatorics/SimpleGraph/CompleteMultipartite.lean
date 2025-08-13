@@ -7,6 +7,7 @@ import Mathlib.Combinatorics.SimpleGraph.Coloring
 import Mathlib.Combinatorics.SimpleGraph.Copy
 import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 import Mathlib.Combinatorics.SimpleGraph.Hasse
+import Mathlib.Combinatorics.SimpleGraph.Turan
 
 /-!
 # Complete Multipartite Graphs
@@ -176,7 +177,9 @@ variable {r t : ℕ}
 /-- The **complete equipartite graph** in `r` parts each of *equal* size `t` such that two
 vertices are adjacent if and only if they are in different parts. -/
 abbrev completeEquipartiteGraph (r t : ℕ) : SimpleGraph (Fin r × Fin t) :=
-  (⊤ : SimpleGraph (Fin r)).comap Prod.fst
+
+lemma completeEquipartiteGraph_adj {v w} :
+  (completeEquipartiteGraph r t).Adj v w ↔ v.1 ≠ w.1 := by rfl
 
 /-- A `completeEquipartiteGraph` is isomorphic to a corresponding `completeMultipartiteGraph`.
 
@@ -190,8 +193,38 @@ def completeEquipartiteGraph.completeMultipartiteGraph :
   right_inv v := by simp
   map_rel_iff' := by simp
 
-lemma completeEquipartiteGraph_adj {v w} :
-  (completeEquipartiteGraph r t).Adj v w ↔ v.1 ≠ w.1 := by rfl
+/-- A `completeEquipartiteGraph` is isomorphic to a corresponding `turanGraph`.
+
+The difference is that the former vertices are a product type whereas the latter vertices are
+not. -/
+def completeEquipartiteGraph.turanGraph :
+    completeEquipartiteGraph r t ≃g turanGraph (r * t) r where
+  toFun := by
+    refine fun v ↦ ⟨v.2 * r + v.1, ?_⟩
+    conv_rhs =>
+      rw [← Nat.sub_one_add_one_eq_of_pos v.2.pos, Nat.mul_add_one, mul_comm r (t - 1)]
+    exact add_lt_add_of_le_of_lt (Nat.mul_le_mul_right r (Nat.le_pred_of_lt v.2.prop)) v.1.prop
+  invFun := by
+    refine fun v ↦ (⟨v % r, ?_⟩, ⟨v / r, ?_⟩)
+    · have ⟨hr, _⟩ := CanonicallyOrderedAdd.mul_pos.mp v.pos
+      exact Nat.mod_lt v hr
+    · exact Nat.div_lt_of_lt_mul v.prop
+  left_inv v := by
+    refine Prod.ext (Fin.ext ?_) (Fin.ext ?_)
+    · conv =>
+        enter [1, 1, 1, 1, 1]
+        rw [Nat.mul_add_mod_self_right]
+      exact Nat.mod_eq_of_lt v.1.prop
+    · apply le_antisymm
+      · rw [Nat.div_le_iff_le_mul_add_pred v.1.pos, mul_comm r ↑v.2]
+        exact Nat.add_le_add_left (Nat.le_pred_of_lt v.1.prop) (↑v.2 * r)
+      · rw [Nat.le_div_iff_mul_le v.1.pos]
+        exact Nat.le_add_right (↑v.2 * r) ↑v.1
+  right_inv v := Fin.ext (Nat.div_add_mod' v r)
+  map_rel_iff' {v w} := by
+    rw [turanGraph_adj, Equiv.coe_fn_mk, Nat.mul_add_mod_self_right, Nat.mod_eq_of_lt v.1.prop,
+      Nat.mul_add_mod_self_right, Nat.mod_eq_of_lt w.1.prop, ← Fin.ext_iff.ne,
+      ← completeEquipartiteGraph_adj]
 
 /-- `completeEquipartiteGraph r t` contains no edges when `r ≤ 1` or `t = 0`. -/
 lemma completeEquipartiteGraph_eq_bot_iff :
