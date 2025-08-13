@@ -18,7 +18,6 @@ The theorems include formulas for computing coefficients, such as
 -/
 
 
-
 noncomputable section
 
 open Finsupp Finset AddMonoidAlgebra
@@ -58,10 +57,10 @@ theorem support_smul [SMulZeroClass S R] (r : S) (p : R[X]) :
 open scoped Pointwise in
 theorem card_support_mul_le : #(p * q).support ≤ #p.support * #q.support := by
   calc #(p * q).support
-   _ = #(p.toFinsupp * q.toFinsupp).support := by rw [← support_toFinsupp, toFinsupp_mul]
-   _ ≤ #(p.toFinsupp.support + q.toFinsupp.support) :=
-    Finset.card_le_card (AddMonoidAlgebra.support_mul p.toFinsupp q.toFinsupp)
-   _ ≤ #p.support * #q.support := Finset.card_image₂_le ..
+    _ = #(p.toFinsupp * q.toFinsupp).support := by rw [← support_toFinsupp, toFinsupp_mul]
+    _ ≤ #(p.toFinsupp.support + q.toFinsupp.support) :=
+      Finset.card_le_card (AddMonoidAlgebra.support_mul p.toFinsupp q.toFinsupp)
+    _ ≤ #p.support * #q.support := Finset.card_image₂_le ..
 
 /-- `Polynomial.sum` as a linear map. -/
 @[simps]
@@ -129,6 +128,9 @@ def constantCoeff : R[X] →+* R where
   map_mul' := mul_coeff_zero
   map_zero' := coeff_zero 0
   map_add' p q := coeff_add p q 0
+
+lemma constantCoeff_surjective : Function.Surjective (constantCoeff (R := R)) :=
+  fun x ↦ ⟨C x, by simp⟩
 
 theorem isUnit_C {x : R} : IsUnit (C x) ↔ IsUnit x :=
   ⟨fun h => (congr_arg IsUnit coeff_C_zero).mp (h.map <| @constantCoeff R _), fun h => h.map C⟩
@@ -223,14 +225,7 @@ end Fewnomials
 theorem coeff_mul_X_pow (p : R[X]) (n d : ℕ) :
     coeff (p * Polynomial.X ^ n) (d + n) = coeff p d := by
   rw [coeff_mul, Finset.sum_eq_single (d, n), coeff_X_pow, if_pos rfl, mul_one]
-  · rintro ⟨i, j⟩ h1 h2
-    rw [coeff_X_pow, if_neg, mul_zero]
-    rintro rfl
-    apply h2
-    rw [mem_antidiagonal, add_right_cancel_iff] at h1
-    subst h1
-    rfl
-  · exact fun h1 => (h1 (mem_antidiagonal.2 rfl)).elim
+  all_goals grind [mem_antidiagonal, coeff_X_pow, mul_zero]
 
 @[simp]
 theorem coeff_X_pow_mul (p : R[X]) (n d : ℕ) :

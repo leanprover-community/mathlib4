@@ -68,7 +68,7 @@ variable {S N}
 namespace Submonoid
 
 @[simp]
-theorem LocalizationMap.sec_zero_fst {f : LocalizationMap S N} : f.toMap (f.sec 0).fst = 0 := by
+theorem LocalizationMap.sec_zero_fst {f : LocalizationMap S N} : f (f.sec 0).fst = 0 := by
   rw [LocalizationMap.sec_spec', mul_zero]
 
 namespace LocalizationMap

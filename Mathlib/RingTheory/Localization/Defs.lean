@@ -171,11 +171,16 @@ abbrev toLocalizationMap : M.LocalizationMap S where
 @[deprecated (since := "2025-08-01")] alias toLocalizationWithZeroMap := toLocalizationMap
 
 @[simp]
-theorem toLocalizationMap_toMap : (toLocalizationMap M S).toMap = (algebraMap R S : R →*₀ S) :=
-  rfl
+lemma toLocalizationMap_toMonoidHom :
+    (toLocalizationMap M S).toMonoidHom = (algebraMap R S : R →*₀ S) := rfl
 
-theorem toLocalizationMap_toMap_apply (x) : (toLocalizationMap M S).toMap x = algebraMap R S x :=
-  rfl
+@[deprecated (since := "2025-08-13")] alias toLocalizationMap_toMap := toLocalizationMap_toMonoidHom
+
+@[simp] lemma coe_toLocalizationMap : ⇑(toLocalizationMap M S) = algebraMap R S := rfl
+
+@[deprecated (since := "2025-08-13")] alias toLocalizationMap_toMap_apply := coe_toLocalizationMap
+
+lemma toLocalizationMap_apply (x) : toLocalizationMap M S x = algebraMap R S x := rfl
 
 theorem surj₂ : ∀ z w : S, ∃ z' w' : R, ∃ d : M,
     (z * algebraMap R S d = algebraMap R S z') ∧ (w * algebraMap R S d = algebraMap R S w') :=
@@ -842,7 +847,7 @@ end
 theorem toLocalizationMap_eq_monoidOf : toLocalizationMap M (Localization M) = monoidOf M :=
   rfl
 
-theorem monoidOf_eq_algebraMap (x) : (monoidOf M).toMap x = algebraMap R (Localization M) x :=
+theorem monoidOf_eq_algebraMap (x) : monoidOf M x = algebraMap R (Localization M) x :=
   rfl
 
 theorem mk_one_eq_algebraMap (x) : mk x 1 = algebraMap R (Localization M) x :=

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Yuyang Zhao
 -/
 import Mathlib.Algebra.GroupWithZero.Units.Basic
-import Mathlib.Algebra.Notation.Pi
+import Mathlib.Algebra.Notation.Pi.Defs
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Defs
 import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Order.Monotone.Basic
@@ -546,10 +546,10 @@ lemma pow_right_strictAnti₀ (h₀ : 0 < a) (h₁ : a < 1) : StrictAnti (a ^ ·
     simpa only [pow_succ, mul_one] using mul_lt_mul_of_pos_left h₁ (pow_pos h₀ n)
 
 lemma pow_le_pow_iff_right_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) : a ^ m ≤ a ^ n ↔ n ≤ m :=
-  (pow_right_strictAnti₀ ha₀ ha₁).le_iff_le
+  (pow_right_strictAnti₀ ha₀ ha₁).le_iff_ge
 
 lemma pow_lt_pow_iff_right_of_lt_one₀ (h₀ : 0 < a) (h₁ : a < 1) : a ^ m < a ^ n ↔ n < m :=
-  (pow_right_strictAnti₀ h₀ h₁).lt_iff_lt
+  (pow_right_strictAnti₀ h₀ h₁).lt_iff_gt
 
 lemma pow_lt_pow_right_of_lt_one₀ (h₀ : 0 < a) (h₁ : a < 1) (hmn : m < n) : a ^ n < a ^ m :=
   (pow_lt_pow_iff_right_of_lt_one₀ h₀ h₁).2 hmn
@@ -987,10 +987,10 @@ lemma one_lt_zpow_of_neg₀ (ha₀ : 0 < a) (ha₁ : a < 1) (hn : n < 0) : 1 < a
   (zpow_right_strictMono₀ ha).lt_iff_lt
 
 lemma zpow_le_zpow_iff_right_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) :
-    a ^ m ≤ a ^ n ↔ n ≤ m := (zpow_right_strictAnti₀ ha₀ ha₁).le_iff_le
+    a ^ m ≤ a ^ n ↔ n ≤ m := (zpow_right_strictAnti₀ ha₀ ha₁).le_iff_ge
 
 lemma zpow_lt_zpow_iff_right_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) :
-    a ^ m < a ^ n ↔ n < m := (zpow_right_strictAnti₀ ha₀ ha₁).lt_iff_lt
+    a ^ m < a ^ n ↔ n < m := (zpow_right_strictAnti₀ ha₀ ha₁).lt_iff_gt
 
 @[simp] lemma one_le_zpow_iff_right₀ (ha : 1 < a) : 1 ≤ a ^ n ↔ 0 ≤ n := by
   simp [← zpow_le_zpow_iff_right₀ ha]
