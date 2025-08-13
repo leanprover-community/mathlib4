@@ -275,7 +275,7 @@ Analysis:
     Banach open mapping theorem: 'ContinuousLinearMap.isOpenMap'
     absolutely convergent series in Banach spaces: 'Summable.of_norm'
     Hahn-Banach theorem: 'exists_extension_norm_eq'
-    dual of a normed space: 'NormedSpace.Dual'
+    dual of a normed space: 'StrongDual'
     isometric inclusion in double dual: 'NormedSpace.inclusionInDoubleDualLi'
     completeness of spaces of bounded continuous functions: 'BoundedContinuousFunction.instCompleteSpace'
 
@@ -434,6 +434,8 @@ Geometry:
     sphere: 'EuclideanSpace.instIsManifoldSphere'
     closed interval: 'instIsManifoldIcc'
     general linear group as a Lie group: 'Units.instLieGroupModelWithCornersSelf'
+    discrete spaces are 0-manifolds: 'IsManifold.of_discreteTopology'
+    0-manifolds are discrete spaces: 'ChartedSpace.discreteTopology'
 
   Smooth vector and fiber bundles:
     (topological) fiber bundle: 'FiberBundle'

@@ -3,10 +3,13 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Group.Pi.Lemmas
+import Mathlib.Algebra.Group.Support
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Module.LinearMap.Defs
+import Mathlib.Data.Finsupp.SMul
 import Mathlib.RingTheory.HahnSeries.Basic
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Tactic.FastInstance
 
 /-!
@@ -326,8 +329,6 @@ instance : AddCommMonoid (HahnSeries Γ R) :=
       ext
       apply add_comm }
 
-open BigOperators
-
 @[simp]
 theorem coeff_sum {s : Finset α} {x : α → HahnSeries Γ R} (g : Γ) :
     (∑ i ∈ s, x i).coeff g = ∑ i ∈ s, (x i).coeff g :=
@@ -505,6 +506,26 @@ def coeff.linearMap (g : Γ) : HahnSeries Γ V →ₗ[R] V :=
 protected lemma map_smul [AddCommMonoid U] [Module R U] (f : U →ₗ[R] V) {r : R}
     {x : HahnSeries Γ U} : (r • x).map f = r • ((x.map f) : HahnSeries Γ V) := by
   ext; simp
+
+section Finsupp
+
+variable (R) in
+/-- `ofFinsupp` as a linear map. -/
+def ofFinsuppLinearMap : (Γ →₀ V) →ₗ[R] HahnSeries Γ V where
+  toFun := ofFinsupp
+  map_add' _ _ := by
+    ext
+    simp
+  map_smul' _ _ := by
+    ext
+    simp
+
+variable (R) in
+@[simp]
+theorem coeff_ofFinsuppLinearMap (f : Γ →₀ V) (a : Γ) :
+    (ofFinsuppLinearMap R f).coeff a = f a := rfl
+
+end Finsupp
 
 section Domain
 
