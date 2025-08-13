@@ -107,6 +107,26 @@ lemma rankOne_comp (x : V) (y : W) (f : W →L[𝕜] W) :
 
 end complete
 
+lemma range_rankOne (x : V) {y : W} (hy : y ≠ 0) :
+    LinearMap.range (rankOne 𝕜 x y) = 𝕜 ∙ x := by
+  ext z
+  apply Iff.intro
+  · intro hz
+    obtain ⟨w, hw⟩ := LinearMap.mem_range.mp hz
+    rw [rankOne_apply] at hw
+    rw [Submodule.mem_span_singleton]
+    use inner 𝕜 y w
+  · intro hz
+    obtain ⟨c, hc⟩ := Submodule.mem_span_singleton.mp hz
+    rw [LinearMap.mem_range]
+    use (c / inner 𝕜 y y) • y
+    rw [rankOne_apply, inner_smul_right, ← hc, div_mul_cancel₀ c (inner_self_ne_zero.mpr hy)]
+
+lemma rank_range_rankOne {x : V} {y : W} (hx : x ≠ 0) (hy : y ≠ 0) :
+    Module.rank 𝕜 (LinearMap.range (rankOne 𝕜 x y)) = 1 := by
+  rw [range_rankOne x hy, Module.rank_eq_one_iff_finrank_eq_one]
+  exact finrank_span_singleton hx
+
 lemma comp_rankOne (x : V) (y : W) (f : V →L[𝕜] V) :
     f ∘L rankOne 𝕜 x y = rankOne 𝕜 (f x) y := by
   simp_rw [rankOne_def, ← comp_assoc, comp_lsmul_flip_apply]
