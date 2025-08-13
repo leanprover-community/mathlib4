@@ -158,10 +158,10 @@ then there exists a morphism `l₁ : A ⟶ E` and a left homotopy `h'` from
 lemma covering_homotopy {A E B : C} {P : Cylinder A} {f₀ f₁ : A ⟶ B}
     [IsCofibrant A] [P.IsGood]
     (h : P.LeftHomotopy f₀ f₁) (p : E ⟶ B) [Fibration p]
-    (l₀ : A ⟶ E) (hl₀ : l₀ ≫ p = f₀) :
-    ∃ (l₁ : A ⟶ E) (h' : P.LeftHomotopy l₀ l₁), h'.h ≫ p = h.h := by
-  have sq : CommSq l₀ P.i₀ p h.h := ⟨by aesop_cat⟩
-  exact ⟨P.i₁ ≫ sq.lift, { h := sq.lift }, by simp⟩
+    (l₀ : A ⟶ E) (hl₀ : l₀ ≫ p = f₀ := by cat_disch) :
+    ∃ (l₁ : A ⟶ E) (h' : P.LeftHomotopy l₀ l₁), h'.h ≫ p = h.h :=
+  have sq : CommSq l₀ P.i₀ p h.h := { }
+  ⟨P.i₁ ≫ sq.lift, { h := sq.lift }, by simp⟩
 
 end
 
