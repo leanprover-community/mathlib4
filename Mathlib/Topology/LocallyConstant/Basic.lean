@@ -442,9 +442,9 @@ variable {R : Type*} [One R] {U : Set X} (f : LocallyConstant X R)
 
 /-- Given a clopen set `U` and a locally constant function `f`, `LocallyConstant.mulIndicator`
   returns the locally constant function that is `f` on `U` and `1` otherwise. -/
-@[to_additive (attr := simps) "Given a clopen set `U` and a locally constant function `f`,
+@[to_additive (attr := simps) /-- Given a clopen set `U` and a locally constant function `f`,
   `LocallyConstant.indicator` returns the locally constant function that is `f` on `U` and `0`
-  otherwise. "]
+  otherwise. -/]
 noncomputable def mulIndicator (hU : IsClopen U) : LocallyConstant X R where
   toFun := Set.mulIndicator U f
   isLocallyConstant := fun s => by

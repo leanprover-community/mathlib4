@@ -9,7 +9,6 @@ import Mathlib.Algebra.BigOperators.RingEquiv
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Star.BigOperators
 import Mathlib.Algebra.Star.Module
-import Mathlib.Algebra.Star.Pi
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Matrix.Basis
 import Mathlib.Data.Matrix.Mul
@@ -110,6 +109,11 @@ theorem vecMul_conjTranspose [Fintype n] [StarRing α] (A : Matrix m n α) (x : 
   funext fun _ => dotProduct_star _ _
 
 end NonUnitalSemiring
+
+@[simp]
+theorem conjTranspose_vecMulVec [Mul α] [StarMul α] (w : m → α) (v : n → α) :
+    (vecMulVec w v)ᴴ = vecMulVec (star v) (star w) :=
+  ext fun _ _ => star_mul _ _
 
 section ConjTranspose
 
