@@ -24,7 +24,7 @@ We show several results related to the (path)-connectedness of subsets of real v
 Statements with connectedness instead of path-connectedness are also given.
 -/
 
-assert_not_exists Sugroup.index Nat.divisors
+assert_not_exists Subgroup.index Nat.divisors
 
 open Convex Set Metric
 
