@@ -32,7 +32,7 @@ functions `f`, such as the function that is defined iff its argument is not, fam
 halting problem. Instead, this requirement is limited to only functions that are `Continuous` in the
 sense of `ω`-complete partial orders, which excludes the example because it is not monotone
 (making the input argument less defined can make `f` more defined). -/
-class LawfulFix (α : Type*) [OmegaCompletePartialOrder α] extends Fix α where
+class LawfulFix (α : Type*) [PartialOrder α] [OmegaCompletePartialOrder α] extends Fix α where
   fix_eq : ∀ {f : α → α}, ωScottContinuous f → Fix.fix f = f (Fix.fix f)
 
 namespace Part
@@ -217,7 +217,7 @@ def monotoneUncurry [(x y : _) → Preorder <| γ x y] :
   toFun := uncurry
   monotone' _x _y h a := h a.1 a.2
 
-variable [(x y : _) → OmegaCompletePartialOrder <| γ x y]
+variable [(x y : _) → PartialOrder (γ x y)] [∀ x y, OmegaCompletePartialOrder <| γ x y]
 
 open OmegaCompletePartialOrder.Chain
 
@@ -244,7 +244,7 @@ open Fix
 instance hasFix [Fix <| (x : Sigma β) → γ x.1 x.2] : Fix ((x : _) → (y : β x) → γ x y) :=
   ⟨fun f ↦ curry (fix <| uncurry ∘ f ∘ curry)⟩
 
-variable [∀ x y, OmegaCompletePartialOrder <| γ x y]
+variable [∀ x y, PartialOrder (γ x y)] [∀ x y, OmegaCompletePartialOrder <| γ x y]
 
 section Curry
 
