@@ -79,12 +79,15 @@ namespace AddSubmonoid
 
 variable {M : Type*} [AddCommMonoid M] (S : AddSubmonoid M) (N : Type*) [AddCommMonoid N]
 
+variable {N} in
+class IsLocalizationMap (f : M → N) where
+  map_add_units' (y : S) : IsAddUnit (f y)
+  surj' (z : N) : ∃ x : M × S, z + f x.2 = f x.1
+  exists_of_eq (x y) : f x = f y → ∃ c : S, c + x = c + y
+
 /-- The type of AddMonoid homomorphisms satisfying the characteristic predicate: if `f : M →+ N`
 satisfies this predicate, then `N` is isomorphic to the localization of `M` at `S`. -/
-structure LocalizationMap extends AddMonoidHom M N where
-  map_add_units' : ∀ y : S, IsAddUnit (toFun y)
-  surj' : ∀ z : N, ∃ x : M × S, z + toFun x.2 = toFun x.1
-  exists_of_eq : ∀ x y, toFun x = toFun y → ∃ c : S, ↑c + x = ↑c + y
+structure LocalizationMap extends M →+ N, IsLocalizationMap S toFun
 
 /-- The AddMonoidHom underlying a `LocalizationMap` of `AddCommMonoid`s. -/
 add_decl_doc LocalizationMap.toAddMonoidHom
@@ -98,14 +101,15 @@ variable {M : Type*} [CommMonoid M] (S : Submonoid M) (N : Type*) [CommMonoid N]
 
 namespace Submonoid
 
+variable {N} in
+@[to_additive (attr := mk_iff)] class IsLocalizationMap (f : M → N) where
+  map_units' (y : S) : IsUnit (f y)
+  surj' (z : N) : ∃ x : M × S, z * f x.2 = f x.1
+  exists_of_eq (x y) : f x = f y → ∃ c : S, c * x = c * y
+
 /-- The type of monoid homomorphisms satisfying the characteristic predicate: if `f : M →* N`
 satisfies this predicate, then `N` is isomorphic to the localization of `M` at `S`. -/
-structure LocalizationMap extends MonoidHom M N where
-  map_units' : ∀ y : S, IsUnit (toFun y)
-  surj' : ∀ z : N, ∃ x : M × S, z * toFun x.2 = toFun x.1
-  exists_of_eq : ∀ x y, toFun x = toFun y → ∃ c : S, ↑c * x = c * y
-
-attribute [to_additive] Submonoid.LocalizationMap
+@[to_additive] structure LocalizationMap extends M →* N, IsLocalizationMap S toFun
 
 /-- The monoid hom underlying a `LocalizationMap`. -/
 add_decl_doc LocalizationMap.toMonoidHom
@@ -406,11 +410,11 @@ theorem ext {f g : LocalizationMap S N} (h : ∀ x, f x = g x) : f = g := DFunLi
 
 @[to_additive]
 theorem map_units (f : LocalizationMap S N) (y : S) : IsUnit (f y) :=
-  f.2 y
+  f.2.1 y
 
 @[to_additive]
 theorem surj (f : LocalizationMap S N) (z : N) : ∃ x : M × S, z * f x.2 = f x.1 :=
-  f.3 z
+  f.2.2 z
 
 /-- Given a localization map `f : M →* N`, and `z w : N`, there exist `z' w' : M` and `d : S`
 such that `f z' / f d = z` and `f w' / f d = w`. -/
@@ -429,7 +433,7 @@ theorem surj₂ (f : LocalizationMap S N) (z w : N) : ∃ z' w' : M, ∃ d : S,
 
 @[to_additive]
 theorem eq_iff_exists (f : LocalizationMap S N) {x y} :
-    f x = f y ↔ ∃ c : S, ↑c * x = c * y := Iff.intro (f.4 x y)
+    f x = f y ↔ ∃ c : S, c * x = c * y := Iff.intro (f.2.3 x y)
   fun ⟨c, h⟩ ↦ by
     replace h := congr_arg f h
     rw [map_mul, map_mul] at h
