@@ -40,8 +40,8 @@ when there is a morphism `h : P.I ⟶ Y` such that `P.i₀ ≫ h = f` and `P.i�
 structure LeftHomotopy (f g : X ⟶ Y) where
   /-- a morphism from the (pre)cylinder object to the target -/
   h : P.I ⟶ Y
-  h₀ : P.i₀ ≫ h = f := by aesop_cat
-  h₁ : P.i₁ ≫ h = g := by aesop_cat
+  h₀ : P.i₀ ≫ h = f := by cat_disch
+  h₁ : P.i₁ ≫ h = g := by cat_disch
 
 namespace LeftHomotopy
 
