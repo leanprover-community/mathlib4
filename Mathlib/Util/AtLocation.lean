@@ -60,6 +60,9 @@ def atTarget (proc : String) (failIfUnchanged : Bool) : TacticM Unit := withMain
 /-- Use the procedure `m` to rewrite hypothesis `fvarId`. -/
 def atLocalDecl (proc : String) (failIfUnchanged : Bool) (mayCloseGoal : Bool) (fvarId : FVarId) :
     TacticM Unit := withMainContext do
+  let ldecl ← fvarId.getDecl
+  if ldecl.isImplementationDetail then
+    throwError "cannot run {proc} at {ldecl.userName}, it is an implementation detail"
   let tgt ← instantiateMVars (← fvarId.getType)
   let goal ← getMainGoal
   let m := match m with
@@ -69,8 +72,7 @@ def atLocalDecl (proc : String) (failIfUnchanged : Bool) (mayCloseGoal : Bool) (
   -- we use expression equality here (rather than defeq) to be consistent with, e.g.,
   -- `applySimpResultToLocalDeclCore`
   if failIfUnchanged && tgt.consumeMData == myres.expr.consumeMData then
-    let hyp := (← getLCtx).get! fvarId
-    throwError "{proc} made no progress at {hyp.userName}"
+    throwError "{proc} made no progress at {ldecl.userName}"
   match ← applySimpResultToLocalDecl goal fvarId myres mayCloseGoal with
   | none => replaceMainGoal []
   | some (_, newGoal) => replaceMainGoal [newGoal]
