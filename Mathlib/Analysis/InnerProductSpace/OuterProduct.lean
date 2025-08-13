@@ -69,7 +69,11 @@ section normed
 variable {𝕜 V W : Type*} [RCLike 𝕜]
 
 variable [NormedAddCommGroup V] [NormedAddCommGroup W]
-variable [InnerProductSpace 𝕜 V] [InnerProductSpace 𝕜 W] [CompleteSpace V] [CompleteSpace W]
+variable [InnerProductSpace 𝕜 V] [InnerProductSpace 𝕜 W]
+
+section complete
+
+variable [CompleteSpace V] [CompleteSpace W]
 
 lemma adjoint_rankOne (x : V) (y : W) :
     (rankOne 𝕜 x y).adjoint = rankOne 𝕜 y x := by
@@ -92,13 +96,12 @@ lemma isSelfAdjoint_rankOne_add (x y : V) :
     IsSelfAdjoint (rankOne 𝕜 x y + rankOne 𝕜 y x) :=
   (adjoint_rankOne (𝕜 := 𝕜) y x) ▸ IsSelfAdjoint.star_add_self _
 
-omit [CompleteSpace V]
-
+omit [CompleteSpace V] in
 lemma rankOne_comp (x : V) (y : W) (f : W →L[𝕜] W) :
     rankOne 𝕜 x y ∘L f = rankOne 𝕜 x (adjoint f y) := by
   simp_rw [rankOne_def, comp_assoc, innerSL_apply_comp]
 
-omit [CompleteSpace W]
+end complete
 
 lemma comp_rankOne (x : V) (y : W) (f : V →L[𝕜] V) :
     f ∘L rankOne 𝕜 x y = rankOne 𝕜 (f x) y := by
