@@ -73,29 +73,33 @@ structure Hypergraph (α β : Type*) where
   /-- The hyperedge predicate: a set of vertices `s : Set α` is contained in a hyperedge `e`. -/
   IsHyperedge : β → Set α → Prop
   /-- Incidence predicate stating that a vertex `x` is a member of hyperedge `e` -/
-  IsIncident : α → β → Prop := fun x e => ∃ s, IsHyperedge e s ∧ x ∈ s
+  IsIncident : α → β → Prop := fun x e => ∃ s ⊆ vertexSet, IsHyperedge e s ∧ x ∈ s
   /-- The hyperedge set -/
-  hyperedgeSet: Set β := {e | ∃ s ⊆ vertexSet, IsHyperedge e s}
+  hyperedgeSet : Set β := {e | ∃ s ⊆ vertexSet, IsHyperedge e s}
+  /-- If a vertex is incident on a hyperedge, then that hyperedge must be in the hyperedge set -/
+  -- TODO: this feels like it can be proven from the definition of IsIncident, but I can't see how
+  isIncident_imp_isHyperedge : ∀ ⦃x e⦄, IsIncident x e → ∃ s ⊆ vertexSet, IsHyperedge e s ∧ x ∈ s
   /-- A hyperedge contains only one set of vertices -/
   eq_of_isHyperedge_of_isHyperedge : ∀ ⦃e s t⦄, IsHyperedge e s → IsHyperedge e t → s = t
-  /-- If some vertex `x` is incident on an edge `e`, then `x ∈ V` -/
-  mem_of_isIncident : ∀ ⦃e x⦄, IsIncident x e → x ∈ vertexSet
+  /--
+  If a set of vertices `s` is contained in a hyperedge `e`, `s` is comprised of all vertices
+  in the vertex set that are incident on `e`
+  -/
+  isIncident_of_isHyperedge :
+    ∀ ⦃e s⦄, IsHyperedge e s → s = { x ∈ vertexSet | IsIncident x e }
   /-- Vertices can be incident on a hyperedge `e` if and only if `e` is in the hyperedge set. -/
   -- TODO: should this be based on IsIncident?
-  -- If so, then we'd be definine hyperedges to be non-empty
+  -- If so, then we'd be defining hyperedges to be non-empty
   hyperedge_mem_iff_exists_isHyperedge :
     ∀ e, e ∈ hyperedgeSet ↔ ∃ s ⊆ vertexSet, IsHyperedge e s := by exact fun _ ↦ Iff.rfl
-  /--
-  If a set of vertices `s` is contained in a hyperedge `e`, then all elements `x ∈ s` are
-  incident on `e` and all elements in `V \ s` are not incident on `e`
-  -/
-  isIncident_and_not_isIncident_of_isHyperedge :
-    ∀ ⦃e s⦄, IsHyperedge e s → (∀ x ∈ s, IsIncident x e) ∧ (∀ y ∈ vertexSet \ s, ¬IsIncident y e)
+  /-- If something is incident on a hyperedge, then it must be in the vertex set -/
+  -- TODO: this feels like it can be proven, but I can't see how
+  vertex_mem_if_isIncident :
+    ∀ ⦃ x e ⦄, IsIncident x e → x ∈ vertexSet
 
 namespace Hypergraph
 
 variable {H : Hypergraph α β}
-
 
 /-! ## Notation -/
 
@@ -104,6 +108,19 @@ scoped notation "V(" H ")" => Hypergraph.vertexSet H
 
 /-- `E(H)` denotes the `hyperedgeSet` of a hypergraph `H` -/
 scoped notation "E(" H ")" => Hypergraph.hyperedgeSet H
+
+section HyperedgeInc
+
+-- lemma IsHyperedge.hyperedge_mem (h1 : s ⊆ V(H)) (h2 : H.IsHyperedge e s) : e ∈ E(H) :=
+--   have h3 : ∃ t ⊆ V(H), H.IsHyperedge e t := by use s
+--   (H.hyperedge_mem_iff_exists_isHyperedge e).mpr h3
+
+-- lemma IsIncident.left_mem (h : H.IsIncident x e) : x ∈ V(H) := H.left_mem_of_isIncident h
+
+-- lemma IsIncident.right_mem (h : H.IsIncident x e) : e ∈ E(H) := by
+
+
+end HyperedgeInc
 
 /-! ## Basic Hypergraph Definitions & Predicates-/
 
