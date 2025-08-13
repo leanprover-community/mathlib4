@@ -90,7 +90,6 @@ local instance {p : Ideal S} [p.IsPrime] [Algebra.IsIntegral R S]
     [Finite (Ideal.under R p).ResidueField] :
   Algebra.IsSeparable (Ideal.under R p).ResidueField p.ResidueField := inferInstance
 
--- set_option synthInstance.maxHeartbeats 25000 in -- infer_instance timeout
 /-- Let `R` be a domain of characteristic 0, finite rank over `ℤ`, `S` be a dedekind domain
 that is a finite `R`-algebra. Let `p` be a prime of `S`, then `p` is unramified iff `e(p) = 1`. -/
 lemma Algebra.isUnramifiedAt_iff_of_isDedekindDomain
