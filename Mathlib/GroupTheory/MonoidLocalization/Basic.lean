@@ -382,17 +382,17 @@ namespace LocalizationMap
 @[to_additive /-- Short for `toAddMonoidHom`; used to apply a localization map as a function. -/]
 abbrev toMap (f : LocalizationMap S N) := f.toMonoidHom
 
-attribute [deprecated toMonoidHom (since := "2025-03-06")] toMap
-attribute [deprecated AddSubmonoid.LocalizationMap.toAddMonoidHom (since := "2025-03-06")]
+attribute [deprecated toMonoidHom (since := "2025-08-13")] toMap
+attribute [deprecated AddSubmonoid.LocalizationMap.toAddMonoidHom (since := "2025-08-13")]
   AddSubmonoid.LocalizationMap.toMap
 
 @[to_additive]
-theorem toMap_injective : Injective (toMonoidHom : LocalizationMap S N → M →* N) :=
+theorem toMonoidHom_injective : Injective (toMonoidHom : LocalizationMap S N → M →* N) :=
   fun f g ↦ by cases f; congr!
 
 @[to_additive] instance : FunLike (LocalizationMap S N) M N where
   coe f := f.toMonoidHom
-  coe_injective' := DFunLike.coe_injective.comp toMap_injective
+  coe_injective' := DFunLike.coe_injective.comp toMonoidHom_injective
 
 @[to_additive] instance : MonoidHomClass (LocalizationMap S N) M N where
   map_one f := f.toMonoidHom.map_one
@@ -561,7 +561,7 @@ theorem mk'_spec' (x) (y : S) : f y * f.mk' x y = f x := by rw [mul_comm, mk'_sp
 
 @[to_additive]
 theorem eq_mk'_iff_mul_eq {x} {y : S} {z} : z = f.mk' x y ↔ z * f y = f x :=
-  ⟨fun H ↦ by rw [H, mk'_spec], fun H ↦ by rw [mk', mul_inv_right]; dsimp; rw[H]⟩
+  ⟨fun H ↦ by rw [H, mk'_spec], fun H ↦ by rwa [mk', mul_inv_right]⟩
 
 @[to_additive]
 theorem mk'_eq_iff_eq_mul {x} {y : S} {z} : f.mk' x y = z ↔ f x = z * f y := by
@@ -574,8 +574,7 @@ theorem mk'_eq_iff_eq {x₁ x₂} {y₁ y₂ : S} :
     rw [map_mul f, map_mul f, f.mk'_eq_iff_eq_mul.1 H,← mul_assoc, mk'_spec', mul_comm (f x₂)]
   mpr H := by
     rw [mk'_eq_iff_eq_mul, mk', mul_assoc, mul_comm _ (f y₁), ← mul_assoc, ← map_mul f, mul_comm x₂,
-      ← H, ← mul_comm x₁, map_mul f, mul_inv_right f.map_units]
-    dsimp
+      ← H, ← mul_comm x₁, map_mul f, mul_inv_right f.map_units, toMonoidHom_apply]
 
 @[to_additive]
 theorem mk'_eq_iff_eq' {x₁ x₂} {y₁ y₂ : S} :
@@ -709,8 +708,8 @@ noncomputable def lift : N →* P where
       mul_assoc, ← mul_assoc, mul_inv_right hg]
     repeat rw [← g.map_mul]
     refine f.eq_of_eq hg ?_
-    simp_rw [map_mul, sec_spec']
-    rw [mul_assoc, mul_rotate, mul_comm x, mul_mul_mul_comm, mul_comm y, mul_comm x, mul_right_comm]
+    simp_rw [map_mul, sec_spec', ← toMonoidHom_apply]
+    ac_rfl
 
 @[to_additive]
 lemma lift_apply (z) :
@@ -801,10 +800,7 @@ theorem lift_comp : (f.lift hg).comp f.toMonoidHom = g := by ext; exact f.lift_e
 
 @[to_additive (attr := simp)]
 theorem lift_of_comp (j : N →* P) : f.lift (f.isUnit_comp j) = j := by
-  ext
-  simp_rw [lift_spec, MonoidHom.comp_apply, ← j.map_mul]
-  dsimp
-  rw [sec_spec']
+  ext; simp_rw [lift_spec, j.comp_apply, ← map_mul, toMonoidHom_apply, sec_spec']
 
 @[to_additive]
 theorem epic_of_localizationMap {j k : N →* P}
@@ -1067,7 +1063,7 @@ def ofMulEquivOfLocalizations (k : N ≃* P) : LocalizationMap S P :=
     (fun v ↦
       let ⟨z, hz⟩ := k.surjective v
       let ⟨x, hx⟩ := f.surj z
-      ⟨x, show v * k _ = k _ by dsimp; rw [← hx, map_mul, ← hz]⟩)
+      ⟨x, show v * k (f _) = k (f _) by rw [← hx, map_mul, ← hz]⟩)
     fun x y ↦ (k.apply_eq_iff_eq.trans f.eq_iff_exists).1
 
 @[to_additive (attr := simp)]
@@ -1094,7 +1090,7 @@ theorem ofMulEquivOfLocalizations_eq_iff_eq {k : N ≃* P} {x y} :
 @[to_additive addEquivOfLocalizations_right_inv]
 theorem mulEquivOfLocalizations_right_inv (k : LocalizationMap S P) :
     f.ofMulEquivOfLocalizations (f.mulEquivOfLocalizations k) = k :=
-  toMap_injective <| f.lift_comp k.map_units
+  toMonoidHom_injective <| f.lift_comp k.map_units
 
 @[to_additive addEquivOfLocalizations_right_inv_apply]
 theorem mulEquivOfLocalizations_right_inv_apply {k : LocalizationMap S P} {x} :
@@ -1143,9 +1139,7 @@ def ofMulEquivOfDom {k : P ≃* M} (H : T.map k.toMonoidHom = S) : LocalizationM
         rw [hx]⟩)
     fun x y ↦ by
       rw [MonoidHom.comp_apply, MonoidHom.comp_apply, MulEquiv.toMonoidHom_eq_coe,
-        MonoidHom.coe_coe]
-      dsimp
-      rw [f.eq_iff_exists]
+        MonoidHom.coe_coe, toMonoidHom_apply, toMonoidHom_apply, f.eq_iff_exists]
       rintro ⟨c, hc⟩
       let ⟨d, hd⟩ := k.surjective c
       refine ⟨⟨d, H' ▸ show k d ∈ S from hd.symm ▸ c.2⟩, ?_⟩
