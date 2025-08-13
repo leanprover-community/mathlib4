@@ -52,6 +52,10 @@ lemma inner_left_rankOne_apply (x : V) (y z : W) (w : V) :
     inner 𝕜 (rankOne 𝕜 x y z) w = inner 𝕜 z y * inner 𝕜 x w := by
   simp [inner_smul_left, inner_conj_symm]
 
+lemma inner_right_rankOne_apply (x y : V) (z w : W) :
+    inner 𝕜 x (rankOne 𝕜 y z w) = inner 𝕜 x y * inner 𝕜 z w := by
+  simp [inner_smul_right, mul_comm]
+
 lemma rankOne_comp_rankOne (x : V) (y z : W) (w : V) :
     rankOne 𝕜 x y ∘L rankOne 𝕜 z w = inner 𝕜 y z • rankOne 𝕜 x w := by
   ext v
