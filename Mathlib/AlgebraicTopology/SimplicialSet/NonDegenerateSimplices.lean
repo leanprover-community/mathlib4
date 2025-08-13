@@ -67,16 +67,28 @@ lemma le_iff_exists_mono {x y : X.N} :
     Subcomplex.mem_ofSimplex_obj_iff]
   exact ⟨fun ⟨f, hf⟩ ↦ ⟨f, X.mono_of_nonDegenerate ⟨_, x.2⟩ f _ hf, hf⟩, by tauto⟩
 
-lemma le_of_le {x y : X.N} (h : x ≤ y) : x.1.1 ≤ y.1.1 := by
+lemma dim_le_of_le {x y : X.N} (h : x ≤ y) : x.dim ≤ y.dim := by
   rw [le_iff_exists_mono] at h
   obtain ⟨f, hf, _⟩ := h
   exact SimplexCategory.len_le_of_mono f
+
+lemma dim_lt_of_lt {x y : X.N} (h : x < y) : x.dim < y.dim := by
+  obtain h' | h' := (dim_le_of_le h.le).lt_or_eq
+  · exact h'
+  · exfalso
+    obtain ⟨f, _, hf⟩ := le_iff_exists_mono.1 h.le
+    obtain ⟨d, ⟨x, hx⟩, rfl⟩ := x.mk_surjective
+    obtain ⟨d', ⟨y, hy⟩, rfl⟩ := y.mk_surjective
+    obtain rfl : d = d' := h'
+    obtain rfl := SimplexCategory.eq_id_of_mono f
+    obtain rfl : y = x := by simpa using hf
+    simp at h
 
 instance : PartialOrder X.N where
   le_antisymm x₁ x₂ h h' := by
     obtain ⟨n₁, ⟨x₁, hx₁⟩, rfl⟩ := x₁.mk_surjective
     obtain ⟨n₂, ⟨x₂, hx₂⟩, rfl⟩ := x₂.mk_surjective
-    obtain rfl : n₁ = n₂ := le_antisymm (le_of_le h) (le_of_le h')
+    obtain rfl : n₁ = n₂ := le_antisymm (dim_le_of_le h) (dim_le_of_le h')
     rw [le_iff_exists_mono] at h
     obtain ⟨f, hf, h⟩ := h
     obtain rfl := SimplexCategory.eq_id_of_mono f
