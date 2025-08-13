@@ -802,7 +802,7 @@ section SMul
 
 /-! ### Basic scalar multiplication instances
 
-The `SMul` section for `MonoidAlgebra` collects instances needed 
+The `SMul` section for `MonoidAlgebra` collects instances needed
 for the algebraic structure of `Polynomial`, which is defined in terms
 of `MonoidAlgebra`. This section mirrors the `MonoidAlgebra` section.
 
