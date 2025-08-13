@@ -191,15 +191,15 @@ variable (M N) [Mul M] [Mul N] [Mul P]
 
 /-- Given magmas `M`, `N`, the natural projection homomorphism from `M × N` to `M`. -/
 @[to_additive
-      /-- Given additive magmas `A`, `B`, the natural projection homomorphism
-      from `A × B` to `A` -/]
+/-- Given additive magmas `A`, `B`, the natural projection homomorphism
+from `A × B` to `A` -/]
 def fst : M × N →ₙ* M :=
   ⟨Prod.fst, fun _ _ => rfl⟩
 
 /-- Given magmas `M`, `N`, the natural projection homomorphism from `M × N` to `N`. -/
 @[to_additive
-      /-- Given additive magmas `A`, `B`, the natural projection homomorphism
-      from `A × B` to `B` -/]
+/-- Given additive magmas `A`, `B`, the natural projection homomorphism
+from `A × B` to `B` -/]
 def snd : M × N →ₙ* N :=
   ⟨Prod.snd, fun _ _ => rfl⟩
 
@@ -216,8 +216,8 @@ theorem coe_snd : ⇑(snd M N) = Prod.snd :=
 /-- Combine two `MonoidHom`s `f : M →ₙ* N`, `g : M →ₙ* P` into
 `f.prod g : M →ₙ* (N × P)` given by `(f.prod g) x = (f x, g x)`. -/
 @[to_additive prod
-      /-- Combine two `AddMonoidHom`s `f : AddHom M N`, `g : AddHom M P` into
-      `f.prod g : AddHom M (N × P)` given by `(f.prod g) x = (f x, g x)` -/]
+/-- Combine two `AddMonoidHom`s `f : AddHom M N`, `g : AddHom M P` into
+`f.prod g : AddHom M (N × P)` given by `(f.prod g) x = (f x, g x)` -/]
 protected def prod (f : M →ₙ* N) (g : M →ₙ* P) :
     M →ₙ* N × P where
   toFun := Pi.prod f g
@@ -278,9 +278,9 @@ variable [Mul M] [Mul N] [CommSemigroup P] (f : M →ₙ* P) (g : N →ₙ* P)
   `f.coprod g (p : M × N) = f p.1 * g p.2`.
   (Commutative codomain; for the general case, see `MulHom.noncommCoprod`) -/
 @[to_additive
-    /-- Coproduct of two `AddHom`s with the same codomain:
-    `f.coprod g (p : M × N) = f p.1 + g p.2`.
-    (Commutative codomain; for the general case, see `AddHom.noncommCoprod`) -/]
+/-- Coproduct of two `AddHom`s with the same codomain:
+`f.coprod g (p : M × N) = f p.1 + g p.2`.
+(Commutative codomain; for the general case, see `AddHom.noncommCoprod`) -/]
 def coprod : M × N →ₙ* P :=
   f.comp (fst M N) * g.comp (snd M N)
 
@@ -303,8 +303,8 @@ variable (M N) [MulOneClass M] [MulOneClass N]
 
 /-- Given monoids `M`, `N`, the natural projection homomorphism from `M × N` to `M`. -/
 @[to_additive
-      /-- Given additive monoids `A`, `B`, the natural projection homomorphism
-      from `A × B` to `A` -/]
+/-- Given additive monoids `A`, `B`, the natural projection homomorphism
+from `A × B` to `A` -/]
 def fst : M × N →* M :=
   { toFun := Prod.fst,
     map_one' := rfl,
@@ -312,8 +312,8 @@ def fst : M × N →* M :=
 
 /-- Given monoids `M`, `N`, the natural projection homomorphism from `M × N` to `N`. -/
 @[to_additive
-      /-- Given additive monoids `A`, `B`, the natural projection homomorphism
-      from `A × B` to `B` -/]
+/-- Given additive monoids `A`, `B`, the natural projection homomorphism
+from `A × B` to `B` -/]
 def snd : M × N →* N :=
   { toFun := Prod.snd,
     map_one' := rfl,
@@ -321,8 +321,8 @@ def snd : M × N →* N :=
 
 /-- Given monoids `M`, `N`, the natural inclusion homomorphism from `M` to `M × N`. -/
 @[to_additive
-      /-- Given additive monoids `A`, `B`, the natural inclusion homomorphism
-      from `A` to `A × B`. -/]
+/-- Given additive monoids `A`, `B`, the natural inclusion homomorphism
+from `A` to `A × B`. -/]
 def inl : M →* M × N :=
   { toFun := fun x => (x, 1),
     map_one' := rfl,
@@ -330,8 +330,8 @@ def inl : M →* M × N :=
 
 /-- Given monoids `M`, `N`, the natural inclusion homomorphism from `N` to `M × N`. -/
 @[to_additive
-      /-- Given additive monoids `A`, `B`, the natural inclusion homomorphism
-      from `B` to `A × B`. -/]
+/-- Given additive monoids `A`, `B`, the natural inclusion homomorphism
+from `B` to `A × B`. -/]
 def inr : N →* M × N :=
   { toFun := fun y => (1, y),
     map_one' := rfl,
@@ -382,8 +382,8 @@ variable [MulOneClass P]
 /-- Combine two `MonoidHom`s `f : M →* N`, `g : M →* P` into `f.prod g : M →* N × P`
 given by `(f.prod g) x = (f x, g x)`. -/
 @[to_additive prod
-      /-- Combine two `AddMonoidHom`s `f : M →+ N`, `g : M →+ P` into
-      `f.prod g : M →+ N × P` given by `(f.prod g) x = (f x, g x)` -/]
+/-- Combine two `AddMonoidHom`s `f : M →+ N`, `g : M →+ P` into
+`f.prod g : M →+ N × P` given by `(f.prod g) x = (f x, g x)` -/]
 protected def prod (f : M →* N) (g : M →* P) :
     M →* N × P where
   toFun := Pi.prod f g
@@ -445,9 +445,9 @@ variable [CommMonoid P] (f : M →* P) (g : N →* P)
   `f.coprod g (p : M × N) = f p.1 * g p.2`.
   (Commutative case; for the general case, see `MonoidHom.noncommCoprod`.) -/
 @[to_additive
-    /-- Coproduct of two `AddMonoidHom`s with the same codomain:
-    `f.coprod g (p : M × N) = f p.1 + g p.2`.
-    (Commutative case; for the general case, see `AddHom.noncommCoprod`.) -/]
+/-- Coproduct of two `AddMonoidHom`s with the same codomain:
+`f.coprod g (p : M × N) = f p.1 + g p.2`.
+(Commutative case; for the general case, see `AddHom.noncommCoprod`.) -/]
 def coprod : M × N →* P :=
   f.comp (fst M N) * g.comp (snd M N)
 
@@ -490,8 +490,8 @@ variable [MulOneClass M] [MulOneClass N]
 /-- The equivalence between `M × N` and `N × M` given by swapping the components
 is multiplicative. -/
 @[to_additive prodComm
-      /-- The equivalence between `M × N` and `N × M` given by swapping the
-      components is additive. -/]
+/-- The equivalence between `M × N` and `N × M` given by swapping the
+components is additive. -/]
 def prodComm : M × N ≃* N × M :=
   { Equiv.prodComm M N with map_mul' := fun ⟨_, _⟩ ⟨_, _⟩ => rfl }
 
@@ -507,7 +507,7 @@ variable [MulOneClass P]
 
 /-- The equivalence between `(M × N) × P` and `M × (N × P)` is multiplicative. -/
 @[to_additive prodAssoc
-      /-- The equivalence between `(M × N) × P` and `M × (N × P)` is additive. -/]
+/-- The equivalence between `(M × N) × P` and `M × (N × P)` is additive. -/]
 def prodAssoc : (M × N) × P ≃* M × (N × P) :=
   { Equiv.prodAssoc M N P with map_mul' := fun ⟨_, _⟩ ⟨_, _⟩ => rfl }
 
@@ -528,7 +528,7 @@ variable (M N M' N')
 
 /-- Four-way commutativity of `Prod`. The name matches `mul_mul_mul_comm`. -/
 @[to_additive (attr := simps apply) prodProdProdComm
-    /-- Four-way commutativity of `Prod`.
+/-- Four-way commutativity of `Prod`.
 The name matches `mul_mul_mul_comm` -/]
 def prodProdProdComm : (M × N) × M' × N' ≃* (M × M') × N × N' :=
   { Equiv.prodProdProdComm M N M' N' with
@@ -581,8 +581,8 @@ variable [Monoid M] [Monoid N]
 /-- The monoid equivalence between units of a product of two monoids, and the product of the
 units of each monoid. -/
 @[to_additive prodAddUnits
-      /-- The additive monoid equivalence between additive units of a product
-      of two additive monoids, and the product of the additive units of each additive monoid. -/]
+/-- The additive monoid equivalence between additive units of a product
+of two additive monoids, and the product of the additive units of each additive monoid. -/]
 def prodUnits : (M × N)ˣ ≃* Mˣ × Nˣ where
   toFun := (Units.map (MonoidHom.fst M N)).prod (Units.map (MonoidHom.snd M N))
   invFun u := ⟨(u.1, u.2), (↑u.1⁻¹, ↑u.2⁻¹), by simp, by simp⟩
@@ -611,8 +611,8 @@ open MulOpposite
 /-- Canonical homomorphism of monoids from `αˣ` into `α × αᵐᵒᵖ`.
 Used mainly to define the natural topology of `αˣ`. -/
 @[to_additive (attr := simps)
-      /-- Canonical homomorphism of additive monoids from `AddUnits α` into `α × αᵃᵒᵖ`.
-      Used mainly to define the natural topology of `AddUnits α`. -/]
+/-- Canonical homomorphism of additive monoids from `AddUnits α` into `α × αᵃᵒᵖ`.
+Used mainly to define the natural topology of `AddUnits α`. -/]
 def embedProduct (α : Type*) [Monoid α] : αˣ →* α × αᵐᵒᵖ where
   toFun x := ⟨x, op ↑x⁻¹⟩
   map_one' := by

@@ -102,8 +102,8 @@ variable [Monoid α] [Monoid β]
 /-- Product of a `s : Multiset α` with `[Monoid α]`, given a proof that `*` commutes
 on all elements `x ∈ s`. -/
 @[to_additive
-      /-- Sum of a `s : Multiset α` with `[AddMonoid α]`, given a proof that `+` commutes
-      on all elements `x ∈ s`. -/]
+/-- Sum of a `s : Multiset α` with `[AddMonoid α]`, given a proof that `+` commutes
+on all elements `x ∈ s`. -/]
 def noncommProd (s : Multiset α) (comm : { x | x ∈ s }.Pairwise Commute) : α :=
   s.noncommFold (· * ·) comm 1
 
@@ -236,7 +236,7 @@ theorem noncommProd_lemma (s : Finset α) (f : α → β)
 /-- Product of a `s : Finset α` mapped with `f : α → β` with `[Monoid β]`,
 given a proof that `*` commutes on all elements `f x` for `x ∈ s`. -/
 @[to_additive
-      /-- Sum of a `s : Finset α` mapped with `f : α → β` with `[AddMonoid β]`,
+/-- Sum of a `s : Finset α` mapped with `f : α → β` with `[AddMonoid β]`,
 given a proof that `+` commutes on all elements `f x` for `x ∈ s`. -/]
 def noncommProd (s : Finset α) (f : α → β)
     (comm : (s : Set α).Pairwise (Commute on f)) : β :=

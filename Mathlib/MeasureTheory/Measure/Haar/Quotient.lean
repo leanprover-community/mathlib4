@@ -52,7 +52,7 @@ section
 
 /-- Measurability of the action of the topological group `G` on the left-coset space `G / Γ`. -/
 @[to_additive /-- Measurability of the action of the additive topological group `G` on the
-  left-coset space `G / Γ`. -/]
+left-coset space `G / Γ`. -/]
 instance QuotientGroup.measurableSMul {G : Type*} [Group G] {Γ : Subgroup G} [MeasurableSpace G]
     [TopologicalSpace G] [IsTopologicalGroup G] [BorelSpace G] [BorelSpace (G ⧸ Γ)] :
     MeasurableSMul G (G ⧸ Γ) where
@@ -124,8 +124,8 @@ variable (ν : Measure G) [IsMulLeftInvariant ν]
   right-invariant measure on `G` and `Γ` is a normal subgroup, then `μ` is a left-invariant
   measure. -/
 @[to_additive /-- If `μ` on `G ⧸ Γ` satisfies `AddQuotientMeasureEqMeasurePreimage` relative to a
-  both left- and right-invariant measure on `G` and `Γ` is a normal subgroup, then `μ` is a
-  left-invariant measure. -/]
+both left- and right-invariant measure on `G` and `Γ` is a normal subgroup, then `μ` is a
+left-invariant measure. -/]
 lemma MeasureTheory.QuotientMeasureEqMeasurePreimage.mulInvariantMeasure_quotient
     [hasFun : HasFundamentalDomain Γ.op G ν] [QuotientMeasureEqMeasurePreimage ν μ] :
     μ.IsMulLeftInvariant where
@@ -333,9 +333,9 @@ local notation "μ_𝓕" => Measure.map (@QuotientGroup.mk G _ Γ) (μ.restrict 
   of the restriction, `μ_𝓕`, of a right-invariant measure `μ` to a fundamental domain `𝓕`, is the
   same as the `essSup` of `g`'s lift to the universal cover `G` with respect to `μ`. -/
 @[to_additive /-- The `essSup` of a function `g` on the additive quotient space `G ⧸ Γ` with respect
-  to the pushforward of the restriction, `μ_𝓕`, of a right-invariant measure `μ` to a fundamental
-  domain `𝓕`, is the same as the `essSup` of `g`'s lift to the universal cover `G` with respect
-  to `μ`. -/]
+to the pushforward of the restriction, `μ_𝓕`, of a right-invariant measure `μ` to a fundamental
+domain `𝓕`, is the same as the `essSup` of `g`'s lift to the universal cover `G` with respect
+to `μ`. -/]
 lemma essSup_comp_quotientGroup_mk [μ.IsMulRightInvariant] {g : G ⧸ Γ → ℝ≥0∞}
     (g_ae_measurable : AEMeasurable g μ_𝓕) : essSup g μ_𝓕 = essSup (fun (x : G) ↦ g x) μ := by
   have hπ : Measurable (QuotientGroup.mk : G → G ⧸ Γ) := continuous_quotient_mk'.measurable
@@ -352,10 +352,10 @@ lemma essSup_comp_quotientGroup_mk [μ.IsMulRightInvariant] {g : G ⧸ Γ → �
   folding of `μ` under the quotient. Note that, if `Γ` is infinite, then the folded map
   will take the value `∞` on any open set in the quotient! -/
 @[to_additive /-- Given an additive quotient space `G ⧸ Γ` where `Γ` is `Countable`, and the
-  restriction, `μ_𝓕`, of a right-invariant measure `μ` on `G` to a fundamental domain `𝓕`, a set
-  in the quotient which has `μ_𝓕`-measure zero, also has measure zero under the
-  folding of `μ` under the quotient. Note that, if `Γ` is infinite, then the folded map
-  will take the value `∞` on any open set in the quotient! -/]
+restriction, `μ_𝓕`, of a right-invariant measure `μ` on `G` to a fundamental domain `𝓕`, a set
+in the quotient which has `μ_𝓕`-measure zero, also has measure zero under the
+folding of `μ` under the quotient. Note that, if `Γ` is infinite, then the folded map
+will take the value `∞` on any open set in the quotient! -/]
 lemma _root_.MeasureTheory.IsFundamentalDomain.absolutelyContinuous_map
     [μ.IsMulRightInvariant] :
     map (QuotientGroup.mk : G → G ⧸ Γ) μ ≪ map (QuotientGroup.mk : G → G ⧸ Γ) (μ.restrict 𝓕) := by
@@ -379,8 +379,8 @@ attribute [-instance] Quotient.instMeasurableSpace
   integral of a function `f` on `G` with respect to a right-invariant measure `μ` is equal to the
   integral over the quotient `G ⧸ Γ` of the automorphization of `f`. -/
 @[to_additive /-- This is a simple version of the **Unfolding Trick**: Given a subgroup `Γ` of an
-  additive group `G`, the integral of a function `f` on `G` with respect to a right-invariant
-  measure `μ` is equal to the integral over the quotient `G ⧸ Γ` of the automorphization of `f`. -/]
+additive group `G`, the integral of a function `f` on `G` with respect to a right-invariant
+measure `μ` is equal to the integral over the quotient `G ⧸ Γ` of the automorphization of `f`. -/]
 lemma QuotientGroup.integral_eq_integral_automorphize {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] [μ.IsMulRightInvariant] {f : G → E}
     (hf₁ : Integrable f μ) (hf₂ : AEStronglyMeasurable (automorphize f) μ_𝓕) :

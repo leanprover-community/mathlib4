@@ -61,7 +61,7 @@ theorem reduce_replicate (n : ℕ) (x : α × Bool) :
 /-- The first theorem that characterises the function `reduce`: a word reduces to its maximal
   reduction. -/
 @[to_additive /-- The first theorem that characterises the function `reduce`: a word reduces to its
-  maximal reduction. -/]
+maximal reduction. -/]
 theorem reduce.red : Red L (reduce L) := by
   induction L with
   | nil => constructor
@@ -115,7 +115,7 @@ theorem reduce.not {p : Prop} :
 /-- The second theorem that characterises the function `reduce`: the maximal reduction of a word
 only reduces to itself. -/
 @[to_additive /-- The second theorem that characterises the function `reduce`: the maximal
-  reduction of a word only reduces to itself. -/]
+reduction of a word only reduces to itself. -/]
 theorem reduce.min (H : Red (reduce L₁) L₂) : reduce L₁ = L₂ := by
   induction H with
   | refl => rfl
@@ -126,7 +126,7 @@ theorem reduce.min (H : Red (reduce L₁) L₂) : reduce L₁ = L₂ := by
 /-- `reduce` is idempotent, i.e. the maximal reduction of the maximal reduction of a word is the
   maximal reduction of the word. -/
 @[to_additive (attr := simp) /-- `reduce` is idempotent, i.e. the maximal reduction of the maximal
-  reduction of a word is the maximal reduction of the word. -/]
+reduction of a word is the maximal reduction of the word. -/]
 theorem reduce.idem : reduce (reduce L) = reduce L :=
   Eq.symm <| reduce.min reduce.red
 
@@ -157,8 +157,8 @@ theorem Red.reduce_left (h : Red L₁ L₂) : Red L₂ (reduce L₁) :=
 have a common maximal reduction. This is the proof that the function that sends
 an element of the free group to its maximal reduction is well-defined. -/
 @[to_additive /-- If two words correspond to the same element in the additive free group, then they
-  have a common maximal reduction. This is the proof that the function that sends an element of the
-  free group to its maximal reduction is well-defined. -/]
+have a common maximal reduction. This is the proof that the function that sends an element of the
+free group to its maximal reduction is well-defined. -/]
 theorem reduce.sound (H : mk L₁ = mk L₂) : reduce L₁ = reduce L₂ :=
   let ⟨_L₃, H13, H23⟩ := Red.exact.1 H
   (reduce.eq_of_red H13).trans (reduce.eq_of_red H23).symm
@@ -166,26 +166,26 @@ theorem reduce.sound (H : mk L₁ = mk L₂) : reduce L₁ = reduce L₂ :=
 /-- If two words have a common maximal reduction, then they correspond to the same element in the
   free group. -/
 @[to_additive /-- If two words have a common maximal reduction, then they correspond to the same
-  element in the additive free group. -/]
+element in the additive free group. -/]
 theorem reduce.exact (H : reduce L₁ = reduce L₂) : mk L₁ = mk L₂ :=
   Red.exact.2 ⟨reduce L₂, H ▸ reduce.red, reduce.red⟩
 
 /-- A word and its maximal reduction correspond to the same element of the free group. -/
 @[to_additive /-- A word and its maximal reduction correspond to the same element of the additive
-  free group. -/]
+free group. -/]
 theorem reduce.self : mk (reduce L) = mk L :=
   reduce.exact reduce.idem
 
 /-- If words `w₁ w₂` are such that `w₁` reduces to `w₂`, then `w₂` reduces to the maximal reduction
   of `w₁`. -/
 @[to_additive /-- If words `w₁ w₂` are such that `w₁` reduces to `w₂`, then `w₂` reduces to the
-  maximal reduction of `w₁`. -/]
+maximal reduction of `w₁`. -/]
 theorem reduce.rev (H : Red L₁ L₂) : Red L₂ (reduce L₁) :=
   (reduce.eq_of_red H).symm ▸ reduce.red
 
 /-- The function that sends an element of the free group to its maximal reduction. -/
 @[to_additive /-- The function that sends an element of the additive free group to its maximal
-  reduction. -/]
+reduction. -/]
 def toWord : FreeGroup α → List (α × Bool) :=
   Quot.lift reduce fun _L₁ _L₂ H => reduce.Step.eq H
 

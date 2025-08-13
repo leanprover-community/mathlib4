@@ -1045,9 +1045,9 @@ lemma multiplicative_of_symmetric_of_isTotal
   (i.e. satisfies `f a c = f a b * f b c`), we may assume `r a b` and `r b c` are satisfied.
   We allow restricting to a subset specified by a predicate `p`. -/
 @[to_additive additive_of_isTotal /-- If a binary function from a type equipped with a total
-  relation `r` to an additive monoid is anti-symmetric (i.e. satisfies `f a b + f b a = 0`), in
-  order to show it is additive (i.e. satisfies `f a c = f a b + f b c`), we may assume `r a b` and
-  `r b c` are satisfied. We allow restricting to a subset specified by a predicate `p`. -/]
+relation `r` to an additive monoid is anti-symmetric (i.e. satisfies `f a b + f b a = 0`), in
+order to show it is additive (i.e. satisfies `f a c = f a b + f b c`), we may assume `r a b` and
+`r b c` are satisfied. We allow restricting to a subset specified by a predicate `p`. -/]
 theorem multiplicative_of_isTotal (p : α → Prop) (hswap : ∀ {a b}, p a → p b → f a b * f b a = 1)
     (hmul : ∀ {a b c}, r a b → r b c → p a → p b → p c → f a c = f a b * f b c) {a b c : α}
     (pa : p a) (pb : p b) (pc : p c) : f a c = f a b * f b c := by

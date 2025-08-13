@@ -201,7 +201,7 @@ lemma mul_of {A : Type*} [Monoid A] (a b : A) :
 
 /-- Universe lift functor for monoids. -/
 @[to_additive (attr := simps)
-  /-- Universe lift functor for additive monoids. -/]
+/-- Universe lift functor for additive monoids. -/]
 def uliftFunctor : MonCat.{v} ⥤ MonCat.{max v u} where
   obj X := MonCat.of (ULift.{u, v} X)
   map {_ _} f := MonCat.ofHom <|
@@ -387,7 +387,7 @@ instance hasForgetToMonCat : HasForget₂ CommMonCat MonCat where
 
 /-- The forgetful functor from `CommMonCat` to `MonCat` is fully faithful. -/
 @[to_additive fullyFaithfulForgetToAddMonCat
-  /-- The forgetful functor from `AddCommMonCat` to `AddMonCat` is fully faithful. -/]
+/-- The forgetful functor from `AddCommMonCat` to `AddMonCat` is fully faithful. -/]
 def fullyFaithfulForgetToMonCat : (forget₂ CommMonCat.{u} MonCat.{u}).FullyFaithful where
   preimage f := ofHom f.hom
 
@@ -400,7 +400,7 @@ instance : Coe CommMonCat.{u} MonCat.{u} where coe := (forget₂ CommMonCat MonC
 
 /-- Universe lift functor for commutative monoids. -/
 @[to_additive (attr := simps)
-  /-- Universe lift functor for additive commutative monoids. -/]
+/-- Universe lift functor for additive commutative monoids. -/]
 def uliftFunctor : CommMonCat.{v} ⥤ CommMonCat.{max v u} where
   obj X := CommMonCat.of (ULift.{u, v} X)
   map {_ _} f := CommMonCat.ofHom <|
@@ -418,7 +418,7 @@ variable [Monoid X] [Monoid Y]
 
 /-- Build an isomorphism in the category `MonCat` from a `MulEquiv` between `Monoid`s. -/
 @[to_additive (attr := simps) AddEquiv.toAddMonCatIso
-      /-- Build an isomorphism in the category `AddMonCat` from
+/-- Build an isomorphism in the category `AddMonCat` from
 an `AddEquiv` between `AddMonoid`s. -/]
 def MulEquiv.toMonCatIso (e : X ≃* Y) : MonCat.of X ≅ MonCat.of Y where
   hom := MonCat.ofHom e.toMonoidHom
@@ -446,7 +446,7 @@ namespace CategoryTheory.Iso
 
 /-- Build a `MulEquiv` from an isomorphism in the category `MonCat`. -/
 @[to_additive addMonCatIsoToAddEquiv
-      /-- Build an `AddEquiv` from an isomorphism in the category
+/-- Build an `AddEquiv` from an isomorphism in the category
 `AddMonCat`. -/]
 def monCatIsoToMulEquiv {X Y : MonCat} (i : X ≅ Y) : X ≃* Y :=
   MonoidHom.toMulEquiv i.hom.hom i.inv.hom (by ext; simp) (by ext; simp)

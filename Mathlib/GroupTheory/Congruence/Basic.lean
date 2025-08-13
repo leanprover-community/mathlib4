@@ -208,8 +208,8 @@ noncomputable def quotientKerEquivRange (f : M →* P) : (ker f).Quotient ≃* M
 
 /-- The first isomorphism theorem for monoids in the case of a homomorphism with right inverse. -/
 @[to_additive (attr := simps)
-  /-- The first isomorphism theorem for `AddMonoid`s in the case of a homomorphism
-  with right inverse. -/]
+/-- The first isomorphism theorem for `AddMonoid`s in the case of a homomorphism
+with right inverse. -/]
 def quotientKerEquivOfRightInverse (f : M →* P) (g : P → M) (hf : Function.RightInverse g f) :
     (ker f).Quotient ≃* P :=
   { kerLift f with

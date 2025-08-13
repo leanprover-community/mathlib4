@@ -928,9 +928,9 @@ is measure preserving, provided that the Haar measures on the domain and on the 
 have the same total mass.
 -/
 @[to_additive
-  /-- A continuous surjective additive monoid homomorphism of topological groups with compact
-  codomain is measure preserving, provided that the Haar measures on the domain and on the codomain
-  have the same total mass. -/]
+/-- A continuous surjective additive monoid homomorphism of topological groups with compact
+codomain is measure preserving, provided that the Haar measures on the domain and on the codomain
+have the same total mass. -/]
 theorem _root_.MonoidHom.measurePreserving
     {H : Type*} [Group H] [TopologicalSpace H] [IsTopologicalGroup H] [CompactSpace H]
     [MeasurableSpace H] [BorelSpace H]

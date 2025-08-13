@@ -332,7 +332,7 @@ variable (G α)
 
 /-- The quotient by `MulAction.orbitRel`, given a name to enable dot notation. -/
 @[to_additive
-    /-- The quotient by `AddAction.orbitRel`, given a name to enable dot notation. -/]
+/-- The quotient by `AddAction.orbitRel`, given a name to enable dot notation. -/]
 abbrev orbitRel.Quotient : Type _ :=
   _root_.Quotient <| orbitRel G α
 
@@ -453,10 +453,10 @@ local notation "Ω" => orbitRel.Quotient G α
 This version is expressed in terms of `MulAction.orbitRel.Quotient.orbit` instead of
 `MulAction.orbit`, to avoid mentioning `Quotient.out`. -/
 @[to_additive
-  /-- Decomposition of a type `X` as a disjoint union of its orbits under an additive group action.
+/-- Decomposition of a type `X` as a disjoint union of its orbits under an additive group action.
 
-  This version is expressed in terms of `AddAction.orbitRel.Quotient.orbit` instead of
-  `AddAction.orbit`, to avoid mentioning `Quotient.out`. -/]
+This version is expressed in terms of `AddAction.orbitRel.Quotient.orbit` instead of
+`AddAction.orbit`, to avoid mentioning `Quotient.out`. -/]
 def selfEquivSigmaOrbits' : α ≃ Σ ω : Ω, ω.orbit :=
   letI := orbitRel G α
   calc

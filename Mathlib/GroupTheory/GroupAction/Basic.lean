@@ -362,7 +362,7 @@ variable {G : Type*} [Group G] {α : Type*} [MulAction G α]
 
 /-- To prove inclusion of a *subgroup* in a stabilizer, it is enough to prove inclusions. -/
 @[to_additive
-  /-- To prove inclusion of a *subgroup* in a stabilizer, it is enough to prove inclusions. -/]
+/-- To prove inclusion of a *subgroup* in a stabilizer, it is enough to prove inclusions. -/]
 theorem le_stabilizer_iff_smul_le (s : Set α) (H : Subgroup G) :
     H ≤ stabilizer G s ↔ ∀ g ∈ H, g • s ⊆ s := by
   constructor

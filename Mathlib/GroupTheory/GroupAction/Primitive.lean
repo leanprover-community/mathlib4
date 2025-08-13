@@ -148,8 +148,8 @@ theorem IsPreprimitive.of_isTrivialBlock_base [IsPretransitive G X] (a : X)
 /-- If the action is not trivial, then the trivial blocks condition implies preprimitivity
 (pretransitivity is automatic) (based condition) -/
 @[to_additive
-  /-- If the action is not trivial, then the trivial blocks condition implies preprimitivity
-  (pretransitivity is automatic) (based condition) -/]
+/-- If the action is not trivial, then the trivial blocks condition implies preprimitivity
+(pretransitivity is automatic) (based condition) -/]
 theorem IsPreprimitive.of_isTrivialBlock_of_notMem_fixedPoints {a : X} (ha : a ∉ fixedPoints G X)
     (H : ∀ ⦃B : Set X⦄, a ∈ B → IsBlock G B → IsTrivialBlock B) :
     IsPreprimitive G X :=
@@ -181,7 +181,7 @@ alias IsPreprimitive.of_isTrivialBlock_of_not_mem_fixedPoints :=
 /-- If the action is not trivial, then the trivial blocks condition implies preprimitivity
 (pretransitivity is automatic) -/
 @[to_additive
-  /-- If the action is not trivial, then the trivial blocks condition implies preprimitivity
+/-- If the action is not trivial, then the trivial blocks condition implies preprimitivity
 (pretransitivity is automatic) -/]
 theorem IsPreprimitive.mk' (Hnt : fixedPoints G X ≠ ⊤)
     (H : ∀ {B : Set X} (_ : IsBlock G B), IsTrivialBlock B) :
@@ -233,8 +233,8 @@ open scoped BigOperators Pointwise
 /-- A pretransitive action on a nontrivial type is preprimitive iff
 the set of blocks containing a given element is a simple order -/
 @[to_additive (attr := simp)
-  /-- A pretransitive action on a nontrivial type is preprimitive iff
-  the set of blocks containing a given element is a simple order -/]
+/-- A pretransitive action on a nontrivial type is preprimitive iff
+the set of blocks containing a given element is a simple order -/]
 theorem isSimpleOrder_blockMem_iff_isPreprimitive [IsPretransitive G X] [Nontrivial X] (a : X) :
     IsSimpleOrder (BlockMem G a) ↔ IsPreprimitive G X := by
   constructor
@@ -257,8 +257,8 @@ theorem isSimpleOrder_blockMem_iff_isPreprimitive [IsPretransitive G X] [Nontriv
 /-- A pretransitive action is preprimitive
 iff the stabilizer of any point is a maximal subgroup (Wielandt, th. 7.5) -/
 @[to_additive
-  /-- A pretransitive action is preprimitive
-  iff the stabilizer of any point is a maximal subgroup (Wielandt, th. 7.5) -/]
+/-- A pretransitive action is preprimitive
+iff the stabilizer of any point is a maximal subgroup (Wielandt, th. 7.5) -/]
 theorem isCoatom_stabilizer_iff_preprimitive [IsPretransitive G X] [Nontrivial X] (a : X) :
     IsCoatom (stabilizer G a) ↔ IsPreprimitive G X := by
   rw [← isSimpleOrder_blockMem_iff_isPreprimitive G a, ← Set.isSimpleOrder_Ici_iff_isCoatom]
@@ -281,7 +281,7 @@ variable {M : Type*} [Group M] {α : Type*} [MulAction M α]
 /-- In a preprimitive action, any normal subgroup that acts nontrivially is pretransitive
 (Wielandt, th. 7.1). -/
 @[to_additive /-- In a preprimitive additive action,
-  any normal subgroup that acts nontrivially is pretransitive (Wielandt, th. 7.1). -/]
+any normal subgroup that acts nontrivially is pretransitive (Wielandt, th. 7.1). -/]
 -- See note [lower instance priority]
 instance (priority := 100) IsPreprimitive.isQuasiPreprimitive [IsPreprimitive M α] :
     IsQuasiPreprimitive M α where

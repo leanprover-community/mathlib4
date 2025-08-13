@@ -44,8 +44,8 @@ variable {G G₀ α : Type*} [MeasurableSpace α] [Group G] [GroupWithZero G₀]
 /-- If a group `G` acts on `α` by measurable maps, then each element `c : G` defines a measurable
 automorphism of `α`. -/
 @[to_additive (attr := simps! -fullyApplied toEquiv apply)
-      /-- If an additive group `G` acts on `α` by measurable maps, then each element `c : G`
-      defines a measurable automorphism of `α`. -/]
+/-- If an additive group `G` acts on `α` by measurable maps, then each element `c : G`
+defines a measurable automorphism of `α`. -/]
 def smul (c : G) : α ≃ᵐ α where
   toEquiv := MulAction.toPerm c
   measurable_toFun := measurable_const_smul c
@@ -84,8 +84,8 @@ variable [MeasurableMul G] [MeasurableMul G₀]
 /-- If `G` is a group with measurable multiplication, then left multiplication by `g : G` is a
 measurable automorphism of `G`. -/
 @[to_additive
-      /-- If `G` is an additive group with measurable addition, then addition of `g : G`
-      on the left is a measurable automorphism of `G`. -/]
+/-- If `G` is an additive group with measurable addition, then addition of `g : G`
+on the left is a measurable automorphism of `G`. -/]
 def mulLeft (g : G) : G ≃ᵐ G :=
   smul g
 
@@ -108,8 +108,8 @@ theorem _root_.measurableEmbedding_mulLeft (g : G) : MeasurableEmbedding (g * ·
 /-- If `G` is a group with measurable multiplication, then right multiplication by `g : G` is a
 measurable automorphism of `G`. -/
 @[to_additive
-      /-- If `G` is an additive group with measurable addition, then addition of `g : G`
-      on the right is a measurable automorphism of `G`. -/]
+/-- If `G` is an additive group with measurable addition, then addition of `g : G`
+on the right is a measurable automorphism of `G`. -/]
 def mulRight (g : G) : G ≃ᵐ G where
   toEquiv := Equiv.mulRight g
   measurable_toFun := measurable_mul_const g
@@ -179,7 +179,7 @@ end Mul
 
 /-- Inversion as a measurable automorphism of a group or group with zero. -/
 @[to_additive (attr := simps! -fullyApplied toEquiv apply)
-    /-- Negation as a measurable automorphism of an additive group. -/]
+/-- Negation as a measurable automorphism of an additive group. -/]
 def inv (G) [MeasurableSpace G] [InvolutiveInv G] [MeasurableInv G] : G ≃ᵐ G where
   toEquiv := Equiv.inv G
   measurable_toFun := measurable_inv

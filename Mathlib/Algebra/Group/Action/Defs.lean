@@ -58,7 +58,7 @@ instance (priority := 910) Mul.toSMul (α : Type*) [Mul α] : SMul α α := ⟨(
 See also `Monoid.toOppositeMulAction` and `MonoidWithZero.toOppositeMulActionWithZero`. -/
 @[to_additive /-- Like `Add.toVAdd`, but adds on the right.
 
-  See also `AddMonoid.toOppositeAddAction`. -/]
+See also `AddMonoid.toOppositeAddAction`. -/]
 instance (priority := 910) Mul.toSMulMulOpposite (α : Type*) [Mul α] : SMul αᵐᵒᵖ α where
   smul a b := b * a.unop
 
@@ -385,7 +385,7 @@ lemma smul_iterate_apply (a : M) (n : ℕ) (x : α) : (a • ·)^[n] x = a ^ n �
 /-- Pullback a multiplicative action along an injective map respecting `•`.
 See note [reducible non-instances]. -/
 @[to_additive
-    /-- Pullback an additive action along an injective map respecting `+ᵥ`. -/]
+/-- Pullback an additive action along an injective map respecting `+ᵥ`. -/]
 protected abbrev Function.Injective.mulAction [SMul M β] (f : β → α) (hf : Injective f)
     (smul : ∀ (c : M) (x), f (c • x) = c • f x) : MulAction M β where
   smul := (· • ·)
@@ -395,7 +395,7 @@ protected abbrev Function.Injective.mulAction [SMul M β] (f : β → α) (hf : 
 /-- Pushforward a multiplicative action along a surjective map respecting `•`.
 See note [reducible non-instances]. -/
 @[to_additive
-    /-- Pushforward an additive action along a surjective map respecting `+ᵥ`. -/]
+/-- Pushforward an additive action along a surjective map respecting `+ᵥ`. -/]
 protected abbrev Function.Surjective.mulAction [SMul M β] (f : α → β) (hf : Surjective f)
     (smul : ∀ (c : M) (x), f (c • x) = c • f x) : MulAction M β where
   smul := (· • ·)

@@ -23,7 +23,7 @@ namespace Pi
 
 /-- The product of a family of ordered commutative monoids is an ordered commutative monoid. -/
 @[to_additive
-      /-- The product of a family of ordered additive commutative monoids is
+/-- The product of a family of ordered additive commutative monoids is
 an ordered additive commutative monoid. -/]
 instance isOrderedMonoid {ι : Type*} {Z : ι → Type*} [∀ i, CommMonoid (Z i)]
     [∀ i, PartialOrder (Z i)] [∀ i, IsOrderedMonoid (Z i)] :
@@ -39,7 +39,7 @@ instance existsMulOfLe {ι : Type*} {α : ι → Type*} [∀ i, LE (α i)] [∀ 
 
 /-- The product of a family of canonically ordered monoids is a canonically ordered monoid. -/
 @[to_additive
-      /-- The product of a family of canonically ordered additive monoids is
+/-- The product of a family of canonically ordered additive monoids is
 a canonically ordered additive monoid. -/]
 instance {ι : Type*} {Z : ι → Type*} [∀ i, Monoid (Z i)] [∀ i, PartialOrder (Z i)]
     [∀ i, CanonicallyOrderedMul (Z i)] :

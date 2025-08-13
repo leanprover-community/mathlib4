@@ -474,7 +474,7 @@ theorem leftQuotientEquiv_apply {f : G ⧸ H → G} (hf : ∀ q, (f q : G ⧸ H)
 /-- A left transversal can be viewed as a function mapping each element of the group
   to the chosen representative from that left coset. -/
 @[to_additive /-- A left transversal can be viewed as a function mapping each element of the group
-  to the chosen representative from that left coset. -/]
+to the chosen representative from that left coset. -/]
 noncomputable def toLeftFun (hS : IsComplement S H) : G → S := leftQuotientEquiv hS ∘ Quotient.mk''
 
 @[to_additive]
@@ -518,7 +518,7 @@ theorem rightQuotientEquiv_apply {f : Quotient (QuotientGroup.rightRel H) → G}
 /-- A right transversal can be viewed as a function mapping each element of the group
   to the chosen representative from that right coset. -/
 @[to_additive /-- A right transversal can be viewed as a function mapping each element of the group
-  to the chosen representative from that right coset. -/]
+to the chosen representative from that right coset. -/]
 noncomputable def toRightFun (hT : IsComplement H T) : G → T := rightQuotientEquiv hT ∘ .mk''
 
 @[to_additive]

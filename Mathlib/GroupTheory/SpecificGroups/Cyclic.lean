@@ -94,8 +94,8 @@ instance IsCyclic.commutative [Group α] [IsCyclic α] :
 /-- A cyclic group is always commutative. This is not an `instance` because often we have a better
 proof of `CommGroup`. -/
 @[to_additive
-      /-- A cyclic group is always commutative. This is not an `instance` because often we have
-      a better proof of `AddCommGroup`. -/]
+/-- A cyclic group is always commutative. This is not an `instance` because often we have
+a better proof of `AddCommGroup`. -/]
 def IsCyclic.commGroup [hg : Group α] [IsCyclic α] : CommGroup α :=
   { hg with mul_comm := commutative.comm }
 
@@ -542,8 +542,8 @@ variable [Group G] [Group G']
 /-- A group is commutative if the quotient by the center is cyclic.
   Also see `commGroupOfCyclicCenterQuotient` for the `CommGroup` instance. -/
 @[to_additive
-      /-- A group is commutative if the quotient by the center is cyclic.
-      Also see `addCommGroupOfCyclicCenterQuotient` for the `AddCommGroup` instance. -/]
+/-- A group is commutative if the quotient by the center is cyclic.
+Also see `addCommGroupOfCyclicCenterQuotient` for the `AddCommGroup` instance. -/]
 theorem commutative_of_cyclic_center_quotient [IsCyclic G'] (f : G →* G') (hf : f.ker ≤ center G)
     (a b : G) : a * b = b * a :=
   let ⟨⟨x, y, (hxy : f y = x)⟩, (hx : ∀ a : f.range, a ∈ zpowers _)⟩ :=
@@ -565,7 +565,7 @@ theorem commutative_of_cyclic_center_quotient [IsCyclic G'] (f : G →* G') (hf 
 
 /-- A group is commutative if the quotient by the center is cyclic. -/
 @[to_additive
-      /-- A group is commutative if the quotient by the center is cyclic. -/]
+/-- A group is commutative if the quotient by the center is cyclic. -/]
 def commGroupOfCyclicCenterQuotient [IsCyclic G'] (f : G →* G') (hf : f.ker ≤ center G) :
     CommGroup G :=
   { show Group G by infer_instance with mul_comm := commutative_of_cyclic_center_quotient f hf }

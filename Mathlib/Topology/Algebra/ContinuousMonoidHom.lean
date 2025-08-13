@@ -154,7 +154,7 @@ def prod (f : A →ₜ* B) (g : A →ₜ* C) : A →ₜ* (B × C) :=
 
 /-- Product of two continuous homomorphisms on different spaces. -/
 @[to_additive (attr := simps!) prodMap
-  /-- Product of two continuous homomorphisms on different spaces. -/]
+/-- Product of two continuous homomorphisms on different spaces. -/]
 def prodMap (f : A →ₜ* C) (g : B →ₜ* D) :
     (A × B) →ₜ* (C × D) :=
   ⟨f.toMonoidHom.prodMap g.toMonoidHom, f.continuous_toFun.prodMap g.continuous_toFun⟩
@@ -183,24 +183,24 @@ lemma coe_id : ⇑(ContinuousMonoidHom.id A) = _root_.id :=
 
 /-- The continuous homomorphism given by projection onto the first factor. -/
 @[to_additive (attr := simps!)
-  /-- The continuous homomorphism given by projection onto the first factor. -/]
+/-- The continuous homomorphism given by projection onto the first factor. -/]
 def fst : (A × B) →ₜ* A := ⟨MonoidHom.fst A B, continuous_fst⟩
 
 /-- The continuous homomorphism given by projection onto the second factor. -/
 @[to_additive (attr := simps!)
-  /-- The continuous homomorphism given by projection onto the second factor. -/]
+/-- The continuous homomorphism given by projection onto the second factor. -/]
 def snd : (A × B) →ₜ* B :=
   ⟨MonoidHom.snd A B, continuous_snd⟩
 
 /-- The continuous homomorphism given by inclusion of the first factor. -/
 @[to_additive (attr := simps!)
-  /-- The continuous homomorphism given by inclusion of the first factor. -/]
+/-- The continuous homomorphism given by inclusion of the first factor. -/]
 def inl : A →ₜ* (A × B) :=
   prod (id A) 1
 
 /-- The continuous homomorphism given by inclusion of the second factor. -/
 @[to_additive (attr := simps!)
-  /-- The continuous homomorphism given by inclusion of the second factor. -/]
+/-- The continuous homomorphism given by inclusion of the second factor. -/]
 def inr : B →ₜ* (A × B) :=
   prod 1 (id B)
 
@@ -533,7 +533,7 @@ def ofUnique {M N} [Unique M] [Unique N] [Mul M] [Mul N]
 
 /-- There is a unique monoid homomorphism between two monoids with a unique element. -/
 @[to_additive /-- There is a unique additive monoid homomorphism between two additive monoids with
-  a unique element. -/]
+a unique element. -/]
 instance {M N} [Unique M] [Unique N] [Mul M] [Mul N]
     [TopologicalSpace M] [TopologicalSpace N] : Unique (M ≃ₜ* N) where
   default := ofUnique

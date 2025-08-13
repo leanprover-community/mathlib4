@@ -48,7 +48,7 @@ theorem coe_mapEquiv (h : M ≃* N) (x : Mˣ) : (mapEquiv h x : N) = h x :=
 
 /-- Left multiplication by a unit of a monoid is a permutation of the underlying type. -/
 @[to_additive (attr := simps -fullyApplied apply)
-  /-- Left addition of an additive unit is a permutation of the underlying type. -/]
+/-- Left addition of an additive unit is a permutation of the underlying type. -/]
 def mulLeft (u : Mˣ) : Equiv.Perm M where
   toFun x := u * x
   invFun x := u⁻¹ * x
@@ -187,7 +187,7 @@ def unitsEquivProdSubtype [Monoid α] : αˣ ≃ {p : α × α // p.1 * p.2 = 1 
 /-- In a `DivisionCommMonoid`, `Equiv.inv` is a `MulEquiv`. There is a variant of this
 `MulEquiv.inv' G : G ≃* Gᵐᵒᵖ` for the non-commutative case. -/
 @[to_additive (attr := simps apply)
-  /-- When the `AddGroup` is commutative, `Equiv.neg` is an `AddEquiv`. -/]
+/-- When the `AddGroup` is commutative, `Equiv.neg` is an `AddEquiv`. -/]
 def MulEquiv.inv (G : Type*) [DivisionCommMonoid G] : G ≃* G :=
   { Equiv.inv G with toFun := Inv.inv, invFun := Inv.inv, map_mul' := mul_inv }
 

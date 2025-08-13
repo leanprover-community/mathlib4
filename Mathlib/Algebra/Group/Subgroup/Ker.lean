@@ -89,8 +89,8 @@ theorem restrict_range (f : G →* N) : (f.restrict K).range = K.map f := by
 /-- The canonical surjective group homomorphism `G →* f(G)` induced by a group
 homomorphism `G →* N`. -/
 @[to_additive
-      /-- The canonical surjective `AddGroup` homomorphism `G →+ f(G)` induced by a group
-      homomorphism `G →+ N`. -/]
+/-- The canonical surjective `AddGroup` homomorphism `G →+ f(G)` induced by a group
+homomorphism `G →+ N`. -/]
 def rangeRestrict (f : G →* N) : G →* f.range :=
   codRestrict f _ fun x => ⟨x, rfl⟩
 
@@ -129,7 +129,7 @@ theorem range_eq_top {N} [Group N] {f : G →* N} :
 
 /-- The range of a surjective monoid homomorphism is the whole of the codomain. -/
 @[to_additive (attr := simp)
-  /-- The range of a surjective `AddMonoid` homomorphism is the whole of the codomain. -/]
+/-- The range of a surjective `AddMonoid` homomorphism is the whole of the codomain. -/]
 theorem range_eq_top_of_surjective {N} [Group N] (f : G →* N) (hf : Function.Surjective f) :
     f.range = (⊤ : Subgroup N) :=
   range_eq_top.2 hf
@@ -213,8 +213,8 @@ variable {M : Type*} [MulOneClass M]
 /-- The multiplicative kernel of a monoid homomorphism is the subgroup of elements `x : G` such that
 `f x = 1` -/
 @[to_additive
-      /-- The additive kernel of an `AddMonoid` homomorphism is the `AddSubgroup` of elements
-      such that `f x = 0` -/]
+/-- The additive kernel of an `AddMonoid` homomorphism is the `AddSubgroup` of elements
+such that `f x = 0` -/]
 def ker (f : G →* M) : Subgroup G :=
   { MonoidHom.mker f with
     inv_mem' := fun {x} (hx : f x = 1) =>
@@ -343,8 +343,8 @@ theorem eqLocus_same (f : G →* N) : f.eqLocus f = ⊤ :=
 
 /-- If two monoid homomorphisms are equal on a set, then they are equal on its subgroup closure. -/
 @[to_additive
-      /-- If two monoid homomorphisms are equal on a set, then they are equal on its subgroup
-      closure. -/]
+/-- If two monoid homomorphisms are equal on a set, then they are equal on its subgroup
+closure. -/]
 theorem eqOn_closure {f g : G →* M} {s : Set G} (h : Set.EqOn f g s) : Set.EqOn f g (closure s) :=
   show closure s ≤ f.eqLocus g from (closure_le _).2 h
 

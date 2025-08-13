@@ -91,7 +91,7 @@ variable {M X : Type*} [Monoid M] [SMul M X]
 /-- If `N` acts continuously and ergodically on `X` and `M` acts minimally on `N`,
 then the corresponding action of `M` on `X` is ergodic. -/
 @[to_additive
-  /-- If `N` acts additively continuously and ergodically on `X` and `M` acts minimally on `N`,
+/-- If `N` acts additively continuously and ergodically on `X` and `M` acts minimally on `N`,
 then the corresponding action of `M` on `X` is ergodic. -/]
 theorem ErgodicSMul.trans_isMinimal (N : Type*) [MulAction M N]
     [Monoid N] [TopologicalSpace N] [MulAction.IsMinimal M N]

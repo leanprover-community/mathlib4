@@ -95,7 +95,7 @@ variable {M S : Type*} [DivInvMonoid M] [SetLike S M] [hSM : SubgroupClass S M] 
 
 /-- A subgroup is closed under division. -/
 @[to_additive (attr := aesop 90% (rule_sets := [SetLike]))
-  /-- An additive subgroup is closed under subtraction. -/]
+/-- An additive subgroup is closed under subtraction. -/]
 theorem div_mem {x y : M} (hx : x ∈ H) (hy : y ∈ H) : x / y ∈ H := by
   rw [div_eq_mul_inv]; exact mul_mem hx (inv_mem hy)
 
@@ -190,7 +190,7 @@ instance (priority := 75) toCommGroup {G : Type*} [CommGroup G] [SetLike S G] [S
 
 /-- The natural group hom from a subgroup of group `G` to `G`. -/
 @[to_additive (attr := coe)
-  /-- The natural group hom from an additive subgroup of `AddGroup` `G` to `G`. -/]
+/-- The natural group hom from an additive subgroup of `AddGroup` `G` to `G`. -/]
 protected def subtype : H →* G where
   toFun := ((↑) : H → G); map_one' := rfl; map_mul' := fun _ _ => rfl
 
@@ -380,8 +380,8 @@ variable (H K : Subgroup G)
 /-- Copy of a subgroup with a new `carrier` equal to the old one. Useful to fix definitional
 equalities. -/
 @[to_additive (attr := simps)
-      /-- Copy of an additive subgroup with a new `carrier` equal to the old one.
-      Useful to fix definitional equalities -/]
+/-- Copy of an additive subgroup with a new `carrier` equal to the old one.
+Useful to fix definitional equalities -/]
 protected def copy (K : Subgroup G) (s : Set G) (hs : s = K) : Subgroup G where
   carrier := s
   one_mem' := hs.symm ▸ K.one_mem'
@@ -660,8 +660,8 @@ def normalizer : Subgroup G where
 -- TODO should this replace `normalizer`?
 /-- The `setNormalizer` of `S` is the subgroup of `G` whose elements satisfy `g*S*g⁻¹=S` -/
 @[to_additive
-      /-- The `setNormalizer` of `S` is the subgroup of `G` whose elements satisfy
-      `g+S-g=S`. -/]
+/-- The `setNormalizer` of `S` is the subgroup of `G` whose elements satisfy
+`g+S-g=S`. -/]
 def setNormalizer (S : Set G) : Subgroup G where
   carrier := { g : G | ∀ n, n ∈ S ↔ g * n * g⁻¹ ∈ S }
   one_mem' := by simp

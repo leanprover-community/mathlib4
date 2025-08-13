@@ -45,8 +45,8 @@ section MonoidHomClass
 /-- If two homomorphisms from a division monoid to a monoid are equal at a unit `x`, then they are
 equal at `x⁻¹`. -/
 @[to_additive
-  /-- If two homomorphisms from a subtraction monoid to an additive monoid are equal at an
-  additive unit `x`, then they are equal at `-x`. -/]
+/-- If two homomorphisms from a subtraction monoid to an additive monoid are equal at an
+additive unit `x`, then they are equal at `-x`. -/]
 theorem IsUnit.eq_on_inv {F G N} [DivisionMonoid G] [Monoid N] [FunLike F G N]
     [MonoidHomClass F G N] {x : G} (hx : IsUnit x) (f g : F) (h : f x = g x) : f x⁻¹ = g x⁻¹ :=
   left_inv_eq_right_inv (map_mul_eq_one f hx.inv_mul_cancel)
@@ -54,8 +54,8 @@ theorem IsUnit.eq_on_inv {F G N} [DivisionMonoid G] [Monoid N] [FunLike F G N]
 
 /-- If two homomorphism from a group to a monoid are equal at `x`, then they are equal at `x⁻¹`. -/
 @[to_additive
-    /-- If two homomorphism from an additive group to an additive monoid are equal at `x`,
-    then they are equal at `-x`. -/]
+/-- If two homomorphism from an additive group to an additive monoid are equal at `x`,
+then they are equal at `-x`. -/]
 theorem eq_on_inv {F G M} [Group G] [Monoid M] [FunLike F G M] [MonoidHomClass F G M]
     (f g : F) {x : G} (h : f x = g x) : f x⁻¹ = g x⁻¹ :=
   (Group.isUnit x).eq_on_inv f g h
@@ -129,8 +129,8 @@ end DivisionMonoid
 /-- If a map `g : M → Nˣ` agrees with a homomorphism `f : M →* N`, then
 this map is a monoid homomorphism too. -/
 @[to_additive
-  /-- If a map `g : M → AddUnits N` agrees with a homomorphism `f : M →+ N`, then this map
-  is an AddMonoid homomorphism too. -/]
+/-- If a map `g : M → AddUnits N` agrees with a homomorphism `f : M →+ N`, then this map
+is an AddMonoid homomorphism too. -/]
 def liftRight (f : M →* N) (g : M → Nˣ) (h : ∀ x, ↑(g x) = f x) : M →* Nˣ where
   toFun := g
   map_one' := by ext; rw [h 1]; exact f.map_one
@@ -162,9 +162,9 @@ variable [Monoid M]
 then its image lies in the units of `M`,
 and `f.toHomUnits` is the corresponding monoid homomorphism from `G` to `Mˣ`. -/
 @[to_additive
-  /-- If `f` is a homomorphism from an additive group `G` to an additive monoid `M`,
-  then its image lies in the `AddUnits` of `M`,
-  and `f.toHomUnits` is the corresponding homomorphism from `G` to `AddUnits M`. -/]
+/-- If `f` is a homomorphism from an additive group `G` to an additive monoid `M`,
+then its image lies in the `AddUnits` of `M`,
+and `f.toHomUnits` is the corresponding homomorphism from `G` to `AddUnits M`. -/]
 def toHomUnits (f : G →* M) : G →* Mˣ :=
   Units.liftRight f (fun g => ⟨f g, f g⁻¹, map_mul_eq_one f (mul_inv_cancel _),
     map_mul_eq_one f (inv_mul_cancel _)⟩)
@@ -214,8 +214,8 @@ theorem _root_.isUnit_map_of_leftInverse [MonoidHomClass F M N] [MonoidHomClass 
 /-- If a homomorphism `f : M →* N` sends each element to an `IsUnit`, then it can be lifted
 to `f : M →* Nˣ`. See also `Units.liftRight` for a computable version. -/
 @[to_additive
-  /-- If a homomorphism `f : M →+ N` sends each element to an `IsAddUnit`, then it can be
-  lifted to `f : M →+ AddUnits N`. See also `AddUnits.liftRight` for a computable version. -/]
+/-- If a homomorphism `f : M →+ N` sends each element to an `IsAddUnit`, then it can be
+lifted to `f : M →+ AddUnits N`. See also `AddUnits.liftRight` for a computable version. -/]
 noncomputable def liftRight (f : M →* N) (hf : ∀ x, IsUnit (f x)) : M →* Nˣ :=
   (Units.liftRight f fun x => (hf x).unit) fun _ => rfl
 

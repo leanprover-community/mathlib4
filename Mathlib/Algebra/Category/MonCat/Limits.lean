@@ -140,9 +140,9 @@ noncomputable instance forget_preservesLimitsOfShape [Small.{u} J] :
 
 This means the underlying type of a limit can be computed as a limit in the category of types. -/
 @[to_additive
-  /-- The forgetful functor from additive monoids to types preserves all limits.
+/-- The forgetful functor from additive monoids to types preserves all limits.
 
-  This means the underlying type of a limit can be computed as a limit in the category of types. -/,
+This means the underlying type of a limit can be computed as a limit in the category of types. -/,
   to_additive_relevant_arg 2]
 noncomputable instance forget_preservesLimitsOfSize [UnivLE.{v, u}] :
     PreservesLimitsOfSize.{w, v} (forget MonCat.{u}) where
@@ -255,7 +255,7 @@ noncomputable def limitCone : Cone F :=
 (Generally, you'll just want to use `limit.cone F`.)
 -/
 @[to_additive
-      /-- The chosen cone is a limit cone. (Generally, you'll just want to use
+/-- The chosen cone is a limit cone. (Generally, you'll just want to use
 `limit.cone F`.) -/]
 noncomputable def limitConeIsLimit : IsLimit (limitCone F) :=
   liftedLimitIsLimit _
@@ -287,10 +287,10 @@ instance hasLimits : HasLimits CommMonCat.{u} :=
 
 This means the underlying type of a limit can be computed as a limit in the category of monoids. -/
 @[to_additive AddCommMonCat.forget₂AddMonPreservesLimitsOfSize /-- The forgetful functor from
-  additive commutative monoids to additive monoids preserves all limits.
+additive commutative monoids to additive monoids preserves all limits.
 
-  This means the underlying type of a limit can be computed as a limit in the category of additive
-  monoids. -/,
+This means the underlying type of a limit can be computed as a limit in the category of additive
+monoids. -/,
   to_additive_relevant_arg 2]
 instance forget₂Mon_preservesLimitsOfSize [UnivLE.{v, u}] :
     PreservesLimitsOfSize.{w, v} (forget₂ CommMonCat.{u} MonCat.{u}) where

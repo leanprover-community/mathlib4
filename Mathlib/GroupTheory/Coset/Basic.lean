@@ -330,7 +330,7 @@ def rightCosetEquivSubgroup (g : α) : (op g • s : Set α) ≃ s :=
 
 /-- A (non-canonical) bijection between a group `α` and the product `(α/s) × s` -/
 @[to_additive addGroupEquivQuotientProdAddSubgroup
-  /-- A (non-canonical) bijection between an add_group `α` and the product `(α/s) × s` -/]
+/-- A (non-canonical) bijection between an add_group `α` and the product `(α/s) × s` -/]
 noncomputable def groupEquivQuotientProdSubgroup : α ≃ (α ⧸ s) × s :=
   calc
     α ≃ Σ L : α ⧸ s, { x : α // (x : α ⧸ s) = L } := (Equiv.sigmaFiberEquiv QuotientGroup.mk).symm
@@ -350,8 +350,8 @@ variable {t : Subgroup α}
 /-- If `H ≤ K`, then `G/H ≃ G/K × K/H` constructively, using the provided right inverse
 of the quotient map `G → G/K`. The classical version is `Subgroup.quotientEquivProdOfLE`. -/
 @[to_additive (attr := simps) quotientEquivProdOfLE'
-  /-- If `H ≤ K`, then `G/H ≃ G/K × K/H` constructively, using the provided right inverse
-  of the quotient map `G → G/K`. The classical version is `AddSubgroup.quotientEquivProdOfLE`. -/]
+/-- If `H ≤ K`, then `G/H ≃ G/K × K/H` constructively, using the provided right inverse
+of the quotient map `G → G/K`. The classical version is `AddSubgroup.quotientEquivProdOfLE`. -/]
 def quotientEquivProdOfLE' (h_le : s ≤ t) (f : α ⧸ t → α)
     (hf : Function.RightInverse f QuotientGroup.mk) : α ⧸ s ≃ (α ⧸ t) × t ⧸ s.subgroupOf t where
   toFun a :=
@@ -391,7 +391,7 @@ alias AddSubgroup.quotientEquivSumOfLE'_symm_apply := AddSubgroup.quotientEquivP
 /-- If `H ≤ K`, then `G/H ≃ G/K × K/H` nonconstructively.
 The constructive version is `quotientEquivProdOfLE'`. -/
 @[to_additive (attr := simps!) quotientEquivProdOfLE
-  /-- If `H ≤ K`, then `G/H ≃ G/K × K/H` nonconstructively. The
+/-- If `H ≤ K`, then `G/H ≃ G/K × K/H` nonconstructively. The
 constructive version is `quotientEquivProdOfLE'`. -/]
 noncomputable def quotientEquivProdOfLE (h_le : s ≤ t) : α ⧸ s ≃ (α ⧸ t) × t ⧸ s.subgroupOf t :=
   quotientEquivProdOfLE' h_le Quotient.out Quotient.out_eq'

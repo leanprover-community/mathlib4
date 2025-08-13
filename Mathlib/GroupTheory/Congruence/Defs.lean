@@ -148,7 +148,7 @@ theorem rel_mk {s : Setoid M} {h a b} : Con.mk s h a b ↔ r a b :=
 /-- Given a type `M` with a multiplication, a congruence relation `c` on `M`, and elements of `M`
 `x, y`, `(x, y) ∈ M × M` iff `x` is related to `y` by `c`. -/
 @[to_additive instMembershipProd
-  /-- Given a type `M` with an addition, `x, y ∈ M`, and an additive congruence relation
+/-- Given a type `M` with an addition, `x, y ∈ M`, and an additive congruence relation
 `c` on `M`, `(x, y) ∈ M × M` iff `x` is related to `y` by `c`. -/]
 instance instMembershipProd : Membership (M × M) (Con M) :=
   ⟨fun c x => c x.1 x.2⟩
@@ -330,8 +330,8 @@ theorem sInf_toSetoid (S : Set (Con M)) : (sInf S).toSetoid = sInf (toSetoid '' 
 /-- The infimum of a set of congruence relations is the same as the infimum of the set's image
 under the map to the underlying binary relation. -/
 @[to_additive (attr := simp, norm_cast)
-  /-- The infimum of a set of additive congruence relations is the same as the infimum
-  of the set's image under the map to the underlying binary relation. -/]
+/-- The infimum of a set of additive congruence relations is the same as the infimum
+of the set's image under the map to the underlying binary relation. -/]
 theorem coe_sInf (S : Set (Con M)) :
     ⇑(sInf S) = sInf ((⇑) '' S) := by
   ext
@@ -368,8 +368,8 @@ instance : CompleteLattice (Con M) where
 /-- The infimum of two congruence relations equals the infimum of the underlying binary
 operations. -/
 @[to_additive (attr := simp, norm_cast)
-  /-- The infimum of two additive congruence relations equals the infimum of the underlying binary
-  operations. -/]
+/-- The infimum of two additive congruence relations equals the infimum of the underlying binary
+operations. -/]
 theorem coe_inf {c d : Con M} : ⇑(c ⊓ d) = ⇑c ⊓ ⇑d :=
   rfl
 
@@ -585,11 +585,11 @@ This lemma allows to avoid code duplication in the definition of the inverse ope
 instead of proving both `∀ x y, c x y → c (f x) (f y)` (to define the operation)
 and `∀ x, c (f x * x) 1` (to prove the group laws), one can only prove the latter. -/
 @[to_additive /-- Sometimes, an additive group is defined as a quotient of a monoid
-  by an additive congruence relation.
-  Usually, the inverse operation is defined as `Setoid.map f _` for some `f`.
-  This lemma allows to avoid code duplication in the definition of the inverse operation:
-  instead of proving both `∀ x y, c x y → c (f x) (f y)` (to define the operation)
-  and `∀ x, c (f x + x) 0` (to prove the group laws), one can only prove the latter. -/]
+by an additive congruence relation.
+Usually, the inverse operation is defined as `Setoid.map f _` for some `f`.
+This lemma allows to avoid code duplication in the definition of the inverse operation:
+instead of proving both `∀ x y, c x y → c (f x) (f y)` (to define the operation)
+and `∀ x, c (f x + x) 0` (to prove the group laws), one can only prove the latter. -/]
 theorem map_of_mul_left_rel_one [Monoid M] (c : Con M)
     (f : M → M) (hf : ∀ x, c (f x * x) 1) {x y} (h : c x y) : c (f x) (f y) := by
   simp only [← Con.eq, coe_one, coe_mul] at *

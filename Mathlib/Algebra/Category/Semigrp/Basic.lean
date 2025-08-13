@@ -369,7 +369,7 @@ variable [Mul X] [Mul Y]
 
 /-- Build an isomorphism in the category `MagmaCat` from a `MulEquiv` between `Mul`s. -/
 @[to_additive (attr := simps)
-      /-- Build an isomorphism in the category `AddMagmaCat` from an `AddEquiv` between `Add`s. -/]
+/-- Build an isomorphism in the category `AddMagmaCat` from an `AddEquiv` between `Add`s. -/]
 def MulEquiv.toMagmaCatIso (e : X ≃* Y) : MagmaCat.of X ≅ MagmaCat.of Y where
   hom := MagmaCat.ofHom e.toMulHom
   inv := MagmaCat.ofHom e.symm.toMulHom
@@ -382,8 +382,8 @@ variable [Semigroup X] [Semigroup Y]
 
 /-- Build an isomorphism in the category `Semigroup` from a `MulEquiv` between `Semigroup`s. -/
 @[to_additive (attr := simps)
-  /-- Build an isomorphism in the category
-  `AddSemigroup` from an `AddEquiv` between `AddSemigroup`s. -/]
+/-- Build an isomorphism in the category
+`AddSemigroup` from an `AddEquiv` between `AddSemigroup`s. -/]
 def MulEquiv.toSemigrpIso (e : X ≃* Y) : Semigrp.of X ≅ Semigrp.of Y where
   hom := Semigrp.ofHom e.toMulHom
   inv := Semigrp.ofHom e.symm.toMulHom
@@ -394,13 +394,13 @@ namespace CategoryTheory.Iso
 
 /-- Build a `MulEquiv` from an isomorphism in the category `MagmaCat`. -/
 @[to_additive
-      /-- Build an `AddEquiv` from an isomorphism in the category `AddMagmaCat`. -/]
+/-- Build an `AddEquiv` from an isomorphism in the category `AddMagmaCat`. -/]
 def magmaCatIsoToMulEquiv {X Y : MagmaCat} (i : X ≅ Y) : X ≃* Y :=
   MulHom.toMulEquiv i.hom.hom i.inv.hom (by ext; simp) (by ext; simp)
 
 /-- Build a `MulEquiv` from an isomorphism in the category `Semigroup`. -/
 @[to_additive
-  /-- Build an `AddEquiv` from an isomorphism in the category `AddSemigroup`. -/]
+/-- Build an `AddEquiv` from an isomorphism in the category `AddSemigroup`. -/]
 def semigrpIsoToMulEquiv {X Y : Semigrp} (i : X ≅ Y) : X ≃* Y :=
   MulHom.toMulEquiv i.hom.hom i.inv.hom (by ext; simp) (by ext; simp)
 
@@ -409,8 +409,8 @@ end CategoryTheory.Iso
 /-- multiplicative equivalences between `Mul`s are the same as (isomorphic to) isomorphisms
 in `MagmaCat` -/
 @[to_additive
-    /-- additive equivalences between `Add`s are the same
-    as (isomorphic to) isomorphisms in `AddMagmaCat` -/]
+/-- additive equivalences between `Add`s are the same
+as (isomorphic to) isomorphisms in `AddMagmaCat` -/]
 def mulEquivIsoMagmaIso {X Y : Type u} [Mul X] [Mul Y] :
     X ≃* Y ≅ MagmaCat.of X ≅ MagmaCat.of Y where
   hom e := e.toMagmaCatIso
@@ -419,8 +419,8 @@ def mulEquivIsoMagmaIso {X Y : Type u} [Mul X] [Mul Y] :
 /-- multiplicative equivalences between `Semigroup`s are the same as (isomorphic to) isomorphisms
 in `Semigroup` -/
 @[to_additive
-  /-- additive equivalences between `AddSemigroup`s are
-  the same as (isomorphic to) isomorphisms in `AddSemigroup` -/]
+/-- additive equivalences between `AddSemigroup`s are
+the same as (isomorphic to) isomorphisms in `AddSemigroup` -/]
 def mulEquivIsoSemigrpIso {X Y : Type u} [Semigroup X] [Semigroup Y] :
     X ≃* Y ≅ Semigrp.of X ≅ Semigrp.of Y where
   hom e := e.toSemigrpIso

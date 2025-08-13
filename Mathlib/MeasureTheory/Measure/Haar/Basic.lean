@@ -143,7 +143,7 @@ variable [IsTopologicalGroup G]
   there is a finite set `t` satisfying the desired properties. -/
 @[to_additive addIndex_defined
 /-- If `K` is compact and `V` has nonempty interior, then the index `(K : V)` is well-defined,
-  there is a finite set `t` satisfying the desired properties. -/]
+there is a finite set `t` satisfying the desired properties. -/]
 theorem index_defined {K V : Set G} (hK : IsCompact K) (hV : (interior V).Nonempty) :
     ∃ n : ℕ, n ∈ Finset.card '' { t : Finset G | K ⊆ ⋃ g ∈ t, (fun h => g * h) ⁻¹' V } := by
   rcases compact_covered_by_mul_left_translates hK hV with ⟨t, ht⟩; exact ⟨t.card, t, ht, rfl⟩
@@ -652,11 +652,11 @@ variable [SecondCountableTopology G]
   for a statement not assuming second-countability. -/
 @[to_additive
 /-- **Uniqueness of left-invariant measures**: In a second-countable locally compact additive group,
-  any σ-finite left-invariant measure is a scalar multiple of the additive Haar measure.
-  This is slightly weaker than assuming that `μ` is a additive Haar measure (in particular we don't
-  require `μ ≠ 0`).
-  See also `isAddLeftInvariant_eq_smul_of_regular`
-  for a statement not assuming second-countability. -/]
+any σ-finite left-invariant measure is a scalar multiple of the additive Haar measure.
+This is slightly weaker than assuming that `μ` is a additive Haar measure (in particular we don't
+require `μ ≠ 0`).
+See also `isAddLeftInvariant_eq_smul_of_regular`
+for a statement not assuming second-countability. -/]
 theorem haarMeasure_unique (μ : Measure G) [SigmaFinite μ] [IsMulLeftInvariant μ]
     (K₀ : PositiveCompacts G) : μ = μ K₀ • haarMeasure K₀ := by
   have A : Set.Nonempty (interior (closure (K₀ : Set G))) :=
@@ -681,7 +681,7 @@ example [LocallyCompactSpace G] (μ : Measure G) [IsHaarMeasure μ] (K₀ : Posi
   on some compact set with non-empty interior. -/
 @[to_additive
 /-- To show that an invariant σ-finite measure is regular it is sufficient to show that it is
-  finite on some compact set with non-empty interior. -/]
+finite on some compact set with non-empty interior. -/]
 theorem regular_of_isMulLeftInvariant {μ : Measure G} [SigmaFinite μ] [IsMulLeftInvariant μ]
     {K : Set G} (hK : IsCompact K) (h2K : (interior K).Nonempty) (hμK : μ K ≠ ∞) : Regular μ := by
   rw [haarMeasure_unique μ ⟨⟨K, hK⟩, h2K⟩]; exact Regular.smul hμK

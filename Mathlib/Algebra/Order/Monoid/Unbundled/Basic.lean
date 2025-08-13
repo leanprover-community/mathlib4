@@ -626,8 +626,8 @@ theorem Left.mul_le_one [MulLeftMono α] {a b : α} (ha : a ≤ 1) (hb : b ≤ 1
 /-- Assumes left covariance.
 The lemma assuming right covariance is `Right.mul_lt_one_of_le_of_lt`. -/
 @[to_additive Left.add_neg_of_nonpos_of_neg
-      /-- Assumes left covariance.
-      The lemma assuming right covariance is `Right.add_neg_of_nonpos_of_neg`. -/]
+/-- Assumes left covariance.
+The lemma assuming right covariance is `Right.add_neg_of_nonpos_of_neg`. -/]
 theorem Left.mul_lt_one_of_le_of_lt [MulLeftStrictMono α] {a b : α} (ha : a ≤ 1)
     (hb : b < 1) :
     a * b < 1 :=
@@ -636,8 +636,8 @@ theorem Left.mul_lt_one_of_le_of_lt [MulLeftStrictMono α] {a b : α} (ha : a �
 /-- Assumes left covariance.
 The lemma assuming right covariance is `Right.mul_lt_one_of_lt_of_le`. -/
 @[to_additive Left.add_neg_of_neg_of_nonpos
-      /-- Assumes left covariance.
-      The lemma assuming right covariance is `Right.add_neg_of_neg_of_nonpos`. -/]
+/-- Assumes left covariance.
+The lemma assuming right covariance is `Right.add_neg_of_neg_of_nonpos`. -/]
 theorem Left.mul_lt_one_of_lt_of_le [MulLeftMono α] {a b : α} (ha : a < 1)
     (hb : b ≤ 1) :
     a * b < 1 :=
@@ -716,8 +716,8 @@ theorem Left.one_le_mul [MulLeftMono α] {a b : α} (ha : 1 ≤ a) (hb : 1 ≤ b
 /-- Assumes left covariance.
 The lemma assuming right covariance is `Right.one_lt_mul_of_le_of_lt`. -/
 @[to_additive Left.add_pos_of_nonneg_of_pos
-      /-- Assumes left covariance.
-      The lemma assuming right covariance is `Right.add_pos_of_nonneg_of_pos`. -/]
+/-- Assumes left covariance.
+The lemma assuming right covariance is `Right.add_pos_of_nonneg_of_pos`. -/]
 theorem Left.one_lt_mul_of_le_of_lt [MulLeftStrictMono α] {a b : α} (ha : 1 ≤ a)
     (hb : 1 < b) :
     1 < a * b :=
@@ -726,8 +726,8 @@ theorem Left.one_lt_mul_of_le_of_lt [MulLeftStrictMono α] {a b : α} (ha : 1 �
 /-- Assumes left covariance.
 The lemma assuming right covariance is `Right.one_lt_mul_of_lt_of_le`. -/
 @[to_additive Left.add_pos_of_pos_of_nonneg
-      /-- Assumes left covariance.
-      The lemma assuming right covariance is `Right.add_pos_of_pos_of_nonneg`. -/]
+/-- Assumes left covariance.
+The lemma assuming right covariance is `Right.add_pos_of_pos_of_nonneg`. -/]
 theorem Left.one_lt_mul_of_lt_of_le [MulLeftMono α] {a b : α} (ha : 1 < a)
     (hb : 1 ≤ b) :
     1 < a * b :=
@@ -807,8 +807,8 @@ theorem Right.mul_le_one [MulRightMono α] {a b : α} (ha : a ≤ 1)
 /-- Assumes right covariance.
 The lemma assuming left covariance is `Left.mul_lt_one_of_lt_of_le`. -/
 @[to_additive Right.add_neg_of_neg_of_nonpos
-      /-- Assumes right covariance.
-      The lemma assuming left covariance is `Left.add_neg_of_neg_of_nonpos`. -/]
+/-- Assumes right covariance.
+The lemma assuming left covariance is `Left.add_neg_of_neg_of_nonpos`. -/]
 theorem Right.mul_lt_one_of_lt_of_le [MulRightStrictMono α] {a b : α}
     (ha : a < 1) (hb : b ≤ 1) :
     a * b < 1 :=
@@ -817,8 +817,8 @@ theorem Right.mul_lt_one_of_lt_of_le [MulRightStrictMono α] {a b : α}
 /-- Assumes right covariance.
 The lemma assuming left covariance is `Left.mul_lt_one_of_le_of_lt`. -/
 @[to_additive Right.add_neg_of_nonpos_of_neg
-      /-- Assumes right covariance.
-      The lemma assuming left covariance is `Left.add_neg_of_nonpos_of_neg`. -/]
+/-- Assumes right covariance.
+The lemma assuming left covariance is `Left.add_neg_of_nonpos_of_neg`. -/]
 theorem Right.mul_lt_one_of_le_of_lt [MulRightMono α] {a b : α}
     (ha : a ≤ 1) (hb : b < 1) :
     a * b < 1 :=
