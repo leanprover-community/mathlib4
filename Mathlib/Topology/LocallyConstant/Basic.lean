@@ -442,9 +442,9 @@ variable {R : Type*} [One R] {U : Set X} (f : LocallyConstant X R)
 
 /-- Given a clopen set `U` and a locally constant function `f`, `LocallyConstant.mulIndicator`
   returns the locally constant function that is `f` on `U` and `1` otherwise. -/
-@[to_additive (attr := simps) "Given a clopen set `U` and a locally constant function `f`,
+@[to_additive (attr := simps) /-- Given a clopen set `U` and a locally constant function `f`,
   `LocallyConstant.indicator` returns the locally constant function that is `f` on `U` and `0`
-  otherwise. "]
+  otherwise. -/]
 noncomputable def mulIndicator (hU : IsClopen U) : LocallyConstant X R where
   toFun := Set.mulIndicator U f
   isLocallyConstant := fun s => by
@@ -521,8 +521,8 @@ end Equiv
 section Piecewise
 
 /-- Given two closed sets covering a topological space, and locally constant maps on these two sets,
-    then if these two locally constant maps agree on the intersection, we get a piecewise defined
-    locally constant map on the whole space.
+then if these two locally constant maps agree on the intersection, we get a piecewise defined
+locally constant map on the whole space.
 
 TODO: Generalise this construction to `ContinuousMap`. -/
 def piecewise {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : IsClosed C₂) (h : C₁ ∪ C₂ = Set.univ)

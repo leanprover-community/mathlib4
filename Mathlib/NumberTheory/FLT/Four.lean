@@ -189,9 +189,7 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
   have h4 : 0 < m := by
     apply lt_of_le_of_ne ht6
     rintro rfl
-    revert hb20
-    rw [ht2]
-    simp
+    omega
   obtain ⟨r, s, _, htt2, htt3, htt4, htt5, htt6⟩ := htt.coprime_classification' h3 ha2 h4
   -- Now use the fact that (b / 2) ^ 2 = m * r * s, and m, r and s are pairwise coprime to obtain
   -- i, j and k such that m = i ^ 2, r = j ^ 2 and s = k ^ 2.
@@ -207,7 +205,7 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
     exact dvd_mul_right 2 (m * n)
   obtain ⟨b', hb2'⟩ := hb2
   have hs : b' ^ 2 = m * (r * s) := by
-    apply (mul_right_inj' (by norm_num : (4 : ℤ) ≠ 0)).mp
+    apply (mul_right_inj' (by simp : (4 : ℤ) ≠ 0)).mp
     linear_combination (-b - 2 * b') * hb2' + ht2 + 2 * m * htt2
   have hrsz : r * s ≠ 0 := by grind
   have h2b0 : b' ≠ 0 := by grind

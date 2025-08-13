@@ -1078,7 +1078,7 @@ theorem contSupp_comp (f k) : contSupp (Cont'.comp f k) = codeSupp f k :=
 
 theorem contSupp_fix (f k) : contSupp (Cont'.fix f k) = codeSupp f (Cont'.fix f k) := by
   simp +contextual [codeSupp, codeSupp', contSupp, Finset.union_assoc,
-    Finset.subset_iff]
+    Finset.subset_iff, -Finset.singleton_union, -Finset.union_singleton]
 
 @[simp]
 theorem contSupp_halt : contSupp Cont'.halt = ∅ :=
