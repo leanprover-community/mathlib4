@@ -209,7 +209,7 @@ def proveLE (g : MVarId) : MetaM Unit := do
   let sα ← synthInstanceQ q(IsOrderedRing $α)
   assumeInstancesCommute
   have e₁ : Q($α) := e₁; have e₂ : Q($α) := e₂
-  let c ← mkCache q($ics)
+  let c ← mkCache q($ics) {}
   let (⟨a, va, pa⟩, ⟨b, vb, pb⟩)
     ← AtomM.run .instances do pure (← eval q($ics) c e₁, ← eval q($ics) c e₂)
   match ← evalLE ics ipo sα va vb with
@@ -235,7 +235,7 @@ def proveLT (g : MVarId) : MetaM Unit := do
   let sα ← synthInstanceQ q(IsStrictOrderedRing $α)
   assumeInstancesCommute
   have e₁ : Q($α) := e₁; have e₂ : Q($α) := e₂
-  let c ← mkCache q($ics)
+  let c ← mkCache q($ics) {}
   let (⟨a, va, pa⟩, ⟨b, vb, pb⟩)
     ← AtomM.run .instances do pure (← eval q($ics) c e₁, ← eval q($ics) c e₂)
   match ← evalLT ics ipo sα va vb with
