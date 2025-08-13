@@ -637,7 +637,6 @@ theorem curry_injective :
     Function.Injective (curry : (M ⊗[R] N →ₛₗ[σ₁₂] P₂) → M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂) :=
   fun _ _ H => ext H
 
-theorem ext_threefold {g h : M ⊗[R] N ⊗[R] P →ₗ[R] Q}
 theorem ext_threefold {g h : (M ⊗[R] N) ⊗[R] P →ₛₗ[σ₁₂] P₂}
     (H : ∀ x y z, g (x ⊗ₜ y ⊗ₜ z) = h (x ⊗ₜ y ⊗ₜ z)) : g = h := by
   ext x y z
@@ -649,14 +648,14 @@ theorem ext_threefold' {g h : M ⊗[R] (N ⊗[R] P) →ₗ[R] Q}
   exact H x y z
 
 -- We'll need this one for checking the pentagon identity!
-theorem ext_fourfold {g h : ((M ⊗[R] N) ⊗[R] P) ⊗[R] Q →ₗ[R] S}
+theorem ext_fourfold {g h : ((M ⊗[R] N) ⊗[R] P) ⊗[R] Q →ₛₗ[σ₁₂] P₂}
     (H : ∀ w x y z, g (w ⊗ₜ x ⊗ₜ y ⊗ₜ z) = h (w ⊗ₜ x ⊗ₜ y ⊗ₜ z)) : g = h := by
   ext w x y z
   exact H w x y z
 
 /-- Two linear maps (M ⊗ N) ⊗ (P ⊗ Q) → S which agree on all elements of the
 form (m ⊗ₜ n) ⊗ₜ (p ⊗ₜ q) are equal. -/
-theorem ext_fourfold' {φ ψ : (M ⊗[R] N) ⊗[R] P ⊗[R] Q →ₗ[R] S}
+theorem ext_fourfold' {φ ψ : (M ⊗[R] N) ⊗[R] P ⊗[R] Q →ₛₗ[σ₁₂] P₂}
     (H : ∀ w x y z, φ (w ⊗ₜ x ⊗ₜ (y ⊗ₜ z)) = ψ (w ⊗ₜ x ⊗ₜ (y ⊗ₜ z))) : φ = ψ := by
   ext m n p q
   exact H m n p q
@@ -784,10 +783,16 @@ section
 variable {P' Q' : Type*}
 variable [AddCommMonoid P'] [Module R P']
 variable [AddCommMonoid Q'] [Module R Q']
+variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 
-theorem map_comp (f₂ : P →ₗ[R] P') (f₁ : M →ₗ[R] P) (g₂ : Q →ₗ[R] Q') (g₁ : N →ₗ[R] Q) :
+theorem map_comp (f₂ : M₂ →ₛₗ[σ₂₃] M₃) (f₁ : M →ₛₗ[σ₁₂] M₂)
+    (g₂ : N₂ →ₛₗ[σ₂₃] N₃) (g₁ : N →ₛₗ[σ₁₂] N₂) :
     map (f₂.comp f₁) (g₂.comp g₁) = (map f₂ g₂).comp (map f₁ g₁) :=
   ext' fun _ _ => rfl
+
+lemma map_map (f₂ : M₂ →ₗ[R] M₃) (g₂ : N₂ →ₗ[R] N₃) (f₁ : M₁ →ₗ[R] M₂) (g₁ : N₁ →ₗ[R] N₂)
+    (x : M₁ ⊗ N₁) : map f₂ g₂ (map f₁ g₁ x) = map (f₂ ∘ₗ f₁) (g₂ ∘ₗ g₁) x :=
+  DFunLike.congr_fun (map_comp ..).symm x
 
 lemma range_mapIncl_mono {p p' : Submodule R P} {q q' : Submodule R Q} (hp : p ≤ p') (hq : q ≤ q') :
     LinearMap.range (mapIncl p q) ≤ LinearMap.range (mapIncl p' q') := by
