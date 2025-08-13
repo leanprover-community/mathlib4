@@ -58,6 +58,8 @@ universe w v v₁ v₂ u u₁ u₂
 
 namespace CategoryTheory
 
+attribute [local instance] uliftCategory
+
 variable (C : Type u) [Category.{v} C]
 
 /-- A category `IsFilteredOrEmpty` if

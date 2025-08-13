@@ -34,7 +34,7 @@ instance instInvolutiveInv [InvolutiveInv α] : InvolutiveInv (WithOne α) where
 section
 
 /-- `WithOne.coe` as a bundled morphism -/
-@[to_additive (attr := simps apply) "`WithZero.coe` as a bundled morphism"]
+@[to_additive (attr := simps apply) /-- `WithZero.coe` as a bundled morphism -/]
 def coeMulHom [Mul α] : α →ₙ* WithOne α where
   toFun := coe
   map_mul' _ _ := rfl
@@ -46,7 +46,7 @@ section lift
 variable [Mul α] [MulOneClass β]
 
 /-- Lift a semigroup homomorphism `f` to a bundled monoid homomorphism. -/
-@[to_additive "Lift an add semigroup homomorphism `f` to a bundled add monoid homomorphism."]
+@[to_additive /-- Lift an add semigroup homomorphism `f` to a bundled add monoid homomorphism. -/]
 def lift : (α →ₙ* β) ≃ (WithOne α →* β) where
   toFun f :=
     { toFun := fun x => Option.casesOn x 1 f, map_one' := rfl,
@@ -78,8 +78,8 @@ variable [Mul α] [Mul β] [Mul γ]
 
 /-- Given a multiplicative map from `α → β` returns a monoid homomorphism
   from `WithOne α` to `WithOne β` -/
-@[to_additive "Given an additive map from `α → β` returns an add monoid homomorphism from
-`WithZero α` to `WithZero β`"]
+@[to_additive /-- Given an additive map from `α → β` returns an add monoid homomorphism from
+`WithZero α` to `WithZero β` -/]
 def map (f : α →ₙ* β) : WithOne α →* WithOne β :=
   lift (coeMulHom.comp f)
 
@@ -114,7 +114,7 @@ theorem map_comp (f : α →ₙ* β) (g : β →ₙ* γ) : map (g.comp f) = (map
   MonoidHom.ext fun x => (map_map f g x).symm
 
 /-- A version of `Equiv.optionCongr` for `WithOne`. -/
-@[to_additive (attr := simps apply) "A version of `Equiv.optionCongr` for `WithZero`."]
+@[to_additive (attr := simps apply) /-- A version of `Equiv.optionCongr` for `WithZero`. -/]
 def _root_.MulEquiv.withOneCongr (e : α ≃* β) : WithOne α ≃* WithOne β :=
   { map e.toMulHom with
     toFun := map e.toMulHom, invFun := map e.symm.toMulHom,

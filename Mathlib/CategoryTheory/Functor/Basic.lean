@@ -35,15 +35,15 @@ The axiom `map_id` expresses preservation of identities, and
 `map_comp` expresses functoriality. -/
 @[stacks 001B]
 structure Functor (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D] :
-    Type max v₁ v₂ u₁ u₂
-    extends Prefunctor C D where
+    Type max v₁ v₂ u₁ u₂ where
+  /-- The action of a functor on objects. -/
+  obj : C → D
+  /-- The action of a functor on morphisms. -/
+  map : ∀ {X Y : C}, (X ⟶ Y) → ((obj X) ⟶ (obj Y))
   /-- A functor preserves identity morphisms. -/
   map_id : ∀ X : C, map (𝟙 X) = 𝟙 (obj X) := by cat_disch
   /-- A functor preserves composition. -/
   map_comp : ∀ {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z), map (f ≫ g) = map f ≫ map g := by cat_disch
-
-/-- The prefunctor between the underlying quivers. -/
-add_decl_doc Functor.toPrefunctor
 
 end
 
@@ -97,6 +97,14 @@ section
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   {E : Type u₃} [Category.{v₃} E]
+
+/-- The prefunctor between the underlying quivers. -/
+@[simps]
+def toPrefunctor (F : C ⥤ D) : Prefunctor C D := { F with }
+
+theorem congr_map (F : C ⥤ D) {X Y : C} {f g : X ⟶ Y}
+    (h : f = g) : F.map f = F.map g := by
+  rw [h]
 
 /-- `F ⋙ G` is the composition of a functor `F` and a functor `G` (`F` first, then `G`).
 -/
