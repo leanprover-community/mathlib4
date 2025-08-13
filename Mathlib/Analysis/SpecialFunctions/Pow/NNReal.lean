@@ -723,7 +723,6 @@ theorem inv_rpow (x : ℝ≥0∞) (y : ℝ) : x⁻¹ ^ y = (x ^ y)⁻¹ := by
     one_rpow]
 
 protected lemma inv_zpow (x : ℝ≥0∞) (n : ℤ) : x⁻¹ ^ n = (x ^ n)⁻¹ := by
-  field_simp
   simp [@one_div,← rpow_intCast, ENNReal.inv_rpow]
 
 lemma zero_zpow_def (n : ℤ) : (0 : ℝ≥0∞) ^ n = if 0 < n then 0 else if n = 0 then 1 else ⊤ := by
