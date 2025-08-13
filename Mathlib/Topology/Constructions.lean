@@ -732,7 +732,7 @@ theorem continuous_update [DecidableEq ι] (i : ι) :
   continuous_fst.update i continuous_snd
 
 /-- `Pi.mulSingle i x` is continuous in `x`. -/
-@[to_additive (attr := continuity) "`Pi.single i x` is continuous in `x`."]
+@[to_additive (attr := continuity) /-- `Pi.single i x` is continuous in `x`. -/]
 theorem continuous_mulSingle [∀ i, One (A i)] [DecidableEq ι] (i : ι) :
     Continuous fun x => (Pi.mulSingle i x : ∀ i, A i) :=
   continuous_const.update _ continuous_id
