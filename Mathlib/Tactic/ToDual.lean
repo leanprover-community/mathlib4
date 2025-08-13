@@ -12,10 +12,10 @@ import Mathlib.Tactic.ToAdditive.ToDual
 
 attribute [to_dual self (reorder := 3 4)] LE.le LT.lt GE.ge GT.gt
 
-attribute [to_dual DecidableGT "`DecidableGT` is equivalent to `DecidableLT`.
-It is used by `@[to_dual]` to be able to translate `DecidableLT`."] DecidableLT
-attribute [to_dual DecidableGE "`DecidableGE` is equivalent to `DecidableLE`.
-It is used by `@[to_dual]` to be able to translate `DecidableLE`."] DecidableLE
+attribute [to_dual DecidableGT /-- `DecidableGT` is equivalent to `DecidableLT`.
+It is used by `@[to_dual]` to be able to translate `DecidableLT`. -/] DecidableLT
+attribute [to_dual DecidableGE /-- `DecidableGE` is equivalent to `DecidableLE`.
+It is used by `@[to_dual]` to be able to translate `DecidableLE`. -/] DecidableLE
 
 set_option linter.existingAttributeWarning false in
 attribute [to_dual self (reorder := 3 4)] ge_iff_le gt_iff_lt

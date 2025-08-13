@@ -140,7 +140,7 @@ instance instTransGTGE : @Trans α α α GT.gt GE.ge GT.gt := ⟨lt_of_lt_of_le'
 instance instTransGEGT : @Trans α α α GE.ge GT.gt GT.gt := ⟨lt_of_le_of_lt'⟩
 
 /-- `<` is decidable if `≤` is. -/
-@[to_dual decidableGTOfDecidableGE "`<` is decidable if `≤` is."]
+@[to_dual decidableGTOfDecidableGE /-- `<` is decidable if `≤` is. -/]
 def decidableLTOfDecidableLE [DecidableLE α] : DecidableLT α
   | a, b =>
     if hab : a ≤ b then
@@ -203,7 +203,7 @@ lemma lt_of_le_of_ne : a ≤ b → a ≠ b → a < b := fun h₁ h₂ =>
   lt_of_le_not_ge h₁ <| mt (le_antisymm h₁) h₂
 
 /-- Equality is decidable if `≤` is. -/
-@[to_dual decidableEqofDecidableGE "Equality is decidable if `≤` is."]
+@[to_dual decidableEqofDecidableGE /-- Equality is decidable if `≤` is. -/]
 def decidableEqOfDecidableLE [DecidableLE α] : DecidableEq α
   | a, b =>
     if hab : a ≤ b then

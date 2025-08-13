@@ -49,8 +49,8 @@ An existing documentation string will _not_ be automatically used, so if the the
 has a doc string, a doc string for the dual version should be passed explicitly to `to_dual`.
 
 ```
-/-- The maximum is commutative -/
-@[to_dual "The minimum is commutative"]
+/-- The maximum is commutative. -/
+@[to_dual /-- The minimum is commutative. -/]
 theorem max_comm' {α} [LinearOrder α] (x y : α) : max x y = max y x := max_comm x y
 ```
 
