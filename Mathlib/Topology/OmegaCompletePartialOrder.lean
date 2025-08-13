@@ -24,7 +24,7 @@ universe u
 
 open Topology.IsScott in
 @[simp] lemma Topology.IsScott.ωScottContinuous_iff_continuous {α : Type*}
-    [PartialOrder α] [OmegaCompletePartialOrder α] [TopologicalSpace α]
+    [PartialOrder α] [TopologicalSpace α]
     [Topology.IsScott α (Set.range fun c : Chain α => Set.range c)] {f : α → Prop} :
     ωScottContinuous f ↔ Continuous f := by
   rw [ωScottContinuous, scottContinuousOn_iff_continuous (fun a b hab => by
@@ -98,7 +98,7 @@ lemma scott_eq_Scott {α} [PartialOrder α] [OmegaCompletePartialOrder α] :
   ext U
   letI := Topology.scott α (Set.range fun c : Chain α => Set.range c)
   rw [isOpen_iff_ωScottContinuous_mem, @isOpen_iff_continuous_mem,
-    @Topology.IsScott.ωscottContinuous_iff_continuous _ _ _
+    @Topology.IsScott.ωscottContinuous_iff_continuous _ _
       (Topology.scott α (Set.range fun c : Chain α => Set.range c)) ({ topology_eq_scott := rfl })]
 
 section notBelow
