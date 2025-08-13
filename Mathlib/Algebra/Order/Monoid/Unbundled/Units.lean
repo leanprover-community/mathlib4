@@ -23,30 +23,31 @@ theorem mulLECancellable_val : MulLECancellable (↑u : M) := fun _ _ h ↦ by
 
 theorem mul_le_mul_left : u * b ≤ u * c ↔ b ≤ c :=
   u.mulLECancellable_val.mul_le_mul_iff_left
-alias ⟨le_of_mul_le_mul_left, _⟩ := mul_le_mul_left
 
 theorem inv_mul_le_iff : u⁻¹ * a ≤ b ↔ a ≤ u * b := by
   rw [← u.mul_le_mul_left, mul_inv_cancel_left]
-alias ⟨le_mul_of_inv_mul_le, inv_mul_le_of_le_mul⟩ := inv_mul_le_iff
 
 theorem le_inv_mul_iff : a ≤ u⁻¹ * b ↔ u * a ≤ b := by
   rw [← u.mul_le_mul_left, mul_inv_cancel_left]
-alias ⟨mul_le_of_le_inv_mul, le_inv_mul_of_mul_le⟩ := le_inv_mul_iff
 
 theorem one_le_inv : (1 : M) ≤ u⁻¹ ↔ (u : M) ≤ 1 := by
   rw [← u.mul_le_mul_left, mul_one, mul_inv]
-alias ⟨le_of_one_le_inv, one_le_inv_of_le⟩ := one_le_inv
 
 theorem inv_le_one : u⁻¹ ≤ (1 : M) ↔ (1 : M) ≤ u := by
   rw [← u.mul_le_mul_left, mul_one, mul_inv]
-alias ⟨le_of_inv_le_one, inv_le_one_of_le⟩ := inv_le_one
 
 theorem one_le_inv_mul : 1 ≤ u⁻¹ * a ↔ u ≤ a := by
   rw [u.le_inv_mul_iff, mul_one]
-alias ⟨le_of_one_le_inv_mul, one_le_inv_mul_of_le⟩ := one_le_inv_mul
 
 theorem inv_mul_le_one : u⁻¹ * a ≤ 1 ↔ a ≤ u := by
   rw [u.inv_mul_le_iff, mul_one]
+
+alias ⟨le_of_mul_le_mul_left, _⟩ := mul_le_mul_left
+alias ⟨le_mul_of_inv_mul_le, inv_mul_le_of_le_mul⟩ := inv_mul_le_iff
+alias ⟨mul_le_of_le_inv_mul, le_inv_mul_of_mul_le⟩ := le_inv_mul_iff
+alias ⟨le_of_one_le_inv, one_le_inv_of_le⟩ := one_le_inv
+alias ⟨le_of_inv_le_one, inv_le_one_of_le⟩ := inv_le_one
+alias ⟨le_of_one_le_inv_mul, one_le_inv_mul_of_le⟩ := one_le_inv_mul
 alias ⟨le_of_inv_mul_le_one, inv_mul_le_one_of_le⟩ := inv_mul_le_one
 
 end Units
@@ -60,6 +61,7 @@ theorem mulLECancellable : MulLECancellable a :=
 
 theorem mul_le_mul_left : a * b ≤ a * c ↔ b ≤ c :=
   ha.unit.mul_le_mul_left
+
 alias ⟨le_of_mul_le_mul_left, _⟩ := mul_le_mul_left
 
 end IsUnit
