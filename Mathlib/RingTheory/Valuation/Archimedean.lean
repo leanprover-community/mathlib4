@@ -16,7 +16,8 @@ section Field
 variable {F Γ₀ O : Type*} [Field F] [LinearOrderedCommGroupWithZero Γ₀]
   [CommRing O] [Algebra O F] {v : Valuation F Γ₀}
 
-instance : LinearOrderedCommGroupWithZero (MonoidHom.mrange v) where
+instance MonoidWithZeroHom.instLinearOrderedCommGroupWithZeroMrange (v : F →*₀ Γ₀) :
+    LinearOrderedCommGroupWithZero (MonoidHom.mrange v) where
   __ : CommGroupWithZero (MonoidHom.mrange v) := inferInstance
   __ : LinearOrder (MonoidHom.mrange v) := inferInstance
   bot := 0
@@ -27,6 +28,10 @@ instance : LinearOrderedCommGroupWithZero (MonoidHom.mrange v) where
       Subtype.mk_le_mk, forall_apply_eq_imp_iff]
     intro a b hab c
     exact mul_le_mul_left' hab (v c)
+
+instance Valuation.instLinearOrderedCommGroupWithZeroMrange :
+    LinearOrderedCommGroupWithZero (MonoidHom.mrange v) :=
+  inferInstanceAs (LinearOrderedCommGroupWithZero (MonoidHom.mrange (v : F →*₀ Γ₀)))
 
 namespace Valuation.Integers
 
