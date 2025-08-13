@@ -68,6 +68,7 @@ Note that `HasForget` potentially depends on three independent universe levels,
 * the universe level `w` appearing in `Forget : C ⥤ Type w`
 * the universe level `v` of the morphisms (i.e. we have a `Category.{v} C`)
 * the universe level `u` of the objects (i.e `C : Type u`)
+
 They are specified that order, to avoid unnecessary universe annotations.
 -/
 class HasForget (C : Type u) [Category.{v} C] where
@@ -226,7 +227,7 @@ def HasForget₂.trans (C : Type u) [Category.{v} C] [HasForget.{w} C]
     simp only [HasForget₂.forget_comp]
 
 /-- Every forgetful functor factors through the identity functor. This is not a global instance as
-    it is prone to creating type class resolution loops. -/
+it is prone to creating type class resolution loops. -/
 def hasForgetToType (C : Type u) [Category.{v} C] [HasForget.{w} C] :
     HasForget₂ C (Type w) where
   forget₂ := forget C
@@ -243,6 +244,7 @@ Note that `ConcreteCategory` potentially depends on three independent universe l
 * the universe level `w` appearing in `forget : C ⥤ Type w`
 * the universe level `v` of the morphisms (i.e. we have a `Category.{v} C`)
 * the universe level `u` of the objects (i.e `C : Type u`)
+
 They are specified that order, to avoid unnecessary universe annotations.
 -/
 class ConcreteCategory (C : Type u) [Category.{v} C]

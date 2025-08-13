@@ -23,6 +23,7 @@ easier to describe than general colimits (and more often preserved by functors).
 
 In this file we show that any functor from a finite category to a filtered category admits a cocone:
 * `cocone_nonempty [FinCategory J] [IsFiltered C] (F : J ⥤ C) : Nonempty (Cocone F)`
+
 More generally,
 for any finite collection of objects and morphisms between them in a filtered category
 (even if not closed under composition) there exists some object `Z` receiving maps from all of them,
@@ -65,7 +66,7 @@ variable (C : Type u) [Category.{v} C]
 /-- A category `IsFilteredOrEmpty` if
 1. for every pair of objects there exists another object "to the right", and
 2. for every pair of parallel morphisms there exists a morphism to the right so the compositions
-   are equal.
+  are equal.
 -/
 class IsFilteredOrEmpty : Prop where
   /-- for every pair of objects there exists another object "to the right" -/
@@ -77,7 +78,7 @@ class IsFilteredOrEmpty : Prop where
 /-- A category `IsFiltered` if
 1. for every pair of objects there exists another object "to the right",
 2. for every pair of parallel morphisms there exists a morphism to the right so the compositions
-   are equal, and
+  are equal, and
 3. there exists some object. -/
 @[stacks 002V "They also define a diagram being filtered."]
 class IsFiltered : Prop extends IsFilteredOrEmpty C where
@@ -481,7 +482,7 @@ end IsFiltered
 A category `IsCofilteredOrEmpty` if
 1. for every pair of objects there exists another object "to the left", and
 2. for every pair of parallel morphisms there exists a morphism to the left so the compositions
-   are equal.
+  are equal.
 -/
 class IsCofilteredOrEmpty : Prop where
   /-- for every pair of objects there exists another object "to the left" -/
@@ -493,8 +494,9 @@ class IsCofilteredOrEmpty : Prop where
 /-- A category `IsCofiltered` if
 1. for every pair of objects there exists another object "to the left",
 2. for every pair of parallel morphisms there exists a morphism to the left so the compositions
-   are equal, and
-3. there exists some object. -/
+  are equal, and
+3. there exists some object.
+-/
 @[stacks 04AZ]
 class IsCofiltered : Prop extends IsCofilteredOrEmpty C where
   /-- a cofiltered category must be non empty -/

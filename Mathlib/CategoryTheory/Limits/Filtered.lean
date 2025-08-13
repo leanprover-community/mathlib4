@@ -32,9 +32,9 @@ section NonemptyLimit
 open CategoryTheory.Limits Opposite
 
 /-- `C` is filtered if and only if for every functor `F : J ⥤ C` from a finite category there is
-    some `X : C` such that `lim Hom(F·, X)` is nonempty.
+some `X : C` such that `lim Hom(F·, X)` is nonempty.
 
-    Lemma 3.1.2 of [Kashiwara2006] -/
+Lemma 3.1.2 of [Kashiwara2006] -/
 theorem IsFiltered.iff_nonempty_limit : IsFiltered C ↔
     ∀ {J : Type v} [SmallCategory J] [FinCategory J] (F : J ⥤ C),
       ∃ (X : C), Nonempty (limit (F.op ⋙ yoneda.obj X)) := by
@@ -46,7 +46,7 @@ theorem IsFiltered.iff_nonempty_limit : IsFiltered C ↔
     exact ⟨⟨pt, (limitCompYonedaIsoCocone F pt).hom ι⟩⟩
 
 /-- `C` is cofiltered if and only if for every functor `F : J ⥤ C` from a finite category there is
-    some `X : C` such that `lim Hom(X, F·)` is nonempty. -/
+some `X : C` such that `lim Hom(X, F·)` is nonempty. -/
 theorem IsCofiltered.iff_nonempty_limit : IsCofiltered C ↔
     ∀ {J : Type v} [SmallCategory J] [FinCategory J] (F : J ⥤ C),
       ∃ (X : C), Nonempty (limit (F ⋙ coyoneda.obj (op X))) := by

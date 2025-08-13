@@ -153,7 +153,7 @@ def sup {ι : Type u} (f : ι → Ordinal.{max u v}) : Ordinal.{max u v} :=
   iSup f
 
 /-- The range of an indexed ordinal function, whose outputs live in a higher universe than the
-    inputs, is always bounded above. See `Ordinal.lsub` for an explicit bound. -/
+inputs, is always bounded above. See `Ordinal.lsub` for an explicit bound. -/
 theorem bddAbove_range {ι : Type u} (f : ι → Ordinal.{max u v}) : BddAbove (Set.range f) :=
   ⟨(iSup (succ ∘ card ∘ f)).ord, by
     rintro a ⟨i, rfl⟩
@@ -434,8 +434,7 @@ theorem sup_eq_sup {ι ι' : Type u} (r : ι → ι → Prop) (r' : ι' → ι' 
 
 set_option linter.deprecated false in
 /-- The supremum of a family of ordinals indexed by the set of ordinals less than some
-    `o : Ordinal.{u}`. This is a special case of `sup` over the family provided by
-    `familyOfBFamily`. -/
+`o : Ordinal.{u}`. This is a special case of `sup` over the family provided by `familyOfBFamily`. -/
 def bsup (o : Ordinal.{u}) (f : ∀ a < o, Ordinal.{max u v}) : Ordinal.{max u v} :=
   sup.{_, v} (familyOfBFamily o f)
 
@@ -738,10 +737,11 @@ end lsub
 
 section blsub
 
-/-- The least strict upper bound of a family of ordinals indexed by the set of ordinals less than
-    some `o : Ordinal.{u}`.
+/--
+The least strict upper bound of a family of ordinals indexed by the set of ordinals less than
+some `o : Ordinal.{u}`.
 
-    This is to `lsub` as `bsup` is to `sup`. -/
+This is to `lsub` as `bsup` is to `sup`. -/
 def blsub (o : Ordinal.{u}) (f : ∀ a < o, Ordinal.{max u v}) : Ordinal.{max u v} :=
   bsup.{_, v} o fun a ha => succ (f a ha)
 

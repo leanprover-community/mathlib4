@@ -65,7 +65,7 @@ theorem IsMaximal.coprime_of_ne {M M' : Ideal α} (hM : M.IsMaximal) (hM' : M'.I
   exact hM.eq_of_le hM'.ne_top (le_sup_left.trans_eq (hM'.eq_of_le h le_sup_right).symm)
 
 /-- **Krull's theorem**: if `I` is an ideal that is not the whole ring, then it is included in some
-    maximal ideal. -/
+maximal ideal. -/
 theorem exists_le_maximal (I : Ideal α) (hI : I ≠ ⊤) : ∃ M : Ideal α, M.IsMaximal ∧ I ≤ M :=
   let ⟨m, hm⟩ := (eq_top_or_exists_le_coatom I).resolve_left hI
   ⟨m, ⟨⟨hm.1⟩, hm.2⟩⟩

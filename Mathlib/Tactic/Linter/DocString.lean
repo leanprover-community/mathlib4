@@ -9,7 +9,7 @@ import Mathlib.Tactic.Linter.Header
 /-!
 #  The "DocString" style linter
 
-The "DocString" linter validates style conventions regarding doc-string formatting.
+The "DocString" linters validate style conventions regarding doc-string formatting.
 -/
 
 open Lean Elab Linter
@@ -22,6 +22,24 @@ The "DocString" linter validates style conventions regarding doc-string formatti
 register_option linter.style.docString : Bool := {
   defValue := false
   descr := "enable the style.docString linter"
+}
+
+/--
+The "empty doc string" linter warns on empty doc-strings.
+-/
+register_option linter.style.docString.empty : Bool := {
+  defValue := true
+  descr := "enable the style.docString.empty linter"
+}
+
+/--
+The "doc string indentation" linter warns about incorrect indentation in doc-strings, particularly
+for enumeration items in lists. (This affects rendering with stricter markdown renderers than
+github's, and hides real formatting issues.)
+-/
+register_option linter.style.docString.indentation : Bool := {
+  defValue := false
+  descr := "enable the style.docString.indentation linter"
 }
 
 /--
@@ -45,9 +63,35 @@ def deindentString (currIndent : Nat) (docString : String) : String :=
 
 namespace Style
 
+/-- Check if a doc-string conforms to some basic style guidelines.
+For now, this verifies that each line is indented by an even number of spaces
+(except for code blocks, where anything is allowed).
+-/
+def checkFormatting (str : String) : Array MessageData := Id.run do
+  let lines := str.splitOn "\n"
+  -- If the doc-string contains a code block, we skip any analysis (for now).
+  if lines.any (·.trimLeft.startsWith "```") then return #[]
+  let mut msgs := #[]
+  -- Each line should be indented by an even number of spaces (and no tabs).
+  -- Indentation should not increase by more than two spaces.
+  let mut prev_indent := 0
+  for line in lines do
+    let indent := line.takeWhile Char.isWhitespace
+    if indent.contains '\t' then
+      msgs := msgs.push m!"error: line '{line.trimLeft}' starts with a tab; use spaces instead"
+    else if indent.length.mod 2 == 1 then
+      msgs := msgs.push m!"error: line '{line.trimLeft}' is indented by {indent.length} \
+        space{if indent.length == 1 then "" else "s"}, which is an odd number"
+    else if indent.length > prev_indent + 2 then
+      msgs := msgs.push m!"error: line '{line.trimLeft}' is indented by {indent.length} spaces, \
+        expected at most {prev_indent + 2}.\nthe previous line had {prev_indent}."
+    prev_indent := indent.length
+  return msgs
+
 @[inherit_doc Mathlib.Linter.linter.style.docString]
 def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
-  unless getLinterValue linter.style.docString (← getLinterOptions) do
+  unless getLinterValue linter.style.docString (← getLinterOptions) ||
+      getLinterValue linter.style.docString.empty (← getLinterOptions) do
     return
   if (← get).messages.hasErrors then
     return
@@ -64,6 +108,14 @@ def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- `docString` contains e.g. trailing spaces before the `-/`, but does not contain
     -- any leading whitespace before the actual string starts.
     let docString ← try getDocStringText ⟨docStx⟩ catch _ => continue
+    if docString.trim.isEmpty then
+      Linter.logLintIf linter.style.docString.empty docStx m!"error: this doc-string is empty"
+      continue
+    -- Check formatting and indentation within the doc-string. Whitespace at the beginning and
+    -- end are checked below.
+    for msg in checkFormatting docString do
+      Linter.logLintIf linter.style.docString docStx msg
+
     -- `startSubstring` is the whitespace between `/--` and the actual doc-string text.
     let startSubstring := match docStx with
       | .node _ _ #[(.atom si ..), _] => si.getTrailing?.getD default
@@ -72,7 +124,7 @@ def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let start := deindentString currIndent startSubstring.toString
     if !#["\n", " "].contains start then
       let startRange := {start := startSubstring.startPos, stop := startSubstring.stopPos}
-      Linter.logLint linter.style.docString (.ofRange startRange)
+      Linter.logLintIf linter.style.docString (.ofRange startRange)
         s!"error: doc-strings should start with a single space or newline"
 
     let deIndentedDocString := deindentString currIndent docString
@@ -83,10 +135,10 @@ def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let endRange (n : Nat) : Syntax := .ofRange
       {start := docStx.getTailPos?.get! - ⟨n⟩, stop := docStx.getTailPos?.get! - ⟨n⟩}
     if docTrim.takeRight 1 == "," then
-      Linter.logLint linter.style.docString (endRange (docString.length - tail + 3))
+      Linter.logLintIf linter.style.docString (endRange (docString.length - tail + 3))
         s!"error: doc-strings should not end with a comma"
     if tail + 1 != deIndentedDocString.length then
-      Linter.logLint linter.style.docString (endRange 3)
+      Linter.logLintIf linter.style.docString (endRange 3)
         s!"error: doc-strings should end with a single space or newline"
 
 initialize addLinter docStringLinter

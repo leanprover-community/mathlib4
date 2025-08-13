@@ -25,7 +25,7 @@ universe v u w v'
 namespace Quiver
 
 /-- A type synonym for the symmetrized quiver (with an arrow both ways for each original arrow).
-    NB: this does not work for `Prop`-valued quivers. It requires `[Quiver.{v+1} V]`. -/
+NB: this does not work for `Prop`-valued quivers. It requires `[Quiver.{v+1} V]`. -/
 def Symmetrify (V : Type*) := V
 
 instance symmetrifyQuiver (V : Type u) [Quiver V] : Quiver (Symmetrify V) :=
@@ -34,7 +34,7 @@ instance symmetrifyQuiver (V : Type u) [Quiver V] : Quiver (Symmetrify V) :=
 variable (U V W : Type*) [Quiver.{u + 1} U] [Quiver.{v + 1} V] [Quiver.{w + 1} W]
 
 /-- A quiver `HasReverse` if we can reverse an arrow `p` from `a` to `b` to get an arrow
-    `p.reverse` from `b` to `a`. -/
+`p.reverse` from `b` to `a`. -/
 class HasReverse where
   /-- the map which sends an arrow to its reverse -/
   reverse' : ∀ {a b : V}, (a ⟶ b) → (b ⟶ a)
@@ -156,7 +156,7 @@ def of : Prefunctor V (Symmetrify V) where
 variable {V' : Type*} [Quiver.{v' + 1} V']
 
 /-- Given a quiver `V'` with reversible arrows, a prefunctor to `V'` can be lifted to one from
-    `Symmetrify V` to `V'` -/
+`Symmetrify V` to `V'` -/
 def lift [HasReverse V'] (φ : Prefunctor V V') :
     Prefunctor (Symmetrify V) V' where
   obj := φ.obj

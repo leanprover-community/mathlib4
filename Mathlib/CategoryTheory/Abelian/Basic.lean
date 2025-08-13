@@ -380,12 +380,12 @@ instance : IsIso (coimageImageComparison f) := by
   simp [-imageStrongEpiMonoFactorisation_m]
 
 /-- There is a canonical isomorphism between the abelian coimage and the abelian image of a
-    morphism. -/
+morphism. -/
 abbrev coimageIsoImage : Abelian.coimage f ≅ Abelian.image f :=
   asIso (coimageImageComparison f)
 
 /-- There is a canonical isomorphism between the abelian coimage and the categorical image of a
-    morphism. -/
+morphism. -/
 abbrev coimageIsoImage' : Abelian.coimage f ≅ image f :=
   IsImage.isoExt (coimageStrongEpiMonoFactorisation f).toMonoIsImage (Image.isImage f)
 
@@ -403,7 +403,7 @@ theorem factorThruImage_comp_coimageIsoImage'_inv :
     coimageStrongEpiMonoFactorisation_e]
 
 /-- There is a canonical isomorphism between the abelian image and the categorical image of a
-    morphism. -/
+morphism. -/
 abbrev imageIsoImage : Abelian.image f ≅ image f :=
   IsImage.isoExt (imageStrongEpiMonoFactorisation f).toMonoIsImage (Image.isImage f)
 
@@ -427,15 +427,15 @@ variable {X Y : C} {f : X ⟶ Y}
 attribute [local instance] nonPreadditiveAbelian
 
 /-- In an abelian category, an epi is the cokernel of its kernel. More precisely:
-    If `f` is an epimorphism and `s` is some limit kernel cone on `f`, then `f` is a cokernel
-    of `fork.ι s`. -/
+If `f` is an epimorphism and `s` is some limit kernel cone on `f`, then `f` is a cokernel
+of `fork.ι s`. -/
 def epiIsCokernelOfKernel [Epi f] (s : Fork f 0) (h : IsLimit s) :
     IsColimit (CokernelCofork.ofπ f (KernelFork.condition s)) :=
   NonPreadditiveAbelian.epiIsCokernelOfKernel s h
 
 /-- In an abelian category, a mono is the kernel of its cokernel. More precisely:
-    If `f` is a monomorphism and `s` is some colimit cokernel cocone on `f`, then `f` is a kernel
-    of `cofork.π s`. -/
+If `f` is a monomorphism and `s` is some colimit cokernel cocone on `f`, then `f` is a kernel
+of `cofork.π s`. -/
 def monoIsKernelOfCokernel [Mono f] (s : Cofork f 0) (h : IsColimit s) :
     IsLimit (KernelFork.ofι f (CokernelCofork.condition s)) :=
   NonPreadditiveAbelian.monoIsKernelOfCokernel s h
@@ -443,7 +443,7 @@ def monoIsKernelOfCokernel [Mono f] (s : Cofork f 0) (h : IsColimit s) :
 variable (f)
 
 /-- In an abelian category, any morphism that turns to zero when precomposed with the kernel of an
-    epimorphism factors through that epimorphism. -/
+epimorphism factors through that epimorphism. -/
 def epiDesc [Epi f] {T : C} (g : X ⟶ T) (hg : kernel.ι f ≫ g = 0) : Y ⟶ T :=
   (epiIsCokernelOfKernel _ (limit.isLimit _)).desc (CokernelCofork.ofπ _ hg)
 
@@ -453,7 +453,7 @@ theorem comp_epiDesc [Epi f] {T : C} (g : X ⟶ T) (hg : kernel.ι f ≫ g = 0) 
   (epiIsCokernelOfKernel _ (limit.isLimit _)).fac (CokernelCofork.ofπ _ hg) WalkingParallelPair.one
 
 /-- In an abelian category, any morphism that turns to zero when postcomposed with the cokernel of a
-    monomorphism factors through that monomorphism. -/
+monomorphism factors through that monomorphism. -/
 def monoLift [Mono f] {T : C} (g : T ⟶ Y) (hg : g ≫ cokernel.π f = 0) : T ⟶ X :=
   (monoIsKernelOfCokernel _ (colimit.isColimit _)).lift (KernelFork.ofι _ hg)
 
@@ -544,15 +544,15 @@ abbrev pullbackToBiproduct : pullback f g ⟶ X ⊞ Y :=
   biprod.lift (pullback.fst f g) (pullback.snd f g)
 
 /-- The canonical map `pullback f g ⟶ X ⊞ Y` induces a kernel cone on the map
-    `biproduct X Y ⟶ Z` induced by `f` and `g`. A slightly more intuitive way to think of
-    this may be that it induces an equalizer fork on the maps induced by `(f, 0)` and
-    `(0, g)`. -/
+`biproduct X Y ⟶ Z` induced by `f` and `g`. A slightly more intuitive way to think of
+this may be that it induces an equalizer fork on the maps induced by `(f, 0)` and
+`(0, g)`. -/
 abbrev pullbackToBiproductFork : KernelFork (biprod.desc f (-g)) :=
   KernelFork.ofι (pullbackToBiproduct f g) <| by
     rw [biprod.lift_desc, comp_neg, pullback.condition, add_neg_cancel]
 
 /-- The canonical map `pullback f g ⟶ X ⊞ Y` is a kernel of the map induced by
-    `(f, -g)`. -/
+`(f, -g)`. -/
 def isLimitPullbackToBiproduct : IsLimit (pullbackToBiproductFork f g) :=
   Fork.IsLimit.mk _
     (fun s =>
@@ -577,13 +577,13 @@ abbrev biproductToPushout : Y ⊞ Z ⟶ pushout f g :=
   biprod.desc (pushout.inl _ _) (pushout.inr _ _)
 
 /-- The canonical map `Y ⊞ Z ⟶ pushout f g` induces a cokernel cofork on the map
-    `X ⟶ Y ⊞ Z` induced by `f` and `-g`. -/
+`X ⟶ Y ⊞ Z` induced by `f` and `-g`. -/
 abbrev biproductToPushoutCofork : CokernelCofork (biprod.lift f (-g)) :=
   CokernelCofork.ofπ (biproductToPushout f g) <| by
     rw [biprod.lift_desc, neg_comp, pushout.condition, add_neg_cancel]
 
 /-- The cofork induced by the canonical map `Y ⊞ Z ⟶ pushout f g` is in fact a colimit cokernel
-    cofork. -/
+cofork. -/
 def isColimitBiproductToPushout : IsColimit (biproductToPushoutCofork f g) :=
   Cofork.IsColimit.mk _
     (fun s =>
@@ -601,7 +601,7 @@ section EpiPullback
 variable [Limits.HasPullbacks C] {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
 
 /-- In an abelian category, the pullback of an epimorphism is an epimorphism.
-    Proof from [aluffi2016, IX.2.3], cf. [borceux-vol2, 1.7.6] -/
+Proof from [aluffi2016, IX.2.3], cf. [borceux-vol2, 1.7.6] -/
 instance epi_pullback_of_epi_f [Epi f] : Epi (pullback.snd f g) :=
   -- It will suffice to consider some morphism e : Y ⟶ R such that
     -- pullback.snd f g ≫ e = 0 and show that e = 0.
@@ -676,8 +676,8 @@ theorem epi_fst_of_isLimit [Epi g] {s : PullbackCone f g} (hs : IsLimit s) : Epi
   apply epi_of_epi_fac (IsLimit.conePointUniqueUpToIso_hom_comp (limit.isLimit _) hs _)
 
 /-- Suppose `f` and `g` are two morphisms with a common codomain and suppose we have written `g` as
-    an epimorphism followed by a monomorphism. If `f` factors through the mono part of this
-    factorization, then any pullback of `g` along `f` is an epimorphism. -/
+an epimorphism followed by a monomorphism. If `f` factors through the mono part of this
+factorization, then any pullback of `g` along `f` is an epimorphism. -/
 theorem epi_fst_of_factor_thru_epi_mono_factorization (g₁ : Y ⟶ W) [Epi g₁] (g₂ : W ⟶ Z) [Mono g₂]
     (hg : g₁ ≫ g₂ = g) (f' : X ⟶ W) (hf : f' ≫ g₂ = f) (t : PullbackCone f g) (ht : IsLimit t) :
     Epi t.fst := by
@@ -746,8 +746,8 @@ theorem mono_inl_of_isColimit [Mono g] {s : PushoutCocone f g} (hs : IsColimit s
     mono_of_mono_fac (IsColimit.comp_coconePointUniqueUpToIso_hom hs (colimit.isColimit _) _)
 
 /-- Suppose `f` and `g` are two morphisms with a common domain and suppose we have written `g` as
-    an epimorphism followed by a monomorphism. If `f` factors through the epi part of this
-    factorization, then any pushout of `g` along `f` is a monomorphism. -/
+an epimorphism followed by a monomorphism. If `f` factors through the epi part of this
+factorization, then any pushout of `g` along `f` is a monomorphism. -/
 theorem mono_inl_of_factor_thru_epi_mono_factorization (f : X ⟶ Y) (g : X ⟶ Z) (g₁ : X ⟶ W) [Epi g₁]
     (g₂ : W ⟶ Z) [Mono g₂] (hg : g₁ ≫ g₂ = g) (f' : W ⟶ Y) (hf : g₁ ≫ f' = f)
     (t : PushoutCocone f g) (ht : IsColimit t) : Mono t.inl := by

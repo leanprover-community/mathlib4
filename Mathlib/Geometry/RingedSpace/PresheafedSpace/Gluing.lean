@@ -480,11 +480,12 @@ instance ιIsOpenImmersion (i : D.J) : IsOpenImmersion (𝖣.ι i) where
   c_iso U := by erw [← colimitPresheafObjIsoComponentwiseLimit_hom_π]; infer_instance
 
 /-- The following diagram is a pullback, i.e. `Vᵢⱼ` is the intersection of `Uᵢ` and `Uⱼ` in `X`.
-
+```
 Vᵢⱼ ⟶ Uᵢ
  |      |
  ↓      ↓
  Uⱼ ⟶ X
+```
 -/
 def vPullbackConeIsLimit (i j : D.J) : IsLimit (𝖣.vPullbackCone i j) :=
   PullbackCone.isLimitAux' _ fun s => by
@@ -575,11 +576,12 @@ theorem ι_jointly_surjective (x : 𝖣.glued) : ∃ (i : D.J) (y : D.U i), (�
   𝖣.ι_jointly_surjective (SheafedSpace.forget _ ⋙ CategoryTheory.forget TopCat) x
 
 /-- The following diagram is a pullback, i.e. `Vᵢⱼ` is the intersection of `Uᵢ` and `Uⱼ` in `X`.
-
+```
 Vᵢⱼ ⟶ Uᵢ
  |      |
  ↓      ↓
  Uⱼ ⟶ X
+```
 -/
 def vPullbackConeIsLimit (i j : D.J) : IsLimit (𝖣.vPullbackCone i j) :=
   𝖣.vPullbackConeIsLimitOfMap forgetToPresheafedSpace i j

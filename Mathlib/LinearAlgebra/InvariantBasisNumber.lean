@@ -112,7 +112,7 @@ section
 variable (R : Type u) [Semiring R]
 
 /-- We say that `R` satisfies the strong rank condition if `(Fin n → R) →ₗ[R] (Fin m → R)` injective
-    implies `n ≤ m`. -/
+implies `n ≤ m`. -/
 @[mk_iff]
 class StrongRankCondition : Prop where
   /-- Any injective linear map from `Rⁿ` to `Rᵐ` guarantees `n ≤ m`. -/
@@ -168,7 +168,7 @@ theorem card_le_of_injective' [StrongRankCondition R] {α β : Type*} [Fintype �
       ((P.injective.comp i).comp Q.injective)
 
 /-- We say that `R` satisfies the rank condition if `(Fin n → R) →ₗ[R] (Fin m → R)` surjective
-    implies `m ≤ n`. -/
+implies `m ≤ n`. -/
 class RankCondition : Prop where
   /-- Any surjective linear map from `Rⁿ` to `Rᵐ` guarantees `m ≤ n`. -/
   le_of_fin_surjective : ∀ {n m : ℕ} (f : (Fin n → R) →ₗ[R] Fin m → R), Surjective f → m ≤ n
@@ -208,8 +208,8 @@ instance (priority := 100) rankCondition_of_strongRankCondition [StrongRankCondi
     le_of_fin_injective R _ (f.splittingOfFunOnFintypeSurjective_injective s)
 
 /-- We say that `R` has the invariant basis number property if `(Fin n → R) ≃ₗ[R] (Fin m → R)`
-    implies `n = m`. This gives rise to a well-defined notion of rank of a finitely generated free
-    module. -/
+implies `n = m`. This gives rise to a well-defined notion of rank of a finitely generated free
+module. -/
 class InvariantBasisNumber : Prop where
   /-- Any linear equiv between `Rⁿ` and `Rᵐ` guarantees `m = n`. -/
   eq_of_fin_equiv : ∀ {n m : ℕ}, ((Fin n → R) ≃ₗ[R] Fin m → R) → n = m
@@ -255,7 +255,7 @@ section
 variable (R : Type u) [Ring R] [Nontrivial R] [IsNoetherianRing R]
 
 /-- Any nontrivial noetherian ring satisfies the strong rank condition,
-    since it satisfies Orzech property. -/
+since it satisfies Orzech property. -/
 instance (priority := 100) IsNoetherianRing.strongRankCondition : StrongRankCondition R :=
   inferInstance
 
@@ -291,7 +291,7 @@ private def induced_map (I : Ideal R) (e : (ι → R) →ₗ[R] ι' → R) :
       exact Ideal.map_pi _ _ hab e h)
 
 /-- An isomorphism of `R`-modules `R^n ≃ R^m` induces an isomorphism of `R/I`-modules
-    `R^n/I^n ≃ R^m/I^m`. -/
+`R^n/I^n ≃ R^m/I^m`. -/
 private def inducedEquiv [Fintype ι'] (I : Ideal R) (e : (ι → R) ≃ₗ[R] ι' → R) :
     ((ι → R) ⧸ Ideal.pi fun _ ↦ I) ≃ₗ[R ⧸ I] (ι' → R) ⧸ Ideal.pi fun _ ↦ I where
   toFun := induced_map I e
