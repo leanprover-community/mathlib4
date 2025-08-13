@@ -188,9 +188,9 @@ lemma Frequently.of_curry {la : Filter α} {lb : Filter β} {p : α × β → Pr
   h.uncurry
 
 theorem Eventually.image_of_prod {y : α → β} {r : α → β → Prop}
-    (hψ : Tendsto y f g) (hr : ∀ᶠ p in f ×ˢ g, r p.1 p.2) : ∀ᶠ x in f, r x (y x) := by
+    (hy : Tendsto y f g) (hr : ∀ᶠ p in f ×ˢ g, r p.1 p.2) : ∀ᶠ x in f, r x (y x) := by
   obtain ⟨p, hp, q, hq, hr⟩ := eventually_prod_iff.mp hr
-  filter_upwards [hp, hψ.eventually hq] with _ hp hq using hr hp hq
+  filter_upwards [hp, hy.eventually hq] with _ hp hq using hr hp hq
 
 /-- A fact that is eventually true about all pairs `l ×ˢ l` is eventually true about
 all diagonal pairs `(i, i)` -/
