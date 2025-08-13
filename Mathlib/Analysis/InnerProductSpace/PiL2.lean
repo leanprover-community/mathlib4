@@ -1176,10 +1176,9 @@ theorem inner_matrix_col_col [Fintype m] (A B : Matrix m n 𝕜) (i j : n) :
     ⟪Aᵀ i, Bᵀ j⟫ₑ = (Aᴴ * B) i j := by
   simp [PiLp.inner_apply, dotProduct, mul_apply', mul_comm]
 
-open ContinuousLinearMap in
 /-- The matrix representation of `(lsmul 𝕜 𝕜).flip x)` given by basis `b` is equal to the
 column `b.repr x`. -/
-theorem lsmul_flip_apply_toMatrix {𝕜 E : Type*} [NontriviallyNormedField 𝕜]
+theorem ContinuousLinearMap.lsmul_flip_apply_toMatrix {𝕜 E : Type*} [NontriviallyNormedField 𝕜]
     [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] (b : Basis ι 𝕜 E) (x : E) :
     ((lsmul 𝕜 𝕜).flip x).toMatrix (.singleton Unit 𝕜) b = replicateCol Unit (b.repr x) := by
   ext; simp [LinearMap.toMatrix_apply]
