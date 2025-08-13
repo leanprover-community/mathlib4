@@ -26,6 +26,9 @@ open Simplicial CategoryTheory Limits
 
 namespace SimplexCategory
 
+instance {n m : ℕ} : DecidableEq (⦋n⦌ ⟶ ⦋m⦌) := fun a b =>
+  decidable_of_iff (a.toOrderHom = b.toOrderHom) SimplexCategory.Hom.ext_iff.symm
+
 section Init
 
 /-- The constant morphism from ⦋0⦌. -/
@@ -419,7 +422,7 @@ lemma δ_one_mkOfSucc {n : ℕ} (i : Fin n) :
     δ 1 ≫ mkOfSucc i = SimplexCategory.const _ ⦋n⦌ i.castSucc := by
   ext x
   fin_cases x
-  aesop
+  rfl
 
 /-- If `i + 1 < j`, `mkOfSucc i ≫ δ j` is the morphism `⦋1⦌ ⟶ ⦋n⦌` that
 sends `0` and `1` to `i` and `i + 1`, respectively. -/
