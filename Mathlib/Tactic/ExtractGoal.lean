@@ -135,7 +135,10 @@ syntax (name := extractGoal) "extract_goal" config (" using " ident)? : tactic
 
 Example output: `myTheorem (a b : Nat) : a + b = b + a`.
 
-Also returns the full type of that declaration.
+The return values are:
+* A formatted piece of `MessageData`, like `m!"myTheorem (a b : Nat) : a + b = b + a"`.
+* The full type of the declaration, like `∀ a b, a + b = b + a`.
+* The imports needed to state this declaration, as an array of module names.
 -/
 def goalSignature (name : Name) (g : MVarId) : TermElabM (MessageData × Expr × Array Name) :=
   withoutModifyingEnv <| withoutModifyingState do
