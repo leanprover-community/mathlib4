@@ -554,11 +554,7 @@ lemma krullDim_nonneg_iff : 0 ≤ krullDim α ↔ Nonempty α := by
 
 lemma krullDim_eq_bot [IsEmpty α] : krullDim α = ⊥ := krullDim_eq_bot_iff.mpr ‹_›
 
-@[deprecated (since := "2024-12-22")] alias krullDim_eq_bot_of_isEmpty := krullDim_eq_bot
-
 lemma krullDim_nonneg [Nonempty α] : 0 ≤ krullDim α := krullDim_nonneg_iff.mpr ‹_›
-
-@[deprecated (since := "2024-12-22")] alias krullDim_nonneg_of_nonempty := krullDim_nonneg
 
 theorem krullDim_ne_bot_iff : krullDim α ≠ ⊥ ↔ Nonempty α := by
   rw [ne_eq, krullDim_eq_bot_iff, not_isEmpty_iff]
@@ -666,9 +662,6 @@ lemma krullDim_eq_top [InfiniteDimensionalOrder α] :
     rw [WithBot.some_eq_coe, ← WithBot.coe_natCast, WithBot.coe_lt_coe,
       WithTop.some_eq_coe, ← WithTop.coe_natCast, WithTop.coe_lt_coe]
     simp
-
-@[deprecated (since := "2024-12-22")]
-alias krullDim_eq_top_of_infiniteDimensionalOrder := krullDim_eq_top
 
 lemma krullDim_eq_top_iff : krullDim α = ⊤ ↔ InfiniteDimensionalOrder α := by
   refine ⟨fun h ↦ ?_, fun _ ↦ krullDim_eq_top⟩

@@ -79,9 +79,6 @@ instance : free.{u}.IsLeftAdjoint :=
 instance : (forget AddCommGrp.{u}).IsRightAdjoint :=
   ⟨_, ⟨adj⟩⟩
 
-instance : AddCommGrp.free.{u}.IsLeftAdjoint :=
-  ⟨_, ⟨adj⟩⟩
-
 /-- As an example, we now give a high-powered proof that
 the monomorphisms in `AddCommGroup` are just the injective functions.
 
@@ -147,7 +144,7 @@ def abelianize : Grp.{u} ⥤ CommGrp.{u} where
     apply (Equiv.apply_eq_iff_eq_symm_apply Abelianization.lift).mpr
     rfl
 
-/-- The abelianization-forgetful adjuction from `Group` to `CommGroup`. -/
+/-- The abelianization-forgetful adjunction from `Group` to `CommGroup`. -/
 def abelianizeAdj : abelianize ⊣ forget₂ CommGrp.{u} Grp.{u} :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun _ _ => ((ConcreteCategory.homEquiv (C := CommGrp)).trans
@@ -159,9 +156,9 @@ def abelianizeAdj : abelianize ⊣ forget₂ CommGrp.{u} Grp.{u} :=
         ext
         simp only
         apply Eq.symm
-        apply Abelianization.lift.unique
+        apply Abelianization.lift_unique
         intros
-        apply Abelianization.lift.of }
+        apply Abelianization.lift_apply_of }
 
 end Abelianization
 

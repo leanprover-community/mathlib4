@@ -473,6 +473,10 @@ theorem norm_nonneg (hd : d ≤ 0) (n : ℤ√d) : 0 ≤ n.norm :=
       rw [mul_assoc, neg_mul_eq_neg_mul]
       exact mul_nonneg (neg_nonneg.2 hd) (mul_self_nonneg _))
 
+@[simp]
+theorem abs_norm (hd : d ≤ 0) (n : ℤ√d) : |n.norm| = n.norm :=
+  abs_of_nonneg <| norm_nonneg hd n
+
 theorem norm_eq_one_iff {x : ℤ√d} : x.norm.natAbs = 1 ↔ IsUnit x :=
   ⟨fun h =>
     isUnit_iff_dvd_one.2 <|
@@ -763,7 +767,7 @@ theorem divides_sq_eq_zero {x y} (h : x * x = d * y * y) : x = 0 ∧ y = 0 :=
           _ = g * g * (d * (n * n)) := by ring
       have co2 :=
         let co1 := co.mul_right co
-        co1.mul co1
+        co1.mul_left co1
       exact
         Nonsquare.ns d m
           (Nat.dvd_antisymm (by rw [this]; apply dvd_mul_right) <|

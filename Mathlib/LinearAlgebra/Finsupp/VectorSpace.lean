@@ -3,6 +3,9 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
+import Mathlib.Algebra.FreeAbelianGroup.Finsupp
+import Mathlib.Algebra.MonoidAlgebra.Defs
+import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.LinearAlgebra.Basis.Defs
 import Mathlib.LinearAlgebra.DFinsupp
 import Mathlib.LinearAlgebra.FreeModule.Basic
@@ -18,7 +21,7 @@ This file contains results on the `R`-module structure on functions of finite su
 
 noncomputable section
 
-open Set LinearMap Submodule
+open Set LinearMap Module Submodule
 
 universe u v w
 
@@ -174,8 +177,36 @@ variable {R S : Type*} [CommRing R] [Ring S] [Algebra R S] {ι : Type*} (B : Bas
 
 /-- For any `r : R`, `s : S`, we have
   `B.repr ((algebra_map R S r) * s) i = r * (B.repr s i) `. -/
-theorem Basis.repr_smul' (i : ι) (r : R) (s : S) :
+theorem Module.Basis.repr_smul' (i : ι) (r : R) (s : S) :
     B.repr (algebraMap R S r * s) i = r * B.repr s i := by
   rw [← smul_eq_mul, ← smul_eq_mul, algebraMap_smul, map_smul, Finsupp.smul_apply]
 
 end Algebra
+
+namespace FreeAbelianGroup
+
+instance {σ : Type*} : Module.Free ℤ (FreeAbelianGroup σ) where
+  exists_basis := ⟨σ, ⟨(FreeAbelianGroup.equivFinsupp _).toIntLinearEquiv⟩⟩
+
+end FreeAbelianGroup
+
+namespace AddMonoidAlgebra
+variable {ι R S : Type*} [Semiring R] [Semiring S] [Module R S] [Module.Free R S]
+
+instance : Module.Free R S[ι] := .finsupp ..
+
+end AddMonoidAlgebra
+
+namespace MonoidAlgebra
+variable {ι R S : Type*} [Semiring R] [Semiring S] [Module R S] [Module.Free R S]
+
+instance : Module.Free R (MonoidAlgebra S ι) := .finsupp ..
+
+end MonoidAlgebra
+
+namespace Polynomial
+variable {R S : Type*} [Semiring R] [Semiring S] [Module R S] [Module.Free R S]
+
+instance : Module.Free R R[X] := .of_equiv (Polynomial.toFinsuppIsoLinear _).symm
+
+end Polynomial
