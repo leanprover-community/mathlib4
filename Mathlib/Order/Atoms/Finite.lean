@@ -28,8 +28,10 @@ variable [LE α] [BoundedOrder α] [IsSimpleOrder α]
 
 section DecidableEq
 
-/- It is important that `IsSimpleOrder` is the last type-class argument of this instance,
-so that type-class inference fails quickly if it doesn't apply. -/
+/-- It is important that `IsSimpleOrder` is the last type-class argument of this instance,
+so that type-class inference fails quickly if it doesn't apply.
+
+Note that as of 2025-08-13, this is false. Could someone investigate? -/
 scoped instance (priority := 200) [DecidableEq α] : Fintype α :=
   Fintype.ofEquiv Bool equivBool.symm
 
