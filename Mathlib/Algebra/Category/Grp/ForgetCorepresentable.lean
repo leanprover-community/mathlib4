@@ -29,12 +29,12 @@ shouldn't be useful outside of category theory.
 /-- The equivalence `(ULift ℤ →+ G) ≃ G` for any additive group `G`. -/
 @[simps!]
 def uliftZMultiplesHom (G : Type u) [AddGroup G] : G ≃ (ULift.{u} ℤ →+ G) :=
-  (zmultiplesHom _).trans <| AddMonoidHom.precompEquiv .ulift _
+  (zmultiplesHom _).trans AddEquiv.ulift.symm.addMonoidHomCongrLeftEquiv
 
 /-- The equivalence `(ULift (Multiplicative ℤ) →* G) ≃ G` for any group `G`. -/
 @[simps!]
 def uliftZPowersHom (G : Type u) [Group G] : G ≃ (ULift.{u} (Multiplicative ℤ) →* G) :=
-  (zpowersHom _).trans <| MonoidHom.precompEquiv .ulift _
+  (zpowersHom _).trans MulEquiv.ulift.symm.monoidHomCongrLeftEquiv
 
 namespace MonoidHom
 

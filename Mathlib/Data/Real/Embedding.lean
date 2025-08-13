@@ -65,7 +65,7 @@ theorem num_le_nat_mul_den [ZeroLEOneClass M] [NeZero (1 : M)]
 namespace Archimedean
 
 /-- Set of rational numbers that are less than the "number" `x / 1`.
- Formally, these are numbers `p / q` such that `p • 1 < q • x`. -/
+Formally, these are numbers `p / q` such that `p • 1 < q • x`. -/
 abbrev ratLt (x : M) : Set ℚ := {r | r.num • 1 < r.den • x}
 
 theorem mkRat_mem_ratLt {num : ℤ} {den : ℕ} (hden : den ≠ 0) {x : M} :
@@ -149,7 +149,7 @@ theorem ratLt_add (x y : M) : ratLt (x + y) = ratLt x + ratLt y := by
     exact num_smul_one_lt_den_smul_add hu hv
 
 theorem ratLt'_bddAbove (x : M) : BddAbove (ratLt' x) :=
-   Monotone.map_bddAbove Rat.cast_mono <| ratLt_bddAbove x
+  Monotone.map_bddAbove Rat.cast_mono <| ratLt_bddAbove x
 
 theorem ratLt'_nonempty (x : M) : (ratLt' x).Nonempty := Set.image_nonempty.mpr (ratLt_nonempty x)
 

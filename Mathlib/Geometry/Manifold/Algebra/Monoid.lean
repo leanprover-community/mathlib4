@@ -47,8 +47,6 @@ class ContMDiffAdd {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [To
     extends IsManifold I n G where
   contMDiff_add : ContMDiff (I.prod I) I n fun p : G × G => p.1 + p.2
 
-@[deprecated (since := "2025-01-09")] alias SmoothAdd := ContMDiffAdd
-
 -- See note [Design choices about smooth algebraic structures]
 /-- Basic hypothesis to talk about a `C^n` (Lie) monoid or a `C^n` semigroup.
 A `C^n` monoid over `G`, for example, is obtained by requiring both the instances `Monoid G`
@@ -60,8 +58,6 @@ class ContMDiffMul {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [To
     (G : Type*) [Mul G] [TopologicalSpace G] [ChartedSpace H G] : Prop
     extends IsManifold I n G where
   contMDiff_mul : ContMDiff (I.prod I) I n fun p : G × G => p.1 * p.2
-
-@[deprecated (since := "2025-01-09")] alias SmoothMul := ContMDiffMul
 
 section ContMDiffMul
 
@@ -106,12 +102,10 @@ theorem contMDiff_mul [ContMDiffMul I n G] : ContMDiff (I.prod I) I n fun p : G 
 include I n in
 /-- If the multiplication is `C^n`, then it is continuous. This is not an instance for technical
 reasons, see note [Design choices about smooth algebraic structures]. -/
-@[to_additive "If the addition is `C^n`, then it is continuous. This is not an instance for
-technical reasons, see note [Design choices about smooth algebraic structures]."]
+@[to_additive /-- If the addition is `C^n`, then it is continuous. This is not an instance for
+technical reasons, see note [Design choices about smooth algebraic structures]. -/]
 theorem continuousMul_of_contMDiffMul [ContMDiffMul I n G] : ContinuousMul G :=
   ⟨(contMDiff_mul I n).continuous⟩
-
-@[deprecated (since := "2025-01-09")] alias continuousMul_of_smooth := continuousMul_of_contMDiffMul
 
 end
 
@@ -280,8 +274,6 @@ structure ContMDiffMonoidMorphism (I : ModelWithCorners 𝕜 E H) (I' : ModelWit
     [TopologicalSpace G'] [ChartedSpace H' G'] [Monoid G'] extends
     G →* G' where
   contMDiff_toFun : ContMDiff I I' n toFun
-
-@[deprecated (since := "2025-01-09")] alias SmoothAddMonoidMorphism := ContMDiffAddMonoidMorphism
 
 @[to_additive]
 instance : One (ContMDiffMonoidMorphism I I' n G G') :=
