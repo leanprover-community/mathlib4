@@ -123,10 +123,10 @@ instance _root_.Algebra.IsCentral.continuousLinearMap [ContinuousSMul R V] :
   out T hT := by
     have h' (f : V →L[R] R) (y v : V) : f (T v) • y = f v • T y := by
       simpa using congr($(Subalgebra.mem_center_iff.mp hT <| f.smulRight y) v)
-    by_cases H : ∀ a : V, a = 0
-    · use 0; simp [ContinuousLinearMap.ext_iff, H]
-    obtain ⟨x, hx⟩ := not_forall.mp H
-    obtain ⟨f, hf⟩ := SeparatingDual.exists_eq_one (R := R) hx
+    obtain H | _ := subsingleton_or_nontrivial V
+    · use 0; simp [ContinuousLinearMap.ext_iff, subsingleton_iff.mp H _ 0]
+    obtain ⟨x, hx⟩ := exists_ne (0 : V)
+    obtain ⟨f, hf⟩ := exists_eq_one (R := R) hx
     exact ⟨f (T x), ContinuousLinearMap.ext fun _ => by simp [h', hf]⟩
 
 /-- In a topological vector space with separating dual, the group of continuous linear equivalences
