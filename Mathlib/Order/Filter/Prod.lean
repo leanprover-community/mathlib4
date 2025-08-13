@@ -116,6 +116,14 @@ theorem eventually_prod_iff {p : α × β → Prop} :
         ∀ {x}, pa x → ∀ {y}, pb y → p (x, y) := by
   simpa only [Set.prod_subset_iff] using @mem_prod_iff α β p f g
 
+theorem eventually_prod_iff_exists_mem {p : α × β → Prop} :
+    (∀ᶠ x in f ×ˢ g, p x) ↔ ∃ s ∈ f, ∃ t ∈ g, ∀ x ∈ s, ∀ y ∈ t, p ⟨x, y⟩ := by
+  rw [Filter.eventually_iff_exists_mem]
+  refine ⟨fun ⟨st, hst, h⟩ ↦ ?_, fun ⟨s, hs, t, ht, h⟩ ↦ ?_⟩
+  · have ⟨s, hs, t, ht, hp⟩ := Filter.mem_prod_iff.mp hst
+    exact ⟨s, hs, t, ht, fun x hx y hy ↦ h _ <| hp ⟨hx, hy⟩⟩
+  · exact ⟨s ×ˢ t, Filter.prod_mem_prod hs ht, fun ⟨x, y⟩ ⟨hx, hy⟩ ↦ h x hx y hy⟩
+
 theorem tendsto_fst : Tendsto Prod.fst (f ×ˢ g) f :=
   tendsto_inf_left tendsto_comap
 
