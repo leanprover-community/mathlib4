@@ -93,13 +93,13 @@ variable [Mul M]
 
 variable (M) in
 /-- The center of a magma. -/
-@[to_additive addCenter " The center of an additive magma. "]
+@[to_additive addCenter /-- The center of an additive magma. -/]
 def center : Set M :=
   { z | IsMulCentral z }
 
 variable (S) in
 /-- The centralizer of a subset of a magma. -/
-@[to_additive addCentralizer " The centralizer of a subset of an additive magma. "]
+@[to_additive addCentralizer /-- The centralizer of a subset of an additive magma. -/]
 def centralizer : Set M := {c | ∀ m ∈ S, m * c = c * m}
 
 @[to_additive mem_addCenter_iff]

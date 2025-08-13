@@ -137,15 +137,11 @@ theorem idxOf_getElem [DecidableEq α] {l : List α} (H : Nodup l) (i : Nat) (h 
     from Fin.val_eq_of_eq this
   nodup_iff_injective_get.1 H (by simp)
 
-@[deprecated (since := "2025-01-30")] alias indexOf_getElem := idxOf_getElem
-
 -- This is incorrectly named and should be `idxOf_get`;
 -- this already exists, so will require a deprecation dance.
 theorem get_idxOf [DecidableEq α] {l : List α} (H : Nodup l) (i : Fin l.length) :
     idxOf (get l i) l = i := by
   simp [idxOf_getElem, H]
-
-@[deprecated (since := "2025-01-30")] alias get_indexOf := get_idxOf
 
 theorem nodup_iff_count_le_one [DecidableEq α] {l : List α} : Nodup l ↔ ∀ a, count a l ≤ 1 :=
   nodup_iff_sublist.trans <|
