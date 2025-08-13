@@ -73,6 +73,7 @@ def functorOp : Iᵒᵖ ⥤ CostructuredArrow toProfinite.op ⟨c.pt⟩ :=
 -- We check that the opposite of the original diagram factors through `Profinite.Extend.functorOp`.
 example : functorOp c ⋙ CostructuredArrow.proj toProfinite.op ⟨c.pt⟩ ≅ F.op := Iso.refl _
 
+attribute [local instance] uliftCategory in
 /--
 If the projection maps in the cone are epimorphic and the cone is limiting, then
 `Profinite.Extend.functor` is initial.
@@ -87,7 +88,7 @@ lemma functor_initial (hc : IsLimit c) [∀ i, Epi (c.π.app i)] : Initial (func
   constructor
   · intro ⟨_, X, (f : c.pt ⟶ _)⟩
     obtain ⟨i, g, h⟩ := exists_hom c hc f
-    refine ⟨⟨i⟩, ⟨StructuredArrow.homMk g h.symm⟩⟩
+    exact ⟨⟨i⟩, ⟨StructuredArrow.homMk g h.symm⟩⟩
   · intro ⟨_, X, (f : c.pt ⟶ _)⟩ ⟨i⟩ ⟨_, (s : F.obj i ⟶ X), (w : f = c.π.app i ≫ _)⟩
       ⟨_, (s' : F.obj i ⟶ X), (w' : f = c.π.app i ≫ _)⟩
     simp only [StructuredArrow.hom_eq_iff,

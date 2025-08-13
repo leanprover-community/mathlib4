@@ -307,7 +307,7 @@ theorem circleIntegrable_sub_zpow_iff {c w : ℂ} {R : ℝ} {n : ℤ} :
         inv_mul_cancel_left₀] using this
     have : x ∈ Ioo (0 : ℝ) 1 := by simpa [x, and_comm] using hθ'
     rw [← zpow_neg_one]
-    refine (zpow_right_strictAnti₀ this.1 this.2).le_iff_le.2 (Int.lt_add_one_iff.1 ?_); exact hn
+    refine (zpow_right_strictAnti₀ this.1 this.2).le_iff_ge.2 (Int.lt_add_one_iff.1 ?_); exact hn
   · rintro (rfl | H)
     exacts [circleIntegrable_zero_radius,
       ((continuousOn_id.sub continuousOn_const).zpow₀ _ fun z hz =>
@@ -528,8 +528,6 @@ theorem norm_cauchyPowerSeries_le (f : ℂ → E) (c : ℂ) (R : ℝ) (n : ℕ) 
     _ ≤ ((2 * π)⁻¹ * ∫ θ : ℝ in (0)..2 * π, ‖f (circleMap c R θ)‖) * |R|⁻¹ ^ n := by
       rcases eq_or_ne R 0 with (rfl | hR)
       · cases n <;> simp [-mul_inv_rev]
-        rw [← mul_assoc, inv_mul_cancel₀ (Real.two_pi_pos.ne.symm), one_mul]
-        apply norm_nonneg
       · rw [mul_inv_cancel_left₀, mul_assoc, mul_comm (|R|⁻¹ ^ n)]
         rwa [Ne, _root_.abs_eq_zero]
 
