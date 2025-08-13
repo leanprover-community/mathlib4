@@ -1181,16 +1181,14 @@ open ContinuousLinearMap in
 column `b.repr x`. -/
 theorem lsmul_flip_apply_toMatrix {𝕜 E : Type*} [NontriviallyNormedField 𝕜]
     [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] {ι : Type*} [Fintype ι] (b : Basis ι 𝕜 E) (x : E) :
-    ((lsmul 𝕜 𝕜).flip x).toMatrix (Basis.singleton Unit 𝕜) b
-    = replicateCol Unit (b.repr x) := ext fun _ _ => by
-  simp [LinearMap.toMatrix_apply]
+    ((lsmul 𝕜 𝕜).flip x).toMatrix (.singleton Unit 𝕜) b = replicateCol Unit (b.repr x) := by
+  ext; simp [LinearMap.toMatrix_apply]
 
 /-- The matrix representation of `innerSL 𝕜 x` given by an orthonormal basis `b` is equal to
 the conjugate transpose of the column `b.repr x`
 (in other words, it is the row `star (b.repr x)`). -/
 theorem innerSL_apply_toMatrix [DecidableEq ι] (b : OrthonormalBasis ι 𝕜 E) (x : E) :
-    (innerSL 𝕜 x).toMatrix b.toBasis (Basis.singleton Unit 𝕜)
-    = (replicateCol Unit (b.repr x))ᴴ := ext fun _ _ => by
-  simp [LinearMap.toMatrix_apply, b.repr_apply_apply]
+    (innerSL 𝕜 x).toMatrix b.toBasis (.singleton Unit 𝕜) = (replicateCol Unit (b.repr x))ᴴ := by
+  ext; simp [LinearMap.toMatrix_apply, b.repr_apply_apply]
 
 end Matrix
