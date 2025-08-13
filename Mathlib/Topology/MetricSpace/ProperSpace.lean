@@ -88,10 +88,6 @@ instance (priority := 100) locallyCompact_of_proper [ProperSpace α] : LocallyCo
   .of_hasBasis (fun _ => nhds_basis_closedBall) fun _ _ _ =>
     isCompact_closedBall _ _
 
--- The `alias` command creates a definition, triggering the defLemma linter.
-@[nolint defLemma, deprecated (since := "2024-11-13")]
-alias locally_compact_of_proper := locallyCompact_of_proper
-
 -- see Note [lower instance priority]
 /-- A proper space is complete -/
 instance (priority := 100) complete_of_proper [ProperSpace α] : CompleteSpace α :=
@@ -116,8 +112,8 @@ instance prod_properSpace {α : Type*} {β : Type*} [PseudoMetricSpace α] [Pseu
     exact (isCompact_closedBall x r).prod (isCompact_closedBall y r)
 
 /-- A finite product of proper spaces is proper. -/
-instance pi_properSpace {π : β → Type*} [Fintype β] [∀ b, PseudoMetricSpace (π b)]
-    [h : ∀ b, ProperSpace (π b)] : ProperSpace (∀ b, π b) := by
+instance pi_properSpace {X : β → Type*} [Fintype β] [∀ b, PseudoMetricSpace (X b)]
+    [h : ∀ b, ProperSpace (X b)] : ProperSpace (∀ b, X b) := by
   refine .of_isCompact_closedBall_of_le 0 fun x r hr => ?_
   rw [closedBall_pi _ hr]
   exact isCompact_univ_pi fun _ => isCompact_closedBall _ _

@@ -14,14 +14,14 @@ example {α β : Type} (f : α → β) (a : α) : β := by solve_by_elim
 example {α β : Type} (f : α → α → β) (a : α) : β := by solve_by_elim
 example {α β γ : Type} (f : α → β) (g : β → γ) (a : α) : γ := by solve_by_elim
 example {α β γ : Type} (_f : α → β) (g : β → γ) (b : β) : γ := by solve_by_elim
-example {α : Nat → Type} (f : (n : Nat) → α n → α (n+1)) (a : α 0) : α 4 := by solve_by_elim
+example {α : Nat → Type} (f : (n : Nat) → α n → α (n + 1)) (a : α 0) : α 4 := by solve_by_elim
 
 example (h : Nat) : Nat := by solve_by_elim []
 example {α β : Type} (f : α → β) (a : α) : β := by solve_by_elim []
 example {α β : Type} (f : α → α → β) (a : α) : β := by solve_by_elim []
 example {α β γ : Type} (f : α → β) (g : β → γ) (a : α) : γ := by solve_by_elim []
 example {α β γ : Type} (_f : α → β) (g : β → γ) (b : β) : γ := by solve_by_elim []
-example {α : Nat → Type} (f : (n : Nat) → α n → α (n+1)) (a : α 0) : α 4 := by solve_by_elim []
+example {α : Nat → Type} (f : (n : Nat) → α n → α (n + 1)) (a : α 0) : α 4 := by solve_by_elim []
 
 example {α β : Type} (f : α → β) (a : α) : β := by
   fail_if_success solve_by_elim [-f]
@@ -39,7 +39,7 @@ example {α β : Type} (f : α → β) (a : α) : β := by solve_by_elim only [f
 example {α β : Type} (f : α → α → β) (a : α) : β := by solve_by_elim only [f, a]
 example {α β γ : Type} (f : α → β) (g : β → γ) (a : α) : γ := by solve_by_elim only [f, g, a]
 example {α β γ : Type} (_f : α → β) (g : β → γ) (b : β) : γ := by solve_by_elim only [g, b]
-example {α : Nat → Type} (f : (n : Nat) → α n → α (n+1)) (a : α 0) : α 4 := by
+example {α : Nat → Type} (f : (n : Nat) → α n → α (n + 1)) (a : α 0) : α 4 := by
   solve_by_elim only [f, a]
 
 set_option linter.unusedVariables false in

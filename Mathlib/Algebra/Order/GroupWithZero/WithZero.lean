@@ -104,4 +104,8 @@ lemma OrderIso.withZeroUnits_mul (x y : WithZero αˣ) :
     OrderIso.withZeroUnits (x * y) = OrderIso.withZeroUnits x * OrderIso.withZeroUnits y := by
   simp [OrderIso.withZeroUnits, map_mul]
 
+lemma WithZero.withZeroUnitsEquiv_symm_strictMono :
+    StrictMono (withZeroUnitsEquiv (G := α)).symm :=
+  OrderIso.withZeroUnits.symm.strictMono
+
 end Units
