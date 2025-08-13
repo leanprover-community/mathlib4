@@ -423,7 +423,7 @@ theorem center_eq_scalar_image :
   refine ⟨fun hx ↦ ?_, fun ⟨x, hx, eq⟩ y ↦ eq ▸ scalar_commute x (hx · |>.symm) y |>.symm⟩
   refine (isEmpty_or_nonempty n).elim (fun _ ↦ ⟨0, by simp [nontriviality]⟩) fun ⟨i⟩ ↦ ?_
   obtain ⟨x, rfl⟩ := mem_range_scalar_iff_commute_single'.mpr fun _ _ ↦ hx _
-  exact ⟨_, fun r ↦ by convert congr($(hx (single i i r)) i i) <;> simp, rfl⟩
+  exact ⟨x, by simpa using fun r ↦ congr($(hx (single i i r)) i i)⟩
 
 theorem submonoidCenter_eq_scalar_map :
     Submonoid.center (Matrix n n α) = (Submonoid.center α).map (scalar n) :=
