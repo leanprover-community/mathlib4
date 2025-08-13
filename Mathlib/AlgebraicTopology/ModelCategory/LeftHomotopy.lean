@@ -138,7 +138,7 @@ noncomputable abbrev trans [IsCofibrant X] {f₀ f₁ f₂ : X ⟶ Y}
     (P.trans P').LeftHomotopy f₀ f₂ :=
   Precylinder.LeftHomotopy.trans h h'
 
-lemma exists_good {f g : X ⟶ Y} (h : P.LeftHomotopy f g) :
+lemma exists_good_cylinder {f g : X ⟶ Y} (h : P.LeftHomotopy f g) :
     ∃ (P' : Cylinder X), P'.IsGood ∧ Nonempty (P'.LeftHomotopy f g) := by
   let d := MorphismProperty.factorizationData (cofibrations C) (trivialFibrations C) P.i
   exact
@@ -205,15 +205,15 @@ lemma postcomp [CategoryWithWeakEquivalences C]
   obtain ⟨P, ⟨h⟩⟩ := h
   exact (h.postcomp p).leftHomotopyRel
 
-lemma exists_good [ModelCategory C] {f g : X ⟶ Y} (h : LeftHomotopyRel f g) :
+lemma exists_good_cylinder [ModelCategory C] {f g : X ⟶ Y} (h : LeftHomotopyRel f g) :
     ∃ (P : Cylinder X), P.IsGood ∧ Nonempty (P.LeftHomotopy f g) := by
   obtain ⟨P, ⟨h⟩⟩ := h
-  exact h.exists_good
+  exact h.exists_good_cylinder
 
-lemma exists_very_good [ModelCategory C] {f g : X ⟶ Y} [IsFibrant Y]
+lemma exists_very_good_cylinder [ModelCategory C] {f g : X ⟶ Y} [IsFibrant Y]
     (h : LeftHomotopyRel f g) :
     ∃ (P : Cylinder X), P.IsVeryGood ∧ Nonempty (P.LeftHomotopy f g) := by
-  obtain ⟨P, _, ⟨h⟩⟩ := h.exists_good
+  obtain ⟨P, _, ⟨h⟩⟩ := h.exists_good_cylinder
   let fac := MorphismProperty.factorizationData (trivialCofibrations C) (fibrations C) P.π
   let P' : Cylinder X :=
     { I := fac.Z
@@ -236,7 +236,7 @@ lemma trans [ModelCategory C]
     {f₀ f₁ f₂ : X ⟶ Y} [IsCofibrant X] (h : LeftHomotopyRel f₀ f₁)
     (h' : LeftHomotopyRel f₁ f₂) : LeftHomotopyRel f₀ f₂ := by
   obtain ⟨P, ⟨h⟩⟩ := h
-  obtain ⟨P', _, ⟨h'⟩⟩ := h'.exists_good
+  obtain ⟨P', _, ⟨h'⟩⟩ := h'.exists_good_cylinder
   exact (h.trans h').leftHomotopyRel
 
 lemma equivalence [ModelCategory C] (X Y : C) [IsCofibrant X] :
@@ -247,7 +247,7 @@ lemma equivalence [ModelCategory C] (X Y : C) [IsCofibrant X] :
 
 lemma precomp [ModelCategory C] {f g : X ⟶ Y} [IsFibrant Y] (h : LeftHomotopyRel f g)
     {Z : C} (i : Z ⟶ X) : LeftHomotopyRel (i ≫ f) (i ≫ g) := by
-  obtain ⟨P, _, ⟨h⟩⟩ := h.exists_very_good
+  obtain ⟨P, _, ⟨h⟩⟩ := h.exists_very_good_cylinder
   obtain ⟨Q, _⟩ := Cylinder.exists_very_good Z
   have sq : CommSq (coprod.desc (i ≫ P.i₀) (i ≫ P.i₁)) Q.i P.π (Q.π ≫ i) := ⟨by aesop_cat⟩
   exact ⟨Q,
