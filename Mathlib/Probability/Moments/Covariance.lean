@@ -3,13 +3,7 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Etienne Marion
 -/
-<<<<<<< HEAD
-import Mathlib.Probability.Moments.Variance
-import Mathlib.MeasureTheory.Integral.Prod
-import Mathlib.MeasureTheory.Function.LpSeminorm.Prod
-=======
 import Mathlib.Probability.Independence.Integration
->>>>>>> master
 
 /-!
 # Covariance
@@ -124,19 +118,6 @@ lemma covariance_add_right [IsFiniteMeasure μ]
     (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) (hZ : MemLp Z 2 μ) :
     cov[X, Y + Z; μ] = cov[X, Y; μ] + cov[X, Z; μ] := by
   rw [covariance_comm, covariance_add_left hY hZ hX, covariance_comm X, covariance_comm Z]
-
-lemma variance_add [IsFiniteMeasure μ] (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) :
-    Var[X + Y; μ] = Var[X; μ] + 2 * cov[X, Y; μ] + Var[Y; μ] := by
-  rw [← covariance_self, covariance_add_left hX hY (hX.add hY), covariance_add_right hX hX hY,
-    covariance_add_right hY hX hY, covariance_self, covariance_self, covariance_comm]
-  · ring
-  · exact hY.aemeasurable
-  · exact hX.aemeasurable
-  · exact hX.aemeasurable.add hY.aemeasurable
-
-lemma variance_fun_add [IsFiniteMeasure μ] (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) :
-    Var[fun ω ↦ X ω + Y ω; μ] = Var[X; μ] + 2 * cov[X, Y; μ] + Var[Y; μ] :=
-  variance_add hX hY
 
 lemma covariance_smul_left (c : ℝ) : cov[c • X, Y; μ] = c * cov[X, Y; μ] := by
   simp_rw [covariance, Pi.smul_apply, smul_eq_mul, ← integral_const_mul, ← mul_assoc, mul_sub,

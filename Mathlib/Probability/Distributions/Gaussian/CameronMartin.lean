@@ -17,9 +17,9 @@ That space is a subspace of `E`, but with a different norm.
 
 In this file, we define a type `CameronMartin μ` and build a bijective continuous linear map from
 that type to the subset of `E` of points `y` such that the quantity
-`⨆ (L : Dual ℝ E) (_ : covarianceBilin μ L L ≤ 1), L y` is finite.
+`⨆ (L : StrongDual ℝ E) (_ : covarianceBilin μ L L ≤ 1), L y` is finite.
 
-Since `μ` has finite second moment, for every function `L : Dual ℝ E`, the function
+Since `μ` has finite second moment, for every function `L : StrongDual ℝ E`, the function
 `L ↦ L (x - μ[id])` can be seen as a function in L2.
 The subspace of L2 we obtain that way inherits the scalar product of L2, which is equal to the
 covariance `covarianceBilin μ L L'`.
@@ -27,8 +27,8 @@ We define `CameronMartin μ` as the completion of that subspace. It is a separab
 
 This is the RKHS construction of the Cameron-Martin space. Another construction would be to
 consider the subspace of `E` consisting of all points `y` such that the quantity
-`⨆ (L : Dual ℝ E) (_ : covarianceBilin μ L L ≤ 1), L y` is finite, and to endow it with the norm
-`‖y‖ = ⨆ (L : Dual ℝ E) (_ : covarianceBilin μ L L ≤ 1), L y`.
+`⨆ (L : StrongDual ℝ E) (_ : covarianceBilin μ L L ≤ 1), L y` is finite, and to endow it with
+the norm `‖y‖ = ⨆ (L : StrongDual ℝ E) (_ : covarianceBilin μ L L ≤ 1), L y`.
 Here we don't define the Cameron-Martin space as a subspace because it would inherit
 the norm from `E`, which is not the norm we want to put on it. And we don't want to have two norms
 on the same type.
@@ -36,10 +36,11 @@ on the same type.
 ## Main definitions
 
 * `CameronMartin μ`: Cameron-Martin space of the measure `μ`.
-* `CameronMartin.ofDual μ L`: inclusion of the dual space `Dual ℝ E` into the Cameron-Martin space.
+* `CameronMartin.ofDual μ L`: inclusion of the dual space `Dual ℝ E` into the Cameron-Martin
+  space.
 * `CameronMartin.toInitialSpace`: the continuous linear map from the Cameron-Martin space
   to the initial space `E`. It is injective and its range is the subspace of `E` of points
-  `y` such that `⨆ (L : Dual ℝ E) (_ : covarianceBilin μ L L ≤ 1), L y` is finite.
+  `y` such that `⨆ (L : StrongDual ℝ E) (_ : covarianceBilin μ L L ≤ 1), L y` is finite.
 * `CameronMartin.ofBounded`: the inverse of `CameronMartin.toInitialSpace`, which
   takes a point `y : E` with bounded Cameron-Martin norm and returns a point of `CameronMartin μ`.
 
@@ -176,7 +177,7 @@ end UniformSpace.Completion
 
 lemma norm_eval_le_norm_mul_ciSup {E G : Type*}
     [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup G] [Module ℝ G] [NormSMulClass ℝ G]
-    (f : Dual ℝ E →ₗ[ℝ] G) {y : E} (hy : ∃ M, ∀ L, ‖f L‖ ≤ 1 → L y ≤ M) (L : Dual ℝ E) :
+    (f : StrongDual ℝ E →ₗ[ℝ] G) {y : E} (hy : ∃ M, ∀ L, ‖f L‖ ≤ 1 → L y ≤ M) (L : StrongDual ℝ E) :
     ‖L y‖ ≤ ‖f L‖ * ⨆ (L') (_ : ‖f L'‖ ≤ 1), L' y := by
   have h_bdd : BddAbove (Set.range fun L' ↦ ⨆ (_ : ‖f L'‖ ≤ 1), L' y) := by
     obtain ⟨M, hM⟩ := hy
@@ -233,36 +234,38 @@ instance [SecondCountableTopology E] [IsGaussian μ] : HasTwoMoments μ where
 
 lemma _root_.ContinuousLinearMap.memLp_two {E : Type*}
     [NormedAddCommGroup E] [NormedSpace ℝ E] {_ : MeasurableSpace E}
-    {μ : Measure E} [HasTwoMoments μ] (L : Dual ℝ E) :
+    {μ : Measure E} [HasTwoMoments μ] (L : StrongDual ℝ E) :
     MemLp L 2 μ := L.comp_memLp' memLp_two_id
 
 section centeredToLp
 
-/-- The Bochner integral as a continuous linear map from the dual to `ℝ`.
+/-- The Bochner integral as a continuous linear map from the StrongDual to `ℝ`.
 This is well defined if the measure has a first moment. If not, it is uniformly zero (since
 `Dual.toLp` is zero in that case). -/
 noncomputable
-def integralDualCLM (μ : Measure E) : Dual ℝ E →L[ℝ] ℝ := L1.integralCLM.comp (Dual.toLp μ 1)
+def integralDualCLM (μ : Measure E) : StrongDual ℝ E →L[ℝ] ℝ :=
+  L1.integralCLM.comp (StrongDual.toLp μ 1)
 
-/-- The function `L ↦ L (x - μ[id])` as a continuous linear map from the dual to `Lp ℝ p μ`.
+/-- The function `L ↦ L (x - μ[id])` as a continuous linear map from the StrongDual to `Lp ℝ p μ`.
 This definition takes meaningful values only if the measure has a moment of order `p`
 (`MemLp id p μ`). -/
 noncomputable
-def Dual.centeredToLp (μ : Measure E) [IsFiniteMeasure μ] (p : ℝ≥0∞) [Fact (1 ≤ p)] :
-    Dual ℝ E →L[ℝ] Lp ℝ p μ :=
-  Dual.toLp μ p - (Lp.constL p μ ℝ).comp (integralDualCLM μ)
+def StrongDual.centeredToLp (μ : Measure E) [IsFiniteMeasure μ] (p : ℝ≥0∞) [Fact (1 ≤ p)] :
+    StrongDual ℝ E →L[ℝ] Lp ℝ p μ :=
+  StrongDual.toLp μ p - (Lp.constL p μ ℝ).comp (integralDualCLM μ)
 
-lemma centeredToLp_apply [IsFiniteMeasure μ] (hμp : MemLp id p μ) (L : Dual ℝ E) :
-    Dual.centeredToLp μ p L =ᵐ[μ] fun x ↦ L (x - ∫ z, z ∂μ) := by
+lemma centeredToLp_apply [IsFiniteMeasure μ] (hμp : MemLp id p μ) (L : StrongDual ℝ E) :
+    StrongDual.centeredToLp μ p L =ᵐ[μ] fun x ↦ L (x - ∫ z, z ∂μ) := by
   have hμ1 : MemLp id 1 μ := MemLp.mono_exponent hμp (Fact.out (p := 1 ≤ p))
   by_cases hμ_zero : μ = 0
   · simp only [hμ_zero, ae_zero, integral_zero_measure, sub_zero]
     exact trivial
   replace hμ_zero : NeZero μ := ⟨hμ_zero⟩
-  simp only [Dual.centeredToLp, ContinuousLinearMap.coe_sub', Pi.sub_apply,
+  simp only [StrongDual.centeredToLp, ContinuousLinearMap.coe_sub', Pi.sub_apply,
     AddSubgroupClass.coe_sub, map_sub]
-  filter_upwards [Dual.toLp_apply_ae hμp L,
-    Lp.coeFn_sub (Dual.toLp μ p L) ((Lp.constL p μ ℝ).comp (integralDualCLM μ) L)] with x hx₁ hx₂
+  filter_upwards [StrongDual.toLp_apply_ae hμp L,
+    Lp.coeFn_sub (StrongDual.toLp μ p L) ((Lp.constL p μ ℝ).comp (integralDualCLM μ) L)]
+    with x hx₁ hx₂
   simp only [AddSubgroupClass.coe_sub, Pi.sub_apply] at hx₂
   rw [← hx₁, hx₂]
   congr
@@ -272,22 +275,23 @@ lemma centeredToLp_apply [IsFiniteMeasure μ] (hμp : MemLp id p μ) (L : Dual �
   simp only [id_eq] at h_int_eq
   rw [← L1.integral_eq, L1.integral_eq_integral, ← h_int_eq]
   refine integral_congr_ae ?_
-  exact Dual.toLp_apply_ae hμ1 L
+  exact StrongDual.toLp_apply_ae hμ1 L
 
-lemma centeredToLp_two_inner [HasTwoMoments μ] (L₁ L₂ : Dual ℝ E) :
-    ⟪Dual.centeredToLp μ 2 L₁, Dual.centeredToLp μ 2 L₂⟫_ℝ = covarianceBilin μ L₁ L₂ := by
+lemma centeredToLp_two_inner [HasTwoMoments μ] (L₁ L₂ : StrongDual ℝ E) :
+    ⟪StrongDual.centeredToLp μ 2 L₁, StrongDual.centeredToLp μ 2 L₂⟫_ℝ
+      = covarianceBilin μ L₁ L₂ := by
   rw [real_inner_comm, L2.inner_def, covarianceBilin_apply' memLp_two_id]
   refine integral_congr_ae ?_
   filter_upwards [centeredToLp_apply memLp_two_id L₁, centeredToLp_apply memLp_two_id L₂]
     with x hx₁ hx₂
   simp [hx₁, hx₂]
 
-lemma norm_centeredToLp_two [HasTwoMoments μ] (L : Dual ℝ E) :
-    ‖Dual.centeredToLp μ 2 L‖ = √(covarianceBilin μ L L) := by
+lemma norm_centeredToLp_two [HasTwoMoments μ] (L : StrongDual ℝ E) :
+    ‖StrongDual.centeredToLp μ 2 L‖ = √(covarianceBilin μ L L) := by
   rw [norm_eq_sqrt_real_inner, centeredToLp_two_inner]
 
-lemma sq_norm_centeredToLp_two [HasTwoMoments μ] (L : Dual ℝ E) :
-    ‖Dual.centeredToLp μ 2 L‖ ^ 2 = covarianceBilin μ L L := by
+lemma sq_norm_centeredToLp_two [HasTwoMoments μ] (L : StrongDual ℝ E) :
+    ‖StrongDual.centeredToLp μ 2 L‖ ^ 2 = covarianceBilin μ L L := by
   rw [← real_inner_self_eq_norm_sq, centeredToLp_two_inner]
 
 end centeredToLp
@@ -298,7 +302,7 @@ section CameronMartinSpace
 This is a separable Hilbert space. -/
 noncomputable
 abbrev CameronMartin (μ : Measure E) [IsFiniteMeasure μ] :=
-  Completion (Submodule.map (Dual.centeredToLp μ 2) ⊤)
+  Completion (Submodule.map (StrongDual.centeredToLp μ 2) ⊤)
 
 -- Uncomment the following lines to check that `CameronMartin μ` is a Hilbert space:
 -- #synth NormedAddCommGroup (CameronMartin μ)
@@ -307,35 +311,35 @@ abbrev CameronMartin (μ : Measure E) [IsFiniteMeasure μ] :=
 
 instance [SecondCountableTopology E] (μ : Measure E) [IsFiniteMeasure μ] :
     SecondCountableTopology (CameronMartin μ) := by
-  suffices SecondCountableTopology (Submodule.map (Dual.centeredToLp μ 2) ⊤) by infer_instance
+  suffices SecondCountableTopology (Submodule.map (StrongDual.centeredToLp μ 2) ⊤) by infer_instance
   have : Fact (2 ≠ ∞) := ⟨by simp⟩
   exact TopologicalSpace.Subtype.secondCountableTopology _
 
 namespace CameronMartin
 
-/-- Inclusion from the dual into the Cameron-Martin space, as a linear map. -/
+/-- Inclusion from the StrongDual into the Cameron-Martin space, as a linear map. -/
 noncomputable
-def ofDual (μ : Measure E) [IsFiniteMeasure μ] : Dual ℝ E →ₗ[ℝ] CameronMartin μ :=
-  Completion.toComplL.toLinearMap.comp (((Dual.centeredToLp μ 2).submoduleMap ⊤).comp
-    (Submodule.topEquiv (R := ℝ) (M := Dual ℝ E)).symm.toLinearMap)
+def ofDual (μ : Measure E) [IsFiniteMeasure μ] : StrongDual ℝ E →ₗ[ℝ] CameronMartin μ :=
+  Completion.toComplL.toLinearMap.comp (((StrongDual.centeredToLp μ 2).submoduleMap ⊤).comp
+    (Submodule.topEquiv (R := ℝ) (M := StrongDual ℝ E)).symm.toLinearMap)
 
 variable [HasTwoMoments μ]
 
 omit [CompleteSpace E] in
-lemma ofDual_apply (L : Dual ℝ E) :
+lemma ofDual_apply (L : StrongDual ℝ E) :
     ofDual μ L
-      = (⟨Dual.centeredToLp μ 2 L, Submodule.mem_map.mpr ⟨L, by simp, rfl⟩⟩ :
-        Submodule.map (Dual.centeredToLp μ 2) ⊤) := rfl
+      = (⟨StrongDual.centeredToLp μ 2 L, Submodule.mem_map.mpr ⟨L, by simp, rfl⟩⟩ :
+        Submodule.map (StrongDual.centeredToLp μ 2) ⊤) := rfl
 
-lemma ofDual_inner (L₁ L₂ : Dual ℝ E) :
+lemma ofDual_inner (L₁ L₂ : StrongDual ℝ E) :
     ⟪ofDual μ L₁, ofDual μ L₂⟫_ℝ = covarianceBilin μ L₁ L₂ := by
   simp only [ofDual_apply, Completion.inner_coe, Submodule.coe_inner]
   exact centeredToLp_two_inner L₁ L₂
 
-lemma norm_ofDual (L : Dual ℝ E) : ‖ofDual μ L‖ = √(covarianceBilin μ L L) := by
+lemma norm_ofDual (L : StrongDual ℝ E) : ‖ofDual μ L‖ = √(covarianceBilin μ L L) := by
   rw [norm_eq_sqrt_real_inner, ofDual_inner]
 
-lemma sq_norm_ofDual (L : Dual ℝ E) : ‖ofDual μ L‖ ^ 2 = covarianceBilin μ L L := by
+lemma sq_norm_ofDual (L : StrongDual ℝ E) : ‖ofDual μ L‖ ^ 2 = covarianceBilin μ L L := by
   rw [← real_inner_self_eq_norm_sq, ofDual_inner]
 
 end CameronMartin
@@ -352,28 +356,28 @@ variable [HasTwoMoments μ]
 namespace CameronMartinAux -- namespace for auxiliary definitions and lemmas
 
 /-- For an L2 function `x` in the image of `Dual ℝ E` by `Dual.centeredToLp μ 2`, we can evaluate
-`x` at `y : E` by taking `L y` for an arbitrary `L : Dual ℝ E` that is sent to `x`.
+`x` at `y : E` by taking `L y` for an arbitrary `L : StrongDual ℝ E` that is sent to `x`.
 This is an auxiliary definition for `CameronMartin.eval`. -/
 noncomputable
-def evalL2 (μ : Measure E) [HasTwoMoments μ] (y : E) (x : Submodule.map (Dual.centeredToLp μ 2) ⊤) :
-    ℝ :=
+def evalL2 (μ : Measure E) [HasTwoMoments μ] (y : E)
+    (x : Submodule.map (StrongDual.centeredToLp μ 2) ⊤) : ℝ :=
   (Submodule.mem_map.mp x.2).choose y
 
 lemma norm_eval_le_norm_centeredToLp_mul (hy : ∃ M, ∀ L, covarianceBilin μ L L ≤ 1 → L y ≤ M)
-    (L : Dual ℝ E) :
-    ‖L y‖ ≤ ‖Dual.centeredToLp μ 2 L‖ * ⨆ (L') (_ : covarianceBilin μ L' L' ≤ 1), L' y := by
+    (L : StrongDual ℝ E) :
+    ‖L y‖ ≤ ‖StrongDual.centeredToLp μ 2 L‖ * ⨆ (L') (_ : covarianceBilin μ L' L' ≤ 1), L' y := by
   simp_rw [← sq_norm_centeredToLp_two, sq_le_one_iff_abs_le_one, abs_norm] at hy ⊢
-  exact norm_eval_le_norm_mul_ciSup (Dual.centeredToLp μ 2).toLinearMap hy L
+  exact norm_eval_le_norm_mul_ciSup (StrongDual.centeredToLp μ 2).toLinearMap hy L
 
 lemma norm_evalL2_le (hy : ∃ M, ∀ L, covarianceBilin μ L L ≤ 1 → L y ≤ M)
-    (x : Submodule.map (Dual.centeredToLp μ 2) ⊤) :
-    ‖evalL2 μ y x‖ ≤ ‖x‖ * ⨆ (L : Dual ℝ E) (_ : covarianceBilin μ L L ≤ 1), L y := by
+    (x : Submodule.map (StrongDual.centeredToLp μ 2) ⊤) :
+    ‖evalL2 μ y x‖ ≤ ‖x‖ * ⨆ (L : StrongDual ℝ E) (_ : covarianceBilin μ L L ≤ 1), L y := by
   simp only [AddSubgroupClass.coe_norm]
   conv_rhs => rw [← (Submodule.mem_map.mp x.2).choose_spec.2]
   exact norm_eval_le_norm_centeredToLp_mul hy (Submodule.mem_map.mp x.2).choose
 
 lemma eval_eq_of_centeredToLp_eq (hy : ∃ M, ∀ L, covarianceBilin μ L L ≤ 1 → L y ≤ M)
-    (L L' : Dual ℝ E) (hL : Dual.centeredToLp μ 2 L = Dual.centeredToLp μ 2 L') :
+    (L L' : StrongDual ℝ E) (hL : StrongDual.centeredToLp μ 2 L = StrongDual.centeredToLp μ 2 L') :
     L y = L' y := by
   rw [← sub_eq_zero, ← Pi.sub_apply, ← norm_eq_zero]
   suffices ‖⇑(L - L') y‖ = 0 by simpa
@@ -382,16 +386,16 @@ lemma eval_eq_of_centeredToLp_eq (hy : ∃ M, ∀ L, covarianceBilin μ L L ≤ 
   simp [hL]
 
 lemma evalL2_eq (hy : ∃ M, ∀ L, covarianceBilin μ L L ≤ 1 → L y ≤ M)
-    (x : Submodule.map (Dual.centeredToLp μ 2) ⊤)
-    {L : Dual ℝ E} (hL : Dual.centeredToLp μ 2 L = x) :
+    (x : Submodule.map (StrongDual.centeredToLp μ 2) ⊤)
+    {L : StrongDual ℝ E} (hL : StrongDual.centeredToLp μ 2 L = x) :
     evalL2 μ y x = L y := by
   rw [evalL2]
   refine eval_eq_of_centeredToLp_eq hy (Submodule.mem_map.mp x.2).choose L ?_
   rw [hL, (Submodule.mem_map.mp x.2).choose_spec.2]
 
 lemma evalL2_centeredToLp_eq (hy : ∃ M, ∀ L, covarianceBilin μ L L ≤ 1 → L y ≤ M)
-    (L : Dual ℝ E) :
-    evalL2 μ y ⟨Dual.centeredToLp μ 2 L, Submodule.mem_map.mpr ⟨L, by simp, rfl⟩⟩ = L y :=
+    (L : StrongDual ℝ E) :
+    evalL2 μ y ⟨StrongDual.centeredToLp μ 2 L, Submodule.mem_map.mpr ⟨L, by simp, rfl⟩⟩ = L y :=
   evalL2_eq hy _ (by simp)
 
 end CameronMartinAux
@@ -402,12 +406,12 @@ open CameronMartinAux
 /-- Evaluation map on the Cameron-Martin space. `CameronMartin.eval μ y hy x` is the evaluation of
 `x` at `y`, where `x` is an element of the Cameron-Martin space of the Gaussian measure `μ`.
 This map is defined for `y` with bounded Cameron-Martin norm, i.e., such that there exists `M` with
-`∀ L : Dual ℝ E, covarianceBilin μ L L ≤ 1 → L y ≤ M`.
+`∀ L : StrongDual ℝ E, covarianceBilin μ L L ≤ 1 → L y ≤ M`.
 It satisfies `eval μ y hy (ofDual μ L) = L y`. -/
 noncomputable
 def eval (μ : Measure E) [HasTwoMoments μ] (y : E)
     (hy : ∃ M, ∀ L, covarianceBilin μ L L ≤ 1 → L y ≤ M) :
-    Dual ℝ (CameronMartin μ) :=
+    StrongDual ℝ (CameronMartin μ) :=
   Completion.continuousLinearMapExtension ℝ <|
   LinearMap.mkContinuous
     { toFun x := evalL2 μ y x
@@ -427,7 +431,7 @@ def eval (μ : Measure E) [HasTwoMoments μ] (y : E)
     rw [mul_comm]
     exact norm_evalL2_le hy x
 
-lemma eval_ofDual (hy : ∃ M, ∀ L, covarianceBilin μ L L ≤ 1 → L y ≤ M) (L : Dual ℝ E) :
+lemma eval_ofDual (hy : ∃ M, ∀ L, covarianceBilin μ L L ≤ 1 → L y ≤ M) (L : StrongDual ℝ E) :
     eval μ y hy (ofDual μ L) = L y := by
   rw [ofDual_apply]
   simp only [eval, Completion.continuousLinearMapExtension_coe, LinearMap.mkContinuous_apply,
@@ -469,16 +473,17 @@ variable [SecondCountableTopology E] [HasTwoMoments μ]
 namespace CameronMartinAux -- namespace for auxiliary definitions and lemmas
 
 /-- From `x` in the image of `Dual ℝ E` by `Dual.centeredToLp μ 2`, we define a point of `E` by
-`∫ y, L (y - ∫ z, z ∂μ) • (y - ∫ z, z ∂μ) ∂μ` for an arbitrary `L : Dual ℝ E` with
+`∫ y, L (y - ∫ z, z ∂μ) • (y - ∫ z, z ∂μ) ∂μ` for an arbitrary `L : StrongDual ℝ E` with
 `Dual.centeredToLp μ 2 L = x`.
 This is an auxiliary definition for `CameronMartin.toInitialSpace`. -/
 noncomputable
-def toInit (μ : Measure E) [IsFiniteMeasure μ] (x : Submodule.map (Dual.centeredToLp μ 2) ⊤) : E :=
+def toInit (μ : Measure E) [IsFiniteMeasure μ]
+    (x : Submodule.map (StrongDual.centeredToLp μ 2) ⊤) : E :=
   ∫ y, (Submodule.mem_map.mp x.2).choose (y - ∫ z, z ∂μ) • (y - ∫ z, z ∂μ) ∂μ
 
 omit [SecondCountableTopology E] in
-lemma toInit_eq (x : Submodule.map (Dual.centeredToLp μ 2) ⊤) {L : Dual ℝ E}
-    (hL : Dual.centeredToLp μ 2 L = x) :
+lemma toInit_eq (x : Submodule.map (StrongDual.centeredToLp μ 2) ⊤) {L : StrongDual ℝ E}
+    (hL : StrongDual.centeredToLp μ 2 L = x) :
     toInit μ x = ∫ y, L (y - ∫ z, z ∂μ) • (y - ∫ z, z ∂μ) ∂μ :=
   calc toInit μ x
   _ = ∫ y, x.1 y • (y - ∫ z, z ∂μ) ∂μ := by
@@ -487,12 +492,12 @@ lemma toInit_eq (x : Submodule.map (Dual.centeredToLp μ 2) ⊤) {L : Dual ℝ E
     refine integral_congr_ae ?_
     filter_upwards [centeredToLp_apply memLp_two_id (Submodule.mem_map.mp x.2).choose] with y hy
     rw [hy]
-  _ = ∫ y, Dual.centeredToLp μ 2 L y • (y - ∫ z, z ∂μ) ∂μ := by rw [hL]
+  _ = ∫ y, StrongDual.centeredToLp μ 2 L y • (y - ∫ z, z ∂μ) ∂μ := by rw [hL]
   _ = ∫ y, L (y - ∫ z, z ∂μ) • (y - ∫ z, z ∂μ) ∂μ := by
     refine integral_congr_ae ?_
     filter_upwards [centeredToLp_apply memLp_two_id L] with y hy using by rw [hy]
 
-lemma apply_toInit (x : Submodule.map (Dual.centeredToLp μ 2) ⊤) (L : Dual ℝ E) :
+lemma apply_toInit (x : Submodule.map (StrongDual.centeredToLp μ 2) ⊤) (L : StrongDual ℝ E) :
     L (toInit μ x)
       = ∫ y, (Submodule.mem_map.mp x.2).choose (y - ∫ z, z ∂μ) * L (y - ∫ z, z ∂μ) ∂μ := by
   rw [toInit, ← L.integral_comp_comm]
@@ -505,8 +510,9 @@ lemma apply_toInit (x : Submodule.map (Dual.centeredToLp μ 2) ⊤) (L : Dual �
   · rw [memLp_norm_iff (by fun_prop)]
     exact MemLp.sub memLp_two_id (memLp_const _)
 
-lemma apply_toInit_eq_inner (x : Submodule.map (Dual.centeredToLp μ 2) ⊤) (L : Dual ℝ E) :
-    L (toInit μ x) = ⟪Dual.centeredToLp μ 2 L, x⟫_ℝ := by
+lemma apply_toInit_eq_inner (x : Submodule.map (StrongDual.centeredToLp μ 2) ⊤)
+    (L : StrongDual ℝ E) :
+    L (toInit μ x) = ⟪StrongDual.centeredToLp μ 2 L, x⟫_ℝ := by
   rw [← (Submodule.mem_map.mp x.2).choose_spec.2, L2.inner_def, apply_toInit]
   simp only [RCLike.inner_apply, conj_trivial]
   refine integral_congr_ae ?_
@@ -515,16 +521,17 @@ lemma apply_toInit_eq_inner (x : Submodule.map (Dual.centeredToLp μ 2) ⊤) (L 
     with y hy₁ hy₂
   rw [hy₁, hy₂]
 
-lemma norm_toInit_le (x : Submodule.map (Dual.centeredToLp μ 2) ⊤) :
-    ‖toInit μ x‖ ≤ ‖Dual.centeredToLp μ 2‖ * ‖x‖ := by
+lemma norm_toInit_le (x : Submodule.map (StrongDual.centeredToLp μ 2) ⊤) :
+    ‖toInit μ x‖ ≤ ‖StrongDual.centeredToLp μ 2‖ * ‖x‖ := by
   refine norm_le_dual_bound ℝ _ (by positivity) fun L ↦ ?_
   calc ‖L (toInit μ x)‖
-  _ = ‖⟪Dual.centeredToLp μ 2 L, x⟫_ℝ‖ := by rw [apply_toInit_eq_inner]
-  _ ≤ ‖Dual.centeredToLp μ 2 L‖ * ‖x‖ := norm_inner_le_norm ((Dual.centeredToLp μ 2) L) x
-  _ ≤ ‖Dual.centeredToLp μ 2‖ * ‖L‖ * ‖x‖ := by
+  _ = ‖⟪StrongDual.centeredToLp μ 2 L, x⟫_ℝ‖ := by rw [apply_toInit_eq_inner]
+  _ ≤ ‖StrongDual.centeredToLp μ 2 L‖ * ‖x‖ :=
+    norm_inner_le_norm ((StrongDual.centeredToLp μ 2) L) x
+  _ ≤ ‖StrongDual.centeredToLp μ 2‖ * ‖L‖ * ‖x‖ := by
     gcongr
-    exact (Dual.centeredToLp μ 2).le_opNorm L
-  _ = ‖Dual.centeredToLp μ 2‖ * ‖x‖ * ‖L‖ := by ring
+    exact (StrongDual.centeredToLp μ 2).le_opNorm L
+  _ = ‖StrongDual.centeredToLp μ 2‖ * ‖x‖ * ‖L‖ := by ring
 
 end CameronMartinAux
 
@@ -547,9 +554,9 @@ def toInitialSpace (μ : Measure E) [HasTwoMoments μ] : CameronMartin μ →L[�
         refine (eq_iff_forall_dual_eq (𝕜 := ℝ)).mpr fun L ↦ ?_
         simp_rw [map_smul, apply_toInit_eq_inner, Submodule.coe_smul, inner_smul_right]
         simp }
-    ‖Dual.centeredToLp μ 2‖ norm_toInit_le
+    ‖StrongDual.centeredToLp μ 2‖ norm_toInit_le
 
-lemma apply_toInitialSpace_eq_inner (x : CameronMartin μ) (L : Dual ℝ E) :
+lemma apply_toInitialSpace_eq_inner (x : CameronMartin μ) (L : StrongDual ℝ E) :
     L (toInitialSpace μ x) = ⟪ofDual μ L, x⟫_ℝ := by
   simp only [toInitialSpace, Completion.continuousLinearMapExtension_apply]
   revert x
@@ -581,7 +588,7 @@ lemma toInitialSpace_injective : Function.Injective (toInitialSpace μ) := by
 /-- Any point of the Cameron-Martin space has finite Cameron-Martin norm
 `⨆ L (_ : covarianceBilin L L ≤ 1), L x` (when seen as a point of the initial space). -/
 lemma apply_toInitialSpace_le_norm (x : CameronMartin μ)
-    {L : Dual ℝ E} (hL : covarianceBilin μ L L ≤ 1) :
+    {L : StrongDual ℝ E} (hL : covarianceBilin μ L L ≤ 1) :
     L (toInitialSpace μ x) ≤ ‖x‖ := by
   calc L (toInitialSpace μ x)
   _ = ⟪ofDual μ L, x⟫_ℝ := apply_toInitialSpace_eq_inner x L
@@ -624,7 +631,7 @@ lemma range_toInitialSpace :
     refine ⟨ofBounded μ y, ?_⟩
     rw [toInitialSpace_ofBounded hy]
 
-lemma ofDual_inner_le_of_norm_ofDual_le (x : CameronMartin μ) {L : Dual ℝ E}
+lemma ofDual_inner_le_of_norm_ofDual_le (x : CameronMartin μ) {L : StrongDual ℝ E}
     (hL : ‖ofDual μ L‖ ≤ 1) :
     ⟪ofDual μ L, x⟫_ℝ ≤ ⨆ (L) (_ : covarianceBilin μ L L ≤ 1), L (toInitialSpace μ x) := by
   refine le_ciSup_of_le ?_ L ?_
@@ -638,7 +645,7 @@ lemma ofDual_inner_le_of_norm_ofDual_le (x : CameronMartin μ) {L : Dual ℝ E}
   simp only [hL', ciSup_unique]
   rw [← apply_toInitialSpace_eq_inner]
 
-lemma ofDual_inner_le_mul (x : CameronMartin μ) (L : Dual ℝ E) :
+lemma ofDual_inner_le_mul (x : CameronMartin μ) (L : StrongDual ℝ E) :
     ⟪ofDual μ L, x⟫_ℝ
       ≤ ‖ofDual μ L‖ * ⨆ (L) (_ : covarianceBilin μ L L ≤ 1), L (toInitialSpace μ x) := by
   by_cases h_zero : ‖ofDual μ L‖ = 0

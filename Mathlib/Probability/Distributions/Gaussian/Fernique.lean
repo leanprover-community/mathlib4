@@ -47,36 +47,6 @@ variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpa
   [NormedAddCommGroup F] [NormedSpace ℝ F] [MeasurableSpace F]
   {μ : Measure E} {ν : Measure F} {p : ℝ≥0∞}
 
-lemma integral_dual_prod' [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] {L : Dual ℝ (E × F)}
-    (hLμ : MemLp (L.comp (.inl ℝ E F)) 1 μ) (hLν : MemLp (L.comp (.inr ℝ E F)) 1 ν) :
-    (μ.prod ν)[L] = μ[L.comp (.inl ℝ E F)] + ν[L.comp (.inr ℝ E F)] := by
-  simp_rw [← L.comp_inl_add_comp_inr]
-  rw [integral_add, integral_prod, integral_prod]
-  · simp
-  · exact (hLν.comp_snd μ).integrable le_rfl
-  · exact (hLμ.comp_fst ν).integrable le_rfl
-  · exact (hLμ.comp_fst ν).integrable le_rfl
-  · exact (hLν.comp_snd μ).integrable le_rfl
-
-lemma integral_dual_prod [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] {L : Dual ℝ (E × F)}
-    (hμ : MemLp id 1 μ) (hν : MemLp id 1 ν) :
-    (μ.prod ν)[L] = μ[L.comp (.inl ℝ E F)] + ν[L.comp (.inr ℝ E F)] :=
-  integral_dual_prod' (ContinuousLinearMap.comp_memLp' _ hμ) (ContinuousLinearMap.comp_memLp' _ hν)
-
-lemma variance_dual_prod' [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] {L : Dual ℝ (E × F)}
-    (hLμ : MemLp (L.comp (.inl ℝ E F)) 2 μ) (hLν : MemLp (L.comp (.inr ℝ E F)) 2 ν) :
-    Var[L; μ.prod ν] = Var[L.comp (.inl ℝ E F); μ] + Var[L.comp (.inr ℝ E F); ν] := by
-  have : L = fun x : E × F ↦ L.comp (.inl ℝ E F) x.1 + L.comp (.inr ℝ E F) x.2 := by
-    ext; rw [L.comp_inl_add_comp_inr]
-  conv_lhs => rw [this]
-  rw [variance_add_prod hLμ hLν]
-
-lemma variance_dual_prod [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] {L : Dual ℝ (E × F)}
-    (hLμ : MemLp id 2 μ) (hLν : MemLp id 2 ν) :
-    Var[L; μ.prod ν] = Var[L.comp (.inl ℝ E F); μ] + Var[L.comp (.inr ℝ E F); ν] :=
-  variance_dual_prod' (ContinuousLinearMap.comp_memLp' _ hLμ)
-    (ContinuousLinearMap.comp_memLp' _ hLν)
-
 variable [IsGaussian μ] [IsGaussian ν] [BorelSpace E] [BorelSpace F]
 
 /-- A product of Gaussian distributions is Gaussian. -/
@@ -91,8 +61,8 @@ instance [SecondCountableTopologyEither E F] : IsGaussian (μ.prod ν) := by
   rw [sub_add_sub_comm, ← add_mul]
   congr
   · simp_rw [integral_complex_ofReal]
-    rw [integral_dual_prod' (IsGaussian.memLp_dual μ (L.comp (.inl ℝ E F)) 1 (by simp))
-      (IsGaussian.memLp_dual ν (L.comp (.inr ℝ E F)) 1 (by simp))]
+    rw [integral_continuousLinearMap_prod' (IsGaussian.integrable_dual μ (L.comp (.inl ℝ E F)))
+      (IsGaussian.integrable_dual ν (L.comp (.inr ℝ E F)))]
     norm_cast
   · field_simp
     rw [variance_dual_prod' (IsGaussian.memLp_dual μ (L.comp (.inl ℝ E F)) 2 (by simp))
@@ -101,15 +71,16 @@ instance [SecondCountableTopologyEither E F] : IsGaussian (μ.prod ν) := by
 
 section Rotation
 
-/-- The hypothesis `∀ L : Dual ℝ E, μ[L] = 0` can be simplified to `μ[id] = 0`, but at this point
-we don't know yet that `μ` has a first moment. -/
-lemma IsGaussian.charFunDual_eq_of_isCentered (hμ : ∀ L : Dual ℝ E, μ[L] = 0) (L : Dual ℝ E) :
+/-- The hypothesis `∀ L : StrongDual ℝ E, μ[L] = 0` can be simplified to `μ[id] = 0`,
+but at this point we don't know yet that `μ` has a first moment. -/
+lemma IsGaussian.charFunDual_eq_of_isCentered (hμ : ∀ L : StrongDual ℝ E, μ[L] = 0)
+    (L : StrongDual ℝ E) :
     charFunDual μ L = cexp (- Var[L; μ] / 2) := by
   rw [IsGaussian.charFunDual_eq L, integral_complex_ofReal, hμ L]
   simp [neg_div]
 
 lemma IsGaussian.map_rotation_eq_self [SecondCountableTopology E] [CompleteSpace E]
-    (hμ : ∀ L : Dual ℝ E, μ[L] = 0) (θ : ℝ) :
+    (hμ : ∀ L : StrongDual ℝ E, μ[L] = 0) (θ : ℝ) :
     (μ.prod μ).map (ContinuousLinearMap.rotation θ) = μ.prod μ := by
   refine Measure.ext_of_charFunDual ?_
   ext L
@@ -151,7 +122,7 @@ section Fernique
 
 variable [SecondCountableTopology E]
 
-lemma integral_dual_conv_map_neg_eq_zero (L : Dual ℝ E) :
+lemma integral_dual_conv_map_neg_eq_zero (L : StrongDual ℝ E) :
     (μ ∗ (μ.map (ContinuousLinearEquiv.neg ℝ)))[L] = 0 := by
   rw [integral_conv (by fun_prop)]
   simp only [map_add]
@@ -258,10 +229,10 @@ lemma IsGaussian.memLp_id (μ : Measure E) [IsGaussian μ] (p : ℝ≥0∞) (hp 
     exact fun x hx ↦ integrable_exp_mul_of_le_of_le hC_neg hC hx.1.le hx.2.le
   exact h_subset ⟨by simp [hC_pos], hC_pos⟩
 
-lemma IsGaussian.integral_dual (L : Dual ℝ E) : μ[L] = L (∫ x, x ∂μ) :=
+lemma IsGaussian.integral_dual (L : StrongDual ℝ E) : μ[L] = L (∫ x, x ∂μ) :=
   L.integral_comp_comm ((IsGaussian.memLp_id μ 1 (by simp)).integrable le_rfl)
 
-lemma IsGaussian.eq_dirac_of_variance_eq_zero (h : ∀ L : Dual ℝ E, Var[L; μ] = 0) :
+lemma IsGaussian.eq_dirac_of_variance_eq_zero (h : ∀ L : StrongDual ℝ E, Var[L; μ] = 0) :
     μ = Measure.dirac (∫ x, x ∂μ) := by
   refine Measure.ext_of_charFunDual ?_
   ext L
@@ -271,7 +242,7 @@ lemma IsGaussian.eq_dirac_of_variance_eq_zero (h : ∀ L : Dual ℝ E, Var[L; μ
 
 lemma IsGaussian.noAtoms (h : ∀ x, μ ≠ Measure.dirac x) : NoAtoms μ where
   measure_singleton x := by
-    obtain ⟨L, hL⟩ : ∃ L : Dual ℝ E, Var[L; μ] ≠ 0 := by
+    obtain ⟨L, hL⟩ : ∃ L : StrongDual ℝ E, Var[L; μ] ≠ 0 := by
       contrapose! h
       exact ⟨_, eq_dirac_of_variance_eq_zero h⟩
     have hL_zero : μ.map L {L x} = 0 := by
