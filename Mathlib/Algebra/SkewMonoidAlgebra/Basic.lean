@@ -596,7 +596,7 @@ end AddGroupWithOne
 
 section Mul
 
-/- Interaction of `sum` and `•` assuming some multiplication stucture. -/
+/- Interaction of `sum` and `•` assuming some multiplication structure. -/
 theorem sum_smul_index {N : Type*} [AddCommMonoid N] [NonUnitalNonAssocSemiring k]
     {g : SkewMonoidAlgebra k G} {b : k} {h : G → k → N} (h0 : ∀ i, h i 0 = 0) :
     (b • g).sum h = g.sum (h · <| b * ·) := by

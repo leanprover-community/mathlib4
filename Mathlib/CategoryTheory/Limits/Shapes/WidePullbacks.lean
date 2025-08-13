@@ -138,6 +138,7 @@ def equivalenceOfEquiv (J' : Type w') (h : J ≃ J') :
   unitIso := NatIso.ofComponents (fun j => by cases j <;> exact eqToIso (by simp))
   counitIso := NatIso.ofComponents (fun j => by cases j <;> exact eqToIso (by simp))
 
+attribute [local instance] uliftCategory in
 /-- Lifting universe and morphism levels preserves wide pullback diagrams. -/
 def uliftEquivalence :
     ULiftHom.{w'} (ULift.{w'} (WidePullbackShape J)) ≌ WidePullbackShape (ULift J) :=
@@ -240,6 +241,7 @@ def equivalenceOfEquiv (J' : Type w') (h : J ≃ J') : WidePushoutShape J ≌ Wi
   unitIso := NatIso.ofComponents (fun j => by cases j <;> exact eqToIso (by simp))
   counitIso := NatIso.ofComponents (fun j => by cases j <;> exact eqToIso (by simp))
 
+attribute [local instance] uliftCategory in
 /-- Lifting universe and morphism levels preserves wide pushout diagrams. -/
 def uliftEquivalence :
     ULiftHom.{w'} (ULift.{w'} (WidePushoutShape J)) ≌ WidePushoutShape (ULift J) :=
