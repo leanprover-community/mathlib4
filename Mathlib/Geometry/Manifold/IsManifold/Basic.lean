@@ -303,9 +303,8 @@ lemma _root_.Convex.convex_isRCLikeNormedField [NormedSpace ℝ E] [h : IsRCLike
 def of_convex_range
     {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [TopologicalSpace H]
     (φ : PartialEquiv H E) (hsource : φ.source = univ) (htarget : Convex ℝ φ.target)
-    (hcont : Continuous φ) (hcont_inv : Continuous φ.symm) (hint : (interior φ.target).Nonempty) :
+    (hcont : Continuous φ) (hcont_inv : Continuous φ.invFun) (hint : (interior φ.target).Nonempty) :
     ModelWithCorners ℝ E H where
-  continuous_invFun := hcont_inv
   toPartialEquiv := φ
   source_eq := hsource
   convex_range' := by
