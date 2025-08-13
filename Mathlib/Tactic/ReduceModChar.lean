@@ -49,6 +49,7 @@ lemma CharP.isInt_of_mod {e' r : ℤ} {α : Type*} [Ring α] {n n' : ℕ} (inst 
     (he : IsInt e e') (hn : IsNat n n') (h₂ : IsInt (e' % n') r) : IsInt e r :=
   ⟨by rw [he.out, CharP.intCast_eq_intCast_mod α n, show n = n' from hn.out, h₂.out, Int.cast_id]⟩
 
+-- See note [norm_num lemma function equality]
 lemma CharP.isNat_pow {α} [Semiring α] : ∀ {f : α → ℕ → α} {a : α} {a' b b' c n n' : ℕ},
     CharP α n → f = HPow.hPow → IsNat a a' → IsNat b b' → IsNat n n' →
     Nat.mod (Nat.pow a' b') n' = c → IsNat (f a b) c
@@ -116,16 +117,15 @@ be more useful by evaluating `-e` mod `n` to an actual numeral.
 @[nolint unusedHavesSuffices] -- the `=Q` is necessary for type checking
 partial def normNeg {α : Q(Type u)} (n : Q(ℕ)) (e : Q($α)) (_instRing : Q(Ring $α))
     (instCharP : Q(CharP $α $n)) :
-    MetaM Simp.Result := do
-  let .app f (b : Q($α)) ← whnfR e | failure
-  guard <|← withNewMCtxDepth <| isDefEq f q(Neg.neg (α := $α))
+    MetaM (Simp.ResultQ q($e)) := do
+  let ~q(-$b) := e | failure
   let r ← (derive (α := α) q($n - 1))
   match r with
   | .isNat sα a p => do
     have : instAddMonoidWithOne =Q $sα := ⟨⟩
     let ⟨a', pa'⟩ ← mkOfNat α sα a
     let pf : Q(-$b = $a' * $b) := q(CharP.neg_eq_sub_one_mul $n $instCharP $b $a $a' $p $pa')
-    return { expr := q($a' * $b), proof? := pf }
+    return .mk q($a' * $b) <| some q($pf)
   | .isNegNat _ _ _ =>
     throwError "normNeg: nothing useful to do in negative characteristic"
   | _ => throwError "normNeg: evaluating `{n} - 1` should give an integer result"
@@ -141,10 +141,8 @@ and `a` is a numeral, simplify this to `((n - 1) * a) * b`. -/
 @[nolint unusedHavesSuffices] -- the `=Q` is necessary for type checking
 partial def normNegCoeffMul {α : Q(Type u)} (n : Q(ℕ)) (e : Q($α)) (_instRing : Q(Ring $α))
     (instCharP : Q(CharP $α $n)) :
-    MetaM Simp.Result := do
-  let .app neg (.app (.app mul (a : Q($α))) (b : Q($α))) ← whnfR e | failure
-  guard <|← withNewMCtxDepth <| isDefEq neg q(Neg.neg (α := $α))
-  guard <|← withNewMCtxDepth <| isDefEq mul q(HMul.hMul (α := $α))
+    MetaM (Simp.ResultQ q($e)) := do
+  let ~q(-($a * $b)) := e | failure
   let r ← (derive (α := α) q(($n - 1) * $a))
   match r with
   | .isNat sα na np => do
@@ -152,7 +150,7 @@ partial def normNegCoeffMul {α : Q(Type u)} (n : Q(ℕ)) (e : Q($α)) (_instRin
     let ⟨na', npa'⟩ ← mkOfNat α sα na
     let pf : Q(-($a * $b) = $na' * $b) :=
       q(CharP.neg_mul_eq_sub_one_mul $n $instCharP $a $b $na $na' $np $npa')
-    return { expr := q($na' * $b), proof? := pf }
+    return .mk q($na' * $b) <| some q($pf)
   | .isNegNat _ _ _ =>
     throwError "normNegCoeffMul: nothing useful to do in negative characteristic"
   | _ => throwError "normNegCoeffMul: evaluating `{n} - 1` should give an integer result"
@@ -204,14 +202,11 @@ Use `matchAndNorm (expensive := true)` to do more work in finding the characteri
 the type of `e`.
 -/
 partial def matchAndNorm (expensive := false) (e : Expr) : MetaM Simp.Result := do
-  let α ← inferType e
-  let u_succ : Level ← getLevel α
-  let (.succ u) := u_succ | throwError "expected {α} to be a `Type _`, not `Sort {u_succ}`"
-  have α : Q(Type u) := α
+  let ⟨_, α, e⟩ ← inferTypeQ' e
   match ← typeToCharP (expensive := expensive) α with
-    | (.intLike n instRing instCharP) =>
+    | .intLike n instRing instCharP =>
       -- Handle the numeric expressions first, e.g. `-5` (which shouldn't become `-1 * 5`)
-      normIntNumeral n e instRing instCharP >>= Result.toSimpResult <|>
+      normIntNumeral n e instRing instCharP >>= Result.toSimpResultQ <|>
       normNegCoeffMul n e instRing instCharP <|> -- `-(3 * X) → ((n - 1) * 3) * X`
       normNeg n e instRing instCharP -- `-X → (n - 1) * X`
 
