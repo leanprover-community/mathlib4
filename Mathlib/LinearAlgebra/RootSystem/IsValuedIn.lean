@@ -89,6 +89,16 @@ lemma pairingIn_eq_add_of_root_eq_add [FaithfulSMul S R] [P.IsValuedIn S]
   apply FaithfulSMul.algebraMap_injective S R
   simpa [← P.algebraMap_pairingIn S, -algebraMap_pairingIn] using pairing_eq_add_of_root_eq_add h
 
+variable {P S} in
+lemma pairingIn_eq_add_of_root_eq_smul_add_smul
+    [FaithfulSMul S R] [P.IsValuedIn S] [Module S M] [IsScalarTower S R M]
+    {i j k l : ι} {x y : S} (h : P.root k = x • P.root i + y • P.root l) :
+    P.pairingIn S k j = x • P.pairingIn S i j + y • P.pairingIn S l j := by
+  apply FaithfulSMul.algebraMap_injective S R
+  replace h : P.root k = (algebraMap S R x) • P.root i + (algebraMap S R y) • P.root l := by simpa
+  simpa [← P.algebraMap_pairingIn S, -algebraMap_pairingIn] using
+    pairing_eq_add_of_root_eq_smul_add_smul h
+
 lemma pairingIn_reflectionPerm [FaithfulSMul S R] [P.IsValuedIn S] (i j k : ι) :
     P.pairingIn S j (P.reflectionPerm i k) = P.pairingIn S (P.reflectionPerm i j) k := by
   simp only [← (FaithfulSMul.algebraMap_injective S R).eq_iff, algebraMap_pairingIn]

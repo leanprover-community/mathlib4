@@ -74,8 +74,8 @@ variable (p)
 /-- The `p`-adic integers as a subring of `ℚ_[p]`. -/
 def subring : Subring ℚ_[p] where
   carrier := { x : ℚ_[p] | ‖x‖ ≤ 1 }
-  zero_mem' := by norm_num
-  one_mem' := by norm_num
+  zero_mem' := by simp
+  one_mem' := by simp
   add_mem' hx hy := (padicNormE.nonarchimedean _ _).trans <| max_le_iff.2 ⟨hx, hy⟩
   mul_mem' hx hy := (padicNormE.mul _ _).trans_le <| mul_le_one₀ hx (norm_nonneg _) hy
   neg_mem' hx := (norm_neg _).trans_le hx
@@ -291,8 +291,6 @@ lemma valuation_pow (x : ℤ_[p]) (n : ℕ) : (x ^ n).valuation = n * x.valuatio
 
 lemma norm_eq_zpow_neg_valuation {x : ℤ_[p]} (hx : x ≠ 0) : ‖x‖ = p ^ (-x.valuation : ℤ) := by
   simp [norm_def, Padic.norm_eq_zpow_neg_valuation <| coe_ne_zero.2 hx]
-
-@[deprecated (since := "2024-12-10")] alias norm_eq_pow_val := norm_eq_zpow_neg_valuation
 
 -- TODO: Do we really need this lemma?
 @[simp]
