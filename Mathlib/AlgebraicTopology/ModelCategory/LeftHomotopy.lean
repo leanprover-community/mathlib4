@@ -35,8 +35,9 @@ namespace Precylinder
 
 variable {X : C} (P : Precylinder X) {Y : C}
 
-/-- Given a precylinder `P` for `X`, two maps `f` and `g` in `X ⟶ Y` are homotopic relative to `P`
-when there is a morphism `h : P.I ⟶ Y` such that `P.i₀ ≫ h = f` and `P.i₁ ≫ h = g`. -/
+/-- Given a precylinder `P` for `X`, two maps `f` and `g` in `X ⟶ Y` are
+homotopic relative to `P` when there is a morphism `h : P.I ⟶ Y`
+such that `P.i₀ ≫ h = f` and `P.i₁ ≫ h = g`. -/
 structure LeftHomotopy (f g : X ⟶ Y) where
   /-- a morphism from the (pre)cylinder object to the target -/
   h : P.I ⟶ Y
@@ -84,8 +85,9 @@ namespace Cylinder
 
 variable {X Y : C}
 
-/-- Given a cylinder `P` for `X`, two maps `f` and `g` in `X ⟶ Y` are homotopic relative to `P`
-when there is a morphism `h : P.I ⟶ Y` such that `P.i₀ ≫ h = f` and `P.i₁ ≫ h = g`. -/
+/-- Given a cylinder `P` for `X`, two maps `f` and `g` in `X ⟶ Y`
+are homotopic relative to `P` when there is a morphism `h : P.I ⟶ Y`
+such that `P.i₀ ≫ h = f` and `P.i₁ ≫ h = g`. -/
 abbrev LeftHomotopy [CategoryWithWeakEquivalences C] (P : Cylinder X) (f g : X ⟶ Y) : Type v :=
   P.toPrecylinder.LeftHomotopy f g
 
@@ -131,7 +133,8 @@ variable [ModelCategory C] {P : Cylinder X}
 
 /-- If `f₀ : X ⟶ Y` is homotopic to `f₁` relative to a cylinder `P`,
 and `f₁` is homotopic to `f₂` relative to a good cylinder `P'`,
-then `f₀` is homotopic to `f₂` relative to the cylinder `P.trans P'` when `X` is cofibrant. -/
+then `f₀` is homotopic to `f₂` relative to the cylinder `P.trans P'`
+when `X` is cofibrant. -/
 noncomputable abbrev trans [IsCofibrant X] {f₀ f₁ f₂ : X ⟶ Y}
     (h : P.LeftHomotopy f₀ f₁) {P' : Cylinder X} [P'.IsGood]
     (h' : P'.LeftHomotopy f₁ f₂) [HasPushout P.i₁ P'.i₀] :
