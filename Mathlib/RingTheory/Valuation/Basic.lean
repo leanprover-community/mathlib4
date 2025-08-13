@@ -844,6 +844,9 @@ open Parser.Tactic Parser.Term
 /-- A tactic to rewrite expressions in a goal (e.g. `v₁ x ≤ 1`) with an equivalent one in the other
 value group or monoid (e.g. `v₂ x ≤ 1`), given `h : v₁.IsEquiv v₂`.
 
+One can use `← ` to rewrite in the opposite direction, and to use `at` to specify which hypotheses
+and/or goal to rewrite at, similar to the syntax of `rw`.
+
 Usage:
 ```lean
 example {R Γ₁ Γ₂ : Type*} [Ring R]
