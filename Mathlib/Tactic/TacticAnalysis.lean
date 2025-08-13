@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2025 Lean FRO LLC. All rights reserved.
+Copyright (c) 2025 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
@@ -17,7 +17,8 @@ import Mathlib.Tactic.Linter.Header
 In this file we define a framework for analyzing sequences of tactics.
 This can be used for linting (for instance: report when two `rw` calls can be merged into one),
 but it can also be run in a more batch-like mode to report larger potential refactors
-(for instance: report when a sequence of three or more tactics can be replaced with `grind`).
+(for instance: report when a sequence of three or more tactics can be replaced with `grind`,
+without taking more heartbeats than the original proof did).
 
 ## Using the framework
 
@@ -321,7 +322,7 @@ structure ComplexConfig where
   /-- Type returned by the `.trigger` function. -/
   ctx : Type
 
-  /-- Determines with (sequences of) tactics to analyze.
+  /-- Determines which (sequences of) tactics to analyze.
 
   `context` is `some ctx` whenever the previous trigger returned `continue ctx`,
   `none` at the start of a tactic sequence or after a `skip`/`accept`.
