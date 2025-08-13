@@ -871,6 +871,12 @@ lemma coeFn_star [Star R] [ContinuousStar R] (f : α →ₘ[μ] R) : ↑(star f)
 instance [InvolutiveStar R] [ContinuousStar R] : InvolutiveStar (α →ₘ[μ] R) where
   star_involutive f := comp_comp _ _ _ _ f |>.trans <| by simp [star_involutive.comp_self]
 
+instance [Star R] [TrivialStar R] [ContinuousStar R] : TrivialStar (α →ₘ[μ] R) where
+  star_trivial f := by
+    change comp (fun x : R => star x) _ f = f
+    have h : (fun x : R => star x) = id := funext (star_trivial (R := R))
+    simpa [← h] using comp_id (f := f)
+
 end Star
 
 section PosPart
