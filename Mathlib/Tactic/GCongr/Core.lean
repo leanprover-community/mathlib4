@@ -212,7 +212,7 @@ def makeGCongrLemma (declName : Name) (declTy : Expr) (numHyps prio : Nat) : Met
   withDefault <| forallBoundedTelescope declTy numHyps fun xs targetTy => withReducible do
     let fail {α} (m : MessageData) : MetaM α := throwError "\
       @[gcongr] attribute only applies to lemmas proving f x₁ ... xₙ ∼ f x₁' ... xₙ'.\n \
-      {m} in the conclusion of {declTy}"
+      {m} in {targetTy}"
     -- verify that conclusion of the lemma is of the form `f x₁ ... xₙ ∼ f x₁' ... xₙ'`
     let some (relName, lhs, rhs) := getRel (← whnf targetTy) | fail "No relation found"
     let lhs := lhs.headBeta; let rhs := rhs.headBeta -- this is required for `Monotone fun x => ⋯`
