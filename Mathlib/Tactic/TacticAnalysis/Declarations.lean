@@ -15,13 +15,14 @@ This file defines passes to run from the tactic analysis framework.
 
 open Lean Mathlib
 
+/-- Debug `grind` by identifying places where it does not yet supersede `linarith`, `omega` or
+`ring`. -/
 register_option linter.tacticAnalysis.grindReplacement : Bool := {
   defValue := false
 }
 
-/-- Debug `grind` by identifying places where it does not yet supersede `linarith`, `omega` or
-`ring`. -/
-@[tacticAnalysis linter.tacticAnalysis.grindReplacement]
+@[tacticAnalysis linter.tacticAnalysis.grindReplacement,
+  inherit_doc linter.tacticAnalysis.grindReplacement]
 def grindReplacement : TacticAnalysis.Config := .ofComplex {
   out := (List MVarId × MessageData)
   ctx := Syntax
@@ -49,12 +50,12 @@ def grindReplacement : TacticAnalysis.Config := .ofComplex {
     -/
     else none }
 
+/-- Suggest merging two adjacent `rw` tactics if that also solves the goal. -/
 register_option linter.tacticAnalysis.rwMerge : Bool := {
   defValue := false
 }
 
-/-- Suggest merging two adjacent `rw` tactics if that also solves the goal. -/
-@[tacticAnalysis linter.tacticAnalysis.rwMerge]
+@[tacticAnalysis linter.tacticAnalysis.rwMerge, inherit_doc linter.tacticAnalysis.rwMerge]
 def rwMerge : TacticAnalysis.Config := .ofComplex {
   out := (List MVarId × Array Syntax)
   ctx := (Array (Array Syntax))
@@ -75,12 +76,13 @@ def rwMerge : TacticAnalysis.Config := .ofComplex {
       m!"Try this: rw {new.1.2}"
     else none }
 
+/-- Suggest merging `tac; grind` into just `grind` if that also solves the goal. -/
 register_option linter.tacticAnalysis.mergeWithGrind : Bool := {
   defValue := false
 }
 
-/-- Suggest merging `tac; grind` into just `grind` if that also solves the goal. -/
-@[tacticAnalysis linter.tacticAnalysis.mergeWithGrind]
+@[tacticAnalysis linter.tacticAnalysis.mergeWithGrind,
+  inherit_doc linter.tacticAnalysis.mergeWithGrind]
 def mergeWithGrind : TacticAnalysis.Config where
   run seq := do
     if let #[(preCtx, preI), (_postCtx, postI)] := seq[0:2].array then
@@ -95,12 +97,13 @@ def mergeWithGrind : TacticAnalysis.Config where
             if goals.isEmpty then
               logWarningAt preI.stx m!"'{preI.stx}; grind' can be replaced with 'grind'"
 
+/-- Suggest replacing a sequence of tactics with `grind` if that also solves the goal. -/
 register_option linter.tacticAnalysis.terminalToGrind : Bool := {
   defValue := false
 }
 
-/-- Suggest replacing a sequence of tactics with `grind` if that also solves the goal. -/
-@[tacticAnalysis linter.tacticAnalysis.terminalToGrind]
+@[tacticAnalysis linter.tacticAnalysis.terminalToGrind,
+  inherit_doc linter.tacticAnalysis.terminalToGrind]
 def terminalToGrind : TacticAnalysis.Config where
   run seq := do
     let threshold := 3
