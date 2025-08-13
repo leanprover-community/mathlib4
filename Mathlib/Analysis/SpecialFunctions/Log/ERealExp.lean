@@ -54,6 +54,7 @@ end Definition
 /-! ### Monotonicity -/
 section Monotonicity
 
+@[gcongr]
 lemma exp_strictMono : StrictMono exp := by
   intro x y h
   induction x
@@ -62,12 +63,14 @@ lemma exp_strictMono : StrictMono exp := by
   · induction y
     · simp at h
     · simp_rw [exp_coe]
-      exact ENNReal.ofReal_lt_ofReal_iff'.mpr ⟨Real.exp_lt_exp_of_lt (mod_cast h), Real.exp_pos _⟩
+      exact ENNReal.ofReal_lt_ofReal_iff'.mpr ⟨Real.exp_strictMono (mod_cast h), Real.exp_pos _⟩
     · simp
   · exact (not_top_lt h).elim
 
+@[gcongr]
 lemma exp_monotone : Monotone exp := exp_strictMono.monotone
 
+-- TODO: rename to `exp_lt_exp`
 @[simp] lemma exp_lt_exp_iff {a b : EReal} : exp a < exp b ↔ a < b := exp_strictMono.lt_iff_lt
 
 @[simp] lemma zero_lt_exp_iff {a : EReal} : 0 < exp a ↔ ⊥ < a := exp_bot ▸ @exp_lt_exp_iff ⊥ a
@@ -84,9 +87,11 @@ lemma exp_monotone : Monotone exp := exp_strictMono.monotone
 
 @[simp] lemma one_le_exp_iff {a : EReal} : 1 ≤ exp a ↔ 0 ≤ a := exp_zero ▸ @exp_le_exp_iff 0 a
 
-@[gcongr] lemma exp_le_exp {a b : EReal} (h : a ≤ b) : exp a ≤ exp b := by simpa
+@[deprecated exp_monotone (since := "2025-08-13")]
+lemma exp_le_exp {a b : EReal} (h : a ≤ b) : exp a ≤ exp b := by simpa
 
-@[gcongr] lemma exp_lt_exp {a b : EReal} (h : a < b) : exp a < exp b := by simpa
+@[deprecated exp_strictMono (since := "2025-08-13")]
+lemma exp_lt_exp {a b : EReal} (h : a < b) : exp a < exp b := by simpa
 
 end Monotonicity
 
