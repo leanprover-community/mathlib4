@@ -89,11 +89,6 @@ lemma StrictMono.exists_between_of_tendsto_atTop {β : Type*} [LinearOrder β] {
   simp only [not_le] at h' hx
   exact ⟨Nat.find h - 1, h' _ (by simp [hx]), by simp [Nat.find_spec h, hx]⟩
 
-lemma inv_sqrt_two_sub_one : (√2 - 1)⁻¹ = √2 + 1 := by
-  rw [← one_div, div_eq_iff (sub_ne_zero_of_ne (by simp))]
-  ring_nf
-  norm_num
-
 end Aux
 
 namespace ProbabilityTheory
@@ -201,7 +196,7 @@ lemma tendsto_normThreshold_atTop (ha_pos : 0 < a) : Tendsto (normThreshold a) a
   tendsto_arithGeom_atTop_of_one_lt Real.one_lt_sqrt_two (lt_normThreshold_zero ha_pos)
 
 lemma normThreshold_eq (n : ℕ) : normThreshold a n = a * (1 + √2) * (√2 ^ (n + 1) - 1) := by
-  rw [normThreshold, arithGeom_same_eq_mul_div (by simp), div_eq_mul_inv, inv_sqrt_two_sub_one]
+  rw [normThreshold, arithGeom_same_eq_mul_div (by simp), div_eq_mul_inv, Real.inv_sqrt_two_sub_one]
   ring
 
 lemma sq_normThreshold_add_one_le (n : ℕ) :
