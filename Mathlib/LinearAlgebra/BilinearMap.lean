@@ -418,8 +418,8 @@ omit [Module R M] in
 /-- Composing a linear map `P →ₛₗ[σ₃₄] Q` and a bilinear map `M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P` to
 form a bilinear map `M →ₛₗ[σ₁₄] N →ₛₗ[σ₂₄] Q`.
 
-See `LinearMap.compr₂` for the linear version, where it's composing a linear map `Pₗ →ₗ[A] Qₗ`
-and a bilinear map `M →ₗ[A] Nₗ →ₗ[R] Pₗ` to form a bilinear map `M →ₗ[A] Nₗ →ₗ[R] Qₗ`. -/
+See `LinearMap.compr₂` for a version of this definition, which does not support semi-linear maps but
+which does support towers of scalars. -/
 def compr₂ₛₗ (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) (g : P →ₛₗ[σ₃₄] Q) : M →ₛₗ[σ₁₄] N →ₛₗ[σ₂₄] Q :=
   llcomp _ N P Q g ∘ₛₗ f
 
