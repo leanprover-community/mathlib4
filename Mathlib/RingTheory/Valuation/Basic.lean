@@ -799,6 +799,48 @@ def equivCore (h : Q(Valuation.IsEquiv $v₁ $v₂)) : Simp.Simproc := fun e : E
   let .some ⟨e₂, pf⟩ ← matchAndMkProof v₁ v₂ h e | return .continue
   return .visit { expr := e₂, proof? := q(propext $pf) }
 
+set_option linter.unusedVariables false in
+/-- Process the given local hypothesis. -/
+def atLocal (s : Simp.Simproc) (f : FVarId) : TacticM Unit := do
+  let hyp ← instantiateMVars (← f.getType)
+  let ctx ← Simp.mkContext (simpTheorems := #[])
+  let (r, _) ← Simp.mainCore hyp ctx (methods := {post := s})
+  liftMetaTactic1 fun m ↦ do
+    let .some (f, m) ← applySimpResultToLocalDecl m f r false | return m
+    return m
+
+/-- Process the goal. -/
+def atTarget (s : Simp.Simproc) : TacticM Unit := do
+  liftMetaTactic1 fun m ↦ do
+    -- `Simproc` usually does not allow arguments, so we hijacked `Simp.mainCore` to provide a
+    -- `Simproc` that accepts arguments (which is `equivCore` here).
+    let target ← instantiateMVars (← m.getType)
+    let ctx ← Simp.mkContext (simpTheorems := #[])
+    let (r, _) ← Simp.mainCore target ctx (methods := {post := s})
+    let i ← applySimpResultToTarget m target r
+    return i
+  evalTactic (← `(tactic| try rfl))
+
+/-- Given the direction (`← ` or nothing) and `equiv : v₁.IsEquiv v₂`, make the simproc that
+transforms relations according to the equivalence. -/
+def mkSimproc (symm? : Option Syntax) (equiv : Term) : TacticM Simp.Simproc := do
+  let h : Expr ← elabTerm equiv none
+  match symm? with
+  | .none =>
+    let ⟨0, h', h⟩ ← inferTypeQ h
+      | throwError "given term is not a proof"
+    let ~q(@Valuation.IsEquiv $R $Γ₁ $Γ₂ $hR $hΓ₁ $hΓ₂ $v₁ $v₂) := h'
+      | throwError "given term is not Valuation.isEquiv"
+    return equivCore v₁ v₂ h
+  | .some _ =>
+    let ⟨0, h', h⟩ ← inferTypeQ h
+      | throwError "given term is not a proof"
+    let ~q(@Valuation.IsEquiv $R $Γ₁ $Γ₂ $hR $hΓ₁ $hΓ₂ $v₁ $v₂) := h'
+      | throwError "given term is not Valuation.isEquiv"
+    return equivCore v₂ v₁ q(($h).symm)
+
+open Parser.Tactic Parser.Term
+
 /-- A tactic to rewrite expressions in a goal (e.g. `v₁ x ≤ 1`) with an equivalent one in the other
 value group or monoid (e.g. `v₂ x ≤ 1`), given `h : v₁.IsEquiv v₂`.
 
@@ -812,20 +854,18 @@ example {R Γ₁ Γ₂ : Type*} [Ring R]
   rw_val_equiv h
 ```
 -/
-elab "rw_val_equiv" equiv:(ppSpace colGt term:max) : tactic => do
-  let hE : Expr ← elabTerm equiv none
-  let ⟨0, h', h⟩ ← inferTypeQ hE | throwError "given term is not a proof"
-  let ~q(@Valuation.IsEquiv $R $Γ₁ $Γ₂ $hR $hΓ₁ $hΓ₂ $v₁ $v₂) := h' |
-    throwError "not Valuation.isEquiv"
-  liftMetaTactic1 fun e ↦ do
-    -- `Simproc` usually does not allow arguments, so we hijacked `Simp.mainCore` to provide a
-    -- `Simproc` that accepts arguments (which is `equivCore` here).
-    let target ← instantiateMVars (← e.getType)
-    let ctx ← Simp.mkContext (simpTheorems := #[])
-    let (r, _) ← Simp.mainCore target ctx (methods := {post := equivCore v₁ v₂ h})
-    let i ← applySimpResultToTarget e target r
-    return i
-  evalTactic (← `(tactic| try rfl))
+elab "rw_val_equiv " symm?:(leftArrow)? e:(ppSpace colGt term:max) loc:(location)? : tactic => do
+  let s ← mkSimproc symm? e
+  match loc with
+  | .none => atTarget s
+  | .some loc => withLocation (expandLocation loc) (atLocal s) (atTarget s) default
+
+open Lean.Parser.Tactic
+
+macro "rwa_val_equiv " s:(leftArrow)? e:(ppSpace colGt term:max) loc:(location)? : tactic =>
+  match s with
+  | .none => `(tactic| (rw_val_equiv $e $[$loc]?; assumption))
+  | .some _ => `(tactic| (rw_val_equiv ← $e $[$loc]?; assumption))
 
 end EquivTac
 
