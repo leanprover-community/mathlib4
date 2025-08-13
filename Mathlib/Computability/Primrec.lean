@@ -964,7 +964,7 @@ theorem listFilterMap {f : α → List β} {g : α → β → Option σ}
   (list_flatMap hf (comp₂ optionToList hg)).of_eq
     fun _ ↦ Eq.symm <| List.filterMap_eq_flatMap_toList _ _
 
-variable {α : Type*} [Primcodable α] {p : α → Prop} [DecidablePred p]
+variable {p : α → Prop} [DecidablePred p]
 
 theorem list_length : Primrec (@List.length α) :=
   (list_foldr (@Primrec.id (List α) _) (const 0) <| to₂ <| (succ.comp <| snd.comp snd).to₂).of_eq
