@@ -17,9 +17,9 @@ namespace TensorProduct
 
 open scoped TensorProduct
 
-variable {R A B : Type*} [CommSemiring R]
-  [StarRing R] [AddCommMonoid A] [AddCommMonoid B] [StarAddMonoid A]
-  [StarAddMonoid B] [Module R A] [Module R B] [StarModule R A] [StarModule R B]
+variable {R A B : Type*} [CommSemiring R] [StarRing R]
+  [AddCommMonoid A] [AddCommMonoid B] [StarAddMonoid A] [StarAddMonoid B]
+  [Module R A] [Module R B] [StarModule R A] [StarModule R B]
 
 instance : Star (A ⊗[R] B) where
   star x := map (starLinearEquiv R (A:=A)) (starLinearEquiv R).toLinearMap x
