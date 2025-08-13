@@ -93,7 +93,7 @@ theorem isHermitian_conjTranspose_iff (A : Matrix n n α) : Aᴴ.IsHermitian ↔
   IsSelfAdjoint.star_iff
 
 /-- A block matrix `A.from_blocks B C D` is hermitian,
-    if `A` and `D` are hermitian and `Bᴴ = C`. -/
+if `A` and `D` are hermitian and `Bᴴ = C`. -/
 theorem IsHermitian.fromBlocks {A : Matrix m m α} {B : Matrix m n α} {C : Matrix n m α}
     {D : Matrix n n α} (hA : A.IsHermitian) (hBC : Bᴴ = C) (hD : D.IsHermitian) :
     (A.fromBlocks B C D).IsHermitian := by
@@ -269,9 +269,9 @@ theorem IsHermitian.coe_re_diag {A : Matrix n n α} (h : A.IsHermitian) :
 /-- A matrix is hermitian iff the corresponding linear map is self adjoint. -/
 theorem isHermitian_iff_isSymmetric [Fintype n] [DecidableEq n] {A : Matrix n n α} :
     IsHermitian A ↔ A.toEuclideanLin.IsSymmetric := by
-  rw [LinearMap.IsSymmetric, (WithLp.equiv 2 (n → α)).symm.surjective.forall₂]
-  simp only [toEuclideanLin_piLp_equiv_symm, EuclideanSpace.inner_eq_star_dotProduct, toLin'_apply,
-    Equiv.apply_symm_apply, star_mulVec]
+  rw [LinearMap.IsSymmetric, (WithLp.toLp_surjective _).forall₂]
+  simp only [toEuclideanLin_toLp, Matrix.toLin'_apply, EuclideanSpace.inner_eq_star_dotProduct,
+    WithLp.ofLp_toLp, star_mulVec]
   constructor
   · rintro (h : Aᴴ = A) x y
     rw [dotProduct_comm, ← dotProduct_mulVec, h, dotProduct_comm]

@@ -118,7 +118,7 @@ def comp {ι₁ M₁ N₁ ι₂ M₂ N₂ : Type*} [AddCommGroup M₁] [Module R
     rw [comp_assoc, f.root_weightMap, ← comp_assoc, g.root_weightMap, comp_assoc]
   coroot_coweightMap := by
     ext i
-    simp only [LinearMap.coe_comp, Equiv.symm_trans_apply]
+    simp only [LinearMap.coe_comp]
     rw [comp_assoc, g.coroot_coweightMap, ← comp_assoc, f.coroot_coweightMap, comp_assoc]
     simp
 
@@ -602,7 +602,7 @@ lemma indexEquiv_inv {P : RootPairing ι R M N} (g : Aut P) :
 def reflection (P : RootPairing ι R M N) (i : ι) : Aut P where
   weightMap := P.reflection i
   coweightMap := P.coreflection i
-  indexEquiv := P.reflection_perm i
+  indexEquiv := P.reflectionPerm i
   weight_coweight_transpose := by
     ext f x
     simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, comp_apply,
@@ -633,7 +633,7 @@ lemma reflection_coweightEquiv (P : RootPairing ι R M N) (i : ι) :
 
 @[simp]
 lemma reflection_indexEquiv (P : RootPairing ι R M N) (i : ι) :
-    (reflection P i).indexEquiv = P.reflection_perm i :=
+    (reflection P i).indexEquiv = P.reflectionPerm i :=
   rfl
 
 @[simp]

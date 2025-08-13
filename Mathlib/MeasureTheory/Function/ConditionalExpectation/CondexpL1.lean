@@ -79,9 +79,6 @@ theorem condExpIndL1Fin_ae_eq_condExpIndSMul (hm : m ≤ m0) [SigmaFinite (μ.tr
     condExpIndL1Fin hm hs hμs x =ᵐ[μ] condExpIndSMul hm hs hμs x :=
   (integrable_condExpIndSMul hm hs hμs x).coeFn_toL1
 
-@[deprecated (since := "2025-01-21")]
-alias condexpIndL1Fin_ae_eq_condexpIndSMul := condExpIndL1Fin_ae_eq_condExpIndSMul
-
 variable {hm : m ≤ m0} [SigmaFinite (μ.trim hm)]
 
 -- Porting note: this lemma fills the hole in `refine' (MemLp.coeFn_toLp _) ...`
@@ -167,9 +164,6 @@ theorem condExpIndL1Fin_disjoint_union (hs : MeasurableSet s) (ht : MeasurableSe
   refine (Lp.coeFn_add _ _).trans ?_
   filter_upwards with y using rfl
 
-@[deprecated (since := "2025-01-21")]
-alias condexpIndL1Fin_disjoint_union := condExpIndL1Fin_disjoint_union
-
 end CondexpIndL1Fin
 
 section CondexpIndL1
@@ -195,18 +189,12 @@ alias condexpIndL1_of_measurableSet_of_measure_ne_top :=
   condExpIndL1_of_measurableSet_of_measure_ne_top
 
 theorem condExpIndL1_of_measure_eq_top (hμs : μ s = ∞) (x : G) : condExpIndL1 hm μ s x = 0 := by
-  simp only [condExpIndL1, hμs, eq_self_iff_true, not_true, Ne, dif_neg, not_false_iff,
+  simp only [condExpIndL1, hμs, not_true, Ne, dif_neg, not_false_iff,
     and_false]
-
-@[deprecated (since := "2025-01-21")]
-alias condexpIndL1_of_measure_eq_top := condExpIndL1_of_measure_eq_top
 
 theorem condExpIndL1_of_not_measurableSet (hs : ¬MeasurableSet s) (x : G) :
     condExpIndL1 hm μ s x = 0 := by
   simp only [condExpIndL1, hs, dif_neg, not_false_iff, false_and]
-
-@[deprecated (since := "2025-01-21")]
-alias condexpIndL1_of_not_measurableSet := condExpIndL1_of_not_measurableSet
 
 theorem condExpIndL1_add (x y : G) :
     condExpIndL1 hm μ s (x + y) = condExpIndL1 hm μ s x + condExpIndL1 hm μ s y := by
@@ -269,9 +257,6 @@ theorem condExpIndL1_disjoint_union (hs : MeasurableSet s) (ht : MeasurableSet t
     condExpIndL1_of_measurableSet_of_measure_ne_top (hs.union ht) hμst x]
   exact condExpIndL1Fin_disjoint_union hs ht hμs hμt hst x
 
-@[deprecated (since := "2025-01-21")]
-alias condexpIndL1_disjoint_union := condExpIndL1_disjoint_union
-
 end CondexpIndL1
 
 variable (G)
@@ -294,18 +279,12 @@ theorem condExpInd_ae_eq_condExpIndSMul (hm : m ≤ m0) [SigmaFinite (μ.trim hm
   refine EventuallyEq.trans ?_ (condExpIndL1Fin_ae_eq_condExpIndSMul hm hs hμs x)
   simp [condExpInd, condExpIndL1, hs, hμs]
 
-@[deprecated (since := "2025-01-21")]
-alias condexpInd_ae_eq_condexpIndSMul := condExpInd_ae_eq_condExpIndSMul
-
 variable {hm : m ≤ m0} [SigmaFinite (μ.trim hm)]
 
 theorem aestronglyMeasurable_condExpInd (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : G) :
     AEStronglyMeasurable[m] (condExpInd G hm μ s x) μ :=
   (aestronglyMeasurable_condExpIndSMul hm hs hμs x).congr
     (condExpInd_ae_eq_condExpIndSMul hm hs hμs x).symm
-
-@[deprecated (since := "2025-01-24")]
-alias aestronglyMeasurable'_condExpInd := aestronglyMeasurable_condExpInd
 
 @[deprecated (since := "2025-01-21")]
 alias aestronglyMeasurable'_condexpInd := aestronglyMeasurable_condExpInd
@@ -343,9 +322,6 @@ theorem condExpInd_disjoint_union_apply (hs : MeasurableSet s) (ht : MeasurableS
     condExpInd G hm μ (s ∪ t) x = condExpInd G hm μ s x + condExpInd G hm μ t x :=
   condExpIndL1_disjoint_union hs ht hμs hμt hst x
 
-@[deprecated (since := "2025-01-21")]
-alias condexpInd_disjoint_union_apply := condExpInd_disjoint_union_apply
-
 theorem condExpInd_disjoint_union (hs : MeasurableSet s) (ht : MeasurableSet t) (hμs : μ s ≠ ∞)
     (hμt : μ t ≠ ∞) (hst : Disjoint s t) : (condExpInd G hm μ (s ∪ t) : G →L[ℝ] α →₁[μ] G) =
     condExpInd G hm μ s + condExpInd G hm μ t := by
@@ -359,9 +335,6 @@ theorem dominatedFinMeasAdditive_condExpInd (hm : m ≤ m0) (μ : Measure α)
     [SigmaFinite (μ.trim hm)] :
     DominatedFinMeasAdditive μ (condExpInd G hm μ : Set α → G →L[ℝ] α →₁[μ] G) 1 :=
   ⟨fun _ _ => condExpInd_disjoint_union, fun _ _ _ => norm_condExpInd_le.trans (one_mul _).symm.le⟩
-
-@[deprecated (since := "2025-01-21")]
-alias dominatedFinMeasAdditive_condexpInd := dominatedFinMeasAdditive_condExpInd
 
 variable {G}
 
@@ -428,15 +401,9 @@ theorem condExpL1CLM_indicatorConstLp (hs : MeasurableSet s) (hμs : μ s ≠ �
     (condExpL1CLM F' hm μ) (indicatorConstLp 1 hs hμs x) = condExpInd F' hm μ s x :=
   L1.setToL1_indicatorConstLp (dominatedFinMeasAdditive_condExpInd F' hm μ) hs hμs x
 
-@[deprecated (since := "2025-01-21")]
-alias condexpL1CLM_indicatorConstLp := condExpL1CLM_indicatorConstLp
-
 theorem condExpL1CLM_indicatorConst (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : F') :
     (condExpL1CLM F' hm μ) ↑(simpleFunc.indicatorConst 1 hs hμs x) = condExpInd F' hm μ s x := by
   rw [Lp.simpleFunc.coe_indicatorConst]; exact condExpL1CLM_indicatorConstLp hs hμs x
-
-@[deprecated (since := "2025-01-21")]
-alias condexpL1CLM_indicatorConst := condExpL1CLM_indicatorConst
 
 /-- Auxiliary lemma used in the proof of `setIntegral_condExpL1CLM`. -/
 theorem setIntegral_condExpL1CLM_of_measure_ne_top (f : α →₁[μ] F') (hs : MeasurableSet[m] s)
@@ -460,9 +427,6 @@ theorem setIntegral_condExpL1CLM_of_measure_ne_top (f : α →₁[μ] F') (hs : 
       hg]
   · exact (continuous_setIntegral s).comp (condExpL1CLM F' hm μ).continuous
   · exact continuous_setIntegral s
-
-@[deprecated (since := "2025-01-21")]
-alias setIntegral_condexpL1CLM_of_measure_ne_top := setIntegral_condExpL1CLM_of_measure_ne_top
 
 /-- The integral of the conditional expectation `condExpL1CLM` over an `m`-measurable set is equal
 to the integral of `f` on that set. See also `setIntegral_condExp`, the similar statement for
@@ -517,14 +481,8 @@ theorem aestronglyMeasurable_condExpL1CLM (f : α →₁[μ] F') :
     refine IsClosed.preimage (condExpL1CLM F' hm μ).continuous ?_
     exact isClosed_aestronglyMeasurable hm
 
-@[deprecated (since := "2025-01-24")]
-alias aestronglyMeasurable'_condExpL1CLM := aestronglyMeasurable_condExpL1CLM
-
 @[deprecated (since := "2025-01-21")]
 alias aestronglyMeasurable_condexpL1CLM := aestronglyMeasurable_condExpL1CLM
-
-@[deprecated (since := "2025-01-24")]
-alias aestronglyMeasurable'_condexpL1CLM := aestronglyMeasurable_condexpL1CLM
 
 theorem condExpL1CLM_lpMeas (f : lpMeas F' ℝ m 1 μ) :
     condExpL1CLM F' hm μ (f : α →₁[μ] F') = ↑f := by
@@ -554,9 +512,6 @@ theorem condExpL1CLM_lpMeas (f : lpMeas F' ℝ m 1 μ) :
 theorem condExpL1CLM_of_aestronglyMeasurable' (f : α →₁[μ] F') (hfm : AEStronglyMeasurable[m] f μ) :
     condExpL1CLM F' hm μ f = f :=
   condExpL1CLM_lpMeas (⟨f, hfm⟩ : lpMeas F' ℝ m 1 μ)
-
-@[deprecated (since := "2025-01-21")]
-alias condexpL1CLM_of_aestronglyMeasurable' := condExpL1CLM_of_aestronglyMeasurable'
 
 /-- Conditional expectation of a function, in L1. Its value is 0 if the function is not
 integrable. The function-valued `condExp` should be used instead in most cases. -/
@@ -595,14 +550,8 @@ theorem aestronglyMeasurable_condExpL1 {f : α → F'} :
   · rw [condExpL1_undef hf]
     exact stronglyMeasurable_zero.aestronglyMeasurable.congr (coeFn_zero ..).symm
 
-@[deprecated (since := "2025-01-24")]
-alias aestronglyMeasurable'_condExpL1 := aestronglyMeasurable_condExpL1
-
 @[deprecated (since := "2025-01-21")]
 alias aestronglyMeasurable_condexpL1 := aestronglyMeasurable_condExpL1
-
-@[deprecated (since := "2025-01-24")]
-alias aestronglyMeasurable'_condexpL1 := aestronglyMeasurable_condexpL1
 
 theorem condExpL1_congr_ae (hm : m ≤ m0) [SigmaFinite (μ.trim hm)] (h : f =ᵐ[μ] g) :
     condExpL1 hm μ f = condExpL1 hm μ g :=
@@ -655,9 +604,6 @@ theorem condExpL1_of_aestronglyMeasurable' (hfm : AEStronglyMeasurable[m] f μ)
   refine EventuallyEq.trans ?_ (Integrable.coeFn_toL1 hfi)
   rw [condExpL1CLM_of_aestronglyMeasurable']
   exact hfm.congr hfi.coeFn_toL1.symm
-
-@[deprecated (since := "2025-01-21")]
-alias condexpL1_of_aestronglyMeasurable' := condExpL1_of_aestronglyMeasurable'
 
 theorem condExpL1_mono {E}
     [NormedAddCommGroup E] [PartialOrder E] [OrderClosedTopology E] [IsOrderedAddMonoid E]

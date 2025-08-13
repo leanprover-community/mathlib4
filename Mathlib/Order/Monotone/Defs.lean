@@ -423,18 +423,18 @@ variable [Preorder β] {f : α → β} {s : Set α}
 open Ordering
 
 theorem Monotone.reflect_lt (hf : Monotone f) {a b : α} (h : f a < f b) : a < b :=
-  lt_of_not_ge fun h' ↦ h.not_le (hf h')
+  lt_of_not_ge fun h' ↦ h.not_ge (hf h')
 
 theorem Antitone.reflect_lt (hf : Antitone f) {a b : α} (h : f a < f b) : b < a :=
-  lt_of_not_ge fun h' ↦ h.not_le (hf h')
+  lt_of_not_ge fun h' ↦ h.not_ge (hf h')
 
 theorem MonotoneOn.reflect_lt (hf : MonotoneOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s)
     (h : f a < f b) : a < b :=
-  lt_of_not_ge fun h' ↦ h.not_le <| hf hb ha h'
+  lt_of_not_ge fun h' ↦ h.not_ge <| hf hb ha h'
 
 theorem AntitoneOn.reflect_lt (hf : AntitoneOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s)
     (h : f a < f b) : b < a :=
-  lt_of_not_ge fun h' ↦ h.not_le <| hf ha hb h'
+  lt_of_not_ge fun h' ↦ h.not_ge <| hf ha hb h'
 
 end Preorder
 
@@ -454,6 +454,14 @@ variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ] {f : α → γ}
 theorem monotone_fst : Monotone (@Prod.fst α β) := fun _ _ ↦ And.left
 
 theorem monotone_snd : Monotone (@Prod.snd α β) := fun _ _ ↦ And.right
+
+theorem monotone_prodMk_iff {f : γ → α} {g : γ → β} :
+    Monotone (fun x => (f x, g x)) ↔ Monotone f ∧ Monotone g := by
+  simp_rw [Monotone, Prod.mk_le_mk, forall_and]
+
+theorem Monotone.prodMk {f : γ → α} {g : γ → β} (hf : Monotone f) (hg : Monotone g) :
+    Monotone (fun x => (f x, g x)) :=
+  monotone_prodMk_iff.2 ⟨hf, hg⟩
 
 theorem Monotone.prodMap (hf : Monotone f) (hg : Monotone g) : Monotone (Prod.map f g) :=
   fun _ _ h ↦ ⟨hf h.1, hg h.2⟩

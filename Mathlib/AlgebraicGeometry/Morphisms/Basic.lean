@@ -5,7 +5,6 @@ Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.AlgebraicGeometry.Pullbacks
-import Mathlib.AlgebraicGeometry.Limits
 import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.Data.List.TFAE
 
@@ -49,13 +48,13 @@ For a morphism property `P` local at the target and `f : X ⟶ Y`, we provide th
 
 For a morphism property `P` local at the source and `f : X ⟶ Y`, we provide these API lemmas:
 
-- `AlgebraicGeometry.IsLocalAtTarget.comp`:
+- `AlgebraicGeometry.IsLocalAtSource.comp`:
     `P` is preserved under composition with open immersions at the source.
-- `AlgebraicGeometry.IsLocalAtTarget.iff_of_iSup_eq_top`:
+- `AlgebraicGeometry.IsLocalAtSource.iff_of_iSup_eq_top`:
     `P f ↔ ∀ i, P (U.ι ≫ f)` for a family `U i` of open sets covering `X`.
-- `AlgebraicGeometry.IsLocalAtTarget.iff_of_openCover`:
+- `AlgebraicGeometry.IsLocalAtSource.iff_of_openCover`:
     `P f ↔ ∀ i, P (𝒰.map i ≫ f)` for `𝒰 : X.openCover`.
-- `AlgebraicGeometry.IsLocalAtTarget.of_isOpenImmersion`: If `P` contains identities then `P` holds
+- `AlgebraicGeometry.IsLocalAtSource.of_isOpenImmersion`: If `P` contains identities then `P` holds
     for open immersions.
 
 ## `AffineTargetMorphismProperty`
@@ -87,7 +86,7 @@ For `HasAffineProperty P Q` and `f : X ⟶ Y`, we provide these API lemmas:
     `P f ↔ ∀ i, Q (f ∣_ U i)` for a family `U i` of affine open sets covering `Y`.
 - `AlgebraicGeometry.HasAffineProperty.iff_of_openCover`:
     `P f ↔ ∀ i, P (𝒰.pullbackHom f i)` for affine open covers `𝒰` of `Y`.
-- `AlgebraicGeometry.HasAffineProperty.isStableUnderBaseChange_mk`:
+- `AlgebraicGeometry.HasAffineProperty.isStableUnderBaseChange`:
     If `Q` is stable under affine base change, then `P` is stable under arbitrary base change.
 -/
 
@@ -159,7 +158,7 @@ lemma of_iSup_eq_top {ι} (U : ι → Y.Opens) (hU : iSup U = ⊤)
     (Y.openCoverOfISupEqTop (s := Set.range U) Subtype.val (by ext; simp [← hU]))).mpr fun i ↦ ?_
   obtain ⟨_, i, rfl⟩ := i
   refine (P.arrow_mk_iso_iff (morphismRestrictOpensRange f _)).mp ?_
-  show P (f ∣_ (U i).ι.opensRange)
+  change P (f ∣_ (U i).ι.opensRange)
   rw [Scheme.Opens.opensRange_ι]
   exact H i
 
@@ -183,7 +182,7 @@ lemma of_range_subset_iSup [P.RespectsRight @IsOpenImmersion] {ι : Type*} (U : 
   rw [IsLocalAtTarget.iff_of_iSup_eq_top (P := P) (U := fun i : ι ↦ (⨆ i, U i).ι ⁻¹ᵁ U i)]
   · intro i
     have heq : g ⁻¹ᵁ (⨆ i, U i).ι ⁻¹ᵁ U i = f ⁻¹ᵁ U i := by
-      show (g ≫ (⨆ i, U i).ι) ⁻¹ᵁ U i = _
+      change (g ≫ (⨆ i, U i).ι) ⁻¹ᵁ U i = _
       simp [g]
     let e : Arrow.mk (g ∣_ (⨆ i, U i).ι ⁻¹ᵁ U i) ≅ Arrow.mk (f ∣_ U i) :=
         Arrow.isoMk (X.isoOfEq heq) (Scheme.Opens.isoOfLE (le_iSup U i)) <| by
@@ -300,7 +299,7 @@ lemma isLocalAtTarget [P.IsMultiplicative]
 
 lemma sigmaDesc {X : Scheme.{u}} {ι : Type v} [Small.{u} ι] {Y : ι → Scheme.{u}}
     {f : ∀ i, Y i ⟶ X} (hf : ∀ i, P (f i)) : P (Sigma.desc f) := by
-  rw [IsLocalAtSource.iff_of_openCover (P := P) (sigmaOpenCover _)]
+  rw [IsLocalAtSource.iff_of_openCover (P := P) (Scheme.IsLocallyDirected.openCover _)]
   exact fun i ↦ by simp [hf]
 
 instance top : IsLocalAtSource (⊤ : MorphismProperty Scheme.{u}) where
@@ -408,7 +407,7 @@ class IsLocal (P : AffineTargetMorphismProperty) : Prop where
   to_basicOpen :
     ∀ {X Y : Scheme} [IsAffine Y] (f : X ⟶ Y) (r : Γ(Y, ⊤)), P f → P (f ∣_ Y.basicOpen r)
   /-- `P` for `f` if `P` holds for `f` restricted to basic sets of a spanning set of the global
-    sections -/
+  sections -/
   of_basicOpenCover :
     ∀ {X Y : Scheme} [IsAffine Y] (f : X ⟶ Y) (s : Finset Γ(Y, ⊤))
       (_ : Ideal.span (s : Set Γ(Y, ⊤)) = ⊤), (∀ r : s, P (f ∣_ Y.basicOpen r.1)) → P f

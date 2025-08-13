@@ -173,6 +173,37 @@ example : Int.natAbs 0 = 0 := by norm_num1
 
 end Int
 
+section NNRat
+open scoped NNRat
+
+variable [DivisionSemiring α] [CharZero α]
+
+-- Normalize to True
+example : (1 : ℚ≥0) = 1 := by norm_num1
+example : (1/2 : ℚ≥0) = 1/2 := by norm_num1
+example : (1 : α) = 1 := by norm_num1
+example : (1/2 : α) = 1/2 := by norm_num1
+example : (1 : ℚ≥0) ≠ 2 := by norm_num1
+example : (1/2 : ℚ≥0) ≠ 1 := by norm_num1
+example : (1/2 : ℚ≥0) ≠ 1/3 := by norm_num1
+example : (1/2 : ℚ≥0) ≠ 5/2 := by norm_num1
+example : (1/2 : α) ≠ 1/3 := by norm_num1
+example : (1/2 : α) ≠ 5/2 := by norm_num1
+example : (1 : α) / 3 ≠ 0 := by norm_num1
+example : (1 : α) / 3 ≠ 2 / 7 := by norm_num1
+
+-- Normalize to False
+example : ((1 : ℚ≥0) = 2) = False := by norm_num1
+example : ((1/2 : ℚ≥0) = 2) = False := by norm_num1
+example : ((1 : α) = 2) = False := by norm_num1
+example : ((1/2 : α) = 2) = False := by norm_num1
+
+example : ((1 : ℚ≥0) ≠ 1) = False := by norm_num1
+example : ((1/2 : ℚ≥0) ≠ 1/2) = False := by norm_num1
+example : ((1/2 : α) ≠ 1/2) = False := by norm_num1
+
+end NNRat
+
 section Rat
 
 variable [DivisionRing α] [CharZero α]
@@ -535,6 +566,7 @@ example : - (-4 / 3) = 1 / (3 / (4 : α)) := by norm_num1
 end
 
 -- user command
+set_option linter.style.commandStart false
 
 /-- info: True -/
 #guard_msgs in #norm_num 1 = 1

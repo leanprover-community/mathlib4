@@ -96,6 +96,26 @@ protected theorem piMap {ι} [Fintype ι] {α β : ι → Type*} [∀ i, PseudoE
     Isometry (Pi.map f) := fun x y => by
   simp only [edist_pi_def, (hf _).edist_eq, Pi.map_apply]
 
+protected lemma single [Fintype ι] [DecidableEq ι] {E : ι → Type*} [∀ i, PseudoEMetricSpace (E i)]
+    [∀ i, Zero (E i)] (i : ι) :
+    Isometry (Pi.single (M := E) i) := by
+  intro x y
+  rw [edist_pi_def]
+  refine le_antisymm (Finset.sup_le fun j ↦ ?_) (Finset.le_sup_of_le (Finset.mem_univ i) (by simp))
+  obtain rfl | h := eq_or_ne i j
+  · simp
+  · simp [h]
+
+protected lemma inl [AddZeroClass α] [AddZeroClass β] : Isometry (AddMonoidHom.inl α β) := by
+  intro x y
+  rw [Prod.edist_eq]
+  simp
+
+protected lemma inr [AddZeroClass α] [AddZeroClass β] : Isometry (AddMonoidHom.inr α β) := by
+  intro x y
+  rw [Prod.edist_eq]
+  simp
+
 /-- The composition of isometries is an isometry. -/
 theorem comp {g : β → γ} {f : α → β} (hg : Isometry g) (hf : Isometry f) : Isometry (g ∘ f) :=
   fun _ _ => (hg _ _).trans (hf _ _)
@@ -175,9 +195,6 @@ lemma isUniformEmbedding (hf : Isometry f) : IsUniformEmbedding f :=
 /-- An isometry from an emetric space is an embedding -/
 theorem isEmbedding (hf : Isometry f) : IsEmbedding f := hf.isUniformEmbedding.isEmbedding
 
-@[deprecated (since := "2024-10-26")]
-alias embedding := isEmbedding
-
 /-- An isometry from a complete emetric space is a closed embedding -/
 theorem isClosedEmbedding [CompleteSpace α] [EMetricSpace γ] {f : α → γ} (hf : Isometry f) :
     IsClosedEmbedding f :=
@@ -247,14 +264,14 @@ theorem Topology.IsEmbedding.to_isometry {α β} [TopologicalSpace α] [MetricSp
   let _ := h.comapMetricSpace f
   Isometry.of_dist_eq fun _ _ => rfl
 
-@[deprecated (since := "2024-10-26")]
-alias Embedding.to_isometry := IsEmbedding.to_isometry
-
 theorem PseudoEMetricSpace.isometry_induced (f : α → β) [m : PseudoEMetricSpace β] :
     letI := m.induced f; Isometry f := fun _ _ ↦ rfl
 
-theorem PsuedoMetricSpace.isometry_induced (f : α → β) [m : PseudoMetricSpace β] :
+theorem PseudoMetricSpace.isometry_induced (f : α → β) [m : PseudoMetricSpace β] :
     letI := m.induced f; Isometry f := fun _ _ ↦ rfl
+
+@[deprecated (since := "2025-07-27")]
+alias PsuedoMetricSpace.isometry_induced := PseudoMetricSpace.isometry_induced
 
 theorem EMetricSpace.isometry_induced (f : α → β) (hf : f.Injective) [m : EMetricSpace β] :
     letI := m.induced f hf; Isometry f := fun _ _ ↦ rfl
@@ -587,7 +604,7 @@ theorem sumArrowIsometryEquivProdArrow_toHomeomorph {α β : Type*} [Fintype α]
 theorem _root_.Fin.edist_append_eq_max_edist (m n : ℕ) {x x2 : Fin m → α} {y y2 : Fin n → α} :
     edist (Fin.append x y) (Fin.append x2 y2) = max (edist x x2) (edist y y2) := by
   simp [edist_pi_def, Finset.sup_univ_eq_iSup, ← Equiv.iSup_comp (e := finSumFinEquiv),
-    Prod.edist_eq, iSup_sum]
+    iSup_sum]
 
 /-- The natural `IsometryEquiv` between `(Fin m → α) × (Fin n → α)` and `Fin (m + n) → α`.
 `Fin.appendEquiv` as an `IsometryEquiv`. -/

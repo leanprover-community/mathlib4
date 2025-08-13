@@ -21,11 +21,11 @@ This file defines bundled isomorphisms of `R`-bialgebras. We simply mimic the ea
 * `A ≃ₐc[R] B` : `R`-bialgebra equivalence from `A` to `B`.
 -/
 
-universe u v w u₁ v₁
+universe u v w u₁
 
 variable {R : Type u} {A : Type v} {B : Type w} {C : Type u₁}
 
-open Bialgebra
+open TensorProduct Coalgebra Bialgebra Function
 
 /-- An equivalence of bialgebras is an invertible bialgebra homomorphism. -/
 structure BialgEquiv (R : Type u) [CommSemiring R] (A : Type v) (B : Type w)
@@ -133,9 +133,7 @@ instance : BialgEquivClass (A ≃ₐc[R] B) R A B where
 theorem toBialgHom_inj {e₁ e₂ : A ≃ₐc[R] B} : (↑e₁ : A →ₐc[R] B) = e₂ ↔ e₁ = e₂ :=
   toBialgHom_injective.eq_iff
 
-@[simp]
-theorem coe_mk {f h h₀ h₁ h₂ h₃ h₄ h₅ h₆} :
-    (⟨⟨⟨⟨⟨f, h⟩, h₀⟩, h₁, h₂⟩, h₃, h₄, h₅⟩, h₆⟩ : A ≃ₐc[R] B) = f := rfl
+@[simp] lemma coe_mk (e : A ≃ₗc[R] B) (h) : mk e h = e := rfl
 
 end
 
@@ -235,8 +233,18 @@ theorem symm_toCoalgEquiv (e : A ≃ₐc[R] B) :
 theorem invFun_eq_symm : e.invFun = e.symm :=
   rfl
 
+theorem coe_toEquiv_symm : e.toEquiv.symm = e.symm := rfl
+
 @[simp]
-theorem coe_toEquiv_symm : e.toEquiv.symm = e.symm :=
+theorem toEquiv_symm : e.symm.toEquiv = e.toEquiv.symm :=
+  rfl
+
+@[simp]
+theorem coe_toEquiv : ⇑e.toEquiv = e :=
+  rfl
+
+@[simp]
+theorem coe_symm_toEquiv : ⇑e.toEquiv.symm = e.symm :=
   rfl
 
 variable {e₁₂ : A ≃ₐc[R] B} {e₂₃ : B ≃ₐc[R] C}
@@ -258,6 +266,21 @@ theorem trans_toBialgHom :
 theorem coe_toEquiv_trans : (e₁₂ : A ≃ B).trans e₂₃ = (e₁₂.trans e₂₃ : A ≃ C) :=
   rfl
 
+@[simp]
+lemma apply_symm_apply (e : A ≃ₐc[R] B) : ∀ x, e (e.symm x) = x := e.toEquiv.apply_symm_apply
+
+@[simp]
+lemma symm_apply_apply (e : A ≃ₐc[R] B) : ∀ x, e.symm (e x) = x := e.toEquiv.symm_apply_apply
+
+@[simp] lemma comp_symm (e : A ≃ₐc[R] B) : (e : A →ₐc[R] B).comp e.symm = .id R B :=
+  BialgHom.coe_algHom_injective e.toAlgEquiv.comp_symm
+
+@[simp] lemma symm_comp (e : A ≃ₐc[R] B) : (e.symm : B →ₐc[R] A).comp e = .id R A :=
+  BialgHom.coe_algHom_injective e.toAlgEquiv.symm_comp
+
+@[simp] lemma toRingEquiv_toRingHom (e : A ≃ₐc[R] B) : ((e : A ≃+* B) : A →+* B) = e := rfl
+@[simp] lemma toAlgEquiv_toRingHom (e : A ≃ₐc[R] B) : ((e : A ≃ₐ[R] B) : A →+* B) = e := rfl
+
 /-- If an coalgebra morphism has an inverse, it is an coalgebra isomorphism. -/
 def ofBialgHom (f : A →ₐc[R] B) (g : B →ₐc[R] A) (h₁ : f.comp g = BialgHom.id R B)
     (h₂ : g.comp f = BialgHom.id R A) : A ≃ₐc[R] B where
@@ -276,18 +299,26 @@ theorem ofBialgHom_symm (f : A →ₐc[R] B) (g : B →ₐc[R] A) (h₁ h₂) :
     (ofBialgHom f g h₁ h₂).symm = ofBialgHom g f h₂ h₁ :=
   rfl
 
-variable {f : A →ₐc[R] B} (hf : Function.Bijective f)
-
-/-- Promotes a bijective coalgebra homomorphism to a coalgebra equivalence. -/
-@[simps apply]
-noncomputable def ofBijective : A ≃ₐc[R] B where
-  toFun := f
+/-- Construct a bialgebra equiv from an algebra equiv respecting counit and comultiplication. -/
+@[simps apply] def ofAlgEquiv (f : A ≃ₐ[R] B) (counit_comp : counit ∘ₗ f.toLinearMap = counit)
+    (map_comp_comul : map f.toLinearMap f.toLinearMap ∘ₗ comul = comul ∘ₗ f.toLinearMap) :
+    A ≃ₐc[R] B where
   __ := f
-  __ := AlgEquiv.ofBijective (f : A →ₐ[R] B) hf
+  map_smul' := map_smul f
+  counit_comp := counit_comp
+  map_comp_comul := map_comp_comul
 
 @[simp]
-theorem coe_ofBijective : (BialgEquiv.ofBijective hf : A → B) = f :=
-  rfl
+lemma toLinearMap_ofAlgEquiv (f : A ≃ₐ[R] B) (counit_comp map_comp_comul) :
+    (ofAlgEquiv f counit_comp map_comp_comul : A →ₗ[R] B) = f := rfl
+
+/-- Promotes a bijective bialgebra homomorphism to a bialgebra equivalence. -/
+@[simps! apply]
+noncomputable def ofBijective (f : A →ₐc[R] B) (hf : Bijective f) : A ≃ₐc[R] B :=
+  .ofAlgEquiv (.ofBijective (f : A →ₐ[R] B) hf) (by ext; simp) (by ext; simp)
+
+@[simp]
+lemma coe_ofBijective (f : A →ₐc[R] B) (hf : Bijective f) : (ofBijective f hf : A → B) = f := rfl
 
 end
 end BialgEquiv

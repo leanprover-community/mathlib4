@@ -139,9 +139,6 @@ theorem range_cotangentToQuotientSquare :
   · rw [LinearMap.range_comp, I.toCotangent_range, Submodule.map_top]
   · rw [to_quotient_square_comp_toCotangent, LinearMap.range_comp, I.range_subtype]; ext; rfl
 
-@[deprecated (since := "2025-01-04")]
-alias to_quotient_square_range := range_cotangentToQuotientSquare
-
 /-- The equivalence of the two definitions of `I / I ^ 2`, either as the quotient of `I` or the
 ideal of `R / I ^ 2`. -/
 noncomputable def cotangentEquivIdeal : I.Cotangent ≃ₗ[R] I.cotangentIdeal := by
@@ -291,24 +288,3 @@ theorem finrank_cotangentSpace_le_one_iff [IsNoetherianRing R] :
   exact ⟨fun ⟨x, h⟩ ↦ ⟨_, h⟩, fun ⟨x, h⟩ ↦ ⟨⟨x, h ▸ subset_span (Set.mem_singleton x)⟩, h⟩⟩
 
 end IsLocalRing
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.CotangentSpace := IsLocalRing.CotangentSpace
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.subsingleton_cotangentSpace_iff := IsLocalRing.subsingleton_cotangentSpace_iff
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.map_eq_top_iff := IsLocalRing.CotangentSpace.map_eq_top_iff
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.span_image_eq_top_iff := IsLocalRing.CotangentSpace.span_image_eq_top_iff
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.finrank_cotangentSpace_eq_zero_iff := IsLocalRing.finrank_cotangentSpace_eq_zero_iff
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.finrank_cotangentSpace_eq_zero := IsLocalRing.finrank_cotangentSpace_eq_zero
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.finrank_cotangentSpace_le_one_iff := IsLocalRing.finrank_cotangentSpace_le_one_iff

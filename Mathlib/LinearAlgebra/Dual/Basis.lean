@@ -30,17 +30,13 @@ This file concerns bases on dual vector spaces.
     then `ε` is a basis.
 -/
 
-open Module Submodule
+open Module Dual Submodule LinearMap Function
 
 noncomputable section
 
-namespace Basis
+namespace Module.Basis
 
-universe u v w
-
-open Module Module.Dual Submodule LinearMap Function
-
-universe uR uM uK uV uι
+universe u v w uR uM uK uV uι
 variable {R : Type uR} {M : Type uM} {K : Type uK} {V : Type uV} {ι : Type uι}
 
 section CommSemiring
@@ -65,7 +61,7 @@ theorem toDual_linearCombination_left (f : ι →₀ R) (i : ι) :
     Finset.sum_ite_eq']
   split_ifs with h
   · rfl
-  · rw [Finsupp.not_mem_support_iff.mp h]
+  · rw [Finsupp.notMem_support_iff.mp h]
 
 @[simp]
 theorem toDual_linearCombination_right (f : ι →₀ R) (i : ι) :
@@ -74,7 +70,7 @@ theorem toDual_linearCombination_right (f : ι →₀ R) (i : ι) :
   simp_rw [LinearMap.map_smul, toDual_apply, smul_eq_mul, mul_boole, Finset.sum_ite_eq]
   split_ifs with h
   · rfl
-  · rw [Finsupp.not_mem_support_iff.mp h]
+  · rw [Finsupp.notMem_support_iff.mp h]
 
 theorem toDual_apply_left (m : M) (i : ι) : b.toDual m (b i) = b.repr m i := by
   rw [← b.toDual_linearCombination_left, b.linearCombination_repr]
@@ -210,11 +206,9 @@ theorem linearCombination_coord [Finite ι] (b : Basis ι R M) (f : ι →₀ R)
 
 end CommSemiring
 
-end Basis
+end Module.Basis
 
 section DualBases
-
-open Module
 
 variable {R M ι : Type*}
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
@@ -237,7 +231,7 @@ end DualBases
 
 namespace Module.DualBases
 
-open Module Module.Dual LinearMap Function
+open LinearMap Function
 
 variable {R M ι : Type*}
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
@@ -317,5 +311,3 @@ theorem coe_dualBasis [DecidableEq ι] [Finite ι] : ⇑h.basis.dualBasis = ε :
   funext fun i => h.basis.ext fun j => by simp
 
 end Module.DualBases
-
-open Module

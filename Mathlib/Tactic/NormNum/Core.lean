@@ -270,16 +270,11 @@ def getSimpContext (cfg args : Syntax) (simpOnly := false) : TacticM Simp.Contex
   let config ← elabSimpConfigCore cfg
   let simpTheorems ←
     if simpOnly then simpOnlyBuiltins.foldlM (·.addConst ·) {} else getSimpTheorems
-  let mut { ctx, simprocs := _, starArg } ←
+  let { ctx, .. } ←
     elabSimpArgs args[0] (eraseLocal := false) (kind := .simp) (simprocs := {})
       (← Simp.mkContext config (simpTheorems := #[simpTheorems])
         (congrTheorems := ← getSimpCongrTheorems))
-  unless starArg do return ctx
-  let mut simpTheorems := ctx.simpTheorems
-  for h in ← getPropHyps do
-    unless simpTheorems.isErased (.fvar h) do
-      simpTheorems ← simpTheorems.addTheorem (.fvar h) (← h.getDecl).toExpr
-  return ctx.setSimpTheorems simpTheorems
+  return ctx
 
 open Elab.Tactic in
 /--

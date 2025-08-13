@@ -6,13 +6,13 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 import Mathlib.Data.Nat.Init
 import Mathlib.Logic.Nontrivial.Defs
 import Mathlib.Tactic.Contrapose
-import Mathlib.Tactic.GCongr.CoreAttrs
+import Mathlib.Tactic.GCongr.Core
 import Mathlib.Util.AssertExists
 
 /-!
 # Basic operations on the natural numbers
 
-This file builds on `Mathlib.Data.Nat.Init` by adding basic lemmas on natural numbers
+This file builds on `Mathlib/Data/Nat/Init.lean` by adding basic lemmas on natural numbers
 depending on Mathlib definitions.
 
 See note [foundational algebra order theory].
@@ -34,14 +34,14 @@ instance instLinearOrder : LinearOrder ℕ where
   le_antisymm := @Nat.le_antisymm
   le_total := @Nat.le_total
   lt := Nat.lt
-  lt_iff_le_not_le := @Nat.lt_iff_le_not_le
+  lt_iff_le_not_ge := @Nat.lt_iff_le_not_le
   toDecidableLT := inferInstance
   toDecidableLE := inferInstance
   toDecidableEq := inferInstance
 
 instance instNontrivial : Nontrivial ℕ := ⟨⟨0, 1, Nat.zero_ne_one⟩⟩
 
-attribute [gcongr] Nat.succ_le_succ Nat.div_le_div_right Nat.div_le_div_left Nat.div_le_div
+attribute [gcongr] Nat.succ_le_succ Nat.div_le_div_right Nat.div_le_div
 
 /-! ### `succ`, `pred` -/
 

@@ -83,7 +83,7 @@ theorem fourierIntegral_half_period_translate {w : V} (hw : w ≠ 0) :
   have := integral_add_right_eq_self (μ := volume) (fun (x : V) ↦ -(𝐞 (-⟪x, w⟫) • f x))
     ((fun w ↦ (1 / (2 * ‖w‖ ^ (2 : ℕ))) • w) w)
   rw [this]
-  simp only [neg_smul, integral_neg]
+  simp only [integral_neg]
 
 /-- Rewrite the Fourier integral in a form that allows us to use uniform continuity. -/
 theorem fourierIntegral_eq_half_sub_half_period_translate {w : V} (hw : w ≠ 0)
@@ -137,7 +137,7 @@ theorem tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support 
     rw [norm_smul, norm_div, Real.norm_of_nonneg (mul_nonneg two_pos.le <| sq_nonneg _), norm_one,
       sq, ← div_div, ← div_div, ← div_div, div_mul_cancel₀ _ (norm_eq_zero.not.mpr hw_ne)]
   --* Rewrite integral in terms of `f v - f (v + w')`.
-  have : ‖(1 / 2 : ℂ)‖ = 2⁻¹ := by norm_num
+  have : ‖(1 / 2 : ℂ)‖ = 2⁻¹ := by simp
   rw [fourierIntegral_eq_half_sub_half_period_translate hw_ne
       (hf1.integrable_of_hasCompactSupport hf2),
     norm_smul, this, inv_mul_eq_div, div_lt_iff₀' two_pos]

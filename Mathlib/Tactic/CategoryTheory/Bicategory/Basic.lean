@@ -17,7 +17,7 @@ source and target. In other words, `bicategory` solves equalities where both sid
 string diagrams.
 
 The core function for the `bicategory` tactic is provided in
-`Mathlib.Tactic.CategoryTheory.Coherence.Basic`. See this file for more details about the
+`Mathlib/Tactic/CategoryTheory/Coherence/Basic.lean`. See this file for more details about the
 implementation.
 
 -/
