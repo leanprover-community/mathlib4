@@ -168,6 +168,12 @@ theorem isClosed_polar (s : Set E) : IsClosed (polar 𝕜 s) := by
   simp only [polar_def, setOf_forall]
   exact isClosed_biInter fun x hx => isClosed_Iic.preimage (WeakBilin.eval_continuous _ _).norm
 
+theorem polar_union {s t : Set E} : polar 𝕜 (s ∪ t) = polar 𝕜 s ∩ polar 𝕜 t :=
+  (strongDualPairing 𝕜 E).flip.polar_union
+
+theorem polar_iUnion {ι} {s : ι → Set E} : polar 𝕜 (⋃ i, s i) = ⋂ i, polar 𝕜 (s i) :=
+  (strongDualPairing 𝕜 E).flip.polar_iUnion
+
 end WeakDual
 
 /-!
@@ -316,7 +322,7 @@ lemma isClosedK (x : (U (E := E₁) (n + 1))) (hC₁ : IsClosed C) : IsClosed (K
   IsClosed.inter (IsClosed.inter (IsClosed.inter (isClosed_polar 𝕜₁ s) (isClosed_polar 𝕜₁ _)) hC₁)
     (isClosed_polar 𝕜₁ (U (n + 2)))
 
-lemma inter_empty (h : polar 𝕜₁ s ∩ C ∩ polar 𝕜₁ (U (n+1)) = ∅) :
+lemma inter_empty (h : polar 𝕜₁ s ∩ C ∩ polar 𝕜₁ (U (n + 1)) = ∅) :
     ⋂ (x : (U (E := E₁) (n + 1))), K C s n x = ∅ := by
   simp_rw [K]
   rw [← iInter_inter, ← iInter_inter, ← inter_iInter, iInter_coe_set]
@@ -337,7 +343,7 @@ lemma more_confusion (u : Finset (U (n + 1))) (h : Nonempty u) :
       ((polar 𝕜₁ (U (n+2))) ∩ (⋂ (i ∈ u), (K C s n i.val))) := by
   aesop
 
-lemma confusion (u : Finset (U (n + 1))) (h : Nonempty u):
+lemma confusion (u : Finset (U (n + 1))) (h : Nonempty u) :
     ((polar 𝕜₁ (U (n+2))) ∩ (⋂ (i : u), (K C s n i))) = ⋂ (i ∈ u), (K C s n i.val) := by
   rw [inter_iInter]
   simp_rw [ss2]

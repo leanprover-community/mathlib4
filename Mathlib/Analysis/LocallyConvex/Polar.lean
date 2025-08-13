@@ -137,9 +137,8 @@ theorem sInter_polar_finite_subset_eq_polar (s : Set E) :
 theorem iInter_polar_singleton_eq_polar (s : Set E) :
     ⋂ i ∈ s, (B.polar { i }) = B.polar s := by
   ext x
-  simp only [Set.sInter_image, Set.mem_setOf_eq, Set.mem_iInter, and_imp]
-  refine ⟨fun hx a ha ↦ ?_, fun hx a ha => (mem_polar_singleton B x).mpr (hx a ha)⟩
-  simpa [mem_polar_singleton] using hx _ ha
+  simp only [polar_singleton, Set.mem_iInter, Set.mem_setOf_eq]
+  rfl
 
 end NormedRing
 
