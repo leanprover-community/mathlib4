@@ -131,4 +131,25 @@ lemma norm_sub_le_of_mem_segment {x y z : E} (hy : y ∈ segment ℝ x z) :
   conv_rhs => rw [← one_mul (‖z - x‖)]
   gcongr
 
+namespace Filter
+
+open scoped Convex Topology
+variable {F : Type*} {l : Filter F} {x : E} {y z : F → E} {r : F → E → Prop}
+
+theorem Eventually.segment_of_prod_nhds (hy : Tendsto y l (𝓝 x)) (hz : Tendsto z l (𝓝 x))
+    (hr : ∀ᶠ p in l ×ˢ 𝓝 x, r p.1 p.2) : ∀ᶠ χ in l, ∀ v ∈ [y χ -[ℝ] z χ], r χ v := by
+  obtain ⟨p, hp, δ, hδ, hr⟩ := eventually_prod_nhds_iff.mp hr
+  rw [Metric.tendsto_nhds] at hy hz
+  filter_upwards [hp, hy δ hδ, hz δ hδ] with χ hp hy hz
+  exact fun v hv => hr hp <| convex_iff_segment_subset.mp (convex_ball x δ) hy hz hv
+
+theorem Eventually.segment_of_prod_nhdsWithin (hy : Tendsto y l (𝓝 x)) (hz : Tendsto z l (𝓝 x))
+    (hr : ∀ᶠ p in l ×ˢ 𝓝[s] x, r p.1 p.2) (seg : ∀ᶠ χ in l, [y χ -[ℝ] z χ] ⊆ s) :
+    ∀ᶠ χ in l, ∀ v ∈ [y χ -[ℝ] z χ], r χ v := by
+  refine seg.mp <| .mono ?_ (fun _ => forall₂_imp)
+  apply segment_of_prod_nhds hy hz
+  simpa [nhdsWithin, prod_eq_inf, ← inf_assoc, eventually_inf_principal] using hr
+
+end Filter
+
 end SeminormedAddCommGroup
