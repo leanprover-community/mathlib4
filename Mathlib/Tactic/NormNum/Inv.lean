@@ -15,7 +15,7 @@ variable {u : Lean.Level}
 
 namespace Mathlib.Meta.NormNum
 
-open Lean.Meta Qq
+open Lean Meta Qq
 
 /-- Helper function to synthesize a typed `CharZero α` expression given `Ring α`. -/
 def inferCharZeroOfRing {α : Q(Type u)} (_i : Q(Ring $α) := by with_reducible assumption) :
@@ -53,6 +53,79 @@ def inferCharZeroOfDivisionRing? {α : Q(Type u)}
     (_i : Q(DivisionRing $α) := by with_reducible assumption) : MetaM (Option Q(CharZero $α)) :=
   return (← trySynthInstanceQ q(CharZero $α)).toOption
 
+section CharP
+
+open Nat in
+def invMod (x n : ℕ) : ℕ :=
+  if x % n = 0 then 0 else
+  match (xgcdAux x 1 0 n 0 1).2.1 % n with
+  | .ofNat r => r
+  | .negSucc r => n - r - 1
+  where
+  xgcdAux : ℕ → ℤ → ℤ → ℕ → ℤ → ℤ → ℕ × ℤ × ℤ
+  | 0, _, _, r', s', t' => (r', s', t')
+  | succ k, s, t, r', s', t' =>
+    let q := r' / succ k
+    xgcdAux (r' % succ k) (s' - q * s) (t' - q * t) (succ k) s t
+termination_by k => k
+decreasing_by exact mod_lt _ <| (succ_pos _).gt
+
+lemma IsNat.inv (p : ℕ) {α : Type*} [DivisionRing α] [CharP α p] {e : α} {n n' : ℕ}
+    (hn' : (n = 0 ∧ n' = 0) ∨ n * n' % p = 1)
+    (H : IsNat e n) :
+    IsNat e⁻¹ n' := by
+  obtain ⟨rfl⟩ := H
+  obtain rfl | hn := eq_or_ne n 0
+  · obtain rfl : n' = 0 := by simpa using hn'
+    exact ⟨by simp⟩
+  replace hn' : n * n' % p = 1 := by simpa [hn] using hn'
+  refine ⟨inv_eq_of_mul_eq_one_right ?_⟩
+  simpa [hn'] using congr_arg (Nat.cast (R := α)) (Nat.mod_add_div (n * n') p).symm
+
+lemma IsNat.ratCast_of_charP (p : ℕ) {α : Type*} [DivisionRing α] [CharP α p]
+    {x x' : ℚ} {n : ℤ} {d n' : ℕ}
+    (hx : IsRat x n d) (hx' : x' = n / d)
+    (hn' : if x'.den % p = 0 then n' = 0 else (n' * x'.den - x'.num) % p = 0) :
+    IsNat (x : α) n' := by
+  obtain rfl : x = x' := by
+    obtain ⟨_, rfl⟩ := hx
+    simp [hx', div_eq_mul_inv]
+  classical
+  simp_rw [← Nat.dvd_iff_mod_eq_zero, ← CharP.cast_eq_zero_iff α p,
+    ← Int.dvd_iff_emod_eq_zero, ← CharP.intCast_eq_zero_iff (R := α), Int.cast_sub,
+    sub_eq_zero] at hn'
+  split_ifs at hn' with h
+  · exact ⟨by simp [DivisionRing.ratCast_def, h, hn']⟩
+  · exact ⟨by simp [DivisionRing.ratCast_def, ← hn', h]⟩
+
+def evalInvCharP (p : ℕ) {u : Level} {α : Q(Type u)} {inst : Q(DivisionRing $α)}
+    {e : Q($α)} (res : Result q($e)) :
+    MetaM (Result q($e⁻¹)) := do
+  let .isNat inst' lit proof ← reduceCharP p e res | failure
+  let _ ← synthInstanceQ q(CharP $α $p)
+  have : $inst' =Q ($inst).toRing.toAddGroupWithOne.toAddMonoidWithOne := ⟨⟩
+  have n' : Q(ℕ) := mkRawNatLit (invMod lit.natLit! p)
+  let pf ← mkDecideProofQ q($lit = 0 ∧ $n' = 0 ∨ $lit * $n' % $p = 1)
+  return .isNat _ n' q(IsNat.inv $p $pf $proof)
+
+def evalRatCastCharP (p : ℕ) {u : Level} {α : Q(Type u)} {inst : Q(DivisionRing $α)}
+    (e : Q(ℚ)) (ne : Q(ℤ)) (de : Q(ℕ)) (he : Q(IsRat $e $ne $de)) :
+    MetaM (Result q(Rat.cast (K := $α) $e)) := do
+  trace[debug] m!"got {he}"
+  let _ ← synthInstanceQ q(CharP $α $p)
+  let x : ℚ := ne.intLit! / de.natLit!
+  have xe : Q(ℚ) := mkRawRatLit x
+  trace[debug] m!"parsed into {x}"
+  have n' : Q(ℕ) := mkRawNatLit ((invMod x.den p * (x.num % p + p).natAbs) % p)
+  trace[debug] m!"start to show {e} ==> {n'}"
+  let pf ← mkDecideProofQ
+    q(if ($xe).den % $p = 0 then $n' = 0 else ($n' * ($xe).den - ($xe).num) % $p = 0)
+  let pf₂ ← mkDecideProofQ q($xe = $ne / $de)
+  trace[debug] m!"decide succeeded on {e} ==> {n'}"
+  return .isNat _ n' q(IsNat.ratCast_of_charP $p $he $pf₂ $pf)
+
+end CharP
+
 theorem isRat_mkRat : {a na n : ℤ} → {b nb d : ℕ} → IsInt a na → IsNat b nb →
     IsRat (na / nb : ℚ) n d → IsRat (mkRat a b) n d
   | _, _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, ⟨_, h⟩ => by rw [Rat.mkRat_eq_div]; exact ⟨_, h⟩
@@ -61,7 +134,7 @@ attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `mkRat a b`,
 such that `norm_num` successfully recognises both `a` and `b`, and returns `a / b`. -/
 @[norm_num mkRat _ _]
-def evalMkRat : NormNumExt where eval {u α} (e : Q(ℚ)) : MetaM (Result e) := do
+def evalMkRat : NormNumExt where eval {u α} (e : Q(ℚ)) : NormNumM (Result e) := do
   let .app (.app (.const ``mkRat _) (a : Q(ℤ))) (b : Q(ℕ)) ← whnfR e | failure
   haveI' : $e =Q mkRat $a $b := ⟨⟩
   let ra ← derive a
@@ -100,6 +173,9 @@ recognizes `q`, returning the cast of `q`. -/
     return .isNegNat _ na q(isInt_ratCast $pa)
   | .isRat _ qa na da pa =>
     assumeInstancesCommute
+    for p in (← readThe NormNum.Config).char do
+      try return ← evalRatCastCharP p (inst := dα) a na da pa
+      catch _ => continue
     let i ← inferCharZeroOfDivisionRing dα
     return .isRat dα qa na da q(isRat_ratCast $pa)
   | _ => failure
@@ -131,8 +207,6 @@ theorem isRat_inv_neg {α} [DivisionRing α] [CharZero α] {a : α} {n d : ℕ} 
   use this; simp only [Int.ofNat_eq_coe, Int.cast_neg,
     Int.cast_natCast, invOf_eq_inv, inv_neg, neg_mul, mul_inv_rev, inv_inv]
 
-open Lean
-
 attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `a⁻¹`,
 such that `norm_num` successfully recognises `a`. -/
@@ -140,9 +214,12 @@ such that `norm_num` successfully recognises `a`. -/
   let .app f (a : Q($α)) ← whnfR e | failure
   let ra ← derive a
   let dα ← inferDivisionRing α
-  let i ← inferCharZeroOfDivisionRing? dα
   guard <|← withNewMCtxDepth <| isDefEq f q(Inv.inv (α := $α))
   haveI' : $e =Q $a⁻¹ := ⟨⟩
+  for p in (← readThe NormNum.Config).char do
+    try return ← evalInvCharP p (inst := dα) ra
+    catch _ => continue
+  let i ← inferCharZeroOfDivisionRing? dα
   assumeInstancesCommute
   let rec
   /-- Main part of `evalInv`. -/
