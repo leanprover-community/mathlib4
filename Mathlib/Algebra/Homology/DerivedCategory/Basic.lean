@@ -264,7 +264,10 @@ noncomputable def singleFunctorsPostcompQIso :
 lemma singleFunctorsPostcompQIso_hom_hom (n : ℤ) :
     (singleFunctorsPostcompQIso C).hom.hom n = 𝟙 _ := by
   ext X
-  simp [singleFunctorsPostcompQIso, HomotopyCategory.singleFunctorsPostcompQuotientIso]
+  dsimp [singleFunctorsPostcompQIso, HomotopyCategory.singleFunctorsPostcompQuotientIso,
+    quotientCompQhIso, HomologicalComplexUpToQuasiIso.quotientCompQhIso]
+  rw [CategoryTheory.Functor.map_id, Category.id_comp]
+  erw [Category.id_comp]
   rfl
 
 lemma singleFunctorsPostcompQIso_inv_hom (n : ℤ) :
