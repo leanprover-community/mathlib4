@@ -557,7 +557,7 @@ theorem coeff_truncLT_of_lt [PartialOrder Γ] [DecidableLT Γ]
     {c i : Γ} (h : i < c) (x : HahnSeries Γ R) : (truncLT c x).coeff i = x.coeff i := by
   simp [h]
 
-theorem coeff_truncLT_eq_zero [LinearOrder Γ]
+theorem coeff_truncLT_of_le [LinearOrder Γ]
     {c i : Γ} (h : c ≤ i) (x : HahnSeries Γ R) :
     (truncLT c x).coeff i = 0 := by
   simp [h]
