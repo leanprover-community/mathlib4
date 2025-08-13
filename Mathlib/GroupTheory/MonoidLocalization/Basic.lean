@@ -390,6 +390,8 @@ attribute [deprecated AddSubmonoid.LocalizationMap.toAddMonoidHom (since := "202
 theorem toMonoidHom_injective : Injective (toMonoidHom : LocalizationMap S N → M →* N) :=
   fun f g ↦ by cases f; congr!
 
+@[deprecated (since := "2025-08-13")] alias toMap_injective := toMonoidHom_injective
+
 @[to_additive] instance : FunLike (LocalizationMap S N) M N where
   coe f := f.toMonoidHom
   coe_injective' := DFunLike.coe_injective.comp toMonoidHom_injective
