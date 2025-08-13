@@ -170,6 +170,7 @@ lemma Ideal.primeHeight_eq_zero_iff {I : Ideal R} [I.IsPrime] :
     exact hI' (y := b.asIdeal) b.isPrime hb
 
 /-- In a trivial commutative ring, the height of any ideal is `∞`. -/
+@[simp, nontriviality]
 lemma Ideal.height_of_subsingleton [Subsingleton R] : I.height = ⊤ := by
   rw [Subsingleton.elim I ⊤, Ideal.height_top]
 
