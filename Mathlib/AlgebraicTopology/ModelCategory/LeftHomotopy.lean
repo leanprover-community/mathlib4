@@ -54,7 +54,7 @@ def refl (f : X ⟶ Y) : P.LeftHomotopy f f where
 
 variable {P}
 
-/-- If `f` and `g` are homotopic relative to precylinder `P`, then `g` and `f`
+/-- If `f` and `g` are homotopic relative to a precylinder `P`, then `g` and `f`
 are homotopic relative to `P.symm` -/
 @[simps]
 def symm {f g : X ⟶ Y} (h : P.LeftHomotopy f g) : P.symm.LeftHomotopy g f where
