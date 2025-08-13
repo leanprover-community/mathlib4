@@ -422,9 +422,9 @@ def boolKernel (μ ν : Measure α) : Kernel Bool α where
   toFun := fun b ↦ if b then ν else μ
   measurable' := .of_discrete
 
-@[simp] lemma boolKernel_false : boolKernel μ ν false = μ := rfl
+lemma boolKernel_false : boolKernel μ ν false = μ := rfl
 
-@[simp] lemma boolKernel_true : boolKernel μ ν true = ν := rfl
+lemma boolKernel_true : boolKernel μ ν true = ν := rfl
 
 @[simp] lemma boolKernel_apply (b : Bool) : boolKernel μ ν b = if b then ν else μ := rfl
 
