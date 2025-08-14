@@ -1029,6 +1029,8 @@ namespace Nat
   simp_rw [Nat.succ_eq_add_one]
   exact fun n hn ↦ AddSubmonoid.add_mem _ hn <| subset_closure <| Set.mem_singleton _
 
+@[deprecated (since := "2025-08-14")] alias addSubmonoid_closure_one := addSubmonoidClosure_one
+
 end Nat
 
 namespace Submonoid
