@@ -289,6 +289,13 @@ theorem chromaticNumber_le_iff_colorable {n : ℕ} : G.chromaticNumber ≤ n ↔
   rw [Set.mem_setOf_eq] at this
   exact this.mono h
 
+/-- If the chromatic number of `G` is `n + 1`, then `G` is colorable in no fewer than `n + 1`
+colors. -/
+theorem chromaticNumber_eq_iff_colorable_not_colorable :
+    G.chromaticNumber = n + 1 ↔ G.Colorable (n + 1) ∧ ¬G.Colorable n := by
+  rw [eq_iff_le_not_lt, not_lt, ENat.add_one_le_iff (ENat.coe_ne_top n), ← not_le,
+    chromaticNumber_le_iff_colorable, ← Nat.cast_add_one, chromaticNumber_le_iff_colorable]
+
 theorem colorable_chromaticNumber {m : ℕ} (hc : G.Colorable m) :
     G.Colorable (ENat.toNat G.chromaticNumber) := by
   classical
