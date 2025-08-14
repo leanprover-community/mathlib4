@@ -523,16 +523,20 @@ open Kronecker
 open Algebra.TensorProduct
 
 section Semiring
-
-variable [CommSemiring R] [Semiring α] [Semiring β] [Algebra R α] [Algebra R β]
+variable [CommSemiring R]
 
 @[simp]
-theorem one_kroneckerTMul_one [DecidableEq m] [DecidableEq n] :
-    (1 : Matrix m m α) ⊗ₖₜ[R] (1 : Matrix n n α) = 1 :=
+theorem one_kroneckerTMul_one
+    [AddCommMonoidWithOne α] [AddCommMonoidWithOne β] [Module R α] [Module R β]
+    [DecidableEq m] [DecidableEq n] :
+    (1 : Matrix m m α) ⊗ₖₜ[R] (1 : Matrix n n β) = 1 :=
   kroneckerMap_one_one _ (zero_tmul _) (tmul_zero _) rfl
 
 unseal mul in
-theorem mul_kroneckerTMul_mul [Fintype m] [Fintype m'] (A : Matrix l m α) (B : Matrix m n α)
+theorem mul_kroneckerTMul_mul
+    [NonUnitalSemiring α] [NonUnitalSemiring β] [Module R α] [Module R β]
+    [IsScalarTower R α α] [SMulCommClass R α α] [IsScalarTower R β β] [SMulCommClass R β β]
+    [Fintype m] [Fintype m'] (A : Matrix l m α) (B : Matrix m n α)
     (A' : Matrix l' m' β) (B' : Matrix m' n' β) :
     (A * B) ⊗ₖₜ[R] (A' * B') = A ⊗ₖₜ[R] A' * B ⊗ₖₜ[R] B' :=
   kroneckerMapBilinear_mul_mul (TensorProduct.mk R α β) tmul_mul_tmul A B A' B'
