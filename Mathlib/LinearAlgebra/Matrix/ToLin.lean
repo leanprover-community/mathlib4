@@ -504,6 +504,14 @@ theorem LinearMap.isUnit_toMatrix'_iff {f : (n → R) →ₗ[R] n → R} : IsUni
 theorem Matrix.isUnit_toLin'_iff {M : Matrix n n R} : IsUnit M.toLin' ↔ IsUnit M :=
   isUnit_map_iff LinearMap.toMatrixAlgEquiv'.symm M
 
+instance : Module (Matrix n n R) (n → R) :=
+  .compHom _ Matrix.toLinAlgEquiv'.toRingHom
+
+instance : SMulCommClass (Matrix n n R) R (n → R) :=
+  SMul.comp.smulCommClass (Matrix.toLinAlgEquiv'.toMonoidHom : _ →* (Module.End R (n → R)))
+
+@[simp] lemma smul_eq_mulVec (g : Matrix n n R) (v : n → R) : g • v = g *ᵥ v := rfl
+
 end ToMatrix'
 
 section ToMatrix

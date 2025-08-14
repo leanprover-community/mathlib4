@@ -19,19 +19,11 @@ section Preliminaries
 
 variable {R n : Type*} [CommSemiring R] [Fintype n] [DecidableEq n]
 
-instance : Module (Matrix n n R) (n → R) :=
-  .compHom _ Matrix.toLinAlgEquiv'.toRingHom
-
-instance : SMulCommClass (Matrix n n R) R (n → R) :=
-  SMul.comp.smulCommClass (Matrix.toLinAlgEquiv'.toMonoidHom : _ →* (Module.End R (n → R)))
-
 instance : Module (Matrix (Fin 2) (Fin 2) R) (R × R) :=
   (LinearEquiv.finTwoArrow R R).symm.toAddEquiv.module _
 
 instance : SMulCommClass (Matrix (Fin 2) (Fin 2) R) R (R × R) :=
   (LinearEquiv.finTwoArrow R R).symm.smulCommClass _ _
-
-@[simp] lemma smul_eq_mulVec (g : Matrix n n R) (v : n → R) : g • v = g *ᵥ v := rfl
 
 @[simp] lemma Matrix.fin_two_smul_prod (g : Matrix (Fin 2) (Fin 2) R) (v : R × R) :
     g • v = (g 0 0 * v.1 + g 0 1 * v.2, g 1 0 * v.1 + g 1 1 * v.2) := by
