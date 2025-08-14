@@ -210,7 +210,7 @@ example (x : ℤ) (R : ℤ → ℤ → Prop) : True := by
 end
 
 -- new behaviour as of #27562
--- (previously, because of a metavariable instantiation issue, the tactic succeeded as a no-op)
+-- (Previously, because of a metavariable instantiation issue, the tactic succeeded as a no-op.)
 /-- error: ring_nf made no progress at h -/
 #guard_msgs in
 example {R : Type*} [CommSemiring R] {x y : R} : True := by
