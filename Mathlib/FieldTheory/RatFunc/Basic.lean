@@ -5,7 +5,6 @@ Authors: Anne Baanen
 -/
 import Mathlib.FieldTheory.RatFunc.Defs
 import Mathlib.RingTheory.Polynomial.Content
-import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.RingTheory.Algebraic.Integral
 
 /-!
