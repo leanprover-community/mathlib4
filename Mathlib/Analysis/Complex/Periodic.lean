@@ -72,6 +72,16 @@ theorem norm_qParam_lt_iff (hh : 0 < h) (A : ℝ) (z : ℂ) :
   rw [norm_qParam, Real.exp_lt_exp, div_lt_div_iff_of_pos_right hh, mul_lt_mul_left_of_neg]
   simpa using Real.pi_pos
 
+@[fun_prop]
+lemma qParam_differentiable (n : ℝ) : Differentiable ℂ (𝕢 n) := by
+    rw [show 𝕢 n = fun x => exp (2 * π * Complex.I * x / n)  by rfl]
+    fun_prop
+
+@[fun_prop]
+lemma qParam_ContDiff (n : ℝ) (m : WithTop ℕ∞) : ContDiff ℂ m (𝕢 n) := by
+    rw [show 𝕢 n = fun x => exp (2 * π * Complex.I * x / n)  by rfl]
+    fun_prop
+
 @[deprecated (since := "2025-02-17")] alias abs_qParam_lt_iff := norm_qParam_lt_iff
 
 theorem qParam_tendsto (hh : 0 < h) : Tendsto (qParam h) I∞ (𝓝[≠] 0) := by
