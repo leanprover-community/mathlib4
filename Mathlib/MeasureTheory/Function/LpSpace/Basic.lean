@@ -916,6 +916,35 @@ theorem meas_ge_le_mul_pow_enorm (f : Lp E p μ) (hp_ne_zero : p ≠ 0) (hp_ne_t
   (ENNReal.ofReal_toReal (eLpNorm_ne_top f)).symm ▸
     meas_ge_le_mul_pow_eLpNorm_enorm μ hp_ne_zero hp_ne_top (Lp.aestronglyMeasurable f) hε (by simp)
 
+section Star
+
+/- Wasn't necessary. Just chained the branches.
+
+feat(MeasureTheory): add `Star` and `InvolutiveStar` instances for `Lp`
+ -/
+
+open MeasureTheory AEEqFun
+
+variable {R : Type*} [NormedAddCommGroup R] [StarAddMonoid R] [NormedStarGroup R]
+
+protected theorem MemLp.star {p : ℝ≥0∞} {f : α → R} (hf : MemLp f p μ) : MemLp (star f) p μ :=
+  ⟨hf.1.star, by simpa using hf.2⟩
+
+protected noncomputable instance {p : ℝ≥0∞} : Star (Lp R p μ) where
+  star f := ⟨star (f : α →ₘ[μ] R),
+      by simpa [Lp.mem_Lp_iff_eLpNorm_lt_top] using Lp.eLpNorm_lt_top f⟩
+
+lemma coeFn_star {p : ℝ≥0∞} (f : Lp R p μ) : (star f : Lp R p μ) =ᵐ[μ] star f :=
+    (f : α →ₘ[μ] R).coeFn_star
+
+noncomputable instance {p : ℝ≥0∞} : InvolutiveStar (Lp R p μ) where
+  star_involutive f := by
+     ext
+     filter_upwards
+     exact congrFun (congrArg AEEqFun.cast <| star_involutive f.1)
+
+end Star
+
 @[deprecated (since := "2025-01-20")] alias pow_mul_meas_ge_le_norm := pow_mul_meas_ge_le_enorm
 @[deprecated (since := "2025-01-20")] alias mul_meas_ge_le_pow_norm := mul_meas_ge_le_pow_enorm
 @[deprecated (since := "2025-01-20")] alias mul_meas_ge_le_pow_norm' := mul_meas_ge_le_pow_enorm'
