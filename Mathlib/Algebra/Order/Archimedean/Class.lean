@@ -462,9 +462,9 @@ end LiftHom
 /-- Given a `UpperSet` of `MulArchimedeanClass`,
 all group elements belonging to these classes form a subsemigroup.
 This is not yet a subgroup because it doesn't contain the identity if `s = ⊤`. -/
-@[to_additive "Given a `UpperSet` of `ArchimedeanClass`,
+@[to_additive /-- Given a `UpperSet` of `ArchimedeanClass`,
 all group elements belonging to these classes form a subsemigroup.
-This is not yet a subgroup because it doesn't contain the identity if `s = ⊤`."]
+This is not yet a subgroup because it doesn't contain the identity if `s = ⊤`. -/]
 def subsemigroup (s : UpperSet (MulArchimedeanClass M)) : Subsemigroup M where
   carrier := mk ⁻¹' s
   mul_mem' {a b} ha hb := by
@@ -475,8 +475,8 @@ def subsemigroup (s : UpperSet (MulArchimedeanClass M)) : Subsemigroup M where
 
 /-- Make `MulArchimedeanClass.subsemigroup` a subgroup by assigning
 s = ⊤ with a junk value ⊥. -/
-@[to_additive "Make `ArchimedeanClass.subsemigroup` a subgroup by assigning
-s = ⊤ with a junk value ⊥."]
+@[to_additive /-- Make `ArchimedeanClass.subsemigroup` a subgroup by assigning
+s = ⊤ with a junk value ⊥. -/]
 noncomputable
 def subgroup (s : UpperSet (MulArchimedeanClass M)) : Subgroup M :=
   open Classical in
@@ -525,7 +525,7 @@ theorem subgroup_antitone : Antitone (subgroup (M := M)) := by
   · rw [eq_top_iff.mpr hst]
   obtain rfl | ht := eq_or_ne t ⊤
   · simp
-  rwa [subgroup_strictAntiOn.le_iff_le ht.lt_top hs.lt_top]
+  rwa [subgroup_strictAntiOn.le_iff_ge ht.lt_top hs.lt_top]
 
 /-- An open ball defined by `MulArchimedeanClass.subgroup` of `UpperSet.Ioi c`.
 For `c = ⊤`, we assign the junk value `⊥`. -/
