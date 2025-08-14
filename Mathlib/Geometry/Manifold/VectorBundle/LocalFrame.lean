@@ -26,9 +26,10 @@ basis of `V x` for each `x ∈ e.baseSet`. Any section `s` of `e` can be uniquel
 `s = ∑ i, f^i sᵢ` near `x`, and `s` is smooth at `x` iff the functions `f^i` are.
 
 In this file, we prove the latter statement for finite-rank bundles (with coefficients in a
-complete field). In `OrthonormalFrame.lean`, we will prove the same for real vector bundles of any
-rank which admit a `C^n` bundle metric. This includes bundles of finite rank, modelled on a Hilbert
-space or on a Banach space which has smooth partitions of unity.
+complete field). In `Mathlib/Geometry/Manifold/VectorBundle/OrthonormalFrame.lean` (#26221),
+we will prove the same for real vector bundles of any rank which admit a `C^n` bundle metric.
+This includes bundles of finite rank, modelled on a Hilbert space or on a Banach space which has
+smooth partitions of unity.
 
 We will use this to construct local extensions of a vector to a section which is smooth on the
 trivialisation domain.

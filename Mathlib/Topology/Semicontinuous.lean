@@ -204,7 +204,6 @@ variable {α : Type*} [TopologicalSpace α] {β : Type*} [LinearOrder β] {f : �
 theorem LowerSemicontinuousOn.exists_isMinOn {s : Set α} (ne_s : s.Nonempty)
     (hs : IsCompact s) (hf : LowerSemicontinuousOn f s) :
     ∃ a ∈ s, IsMinOn f s a := by
---  hf.exists_forall_le_of_isCompact ne_s hs
   simp only [isMinOn_iff]
   have _ : Nonempty α := Exists.nonempty ne_s
   have _ : Nonempty s := Nonempty.to_subtype ne_s
@@ -212,10 +211,10 @@ theorem LowerSemicontinuousOn.exists_isMinOn {s : Set α} (ne_s : s.Nonempty)
   let ℱ : Filter α := ⨅ a : s, φ (f a)
   have : ℱ.NeBot := by
     apply iInf_neBot_of_directed _ _
-    · change Directed GE.ge (fun x ↦ (φ ∘ (fun (a : s) ↦ f ↑a)) x)
-      exact Directed.mono_comp GE.ge (fun x y hxy ↦
-          principal_mono.mpr (inter_subset_inter_right _ (preimage_mono <| Iic_subset_Iic.mpr hxy))
-        ) (IsTotal.directed _)
+    · rw [← Function.comp_def]
+      exact (IsTotal.directed (fun (a : s) ↦ f ↑a)).mono_comp (· ≥ ·)
+        (fun x y hxy ↦
+          principal_mono.mpr (inter_subset_inter_right _ (preimage_mono <| Iic_subset_Iic.mpr hxy)))
     · intro x
       have : (pure x : Filter α) ≤ φ (f x) := le_principal_iff.mpr ⟨x.2, le_refl (f x)⟩
       exact neBot_of_le this
@@ -328,8 +327,8 @@ theorem LowerSemicontinuous.isClosed_preimage {f : α → γ} (hf : LowerSemicon
 theorem lowerSemicontinuousOn_iff_preimage_Iic {f : α → γ} :
     LowerSemicontinuousOn f s ↔ ∀ b, ∃ v, IsClosed v ∧ s ∩ f ⁻¹' Set.Iic b = s ∩ v := by
   simp only [← lowerSemicontinuous_restrict_iff, restrict_eq,
-      lowerSemicontinuous_iff_isClosed_preimage, preimage_comp,
-      isClosed_induced_iff, Subtype.preimage_coe_eq_preimage_coe_iff, eq_comm]
+    lowerSemicontinuous_iff_isClosed_preimage, preimage_comp,
+    isClosed_induced_iff, Subtype.preimage_coe_eq_preimage_coe_iff, eq_comm]
 
 variable [TopologicalSpace γ] [OrderTopology γ]
 
