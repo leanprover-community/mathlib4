@@ -61,7 +61,7 @@ lemma binomialSeries_add [Ring A] [Algebra R A] (r s : R) :
   rw [mul_comm, mul_smul]
 
 @[simp]
-lemma binomialSeries_nat [CommRing A] [Algebra R A] (d : ℕ) :
+lemma binomialSeries_nat [Ring A] [Algebra R A] (d : ℕ) :
     binomialSeries A (d : R) = (1 + X) ^ d := by
   ext n
   have hright : (1 + X) ^ d = (((1 : Polynomial A) + (Polynomial.X)) ^ d).toPowerSeries := by
@@ -69,10 +69,10 @@ lemma binomialSeries_nat [CommRing A] [Algebra R A] (d : ℕ) :
   rw [hright, Polynomial.coeff_coe, binomialSeries_coeff, Polynomial.coeff_one_add_X_pow]
   simp [Ring.choose_eq_nat_choose, Nat.cast_smul_eq_nsmul]
 
-lemma binomialSeries_zero [CommRing A] [Algebra R A] :
+@[simp]
+lemma binomialSeries_zero [Ring A] [Algebra R A] :
     binomialSeries A (0 : R) = (1 : A⟦X⟧) := by
-  rw [show (0 : R) = Nat.cast (R := R) 0 by norm_cast,
-    binomialSeries_nat (R := R) (A := A) 0, pow_zero]
+  simpa using binomialSeries_nat 0
 
 lemma rescale_neg_one_invOneSubPow [CommRing A] (d : ℕ) :
     rescale (-1 : A) (invOneSubPow A d) = binomialSeries A (-d : ℤ) := by

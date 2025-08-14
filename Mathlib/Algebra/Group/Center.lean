@@ -93,13 +93,13 @@ variable [Mul M]
 
 variable (M) in
 /-- The center of a magma. -/
-@[to_additive addCenter " The center of an additive magma. "]
+@[to_additive addCenter /-- The center of an additive magma. -/]
 def center : Set M :=
   { z | IsMulCentral z }
 
 variable (S) in
 /-- The centralizer of a subset of a magma. -/
-@[to_additive addCentralizer " The centralizer of a subset of an additive magma. "]
+@[to_additive addCentralizer /-- The centralizer of a subset of an additive magma. -/]
 def centralizer : Set M := {c | ∀ m ∈ S, m * c = c * m}
 
 @[to_additive mem_addCenter_iff]
@@ -164,11 +164,13 @@ lemma centralizer_centralizer_comm_of_comm (h_comm : ∀ x ∈ S, ∀ y ∈ S, x
     ∀ x ∈ S.centralizer.centralizer, ∀ y ∈ S.centralizer.centralizer, x * y = y * x :=
   fun _ h₁ _ h₂ ↦ h₂ _ fun _ h₃ ↦ h₁ _ fun _ h₄ ↦ h_comm _ h₄ _ h₃
 
+@[to_additive addCentralizer_empty]
 theorem centralizer_empty : (∅ : Set M).centralizer = ⊤ := by
   simp only [centralizer, mem_empty_iff_false, IsEmpty.forall_iff, implies_true, setOf_true,
     top_eq_univ]
 
 /-- The centralizer of the product of non-empty sets is equal to the product of the centralizers. -/
+@[to_additive addCentralizer_prod]
 theorem centralizer_prod {N : Type*} [Mul N] {S : Set M} {T : Set N}
     (hS : S.Nonempty) (hT : T.Nonempty) :
     (S ×ˢ T).centralizer = S.centralizer ×ˢ T.centralizer := by
@@ -180,11 +182,30 @@ theorem centralizer_prod {N : Type*} [Mul N] {S : Set M} {T : Set N}
   exact ⟨fun h => ⟨fun y hy => (h y c hy hc).1, fun y hy => (h b y hb hy).2⟩,
     fun h y z hy hz => ⟨h.1 _ hy, h.2 _ hz⟩⟩
 
+@[to_additive prod_addCentralizer_subset_addCentralizer_prod]
 theorem prod_centralizer_subset_centralizer_prod {N : Type*} [Mul N] (S : Set M) (T : Set N) :
     S.centralizer ×ˢ T.centralizer ⊆ (S ×ˢ T).centralizer := by
   rw [subset_def]
   simp only [mem_prod, and_imp, Prod.forall, mem_centralizer_iff, Prod.mk_mul_mk, Prod.mk.injEq]
   exact fun a b ha hb c d hc hd => ⟨ha c hc, hb d hd⟩
+
+@[to_additive addCenter_prod]
+theorem center_prod {N : Type*} [Mul N] :
+    center (M × N) = center M ×ˢ center N := by
+  ext x
+  simp only [mem_prod, mem_center_iff, isMulCentral_iff, commute_iff_eq, Prod.ext_iff]
+  exact ⟨
+    fun ⟨h1, h2, h3⟩ => ⟨
+      ⟨ fun a => (h1 (a, x.2)).1,
+        fun b c => (h2 (b, x.2) (c, x.2)).1,
+        fun a b => (h3 (a, x.2) (b, x.2)).1⟩,
+      ⟨ fun a => (h1 (x.1, a)).2,
+        fun a b => (h2 (x.1, a) (x.1, b)).2,
+        fun a b => (h3 (x.1, a) (x.1, b)).2⟩⟩,
+    fun ⟨⟨h1, h2, h3⟩, ⟨h4, h5, h6⟩⟩ => ⟨
+      fun _ => ⟨h1 _, h4 _⟩,
+      fun _ _ => ⟨h2 _ _, h5 _ _⟩,
+      fun _ _ => ⟨h3 _ _, h6 _ _⟩⟩⟩
 
 open Function in
 @[to_additive addCenter_pi]

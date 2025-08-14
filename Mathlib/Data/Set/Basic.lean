@@ -981,11 +981,6 @@ theorem powerset_univ : 𝒫(univ : Set α) = univ :=
 
 /-! ### Sets defined as an if-then-else -/
 
-@[deprecated _root_.mem_dite (since := "2025-01-30")]
-protected theorem mem_dite (p : Prop) [Decidable p] (s : p → Set α) (t : ¬ p → Set α) (x : α) :
-    (x ∈ if h : p then s h else t h) ↔ (∀ h : p, x ∈ s h) ∧ ∀ h : ¬p, x ∈ t h :=
-  _root_.mem_dite
-
 theorem mem_dite_univ_right (p : Prop) [Decidable p] (t : p → Set α) (x : α) :
     (x ∈ if h : p then t h else univ) ↔ ∀ h : p, x ∈ t h := by
   simp [mem_dite]
