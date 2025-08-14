@@ -523,4 +523,12 @@ theorem colorable_of_cliqueFree (f : ∀ (i : ι), V i)
   exact hc.mono this
 
 end completeMultipartiteGraph
+
+/-- If `H` is not `n`-colorable and `G` is `n`-colorable, then `G` is `H.Free`. -/
+theorem free_of_colorable {W : Type*} {H : SimpleGraph W}
+    (nhc : ¬H.Colorable n) (hc : G.Colorable n) : H.Free G := by
+  contrapose! nhc with hc'
+  rw [not_not] at hc'
+  exact ⟨hc.some.comp hc'.some.toHom⟩
+
 end SimpleGraph
