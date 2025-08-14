@@ -4,10 +4,15 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Weiyi Wang
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Group.Subgroup.Lattice
+import Mathlib.Algebra.Group.Subgroup.Order
 import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Algebra.Order.Hom.Monoid
 import Mathlib.Data.Finset.Max
 import Mathlib.Order.Antisymmetrization
+import Mathlib.Order.SupIndep
+import Mathlib.Order.UpperLower.CompleteLattice
+import Mathlib.Order.UpperLower.Principal
 
 /-!
 # Archimedean classes of a linearly ordered group
@@ -24,6 +29,18 @@ is "infinitesimal" to `b` in the sense that `n • |a| < |b|` for all natural nu
 * `MulArchimedeanClass` is the archimedean class for multiplicative linearly ordered group.
 * `ArchimedeanClass.orderHom` and `MulArchimedeanClass.orderHom` are `OrderHom` over
   archimedean classes lifted from ordered group homomorphisms.
+* `ArchimedeanClass.ballAddSubgroup` and `MulArchimedeanClass.ballSubgroup` are subgroups
+  formed by an open interval of archimedean classes
+* `ArchimedeanClass.closedBallAddSubgroup` and `MulArchimedeanClass.closedBallSubgroup` are
+  subgroups formed by a closed interval of archimedean classes.
+* `ArchimedeanClass.IsGradeAddSubgroup` and `MulArchimedeanClass.IsGradeSubgroup` are props stating
+  that a subgroup is a complement to the open ball under the closed ball. For a group with finitely
+  many archimedean classes, if there exists a `IsGrade(Add)Subgroup` subgroup for each class,
+  then the whole group is a direct sum of them. As such subgroup has elements only from the
+  corresponding class (see `MulArchimedeanClass.IsGradeSubgroup.mulArchimedeanClassMk_eq` /
+  `ArchimedeanClass.IsGradeAddSubgroup.archimedeanClassMk_eq`), this is a decomposition by
+  archimedean classes. For a group with infinitely many archimedean classes, the direct sum is not
+  necessarily the whole group, but still forms subgroup with the same set of archimedean classes.
 
 ## Main statements
 
@@ -452,4 +469,307 @@ theorem liftOrderHom_mk (f : M → α) (h : ∀ a b, mk a ≤ mk b → f a ≤ f
 
 end LiftHom
 
+/-- Given a non-empty `UpperSet` of `MulArchimedeanClass`,
+all group elements belonging to these classes form a subgroup. -/
+@[to_additive "Given a non-empty `UpperSet` of `ArchimedeanClass`,
+all group elements belonging to these classes form a subgroup."]
+def subgroup' {s : UpperSet (MulArchimedeanClass M)} (hs : s ≠ ⊤) : Subgroup M where
+  carrier := mk ⁻¹' s
+  mul_mem' {a b} ha hb := by
+    rw [Set.mem_preimage] at ha hb ⊢
+    obtain h | h := min_le_iff.mp (min_le_mk_mul a b)
+    · exact s.upper h ha
+    · exact s.upper h hb
+  one_mem' := by
+    rw [Set.mem_preimage]
+    obtain ⟨u, hu⟩ := UpperSet.coe_nonempty.mpr hs
+    simpa using s.upper (by simp) hu
+  inv_mem' {a} h := by simpa using h
+
+/-- Extend `MulArchimedeanClass.subgroup'` to any `UpperSet`
+with a junk value `⊥` assigned to the empty set. -/
+@[to_additive "Extend `ArchimedeanClass.subgroup'` to any `UpperSet`
+with a junk value `⊥` assigned to the empty set."]
+noncomputable
+def subgroup (s : UpperSet (MulArchimedeanClass M)) : Subgroup M :=
+  open Classical in
+  if hs : s = ⊤ then
+    ⊥
+  else
+    subgroup' hs
+
+variable {s : UpperSet (MulArchimedeanClass M)}
+
+@[to_additive]
+theorem subgroup_eq_of_ne_top (hs : s ≠ ⊤) : subgroup s = subgroup' hs := by
+  simp [subgroup, hs]
+
+variable (M) in
+@[to_additive (attr := simp)]
+theorem subgroup_eq_bot : subgroup (M := M) ⊤ = ⊥ := by
+  simp [subgroup]
+
+@[to_additive]
+theorem mem_subgroup_iff (hs : s ≠ ⊤) : a ∈ subgroup s ↔ mk a ∈ s := by
+  rw [subgroup_eq_of_ne_top hs]
+  exact Set.mem_preimage
+
+/-- An open ball defined by `MulArchimedeanClass.subgroup` of `UpperSet.Ioi A`.
+For `A = ⊤`, we assign the junk value `⊥`. -/
+@[to_additive "An open ball defined by `ArchimedeanClass.addSubgroup` of `UpperSet.Ioi A`.
+For `A = ⊤`, we assign the junk value `⊥`. "]
+noncomputable
+abbrev ballSubgroup (A : MulArchimedeanClass M) := subgroup (UpperSet.Ioi A)
+
+/-- A closed ball defined by `MulArchimedeanClass.subgroup` of `UpperSet.Ici A`. -/
+@[to_additive "An closed ball defined by `ArchimedeanClass.addSubgroup` of `UpperSet.Ici A`."]
+noncomputable
+abbrev closedBallSubgroup (A : MulArchimedeanClass M) := subgroup (UpperSet.Ici A)
+
+@[to_additive]
+theorem mem_ballSubgroup_iff {a : M} {A : MulArchimedeanClass M} (hA : A ≠ ⊤) :
+    a ∈ ballSubgroup A ↔ A < mk a := by
+  have : UpperSet.Ioi A ≠ ⊤ := by
+    contrapose! hA
+    rw [UpperSet.ext_iff] at hA
+    simpa using hA
+  simp [mem_subgroup_iff this]
+
+@[to_additive (attr := simp)]
+theorem mem_closedBallSubgroup_iff {a : M} {A : MulArchimedeanClass M} :
+    a ∈ closedBallSubgroup A ↔ A ≤ mk a := by
+  have : UpperSet.Ici A ≠ ⊤ := by simp
+  simp [mem_subgroup_iff this]
+
+variable (M) in
+@[to_additive (attr := simp)]
+theorem ballSubgroup_top : ballSubgroup (M := M) ⊤ = ⊥ := by
+  convert subgroup_eq_bot M
+  simp
+
+variable (M) in
+@[to_additive (attr := simp)]
+theorem closedBallSubgroup_top : closedBallSubgroup (M := M) ⊤ = ⊥ := by
+  ext
+  simp
+
+variable (M) in
+@[to_additive]
+theorem subgroup_strictAntiOn : StrictAntiOn (subgroup (M := M)) (Set.Iio ⊤) := by
+  intro s hs t ht hst
+  rw [subgroup_eq_of_ne_top (Set.mem_Iio.mp hs).ne_top]
+  rw [subgroup_eq_of_ne_top (Set.mem_Iio.mp ht).ne_top]
+  apply lt_of_le_of_ne
+  · rw [Subgroup.mk_le_mk]
+    exact (Set.preimage_subset_preimage_iff (by simp)).mpr (by simpa using hst.le)
+  · contrapose! hst with heq
+    apply le_of_eq
+    simpa [mk_surjective, subgroup'] using heq
+
+variable (M) in
+@[to_additive]
+theorem subgroup_antitone : Antitone (subgroup (M := M)) := by
+  intro s t hst
+  obtain hs | rfl := ne_or_eq s ⊤
+  · obtain ht | rfl := ne_or_eq t ⊤
+    · exact ((subgroup_strictAntiOn M).le_iff_le
+        (Set.mem_Iio.mpr ht.lt_top) (Set.mem_Iio.mpr hs.lt_top)).mpr hst
+    · simp
+  · rw [eq_top_iff.mpr hst]
+
+variable (M) in
+@[to_additive]
+theorem ballSubgroup_antitone : Antitone (ballSubgroup (M := M)) := by
+  intro A B h
+  exact subgroup_antitone _ <| (UpperSet.Ioi_strictMono _).monotone h
+
+
+/-- A subgroup `G` is called a grade at `c` iff
+`ballSubgroup c` and `G` are complements in the lattice under `closedBallSubgroup c`. -/
+@[to_additive /-- A subgroup `G` is called a grade at `c` iff
+`ballAddSubgroup c` and `G` are complements in the lattice under `closedBallAddSubgroup c`. -/]
+def IsGradeSubgroup (c : MulArchimedeanClass M) (G : Subgroup M) : Prop :=
+  Disjoint (ballSubgroup c) G ∧ ballSubgroup c ⊔ G = closedBallSubgroup c
+
+namespace IsGradeSubgroup
+variable {c : MulArchimedeanClass M} {G : Subgroup M}
+
+@[to_additive]
+theorem disjoint (hgrade : IsGradeSubgroup c G) : Disjoint (ballSubgroup c) G := hgrade.1
+
+@[to_additive]
+theorem sup_eq (hgrade : IsGradeSubgroup c G) : ballSubgroup c ⊔ G = closedBallSubgroup c :=
+  hgrade.2
+
+@[to_additive]
+theorem eq_bot_iff (hgrade : IsGradeSubgroup c G) : G = ⊥ ↔ c = ⊤ := by
+  obtain hsup := hgrade.sup_eq
+  constructor
+  · rintro rfl
+    replace hsup : c.ballSubgroup = c.closedBallSubgroup := by simpa using hsup
+    contrapose! hsup with h
+    apply Subgroup.ext_iff.not.mpr
+    induction c using ind with | mk a
+    rw [not_forall]
+    exact ⟨a, by simp [h]⟩
+  · rintro rfl
+    simpa using hsup
+
+@[to_additive]
+theorem nontrivial (hgrade : IsGradeSubgroup c G) (h : c ≠ ⊤) : Nontrivial G :=
+  (Subgroup.nontrivial_iff_ne_bot _).mpr (hgrade.eq_bot_iff.ne.mpr h)
+
+@[to_additive]
+theorem le_closedBallSubgroup (hgrade : IsGradeSubgroup c G) : G ≤ closedBallSubgroup c := by
+  simp [← hgrade.sup_eq]
+
+@[to_additive archimedeanClassMk_eq]
+theorem mulArchimedeanClassMk_eq (hgrade : IsGradeSubgroup c G) {a : M} (ha : a ∈ G) (h0 : a ≠ 1) :
+    mk a = c := by
+  apply le_antisymm
+  · have hA : c ≠ ⊤ := by
+      contrapose! h0
+      rw [hgrade.eq_bot_iff.mpr h0] at ha
+      simpa using ha
+    contrapose! h0 with hlt
+    have ha' : a ∈ ballSubgroup c := (mem_ballSubgroup_iff hA).mpr hlt
+    exact (Subgroup.disjoint_def.mp hgrade.disjoint) ha' ha
+  · simpa using hgrade.le_closedBallSubgroup ha
+
+@[to_additive archimedean]
+theorem mulArchimedean (hgrade : IsGradeSubgroup c G) : MulArchimedean G := by
+  apply mulArchimedean_of_mk_eq_mk
+  intro a ha b hb
+  suffices mk a.val = mk b.val by
+    rw [mk_eq_mk] at this ⊢
+    exact this
+  rw [hgrade.mulArchimedeanClassMk_eq a.prop (by simpa using ha)]
+  rw [hgrade.mulArchimedeanClassMk_eq b.prop (by simpa using hb)]
+
+end IsGradeSubgroup
+
 end MulArchimedeanClass
+
+variable (M) in
+/-- Subtype of `MulArchimedeanClass` that removes the top element. -/
+@[to_additive ArchimedeanClass₀ "Subtype of `ArchimedeanClass` that removes the top element"]
+abbrev MulArchimedeanClass₁ := {A : MulArchimedeanClass M // A ≠ ⊤}
+
+namespace MulArchimedeanClass₁
+
+/-- Create a `MulArchimedeanClass₁` from a non-one element. -/
+@[to_additive "Create a `ArchimedeanClass₀` from a non-zero element."]
+def mk {a : M} (h : a ≠ 1) : MulArchimedeanClass₁ M :=
+  ⟨MulArchimedeanClass.mk a, MulArchimedeanClass.mk_eq_top_iff.not.mpr h⟩
+
+@[to_additive (attr := simp)]
+theorem val_mk {a : M} (h : a ≠ 1) : (mk h).val = MulArchimedeanClass.mk a := rfl
+
+@[to_additive]
+theorem mk_le_mk {a : M} (ha : a ≠ 1) {b : M} (hb : b ≠ 1) :
+    mk ha ≤ mk hb ↔ MulArchimedeanClass.mk a ≤ MulArchimedeanClass.mk b := .rfl
+
+@[to_additive]
+theorem mk_lt_mk {a : M} (ha : a ≠ 1) {b : M} (hb : b ≠ 1) :
+    mk ha < mk hb ↔ MulArchimedeanClass.mk a < MulArchimedeanClass.mk b := .rfl
+
+/-- An induction principle for `MulArchimedeanClass₁`. -/
+@[to_additive (attr := elab_as_elim) "An induction principle for `ArchimedeanClass₀`."]
+theorem ind {motive : MulArchimedeanClass₁ M → Prop}
+    (mk : ∀ a, (ha : a ≠ 1) → motive (.mk ha)) : ∀ x, motive x := by
+  intro ⟨A, hA⟩
+  induction A using MulArchimedeanClass.ind with | mk a
+  exact mk _ <| MulArchimedeanClass.mk_eq_top_iff.not.mp hA
+
+@[to_additive]
+instance [MulArchimedean M] : Subsingleton (MulArchimedeanClass₁ M) where
+  allEq A B := by
+    induction A using ind with | mk a ha
+    induction B using ind with | mk b hb
+    simpa [mk] using MulArchimedeanClass.mk_eq_mk_of_mulArchimedean ha hb
+
+@[to_additive]
+instance [Nontrivial M] : Nonempty (MulArchimedeanClass₁ M) := by
+  obtain ⟨x, hx⟩ := exists_ne (1 : M)
+  exact ⟨mk hx, by simpa using hx⟩
+
+/-- Lift a `f : {a : M // a ≠ 1} → α` function to `MulArchimedeanClass₁ M → α`. -/
+@[to_additive "Lift a `f : {a : M // a ≠ 0} → α` function to `ArchimedeanClass₀ M → α`."]
+def lift {α : Type*} (f : {a : M // a ≠ 1} → α)
+    (h : ∀ (a b : {a : M // a ≠ 1}), mk a.prop = mk b.prop → f a = f b) :
+    MulArchimedeanClass₁ M → α := fun ⟨A, hA⟩ ↦ by
+  refine (MulArchimedeanClass.lift
+    (fun b ↦ if h : b = 1 then ⊤ else WithTop.some (f ⟨b, h⟩)) ?_ A).untop ?_
+  · intro a b h'
+    simp only
+    split_ifs with ha hb hb
+    · rfl
+    · rw [ha] at h'
+      exact (hb (MulArchimedeanClass.mk_eq_top_iff.mp h'.symm)).elim
+    · rw [hb] at h'
+      exact (ha (MulArchimedeanClass.mk_eq_top_iff.mp h')).elim
+    · exact WithTop.coe_eq_coe.mpr <| h ⟨a, ha⟩ ⟨b, hb⟩ (by simpa [mk] using h')
+  · induction A using MulArchimedeanClass.ind with | mk a
+    simpa using MulArchimedeanClass.mk_eq_top_iff.not.mp hA
+
+@[to_additive (attr := simp)]
+theorem lift_mk {α : Type*} (f : {a : M // a ≠ 1} → α)
+    (h : ∀ (a b : {a : M // a ≠ 1}), mk a.prop = mk b.prop → f a = f b) {a : M} (ha : a ≠ 1) :
+    lift f h (mk ha) = f ⟨a, ha⟩ := by simp [lift, mk, ha]
+
+/-- Lift a function `{a : M // a ≠ 1} → α` that's monotone along archimedean classes to a
+monotone function `MulArchimedeanClass₁ M →o α`. -/
+@[to_additive "Lift a function `{a : M // a ≠ 1} → α` that's monotone along archimedean classes to a
+monotone function `ArchimedeanClass₀ M₁ →o α`."]
+noncomputable
+def liftOrderHom {α : Type*} [PartialOrder α]
+    (f : {a : M // a ≠ 1} → α) (h : ∀ (a b : {a : M // a ≠ 1}), mk a.prop ≤ mk b.prop → f a ≤ f b) :
+    MulArchimedeanClass₁ M →o α where
+  toFun := lift f fun a b heq ↦ le_antisymm (h a b heq.le) (h b a heq.ge)
+  monotone' A B hAB := by
+    induction A using ind with | mk a ha
+    induction B using ind with | mk b hb
+    simpa using h ⟨a, ha⟩ ⟨b, hb⟩ hAB
+
+@[to_additive (attr := simp)]
+theorem liftOrderHom_mk {α : Type*} [PartialOrder α]
+    (f : {a : M // a ≠ 1} → α) (h : ∀ (a b : {a : M // a ≠ 1}), mk a.prop ≤ mk b.prop → f a ≤ f b)
+    {a : M} (ha : a ≠ 1) : liftOrderHom f h (mk ha) = f ⟨a, ha⟩ :=
+  lift_mk f (fun a b heq ↦ le_antisymm (h a b heq.le) (h b a heq.ge)) ha
+
+variable (M) in
+/-- Adding top to top-less classes turns it back to full classes. -/
+@[to_additive "Adding top to top-less classes turns it back to full classes."]
+noncomputable
+def withTopOrderIso : WithTop (MulArchimedeanClass₁ M) ≃o MulArchimedeanClass M where
+  toFun
+    | WithTop.some A => A.val
+    | ⊤ => ⊤
+  invFun A := if h : A = ⊤ then ⊤ else WithTop.some ⟨A, h⟩
+  left_inv
+    | WithTop.some A => by simpa using A.prop
+    | ⊤ => by simp
+  right_inv A := by
+    simp only
+    split_ifs with h
+    · simp [h]
+    · simp
+  map_rel_iff' {A B} := match A with
+  | WithTop.some A => match B with
+    | WithTop.some B => by simp
+    | ⊤ => by simp
+  | ⊤ => match B with
+    | WithTop.some B => by simpa using B.prop
+    | ⊤ => by simp
+
+@[to_additive (attr := simp)]
+theorem withTopOrderIso_apply_coe (A : MulArchimedeanClass₁ M) :
+    withTopOrderIso M (A : WithTop (MulArchimedeanClass₁ M)) = A.val := rfl
+
+@[to_additive]
+theorem withTopOrderIso_symm_apply {a : M} (h : a ≠ 1) :
+    (withTopOrderIso M).symm (MulArchimedeanClass.mk a) = mk h := by
+  rw [OrderIso.symm_apply_eq]
+  rfl
+
+end MulArchimedeanClass₁
