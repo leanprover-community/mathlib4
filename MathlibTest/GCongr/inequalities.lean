@@ -327,7 +327,4 @@ attribute [local gcongr] myAnti_strictAntiOn in
 example : myAnti 6 < myAnti 5 := by
   gcongr <;> simp
 
-#check StrictMono.add_monotone
-
-
 end GCongrTests
