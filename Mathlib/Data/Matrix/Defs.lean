@@ -19,6 +19,7 @@ with `Matrix m n α`. For the typical approach of counting rows and columns,
 * `Matrix.transpose`: transpose of a matrix, turning rows into columns and vice versa
 * `Matrix.submatrix`: take a submatrix by reindexing rows and columns
 * `Matrix.module`: matrices are a module over the ring of entries
+* `Set.matrix`: set of matrices with entries in a given set
 
 ## Notation
 
@@ -38,7 +39,7 @@ form `fun i j ↦ _` or even `(fun i j ↦ _ : Matrix m n α)`, as these are not
 as having the right type. Instead, `Matrix.of` should be used.
 -/
 
-assert_not_exists Algebra Star
+assert_not_exists Algebra TrivialStar
 
 universe u u' v w
 
@@ -376,16 +377,16 @@ theorem transpose_map {f : α → β} {M : Matrix m n α} : Mᵀ.map f = (M.map 
 
 end Transpose
 
-/-- Given maps `(r_reindex : l → m)` and `(c_reindex : o → n)` reindexing the rows and columns of
-a matrix `M : Matrix m n α`, the matrix `M.submatrix r_reindex c_reindex : Matrix l o α` is defined
-by `(M.submatrix r_reindex c_reindex) i j = M (r_reindex i) (c_reindex j)` for `(i,j) : l × o`.
+/-- Given maps `(r : l → m)` and `(c : o → n)` reindexing the rows and columns of
+a matrix `M : Matrix m n α`, the matrix `M.submatrix r c : Matrix l o α` is defined
+by `(M.submatrix r c) i j = M (r i) (c j)` for `(i,j) : l × o`.
 Note that the total number of row and columns does not have to be preserved. -/
-def submatrix (A : Matrix m n α) (r_reindex : l → m) (c_reindex : o → n) : Matrix l o α :=
-  of fun i j => A (r_reindex i) (c_reindex j)
+def submatrix (A : Matrix m n α) (r : l → m) (c : o → n) : Matrix l o α :=
+  of fun i j => A (r i) (c j)
 
 @[simp]
-theorem submatrix_apply (A : Matrix m n α) (r_reindex : l → m) (c_reindex : o → n) (i j) :
-    A.submatrix r_reindex c_reindex i j = A (r_reindex i) (c_reindex j) :=
+theorem submatrix_apply (A : Matrix m n α) (r : l → m) (c : o → n) (i j) :
+    A.submatrix r c i j = A (r i) (c j) :=
   rfl
 
 @[simp]
@@ -399,8 +400,8 @@ theorem submatrix_submatrix {l₂ o₂ : Type*} (A : Matrix m n α) (r₁ : l �
   ext fun _ _ => rfl
 
 @[simp]
-theorem transpose_submatrix (A : Matrix m n α) (r_reindex : l → m) (c_reindex : o → n) :
-    (A.submatrix r_reindex c_reindex)ᵀ = Aᵀ.submatrix c_reindex r_reindex :=
+theorem transpose_submatrix (A : Matrix m n α) (r : l → m) (c : o → n) :
+    (A.submatrix r c)ᵀ = Aᵀ.submatrix c r :=
   ext fun _ _ => rfl
 
 theorem submatrix_add [Add α] (A B : Matrix m n α) :
@@ -563,5 +564,39 @@ lemma row_transpose (A : Matrix m n α) : Aᵀ.row = A.col := rfl
 lemma col_transpose (A : Matrix m n α) : Aᵀ.col = A.row := rfl
 
 end RowCol
+
+end Matrix
+
+namespace Set
+
+/-- Given a set `S`, `S.matrix` is the set of matrices `M`
+all of whose entries `M i j` belong to `S`. -/
+def matrix (S : Set α) : Set (Matrix m n α) := {M | ∀ i j, M i j ∈ S}
+
+theorem mem_matrix {S : Set α} {M : Matrix m n α} :
+    M ∈ S.matrix ↔ ∀ i j, M i j ∈ S := .rfl
+
+theorem matrix_eq_pi {S : Set α} :
+    S.matrix = of.symm ⁻¹' Set.univ.pi fun (_ : m) ↦ Set.univ.pi fun (_ : n) ↦ S := by
+  ext
+  simp [Set.mem_matrix]
+
+end Set
+
+namespace Matrix
+
+variable {S : Set α}
+
+@[simp]
+theorem transpose_mem_matrix_iff {M : Matrix m n α} :
+    Mᵀ ∈ S.matrix ↔ M ∈ S.matrix := forall_comm
+
+theorem submatrix_mem_matrix {M : Matrix m n α} {r : l → m} {c : o → n} (hM : M ∈ S.matrix) :
+    M.submatrix r c ∈ S.matrix := by simp_all [Set.mem_matrix]
+
+theorem submatrix_mem_matrix_iff {M : Matrix m n α} {r : l → m} {c : o → n}
+    (hr : Function.Surjective r) (hc : Function.Surjective c) :
+    M.submatrix r c ∈ S.matrix ↔ M ∈ S.matrix :=
+  ⟨(hr.forall.mpr fun _ => hc.forall.mpr fun _ => · _ _), submatrix_mem_matrix⟩
 
 end Matrix

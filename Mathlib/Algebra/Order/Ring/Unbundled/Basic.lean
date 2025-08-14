@@ -562,7 +562,7 @@ theorem mul_self_inj [PosMulStrictMono R] [MulPosMono R]
 lemma sign_cases_of_C_mul_pow_nonneg [PosMulStrictMono R]
     (h : ∀ n, 0 ≤ a * b ^ n) : a = 0 ∨ 0 < a ∧ 0 ≤ b := by
   have : 0 ≤ a := by simpa only [pow_zero, mul_one] using h 0
-  refine this.eq_or_gt.imp_right fun ha ↦ ⟨ha, nonneg_of_mul_nonneg_right ?_ ha⟩
+  refine this.eq_or_lt'.imp_right fun ha ↦ ⟨ha, nonneg_of_mul_nonneg_right ?_ ha⟩
   simpa only [pow_one] using h 1
 
 theorem mul_pos_iff [ExistsAddOfLE R] [PosMulStrictMono R] [MulPosStrictMono R]
@@ -572,7 +572,7 @@ theorem mul_pos_iff [ExistsAddOfLE R] [PosMulStrictMono R] [MulPosStrictMono R]
     h.elim (and_imp.2 mul_pos) (and_imp.2 mul_pos_of_neg_of_neg)⟩
 
 theorem mul_nonneg_iff [ExistsAddOfLE R] [MulPosStrictMono R] [PosMulStrictMono R]
-    [AddLeftReflectLE R] [AddLeftMono R]:
+    [AddLeftReflectLE R] [AddLeftMono R] :
     0 ≤ a * b ↔ 0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 :=
   ⟨nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nonneg, fun h =>
     h.elim (and_imp.2 mul_nonneg) (and_imp.2 mul_nonneg_of_nonpos_of_nonpos)⟩
@@ -600,25 +600,25 @@ lemma mul_nonneg_iff_pos_imp_nonneg [ExistsAddOfLE R] [PosMulStrictMono R] [MulP
 theorem mul_le_mul_left_of_neg [ExistsAddOfLE R] [PosMulStrictMono R]
     [AddRightMono R] [AddRightReflectLE R]
     {a b c : R} (h : c < 0) : c * a ≤ c * b ↔ b ≤ a :=
-  (strictAnti_mul_left h).le_iff_le
+  (strictAnti_mul_left h).le_iff_ge
 
 @[simp]
 theorem mul_le_mul_right_of_neg [ExistsAddOfLE R] [MulPosStrictMono R]
     [AddRightMono R] [AddRightReflectLE R]
     {a b c : R} (h : c < 0) : a * c ≤ b * c ↔ b ≤ a :=
-  (strictAnti_mul_right h).le_iff_le
+  (strictAnti_mul_right h).le_iff_ge
 
 @[simp]
 theorem mul_lt_mul_left_of_neg [ExistsAddOfLE R] [PosMulStrictMono R]
     [AddRightStrictMono R] [AddRightReflectLT R]
     {a b c : R} (h : c < 0) : c * a < c * b ↔ b < a :=
-  (strictAnti_mul_left h).lt_iff_lt
+  (strictAnti_mul_left h).lt_iff_gt
 
 @[simp]
 theorem mul_lt_mul_right_of_neg [ExistsAddOfLE R] [MulPosStrictMono R]
     [AddRightStrictMono R] [AddRightReflectLT R]
     {a b c : R} (h : c < 0) : a * c < b * c ↔ b < a :=
-  (strictAnti_mul_right h).lt_iff_lt
+  (strictAnti_mul_right h).lt_iff_gt
 
 theorem lt_of_mul_lt_mul_of_nonpos_left [ExistsAddOfLE R] [PosMulMono R]
     [AddRightMono R] [AddRightReflectLE R]
@@ -828,7 +828,7 @@ lemma sub_mul_sub_nonneg_iff [MulPosStrictMono R] [PosMulStrictMono R] [AddLeftM
     and_iff_right_of_imp h.trans, and_iff_left_of_imp h.trans', or_comm]
 
 lemma sub_mul_sub_nonpos_iff [MulPosStrictMono R] [PosMulStrictMono R] [AddLeftMono R]
-    (x : R) (h : a ≤ b) :  (x - a) * (x - b) ≤ 0 ↔ a ≤ x ∧ x ≤ b := by
+    (x : R) (h : a ≤ b) : (x - a) * (x - b) ≤ 0 ↔ a ≤ x ∧ x ≤ b := by
   rw [mul_nonpos_iff, sub_nonneg, sub_nonneg, sub_nonpos, sub_nonpos, or_iff_left_iff_imp, and_comm]
   exact And.imp h.trans h.trans'
 

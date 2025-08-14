@@ -20,8 +20,6 @@ import Mathlib.RingTheory.TensorProduct.Basic
   where the forward map is the (tensor-ified) Kronecker product.
 -/
 
-suppress_compilation
-
 open TensorProduct Algebra.TensorProduct Matrix
 
 variable {l m n p : Type*} {R S A B M N : Type*}

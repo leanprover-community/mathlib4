@@ -169,7 +169,7 @@ lemma IsClique.sdiff_of_sup_edge {v w : α} {s : Set α} (hc : (G ⊔ edge v w).
   have := hc hx.1 hy.1 hxy
   simp_all [sup_adj, edge_adj]
 
-lemma isClique_sup_edge_of_ne_sdiff {v w : α} {s : Set α} (h : v ≠ w ) (hv : G.IsClique (s \ {v}))
+lemma isClique_sup_edge_of_ne_sdiff {v w : α} {s : Set α} (h : v ≠ w) (hv : G.IsClique (s \ {v}))
     (hw : G.IsClique (s \ {w})) : (G ⊔ edge v w).IsClique s := by
   intro x hx y hy hxy
   by_cases h' : x ∈ s \ {v} ∧ y ∈ s \ {v} ∨ x ∈ s \ {w} ∧ y ∈ s \ {w}
@@ -482,7 +482,7 @@ lemma CliqueFree.mem_of_sup_edge_isNClique {x y : α} {t : Finset α} {n : ℕ} 
 open Classical in
 /-- Adding an edge increases the clique number by at most one. -/
 protected theorem CliqueFree.sup_edge (h : G.CliqueFree n) (v w : α) :
-   (G ⊔ edge v w).CliqueFree (n + 1) :=
+    (G ⊔ edge v w).CliqueFree (n + 1) :=
   fun _ hs ↦ (hs.erase_of_sup_edge_of_mem <|
     (h.mono n.le_succ).mem_of_sup_edge_isNClique hs).not_cliqueFree h
 

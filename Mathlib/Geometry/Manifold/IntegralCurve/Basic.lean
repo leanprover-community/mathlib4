@@ -61,7 +61,7 @@ outside of `s` is irrelevant and considered junk. -/
 def IsMIntegralCurveOn (γ : ℝ → M) (v : (x : M) → TangentSpace I x) (s : Set ℝ) : Prop :=
   ∀ t ∈ s, HasMFDerivWithinAt 𝓘(ℝ, ℝ) I γ s t ((1 : ℝ →L[ℝ] ℝ).smulRight <| v (γ t))
 
-@[deprecated (since := "2025-06-29")] alias IsIntegralCurveOn := IsMIntegralCurveOn
+@[deprecated (since := "2025-08-12")] alias IsIntegralCurveOn := IsMIntegralCurveOn
 
 /-- If `v` is a vector field on `M` and `t₀ : ℝ`, `IsMIntegralCurveAt γ v t₀` means `γ : ℝ → M` is a
 local integral curve of `v` in a neighbourhood containing `t₀`. The value of `γ` outside of this
@@ -69,28 +69,28 @@ interval is irrelevant and considered junk. -/
 def IsMIntegralCurveAt (γ : ℝ → M) (v : (x : M) → TangentSpace I x) (t₀ : ℝ) : Prop :=
   ∀ᶠ t in 𝓝 t₀, HasMFDerivAt 𝓘(ℝ, ℝ) I γ t ((1 : ℝ →L[ℝ] ℝ).smulRight <| v (γ t))
 
-@[deprecated (since := "2025-06-29")] alias IsIntegralCurveAt := IsMIntegralCurveAt
+@[deprecated (since := "2025-08-12")] alias IsIntegralCurveAt := IsMIntegralCurveAt
 
 /-- If `v : M → TM` is a vector field on `M`, `IsMIntegralCurve γ v` means `γ : ℝ → M` is a global
 integral curve of `v`. That is, `γ t` is tangent to `v (γ t)` for all `t : ℝ`. -/
 def IsMIntegralCurve (γ : ℝ → M) (v : (x : M) → TangentSpace I x) : Prop :=
   ∀ t : ℝ, HasMFDerivAt 𝓘(ℝ, ℝ) I γ t ((1 : ℝ →L[ℝ] ℝ).smulRight (v (γ t)))
 
-@[deprecated (since := "2025-06-29")] alias IsIntegralCurve := IsMIntegralCurve
+@[deprecated (since := "2025-08-12")] alias IsIntegralCurve := IsMIntegralCurve
 
 variable {γ γ' : ℝ → M} {v : (x : M) → TangentSpace I x} {s s' : Set ℝ} {t₀ : ℝ}
 
 lemma IsMIntegralCurve.isMIntegralCurveOn (h : IsMIntegralCurve γ v) (s : Set ℝ) :
     IsMIntegralCurveOn γ v s := fun t _ ↦ (h t).hasMFDerivWithinAt
 
-@[deprecated (since := "2025-06-29")] alias IsIntegralCurve.isIntegralCurveOn :=
+@[deprecated (since := "2025-08-12")] alias IsIntegralCurve.isIntegralCurveOn :=
   IsMIntegralCurve.isMIntegralCurveOn
 
 lemma isMIntegralCurve_iff_isMIntegralCurveOn :
     IsMIntegralCurve γ v ↔ IsMIntegralCurveOn γ v univ :=
   ⟨fun h ↦ h.isMIntegralCurveOn _, fun h t ↦ (h t (mem_univ _)).hasMFDerivAt Filter.univ_mem⟩
 
-@[deprecated (since := "2025-06-29")] alias isIntegralCurve_iff_isIntegralCurveOn :=
+@[deprecated (since := "2025-08-12")] alias isIntegralCurve_iff_isIntegralCurveOn :=
   isMIntegralCurve_iff_isMIntegralCurveOn
 
 lemma isMIntegralCurveAt_iff :
@@ -109,7 +109,7 @@ lemma isMIntegralCurveAt_iff :
     rw [mem_nhds_iff]
     exact ⟨s', h1, h2, ht⟩
 
-@[deprecated (since := "2025-06-29")] alias isIntegralCurveAt_iff := isMIntegralCurveAt_iff
+@[deprecated (since := "2025-08-12")] alias isIntegralCurveAt_iff := isMIntegralCurveAt_iff
 
 /-- `γ` is an integral curve for `v` at `t₀` iff `γ` is an integral curve on some interval
 containing `t₀`. -/
@@ -124,13 +124,13 @@ lemma isMIntegralCurveAt_iff' :
   · intro ⟨ε, hε, h⟩
     exact ⟨Metric.ball t₀ ε, Metric.ball_mem_nhds _ hε, h⟩
 
-@[deprecated (since := "2025-06-29")] alias isIntegralCurveAt_iff' := isMIntegralCurveAt_iff'
+@[deprecated (since := "2025-08-12")] alias isIntegralCurveAt_iff' := isMIntegralCurveAt_iff'
 
 lemma IsMIntegralCurve.isMIntegralCurveAt (h : IsMIntegralCurve γ v) (t : ℝ) :
     IsMIntegralCurveAt γ v t :=
   isMIntegralCurveAt_iff.mpr ⟨univ, Filter.univ_mem, fun t _ ↦ (h t).hasMFDerivWithinAt⟩
 
-@[deprecated (since := "2025-06-29")] alias IsIntegralCurve.isIntegralCurveAt :=
+@[deprecated (since := "2025-08-12")] alias IsIntegralCurve.isIntegralCurveAt :=
   IsMIntegralCurve.isMIntegralCurveAt
 
 lemma isMIntegralCurve_iff_isMIntegralCurveAt :
@@ -139,13 +139,13 @@ lemma isMIntegralCurve_iff_isMIntegralCurveAt :
     obtain ⟨s, hs, h⟩ := isMIntegralCurveAt_iff.mp (h t)
     exact h t (mem_of_mem_nhds hs) |>.hasMFDerivAt hs⟩
 
-@[deprecated (since := "2025-06-29")] alias isIntegralCurve_iff_isIntegralCurveAt :=
+@[deprecated (since := "2025-08-12")] alias isIntegralCurve_iff_isIntegralCurveAt :=
   isMIntegralCurve_iff_isMIntegralCurveAt
 
 lemma IsMIntegralCurveOn.mono (h : IsMIntegralCurveOn γ v s) (hs : s' ⊆ s) :
     IsMIntegralCurveOn γ v s' := fun t ht ↦ (h t (hs ht)).mono hs
 
-@[deprecated (since := "2025-06-29")] alias IsIntegralCurveOn.mono :=
+@[deprecated (since := "2025-08-12")] alias IsIntegralCurveOn.mono :=
   IsMIntegralCurveOn.mono
 
 lemma IsMIntegralCurveAt.hasMFDerivAt (h : IsMIntegralCurveAt γ v t₀) :
@@ -153,13 +153,13 @@ lemma IsMIntegralCurveAt.hasMFDerivAt (h : IsMIntegralCurveAt γ v t₀) :
   have ⟨_, hs, h⟩ := isMIntegralCurveAt_iff.mp h
   h t₀ (mem_of_mem_nhds hs) |>.hasMFDerivAt hs
 
-@[deprecated (since := "2025-06-29")] alias IsIntegralCurveAt.hasMFDerivAt :=
+@[deprecated (since := "2025-08-12")] alias IsIntegralCurveAt.hasMFDerivAt :=
   IsMIntegralCurveAt.hasMFDerivAt
 
 lemma IsMIntegralCurveOn.isMIntegralCurveAt (h : IsMIntegralCurveOn γ v s) (hs : s ∈ 𝓝 t₀) :
     IsMIntegralCurveAt γ v t₀ := isMIntegralCurveAt_iff.mpr ⟨s, hs, h⟩
 
-@[deprecated (since := "2025-06-29")] alias IsIntegralCurveOn.isIntegralCurveAt :=
+@[deprecated (since := "2025-08-12")] alias IsIntegralCurveOn.isIntegralCurveAt :=
   IsMIntegralCurveOn.isMIntegralCurveAt
 
 /-- If `γ` is an integral curve at each `t ∈ s`, it is an integral curve on `s`. -/
@@ -170,26 +170,28 @@ lemma IsMIntegralCurveAt.isMIntegralCurveOn (h : ∀ t ∈ s, IsMIntegralCurveAt
   obtain ⟨s', hs', h⟩ := Filter.eventually_iff_exists_mem.mp (h t ht)
   exact h _ (mem_of_mem_nhds hs')
 
-@[deprecated (since := "2025-06-29")] alias IsIntegralCurveAt.isIntegralCurveOn :=
+@[deprecated (since := "2025-08-12")] alias IsIntegralCurveAt.isIntegralCurveOn :=
   IsMIntegralCurveAt.isMIntegralCurveOn
 
 lemma isMIntegralCurveOn_iff_isMIntegralCurveAt (hs : IsOpen s) :
     IsMIntegralCurveOn γ v s ↔ ∀ t ∈ s, IsMIntegralCurveAt γ v t :=
   ⟨fun h _ ht ↦ h.isMIntegralCurveAt (hs.mem_nhds ht), IsMIntegralCurveAt.isMIntegralCurveOn⟩
 
-@[deprecated (since := "2025-06-29")] alias isIntegralCurveOn_iff_isIntegralCurveAt :=
+@[deprecated (since := "2025-08-12")] alias isIntegralCurveOn_iff_isIntegralCurveAt :=
   isMIntegralCurveOn_iff_isMIntegralCurveAt
 
 lemma IsMIntegralCurveOn.continuousWithinAt (hγ : IsMIntegralCurveOn γ v s) (ht : t₀ ∈ s) :
     ContinuousWithinAt γ s t₀ := (hγ t₀ ht).1
 
-@[deprecated (since := "2025-06-29")] alias IsIntegralCurveOn.continuousWithinAt :=
+@[deprecated (since := "2025-08-12")] alias IsIntegralCurveOn.continuousAt :=
+  IsMIntegralCurveOn.continuousWithinAt
+@[deprecated (since := "2025-08-12")] alias IsIntegralCurveOn.continuousWithinAt :=
   IsMIntegralCurveOn.continuousWithinAt
 
 lemma IsMIntegralCurveOn.continuousOn (hγ : IsMIntegralCurveOn γ v s) :
     ContinuousOn γ s := fun t ht ↦ (hγ t ht).continuousWithinAt
 
-@[deprecated (since := "2025-06-29")] alias IsIntegralCurveOn.continuousOn :=
+@[deprecated (since := "2025-08-12")] alias IsIntegralCurveOn.continuousOn :=
   IsMIntegralCurveOn.continuousOn
 
 lemma IsMIntegralCurveAt.continuousAt (hγ : IsMIntegralCurveAt γ v t₀) :
@@ -197,13 +199,13 @@ lemma IsMIntegralCurveAt.continuousAt (hγ : IsMIntegralCurveAt γ v t₀) :
   have ⟨_, hs, hγ⟩ := isMIntegralCurveAt_iff.mp hγ
   hγ.continuousWithinAt (mem_of_mem_nhds hs) |>.continuousAt hs
 
-@[deprecated (since := "2025-06-29")] alias IsIntegralCurveAt.continuousAt :=
+@[deprecated (since := "2025-08-12")] alias IsIntegralCurveAt.continuousAt :=
   IsMIntegralCurveAt.continuousAt
 
 lemma IsMIntegralCurve.continuous (hγ : IsMIntegralCurve γ v) : Continuous γ :=
   continuous_iff_continuousAt.mpr fun t ↦ (hγ.isMIntegralCurveAt t).continuousAt
 
-@[deprecated (since := "2025-06-29")] alias IsIntegralCurve.continuous :=
+@[deprecated (since := "2025-08-12")] alias IsIntegralCurve.continuous :=
   IsMIntegralCurve.continuous
 
 variable [IsManifold I 1 M]
@@ -226,7 +228,7 @@ lemma IsMIntegralCurveOn.hasDerivWithinAt (hγ : IsMIntegralCurveOn γ v s) {t :
     mfderiv_chartAt_eq_tangentCoordChange hsrc]
   rfl
 
-@[deprecated (since := "2025-06-29")] alias IsIntegralCurveOn.hasDerivAt :=
+@[deprecated (since := "2025-08-12")] alias IsIntegralCurveOn.hasDerivWithinAt :=
   IsMIntegralCurveOn.hasDerivWithinAt
 
 lemma IsMIntegralCurveAt.eventually_hasDerivAt (hγ : IsMIntegralCurveAt γ v t₀) :
@@ -246,5 +248,5 @@ lemma IsMIntegralCurveAt.eventually_hasDerivAt (hγ : IsMIntegralCurveAt γ v t�
     mfderiv_chartAt_eq_tangentCoordChange hsrc]
   rfl
 
-@[deprecated (since := "2025-06-29")] alias IsIntegralCurveAt.eventually_hasDerivAt :=
+@[deprecated (since := "2025-08-12")] alias IsIntegralCurveAt.eventually_hasDerivAt :=
   IsMIntegralCurveAt.eventually_hasDerivAt

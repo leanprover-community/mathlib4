@@ -43,7 +43,7 @@ lemma IsMIntegralCurveOn.comp_add (hγ : IsMIntegralCurveOn γ v s) (dt : ℝ) :
   simp only [mfld_simps]
   exact (hasFDerivWithinAt_id _ _).add_const _
 
-@[deprecated (since := "2025-06-29")] alias IsIntegralCurveOn.comp_add :=
+@[deprecated (since := "2025-08-12")] alias IsIntegralCurveOn.comp_add :=
   IsMIntegralCurveOn.comp_add
 
 lemma isMIntegralCurveOn_comp_add {dt : ℝ} :
@@ -54,14 +54,14 @@ lemma isMIntegralCurveOn_comp_add {dt : ℝ} :
     simp
   · simp
 
-@[deprecated (since := "2025-06-29")] alias isIntegralCurveOn_comp_add :=
+@[deprecated (since := "2025-08-12")] alias isIntegralCurveOn_comp_add :=
   isMIntegralCurveOn_comp_add
 
 lemma isMIntegralCurveOn_comp_sub {dt : ℝ} :
     IsMIntegralCurveOn γ v s ↔ IsMIntegralCurveOn (γ ∘ (· - dt)) v { t | t - dt ∈ s } := by
   simpa using isMIntegralCurveOn_comp_add (dt := -dt)
 
-@[deprecated (since := "2025-06-29")] alias isIntegralCurveOn_comp_sub :=
+@[deprecated (since := "2025-08-12")] alias isIntegralCurveOn_comp_sub :=
   isMIntegralCurveOn_comp_sub
 
 lemma IsMIntegralCurveAt.comp_add (hγ : IsMIntegralCurveAt γ v t₀) (dt : ℝ) :
@@ -73,7 +73,7 @@ lemma IsMIntegralCurveAt.comp_add (hγ : IsMIntegralCurveAt γ v t₀) (dt : ℝ
   rw [Metric.ball]
   simp_rw [Metric.mem_ball, Real.dist_eq, ← sub_add, add_sub_right_comm]
 
-@[deprecated (since := "2025-06-29")] alias IsIntegralCurveAt.comp_add :=
+@[deprecated (since := "2025-08-12")] alias IsIntegralCurveAt.comp_add :=
   IsMIntegralCurveAt.comp_add
 
 lemma isMIntegralCurveAt_comp_add {dt : ℝ} :
@@ -84,14 +84,14 @@ lemma isMIntegralCurveAt_comp_add {dt : ℝ} :
     simp only [Function.comp_apply, neg_add_cancel_right]
   · simp only [sub_neg_eq_add, sub_add_cancel]
 
-@[deprecated (since := "2025-06-29")] alias isIntegralCurveAt_comp_add :=
+@[deprecated (since := "2025-08-12")] alias isIntegralCurveAt_comp_add :=
   isMIntegralCurveAt_comp_add
 
 lemma isMIntegralCurveAt_comp_sub {dt : ℝ} :
     IsMIntegralCurveAt γ v t₀ ↔ IsMIntegralCurveAt (γ ∘ (· - dt)) v (t₀ + dt) := by
   simpa using isMIntegralCurveAt_comp_add (dt := -dt)
 
-@[deprecated (since := "2025-06-29")] alias isIntegralCurveAt_comp_sub :=
+@[deprecated (since := "2025-08-12")] alias isIntegralCurveAt_comp_sub :=
   isMIntegralCurveAt_comp_sub
 
 lemma IsMIntegralCurve.comp_add (hγ : IsMIntegralCurve γ v) (dt : ℝ) :
@@ -99,7 +99,7 @@ lemma IsMIntegralCurve.comp_add (hγ : IsMIntegralCurve γ v) (dt : ℝ) :
   rw [isMIntegralCurve_iff_isMIntegralCurveOn] at *
   simpa using hγ.comp_add dt
 
-@[deprecated (since := "2025-06-29")] alias IsIntegralCurve.comp_add := IsMIntegralCurve.comp_add
+@[deprecated (since := "2025-08-12")] alias IsIntegralCurve.comp_add := IsMIntegralCurve.comp_add
 
 lemma isMIntegralCurve_comp_add {dt : ℝ} :
     IsMIntegralCurve γ v ↔ IsMIntegralCurve (γ ∘ (· + dt)) v := by
@@ -108,13 +108,13 @@ lemma isMIntegralCurve_comp_add {dt : ℝ} :
   ext t
   simp only [Function.comp_apply, neg_add_cancel_right]
 
-@[deprecated (since := "2025-06-29")] alias isIntegralCurve_comp_add := isMIntegralCurve_comp_add
+@[deprecated (since := "2025-08-12")] alias isIntegralCurve_comp_add := isMIntegralCurve_comp_add
 
 lemma isMIntegralCurve_comp_sub {dt : ℝ} :
     IsMIntegralCurve γ v ↔ IsMIntegralCurve (γ ∘ (· - dt)) v := by
   simpa using isMIntegralCurve_comp_add (dt := -dt)
 
-@[deprecated (since := "2025-06-29")] alias isIntegralCurve_comp_sub := isMIntegralCurve_comp_sub
+@[deprecated (since := "2025-08-12")] alias isIntegralCurve_comp_sub := isMIntegralCurve_comp_sub
 
 end Translation
 
@@ -131,7 +131,7 @@ lemma IsMIntegralCurveOn.comp_mul (hγ : IsMIntegralCurveOn γ v s) (a : ℝ) :
   simp only [mfld_simps]
   exact HasFDerivWithinAt.mul_const' (hasFDerivWithinAt_id _ _) _
 
-@[deprecated (since := "2025-06-29")] alias IsIntegralCurveOn.comp_mul :=
+@[deprecated (since := "2025-08-12")] alias IsIntegralCurveOn.comp_mul :=
   IsMIntegralCurveOn.comp_mul
 
 lemma isMIntegralCurveOn_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
@@ -143,7 +143,7 @@ lemma isMIntegralCurveOn_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
   · simp only [smul_smul, inv_mul_eq_div, div_self ha, one_smul]
   · simp only [mem_setOf_eq, mul_assoc, inv_mul_eq_div, div_self ha, mul_one, setOf_mem_eq]
 
-@[deprecated (since := "2025-06-29")] alias isIntegralCurveOn_comp_mul_ne_zero :=
+@[deprecated (since := "2025-08-12")] alias isIntegralCurveOn_comp_mul_ne_zero :=
   isMIntegralCurveOn_comp_mul_ne_zero
 
 lemma IsMIntegralCurveAt.comp_mul_ne_zero (hγ : IsMIntegralCurveAt γ v t₀) {a : ℝ} (ha : a ≠ 0) :
@@ -156,7 +156,7 @@ lemma IsMIntegralCurveAt.comp_mul_ne_zero (hγ : IsMIntegralCurveAt γ v t₀) {
   rw [mem_setOf_eq, Metric.mem_ball, Metric.mem_ball, Real.dist_eq, Real.dist_eq,
     lt_div_iff₀ (abs_pos.mpr ha), ← abs_mul, sub_mul, div_mul_cancel₀ _ ha]
 
-@[deprecated (since := "2025-06-29")] alias IsIntegralCurveAt.comp_mul_ne_zero :=
+@[deprecated (since := "2025-08-12")] alias IsIntegralCurveAt.comp_mul_ne_zero :=
   IsMIntegralCurveAt.comp_mul_ne_zero
 
 lemma isMIntegralCurveAt_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
@@ -168,7 +168,7 @@ lemma isMIntegralCurveAt_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
   · simp only [smul_smul, inv_mul_eq_div, div_self ha, one_smul]
   · simp only [div_inv_eq_mul, div_mul_cancel₀ _ ha]
 
-@[deprecated (since := "2025-06-29")] alias isIntegralCurveAt_comp_mul_ne_zero :=
+@[deprecated (since := "2025-08-12")] alias isIntegralCurveAt_comp_mul_ne_zero :=
   isMIntegralCurveAt_comp_mul_ne_zero
 
 lemma IsMIntegralCurve.comp_mul (hγ : IsMIntegralCurve γ v) (a : ℝ) :
@@ -176,7 +176,7 @@ lemma IsMIntegralCurve.comp_mul (hγ : IsMIntegralCurve γ v) (a : ℝ) :
   rw [isMIntegralCurve_iff_isMIntegralCurveOn] at *
   exact hγ.comp_mul _
 
-@[deprecated (since := "2025-06-29")] alias IsIntegralCurve.comp_mul := IsMIntegralCurve.comp_mul
+@[deprecated (since := "2025-08-12")] alias IsIntegralCurve.comp_mul := IsMIntegralCurve.comp_mul
 
 lemma isMIntegralCurve_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
     IsMIntegralCurve γ v ↔ IsMIntegralCurve (γ ∘ (· * a)) (a • v) := by
@@ -186,7 +186,7 @@ lemma isMIntegralCurve_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
     simp only [Function.comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
   · simp only [smul_smul, inv_mul_eq_div, div_self ha, one_smul]
 
-@[deprecated (since := "2025-06-29")] alias isIntegralCurve_comp_mul_ne_zero :=
+@[deprecated (since := "2025-08-12")] alias isIntegralCurve_comp_mul_ne_zero :=
   isMIntegralCurve_comp_mul_ne_zero
 
 /-- If the vector field `v` vanishes at `x₀`, then the constant curve at `x₀`
@@ -197,6 +197,6 @@ lemma isMIntegralCurve_const {x : M} (h : v x = 0) : IsMIntegralCurve (fun _ ↦
     ContinuousLinearMap.smulRight_one_one]
   exact hasMFDerivAt_const ..
 
-@[deprecated (since := "2025-06-29")] alias isIntegralCurve_const := isMIntegralCurve_const
+@[deprecated (since := "2025-08-12")] alias isIntegralCurve_const := isMIntegralCurve_const
 
 end Scaling
