@@ -643,6 +643,12 @@ theorem coe_zpow (hr : r ≠ 0) (n : ℤ) : (↑(r ^ n) : ℝ≥0∞) = (r : ℝ
   · have : r ^ n.succ ≠ 0 := pow_ne_zero (n + 1) hr
     simp only [zpow_negSucc, coe_inv this, coe_pow]
 
+lemma zero_zpow_def (n : ℤ) : (0 : ℝ≥0∞) ^ n = if n = 0 then 1 else if 0 < n then 0 else ⊤ := by
+  obtain ((_ | n) | n) := n <;> simp [-Nat.cast_add, -Int.natCast_add]
+
+lemma top_zpow_def (n : ℤ) : (⊤ : ℝ≥0∞) ^ n = if n = 0 then 1 else if 0 < n then ⊤ else 0 := by
+  obtain ((_ | n) | n) := n <;> simp [-Nat.cast_add, -Int.natCast_add]
+
 theorem zpow_pos (ha : a ≠ 0) (h'a : a ≠ ∞) (n : ℤ) : 0 < a ^ n := by
   cases n
   · simpa using ENNReal.pow_pos ha.bot_lt _
@@ -718,74 +724,24 @@ protected theorem zpow_add {x : ℝ≥0∞} (hx : x ≠ 0) (h'x : x ≠ ∞) (m 
   replace hx : x ≠ 0 := by simpa only [Ne, coe_eq_zero] using hx
   simp only [← coe_zpow hx, zpow_add₀ hx, coe_mul]
 
-protected theorem zpow_neg {x : ℝ≥0∞} (x_ne_zero : x ≠ 0) (x_ne_top : x ≠ ⊤) (m : ℤ) :
-    x ^ (-m) = (x ^ m)⁻¹ :=
-  ENNReal.eq_inv_of_mul_eq_one_left (by simp [← ENNReal.zpow_add x_ne_zero x_ne_top])
+protected theorem zpow_neg (x : ℝ≥0∞) (m : ℤ) : x ^ (-m) = (x ^ m)⁻¹ := by
+  obtain hx₀ | hx₀ := eq_or_ne x 0
+  · obtain hm | hm | hm := lt_trichotomy m 0 <;>
+      simp_all [zero_zpow_def, ne_of_lt, ne_of_gt, lt_asymm]
+  obtain hx | hx := eq_or_ne x ⊤
+  · obtain hm | hm | hm := lt_trichotomy m 0 <;>
+      simp_all [top_zpow_def, ne_of_lt, ne_of_gt, lt_asymm]
+  exact ENNReal.eq_inv_of_mul_eq_one_left (by simp [← ENNReal.zpow_add hx₀ hx])
 
 protected theorem zpow_sub {x : ℝ≥0∞} (x_ne_zero : x ≠ 0) (x_ne_top : x ≠ ⊤) (m n : ℤ) :
     x ^ (m - n) = (x ^ m) * (x ^ n)⁻¹ := by
-  rw [sub_eq_add_neg, ENNReal.zpow_add x_ne_zero x_ne_top, ENNReal.zpow_neg x_ne_zero x_ne_top n]
+  rw [sub_eq_add_neg, ENNReal.zpow_add x_ne_zero x_ne_top, ENNReal.zpow_neg]
 
 protected lemma inv_zpow (x : ℝ≥0∞) (n : ℤ) : x⁻¹ ^ n = (x ^ n)⁻¹ := by
-  rcases lt_trichotomy (0 : ℤ) n with (H | rfl | H)
-  · lift n to ℕ using Int.le_of_lt H
-    simp only [zpow_natCast]
-    exact Eq.symm ENNReal.inv_pow
-  · simp
-  · obtain ⟨a, rfl | rfl⟩ := Int.eq_nat_or_neg n
-    · simp
-      exact Eq.symm ENNReal.inv_pow
-    · simp_all only [Int.neg_neg_iff_pos, Int.natCast_pos]
-      rw [zpow_neg_coe_of_pos x⁻¹ H, ← ENNReal.inv_pow, zpow_neg_coe_of_pos x H]
-
-lemma zero_zpow_def (n : ℤ) : (0 : ℝ≥0∞) ^ n = if 0 < n then 0 else if n = 0 then 1 else ⊤ := by
-  have : (0 : ENNReal) ≠ ⊤ := zero_ne_top
-  rcases lt_trichotomy (0 : ℤ) n with (H | rfl | H)
-  swap; · simp
-  · split_ifs with ha
-    swap; · linarith
-    lift n to ℕ using Int.le_of_lt H
-    rw [zpow_natCast]
-    simp only [pow_eq_zero_iff', ne_eq, true_and]
-    exact Nat.ne_zero_iff_zero_lt.mpr <| Int.natCast_pos.mp H
-  · split_ifs with ha hb
-    all_goals try linarith
-    induction n
-    all_goals try linarith
-    rw [neg_sub_comm,neg_sub_left,←Int.negSucc_eq, zpow_negSucc]
-    simp
-
-lemma top_zpow (n : ℤ) : (⊤ : ℝ≥0∞) ^ n = if 0 < n then ⊤ else if n = 0 then 1
-    else 0 := by
-  rw [← inv_zero, ENNReal.inv_zpow, zero_zpow_def]; split_ifs with h; all_goals simp
+  cases n <;> simp [ENNReal.inv_pow]
 
 protected lemma inv_zpow' (x : ℝ≥0∞) (n : ℤ) : x⁻¹ ^ n = x ^ (-n) := by
-  by_cases h0 : x = 0
-  · rw[h0, zero_zpow_def]
-    simp
-    rw [top_zpow]
-    split_ifs with ha hb hc hd he hf
-    all_goals try linarith
-    all_goals try rfl
-    have : n = 0 := (Int.le_antisymm (Int.not_lt.mp ha) (Int.not_lt.mp hf))
-    contradiction
-  by_cases h1 : x = ⊤
-  · rw [h1, inv_top, zero_zpow_def, top_zpow]
-    split_ifs with a b c d e f g h
-    all_goals try simp;
-    all_goals try linarith
-    · rw [neg_eq_zero] at f
-      contradiction
-    · rw [neg_eq_zero] at h
-      contradiction
-    simp only [Int.neg_pos, not_lt] at g a
-    have : n = 0 := Eq.symm (Int.le_antisymm g a)
-    contradiction
-  rw [ENNReal.inv_zpow, ←ENNReal.eq_inv_of_mul_eq_one_left]
-  rw [←ENNReal.zpow_add]
-  · simp
-  · exact h0
-  exact h1
+  rw [ENNReal.zpow_neg, ENNReal.inv_zpow]
 
 lemma zpow_le_one_of_nonpos {n : ℤ} (hn : n ≤ 0) {x : ℝ≥0∞} (hx : 1 ≤ x) : x ^ n ≤ 1 := by
   obtain ⟨m, rfl⟩ := neg_surjective n
