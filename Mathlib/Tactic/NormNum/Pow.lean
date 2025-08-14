@@ -304,18 +304,10 @@ def evalZPow : NormNumExt where eval {u α} e := do
       let _c ← synthInstanceQ q(DivisionRing $α)
       assumeInstancesCommute
       return .isNegNat sα' ne' q(isInt_zpow_neg $pb $pe')
-<<<<<<< HEAD
-    | .isRat sα' qe' nume' dene' pe' =>
-=======
     | .isNNRat dsα' qe' nume' dene' pe' =>
-      have h : $e =Q (HPow.hPow (γ := $α) $a $b) := ⟨⟩
-      h.check
->>>>>>> master
       assumeInstancesCommute
       return .isNNRat dsα' qe' nume' dene' q(isNNRat_zpow_neg $pb $pe')
     | .isNegNNRat dα' qe' nume' dene' pe' =>
-      have h : $e =Q (HPow.hPow (γ := $α) $a $b) := ⟨⟩
-      h.check
       assumeInstancesCommute
       return .isRat dα' qe' q(.negOfNat $nume') dene' q(isRat_zpow_neg $pb $pe')
 
