@@ -269,7 +269,7 @@ theorem exists_fin_rename (p : MvPolynomial σ R) :
 end Rename
 
 theorem eval₂_cast_comp (f : σ → τ) (c : ℤ →+* R) (g : τ → R) (p : MvPolynomial σ ℤ) :
-    eval₂ c (g ∘ f) p = eval₂ c g (rename f p) := Eq.symm (eval₂_rename c f g p)
+    eval₂ c (g ∘ f) p = eval₂ c g (rename f p) := (eval₂_rename c f g p).symm
 
 section Coeff
 
