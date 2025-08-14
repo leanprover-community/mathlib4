@@ -217,10 +217,12 @@ theorem ι_isoCarrier_inv (i : D.J) :
     PresheafedSpace.forget_map,
     PresheafedSpace.forget_map, ← PresheafedSpace.comp_base, ← Category.assoc,
     D.toLocallyRingedSpaceGlueData.toSheafedSpaceGlueData.ι_isoPresheafedSpace_inv i]
-  sorry
-  /-erw [← Category.assoc, D.toLocallyRingedSpaceGlueData.ι_isoSheafedSpace_inv i]
+  dsimp
+  rw [← Category.assoc, ← PresheafedSpace.comp_base,
+    ← InducedCategory.comp_hom, D.toLocallyRingedSpaceGlueData.ι_isoSheafedSpace_inv i,
+    ← PresheafedSpace.comp_base,]
   change (_ ≫ D.isoLocallyRingedSpace.inv).base = _
-  rw [D.ι_isoLocallyRingedSpace_inv i]-/
+  rw [D.ι_isoLocallyRingedSpace_inv i]
 
 /-- An equivalence relation on `Σ i, D.U i` that holds iff `𝖣.ι i x = 𝖣.ι j y`.
 See `AlgebraicGeometry.Scheme.GlueData.ι_eq_iff`. -/
@@ -662,6 +664,10 @@ lemma glueDataι_naturality {i j : Shrink.{u} J} (f : ↓i ⟶ ↓j) :
   have : t F ↓i ↓j ≫ (V F ↓j ↓i).ι ≫ _ = (V F ↓i ↓j).ι ≫ _ :=
     (glueData F).glue_condition i j
   simp only [t, IsOpenImmersion.lift_fac_assoc] at this
+  rw [← cancel_epi (V F ↓i ↓j).ι, ← this, ← Category.assoc,
+    ← (Iso.eq_inv_comp _).mp (homOfLE_tAux F ↓i ↓j (𝟙 _) f),
+    ← Category.assoc, ← Category.assoc, Category.assoc]
+  convert Category.id_comp _
   sorry /-
   rw [← cancel_epi (V F ↓i ↓j).ι, ← this, ← Category.assoc,
     ← (Iso.eq_inv_comp _).mp (homOfLE_tAux F ↓i ↓j (𝟙 i) f),
