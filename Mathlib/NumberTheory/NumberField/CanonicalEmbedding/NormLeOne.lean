@@ -646,12 +646,7 @@ theorem interior_paramSet :
   simp [interior_pi_set Set.finite_univ, apply_ite]
 
 theorem measurableSet_interior_paramSet :
-    MeasurableSet (interior (paramSet K)) := by
-  rw [interior_paramSet]
-  refine MeasurableSet.univ_pi fun _ ↦ ?_
-  split_ifs
-  · exact measurableSet_Iio
-  · exact measurableSet_Ioo
+    MeasurableSet (interior (paramSet K)) := measurableSet_interior
 
 open scoped Classical in
 theorem closure_paramSet :
