@@ -285,10 +285,9 @@ elab tk:"#find_deleted_files" nc:(ppSpace num)? : command => do
     let commitHash := last.takeWhile (!·.isWhitespace)
     let PRdescr := (last.drop commitHash.length).trim
     return (commitHash, .trace {cls := `Commit} m!"{PRdescr}" #[m!"{commitHash}"])
-  let getFilesAtHash (hash : String) := do
+  let getFilesAtHash (hash : String) : CommandElabM (Std.HashSet String) := do
     let files ← runCmd s!"git ls-tree -r --name-only {hash} Mathlib/"
-    let h : Std.HashSet String := .ofList <| files.splitOn "\n"
-    return h
+    return .ofList <| files.splitOn "\n"
   let (currentHash, currentPRdescr) ← getHashAndMessage 1
   let currentFiles ← getFilesAtHash currentHash
   msgs := msgs.push m!"{currentFiles.size} files at the current commit {currentPRdescr}"
