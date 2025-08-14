@@ -450,12 +450,12 @@ protected alias ⟨_, IsMax.coheight_eq_zero⟩ := coheight_eq_zero
 
 @[simp] lemma coheight_top (α : Type*) [Preorder α] [OrderTop α] : coheight (⊤ : α) = 0 := by simp
 
-@[simp] lemma height_ne_zero {x : α} : height x ≠ 0 ↔ ¬ IsMin x := height_eq_zero.not
+lemma height_ne_zero {x : α} : height x ≠ 0 ↔ ¬ IsMin x := height_eq_zero.not
 
 @[simp] lemma height_pos {x : α} : 0 < height x ↔ ¬ IsMin x := by
   simp [pos_iff_ne_zero]
 
-@[simp] lemma coheight_ne_zero {x : α} : coheight x ≠ 0 ↔ ¬ IsMax x := coheight_eq_zero.not
+lemma coheight_ne_zero {x : α} : coheight x ≠ 0 ↔ ¬ IsMax x := coheight_eq_zero.not
 
 @[simp] lemma coheight_pos {x : α} : 0 < coheight x ↔ ¬ IsMax x := by
   simp [pos_iff_ne_zero]
