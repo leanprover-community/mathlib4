@@ -49,7 +49,7 @@ instance [TopologicalSpace R] [T2Space R] : T2Space (Matrix m n R) :=
 
 instance [TopologicalSpace R] [DecidableEq n] [Fintype n] [CommRing R] :
     TopologicalSpace (SpecialLinearGroup n R) :=
-  inferInstanceAs (TopologicalSpace { A : Matrix n n R // A.det = 1 })
+  instTopologicalSpaceSubtype
 
 section Set
 
