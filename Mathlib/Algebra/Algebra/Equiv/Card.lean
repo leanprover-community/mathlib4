@@ -15,11 +15,11 @@ namespace AlgEquiv
 
 variable (R A B : Type*) [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 
-lemma card_le [Fintype (A ≃ₐ[R] B)] [Fintype (A →ₐ[R] B)] :
+lemma card_le_card_algHom [Fintype (A ≃ₐ[R] B)] [Fintype (A →ₐ[R] B)] :
     Fintype.card (A ≃ₐ[R] B) ≤ Fintype.card (A →ₐ[R] B) :=
   Fintype.card_le_of_injective _ coe_algHom_injective
 
-lemma natCard_le [Finite (A →ₐ[R] B)] :
+lemma natCard_le_natCard_algHom [Finite (A →ₐ[R] B)] :
     Nat.card (A ≃ₐ[R] B) ≤ Nat.card (A →ₐ[R] B) :=
   Finite.card_le_of_injective _ coe_algHom_injective
 

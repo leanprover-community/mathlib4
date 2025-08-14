@@ -427,12 +427,10 @@ instance : Subsingleton (K' →ₐ[K] K') :=
 instance AlgHom.instUnique : Unique (K' →ₐ[K] K') :=
   uniqueOfSubsingleton (.id _ _)
 
-lemma aux : Nat.card (K' ≃ₐ[K] K') ≤ 1 := by
-  rw [← aux1 K K']
-  exact AlgEquiv.natCard_le _ _ _
-
 instance : Subsingleton (K' ≃ₐ[K] K') :=
-  Finite.card_le_one_iff_subsingleton.mp (aux ..)
+  Finite.card_le_one_iff_subsingleton.mp <| by
+    rw [← aux1 K K']
+    exact AlgEquiv.natCard_le_natCard_algHom _ _ _
 
 instance AlgEquiv.instUnique : Unique (K' ≃ₐ[K] K') :=
   uniqueOfSubsingleton .refl
