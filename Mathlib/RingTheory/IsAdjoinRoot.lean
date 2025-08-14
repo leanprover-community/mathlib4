@@ -195,7 +195,7 @@ theorem adjoinRootEquiv_symm_apply_root : h.adjoinRootEquiv.symm h.root = Adjoin
 
 variable (h' : IsAdjoinRoot T f)
 
-/-- Adjoining a root gives a unique ring up to algebra isomorphism.
+/-- Adjoining a root gives a unique algebra up to isomorphism.
 
 This is the converse of `IsAdjoinRoot.ofAlgEquiv`: this turns an `IsAdjoinRoot` into an
 `AlgEquiv`, and `IsAdjoinRoot.ofAlgEquiv` turns an `AlgEquiv` into an `IsAdjoinRoot`.
@@ -350,8 +350,7 @@ theorem liftHom_map (z : R[X]) : h.liftHom x hx' (h.map z) = aeval x z := by
   rw [← lift_algebraMap_apply, lift_map, aeval_def]
 
 @[simp]
-theorem liftHom_root : h.liftHom x hx' h.root = x := by
-  rw [← lift_algebraMap_apply, lift_root]
+theorem liftHom_root : h.liftHom x hx' h.root = x := by rw [← lift_algebraMap_apply, lift_root]
 
 /-- Unicity of `liftHom`: a map that agrees on `h.root` agrees with `liftHom` everywhere. -/
 theorem eq_liftHom (g : S →ₐ[R] T) (hroot : g h.root = x) : g = h.liftHom x hx' :=
@@ -375,15 +374,30 @@ protected def isAdjoinRoot : IsAdjoinRoot (AdjoinRoot f) f where
 
 /-- `AdjoinRoot f` is indeed given by adjoining a root of `f`. If `f` is monic this is more
 powerful than `AdjoinRoot.isAdjoinRoot`. -/
-protected abbrev isAdjoinRootMonic (hf : Monic f) : IsAdjoinRootMonic (AdjoinRoot f) f where
+protected def isAdjoinRootMonic (hf : Monic f) : IsAdjoinRootMonic (AdjoinRoot f) f where
   __ := AdjoinRoot.isAdjoinRoot f
   monic := hf
 
+@[simp]
+theorem isAdjoinRootMonic_toAdjoinRoot (hf : Monic f) :
+    (AdjoinRoot.isAdjoinRootMonic f hf).toIsAdjoinRoot = AdjoinRoot.isAdjoinRoot f := rfl
+
 theorem isAdjoinRoot_map_eq_mkₐ : (AdjoinRoot.isAdjoinRoot f).map = AdjoinRoot.mkₐ f := rfl
+
+@[deprecated (since := "2025-08-07")] alias isAdjoinRoot_map_eq_mk := isAdjoinRoot_map_eq_mkₐ
+
+@[deprecated "Use `simp` and `isAdjoinRoot_map_eq_mkₐ` instead" (since := "2025-08-07")]
+theorem isAdjoinRootMonic_map_eq_mk (hf : f.Monic) :
+    (AdjoinRoot.isAdjoinRootMonic f hf).map = AdjoinRoot.mk f := by
+  simp [isAdjoinRoot_map_eq_mkₐ]
 
 @[simp]
 theorem isAdjoinRoot_root_eq_root : (AdjoinRoot.isAdjoinRoot f).root = AdjoinRoot.root f := by
   simp [AdjoinRoot.isAdjoinRoot, IsAdjoinRoot.root]
+
+@[deprecated "Use `simp` instead" (since := "2025-08-07")]
+theorem isAdjoinRootMonic_root_eq_root (hf : Monic f) :
+    (AdjoinRoot.isAdjoinRootMonic f hf).root = AdjoinRoot.root f := by simp
 
 end AdjoinRoot
 
@@ -590,7 +604,7 @@ theorem ext_elem_iff {x y : S} : x = y ↔ ∀ i < natDegree f, h.coeff x i = h.
 theorem coeff_injective : Function.Injective h.coeff := fun _ _ hxy =>
   h.ext_elem fun _ _ => hxy ▸ rfl
 
-theorem isIntegral_root : IsIntegral R h.root := ⟨f, h.Monic, h.aeval_root_self⟩
+theorem isIntegral_root : IsIntegral R h.root := ⟨f, h.monic, h.aeval_root_self⟩
 
 end IsAdjoinRootMonic
 
@@ -603,6 +617,17 @@ variable {R : Type u} {S : Type v} [CommRing R] [CommRing S] [Algebra R S] {f : 
 namespace IsAdjoinRoot
 
 variable (h : IsAdjoinRoot S f)
+
+section lift
+
+@[simp]
+theorem lift_self_apply (x : S) : h.lift (algebraMap R S) h.root h.aeval_root_self x = x := by
+  rw [← h.map_repr x, lift_map, ← aeval_def, h.aeval_root_eq_map]
+
+theorem lift_self : h.lift (algebraMap R S) h.root h.aeval_root_self = RingHom.id S :=
+  RingHom.ext h.lift_self_apply
+
+end lift
 
 section mkOfAdjoinEqTop
 
@@ -624,24 +649,13 @@ variable (hα hα₂) in
 /-- If `α` generates `S` as an algebra, then `S` is given by adjoining a root of `minpoly R α`. -/
 abbrev _root_.IsAdjoinRootMonic.mkOfAdjoinEqTop : IsAdjoinRootMonic S (minpoly R α) where
   __ := IsAdjoinRoot.mkOfAdjoinEqTop hα hα₂
-  Monic := minpoly.monic hα
+  monic := minpoly.monic hα
 
 @[simp]
 theorem mkOfAdjoinEqTop_root : (IsAdjoinRoot.mkOfAdjoinEqTop hα hα₂).root = α := by
   simp [IsAdjoinRoot.mkOfAdjoinEqTop, IsAdjoinRoot.root]
 
 end mkOfAdjoinEqTop
-
-section lift
-
-@[simp]
-theorem lift_self_apply (x : S) : h.lift (algebraMap R S) h.root h.aeval_root_self x = x := by
-  rw [← h.map_repr x, lift_map, ← aeval_def, h.aeval_root_eq_map]
-
-theorem lift_self : h.lift (algebraMap R S) h.root h.aeval_root_self = RingHom.id S :=
-  RingHom.ext h.lift_self_apply
-
-end lift
 
 section Equiv
 
@@ -693,6 +707,7 @@ theorem Algebra.adjoin.powerBasis'_minpoly_gen [IsDomain R] [IsDomain S] [NoZero
       (ne_of_lt (degree_pos hx')).symm
   rw [← minpolyGen_eq, adjoin.powerBasis', minpolyGen_map, minpolyGen_eq,
     AdjoinRoot.powerBasis'_gen, ← isAdjoinRoot_root_eq_root _,
+    ← isAdjoinRootMonic_toAdjoinRoot,
     minpoly_eq (AdjoinRoot.isAdjoinRootMonic _ (monic hx')) (irreducible hx')]
 
 end Algebra
@@ -719,7 +734,7 @@ abbrev mkOfPrimitiveElement {α : E} (hα : IsIntegral F α) (hα₂ : F⟮α⟯
 abbrev _root_.IsAdjoinRootMonic.mkOfPrimitiveElement
     {α : E} (hα : IsIntegral F α) (hα₂ : F⟮α⟯ = ⊤) : IsAdjoinRootMonic E (minpoly F α) where
   __ := IsAdjoinRoot.mkOfPrimitiveElement hα hα₂
-  Monic := minpoly.monic hα
+  monic := minpoly.monic hα
 
 end IsAdjoinRoot
 
