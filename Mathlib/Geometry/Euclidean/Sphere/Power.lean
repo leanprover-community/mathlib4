@@ -80,13 +80,6 @@ open InnerProductGeometry EuclideanGeometry
 
 variable {P : Type*} [MetricSpace P] [NormedAddTorsor V P]
 
-/-- The power of a point with respect to a sphere. For a point and a sphere,
-this is defined as the square of the distance from the point to the center
-minus the square of the radius. This value is positive if the point is outside
-the sphere, negative if inside, and zero if on the sphere. -/
-def Sphere.power (s : Sphere P) (p : P) : ℝ :=
-  dist p s.center ^ 2 - s.radius ^ 2
-
 /-- If `P` is a point on the line `AB` and `Q` is equidistant from `A` and `B`, then
 `AP * BP = abs (BQ ^ 2 - PQ ^ 2)`. -/
 theorem mul_dist_eq_abs_sub_sq_dist {a b p q : P} (hp : ∃ k : ℝ, k ≠ 1 ∧ b -ᵥ p = k • (a -ᵥ p))
@@ -134,6 +127,13 @@ theorem mul_dist_eq_mul_dist_of_cospherical_of_angle_eq_zero {a b c d p : P}
   exacts [hab (vsub_left_cancel hab₁).symm, hcd (vsub_left_cancel hcd₁).symm]
 
 namespace Sphere
+
+/-- The power of a point with respect to a sphere. For a point and a sphere,
+this is defined as the square of the distance from the point to the center
+minus the square of the radius. This value is positive if the point is outside
+the sphere, negative if inside, and zero if on the sphere. -/
+def power (s : Sphere P) (p : P) : ℝ :=
+  dist p s.center ^ 2 - s.radius ^ 2
 
 /-- A point lies on the sphere if and only if its power with respect to
 the sphere is zero. -/
@@ -212,7 +212,7 @@ theorem dist_sq_eq_mul_dist_of_tangent_and_secant {a b t p : P} {s : Sphere P}
     · exact hpt (h_tangent.mem_and_mem_iff_eq.mp
         ⟨by rw [mem_sphere, h_eq], mem_affineSpan ℝ (Set.mem_insert p {t})⟩)
   rw [eq_comm, ← dist_comm p a, ← dist_comm p b,
-    Sphere.mul_dist_eq_abs_power (Sphere.radius_nonneg_of_mem ha) h_secant ha hb,
+    Sphere.mul_dist_eq_abs_power h_secant ha hb,
     abs_of_pos ((Sphere.power_pos_iff_radius_lt_dist_center
         (Sphere.radius_nonneg_of_mem ha)).mpr hp_outside),
     Sphere.power, ← mem_sphere.mp ht, dist_eq_norm_vsub, dist_eq_norm_vsub]
