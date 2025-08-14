@@ -57,11 +57,11 @@ theorem logDeriv_div {f g : 𝕜 → 𝕜'} (x : 𝕜) (hf : f x ≠ 0) (hg : g 
   field_simp [mul_comm]
   ring
 
-theorem logDeriv_mul_const {f : 𝕜 → 𝕜'} (x : 𝕜) (a : 𝕜') (ha : a ≠ 0):
+theorem logDeriv_mul_const {f : 𝕜 → 𝕜'} (x : 𝕜) (a : 𝕜') (ha : a ≠ 0) :
     logDeriv (fun z => f z * a) x = logDeriv f x := by
   simp only [logDeriv_apply, deriv_mul_const_field, mul_div_mul_right _ _ ha]
 
-theorem logDeriv_const_mul {f : 𝕜 → 𝕜'} (x : 𝕜) (a : 𝕜') (ha : a ≠ 0):
+theorem logDeriv_const_mul {f : 𝕜 → 𝕜'} (x : 𝕜) (a : 𝕜') (ha : a ≠ 0) :
     logDeriv (fun z => a * f z) x = logDeriv f x := by
   simp only [logDeriv_apply, deriv_const_mul_field, mul_div_mul_left _ _ ha]
 

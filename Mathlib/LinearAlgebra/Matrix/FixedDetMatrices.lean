@@ -30,13 +30,13 @@ open Matrix hiding mul_smul
 open ModularGroup SpecialLinearGroup MatrixGroups
 
 /-- Extensionality theorem for `FixedDetMatrix` with respect to the underlying matrix, not
-entriwise. -/
+entrywise. -/
 lemma ext' {m : R} {A B : FixedDetMatrix n R m} (h : A.1 = B.1) : A = B := by
   cases A; cases B
   congr
 
 @[ext]
-lemma ext {m : R} {A B : FixedDetMatrix n R m} (h : ∀ i j , A.1 i j = B.1 i j) : A = B := by
+lemma ext {m : R} {A B : FixedDetMatrix n R m} (h : ∀ i j, A.1 i j = B.1 i j) : A = B := by
   apply ext'
   ext i j
   apply h

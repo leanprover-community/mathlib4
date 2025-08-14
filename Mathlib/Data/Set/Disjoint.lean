@@ -9,7 +9,7 @@ import Mathlib.Data.Set.Basic
 # Theorems about the `Disjoint` relation on `Set`.
 -/
 
-assert_not_exists RelIso
+assert_not_exists HeytingAlgebra RelIso
 
 /-! ### Set coercion to a type -/
 
@@ -81,50 +81,6 @@ lemma disjoint_union_right : Disjoint s (t ∪ u) ↔ Disjoint s t ∧ Disjoint 
 @[simp] lemma univ_disjoint : Disjoint univ s ↔ s = ∅ := top_disjoint
 @[simp] lemma disjoint_univ : Disjoint s univ ↔ s = ∅ := disjoint_top
 
-lemma disjoint_sdiff_left : Disjoint (t \ s) s := disjoint_sdiff_self_left
-
-lemma disjoint_sdiff_right : Disjoint s (t \ s) := disjoint_sdiff_self_right
-
--- TODO: prove this in terms of a lattice lemma
-theorem disjoint_sdiff_inter : Disjoint (s \ t) (s ∩ t) :=
-  disjoint_of_subset_right inter_subset_right disjoint_sdiff_left
-
-lemma subset_diff : s ⊆ t \ u ↔ s ⊆ t ∧ Disjoint s u := le_iff_subset.symm.trans le_sdiff
-
-theorem disjoint_of_subset_iff_left_eq_empty (h : s ⊆ t) :
-    Disjoint s t ↔ s = ∅ :=
-  disjoint_of_le_iff_left_eq_bot h
-
-/-! ### Lemmas about complement -/
-
-theorem subset_compl_iff_disjoint_left : s ⊆ tᶜ ↔ Disjoint t s :=
-  @le_compl_iff_disjoint_left (Set α) _ _ _
-
-theorem subset_compl_iff_disjoint_right : s ⊆ tᶜ ↔ Disjoint s t :=
-  @le_compl_iff_disjoint_right (Set α) _ _ _
-
-theorem disjoint_compl_left_iff_subset : Disjoint sᶜ t ↔ t ⊆ s :=
-  disjoint_compl_left_iff
-
-theorem disjoint_compl_right_iff_subset : Disjoint s tᶜ ↔ s ⊆ t :=
-  disjoint_compl_right_iff
-
-alias ⟨_, _root_.Disjoint.subset_compl_right⟩ := subset_compl_iff_disjoint_right
-
-alias ⟨_, _root_.Disjoint.subset_compl_left⟩ := subset_compl_iff_disjoint_left
-
-alias ⟨_, _root_.HasSubset.Subset.disjoint_compl_left⟩ := disjoint_compl_left_iff_subset
-
-alias ⟨_, _root_.HasSubset.Subset.disjoint_compl_right⟩ := disjoint_compl_right_iff_subset
-
-@[simp]
-theorem diff_ssubset_left_iff : s \ t ⊂ s ↔ (s ∩ t).Nonempty :=
-  sdiff_lt_left.trans <| by rw [not_disjoint_iff_nonempty_inter, inter_comm]
-
-theorem _root_.HasSubset.Subset.diff_ssubset_of_nonempty (hst : s ⊆ t) (hs : s.Nonempty) :
-    t \ s ⊂ t := by
-  simpa [inter_eq_self_of_subset_right hst]
-
 theorem disjoint_range_iff {β γ : Sort*} {x : β → α} {y : γ → α} :
     Disjoint (range x) (range y) ↔ ∀ i j, x i ≠ y j := by
   simp [Set.disjoint_iff_forall_ne]
@@ -162,3 +118,10 @@ theorem subset_right_of_subset_union (h : s ⊆ t ∪ u) (hab : Disjoint s t) : 
   hab.left_le_of_le_sup_left h
 
 end Disjoint
+
+namespace Set
+
+theorem mem_union_of_disjoint (h : Disjoint s t) {x : α} : x ∈ s ∪ t ↔ Xor' (x ∈ s) (x ∈ t) := by
+  grind [Xor', Set.disjoint_left]
+
+end Set

@@ -118,8 +118,7 @@ lemma hom_ext {X Y : FinBddDistLat} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g
 
 @[simp]
 lemma hom_ofHom {X Y : Type u} [DistribLattice X] [BoundedOrder X] [Fintype X] [DistribLattice Y]
-    [BoundedOrder Y] [Fintype Y] (f : BoundedLatticeHom X Y) :
-  (ofHom f).hom = f := rfl
+    [BoundedOrder Y] [Fintype Y] (f : BoundedLatticeHom X Y) : (ofHom f).hom = f := rfl
 
 @[simp]
 lemma ofHom_hom {X Y : FinBddDistLat} (f : X ⟶ Y) :

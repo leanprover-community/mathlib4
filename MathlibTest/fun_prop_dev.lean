@@ -121,12 +121,12 @@ instance : FunLike (α -o β) α β where
 instance : HasUncurry (α ->> β) α β :=
   ⟨fun f x => f x⟩
 instance [HasUncurry β γ δ] : HasUncurry (α ->> β) (α × γ) δ :=
-  ⟨fun f p ↦ (↿(f p.1)) p.2⟩
+  ⟨fun f p ↦ ↿(f p.1) p.2⟩
 
 instance : HasUncurry (α -o β) α β :=
   ⟨fun f x => f x⟩
 instance [HasUncurry β γ δ] : HasUncurry (α -o β) (α × γ) δ :=
-  ⟨fun f p ↦ (↿(f p.1)) p.2⟩
+  ⟨fun f p ↦ ↿(f p.1) p.2⟩
 
 
 -- morphism theorems i.e. theorems about `FunLike.coe` --
@@ -346,7 +346,7 @@ example : Con (fun fx : (α ->> β)×α => fx.1 fx.2) := by fun_prop
 def iterate (n : Nat) (f : α → α) (x : α) : α :=
   match n with
   | 0 => x
-  | n+1 => iterate n f (f x)
+  | n + 1 => iterate n f (f x)
 
 theorem iterate_con (n : Nat) (f : α → α) (hf : Con f) : Con (iterate n f) := by
   induction n <;> (simp [iterate]; fun_prop)
