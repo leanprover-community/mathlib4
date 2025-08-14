@@ -530,15 +530,10 @@ section Mul
 ### mul
 -/
 
-protected theorem mul_one' [NeZero n] (k : Fin n) : k * 1 = k := by
-  rcases n with - | n
-  · simp [eq_iff_true_of_subsingleton]
-  cases n
-  · simp [fin_one_eq_zero]
-  simp [mul_def, mod_eq_of_lt (is_lt k)]
+@[deprecated (since := "2025-08-14")] alias mul_one' := Fin.mul_one
 
 protected theorem one_mul' [NeZero n] (k : Fin n) : (1 : Fin n) * k = k := by
-  rw [Fin.mul_comm, Fin.mul_one']
+  rw [Fin.mul_comm, Fin.mul_one]
 
 protected theorem mul_zero' [NeZero n] (k : Fin n) : k * 0 = 0 := by simp [mul_def]
 
