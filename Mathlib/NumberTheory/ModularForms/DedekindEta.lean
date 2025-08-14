@@ -51,17 +51,15 @@ lemma one_add_eta_q_ne_zero (n : ℕ) (z : ℍ) : 1 - eta_q n z ≠ 0 := by
   have := UpperHalfPlane.norm_exp_two_pi_I_lt_one ⟨(n + 1) • z, by
     have : 0 < (n + 1 : ℝ) := by linarith
     simpa [this] using z.2⟩
-  simp [← mul_assoc] at this
-  rw [← h] at this
-  simp only [norm_one, lt_self_iff_false] at *
+  simp [← mul_assoc, ← h] at *
 
-/-- The product term in the eta function, defined as `∏' 1 - q ^ n` for `q = e ^ 2 π i z`. -/
+/-- The product term in the eta function, defined as `∏' 1 - q ^ (n + 1)` for `q = e ^ 2 π i z`. -/
 noncomputable abbrev etaProdTerm (z : ℂ) := ∏' (n : ℕ), (1 - eta_q n z)
 
 local notation "ηₚ" => etaProdTerm
 
-/- The eta function, whose value at z is `q^1/24 * ∏' 1 - q ^ n` for `q = e ^ 2 π i z`. -/
-noncomputable def ModularForm.eta (z : ℂ) := (𝕢 24 z) * ηₚ z
+/- The eta function, whose value at z is `q^1/24 * ∏' 1 - q ^ (n + 1)` for `q = e ^ 2 π i z`. -/
+noncomputable def ModularForm.eta (z : ℂ) := 𝕢 24 z * ηₚ z
 
 local notation "η" => ModularForm.eta
 
@@ -95,7 +93,7 @@ theorem etaProdTerm_ne_zero (z : ℍ) : ηₚ z ≠ 0 := by
   refine tprod_one_add_ne_zero_of_summable z (f := fun n x => -eta_q n x) ?_ ?_
   · refine fun i x => by simpa using one_add_eta_q_ne_zero i x
   · intro x
-    simpa [eta_q, ←summable_norm_iff] using Summable_eta_q x
+    simpa [eta_q, ← summable_norm_iff] using Summable_eta_q x
 
 /-- Eta is non-vanishing. -/
 lemma eta_ne_zero_on_UpperHalfPlane (z : ℍ) : η z ≠ 0 := by
@@ -139,8 +137,7 @@ lemma tsum_log_deriv_eta_q (z : ℂ) : ∑' (i : ℕ), logDeriv (fun x ↦ 1 - e
 theorem etaProdTerm_differentiableAt (z : ℍ) : DifferentiableAt ℂ ηₚ z := by
   have hD := hasProdLocallyUniformlyOn_eta.tendstoLocallyUniformlyOn_finsetRange.differentiableOn ?_
     (isOpen_lt continuous_const Complex.continuous_im)
-  · rw [DifferentiableOn] at hD
-    apply (hD z z.2).differentiableAt
+  · apply (hD z z.2).differentiableAt
     exact (isOpen_lt continuous_const Complex.continuous_im).mem_nhds z.2
   · filter_upwards with b y
     apply (DifferentiableOn.finset_prod (u := Finset.range b)
@@ -149,5 +146,5 @@ theorem etaProdTerm_differentiableAt (z : ℍ) : DifferentiableAt ℂ ηₚ z :=
     intro x hx
     simp [sub_eq_add_neg, eta_q_eq_cexp]
 
-lemma eta_DifferentiableAt_UpperHalfPlane (z : ℍ) : DifferentiableAt ℂ eta z := by
-  apply DifferentiableAt.mul (by fun_prop) (etaProdTerm_differentiableAt z)
+lemma eta_DifferentiableAt_UpperHalfPlane (z : ℍ) : DifferentiableAt ℂ eta z :=
+  DifferentiableAt.mul (by fun_prop) (etaProdTerm_differentiableAt z)
