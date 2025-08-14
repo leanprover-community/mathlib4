@@ -459,32 +459,31 @@ theorem iteratedFDerivWithin_succ_apply_right {n : ℕ} (hs : UniqueDiffOn 𝕜 
     rw [iteratedFDerivWithin_succ_eq_comp_left, iteratedFDerivWithin_zero_eq_comp,
       iteratedFDerivWithin_zero_apply, Function.comp_apply,
       LinearIsometryEquiv.comp_fderivWithin _ (hs x hx)]
-    rfl
+    simp
   | succ n IH =>
     let I := (continuousMultilinearCurryRightEquiv' 𝕜 n E F).symm
     have A : ∀ y ∈ s, iteratedFDerivWithin 𝕜 n.succ f s y =
         (I ∘ iteratedFDerivWithin 𝕜 n (fun y => fderivWithin 𝕜 f s y) s) y := fun y hy ↦ by
       ext m
-      rw [@IH y hy m]
-      rfl
+      simp [IH hy m, I]
     calc
       (iteratedFDerivWithin 𝕜 (n + 2) f s x : (Fin (n + 2) → E) → F) m =
           (fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 n.succ f s) s x : E → E[×n + 1]→L[𝕜] F) (m 0)
-            (tail m) :=
-        rfl
+            (tail m) := by
+        simp [iteratedFDerivWithin_succ_eq_comp_left]
       _ = (fderivWithin 𝕜 (I ∘ iteratedFDerivWithin 𝕜 n (fderivWithin 𝕜 f s) s) s x :
               E → E[×n + 1]→L[𝕜] F) (m 0) (tail m) := by
         rw [fderivWithin_congr A (A x hx)]
       _ = (I ∘ fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 n (fderivWithin 𝕜 f s) s) s x :
               E → E[×n + 1]→L[𝕜] F) (m 0) (tail m) := by
-        simp only [LinearIsometryEquiv.comp_fderivWithin _ (hs x hx)]
-        rfl
+        simp [LinearIsometryEquiv.comp_fderivWithin _ (hs x hx)]
       _ = (fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 n (fun y => fderivWithin 𝕜 f s y) s) s x :
-              E → E[×n]→L[𝕜] E →L[𝕜] F) (m 0) (init (tail m)) ((tail m) (last n)) := rfl
+              E → E[×n]→L[𝕜] E →L[𝕜] F) (m 0) (init (tail m)) ((tail m) (last n)) := by
+        simp [I]
       _ = iteratedFDerivWithin 𝕜 (Nat.succ n) (fun y => fderivWithin 𝕜 f s y) s x (init m)
             (m (last (n + 1))) := by
         rw [iteratedFDerivWithin_succ_apply_left, tail_init_eq_init_tail]
-        rfl
+        simp [init, tail]
 
 /-- Writing explicitly the `n+1`-th derivative as the composition of a currying linear equiv,
 and the `n`-th derivative of the derivative. -/
@@ -493,7 +492,7 @@ theorem iteratedFDerivWithin_succ_eq_comp_right {n : ℕ} (hs : UniqueDiffOn �
       ((continuousMultilinearCurryRightEquiv' 𝕜 n E F).symm ∘
           iteratedFDerivWithin 𝕜 n (fun y => fderivWithin 𝕜 f s y) s)
         x := by
-  ext m; rw [iteratedFDerivWithin_succ_apply_right hs hx]; rfl
+  ext m; simp [iteratedFDerivWithin_succ_apply_right hs hx]
 
 theorem norm_iteratedFDerivWithin_fderivWithin {n : ℕ} (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
     ‖iteratedFDerivWithin 𝕜 n (fderivWithin 𝕜 f s) s x‖ =
@@ -503,9 +502,8 @@ theorem norm_iteratedFDerivWithin_fderivWithin {n : ℕ} (hs : UniqueDiffOn 𝕜
 @[simp]
 theorem iteratedFDerivWithin_one_apply (h : UniqueDiffWithinAt 𝕜 s x) (m : Fin 1 → E) :
     iteratedFDerivWithin 𝕜 1 f s x m = fderivWithin 𝕜 f s x (m 0) := by
-  simp only [iteratedFDerivWithin_succ_apply_left, iteratedFDerivWithin_zero_eq_comp,
+  simp [iteratedFDerivWithin_succ_apply_left, iteratedFDerivWithin_zero_eq_comp,
     (continuousMultilinearCurryFin0 𝕜 E F).symm.comp_fderivWithin h]
-  rfl
 
 /-- On a set of unique differentiability, the second derivative is obtained by taking the
 derivative of the derivative. -/
@@ -898,7 +896,8 @@ theorem iteratedFDeriv_succ_eq_comp_right {n : ℕ} :
     iteratedFDeriv 𝕜 (n + 1) f x =
       ((continuousMultilinearCurryRightEquiv' 𝕜 n E F).symm ∘
           iteratedFDeriv 𝕜 n fun y => fderiv 𝕜 f y) x := by
-  ext m; rw [iteratedFDeriv_succ_apply_right]; rfl
+  ext m
+  rw [iteratedFDeriv_succ_apply_right, comp_apply, continuousMultilinearCurryRightEquiv_symm_apply']
 
 theorem norm_iteratedFDeriv_fderiv {n : ℕ} :
     ‖iteratedFDeriv 𝕜 n (fderiv 𝕜 f) x‖ = ‖iteratedFDeriv 𝕜 (n + 1) f x‖ := by
@@ -911,8 +910,7 @@ theorem iteratedFDeriv_one_apply (m : Fin 1 → E) :
 
 lemma iteratedFDeriv_two_apply (f : E → F) (z : E) (m : Fin 2 → E) :
     iteratedFDeriv 𝕜 2 f z m = fderiv 𝕜 (fderiv 𝕜 f) z (m 0) (m 1) := by
-  simp only [iteratedFDeriv_succ_apply_right]
-  rfl
+  simp [iteratedFDeriv_succ_apply_right, init]
 
 /-- The iterated derivative commutes with shifting the function by a constant on the left. -/
 lemma iteratedFDeriv_comp_add_left' (n : ℕ) (a : E) :
