@@ -37,7 +37,7 @@ open scoped ENNReal NNReal Finset
 
 variable {T : Type*} [PseudoEMetricSpace T] {a c : ℝ≥0∞} {n : ℕ} {V J : Finset T} {t : T}
 
-namespace pairReduction
+namespace PairReduction
 
 lemma exists_radius_le (t : T) (V : Finset T) (ha : 1 < a) (c : ℝ≥0∞) :
     ∃ r : ℕ, 1 ≤ r ∧ #(V.filter fun x ↦ edist t x ≤ r * c) ≤ a ^ r := by
