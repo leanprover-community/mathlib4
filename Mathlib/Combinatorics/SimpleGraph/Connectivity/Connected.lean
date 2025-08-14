@@ -191,8 +191,9 @@ lemma Preconnected.degree_pos_of_nontrivial [Nontrivial V] {G : SimpleGraph V} (
 
 lemma Preconnected.minDegree_pos_of_nontrivial [Nontrivial V] [Fintype V] {G : SimpleGraph V}
     [DecidableRel G.Adj] (h : G.Preconnected) : 0 < G.minDegree := by
-  rw [G.exists_minimal_degree_vertex.choose_spec]
-  exact h.degree_pos_of_nontrivial G.exists_minimal_degree_vertex.choose
+  obtain ⟨v, hv⟩ := G.exists_minimal_degree_vertex
+  rw [hv]
+  exact h.degree_pos_of_nontrivial v
 
 lemma adj_of_mem_walk_support {G : SimpleGraph V} {u v : V} (p : G.Walk u v) (hp : ¬p.Nil) {x : V}
     (hx : x ∈ p.support) : ∃ y ∈ p.support, G.Adj x y := by
