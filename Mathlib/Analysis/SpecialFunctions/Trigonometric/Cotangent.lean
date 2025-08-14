@@ -31,15 +31,9 @@ open Real Complex
 
 open scoped UpperHalfPlane
 
-/-- The UpperHalfPlane as a subset of `ℂ`. This is convinient for takind derivatives of functions
-on the upper half plane. -/
-abbrev complexUpperHalfPlane := {z : ℂ | 0 < z.im}
-
-local notation "ℍₒ" => complexUpperHalfPlane
-
-lemma complexUpperHalPlane_isOpen : IsOpen ℍₒ :=  (isOpen_lt continuous_const Complex.continuous_im)
-
 local notation "ℂ_ℤ" => integerComplement
+
+local notation "ℍₒ" => UpperHalfPlane.complexUpperHalfPlane
 
 lemma Complex.cot_eq_exp_ratio (z : ℂ) :
     cot z = (Complex.exp (2 * I * z) + 1) / (I * (1 - Complex.exp (2 * I * z))) := by
