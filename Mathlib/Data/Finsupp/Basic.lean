@@ -182,9 +182,7 @@ variable {F : Type*} [FunLike F M N] [AddMonoidHomClass F M N]
 def mapRange.addMonoidHom (f : M →+ N) : (α →₀ M) →+ α →₀ N where
   toFun := (mapRange f f.map_zero : (α →₀ M) → α →₀ N)
   map_zero' := mapRange_zero
-  -- Porting note: need either `dsimp only` or to specify `hf`:
-  -- see also: https://github.com/leanprover-community/mathlib4/issues/12129
-  map_add' := mapRange_add (hf := f.map_zero) f.map_add
+  map_add' := mapRange_add f.map_add
 
 @[simp]
 theorem mapRange.addMonoidHom_id :
