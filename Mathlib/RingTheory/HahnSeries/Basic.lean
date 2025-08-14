@@ -537,4 +537,31 @@ theorem order_ofForallLtEqZero [Zero Γ] (f : Γ → R) (hf : f ≠ 0) (n : Γ)
 
 end LocallyFiniteLinearOrder
 
+section Truncate
+variable [Zero R]
+
+/-- Zeroes out coefficients of a `HahnSeries` at indices not less than `c`. -/
+def truncLT [PartialOrder Γ] [DecidableLT Γ] (c : Γ) :
+    ZeroHom (HahnSeries Γ R) (HahnSeries Γ R) where
+  toFun x :=
+    { coeff i := if i < c then x.coeff i else 0
+      isPWO_support' := Set.IsPWO.mono x.isPWO_support (by simp) }
+  map_zero' := by ext; simp
+
+@[simp]
+protected theorem coeff_truncLT [PartialOrder Γ] [DecidableLT Γ]
+    (c : Γ) (x : HahnSeries Γ R) (i : Γ) :
+    (truncLT c x).coeff i = if i < c then x.coeff i else 0  := rfl
+
+theorem coeff_truncLT_of_lt [PartialOrder Γ] [DecidableLT Γ]
+    {c i : Γ} (h : i < c) (x : HahnSeries Γ R) : (truncLT c x).coeff i = x.coeff i := by
+  simp [h]
+
+theorem coeff_truncLT_of_le [LinearOrder Γ]
+    {c i : Γ} (h : c ≤ i) (x : HahnSeries Γ R) :
+    (truncLT c x).coeff i = 0 := by
+  simp [h]
+
+end Truncate
+
 end HahnSeries
