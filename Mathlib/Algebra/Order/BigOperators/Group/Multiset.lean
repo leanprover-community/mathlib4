@@ -174,6 +174,6 @@ lemma prod_min_le [CommMonoid α] [LinearOrder α] [IsOrderedMonoid α]
 
 lemma abs_sum_le_sum_abs [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α] {s : Multiset α} :
     |s.sum| ≤ (s.map abs).sum :=
-  le_sum_of_subadditive _ abs_zero abs_add s
+  le_sum_of_subadditive _ abs_zero abs_add_le s
 
 end Multiset

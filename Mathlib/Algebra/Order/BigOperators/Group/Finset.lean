@@ -242,7 +242,7 @@ lemma prod_min_le [CommMonoid M] [LinearOrder M] [IsOrderedMonoid M] {f g : ι �
 
 theorem abs_sum_le_sum_abs {G : Type*} [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G]
     (f : ι → G) (s : Finset ι) :
-    |∑ i ∈ s, f i| ≤ ∑ i ∈ s, |f i| := le_sum_of_subadditive _ abs_zero abs_add s f
+    |∑ i ∈ s, f i| ≤ ∑ i ∈ s, |f i| := le_sum_of_subadditive _ abs_zero abs_add_le s f
 
 theorem abs_sum_of_nonneg {G : Type*} [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G]
     {f : ι → G} {s : Finset ι}

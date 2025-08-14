@@ -37,7 +37,7 @@ instance (priority := 100) LinearOrderedCommGroup.toIsTopologicalGroup :
       rintro ⟨c, d⟩ ⟨hc, hd⟩
       calc
         |c * d / (a * b)|ₘ = |(c / a) * (d / b)|ₘ := by rw [div_mul_div_comm]
-        _ ≤ |c / a|ₘ * |d / b|ₘ := mabs_mul ..
+        _ ≤ |c / a|ₘ * |d / b|ₘ := mabs_mul_le ..
         _ < δ * (ε / δ) := mul_lt_mul_of_lt_of_lt hc hd
         _ = ε := mul_div_cancel ..
     · have (x : G) : ∀ᶠ y in 𝓝 x, y = x :=
