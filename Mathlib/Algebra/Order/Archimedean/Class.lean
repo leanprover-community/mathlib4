@@ -461,13 +461,13 @@ end MulArchimedeanClass
 variable (M) in
 /-- Subtype of `MulArchimedeanClass` that removes the class of `1` (i.e. the top element). -/
 @[to_additive FiniteArchimedeanClass
-"Subtype of `ArchimedeanClass` that removes the class of `0` (i.e. the top element)."]
+/--Subtype of `ArchimedeanClass` that removes the class of `0` (i.e. the top element). -/]
 abbrev FiniteMulArchimedeanClass := {A : MulArchimedeanClass M // A ≠ ⊤}
 
 namespace FiniteMulArchimedeanClass
 
 /-- Create a `FiniteMulArchimedeanClass` from a non-one element. -/
-@[to_additive "Create an `FiniteArchimedeanClass` from a non-zero element."]
+@[to_additive /--Create an `FiniteArchimedeanClass` from a non-zero element.-/]
 def mk (a : M) (h : a ≠ 1) : FiniteMulArchimedeanClass M :=
   ⟨MulArchimedeanClass.mk a, MulArchimedeanClass.mk_eq_top_iff.not.mpr h⟩
 
@@ -483,7 +483,7 @@ theorem mk_lt_mk {a : M} (ha : a ≠ 1) {b : M} (hb : b ≠ 1) :
     mk a ha < mk b hb ↔ MulArchimedeanClass.mk a < MulArchimedeanClass.mk b := .rfl
 
 /-- An induction principle for `FiniteMulArchimedeanClass`. -/
-@[to_additive (attr := elab_as_elim) "An induction principle for `FiniteArchimedeanClass`."]
+@[to_additive (attr := elab_as_elim) /--An induction principle for `FiniteArchimedeanClass`.-/]
 theorem ind {motive : FiniteMulArchimedeanClass M → Prop}
     (mk : ∀ a, (ha : a ≠ 1) → motive (.mk a ha)) : ∀ x, motive x := by
   simpa [FiniteMulArchimedeanClass, MulArchimedeanClass.forall]
@@ -501,7 +501,7 @@ instance [Nontrivial M] : Nonempty (FiniteMulArchimedeanClass M) := by
   exact ⟨mk x hx, by simpa using hx⟩
 
 /-- Lift a `f : {a : M // a ≠ 1} → α` function to `FiniteMulArchimedeanClass M → α`. -/
-@[to_additive "Lift a `f : {a : M // a ≠ 0} → α` function to `FiniteArchimedeanClass M → α`."]
+@[to_additive /--Lift a `f : {a : M // a ≠ 0} → α` function to `FiniteArchimedeanClass M → α`. -/]
 def lift {α : Type*} (f : {a : M // a ≠ 1} → α)
     (h : ∀ (a b : {a : M // a ≠ 1}), mk a.val a.prop = mk b.val b.prop → f a = f b) :
     FiniteMulArchimedeanClass M → α := fun ⟨A, hA⟩ ↦ by
@@ -527,8 +527,8 @@ theorem lift_mk {α : Type*} (f : {a : M // a ≠ 1} → α)
 
 /-- Lift a function `{a : M // a ≠ 1} → α` that's monotone along archimedean classes to a
 monotone function `FiniteMulArchimedeanClass M →o α`. -/
-@[to_additive "Lift a function `{a : M // a ≠ 1} → α` that's monotone along archimedean classes to a
-monotone function `FiniteArchimedeanClass M₁ →o α`."]
+@[to_additive /--Lift a function `{a : M // a ≠ 1} → α` that's monotone along archimedean classes to
+a monotone function `FiniteArchimedeanClass M₁ →o α`. -/]
 noncomputable
 def liftOrderHom {α : Type*} [PartialOrder α]
     (f : {a : M // a ≠ 1} → α)
@@ -549,7 +549,7 @@ theorem liftOrderHom_mk {α : Type*} [PartialOrder α]
 
 variable (M) in
 /-- Adding top to the type of finite classes yields the type of all classes. -/
-@[to_additive "Adding top to the type of finite classes yields the type of all classes."]
+@[to_additive /--Adding top to the type of finite classes yields the type of all classes.-/]
 noncomputable
 def withTopOrderIso : WithTop (FiniteMulArchimedeanClass M) ≃o MulArchimedeanClass M :=
   WithTop.subtypeOrderIso
