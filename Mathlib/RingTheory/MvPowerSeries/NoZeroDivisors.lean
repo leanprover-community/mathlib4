@@ -176,7 +176,7 @@ theorem weightedOrder_mul (w : σ → ℕ) (f g : MvPowerSeries σ R) :
 
 theorem weightedOrder_prod {R : Type*} [CommSemiring R] [NoZeroDivisors R] [Nontrivial R]
     {ι : Type*} (w : σ → ℕ) (f : ι → MvPowerSeries σ R) (s : Finset ι) :
-    (∏ i ∈ s, f i).weightedOrder w = ∑ i ∈ s, (f i).weightedOrder w:= by
+    (∏ i ∈ s, f i).weightedOrder w = ∑ i ∈ s, (f i).weightedOrder w := by
   induction s using Finset.cons_induction with
   | empty => simp
   | cons a s ha ih => rw [Finset.sum_cons ha, Finset.prod_cons ha, weightedOrder_mul, ih]
