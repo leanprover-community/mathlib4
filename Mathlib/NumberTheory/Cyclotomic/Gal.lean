@@ -62,7 +62,7 @@ theorem autToPow_injective : Function.Injective <| hμ.autToPow K := by
     apply AlgEquiv.coe_algHom_injective
     apply (hμ.powerBasis K).algHom_ext
     exact this
-  rw [ZMod.eq_iff_modEq_nat] at hfg
+  rw [ZMod.natCast_eq_natCast_iff] at hfg
   refine (hf.trans ?_).trans hg.symm
   rw [← rootsOfUnity.coe_pow _ hf'.choose, ← rootsOfUnity.coe_pow _ hg'.choose]
   congr 2
@@ -123,7 +123,7 @@ noncomputable def autEquivPow (h : Irreducible (cyclotomic n K)) : (L ≃ₐ[K] 
       simp only [← rootsOfUnity.coe_pow] at key
       replace key := rootsOfUnity.coe_injective key
       rw [pow_eq_pow_iff_modEq, ← Subgroup.orderOf_coe, ← orderOf_units, hζ.val_toRootsOfUnity_coe,
-        ← (zeta_spec n K L).eq_orderOf, ← ZMod.eq_iff_modEq_nat] at key
+        ← (zeta_spec n K L).eq_orderOf, ← ZMod.natCast_eq_natCast_iff] at key
       simp only [ZMod.natCast_val, ZMod.cast_id', id] at key
       exact Units.ext key }
 

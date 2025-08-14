@@ -546,7 +546,7 @@ theorem ZMod.pow_totient {n : ℕ} (x : (ZMod n)ˣ) : x ^ φ n = 1 := by
 /-- The **Fermat-Euler totient theorem**. `ZMod.pow_totient` is an alternative statement
   of the same theorem. -/
 theorem Nat.ModEq.pow_totient {x n : ℕ} (h : Nat.Coprime x n) : x ^ φ n ≡ 1 [MOD n] := by
-  rw [← ZMod.eq_iff_modEq_nat]
+  rw [← ZMod.natCast_eq_natCast_iff]
   let x' : Units (ZMod n) := ZMod.unitOfCoprime _ h
   have := ZMod.pow_totient x'
   apply_fun ((fun (x : Units (ZMod n)) => (x : ZMod n)) : Units (ZMod n) → ZMod n) at this
@@ -660,7 +660,7 @@ theorem ZMod.eq_one_or_isUnit_sub_one {n p k : ℕ} [Fact p.Prime] (hn : n = p ^
   obtain ⟨a, rfl⟩ := ZMod.natCast_zmod_surjective a
   rw [← orderOf_eq_one_iff, or_iff_not_imp_right]
   refine fun h ↦ ha.eq_one_of_dvd ?_
-  rw [orderOf_dvd_iff_pow_eq_one, ← Nat.cast_pow, ← Nat.cast_one, ZMod.eq_iff_modEq_nat, hn]
+  rw [orderOf_dvd_iff_pow_eq_one, ← Nat.cast_pow, ← Nat.cast_one, ZMod.natCast_eq_natCast_iff, hn]
   replace ha0 : 1 ≤ a := by
     contrapose! ha0
     rw [Nat.lt_one_iff.mp ha0, Nat.cast_zero]
