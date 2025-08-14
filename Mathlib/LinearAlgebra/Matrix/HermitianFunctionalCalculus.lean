@@ -51,15 +51,13 @@ variable (hA : IsHermitian A)
 theorem spectrum_eq_image_range :
     spectrum 𝕜 A = RCLike.ofReal '' Set.range hA.eigenvalues := Set.ext fun x => by
   conv_lhs => rw [hA.spectral_theorem]
-  simp [unitary.spectrum.unitary_conjugate, spectrum_diagonal]
+  simp
 
 /-- The `ℝ`-spectrum of a Hermitian matrix over `RCLike` field is the range of the eigenvalue
 function. -/
 theorem spectrum_real_eq_range_eigenvalues :
-    spectrum ℝ A = Set.range hA.eigenvalues := by
-  ext x
-  conv_lhs => rw [hA.spectral_theorem, unitary.spectrum.unitary_conjugate,
-  ← spectrum.algebraMap_mem_iff 𝕜, spectrum_diagonal, RCLike.algebraMap_eq_ofReal]
+    spectrum ℝ A = Set.range hA.eigenvalues := Set.ext fun x => by
+  conv_lhs => rw [hA.spectral_theorem, ← spectrum.algebraMap_mem_iff 𝕜]
   simp
 
 @[deprecated (since := "14-08-2025")] alias eigenvalues_eq_spectrum_real :=
