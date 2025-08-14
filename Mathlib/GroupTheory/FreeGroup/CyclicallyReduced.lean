@@ -25,9 +25,9 @@ variable {L L₁ L₂ : List (α × Bool)}
 /-- Predicate asserting that the word `L` is cyclically reduced, i.e., it is reduced and furthermore
 the first and the last letter of the word do not cancel. The empty word is by convention also
 cyclically reduced. -/
-@[to_additive "Predicate asserting that the word `L` is cyclically reduced, i.e., it is reduced and
-furthermore the first and the last letter of the word do not cancel. The empty word is by convention
-also cyclically reduced."]
+@[to_additive /-- Predicate asserting that the word `L` is cyclically reduced, i.e., it is reduced
+and furthermore the first and the last letter of the word do not cancel. The empty word is by
+convention also cyclically reduced. -/]
 def IsCyclicallyReduced (L : List (α × Bool)) : Prop :=
   IsReduced L ∧ ∀ a ∈ L.getLast?, ∀ b ∈ L.head?, a.1 = b.1 → a.2 = b.2
 
