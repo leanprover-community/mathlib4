@@ -118,6 +118,9 @@ theorem length_eq_two {l : List α} : l.length = 2 ↔ ∃ a b, l = [a, b] :=
 theorem length_eq_three {l : List α} : l.length = 3 ↔ ∃ a b c, l = [a, b, c] :=
   ⟨fun _ => let [a, b, c] := l; ⟨a, b, c, rfl⟩, fun ⟨_, _, _, e⟩ => e ▸ rfl⟩
 
+theorem length_eq_four {l : List α} : l.length = 4 ↔ ∃ a b c d, l = [a, b, c, d] :=
+  ⟨fun _ => let [a, b, c, d] := l; ⟨a, b, c, d, rfl⟩, fun ⟨_, _, _, _, e⟩ => e ▸ rfl⟩
+
 /-! ### set-theoretic notation of lists -/
 
 instance instSingletonList : Singleton α (List α) := ⟨fun x => [x]⟩
@@ -520,13 +523,9 @@ variable [DecidableEq α]
 theorem idxOf_cons_eq {a b : α} (l : List α) : b = a → idxOf a (b :: l) = 0
   | e => by rw [← e]; exact idxOf_cons_self
 
-@[deprecated (since := "2025-01-30")] alias indexOf_cons_eq := idxOf_cons_eq
-
 @[simp]
 theorem idxOf_cons_ne {a b : α} (l : List α) : b ≠ a → idxOf a (b :: l) = succ (idxOf a l)
   | h => by simp only [idxOf_cons, Bool.cond_eq_ite, beq_iff_eq, if_neg h]
-
-@[deprecated (since := "2025-01-30")] alias indexOf_cons_ne := idxOf_cons_ne
 
 theorem idxOf_eq_length_iff {a : α} {l : List α} : idxOf a l = length l ↔ a ∉ l := by
   induction l with
@@ -546,12 +545,6 @@ theorem idxOf_of_notMem {l : List α} {a : α} : a ∉ l → idxOf a l = length 
 
 @[deprecated (since := "2025-05-23")] alias idxOf_of_not_mem := idxOf_of_notMem
 
-@[deprecated (since := "2025-01-30")] alias indexOf_of_not_mem := idxOf_of_notMem
-
-@[deprecated (since := "2025-01-30")] alias indexOf_le_length := idxOf_le_length
-
-@[deprecated (since := "2025-01-30")] alias indexOf_lt_length_iff := idxOf_lt_length_iff
-
 theorem idxOf_append_of_mem {a : α} (h : a ∈ l₁) : idxOf a (l₁ ++ l₂) = idxOf a l₁ := by
   induction l₁ with
   | nil =>
@@ -563,8 +556,6 @@ theorem idxOf_append_of_mem {a : α} (h : a ∈ l₁) : idxOf a (l₁ ++ l₂) =
     · iterate 2 rw [idxOf_cons_eq _ hh]
     rw [idxOf_cons_ne _ hh, idxOf_cons_ne _ hh, ih (mem_of_ne_of_mem (Ne.symm hh) h)]
 
-@[deprecated (since := "2025-01-30")] alias indexOf_append_of_mem := idxOf_append_of_mem
-
 theorem idxOf_append_of_notMem {a : α} (h : a ∉ l₁) :
     idxOf a (l₁ ++ l₂) = l₁.length + idxOf a l₂ := by
   induction l₁ with
@@ -574,8 +565,6 @@ theorem idxOf_append_of_notMem {a : α} (h : a ∉ l₁) :
       ih (not_mem_of_not_mem_cons h), Nat.succ_add]
 
 @[deprecated (since := "2025-05-23")] alias idxOf_append_of_not_mem := idxOf_append_of_notMem
-
-@[deprecated (since := "2025-01-30")] alias indexOf_append_of_not_mem := idxOf_append_of_notMem
 
 end IndexOf
 
@@ -636,23 +625,17 @@ theorem getElem_idxOf [DecidableEq α] {a : α} : ∀ {l : List α} (h : idxOf a
     by_cases h' : b = a <;>
     simp [h', getElem_idxOf]
 
-@[deprecated (since := "2025-01-30")] alias getElem_indexOf := getElem_idxOf
-
 -- This is incorrectly named and should be `get_idxOf`;
 -- this already exists, so will require a deprecation dance.
 theorem idxOf_get [DecidableEq α] {a : α} {l : List α} (h) : get l ⟨idxOf a l, h⟩ = a := by
   simp
-
-@[deprecated (since := "2025-01-30")] alias indexOf_get := idxOf_get
 
 @[simp]
 theorem getElem?_idxOf [DecidableEq α] {a : α} {l : List α} (h : a ∈ l) :
     l[idxOf a l]? = some a := by
   rw [getElem?_eq_getElem, getElem_idxOf (idxOf_lt_length_iff.2 h)]
 
-@[deprecated (since := "2025-01-30")] alias getElem?_indexOf := getElem?_idxOf
 @[deprecated (since := "2025-02-15")] alias idxOf_get? := getElem?_idxOf
-@[deprecated (since := "2025-01-30")] alias indexOf_get? := getElem?_idxOf
 
 theorem idxOf_inj [DecidableEq α] {l : List α} {x y : α} (hx : x ∈ l) (hy : y ∈ l) :
     idxOf x l = idxOf y l ↔ x = y :=
@@ -662,8 +645,6 @@ theorem idxOf_inj [DecidableEq α] {l : List α} {x y : α} (hx : x ∈ l) (hy :
         get l ⟨idxOf y l, idxOf_lt_length_iff.2 hy⟩ := by
       simp only [h]
     simp only [idxOf_get] at x_eq_y; exact x_eq_y, fun h => by subst h; rfl⟩
-
-@[deprecated (since := "2025-01-30")] alias indexOf_inj := idxOf_inj
 
 theorem get_reverse' (l : List α) (n) (hn') :
     l.reverse.get n = l.get ⟨l.length - 1 - n, hn'⟩ := by

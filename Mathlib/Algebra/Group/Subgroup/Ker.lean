@@ -145,12 +145,6 @@ theorem _root_.Subgroup.range_subtype (H : Subgroup G) : H.subtype.range = H :=
 @[to_additive]
 alias _root_.Subgroup.subtype_range := Subgroup.range_subtype
 
--- `alias` doesn't add the deprecation suggestion to the `to_additive` version
--- see https://github.com/leanprover-community/mathlib4/issues/19424
-attribute [deprecated Subgroup.range_subtype (since := "2024-11-26")] _root_.Subgroup.subtype_range
-attribute [deprecated AddSubgroup.range_subtype (since := "2024-11-26")]
-_root_.AddSubgroup.subtype_range
-
 @[to_additive (attr := simp)]
 theorem _root_.Subgroup.inclusion_range {H K : Subgroup G} (h_le : H ≤ K) :
     (inclusion h_le).range = H.subgroupOf K :=

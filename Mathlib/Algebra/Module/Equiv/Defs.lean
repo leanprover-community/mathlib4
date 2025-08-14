@@ -352,11 +352,9 @@ theorem apply_symm_apply (c : M₂) : e (e.symm c) = c :=
 theorem symm_apply_apply (b : M) : e.symm (e b) = b :=
   e.left_inv b
 
-@[simp]
 theorem comp_symm : e.toLinearMap ∘ₛₗ e.symm.toLinearMap = LinearMap.id :=
   LinearMap.ext e.apply_symm_apply
 
-@[simp]
 theorem symm_comp : e.symm.toLinearMap ∘ₛₗ e.toLinearMap = LinearMap.id :=
   LinearMap.ext e.symm_apply_apply
 
@@ -393,6 +391,11 @@ theorem eq_symm_comp {α : Type*} (f : α → M₁) (g : α → M₂) : f = e₁
 
 theorem symm_comp_eq {α : Type*} (f : α → M₁) (g : α → M₂) : e₁₂.symm ∘ g = f ↔ g = e₁₂ ∘ f :=
   e₁₂.toEquiv.symm_comp_eq f g
+
+@[simp]
+theorem comp_coe (f : M₁ ≃ₛₗ[σ₁₂] M₂) (f' : M₂ ≃ₛₗ[σ₂₃] M₃) :
+    (f' : M₂ →ₛₗ[σ₂₃] M₃).comp (f : M₁ →ₛₗ[σ₁₂] M₂) = (f.trans f' : M₁ ≃ₛₗ[σ₁₃] M₃) :=
+  rfl
 
 lemma trans_assoc (e₁₂ : M₁ ≃ₛₗ[σ₁₂] M₂) (e₂₃ : M₂ ≃ₛₗ[σ₂₃] M₃) (e₃₄ : M₃ ≃ₛₗ[σ₃₄] M₄) :
     (e₁₂.trans e₂₃).trans e₃₄ = e₁₂.trans (e₂₃.trans e₃₄) := rfl
@@ -475,11 +478,6 @@ theorem symm_trans_self (f : M₁ ≃ₛₗ[σ₁₂] M₂) : f.symm.trans f = L
 
 @[simp]
 theorem refl_toLinearMap [Module R M] : (LinearEquiv.refl R M : M →ₗ[R] M) = LinearMap.id :=
-  rfl
-
-@[simp]
-theorem comp_coe [Module R M] [Module R M₂] [Module R M₃] (f : M ≃ₗ[R] M₂) (f' : M₂ ≃ₗ[R] M₃) :
-    (f' : M₂ →ₗ[R] M₃).comp (f : M →ₗ[R] M₂) = (f.trans f' : M ≃ₗ[R] M₃) :=
   rfl
 
 @[simp]
