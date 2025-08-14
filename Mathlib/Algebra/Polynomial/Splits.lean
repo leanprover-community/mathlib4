@@ -92,7 +92,7 @@ theorem splits_mul {f g : K[X]} (hf : Splits i f) (hg : Splits i g) : Splits i (
   letI := Classical.decEq L
   if h : (f * g).map i = 0 then Or.inl h
   else
-    Or.inr @fun p hp hpf =>
+    Or.inr fun {p} hp hpf =>
       ((irreducible_iff_prime.1 hp).2.2 _ _
             (show p ∣ map i f * map i g by convert hpf; rw [Polynomial.map_mul])).elim
         (hf.resolve_left (fun hf => by simp [hf] at h) hp)
@@ -100,9 +100,9 @@ theorem splits_mul {f g : K[X]} (hf : Splits i f) (hg : Splits i g) : Splits i (
 
 theorem splits_of_splits_mul' {f g : K[X]} (hfg : (f * g).map i ≠ 0) (h : Splits i (f * g)) :
     Splits i f ∧ Splits i g :=
-  ⟨Or.inr @fun g hgi hg =>
+  ⟨Or.inr fun {g} hgi hg =>
       Or.resolve_left h hfg hgi (by rw [Polynomial.map_mul]; exact hg.trans (dvd_mul_right _ _)),
-    Or.inr @fun g hgi hg =>
+    Or.inr fun {g} hgi hg =>
       Or.resolve_left h hfg hgi (by rw [Polynomial.map_mul]; exact hg.trans (dvd_mul_left _ _))⟩
 
 theorem splits_map_iff {L : Type*} [CommRing L] (i : K →+* L) (j : L →+* F) {f : K[X]} :
@@ -465,7 +465,7 @@ theorem splits_of_exists_multiset {f : K[X]} {s : Multiset L}
   letI := Classical.decEq K
   if hf0 : f = 0 then hf0.symm ▸ splits_zero i
   else
-    Or.inr @fun p hp hdp => by
+    Or.inr fun {p} hp hdp => by
       rw [irreducible_iff_prime] at hp
       rw [hs, ← Multiset.prod_toList] at hdp
       obtain hd | hd := hp.2.2 _ _ hdp
