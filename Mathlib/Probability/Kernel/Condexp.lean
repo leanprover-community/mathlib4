@@ -117,12 +117,7 @@ section Measurability
 variable [NormedAddCommGroup F] {f : Ω → F}
 
 theorem measurable_condExpKernel {s : Set Ω} (hs : MeasurableSet s) :
-    Measurable[m] fun ω => condExpKernel μ m ω s := by
-  nontriviality Ω
-  simp_rw [condExpKernel_apply_eq_condDistrib]
-  refine Measurable.mono ?_ (inf_le_left : m ⊓ mΩ ≤ m) le_rfl
-  convert measurable_condDistrib (μ := μ) hs
-  rw [MeasurableSpace.comap_id]
+    Measurable[m] fun ω => condExpKernel μ m ω s := Kernel.measurable_coe (condExpKernel μ m) hs
 
 @[deprecated (since := "2025-01-21")] alias measurable_condexpKernel := measurable_condExpKernel
 
