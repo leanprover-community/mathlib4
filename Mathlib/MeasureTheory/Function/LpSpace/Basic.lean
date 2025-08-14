@@ -938,6 +938,12 @@ noncomputable instance {p : ℝ≥0∞} : InvolutiveStar (Lp R p μ) where
      filter_upwards
      exact congrFun (congrArg AEEqFun.cast <| star_involutive f.1)
 
+noncomputable instance [TrivialStar R] {p : ℝ≥0∞} : TrivialStar (Lp R p μ) where
+  star_trivial f := by
+     ext
+     filter_upwards
+     exact congrFun (congrArg AEEqFun.cast <| star_trivial f.1)
+
 end Star
 
 @[deprecated (since := "2025-01-20")] alias pow_mul_meas_ge_le_norm := pow_mul_meas_ge_le_enorm
