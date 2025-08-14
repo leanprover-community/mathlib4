@@ -605,7 +605,8 @@ theorem sign_kerParam_apply_apply :
 
 theorem cycleType_kerParam_apply_apply :
     cycleType (kerParam g ⟨k, v⟩) = cycleType k + ∑ c, (v c).val.cycleType := by
-  let U := SetLike.coe (Finset.univ : Finset { x // x ∈ g.cycleFactorsFinset })
+  let U : Set { x // x ∈ g.cycleFactorsFinset } :=
+    (Finset.univ : Finset { x // x ∈ g.cycleFactorsFinset })
   have hU : U.Pairwise fun i j ↦ (v i).val.Disjoint (v j).val := fun c _ d _ h ↦ by
     obtain ⟨m, hm⟩ := (v c).prop
     obtain ⟨n, hn⟩ := (v d).prop

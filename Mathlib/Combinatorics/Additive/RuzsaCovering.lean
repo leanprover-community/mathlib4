@@ -32,7 +32,7 @@ variable [DecidableEq G] {A B : Finset G}
 theorem ruzsa_covering_mul (hB : B.Nonempty) (hK : #(A * B) ≤ K * #B) :
     ∃ F ⊆ A, #F ≤ K ∧ A ⊆ F * (B / B) := by
   haveI : ∀ F, Decidable ((F : Set G).PairwiseDisjoint (· • B)) := fun F ↦ Classical.dec _
-  set C := {F ∈ A.powerset | (SetLike.coe F).PairwiseDisjoint (· • B)}
+  set C := {F ∈ A.powerset | ((F : Finset G) : Set G).PairwiseDisjoint (· • B)}
   obtain ⟨F, hFmax⟩ := C.exists_maximal <| filter_nonempty_iff.2
     ⟨∅, empty_mem_powerset _, by simp [coe_empty]⟩
   simp only [C, mem_filter, mem_powerset] at hFmax
