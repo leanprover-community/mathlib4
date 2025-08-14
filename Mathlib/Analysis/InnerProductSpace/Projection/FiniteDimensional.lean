@@ -283,7 +283,7 @@ theorem OrthogonalFamily.projection_directSum_coeAddHom [DecidableEq ι] {V : ι
   | zero => simp
   | of j x =>
     simp_rw [DirectSum.coeAddMonoidHom_of, DirectSum.of]
-      -- Porting note: was in the previous `simp_rw`, no longer works
+    -- Porting note: was in the previous `simp_rw`, no longer works
     -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [DFinsupp.singleAddHom_apply]
     obtain rfl | hij := Decidable.eq_or_ne i j
