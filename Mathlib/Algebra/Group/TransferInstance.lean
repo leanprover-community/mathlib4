@@ -165,13 +165,23 @@ protected abbrev commGroup [CommGroup β] : CommGroup α := by
   let zpow := e.pow ℤ
   apply e.injective.commGroup _ <;> intros <;> exact e.apply_symm_apply _
 
-variable (M) [Monoid M] in
+variable (M) [Monoid M] (N : Type*) [Monoid N]
+
 /-- Transfer `MulAction` across an `Equiv` -/
 @[to_additive /-- Transfer `AddAction` across an `Equiv` -/]
 protected abbrev mulAction (e : α ≃ β) [MulAction M β] : MulAction M α where
   __ := e.smul M
   one_smul := by simp [smul_def]
   mul_smul := by simp [smul_def, mul_smul]
+
+/-- Transfer `SMulCommClass` across an `Equiv` -/
+protected abbrev smulCommClass (e : α ≃ β) [SMul M β] [SMul N β] [SMulCommClass M N β] :
+    letI := Equiv.smul M e
+    letI := Equiv.smul N e
+    SMulCommClass M N α :=
+  letI := Equiv.smul M e
+  letI := Equiv.smul N e
+  { smul_comm m n x := by simp [Equiv.smul_def,Equiv.apply_symm_apply, smul_comm m n] }
 
 end Equiv
 

@@ -79,12 +79,12 @@ groups. -/
 def congrLinearEquiv (e : M ≃ₛₗ[σ] N) : GeneralLinearGroup R M ≃* GeneralLinearGroup S N :=
   Units.mapEquiv (LinearEquiv.conjRingEquiv e).toMulEquiv
 
-@[simp] lemma compLinearEquiv_apply (e : M ≃ₛₗ[σ] N) (g : GeneralLinearGroup R M) :
-    compLinearEquiv e g = ofLinearEquiv (e.symm.trans <| g.toLinearEquiv.trans e) :=
+@[simp] lemma congrLinearEquiv_apply (e : M ≃ₛₗ[σ] N) (g : GeneralLinearGroup R M) :
+    congrLinearEquiv e g = ofLinearEquiv (e.symm.trans <| g.toLinearEquiv.trans e) :=
   rfl
 
-@[simp] lemma compLinearEquiv_symm (e : M ≃ₛₗ[σ] N) :
-    (compLinearEquiv e).symm = compLinearEquiv e.symm :=
+@[simp] lemma congrLinearEquiv_symm (e : M ≃ₛₗ[σ] N) :
+    (congrLinearEquiv e).symm = congrLinearEquiv e.symm :=
   rfl
 
 end Functoriality
