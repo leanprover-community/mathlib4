@@ -392,11 +392,11 @@ theorem cycleIcc_eq [NeZero n] : cycleIcc i i = 1 := by
   · simp [cycleIcc_of_gt ch]
 
 @[simp]
-theorem cycleIcc_gt (hij : j < i) : cycleIcc i j = 1 := by
+theorem cycleIcc_gt (hij : i < j) : cycleIcc j i = 1 := by
   simp [cycleIcc, hij]
 
 @[simp]
-theorem cycleIcc_ge (hij : j ≤ i) [NeZero n] : cycleIcc i j = 1 := by
+theorem cycleIcc_ge (hij : i ≤ j) [NeZero n] : cycleIcc j i = 1 := by
   rcases Fin.lt_or_eq_of_le hij with hij | hij
   · exact cycleIcc_gt hij
   · rw [hij, ← cycleIcc_eq]
@@ -407,7 +407,7 @@ theorem sign_cycleIcc_of_le (hij : i ≤ j) : Perm.sign (cycleIcc i j) = (-1) ^ 
 theorem sign_cycleIcc_of_eq : Perm.sign (cycleIcc i i) = 1 := by
   rw [sign_cycleIcc_of_le (Fin.ge_of_eq rfl), tsub_self, pow_zero]
 
-theorem sign_cycleIcc_of_ge (hij : j ≤ i) : Perm.sign (cycleIcc i j) = 1 := by
+theorem sign_cycleIcc_of_ge (hij : i ≤ j) : Perm.sign (cycleIcc j i) = 1 := by
   rcases Fin.lt_or_eq_of_le hij with hij | hij
   · simp [cycleIcc, Fin.not_le.mpr hij]
   · rw [hij, sign_cycleIcc_of_eq]
@@ -421,7 +421,7 @@ theorem cycleType_cycleIcc_of_lt (hij : i < j) :
   simpa [cycleIcc, le_of_lt hij, cycleType_cycleRange (castLT_sub_nezero hij)] using sub_val_of_le
     (le_of_lt hij)
 
-theorem cycleType_cycleIcc_of_ge (hij : j ≤ i) [NeZero n] : Perm.cycleType (cycleIcc i j) = ∅ := by
+theorem cycleType_cycleIcc_of_ge (hij : i ≤ j) [NeZero n] : Perm.cycleType (cycleIcc j i) = ∅ := by
   simpa using cycleIcc_ge hij
 
 theorem cycleIcc_zero_eq_cycleRange (i : Fin n) [NeZero n] : cycleIcc 0 i = cycleRange i := by
@@ -448,12 +448,12 @@ theorem cycleIcc.trans [NeZero n] (hij : i ≤ j) (hjk : j ≤ k) :
     · exact val_eq_of_eq (cycleIcc_of_last hij)
     · simp [cycleIcc_of_gt (lt_of_le_of_lt ch2 (lt_add_one_of_succ_lt (by omega)))]
 
-theorem cycleIcc.trans_left_one [NeZero n] (hij : j ≤ i) :
-    (cycleIcc i j) ∘ (cycleIcc j k) = cycleIcc j k := by
+theorem cycleIcc.trans_left_one [NeZero n] (hij : i ≤ j) :
+    (cycleIcc j i) ∘ (cycleIcc i k) = cycleIcc i k := by
   simp [hij]
 
-theorem cycleIcc.trans_right_one [NeZero n] (hjk : k ≤ j) :
-    (cycleIcc i j) ∘ (cycleIcc j k) = cycleIcc i j := by
+theorem cycleIcc.trans_right_one [NeZero n] (hjk : j ≤ k) :
+    (cycleIcc i k) ∘ (cycleIcc k j) = cycleIcc i k := by
   simp [hjk]
 
 end Fin
