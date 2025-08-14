@@ -187,6 +187,8 @@ def mkModName (fname : System.FilePath) : String :=
   ".".intercalate cpts
 
 #guard mkModName ("Mathlib" / "Data" / "Nat" / "Basic.lean") == "Mathlib.Data.Nat.Basic"
+#guard mkModName "" == ""
+#guard mkModName ("" / "") == "."
 
 /--
 `deprecateFilePath fname rename comment` takes as input
