@@ -374,7 +374,8 @@ theorem completeSpace_extension {m : β → α} (hm : IsUniformInducing m) (dens
         have hg : p (Prod.swap ⁻¹' s₁) t ×ˢ p s₂ t ∈ g ×ˢ g := @prod_mem_prod α α _ _ g g hg₁ hg₂
         (g ×ˢ g).sets_of_superset hg fun ⟨_, _⟩ ⟨⟨c₁, c₁t, hc₁⟩, ⟨c₂, c₂t, hc₂⟩⟩ =>
           have : (c₁, c₂) ∈ t ×ˢ t := ⟨c₁t, c₂t⟩
-          comp_s₁ <| SetRel.prodMk_mem_comp hc₁ <| comp_s₂ <| SetRel.prodMk_mem_comp (prod_t this) hc₂⟩
+          comp_s₁ <| SetRel.prodMk_mem_comp hc₁ <| comp_s₂ <|
+            SetRel.prodMk_mem_comp (prod_t this) hc₂⟩
     have : Cauchy (Filter.comap m g) := ‹Cauchy g›.comap' (le_of_eq hm.comap_uniformity) ‹_›
     let ⟨x, (hx : map m (Filter.comap m g) ≤ 𝓝 x)⟩ := h _ this
     have : ClusterPt x (map m (Filter.comap m g)) :=
