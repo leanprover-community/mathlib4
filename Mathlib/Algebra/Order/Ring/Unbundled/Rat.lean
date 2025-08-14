@@ -197,9 +197,9 @@ instance instPreorder : Preorder ℚ := inferInstance
 
 /-! ### Miscellaneous lemmas -/
 
-protected lemma le_def : p ≤ q ↔ p.num * q.den ≤ q.num * p.den := Rat.le_iff p q
+@[deprecated (since := "2025-08-14")] alias le_def := Rat.le_iff
 
-protected lemma lt_def : p < q ↔ p.num * q.den < q.num * p.den := Rat.lt_iff p q
+@[deprecated (since := "2025-08-14")] alias lt_def := Rat.lt_iff
 
 protected theorem add_le_add_left {a b c : ℚ} : c + a ≤ c + b ↔ a ≤ b := by
   rw [Rat.le_iff_sub_nonneg, add_sub_add_left_eq_sub, ← Rat.le_iff_sub_nonneg]
@@ -219,7 +219,7 @@ theorem div_lt_div_iff_mul_lt_mul {a b c d : ℤ} (b_pos : 0 < b) (d_pos : 0 < d
   · simp [div_def', Rat.divInt_le_divInt b_pos d_pos]
   · simp [div_def', Rat.divInt_le_divInt d_pos b_pos]
 
-theorem lt_one_iff_num_lt_denom {q : ℚ} : q < 1 ↔ q.num < q.den := by simp [Rat.lt_def]
+theorem lt_one_iff_num_lt_denom {q : ℚ} : q < 1 ↔ q.num < q.den := by simp [Rat.lt_iff]
 
 theorem abs_def (q : ℚ) : |q| = q.num.natAbs /. q.den := by
   rcases le_total q 0 with hq | hq
