@@ -103,8 +103,7 @@ theorem wEquiv.abs' {α : TypeVec n} (x y : q.P.W α)
   intro a₁ f'₁ f₁
   apply WEquiv.abs
 
-theorem wEquiv.refl {α : TypeVec n} (x : q.P.W α) : WEquiv x x := by
-  apply q.P.w_cases _ x; intro a f' f; exact WEquiv.abs a f' f a f' f rfl
+theorem wEquiv.refl {α : TypeVec n} (x : q.P.W α) : WEquiv x x := abs' x x rfl
 
 theorem wEquiv.symm {α : TypeVec n} (x y : q.P.W α) : WEquiv x y → WEquiv y x := by
   intro h; induction h with
