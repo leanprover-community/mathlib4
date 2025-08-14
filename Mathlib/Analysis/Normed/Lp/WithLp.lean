@@ -46,7 +46,7 @@ universe uK uK' uV
 forgets the norm structure on `V`; it is up to downstream users to implement the L`p` norm (for
 instance, on `Prod` and finite `Pi` types). -/
 @[nolint unusedArguments]
-structure WithLp (_p : ℝ≥0∞) (V : Type uV) : Type uV where
+structure WithLp (p : ℝ≥0∞) (V : Type uV) : Type uV where
   /-- Converts an element of `V` to an element of `WithLp p V`. One should use `toLp` instead
   so that `p` is explicit. -/
   toLp' ::
