@@ -1080,16 +1080,7 @@ theorem iIndepFun.indepFun_finset (S T : Finset ι) (hST : Disjoint S T)
     ext1 x
     simp_rw [Set.mem_inter_iff, Set.mem_iInter, Set.mem_preimage, Finset.mem_union]
     constructor <;> intro h
-    · intro i hi
-      rcases hi with hiS | hiT
-      · replace h := h.1 i hiS
-        simp_rw [sets_s', sets_t', dif_pos hiS, dif_neg (Finset.disjoint_left.mp hST hiS)]
-        simp only [sets_s'] at h
-        exact ⟨by rwa [dif_pos hiS] at h, Set.mem_univ _⟩
-      · replace h := h.2 i hiT
-        simp_rw [sets_s', sets_t', dif_pos hiT, dif_neg (Finset.disjoint_right.mp hST hiT)]
-        simp only [sets_t'] at h
-        exact ⟨Set.mem_univ _, by rwa [dif_pos hiT] at h⟩
+    · grind
     · exact ⟨fun i hi => (h i (Or.inl hi)).1, fun i hi => (h i (Or.inr hi)).2⟩
   have h_meas_inter : ∀ i ∈ S ∪ T, MeasurableSet (sets_s' i ∩ sets_t' i) := by
     intros i hi_mem
