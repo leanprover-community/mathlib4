@@ -49,19 +49,11 @@ theorem lintegral_rpow_enorm_lt_top_of_eLpNorm'_lt_top {f : α → ε} (hq0_lt :
   rw [lintegral_rpow_enorm_eq_rpow_eLpNorm' hq0_lt]
   exact ENNReal.rpow_lt_top_of_nonneg (le_of_lt hq0_lt) (ne_of_lt hfq)
 
-@[deprecated (since := "2025-01-17")]
-alias lintegral_rpow_nnnorm_lt_top_of_eLpNorm'_lt_top' :=
-  lintegral_rpow_enorm_lt_top_of_eLpNorm'_lt_top
-
 theorem lintegral_rpow_enorm_lt_top_of_eLpNorm_lt_top {f : α → ε} (hp_ne_zero : p ≠ 0)
     (hp_ne_top : p ≠ ∞) (hfp : eLpNorm f p μ < ∞) : ∫⁻ a, ‖f a‖ₑ ^ p.toReal ∂μ < ∞ := by
   apply lintegral_rpow_enorm_lt_top_of_eLpNorm'_lt_top
   · exact ENNReal.toReal_pos hp_ne_zero hp_ne_top
   · simpa [eLpNorm_eq_eLpNorm' hp_ne_zero hp_ne_top] using hfp
-
-@[deprecated (since := "2025-01-17")]
-alias lintegral_rpow_nnnorm_lt_top_of_eLpNorm_lt_top :=
-  lintegral_rpow_enorm_lt_top_of_eLpNorm_lt_top
 
 theorem eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top {f : α → ε} (hp_ne_zero : p ≠ 0)
     (hp_ne_top : p ≠ ∞) : eLpNorm f p μ < ∞ ↔ ∫⁻ a, (‖f a‖ₑ) ^ p.toReal ∂μ < ∞ :=
@@ -130,9 +122,6 @@ theorem eLpNorm_zero' : eLpNorm (fun _ : α => (0 : ε)) p μ = 0 := eLpNorm_zer
 
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.zero' := MemLp.zero'
-
-@[deprecated (since := "2025-01-21")] alias zero_memℒp := MemLp.zero
-@[deprecated (since := "2025-01-21")] alias zero_mem_ℒp := MemLp.zero'
 
 variable [MeasurableSpace α]
 

@@ -432,8 +432,6 @@ theorem tendsto_ae_condExp (g : Ω → ℝ) :
   filter_upwards [heq, ht] with x hxeq hxt
   exact hxt.congr hxeq
 
-@[deprecated (since := "2025-01-21")] alias tendsto_ae_condexp := tendsto_ae_condExp
-
 /-- **Lévy's upward theorem**, L¹ version: given a function `g` and a filtration `ℱ`, the
 sequence defined by `𝔼[g | ℱ n]` converges in L¹ to `𝔼[g | ⨆ n, ℱ n]`. -/
 theorem tendsto_eLpNorm_condExp (g : Ω → ℝ) :
@@ -445,8 +443,6 @@ theorem tendsto_eLpNorm_condExp (g : Ω → ℝ) :
   refine ht.congr fun n => eLpNorm_congr_ae ?_
   filter_upwards [heq n] with x hxeq
   simp only [hxeq, Pi.sub_apply]
-
-@[deprecated (since := "2025-01-21")] alias tendsto_eLpNorm_condexp := tendsto_eLpNorm_condExp
 
 end L1Convergence
 

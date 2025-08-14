@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.MeasureTheory.Function.LpSeminorm.Trim
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.Inner
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp
 
 /-! # Functions a.e. measurable with respect to a sub-σ-algebra
@@ -40,90 +39,6 @@ open scoped ENNReal MeasureTheory
 
 namespace MeasureTheory
 
-/-- A function `f` verifies `AEStronglyMeasurable[m] f μ` if it is `μ`-a.e. equal to
-an `m`-strongly measurable function. This is similar to `AEStronglyMeasurable`, but the
-`MeasurableSpace` structures used for the measurability statement and for the measure are
-different. -/
-@[deprecated AEStronglyMeasurable (since := "2025-01-23")]
-def AEStronglyMeasurable' {α β} [TopologicalSpace β] (m : MeasurableSpace α)
-    {_ : MeasurableSpace α} (f : α → β) (μ : Measure α) : Prop := AEStronglyMeasurable[m] f μ
-
-namespace AEStronglyMeasurable'
-
-variable {α β 𝕜 : Type*} {m m0 : MeasurableSpace α} {μ : Measure α} [TopologicalSpace β]
-  {f g : α → β}
-
-@[deprecated AEStronglyMeasurable.congr (since := "2025-01-23")]
-theorem congr (hf : AEStronglyMeasurable[m] f μ) (hfg : f =ᵐ[μ] g) :
-    AEStronglyMeasurable[m] g μ := AEStronglyMeasurable.congr hf hfg
-
-@[deprecated AEStronglyMeasurable.mono (since := "2025-01-23")]
-theorem mono {m'} (hf : AEStronglyMeasurable[m] f μ) (hm : m ≤ m') :
-    AEStronglyMeasurable[m'] f μ := AEStronglyMeasurable.mono hm hf
-
-@[deprecated AEStronglyMeasurable.add (since := "2025-01-23")]
-theorem add [Add β] [ContinuousAdd β] (hf : AEStronglyMeasurable[m] f μ)
-    (hg : AEStronglyMeasurable[m] g μ) : AEStronglyMeasurable[m] (f + g) μ :=
-  AEStronglyMeasurable.add hf hg
-
-@[deprecated AEStronglyMeasurable.neg (since := "2025-01-23")]
-theorem neg [Neg β] [ContinuousNeg β] {f : α → β} (hfm : AEStronglyMeasurable[m] f μ) :
-    AEStronglyMeasurable[m] (-f) μ :=
-  AEStronglyMeasurable.neg hfm
-
-@[deprecated AEStronglyMeasurable.sub (since := "2025-01-23")]
-theorem sub [AddGroup β] [IsTopologicalAddGroup β] {f g : α → β} (hfm : AEStronglyMeasurable[m] f μ)
-    (hgm : AEStronglyMeasurable[m] g μ) : AEStronglyMeasurable[m] (f - g) μ :=
-  AEStronglyMeasurable.sub hfm hgm
-
-@[deprecated AEStronglyMeasurable.const_smul (since := "2025-01-23")]
-theorem const_smul [SMul 𝕜 β] [ContinuousConstSMul 𝕜 β] (c : 𝕜) (hf : AEStronglyMeasurable[m] f μ) :
-    AEStronglyMeasurable[m] (c • f) μ :=
-  AEStronglyMeasurable.const_smul hf _
-
-@[deprecated AEStronglyMeasurable.const_inner (since := "2025-01-23")]
-theorem const_inner {𝕜 β} [RCLike 𝕜] [NormedAddCommGroup β] [InnerProductSpace 𝕜 β] {f : α → β}
-    (hfm : AEStronglyMeasurable[m] f μ) (c : β) :
-    AEStronglyMeasurable[m] (fun x => (inner 𝕜 c (f x))) μ :=
-  AEStronglyMeasurable.const_inner hfm
-
-@[deprecated AEStronglyMeasurable.of_subsingleton_cod (since := "2025-01-23")]
-theorem of_subsingleton [Subsingleton β] : AEStronglyMeasurable[m] f μ := .of_subsingleton_cod
-
-@[deprecated AEStronglyMeasurable.of_subsingleton_dom (since := "2025-01-23")]
-theorem of_subsingleton' [Subsingleton α] : AEStronglyMeasurable[m] f μ := .of_subsingleton_dom
-
-/-- An `m`-strongly measurable function almost everywhere equal to `f`. -/
-@[deprecated AEStronglyMeasurable.mk (since := "2025-01-23")]
-noncomputable def mk (f : α → β) (hfm : AEStronglyMeasurable[m] f μ) : α → β :=
-  AEStronglyMeasurable.mk f hfm
-
-@[deprecated AEStronglyMeasurable.stronglyMeasurable_mk (since := "2025-01-23")]
-theorem stronglyMeasurable_mk {f : α → β} (hfm : AEStronglyMeasurable[m] f μ) :
-    StronglyMeasurable[m] (hfm.mk f) :=
-  AEStronglyMeasurable.stronglyMeasurable_mk hfm
-
-@[deprecated AEStronglyMeasurable.ae_eq_mk (since := "2025-01-23")]
-theorem ae_eq_mk {f : α → β} (hfm : AEStronglyMeasurable[m] f μ) : f =ᵐ[μ] hfm.mk f :=
-  AEStronglyMeasurable.ae_eq_mk hfm
-
-@[deprecated Continuous.comp_aestronglyMeasurable (since := "2025-01-23")]
-theorem continuous_comp {γ} [TopologicalSpace γ] {f : α → β} {g : β → γ} (hg : Continuous g)
-    (hf : AEStronglyMeasurable[m] f μ) : AEStronglyMeasurable[m] (g ∘ f) μ :=
-  hg.comp_aestronglyMeasurable hf
-
-end AEStronglyMeasurable'
-
-@[deprecated AEStronglyMeasurable.of_trim (since := "2025-01-23")]
-theorem aeStronglyMeasurable'_of_aeStronglyMeasurable'_trim {α β} {m m0 m0' : MeasurableSpace α}
-    [TopologicalSpace β] (hm0 : m0 ≤ m0') {μ : Measure α} {f : α → β}
-    (hf : AEStronglyMeasurable[m] f (μ.trim hm0)) : AEStronglyMeasurable[m] f μ := .of_trim hm0 hf
-
-@[deprecated StronglyMeasurable.aestronglyMeasurable (since := "2025-01-23")]
-theorem StronglyMeasurable.aeStronglyMeasurable' {α β} {m _ : MeasurableSpace α}
-    [TopologicalSpace β] {μ : Measure α} {f : α → β} (hf : StronglyMeasurable[m] f) :
-    AEStronglyMeasurable[m] f μ := hf.aestronglyMeasurable
-
 theorem ae_eq_trim_iff_of_aestronglyMeasurable {α β} [TopologicalSpace β] [MetrizableSpace β]
     {m m0 : MeasurableSpace α} {μ : Measure α} {f g : α → β} (hm : m ≤ m0)
     (hfm : AEStronglyMeasurable[m] f μ) (hgm : AEStronglyMeasurable[m] g μ) :
@@ -141,19 +56,6 @@ theorem AEStronglyMeasurable.comp_ae_measurable' {α β γ : Type*} [Topological
     AEStronglyMeasurable[mα.comap g] (f ∘ g) μ :=
   ⟨hf.mk f ∘ g, hf.stronglyMeasurable_mk.comp_measurable (measurable_iff_comap_le.mpr le_rfl),
     ae_eq_comp hg hf.ae_eq_mk⟩
-
-/-- If the restriction to a set `s` of a σ-algebra `m` is included in the restriction to `s` of
-another σ-algebra `m₂` (hypothesis `hs`), the set `s` is `m` measurable and a function `f` almost
-everywhere supported on `s` is `m`-ae-strongly-measurable, then `f` is also
-`m₂`-ae-strongly-measurable. -/
-@[deprecated AEStronglyMeasurable.of_measurableSpace_le_on (since := "2025-01-23")]
-theorem AEStronglyMeasurable'.aeStronglyMeasurable'_of_measurableSpace_le_on {α E}
-    {m m₂ m0 : MeasurableSpace α} {μ : Measure α} [TopologicalSpace E] [Zero E] (hm : m ≤ m0)
-    {s : Set α} {f : α → E} (hs_m : MeasurableSet[m] s)
-    (hs : ∀ t, MeasurableSet[m] (s ∩ t) → MeasurableSet[m₂] (s ∩ t))
-    (hf : AEStronglyMeasurable[m] f μ) (hf_zero : f =ᵐ[μ.restrict sᶜ] 0) :
-    AEStronglyMeasurable[m₂] f μ :=
-  .of_measurableSpace_le_on hm hs_m hs hf hf_zero
 
 variable {α F 𝕜 : Type*} {p : ℝ≥0∞} [RCLike 𝕜]
   -- 𝕜 for ℝ or ℂ
@@ -195,8 +97,6 @@ theorem mem_lpMeasSubgroup_iff_aestronglyMeasurable {m m0 : MeasurableSpace α} 
     {f : Lp F p μ} : f ∈ lpMeasSubgroup F m p μ ↔ AEStronglyMeasurable[m] f μ := by
   rw [← AddSubgroup.mem_carrier, lpMeasSubgroup, Set.mem_setOf_eq]
 
-@[deprecated (since := "2025-01-24")]
-alias mem_lpMeasSubgroup_iff_aeStronglyMeasurable' := mem_lpMeasSubgroup_iff_aestronglyMeasurable
 @[deprecated (since := "2025-04-09")]
 alias mem_lpMeasSubgroup_iff_aeStronglyMeasurable := mem_lpMeasSubgroup_iff_aestronglyMeasurable
 
@@ -204,8 +104,6 @@ theorem mem_lpMeas_iff_aestronglyMeasurable {m m0 : MeasurableSpace α} {μ : Me
     {f : Lp F p μ} : f ∈ lpMeas F 𝕜 m p μ ↔ AEStronglyMeasurable[m] f μ := by
   rw [← SetLike.mem_coe, ← Submodule.mem_carrier, lpMeas, Set.mem_setOf_eq]
 
-@[deprecated (since := "2025-01-24")]
-alias mem_lpMeas_iff_aeStronglyMeasurable' := mem_lpMeas_iff_aestronglyMeasurable
 @[deprecated (since := "2025-04-09")]
 alias mem_lpMeas_iff_aeStronglyMeasurable := mem_lpMeas_iff_aestronglyMeasurable
 
@@ -213,8 +111,6 @@ theorem lpMeas.aestronglyMeasurable {m _ : MeasurableSpace α} {μ : Measure α}
     (f : lpMeas F 𝕜 m p μ) : AEStronglyMeasurable[m] (f : α → F) μ :=
   mem_lpMeas_iff_aestronglyMeasurable.mp f.mem
 
-@[deprecated (since := "2025-01-24")]
-alias lpMeas.aeStronglyMeasurable' := lpMeas.aestronglyMeasurable
 @[deprecated (since := "2025-04-09")]
 alias lpMeas.aeStronglyMeasurable := lpMeas.aestronglyMeasurable
 

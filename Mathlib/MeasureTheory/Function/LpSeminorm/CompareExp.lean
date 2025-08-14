@@ -141,8 +141,6 @@ theorem MemLp.mono_exponent {p q : ℝ≥0∞} [IsFiniteMeasure μ] (hfq : MemLp
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.mono_exponent := MemLp.mono_exponent
 
-@[deprecated (since := "2025-01-07")] alias MemLp.memℒp_of_exponent_le := MemLp.mono_exponent
-
 /-- If a function is supported on a finite-measure set and belongs to `ℒ^p`, then it belongs to
 `ℒ^q` for any `q ≤ p`. -/
 lemma MemLp.mono_exponent_of_measure_support_ne_top {p q : ℝ≥0∞} {f : α → ε'} (hfq : MemLp f q μ)
@@ -158,10 +156,6 @@ lemma MemLp.mono_exponent_of_measure_support_ne_top {p q : ℝ≥0∞} {f : α �
 
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.mono_exponent_of_measure_support_ne_top := MemLp.mono_exponent_of_measure_support_ne_top
-
-@[deprecated (since := "2025-01-07")]
-alias MemLp.memℒp_of_exponent_le_of_measure_support_ne_top :=
-  MemLp.mono_exponent_of_measure_support_ne_top
 
 end SameSpace
 

@@ -153,9 +153,6 @@ lemma variance_of_integral_eq_zero (hX : AEMeasurable X μ) (hXint : μ[X] = 0) 
     variance X μ = ∫ ω, X ω ^ 2 ∂μ := by
   simp [variance_eq_integral hX, hXint]
 
-@[deprecated (since := "2025-01-23")]
-alias _root_.MeasureTheory.Memℒp.variance_eq_of_integral_eq_zero := variance_of_integral_eq_zero
-
 @[simp]
 theorem evariance_zero : evariance 0 μ = 0 := by simp [evariance]
 

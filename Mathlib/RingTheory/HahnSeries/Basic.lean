@@ -96,8 +96,6 @@ theorem coeff_zero' : (0 : HahnSeries Γ R).coeff = 0 :=
 theorem coeff_zero {a : Γ} : (0 : HahnSeries Γ R).coeff a = 0 :=
   rfl
 
-@[deprecated (since := "2025-01-31")] alias zero_coeff := coeff_zero
-
 @[simp]
 theorem coeff_fun_eq_zero_iff {x : HahnSeries Γ R} : x.coeff = 0 ↔ x = 0 :=
   coeff_injective.eq_iff' rfl
@@ -182,19 +180,13 @@ variable {a b : Γ} {r : R}
 theorem coeff_single_same (a : Γ) (r : R) : (single a r).coeff a = r := by
   classical exact Pi.single_eq_same (M := fun _ => R) a r
 
-@[deprecated (since := "2025-01-31")] alias single_coeff_same := coeff_single_same
-
 @[simp]
 theorem coeff_single_of_ne (h : b ≠ a) : (single a r).coeff b = 0 := by
   classical exact Pi.single_eq_of_ne (M := fun _ => R) h r
 
-@[deprecated (since := "2025-01-31")] alias single_coeff_of_ne := coeff_single_of_ne
-
 open Classical in
 theorem coeff_single : (single a r).coeff b = if b = a then r else 0 := by
   split_ifs with h <;> simp [h]
-
-@[deprecated (since := "2025-01-31")] alias single_coeff := coeff_single
 
 @[simp]
 theorem support_single_of_ne (h : r ≠ 0) : support (single a r) = {a} := by

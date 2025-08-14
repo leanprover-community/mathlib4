@@ -175,8 +175,6 @@ end LT.lt
 theorem le_of_forall_le (H : ∀ c, c ≤ a → c ≤ b) : a ≤ b := H _ le_rfl
 theorem le_of_forall_ge (H : ∀ c, a ≤ c → b ≤ c) : b ≤ a := H _ le_rfl
 
-@[deprecated (since := "2025-01-30")] alias le_of_forall_le' := le_of_forall_ge
-
 theorem forall_le_iff_le : (∀ ⦃c⦄, c ≤ a → c ≤ b) ↔ a ≤ b :=
   ⟨le_of_forall_le, fun h _ hca ↦ le_trans hca h⟩
 
@@ -1298,15 +1296,6 @@ lemma forall_lt_imp_le_iff_le_of_dense : (∀ a < a₁, a ≤ a₂) ↔ a₁ ≤
 
 theorem eq_of_le_of_forall_gt_imp_ge_of_dense (h₁ : a₂ ≤ a₁) (h₂ : ∀ a < a₁, a ≤ a₂) : a₁ = a₂ :=
   (le_of_forall_lt_imp_le_of_dense h₂).antisymm h₁
-
-@[deprecated (since := "2025-01-21")]
-alias le_of_forall_ge_of_dense := le_of_forall_lt_imp_le_of_dense
-
-@[deprecated (since := "2025-01-21")] alias forall_lt_le_iff := forall_lt_imp_le_iff_le_of_dense
-@[deprecated (since := "2025-01-21")] alias forall_gt_ge_iff := forall_gt_imp_ge_iff_le_of_dense
-
-@[deprecated (since := "2025-01-21")]
-alias eq_of_le_of_forall_ge_of_dense := eq_of_le_of_forall_gt_imp_ge_of_dense
 
 end LinearOrder
 

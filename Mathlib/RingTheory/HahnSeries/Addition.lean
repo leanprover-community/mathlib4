@@ -52,8 +52,6 @@ theorem coeff_smul' (r : R) (x : HahnSeries Γ V) : (r • x).coeff = r • x.co
 theorem coeff_smul {r : R} {x : HahnSeries Γ V} {a : Γ} : (r • x).coeff a = r • x.coeff a :=
   rfl
 
-@[deprecated (since := "2025-01-31")] alias smul_coeff := coeff_smul
-
 instance : SMulZeroClass R (HahnSeries Γ V) :=
   { inferInstanceAs (SMul R (HahnSeries Γ V)) with
     smul_zero := by
@@ -101,8 +99,6 @@ instance : Add (HahnSeries Γ R) where
 theorem coeff_add' (x y : HahnSeries Γ R) : (x + y).coeff = x.coeff + y.coeff :=
   rfl
 
-@[deprecated (since := "2025-01-31")] alias add_coeff' := coeff_add'
-
 theorem coeff_add {x y : HahnSeries Γ R} {a : Γ} : (x + y).coeff a = x.coeff a + y.coeff a :=
   rfl
 
@@ -110,15 +106,11 @@ theorem coeff_add {x y : HahnSeries Γ R} {a : Γ} : (x + y).coeff a = x.coeff a
   classical
   ext : 1; exact Pi.single_add (f := fun _ => R) a r s
 
-@[deprecated (since := "2025-01-31")] alias add_coeff := coeff_add
-
 instance : AddMonoid (HahnSeries Γ R) := fast_instance%
   coeff_injective.addMonoid _
     coeff_zero' coeff_add' (fun _ _ => coeff_smul' _ _)
 
 theorem coeff_nsmul {x : HahnSeries Γ R} {n : ℕ} : (n • x).coeff = n • x.coeff := coeff_smul' _ _
-
-@[deprecated (since := "2025-01-31")] alias nsmul_coeff := coeff_nsmul
 
 @[simp]
 protected lemma map_add [AddMonoid S] (f : R →+ S) {x y : HahnSeries Γ R} :
@@ -359,12 +351,8 @@ instance : Neg (HahnSeries Γ R) where
 theorem coeff_neg' (x : HahnSeries Γ R) : (-x).coeff = -x.coeff :=
   rfl
 
-@[deprecated (since := "2025-01-31")] alias neg_coeff' := coeff_neg'
-
 theorem coeff_neg {x : HahnSeries Γ R} {a : Γ} : (-x).coeff a = -x.coeff a :=
   rfl
-
-@[deprecated (since := "2025-01-31")] alias neg_coeff := coeff_neg
 
 instance : Sub (HahnSeries Γ R) where
   sub x y :=
@@ -375,12 +363,8 @@ instance : Sub (HahnSeries Γ R) where
 theorem coeff_sub' (x y : HahnSeries Γ R) : (x - y).coeff = x.coeff - y.coeff :=
   rfl
 
-@[deprecated (since := "2025-01-31")] alias sub_coeff' := coeff_sub'
-
 theorem coeff_sub {x y : HahnSeries Γ R} {a : Γ} : (x - y).coeff a = x.coeff a - y.coeff a :=
   rfl
-
-@[deprecated (since := "2025-01-31")] alias sub_coeff := coeff_sub
 
 instance : AddGroup (HahnSeries Γ R) := fast_instance%
   coeff_injective.addGroup _
