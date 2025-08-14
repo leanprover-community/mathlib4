@@ -174,8 +174,11 @@ end Monoid
 
 section SMul
 
-variable {A : Type*} [Monoid R] [Monoid A] [MulAction R A] [SMulCommClass R A A]
-    [IsScalarTower R A A] [StarMul R] [StarMul A] [StarModule R A]
+section
+
+variable {A : Type*}
+  [Monoid R] [Monoid A] [MulAction R A] [SMulCommClass R A A]
+  [IsScalarTower R A A] [StarMul R] [StarMul A] [StarModule R A]
 
 lemma smul_mem_of_mem {r : R} {a : A} (hr : r ∈ unitary R) (ha : a ∈ unitary A) :
     r • a ∈ unitary A := by
@@ -198,11 +201,25 @@ instance : MulAction (unitary R) (unitary A) where
 instance : StarModule (unitary R) (unitary A) where
   star_smul _ _ := Subtype.ext <| star_smul (_ : R) _
 
-instance : SMulCommClass (unitary R) (unitary A) (unitary A) where
-  smul_comm _ _ _ := Subtype.ext <| smul_comm _ (_ : A) (_ : A)
+end
 
-instance : IsScalarTower (unitary R) (unitary A) (unitary A) where
-  smul_assoc _ _ _ := Subtype.ext <| smul_assoc _ (_ : A) (_ : A)
+section
+
+variable {S A : Type*}
+  [Monoid R] [Monoid S] [Monoid A] [StarMul R] [StarMul S] [StarMul A]
+  [MulAction R S] [MulAction R A] [MulAction S A]
+  [StarModule R S] [StarModule R A] [StarModule S A]
+  [IsScalarTower R A A] [IsScalarTower S A A]
+  [SMulCommClass R A A] [SMulCommClass S A A]
+
+instance [SMulCommClass R S A] : SMulCommClass (unitary R) (unitary S) (unitary A) where
+  smul_comm _ _ _ := Subtype.ext <| smul_comm _ (_ : S) (_ : A)
+
+instance [IsScalarTower R S S] [SMulCommClass R S S] [IsScalarTower R S A] :
+    IsScalarTower (unitary R) (unitary S) (unitary A) where
+  smul_assoc _ _ _ := Subtype.ext <| smul_assoc _ (_ : S) (_ : A)
+
+end
 
 end SMul
 
