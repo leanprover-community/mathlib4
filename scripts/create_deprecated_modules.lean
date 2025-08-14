@@ -22,8 +22,8 @@ namespace DeprecatedModule
 
 /--
 This file interacts with `git ...` quite a bit. `runCmd` takes as input the command-line
-function `git ...` and returns its stdout string as its output, although technically the
-command need not be `git ...`, this is the only situation where we use it.
+function `git ...` and returns its stdout string as its output. (Technically, the command need not be `git`,
+but can be any command need. We only use this for `git`, though.)
 
 This is convenient to get both the output of the function, but also for reproducing the exact
 command-line text that produced the output for better reproducibility and error reporting.
@@ -122,7 +122,7 @@ def processPrettyOneLine (log msg fname : String) : IO (String × MessageData) :
   let hash := log.takeWhile (!·.isWhitespace)
   let PRdescr := (log.drop hash.length).trim
   let gitDiffCLI := s!"git diff {hash}^...{hash} -- {fname}"
-  let diff ← runCmd gitDiffCLI <|> pure s!"{hash}: Error in computing '{gitDiffCLI}'"
+  let diff ← runCmd gitDiffCLI <|> pure s!"{hash}: error in computing '{gitDiffCLI}'"
   let diffCollapsed := .trace {cls := .str .anonymous s!"{hash}"} m!"{gitDiffCLI}" #[m!"{diff}"]
   return (hash, m!"{msg} in " ++
     .trace {cls := .str .anonymous ("_" ++ hash.take 7)} m!"{PRdescr}" #[diffCollapsed])
@@ -134,7 +134,7 @@ It computes the `git` status of the files at the current `HEAD` commit,
 comparing them with `master`.
 
 It returns a `HashMap` with keys the old names and values the new names of all the files that
-git considers renames with likelihood at least the input `pct`.
+git considers renames with likelihood at least the input `percent`.
 
 If no input is provided, the default percentage is `100`.
 -/
@@ -212,9 +212,7 @@ def deprecateFilePath (fname : String) (rename comment : Option String) :
       Please make sure the file {fname} existed at some point!"
   let (_deleteHash, deletedMsg) ← processPrettyOneLine deleted "deleted" fname
   let (modifiedHash, modifiedMsg) ← processPrettyOneLine lastModified "last modified" fname
-  msgs := msgs.push <| m!"The file {fname} was\n"
-  msgs := msgs.push modifiedMsg
-  msgs := msgs.push deletedMsg
+  msgs := msgs.append [m!"The file {fname} was\n", modifiedMsg, deletedMsg]
   -- Get the commit date, in `YYYY-MM-DD` format, of the commit deleting the file.
   let log' ← runCmd s!"git log --format=%cs -2 -- {fname}"
   let deletionDate := (log'.trim.splitOn "\n")[0]!
@@ -226,7 +224,7 @@ def deprecateFilePath (fname : String) (rename comment : Option String) :
   let fileHeader := ← match rename with
     | some rename => do
       let modName := mkModName rename
-      pure s!"import {modName}\n"
+      pure s!"import {modName}"
     | none => getHeader fname file false
   let deprecatedFile := s!"{fileHeader.trimRight}\n\n{deprecation.pretty.trimRight}\n"
   msgs := msgs.push <| .trace {cls := `Deprecation} m!"{fname}" #[m!"\n{deprecatedFile}"]
@@ -239,7 +237,6 @@ elab_rules : command
     logWarningAt fnameStx m!"The file {fname} exists: I cannot deprecate it!"
     return
   let (msgs, deprecatedFile) ← deprecateFilePath fname (rename?.map (·.getString)) (comment.map (·.getString))
-  let mut msgs : Array MessageData := msgs
   if write?.isSome then
     IO.FS.writeFile fname deprecatedFile
   if write?.isNone then
@@ -271,7 +268,7 @@ Unlike what usually happens with `Try these:`, the original `#find_deleted_files
 replaced by the suggestion, which means that you can click on multiple suggestions and proceed with
 the deprecations later on.
 
-If the number of commits is not explicitly used, `#find_deleted_files` defaults to `2`,
+If the number of commits is not explicitly given, `#find_deleted_files` defaults to `2`,
 namely, the commit just prior to the current one.
 -/
 elab tk:"#find_deleted_files" nc:(ppSpace num)? : command => do
@@ -287,8 +284,7 @@ elab tk:"#find_deleted_files" nc:(ppSpace num)? : command => do
     return (commitHash, .trace {cls := `Commit} m!"{PRdescr}" #[m!"{commitHash}"])
   let getFilesAtHash (hash : String) := do
     let files ← runCmd s!"git ls-tree -r --name-only {hash} Mathlib/"
-    let h : Std.HashSet String := .ofList <| files.splitOn "\n"
-    return h
+    return .ofList <| files.splitOn "\n"
   let (currentHash, currentPRdescr) ← getHashAndMessage 1
   let currentFiles ← getFilesAtHash currentHash
   msgs := msgs.push m!"{currentFiles.size} files at the current commit {currentPRdescr}"
