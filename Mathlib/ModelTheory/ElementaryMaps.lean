@@ -64,8 +64,7 @@ instance instFunLike : FunLike (M ↪ₑ[L] N) M N where
   coe_injective' f g h := by
     cases f
     cases g
-    simp only [ElementaryEmbedding.mk.injEq]
-    assumption
+    simpa only [ElementaryEmbedding.mk.injEq]
 
 @[simp]
 theorem map_boundedFormula (f : M ↪ₑ[L] N) {α : Type*} {n : ℕ} (φ : L.BoundedFormula α n)

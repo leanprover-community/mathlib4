@@ -74,7 +74,7 @@ theorem get_succ_cons (n : ℕ) (s : Stream' α) (x : α) : get (x :: s) n.succ 
   rfl
 
 @[simp] lemma get_cons_append_zero {a : α} {x : List α} {s : Stream' α} :
-  (a :: x ++ₛ s).get 0 = a := rfl
+    (a :: x ++ₛ s).get 0 = a := rfl
 
 @[simp] lemma append_eq_cons {a : α} {as : Stream' α} : [a] ++ₛ as = a :: as := rfl
 
