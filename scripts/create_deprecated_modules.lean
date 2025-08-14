@@ -212,7 +212,7 @@ def deprecateFilePath (fname : String) (rename comment : Option String) :
       Please make sure the file {fname} existed at some point!"
   let (_deleteHash, deletedMsg) ← processPrettyOneLine deleted "deleted" fname
   let (modifiedHash, modifiedMsg) ← processPrettyOneLine lastModified "last modified" fname
-  msgs := msgs.append [m!"The file {fname} was\n", modifiedMsg, deletedMsg]
+  msgs := msgs.append #[m!"The file {fname} was\n", modifiedMsg, deletedMsg]
   -- Get the commit date, in `YYYY-MM-DD` format, of the commit deleting the file.
   let log' ← runCmd s!"git log --format=%cs -2 -- {fname}"
   let deletionDate := (log'.trim.splitOn "\n")[0]!
