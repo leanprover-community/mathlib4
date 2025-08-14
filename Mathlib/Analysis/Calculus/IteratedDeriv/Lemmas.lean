@@ -42,6 +42,13 @@ theorem iteratedDerivWithin_add
   simp_rw [iteratedDerivWithin, iteratedFDerivWithin_add_apply hf hg h hx,
     ContinuousMultilinearMap.add_apply]
 
+include h hx in
+theorem iteratedDerivWithin_fun_add
+    (hf : ContDiffWithinAt 𝕜 n f s x) (hg : ContDiffWithinAt 𝕜 n g s x) :
+    iteratedDerivWithin n (fun z ↦ f z + g z) s x =
+      iteratedDerivWithin n f s x + iteratedDerivWithin n g s x := by
+  simpa using iteratedDerivWithin_add hx h hf hg
+
 theorem iteratedDerivWithin_const_add (hn : 0 < n) (c : F) :
     iteratedDerivWithin n (fun z => c + f z) s x = iteratedDerivWithin n f s x := by
   obtain ⟨n, rfl⟩ := n.exists_eq_succ_of_ne_zero hn.ne'
