@@ -18,7 +18,7 @@ principal ideal domain (PID) is an integral domain which is a principal ideal ri
 
 The definition of `IsPrincipalIdealRing` can be found in `Mathlib/RingTheory/Ideal/Span.lean`.
 
-# Main definitions
+## Main definitions
 
 Note that for principal ideal domains, one should use
 `[IsDomain R] [IsPrincipalIdealRing R]`. There is no explicit definition of a PID.
@@ -28,7 +28,7 @@ Theorems about PID's are in the `PrincipalIdealRing` namespace.
 - `generator`: a generator of a principal ideal (or more generally submodule)
 - `to_uniqueFactorizationMonoid`: a PID is a unique factorization domain
 
-# Main results
+## Main results
 
 - `Ideal.IsPrime.to_maximal_ideal`: a non-zero prime ideal in a PID is maximal.
 - `EuclideanDomain.to_principal_ideal_domain` : a Euclidean domain is a PID.
