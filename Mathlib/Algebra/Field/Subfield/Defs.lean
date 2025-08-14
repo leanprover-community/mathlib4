@@ -247,7 +247,7 @@ protected theorem zsmul_mem {x : K} (hx : x ∈ s) (n : ℤ) : n • x ∈ s :=
 
 protected theorem intCast_mem (n : ℤ) : (n : K) ∈ s := intCast_mem s n
 
-theorem zpow_mem {x : K} (hx : x ∈ s) (n : ℤ) : x ^ n ∈ s := _root_.zpow_mem hx n
+protected theorem zpow_mem {x : K} (hx : x ∈ s) (n : ℤ) : x ^ n ∈ s := zpow_mem hx n
 
 instance : Ring s :=
   s.toSubring.toRing
