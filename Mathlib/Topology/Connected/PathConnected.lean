@@ -208,8 +208,6 @@ theorem Topology.IsInducing.joinedIn_image {f : X → Y} (hf : IsInducing f) (hx
     simpa only [hf.continuous_iff, comp_def, hγ'] using map_continuous γ
   exact (h₀.joinedIn hx (hγ'F _)).trans <| h.trans <| h₁.joinedIn (hγ'F _) hy
 
-@[deprecated (since := "2024-10-28")] alias Inducing.joinedIn_image := IsInducing.joinedIn_image
-
 @[to_additive]
 theorem JoinedIn.mul {M : Type*} [Mul M] [TopologicalSpace M] [ContinuousMul M]
     {s t : Set M} {a b c d : M} (hs : JoinedIn s a b) (ht : JoinedIn t c d) :
@@ -291,8 +289,8 @@ theorem pathComponentIn_mono {G : Set X} (h : F ⊆ G) :
 /-! ### Path component of the identity in a group -/
 
 /-- The path component of the identity in a topological monoid, as a submonoid. -/
-@[to_additive (attr := simps)
-"The path component of the identity in an additive topological monoid, as an additive submonoid."]
+@[to_additive (attr := simps) /-- The path component of the identity in an additive topological
+monoid, as an additive submonoid. -/]
 def Submonoid.pathComponentOne (M : Type*) [Monoid M] [TopologicalSpace M] [ContinuousMul M] :
     Submonoid M where
   carrier := pathComponent (1 : M)
@@ -300,8 +298,8 @@ def Submonoid.pathComponentOne (M : Type*) [Monoid M] [TopologicalSpace M] [Cont
   one_mem' := mem_pathComponent_self 1
 
 /-- The path component of the identity in a topological group, as a subgroup. -/
-@[to_additive (attr := simps!)
-"The path component of the identity in an additive topological group, as an additive subgroup."]
+@[to_additive (attr := simps!) /-- The path component of the identity in an additive topological
+group, as an additive subgroup. -/]
 def Subgroup.pathComponentOne (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G] :
     Subgroup G where
   toSubmonoid := .pathComponentOne G
@@ -372,9 +370,6 @@ nonrec theorem Topology.IsInducing.isPathConnected_iff {f : X → Y} (hf : IsInd
   simp only [IsPathConnected, forall_mem_image, exists_mem_image]
   refine exists_congr fun x ↦ and_congr_right fun hx ↦ forall₂_congr fun y hy ↦ ?_
   rw [hf.joinedIn_image hx hy]
-
-@[deprecated (since := "2024-10-28")]
-alias Inducing.isPathConnected_iff := IsInducing.isPathConnected_iff
 
 /-- If `h : X → Y` is a homeomorphism, `h(s)` is path-connected iff `s` is. -/
 @[simp]
@@ -468,10 +463,7 @@ theorem IsPathConnected.exists_path_through_family {n : ℕ}
           rw [this]
           use 1
           exact γ.target
-      · rw [range_eq]
-        apply union_subset hγ₀.2
-        rw [range_subset_iff]
-        exact hγ₁
+      · grind [Set.union_subset, Set.range_subset_iff]
   have hpp' : ∀ k < n + 1, p k = p' k := by
     intro k hk
     simp only [p', hk, dif_pos]
