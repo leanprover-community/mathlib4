@@ -39,7 +39,7 @@ form `fun i j ↦ _` or even `(fun i j ↦ _ : Matrix m n α)`, as these are not
 as having the right type. Instead, `Matrix.of` should be used.
 -/
 
-assert_not_exists Algebra Star
+assert_not_exists Algebra TrivialStar
 
 universe u u' v w
 
@@ -278,6 +278,11 @@ protected theorem map_sub [Sub α] [Sub β] (f : α → β) (hf : ∀ a₁ a₂,
 
 protected theorem map_smul [SMul R α] [SMul R β] (f : α → β) (r : R) (hf : ∀ a, f (r • a) = r • f a)
     (M : Matrix m n α) : (r • M).map f = r • M.map f :=
+  ext fun _ _ => hf _
+
+protected theorem map_smulₛₗ [SMul R α] [SMul S β] (f : α → β) (σ : R → S) (r : R)
+    (hf : ∀ a, f (r • a) = σ r • f a)
+    (M : Matrix m n α) : (r • M).map f = σ r • M.map f :=
   ext fun _ _ => hf _
 
 /-- The scalar action via `Mul.toSMul` is transformed by the same map as the elements
