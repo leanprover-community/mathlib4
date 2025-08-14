@@ -255,7 +255,7 @@ lemma postcomp [ModelCategory C] {f g : X ⟶ Y} [IsCofibrant X] (h : RightHomot
   obtain ⟨P, _, ⟨h⟩⟩ := h.exists_very_good_pathObject
   obtain ⟨Q, _⟩ := PathObject.exists_very_good Z
   have sq : CommSq (p ≫ Q.ι) P.ι Q.p (prod.lift (P.p₀ ≫ p) (P.p₁ ≫ p)) := { }
-  refine ⟨Q,
+  exact ⟨Q,
    ⟨{ h := h.h ≫ sq.lift
       h₀ := by
         have := sq.fac_right =≫ prod.fst
