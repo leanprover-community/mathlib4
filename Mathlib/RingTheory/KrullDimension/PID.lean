@@ -3,9 +3,9 @@ Copyright (c) 2025 Jingting Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jingting Wang
 -/
+import Mathlib.RingTheory.Ideal.Height
 import Mathlib.RingTheory.KrullDimension.Zero
 import Mathlib.RingTheory.PrincipalIdealDomain
-import Mathlib.RingTheory.Ideal.Height
 
 /-!
 # The Krull dimension of a principal ideal domain
@@ -47,5 +47,5 @@ lemma IsPrincipalIdealRing.height_eq_one_of_isMaximal {R : Type*} [CommRing R] [
   · suffices h : (m.height : WithBot ℕ∞) ≤ 1 by norm_cast at h
     rw [← IsPrincipalIdealRing.ringKrullDim_eq_one _ h]
     exact Ideal.height_le_ringKrullDim_of_ne_top Ideal.IsPrime.ne_top'
-  · rw [Order.one_le_iff_pos, Ideal.height_eq_primeHeight]
-    exact Order.zero_lt_height (Ideal.bot_lt_of_maximal m h)
+  · rw [Order.one_le_iff_pos, Ideal.height_eq_primeHeight, Ideal.primeHeight, Order.height_pos]
+    exact not_isMin_of_lt (b := ⊥) (Ideal.bot_lt_of_maximal m h)

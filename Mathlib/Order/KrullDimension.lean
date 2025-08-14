@@ -450,15 +450,15 @@ protected alias ⟨_, IsMax.coheight_eq_zero⟩ := coheight_eq_zero
 
 @[simp] lemma coheight_top (α : Type*) [Preorder α] [OrderTop α] : coheight (⊤ : α) = 0 := by simp
 
-lemma zero_lt_height {x : α} [OrderBot α] (h : ⊥ < x) : 0 < height x := by
-  rw [← Order.height_bot (α := α)]
-  apply Order.height_strictMono h
-  simp [ENat.top_pos]
+@[simp] lemma height_ne_zero {x : α} : height x ≠ 0 ↔ ¬ IsMin x := height_eq_zero.not
 
-lemma zero_lt_coheight {x : α} [OrderTop α] (h : x < ⊤) : 0 < coheight x := by
-  rw [← Order.coheight_top (α := α)]
-  apply Order.coheight_strictAnti h
-  simp [ENat.top_pos]
+@[simp] lemma height_pos {x : α} : 0 < height x ↔ ¬ IsMin x := by
+  simp [pos_iff_ne_zero]
+
+@[simp] lemma coheight_ne_zero {x : α} : coheight x ≠ 0 ↔ ¬ IsMax x := coheight_eq_zero.not
+
+@[simp] lemma coheight_pos {x : α} : 0 < coheight x ↔ ¬ IsMax x := by
+  simp [pos_iff_ne_zero]
 
 lemma coe_lt_height_iff {x : α} {n : ℕ} (hfin : height x < ⊤) :
     n < height x ↔ ∃ y < x, height y = n where
@@ -545,7 +545,7 @@ lemma one_lt_height_iff {x : α} : 1 < Order.height x ↔ ∃ y z, z < y ∧ y <
     refine ⟨p 1, p 0, p.rel_of_lt ?_, hp ▸ p.rel_of_lt ?_⟩ <;> simp [Fin.lt_def, hlen]
   · rintro ⟨y, z, hzy, hyx⟩
     let p : LTSeries α := RelSeries.fromListChain' [z, y, x] (List.cons_ne_nil z [y, x])
-      (List.Chain'.cons hzy <| List.chain'_pair.mpr hyx)
+      (List.Chain'.cons_cons hzy <| List.chain'_pair.mpr hyx)
     exact Order.length_le_height (p := p) (by rfl)
 
 end height
