@@ -6,21 +6,22 @@ Authors: Evan Spotte-Smith
 import Mathlib.Data.Set.Basic
 import Mathlib.Data.Set.Card
 import Mathlib.Data.Sym.Sym2
+import Mathlib.Data.Matrix.Basic
+import Mathlib.Data.Matrix.Defs
 import Mathlib.Combinatorics.Graph.Basic
 
 open Set
 
-variable {α β : Type*} {x y z : α} {e f g : Set α} {l m n : Set (Set α)}
+variable {α β γ : Type*} {x y : α} {e f g : Set α} {l : Set (Set α)}
 
 /-!
-
 # Undirected hypergraphs
 
 An *undirected hypergraph* (here abbreviated as *hypergraph*) `H` is a generalization of a graph
-(see `Mathlib.Combinatorics.Graph`) and consists of a set of *vertices*, usually denoted `V` or
-`V(H)`, and a set of *hyperedges*, denoted `E` or `E(H)`. In contrast with a graph, where edges are
-unordered pairs of vertices, in hypergraphs, hyperedges are (unordered) sets of vertices of length
-`0 ≤ |e| ≤ |V|`, where `e` is some hyperedge.
+(see `Mathlib.Combinatorics.Graph` or `Mathlib.Combinatorics.SimpleGraph`) and consists of a set of
+*vertices*, usually denoted `V` or `V(H)`, and a set of *hyperedges*, denoted `E` or `E(H)`. In
+contrast with a graph, where edges are unordered pairs of vertices, in hypergraphs, hyperedges are
+(unordered) sets of vertices of length `0 ≤ |e| ≤ |V|`, where `e` is some hyperedge.
 
 A hypergraph where `V = ∅` and `E = ∅` is *empty*. A hypergraph with a nonempty
 vertex set (`V ≠ ∅`) and empty hyperedge set is *trivial*. A *complete hypergraph* is
@@ -61,7 +62,7 @@ the vertex or edge set. This is an issue, but is likely amenable to automation."
 ## Acknowledgments
 
 Credit to Shreyas Srinivas, GitHub user @NotWearingPants ("Snir" on the Lean Zulip), Ammar
-Husain, and Aaron Liu for useful feedback on this implementation.
+Husain, and Aaron Liu for patient guidance and useful feedback on this implementation.
 -/
 
 structure Hypergraph (α : Type*) where
@@ -84,6 +85,82 @@ scoped notation "V(" H ")" => Hypergraph.vertexSet H
 /-- `E(H)` denotes the `hyperedgeSet` of a hypergraph `H` -/
 scoped notation "E(" H ")" => Hypergraph.hyperedgeSet H
 
+
+section Incidence
+
+/-! ## Vertex-Hyperedge Incidence -/
+
+lemma vertex_mem_if_mem_hyperedge {H : Hypergraph α} (h : ∃ e ∈ H.hyperedgeSet, x ∈ e) :
+x ∈ H.vertexSet := by
+  obtain ⟨e, he⟩ := h
+  have h1 : e ⊆ V(H) := by apply H.hyperedge_isSubset_vertexSet he.1
+  apply Set.mem_of_subset_of_mem h1 he.2
+
+end Incidence
+
+section Adjacency
+
+/-! ## Vertex and Hyperedge Adjacency -/
+
+/--
+Predicate for adjacency. Two vertices `x` and `y` are adjacent if there is some
+hyperedge `e ∈ E(H)` where `x` and `y` are both incident on `e`.
+
+Note that we do not need to explicitly check that x, y ∈ V(H) here because a vertex that is not in
+the vertex set cannot be incident on any hyperedge.
+-/
+def Adj (H : Hypergraph α) (x : α) (y : α) : Prop :=
+  ∃ e ∈ E(H), x ∈ e ∧ y ∈ e
+
+lemma Adj.symm {H : Hypergraph α} {x y : α} (h : H.Adj x y) : H.Adj y x := by
+  unfold Adj at h
+  unfold Adj
+  obtain ⟨e, he⟩ := h
+  use e
+  constructor
+  · exact he.1
+  constructor
+  · exact he.2.2
+  · exact he.2.1
+
+/--
+Predicate for (hyperedge) adjacency. Analogous to `Hypergraph.Adj`, hyperedges `e` and `f` are
+adjacent if there is some vertex `x ∈ V(H)` where `x` is incident on both `e` and `f`.
+
+Note that we do not need to explicitly check that e, f ∈ E(H) here because a vertex cannot be
+incident on a hyperedge that is not in the hyperedge set.
+-/
+def EAdj (H : Hypergraph α) (e : Set α) (f : Set α) : Prop :=
+  ∃ x ∈ V(H), x ∈ e ∧ x ∈ f
+
+lemma EAdj.symm {H : Hypergraph α} {e f : Set α} (h : H.EAdj e f) : H.EAdj f e := by
+  unfold EAdj at h
+  unfold EAdj
+  obtain ⟨v, hv⟩ := h
+  use v
+  constructor
+  · exact hv.1
+  constructor
+  · exact hv.2.2
+  · exact hv.2.1
+
+/--
+Neighbors of a vertex `x` in hypergraph `H`
+
+A vertex `y` is a neighbor of vertex `x` if there exists some hyperedge `e ∈ E(H)` where `x` and
+`y` are both incident on `e`, i.e., if the two vertices are adjacent (see `Hypergraph.Adj`)
+-/
+def neighbors (H : Hypergraph α) (x : α) := {y | H.Adj x y}
+
+/--
+Neighbors of a hyperedge `e` in hypergraph `H`
+
+A hyperedge `f` is a neighbor of hyperedge `e` if there exists some vertex `x ∈ V(H)` where `x` is
+incident on both `e` and `f`, i.e., if the two hyperedges are adjacent (see `Hypergraph.EAdj`)
+-/
+def hyperedgeNeighbors (H : Hypergraph α) (e : Set α) := {f | H.EAdj e f}
+
+end Adjacency
 
 section DefsPreds
 
@@ -159,48 +236,6 @@ def IsDRegular (H : Hypergraph α) (d : ℕ) : Prop := ∀ l ∈ H.hyperedgesInc
 
 end DefsPreds
 
-section Adjacency
-
-/-! ## Vertex and Hyperedge Adjacency -/
-
-/--
-Predicate for adjacency. Two vertices `x` and `y` are adjacent if there is some
-hyperedge `e ∈ E(H)` where `x` and `y` are both incident on `e`.
-
-Note that we do not need to explicitly check that x, y ∈ V(H) here because a vertex that is not in
-the vertex set cannot be incident on any hyperedge.
--/
-def Adj (H : Hypergraph α) (x : α) (y : α) : Prop :=
-  ∃ e ∈ E(H), x ∈ e ∧ y ∈ e
-
-/--
-Predicate for (hyperedge) adjacency. Analogous to `Hypergraph.Adj`, hyperedges `e` and `f` are
-adjacent if there is some vertex `x ∈ V(H)` where `x` is incident on both `e` and `f`.
-
-Note that we do not need to explicitly check that e, f ∈ E(H) here because a vertex cannot be
-incident on a hyperedge that is not in the hyperedge set.
--/
-def EAdj (H : Hypergraph α) (e : Set α) (f : Set α) : Prop :=
-  ∃ x ∈ V(H), x ∈ e ∧ x ∈ f
-
-/--
-Neighbors of a vertex `x` in hypergraph `H`
-
-A vertex `y` is a neighbor of vertex `x` if there exists some hyperedge `e ∈ E(H)` where `x` and
-`y` are both incident on `e`, i.e., if the two vertices are adjacent (see `Hypergraph.Adj`)
--/
-def neighbors (H : Hypergraph α) (x : α) := {y | H.Adj x y}
-
-/--
-Neighbors of a hyperedge `e` in hypergraph `H`
-
-A hyperedge `f` is a neighbor of hyperedge `e` if there exists some vertex `x ∈ V(H)` where `x` is
-incident on both `e` and `f`, i.e., if the two hyperedges are adjacent (see `Hypergraph.EAdj`)
--/
-def hyperedgeNeighbors (H : Hypergraph α) (e : Set α) := {f | H.EAdj e f}
-
-end Adjacency
-
 section Card
 
 /-! ## Cardinality -/
@@ -271,5 +306,26 @@ def partialHypergraph (H : Hypergraph α) (l : Set (Set α)) :=
   (sorry)
 
 end Sub
+
+section IncMatrix
+
+/-! ## Incidence Matrix -/
+
+/--
+The *incidence matrix* `M` of a hypergraph `H` is a `|V(H)|`-by-`|E(H)|` matrix with elements:
+
+`Mₓₑ = 1` if `x ∈ V(H) ∧ e ∈ E(H) ∧ x ∈ e`
+`Mₓₑ = 0` otherwise
+
+Note that this means that the incidence Matrix is defined even for members of α and Set α that are
+not part of the hypergraph `H`.
+
+TODO: there's no way this DecidableRel requirement is reasonable
+-/
+def incidenceMatrix (H : Hypergraph α)
+[DecidableRel fun x e => x ∈ V(H) ∧ e ∈ E(H) ∧ x ∈ e] [Zero γ] [One γ] : Matrix α (Set α) γ :=
+  Matrix.of (fun x e => ite (x ∈ V(H) ∧ e ∈ E(H) ∧ x ∈ e) 1 0)
+
+end IncMatrix
 
 end Hypergraph
