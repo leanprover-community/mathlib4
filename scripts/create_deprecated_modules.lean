@@ -336,7 +336,8 @@ If you already know the name of the file that you want to deprecate, then uncomm
 * omitting `"a comment here"` is equivalent to using `"Auto-generated deprecation"`
   while using the empty string `""` eliminates the comment entirely;
 * uncomment `write` only when you are satisfied that the deprecations look correct!
-  The command will also suggested this as a `Try this`.
+  The command will also by proposed this as a `Try this` suggestion by the
+  `#create_deprecated_module` command.
 -/
 --#create_deprecated_module "Mathlib/LinearAlgebra/RootSystem/Finite/g2.lean"  "a comment here" --write
 
@@ -356,7 +357,8 @@ the deprecations later on.
 -/
 
 #find_deleted_files 15
-
+--#create_deprecated_module "Mathlib/Analysis/InnerProductSpace/Projection.lean"
+#find_deleted_files 600
 /--
 info: import Mathlib.Tactic.Linter.DeprecatedModule
 import Std.Time.Zoned
