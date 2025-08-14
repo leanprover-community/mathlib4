@@ -7,7 +7,6 @@ import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.FieldTheory.SplittingField.Construction
 import Mathlib.Algebra.Algebra.Equiv.Card
-import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 import Mathlib.RingTheory.IntegralDomain
 import Mathlib.RingTheory.Polynomial.UniqueFactorization
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix

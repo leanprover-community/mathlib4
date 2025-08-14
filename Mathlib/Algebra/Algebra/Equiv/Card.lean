@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ruben Van de Velde
 -/
 import Mathlib.Algebra.Algebra.Equiv
-import Mathlib.Algebra.Ring.Aut
 import Mathlib.Data.Finite.Card
 
 /-!
