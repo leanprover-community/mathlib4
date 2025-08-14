@@ -923,12 +923,7 @@ section Star
 feat(MeasureTheory): add `Star` and `InvolutiveStar` instances for `Lp`
  -/
 
-open MeasureTheory AEEqFun
-
 variable {R : Type*} [NormedAddCommGroup R] [StarAddMonoid R] [NormedStarGroup R]
-
-protected theorem MemLp.star {p : ℝ≥0∞} {f : α → R} (hf : MemLp f p μ) : MemLp (star f) p μ :=
-  ⟨hf.1.star, by simpa using hf.2⟩
 
 protected noncomputable instance {p : ℝ≥0∞} : Star (Lp R p μ) where
   star f := ⟨star (f : α →ₘ[μ] R),
