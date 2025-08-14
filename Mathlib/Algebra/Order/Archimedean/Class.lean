@@ -152,12 +152,12 @@ variable {M : Type*}
 variable [CommGroup M] [LinearOrder M] [IsOrderedMonoid M] {a b : M}
 
 variable (M) in
-/-- `MulArchimedeanClass` is the quotient by multiplicative archimedean equivalence,
-where two elements `a` and `b` are in the same class iff
+/-- `MulArchimedeanClass M` is the quotient of the group `M` by multiplicative archimedean
+equivalence, where two elements `a` and `b` are in the same class iff
 `(∃ m : ℕ, |b|ₘ ≤ |a|ₘ ^ m) ∧ (∃ n : ℕ, |a|ₘ ≤ |b|ₘ ^ n)`. -/
 @[to_additive ArchimedeanClass
-/-- `ArchimedeanClass` is the quotient by additive archimedean equivalence,
-where two elements `a` and `b` are in the same class iff
+/-- `ArchimedeanClass M` is the quotient of the additive group `M` by additive archimedean
+equivalence, where two elements `a` and `b` are in the same class iff
 `(∃ m : ℕ, |b| ≤ m • |a|) ∧ (∃ n : ℕ, |a| ≤ n • |b|)`. -/]
 def MulArchimedeanClass := Antisymmetrization (MulArchimedeanOrder M) (· ≤ ·)
 
@@ -577,13 +577,21 @@ theorem ballSubgroup_antitone : Antitone (ballSubgroup (M := M)) := by
 end MulArchimedeanClass
 
 variable (M) in
-/-- Quotient of non-identity elements by multiplicative archimedean equivalence, defined as a
-subtype of `MulArchimedeanClass` that removes the class of `1` (i.e. the top element).
+/-- `FiniteMulArchimedeanClass M` is the quotient of the non-one elements of the group `M` by
+multiplicative archimedean equivalence, where two elements `a` and `b` are in the same class iff
+`(∃ m : ℕ, |b|ₘ ≤ |a|ₘ ^ m) ∧ (∃ n : ℕ, |a|ₘ ≤ |b|ₘ ^ n)`.
+
+It is defined as the subtype of non-top elements of `MulArchimedeanClass M`
+(`⊤ : MulArchimedeanClass M` is the archimedean class of `1`).
 
 This is useful since the family of non-top archimedean classes is linearly independent. -/
 @[to_additive FiniteArchimedeanClass
-/-- Quotient of non-identity elements by additive archimedean equivalence, defined as a
-subtype of `ArchimedeanClass` that removes the class of `0` (i.e. the top element).
+/-- `FiniteArchimedeanClass M` is the quotient of the non-zero elements of the additive group `M` by
+additive archimedean equivalence, where two elements `a` and `b` are in the same class iff
+`(∃ m : ℕ, |b| ≤ m • |a|) ∧ (∃ n : ℕ, |a| ≤ n • |b|)`.
+
+It is defined as the subtype of non-top elements of `ArchimedeanClass M`
+(`⊤ : ArchimedeanClass M` is the archimedean class of `0`).
 
 This is useful since the family of non-top archimedean classes is linearly independent. -/]
 abbrev FiniteMulArchimedeanClass := {A : MulArchimedeanClass M // A ≠ ⊤}
