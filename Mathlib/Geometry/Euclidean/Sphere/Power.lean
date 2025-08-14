@@ -139,56 +139,17 @@ namespace Sphere
 the sphere is zero. -/
 theorem power_eq_zero_iff_mem_sphere {s : Sphere P} {p : P} (hr : 0 ≤ s.radius) :
     s.power p = 0 ↔ p ∈ s := by
-  simp only [Sphere.power, mem_sphere, sub_eq_zero]
-  constructor
-  · intro hp
-    rw [← Real.sqrt_sq dist_nonneg, hp, Real.sqrt_sq hr]
-  · intro hp
-    rw [hp]
+  rw [power, mem_sphere, sub_eq_zero, pow_left_inj₀ dist_nonneg hr two_ne_zero]
 
 /-- The power of a point is positive if and only if the point lies outside the sphere. -/
 theorem power_pos_iff_radius_lt_dist_center {s : Sphere P} {p : P} (hr : 0 ≤ s.radius) :
     0 < s.power p ↔ s.radius < dist p s.center := by
-  simp only [Sphere.power, sub_pos]
-  constructor
-  · intro hp
-    by_contra h
-    push_neg at h
-    have h_sq_le : dist p s.center ^ 2 ≤ s.radius ^ 2 := by
-      apply sq_le_sq'
-      · calc -s.radius
-        ≤ 0 := neg_nonpos.mpr hr
-        _ ≤ dist p s.center := dist_nonneg
-      · exact h
-    linarith
-  · intro hp
-    exact sq_lt_sq' (by linarith [hr]) hp
+  rw [power, sub_pos, (pow_left_strictMonoOn₀ two_ne_zero).lt_iff_lt hr dist_nonneg]
 
 /-- The power of a point is negative if and only if the point lies inside the sphere. -/
-theorem power_neg_iff_dist_center_lt_radius {s : Sphere P} {p : P} (hr : 0 < s.radius) :
+theorem power_neg_iff_dist_center_lt_radius {s : Sphere P} {p : P} (hr : 0 ≤ s.radius) :
   s.power p < 0 ↔ dist p s.center < s.radius := by
-  simp only [Sphere.power, sub_neg]
-  constructor
-  · intro hp
-    by_contra h
-    push_neg at h
-    have h_sq_le : s.radius ^ 2 ≤ dist p s.center ^ 2 := by
-      by_cases h_eq : s.radius = dist p s.center
-      · rw [← h_eq]
-      · have h_lt : s.radius < dist p s.center := lt_of_le_of_ne h h_eq
-        have h_sq_lt : s.radius ^ 2 < dist p s.center ^ 2 := by
-          apply sq_lt_sq'
-          · linarith [hr]
-          · exact h_lt
-        exact le_of_lt h_sq_lt
-    linarith
-  · intro hp
-    have h_nonneg : 0 ≤ dist p s.center := by exact dist_nonneg
-    have h_sq_lt : dist p s.center ^ 2 < s.radius ^ 2 := by
-      apply sq_lt_sq'
-      · linarith
-      · exact hp
-    linarith
+  rw [power, sub_neg, (pow_left_strictMonoOn₀ two_ne_zero).lt_iff_lt dist_nonneg hr]
 
 /-- For a point outside the sphere, the product of distances to two intersection
 points on a line through the point equals the power of the point. -/
