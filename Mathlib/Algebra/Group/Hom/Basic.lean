@@ -72,7 +72,7 @@ namespace OneHom
 /-- Given two one-preserving morphisms `f`, `g`,
 `f * g` is the one-preserving morphism sending `x` to `f x * g x`. -/
 @[to_additive "Given two zero-preserving morphisms `f`, `g`,
-`f + g` is the additive morphism sending `x` to `f x + g x`."]
+`f + g` is the zero-preserving morphism sending `x` to `f x + g x`."]
 instance [One M] [MulOneClass N] : Mul (OneHom M N) where
   mul f g :=
     { toFun m := f m * g m
