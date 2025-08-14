@@ -8,6 +8,7 @@ import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Algebra.Star
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.Matrix.Trace
+import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 
 /-!
 # Topological properties of matrices
@@ -45,6 +46,10 @@ instance [TopologicalSpace R] : TopologicalSpace (Matrix m n R) :=
 
 instance [TopologicalSpace R] [T2Space R] : T2Space (Matrix m n R) :=
   Pi.t2Space
+
+instance [TopologicalSpace R] [DecidableEq n] [Fintype n] [CommRing R] :
+    TopologicalSpace (SpecialLinearGroup n R) :=
+  inferInstanceAs (TopologicalSpace { A : Matrix n n R // A.det = 1 })
 
 section Set
 
