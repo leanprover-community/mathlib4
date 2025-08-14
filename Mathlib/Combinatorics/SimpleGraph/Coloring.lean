@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Clique
+import Mathlib.Combinatorics.SimpleGraph.Copy
 import Mathlib.Data.ENat.Lattice
 import Mathlib.Data.Nat.Lattice
 import Mathlib.Data.Setoid.Partition
