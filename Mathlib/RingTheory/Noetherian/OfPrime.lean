@@ -28,9 +28,9 @@ open Set Finset
 
 /-- If a commutative (semi)ring has a infinitely generated ideal, then it has an ideal which is
 maximal for being infinitely generated. -/
-theorem exists_maximal_not_fg [CommSemiring R] (h : ∃ I : Ideal R, ¬I.FG) :
+lemma exists_maximal_not_fg [CommSemiring R] (h : ∃ I : Ideal R, ¬I.FG) :
     ∃ I : Ideal R, Maximal (¬·.FG) I := by
-  refine zorn_le₀ _ (fun C hC hC₂ ↦ ?_)
+  refine zorn_le₀ { I : Ideal R | ¬I.FG } (fun C hC hC₂ ↦ ?_)
   by_cases H : C.Nonempty
   · refine ⟨sSup C, ?_, fun _ ↦ le_sSup⟩
     intro ⟨G, hG⟩
