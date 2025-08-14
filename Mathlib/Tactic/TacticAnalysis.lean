@@ -9,9 +9,6 @@ import Lean.Elab.Tactic.Meta
 import Lean.Util.Heartbeats
 import Lean.Server.InfoUtils
 import Mathlib.Lean.ContextInfo
--- Import this linter explicitly to ensure that
--- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header
 
 /-! # Tactic analysis framework
 
