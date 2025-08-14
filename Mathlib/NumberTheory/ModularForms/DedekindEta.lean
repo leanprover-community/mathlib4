@@ -89,8 +89,8 @@ lemma hasProdLocallyUniformlyOn_eta : HasProdLocallyUniformlyOn (fun n a ↦ 1 -
 
 theorem etaProdTerm_ne_zero (z : ℍ) : ηₚ z ≠ 0 := by
   simp only [etaProdTerm, eta_q, ne_eq]
-  refine tprod_one_add_ne_zero_of_summable z (f := fun n x => -eta_q n x) ?_ ?_
-  · refine fun i x => by simpa using one_add_eta_q_ne_zero i x
+  refine tprod_one_add_ne_zero_of_summable z (f := fun n x ↦ -eta_q n x) ?_ ?_
+  · refine fun i x ↦ by simpa using one_add_eta_q_ne_zero i x
   · intro x
     simpa [eta_q, ← summable_norm_iff] using Summable_eta_q x
 
@@ -119,7 +119,7 @@ private theorem one_sub_eta_logDeriv_eq (z : ℂ) (i : ℕ) : logDeriv (fun x �
     ext y
     simpa using deriv_const_mul (2 * π * Complex.I * (i + 1)) (d := fun (x : ℂ) ↦ x) (x := y)
   simp_rw [eta_q_eq_cexp, h2, logDeriv_one_sub_mul_cexp_comp 1
-    (g := fun x => (2 * π * Complex.I * (i + 1) * x)) (by fun_prop), h3]
+    (g := fun x ↦ (2 * π * Complex.I * (i + 1) * x)) (by fun_prop), h3]
   simp
 
 lemma tsum_log_deriv_eta_q (z : ℂ) : ∑' (i : ℕ), logDeriv (fun x ↦ 1 - eta_q i x) z =
@@ -130,14 +130,14 @@ lemma tsum_log_deriv_eta_q (z : ℂ) : ∑' (i : ℕ), logDeriv (fun x ↦ 1 - e
     congr 1
     ext i
     ring
-  exact tsum_congr (fun i => one_sub_eta_logDeriv_eq z i)
+  exact tsum_congr (fun i ↦ one_sub_eta_logDeriv_eq z i)
 
 theorem etaProdTerm_differentiableAt (z : ℍ) : DifferentiableAt ℂ ηₚ z := by
   have hD := hasProdLocallyUniformlyOn_eta.tendstoLocallyUniformlyOn_finsetRange.differentiableOn ?_
     complexUpperHalPlane_isOpen
   · exact (hD z z.2).differentiableAt (complexUpperHalPlane_isOpen.mem_nhds z.2)
   · filter_upwards with b y
-    apply (DifferentiableOn.finset_prod (u := Finset.range b) (f := fun i x => 1 - eta_q i x)
+    apply (DifferentiableOn.finset_prod (u := Finset.range b) (f := fun i x ↦ 1 - eta_q i x)
       (by fun_prop)).congr
     simp
 
