@@ -568,7 +568,7 @@ theorem le_of_castSucc_lt_of_succ_lt {a b : Fin (n + 1)} {i : Fin n}
   simp [Fin.lt_def, -val_fin_lt] at *; omega
 
 theorem castSucc_lt_or_lt_succ (p : Fin (n + 1)) (i : Fin n) : castSucc i < p ∨ p < i.succ := by
-  simp [Fin.lt_def, -val_fin_lt]; omega
+  simpa [Fin.lt_def, -val_fin_lt] using by omega
 
 theorem succ_le_or_le_castSucc (p : Fin (n + 1)) (i : Fin n) : succ i ≤ p ∨ p ≤ i.castSucc := by
   rw [le_castSucc_iff, ← castSucc_lt_iff_succ_le]
@@ -1043,7 +1043,7 @@ lemma exists_succAbove_eq {x y : Fin (n + 1)} (h : x ≠ y) : ∃ z, y.succAbove
   Set.ext fun _ => exists_succAbove_eq_iff
 
 @[simp] lemma range_succ (n : ℕ) : Set.range (Fin.succ : Fin n → Fin (n + 1)) = {0}ᶜ := by
-  rw [← succAbove_zero]; exact range_succAbove (0 : Fin (n + 1))
+  rw [← succAbove_zero, range_succAbove]
 
 /-- `succAbove` is injective at the pivot -/
 lemma succAbove_left_injective : Injective (@succAbove n) := fun _ _ h => by
@@ -1085,14 +1085,14 @@ lemma castPred_succAbove_castPred {a : Fin (n + 2)} {b : Fin (n + 1)} (ha : a �
   simp_rw [← castSucc_inj (b := (a.succAbove b).castPred hk), ← castSucc_succAbove_castSucc,
     castSucc_castPred]
 
-lemma one_succAbove_zero {n : ℕ} : (1 : Fin (n + 2)).succAbove 0 = 0 := by
-  rfl
+lemma one_succAbove_zero {n : ℕ} : (1 : Fin (n + 2)).succAbove 0 = 0 := rfl
 
 /-- By moving `succ` to the outside of this expression, we create opportunities for further
 simplification using `succAbove_zero` or `succ_succAbove_zero`. -/
 @[simp] lemma succ_succAbove_one {n : ℕ} [NeZero n] (i : Fin (n + 1)) :
     i.succ.succAbove 1 = (i.succAbove 0).succ := by
-  rw [← succ_zero_eq_one']; convert succ_succAbove_succ i 0
+  rw [← succ_zero_eq_one']
+  exact succ_succAbove_succ i 0
 
 @[simp] lemma one_succAbove_succ {n : ℕ} (j : Fin n) :
     (1 : Fin (n + 2)).succAbove j.succ = j.succ.succ := by
@@ -1181,10 +1181,11 @@ lemma predAbove_zero_succ [NeZero n] {i : Fin n} : predAbove 0 i.succ = i := by
 
 @[simp] lemma predAbove_zero_of_ne_zero [NeZero n] {i : Fin (n + 1)} (hi : i ≠ 0) :
     predAbove 0 i = i.pred hi := by
-  obtain ⟨y, rfl⟩ := exists_succ_eq.2 hi; exact predAbove_zero_succ
+  obtain ⟨y, rfl⟩ := exists_succ_eq.2 hi
+  exact predAbove_zero_succ
 
 lemma succ_predAbove_zero [NeZero n] {j : Fin (n + 1)} (h : j ≠ 0) : succ (predAbove 0 j) = j := by
-  simp [*]
+  simp [h]
 
 lemma predAbove_zero [NeZero n] {i : Fin (n + 1)} :
     predAbove (0 : Fin n) i = if hi : i = 0 then 0 else i.pred hi := by
@@ -1394,8 +1395,7 @@ theorem exists_eq_add_of_lt {n : ℕ} {a b : Fin (n + 1)} (h : a < b) :
   refine ⟨⟨k, hkb.trans b.is_lt⟩, hkb, by fin_omega, ?_⟩
   simp [Fin.ext_iff, Fin.val_add, ← hk, Nat.mod_eq_of_lt b.is_lt]
 
-lemma pos_of_ne_zero {n : ℕ} {a : Fin (n + 1)} (h : a ≠ 0) :
-    0 < a :=
+lemma pos_of_ne_zero {n : ℕ} {a : Fin (n + 1)} (h : a ≠ 0) : 0 < a :=
   Nat.pos_of_ne_zero (val_ne_of_ne h)
 
 lemma sub_succ_le_sub_of_le {n : ℕ} {u v : Fin (n + 2)} (h : u < v) : v - (u + 1) < v - u := by
