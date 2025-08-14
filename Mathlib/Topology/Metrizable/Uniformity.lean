@@ -45,7 +45,7 @@ metrizable space, uniform space
 
 
 open Set Function Metric List Filter
-open scoped NNReal Rel Uniformity
+open scoped NNReal SetRel Uniformity
 
 variable {X : Type*}
 
@@ -177,7 +177,7 @@ end PseudoMetricSpace
 protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X]
     [IsCountablyGenerated (𝓤 X)] : ∃ I : PseudoMetricSpace X, I.toUniformSpace = ‹_› := by
   classical
-  /- Choose a fast decreasing antitone basis `U : ℕ → Rel X X` of the uniformity filter `𝓤 X`.
+  /- Choose a fast decreasing antitone basis `U : ℕ → SetRel X X` of the uniformity filter `𝓤 X`.
     Define `d x y : ℝ≥0` to be `(1 / 2) ^ n`, where `n` is the minimal index of `U n` that
     separates `x` and `y`: `(x, y) ∉ U n`, or `0` if `x` is not separated from `y`. This function
     satisfies the assumptions of `PseudoMetricSpace.ofPreNNDist` and
@@ -186,7 +186,7 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
     `d` and `dist` are equal. Since the former uniformity is equal to `𝓤 X`, the latter is equal to
     `𝓤 X` as well. -/
   obtain ⟨U, hU_symm, hU_comp, hB⟩ :
-    ∃ U : ℕ → Rel X X,
+    ∃ U : ℕ → SetRel X X,
       (∀ n, (U n).IsSymm) ∧
         (∀ ⦃m n⦄, m < n → U n ○ (U n ○ U n) ⊆ U m) ∧ (𝓤 X).HasAntitoneBasis U := by
     rcases UniformSpace.has_seq_basis X with ⟨V, hB, hV_symm⟩
