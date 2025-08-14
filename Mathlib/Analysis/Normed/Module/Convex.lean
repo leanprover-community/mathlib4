@@ -147,7 +147,7 @@ theorem Eventually.segment_of_prod_nhdsWithin (hy : Tendsto y f (𝓝 x)) (hz : 
     (hr : ∀ᶠ p in f ×ˢ 𝓝[s] x, r p.1 p.2) (seg : ∀ᶠ χ in f, [y χ -[ℝ] z χ] ⊆ s) :
     ∀ᶠ χ in f, ∀ v ∈ [y χ -[ℝ] z χ], r χ v := by
   refine seg.mp <| .mono ?_ (fun _ => forall₂_imp)
-  apply segment_of_prod_nhds hy hz
+  apply Eventually.segment_of_prod_nhds hy hz
   simpa [nhdsWithin, prod_eq_inf, ← inf_assoc, eventually_inf_principal] using hr
 
 end Filter
