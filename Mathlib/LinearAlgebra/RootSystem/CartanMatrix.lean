@@ -231,7 +231,7 @@ lemma abs_cartanMatrix_apply [DecidableEq ι] {i j : b.support} :
 
 @[simp]
 lemma cartanMatrix_map_abs [DecidableEq ι] :
-    b.cartanMatrix.map abs = 4 • 1 - b.cartanMatrix := by
+    b.cartanMatrix.map abs = 4 - b.cartanMatrix := by
   ext; simp [abs_cartanMatrix_apply, Matrix.ofNat_apply]
 
 lemma cartanMatrix_nondegenerate
@@ -680,6 +680,40 @@ lemma induction_on_cartanMatrix [P.IsReduced] [P.IsIrreducible]
     · replace hk : P.coroot' k x = 0 := hq_notMem ⟨k, hkb⟩ hk hx
       simp [hk]
   simp [← hq_mem, IsIrreducible.eq_top_of_invtSubmodule_reflection q hq hq₀]
+
+open scoped Matrix in
+lemma injective_pairingIn {P : RootSystem ι R M N} [P.IsCrystallographic] (b : P.Base) :
+    Injective (fun i (k : b.support) ↦ P.pairingIn ℤ i k) := by
+  classical
+  intro i j hij
+  obtain ⟨f, -, -, hf⟩ := b.exists_root_eq_sum_int i
+  obtain ⟨g, -, -, hg⟩ := b.exists_root_eq_sum_int j
+  let f' : b.support → ℤ := f ∘ (↑)
+  let g' : b.support → ℤ := g ∘ (↑)
+  suffices f' = g' by
+    rw [← P.root.apply_eq_iff_eq, hf, hg]
+    refine Finset.sum_congr rfl fun k hk ↦ ?_
+    replace this : f k = g k := congr_fun this ⟨k, hk⟩
+    rw [this]
+  replace hf : (fun k : b.support ↦ P.pairingIn ℤ i k) = f' ᵥ* b.cartanMatrix := by
+    suffices ∀ k, P.pairingIn ℤ i k = ∑ l ∈ b.support, f l * P.pairingIn ℤ l k by
+      ext; simp [f', this, cartanMatrixIn, Matrix.vecMul_eq_sum, b.support.sum_subtype (by tauto)]
+    refine fun k ↦ algebraMap_injective ℤ R ?_
+    simp_rw [algebraMap_pairingIn, map_sum, map_mul, algebraMap_pairingIn,
+      ← P.root_coroot'_eq_pairing]
+    simp [hf]
+  replace hg : (fun k : b.support ↦ P.pairingIn ℤ j k) = g' ᵥ* b.cartanMatrix := by
+    suffices ∀ k, P.pairingIn ℤ j k = ∑ l ∈ b.support, g l * P.pairingIn ℤ l k by
+      ext; simp [g', this, cartanMatrixIn, Matrix.vecMul_eq_sum, b.support.sum_subtype (by tauto)]
+    refine fun k ↦ algebraMap_injective ℤ R ?_
+    simp_rw [algebraMap_pairingIn, map_sum, map_mul, algebraMap_pairingIn,
+      ← P.root_coroot'_eq_pairing]
+    simp [hg]
+  suffices Injective fun v ↦ v ᵥ* b.cartanMatrix from this <| by simpa [← hf, ← hg]
+  rw [Matrix.vecMul_injective_iff]
+  apply Matrix.linearIndependent_rows_of_det_ne_zero
+  rw [← Matrix.nondegenerate_iff_det_ne_zero]
+  exact b.cartanMatrix_nondegenerate
 
 end IsCrystallographic
 

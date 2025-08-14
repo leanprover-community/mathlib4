@@ -169,10 +169,10 @@ lemma zero_lt_posForm_apply_root (i : ι)
   simpa only [zero_lt_posForm_iff] using B.exists_pos_eq i
 
 lemma isSymm_posForm :
-    B.posForm.IsSymm := by
-  intro x y
-  apply FaithfulSMul.algebraMap_injective S R
-  simpa using B.symm.eq x y
+    B.posForm.IsSymm where
+  eq x y := by
+    apply FaithfulSMul.algebraMap_injective S R
+    simpa using B.symm.eq x y
 
 /-- The length of the `i`-th root wrt a root-positive form taking values in `S`. -/
 def rootLength (i : ι) : S :=

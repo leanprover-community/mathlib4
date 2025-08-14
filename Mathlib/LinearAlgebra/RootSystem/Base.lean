@@ -77,6 +77,12 @@ section RootPairing
 
 variable {P : RootPairing ι R M N} (b : P.Base)
 
+lemma support_nonempty [Nonempty ι] [NeZero (2 : R)] : b.support.Nonempty := by
+  by_contra! contra
+  replace contra : b.support = ∅ := by aesop
+  obtain ⟨i⟩ := inferInstanceAs (Nonempty ι)
+  simpa [P.ne_zero i, contra] using b.root_mem_or_neg_mem i
+
 /-- Interchanging roots and coroots, one still has a base of a root pairing. -/
 @[simps] protected def flip :
     P.flip.Base where
@@ -593,6 +599,14 @@ lemma IsPos.exists_mem_support_pos_pairingIn [P.IsCrystallographic] {i : ι} (h�
   by_cases hj : j ∈ Function.support f
   · exact smul_nonpos_of_nonneg_of_nonpos (hf₁.le j) (contra j (hf₀ hj))
   · aesop
+
+lemma exists_mem_support_pos_pairingIn_ne_zero [P.IsCrystallographic] (i : ι) :
+    ∃ j ∈ b.support, P.pairingIn ℤ j i ≠ 0 := by
+  rcases IsPos.or_neg b i with hi | hi
+  · obtain ⟨j, hj, hj₀⟩ := hi.exists_mem_support_pos_pairingIn
+    exact ⟨j, hj, hj₀.ne'⟩
+  · obtain ⟨j, hj, hj₀⟩ := hi.exists_mem_support_pos_pairingIn
+    exact ⟨j, hj, by aesop⟩
 
 variable [Finite ι] [IsDomain R] [P.IsCrystallographic] [P.IsReduced]
 
