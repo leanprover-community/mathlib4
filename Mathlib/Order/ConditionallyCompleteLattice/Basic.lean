@@ -740,7 +740,7 @@ theorem isGLB_sInf (s : Set (WithTop α)) : IsGLB s (sInf s) := by
 
 noncomputable instance : CompleteLinearOrder (WithTop α) where
   __ := linearOrder
-  __ := LinearOrder.toBiheytingAlgebra
+  __ := linearOrder.toBiheytingAlgebra
   le_sSup s := (isLUB_sSup s).1
   sSup_le s := (isLUB_sSup s).2
   le_sInf s := (isGLB_sInf s).2
@@ -968,9 +968,10 @@ noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
     le_sInf := fun _ a haS => (WithTop.isGLB_sInf' ⟨a, haS⟩).2 haS }
 
 noncomputable instance WithTop.WithBot.completeLinearOrder {α : Type*}
-    [ConditionallyCompleteLinearOrder α] : CompleteLinearOrder (WithTop (WithBot α)) :=
-  -- FIXME: Spread notation doesn't work
-  { completeLattice, linearOrder, LinearOrder.toBiheytingAlgebra with }
+    [ConditionallyCompleteLinearOrder α] : CompleteLinearOrder (WithTop (WithBot α)) where
+  __ := completeLattice
+  __ := linearOrder
+  __ := linearOrder.toBiheytingAlgebra
 
 noncomputable instance WithBot.WithTop.completeLattice {α : Type*}
     [ConditionallyCompleteLattice α] : CompleteLattice (WithBot (WithTop α)) :=
@@ -981,7 +982,9 @@ noncomputable instance WithBot.WithTop.completeLattice {α : Type*}
     le_sInf := (WithTop.WithBot.completeLattice (α := αᵒᵈ)).sSup_le }
 
 noncomputable instance WithBot.WithTop.completeLinearOrder {α : Type*}
-    [ConditionallyCompleteLinearOrder α] : CompleteLinearOrder (WithBot (WithTop α)) :=
-  { completeLattice, linearOrder, LinearOrder.toBiheytingAlgebra with }
+    [ConditionallyCompleteLinearOrder α] : CompleteLinearOrder (WithBot (WithTop α)) where
+  __ := completeLattice
+  __ := linearOrder
+  __ := linearOrder.toBiheytingAlgebra
 
 end WithTopBot
