@@ -58,14 +58,14 @@ namespace Dynamics
 
 variable {X Y : Type*} {S : X → X} {T : Y → Y} {φ : X → Y}
 
-lemma IsDynCoverOf.image (h : Semiconj φ S T) {F : Set X} {V : Rel Y Y} {n : ℕ} {s : Set X}
+lemma IsDynCoverOf.image (h : Semiconj φ S T) {F : Set X} {V : SetRel Y Y} {n : ℕ} {s : Set X}
     (h' : IsDynCoverOf S F ((map φ φ) ⁻¹' V) n s) :
     IsDynCoverOf T (φ '' F) V n (φ '' s) := by
   simp only [IsDynCoverOf, image_subset_iff, preimage_iUnion₂, biUnion_image]
   refine h'.trans (iUnion₂_mono fun i _ ↦ subset_of_eq ?_)
   rw [← h.preimage_dynEntourage V n, ball_preimage]
 
-lemma IsDynCoverOf.preimage (h : Semiconj φ S T) {F : Set X} {V : Rel Y Y} [V.IsSymm] {n : ℕ}
+lemma IsDynCoverOf.preimage (h : Semiconj φ S T) {F : Set X} {V : SetRel Y Y} [V.IsSymm] {n : ℕ}
     {t : Finset Y} (h' : IsDynCoverOf T (φ '' F) V n t) :
     ∃ s : Finset X, IsDynCoverOf S F ((map φ φ) ⁻¹' (V ○ V)) n s ∧ s.card ≤ t.card := by
   classical
@@ -89,7 +89,7 @@ lemma IsDynCoverOf.preimage (h : Semiconj φ S T) {F : Set X} {V : Rel Y Y} [V.I
   rw [mem_ball_symmetry] at x_i gs_cover
   exact ⟨x_i, gs_cover⟩
 
-lemma le_coverMincard_image (h : Semiconj φ S T) (F : Set X) {V : Rel Y Y}
+lemma le_coverMincard_image (h : Semiconj φ S T) (F : Set X) {V : SetRel Y Y}
     [V.IsSymm] (n : ℕ) :
     coverMincard S F ((map φ φ) ⁻¹' (V ○ V)) n ≤ coverMincard T (φ '' F) V n := by
   rcases eq_top_or_lt_top (coverMincard T (φ '' F) V n) with h' | h'
@@ -99,7 +99,7 @@ lemma le_coverMincard_image (h : Semiconj φ S T) (F : Set X) {V : Rel Y Y}
   rw [← t_card]
   exact s_cover.coverMincard_le_card.trans (WithTop.coe_le_coe.2 s_card)
 
-lemma coverMincard_image_le (h : Semiconj φ S T) (F : Set X) (V : Rel Y Y) (n : ℕ) :
+lemma coverMincard_image_le (h : Semiconj φ S T) (F : Set X) (V : SetRel Y Y) (n : ℕ) :
     coverMincard T (φ '' F) V n ≤ coverMincard S F ((map φ φ) ⁻¹' V) n := by
   classical
   rcases eq_top_or_lt_top (coverMincard S F ((map φ φ) ⁻¹' V) n) with h' | h'
@@ -112,21 +112,21 @@ lemma coverMincard_image_le (h : Semiconj φ S T) (F : Set X) (V : Rel Y Y) (n :
 
 open ENNReal EReal ExpGrowth Filter
 
-lemma le_coverEntropyEntourage_image (h : Semiconj φ S T) (F : Set X) {V : Rel Y Y}
+lemma le_coverEntropyEntourage_image (h : Semiconj φ S T) (F : Set X) {V : SetRel Y Y}
     [V.IsSymm] :
     coverEntropyEntourage S F ((map φ φ) ⁻¹' (V ○ V)) ≤ coverEntropyEntourage T (φ '' F) V :=
   expGrowthSup_monotone fun n ↦ ENat.toENNReal_mono (le_coverMincard_image h F n)
 
-lemma le_coverEntropyInfEntourage_image (h : Semiconj φ S T) (F : Set X) {V : Rel Y Y}
+lemma le_coverEntropyInfEntourage_image (h : Semiconj φ S T) (F : Set X) {V : SetRel Y Y}
     [V.IsSymm] :
     coverEntropyInfEntourage S F ((map φ φ) ⁻¹' (V ○ V)) ≤ coverEntropyInfEntourage T (φ '' F) V :=
   expGrowthInf_monotone fun n ↦ ENat.toENNReal_mono (le_coverMincard_image h F n)
 
-lemma coverEntropyEntourage_image_le (h : Semiconj φ S T) (F : Set X) (V : Rel Y Y) :
+lemma coverEntropyEntourage_image_le (h : Semiconj φ S T) (F : Set X) (V : SetRel Y Y) :
     coverEntropyEntourage T (φ '' F) V ≤ coverEntropyEntourage S F ((map φ φ) ⁻¹' V) :=
   expGrowthSup_monotone fun n ↦ ENat.toENNReal_mono (coverMincard_image_le h F V n)
 
-lemma coverEntropyInfEntourage_image_le (h : Semiconj φ S T) (F : Set X) (V : Rel Y Y) :
+lemma coverEntropyInfEntourage_image_le (h : Semiconj φ S T) (F : Set X) (V : SetRel Y Y) :
     coverEntropyInfEntourage T (φ '' F) V ≤ coverEntropyInfEntourage S F ((map φ φ) ⁻¹' V) :=
   expGrowthInf_monotone fun n ↦ ENat.toENNReal_mono (coverMincard_image_le h F V n)
 
