@@ -211,7 +211,7 @@ lemma posForm_self_of_add [Fintype ι] [FaithfulSMul ℤ R] [IsCrystallographic 
     (P.posRootForm ℤ).posForm (b.rootCombination ℤ f₂) (b.rootCombination ℤ f₂) +
     2 • (P.posRootForm ℤ).posForm (b.rootCombination ℤ f₁) (b.rootCombination ℤ f₂) := by
   simp only [← h, rootCombination_add, map_add, LinearMap.add_apply]
-  rw [← (P.posRootForm ℤ).isSymm_posForm (b.rootCombination ℤ f₂) (b.rootCombination ℤ f₁),
+  rw [← (P.posRootForm ℤ).isSymm_posForm.eq (b.rootCombination ℤ f₂) (b.rootCombination ℤ f₁),
     RingHom.id_apply]
   abel
 

@@ -230,7 +230,7 @@ lemma posForm_eq_zero_iff_IsOrthogonal [IsStrictOrderedRing S] (i j : ι) :
     (FaithfulSMul.algebraMap_injective S R) (by simp [algebraMap_pairingIn, h.1])⟩
   intro h
   have : (B.posForm (P.rootSpanMem S j)) (P.rootSpanMem S i) = 0 := by
-    rwa [← RootPositiveForm.isSymm_posForm B, RingHom.id_apply]
+    rw [← B.isSymm_posForm.eq, RingHom.id_apply, h]
   constructor
   · rw [← P.algebraMap_pairingIn S, (B.posForm_eq_zero_iff_pairing i j).mp h,
       algebraMap_eq_zero_iff]

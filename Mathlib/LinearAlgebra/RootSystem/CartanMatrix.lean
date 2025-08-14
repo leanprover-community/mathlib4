@@ -177,7 +177,7 @@ lemma posForm_le_neg_rootLength_right [Fintype ι] {i j : b.support} (h : j ∈ 
 lemma posForm_le_neg_rootLength_left [Fintype ι] {i j : b.support} (h : j ∈ b.neighbor i) :
   2 • (P.posRootForm ℤ).posForm (P.rootSpanMem ℤ i) (P.rootSpanMem ℤ j) ≤
     -(P.posRootForm ℤ).rootLength i := by
-  rw [← RootPositiveForm.isSymm_posForm, RingHom.id_apply,
+  rw [← (P.posRootForm ℤ).isSymm_posForm.eq, RingHom.id_apply,
     RootPositiveForm.two_smul_apply_rootSpanMem_rootSpanMem]
   exact b.pairingIn_smul_rootLength_le ((neighbor_symm b i j).mp h)
 
@@ -360,7 +360,7 @@ lemma posForm_apply_add_single_le [Fintype ι] {f g : b.support →₀ ℤ} {i j
   have : (P.posRootForm ℤ).posForm (b.rootCombination ℤ f) (P.rootSpanMem ℤ i) ≤
       -(P.posRootForm ℤ).rootLength i := by
     refine le_of_eq_of_le ?_ hfi
-    rw [← (P.posRootForm ℤ).isSymm_posForm (P.rootSpanMem ℤ i), RingHom.id_apply]
+    rw [← (P.posRootForm ℤ).isSymm_posForm.eq (P.rootSpanMem ℤ i), RingHom.id_apply]
   rw [← RootPositiveForm.rootLength]
   linarith
 
@@ -391,7 +391,7 @@ lemma notMem_neighbor_left_of_pairing_neg_three [Fintype ι] {i j k : b.support}
         P.pairingIn ℤ i j • (P.posRootForm ℤ).rootLength j := by
       simpa using (P.posRootForm ℤ).two_smul_apply_rootSpanMem_rootSpanMem i j
     nth_rw 1 [this i k]
-    rw [← (P.posRootForm ℤ).isSymm_posForm (P.rootSpanMem ℤ k) (P.rootSpanMem ℤ i),
+    rw [← (P.posRootForm ℤ).isSymm_posForm.eq (P.rootSpanMem ℤ k) (P.rootSpanMem ℤ i),
       RingHom.id_apply, this k i, ← add_assoc]
     refine Int.add_nonpos ?_ ?_
     · rw [add_rotate, ← add_assoc, add_assoc _ _ (3 * (P.posRootForm ℤ).rootLength ↑j)]
@@ -435,7 +435,7 @@ lemma notMem_neighbor_right_of_pairing_neg_three [Fintype ι] {i j k : b.support
         P.pairingIn ℤ i j • (P.posRootForm ℤ).rootLength j := by
       simpa using (P.posRootForm ℤ).two_smul_apply_rootSpanMem_rootSpanMem i j
     rw [mul_add, this i k, two_mul]
-    nth_rw 1 [← (P.posRootForm ℤ).isSymm_posForm (P.rootSpanMem ℤ k) (P.rootSpanMem ℤ j)]
+    nth_rw 1 [← (P.posRootForm ℤ).isSymm_posForm.eq (P.rootSpanMem ℤ k) (P.rootSpanMem ℤ j)]
     rw [RingHom.id_apply, this k j, this j k, ← RootPositiveForm.rootLength]
     have : 0 < (P.posRootForm ℤ).rootLength k := (P.posRootForm ℤ).rootLength_pos k
     have hk1 := pairingIn_smul_rootLength_le b hp
@@ -467,7 +467,7 @@ lemma isOrthogonal_of_neighbor [IsDomain R] [Fintype ι] {i j k : b.support} (hj
       b.posForm_self_of_add (Finsupp.single i 1) (Finsupp.single j 1) _ rfl]
     have := (P.posRootForm ℤ).pairingIn_mul_eq_pairingIn_mul_swap i j
     simp only [rootCombination_add, rootCombination_single, one_smul, LinearMap.BilinForm.add_left]
-    rw [smul_add, ← (P.posRootForm ℤ).isSymm_posForm (P.rootSpanMem ℤ k) (P.rootSpanMem ℤ i),
+    rw [smul_add, ← (P.posRootForm ℤ).isSymm_posForm.eq (P.rootSpanMem ℤ k) (P.rootSpanMem ℤ i),
       RingHom.id_apply]
     simp only [RootPositiveForm.two_smul_apply_rootSpanMem_rootSpanMem]
     have : k ∈ b.neighbor j := by
