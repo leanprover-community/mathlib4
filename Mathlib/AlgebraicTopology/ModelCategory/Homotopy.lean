@@ -136,7 +136,7 @@ lemma bijective_postcomp_of_weakEquivalence
     ext φ
     obtain ⟨φ, rfl⟩ := φ.mk_surjective
     simp
-  convert (bijective_postcomp_of_fibration_of_weakEquivalence X h.j).comp hi
+  convert (bijective_postcomp_of_fibration_of_weakEquivalence X h.j).comp hi using 1
   ext φ
   obtain ⟨φ, rfl⟩ := φ.mk_surjective
   simp
