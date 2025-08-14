@@ -13,3 +13,16 @@ theorem exists_k_base_eq_p_pow_k_of_prime_p_pow_eq_base_pow
   rcases exponent_dvd_of_prime_pow_eq_pow hp h with ⟨k, m_eq⟩
   rw [m_eq, show p ^ (n * k) = (p ^ k) ^ n by ring] at h
   use k, Nat.pow_left_injective hn h.symm
+
+theorem exists_eq_pow_of_exponent_coprime_of_pow_eq {a b m n : ℕ} (hmn : m.Coprime n) (h : a ^ m = b ^ n) :
+    ∃ c, a = c ^ n ∧ b = c ^ m := by
+  sorry
+
+theorem exists_eq_pow_of_pow_eq {a b m n : ℕ} (hmn : m ≠ 0 ∨ n ≠ 0) (h : a ^ m = b ^ n) :
+    ∃ c, a = c ^ n / gcd m n ∧ b = c ^ m / gcd m n := by
+  sorry
+
+#eval Nat.gcd 0 0
+#eval Nat.gcd 0 1
+
+#check factorization
