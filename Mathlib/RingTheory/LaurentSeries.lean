@@ -979,7 +979,7 @@ theorem inducing_coe : IsUniformInducing ((↑) : RatFunc K → K⸨X⸩) := by
         use d
     · refine subset_trans (fun _ _ ↦ ?_) pre_T
       apply hd
-      rw [Set.mem_setOf_eq, sub_zero, WithZero.valued_def, valuation_eq_LaurentSeries_valuation,
+      rw [Set.mem_setOf_eq, sub_zero, v_def, valuation_eq_LaurentSeries_valuation,
         RatFunc.coe_sub]
       assumption
 
@@ -1079,7 +1079,7 @@ theorem valuation_LaurentSeries_equal_extension :
     (LaurentSeriesPkg K).isDenseInducing.extend Valued.v = (Valued.v : K⸨X⸩ → ℤᵐ⁰) := by
   apply IsDenseInducing.extend_unique
   · intro x
-    rw [valued_def, valuation_eq_LaurentSeries_valuation K x]
+    rw [v_def, valuation_eq_LaurentSeries_valuation K x]
     rfl
   · exact Valued.continuous_valuation (K := K⸨X⸩)
 
