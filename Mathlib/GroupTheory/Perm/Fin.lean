@@ -210,9 +210,6 @@ theorem cycleRange_mk_zero (h : 0 < n) : cycleRange ⟨0, h⟩ = 1 :=
   have : NeZero n := .of_pos h
   cycleRange_zero n
 
-@[deprecated (since := "2025-01-28")]
-alias cycleRange_zero' := cycleRange_mk_zero
-
 @[simp]
 theorem sign_cycleRange (i : Fin n) : Perm.sign (cycleRange i) = (-1) ^ (i : ℕ) := by
   simp [cycleRange]
