@@ -144,7 +144,7 @@ lemma colorable_zero_iff : G.Colorable 0 ↔ IsEmpty V :=
 
 /-- If `G` is `n`-colorable, then mapping the vertices of `G` produces an `n`-colorable simple
 graph. -/
-theorem Colorable.map {β : Type*} (f : V ↪ β) [NeZero n] (hc : G.Colorable n) :
+theorem Colorable.map {β : Type*} (f : V ↪ β) [NeZero n] {G : SimpleGraph V} (hc : G.Colorable n) :
     (G.map f).Colorable n := by
   classical use fun b ↦ if h : ∃ v, f v = b then hc.some h.choose else default
   intro b₁ b₂ hadj'
