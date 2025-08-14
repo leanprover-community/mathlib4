@@ -63,6 +63,33 @@ def coeOrderHom {α : Type*} [Preorder α] : α ↪o WithTop α where
   inj' := WithTop.coe_injective
   map_rel_iff' := WithTop.coe_le_coe
 
+/-- Any `OrderTop` is equivalent to `WithTop` of the subtype excluding `⊤`.
+
+See also `Equiv.optionSubtypeNe`. -/
+def subtypeOrderIso [PartialOrder α] [OrderTop α] [DecidablePred (· = (⊤ : α))] :
+    WithTop {a : α // a ≠ ⊤} ≃o α where
+  toFun a := (a.map (↑)).untopD ⊤
+  invFun a := if h : a = ⊤ then ⊤ else .some ⟨a, h⟩
+  left_inv
+  | .some ⟨a, h⟩ => by simp [h]
+  | ⊤ => by simp
+  right_inv a := by dsimp only; split_ifs <;> simp [*]
+  map_rel_iff' {a b} := match a, b with
+  | .some a, .some b => by simp
+  | ⊤, .some ⟨b, h⟩ => by simp [h]
+  | a, ⊤ => by simp
+
+@[simp]
+theorem subtypeOrderIso_apply_coe [PartialOrder α] [OrderTop α] [DecidablePred (· = (⊤ : α))]
+    (a : {a : α // a ≠ ⊤}) :
+  subtypeOrderIso (a : WithTop {a : α // a ≠ ⊤}) = a := rfl
+
+theorem subtypeOrderIso_symm_apply [PartialOrder α] [OrderTop α] [DecidablePred (· = (⊤ : α))]
+    {a : α} (h : a ≠ ⊤) :
+    (subtypeOrderIso).symm a = (⟨a, h⟩ : {a : α // a ≠ ⊤}) := by
+  rw [OrderIso.symm_apply_eq]
+  rfl
+
 end WithTop
 
 namespace WithBot
@@ -108,6 +135,23 @@ def coeOrderHom {α : Type*} [Preorder α] : α ↪o WithBot α where
   toFun := (↑)
   inj' := WithBot.coe_injective
   map_rel_iff' := WithBot.coe_le_coe
+
+/-- Any `OrderBot` is equivalent to `WithBot` of the subtype excluding `⊥`.
+
+See also `Equiv.optionSubtypeNe`. -/
+def subtypeOrderIso [PartialOrder α] [OrderBot α] [DecidablePred (· = (⊥ : α))] :
+    WithBot {a : α // a ≠ ⊥} ≃o α := (WithTop.subtypeOrderIso (α := αᵒᵈ)).dual
+
+@[simp]
+theorem subtypeOrderIso_apply_coe [PartialOrder α] [OrderBot α] [DecidablePred (· = (⊥ : α))]
+    (a : {a : α // a ≠ ⊥}) :
+  subtypeOrderIso (a : WithTop {a : α // a ≠ ⊥}) = a := rfl
+
+theorem subtypeOrderIso_symm_apply [PartialOrder α] [OrderBot α] [DecidablePred (· = (⊥ : α))]
+    {a : α} (h : a ≠ ⊥) :
+    (subtypeOrderIso).symm a = (⟨a, h⟩ : {a : α // a ≠ ⊥}) := by
+  rw [OrderIso.symm_apply_eq]
+  rfl
 
 end WithBot
 
