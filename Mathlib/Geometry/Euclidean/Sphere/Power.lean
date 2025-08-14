@@ -267,8 +267,8 @@ theorem mul_dist_eq_abs_power {s : Sphere P} {p a b : P}
 theorem dist_sq_eq_mul_dist_of_tangent_and_secant {a b t p : P} {s : Sphere P}
     (ha : a ∈ s) (hb : b ∈ s) (ht : t ∈ s) (hpt : p ≠ t)
     (h_secant : ∃ k : ℝ, k ≠ 1 ∧ b -ᵥ p = k • (a -ᵥ p))
-    (h_tangent : s.IsTangentAt t (affineSpan ℝ {p, t}))
-    : dist t p ^ 2 = dist a p * dist b p := by
+    (h_tangent : s.IsTangentAt t (line[ℝ, p, t])) :
+    dist t p ^ 2 = dist a p * dist b p := by
   have hp_outside : s.radius < dist p s.center := by
     by_contra h; push_neg at h
     obtain h_lt | h_eq := lt_or_eq_of_le h
