@@ -1448,6 +1448,10 @@ Q1227061:
 
 Q1227702:
   title: Dirichlet's unit theorem
+  decls: 
+    - NumberField.Units.basisModTorsion
+    - NumberField.Units.exist_unique_eq_mul_prod
+  authors: Xavier Roblot
 
 Q1227703:
   title: Dirichlet's approximation theorem
