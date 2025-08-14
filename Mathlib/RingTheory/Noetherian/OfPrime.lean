@@ -12,7 +12,8 @@ import Mathlib.RingTheory.Ideal.BigOperators
 
 ## Main results
 
-- `IsNoetherianRing.of_prime`: a ring where all prime ideals are principal is a principal ideal ring
+- `IsNoetherianRing.of_prime`: a ring where all prime ideals are finitely generated is a noetherian
+  ring
 
 ## References
 
@@ -22,6 +23,8 @@ import Mathlib.RingTheory.Ideal.BigOperators
 variable {R : Type*}
 
 namespace Ideal
+
+open Set Finset
 
 /-- If a commutative (semi)ring has a infinitely generated ideal, then it has an ideal which is
 maximal for being infinitely generated. -/
@@ -39,8 +42,6 @@ theorem exists_maximal_not_fg [CommSemiring R] (h : ∃ I : Ideal R, ¬I.FG) :
     exact hC I_mem_C ⟨G, I_eq_sSup ▸ hG⟩
   · obtain ⟨I, hI⟩ := h
     exact ⟨I, hI, by simp [Set.not_nonempty_iff_eq_empty.1 H]⟩
-
-open Set Finset
 
 /-- `Ideal.FG` is an Oka predicate. -/
 theorem isOka_fg [CommRing R] : IsOka (FG (R := R)) where
@@ -74,6 +75,7 @@ end Ideal
 
 open Ideal
 
+/-- If all prime ideals in a commutative ring are finitely generated, so are all other ideals. -/
 theorem IsNoetherianRing.of_prime [CommRing R] (H : ∀ I : Ideal R, I.IsPrime → I.FG) :
     IsNoetherianRing R :=
   ⟨isOka_fg.forall_of_forall_prime_isOka exists_maximal_not_fg H⟩
