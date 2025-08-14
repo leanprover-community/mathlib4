@@ -80,6 +80,9 @@ theorem map_monotone (f : V ↪ W) : Monotone (SimpleGraph.map f) := by
 @[simp] lemma map_map (f : V ↪ W) (g : W ↪ X) : (G.map f).map g = G.map (f.trans g) :=
   SimpleGraph.ext <| Relation.map_map _ _ _ _ _
 
+theorem support_map_eq_image (f : V ↪ W) : (G.map f).support = f '' G.support := by
+  ext; simp [mem_support]; tauto
+
 /-- Given a function, there is a contravariant induced map on graphs by pulling back the
 adjacency relation.
 This is one of the ways of creating induced graphs. See `SimpleGraph.induce` for a wrapper.
