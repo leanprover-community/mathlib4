@@ -171,27 +171,28 @@ section Equiv
 variable {T : Type*} [Ring T] [Algebra R T]
 
 /-- Algebra isomorphism with `R[X]/(f)`. -/
-def adjoinRootEquiv : AdjoinRoot f ≃ₐ[R] S :=
+def adjoinRootAlgEquiv : AdjoinRoot f ≃ₐ[R] S :=
   (Ideal.quotientEquivAlgOfEq R h.ker_map.symm).trans <|
     Ideal.quotientKerAlgEquivOfSurjective h.map_surjective
 
 @[simp]
-theorem adjoinRootEquiv_apply_mk (g : R[X]) : h.adjoinRootEquiv (AdjoinRoot.mk f g) = h.map g := rfl
+theorem adjoinRootAlgEquiv_apply_mk (g : R[X]) :
+    h.adjoinRootAlgEquiv (AdjoinRoot.mk f g) = h.map g := rfl
 
-theorem adjoinRootEquiv_apply_eq_map (a : AdjoinRoot f) :
-    h.adjoinRootEquiv a = h.map (AdjoinRoot.mk_surjective a).choose := by
-  rw (occs := [1]) [← (AdjoinRoot.mk_surjective a).choose_spec, adjoinRootEquiv_apply_mk]
+theorem adjoinRootAlgEquiv_apply_eq_map (a : AdjoinRoot f) :
+    h.adjoinRootAlgEquiv a = h.map (AdjoinRoot.mk_surjective a).choose := by
+  rw (occs := [1]) [← (AdjoinRoot.mk_surjective a).choose_spec, adjoinRootAlgEquiv_apply_mk]
 
-theorem adjoinRootEquiv_symm_apply_eq_mk (a : S) :
-    h.adjoinRootEquiv.symm a = AdjoinRoot.mk f (h.repr a) := by
-  rw (occs := [1]) [AlgEquiv.symm_apply_eq, ← h.map_repr a, adjoinRootEquiv_apply_mk]
-
-@[simp]
-theorem adjoinRootEquiv_apply_root : h.adjoinRootEquiv (AdjoinRoot.root f) = h.root := rfl
+theorem adjoinRootAlgEquiv_symm_apply_eq_mk (a : S) :
+    h.adjoinRootAlgEquiv.symm a = AdjoinRoot.mk f (h.repr a) := by
+  rw (occs := [1]) [AlgEquiv.symm_apply_eq, ← h.map_repr a, adjoinRootAlgEquiv_apply_mk]
 
 @[simp]
-theorem adjoinRootEquiv_symm_apply_root : h.adjoinRootEquiv.symm h.root = AdjoinRoot.root f :=
-    (AlgEquiv.symm_apply_eq h.adjoinRootEquiv).mpr rfl
+theorem adjoinRootAlgEquiv_apply_root : h.adjoinRootAlgEquiv (AdjoinRoot.root f) = h.root := rfl
+
+@[simp]
+theorem adjoinRootAlgEquiv_symm_apply_root : h.adjoinRootAlgEquiv.symm h.root = AdjoinRoot.root f :=
+    (AlgEquiv.symm_apply_eq h.adjoinRootAlgEquiv).mpr rfl
 
 variable (h' : IsAdjoinRoot T f)
 
@@ -200,11 +201,11 @@ variable (h' : IsAdjoinRoot T f)
 This is the converse of `IsAdjoinRoot.ofAlgEquiv`: this turns an `IsAdjoinRoot` into an
 `AlgEquiv`, and `IsAdjoinRoot.ofAlgEquiv` turns an `AlgEquiv` into an `IsAdjoinRoot`.
 -/
-def algEquiv : S ≃ₐ[R] T := h.adjoinRootEquiv.symm.trans h'.adjoinRootEquiv
+def algEquiv : S ≃ₐ[R] T := h.adjoinRootAlgEquiv.symm.trans h'.adjoinRootAlgEquiv
 
 @[deprecated (since := "2025-08-13")] noncomputable alias aequiv := algEquiv
 
-theorem algEquiv_def : h.algEquiv h' = h.adjoinRootEquiv.symm.trans h'.adjoinRootEquiv := rfl
+theorem algEquiv_def : h.algEquiv h' = h.adjoinRootAlgEquiv.symm.trans h'.adjoinRootAlgEquiv := rfl
 
 @[simp]
 theorem algEquiv_root : h.algEquiv h' h.root = h'.root := by simp [algEquiv_def]
@@ -262,7 +263,7 @@ def ofAlgEquiv (e : S ≃ₐ[R] T) : IsAdjoinRoot T f where
 theorem algEquiv_ofAlgEquiv {U : Type*} [Ring U] [Algebra R U] (e : T ≃ₐ[R] U) :
     h.algEquiv (h'.ofAlgEquiv e) = (h.algEquiv h').trans e := by
   ext a
-  simp [algEquiv_def, AlgEquiv.trans_apply, adjoinRootEquiv_apply_eq_map, ofAlgEquiv_map_apply]
+  simp [algEquiv_def, AlgEquiv.trans_apply, adjoinRootAlgEquiv_apply_eq_map, ofAlgEquiv_map_apply]
 
 @[deprecated (since := "2025-08-13")] alias aequiv_ofEquiv := algEquiv_ofAlgEquiv
 
@@ -271,8 +272,8 @@ theorem ofAlgEquiv_algEquiv {U : Type*} [Ring U] [Algebra R U] (h'' : IsAdjoinRo
     (e : S ≃ₐ[R] T) : (h.ofAlgEquiv e).algEquiv h'' = e.symm.trans (h.algEquiv h'') := by
   ext a
   simp_rw [algEquiv_def, AlgEquiv.trans_apply, EmbeddingLike.apply_eq_iff_eq,
-           AlgEquiv.symm_apply_eq, adjoinRootEquiv_apply_eq_map, ofAlgEquiv_map_apply,
-           ← adjoinRootEquiv_apply_eq_map, AlgEquiv.apply_symm_apply]
+           AlgEquiv.symm_apply_eq, adjoinRootAlgEquiv_apply_eq_map, ofAlgEquiv_map_apply,
+           ← adjoinRootAlgEquiv_apply_eq_map, AlgEquiv.apply_symm_apply]
 
 @[deprecated (since := "2025-08-13")] alias ofEquiv_aequiv := ofAlgEquiv_algEquiv
 
