@@ -30,8 +30,8 @@ section
 class Grp_Class (X : C) extends Mon_Class X where
   /-- The inverse in a group object -/
   inv : X ⟶ X
-  left_inv (X) : lift inv (𝟙 X) ≫ mul = toUnit _ ≫ one := by aesop_cat
-  right_inv (X) : lift (𝟙 X) inv ≫ mul = toUnit _ ≫ one := by aesop_cat
+  left_inv (X) : lift inv (𝟙 X) ≫ mul = toUnit _ ≫ one := by cat_disch
+  right_inv (X) : lift (𝟙 X) inv ≫ mul = toUnit _ ≫ one := by cat_disch
 
 namespace Mon_Class
 
@@ -265,6 +265,7 @@ section
 variable (C)
 
 /-- The forgetful functor from group objects to monoid objects. -/
+@[simps! obj_X]
 def forget₂Mon_ : Grp_ C ⥤ Mon_ C :=
   inducedFunctor Grp_.toMon_
 
@@ -315,8 +316,8 @@ def mkIso' {G H : C} (e : G ≅ H) [Grp_Class G] [Grp_Class H] [IsMon_Hom e.hom]
 /-- Construct an isomorphism of group objects by giving an isomorphism between the underlying
 objects and checking compatibility with unit and multiplication only in the forward direction. -/
 @[simps!]
-abbrev mkIso {G H : Grp_ C} (e : G.X ≅ H.X) (one_f : η[G.X] ≫ e.hom = η[H.X] := by aesop_cat)
-    (mul_f : μ[G.X] ≫ e.hom = (e.hom ⊗ₘ e.hom) ≫ μ[H.X] := by aesop_cat) : G ≅ H :=
+abbrev mkIso {G H : Grp_ C} (e : G.X ≅ H.X) (one_f : η[G.X] ≫ e.hom = η[H.X] := by cat_disch)
+    (mul_f : μ[G.X] ≫ e.hom = (e.hom ⊗ₘ e.hom) ≫ μ[H.X] := by cat_disch) : G ≅ H :=
   have : IsMon_Hom e.hom := ⟨one_f, mul_f⟩
   mkIso' e
 
