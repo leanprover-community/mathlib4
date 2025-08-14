@@ -145,15 +145,15 @@ theorem natDegree_lt_coeff_mul (h : p.natDegree + q.natDegree < m + n) :
     (p * q).coeff (m + n) = 0 :=
   coeff_eq_zero_of_natDegree_lt (natDegree_mul_le.trans_lt h)
 
-theorem coeff_mul_of_natDegree_le (pm : p.natDegree ≤ m) (qn : q.natDegree ≤ n) :
-    (p * q).coeff (m + n) = p.coeff m * q.coeff n := coeff_mul_add_eq_of_natDegree_le pm qn
+@[deprecated (since := "2025-08-14")] alias coeff_mul_of_natDegree_le :=
+  coeff_mul_add_eq_of_natDegree_le
 
 theorem coeff_pow_of_natDegree_le (pn : p.natDegree ≤ n) :
     (p ^ m).coeff (m * n) = p.coeff n ^ m := by
   induction m with
   | zero => simp
   | succ m hm =>
-    rw [pow_succ, pow_succ, ← hm, Nat.succ_mul, coeff_mul_of_natDegree_le _ pn]
+    rw [pow_succ, pow_succ, ← hm, Nat.succ_mul, coeff_mul_add_eq_of_natDegree_le _ pn]
     refine natDegree_pow_le.trans (le_trans ?_ (le_refl _))
     exact mul_le_mul_of_nonneg_left pn m.zero_le
 
