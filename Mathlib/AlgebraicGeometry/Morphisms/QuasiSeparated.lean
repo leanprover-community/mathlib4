@@ -361,13 +361,10 @@ lemma exists_of_res_eq_of_qcqs_of_top {X : Scheme.{u}} [CompactSpace X] [QuasiSe
   exists_of_res_eq_of_qcqs (U := ⊤) CompactSpace.isCompact_univ isQuasiSeparated_univ hfg
 
 lemma exists_of_res_zero_of_qcqs {X : Scheme.{u}} {U : TopologicalSpace.Opens X}
-    (hU : IsCompact U.carrier) (hU' : IsQuasiSeparated U.carrier)
+    (hU : IsCompact U.carrier) (_ : IsQuasiSeparated U.carrier)
     {f s : Γ(X, U)} (hf : f |_ X.basicOpen s = 0) :
-    ∃ n, s ^ n * f = 0 := by
-  suffices h : ∃ n, s ^ n * f = s ^ n * 0 by
-    simpa using h
-  apply exists_of_res_eq_of_qcqs hU hU'
-  simpa
+    ∃ n, s ^ n * f = 0 :=
+  exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact X hU f s hf
 
 lemma exists_of_res_zero_of_qcqs_of_top {X : Scheme} [CompactSpace X] [QuasiSeparatedSpace X]
     {f s : Γ(X, ⊤)} (hf : f |_ X.basicOpen s = 0) :
