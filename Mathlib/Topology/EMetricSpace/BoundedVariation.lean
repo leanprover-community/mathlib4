@@ -366,7 +366,7 @@ theorem add_le_union (f : α → E) {s t : Set α} (h : ∀ x ∈ s, ∀ y ∈ t
           ∑ i ∈ Finset.range m, edist (f (w (n + 1 + i + 1))) (f (w (n + 1 + i))) := by
       dsimp only [w]
       congr 1
-      · grind [Finset.mem_range, Finset.sum_congr]
+      · grind [Finset.sum_congr]
       · grind
     _ = (∑ i ∈ Finset.range n, edist (f (w (i + 1))) (f (w i))) +
           ∑ i ∈ Finset.Ico (n + 1) (n + 1 + m), edist (f (w (i + 1))) (f (w i)) := by

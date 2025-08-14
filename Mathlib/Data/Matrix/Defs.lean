@@ -39,7 +39,7 @@ form `fun i j ↦ _` or even `(fun i j ↦ _ : Matrix m n α)`, as these are not
 as having the right type. Instead, `Matrix.of` should be used.
 -/
 
-assert_not_exists Algebra Star
+assert_not_exists Algebra TrivialStar
 
 universe u u' v w
 

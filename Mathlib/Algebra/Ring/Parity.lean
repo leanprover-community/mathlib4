@@ -235,15 +235,9 @@ lemma even_or_odd' (n : ℕ) : ∃ k, n = 2 * k ∨ n = 2 * k + 1 := by
   simpa only [← two_mul, exists_or, Odd, Even] using even_or_odd n
 
 lemma even_xor_odd' (n : ℕ) : ∃ k, Xor' (n = 2 * k) (n = 2 * k + 1) := by
-  obtain ⟨k, rfl⟩ | ⟨k, rfl⟩ := even_or_odd n
+  obtain ⟨k, rfl⟩ | ⟨k, rfl⟩ := even_or_odd n <;>
   · use k
     grind
-  · use k
-    #adaptation_note
-    /-- 2025-08-11: this was `by grind`, but this fails after a regression introduced in
-    https://github.com/leanprover/lean4/pull/9776
-    Reported as https://github.com/leanprover/lean4/pull/9828 -/
-    simpa only [xor_true, xor_comm] using (succ_ne_self _)
 
 lemma odd_add_one {n : ℕ} : Odd (n + 1) ↔ ¬ Odd n := by grind
 

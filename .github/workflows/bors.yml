@@ -296,6 +296,10 @@ jobs:
         run: |
           cd pr-branch
 
+          # Trim trailing whitespace from secrets to prevent issues with accidentally added spaces
+          export MATHLIB_CACHE_SAS="${MATHLIB_CACHE_SAS_RAW%"${MATHLIB_CACHE_SAS_RAW##*[![:space:]]}"}"
+          export MATHLIB_CACHE_S3_TOKEN="${MATHLIB_CACHE_S3_TOKEN_RAW%"${MATHLIB_CACHE_S3_TOKEN_RAW##*[![:space:]]}"}"
+
           # Use the trusted cache tool from master-branch
           # TODO: this is not doing anything currently, and needs to be integrated with put-unpacked
           # ../master-branch/.lake/build/bin/cache commit || true
@@ -304,8 +308,8 @@ jobs:
           # do not try to upload files just downloaded
           ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked
         env:
-          MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
-          MATHLIB_CACHE_S3_TOKEN: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
+          MATHLIB_CACHE_SAS_RAW: ${{ secrets.MATHLIB_CACHE_SAS }}
+          MATHLIB_CACHE_S3_TOKEN_RAW: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
 
       # Note: we should not be including `Archive` and `Counterexamples` in the cache.
       # We do this for now for the sake of not rebuilding them in every CI run
@@ -352,11 +356,16 @@ jobs:
         shell: bash
         run: |
           cd pr-branch
+
+          # Trim trailing whitespace from secrets to prevent issues with accidentally added spaces
+          export MATHLIB_CACHE_SAS="${MATHLIB_CACHE_SAS_RAW%"${MATHLIB_CACHE_SAS_RAW##*[![:space:]]}"}"
+          export MATHLIB_CACHE_S3_TOKEN="${MATHLIB_CACHE_S3_TOKEN_RAW%"${MATHLIB_CACHE_S3_TOKEN_RAW##*[![:space:]]}"}"
+
           ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put Archive.lean
           ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put Counterexamples.lean
         env:
-          MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
-          MATHLIB_CACHE_S3_TOKEN: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
+          MATHLIB_CACHE_SAS_RAW: ${{ secrets.MATHLIB_CACHE_SAS }}
+          MATHLIB_CACHE_S3_TOKEN_RAW: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
 
       - name: Check {Mathlib, Tactic, Counterexamples, Archive}.lean
         if: always()
