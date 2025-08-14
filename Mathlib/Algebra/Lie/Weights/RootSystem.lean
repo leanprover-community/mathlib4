@@ -463,7 +463,7 @@ lemma eq_top_of_invtSubmodule_ne_bot (q : Submodule K (Dual K H))
         simp at this; exact this)
       have := s₂ i j h₁ h₂
       rw [h_eq, coe_neg, Pi.neg_apply, root_apply_coroot j_non_zero] at this
-      field_simp at this
+      simp at this
     have r₂ : r ∈ H.root := by simp [isNonZero_iff_ne_zero, r₁]
     cases Classical.em (⟨r, r₂⟩ ∈ Φ) with
     | inl hl =>

@@ -215,7 +215,7 @@ theorem integral_gaussian_sq_complex {b : ℂ} (hb : 0 < b.re) :
       simp only [integral_const, MeasurableSet.univ, measureReal_restrict_apply,
         univ_inter, real_smul, mul_one, integral_mul_cexp_neg_mul_sq hb]
       rw [volume_real_Ioo_of_le (by linarith [pi_nonneg])]
-      field_simp [(by contrapose! hb; rw [hb, zero_re] : b ≠ 0)]
+      simp
       ring
 
 theorem integral_gaussian (b : ℝ) : ∫ x : ℝ, exp (-b * x ^ 2) = √(π / b) := by
@@ -359,7 +359,7 @@ lemma Real.Gamma_nat_add_one_add_half (k : ℕ) :
   | zero => simp [-one_div, add_comm (1 : ℝ), Gamma_add_one, Gamma_one_half_eq]; ring
   | succ k ih =>
     rw [add_right_comm, Gamma_add_one (by positivity), Nat.cast_add, Nat.cast_one, ih, Nat.mul_add]
-    field_simp
+    simp
     ring
 
 open scoped Nat in
