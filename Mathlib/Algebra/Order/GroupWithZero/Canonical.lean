@@ -174,7 +174,7 @@ instance instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
     LinearOrderedCommMonoidWithZero (Multiplicative αᵒᵈ) where
   zero := Multiplicative.ofAdd (OrderDual.toDual ⊤)
   zero_mul := @top_add _ (_)
-  -- Porting note:  Here and elsewhere in the file, just `zero_mul` worked in Lean 3. See
+  -- Porting note:  Here and elsewhere in the file, just `top_add` worked in Lean 3. See
   -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Type.20synonyms
   mul_zero := @add_top _ (_)
   zero_le_one := (le_top : (0 : α) ≤ ⊤)
