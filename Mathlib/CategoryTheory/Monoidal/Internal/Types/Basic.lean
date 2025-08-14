@@ -20,11 +20,11 @@ assert_not_exists MonoidWithZero
 
 universe v u
 
-open CategoryTheory Mon_Class
+open CategoryTheory MonObj
 
 namespace MonTypeEquivalenceMon
 
-instance monMonoid (A : Type u) [Mon_Class A] : Monoid A where
+instance monMonoid (A : Type u) [MonObj A] : Monoid A where
   one := η[A] PUnit.unit
   mul x y := μ[A] (x, y)
   one_mul x := by convert congr_fun (one_mul A) (PUnit.unit, x)
@@ -80,7 +80,7 @@ noncomputable instance monTypeInhabited : Inhabited (Mon_ (Type u)) :=
 
 namespace CommMonTypeEquivalenceCommMon
 
-instance commMonCommMonoid (A : Type u) [Mon_Class A] [IsCommMon A] : CommMonoid A :=
+instance commMonCommMonoid (A : Type u) [MonObj A] [IsCommMon A] : CommMonoid A :=
   { MonTypeEquivalenceMon.monMonoid A with
     mul_comm := fun x y => by convert congr_fun (IsCommMon.mul_comm A) (y, x) }
 

@@ -20,25 +20,25 @@ We show that a finite-product-preserving functor takes group objects to group ob
 
 universe v₁ v₂ v₃ u₁ u₂ u₃ u
 
-open CategoryTheory Category Limits MonoidalCategory CartesianMonoidalCategory Mon_ Mon_Class
+open CategoryTheory Category Limits MonoidalCategory CartesianMonoidalCategory Mon_ MonObj
 
 variable {C : Type u₁} [Category.{v₁} C] [CartesianMonoidalCategory.{v₁} C]
 
 section
 
 /-- A group object internal to a cartesian monoidal category. Also see the bundled `Grp_`. -/
-class Grp_Class (X : C) extends Mon_Class X where
+class Grp_Class (X : C) extends MonObj X where
   /-- The inverse in a group object -/
   inv : X ⟶ X
   left_inv (X) : lift inv (𝟙 X) ≫ mul = toUnit _ ≫ one := by cat_disch
   right_inv (X) : lift (𝟙 X) inv ≫ mul = toUnit _ ≫ one := by cat_disch
 
-namespace Mon_Class
+namespace MonObj
 
 @[inherit_doc] scoped notation "ι" => Grp_Class.inv
 @[inherit_doc] scoped notation "ι["G"]" => Grp_Class.inv (X := G)
 
-end Mon_Class
+end MonObj
 
 namespace Grp_Class
 
@@ -160,10 +160,10 @@ theorem inv_comp_inv (A : C) [Grp_Class A] : ι ≫ ι = 𝟙 A := by
 /-- Transfer `Grp_Class` along an isomorphism. -/
 @[simps!]
 abbrev ofIso (e : G ≅ X) : Grp_Class X where
-  toMon_Class := .ofIso e
+  toMonObj := .ofIso e
   inv := e.inv ≫ ι[G] ≫ e.hom
-  left_inv := by simp [Mon_Class.ofIso]
-  right_inv := by simp [Mon_Class.ofIso]
+  left_inv := by simp [MonObj.ofIso]
+  right_inv := by simp [MonObj.ofIso]
 
 instance (A : C) [Grp_Class A] : IsIso ι[A] := ⟨ι, by simp, by simp⟩
 
@@ -249,8 +249,8 @@ theorem inv_hom [Grp_Class A] [Grp_Class B] (f : A ⟶ B) [IsMon_Hom f] : ι ≫
   apply (isPullback B).hom_ext <;> apply CartesianMonoidalCategory.hom_ext <;>
     simp [lift_inv_comp_right, lift_inv_comp_left]
 
-lemma toMon_Class_injective {X : C} :
-    Function.Injective (@Grp_Class.toMon_Class C ‹_› ‹_› X) := by
+lemma toMonObj_injective {X : C} :
+    Function.Injective (@Grp_Class.toMonObj C ‹_› ‹_› X) := by
   intro h₁ h₂ e
   let X₁ : Grp_ C := @Grp_.mk _ _ _ X h₁
   let X₂ : Grp_ C := @Grp_.mk _ _ _ X h₂
@@ -261,8 +261,8 @@ lemma toMon_Class_injective {X : C} :
   exacts [congr(($e.symm).mul), congr(($e.symm).one)]
 
 @[ext]
-lemma ext {X : C} (h₁ h₂ : Grp_Class X) (H : h₁.toMon_Class = h₂.toMon_Class) : h₁ = h₂ :=
-  Grp_Class.toMon_Class_injective H
+lemma ext {X : C} (h₁ h₂ : Grp_Class X) (H : h₁.toMonObj = h₂.toMonObj) : h₁ = h₂ :=
+  Grp_Class.toMonObj_injective H
 
 namespace tensorObj
 variable [BraidedCategory C] {G H : C} [Grp_Class G] [Grp_Class H]
@@ -431,12 +431,12 @@ noncomputable def mapGrpFunctor : (C ⥤ₗ D) ⥤ Grp_ C ⥤ Grp_ D where
 
 /-- Pullback a group object along a fully faithful monoidal functor. -/
 def FullyFaithful.grp_Class (hF : F.FullyFaithful) (X : C) [Grp_Class (F.obj X)] : Grp_Class X where
-  __ := hF.mon_Class X
+  __ := hF.monObj X
   inv := hF.preimage ι[F.obj X]
   left_inv := hF.map_injective <| by
-    simp [FullyFaithful.mon_Class, OplaxMonoidal.η_of_cartesianMonoidalCategory]
+    simp [FullyFaithful.monObj, OplaxMonoidal.η_of_cartesianMonoidalCategory]
   right_inv := hF.map_injective <| by
-    simp [FullyFaithful.mon_Class, OplaxMonoidal.η_of_cartesianMonoidalCategory]
+    simp [FullyFaithful.monObj, OplaxMonoidal.η_of_cartesianMonoidalCategory]
 
 end Functor
 
