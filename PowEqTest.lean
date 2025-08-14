@@ -25,4 +25,7 @@ theorem exists_eq_pow_of_pow_eq {a b m n : ℕ} (hmn : m ≠ 0 ∨ n ≠ 0) (h :
 #eval Nat.gcd 0 0
 #eval Nat.gcd 0 1
 
+#check Nat.factorization
 #check factorization
+#check IsPrimePow
+--#check Nat.IsPrimePow
