@@ -8,7 +8,7 @@ import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Ring
 
 /-!
-## Tests for the `field_simp` tactic
+# Tests for the `field_simp` tactic
 -/
 
 private axiom test_sorry : ∀ {α}, α
@@ -415,18 +415,16 @@ example {x y z : ℚ} (hx : y ≠ 0) {f : ℚ → ℚ} (hf : ∀ t, f t ≠ 0) :
 -- from `InnerProductGeometry.cos_angle_sub_add_angle_sub_rev_eq_neg_cos_angle`
 -- 21794 heartbeats!!!
 example {V : Type*} [AddCommGroup V] (F : V → ℚ)
-   {x y : V} (hx : x ≠ 0) (hy : y ≠ 0)
-  (hxn : F x ≠ 0) (hyn : F y ≠ 0) (hxyn : F (x - y) ≠ 0) :
-  (F x * F x - (F x * F x + F y * F y - F (x - y) * F (x - y)) / 2)
-    / (F x * F (x - y))
-    * ((F y * F y - (F x * F x + F y * F y - F (x - y) * F (x - y)) / 2) / (F y * F (x - y)))
-    * F x * F y * F (x - y) * F (x - y)
-  - (F x * F x * (F y * F y)
-    - (F x * F x + F y * F y - F (x - y) * F (x - y))
-      / 2
-      * ((F x * F x + F y * F y - F (x - y) * F (x - y)) / 2))
-  = -((F x * F x + F y * F y - F (x - y) * F (x - y)) / 2 / (F x * F y))
-      * F x * F y * F (x - y) * F (x - y) := by
+    {x y : V} (hx : x ≠ 0) (hy : y ≠ 0)
+    (hxn : F x ≠ 0) (hyn : F y ≠ 0) (hxyn : F (x - y) ≠ 0) :
+    (F x * F x - (F x * F x + F y * F y - F (x - y) * F (x - y)) / 2) / (F x * F (x - y))
+      * ((F y * F y - (F x * F x + F y * F y - F (x - y) * F (x - y)) / 2) / (F y * F (x - y)))
+      * F x * F y * F (x - y) * F (x - y)
+    - (F x * F x * (F y * F y)
+      - (F x * F x + F y * F y - F (x - y) * F (x - y)) / 2
+        * ((F x * F x + F y * F y - F (x - y) * F (x - y)) / 2))
+    = -((F x * F x + F y * F y - F (x - y) * F (x - y)) / 2 / (F x * F y))
+        * F x * F y * F (x - y) * F (x - y) := by
   field_simp
   guard_target =
     ((F x * F x * 2 - (F x * F x + F y * F y - F (x - y) * F (x - y)))
