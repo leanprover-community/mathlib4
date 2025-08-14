@@ -415,6 +415,8 @@ end iff
 
 variable (K K' : Type*) [Field K] [IsAlgClosed K] [Field K'] [Algebra K K'] [IsAlgClosure K K']
 
+attribute [local instance] FiniteDimensional.of_isAlgClosure
+
 lemma aux1 : Nat.card (K' →ₐ[K] K') = 1 := by
   have := IsAlgClosure.isAlgClosed K (K := K')
   rw [AlgHom.natCard K K' K']
