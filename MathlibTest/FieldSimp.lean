@@ -98,7 +98,7 @@ example : P (x ^ 2 * x⁻¹) := by test_field_simp
 #guard_msgs in
 example : P (x ^ 3 * x⁻¹) := by test_field_simp
 
--- TODO (new implementation): this should reduce to `P (1 / x ^ 2)`
+-- TODO (new implementation): this should reduce to `P (1 / x ^ 3)`
 /-- error: simp made no progress -/
 #guard_msgs in
 example : P (x / x ^ 4) := by test_field_simp
@@ -107,6 +107,18 @@ example : P (x / x ^ 4) := by test_field_simp
 /-- info: P (1 / (x ^ 2) ^ 3) -/
 #guard_msgs in
 example : P ((x ^ (-2:ℤ)) ^ 3) := by test_field_simp
+
+-- Even if we cannot cancel, we can simplify the exponent.
+
+-- TODO (new implementation): this should reduce to P (x / x)
+/-- info: P (x ^ 2 / x ^ 2) -/
+#guard_msgs in
+example : P (x ^ 2 * x ^ (-2 : ℤ)) := by test_field_simp
+
+-- TODO (new implementation): this should reduce to P (x / x)
+/-- info: P (x ^ 37 / x ^ 37) -/
+#guard_msgs in
+example : P (x ^ (-37 : ℤ) * x ^ 37) := by test_field_simp
 
 -- If x is non-zero, we do cancel.
 
@@ -118,6 +130,15 @@ example {hx : x ≠ 0} : P (x * x⁻¹) := by test_field_simp
 #guard_msgs in
 example {hx : x ≠ 0} : P (x⁻¹ * x) := by test_field_simp
 
+-- TODO (new implementation): this should reduce to P 1
+/-- info: P (x ^ 17 / x ^ 17) -/
+#guard_msgs in
+example {hx : x ≠ 0} : P (x ^ (-17 : ℤ) * x ^ 17) := by test_field_simp
+
+/-- info: P 1 -/
+#guard_msgs in
+example {hx : x ≠ 0} : P (x ^ 17 / x ^ 17) := by test_field_simp
+
 /-- info: P 1 -/
 #guard_msgs in
 example {hx : x ≠ 0} : P (x / x) := by test_field_simp
@@ -127,10 +148,74 @@ example {hx : x ≠ 0} : P (x / x) := by test_field_simp
 #guard_msgs in
 example {hx : x ≠ 0} : P (x ^ 3 * x⁻¹) := by test_field_simp
 
--- TODO (new implementation): this should reduce to `P (1 / x ^ 2)`
+-- TODO (new implementation): this should reduce to `P (1 / x ^ 3)`
 /-- error: simp made no progress -/
 #guard_msgs in
 example {hx : x ≠ 0} : P (x / x ^ 4) := by test_field_simp
+
+-- We simplify subtracting the same term, even in constants and with literals.
+-- These tests document the current behaviour of `field_simp`;
+-- these simplifications are not necessarily in scope for `field_simp`.
+
+/-- info: P 0 -/
+#guard_msgs in
+example : P (x - x) := by test_field_simp
+
+/-- info: P 0 -/
+#guard_msgs in
+example : P (-x + x) := by test_field_simp
+
+/-- info: P 0 -/
+#guard_msgs in
+example : P (1 * x - x) := by test_field_simp
+
+/-- info: P 0 -/
+#guard_msgs in
+example : P ((2 - 2) * x) := by test_field_simp
+
+/-- info: P 0 -/
+#guard_msgs in
+example {a : Nat} : P (a* x - a * x) := by test_field_simp
+
+-- We simplify multiplication by one, but not by e.g. two, and do not simplify literals.
+
+/-- info: P (2 * x - x) -/
+#guard_msgs in
+example : P (2 * x - 1 * x) := by test_field_simp
+
+/-- error: simp made no progress -/
+#guard_msgs in
+example : P (2 * x - x - x) := by test_field_simp
+
+/-- error: simp made no progress -/
+#guard_msgs in
+example : P (2 * x - x) := by test_field_simp
+
+/-- error: simp made no progress -/
+#guard_msgs in
+example : P ((3 - 2) * x - x) := by test_field_simp
+
+-- Multiplication with a zero literal is simplified.
+/-- info: P 0 -/
+#guard_msgs in
+example : P (0 * x) := by test_field_simp
+
+/-- info: P 0 -/
+#guard_msgs in
+example : P (0 * x * y + 0) := by test_field_simp
+
+/-- error: simp made no progress -/
+#guard_msgs in
+example : P ((x * y - y * x) * z) := by test_field_simp
+
+-- Iterated negation is simplified, as is subtraction from zero.
+/-- info: P x -/
+#guard_msgs in
+example : P (-(-x)) := by test_field_simp
+
+/-- info: P x -/
+#guard_msgs in
+example : P (0 -(0 + (-x))) := by test_field_simp
 
 /- ### Two atoms -/
 
@@ -145,6 +230,11 @@ example : P (x * y) := by test_field_simp
 /-- error: simp made no progress -/
 #guard_msgs in
 example : P ((x * y) / (y * x)) := by test_field_simp
+
+-- TODO(new implementation): combine these two 2 * x * y
+/-- error: simp made no progress -/
+#guard_msgs in
+example : P (x * y + y * x) := by test_field_simp
 
 /-- info: P (x * y + x) -/
 #guard_msgs in
