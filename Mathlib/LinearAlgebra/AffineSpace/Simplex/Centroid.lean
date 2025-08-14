@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joseph Myers
+Authors: Joseph Myers, Chu Zheng
 -/
 import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
 import Mathlib.LinearAlgebra.AffineSpace.Centroid
@@ -362,8 +362,7 @@ theorem point_vsub_faceOppositeCentroid_eq_smul_vsub [CharZero k] (s : Simplex k
 
 /-- *Commandino's theorem* : For n-simplex, the vector from a vertex to the `centroid`
 equals `n` times the vector from the `centroid` to the corresponding `faceOppositeCentroid`. -/
-theorem point_vsub_centroid_eq_smul_vsub [CharZero k]
-    (s : Simplex k P n) (i : Fin (n + 1)) :
+theorem point_vsub_centroid_eq_smul_vsub [CharZero k] (s : Simplex k P n) (i : Fin (n + 1)) :
     s.points i -ᵥ s.centroid = (n : k) • (s.centroid -ᵥ s.faceOppositeCentroid i) := by
   symm
   rw [← vsub_sub_vsub_cancel_right _ _ (s.points i),
@@ -376,16 +375,41 @@ theorem point_vsub_centroid_eq_smul_vsub [CharZero k]
   field_simp [sub_eq_iff_eq_add, NeZero.ne (n : k)]
   rw [div_self (by norm_cast)]
 
+/-- Reverse version of `point_vsub_centroid_eq_smul_vsub`. -/
 theorem centroid_vsub_point_eq_smul_vsub [CharZero k]
     (s : Simplex k P n) (i : Fin (n + 1)) :
     s.centroid -ᵥ s.points i = (n : k) • (s.faceOppositeCentroid i -ᵥ s.centroid) := by
   rw [← neg_vsub_eq_vsub_rev, point_vsub_centroid_eq_smul_vsub, ← neg_smul_neg,
     neg_vsub_eq_vsub_rev, ← neg_smul, neg_neg]
 
+/-- The vector from `centroid` to a vertex corresponding `faceOppositeCentroid` is `(1 / n)` of the
+vector from the vertex to the centroid. -/
+theorem faceOppositeCentroid_vsub_centroid_eq_smul_vsub [CharZero k]
+    (s : Simplex k P n) (i : Fin (n + 1)) :
+    s.faceOppositeCentroid i -ᵥ s.centroid = (1 / n : k) • (s.centroid -ᵥ s.points i) := by
+  rw [centroid_vsub_point_eq_smul_vsub, smul_smul]
+  field_simp [div_eq_inv_mul, NeZero.ne (n : k)]
 
+/-- Reverse version of `faceOppositeCentroid_vsub_centroid_eq_smul_vsub` -/
+theorem centroid_vsub_faceOppositeCentroid_eq_smul_vsub [CharZero k]
+    (s : Simplex k P n) (i : Fin (n + 1)) :
+    s.centroid -ᵥ s.faceOppositeCentroid i = (1 / n : k) • (s.points i -ᵥ s.centroid) := by
+  rw [point_vsub_centroid_eq_smul_vsub, smul_smul]
+  field_simp [div_eq_inv_mul, NeZero.ne (n : k)]
+
+/-- The centroid of an n-simplex can be obtained from a vertex by adding
+`n` times the vector from the centroid to the `faceOppositeCentroid`. -/
 theorem centroid_eq_smul_vsub_vadd_point [CharZero k] (s : Simplex k P n) (i : Fin (n + 1)) :
     s.centroid = (n : k) • (s.faceOppositeCentroid i -ᵥ s.centroid) +ᵥ s.points i := by
   rw [← centroid_vsub_point_eq_smul_vsub, vsub_vadd]
+
+/-- The point `faceOppositeCentroid` of an n-simplex can be obtained from
+the centroid by adding `(1 / n)` times the vector from the vertex to the centroid. -/
+theorem faceOppositeCentroid_eq_smul_vsub_vadd_point [CharZero k] (s : Simplex k P n)
+    (i : Fin (n + 1)) :
+    s.faceOppositeCentroid i = (1 / n : k) • (s.centroid -ᵥ s.points i) +ᵥ s.centroid := by
+  rw [centroid_vsub_point_eq_smul_vsub, eq_vadd_iff_vsub_eq, smul_smul]
+  field_simp [div_eq_inv_mul, NeZero.ne (n : k)]
 
 /-- The centroid, a vertex, and the corresponding `faceOppositeCentroid` of a simplex are collinear.
 -/
@@ -434,11 +458,14 @@ theorem median_eq_affineSpan_point_centroid [CharZero k] (s : Simplex k P n) (i 
   have h1 : s.median i ≤ affineSpan k {s.points i, s.centroid} := by
     unfold median
     apply affineSpan_pair_le_of_right_mem
-    have h : s.faceOppositeCentroid i = (-1 / (n : k)) • (s.points i -ᵥ s.centroid) +ᵥ s.centroid
+    rw [faceOppositeCentroid_eq_smul_vsub_vadd_point]
+    have h : (1 / n : k) • (s.centroid -ᵥ s.points i) = (-1 / n : k) • (s.points i -ᵥ s.centroid)
         := by
-      rw [point_eq_smul_vsub_vadd_centroid, vadd_vsub, smul_smul]
-      field_simp
-      rw [div_mul_cancel₀ _ (NeZero.ne (n : k)), neg_one_smul, neg_neg, vsub_vadd]
+      rw [← neg_vsub_eq_vsub_rev]
+      have : -(s.points i -ᵥ s.centroid) = (-1 : k) • (s.points i -ᵥ s.centroid) := by simp
+      rw [this, smul_smul]
+      congr 1
+      field_simp [div_eq_inv_mul, NeZero.ne (n : k)]
     rw [h]
     exact smul_vsub_rev_vadd_mem_affineSpan_pair _ _ _
   have h2 : affineSpan k {s.points i, s.centroid} ≤ s.median i := by
