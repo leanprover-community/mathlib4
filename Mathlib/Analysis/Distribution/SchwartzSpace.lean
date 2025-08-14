@@ -539,12 +539,12 @@ as `‖x‖ → ∞`.
 -/
 theorem _root_.Function.hasTemperateGrowth_iff_isBigO {f : E → F} :
     f.HasTemperateGrowth ↔ ContDiff ℝ ∞ f ∧
-      ∀ n, ∃ k, iteratedFDeriv ℝ n f =O[⊤] (fun x ↦ (1 + ‖x‖) ^ k):= by
+      ∀ n, ∃ k, iteratedFDeriv ℝ n f =O[⊤] (fun x ↦ (1 + ‖x‖) ^ k) := by
   simp_rw [Asymptotics.isBigO_top]
   congrm ContDiff ℝ ∞ f ∧ (∀ n, ∃ k C, ∀ x, _ ≤ C * ?_)
   rw [norm_pow, Real.norm_of_nonneg (by positivity)]
 
-/-- If `f` as temperate growth, then its `n`-th iterated derivative is `O((1 + ‖x‖) ^ k)` for
+/-- If `f` has temperate growth, then its `n`-th iterated derivative is `O((1 + ‖x‖) ^ k)` for
 some `k : ℕ` (depending on `n`).
 
 Note that the `O` here is with respect to the `⊤` filter, meaning that the bound holds everywhere.
@@ -554,7 +554,7 @@ theorem _root_.Function.HasTemperateGrowth.isBigO {f : E → F}
     ∃ k, iteratedFDeriv ℝ n f =O[⊤] (fun x ↦ (1 + ‖x‖) ^ k) :=
   Function.hasTemperateGrowth_iff_isBigO.mp hf_temperate |>.2 n
 
-/-- If `f` as temperate growth, then for any `N : ℕ` one can find `k` such that *all* iterated
+/-- If `f` has temperate growth, then for any `N : ℕ` one can find `k` such that *all* iterated
 derivatives of `f` of order `≤ N` are `O((1 + ‖x‖) ^ k)`.
 
 Note that the `O` here is with respect to the `⊤` filter, meaning that the bound holds everywhere.
@@ -754,7 +754,7 @@ def _root_.HasCompactSupport.toSchwartzMap {f : E → F} (h₁ : HasCompactSuppo
     set g := fun x ↦ ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖
     have hg₁ : Continuous g := by
       apply Continuous.mul (by fun_prop)
-      exact (h₂.of_le (right_eq_inf.mp rfl)).continuous_iteratedFDeriv'.norm
+      exact (h₂.of_le (mod_cast le_top)).continuous_iteratedFDeriv'.norm
     have hg₂ : HasCompactSupport g := (h₁.iteratedFDeriv _).norm.mul_left
     obtain ⟨x₀, hx₀⟩ := hg₁.exists_forall_ge_of_hasCompactSupport hg₂
     exact ⟨g x₀, hx₀⟩

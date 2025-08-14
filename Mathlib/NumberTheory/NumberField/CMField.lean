@@ -87,8 +87,8 @@ The equiv between the infinite places of `K` and the infinite places of `K⁺` i
 restriction to `K⁺`, see `equivInfinitePlace_apply`.
 -/
 noncomputable def equivInfinitePlace : InfinitePlace K ≃ InfinitePlace K⁺ :=
-  Equiv.ofBijective (fun w ↦ w.comap (algebraMap K⁺ K))
-   <| (Fintype.bijective_iff_surjective_and_card _).mpr
+  Equiv.ofBijective (fun w ↦ w.comap (algebraMap K⁺ K)) <|
+    (Fintype.bijective_iff_surjective_and_card _).mpr
       ⟨comap_surjective, (card_infinitePlace_eq_card_infinitePlace K).symm⟩
 
 @[simp]
@@ -385,8 +385,8 @@ theorem indexRealUnits_eq_two_iff :
 /--
 The fundamental system of units of `K⁺` as a family of `(𝓞 K)ˣ`.
 -/
-noncomputable def realFundSystem : Fin (rank K) → (𝓞 K)ˣ :=
-   fun i ↦ (Units.map (algebraMap (𝓞 K⁺) (𝓞 K)).toMonoidHom)
+noncomputable def realFundSystem (i : Fin (rank K)) : (𝓞 K)ˣ :=
+  (Units.map (algebraMap (𝓞 K⁺) (𝓞 K)).toMonoidHom)
     (fundSystem K⁺ (finCongr (units_rank_eq_units_rank K).symm i))
 
 theorem closure_realFundSystem_sup_torsion :

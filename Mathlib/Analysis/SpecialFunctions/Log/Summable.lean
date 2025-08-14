@@ -104,7 +104,7 @@ lemma Multipliable.eventually_bounded_finset_prod {v : ι → ℝ} (hv : Multipl
   rw [max_lt_iff] at hr₁
   have := hv.hasProd.eventually_le_const hr₁.2
   rw [unconditional, eventually_atTop] at this
-  refine ⟨r₁, hr₁.1, this⟩
+  exact ⟨r₁, hr₁.1, this⟩
 
 variable {R : Type*} [NormedCommRing R] [NormOneClass R] {f : ι → R}
 
