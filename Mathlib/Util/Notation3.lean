@@ -460,18 +460,6 @@ partial def mkFoldrMatcher (lit x y : Name) (scopedTerm init : Term) (boundNames
 
 /-! ### The `notation3` command -/
 
-/-- Create a name that we can use for the `syntax` definition, using the
-algorithm from `notation`. -/
-def mkNameFromSyntax (name? : Option (TSyntax ``namedName))
-    (syntaxArgs : Array (TSyntax `stx)) (attrKind : TSyntax ``Term.attrKind) :
-    CommandElabM Name := do
-  if let some name := name? then
-    match name with
-    | `(namedName| (name := $n)) => return n.getId
-    | _ => pure ()
-  let name ← liftMacroM <| mkNameFromParserSyntax `term (mkNullNode syntaxArgs)
-  addMacroScopeIfLocal name attrKind
-
 /-- Used when processing different kinds of variables when building the
 final delaborator. -/
 inductive BoundValueType
@@ -619,10 +607,9 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
     throwError "If there is a `scoped` item then there must be a `(...)` item for binders."
 
   -- 1. The `syntax` command
-  let name ← mkNameFromSyntax name? syntaxArgs attrKind
-  elabCommand <| ← `(command|
+  let name ← elabSyntax (← `(command|
     $[$doc]? $(attrs?)? $attrKind
-    syntax $(prec?)? (name := $(Lean.mkIdent name)) $(prio?)? $[$syntaxArgs]* : term)
+    syntax $(prec?)? $[$name?:namedName]? $(prio?)? $[$syntaxArgs]* : term))
 
   -- 2. The `macro_rules`
   let currNamespace : Name ← getCurrNamespace
