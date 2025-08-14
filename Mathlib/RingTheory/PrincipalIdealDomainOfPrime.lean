@@ -21,9 +21,9 @@ namespace Ideal
 
 /-- If a commutative (semi)ring has a non-principal ideal, then it has an ideal which is maximal for
 not being principal. -/
-theorem exists_maximal_not_principal (h : ∃ I : Ideal R, ¬I.IsPrincipal) :
+lemma exists_maximal_not_principal (h : ∃ I : Ideal R, ¬I.IsPrincipal) :
     ∃ I : Ideal R, Maximal (¬·.IsPrincipal) I := by
-  refine zorn_le₀ _ (fun C hC hC₂ ↦ ?_)
+  refine zorn_le₀ { I : Ideal R | ¬I.IsPrincipal } (fun C hC hC₂ ↦ ?_)
   by_cases H : C.Nonempty
   · refine ⟨sSup C, ?_, fun _ ↦ le_sSup⟩
     intro ⟨x, hx⟩
