@@ -350,6 +350,17 @@ lemma minDegree_le_minDegree {H : SimpleGraph V} [DecidableRel G.Adj] [Decidable
   · rw [not_nonempty_iff] at hne
     simp
 
+/-- In a nonempty graph, the minimal degree is less than the number of vertices. -/
+theorem minDegree_lt_card [DecidableRel G.Adj] [Nonempty V] :
+    G.minDegree < Fintype.card V := by
+  obtain ⟨v, hδ⟩ := G.exists_minimal_degree_vertex
+  rw [hδ, ← card_neighborFinset_eq_degree, ← card_univ]
+  have h : v ∉ G.neighborFinset v :=
+    (G.mem_neighborFinset v v).not.mpr (G.loopless v)
+  contrapose! h
+  rw [eq_of_subset_of_card_le (subset_univ _) h]
+  exact mem_univ v
+
 /-- The maximum degree of all vertices (and `0` if there are no vertices).
 The key properties of this are given in `exists_maximal_degree_vertex`, `degree_le_maxDegree`
 and `maxDegree_le_of_forall_degree_le`. -/
