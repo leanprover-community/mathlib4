@@ -171,18 +171,28 @@ theorem dense_iUnion_interior_of_closed [Countable ι] {f : ι → Set X} (hc : 
     (hU : ⋃ i, f i = univ) : Dense (⋃ i, interior (f i)) :=
   IsGδ.univ.dense_iUnion_interior_of_closed dense_univ hc hU.ge
 
+variable [Nonempty X]
+
 /-- One of the most useful consequences of Baire theorem: if a countable union of closed sets
 covers the space, then one of the sets has nonempty interior. -/
-theorem nonempty_interior_of_iUnion_of_closed [Nonempty X] [Countable ι] {f : ι → Set X}
+theorem nonempty_interior_of_iUnion_of_closed [Countable ι] {f : ι → Set X}
     (hc : ∀ i, IsClosed (f i)) (hU : ⋃ i, f i = univ) : ∃ i, (interior <| f i).Nonempty := by
   simpa using (dense_iUnion_interior_of_closed hc hU).nonempty
 
 /-- In a nonempty Baire space, any dense `Gδ` set is not meagre. -/
-theorem not_isMeagre_of_isGδ_of_dense [Nonempty X] {s : Set X} (hs : IsGδ s) (hd : Dense s) :
+theorem not_isMeagre_of_isGδ_of_dense {s : Set X} (hs : IsGδ s) (hd : Dense s) :
     ¬ IsMeagre s := by
   intro h
   rcases (mem_residual).1 h with ⟨t, hts, htG, hd'⟩
   rcases (hd.inter_of_Gδ hs htG hd').nonempty with ⟨x, hx₁, hx₂⟩
   exact hts hx₂ hx₁
+
+/-- A countable intersection of dense open sets is nonempty. -/
+theorem nonempty_iInter_of_dense_open {ι : Type*} [Countable ι] (U : ι → Set X)
+    (hUo : ∀ i, IsOpen (U i)) (hUd : ∀ i, Dense (U i)) :
+    (⋂ i, U i).Nonempty := by
+  simpa [Set.univ_inter] using
+    (dense_iff_inter_open.1 (dense_iInter_of_isOpen (f := U) hUo hUd))
+      Set.univ isOpen_univ (nonempty_iff_univ_nonempty.mp (by infer_instance))
 
 end BaireTheorem
