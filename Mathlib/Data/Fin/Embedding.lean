@@ -147,12 +147,9 @@ def succAboveEmb (p : Fin (n + 1)) : Fin n ↪ Fin (n + 1) := ⟨p.succAbove, su
 def natAdd_castLEEmb (hmn : n ≤ m) : Fin n ↪ Fin m :=
   (addNatEmb (m - n)).trans (finCongr (by omega)).toEmbedding
 
-lemma natAdd_castLEEmb_apply {n m : ℕ} (hmn : n ≤ m) (k : Fin n) :
-    ((natAdd_castLEEmb hmn) k).1 = k.1 + (m - n) := by simp
-
 lemma range_natAdd_castLEEmb {n m : ℕ} (hmn : n ≤ m) :
     Set.range (natAdd_castLEEmb hmn) = {i | m - n ≤ i.1} := by
-  simp [natAdd_castLEEmb]
+  simp only [natAdd_castLEEmb, Nat.sub_le_iff_le_add]
   ext y
   exact ⟨fun ⟨x, hx⟩ ↦ by simp [← hx]; omega,
     fun xin ↦ ⟨subNat (m - n) (y.cast (Nat.add_sub_of_le hmn).symm)

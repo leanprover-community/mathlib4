@@ -376,16 +376,16 @@ theorem cycleIcc_of_le_of_le (hik : i ≤ k) (hkj : k ≤ j) [NeZero n] :
     omega
 
 theorem cycleIcc_of_ge_of_lt (hik : i ≤ k) (hkj : k < j) [NeZero n] : (cycleIcc i j) k = k + 1 := by
-  simp [cycleIcc_of_le_of_le hik (le_of_lt hkj), Fin.ne_of_lt hkj]
+  simp [hik, le_of_lt hkj, Fin.ne_of_lt hkj]
 
 theorem cycleIcc_of_last (hij : i ≤ j) [NeZero n] : (cycleIcc i j) j = i := by
-  simp [cycleIcc_of_le_of_le hij (ge_of_eq rfl)]
+  simp [hij]
 
 theorem cycleIcc_eq [NeZero n] : cycleIcc i i = 1 := by
   ext k
   rcases lt_trichotomy k i with ch | ch | ch
   · simp [cycleIcc_of_lt ch]
-  · simp [ch, cycleIcc_of_last Nat.le.refl]
+  · simp [ch]
   · simp [cycleIcc_of_gt ch]
 
 @[simp]
