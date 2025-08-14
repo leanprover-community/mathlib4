@@ -149,7 +149,7 @@ theorem element_of_chain_eq_pow_second_of_chain {q r : Associates M} {n : ℕ} (
       intro b hb
       refine
         eq_second_of_chain_of_prime_dvd hn h₁ (@fun r' => h₂) (prime_of_normalized_factor b hb) hr
-          (dvd_of_mem_normalizedFactors hb)
+          (dvd_of_normalized_factor hb)
     have H : r = c 1 ^ i := by
       have := UniqueFactorizationMonoid.prod_normalizedFactors (ne_zero_of_dvd_ne_zero hq hr)
       rw [associated_iff_eq, hi, Multiset.prod_replicate] at this
@@ -241,10 +241,10 @@ open DivisorChain
 theorem pow_image_of_prime_by_factor_orderIso_dvd
     {m p : Associates M} {n : Associates N} (hn : n ≠ 0) (hp : p ∈ normalizedFactors m)
     (d : Set.Iic m ≃o Set.Iic n) {s : ℕ} (hs' : p ^ s ≤ m) :
-    (d ⟨p, dvd_of_mem_normalizedFactors hp⟩ : Associates N) ^ s ≤ n := by
+    (d ⟨p, dvd_of_normalized_factor hp⟩ : Associates N) ^ s ≤ n := by
   by_cases hs : s = 0
   · simp [← Associates.bot_eq_one, hs]
-  suffices (d ⟨p, dvd_of_mem_normalizedFactors hp⟩ : Associates N) ^ s =
+  suffices (d ⟨p, dvd_of_normalized_factor hp⟩ : Associates N) ^ s =
       (d ⟨p ^ s, hs'⟩) by
     rw [this]
     apply Subtype.prop (d ⟨p ^ s, hs'⟩)
@@ -271,7 +271,7 @@ theorem pow_image_of_prime_by_factor_orderIso_dvd
 
 theorem map_prime_of_factor_orderIso {m p : Associates M} {n : Associates N} (hn : n ≠ 0)
     (hp : p ∈ normalizedFactors m) (d : Set.Iic m ≃o Set.Iic n) :
-    Prime (d ⟨p, dvd_of_mem_normalizedFactors hp⟩ : Associates N) := by
+    Prime (d ⟨p, dvd_of_normalized_factor hp⟩ : Associates N) := by
   rw [← irreducible_iff_prime]
   refine (Associates.isAtom_iff <|
     ne_zero_of_dvd_ne_zero hn (d ⟨p, _⟩).prop).mp ⟨?_, fun b hb => ?_⟩
@@ -280,7 +280,7 @@ theorem map_prime_of_factor_orderIso {m p : Associates M} {n : Associates N} (hn
     rintro rfl
     exact (prime_of_normalized_factor 1 hp).not_unit isUnit_one
   · obtain ⟨x, hx⟩ :=
-      d.surjective ⟨b, le_trans (le_of_lt hb) (d ⟨p, dvd_of_mem_normalizedFactors hp⟩).prop⟩
+      d.surjective ⟨b, le_trans (le_of_lt hb) (d ⟨p, dvd_of_normalized_factor hp⟩).prop⟩
     rw [← Subtype.coe_mk b _, ← hx] at hb
     letI : OrderBot { l : Associates M // l ≤ m } := Subtype.orderBot bot_le
     letI : OrderBot { l : Associates N // l ≤ n } := Subtype.orderBot bot_le
@@ -298,16 +298,16 @@ theorem map_prime_of_factor_orderIso {m p : Associates M} {n : Associates N} (hn
 
 theorem mem_normalizedFactors_factor_orderIso_of_mem_normalizedFactors {m p : Associates M}
     {n : Associates N} (hn : n ≠ 0) (hp : p ∈ normalizedFactors m) (d : Set.Iic m ≃o Set.Iic n) :
-    (d ⟨p, dvd_of_mem_normalizedFactors hp⟩ : Associates N) ∈ normalizedFactors n := by
+    (d ⟨p, dvd_of_normalized_factor hp⟩ : Associates N) ∈ normalizedFactors n := by
   obtain ⟨q, hq, hq'⟩ :=
     exists_mem_normalizedFactors_of_dvd hn (map_prime_of_factor_orderIso hn hp d).irreducible
-      (d ⟨p, dvd_of_mem_normalizedFactors hp⟩).prop
+      (d ⟨p, dvd_of_normalized_factor hp⟩).prop
   rw [associated_iff_eq] at hq'
   rwa [hq']
 
 theorem emultiplicity_prime_le_emultiplicity_image_by_factor_orderIso {m p : Associates M}
     {n : Associates N} (hp : p ∈ normalizedFactors m) (d : Set.Iic m ≃o Set.Iic n) :
-    emultiplicity p m ≤ emultiplicity (↑(d ⟨p, dvd_of_mem_normalizedFactors hp⟩)) n := by
+    emultiplicity p m ≤ emultiplicity (↑(d ⟨p, dvd_of_normalized_factor hp⟩)) n := by
   by_cases hn : n = 0
   · simp [hn]
   by_cases hm : m = 0
@@ -318,11 +318,11 @@ theorem emultiplicity_prime_le_emultiplicity_image_by_factor_orderIso {m p : Ass
 
 theorem emultiplicity_prime_eq_emultiplicity_image_by_factor_orderIso {m p : Associates M}
     {n : Associates N} (hn : n ≠ 0) (hp : p ∈ normalizedFactors m) (d : Set.Iic m ≃o Set.Iic n) :
-    emultiplicity p m = emultiplicity (↑(d ⟨p, dvd_of_mem_normalizedFactors hp⟩)) n := by
+    emultiplicity p m = emultiplicity (↑(d ⟨p, dvd_of_normalized_factor hp⟩)) n := by
   refine le_antisymm (emultiplicity_prime_le_emultiplicity_image_by_factor_orderIso hp d) ?_
-  suffices emultiplicity (↑(d ⟨p, dvd_of_mem_normalizedFactors hp⟩)) n ≤
-      emultiplicity (↑(d.symm (d ⟨p, dvd_of_mem_normalizedFactors hp⟩))) m by
-    rw [d.symm_apply_apply ⟨p, dvd_of_mem_normalizedFactors hp⟩, Subtype.coe_mk] at this
+  suffices emultiplicity (↑(d ⟨p, dvd_of_normalized_factor hp⟩)) n ≤
+      emultiplicity (↑(d.symm (d ⟨p, dvd_of_normalized_factor hp⟩))) m by
+    rw [d.symm_apply_apply ⟨p, dvd_of_normalized_factor hp⟩, Subtype.coe_mk] at this
     exact this
   letI := Classical.decEq (Associates N)
   simpa only [Subtype.coe_eta] using
@@ -371,25 +371,25 @@ variable [UniqueFactorizationMonoid M] [UniqueFactorizationMonoid N]
 theorem mem_normalizedFactors_factor_dvd_iso_of_mem_normalizedFactors {m p : M} {n : N} (hm : m ≠ 0)
     (hn : n ≠ 0) (hp : p ∈ normalizedFactors m) {d : { l : M // l ∣ m } ≃ { l : N // l ∣ n }}
     (hd : ∀ l l', (d l : N) ∣ d l' ↔ (l : M) ∣ (l' : M)) :
-    ↑(d ⟨p, dvd_of_mem_normalizedFactors hp⟩) ∈ normalizedFactors n := by
+    ↑(d ⟨p, dvd_of_normalized_factor hp⟩) ∈ normalizedFactors n := by
   suffices
     Prime (d ⟨associatesEquivOfUniqueUnits (associatesEquivOfUniqueUnits.symm p), by
-            simp [dvd_of_mem_normalizedFactors hp]⟩ : N) by
+            simp [dvd_of_normalized_factor hp]⟩ : N) by
     simp only [associatesEquivOfUniqueUnits_apply, out_mk, normalize_eq,
       associatesEquivOfUniqueUnits_symm_apply] at this
     obtain ⟨q, hq, hq'⟩ :=
       exists_mem_normalizedFactors_of_dvd hn this.irreducible
-        (d ⟨p, by apply dvd_of_mem_normalizedFactors; convert hp⟩).prop
+        (d ⟨p, by apply dvd_of_normalized_factor; convert hp⟩).prop
     rwa [associated_iff_eq.mp hq']
   have :
     Associates.mk
         (d ⟨associatesEquivOfUniqueUnits (associatesEquivOfUniqueUnits.symm p), by
-              simp only [dvd_of_mem_normalizedFactors hp, associatesEquivOfUniqueUnits_apply,
+              simp only [dvd_of_normalized_factor hp, associatesEquivOfUniqueUnits_apply,
                 out_mk, normalize_eq, associatesEquivOfUniqueUnits_symm_apply]⟩ : N) =
       ↑(mkFactorOrderIsoOfFactorDvdEquiv hd
           ⟨associatesEquivOfUniqueUnits.symm p, by
             simp only [associatesEquivOfUniqueUnits_symm_apply]
-            exact mk_dvd_mk.mpr (dvd_of_mem_normalizedFactors hp)⟩) := by
+            exact mk_dvd_mk.mpr (dvd_of_normalized_factor hp)⟩) := by
     rw [mkFactorOrderIsoOfFactorDvdEquiv_apply_coe]
   rw [← Associates.prime_mk, this]
   letI := Classical.decEq (Associates M)
@@ -397,25 +397,25 @@ theorem mem_normalizedFactors_factor_dvd_iso_of_mem_normalizedFactors {m p : M} 
   obtain ⟨q, hq, hq'⟩ :=
     exists_mem_normalizedFactors_of_dvd (mk_ne_zero.mpr hm)
       (prime_mk.mpr (prime_of_normalized_factor p (by convert hp))).irreducible
-      (mk_le_mk_of_dvd (dvd_of_mem_normalizedFactors hp))
+      (mk_le_mk_of_dvd (dvd_of_normalized_factor hp))
   simpa only [associated_iff_eq.mp hq', associatesEquivOfUniqueUnits_symm_apply] using hq
 
 theorem emultiplicity_factor_dvd_iso_eq_emultiplicity_of_mem_normalizedFactors {m p : M} {n : N}
     (hm : m ≠ 0) (hn : n ≠ 0) (hp : p ∈ normalizedFactors m)
     {d : { l : M // l ∣ m } ≃ { l : N // l ∣ n }} (hd : ∀ l l', (d l : N) ∣ d l' ↔ (l : M) ∣ l') :
-    emultiplicity (d ⟨p, dvd_of_mem_normalizedFactors hp⟩ : N) n = emultiplicity p m := by
+    emultiplicity (d ⟨p, dvd_of_normalized_factor hp⟩ : N) n = emultiplicity p m := by
   apply Eq.symm
   suffices emultiplicity (Associates.mk p) (Associates.mk m) = emultiplicity (Associates.mk
     ↑(d ⟨associatesEquivOfUniqueUnits (associatesEquivOfUniqueUnits.symm p), by
-      simp [dvd_of_mem_normalizedFactors hp]⟩)) (Associates.mk n) by
+      simp [dvd_of_normalized_factor hp]⟩)) (Associates.mk n) by
     simpa only [emultiplicity_mk_eq_emultiplicity, associatesEquivOfUniqueUnits_symm_apply,
       associatesEquivOfUniqueUnits_apply, out_mk, normalize_eq] using this
   have : Associates.mk (d ⟨associatesEquivOfUniqueUnits (associatesEquivOfUniqueUnits.symm p), by
-    simp only [dvd_of_mem_normalizedFactors hp, associatesEquivOfUniqueUnits_symm_apply,
+    simp only [dvd_of_normalized_factor hp, associatesEquivOfUniqueUnits_symm_apply,
       associatesEquivOfUniqueUnits_apply, out_mk, normalize_eq]⟩ : N) =
     ↑(mkFactorOrderIsoOfFactorDvdEquiv hd ⟨associatesEquivOfUniqueUnits.symm p, by
       rw [associatesEquivOfUniqueUnits_symm_apply]
-      exact mk_le_mk_of_dvd (dvd_of_mem_normalizedFactors hp)⟩) := by
+      exact mk_le_mk_of_dvd (dvd_of_normalized_factor hp)⟩) := by
     rw [mkFactorOrderIsoOfFactorDvdEquiv_apply_coe]
   rw [this]
   refine
@@ -424,5 +424,5 @@ theorem emultiplicity_factor_dvd_iso_eq_emultiplicity_of_mem_normalizedFactors {
   obtain ⟨q, hq, hq'⟩ :=
     exists_mem_normalizedFactors_of_dvd (mk_ne_zero.mpr hm)
       (prime_mk.mpr (prime_of_normalized_factor p hp)).irreducible
-      (mk_le_mk_of_dvd (dvd_of_mem_normalizedFactors hp))
+      (mk_le_mk_of_dvd (dvd_of_normalized_factor hp))
   rwa [associated_iff_eq.mp hq']

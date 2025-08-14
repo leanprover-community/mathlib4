@@ -220,17 +220,14 @@ theorem zero_notMem_normalizedFactors (x : α) : (0 : α) ∉ normalizedFactors 
 @[deprecated (since := "2025-05-23")]
 alias zero_not_mem_normalizedFactors := zero_notMem_normalizedFactors
 
-theorem dvd_of_mem_normalizedFactors {a p : α} (H : p ∈ normalizedFactors a) : p ∣ a := by
-  by_cases hcases : a = 0
-  · rw [hcases]
-    exact dvd_zero p
-  · exact dvd_trans (Multiset.dvd_prod H) (Associated.dvd (prod_normalizedFactors hcases))
+@[deprecated (since := "2025-08-14")]
+alias dvd_of_mem_normalizedFactors := dvd_of_normalized_factor
 
 theorem mem_normalizedFactors_iff [Subsingleton αˣ] {p x : α} (hx : x ≠ 0) :
     p ∈ normalizedFactors x ↔ Prime p ∧ p ∣ x := by
   constructor
   · intro h
-    exact ⟨prime_of_normalized_factor p h, dvd_of_mem_normalizedFactors h⟩
+    exact ⟨prime_of_normalized_factor p h, dvd_of_normalized_factor h⟩
   · rintro ⟨hprime, hdvd⟩
     obtain ⟨q, hqmem, hqeq⟩ := exists_mem_normalizedFactors_of_dvd hx hprime.irreducible hdvd
     rw [associated_iff_eq] at hqeq
@@ -249,8 +246,8 @@ theorem disjoint_normalizedFactors {a b : α} (hc : IsRelPrime a b) :
     Disjoint (normalizedFactors a) (normalizedFactors b) := by
   rw [Multiset.disjoint_left]
   intro x hxa hxb
-  have x_dvd_a := dvd_of_mem_normalizedFactors hxa
-  have x_dvd_b := dvd_of_mem_normalizedFactors hxb
+  have x_dvd_a := dvd_of_normalized_factor hxa
+  have x_dvd_b := dvd_of_normalized_factor hxb
   exact (prime_of_normalized_factor x hxa).not_unit (hc x_dvd_a x_dvd_b)
 
 theorem exists_associated_prime_pow_of_unique_normalized_factor {p r : α}
@@ -283,7 +280,7 @@ theorem normalizedFactors_pos (x : α) (hx : x ≠ 0) : 0 < normalizedFactors x 
     obtain ⟨p, hp⟩ := Multiset.exists_mem_of_ne_zero h.ne'
     exact
       (prime_of_normalized_factor _ hp).not_unit
-        (isUnit_of_dvd_unit (dvd_of_mem_normalizedFactors hp) hx)
+        (isUnit_of_dvd_unit (dvd_of_normalized_factor hp) hx)
   · intro h
     obtain ⟨p, hp⟩ := exists_mem_normalizedFactors hx h
     exact
