@@ -243,8 +243,8 @@ theorem free_iff_linearEquiv : Free R M ↔ Nonempty (M ≃ₗ[R] R) := by
 
 /- TODO: The ≤ direction holds for arbitrary invertible modules over any commutative **ring** by
 considering the localization at a prime (which is free of rank 1) using the strong rank condition.
-The ≥ direction fails in general but holds for domains and Noetherian rings,
-see https://math.stackexchange.com/q/5089900. -/
+The ≥ direction fails in general but holds for domains and Noetherian rings without embedded
+components, see https://math.stackexchange.com/q/5089900. -/
 theorem finrank_eq_one [StrongRankCondition R] [Free R M] : finrank R M = 1 := by
   cases subsingleton_or_nontrivial R
   · rw [← rank_eq_one_iff_finrank_eq_one, rank_subsingleton]
