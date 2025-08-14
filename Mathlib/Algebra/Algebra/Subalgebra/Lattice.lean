@@ -847,6 +847,11 @@ theorem comap_map_eq_self {f : A →ₐ[R] B} {S : Subalgebra R A}
   convert comap_map_eq f S
   rwa [left_eq_sup, Algebra.adjoin_le_iff]
 
+@[nontriviality]
+lemma mem_of_subsingleton {A : Type*} [Semiring A] [Algebra R A] [Subsingleton A]
+    (S : Subalgebra R A) {a : A} : a ∈ S := by
+  simp [Subsingleton.elim S ⊤]
+
 end Subalgebra
 
 end Adjoin
