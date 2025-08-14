@@ -61,9 +61,9 @@ def atTarget (proc : String) (failIfUnchanged : Bool) (goal : MVarId) : MetaM (O
   let r ← m tgt
   -- we use expression equality here (rather than defeq) to be consistent with, e.g.,
   -- `applySimpResultToTarget`
-  let unchanged := tgt.consumeMData == r.expr.consumeMData
+  let unchanged := tgt.cleanupAnnotations == r.expr.cleanupAnnotations
   if failIfUnchanged && unchanged then throwError "{proc} made no progress on goal"
-  if r.expr.consumeMData.isConstOf ``True then
+  if r.expr.isTrue then
     goal.assign (← mkOfEqTrue (← r.getProof))
     pure none
   else
@@ -83,12 +83,12 @@ def atLocalDecl (proc : String) (failIfUnchanged : Bool) (mayCloseGoal : Bool) (
   let m := match m with
   | .noContext m => m
   | .withContext ctx m => m <| ctx.setSimpTheorems <| ctx.simpTheorems.eraseTheorem (.fvar fvarId)
-  let myres ← m tgt
+  let r ← m tgt
   -- we use expression equality here (rather than defeq) to be consistent with, e.g.,
   -- `applySimpResultToLocalDeclCore`
-  if failIfUnchanged && tgt.consumeMData == myres.expr.consumeMData then
+  if failIfUnchanged && tgt.cleanupAnnotations == r.expr.cleanupAnnotations then
     throwError "{proc} made no progress at {ldecl.userName}"
-  return (← applySimpResultToLocalDecl goal fvarId myres mayCloseGoal).map Prod.snd
+  return (← applySimpResultToLocalDecl goal fvarId r mayCloseGoal).map Prod.snd
 
 /-- Use the procedure `m` to rewrite at specified locations. -/
 def atLocation (proc : String) (loc : Location) (failIfUnchanged : Bool := true)
