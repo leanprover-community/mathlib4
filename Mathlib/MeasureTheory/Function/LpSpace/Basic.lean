@@ -934,8 +934,7 @@ lemma coeFn_star {p : ℝ≥0∞} (f : Lp R p μ) : (star f : Lp R p μ) =ᵐ[μ
 
 noncomputable instance {p : ℝ≥0∞} : InvolutiveStar (Lp R p μ) where
   star_involutive f := by
-     ext
-     filter_upwards
+     ext; filter_upwards
      exact congrFun (congrArg AEEqFun.cast <| star_involutive f.1)
 
 end Star

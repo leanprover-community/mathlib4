@@ -128,15 +128,6 @@ lemma MemLp.aemeasurable [MeasurableSpace ε] [TopologicalSpace ε]
     AEMeasurable f μ :=
   hf.aestronglyMeasurable.aemeasurable
 
-section Star
-
-variable {R : Type*} [NormedAddCommGroup R] [StarAddMonoid R] [NormedStarGroup R]
-
-protected theorem MemLp.star {p : ℝ≥0∞} {f : α → R} (hf : MemLp f p μ) :
-    MemLp (star f) p μ := ⟨hf.1.star, by simpa using hf.2⟩
-
-end Star
-
 theorem lintegral_rpow_enorm_eq_rpow_eLpNorm' {f : α → ε} (hq0_lt : 0 < q) :
     ∫⁻ a, ‖f a‖ₑ ^ q ∂μ = eLpNorm' f q μ ^ q := by
   rw [eLpNorm'_eq_lintegral_enorm, ← ENNReal.rpow_mul, one_div, inv_mul_cancel₀, ENNReal.rpow_one]
