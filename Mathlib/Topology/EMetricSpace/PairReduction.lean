@@ -49,7 +49,7 @@ lemma exists_radius_le (t : T) (V : Finset T) (ha : 1 < a) (c : ℝ≥0∞) :
     le_trans (mod_cast Finset.card_filter_le V _) (hr (max r 1) (le_max_left r 1)).le⟩
 
 /-- The log-size radius of `t` in `V` is the smallest natural number n greater than zero such that
- `{x ∈ V | d(t, x) ≤ nc} ≤ aⁿ`. -/
+ `|{x ∈ V | d(t, x) ≤ nc}| ≤ aⁿ`. -/
 noncomputable
 def logSizeRadius (t : T) (V : Finset T) (a c : ℝ≥0∞) : ℕ :=
   if h : 1 < a then Nat.find (exists_radius_le t V h c) else 0
@@ -249,7 +249,7 @@ def pairSet (J : Finset T) (a c : ℝ≥0∞) : Finset (T × T) :=
 
 lemma pairSet_empty_eq_empty (a c : ℝ≥0∞) : pairSet (∅ : Finset T) a c = ∅ := rfl
 
-lemma pairSet_subset : pairSet J a c ⊆ J.product J := by
+lemma pairSet_subset : pairSet J a c ⊆ J ×ˢ J := by
   unfold pairSet
   rw [Finset.biUnion_subset_iff_forall_subset]
   intro i hi
@@ -396,13 +396,11 @@ lemma iSup_edist_pairSet {E : Type*} [PseudoEMetricSpace E] (ha : 1 < a) (f : T 
   rw [edist_comm]
   apply add_le_add (sup_bound hsP) (sup_bound htP)
 
-end pairReduction
+end PairReduction
 
-variable [DecidableEq T]
-
-open pairReduction in
+open Classical PairReduction in
 theorem pair_reduction (hJ_card : #J ≤ a ^ n) (c : ℝ≥0∞) (E : Type*) [PseudoEMetricSpace E] :
-    ∃ K : Finset (T × T), K ⊆ J.product J
+    ∃ K : Finset (T × T), K ⊆ J ×ˢ J
       ∧ #K ≤ a * #J
       ∧ (∀ s t, (s, t) ∈ K → edist s t ≤ n * c)
       ∧ (∀ f : T → E,
@@ -420,7 +418,7 @@ theorem pair_reduction (hJ_card : #J ≤ a ^ n) (c : ℝ≥0∞) (E : Type*) [Ps
         by_cases hn : n = 0
         · simp [hn]
         conv_rhs => rw [← one_pow n]
-        exact ENNReal.pow_le_pow_left hn ha1
+        exact ENNReal.pow_le_pow_left ha1
       · rwa [Finset.one_le_card, ← Finset.nonempty_coe_sort]
     simp_all
   · exact ⟨pairSet J a c, pairSet_subset, card_pairSet_le ha1 hJ_card,
