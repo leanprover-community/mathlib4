@@ -19,15 +19,15 @@ open Function Int
 
 variable {α M R : Type*}
 
-theorem IsSquare.nonneg [Semiring R] [LinearOrder R] [IsRightCancelAdd R]
-    [ZeroLEOneClass R] [ExistsAddOfLE R] [PosMulMono R] [AddLeftStrictMono R]
+theorem IsSquare.nonneg [Semiring R] [LinearOrder R]
+    [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R]
     {x : R} (h : IsSquare x) : 0 ≤ x := by
   rcases h with ⟨y, rfl⟩
   exact mul_self_nonneg y
 
 @[simp]
-lemma not_isSquare_of_neg [Semiring R] [LinearOrder R] [IsRightCancelAdd R]
-    [ZeroLEOneClass R] [ExistsAddOfLE R] [PosMulMono R] [AddLeftStrictMono R]
+lemma not_isSquare_of_neg [Semiring R] [LinearOrder R]
+    [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R]
     {x : R} (h : x < 0) : ¬ IsSquare x :=
   (h.not_ge ·.nonneg)
 
@@ -85,6 +85,19 @@ lemma sq_pos_of_neg (ha : a < 0) : 0 < a ^ 2 := by rw [sq]; exact mul_pos_of_neg
 end StrictOrderedRing
 
 section LinearOrderedSemiring
+
+section IsOrderedRing
+
+variable [Semiring R] [LinearOrder R] [IsOrderedRing R] [ExistsAddOfLE R] {m n : ℕ}
+
+protected lemma Even.pow_nonneg (hn : Even n) (a : R) : 0 ≤ a ^ n := by
+  obtain ⟨k, rfl⟩ := hn; rw [pow_add]; exact mul_self_nonneg _
+
+lemma pow_four_le_pow_two_of_pow_two_le {a b : R} (h : a ^ 2 ≤ b) : a ^ 4 ≤ b ^ 2 :=
+  (pow_mul a 2 2).symm ▸ pow_le_pow_left₀ (sq_nonneg a) h 2
+
+end IsOrderedRing
+
 variable [Semiring R] [LinearOrder R] [IsStrictOrderedRing R] {a b : R} {m n : ℕ}
 
 /-- A function `f : α → R` is nonarchimedean if it satisfies the ultrametric inequality
@@ -148,9 +161,6 @@ protected lemma Even.add_pow_le (hn : Even n) :
       · rfl
       · simp [Nat.two_mul]
 
-lemma Even.pow_nonneg (hn : Even n) (a : R) : 0 ≤ a ^ n := by
-  obtain ⟨k, rfl⟩ := hn; rw [pow_add]; exact mul_self_nonneg _
-
 lemma Even.pow_pos (hn : Even n) (ha : a ≠ 0) : 0 < a ^ n :=
   (hn.pow_nonneg _).lt_of_ne' (pow_ne_zero _ ha)
 
@@ -211,8 +221,5 @@ lemma sq_pos_iff {a : R} : 0 < a ^ 2 ↔ a ≠ 0 := even_two.pow_pos_iff two_ne_
 
 alias ⟨_, sq_pos_of_ne_zero⟩ := sq_pos_iff
 alias pow_two_pos_of_ne_zero := sq_pos_of_ne_zero
-
-lemma pow_four_le_pow_two_of_pow_two_le (h : a ^ 2 ≤ b) : a ^ 4 ≤ b ^ 2 :=
-  (pow_mul a 2 2).symm ▸ pow_le_pow_left₀ (sq_nonneg a) h 2
 
 end LinearOrderedSemiring
