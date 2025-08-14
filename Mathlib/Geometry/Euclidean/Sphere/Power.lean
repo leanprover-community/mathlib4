@@ -196,28 +196,6 @@ theorem mul_dist_eq_zero_of_mem_sphere {s : Sphere P} {p a b : P}
   rw [dist_comm p a, dist_comm p b, mul_dist_eq_abs_sub_sq_dist hp hq,
       mem_sphere.mp hb, mem_sphere.mp hp_on, sub_self, abs_zero]
 
-/-- The product of distances from any point to two intersection points on a line
-through the point equals the absolute value of the point's power with respect to the sphere. -/
-theorem mul_dist_eq_abs_power {s : Sphere P} {p a b : P}
-    (hr : 0 ≤ s.radius)
-    (hp : ∃ k : ℝ, k ≠ 1 ∧ b -ᵥ p = k • (a -ᵥ p))
-    (ha : a ∈ s) (hb : b ∈ s) :
-    dist p a * dist p b = |s.power p| := by
-  by_cases h1 : dist p s.center > s.radius
-  · rw [abs_of_pos, Sphere.mul_dist_eq_power_of_radius_lt_dist_center hr hp ha hb h1]
-    exact (Sphere.power_pos_iff_radius_lt_dist_center hr).mpr h1
-  · by_cases h2 : dist p s.center < s.radius
-    · have hr_pos : 0 < s.radius := by
-        rcases le_iff_eq_or_lt.mp hr with h_eq | h_lt
-        · exfalso; rw [← h_eq] at h2; exact lt_irrefl 0 (dist_nonneg.trans_lt h2)
-        · exact h_lt
-      rw [abs_of_neg, ← Sphere.mul_dist_eq_neg_power_of_dist_center_lt_radius hr_pos hp ha hb h2]
-      exact (Sphere.power_neg_iff_dist_center_lt_radius hr_pos).mpr h2
-    · have hp_on : p ∈ s := by
-        rw [mem_sphere]
-        exact le_antisymm (le_of_not_gt h1) (le_of_not_gt h2)
-      have h_power_zero : s.power p = 0 := (Sphere.power_eq_zero_iff_mem_sphere hr).mpr hp_on
-      rw [h_power_zero, abs_zero, Sphere.mul_dist_eq_zero_of_mem_sphere hp ha hb hp_on]
 
 /-- **Tangent-Secant Theorem**. The square of the tangent length equals
     the product of secant segment lengths. -/
