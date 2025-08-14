@@ -156,7 +156,7 @@ def mkRenamesDict (percent : Nat := 100) : IO (Std.HashMap String String) := do
         s!"mkRenamesDict: '{pct}' should have been of the form Rxxx, denoting a `R`ename \
           and a similarity percentage.\nFull git line: '{git}'"
       continue
-    let pctNat := (pct.drop 1).toNat?.getD 0
+    let some pctNat := (pct.drop 1).toNat? | continue
     -- This looks like a rename with a similarity index at least as big as our threshold:
     -- we add the rename to our dictionary.
     if percent ≤ pctNat then
