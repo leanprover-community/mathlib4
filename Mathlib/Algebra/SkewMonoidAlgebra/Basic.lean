@@ -829,14 +829,16 @@ variable [Semiring k]
 
 section Monoid
 
-theorem coeff_mul [DecidableEq G] [Monoid G] [MulSemiringAction G k] (f g : SkewMonoidAlgebra k G)
+variable [Monoid G] [MulSemiringAction G k]
+
+theorem coeff_mul [DecidableEq G] (f g : SkewMonoidAlgebra k G)
     (x : G) : (f * g).coeff x = f.sum fun a₁ b₁ => g.sum fun a₂ b₂ =>
       if a₁ * a₂ = x then b₁ * a₁ • b₂ else 0 := by
   rw [mul_def, coeff_sum]; congr; ext
   rw [coeff_sum]; congr; ext
   exact coeff_single_apply
 
-theorem coeff_mul_antidiagonal [Monoid G] (f g : SkewMonoidAlgebra k G) [MulSemiringAction G k]
+theorem coeff_mul_antidiagonal (f g : SkewMonoidAlgebra k G)
     (x : G) (s : Finset (G × G)) (hs : ∀ {p : G × G}, p ∈ s ↔ p.1 * p.2 = x) :
     (f * g).coeff x = ∑ p ∈ s, f.coeff p.1 * p.1 • g.coeff p.2 := by
   classical
@@ -855,8 +857,8 @@ theorem coeff_mul_antidiagonal [Monoid G] (f g : SkewMonoidAlgebra k G) [MulSemi
         simp only [Finset.mem_filter, mem_support_iff, not_and, Classical.not_not] at hp ⊢
         by_cases h1 : f.coeff p.1 = 0 <;> simp_all
 
-theorem coeff_mul_single_aux [Monoid G] [MulSemiringAction G k] (f : SkewMonoidAlgebra k G) {r : k}
-    {x y z : G} (H : ∀ a, a * x = z ↔ a = y) : (f * single x r).coeff z = f.coeff y * y • r := by
+theorem coeff_mul_single_aux (f : SkewMonoidAlgebra k G) {r : k} {x y z : G}
+    (H : ∀ a, a * x = z ↔ a = y) : (f * single x r).coeff z = f.coeff y * y • r := by
   classical
   have A : ∀ a₁ b₁, ((single x r).sum fun a₂ b₂ => ite (a₁ * a₂ = z) (b₁ * a₁ • b₂) 0) =
       ite (a₁ * x = z) (b₁ * a₁ • r) 0 :=
@@ -868,21 +870,21 @@ theorem coeff_mul_single_aux [Monoid G] [MulSemiringAction G k] (f : SkewMonoidA
     _ = f.coeff y * y • r := by
       split_ifs with h <;> simp [support] at h <;> simp [h]
 
-theorem coeff_mul_single_one [Monoid G] [MulSemiringAction G k] (f : SkewMonoidAlgebra k G) (r : k)
-    (x : G) : (f * (single 1 r)).coeff x = f.coeff x * x • r :=
+theorem coeff_mul_single_one (f : SkewMonoidAlgebra k G) (r : k) (x : G) :
+    (f * single 1 r).coeff x = f.coeff x * x • r :=
   f.coeff_mul_single_aux fun a => by rw [mul_one]
 
-theorem coeff_mul_single_of_not_exists_mul [Monoid G] [MulSemiringAction G k] (r : k) {g g' : G}
-    (x : SkewMonoidAlgebra k G) (h : ¬∃ d, g' = d * g) : (x * single g r).coeff g' = 0 := by
+theorem coeff_mul_single_of_not_exists_mul (r : k) {g g' : G} (x : SkewMonoidAlgebra k G)
+    (h : ∀ x, ¬g' = x * g) : (x * single g r).coeff g' = 0 := by
   classical
   simp only [coeff_mul, smul_zero, mul_zero, ite_self, sum_single_index]
   apply Finset.sum_eq_zero
   simp_rw [ite_eq_right_iff]
   rintro _ _ rfl
-  exact absurd ⟨_, rfl⟩ h
+  exact False.elim (h _ rfl)
 
-theorem coeff_single_mul_aux [Monoid G] [MulSemiringAction G k] (f : SkewMonoidAlgebra k G) {r : k}
-    {x y z : G} (H : ∀ a, x * a = y ↔ a = z) : (single x r * f).coeff y = r * x • f.coeff z := by
+theorem coeff_single_mul_aux (f : SkewMonoidAlgebra k G) {r : k} {x y z : G}
+    (H : ∀ a, x * a = y ↔ a = z) : (single x r * f).coeff y = r * x • f.coeff z := by
   classical
   have : (f.sum fun a b => ite (x * a = y) (0 * x • b) 0) = 0 := by simp
   calc
@@ -893,12 +895,12 @@ theorem coeff_single_mul_aux [Monoid G] [MulSemiringAction G k] (f : SkewMonoidA
     _ = if z ∈ f.support then r * x • f.coeff z else 0 := (f.support.sum_ite_eq' _ _)
     _ = _ := by split_ifs with h <;> simp [support] at h <;> simp [h]
 
-theorem coeff_single_one_mul [Monoid G] [MulSemiringAction G k] (f : SkewMonoidAlgebra k G) (r : k)
-    (x : G) : (single (1 : G) r * f).coeff x = r * f.coeff x := by
+theorem coeff_single_one_mul (f : SkewMonoidAlgebra k G) (r : k) (x : G) :
+    (single (1 : G) r * f).coeff x = r * f.coeff x := by
   simp [coeff_single_mul_aux, one_smul]
 
-theorem coeff_single_mul_of_not_exists_mul [Monoid G] [MulSemiringAction G k] (r : k) {g g' : G}
-    (x : SkewMonoidAlgebra k G) (h : ¬∃ d, g' = g * d) : (single g r * x).coeff g' = 0 := by
+theorem coeff_single_mul_of_not_exists_mul (r : k) {g g' : G} (x : SkewMonoidAlgebra k G)
+    (h : ¬∃ d, g' = g * d) : (single g r * x).coeff g' = 0 := by
   classical
   rw [coeff_mul, sum_single_index]
   · apply Finset.sum_eq_zero
@@ -941,6 +943,5 @@ theorem coeff_mul_right (f g : SkewMonoidAlgebra k G) (x : G) :
 end Group
 
 end coeff_mul
-
 
 end SkewMonoidAlgebra
