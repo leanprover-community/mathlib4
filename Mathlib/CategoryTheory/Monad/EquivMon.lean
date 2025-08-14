@@ -25,7 +25,7 @@ A monad "is just" a monoid in the category of endofunctors.
 
 namespace CategoryTheory
 
-open Category Mon_Class
+open Category MonObj
 
 universe v u -- morphism levels before object levels. See note [category_theory universes].
 
@@ -36,7 +36,7 @@ namespace Monad
 attribute [local instance] endofunctorMonoidalCategory
 
 @[simps]
-instance (M : Monad C) : Mon_Class (M : C ⥤ C) where
+instance (M : Monad C) : MonObj (M : C ⥤ C) where
   one := M.η
   mul := M.μ
   mul_assoc := by ext; simp [M.assoc]
@@ -60,11 +60,11 @@ def ofMon (M : Mon_ (C ⥤ C)) : Monad C where
   «η» := η[M.X]
   «μ» := μ[M.X]
   left_unit := fun X => by
-    simpa [-Mon_Class.mul_one] using congrArg (fun t ↦ t.app X) (mul_one M.X)
+    simpa [-MonObj.mul_one] using congrArg (fun t ↦ t.app X) (mul_one M.X)
   right_unit := fun X => by
-    simpa [-Mon_Class.one_mul] using congrArg (fun t ↦ t.app X) (one_mul M.X)
+    simpa [-MonObj.one_mul] using congrArg (fun t ↦ t.app X) (one_mul M.X)
   assoc := fun X => by
-    simpa [-Mon_Class.mul_assoc] using congrArg (fun t ↦ t.app X) (mul_assoc M.X)
+    simpa [-MonObj.mul_assoc] using congrArg (fun t ↦ t.app X) (mul_assoc M.X)
 
 -- Porting note: `@[simps]` fails to generate `ofMon_obj`:
 @[simp] lemma ofMon_obj (M : Mon_ (C ⥤ C)) (X : C) : (ofMon M).obj X = M.X.obj X := rfl
