@@ -463,4 +463,11 @@ theorem DirectedOn.exists_mem_subset_of_finset_subset_biUnion {α ι : Type*} {f
   haveI := hn.coe_sort
   simpa using (directed_comp.2 hc.directed_val).exists_mem_subset_of_finset_subset_biUnion hs
 
+theorem DirectedOn.exists_mem_subset_of_finite_of_subset_sUnion {α : Type*} {c : Set (Set α)}
+    (hn : c.Nonempty) (hc : DirectedOn (· ⊆ ·) c) {s : Set α} (hs : s.Finite)
+    (hsc : s ⊆ sUnion c) : ∃ t ∈ c, s ⊆ t := by
+  rw [← hs.coe_toFinset, sUnion_eq_biUnion] at hsc
+  have := DirectedOn.exists_mem_subset_of_finset_subset_biUnion hn hc hsc
+  exact hs.coe_toFinset ▸ this
+
 end LinearOrder
