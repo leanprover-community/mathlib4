@@ -324,7 +324,6 @@ def ιInvAppπApp {i : D.J} (U : Opens (D.U i).carrier) (j) :
     exact colimit.w 𝖣.diagram.multispan (WalkingMultispan.Hom.fst (j, k))
   · exact D.opensImagePreimageMap i j U
 
-set_option maxHeartbeats 600000 in
 -- Porting note: time out started in `erw [... congr_app (pullbackSymmetry_hom_comp_snd _ _)]` and
 -- the last congr has a very difficult `rfl : eqToHom _ ≫ eqToHom _ ≫ ... = eqToHom ... `
 /-- (Implementation) The natural map `Γ(𝒪_{U_i}, U) ⟶ Γ(𝒪_X, 𝖣.ι i '' U)`.
@@ -368,16 +367,14 @@ def ιInvApp {i : D.J} (U : Opens (D.U i).carrier) :
                 PresheafedSpace.comp_c_app_assoc (pullbackSymmetry _ _).hom]
             simp_rw [Category.assoc]
             congr 1
-            rw [← IsIso.eq_inv_comp,
-                IsOpenImmersion.inv_invApp]
-            simp_rw [Category.assoc]
-            erw [NatTrans.naturality_assoc, ← PresheafedSpace.comp_c_app_assoc,
-              congr_app (pullbackSymmetry_hom_comp_snd _ _)]
-            simp_rw [Category.assoc]
-            erw [IsOpenImmersion.inv_naturality_assoc, IsOpenImmersion.inv_naturality_assoc,
+            rw [← IsIso.eq_inv_comp, IsOpenImmersion.inv_invApp, Category.assoc,
+              NatTrans.naturality_assoc]
+            simp_rw [Functor.op_obj]
+            rw [← PresheafedSpace.comp_c_app_assoc, congr_app (pullbackSymmetry_hom_comp_snd _ _)]
+            simp_rw [Category.assoc, Functor.op_obj, comp_base, Opens.map_comp_obj,
+              TopCat.Presheaf.pushforward_obj_map]
+            rw [IsOpenImmersion.inv_naturality_assoc, IsOpenImmersion.inv_naturality_assoc,
               IsOpenImmersion.inv_naturality_assoc, IsOpenImmersion.app_invApp_assoc]
-            rw [← (D.V (j, k)).presheaf.map_comp]
-            erw [← (D.V (j, k)).presheaf.map_comp]
             repeat rw [← (D.V (j, k)).presheaf.map_comp]
             rfl } }
 
