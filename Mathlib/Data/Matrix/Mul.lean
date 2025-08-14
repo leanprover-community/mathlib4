@@ -219,7 +219,7 @@ end NonUnitalNonAssocRing
 
 section DistribMulAction
 
-variable [Monoid R] [Mul α] [AddCommMonoid α] [DistribMulAction R α]
+variable [Mul α] [AddCommMonoid α] [DistribSMul R α]
 
 @[simp]
 theorem smul_dotProduct [IsScalarTower R α α] (x : R) (v w : m → α) :
@@ -667,11 +667,6 @@ theorem vecMul_zero [Fintype m] (v : m → α) : v ᵥ* (0 : Matrix m n α) = 0 
   ext
   simp [vecMul]
 
-theorem smul_mulVec_assoc [Fintype n] [Monoid R] [DistribMulAction R α] [IsScalarTower R α α]
-    (a : R) (A : Matrix m n α) (b : n → α) : (a • A) *ᵥ b = a • A *ᵥ b := by
-  ext
-  apply smul_dotProduct
-
 theorem mulVec_add [Fintype n] (A : Matrix m n α) (x y : n → α) :
     A *ᵥ (x + y) = A *ᵥ x + A *ᵥ y := by
   ext
@@ -692,17 +687,31 @@ theorem add_vecMul [Fintype m] (A : Matrix m n α) (x y : m → α) :
   ext
   apply add_dotProduct
 
-theorem vecMul_smul [Fintype n] [NonUnitalNonAssocSemiring S] [DistribSMul R S]
-    [IsScalarTower R S S] (M : Matrix n m S) (b : R) (v : n → S) :
-    (b • v) ᵥ* M = b • v ᵥ* M := by
-  ext i
-  simp only [vecMul, dotProduct, Finset.smul_sum, Pi.smul_apply, smul_mul_assoc]
-
 theorem mulVec_smul [Fintype n] [NonUnitalNonAssocSemiring S] [DistribSMul R S]
     [SMulCommClass R S S] (M : Matrix m n S) (b : R) (v : n → S) :
     M *ᵥ (b • v) = b • M *ᵥ v := by
-  ext i
-  simp only [mulVec, dotProduct, Finset.smul_sum, Pi.smul_apply, mul_smul_comm]
+  ext
+  exact dotProduct_smul _ _ _
+
+theorem smul_mulVec [Fintype n] [NonUnitalNonAssocSemiring S] [DistribSMul R S]
+    [IsScalarTower R S S] (b : R) (M : Matrix m n S) (v : n → S) :
+    (b • M) *ᵥ v = b • M *ᵥ v := by
+  ext
+  exact smul_dotProduct _ _ _
+
+theorem smul_vecMul [Fintype n] [NonUnitalNonAssocSemiring S] [DistribSMul R S]
+    [IsScalarTower R S S] (b : R) (v : n → S) (M : Matrix n m S) :
+    (b • v) ᵥ* M = b • v ᵥ* M := by
+  ext
+  exact smul_dotProduct _ _ _
+
+theorem vecMul_smul [Fintype n] [NonUnitalNonAssocSemiring S] [DistribSMul R S]
+    [SMulCommClass R S S] (v : n → S) (b : R) (M : Matrix n m S) :
+    v ᵥ* (b • M) = b • v ᵥ* M := by
+  ext
+  exact dotProduct_smul _ _ _
+
+@[deprecated (since := "2025-08-14")] alias smul_mulVec_assoc := smul_mulVec
 
 @[simp]
 theorem mulVec_single [Fintype n] [DecidableEq n] [NonUnitalNonAssocSemiring R] (M : Matrix m n R)
