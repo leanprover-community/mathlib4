@@ -838,8 +838,8 @@ theorem coeff_mul [DecidableEq G] (f g : SkewMonoidAlgebra k G)
   rw [coeff_sum]; congr; ext
   exact coeff_single_apply
 
-theorem coeff_mul_antidiagonal (f g : SkewMonoidAlgebra k G)
-    (x : G) (s : Finset (G × G)) (hs : ∀ {p : G × G}, p ∈ s ↔ p.1 * p.2 = x) :
+theorem coeff_mul_antidiagonal_of_finset (f g : SkewMonoidAlgebra k G) (x : G)
+    (s : Finset (G × G)) (hs : ∀ {p : G × G}, p ∈ s ↔ p.1 * p.2 = x) :
     (f * g).coeff x = ∑ p ∈ s, f.coeff p.1 * p.1 • g.coeff p.2 := by
   classical
   let F : G × G → k := fun p => if p.1 * p.2 = x then f.coeff p.1 * p.1 • g.coeff p.2 else 0
@@ -852,6 +852,32 @@ theorem coeff_mul_antidiagonal (f g : SkewMonoidAlgebra k G)
       f.coeff p.1 * p.1 • g.coeff p.2 :=
       (Finset.sum_congr (by ext; simp [Finset.mem_filter, Finset.mem_product, hs, and_comm])
         fun _ _ => rfl)
+    _ = ∑ p ∈ s, f.coeff p.1 * p.1 • g.coeff p.2 :=
+      Finset.sum_subset (Finset.filter_subset _ _) fun p hps hp => by
+        simp only [Finset.mem_filter, mem_support_iff, not_and, Classical.not_not] at hp ⊢
+        by_cases h1 : f.coeff p.1 = 0 <;> simp_all
+
+theorem coeff_mul_antidiagonal_finsum (f g : SkewMonoidAlgebra k G) (x : G) :
+    (f * g).coeff x = ∑ᶠ p ∈ {p : G × G | p.1 * p.2 = x}, f.coeff p.1 * p.1 • g.coeff p.2 := by
+  have : ({p : G × G | p.1 * p.2 = x}
+      ∩ Function.support fun p ↦ f.coeff p.1 * p.1 • g.coeff p.2).Finite := by
+    apply Set.Finite.inter_of_right
+    apply Set.Finite.subset (Finset.finite_toSet ((f.support).product (g.support)))
+    rw [support_subset_iff]
+    aesop
+  rw [← finsum_mem_inter_support, finsum_mem_eq_finite_toFinset_sum _ this]
+  classical
+  let s := Set.Finite.toFinset (s := ({p : G × G | p.1 * p.2 = x}
+    ∩ Function.support fun p ↦ f.coeff p.1 * p.1 • g.coeff p.2)) (this)
+  let F : G × G → k := fun p => if p.1 * p.2 = x then f.coeff p.1 * p.1 • g.coeff p.2 else 0
+  calc
+    (f * g).coeff x = ∑ a₁ ∈ f.support, ∑ a₂ ∈ g.support, F (a₁, a₂) := coeff_mul f g x
+    _ = ∑ p ∈ f.support ×ˢ g.support, F p := by rw [← Finset.sum_product _ _ _]
+    _ = ∑ p ∈ (f.support ×ˢ g.support).filter fun p : G × G => p.1 * p.2 = x,
+      f.coeff p.1 * p.1 • g.coeff p.2 := (Finset.sum_filter _ _).symm
+    _ = ∑ p ∈ s.filter fun p : G × G => p.1 ∈ f.support ∧ p.2 ∈ g.support,
+      f.coeff p.1 * p.1 • g.coeff p.2 := by
+        apply Finset.sum_congr_of_eq_on_inter <;> aesop
     _ = ∑ p ∈ s, f.coeff p.1 * p.1 • g.coeff p.2 :=
       Finset.sum_subset (Finset.filter_subset _ _) fun p hps hp => by
         simp only [Finset.mem_filter, mem_support_iff, not_and, Classical.not_not] at hp ⊢
