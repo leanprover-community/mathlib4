@@ -196,6 +196,11 @@ lemma Ideal.height_bot [Nontrivial R] : (⊥ : Ideal R).height = 0 := by
   simp only [Ideal.height, ENat.iInf_eq_zero]
   exact ⟨p, hp, haveI := hp.1.1; primeHeight_eq_zero_iff.mpr hp⟩
 
+/-- In a trivial commutative ring, the height of any ideal is `∞`. -/
+@[simp, nontriviality]
+lemma Ideal.height_of_subsingleton [Subsingleton R] : I.height = ⊤ := by
+  rw [Subsingleton.elim I ⊤, Ideal.height_top]
+
 theorem Ideal.isMaximal_of_primeHeight_eq_ringKrullDim {I : Ideal R} [I.IsPrime]
     [FiniteRingKrullDim R] (e : I.primeHeight = ringKrullDim R) : I.IsMaximal := by
   have h : I ≠ ⊤ := by
