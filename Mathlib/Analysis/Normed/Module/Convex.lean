@@ -134,7 +134,7 @@ lemma norm_sub_le_of_mem_segment {x y z : E} (hy : y ∈ segment ℝ x z) :
 namespace Filter
 
 open scoped Convex Topology
-variable {F : Type*} {f : Filter F} {x : E} {y z : F → E} {r : F → E → Prop}
+variable {α : Type*} {f : Filter α} {x : E} {y z : α → E} {r : α → E → Prop}
 
 theorem Eventually.segment_of_prod_nhds (hy : Tendsto y f (𝓝 x)) (hz : Tendsto z f (𝓝 x))
     (hr : ∀ᶠ p in f ×ˢ 𝓝 x, r p.1 p.2) : ∀ᶠ χ in f, ∀ v ∈ [y χ -[ℝ] z χ], r χ v := by
