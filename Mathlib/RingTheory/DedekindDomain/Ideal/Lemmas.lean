@@ -583,7 +583,7 @@ open UniqueFactorizationMonoid
 
 theorem idealFactorsEquivOfQuotEquiv_mem_normalizedFactors_of_mem_normalizedFactors (hJ : J ≠ ⊥)
     {L : Ideal R} (hL : L ∈ normalizedFactors I) :
-    ↑(idealFactorsEquivOfQuotEquiv f ⟨L, dvd_of_mem_normalizedFactors hL⟩)
+    ↑(idealFactorsEquivOfQuotEquiv f ⟨L, dvd_of_normalized_factor hL⟩)
       ∈ normalizedFactors J := by
   have hI : I ≠ ⊥ := by
     intro hI
@@ -600,10 +600,10 @@ isomorphism `f : R/I ≅ A/J`. -/
 def normalizedFactorsEquivOfQuotEquiv (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
     { L : Ideal R | L ∈ normalizedFactors I } ≃ { M : Ideal A | M ∈ normalizedFactors J } where
   toFun j :=
-    ⟨idealFactorsEquivOfQuotEquiv f ⟨↑j, dvd_of_mem_normalizedFactors j.prop⟩,
+    ⟨idealFactorsEquivOfQuotEquiv f ⟨↑j, dvd_of_normalized_factor j.prop⟩,
       idealFactorsEquivOfQuotEquiv_mem_normalizedFactors_of_mem_normalizedFactors f hJ j.prop⟩
   invFun j :=
-    ⟨(idealFactorsEquivOfQuotEquiv f).symm ⟨↑j, dvd_of_mem_normalizedFactors j.prop⟩, by
+    ⟨(idealFactorsEquivOfQuotEquiv f).symm ⟨↑j, dvd_of_normalized_factor j.prop⟩, by
       rw [idealFactorsEquivOfQuotEquiv_symm]
       exact
         idealFactorsEquivOfQuotEquiv_mem_normalizedFactors_of_mem_normalizedFactors f.symm hI
@@ -866,7 +866,7 @@ theorem singleton_span_mem_normalizedFactors_of_mem_normalizedFactors [Normaliza
     exact absurd ha (Multiset.notMem_zero a)
   · suffices Prime (Ideal.span ({a} : Set R)) by
       obtain ⟨c, hc, hc'⟩ := exists_mem_normalizedFactors_of_dvd ?_ this.irreducible
-          (dvd_iff_le.mpr (span_singleton_le_span_singleton.mpr (dvd_of_mem_normalizedFactors ha)))
+          (dvd_iff_le.mpr (span_singleton_le_span_singleton.mpr (dvd_of_normalized_factor ha)))
       rwa [associated_iff_eq.mp hc']
     · by_contra h
       exact hb (span_singleton_eq_bot.mp h)
@@ -917,7 +917,7 @@ noncomputable def normalizedFactorsEquivSpanNormalizedFactors {r : R} (hr : r �
         simp only [← span_singleton_eq_span_singleton.mpr ha',
             Ideal.span_singleton_generator]
       · exact (Submodule.IsPrincipal.mem_iff_generator_dvd i).mp
-          ((show Ideal.span {r} ≤ i from dvd_iff_le.mp (dvd_of_mem_normalizedFactors hi))
+          ((show Ideal.span {r} ≤ i from dvd_iff_le.mp (dvd_of_normalized_factor hi))
             (mem_span_singleton.mpr (dvd_refl r)))
 
 /-- The bijection `normalizedFactorsEquivSpanNormalizedFactors` between the set of prime
