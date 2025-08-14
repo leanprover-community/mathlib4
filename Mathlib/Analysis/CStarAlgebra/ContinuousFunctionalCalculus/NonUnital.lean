@@ -97,9 +97,6 @@ class ContinuousMapZero.UniqueHom (R A : Type*) [CommSemiring R] [StarRing R]
     (h : φ (⟨.restrict s <| .id R, h0⟩) = ψ (⟨.restrict s <| .id R, h0⟩)) :
     φ = ψ
 
-@[deprecated (since := "2025-01-10")] alias UniqueNonUnitalContinuousFunctionalCalculus :=
-  ContinuousMapZero.UniqueHom
-
 section Main
 
 variable {R A : Type*} {p : A → Prop} [CommSemiring R] [Nontrivial R] [StarRing R] [MetricSpace R]

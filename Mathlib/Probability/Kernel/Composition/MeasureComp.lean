@@ -72,12 +72,23 @@ instance [IsZeroOrProbabilityMeasure μ] [IsZeroOrMarkovKernel κ] :
     IsZeroOrProbabilityMeasure (κ ∘ₘ μ) := by
   rw [← snd_compProd]; infer_instance
 
+@[simp]
+lemma _root_.ProbabilityTheory.Kernel.comp_const (κ : Kernel β γ) (μ : Measure β) :
+    κ ∘ₖ Kernel.const α μ = Kernel.const α (κ ∘ₘ μ) := by
+  ext x s hs
+  rw [Kernel.comp_apply, bind_apply hs (by fun_prop), Kernel.const_apply, Kernel.const_apply,
+    bind_apply hs (by fun_prop)]
+
 lemma map_comp (μ : Measure α) (κ : Kernel α β) {f : β → γ} (hf : Measurable f) :
     (κ ∘ₘ μ).map f = (κ.map f) ∘ₘ μ := by
   ext s hs
   rw [Measure.map_apply hf hs, Measure.bind_apply (hf hs) κ.aemeasurable,
     Measure.bind_apply hs (Kernel.aemeasurable _)]
   simp_rw [Kernel.map_apply' _ hf _ hs]
+
+@[simp]
+lemma discard_comp (μ : Measure α) : Kernel.discard α ∘ₘ μ = μ .univ • Measure.dirac () := by
+  ext s hs; simp [Measure.bind_apply hs (Kernel.aemeasurable _), mul_comm]
 
 section CompProd
 

@@ -13,7 +13,7 @@ Continuous semilinear / linear / star-linear equivalences between topological mo
 by `M ≃SL[σ] M₂`, `M ≃L[R] M₂` and `M ≃L⋆[R] M₂`.
 -/
 
-assert_not_exists Star.star
+assert_not_exists TrivialStar
 
 open LinearMap (ker range)
 open Topology Filter Pointwise
@@ -1025,8 +1025,6 @@ theorem inverse_equiv (e : M ≃L[R] M₂) : inverse (e : M →L[R] M₂) = e.sy
 @[simp] lemma inverse_of_not_isInvertible
     {f : M →L[R] M₂} (hf : ¬ f.IsInvertible) : f.inverse = 0 :=
   dif_neg hf
-
-@[deprecated (since := "2024-10-29")] alias inverse_non_equiv := inverse_of_not_isInvertible
 
 @[simp]
 theorem isInvertible_zero_iff :
