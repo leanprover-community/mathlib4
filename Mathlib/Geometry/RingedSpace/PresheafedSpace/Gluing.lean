@@ -324,6 +324,9 @@ def ιInvAppπApp {i : D.J} (U : Opens (D.U i).carrier) (j) :
     exact colimit.w 𝖣.diagram.multispan (WalkingMultispan.Hom.fst (j, k))
   · exact D.opensImagePreimageMap i j U
 
+set_option maxHeartbeats 600000 in
+-- Porting note: time out started in `erw [... congr_app (pullbackSymmetry_hom_comp_snd _ _)]` and
+-- the last congr has a very difficult `rfl : eqToHom _ ≫ eqToHom _ ≫ ... = eqToHom ... `
 /-- (Implementation) The natural map `Γ(𝒪_{U_i}, U) ⟶ Γ(𝒪_X, 𝖣.ι i '' U)`.
 This forms the inverse of `(𝖣.ι i).c.app (op U)`. -/
 def ιInvApp {i : D.J} (U : Opens (D.U i).carrier) :
@@ -338,9 +341,9 @@ def ιInvApp {i : D.J} (U : Opens (D.U i).carrier) :
             let f : Y ⟶ X := f'.unop; have : f' = f.op := rfl; clear_value f; subst this
             rcases f with (_ | ⟨j, k⟩ | ⟨j, k⟩)
             · simp
-            · simp_rw [Functor.const_obj_obj, Functor.const_obj_map, Category.id_comp]
-              rfl
-            simp_rw [Functor.const_obj_obj, Functor.const_obj_map, Category.id_comp]
+            · simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.id_comp]
+              congr 1
+            simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.id_comp]
             -- It remains to show that the blue is equal to red + green in the original diagram.
             -- The proof strategy is illustrated in ![this diagram](https://i.imgur.com/mBzV1Rx.png)
             -- where we prove red = pink = light-blue = green = blue.
@@ -349,8 +352,10 @@ def ιInvApp {i : D.J} (U : Opens (D.U i).carrier) :
                   (D.f j k).c.app _ ≫ (D.V (j, k)).presheaf.map (eqToHom _) =
                 D.opensImagePreimageMap _ _ _ ≫
                   ((D.f k j).c.app _ ≫ (D.t j k).c.app _) ≫ (D.V (j, k)).presheaf.map (eqToHom _)
-            rw [opensImagePreimageMap_app_assoc, Category.assoc, opensImagePreimageMap_app_assoc,
-                (D.t j k).c.naturality_assoc, snd_invApp_t_app_assoc,
+            rw [opensImagePreimageMap_app_assoc]
+            simp_rw [Category.assoc]
+            rw [opensImagePreimageMap_app_assoc, (D.t j k).c.naturality_assoc,
+                snd_invApp_t_app_assoc,
                 ← PresheafedSpace.comp_c_app_assoc]
             -- light-blue = green is relatively easy since the part that differs does not involve
             -- partial inverses.
@@ -360,12 +365,14 @@ def ιInvApp {i : D.J} (U : Opens (D.U i).carrier) :
               rw [← 𝖣.t_fac_assoc, 𝖣.t'_comp_eq_pullbackSymmetry_assoc,
                 pullbackSymmetry_hom_comp_snd_assoc, pullback.condition, 𝖣.t_fac_assoc]
             rw [congr_app this,
-                PresheafedSpace.comp_c_app_assoc (pullbackSymmetry _ _).hom, Category.assoc]
+                PresheafedSpace.comp_c_app_assoc (pullbackSymmetry _ _).hom]
+            simp_rw [Category.assoc]
             congr 1
-            rw [← IsIso.eq_inv_comp, IsOpenImmersion.inv_invApp]
-            simp_rw [Category.assoc, NatTrans.naturality_assoc]
-            erw [← PresheafedSpace.comp_c_app_assoc]
-            rw [congr_app (pullbackSymmetry_hom_comp_snd _ _)]
+            rw [← IsIso.eq_inv_comp,
+                IsOpenImmersion.inv_invApp]
+            simp_rw [Category.assoc]
+            erw [NatTrans.naturality_assoc, ← PresheafedSpace.comp_c_app_assoc,
+              congr_app (pullbackSymmetry_hom_comp_snd _ _)]
             simp_rw [Category.assoc]
             erw [IsOpenImmersion.inv_naturality_assoc, IsOpenImmersion.inv_naturality_assoc,
               IsOpenImmersion.inv_naturality_assoc, IsOpenImmersion.app_invApp_assoc]
