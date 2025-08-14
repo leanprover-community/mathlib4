@@ -105,7 +105,7 @@ theorem exists_isCompact_closure_measure_compl_lt [UniformSpace α] [CompleteSpa
   case inr =>
     let seq := TopologicalSpace.denseSeq α
     have hseq_dense : DenseRange seq := TopologicalSpace.denseRange_denseSeq α
-    obtain ⟨t : ℕ → Rel α α,
+    obtain ⟨t : ℕ → SetRel α α,
         ht : ∀ i, t i ∈ 𝓤 α ∧ IsOpen (t i) ∧ (t i).IsSymm,
         h_basis : (uniformity α).HasAntitoneBasis t⟩ :=
       (@uniformity_hasBasis_open_symmetric α _).exists_antitone_subbasis
