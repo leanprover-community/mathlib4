@@ -1074,7 +1074,7 @@ noncomputable def mulValuation : Valuation ℚ_[p] ℤᵐ⁰ where
   map_mul' _ _ := by split_ifs <;> simp_all [add_comm]
   map_add_le_max' _ _ := by
     split_ifs
-    any_goals simp_all [-exp_neg]
+    any_goals simp_all [inv_le_inv₀]
     simpa using le_valuation_add ‹_›
 
 /-- The additive `p`-adic valuation on `ℚ_[p]`, as an `addValuation`. -/
