@@ -214,10 +214,7 @@ theorem meromorphicTrailingCoeffAt_factorizedRational {d : 𝕜 → ℤ} {x : �
   by_cases hxy : x = y
   · rw [hxy, meromorphicTrailingCoeffAt_id_sub_const]
     simp_all
-  · rw [meromorphicTrailingCoeffAt_id_sub_const]
-    simp only [hxy, reduceIte]
-    congr
-    apply (Function.update_of_ne (by tauto) _ _).symm
+  · grind [Function.update_of_ne, meromorphicTrailingCoeffAt_id_sub_const]
 
 /--
 Variant of `meromorphicTrailingCoeffAt_factorizedRational`: Compute the trailing coefficient of the

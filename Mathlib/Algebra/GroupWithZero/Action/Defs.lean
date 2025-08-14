@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Action.Opposite
-import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.GroupWithZero.Opposite
+import Mathlib.Algebra.Notation.Pi.Basic
 
 /-!
 # Definitions of group actions
@@ -334,7 +334,7 @@ end DistribSMul
 For example, if `G` is a group (with group law written as multiplication) and `A` is an
 abelian group (with group law written as addition), then to give `A` a `G`-module
 structure (for example, to use the theory of group cohomology) is to say `[DistribMulAction G A]`.
-Note in that we do not use the `Module` typeclass for `G`-modules, as the `Module` typclass
+Note in that we do not use the `Module` typeclass for `G`-modules, as the `Module` typeclass
 is for modules over a ring rather than a group.
 
 Mathematically, `DistribMulAction G A` is equivalent to giving `A` the structure of
