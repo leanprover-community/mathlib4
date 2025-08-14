@@ -92,7 +92,7 @@ theorem Nat.mod_four_ne_three_of_mem_primeFactors_of_isSquare_neg_one {p n : ℕ
     (hp : p ∈ n.primeFactors) (hs : IsSquare (-1 : ZMod n)) : p % 4 ≠ 3 := by
   obtain ⟨y, h⟩ := ZMod.isSquare_neg_one_of_dvd (Nat.dvd_of_mem_primeFactors hp) hs
   rw [← sq, eq_comm, show (-1 : ZMod p) = -1 ^ 2 by ring] at h
-  haveI : Fact p.Prime := ⟨Nat.prime_of_mem_primeFactors hp⟩
+  have : Fact p.Prime := ⟨Nat.prime_of_mem_primeFactors hp⟩
   exact ZMod.mod_four_ne_three_of_sq_eq_neg_sq' one_ne_zero h
 
 @[deprecated "Note that the statement now uses `Nat.primeFactors`, \
@@ -110,7 +110,7 @@ theorem ZMod.isSquare_neg_one_iff_forall_mem_primeFactors_mod_four_ne_three {n :
   | zero => exact False.elim (hn.ne_zero rfl)
   | one => exact ⟨0, by simp only [mul_zero, eq_iff_true_of_subsingleton]⟩
   | prime_mul p n hpp ih =>
-    haveI : Fact p.Prime := ⟨hpp⟩
+    have : Fact p.Prime := ⟨hpp⟩
     have hcp : p.Coprime n := by
       by_contra hc
       exact hpp.not_isUnit (hn p <| mul_dvd_mul_left p <| hpp.dvd_iff_not_coprime.mpr hc)
@@ -156,7 +156,7 @@ theorem Nat.eq_sq_add_sq_of_isSquare_mod_neg_one {n : ℕ} (h : IsSquare (-1 : Z
   | zero => exact ⟨0, 0, rfl⟩
   | one => exact ⟨0, 1, rfl⟩
   | prime_mul p n hpp ih =>
-    haveI : Fact p.Prime := ⟨hpp⟩
+    have : Fact p.Prime := ⟨hpp⟩
     have hp : IsSquare (-1 : ZMod p) := ZMod.isSquare_neg_one_of_dvd ⟨n, rfl⟩ h
     obtain ⟨u, v, huv⟩ := Nat.Prime.sq_add_sq (ZMod.exists_sq_eq_neg_one_iff.mp hp)
     obtain ⟨x, y, hxy⟩ := ih (ZMod.isSquare_neg_one_of_dvd ⟨p, mul_comm _ _⟩ h)
@@ -220,14 +220,14 @@ theorem Nat.eq_sq_add_sq_iff {n : ℕ} :
   · exact ⟨fun _ q _ _ ↦ padicValNat.zero.symm ▸ Even.zero, fun _ ↦ ⟨0, 0, rfl⟩⟩
   -- now `0 < n`
   refine eq_sq_add_sq_iff_eq_sq_mul.trans ⟨fun ⟨a, b, h₁, h₂⟩ q hq h ↦ ?_, fun H ↦ ?_⟩
-  · haveI : Fact q.Prime := ⟨prime_of_mem_primeFactors hq⟩
+  · have : Fact q.Prime := ⟨prime_of_mem_primeFactors hq⟩
     have : q ∣ b → q ∈ b.primeFactors := by grind [mem_primeFactors]
     grind [padicValNat.mul, padicValNat.pow,
       padicValNat.eq_zero_of_not_dvd, mod_four_ne_three_of_mem_primeFactors_of_isSquare_neg_one]
   · obtain ⟨b, a, hb₀, ha₀, hab, hb⟩ := sq_mul_squarefree_of_pos hn₀
     refine ⟨a, b, hab.symm, ZMod.isSquare_neg_one_iff_forall_mem_primeFactors_mod_four_ne_three hb
       |>.mpr fun q hq hq4 ↦ ?_⟩
-    haveI : Fact q.Prime := ⟨prime_of_mem_primeFactors hq⟩
+    have : Fact q.Prime := ⟨prime_of_mem_primeFactors hq⟩
     have := Nat.primeFactors_mono <| Dvd.intro_left _ hab
     have : b.factorization q = 1 := by grind [Squarefree.natFactorization_le_one,
       Prime.dvd_iff_one_le_factorization, prime_of_mem_primeFactors, dvd_of_mem_primeFactors]

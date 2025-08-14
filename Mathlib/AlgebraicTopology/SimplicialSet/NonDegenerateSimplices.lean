@@ -102,10 +102,7 @@ lemma subcomplex_injective_iff {x y : X.N} :
 
 lemma eq_iff {x y : X.N} :
     x = y ↔ x.subcomplex = y.subcomplex :=
-  ⟨by rintro rfl; rfl, fun h ↦ by
-    apply le_antisymm
-    all_goals
-    · rw [le_iff, h]⟩
+  ⟨by rintro rfl; rfl, fun h ↦ by simp [le_antisymm_iff, le_iff, h]⟩
 
 section
 

@@ -55,7 +55,7 @@ theorem associated_sub_one_pow_sub_one_of_coprime (hζ : IsPrimitiveRoot ζ n) (
   associated for all `i` and `j` coprime with `n`. -/
 theorem associated_pow_sub_one_pow_of_coprime (hζ : IsPrimitiveRoot ζ n)
     (hi : i.Coprime n) (hj : j.Coprime n) : Associated (ζ ^ j - 1) (ζ ^ i - 1) := by
-  suffices ∀ {j}, (j.Coprime n) → Associated (ζ - 1) (ζ ^ j - 1) by
+  suffices ∀ {j}, j.Coprime n → Associated (ζ - 1) (ζ ^ j - 1) by
     grind [Associated.trans, Associated.symm]
   exact hζ.associated_sub_one_pow_sub_one_of_coprime
 
@@ -103,7 +103,8 @@ theorem pow_sub_one_mul_geom_sum_eq_pow_sub_one_mul_geom_sum (hζ : IsPrimitiveR
   grind [geom_sum_mul]
 
 theorem pow_sub_one_eq_geom_sum_mul_geom_sum_inv_mul_pow_sub_one (hζ : IsPrimitiveRoot ζ n)
-    (hn : 2 ≤ n) (hi : i.Coprime n) (hj : j.Coprime n) : (ζ ^ j - 1) =
+    (hn : 2 ≤ n) (hi : i.Coprime n) (hj : j.Coprime n) :
+    (ζ ^ j - 1) =
       (hζ.geom_sum_isUnit hn hj).unit * (hζ.geom_sum_isUnit hn hi).unit⁻¹ * (ζ ^ i - 1) := by
   grind [IsUnit.mul_val_inv, pow_sub_one_mul_geom_sum_eq_pow_sub_one_mul_geom_sum, IsUnit.unit_spec]
 
@@ -121,8 +122,8 @@ theorem associated_pow_add_sub_sub_one (hζ : IsPrimitiveRoot ζ n) (hn : 2 ≤ 
 /-- If `p` is prime and `ζ` is a `p`-th primitive root of unit, then `ζ - 1` and `η₁ - η₂` are
   associated for all distincts `p`-th root of unit `η₁` and `η₂`. -/
 lemma ntRootsFinset_pairwise_associated_sub_one_sub_of_prime (hζ : IsPrimitiveRoot ζ p)
-    (hp : p.Prime) : Set.Pairwise
-      (nthRootsFinset p (1 : A)) (fun η₁ η₂ ↦ Associated (ζ - 1) (η₁ - η₂)) := by
+    (hp : p.Prime) :
+    Set.Pairwise (nthRootsFinset p (1 : A)) (fun η₁ η₂ ↦ Associated (ζ - 1) (η₁ - η₂)) := by
   intro η₁ hη₁ η₂ hη₂ e
   have : NeZero p := ⟨hp.ne_zero⟩
   obtain ⟨i, hi, rfl⟩ :=

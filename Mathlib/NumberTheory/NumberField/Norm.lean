@@ -54,8 +54,10 @@ theorem coe_algebraMap_norm (x : 𝓞 L) :
     (algebraMap (𝓞 K) (𝓞 L) (norm K x) : L) = algebraMap K L (Algebra.norm K (x : L)) :=
   rfl
 
-theorem algebraMap_norm_algebraMap (x : 𝓞 K) : algebraMap _ K (norm K (algebraMap (𝓞 K) (𝓞 L) x)) =
-      Algebra.norm K (algebraMap K L (algebraMap _ _ x)) := rfl
+theorem algebraMap_norm_algebraMap (x : 𝓞 K) :
+    algebraMap _ K (norm K (algebraMap (𝓞 K) (𝓞 L) x)) =
+      Algebra.norm K (algebraMap K L (algebraMap _ _ x)) :=
+  rfl
 
 theorem norm_algebraMap (x : 𝓞 K) : norm K (algebraMap (𝓞 K) (𝓞 L) x) = x ^ finrank K L := by
   rw [RingOfIntegers.ext_iff, RingOfIntegers.coe_eq_algebraMap,

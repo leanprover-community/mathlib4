@@ -132,7 +132,7 @@ theorem nnnorm_star_mul_self {x : E} : ‖x⋆ * x‖₊ = ‖x‖₊ * ‖x‖�
 
 lemma _root_.IsSelfAdjoint.norm_mul_self {x : E} (hx : IsSelfAdjoint x) :
     ‖x * x‖ = ‖x‖ ^ 2 := by
-  simpa [sq, hx.star_eq] using  CStarRing.norm_star_mul_self (x := x)
+  simpa [sq, hx.star_eq] using CStarRing.norm_star_mul_self (x := x)
 
 lemma _root_.IsSelfAdjoint.nnnorm_mul_self {x : E} (hx : IsSelfAdjoint x) :
     ‖x * x‖₊ = ‖x‖₊ ^ 2 :=
