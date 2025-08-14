@@ -20,8 +20,8 @@ We also state a corresponding lemma guaranteeing that a subset of `M` contains a
 /-- Any nonempty compact Hausdorff semigroup where right-multiplication is continuous contains
 an idempotent, i.e. an `m` such that `m * m = m`. -/
 @[to_additive
-      "Any nonempty compact Hausdorff additive semigroup where right-addition is continuous
-      contains an idempotent, i.e. an `m` such that `m + m = m`"]
+      /-- Any nonempty compact Hausdorff additive semigroup where right-addition is continuous
+      contains an idempotent, i.e. an `m` such that `m + m = m` -/]
 theorem exists_idempotent_of_compact_t2_of_continuous_mul_left {M} [Nonempty M] [Semigroup M]
     [TopologicalSpace M] [CompactSpace M] [T2Space M]
     (continuous_mul_left : ∀ r : M, Continuous (· * r)) : ∃ m : M, m * m = m := by
@@ -72,9 +72,9 @@ theorem exists_idempotent_of_compact_t2_of_continuous_mul_left {M} [Nonempty M] 
 /-- A version of `exists_idempotent_of_compact_t2_of_continuous_mul_left` where the idempotent lies
 in some specified nonempty compact subsemigroup. -/
 @[to_additive exists_idempotent_in_compact_add_subsemigroup
-      "A version of
+      /-- A version of
       `exists_idempotent_of_compact_t2_of_continuous_add_left` where the idempotent lies in
-      some specified nonempty compact additive subsemigroup."]
+      some specified nonempty compact additive subsemigroup. -/]
 theorem exists_idempotent_in_compact_subsemigroup {M} [Semigroup M] [TopologicalSpace M] [T2Space M]
     (continuous_mul_left : ∀ r : M, Continuous (· * r)) (s : Set M) (snemp : s.Nonempty)
     (s_compact : IsCompact s) (s_add : ∀ᵉ (x ∈ s) (y ∈ s), x * y ∈ s) :
