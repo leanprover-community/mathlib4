@@ -154,6 +154,8 @@ example {hx : x ≠ 0} : P (x ^ 3 * x⁻¹) := by test_field_simp
 example {hx : x ≠ 0} : P (x / x ^ 4) := by test_field_simp
 
 -- We simplify subtracting the same term, even in constants and with literals.
+-- These tests document the current behaviour of `field_simp`;
+-- these simplifications are not necessarily in scope for `field_simp`.
 
 /-- info: P 0 -/
 #guard_msgs in
