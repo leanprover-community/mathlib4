@@ -49,25 +49,15 @@ theorem nhdsWithin_Ici_neBot {a b : α} (H₂ : a ≤ b) : NeBot (𝓝[Ici a] b)
 
 instance nhdsGE_neBot (a : α) : NeBot (𝓝[≥] a) := nhdsWithin_Ici_neBot (le_refl a)
 
-@[deprecated nhdsGE_neBot (since := "2024-12-21")]
-theorem nhdsWithin_Ici_self_neBot (a : α) : NeBot (𝓝[≥] a) := nhdsGE_neBot a
-
 theorem nhdsWithin_Iic_neBot {a b : α} (H : a ≤ b) : NeBot (𝓝[Iic b] a) :=
   nhdsWithin_neBot_of_mem H
 
 instance nhdsLE_neBot (a : α) : NeBot (𝓝[≤] a) := nhdsWithin_Iic_neBot (le_refl a)
 
-@[deprecated nhdsLE_neBot (since := "2024-12-21")]
-theorem nhdsWithin_Iic_self_neBot (a : α) : NeBot (𝓝[≤] a) := nhdsLE_neBot a
-
 theorem nhdsLT_le_nhdsNE (a : α) : 𝓝[<] a ≤ 𝓝[≠] a :=
   nhdsWithin_mono a fun _ => ne_of_lt
 
-@[deprecated (since := "2024-12-21")] alias nhds_left'_le_nhds_ne := nhdsLT_le_nhdsNE
-
 theorem nhdsGT_le_nhdsNE (a : α) : 𝓝[>] a ≤ 𝓝[≠] a := nhdsWithin_mono a fun _ => ne_of_gt
-
-@[deprecated (since := "2024-12-21")] alias nhds_right'_le_nhds_ne := nhdsGT_le_nhdsNE
 
 -- TODO: add instances for `NeBot (𝓝[<] x)` on (indexed) product types
 
@@ -114,15 +104,11 @@ variable {α β : Type*} [TopologicalSpace α] [LinearOrder α] [TopologicalSpac
 theorem nhdsLE_sup_nhdsGE (a : α) : 𝓝[≤] a ⊔ 𝓝[≥] a = 𝓝 a := by
   rw [← nhdsWithin_union, Iic_union_Ici, nhdsWithin_univ]
 
-@[deprecated (since := "2024-12-21")] alias nhds_left_sup_nhds_right := nhdsLE_sup_nhdsGE
-
 theorem nhdsWithinLE_sup_nhdsWithinGE (a : α) : 𝓝[s ∩ Iic a] a ⊔ 𝓝[s ∩ Ici a] a = 𝓝[s] a := by
   rw [← nhdsWithin_union, ← inter_union_distrib_left, Iic_union_Ici, inter_univ]
 
 theorem nhdsLT_sup_nhdsGE (a : α) : 𝓝[<] a ⊔ 𝓝[≥] a = 𝓝 a := by
   rw [← nhdsWithin_union, Iio_union_Ici, nhdsWithin_univ]
-
-@[deprecated (since := "2024-12-21")] alias nhds_left'_sup_nhds_right := nhdsLT_sup_nhdsGE
 
 theorem nhdsWithinLT_sup_nhdsWithinGE (a : α) : 𝓝[s ∩ Iio a] a ⊔ 𝓝[s ∩ Ici a] a = 𝓝[s] a := by
   rw [← nhdsWithin_union, ← inter_union_distrib_left, Iio_union_Ici, inter_univ]
@@ -130,15 +116,11 @@ theorem nhdsWithinLT_sup_nhdsWithinGE (a : α) : 𝓝[s ∩ Iio a] a ⊔ 𝓝[s 
 theorem nhdsLE_sup_nhdsGT (a : α) : 𝓝[≤] a ⊔ 𝓝[>] a = 𝓝 a := by
   rw [← nhdsWithin_union, Iic_union_Ioi, nhdsWithin_univ]
 
-@[deprecated (since := "2024-12-21")] alias nhds_left_sup_nhds_right' := nhdsLE_sup_nhdsGT
-
 theorem nhdsWithinLE_sup_nhdsWithinGT (a : α) : 𝓝[s ∩ Iic a] a ⊔ 𝓝[s ∩ Ioi a] a = 𝓝[s] a := by
   rw [← nhdsWithin_union, ← inter_union_distrib_left, Iic_union_Ioi, inter_univ]
 
 theorem nhdsLT_sup_nhdsGT (a : α) : 𝓝[<] a ⊔ 𝓝[>] a = 𝓝[≠] a := by
   rw [← nhdsWithin_union, Iio_union_Ioi]
-
-@[deprecated (since := "2024-12-21")] alias nhds_left'_sup_nhds_right' := nhdsLT_sup_nhdsGT
 
 theorem nhdsWithinLT_sup_nhdsWithinGT (a : α) :
     𝓝[s ∩ Iio a] a ⊔ 𝓝[s ∩ Ioi a] a = 𝓝[s \ {a}] a := by
