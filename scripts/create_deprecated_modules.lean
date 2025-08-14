@@ -22,11 +22,16 @@ namespace DeprecatedModule
 
 /--
 This file interacts with `git ...` quite a bit. `runCmd` takes as input the command-line
-function `git ...` and returns its stdout string as its output. (Technically, the command need not be `git`,
-but can be any command need. We only use this for `git`, though.)
+function `git ...` and returns its stdout string as its output.
+(Technically, the command need not be `git`: it can be any command we need.
+We only use this for `git`, though.)
 
 This is convenient to get both the output of the function, but also for reproducing the exact
 command-line text that produced the output for better reproducibility and error reporting.
+
+*Warning*. Splitting of the input string happens at *every* space. This means that if you
+pass `"git commit -m 'message with spaces'`, the command will be split into
+`["git", "commit", "-m", "'message", "with", "spaces'"]`, which is not what you want.
 -/
 def runCmd (s : String) : IO String := do
   let cmd::args := s.splitOn | EStateM.throw "Please provide at least one word in your command!"
