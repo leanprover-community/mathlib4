@@ -74,11 +74,9 @@ lemma hasProdLocallyUniformlyOn_eta : HasProdLocallyUniformlyOn (fun n a ↦ 1 -
   simp_rw [sub_eq_add_neg]
   apply hasProdLocallyUniformlyOn_of_forall_compact complexUpperHalPlane_isOpen
   intro K hK hcK
-  by_cases hN : ¬ Nonempty K
-  · rw [hasProdUniformlyOn_iff_tendstoUniformlyOn]
-    simpa [not_nonempty_iff_eq_empty'.mp hN] using tendstoUniformlyOn_empty
+  by_cases hN : K.Nonempty
   · have hc : ContinuousOn (fun x ↦ ‖cexp (2 * π * Complex.I * x)‖) K := by fun_prop
-    obtain ⟨z, hz, hB, HB⟩ := hcK.exists_sSup_image_eq_and_ge (by simpa using hN) hc
+    obtain ⟨z, hz, hB, HB⟩ := hcK.exists_sSup_image_eq_and_ge hN hc
     apply (Summable_eta_q ⟨z, by simpa using (hK hz)⟩).hasProdUniformlyOn_nat_one_add hcK
     · filter_upwards with n x hx
       simpa only [eta_q, eta_q_eq_pow n x, norm_neg, norm_pow, coe_mk_subtype,
@@ -86,6 +84,8 @@ lemma hasProdLocallyUniformlyOn_eta : HasProdLocallyUniformlyOn (fun n a ↦ 1 -
           pow_le_pow_left₀ (by simp [norm_nonneg]) (HB x hx) (n + 1)
     · simp_rw [eta_q, Periodic.qParam]
       fun_prop
+  · rw [hasProdUniformlyOn_iff_tendstoUniformlyOn]
+    simpa [not_nonempty_iff_eq_empty.mp hN] using tendstoUniformlyOn_empty
 
 theorem etaProdTerm_ne_zero (z : ℍ) : ηₚ z ≠ 0 := by
   simp only [etaProdTerm, eta_q, ne_eq]
@@ -123,9 +123,9 @@ private theorem one_sub_eta_logDeriv_eq (z : ℂ) (i : ℕ) : logDeriv (fun x �
   simp
 
 lemma tsum_log_deriv_eta_q (z : ℂ) : ∑' (i : ℕ), logDeriv (fun x ↦ 1 - eta_q i x) z =
-  (2 * π * Complex.I) * ∑' n : ℕ, (n + 1) * (-eta_q n z) / (1  - eta_q n z) := by
+  (2 * π * Complex.I) * ∑' n : ℕ, (n + 1) * (-eta_q n z) / (1 - eta_q n z) := by
   suffices ∑' (i : ℕ), logDeriv (fun x ↦ 1 - eta_q i x) z =
-  ∑' n : ℕ, (2 * ↑π * Complex.I * (n + 1)) * (-eta_q n z) / (1  - eta_q n z) by
+  ∑' n : ℕ, (2 * ↑π * Complex.I * (n + 1)) * (-eta_q n z) / (1 - eta_q n z) by
     rw [this, ← tsum_mul_left]
     congr 1
     ext i
