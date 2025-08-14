@@ -25,8 +25,8 @@ differentiable on the upper half-plane.
 * [F. Diamond and J. Shurman, *A First Course in Modular Forms*][diamondshurman2005]
 -/
 
-open  UpperHalfPlane TopologicalSpace Set MeasureTheory intervalIntegral
-  Metric Filter Function Complex
+open UpperHalfPlane TopologicalSpace Set MeasureTheory intervalIntegral
+ Metric Filter Function Complex
 
 open scoped Interval Real NNReal ENNReal Topology BigOperators Nat
 
