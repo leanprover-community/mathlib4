@@ -49,13 +49,6 @@ noncomputable def nim (o : Ordinal.{u}) : PGame.{u} :=
 termination_by o
 decreasing_by all_goals exact ((enumIsoToType o).symm x).prop
 
-@[deprecated "you can use `rw [nim]` directly" (since := "2025-01-23")]
-theorem nim_def (o : Ordinal) : nim o =
-    ⟨o.toType, o.toType,
-      fun x => nim ((enumIsoToType o).symm x).val,
-      fun x => nim ((enumIsoToType o).symm x).val⟩ := by
-  rw [nim]
-
 theorem leftMoves_nim (o : Ordinal) : (nim o).LeftMoves = o.toType := by rw [nim]; rfl
 theorem rightMoves_nim (o : Ordinal) : (nim o).RightMoves = o.toType := by rw [nim]; rfl
 
