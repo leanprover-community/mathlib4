@@ -31,8 +31,9 @@ open  UpperHalfPlane TopologicalSpace Set MeasureTheory intervalIntegral
 
 open scoped Interval Real NNReal ENNReal Topology BigOperators Nat
 
-
 local notation "𝕢" => Periodic.qParam
+
+local notation "ℍₒ" => complexUpperHalfPlane
 
 /-- The q term inside the product defining the eta function. It is defined as
 `eta_q n z = e ^ (2 π i (n + 1) z)`. -/
@@ -68,12 +69,11 @@ open ModularForm
 theorem Summable_eta_q (z : ℍ) : Summable fun n : ℕ ↦ ‖-eta_q n z‖ := by
     simp_rw  [eta_q, eta_q_eq_pow, norm_neg, norm_pow, summable_nat_add_iff 1]
     simp only [summable_geometric_iff_norm_lt_one, norm_norm]
-    apply UpperHalfPlane.norm_exp_two_pi_I_lt_one z
+    apply norm_exp_two_pi_I_lt_one z
 
-lemma hasProdLocallyUniformlyOn_eta : HasProdLocallyUniformlyOn (fun n a ↦ 1 - eta_q n a) ηₚ
-    {x | 0 < x.im} := by
+lemma hasProdLocallyUniformlyOn_eta : HasProdLocallyUniformlyOn (fun n a ↦ 1 - eta_q n a) ηₚ ℍₒ:= by
   simp_rw [sub_eq_add_neg]
-  apply hasProdLocallyUniformlyOn_of_forall_compact (isOpen_lt continuous_const continuous_im)
+  apply hasProdLocallyUniformlyOn_of_forall_compact complexUpperHalPlane_isOpen
   intro K hK hcK
   by_cases hN : ¬ Nonempty K
   · rw [hasProdUniformlyOn_iff_tendstoUniformlyOn]
@@ -136,9 +136,9 @@ lemma tsum_log_deriv_eta_q (z : ℂ) : ∑' (i : ℕ), logDeriv (fun x ↦ 1 - e
 
 theorem etaProdTerm_differentiableAt (z : ℍ) : DifferentiableAt ℂ ηₚ z := by
   have hD := hasProdLocallyUniformlyOn_eta.tendstoLocallyUniformlyOn_finsetRange.differentiableOn ?_
-    (isOpen_lt continuous_const Complex.continuous_im)
+    complexUpperHalPlane_isOpen
   · apply (hD z z.2).differentiableAt
-    exact (isOpen_lt continuous_const Complex.continuous_im).mem_nhds z.2
+    exact (complexUpperHalPlane_isOpen).mem_nhds z.2
   · filter_upwards with b y
     apply (DifferentiableOn.finset_prod (u := Finset.range b)
       (f := fun i x => 1 - cexp (2 * ↑π * Complex.I * (↑i + 1) * x))
