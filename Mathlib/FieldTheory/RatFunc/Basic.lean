@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.FieldTheory.RatFunc.Defs
-import Mathlib.RingTheory.EuclideanDomain
-import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Polynomial.Content
 import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.RingTheory.Algebraic.Integral
