@@ -10,7 +10,7 @@ import Mathlib.Combinatorics.Graph.Basic
 
 open Set
 
-variable {α β : Type*} {x y z : α} {e f g : Set α} {l m n : Set (Set (Set α))}
+variable {α β : Type*} {x y z : α} {e f g : Set α} {l m n : Set (Set α)}
 
 /-!
 
@@ -31,7 +31,7 @@ If a hyperedge `e` contains only one vertex (i.e., `|e| = 1`), then it is a *loo
 This module defines `Hypergraph α` for a vertex type `α` (hyperedges are defined as `Set Set α`).
 In the near term, the hope is to provide an API for incidence and adjacency, as well as for
 conversions:
-- `Graph α β → Hypergraph α` (coersion/generalization of graph)
+- `Graph α β → Hypergraph α` (coersion/generalization of graph as 2-uniform hypergraph)
 - `Hypergraph α → Graph α (α × α)` (as a *clique graph* or *two-section graph*)
 - `Hypergraph α → Matrix α (Set α) γ` (the *incidence matrix* of the hypergraph)
 - `Hypergraph α → Hypergraph α` (e.g., constructing the *dual* of a hypergraph)
@@ -41,14 +41,12 @@ conversions:
 For `H : Hypergraph α`:
 
 * `V(H)` denotes the vertex set of `H` as a term in `Set α`.
-* `E(H)` denotes the hyperedge set of `H` as a term in `Set Set α`.
-* `H.IsHyperedge e s` means that the hyperedge `x` contains exactly the vertices contained in
-    `s : Set α`.
-* `H.IsIncident x e` means that the vertex `x : α` is *incident* on the hyperedge `e : β`.
+* `E(H)` denotes the hyperedge set of `H` as a term in `Set (Set α)`. Hyperedges must be subsets of
+    `V(H)`.
 * `H.Adj x y` means that there exists some hyperedge containing both `x` and `y` (or, in other
     words, `x` and `y` are incident on some shared hyperedge `e`).
 * `H.EAdj e f` means that there exists some vertex that is incident on both hyperedge `e` and
-    hyperedge `f : β`.
+    hyperedge `f : Set α`.
 
 ## Implementation details
 
@@ -62,8 +60,8 @@ the vertex or edge set. This is an issue, but is likely amenable to automation."
 
 ## Acknowledgments
 
-Credit to Shreyas Srinivas, GitHub user @NotWearingPants ("Snir" on the Lean4 Zulip), and Ammar
-Husain for useful feedback.
+Credit to Shreyas Srinivas, GitHub user @NotWearingPants ("Snir" on the Lean Zulip), Ammar
+Husain, and Aaron Liu for useful feedback on this implementation.
 -/
 
 structure Hypergraph (α : Type*) where
@@ -71,14 +69,8 @@ structure Hypergraph (α : Type*) where
   vertexSet : Set α
   /-- The hyperedge set -/
   hyperedgeSet : Set (Set α)
-  /-- Incidence predicate stating that a vertex `x` is a member of hyperedge `e` -/
-  IsIncident : α → Set α → Prop := fun x e => e ∈ hyperedgeSet ∧ x ∈ e
   /-- All hyperedges must be subsets of the vertex set -/
   hyperedge_isSubset_vertexSet : ∀ ⦃e⦄, e ∈ hyperedgeSet → e ⊆ vertexSet
-  /-- If something is incident on a hyperedge, then it must be in the vertex set -/
-  -- TODO: this feels like it can be proven, but I'm not sure how
-  -- Leaving as-is for now
-  vertex_mem_if_isIncident : ∀ ⦃x e⦄, IsIncident x e → x ∈ vertexSet
 
 namespace Hypergraph
 
@@ -92,18 +84,6 @@ scoped notation "V(" H ")" => Hypergraph.vertexSet H
 /-- `E(H)` denotes the `hyperedgeSet` of a hypergraph `H` -/
 scoped notation "E(" H ")" => Hypergraph.hyperedgeSet H
 
-section HyperedgeInc
-
--- lemma IsHyperedge.hyperedge_mem (h1 : s ⊆ V(H)) (h2 : H.IsHyperedge e s) : e ∈ E(H) :=
---   have h3 : ∃ t ⊆ V(H), H.IsHyperedge e t := by use s
---   (H.hyperedge_mem_iff_exists_isHyperedge e).mpr h3
-
--- lemma IsIncident.left_mem (h : H.IsIncident x e) : x ∈ V(H) := H.left_mem_of_isIncident h
-
--- lemma IsIncident.right_mem (h : H.IsIncident x e) : e ∈ E(H) := by
-
-
-end HyperedgeInc
 
 section DefsPreds
 
@@ -112,7 +92,7 @@ section DefsPreds
 /--
 The set of all hyperedges `e ∈ E(H)` that a given vertex `x` is incident on
 -/
-def hyperedgesIncVertex (H : Hypergraph α) (x : α) : Set (Set α) := {e | H.IsIncident x e}
+def hyperedgesIncVertex (H : Hypergraph α) (x : α) : Set (Set α) := {e ∈ E(H) | x ∈ e }
 
 /--
 We define the *vertex hyperedge set* as the set of subsets of `E(H)` that each vertex in `V(H)` is
@@ -126,7 +106,7 @@ Predicate to determine if a vertex is isolated, meaning that it is not incident 
 Note that this includes loops, i.e., if vertex `x` is isolated, there is no hyperedge with
 associated vertex subset `{x}`
 -/
-def IsIsolated (H : Hypergraph α) (x : α) : Prop := ∀ e ∈ E(H), ¬H.IsIncident x e
+def IsIsolated (H : Hypergraph α) (x : α) : Prop := ∀ e ∈ E(H), x ∉ e
 
 /--
 Predicate to determine if a hyperedge `e` is a loop, meaning that its associated vertex subset `s`
@@ -161,6 +141,22 @@ such that `s ⊂ t`.
 -/
 def IsSimple (H : Hypergraph α) : Prop := ∀ e ∈ E(H), ∀ f ∈ E(H) \ {e}, ¬e ⊆ f
 
+/--
+Predicate to determine if a hypergraph is *`k`-uniform*.
+
+In a `k`-uniform hypergraph `H`, all hyperedges `e ∈ E(H)` have the same cardinality, i.e.,
+`|e| = k`.
+-/
+def IsKUniform (H : Hypergraph α) (k : ℕ) : Prop := ∀ e ∈ E(H), Set.ncard e = k
+
+/--
+Predicate to determine if a hypergraph is *`d`-regular*.
+
+In a `d`-regular hypergraph `H`, all vertices `v ∈ V(H)` have the same degree, i.e., all vertices
+are incident on `d` hyperedges.
+-/
+def IsDRegular (H : Hypergraph α) (d : ℕ) : Prop := ∀ l ∈ H.hyperedgesIncVertices, Set.ncard l = d
+
 end DefsPreds
 
 section Adjacency
@@ -175,7 +171,7 @@ Note that we do not need to explicitly check that x, y ∈ V(H) here because a v
 the vertex set cannot be incident on any hyperedge.
 -/
 def Adj (H : Hypergraph α) (x : α) (y : α) : Prop :=
-  ∃ e, H.IsIncident x e ∧ H.IsIncident y e
+  ∃ e ∈ E(H), x ∈ e ∧ y ∈ e
 
 /--
 Predicate for (hyperedge) adjacency. Analogous to `Hypergraph.Adj`, hyperedges `e` and `f` are
@@ -185,7 +181,7 @@ Note that we do not need to explicitly check that e, f ∈ E(H) here because a v
 incident on a hyperedge that is not in the hyperedge set.
 -/
 def EAdj (H : Hypergraph α) (e : Set α) (f : Set α) : Prop :=
-  ∃ x, H.IsIncident x e ∧ H.IsIncident x f
+  ∃ x ∈ V(H), x ∈ e ∧ x ∈ f
 
 /--
 Neighbors of a vertex `x` in hypergraph `H`
@@ -238,90 +234,42 @@ noncomputable def hyperedgeDegrees (H : Hypergraph α) : Set ENat := {Set.encard
 
 end Card
 
-section Dual
-/-! ## Hypergraph Dual -/
-
-/--
-The *dual* of a hypergraph `H` is the hypergraph `H*`, where
-  - `H*.vertexSet = H.hyperedgeSet`
-  - `H*.hyperedgeSet = H.vertexSet`
-  - `H*.IsIncident e x ↔ H.IsIncident x e` (this will be proven)
-
-TODO
--/
-def dual (H : Hypergraph α) : Hypergraph (Set α) :=
-  Hypergraph.mk
-    H.hyperedgeSet
-    (fun x l => H.hyperedgesIncVertex x = l)
-    (fun e x => H.IsIncident x e)
-    H.vertexSet
-    (fun x l m h1 h2 => sorry )
-    (fun x e h => sorry )
-    (sorry)
-    (sorry)
-
-/-- `H*` denotes the `dual` of a hypergraph `H` -/
-scoped notation H "*" => Hypergraph.dual H
-
-  end Dual
-
+section Sub
 /-! ## Subhypergraphs, Partial Hypergraphs, and Section Hypergraphs -/
 
--- /--
--- Given a subset of the vertex set `V(H)` of a hypergraph `H` (`s : Set α`), the
--- *subhypergraph* `Hₛ` has `V(Hₛ) = s ∩ V(H)`, `E(Hₛ)` is the subset of `E(H)` for which all incident
--- vertices are included in `s`, and the incidence relation is the same as `H.IsIncident`
--- -/
--- def subHypergraph (H : Hypergraph α β) (s : Set α) :=
---   Hypergraph.mk (s ∩ V(H)) {e | e ∈ E(H) ∧ H.verticesIncHyperedge e ⊆ s} H.IsIncident
+/--
+Given a subset of the vertex set `V(H)` of a hypergraph `H` (`g : Set α`), the
+*subhypergraph* `Hg` has `V(Hg) = g ∩ V(H)`, and `E(Hg)` is the subset of `E(H)` for which all
+incident vertices are included in `g`.
+-/
+def subHypergraph (H : Hypergraph α) (g : Set α) :=
+  Hypergraph.mk
+  (g ∩ V(H))
+  {e | e ∈ E(H) ∧ e ⊆ g}
+  (sorry)
 
--- TODO: induced subhypergraph (see Bretto pg. 2)
--- Definition is kind of messy, since you take subsets of each hyperedge, rather than only keeping
--- Allowed hyperedges
+/--
+Given a subset of the vertex set `V(H)` of a hypergraph `H` (`g`),the *induced subhypergraph* `Hg`
+has `V(Hg) = g ∩ V(H)` and `E(Hg)` contains the (nonempty) subset of each hyperedge that intersects
+with `g`.
+-/
+def inducedSubHypergraph (H : Hypergraph α) (g : Set α) :=
+  Hypergraph.mk
+  (g ∩ V(H))
+  { { x | x ∈ (g ∩ e)} | e ∈ {f ∈ E(H) | g ∩ f ≠ ∅}}
+  (sorry)
 
--- /--
--- Given a subset of the hyperedge set `E(H)` of a hypergraph `H` (`l : Set β`), the
--- *partial hypergraph* `Hˡ` has `E(Hˡ) = l ∩ E(H)`, `E(Hˡ)` is the subset of `V(H)` which is incident
--- on at least one hyperedge in `E(Hˡ)`, and the incidence relation is the same as `H.IsIncident`
+/--
+Given a subset of the hyperedge set `E(H)` of a hypergraph `H` (`l : Set (Set α)`), the
+*partial hypergraph* `Hˡ` has `E(Hˡ) = l ∩ E(H)` and `V(Hˡ)` is the subset of `V(H)` which is
+incident on at least one hyperedge in `E(Hˡ)`.
+-/
+def partialHypergraph (H : Hypergraph α) (l : Set (Set α)) :=
+  Hypergraph.mk
+  {x | x ∈ V(H) ∧ ∃ e ∈ l, e ∈ E(H) ∧ x ∈ e}
+  (l ∩ E(H))
+  (sorry)
 
--- Note: alternative definition of `vertexSet` of a partial hypergraph:
---   {x | x ∈ V(H) ∧ Set.encard (H.hyperedgesIncVertex x ∩ l) ≥ 1}
--- -/
--- def partialHypergraph (H : Hypergraph α β) (l : Set β) :=
---   Hypergraph.mk {x | x ∈ V(H) ∧ ∃ e ∈ l, H.IsIncident x e} (l ∩ E(H)) H.IsIncident
-
-
-/-! ## Graphs -/
-
--- /--
--- A *graph* (see `Mathlib.Combinatorics.Graph.Basic`) consists of a vertex set, an *edge set*, and an
--- *link relation*, where the link relation determines if two vertices in the vertex set are connected
--- by a given edge in the edge set.
-
--- A graph is exactly a *2-uniform hypergraph*, meaning that a graph is a hypergraph where each
--- hyperedge consists of exactly two vertices. We can therefore straightforwardly coerce a `Graph` to
--- a `Hypergraph`, where the vertex set is unchanged and the graph's edge set becomes a hyperedge set.
-
--- The incidence relation is similarly straightforward: incidence is already defined for `Graph` types.
--- -/
--- instance : Coe (Graph α β) (Hypergraph α β) where
---   coe G := Hypergraph.mk G.vertexSet G.edgeSet (fun x e => G.Inc e x)
-
--- TODO: two-section graph (problems w/ one-to-many correspondence, possible fintype limitations)
-
--- def twoSectionGraph (H : Hypergraph α β) : Graph α (β × α × α) :=
---   Graph.mk
---     V(H)
---     (
---       fun (e, x, y) a1 a2 => (
---         (a1 = x ∧ a2 = y) ∨ (a2 = x ∧ a1 = y)
---       ) ∧ a1 ∈ H.verticesIncHyperedge e
---         ∧ a2 ∈ H.verticesIncHyperedge e
---     )
---     {(e, x, y) | e ∈ E(H) ∧ x ∈ H.verticesIncHyperedge e ∧ y ∈ H.verticesIncHyperedge e}
---     () -- isLink_symm
---     () -- eq_or_eq_of_isLink_of_isLink
---     () -- edge_mem_iff_exists_isLink
---     () -- left_mem_of_isLink
+end Sub
 
 end Hypergraph
