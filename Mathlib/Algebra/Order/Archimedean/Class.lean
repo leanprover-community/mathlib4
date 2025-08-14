@@ -577,11 +577,13 @@ theorem ballSubgroup_antitone : Antitone (ballSubgroup (M := M)) := by
 end MulArchimedeanClass
 
 variable (M) in
-/-- Subtype of `MulArchimedeanClass` that removes the class of `1` (i.e. the top element).
+/-- Quotient of non-identity elements by multiplicative archimedean equivalence, defined as a
+subtype of `MulArchimedeanClass` that removes the class of `1` (i.e. the top element).
 
 This is useful since the family of non-top archimedean classes is linearly independent. -/
 @[to_additive FiniteArchimedeanClass
-/-- Subtype of `ArchimedeanClass` that removes the class of `0` (i.e. the top element).
+/-- Quotient of non-identity elements by additive archimedean equivalence, defined as a
+subtype of `ArchimedeanClass` that removes the class of `0` (i.e. the top element).
 
 This is useful since the family of non-top archimedean classes is linearly independent. -/]
 abbrev FiniteMulArchimedeanClass := {A : MulArchimedeanClass M // A ≠ ⊤}
