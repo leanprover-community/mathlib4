@@ -395,7 +395,7 @@ theorem completeEquipartiteGraph_succ_isContained_iff {n : ℕ} :
     use fun i ↦ if hi : ↑i < n then A.parts ⟨i, hi⟩ else s
     intro i₁ i₂ hne v₁ hv₁ v₂ hv₂
     by_cases hi₁ : ↑i₁ < n <;> by_cases hi₂ : ↑i₂ < n
-    all_goals simp only [hi₁, hi₂, ↓reduceDIte] at hne hv₁ hv₂ ⊢
+        <;> simp only [hi₁, hi₂, ↓reduceDIte] at hne hv₁ hv₂ ⊢
     · have hne : i₁.castLT hi₁ ≠ i₂.castLT hi₂ := by rwa [Fin.ext_iff.ne] at hne ⊢
       exact A.Adj hne v₁ hv₁ v₂ hv₂
     · exact (hs v₂ hv₂ ⟨i₁, hi₁⟩ v₁ hv₁).symm
