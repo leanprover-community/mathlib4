@@ -131,7 +131,7 @@ lemma Metric.diam_closedBall_eq (x : E) {r : ℝ} (hr : 0 ≤ r) : diam (closedB
     diam_sphere_eq x hr |>.symm.le.trans <| diam_mono sphere_subset_closedBall isBounded_closedBall
 
 lemma Metric.diam_ball_eq (x : E) {r : ℝ} (hr : 0 ≤ r) : diam (ball x r) = 2 * r := by
-    /- This proof could be simplified with `Metric.diam_closure` and `closure_ball`,
+  /- This proof could be simplified with `Metric.diam_closure` and `closure_ball`,
   but we opt for this proof to minimize dependencies. -/
   refine le_antisymm (diam_ball hr) <|
     mul_le_of_forall_lt_of_nonneg (by positivity) diam_nonneg fun a ha ha' r' hr' hr'' ↦ ?_
