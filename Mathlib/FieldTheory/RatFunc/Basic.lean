@@ -729,8 +729,10 @@ As `RatFunc R` is a one-field-struct, we need to specialize the following instan
 
 variable (R L : Type*) [CommRing R] [Field L] [IsDomain R] [Algebra R[X] L] [FaithfulSMul R[X] L]
 
-/-- `FractionRing.liftAlgebra` specialized to `RatFunc R`. -/
-instance liftAlgebra : Algebra (RatFunc R) L :=
+/-- `FractionRing.liftAlgebra` specialized to `RatFunc R`.
+
+This is a scoped instance because it creates a diamond when `L = FractionRing R`. -/
+scoped instance liftAlgebra : Algebra (RatFunc R) L :=
   RingHom.toAlgebra (IsFractionRing.lift (FaithfulSMul.algebraMap_injective R[X] _))
 
 /-- `FractionRing.isScalarTower_liftAlgebra` specialized to `RatFunc R`. -/
