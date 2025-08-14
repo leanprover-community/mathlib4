@@ -137,21 +137,6 @@ instance cancelMonoid [∀ i, CancelMonoid (f i)] : CancelMonoid (∀ i, f i) :=
 instance cancelCommMonoid [∀ i, CancelCommMonoid (f i)] : CancelCommMonoid (∀ i, f i) :=
   { leftCancelMonoid, commMonoid with }
 
-/-- The mapping into a product type built from maps into each component. -/
-@[simp]
-protected def prod (f' : ∀ i, f i) (g' : ∀ i, g i) (i : I) : f i × g i :=
-  (f' i, g' i)
-
--- Porting note: simp now unfolds the lhs, so we are not marking these as simp.
--- @[simp]
-theorem prod_fst_snd : Pi.prod (Prod.fst : α × β → α) (Prod.snd : α × β → β) = id :=
-  rfl
-
--- Porting note: simp now unfolds the lhs, so we are not marking these as simp.
--- @[simp]
-theorem prod_snd_fst : Pi.prod (Prod.snd : α × β → β) (Prod.fst : α × β → α) = Prod.swap :=
-  rfl
-
 end Pi
 
 namespace Function
@@ -202,7 +187,7 @@ lemma comp_ne_one_iff [One β] [One γ] (f : α → β) {g : β → γ} (hg : In
 end Function
 
 /-- If the one function is surjective, the codomain is trivial. -/
-@[to_additive "If the zero function is surjective, the codomain is trivial."]
+@[to_additive /-- If the zero function is surjective, the codomain is trivial. -/]
 def uniqueOfSurjectiveOne (α : Type*) {β : Type*} [One β] (h : Function.Surjective (1 : α → β)) :
     Unique β :=
   h.uniqueOfSurjectiveConst α (1 : β)

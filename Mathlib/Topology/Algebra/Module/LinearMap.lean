@@ -18,7 +18,7 @@ modules which are continuous. The set of continuous semilinear maps between the 
 Plain linear maps are denoted by `M →L[R] M₂` and star-linear maps by `M →L⋆[R] M₂`.
 -/
 
-assert_not_exists Star.star
+assert_not_exists TrivialStar
 
 open LinearMap (ker range)
 open Topology Filter Pointwise
@@ -59,6 +59,12 @@ abbrev ContinuousLinearMapClass (F : Type*) (R : outParam Type*) [Semiring R]
     (M : outParam Type*) [TopologicalSpace M] [AddCommMonoid M] (M₂ : outParam Type*)
     [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M] [Module R M₂] [FunLike F M M₂] :=
   ContinuousSemilinearMapClass F (RingHom.id R) M M₂
+
+/-- The *strong dual* of a topological vector space `M` over a ring `R`. This is the space of
+continuous linear functionals and is equipped with the topology of uniform convergence
+on bounded subsets. `StrongDual R M` is an abbreviation for `M →L[R] R`. -/
+abbrev StrongDual (R : Type*) [Semiring R] [TopologicalSpace R]
+  (M : Type*) [TopologicalSpace M] [AddCommMonoid M] [Module R M] : Type _ := M →L[R] R
 
 namespace ContinuousLinearMap
 
