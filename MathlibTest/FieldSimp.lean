@@ -14,9 +14,6 @@ import Mathlib.Tactic.Ring
 private axiom test_sorry : ∀ {α}, α
 
 open Lean Elab Tactic in
-elab "echo_goal" : tactic => liftMetaFinishingTactic fun g ↦ do logInfo (← g.getType)
-
-open Lean Elab Tactic in
 elab "test_field_simp" : tactic => do
   evalTactic <| ← `(tactic | field_simp)
   liftMetaFinishingTactic fun g ↦ do
