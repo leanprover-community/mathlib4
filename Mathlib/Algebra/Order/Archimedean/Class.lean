@@ -152,9 +152,13 @@ variable {M : Type*}
 variable [CommGroup M] [LinearOrder M] [IsOrderedMonoid M] {a b : M}
 
 variable (M) in
-/-- `MulArchimedeanClass` is the antisymmetrization of `MulArchimedeanOrder`. -/
+/-- `MulArchimedeanClass` is the quotient by multiplicative archimedean equivalence,
+where two elements `a` and `b` are in the same class iff
+`(∃ m : ℕ, |b|ₘ ≤ |a|ₘ ^ m) ∧ (∃ n : ℕ, |a|ₘ ≤ |b|ₘ ^ n)`. -/
 @[to_additive ArchimedeanClass
-/-- `ArchimedeanClass` is the antisymmetrization of `ArchimedeanOrder`. -/]
+/-- `ArchimedeanClass` is the quotient by additive archimedean equivalence,
+where two elements `a` and `b` are in the same class iff
+`(∃ m : ℕ, |b| ≤ m • |a|) ∧ (∃ n : ℕ, |a| ≤ n • |b|)`. -/]
 def MulArchimedeanClass := Antisymmetrization (MulArchimedeanOrder M) (· ≤ ·)
 
 namespace MulArchimedeanClass
@@ -573,9 +577,13 @@ theorem ballSubgroup_antitone : Antitone (ballSubgroup (M := M)) := by
 end MulArchimedeanClass
 
 variable (M) in
-/-- Subtype of `MulArchimedeanClass` that removes the class of `1` (i.e. the top element). -/
+/-- Subtype of `MulArchimedeanClass` that removes the class of `1` (i.e. the top element).
+
+This is useful since the family of non-top archimedean classes is linearly independent. -/
 @[to_additive FiniteArchimedeanClass
-/--Subtype of `ArchimedeanClass` that removes the class of `0` (i.e. the top element). -/]
+/-- Subtype of `ArchimedeanClass` that removes the class of `0` (i.e. the top element).
+
+This is useful since the family of non-top archimedean classes is linearly independent. -/]
 abbrev FiniteMulArchimedeanClass := {A : MulArchimedeanClass M // A ≠ ⊤}
 
 namespace FiniteMulArchimedeanClass
