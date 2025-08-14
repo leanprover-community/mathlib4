@@ -16,6 +16,7 @@ the *covariant* functor which sends a type `α` to `αᵒᵈ`.
 -/
 
 open CategoryTheory
+
 namespace SimplexCategory
 
 /-- The covariant involution `rev : SimplexCategory ⥤ SimplexCategory` which,
