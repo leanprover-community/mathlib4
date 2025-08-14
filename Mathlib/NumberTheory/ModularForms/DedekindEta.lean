@@ -17,14 +17,13 @@ import Mathlib.Data.Complex.FiniteDimensional
 ## Main definitions
 
 * We define the Dedekind eta function as the infinite product
-  `η(z) = q^1/24 * ∏' (1 - q^n)` where `q = e^(2πiz)` and `z` is in the upper half-plane.
-  The product is taken over all non-negative integers `n`. We then show it is non-vanishing and
-  differentiable on the upper half-plane.
+`η(z) = q ^ 1/24 * ∏' (1 - q ^ (n + 1))` where `q = e ^ (2πiz)` and `z` is in the upper half-plane.
+The product is taken over all non-negative integers `n`. We then show it is non-vanishing and
+differentiable on the upper half-plane.
 
 ## References
 * [F. Diamond and J. Shurman, *A First Course in Modular Forms*][diamondshurman2005]
 -/
-
 
 open  UpperHalfPlane TopologicalSpace Set MeasureTheory intervalIntegral
   Metric Filter Function Complex
@@ -49,7 +48,7 @@ lemma eta_q_eq_pow (n : ℕ) (z : ℂ) : eta_q n z = cexp (2 * π * Complex.I * 
 lemma one_add_eta_q_ne_zero (n : ℕ) (z : ℍ) : 1 - eta_q n z ≠ 0 := by
   rw [eta_q_eq_cexp, sub_ne_zero]
   intro h
-  have := UpperHalfPlane.norm_exp_two_pi_I_lt_one ⟨(n + 1) • z, by
+  have := norm_exp_two_pi_I_lt_one ⟨(n + 1) • z, by
     have : 0 < (n + 1 : ℝ) := by linarith
     simpa [this] using z.2⟩
   simp [← mul_assoc, ← h] at *
@@ -59,14 +58,14 @@ noncomputable abbrev etaProdTerm (z : ℂ) := ∏' (n : ℕ), (1 - eta_q n z)
 
 local notation "ηₚ" => etaProdTerm
 
-/- The eta function, whose value at z is `q^1/24 * ∏' 1 - q ^ (n + 1)` for `q = e ^ 2 π i z`. -/
+/-- The eta function, whose value at z is `q^1/24 * ∏' 1 - q ^ (n + 1)` for `q = e ^ 2 π i z`. -/
 noncomputable def ModularForm.eta (z : ℂ) := 𝕢 24 z * ηₚ z
 
 local notation "η" => ModularForm.eta
 
 open ModularForm
 
-theorem Summable_eta_q (z : ℍ) : Summable fun n : ℕ ↦ ‖-eta_q n z‖ := by
+theorem Summable_eta_q (z : ℍ) : Summable fun n ↦ ‖-eta_q n z‖ := by
     simp_rw  [eta_q, eta_q_eq_pow, norm_neg, norm_pow, summable_nat_add_iff 1]
     simp only [summable_geometric_iff_norm_lt_one, norm_norm]
     apply norm_exp_two_pi_I_lt_one z
@@ -78,9 +77,9 @@ lemma hasProdLocallyUniformlyOn_eta : HasProdLocallyUniformlyOn (fun n a ↦ 1 -
   by_cases hN : ¬ Nonempty K
   · rw [hasProdUniformlyOn_iff_tendstoUniformlyOn]
     simpa [not_nonempty_iff_eq_empty'.mp hN] using tendstoUniformlyOn_empty
-  · have hc : ContinuousOn (fun x ↦ ‖cexp (2 * ↑π * Complex.I * x)‖) K := by fun_prop
-    obtain ⟨z, hz, hB, HB⟩ := IsCompact.exists_sSup_image_eq_and_ge hcK (by simpa using hN) hc
-    apply Summable.hasProdUniformlyOn_nat_one_add hcK (Summable_eta_q ⟨z, by simpa using (hK hz)⟩)
+  · have hc : ContinuousOn (fun x ↦ ‖cexp (2 * π * Complex.I * x)‖) K := by fun_prop
+    obtain ⟨z, hz, hB, HB⟩ := hcK.exists_sSup_image_eq_and_ge (by simpa using hN) hc
+    apply (Summable_eta_q ⟨z, by simpa using (hK hz)⟩).hasProdUniformlyOn_nat_one_add hcK
     · filter_upwards with n x hx
       simpa only [eta_q, eta_q_eq_pow n x, norm_neg, norm_pow, coe_mk_subtype,
           eta_q_eq_pow n (⟨z, hK hz⟩ : ℍ)] using
@@ -95,7 +94,7 @@ theorem etaProdTerm_ne_zero (z : ℍ) : ηₚ z ≠ 0 := by
   · intro x
     simpa [eta_q, ← summable_norm_iff] using Summable_eta_q x
 
-/-- Eta is non-vanishing. -/
+/-- Eta is non-vanishing on the upper half plane. -/
 lemma eta_ne_zero_on_UpperHalfPlane (z : ℍ) : η z ≠ 0 := by
   simpa [ModularForm.eta, Periodic.qParam] using etaProdTerm_ne_zero z
 
@@ -111,8 +110,8 @@ lemma logDeriv_one_sub_mul_cexp_comp (r : ℂ) {g : ℂ → ℂ} (hg : Different
   rw [logDeriv_comp (by fun_prop) (hg y), logDeriv_one_sub_cexp]
   ring
 
-theorem one_add_eta_logDeriv_eq (z : ℂ) (i : ℕ) : logDeriv (fun x ↦ 1 - eta_q i x) z =
-    2 * ↑π * Complex.I * (↑i + 1) * -eta_q i z / (1 - eta_q i z) := by
+private theorem one_sub_eta_logDeriv_eq (z : ℂ) (i : ℕ) : logDeriv (fun x ↦ 1 - eta_q i x) z =
+    2 * π * Complex.I * (i + 1) * -eta_q i z / (1 - eta_q i z) := by
   have h2 : (fun x ↦ 1 - cexp (2 * ↑π * Complex.I * (↑i + 1) * x)) =
       ((fun z ↦ 1 - 1 * cexp z) ∘ fun x ↦ 2 * ↑π * Complex.I * (↑i + 1) * x) := by aesop
   have h3 : deriv (fun x : ℂ ↦ (2 * π * Complex.I * (i + 1) * x)) =
@@ -124,27 +123,23 @@ theorem one_add_eta_logDeriv_eq (z : ℂ) (i : ℕ) : logDeriv (fun x ↦ 1 - et
   simp
 
 lemma tsum_log_deriv_eta_q (z : ℂ) : ∑' (i : ℕ), logDeriv (fun x ↦ 1 - eta_q i x) z =
-  (2 * ↑π * Complex.I) * ∑' n : ℕ, (n + 1) * (-eta_q n z) / (1  - eta_q n z) := by
+  (2 * π * Complex.I) * ∑' n : ℕ, (n + 1) * (-eta_q n z) / (1  - eta_q n z) := by
   suffices ∑' (i : ℕ), logDeriv (fun x ↦ 1 - eta_q i x) z =
   ∑' n : ℕ, (2 * ↑π * Complex.I * (n + 1)) * (-eta_q n z) / (1  - eta_q n z) by
     rw [this, ← tsum_mul_left]
     congr 1
     ext i
     ring
-  refine tsum_congr (fun i => ?_)
-  apply one_add_eta_logDeriv_eq
+  exact tsum_congr (fun i => one_sub_eta_logDeriv_eq z i)
 
 theorem etaProdTerm_differentiableAt (z : ℍ) : DifferentiableAt ℂ ηₚ z := by
   have hD := hasProdLocallyUniformlyOn_eta.tendstoLocallyUniformlyOn_finsetRange.differentiableOn ?_
     complexUpperHalPlane_isOpen
-  · apply (hD z z.2).differentiableAt
-    exact (complexUpperHalPlane_isOpen).mem_nhds z.2
+  · exact (hD z z.2).differentiableAt (complexUpperHalPlane_isOpen.mem_nhds z.2)
   · filter_upwards with b y
-    apply (DifferentiableOn.finset_prod (u := Finset.range b)
-      (f := fun i x => 1 - cexp (2 * ↑π * Complex.I * (↑i + 1) * x))
+    apply (DifferentiableOn.finset_prod (u := Finset.range b) (f := fun i x => 1 - eta_q i x)
       (by fun_prop)).congr
-    intro x hx
-    simp [sub_eq_add_neg, eta_q_eq_cexp]
+    simp
 
 lemma eta_DifferentiableAt_UpperHalfPlane (z : ℍ) : DifferentiableAt ℂ eta z :=
   DifferentiableAt.mul (by fun_prop) (etaProdTerm_differentiableAt z)
