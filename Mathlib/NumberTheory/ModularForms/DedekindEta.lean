@@ -159,13 +159,12 @@ lemma logDeriv_z_term (z : ℍ) : logDeriv (𝕢 24) ↑z  =  2 * ↑π * Comple
   rw [this, logDeriv_comp (by fun_prop) (by fun_prop), deriv_const_mul _ (by fun_prop)]
   simp [LogDeriv_exp]
 
-
 theorem etaProdTerm_differentiableAt (z : ℍ) : DifferentiableAt ℂ ηₚ z := by
   have hD := hasProdLocallyUniformlyOn_eta.tendstoLocallyUniformlyOn_finsetRange.differentiableOn ?_
     (isOpen_lt continuous_const Complex.continuous_im)
   · rw [DifferentiableOn] at hD
-    apply (hD z (by apply z.2)).differentiableAt
-    · apply IsOpen.mem_nhds  (isOpen_lt continuous_const Complex.continuous_im) z.2
+    apply (hD z z.2).differentiableAt
+    · apply (isOpen_lt continuous_const Complex.continuous_im).mem_nhds z.2
   · filter_upwards with b y
     apply (DifferentiableOn.finset_prod (u := Finset.range b)
       (f := fun i x => 1 - cexp (2 * ↑π * Complex.I * (↑i + 1) * x))
@@ -175,33 +174,6 @@ theorem etaProdTerm_differentiableAt (z : ℍ) : DifferentiableAt ℂ ηₚ z :=
 
 lemma eta_DifferentiableAt_UpperHalfPlane (z : ℍ) : DifferentiableAt ℂ eta z := by
   apply DifferentiableAt.mul (by fun_prop) (etaProdTerm_differentiableAt z)
-
-theorem logDeriv_tprod_eq_tsum {ι : Type*} {s : Set ℂ} (hs : IsOpen s) (x : s) {f : ι → ℂ → ℂ}
-    (hf : ∀ i, f i x ≠ 0) (hd : ∀ i : ι, DifferentiableOn ℂ (f i) s)
-    (hm : Summable fun i ↦ logDeriv (f i) ↑x) (htend : MultipliableLocallyUniformlyOn f s)
-    (hnez : ∏' (i : ι), f i x ≠ 0) : logDeriv (∏' i : ι, f i ·) x = ∑' i : ι, logDeriv (f i) x := by
-    apply symm
-    rw [← Summable.hasSum_iff hm, HasSum]
-    have := logDeriv_tendsto (f := fun (n : Finset ι) ↦ ∏ i ∈ n, (f i))
-      (g := (∏' i : ι, f i ·)) (s := s) hs (p := atTop)
-    simp only [eventually_atTop, ge_iff_le, ne_eq, forall_exists_index, Subtype.forall] at this
-    conv =>
-      enter [1]
-      ext n
-      rw [← logDeriv_prod _ _ _ (by intro i hi; apply hf i)
-        (by intro i hi; apply (hd i x x.2).differentiableAt; exact IsOpen.mem_nhds hs x.2)]
-    apply (this x x.2 ?_ ⊥ ?_ hnez).congr
-    · intro m
-      congr
-      aesop
-    · convert hasProdLocallyUniformlyOn_iff_tendstoLocallyUniformlyOn.mp
-        htend.hasProdLocallyUniformlyOn
-      simp
-    · intro b hb z hz
-      apply DifferentiableAt.differentiableWithinAt
-      have hp : ∀ (i : ι), i ∈ b → DifferentiableAt ℂ (f i) z := by
-        exact fun i hi ↦ (hd i z hz).differentiableAt (IsOpen.mem_nhds hs hz)
-      simpa using  DifferentiableAt.finset_prod hp
 
 /- lemma eta_logDeriv (z : ℍ) : logDeriv ModularForm.eta z = (π * Complex.I / 12) * E₂ z := by
   unfold ModularForm.eta etaProdTerm
