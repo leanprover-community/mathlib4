@@ -282,7 +282,8 @@ elab tk:"#find_deleted_files" nc:(ppSpace num)? : command => do
   let n := nc.getD (Syntax.mkNumLit "2") |>.getNat
   let mut msgs : Array MessageData := #[]
   -- Get the hash and the commit message of the commit at `git log -n`
-  -- (and throw an error if that doesn't exist).
+  -- and format the message (with its hash) as a collapsible message.
+  -- (throwing an error if that doesn't exist).
   let getHashAndMessage (n : Nat) : CommandElabM (String × MessageData) := do
     let log ← runCmd s!"git log --pretty=oneline -{n}"
     let some last := log.trim.splitOn "\n" |>.getLast? | throwError "Found no commits!"
@@ -357,8 +358,6 @@ the deprecations later on.
 -/
 
 #find_deleted_files 15
---#create_deprecated_module "Mathlib/Analysis/InnerProductSpace/Projection.lean"
-#find_deleted_files 600
 /--
 info: import Mathlib.Tactic.Linter.DeprecatedModule
 import Std.Time.Zoned
