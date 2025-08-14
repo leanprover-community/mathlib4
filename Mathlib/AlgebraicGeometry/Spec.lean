@@ -115,7 +115,7 @@ theorem Spec.sheafedSpaceMap_comp {R S T : CommRingCat.{u}} (f : R ⟶ S) (g : S
     ext
     -- Porting note: was one liner
     -- `dsimp, rw category_theory.functor.map_id, rw category.comp_id, erw comap_comp f g, refl`
-    rw [NatTrans.comp_app, sheafedSpaceMap_c_app, whiskerRight_app, eqToHom_refl]
+    rw [NatTrans.comp_app, sheafedSpaceMap_c_app, Functor.whiskerRight_app, eqToHom_refl]
     erw [(sheafedSpaceObj T).presheaf.map_id]
     dsimp only [CommRingCat.hom_comp, RingHom.coe_comp, Function.comp_apply]
     rw [comap_comp]
@@ -244,8 +244,6 @@ def Spec.locallyRingedSpaceMap {R S : CommRingCat.{u}} (f : R ⟶ S) :
       -- Here, we are showing that the map on prime spectra induced by `f` is really a morphism of
       -- *locally* ringed spaces, i.e. that the induced map on the stalks is a local ring
       -- homomorphism.
-      #adaptation_note /-- nightly-2024-04-01
-      It's this `erw` that is blowing up. The implicit arguments differ significantly. -/
       erw [← localRingHom_comp_stalkIso_apply' f p a] at ha
       have : IsLocalHom (stalkIso (↑S) p).inv.hom := isLocalHom_of_isIso _
       replace ha := (isUnit_map_iff (stalkIso S p).inv.hom _).mp ha
@@ -316,7 +314,7 @@ theorem Spec_map_localization_isIso (R : CommRingCat.{u}) (M : Submonoid R)
   -- See https://github.com/leanprover/lean4/issues/2273
   refine IsIso.comp_isIso' inferInstance (IsIso.comp_isIso' ?_ inferInstance)
   /- I do not know why this is defeq to the goal, but I'm happy to accept that it is. -/
-  show
+  change
     IsIso (IsLocalization.localizationLocalizationAtPrimeIsoLocalization M
       x.asIdeal).toRingEquiv.toCommRingCatIso.hom
   infer_instance
@@ -412,7 +410,7 @@ instance isLocalizedModule_toPushforwardStalkAlgHom :
         U.2
     apply_fun (Spec.topMap (CommRingCat.ofHom (algebraMap R S)) _* (structureSheaf S).1).map
         (homOfLE hrU).op at e
-    simp only [Functor.op_map, map_zero, ← CategoryTheory.comp_apply, toOpen_res] at e
+    simp only [map_zero] at e
     have : toOpen S (PrimeSpectrum.basicOpen <| algebraMap R S r) x = 0 := by
       refine Eq.trans ?_ e; rfl
     have :=

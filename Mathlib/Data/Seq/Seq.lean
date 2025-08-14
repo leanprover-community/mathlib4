@@ -47,7 +47,7 @@ def get? : Seq α → ℕ → Option α :=
   Subtype.val
 
 @[simp]
-theorem val_eq_get (s : Seq α) (n : ℕ) : s.val n = s.get? n := by
+theorem val_eq_get (s : Seq α) (n : ℕ) : s.val n = s.get? n :=
   rfl
 
 @[simp]
@@ -352,13 +352,7 @@ theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s
       · intro _ this
         rw [destruct_nil, destruct_cons] at this
         exact False.elim this
-      · intro _ this
-        rw [destruct_cons, destruct_cons] at this
-        rw [head_cons, head_cons, tail_cons, tail_cons]
-        obtain ⟨h1, h2⟩ := this
-        constructor
-        · rw [h1]
-        · exact h2
+      · simp
   · exact ⟨s₁, s₂, rfl, rfl, r⟩
 
 end Bisim
@@ -407,7 +401,6 @@ theorem terminated_stable : ∀ (s : Seq α) {m n : ℕ}, m ≤ n → s.Terminat
 theorem not_terminates_iff {s : Seq α} : ¬s.Terminates ↔ ∀ n, (s.get? n).isSome := by
   simp only [Terminates, TerminatedAt, ← Ne.eq_def, Option.ne_none_iff_isSome, not_exists, iff_self]
 
-@[simp]
 theorem terminatedAt_nil {n : ℕ} : TerminatedAt (nil : Seq α) n := rfl
 
 @[simp]
@@ -828,7 +821,7 @@ theorem length_toList (s : Seq α) (h : s.Terminates) : (toList s h).length = le
 @[simp]
 theorem getElem?_toList (s : Seq α) (h : s.Terminates) (n : ℕ) : (toList s h)[n]? = s.get? n := by
   ext k
-  simp only [ofList, toList, get?_mk, Option.mem_def, getElem?_take, Nat.lt_find_iff, length,
+  simp only [toList, getElem?_take, Nat.lt_find_iff, length,
     Option.ite_none_right_eq_some, and_iff_right_iff_imp, TerminatedAt]
   intro h m hmn
   let ⟨a, ha⟩ := ge_stable s hmn h
@@ -1040,7 +1033,7 @@ theorem join_cons (a : α) (s S) : join (cons (a, s) S) = cons a (append s (join
         exact ⟨rfl, Or.inl rfl⟩
     | _, _, Or.inr ⟨a, s, S, rfl, rfl⟩ => by
       cases s
-      · simp [join_cons_cons, join_cons_nil]
+      · simp [join_cons_nil]
       · simpa [join_cons_cons, join_cons_nil] using Or.inr ⟨_, _, S, rfl, rfl⟩
 
 @[simp]

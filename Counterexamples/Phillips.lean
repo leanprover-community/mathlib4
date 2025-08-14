@@ -282,7 +282,7 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
   have ε_pos : 0 < ε := ht
   have I1 : ∀ n, ε / 2 ≤ f (↑(s (n + 1)) \ ↑(s n)) := by
     intro n
-    rw [div_le_iff₀' (show (0 : ℝ) < 2 by norm_num), hε]
+    rw [div_le_iff₀' (show (0 : ℝ) < 2 by simp), hε]
     convert hF (s n) u using 2
     · dsimp
       ext x
@@ -468,7 +468,7 @@ theorem sierpinski_pathological_family (Hcont : #ℝ = ℵ₁) :
         constructor
         · rintro rfl; exact irrefl_of r y h
         · exact asymm h
-      · simp only [true_or, eq_self_iff_true, iff_true]; exact irrefl x
+      · simp only [true_or, iff_true]; exact irrefl x
       · simp only [h, iff_true, or_true]; exact asymm h
     rw [this]
     apply Countable.union _ (countable_singleton _)

@@ -58,7 +58,7 @@ instance [Nontrivial M] : Nontrivial P.invtRootSubmodule where
 lemma isSimpleModule_weylGroupRootRep_iff [Nontrivial M] :
     IsSimpleModule (MonoidAlgebra R P.weylGroup) P.weylGroupRootRep.asModule ↔
     ∀ (q : Submodule R M), (∀ i, q ∈ invtSubmodule (P.reflection i)) → q ≠ ⊥ → q = ⊤ := by
-  rw [IsSimpleModule, ← P.weylGroupRootRep.mapSubmodule.isSimpleOrder_iff]
+  rw [isSimpleModule_iff, ← P.weylGroupRootRep.mapSubmodule.isSimpleOrder_iff]
   refine ⟨fun h q hq₁ hq₂ ↦ ?_, fun h ↦ ⟨fun q ↦ ?_⟩⟩
   · suffices ∀ g : P.weylGroup, q ∈ invtSubmodule (P.weylGroupRootRep g) by
       let q' : P.weylGroupRootRep.invtSubmodule :=
@@ -138,7 +138,7 @@ lemma isIrreducible_iff_invtRootSubmodule
     have := IsIrreducible.eq_top_of_invtSubmodule_reflection q hq
     tauto
   · let q' : P.invtRootSubmodule := ⟨q, P.mem_invtRootSubmodule_iff.mpr hq⟩
-    replace hq' : ⊥ < q' := by simpa [q', bot_lt_iff_ne_bot]
+    replace hq' : ⊥ < q' := by simpa [q', bot_lt_iff_ne_bot, -IsSimpleOrder.bot_lt_iff_eq_top]
     suffices q' = ⊤ by simpa [q'] using this
     exact IsSimpleOrder.eq_top_of_lt hq'
 

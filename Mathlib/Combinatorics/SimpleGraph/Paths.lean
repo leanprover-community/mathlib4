@@ -256,7 +256,7 @@ lemma isCycle_reverse {p : G.Walk u u} : p.reverse.IsCycle ↔ p.IsCycle where
 lemma IsCycle.isPath_of_append_right {p : G.Walk u v} {q : G.Walk v u} (h : ¬ p.Nil)
     (hcyc : (p.append q).IsCycle) : q.IsPath := by
   have := hcyc.2
-  rw [tail_support_append, List.nodup_append] at this
+  rw [tail_support_append, List.nodup_append'] at this
   rw [isPath_def, support_eq_cons, List.nodup_cons]
   exact ⟨this.2.2 (p.end_mem_tail_support h), this.2.1⟩
 
@@ -289,7 +289,7 @@ lemma IsPath.getVert_injOn {p : G.Walk u v} (hp : p.IsPath) :
   | @cons v w u h p ihp =>
     simp only [length_cons, Set.mem_setOf_eq] at hn hm hnm
     by_cases hn0 : n = 0 <;> by_cases hm0 : m = 0
-    · aesop
+    · omega
     · simp only [hn0, getVert_zero, Walk.getVert_cons p h hm0] at hnm
       have hvp : v ∉ p.support := by aesop
       exact (hvp (Walk.mem_support_iff_exists_getVert.mpr ⟨(m - 1), ⟨hnm.symm, by omega⟩⟩)).elim
@@ -356,7 +356,7 @@ lemma IsCycle.getVert_injOn {p : G.Walk u u} (hpc : p.IsCycle) :
 lemma IsCycle.getVert_injOn' {p : G.Walk u u} (hpc : p.IsCycle) :
     Set.InjOn p.getVert {i |  i ≤ p.length - 1} := by
   intro n hn m hm hnm
-  simp only [Walk.length_reverse, Set.mem_setOf_eq, Nat.sub_le, and_true] at *
+  simp only [Set.mem_setOf_eq] at *
   have := hpc.three_le_length
   have : p.length - n = p.length - m := Walk.length_reverse _ ▸ hpc.reverse.getVert_injOn
     (by simp only [Walk.length_reverse, Set.mem_setOf_eq]; omega)
@@ -660,13 +660,7 @@ theorem map_isPath_of_injective (hinj : Function.Injective f) (hp : p.IsPath) :
 protected theorem IsPath.of_map {f : G →g G'} (hp : (p.map f).IsPath) : p.IsPath := by
   induction p with
   | nil => simp
-  | cons _ _ ih =>
-    rw [map_cons, Walk.cons_isPath_iff, support_map] at hp
-    rw [Walk.cons_isPath_iff]
-    obtain ⟨hp1, hp2⟩ := hp
-    refine ⟨ih hp1, ?_⟩
-    contrapose! hp2
-    exact List.mem_map_of_mem hp2
+  | cons _ _ ih => grind [map_cons, Walk.cons_isPath_iff, support_map]
 
 theorem map_isPath_iff_of_injective (hinj : Function.Injective f) : (p.map f).IsPath ↔ p.IsPath :=
   ⟨IsPath.of_map, map_isPath_of_injective hinj⟩
@@ -725,7 +719,7 @@ protected def map (f : G →g G') (hinj : Function.Injective f) {u v : V} (p : G
 theorem map_injective {f : G →g G'} (hinj : Function.Injective f) (u v : V) :
     Function.Injective (Path.map f hinj : G.Path u v → G'.Path (f u) (f v)) := by
   rintro ⟨p, hp⟩ ⟨p', hp'⟩ h
-  simp only [Path.map, Subtype.coe_mk, Subtype.mk.injEq] at h
+  simp only [Path.map, Subtype.mk.injEq] at h
   simp [Walk.map_injective_of_injective hinj u v h]
 
 /-- Given a graph embedding, map paths to paths. -/
@@ -759,7 +753,7 @@ protected theorem IsCycle.transfer {q : G.Walk u u} (qc : q.IsCycle) (hq) :
   cases q with
   | nil => simp at qc
   | cons _ q =>
-    simp only [edges_cons, List.find?, List.mem_cons, forall_eq_or_imp, mem_edgeSet] at hq
+    simp only [edges_cons, List.mem_cons, forall_eq_or_imp] at hq
     simp only [Walk.transfer, cons_isCycle_iff, edges_transfer q hq.2] at qc ⊢
     exact ⟨qc.1.transfer hq.2, qc.2⟩
 

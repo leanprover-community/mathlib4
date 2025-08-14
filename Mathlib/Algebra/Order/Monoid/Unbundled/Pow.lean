@@ -113,7 +113,7 @@ theorem Right.pow_lt_one_of_lt {n : ℕ} {x : M} (hn : 0 < n) (h : x < 1) : x ^ 
 
 /-- This lemma is useful in non-cancellative monoids, like sets under pointwise operations. -/
 @[to_additive
-"This lemma is useful in non-cancellative monoids, like sets under pointwise operations."]
+/-- This lemma is useful in non-cancellative monoids, like sets under pointwise operations. -/]
 lemma pow_le_pow_mul_of_sq_le_mul [MulLeftMono M] {a b : M} (hab : a ^ 2 ≤ b * a) :
     ∀ {n}, n ≠ 0 → a ^ n ≤ b ^ (n - 1) * a
   | 1, _ => by simp
@@ -303,5 +303,11 @@ theorem one_le_zpow {x : G} (H : 1 ≤ x) {n : ℤ} (hn : 0 ≤ n) : 1 ≤ x ^ n
   lift n to ℕ using hn
   rw [zpow_natCast]
   apply one_le_pow_of_one_le' H
+
+@[to_additive zsmul_pos]
+lemma one_lt_zpow {x : G} (hx : 1 < x) {n : ℤ} (hn : 0 < n) : 1 < x ^ n := by
+  lift n to ℕ using Int.le_of_lt hn
+  rw [zpow_natCast]
+  exact one_lt_pow' hx (Int.natCast_pos.mp hn).ne'
 
 end DivInvMonoid

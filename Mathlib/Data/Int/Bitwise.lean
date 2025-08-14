@@ -68,7 +68,7 @@ def land : ℤ → ℤ → ℤ
 
 /-- `ldiff a b` performs bitwise set difference. For each corresponding
   pair of bits taken as booleans, say `aᵢ` and `bᵢ`, it applies the
-  boolean operation `aᵢ ∧ bᵢ` to obtain the `iᵗʰ` bit of the result. -/
+  boolean operation `aᵢ ∧ ¬bᵢ` to obtain the `iᵗʰ` bit of the result. -/
 def ldiff : ℤ → ℤ → ℤ
   | (m : ℕ), (n : ℕ) => Nat.ldiff m n
   | (m : ℕ), -[n +1] => m &&& n
@@ -117,7 +117,7 @@ theorem bodd_coe (n : ℕ) : Int.bodd n = Nat.bodd n :=
 theorem bodd_subNatNat (m n : ℕ) : bodd (subNatNat m n) = xor m.bodd n.bodd := by
   apply subNatNat_elim m n fun m n i => bodd i = xor m.bodd n.bodd <;>
   intros i j <;>
-  simp only [Int.bodd, Int.bodd_coe, Nat.bodd_add] <;>
+  simp only [Int.bodd, Nat.bodd_add] <;>
   cases Nat.bodd i <;> simp
 
 @[simp]
@@ -218,46 +218,40 @@ theorem bitwise_or : bitwise or = lor := by
   funext m n
   rcases m with m | m <;> rcases n with n | n <;> try {rfl}
     <;> simp only [bitwise, natBitwise, Bool.not_false, Bool.or_true, cond_true, lor, Nat.ldiff,
-      negSucc.injEq, Bool.true_or, Nat.land]
+      negSucc.injEq, Bool.true_or]
   · rw [Nat.bitwise_swap, Function.swap]
     congr
     funext x y
     cases x <;> cases y <;> rfl
+  · simp
   · congr
-    funext x y
-    cases x <;> cases y <;> rfl
-  · congr
-    funext x y
-    cases x <;> cases y <;> rfl
+    simp
 
 -- Porting note: Was `bitwise_tac` in mathlib
 theorem bitwise_and : bitwise and = land := by
   funext m n
   rcases m with m | m <;> rcases n with n | n <;> try {rfl}
-    <;> simp only [bitwise, natBitwise, Bool.not_false, Bool.or_true,
-      cond_false, cond_true, lor, Nat.ldiff, Bool.and_true, negSucc.injEq,
-      Bool.and_false, Nat.land]
+    <;> simp only [bitwise, natBitwise, Bool.not_false,
+      cond_false, cond_true, Bool.and_true,
+      Bool.and_false]
   · rw [Nat.bitwise_swap, Function.swap]
     congr
     funext x y
     cases x <;> cases y <;> rfl
   · congr
-    funext x y
-    cases x <;> cases y <;> rfl
+    simp
 
 -- Porting note: Was `bitwise_tac` in mathlib
 theorem bitwise_diff : (bitwise fun a b => a && not b) = ldiff := by
   funext m n
   rcases m with m | m <;> rcases n with n | n <;> try {rfl}
-    <;> simp only [bitwise, natBitwise, Bool.not_false, Bool.or_true,
-      cond_false, cond_true, lor, Nat.ldiff, Bool.and_true, negSucc.injEq,
-      Bool.and_false, Nat.land, Bool.not_true, ldiff, Nat.lor]
+    <;> simp only [bitwise, natBitwise, Bool.not_false,
+      cond_false, cond_true, Nat.ldiff, Bool.and_true, negSucc.injEq,
+      Bool.and_false, Bool.not_true, ldiff]
   · congr
-    funext x y
-    cases x <;> cases y <;> rfl
+    simp
   · congr
-    funext x y
-    cases x <;> cases y <;> rfl
+    simp
   · rw [Nat.bitwise_swap, Function.swap]
     congr
     funext x y
@@ -267,25 +261,16 @@ theorem bitwise_diff : (bitwise fun a b => a && not b) = ldiff := by
 theorem bitwise_xor : bitwise xor = Int.xor := by
   funext m n
   rcases m with m | m <;> rcases n with n | n <;> try {rfl}
-    <;> simp only [bitwise, natBitwise, Bool.not_false, Bool.or_true, Bool.bne_eq_xor,
-      cond_false, cond_true, lor, Nat.ldiff, Bool.and_true, negSucc.injEq, Bool.false_xor,
-      Bool.true_xor, Bool.and_false, Nat.land, Bool.not_true, ldiff,
-      HOr.hOr, OrOp.or, Nat.lor, Int.xor, HXor.hXor, Xor.xor, Nat.xor]
-  · congr
-    funext x y
-    cases x <;> cases y <;> rfl
-  · congr
-    funext x y
-    cases x <;> cases y <;> rfl
-  · congr
-    funext x y
-    cases x <;> cases y <;> rfl
+    <;> simp only [bitwise, natBitwise, Bool.not_false, Bool.bne_eq_xor,
+      cond_false, cond_true, negSucc.injEq, Bool.false_xor,
+      Bool.true_xor, Bool.not_true,
+      Int.xor, HXor.hXor, Xor.xor, Nat.xor] <;> simp
 
 @[simp]
 theorem bitwise_bit (f : Bool → Bool → Bool) (a m b n) :
     bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by
   rcases m with m | m <;> rcases n with n | n <;>
-  simp [bitwise, ofNat_eq_coe, bit_coe_nat, natBitwise, Bool.not_false, Bool.not_eq_false',
+  simp [bitwise, ofNat_eq_coe, bit_coe_nat, natBitwise, Bool.not_false,
     bit_negSucc]
   · by_cases h : f false false <;> simp +decide [h]
   · by_cases h : f false true <;> simp +decide [h]

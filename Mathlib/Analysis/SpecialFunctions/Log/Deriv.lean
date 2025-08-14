@@ -128,7 +128,7 @@ theorem deriv.log (hf : DifferentiableAt ℝ f x) (hx : f x ≠ 0) :
 `f x  ≠ 0`. -/
 lemma Real.deriv_log_comp_eq_logDeriv {f : ℝ → ℝ} {x : ℝ} (h₁ : DifferentiableAt ℝ f x)
     (h₂ : f x ≠ 0) : deriv (log ∘ f) x = logDeriv f x := by
-  simp only [ne_eq, logDeriv, Pi.div_apply, ← deriv.log h₁ h₂, Function.comp_def]
+  simp only [logDeriv, Pi.div_apply, ← deriv.log h₁ h₂, Function.comp_def]
 
 end deriv
 

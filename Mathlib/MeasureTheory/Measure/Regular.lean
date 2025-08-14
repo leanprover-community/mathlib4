@@ -556,7 +556,7 @@ theorem measurableSet_of_isOpen [OuterRegular μ] (H : InnerRegularWRT μ p IsOp
     simpa using hd hK isOpen_univ
   obtain ⟨ε, hε, hεs, rfl⟩ : ∃ ε ≠ 0, ε + ε ≤ μ s ∧ r = μ s - (ε + ε) := by
     use (μ s - r) / 2
-    simp [*, hr.le, ENNReal.add_halves, ENNReal.sub_sub_cancel, le_add_right, tsub_eq_zero_iff_le]
+    simp [*, hr.le, ENNReal.add_halves, ENNReal.sub_sub_cancel, tsub_eq_zero_iff_le]
   rcases hs.exists_isOpen_diff_lt hμs hε with ⟨U, hsU, hUo, hUt, hμU⟩
   rcases (U \ s).exists_isOpen_lt_of_lt _ hμU with ⟨U', hsU', hU'o, hμU'⟩
   replace hsU' := diff_subset_comm.1 hsU'
@@ -694,8 +694,6 @@ lemma innerRegularWRT_isClosed_isOpen [R1Space α] [OpensMeasurableSpace α] [h 
 theorem exists_isCompact_not_null [InnerRegular μ] : (∃ K, IsCompact K ∧ μ K ≠ 0) ↔ μ ≠ 0 := by
   simp_rw [Ne, ← measure_univ_eq_zero, MeasurableSet.univ.measure_eq_iSup_isCompact,
     ENNReal.iSup_eq_zero, not_forall, exists_prop, subset_univ, true_and]
-@[deprecated (since := "2024-11-19")] alias exists_compact_not_null := exists_isCompact_not_null
-
 /-- If `μ` is inner regular, then any measurable set can be approximated by a compact subset.
 See also `MeasurableSet.exists_isCompact_lt_add_of_ne_top`. -/
 theorem _root_.MeasurableSet.exists_lt_isCompact [InnerRegular μ] ⦃A : Set α⦄
@@ -895,13 +893,12 @@ instance smul [h : InnerRegularCompactLTTop μ] (c : ℝ≥0∞) : InnerRegularC
   by_cases h'c : c = ∞
   · constructor
     intro s hs r hr
-    simp only [h'c, smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply, smul_eq_mul] at hr
     by_cases h's : μ s = 0
     · simp [h's] at hr
-    · simp [h'c, ENNReal.mul_eq_top, h's] at hs
+    · simp [h'c, h's] at hs
   · constructor
     convert InnerRegularWRT.smul h.innerRegular c using 2 with s
-    have : (c • μ) s ≠ ∞ ↔ μ s ≠ ∞ := by simp [not_iff_not, ENNReal.mul_eq_top, hc, h'c]
+    have : (c • μ) s ≠ ∞ ↔ μ s ≠ ∞ := by simp [ENNReal.mul_eq_top, hc, h'c]
     simp only [this]
 
 instance smul_nnreal [InnerRegularCompactLTTop μ] (c : ℝ≥0) :
@@ -1033,8 +1030,6 @@ theorem _root_.IsOpen.measure_eq_iSup_isCompact ⦃U : Set α⦄ (hU : IsOpen U)
 theorem exists_isCompact_not_null [Regular μ] : (∃ K, IsCompact K ∧ μ K ≠ 0) ↔ μ ≠ 0 := by
   simp_rw [Ne, ← measure_univ_eq_zero, isOpen_univ.measure_eq_iSup_isCompact,
     ENNReal.iSup_eq_zero, not_forall, exists_prop, subset_univ, true_and]
-@[deprecated (since := "2024-11-19")] alias exists_compact_not_null := exists_isCompact_not_null
-
 /-- If `μ` is a regular measure, then any measurable set of finite measure can be approximated by a
 compact subset. See also `MeasurableSet.exists_isCompact_lt_add` and
 `MeasurableSet.exists_lt_isCompact_of_ne_top`. -/

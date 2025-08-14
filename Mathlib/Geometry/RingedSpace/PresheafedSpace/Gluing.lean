@@ -234,10 +234,7 @@ theorem ι_image_preimage_eq (i j : D.J) (U : Opens (D.U i).carrier) :
   dsimp only [Opens.map_coe, IsOpenMap.coe_functor_obj]
   rw [← show _ = (𝖣.ι i).base from 𝖣.ι_gluedIso_inv (PresheafedSpace.forget _) i, ←
     show _ = (𝖣.ι j).base from 𝖣.ι_gluedIso_inv (PresheafedSpace.forget _) j]
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): change `rw` to `erw` on `coe_comp`
-  erw [TopCat.coe_comp, TopCat.coe_comp, TopCat.coe_comp]
-  rw [Set.image_comp, Set.preimage_comp]
-  erw [Set.preimage_image_eq]
+  rw [TopCat.coe_comp, TopCat.coe_comp, Set.image_comp, Set.preimage_comp, Set.preimage_image_eq]
   · refine Eq.trans (D.toTopGlueData.preimage_image_eq_image' _ _ _) ?_
     dsimp
     rw [Set.image_comp]
@@ -248,7 +245,7 @@ theorem ι_image_preimage_eq (i j : D.J) (U : Opens (D.U i).carrier) :
     change (D.t i j ≫ D.t j i).base '' _ = _
     rw [𝖣.t_inv]
     simp
-  · rw [← TopCat.coe_comp, ← TopCat.mono_iff_injective]
+  · rw [← TopCat.mono_iff_injective]
     infer_instance
 
 /-- (Implementation). The map `Γ(𝒪_{U_i}, U) ⟶ Γ(𝒪_{U_j}, 𝖣.ι j ⁻¹' (𝖣.ι i '' U))` -/
@@ -327,7 +324,6 @@ def ιInvAppπApp {i : D.J} (U : Opens (D.U i).carrier) (j) :
     exact colimit.w 𝖣.diagram.multispan (WalkingMultispan.Hom.fst (j, k))
   · exact D.opensImagePreimageMap i j U
 
-set_option maxHeartbeats 600000 in
 -- Porting note: time out started in `erw [... congr_app (pullbackSymmetry_hom_comp_snd _ _)]` and
 -- the last congr has a very difficult `rfl : eqToHom _ ≫ eqToHom _ ≫ ... = eqToHom ... `
 /-- (Implementation) The natural map `Γ(𝒪_{U_i}, U) ⟶ Γ(𝒪_X, 𝖣.ι i '' U)`.
@@ -371,16 +367,14 @@ def ιInvApp {i : D.J} (U : Opens (D.U i).carrier) :
                 PresheafedSpace.comp_c_app_assoc (pullbackSymmetry _ _).hom]
             simp_rw [Category.assoc]
             congr 1
-            rw [← IsIso.eq_inv_comp,
-                IsOpenImmersion.inv_invApp]
-            simp_rw [Category.assoc]
-            erw [NatTrans.naturality_assoc, ← PresheafedSpace.comp_c_app_assoc,
-              congr_app (pullbackSymmetry_hom_comp_snd _ _)]
-            simp_rw [Category.assoc]
-            erw [IsOpenImmersion.inv_naturality_assoc, IsOpenImmersion.inv_naturality_assoc,
+            rw [← IsIso.eq_inv_comp, IsOpenImmersion.inv_invApp, Category.assoc,
+              NatTrans.naturality_assoc]
+            simp_rw [Functor.op_obj]
+            rw [← PresheafedSpace.comp_c_app_assoc, congr_app (pullbackSymmetry_hom_comp_snd _ _)]
+            simp_rw [Category.assoc, Functor.op_obj, comp_base, Opens.map_comp_obj,
+              TopCat.Presheaf.pushforward_obj_map]
+            rw [IsOpenImmersion.inv_naturality_assoc, IsOpenImmersion.inv_naturality_assoc,
               IsOpenImmersion.inv_naturality_assoc, IsOpenImmersion.app_invApp_assoc]
-            rw [← (D.V (j, k)).presheaf.map_comp]
-            erw [← (D.V (j, k)).presheaf.map_comp]
             repeat rw [← (D.V (j, k)).presheaf.map_comp]
             rfl } }
 
@@ -409,7 +403,7 @@ theorem ιInvApp_π {i : D.J} (U : Opens (D.U i).carrier) :
   dsimp [opensImagePreimageMap]
   rw [congr_app (D.t_id _), id_c_app, ← Functor.map_comp]
   erw [IsOpenImmersion.inv_naturality_assoc, IsOpenImmersion.app_inv_app'_assoc]
-  · simp only [eqToHom_op, eqToHom_trans, eqToHom_map (Functor.op _), ← Functor.map_comp]
+  · simp only [eqToHom_op, ← Functor.map_comp]
     rfl
   · rw [Set.range_eq_univ.mpr _]
     · simp
@@ -651,11 +645,12 @@ theorem ι_jointly_surjective (x : 𝖣.glued) : ∃ (i : D.J) (y : D.U i), (�
       forget TopCat.{u}) x
 
 /-- The following diagram is a pullback, i.e. `Vᵢⱼ` is the intersection of `Uᵢ` and `Uⱼ` in `X`.
-
+```
 Vᵢⱼ ⟶ Uᵢ
  |      |
  ↓      ↓
  Uⱼ ⟶ X
+```
 -/
 def vPullbackConeIsLimit (i j : D.J) : IsLimit (𝖣.vPullbackCone i j) :=
   𝖣.vPullbackConeIsLimitOfMap forgetToSheafedSpace i j

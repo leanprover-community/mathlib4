@@ -161,7 +161,7 @@ theorem primitive_element_inf_aux [Algebra.IsSeparable F E] : ∃ γ : E, F⟮α
   · dsimp only [γ]
     convert (gcd_map (algebraMap F⟮γ⟯ E)).symm
   · simp only [map_comp, Polynomial.map_map, ← IsScalarTower.algebraMap_eq, Polynomial.map_sub,
-      map_C, AdjoinSimple.algebraMap_gen, map_add, Polynomial.map_mul, map_X]
+      map_C, AdjoinSimple.algebraMap_gen, Polynomial.map_mul, map_X]
     congr
 
 -- If `F` is infinite and `E/F` has only finitely many intermediate fields, then for any

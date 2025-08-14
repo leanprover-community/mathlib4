@@ -64,8 +64,10 @@ theorem intervalIntegrable_rpow' {r : ℝ} (h : -1 < r) :
 /-- The power function `x ↦ x^s` is integrable on `(0, t)` iff `-1 < s`. -/
 lemma integrableOn_Ioo_rpow_iff {s t : ℝ} (ht : 0 < t) :
     IntegrableOn (fun x ↦ x ^ s) (Ioo (0 : ℝ) t) ↔ -1 < s := by
-  refine ⟨fun h ↦ ?_, fun h ↦ by simpa [intervalIntegrable_iff_integrableOn_Ioo_of_le ht.le]
-    using intervalIntegrable_rpow' h (a := 0) (b := t)⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  swap
+  · rw [← intervalIntegrable_iff_integrableOn_Ioo_of_le ht.le]
+    apply intervalIntegrable_rpow' h (a := 0) (b := t)
   contrapose! h
   intro H
   have I : 0 < min 1 t := lt_min zero_lt_one ht
@@ -163,8 +165,10 @@ theorem intervalIntegrable_cpow' {r : ℂ} (h : -1 < r.re) :
 /-- The complex power function `x ↦ x^s` is integrable on `(0, t)` iff `-1 < s.re`. -/
 theorem integrableOn_Ioo_cpow_iff {s : ℂ} {t : ℝ} (ht : 0 < t) :
     IntegrableOn (fun x : ℝ ↦ (x : ℂ) ^ s) (Ioo (0 : ℝ) t) ↔ -1 < s.re := by
-  refine ⟨fun h ↦ ?_, fun h ↦ by simpa [intervalIntegrable_iff_integrableOn_Ioo_of_le ht.le]
-    using intervalIntegrable_cpow' h (a := 0) (b := t)⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  swap
+  · rw [← intervalIntegrable_iff_integrableOn_Ioo_of_le ht.le]
+    exact intervalIntegrable_cpow' h (a := 0) (b := t)
   have B : IntegrableOn (fun a ↦ a ^ s.re) (Ioo 0 t) := by
     apply (integrableOn_congr_fun _ measurableSet_Ioo).1 h.norm
     intro a ha
@@ -252,6 +256,6 @@ theorem intervalIntegrable_one_div_one_add_sq :
 @[simp]
 theorem intervalIntegrable_inv_one_add_sq :
     IntervalIntegrable (fun x : ℝ => (↑1 + x ^ 2)⁻¹) μ a b := by
-  field_simp; exact mod_cast intervalIntegrable_one_div_one_add_sq
+  field_simp [mod_cast intervalIntegrable_one_div_one_add_sq]
 
 end intervalIntegral

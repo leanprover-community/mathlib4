@@ -3,7 +3,6 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.LinearAlgebra.RootSystem.Base
 import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
 import Mathlib.LinearAlgebra.RootSystem.Reduced
 import Mathlib.LinearAlgebra.RootSystem.Irreducible
@@ -26,6 +25,9 @@ root pairings.
   a root.
 
 -/
+
+#adaptation_note /-- 2025-08-10 add back `import Mathlib.Algebra.Ring.Torsion` after
+  https://github.com/leanprover/lean4/issues/9825 is fixed -/
 
 noncomputable section
 
@@ -83,7 +85,7 @@ lemma coxeterWeightIn_mem_set_of_isCrystallographic :
     have : 0 ≤ P.coxeterWeightIn ℤ i j := by
       simpa only [P.algebraMap_coxeterWeightIn] using P.coxeterWeight_nonneg (P.posRootForm ℤ) i j
     obtain ⟨n, hn⟩ := Int.eq_ofNat_of_zero_le this
-    exact ⟨n, by simp [← P.algebraMap_coxeterWeightIn ℤ, hn]⟩
+    exact ⟨n, by simp [hn]⟩
   have : P.coxeterWeightIn ℤ i j ≤ 4 := P.coxeterWeightIn_le_four ℤ i j
   simp only [hcn, mem_insert_iff, mem_singleton_iff] at this ⊢
   norm_cast at this ⊢
@@ -111,7 +113,7 @@ lemma pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed [P.IsReduced] :
   aesop -- #24551 (this should be faster)
 
 lemma pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed' [P.IsReduced]
-    (hij : α i ≠ α j) (hij' : α i ≠ - α j) :
+    (hij : α i ≠ α j) (hij' : α i ≠ -α j) :
     (P.pairingIn ℤ i j, P.pairingIn ℤ j i) ∈
       ({(0, 0), (1, 1), (-1, -1), (1, 2), (2, 1), (-1, -2), (-2, -1), (1, 3), (3, 1), (-1, -3),
         (-3, -1)} : Set (ℤ × ℤ)) := by
@@ -136,7 +138,7 @@ lemma RootPositiveForm.rootLength_le_of_pairingIn_eq (B : P.RootPositiveForm ℤ
 variable {P} in
 lemma RootPositiveForm.rootLength_lt_of_pairingIn_notMem
     (B : P.RootPositiveForm ℤ) {i j : ι}
-    (hne : α i ≠ α j) (hne' : α i ≠ - α j)
+    (hne : α i ≠ α j) (hne' : α i ≠ -α j)
     (hij : P.pairingIn ℤ i j ∉ ({-1, 0, 1} : Set ℤ)) :
     B.rootLength j < B.rootLength i := by
   have hij' : P.pairingIn ℤ i j = -3 ∨ P.pairingIn ℤ i j = -2 ∨ P.pairingIn ℤ i j = 2 ∨
@@ -228,7 +230,7 @@ lemma root_sub_root_mem_of_pairingIn_pos (h : 0 < P.pairingIn ℤ i j) (h' : i �
 /-- If two roots make an obtuse angle then their sum is a root (provided it is not zero).
 
 See `RootPairing.pairingIn_le_zero_of_root_add_mem` for a partial converse. -/
-lemma root_add_root_mem_of_pairingIn_neg (h : P.pairingIn ℤ i j < 0) (h' : α i ≠ - α j) :
+lemma root_add_root_mem_of_pairingIn_neg (h : P.pairingIn ℤ i j < 0) (h' : α i ≠ -α j) :
     α i + α j ∈ Φ := by
   let _i := P.indexNeg
   replace h : 0 < P.pairingIn ℤ i (-j) := by simpa
@@ -287,11 +289,13 @@ lemma apply_eq_or (i j : ι) :
     B.form (α j) (α j) = 2 * B.form (α i) (α i) ∨
     B.form (α j) (α j) = 3 * B.form (α i) (α i) := by
   obtain ⟨j', h₁, h₂⟩ := P.exists_form_eq_form_and_form_ne_zero B i j
-  suffices P.pairingIn ℤ i j' ≠ 0 by simp only [← h₁]; exact B.apply_eq_or_aux i j' this
+  suffices P.pairingIn ℤ i j' ≠ 0 by simp only [← h₁, B.apply_eq_or_aux i j' this]
   contrapose! h₂
   replace h₂ : P.pairing i j' = 0 := by rw [← P.algebraMap_pairingIn ℤ, h₂, map_zero]
   exact (B.apply_root_root_zero_iff i j').mpr h₂
 
+#adaptation_note /-- 2025-08-10 delete this after
+  https://github.com/leanprover/lean4/issues/9825 is fixed -/
 theorem exists_apply_eq_or_aux {x y z : R}
     (hij : x = 2 * y ∨ x = 3 * y ∨ y = 2 * x ∨ y = 3 * x)
     (hik : x = 2 * z ∨ x = 3 * z ∨ z = 2 * x ∨ z = 3 * x)
@@ -328,6 +332,8 @@ lemma exists_apply_eq_or [Nonempty ι] : ∃ i j, ∀ k,
     have hij := (B.apply_eq_or i j).resolve_left hji_ne.symm
     have hik := (B.apply_eq_or i k).resolve_left hki_ne.symm
     have hjk := (B.apply_eq_or j k).resolve_left hkj_ne.symm
+    #adaptation_note /-- 2025-08-10 replace the following with grind after
+  https://github.com/leanprover/lean4/issues/9825 is fixed -/
     have := exists_apply_eq_or_aux hij hik hjk
     aesop
 
@@ -385,84 +391,5 @@ lemma forall_pairingIn_eq_swap_or [P.IsReduced] [P.IsIrreducible] :
             P.pairingIn ℤ j i = 3 * P.pairingIn ℤ i j) := by
   simpa only [← P.algebraMap_pairingIn ℤ, eq_intCast, ← Int.cast_mul, Int.cast_inj,
     ← map_ofNat (algebraMap ℤ R)] using P.forall_pairing_eq_swap_or
-
-namespace Base
-
-variable {P}
-variable (b : P.Base) (i j k : ι) (hij : i ≠ j) (hi : i ∈ b.support) (hj : j ∈ b.support)
-include hij hi hj
-
-variable {i j} in
-lemma pairingIn_le_zero_of_ne :
-    P.pairingIn ℤ i j ≤ 0 := by
-  by_contra! h
-  exact b.sub_notMem_range_root hi hj <| P.root_sub_root_mem_of_pairingIn_pos h hij
-
-/-- This is Lemma 2.5 (a) from [Geck](Geck2017). -/
-lemma root_sub_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
-    (hkj : k ≠ j) (hk' : α k + α i ∈ Φ) :
-    α k - α j ∈ Φ := by
-  rcases lt_or_ge 0 (P.pairingIn ℤ j k) with hm | hm
-  · rw [← neg_mem_range_root_iff, neg_sub]
-    exact P.root_sub_root_mem_of_pairingIn_pos hm hkj.symm
-  obtain ⟨l, hl⟩ := hk
-  have hli : l ≠ i := by
-    rintro rfl
-    rw [add_comm, add_sub_assoc, left_eq_add, sub_eq_zero, P.root.injective.eq_iff] at hl
-    exact hkj hl
-  suffices 0 < P.pairingIn ℤ l i by
-    convert P.root_sub_root_mem_of_pairingIn_pos this hli using 1
-    rw [hl]
-    module
-  have hkl : l ≠ k := by rintro rfl; exact hij <| by simpa [add_sub_assoc, sub_eq_zero] using hl
-  replace hkl : P.pairingIn ℤ l k ≤ 0 := by
-    suffices α l - α k ∉ Φ by contrapose! this; exact P.root_sub_root_mem_of_pairingIn_pos this hkl
-    replace hl : α l - α k = α i - α j := by rw [hl]; module
-    rw [hl]
-    exact b.sub_notMem_range_root hi hj
-  have hki : P.pairingIn ℤ i k ≤ -2 := by
-    suffices P.pairingIn ℤ l k = 2 + P.pairingIn ℤ i k - P.pairingIn ℤ j k by linarith
-    apply algebraMap_injective ℤ R
-    simp only [algebraMap_pairingIn, map_sub, map_add, map_ofNat]
-    simpa using (P.coroot' k : M →ₗ[R] R).congr_arg hl
-  replace hki : P.pairingIn ℤ k i = -1 := by
-    replace hk' : α i ≠ - α k := by
-      rw [← sub_ne_zero, sub_neg_eq_add, add_comm]
-      intro contra
-      rw [contra] at hk'
-      exact P.ne_zero _ hk'.choose_spec
-    have aux (h : P.pairingIn ℤ i k = -2) : ¬P.pairingIn ℤ k i = -2 := by
-      have := P.reflexive_left
-      contrapose! hk'; exact (P.pairingIn_neg_two_neg_two_iff ℤ i k).mp ⟨h, hk'⟩
-    have := P.pairingIn_pairingIn_mem_set_of_isCrystallographic i k
-    aesop -- #24551 (this should be faster)
-  replace hki : P.pairing k i = -1 := by rw [← P.algebraMap_pairingIn ℤ, hki]; simp
-  have : P.pairingIn ℤ l i = 1 - P.pairingIn ℤ j i := by
-    apply algebraMap_injective ℤ R
-    simp only [algebraMap_pairingIn, map_sub, map_one, algebraMap_pairingIn]
-    convert (P.coroot' i : M →ₗ[R] R).congr_arg hl using 1
-    simp only [PerfectPairing.flip_apply_apply, map_sub, map_add, LinearMap.sub_apply,
-      LinearMap.add_apply, root_coroot_eq_pairing, hki, pairing_same]
-    ring
-  replace hij := pairingIn_le_zero_of_ne b hij.symm hj hi
-  omega
-
-/-- This is Lemma 2.5 (b) from [Geck](Geck2017). -/
-lemma root_add_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
-    (hkj : α k ≠ - α i) (hk' : α k - α j ∈ Φ) :
-    α k + α i ∈ Φ := by
-  let _i := P.indexNeg
-  replace hk : α (-k) + α j - α i ∈ Φ := by
-    rw [← neg_mem_range_root_iff]
-    convert hk using 1
-    simp only [indexNeg_neg, root_reflectionPerm, reflection_apply_self]
-    module
-  rw [← neg_mem_range_root_iff]
-  convert b.root_sub_root_mem_of_mem_of_mem j i (-k) hij.symm hj hi hk (by contrapose! hkj; aesop)
-    (by convert P.neg_mem_range_root_iff.mpr hk' using 1; simp [neg_add_eq_sub]) using 1
-  simp only [indexNeg_neg, root_reflectionPerm, reflection_apply_self]
-  module
-
-end Base
 
 end RootPairing

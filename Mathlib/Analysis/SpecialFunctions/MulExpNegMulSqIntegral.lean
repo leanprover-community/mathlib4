@@ -112,6 +112,9 @@ theorem tendsto_integral_mul_one_add_inv_smul_sq_pow (g : E →ᵇ ℝ) (hε : 0
     simp [mul_assoc, inv_mul_eq_div, ← neg_div]
     exact tendsto_one_add_div_pow_exp (-(ε * (g x * g x)))
 
+@[deprecated (since := "2025-05-22")]
+alias tendsto_integral_mul_one_plus_inv_smul_sq_pow := tendsto_integral_mul_one_add_inv_smul_sq_pow
+
 theorem integral_mulExpNegMulSq_comp_eq {P' : Measure E} [IsFiniteMeasure P']
     {A : Subalgebra ℝ (E →ᵇ ℝ)} (hε : 0 < ε)
     (heq : ∀ g ∈ A, ∫ x, (g : E → ℝ) x ∂P = ∫ x, (g : E → ℝ) x ∂P') {g : E →ᵇ ℝ} (hgA : g ∈ A) :
@@ -159,7 +162,7 @@ theorem dist_integral_mulExpNegMulSq_comp_le (f : E →ᵇ ℝ)
     |∫ x, mulExpNegMulSq ε (f x) ∂P - ∫ x, mulExpNegMulSq ε (f x) ∂P'| ≤ 6 * √ε := by
   -- if both measures are zero, the result is trivial
   by_cases hPP' : P = 0 ∧ P' = 0
-  · simp only [hPP', integral_zero_measure, sub_self, abs_zero, gt_iff_lt, Nat.ofNat_pos,
+  · simp only [hPP', integral_zero_measure, sub_self, abs_zero, Nat.ofNat_pos,
     mul_nonneg_iff_of_pos_left, (le_of_lt (sqrt_pos_of_pos hε))]
   let const : ℝ := (max (P.real Set.univ) (P'.real Set.univ))
   have pos_of_measure : 0 < const := by

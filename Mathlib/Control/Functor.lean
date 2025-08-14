@@ -131,8 +131,8 @@ instance {α β} [Inhabited α] : Inhabited (AddConst α β) :=
   ⟨(default : α)⟩
 
 /-- `Functor.Comp` is a wrapper around `Function.Comp` for types.
-    It prevents Lean's type class resolution mechanism from trying
-    a `Functor (Comp F id)` when `Functor F` would do. -/
+It prevents Lean's type class resolution mechanism from trying
+a `Functor (Comp F id)` when `Functor F` would do. -/
 def Comp (F : Type u → Type w) (G : Type v → Type u) (α : Type v) : Type w :=
   F <| G α
 
@@ -181,7 +181,7 @@ protected theorem id_map : ∀ x : Comp F G α, Comp.map id x = x
 
 protected theorem comp_map (g' : α → β) (h : β → γ) :
     ∀ x : Comp F G α, Comp.map (h ∘ g') x = Comp.map h (Comp.map g' x)
-  | Comp.mk x => by simp [Comp.map, Comp.mk, Functor.map_comp_map, functor_norm, Function.comp_def]
+  | Comp.mk x => by simp [Comp.map, Comp.mk, functor_norm, Function.comp_def]
 
 instance lawfulFunctor : LawfulFunctor (Comp F G) where
   map_const := rfl

@@ -71,15 +71,14 @@ See also [nlab] or [MM92] Chapter III, Section 2, Definition 1. -/
 @[stacks 00Z4]
 structure GrothendieckTopology where
   /-- A Grothendieck topology on `C` consists of a set of sieves for each object `X`,
-    which satisfy some axioms. -/
+  which satisfy some axioms. -/
   sieves : ∀ X : C, Set (Sieve X)
   /-- The sieves associated to each object must contain the top sieve.
-    Use `GrothendieckTopology.top_mem`. -/
+  Use `GrothendieckTopology.top_mem`. -/
   top_mem' : ∀ X, ⊤ ∈ sieves X
   /-- Stability under pullback. Use `GrothendieckTopology.pullback_stable`. -/
   pullback_stable' : ∀ ⦃X Y : C⦄ ⦃S : Sieve X⦄ (f : Y ⟶ X), S ∈ sieves X → S.pullback f ∈ sieves Y
-  /-- Transitivity of sieves in a Grothendieck topology.
-    Use `GrothendieckTopology.transitive`. -/
+  /-- Transitivity of sieves in a Grothendieck topology. Use `GrothendieckTopology.transitive`. -/
   transitive' :
     ∀ ⦃X⦄ ⦃S : Sieve X⦄ (_ : S ∈ sieves X) (R : Sieve X),
       (∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄, S f → R.pullback f ∈ sieves Y) → R ∈ sieves X
@@ -159,6 +158,12 @@ theorem intersection_covering_iff : R ⊓ S ∈ J X ↔ R ∈ J X ∧ S ∈ J X 
 theorem bind_covering {S : Sieve X} {R : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, S f → Sieve Y} (hS : S ∈ J X)
     (hR : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (H : S f), R H ∈ J Y) : Sieve.bind S R ∈ J X :=
   J.transitive hS _ fun _ f hf => superset_covering J (Sieve.le_pullback_bind S R f hf) (hR hf)
+
+lemma bindOfArrows {ι : Type*} {X : C} {Z : ι → C} {f : ∀ i, Z i ⟶ X} {R : ∀ i, Presieve (Z i)}
+    (h : Sieve.ofArrows Z f ∈ J X) (hR : ∀ i, Sieve.generate (R i) ∈ J _) :
+    Sieve.generate (Presieve.bindOfArrows Z f R) ∈ J X := by
+  refine J.superset_covering (Presieve.bind_ofArrows_le_bindOfArrows _ _ _) ?_
+  exact J.bind_covering h fun _ _ _ ↦ J.pullback_stable _ (hR _)
 
 /-- The sieve `S` on `X` `J`-covers an arrow `f` to `X` if `S.pullback f ∈ J Y`.
 This definition is an alternate way of presenting a Grothendieck topology.
@@ -260,7 +265,7 @@ instance : InfSet (GrothendieckTopology C) where
 
 lemma mem_sInf (s : Set (GrothendieckTopology C)) {X : C} (S : Sieve X) :
     S ∈ sInf s X ↔ ∀ t ∈ s, S ∈ t X := by
-  show S ∈ sInf (sieves '' s) X ↔ _
+  change S ∈ sInf (sieves '' s) X ↔ _
   simp
 
 @[stacks 00Z7]
@@ -276,7 +281,7 @@ instance : CompleteLattice (GrothendieckTopology C) :=
   CompleteLattice.copy (completeLatticeOfInf _ isGLB_sInf) _ rfl (discrete C)
     (by
       apply le_antisymm
-      · exact @CompleteLattice.le_top _ (completeLatticeOfInf _ isGLB_sInf) (discrete C)
+      · exact (completeLatticeOfInf _ isGLB_sInf).le_top (discrete C)
       · intro X S _
         apply Set.mem_univ)
     (trivial C)
@@ -285,7 +290,7 @@ instance : CompleteLattice (GrothendieckTopology C) :=
       · intro X S hS
         rw [trivial_covering] at hS
         apply covering_of_eq_top _ hS
-      · exact @CompleteLattice.bot_le _ (completeLatticeOfInf _ isGLB_sInf) (trivial C))
+      · exact (completeLatticeOfInf _ isGLB_sInf).bot_le (trivial C))
     _ rfl _ rfl _ rfl sInf rfl
 
 instance : Inhabited (GrothendieckTopology C) :=
@@ -426,7 +431,7 @@ structure Arrow.Relation {S : J.Cover X} (I₁ I₂ : S.Arrow) where
   /-- The second arrow defining the relation. -/
   g₂ : Z ⟶ I₂.Y
   /-- The relation itself. -/
-  w : g₁ ≫ I₁.f = g₂ ≫ I₂.f := by aesop_cat
+  w : g₁ ≫ I₁.f = g₂ ≫ I₂.f := by cat_disch
 
 attribute [reassoc] Arrow.Relation.w
 

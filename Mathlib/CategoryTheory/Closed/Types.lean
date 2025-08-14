@@ -52,13 +52,14 @@ instance {C : Type v₁} [SmallCategory C] : CartesianClosed (C ⥤ Type v₁) :
 
 -- TODO: once we have `MonoidalClosed` instances for functor categories into general monoidal
 -- closed categories, replace this with that, as it will be a more explicit construction.
+attribute [local instance] uliftCategory in
 /-- This is not a good instance because of the universe levels. Below is the instance where the
 target category is `Type (max u₁ v₁)`. -/
 def cartesianClosedFunctorToTypes {C : Type u₁} [Category.{v₁} C] :
     CartesianClosed (C ⥤ Type (max u₁ v₁ u₂)) :=
   let e : (ULiftHom.{max u₁ v₁ u₂} (ULift.{max u₁ v₁ u₂} C)) ⥤ Type (max u₁ v₁ u₂) ≌
       C ⥤ Type (max u₁ v₁ u₂) :=
-      Functor.asEquivalence ((whiskeringLeft _ _ _).obj
+      Functor.asEquivalence ((Functor.whiskeringLeft _ _ _).obj
         (ULift.equivalence.trans ULiftHom.equiv).functor)
   cartesianClosedOfEquiv e
 
@@ -72,7 +73,7 @@ instance {C : Type u₁} [Category.{v₁} C] : CartesianClosed (C ⥤ Type (max 
 instance {C : Type u₁} [Category.{v₁} C] [EssentiallySmall.{v₁} C] :
     CartesianClosed (C ⥤ Type v₁) :=
   let e : (SmallModel C) ⥤ Type v₁ ≌ C ⥤ Type v₁ :=
-    Functor.asEquivalence ((whiskeringLeft _ _ _).obj (equivSmallModel _).functor)
+    Functor.asEquivalence ((Functor.whiskeringLeft _ _ _).obj (equivSmallModel _).functor)
   cartesianClosedOfEquiv e
 
 end CartesianClosed
