@@ -318,7 +318,7 @@ part of `OnePoint K`. -/
 lemma fixpointPolynomial_aeval_eq_zero_iff {c : K} {g : GL (Fin 2) K} :
     g.fixpointPolynomial.aeval c = 0 ↔ g • (c : OnePoint K) = c := by
   simp only [fixpointPolynomial, map_sub, map_mul, map_add, aeval_X_pow, aeval_C, aeval_X,
-    Algebra.id.map_eq_self, OnePoint.smul_some_eq_ite]
+    Algebra.algebraMap_self_apply, OnePoint.smul_some_eq_ite]
   split_ifs with h
   · refine ⟨fun hg ↦ (g.det_ne_zero ?_).elim, fun hg ↦ (infty_ne_coe _ hg).elim⟩
     rw [det_fin_two]
