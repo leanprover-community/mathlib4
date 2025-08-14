@@ -483,38 +483,3 @@ theorem isCoprime_of_prime_dvd {x y : R} (nonzero : ¬(x = 0 ∧ y = 0))
   isCoprime_of_irreducible_dvd nonzero fun z zi ↦ H z zi.prime
 
 end
-
-section PrincipalOfPrime
-
-open Set Ideal
-
-variable (R) [CommRing R]
-
-/-- `nonPrincipals R` is the set of all ideals of `R` that are not principal ideals. -/
-def nonPrincipals :=
-  { I : Ideal R | ¬I.IsPrincipal }
-
-theorem nonPrincipals_def {I : Ideal R} : I ∈ nonPrincipals R ↔ ¬I.IsPrincipal :=
-  Iff.rfl
-
-variable {R}
-
-theorem nonPrincipals_eq_empty_iff : nonPrincipals R = ∅ ↔ IsPrincipalIdealRing R := by
-  simp [Set.eq_empty_iff_forall_notMem, isPrincipalIdealRing_iff, nonPrincipals_def]
-
-/-- Any chain in the set of non-principal ideals has an upper bound which is non-principal.
-(Namely, the union of the chain is such an upper bound.)
--/
-theorem nonPrincipals_zorn (c : Set (Ideal R)) (hs : c ⊆ nonPrincipals R)
-    (hchain : IsChain (· ≤ ·) c) {K : Ideal R} (hKmem : K ∈ c) :
-    ∃ I ∈ nonPrincipals R, ∀ J ∈ c, J ≤ I := by
-  refine ⟨sSup c, ?_, fun J hJ => le_sSup hJ⟩
-  rintro ⟨x, hx⟩
-  have hxmem : x ∈ sSup c := hx.symm ▸ Submodule.mem_span_singleton_self x
-  obtain ⟨J, hJc, hxJ⟩ := (Submodule.mem_sSup_of_directed ⟨K, hKmem⟩ hchain.directedOn).1 hxmem
-  have hsSupJ : sSup c = J := le_antisymm (by simp [hx, Ideal.span_le, hxJ]) (le_sSup hJc)
-  specialize hs hJc
-  rw [← hsSupJ, hx, nonPrincipals_def] at hs
-  exact hs ⟨⟨x, rfl⟩⟩
-
-end PrincipalOfPrime
