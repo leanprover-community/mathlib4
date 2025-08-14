@@ -17,7 +17,7 @@ facts about this, including how it changes under multiplication and composition.
 
 noncomputable section
 
-open Filter Function Set
+open Filter Function
 
 open scoped Topology
 
