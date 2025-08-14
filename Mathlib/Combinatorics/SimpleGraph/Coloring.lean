@@ -141,6 +141,27 @@ theorem isEmpty_of_colorable_zero (h : G.Colorable 0) : IsEmpty V := by
 lemma colorable_zero_iff : G.Colorable 0 ↔ IsEmpty V :=
   ⟨G.isEmpty_of_colorable_zero, fun _ ↦ G.colorable_of_isEmpty 0⟩
 
+/-- If `G` is `n`-colorable, then mapping the vertices of `G` produces an `n`-colorable simple
+graph. -/
+theorem Colorable.map {β : Type*} (f : V ↪ β) [NeZero n] (hc : G.Colorable n) :
+    (G.map f).Colorable n := by
+  classical use fun b ↦ if h : ∃ v, f v = b then hc.some h.choose else default
+  intro b₁ b₂ hadj'
+  obtain ⟨v₁, v₂, hadj, hv₁, hv₂⟩ := (G.map_adj _ b₁ b₂).mp hadj'
+  have hb₁ : ∃ v, f v = b₁ := ⟨v₁, hv₁⟩
+  have hb₁_choose : hb₁.choose = v₁ := by
+    apply f.injective
+    rw [hv₁]
+    exact hb₁.choose_spec
+  have hb₂ : ∃ v, f v = b₂ := ⟨v₂, hv₂⟩
+  have hb₂_choose : hb₂.choose = v₂ := by
+    apply f.injective
+    rw [hv₂]
+    exact hb₂.choose_spec
+  have hne := hc.some.valid hadj
+  rw [← hb₁_choose, ← hb₂_choose] at hne
+  simpa [hb₁, hb₂, hb₁_choose, hb₂_choose] using hc.some.valid hadj
+
 /-- The "tautological" coloring of a graph, using the vertices of the graph as colors. -/
 def selfColoring : G.Coloring V := Coloring.mk id fun {_ _} => G.ne_of_adj
 
