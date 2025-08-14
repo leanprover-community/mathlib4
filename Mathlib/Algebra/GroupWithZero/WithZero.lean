@@ -425,8 +425,7 @@ lemma logEquiv_unitsMk0 (x : Gᵐ⁰) (hx) : logEquiv (.mk0 x hx) = log x := log
 lemma log_div {x y : Gᵐ⁰} (hx : x ≠ 0) (hy : y ≠ 0) : log (x / y) = log x - log y := by
   lift x to Multiplicative G using hx; lift y to Multiplicative G using hy; rfl
 
-@[simp]
-lemma exp_neg (a : G) : exp (-a) = (exp a)⁻¹  := rfl
+@[simp] lemma exp_neg (a : G) : exp (-a) = (exp a)⁻¹  := rfl
 
 @[simp]
 lemma log_inv : ∀ x : Gᵐ⁰, log x⁻¹ = -log x

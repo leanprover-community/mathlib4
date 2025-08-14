@@ -16,7 +16,7 @@ open Multiplicative
 
 namespace WithZero
 
-@[deprecated exp_nsmul (since := "2025-05-17")]
+@[deprecated exp_zsmul (since := "2025-05-17")]
 theorem ofAdd_zpow (a : ℤ) : (↑(ofAdd a) : ℤᵐ⁰) = ofAdd (1 : ℤ) ^ a :=
   show exp a = exp 1 ^ a by simp
 
