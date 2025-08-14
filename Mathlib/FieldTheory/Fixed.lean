@@ -309,9 +309,20 @@ theorem AlgHom.card_le {F K : Type*} [Field F] [Field K] [Algebra F K] [FiniteDi
     Fintype.card (K →ₐ[F] K) ≤ Module.finrank F K :=
   Module.finrank_linearMap_self F K K ▸ finrank_algHom F K
 
+theorem AlgHom.natCard_le {F K : Type*} [Field F] [Field K] [Algebra F K] [FiniteDimensional F K] :
+    Nat.card (K →ₐ[F] K) ≤ Module.finrank F K := by
+  rw [Nat.card_eq_fintype_card]
+  exact card_le
+
 theorem AlgEquiv.card_le {F K : Type*} [Field F] [Field K] [Algebra F K] [FiniteDimensional F K] :
     Fintype.card (K ≃ₐ[F] K) ≤ Module.finrank F K :=
   Fintype.ofEquiv_card (algEquivEquivAlgHom F K).toEquiv.symm ▸ AlgHom.card_le
+
+theorem AlgEquiv.natCard_le {F K : Type*} [Field F] [Field K] [Algebra F K]
+    [FiniteDimensional F K] :
+    Nat.card (K ≃ₐ[F] K) ≤ Module.finrank F K := by
+  rw [Nat.card_eq_fintype_card]
+  exact card_le
 
 namespace FixedPoints
 
