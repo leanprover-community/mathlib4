@@ -19,19 +19,28 @@ section Preliminaries
 
 variable {R n : Type*} [CommSemiring R] [Fintype n] [DecidableEq n]
 
-instance : DistribMulAction (Matrix n n R) (n → R) :=
-  .compHom _ Matrix.toLinAlgEquiv'.toMonoidHom
+instance : Module (Matrix n n R) (n → R) :=
+  .compHom _ Matrix.toLinAlgEquiv'.toRingHom
 
 instance : SMulCommClass (Matrix n n R) R (n → R) :=
   SMul.comp.smulCommClass (Matrix.toLinAlgEquiv'.toMonoidHom : _ →* (Module.End R (n → R)))
 
-instance : DistribMulAction (Matrix (Fin 2) (Fin 2) R) (R × R) :=
-  (LinearEquiv.finTwoArrow R R).symm.distribMulAction _
+instance : Module (Matrix (Fin 2) (Fin 2) R) (R × R) :=
+  (LinearEquiv.finTwoArrow R R).symm.toAddEquiv.module _
 
 instance : SMulCommClass (Matrix (Fin 2) (Fin 2) R) R (R × R) :=
   (LinearEquiv.finTwoArrow R R).symm.smulCommClass _ _
 
-lemma smul_eq_mulVec (g : Matrix n n R) (v : n → R) : g • v = g *ᵥ v := rfl
+@[simp] lemma smul_eq_mulVec (g : Matrix n n R) (v : n → R) : g • v = g *ᵥ v := rfl
+
+@[simp] lemma Matrix.fin_two_smul_prod (g : Matrix (Fin 2) (Fin 2) R) (v : R × R) :
+    g • v = (g 0 0 * v.1 + g 0 1 * v.2, g 1 0 * v.1 + g 1 1 * v.2) := by
+  simp [Equiv.smul_def, smul_eq_mulVec, Matrix.mulVec_eq_sum, mul_comm]
+
+@[simp] lemma Matrix.GeneralLinearGroup.fin_two_smul_prod {R : Type*} [CommRing R]
+    (g : GL (Fin 2) R) (v : R × R) :
+    g • v = (g 0 0 * v.1 + g 0 1 * v.2, g 1 0 * v.1 + g 1 1 * v.2) := by
+  simp [Units.smul_def]
 
 end Preliminaries
 
@@ -61,29 +70,5 @@ lemma smul_mk (g : α) {v : V} (hv : v ≠ 0) :
   rfl
 
 end DivisionRing
-
-section Field
-
-variable {K n : Type*} [Field K] [Fintype n] [DecidableEq n]
-
-@[simp]
-lemma pi_smul_mk (g : GL n K) {v : n → K} (hv : v ≠ 0) :
-    g • mk K v hv = mk K (g.val *ᵥ v) (g.toLin.toLinearEquiv.map_ne_zero_iff.mpr hv) := by
-  rfl
-
-private lemma finTwoProdSMul_ne_zero {v : K × K} (hv : v ≠ 0) (g : GL (Fin 2) K) :
-    (g 0 0 * v.1 + g 0 1 * v.2, g 1 0 * v.1 + g 1 1 * v.2) ≠ 0 := by
-  rw [← (LinearEquiv.finTwoArrow K K).symm.map_ne_zero_iff] at hv ⊢
-  convert g.toLin.toLinearEquiv.map_ne_zero_iff.mpr hv using 1
-  ext i
-  fin_cases i <;>
-  simp [Matrix.mulVec_eq_sum, mul_comm]
-
-@[simp]
-lemma prod_smul_mk (g : GL (Fin 2) K) {v : K × K} (hv : v ≠ 0) :
-    g • mk K v hv = mk K _ (finTwoProdSMul_ne_zero hv g) := by
-  simp [Equiv.smul_def, Units.smul_def, smul_eq_mulVec, Matrix.mulVec_eq_sum, mul_comm]
-
-end Field
 
 end Projectivization

@@ -174,7 +174,7 @@ protected abbrev mulAction (e : α ≃ β) [MulAction M β] : MulAction M α whe
   mul_smul := by simp [smul_def, mul_smul]
 
 /-- Transfer `SMulCommClass` across an `Equiv` -/
-protected abbrev smulCommClass (N : Type*) [SMul M β] [SMul N β] [SMulCommClass M N β] :
+protected abbrev smulCommClass (M N) [SMul M β] [SMul N β] [SMulCommClass M N β] :
     letI := Equiv.smul M e
     letI := Equiv.smul N e
     SMulCommClass M N α :=
