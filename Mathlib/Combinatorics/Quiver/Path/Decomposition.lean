@@ -28,7 +28,7 @@ theorem exists_notMem_mem_hom_path_path_of_notMem_mem {a b : V} (p : Path a b) (
   induction' h_len : p.length with n ih generalizing a b S ha_not_in_S hb_in_S
   · obtain rfl := eq_of_length_zero p h_len
     exact (ha_not_in_S hb_in_S).elim
-  · have h_pos : 0 < p.length := by rw[h_len]; simp only [lt_add_iff_pos_left, add_pos_iff,
+  · have h_pos : 0 < p.length := by rw [h_len]; simp only [lt_add_iff_pos_left, add_pos_iff,
       Nat.lt_one_iff, pos_of_gt, or_true]
     have h_ne : p.length ≠ 0 := ne_of_gt h_pos
     obtain ⟨c, p', e, rfl⟩ := (length_ne_zero_iff_eq_cons p).mp h_ne
