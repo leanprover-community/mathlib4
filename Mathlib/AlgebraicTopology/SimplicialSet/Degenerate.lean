@@ -219,6 +219,8 @@ lemma nonDegenerate_iff_of_isIso (f : X ⟶ Y) [IsIso f] {n : ℕ} (x : X _⦋n�
     degenerate_iff_of_isIso]
 
 attribute [local simp] nonDegenerate_iff_of_isIso in
+/-- The bijection on nondegenerate simplices induced by an isomorphism
+of simplicial sets. -/
 @[simps]
 def nonDegenerateEquivOfIso (e : X ≅ Y) {n : ℕ} :
     X.nonDegenerate n ≃ Y.nonDegenerate n where

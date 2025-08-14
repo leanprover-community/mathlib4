@@ -78,22 +78,25 @@ section
 
 variable (f : X ⟶ Y)
 
+/-- The range of a morphism of simplicial sets, as a subcomplex. -/
 abbrev range : Y.Subcomplex := Subpresheaf.range f
 
+/-- The morphism `X ⟶ Subcomplex.range f` induced by `f : X ⟶ Y`. -/
 abbrev toRange : X ⟶ Subcomplex.range f := Subpresheaf.toRange f
+
+@[reassoc (attr := simp)]
+lemma toRange_ι : toRange f ≫ (Subcomplex.range f).ι = f := rfl
 
 @[simp]
 lemma toRange_app_val {Δ : SimplexCategoryᵒᵖ} (x : X.obj Δ) :
     ((toRange f).app Δ x).val = f.app Δ x := rfl
 
-@[reassoc (attr := simp)]
-lemma toRangeSubcomplex_ι : toRange f ≫ (Subcomplex.range f).ι = f := rfl
 
 instance : Epi (toRange f) :=
   inferInstanceAs (Epi (Subpresheaf.toRange f))
 
 instance [Mono f] : Mono (toRange f) :=
-  mono_of_mono_fac (toRangeSubcomplex_ι f)
+  mono_of_mono_fac (toRange_ι f)
 
 instance [Mono f] : IsIso (toRange f) :=
   isIso_of_mono_of_epi _
