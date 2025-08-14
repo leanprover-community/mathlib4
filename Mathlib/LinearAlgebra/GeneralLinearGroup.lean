@@ -76,7 +76,7 @@ variable {S N : Type*} [Semiring S] [AddCommMonoid N] [Module S N]
 
 /-- A semilinear equivalence from `V` to `W` determines an isomorphism of general linear
 groups. -/
-def compLinearEquiv (e : M ≃ₛₗ[σ] N) : GeneralLinearGroup R M ≃* GeneralLinearGroup S N :=
+def congrLinearEquiv (e : M ≃ₛₗ[σ] N) : GeneralLinearGroup R M ≃* GeneralLinearGroup S N :=
   Units.mapEquiv (LinearEquiv.conjRingEquiv e).toMulEquiv
 
 @[simp] lemma compLinearEquiv_apply (e : M ≃ₛₗ[σ] N) (g : GeneralLinearGroup R M) :
