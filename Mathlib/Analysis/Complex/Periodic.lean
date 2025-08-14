@@ -77,13 +77,13 @@ lemma qParam_ne_zero (z : ℂ) : 𝕢 h z ≠ 0 := by
 
 @[fun_prop]
 lemma differentiable_qParam : Differentiable ℂ (𝕢 h) := by
-    unfold qParam
-    fun_prop
+  unfold qParam
+  fun_prop
 
 @[fun_prop]
 lemma contDiff_qParam (m : WithTop ℕ∞) : ContDiff ℂ m (𝕢 h) := by
-    unfold qParam
-    fun_prop
+  unfold qParam
+  fun_prop
 
 @[deprecated (since := "2025-02-17")] alias abs_qParam_lt_iff := norm_qParam_lt_iff
 
