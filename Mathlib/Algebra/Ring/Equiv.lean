@@ -141,8 +141,7 @@ instance : RingEquivClass (R ≃+* S) R S where
   map_add f := f.map_add'
   map_mul f := f.map_mul'
 
-/-- Two ring isomorphisms agree if they are defined by the
-    same underlying function. -/
+/-- Two ring isomorphisms agree if they are defined by the same underlying function. -/
 @[ext]
 theorem ext {f g : R ≃+* S} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
@@ -307,6 +306,12 @@ theorem symm_apply_apply (e : R ≃+* S) : ∀ x, e.symm (e x) = x :=
 theorem image_eq_preimage (e : R ≃+* S) (s : Set R) : e '' s = e.symm ⁻¹' s :=
   e.toEquiv.image_eq_preimage s
 
+theorem symm_apply_eq (e : R ≃+* S) {x : S} {y : R} :
+    e.symm x = y ↔ x = e y := Equiv.symm_apply_eq _
+
+theorem eq_symm_apply (e : R ≃+* S) {x : S} {y : R} :
+    y = e.symm x ↔ e y = x := Equiv.eq_symm_apply _
+
 end symm
 
 section simps
@@ -358,8 +363,6 @@ section unique
 /-- The `RingEquiv` between two semirings with a unique element. -/
 def ofUnique {M N} [Unique M] [Unique N] [Add M] [Mul M] [Add N] [Mul N] : M ≃+* N :=
   { AddEquiv.ofUnique, MulEquiv.ofUnique with }
-
-@[deprecated (since := "2024-12-26")] alias ringEquivOfUnique := ofUnique
 
 instance {M N} [Unique M] [Unique N] [Add M] [Mul M] [Add N] [Mul N] :
     Unique (M ≃+* N) where
@@ -521,6 +524,17 @@ def piEquivPiSubtypeProd {ι : Type*} (p : ι → Prop) [DecidablePred p] (Y : �
     [∀ i, NonUnitalNonAssocSemiring (Y i)] :
     ((i : ι) → Y i) ≃+* ((i : { x : ι // p x }) → Y i) × ((i : { x : ι // ¬p x }) → Y i) where
   toEquiv := Equiv.piEquivPiSubtypeProd p Y
+  map_mul' _ _ := rfl
+  map_add' _ _ := rfl
+
+/-- The opposite of a direct product is isomorphic to the direct product of the opposites
+as rings. -/
+def piMulOpposite {ι : Type*} (S : ι → Type*) [∀ i, NonUnitalNonAssocSemiring (S i)] :
+    (Π i, S i)ᵐᵒᵖ ≃+* Π i, (S i)ᵐᵒᵖ where
+  toFun f i := .op (f.unop i)
+  invFun f := .op fun i ↦ (f i).unop
+  left_inv _ := rfl
+  right_inv _ := rfl
   map_mul' _ _ := rfl
   map_add' _ _ := rfl
 
@@ -919,5 +933,29 @@ protected theorem isDomain {A : Type*} (B : Type*) [Semiring A] [Semiring B] [Is
   { e.injective.isLeftCancelMulZero e (map_zero e) (map_mul e),
     e.injective.isRightCancelMulZero e (map_zero e) (map_mul e) with
     exists_pair_ne := ⟨e.symm 0, e.symm 1, e.symm.injective.ne zero_ne_one⟩ }
+
+theorem isDomain_iff {A B : Type*} [Semiring A] [Semiring B] (e : A ≃* B) :
+    IsDomain A ↔ IsDomain B where
+  mp _ := e.symm.isDomain
+  mpr _ := e.isDomain
+
+variable {A B : Type*} [MulZeroClass A] [MulZeroClass B]
+
+theorem noZeroDivisors_iff (e : A ≃* B) : NoZeroDivisors A ↔ NoZeroDivisors B where
+  mp _ := e.symm.noZeroDivisors
+  mpr _ := e.noZeroDivisors
+
+theorem isLeftCancelMulZero_iff (e : A ≃* B) : IsLeftCancelMulZero A ↔ IsLeftCancelMulZero B where
+  mp _ := e.symm.injective.isLeftCancelMulZero _ (map_zero _) (map_mul _)
+  mpr _ := e.injective.isLeftCancelMulZero _ (map_zero _) (map_mul _)
+
+theorem isRightCancelMulZero_iff (e : A ≃* B) :
+    IsRightCancelMulZero A ↔ IsRightCancelMulZero B where
+  mp _ := e.symm.injective.isRightCancelMulZero _ (map_zero _) (map_mul _)
+  mpr _ := e.injective.isRightCancelMulZero _ (map_zero _) (map_mul _)
+
+theorem isCancelMulZero_iff (e : A ≃* B) : IsCancelMulZero A ↔ IsCancelMulZero B where
+  mp _ := e.symm.injective.isCancelMulZero _ (map_zero _) (map_mul _)
+  mpr _ := e.injective.isCancelMulZero _ (map_zero _) (map_mul _)
 
 end MulEquiv
