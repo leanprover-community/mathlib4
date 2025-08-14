@@ -731,7 +731,7 @@ variable (R L : Type*) [CommRing R] [Field L] [IsDomain R] [Algebra R[X] L] [Fai
 
 /-- `FractionRing.liftAlgebra` specialized to `RatFunc R`.
 
-This is a scoped instance because it creates a diamond when `L = FractionRing R`. -/
+This is a scoped instance because it creates a diamond when `L = RatFunc R`. -/
 scoped instance liftAlgebra : Algebra (RatFunc R) L :=
   RingHom.toAlgebra (IsFractionRing.lift (FaithfulSMul.algebraMap_injective R[X] _))
 
