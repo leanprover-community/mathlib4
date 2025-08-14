@@ -6171,7 +6171,6 @@ import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 import Mathlib.Topology.Algebra.InfiniteSum.Field
 import Mathlib.Topology.Algebra.InfiniteSum.Group
 import Mathlib.Topology.Algebra.InfiniteSum.GroupCompletion
-import Mathlib.Topology.Algebra.InfiniteSum.LogDerivUniformlyOn
 import Mathlib.Topology.Algebra.InfiniteSum.Module
 import Mathlib.Topology.Algebra.InfiniteSum.NatInt
 import Mathlib.Topology.Algebra.InfiniteSum.Nonarchimedean
