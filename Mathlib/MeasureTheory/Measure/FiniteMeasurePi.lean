@@ -1,10 +1,9 @@
 /-
-Copyright (c) 2023 Kalle Kytölä. All rights reserved.
+Copyright (c) 2025 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kalle Kytölä
+Authors: Sébastien Gouëzel
 -/
 import Mathlib.MeasureTheory.Measure.LevyProkhorovMetric
-import Mathlib.MeasureTheory.Measure.Prod
 
 /-!
 # Products of finite measures and probability measures
@@ -35,8 +34,6 @@ namespace MeasureTheory
 
 variable {ι : Type*} {α : ι → Type*} [Fintype ι] [∀ i, MeasurableSpace (α i)]
 
-section FiniteMeasure_product
-
 namespace FiniteMeasure
 
 /-- The product of finitely many finite measures. -/
@@ -63,11 +60,7 @@ lemma pi_map_pi {β : ι → Type*} [∀ i, MeasurableSpace (β i)] {f : Π i, �
   simp only [val_eq_toMeasure, toMeasure_map, toMeasure_pi]
   rw [Measure.pi_map_pi f_mble]
 
-end FiniteMeasure -- namespace
-
-end FiniteMeasure_product -- section
-
-section ProbabilityMeasure_product
+end FiniteMeasure
 
 namespace ProbabilityMeasure
 
@@ -127,8 +120,6 @@ theorem continuous_pi [∀ i, TopologicalSpace (α i)] [∀ i, SecondCountableTo
     apply tendsto_finset_prod _ (fun i hi ↦ ?_)
     exact tendsto_measure_of_null_frontier_of_tendsto (Tendsto.apply_nhds (fun ⦃U⦄ a ↦ a) i) (hs i)
 
-end ProbabilityMeasure -- namespace
+end ProbabilityMeasure
 
-end ProbabilityMeasure_product -- section
-
-end MeasureTheory -- namespace
+end MeasureTheory
