@@ -284,6 +284,24 @@ lemma predAbove_le_predAbove {p q : Fin n} (hpq : p ≤ q) {i j : Fin (n + 1)} (
 @[simps!] def predAboveOrderHom (p : Fin n) : Fin (n + 1) →o Fin n :=
   ⟨p.predAbove, p.predAbove_right_monotone⟩
 
+/-- `predAbove` is injective at the pivot -/
+lemma predAbove_left_injective : Injective (@predAbove n) := by
+  intro i j hij
+  obtain ⟨n, rfl⟩ := Nat.exists_add_one_eq.2 i.size_positive
+  wlog h : i < j generalizing i j
+  · simp only [not_lt] at h
+    obtain h | rfl := h.lt_or_eq
+    · exact (this hij.symm h).symm
+    · rfl
+  replace hij := congr_fun hij i.succ
+  rw [predAbove_succ_self, Fin.predAbove_of_le_castSucc _ _ (by simpa),
+    ← Fin.castSucc_inj, castSucc_castPred] at hij
+  exact (i.castSucc_lt_succ.ne hij).elim
+
+/-- `predAbove` is injective at the pivot -/
+@[simp] lemma predAbove_left_inj {x y : Fin n} : x.predAbove = y.predAbove ↔ x = y :=
+  predAbove_left_injective.eq_iff
+
 /-! #### Order isomorphisms -/
 
 /-- The equivalence `Fin n ≃ {i // i < n}` is an order isomorphism. -/

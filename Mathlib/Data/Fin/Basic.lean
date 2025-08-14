@@ -1201,6 +1201,14 @@ lemma predAbove_last_apply {i : Fin (n + 2)} :
   · rw [hi, predAbove_right_last]
   · rw [predAbove_last_of_ne_last hi]
 
+lemma predAbove_surjective {n : ℕ} (p : Fin n) :
+    Function.Surjective p.predAbove := by
+  intro i
+  by_cases hi : i ≤ p
+  · exact ⟨i.castSucc, predAbove_castSucc_of_le p i hi⟩
+  · rw [Fin.not_le] at hi
+    exact ⟨i.succ, predAbove_succ_of_le p i (Fin.le_of_lt hi)⟩
+
 /-- Sending `Fin (n+1)` to `Fin n` by subtracting one from anything above `p`
 then back to `Fin (n+1)` with a gap around `p` is the identity away from `p`. -/
 @[simp]
