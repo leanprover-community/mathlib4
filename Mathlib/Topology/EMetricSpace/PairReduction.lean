@@ -415,8 +415,6 @@ theorem pair_reduction (hJ_card : #J ≤ a ^ n) (c : ℝ≥0∞) (E : Type*) [Ps
       refine le_antisymm ?_ ?_
       · suffices (#J : ENNReal) ≤ 1 by norm_cast at this
         refine hJ_card.trans ?_
-        by_cases hn : n = 0
-        · simp [hn]
         conv_rhs => rw [← one_pow n]
         exact ENNReal.pow_le_pow_left ha1
       · rwa [Finset.one_le_card, ← Finset.nonempty_coe_sort]
