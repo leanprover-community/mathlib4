@@ -24,7 +24,7 @@ via the equivalence between the simplex category and the
 category of nonempty finite linearly ordered types, corresponds to
 the *covariant* functor which sends a type `α` to `αᵒᵈ`.
 This functor sends the object `⦋n⦌` to `⦋n⦌` and a map `f : ⦋n⦌ ⟶ ⦋m⦌`
-is sends to the monotone map `i ↦ (f i.rev).rev`,    -/
+is sent to the monotone map `(i : Fin (n + 1)) ↦ (f i.rev).rev`. -/
 @[simps obj]
 def rev : SimplexCategory ⥤ SimplexCategory where
   obj n := n
