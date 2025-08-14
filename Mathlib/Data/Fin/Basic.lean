@@ -249,10 +249,7 @@ theorem coe_int_add_eq_ite {n : Nat} (u v : Fin n) :
 
 theorem coe_int_add_eq_mod {n : Nat} (u v : Fin n) :
     ((u + v : Fin n) : Int) = ((u : Int) + (v : Int)) % n := by
-  rw [coe_int_add_eq_ite]
-  split
-  · rw [Int.emod_eq_of_lt] <;> omega
-  · rw [Int.emod_eq_sub_self_emod, Int.emod_eq_of_lt] <;> omega
+  omega
 
 -- Write `a + b` as `if (a + b : ℕ) < n then (a + b : ℤ) else (a + b : ℤ) - n` and
 -- similarly `a - b` as `if (b : ℕ) ≤ a then (a - b : ℤ) else (a - b : ℤ) + n`.
@@ -690,9 +687,7 @@ theorem castSucc_pred_eq_pred_castSucc {a : Fin (n + 1)} (ha : a ≠ 0) :
 
 theorem castSucc_pred_add_one_eq {a : Fin (n + 1)} (ha : a ≠ 0) :
     (a.pred ha).castSucc + 1 = a := by
-  cases a using cases
-  · exact (ha rfl).elim
-  · rw [pred_succ, coeSucc_eq_succ]
+  simp
 
 theorem le_pred_castSucc_iff {a b : Fin (n + 1)} (ha : castSucc a ≠ 0) :
     b ≤ (castSucc a).pred ha ↔ b < a := by
@@ -1206,6 +1201,14 @@ lemma predAbove_last_apply {i : Fin (n + 2)} :
   split_ifs with hi
   · rw [hi, predAbove_right_last]
   · rw [predAbove_last_of_ne_last hi]
+
+lemma predAbove_surjective {n : ℕ} (p : Fin n) :
+    Function.Surjective p.predAbove := by
+  intro i
+  by_cases hi : i ≤ p
+  · exact ⟨i.castSucc, predAbove_castSucc_of_le p i hi⟩
+  · rw [Fin.not_le] at hi
+    exact ⟨i.succ, predAbove_succ_of_le p i (Fin.le_of_lt hi)⟩
 
 /-- Sending `Fin (n+1)` to `Fin n` by subtracting one from anything above `p`
 then back to `Fin (n+1)` with a gap around `p` is the identity away from `p`. -/
