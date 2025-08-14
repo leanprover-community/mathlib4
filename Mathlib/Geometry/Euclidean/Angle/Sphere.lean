@@ -75,7 +75,7 @@ open Real InnerProductSpace
 
 /-- For a diameter of a sphere, the angle subtended by the diameter
 at any other point on the sphere is a right angle. -/
-theorem angle_eq_pi_div_two_iff_mem_sphere_of_isDiameter (p₁ p₂ p₃ : P) (s : Sphere P)
+theorem angle_eq_pi_div_two_iff_mem_sphere_of_isDiameter {p₁ p₂ p₃ : P} {s : Sphere P}
     (hd : s.IsDiameter p₁ p₃) :
     ∠ p₁ p₂ p₃ = π / 2 ↔ p₂ ∈ s := by
   constructor
@@ -125,15 +125,14 @@ theorem angle_eq_pi_div_two_iff_mem_sphere_of_isDiameter (p₁ p₂ p₃ : P) (s
 /-- For three distinct points, the angle at the second point
 is a right angle if and only if the second point lies on the sphere having the first and third
 points as diameter endpoints. -/
-theorem angle_eq_pi_div_two_iff_mem_sphere_ofDiameter (p₁ p₂ p₃ : P) :
+theorem angle_eq_pi_div_two_iff_mem_sphere_ofDiameter {p₁ p₂ p₃ : P} :
     ∠ p₁ p₂ p₃ = π / 2 ↔ p₂ ∈ Sphere.ofDiameter p₁ p₃ :=
-  angle_eq_pi_div_two_iff_mem_sphere_of_isDiameter p₁ p₂ p₃ (Sphere.ofDiameter p₁ p₃)
-    (Sphere.isDiameter_ofDiameter p₁ p₃)
+  angle_eq_pi_div_two_iff_mem_sphere_of_isDiameter (Sphere.isDiameter_ofDiameter p₁ p₃)
 
 /-- **Thales' theorem**: The angle inscribed in a semicircle is a right angle. -/
-theorem thales_theorem (p₁ p₂ p₃ : P) (s : Sphere P) (hd : s.IsDiameter p₁ p₃) :
+theorem thales_theorem {p₁ p₂ p₃ : P} {s : Sphere P} (hd : s.IsDiameter p₁ p₃) :
     ∠ p₁ p₂ p₃ = π / 2 ↔ p₂ ∈ s :=
-  angle_eq_pi_div_two_iff_mem_sphere_of_isDiameter p₁ p₂ p₃ s hd
+  angle_eq_pi_div_two_iff_mem_sphere_of_isDiameter hd
 
 end Sphere
 
