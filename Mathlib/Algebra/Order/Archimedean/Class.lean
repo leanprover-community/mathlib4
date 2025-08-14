@@ -29,6 +29,18 @@ is "infinitesimal" to `b` in the sense that `n • |a| < |b|` for all natural nu
 * `MulArchimedeanClass` is the archimedean class for multiplicative linearly ordered group.
 * `ArchimedeanClass.orderHom` and `MulArchimedeanClass.orderHom` are `OrderHom` over
   archimedean classes lifted from ordered group homomorphisms.
+* `ArchimedeanClass.ballAddSubgroup` and `MulArchimedeanClass.ballSubgroup` are subgroups
+  formed by an open interval of archimedean classes
+* `ArchimedeanClass.closedBallAddSubgroup` and `MulArchimedeanClass.closedBallSubgroup` are
+  subgroups formed by a closed interval of archimedean classes.
+* `ArchimedeanClass.IsGradeAddSubgroup` and `MulArchimedeanClass.IsGradeSubgroup` are props stating
+  that a subgroup is a complement to the open ball under the closed ball. For a group with finitely
+  many archimedean classes, if there exists a `IsGrade(Add)Subgroup` subgroup for each class,
+  then the whole group is a direct sum of them. As such subgroup has elements only from the
+  corresponding class (see `MulArchimedeanClass.IsGradeSubgroup.mulArchimedeanClassMk_eq` /
+  `ArchimedeanClass.IsGradeAddSubgroup.archimedeanClassMk_eq`), this is a decomposition by
+  archimedean classes. For a group with infinitely many archimedean classes, the direct sum is not
+  necessarily the whole group, but still forms subgroup with the same set of archimedean classes.
 
 ## Main statements
 
