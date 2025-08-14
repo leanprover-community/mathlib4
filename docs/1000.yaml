@@ -802,10 +802,9 @@ Q766722:
   # theorem about Hamiltonian mechanics
 
 Q776578:
-  title: Artin–Wedderburn theorem
-  # in Mathlib/RingTheory/SimpleModule/Basic.lean
-  comment: "statement is formalized using proof_wanted (isSemisimpleRing_iff_pi_matrix_divisionRing)"
-  # WIP formalisation, but not complete yet (January 1, 2025)
+  title: Wedderburn–Artin theorem
+  decl: IsSimpleRing.exists_algEquiv_matrix_divisionRing
+  decl: IsSemisimpleRing.exists_algEquiv_pi_matrix_divisionRing
 
 Q777924:
   title: Tijdeman's theorem

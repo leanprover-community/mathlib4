@@ -44,7 +44,7 @@ import Mathlib.RingTheory.Noetherian.Defs
 * `RingHom.isSemisimpleRing_of_surjective`: any quotient of a semisimple ring is semisimple.
 
 ## TODO
-* Artin-Wedderburn Theory
+* Artin-Wedderburn Theory (uniqueness)
 * Unify with the work on Schur's Lemma in a category theory context
 
 -/
@@ -188,6 +188,13 @@ theorem IsSemisimpleModule.of_sSup_simples_eq_top
 
 namespace IsSemisimpleModule
 
+theorem eq_bot_or_exists_simple_le (N : Submodule R M) [IsSemisimpleModule R N] :
+    N = ⊥ ∨ ∃ m ≤ N, IsSimpleModule R m := by
+  rw [← N.subsingleton_iff_eq_bot, ← Submodule.subsingleton_iff R, ← subsingleton_iff_bot_eq_top]
+  refine (eq_bot_or_exists_atom_le _).imp .symm fun ⟨m, h, _⟩ ↦ ⟨_, N.map_subtype_le m, ?_⟩
+  rw [← isSimpleModule_iff_isAtom] at h
+  exact .congr (m.equivMapOfInjective _ N.subtype_injective).symm
+
 variable [IsSemisimpleModule R M]
 
 theorem extension_property {P} [AddCommGroup P] [Module R P] (f : N →ₗ[R] M)
@@ -207,9 +214,6 @@ theorem lifting_property (f : M →ₗ[R] N) (hf : Function.Surjective f) :
   rw [← LinearMap.sub_mem_ker_iff, ← Submodule.Quotient.mk_eq_zero, ← Submodule.mkQ_apply,
     map_sub, Submodule.mkQ_apply, Submodule.mkQ_apply, Submodule.mk_quotientEquivOfIsCompl_apply,
     ← LinearMap.quotKerEquivOfSurjective_apply_mk f hf, LinearEquiv.symm_apply_apply, sub_self]
-
-theorem eq_bot_or_exists_simple_le (N : Submodule R M) : N = ⊥ ∨ ∃ m ≤ N, IsSimpleModule R m := by
-  simpa only [isSimpleModule_iff_isAtom, and_comm] using eq_bot_or_exists_atom_le _
 
 theorem sSup_simples_le (N : Submodule R M) :
     sSup { m : Submodule R M | IsSimpleModule R m ∧ m ≤ N } = N := by

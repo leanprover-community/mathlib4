@@ -527,6 +527,17 @@ def piEquivPiSubtypeProd {ι : Type*} (p : ι → Prop) [DecidablePred p] (Y : �
   map_mul' _ _ := rfl
   map_add' _ _ := rfl
 
+/-- The opposite of a direct product is isomorphic to the direct product of the opposites
+as rings. -/
+def piMulOpposite {ι : Type*} (S : ι → Type*) [∀ i, NonUnitalNonAssocSemiring (S i)] :
+    (Π i, S i)ᵐᵒᵖ ≃+* Π i, (S i)ᵐᵒᵖ where
+  toFun f i := .op (f.unop i)
+  invFun f := .op fun i ↦ (f i).unop
+  left_inv _ := rfl
+  right_inv _ := rfl
+  map_mul' _ _ := rfl
+  map_add' _ _ := rfl
+
 /-- Product of ring equivalences. This is `Equiv.prodCongr` as a `RingEquiv`. -/
 @[simps!]
 def prodCongr {R R' S S' : Type*} [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring R']
