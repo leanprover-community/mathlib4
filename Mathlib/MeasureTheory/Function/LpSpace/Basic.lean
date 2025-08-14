@@ -918,11 +918,6 @@ theorem meas_ge_le_mul_pow_enorm (f : Lp E p μ) (hp_ne_zero : p ≠ 0) (hp_ne_t
 
 section Star
 
-/- Wasn't necessary. Just chained the branches.
-
-feat(MeasureTheory): add `Star` and `InvolutiveStar` instances for `Lp`
- -/
-
 variable {R : Type*} [NormedAddCommGroup R] [StarAddMonoid R] [NormedStarGroup R]
 
 protected noncomputable instance {p : ℝ≥0∞} : Star (Lp R p μ) where
