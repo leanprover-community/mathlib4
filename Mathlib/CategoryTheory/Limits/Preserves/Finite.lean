@@ -68,6 +68,7 @@ instance (priority := 120) PreservesLimits.preservesFiniteLimits (F : C ⥤ D)
     [PreservesLimits F] : PreservesFiniteLimits F :=
   PreservesLimitsOfSize.preservesFiniteLimits F
 
+attribute [local instance] uliftCategory in
 /-- We can always derive `PreservesFiniteLimits C` by showing that we are preserving limits at an
 arbitrary universe. -/
 lemma preservesFiniteLimits_of_preservesFiniteLimitsOfSize (F : C ⥤ D)
@@ -222,6 +223,7 @@ instance (priority := 120) PreservesColimits.preservesFiniteColimits (F : C ⥤ 
     [PreservesColimits F] : PreservesFiniteColimits F :=
   PreservesColimitsOfSize.preservesFiniteColimits F
 
+attribute [local instance] uliftCategory in
 /-- We can always derive `PreservesFiniteColimits C`
 by showing that we are preserving colimits at an arbitrary universe. -/
 lemma preservesFiniteColimits_of_preservesFiniteColimitsOfSize (F : C ⥤ D)

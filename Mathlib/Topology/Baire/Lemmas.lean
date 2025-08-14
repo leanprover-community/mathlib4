@@ -195,4 +195,11 @@ theorem nonempty_iInter_of_dense_open {ι : Type*} [Countable ι] (U : ι → Se
     (dense_iff_inter_open.1 (dense_iInter_of_isOpen (f := U) hUo hUd))
       Set.univ isOpen_univ (nonempty_iff_univ_nonempty.mp (by infer_instance))
 
+/-- In a nonempty Baire space, a residual set is not meagre. -/
+theorem not_isMeagre_of_mem_residual {s : Set X} (hs : s ∈ residual X) :
+    ¬ IsMeagre s := by
+  rcases (mem_residual (X := X)).1 hs with ⟨t, ht_sub, htGδ, ht_dense⟩
+  intro hs_meagre
+  exact not_isMeagre_of_isGδ_of_dense (X := X) htGδ ht_dense (hs_meagre.mono ht_sub)
+
 end BaireTheorem

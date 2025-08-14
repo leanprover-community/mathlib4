@@ -5,6 +5,7 @@ Authors: Aaron Anderson
 -/
 import Mathlib.Algebra.Notation.Support
 import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
+import Mathlib.Data.Finsupp.Defs
 import Mathlib.Order.WellFoundedSet
 
 /-!
@@ -405,6 +406,18 @@ theorem leadingCoeff_eq {x : HahnSeries Γ R} : x.leadingCoeff = x.coeff x.order
 
 end Order
 
+section Finsupp
+
+/-- Create a `HahnSeries` with a `Finsupp` as coefficients. -/
+def ofFinsupp : ZeroHom (Γ →₀ R) (HahnSeries Γ R) where
+  toFun f := { coeff := f, isPWO_support' := f.finite_support.isPWO }
+  map_zero' := by simp
+
+@[simp]
+theorem coeff_ofFinsupp (f : Γ →₀ R) (a : Γ) : (ofFinsupp f).coeff a = f a := rfl
+
+end Finsupp
+
 section Domain
 
 variable [PartialOrder Γ']
@@ -523,5 +536,32 @@ theorem order_ofForallLtEqZero [Zero Γ] (f : Γ → R) (hf : f ≠ 0) (n : Γ)
   exact not_lt.mp (mt (hn m) hm)
 
 end LocallyFiniteLinearOrder
+
+section Truncate
+variable [Zero R]
+
+/-- Zeroes out coefficients of a `HahnSeries` at indices not less than `c`. -/
+def truncLT [PartialOrder Γ] [DecidableLT Γ] (c : Γ) :
+    ZeroHom (HahnSeries Γ R) (HahnSeries Γ R) where
+  toFun x :=
+    { coeff i := if i < c then x.coeff i else 0
+      isPWO_support' := Set.IsPWO.mono x.isPWO_support (by simp) }
+  map_zero' := by ext; simp
+
+@[simp]
+protected theorem coeff_truncLT [PartialOrder Γ] [DecidableLT Γ]
+    (c : Γ) (x : HahnSeries Γ R) (i : Γ) :
+    (truncLT c x).coeff i = if i < c then x.coeff i else 0  := rfl
+
+theorem coeff_truncLT_of_lt [PartialOrder Γ] [DecidableLT Γ]
+    {c i : Γ} (h : i < c) (x : HahnSeries Γ R) : (truncLT c x).coeff i = x.coeff i := by
+  simp [h]
+
+theorem coeff_truncLT_of_le [LinearOrder Γ]
+    {c i : Γ} (h : c ≤ i) (x : HahnSeries Γ R) :
+    (truncLT c x).coeff i = 0 := by
+  simp [h]
+
+end Truncate
 
 end HahnSeries
