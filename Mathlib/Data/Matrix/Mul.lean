@@ -961,10 +961,10 @@ section CommSemiring
 
 variable [CommSemiring α]
 
+@[deprecated mulVec_smul (since := "2025-08-14")]
 theorem mulVec_smul_assoc [Fintype n] (A : Matrix m n α) (b : n → α) (a : α) :
-    A *ᵥ (a • b) = a • A *ᵥ b := by
-  ext
-  apply dotProduct_smul
+    A *ᵥ (a • b) = a • A *ᵥ b :=
+  mulVec_smul _ _ _
 
 end CommSemiring
 
