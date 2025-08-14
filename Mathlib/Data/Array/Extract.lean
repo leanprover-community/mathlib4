@@ -27,7 +27,7 @@ and should be upstreamed to replace that.
 -/
 theorem extract_append_left' {a b : Array α} {i j : Nat} (h : j ≤ a.size) :
     (a ++ b).extract i j = a.extract i j := by
-  simp_all
+  simp [h]
 
 /--
 This is a stronger version of `Array.extract_append_right`,
