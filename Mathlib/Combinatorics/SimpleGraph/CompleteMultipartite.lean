@@ -320,7 +320,7 @@ theorem pairwiseDisjoint_parts :
 /-- The finset of vertices in a `G.completeEquipartiteSubgraph r t`. -/
 abbrev verts : Finset V := univ.disjiUnion (Subtype.val ∘ A.parts) A.pairwiseDisjoint_parts
 
-/-- There are `r*t` vertices in a `G.completeEquipartiteSubgraph r t`. -/
+/-- There are `r * t` vertices in a `G.completeEquipartiteSubgraph r t`. -/
 theorem card_verts : #A.verts = r * t := by
   simp [card_disjiUnion, Function.comp_apply, card_parts]
 
@@ -368,11 +368,11 @@ theorem completeEquipartiteGraph_isContained_iff :
     completeEquipartiteGraph r t ⊑ G ↔ Nonempty (G.completeEquipartiteSubgraph r t) :=
   ⟨fun ⟨f⟩ ↦ ⟨completeEquipartiteSubgraph.ofCopy f⟩, fun ⟨A⟩ ↦ ⟨A.toCopy⟩⟩
 
-/-- Simple graphs contain a copy of a `completeEquipartiteGraph (n+1) t` iff there exists
+/-- Simple graphs contain a copy of a `completeEquipartiteGraph (n + 1) t` iff there exists
 `s : univ.powersetCard t` and `A : G.completeEquipartiteSubgraph n t` such that the vertices
 in `s` are adjacent to the vertices in `A`. -/
 theorem completeEquipartiteGraph_succ_isContained_iff {n : ℕ} :
-  completeEquipartiteGraph (n+1) t ⊑ G
+  completeEquipartiteGraph (n + 1) t ⊑ G
     ↔ ∃ (A : G.completeEquipartiteSubgraph n t) (s : univ.powersetCard t),
         ∀ v₁ ∈ s.val, ∀ i, ∀ v₂ ∈ (A.parts i).val, G.Adj v₁ v₂ := by
   rw [completeEquipartiteGraph_isContained_iff]
