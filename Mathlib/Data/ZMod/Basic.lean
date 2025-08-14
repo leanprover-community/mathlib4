@@ -463,9 +463,7 @@ lemma ringEquivCongr_val {a b : ℕ} (h : a = b) (x : ZMod a) :
   cases a <;> rfl
 
 lemma ringEquivCongr_intCast {a b : ℕ} (h : a = b) (z : ℤ) :
-    ZMod.ringEquivCongr h z = z := by
-  subst h
-  cases a <;> rfl
+    ZMod.ringEquivCongr h z = z := map_intCast (ringEquivCongr h) z
 
 end CharEq
 
