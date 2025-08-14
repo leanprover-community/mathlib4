@@ -454,9 +454,9 @@ lemma isTrans_iff_comp_subset_self : R.IsTrans ↔ R ○ R ⊆ R where
   mp _ := comp_subset_self
   mpr h := ⟨fun _ _ _ hx hy ↦ h ⟨_, hx, hy⟩⟩
 
-lemma isTrans_empty : (∅ : SetRel α α).IsTrans where trans _ _ _ := by simp
-lemma isTrans_univ : SetRel.IsTrans (Set.univ : SetRel α α) where trans _ _ _ := by simp
-lemma isTrans_singleton (x : α × α) : SetRel.IsTrans {x} where trans _ _ _ := by aesop
+instance isTrans_empty : (∅ : SetRel α α).IsTrans where trans _ _ _ := by simp
+instance isTrans_univ : SetRel.IsTrans (Set.univ : SetRel α α) where trans _ _ _ := by simp
+instance isTrans_singleton (x : α × α) : SetRel.IsTrans {x} where trans _ _ _ := by aesop
 
 instance isTrans_inter [R₁.IsTrans] [R₂.IsTrans] : (R₁ ∩ R₂).IsTrans where
   trans _a _b _c hab hbc := ⟨R₁.trans hab.1 hbc.1, R₂.trans hab.2 hbc.2⟩
