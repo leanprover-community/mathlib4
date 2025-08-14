@@ -280,6 +280,9 @@ namely, the commit just prior to the current one.
 -/
 elab tk:"#find_deleted_files" nc:(ppSpace num)? : command => do
   let n := nc.getD (Syntax.mkNumLit "2") |>.getNat
+  if n == 0 then
+    logWarningAt (nc.getD default) "The number of commits to look back must be at least 1!"
+    return
   let mut msgs : Array MessageData := #[]
   -- Get the hash and the commit message of the commit at `git log -n`
   -- and format the message (with its hash) as a collapsible message.
@@ -357,7 +360,7 @@ replaced by the suggestion, which means that you can click on multiple suggestio
 the deprecations later on.
 -/
 
-#find_deleted_files 15
+#find_deleted_files 0
 /--
 info: import Mathlib.Tactic.Linter.DeprecatedModule
 import Std.Time.Zoned
