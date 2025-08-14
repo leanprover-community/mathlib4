@@ -208,6 +208,15 @@ example : P (0 * x * y + 0) := by test_field_simp
 #guard_msgs in
 example : P ((x * y - y * x) * z) := by test_field_simp
 
+-- Iterated negation is simplified, as is subtraction from zero.
+/-- info: P x -/
+#guard_msgs in
+example : P (-(-x)) := by test_field_simp
+
+/-- info: P x -/
+#guard_msgs in
+example : P (0 -(0 + (-x))) := by test_field_simp
+
 /- ### Two atoms -/
 
 /-- error: simp made no progress -/
