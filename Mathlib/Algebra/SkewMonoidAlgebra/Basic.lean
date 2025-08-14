@@ -863,12 +863,11 @@ theorem coeff_mul_antidiagonal_finsum (f g : SkewMonoidAlgebra k G) (x : G) :
       ∩ Function.support fun p ↦ f.coeff p.1 * p.1 • g.coeff p.2).Finite := by
     apply Set.Finite.inter_of_right
     apply Set.Finite.subset (Finset.finite_toSet ((f.support).product (g.support)))
-    rw [support_subset_iff]
     aesop
   rw [← finsum_mem_inter_support, finsum_mem_eq_finite_toFinset_sum _ this]
   classical
   let s := Set.Finite.toFinset (s := ({p : G × G | p.1 * p.2 = x}
-    ∩ Function.support fun p ↦ f.coeff p.1 * p.1 • g.coeff p.2)) (this)
+    ∩ Function.support fun p ↦ f.coeff p.1 * p.1 • g.coeff p.2)) this
   let F : G × G → k := fun p => if p.1 * p.2 = x then f.coeff p.1 * p.1 • g.coeff p.2 else 0
   calc
     (f * g).coeff x = ∑ a₁ ∈ f.support, ∑ a₂ ∈ g.support, F (a₁, a₂) := coeff_mul f g x
