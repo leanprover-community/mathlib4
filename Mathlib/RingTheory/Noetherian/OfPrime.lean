@@ -40,10 +40,6 @@ theorem exists_maximal_not_fg [CommSemiring R] (h : ∃ I : Ideal R, ¬I.FG) :
   · obtain ⟨I, hI⟩ := h
     exact ⟨I, hI, by simp [Set.not_nonempty_iff_eq_empty.1 H]⟩
 
--- TODO: Mettre dans RingTheory/Ideal/Span.lean
-lemma mem_span_range_self [Semiring R] {α : Type*} {f : α → R} : ∀ {x}, f x ∈ span (Set.range f) :=
-  (subset_span <| Set.mem_range_self _)
-
 open Set Finset
 
 /-- `Ideal.FG` is an Oka predicate. -/
