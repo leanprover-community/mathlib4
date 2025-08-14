@@ -832,7 +832,7 @@ section Monoid
 variable [Monoid G] [MulSemiringAction G k]
 
 theorem coeff_mul [DecidableEq G] (f g : SkewMonoidAlgebra k G)
-    (x : G) : (f * g).coeff x = f.sum fun a₁ b₁ => g.sum fun a₂ b₂ =>
+    (x : G) : (f * g).coeff x = f.sum fun a₁ b₁ ↦ g.sum fun a₂ b₂ ↦
       if a₁ * a₂ = x then b₁ * a₁ • b₂ else 0 := by
   rw [mul_def, coeff_sum]; congr; ext
   rw [coeff_sum]; congr; ext
@@ -842,18 +842,18 @@ theorem coeff_mul_antidiagonal_of_finset (f g : SkewMonoidAlgebra k G) (x : G)
     (s : Finset (G × G)) (hs : ∀ {p : G × G}, p ∈ s ↔ p.1 * p.2 = x) :
     (f * g).coeff x = ∑ p ∈ s, f.coeff p.1 * p.1 • g.coeff p.2 := by
   classical
-  let F : G × G → k := fun p => if p.1 * p.2 = x then f.coeff p.1 * p.1 • g.coeff p.2 else 0
+  let F : G × G → k := fun p ↦ if p.1 * p.2 = x then f.coeff p.1 * p.1 • g.coeff p.2 else 0
   calc
     (f * g).coeff x = ∑ a₁ ∈ f.support, ∑ a₂ ∈ g.support, F (a₁, a₂) := coeff_mul f g x
     _ = ∑ p ∈ f.support ×ˢ g.support, F p := by rw [← Finset.sum_product _ _ _]
-    _ = ∑ p ∈ (f.support ×ˢ g.support).filter fun p : G × G => p.1 * p.2 = x,
+    _ = ∑ p ∈ (f.support ×ˢ g.support).filter fun p : G × G ↦ p.1 * p.2 = x,
       f.coeff p.1 * p.1 • g.coeff p.2 := (Finset.sum_filter _ _).symm
-    _ = ∑ p ∈ s.filter fun p : G × G => p.1 ∈ f.support ∧ p.2 ∈ g.support,
+    _ = ∑ p ∈ s.filter fun p : G × G ↦ p.1 ∈ f.support ∧ p.2 ∈ g.support,
       f.coeff p.1 * p.1 • g.coeff p.2 :=
       (Finset.sum_congr (by ext; simp [Finset.mem_filter, Finset.mem_product, hs, and_comm])
-        fun _ _ => rfl)
+        fun _ _ ↦ rfl)
     _ = ∑ p ∈ s, f.coeff p.1 * p.1 • g.coeff p.2 :=
-      Finset.sum_subset (Finset.filter_subset _ _) fun p hps hp => by
+      Finset.sum_subset (Finset.filter_subset _ _) fun p hps hp ↦ by
         simp only [Finset.mem_filter, mem_support_iff, not_and, Classical.not_not] at hp ⊢
         by_cases h1 : f.coeff p.1 = 0 <;> simp_all
 
@@ -868,36 +868,36 @@ theorem coeff_mul_antidiagonal_finsum (f g : SkewMonoidAlgebra k G) (x : G) :
   classical
   let s := Set.Finite.toFinset (s := ({p : G × G | p.1 * p.2 = x}
     ∩ Function.support fun p ↦ f.coeff p.1 * p.1 • g.coeff p.2)) this
-  let F : G × G → k := fun p => if p.1 * p.2 = x then f.coeff p.1 * p.1 • g.coeff p.2 else 0
+  let F : G × G → k := fun p ↦ if p.1 * p.2 = x then f.coeff p.1 * p.1 • g.coeff p.2 else 0
   calc
     (f * g).coeff x = ∑ a₁ ∈ f.support, ∑ a₂ ∈ g.support, F (a₁, a₂) := coeff_mul f g x
     _ = ∑ p ∈ f.support ×ˢ g.support, F p := by rw [← Finset.sum_product _ _ _]
-    _ = ∑ p ∈ (f.support ×ˢ g.support).filter fun p : G × G => p.1 * p.2 = x,
+    _ = ∑ p ∈ (f.support ×ˢ g.support).filter fun p : G × G ↦ p.1 * p.2 = x,
       f.coeff p.1 * p.1 • g.coeff p.2 := (Finset.sum_filter _ _).symm
-    _ = ∑ p ∈ s.filter fun p : G × G => p.1 ∈ f.support ∧ p.2 ∈ g.support,
+    _ = ∑ p ∈ s.filter fun p : G × G ↦ p.1 ∈ f.support ∧ p.2 ∈ g.support,
       f.coeff p.1 * p.1 • g.coeff p.2 := by
         apply Finset.sum_congr_of_eq_on_inter <;> aesop
     _ = ∑ p ∈ s, f.coeff p.1 * p.1 • g.coeff p.2 :=
-      Finset.sum_subset (Finset.filter_subset _ _) fun p hps hp => by
+      Finset.sum_subset (Finset.filter_subset _ _) fun p hps hp ↦ by
         simp only [Finset.mem_filter, mem_support_iff, not_and, Classical.not_not] at hp ⊢
         by_cases h1 : f.coeff p.1 = 0 <;> simp_all
 
 theorem coeff_mul_single_aux (f : SkewMonoidAlgebra k G) {r : k} {x y z : G}
     (H : ∀ a, a * x = z ↔ a = y) : (f * single x r).coeff z = f.coeff y * y • r := by
   classical
-  have A : ∀ a₁ b₁, ((single x r).sum fun a₂ b₂ => ite (a₁ * a₂ = z) (b₁ * a₁ • b₂) 0) =
+  have A : ∀ a₁ b₁, ((single x r).sum fun a₂ b₂ ↦ ite (a₁ * a₂ = z) (b₁ * a₁ • b₂) 0) =
       ite (a₁ * x = z) (b₁ * a₁ • r) 0 :=
-    fun a₁ b₁ => sum_single_index <| by simp
+    fun a₁ b₁ ↦ sum_single_index <| by simp
   calc
     (f * (single x r)).coeff z =
-        sum f fun a b => if a = y then b * y • r else 0 := by simp [coeff_mul, A, H, sum_ite_eq']
+        sum f fun a b ↦ if a = y then b * y • r else 0 := by simp [coeff_mul, A, H, sum_ite_eq']
     _ = if y ∈ f.support then f.coeff y * y • r else 0 := (f.support.sum_ite_eq' _ _)
     _ = f.coeff y * y • r := by
       split_ifs with h <;> simp [support] at h <;> simp [h]
 
 theorem coeff_mul_single_one (f : SkewMonoidAlgebra k G) (r : k) (x : G) :
     (f * single 1 r).coeff x = f.coeff x * x • r :=
-  f.coeff_mul_single_aux fun a => by rw [mul_one]
+  f.coeff_mul_single_aux fun a ↦ by rw [mul_one]
 
 theorem coeff_mul_single_of_not_exists_mul (r : k) {g g' : G} (x : SkewMonoidAlgebra k G)
     (h : ∀ x, ¬g' = x * g) : (x * single g r).coeff g' = 0 := by
@@ -911,12 +911,12 @@ theorem coeff_mul_single_of_not_exists_mul (r : k) {g g' : G} (x : SkewMonoidAlg
 theorem coeff_single_mul_aux (f : SkewMonoidAlgebra k G) {r : k} {x y z : G}
     (H : ∀ a, x * a = y ↔ a = z) : (single x r * f).coeff y = r * x • f.coeff z := by
   classical
-  have : (f.sum fun a b => ite (x * a = y) (0 * x • b) 0) = 0 := by simp
+  have : (f.sum fun a b ↦ ite (x * a = y) (0 * x • b) 0) = 0 := by simp
   calc
     ((single x r) *  f).coeff y =
-        sum f fun a b => ite (x * a = y) (r * x • b) 0 :=
+        sum f fun a b ↦ ite (x * a = y) (r * x • b) 0 :=
       (coeff_mul _ _ _).trans <| sum_single_index this
-    _ = f.sum fun a b => ite (a = z) (r * x • b) 0 := by simp [H]
+    _ = f.sum fun a b ↦ ite (a = z) (r * x • b) 0 := by simp [H]
     _ = if z ∈ f.support then r * x • f.coeff z else 0 := (f.support.sum_ite_eq' _ _)
     _ = _ := by split_ifs with h <;> simp [support] at h <;> simp [h]
 
@@ -944,24 +944,24 @@ variable [Group G] [MulSemiringAction G k]
 @[simp]
 theorem coeff_mul_single (f : SkewMonoidAlgebra k G) (r : k) (x y : G) :
     (f * single x r).coeff y = f.coeff (y * x⁻¹) * (y * x⁻¹) • r :=
-  f.coeff_mul_single_aux fun _a => eq_mul_inv_iff_mul_eq.symm
+  f.coeff_mul_single_aux fun _a ↦ eq_mul_inv_iff_mul_eq.symm
 
 @[simp]
 theorem coeff_single_mul (r : k) (x : G) (f : SkewMonoidAlgebra k G) (y : G) :
     (single x r * f).coeff y = r * x • f.coeff (x⁻¹ * y) :=
-  f.coeff_single_mul_aux fun _z => eq_inv_mul_iff_mul_eq.symm
+  f.coeff_single_mul_aux fun _z ↦ eq_inv_mul_iff_mul_eq.symm
 
 theorem coeff_mul_left (f g : SkewMonoidAlgebra k G) (x : G) :
-    (f * g).coeff x = f.sum fun a b => b * a • g.coeff (a⁻¹ * x) :=
+    (f * g).coeff x = f.sum fun a b ↦ b * a • g.coeff (a⁻¹ * x) :=
   calc
-    (f * g).coeff x = sum f fun a b => (single a b * g).coeff x := by
+    (f * g).coeff x = sum f fun a b ↦ (single a b * g).coeff x := by
       rw [← coeff_sum, ← sum_mul g f, f.sum_single]
     _ = _ := by simp
 
 theorem coeff_mul_right (f g : SkewMonoidAlgebra k G) (x : G) :
-    (f * g).coeff x = g.sum fun a b => f.coeff (x * a⁻¹) * (x * a⁻¹) • b :=
+    (f * g).coeff x = g.sum fun a b ↦ f.coeff (x * a⁻¹) * (x * a⁻¹) • b :=
   calc
-    (f * g).coeff x = sum g fun a b => (f * single a b).coeff x := by
+    (f * g).coeff x = sum g fun a b ↦ (f * single a b).coeff x := by
       rw [← coeff_sum, ← mul_sum f g, g.sum_single]
     _ = _ := by simp
 
