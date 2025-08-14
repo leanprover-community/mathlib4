@@ -142,7 +142,7 @@ example (h : p ∧ q) : ¬¬(p ∧ q) := by
 example {P : Prop} (h : P) : P := by push_neg at *
 
 -- new behaviour as of #27562
--- (previously, because of a metavariable instantiation issue, the tactic succeeded as a no-op)
+-- (Previously, because of a metavariable instantiation issue, the tactic succeeded as a no-op.)
 /-- error: push_neg made no progress at h -/
 #guard_msgs in
 example {x y : ℕ} : True := by

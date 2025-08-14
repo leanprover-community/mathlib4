@@ -22,7 +22,7 @@ combination of these.
 `loc`.
 * If `loc` is a list of locations, runs at each specified hypothesis (and finally the goal if `⊢` is
   included), and fails if any of the tactic applications fail.
-* If `loc` is `*`, runs at the nondependent `Prop` hypotheses and then at the target.
+* If `loc` is `*`, runs at the nondependent `Prop` hypotheses (those produced by `Lean.MVarId.getNondepPropHyps`) and then at the target.
 
 This is a variant of `Lean.Elab.Tactic.withLocation`. -/
 def Lean.Elab.Tactic.withNondepPropLocation (loc : Location) (atLocal : FVarId → TacticM Unit)
