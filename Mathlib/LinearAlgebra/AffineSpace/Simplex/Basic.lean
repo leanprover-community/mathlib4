@@ -357,6 +357,27 @@ lemma closedInterior_subset_affineSpan {n : ℕ} {s : Simplex k P n} :
   · rintro rfl
     exact ⟨1, by simp [affineCombination_apply]⟩
 
+omit [PartialOrder k] in
+theorem mem_and_eq_zero_of_forall_mem_of_affineCombination_eq_affineCombination_face {n : ℕ}
+    (s : Simplex k P n) {fs : Finset (Fin (n + 1))} {m : ℕ} (h : #fs = m + 1)
+    {w : Fin (n + 1) → k} (hw : ∑ i, w i = 1) (w' : Fin (m + 1) → k) (I : Set k)
+    (hI : ∀ (i : Fin (m + 1)), w' i ∈ I) (hw' : ∑ i, w' i = 1)
+    (he : (affineCombination k univ s.points) w = (affineCombination k univ (s.face h).points) w') :
+    (∀ i ∈ fs, w i ∈ I) ∧ ∀ i ∉ fs, w i = 0 := by
+  have he' := s.independent.indicator_eq_of_affineCombination_comp_embedding_eq_of_fintype
+    hw hw' (fs.orderEmbOfFin h).toEmbedding he
+  simp_rw [he'.symm]
+  constructor
+  · intro i hi
+    simp only [RelEmbedding.coe_toEmbedding, range_orderEmbOfFin, mem_coe, hi,
+      Set.indicator_of_mem]
+    rw [← mem_coe, ← fs.range_orderEmbOfFin h] at hi
+    obtain ⟨j, rfl⟩ := hi
+    rw [(fs.orderEmbOfFin h).injective.extend_apply]
+    exact hI _
+  · intro i hi
+    simp [hi]
+
 lemma affineCombination_mem_interior_face_iff_mem_Ioo {n : ℕ} (s : Simplex k P n)
     {fs : Finset (Fin (n + 1))} {m : ℕ} (h : #fs = m + 1) {w : Fin (n + 1) → k}
     (hw : ∑ i, w i = 1) : Finset.univ.affineCombination k s.points w ∈ (s.face h).interior ↔
@@ -367,19 +388,8 @@ lemma affineCombination_mem_interior_face_iff_mem_Ioo {n : ℕ} (s : Simplex k P
         ((s.face h).interior_subset_closedInterior.trans closedInterior_subset_affineSpan)
     obtain ⟨w', hw', he⟩ := eq_affineCombination_of_mem_affineSpan_of_fintype h'
     rw [he, affineCombination_mem_interior_iff hw'] at hi
-    have he' := s.independent.indicator_eq_of_affineCombination_comp_embedding_eq_of_fintype
-      hw hw' (fs.orderEmbOfFin h).toEmbedding he
-    simp_rw [he']
-    constructor
-    · intro i hi
-      simp only [RelEmbedding.coe_toEmbedding, range_orderEmbOfFin, mem_coe, hi,
-        Set.indicator_of_mem]
-      rw [← mem_coe, ← fs.range_orderEmbOfFin h] at hi
-      obtain ⟨j, rfl⟩ := hi
-      rw [(fs.orderEmbOfFin h).injective.extend_apply]
-      exact hi _
-    · intro i hi
-      simp [hi]
+    exact mem_and_eq_zero_of_forall_mem_of_affineCombination_eq_affineCombination_face s h hw w'
+      _ hi hw' he
   · let w' : Fin (m + 1) → k := w ∘ fs.orderEmbOfFin h
     have hw' : ∑ i, w' i = 1 := by
       rw [Fintype.sum_of_injective _ (fs.orderEmbOfFin h).injective w' w (fun i hi ↦ ?_)
@@ -409,17 +419,8 @@ lemma affineCombination_mem_closedInterior_face_iff_mem_Icc {n : ℕ} (s : Simpl
     rw [he, affineCombination_mem_closedInterior_iff hw'] at hi
     have he' := s.independent.indicator_eq_of_affineCombination_comp_embedding_eq_of_fintype
       hw hw' (fs.orderEmbOfFin h).toEmbedding he
-    simp_rw [he']
-    constructor
-    · intro i hi
-      simp only [RelEmbedding.coe_toEmbedding, range_orderEmbOfFin, mem_coe, hi,
-        Set.indicator_of_mem]
-      rw [← mem_coe, ← fs.range_orderEmbOfFin h] at hi
-      obtain ⟨j, rfl⟩ := hi
-      rw [(fs.orderEmbOfFin h).injective.extend_apply]
-      exact hi _
-    · intro i hi
-      simp [hi]
+    exact mem_and_eq_zero_of_forall_mem_of_affineCombination_eq_affineCombination_face s h hw w'
+      _ hi hw' he
   · let w' : Fin (m + 1) → k := w ∘ fs.orderEmbOfFin h
     have hw' : ∑ i, w' i = 1 := by
       rw [Fintype.sum_of_injective _ (fs.orderEmbOfFin h).injective w' w (fun i hi ↦ ?_)

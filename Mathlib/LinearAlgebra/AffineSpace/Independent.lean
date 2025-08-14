@@ -355,10 +355,10 @@ lemma AffineIndependent.indicator_eq_of_affineCombination_comp_embedding_eq {ι�
     (ha : AffineIndependent k p) {s₁ : Finset ι} {s₂ : Finset ι₂} {w₁ : ι → k} {w₂ : ι₂ → k}
     (hw₁ : ∑ i ∈ s₁, w₁ i = 1) (hw₂ : ∑ i ∈ s₂, w₂ i = 1) (e : ι₂ ↪ ι)
     (h : s₁.affineCombination k p w₁ = s₂.affineCombination k (p ∘ e) w₂) :
-    Set.indicator (↑s₁) w₁ = Set.indicator (s₂.map e) (extend e w₂ 0) := by
+    Set.indicator (s₂.map e) (extend e w₂ 0) = Set.indicator (↑s₁) w₁ := by
   have hw₂e : extend e w₂ 0 ∘ e = w₂ := extend_comp e.injective _ _
   rw [← hw₂e, ← affineCombination_map] at h
-  refine ha.indicator_eq_of_affineCombination_eq s₁ (s₂.map e) _ _ hw₁ ?_ h
+  refine (ha.indicator_eq_of_affineCombination_eq s₁ (s₂.map e) _ _ hw₁ ?_ h).symm
   rw [sum_map]
   convert hw₂ with i hi
   exact e.injective.extend_apply _ _ _
@@ -367,7 +367,7 @@ lemma AffineIndependent.indicator_eq_of_affineCombination_comp_embedding_eq_of_f
     {ι₂ : Type*} [Fintype ι₂] {p : ι → P} (ha : AffineIndependent k p) {w₁ : ι → k} {w₂ : ι₂ → k}
     (hw₁ : ∑ i, w₁ i = 1) (hw₂ : ∑ i, w₂ i = 1) (e : ι₂ ↪ ι)
     (h : Finset.univ.affineCombination k p w₁ = Finset.univ.affineCombination k (p ∘ e) w₂) :
-    w₁ = Set.indicator (Set.range e) (extend e w₂ 0) := by
+    Set.indicator (Set.range e) (extend e w₂ 0) = w₁ := by
   simpa using ha.indicator_eq_of_affineCombination_comp_embedding_eq hw₁ hw₂ e h
 
 section Composition
