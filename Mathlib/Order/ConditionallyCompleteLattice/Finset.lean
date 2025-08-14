@@ -49,19 +49,6 @@ theorem Set.Finite.lt_csInf_iff (hs : s.Finite) (h : s.Nonempty) : a < sInf s �
 
 variable (f : ι → α)
 
-/-- In a conditionally complete linear order with `Bot`,
-then the supremum of a finite family is `< x`
-iff all the elements are `< x` (provided `⊥ < x`). -/
-lemma ciSup_lt_iff_of_finite_of_bot_lt
-    {ι α : Type*} [ConditionallyCompleteLinearOrderBot α]
-    [Finite ι] (f : ι → α) {x : α} (hx : ⊥ < x) :
-    ⨆ a, f a < x ↔ ∀ (a : ι), f a < x := by
-  dsimp [iSup]
-  by_cases hα : Nonempty ι
-  · simp [Set.Finite.csSup_lt_iff (Set.finite_range _) (Set.range_nonempty _)]
-  · rw [not_nonempty_iff] at hα
-    simpa [show Set.range f = ∅ by simpa]
-
 theorem Finset.ciSup_eq_max'_image {s : Finset ι} (h : ∃ x ∈ s, sSup ∅ ≤ f x)
     (h' : (s.image f).Nonempty := by classical exact image_nonempty.mpr (h.imp fun _ ↦ And.left)) :
     ⨆ i ∈ s, f i = (s.image f).max' h' := by

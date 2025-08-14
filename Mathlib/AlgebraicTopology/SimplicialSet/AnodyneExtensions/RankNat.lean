@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Rank
-import Mathlib.SetTheory.Ordinal.Rank
 
 /-!
 # Existence of a rank function to natural numbers
@@ -17,7 +16,7 @@ then there exists a rank function for `P` with value in `ℕ`.
 
 universe u
 
-open Ordinal Simplicial
+open Simplicial
 
 namespace SSet.Subcomplex.Pairing
 
@@ -37,34 +36,38 @@ instance (y : P.II) : Finite { x // P.AncestralRel x y } := by
   intro t₁ t₂ h
   rw [Subtype.ext_iff, Subtype.ext_iff, N.ext_iff, SSet.N.ext_iff, ← hφ, ← hφ, h]
 
+section
+
+variable {y : P.II} (hy : Acc P.AncestralRel y)
+
+noncomputable def rank' : ℕ :=
+  Acc.recOn hy (fun y _ r ↦ ⨆ (x : { x // P.AncestralRel x y }), r x x.2 + 1)
+
+lemma rank'_eq :
+    P.rank' hy = ⨆ (x : { x // P.AncestralRel x y }), P.rank' (hy.inv x.2) + 1 := by
+  change P.rank' (Acc.intro y fun _ => hy.inv) = _
+  rfl
+
+lemma rank'_lt {x : P.II} (r : P.AncestralRel x y) :
+    P.rank' (hy.inv r) < P.rank' hy := by
+  rw [P.rank'_eq hy, ← Nat.add_one_le_iff]
+  exact le_csSup (Finite.bddAbove_range _) ⟨⟨x, r⟩, rfl⟩
+
+end
+
 section IsRegular
 
 variable [P.IsRegular]
 
-lemma isWellFoundedRank_lt_omega (x : P.II) :
-    IsWellFounded.rank P.AncestralRel x < ω := by
-  induction x using IsWellFounded.induction P.AncestralRel with
-  | ind y hy =>
-    rw [IsWellFounded.rank_eq, ciSup_lt_iff_of_finite_of_bot_lt _ Ordinal.omega0_pos]
-    rintro x
-    have := hy _ x.2
-    rw [Ordinal.lt_omega0] at this ⊢
-    obtain ⟨n, hn⟩ := this
-    exact ⟨n + 1, by simp [hn]⟩
-
 /-- The rank function with values in `ℕ` relative to the well founded
 ancestrality relation of a regular pairing. -/
 noncomputable def rank (x : P.II) : ℕ :=
-  (Ordinal.lt_omega0.1 (P.isWellFoundedRank_lt_omega x)).choose
-
-@[simp]
-lemma coe_rank (x : P.II) : P.rank x = IsWellFounded.rank P.AncestralRel x :=
-  (Ordinal.lt_omega0.1 (P.isWellFoundedRank_lt_omega x)).choose_spec.symm
+  P.rank' (P.wf.apply x)
 
 variable {P} in
 lemma rank_lt {x y : P.II} (h : P.AncestralRel x y) :
-    P.rank x < P.rank y := by
-  simpa [← coe_rank, Nat.cast_lt] using IsWellFounded.rank_lt_of_rel h
+    P.rank x < P.rank y :=
+  P.rank'_lt _ h
 
 /-- The canonical rank function with values in `ℕ` of a regular pairing. -/
 noncomputable def rankFunction : P.RankFunction ℕ where
