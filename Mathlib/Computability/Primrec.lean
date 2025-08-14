@@ -1142,48 +1142,31 @@ theorem listFilter (hf : PrimrecRel R) :
   · refine PrimrecRel.comp .eq (PrimrecRel.comp hf snd (Primrec.comp snd fst)) (.const true)
   · exact Primrec.comp (option_some) snd
 
-/-- If `R a b` is decidable, then given `L : List α` and `b : β`, `"g L b ↔ ∃ a L, R a b"`
+/-- If `R a b` is decidable, then given `L : List α` and `b : β`, `g L b ↔ ∃ a L, R a b`
 is a primitive recursive relation. -/
 theorem exists_mem_list (hf : PrimrecRel R) : PrimrecRel fun (L : List α) b ↦ ∃ a ∈ L, R a b := by
   have h (L) (b) : (List.filter (R · b) L).length ≠ 0 ↔ ∃ a ∈ L, R a b := by simp
   apply PrimrecRel.of_eq ?_ h
   exact PrimrecRel.not (.comp .eq (list_length.comp <| PrimrecRel.listFilter hf) (const 0))
 
-/-- If `R a b` is decidable, then given `L : List α` and `b : β`, `"g L b ↔ ∀ a L, R a b"`
+/-- If `R a b` is decidable, then given `L : List α` and `b : β`, `g L b ↔ ∀ a L, R a b`
 is a primitive recursive relation. -/
 theorem forall_mem_list (hf : PrimrecRel R) : PrimrecRel fun (L : List α) b ↦ ∀ a ∈ L, R a b := by
   have h (L) (b) : (List.filter (R · b) L).length = L.length ↔ ∀ a ∈ L, R a b := by simp
   apply PrimrecRel.of_eq ?_ h
   exact (PrimrecRel.comp .eq (list_length.comp <| PrimrecRel.listFilter hf) (.comp list_length fst))
 
-variable {R : ℕ → ℕ → Prop} [DecidableRel R] (s : ℕ)
+variable {R : ℕ → ℕ → Prop} [DecidableRel R]
 
-/-- If `R a b` is decidable, then for any fixed `n` and `y`,  `"g n y ↔ ∃ x < n, R x y"` is a
+/-- If `R a b` is decidable, then for any fixed `n` and `y`, `g n y ↔ ∃ x < n, R x y` is a
 primitive recursive relation. -/
 theorem exists_lt (hf : PrimrecRel R) : PrimrecRel fun n y ↦ ∃ x < n, R x y :=
   PrimrecPred.of_eq (PrimrecRel.comp (exists_mem_list hf) (list_range.comp fst) snd) (by simp)
 
-/-- If `R a b` is decidable, then for any fixed `n` and `y`,  `"g n y ↔ ∀ x < n, R x y"` is a
+/-- If `R a b` is decidable, then for any fixed `n` and `y`, `g n y ↔ ∀ x < n, R x y` is a
 primitive recursive relation. -/
 theorem forall_lt (hf : PrimrecRel R) : PrimrecRel fun n y ↦ ∀ x < n, R x y :=
   PrimrecPred.of_eq (PrimrecRel.comp (forall_mem_list hf) (list_range.comp fst) snd) (by simp)
-
-/-- If `R a b` is decidable, then for any fixed `n` and `y`, `"∃ x < n, R x y"` is a
-primitive recursive predicate in `n`. This is sometimes easier to work with than the fully
-general case involving a primitive recursive relation. -/
-theorem exists_lt1 (hf : PrimrecRel R) : PrimrecPred fun n ↦ ∃ y < s, R y n := by
-  have h (n) : decide (∃ y < s, R y n) = decide ((List.range s).filter (R · n) ≠ []) := by simp
-  simp only [PrimrecPred, h]
-  exact not (PrimrecRel.comp Primrec.eq (listFilter_listRange _ hf) (const []))
-
-/-- If `R a b` is decidable, then for any fixed `n` and `y`, `"∀ x < n, R x y"` is a
-primitive recursive predicate in `n`. This is sometimes easier to work with than the fully
-general case involving a primitive recursive relation. -/
-theorem forall_lt1 (hf : PrimrecRel R) : PrimrecPred fun n ↦ ∀ y < s, R y n := by
-  have h (n) : decide (∀ y < s, R y n) = decide ((range s).filter (fun y ↦ R y n) = range s) := by
-    simp
-  simp only [PrimrecPred, h]
-  exact PrimrecRel.comp Primrec.eq (listFilter_listRange _ hf) (Primrec.const (range s))
 
 end PrimrecRel
 
