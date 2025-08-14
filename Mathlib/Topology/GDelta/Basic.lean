@@ -185,21 +185,16 @@ lemma sInter_mem_residual {S : Set (Set X)} (hS : ∀ s ∈ S, s ∈ residual X)
     ⋂₀ S ∈ residual X :=
   (Filter.sInter_mem hfin).2 hS
 
-/-- Finite (indexed by a `Finset`) intersections of residual sets are residual. -/
-lemma finset_iInter_mem_residual' {ι : Type*} (S : Finset ι) (s : ι → Set X)
-  (h : ∀ i ∈ S, s i ∈ residual X) :
+lemma finset_iInter_mem_residual {X : Type*} [TopologicalSpace X]
+    {ι : Type*} (S : Finset ι) (s : ι → Set X)
+    (h : ∀ i ∈ S, s i ∈ residual X) :
     (⋂ i ∈ S, s i) ∈ residual X := by
   classical
-  revert h
-  refine S.induction_on ?base ?step
-  · simp
-  · intro a S ha ih h
-    have ha' : s a ∈ residual X := h a (by simp)
-    have hS : ∀ i ∈ S, s i ∈ residual X := by
-      intro i hi
-      exact h i (by simp [Finset.mem_insert, hi])
-    have hS_mem : (⋂ i ∈ S, s i) ∈ residual X := ih hS
-    simpa [Finset.mem_insert, ha] using (residual (X := X)).inter_mem ha' hS_mem
+  have h' : ∀ i : {i // i ∈ S}, s i.1 ∈ residual X := fun i => h i.1 i.2
+  have hmem :
+    (⋂ i : {i // i ∈ S}, s i.1) ∈ residual X :=
+      (Filter.iInter_mem (s := fun i : {i // i ∈ S} => s i.1)).2 h'
+  simpa [iInter_subtype] using hmem
 
 end residual
 
