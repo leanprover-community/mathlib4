@@ -304,7 +304,7 @@ instance : LinearOrder (Products I) :=
 
 @[simp]
 theorem lt_iff_lex_lt (l m : Products I) : l < m ↔ List.Lex (· < ·) l.val m.val := by
-  cases l; cases m; rw [Subtype.mk_lt_mk]; exact Iff.rfl
+  simp
 
 instance [WellFoundedLT I] : WellFoundedLT (Products I) := by
   have : (· < · : Products I → _ → _) = (fun l m ↦ List.Lex (· < ·) l.val m.val) := by
@@ -563,7 +563,7 @@ theorem injective_πs (o : Ordinal) : Function.Injective (πs C o) :=
     (Set.surjective_mapsTo_image_restrict _ _)
 
 /-- The `ℤ`-linear map induced by precomposition of the projection
-    `π C (ord I · < o₂) → π C (ord I · < o₁)` for `o₁ ≤ o₂`. -/
+`π C (ord I · < o₂) → π C (ord I · < o₁)` for `o₁ ≤ o₂`. -/
 @[simps!]
 noncomputable
 def πs' {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂) :
