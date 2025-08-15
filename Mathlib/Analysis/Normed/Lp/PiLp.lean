@@ -441,8 +441,25 @@ nonrec lemma continuous_apply [∀ i, TopologicalSpace (β i)] (i : ι) :
     Continuous (fun f : PiLp p β ↦ f i) := (continuous_apply i).comp (continuous_ofLp p β)
 
 @[fun_prop, continuity]
+nonrec lemma continuous_apply [∀ i, TopologicalSpace (β i)] (i : ι) :
+    Continuous (fun f : PiLp p β ↦ f i) := (continuous_apply i).comp (continuous_ofLp p β)
+
+@[fun_prop, continuity]
 theorem continuous_toLp [∀ i, TopologicalSpace (β i)] : Continuous (@toLp p (∀ i, β i)) :=
   continuous_induced_rng.2 continuous_id
+
+/-- `WithLp.equiv` as a homeomorphism. -/
+def homeomorph [∀ i, TopologicalSpace (β i)] : (Π i, β i) ≃ₜ PiLp p β where
+  toEquiv := (WithLp.equiv p (Π i, β i)).symm
+  continuous_toFun := continuous_toLp p β
+  continuous_invFun := continuous_ofLp p β
+
+lemma isOpenMap_apply [∀ i, TopologicalSpace (β i)] (i : ι) :
+    IsOpenMap (fun f : PiLp p β ↦ f i) := (isOpenMap_eval i).comp (homeomorph p β).symm.isOpenMap
+
+instance instProdT0Space [∀ i, TopologicalSpace (β i)] [∀ i, T0Space (β i)] :
+    T0Space (PiLp p β) :=
+  (homeomorph p β).t0Space
 
 /-- `WithLp.equiv` as a homeomorphism. -/
 def homeomorph [∀ i, TopologicalSpace (β i)] : (Π i, β i) ≃ₜ PiLp p β where

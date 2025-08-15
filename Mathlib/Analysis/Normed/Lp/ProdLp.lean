@@ -465,6 +465,12 @@ def homeomorph_prod : α × β ≃ₜ WithLp p (α × β) where
   continuous_toFun := prod_continuous_toLp p α β
   continuous_invFun := prod_continuous_ofLp p α β
 
+/-- `WithLp.equiv` as a homeomorphism. -/
+def homeomorph_prod : α × β ≃ₜ WithLp p (α × β) where
+  toEquiv := (WithLp.equiv p (α × β)).symm
+  continuous_toFun := prod_continuous_toLp p α β
+  continuous_invFun := prod_continuous_ofLp p α β
+
 variable [T0Space α] [T0Space β]
 
 instance instProdT0Space : T0Space (WithLp p (α × β)) :=
