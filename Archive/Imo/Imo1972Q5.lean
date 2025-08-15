@@ -95,6 +95,6 @@ theorem imo1972_q5' (f g : ℝ → ℝ) (hf1 : ∀ x, ∀ y, f (x + y) + f (x - 
     calc
       2 * (‖f x‖ * ‖g y‖) = ‖2 * f x * g y‖ := by simp [mul_assoc]
       _ = ‖f (x + y) + f (x - y)‖ := by rw [hf1]
-      _ ≤ ‖f (x + y)‖ + ‖f (x - y)‖ := abs_add _ _
+      _ ≤ ‖f (x + y)‖ + ‖f (x - y)‖ := abs_add_le _ _
       _ ≤ 2 * k := by linarith [h (x + y), h (x - y)]
   linarith
