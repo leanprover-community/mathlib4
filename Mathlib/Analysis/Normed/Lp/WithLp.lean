@@ -206,6 +206,10 @@ protected def linearEquiv [Semiring K] [AddCommGroup V] [Module K V] : WithLp p 
   toFun := WithLp.ofLp
   invFun := WithLp.toLp p
 
+@[simp]
+lemma linearEquiv_symm_apply [Semiring K] [AddCommGroup V] [Module K V] :
+    ⇑(WithLp.linearEquiv p K V).symm = toLp p := rfl
+
 instance instModuleFinite
     [Semiring K] [AddCommGroup V] [Module K V] [Module.Finite K V] :
     Module.Finite K (WithLp p V) :=

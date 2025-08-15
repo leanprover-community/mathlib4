@@ -826,10 +826,10 @@ protected def _root_.LinearIsometryEquiv.piLpCongrRight (e : ∀ i, α i ≃ₗ�
     simp only [LinearEquiv.trans_apply, WithLp.linearEquiv_symm_apply, WithLp.linearEquiv_apply]
     obtain rfl | hp := p.dichotomy
     · simp_rw [PiLp.norm_toLp, Pi.norm_def, LinearEquiv.piCongrRight_apply,
-        LinearIsometryEquiv.coe_toLinearEquiv, LinearIsometryEquiv.nnnorm_map, toLp_apply]
+        LinearIsometryEquiv.coe_toLinearEquiv, LinearIsometryEquiv.nnnorm_map]
     · have : 0 < p.toReal := zero_lt_one.trans_le <| by norm_cast
-      simp only [PiLp.norm_eq_sum this, toLp_apply, LinearEquiv.piCongrRight_apply,
-        LinearIsometryEquiv.coe_toLinearEquiv, LinearIsometryEquiv.norm_map, toLp_apply]
+      simp only [PiLp.norm_eq_sum this, LinearEquiv.piCongrRight_apply,
+        LinearIsometryEquiv.coe_toLinearEquiv, LinearIsometryEquiv.norm_map, one_div]
 
 @[simp]
 theorem _root_.LinearIsometryEquiv.piLpCongrRight_apply (e : ∀ i, α i ≃ₗᵢ[𝕜] β i) (x : PiLp p α) :
@@ -878,7 +878,7 @@ def _root_.LinearIsometryEquiv.piLpCurry :
       dsimp [Sigma.curry]
       rw [← Finset.univ_sigma_univ, Finset.sup_sigma]
     · have : 0 < p.toReal := (toReal_pos_iff_ne_top _).mpr hp
-      simp_rw [PiLp.nnnorm_eq_sum hp, toLp_apply]
+      simp_rw [PiLp.nnnorm_eq_sum hp]
       dsimp [Sigma.curry]
       simp_rw [one_div, NNReal.rpow_inv_rpow this.ne', ← Finset.univ_sigma_univ, Finset.sum_sigma]
 
@@ -933,7 +933,7 @@ theorem nnnorm_toLp_single (i : ι) (b : β i) :
   haveI : Nonempty ι := ⟨i⟩
   induction p generalizing hp with
   | top =>
-    simp_rw [nnnorm_eq_ciSup, toLp_apply]
+    simp_rw [nnnorm_eq_ciSup]
     refine
       ciSup_eq_of_forall_le_of_forall_lt_exists_gt (fun j => ?_) fun n hn => ⟨i, hn.trans_eq ?_⟩
     · obtain rfl | hij := Decidable.eq_or_ne i j
@@ -981,7 +981,7 @@ lemma nnnorm_toLp_const {β} [SeminormedAddCommGroup β] (hp : p ≠ ∞) (b : �
   rcases p.dichotomy with (h | h)
   · exact False.elim (hp h)
   · have ne_zero : p.toReal ≠ 0 := (zero_lt_one.trans_le h).ne'
-    simp_rw [nnnorm_eq_sum hp, toLp_apply, Function.const_apply, Finset.sum_const,
+    simp_rw [nnnorm_eq_sum hp, Function.const_apply, Finset.sum_const,
       Finset.card_univ, nsmul_eq_mul, NNReal.mul_rpow, ← NNReal.rpow_mul,
       mul_one_div_cancel ne_zero, NNReal.rpow_one, ENNReal.toReal_div, ENNReal.toReal_one]
 
@@ -993,7 +993,7 @@ lemma nnnorm_toLp_const' {β} [SeminormedAddCommGroup β] [Nonempty ι] (b : β)
     ‖toLp p (Function.const ι b)‖₊ =
       (Fintype.card ι : ℝ≥0) ^ (1 / p).toReal * ‖b‖₊ := by
   rcases em <| p = ∞ with (rfl | hp)
-  · simp only [toLp_apply, ENNReal.div_top, ENNReal.toReal_zero, NNReal.rpow_zero,
+  · simp only [ENNReal.div_top, ENNReal.toReal_zero, NNReal.rpow_zero,
       one_mul, nnnorm_eq_ciSup, Function.const_apply, ciSup_const]
   · exact nnnorm_toLp_const hp b
 
