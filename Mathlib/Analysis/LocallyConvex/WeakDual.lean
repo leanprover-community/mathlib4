@@ -5,9 +5,9 @@ Authors: Moritz Doll
 -/
 import Mathlib.Analysis.Normed.Field.Lemmas
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
-import Mathlib.Topology.Algebra.Module.WeakBilin
 import Mathlib.LinearAlgebra.Dual.Lemmas
 import Mathlib.LinearAlgebra.Finsupp.Span
+import Mathlib.Topology.Algebra.Module.WeakBilin
 
 /-!
 # Weak Dual in Topological Vector Spaces
