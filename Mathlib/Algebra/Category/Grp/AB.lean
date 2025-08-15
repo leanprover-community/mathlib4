@@ -88,3 +88,4 @@ instance : HasExactLimitsOfShape (Discrete J) (AddCommGrp.{u}) := by
 
 instance : AB4Star AddCommGrp.{u} where
   ofShape _ := inferInstance
+

@@ -76,8 +76,6 @@ instance {P S : Type*} [Ring S] [Semiring P] [Module P R] [Module P S]
     [Algebra R S] [IsScalarTower P R S] :
     IsScalarTower P (WithVal v) S := inferInstanceAs (IsScalarTower P R S)
 
-instance {R} [Ring R] (v : Valuation R Γ₀) : Valued (WithVal v) Γ₀ := Valued.mk' v
-
 end Instances
 
 section Ring
@@ -87,7 +85,16 @@ variable [Ring R] (v : Valuation R Γ₀)
 /-- Canonical ring equivalence between `WithVal v` and `R`. -/
 def equiv : WithVal v ≃+* R := RingEquiv.refl _
 
-theorem apply_equiv (r : WithVal v) : v (WithVal.equiv v r) = v r := rfl
+instance {R} [Ring R] (v : Valuation R Γ₀) : Valued (WithVal v) Γ₀ :=
+  Valued.mk' (v.comap (WithVal.equiv v))
+
+@[simp]
+theorem apply_equiv (r : WithVal v) :
+    (Valued.v : Valuation (WithVal v) Γ₀) (WithVal.equiv v r) = v r :=
+  rfl
+
+@[simp]
+theorem apply_symm_equiv (r : R) : v ((WithVal.equiv v).symm r) = v r := rfl
 
 /-- Canonical valuation on the `WithVal v` type synonym. -/
 def valuation : Valuation (WithVal v) Γ₀ where

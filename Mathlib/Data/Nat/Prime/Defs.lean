@@ -28,9 +28,8 @@ This file deals with prime numbers: natural numbers `p ≥ 2` whose only divisor
 
 assert_not_exists Ring
 
-open Bool Subtype Nat
-
 namespace Nat
+
 variable {n : ℕ}
 
 /-- `Nat.Prime p` means that `p` is a prime number, that is, a natural number
@@ -102,9 +101,6 @@ theorem prime_def {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, m ∣ p → m = 1 �
   refine (h.2 a <| dvd_mul_right ..).imp_right fun hab ↦ ?_
   rw [← mul_right_inj' (Nat.ne_zero_of_lt h1), ← hab, ← hab, mul_one]
 
-@[deprecated (since := "2024-11-19")]
-alias prime_def_lt'' := prime_def
-
 theorem prime_def_lt {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m < p, m ∣ p → m = 1 :=
   prime_def.trans <|
     and_congr_right fun p2 =>
@@ -118,9 +114,7 @@ theorem prime_def_lt' {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, 2 ≤ m → m <
       forall_congr' fun m =>
         ⟨fun h m2 l d => not_lt_of_ge m2 ((h l d).symm ▸ by decide), fun h l d => by
           rcases m with (_ | _ | m)
-          · rw [eq_zero_of_zero_dvd d] at p2
-            revert p2
-            decide
+          · omega
           · rfl
           · exact (h (le_add_left 2 m) l).elim d⟩
 
@@ -296,7 +290,7 @@ theorem minFac_prime {n : ℕ} (n1 : n ≠ 1) : Prime (minFac n) :=
 theorem minFac_prime_iff {n : ℕ} : Prime (minFac n) ↔ n ≠ 1 := by
   refine ⟨?_, minFac_prime⟩
   rintro h rfl
-  exact prime_one_false h
+  simp only [minFac_one, not_prime_one] at h
 
 theorem minFac_le_of_dvd {n : ℕ} : ∀ {m : ℕ}, 2 ≤ m → m ∣ n → minFac n ≤ m := by
   by_cases n1 : n = 1
@@ -427,6 +421,8 @@ theorem Prime.dvd_mul {p m n : ℕ} (pp : Prime p) : p ∣ m * n ↔ p ∣ m ∨
   ⟨fun H => or_iff_not_imp_left.2 fun h => (pp.coprime_iff_not_dvd.2 h).dvd_of_dvd_mul_left H,
     Or.rec (fun h : p ∣ m => h.mul_right _) fun h : p ∣ n => h.mul_left _⟩
 
+alias ⟨Prime.dvd_or_dvd, _⟩ := Prime.dvd_mul
+
 theorem prime_iff {p : ℕ} : p.Prime ↔ _root_.Prime p :=
   ⟨fun h => ⟨h.ne_zero, h.not_isUnit, fun _ _ => h.dvd_mul.mp⟩, Prime.irreducible⟩
 
@@ -461,10 +457,6 @@ end Primes
 
 instance monoid.primePow {α : Type*} [Monoid α] : Pow α Primes :=
   ⟨fun x p => x ^ (p : ℕ)⟩
-
-end Nat
-
-namespace Nat
 
 instance fact_prime_two : Fact (Prime 2) :=
   ⟨prime_two⟩

@@ -18,7 +18,7 @@ variable {α : Type*} [DecidableEq α]
 namespace FreeMonoid
 
 /-- the set of unique symbols in a free monoid element -/
-@[to_additive "The set of unique symbols in an additive free monoid element"]
+@[to_additive /-- The set of unique symbols in an additive free monoid element -/]
 def symbols (a : FreeMonoid α) : Finset α := List.toFinset a
 
 @[to_additive (attr := simp)]
