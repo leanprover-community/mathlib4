@@ -7,6 +7,7 @@ import Mathlib.Control.Basic
 import Mathlib.Data.Set.Defs
 import Mathlib.Data.Set.Lattice.Image
 import Mathlib.Data.Set.Notation
+import Batteries.Control.AlternativeMonad
 
 /-!
 # Functoriality of `Set`
@@ -76,6 +77,23 @@ instance : Alternative Set :=
     orElse := fun s t => s ∪ (t ())
     failure := ∅ }
 
+@[simp]
+theorem failure_def : (failure : Set α) = ∅ :=
+  rfl
+
+@[simp]
+theorem orElse_def (s : Set α) (t : Set α) : (s <|> t) = s ∪ t :=
+  rfl
+
+instance : LawfulAlternative Set where
+  map_failure f := by simp
+  failure_seq := by simp [Set.ext_iff]
+  orElse_failure := by simp
+  failure_orElse := by simp
+  orElse_assoc x y z := by simp [Set.union_assoc]
+  map_orElse x y f := by simp [Set.image_union]
+  __ := inferInstanceAs (LawfulMonad Set)
+
 /-! ### Monadic coercion lemmas -/
 
 variable {β : Set α} {γ : Set β}
@@ -135,6 +153,13 @@ end Set
 def SetM (α : Type u) := Set α
 
 instance : Monad SetM := Set.monad
+
+instance : AlternativeMonad SetM where
+  __ := Set.instAlternative
+
+instance : LawfulMonad SetM := Set.instLawfulMonad
+
+instance : LawfulAlternative SetM := Set.instLawfulAlternative
 
 /-- Evaluates the `SetM` monad, yielding a `Set`.
 Implementation note: this is the identity function. -/
