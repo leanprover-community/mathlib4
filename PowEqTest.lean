@@ -28,6 +28,7 @@ end Nat
 
 #check factorization
 #check UniqueFactorizationMonoid.factors
+#check UniqueFactorizationMonoid
 
 section UniqueFactorizationMonoid
 
