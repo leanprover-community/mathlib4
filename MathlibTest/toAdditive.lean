@@ -318,13 +318,37 @@ def reorderMulThree {α : Type _} [Mul α] (x y z : α) : α := x * y * z
 /--
 error: the permutation
 [[2, 3, 50]]
-provided by the reorder config option is too large, the type
+provided by the `(reorder := ...)` option is out of bounds, the type
   {α : Type u_1} → [Mul α] → α → α → α → α
 has only 5 arguments
 -/
 #guard_msgs in
 @[to_additive (reorder := 3 4 51)]
 def reorderMulThree' {α : Type _} [Mul α] (x y z : α) : α := x * y * z
+
+/-! Test `(reorder := ...)` when the proof needs to be eta-expanded. -/
+@[to_additive (reorder := 3 4 5)]
+alias reorderMulThree_alias := reorderMulThree
+
+@[to_additive (reorder := 3 4 2)]
+alias reorderMulThree_alias' := reorderMulThree
+
+@[to_additive (reorder := 3 4 5)]
+def reorderMulThree_alias'' {α : Type _} [Mul α] (x y : α) : α → α := reorderMulThree x y
+
+/--
+error: invalid cycle `04`, a cycle must have at least 2 elements.
+`(reorder := ...)` uses cycle notation to specify a permutation.
+For example `(reorder := 1 2, 5 6)` swaps the first two arguments with each other and the fifth and the sixth argument and `(reorder := 3 4 5)` will move the fifth argument before the third argument.
+-/
+#guard_msgs in
+@[to_additive (reorder := 04)]
+example : True := trivial
+
+/-- error: invalid position `00`, positions are counted starting from 1. -/
+#guard_msgs in
+@[to_additive (reorder := 100 200, 2 00)]
+example : True := trivial
 
 example {α : Type _} [Add α] (x y z : α) : reorderAddThree z x y = x + y + z := rfl
 
@@ -517,7 +541,57 @@ fun {α} [i : Mul α] a => i.1 a
 #print myMul
 /--
 info: def myAdd : {α : Type} → [i : Add α] → α → α → α :=
-fun {α} [i : Add α] a => i.1 a
+fun {α} [Add α] a => Add.add a
 -/
 #guard_msgs in
 #print myAdd
+
+/-! Test that the `existingAttributeWarning` linter doesn't fire for `to_additive self`. -/
+@[simp, to_additive self]
+theorem test1 : 5 = 5 := rfl
+
+/-! Test that we can't write `to_additive self (attr := ..)`. -/
+
+/--
+error: invalid `(attr := ...)` after `self`, as there is only one declaration for the attributes.
+Instead, you can write the attributes in the usual way.
+-/
+#guard_msgs in
+@[to_additive self (attr := simp)]
+theorem test2 : 5 = 5 := rfl
+
+/-! Previously, An application that isn't a constant, such as `(no_index Add) α`, would be seen as
+multiplicative, hence `α` would be set as the `to_additive_relevant_arg`. -/
+
+@[to_additive]
+def fooMul {α β : Type} (_ : (no_index Add) α) [Mul β] (x y : β) : β := x * y
+
+@[to_additive] -- this would not translate `fooMul`
+def barMul {β : Type} [Mul β] (x y : β) : β := fooMul instAddNat x y
+
+/-! Test that additive docstrings work -/
+
+@[to_additive /-- (via `docComment` syntax) I am an additive docstring! -/]
+theorem mulTrivial : True := trivial
+
+/-- info: (via `docComment` syntax) I am an additive docstring! -/
+#guard_msgs in
+run_cmd
+  let some doc  ← findDocString? (← getEnv) ``addTrivial
+    | throwError "no `docComment` docstring found"
+  logInfo doc
+
+/--
+warning: String syntax for `to_additive` docstrings is deprecated:
+Use docstring syntax instead (e.g. `@[to_additive /-- example -/]`)
+-/
+#guard_msgs in
+@[to_additive "(via `str` syntax) I am an additive docstring!"]
+theorem mulTrivial' : True := trivial
+
+/-- info: (via `str` syntax) I am an additive docstring! -/
+#guard_msgs in
+run_cmd
+  let some doc ← findDocString? (← getEnv) ``addTrivial'
+    | throwError "no `str` docstring found"
+  logInfo doc

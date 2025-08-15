@@ -65,7 +65,7 @@ lemma Quot.addMonoidHom_ext [DecidableEq J] {α : Type*} [AddMonoid α] {f g : Q
 variable (c : Cocone F)
 
 /-- (implementation detail) Part of the universal property of the colimit cocone, but without
-    assuming that `Quot F` lives in the correct universe. -/
+assuming that `Quot F` lives in the correct universe. -/
 def Quot.desc [DecidableEq J] : Quot.{w} F →+ c.pt := by
   refine QuotientAddGroup.lift _ (DFinsupp.sumAddHom fun x => (c.ι.app x).hom) ?_
   dsimp

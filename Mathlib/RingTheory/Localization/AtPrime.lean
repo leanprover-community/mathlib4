@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2018 Kenny Lau. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
--/
-import Mathlib.RingTheory.Ideal.Over
-import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-import Mathlib.RingTheory.Localization.Basic
-import Mathlib.RingTheory.Localization.Ideal
-import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
+import Mathlib.RingTheory.Localization.AtPrime.Basic
 
 /-!
 # Localizations of commutative rings at the complement of a prime ideal
@@ -321,3 +312,4 @@ lemma IsLocalization.subsingleton_primeSpectrum_of_mem_minimalPrimes
     fun ⦃x⦄ a ↦ a⟩, fun i ↦ Subtype.ext <| PrimeSpectrum.ext <|
     (minimalPrimes_eq_minimals (R := R) ▸ hp).eq_of_le i.1.2 i.2⟩
   (IsLocalization.AtPrime.primeSpectrumOrderIso S p).subsingleton
+deprecated_module (since := "2025-08-01")
