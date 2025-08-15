@@ -213,12 +213,10 @@ theorem eq_get_iff_mem {o : Part α} {a : α} (h : o.Dom) : a = o.get h ↔ a �
   eq_comm.trans (get_eq_iff_mem h)
 
 theorem eq_of_get_eq_get {a b : Part α} (ha : a.Dom) (hb : b.Dom) (hab : a.get ha = b.get hb) :
-    a = b := by
-  ext
-  rw [← eq_get_iff_mem ha, ← eq_get_iff_mem hb, hab]
+    a = b := ext' (iff_of_true ha hb) fun _ _ => hab
 
 theorem eq_iff_of_dom {a b : Part α} (ha : a.Dom) (hb : b.Dom) : a.get ha = b.get hb ↔ a = b :=
-  ⟨fun H ↦ eq_of_get_eq_get ha hb H, fun H ↦ get_eq_get_of_eq a ha H⟩
+  ⟨eq_of_get_eq_get ha hb, get_eq_get_of_eq a ha⟩
 
 theorem get_eq_get {a b : Part α} (ha : a.Dom) (hb : a.get ha ∈ b) : a = b := by
   have hb' : b.Dom := Part.dom_iff_mem.mpr ⟨a.get ha, hb⟩
