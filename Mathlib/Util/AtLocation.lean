@@ -27,14 +27,15 @@ combination of these.
 
 This is a variant of `Lean.Elab.Tactic.withLocation`. -/
 def Lean.Elab.Tactic.withNondepPropLocation (loc : Location) (atLocal : FVarId → TacticM Unit)
-    (atTarget : TacticM Unit) : TacticM Unit := do
+    (atTarget : TacticM Unit) (failed : MVarId → TacticM Unit) : TacticM Unit := do
   match loc with
   | Location.targets hyps target => do
     (← getFVarIds hyps).forM atLocal
     if target then atTarget
   | Location.wildcard => do
-    (← (← getMainGoal).getNondepPropHyps).forM atLocal
-    atTarget
+    let worked ← (← (← getMainGoal).getNondepPropHyps).anyM (tryTactic ∘ atLocal)
+    unless worked || (← tryTactic atTarget) do
+      failed (← getMainGoal)
 
 namespace Mathlib.Tactic
 open Lean Meta Elab.Tactic
@@ -109,5 +110,6 @@ def atNondepPropLocation (proc : String) (loc : Location) (failIfUnchanged : Boo
   withNondepPropLocation loc
     (liftMetaTactic1 ∘ atLocalDecl m proc failIfUnchanged mayCloseGoalFromHyp)
     (liftMetaTactic1 <| atTarget m proc failIfUnchanged)
+    fun _ ↦ throwError "{proc} made no progress anywhere"
 
 end Mathlib.Tactic
