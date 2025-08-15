@@ -13,7 +13,7 @@ import Mathlib.CategoryTheory.Adjunction.Mates
 
 In this file, we construct the pseudofunctors
 `CommRingCat.moduleCatRestrictScalarsPseudofunctor` and
-`RingCat.moduleCatRestrictScalarsPseudofunctor` which sends a (commutative) ring
+`RingCat.moduleCatRestrictScalarsPseudofunctor` which send a (commutative) ring
 to its category of modules: the contravariant functoriality is given
 by the restriction of scalars functors.
 
