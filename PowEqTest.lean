@@ -3,9 +3,9 @@ import Mathlib
 namespace Nat
 
 theorem exponent_dvd_of_prime_pow_eq_pow {p a m n : ℕ} (hp : p.Prime) (h : p ^ m = a ^ n) : n ∣ m := by
-  have factorization_eq := congrArg factorization h
-  rw [Prime.factorization_pow hp, factorization_pow] at factorization_eq
-  have := congrFun (congrArg DFunLike.coe factorization_eq) p
+  have := congrArg factorization h
+  rw [Prime.factorization_pow hp, factorization_pow] at this
+  have := congrFun (congrArg DFunLike.coe this) p
   simp at this
   exact Dvd.intro (a.factorization p) this.symm
 
@@ -18,9 +18,18 @@ theorem exists_k_base_eq_p_pow_k_of_prime_p_pow_eq_base_pow
 
 theorem exists_eq_pow_of_exponent_coprime_of_pow_eq {a b m n : ℕ} (hmn : m.Coprime n) (h : a ^ m = b ^ n) :
     ∃ c, a = c ^ n ∧ b = c ^ m := by
-  have factorization_eq := congrArg factorization h
-
-  sorry
+  have := congrArg factorization h
+  rw [factorization_pow, factorization_pow] at this
+  let c_factoriztion := a.factorization.mapRange (. / n) (Nat.zero_div n)
+  let c := c_factoriztion.prod (. ^ .)
+  use c
+  constructor
+  · suffices a.factorization = n * c_factoriztion by
+      sorry
+    have : a = a.factorization.prod (. ^ .) := by
+      hint
+    sorry
+  · sorry
 
 theorem exists_eq_pow_of_pow_eq {a b m n : ℕ} (hmn : m ≠ 0 ∨ n ≠ 0) (h : a ^ m = b ^ n) :
     let g := gcd m n; ∃ c, a = c ^ (n / g) ∧ b = c ^ (m / g) := by
