@@ -27,6 +27,8 @@ and products of functors and natural transformations, written `F.prod G` and `α
 
 namespace CategoryTheory
 
+open Functor
+
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
@@ -36,7 +38,7 @@ variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
 
 -- the generates simp lemmas like `id_fst` and `comp_snd`
 /-- `prod C D` gives the cartesian product of two categories. -/
-@[simps (config := { notRecursive := [] }) Hom id_fst id_snd comp_fst comp_snd, stacks 001K]
+@[simps (notRecursive := []) Hom id_fst id_snd comp_fst comp_snd, stacks 001K]
 instance prod : Category.{max v₁ v₂} (C × D) where
   Hom X Y := (X.1 ⟶ Y.1) × (X.2 ⟶ Y.2)
   id X := ⟨𝟙 X.1, 𝟙 X.2⟩
@@ -64,7 +66,7 @@ variable {C D} in
 This constructor should be preferred over `Prod.mk`, because lean infers better the
 source and target of the resulting morphism. -/
 abbrev mkHom {X₁ X₂ : C} {Y₁ Y₂ : D} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) : (X₁, Y₁) ⟶ (X₂, Y₂) :=
-  ⟨f,g⟩
+  ⟨f, g⟩
 
 @[inherit_doc Prod.mkHom]
 scoped infixr:70 " ×ₘ " => Prod.mkHom
@@ -131,13 +133,6 @@ def sectR {C : Type u₁} [Category.{v₁} C] (Z : C) (D : Type u₂) [Category.
   obj X := (Z, X)
   map f := (𝟙 Z, f)
 
-@[deprecated (since := "2024-11-12")] alias sectl := sectL
-@[deprecated (since := "2024-11-12")] alias sectr := sectR
-@[deprecated (since := "2024-11-12")] alias sectl_obj := sectL_obj
-@[deprecated (since := "2024-11-12")] alias sectr_obj := sectR_obj
-@[deprecated (since := "2024-11-12")] alias sectl_map := sectL_map
-@[deprecated (since := "2024-11-12")] alias sectr_map := sectR_map
-
 variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
 
 /-- `fst` is the functor `(X, Y) ↦ X`. -/
@@ -183,12 +178,12 @@ variable {C D}
 /-- Any morphism in a product factors as a morphsim whose left component is an identity
 followed by a morphism whose right component is an identity. -/
 @[reassoc]
-lemma fac {x y : C × D} (f : x ⟶ y) : f = (𝟙 x.1 ×ₘ f.2) ≫ (f.1 ×ₘ (𝟙 y.2)) := by aesop
+lemma fac {x y : C × D} (f : x ⟶ y) : f = (𝟙 x.1 ×ₘ f.2) ≫ (f.1 ×ₘ (𝟙 y.2)) := by simp
 
 /-- Any morphism in a product factors as a morphsim whose right component is an identity
 followed by a morphism whose left component is an identity. -/
 @[reassoc]
-lemma fac' {x y : C × D} (f : x ⟶ y) : f = (f.1 ×ₘ 𝟙 x.2) ≫ ((𝟙 y.1) ×ₘ f.2) := by aesop
+lemma fac' {x y : C × D} (f : x ⟶ y) : f = (f.1 ×ₘ 𝟙 x.2) ≫ ((𝟙 y.1) ×ₘ f.2) := by simp
 
 end Prod
 

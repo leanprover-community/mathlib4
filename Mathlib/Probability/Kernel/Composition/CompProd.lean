@@ -80,7 +80,7 @@ theorem compProdFun_iUnion (κ : Kernel α β) (η : Kernel (α × β) γ) [IsSF
   have h_Union : (fun b ↦ η (a, b) {c : γ | (b, c) ∈ ⋃ i, f i})
       = fun b ↦ η (a, b) (⋃ i, {c : γ | (b, c) ∈ f i}) := by
     ext1 b
-    congr with c
+    congr 1 with c
     simp only [Set.mem_iUnion, Set.mem_setOf_eq]
   rw [compProdFun, h_Union]
   have h_tsum : (fun b ↦ η (a, b) (⋃ i, {c : γ | (b, c) ∈ f i}))
@@ -359,7 +359,7 @@ theorem compProd_restrict {s : Set β} {t : Set γ} (hs : MeasurableSet s) (ht :
   rw [compProd_apply hu, restrict_apply' _ _ _ hu, compProd_apply (hu.inter (hs.prod ht))]
   simp only [restrict_apply, Set.preimage, Measure.restrict_apply' ht, Set.mem_inter_iff,
     Set.mem_prod]
-  have (b) : η (a, b) {c : γ | (b, c) ∈ u ∧ b ∈ s ∧ c ∈ t} =
+  have (b : _) : η (a, b) {c : γ | (b, c) ∈ u ∧ b ∈ s ∧ c ∈ t} =
       s.indicator (fun b => η (a, b) ({c : γ | (b, c) ∈ u} ∩ t)) b := by
     classical
     rw [Set.indicator_apply]

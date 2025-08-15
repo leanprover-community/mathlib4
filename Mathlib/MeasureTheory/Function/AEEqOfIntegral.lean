@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.Analysis.InnerProductSpace.Continuous
-import Mathlib.Analysis.Normed.Module.Dual
 import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp
 import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
@@ -37,7 +36,7 @@ example, `Lp.ae_eq_zero_of_forall_setIntegral_eq_zero`.
 Generally useful lemmas which are not related to integrals:
 * `ae_eq_zero_of_forall_inner`: if for all constants `c`, `(fun x => ⟪c, f x⟫_𝕜) =ᵐ[μ] 0` then
   `f =ᵐ[μ] 0`.
-* `ae_eq_zero_of_forall_dual`: if for all constants `c` in the dual space,
+* `ae_eq_zero_of_forall_dual`: if for all constants `c` in the `StrongDual` space,
   `fun x => c (f x) =ᵐ[μ] 0` then `f =ᵐ[μ] 0`.
 
 -/
@@ -72,7 +71,8 @@ variable (𝕜)
 
 theorem ae_eq_zero_of_forall_dual_of_isSeparable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     {t : Set E} (ht : TopologicalSpace.IsSeparable t) {f : α → E}
-    (hf : ∀ c : Dual 𝕜 E, (fun x => ⟪f x, c⟫) =ᵐ[μ] 0) (h't : ∀ᵐ x ∂μ, f x ∈ t) : f =ᵐ[μ] 0 := by
+    (hf : ∀ c : StrongDual 𝕜 E, (fun x => ⟪f x, c⟫) =ᵐ[μ] 0) (h't : ∀ᵐ x ∂μ, f x ∈ t) :
+    f =ᵐ[μ] 0 := by
   rcases ht with ⟨d, d_count, hd⟩
   haveI : Encodable d := d_count.toEncodable
   have : ∀ x : d, ∃ g : E →L[𝕜] 𝕜, ‖g‖ ≤ 1 ∧ g x = ‖(x : E)‖ :=
@@ -105,8 +105,8 @@ theorem ae_eq_zero_of_forall_dual_of_isSeparable [NormedAddCommGroup E] [NormedS
   exact A (f x) h'x hx
 
 theorem ae_eq_zero_of_forall_dual [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [SecondCountableTopology E] {f : α → E} (hf : ∀ c : Dual 𝕜 E, (fun x => ⟪f x, c⟫) =ᵐ[μ] 0) :
-    f =ᵐ[μ] 0 :=
+    [SecondCountableTopology E] {f : α → E}
+    (hf : ∀ c : StrongDual 𝕜 E, (fun x => ⟪f x, c⟫) =ᵐ[μ] 0) : f =ᵐ[μ] 0 :=
   ae_eq_zero_of_forall_dual_of_isSeparable 𝕜 (.of_separableSpace Set.univ) hf
     (Eventually.of_forall fun _ => Set.mem_univ _)
 

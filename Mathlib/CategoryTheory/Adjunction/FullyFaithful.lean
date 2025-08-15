@@ -36,7 +36,7 @@ namespace CategoryTheory.Adjunction
 
 universe v₁ v₂ u₁ u₂
 
-open Category
+open Category Functor
 
 open Opposite
 

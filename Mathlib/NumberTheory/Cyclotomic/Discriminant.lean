@@ -139,10 +139,9 @@ theorem discr_prime_pow [hcycl : IsCyclotomicExtension {p ^ k} K L] [hp : Fact p
     rw [← (algebraMap K L).map_one, trace_algebraMap, finrank _ hirr]
     norm_num
   · by_cases hk : p ^ (k + 1) = 2
-    · have hp : p = 2 := by
+    · obtain rfl : p = 2 := by
         rw [← pow_one 2] at hk
         exact eq_of_prime_pow_eq (prime_iff.1 hp.out) (prime_iff.1 Nat.prime_two) (succ_pos _) hk
-      subst hp
       nth_rw 2 [← pow_one 2] at hk
       replace hk := Nat.pow_right_injective rfl.le hk
       rw [add_eq_right] at hk
@@ -156,7 +155,7 @@ theorem discr_prime_pow [hcycl : IsCyclotomicExtension {p ^ k} K L] [hp : Fact p
       rw [← Algebra.discr_reindex K (hζ.powerBasis K).basis e, coe_basis, powerBasis_gen]; norm_num
       simp_rw [hζ.eq_neg_one_of_two_right, show (-1 : L) = algebraMap K L (-1) by simp]
       convert_to (discr K fun i : Fin 1 ↦ (algebraMap K L) (-1) ^ ↑i) = _
-      · congr
+      · congr 1
         ext i
         simp only [map_neg, map_one, Function.comp_apply, Fin.val_eq_zero, _root_.pow_zero]
         suffices (e.symm i : ℕ) = 0 by simp [this]

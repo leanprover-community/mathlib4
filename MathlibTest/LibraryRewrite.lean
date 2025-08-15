@@ -78,6 +78,8 @@ Pattern ∀ (p : P), Q p
 info: Pattern n + 1
 · n.succ
   Nat.add_one
+· Std.PRange.UpwardEnumerable.succ n
+  Std.PRange.Nat.succ_eq
 · (↑n + 1).toNat
   Int.toNat_natCast_add_one
 
@@ -104,7 +106,7 @@ Pattern a + b
   add_comm
 -/
 #guard_msgs in
-#rw?? n+1
+#rw?? n + 1
 
 /--
 info: Pattern n / 2
