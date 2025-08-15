@@ -36,7 +36,7 @@ form
 Z  ⟶ X₁
 ↓    ↓
 X₂ ⟶ ∐ X
-```,
+```
 `Z` is initial.
 -/
 class CoproductDisjoint {ι : Type*} (X : ι → C) : Prop where
@@ -79,33 +79,35 @@ instance _root_.CategoryTheory.Mono.ι_of_coproductDisjoint [HasCoproduct X] (i 
     Mono (Sigma.ι X i) :=
   CoproductDisjoint.mono_inj (colimit.isColimit _) i
 
+namespace IsInitial
+variable {i j : ι} (hij : i ≠ j)
+
 /-- If `i ≠ j` and `Xᵢ ← Y → Xⱼ` is a pullback diagram over `Z`, where `Z` is the
 coproduct of the `Xᵢ`, then `Y` is initial. -/
-noncomputable def IsInitial.ofCoproductDisjointOfIsColimitOfIsLimit {i j : ι} (hij : i ≠ j)
-    {c : Cofan X} (hc : IsColimit c)
+noncomputable def ofCoproductDisjointOfIsColimitOfIsLimit {c : Cofan X} (hc : IsColimit c)
     {s : PullbackCone (c.inj i) (c.inj j)} (hs : IsLimit s) :
     IsInitial s.pt :=
   (CoproductDisjoint.nonempty_isInitial_of_ne hc hij _ hs).some
 
 /-- If `i ≠ j`, the pullback `Xᵢ ×[∐ X] Xⱼ` is initial. -/
-noncomputable def IsInitial.ofCoproductDisjoint {i j : ι} (hij : i ≠ j)
-    [HasCoproduct X] [HasPullback (Sigma.ι X i) (Sigma.ι X j)] :
+noncomputable def ofCoproductDisjoint [HasCoproduct X] [HasPullback (Sigma.ι X i) (Sigma.ι X j)] :
     IsInitial (pullback (Sigma.ι X i) (Sigma.ι X j)) :=
   ofCoproductDisjointOfIsColimitOfIsLimit hij (colimit.isColimit _)
     (pullback.isLimit (Sigma.ι X i) (Sigma.ι X j))
 
 /-- If `i ≠ j`, the pullback `Xᵢ ×[Z] Xⱼ` is initial, if `Z` is the coproduct of the `Xᵢ`. -/
-noncomputable def IsInitial.ofCoproductDisjointOfIsColimit {i j : ι} (hij : i ≠ j)
-    {Z : C} {f : ∀ i, X i ⟶ Z} [HasPullback (f i) (f j)]
-    (hc : IsColimit (Cofan.mk _ f)) :
+noncomputable def ofCoproductDisjointOfIsColimit
+    {Z : C} {f : ∀ i, X i ⟶ Z} [HasPullback (f i) (f j)] (hc : IsColimit (Cofan.mk _ f)) :
     IsInitial (pullback (f i) (f j)) :=
   ofCoproductDisjointOfIsColimitOfIsLimit hij hc (pullback.isLimit (f i) (f j))
 
 /-- If `i ≠ j` and `Xᵢ ← Y → Xⱼ` is a pullback diagram over `∐ X`, `Y` is initial. -/
-noncomputable def IsInitial.ofCoproductDisjointOfIsLimit {i j : ι} (hij : i ≠ j)
-    [HasCoproduct X] {s : PullbackCone (Sigma.ι X i) (Sigma.ι X j)}
-    (hs : IsLimit s) : IsInitial s.pt :=
+noncomputable def ofCoproductDisjointOfIsLimit
+    [HasCoproduct X] {s : PullbackCone (Sigma.ι X i) (Sigma.ι X j)} (hs : IsLimit s) : 
+    IsInitial s.pt :=
   ofCoproductDisjointOfIsColimitOfIsLimit hij (colimit.isColimit _) hs
+
+end IsInitial
 
 end
 
@@ -171,8 +173,7 @@ noncomputable def IsInitial.ofBinaryCoproductDisjointOfIsColimitOfIsLimit
   (CoproductDisjoint.nonempty_isInitial_of_ne hc (by simp) _ hs).some
 
 /-- `X ×[X ⨿ Y] Y` is initial. -/
-noncomputable
-def IsInitial.ofBinaryCoproductDisjoint [HasBinaryCoproduct X Y]
+noncomputable def IsInitial.ofBinaryCoproductDisjoint [HasBinaryCoproduct X Y]
     [HasPullback (coprod.inl : X ⟶ X ⨿ Y) coprod.inr] :
     IsInitial (pullback (coprod.inl : X ⟶ X ⨿ Y) coprod.inr) :=
   ofBinaryCoproductDisjointOfIsColimitOfIsLimit (colimit.isColimit _) (pullback.isLimit _ _)
