@@ -46,7 +46,7 @@ Under various conditions, multiplication of infinite matrices makes sense.
 These have not yet been implemented.
 -/
 
-assert_not_exists Algebra Field Star
+assert_not_exists Algebra Field TrivialStar
 
 universe u u' v w
 
@@ -219,7 +219,7 @@ end NonUnitalNonAssocRing
 
 section DistribMulAction
 
-variable [Monoid R] [Mul α] [AddCommMonoid α] [DistribMulAction R α]
+variable [Mul α] [AddCommMonoid α] [DistribSMul R α]
 
 @[simp]
 theorem smul_dotProduct [IsScalarTower R α α] (x : R) (v w : m → α) :
@@ -667,11 +667,6 @@ theorem vecMul_zero [Fintype m] (v : m → α) : v ᵥ* (0 : Matrix m n α) = 0 
   ext
   simp [vecMul]
 
-theorem smul_mulVec_assoc [Fintype n] [Monoid R] [DistribMulAction R α] [IsScalarTower R α α]
-    (a : R) (A : Matrix m n α) (b : n → α) : (a • A) *ᵥ b = a • A *ᵥ b := by
-  ext
-  apply smul_dotProduct
-
 theorem mulVec_add [Fintype n] (A : Matrix m n α) (x y : n → α) :
     A *ᵥ (x + y) = A *ᵥ x + A *ᵥ y := by
   ext
@@ -692,29 +687,31 @@ theorem add_vecMul [Fintype m] (A : Matrix m n α) (x y : m → α) :
   ext
   apply add_dotProduct
 
-theorem mulVec_smul [Fintype n] [NonUnitalNonAssocSemiring S] [DistribSMul R S]
-    [SMulCommClass R S S] (M : Matrix m n S) (b : R) (v : n → S) :
+theorem mulVec_smul [Fintype n] [DistribSMul R α] [SMulCommClass R α α]
+    (M : Matrix m n α) (b : R) (v : n → α) :
     M *ᵥ (b • v) = b • M *ᵥ v := by
-  ext i
-  simp only [mulVec, dotProduct, Finset.smul_sum, Pi.smul_apply, mul_smul_comm]
+  ext
+  exact dotProduct_smul _ _ _
 
-theorem smul_mulVec [Fintype n] [NonUnitalNonAssocSemiring S] [DistribSMul R S]
-    [IsScalarTower R S S] (M : Matrix m n S) (b : R) (v : n → S) :
+theorem smul_mulVec [Fintype n] [DistribSMul R α] [IsScalarTower R α α]
+    (b : R) (M : Matrix m n α) (v : n → α) :
     (b • M) *ᵥ v = b • M *ᵥ v := by
-  ext i
-  simp only [mulVec, dotProduct, Finset.smul_sum, Pi.smul_apply, Matrix.smul_apply, smul_mul_assoc]
+  ext
+  exact smul_dotProduct _ _ _
 
-theorem smul_vecMul [Fintype n] [NonUnitalNonAssocSemiring S] [DistribSMul R S]
-    [IsScalarTower R S S] (M : Matrix n m S) (b : R) (v : n → S) :
+theorem smul_vecMul [Fintype m] [DistribSMul R α] [IsScalarTower R α α]
+    (b : R) (v : m → α) (M : Matrix m n α) :
     (b • v) ᵥ* M = b • v ᵥ* M := by
-  ext i
-  simp only [vecMul, dotProduct, Finset.smul_sum, Pi.smul_apply, smul_mul_assoc]
+  ext
+  exact smul_dotProduct _ _ _
 
-theorem vecMul_smul [Fintype n] [NonUnitalNonAssocSemiring S] [DistribSMul R S]
-    [SMulCommClass R S S] (M : Matrix n m S) (b : R) (v : n → S) :
+theorem vecMul_smul [Fintype m] [DistribSMul R α] [SMulCommClass R α α]
+    (v : m → α) (b : R) (M : Matrix m n α) :
     v ᵥ* (b • M) = b • v ᵥ* M := by
-  ext i
-  simp only [vecMul, dotProduct, Finset.smul_sum, Pi.smul_apply, Matrix.smul_apply, mul_smul_comm]
+  ext
+  exact dotProduct_smul _ _ _
+
+@[deprecated (since := "2025-08-14")] alias smul_mulVec_assoc := smul_mulVec
 
 @[simp]
 theorem mulVec_single [Fintype n] [DecidableEq n] [NonUnitalNonAssocSemiring R] (M : Matrix m n R)
@@ -798,8 +795,6 @@ theorem mulVec_one [Fintype n] (A : Matrix m n α) : A *ᵥ 1 = ∑ j, Aᵀ j :=
 
 theorem one_vecMul [Fintype m] (A : Matrix m n α) : 1 ᵥ* A = ∑ i, A i := by
   ext; simp [vecMul, dotProduct]
-
-@[deprecated (since := "2025-01-26")] alias vec_one_mul := one_vecMul
 
 lemma ext_of_mulVec_single [DecidableEq n] [Fintype n] {M N : Matrix m n α}
     (h : ∀ i, M *ᵥ Pi.single i 1 = N *ᵥ Pi.single i 1) :
@@ -946,16 +941,30 @@ lemma vecMul_injective_of_isUnit [Fintype m] [DecidableEq m] {A : Matrix m m R}
   intro x y hxy
   simpa [hBl] using congrArg B.vecMul hxy
 
+lemma pow_row_eq_zero_of_le [Fintype n] [DecidableEq n] {M : Matrix n n R} {k l : ℕ} {i : n}
+    (h : (M ^ k).row i = 0) (h' : k ≤ l) :
+    (M ^ l).row i = 0 := by
+  replace h' : l = k + (l - k) := by omega
+  rw [← single_one_vecMul] at h ⊢
+  rw [h', pow_add, ← vecMul_vecMul, h, zero_vecMul]
+
+lemma pow_col_eq_zero_of_le [Fintype n] [DecidableEq n] {M : Matrix n n R} {k l : ℕ} {i : n}
+    (h : (M ^ k).col i = 0) (h' : k ≤ l) :
+    (M ^ l).col i = 0 := by
+  replace h' : l = (l - k) + k := by omega
+  rw [← mulVec_single_one] at h ⊢
+  rw [h', pow_add, ← mulVec_mulVec, h, mulVec_zero]
+
 end Semiring
 
 section CommSemiring
 
 variable [CommSemiring α]
 
+@[deprecated mulVec_smul (since := "2025-08-14")]
 theorem mulVec_smul_assoc [Fintype n] (A : Matrix m n α) (b : n → α) (a : α) :
-    A *ᵥ (a • b) = a • A *ᵥ b := by
-  ext
-  apply dotProduct_smul
+    A *ᵥ (a • b) = a • A *ᵥ b :=
+  mulVec_smul _ _ _
 
 end CommSemiring
 

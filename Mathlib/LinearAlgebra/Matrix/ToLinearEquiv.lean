@@ -197,7 +197,7 @@ omit [Fintype n] in
 theorem Nondegenerate.smul_iff [Finite n] {A : Type*} [CommRing A] [IsDomain A]
     {M : Matrix n n A} {t : A} (h : t ≠ 0) :
     (t • M).Nondegenerate ↔ M.Nondegenerate := by
-  simp_rw [Nondegenerate, smul_mulVec_assoc, dotProduct_smul]
+  simp_rw [Nondegenerate, smul_mulVec, dotProduct_smul]
   refine ⟨fun hM v hv ↦ hM v fun w ↦ ?_, fun hM v hv ↦ hM v fun w ↦ ?_⟩
   · simp [hv]
   · exact (mul_eq_zero_iff_left h).mp <| hv w
