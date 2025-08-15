@@ -25,7 +25,7 @@ variable [MonoidWithZero M₀]
 namespace Units
 
 /-- An element of the unit group of a nonzero monoid with zero represented as an element
-    of the monoid is nonzero. -/
+of the monoid is nonzero. -/
 @[simp]
 theorem ne_zero [Nontrivial M₀] (u : M₀ˣ) : (u : M₀) ≠ 0 :=
   left_ne_zero_of_mul_eq_one u.mul_inv
@@ -78,7 +78,6 @@ Note that while this is in the `Ring` namespace for brevity, it requires the wea
 noncomputable def inverse : M₀ → M₀ := fun x => if h : IsUnit x then ((h.unit⁻¹ : M₀ˣ) : M₀) else 0
 
 /-- By definition, if `x` is invertible then `inverse x = x⁻¹`. -/
-@[simp]
 theorem inverse_unit (u : M₀ˣ) : inverse (u : M₀) = (u⁻¹ : M₀ˣ) := by
   rw [inverse, dif_pos u.isUnit, IsUnit.unit_of_val_units]
 
