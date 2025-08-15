@@ -69,12 +69,7 @@ theorem lhopital_zero_right_on_Ioo (hab : a < b) (hff' : ∀ x ∈ Ioo a b, HasD
       (tendsto_nhdsWithin_of_tendsto_nhds (hgg' x hx).continuousAt.tendsto)
       (tendsto_nhdsWithin_of_tendsto_nhds (hff' x hx).continuousAt.tendsto)
   choose! c hc using this
-  have : ∀ x ∈ Ioo a b, ((fun x' => f' x' / g' x') ∘ c) x = f x / g x := by
-    intro x hx
-    rcases hc x hx with ⟨h₁, h₂⟩
-    field_simp [hg x hx, hg' (c x) ((sub x hx) h₁)]
-    simp only [h₂]
-    rw [mul_comm]
+  have : ∀ x ∈ Ioo a b, ((fun x' => f' x' / g' x') ∘ c) x = f x / g x := by grind
   have cmp : ∀ x ∈ Ioo a b, a < c x ∧ c x < x := fun x hx => (hc x hx).1
   rw [← nhdsWithin_Ioo_eq_nhdsGT hab]
   apply tendsto_nhdsWithin_congr this
@@ -104,7 +99,7 @@ theorem lhopital_zero_left_on_Ioo (hab : a < b) (hff' : ∀ x ∈ Ioo a b, HasDe
     (hgg' : ∀ x ∈ Ioo a b, HasDerivAt g (g' x) x) (hg' : ∀ x ∈ Ioo a b, g' x ≠ 0)
     (hfb : Tendsto f (𝓝[<] b) (𝓝 0)) (hgb : Tendsto g (𝓝[<] b) (𝓝 0))
     (hdiv : Tendsto (fun x => f' x / g' x) (𝓝[<] b) l) :
-  Tendsto (fun x => f x / g x) (𝓝[<] b) l := by
+    Tendsto (fun x => f x / g x) (𝓝[<] b) l := by
   -- Here, we essentially compose by `Neg.neg`. The following is mostly technical details.
   have hdnf : ∀ x ∈ -Ioo a b, HasDerivAt (f ∘ Neg.neg) (f' (-x) * -1) x := fun x hx =>
     comp x (hff' (-x) hx) (hasDerivAt_neg x)
