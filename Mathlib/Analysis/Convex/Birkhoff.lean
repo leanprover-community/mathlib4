@@ -6,11 +6,11 @@ Authors: Bhavik Mehta
 
 import Mathlib.Analysis.Convex.Combination
 import Mathlib.Analysis.Convex.Extreme
+import Mathlib.Analysis.Convex.Jensen
+import Mathlib.Analysis.Normed.Module.Convex
 import Mathlib.Combinatorics.Hall.Basic
 import Mathlib.Data.Matrix.DoublyStochastic
 import Mathlib.Tactic.Linarith
-import Mathlib.Analysis.Convex.Jensen
-import Mathlib.Analysis.Normed.Module.Convex
 
 /-!
 # Birkhoff's theorem
