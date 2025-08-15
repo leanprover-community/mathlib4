@@ -61,7 +61,7 @@ theorem toDFinsupp_replicate (a : α) (n : ℕ) :
     toDFinsupp (Multiset.replicate n a) = DFinsupp.single a n := by
   ext i
   dsimp [toDFinsupp]
-  simp [count_replicate, eq_comm]
+  simp [count_replicate]
 
 @[simp]
 theorem toDFinsupp_singleton (a : α) : toDFinsupp {a} = DFinsupp.single a 1 := by

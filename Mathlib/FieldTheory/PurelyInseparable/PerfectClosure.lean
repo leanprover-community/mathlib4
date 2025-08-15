@@ -38,7 +38,7 @@ separable degree, degree, separable closure, purely inseparable
 
 -/
 
-open IntermediateField
+open IntermediateField Module
 
 noncomputable section
 
@@ -373,9 +373,9 @@ theorem LinearIndependent.map_pow_expChar_pow_of_isSeparable'
 /-- If `E / F` is a separable extension of exponential characteristic `q`, if `{ u_i }` is an
 `F`-basis of `E`, then `{ u_i ^ (q ^ n) }` is also an `F`-basis of `E`
 for any natural number `n`. -/
-def Basis.mapPowExpCharPowOfIsSeparable [Algebra.IsSeparable F E]
-    (b : Basis ι F E) : Basis ι F E :=
-  Basis.mk (b.linearIndependent.map_pow_expChar_pow_of_isSeparable q n)
+def Module.Basis.mapPowExpCharPowOfIsSeparable [Algebra.IsSeparable F E] (b : Basis ι F E) :
+    Basis ι F E :=
+  .mk (b.linearIndependent.map_pow_expChar_pow_of_isSeparable q n)
     (Field.span_map_pow_expChar_pow_eq_top_of_isSeparable q n b.span_eq).ge
 
 /-- For an extension `E / F` of exponential characteristic `q` and a separable element `a : E`, the
@@ -414,11 +414,11 @@ theorem perfectField_of_perfectClosure_eq_bot [h : PerfectField E] (eq : perfect
     obtain ⟨y, h⟩ := surjective_frobenius E p (algebraMap F E x)
     have : y ∈ perfectClosure F E := ⟨1, x, by rw [← h, pow_one, frobenius_def, ringExpChar.eq F p]⟩
     obtain ⟨z, rfl⟩ := eq ▸ this
-    simp only [Algebra.ofId, AlgHom.coe_ringHom_mk] at h
+    simp only [Algebra.ofId] at h
     exact ⟨z, (algebraMap F E).injective (by rw [RingHom.map_frobenius]; rw [h])⟩
   exact PerfectRing.toPerfectField F p
 
-/-- If `E / F` is a separable extension, `E` is perfect, then `F` is also prefect. -/
+/-- If `E / F` is a separable extension, `E` is perfect, then `F` is also perfect. -/
 theorem perfectField_of_isSeparable_of_perfectField_top [Algebra.IsSeparable F E] [PerfectField E] :
     PerfectField F :=
   perfectField_of_perfectClosure_eq_bot F E (perfectClosure.eq_bot_of_isSeparable F E)

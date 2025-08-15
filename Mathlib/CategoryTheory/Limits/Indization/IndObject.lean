@@ -49,8 +49,8 @@ section NonSmall
 variable {C : Type u} [Category.{v} C]
 
 /-- The data that witnesses that a presheaf `A` is an ind-object. It consists of a small
-    filtered indexing category `I`, a diagram `F : I ⥤ C` and the data for a colimit cocone on
-    `F ⋙ yoneda : I ⥤ Cᵒᵖ ⥤ Type v` with cocone point `A`. -/
+filtered indexing category `I`, a diagram `F : I ⥤ C` and the data for a colimit cocone on
+`F ⋙ yoneda : I ⥤ Cᵒᵖ ⥤ Type v` with cocone point `A`. -/
 structure IndObjectPresentation (A : Cᵒᵖ ⥤ Type v) where
   /-- The indexing category of the filtered colimit presentation -/
   I : Type v
@@ -67,7 +67,7 @@ structure IndObjectPresentation (A : Cᵒᵖ ⥤ Type v) where
 namespace IndObjectPresentation
 
 /-- Alternative constructor for `IndObjectPresentation` taking a cocone instead of its defining
-    natural transformation. -/
+natural transformation. -/
 @[simps]
 def ofCocone {I : Type v} [SmallCategory I] [IsFiltered I] {F : I ⥤ C}
     (c : Cocone (F ⋙ yoneda)) (hc : IsColimit c) : IndObjectPresentation c.pt where
@@ -92,14 +92,14 @@ def coconeIsColimit : IsColimit P.cocone :=
   P.isColimit
 
 /-- If `A` and `B` are isomorphic, then an ind-object presentation of `A` can be extended to an
-    ind-object presentation of `B`. -/
+ind-object presentation of `B`. -/
 @[simps!]
 noncomputable def extend {A B : Cᵒᵖ ⥤ Type v} (P : IndObjectPresentation A) (η : A ⟶ B) [IsIso η] :
     IndObjectPresentation B :=
   .ofCocone (P.cocone.extend η) (P.coconeIsColimit.extendIso (by exact η))
 
 /-- The canonical comparison functor between the indexing category of the presentation and the
-    comma category `CostructuredArrow yoneda A`. This functor is always final. -/
+comma category `CostructuredArrow yoneda A`. This functor is always final. -/
 @[simps! obj_left obj_right_as obj_hom map_left]
 def toCostructuredArrow : P.I ⥤ CostructuredArrow yoneda A :=
   P.cocone.toCostructuredArrow ⋙ CostructuredArrow.pre _ _ _
@@ -120,7 +120,7 @@ def yoneda (X : C) : IndObjectPresentation (yoneda.obj X) where
 end IndObjectPresentation
 
 /-- A presheaf is called an ind-object if it can be written as a filtered colimit of representable
-    presheaves. -/
+presheaves. -/
 structure IsIndObject (A : Cᵒᵖ ⥤ Type v) : Prop where
   mk' :: nonempty_presentation : Nonempty (IndObjectPresentation A)
 
@@ -175,9 +175,8 @@ theorem isIndObject_of_isFiltered_of_finallySmall (A : Cᵒᵖ ⥤ Type v)
   exact ⟨_, inclusion (fromFinalModel _) ⋙ CostructuredArrow.proj yoneda A, c.ι, hc⟩
 
 /-- The recognition theorem for ind-objects: `A : Cᵒᵖ ⥤ Type v` is an ind-object if and only if
-    `CostructuredArrow yoneda A` is filtered and finally `v`-small.
-
-    Theorem 6.1.5 of [Kashiwara2006] -/
+`CostructuredArrow yoneda A` is filtered and finally `v`-small.
+Theorem 6.1.5 of [Kashiwara2006] -/
 theorem isIndObject_iff (A : Cᵒᵖ ⥤ Type v) : IsIndObject A ↔
     (IsFiltered (CostructuredArrow yoneda A) ∧ FinallySmall.{v} (CostructuredArrow yoneda A)) :=
   ⟨fun h => ⟨h.isFiltered, h.finallySmall⟩,

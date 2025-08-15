@@ -77,7 +77,7 @@ instance : SubgroupClass (OpenSubgroup G) G where
   inv_mem := Subgroup.inv_mem' _
 
 /-- Coercion from `OpenSubgroup G` to `Opens G`. -/
-@[to_additive (attr := coe) "Coercion from `OpenAddSubgroup G` to `Opens G`."]
+@[to_additive (attr := coe) /-- Coercion from `OpenAddSubgroup G` to `Opens G`. -/]
 def toOpens (U : OpenSubgroup G) : Opens G := ⟨U, U.isOpen'⟩
 
 @[to_additive]
@@ -154,7 +154,8 @@ section
 variable {H : Type*} [Group H] [TopologicalSpace H]
 
 /-- The product of two open subgroups as an open subgroup of the product group. -/
-@[to_additive prod "The product of two open subgroups as an open subgroup of the product group."]
+@[to_additive prod
+/-- The product of two open subgroups as an open subgroup of the product group. -/]
 def prod (U : OpenSubgroup G) (V : OpenSubgroup H) : OpenSubgroup (G × H) :=
   ⟨.prod U V, U.isOpen.prod V.isOpen⟩
 
@@ -221,8 +222,8 @@ variable {N : Type*} [Group N] [TopologicalSpace N]
 
 /-- The preimage of an `OpenSubgroup` along a continuous `Monoid` homomorphism
   is an `OpenSubgroup`. -/
-@[to_additive "The preimage of an `OpenAddSubgroup` along a continuous `AddMonoid` homomorphism
-is an `OpenAddSubgroup`."]
+@[to_additive /-- The preimage of an `OpenAddSubgroup` along a continuous `AddMonoid` homomorphism
+is an `OpenAddSubgroup`. -/]
 def comap (f : G →* N) (hf : Continuous f) (H : OpenSubgroup N) : OpenSubgroup G :=
   ⟨.comap f H, H.isOpen.preimage hf⟩
 
@@ -274,8 +275,8 @@ theorem isOpen_of_openSubgroup
   isOpen_mono h U.isOpen
 
 /-- If a subgroup of a topological group has `1` in its interior, then it is open. -/
-@[to_additive "If a subgroup of an additive topological group has `0` in its interior, then it is
-open."]
+@[to_additive /-- If a subgroup of an additive topological group has `0` in its interior, then it is
+open. -/]
 theorem isOpen_of_one_mem_interior [ContinuousMul G] (H : Subgroup G)
     (h_1_int : (1 : G) ∈ interior (H : Set G)) : IsOpen (H : Set G) :=
   isOpen_of_mem_nhds H <| mem_interior_iff_mem_nhds.1 h_1_int
@@ -295,7 +296,7 @@ lemma discreteTopology [ContinuousMul G] (U : Subgroup G) (h : IsOpen (U : Set G
     DiscreteTopology (G ⧸ U) := by
   refine singletons_open_iff_discrete.mp (fun g ↦ ?_)
   induction g using Quotient.inductionOn with | h g =>
-  show IsOpen (QuotientGroup.mk ⁻¹' {QuotientGroup.mk g})
+  change IsOpen (QuotientGroup.mk ⁻¹' {QuotientGroup.mk g})
   convert_to IsOpen ((g * ·) '' U)
   · ext g'
     simp only [Set.mem_preimage, Set.mem_singleton_iff, QuotientGroup.eq, Set.image_mul_left]
@@ -482,11 +483,11 @@ structure IsTopologicalAddGroup.addNegClosureNhd (T W : Set G) [AddGroup G] : Pr
   isOpen : IsOpen T
   add : W + T ⊆ W
 
-/-- For a set `W`, `T` is a neighborhood of `1` which is open, statble under inverse and satisfies
+/-- For a set `W`, `T` is a neighborhood of `1` which is open, stable under inverse and satisfies
 `T * W ⊆ W`. -/
 @[to_additive
-"For a set `W`, `T` is a neighborhood of `0` which is open, stable under negation and satisfies
-`T + W ⊆ W`. "]
+/-- For a set `W`, `T` is a neighborhood of `0` which is open, stable under negation and satisfies
+`T + W ⊆ W`. -/]
 structure IsTopologicalGroup.mulInvClosureNhd (T W : Set G) [Group G] : Prop where
   nhds : T ∈ 𝓝 1
   inv : T⁻¹ = T
