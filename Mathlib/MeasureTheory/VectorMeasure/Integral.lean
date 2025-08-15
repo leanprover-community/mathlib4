@@ -130,11 +130,6 @@ variable {α E F G : Type*} [MeasurableSpace α]
 noncomputable def integral : (α →₁[Bμ.vectorMeasure.variation.ennrealToMeasure] E) →L[ℝ] G :=
     setToL1 (dominatedFinMeasAdditive_weightedVectorSMul Bμ.pairing Bμ.vectorMeasure)
 
-@[simp]
-theorem integral_zero :
-    Bμ.integral (0 : α →₁[Bμ.vectorMeasure.variation.ennrealToMeasure] E) = 0 := by
-  simp [integral]
-
 @[integral_simps]
 theorem integral_add (f g : α →₁[Bμ.vectorMeasure.variation.ennrealToMeasure] E) :
     Bμ.integral (f + g) = Bμ.integral f + Bμ.integral g := by
