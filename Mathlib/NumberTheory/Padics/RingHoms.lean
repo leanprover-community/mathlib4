@@ -185,8 +185,6 @@ theorem existsUnique_mem_range : ∃! n : ℕ, n < p ∧ x - n ∈ maximalIdeal 
   have := (zmod_congr_of_sub_mem_max_ideal x n m hn₂ hm₂).symm
   rwa [ZMod.natCast_eq_natCast_iff, ModEq, mod_eq_of_lt hn₁, mod_eq_of_lt hm₁] at this
 
-@[deprecated (since := "2024-12-17")] alias exists_unique_mem_range := existsUnique_mem_range
-
 /-- `zmodRepr x` is the unique natural number smaller than `p`
 satisfying `‖(x - zmodRepr x : ℤ_[p])‖ < 1`.
 -/
@@ -399,7 +397,7 @@ theorem ker_toZModPow (n : ℕ) :
       convert appr_spec n x
       simp only [this, sub_zero, cast_zero]
     dsimp [toZModPow, toZModHom] at h
-    rw [ZMod.natCast_zmod_eq_zero_iff_dvd] at h
+    rw [ZMod.natCast_eq_zero_iff] at h
     apply eq_zero_of_dvd_of_lt h (appr_lt _ _)
   · intro h
     rw [← sub_zero x] at h
@@ -564,7 +562,7 @@ theorem limNthHom_spec (r : R) :
   use N
   intro n hn
   apply _root_.lt_trans _ hε'
-  change (padicNormE _  : ℝ) < _
+  change (padicNormE _ : ℝ) < _
   norm_cast
   exact hN _ hn
 
@@ -634,7 +632,7 @@ end
 
 @[simp]
 theorem lift_self (z : ℤ_[p]) : lift zmod_cast_comp_toZModPow z = z := by
-  show _ = RingHom.id _ z
+  change _ = RingHom.id _ z
   rw [lift_unique zmod_cast_comp_toZModPow (RingHom.id ℤ_[p])]
   intro; rw [RingHom.comp_id]
 
@@ -655,7 +653,7 @@ theorem toZModPow_eq_iff_ext {R : Type*} [NonAssocSemiring R] {g g' : R →+* �
     ext x : 1
     apply ext_of_toZModPow.mp
     intro n
-    show (toZModPow n).comp g x = (toZModPow n).comp g' x
+    change (toZModPow n).comp g x = (toZModPow n).comp g' x
     rw [hg n]
   · rintro rfl _
     rfl

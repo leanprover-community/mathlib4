@@ -213,7 +213,7 @@ def ennrealEquivSum : ℝ≥0∞ ≃ᵐ ℝ≥0 ⊕ Unit :=
   { Equiv.optionEquivSumPUnit ℝ≥0 with
     measurable_toFun := measurable_of_measurable_nnreal measurable_inl
     measurable_invFun :=
-      measurable_sum measurable_coe_nnreal_ennreal (@measurable_const ℝ≥0∞ Unit _ _ ∞) }
+      measurable_fun_sum measurable_coe_nnreal_ennreal (@measurable_const ℝ≥0∞ Unit _ _ ∞) }
 
 open Function (uncurry)
 
@@ -223,7 +223,7 @@ theorem measurable_of_measurable_nnreal_prod {_ : MeasurableSpace β} {_ : Measu
   let e : ℝ≥0∞ × β ≃ᵐ (ℝ≥0 × β) ⊕ (Unit × β) :=
     (ennrealEquivSum.prodCongr (MeasurableEquiv.refl β)).trans
       (MeasurableEquiv.sumProdDistrib _ _ _)
-  e.symm.measurable_comp_iff.1 <| measurable_sum H₁ (H₂.comp measurable_id.snd)
+  e.symm.measurable_comp_iff.1 <| measurable_fun_sum H₁ (H₂.comp measurable_id.snd)
 
 theorem measurable_of_measurable_nnreal_nnreal {_ : MeasurableSpace β} {f : ℝ≥0∞ × ℝ≥0∞ → β}
     (h₁ : Measurable fun p : ℝ≥0 × ℝ≥0 => f (p.1, p.2)) (h₂ : Measurable fun r : ℝ≥0 => f (∞, r))
@@ -277,7 +277,7 @@ theorem measurable_of_tendsto' {ι : Type*} {f : ι → α → ℝ≥0∞} {g : 
     ext1 y
     exact ((lim y).comp hx).liminf_eq
   rw [← this]
-  show Measurable fun y => liminf (fun n => (f (x n) y : ℝ≥0∞)) atTop
+  change Measurable fun y => liminf (fun n => (f (x n) y : ℝ≥0∞)) atTop
   exact .liminf fun n => hf (x n)
 
 /-- A sequential limit of measurable `ℝ≥0∞` valued functions is measurable. -/
@@ -352,7 +352,7 @@ theorem AEMeasurable.ennreal_toReal {f : α → ℝ≥0∞} {μ : Measure α} (h
 theorem Measurable.ennreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0∞} (h : ∀ i, Measurable (f i)) :
     Measurable fun x => ∑' i, f i x := by
   simp_rw [ENNReal.tsum_eq_iSup_sum]
-  exact .iSup fun s ↦ s.measurable_sum fun i _ => h i
+  exact .iSup fun s ↦ s.measurable_fun_sum fun i _ => h i
 
 @[measurability, fun_prop]
 theorem Measurable.ennreal_tsum' {ι} [Countable ι] {f : ι → α → ℝ≥0∞} (h : ∀ i, Measurable (f i)) :
@@ -370,7 +370,7 @@ theorem Measurable.nnreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0} (
 theorem AEMeasurable.ennreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0∞} {μ : Measure α}
     (h : ∀ i, AEMeasurable (f i) μ) : AEMeasurable (fun x => ∑' i, f i x) μ := by
   simp_rw [ENNReal.tsum_eq_iSup_sum]
-  exact .iSup fun s ↦ Finset.aemeasurable_sum s fun i _ => h i
+  exact .iSup fun s ↦ Finset.aemeasurable_fun_sum s fun i _ => h i
 
 @[measurability, fun_prop]
 theorem AEMeasurable.nnreal_tsum {α : Type*} {_ : MeasurableSpace α} {ι : Type*} [Countable ι]

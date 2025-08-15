@@ -125,11 +125,10 @@ protected theorem contMDiffAt (h : M ≃ₘ^n⟮I, I'⟯ M') {x} : ContMDiffAt I
 protected theorem contMDiffWithinAt (h : M ≃ₘ^n⟮I, I'⟯ M') {s x} : ContMDiffWithinAt I I' n h s x :=
   h.contMDiffAt.contMDiffWithinAt
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: should use `E ≃ₘ^n[𝕜] F` notation
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215):
+-- TODO: should use `E ≃ₘ^n[𝕜] F` notation
 protected theorem contDiff (h : E ≃ₘ^n⟮𝓘(𝕜, E), 𝓘(𝕜, E')⟯ E') : ContDiff 𝕜 n h :=
   h.contMDiff.contDiff
-
-@[deprecated (since := "2024-11-21")] alias smooth := Diffeomorph.contDiff
 
 protected theorem mdifferentiable (h : M ≃ₘ^n⟮I, I'⟯ M') (hn : 1 ≤ n) : MDifferentiable I I' h :=
   h.contMDiff.mdifferentiable hn
@@ -459,8 +458,8 @@ alias coe_extChartAt_transDiffeomorph_symm := coe_extChartAt_transContinuousLine
 theorem extChartAt_transContinuousLinearEquiv_target (x : M) :
     (extChartAt (I.transContinuousLinearEquiv e) x).target
       = e.symm ⁻¹' (extChartAt I x).target := by
-  simp only [range_comp, preimage_preimage, ContinuousLinearEquiv.image_eq_preimage, mfld_simps]
-  rfl
+  simp only [range_comp, preimage_preimage, ContinuousLinearEquiv.image_eq_preimage, mfld_simps,
+    ← comp_def]
 
 @[deprecated (since := "2025-06-12")]
 alias extChartAt_transDiffeomorph_target := extChartAt_transContinuousLinearEquiv_target
@@ -543,10 +542,6 @@ theorem contMDiff_transContinuousLinearEquiv_right {f : M' → M} :
 alias _root_.Diffeomorph.contMDiff_transDiffeomorph_right :=
 contMDiff_transContinuousLinearEquiv_right
 
-@[deprecated (since := "2024-11-21")]
-alias _root_.Diffeomorph.smooth_transDiffeomorph_right :=
-contMDiff_transContinuousLinearEquiv_right
-
 @[simp]
 theorem contMDiffWithinAt_transContinuousLinearEquiv_left {f : M → M'} {x s} :
     ContMDiffWithinAt (I.transContinuousLinearEquiv e) I' n f s x
@@ -582,10 +577,6 @@ theorem contMDiff_transContinuousLinearEquiv_left {f : M → M'} :
 
 @[deprecated (since := "2025-06-12")]
 alias _root_.Diffeomorph.contMDiff_transDiffeomorph_left :=
-contMDiff_transContinuousLinearEquiv_left
-
-@[deprecated (since := "2024-11-21")]
-alias _root_.Diffeomorph.smooth_transContinuousLinearEquiv_left :=
 contMDiff_transContinuousLinearEquiv_left
 
 end ContinuousLinearEquiv

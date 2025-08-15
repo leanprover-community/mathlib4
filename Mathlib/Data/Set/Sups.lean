@@ -150,7 +150,7 @@ lemma subset_sups_self : s ⊆ s ⊻ s := fun _a ha ↦ mem_sups.2 ⟨_, ha, _, 
 lemma sups_subset_self : s ⊻ s ⊆ s ↔ SupClosed s := sups_subset_iff
 
 @[simp] lemma sups_eq_self : s ⊻ s = s ↔ SupClosed s :=
-  subset_sups_self.le.le_iff_eq.symm.trans sups_subset_self
+  subset_sups_self.le.ge_iff_eq'.symm.trans sups_subset_self
 
 lemma sep_sups_le (s t : Set α) (a : α) :
     {b ∈ s ⊻ t | b ≤ a} = {b ∈ s | b ≤ a} ⊻ {b ∈ t | b ≤ a} := by ext; aesop
@@ -279,7 +279,7 @@ lemma subset_infs_self : s ⊆ s ⊼ s := fun _a ha ↦ mem_infs.2 ⟨_, ha, _, 
 lemma infs_self_subset : s ⊼ s ⊆ s ↔ InfClosed s := infs_subset_iff
 
 @[simp] lemma infs_self : s ⊼ s = s ↔ InfClosed s :=
-  subset_infs_self.le.le_iff_eq.symm.trans infs_self_subset
+  subset_infs_self.le.ge_iff_eq'.symm.trans infs_self_subset
 
 lemma sep_infs_le (s t : Set α) (a : α) :
     {b ∈ s ⊼ t | a ≤ b} = {b ∈ s | a ≤ b} ⊼ {b ∈ t | a ≤ b} := by ext; aesop

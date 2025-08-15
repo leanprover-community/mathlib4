@@ -80,7 +80,8 @@ instance : IsLocalAtTarget @IsSeparated := by
 instance (R S : CommRingCat.{u}) (f : R ⟶ S) : IsSeparated (Spec.map f) := by
   constructor
   letI := f.hom.toAlgebra
-  show IsClosedImmersion (Limits.pullback.diagonal (Spec.map (CommRingCat.ofHom (algebraMap R S))))
+  change IsClosedImmersion
+    (Limits.pullback.diagonal (Spec.map (CommRingCat.ofHom (algebraMap R S))))
   rw [diagonal_Spec_map, MorphismProperty.cancel_right_of_respectsIso @IsClosedImmersion]
   exact .spec_of_surjective _ fun x ↦ ⟨.tmul R 1 x,
     (Algebra.TensorProduct.lmul'_apply_tmul (R := R) (S := S) 1 x).trans (one_mul x)⟩
@@ -138,7 +139,7 @@ lemma Scheme.Pullback.diagonalCoverDiagonalRange_eq_top_of_injective
   obtain ⟨w : (𝒱 i).obj j, hy : ((𝒱 i).map j).base w = z⟩ := (𝒱 i).covers z
   refine ⟨i, j, ?_⟩
   simp_rw [diagonalCover_map]
-  show x ∈ Set.range _
+  change x ∈ Set.range _
   dsimp only [diagonalCover, Cover.bind_obj, openCoverOfLeftRight_obj]
   rw [range_map]
   simp [← H, ← hz₁, ← hy]

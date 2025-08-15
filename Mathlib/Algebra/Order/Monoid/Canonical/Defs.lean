@@ -191,7 +191,7 @@ theorem bot_eq_one [OrderBot α] : (⊥ : α) = 1 := isBot_one.eq_bot.symm
 
 @[to_additive (attr := simp)]
 theorem le_one_iff_eq_one : a ≤ 1 ↔ a = 1 :=
-  (one_le a).le_iff_eq
+  (one_le a).ge_iff_eq'
 
 @[to_additive]
 theorem one_lt_iff_ne_one : 1 < a ↔ a ≠ 1 :=
@@ -317,7 +317,7 @@ end NeZero
 
 set_option linter.deprecated false in
 /-- A canonically linear-ordered additive monoid is a canonically ordered additive monoid
-    whose ordering is a linear order. -/
+whose ordering is a linear order. -/
 @[deprecated "Use `[LinearOrderedAddCommMonoid α] [CanonicallyOrderedAdd α]` instead."
   (since := "2025-01-13")]
 structure CanonicallyLinearOrderedAddCommMonoid (α : Type*)
@@ -326,7 +326,7 @@ structure CanonicallyLinearOrderedAddCommMonoid (α : Type*)
 set_option linter.deprecated false in
 set_option linter.existingAttributeWarning false in
 /-- A canonically linear-ordered monoid is a canonically ordered monoid
-    whose ordering is a linear order. -/
+whose ordering is a linear order. -/
 @[to_additive,
   deprecated "Use `[LinearOrderedCommMonoid α] [CanonicallyOrderedMul α]` instead."
   (since := "2025-01-13")]
@@ -362,7 +362,7 @@ theorem min_one (a : α) : min a 1 = 1 :=
 
 /-- In a linearly ordered monoid, we are happy for `bot_eq_one` to be a `@[simp]` lemma. -/
 @[to_additive (attr := simp)
-  "In a linearly ordered monoid, we are happy for `bot_eq_zero` to be a `@[simp]` lemma"]
+  /-- In a linearly ordered monoid, we are happy for `bot_eq_zero` to be a `@[simp]` lemma -/]
 theorem bot_eq_one' [OrderBot α] : (⊥ : α) = 1 :=
   bot_eq_one
 

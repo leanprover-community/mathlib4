@@ -100,12 +100,6 @@ private structure ImportErrorData where
 private def ImportErrorData.new : BaseIO ImportErrorData := do
   return { errors := ← IO.mkRef #[] }
 
--- TODO: remove this function when bumping to v4.22.0
-/-- Return true if the name is in a namespace associated to metaprogramming. -/
-def _root_.Lean.Name.isMetaprogramming (n : Name) : Bool :=
-  let components := n.components
-  components.head? == some `Lean || (components.any fun n => n == `Tactic || n == `Linter)
-
 /-- Return true if `declName` is automatically generated,
 or otherwise unsuitable as a lemma suggestion. -/
 def blacklistInsertion (env : Environment) (declName : Name) : Bool :=
@@ -140,7 +134,7 @@ Note: It is expensive to create two new `IO.Ref`s for every `MetaM` operation,
   /- For efficiency, we leave it up to the implementation of `act` to reset the states if needed -/
   -- mstate.modify fun s => { cache := s.cache }
   -- cstate.modify fun s => { env := s.env, cache := s.cache, ngen := s.ngen }
-  let mctx := { config := { transparency := .reducible } }
+  let mctx := { keyedConfig := Config.toConfigWithKey { transparency := .reducible } }
   match ← (((act name constInfo) mctx mstate) cctx cstate).toBaseIO with
   | .ok a =>
     return a.foldl (fun t (val, entries) =>
@@ -155,7 +149,7 @@ Note: It is expensive to create two new `IO.Ref`s for every `MetaM` operation,
 
 
 /--
-Contains the pre discrimination tree and any errors occuring during initialization of
+Contains the pre discrimination tree and any errors occurring during initialization of
 the library search tree.
 -/
 private structure InitResults (α : Type) where

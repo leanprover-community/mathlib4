@@ -234,9 +234,7 @@ theorem lt_def (x y : PartENat) : x < y ↔ ∃ hx : x.Dom, ∀ hy : y.Dom, x.ge
       specialize H hy
       specialize h fun _ => hy
       rw [not_forall] at h
-      obtain ⟨hx', h⟩ := h
-      rw [not_le] at h
-      exact h
+      omega
     · specialize h fun hx' => (hx hx').elim
       rw [not_forall] at h
       obtain ⟨hx', h⟩ := h
@@ -282,7 +280,7 @@ theorem get_le_get {x y : PartENat} {hx : x.Dom} {hy : y.Dom} : x.get hx ≤ y.g
     rw [← coe_le_coe, natCast_get, natCast_get]
 
 theorem le_coe_iff (x : PartENat) (n : ℕ) : x ≤ n ↔ ∃ h : x.Dom, x.get h ≤ n := by
-  show (∃ h : True → x.Dom, _) ↔ ∃ h : x.Dom, x.get h ≤ n
+  change (∃ h : True → x.Dom, _) ↔ ∃ h : x.Dom, x.get h ≤ n
   simp only [forall_prop_of_true, dom_natCast, get_natCast']
 
 theorem lt_coe_iff (x : PartENat) (n : ℕ) : x < n ↔ ∃ h : x.Dom, x.get h < n := by
@@ -739,6 +737,6 @@ noncomputable instance : LinearOrderedAddCommMonoidWithTop PartENat :=
 
 noncomputable instance : CompleteLinearOrder PartENat :=
   { lattice, withTopOrderIso.symm.toGaloisInsertion.liftCompleteLattice,
-    linearOrder, LinearOrder.toBiheytingAlgebra with }
+    linearOrder, linearOrder.toBiheytingAlgebra with }
 
 end PartENat

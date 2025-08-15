@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Jujian Zhang
 -/
 import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Algebra.Equiv.TransferInstance
+import Mathlib.Algebra.Module.TransferInstance
 import Mathlib.RingTheory.Localization.Defs
 
 /-!
@@ -933,9 +933,6 @@ theorem ext (map_unit : ∀ x : S, IsUnit ((algebraMap R (Module.End R M'')) x))
     ⦃j k : M' →ₗ[R] M''⦄ (h : j.comp f = k.comp f) : j = k := by
   rw [← lift_unique S f (k.comp f) map_unit j h, lift_unique]
   rfl
-
-@[deprecated (since := "2024-12-07")]
-alias ringHom_ext := ext
 
 /-- If `(M', f)` and `(M'', g)` both satisfy universal property of localized module, then `M', M''`
 are isomorphic as `R`-module

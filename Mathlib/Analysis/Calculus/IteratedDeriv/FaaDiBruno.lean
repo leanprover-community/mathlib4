@@ -103,7 +103,7 @@ theorem iteratedDerivWithin_vcomp_three
       Fin.cons_one, Fin.default_eq_zero, OrderedFinpartition.extendMiddle_length, Fin.cons_update,
       Fin.succ_zero_eq_one, update_self, update_idem,
       iteratedFDerivWithin_one_apply (ht _ <| hst hx), add_assoc, two_smul]
-  have (j) : (Fin.cons 1 (Fin.cons 1 fun _ ↦ 1) : Fin 3 → ℕ) j = 1 := by
+  have (j : _) : (Fin.cons 1 (Fin.cons 1 fun _ ↦ 1) : Fin 3 → ℕ) j = 1 := by
     fin_cases j <;> rfl
   congr <;> ext x <;> fin_cases x <;> simp [this]
 

@@ -231,7 +231,7 @@ theorem Kernel.continuous_integral_integral :
   apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds _ (fun i => zero_le _) _
   · exact fun i => ∫⁻ x, ∫⁻ y, ‖i (x, y) - g (x, y)‖ₑ ∂η (a, x) ∂κ a
   swap; · exact fun i => lintegral_mono fun x => enorm_integral_le_lintegral_enorm _
-  show
+  change
     Tendsto
       (fun i : β × γ →₁[(κ ⊗ₖ η) a] E => ∫⁻ x, ∫⁻ y : γ, ‖i (x, y) - g (x, y)‖ₑ ∂η (a, x) ∂κ a)
       (𝓝 g) (𝓝 0)
@@ -481,7 +481,7 @@ lemma integral_compProd [SFinite μ] [IsSFiniteKernel κ] {E : Type*}
 lemma setIntegral_compProd [SFinite μ] [IsSFiniteKernel κ] {E : Type*}
     [NormedAddCommGroup E] [NormedSpace ℝ E]
     {s : Set α} (hs : MeasurableSet s) {t : Set β} (ht : MeasurableSet t)
-    {f : α × β → E} (hf : IntegrableOn f (s ×ˢ t) (μ ⊗ₘ κ))  :
+    {f : α × β → E} (hf : IntegrableOn f (s ×ˢ t) (μ ⊗ₘ κ)) :
     ∫ x in s ×ˢ t, f x ∂(μ ⊗ₘ κ) = ∫ a in s, ∫ b in t, f (a, b) ∂(κ a) ∂μ := by
   rw [Measure.compProd, ProbabilityTheory.setIntegral_compProd hs ht hf]
   simp
