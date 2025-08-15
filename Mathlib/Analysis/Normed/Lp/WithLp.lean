@@ -64,6 +64,9 @@ protected def equiv : WithLp p V ≃ V where
   left_inv _ := rfl
   right_inv _ := rfl
 
+@[simp]
+lemma equiv_symm_apply : ⇑(WithLp.equiv p V).symm = toLp p := rfl
+
 /-! `WithLp p V` inherits various module-adjacent structures from `V`. -/
 
 instance instNontrivial [Nontrivial V] : Nontrivial (WithLp p V) := (WithLp.equiv p V).nontrivial

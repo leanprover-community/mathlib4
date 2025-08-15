@@ -185,7 +185,7 @@ theorem diagonalization_apply_self_apply (hT : T.IsSymmetric) (v : E) (μ : Eige
       congr_arg (fun w => hT.diagonalization w μ) (this (hT.diagonalization v))
   intro w
   have hwT : ∀ μ, T (w μ) = (μ : 𝕜) • w μ := fun μ => mem_eigenspace_iff.1 (w μ).2
-  simp only [diagonalization_symm_apply, map_sum, hwT, PiLp.toLp_apply, SetLike.val_smul]
+  simp only [diagonalization_symm_apply, map_sum, hwT, SetLike.val_smul]
 
 end Version1
 

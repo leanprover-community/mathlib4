@@ -206,13 +206,13 @@ def modelWithCornersEuclideanQuadrant (n : ℕ) :
     ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanQuadrant n) where
   toFun := Subtype.val
   invFun x := ⟨toLp 2 fun i ↦ max (x i) 0,
-    fun i ↦ by simp only [PiLp.toLp_apply, le_sup_right]⟩
+    fun i ↦ by simp only [le_sup_right]⟩
   source := univ
   target := { x | ∀ i, 0 ≤ x i }
   map_source' x _ := x.property
   map_target' _ _ := mem_univ _
-  left_inv' x _ := by ext i; simp only [PiLp.toLp_apply, x.2 i, sup_of_le_left]
-  right_inv' x hx := by ext1 i; simp only [PiLp.toLp_apply, hx i, sup_of_le_left]
+  left_inv' x _ := by ext i; simp only [x.2 i, sup_of_le_left]
+  right_inv' x hx := by ext1 i; simp only [hx i, sup_of_le_left]
   source_eq := rfl
   convex_range' := by
     simp only [instIsRCLikeNormedField, ↓reduceDIte]
@@ -268,7 +268,7 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
   target := { z : EuclideanHalfSpace 1 | z.val 0 < y - x }
   toFun := fun z : Icc x y => ⟨toLp 2 fun _ ↦ z.val - x, sub_nonneg.mpr z.property.1⟩
   invFun z := ⟨min (z.val 0 + x) y, by simp [z.prop, h.out.le]⟩
-  map_source' := by simp only [mem_setOf_eq, Fin.isValue, PiLp.toLp_apply, sub_lt_sub_iff_right,
+  map_source' := by simp only [mem_setOf_eq, Fin.isValue, sub_lt_sub_iff_right,
     imp_self, implies_true]
   map_target' := by
     simp only [min_lt_iff, mem_setOf_eq]; intro z hz; left
@@ -276,7 +276,7 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
   left_inv' := by
     rintro ⟨z, hz⟩ h'z
     simp only [mem_setOf_eq, mem_Icc] at hz h'z
-    simp only [Fin.isValue, PiLp.toLp_apply, sub_add_cancel, hz, inf_of_le_left]
+    simp only [Fin.isValue, sub_add_cancel, hz, inf_of_le_left]
   right_inv' := by
     rintro ⟨z, hz⟩ h'z
     rw [Subtype.mk_eq_mk]
@@ -284,7 +284,7 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
     dsimp at hz h'z
     have A : x + z 0 ≤ y := by linarith
     rw [Subsingleton.elim i 0]
-    simp only [Fin.isValue, add_comm, A, inf_of_le_left, add_sub_cancel_left, PiLp.toLp_apply]
+    simp only [Fin.isValue, add_comm, A, inf_of_le_left, add_sub_cancel_left]
   open_source :=
     haveI : IsOpen { z : ℝ | z < y } := isOpen_Iio
     this.preimage continuous_subtype_val
@@ -344,7 +344,7 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
   toFun z := ⟨toLp 2 fun _ ↦ y - z.val, sub_nonneg.mpr z.property.2⟩
   invFun z :=
     ⟨max (y - z.val 0) x, by simp [z.prop, h.out.le, sub_eq_add_neg]⟩
-  map_source' := by simp only [mem_setOf_eq, Fin.isValue, PiLp.toLp_apply, sub_lt_sub_iff_left,
+  map_source' := by simp only [mem_setOf_eq, Fin.isValue, sub_lt_sub_iff_left,
     imp_self, implies_true]
   map_target' := by
     simp only [lt_max_iff, mem_setOf_eq]; intro z hz; left
@@ -352,7 +352,7 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
   left_inv' := by
     rintro ⟨z, hz⟩ h'z
     simp only [mem_setOf_eq, mem_Icc] at hz h'z
-    simp only [Fin.isValue, sub_eq_add_neg, PiLp.toLp_apply, neg_add_rev, neg_neg,
+    simp only [Fin.isValue, sub_eq_add_neg, neg_add_rev, neg_neg,
       add_neg_cancel_comm_assoc, hz, sup_of_le_left]
   right_inv' := by
     rintro ⟨z, hz⟩ h'z
@@ -361,7 +361,7 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
     dsimp at hz h'z
     have A : x ≤ y - z 0 := by linarith
     rw [Subsingleton.elim i 0]
-    simp only [Fin.isValue, A, sup_of_le_left, sub_sub_cancel, PiLp.toLp_apply]
+    simp only [Fin.isValue, A, sup_of_le_left, sub_sub_cancel]
   open_source :=
     haveI : IsOpen { z : ℝ | x < z } := isOpen_Ioi
     this.preimage continuous_subtype_val
@@ -491,7 +491,7 @@ instance instIsManifoldIcc (x y : ℝ) [Fact (x < y)] {n : WithTop ℕ∞} :
     simp only [modelWithCornersEuclideanHalfSpace, Fin.isValue, ModelWithCorners.mk_coe,
       IccLeftChart, IccRightChart, PartialHomeomorph.coe_trans, PartialHomeomorph.mk_coe,
       PartialHomeomorph.mk_coe_symm, PartialEquiv.coe_symm_mk, ModelWithCorners.mk_symm, comp_apply,
-      sup_of_le_left, update_eq_self, toLp_ofLp, min_eq_left hz₁.le, PiLp.toLp_apply, hz₀]
+      sup_of_le_left, update_eq_self, toLp_ofLp, min_eq_left hz₁.le, hz₀]
     abel
   · -- `e = right chart`, `e' = left chart`
     apply M.contDiffOn.congr
@@ -507,7 +507,7 @@ instance instIsManifoldIcc (x y : ℝ) [Fact (x < y)] {n : WithTop ℕ∞} :
     simp only [modelWithCornersEuclideanHalfSpace, Fin.isValue, ModelWithCorners.mk_coe,
       IccRightChart, IccLeftChart, PartialHomeomorph.coe_trans, PartialHomeomorph.mk_coe,
       PartialHomeomorph.mk_coe_symm, PartialEquiv.coe_symm_mk, ModelWithCorners.mk_symm, comp_apply,
-      hz₀, sup_of_le_left, update_eq_self, toLp_ofLp, hz₁.le, PiLp.toLp_apply]
+      hz₀, sup_of_le_left, update_eq_self, toLp_ofLp, hz₁.le]
     abel
   ·-- `e = right chart`, `e' = right chart`
     exact (mem_groupoid_of_pregroupoid.mpr (symm_trans_mem_contDiffGroupoid _)).1
