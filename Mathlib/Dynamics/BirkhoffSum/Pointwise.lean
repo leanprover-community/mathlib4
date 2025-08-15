@@ -197,7 +197,7 @@ variable {f : α → α} [MeasurableSpace α] (μ : Measure α := by volume_tac)
 
 lemma birkhoffSum_integrable (hf : MeasurePreserving f μ μ) (hφ : Integrable φ μ) {n} :
     Integrable (birkhoffSum f φ n) μ :=
-  integrable_finset_sum _ fun _ _ ↦ (integrable_comp_iterate hf hφ.aestronglyMeasurable).mpr hφ
+  integrable_finset_sum _ fun _ _ ↦ (hf.iterate _).integrable_comp_of_integrable hφ
 
 lemma birkhoffMax_integrable (hf : MeasurePreserving f μ μ) (hφ : Integrable φ μ) {n} :
     Integrable (birkhoffMax f φ n) μ := by
