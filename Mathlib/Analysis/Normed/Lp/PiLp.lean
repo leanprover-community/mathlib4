@@ -440,18 +440,9 @@ theorem continuous_ofLp [∀ i, TopologicalSpace (β i)] : Continuous (@ofLp p (
 nonrec lemma continuous_apply [∀ i, TopologicalSpace (β i)] (i : ι) :
     Continuous (fun f : PiLp p β ↦ f i) := (continuous_apply i).comp (continuous_ofLp p β)
 
-@[deprecated continuous_ofLp (since := "2024-04-27")]
-theorem continuous_equiv [∀ i, TopologicalSpace (β i)] : Continuous (WithLp.equiv p (Π i, β i)) :=
-  continuous_ofLp _ _
-
 @[fun_prop, continuity]
 theorem continuous_toLp [∀ i, TopologicalSpace (β i)] : Continuous (@toLp p (∀ i, β i)) :=
   continuous_induced_rng.2 continuous_id
-
-@[deprecated continuous_toLp (since := "2024-04-27")]
-theorem continuous_equiv_symm [∀ i, TopologicalSpace (β i)] :
-    Continuous (WithLp.equiv p (Π i, β i)).symm :=
-  continuous_toLp _ _
 
 /-- `WithLp.equiv` as a homeomorphism. -/
 def homeomorph [∀ i, TopologicalSpace (β i)] : (Π i, β i) ≃ₜ PiLp p β where
