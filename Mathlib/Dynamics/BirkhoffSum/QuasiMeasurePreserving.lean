@@ -7,13 +7,13 @@ import Mathlib.Dynamics.BirkhoffSum.Average
 import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
 
 /-!
-# Birkhoff sum and average for measure preserving maps
+# Birkhoff sum and average for quasi measure preserving maps
 
 This file contains lemmas about the `birkhoffSum` and `birkhoffAverage` of a map which is
 `QuasiMeasurePreserving`.
 -/
 
-section QuasiMeasurePreserving
+namespace QuasiMeasurePreserving
 
 open MeasureTheory Measure Filter
 
