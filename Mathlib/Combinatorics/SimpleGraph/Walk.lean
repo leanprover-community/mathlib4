@@ -1101,10 +1101,7 @@ lemma not_nil_of_tail_not_nil {p : G.Walk v w} (hp : ¬ p.tail.Nil) : ¬ p.Nil :
 
 @[simp]
 lemma tail_cons {t u v} (p : G.Walk u v) (h : G.Adj t u) :
-    (p.cons h).tail = p.copy (getVert_zero p).symm rfl := by
-  match p with
-  | .nil => rfl
-  | .cons h q => rfl
+    (p.cons h).tail = p.copy (getVert_zero p).symm rfl := tail_cons_eq h p
 
 lemma support_tail_of_not_nil (p : G.Walk u v) (hnp : ¬p.Nil) :
     p.tail.support = p.support.tail := by
