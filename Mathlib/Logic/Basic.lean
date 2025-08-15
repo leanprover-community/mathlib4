@@ -290,9 +290,7 @@ theorem or_congr_left' {c a b : Prop} (h : ¬c → (a ↔ b)) : a ∨ c ↔ b �
 theorem or_congr_right' {c : Prop} (h : ¬a → (b ↔ c)) : a ∨ b ↔ a ∨ c :=
   open scoped Classical in Decidable.or_congr_right' h
 
-/-! ### Declarations about distributivity -/
-
-/-! Declarations about `iff` -/
+/-! ### Declarations about `iff` -/
 
 alias Iff.iff := iff_congr
 
@@ -435,6 +433,7 @@ lemma eq_cast_iff_heq : a = cast e b ↔ a ≍ b := ⟨heq_of_eq_cast _, fun h �
 end Equality
 
 /-! ### Declarations about quantifiers -/
+
 section Quantifiers
 section Dependent
 
@@ -723,6 +722,7 @@ noncomputable def Exists.classicalRecOn {α : Sort*} {p : α → Prop} (h : ∃ 
   H (Classical.choose h) (Classical.choose_spec h)
 
 /-! ### Declarations about bounded quantifiers -/
+
 section BoundedQuantifiers
 
 variable {α : Sort*} {r p q : α → Prop} {P Q : ∀ x, p x → Prop}
@@ -790,6 +790,8 @@ theorem exists_mem_or_left :
   exact Iff.trans (exists_congr fun x ↦ or_and_right) exists_or
 
 end BoundedQuantifiers
+
+/-! ### Declarations about `ite` and `dite` -/
 
 section ite
 
@@ -964,7 +966,9 @@ end congr
 
 end ite
 
-/-! ### Membership -/
+/-! ### Declarations about membership -/
+
+section Membership
 
 alias Membership.mem.ne_of_notMem := ne_of_mem_of_not_mem
 alias Membership.mem.ne_of_notMem' := ne_of_mem_of_not_mem'
@@ -974,8 +978,6 @@ alias Membership.mem.ne_of_not_mem := Membership.mem.ne_of_notMem
 
 @[deprecated (since := "2025-05-23")]
 alias Membership.mem.ne_of_not_mem' := Membership.mem.ne_of_notMem'
-
-section Membership
 
 variable {α β : Type*} [Membership α β] {p : Prop} [Decidable p]
 
@@ -994,6 +996,10 @@ theorem ite_mem {a b : α} {s : β} : (if p then a else b) ∈ s ↔ (p → a �
   dite_mem
 
 end Membership
+
+/-! ### Declarations about `BEq` -/
+
+section BEq
 
 theorem not_beq_of_ne {α : Type*} [BEq α] [LawfulBEq α] {a b : α} (ne : a ≠ b) : ¬(a == b) :=
   fun h => ne (eq_of_beq h)
@@ -1019,3 +1025,5 @@ theorem lawful_beq_subsingleton {α : Type*} (inst1 : BEq α) (inst2 : BEq α)
   apply beq_ext
   intro x y
   simp only [Bool.eq_iff_iff, @beq_iff_eq α]
+
+end BEq
