@@ -70,16 +70,93 @@ noncomputable section
 
 open LinearMap Matrix Module Set Submodule
 
-section ToMatrixRight
+/-!
+### Bilinear versions of matrix products
 
+The definitions in this section are stated with two extra rings, to allow for non-commutative rings.
+-/
+
+section Bilinear
+variable {l m n R S A : Type*}
+variable [Semiring R] [Semiring S] [NonUnitalNonAssocSemiring A]
+variable [Module R A] [Module S A]
+variable [SMulCommClass S R A] [SMulCommClass S A A] [IsScalarTower R A A]
+
+variable (R S)
+
+/-- `Matrix.vecMul` is a bilinear map.
+
+When `A` is non-commutative, this can be instantiated as `vecMulBilin A Aᵐᵒᵖ` -/
+def Matrix.vecMulBilin [Fintype m] : (m → A) →ₗ[R] Matrix m n A →ₗ[S] (n → A) where
+  toFun x :=
+  { toFun M := x ᵥ* M
+    map_add' _ _ := vecMul_add _ _ _
+    map_smul' _ _ := vecMul_smul _ _ _ }
+  map_add' _ _ := LinearMap.ext fun _ => add_vecMul _ _ _
+  map_smul' _ _ := LinearMap.ext fun _ => smul_vecMul _ _ _
+
+@[simp]
+theorem Matrix.vecMulBilin_apply [Fintype m] (v : m → A) (M : Matrix m n A) :
+    Matrix.vecMulBilin R S v M = v ᵥ* M := rfl
+
+example {A} [Semiring A] [Fintype m] := (vecMulBilin A Aᵐᵒᵖ : _ →ₗ[_] Matrix m n A →ₗ[_] _)
+
+/-- `Matrix.mulVec` is a bilinear map.
+
+When `A` is non-commutative, this can be instantiated as `mulVecBilin A Aᵐᵒᵖ` -/
+def Matrix.mulVecBilin [Fintype n] : Matrix m n A →ₗ[R] (n → A) →ₗ[S] (m → A) where
+  toFun M :=
+  { toFun x := M *ᵥ x
+    map_add' _ _ := mulVec_add _ _ _
+    map_smul' _ _ := mulVec_smul _ _ _ }
+  map_add' _ _ := LinearMap.ext fun _ => add_mulVec _ _ _
+  map_smul' _ _ := LinearMap.ext fun _ => smul_mulVec _ _ _
+
+@[simp]
+theorem Matrix.mulVecBilin_apply [Fintype n] (M : Matrix m n A) (v : n → A) :
+    Matrix.mulVecBilin R S M v = M *ᵥ v := rfl
+
+example {A} [Semiring A] [Fintype n] := (mulVecBilin A Aᵐᵒᵖ : Matrix m n A →ₗ[_] _ →ₗ[_] _)
+
+/-- `vecMulVec` as a bilinear map.
+
+When `A` is noncommutative, `R` and `S` can be instantiated as `vecMulVecLinear A Aᵐᵒᵖ`. -/
+@[simps]
+def vecMulVecBilin : (m → A) →ₗ[R] (n → A) →ₗ[S] Matrix m n A where
+  toFun x :=
+    { toFun y := vecMulVec x y
+      map_add' _ _ := vecMulVec_add _ _ _
+      map_smul' _ _ := vecMulVec_smul _ _ _ }
+  map_add' _ _ := LinearMap.ext fun _ => add_vecMulVec _ _ _
+  map_smul' _ _ := LinearMap.ext fun _ => smul_vecMulVec _ _ _
+
+example {A} [Semiring A] := (vecMulVecBilin A Aᵐᵒᵖ : (m → A) →ₗ[_] (n → A) →ₗ[_] _)
+
+/-- `vecMulVec` as a bilinear map.
+
+When `A` is noncommutative, `R` and `S` can be instantiated as `vecMulVecLinear A Aᵐᵒᵖ`. -/
+@[simps]
+def dotProductBilin [Fintype m] : (m → A) →ₗ[R] (m → A) →ₗ[S] A where
+  toFun x :=
+    { toFun y := dotProduct x y
+      map_add' _ _ := dotProduct_add _ _ _
+      map_smul' _ _ := dotProduct_smul _ _ _ }
+  map_add' _ _ := LinearMap.ext fun _ => add_dotProduct _ _ _
+  map_smul' _ _ := LinearMap.ext fun _ => smul_dotProduct _ _ _
+
+example {A} [Semiring A] [Fintype m] := (dotProductBilin A Aᵐᵒᵖ : (m → A) →ₗ[_] _ →ₗ[_] _)
+
+end Bilinear
+
+section ToMatrixRight
 variable {R : Type*} [Semiring R]
 variable {l m n : Type*}
 
-/-- `Matrix.vecMul M` is a linear map. -/
-def Matrix.vecMulLinear [Fintype m] (M : Matrix m n R) : (m → R) →ₗ[R] n → R where
-  toFun x := x ᵥ* M
-  map_add' _ _ := funext fun _ ↦ add_dotProduct _ _ _
-  map_smul' _ _ := funext fun _ ↦ smul_dotProduct _ _ _
+/-- `Matrix.vecMul M` is a linear map.
+
+Note this is a special ase of `Matrix.vecMulBilin`. -/
+abbrev Matrix.vecMulLinear [Fintype m] (M : Matrix m n R) : (m → R) →ₗ[R] n → R :=
+  Matrix.vecMulBilin R Rᵐᵒᵖ |>.flip M
 
 @[simp] theorem Matrix.vecMulLinear_apply [Fintype m] (M : Matrix m n R) (x : m → R) :
     M.vecMulLinear x = x ᵥ* M := rfl
@@ -196,11 +273,10 @@ section mulVec
 variable {R : Type*} [CommSemiring R]
 variable {k l m n : Type*}
 
-/-- `Matrix.mulVec M` is a linear map. -/
-def Matrix.mulVecLin [Fintype n] (M : Matrix m n R) : (n → R) →ₗ[R] m → R where
-  toFun := M.mulVec
-  map_add' _ _ := funext fun _ ↦ dotProduct_add _ _ _
-  map_smul' _ _ := funext fun _ ↦ dotProduct_smul _ _ _
+/-- `Matrix.mulVec M` is a linear map.
+
+Note this is a special case of `Matrix.mulVecBilin`. -/
+abbrev Matrix.mulVecLin [Fintype n] (M : Matrix m n R) : (n → R) →ₗ[R] m → R := mulVecBilin R R M
 
 theorem Matrix.coe_mulVecLin [Fintype n] (M : Matrix m n R) :
     (M.mulVecLin : _ → _) = M.mulVec := rfl
@@ -272,26 +348,6 @@ lemma Matrix.linearIndependent_cols_of_isUnit {R : Type*} [CommRing R] [Fintype 
   exact Matrix.mulVec_injective_of_isUnit ha
 
 end mulVec
-
-section vecMulVec
-variable {m n R S A : Type*}
-variable [Semiring R] [Semiring S] [NonUnitalSemiring A] [Module R A] [Module S A]
-variable [SMulCommClass S R A] [SMulCommClass S A A] [IsScalarTower R A A]
-
-variable (R S) in
-/-- `vecMulVec` as a bilinear map.
-
-When `A` is noncommutative, `R` and `S` can be instantiated as `vecMulVecLinear A Aᵐᵒᵖ`. -/
-@[simps]
-def vecMulVecBilin : (m → A) →ₗ[R] (n → A) →ₗ[S] Matrix m n A where
-  toFun x :=
-    { toFun y := vecMulVec x y
-      map_add' _ _ := vecMulVec_add _ _ _
-      map_smul' _ _ := vecMulVec_smul _ _ _ }
-  map_add' _ _ := LinearMap.ext fun _ => add_vecMulVec _ _ _
-  map_smul' _ _ := LinearMap.ext fun _ => smul_vecMulVec _ _ _
-
-end vecMulVec
 
 section ToMatrix'
 

@@ -687,8 +687,8 @@ theorem add_vecMul [Fintype m] (A : Matrix m n α) (x y : m → α) :
   ext
   apply add_dotProduct
 
-theorem mulVec_smul [Fintype n] [DistribSMul R α] [SMulCommClass R α α]
-    (M : Matrix m n α) (b : R) (v : n → α) :
+theorem mulVec_smul [Fintype n] [NonUnitalNonAssocSemiring S] [DistribSMul R S]
+    [SMulCommClass R S S] (M : Matrix m n S) (b : R) (v : n → S) :
     M *ᵥ (b • v) = b • M *ᵥ v := by
   ext
   exact dotProduct_smul _ _ _

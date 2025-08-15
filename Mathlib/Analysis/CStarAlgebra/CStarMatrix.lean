@@ -474,21 +474,18 @@ noncomputable def toCLM : CStarMatrix m n A →ₗ[ℂ] C⋆ᵐᵒᵈ(A, m → A
                map_smul' := M.smul_vecMul
                cont := Continuous.comp (by fun_prop) (by fun_prop) }
   map_add' M₁ M₂ := by
-    ext
+    ext x
     simp only [ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply,
       WithCStarModule.equivL_apply, WithCStarModule.equivL_symm_apply,
       WithCStarModule.equiv_symm_pi_apply, ContinuousLinearMap.add_apply, WithCStarModule.add_apply]
     rw [Matrix.vecMul_add, Pi.add_apply]
   map_smul' c M := by
-    ext x i
+    ext x
     simp only [ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply,
       WithCStarModule.equivL_apply, WithCStarModule.equivL_symm_apply,
-      WithCStarModule.equiv_symm_pi_apply, Matrix.vecMul, dotProduct,
-      WithCStarModule.equiv_pi_apply, RingHom.id_apply, ContinuousLinearMap.coe_smul',
-      Pi.smul_apply, WithCStarModule.smul_apply, Finset.smul_sum]
-    congr
-    ext j
-    rw [CStarMatrix.smul_apply, mul_smul_comm]
+      WithCStarModule.equiv_symm_pi_apply, ContinuousLinearMap.smul_apply,
+      WithCStarModule.smul_apply, RingHom.id_apply]
+    rw [Matrix.vecMul_smul, Pi.smul_apply]
 
 lemma toCLM_apply {M : CStarMatrix m n A} {v : C⋆ᵐᵒᵈ(A, m → A)} :
     toCLM M v = (WithCStarModule.equiv _ _).symm (M.vecMul v) := rfl
