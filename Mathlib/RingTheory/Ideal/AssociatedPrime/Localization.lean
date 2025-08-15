@@ -65,13 +65,9 @@ lemma mem_associatedPrimes_of_comap_mem_associatedPrimes_of_isLocalizedModule
         simp [← mul_assoc, mul_comm r t.1, IsLocalization.mk'_zero]
       simpa [this] using Ideal.IsTwoSided.mul_mem_of_left _ ht
 
-include S f in
-@[deprecated mem_associatedPrimes_of_comap_mem_associatedPrimes_of_isLocalizedModule
-  (since := "2025-08-01")]
-lemma mem_associatePrimes_of_comap_mem_associatePrimes_isLocalizedModule
-    (p : Ideal R') (ass : p.comap (algebraMap R R') ∈ associatedPrimes R M) :
-    p ∈ associatedPrimes R' M' :=
-  mem_associatedPrimes_of_comap_mem_associatedPrimes_of_isLocalizedModule S f p ass
+@[deprecated (since := "2025-08-15")]
+alias mem_associatePrimes_of_comap_mem_associatePrimes_isLocalizedModule :=
+  mem_associatedPrimes_of_comap_mem_associatedPrimes_of_isLocalizedModule
 
 lemma mem_associatePrimes_localizedModule_atPrime_of_mem_associated_primes
     {p : Ideal R} [p.IsPrime] (ass : p ∈ associatedPrimes R M) :
