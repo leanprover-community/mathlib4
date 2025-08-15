@@ -234,11 +234,18 @@ theorem isNat_intFract_of_isNat (r : R) (m : ℕ) : IsNat r m → IsNat (Int.fra
 theorem isNat_intFract_of_isInt (r : R) (m : ℤ) : IsInt r m → IsNat (Int.fract r) 0 := by
   rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
 
-theorem isRat_intFract_of_isRat (r : α) (n : ℤ) (d : ℕ) :
-    IsRat r n d → IsRat (Int.fract r) (n % d) d := by
+theorem isNNRat_intFract_of_isNNRat (r : α) (n d : ℕ) :
+    IsNNRat r n d → IsNNRat (Int.fract r) (n % d) d := by
   rintro ⟨inv, rfl⟩
   refine ⟨inv, ?_⟩
-  simp only [invOf_eq_inv, ← div_eq_mul_inv, fract_div_intCast_eq_div_intCast_mod]
+  simp only [invOf_eq_inv, ← div_eq_mul_inv, fract_div_natCast_eq_div_natCast_mod]
+
+theorem isRat_intFract_of_isRat_negOfNat (r : α) (n d : ℕ) :
+    IsRat r (negOfNat n) d → IsRat (Int.fract r) (-n % d) d := by
+  rintro ⟨inv, rfl⟩
+  refine ⟨inv, ?_⟩
+  simp only [invOf_eq_inv, ← div_eq_mul_inv, fract_div_intCast_eq_div_intCast_mod,
+    negOfNat_eq, ofNat_eq_coe]
 
 /-- `norm_num` extension for `Int.fract` -/
 @[norm_num (Int.fract _)]
@@ -259,14 +266,24 @@ def evalIntFract : NormNumExt where eval {u α} e := do
       have z : Q(ℕ) := Lean.mkRawNatLit 0
       letI : $z =Q 0 := ⟨⟩
       return .isNat _ z q(isNat_intFract_of_isInt _ _ $pb)
-    | .isRat _ q n d h => do
+    | .isNNRat _ q n d h => do
+      let _i ← synthInstanceQ q(Field $α)
+      let _i ← synthInstanceQ q(IsStrictOrderedRing $α)
+      assertInstancesCommute
+      have n' : Q(ℕ) := Lean.mkRawNatLit (q.num.natAbs % q.den)
+      letI : $n' =Q $n % $d := ⟨⟩
+      return .isNNRat _ (Int.fract q) n' d q(isNNRat_intFract_of_isNNRat _ $n $d $h)
+    | .isNegNNRat _ q n d h => do
       let _i ← synthInstanceQ q(Field $α)
       let _i ← synthInstanceQ q(IsStrictOrderedRing $α)
       assertInstancesCommute
       have n' : Q(ℤ) := mkRawIntLit (q.num % q.den)
-      letI : $n' =Q $n % $d := ⟨⟩
-      return .isRat _ (Int.fract q) n' d q(isRat_intFract_of_isRat _ $n $d $h)
+      letI : $n' =Q -$n % $d := ⟨⟩
+      return .isRat _ (Int.fract q) n' d q(isRat_intFract_of_isRat_negOfNat _ $n $d $h)
   | _, _, _ => failure
+
+example : Int.fract (3.7 : ℚ) = 0.7 := by norm_num
+example : Int.fract (-3.7 : ℚ) = 0.3 := by norm_num
 
 end NormNum
 
