@@ -127,60 +127,60 @@ variable {α E F G : Type*} [MeasurableSpace α]
   (Bμ : VectorMeasureWithPairing α E F G)
 
 /-- The pairing integral in L1 space as a continuous linear map. -/
-noncomputable def pairingIntegral : (α →₁[Bμ.vectorMeasure.variation.ennrealToMeasure] E) →L[ℝ] G :=
+noncomputable def integral : (α →₁[Bμ.vectorMeasure.variation.ennrealToMeasure] E) →L[ℝ] G :=
     setToL1 (dominatedFinMeasAdditive_weightedVectorSMul Bμ.pairing Bμ.vectorMeasure)
 
 @[simp]
-theorem pairingIntegral_zero :
-    Bμ.pairingIntegral (0 : α →₁[Bμ.vectorMeasure.variation.ennrealToMeasure] E) = 0 := by
-  simp [pairingIntegral]
+theorem integral_zero :
+    Bμ.integral (0 : α →₁[Bμ.vectorMeasure.variation.ennrealToMeasure] E) = 0 := by
+  simp [integral]
 
 @[integral_simps]
-theorem pairingIntegral_add (f g : α →₁[Bμ.vectorMeasure.variation.ennrealToMeasure] E) :
-    Bμ.pairingIntegral (f + g) = Bμ.pairingIntegral f + Bμ.pairingIntegral g := by
-  simp [pairingIntegral]
+theorem integral_add (f g : α →₁[Bμ.vectorMeasure.variation.ennrealToMeasure] E) :
+    Bμ.integral (f + g) = Bμ.integral f + Bμ.integral g := by
+  simp [integral]
 
 @[integral_simps]
-theorem pairingIntegral_neg (f : α →₁[Bμ.vectorMeasure.variation.ennrealToMeasure] E) :
-    Bμ.pairingIntegral (-f) = -Bμ.pairingIntegral f := by
-  simp [pairingIntegral]
+theorem integral_neg (f : α →₁[Bμ.vectorMeasure.variation.ennrealToMeasure] E) :
+    Bμ.integral (-f) = -Bμ.integral f := by
+  simp [integral]
 
 @[integral_simps]
-theorem pairingIntegral_sub (f g : α →₁[Bμ.vectorMeasure.variation.ennrealToMeasure] E) :
-    Bμ.pairingIntegral (f - g) = Bμ.pairingIntegral f - Bμ.pairingIntegral g := by
-  simp [pairingIntegral]
+theorem integral_sub (f g : α →₁[Bμ.vectorMeasure.variation.ennrealToMeasure] E) :
+    Bμ.integral (f - g) = Bμ.integral f - Bμ.integral g := by
+  simp [integral]
 
 @[integral_simps]
-theorem pairingIntegral_smul (c : ℝ) (f : α →₁[Bμ.vectorMeasure.variation.ennrealToMeasure] E) :
-    Bμ.pairingIntegral (c • f) = c • Bμ.pairingIntegral f := by
-  simp [pairingIntegral]
+theorem integral_smul (c : ℝ) (f : α →₁[Bμ.vectorMeasure.variation.ennrealToMeasure] E) :
+    Bμ.integral (c • f) = c • Bμ.integral f := by
+  simp [integral]
 
 @[simp]
-lemma pairingIntegral_apply (f : (α →₁[Bμ.vectorMeasure.variation.ennrealToMeasure] E)) :
-    Bμ.pairingIntegral f
+lemma integral_apply (f : (α →₁[Bμ.vectorMeasure.variation.ennrealToMeasure] E)) :
+    Bμ.integral f
     = setToL1 (dominatedFinMeasAdditive_weightedVectorSMul Bμ.pairing Bμ.vectorMeasure) f := rfl
 
-theorem pairingIntegral_le (f : (α →₁[Bμ.vectorMeasure.variation.ennrealToMeasure] E)) :
-    ‖Bμ.pairingIntegral f‖ ≤ ‖Bμ.pairing‖ * ‖f‖:= by
-  simp only [pairingIntegral_apply]
+theorem integral_le (f : (α →₁[Bμ.vectorMeasure.variation.ennrealToMeasure] E)) :
+    ‖Bμ.integral f‖ ≤ ‖Bμ.pairing‖ * ‖f‖:= by
+  simp only [integral_apply]
   exact norm_setToL1_le_mul_norm
     (dominatedFinMeasAdditive_weightedVectorSMul Bμ.pairing Bμ.vectorMeasure)
     (norm_nonneg Bμ.pairing) f
 
-theorem norm_pairingIntegral_le_norm_pairing : ‖Bμ.pairingIntegral‖ ≤ ‖Bμ.pairing‖ :=
+theorem norm_integral_le_norm_pairing : ‖Bμ.integral‖ ≤ ‖Bμ.pairing‖ :=
   (ContinuousLinearMap.opNorm_le_iff (norm_nonneg Bμ.pairing)).mpr
-  (pairingIntegral_le Bμ)
+  (integral_le Bμ)
 
-theorem nnnorm_pairingIntegral_le_nnNnorm : ‖Bμ.pairingIntegral‖₊ ≤ ‖Bμ.pairing‖₊ :=
-  norm_pairingIntegral_le_norm_pairing Bμ
+theorem nnnorm_integral_le_nnNnorm : ‖Bμ.integral‖₊ ≤ ‖Bμ.pairing‖₊ :=
+  norm_integral_le_norm_pairing Bμ
 
-theorem nnnorm_pairingIntegral_le (f : α →₁[Bμ.vectorMeasure.variation.ennrealToMeasure] E) :
-    ‖Bμ.pairingIntegral f‖₊ ≤ ‖Bμ.pairing‖₊ * ‖f‖₊ := pairingIntegral_le Bμ f
+theorem nnnorm_integral_le (f : α →₁[Bμ.vectorMeasure.variation.ennrealToMeasure] E) :
+    ‖Bμ.integral f‖₊ ≤ ‖Bμ.pairing‖₊ * ‖f‖₊ := integral_le Bμ f
 
 @[continuity]
-theorem continuous_pairingIntegral :
+theorem continuous_integral :
     Continuous fun f : α →₁[Bμ.vectorMeasure.variation.ennrealToMeasure] E =>
-    Bμ.pairingIntegral f :=
+    Bμ.integral f :=
   (setToL1 (dominatedFinMeasAdditive_weightedVectorSMul Bμ.pairing Bμ.vectorMeasure)).continuous
 
 end VectorMeasureWithPairing
@@ -209,7 +209,7 @@ def withPairing : VectorMeasureWithPairing α ℝ F F where
 /-- The `F`-valued integral with respect to an `F`-valued vector measure, defined as the pairing
 integral where the pairing is `scalarSMulCLM`. -/
 noncomputable def integral (f : α →₁[μ.variation.ennrealToMeasure] ℝ) : F :=
-    μ.withPairing.pairingIntegral f
+    μ.withPairing.integral f
 
 end VectorMeasure
 
