@@ -18,11 +18,26 @@ theorem exists_k_base_eq_p_pow_k_of_prime_p_pow_eq_base_pow
 
 theorem exists_eq_pow_of_exponent_coprime_of_pow_eq {a b m n : ℕ} (hmn : m.Coprime n) (h : a ^ m = b ^ n) :
     ∃ c, a = c ^ n ∧ b = c ^ m := by
+  have factorization_eq := congrArg factorization h
+
   sorry
 
 theorem exists_eq_pow_of_pow_eq {a b m n : ℕ} (hmn : m ≠ 0 ∨ n ≠ 0) (h : a ^ m = b ^ n) :
-    ∃ c, a = c ^ n / gcd m n ∧ b = c ^ m / gcd m n := by
-  sorry
+    let g := gcd m n; ∃ c, a = c ^ (n / g) ∧ b = c ^ (m / g) := by
+  intro g
+  let m' := m / gcd m n
+  let n' := n / gcd m n
+  have coprime : m'.Coprime n' := by
+    rcases hmn with hm | hn
+    . exact gcd_div_gcd_div_gcd_of_pos_left (zero_lt_of_ne_zero hm)
+    . exact gcd_div_gcd_div_gcd_of_pos_right (zero_lt_of_ne_zero hn)
+  have eq : a ^ m' = b ^ n' := by
+    have : m = m' * g :=
+      have : g ∣ m := by
+        exact gcd_dvd_left m n
+      (Nat.div_mul_cancel this).symm
+    sorry
+  exact exists_eq_pow_of_exponent_coprime_of_pow_eq coprime eq
 
 end Nat
 
