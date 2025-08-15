@@ -546,11 +546,12 @@ section Map
 
 variable [Fintype V] {W : Type*} [Fintype W] [DecidableEq W]
 
-theorem edgeFinset_map_eq_map (G : SimpleGraph V) [DecidableRel G.Adj] (f : V ↪ W) :
+theorem edgeFinset_map_eq_map (f : V ↪ W) (G : SimpleGraph V) [DecidableRel G.Adj] :
     (G.map f).edgeFinset = G.edgeFinset.map f.sym2Map := by
-  simpa [Finset.map_eq_image, ← Set.toFinset_image, Set.toFinset_inj] using G.edgeSet_map_eq_image f
+  rw [Finset.map_eq_image, ← Set.toFinset_image, Set.toFinset_inj]
+  exact G.edgeSet_map_eq_image f
 
-theorem card_edgeFinset_map (G : SimpleGraph V) [DecidableRel G.Adj] (f : V ↪ W) :
+theorem card_edgeFinset_map (f : V ↪ W) (G : SimpleGraph V) [DecidableRel G.Adj] :
     #(G.map f).edgeFinset = #G.edgeFinset := by
   rw [edgeFinset_map_eq_map]
   exact G.edgeFinset.card_map f.sym2Map
