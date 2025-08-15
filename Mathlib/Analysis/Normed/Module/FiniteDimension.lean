@@ -434,7 +434,7 @@ theorem FiniteDimensional.of_isCompact_closedBall₀ {r : ℝ} (rpos : 0 < r)
         gcongr
         · exact hc.2.le
         · apply fle
-      _ = r := by field_simp [(zero_lt_one.trans Rgt).ne']
+      _ = r := by simp [(zero_lt_one.trans Rgt).ne']
   obtain ⟨x : E, _ : x ∈ Metric.closedBall (0 : E) r, φ : ℕ → ℕ, φmono : StrictMono φ,
     φlim : Tendsto (g ∘ φ) atTop (𝓝 x)⟩ := h.tendsto_subseq A
   have B : CauchySeq (g ∘ φ) := φlim.cauchySeq
