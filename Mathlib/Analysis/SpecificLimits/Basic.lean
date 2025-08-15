@@ -398,10 +398,9 @@ theorem ENNReal.tsum_geometric_add_one (r : ℝ≥0∞) : ∑' n : ℕ, r ^ (n +
 
 lemma ENNReal.tsum_two_zpow_neg_add_one :
     ∑' m : ℕ, 2 ^ (-1 - m  : ℤ) = (1 : ℝ≥0∞) := by
-  simp_rw [@neg_sub_left, ENNReal.zpow_neg (x:= 2) (by norm_num) (by norm_num),
-   ← Nat.cast_one (R := ℤ), ← Nat.cast_add, zpow_natCast, ENNReal.inv_pow,
-   ENNReal.tsum_geometric_add_one, one_sub_inv_two, inv_inv]
-  exact ENNReal.inv_mul_cancel (by simp) (by simp)
+  simp_rw [neg_sub_left, ENNReal.zpow_neg,← Nat.cast_one (R := ℤ), ← Nat.cast_add, zpow_natCast,
+    ENNReal.inv_pow, ENNReal.tsum_geometric_add_one, one_sub_inv_two, inv_inv]
+  exact ENNReal.inv_mul_cancel (Ne.symm (NeZero.ne' 2)) (Ne.symm top_ne_ofNat)
 
 end Geometric
 
