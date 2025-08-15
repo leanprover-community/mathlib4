@@ -59,7 +59,7 @@ multiple declarations it will throw. -/
 def getAuxDefOfDeclName : TermElabM FVarId := do
   let some declName ← getDeclName? | throwError "no 'declName?'"
   let auxDeclMap := (← getLCtx).auxDeclToFullName
-  let fvars := auxDeclMap.fold (init := []) fun fvars fvar fullName =>
+  let fvars := auxDeclMap.foldl (init := []) fun fvars fvar fullName =>
     if fullName = declName then fvars.concat fvar else fvars
   match fvars with
   | [] => throwError "no auxiliary local declaration corresponding to the current declaration"
@@ -414,7 +414,7 @@ def deriveTraversable (m : MVarId) : TermElabM Unit := do
           levelParams := levels
           modifiers :=
             { isUnsafe := d.isUnsafe
-              visibility := .protected }
+              isProtected := true }
           declName := n'
           type := t'
           value := e'
