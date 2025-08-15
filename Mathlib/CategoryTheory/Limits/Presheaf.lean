@@ -77,7 +77,7 @@ def restrictedYonedaHomEquiv' (P : Cᵒᵖ ⥤ Type v₁) (E : ℰ) :
     { app := fun _ x => f.app (CostructuredArrow.mk (yonedaEquiv.symm x))
       naturality := fun {X₁ X₂} φ => by
         ext x
-        let ψ : CostructuredArrow.mk (yonedaEquiv.symm (P.toPrefunctor.map φ x)) ⟶
+        let ψ : CostructuredArrow.mk (yonedaEquiv.symm (P.map φ x)) ⟶
           CostructuredArrow.mk (yonedaEquiv.symm x) := CostructuredArrow.homMk φ.unop (by
             dsimp [yonedaEquiv]
             cat_disch )

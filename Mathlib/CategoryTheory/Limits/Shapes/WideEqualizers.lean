@@ -89,14 +89,12 @@ def WalkingParallelFamily.Hom.comp :
   | _, _, _, id _, h => h
   | _, _, _, line j, id one => line j
 
--- attribute [local tidy] tactic.case_bash Porting note: no tidy, no local
+attribute [local aesop safe cases] WalkingParallelFamily.Hom
 
 instance WalkingParallelFamily.category : SmallCategory (WalkingParallelFamily J) where
   Hom := WalkingParallelFamily.Hom J
   id := WalkingParallelFamily.Hom.id
   comp := WalkingParallelFamily.Hom.comp
-  assoc f g h := by cases f <;> cases g <;> cases h <;> cat_disch
-  comp_id f := by cases f <;> cat_disch
 
 @[simp]
 theorem WalkingParallelFamily.hom_id (X : WalkingParallelFamily J) :

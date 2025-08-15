@@ -73,7 +73,7 @@ lemma mem_degenerate_iff (x : X _⦋n⦌) :
   constructor
   · rintro ⟨m, hm, f, y, hy⟩
     rw [← image.fac f, op_comp] at hy
-    have : _ ≤ m := SimplexCategory.len_le_of_mono (f := image.ι f) inferInstance
+    have : _ ≤ m := SimplexCategory.len_le_of_mono (image.ι f)
     exact ⟨(image f).len, by omega, factorThruImage f, inferInstance, by aesop⟩
   · rintro ⟨m, hm, f, hf, hx⟩
     exact ⟨m, hm, f, hx⟩
@@ -86,8 +86,8 @@ lemma degenerate_eq_iUnion_range_σ :
     rw [mem_degenerate_iff] at hx
     obtain ⟨m, hm, f, hf, y, rfl⟩ := hx
     obtain ⟨i, θ, rfl⟩ := SimplexCategory.eq_σ_comp_of_not_injective f (fun hf ↦ by
-      have := SimplexCategory.le_of_mono (f := f) (by
-        rwa [SimplexCategory.mono_iff_injective])
+      rw [← SimplexCategory.mono_iff_injective] at hf
+      have := SimplexCategory.le_of_mono f
       omega)
     aesop
   · intro hx
@@ -118,11 +118,8 @@ lemma isIso_of_nonDegenerate (x : X.nonDegenerate n)
   induction' m using SimplexCategory.rec with m
   rw [mem_nonDegenerate_iff_notMem_degenerate] at hx
   by_contra!
-  refine hx ⟨_ ,?_, f, y, hy⟩
-  by_contra!
-  obtain rfl : m = n :=
-    le_antisymm (SimplexCategory.len_le_of_epi (f := f) inferInstance) this
-  obtain rfl := SimplexCategory.eq_id_of_epi f
-  exact this inferInstance
+  refine hx ⟨_, not_le.1 (fun h ↦ this ?_), f, y, hy⟩
+  rw [SimplexCategory.isIso_iff_of_epi]
+  exact le_antisymm h (SimplexCategory.len_le_of_epi f)
 
 end SSet

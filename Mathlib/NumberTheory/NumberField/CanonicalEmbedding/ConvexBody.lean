@@ -307,11 +307,7 @@ variable (K)
 
 theorem convexBodySumFun_continuous :
     Continuous (convexBodySumFun : mixedSpace K → ℝ) := by
-  refine continuous_finset_sum Finset.univ fun w ↦ ?_
-  obtain hw | hw := isReal_or_isComplex w
-  all_goals
-  · simp only [normAtPlace_apply_of_isReal, normAtPlace_apply_of_isComplex, hw]
-    fun_prop
+  fun_prop
 
 /-- The convex body equal to the set of points `x : mixedSpace K` such that
   `∑ w real, ‖x w‖ + 2 * ∑ w complex, ‖x w‖ ≤ B`. -/
