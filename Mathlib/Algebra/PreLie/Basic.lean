@@ -37,7 +37,7 @@ Perhaps one could be favored but there is no real reason to.
 pre-lie algebras
 
 -/
-open MulOpposite Ring Module 
+open MulOpposite Ring Module
 
 universe u v
 
@@ -60,10 +60,10 @@ section algebras
 variable (R : Type u) [CommRing R]
 @[ext]
 class LeftPreLieAlgebra (L : Type v) [LeftPreLieRing L] : Type (max u v) extends
-  Module R L, IsScalarTower R L L, SMulCommClass R L L 
+  Module R L, IsScalarTower R L L, SMulCommClass R L L
 @[ext]
 class RightPreLieAlgebra (L : Type v) [RightPreLieRing L] : Type (max u v) extends
-  Module R L, IsScalarTower R L L, SMulCommClass R L L 
+  Module R L, IsScalarTower R L L, SMulCommClass R L L
 end algebras
 
 namespace LeftPreLieRing
