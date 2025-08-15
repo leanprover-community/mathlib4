@@ -1,30 +1,26 @@
-import Mathlib.Data.ZMod.Defs
 import Mathlib.Tactic.Ring.NamePolyVars
 
-variable (R : Type) [CommRing R]
+set_option trace.name_poly_vars true
 
-name_poly_vars R[X,Y,Z]
-name_poly_vars Int[q]
-name_poly_vars R[S][T][U]
-name_poly_vars (ZMod 37)[d,e]
+axiom Polynomial : Type → Type
+axiom Polynomial.C {R : Type} : R → Polynomial R
+axiom Polynomial.X {R : Type} : Polynomial R
 
-noncomputable example : Vector (MvPolynomial (Fin 3) R) 3 :=
-  have : X = MvPolynomial.X 0 := rfl
-  have : Y = MvPolynomial.X 1 := rfl
-  have : Z = MvPolynomial.X 2 := rfl
-  #v[X, Y, Z]
+#register_poly_vars "[" X "]" Polynomial Polynomial.C Polynomial.X
 
-noncomputable example : Polynomial ℤ :=
-  have : q = Polynomial.X := rfl
-  q
+variable (R : Type)
 
-noncomputable example : Vector (Polynomial (Polynomial (Polynomial R))) 3 :=
-  have : S = Polynomial.C (Polynomial.C Polynomial.X) := rfl
-  have : T = Polynomial.C Polynomial.X := rfl
-  have : U = Polynomial.X := rfl
-  #v[S, T, U]
+axiom MvPolynomial : Type → Type → Type
+axiom MvPolynomial.C {σ R : Type} : R → MvPolynomial σ R
+axiom MvPolynomial.X {σ R : Type} (i : σ) : MvPolynomial σ R
 
-noncomputable example : Vector (MvPolynomial (Fin 2) (ZMod 37)) 2 :=
-  have : d = MvPolynomial.X 0 := rfl
-  have : e = MvPolynomial.X 1 := rfl
-  #v[d, e]
+#register_poly_vars "[" X, ... "]" MvPolynomial MvPolynomial.C MvPolynomial.X
+
+#name_poly_vars R[a,b][C]
+
+noncomputable example : Vector (R[a,b][C]) 3 :=
+  have : Polynomial (MvPolynomial (Fin 2) R) = R[a,b][C] := rfl
+  have : Polynomial.C (MvPolynomial.X 0) = a := rfl
+  have : Polynomial.C (MvPolynomial.X 1) = b := rfl
+  have : Polynomial.X = C := rfl
+  #v[a, b, C]
