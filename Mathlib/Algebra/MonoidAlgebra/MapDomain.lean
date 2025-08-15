@@ -46,6 +46,18 @@ variable [Semiring k]
 
 section
 
+/-- Like `Finsupp.mapDomain_zero`, but with `MonoidAlgebra.mapDomain`
+so head-matching will identify it. -/
+theorem mapDomain_zero {α : Type*} {β : Type*} {α₂ : Type*} [Semiring β] (f : α → α₂) :
+    (mapDomain f (0 : MonoidAlgebra β α) : MonoidAlgebra β α₂) = (0 : MonoidAlgebra β α₂) :=
+  Finsupp.mapDomain_zero
+
+/-- Like `Finsupp.mapDomain_add`, but with `MonoidAlgebra.mapDomain`
+so head-matching will identify it. -/
+theorem mapDomain_add {α : Type*} {β : Type*} {α₂ : Type*} [Semiring β] (f : α → α₂)
+    (x y : MonoidAlgebra β α) : mapDomain f (x + y) = mapDomain f x + mapDomain f y :=
+  Finsupp.mapDomain_add
+
 /-- Like `Finsupp.mapDomain_zero`, but for the `1` we define in this file -/
 @[simp]
 theorem mapDomain_one {α : Type*} {β : Type*} {α₂ : Type*} [Semiring β] [One α] [One α₂]
@@ -66,6 +78,11 @@ theorem mapDomain_mul {α : Type*} {β : Type*} {α₂ : Type*} [Semiring β] [M
     · simp [mul_add]
   · simp
   · simp [add_mul]
+
+@[simp]
+theorem mapDomain_neg {α : Type*} {β : Type*} {α₂ : Type*} [Ring β] (f : α → α₂)
+    (x : MonoidAlgebra β α) : mapDomain f (-x) = -mapDomain f x := by
+  rw [eq_neg_iff_add_eq_zero, ← mapDomain_add, neg_add_cancel, mapDomain_zero]
 
 end
 
