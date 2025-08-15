@@ -152,9 +152,8 @@ namespace ZMod
 
 instance instUnique : Unique (ZMod 1) := Fin.instUnique
 
-instance fintype : ∀ (n : ℕ) [NeZero n], Fintype (ZMod n)
-  | 0, h => (h.ne _ rfl).elim
-  | n + 1, _ => Fin.fintype (n + 1)
+instance fintype (n : ℕ) [hn : NeZero n] : Fintype (ZMod n) :=
+  cast (by exact Nat.casesOn n nofun (fun _ _ => rfl) hn) (Fin.fintype n)
 
 instance infinite : Infinite (ZMod 0) :=
   Int.infinite
