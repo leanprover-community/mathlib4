@@ -216,6 +216,16 @@ theorem IsPath.of_append_right {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
 lemma IsPath.of_adj {G : SimpleGraph V} {u v : V} (h : G.Adj u v) : h.toWalk.IsPath := by
   aesop
 
+theorem concat_isPath_iff {p : G.Walk u v} (h : G.Adj v w) :
+    (p.concat h).IsPath ↔ p.IsPath ∧ w ∉ p.support := by
+  rw [← (p.concat h).isPath_reverse_iff, ← p.isPath_reverse_iff, reverse_concat, ← List.mem_reverse,
+    ← support_reverse]
+  exact cons_isPath_iff h.symm p.reverse
+
+theorem IsPath.concat {p : G.Walk u v} (hp : p.IsPath) (hw : w ∉ p.support)
+    (h : G.Adj v w) : (p.concat h).IsPath :=
+  (concat_isPath_iff h).mpr ⟨hp, hw⟩
+
 @[simp]
 theorem IsCycle.not_of_nil {u : V} : ¬(nil : G.Walk u u).IsCycle := fun h => h.ne_nil rfl
 
