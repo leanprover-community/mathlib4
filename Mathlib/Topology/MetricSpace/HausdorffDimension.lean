@@ -140,6 +140,21 @@ theorem dimH_of_hausdorffMeasure_ne_zero_ne_top {d : ℝ≥0} {s : Set X} (h : �
     (h' : μH[d] s ≠ ∞) : dimH s = d :=
   le_antisymm (dimH_le_of_hausdorffMeasure_ne_top h') (le_dimH_of_hausdorffMeasure_ne_zero h)
 
+/-- The Hausdorff dimension of a set `s` is the infimum of all `d : ℝ≥0` such that the
+`d`-dimensional Hausdorff measure of `s` is zero. This infimum is taken in `ℝ≥0∞`.
+This gives an equivalent definition of the Hausdorff dimension. -/
+theorem dimH_eq_iInf (s : Set X) : dimH s = ⨅ (d : ℝ≥0) (_ : μH[d] s = 0), (d : ℝ≥0∞) := by
+  apply le_antisymm
+  · rw [dimH_def]
+    simp only [le_iInf_iff, iSup_le_iff, ENNReal.coe_le_coe]
+    intro i hi j hj
+    by_contra! hij
+    simpa [hi, hj] using hausdorffMeasure_mono hij.le s
+  · by_contra! h
+    rcases ENNReal.lt_iff_exists_nnreal_btwn.1 h with ⟨d', hdim_lt, hlt⟩
+    have h0 : μH[d'] s = 0 := hausdorffMeasure_of_dimH_lt hdim_lt
+    exact hlt.not_ge (iInf₂_le d' h0)
+
 end Measurable
 
 @[mono]
@@ -463,6 +478,14 @@ theorem dimH_univ : dimH (univ : Set ℝ) = 1 := by
 
 variable {E}
 
+/-- The Hausdorff dimension of any set in a finite-dimensional real normed space is finite. -/
+theorem dimH_lt_top (s : Set E) : dimH s < ⊤ := by calc
+  dimH s ≤ dimH (univ : Set E) := dimH_mono (subset_univ s)
+  _ = finrank ℝ E := dimH_univ_eq_finrank E
+  _ < ⊤ := by simp
+
+theorem dimH_ne_top (s : Set E) : dimH s ≠ ⊤ := (dimH_lt_top s).ne
+
 lemma hausdorffMeasure_of_finrank_lt [MeasurableSpace E] [BorelSpace E] {d : ℝ}
     (hd : finrank ℝ E < d) : (μH[d] : Measure E) = 0 := by
   lift d to ℝ≥0 using (Nat.cast_nonneg _).trans hd.le
@@ -523,3 +546,13 @@ in `F`. -/
 theorem ContDiff.dense_compl_range_of_finrank_lt_finrank [FiniteDimensional ℝ F] {f : E → F}
     (h : ContDiff ℝ 1 f) (hEF : finrank ℝ E < finrank ℝ F) : Dense (range f)ᶜ :=
   dense_compl_of_dimH_lt_finrank <| h.dimH_range_le.trans_lt <| Nat.cast_lt.2 hEF
+
+/--
+The Hausdorff dimension of the orthogonal projection of a set `s` onto a subspace `K`
+is less than or equal to the Hausdorff dimension of `s`.
+-/
+theorem dimH_orthogonalProjection_le {𝕜 E : Type*} [RCLike 𝕜]
+    [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+    (K : Submodule 𝕜 E) [K.HasOrthogonalProjection] (s : Set E) :
+    dimH (K.orthogonalProjection '' s) ≤ dimH s :=
+  K.lipschitzWith_orthogonalProjection.dimH_image_le s

@@ -103,6 +103,10 @@ instance algHomClass : AlgHomClass (A →ₐ[R] B) R A B where
   map_one f := f.map_one'
   commutes f := f.commutes'
 
+@[simp] lemma _root_.AlgHomClass.toLinearMap_toAlgHom {R A B F : Type*} [CommSemiring R]
+    [Semiring A] [Semiring B] [Algebra R A] [Algebra R B] [FunLike F A B] [AlgHomClass F R A B]
+    (f : F) : (AlgHomClass.toAlgHom f : A →ₗ[R] B) = f := rfl
+
 /-- See Note [custom simps projection] -/
 def Simps.apply {R : Type u} {α : Type v} {β : Type w} [CommSemiring R]
     [Semiring α] [Semiring β] [Algebra R α] [Algebra R β] (f : α →ₐ[R] β) : α → β := f
@@ -341,7 +345,7 @@ theorem mul_apply (φ ψ : A →ₐ[R] A) (x : A) : (φ * ψ) x = φ (ψ x) :=
   rfl
 
 @[simp] theorem coe_pow (φ : A →ₐ[R] A) (n : ℕ) : ⇑(φ ^ n) = φ^[n] :=
-   n.rec (by ext; simp) fun _ ih ↦ by ext; simp [pow_succ, ih]
+  n.rec (by ext; simp) fun _ ih ↦ by ext; simp [pow_succ, ih]
 
 theorem algebraMap_eq_apply (f : A →ₐ[R] B) {y : R} {x : A} (h : algebraMap R A y = x) :
     algebraMap R B y = f x :=
@@ -355,8 +359,23 @@ lemma cancel_left {g₁ g₂ : A →ₐ[R] B} {f : B →ₐ[R] C} (hf : Function
     f.comp g₁ = f.comp g₂ ↔ g₁ = g₂ :=
   ⟨fun h => AlgHom.ext <| fun _ ↦ hf.eq_iff.mp <| AlgHom.ext_iff.mp h _, fun h => h ▸ rfl⟩
 
+/-- `AlgHom.toLinearMap` as a `MonoidHom`. -/
+@[simps] def toEnd : (A →ₐ[R] A) →* Module.End R A where
+  toFun := toLinearMap
+  map_one' := rfl
+  map_mul' _ _ := rfl
+
 end Semiring
 end AlgHom
+
+namespace AlgHomClass
+
+@[simp]
+lemma toRingHom_toAlgHom {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
+    [Algebra R B] {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) :
+    RingHomClass.toRingHom (AlgHomClass.toAlgHom f) = RingHomClass.toRingHom f := rfl
+
+end AlgHomClass
 
 namespace RingHom
 
@@ -403,6 +422,9 @@ def ofId : R →ₐ[R] A :=
 
 variable {R}
 
+@[simp] lemma ofId_self : ofId R R = .id R R := rfl
+
+@[simp]
 theorem ofId_apply (r) : ofId R A r = algebraMap R A r :=
   rfl
 
@@ -410,7 +432,7 @@ theorem ofId_apply (r) : ofId R A r = algebraMap R A r :=
 instance subsingleton_id : Subsingleton (R →ₐ[R] A) :=
   ⟨fun f g => AlgHom.ext fun _ => (f.commutes _).trans (g.commutes _).symm⟩
 
-/-- This ext lemma closes trivial subgoals create when chaining heterobasic ext lemmas. -/
+/-- This ext lemma closes trivial subgoals created when chaining heterobasic ext lemmas. -/
 @[ext high]
 theorem ext_id (f g : R →ₐ[R] A) : f = g := Subsingleton.elim _ _
 
@@ -474,3 +496,18 @@ theorem toAlgHom_injective [FaithfulSMul M A] :
   eq_of_smul_eq_smul fun r => AlgHom.ext_iff.1 h r
 
 end MulSemiringAction
+
+section
+
+variable {R S T : Type*} [CommSemiring R] [Semiring S] [Semiring T] [Algebra R S] [Algebra R T]
+  [Subsingleton T]
+
+instance uniqueOfRight : Unique (S →ₐ[R] T) where
+  default := AlgHom.ofLinearMap default (Subsingleton.elim _ _) (fun _ _ ↦ (Subsingleton.elim _ _))
+  uniq _ := AlgHom.ext fun _ ↦ Subsingleton.elim _ _
+
+@[simp]
+lemma AlgHom.default_apply (x : S) : (default : S →ₐ[R] T) x = 0 :=
+  rfl
+
+end

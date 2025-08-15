@@ -113,9 +113,6 @@ theorem isEmbedding {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (hB : Function.Inje
     IsEmbedding fun (x : WeakBilin B) y => B x y :=
   Function.Injective.isEmbedding_induced <| LinearMap.coe_injective.comp hB
 
-@[deprecated (since := "2024-10-26")]
-alias embedding := isEmbedding
-
 theorem tendsto_iff_forall_eval_tendsto {l : Filter α} {f : α → WeakBilin B} {x : WeakBilin B}
     (hB : Function.Injective B) :
     Tendsto f l (𝓝 x) ↔ ∀ y, Tendsto (fun i => B (f i) y) l (𝓝 (B x y)) := by

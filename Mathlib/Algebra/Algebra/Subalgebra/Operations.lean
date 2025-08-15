@@ -49,7 +49,7 @@ theorem mem_of_finset_sum_eq_one_of_pow_smul_mem
   let l' : ι → S' := fun x => ⟨l x, hl x⟩
   have e' : ∑ i ∈ ι', l' i * s' i = 1 := by
     ext
-    show S'.subtype (∑ i ∈ ι', l' i * s' i) = 1
+    change S'.subtype (∑ i ∈ ι', l' i * s' i) = 1
     simpa only [map_sum, map_mul] using e
   have : Ideal.span (s' '' ι') = ⊤ := by
     rw [Ideal.eq_top_iff_one, ← e']

@@ -257,12 +257,12 @@ theorem finite_rat_abs_sub_lt_one_div_den_sq (ξ : ℚ) :
     rw [← Rat.num_div_den a, ← Rat.num_div_den b, hab.1, hab.2]
   have H : f '' s ⊆ ⋃ (y : ℕ) (_ : y ∈ Ioc 0 ξ.den), Icc (⌈ξ * y⌉ - 1) (⌊ξ * y⌋ + 1) ×ˢ {y} := by
     intro xy hxy
-    simp only [mem_image, mem_setOf] at hxy
+    simp only [mem_image] at hxy
     obtain ⟨q, hq₁, hq₂⟩ := hxy
     obtain ⟨hd, hn⟩ := den_le_and_le_num_le_of_sub_lt_one_div_den_sq hq₁
     simp_rw [mem_iUnion]
     refine ⟨q.den, Set.mem_Ioc.mpr ⟨q.pos, hd⟩, ?_⟩
-    simp only [prod_singleton, mem_image, mem_Icc, (congr_arg Prod.snd (Eq.symm hq₂)).trans rfl]
+    simp only [prod_singleton, mem_image, mem_Icc]
     exact ⟨q.num, hn, hq₂⟩
   refine (Finite.subset ?_ H).of_finite_image hinj.injOn
   exact Finite.biUnion (finite_Ioc _ _) fun x _ => Finite.prod (finite_Icc _ _) (finite_singleton _)
@@ -274,7 +274,7 @@ end Rat
 theorem Real.infinite_rat_abs_sub_lt_one_div_den_sq_iff_irrational (ξ : ℝ) :
     {q : ℚ | |ξ - q| < 1 / (q.den : ℝ) ^ 2}.Infinite ↔ Irrational ξ := by
   refine
-    ⟨fun h => (irrational_iff_ne_rational ξ).mpr fun a b H => Set.not_infinite.mpr ?_ h,
+    ⟨fun h => (irrational_iff_ne_rational ξ).mpr fun a b _ H => Set.not_infinite.mpr ?_ h,
       Real.infinite_rat_abs_sub_lt_one_div_den_sq_of_irrational⟩
   convert Rat.finite_rat_abs_sub_lt_one_div_den_sq ((a : ℚ) / b) with q
   rw [H, (by (push_cast; rfl) : (1 : ℝ) / (q.den : ℝ) ^ 2 = (1 / (q.den : ℚ) ^ 2 : ℚ))]

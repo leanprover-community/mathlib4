@@ -49,6 +49,7 @@ info: Try this: let a : ℕ × String := bar p.1 p.2
 info: Try this: let _ : ℕ × String := bar p.1 p.2
 -/
 #guard_msgs in
+set_option maxHeartbeats 400000 in
 example (p : Nat × String) : True := by
   fail_if_success have? using p
   have? a : Nat × String using p.1, p.2

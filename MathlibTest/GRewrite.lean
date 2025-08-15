@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Sebastian Zimmer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sebastian Zimmer, Mario Carneiro, Heather Macbeth
+Authors: Sebastian Zimmer, Mario Carneiro, Heather Macbeth, Jovan Gerbscheid
 -/
 import Mathlib.Data.Int.ModEq
 import Mathlib.Tactic.GRewrite
@@ -204,8 +204,9 @@ relation does not have its main goals proved by `gcongr` (in the two examples he
 the inequality goes in the wrong direction). -/
 
 /--
-error: tactic 'grewrite' failed, could not discharge x ≤ y using x ≥ y
-case a.h
+error: Tactic `grewrite` failed: could not discharge x ≤ y using x ≥ y
+
+case h₁.h
 α : Type u_1
 inst✝² : CommRing α
 inst✝¹ : LinearOrder α
@@ -250,7 +251,8 @@ example {Prime : ℕ → Prop} {a a' : ℕ} (h₁ : Prime (a + 1)) (h₂ : a = a
   exact test_sorry
 
 /--
-error: tactic 'grewrite' failed, could not discharge b ≤ a using a ≤ b
+error: Tactic `grewrite` failed: could not discharge b ≤ a using a ≤ b
+
 case h₁.h
 α : Type u_1
 inst✝² : CommRing α
@@ -294,3 +296,10 @@ example (h : p → q) (h' : q → r) : p → r := by
   exact h'
 
 end apply
+
+-- previously, `grw` failed to rewrite in expressions with syntheticOpaque metavariables
+example : ∃ n, n < 2 := by
+  refine ⟨?_, ?_⟩
+  on_goal 2 => grw [← one_lt_two]
+  exact 0
+  refine zero_lt_one

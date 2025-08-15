@@ -52,7 +52,7 @@ open Module Polynomial
 variable {D}
 
 private def field (hD : InductionHyp D) {R : Subring D} (hR : R < ⊤)
-  [Fintype D] [DecidableEq D] [DecidablePred (· ∈ R)] :
+    [Fintype D] [DecidableEq D] [DecidablePred (· ∈ R)] :
     Field R :=
   { show DivisionRing R from Fintype.divisionRingOfIsDomain R with
     mul_comm := fun x y ↦ Subtype.ext <| hD hR x.2 y.2 }
@@ -123,7 +123,7 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
       Nat.cast_pow, Nat.cast_pow]
   apply Int.dvd_div_of_mul_dvd
   have aux : ∀ {k : ℕ}, ((X : ℤ[X]) ^ k - 1).eval ↑q = (q : ℤ) ^ k - 1 := by
-    simp only [eval_X, eval_one, eval_pow, eval_sub, eq_self_iff_true, forall_const]
+    simp only [eval_X, eval_one, eval_pow, eval_sub, forall_const]
   rw [← aux, ← aux, ← eval_mul]
   refine map_dvd (evalRingHom ↑q) (X_pow_sub_one_mul_cyclotomic_dvd_X_pow_sub_one_of_dvd ℤ ?_)
   refine Nat.mem_properDivisors.mpr ⟨⟨_, (finrank_mul_finrank Z Zx D).symm⟩, ?_⟩

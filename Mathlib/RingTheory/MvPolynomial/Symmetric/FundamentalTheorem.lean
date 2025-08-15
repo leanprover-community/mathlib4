@@ -74,7 +74,7 @@ lemma accumulate_rec {i n m : ℕ} (hin : i < n) (him : i + 1 < m) (t : Fin n �
   convert (add_sum_erase _ _ _).symm
   · ext
     rw [mem_erase]
-    simp_rw [mem_filter, mem_univ, true_and, i.succ_le_iff, lt_iff_le_and_ne]
+    simp_rw [mem_filter_univ, i.succ_le_iff, lt_iff_le_and_ne]
     rw [and_comm, ne_comm, ← Fin.val_ne_iff]
   · exact mem_filter.2 ⟨mem_univ _, le_rfl⟩
 
@@ -85,12 +85,12 @@ lemma accumulate_last {i n m : ℕ} (hin : i < n) (hmi : m = i + 1) (t : Fin n �
   apply sum_eq_single_of_mem
   · rw [mem_filter]; exact ⟨mem_univ _, le_rfl⟩
   refine fun j hij hji ↦ ht j ?_
-  simp_rw [mem_filter, mem_univ, true_and] at hij
+  rw [mem_filter_univ] at hij
   exact hmi.trans_le (hij.lt_of_ne (Fin.val_ne_iff.2 hji).symm).nat_succ_le
 
 lemma accumulate_injective {n m} (hnm : n ≤ m) : Function.Injective (accumulate n m) := by
   refine fun t s he ↦ funext fun i ↦ ?_
-  obtain h|h := lt_or_ge (i.1 + 1) m
+  obtain h | h := lt_or_ge (i.1 + 1) m
   · have := accumulate_rec i.2 h s
     rwa [← he, accumulate_rec i.2 h t, add_right_cancel_iff] at this
   · have := h.antisymm (i.2.nat_succ_le.trans hnm)
@@ -186,7 +186,7 @@ private lemma supDegree_monic_esymm [Nontrivial R] {i : ℕ} (him : i < m) :
   simp_rw [← mem_sdiff] at hne
   have hkm := mem_sdiff.1 (min'_mem _ hne)
   refine ⟨min' _ hne, fun k hk ↦ ?_, ?_⟩
-  all_goals simp only [Pi.toLex_apply, ofLex_toLex, Finsupp.indicator_apply]
+  all_goals simp only [ofLex_toLex, Finsupp.indicator_apply]
   · have hki := mem_Iic.2 (hk.le.trans <| mem_Iic.1 hkm.1)
     rw [dif_pos hki, dif_pos]
     by_contra h
@@ -198,7 +198,7 @@ lemma supDegree_esymm [Nontrivial R] (him : i < m) :
   rw [(supDegree_monic_esymm him).1, ofLex_toLex]
   ext j
   simp_rw [Finsupp.indicator_apply, dite_eq_ite, mem_Iic, accumulate_apply, Finsupp.single_apply,
-    sum_ite_eq, mem_filter, mem_univ, true_and, Fin.le_def]
+    sum_ite_eq, mem_filter_univ, Fin.le_def]
 
 lemma monic_esymm {i : ℕ} (him : i ≤ m) : Monic toLex (esymm (Fin m) R i) := by
   cases i with
