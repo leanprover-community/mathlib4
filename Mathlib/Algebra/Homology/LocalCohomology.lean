@@ -132,11 +132,7 @@ def idealPowersDiagram (J : Ideal R) : ℕᵒᵖ ⥤ Ideal R where
 /-- The full subcategory of all ideals with radical containing `J` -/
 def SelfLERadical (J : Ideal R) : Type u :=
   ObjectProperty.FullSubcategory fun J' : Ideal R => J ≤ J'.radical
-
--- The `Category` instance should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-instance (J : Ideal R) : Category (SelfLERadical J) :=
-  (ObjectProperty.FullSubcategory.category _)
+deriving Category
 
 instance SelfLERadical.inhabited (J : Ideal R) : Inhabited (SelfLERadical J) where
   default := ⟨J, Ideal.le_radical⟩

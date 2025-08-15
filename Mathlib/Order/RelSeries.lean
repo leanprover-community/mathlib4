@@ -606,7 +606,7 @@ lemma tail_cons (p : RelSeries r) (x : α) (hx : x ~[r] p.head) :
 lemma cons_self_tail {p : RelSeries r} (hp : p.length ≠ 0) :
     (p.tail hp).cons p.head (p.3 ⟨0, Nat.zero_lt_of_ne_zero hp⟩) = p := by
   apply toList_injective
-  simp [← head_toList, List.head_cons_tail]
+  simp [← head_toList]
 
 /--
 To show a proposition `p` for `xs : RelSeries r` it suffices to show it for all singletons

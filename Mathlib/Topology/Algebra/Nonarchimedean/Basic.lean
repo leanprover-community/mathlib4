@@ -80,7 +80,7 @@ theorem prod_subset {U} (hU : U ∈ 𝓝 (1 : G × K)) :
   obtain ⟨V, hV⟩ := is_nonarchimedean _ hU₁
   obtain ⟨W, hW⟩ := is_nonarchimedean _ hU₂
   use V
-  grind [Set.subset_def, Set.mem_prod]
+  grind
 
 /-- An open neighborhood of the identity in the cartesian square of a nonarchimedean group
 contains the cartesian square of an open neighborhood in the group. -/

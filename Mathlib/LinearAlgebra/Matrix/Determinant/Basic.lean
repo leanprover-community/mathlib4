@@ -498,7 +498,7 @@ theorem det_eq_of_forall_row_eq_smul_add_const_aux {A B : Matrix n n R} {s : Fin
   induction s using Finset.induction_on generalizing B with
   | empty =>
     rintro c hs k - A_eq
-    have : ∀ i, c i = 0 := by grind [Finset.notMem_empty]
+    have : ∀ i, c i = 0 := by grind
     congr
     ext i j
     rw [A_eq, this, zero_mul, add_zero]
@@ -759,7 +759,7 @@ theorem det_succ_row {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) (i : Fin
   rw [← det_permute, det_succ_row_zero]
   refine Finset.sum_congr rfl fun j _ => ?_
   rw [mul_assoc, Matrix.submatrix_apply, submatrix_submatrix, id_comp, Function.comp_def, id]
-  congr
+  congr 3
   · rw [Equiv.Perm.inv_def, Fin.cycleRange_symm_zero]
   · ext i' j'
     rw [Equiv.Perm.inv_def, Matrix.submatrix_apply, Matrix.submatrix_apply,

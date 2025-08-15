@@ -6,6 +6,7 @@ Authors: Oliver Nash
 import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
 import Mathlib.LinearAlgebra.RootSystem.Reduced
 import Mathlib.LinearAlgebra.RootSystem.Irreducible
+import Mathlib.Algebra.Ring.Torsion
 
 /-!
 # Structural lemmas about finite crystallographic root pairings
@@ -25,9 +26,6 @@ root pairings.
   a root.
 
 -/
-
-#adaptation_note /-- 2025-08-10 add back `import Mathlib.Algebra.Ring.Torsion` after
-  https://github.com/leanprover/lean4/issues/9825 is fixed -/
 
 noncomputable section
 
@@ -294,28 +292,6 @@ lemma apply_eq_or (i j : ι) :
   replace h₂ : P.pairing i j' = 0 := by rw [← P.algebraMap_pairingIn ℤ, h₂, map_zero]
   exact (B.apply_root_root_zero_iff i j').mpr h₂
 
-#adaptation_note /-- 2025-08-10 delete this after
-  https://github.com/leanprover/lean4/issues/9825 is fixed -/
-theorem exists_apply_eq_or_aux {x y z : R}
-    (hij : x = 2 * y ∨ x = 3 * y ∨ y = 2 * x ∨ y = 3 * x)
-    (hik : x = 2 * z ∨ x = 3 * z ∨ z = 2 * x ∨ z = 3 * x)
-    (hjk : y = 2 * z ∨ y = 3 * z ∨ z = 2 * y ∨ z = 3 * y) :
-    x = 0 ∧ y = 0 ∧ z = 0 := by
-  /- The below proof (due to Mario Carneiro, Johan Commelin, Bhavik Mehta, Jingting Wang) should
-     not really be necessary: we should have a tactic to crush this. -/
-  suffices y = 0 ∨ z = 0 by apply this.elim <;> rintro rfl <;> simp_all
-  let S : Finset (ℕ × ℕ) := {(1, 2), (1, 3), (2, 1), (3, 1)}
-  obtain ⟨⟨ab, hab, hxy⟩, ⟨cd, hcd, hxz⟩, ⟨ef, hef, hyz⟩⟩ :
-    (∃ ab ∈ S, ab.1 * x = ab.2 * y) ∧
-    (∃ cd ∈ S, cd.1 * x = cd.2 * z) ∧
-    (∃ ef ∈ S, ef.1 * y = ef.2 * z) := by
-    simp_all only [Finset.mem_insert, Finset.mem_singleton, exists_eq_or_imp, Nat.cast_one, one_mul,
-      Nat.cast_ofNat, eq_comm, exists_eq_left, and_self, S]
-  have : (ab.1 * cd.2 * ef.1 : R) ≠ ab.2 * cd.1 * ef.2 := by norm_cast; clear! R; decide +revert
-  have : (ab.1 * cd.2 * ef.1 - ab.2 * cd.1 * ef.2) * (y * z) = 0 := by
-    linear_combination z * cd.1 * ef.2 * hxy - ab.1 * ef.1 * y * hxz + ab.1 * x * cd.1 * hyz
-  simp_all only [ne_eq, mul_eq_zero, sub_eq_zero, false_or, S]
-
 /-- A reduced irreducible finite crystallographic root system has roots of at most two different
 lengths. -/
 lemma exists_apply_eq_or [Nonempty ι] : ∃ i j, ∀ k,
@@ -332,10 +308,7 @@ lemma exists_apply_eq_or [Nonempty ι] : ∃ i j, ∀ k,
     have hij := (B.apply_eq_or i j).resolve_left hji_ne.symm
     have hik := (B.apply_eq_or i k).resolve_left hki_ne.symm
     have hjk := (B.apply_eq_or j k).resolve_left hkj_ne.symm
-    #adaptation_note /-- 2025-08-10 replace the following with grind after
-  https://github.com/leanprover/lean4/issues/9825 is fixed -/
-    have := exists_apply_eq_or_aux hij hik hjk
-    aesop
+    grind
 
 lemma apply_eq_or_of_apply_ne
     (h : B.form (α i) (α i) ≠ B.form (α j) (α j)) (k : ι) :

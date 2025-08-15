@@ -168,7 +168,7 @@ def lxor : Num → Num → Num
   | p, 0 => p
   | pos p, pos q => p ^^^ q
 
-instance : Xor Num where xor := Num.lxor
+instance : XorOp Num where xor := Num.lxor
 
 @[simp] lemma lxor_eq_xor (p q : Num) : p.lxor q = p ^^^ q := rfl
 

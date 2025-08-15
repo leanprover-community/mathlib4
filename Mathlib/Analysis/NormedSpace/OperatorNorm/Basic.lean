@@ -304,7 +304,7 @@ alias ⟨lipschitzWith_of_opNorm_le, opNorm_le_of_lipschitz⟩ := opNorm_le_iff_
 We use this seminorm to define a `SeminormedGroup` structure on `E →SL[σ] F`,
 but we have to override the projection `UniformSpace`
 so that it is definitionally equal to the one coming from the topologies on `E` and `F`. -/
-protected def seminorm : Seminorm 𝕜₂ (E →SL[σ₁₂] F) :=
+protected noncomputable def seminorm : Seminorm 𝕜₂ (E →SL[σ₁₂] F) :=
   .ofSMulLE norm opNorm_zero opNorm_add_le opNorm_smul_le
 
 private lemma uniformity_eq_seminorm :

@@ -53,14 +53,14 @@ theorem iteratedDerivWithin_const_add (hn : 0 < n) (c : F) :
     iteratedDerivWithin n (fun z => c + f z) s x = iteratedDerivWithin n f s x := by
   obtain ⟨n, rfl⟩ := n.exists_eq_succ_of_ne_zero hn.ne'
   rw [iteratedDerivWithin_succ', iteratedDerivWithin_succ']
-  congr with y
+  congr 1 with y
   exact derivWithin_const_add _
 
 theorem iteratedDerivWithin_const_sub (hn : 0 < n) (c : F) :
     iteratedDerivWithin n (fun z => c - f z) s x = iteratedDerivWithin n (fun z => -f z) s x := by
   obtain ⟨n, rfl⟩ := n.exists_eq_succ_of_ne_zero hn.ne'
   rw [iteratedDerivWithin_succ', iteratedDerivWithin_succ']
-  congr with y
+  congr 1 with y
   rw [derivWithin.fun_neg]
   exact derivWithin_const_sub _
 

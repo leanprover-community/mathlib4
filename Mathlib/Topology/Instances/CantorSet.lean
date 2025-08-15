@@ -83,16 +83,7 @@ theorem preCantorSet_antitone : Antitone preCantorSet := by
     constructor <;> intro x <;>
       simp only [Set.mem_image, Set.mem_Icc, forall_exists_index, and_imp] <;>
       intro y _ _ _ <;> constructor <;> linarith
-  | succ m ih =>
-    #adaptation_note /-- 2025-08-10 replace the following with the commented-out grind proof after
-  https://github.com/leanprover/lean4/issues/9825 is fixed -/
-    simp only [preCantorSet_succ, Set.union_subset_iff, Set.image_union]
-    constructor
-    · constructor <;> apply Set.subset_union_of_subset_left
-      exacts [Set.image_mono ih.left, Set.image_mono ih.right]
-    · constructor <;> apply Set.subset_union_of_subset_right
-      exacts [Set.image_mono ih.left, Set.image_mono ih.right]
-    -- grind [preCantorSet_succ, Set.image_union, Set.subset_def, Set.mem_union, Set.mem_image]
+  | succ m ih => grind [preCantorSet_succ, Set.image_union]
 
 lemma preCantorSet_subset_unitInterval {n : ℕ} : preCantorSet n ⊆ Set.Icc 0 1 := by
   rw [← preCantorSet_zero]

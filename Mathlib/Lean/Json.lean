@@ -5,7 +5,6 @@ Authors: Eric Wieser
 -/
 
 import Mathlib.Init
-import Lean.Data.Json.FromToJson
 
 /-!
 # Json serialization typeclass for `PUnit` & `Fin n` & `Subtype p`

@@ -150,7 +150,7 @@ theorem covolume_div_covolume_eq_relindex {ι : Type*} [Fintype ι] (L₁ L₂ :
   · rw [← Basis.det_mul_det _ (Pi.basisFun ℝ ι) _, abs_mul, Pi.basisFun_det_apply,
       ← Basis.det_inv, Units.val_inv_eq_inv_val, IsUnit.unit_spec, Pi.basisFun_det_apply,
       covolume_eq_det _ b₁, covolume_eq_det _ b₂, mul_comm, abs_inv]
-    congr <;> ext <;> simp
+    congr 3 <;> ext <;> simp
   · rw [Basis.det_apply, Basis.det_apply, Int.cast_det]
     congr; ext i j
     rw [Matrix.map_apply, Basis.toMatrix_apply, Basis.toMatrix_apply, Basis.ofZLatticeBasis_apply]

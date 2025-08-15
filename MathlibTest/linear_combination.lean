@@ -314,14 +314,14 @@ example (a : ℚ) (ha : a = 1) : a = 2 := by linear_combination ha
 --   sake of simplicity, but the tactic could potentially be modified to allow
 --   this behavior.
 /--
-error: Application type mismatch: In the application
-  Mathlib.Tactic.LinearCombination.mul_const_eq h2 0
-the argument
+error: Application type mismatch: The argument
   0
 has type
-  ℝ : Type
+  ℝ
 but is expected to have type
-  ℤ : Type
+  ℤ
+in the application
+  Mathlib.Tactic.LinearCombination.mul_const_eq h2 0
 -/
 #guard_msgs in
 example (x y : ℤ) (h1 : x * y + 2 * x = 1) (h2 : x = y) : x * y + 2 * x = 1 := by

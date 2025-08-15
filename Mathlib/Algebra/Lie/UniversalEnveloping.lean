@@ -56,20 +56,9 @@ end UniversalEnvelopingAlgebra
 /-- The universal enveloping algebra of a Lie algebra. -/
 def UniversalEnvelopingAlgebra :=
   RingQuot (UniversalEnvelopingAlgebra.Rel R L)
--- The `Inhabited, Ring, Algebra R` instances should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
+deriving Inhabited, Ring, Algebra R
 
 namespace UniversalEnvelopingAlgebra
-
-instance instInhabited : Inhabited (UniversalEnvelopingAlgebra R L) :=
-  inferInstanceAs (Inhabited (RingQuot (UniversalEnvelopingAlgebra.Rel R L)))
-
-instance instRing : Ring (UniversalEnvelopingAlgebra R L) :=
-  inferInstanceAs (Ring (RingQuot (UniversalEnvelopingAlgebra.Rel R L)))
-
-instance instAlgebra : Algebra R (UniversalEnvelopingAlgebra R L) :=
-  inferInstanceAs (Algebra R (RingQuot (UniversalEnvelopingAlgebra.Rel R L)))
-
 
 /-- The quotient map from the tensor algebra to the universal enveloping algebra as a morphism of
 associative algebras. -/

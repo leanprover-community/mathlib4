@@ -48,12 +48,13 @@ Other example tests
 recall id (x : α) : α := x
 
 /--
-error: type mismatch
+error: Type mismatch
   @id
 has type
-  {α : Sort u_1} → α → α → ℕ : Type u_1
-but is expected to have type
-  {α : Sort u} → α → α : Sort (imax (u + 1) u)
+  {α : Sort u_1} → α → α → ℕ
+of sort `Type u_1` but is expected to have type
+  {α : Sort u} → α → α
+of sort `Sort (imax (u + 1) u)`
 -/
 #guard_msgs in recall id (_x _y : α) : ℕ := 0
 

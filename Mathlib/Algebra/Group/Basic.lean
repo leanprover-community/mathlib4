@@ -1080,10 +1080,7 @@ instance AddCommMonoid.toGrindNatModule [s : AddCommMonoid α] :
   { s with
     nsmul := ⟨s.nsmul⟩
     zero_nsmul := AddMonoid.nsmul_zero
-    one_nsmul := one_nsmul
-    add_nsmul n m a := add_nsmul a n m
-    nsmul_zero := nsmul_zero
-    nsmul_add n a b := nsmul_add a b n }
+    add_one_nsmul n a := by change (n + 1) • a = n • a + a; rw [add_nsmul, one_nsmul] }
 
 instance AddCommGroup.toGrindIntModule [s : AddCommGroup α] :
     Grind.IntModule α :=
@@ -1093,8 +1090,6 @@ instance AddCommGroup.toGrindIntModule [s : AddCommGroup α] :
     zero_zsmul := SubNegMonoid.zsmul_zero'
     one_zsmul := one_zsmul
     add_zsmul n m a := add_zsmul a n m
-    zsmul_zero := zsmul_zero
-    zsmul_add n a b := zsmul_add a b n
     zsmul_natCast_eq_nsmul n a := by simp }
 
 instance IsRightCancelAdd.toGrindAddRightCancel [AddSemigroup α] [IsRightCancelAdd α] :

@@ -482,7 +482,7 @@ lemma image_latticeClosure (s : Set α) (f : α → β)
 lemma ofDual_preimage_latticeClosure (s : Set α) :
     ofDual ⁻¹' latticeClosure s = latticeClosure (ofDual ⁻¹' s) := by
   change ClosureOperator.ofCompletePred _ _ _ = ClosureOperator.ofCompletePred _ _ _
-  congr
+  congr 2
   ext
   exact ⟨fun h => ⟨h.2, h.1⟩, fun h => ⟨h.2, h.1⟩⟩
 

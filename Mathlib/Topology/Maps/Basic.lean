@@ -459,7 +459,7 @@ theorem IsClosedMap.lift'_closure_map_eq
     (f_closed : IsClosedMap f) (f_cont : Continuous f) (F : Filter X) :
     (map f F).lift' closure = map f (F.lift' closure) := by
   rw [map_lift'_eq2 (monotone_closure Y), map_lift'_eq (monotone_closure X)]
-  congr
+  congr 1
   ext s : 1
   exact f_closed.closure_image_eq_of_continuous f_cont s
 

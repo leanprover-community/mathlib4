@@ -49,7 +49,7 @@ theorem norm_eq_of_nonempty [h : Nonempty α] : ‖f‖ = sInf { C : ℝ | ∀ x
   rw [norm_eq]
   congr
   ext
-  simp only [mem_setOf_eq, and_iff_right_iff_imp]
+  simp only [and_iff_right_iff_imp]
   exact fun h' => le_trans (norm_nonneg (f a)) (h' a)
 
 @[simp]

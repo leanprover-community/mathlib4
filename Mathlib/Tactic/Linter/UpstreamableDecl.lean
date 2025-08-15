@@ -31,7 +31,7 @@ def Lean.Environment.localDefinitionDependencies (env : Environment) (stx id : S
   let immediateDeps ← getAllDependencies stx id
 
   -- Drop all the unresolvable constants, otherwise `transitivelyUsedConstants` fails.
-  let immediateDeps : NameSet := immediateDeps.fold (init := ∅) fun s n =>
+  let immediateDeps : NameSet := immediateDeps.foldl (init := ∅) fun s n =>
     if (env.find? n).isSome then s.insert n else s
 
   let deps ← liftCoreM <| immediateDeps.transitivelyUsedConstants
@@ -105,8 +105,8 @@ def upstreamableDeclLinter : Linter where run := withSetOptionIn fun stx ↦ do
         return
 
       let minImports := getIrredundantImports env (← getAllImports stx id)
-      match minImports with
-      | ⟨(RBNode.node _ .leaf upstream _ .leaf), _⟩ => do
+      match minImports.size, minImports.min? with
+      | 1, some upstream => do
         if !(← env.localDefinitionDependencies stx id) then
           let p : GoToModuleLinkProps := { modName := upstream }
           let widget : MessageData := .ofWidget
@@ -116,7 +116,7 @@ def upstreamableDeclLinter : Linter where run := withSetOptionIn fun stx ↦ do
             (toString upstream)
           Linter.logLint linter.upstreamableDecl id
             m!"Consider moving this declaration to the module {widget}."
-      | _ => pure ()
+      | _, _ => pure ()
 
 initialize addLinter upstreamableDeclLinter
 
