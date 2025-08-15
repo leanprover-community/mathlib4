@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard,
 Amelia Livingston, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Hom.End
 import Mathlib.Algebra.Group.Submonoid.Pointwise
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Data.Nat.Cast.Basic
@@ -169,8 +168,8 @@ variable {M N P Q : AddSubmonoid R}
 
 @[mono, gcongr] lemma mul_le_mul (hmp : M ≤ P) (hnq : N ≤ Q) : M * N ≤ P * Q := smul_le_smul hmp hnq
 
-@[gcongr] lemma mul_le_mul_left (h : M ≤ N) : M * P ≤ N * P := smul_le_smul_left h
-@[gcongr] lemma mul_le_mul_right (h : N ≤ P) : M * N ≤ M * P := smul_le_smul_right h
+lemma mul_le_mul_left (h : M ≤ N) : M * P ≤ N * P := smul_le_smul_left h
+lemma mul_le_mul_right (h : N ≤ P) : M * N ≤ M * P := smul_le_smul_right h
 
 lemma mul_subset_mul : (↑M : Set R) * (↑N : Set R) ⊆ (↑(M * N) : Set R) := smul_subset_smul
 

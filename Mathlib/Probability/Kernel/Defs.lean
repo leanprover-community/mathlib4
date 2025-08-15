@@ -100,8 +100,8 @@ noncomputable instance instAddCommMonoid : AddCommMonoid (Kernel α β) :=
 
 instance instPartialOrder : PartialOrder (Kernel α β) := .lift _ DFunLike.coe_injective
 
-instance instCovariantAddLE {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
-    CovariantClass (Kernel α β) (Kernel α β) (· + ·) (· ≤ ·) :=
+instance {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
+    AddLeftMono (Kernel α β) :=
   ⟨fun _ _ _ hμ a ↦ add_le_add_left (hμ a) _⟩
 
 noncomputable
@@ -111,7 +111,7 @@ instance instOrderBot {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] 
   bot_le κ a := by simp only [coe_zero, Pi.zero_apply, Measure.zero_le]
 
 /-- Coercion to a function as an additive monoid homomorphism. -/
-def coeAddHom (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] :
+noncomputable def coeAddHom (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] :
     Kernel α β →+ α → Measure β where
   toFun := (⇑)
   map_zero' := coe_zero
@@ -232,6 +232,28 @@ theorem ext_fun (h : ∀ a f, Measurable f → ∫⁻ b, f b ∂κ a = ∫⁻ b,
 theorem ext_fun_iff : κ = η ↔ ∀ a f, Measurable f → ∫⁻ b, f b ∂κ a = ∫⁻ b, f b ∂η a :=
   ⟨fun h a f _ => by rw [h], ext_fun⟩
 
+section IsEmptyNonempty
+
+instance [IsEmpty β] : Subsingleton (Kernel α β) where
+  allEq κ η := by ext a s; simp [Set.eq_empty_of_isEmpty s]
+
+instance [IsEmpty α] (κ : Kernel α β) : IsMarkovKernel κ where
+  isProbabilityMeasure := by simp
+
+instance [IsEmpty β] (κ : Kernel α β) : IsZeroOrMarkovKernel κ where
+  eq_zero_or_isMarkovKernel' := by
+    left
+    ext a s
+    simp [Set.eq_empty_of_isEmpty s]
+
+lemma not_isMarkovKernel_zero [Nonempty α] : ¬ IsMarkovKernel (0 : Kernel α β) := by
+  by_contra h
+  let x : α := Nonempty.some inferInstance
+  have h1 : (0 : Measure β) .univ = 1 := (h.isProbabilityMeasure x).measure_univ
+  simp at h1
+
+end IsEmptyNonempty
+
 protected theorem measurable_coe (κ : Kernel α β) {s : Set β} (hs : MeasurableSet s) :
     Measurable fun a => κ a s :=
   (Measure.measurable_coe hs).comp κ.measurable
@@ -336,9 +358,10 @@ instance IsSFiniteKernel.add (κ η : Kernel α β) [IsSFiniteKernel κ] [IsSFin
 theorem IsSFiniteKernel.finset_sum {κs : ι → Kernel α β} (I : Finset ι)
     (h : ∀ i ∈ I, IsSFiniteKernel (κs i)) : IsSFiniteKernel (∑ i ∈ I, κs i) := by
   classical
-  induction' I using Finset.induction with i I hi_nmem_I h_ind h
-  · rw [Finset.sum_empty]; infer_instance
-  · rw [Finset.sum_insert hi_nmem_I]
+  induction I using Finset.induction with
+  | empty => rw [Finset.sum_empty]; infer_instance
+  | insert i I hi_notMem_I h_ind =>
+    rw [Finset.sum_insert hi_notMem_I]
     haveI : IsSFiniteKernel (κs i) := h i (Finset.mem_insert_self _ _)
     have : IsSFiniteKernel (∑ x ∈ I, κs x) :=
       h_ind fun i hiI => h i (Finset.mem_insert_of_mem hiI)

@@ -38,7 +38,7 @@ open scoped Pointwise
 variable (R S T : H.LeftTransversal) [FiniteIndex H]
 
 /-- The difference of two left transversals -/
-@[to_additive "The difference of two left transversals"]
+@[to_additive /-- The difference of two left transversals -/]
 noncomputable def diff : A :=
   let α := S.2.leftQuotientEquiv
   let β := T.2.leftQuotientEquiv
@@ -73,7 +73,7 @@ theorem smul_diff_smul (g : G) : diff ϕ (g • S) (g • T) = diff ϕ S T :=
 
 end leftTransversals
 
-open Equiv Function MemLeftTransversals MulAction ZMod
+open Equiv Function MulAction ZMod
 
 variable (g : G)
 
@@ -138,8 +138,8 @@ open MulAction Subgroup Subgroup.leftTransversals
 
 /-- Given `ϕ : H →* A` from `H : Subgroup G` to a commutative group `A`,
 the transfer homomorphism is `transfer ϕ : G →* A`. -/
-@[to_additive "Given `ϕ : H →+ A` from `H : AddSubgroup G` to an additive commutative group `A`,
-the transfer homomorphism is `transfer ϕ : G →+ A`."]
+@[to_additive /-- Given `ϕ : H →+ A` from `H : AddSubgroup G` to an additive commutative group `A`,
+the transfer homomorphism is `transfer ϕ : G →+ A`. -/]
 noncomputable def transfer [FiniteIndex H] : G →* A :=
   let T : H.LeftTransversal := default
   { toFun := fun g => diff ϕ T (g • T)
@@ -213,7 +213,7 @@ theorem transfer_eq_pow [FiniteIndex H] (g : G)
       Nat.card_eq_fintype_card, Fintype.card_congr (selfEquivSigmaOrbits (zpowers g) (G ⧸ H)),
       Fintype.card_sigma, ← Finset.prod_pow_eq_pow_sum, ← Finset.prod_map_toList]
     simp only [Subgroup.val_list_prod, List.map_map, ← minimalPeriod_eq_card]
-    congr
+    congr 2
     funext
     apply key
 
@@ -325,7 +325,7 @@ theorem normalizer_le_centralizer (hP : IsCyclic P) : P.normalizer ≤ centraliz
   · apply Nat.Coprime.coprime_dvd_left (relindex_dvd_card (centralizer P) P.normalizer)
     apply Nat.Coprime.coprime_dvd_left (card_subgroup_dvd_card P.normalizer)
     have h1 := Nat.gcd_dvd_left (Nat.card G) ((Nat.card G).minFac - 1)
-    have h2 := Nat.gcd_le_right (m := Nat.card G) ((Nat.card G).minFac - 1)
+    have h2 := Nat.gcd_le_right (n := (Nat.card G).minFac - 1) (Nat.card G)
       (tsub_pos_iff_lt.mpr (Nat.minFac_prime hn).one_lt)
     contrapose! h2
     refine Nat.sub_one_lt_of_le (Nat.card G).minFac_pos (Nat.minFac_le_of_dvd ?_ h1)

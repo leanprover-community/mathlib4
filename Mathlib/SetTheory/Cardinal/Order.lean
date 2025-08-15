@@ -33,8 +33,8 @@ semiring structure.
 * The less than relation on cardinals forms a well-order.
 * Cardinals form a `ConditionallyCompleteLinearOrderBot`. Bounded sets for cardinals in universe
   `u` are precisely the sets indexed by some type in universe `u`, see
-  `Cardinal.bddAbove_iff_small` (in `Mathlib.SetTheory.Cardinal.Small`). One can use `sSup` for the
-  cardinal supremum, and `sInf` for the minimum of a set of cardinals.
+  `Cardinal.bddAbove_iff_small`. One can use `sSup` for the cardinal supremum,
+  and `sInf` for the minimum of a set of cardinals.
 
 ## Main Statements
 
@@ -247,9 +247,6 @@ theorem power_mul {a b c : Cardinal} : a ^ (b * c) = (a ^ b) ^ c := by
 theorem power_natCast (a : Cardinal.{u}) (n : ℕ) : a ^ (↑n : Cardinal.{u}) = a ^ n :=
   rfl
 
-@[deprecated (since := "2024-10-16")]
-alias power_cast_right := power_natCast
-
 @[simp]
 theorem lift_eq_one {a : Cardinal.{v}} : lift.{u} a = 1 ↔ a = 1 :=
   lift_injective.eq_iff' lift_one
@@ -262,7 +259,7 @@ theorem lift_mul (a b : Cardinal.{u}) : lift.{v} (a * b) = lift.{v} a * lift.{v}
 theorem lift_two : lift.{u, v} 2 = 2 := by simp [← one_add_one_eq_two]
 
 @[simp]
-theorem mk_set {α : Type u} : #(Set α) = 2 ^ #α := by simp [← one_add_one_eq_two, Set, mk_arrow]
+theorem mk_set {α : Type u} : #(Set α) = 2 ^ #α := by simp [← one_add_one_eq_two, Set]
 
 /-- A variant of `Cardinal.mk_set` expressed in terms of a `Set` instead of a `Type`. -/
 @[simp]
@@ -300,7 +297,9 @@ instance canonicallyOrderedAdd : CanonicallyOrderedAdd Cardinal.{u} where
 instance isOrderedRing : IsOrderedRing Cardinal.{u} :=
   CanonicallyOrderedAdd.toIsOrderedRing
 
-instance orderBot : OrderBot Cardinal.{u} := inferInstance
+instance orderBot : OrderBot Cardinal.{u} where
+  bot := 0
+  bot_le := zero_le
 
 instance noZeroDivisors : NoZeroDivisors Cardinal.{u} where
   eq_zero_or_eq_zero_of_mul_eq_zero := fun {a b} =>
@@ -342,7 +341,7 @@ theorem self_le_power (a : Cardinal) {b : Cardinal} (hb : 1 ≤ b) : a ≤ a ^ b
 
 /-- **Cantor's theorem** -/
 theorem cantor (a : Cardinal.{u}) : a < 2 ^ a := by
-  induction' a using Cardinal.inductionOn with α
+  induction a using Cardinal.inductionOn with | _ α
   rw [← mk_set]
   refine ⟨⟨⟨singleton, fun a b => singleton_eq_singleton_iff.1⟩⟩, ?_⟩
   rintro ⟨⟨f, hf⟩⟩
@@ -409,7 +408,7 @@ theorem add_one_le_succ (c : Cardinal.{u}) : c + 1 ≤ succ c := by
   intro b hlt
   rcases b, c with ⟨⟨β⟩, ⟨γ⟩⟩
   obtain ⟨f⟩ := le_of_lt hlt
-  have : ¬Surjective f := fun hn => (not_le_of_lt hlt) (mk_le_of_surjective hn)
+  have : ¬Surjective f := fun hn => (not_le_of_gt hlt) (mk_le_of_surjective hn)
   simp only [Surjective, not_forall] at this
   rcases this with ⟨b, hb⟩
   calc
@@ -422,7 +421,7 @@ theorem lift_succ (a) : lift.{v, u} (succ a) = succ (lift.{v, u} a) :=
     (le_of_not_gt fun h => by
       rcases lt_lift_iff.1 h with ⟨b, h, e⟩
       rw [lt_succ_iff, ← lift_le, e] at h
-      exact h.not_lt (lt_succ _))
+      exact h.not_gt (lt_succ _))
     (succ_le_of_lt <| lift_lt.2 <| lt_succ a)
 
 /-! ### Limit cardinals -/
@@ -570,7 +569,7 @@ theorem sum_lt_prod {ι} (f g : ι → Cardinal) (H : ∀ i, f i < g i) : sum f 
       show ∀ i, ∃ b, ∀ a, G ⟨i, a⟩ i ≠ b by
         intro i
         simp only [not_exists.symm, not_forall.symm]
-        refine fun h => (H i).not_le ?_
+        refine fun h => (H i).not_ge ?_
         rw [← mk_out (f i), ← mk_out (g i)]
         exact ⟨Embedding.ofSurjective _ h⟩
     let ⟨⟨i, a⟩, h⟩ := sG C

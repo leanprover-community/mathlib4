@@ -70,17 +70,17 @@ def complexMGF (X : Ω → ℝ) (μ : Measure Ω) (z : ℂ) : ℂ := μ[fun ω �
 lemma complexMGF_undef (hX : AEMeasurable X μ) (h : ¬ Integrable (fun ω ↦ rexp (z.re * X ω)) μ) :
     complexMGF X μ z = 0 := by
   rw [complexMGF, integral_undef]
-  rw [← integrable_norm_iff (AEMeasurable.aestronglyMeasurable <| by fun_prop)]
+  rw [← integrable_norm_iff (by fun_prop)]
   simpa [Complex.norm_exp] using h
 
 lemma complexMGF_id_map (hX : AEMeasurable X μ) : complexMGF id (μ.map X) = complexMGF X μ := by
   ext t
   rw [complexMGF, integral_map hX]
   · rfl
-  · exact AEMeasurable.aestronglyMeasurable <| by fun_prop
+  · fun_prop
 
 lemma complexMGF_congr_identDistrib {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ' : Measure Ω'}
-    {Y : Ω' → ℝ}  (h : IdentDistrib X Y μ μ') :
+    {Y : Ω' → ℝ} (h : IdentDistrib X Y μ μ') :
     complexMGF X μ = complexMGF Y μ' := by
   rw [← complexMGF_id_map h.aemeasurable_fst, ← complexMGF_id_map h.aemeasurable_snd, h.map_eq]
 
@@ -104,6 +104,16 @@ lemma re_complexMGF_ofReal' : (fun x : ℝ ↦ (complexMGF X μ x).re) = mgf X �
   ext x
   exact re_complexMGF_ofReal x
 
+lemma complexMGF_id_mul_I {μ : Measure ℝ} (t : ℝ) :
+    complexMGF id μ (t * I) = charFun μ t := by
+  simp only [complexMGF, id_eq, charFun, RCLike.inner_apply, conj_trivial, ofReal_mul]
+  congr with x
+  ring_nf
+
+lemma complexMGF_mul_I (hX : AEMeasurable X μ) (t : ℝ) :
+    complexMGF X μ (t * I) = charFun (μ.map X) t := by
+  rw [← complexMGF_id_map hX, complexMGF_id_mul_I]
+
 section Analytic
 
 /-- For `z : ℂ` with `z.re ∈ interior (integrableExpSet X μ)`, the derivative of the function
@@ -119,12 +129,12 @@ lemma hasDerivAt_integral_pow_mul_exp (hz : z.re ∈ interior (integrableExpSet 
   have h_pos : 0 < (z.re - l) ⊓ (u - z.re) := by simp [hlu.1, hlu.2]
   have ht : 0 < t := half_pos h_pos
   refine (hasDerivAt_integral_of_dominated_loc_of_deriv_le
-    (bound := fun ω ↦ |X ω| ^ (n + 1) * rexp (z.re * X ω + t/2 * |X ω|))
+    (bound := fun ω ↦ |X ω| ^ (n + 1) * rexp (z.re * X ω + t / 2 * |X ω|))
     (F := fun z ω ↦ X ω ^ n * cexp (z * X ω))
     (F' := fun z ω ↦ X ω ^ (n + 1) * cexp (z * X ω)) (half_pos ht) ?_ ?_ ?_ ?_ ?_ ?_).2
-  · exact .of_forall fun z ↦ AEMeasurable.aestronglyMeasurable (by fun_prop)
+  · exact .of_forall fun z ↦ by fun_prop
   · exact integrable_pow_mul_cexp_of_re_mem_interior_integrableExpSet hz n
-  · exact AEMeasurable.aestronglyMeasurable (by fun_prop)
+  · fun_prop
   · refine ae_of_all _ fun ω ε hε ↦ ?_
     simp only [norm_mul, norm_pow, norm_real, Real.norm_eq_abs]
     rw [Complex.norm_exp]
@@ -317,8 +327,7 @@ theorem _root_.MeasureTheory.Measure.ext_of_complexMGF_eq [IsFiniteMeasure μ]
   simp_rw [complexMGF, mul_assoc, mul_comm I, ← mul_assoc] at h
   simp only [BoundedContinuousFunction.char_apply, bilinFormOfRealInner_apply_apply,
     RCLike.inner_apply, conj_trivial, probChar_apply, ofReal_mul]
-  rwa [integral_map hX (AEMeasurable.aestronglyMeasurable <| by fun_prop),
-    integral_map hY (AEMeasurable.aestronglyMeasurable <| by fun_prop)]
+  rwa [integral_map hX (by fun_prop), integral_map hY (by fun_prop)]
 
 lemma _root_.MeasureTheory.Measure.ext_of_complexMGF_id_eq
     {μ μ' : Measure ℝ} [IsFiniteMeasure μ] [IsFiniteMeasure μ']

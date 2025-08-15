@@ -38,7 +38,7 @@ uniqueness is expressed by `uniq`.
 
 noncomputable section
 
-open CategoryTheory.Category
+open CategoryTheory.Category CategoryTheory.Functor
 
 namespace CategoryTheory
 
@@ -146,15 +146,7 @@ def lift : W.Localization ⥤ D :=
   Quotient.lift (relations W) (liftToPathCategory G hG)
     (by
       rintro ⟨X⟩ ⟨Y⟩ f₁ f₂ r
-      -- Porting note: rest of proof was `rcases r with ⟨⟩; tidy`
-      rcases r with (_|_|⟨f,hf⟩|⟨f,hf⟩)
-      · aesop_cat
-      · simp
-      all_goals
-        dsimp
-        haveI := hG f hf
-        simp
-        rfl)
+      rcases r with ⟨⟩ <;> all_goals aesop)
 
 @[simp]
 theorem fac : W.Q ⋙ lift G hG = G :=
@@ -191,7 +183,6 @@ localization with respect to a morphism_property `W` -/
 def objEquiv : C ≃ W.Localization where
   toFun := W.Q.obj
   invFun X := X.as.obj
-  left_inv _ := rfl
   right_inv := by
     rintro ⟨⟨X⟩⟩
     rfl
@@ -272,10 +263,11 @@ def natTransExtension {F₁ F₂ : W.Localization ⥤ D} (τ : W.Q ⋙ F₁ ⟶ 
 
 @[simp]
 theorem whiskerLeft_natTransExtension {F G : W.Localization ⥤ D} (τ : W.Q ⋙ F ⟶ W.Q ⋙ G) :
-    whiskerLeft W.Q (natTransExtension τ) = τ := by aesop_cat
+    whiskerLeft W.Q (natTransExtension τ) = τ := by cat_disch
 
+-- This is not a simp lemma, because the simp norm form of the left-hand side uses `whiskerLeft`.
 theorem natTransExtension_hcomp {F G : W.Localization ⥤ D} (τ : W.Q ⋙ F ⟶ W.Q ⋙ G) :
-    𝟙 W.Q ◫ natTransExtension τ = τ := by aesop_cat
+    𝟙 W.Q ◫ natTransExtension τ = τ := by cat_disch
 
 theorem natTrans_hcomp_injective {F G : W.Localization ⥤ D} {τ₁ τ₂ : F ⟶ G}
     (h : 𝟙 W.Q ◫ τ₁ = 𝟙 W.Q ◫ τ₂) : τ₁ = τ₂ := by
@@ -292,7 +284,7 @@ namespace WhiskeringLeftEquivalence
 composition with `W.Q : C ⥤ W.Localization`. -/
 @[simps!]
 def functor : (W.Localization ⥤ D) ⥤ W.FunctorsInverting D :=
-  FullSubcategory.lift _ ((whiskeringLeft _ _ D).obj W.Q) fun _ =>
+  ObjectProperty.lift _ ((whiskeringLeft _ _ D).obj W.Q) fun _ =>
     MorphismProperty.IsInvertedBy.of_comp W W.Q W.Q_inverts _
 
 /-- The function `(W.FunctorsInverting D) ⥤ (W.Localization ⥤ D)` induced by

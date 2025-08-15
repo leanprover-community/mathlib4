@@ -34,7 +34,7 @@ theorem lintegral_add_mul_meas_add_le_le_lintegral {f g : α → ℝ≥0∞} (hl
       rw [hφ_eq]
     _ ≤ ∫⁻ x, φ x ∂μ + ε * μ { x | φ x + ε ≤ g x } := by
       gcongr
-      exact fun x => (add_le_add_right (hφ_le _) _).trans
+      exact hφ_le _
     _ = ∫⁻ x, φ x + indicator { x | φ x + ε ≤ g x } (fun _ => ε) x ∂μ := by
       rw [lintegral_add_left hφm, lintegral_indicator₀, setLIntegral_const]
       exact measurableSet_le (hφm.nullMeasurable.measurable'.add_const _) hg.nullMeasurable
@@ -78,23 +78,29 @@ theorem lintegral_eq_top_of_measure_eq_top_ne_zero {f : α → ℝ≥0∞} (hf :
     (hμf : μ {x | f x = ∞} ≠ 0) : ∫⁻ x, f x ∂μ = ∞ :=
   eq_top_iff.mpr <|
     calc
-      ∞ = ∞ * μ { x | ∞ ≤ f x } := by simp [mul_eq_top, hμf]
+      ∞ = ∞ * μ { x | ∞ ≤ f x } := by simp [hμf]
       _ ≤ ∫⁻ x, f x ∂μ := mul_meas_ge_le_lintegral₀ hf ∞
 
-theorem setLintegral_eq_top_of_measure_eq_top_ne_zero {f : α → ℝ≥0∞} {s : Set α}
+theorem setLIntegral_eq_top_of_measure_eq_top_ne_zero {f : α → ℝ≥0∞} {s : Set α}
     (hf : AEMeasurable f (μ.restrict s)) (hμf : μ ({x ∈ s | f x = ∞}) ≠ 0) :
     ∫⁻ x in s, f x ∂μ = ∞ :=
   lintegral_eq_top_of_measure_eq_top_ne_zero hf <|
     mt (eq_bot_mono <| by rw [← setOf_inter_eq_sep]; exact Measure.le_restrict_apply _ _) hμf
 
+@[deprecated (since := "2025-04-22")]
+alias setLintegral_eq_top_of_measure_eq_top_ne_zero := setLIntegral_eq_top_of_measure_eq_top_ne_zero
+
 theorem measure_eq_top_of_lintegral_ne_top {f : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) (hμf : ∫⁻ x, f x ∂μ ≠ ∞) : μ {x | f x = ∞} = 0 :=
   of_not_not fun h => hμf <| lintegral_eq_top_of_measure_eq_top_ne_zero hf h
 
-theorem measure_eq_top_of_setLintegral_ne_top {f : α → ℝ≥0∞} {s : Set α}
+theorem measure_eq_top_of_setLIntegral_ne_top {f : α → ℝ≥0∞} {s : Set α}
     (hf : AEMeasurable f (μ.restrict s)) (hμf : ∫⁻ x in s, f x ∂μ ≠ ∞) :
     μ ({x ∈ s | f x = ∞}) = 0 :=
-  of_not_not fun h => hμf <| setLintegral_eq_top_of_measure_eq_top_ne_zero hf h
+  of_not_not fun h => hμf <| setLIntegral_eq_top_of_measure_eq_top_ne_zero hf h
+
+@[deprecated (since := "2025-04-22")]
+alias measure_eq_top_of_setLintegral_ne_top := measure_eq_top_of_setLIntegral_ne_top
 
 /-- **Markov's inequality**, also known as **Chebyshev's first inequality**. -/
 theorem meas_ge_le_lintegral_div {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) {ε : ℝ≥0∞} (hε : ε ≠ 0)

@@ -10,7 +10,7 @@ import Mathlib.Analysis.Normed.MulAction
 # The null subgroup in a seminormed commutative group
 
 For any `SeminormedAddCommGroup M`, the quotient `SeparationQuotient M` by the null subgroup is
-defined as a `NormedAddCommGroup` instance in `Mathlib.Analysis.Normed.Group.Uniform`. Here we
+defined as a `NormedAddCommGroup` instance in `Mathlib/Analysis/Normed/Group/Uniform.lean`. Here we
 define the null space as a subgroup.
 
 ## Main definitions
@@ -30,7 +30,7 @@ variable {M : Type*} [SeminormedCommGroup M]
 
 variable (M) in
 /-- The null subgroup with respect to the norm. -/
-@[to_additive "The additive null subgroup with respect to the norm."]
+@[to_additive /-- The additive null subgroup with respect to the norm. -/]
 def nullSubgroup : Subgroup M where
   carrier := {x : M | ‖x‖ = 0}
   mul_mem' {x y} (hx : ‖x‖ = 0) (hy : ‖y‖ = 0) := by

@@ -18,14 +18,14 @@ convex and we explicitly give a neighborhood basis in terms of the family of sem
 
 * `LinearMap.toSeminorm`: turn a linear form `f : E →ₗ[𝕜] 𝕜` into a seminorm `fun x => ‖f x‖`.
 * `LinearMap.toSeminormFamily`: turn a bilinear form `B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜` into a map
-`F → Seminorm 𝕜 E`.
+  `F → Seminorm 𝕜 E`.
 
 ## Main statements
 
 * `LinearMap.hasBasis_weakBilin`: the seminorm balls of `B.toSeminormFamily` form a
-neighborhood basis of `0` in the weak topology.
+  neighborhood basis of `0` in the weak topology.
 * `LinearMap.toSeminormFamily.withSeminorms`: the topology of a weak space is induced by the
-family of seminorms `B.toSeminormFamily`.
+  family of seminorms `B.toSeminormFamily`.
 * `WeakBilin.locallyConvexSpace`: a space endowed with a weak topology is locally convex.
 
 ## References
@@ -88,7 +88,6 @@ variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [M
 theorem LinearMap.weakBilin_withSeminorms (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) :
     WithSeminorms (LinearMap.toSeminormFamily B : F → Seminorm 𝕜 (WeakBilin B)) :=
   let e : F ≃ (Σ _ : F, Fin 1) := .symm <| .sigmaUnique _ _
-  have : Nonempty (Σ _ : F, Fin 1) := e.symm.nonempty
   withSeminorms_induced (withSeminorms_pi (fun _ ↦ norm_withSeminorms 𝕜 𝕜))
     (LinearMap.ltoFun 𝕜 F 𝕜 ∘ₗ B : (WeakBilin B) →ₗ[𝕜] (F → 𝕜)) |>.congr_equiv e
 

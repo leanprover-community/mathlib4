@@ -5,7 +5,6 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.Calculus.FDeriv.Prod
 import Mathlib.Analysis.Calculus.InverseFunctionTheorem.FDeriv
-import Mathlib.GroupTheory.MonoidLocalization.Basic
 import Mathlib.LinearAlgebra.Dual.Defs
 
 /-!
@@ -74,7 +73,7 @@ theorem IsLocalExtrOn.exists_linear_map_of_hasStrictFDerivAt
     LinearEquiv.refl_apply, LinearMap.ringLmapEquivSelf_symm_apply, LinearMap.coprodEquiv_apply,
     ContinuousLinearMap.coe_prod, LinearMap.coprod_comp_prod, LinearMap.add_apply,
     LinearMap.coe_comp, ContinuousLinearMap.coe_coe, Function.comp_apply, LinearMap.coe_smulRight,
-    LinearMap.one_apply, mul_comm]
+    Module.End.one_apply, mul_comm]
 
 /-- Lagrange multipliers theorem: if `φ : E → ℝ` has a local extremum on the set `{x | f x = f x₀}`
 at `x₀`, and both `f : E → ℝ` and `φ` are strictly differentiable at `x₀`, then there exist

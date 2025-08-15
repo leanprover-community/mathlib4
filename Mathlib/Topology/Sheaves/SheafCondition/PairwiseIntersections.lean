@@ -18,7 +18,7 @@ Given any indexed type `ι`, we define `overlap ι`,
 a category with objects corresponding to
 * individual open sets, `single i`, and
 * intersections of pairs of open sets, `pair i j`,
-with morphisms from `pair i j` to both `single i` and `single j`.
+  with morphisms from `pair i j` to both `single i` and `single j`.
 
 Any open cover `U : ι → Opens X` provides a functor `diagram U : overlap ι ⥤ (Opens X)ᵒᵖ`.
 
@@ -206,7 +206,7 @@ instance : Functor.Final (pairwiseToOpensLeCover U) :=
 (in fact, equal) to the diagram factored through `OpensLeCover U`.
 -/
 def pairwiseDiagramIso :
-    Pairwise.diagram U ≅ pairwiseToOpensLeCover U ⋙ fullSubcategoryInclusion _ where
+    Pairwise.diagram U ≅ pairwiseToOpensLeCover U ⋙ ObjectProperty.ι _ where
   hom := { app := by rintro (i | ⟨i, j⟩) <;> exact 𝟙 _ }
   inv := { app := by rintro (i | ⟨i, j⟩) <;> exact 𝟙 _ }
 
@@ -219,7 +219,7 @@ def pairwiseCoconeIso :
     (Pairwise.cocone U).op ≅
       (Cones.postcomposeEquivalence (NatIso.op (pairwiseDiagramIso U :) :)).functor.obj
         ((opensLeCoverCocone U).op.whisker (pairwiseToOpensLeCover U).op) :=
-  Cones.ext (Iso.refl _) (by aesop_cat)
+  Cones.ext (Iso.refl _) (by cat_disch)
 
 end SheafCondition
 

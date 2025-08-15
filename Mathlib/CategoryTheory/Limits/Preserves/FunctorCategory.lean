@@ -13,11 +13,10 @@ import Mathlib.CategoryTheory.Limits.Presheaf
 # Preservation of (co)limits in the functor category
 
 * Show that if `X ⨯ -` preserves colimits in `D` for any `X : D`, then the product functor `F ⨯ -`
-for `F : C ⥤ D` preserves colimits.
+  for `F : C ⥤ D` preserves colimits.
 
-The idea of the proof is simply that products and colimits in the functor category are computed
-pointwise, so pointwise preservation implies general preservation.
-
+  The idea of the proof is simply that products and colimits in the functor category are computed
+  pointwise, so pointwise preservation implies general preservation.
 * Show that `F ⋙ -` preserves limits if the target category has limits.
 * Show that `F : C ⥤ D` preserves limits of a certain shape
   if `Lan F.op : Cᵒᵖ ⥤ Type*` preserves such limits.
@@ -35,7 +34,7 @@ noncomputable section
 
 namespace CategoryTheory
 
-open Category Limits
+open Category Limits Functor
 
 section
 
@@ -119,7 +118,7 @@ instance whiskeringRight_preservesLimitsOfShape {C : Type*} [Category C] {D : Ty
       exact isLimitOfPreserves _ hc⟩⟩⟩
 
 /-- Whiskering right and then taking a limit is the same as taking the limit and applying the
-    functor. -/
+functor. -/
 def limitCompWhiskeringRightIsoLimitComp {C : Type*} [Category C] {D : Type*}
     [Category D] {E : Type*} [Category E] {J : Type*} [Category J]
     [HasLimitsOfShape J D] (F : D ⥤ E) [PreservesLimitsOfShape J F] (G : J ⥤ C ⥤ D) :
@@ -153,7 +152,7 @@ instance whiskeringRight_preservesColimitsOfShape {C : Type*} [Category C] {D : 
       exact isColimitOfPreserves _ hc⟩⟩⟩
 
 /-- Whiskering right and then taking a colimit is the same as taking the colimit and applying the
-    functor. -/
+functor. -/
 def colimitCompWhiskeringRightIsoColimitComp {C : Type*} [Category C] {D : Type*}
     [Category D] {E : Type*} [Category E] {J : Type*} [Category J]
     [HasColimitsOfShape J D] (F : D ⥤ E) [PreservesColimitsOfShape J F] (G : J ⥤ C ⥤ D) :

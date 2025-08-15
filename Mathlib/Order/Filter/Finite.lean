@@ -104,7 +104,7 @@ theorem mem_iInf' {ι} {s : ι → Filter α} {U : Set α} :
       ∃ I : Set ι, I.Finite ∧ ∃ V : ι → Set α, (∀ i, V i ∈ s i) ∧
         (∀ i ∉ I, V i = univ) ∧ (U = ⋂ i ∈ I, V i) ∧ U = ⋂ i, V i := by
   classical
-  simp only [mem_iInf, SetCoe.forall', biInter_eq_iInter]
+  simp only [mem_iInf, biInter_eq_iInter]
   refine ⟨?_, fun ⟨I, If, V, hVs, _, hVU, _⟩ => ⟨I, If, fun i => V i, fun i => hVs i, hVU⟩⟩
   rintro ⟨I, If, V, hV, rfl⟩
   refine ⟨I, If, fun i => if hi : i ∈ I then V ⟨i, hi⟩ else univ, fun i => ?_, fun i hi => ?_, ?_⟩
@@ -113,7 +113,7 @@ theorem mem_iInf' {ι} {s : ι → Filter α} {U : Set α} :
     exacts [hV ⟨i,_⟩, univ_mem]
   · exact dif_neg hi
   · simp only [iInter_dite, biInter_eq_iInter, dif_pos (Subtype.coe_prop _), Subtype.coe_eta,
-      iInter_univ, inter_univ, eq_self_iff_true, true_and]
+      iInter_univ, inter_univ, true_and]
 
 theorem exists_iInter_of_mem_iInf {ι : Sort*} {α : Type*} {f : ι → Filter α} {s}
     (hs : s ∈ ⨅ i, f i) : ∃ t : ι → Set α, (∀ i, t i ∈ f i) ∧ s = ⋂ i, t i := by
@@ -226,7 +226,7 @@ theorem iInf_sets_induct {f : ι → Filter α} {s : Set α} (hs : s ∈ iInf f)
   rcases hs with ⟨is, his⟩
   induction is using Finset.induction_on generalizing s with
   | empty => rwa [mem_top.1 his]
-  | insert _ ih =>
+  | insert _ _ _ ih =>
     rw [Finset.inf_insert, mem_inf_iff] at his
     rcases his with ⟨s₁, hs₁, s₂, hs₂, rfl⟩
     exact ins hs₁ (ih hs₂)
@@ -237,9 +237,9 @@ theorem iInf_sets_induct {f : ι → Filter α} {s : Set α} (hs : s ∈ iInf f)
 theorem iInf_principal_finset {ι : Type w} (s : Finset ι) (f : ι → Set α) :
     ⨅ i ∈ s, 𝓟 (f i) = 𝓟 (⋂ i ∈ s, f i) := by
   classical
-  induction' s using Finset.induction_on with i s _ hs
-  · simp
-  · rw [Finset.iInf_insert, Finset.set_biInter_insert, hs, inf_principal]
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert i s _ hs => rw [Finset.iInf_insert, Finset.set_biInter_insert, hs, inf_principal]
 
 theorem iInf_principal {ι : Sort w} [Finite ι] (f : ι → Set α) : ⨅ i, 𝓟 (f i) = 𝓟 (⋂ i, f i) := by
   cases nonempty_fintype (PLift ι)

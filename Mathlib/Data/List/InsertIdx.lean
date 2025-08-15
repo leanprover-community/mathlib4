@@ -29,7 +29,7 @@ variable {a : α}
 
 @[simp]
 theorem sublist_insertIdx (l : List α) (n : ℕ) (a : α) : l <+ (l.insertIdx n a) := by
-  simpa only [eraseIdx_insertIdx] using eraseIdx_sublist (l.insertIdx n a) n
+  simpa only [eraseIdx_insertIdx_self] using eraseIdx_sublist (l.insertIdx n a) n
 
 @[simp]
 theorem subset_insertIdx (l : List α) (n : ℕ) (a : α) : l ⊆ l.insertIdx n a :=
@@ -40,7 +40,7 @@ is the same as setting `n`th element to `a`.
 
 We assume that `n ≠ length l`, because otherwise LHS equals `l ++ [a]` while RHS equals `l`. -/
 @[simp]
-theorem insertIdx_eraseIdx {l : List α} {n : ℕ} (hn : n ≠ length l) (a : α) :
+theorem insertIdx_eraseIdx_self {l : List α} {n : ℕ} (hn : n ≠ length l) (a : α) :
     (l.eraseIdx n).insertIdx n a = l.set n a := by
   induction n generalizing l <;> cases l <;> simp_all
 
@@ -94,7 +94,7 @@ theorem get_insertIdx_self (l : List α) (x : α) (n : ℕ) (hn : n ≤ l.length
     (hn' : n < (l.insertIdx n x).length :=
       (by rwa [length_insertIdx_of_le_length hn, Nat.lt_succ_iff])) :
     (l.insertIdx n x).get ⟨n, hn'⟩ = x := by
-  simp [hn, hn']
+  simp
 
 theorem getElem_insertIdx_add_succ (l : List α) (x : α) (n k : ℕ) (hk' : n + k < l.length)
     (hk : n + k + 1 < (l.insertIdx n x).length := (by
@@ -107,7 +107,7 @@ theorem get_insertIdx_add_succ (l : List α) (x : α) (n k : ℕ) (hk' : n + k <
     (hk : n + k + 1 < (l.insertIdx n x).length := (by
       rwa [length_insertIdx_of_le_length (by omega), Nat.succ_lt_succ_iff])) :
     (l.insertIdx n x).get ⟨n + k + 1, hk⟩ = get l ⟨n + k, hk'⟩ := by
-  simp [getElem_insertIdx_add_succ, hk, hk']
+  simp [getElem_insertIdx_add_succ, hk']
 
 set_option linter.unnecessarySimpa false in
 theorem insertIdx_injective (n : ℕ) (x : α) :
@@ -115,27 +115,6 @@ theorem insertIdx_injective (n : ℕ) (x : α) :
   induction n with
   | zero => simp
   | succ n IH => rintro (_ | ⟨a, as⟩) (_ | ⟨b, bs⟩) h <;> simpa [IH.eq_iff] using h
-
-@[deprecated (since := "2024-10-21")] alias insertNth_zero := insertIdx_zero
-@[deprecated (since := "2024-10-21")] alias insertNth_succ_nil := insertIdx_succ_nil
-@[deprecated (since := "2024-10-21")] alias insertNth_succ_cons := insertIdx_succ_cons
-@[deprecated (since := "2024-10-21")] alias length_insertNth := length_insertIdx
-@[deprecated (since := "2024-10-21")] alias removeNth_insertIdx := eraseIdx_insertIdx
-@[deprecated (since := "2024-10-21")] alias insertNth_eraseIdx_of_ge := insertIdx_eraseIdx_of_ge
-@[deprecated (since := "2024-10-21")] alias insertNth_eraseIdx_of_le := insertIdx_eraseIdx_of_le
-@[deprecated (since := "2024-10-21")] alias insertNth_comm := insertIdx_comm
-@[deprecated (since := "2024-10-21")] alias mem_insertNth := mem_insertIdx
-@[deprecated (since := "2024-10-21")] alias insertNth_of_length_lt := insertIdx_of_length_lt
-@[deprecated (since := "2024-10-21")] alias insertNth_length_self := insertIdx_length_self
-@[deprecated (since := "2024-10-21")] alias length_le_length_insertNth := length_le_length_insertIdx
-@[deprecated (since := "2024-10-21")] alias length_insertNth_le_succ := length_insertIdx_le_succ
-@[deprecated (since := "2024-10-21")] alias getElem_insertNth_of_lt := getElem_insertIdx_of_lt
-@[deprecated (since := "2024-10-21")] alias get_insertNth_of_lt := get_insertIdx_of_lt
-@[deprecated (since := "2024-10-21")] alias getElem_insertNth_self := getElem_insertIdx_self
-@[deprecated (since := "2024-10-21")] alias get_insertNth_self := get_insertIdx_self
-@[deprecated (since := "2024-10-21")] alias getElem_insertNth_add_succ := getElem_insertIdx_add_succ
-@[deprecated (since := "2024-10-21")] alias get_insertNth_add_succ := get_insertIdx_add_succ
-@[deprecated (since := "2024-10-21")] alias insertNth_injective := insertIdx_injective
 
 end InsertIdx
 

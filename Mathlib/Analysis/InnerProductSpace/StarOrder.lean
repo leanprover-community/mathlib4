@@ -32,7 +32,7 @@ lemma IsPositive.spectrumRestricts {f : H →L[𝕜] H} (hf : f.IsPositive) :
   rw [SpectrumRestricts.nnreal_iff]
   intro c hc
   contrapose! hc
-  rw [spectrum.not_mem_iff, IsUnit.sub_iff, sub_eq_add_neg, ← map_neg]
+  rw [spectrum.notMem_iff, IsUnit.sub_iff, sub_eq_add_neg, ← map_neg]
   rw [← neg_pos] at hc
   set c := -c
   exact isUnit_of_forall_le_norm_inner_map _ (c := ⟨c, hc.le⟩) hc fun x ↦ calc
@@ -42,7 +42,7 @@ lemma IsPositive.spectrumRestricts {f : H →L[𝕜] H} (hf : f.IsPositive) :
         re_ofReal_mul, inner_self_eq_norm_sq, mul_comm]
     _ ≤ re ⟪(f + (algebraMap ℝ (H →L[𝕜] H)) c) x, x⟫_𝕜 := by
       simpa only [add_apply, inner_add_left, map_add, le_add_iff_nonneg_left]
-        using hf.inner_nonneg_left x
+        using hf.re_inner_nonneg_left x
     _ ≤ ‖⟪(f + (algebraMap ℝ (H →L[𝕜] H)) c) x, x⟫_𝕜‖ := RCLike.re_le_norm _
 
 instance : NonnegSpectrumClass ℝ (H →L[𝕜] H) where

@@ -58,9 +58,10 @@ theorem exists_succ_iterate_iff_le : (∃ n, succ^[n] a = b) ↔ a ≤ b := by
 theorem Succ.rec {P : α → Prop} {m : α} (h0 : P m) (h1 : ∀ n, m ≤ n → P n → P (succ n)) ⦃n : α⦄
     (hmn : m ≤ n) : P n := by
   obtain ⟨n, rfl⟩ := hmn.exists_succ_iterate; clear hmn
-  induction' n with n ih
-  · exact h0
-  · rw [Function.iterate_succ_apply']
+  induction n with
+  | zero => exact h0
+  | succ n ih =>
+    rw [Function.iterate_succ_apply']
     exact h1 _ (id_le_iterate_of_id_le le_succ n m) ih
 
 theorem Succ.rec_iff {p : α → Prop} (hsucc : ∀ a, p a ↔ p (succ a)) {a b : α} (h : a ≤ b) :
@@ -207,7 +208,7 @@ lemma StrictMono.not_bddAbove_range_of_isSuccArchimedean [NoMaxOrder α] [SuccOr
   obtain ⟨a₀⟩ := ‹Nonempty α›
   suffices ∀ b, f a₀ ≤ b → ∃ a, b < f a by
     obtain ⟨a, ha⟩ : ∃ a, m < f a := this m (hm' a₀)
-    exact ha.not_le (hm' a)
+    exact ha.not_ge (hm' a)
   have h : ∀ a, ∃ a', f a < f a' := fun a ↦ (exists_gt a).imp (fun a' h ↦ hf h)
   apply Succ.rec
   · exact h a₀
@@ -297,7 +298,7 @@ lemma BddAbove.exists_isGreatest_of_nonempty {X : Type*} [LinearOrder X] [SuccOr
   have hn' := hm hn
   revert hn hm hm'
   refine Succ.rec ?_ ?_ hn'
-  · simp (config := {contextual := true})
+  · simp +contextual
   intro m _ IH hm hn hm'
   rw [mem_upperBounds] at IH hm
   simp_rw [Order.le_succ_iff_eq_or_le] at hm
@@ -396,14 +397,15 @@ lemma monotoneOn_of_le_succ (hs : s.OrdConnected)
   rintro a ha b hb hab
   obtain ⟨n, rfl⟩ := exists_succ_iterate_of_le hab
   clear hab
-  induction' n with n hn
-  · simp
-  rw [Function.iterate_succ_apply'] at hb ⊢
-  have : succ^[n] a ∈ s := hs.1 ha hb ⟨le_succ_iterate .., le_succ _⟩
-  by_cases hb' : IsMax (succ^[n] a)
-  · rw [succ_eq_iff_isMax.2 hb']
-    exact hn this
-  · exact (hn this).trans (hf _ hb' this hb)
+  induction n with
+  | zero => simp
+  | succ n hn =>
+    rw [Function.iterate_succ_apply'] at hb ⊢
+    have : succ^[n] a ∈ s := hs.1 ha hb ⟨le_succ_iterate .., le_succ _⟩
+    by_cases hb' : IsMax (succ^[n] a)
+    · rw [succ_eq_iff_isMax.2 hb']
+      exact hn this
+    · exact (hn this).trans (hf _ hb' this hb)
 
 lemma antitoneOn_of_succ_le (hs : s.OrdConnected)
     (hf : ∀ a, ¬ IsMax a → a ∈ s → succ a ∈ s → f (succ a) ≤ f a) : AntitoneOn f s :=
@@ -416,14 +418,15 @@ lemma strictMonoOn_of_lt_succ (hs : s.OrdConnected)
   obtain _ | n := n
   · simp at hab
   apply not_isMax_of_lt at hab
-  induction' n with n hn
-  · simpa using hf _ hab ha hb
-  rw [Function.iterate_succ_apply'] at hb ⊢
-  have : succ^[n + 1] a ∈ s := hs.1 ha hb ⟨le_succ_iterate .., le_succ _⟩
-  by_cases hb' : IsMax (succ^[n + 1] a)
-  · rw [succ_eq_iff_isMax.2 hb']
-    exact hn this
-  · exact (hn this).trans (hf _ hb' this hb)
+  induction n with
+  | zero => simpa using hf _ hab ha hb
+  | succ n hn =>
+    rw [Function.iterate_succ_apply'] at hb ⊢
+    have : succ^[n + 1] a ∈ s := hs.1 ha hb ⟨le_succ_iterate .., le_succ _⟩
+    by_cases hb' : IsMax (succ^[n + 1] a)
+    · rw [succ_eq_iff_isMax.2 hb']
+      exact hn this
+    · exact (hn this).trans (hf _ hb' this hb)
 
 lemma strictAntiOn_of_succ_lt (hs : s.OrdConnected)
     (hf : ∀ a, ¬ IsMax a → a ∈ s → succ a ∈ s → f (succ a) < f a) : StrictAntiOn f s :=
@@ -451,14 +454,15 @@ lemma monotoneOn_of_pred_le (hs : s.OrdConnected)
   rintro a ha b hb hab
   obtain ⟨n, rfl⟩ := exists_pred_iterate_of_le hab
   clear hab
-  induction' n with n hn
-  · simp
-  rw [Function.iterate_succ_apply'] at ha ⊢
-  have : pred^[n] b ∈ s := hs.1 ha hb ⟨pred_le _, pred_iterate_le ..⟩
-  by_cases ha' : IsMin (pred^[n] b)
-  · rw [pred_eq_iff_isMin.2 ha']
-    exact hn this
-  · exact (hn this).trans' (hf _ ha' this ha)
+  induction n with
+  | zero => simp
+  | succ n hn =>
+    rw [Function.iterate_succ_apply'] at ha ⊢
+    have : pred^[n] b ∈ s := hs.1 ha hb ⟨pred_le _, pred_iterate_le ..⟩
+    by_cases ha' : IsMin (pred^[n] b)
+    · rw [pred_eq_iff_isMin.2 ha']
+      exact hn this
+    · exact (hn this).trans' (hf _ ha' this ha)
 
 lemma antitoneOn_of_le_pred (hs : s.OrdConnected)
     (hf : ∀ a, ¬ IsMin a → a ∈ s → pred a ∈ s → f a ≤ f (pred a)) : AntitoneOn f s :=
@@ -471,14 +475,15 @@ lemma strictMonoOn_of_pred_lt (hs : s.OrdConnected)
   obtain _ | n := n
   · simp at hab
   apply not_isMin_of_lt at hab
-  induction' n with n hn
-  · simpa using hf _ hab hb ha
-  rw [Function.iterate_succ_apply'] at ha ⊢
-  have : pred^[n + 1] b ∈ s := hs.1 ha hb ⟨pred_le _, pred_iterate_le ..⟩
-  by_cases ha' : IsMin (pred^[n + 1] b)
-  · rw [pred_eq_iff_isMin.2 ha']
-    exact hn this
-  · exact (hn this).trans' (hf _ ha' this ha)
+  induction n with
+  | zero => simpa using hf _ hab hb ha
+  | succ n hn =>
+    rw [Function.iterate_succ_apply'] at ha ⊢
+    have : pred^[n + 1] b ∈ s := hs.1 ha hb ⟨pred_le _, pred_iterate_le ..⟩
+    by_cases ha' : IsMin (pred^[n + 1] b)
+    · rw [pred_eq_iff_isMin.2 ha']
+      exact hn this
+    · exact (hn this).trans' (hf _ ha' this ha)
 
 lemma strictAntiOn_of_lt_pred (hs : s.OrdConnected)
     (hf : ∀ a, ¬ IsMin a → a ∈ s → pred a ∈ s → f a < f (pred a)) : StrictAntiOn f s :=
