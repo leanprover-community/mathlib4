@@ -19,11 +19,6 @@ variable {C : Type u} [Bicategory.{w, v} C]
 /-- The endomorphisms of an object in a bicategory can be considered as a monoidal category. -/
 abbrev EndMonoidal (X : C) :=
   X ⟶ X
--- The `Category` instance should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-
-instance (X : C) : Category (EndMonoidal X) :=
-  show Category (X ⟶ X) from inferInstance
 
 instance (X : C) : Inhabited (EndMonoidal X) :=
   ⟨𝟙 X⟩
