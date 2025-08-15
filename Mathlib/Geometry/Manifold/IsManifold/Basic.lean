@@ -982,7 +982,7 @@ all the smooth bundle structure when defining manifold derivatives. -/
 
 set_option linter.unusedVariables false in
 /-- The tangent space at a point of the manifold `M`. It is just `E`. We could use instead
-`(tangentBundleCore I M).to_topological_vector_bundle_core.fiber x`, but we use `E` to help the
+`(tangentBundleCore I M).toFiberBundleCore.fiber x`, but we use `E` to help the
 kernel.
 -/
 @[nolint unusedArguments]

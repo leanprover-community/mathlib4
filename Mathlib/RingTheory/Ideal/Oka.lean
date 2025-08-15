@@ -12,10 +12,10 @@ This file introduces the notion of oka predicates and standard results about the
 
 ## Main results
 
-- `Ideal.isPrime_of_maximal_not_isOka`: if an ideal is maximal for not satisfying an oka predicate
-  then it is prime.
-- `IsOka.forall_of_forall_prime`: if all prime ideals of a ring satisfy an oka predicate, then all
-  its ideals also satisfy the predicate.
+- `Ideal.IsOka.isPrime_of_maximal_not_isOka`: if an ideal is maximal for not satisfying an oka
+  predicate then it is prime.
+- `Ideal.IsOka.forall_of_forall_prime_isOka`: if all prime ideals of a ring satisfy an oka
+  predicate, then all its ideals also satisfy the predicate.
 
 ## References
 

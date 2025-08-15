@@ -255,8 +255,8 @@ theorem LieAlgebra.isEngelian_of_isNoetherian [IsNoetherian R L] : LieAlgebra.Is
     simp only [LinearMap.range_eq_top]
     exact LieHom.surjective_rangeRestrict (toEnd R L M)
   obtain ⟨K, hK₁, hK₂⟩ := (LieSubalgebra.wellFoundedGT_of_noetherian R L').wf.has_min s hs
-  have hK₃ : K = ⊤ := by grind
-  exact hK₃ ▸ hK₁
+  obtain rfl : K = ⊤ := by grind
+  exact hK₁
 
 /-- Engel's theorem.
 
