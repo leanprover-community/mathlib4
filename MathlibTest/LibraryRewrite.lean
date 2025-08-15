@@ -19,7 +19,7 @@ Pattern a → b → c
 
 Pattern ∀ (hp : p) (hq : q), r hp hq
 · p ∧ p → q
-  forall_prop_and_left'
+  forall_and_index'
 
 Pattern ∀ (x : α), p x → b
 · (∃ x, p) → q
