@@ -73,7 +73,7 @@ lemma mem_associatePrimes_of_comap_mem_associatePrimes_isLocalizedModule
     p ∈ associatedPrimes R' M' :=
   mem_associatedPrimes_of_comap_mem_associatedPrimes_of_isLocalizedModule S f p ass
 
-lemma mem_associatePrimes_localizedModule_atPrime_of_mem_associated_primes
+lemma mem_associatePrimes_localizedModule_atPrime_of_mem_associatedPrimes
     {p : Ideal R} [p.IsPrime] (ass : p ∈ associatedPrimes R M) :
     maximalIdeal (Localization.AtPrime p) ∈
     associatedPrimes (Localization.AtPrime p) (LocalizedModule p.primeCompl M) := by
