@@ -89,8 +89,7 @@ def terminalLimitCone : Limits.LimitCone (Functor.empty (Type u)) where
       π := (Functor.uniqueFromEmpty _).hom }
   isLimit :=
     { lift := fun _ _ => PUnit.unit
-      fac := fun _ => by rintro ⟨⟨⟩⟩
-      uniq := fun _ _ _ => by constructor }
+      fac := fun _ => by rintro ⟨⟨⟩⟩ }
 
 /-- The terminal object in `Type u` is `PUnit`. -/
 noncomputable def terminalIso : ⊤_ Type u ≅ PUnit :=
@@ -523,11 +522,8 @@ theorem coequalizer_preimage_image_eq_of_preimage_eq (π : Y ⟶ Z) (e : f ≫ �
     rintro _ _ ⟨x⟩
     change x ∈ f ⁻¹' U ↔ x ∈ g ⁻¹' U
     rw [H]
-  -- Porting note: tidy was able to fill the structure automatically
-  have eqv : _root_.Equivalence fun x y => x ∈ U ↔ y ∈ U :=
-    { refl := by tauto
-      symm := by tauto
-      trans := by tauto }
+  have eqv : _root_.Equivalence fun x y => x ∈ U ↔ y ∈ U := by
+    aesop (add safe constructors _root_.Equivalence)
   ext
   constructor
   · rw [←
