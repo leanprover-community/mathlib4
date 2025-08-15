@@ -24,14 +24,9 @@ variable {f : α → α} {μ : Measure α} {φ ψ : α → M}
 `μ`-a.e. equal. -/
 theorem birkhoffSum_ae_eq_of_ae_eq (hf : QuasiMeasurePreserving f μ μ) (hφ : φ =ᵐ[μ] ψ) n :
     birkhoffSum f φ n =ᵐ[μ] birkhoffSum f ψ n := by
-  obtain ⟨s, hs, hs'⟩ := eventuallyEq_iff_exists_mem.mp hφ
-  let t := {x | ∀ n, f^[n] x ∈ s}
-  have ht : t ∈ ae μ := by
-    refine mem_ae_iff.mpr ?_
-    rw [show tᶜ = ⋃ n, (f^[n])⁻¹' sᶜ by ext x; simp [t]]
-    exact measure_iUnion_null_iff.mpr fun n ↦ ((hf.iterate n).preimage_null hs)
-  filter_upwards [ht] with _ hx
-  exact Finset.sum_congr rfl fun x _ => hs' (hx x)
+  apply Eventually.mono _ (fun _ => Finset.sum_congr rfl)
+  apply ae_all_iff.mpr (fun i => ?_)
+  exact (hf.iterate i).ae (hφ.mono (fun _ h _ => h))
 
 /-- If observables `φ` and `ψ` are `μ`-a.e. equal then the corresponding `birkhoffAverage` are
  `μ`-a.e. equal. -/
