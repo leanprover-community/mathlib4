@@ -11,6 +11,7 @@ import Mathlib.Tactic.ScopedNS
 import Batteries.Linter.UnreachableTactic
 import Batteries.Util.ExtendedBinder
 import Batteries.Lean.Syntax
+import Lean.Elab.AuxDef
 
 /-!
 # The notation3 macro, simulating Lean 3's notation.
@@ -607,15 +608,11 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
     throwError "If there is a `scoped` item then there must be a `(...)` item for binders."
 
   -- 1. The `syntax` command
-  let name ← elabSyntax (← `(command|
+  let fullName ← elabSyntax (← `(command|
     $[$doc]? $(attrs?)? $attrKind
     syntax $(prec?)? $[$name?:namedName]? $(prio?)? $[$syntaxArgs]* : term))
 
   -- 2. The `macro_rules`
-  let currNamespace : Name ← getCurrNamespace
-  -- The `syntax` command puts definitions into the current namespace; we need this
-  -- to make the syntax `pat`.
-  let fullName := currNamespace ++ name
   trace[notation3] "syntax declaration has name {fullName}"
   let pat : Term := ⟨mkNode fullName pattArgs⟩
   let val' ← val.replaceM fun s => pure boundValues[s.getId]?
@@ -652,7 +649,6 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
       let delabKeys : List DelabKey := ms.foldr (·.1 ++ ·) []
       for key in delabKeys do
         trace[notation3] "Creating delaborator for key {repr key}"
-        let delabName := name ++ Name.mkSimple s!"delab_{key.key}"
         let bodyCore ← `(getExpr >>= fun e => $matcher MatchState.empty >>= fun s => $result)
         let body ←
           match key with
@@ -660,11 +656,9 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
           | _            => pure bodyCore
         elabCommand <| ← `(
           /-- Pretty printer defined by `notation3` command. -/
-          def $(Lean.mkIdent delabName) : Delab :=
-            whenPPOption getPPNotation <| whenNotPPOption getPPExplicit <| $body
-          -- Avoid scope issues by adding attribute afterwards.
-          attribute [$attrKind delab $(mkIdent key.key)] $(Lean.mkIdent delabName))
-        trace[notation3] "Defined delaborator {currNamespace ++ delabName}"
+          @[$attrKind delab $(mkIdent key.key)]
+          public aux_def delab_app $(mkIdent fullName) : Delab :=
+            whenPPOption getPPNotation <| whenNotPPOption getPPExplicit <| $body)
     else
       logWarning s!"\
         Was not able to generate a pretty printer for this notation. \
