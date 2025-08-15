@@ -351,14 +351,10 @@ theorem MeasurePreserving.integrable_comp {ν : Measure δ} {g : δ → ε} {f :
   rw [← hf.map_eq] at hg ⊢
   exact (integrable_map_measure hg hf.measurable.aemeasurable).symm
 
-/-- If an observable is integrable then the observable formed by composing with iterates of a
-measure preserving map is also integrable. -/
-lemma integrable_comp_iterate {g : α → ε} {f : α → α} {i : ℕ}
-    (hf : MeasurePreserving f μ μ) (hg : AEStronglyMeasurable g μ) :
-    Integrable (g ∘ f^[i]) μ ↔ Integrable g μ := by
-  rw [←integrable_map_measure _ (hf.iterate i).aemeasurable]
-  all_goals rw [(hf.iterate i).map_eq]
-  assumption
+theorem MeasurePreserving.integrable_comp_of_integrable {ν : Measure δ} {g : δ → ε} {f : α → δ}
+    (hf : MeasurePreserving f μ ν) (hg : Integrable g ν) :
+    Integrable (g ∘ f) μ :=
+  hf.integrable_comp hg.aestronglyMeasurable |>.mpr hg
 
 theorem MeasurePreserving.integrable_comp_emb {f : α → δ} {ν} (h₁ : MeasurePreserving f μ ν)
     (h₂ : MeasurableEmbedding f) {g : δ → ε} : Integrable (g ∘ f) μ ↔ Integrable g ν :=
