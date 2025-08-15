@@ -67,6 +67,20 @@ theorem map_adj (f : V ↪ W) (G : SimpleGraph V) (u v : W) :
     (G.map f).Adj u v ↔ ∃ u' v' : V, G.Adj u' v' ∧ f u' = u ∧ f v' = v :=
   Iff.rfl
 
+theorem edgeSet_map_eq_image (f : V ↪ W) (G : SimpleGraph V) :
+    (G.map f).edgeSet = f.sym2Map '' G.edgeSet := by
+  ext v
+  induction v
+  rw [mem_edgeSet, map_adj, Set.mem_image]
+  constructor
+  · intro ⟨a, b, hadj, ha, hb⟩
+    use s(a, b), hadj
+    rw [Embedding.sym2Map_apply, Sym2.map_pair_eq, ha, hb]
+  · intro ⟨e, hadj, he⟩
+    induction e
+    rw [Embedding.sym2Map_apply, Sym2.map_pair_eq, Sym2.eq_iff] at he
+    exact he.elim (fun ⟨h, h'⟩ ↦ ⟨_, _, hadj, h, h'⟩) (fun ⟨h', h⟩ ↦ ⟨_, _, hadj.symm, h, h'⟩)
+
 lemma map_adj_apply {G : SimpleGraph V} {f : V ↪ W} {a b : V} :
     (G.map f).Adj (f a) (f b) ↔ G.Adj a b := by simp
 
