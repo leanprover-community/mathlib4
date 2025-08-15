@@ -257,7 +257,7 @@ theorem linearIndependent_right (H : A.LinearDisjoint B)
 
 /--
 If `A` and `B` are linearly disjoint and such that `A.toSubalgebra ⊔ B.toSubalgebra = ⊤`,
-then any `F`-basis of `B` is also a `A`-basis of `E`.
+then any `F`-basis of `B` is also an `A`-basis of `E`.
 Note that the condition `A.toSubalgebra ⊔ B.toSubalgebra = ⊤` is equivalent to
 `A ⊔ B = ⊤` in many cases, see `IntermediateField.sup_toSubalgebra_of_isAlgebraic_right` and similar
 results.
@@ -271,12 +271,12 @@ noncomputable def basisOfBasisRight (H : A.LinearDisjoint B)
 theorem basisOfBasisRight_apply (H : A.LinearDisjoint B) (H' : A.toSubalgebra ⊔ B.toSubalgebra = ⊤)
     {ι : Type*} (b : Basis ι F B) (i : ι) :
     H.basisOfBasisRight H' b i = algebraMap B E (b i) :=
-  (linearDisjoint_iff'.mp H).basisOfBasisRight_apply H' b i
+  (linearDisjoint_iff'.mp H).algebraMap_basisOfBasisRight_apply H' b i
 
 theorem basisOfBasisRight_repr_apply (H : A.LinearDisjoint B)
     (H' : A.toSubalgebra ⊔ B.toSubalgebra = ⊤) {ι : Type*} (b : Basis ι F B) (x : B) (i : ι) :
     algebraMap A E ((H.basisOfBasisRight H' b).repr x i) = algebraMap F E (b.repr x i) :=
-  (linearDisjoint_iff'.mp H).basisOfBasisRight_repr_apply H' b x i
+  (linearDisjoint_iff'.mp H).algebraMap_basisOfBasisRight_repr_apply H' b x i
 
 /--
 If `A` and `B` are linearly disjoint and such that `A.toSubalgebra ⊔ B.toSubalgebra = ⊤`,
