@@ -90,15 +90,19 @@ variable [P.IsCore R₀]
 lemma coeffs_subset_range : (P.coeffs : Set R) ⊆ Set.range (algebraMap R₀ R) :=
   IsCore.coeffs_subset_range
 
-instance (s : Set R) : P.IsCore (Algebra.adjoin R₀ s) := by
+lemma IsCore.of_isScalarTower {R₁ : Type*} [CommRing R₁] [Algebra R₀ R₁] [Algebra R₁ R]
+    [IsScalarTower R₀ R₁ R] [Algebra R₁ S] [IsScalarTower R₁ R S] :
+    P.IsCore R₁ := by
   refine ⟨subset_trans (P.coeffs_subset_range R₀) ?_⟩
-  refine subset_trans (Subalgebra.range_le (adjoin R₀ s)) (by simp)
+  simp [IsScalarTower.algebraMap_eq R₀ R₁ R, RingHom.coe_comp, Set.range_comp]
+
+instance (s : Set R) : P.IsCore (Algebra.adjoin R₀ s) := IsCore.of_isScalarTower R₀
 
 lemma IsCore.coeffs_relation_mem_range (x : σ) :
-    ((P.relation x).coeffs : Set R) ⊆ Set.range (algebraMap R₀ R) :=
+    ↑(P.relation x).coeffs ⊆ Set.range (algebraMap R₀ R) :=
   subset_trans (P.coeffs_relation_subset_coeffs x) IsCore.coeffs_subset_range
 
-lemma IsCore.mem_range_map_core (x : σ) :
+lemma IsCore.relation_mem_range_map (x : σ) :
     P.relation x ∈ Set.range (MvPolynomial.map (algebraMap R₀ R)) := by
   rw [MvPolynomial.mem_range_map_iff_coeffs_subset]
   exact IsCore.coeffs_relation_mem_range R₀ x
@@ -106,11 +110,11 @@ lemma IsCore.mem_range_map_core (x : σ) :
 /-- The `r`-th relation of `P` as a polynomial in `R₀`. This is the (arbitrary) choice of a
 pre-image under the map `R₀[X] → R[X]`. -/
 noncomputable def coreRelation (r : σ) : MvPolynomial ι R₀ :=
-  (IsCore.mem_range_map_core (P := P) R₀ r).choose
+  (IsCore.relation_mem_range_map (P := P) R₀ r).choose
 
 lemma map_coreRelation (r : σ) :
     MvPolynomial.map (algebraMap R₀ R) (P.coreRelation R₀ r) = P.relation r :=
-  (IsCore.mem_range_map_core R₀ r).choose_spec
+  (IsCore.relation_mem_range_map R₀ r).choose_spec
 
 @[simp]
 lemma aeval_val_coreRelation (r : σ) :
@@ -122,14 +126,6 @@ lemma algebraTensorAlgEquiv_symm_relation (r : σ) :
     (MvPolynomial.algebraTensorAlgEquiv R₀ R).symm (P.relation r) =
       1 ⊗ₜ P.coreRelation R₀ r := by
   rw [← map_coreRelation R₀, MvPolynomial.algebraTensorAlgEquiv_symm_map]
-
-@[simp]
-lemma _root_.Ideal.Quotient.mk_span_range {R : Type*} [CommRing R]
-    {ι : Type*} (f : ι → R) (i : ι) :
-    Ideal.Quotient.mk (Ideal.span (Set.range f)) (f i) = 0 := by
-  rw [Ideal.Quotient.eq_zero_iff_mem]
-  apply Ideal.subset_span
-  use i
 
 /-- The model of `S` over a core `R₀` is `R₀[X]` quotiented by the same relations. -/
 abbrev CoreModel : Type _ :=
@@ -197,5 +193,16 @@ private lemma inv_comp_hom :
 noncomputable def tensorCoreModelEquiv : R ⊗[R₀] P.CoreModel R₀ ≃ₐ[R] S :=
   AlgEquiv.ofAlgHom (P.tensorCoreModelHom R₀) (P.tensorCoreModelInv R₀)
     (P.hom_comp_inv R₀) (P.inv_comp_hom R₀)
+
+@[simp]
+lemma tensorCoreModelEquiv_tmul (x : R) (y : MvPolynomial ι R₀) :
+    P.tensorCoreModelEquiv R₀ (x ⊗ₜ y) = algebraMap R S x * MvPolynomial.aeval P.val y :=
+  rfl
+
+@[simp]
+lemma tensorCoreModelEquiv_symm_tmul (x : MvPolynomial ι R₀) :
+    (P.tensorCoreModelEquiv R₀).symm (MvPolynomial.aeval P.val x) =
+      1 ⊗ₜ[R₀] (Ideal.Quotient.mk _ x) :=
+  tensorCoreModelInv_aeval_val _ x
 
 end Algebra.Presentation

@@ -36,6 +36,12 @@ variable {S : Type v}
 
 namespace Quotient
 
+@[simp]
+lemma mk_span_range {ι : Type*} (f : ι → R) [(span (range f)).IsTwoSided] (i : ι) :
+    mk (span (.range f)) (f i) = 0 := by
+  rw [Ideal.Quotient.eq_zero_iff_mem]
+  exact Ideal.subset_span ⟨i, rfl⟩
+
 variable {I} {x y : R}
 
 theorem zero_eq_one_iff : (0 : R ⧸ I) = 1 ↔ I = ⊤ :=
