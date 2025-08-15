@@ -164,7 +164,7 @@ private lemma mono_g : Mono (g hf₁ f₂) := by
 private lemma le : m₁ ≤ m₂ := by
   have := isIso_factorThruImage_g hf₁ hy₁ hy₂
   exact SimplexCategory.len_le_of_mono
-    (f := factorThruImage (g hf₁ f₂) ≫ image.ι _) inferInstance
+    (factorThruImage (g hf₁ f₂) ≫ image.ι _)
 
 end
 
