@@ -131,11 +131,6 @@ the use of the type synonym. -/
 
 @[simp] lemma toLp_apply (x : ∀ i, α i) (i : ι) : toLp p x i = x i := rfl
 
-@[deprecated toLp_apply (since := "2024-04-27")]
-theorem _root_.WithLp.equiv_symm_pi_apply (x : ∀ i, α i) (i : ι) :
-    (WithLp.equiv p _).symm x i = x i :=
-  rfl
-
 section DistNorm
 
 variable [Fintype ι]
