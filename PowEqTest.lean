@@ -13,7 +13,7 @@ theorem exists_k_base_eq_p_pow_k_of_prime_p_pow_eq_base_pow
     {p a m n : ℕ} (hp : p.Prime) (hn : n ≠ 0) (h : p ^ m = a ^ n) :
     ∃ k, a = p ^ k := by
   rcases exponent_dvd_of_prime_pow_eq_pow hp h with ⟨k, m_eq⟩
-  rw [m_eq, show p ^ (n * k) = (p ^ k) ^ n by ring] at h
+  rw [m_eq, pow_mul'] at h
   use k, pow_left_injective hn h.symm
 
 theorem exists_eq_pow_of_exponent_coprime_of_pow_eq {a b m n : ℕ} (hmn : m.Coprime n) (h : a ^ m = b ^ n) :
@@ -32,10 +32,9 @@ theorem exists_eq_pow_of_pow_eq {a b m n : ℕ} (hmn : m ≠ 0 ∨ n ≠ 0) (h :
     . exact gcd_div_gcd_div_gcd_of_pos_left (zero_lt_of_ne_zero hm)
     . exact gcd_div_gcd_div_gcd_of_pos_right (zero_lt_of_ne_zero hn)
   have eq : a ^ m' = b ^ n' := by
-    have : m = m' * g :=
-      have : g ∣ m := by
-        exact gcd_dvd_left m n
-      (Nat.div_mul_cancel this).symm
+    conv_lhs at h => rw [show m = m' * g from (Nat.div_mul_cancel (gcd_dvd_left m n)).symm]
+    conv_rhs at h => rw [show n = n' * g from (Nat.div_mul_cancel (gcd_dvd_right m n)).symm]
+    rw [pow_mul', pow_mul'] at h
     sorry
   exact exists_eq_pow_of_exponent_coprime_of_pow_eq coprime eq
 
