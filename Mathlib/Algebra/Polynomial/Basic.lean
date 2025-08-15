@@ -390,10 +390,8 @@ theorem card_support_eq_zero : #p.support = 0 ↔ p = 0 := by simp
 /-- `monomial s a` is the monomial `a * X^s` -/
 def monomial (n : ℕ) : R →ₗ[R] R[X] where
   toFun t := ⟨Finsupp.single n t⟩
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp`.
-  map_add' x y := by simp; rw [ofFinsupp_add]
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp [← ofFinsupp_smul]`.
-  map_smul' r x := by simp; rw [← ofFinsupp_smul, smul_single']
+  map_add' x y := by simp [← ofFinsupp_add]
+  map_smul' r x := by simp [← ofFinsupp_smul]
 
 @[simp]
 theorem toFinsupp_monomial (n : ℕ) (r : R) : (monomial n r).toFinsupp = Finsupp.single n r := by
