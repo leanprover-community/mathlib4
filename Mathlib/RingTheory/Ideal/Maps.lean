@@ -1122,7 +1122,7 @@ end RingHom
 
 /-- Any ring isomorphism induces an order isomorphism of ideals. -/
 @[simps apply]
-def RingEquiv.idealComapEquiv {R S : Type*} [Semiring R] [Semiring S] (e : R ≃+* S) :
+def RingEquiv.idealComapOrderIso {R S : Type*} [Semiring R] [Semiring S] (e : R ≃+* S) :
     Ideal S ≃o Ideal R where
   toFun I := I.comap e
   invFun I := I.map e
