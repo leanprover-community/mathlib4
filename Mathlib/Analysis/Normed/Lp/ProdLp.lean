@@ -571,9 +571,17 @@ lemma prod_lipschitzWith_ofLp [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     LipschitzWith 1 (@ofLp p (α × β)) :=
   prod_lipschitzWith_ofLp_aux p α β
 
+lemma prod_antilipschitzWith_toLp [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
+    AntilipschitzWith 1 (@toLp p (α × β)) :=
+  (prod_lipschitzWith_ofLp p α β).to_rightInverse (ofLp_toLp p)
+
 lemma prod_antilipschitzWith_ofLp [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     AntilipschitzWith ((2 : ℝ≥0) ^ (1 / p).toReal) (@ofLp p (α × β)) :=
   prod_antilipschitzWith_ofLp_aux p α β
+
+lemma prod_lipschitzWith_toLp [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
+    LipschitzWith ((2 : ℝ≥0) ^ (1 / p).toReal) (@toLp p (α × β)) :=
+  (prod_antilipschitzWith_ofLp p α β).to_rightInverse (ofLp_toLp p)
 
 lemma prod_isometry_ofLp_infty [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     Isometry (@ofLp ∞ (α × β)) :=
@@ -594,6 +602,11 @@ instance instProdSeminormedAddCommGroup [SeminormedAddCommGroup α] [SeminormedA
     · simp only [prod_dist_eq_add (zero_lt_one.trans_le h),
         prod_norm_eq_add (zero_lt_one.trans_le h), dist_eq_norm]
       rfl
+
+lemma isUniformInducing_toLp [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
+    IsUniformInducing (@toLp p (α × β)) :=
+  (prod_antilipschitzWith_toLp p α β).isUniformInducing
+    (prod_lipschitzWith_toLp p α β).uniformContinuous
 
 section
 variable {β p}
