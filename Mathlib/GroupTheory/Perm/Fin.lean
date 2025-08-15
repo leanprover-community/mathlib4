@@ -355,8 +355,8 @@ theorem cycleIcc_of_gt (h : j < k) : (cycleIcc i j) k = k := by
   by_cases hij : i ≤ j
   · have kin : k ∈ Set.range (natAdd_castLEEmb (Nat.sub_le n i)) := by
       simpa [range_natAdd_castLEEmb] using by omega
-    have : (((addNatEmb (n - (n - i.1))).trans (finCongr _).toEmbedding
-      ).toEquivRange.symm ⟨k, kin⟩) = subNat i.1 (k.cast (by omega)) (by simpa using by omega) := by
+    have : (((addNatEmb (n - (n - i.1))).trans (finCongr _).toEmbedding).toEquivRange.symm ⟨k, kin⟩)
+      = subNat i.1 (k.cast (by omega)) (by simpa using by omega) := by
       simpa [symm_apply_eq] using eq_of_val_eq (by simpa using by omega)
     simp only [cycleIcc_to_cycleRange hij kin, natAdd_castLEEmb, this,
       Function.Embedding.trans_apply, addNatEmb_apply, coe_toEmbedding, finCongr_apply]
