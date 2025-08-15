@@ -125,7 +125,7 @@ theorem counted_succ_succ (p q : ℕ) :
       · rw [List.count_tail, hl₁, List.head?_eq_head, hlast, beq_self_eq_true, if_pos rfl,
           Nat.add_sub_cancel]
       · exact fun x hx => hl₂ x (List.mem_of_mem_tail hx)
-      · rw [← hlast, List.head_cons_tail]
+      · rw [← hlast, List.cons_head_tail]
   · rintro (⟨t, ⟨ht₀, ht₁, ht₂⟩, rfl⟩ | ⟨t, ⟨ht₀, ht₁, ht₂⟩, rfl⟩)
     · refine ⟨?_, ?_, ?_⟩
       · rw [List.count_cons, beq_self_eq_true, if_pos rfl, ht₀]
