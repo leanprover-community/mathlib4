@@ -187,13 +187,8 @@ end FiniteDimensional
 
 end ResidueField
 
-theorem isLocalHom_residue : IsLocalHom (IsLocalRing.residue R) := by
-  constructor
-  intro a ha
-  by_contra h
-  rw [residue_def, Ideal.Quotient.eq_zero_iff_mem.mpr ((IsLocalRing.mem_maximalIdeal _).mpr h)]
-    at ha
-  exact ha.ne_zero rfl
+theorem isLocalHom_residue : IsLocalHom (IsLocalRing.residue R) :=
+  instIsLocalHomResidueFieldRingHomResidue R
 
 end
 
