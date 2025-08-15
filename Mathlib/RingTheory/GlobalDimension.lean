@@ -40,8 +40,7 @@ variable {C : Type u} [Category.{v, u} C] [Abelian C]
 --projectiveDimension should be `-∞` when `X = 0`
 
 noncomputable def projectiveDimension (X : C) : WithBot ℕ∞ :=
-  sorry
---sInf (({(n : ℕ) | HasProjectiveDimensionLT X n}).image WithTop.some)-/
+  sInf {n : WithBot ℕ∞ | ∀ (i : ℕ), n < i → HasProjectiveDimensionLT X i}
 
 lemma projectiveDimension_le_iff (X : C) (n : ℕ) : projectiveDimension X ≤ n ↔
     HasProjectiveDimensionLE X n := by
