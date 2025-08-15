@@ -1146,7 +1146,7 @@ theorem listFilter (hf : PrimrecRel R) :
 is a primitive recursive relation. -/
 theorem exists_mem_list (hf : PrimrecRel R) : PrimrecRel fun (L : List α) b ↦ ∃ a ∈ L, R a b := by
   have h (L) (b) : (List.filter (R · b) L).length ≠ 0 ↔ ∃ a ∈ L, R a b := by simp
-  refine .of_eq (.not (?_)) h
+  refine .of_eq (.not ?_) h
   exact .comp .eq (list_length.comp hf.listFilter) (const 0)
 
 /-- If `R a b` is decidable, then given `L : List α` and `b : β`, `g L b ↔ ∀ a L, R a b`
