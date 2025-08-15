@@ -6,6 +6,7 @@ Authors: Joseph Myers, Manuel Candales
 import Mathlib.Geometry.Euclidean.Angle.Oriented.Affine
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
 import Mathlib.Tactic.IntervalCases
+import Mathlib.Analysis.Normed.Affine.AddTorsor
 
 /-!
 # Triangles
