@@ -173,6 +173,17 @@ def hyperedgeNeighbors (H : Hypergraph α) (e : Set α) : Set (Set α) := {f | H
 
 end Adjacency
 
+section Extensionality
+
+/-! ## Extensionality -/
+
+-- TODO: this
+-- Start here? https://lean-lang.org/theorem_proving_in_lean4/Axioms-and-Computation/#propositional-extensionality
+
+lemma ext {H₁ H₂ : Hypergraph α} (hv : V(H₁) = V(H₂)) (he : E(H₁) = E(H₂)) : H₁ = H₂ := by sorry
+
+end Extensionality
+
 section DefsPreds
 
 /-! ## Basic Hypergraph Definitions & Predicates-/
@@ -206,6 +217,26 @@ def IsLoop (H : Hypergraph α) (e : Set α) : Prop := e ∈ E(H) ∧ Set.encard 
 Predicate to determine if a hypergraph is empty
 -/
 def IsEmpty (H : Hypergraph α) : Prop := V(H) = ∅ ∧ E(H) = ∅
+
+/--
+The empty hypergraph of type α
+-/
+def emptyHypergraph (α : Type*) : Hypergraph α :=
+  Hypergraph.mk
+  ∅
+  ∅
+  (by
+    intro e he
+    have h1 : e = ∅ := by exact False.elim he
+    exact Set.subset_empty_iff.mpr h1
+  )
+
+lemma isEmpty_empty_hypergraph {α : Type*} : IsEmpty (Hypergraph.emptyHypergraph α) := by
+  unfold IsEmpty
+  exact Prod.mk_inj.mp rfl
+
+-- lemma isEmpty_eq_empty_hypergraph {H : Hypergraph α} (hh : IsEmpty H) : H = Hypergraph.emptyHypergraph α := by
+--   have h0 : V(H) = ∅ ∧ E(H) = ∅ := by exact hh
 
 /--
 Predicate to determine if a hypergraph is trivial
