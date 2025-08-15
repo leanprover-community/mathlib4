@@ -201,12 +201,7 @@ def lift (H : ∀ (x y : C) (f₁ f₂ : x ⟶ y), r f₁ f₂ → F.map f₁ = 
 variable (H : ∀ (x y : C) (f₁ f₂ : x ⟶ y), r f₁ f₂ → F.map f₁ = F.map f₂)
 
 theorem lift_spec : functor r ⋙ lift r F H = F := by
-  apply Functor.ext; rotate_left
-  · rintro X
-    rfl
-  · rintro X Y f
-    dsimp [lift, functor]
-    simp
+  tauto
 
 theorem lift_unique (Φ : Quotient r ⥤ D) (hΦ : functor r ⋙ Φ = F) : Φ = lift r F H := by
   subst_vars
@@ -276,11 +271,11 @@ lemma natTransLift_app (F G : Quotient r ⥤ D)
 lemma comp_natTransLift {F G H : Quotient r ⥤ D}
     (τ : Quotient.functor r ⋙ F ⟶ Quotient.functor r ⋙ G)
     (τ' : Quotient.functor r ⋙ G ⟶ Quotient.functor r ⋙ H) :
-    natTransLift r τ ≫ natTransLift r τ' =  natTransLift r (τ ≫ τ') := by aesop_cat
+    natTransLift r τ ≫ natTransLift r τ' =  natTransLift r (τ ≫ τ') := by cat_disch
 
 @[simp]
 lemma natTransLift_id (F : Quotient r ⥤ D) :
-    natTransLift r (𝟙 (Quotient.functor r ⋙ F)) = 𝟙 _ := by aesop_cat
+    natTransLift r (𝟙 (Quotient.functor r ⋙ F)) = 𝟙 _ := by cat_disch
 
 /-- In order to define a natural isomorphism `F ≅ G` with `F G : Quotient r ⥤ D`, it suffices
 to do so after precomposing with `Quotient.functor r`. -/
@@ -296,7 +291,7 @@ variable (D)
 
 instance full_whiskeringLeft_functor :
     ((whiskeringLeft C _ D).obj (functor r)).Full where
-  map_surjective f := ⟨natTransLift r f, by aesop_cat⟩
+  map_surjective f := ⟨natTransLift r f, by cat_disch⟩
 
 instance faithful_whiskeringLeft_functor :
     ((whiskeringLeft C _ D).obj (functor r)).Faithful := ⟨by apply natTrans_ext⟩

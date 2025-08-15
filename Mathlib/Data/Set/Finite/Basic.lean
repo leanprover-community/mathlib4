@@ -716,9 +716,6 @@ theorem Finite.induction_on_subset {motive : ∀ s : Set α, s.Finite → Prop} 
   rw [insert_subset_iff] at haS
   exact insert haS.1 haS.2 has (hCs haS.2)
 
-@[deprecated (since := "2025-01-03")] alias Finite.induction_on' := Finite.induction_on_subset
-@[deprecated (since := "2025-01-03")] alias Finite.dinduction_on := Finite.induction_on
-
 section
 
 attribute [local instance] Nat.fintypeIio
