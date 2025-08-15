@@ -1132,9 +1132,9 @@ def RingEquiv.idealComapOrderIso {R S : Type*} [Semiring R] [Semiring S] (e : R 
     simp [← Ideal.map_le_iff_le_comap, Ideal.map_comap_of_surjective _ e.surjective]
 
 @[simp]
-lemma RingEquiv.idealComapEquiv_symm_apply
+lemma RingEquiv.idealComapOrderIso_symm_apply
     {R S : Type*} [Semiring R] [Semiring S] (e : R ≃+* S) (I : Ideal R) :
-    e.idealComapEquiv.symm I = I.map e :=
+    e.idealComapOrderIso.symm I = I.map e :=
   rfl
 
 namespace AlgHom
