@@ -95,6 +95,7 @@ lemma isRegular : P.IsRegular where
 
 end WeakRankFunction
 
+/-- The weak rank function attached to a rank function. -/
 @[simps]
 def RankFunction.toWeakRankFunction (f : P.RankFunction α) :
     P.WeakRankFunction α where
