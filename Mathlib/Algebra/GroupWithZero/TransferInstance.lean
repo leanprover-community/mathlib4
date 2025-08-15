@@ -43,18 +43,4 @@ protected abbrev mulZeroOneClass [MulZeroOneClass β] : MulZeroOneClass α := by
   let mul := e.mul
   apply e.injective.mulZeroOneClass _ <;> intros <;> exact e.apply_symm_apply _
 
-variable (M : Type*) [Monoid M]
-
-/-- Transfer `DistribMulAction` across an `Equiv` -/
-protected abbrev distribMulAction (e : α ≃ β) [AddCommMonoid β] :
-    letI := Equiv.addCommMonoid e
-    ∀ [DistribMulAction M β], DistribMulAction M α := by
-  intros
-  letI := Equiv.addCommMonoid e
-  exact
-    ({ Equiv.mulAction M e with
-        smul_zero := by simp [zero_def, smul_def]
-        smul_add := by simp [add_def, smul_def, smul_add] } :
-      DistribMulAction M α)
-
 end Equiv
