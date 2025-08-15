@@ -329,8 +329,6 @@ def inducedSubHypergraph (H : Hypergraph α) (g : Set α) :=
     exact Eq.trans_subset h2 h3
   )
 
-#check Eq.symm
-
 /--
 Given a subset of the hyperedge set `E(H)` of a hypergraph `H` (`l : Set (Set α)`), the
 *partial hypergraph* `Hˡ` has `E(Hˡ) = l ∩ E(H)` and `V(Hˡ)` is the subset of `V(H)` which is
@@ -338,9 +336,12 @@ incident on at least one hyperedge in `E(Hˡ)`.
 -/
 def partialHypergraph (H : Hypergraph α) (l : Set (Set α)) :=
   Hypergraph.mk
-  {x | x ∈ V(H) ∧ ∃ e ∈ l, e ∈ E(H) ∧ x ∈ e}
+  {x | ∃ e ∈ l, e ∈ E(H) ∧ x ∈ e}
   (l ∩ E(H))
-  (sorry)
+  (by
+    intro q hq
+
+  )
 
 end Sub
 
