@@ -46,10 +46,6 @@ instance [TopologicalSpace R] : TopologicalSpace (Matrix m n R) :=
 instance [TopologicalSpace R] [T2Space R] : T2Space (Matrix m n R) :=
   Pi.t2Space
 
-instance [TopologicalSpace R] [DecidableEq n] [Fintype n] [CommRing R] :
-    TopologicalSpace (SpecialLinearGroup n R) :=
-  instTopologicalSpaceSubtype
-
 section Set
 
 theorem IsOpen.matrix [Fintype m] [Fintype n]
