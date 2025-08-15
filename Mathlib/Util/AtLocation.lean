@@ -33,7 +33,9 @@ def Lean.Elab.Tactic.withNondepPropLocation (loc : Location) (atLocal : FVarId �
     (← getFVarIds hyps).forM atLocal
     if target then atTarget
   | Location.wildcard => do
-    let worked ← (← (← getMainGoal).getNondepPropHyps).anyM (tryTactic ∘ atLocal)
+    let mut worked := false
+    for hyp in ← (← getMainGoal).getNondepPropHyps do
+      worked := worked || (← tryTactic <| atLocal hyp)
     unless worked || (← tryTactic atTarget) do
       failed (← getMainGoal)
 
