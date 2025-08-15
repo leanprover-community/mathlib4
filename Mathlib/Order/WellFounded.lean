@@ -42,7 +42,7 @@ theorem acc_iff_isEmpty_descending_chain {α} {r : α → α → Prop} {x : α} 
 
 /-- A relation is well-founded iff it doesn't have any infinite descending chain.
 
-See `RelEmbedding.wellFounded_iff_isEmpty` for a version on strict orders. -/
+See `RelEmbedding.wellFounded_iff_isEmpty` for a version in terms of relation embeddings. -/
 theorem wellFounded_iff_isEmpty_descending_chain {α} {r : α → α → Prop} :
     WellFounded r ↔ IsEmpty { f : ℕ → α // ∀ n, r (f (n + 1)) (f n) } where
   mp := fun ⟨h⟩ ↦ ⟨fun ⟨f, hf⟩ ↦ (acc_iff_isEmpty_descending_chain.mp (h (f 0))).false ⟨f, rfl, hf⟩⟩
