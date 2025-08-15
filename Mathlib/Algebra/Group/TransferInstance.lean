@@ -122,21 +122,21 @@ protected abbrev commSemigroup [CommSemigroup β] : CommSemigroup α := by
 
 /-- Transfer `IsLeftCancelMul` across an `Equiv` -/
 @[to_additive /-- Transfer `IsLeftCancelAdd` across an `Equiv` -/]
-protected abbrev isLeftCancelMul [Mul β] [IsLeftCancelMul β] :
+protected lemma isLeftCancelMul [Mul β] [IsLeftCancelMul β] :
     letI := e.mul
     IsLeftCancelMul α := by
   letI := e.mul; exact e.injective.isLeftCancelMul _ fun _ _ ↦ e.apply_symm_apply _
 
 /-- Transfer `IsRightCancelMul` across an `Equiv` -/
 @[to_additive /-- Transfer `IsRightCancelAdd` across an `Equiv` -/]
-protected abbrev isRightCancelMul [Mul β] [IsRightCancelMul β] :
+protected lemma isRightCancelMul [Mul β] [IsRightCancelMul β] :
     letI := e.mul
     IsRightCancelMul α := by
   letI := e.mul; exact e.injective.isRightCancelMul _ fun _ _ ↦ e.apply_symm_apply _
 
 /-- Transfer `IsCancelMul` across an `Equiv` -/
 @[to_additive /-- Transfer `IsCancelAdd` across an `Equiv` -/]
-protected abbrev isCancelMul [Mul β] [IsCancelMul β] :
+protected lemma isCancelMul [Mul β] [IsCancelMul β] :
     letI := e.mul
     IsCancelMul α := by
   letI := e.mul; exact e.injective.isCancelMul _ fun _ _ ↦ e.apply_symm_apply _
