@@ -606,8 +606,7 @@ theorem rat_dense' (q : ℚ_[p]) {ε : ℚ} (hε : 0 < ε) : ∃ r : ℚ, padicN
     ⟨q' N, by
       classical
       dsimp [padicNormE]
-      -- Porting note: this used to be `change`, but that times out.
-      convert_to PadicSeq.norm (q' - const _ (q' N)) < ε
+      convert_to PadicSeq.norm (q' - const _ (q' N)) < ε -- `change` times out here.
       rcases Decidable.em (q' - const (padicNorm p) (q' N) ≈ 0) with heq | hne'
       · simpa only [heq, PadicSeq.norm, dif_pos]
       · simp only [PadicSeq.norm, dif_neg hne']
@@ -1071,10 +1070,10 @@ noncomputable def mulValuation : Valuation ℚ_[p] ℤᵐ⁰ where
   toFun x := if x = 0 then 0 else exp (-x.valuation)
   map_zero' := by simp
   map_one' := by simp
-  map_mul' _ := by split_ifs <;> simp_all [exp_add, exp_neg, mul_comm]
+  map_mul' _ _ := by split_ifs <;> simp_all [add_comm]
   map_add_le_max' _ _ := by
     split_ifs
-    any_goals simp_all
+    any_goals simp_all [inv_le_inv₀]
     simpa using le_valuation_add ‹_›
 
 /-- The additive `p`-adic valuation on `ℚ_[p]`, as an `addValuation`. -/

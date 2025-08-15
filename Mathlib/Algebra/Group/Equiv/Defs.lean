@@ -99,24 +99,8 @@ class MulEquivClass (F : Type*) (A B : outParam Type*) [Mul A] [Mul B] [EquivLik
 @[to_additive]
 alias MulEquivClass.map_eq_one_iff := EmbeddingLike.map_eq_one_iff
 
--- `alias` doesn't add the deprecation suggestion to the `to_additive` version
--- see https://github.com/leanprover-community/mathlib4/issues/19424
-attribute [deprecated EmbeddingLike.map_eq_one_iff (since := "2024-11-10")]
-MulEquivClass.map_eq_one_iff
-attribute [deprecated EmbeddingLike.map_eq_zero_iff (since := "2024-11-10")]
-AddEquivClass.map_eq_zero_iff
-
-
 @[to_additive]
 alias MulEquivClass.map_ne_one_iff := EmbeddingLike.map_ne_one_iff
-
--- `alias` doesn't add the deprecation suggestion to the `to_additive` version
--- see https://github.com/leanprover-community/mathlib4/issues/19424
-attribute [deprecated EmbeddingLike.map_ne_one_iff (since := "2024-11-10")]
-MulEquivClass.map_ne_one_iff
-attribute [deprecated EmbeddingLike.map_ne_zero_iff (since := "2024-11-10")]
-AddEquivClass.map_ne_zero_iff
-
 
 namespace MulEquivClass
 
