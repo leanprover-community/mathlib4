@@ -95,7 +95,8 @@ def atLocalDecl (proc : String) (failIfUnchanged : Bool) (mayCloseGoal : Bool) (
 def atLocation (proc : String) (loc : Location) (failIfUnchanged : Bool := true)
     (mayCloseGoalFromHyp : Bool := false) :
     TacticM Unit :=
-  withLocation loc (liftMetaTactic1 ∘ atLocalDecl m proc failIfUnchanged mayCloseGoalFromHyp)
+  withLocation loc
+    (liftMetaTactic1 ∘ atLocalDecl m proc failIfUnchanged mayCloseGoalFromHyp)
     (liftMetaTactic1 <| atTarget m proc failIfUnchanged)
     fun _ ↦ throwError "{proc} made no progress anywhere"
 
