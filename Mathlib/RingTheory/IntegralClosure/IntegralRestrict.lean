@@ -453,7 +453,7 @@ theorem Algebra.dvd_algebraMap_intNorm_self [Algebra.IsSeparable (FractionRing A
     (FaithfulSMul.algebraMap_injective L E), IsScalarTower.coe_toAlgHom', map_mul, map_inv₀,
     IsScalarTower.algebraMap_apply A K L, algebraMap_intNorm (L := L),
     ← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply, norm_eq_prod_embeddings,
-    ←  Finset.univ.mul_prod_erase _ (Finset.mem_univ (IsScalarTower.toAlgHom K L E)),
+    ← Finset.univ.mul_prod_erase _ (Finset.mem_univ (IsScalarTower.toAlgHom K L E)),
     IsScalarTower.coe_toAlgHom', ← IsScalarTower.algebraMap_apply, inv_mul_cancel_left₀]
   · refine _root_.IsIntegral.prod _ fun σ _ ↦ ?_
     change IsIntegral A ((σ.restrictScalars A) (IsScalarTower.toAlgHom A B L x))

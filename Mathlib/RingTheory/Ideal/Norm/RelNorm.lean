@@ -191,7 +191,7 @@ theorem spanNorm_le_comap (I : Ideal S) :
 
 theorem bot_of_liesOver_bot (P : Ideal S) [h : P.LiesOver (⊥ : Ideal R)] :
     P = ⊥ := by
-  rw [liesOver_iff,under_def, eq_comm, eq_bot_iff] at h
+  rw [liesOver_iff, under_def, eq_comm, eq_bot_iff] at h
   exact spanNorm_eq_bot_iff.mp <| eq_bot_iff.mpr <| (spanNorm_le_comap R P).trans h
 
 variable [IsDedekindDomain R] [IsDedekindDomain S]
