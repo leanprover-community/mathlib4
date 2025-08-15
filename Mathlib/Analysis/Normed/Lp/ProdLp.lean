@@ -496,6 +496,12 @@ def uniformEquiv_prod : α × β ≃ᵤ WithLp p (α × β) where
   uniformContinuous_toFun := prod_uniformContinuous_toLp p α β
   uniformContinuous_invFun := prod_uniformContinuous_ofLp p α β
 
+/-- `WithLp.equiv` as a uniform isomorphism. -/
+def uniformEquiv_prod : α × β ≃ᵤ WithLp p (α × β) where
+  toEquiv := (WithLp.equiv p (α × β)).symm
+  uniformContinuous_toFun := prod_uniformContinuous_toLp p α β
+  uniformContinuous_invFun := prod_uniformContinuous_ofLp p α β
+
 variable [CompleteSpace α] [CompleteSpace β]
 
 instance instProdCompleteSpace : CompleteSpace (WithLp p (α × β)) :=
