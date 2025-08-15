@@ -85,6 +85,16 @@ lemma Rat.padicValuation_cast (p : ℕ) [Fact p.Prime] (x : ℤ) :
   rfl
 
 @[simp]
+lemma Rat.padicValuation_eq_zero_iff {p : ℕ} [Fact p.Prime] {x : ℚ} :
+    Rat.padicValuation p x = 0 ↔ x = 0 := by
+  simp [Rat.padicValuation]
+
+@[simp]
+lemma Int.padicValuation_eq_zero_iff {p : ℕ} [Fact p.Prime] {x : ℤ} :
+    Int.padicValuation p x = 0 ↔ x = 0 := by
+  simp [← Rat.padicValuation_cast]
+
+@[simp]
 lemma Rat.padicValuation_self (p : ℕ) [Fact p.Prime] :
     Rat.padicValuation p p = exp (-1) := by
   simp [Rat.padicValuation, Nat.Prime.ne_zero Fact.out]
@@ -111,6 +121,26 @@ lemma Int.padicValuation_eq_one_iff {p : ℕ} [Fact p.Prime] {x : ℤ} :
   · simp_all
   · rw [← exp_zero, exp_injective.eq_iff]
     simp_all [Nat.Prime.ne_one Fact.out]
+
+lemma Int.padicValuation_lt_one_iff {p : ℕ} [Fact p.Prime] {x : ℤ} :
+    Int.padicValuation p x < 1 ↔ (p : ℤ) ∣ x := by
+  simp [lt_iff_le_and_ne, padicValuation_eq_one_iff, Int.padicValuation_le_one]
+
+lemma Rat.padicValuation_le_one_iff {p : ℕ} [Fact p.Prime] {x : ℚ} :
+    Rat.padicValuation p x ≤ 1 ↔ ¬ p ∣ x.den := by
+  nth_rw 1 [← x.num_div_den, map_div₀, ← Int.natCast_dvd_natCast, ← Int.padicValuation_eq_one_iff,
+    Rat.padicValuation_cast, ← Int.cast_natCast, Rat.padicValuation_cast, div_le_one₀]
+  · rcases (Int.padicValuation_le_one p x.den).eq_or_lt with h | h
+    · simp [h, Int.padicValuation_le_one]
+    · simp only [h.ne, iff_false, not_le]
+      rcases (Int.padicValuation_le_one p x.num).eq_or_lt with h' | h'
+      · simp [h, h']
+      · rw [Int.padicValuation_lt_one_iff] at h h'
+        exfalso
+        rw [Int.natCast_dvd_natCast] at h
+        rw [Int.natCast_dvd] at h'
+        exact Nat.not_coprime_of_dvd_of_dvd (Nat.Prime.one_lt Fact.out) h h' x.reduced.symm
+  · simp [zero_lt_iff]
 
 noncomputable section
 
