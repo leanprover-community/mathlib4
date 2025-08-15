@@ -8,6 +8,9 @@ import Mathlib.Data.Set.Card
 import Mathlib.Data.Sym.Sym2
 import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Matrix.Defs
+import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Finset.Basic
+import Mathlib.Data.Finset.Max
 import Mathlib.Combinatorics.Graph.Basic
 
 open Set
@@ -123,6 +126,10 @@ lemma Adj.symm {H : Hypergraph α} {x y : α} (h : H.Adj x y) : H.Adj y x := by
   · exact he.2.2
   · exact he.2.1
 
+-- Credit: Peter Nelson, Jun Kwon
+lemma hypergraph_adj_comm (x y) : H.Adj x y ↔ H.Adj y x :=
+  ⟨.symm, .symm⟩
+
 /--
 Predicate for (hyperedge) adjacency. Analogous to `Hypergraph.Adj`, hyperedges `e` and `f` are
 adjacent if there is some vertex `x ∈ V(H)` where `x` is incident on both `e` and `f`.
@@ -144,13 +151,17 @@ lemma EAdj.symm {H : Hypergraph α} {e f : Set α} (h : H.EAdj e f) : H.EAdj f e
   · exact hv.2.2
   · exact hv.2.1
 
+-- Credit: Peter Nelson, Jun Kwon
+lemma hypergraph_eadj_comm (e f) : H.EAdj e f ↔ H.EAdj f e :=
+  ⟨.symm, .symm⟩
+
 /--
 Neighbors of a vertex `x` in hypergraph `H`
 
 A vertex `y` is a neighbor of vertex `x` if there exists some hyperedge `e ∈ E(H)` where `x` and
 `y` are both incident on `e`, i.e., if the two vertices are adjacent (see `Hypergraph.Adj`)
 -/
-def neighbors (H : Hypergraph α) (x : α) := {y | H.Adj x y}
+def neighbors (H : Hypergraph α) (x : α) : Set α := {y | H.Adj x y}
 
 /--
 Neighbors of a hyperedge `e` in hypergraph `H`
@@ -158,7 +169,7 @@ Neighbors of a hyperedge `e` in hypergraph `H`
 A hyperedge `f` is a neighbor of hyperedge `e` if there exists some vertex `x ∈ V(H)` where `x` is
 incident on both `e` and `f`, i.e., if the two hyperedges are adjacent (see `Hypergraph.EAdj`)
 -/
-def hyperedgeNeighbors (H : Hypergraph α) (e : Set α) := {f | H.EAdj e f}
+def hyperedgeNeighbors (H : Hypergraph α) (e : Set α) : Set (Set α) := {f | H.EAdj e f}
 
 end Adjacency
 
@@ -281,7 +292,23 @@ def subHypergraph (H : Hypergraph α) (g : Set α) :=
   Hypergraph.mk
   (g ∩ V(H))
   {e | e ∈ E(H) ∧ e ⊆ g}
-  (sorry)
+  (by
+    intro f hf
+    have h0 : f ∈ {e | e ∈ E(H) ∧ e ⊆ g} → f ∈ E(H) ∧ f ⊆ g := by apply Set.mem_sep_iff.mp
+    have h1 : f ∈ E(H) ∧ f ⊆ g → f ⊆ V(H) ∧ f ⊆ g := by
+      intro q
+      have h1' : f ∈ E(H) := by exact q.left
+      have h1'' : f ⊆ V(H) := by apply H.hyperedge_isSubset_vertexSet h1'
+      constructor
+      exact h1''
+      exact q.right
+    have h2 : f ⊆ V(H) ∧ f ⊆ g → f ⊆ V(H) ∩ g := by exact Set.subset_inter_iff.mpr
+    apply h0 at hf
+    apply h1 at hf
+    apply h2 at hf
+    rw [Set.inter_comm g V(H)]
+    exact hf
+  )
 
 /--
 Given a subset of the vertex set `V(H)` of a hypergraph `H` (`g`),the *induced subhypergraph* `Hg`
