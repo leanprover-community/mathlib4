@@ -93,7 +93,7 @@ abbrev star : SingleObj M :=
   Quiver.SingleObj.star M
 
 /-- The endomorphisms monoid of the only object in `SingleObj M` is equivalent to the original
-     monoid M. -/
+monoid `M`. -/
 def toEnd : M ≃* End (SingleObj.star M) :=
   { Equiv.refl M with map_mul' := fun _ _ => rfl }
 

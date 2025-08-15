@@ -405,11 +405,6 @@ theorem liftAux_tprod (φ : MultilinearMap R s E) (f : Π i, s i) : liftAux φ (
   -- show _ • _ = _
   -- rw [one_smul]
   erw [AddCon.lift_coe]
-  rw [FreeAddMonoid.of]
-  dsimp [FreeAddMonoid.ofList]
-  rw [← one_smul R (φ f)]
-  erw [Equiv.refl_apply]
-  convert one_smul R (φ f)
   simp
 
 theorem liftAux_tprodCoeff (φ : MultilinearMap R s E) (z : R) (f : Π i, s i) :
@@ -782,8 +777,7 @@ def isEmptyEquiv [IsEmpty ι] : (⨂[R] i : ι, s i) ≃ₗ[R] R where
   left_inv x := by
     refine x.induction_on ?_ ?_
     · intro x y
-      -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to change `map_smulₛₗ` into `map_smulₛₗ _`
-      simp only [map_smulₛₗ _, RingHom.id_apply, lift.tprod, constOfIsEmpty_apply, const_apply,
+      simp only [map_smulₛₗ, RingHom.id_apply, lift.tprod, constOfIsEmpty_apply, const_apply,
         smul_eq_mul, mul_one]
       congr
       aesop
