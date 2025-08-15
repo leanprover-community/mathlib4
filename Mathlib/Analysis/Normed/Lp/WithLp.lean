@@ -87,7 +87,7 @@ instance instModule [Semiring K] [AddCommGroup V] [Module K V] : Module K (WithL
 
 variable {K V}
 
-@[simp] lemma ofLp_toLp (x : V) : ofLp (toLp p x) = x := rfl
+lemma ofLp_toLp (x : V) : ofLp (toLp p x) = x := rfl
 @[simp] lemma toLp_ofLp (x : WithLp p V) : toLp p (ofLp x) = x := rfl
 
 lemma ofLp_surjective : Function.Surjective (@ofLp p V) :=
