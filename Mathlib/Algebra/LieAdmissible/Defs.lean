@@ -66,7 +66,7 @@ instance : LieRing L where
     simp [associator_apply] at assoc
     simp [Ring.lie_def]
     noncomm_ring; simp;
-    abel_nf at assoc; simp at assoc;    
+    abel_nf at assoc; simp at assoc;
     grind
 end ring
 
