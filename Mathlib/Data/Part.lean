@@ -218,7 +218,7 @@ theorem eq_of_get_eq_get {a b : Part α} (ha : a.Dom) (hb : b.Dom) (hab : a.get 
 theorem eq_iff_of_dom {a b : Part α} (ha : a.Dom) (hb : b.Dom) : a.get ha = b.get hb ↔ a = b :=
   ⟨eq_of_get_eq_get ha hb, get_eq_get_of_eq a ha⟩
 
-theorem get_eq_get {a b : Part α} (ha : a.Dom) (hb : a.get ha ∈ b) : a = b := by
+theorem eq_of_mem {a b : Part α} (ha : a.Dom) (hb : a.get ha ∈ b) : a = b := by
   have hb' : b.Dom := Part.dom_iff_mem.mpr ⟨a.get ha, hb⟩
   rwa [← eq_get_iff_mem hb', eq_iff_of_dom ha hb'] at hb
 
