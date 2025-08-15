@@ -7,6 +7,8 @@ import Mathlib.Analysis.InnerProductSpace.Completion
 import Mathlib.MeasureTheory.Measure.SeparableMeasure
 import Mathlib.Probability.Distributions.Gaussian.Fernique
 import Mathlib.Probability.Moments.CovarianceBilin
+import Mathlib.Topology.Algebra.Module.ClosedSubmodule
+
 
 /-!
 # Cameron-Martin space
@@ -305,6 +307,7 @@ abbrev CameronMartin (μ : Measure E) [IsFiniteMeasure μ] :=
   Completion (Submodule.map (StrongDual.centeredToLp μ 2) ⊤)
 
 -- Uncomment the following lines to check that `CameronMartin μ` is a Hilbert space:
+-- variable [IsFiniteMeasure μ]
 -- #synth NormedAddCommGroup (CameronMartin μ)
 -- #synth InnerProductSpace ℝ (CameronMartin μ)
 -- #synth CompleteSpace (CameronMartin μ)
@@ -674,7 +677,7 @@ lemma norm_eq_ciSup (x : CameronMartin μ) :
   refine le_antisymm ?_ ?_
   · refine InnerProductSpace.norm_le_dual_bound x ?_ fun y ↦ ?_
     · by_cases h_bdd :
-          BddAbove (Set.range fun L ↦ ⨆ (_ : covarianceBilin μ L L ≤ 1), L (toInitialSpace μ x))
+        BddAbove (Set.range fun L ↦ ⨆ (_ : covarianceBilin μ L L ≤ 1), L (toInitialSpace μ x))
       · exact le_ciSup_of_le h_bdd 0 (by simp)
       · simp [h_bdd]
     rw [real_inner_comm, mul_comm]
@@ -690,5 +693,117 @@ lemma norm_ofBounded {y : E} [Decidable (∃ M, ∀ L, covarianceBilin μ L L �
   simp [norm_eq_ciSup, toInitialSpace_ofBounded hy]
 
 end CameronMartin
+
+section RKHS
+
+noncomputable
+abbrev cameronMartinRKHS (μ : Measure E) [HasTwoMoments μ] : Submodule ℝ (Lp ℝ 2 μ) :=
+  (Submodule.map (StrongDual.centeredToLp μ 2) ⊤).topologicalClosure
+
+def abstractCompletionClosure {α : Type*} [UniformSpace α] [T0Space α] [CompleteSpace α]
+    (s : Set α) :
+    AbstractCompletion s where
+  space := closure s
+  coe x := ⟨x, subset_closure x.2⟩
+  uniformStruct := inferInstance
+  complete := isClosed_closure.isComplete.completeSpace_coe
+  separation := inferInstance
+  isUniformInducing := by
+    constructor
+    simp only [uniformity_subtype, Filter.comap_comap]
+    congr
+  dense := by
+    rw [DenseRange, Subtype.dense_iff]
+    refine closure_mono fun x hx ↦ ?_
+    simp [hx, subset_closure hx]
+
+noncomputable
+def cameronMartinRKHSEquiv (μ : Measure E) [HasTwoMoments μ] :
+    CameronMartin μ ≃ᵤ cameronMartinRKHS μ :=
+  AbstractCompletion.compareEquiv
+    (UniformSpace.Completion.cPkg (α := Submodule.map (StrongDual.centeredToLp μ 2) ⊤))
+    (abstractCompletionClosure (Submodule.map (StrongDual.centeredToLp μ 2) ⊤).carrier)
+
+lemma Submodule.mem_closure {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+    [TopologicalSpace M] [ContinuousAdd M] [ContinuousConstSMul R M] (s : Submodule R M) (L : s) :
+    (L : M) ∈ s.topologicalClosure := by
+  simp only [Submodule.topologicalClosure, AddSubmonoid.topologicalClosure,
+    Submodule.coe_toAddSubmonoid, Submodule.mem_mk, AddSubmonoid.mem_mk,
+    AddSubsemigroup.mem_mk]
+  exact subset_closure L.2
+
+instance {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+    [TopologicalSpace M] [ContinuousAdd M] (s : Submodule R M) :
+    ContinuousAdd s := AddSubmonoid.continuousAdd s.toAddSubmonoid
+
+instance {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+    [TopologicalSpace M] [ContinuousAdd M] (s : ClosedSubmodule R M) :
+    ContinuousAdd s := AddSubmonoid.continuousAdd s.toAddSubmonoid
+
+@[coe] def coeClosure {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [TopologicalSpace M]
+    [ContinuousAdd M] [ContinuousConstSMul R M] {s : Submodule R M} :
+    s → s.topologicalClosure := fun L ↦ ⟨L, Submodule.mem_closure s L⟩
+
+instance {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [TopologicalSpace M]
+    [ContinuousAdd M] [ContinuousConstSMul R M] {s : Submodule R M} :
+    Coe s s.topologicalClosure :=
+  ⟨coeClosure⟩
+
+@[simp, norm_cast]
+lemma coeClosure_add {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [TopologicalSpace M]
+    [ContinuousAdd M] [ContinuousConstSMul R M] {s : Submodule R M} (x y : s) :
+    ((x + y : s) : s.topologicalClosure)
+      = (x : s.topologicalClosure) + (y : s.topologicalClosure) := by
+  simp [coeClosure]
+
+@[simp, norm_cast]
+lemma coeClosure_smul {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [TopologicalSpace M]
+    [ContinuousAdd M] [ContinuousConstSMul R M] {s : Submodule R M} (r : R) (x : s) :
+    ((r • x : s) : s.topologicalClosure) = r • (x : s.topologicalClosure) := by
+  simp [coeClosure]
+
+variable [HasTwoMoments μ]
+
+omit [CompleteSpace E] in
+@[simp]
+lemma cameronMartinRKHSEquiv_coe (L : Submodule.map (StrongDual.centeredToLp μ 2) ⊤) :
+    cameronMartinRKHSEquiv μ L = L := by
+  simp [cameronMartinRKHSEquiv, AbstractCompletion.compareEquiv]
+  exact AbstractCompletion.compare_coe _ _ _
+
+noncomputable
+def cameronMartinRKHSIsometryEquiv (μ : Measure E) [HasTwoMoments μ] :
+    CameronMartin μ ≃ₗᵢ[ℝ] cameronMartinRKHS μ where
+  toFun := cameronMartinRKHSEquiv μ
+  invFun := (cameronMartinRKHSEquiv μ).symm
+  left_inv := (cameronMartinRKHSEquiv μ).left_inv
+  right_inv := (cameronMartinRKHSEquiv μ).right_inv
+  map_add' x y := by
+    refine Completion.induction_on₂ x y ?_ fun x' y' ↦ ?_
+    · have : Continuous (cameronMartinRKHSEquiv μ) := UniformEquiv.continuous _
+      exact isClosed_eq (by fun_prop) (by fun_prop)
+    · norm_cast
+      simp
+  map_smul' r x := by
+    simp only [RingHom.id_apply]
+    induction x using Completion.induction_on with
+    | hp =>
+      have : Continuous (cameronMartinRKHSEquiv μ) := UniformEquiv.continuous _
+      exact isClosed_eq (this.comp (continuous_const_smul _)) (by fun_prop)
+    | ih x =>
+      norm_cast
+      simp only [cameronMartinRKHSEquiv_coe]
+      norm_cast
+  norm_map' x := by
+    simp only [LinearEquiv.coe_mk, LinearMap.coe_mk, AddHom.coe_mk, AddSubgroupClass.coe_norm]
+    induction x using Completion.induction_on with
+    | hp =>
+      have : Continuous (cameronMartinRKHSEquiv μ) := UniformEquiv.continuous _
+      exact isClosed_eq (by fun_prop) (by fun_prop)
+    | ih a =>
+      simp only [cameronMartinRKHSEquiv_coe, Completion.norm_coe, AddSubgroupClass.coe_norm]
+      norm_cast
+
+end RKHS
 
 end ProbabilityTheory
