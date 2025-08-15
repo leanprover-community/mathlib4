@@ -145,7 +145,7 @@ theorem leftInv_comp (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F)
       ext c
       congr
       ext k
-      simp [h, Function.comp_def]
+      simp [h]
     simp [FormalMultilinearSeries.comp, A, Finset.sum_union B,
       applyComposition_ones, C, D, -Set.toFinset_setOf, -Finset.union_singleton]
 
