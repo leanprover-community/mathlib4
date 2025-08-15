@@ -532,8 +532,7 @@ theorem isUnit [DecidableEq n] {M : Matrix n n R} (hM : M.PosDef) : IsUnit M := 
   by_contra h
   obtain ⟨a, ha, ha2⟩ : ∃ a ≠ 0, M *ᵥ a = 0 := by
     obtain ⟨a, b, ha⟩ := Function.not_injective_iff.mp <| mulVec_injective_iff_isUnit.not.mpr h
-    use a - b
-    simp [sub_eq_zero, ha, Matrix.mulVec_sub]
+    exact ⟨a - b, by simp [sub_eq_zero, ha, mulVec_sub]⟩
   simpa [ha2] using hM.2 _ ha
 
 protected theorem inv [DecidableEq n] {M : Matrix n n R} (hM : M.PosDef) : M⁻¹.PosDef := by
