@@ -28,7 +28,7 @@ section
 
 variable {P : ℚ → Prop} {x y z : ℚ}
 
-/-- error: simp made no progress -/
+/-- error: `simp` made no progress -/
 #guard_msgs in
 example : P (1 : ℚ) := by test_field_simp
 
@@ -42,11 +42,11 @@ example : P (x ^ 0) := by test_field_simp
 #guard_msgs in
 example : P (x ^ 1) := by test_field_simp
 
-/-- error: simp made no progress -/
+/-- error: `simp` made no progress -/
 #guard_msgs in
 example : P x := by test_field_simp
 
-/-- error: simp made no progress -/
+/-- error: `simp` made no progress -/
 #guard_msgs in
 example : P (x ^ 2) := by test_field_simp
 
@@ -54,15 +54,15 @@ example : P (x ^ 2) := by test_field_simp
 #guard_msgs in
 example : P (x ^ 1 * x ^ 2) := by test_field_simp
 
-/-- error: simp made no progress -/
+/-- error: `simp` made no progress -/
 #guard_msgs in
 example : P (x * x) := by test_field_simp
 
-/-- error: simp made no progress -/
+/-- error: `simp` made no progress -/
 #guard_msgs in
 example : P (x ^ 3 * x ^ 42) := by test_field_simp
 
-/-- error: simp made no progress -/
+/-- error: `simp` made no progress -/
 #guard_msgs in
 example {k : ℤ} : P (x ^ k * x ^ 2) := by test_field_simp
 
@@ -84,7 +84,7 @@ example : P (x⁻¹ * x) := by test_field_simp
 #guard_msgs in
 example : P (x * x * x⁻¹) := by test_field_simp
 
-/-- error: simp made no progress -/
+/-- error: `simp` made no progress -/
 #guard_msgs in
 example : P (x / x) := by test_field_simp
 
@@ -99,7 +99,7 @@ example : P (x ^ 2 * x⁻¹) := by test_field_simp
 example : P (x ^ 3 * x⁻¹) := by test_field_simp
 
 -- TODO (new implementation): this should reduce to `P (1 / x ^ 3)`
-/-- error: simp made no progress -/
+/-- error: `simp` made no progress -/
 #guard_msgs in
 example : P (x / x ^ 4) := by test_field_simp
 
@@ -149,7 +149,7 @@ example {hx : x ≠ 0} : P (x / x) := by test_field_simp
 example {hx : x ≠ 0} : P (x ^ 3 * x⁻¹) := by test_field_simp
 
 -- TODO (new implementation): this should reduce to `P (1 / x ^ 3)`
-/-- error: simp made no progress -/
+/-- error: `simp` made no progress -/
 #guard_msgs in
 example {hx : x ≠ 0} : P (x / x ^ 4) := by test_field_simp
 
@@ -183,15 +183,15 @@ example {a : Nat} : P (a* x - a * x) := by test_field_simp
 #guard_msgs in
 example : P (2 * x - 1 * x) := by test_field_simp
 
-/-- error: simp made no progress -/
+/-- error: `simp` made no progress -/
 #guard_msgs in
 example : P (2 * x - x - x) := by test_field_simp
 
-/-- error: simp made no progress -/
+/-- error: `simp` made no progress -/
 #guard_msgs in
 example : P (2 * x - x) := by test_field_simp
 
-/-- error: simp made no progress -/
+/-- error: `simp` made no progress -/
 #guard_msgs in
 example : P ((3 - 2) * x - x) := by test_field_simp
 
@@ -204,7 +204,7 @@ example : P (0 * x) := by test_field_simp
 #guard_msgs in
 example : P (0 * x * y + 0) := by test_field_simp
 
-/-- error: simp made no progress -/
+/-- error: `simp` made no progress -/
 #guard_msgs in
 example : P ((x * y - y * x) * z) := by test_field_simp
 
@@ -219,20 +219,20 @@ example : P (0 -(0 + (-x))) := by test_field_simp
 
 /- ### Two atoms -/
 
-/-- error: simp made no progress -/
+/-- error: `simp` made no progress -/
 #guard_msgs in
 example : P (x + y) := by test_field_simp
 
-/-- error: simp made no progress -/
+/-- error: `simp` made no progress -/
 #guard_msgs in
 example : P (x * y) := by test_field_simp
 
-/-- error: simp made no progress -/
+/-- error: `simp` made no progress -/
 #guard_msgs in
 example : P ((x * y) / (y * x)) := by test_field_simp
 
 -- TODO(new implementation): combine these two 2 * x * y
-/-- error: simp made no progress -/
+/-- error: `simp` made no progress -/
 #guard_msgs in
 example : P (x * y + y * x) := by test_field_simp
 
@@ -252,15 +252,15 @@ example : P (x ^ (0:ℤ) * y) := by test_field_simp
 #guard_msgs in
 example : P (y * (y + x) ^ (0:ℤ) * y) := by test_field_simp
 
-/-- error: simp made no progress -/
+/-- error: `simp` made no progress -/
 #guard_msgs in
 example : P (x / y) := by test_field_simp
 
-/-- error: simp made no progress -/
+/-- error: `simp` made no progress -/
 #guard_msgs in
 example : P (x / -y) := by test_field_simp
 
-/-- error: simp made no progress -/
+/-- error: `simp` made no progress -/
 #guard_msgs in
 example : P (-x / y) := by test_field_simp
 
@@ -295,12 +295,12 @@ example : P (x ^ 1 * y * x ^ 2 * y ^ 3) := by test_field_simp
 example : P (x ^ 1 * y * x ^ 2 * y⁻¹) := by test_field_simp
 
 -- TODO (new implementation): this should reduce to `P (1 / y)`
-/-- error: simp made no progress -/
+/-- error: `simp` made no progress -/
 #guard_msgs in
 example (hx : x ≠ 0) : P (x / (x * y)) := by test_field_simp
 
 -- TODO (new implementation): this should reduce to `P 1`
-/-- error: simp made no progress -/
+/-- error: `simp` made no progress -/
 #guard_msgs in
 example (hx : x ≠ 0) (hy : y ≠ 0) : P ((x * y) / (y * x)) := by test_field_simp
 
@@ -316,21 +316,21 @@ example (hy : y ≠ 0) : P (x ^ 1 * y * x ^ 2 * y⁻¹) := by test_field_simp
 
 /- ### Three atoms -/
 
-/-- error: simp made no progress -/
+/-- error: `simp` made no progress -/
 #guard_msgs in
 example : P (x * y * z) := by test_field_simp
 
-/-- error: simp made no progress -/
+/-- error: `simp` made no progress -/
 #guard_msgs in
 example : P (x * y + x * z) := by test_field_simp
 
 -- TODO (new implementation): this should reduce to `P (1 / (y + z))`
-/-- error: simp made no progress -/
+/-- error: `simp` made no progress -/
 #guard_msgs in
 example (hx : x ≠ 0) : P (x / (x * y + x * z))  := by test_field_simp
 
 -- TODO (new implementation): this should reduce to `P (x / (x * (y + z)))`
-/-- error: simp made no progress -/
+/-- error: `simp` made no progress -/
 #guard_msgs in
 example : P (x / (x * y + x * z))  := by test_field_simp
 
@@ -425,7 +425,7 @@ section
 
 -- TODO (new implementation): do we want `field_simp` to reduce this to `⊢ x * y = z * y ^ 2`?
 -- Or perhaps to `⊢ x / y / y = z / y`?
-/-- error: simp made no progress -/
+/-- error: `simp` made no progress -/
 #guard_msgs in
 example {x y z : ℚ} : x / y ^ 2 = z / y := by
   field_simp
@@ -572,7 +572,7 @@ example  (hK : ∀ ξ : K, ξ + 1 ≠ 0) (x : K) : 1 / |x + 1| = 5 := by
 #guard_msgs in
 example (hK : ∀ ξ : K, 0 < ξ + 1) (x : K) : x + 1 ≠ 0 := by positivity
 
-/-- error: simp made no progress -/
+/-- error: `simp` made no progress -/
 #guard_msgs in
 example (hK : ∀ ξ : K, 0 < ξ + 1) (x : K) : 1 / (x + 1) = 5 := by field_simp [hK x]
 
