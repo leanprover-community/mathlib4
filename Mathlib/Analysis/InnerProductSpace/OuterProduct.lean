@@ -11,12 +11,13 @@ This file defines the outer product of two vectors as a linear map,
 and proves basic properties of the outer product.
 -/
 
-namespace ContinuousLinearMap
+namespace InnerProductSpace
+open ContinuousLinearMap
 
-section seminormed
+section seminormed_normed
 
 variable {𝕜 V W : Type*} [RCLike 𝕜]
-variable [SeminormedAddCommGroup V] [InnerProductSpace 𝕜 V]
+variable [SeminormedAddCommGroup V] [NormedSpace 𝕜 V]
 variable [SeminormedAddCommGroup W] [InnerProductSpace 𝕜 W]
 
 variable (𝕜) in
@@ -48,6 +49,13 @@ lemma rankOne_apply (x : V) (y z : W) :
     rankOne 𝕜 x y z = inner 𝕜 y z • x :=
   rfl
 
+end seminormed_normed
+section seminormed_inner
+
+variable {𝕜 V W : Type*} [RCLike 𝕜]
+variable [SeminormedAddCommGroup V] [InnerProductSpace 𝕜 V]
+variable [SeminormedAddCommGroup W] [InnerProductSpace 𝕜 W]
+
 lemma inner_left_rankOne_apply (x : V) (y z : W) (w : V) :
     inner 𝕜 (rankOne 𝕜 x y z) w = inner 𝕜 z y * inner 𝕜 x w := by
   simp [inner_smul_left, inner_conj_symm]
@@ -66,7 +74,7 @@ lemma isIdempotentElem_rankOne_self {x : V} (h : ‖x‖ = 1) :
     IsIdempotentElem (rankOne 𝕜 x x) := by
   simp [IsIdempotentElem, mul_def, rankOne_comp_rankOne, inner_self_eq_norm_sq_to_K, h]
 
-end seminormed
+end seminormed_inner
 
 section normed
 
@@ -147,4 +155,4 @@ lemma trace_toLinearMap_rankOne (x y : V) (b : Module.Basis ι 𝕜 V) :
 
 end normed
 
-end ContinuousLinearMap
+end InnerProductSpace
