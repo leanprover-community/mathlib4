@@ -497,12 +497,6 @@ def uniformEquiv [∀ i, UniformSpace (β i)] : (Π i, β i) ≃ᵤ PiLp p β wh
   uniformContinuous_toFun := uniformContinuous_toLp p β
   uniformContinuous_invFun := uniformContinuous_ofLp p β
 
-/-- `WithLp.equiv` as a uniform isomorphism. -/
-def uniformEquiv [∀ i, UniformSpace (β i)] : (Π i, β i) ≃ᵤ PiLp p β where
-  toEquiv := (WithLp.equiv p (Π i, β i)).symm
-  uniformContinuous_toFun := uniformContinuous_toLp p β
-  uniformContinuous_invFun := uniformContinuous_ofLp p β
-
 instance completeSpace [∀ i, UniformSpace (β i)] [∀ i, CompleteSpace (β i)] :
     CompleteSpace (PiLp p β) :=
   (uniformEquiv p β).completeSpace_iff.1 inferInstance
@@ -598,11 +592,6 @@ instance seminormedAddCommGroup [∀ i, SeminormedAddCommGroup (β i)] :
         linarith
       simp only [dist_eq_sum (zero_lt_one.trans_le h), norm_eq_sum (zero_lt_one.trans_le h),
         dist_eq_norm, sub_apply]
-
-lemma isUniformInducing_toLp [∀ i, PseudoEMetricSpace (β i)] :
-    IsUniformInducing (@toLp p (Π i, β i)) :=
-  (antilipschitzWith_toLp p β).isUniformInducing
-    (lipschitzWith_toLp p β).uniformContinuous
 
 lemma isUniformInducing_toLp [∀ i, PseudoEMetricSpace (β i)] :
     IsUniformInducing (@toLp p (Π i, β i)) :=
