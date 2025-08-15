@@ -233,12 +233,13 @@ noncomputable def TransportEnrichment.enrichedOrdinaryCategory
   homEquiv_comp f g := by
     simp [eHomEquiv_comp, eComp_eq, tensorHom_def (Functor.LaxMonoidal.ε F), unitors_inv_equal]
 
-noncomputable section Equiv
+section Equiv
 
 variable {W : Type u''} [Category.{v''} W] [MonoidalCategory W]
   (F : V ⥤ W) [F.LaxMonoidal]
   (D : Type u) [EnrichedCategory V D]
-  (h : ∀ v : V, Function.Bijective fun (f : 𝟙_ V ⟶ v) => Functor.LaxMonoidal.ε F ≫ F.map f)
+  (e : ∀ v : V, (𝟙_ V ⟶ v) ≃ (𝟙_ W ⟶ F.obj v))
+  (h : ∀ (v : V) (f : 𝟙_ V ⟶ v), (e v) f = Functor.LaxMonoidal.ε F ≫ F.map f)
 
 /-- The functor that makes up `TransportEnrichment.forgetEnrichmentEquiv`. -/
 @[simps]
@@ -246,17 +247,18 @@ def TransportEnrichment.forgetEnrichmentEquivFunctor :
     TransportEnrichment F (ForgetEnrichment V D) ⥤
       ForgetEnrichment W (TransportEnrichment F D) where
   obj X := ForgetEnrichment.of W X
-  map f := ForgetEnrichment.homOf _ (Equiv.ofBijective _ (h _) (ForgetEnrichment.homTo V f))
+  map {X} {Y} f := ForgetEnrichment.homOf W <| (e (Hom (C := ForgetEnrichment V D) X Y)) <|
+    ForgetEnrichment.homTo V f
   map_id X := by
-    simp only [Equiv.ofBijective_apply]
-    erw [forgetEnrichment_id, ← TransportEnrichment.eId_eq, forgetEnrichment_id']
+    rw [h, forgetEnrichment_id, ← TransportEnrichment.eId_eq]
+    simp [ForgetEnrichment.to]
   map_comp f g := by
-    simp only [Equiv.ofBijective_apply]
-    rw [forgetEnrichment_comp, F.map_comp, F.map_comp, ← Category.assoc,
+    rw [h, h, h, forgetEnrichment_comp, F.map_comp, F.map_comp, ← Category.assoc,
       ← Functor.LaxMonoidal.left_unitality_inv, Category.assoc, Category.assoc, Category.assoc,
-      Category.assoc, ← Functor.LaxMonoidal.μ_natural_assoc,
-      ← TransportEnrichment.eComp_eq, ← ForgetEnrichment.homOf_comp]
-    simp [ForgetEnrichment.to, tensorHom_def' (Functor.LaxMonoidal.ε F)]
+      Category.assoc, ← Functor.LaxMonoidal.μ_natural_assoc, ← TransportEnrichment.eComp_eq,
+      ← ForgetEnrichment.homOf_comp, leftUnitor_inv_naturality_assoc, ← tensorHom_def'_assoc,
+      ← tensor_comp_assoc]
+    rfl
 
 /-- The inverse functor that makes up `TransportEnrichment.forgetEnrichmentEquiv`. -/
 @[simps]
@@ -264,45 +266,41 @@ def TransportEnrichment.forgetEnrichmentEquivInverse :
     ForgetEnrichment W (TransportEnrichment F D) ⥤ TransportEnrichment F (ForgetEnrichment V D)
       where
   obj X := ForgetEnrichment.of V (ForgetEnrichment.to (C := TransportEnrichment F D) W X)
-  map f := ForgetEnrichment.homOf V ((Equiv.ofBijective _ (h _)).symm (ForgetEnrichment.homTo W f))
+  map f := ForgetEnrichment.homOf V ((e _).symm (ForgetEnrichment.homTo W f))
   map_id X := by
     rw [← forgetEnrichment_id']
     congr 1
-    apply Equiv.injective (Equiv.ofBijective _ (h _))
-    simp [TransportEnrichment.eId_eq]
+    apply Equiv.injective (e _)
+    rw [forgetEnrichment_id, Equiv.apply_symm_apply, h, TransportEnrichment.eId_eq]
   map_comp f g := by
     rw [← ForgetEnrichment.homOf_comp]
     congr
-    apply Equiv.injective (Equiv.ofBijective _ (h _))
-    simp only [forgetEnrichment_comp, eComp_eq, Category.assoc, Equiv.apply_symm_apply,
-      Equiv.ofBijective_apply, Functor.map_comp]
+    apply Equiv.injective (e _)
+    rw [Equiv.apply_symm_apply, h]
+    simp only [forgetEnrichment_comp, eComp_eq, Category.assoc, Functor.map_comp]
     slice_rhs 1 3 =>
       rw [← Functor.LaxMonoidal.left_unitality_inv, Category.assoc, Category.assoc,
         ← Functor.LaxMonoidal.μ_natural, ← leftUnitor_inv_comp_tensorHom_assoc,
         ← tensor_comp_assoc]
-    iterate 2 erw [← Equiv.ofBijective_apply _ (h _), Equiv.apply_symm_apply]
-    simp
+    simp [← h]
 
 /-- If `D` is a `V`-enriched category, then forgetting the enrichment and transporting the resulting
-enriched ordinary category along a functor `F : V ⥤ W` results in a category equivalent to
+enriched ordinary category along a functor `F : V ⥤ W`, for which
+`f ↦ Functor.LaxMonoidal.ε F ≫ F.map f` has an inverse, results in a category equivalent to
 transporting along `F` and then forgetting about the resulting `W`-enrichment. -/
 def TransportEnrichment.forgetEnrichmentEquiv : TransportEnrichment F (ForgetEnrichment V D) ≌
     ForgetEnrichment W (TransportEnrichment F D) where
-  functor := forgetEnrichmentEquivFunctor _ _ h
-  inverse := forgetEnrichmentEquivInverse _ _ h
-  unitIso := NatIso.ofComponents (fun _ => Iso.refl _)
+  functor := forgetEnrichmentEquivFunctor _ _ e h
+  inverse := forgetEnrichmentEquivInverse _ _ e h
+  unitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by simp)
   counitIso := NatIso.ofComponents (fun _ => Iso.refl _) fun f => by
-    simp only [Functor.comp_obj, forgetEnrichmentEquivInverse_obj, forgetEnrichmentEquivFunctor_obj,
-      Functor.id_obj, Functor.comp_map, forgetEnrichmentEquivInverse_map,
-      forgetEnrichmentEquivFunctor_map, ForgetEnrichment.homTo_homOf,
-      Equiv.ofBijective_apply, Iso.refl_hom, Category.comp_id, Functor.id_map, Category.id_comp]
-    erw [← Equiv.ofBijective_apply _ (h _), Equiv.apply_symm_apply]
-    simp
+    simp [ForgetEnrichment.to, ForgetEnrichment.of]
   functor_unitIso_comp X := by
     simp only [Functor.id_obj, forgetEnrichmentEquivFunctor_obj, Functor.comp_obj,
       forgetEnrichmentEquivInverse_obj, ForgetEnrichment.to_of, NatIso.ofComponents_hom_app,
-      Iso.refl_hom, forgetEnrichmentEquivFunctor_map, Equiv.ofBijective_apply, Category.comp_id]
-    erw [forgetEnrichment_id, ← TransportEnrichment.eId_eq, forgetEnrichment_id']
+      Iso.refl_hom, forgetEnrichmentEquivFunctor_map, h, Category.comp_id]
+    rw [← forgetEnrichment_id', TransportEnrichment.eId_eq, forgetEnrichment_id]
+    rfl
 
 end Equiv
 
