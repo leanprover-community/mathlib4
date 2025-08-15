@@ -937,9 +937,4 @@ noncomputable instance [TrivialStar R] {p : ℝ≥0∞} : TrivialStar (Lp R p μ
 
 end Star
 
-@[deprecated (since := "2025-01-20")] alias pow_mul_meas_ge_le_norm := pow_mul_meas_ge_le_enorm
-@[deprecated (since := "2025-01-20")] alias mul_meas_ge_le_pow_norm := mul_meas_ge_le_pow_enorm
-@[deprecated (since := "2025-01-20")] alias mul_meas_ge_le_pow_norm' := mul_meas_ge_le_pow_enorm'
-@[deprecated (since := "2025-01-20")] alias meas_ge_le_mul_pow_norm := meas_ge_le_mul_pow_enorm
-
 end MeasureTheory.Lp
