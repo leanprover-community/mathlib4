@@ -340,7 +340,15 @@ def partialHypergraph (H : Hypergraph α) (l : Set (Set α)) :=
   (l ∩ E(H))
   (by
     intro q hq
-
+    have h0 : ∀ x ∈ q, ∃ e ∈ l, e ∈ E(H) ∧ x ∈ e := by
+      intro x hx
+      use q
+      constructor
+      · exact mem_of_mem_inter_left hq
+      constructor
+      · exact mem_of_mem_inter_right hq
+      · exact hx
+    exact h0
   )
 
 end Sub
