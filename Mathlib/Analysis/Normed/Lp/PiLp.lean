@@ -468,19 +468,9 @@ lemma uniformContinuous_ofLp [∀ i, UniformSpace (β i)] :
     UniformContinuous (@ofLp p (∀ i, β i)) :=
   uniformContinuous_comap
 
-@[deprecated uniformContinuous_ofLp (since := "2024-04-27")]
-theorem uniformContinuous_equiv [∀ i, UniformSpace (β i)] :
-    UniformContinuous (WithLp.equiv p (∀ i, β i)) :=
-  uniformContinuous_ofLp _ _
-
 lemma uniformContinuous_toLp [∀ i, UniformSpace (β i)] :
     UniformContinuous (@toLp p (∀ i, β i)) :=
   uniformContinuous_comap' uniformContinuous_id
-
-@[deprecated uniformContinuous_toLp (since := "2024-04-27")]
-theorem uniformContinuous_equiv_symm [∀ i, UniformSpace (β i)] :
-    UniformContinuous (WithLp.equiv p (∀ i, β i)).symm :=
-  uniformContinuous_toLp _ _
 
 /-- `WithLp.equiv` as a uniform isomorphism. -/
 def uniformEquiv [∀ i, UniformSpace (β i)] : (Π i, β i) ≃ᵤ PiLp p β where
