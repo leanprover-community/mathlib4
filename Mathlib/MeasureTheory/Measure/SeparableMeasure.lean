@@ -138,7 +138,6 @@ theorem Measure.MeasureDense.indicatorConstLp_subset_closure (h𝒜 : μ.Measure
     obtain ⟨t, ht, hμt⟩ := h𝒜.nonempty'
     refine ⟨t, ht, hμt, ?_⟩
     simp_rw [indicatorConstLp]
-    congr
     simp
   · have p_pos : 0 < p := lt_of_lt_of_le (by simp) one_le_p.elim
     rintro - ⟨s, ms, hμs, rfl⟩
