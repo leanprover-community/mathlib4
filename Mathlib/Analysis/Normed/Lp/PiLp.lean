@@ -126,6 +126,11 @@ def projₗ (i : ι) : PiLp p β →ₗ[𝕜] β i :=
 
 end
 
+/-! Note that the unapplied versions of these lemmas are deliberately omitted, as they break
+the use of the type synonym. -/
+
+lemma toLp_apply (x : ∀ i, α i) (i : ι) : toLp p x i = x i := rfl
+
 section DistNorm
 
 variable [Fintype ι]
