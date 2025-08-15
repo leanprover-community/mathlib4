@@ -1040,7 +1040,7 @@ theorem MDifferentiableWithinAt.congr_of_eventuallyEq_insert
 
 theorem Filter.EventuallyEq.mdifferentiableWithinAt_iff (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) :
     MDifferentiableWithinAt I I' f s x ↔ MDifferentiableWithinAt I I' f₁ s x :=
-  mdifferentiablefWithinAt_iff (id (symm h₁)) (id (Eq.symm hx))
+  mdifferentiablefWithinAt_iff h₁.symm hx.symm
 
 theorem MDifferentiableWithinAt.congr_mono (h : MDifferentiableWithinAt I I' f s x)
     (ht : ∀ x ∈ t, f₁ x = f x) (hx : f₁ x = f x) (h₁ : t ⊆ s) :
