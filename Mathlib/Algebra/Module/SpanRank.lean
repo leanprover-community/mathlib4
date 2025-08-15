@@ -144,7 +144,7 @@ lemma spanRank_span_of_linearIndepOn [RankCondition R] (s : Set M) (hs : LinearI
 
 lemma spanFinrank_span_le_encard (s : Set M) : (span R s).spanFinrank ≤ s.encard := by
   rw [spanFinrank, Set.encard, ENat.card]
-  exact le_trans (coe_toNat_le_toENat _) ((toENat).monotone' (spanRank_span_le_card s))
+  exact le_trans (by simp) ((toENat).monotone' (spanRank_span_le_card (R := R) s))
 
 lemma spanFinrank_span_le_ncard_of_finite {s : Set M} (hs : s.Finite) :
     (span R s).spanFinrank ≤ s.ncard := by
