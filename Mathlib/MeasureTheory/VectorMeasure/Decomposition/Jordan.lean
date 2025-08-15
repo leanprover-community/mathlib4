@@ -159,8 +159,8 @@ theorem toSignedMeasure_smul (r : ℝ≥0) : (r • j).toSignedMeasure = r • j
   ext1 i hi
   rw [VectorMeasure.smul_apply, toSignedMeasure, toSignedMeasure,
     toSignedMeasure_sub_apply hi, toSignedMeasure_sub_apply hi, smul_sub, smul_posPart,
-    smul_negPart, ← ENNReal.toReal_smul, ← ENNReal.toReal_smul, Measure.smul_apply,
-    Measure.smul_apply]
+    smul_negPart, measureReal_nnreal_smul_apply, measureReal_nnreal_smul_apply]
+  rfl
 
 /-- A Jordan decomposition provides a Hahn decomposition. -/
 theorem exists_compl_positive_negative :
@@ -171,12 +171,12 @@ theorem exists_compl_positive_negative :
   obtain ⟨S, hS₁, hS₂, hS₃⟩ := j.mutuallySingular
   refine ⟨S, hS₁, ?_, ?_, hS₂, hS₃⟩
   · refine restrict_le_restrict_of_subset_le _ _ fun A hA hA₁ => ?_
-    rw [toSignedMeasure, toSignedMeasure_sub_apply hA,
+    rw [toSignedMeasure, toSignedMeasure_sub_apply hA, measureReal_def,
       show j.posPart A = 0 from nonpos_iff_eq_zero.1 (hS₂ ▸ measure_mono hA₁), ENNReal.toReal_zero,
       zero_sub, neg_le, zero_apply, neg_zero]
     exact ENNReal.toReal_nonneg
   · refine restrict_le_restrict_of_subset_le _ _ fun A hA hA₁ => ?_
-    rw [toSignedMeasure, toSignedMeasure_sub_apply hA,
+    rw [toSignedMeasure, toSignedMeasure_sub_apply hA, measureReal_def (μ := j.negPart),
       show j.negPart A = 0 from nonpos_iff_eq_zero.1 (hS₃ ▸ measure_mono hA₁), ENNReal.toReal_zero,
       sub_zero]
     exact ENNReal.toReal_nonneg
@@ -195,7 +195,7 @@ theorem, and is shown by
 `MeasureTheory.SignedMeasure.toSignedMeasure_toJordanDecomposition`. -/
 def toJordanDecomposition (s : SignedMeasure α) : JordanDecomposition α :=
   let i := s.exists_compl_positive_negative.choose
-  let hi := s.exists_compl_positive_negative.choose_spec
+  have hi := s.exists_compl_positive_negative.choose_spec
   { posPart := s.toMeasureOfZeroLE i hi.1 hi.2.1
     negPart := s.toMeasureOfLEZero iᶜ hi.1.compl hi.2.2
     posPart_finite := inferInstance
@@ -227,9 +227,9 @@ theorem toSignedMeasure_toJordanDecomposition (s : SignedMeasure α) :
   obtain ⟨i, hi₁, hi₂, hi₃, hμ, hν⟩ := s.toJordanDecomposition_spec
   simp only [JordanDecomposition.toSignedMeasure, hμ, hν]
   ext k hk
-  rw [toSignedMeasure_sub_apply hk, toMeasureOfZeroLE_apply _ hi₂ hi₁ hk,
-    toMeasureOfLEZero_apply _ hi₃ hi₁.compl hk]
-  simp only [ENNReal.coe_toReal, NNReal.coe_mk, ENNReal.some_eq_coe, sub_neg_eq_add]
+  rw [toSignedMeasure_sub_apply hk, toMeasureOfZeroLE_real_apply _ hi₂ hi₁ hk,
+    toMeasureOfLEZero_real_apply _ hi₃ hi₁.compl hk]
+  simp only [sub_neg_eq_add]
   rw [← of_union _ (MeasurableSet.inter hi₁ hk) (MeasurableSet.inter hi₁.compl hk),
     Set.inter_comm i, Set.inter_comm iᶜ, Set.inter_union_compl _ _]
   exact (disjoint_compl_right.inf_left _).inf_right _
@@ -349,37 +349,39 @@ theorem toSignedMeasure_injective : Injective <| @JordanDecomposition.toSignedMe
   ext1 i hi
   -- we see that the positive parts of the two Jordan decompositions are equal to their
   -- associated signed measures restricted on their associated Hahn decompositions
-  have hμ₁ : (j₁.posPart i).toReal = j₁.toSignedMeasure (i ∩ Sᶜ) := by
+  have hμ₁ : j₁.posPart.real i = j₁.toSignedMeasure (i ∩ Sᶜ) := by
     rw [toSignedMeasure, toSignedMeasure_sub_apply (hi.inter hS₁.compl),
+      measureReal_def (μ := j₁.negPart),
       show j₁.negPart (i ∩ Sᶜ) = 0 from
         nonpos_iff_eq_zero.1 (hS₅ ▸ measure_mono Set.inter_subset_right),
       ENNReal.toReal_zero, sub_zero]
     conv_lhs => rw [← Set.inter_union_compl i S]
-    rw [measure_union,
+    rw [measureReal_union, measureReal_def,
       show j₁.posPart (i ∩ S) = 0 from
         nonpos_iff_eq_zero.1 (hS₄ ▸ measure_mono Set.inter_subset_right),
-      zero_add]
+      ENNReal.toReal_zero, zero_add]
     · refine
         Set.disjoint_of_subset_left Set.inter_subset_right
           (Set.disjoint_of_subset_right Set.inter_subset_right disjoint_compl_right)
     · exact hi.inter hS₁.compl
-  have hμ₂ : (j₂.posPart i).toReal = j₂.toSignedMeasure (i ∩ Tᶜ) := by
+  have hμ₂ : j₂.posPart.real i = j₂.toSignedMeasure (i ∩ Tᶜ) := by
     rw [toSignedMeasure, toSignedMeasure_sub_apply (hi.inter hT₁.compl),
+      measureReal_def (μ := j₂.negPart),
       show j₂.negPart (i ∩ Tᶜ) = 0 from
         nonpos_iff_eq_zero.1 (hT₅ ▸ measure_mono Set.inter_subset_right),
       ENNReal.toReal_zero, sub_zero]
     conv_lhs => rw [← Set.inter_union_compl i T]
-    rw [measure_union,
+    rw [measureReal_union, measureReal_def,
       show j₂.posPart (i ∩ T) = 0 from
         nonpos_iff_eq_zero.1 (hT₄ ▸ measure_mono Set.inter_subset_right),
-      zero_add]
+      ENNReal.toReal_zero, zero_add]
     · exact
         Set.disjoint_of_subset_left Set.inter_subset_right
           (Set.disjoint_of_subset_right Set.inter_subset_right disjoint_compl_right)
     · exact hi.inter hT₁.compl
   -- since the two signed measures associated with the Jordan decompositions are the same,
   -- and the symmetric difference of the Hahn decompositions have measure zero, the result follows
-  rw [← ENNReal.toReal_eq_toReal (measure_ne_top _ _) (measure_ne_top _ _), hμ₁, hμ₂, ← hj]
+  rw [← measureReal_eq_measureReal_iff, hμ₁, hμ₂, ← hj]
   exact of_inter_eq_of_symmDiff_eq_zero_positive hS₁.compl hT₁.compl hi hS₃ hT₃ hST₁
 
 @[simp]
@@ -457,7 +459,7 @@ theorem null_of_totalVariation_zero (s : SignedMeasure α) {i : Set α}
   rw [← toSignedMeasure_toJordanDecomposition s, toSignedMeasure, VectorMeasure.coe_sub,
     Pi.sub_apply, Measure.toSignedMeasure_apply, Measure.toSignedMeasure_apply]
   by_cases hi : MeasurableSet i
-  · rw [if_pos hi, if_pos hi]; simp [hs.1, hs.2]
+  · rw [if_pos hi, if_pos hi]; simp [hs.1, hs.2, measureReal_def]
   · simp [if_neg hi]
 
 theorem absolutelyContinuous_ennreal_iff (s : SignedMeasure α) (μ : VectorMeasure α ℝ≥0∞) :

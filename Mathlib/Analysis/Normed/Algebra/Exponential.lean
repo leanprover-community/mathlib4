@@ -1,9 +1,10 @@
 /-
 Copyright (c) 2021 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anatole Dedecker, Eric Wieser
+Authors: Anatole Dedecker, Eric Wieser, Yuyang Zhao
 -/
 import Mathlib.Algebra.Ring.Action.ConjAct
+import Mathlib.Algebra.Algebra.TransferInstance
 import Mathlib.Analysis.Analytic.ChangeOrigin
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.Data.Nat.Choose.Cast
@@ -154,11 +155,10 @@ variable (𝕂) in
 /-- The exponential sum as an `ofScalarsSum`. -/
 theorem exp_eq_ofScalarsSum [CharZero 𝕂] :
     exp = ofScalarsSum (E := 𝔸) fun n ↦ (n !⁻¹ : 𝕂) := by
-  ext x
   rw [exp_eq_tsum 𝕂, ofScalarsSum_eq_tsum]
 
 theorem expSeries_apply_zero (n : ℕ) :
-    (expSeries 𝕂 𝔸 n fun _ => (0 : 𝔸)) = Pi.single (f := fun _ => 𝔸) 0 1 n := by
+    expSeries 𝕂 𝔸 n (fun _ => (0 : 𝔸)) = Pi.single (M := fun _ => 𝔸) 0 1 n := by
   rw [expSeries_apply_eq]
   rcases n with - | n
   · rw [pow_zero, Nat.factorial_zero, Nat.cast_one, inv_one, one_smul, Pi.single_eq_same]
@@ -356,8 +356,8 @@ theorem isUnit_exp_of_mem_ball [CharZero 𝕂] {x : 𝔸}
 
 theorem invOf_exp_of_mem_ball [CharZero 𝕂] {x : 𝔸}
     (hx : x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) [Invertible (exp x)] :
-    ⅟ (exp x) = exp (-x) := by
-  letI := invertibleExpOfMemBall hx; convert (rfl : ⅟ (exp x) = _)
+    ⅟(exp x) = exp (-x) := by
+  letI := invertibleExpOfMemBall hx; convert (rfl : ⅟(exp x) = _)
 
 /-- Any continuous ring homomorphism commutes with `NormedSpace.exp`. -/
 theorem map_exp_of_mem_ball [Algebra 𝕂 𝔹] [CharZero 𝕂] {F} [FunLike F 𝔸 𝔹] [RingHomClass F 𝔸 𝔹]
@@ -485,9 +485,9 @@ section
 variable (𝕂)
 include 𝕂
 
-@[continuity]
+@[continuity, fun_prop]
 theorem exp_continuous : Continuous (exp : 𝔸 → 𝔸) := by
-  rw [continuous_iff_continuousOn_univ, ← Metric.eball_top_eq_univ (0 : 𝔸), ←
+  rw [← continuousOn_univ, ← Metric.eball_top_eq_univ (0 : 𝔸), ←
     expSeries_radius_eq_top 𝕂 𝔸]
   exact continuousOn_exp
 
@@ -521,7 +521,7 @@ noncomputable def invertibleExp (x : 𝔸) : Invertible (exp x) :=
 theorem isUnit_exp (x : 𝔸) : IsUnit (exp x) :=
   isUnit_exp_of_mem_ball <| (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _
 
-theorem invOf_exp (x : 𝔸) [Invertible (exp x)] : ⅟ (exp x) = exp (-x) :=
+theorem invOf_exp (x : 𝔸) [Invertible (exp x)] : ⅟(exp x) = exp (-x) :=
   invOf_exp_of_mem_ball <| (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _
 
 theorem _root_.Ring.inverse_exp (x : 𝔸) : Ring.inverse (exp x) = exp (-x) :=
@@ -548,7 +548,7 @@ theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → 𝔸)
   classical
     induction' s using Finset.induction_on with a s ha ih
     · simp
-    rw [Finset.noncommProd_insert_of_not_mem _ _ _ _ ha, Finset.sum_insert ha, exp_add_of_commute 𝕂,
+    rw [Finset.noncommProd_insert_of_notMem _ _ _ _ ha, Finset.sum_insert ha, exp_add_of_commute 𝕂,
       ih (h.mono <| Finset.subset_insert _ _)]
     refine Commute.sum_right _ _ _ fun i hi => ?_
     exact h.of_refl (Finset.mem_insert_self _ _) (Finset.mem_insert_of_mem hi)

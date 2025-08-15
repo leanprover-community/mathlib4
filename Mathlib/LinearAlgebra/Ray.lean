@@ -22,7 +22,7 @@ This file defines rays in modules.
   coefficient.
 
 * `Module.Ray` is a type for the equivalence class of nonzero vectors in a module with some
-common positive multiple.
+  common positive multiple.
 -/
 
 
@@ -108,7 +108,7 @@ variable {S : Type*} [CommSemiring S] [PartialOrder S]
 
 /-- A vector is in the same ray as a nonnegative multiple of itself. -/
 lemma sameRay_nonneg_smul_right (v : M) (h : 0 ≤ a) : SameRay R v (a • v) := by
-  obtain h | h := (algebraMap_nonneg R h).eq_or_gt
+  obtain h | h := (algebraMap_nonneg R h).eq_or_lt'
   · rw [← algebraMap_smul R a v, h, zero_smul]
     exact zero_right _
   · refine Or.inr <| Or.inr ⟨algebraMap S R a, 1, h, by nontriviality R; exact zero_lt_one, ?_⟩
@@ -522,8 +522,8 @@ theorem sameRay_or_sameRay_neg_iff_not_linearIndependent {x y : M} :
       rw [Fin.sum_univ_two, Fin.exists_fin_two]
       simp [h, hr₁.ne.symm]
   · rcases h with ⟨m, hm, hmne⟩
-    rw [Fin.sum_univ_two, add_eq_zero_iff_eq_neg, Matrix.cons_val_zero,
-      Matrix.cons_val_one, Matrix.head_cons] at hm
+    rw [Fin.sum_univ_two, add_eq_zero_iff_eq_neg] at hm
+    dsimp only [Matrix.cons_val] at hm
     rcases lt_trichotomy (m 0) 0 with (hm0 | hm0 | hm0) <;>
       rcases lt_trichotomy (m 1) 0 with (hm1 | hm1 | hm1)
     · refine

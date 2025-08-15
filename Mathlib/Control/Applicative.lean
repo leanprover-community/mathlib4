@@ -29,7 +29,7 @@ variable {α β γ σ : Type u}
 
 theorem Applicative.map_seq_map (f : α → β → γ) (g : σ → β) (x : F α) (y : F σ) :
     f <$> x <*> g <$> y = ((· ∘ g) ∘ f) <$> x <*> y := by
-  simp [flip, functor_norm, Function.comp_def]
+  simp [functor_norm, Function.comp_def]
 
 theorem Applicative.pure_seq_eq_map' (f : α → β) : ((pure f : F (α → β)) <*> ·) = (f <$> ·) := by
   ext; simp [functor_norm]
@@ -83,14 +83,14 @@ theorem map_pure (f : α → β) (x : α) : (f <$> pure x : Comp F G β) = pure 
   Comp.ext <| by simp
 
 theorem seq_pure (f : Comp F G (α → β)) (x : α) : f <*> pure x = (fun g : α → β => g x) <$> f :=
-  Comp.ext <| by simp [comp_def, functor_norm]
+  Comp.ext <| by simp [functor_norm]
 
 theorem seq_assoc (x : Comp F G α) (f : Comp F G (α → β)) (g : Comp F G (β → γ)) :
     g <*> (f <*> x) = @Function.comp α β γ <$> g <*> f <*> x :=
   Comp.ext <| by simp [comp_def, functor_norm]
 
 theorem pure_seq_eq_map (f : α → β) (x : Comp F G α) : pure f <*> x = f <$> x :=
-  Comp.ext <| by simp [Applicative.pure_seq_eq_map', functor_norm]
+  Comp.ext <| by simp [functor_norm]
 
 -- TODO: the first two results were handled by `control_laws_tac` in mathlib3
 instance instLawfulApplicativeComp : LawfulApplicative (Comp F G) where

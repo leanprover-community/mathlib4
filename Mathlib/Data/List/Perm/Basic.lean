@@ -44,7 +44,7 @@ theorem Perm.subset_congr_right {l₁ l₂ l₃ : List α} (h : l₁ ~ l₂) : l
 
 theorem set_perm_cons_eraseIdx {n : ℕ} (h : n < l.length) (a : α) :
     l.set n a ~ a :: l.eraseIdx n := by
-  rw [← insertIdx_eraseIdx h.ne]
+  rw [← insertIdx_eraseIdx_self h.ne]
   apply perm_insertIdx
   rw [length_eraseIdx_of_lt h]
   exact Nat.le_sub_one_of_lt h
@@ -63,7 +63,7 @@ alias ⟨_, Perm.insertIdx_of_le⟩ := perm_insertIdx_iff_of_le
 theorem perm_insertIdx_iff {l₁ l₂ : List α} {n : ℕ} {a : α} :
     l₁.insertIdx n a ~ l₂.insertIdx n a ↔ l₁ ~ l₂ := by
   wlog hle : length l₁ ≤ length l₂ generalizing l₁ l₂
-  · rw [perm_comm, this (le_of_not_le hle), perm_comm]
+  · rw [perm_comm, this (le_of_not_ge hle), perm_comm]
   cases Nat.lt_or_ge (length l₁) n with
   | inl hn₁ =>
     rw [insertIdx_of_length_lt hn₁]
@@ -73,8 +73,8 @@ theorem perm_insertIdx_iff {l₁ l₂ : List α} {n : ℕ} {a : α} :
       apply iff_of_false
       · intro h
         rw [h.length_eq] at hn₁
-        exact (hn₁.trans_le hn₂).not_le (length_le_length_insertIdx ..)
-      · exact fun h ↦ (hn₁.trans_le hn₂).not_le h.length_eq.ge
+        exact (hn₁.trans_le hn₂).not_ge (length_le_length_insertIdx ..)
+      · exact fun h ↦ (hn₁.trans_le hn₂).not_ge h.length_eq.ge
   | inr hn₁ =>
     exact perm_insertIdx_iff_of_le hn₁ (le_trans hn₁ hle) _
 
@@ -200,8 +200,6 @@ theorem perm_option_toList {o₁ o₂ : Option α} : o₁.toList ~ o₂.toList �
   · cases p.length_eq
   · exact Option.mem_toList.1 (p.symm.subset <| by simp)
 
-@[deprecated (since := "2024-10-16")] alias perm_option_to_list := perm_option_toList
-
 theorem perm_replicate_append_replicate
     [DecidableEq α] {l : List α} {a b : α} {m n : ℕ} (h : a ≠ b) :
     l ~ replicate m a ++ replicate n b ↔ count a l = m ∧ count b l = n ∧ l ⊆ [a, b] := by
@@ -217,15 +215,10 @@ theorem map_perm_map_iff {l' : List α} {f : α → β} (hf : f.Injective) :
   map f l ~ map f l' ↔ Relation.Comp (· = map f ·) (· ~ ·) (map f l) l' := by rw [eq_map_comp_perm]
   _ ↔ l ~ l' := by simp [Relation.Comp, map_inj_right hf]
 
-@[gcongr]
 theorem Perm.flatMap_left (l : List α) {f g : α → List β} (h : ∀ a ∈ l, f a ~ g a) :
     l.flatMap f ~ l.flatMap g :=
   Perm.flatten_congr <| by
     rwa [List.forall₂_map_right_iff, List.forall₂_map_left_iff, List.forall₂_same]
-
-@[deprecated (since := "2024-10-16")] alias Perm.bind_left := Perm.flatMap_left
-
-attribute [gcongr] Perm.flatMap_right
 
 @[gcongr]
 protected theorem Perm.flatMap {l₁ l₂ : List α} {f g : α → List β} (h : l₁ ~ l₂)
@@ -240,20 +233,14 @@ theorem flatMap_append_perm (l : List α) (f g : α → List β) :
   rw [← append_assoc, ← append_assoc]
   exact perm_append_comm.append_right _
 
-@[deprecated (since := "2024-10-16")] alias bind_append_perm := flatMap_append_perm
-
 theorem map_append_flatMap_perm (l : List α) (f : α → β) (g : α → List β) :
     l.map f ++ l.flatMap g ~ l.flatMap fun x => f x :: g x := by
   simpa [← map_eq_flatMap] using flatMap_append_perm l (fun x => [f x]) g
 
-@[deprecated (since := "2024-10-16")] alias map_append_bind_perm := map_append_flatMap_perm
-
-@[gcongr]
 theorem Perm.product_right {l₁ l₂ : List α} (t₁ : List β) (p : l₁ ~ l₂) :
     product l₁ t₁ ~ product l₂ t₁ :=
   p.flatMap_right _
 
-@[gcongr]
 theorem Perm.product_left (l : List α) {t₁ t₂ : List β} (p : t₁ ~ t₂) :
     product l t₁ ~ product l t₂ :=
   (Perm.flatMap_left _) fun _ _ => p.map _

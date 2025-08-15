@@ -92,17 +92,11 @@ def truncateAugment (C : ChainComplex V ℕ) {X : V} (f : C.X 0 ⟶ X) (w : C.d 
   inv :=
     { f := fun _ => 𝟙 _
       comm' := fun i j => by
-        cases j <;>
-          · dsimp
-            simp }
+        cases j <;> simp }
   hom_inv_id := by
-    ext (_ | i) <;>
-      · dsimp
-        simp
+    ext (_ | i) <;> simp
   inv_hom_id := by
-    ext (_ | i) <;>
-      · dsimp
-        simp
+    ext (_ | i) <;> simp
 
 @[simp]
 theorem truncateAugment_hom_f (C : ChainComplex V ℕ) {X : V} (f : C.X 0 ⟶ X) (w : C.d 1 0 ≫ f = 0)
@@ -142,14 +136,10 @@ def augmentTruncate (C : ChainComplex V ℕ) :
     }
   hom_inv_id := by
     ext i
-    cases i <;>
-      · dsimp
-        simp
+    cases i <;> simp
   inv_hom_id := by
     ext i
-    cases i <;>
-      · dsimp
-        simp
+    cases i <;> simp
 
 @[simp]
 theorem augmentTruncate_hom_f_zero (C : ChainComplex V ℕ) :
@@ -263,19 +253,13 @@ def truncateAugment (C : CochainComplex V ℕ) {X : V} (f : X ⟶ C.X 0) (w : f 
   inv :=
     { f := fun _ => 𝟙 _
       comm' := fun i j => by
-        cases j <;>
-          · dsimp
-            simp }
+        cases j <;> simp }
   hom_inv_id := by
     ext i
-    cases i <;>
-      · dsimp
-        simp
+    cases i <;> simp
   inv_hom_id := by
     ext i
-    cases i <;>
-      · dsimp
-        simp
+    cases i <;> simp
 
 @[simp]
 theorem truncateAugment_hom_f (C : CochainComplex V ℕ) {X : V} (f : X ⟶ C.X 0)
@@ -317,14 +301,10 @@ def augmentTruncate (C : CochainComplex V ℕ) :
             aesop }
   hom_inv_id := by
     ext i
-    cases i <;>
-      · dsimp
-        simp
+    cases i <;> simp
   inv_hom_id := by
     ext i
-    cases i <;>
-      · dsimp
-        simp
+    cases i <;> simp
 
 @[simp]
 theorem augmentTruncate_hom_f_zero (C : CochainComplex V ℕ) :

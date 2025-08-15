@@ -80,7 +80,7 @@ lemma IsColimit.mono_ι_app_of_isFiltered
         simp only [Category.id_comp, ← X.map_comp, Under.w] }
   have := NatTrans.mono_of_mono_app f
   exact colim.map_mono' f (isColimitConstCocone _ _)
-    ((Functor.Final.isColimitWhiskerEquiv _ _).symm hc) (c.ι.app j₀) (by aesop_cat)
+    ((Functor.Final.isColimitWhiskerEquiv _ _).symm hc) (c.ι.app j₀) (by cat_disch)
 
 section
 
@@ -138,18 +138,16 @@ open Limits
 open MorphismProperty
 
 variable (J C) in
-lemma isStableUnderColimitsOfShape_monomorphisms
+instance isStableUnderColimitsOfShape_monomorphisms
     [HasColimitsOfShape J C] [(colim : (J ⥤ C) ⥤ C).PreservesMonomorphisms] :
-    (monomorphisms C).IsStableUnderColimitsOfShape J := by
-  intro X₁ X₂ c₁ c₂ hc₁ hc₂ f hf
-  have (j : J) : Mono (f.app j) := hf _
-  have := NatTrans.mono_of_mono_app f
-  exact colim.map_mono' f hc₁ hc₂ _ (by simp)
+    (monomorphisms C).IsStableUnderColimitsOfShape J where
+  condition X₁ X₂ c₁ c₂ hc₁ hc₂ f hf φ hφ := by
+    have (j : J) : Mono (f.app j) := hf _
+    have := NatTrans.mono_of_mono_app f
+    apply colim.map_mono' f hc₁ hc₂ φ (by simp [hφ])
 
 instance [HasCoproducts.{u'} C] [AB4OfSize.{u'} C] :
     IsStableUnderCoproducts.{u'} (monomorphisms C) where
-  isStableUnderCoproductsOfShape _ :=
-    isStableUnderColimitsOfShape_monomorphisms _ _
 
 end MorphismProperty
 

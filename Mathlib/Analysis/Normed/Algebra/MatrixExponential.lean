@@ -119,40 +119,25 @@ variable [RCLike 𝕂] [Fintype m] [DecidableEq m]
 include 𝕂
 
 nonrec theorem exp_add_of_commute (A B : Matrix m m 𝔸) (h : Commute A B) :
-    exp (A + B) = exp A * exp B := by
-  letI : SeminormedRing (Matrix m m 𝔸) := Matrix.linftyOpSemiNormedRing
-  letI : NormedRing (Matrix m m 𝔸) := Matrix.linftyOpNormedRing
-  letI : NormedAlgebra 𝕂 (Matrix m m 𝔸) := Matrix.linftyOpNormedAlgebra
-  exact exp_add_of_commute 𝕂 h
+    exp (A + B) = exp A * exp B :=
+  open scoped Norms.Operator in exp_add_of_commute 𝕂 h
 
 open scoped Function in -- required for scoped `on` notation
 nonrec theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → Matrix m m 𝔸)
     (h : (s : Set ι).Pairwise (Commute on f)) :
     exp (∑ i ∈ s, f i) =
-      s.noncommProd (fun i => exp (f i)) fun _ hi _ hj _ => (h.of_refl hi hj).exp := by
-  letI : SeminormedRing (Matrix m m 𝔸) := Matrix.linftyOpSemiNormedRing
-  letI : NormedRing (Matrix m m 𝔸) := Matrix.linftyOpNormedRing
-  letI : NormedAlgebra 𝕂 (Matrix m m 𝔸) := Matrix.linftyOpNormedAlgebra
-  exact exp_sum_of_commute 𝕂 s f h
+      s.noncommProd (fun i => exp (f i)) fun _ hi _ hj _ => (h.of_refl hi hj).exp :=
+  open scoped Norms.Operator in exp_sum_of_commute 𝕂 s f h
 
-nonrec theorem exp_nsmul (n : ℕ) (A : Matrix m m 𝔸) : exp (n • A) = exp A ^ n := by
-  letI : SeminormedRing (Matrix m m 𝔸) := Matrix.linftyOpSemiNormedRing
-  letI : NormedRing (Matrix m m 𝔸) := Matrix.linftyOpNormedRing
-  letI : NormedAlgebra 𝕂 (Matrix m m 𝔸) := Matrix.linftyOpNormedAlgebra
-  exact exp_nsmul 𝕂 n A
+nonrec theorem exp_nsmul (n : ℕ) (A : Matrix m m 𝔸) : exp (n • A) = exp A ^ n :=
+  open scoped Norms.Operator in exp_nsmul 𝕂 n A
 
-nonrec theorem isUnit_exp (A : Matrix m m 𝔸) : IsUnit (exp A) := by
-  letI : SeminormedRing (Matrix m m 𝔸) := Matrix.linftyOpSemiNormedRing
-  letI : NormedRing (Matrix m m 𝔸) := Matrix.linftyOpNormedRing
-  letI : NormedAlgebra 𝕂 (Matrix m m 𝔸) := Matrix.linftyOpNormedAlgebra
-  exact isUnit_exp 𝕂 A
+nonrec theorem isUnit_exp (A : Matrix m m 𝔸) : IsUnit (exp A) :=
+  open scoped Norms.Operator in isUnit_exp 𝕂 A
 
 nonrec theorem exp_units_conj (U : (Matrix m m 𝔸)ˣ) (A : Matrix m m 𝔸) :
-    exp (U * A * U⁻¹) = U * exp A * U⁻¹ := by
-  letI : SeminormedRing (Matrix m m 𝔸) := Matrix.linftyOpSemiNormedRing
-  letI : NormedRing (Matrix m m 𝔸) := Matrix.linftyOpNormedRing
-  letI : NormedAlgebra 𝕂 (Matrix m m 𝔸) := Matrix.linftyOpNormedAlgebra
-  exact exp_units_conj 𝕂 U A
+    exp (U * A * U⁻¹) = U * exp A * U⁻¹ :=
+  open scoped Norms.Operator in exp_units_conj 𝕂 U A
 
 theorem exp_units_conj' (U : (Matrix m m 𝔸)ˣ) (A : Matrix m m 𝔸) :
     exp (U⁻¹ * A * U) = U⁻¹ * exp A * U :=
@@ -167,11 +152,8 @@ variable [RCLike 𝕂] [Fintype m] [DecidableEq m]
 include 𝕂
 
 theorem exp_neg (A : Matrix m m 𝔸) : exp (-A) = (exp A)⁻¹ := by
-  rw [nonsing_inv_eq_ring_inverse]
-  letI : SeminormedRing (Matrix m m 𝔸) := Matrix.linftyOpSemiNormedRing
-  letI : NormedRing (Matrix m m 𝔸) := Matrix.linftyOpNormedRing
-  letI : NormedAlgebra 𝕂 (Matrix m m 𝔸) := Matrix.linftyOpNormedAlgebra
-  exact (Ring.inverse_exp 𝕂 A).symm
+  rw [nonsing_inv_eq_ringInverse]
+  open scoped Norms.Operator in exact (Ring.inverse_exp 𝕂 A).symm
 
 theorem exp_zsmul (z : ℤ) (A : Matrix m m 𝔸) : exp (z • A) = exp A ^ z := by
   obtain ⟨n, rfl | rfl⟩ := z.eq_nat_or_neg

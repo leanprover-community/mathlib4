@@ -57,7 +57,9 @@ open scoped SorgenfreyLine
 instance : ConditionallyCompleteLinearOrder ℝₗ :=
   inferInstanceAs (ConditionallyCompleteLinearOrder ℝ)
 
-instance : LinearOrderedField ℝₗ := inferInstanceAs (LinearOrderedField ℝ)
+instance : Field ℝₗ := inferInstanceAs (Field ℝ)
+
+instance : IsStrictOrderedRing ℝₗ := inferInstanceAs (IsStrictOrderedRing ℝ)
 
 instance : Archimedean ℝₗ := inferInstanceAs (Archimedean ℝ)
 

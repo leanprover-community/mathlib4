@@ -3,9 +3,8 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-
-import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Algebra.Group.Submonoid.Defs
+import Mathlib.Algebra.Order.Archimedean.Basic
 
 /-!
 # Submonoids of archimedean monoids
@@ -30,5 +29,5 @@ instance SubmonoidClass.instMulArchimedean {M S : Type*} [SetLike S M]
     [SubmonoidClass S M] [MulArchimedean M] (H : S) : MulArchimedean H := by
   constructor
   rintro x _
-  simp only [← Subtype.coe_lt_coe, OneMemClass.coe_one, SubmonoidClass.mk_pow, Subtype.mk_le_mk]
+  simp only [← Subtype.coe_lt_coe, OneMemClass.coe_one]
   exact MulArchimedean.arch x.val

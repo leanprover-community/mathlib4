@@ -61,7 +61,7 @@ lemma respectsIso : RespectsIso Flat := by
   exact of_bijective e.bijective
 
 lemma isStableUnderBaseChange : IsStableUnderBaseChange Flat := by
-  apply IsStableUnderBaseChange.mk _ respectsIso
+  apply IsStableUnderBaseChange.mk respectsIso
   introv h
   replace h : Module.Flat R T := by
     rw [RingHom.Flat] at h; convert h; ext; simp_rw [Algebra.smul_def]; rfl
@@ -124,7 +124,7 @@ open PrimeSpectrum
 /-- `Spec S → Spec R` is generalizing if `R →+* S` is flat. -/
 lemma generalizingMap_comap {f : R →+* S} (hf : f.Flat) : GeneralizingMap (comap f) := by
   algebraize [f]
-  show GeneralizingMap (comap (algebraMap R S))
+  change GeneralizingMap (comap (algebraMap R S))
   rw [← Algebra.HasGoingDown.iff_generalizingMap_primeSpectrumComap]
   infer_instance
 

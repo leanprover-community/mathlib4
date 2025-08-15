@@ -47,7 +47,7 @@ theorem embeddingOfSubset_coe : embeddingOfSubset x a n = dist a (x n) - dist (x
 theorem embeddingOfSubset_dist_le (a b : α) :
     dist (embeddingOfSubset x a) (embeddingOfSubset x b) ≤ dist a b := by
   refine lp.norm_le_of_forall_le dist_nonneg fun n => ?_
-  simp only [lp.coeFn_sub, Pi.sub_apply, embeddingOfSubset_coe, Real.dist_eq]
+  simp only [lp.coeFn_sub, Pi.sub_apply, embeddingOfSubset_coe]
   convert abs_dist_sub_le a b (x n) using 2
   ring
 
@@ -93,7 +93,7 @@ theorem exists_isometric_embedding (α : Type u) [MetricSpace α] [SeparableSpac
 
 end KuratowskiEmbedding
 
-open TopologicalSpace KuratowskiEmbedding
+open KuratowskiEmbedding
 
 /-- The Kuratowski embedding is an isometric embedding of a separable metric space in `ℓ^∞(ℕ, ℝ)`.
 -/

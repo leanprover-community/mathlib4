@@ -155,10 +155,9 @@ theorem add_le (ha : a ≤ c) (hb : b ≤ c) : a + b ≤ c :=
   add_le_iff.2 ⟨ha, hb⟩
 
 -- See note [lower instance priority]
-instance (priority := 100) IdemSemiring.toOrderedAddCommMonoid :
-    OrderedAddCommMonoid α :=
-  { ‹IdemSemiring α› with
-    add_le_add_left := fun a b hbc c ↦ by
+instance (priority := 100) IdemSemiring.toIsOrderedAddMonoid :
+    IsOrderedAddMonoid α :=
+  { add_le_add_left := fun a b hbc c ↦ by
       simp_rw [add_eq_sup]
       exact sup_le_sup_left hbc _ }
 

@@ -158,7 +158,7 @@ theorem snd_exp (x : tsze R M) : snd (exp x) = exp x.fst • x.snd := by
 
 /-- Polar form of trivial-square-zero extension. -/
 theorem eq_smul_exp_of_invertible (x : tsze R M) [Invertible x.fst] :
-    x = x.fst • exp (⅟ x.fst • inr x.snd) := by
+    x = x.fst • exp (⅟x.fst • inr x.snd) := by
   rw [← inr_smul, exp_inr, smul_add, ← inl_one, ← inl_smul, ← inr_smul, smul_eq_mul, mul_one,
     smul_smul, mul_invOf_self, one_smul, inl_fst_add_inr_snd_eq]
 
@@ -203,7 +203,7 @@ example :
     PseudoMetricSpace.toUniformSpace := rfl
 
 theorem norm_def (x : tsze R M) : ‖x‖ = ‖fst x‖ + ‖snd x‖ := by
-  rw [WithLp.prod_norm_eq_add (by norm_num)]
+  rw [WithLp.prod_norm_eq_add (by simp)]
   simp only [ENNReal.toReal_one, Real.rpow_one, div_one]
   rfl
 

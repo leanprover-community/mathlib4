@@ -47,7 +47,7 @@ instance KleisliCat.category {m} [Monad.{u, v} m] [LawfulMonad m] : Category (Kl
   --  simp only [(· >=> ·), functor_norm]
   refine { id_comp := ?_, comp_id := ?_, assoc := ?_ } <;> intros <;>
   refine funext (fun x => ?_) <;>
-  simp (config := { unfoldPartialApp := true }) [CategoryStruct.id, CategoryStruct.comp, (· >=> ·)]
+  simp +unfoldPartialApp [CategoryStruct.id, CategoryStruct.comp, (· >=> ·)]
 
 @[simp]
 theorem KleisliCat.id_def {m} [Monad m] (α : KleisliCat m) : 𝟙 α = @pure m _ α :=

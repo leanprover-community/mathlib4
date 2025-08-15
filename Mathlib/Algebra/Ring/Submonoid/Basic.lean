@@ -6,7 +6,6 @@ Amelia Livingston, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Submonoid.Basic
 import Mathlib.Algebra.Ring.Defs
-import Mathlib.Tactic.MinImports
 
 /-! # Lemmas about additive closures of `Subsemigroup`. -/
 

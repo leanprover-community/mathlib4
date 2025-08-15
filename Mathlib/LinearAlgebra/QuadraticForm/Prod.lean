@@ -60,7 +60,7 @@ def IsometryEquiv.prod
     (e₁ : Q₁.IsometryEquiv Q₁') (e₂ : Q₂.IsometryEquiv Q₂') :
     (Q₁.prod Q₂).IsometryEquiv (Q₁'.prod Q₂') where
   map_app' x := congr_arg₂ (· + ·) (e₁.map_app x.1) (e₂.map_app x.2)
-  toLinearEquiv := LinearEquiv.prod e₁.toLinearEquiv e₂.toLinearEquiv
+  toLinearEquiv := LinearEquiv.prodCongr e₁.toLinearEquiv e₂.toLinearEquiv
 
 /-- `LinearMap.inl` as an isometry. -/
 @[simps!]
@@ -258,7 +258,7 @@ def IsometryEquiv.pi [Fintype ι]
     {Q : ∀ i, QuadraticMap R (Mᵢ i) P} {Q' : ∀ i, QuadraticMap R (Nᵢ i) P}
     (e : ∀ i, (Q i).IsometryEquiv (Q' i)) : (pi Q).IsometryEquiv (pi Q') where
   map_app' x := by
-    simp only [pi_apply, LinearEquiv.piCongrRight, LinearEquiv.toFun_eq_coe,
+    simp only [pi_apply, LinearEquiv.piCongrRight,
       IsometryEquiv.coe_toLinearEquiv, IsometryEquiv.map_app]
   toLinearEquiv := LinearEquiv.piCongrRight fun i => (e i : Mᵢ i ≃ₗ[R] Nᵢ i)
 

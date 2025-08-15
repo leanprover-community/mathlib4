@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rohan Mitta, Kevin Buzzard, Alistair Tucker, Johannes Hölzl, Yury Kudryashov, Winston Yin
 -/
 import Mathlib.Algebra.Group.End
+import Mathlib.Tactic.Finiteness
 import Mathlib.Topology.EMetricSpace.Diam
 
 /-!
@@ -94,12 +95,12 @@ theorem lipschitzOnWith_iff_restrict : LipschitzOnWith K f s ↔ LipschitzWith K
 
 lemma lipschitzOnWith_restrict {t : Set s} :
     LipschitzOnWith K (s.restrict f) t ↔ LipschitzOnWith K f (s ∩ Subtype.val '' t) := by
-  simp [LipschitzOnWith, LipschitzWith]
+  simp [LipschitzOnWith]
 
 lemma locallyLipschitzOn_iff_restrict :
     LocallyLipschitzOn s f ↔ LocallyLipschitz (s.restrict f) := by
-  simp only [LocallyLipschitzOn, LocallyLipschitz, SetCoe.forall', restrict_apply,
-    Subtype.edist_mk_mk, ← lipschitzOnWith_iff_restrict, lipschitzOnWith_restrict,
+  simp only [LocallyLipschitzOn, LocallyLipschitz, SetCoe.forall',
+    lipschitzOnWith_restrict,
     nhds_subtype_eq_comap_nhdsWithin, mem_comap]
   congr! with x K
   constructor
@@ -149,7 +150,7 @@ theorem mapsTo_emetric_ball (h : LipschitzWith K f) (hK : K ≠ 0) (x : α) (r :
 
 theorem edist_lt_top (hf : LipschitzWith K f) {x y : α} (h : edist x y ≠ ⊤) :
     edist (f x) (f y) < ⊤ :=
-  (hf x y).trans_lt <| ENNReal.mul_lt_top ENNReal.coe_lt_top h.lt_top
+  (hf x y).trans_lt (by finiteness)
 
 theorem mul_edist_le (h : LipschitzWith K f) (x y : α) :
     (K⁻¹ : ℝ≥0∞) * edist (f x) (f y) ≤ edist x y := by
@@ -265,7 +266,7 @@ protected theorem iterate {f : α → α} (hf : LipschitzWith K f) : ∀ n, Lips
   | n + 1 => by rw [pow_succ]; exact (LipschitzWith.iterate hf n).comp hf
 
 theorem edist_iterate_succ_le_geometric {f : α → α} (hf : LipschitzWith K f) (x n) :
-    edist (f^[n] x) (f^[n + 1] x) ≤ edist x (f x) * (K : ℝ≥0∞) ^ n := by
+    edist (f^[n] x) (f^[n+1] x) ≤ edist x (f x) * (K : ℝ≥0∞) ^ n := by
   rw [iterate_succ, mul_comm]
   simpa only [ENNReal.coe_pow] using (hf.iterate n) x (f x)
 
@@ -309,8 +310,7 @@ theorem edist_le_mul_of_le (h : LipschitzOnWith K f s) {x y : α} (hx : x ∈ s)
 
 theorem edist_lt_of_edist_lt_div (hf : LipschitzOnWith K f s) {x y : α} (hx : x ∈ s) (hy : y ∈ s)
     {d : ℝ≥0∞} (hd : edist x y < d / K) : edist (f x) (f y) < d :=
-   hf.to_restrict.edist_lt_of_edist_lt_div <|
-    show edist (⟨x, hx⟩ : s) ⟨y, hy⟩ < d / K from hd
+  hf.to_restrict.edist_lt_of_edist_lt_div <| show edist (⟨x, hx⟩ : s) ⟨y, hy⟩ < d / K from hd
 
 protected theorem comp {g : β → γ} {t : Set β} {Kg : ℝ≥0} (hg : LipschitzOnWith Kg g t)
     (hf : LipschitzOnWith K f s) (hmaps : MapsTo f s t) : LipschitzOnWith (Kg * K) (g ∘ f) s :=
@@ -363,7 +363,7 @@ protected theorem continuous {f : α → β} (hf : LocallyLipschitz f) : Continu
   exact (hK.continuousOn).continuousAt ht
 
 /-- The composition of locally Lipschitz functions is locally Lipschitz. -/
-protected lemma comp  {f : β → γ} {g : α → β}
+protected lemma comp {f : β → γ} {g : α → β}
     (hf : LocallyLipschitz f) (hg : LocallyLipschitz g) : LocallyLipschitz (f ∘ g) := by
   intro x
   -- g is Lipschitz on t ∋ x, f is Lipschitz on u ∋ g(x)
@@ -482,7 +482,7 @@ theorem continuous_prod_of_dense_continuous_lipschitzWith [PseudoEMetricSpace α
     [TopologicalSpace β] [PseudoEMetricSpace γ] (f : α × β → γ) (K : ℝ≥0) {s : Set α}
     (hs : Dense s) (ha : ∀ a ∈ s, Continuous fun y => f (a, y))
     (hb : ∀ b, LipschitzWith K fun x => f (x, b)) : Continuous f := by
-  simp only [continuous_iff_continuousOn_univ, ← univ_prod_univ, ← lipschitzOnWith_univ] at *
+  simp only [← continuousOn_univ, ← univ_prod_univ, ← lipschitzOnWith_univ] at *
   exact continuousOn_prod_of_subset_closure_continuousOn_lipschitzOnWith f (subset_univ _)
     hs.closure_eq.ge K ha fun b _ => hb b
 

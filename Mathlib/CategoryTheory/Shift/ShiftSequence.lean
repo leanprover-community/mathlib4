@@ -60,7 +60,7 @@ noncomputable def ShiftSequence.tautological : ShiftSequence F M where
     isoWhiskerRight (shiftFunctorAdd' C n a a' ha').symm _
   shiftIso_zero a := by
     rw [shiftFunctorAdd'_zero_add]
-    aesop_cat
+    cat_disch
   shiftIso_add n m a a' a'' ha' ha'' := by
     ext X
     dsimp
@@ -235,7 +235,6 @@ lemma shiftIso_hom_app_comp_shiftMap_of_add_eq_zero [F.ShiftSequence G]
       (by rw [← add_left_inj m, add_assoc, hnm, zero_add, add_zero])).hom.app Y) := by
   have hnm' : m + n = 0 := by
     rw [← add_left_inj m, add_assoc, hnm, zero_add, add_zero]
-  dsimp
   simp [F.shiftIso_hom_app_comp_shiftMap f n 0 hnm' a' a, shiftIso_zero_hom_app,
     shiftFunctorCompIsoId]
 
