@@ -451,6 +451,18 @@ theorem ofBijective_apply [NonUnitalRingHomClass F R S] (f : F) (hf : Function.B
     (x : R) : ofBijective f hf x = f x :=
   rfl
 
+@[simp]
+lemma ofBijective_symm_comp (f : R →ₙ+* S) (hf : Function.Bijective f) :
+    ((RingEquiv.ofBijective f hf).symm : _ →ₙ+* _).comp f = NonUnitalRingHom.id R := by
+  ext
+  exact (RingEquiv.ofBijective f hf).injective <| RingEquiv.apply_symm_apply ..
+
+@[simp]
+lemma comp_ofBijective_symm (f : R →ₙ+* S) (hf : Function.Bijective f) :
+    f.comp ((RingEquiv.ofBijective f hf).symm : _ →ₙ+* _) = NonUnitalRingHom.id S := by
+  ext
+  exact (RingEquiv.ofBijective f hf).symm.injective <| RingEquiv.apply_symm_apply ..
+
 /-- Product of a singleton family of (non-unital non-associative semi)rings is isomorphic
 to the only member of this family. -/
 @[simps! -fullyApplied]
