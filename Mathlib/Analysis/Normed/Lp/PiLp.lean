@@ -521,9 +521,17 @@ lemma lipschitzWith_ofLp [∀ i, PseudoEMetricSpace (β i)] :
     LipschitzWith 1 (@ofLp p (∀ i, β i)) :=
   lipschitzWith_ofLp_aux p β
 
+lemma antilipschitzWith_toLp [∀ i, PseudoEMetricSpace (β i)] :
+    AntilipschitzWith 1 (@toLp p (∀ i, β i)) :=
+  (lipschitzWith_ofLp p β).to_rightInverse (ofLp_toLp p)
+
 theorem antilipschitzWith_ofLp [∀ i, PseudoEMetricSpace (β i)] :
     AntilipschitzWith ((Fintype.card ι : ℝ≥0) ^ (1 / p).toReal) (@ofLp p (∀ i, β i)) :=
   antilipschitzWith_ofLp_aux p β
+
+lemma lipschitzWith_toLp [∀ i, PseudoEMetricSpace (β i)] :
+    LipschitzWith ((Fintype.card ι : ℝ≥0) ^ (1 / p).toReal) (@toLp p (∀ i, β i)) :=
+  (antilipschitzWith_ofLp p β).to_rightInverse (ofLp_toLp p)
 
 lemma isometry_ofLp_infty [∀ i, PseudoEMetricSpace (β i)] :
     Isometry (@ofLp ∞ (∀ i, β i)) :=
@@ -546,6 +554,11 @@ instance seminormedAddCommGroup [∀ i, SeminormedAddCommGroup (β i)] :
           linarith
         simp only [dist_eq_sum (zero_lt_one.trans_le h), norm_eq_sum (zero_lt_one.trans_le h),
           dist_eq_norm, sub_apply] }
+
+lemma isUniformInducing_toLp [∀ i, PseudoEMetricSpace (β i)] :
+    IsUniformInducing (@toLp p (Π i, β i)) :=
+  (antilipschitzWith_toLp p β).isUniformInducing
+    (lipschitzWith_toLp p β).uniformContinuous
 
 section
 variable {β p}
