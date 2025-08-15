@@ -27,13 +27,10 @@ This file defines restrictions of affine maps.
 variable {k V₁ P₁ V₂ P₂ : Type*} [Ring k] [AddCommGroup V₁] [AddCommGroup V₂] [Module k V₁]
   [Module k V₂] [AddTorsor V₁ P₁] [AddTorsor V₂ P₂]
 
--- not an instance because it loops with `Nonempty`
-theorem AffineSubspace.nonempty_map {E : AffineSubspace k P₁} [Ene : Nonempty E] {φ : P₁ →ᵃ[k] P₂} :
-    Nonempty (E.map φ) := by
+instance AffineSubspace.nonempty_map {E : AffineSubspace k P₁} [Ene : Nonempty E]
+    {φ : P₁ →ᵃ[k] P₂} : Nonempty (E.map φ) := by
   obtain ⟨x, hx⟩ := id Ene
   exact ⟨⟨φ x, AffineSubspace.mem_map.mpr ⟨x, hx, rfl⟩⟩⟩
-
-attribute [local instance] AffineSubspace.nonempty_map AffineSubspace.toAddTorsor
 
 /-- Restrict domain and codomain of an affine map to the given subspaces. -/
 def AffineMap.restrict (φ : P₁ →ᵃ[k] P₂) {E : AffineSubspace k P₁} {F : AffineSubspace k P₂}
