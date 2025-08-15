@@ -85,8 +85,13 @@ variable [Ring R] (v : Valuation R Γ₀)
 /-- Canonical ring equivalence between `WithVal v` and `R`. -/
 def equiv : WithVal v ≃+* R := RingEquiv.refl _
 
+/-- Canonical valuation on the `WithVal v` type synonym. -/
+def valuation : Valuation (WithVal v) Γ₀ := v.comap (equiv v)
+
+@[simp] lemma valuation_apply_equiv_apply (x : R) : valuation v (equiv v x) = v x := rfl
+
 instance {R} [Ring R] (v : Valuation R Γ₀) : Valued (WithVal v) Γ₀ :=
-  Valued.mk' (v.comap (WithVal.equiv v))
+  Valued.mk' (valuation v)
 
 @[simp]
 theorem apply_equiv (r : WithVal v) :
@@ -96,13 +101,6 @@ theorem apply_equiv (r : WithVal v) :
 @[simp]
 theorem apply_symm_equiv (r : R) : v ((WithVal.equiv v).symm r) = v r := rfl
 
-/-- Canonical valuation on the `WithVal v` type synonym. -/
-def valuation : Valuation (WithVal v) Γ₀ where
-  __ := v.toMonoidWithZeroHom.comp (equiv v).toMonoidWithZeroHom
-  map_add_le_max' := by simp
-
-@[simp] lemma valuation_apply_equiv_apply (x : R) : valuation v (equiv v x) = v x := rfl
-
 end Ring
 
 section CommRing
@@ -111,7 +109,7 @@ variable [CommRing R] (v : Valuation R Γ₀)
 
 instance : ValuativeRel (WithVal v) := .ofValuation (valuation v)
 instance : (valuation v).Compatible := .ofValuation (valuation v)
--- defeq-piercing, the same way `apply_equiv` is
+-- defeq-piercing, the same way `apply_equiv` is, for any downstream usage that abuses the defeq
 instance : (v : Valuation (WithVal v) Γ₀).Compatible (R := WithVal v) := .ofValuation (valuation v)
 
 end CommRing
