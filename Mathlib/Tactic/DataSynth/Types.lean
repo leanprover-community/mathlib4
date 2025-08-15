@@ -83,23 +83,23 @@ def congr (r : Result) (rs : Array Simp.Result) : MetaM Result := do
 
 end Result
 
--- /-- For a `Goal` and its proof extract `Result` from it. -/
--- def Goal.getResultFrom (g : Goal) (proof : Expr) : MetaM Result := do
+/-- Data synth theorem and it discr three key. -/
+structure Theorem where
+  /-- function property name -/
+  dataSynthName : Name
+  /-- theorem name -/
+  thmName : Name
+  /-- discrimination tree keys used to index this theorem -/
+  keys : List (RefinedDiscrTree.Key × RefinedDiscrTree.LazyEntry)
+  /-- priority -/
+  priority : Nat  := eval_prio default
+  deriving Inhabited
 
---   -- todo: maybe add same sanity checks that we are doing reasonable things
-
---   let P ← inferType proof
---   let (xs,goal) ← g.mkFreshProofGoal
---   if ¬(← isDefEq goal P) then
---     throwError "invalid result of {← ppExpr P}"
---   let xs ← xs.mapM instantiateMVars
-
---   let r : Result := {
---     xs := xs
---     proof := ← instantiateMVars proof
---     goal := g
---   }
---   return r
+/-- Structure holding transition or morphism theorems for `fun_prop` tactic. -/
+structure Theorems where
+  /-- Discrimination tree indexing theorems. -/
+  theorems : RefinedDiscrTree Theorem := {}
+  deriving Inhabited
 
 -- what are `data_synth` specific config options?
 structure DataSynthConfig where
@@ -118,6 +118,9 @@ structure State where
   failedCache : Std.HashSet Goal := {}
   /-- Log failures messages that should be displayed to the user at the end. -/
   msgLog : List MessageData := []
+  /-- `RefinedDiscrTree` is lazy, so we store the partially evaluated tree. -/
+  theorems : Theorems := default
+
 
 abbrev DataSynthM := ReaderT Context <| StateRefT State Simp.SimpM
 
