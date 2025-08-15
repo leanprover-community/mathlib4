@@ -95,7 +95,7 @@ instance {R} [Ring R] (v : Valuation R Γ₀) : Valued (WithVal v) Γ₀ :=
 
 @[simp]
 theorem apply_equiv (r : WithVal v) :
-    (Valued.v : Valuation (WithVal v) Γ₀) (WithVal.equiv v r) = v r :=
+    (Valued.v : Valuation (WithVal v) Γ₀) r = v (equiv v r) :=
   rfl
 
 @[simp]
