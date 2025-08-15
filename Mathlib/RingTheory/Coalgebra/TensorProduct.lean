@@ -85,13 +85,13 @@ private lemma coassoc :
     (comul (R := S) (A := (A ⊗[R] B))).lTensor (A ⊗[R] B) ∘ₗ
       (comul (R := S) (A := (A ⊗[R] B))) := by
   ext x y
-  let F : (A ⊗[S] A ⊗[S] A) ⊗[R] (B ⊗[R] B ⊗[R] B) ≃ₗ[S]
-    (A ⊗[R] B) ⊗[S] (A ⊗[R] B) ⊗[S] A ⊗[R] B :=
+  let F : A ⊗[S] (A ⊗[S] A) ⊗[R] (B ⊗[R] (B ⊗[R] B)) ≃ₗ[S]
+    A ⊗[R] B ⊗[S] (A ⊗[R] B ⊗[S] (A ⊗[R] B)) :=
     AlgebraTensorModule.tensorTensorTensorComm _ _ _ _ _ _ _ _ ≪≫ₗ
       AlgebraTensorModule.congr (.refl _ _)
         (AlgebraTensorModule.tensorTensorTensorComm _ _ _ _ _ _ _ _)
-  let F' : (A ⊗[S] A ⊗[S] A) ⊗[R] (B ⊗[R] B ⊗[R] B) →ₗ[S]
-      (A ⊗[R] B) ⊗[S] (A ⊗[R] B) ⊗[S] A ⊗[R] B :=
+  let F' : A ⊗[S] (A ⊗[S] A) ⊗[R] (B ⊗[R] (B ⊗[R] B)) →ₗ[S]
+      A ⊗[R] B ⊗[S] (A ⊗[R] B ⊗[S] (A ⊗[R] B)) :=
     TensorProduct.mapOfCompatibleSMul _ _ _ _ ∘ₗ
         TensorProduct.map .id (TensorProduct.mapOfCompatibleSMul _ _ _ _) ∘ₗ F.toLinearMap
   convert congr(F ($(Coalgebra.coassoc_apply x) ⊗ₜ[R] $(Coalgebra.coassoc_apply y))) using 1
@@ -139,6 +139,15 @@ instance instCoalgebra : Coalgebra S (A ⊗[R] B) where
       rw [tmul_smul, smul_assoc, one_smul, smul_tmul']
     · dsimp
       simp only [one_smul]
+
+instance [IsCocomm S A] [IsCocomm R B] : IsCocomm S (A ⊗[R] B) where
+  comm_comp_comul := by
+    ext x y
+    dsimp
+    conv_rhs => rw [← comm_comul _ x, ← comm_comul _ y]
+    hopf_tensor_induction comul (R := S) x with x₁ x₂
+    hopf_tensor_induction comul (R := R) y with y₁ y₂
+    simp
 
 end TensorProduct
 

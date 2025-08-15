@@ -34,7 +34,7 @@ outer measure, Carathéodory-measurable, Carathéodory's criterion
 
 -/
 
-assert_not_exists Basis
+assert_not_exists Module.Basis
 
 noncomputable section
 
@@ -163,7 +163,6 @@ theorem ofFunction_union_of_top_of_nonempty_inter {s t : Set α}
       μ s + μ t ≤ ∞ := le_top
       _ = m (f i) := (h (f i) hs ht).symm
       _ ≤ ∑' i, m (f i) := ENNReal.le_tsum i
-
   set I := fun s => { i : ℕ | (s ∩ f i).Nonempty }
   have hd : Disjoint (I s) (I t) := disjoint_iff_inf_le.mpr fun i hi => he ⟨i, hi⟩
   have hI : ∀ u ⊆ s ∪ t, μ u ≤ ∑' i : I u, μ (f i) := fun u hu =>
@@ -173,7 +172,6 @@ theorem ofFunction_union_of_top_of_nonempty_inter {s t : Set α}
           let ⟨i, hi⟩ := mem_iUnion.1 (hf (hu hx))
           mem_iUnion.2 ⟨⟨i, ⟨x, hx, hi⟩⟩, hi⟩
       _ ≤ ∑' i : I u, μ (f i) := measure_iUnion_le _
-
   calc
     μ s + μ t ≤ (∑' i : I s, μ (f i)) + ∑' i : I t, μ (f i) :=
       add_le_add (hI _ subset_union_left) (hI _ subset_union_right)
@@ -213,7 +211,7 @@ theorem map_ofFunction {β} {f : α → β} (hf : Injective f) :
   intro t ht
   refine iInf_le_of_le (fun n => (range f)ᶜ ∪ f '' t n) (iInf_le_of_le ?_ ?_)
   · rw [← union_iUnion, ← inter_subset, ← image_preimage_eq_inter_range, ← image_iUnion]
-    exact image_subset _ ht
+    exact image_mono ht
   · refine ENNReal.tsum_le_tsum fun n => le_of_eq ?_
     simp [hf.preimage_image]
 
@@ -425,7 +423,7 @@ theorem map_iInf_comap {ι β} [Nonempty ι] {f : α → β} (m : ι → OuterMe
   refine fun t ht => iInf_le_of_le (fun n => f '' t n ∪ (range f)ᶜ) (iInf_le_of_le ?_ ?_)
   · rw [← iUnion_union, Set.union_comm, ← inter_subset, ← image_iUnion, ←
       image_preimage_eq_inter_range]
-    exact image_subset _ ht
+    exact image_mono ht
   · refine ENNReal.tsum_le_tsum fun n => iInf_mono fun i => (m i).mono ?_
     simp only [preimage_union, preimage_compl, preimage_range, compl_univ, union_empty,
       image_subset_iff]

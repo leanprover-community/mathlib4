@@ -3,9 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kim Morrison
 -/
-import Mathlib.Algebra.Group.Finsupp
-import Mathlib.Algebra.Group.Indicator
-import Mathlib.Data.Finset.Max
+import Mathlib.Algebra.Notation.Indicator
+import Mathlib.Data.Finsupp.Defs
 
 /-!
 # Finitely supported functions on exactly one point
@@ -24,6 +23,7 @@ using one point of the domain.
 This file is a `noncomputable theory` and uses classical logic throughout.
 -/
 
+assert_not_exists CompleteLattice
 
 noncomputable section
 
@@ -54,7 +54,7 @@ def single (a : α) (b : M) : α →₀ M where
       rw [if_neg hb, mem_singleton]
       obtain rfl | ha := eq_or_ne a' a
       · simp [hb, Pi.single, update]
-      simp [Pi.single_eq_of_ne' ha.symm, ha]
+      simp [ha]
 
 theorem single_apply [Decidable (a = a')] : single a b a' = if a = a' then b else 0 := by
   classical
@@ -124,7 +124,7 @@ theorem single_apply_ne_zero {a x : α} {b : M} : single a b x ≠ 0 ↔ x = a �
   simp [single_apply_eq_zero]
 
 theorem mem_support_single (a a' : α) (b : M) : a ∈ (single a' b).support ↔ a = a' ∧ b ≠ 0 := by
-  simp [single_apply_eq_zero, not_or]
+  simp [single_apply_eq_zero]
 
 theorem eq_single_iff {f : α →₀ M} {a b} : f = single a b ↔ f.support ⊆ {a} ∧ f a = b := by
   refine ⟨fun h => h.symm ▸ ⟨support_single_subset, single_eq_same⟩, ?_⟩
@@ -197,11 +197,6 @@ lemma apply_single' [Zero N] [Zero P] (e : N → P) (he : e 0 = 0) (a : α) (n :
   split_ifs
   · rfl
   · exact he
-
-lemma apply_single [Zero N] [Zero P] {F : Type*} [FunLike F N P] [ZeroHomClass F N P]
-    (e : F) (a : α) (n : N) (b : α) :
-    e ((single a n) b) = single a (e n) b :=
-  apply_single' e (map_zero e) a n b
 
 theorem support_eq_singleton {f : α →₀ M} {a : α} :
     f.support = {a} ↔ f a ≠ 0 ∧ f = single a (f a) :=
@@ -283,7 +278,7 @@ def update (f : α →₀ M) (a : α) (b : M) : α →₀ M where
     · rw [Finset.mem_erase]
       simp [ha]
     · rw [Finset.mem_insert]
-      simp [ha]
+      simp
     · rw [Finset.mem_insert]
       simp [ha]
 
@@ -315,7 +310,7 @@ theorem support_update [DecidableEq α] [DecidableEq M] :
 @[simp]
 theorem support_update_zero [DecidableEq α] : support (f.update a 0) = f.support.erase a := by
   classical
-  simp only [update, ite_true, mem_support_iff, ne_eq, not_not]
+  simp only [update, ite_true]
   congr!
 
 variable {b}
@@ -323,7 +318,7 @@ variable {b}
 theorem support_update_ne_zero [DecidableEq α] (h : b ≠ 0) :
     support (f.update a b) = insert a f.support := by
   classical
-  simp only [update, h, ite_false, mem_support_iff, ne_eq]
+  simp only [update, h, ite_false]
   congr!
 
 theorem support_update_subset [DecidableEq α] :
@@ -509,216 +504,4 @@ theorem zipWith_single_single (f : M → N → P) (hf : f 0 0 = 0) (a : α) (m :
   · rw [single_eq_of_ne ha', single_eq_of_ne ha', single_eq_of_ne ha', hf]
 
 end ZipWith
-
-/-! ### Additive monoid structure on `α →₀ M` -/
-
-
-section AddZeroClass
-
-variable [AddZeroClass M]
-
-@[simp]
-theorem single_add (a : α) (b₁ b₂ : M) : single a (b₁ + b₂) = single a b₁ + single a b₂ :=
-  (zipWith_single_single _ _ _ _ _).symm
-
-theorem support_single_add {a : α} {b : M} {f : α →₀ M} (ha : a ∉ f.support) (hb : b ≠ 0) :
-    support (single a b + f) = cons a f.support ha := by
-  classical
-  have H := support_single_ne_zero a hb
-  rw [support_add_eq, H, cons_eq_insert, insert_eq]
-  rwa [H, disjoint_singleton_left]
-
-theorem support_add_single {a : α} {b : M} {f : α →₀ M} (ha : a ∉ f.support) (hb : b ≠ 0) :
-    support (f + single a b) = cons a f.support ha := by
-  classical
-  have H := support_single_ne_zero a hb
-  rw [support_add_eq, H, union_comm, cons_eq_insert, insert_eq]
-  rwa [H, disjoint_singleton_right]
-
-lemma _root_.AddEquiv.finsuppUnique_symm {M : Type*} [AddZeroClass M] (d : M) :
-    AddEquiv.finsuppUnique.symm d = single () d := by
-  rw [Finsupp.unique_single (AddEquiv.finsuppUnique.symm d), Finsupp.unique_single_eq_iff]
-  simp [AddEquiv.finsuppUnique]
-
-/-- `Finsupp.single` as an `AddMonoidHom`.
-
-See `Finsupp.lsingle` in `Mathlib/LinearAlgebra/Finsupp/Defs.lean` for the stronger version as a
-linear map. -/
-@[simps]
-def singleAddHom (a : α) : M →+ α →₀ M where
-  toFun := single a
-  map_zero' := single_zero a
-  map_add' := single_add a
-
-theorem update_eq_single_add_erase (f : α →₀ M) (a : α) (b : M) :
-    f.update a b = single a b + f.erase a := by
-  classical
-    ext j
-    rcases eq_or_ne a j with (rfl | h)
-    · simp
-    · simp [Function.update_of_ne h.symm, single_apply, h, erase_ne, h.symm]
-
-theorem update_eq_erase_add_single (f : α →₀ M) (a : α) (b : M) :
-    f.update a b = f.erase a + single a b := by
-  classical
-    ext j
-    rcases eq_or_ne a j with (rfl | h)
-    · simp
-    · simp [Function.update_of_ne h.symm, single_apply, h, erase_ne, h.symm]
-
-theorem single_add_erase (a : α) (f : α →₀ M) : single a (f a) + f.erase a = f := by
-  rw [← update_eq_single_add_erase, update_self]
-
-theorem erase_add_single (a : α) (f : α →₀ M) : f.erase a + single a (f a) = f := by
-  rw [← update_eq_erase_add_single, update_self]
-
-@[simp]
-theorem erase_add (a : α) (f f' : α →₀ M) : erase a (f + f') = erase a f + erase a f' := by
-  ext s; by_cases hs : s = a
-  · rw [hs, add_apply, erase_same, erase_same, erase_same, add_zero]
-  rw [add_apply, erase_ne hs, erase_ne hs, erase_ne hs, add_apply]
-
-/-- `Finsupp.erase` as an `AddMonoidHom`. -/
-@[simps]
-def eraseAddHom (a : α) : (α →₀ M) →+ α →₀ M where
-  toFun := erase a
-  map_zero' := erase_zero a
-  map_add' := erase_add a
-
-@[elab_as_elim]
-protected theorem induction {motive : (α →₀ M) → Prop} (f : α →₀ M) (zero : motive 0)
-    (single_add : ∀ (a b) (f : α →₀ M),
-      a ∉ f.support → b ≠ 0 → motive f → motive (single a b + f)) : motive f :=
-  suffices ∀ (s) (f : α →₀ M), f.support = s → motive f from this _ _ rfl
-  fun s =>
-  Finset.cons_induction_on s (fun f hf => by rwa [support_eq_empty.1 hf]) fun a s has ih f hf => by
-    suffices motive (single a (f a) + f.erase a) by rwa [single_add_erase] at this
-    classical
-      apply single_add
-      · rw [support_erase, mem_erase]
-        exact fun H => H.1 rfl
-      · rw [← mem_support_iff, hf]
-        exact mem_cons_self _ _
-      · apply ih _ _
-        rw [support_erase, hf, Finset.erase_cons]
-
-@[elab_as_elim]
-theorem induction₂ {motive : (α →₀ M) → Prop} (f : α →₀ M) (zero : motive 0)
-    (add_single : ∀ (a b) (f : α →₀ M),
-      a ∉ f.support → b ≠ 0 → motive f → motive (f + single a b)) : motive f :=
-  suffices ∀ (s) (f : α →₀ M), f.support = s → motive f from this _ _ rfl
-  fun s =>
-  Finset.cons_induction_on s (fun f hf => by rwa [support_eq_empty.1 hf]) fun a s has ih f hf => by
-    suffices motive (f.erase a + single a (f a)) by rwa [erase_add_single] at this
-    classical
-      apply add_single
-      · rw [support_erase, mem_erase]
-        exact fun H => H.1 rfl
-      · rw [← mem_support_iff, hf]
-        exact mem_cons_self _ _
-      · apply ih _ _
-        rw [support_erase, hf, Finset.erase_cons]
-
-@[elab_as_elim]
-theorem induction_linear {motive : (α →₀ M) → Prop} (f : α →₀ M) (zero : motive 0)
-    (add : ∀ f g : α →₀ M, motive f → motive g → motive (f + g))
-    (single : ∀ a b, motive (single a b)) : motive f :=
-  induction₂ f zero fun _a _b _f _ _ w => add _ _ w (single _ _)
-
-section LinearOrder
-
-variable [LinearOrder α] {p : (α →₀ M) → Prop}
-
-/-- A finitely supported function can be built by adding up `single a b` for increasing `a`.
-
-The theorem `induction_on_max₂` swaps the argument order in the sum. -/
-theorem induction_on_max (f : α →₀ M) (h0 : p 0)
-    (ha : ∀ (a b) (f : α →₀ M), (∀ c ∈ f.support, c < a) → b ≠ 0 → p f → p (single a b + f)) :
-    p f := by
-  suffices ∀ (s) (f : α →₀ M), f.support = s → p f from this _ _ rfl
-  refine fun s => s.induction_on_max (fun f h => ?_) (fun a s hm hf f hs => ?_)
-  · rwa [support_eq_empty.1 h]
-  · have hs' : (erase a f).support = s := by
-      rw [support_erase, hs, erase_insert (fun ha => (hm a ha).false)]
-    rw [← single_add_erase a f]
-    refine ha _ _ _ (fun c hc => hm _ <| hs'.symm ▸ hc) ?_ (hf _ hs')
-    rw [← mem_support_iff, hs]
-    exact mem_insert_self a s
-
-/-- A finitely supported function can be built by adding up `single a b` for decreasing `a`.
-
-The theorem `induction_on_min₂` swaps the argument order in the sum. -/
-theorem induction_on_min (f : α →₀ M) (h0 : p 0)
-    (ha : ∀ (a b) (f : α →₀ M), (∀ c ∈ f.support, a < c) → b ≠ 0 → p f → p (single a b + f)) :
-    p f :=
-  induction_on_max (α := αᵒᵈ) f h0 ha
-
-/-- A finitely supported function can be built by adding up `single a b` for increasing `a`.
-
-The theorem `induction_on_max` swaps the argument order in the sum. -/
-theorem induction_on_max₂ (f : α →₀ M) (h0 : p 0)
-    (ha : ∀ (a b) (f : α →₀ M), (∀ c ∈ f.support, c < a) → b ≠ 0 → p f → p (f + single a b)) :
-    p f := by
-  suffices ∀ (s) (f : α →₀ M), f.support = s → p f from this _ _ rfl
-  refine fun s => s.induction_on_max (fun f h => ?_) (fun a s hm hf f hs => ?_)
-  · rwa [support_eq_empty.1 h]
-  · have hs' : (erase a f).support = s := by
-      rw [support_erase, hs, erase_insert (fun ha => (hm a ha).false)]
-    rw [← erase_add_single a f]
-    refine ha _ _ _ (fun c hc => hm _ <| hs'.symm ▸ hc) ?_ (hf _ hs')
-    rw [← mem_support_iff, hs]
-    exact mem_insert_self a s
-
-/-- A finitely supported function can be built by adding up `single a b` for decreasing `a`.
-
-The theorem `induction_on_min` swaps the argument order in the sum. -/
-theorem induction_on_min₂ (f : α →₀ M) (h0 : p 0)
-    (ha : ∀ (a b) (f : α →₀ M), (∀ c ∈ f.support, a < c) → b ≠ 0 → p f → p (f + single a b)) :
-    p f :=
-  induction_on_max₂ (α := αᵒᵈ) f h0 ha
-
-end LinearOrder
-
-end AddZeroClass
-
-theorem single_add_single_eq_single_add_single [AddCommMonoid M] {k l m n : α} {u v : M}
-    (hu : u ≠ 0) (hv : v ≠ 0) :
-    single k u + single l v = single m u + single n v ↔
-      (k = m ∧ l = n) ∨ (u = v ∧ k = n ∧ l = m) ∨ (u + v = 0 ∧ k = l ∧ m = n) := by
-  classical
-    simp_rw [DFunLike.ext_iff, coe_add, single_eq_pi_single, ← funext_iff]
-    exact Pi.single_add_single_eq_single_add_single hu hv
-
-theorem erase_eq_sub_single [AddGroup G] (f : α →₀ G) (a : α) : f.erase a = f - single a (f a) := by
-  ext a'
-  rcases eq_or_ne a a' with (rfl | h)
-  · simp
-  · simp [erase_ne h.symm, single_eq_of_ne h]
-
-theorem update_eq_sub_add_single [AddGroup G] (f : α →₀ G) (a : α) (b : G) :
-    f.update a b = f - single a (f a) + single a b := by
-  rw [update_eq_erase_add_single, erase_eq_sub_single]
-
-section Group
-
-variable [AddGroup G] {p : α → Prop} {v v' : α →₀ G}
-
-@[simp]
-theorem single_neg (a : α) (b : G) : single a (-b) = -single a b :=
-  (singleAddHom a : G →+ _).map_neg b
-
-@[simp]
-theorem single_sub (a : α) (b₁ b₂ : G) : single a (b₁ - b₂) = single a b₁ - single a b₂ :=
-  (singleAddHom a : G →+ _).map_sub b₁ b₂
-
-@[simp]
-theorem erase_neg (a : α) (f : α →₀ G) : erase a (-f) = -erase a f :=
-  (eraseAddHom a : (_ →₀ G) →+ _).map_neg f
-
-@[simp]
-theorem erase_sub (a : α) (f₁ f₂ : α →₀ G) : erase a (f₁ - f₂) = erase a f₁ - erase a f₂ :=
-  (eraseAddHom a : (_ →₀ G) →+ _).map_sub f₁ f₂
-
-end Group
-
 end Finsupp

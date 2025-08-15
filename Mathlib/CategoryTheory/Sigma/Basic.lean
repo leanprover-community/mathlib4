@@ -179,7 +179,7 @@ section
 variable (C) {J : Type w₂} (g : J → I)
 
 /-- A function `J → I` induces a functor `Σ j, C (g j) ⥤ Σ i, C i`. -/
-def map : (Σj : J, C (g j)) ⥤ Σ i : I, C i :=
+def map : (Σ j : J, C (g j)) ⥤ Σ i : I, C i :=
   desc fun j => incl (g j)
 
 @[simp]
@@ -212,7 +212,7 @@ variable {I} {K : Type w₃}
 @[simps!]
 def mapComp (f : K → J) (g : J → I) : map (fun x ↦ C (g x)) f ⋙ (map C g :) ≅ map C (g ∘ f) :=
   (descUniq _ _) fun k =>
-    (isoWhiskerRight (inclCompMap (fun i => C (g i)) f k) (map C g :) :) ≪≫ inclCompMap _ _ _
+    (Functor.isoWhiskerRight (inclCompMap _ f k) (map C g :) :) ≪≫ inclCompMap _ g (f k)
 
 end
 

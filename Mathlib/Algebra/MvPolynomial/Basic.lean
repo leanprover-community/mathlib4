@@ -7,9 +7,11 @@ import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.MonoidAlgebra.Basic
+import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
 import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Algebra.Regular.Pow
 import Mathlib.Data.Finsupp.Antidiagonal
+import Mathlib.Data.Finsupp.Order
 import Mathlib.Order.SymmDiff
 
 /-!
@@ -164,6 +166,11 @@ theorem algebraMap_eq : algebraMap R (MvPolynomial σ R) = C :=
 
 variable {R σ}
 
+@[simp]
+theorem algebraMap_apply [Algebra R S₁] (r : R) :
+    algebraMap R (MvPolynomial σ S₁) r = C (algebraMap R S₁ r) :=
+  rfl
+
 /-- `X n` is the degree `1` monomial $X_n$. -/
 def X (n : σ) : MvPolynomial σ R :=
   monomial (Finsupp.single n 1) 1
@@ -188,9 +195,9 @@ theorem C_1 : C 1 = (1 : MvPolynomial σ R) :=
   rfl
 
 theorem C_mul_monomial : C a * monomial s a' = monomial s (a * a') := by
-  -- Porting note: this `show` feels like defeq abuse, but I can't find the appropriate lemmas
-  show AddMonoidAlgebra.single _ _ * AddMonoidAlgebra.single _ _ = AddMonoidAlgebra.single _ _
-  simp [C_apply, single_mul_single]
+  -- Porting note: this `change` feels like defeq abuse, but I can't find the appropriate lemmas
+  change AddMonoidAlgebra.single _ _ * AddMonoidAlgebra.single _ _ = AddMonoidAlgebra.single _ _
+  simp [single_mul_single]
 
 @[simp]
 theorem C_add : (C (a + a') : MvPolynomial σ R) = C a + C a' :=
@@ -237,6 +244,16 @@ instance infinite_of_nonempty (σ : Type*) (R : Type*) [Nonempty σ] [CommSemiri
     [Nontrivial R] : Infinite (MvPolynomial σ R) :=
   Infinite.of_injective ((fun s : σ →₀ ℕ => monomial s 1) ∘ Finsupp.single (Classical.arbitrary σ))
     <| (monomial_left_injective one_ne_zero).comp (Finsupp.single_injective _)
+
+instance [CommSemiring R] [NoZeroDivisors R] : NoZeroDivisors (MvPolynomial σ R) :=
+  inferInstanceAs (NoZeroDivisors (AddMonoidAlgebra ..))
+
+instance [CommSemiring R] [IsCancelAdd R] [IsCancelMulZero R] :
+    IsCancelMulZero (MvPolynomial σ R) :=
+  inferInstanceAs (IsCancelMulZero (AddMonoidAlgebra ..))
+
+/-- The multivariate polynomial ring over an integral domain is an integral domain. -/
+instance [CommSemiring R] [IsCancelAdd R] [IsDomain R] : IsDomain (MvPolynomial σ R) where
 
 theorem C_eq_coe_nat (n : ℕ) : (C ↑n : MvPolynomial σ R) = n := by
   induction n <;> simp [*]
@@ -348,14 +365,14 @@ theorem induction_on_monomial {motive : MvPolynomial σ R → Prop}
     (mul_X : ∀ p n, motive p → motive (p * X n)) : ∀ s a, motive (monomial s a) := by
   intro s a
   apply @Finsupp.induction σ ℕ _ _ s
-  · show motive (monomial 0 a)
+  · change motive (monomial 0 a)
     exact C a
   · intro n e p _hpn _he ih
     have : ∀ e : ℕ, motive (monomial p a * X n ^ e) := by
       intro e
       induction e with
       | zero => simp [ih]
-      | succ e e_ih => simp [ih, pow_succ, (mul_assoc _ _ _).symm, mul_X, e_ih]
+      | succ e e_ih => simp [pow_succ, (mul_assoc _ _ _).symm, mul_X, e_ih]
     simp [add_comm, monomial_add_single, this]
 
 /-- Analog of `Polynomial.induction_on'`.
@@ -566,6 +583,11 @@ theorem coeff_zero (m : σ →₀ ℕ) : coeff m (0 : MvPolynomial σ R) = 0 :=
 @[simp]
 theorem coeff_zero_X (i : σ) : coeff 0 (X i : MvPolynomial σ R) = 0 :=
   single_eq_of_ne fun h => by cases Finsupp.single_eq_zero.1 h
+
+@[simp]
+theorem coeff_mapRange (g : S₁ → R) (hg : g 0 = 0) (φ : MvPolynomial σ S₁) (m) :
+    coeff m (mapRange g hg φ) = g (coeff m φ) := by
+  simp [mapRange, coeff]
 
 /-- `MvPolynomial.coeff m` but promoted to an `AddMonoidHom`. -/
 @[simps]
@@ -860,12 +882,12 @@ lemma coeffs_add [DecidableEq R] {p q : MvPolynomial σ R} (h : Disjoint p.suppo
   have hr (n : σ →₀ ℕ) (hne : q.coeff n ≠ 0) : p.coeff n = 0 :=
     notMem_support_iff.mp <| h.notMem_of_mem_right_finset (mem_support_iff.mpr hne)
   have hor (n) (h : ¬coeff n p + coeff n q = 0) : coeff n p ≠ 0 ∨ coeff n q ≠ 0 := by
-    by_cases hp : coeff n p = 0 <;> aesop
+    by_cases hp : coeff n p = 0 <;> simp_all
   refine ⟨fun ⟨n, hn1, hn2⟩ ↦ ?_, ?_⟩
-  · obtain (h|h) := hor n hn1
+  · obtain (h | h) := hor n hn1
     · exact Or.inl ⟨n, by simp [h, hn2, hl n h]⟩
     · exact Or.inr ⟨n, by simp [h, hn2, hr n h]⟩
-  · rintro (⟨n, hn, rfl⟩|⟨n, hn, rfl⟩)
+  · rintro (⟨n, hn, rfl⟩ | ⟨n, hn, rfl⟩)
     · exact ⟨n, by simp [hl n hn, hn]⟩
     · exact ⟨n, by simp [hr n hn, hn]⟩
 
@@ -878,8 +900,8 @@ This is a ring homomorphism.
 -/
 def constantCoeff : MvPolynomial σ R →+* R where
   toFun := coeff 0
-  map_one' := by simp [AddMonoidAlgebra.one_def]
-  map_mul' := by classical simp [coeff_mul, Finsupp.support_single_ne_zero]
+  map_one' := by simp
+  map_mul' := by classical simp [coeff_mul]
   map_zero' := coeff_zero _
   map_add' := coeff_add _
 
@@ -963,7 +985,7 @@ lemma one_coeffsIn : 1 ∈ coeffsIn σ M ↔ 1 ∈ M := by simpa using C_mem_coe
 @[simp]
 lemma mul_monomial_mem_coeffsIn : p * monomial i 1 ∈ coeffsIn σ M ↔ p ∈ coeffsIn σ M := by
   classical
-  simp only [mem_coeffsIn, coeff_mul_monomial', Finsupp.mem_support_iff]
+  simp only [mem_coeffsIn, coeff_mul_monomial']
   constructor
   · rintro hp j
     simpa using hp (j + i)
@@ -989,7 +1011,7 @@ lemma coeffsIn_eq_span_monomial : coeffsIn σ M = .span R {monomial i m | (m ∈
     rw [p.as_sum]
     exact sum_mem fun i hi ↦ Submodule.subset_span ⟨_, hp i, _, rfl⟩
   · rintro _ ⟨m, hm, s, n, rfl⟩ i
-    simp [coeff_X_pow]
+    simp
     split <;> simp [hm]
 
 lemma coeffsIn_le {N : Submodule R (MvPolynomial σ S)} :

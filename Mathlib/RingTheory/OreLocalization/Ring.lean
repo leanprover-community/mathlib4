@@ -148,7 +148,7 @@ def universalHom : R[S⁻¹] →+* T :=
       rcases oreDivAddChar' r₁ r₂ s₁ s₂ with ⟨r₃, s₃, h₃, h₃'⟩
       rw [h₃']
       clear h₃'
-      simp only [RingHom.toMonoidHom_eq_coe, smul_eq_mul, universalMulHom_apply, MonoidHom.coe_coe,
+      simp only [smul_eq_mul, universalMulHom_apply, MonoidHom.coe_coe,
         Submonoid.smul_def]
       simp only [mul_inv_rev, MonoidHom.map_mul, RingHom.map_add, RingHom.map_mul, Units.val_mul]
       rw [mul_add, mul_assoc, ← mul_assoc _ (f s₃), hf, ← Units.val_mul]
@@ -195,7 +195,7 @@ lemma zsmul_eq_zsmul (n : ℤ) (x : X[S⁻¹]) :
 
 open nonZeroDivisors
 
-theorem numeratorHom_inj (hS : S ≤ nonZeroDivisorsRight R) :
+theorem numeratorHom_inj (hS : S ≤ nonZeroDivisorsLeft R) :
     Function.Injective (numeratorHom : R → R[S⁻¹]) :=
   fun r₁ r₂ h => by
   rw [numeratorHom_apply, numeratorHom_apply, oreDiv_eq_iff] at h
@@ -214,9 +214,17 @@ theorem nontrivial_iff :
     Nontrivial R[S⁻¹] ↔ 0 ∉ S := by
   rw [← not_subsingleton_iff_nontrivial, subsingleton_iff]
 
-theorem nontrivial_of_nonZeroDivisors [Nontrivial R] (hS : S ≤ R⁰) :
+theorem nontrivial_of_nonZeroDivisorsLeft [Nontrivial R] (hS : S ≤ nonZeroDivisorsLeft R) :
+    Nontrivial R[S⁻¹] :=
+  nontrivial_iff.mpr (fun e ↦ one_ne_zero <| hS e 1 (zero_mul _))
+
+theorem nontrivial_of_nonZeroDivisorsRight [Nontrivial R] (hS : S ≤ nonZeroDivisorsRight R) :
     Nontrivial R[S⁻¹] :=
   nontrivial_iff.mpr (fun e ↦ one_ne_zero <| hS e 1 (mul_zero _))
+
+theorem nontrivial_of_nonZeroDivisors [Nontrivial R] (hS : S ≤ R⁰) :
+    Nontrivial R[S⁻¹] :=
+  nontrivial_of_nonZeroDivisorsLeft (hS.trans inf_le_left)
 
 end Ring
 
@@ -239,7 +247,7 @@ protected def inv : R[R⁰⁻¹] → R[R⁰⁻¹] :=
   liftExpand
     (fun r s =>
       if hr : r = (0 : R) then (0 : R[R⁰⁻¹])
-      else s /ₒ ⟨r, fun _ => eq_zero_of_ne_zero_of_mul_right_eq_zero hr⟩)
+      else s /ₒ ⟨r, mem_nonZeroDivisors_of_ne_zero hr⟩)
     (by
       intro r t s hst
       by_cases hr : r = 0
@@ -247,7 +255,7 @@ protected def inv : R[R⁰⁻¹] → R[R⁰⁻¹] :=
       · by_cases ht : t = 0
         · exfalso
           apply nonZeroDivisors.coe_ne_zero ⟨_, hst⟩
-          simp [ht, mul_zero]
+          simp [ht]
         · simp only [hr, ht, dif_neg, not_false_iff, or_self_iff, mul_eq_zero, smul_eq_mul]
           apply OreLocalization.expand)
 
@@ -258,7 +266,7 @@ open Classical in
 protected theorem inv_def {r : R} {s : R⁰} :
     (r /ₒ s)⁻¹ =
       if hr : r = (0 : R) then (0 : R[R⁰⁻¹])
-      else s /ₒ ⟨r, fun _ => eq_zero_of_ne_zero_of_mul_right_eq_zero hr⟩ := by
+      else s /ₒ ⟨r, mem_nonZeroDivisors_of_ne_zero hr⟩ := by
   with_unfolding_all rfl
 
 protected theorem mul_inv_cancel (x : R[R⁰⁻¹]) (h : x ≠ 0) : x * x⁻¹ = 1 := by

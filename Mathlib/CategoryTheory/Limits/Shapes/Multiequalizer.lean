@@ -232,7 +232,7 @@ def multicospan : WalkingMulticospan J ⥤ C where
   map_id := by
     rintro (_ | _) <;> rfl
   map_comp := by
-    rintro (_ | _) (_ | _) (_ | _) (_ | _ | _) (_ | _ | _) <;> aesop_cat
+    rintro (_ | _) (_ | _) (_ | _) (_ | _ | _) (_ | _ | _) <;> cat_disch
 
 variable [HasProduct I.left] [HasProduct I.right]
 
@@ -280,7 +280,7 @@ def multispan : WalkingMultispan J ⥤ C where
   map_id := by
     rintro (_ | _) <;> rfl
   map_comp := by
-    rintro (_ | _) (_ | _) (_ | _) (_ | _ | _) (_ | _ | _) <;> aesop_cat
+    rintro (_ | _) (_ | _) (_ | _) (_ | _ | _) (_ | _ | _) <;> cat_disch
 
 @[simp]
 theorem multispan_obj_left (a) : I.multispan.obj (WalkingMultispan.left a) = I.left a :=
@@ -318,7 +318,7 @@ theorem ι_sndSigmaMap (b) : Sigma.ι I.left b ≫ I.sndSigmaMap = I.snd b ≫ S
 
 /--
 Taking the multicoequalizer over the multispan index is equivalent to taking the coequalizer over
-the two morphsims `∐ I.left ⇉ ∐ I.right`. This is the diagram of the latter.
+the two morphisms `∐ I.left ⇉ ∐ I.right`. This is the diagram of the latter.
 -/
 protected noncomputable abbrev parallelPairDiagram :=
   parallelPair I.fstSigmaMap I.sndSigmaMap
@@ -408,7 +408,7 @@ variable {K}
 lemma IsLimit.hom_ext (hK : IsLimit K) {T : C} {f g : T ⟶ K.pt}
     (h : ∀ a, f ≫ K.ι a = g ≫ K.ι a) : f = g := by
   apply hK.hom_ext
-  rintro (_|b)
+  rintro (_ | b)
   · apply h
   · dsimp
     rw [app_right_eq_ι_comp_fst, reassoc_of% h]
@@ -527,7 +527,7 @@ noncomputable def multiforkEquivPiFork : Multifork I ≌ Fork I.fstPiMap I.sndPi
   unitIso :=
     NatIso.ofComponents fun K =>
       Cones.ext (Iso.refl _) (by
-        rintro (_ | _) <;> simp [← Fork.app_one_eq_ι_comp_left])
+        rintro (_ | _) <;> simp)
   counitIso :=
     NatIso.ofComponents fun K => Fork.ext (Iso.refl _)
 
@@ -601,13 +601,26 @@ def IsColimit.mk (desc : ∀ E : Multicofork I, K.pt ⟶ E.pt)
       intro i
       apply hm }
 
-variable {K} in
+variable {K}
+
 lemma IsColimit.hom_ext (hK : IsColimit K) {T : C} {f g : K.pt ⟶ T}
     (h : ∀ a, K.π a ≫ f = K.π a ≫ g) : f = g := by
   apply hK.hom_ext
   rintro (_ | _) <;> simp [h]
 
-variable [HasCoproduct I.left] [HasCoproduct I.right]
+/-- Constructor for morphisms from the point of a colimit multicofork. -/
+def IsColimit.desc (hK : IsColimit K) {T : C} (k : ∀ a, I.right a ⟶ T)
+    (hk : ∀ b, I.fst b ≫ k (J.fst b) = I.snd b ≫ k (J.snd b)) :
+    K.pt ⟶ T :=
+  hK.desc (Multicofork.ofπ _ _ k hk)
+
+@[reassoc (attr := simp)]
+lemma IsColimit.fac (hK : IsColimit K) {T : C} (k : ∀ a, I.right a ⟶ T)
+    (hk : ∀ b, I.fst b ≫ k (J.fst b) = I.snd b ≫ k (J.snd b)) (a : J.R) :
+    K.π a ≫ IsColimit.desc hK k hk = k a :=
+  hK.fac _ _
+
+variable (K) [HasCoproduct I.left] [HasCoproduct I.right]
 
 @[reassoc (attr := simp)]
 theorem sigma_condition : I.fstSigmaMap ≫ Sigma.desc K.π = I.sndSigmaMap ≫ Sigma.desc K.π := by
@@ -670,7 +683,7 @@ variable {I} in
 /-- Constructor for isomorphisms between multicoforks. -/
 @[simps!]
 def ext {K K' : Multicofork I}
-    (e : K.pt ≅ K'.pt) (h : ∀ (i : J.R), K.π i ≫ e.hom = K'.π i := by aesop_cat) :
+    (e : K.pt ≅ K'.pt) (h : ∀ (i : J.R), K.π i ≫ e.hom = K'.π i := by cat_disch) :
     K ≅ K' :=
   Cocones.ext e (by rintro (i | j) <;> simp [h])
 
@@ -688,7 +701,7 @@ noncomputable def toSigmaCoforkFunctor : Multicofork I ⥤ Cofork I.fstSigmaMap 
   map {K₁ K₂} f :=
   { hom := f.hom
     w := by
-      rintro (_|_)
+      rintro (_ | _)
       all_goals {
         apply colimit.hom_ext
         rintro ⟨j⟩

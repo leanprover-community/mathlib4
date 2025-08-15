@@ -51,7 +51,7 @@ alias preimage_insertNth_Icc_of_not_mem := preimage_insertNth_Icc_of_notMem
 
 end Fin
 
-open Set Fin Matrix Function
+open Fin Matrix
 
 variable {α : Type*}
 

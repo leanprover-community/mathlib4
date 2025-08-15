@@ -100,6 +100,26 @@ theorem isArtinian_of_surjective (f : M →ₗ[R] P) (hf : Function.Surjective f
       show A.comap f < B.comap f from Submodule.comap_strictMono_of_surjective hf hAB)
     (InvImage.wf (Submodule.comap f) IsWellFounded.wf)⟩
 
+/--
+If `M` is an Artinian `R` module, and `S` is an `R`-algebra with a surjective
+algebra map, then `M` is an Artinian `S` module.
+-/
+theorem isArtinian_of_surjective_algebraMap {S : Type*} [CommSemiring S] [Algebra S R]
+    [Module S M] [IsArtinian R M] [IsScalarTower S R M]
+    (H : Function.Surjective (algebraMap S R)) : IsArtinian S M := by
+  apply (OrderEmbedding.wellFoundedLT (β := Submodule R M))
+  refine ⟨⟨?_, ?_⟩, ?_⟩
+  · intro N
+    refine {toAddSubmonoid := N.toAddSubmonoid, smul_mem' := ?_}
+    intro c x hx
+    obtain ⟨r, rfl⟩ := H c
+    suffices r • x ∈ N by simpa [Algebra.algebraMap_eq_smul_one, smul_assoc]
+    apply N.smul_mem _ hx
+  · intro N1 N2 h
+    rwa [Submodule.ext_iff] at h ⊢
+  · intro N1 N2
+    rfl
+
 instance isArtinian_range (f : M →ₗ[R] P) [IsArtinian R M] : IsArtinian R (LinearMap.range f) :=
   isArtinian_of_surjective _ _ f.surjective_rangeRestrict
 
@@ -109,7 +129,9 @@ theorem isArtinian_of_linearEquiv (f : M ≃ₗ[R] P) [IsArtinian R M] : IsArtin
 theorem LinearEquiv.isArtinian_iff (f : M ≃ₗ[R] P) : IsArtinian R M ↔ IsArtinian R P :=
   ⟨fun _ ↦ isArtinian_of_linearEquiv f, fun _ ↦ isArtinian_of_linearEquiv f.symm⟩
 
-instance (priority := 100) isArtinian_of_finite [Finite M] : IsArtinian R M :=
+-- This was previously a global instance,
+-- but it doesn't appear to be used and has been implicated in slow typeclass resolutions.
+lemma isArtinian_of_finite [Finite M] : IsArtinian R M :=
   ⟨Finite.wellFounded_of_trans_of_irrefl _⟩
 
 -- Porting note: elab_as_elim can only be global and cannot be changed on an imported decl
@@ -119,7 +141,7 @@ open Submodule
 
 theorem IsArtinian.finite_of_linearIndependent [Nontrivial R] [h : IsArtinian R M] {s : Set M}
     (hs : LinearIndependent R ((↑) : s → M)) : s.Finite := by
-  refine by_contradiction fun hf ↦ (RelEmbedding.wellFounded_iff_no_descending_seq.1 h.wf).elim' ?_
+  refine by_contradiction fun hf ↦ (RelEmbedding.wellFounded_iff_isEmpty.1 h.wf).elim' ?_
   have f : ℕ ↪ s := Set.Infinite.natEmbedding s hf
   have : ∀ n, (↑) ∘ f '' { m | n ≤ m } ⊆ s := by
     rintro n x ⟨y, _, rfl⟩
@@ -135,7 +157,7 @@ theorem IsArtinian.finite_of_linearIndependent [Nontrivial R] [h : IsArtinian R 
     rw [le_antisymm_iff, ← this y x, ← this x y]
     exact fun ⟨h₁, h₂⟩ ↦ le_antisymm_iff.2 ⟨h₂, h₁⟩⟩, by
     intro a b
-    conv_rhs => rw [GT.gt, lt_iff_le_not_le, this, this, ← lt_iff_le_not_le]
+    conv_rhs => rw [GT.gt, lt_iff_le_not_ge, this, this, ← lt_iff_le_not_ge]
     rfl⟩
 
 /-- A module is Artinian iff every nonempty set of submodules has a minimal submodule among them. -/
@@ -175,7 +197,7 @@ open Function
 theorem surjective_of_injective_endomorphism (f : M →ₗ[R] M) (s : Injective f) : Surjective f := by
   have h := ‹IsArtinian R M›; contrapose! h
   rw [IsArtinian, WellFoundedLT, isWellFounded_iff]
-  refine (RelEmbedding.natGT (LinearMap.range <| f ^ ·) ?_).not_wellFounded_of_decreasing_seq
+  refine (RelEmbedding.natGT (LinearMap.range <| f ^ ·) ?_).not_wellFounded
   intro n
   simp_rw [pow_succ, Module.End.mul_eq_comp, LinearMap.range_comp, ← Submodule.map_top (f ^ n)]
   refine Submodule.map_strictMono_of_injective (Module.End.iterate_injective s n) (Ne.lt_top ?_)
@@ -213,7 +235,7 @@ lemma eventually_iInf_range_pow_eq (f : Module.End R M) :
   obtain ⟨n, hn : ∀ m, n ≤ m → LinearMap.range (f ^ n) = LinearMap.range (f ^ m)⟩ :=
     IsArtinian.monotone_stabilizes f.iterateRange
   refine eventually_atTop.mpr ⟨n, fun l hl ↦ le_antisymm (iInf_le _ _) (le_iInf fun m ↦ ?_)⟩
-  rcases le_or_lt l m with h | h
+  rcases le_or_gt l m with h | h
   · rw [← hn _ (hl.trans h), hn _ hl]
   · exact f.iterateRange.monotone h.le
 
@@ -377,7 +399,7 @@ theorem isArtinian_of_tower (R) {S M} [Semiring R] [Semiring S] [AddCommMonoid M
   ⟨(Submodule.restrictScalarsEmbedding R S M).wellFounded h.wf⟩
 
 -- See `Mathlib/RingTheory/Artinian/Ring.lean`
-assert_not_exists IsLocalization LocalRing
+assert_not_exists IsLocalization IsLocalRing
 
 /-- A ring is Artinian if it is Artinian as a module over itself.
 
@@ -505,8 +527,6 @@ lemma isPrime_iff_isMaximal (p : Ideal R) : p.IsPrime ↔ p.IsMaximal :=
 def primeSpectrumEquivMaximalSpectrum : PrimeSpectrum R ≃ MaximalSpectrum R where
   toFun I := ⟨I.asIdeal, isPrime_iff_isMaximal I.asIdeal |>.mp I.isPrime⟩
   invFun I := ⟨I.asIdeal, isPrime_iff_isMaximal I.asIdeal |>.mpr I.isMaximal⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 lemma primeSpectrumEquivMaximalSpectrum_comp_asIdeal :
     MaximalSpectrum.asIdeal ∘ primeSpectrumEquivMaximalSpectrum =
@@ -528,7 +548,7 @@ lemma setOf_isPrime_finite : {I : Ideal R | I.IsPrime}.Finite := by
 
 instance : Finite (PrimeSpectrum R) :=
   haveI : Finite {I : Ideal R // I.IsPrime} := (setOf_isPrime_finite R).to_subtype
-  .of_equiv _ (PrimeSpectrum.equivSubtype _).symm
+  .of_equiv _ (PrimeSpectrum.equivSubtype _).symm.toEquiv
 
 /-- A temporary field instance on the quotients by maximal ideals. -/
 @[local instance] noncomputable def fieldOfSubtypeIsMaximal

@@ -254,7 +254,7 @@ instance : IsLeftCancelAdd Nimber := by
   constructor
   intro a b c h
   apply le_antisymm <;>
-  apply le_of_not_lt
+  apply le_of_not_gt
   · exact fun hc => (add_ne_of_lt a b).2 c hc h.symm
   · exact fun hb => (add_ne_of_lt a c).2 b hb h
 
@@ -262,9 +262,9 @@ instance : IsRightCancelAdd Nimber := by
   constructor
   intro a b c h
   apply le_antisymm <;>
-  apply le_of_not_lt
-  · exact fun hc => (add_ne_of_lt a b).1 c hc h.symm
-  · exact fun ha => (add_ne_of_lt c b).1 a ha h
+  apply le_of_not_gt
+  · exact fun hc => (add_ne_of_lt b a).1 c hc h.symm
+  · exact fun ha => (add_ne_of_lt c a).1 b ha h
 
 protected theorem add_comm (a b : Nimber) : a + b = b + a := by
   rw [add_def, add_def]
@@ -383,7 +383,7 @@ theorem add_nat (a b : ℕ) : ∗a + ∗b = ∗(a ^^^ b) := by
       replace hc := Nat.cast_lt.1 hc
       rw [add_nat]
       simpa using hc.ne
-  · apply le_of_not_lt
+  · apply le_of_not_gt
     intro hc
     obtain ⟨c, hc'⟩ := eq_nat_of_le_nat hc.le
     rw [hc', OrderIso.lt_iff_lt, Nat.cast_lt] at hc

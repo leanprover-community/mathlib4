@@ -58,23 +58,26 @@ section CommSemiRing
 variable [CommSemiring R] [CommSemiring S]
 variable {R S}
 
+lemma nonempty_iff_nontrivial : Nonempty (PrimeSpectrum R) ↔ Nontrivial R := by
+  refine ⟨fun ⟨p⟩ ↦ ⟨0, 1, fun h ↦ p.2.ne_top ?_⟩, fun h ↦ ?_⟩
+  · simp [Ideal.eq_top_iff_one p.asIdeal, ← h]
+  · obtain ⟨I, hI⟩ := Ideal.exists_maximal R
+    exact ⟨⟨I, hI.isPrime⟩⟩
+
+lemma isEmpty_iff_subsingleton : IsEmpty (PrimeSpectrum R) ↔ Subsingleton R := by
+  rw [← not_iff_not, not_isEmpty_iff, not_subsingleton_iff_nontrivial, nonempty_iff_nontrivial]
+
 instance [Nontrivial R] : Nonempty <| PrimeSpectrum R :=
-  let ⟨I, hI⟩ := Ideal.exists_maximal R
-  ⟨⟨I, hI.isPrime⟩⟩
+  nonempty_iff_nontrivial.mpr inferInstance
 
 /-- The prime spectrum of the zero ring is empty. -/
 instance [Subsingleton R] : IsEmpty (PrimeSpectrum R) :=
-  ⟨fun x ↦ x.isPrime.ne_top <| SetLike.ext' <| Subsingleton.eq_univ_of_nonempty x.asIdeal.nonempty⟩
+  isEmpty_iff_subsingleton.mpr inferInstance
+
+lemma nontrivial (p : PrimeSpectrum R) : Nontrivial R :=
+  nonempty_iff_nontrivial.mp ⟨p⟩
 
 variable (R S)
-
-/-- The prime spectrum is in bijection with the set of prime ideals. -/
-@[simps]
-def equivSubtype : PrimeSpectrum R ≃ {I : Ideal R // I.IsPrime} where
-  toFun I := ⟨I.asIdeal, I.2⟩
-  invFun I := ⟨I, I.2⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 theorem range_asIdeal : Set.range PrimeSpectrum.asIdeal = {J : Ideal R | J.IsPrime} :=
   Set.ext fun J ↦
@@ -383,25 +386,6 @@ lemma zeroLocus_smul_of_isUnit {r : R} (hr : IsUnit r) (s : Set R) :
 
 section Order
 
-/-!
-## The specialization order
-
-We endow `PrimeSpectrum R` with a partial order induced from the ideal lattice.
-This is exactly the specialization order.
-See the corresponding section at `Mathlib/RingTheory/Spectrum/Prime/Topology.lean`.
--/
-
-instance : PartialOrder (PrimeSpectrum R) :=
-  PartialOrder.lift asIdeal (@PrimeSpectrum.ext _ _)
-
-@[simp]
-theorem asIdeal_le_asIdeal (x y : PrimeSpectrum R) : x.asIdeal ≤ y.asIdeal ↔ x ≤ y :=
-  Iff.rfl
-
-@[simp]
-theorem asIdeal_lt_asIdeal (x y : PrimeSpectrum R) : x.asIdeal < y.asIdeal ↔ x < y :=
-  Iff.rfl
-
 instance [IsDomain R] : OrderBot (PrimeSpectrum R) where
   bot := ⟨⊥, Ideal.bot_prime⟩
   bot_le I := @bot_le _ _ _ I.asIdeal
@@ -418,9 +402,17 @@ lemma isMax_iff {x : PrimeSpectrum R} :
   obtain ⟨m, hm, hm'⟩ := Ideal.exists_le_maximal I e
   exact hx.not_lt (show x < ⟨m, hm.isPrime⟩ from hI.trans_le hm')
 
+lemma zeroLocus_eq_singleton (m : Ideal R) [m.IsMaximal] :
+    zeroLocus m = {⟨m, inferInstance⟩} := by
+  ext I
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · simp only [mem_zeroLocus, SetLike.coe_subset_coe] at h
+    simpa using PrimeSpectrum.ext_iff.mpr (Ideal.IsMaximal.eq_of_le ‹_› I.2.ne_top h).symm
+  · simp [Set.mem_singleton_iff.mp h]
+
 lemma isMin_iff {x : PrimeSpectrum R} :
     IsMin x ↔ x.asIdeal ∈ minimalPrimes R := by
-  show IsMin _ ↔ Minimal (fun q : Ideal R ↦ q.IsPrime ∧ ⊥ ≤ q) _
+  change IsMin _ ↔ Minimal (fun q : Ideal R ↦ q.IsPrime ∧ ⊥ ≤ q) _
   simp only [IsMin, Minimal, x.2, bot_le, and_self, and_true, true_and]
   exact ⟨fun H y hy e ↦ @H ⟨y, hy⟩ e, fun H y e ↦ H y.2 e⟩
 

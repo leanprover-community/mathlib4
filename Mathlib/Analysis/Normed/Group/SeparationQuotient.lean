@@ -88,7 +88,6 @@ noncomputable def liftNormedAddGroupHomEquiv {N : Type*} [SeminormedAddCommGroup
     intro x hx
     rw [← norm_mk, norm_eq_zero] at hx
     simp [hx]⟩
-  left_inv _ := rfl
   right_inv _ := by
     ext x
     obtain ⟨x, rfl⟩ := surjective_mk x

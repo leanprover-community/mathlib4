@@ -135,12 +135,12 @@ theorem ofScalarsSum_of_subsingleton [Subsingleton E] {x : E} : ofScalarsSum c x
 @[simp]
 theorem ofScalarsSum_op [T2Space E] (x : E) :
     ofScalarsSum c (MulOpposite.op x) = MulOpposite.op (ofScalarsSum c x) := by
-  simp [ofScalars, ofScalars_sum_eq, ← MulOpposite.op_pow, ← MulOpposite.op_smul, tsum_op]
+  simp [ofScalars_sum_eq, ← MulOpposite.op_pow, ← MulOpposite.op_smul, tsum_op]
 
 @[simp]
 theorem ofScalarsSum_unop [T2Space E] (x : Eᵐᵒᵖ) :
     ofScalarsSum c (MulOpposite.unop x) = MulOpposite.unop (ofScalarsSum c x) := by
-  simp [ofScalars, ofScalars_sum_eq, ← MulOpposite.unop_pow, ← MulOpposite.unop_smul, tsum_unop]
+  simp [ofScalars_sum_eq, ← MulOpposite.unop_pow, ← MulOpposite.unop_smul, tsum_unop]
 
 end Field
 
@@ -191,7 +191,7 @@ theorem ofScalars_radius_ge_inv_of_tendsto {r : ℝ≥0} (hr : r ≠ 0)
   by_cases hrz : r' = 0
   · simp [hrz]
   apply FormalMultilinearSeries.le_radius_of_summable_norm
-  refine Summable.of_norm_bounded_eventually (fun n ↦ ‖‖c n‖ * r' ^ n‖) ?_ ?_
+  refine Summable.of_norm_bounded_eventually (g := fun n ↦ ‖‖c n‖ * r' ^ n‖) ?_ ?_
   · refine summable_of_ratio_test_tendsto_lt_one hr' ?_ ?_
     · refine (hc.eventually_ne (NNReal.coe_ne_zero.mpr hr)).mp (Eventually.of_forall ?_)
       aesop
@@ -237,7 +237,7 @@ theorem ofScalars_radius_eq_top_of_tendsto (hc : ∀ᶠ n in atTop, c n ≠ 0)
   · apply Summable.comp_nat_add (k := 1)
     simp [hrz]
     exact (summable_const_iff 0).mpr rfl
-  · refine Summable.of_norm_bounded_eventually (fun n ↦ ‖‖c n‖ * r' ^ n‖) ?_ ?_
+  · refine Summable.of_norm_bounded_eventually (g := fun n ↦ ‖‖c n‖ * r' ^ n‖) ?_ ?_
     · apply summable_of_ratio_test_tendsto_lt_one zero_lt_one (hc.mp (Eventually.of_forall ?_))
       · simp only [norm_norm]
         exact mul_zero (_ : ℝ) ▸ tendsto_succ_norm_div_norm _ hrz (NNReal.coe_zero ▸ hc')
@@ -287,7 +287,7 @@ theorem ofScalars_radius_eq_inv_of_tendsto_ENNReal [NormOneClass E] {r : ℝ≥0
       filter_upwards [h]
       simp
     · apply (ofScalars E c).radius_eq_top_of_eventually_eq_zero
-      simp only [eventually_atTop, not_exists, not_forall, Classical.not_imp, not_not] at h ⊢
+      simp only [eventually_atTop, not_exists, not_forall, not_not] at h ⊢
       obtain ⟨ti, hti⟩ := eventually_atTop.mp (hc'.eventually_ne zero_ne_top)
       obtain ⟨zi, hzi, z⟩ := h ti
       refine ⟨zi, Nat.le_induction (ofScalars_eq_zero_of_scalar_zero E z) fun n hmn a ↦ ?_⟩
