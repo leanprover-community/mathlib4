@@ -64,8 +64,7 @@ theorem mk_multiset_of_nonempty (α : Type u) [Nonempty α] : #(Multiset α) = m
 
 theorem mk_multiset_of_infinite (α : Type u) [Infinite α] : #(Multiset α) = #α := by simp
 
-theorem mk_multiset_of_countable (α : Type u) [Countable α] [Nonempty α] : #(Multiset α) = ℵ₀ := by
-  classical
-  exact Multiset.toFinsupp.toEquiv.cardinal_eq.trans (by simp)
+theorem mk_multiset_of_countable (α : Type u) [Countable α] [Nonempty α] : #(Multiset α) = ℵ₀ :=
+  mk_eq_aleph0 (Multiset α)
 
 end Cardinal
