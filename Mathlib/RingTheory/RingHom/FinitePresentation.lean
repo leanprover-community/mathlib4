@@ -124,10 +124,9 @@ theorem finitePresentation_stableUnderComposition : StableUnderComposition @Fini
   exact hg.comp hf
 
 /-- Being finitely-presented respects isomorphisms. -/
-theorem finitePresentation_respectsIso : RingHom.RespectsIso @RingHom.FinitePresentation := by
-  refine finitePresentation_stableUnderComposition.respectsIso (fun {R S} _ _ e ↦ ?_)
-  algebraize [e.toRingHom]
-  apply Algebra.FinitePresentation.equiv <| .ofRingEquiv (congrFun rfl)
+theorem finitePresentation_respectsIso : RingHom.RespectsIso @RingHom.FinitePresentation :=
+  finitePresentation_stableUnderComposition.respectsIso
+    fun e ↦ .of_surjective _ e.surjective <| by simpa using Submodule.fg_bot
 
 /-- Being finitely-presented is stable under base change. -/
 theorem finitePresentation_isStableUnderBaseChange :
