@@ -59,8 +59,8 @@ lemma subsingleton_linearMap_iff [IsNoetherianRing R] [Module.Finite R M] [Modul
     have loc_ne_zero : p' ∈ Module.support R N := Module.mem_support_iff_of_finite.mpr hp
     rw [Module.mem_support_iff] at loc_ne_zero
     let Rₚ := Localization.AtPrime p
-    let Nₚ := LocalizedModule p'.asIdeal.primeCompl N
-    let Mₚ := LocalizedModule p'.asIdeal.primeCompl M
+    let Nₚ := LocalizedModule.AtPrime p'.asIdeal N
+    let Mₚ := LocalizedModule.AtPrime p'.asIdeal M
     let Nₚ' := Nₚ ⧸ (IsLocalRing.maximalIdeal (Localization.AtPrime p)) • (⊤ : Submodule Rₚ Nₚ)
     have ntr : Nontrivial Nₚ' :=
       Submodule.Quotient.nontrivial_of_lt_top _ (Ne.lt_top'

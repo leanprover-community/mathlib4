@@ -3,6 +3,7 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
+import Mathlib.Algebra.Module.LocalizedModule.AtPrime
 import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
 import Mathlib.RingTheory.Support
 
@@ -72,10 +73,14 @@ alias mem_associatePrimes_of_comap_mem_associatePrimes_isLocalizedModule :=
 lemma mem_associatePrimes_localizedModule_atPrime_of_mem_associatedPrimes
     {p : Ideal R} [p.IsPrime] (ass : p ∈ associatedPrimes R M) :
     maximalIdeal (Localization.AtPrime p) ∈
-    associatedPrimes (Localization.AtPrime p) (LocalizedModule p.primeCompl M) := by
+    associatedPrimes (Localization.AtPrime p) (LocalizedModule.AtPrime p M) := by
   apply mem_associatedPrimes_of_comap_mem_associatedPrimes_of_isLocalizedModule
     p.primeCompl (LocalizedModule.mkLinearMap p.primeCompl M)
   simpa [Localization.AtPrime.comap_maximalIdeal] using ass
+
+@[deprecated (since := "2025-08-15")]
+alias mem_associatePrimes_localizedModule_atPrime_of_mem_associated_primes :=
+  mem_associatePrimes_localizedModule_atPrime_of_mem_associatedPrimes
 
 include S f in
 lemma comap_mem_associatedPrimes_of_mem_associatedPrimes_of_isLocalizedModule_of_fg (p : Ideal R')
