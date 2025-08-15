@@ -50,6 +50,7 @@ lemma nonempty_orderIso_withZeroMul_int_iff :
 
 lemma IsDiscrete.of_compatible_withZeroMulInt (v : Valuation R ℤᵐ⁰) [v.Compatible] :
     IsDiscrete R := by
+  have : IsRankLeOne R := .of_compatible_mulArchimedean v
   by_cases h : IsNontrivial R
   · by_cases H : DenselyOrdered (ValueGroupWithZero R)
     · exfalso
