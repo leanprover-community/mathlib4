@@ -324,6 +324,10 @@ instance (priority := 500) algebra' [CommSemiring R'] [SMul R' R] [Algebra R' A]
 
 instance algebra : Algebra R S := S.algebra'
 
+@[simp]
+theorem mk_algebraMap {S : Subalgebra R A} (r : R) (hr : algebraMap R A r ∈ S) :
+  ⟨algebraMap R A r, hr⟩ = algebraMap R S r := rfl
+
 end
 
 instance noZeroSMulDivisors_bot [NoZeroSMulDivisors R A] : NoZeroSMulDivisors R S :=
@@ -822,6 +826,15 @@ instance toAlgebra {R A : Type*} [CommSemiring R] [CommSemiring A] [Semiring α]
 theorem algebraMap_eq {R A : Type*} [CommSemiring R] [CommSemiring A] [Semiring α] [Algebra R A]
     [Algebra A α] (S : Subalgebra R A) : algebraMap S α = (algebraMap A α).comp S.val :=
   rfl
+
+theorem algebraMap_def {R A : Type*} [CommSemiring R] [CommSemiring A] [Semiring α]
+    [Algebra R A] [Algebra A α] {S : Subalgebra R A} (s : S) :
+  algebraMap S α s = algebraMap A α (s : A) := rfl
+
+@[simp]
+theorem algebraMap_mk {R A : Type*} [CommSemiring R] [CommSemiring A] [Semiring α]
+    [Algebra R A] [Algebra A α] {S : Subalgebra R A} (a : A) (ha : a ∈ S) :
+  algebraMap S α (⟨a, ha⟩ : S) = algebraMap A α a := rfl
 
 @[simp]
 theorem rangeS_algebraMap {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
