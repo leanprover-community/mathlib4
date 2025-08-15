@@ -188,11 +188,11 @@ abbrev BinaryFan.fst {X Y : C} (s : BinaryFan X Y) :=
 abbrev BinaryFan.snd {X Y : C} (s : BinaryFan X Y) :=
   s.π.app ⟨WalkingPair.right⟩
 
-@[simp]
+-- Marking this `@[simp]` causes loops since `s.fst` is reducibly defeq to the LHS.
 theorem BinaryFan.π_app_left {X Y : C} (s : BinaryFan X Y) : s.π.app ⟨WalkingPair.left⟩ = s.fst :=
   rfl
 
-@[simp]
+-- Marking this `@[simp]` causes loops since `s.snd` is reducibly defeq to the LHS.
 theorem BinaryFan.π_app_right {X Y : C} (s : BinaryFan X Y) : s.π.app ⟨WalkingPair.right⟩ = s.snd :=
   rfl
 
@@ -247,11 +247,11 @@ lemma BinaryCofan.ext_hom_hom {A B : C} {c c' : BinaryCofan A B} (e : c.pt ≅ c
     (h₁ : c.inl ≫ e.hom = c'.inl) (h₂ : c.inr ≫ e.hom = c'.inr) :
     (ext e h₁ h₂).hom.hom = e.hom := rfl
 
-@[simp]
+-- This cannot be `@[simp]` because `s.inl` is reducibly defeq to the LHS.
 theorem BinaryCofan.ι_app_left {X Y : C} (s : BinaryCofan X Y) :
     s.ι.app ⟨WalkingPair.left⟩ = s.inl := rfl
 
-@[simp]
+-- This cannot be `@[simp]` because `s.inr` is reducibly defeq to the LHS.
 theorem BinaryCofan.ι_app_right {X Y : C} (s : BinaryCofan X Y) :
     s.ι.app ⟨WalkingPair.right⟩ = s.inr := rfl
 
@@ -407,17 +407,12 @@ noncomputable def BinaryFan.isLimitCompLeftIso {X Y X' : C} (c : BinaryFan X Y) 
     [IsIso f] (h : IsLimit c) : IsLimit (BinaryFan.mk (c.fst ≫ f) c.snd) := by
   fapply BinaryFan.isLimitMk
   · exact fun s => h.lift (BinaryFan.mk (s.fst ≫ inv f) s.snd)
-  · intro s -- Porting note: simp timed out here
-    simp only [Category.comp_id,BinaryFan.π_app_left,IsIso.inv_hom_id,
-      BinaryFan.mk_fst,IsLimit.fac_assoc,Category.assoc]
-  · intro s -- Porting note: simp timed out here
-    simp only [BinaryFan.π_app_right,BinaryFan.mk_snd,IsLimit.fac]
+  · simp
+  · simp
   · intro s m e₁ e₂
-     -- Porting note: simpa timed out here also
     apply BinaryFan.IsLimit.hom_ext h
-    · simpa only
-      [BinaryFan.π_app_left,BinaryFan.mk_fst,Category.assoc,IsLimit.fac,IsIso.eq_comp_inv]
-    · simpa only [BinaryFan.π_app_right,BinaryFan.mk_snd,IsLimit.fac]
+    · simpa
+    · simpa
 
 /-- If `Y' ≅ Y`, then `X x Y` also is the product of `X` and `Y'`. -/
 noncomputable def BinaryFan.isLimitCompRightIso {X Y Y' : C} (c : BinaryFan X Y) (f : Y ⟶ Y')
@@ -460,21 +455,13 @@ noncomputable def BinaryCofan.isColimitCompLeftIso {X Y X' : C} (c : BinaryCofan
     [IsIso f] (h : IsColimit c) : IsColimit (BinaryCofan.mk (f ≫ c.inl) c.inr) := by
   fapply BinaryCofan.isColimitMk
   · exact fun s => h.desc (BinaryCofan.mk (inv f ≫ s.inl) s.inr)
-  · intro s
-    -- Porting note: simp timed out here too
-    simp only [IsColimit.fac,BinaryCofan.ι_app_left,
-      Category.assoc,BinaryCofan.mk_inl,IsIso.hom_inv_id_assoc]
-  · intro s
-    -- Porting note: simp timed out here too
-    simp only [IsColimit.fac,BinaryCofan.ι_app_right,BinaryCofan.mk_inr]
+  · simp
+  · simp
   · intro s m e₁ e₂
     apply BinaryCofan.IsColimit.hom_ext h
     · rw [← cancel_epi f]
-    -- Porting note: simp timed out here too
-      simpa only [IsColimit.fac,BinaryCofan.ι_app_left,eq_self_iff_true,
-      Category.assoc,BinaryCofan.mk_inl,IsIso.hom_inv_id_assoc] using e₁
-    -- Porting note: simp timed out here too
-    · simpa only [IsColimit.fac,BinaryCofan.ι_app_right,eq_self_iff_true,BinaryCofan.mk_inr]
+      simpa using e₁
+    · simpa
 
 /-- If `Y' ≅ Y`, then `X ⨿ Y` also is the coproduct of `X` and `Y'`. -/
 noncomputable def BinaryCofan.isColimitCompRightIso {X Y Y' : C} (c : BinaryCofan X Y) (f : Y' ⟶ Y)
@@ -524,8 +511,8 @@ noncomputable def prodIsProd (X Y : C) [HasBinaryProduct X Y] :
     IsLimit (BinaryFan.mk (prod.fst : X ⨯ Y ⟶ X) prod.snd) :=
   (limit.isLimit _).ofIsoLimit (Cones.ext (Iso.refl _) (fun ⟨u⟩ => by
     cases u
-    · dsimp; simp only [Category.id_comp]; rfl
-    · dsimp; simp only [Category.id_comp]; rfl
+    · simp [Category.id_comp]
+    · simp [Category.id_comp]
   ))
 
 /-- The binary cofan constructed from the coprojection maps is a colimit. -/
@@ -1031,8 +1018,7 @@ end ProdFunctor
 
 noncomputable section CoprodFunctor
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added category instance as it did not propagate
-variable {C} [Category.{v} C] [HasBinaryCoproducts C]
+variable {C} [HasBinaryCoproducts C]
 
 /-- The binary coproduct functor. -/
 @[simps]
