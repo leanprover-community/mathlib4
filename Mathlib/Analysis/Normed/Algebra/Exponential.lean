@@ -391,7 +391,7 @@ theorem expSeries_radius_eq_top : (expSeries 𝕂 𝔸).radius = ∞ := by
       inv_div_inv, norm_mul, div_self this, norm_one, one_mul]
     apply norm_zero (E := 𝕂) ▸ Filter.Tendsto.norm
     apply (Filter.tendsto_add_atTop_iff_nat (f := fun n => (n : 𝕂)⁻¹) 1).mpr
-    exact tendsto_inverse_atTop_nhds_zero_nat 𝕂
+    exact tendsto_inv_atTop_nhds_zero_nat
   · simp [this]
 
 theorem expSeries_radius_pos : 0 < (expSeries 𝕂 𝔸).radius := by

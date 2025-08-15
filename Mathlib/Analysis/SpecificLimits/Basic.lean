@@ -27,17 +27,17 @@ open Set Function Filter Finset Metric Topology Nat uniformity NNReal ENNReal
 
 variable {α : Type*} {β : Type*} {ι : Type*}
 
-theorem NNRat.tendsto_inverse_atTop_nhds_zero_nat : Tendsto (fun n : ℕ ↦ (n : ℚ≥0)⁻¹) atTop (𝓝 0) :=
+theorem NNRat.tendsto_inv_atTop_nhds_zero_nat : Tendsto (fun n : ℕ ↦ (n : ℚ≥0)⁻¹) atTop (𝓝 0) :=
   tendsto_inv_atTop_zero.comp tendsto_natCast_atTop_atTop
 
 theorem NNRat.tendsto_algebraMap_inverse_atTop_nhds_zero_nat {𝕜 : Type*} [Semiring 𝕜]
     [Algebra ℚ≥0 𝕜] [TopologicalSpace 𝕜] [ContinuousSMul ℚ≥0 𝕜] :
     Tendsto (algebraMap ℚ≥0 𝕜 ∘ fun n : ℕ ↦ (n : ℚ≥0)⁻¹) atTop (𝓝 0) := by
   convert (continuous_algebraMap ℚ≥0 𝕜).continuousAt.tendsto.comp
-    tendsto_inverse_atTop_nhds_zero_nat
+    tendsto_inv_atTop_nhds_zero_nat
   rw [map_zero]
 
-theorem tendsto_inverse_atTop_nhds_zero_nat {𝕜 : Type*} [Semifield 𝕜] [CharZero 𝕜]
+theorem tendsto_inv_atTop_nhds_zero_nat {𝕜 : Type*} [Semifield 𝕜] [CharZero 𝕜]
     [TopologicalSpace 𝕜] [ContinuousSMul ℚ≥0 𝕜] :
     Tendsto (fun n : ℕ ↦ (n : 𝕜)⁻¹) atTop (𝓝 0) := by
   convert NNRat.tendsto_algebraMap_inverse_atTop_nhds_zero_nat (𝕜 := 𝕜)
@@ -47,7 +47,7 @@ theorem tendsto_const_div_atTop_nhds_zero_nat {𝕜 : Type*} [Semifield 𝕜] [C
     [TopologicalSpace 𝕜] [ContinuousSMul ℚ≥0 𝕜] [ContinuousMul 𝕜] (C : 𝕜) :
     Tendsto (fun n : ℕ ↦ C / n) atTop (𝓝 0) := by
   simpa only [mul_zero, div_eq_mul_inv] using
-    (tendsto_const_nhds (x := C)).mul tendsto_inverse_atTop_nhds_zero_nat
+    (tendsto_const_nhds (x := C)).mul tendsto_inv_atTop_nhds_zero_nat
 
 theorem tendsto_one_div_atTop_nhds_zero_nat : Tendsto (fun n : ℕ ↦ 1/(n : ℝ)) atTop (𝓝 0) :=
   tendsto_const_div_atTop_nhds_zero_nat 1
@@ -68,8 +68,7 @@ theorem tendsto_one_div_add_atTop_nhds_zero_nat :
 theorem NNReal.tendsto_algebraMap_inverse_atTop_nhds_zero_nat (𝕜 : Type*) [Semiring 𝕜]
     [Algebra ℝ≥0 𝕜] [TopologicalSpace 𝕜] [ContinuousSMul ℝ≥0 𝕜] :
     Tendsto (algebraMap ℝ≥0 𝕜 ∘ fun n : ℕ ↦ (n : ℝ≥0)⁻¹) atTop (𝓝 0) := by
-  convert (continuous_algebraMap ℝ≥0 𝕜).continuousAt.tendsto.comp
-    tendsto_inverse_atTop_nhds_zero_nat
+  convert (continuous_algebraMap ℝ≥0 𝕜).continuousAt.tendsto.comp tendsto_inv_atTop_nhds_zero_nat
   rw [map_zero]
 
 theorem tendsto_algebraMap_inverse_atTop_nhds_zero_nat (𝕜 : Type*) [Semiring 𝕜] [Algebra ℝ 𝕜]
@@ -94,7 +93,7 @@ theorem tendsto_natCast_div_add_atTop {𝕜 : Type*} [DivisionRing 𝕜] [Topolo
     refine tendsto_const_nhds.div (tendsto_const_nhds.add ?_) (by simp)
     simp_rw [div_eq_mul_inv]
     refine tendsto_const_nhds.mul ?_
-    have := ((continuous_algebraMap ℝ 𝕜).tendsto _).comp tendsto_inverse_atTop_nhds_zero_nat
+    have := ((continuous_algebraMap ℝ 𝕜).tendsto _).comp tendsto_inv_atTop_nhds_zero_nat
     rw [map_zero, Filter.tendsto_atTop'] at this
     refine Iff.mpr tendsto_atTop' ?_
     intros
@@ -731,7 +730,10 @@ lemma Nat.tendsto_div_const_atTop {n : ℕ} (hn : n ≠ 0) : Tendsto (· / n) at
 end
 
 @[deprecated (since := "2025-08-15")]
-alias NNReal.tendsto_inverse_atTop_nhds_zero_nat := tendsto_inverse_atTop_nhds_zero_nat
+alias tendsto_inverse_atTop_nhds_zero_nat := tendsto_inv_atTop_nhds_zero_nat
+
+@[deprecated (since := "2025-08-15")]
+alias NNReal.tendsto_inverse_atTop_nhds_zero_nat := tendsto_inv_atTop_nhds_zero_nat
 
 @[deprecated (since := "2025-08-15")]
 alias NNReal.tendsto_const_div_atTop_nhds_zero_nat := tendsto_const_div_atTop_nhds_zero_nat

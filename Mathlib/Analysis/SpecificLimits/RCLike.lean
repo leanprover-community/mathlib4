@@ -43,9 +43,9 @@ theorem tendsto_add_mul_div_add_mul_atTop_nhds (a b c : 𝕜) {d : 𝕜} (hd : d
     all_goals
       apply zero_add (_ : 𝕜) ▸ Filter.Tendsto.add_const _ _
       apply mul_zero (_ : 𝕜) ▸ Filter.Tendsto.const_mul _ _
-      exact tendsto_inverse_atTop_nhds_zero_nat
+      exact tendsto_inv_atTop_nhds_zero_nat
 
 end RCLike
 
 @[deprecated (since := "2025-08-15")]
-alias RCLike.tendsto_inverse_atTop_nhds_zero_nat := tendsto_inverse_atTop_nhds_zero_nat
+alias RCLike.tendsto_inverse_atTop_nhds_zero_nat := tendsto_inv_atTop_nhds_zero_nat
