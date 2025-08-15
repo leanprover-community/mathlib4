@@ -72,7 +72,7 @@ lemma mem_associatePrimes_of_comap_mem_associatePrimes_isLocalizedModule
         simp [← mul_assoc, mul_comm r t.1, IsLocalization.mk'_zero]
       simpa [this] using Ideal.IsTwoSided.mul_mem_of_left _ ht
 
-lemma mem_associatePrimes_localizedModule_atPrime_of_mem_associated_primes
+lemma mem_associatePrimes_localizedModule_atPrime_of_mem_associatedPrimes
     {p : Ideal R} [p.IsPrime] (ass : p ∈ associatedPrimes R M) :
     maximalIdeal (Localization.AtPrime p) ∈
     associatedPrimes (Localization.AtPrime p) (LocalizedModule p.primeCompl M) := by
