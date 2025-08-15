@@ -471,7 +471,7 @@ variable [Fintype m] [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing
 noncomputable def toCLM : CStarMatrix m n A →ₗ[ℂ] C⋆ᵐᵒᵈ(A, m → A) →L[ℂ] C⋆ᵐᵒᵈ(A, n → A) where
   toFun M := { toFun := (WithCStarModule.equivL ℂ).symm ∘ M.vecMul ∘ WithCStarModule.equivL ℂ
                map_add' := M.add_vecMul
-               map_smul' := M.vecMul_smul
+               map_smul' := M.smul_vecMul
                cont := Continuous.comp (by fun_prop) (by fun_prop) }
   map_add' M₁ M₂ := by
     ext
