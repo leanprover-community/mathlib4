@@ -60,7 +60,7 @@ the inequality `u x ≤ a` eventually holds for `f`. -/
 def limsup (u : β → α) (f : Filter β) : α :=
   limsSup (map u f)
 
-/-- The `liminf` of a function `u` along a filter `f` is the infimum of the `a` such that
+/-- The `liminf` of a function `u` along a filter `f` is the supremum of the `a` such that
 the inequality `u x ≥ a` eventually holds for `f`. -/
 def liminf (u : β → α) (f : Filter β) : α :=
   limsInf (map u f)
