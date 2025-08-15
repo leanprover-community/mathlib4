@@ -121,17 +121,12 @@ alias ⟨_, WCovBy.toDual⟩ := toDual_wcovBy_toDual_iff
 alias ⟨_, WCovBy.ofDual⟩ := ofDual_wcovBy_ofDual_iff
 
 theorem OrderEmbedding.wcovBy_of_apply {α β : Type*} [Preorder α] [Preorder β]
-    (f : α ↪o β) {x y : α} (h : f x ⩿ f y) : x ⩿ y := by
-  use f.le_iff_le.1 h.1
-  intro a
-  rw [← f.lt_iff_lt, ← f.lt_iff_lt]
-  apply h.2
+    (f : α ↪o β) {x y : α} (h : f x ⩿ f y) : x ⩿ y :=
+  WCovBy.of_image f h
 
 theorem OrderIso.map_wcovBy {α β : Type*} [Preorder α] [Preorder β]
-    (f : α ≃o β) {x y : α} : f x ⩿ f y ↔ x ⩿ y := by
-  use f.toOrderEmbedding.wcovBy_of_apply
-  conv_lhs => rw [← f.symm_apply_apply x, ← f.symm_apply_apply y]
-  exact f.symm.toOrderEmbedding.wcovBy_of_apply
+    (f : α ≃o β) {x y : α} : f x ⩿ f y ↔ x ⩿ y :=
+  apply_wcovBy_apply_iff f
 
 end Preorder
 
@@ -310,17 +305,12 @@ theorem covBy_of_eq_or_eq (hab : a < b) (h : ∀ c, a ≤ c → c ≤ b → c = 
   ⟨hab, fun c ha hb => (h c ha.le hb.le).elim ha.ne' hb.ne⟩
 
 theorem OrderEmbedding.covBy_of_apply {α β : Type*} [Preorder α] [Preorder β]
-    (f : α ↪o β) {x y : α} (h : f x ⋖ f y) : x ⋖ y := by
-  use f.lt_iff_lt.1 h.1
-  intro a
-  rw [← f.lt_iff_lt, ← f.lt_iff_lt]
-  apply h.2
+    (f : α ↪o β) {x y : α} (h : f x ⋖ f y) : x ⋖ y :=
+  CovBy.of_image f h
 
 theorem OrderIso.map_covBy {α β : Type*} [Preorder α] [Preorder β]
-    (f : α ≃o β) {x y : α} : f x ⋖ f y ↔ x ⋖ y := by
-  use f.toOrderEmbedding.covBy_of_apply
-  conv_lhs => rw [← f.symm_apply_apply x, ← f.symm_apply_apply y]
-  exact f.symm.toOrderEmbedding.covBy_of_apply
+    (f : α ≃o β) {x y : α} : f x ⋖ f y ↔ x ⋖ y :=
+  apply_covBy_apply_iff f
 
 end Preorder
 
