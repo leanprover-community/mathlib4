@@ -207,6 +207,7 @@ def DirectSum.IsInternal.isometryL2OfOrthogonalFamily [DecidableEq ι] {V : ι �
     (WithLp.linearEquiv 2 𝕜 (Π i, V i)).symm) ?_
   suffices ∀ (v w : PiLp 2 fun i => V i), ⟪v, w⟫ = ⟪e₂ (e₁.symm v), e₂ (e₁.symm w)⟫ by
     intro v₀ w₀
+    simp only [LinearEquiv.trans_apply, linearEquiv_symm_apply]
     convert this (toLp 2 (e₁ (e₂.symm v₀))) (toLp 2 (e₁ (e₂.symm w₀))) <;> simp
   intro v w
   trans ⟪∑ i, (V i).subtypeₗᵢ (v i), ∑ i, (V i).subtypeₗᵢ (w i)⟫
@@ -545,9 +546,7 @@ def _root_.Module.Basis.toOrthonormalBasis (v : Basis ι 𝕜 E) (hv : Orthonorm
           simp [inner_sum, inner_smul_right, hv.inner_left_fintype, PiLp.inner_apply]
         convert key
         · rw [← v.equivFun.symm_apply_apply x, v.equivFun_symm_apply]
-          rfl
-        · rw [← v.equivFun.symm_apply_apply y, v.equivFun_symm_apply]
-          rfl)
+        · rw [← v.equivFun.symm_apply_apply y, v.equivFun_symm_apply])
 
 @[simp]
 theorem _root_.Basis.coe_toOrthonormalBasis_repr (v : Basis ι 𝕜 E) (hv : Orthonormal 𝕜 v) :
