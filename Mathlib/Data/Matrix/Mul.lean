@@ -687,26 +687,26 @@ theorem add_vecMul [Fintype m] (A : Matrix m n α) (x y : m → α) :
   ext
   apply add_dotProduct
 
-theorem mulVec_smul [Fintype n] [NonUnitalNonAssocSemiring S] [DistribSMul R S]
-    [SMulCommClass R S S] (M : Matrix m n S) (b : R) (v : n → S) :
+theorem mulVec_smul [Fintype n] [DistribSMul R α] [SMulCommClass R α α]
+    (M : Matrix m n α) (b : R) (v : n → α) :
     M *ᵥ (b • v) = b • M *ᵥ v := by
   ext
   exact dotProduct_smul _ _ _
 
-theorem smul_mulVec [Fintype n] [NonUnitalNonAssocSemiring S] [DistribSMul R S]
-    [IsScalarTower R S S] (b : R) (M : Matrix m n S) (v : n → S) :
+theorem smul_mulVec [Fintype n] [DistribSMul R α] [IsScalarTower R α α]
+    (b : R) (M : Matrix m n α) (v : n → α) :
     (b • M) *ᵥ v = b • M *ᵥ v := by
   ext
   exact smul_dotProduct _ _ _
 
-theorem smul_vecMul [Fintype n] [NonUnitalNonAssocSemiring S] [DistribSMul R S]
-    [IsScalarTower R S S] (b : R) (v : n → S) (M : Matrix n m S) :
+theorem smul_vecMul [Fintype m] [DistribSMul R α] [IsScalarTower R α α]
+    (b : R) (v : m → α) (M : Matrix m n α) :
     (b • v) ᵥ* M = b • v ᵥ* M := by
   ext
   exact smul_dotProduct _ _ _
 
-theorem vecMul_smul [Fintype n] [NonUnitalNonAssocSemiring S] [DistribSMul R S]
-    [SMulCommClass R S S] (v : n → S) (b : R) (M : Matrix n m S) :
+theorem vecMul_smul [Fintype m] [DistribSMul R α] [SMulCommClass R α α]
+    (v : m → α) (b : R) (M : Matrix m n α) :
     v ᵥ* (b • M) = b • v ᵥ* M := by
   ext
   exact dotProduct_smul _ _ _
