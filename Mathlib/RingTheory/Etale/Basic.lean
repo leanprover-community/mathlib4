@@ -226,8 +226,6 @@ def FormallyEtale (f : R →+* S) : Prop :=
 
 lemma formallyEtale_algebraMap [Algebra R S] :
     (algebraMap R S).FormallyEtale ↔ Algebra.FormallyEtale R S := by
-  delta FormallyEtale
-  congr!
-  exact Algebra.algebra_ext _ _ fun _ ↦ rfl
+  rw [FormallyEtale, toAlgebra_algebraMap]
 
 end RingHom

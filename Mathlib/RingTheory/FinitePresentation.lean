@@ -393,9 +393,7 @@ def FinitePresentation (f : A →+* B) : Prop :=
 @[simp]
 lemma finitePresentation_algebraMap [Algebra A B] :
     (algebraMap A B).FinitePresentation ↔ Algebra.FinitePresentation A B := by
-  delta RingHom.FinitePresentation
-  congr!
-  exact Algebra.algebra_ext _ _ fun _ ↦ rfl
+  rw [RingHom.FinitePresentation, toAlgebra_algebraMap]
 
 namespace FiniteType
 
