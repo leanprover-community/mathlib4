@@ -84,10 +84,9 @@ lemma Rat.padicValuation_cast (p : ℕ) [Fact p.Prime] (x : ℤ) :
     Rat.padicValuation p (Int.cast x) = Int.padicValuation p x :=
   rfl
 
-@[simp]
 lemma Rat.padicValuation_eq_zero_iff {p : ℕ} [Fact p.Prime] {x : ℚ} :
     Rat.padicValuation p x = 0 ↔ x = 0 := by
-  simp [Rat.padicValuation]
+  simp
 
 @[simp]
 lemma Int.padicValuation_eq_zero_iff {p : ℕ} [Fact p.Prime] {x : ℤ} :
@@ -1171,6 +1170,10 @@ lemma comap_mulValuation_eq_int_padicValuation :
   ext
   simp [← Rat.padicValuation_cast, ← comap_mulValuation_eq_padicValuation]
 
+lemma norm_eq_zpow_log_mulValuation {x : ℚ_[p]} (hx : x ≠ 0) :
+    ‖x‖ = (p : ℝ) ^ (log (mulValuation x)) := by
+  simp [norm_eq_zpow_neg_valuation, hx]
+
 /-- The additive `p`-adic valuation on `ℚ_[p]`, as an `addValuation`. -/
 def addValuation : AddValuation ℚ_[p] (WithTop ℤ) :=
   AddValuation.of addValuationDef AddValuation.map_zero AddValuation.map_one AddValuation.map_add
@@ -1209,3 +1212,4 @@ theorem norm_le_one_iff_val_nonneg (x : ℚ_[p]) : ‖x‖ ≤ 1 ↔ 0 ≤ x.val
 end NormLEIff
 
 end Padic
+#lint
