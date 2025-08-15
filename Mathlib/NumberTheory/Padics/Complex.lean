@@ -88,7 +88,7 @@ theorem valuation_def (x : PadicAlgCl p) : Valued.v x = ‖x‖₊ := rfl
 theorem valuation_p (p : ℕ) [Fact p.Prime] : Valued.v (p : PadicAlgCl p) = 1 / (p : ℝ≥0) := by
   rw [← map_natCast (algebraMap ℚ_[p] (PadicAlgCl p))]
   ext
-  rw [valuation_coe, norm_extends, padicNormE.norm_p, one_div, NNReal.coe_inv,
+  rw [valuation_coe, norm_extends, Padic.norm_p, one_div, NNReal.coe_inv,
     NNReal.coe_natCast]
 
 /-- The valuation on `PadicAlgCl p` has rank one. -/
