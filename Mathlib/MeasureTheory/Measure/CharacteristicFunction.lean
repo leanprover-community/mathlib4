@@ -46,7 +46,7 @@ and `L`.
 
 -/
 
-open BoundedContinuousFunction RealInnerProductSpace Real Complex ComplexConjugate NormedSpace
+open BoundedContinuousFunction RealInnerProductSpace Real Complex ComplexConjugate
 
 namespace BoundedContinuousFunction
 

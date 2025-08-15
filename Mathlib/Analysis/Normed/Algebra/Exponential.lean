@@ -426,12 +426,12 @@ section RCLike
 
 section AnyAlgebra
 
-variable (𝕂 𝔸 𝔹 : Type*) [RCLike 𝕂] [NormedRing 𝔸] [NormedAlgebra 𝕂 𝔸]
-variable [NormedRing 𝔹]
+variable (𝕂 𝔸 𝔹 : Type*) [NontriviallyNormedField 𝕂] [NormedRing 𝔸] [NormedAlgebra 𝕂 𝔸]
+variable [NormedRing 𝔹] [ContinuousSMul ℚ 𝕂]
 
 /-- In a normed algebra `𝔸` over `𝕂 = ℝ` or `𝕂 = ℂ`, the series defining the exponential map
 has an infinite radius of convergence. -/
-theorem expSeries_radius_eq_top : (expSeries 𝕂 𝔸).radius = ∞ := by
+theorem expSeries_radius_eq_top [CharZero 𝕂] : (expSeries 𝕂 𝔸).radius = ∞ := by
   have {n : ℕ} : (Nat.factorial n : 𝕂) ≠ 0 := Nat.cast_ne_zero.mpr (Nat.factorial_ne_zero n)
   apply expSeries_eq_ofScalars 𝕂 𝔸 ▸
     ofScalars_radius_eq_top_of_tendsto 𝔸 _ (Eventually.of_forall fun n => ?_)
@@ -439,35 +439,34 @@ theorem expSeries_radius_eq_top : (expSeries 𝕂 𝔸).radius = ∞ := by
       inv_div_inv, norm_mul, div_self this, norm_one, one_mul]
     apply norm_zero (E := 𝕂) ▸ Filter.Tendsto.norm
     apply (Filter.tendsto_add_atTop_iff_nat (f := fun n => (n : 𝕂)⁻¹) 1).mpr
-    exact RCLike.tendsto_inverse_atTop_nhds_zero_nat 𝕂
+    exact tendsto_inverse_atTop_nhds_zero_nat
   · simp [this]
 
-theorem expSeries_radius_pos : 0 < (expSeries 𝕂 𝔸).radius := by
+theorem expSeries_radius_pos [CharZero 𝕂] : 0 < (expSeries 𝕂 𝔸).radius := by
   rw [expSeries_radius_eq_top]
   exact WithTop.top_pos
 
 variable {𝕂 𝔸 𝔹}
 
-theorem norm_expSeries_summable (x : 𝔸) : Summable fun n => ‖expSeries 𝕂 𝔸 n fun _ => x‖ :=
+theorem norm_expSeries_summable [CharZero 𝕂] (x : 𝔸) :
+    Summable fun n => ‖expSeries 𝕂 𝔸 n fun _ => x‖ :=
   norm_expSeries_summable_of_mem_ball x ((expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _)
 
 variable (𝕂) in
-theorem norm_expSeries_summable' (x : 𝔸) : Summable fun n => ‖(n !⁻¹ : 𝕂) • x ^ n‖ :=
+theorem norm_expSeries_summable' [CharZero 𝕂] (x : 𝔸) : Summable fun n => ‖(n !⁻¹ : 𝕂) • x ^ n‖ :=
   norm_expSeries_summable_of_mem_ball' x
     (show x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius from
       (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _)
 
 section CompleteAlgebra
 
-variable [CompleteSpace 𝔸]
+variable [CharZero 𝕂] [CompleteSpace 𝔸]
 
 theorem expSeries_summable (x : 𝔸) : Summable fun n => expSeries 𝕂 𝔸 n fun _ => x :=
   (norm_expSeries_summable x).of_norm
 
 theorem expSeries_summable' (x : 𝔸) : Summable fun n => (n !⁻¹ : 𝕂) • x ^ n :=
   (norm_expSeries_summable' 𝕂 x).of_norm
-
-variable [CharZero 𝕂]
 
 theorem expSeries_hasSum_exp (x : 𝔸) : HasSum (fun n => expSeries 𝕂 𝔸 n fun _ => x) (exp x) :=
   expSeries_hasSum_exp_of_mem_ball x ((expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _)
@@ -485,7 +484,6 @@ section
 variable (𝕂)
 include 𝕂
 
-@[continuity, fun_prop]
 theorem exp_continuous : Continuous (exp : 𝔸 → 𝔸) := by
   rw [← continuousOn_univ, ← Metric.eball_top_eq_univ (0 : 𝔸), ←
     expSeries_radius_eq_top 𝕂 𝔸]
@@ -495,9 +493,22 @@ open Topology in
 lemma _root_.Filter.Tendsto.exp {α : Type*} {l : Filter α} {f : α → 𝔸} {a : 𝔸}
     (hf : Tendsto f l (𝓝 a)) :
     Tendsto (fun x => exp (f x)) l (𝓝 (exp a)) :=
-  (exp_continuous 𝕂 |>.tendsto _).comp hf
+  ((exp_continuous 𝕂).tendsto _).comp hf
 
 end
+
+@[continuity, fun_prop]
+theorem exp_continuous_rat [NormedAlgebra ℚ 𝔸] : Continuous (exp : 𝔸 → 𝔸) := by
+  rw [← continuousOn_univ, ← Metric.eball_top_eq_univ (0 : 𝔸), ←
+    expSeries_radius_eq_top ℚ 𝔸]
+  exact continuousOn_exp
+
+open Topology in
+lemma _root_.Filter.Tendsto.exp_rat [NormedAlgebra ℚ 𝔸]
+    {α : Type*} {l : Filter α} {f : α → 𝔸} {a : 𝔸}
+    (hf : Tendsto f l (𝓝 a)) :
+    Tendsto (fun x => exp (f x)) l (𝓝 (exp a)) :=
+  (exp_continuous_rat.tendsto _).comp hf
 
 theorem exp_analytic (x : 𝔸) : AnalyticAt 𝕂 exp x :=
   analyticAt_exp_of_mem_ball x ((expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _)
@@ -609,7 +620,7 @@ theorem _root_.Function.update_exp {ι : Type*} {𝔸 : ι → Type*} [Finite ι
 
 end CompleteAlgebra
 
-theorem algebraMap_exp_comm (x : 𝕂) :
+theorem algebraMap_exp_comm [CharZero 𝕂] [CompleteSpace 𝕂] (x : 𝕂) :
     algebraMap 𝕂 𝔸 (exp x) = exp (algebraMap 𝕂 𝔸 x) :=
   algebraMap_exp_comm_of_mem_ball x <| (expSeries_radius_eq_top 𝕂 𝕂).symm ▸ edist_lt_top _ _
 

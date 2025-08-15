@@ -44,6 +44,7 @@ lemma selfAdjoint.expUnitary_zero : expUnitary (0 : selfAdjoint A) = 1 := by
 @[fun_prop]
 lemma selfAdjoint.continuous_expUnitary : Continuous (expUnitary : selfAdjoint A → unitary A) := by
   simp only [continuous_induced_rng, Function.comp_def, selfAdjoint.expUnitary_coe]
+  have : NormedAlgebra ℚ A := NormedAlgebra.restrictScalars ℚ ℂ A
   fun_prop
 
 theorem Commute.expUnitary_add {a b : selfAdjoint A} (h : Commute (a : A) (b : A)) :
