@@ -177,8 +177,8 @@ theorem MeasureTheory.volume_sum_rpow_lt_one (hp : 1 ≤ p) :
   have eq_norm (x : ι → ℝ) : ‖toLp (.ofReal p) x‖ = (∑ i, |x i| ^ p) ^ (1 / p) := by
     simp [PiLp.norm_eq_sum (f := toLp (.ofReal p) x) (this.symm ▸ h₁), this]
   have : Fact (1 ≤ ENNReal.ofReal p) := fact_iff.mpr (ofReal_one ▸ (ofReal_le_ofReal hp))
-  have nm_zero : ‖@toLp (.ofReal p) (ι → ℝ) 0‖ = 0 := norm_zero
-  have eq_zero x : ‖@toLp (.ofReal p) (ι → ℝ) x‖ = 0 ↔ x = 0 :=
+  have nm_zero : ‖toLp (.ofReal p) (0 : ι → ℝ)‖ = 0 := norm_zero
+  have eq_zero (x : ι → ℝ) : ‖toLp (.ofReal p) x‖ = 0 ↔ x = 0 :=
     norm_eq_zero.trans (toLp_eq_zero _)
   have nm_neg := fun x : ι → ℝ => norm_neg (toLp (.ofReal p) x)
   have nm_add := fun x y : ι → ℝ => norm_add_le (toLp (.ofReal p) x) (toLp (.ofReal p) y)
@@ -227,8 +227,8 @@ theorem MeasureTheory.volume_sum_rpow_le [Nonempty ι] {p : ℝ} (hp : 1 ≤ p) 
   have eq_norm (x : ι → ℝ) : ‖toLp (.ofReal p) x‖ = (∑ i, |x i| ^ p) ^ (1 / p) := by
     simp [PiLp.norm_eq_sum (f := toLp (.ofReal p) x) (this.symm ▸ h₁), this]
   have : Fact (1 ≤ ENNReal.ofReal p) := fact_iff.mpr (ofReal_one ▸ (ofReal_le_ofReal hp))
-  have nm_zero : ‖@toLp (.ofReal p) (ι → ℝ) 0‖ = 0 := norm_zero
-  have eq_zero x : ‖@toLp (.ofReal p) (ι → ℝ) x‖ = 0 ↔ x = 0 :=
+  have nm_zero : ‖toLp (.ofReal p) (0 : ι → ℝ)‖ = 0 := norm_zero
+  have eq_zero (x : ι → ℝ) : ‖toLp (.ofReal p) x‖ = 0 ↔ x = 0 :=
     norm_eq_zero.trans (toLp_eq_zero _)
   have nm_neg := fun x : ι → ℝ => norm_neg (toLp (.ofReal p) x)
   have nm_add := fun x y : ι → ℝ => norm_add_le (toLp (.ofReal p) x) (toLp (.ofReal p) y)
@@ -251,8 +251,8 @@ theorem Complex.volume_sum_rpow_lt_one {p : ℝ} (hp : 1 ≤ p) :
   have eq_norm (x : ι → ℂ) : ‖toLp (.ofReal p) x‖ = (∑ i, ‖x i‖ ^ p) ^ (1 / p) := by
     simp [PiLp.norm_eq_sum (f := toLp (.ofReal p) x) (this.symm ▸ h₁), this]
   have : Fact (1 ≤ ENNReal.ofReal p) := fact_iff.mpr (ENNReal.ofReal_one ▸ (ofReal_le_ofReal hp))
-  have nm_zero : ‖@toLp (.ofReal p) (ι → ℂ) 0‖ = 0 := norm_zero
-  have eq_zero x : ‖@toLp (.ofReal p) (ι → ℂ) x‖ = 0 ↔ x = 0 :=
+  have nm_zero : ‖toLp (.ofReal p) (0 : ι → ℂ)‖ = 0 := norm_zero
+  have eq_zero (x : ι → ℂ) : ‖toLp (.ofReal p) x‖ = 0 ↔ x = 0 :=
     norm_eq_zero.trans (toLp_eq_zero _)
   have nm_neg := fun x : ι → ℂ => norm_neg (toLp (.ofReal p) x)
   have nm_add := fun x y : ι → ℂ => norm_add_le (toLp (.ofReal p) x) (toLp (.ofReal p) y)
@@ -303,8 +303,8 @@ theorem Complex.volume_sum_rpow_le [Nonempty ι] {p : ℝ} (hp : 1 ≤ p) (r : �
   have eq_norm (x : ι → ℂ) : ‖toLp (.ofReal p) x‖ = (∑ i, ‖x i‖ ^ p) ^ (1 / p) := by
     simp [PiLp.norm_eq_sum (f := toLp (.ofReal p) x) (this.symm ▸ h₁), this]
   have : Fact (1 ≤ ENNReal.ofReal p) := fact_iff.mpr (ENNReal.ofReal_one ▸ (ofReal_le_ofReal hp))
-  have nm_zero : ‖@toLp (.ofReal p) (ι → ℂ) 0‖ = 0 := norm_zero
-  have eq_zero x : ‖@toLp (.ofReal p) (ι → ℂ) x‖ = 0 ↔ x = 0 :=
+  have nm_zero : ‖toLp (.ofReal p) (0 : ι → ℂ)‖ = 0 := norm_zero
+  have eq_zero (x : ι → ℂ) : ‖toLp (.ofReal p) x‖ = 0 ↔ x = 0 :=
     norm_eq_zero.trans (toLp_eq_zero _)
   have nm_neg := fun x : ι → ℂ => norm_neg (toLp (.ofReal p) x)
   have nm_add := fun x y : ι → ℂ => norm_add_le (toLp (.ofReal p) x) (toLp (.ofReal p) y)
