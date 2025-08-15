@@ -135,6 +135,6 @@ instance {R} [Ring R] [TopologicalSpace R] [Algebra ℚ R] [Algebra ℚ≥0 R] [
     rfl
 
 instance : ContinuousSMul ℚ≥0 NNReal where
-  continuous_smul := by apply Continuous.subtype_mk; fun_prop
+  continuous_smul := Continuous.subtype_mk (by fun_prop) _
 
 end NNRat
