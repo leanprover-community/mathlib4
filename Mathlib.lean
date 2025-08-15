@@ -1289,6 +1289,7 @@ import Mathlib.AlgebraicTopology.ModelCategory.Cylinder
 import Mathlib.AlgebraicTopology.ModelCategory.Instances
 import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
 import Mathlib.AlgebraicTopology.ModelCategory.JoyalTrick
+import Mathlib.AlgebraicTopology.ModelCategory.LeftHomotopy
 import Mathlib.AlgebraicTopology.ModelCategory.PathObject
 import Mathlib.AlgebraicTopology.MooreComplex
 import Mathlib.AlgebraicTopology.Quasicategory.Basic
@@ -1647,6 +1648,7 @@ import Mathlib.Analysis.InnerProductSpace.Orthonormal
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Analysis.InnerProductSpace.Positive
 import Mathlib.Analysis.InnerProductSpace.ProdL2
+import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Analysis.InnerProductSpace.Projection.Basic
 import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
 import Mathlib.Analysis.InnerProductSpace.Projection.Minimal
@@ -3960,6 +3962,7 @@ import Mathlib.InformationTheory.Hamming
 import Mathlib.InformationTheory.KullbackLeibler.Basic
 import Mathlib.InformationTheory.KullbackLeibler.KLFun
 import Mathlib.Init
+import Mathlib.Lean.ContextInfo
 import Mathlib.Lean.CoreM
 import Mathlib.Lean.Elab.Tactic.Basic
 import Mathlib.Lean.Elab.Term
@@ -5734,6 +5737,7 @@ import Mathlib.RingTheory.Valuation.AlgebraInstances
 import Mathlib.RingTheory.Valuation.Archimedean
 import Mathlib.RingTheory.Valuation.Basic
 import Mathlib.RingTheory.Valuation.Discrete.Basic
+import Mathlib.RingTheory.Valuation.DiscreteValuativeRel
 import Mathlib.RingTheory.Valuation.ExtendToLocalization
 import Mathlib.RingTheory.Valuation.Extension
 import Mathlib.RingTheory.Valuation.Integers
@@ -6101,6 +6105,8 @@ import Mathlib.Tactic.SudoSetOption
 import Mathlib.Tactic.SuppressCompilation
 import Mathlib.Tactic.SwapVar
 import Mathlib.Tactic.TFAE
+import Mathlib.Tactic.TacticAnalysis
+import Mathlib.Tactic.TacticAnalysis.Declarations
 import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.TautoSet
 import Mathlib.Tactic.TermCongr
