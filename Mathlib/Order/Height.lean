@@ -319,7 +319,7 @@ theorem wellFoundedGT_of_chainHeight_ne_top (s : Set α) (hs : s.chainHeight ≠
     WellFoundedGT s := by
   haveI : IsTrans { x // x ∈ s } (↑· < ↑·) := inferInstance
   obtain ⟨n, hn⟩ := WithTop.ne_top_iff_exists.1 hs
-  refine ⟨RelEmbedding.wellFounded_iff_no_descending_seq.2 ⟨fun f ↦ ?_⟩⟩
+  refine ⟨RelEmbedding.wellFounded_iff_isEmpty.2 ⟨fun f ↦ ?_⟩⟩
   refine n.lt_succ_self.not_ge (WithTop.coe_le_coe.1 <| hn.symm ▸ ?_)
   refine le_iSup₂_of_le ((ofFn (n := n.succ) fun i ↦ f i).map Subtype.val)
     ⟨chain'_map_of_chain' ((↑) : {x // x ∈ s} → α) (fun _ _ ↦ id)
