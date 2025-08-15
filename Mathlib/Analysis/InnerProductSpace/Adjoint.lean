@@ -65,12 +65,12 @@ variable [CompleteSpace E] [CompleteSpace G]
 definition for the main definition `adjoint`, where this is bundled as a conjugate-linear isometric
 equivalence. -/
 noncomputable def adjointAux : (E →L[𝕜] F) →L⋆[𝕜] F →L[𝕜] E :=
-  (ContinuousLinearMap.compSL _ _ _ _ _ ((toDual 𝕜 E).symm : NormedSpace.Dual 𝕜 E →L⋆[𝕜] E)).comp
-    (toSesqForm : (E →L[𝕜] F) →L[𝕜] F →L⋆[𝕜] NormedSpace.Dual 𝕜 E)
+  (ContinuousLinearMap.compSL _ _ _ _ _ ((toDual 𝕜 E).symm : StrongDual 𝕜 E →L⋆[𝕜] E)).comp
+    (toSesqForm : (E →L[𝕜] F) →L[𝕜] F →L⋆[𝕜] StrongDual 𝕜 E)
 
 @[simp]
 theorem adjointAux_apply (A : E →L[𝕜] F) (x : F) :
-    adjointAux A x = ((toDual 𝕜 E).symm : NormedSpace.Dual 𝕜 E → E) ((toSesqForm A) x) :=
+    adjointAux A x = ((toDual 𝕜 E).symm : StrongDual 𝕜 E → E) ((toSesqForm A) x) :=
   rfl
 
 theorem adjointAux_inner_left (A : E →L[𝕜] F) (x : E) (y : F) : ⟪adjointAux A y, x⟫ = ⟪y, A x⟫ := by
@@ -247,6 +247,19 @@ theorem isAdjointPair_inner (A : E →L[𝕜] F) :
       (sesqFormOfInner : F →ₗ[𝕜] F →ₗ⋆[𝕜] 𝕜) A (A†) := by
   intro x y
   simp only [sesqFormOfInner_apply_apply, adjoint_inner_left]
+
+theorem adjoint_innerSL_apply (x : E) :
+    adjoint (innerSL 𝕜 x) = (lsmul 𝕜 𝕜).flip x :=
+  ext_ring <| ext_inner_left 𝕜 <| fun _ => by simp [adjoint_inner_right]
+
+theorem innerSL_apply_comp (x : F) (f : E →L[𝕜] F) :
+    innerSL 𝕜 x ∘L f = innerSL 𝕜 (adjoint f x) := by
+  ext; simp [adjoint_inner_left]
+
+omit [CompleteSpace E] in
+theorem innerSL_apply_comp_of_isSymmetric (x : E) {f : E →L[𝕜] E} (hf : f.IsSymmetric) :
+    innerSL 𝕜 x ∘L f = innerSL 𝕜 (f x) := by
+  ext; simp [hf]
 
 end ContinuousLinearMap
 

@@ -615,7 +615,7 @@ theorem _root_.Finset.stronglyMeasurable_fun_prod {ι : Type*} {f : ι → α �
 variable {n : MeasurableSpace β} in
 /-- Compositional version of `Finset.stronglyMeasurable_prod` for use by `fun_prop`. -/
 @[to_additive (attr := measurability, fun_prop)
-"Compositional version of `Finset.stronglyMeasurable_sum` for use by `fun_prop`."]
+/-- Compositional version of `Finset.stronglyMeasurable_sum` for use by `fun_prop`. -/]
 lemma Finset.stronglyMeasurable_prod_apply {ι : Type*} {f : ι → α → β → M} {g : α → β}
     {s : Finset ι} (hf : ∀ i ∈ s, StronglyMeasurable ↿(f i)) (hg : Measurable g) :
     StronglyMeasurable fun a ↦ (∏ i ∈ s, f i a) (g a) := by
@@ -916,8 +916,6 @@ protected theorem enorm {_ : MeasurableSpace α} {ε : Type*} [TopologicalSpace 
     {f : α → ε} (hf : StronglyMeasurable f) : Measurable (‖f ·‖ₑ) :=
   (continuous_enorm.comp_stronglyMeasurable hf).measurable
 
-@[deprecated (since := "2025-01-21")] alias ennnorm := StronglyMeasurable.enorm
-
 @[fun_prop, measurability]
 protected theorem real_toNNReal {_ : MeasurableSpace α} {f : α → ℝ} (hf : StronglyMeasurable f) :
     StronglyMeasurable fun x => (f x).toNNReal :=
@@ -1048,7 +1046,7 @@ end StronglyMeasurable
 theorem finStronglyMeasurable_zero {α β} {m : MeasurableSpace α} {μ : Measure α} [Zero β]
     [TopologicalSpace β] : FinStronglyMeasurable (0 : α → β) μ :=
   ⟨0, by
-    simp only [Pi.zero_apply, SimpleFunc.coe_zero, support_zero', measure_empty,
+    simp only [Pi.zero_apply, SimpleFunc.coe_zero, support_zero, measure_empty,
       zero_lt_top, forall_const],
     fun _ => tendsto_const_nhds⟩
 
@@ -1132,9 +1130,9 @@ protected theorem add [AddZeroClass β] [ContinuousAdd β] (hf : FinStronglyMeas
 @[measurability]
 protected theorem neg [SubtractionMonoid β] [ContinuousNeg β] (hf : FinStronglyMeasurable f μ) :
     FinStronglyMeasurable (-f) μ := by
-  refine ⟨fun n => -hf.approx n, fun n => ?_, fun x => (hf.tendsto_approx x).neg⟩
-  suffices μ (Function.support fun x => -(hf.approx n) x) < ∞ by convert this
-  rw [Function.support_neg (hf.approx n)]
+  refine ⟨fun n ↦ -hf.approx n, fun n ↦ ?_, fun x ↦ (hf.tendsto_approx x).neg⟩
+  suffices μ (Function.support fun x ↦ -(hf.approx n) x) < ∞ by convert this
+  rw [Function.support_fun_neg (hf.approx n)]
   exact hf.fin_support_approx n
 
 @[measurability]
