@@ -31,7 +31,7 @@ lemma nonempty_orderIso_withZeroMul_int_iff :
   · rintro ⟨e⟩
     let x := e.symm (exp (-1))
     have hx0 : x ≠ 0 := by simp [x]
-    have hx1 : x < 1 := by simp [x, ← lt_map_inv_iff, ← exp_zero]
+    have hx1 : x < 1 := by simp [- exp_neg, x, ← lt_map_inv_iff, ← exp_zero]
     refine ⟨⟨x, hx1, fun y hy ↦ ?_⟩, ⟨x, hx0, hx1.ne⟩, .comap e.toMonoidHom e.strictMono⟩
     rcases eq_or_ne y 0 with rfl | hy0
     · simp
@@ -50,8 +50,6 @@ lemma nonempty_orderIso_withZeroMul_int_iff :
 
 lemma IsDiscrete.of_compatible_withZeroMulInt (v : Valuation R ℤᵐ⁰) [v.Compatible] :
     IsDiscrete R := by
-  have : IsRankLeOne R := .of_compatible_mulArchimedean v
-  have : MulArchimedean (ValueGroupWithZero R) := inferInstance
   by_cases h : IsNontrivial R
   · by_cases H : DenselyOrdered (ValueGroupWithZero R)
     · exfalso
