@@ -392,7 +392,7 @@ variable [IsStableUnderTransfiniteComposition.{w} W]
 
 lemma mem_map {i j : J} (φ : i ⟶ j) :
     W (h.F.map φ) :=
-  W.transfiniteCompositionsOfShape_le _ _ ((h.iic j).ici (⟨i, leOfHom φ⟩)).mem
+  W.transfiniteCompositionsOfShape_le _ _ ((h.iic j).ici ⟨i, leOfHom φ⟩).mem
 
 lemma mem_incl_app (j : J) :
     W (h.incl.app j) :=
