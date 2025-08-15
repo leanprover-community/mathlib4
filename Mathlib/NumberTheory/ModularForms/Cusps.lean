@@ -29,12 +29,10 @@ lemma exists_mem_SL2 (A : Type*) [CommRing A] [IsDomain A] [Algebra A K] [IsFrac
     [IsPrincipalIdealRing A] (c : OnePoint K) :
     ∃ g : SL(2, A), (mapGL K g) • ∞ = c := by
   cases c with
-  | infty => use 1; simp
+  | infty => exact ⟨1, by simp⟩
   | coe q =>
     obtain ⟨g, hg0, hg1⟩ := (IsFractionRing.num_den_reduced A q).isCoprime.exists_SL2_col 0
-    use g
-    have : mapGL K g 1 0 ≠ 0 := by simp [hg1]
-    simp [hg0, hg1]
+    exact ⟨g, by simp [hg0, hg1]⟩
 
 end OnePoint
 
@@ -51,7 +49,7 @@ lemma IsCusp.smul {c : OnePoint ℝ} {Γ : Subgroup (GL (Fin 2) ℝ)} (hc : IsCu
   refine ⟨_, Γ.smul_mem_pointwise_smul _ _ hpΓ, ?_, ?_⟩
   · simpa only [ConjAct.toConjAct_smul, GeneralLinearGroup.IsParabolic, Units.val_mul,
       isParabolic_conj_iff] using hpp
-  · simp only [ConjAct.toConjAct_smul, MulAction.mul_smul, inv_smul_smul, hpc]
+  · simp [ConjAct.toConjAct_smul, MulAction.mul_smul, hpc]
 
 lemma IsCusp.smul_of_mem {c : OnePoint ℝ} {Γ : Subgroup (GL (Fin 2) ℝ)} (hc : IsCusp c Γ)
     {g : GL (Fin 2) ℝ} (hg : g ∈ Γ) : IsCusp (g • c) Γ := by
@@ -109,7 +107,7 @@ lemma isCusp_SL2Z_iff' {c : OnePoint ℝ} :
     refine ⟨mapGL ℚ γ • ∞, ?_⟩
     rw [← Rat.coe_castHom, OnePoint.map_smul, OnePoint.map_infty, γ.map_mapGL (by rfl)]
 
-/-- The cusps of `SL(2, ℤ)` are precisely the elements of `ℙ¹(ℚ)`. -/
+/-- The cusps of a finite-index subgroup `SL(2, ℤ)` are the same as those of `SL(2, ℤ)` itself. -/
 lemma isCusp_SL2Z_subgroup_iff {c : OnePoint ℝ} (Γ : Subgroup SL(2, ℤ)) [Γ.FiniteIndex] :
     IsCusp c (Γ.map (mapGL ℝ)) ↔ IsCusp c (mapGL (R := ℤ) ℝ).range := by
   apply isCusp_finiteIndex_iff (Subgroup.map_le_range _ _)

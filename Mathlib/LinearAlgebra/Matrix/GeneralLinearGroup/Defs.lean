@@ -246,6 +246,10 @@ lemma map_mapGL {T : Type*} [CommRing T] [Algebra S T] [Algebra R T] [IsScalarTo
   ext
   simp [IsScalarTower.algebraMap_apply R S T, hf]
 
+@[simp]
+lemma det_mapGL (g : SpecialLinearGroup n R) : (mapGL S g).det = 1 := by
+  simp [mapGL]
+
 end SpecialLinearGroup
 
 section
