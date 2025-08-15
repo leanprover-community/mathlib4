@@ -637,9 +637,6 @@ theorem nnnorm_eq_ciSup (f : PiLp ∞ β) : ‖f‖₊ = ⨆ i, ‖f i‖₊ := 
 @[simp] lemma nnnorm_ofLp (f : PiLp ∞ β) : ‖ofLp f‖₊ = ‖f‖₊ := by
   rw [nnnorm_eq_ciSup, Pi.nnnorm_def, Finset.sup_univ_eq_ciSup]
 
-@[deprecated nnnorm_ofLp (since := "2024-04-27")]
-theorem nnnorm_equiv (f : PiLp ∞ β) : ‖WithLp.equiv ⊤ _ f‖₊ = ‖f‖₊ := nnnorm_ofLp _
-
 @[simp] lemma nnnorm_toLp (f : ∀ i, β i) : ‖toLp ∞ f‖₊ = ‖f‖₊ := (nnnorm_ofLp _).symm
 
 @[simp] lemma norm_ofLp (f : PiLp ∞ β) : ‖ofLp f‖ = ‖f‖ := congr_arg NNReal.toReal <| nnnorm_ofLp f
