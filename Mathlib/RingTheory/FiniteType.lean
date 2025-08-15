@@ -213,7 +213,7 @@ lemma adjoin_of_finite {A : Type*} [CommSemiring A] [Algebra R A] {t : Set A} (h
     FiniteType R (Algebra.adjoin R t) := by
   rw [Algebra.adjoin_eq_range]
   have : Finite t := Set.Finite.to_subtype h
-  exact .of_surjective (.mvPolynomial _ _) (.rangeRestrict (MvPolynomial.aeval Subtype.val))
+  exact .of_surjective (.rangeRestrict (MvPolynomial.aeval Subtype.val))
     (AlgHom.rangeRestrict_surjective _)
 
 end FiniteType

@@ -170,7 +170,7 @@ theorem sumElim_iff {ι'} {y : ι' → A} : AlgebraicIndependent R (Sum.elim y x
   · exact ⟨fun h ↦ (hx <| by apply h.comp _ Sum.inr_injective).elim, fun h ↦ (hx h.1).elim⟩
   let e := (sumAlgEquiv R ι' ι).trans (mapAlgEquiv _ hx.aevalEquiv)
   have : aeval (Sum.elim y x) = ((aeval y).restrictScalars R).comp e.toAlgHom := by
-    ext (_ | _) <;> simp [e, algebraMap_aevalEquiv]
+    ext (_ | _) <;> simp [e]
   simp_rw [hx, AlgebraicIndependent, this]; simp
 
 theorem iff_adjoin_image (s : Set ι) :
