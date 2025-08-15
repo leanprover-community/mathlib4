@@ -331,6 +331,11 @@ theorem _root_.Cardinal.toENat_lt_natCast_iff {n : ℕ} {c : Cardinal} :
     toENat c < ↑n ↔ c < ↑n := by
   simp only [← not_le, Cardinal.natCast_le_toENat_iff]
 
+@[simp]
+lemma _root_.Cardinal.coe_toNat_le_toENat (c : Cardinal) : (c.toNat : ℕ∞) ≤ toENat c := by
+  rw [Cardinal.toNat]
+  simp
+
 theorem card_eq_zero_iff_empty (α : Type*) : card α = 0 ↔ IsEmpty α := by
   rw [← Cardinal.mk_eq_zero_iff]
   simp [card]
