@@ -222,7 +222,7 @@ instance instSMul : SMul R (FiniteMeasure Ω) where
 @[simp, norm_cast]
 theorem toMeasure_zero : ((↑) : FiniteMeasure Ω → Measure Ω) 0 = 0 := rfl
 
-@[norm_cast]
+@[simp, norm_cast]
 theorem toMeasure_add (μ ν : FiniteMeasure Ω) : ↑(μ + ν) = (↑μ + ↑ν : Measure Ω) := rfl
 
 @[simp, norm_cast]
@@ -757,9 +757,7 @@ lemma map_apply (ν : FiniteMeasure Ω) {f : Ω → Ω'} (f_mble : Measurable f)
   map_apply_of_aemeasurable ν f_mble.aemeasurable A_mble
 
 @[simp] lemma map_add {f : Ω → Ω'} (f_mble : Measurable f) (ν₁ ν₂ : FiniteMeasure Ω) :
-    (ν₁ + ν₂).map f = ν₁.map f + ν₂.map f := by
-  ext s s_mble
-  simp only [map_apply' _ f_mble.aemeasurable s_mble, toMeasure_add, Measure.add_apply]
+    (ν₁ + ν₂).map f = ν₁.map f + ν₂.map f := by ext; simp [*]
 
 @[simp] lemma map_smul {f : Ω → Ω'} (c : ℝ≥0) (ν : FiniteMeasure Ω) :
     (c • ν).map f = c • (ν.map f) := by
