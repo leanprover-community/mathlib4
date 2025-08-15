@@ -67,6 +67,7 @@ import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.DeclarationNames
 import Mathlib.Tactic.DefEqTransformations
+import Mathlib.Tactic.DepRewrite
 import Mathlib.Tactic.DeprecateTo
 import Mathlib.Tactic.DeriveCountable
 import Mathlib.Tactic.DeriveEncodable
@@ -87,6 +88,7 @@ import Mathlib.Tactic.FBinop
 import Mathlib.Tactic.FailIfNoProgress
 import Mathlib.Tactic.FastInstance
 import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.FieldSimp.Discharger
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Find
 import Mathlib.Tactic.FindSyntax
@@ -264,6 +266,8 @@ import Mathlib.Tactic.SudoSetOption
 import Mathlib.Tactic.SuppressCompilation
 import Mathlib.Tactic.SwapVar
 import Mathlib.Tactic.TFAE
+import Mathlib.Tactic.TacticAnalysis
+import Mathlib.Tactic.TacticAnalysis.Declarations
 import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.TautoSet
 import Mathlib.Tactic.TermCongr
