@@ -380,6 +380,14 @@ lemma nnnorm_natAbs (z : ℤ) :
     ‖(z.natAbs : α)‖₊ = ‖(z : α)‖₊ := by
   simp [← NNReal.coe_inj, - Nat.cast_natAbs, norm_natAbs]
 
+@[simp] lemma norm_intCast_abs (z : ℤ) :
+    ‖((|z| : ℤ) : α)‖ = ‖(z : α)‖ := by
+  simp [← norm_natAbs]
+
+@[simp] lemma nnnorm_intCast_abs (z : ℤ) :
+    ‖((|z| : ℤ) : α)‖₊ = ‖(z : α)‖₊ := by
+  simp [← nnnorm_natAbs]
+
 /-- If `α` is a seminormed ring, then `‖a ^ n‖₊ ≤ ‖a‖₊ ^ n` for `n > 0`.
 See also `nnnorm_pow_le`. -/
 theorem nnnorm_pow_le' (a : α) : ∀ {n : ℕ}, 0 < n → ‖a ^ n‖₊ ≤ ‖a‖₊ ^ n
