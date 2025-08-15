@@ -466,6 +466,12 @@ theorem card_eq_three {s : Multiset α} : card s = 3 ↔ ∃ x y z, s = {x, y, z
         Exists.imp fun _b => Exists.imp fun _c => congr_arg _,
     fun ⟨_a, _b, _c, e⟩ => e.symm ▸ rfl⟩
 
+theorem card_eq_four {s : Multiset α} : card s = 4 ↔ ∃ x y z w, s = {x, y, z, w} :=
+  ⟨Quot.inductionOn s fun _l h =>
+      (List.length_eq_four.mp h).imp fun _a =>
+        Exists.imp fun _b => Exists.imp fun _c => Exists.imp fun _d => congr_arg _,
+    fun ⟨_a, _b, _c, _d, e⟩ => e.symm ▸ rfl⟩
+
 /-! ### Map for partial functions -/
 
 @[simp]
