@@ -138,7 +138,7 @@ lemma spanRank_span_range_of_linearIndependent [RankCondition R] {ι : Type u} {
   · apply map_injective_of_injective (f := (span R _).subtype) (injective_subtype _)
     simp [map_span, Set.image_preimage_eq_inter_range, Set.inter_eq_self_of_subset_left, ← x.2]
 
-lemma spanRank_span_of_linearIndependent [RankCondition R] (s : Set M) (hs : LinearIndepOn R id s) :
+lemma spanRank_span_of_linearIndepOn [RankCondition R] (s : Set M) (hs : LinearIndepOn R id s) :
     (span R s).spanRank = #s := by
   simp [← spanRank_span_range_of_linearIndependent Subtype.val_injective hs]
 
@@ -255,7 +255,7 @@ variable {R : Type u} {M : Type v} [Semiring R] [AddCommMonoid M] [Module R M]
 
 lemma Module.Basis.mk_eq_spanRank [RankCondition R] {ι : Type*} (v : Basis ι R M) :
     #(Set.range v) = (⊤ : Submodule R M).spanRank := by
-  rw [← v.span_eq, spanRank_span_of_linearIndependent]
+  rw [← v.span_eq, spanRank_span_of_linearIndepOn]
   exact v.linearIndependent.linearIndepOn_id
 
 theorem Submodule.rank_eq_spanRank_of_free [Module.Free R M] [StrongRankCondition R] :
