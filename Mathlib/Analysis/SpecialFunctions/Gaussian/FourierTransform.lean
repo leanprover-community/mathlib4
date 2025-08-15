@@ -353,7 +353,7 @@ theorem _root_.fourierIntegral_gaussian_innerProductSpace' (hb : 0 < b.re) (x w 
     simp [inner_sub_left]
     ring
   · have : b ≠ 0 := by contrapose! hb; rw [hb, zero_re]
-    field_simp [mul_pow]
+    simp [mul_pow]
     ring
 
 theorem _root_.fourierIntegral_gaussian_innerProductSpace (hb : 0 < b.re) (w : V) :
