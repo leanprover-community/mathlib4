@@ -13,11 +13,7 @@ For `f : SkewMonoidAlgebra k G`, `f.support` is the set of all `a ∈ G` such th
 
 ## TODO
 
-The following lemmas are currently missing:
-- `support_single_mul_eq_image`
-- `support_mul_single_eq_image`
-- `support_mul_single`
-- `support_single_mul`
+The following lemma is currently missing since it needs:
 - `mem_span_support`
 -/
 
@@ -93,6 +89,38 @@ theorem support_mul_single_subset [DecidableEq G] (f : SkewMonoidAlgebra k G) (r
     (f * single a r).support ⊆ Finset.image (· * a) f.support :=
   (support_mul _ _).trans <| (Finset.image₂_subset_left support_single_subset).trans <| by
     rw [Finset.image₂_singleton_right]
+
+theorem support_single_mul_eq_image [DecidableEq G] (f : SkewMonoidAlgebra k G) {r : k}
+    {x : G} (lx : IsLeftRegular x) (hrx : ∀ y, r * x • y = 0 ↔ y = 0) :
+    (single x r * f : SkewMonoidAlgebra k G).support = Finset.image (x * ·) f.support := by
+  refine subset_antisymm (support_single_mul_subset f _ _) fun y hy => ?_
+  obtain ⟨y, yf, rfl⟩ : ∃ a : G, a ∈ f.support ∧ x * a = y := by
+    simpa only [Finset.mem_image, exists_prop] using hy
+  simp [coeff_mul, mem_support_iff.mp yf, hrx, mem_support_iff, sum_single_index, Ne,
+    zero_mul, ite_self, sum_zero, lx.eq_iff]
+
+theorem support_mul_single_eq_image [DecidableEq G] (f : SkewMonoidAlgebra k G) {r : k} {x : G}
+    (rx : IsRightRegular x) (hrx : ∀ g : G, ∀ y, y * g • r = 0 ↔ y = 0) :
+    (f * single x r).support = Finset.image (· * x) f.support := by
+  refine subset_antisymm (support_mul_single_subset f _ _) fun y hy => ?_
+  obtain ⟨y, yf, rfl⟩ : ∃ a : G, a ∈ f.support ∧ a * x = y := by
+    simpa only [Finset.mem_image, exists_prop] using hy
+  simp [coeff_mul, mem_support_iff.mp yf, hrx, mem_support_iff, sum_single_index, mul_zero,
+    ite_self, rx.eq_iff]
+
+theorem support_mul_single [IsRightCancelMul G] (f : SkewMonoidAlgebra k G) (r : k) (x : G)
+   (hrx : ∀ g : G, ∀ y, y * g • r = 0 ↔ y = 0) :
+    (f * single x r).support = f.support.map (mulRightEmbedding x) := by
+  classical
+    ext
+    simp [support_mul_single_eq_image f (IsRightRegular.all x) hrx]
+
+theorem support_single_mul [IsLeftCancelMul G] (f : SkewMonoidAlgebra k G) (r : k) (x : G)
+    (hrx : ∀ y, r * x • y = 0 ↔ y = 0) :
+    (single x r * f : SkewMonoidAlgebra k G).support = f.support.map (mulLeftEmbedding x) := by
+  classical
+    ext
+    simp [support_single_mul_eq_image f (IsLeftRegular.all x) hrx]
 
 end Semiring
 
