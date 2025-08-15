@@ -259,6 +259,11 @@ theorem measurable_fun_prod {α β : Type*} [MeasurableSpace α] [MeasurableSpac
   · exact (Measure.measurable_coe Hu).comp (measurable_subtype_coe.comp measurable_fst)
   · exact (Measure.measurable_coe Hv).comp (measurable_subtype_coe.comp measurable_snd)
 
+lemma apply_iUnion_le {μ : ProbabilityMeasure Ω} {f : ℕ → Set Ω}
+    (hf : Summable fun n ↦ μ (f n)) :
+    μ (⋃ n, f n) ≤ ∑' n, μ (f n) := by
+  simpa [← ENNReal.coe_le_coe, ENNReal.coe_tsum hf] using MeasureTheory.measure_iUnion_le f
+
 section convergence_in_distribution
 
 variable [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
