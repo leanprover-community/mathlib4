@@ -183,15 +183,15 @@ example {a : Nat} : P (a* x - a * x) := by test_field_simp
 #guard_msgs in
 example : P (2 * x - 1 * x) := by test_field_simp
 
-/-- error: simp made no progress -/
+/-- error: `simp` made no progress -/
 #guard_msgs in
 example : P (2 * x - x - x) := by test_field_simp
 
-/-- error: simp made no progress -/
+/-- error: `simp` made no progress -/
 #guard_msgs in
 example : P (2 * x - x) := by test_field_simp
 
-/-- error: simp made no progress -/
+/-- error: `simp` made no progress -/
 #guard_msgs in
 example : P ((3 - 2) * x - x) := by test_field_simp
 
@@ -204,7 +204,7 @@ example : P (0 * x) := by test_field_simp
 #guard_msgs in
 example : P (0 * x * y + 0) := by test_field_simp
 
-/-- error: simp made no progress -/
+/-- error: `simp` made no progress -/
 #guard_msgs in
 example : P ((x * y - y * x) * z) := by test_field_simp
 
@@ -232,7 +232,7 @@ example : P (x * y) := by test_field_simp
 example : P ((x * y) / (y * x)) := by test_field_simp
 
 -- TODO(new implementation): combine these two 2 * x * y
-/-- error: simp made no progress -/
+/-- error: `simp` made no progress -/
 #guard_msgs in
 example : P (x * y + y * x) := by test_field_simp
 
