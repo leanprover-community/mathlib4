@@ -276,13 +276,6 @@ noncomputable def imageFactorization {F F' : Sheaf J (Type (max v u))} (f : F �
 instance : Limits.HasImages (Sheaf J (Type max v u)) :=
   ⟨fun f => ⟨⟨imageFactorization f⟩⟩⟩
 
-@[deprecated (since := "2025-01-25")] alias toImagePresheafSheafify :=
-  Subpresheaf.toRangeSheafify
-@[deprecated (since := "2025-01-25")] alias imageSheaf := Sheaf.image
-@[deprecated (since := "2025-01-25")] alias toImageSheaf := Sheaf.toImage
-@[deprecated (since := "2025-01-25")] alias imageSheafι := Sheaf.imageι
-@[deprecated (since := "2025-01-25")] alias toImageSheaf_ι := Sheaf.toImage_ι
-
 end Image
 
 end CategoryTheory

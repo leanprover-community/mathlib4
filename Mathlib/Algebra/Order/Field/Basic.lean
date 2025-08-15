@@ -7,9 +7,9 @@ import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Data.Set.Monotone
-import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.Bounds.OrderIso
 import Mathlib.Tactic.Positivity.Core
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
 
 /-!
 # Lemmas about linear ordered (semi)fields
@@ -23,44 +23,6 @@ variable {ι α β : Type*}
 section LinearOrderedSemifield
 
 variable [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] {a b c d e : α} {m n : ℤ}
-
-/-!
-### Relating two divisions.
--/
-
-@[deprecated div_le_div_iff_of_pos_right (since := "2024-11-12")]
-theorem div_le_div_right (hc : 0 < c) : a / c ≤ b / c ↔ a ≤ b := div_le_div_iff_of_pos_right hc
-
-@[deprecated div_lt_div_iff_of_pos_right (since := "2024-11-12")]
-theorem div_lt_div_right (hc : 0 < c) : a / c < b / c ↔ a < b := div_lt_div_iff_of_pos_right hc
-
-@[deprecated div_lt_div_iff_of_pos_left (since := "2024-11-13")]
-theorem div_lt_div_left (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) : a / b < a / c ↔ c < b :=
-  div_lt_div_iff_of_pos_left ha hb hc
-
-@[deprecated div_le_div_iff_of_pos_left (since := "2024-11-12")]
-theorem div_le_div_left (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) : a / b ≤ a / c ↔ c ≤ b :=
-  div_le_div_iff_of_pos_left ha hb hc
-
-@[deprecated div_lt_div_iff₀ (since := "2024-11-12")]
-theorem div_lt_div_iff (b0 : 0 < b) (d0 : 0 < d) : a / b < c / d ↔ a * d < c * b :=
-  div_lt_div_iff₀ b0 d0
-
-@[deprecated div_le_div_iff₀ (since := "2024-11-12")]
-theorem div_le_div_iff (b0 : 0 < b) (d0 : 0 < d) : a / b ≤ c / d ↔ a * d ≤ c * b :=
-  div_le_div_iff₀ b0 d0
-
-@[deprecated div_le_div₀ (since := "2024-11-12")]
-theorem div_le_div (hc : 0 ≤ c) (hac : a ≤ c) (hd : 0 < d) (hbd : d ≤ b) : a / b ≤ c / d :=
-  div_le_div₀ hc hac hd hbd
-
-@[deprecated div_lt_div₀ (since := "2024-11-12")]
-theorem div_lt_div (hac : a < c) (hbd : d ≤ b) (c0 : 0 ≤ c) (d0 : 0 < d) : a / b < c / d :=
-  div_lt_div₀ hac hbd c0 d0
-
-@[deprecated div_lt_div₀' (since := "2024-11-12")]
-theorem div_lt_div' (hac : a ≤ c) (hbd : d < b) (c0 : 0 < c) (d0 : 0 < d) : a / b < c / d :=
-  div_lt_div₀' hac hbd c0 d0
 
 /-!
 ### Relating one division and involving `1`
@@ -274,12 +236,19 @@ theorem le_iff_forall_one_lt_le_mul₀ {α : Type*}
     [Semifield α] [LinearOrder α] [IsStrictOrderedRing α]
     {a b : α} (hb : 0 ≤ b) : a ≤ b ↔ ∀ ε, 1 < ε → a ≤ b * ε := by
   refine ⟨fun h _ hε ↦ h.trans <| le_mul_of_one_le_right hb hε.le, fun h ↦ ?_⟩
-  obtain rfl|hb := hb.eq_or_lt
+  obtain rfl | hb := hb.eq_or_lt
   · simp_rw [zero_mul] at h
     exact h 2 one_lt_two
   refine le_of_forall_gt_imp_ge_of_dense fun x hbx => ?_
   convert h (x / b) ((one_lt_div hb).mpr hbx)
   rw [mul_div_cancel₀ _ hb.ne']
+
+theorem div_nat_le_self_of_nonnneg (ha : 0 ≤ a) (n : ℕ) : a / n ≤ a :=
+  if h : n = 0 then by simpa [h] using ha
+  else div_le_self ha (n.one_le_cast_iff_ne_zero.mpr h)
+
+theorem div_nat_lt_self_of_pos_of_two_le (ha : 0 < a) {n : ℕ} (hn : 2 ≤ n) : a / n < a :=
+  div_lt_self ha (n.one_lt_cast.mpr hn)
 
 /-! ### Results about `IsGLB` -/
 
@@ -409,23 +378,23 @@ theorem lt_inv_of_neg (ha : a < 0) (hb : b < 0) : a < b⁻¹ ↔ b < a⁻¹ :=
 
 
 theorem sub_inv_antitoneOn_Ioi :
-    AntitoneOn (fun x ↦ (x-c)⁻¹) (Set.Ioi c) :=
+    AntitoneOn (fun x ↦ (x - c)⁻¹) (Set.Ioi c) :=
   antitoneOn_iff_forall_lt.mpr fun _ ha _ hb hab ↦
     inv_le_inv₀ (sub_pos.mpr hb) (sub_pos.mpr ha) |>.mpr <| sub_le_sub (le_of_lt hab) le_rfl
 
 theorem sub_inv_antitoneOn_Iio :
-    AntitoneOn (fun x ↦ (x-c)⁻¹) (Set.Iio c) :=
+    AntitoneOn (fun x ↦ (x - c)⁻¹) (Set.Iio c) :=
   antitoneOn_iff_forall_lt.mpr fun _ ha _ hb hab ↦
     inv_le_inv_of_neg (sub_neg.mpr hb) (sub_neg.mpr ha) |>.mpr <| sub_le_sub (le_of_lt hab) le_rfl
 
 theorem sub_inv_antitoneOn_Icc_right (ha : c < a) :
-    AntitoneOn (fun x ↦ (x-c)⁻¹) (Set.Icc a b) := by
+    AntitoneOn (fun x ↦ (x - c)⁻¹) (Set.Icc a b) := by
   by_cases hab : a ≤ b
   · exact sub_inv_antitoneOn_Ioi.mono <| (Set.Icc_subset_Ioi_iff hab).mpr ha
   · simp [hab, Set.Subsingleton.antitoneOn]
 
 theorem sub_inv_antitoneOn_Icc_left (ha : b < c) :
-    AntitoneOn (fun x ↦ (x-c)⁻¹) (Set.Icc a b) := by
+    AntitoneOn (fun x ↦ (x - c)⁻¹) (Set.Icc a b) := by
   by_cases hab : a ≤ b
   · exact sub_inv_antitoneOn_Iio.mono <| (Set.Icc_subset_Iio_iff hab).mpr ha
   · simp [hab, Set.Subsingleton.antitoneOn]
@@ -493,13 +462,13 @@ theorem lt_one_div_of_neg (ha : a < 0) (hb : b < 0) : a < 1 / b ↔ b < 1 / a :=
 theorem one_lt_div_iff : 1 < a / b ↔ 0 < b ∧ b < a ∨ b < 0 ∧ a < b := by
   rcases lt_trichotomy b 0 with (hb | rfl | hb)
   · simp [hb, hb.not_gt, one_lt_div_of_neg]
-  · simp [lt_irrefl, zero_le_one]
+  · simp [zero_le_one]
   · simp [hb, hb.not_gt, one_lt_div]
 
 theorem one_le_div_iff : 1 ≤ a / b ↔ 0 < b ∧ b ≤ a ∨ b < 0 ∧ a ≤ b := by
   rcases lt_trichotomy b 0 with (hb | rfl | hb)
   · simp [hb, hb.not_gt, one_le_div_of_neg]
-  · simp [lt_irrefl, zero_lt_one.not_ge, zero_lt_one]
+  · simp [zero_lt_one.not_ge]
   · simp [hb, hb.not_gt, one_le_div]
 
 theorem div_lt_one_iff : a / b < 1 ↔ 0 < b ∧ a < b ∨ b = 0 ∨ b < 0 ∧ b < a := by
@@ -551,12 +520,10 @@ theorem one_div_le_neg_one (h1 : a < 0) (h2 : -1 ≤ a) : 1 / a ≤ -1 :=
 
 
 theorem sub_self_div_two (a : α) : a - a / 2 = a / 2 := by
-  suffices a / 2 + a / 2 - a / 2 = a / 2 by rwa [add_halves] at this
-  rw [add_sub_cancel_right]
+  grind
 
 theorem div_two_sub_self (a : α) : a / 2 - a = -(a / 2) := by
-  suffices a / 2 - (a / 2 + a / 2) = -(a / 2) by rwa [add_halves] at this
-  rw [sub_add_eq_sub_sub, sub_self, zero_sub]
+  grind
 
 theorem add_sub_div_two_lt (h : a < b) : a + (b - a) / 2 < b := by
   rwa [← div_sub_div_same, sub_eq_add_neg, add_comm (b / 2), ← add_assoc, ← sub_eq_add_neg, ←
@@ -637,10 +604,7 @@ lemma mul_le_of_forall_lt_of_nonneg {a b c : α} (ha : 0 ≤ a) (hc : 0 ≤ c)
 
 theorem mul_self_inj_of_nonneg (a0 : 0 ≤ a) (b0 : 0 ≤ b) : a * a = b * b ↔ a = b :=
   mul_self_eq_mul_self_iff.trans <|
-    or_iff_left_of_imp fun h => by
-      subst a
-      have : b = 0 := le_antisymm (neg_nonneg.1 a0) b0
-      rw [this, neg_zero]
+    or_iff_left_of_imp fun h => by grind
 
 theorem min_div_div_right_of_nonpos (hc : c ≤ 0) (a b : α) : min (a / c) (b / c) = max a b / c :=
   Eq.symm <| Antitone.map_max fun _ _ => div_le_div_of_nonpos_of_le hc

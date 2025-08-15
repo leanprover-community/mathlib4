@@ -162,8 +162,7 @@ theorem exists_increasing_or_nonincreasing_subseq' (r : α → α → Prop) (f :
   classical
     let bad : Set ℕ := { m | ∀ n, m < n → ¬r (f m) (f n) }
     by_cases hbad : Infinite bad
-    · haveI := hbad
-      refine ⟨Nat.orderEmbeddingOfSet bad, Or.intro_right _ fun m n mn => ?_⟩
+    · refine ⟨Nat.orderEmbeddingOfSet bad, Or.intro_right _ fun m n mn => ?_⟩
       have h := @Set.mem_range_self _ _ ↑(Nat.orderEmbeddingOfSet bad) m
       rw [Nat.orderEmbeddingOfSet_range bad] at h
       exact h _ ((OrderEmbedding.lt_iff_lt _).2 mn)
@@ -190,7 +189,7 @@ theorem exists_increasing_or_nonincreasing_subseq' (r : α → α → Prop) (f :
           Or.intro_left _ fun n => (Nat.find_spec (h (g' n))).2⟩
 
 /-- This is the infinitary Erdős–Szekeres theorem, and an important lemma in the usual proof of
-    Bolzano-Weierstrass for `ℝ`. -/
+Bolzano-Weierstrass for `ℝ`. -/
 theorem exists_increasing_or_nonincreasing_subseq (r : α → α → Prop) [IsTrans α r] (f : ℕ → α) :
     ∃ g : ℕ ↪o ℕ,
       (∀ m n : ℕ, m < n → r (f (g m)) (f (g n))) ∨ ∀ m n : ℕ, m < n → ¬r (f (g m)) (f (g n)) := by
@@ -236,18 +235,6 @@ theorem WellFoundedGT.monotone_chain_condition [PartialOrder α] [h : WellFounde
     ∃ n, ∀ m, n ≤ m → a n = a m :=
   wellFoundedGT_iff_monotone_chain_condition.1 h a
 
-@[deprecated wellFoundedGT_iff_monotone_chain_condition' (since := "2025-01-15")]
-theorem WellFounded.monotone_chain_condition' [Preorder α] :
-    WellFounded ((· > ·) : α → α → Prop) ↔ ∀ a : ℕ →o α, ∃ n, ∀ m, n ≤ m → ¬a n < a m := by
-  rw [← isWellFounded_iff]
-  exact wellFoundedGT_iff_monotone_chain_condition'
-
-@[deprecated wellFoundedGT_iff_monotone_chain_condition (since := "2025-01-15")]
-theorem WellFounded.monotone_chain_condition [PartialOrder α] :
-    WellFounded ((· > ·) : α → α → Prop) ↔ ∀ a : ℕ →o α, ∃ n, ∀ m, n ≤ m → a n = a m := by
-  rw [← isWellFounded_iff]
-  exact wellFoundedGT_iff_monotone_chain_condition
-
 /-- Given an eventually-constant monotone sequence `a₀ ≤ a₁ ≤ a₂ ≤ ...` in a partially-ordered
 type, `monotonicSequenceLimitIndex a` is the least natural number `n` for which `aₙ` reaches the
 constant value. For sequences that are not eventually constant, `monotonicSequenceLimitIndex a`
@@ -275,13 +262,6 @@ theorem WellFoundedGT.ciSup_eq_monotonicSequenceLimit [ConditionallyCompleteLatt
     [WellFoundedGT α] (a : ℕ →o α) (ha : BddAbove (Set.range a)) :
     iSup a = monotonicSequenceLimit a :=
   (ciSup_le (le_monotonicSequenceLimit a)).antisymm (le_ciSup ha _)
-
-@[deprecated WellFoundedGT.iSup_eq_monotonicSequenceLimit (since := "2025-01-15")]
-theorem WellFounded.iSup_eq_monotonicSequenceLimit [CompleteLattice α]
-    (h : WellFounded ((· > ·) : α → α → Prop)) (a : ℕ →o α) :
-    iSup a = monotonicSequenceLimit a := by
-  have : WellFoundedGT α := ⟨h⟩
-  exact WellFoundedGT.iSup_eq_monotonicSequenceLimit a
 
 theorem exists_covBy_seq_of_wellFoundedLT_wellFoundedGT (α) [Preorder α]
     [Nonempty α] [wfl : WellFoundedLT α] [wfg : WellFoundedGT α] :

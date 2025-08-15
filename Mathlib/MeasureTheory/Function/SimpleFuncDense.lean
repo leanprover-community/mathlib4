@@ -141,8 +141,7 @@ lemma approxOn_range_nonneg [Zero α] [Preorder α] {f : β → α}
     exact hf x
   exact fun _ ↦ this <| approxOn_mem ..
 
-@[simp, nolint simpNF] -- Porting note: LHS doesn't simplify.
--- It seems the side conditions `hf` and `hg` are not applied by `simpNF`.
+@[simp]
 theorem approxOn_comp {γ : Type*} [MeasurableSpace γ] {f : β → α} (hf : Measurable f) {g : γ → β}
     (hg : Measurable g) {s : Set α} {y₀ : α} (h₀ : y₀ ∈ s) [SeparableSpace s] (n : ℕ) :
     approxOn (f ∘ g) (hf.comp hg) s y₀ h₀ n = (approxOn f hf s y₀ h₀ n).comp g hg :=
@@ -231,7 +230,7 @@ lemma HasCompactSupport.exists_simpleFunc_approx_of_prod [PseudoMetricSpace α]
       contrapose! H
       rw [← Function.mem_support] at H
       exact fs (subset_tsupport _ H)
-    simp [SimpleFunc.piecewise_apply, H, ite_false, this, hε]
+    simp [SimpleFunc.piecewise_apply, H, this, hε]
 
 /-- A continuous function with compact support on a product space is measurable for the product
 sigma-algebra. The subtlety is that we do not assume that the spaces are separable, so the

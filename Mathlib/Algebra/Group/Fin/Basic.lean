@@ -26,12 +26,8 @@ variable {n : ℕ}
 /-! ### Instances -/
 
 instance addCommSemigroup (n : ℕ) : AddCommSemigroup (Fin n) where
-  add_assoc := by simp [Fin.ext_iff, add_def, Nat.add_assoc]
-  add_comm := by simp [Fin.ext_iff, add_def, Nat.add_comm]
-
-instance (n) : AddCommSemigroup (Fin n) where
-  add_assoc := by simp [Fin.ext_iff, add_def, Nat.add_assoc]
-  add_comm := by simp [Fin.ext_iff, add_def, add_comm]
+  add_assoc := by simp [add_def, Nat.add_assoc]
+  add_comm := by simp [add_def, Nat.add_comm]
 
 instance addCommMonoid (n : ℕ) [NeZero n] : AddCommMonoid (Fin n) where
   zero_add := Fin.zero_add
@@ -93,6 +89,12 @@ instance instAddRightCancelSemigroup (n : ℕ) : AddRightCancelSemigroup (Fin n)
   { Fin.addCommSemigroup n, Fin.instIsCancelAdd n with }
 
 /-! ### Miscellaneous lemmas -/
+
+open scoped Fin.NatCast Fin.IntCast in
+/-- Variant of `Fin.intCast_def` with `Nat.cast` on the RHS. -/
+theorem intCast_def' {n : Nat} [NeZero n] (x : Int) :
+    (x : Fin n) = if 0 ≤ x then ↑x.natAbs else -↑x.natAbs :=
+  Fin.intCast_def _
 
 lemma coe_sub_one (a : Fin (n + 1)) : ↑(a - 1) = if a = 0 then n else a - 1 := by
   cases n

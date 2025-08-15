@@ -143,7 +143,7 @@ instance addRightMono [LE α] [AddRightMono α] : AddRightMono (WithTop α) wher
 
 instance addLeftReflectLT [LT α] [AddLeftReflectLT α] : AddLeftReflectLT (WithTop α) where
   elim x y z := by
-    cases x <;> cases y <;> cases z <;> simp [← coe_add, swap]; simpa using lt_of_add_lt_add_left
+    cases x <;> cases y <;> cases z <;> simp [← coe_add]; simpa using lt_of_add_lt_add_left
 
 instance addRightReflectLT [LT α] [AddRightReflectLT α] : AddRightReflectLT (WithTop α) where
   elim x y z := by
@@ -187,17 +187,17 @@ protected theorem add_lt_add_of_lt_of_le [Preorder α] [AddLeftMono α]
     w + x < y + z :=
   (WithTop.add_lt_add_right hx hwy).trans_le <| add_le_add_left hxz _
 
-lemma addLECancellable_of_ne_top [LE α] [ContravariantClass α α (· + ·) (· ≤ ·)]
+lemma addLECancellable_of_ne_top [LE α] [AddLeftReflectLE α]
     (hx : x ≠ ⊤) : AddLECancellable x := fun _b _c ↦ WithTop.le_of_add_le_add_left hx
 
-lemma addLECancellable_of_lt_top [Preorder α] [ContravariantClass α α (· + ·) (· ≤ ·)]
+lemma addLECancellable_of_lt_top [Preorder α] [AddLeftReflectLE α]
     (hx : x < ⊤) : AddLECancellable x := addLECancellable_of_ne_top hx.ne
 
-lemma addLECancellable_coe [LE α] [ContravariantClass α α (· + ·) (· ≤ ·)] (a : α) :
+lemma addLECancellable_coe [LE α] [AddLeftReflectLE α] (a : α) :
     AddLECancellable (a : WithTop α) := addLECancellable_of_ne_top coe_ne_top
 
 lemma addLECancellable_iff_ne_top [Nonempty α] [Preorder α]
-    [ContravariantClass α α (· + ·) (· ≤ ·)] : AddLECancellable x ↔ x ≠ ⊤ where
+    [AddLeftReflectLE α] : AddLECancellable x ↔ x ≠ ⊤ where
   mp := by rintro h rfl; exact (coe_lt_top <| Classical.arbitrary _).not_ge <| h <| by simp
   mpr := addLECancellable_of_ne_top
 
@@ -348,16 +348,9 @@ instance existsAddOfLE [LE α] [Add α] [ExistsAddOfLE α] : ExistsAddOfLE (With
 @[to_additive (attr := simp) top_pos]
 theorem one_lt_top [One α] [LT α] : (1 : WithTop α) < ⊤ := coe_lt_top _
 
-@[deprecated top_pos (since := "2024-10-22")]
-alias zero_lt_top := top_pos
-
-@[norm_cast, deprecated coe_pos (since := "2024-10-22")]
-theorem zero_lt_coe [Zero α] [LT α] (a : α) : (0 : WithTop α) < a ↔ 0 < a :=
-  coe_lt_coe
-
 /-- A version of `WithTop.map` for `OneHom`s. -/
 @[to_additive (attr := simps -fullyApplied)
-  "A version of `WithTop.map` for `ZeroHom`s"]
+  /-- A version of `WithTop.map` for `ZeroHom`s -/]
 protected def _root_.OneHom.withTopMap {M N : Type*} [One M] [One N] (f : OneHom M N) :
     OneHom (WithTop M) (WithTop N) where
   toFun := WithTop.map f
@@ -491,7 +484,7 @@ instance addRightMono [LE α] [AddRightMono α] : AddRightMono (WithBot α) wher
 
 instance addLeftReflectLT [LT α] [AddLeftReflectLT α] : AddLeftReflectLT (WithBot α) where
   elim x y z := by
-    cases x <;> cases y <;> cases z <;> simp [← coe_add, swap]; simpa using lt_of_add_lt_add_left
+    cases x <;> cases y <;> cases z <;> simp [← coe_add]; simpa using lt_of_add_lt_add_left
 
 instance addRightReflectLT [LT α] [AddRightReflectLT α] : AddRightReflectLT (WithBot α) where
   elim x y z := by
@@ -535,19 +528,30 @@ protected theorem add_lt_add_of_lt_of_le [Preorder α] [AddLeftMono α]
     w + x < y + z :=
   (WithBot.add_lt_add_right hx hwy).trans_le <| add_le_add_left hxz _
 
-lemma addLECancellable_of_ne_bot [LE α] [ContravariantClass α α (· + ·) (· ≤ ·)]
+lemma addLECancellable_of_ne_bot [LE α] [AddLeftReflectLE α]
     (hx : x ≠ ⊥) : AddLECancellable x := fun _b _c ↦ WithBot.le_of_add_le_add_left hx
 
-lemma addLECancellable_of_lt_bot [Preorder α] [ContravariantClass α α (· + ·) (· ≤ ·)]
+lemma addLECancellable_of_lt_bot [Preorder α] [AddLeftReflectLE α]
     (hx : x < ⊥) : AddLECancellable x := addLECancellable_of_ne_bot hx.ne
 
-lemma addLECancellable_coe [LE α] [ContravariantClass α α (· + ·) (· ≤ ·)] (a : α) :
+lemma addLECancellable_coe [LE α] [AddLeftReflectLE α] (a : α) :
     AddLECancellable (a : WithBot α) := addLECancellable_of_ne_bot coe_ne_bot
 
 lemma addLECancellable_iff_ne_bot [Nonempty α] [Preorder α]
-    [ContravariantClass α α (· + ·) (· ≤ ·)] : AddLECancellable x ↔ x ≠ ⊥ where
+    [AddLeftReflectLE α] : AddLECancellable x ↔ x ≠ ⊥ where
   mp := by rintro h rfl; exact (bot_lt_coe <| Classical.arbitrary _).not_ge <| h <| by simp
   mpr := addLECancellable_of_ne_bot
+
+/--
+Addition in `WithBot (WithTop α)` is right cancellative provided the element
+being cancelled is not `⊤` or `⊥`.
+-/
+lemma add_le_add_iff_right' {α : Type*} [Add α] [LE α]
+    [AddRightMono α] [AddRightReflectLE α]
+    {a b c : WithBot (WithTop α)} (hc : c ≠ ⊥) (hc' : c ≠ ⊤) :
+    a + c ≤ b + c ↔ a ≤ b := by
+  induction a <;> induction b <;> induction c <;> norm_cast at * <;>
+    aesop (add simp WithTop.add_le_add_iff_right)
 
 --  There is no `WithBot.map_mul_of_mulHom`, since `WithBot` does not have a multiplication.
 @[simp]
@@ -646,7 +650,7 @@ instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne (
 
 /-- A version of `WithBot.map` for `OneHom`s. -/
 @[to_additive (attr := simps -fullyApplied)
-  "A version of `WithBot.map` for `ZeroHom`s"]
+  /-- A version of `WithBot.map` for `ZeroHom`s -/]
 protected def _root_.OneHom.withBotMap {M N : Type*} [One M] [One N] (f : OneHom M N) :
     OneHom (WithBot M) (WithBot N) where
   toFun := WithBot.map f

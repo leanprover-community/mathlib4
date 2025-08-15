@@ -4,6 +4,12 @@ name: Label New Contributors
 
 on: pull_request_target
 
+# Limit permissions for GITHUB_TOKEN for the entire workflow
+permissions:
+  contents: read
+  pull-requests: write  # Only allow PR comments/labels
+  # All other permissions are implicitly 'none'
+
 jobs:
   label-and-report-new-contributor:
     runs-on: ubuntu-latest

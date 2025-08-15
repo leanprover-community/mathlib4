@@ -12,7 +12,7 @@ We extend `reassoc` and `reassoc_of%` for equality of isomorphisms.
 Adding `@[reassoc]` to a lemma named `F` of shape `∀ .., f = g`,
 where `f g : X ≅ Y` in some category will create a new lemma named `F_assoc` of shape
 `∀ .. {Z : C} (h : Y ≅ Z), f ≪≫ h = g ≪≫ h`
-but with the conclusions simplified using basic propertions in isomorphisms in a category
+but with the conclusions simplified using basic proportions in isomorphisms in a category
 (`Iso.trans_refl`, `Iso.refl_trans`, `Iso.trans_assoc`, `Iso.trans_symm`,
 `Iso.symm_self_id` and `Iso.self_symm_id`).
 

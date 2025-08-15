@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.Algebra.MonoidAlgebra.Defs
+import Mathlib.Algebra.MonoidAlgebra.Module
+import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
 import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 import Mathlib.Algebra.Ring.Action.Rat
 import Mathlib.Data.Finset.Sort
@@ -87,7 +88,7 @@ theorem exists_iff_exists_finsupp (P : R[X] → Prop) :
   ⟨fun ⟨⟨p⟩, hp⟩ => ⟨p, hp⟩, fun ⟨q, hq⟩ => ⟨⟨q⟩, hq⟩⟩
 
 @[simp]
-theorem eta (f : R[X]) : Polynomial.ofFinsupp f.toFinsupp = f := by cases f; rfl
+theorem eta (f : R[X]) : Polynomial.ofFinsupp f.toFinsupp = f := by constructor
 
 /-! ### Conversions to and from `AddMonoidAlgebra`
 
@@ -302,13 +303,13 @@ instance module {S} [Semiring S] [Module S R] : Module S R[X] :=
     toFinsupp_injective toFinsupp_smul
 
 instance smulCommClass {S₁ S₂} [SMulZeroClass S₁ R] [SMulZeroClass S₂ R] [SMulCommClass S₁ S₂ R] :
-  SMulCommClass S₁ S₂ R[X] :=
+    SMulCommClass S₁ S₂ R[X] :=
   ⟨by
     rintro m n ⟨f⟩
     simp_rw [← ofFinsupp_smul, smul_comm m n f]⟩
 
 instance isScalarTower {S₁ S₂} [SMul S₁ S₂] [SMulZeroClass S₁ R] [SMulZeroClass S₂ R]
-  [IsScalarTower S₁ S₂ R] : IsScalarTower S₁ S₂ R[X] :=
+    [IsScalarTower S₁ S₂ R] : IsScalarTower S₁ S₂ R[X] :=
   ⟨by
     rintro _ _ ⟨⟩
     simp_rw [← ofFinsupp_smul, smul_assoc]⟩
@@ -320,7 +321,7 @@ instance isScalarTower_right {α K : Type*} [Semiring K] [DistribSMul α K] [IsS
     simp_rw [smul_eq_mul, ← ofFinsupp_smul, ← ofFinsupp_mul, ← ofFinsupp_smul, smul_mul_assoc]⟩
 
 instance isCentralScalar {S} [SMulZeroClass S R] [SMulZeroClass Sᵐᵒᵖ R] [IsCentralScalar S R] :
-  IsCentralScalar S R[X] :=
+    IsCentralScalar S R[X] :=
   ⟨by
     rintro _ ⟨⟩
     simp_rw [← ofFinsupp_smul, op_smul_eq_smul]⟩
@@ -340,8 +341,6 @@ implementation detail, but it can be useful to transfer results from `Finsupp` t
 def toFinsuppIso : R[X] ≃+* R[ℕ] where
   toFun := toFinsupp
   invFun := ofFinsupp
-  left_inv := fun ⟨_p⟩ => rfl
-  right_inv _p := rfl
   map_mul' := toFinsupp_mul
   map_add' := toFinsupp_add
 
@@ -500,7 +499,7 @@ theorem monomial_one_one_eq_X : monomial 1 (1 : R) = X :=
 
 theorem monomial_one_right_eq_X_pow (n : ℕ) : monomial n (1 : R) = X ^ n := by
   induction n with
-  | zero => simp [monomial_zero_one]
+  | zero => simp
   | succ n ih => rw [pow_succ, ← ih, ← monomial_one_one_eq_X, monomial_mul_monomial, mul_one]
 
 @[simp]
@@ -514,9 +513,9 @@ theorem X_ne_C [Nontrivial R] (a : R) : X ≠ C a := by
 /-- `X` commutes with everything, even when the coefficients are noncommutative. -/
 theorem X_mul : X * p = p * X := by
   rcases p with ⟨⟩
-  simp only [X, ← ofFinsupp_single, ← ofFinsupp_mul, LinearMap.coe_mk, ofFinsupp.injEq]
+  simp only [X, ← ofFinsupp_single, ← ofFinsupp_mul, ofFinsupp.injEq]
   ext
-  simp [AddMonoidAlgebra.mul_apply, AddMonoidAlgebra.sum_single_index, add_comm]
+  simp [AddMonoidAlgebra.mul_apply, add_comm]
 
 theorem X_pow_mul {n : ℕ} : X ^ n * p = p * X ^ n := by
   induction n with
@@ -1049,8 +1048,19 @@ theorem coeffs_one : coeffs (1 : R[X]) ⊆ {1} := by
 
 theorem coeff_mem_coeffs (p : R[X]) (n : ℕ) (h : p.coeff n ≠ 0) : p.coeff n ∈ p.coeffs := by
   classical
-  simp only [coeffs, exists_prop, mem_support_iff, Finset.mem_image, Ne]
+  simp only [coeffs, mem_support_iff, Finset.mem_image, Ne]
   exact ⟨n, h, rfl⟩
+
+@[simp]
+theorem coeffs_empty_iff (p : R[X]) : coeffs p = ∅ ↔ p = 0 := by
+  refine ⟨?_, fun h ↦ by simp [h]⟩
+  contrapose!
+  intro h
+  rw [← support_nonempty] at h
+  obtain ⟨n, hn⟩ := h
+  rw [mem_support_iff] at hn
+  rw [← nonempty_iff_ne_empty]
+  exact ⟨p.coeff n, coeff_mem_coeffs p n hn⟩
 
 theorem coeffs_monomial (n : ℕ) {c : R} (hc : c ≠ 0) : (monomial n c).coeffs = {c} := by
   rw [coeffs, support_monomial n hc]
@@ -1137,7 +1147,7 @@ instance commRing [CommRing R] : CommRing R[X] :=
   { toRing := Polynomial.ring
     mul_comm := mul_comm }
 
-section NonzeroSemiring
+section Semiring
 
 variable [Semiring R]
 
@@ -1151,7 +1161,20 @@ instance nontrivial [Nontrivial R] : Nontrivial R[X] := by
 theorem X_ne_zero [Nontrivial R] : (X : R[X]) ≠ 0 :=
   mt (congr_arg fun p => coeff p 1) (by simp)
 
-end NonzeroSemiring
+instance [NoZeroDivisors R] : NoZeroDivisors R[X] :=
+  (toFinsuppIso R).injective.noZeroDivisors _ (map_zero _) (map_mul _)
+
+instance [IsCancelAdd R] [IsLeftCancelMulZero R] : IsLeftCancelMulZero R[X] :=
+  (toFinsuppIso R).injective.isLeftCancelMulZero _ (map_zero _) (map_mul _)
+
+instance [IsCancelAdd R] [IsRightCancelMulZero R] : IsRightCancelMulZero R[X] :=
+  (toFinsuppIso R).injective.isRightCancelMulZero _ (map_zero _) (map_mul _)
+
+instance [IsCancelAdd R] [IsCancelMulZero R] : IsCancelMulZero R[X] where
+
+instance [IsCancelAdd R] [IsDomain R] : IsDomain R[X] where
+
+end Semiring
 
 section DivisionSemiring
 variable [DivisionSemiring R]

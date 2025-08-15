@@ -889,7 +889,7 @@ lemma Restriction.isBase_iff_of_spanning {N : Matroid α} (hR : N ≤r M) (hN : 
   rw [Spanning.isBase_restrict_iff (show M.Spanning R from hN), restrict_ground_eq]
 
 lemma ext_spanning {M M' : Matroid α} (h : M.E = M'.E)
-    (hsp : ∀ S, S ⊆ M.E → (M.Spanning S ↔ M'.Spanning S )) : M = M' := by
+    (hsp : ∀ S, S ⊆ M.E → (M.Spanning S ↔ M'.Spanning S)) : M = M' := by
   have hsp' : M.Spanning = M'.Spanning := by
     ext S
     refine (em (S ⊆ M.E)).elim (fun hSE ↦ by rw [hsp _ hSE] )

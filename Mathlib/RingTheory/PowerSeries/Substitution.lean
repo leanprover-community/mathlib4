@@ -108,16 +108,16 @@ theorem HasSubst.add (hf : HasSubst f) (hg : HasSubst g) :
 theorem HasSubst.mul_left (hf : HasSubst f) :
     HasSubst (f * g) := by
   simp only [HasSubst, map_mul]
-  exact (Commute.all _ _).isNilpotent_mul_left hf
+  exact (Commute.all _ _).isNilpotent_mul_right hf
 
 theorem HasSubst.mul_right (hf : HasSubst f) :
     HasSubst (g * f) := by
   simp only [HasSubst, map_mul]
-  exact (Commute.all _ _).isNilpotent_mul_right hf
+  exact (Commute.all _ _).isNilpotent_mul_left hf
 
-theorem HasSubst.smul (r : MvPowerSeries τ S) {a : MvPowerSeries τ S}
-    (ha : HasSubst a) :
-  HasSubst (r • a) := ha.mul_right
+theorem HasSubst.smul (r : MvPowerSeries τ S) {a : MvPowerSeries τ S} (ha : HasSubst a) :
+    HasSubst (r • a) :=
+  ha.mul_right
 
 /-- Families of `PowerSeries` that can be substituted, as an `Ideal`. -/
 noncomputable def HasSubst.ideal : Ideal (MvPowerSeries τ S) where
@@ -174,7 +174,7 @@ theorem subst_add (ha : HasSubst a) (f g : PowerSeries R) :
   rw [← coe_substAlgHom ha, map_add]
 
 theorem subst_pow (ha : HasSubst a) (f : PowerSeries R) (n : ℕ) :
-    subst a (f ^ n) = (subst a f ) ^ n := by
+    subst a (f ^ n) = (subst a f) ^ n := by
   rw [← coe_substAlgHom ha, map_pow]
 
 theorem subst_mul (ha : HasSubst a) (f g : PowerSeries R) :
@@ -198,7 +198,7 @@ theorem coeff_subst_finite (ha : HasSubst a) (f : PowerSeries R) (e : τ →₀ 
 
 theorem coeff_subst_finite' (hb : HasSubst b) (f : PowerSeries R) (e : ℕ) :
     Set.Finite (fun (d : ℕ) ↦ (coeff R d f) • (PowerSeries.coeff S e (b ^ d))).support :=
-  coeff_subst_finite hb f  _
+  coeff_subst_finite hb f _
 
 theorem coeff_subst (ha : HasSubst a) (f : PowerSeries R) (e : τ →₀ ℕ) :
     MvPowerSeries.coeff S e (subst a f) =
@@ -256,31 +256,28 @@ theorem subst_X (ha : HasSubst a) :
     subst a (X : R⟦X⟧) = a := by
   rw [← coe_substAlgHom ha, substAlgHom_X]
 
-theorem HasSubst.comp {a : PowerSeries S} (ha : HasSubst a)
-  {b : MvPowerSeries υ T} (hb : HasSubst b) :
+theorem HasSubst.comp
+    {a : PowerSeries S} (ha : HasSubst a) {b : MvPowerSeries υ T} (hb : HasSubst b) :
     HasSubst (substAlgHom hb a) :=
   MvPowerSeries.IsNilpotent_subst hb.const ha
 
 variable {a : PowerSeries S} {b : MvPowerSeries υ T} {a' : MvPowerSeries τ S}
   {b' : τ → MvPowerSeries υ T} [IsScalarTower R S T]
 
-theorem substAlgHom_comp_substAlgHom
-  (ha : HasSubst a) (hb : HasSubst b) :
+theorem substAlgHom_comp_substAlgHom (ha : HasSubst a) (hb : HasSubst b) :
     ((substAlgHom hb).restrictScalars R).comp (substAlgHom ha)
       = substAlgHom (ha.comp hb) :=
   MvPowerSeries.substAlgHom_comp_substAlgHom _ _
 
-theorem substAlgHom_comp_substAlgHom_apply
-  (ha : HasSubst a) (hb : HasSubst b) (f : PowerSeries R) :
-    (substAlgHom hb) (substAlgHom  ha f) = substAlgHom (ha.comp hb) f :=
+theorem substAlgHom_comp_substAlgHom_apply (ha : HasSubst a) (hb : HasSubst b) (f : PowerSeries R) :
+    (substAlgHom hb) (substAlgHom ha f) = substAlgHom (ha.comp hb) f :=
   DFunLike.congr_fun (substAlgHom_comp_substAlgHom ha hb) f
 
 theorem subst_comp_subst (ha : HasSubst a) (hb : HasSubst b) :
     (subst b) ∘ (subst a) = subst (R := R) (subst b a) := by
   simpa [funext_iff, DFunLike.ext_iff, coe_substAlgHom] using substAlgHom_comp_substAlgHom ha hb
 
-theorem subst_comp_subst_apply
-  (ha : HasSubst a) (hb : HasSubst b) (f : PowerSeries R) :
+theorem subst_comp_subst_apply (ha : HasSubst a) (hb : HasSubst b) (f : PowerSeries R) :
     subst b (subst a f) = subst (subst b a) f :=
   congr_fun (subst_comp_subst ha hb) f
 
