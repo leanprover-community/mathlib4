@@ -150,7 +150,7 @@ theorem comp (x : F.obj X) : (σ ≫ τ).app X x = τ.app X (σ.app X x) :=
 @[simp]
 theorem eqToHom_map_comp_apply (p : X = Y) (q : Y = Z) (x : F.obj X) :
     F.map (eqToHom q) (F.map (eqToHom p) x) = F.map (eqToHom <| p.trans q) x := by
-  aesop_cat
+  cat_disch
 
 variable {D : Type u'} [𝒟 : Category.{u'} D] (I J : D ⥤ C) (ρ : I ⟶ J) {W : D}
 
@@ -265,7 +265,7 @@ section
 allows us to use these functors in category theory. -/
 def ofTypeFunctor (m : Type u → Type v) [_root_.Functor m] [LawfulFunctor m] : Type u ⥤ Type v where
   obj := m
-  map f := Functor.map f
+  map f := _root_.Functor.map f
   map_id := fun α => by funext X; apply id_map
 
 variable (m : Type u → Type v) [_root_.Functor m] [LawfulFunctor m]
@@ -276,7 +276,7 @@ theorem ofTypeFunctor_obj : (ofTypeFunctor m).obj = m :=
 
 @[simp]
 theorem ofTypeFunctor_map {α β} (f : α → β) :
-    (ofTypeFunctor m).map f = (Functor.map f : m α → m β) :=
+    (ofTypeFunctor m).map f = (_root_.Functor.map f : m α → m β) :=
   rfl
 
 end
@@ -359,7 +359,7 @@ instance : SplitEpiCategory (Type u) where
 end CategoryTheory
 
 -- We prove `equivIsoIso` and then use that to sneakily construct `equivEquivIso`.
--- (In this order the proofs are handled by `aesop_cat`.)
+-- (In this order the proofs are handled by `cat_disch`.)
 /-- Equivalences (between types in the same universe) are the same as (isomorphic to) isomorphisms
 of types. -/
 @[simps]

@@ -31,7 +31,7 @@ This however is not straightforward.
 Consider `n : ℕ`. We cannot write `(κ n) ⊗ₖ (κ (n + 1))` directly, we need to first
 introduce an equivalence to see `κ (n + 1)` as a kernel with codomain
 `(Π i : Iic n, X i) × X (n + 1)`, and we get a `Kernel (Π i : Iic n, X i) (X (n + 1) × (X (n + 2))`.
-However we want to do multiple compostion at ones, i.e. write
+However we want to do multiple composition at ones, i.e. write
 `(κ n) ⊗ₖ ... ⊗ₖ (κ m)` for `n < m`. This requires even more equivalences to make sense of, and at
 the end of the day we get kernels which still cannot be composed together.
 
