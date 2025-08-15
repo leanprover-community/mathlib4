@@ -140,12 +140,12 @@ alias ⟨_, _root_.IsUnit.mem_unitary_of_mul_star_self⟩ := IsUnit.mem_unitary_
 theorem mul_left_inj {x y : R} (U : unitary R) :
     x * U = y * U ↔ x = y := by
   refine ⟨fun h => ?_, fun h => h ▸ rfl⟩
-  rw [← mul_one y, ← coe_mul_star_self U, ← mul_assoc, ← h, mul_assoc, coe_mul_star_self, mul_one]
+  simpa [mul_assoc] using congr($h * star U)
 
 theorem mul_right_inj {x y : R} (U : unitary R) :
     U * x = U * y ↔ x = y := by
   refine ⟨fun h => ?_, fun h => h ▸ rfl⟩
-  rw [← one_mul y, ← coe_star_mul_self U, mul_assoc, ← h, ← mul_assoc, coe_star_mul_self, one_mul]
+  simpa [← mul_assoc] using congr(star U * $h)
 
 lemma mul_inv_mem_iff {G : Type*} [Group G] [StarMul G] (a b : G) :
     a * b⁻¹ ∈ unitary G ↔ star a * a = star b * b := by
