@@ -17,7 +17,7 @@ namespace RingHom
 variable {R S : Type*} [CommRing R] [CommRing S] {f : R →+* S}
 
 /-- A ring map `f : R →+* S` is faithfully flat if `S` is faithfully flat as an `R`-algebra. -/
-@[algebraize Module.FaithfullyFlat]
+@[stacks 00HB "Part (4)", algebraize Module.FaithfullyFlat]
 def FaithfullyFlat {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S) : Prop :=
   letI : Algebra R S := f.toAlgebra
   Module.FaithfullyFlat R S
@@ -41,8 +41,8 @@ lemma iff_flat_and_comap_surjective :
   exact ⟨fun h ↦ ⟨inferInstance, PrimeSpectrum.specComap_surjective_of_faithfullyFlat⟩,
     fun ⟨h, hf⟩ ↦ .of_specComap_surjective hf⟩
 
-lemma eq_and : @FaithfullyFlat =
-      fun R S (_ : CommRing R) (_ : CommRing S) f ↦ f.Flat ∧ Function.Surjective f.specComap := by
+lemma eq_and : FaithfullyFlat =
+      fun (f : R →+* S) ↦ f.Flat ∧ Function.Surjective f.specComap := by
   ext
   rw [iff_flat_and_comap_surjective]
 
