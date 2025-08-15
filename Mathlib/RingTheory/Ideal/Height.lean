@@ -276,7 +276,7 @@ lemma RingEquiv.height_map {S : Type*} [CommRing S] (e : R ≃+* S) (I : Ideal R
 
 /-- `dim R ≤ n` if and only if the height of all prime ideals is less than `n`. -/
 lemma ringKrullDim_le_iff_height_le {R : Type*} [CommRing R] (n : WithBot ℕ∞) :
-    ringKrullDim R ≤ n ↔ ∀ (p : Ideal R), (hp : p.IsPrime) → p.height ≤ n := by
+    ringKrullDim R ≤ n ↔ ∀ ⦃p : Ideal R⦄, p.IsPrime → p.height ≤ n := by
   rw [ringKrullDim, Order.krullDim_eq_iSup_height, iSup_le_iff]
   refine ⟨fun h p hp ↦ ?_, fun h p ↦ ?_⟩
   · rw [Ideal.height_eq_primeHeight]
