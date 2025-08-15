@@ -454,6 +454,12 @@ lemma uniformContinuous_toLp [∀ i, UniformSpace (β i)] :
     UniformContinuous (@toLp p (∀ i, β i)) :=
   uniformContinuous_id
 
+/-- `WithLp.equiv` as a uniform isomorphism. -/
+def uniformEquiv [∀ i, UniformSpace (β i)] : (Π i, β i) ≃ᵤ PiLp p β where
+  toEquiv := (WithLp.equiv p (Π i, β i)).symm
+  uniformContinuous_toFun := uniformContinuous_toLp p β
+  uniformContinuous_invFun := uniformContinuous_ofLp p β
+
 instance completeSpace [∀ i, UniformSpace (β i)] [∀ i, CompleteSpace (β i)] :
     CompleteSpace (PiLp p β) :=
   inferInstanceAs <| CompleteSpace (Π i, β i)
