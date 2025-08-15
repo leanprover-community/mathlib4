@@ -185,7 +185,7 @@ theorem heval_mul {a b : PowerSeries R} :
     heval x (a * b) = heval x a * heval x b :=
   map_mul (heval x) a b
 
-theorem heval_C (r : R) : heval x (C R r) = r • 1 := by
+theorem heval_C (r : R) : heval x (C r) = r • 1 := by
   ext g
   simp only [heval_apply, coeff_hsum, smulFamily_toFun, powers_toFun, HahnSeries.coeff_smul,
     HahnSeries.coeff_one, smul_eq_mul, mul_ite, mul_one, mul_zero]
