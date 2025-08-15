@@ -218,7 +218,7 @@ protected def comp (g : DPMorphism hJ hK) (f : DPMorphism hI hJ) :
   mk' (IsDPMorphism.comp hK g.isDPMorphism f.isDPMorphism)
 
 @[simp] lemma comp_toRingHom (g : DPMorphism hJ hK) (f : DPMorphism hI hJ) :
-  (g.comp f).toRingHom = g.toRingHom.comp f.toRingHom := rfl
+    (g.comp f).toRingHom = g.toRingHom.comp f.toRingHom := rfl
 
 end DPMorphism
 

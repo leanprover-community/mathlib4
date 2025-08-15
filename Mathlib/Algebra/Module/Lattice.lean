@@ -42,11 +42,12 @@ generated condition is replaced by having the discrete topology. This is for exa
 for complex tori.
 -/
 
+open Module
+open scoped Pointwise
+
 universe u
 
 variable {R : Type*} [CommRing R]
-
-open Pointwise
 
 namespace Submodule
 
@@ -129,7 +130,7 @@ lemma _root_.Submodule.span_range_eq_top_of_injective_of_rank_le {M N : Type u} 
 variable (K) {V : Type*} [AddCommGroup V] [Module K V] [Module R V] [IsScalarTower R K V]
 
 /-- Any basis of an `R`-lattice in `V` defines a `K`-basis of `V`. -/
-noncomputable def _root_.Basis.extendOfIsLattice [IsFractionRing R K] {κ : Type*}
+noncomputable def _root_.Module.Basis.extendOfIsLattice [IsFractionRing R K] {κ : Type*}
     {M : Submodule R V} [IsLattice K M] (b : Basis κ R M) :
     Basis κ K V :=
   have hli : LinearIndependent K (fun i ↦ (b i).val) := by
@@ -143,7 +144,7 @@ noncomputable def _root_.Basis.extendOfIsLattice [IsFractionRing R K] {κ : Type
   Basis.mk hli hsp
 
 @[simp]
-lemma _root_.Basis.extendOfIsLattice_apply [IsFractionRing R K] {κ : Type*}
+lemma _root_.Module.Basis.extendOfIsLattice_apply [IsFractionRing R K] {κ : Type*}
     {M : Submodule R V} [IsLattice K M] (b : Basis κ R M) (k : κ) :
     b.extendOfIsLattice K k = (b k).val := by
   simp [Basis.extendOfIsLattice]
