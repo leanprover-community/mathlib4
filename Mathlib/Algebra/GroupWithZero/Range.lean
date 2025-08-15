@@ -116,16 +116,18 @@ end MonoidWithZeroHom
 noncomputable section Restrict
 
 variable [MonoidWithZero A] [GroupWithZero B] [MonoidWithZeroHomClass F A B] {f}
+  [DecidablePred fun b : B ↦ b = 0]
 
-open Classical in
 /-- The inclusion of `valueGroup₀ f` into `B` as a multiplicative homomorphism. -/
 def valueGroup₀_MulWithZeroEmbedding : valueGroup₀ f →*₀ B :=
   MonoidWithZeroHom.comp (WithZero.withZeroUnitsEquiv (G := B))
     <| WithZero.map' (valueGroup f).subtype
 
+@[simp]
+lemma valueGroup₀_MulWithZeroEmbedding_apply_coe {y : valueGroup f} {x : A} :
+    valueGroup₀_MulWithZeroEmbedding (y : valueGroup₀ f) = f x ↔ y.val = f x := by rfl
 
 variable (f) in
-open Classical in
 /-- This is the restriction of `f` as a function taking values in `valueGroup₀ f`. It cannot land
 in `valueMonoid₀ f` because in general `f a` needs not be a unit, so it will not be in
 `valueMonoid₀ f`. -/
@@ -144,20 +146,17 @@ def restrict₀ : A →*₀ (valueGroup₀ f) where
 
 lemma restrict₀_of_ne_zero {a : A} (h : f a ≠ 0) :
     restrict₀ f a = (⟨Units.mk0 (f a) h, mem_valueGroup _ ⟨a, rfl⟩⟩ : valueGroup f) :=
-  by simp [restrict₀, h]
+  by simp [h]
 
 lemma restrict₀_of_eq_zero {a : A} (h : f a = 0) :
-    restrict₀ f a = 0 := by simp [restrict₀, h]
+    restrict₀ f a = 0 := by simp [h]
 
-lemma restrict₀_eq_zero_iff {a : A} : restrict₀ f a = 0 ↔ f a = 0 := by
-  refine ⟨fun h ↦ ?_, restrict₀_of_eq_zero⟩
-  · by_contra H; simp [H] at h
+lemma restrict₀_eq_zero_iff {a : A} : restrict₀ f a = 0 ↔ f a = 0 := by simp
 
 lemma restrict₀_eq (a : A) : valueGroup₀_MulWithZeroEmbedding (restrict₀ f a) = f a := by
-  simp [restrict₀]
-  split_ifs with h
-  · simp [h]
-  · rfl
+  simp [restrict₀_apply]
+  split_ifs <;>
+  simp_all
 
 end Restrict
 noncomputable section GroupWithZero

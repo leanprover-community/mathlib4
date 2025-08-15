@@ -31,7 +31,9 @@ lemma valueGroup₀_MonoidWithZeroHom_strictMono :
     StrictMono (valueGroup₀_MonoidWithZeroHom (f := f)) :=
   map'_strictMono (Subtype.strictMono_coe _)
 
-/-- The inclusion of `valueGroup₀ f` into `WithZero Bˣ` as an order embedding. -/
+/-- The inclusion of `valueGroup₀ f` into `WithZero Bˣ` as an order embedding. In general, prefer
+the use of `valueGroup₀_MonoidWithZeroHom` and apply the above lemma
+`valueGroup₀_MonoidWithZeroHom_strictMono` if properties about ordering are needed. -/
 def valueGroup₀_OrderEmbedding : valueGroup₀ f ↪o WithZero Bˣ where
   toFun := valueGroup₀_MonoidWithZeroHom
   inj' := valueGroup₀_MonoidWithZeroHom_strictMono.injective
