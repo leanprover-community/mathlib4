@@ -158,7 +158,7 @@ theorem isCohenMacaulayRing_iff_unmixed : IsCohenMacaulayRing R ↔
     (Module.annihilator (Localization.AtPrime p) S).minimalPrimes :=
     associated_prime_eq_minimalPrimes_isCohenMacaulay (ModuleCat.of (Localization.AtPrime p) S)
   have : maximalIdeal (Localization.AtPrime p) ∈ associatedPrimes (Localization.AtPrime p) S := by
-    have := mem_associatePrimes_localizedModule_atPrime_of_mem_associated_primes hp
+    have := mem_associatePrimes_localizedModule_atPrime_of_mem_associatedPrimes hp
     simp only [smul_eq_mul, S]
     rw [Ideal.mul_top, ← Ideal.map_ofList]
     convert this
