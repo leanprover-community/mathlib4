@@ -18,11 +18,6 @@ namespace RCLike
 
 variable (𝕜 : Type*) [RCLike 𝕜]
 
-theorem tendsto_inverse_atTop_nhds_zero_nat :
-    Tendsto (fun n : ℕ => (n : 𝕜)⁻¹) atTop (𝓝 0) := by
-  convert tendsto_algebraMap_inverse_atTop_nhds_zero_nat 𝕜
-  simp
-
 theorem tendsto_ofReal_cobounded_cobounded :
     Tendsto ofReal (Bornology.cobounded ℝ) (Bornology.cobounded 𝕜) :=
   tendsto_norm_atTop_iff_cobounded.mp (mod_cast tendsto_norm_cobounded_atTop)
@@ -48,6 +43,9 @@ theorem tendsto_add_mul_div_add_mul_atTop_nhds (a b c : 𝕜) {d : 𝕜} (hd : d
     all_goals
       apply zero_add (_ : 𝕜) ▸ Filter.Tendsto.add_const _ _
       apply mul_zero (_ : 𝕜) ▸ Filter.Tendsto.const_mul _ _
-      exact tendsto_inverse_atTop_nhds_zero_nat 𝕜
+      exact tendsto_inverse_atTop_nhds_zero_nat
 
 end RCLike
+
+@[deprecated (since := "2025-08-15")]
+alias RCLike.tendsto_inverse_atTop_nhds_zero_nat := tendsto_inverse_atTop_nhds_zero_nat
