@@ -9,7 +9,6 @@ import Mathlib.Algebra.Order.SuccOrder.PartialSups
 import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLogExp
 import Mathlib.Data.Real.StarOrdered
 import Mathlib.Dynamics.BirkhoffSum.QuasiMeasurePreserving
-import Mathlib.Dynamics.MeasurePreserving.Lemmas
 import Mathlib.GroupTheory.MonoidLocalization.Basic
 import Mathlib.MeasureTheory.Constructions.Polish.Basic
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
@@ -198,7 +197,7 @@ variable {f : α → α} [MeasurableSpace α] (μ : Measure α := by volume_tac)
 
 lemma birkhoffSum_integrable (hf : MeasurePreserving f μ μ) (hφ : Integrable φ μ) {n} :
     Integrable (birkhoffSum f φ n) μ :=
-  integrable_finset_sum _ fun _ _ ↦ MeasurePreserving.comp_iterate_integrable hf hφ
+  integrable_finset_sum _ fun _ _ ↦ (integrable_comp_iterate hf hφ.aestronglyMeasurable).mpr hφ
 
 lemma birkhoffMax_integrable (hf : MeasurePreserving f μ μ) (hφ : Integrable φ μ) {n} :
     Integrable (birkhoffMax f φ n) μ := by
