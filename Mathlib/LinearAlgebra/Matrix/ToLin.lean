@@ -154,7 +154,7 @@ variable {l m n : Type*}
 
 /-- `Matrix.vecMul M` is a linear map.
 
-Note this is a special ase of `Matrix.vecMulBilin`. -/
+Note this is a special case of `Matrix.vecMulBilin`. -/
 abbrev Matrix.vecMulLinear [Fintype m] (M : Matrix m n R) : (m → R) →ₗ[R] n → R :=
   Matrix.vecMulBilin R Rᵐᵒᵖ |>.flip M
 
