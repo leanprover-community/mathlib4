@@ -636,13 +636,13 @@ theorem forall_or_right {q} {p : α → Prop} : (∀ x, p x ∨ q) ↔ (∀ x, p
   open scoped Classical in Decidable.forall_or_right
 
 @[simp]
-theorem forall_prop_and_left {p q : Prop} {r : p ∧ q → Prop} :
+theorem forall_and_index {p q : Prop} {r : p ∧ q → Prop} :
     (∀ h : p ∧ q, r h) ↔ ∀ (hp : p) (hq : q), r ⟨hp, hq⟩ :=
   ⟨fun h hp hq ↦ h ⟨hp, hq⟩, fun h h1 ↦ h h1.1 h1.2⟩
 
-theorem forall_prop_and_left' {p q : Prop} {r : p → q → Prop} :
+theorem forall_and_index' {p q : Prop} {r : p → q → Prop} :
     (∀ (hp : p) (hq : q), r hp hq) ↔ ∀ h : p ∧ q, r h.1 h.2 :=
-  (forall_prop_and_left (r := fun h => r h.1 h.2)).symm
+  (forall_and_index (r := fun h => r h.1 h.2)).symm
 
 theorem Exists.fst {b : Prop} {p : b → Prop} : Exists p → b
   | ⟨h, _⟩ => h
