@@ -15,7 +15,7 @@ import Mathlib.Combinatorics.Graph.Basic
 
 open Set
 
-variable {α β γ : Type*} {x y : α} {e f g : Set α} {l : Set (Set α)}
+variable {α β γ : Type*} {x y : α} {e f g h : Set α} {l : Set (Set α)}
 
 /-!
 # Undirected hypergraphs
@@ -312,14 +312,24 @@ def subHypergraph (H : Hypergraph α) (g : Set α) :=
 
 /--
 Given a subset of the vertex set `V(H)` of a hypergraph `H` (`g`),the *induced subhypergraph* `Hg`
-has `V(Hg) = g ∩ V(H)` and `E(Hg)` contains the (nonempty) subset of each hyperedge that intersects
+has `V(Hg) = g ∩ V(H)` and `E(Hg)` contains the subset of each hyperedge that intersects
 with `g`.
 -/
 def inducedSubHypergraph (H : Hypergraph α) (g : Set α) :=
   Hypergraph.mk
   (g ∩ V(H))
-  { { x | x ∈ (g ∩ e)} | e ∈ {f ∈ E(H) | g ∩ f ≠ ∅}}
-  (sorry)
+  { { y | y ∈ (g ∩ e)} | e ∈ E(H) }
+  (by
+    intro q hq
+    have h0 : ∃ e ∈ E(H), {y | y ∈ g ∩ e} = q := by exact hq
+    obtain ⟨e, he⟩ := h0
+    have h1 : e ⊆ V(H) := by exact H.hyperedge_isSubset_vertexSet he.left
+    have h2 : q = {y | y ∈ g ∩ e} := by apply Eq.symm he.2
+    have h3 : g ∩ e ⊆ g ∩ V(H) := by exact inter_subset_inter (fun ⦃a⦄ a ↦ a) h1
+    exact Eq.trans_subset h2 h3
+  )
+
+#check Eq.symm
 
 /--
 Given a subset of the hyperedge set `E(H)` of a hypergraph `H` (`l : Set (Set α)`), the
