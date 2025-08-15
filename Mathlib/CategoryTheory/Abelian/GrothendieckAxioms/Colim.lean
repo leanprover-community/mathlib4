@@ -149,6 +149,10 @@ instance isStableUnderColimitsOfShape_monomorphisms
 instance [HasCoproducts.{u'} C] [AB4OfSize.{u'} C] :
     IsStableUnderCoproducts.{u'} (monomorphisms C) where
 
+instance [HasFilteredColimitsOfSize.{v', u'} C] [AB5OfSize.{v', u'} C] :
+    IsStableUnderFilteredColimits.{v', u'} (monomorphisms C) where
+  isStableUnderColimitsOfShape J _ _ := by infer_instance
+
 end MorphismProperty
 
 end CategoryTheory

@@ -3,9 +3,10 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
 import Mathlib.CategoryTheory.Limits.Final
+import Mathlib.CategoryTheory.Limits.Connected
+import Mathlib.CategoryTheory.Filtered.Connected
+import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
 import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-!
@@ -499,6 +500,19 @@ lemma colimitsOfShape_colimMap {X Y : J ⥤ C}
     W.colimitsOfShape J (colimMap f) :=
   ⟨_, _, _, _, _, colimit.isColimit Y, _, hf⟩
 
+attribute [local instance] IsCofiltered.isConnected in
+variable {W} in
+lemma colimitsOfShape.of_isColimit
+    {J : Type*} [Preorder J] [OrderBot J] {F : J ⥤ C}
+    {c : Cocone F} (hc : IsColimit c) (h : ∀ (j : J), W (F.map (homOfLE bot_le : ⊥ ⟶ j))) :
+    W.colimitsOfShape J (c.ι.app ⊥) :=
+  .mk' _ _ _ _ (isColimitConstCocone J (F.obj ⊥)) hc
+    { app k := F.map (homOfLE bot_le)
+      naturality _ _ _ := by
+        dsimp
+        rw [Category.id_comp, ← Functor.map_comp]
+        rfl} h _ (by simp)
+
 /-- The property that a morphism property `W` is stable under colimits
 indexed by a category `J`. -/
 class IsStableUnderColimitsOfShape : Prop where
@@ -534,7 +548,7 @@ protected lemma colimMap [W.IsStableUnderColimitsOfShape J] {X Y : J ⥤ C}
   colimitsOfShape_le
 
 variable (C J) in
-lemma IsStableUnderColimitsOfShape.isomorphisms :
+instance IsStableUnderColimitsOfShape.isomorphisms :
     (isomorphisms C).IsStableUnderColimitsOfShape J where
   condition F₁ F₂ c₁ c₂ h₁ h₂ f (_ : ∀ j, IsIso (f.app j)) φ hφ := by
     have := NatIso.isIso_of_isIso_app f
@@ -543,6 +557,16 @@ lemma IsStableUnderColimitsOfShape.isomorphisms :
       h₂.hom_ext (by simp [hφ])⟩
 
 end ColimitsOfShape
+
+/-- The condition that a property of morphisms is stable by filtered colimits. -/
+@[pp_with_univ]
+class IsStableUnderFilteredColimits (W : MorphismProperty C) : Prop where
+  isStableUnderColimitsOfShape (J : Type w') [Category.{w} J] [IsFiltered J] :
+    W.IsStableUnderColimitsOfShape J := by infer_instance
+
+attribute [instance] IsStableUnderFilteredColimits.isStableUnderColimitsOfShape
+
+instance : IsStableUnderFilteredColimits.{w, w'} (isomorphisms C) where
 
 section Coproducts
 
