@@ -49,19 +49,11 @@ theorem lintegral_rpow_enorm_lt_top_of_eLpNorm'_lt_top {f : α → ε} (hq0_lt :
   rw [lintegral_rpow_enorm_eq_rpow_eLpNorm' hq0_lt]
   exact ENNReal.rpow_lt_top_of_nonneg (le_of_lt hq0_lt) (ne_of_lt hfq)
 
-@[deprecated (since := "2025-01-17")]
-alias lintegral_rpow_nnnorm_lt_top_of_eLpNorm'_lt_top' :=
-  lintegral_rpow_enorm_lt_top_of_eLpNorm'_lt_top
-
 theorem lintegral_rpow_enorm_lt_top_of_eLpNorm_lt_top {f : α → ε} (hp_ne_zero : p ≠ 0)
     (hp_ne_top : p ≠ ∞) (hfp : eLpNorm f p μ < ∞) : ∫⁻ a, ‖f a‖ₑ ^ p.toReal ∂μ < ∞ := by
   apply lintegral_rpow_enorm_lt_top_of_eLpNorm'_lt_top
   · exact ENNReal.toReal_pos hp_ne_zero hp_ne_top
   · simpa [eLpNorm_eq_eLpNorm' hp_ne_zero hp_ne_top] using hfp
-
-@[deprecated (since := "2025-01-17")]
-alias lintegral_rpow_nnnorm_lt_top_of_eLpNorm_lt_top :=
-  lintegral_rpow_enorm_lt_top_of_eLpNorm_lt_top
 
 theorem eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top {f : α → ε} (hp_ne_zero : p ≠ 0)
     (hp_ne_top : p ≠ ∞) : eLpNorm f p μ < ∞ ↔ ∫⁻ a, (‖f a‖ₑ) ^ p.toReal ∂μ < ∞ :=
@@ -130,9 +122,6 @@ theorem eLpNorm_zero' : eLpNorm (fun _ : α => (0 : ε)) p μ = 0 := eLpNorm_zer
 
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.zero' := MemLp.zero'
-
-@[deprecated (since := "2025-01-21")] alias zero_memℒp := MemLp.zero
-@[deprecated (since := "2025-01-21")] alias zero_mem_ℒp := MemLp.zero'
 
 variable [MeasurableSpace α]
 
@@ -694,9 +683,6 @@ lemma eLpNorm_indicator_eq_eLpNorm_restrict {f : α → ε} {s : Set α} (hs : M
   rw [eq_comm, ← Function.comp_def (fun x : ℝ≥0∞ => x ^ p.toReal), Set.indicator_comp_of_zero,
     Function.comp_def]
   simp [ENNReal.toReal_pos hp_zero hp_top]
-
-@[deprecated (since := "2025-01-07")]
-alias eLpNorm_indicator_eq_restrict := eLpNorm_indicator_eq_eLpNorm_restrict
 
 lemma eLpNormEssSup_indicator_eq_eLpNormEssSup_restrict (hs : MeasurableSet s) :
     eLpNormEssSup (s.indicator f) μ = eLpNormEssSup f (μ.restrict s) := by
@@ -1400,6 +1386,10 @@ theorem MemLp.const_mul {f : α → 𝕜} (hf : MemLp f p μ) (c : 𝕜) : MemLp
 
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.const_mul := MemLp.const_mul
+
+theorem MemLp.mul_const {f : α → 𝕜} (hf : MemLp f p μ) (c : 𝕜) :
+    MemLp (fun x => f x * c) p μ :=
+  hf.const_smul (MulOpposite.op c)
 
 end IsBoundedSMul
 

@@ -1,14 +1,6 @@
-/-
-Copyright (c) 2019 Neil Strickland. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Neil Strickland
--/
-import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Group.NatPowAssoc
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Ring.Opposite
+import Mathlib.Algebra.Order.Field.GeomSum
+import Mathlib.Algebra.Order.Ring.GeomSum
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Positivity.Basic
@@ -619,3 +611,4 @@ lemma Nat.geomSum_lt (hm : 2 ≤ m) (hs : ∀ k ∈ s, k < n) : ∑ k ∈ s, m ^
     _ = (m ^ n - 1) / (m - 1) := Nat.geomSum_eq hm _
     _ ≤ m ^ n - 1 := Nat.div_le_self _ _
     _ < m ^ n := tsub_lt_self (by positivity) zero_lt_one
+deprecated_module (since := "2025-06-19")

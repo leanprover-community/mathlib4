@@ -210,8 +210,6 @@ theorem norm_eq_zpow_neg_valuation {f : PadicSeq p} (hf : ¬f ≈ 0) :
   rw [stationaryPoint_spec hf le_rfl hn]
   simpa [H] using hε
 
-@[deprecated (since := "2024-12-10")] alias norm_eq_pow_val := norm_eq_zpow_neg_valuation
-
 theorem val_eq_iff_norm_eq {f g : PadicSeq p} (hf : ¬f ≈ 0) (hg : ¬g ≈ 0) :
     f.valuation = g.valuation ↔ f.norm = g.norm := by
   rw [norm_eq_zpow_neg_valuation hf, norm_eq_zpow_neg_valuation hg, ← neg_inj, zpow_right_inj₀]
@@ -1026,9 +1024,6 @@ lemma valuation_zpow (x : ℚ_[p]) : ∀ n : ℤ, (x ^ n).valuation = n * x.valu
   | (n : ℕ) => by simp
   | .negSucc n => by simp [← neg_mul]; simp [Int.negSucc_eq]
 
-@[deprecated (since := "2024-12-10")] alias valuation_map_add := le_valuation_add
-@[deprecated (since := "2024-12-10")] alias valuation_map_mul := valuation_mul
-
 open Classical in
 /-- The additive `p`-adic valuation on `ℚ_[p]`, with values in `WithTop ℤ`. -/
 def addValuationDef : ℚ_[p] → WithTop ℤ :=
@@ -1076,10 +1071,10 @@ noncomputable def mulValuation : Valuation ℚ_[p] ℤᵐ⁰ where
   toFun x := if x = 0 then 0 else exp (-x.valuation)
   map_zero' := by simp
   map_one' := by simp
-  map_mul' _ := by split_ifs <;> simp_all [exp_add, exp_neg, mul_comm]
+  map_mul' _ _ := by split_ifs <;> simp_all [add_comm]
   map_add_le_max' _ _ := by
     split_ifs
-    any_goals simp_all
+    any_goals simp_all [inv_le_inv₀]
     simpa using le_valuation_add ‹_›
 
 /-- The additive `p`-adic valuation on `ℚ_[p]`, as an `addValuation`. -/

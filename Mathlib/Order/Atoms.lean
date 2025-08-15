@@ -105,7 +105,7 @@ lemma IsAtom.ne_iff_eq_bot (ha : IsAtom a) (hba : b ≤ a) : b ≠ a ↔ b = ⊥
   mpr := by rintro rfl; exact ha.ne_bot.symm
 
 lemma IsAtom.ne_bot_iff_eq (ha : IsAtom a) (hba : b ≤ a) : b ≠ ⊥ ↔ b = a :=
-   (ha.ne_iff_eq_bot hba).not_right.symm
+  (ha.ne_iff_eq_bot hba).not_right.symm
 
 theorem IsAtom.Iic_eq (h : IsAtom a) : Set.Iic a = {⊥, a} :=
   Set.ext fun _ => h.le_iff
@@ -201,7 +201,7 @@ lemma IsCoatom.ne_iff_eq_top (ha : IsCoatom a) (hab : a ≤ b) : b ≠ a ↔ b =
   mpr := by rintro rfl; exact ha.ne_top.symm
 
 lemma IsCoatom.ne_top_iff_eq (ha : IsCoatom a) (hab : a ≤ b) : b ≠ ⊤ ↔ b = a :=
-   (ha.ne_iff_eq_top hab).not_right.symm
+  (ha.ne_iff_eq_top hab).not_right.symm
 
 theorem IsCoatom.Ici_eq (h : IsCoatom a) : Set.Ici a = {⊤, a} :=
   h.dual.Iic_eq
@@ -707,6 +707,11 @@ class IsSimpleOrder (α : Type*) [LE α] [BoundedOrder α] : Prop extends Nontri
   eq_bot_or_eq_top : ∀ a : α, a = ⊥ ∨ a = ⊤
 
 export IsSimpleOrder (eq_bot_or_eq_top)
+
+lemma IsSimpleOrder.of_forall_eq_top {α : Type*} [LE α] [BoundedOrder α] [Nontrivial α]
+    (h : ∀ a : α, a ≠ ⊥ → a = ⊤) :
+    IsSimpleOrder α where
+  eq_bot_or_eq_top a := or_iff_not_imp_left.mpr <| h a
 
 theorem isSimpleOrder_iff_isSimpleOrder_orderDual [LE α] [BoundedOrder α] :
     IsSimpleOrder α ↔ IsSimpleOrder αᵒᵈ := by
