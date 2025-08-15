@@ -77,12 +77,16 @@ variable (C)
 @[simps! obj_X]
 def forget₂Mon_ : CommMon_ C ⥤ Mon_ C :=
   inducedFunctor CommMon_.toMon_
-deriving Functor.Full, Functor.Faithful
 
 /-- The forgetful functor from commutative monoid objects to monoid objects
 is fully faithful. -/
 def fullyFaithfulForget₂Mon_ : (forget₂Mon_ C).FullyFaithful :=
   fullyFaithfulInducedFunctor _
+-- The `Full, Faithful` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
+
+instance : (forget₂Mon_ C).Full := InducedCategory.full _
+instance : (forget₂Mon_ C).Faithful := InducedCategory.faithful _
 
 @[simp]
 theorem forget₂Mon_obj_one (A : CommMon_ C) : η[((forget₂Mon_ C).obj A).X] = η[A.X] :=
