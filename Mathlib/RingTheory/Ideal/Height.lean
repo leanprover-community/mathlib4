@@ -286,7 +286,7 @@ lemma ringKrullDim_le_iff_height_le {R : Type*} [CommRing R] (n : WithBot ℕ∞
 
 /-- `dim R ≤ n` if and only if the height of all maximal ideals is less than `n`. -/
 lemma ringKrullDim_le_iff_isMaximal_height_le {R : Type*} [CommRing R] (n : WithBot ℕ∞) :
-    ringKrullDim R ≤ n ↔ ∀ (m : Ideal R), (hm : m.IsMaximal) → m.height ≤ n := by
+    ringKrullDim R ≤ n ↔ ∀ ⦃m : Ideal R⦄, m.IsMaximal → m.height ≤ n := by
   rw [ringKrullDim_le_iff_height_le]
   refine ⟨fun h m hm ↦ h m hm.isPrime, fun h p hp ↦ ?_⟩
   obtain ⟨m, hm, hle⟩ := p.exists_le_maximal hp.ne_top
