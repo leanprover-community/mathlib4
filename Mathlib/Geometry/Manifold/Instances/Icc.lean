@@ -79,7 +79,7 @@ lemma contMDiff_subtype_coe_Icc :
   · simp? [IccLeftChart, Function.comp_def, modelWithCornersEuclideanHalfSpace] says
       simp only [IccLeftChart, Fin.isValue, PartialHomeomorph.mk_coe_symm, PartialEquiv.coe_symm_mk,
         modelWithCornersEuclideanHalfSpace, ModelWithCorners.mk_symm, Function.comp_def,
-        PiLp.toLp_apply, Function.update_self, ModelWithCorners.mk_coe, PartialHomeomorph.mk_coe]
+        Function.update_self, ModelWithCorners.mk_coe, PartialHomeomorph.mk_coe]
     rw [Subtype.range_val_subtype]
     have : ContDiff ℝ n (fun (z : EuclideanSpace ℝ (Fin 1)) ↦ z 0 + x) := by fun_prop
     apply this.contDiffWithinAt.congr_of_eventuallyEq_of_mem; swap
@@ -94,7 +94,7 @@ lemma contMDiff_subtype_coe_Icc :
     simp? [IccRightChart, Function.comp_def, modelWithCornersEuclideanHalfSpace] says
       simp only [IccRightChart, Fin.isValue, PartialHomeomorph.mk_coe_symm,
         PartialEquiv.coe_symm_mk, modelWithCornersEuclideanHalfSpace, ModelWithCorners.mk_symm,
-        Function.comp_def, PiLp.toLp_apply, Function.update_self, ModelWithCorners.mk_coe,
+        Function.comp_def, Function.update_self, ModelWithCorners.mk_coe,
         PartialHomeomorph.mk_coe]
     rw [Subtype.range_val_subtype]
     have : ContDiff ℝ n (fun (z : EuclideanSpace ℝ (Fin 1)) ↦ y - z 0) := by fun_prop
@@ -134,7 +134,7 @@ lemma contMDiffOn_projIcc :
     apply this.contDiffWithinAt.congr_of_eventuallyEq_of_mem _ hz
     filter_upwards [self_mem_nhdsWithin] with w hw
     ext i
-    simp only [PiLp.toLp_apply, sub_left_inj]
+    simp only [sub_left_inj]
     rw [max_eq_right, min_eq_right hw.2]
     simp [hw.1, h.out.le]
   · simp? [IccRightChart, Function.comp_def, modelWithCornersEuclideanHalfSpace, projIcc] says
@@ -147,7 +147,7 @@ lemma contMDiffOn_projIcc :
     apply this.contDiffWithinAt.congr_of_eventuallyEq_of_mem _ hz
     filter_upwards [self_mem_nhdsWithin] with w hw
     ext i
-    simp only [PiLp.toLp_apply, sub_right_inj]
+    simp only [sub_right_inj]
     rw [max_eq_right, min_eq_right hw.2]
     simp [hw.1, h.out.le]
 
