@@ -566,7 +566,7 @@ theorem _root_.Module.Basis.toBasis_toOrthonormalBasis (v : Basis ι 𝕜 E) (hv
     (v.toOrthonormalBasis hv).toBasis = v := by
   simp only [OrthonormalBasis.toBasis, Basis.toOrthonormalBasis,
     LinearEquiv.isometryOfInner_toLinearEquiv]
-  exact Basis.ofEquivFun_equivFun v
+  exact v.ofEquivFun_equivFun
 
 @[simp]
 theorem _root_.Module.Basis.coe_toOrthonormalBasis (v : Basis ι 𝕜 E) (hv : Orthonormal 𝕜 v) :
