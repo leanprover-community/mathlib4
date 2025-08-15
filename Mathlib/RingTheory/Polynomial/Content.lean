@@ -425,12 +425,13 @@ theorem exists_primitive_lcm_of_isPrimitive {p q : R[X]} (hp : p.IsPrimitive) (h
 
 theorem dvd_iff_content_dvd_content_and_primPart_dvd_primPart {p q : R[X]} (hq : q ≠ 0) :
     p ∣ q ↔ p.content ∣ q.content ∧ p.primPart ∣ q.primPart := by
-  constructor <;> intro h
-  · rcases h with ⟨r, rfl⟩
+  constructor
+  · rintro ⟨r, rfl⟩
     rw [content_mul, p.isPrimitive_primPart.dvd_primPart_iff_dvd hq]
-    exact ⟨Dvd.intro _ rfl, p.primPart_dvd.trans (Dvd.intro _ rfl)⟩
-  · rw [p.eq_C_content_mul_primPart, q.eq_C_content_mul_primPart]
-    exact mul_dvd_mul (_root_.map_dvd C h.1) h.2
+    exact ⟨dvd_mul_right .., dvd_mul_of_dvd_left p.primPart_dvd _⟩
+  · rintro ⟨h₁, h₂⟩
+    rw [p.eq_C_content_mul_primPart, q.eq_C_content_mul_primPart]
+    gcongr
 
 noncomputable instance (priority := 100) normalizedGcdMonoid : NormalizedGCDMonoid R[X] :=
   letI := Classical.decEq R

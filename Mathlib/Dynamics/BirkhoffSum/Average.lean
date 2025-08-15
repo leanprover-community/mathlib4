@@ -76,23 +76,23 @@ theorem Function.IsFixedPt.birkhoffAverage_eq [CharZero R] {f : α → α} {x : 
 
 lemma birkhoffAverage_add {f : α → α} {g g' : α → M} :
     birkhoffAverage R f (g + g') = birkhoffAverage R f g + birkhoffAverage R f g' := by
-  funext n x
+  funext _ x
   simp [birkhoffAverage, birkhoffSum, sum_add_distrib, smul_add]
 
 end birkhoffAverage
 
 section AddCommGroup
 
-variable (R : Type*) {α M : Type*} [DivisionSemiring R] [AddCommGroup M] [Module R M]
+variable {R : Type*} {α M : Type*} [DivisionSemiring R] [AddCommGroup M] [Module R M]
 
 lemma birkhoffAverage_neg {f : α → α} {g : α → M} :
     birkhoffAverage R f (-g) = - birkhoffAverage R f g := by
-  funext n x
+  funext _ x
   simp [birkhoffAverage, birkhoffSum]
 
 lemma birkhoffAverage_sub {f : α → α} {g g' : α → M} :
     birkhoffAverage R f (g - g') = birkhoffAverage R f g - birkhoffAverage R f g' := by
-  funext n x
+  funext _ x
   simp [birkhoffAverage, birkhoffSum, smul_sub]
 
 end AddCommGroup

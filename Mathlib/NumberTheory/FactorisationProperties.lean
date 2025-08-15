@@ -3,7 +3,7 @@ Copyright (c) 2024 Colin Jones. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Colin Jones
 -/
-import Mathlib.Algebra.GeomSum
+import Mathlib.Algebra.Ring.GeomSum
 import Mathlib.NumberTheory.Divisors
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Linarith
