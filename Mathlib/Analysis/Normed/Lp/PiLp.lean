@@ -436,6 +436,10 @@ theorem continuous_ofLp [∀ i, TopologicalSpace (β i)] : Continuous (@ofLp p (
   continuous_id
 
 @[fun_prop, continuity]
+nonrec lemma continuous_apply [∀ i, TopologicalSpace (β i)] (i : ι) :
+    Continuous (fun f : PiLp p β ↦ f i) := (continuous_apply i).comp (continuous_ofLp p β)
+
+@[fun_prop, continuity]
 theorem continuous_toLp [∀ i, TopologicalSpace (β i)] : Continuous (@toLp p (∀ i, β i)) :=
   continuous_id
 
