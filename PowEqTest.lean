@@ -24,26 +24,33 @@ theorem exists_eq_pow_of_exponent_coprime_of_pow_eq {a b m n : ℕ} (ha : a ≠ 
     ∃ c, a = c ^ n ∧ b = c ^ m := by
   have := congrArg factorization h
   rw [factorization_pow, factorization_pow] at this
-  let c_factoriztion := a.factorization.mapRange (. / n) (Nat.zero_div n)
+  let c_factorization := a.factorization.mapRange (. / n) (Nat.zero_div n)
   --let factoriztion_prod (factorization : ℕ →₀ ℕ) := factorization.prod (. ^ .)
-  let c := c_factoriztion.prod (. ^ .)
+  let c := c_factorization.prod (. ^ .)
   use c
   constructor
   · --unfold c c_factoriztion
     suffices a.factorization = (c ^ n).factorization by
       refine eq_of_factorization_eq' ha ?_ this
-      sorry
-    suffices a.factorization = n • c_factoriztion by
-      have eq := congrArg (Finsupp.prod . (. ^ .)) this
-      simp at eq
-      have : a = a.factorization.prod (. ^ .) := by
-        symm
-        exact factorization_prod_pow_eq_self ha
-      rw [← this] at eq
-      convert eq
-      --exact eq
-      sorry
-    unfold c_factoriztion
+      suffices c ≠ 0 by
+        exact pow_ne_zero n this
+      unfold c c_factorization
+      simp
+    suffices a.factorization = n • c_factorization by
+      convert this
+      rw [factorization_pow]
+      suffices c.factorization = c_factorization by
+        rw [this]
+      unfold c
+      refine prod_pow_factorization_eq_self ?_
+      intro p p_mem
+      --simp [c_factorization] at p_mem
+      have : p ∈ a.factorization.support := by
+        unfold c_factorization at p_mem
+
+        sorry
+      exact prime_of_mem_primeFactors this
+    unfold c_factorization
     have : n • Finsupp.mapRange (fun x => x / n) (by simp) a.factorization =
         Finsupp.mapRange (fun x => x / n * n) (by simp) a.factorization := by
       --apply?
