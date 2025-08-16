@@ -3,7 +3,8 @@ Copyright (c) 2025 Xiangyu Li. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xiangyu Li
 -/
-import Mathlib.Topology.Algebra.Ring.Real
+import Mathlib.Topology.MetricSpace.Pseudo.Defs
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Standard simplices

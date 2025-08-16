@@ -5,7 +5,7 @@ Authors: Xiangyu Li
 -/
 import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Combinatorics.SimplicialComplex.FacePoset
-import Mathlib.Combinatorics.SimplicialComplex.Topology.GeomReal.Basic
+import Mathlib.Combinatorics.SimplicialComplex.Topology.Simplex
 
 /-!
 # Face diagram for geometric realisation

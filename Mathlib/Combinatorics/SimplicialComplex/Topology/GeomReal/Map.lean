@@ -5,7 +5,6 @@ Authors: Quang Minh Nguyen, Xiangyu Li
 -/
 import Mathlib.Combinatorics.SimplicialComplex.Topology.GeomReal.Colimit
 import Mathlib.Combinatorics.SimplicialComplex.Topology.SimplexMap
-import Mathlib.Combinatorics.SimplicialComplex.Category
 
 /-!
 # Induced map on geometric realisations

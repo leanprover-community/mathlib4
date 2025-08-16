@@ -5,6 +5,7 @@ Authors: Xiangyu Li
 -/
 import Mathlib.Topology.Category.TopCat.Limits.Basic
 import Mathlib.Combinatorics.SimplicialComplex.Topology.GeomReal.Diagram
+import Mathlib.Combinatorics.SimplicialComplex.Topology.GeomReal.Basic
 
 
 /-!

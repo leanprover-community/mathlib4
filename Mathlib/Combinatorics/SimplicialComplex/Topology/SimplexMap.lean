@@ -5,6 +5,7 @@ Authors: Xiangyu Li
 -/
 import Mathlib.Combinatorics.SimplicialComplex.FacePoset
 import Mathlib.Combinatorics.SimplicialComplex.Topology.Simplex
+import Mathlib.Topology.Algebra.Ring.Real
 
 /-!
 # Maps on standard simplices
