@@ -193,6 +193,11 @@ alias rootLength_reflection_perm_self := rootLength_reflectionPerm_self
     algebraMap S R (B.rootLength i) = B.form (P.root i) (P.root i) := by
   simp [rootLength]
 
+lemma two_smul_apply_rootSpanMem_rootSpanMem (i j : ι) :
+    2 • B.posForm (P.rootSpanMem S i) (P.rootSpanMem S j) = P.pairingIn S i j • B.rootLength j := by
+  apply algebraMap_injective S R
+  simp [map_ofNat, B.two_mul_apply_root_root i j]
+
 lemma pairingIn_mul_eq_pairingIn_mul_swap :
     P.pairingIn S j i * B.rootLength i = P.pairingIn S i j * B.rootLength j := by
   simpa only [← (algebraMap_injective S R).eq_iff, algebraMap_pairingIn, map_mul,
@@ -212,6 +217,25 @@ lemma zero_lt_apply_root_root_iff [IsStrictOrderedRing S]
       ↔ 0 < 2 * B.posForm ri rj := by rw [mul_pos_iff_of_pos_left zero_lt_two]
     _ ↔ 0 < P.pairingIn S i j * B.posForm rj rj := by rw [this]
     _ ↔ 0 < P.pairingIn S i j := by rw [mul_pos_iff_of_pos_right (B.zero_lt_posForm_apply_root j)]
+
+lemma posForm_eq_zero_iff_pairing [IsStrictOrderedRing S] (i j : ι) :
+    B.posForm (P.rootSpanMem S i) (P.rootSpanMem S j) = 0 ↔ P.pairingIn S i j = 0 := by
+  have := B.two_smul_apply_rootSpanMem_rootSpanMem i j
+  have hn := ne_of_gt <| RootPositiveForm.rootLength_pos B j
+  exact ⟨fun h ↦ by simpa [h, hn] using this, fun h ↦ by simpa [h] using this⟩
+
+lemma posForm_eq_zero_iff_IsOrthogonal [IsStrictOrderedRing S] (i j : ι) :
+    B.posForm (P.rootSpanMem S i) (P.rootSpanMem S j) = 0 ↔ P.IsOrthogonal i j := by
+  refine ⟨?_, fun h ↦ (B.posForm_eq_zero_iff_pairing i j).mpr <|
+    (FaithfulSMul.algebraMap_injective S R) (by simp [algebraMap_pairingIn, h.1])⟩
+  intro h
+  have : (B.posForm (P.rootSpanMem S j)) (P.rootSpanMem S i) = 0 := by
+    rw [← B.isSymm_posForm.eq, RingHom.id_apply, h]
+  constructor
+  · rw [← P.algebraMap_pairingIn S, (B.posForm_eq_zero_iff_pairing i j).mp h,
+      algebraMap_eq_zero_iff]
+  · rw [← P.algebraMap_pairingIn S, (B.posForm_eq_zero_iff_pairing j i).mp this,
+      algebraMap_eq_zero_iff]
 
 end RootPositiveForm
 
