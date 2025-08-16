@@ -3,15 +3,14 @@ Copyright (c) 2020 Kexing Ying and Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Kevin Buzzard, Yury Kudryashov
 -/
-import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.Group.FiniteSupport
+import Mathlib.Algebra.Group.Indicator
 import Mathlib.Algebra.Group.Support
 import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+import Mathlib.Algebra.Notation.FiniteSupport
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Data.Set.Finite.Lattice
-import Mathlib.Data.Set.Subsingleton
 
 /-!
 # Finite products and sums over types and sets
@@ -967,7 +966,7 @@ lemma finprod_mem_powerset_insert {f : Set α → M} {s : Set α} {a : α} (hs :
 lemma finprod_mem_powerset_diff_elem {f : Set α → M} {s : Set α} {a : α} (hs : s.Finite)
     (has : a ∈ s) : ∏ᶠ t ∈ 𝒫 s, f t = (∏ᶠ t ∈ 𝒫 (s \ {a}), f t)
     * ∏ᶠ t ∈ 𝒫 (s \ {a}), f (insert a t) := by
-  nth_rw 1 2 [← Set.insert_diff_self_of_mem has] -- second appearence hidden by notation
+  nth_rw 1 2 [← Set.insert_diff_self_of_mem has] -- second appearance hidden by notation
   exact finprod_mem_powerset_insert (hs.subset Set.diff_subset)
     (notMem_diff_of_mem (Set.mem_singleton a))
 
