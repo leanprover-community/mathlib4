@@ -9,6 +9,7 @@ import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Algebra.Order.Hom.Monoid
 import Mathlib.Data.Finset.Max
 import Mathlib.Order.Antisymmetrization
+import Mathlib.Order.Hom.WithTopBot
 import Mathlib.Order.UpperLower.CompleteLattice
 import Mathlib.Order.UpperLower.Principal
 
@@ -151,9 +152,13 @@ variable {M : Type*}
 variable [CommGroup M] [LinearOrder M] [IsOrderedMonoid M] {a b : M}
 
 variable (M) in
-/-- `MulArchimedeanClass` is the antisymmetrization of `MulArchimedeanOrder`. -/
+/-- `MulArchimedeanClass M` is the quotient of the group `M` by multiplicative archimedean
+equivalence, where two elements `a` and `b` are in the same class iff
+`(∃ m : ℕ, |b|ₘ ≤ |a|ₘ ^ m) ∧ (∃ n : ℕ, |a|ₘ ≤ |b|ₘ ^ n)`. -/
 @[to_additive ArchimedeanClass
-/-- `ArchimedeanClass` is the antisymmetrization of `ArchimedeanOrder`. -/]
+/-- `ArchimedeanClass M` is the quotient of the additive group `M` by additive archimedean
+equivalence, where two elements `a` and `b` are in the same class iff
+`(∃ m : ℕ, |b| ≤ m • |a|) ∧ (∃ n : ℕ, |a| ≤ n • |b|)`. -/]
 def MulArchimedeanClass := Antisymmetrization (MulArchimedeanOrder M) (· ≤ ·)
 
 namespace MulArchimedeanClass
@@ -166,6 +171,9 @@ def mk (a : M) : MulArchimedeanClass M := toAntisymmetrization _ (MulArchimedean
 @[to_additive (attr := elab_as_elim) /-- An induction principle for `ArchimedeanClass` -/]
 theorem ind {motive : MulArchimedeanClass M → Prop} (mk : ∀ a, motive (.mk a)) : ∀ x, motive x :=
   Antisymmetrization.ind _ mk
+
+@[to_additive]
+theorem «forall» {p : MulArchimedeanClass M → Prop} : (∀ A, p A) ↔ ∀ a, p (mk a) := Quotient.forall
 
 variable (M) in
 @[to_additive]
@@ -567,3 +575,126 @@ theorem ballSubgroup_antitone : Antitone (ballSubgroup (M := M)) := by
   exact subgroup_antitone <| (UpperSet.Ioi_strictMono _).monotone h
 
 end MulArchimedeanClass
+
+variable (M) in
+/-- `FiniteMulArchimedeanClass M` is the quotient of the non-one elements of the group `M` by
+multiplicative archimedean equivalence, where two elements `a` and `b` are in the same class iff
+`(∃ m : ℕ, |b|ₘ ≤ |a|ₘ ^ m) ∧ (∃ n : ℕ, |a|ₘ ≤ |b|ₘ ^ n)`.
+
+It is defined as the subtype of non-top elements of `MulArchimedeanClass M`
+(`⊤ : MulArchimedeanClass M` is the archimedean class of `1`).
+
+This is useful since the family of non-top archimedean classes is linearly independent. -/
+@[to_additive FiniteArchimedeanClass
+/-- `FiniteArchimedeanClass M` is the quotient of the non-zero elements of the additive group `M` by
+additive archimedean equivalence, where two elements `a` and `b` are in the same class iff
+`(∃ m : ℕ, |b| ≤ m • |a|) ∧ (∃ n : ℕ, |a| ≤ n • |b|)`.
+
+It is defined as the subtype of non-top elements of `ArchimedeanClass M`
+(`⊤ : ArchimedeanClass M` is the archimedean class of `0`).
+
+This is useful since the family of non-top archimedean classes is linearly independent. -/]
+abbrev FiniteMulArchimedeanClass := {A : MulArchimedeanClass M // A ≠ ⊤}
+
+namespace FiniteMulArchimedeanClass
+
+/-- Create a `FiniteMulArchimedeanClass` from a non-one element. -/
+@[to_additive /-- Create a `FiniteArchimedeanClass` from a non-zero element.-/]
+def mk (a : M) (h : a ≠ 1) : FiniteMulArchimedeanClass M :=
+  ⟨MulArchimedeanClass.mk a, MulArchimedeanClass.mk_eq_top_iff.not.mpr h⟩
+
+@[to_additive (attr := simp)]
+theorem val_mk {a : M} (h : a ≠ 1) : (mk a h).val = MulArchimedeanClass.mk a := rfl
+
+@[to_additive]
+theorem mk_le_mk {a : M} (ha : a ≠ 1) {b : M} (hb : b ≠ 1) :
+    mk a ha ≤ mk b hb ↔ MulArchimedeanClass.mk a ≤ MulArchimedeanClass.mk b := .rfl
+
+@[to_additive]
+theorem mk_lt_mk {a : M} (ha : a ≠ 1) {b : M} (hb : b ≠ 1) :
+    mk a ha < mk b hb ↔ MulArchimedeanClass.mk a < MulArchimedeanClass.mk b := .rfl
+
+/-- An induction principle for `FiniteMulArchimedeanClass`. -/
+@[to_additive (attr := elab_as_elim) /--An induction principle for `FiniteArchimedeanClass`.-/]
+theorem ind {motive : FiniteMulArchimedeanClass M → Prop}
+    (mk : ∀ a, (ha : a ≠ 1) → motive (.mk a ha)) : ∀ x, motive x := by
+  simpa [FiniteMulArchimedeanClass, MulArchimedeanClass.forall]
+
+@[to_additive]
+instance [MulArchimedean M] : Subsingleton (FiniteMulArchimedeanClass M) where
+  allEq A B := by
+    induction A using ind with | mk a ha
+    induction B using ind with | mk b hb
+    simpa [mk] using MulArchimedeanClass.mk_eq_mk_of_mulArchimedean ha hb
+
+@[to_additive]
+instance [Nontrivial M] : Nonempty (FiniteMulArchimedeanClass M) := by
+  obtain ⟨x, hx⟩ := exists_ne (1 : M)
+  exact ⟨mk x hx, by simpa using hx⟩
+
+/-- Lift a `f : {a : M // a ≠ 1} → α` function to `FiniteMulArchimedeanClass M → α`. -/
+@[to_additive /--Lift a `f : {a : M // a ≠ 0} → α` function to `FiniteArchimedeanClass M → α`. -/]
+def lift {α : Type*} (f : {a : M // a ≠ 1} → α)
+    (h : ∀ (a b : {a : M // a ≠ 1}), mk a.val a.prop = mk b.val b.prop → f a = f b) :
+    FiniteMulArchimedeanClass M → α := fun ⟨A, hA⟩ ↦ by
+  refine (MulArchimedeanClass.lift
+    (fun b ↦ if h : b = 1 then ⊤ else WithTop.some (f ⟨b, h⟩)) ?_ A).untop ?_
+  · intro a b h'
+    simp only
+    split_ifs with ha hb hb
+    · rfl
+    · rw [ha] at h'
+      exact (hb (MulArchimedeanClass.mk_eq_top_iff.mp h'.symm)).elim
+    · rw [hb] at h'
+      exact (ha (MulArchimedeanClass.mk_eq_top_iff.mp h')).elim
+    · exact WithTop.coe_eq_coe.mpr <| h ⟨a, ha⟩ ⟨b, hb⟩ (by simpa [mk] using h')
+  · induction A using MulArchimedeanClass.ind with | mk a
+    simpa using MulArchimedeanClass.mk_eq_top_iff.not.mp hA
+
+@[to_additive (attr := simp)]
+theorem lift_mk {α : Type*} (f : {a : M // a ≠ 1} → α)
+    (h : ∀ (a b : {a : M // a ≠ 1}), mk a.val a.prop = mk b.val b.prop → f a = f b)
+    {a : M} (ha : a ≠ 1) :
+    lift f h (mk a ha) = f ⟨a, ha⟩ := by simp [lift, mk, ha]
+
+/-- Lift a function `{a : M // a ≠ 1} → α` that's monotone along archimedean classes to a
+monotone function `FiniteMulArchimedeanClass M →o α`. -/
+@[to_additive /--Lift a function `{a : M // a ≠ 1} → α` that's monotone along archimedean classes to
+a monotone function `FiniteArchimedeanClass M₁ →o α`. -/]
+noncomputable
+def liftOrderHom {α : Type*} [PartialOrder α]
+    (f : {a : M // a ≠ 1} → α)
+    (h : ∀ (a b : {a : M // a ≠ 1}), mk a.val a.prop ≤ mk b.val b.prop → f a ≤ f b) :
+    FiniteMulArchimedeanClass M →o α where
+  toFun := lift f fun a b heq ↦ le_antisymm (h a b heq.le) (h b a heq.ge)
+  monotone' A B hAB := by
+    induction A using ind with | mk a ha
+    induction B using ind with | mk b hb
+    simpa using h ⟨a, ha⟩ ⟨b, hb⟩ hAB
+
+@[to_additive (attr := simp)]
+theorem liftOrderHom_mk {α : Type*} [PartialOrder α]
+    (f : {a : M // a ≠ 1} → α)
+    (h : ∀ (a b : {a : M // a ≠ 1}), mk a.val a.prop ≤ mk b.val b.prop → f a ≤ f b)
+    {a : M} (ha : a ≠ 1) : liftOrderHom f h (mk a ha) = f ⟨a, ha⟩ :=
+  lift_mk f (fun a b heq ↦ le_antisymm (h a b heq.le) (h b a heq.ge)) ha
+
+variable (M) in
+/-- Adding top to the type of finite classes yields the type of all classes. -/
+@[to_additive /--Adding top to the type of finite classes yields the type of all classes.-/]
+noncomputable
+def withTopOrderIso : WithTop (FiniteMulArchimedeanClass M) ≃o MulArchimedeanClass M :=
+  WithTop.subtypeOrderIso
+
+@[to_additive (attr := simp)]
+theorem withTopOrderIso_apply_coe (A : FiniteMulArchimedeanClass M) :
+    withTopOrderIso M (A : WithTop (FiniteMulArchimedeanClass M)) = A.val :=
+  WithTop.subtypeOrderIso_apply_coe A
+
+@[to_additive]
+theorem withTopOrderIso_symm_apply {a : M} (h : a ≠ 1) :
+    (withTopOrderIso M).symm (MulArchimedeanClass.mk a) = mk a h := by
+  unfold mk withTopOrderIso
+  convert WithTop.subtypeOrderIso_symm_apply (MulArchimedeanClass.mk_eq_top_iff.ne.mpr h)
+
+end FiniteMulArchimedeanClass
