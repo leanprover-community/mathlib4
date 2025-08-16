@@ -473,7 +473,7 @@ instance isRightCancelMul [IsRightCancelMul M] (S : Submonoid M) : IsRightCancel
 
 /-- A submonoid of a cancellative unital magma inherits cancellation. -/
 @[to_additive
-/-- An `AddSubmonoid` of a cancellative unital additive magma inherits cancellation. -/]
+  /-- An `AddSubmonoid` of a cancellative unital additive magma inherits cancellation. -/]
 instance isCancelMul [IsCancelMul M] (S : Submonoid M) : IsCancelMul S where
 
 /-- The natural monoid hom from a submonoid of monoid `M` to `M`. -/
