@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Johannes Hölzl, Yury Kudryashov, Patrick Massot
 -/
-import Mathlib.Algebra.GeomSum
+import Mathlib.Algebra.Field.GeomSum
 import Mathlib.Order.Filter.AtTopBot.Archimedean
 import Mathlib.Order.Iterate
 import Mathlib.Topology.Algebra.Algebra
@@ -124,7 +124,7 @@ theorem Filter.EventuallyEq.div_mul_cancel_atTop {α K : Type*}
 
 /-- If when `x` tends to `∞`, `g` tends to `∞` and `f x / g x` tends to a positive
   constant, then `f` tends to `∞`. -/
-theorem Tendsto.num {α K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
+theorem Filter.Tendsto.num {α K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
     [TopologicalSpace K] [OrderTopology K]
     {f g : α → K} {l : Filter α} (hg : Tendsto g l atTop) {a : K} (ha : 0 < a)
     (hlim : Tendsto (fun x => f x / g x) l (𝓝 a)) :
@@ -133,7 +133,7 @@ theorem Tendsto.num {α K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRin
 
 /-- If when `x` tends to `∞`, `g` tends to `∞` and `f x / g x` tends to a positive
   constant, then `f` tends to `∞`. -/
-theorem Tendsto.den {α K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
+theorem Filter.Tendsto.den {α K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
     [TopologicalSpace K] [OrderTopology K]
     [ContinuousInv K] {f g : α → K} {l : Filter α} (hf : Tendsto f l atTop) {a : K} (ha : 0 < a)
     (hlim : Tendsto (fun x => f x / g x) l (𝓝 a)) :
@@ -145,12 +145,12 @@ theorem Tendsto.den {α K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRin
 
 /-- If when `x` tends to `∞`, `f x / g x` tends to a positive constant, then `f` tends to `∞` if
   and only if `g` tends to `∞`. -/
-theorem Tendsto.num_atTop_iff_den_atTop {α K : Type*}
+theorem Filter.Tendsto.num_atTop_iff_den_atTop {α K : Type*}
     [Field K] [LinearOrder K] [IsStrictOrderedRing K] [TopologicalSpace K]
     [OrderTopology K] [ContinuousInv K] {f g : α → K} {l : Filter α} {a : K} (ha : 0 < a)
     (hlim : Tendsto (fun x => f x / g x) l (𝓝 a)) :
     Tendsto f l atTop ↔ Tendsto g l atTop :=
-  ⟨fun hf ↦ Tendsto.den hf ha hlim, fun hg ↦ Tendsto.num hg ha hlim⟩
+  ⟨fun hf ↦ hf.den ha hlim, fun hg ↦ hg.num ha hlim⟩
 
 /-! ### Powers -/
 
@@ -395,6 +395,12 @@ theorem ENNReal.tsum_geometric (r : ℝ≥0∞) : ∑' n : ℕ, r ^ n = (1 - r)�
 
 theorem ENNReal.tsum_geometric_add_one (r : ℝ≥0∞) : ∑' n : ℕ, r ^ (n + 1) = r * (1 - r)⁻¹ := by
   simp only [_root_.pow_succ', ENNReal.tsum_mul_left, ENNReal.tsum_geometric]
+
+lemma ENNReal.tsum_two_zpow_neg_add_one :
+    ∑' m : ℕ, 2 ^ (-1 - m  : ℤ) = (1 : ℝ≥0∞) := by
+  simp_rw [neg_sub_left, ENNReal.zpow_neg,← Nat.cast_one (R := ℤ), ← Nat.cast_add, zpow_natCast,
+    ENNReal.inv_pow, ENNReal.tsum_geometric_add_one, one_sub_inv_two, inv_inv]
+  exact ENNReal.inv_mul_cancel (Ne.symm (NeZero.ne' 2)) (Ne.symm top_ne_ofNat)
 
 end Geometric
 

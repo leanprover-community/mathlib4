@@ -38,25 +38,17 @@ assert_not_exists Field
 
 deriving instance Zero, CommSemiring, Nontrivial,
   LinearOrder, Bot, Sub,
-  LinearOrderedAddCommMonoidWithTop, WellFoundedRelation
+  LinearOrderedAddCommMonoidWithTop,
+  IsOrderedRing, CanonicallyOrderedAdd,
+  OrderBot, OrderTop, OrderedSub, SuccOrder,
+  WellFoundedLT,
+  CharZero
   for ENat
--- The `CanonicallyOrderedAdd, OrderBot, OrderTop, OrderedSub, SuccOrder, WellFoundedLT, CharZero`
--- instances should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
 
 -- In `Mathlib.Data.Nat.PartENat` proofs timed out when we included `deriving AddCommMonoidWithOne`,
 -- and it seems to work without.
 
 namespace ENat
-
-instance : IsOrderedRing ℕ∞ := WithTop.instIsOrderedRing
-instance : CanonicallyOrderedAdd ℕ∞ := WithTop.canonicallyOrderedAdd
-instance : OrderBot ℕ∞ := WithTop.orderBot
-instance : OrderTop ℕ∞ := WithTop.orderTop
-instance : OrderedSub ℕ∞ := inferInstanceAs (OrderedSub (WithTop ℕ))
-instance : SuccOrder ℕ∞ := inferInstanceAs (SuccOrder (WithTop ℕ))
-instance : WellFoundedLT ℕ∞ := inferInstanceAs (WellFoundedLT (WithTop ℕ))
-instance : CharZero ℕ∞ := inferInstanceAs (CharZero (WithTop ℕ))
 
 variable {a b c m n : ℕ∞}
 
@@ -317,6 +309,11 @@ theorem nat_induction {P : ℕ∞ → Prop} (a : ℕ∞) (h0 : P 0) (hsuc : ∀ 
 
 lemma add_one_pos : 0 < n + 1 :=
   succ_def n ▸ Order.bot_lt_succ n
+
+lemma natCast_lt_succ {n : ℕ} :
+    (n : ℕ∞) < (n : ℕ∞) + 1 := by
+  rw [← Nat.cast_one, ← Nat.cast_add, coe_lt_coe]
+  exact lt_add_one n
 
 lemma add_lt_add_iff_right {k : ℕ∞} (h : k ≠ ⊤) : n + k < m + k ↔ n < m :=
   WithTop.add_lt_add_iff_right h

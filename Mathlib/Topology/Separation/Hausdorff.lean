@@ -361,9 +361,6 @@ theorem Topology.IsEmbedding.t2Space [TopologicalSpace Y] [T2Space Y] {f : X →
     (hf : IsEmbedding f) : T2Space X :=
   .of_injective_continuous hf.injective hf.continuous
 
-@[deprecated (since := "2024-10-26")]
-alias Embedding.t2Space := IsEmbedding.t2Space
-
 protected theorem Homeomorph.t2Space [TopologicalSpace Y] [T2Space X] (h : X ≃ₜ Y) : T2Space Y :=
   h.symm.isEmbedding.t2Space
 
@@ -614,7 +611,7 @@ theorem IsCompact.inter [T2Space X] {s t : Set X} (hs : IsCompact s) (ht : IsCom
 theorem image_closure_of_isCompact [T2Space Y] {s : Set X} (hs : IsCompact (closure s)) {f : X → Y}
     (hf : ContinuousOn f (closure s)) : f '' closure s = closure (f '' s) :=
   Subset.antisymm hf.image_closure <|
-    closure_minimal (image_subset f subset_closure) (hs.image_of_continuousOn hf).isClosed
+    closure_minimal (image_mono subset_closure) (hs.image_of_continuousOn hf).isClosed
 
 /-- Two continuous maps into a Hausdorff space agree at a point iff they agree in a
 neighborhood. -/
@@ -669,9 +666,6 @@ theorem Continuous.isClosedEmbedding [CompactSpace X] [T2Space Y] {f : X → Y} 
 theorem IsQuotientMap.of_surjective_continuous [CompactSpace X] [T2Space Y] {f : X → Y}
     (hsurj : Surjective f) (hcont : Continuous f) : IsQuotientMap f :=
   hcont.isClosedMap.isQuotientMap hcont hsurj
-
-@[deprecated (since := "2024-10-22")]
-alias QuotientMap.of_surjective_continuous := IsQuotientMap.of_surjective_continuous
 
 theorem isPreirreducible_iff_subsingleton [T2Space X] {S : Set X} :
     IsPreirreducible S ↔ S.Subsingleton := by
