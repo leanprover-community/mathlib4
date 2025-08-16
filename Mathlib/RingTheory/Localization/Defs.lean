@@ -86,6 +86,10 @@ assert_not_exists AlgHom Ideal
 
 open Function
 
+instance : (⊤ : AddSubmonoid NNRat).IsLocalizationMap ((↑) : NNRat → ℚ) :=
+  AddSubmonoid.isLocalizationMap_top_of_addGroup Subtype.val_injective
+    sorry
+
 section CommSemiring
 
 variable {R : Type*} [CommSemiring R] (M : Submonoid R) (S : Type*) [CommSemiring S]
@@ -94,6 +98,8 @@ variable [Algebra R S] {P : Type*} [CommSemiring P]
 /-- The typeclass `IsLocalization (M : Submonoid R) S` where `S` is an `R`-algebra
 expresses that `S` is isomorphic to the localization of `R` at `M`. -/
 abbrev IsLocalization : Prop := M.IsLocalizationMap (algebraMap R S)
+
+@[deprecated (since := "2025-08-15")] alias isLocalization_iff := Submonoid.isLocalizationMap_iff
 
 variable {M}
 
@@ -110,46 +116,14 @@ theorem map_units : ∀ y : M, IsUnit (algebraMap R S y) :=
   Submonoid.IsLocalizationMap.map_units'
 
 variable (M) {S}
-/-- The `algebraMap` is surjective. -/
+/-- Every element in the localization can be expressed as a quotient of an element in the
+range of `algebraMap` by the image of an element of the submonoid. -/
 theorem surj : ∀ z : S, ∃ x : R × M, z * algebraMap R S x.2 = algebraMap R S x.1 :=
   Submonoid.IsLocalizationMap.surj'
 
-variable (S) in
-/-- The kernel of `algebraMap` is equal to the annihilator by `map_units'` -/
-theorem eq_iff_exists {x y} : algebraMap R S x = algebraMap R S y ↔ ∃ c : M, ↑c * x = ↑c * y :=
-  Iff.intro (Submonoid.IsLocalizationMap.exists_of_eq _ _) fun ⟨c, h⟩ ↦ by
-    apply_fun algebraMap R S at h
-    rw [map_mul, map_mul] at h
-    exact (IsLocalization.map_units S c).mul_right_inj.mp h
-
-theorem injective_iff_isRegular : Injective (algebraMap R S) ↔ ∀ c : M, IsRegular (c : R) := by
-  simp_rw [Commute.isRegular_iff (Commute.all _), IsLeftRegular,
-    Injective, eq_iff_exists M, exists_imp, forall_comm (α := M)]
-
-theorem of_le (N : Submonoid R) (h₁ : M ≤ N) (h₂ : ∀ r ∈ N, IsUnit (algebraMap R S r)) :
-    IsLocalization N S where
-  map_units' r := h₂ r r.2
-  surj' s :=
-    have ⟨⟨x, y, hy⟩, H⟩ := IsLocalization.surj M s
-    ⟨⟨x, y, h₁ hy⟩, H⟩
-  exists_of_eq {x y} := by
-    rw [IsLocalization.eq_iff_exists M]
-    rintro ⟨c, hc⟩
-    exact ⟨⟨c, h₁ c.2⟩, hc⟩
-
-theorem of_le_of_exists_dvd (N : Submonoid R) (h₁ : M ≤ N) (h₂ : ∀ n ∈ N, ∃ m ∈ M, n ∣ m) :
-    IsLocalization N S :=
-  of_le M N h₁ fun n hn ↦ have ⟨m, hm, dvd⟩ := h₂ n hn
-    isUnit_of_dvd_unit (map_dvd _ dvd) (map_units S ⟨m, hm⟩)
-
-theorem algebraMap_isUnit_iff {x : R} : IsUnit (algebraMap R S x) ↔ ∃ m ∈ M, x ∣ m := by
-  refine ⟨fun h ↦ ?_, fun ⟨m, hm, dvd⟩ ↦ isUnit_of_dvd_unit (map_dvd _ dvd) (map_units S ⟨m, hm⟩)⟩
-  have ⟨s, hxs⟩ := isUnit_iff_dvd_one.mp h
-  have ⟨⟨r, m⟩, hrm⟩ := surj M s
-  apply_fun (algebraMap R S x * ·) at hrm
-  rw [← mul_assoc, ← hxs, one_mul, ← map_mul] at hrm
-  have ⟨m', eq⟩ := (eq_iff_exists M S).mp hrm
-  exact ⟨m' * m, mul_mem m'.2 m.2, _, mul_left_comm _ x _ ▸ eq⟩
+variable {M} in
+theorem exists_of_eq {x y : R} : algebraMap R S x = algebraMap R S y → ∃ c : M, c * x = c * y :=
+  Submonoid.IsLocalizationMap.exists_of_eq
 
 variable (S)
 
@@ -176,6 +150,40 @@ lemma toLocalizationMap_apply (x) : toLocalizationMap M S x = algebraMap R S x :
 theorem surj₂ : ∀ z w : S, ∃ z' w' : R, ∃ d : M,
     (z * algebraMap R S d = algebraMap R S z') ∧ (w * algebraMap R S d = algebraMap R S w') :=
   (toLocalizationMap M S).surj₂
+
+/-- The kernel of `algebraMap` is equal to the annihilator by `map_units'` -/
+theorem eq_iff_exists {x y} : algebraMap R S x = algebraMap R S y ↔ ∃ c : M, ↑c * x = ↑c * y :=
+  (toLocalizationMap M S).eq_iff_exists
+
+variable {S}
+
+theorem injective_iff_isRegular : Injective (algebraMap R S) ↔ ∀ c : M, IsRegular (c : R) :=
+  (toLocalizationMap M S).injective_iff.trans <| .symm <| Subtype.forall
+
+theorem of_le (N : Submonoid R) (h₁ : M ≤ N) (h₂ : ∀ r ∈ N, IsUnit (algebraMap R S r)) :
+    IsLocalization N S where
+  map_units' r := h₂ r r.2
+  surj' s :=
+    have ⟨⟨x, y, hy⟩, H⟩ := IsLocalization.surj M s
+    ⟨⟨x, y, h₁ hy⟩, H⟩
+  exists_of_eq {x y} := by
+    rw [IsLocalization.eq_iff_exists M]
+    rintro ⟨c, hc⟩
+    exact ⟨⟨c, h₁ c.2⟩, hc⟩
+
+theorem of_le_of_exists_dvd (N : Submonoid R) (h₁ : M ≤ N) (h₂ : ∀ n ∈ N, ∃ m ∈ M, n ∣ m) :
+    IsLocalization N S :=
+  of_le M N h₁ fun n hn ↦ have ⟨m, hm, dvd⟩ := h₂ n hn
+    isUnit_of_dvd_unit (map_dvd _ dvd) (map_units S ⟨m, hm⟩)
+
+theorem algebraMap_isUnit_iff {x : R} : IsUnit (algebraMap R S x) ↔ ∃ m ∈ M, x ∣ m := by
+  refine ⟨fun h ↦ ?_, fun ⟨m, hm, dvd⟩ ↦ isUnit_of_dvd_unit (map_dvd _ dvd) (map_units S ⟨m, hm⟩)⟩
+  have ⟨s, hxs⟩ := isUnit_iff_dvd_one.mp h
+  have ⟨⟨r, m⟩, hrm⟩ := surj M s
+  apply_fun (algebraMap R S x * ·) at hrm
+  rw [← mul_assoc, ← hxs, one_mul, ← map_mul] at hrm
+  have ⟨m', eq⟩ := (eq_iff_exists M S).mp hrm
+  exact ⟨m' * m, mul_mem m'.2 m.2, _, mul_left_comm _ x _ ▸ eq⟩
 
 end
 
