@@ -47,14 +47,21 @@ namespace IsHermitian
 
 variable (hA : IsHermitian A)
 
-/-- The `ℝ`-spectrum of a Hermitian matrix over `RCLike` field is the range of the eigenvalue
-function -/
-theorem eigenvalues_eq_spectrum_real {a : Matrix n n 𝕜} (ha : IsHermitian a) :
-    spectrum ℝ a = Set.range (ha.eigenvalues) := by
-  ext x
-  conv_lhs => rw [ha.spectral_theorem, unitary.spectrum.unitary_conjugate,
-  ← spectrum.algebraMap_mem_iff 𝕜, spectrum_diagonal, RCLike.algebraMap_eq_ofReal]
+/-- The spectrum of a Hermitian matrix is the range of its eigenvalues under `RCLike.ofReal`. -/
+theorem spectrum_eq_image_range :
+    spectrum 𝕜 A = RCLike.ofReal '' Set.range hA.eigenvalues := Set.ext fun x => by
+  conv_lhs => rw [hA.spectral_theorem]
   simp
+
+/-- The `ℝ`-spectrum of a Hermitian matrix over `RCLike` field is the range of the eigenvalue
+function. -/
+theorem spectrum_real_eq_range_eigenvalues :
+    spectrum ℝ A = Set.range hA.eigenvalues := Set.ext fun x => by
+  conv_lhs => rw [hA.spectral_theorem, ← spectrum.algebraMap_mem_iff 𝕜]
+  simp
+
+@[deprecated (since := "14-08-2025")] alias eigenvalues_eq_spectrum_real :=
+  spectrum_real_eq_range_eigenvalues
 
 /-- The star algebra homomorphism underlying the instance of the continuous functional
 calculus of a Hermitian matrix. This is an auxiliary definition and is not intended
@@ -104,7 +111,7 @@ lemma isClosedEmbedding_cfcAux : IsClosedEmbedding hA.cfcAux := by
   ext x
   simp only [ContinuousMap.zero_apply]
   obtain ⟨x, hx⟩ := x
-  obtain ⟨i, rfl⟩ := hA.eigenvalues_eq_spectrum_real ▸ hx
+  obtain ⟨i, rfl⟩ := hA.spectrum_real_eq_range_eigenvalues ▸ hx
   rw [← diagonal_zero] at h2
   have := (diagonal_eq_diagonal_iff).mp h2
   refine RCLike.ofReal_eq_zero.mp (this i)
@@ -130,7 +137,7 @@ instance instContinuousFunctionalCalculus :
         apply spectrum.of_algebraMap_mem 𝕜
         simp only [Function.comp_apply, Set.mem_range, spectrum_diagonal]
         obtain ⟨x, hx⟩ := x
-        obtain ⟨i, rfl⟩ := ha.eigenvalues_eq_spectrum_real ▸ hx
+        obtain ⟨i, rfl⟩ := ha.spectrum_real_eq_range_eigenvalues ▸ hx
         exact ⟨i, rfl⟩
     case hermitian =>
       simp only [isSelfAdjoint_iff, cfcAux_apply, mul_assoc, star_mul, star_star]
@@ -141,7 +148,7 @@ instance instContinuousFunctionalCalculus :
     obtain (h | h) := isEmpty_or_nonempty n
     · obtain ⟨x, y, hxy⟩ := exists_pair_ne (Matrix n n 𝕜)
       exact False.elim <| Matrix.of.symm.injective.ne hxy <| Subsingleton.elim _ _
-    · exact eigenvalues_eq_spectrum_real ha ▸ Set.range_nonempty _
+    · exact spectrum_real_eq_range_eigenvalues ha ▸ Set.range_nonempty _
   predicate_zero := .zero _
 
 /-- The continuous functional calculus of a Hermitian matrix as a triple product using the
