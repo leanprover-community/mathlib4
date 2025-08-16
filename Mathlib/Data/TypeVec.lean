@@ -54,8 +54,7 @@ open MvFunctor
 /-- Extensionality for arrows -/
 @[ext]
 theorem Arrow.ext {α β : TypeVec n} (f g : α ⟹ β) :
-    (∀ i, f i = g i) → f = g := by
-  intro h; funext i; apply h
+    (∀ i, f i = g i) → f = g := funext
 
 instance Arrow.inhabited (α β : TypeVec n) [∀ i, Inhabited (β i)] : Inhabited (α ⟹ β) :=
   ⟨fun _ _ => default⟩
@@ -108,7 +107,7 @@ theorem last_append1 {α : TypeVec n} {β : Type*} : last (append1 α β) = β :
 
 @[simp]
 theorem append1_drop_last (α : TypeVec (n + 1)) : append1 (drop α) (last α) = α :=
-  funext fun i => by cases i <;> rfl
+  funext fun | .fz | .fs _ => rfl
 
 /-- cases on `(n+1)-length` vectors -/
 @[elab_as_elim]
@@ -144,7 +143,7 @@ def nilFun {α : TypeVec 0} {β : TypeVec 0} : α ⟹ β := fun i => by apply Fi
 
 theorem eq_of_drop_last_eq {α β : TypeVec (n + 1)} {f g : α ⟹ β} (h₀ : dropFun f = dropFun g)
     (h₁ : lastFun f = lastFun g) : f = g := by
-  refine funext (fun x => ?_)
+  funext x
   cases x
   · apply h₁
   · apply congr_fun h₀
@@ -258,7 +257,7 @@ protected def casesNil {β : TypeVec 0 → Sort*} (f : β Fin2.elim0) : ∀ v, �
 protected def casesCons (n : ℕ) {β : TypeVec (n + 1) → Sort*}
     (f : ∀ (t) (v : TypeVec n), β (v ::: t)) :
     ∀ v, β v :=
-  fun v : TypeVec (n + 1) => cast (by simp) (f v.last v.drop)
+  fun v : TypeVec (n + 1) => cast (congr rfl (append1_drop_last _)) (f v.last v.drop)
 
 protected theorem casesNil_append1 {β : TypeVec 0 → Sort*} (f : β Fin2.elim0) :
     TypeVec.casesNil f Fin2.elim0 = f :=
@@ -274,10 +273,10 @@ def typevecCasesNil₃ {β : ∀ v v' : TypeVec 0, v ⟹ v' → Sort*}
     (f : β Fin2.elim0 Fin2.elim0 nilFun) :
     ∀ v v' fs, β v v' fs := fun v v' fs => by
   refine cast ?_ f
-  have eq₁ : v = Fin2.elim0 := by funext i; contradiction
-  have eq₂ : v' = Fin2.elim0 := by funext i; contradiction
-  have eq₃ : fs = nilFun := by funext i; contradiction
-  cases eq₁; cases eq₂; cases eq₃; rfl
+  obtain rfl : v = Fin2.elim0 := by funext i; contradiction
+  obtain rfl : v' = Fin2.elim0 := by funext i; contradiction
+  obtain rfl : fs = nilFun := by funext i; contradiction
+  rfl
 
 /-- cases distinction for an arrow in the category of (n+1)-length type vectors -/
 def typevecCasesCons₃ (n : ℕ) {β : ∀ v v' : TypeVec (n + 1), v ⟹ v' → Sort*}
@@ -447,14 +446,14 @@ end
 theorem prod_fst_mk {α β : TypeVec n} (i : Fin2 n) (a : α i) (b : β i) :
     TypeVec.prod.fst i (prod.mk i a b) = a := by
   induction i with
-  | fz => simp_all only [prod.fst, prod.mk]
+  | fz => rfl
   | fs _ i_ih => apply i_ih
 
 @[simp]
 theorem prod_snd_mk {α β : TypeVec n} (i : Fin2 n) (a : α i) (b : β i) :
     TypeVec.prod.snd i (prod.mk i a b) = b := by
   induction i with
-  | fz => simp_all [prod.snd, prod.mk]
+  | fz => rfl
   | fs _ i_ih => apply i_ih
 
 /-- `prod` is functorial -/
@@ -555,7 +554,7 @@ theorem prod_id : ∀ {n} {α β : TypeVec.{u} n}, (id ⊗' id) = (id : α ⊗ �
   intros
   ext i a
   induction i with
-  | fz => cases a; rfl
+  | fz => rfl
   | fs _ i_ih => apply i_ih
 
 theorem append_prod_appendFun {n} {α α' β β' : TypeVec.{u} n} {φ φ' ψ ψ' : Type u}
@@ -572,7 +571,7 @@ end Liftp'
 @[simp]
 theorem dropFun_diag {α} : dropFun (@prod.diag (n + 1) α) = prod.diag := by
   ext i : 2
-  induction i <;> simp [dropFun, *] <;> rfl
+  rfl
 
 @[simp]
 theorem dropFun_subtypeVal {α} (p : α ⟹ «repeat» (n + 1) Prop) :
@@ -587,20 +586,20 @@ theorem lastFun_subtypeVal {α} (p : α ⟹ «repeat» (n + 1) Prop) :
 @[simp]
 theorem dropFun_toSubtype {α} (p : α ⟹ «repeat» (n + 1) Prop) :
     dropFun (toSubtype p) = toSubtype _ := by
-  ext i
-  induction i <;> simp [dropFun, *] <;> rfl
+  ext i : 2
+  rfl
 
 @[simp]
 theorem lastFun_toSubtype {α} (p : α ⟹ «repeat» (n + 1) Prop) :
     lastFun (toSubtype p) = _root_.id := by
   ext i : 2
-  induction i; simp [*]; rfl
+  rfl
 
 @[simp]
 theorem dropFun_of_subtype {α} (p : α ⟹ «repeat» (n + 1) Prop) :
     dropFun (ofSubtype p) = ofSubtype _ := by
   ext i : 2
-  induction i <;> simp [dropFun, *] <;> rfl
+  rfl
 
 @[simp]
 theorem lastFun_of_subtype {α} (p : α ⟹ «repeat» (n + 1) Prop) :
@@ -617,13 +616,13 @@ attribute [simp] drop_append1'
 theorem dropFun_prod {α α' β β' : TypeVec (n + 1)} (f : α ⟹ β) (f' : α' ⟹ β') :
     dropFun (f ⊗' f') = (dropFun f ⊗' dropFun f') := by
   ext i : 2
-  induction i <;> simp [dropFun, *] <;> rfl
+  rfl
 
 @[simp]
 theorem lastFun_prod {α α' β β' : TypeVec (n + 1)} (f : α ⟹ β) (f' : α' ⟹ β') :
     lastFun (f ⊗' f') = Prod.map (lastFun f) (lastFun f') := by
   ext i : 1
-  induction i; simp [lastFun, *]; rfl
+  rfl
 
 @[simp]
 theorem dropFun_from_append1_drop_last {α : TypeVec (n + 1)} :
@@ -644,12 +643,10 @@ theorem prod_map_id {α β : TypeVec n} : (@TypeVec.id _ α ⊗' @TypeVec.id _ �
 
 @[simp]
 theorem subtypeVal_diagSub {α : TypeVec n} : subtypeVal (repeatEq α) ⊚ diagSub = prod.diag := by
-  ext i x
+  funext i
   induction i with
-  | fz => simp [comp, diagSub, subtypeVal, prod.diag]
-  | fs _ i_ih =>
-    simp only [comp, subtypeVal, diagSub, prod.diag] at *
-    apply i_ih
+  | fz => rfl
+  | fs _ i_ih => apply i_ih
 
 @[simp]
 theorem toSubtype_of_subtype {α : TypeVec n} (p : α ⟹ «repeat» n Prop) :
@@ -669,7 +666,7 @@ theorem subtypeVal_toSubtype {α : TypeVec n} (p : α ⟹ «repeat» n Prop) :
 theorem toSubtype_of_subtype_assoc
     {α β : TypeVec n} (p : α ⟹ «repeat» n Prop) (f : β ⟹ Subtype_ p) :
     @toSubtype n _ p ⊚ ofSubtype _ ⊚ f = f := by
-  rw [← comp_assoc, toSubtype_of_subtype]; simp
+  rw [← comp_assoc, toSubtype_of_subtype]; rfl
 
 @[simp]
 theorem toSubtype'_of_subtype' {α : TypeVec n} (r : α ⊗ α ⟹ «repeat» n Prop) :
@@ -677,7 +674,8 @@ theorem toSubtype'_of_subtype' {α : TypeVec n} (r : α ⊗ α ⟹ «repeat» n 
   ext i x
   induction i
   <;> dsimp only [id, toSubtype', comp, ofSubtype'] at *
-  <;> simp [*]
+  · rfl
+  · simp only [*]
 
 theorem subtypeVal_toSubtype' {α : TypeVec n} (r : α ⊗ α ⟹ «repeat» n Prop) :
     subtypeVal r ⊚ toSubtype' r = fun i x => prod.mk i x.1.fst x.1.snd := by
