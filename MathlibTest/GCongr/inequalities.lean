@@ -139,11 +139,11 @@ example {a b c d x : ℝ} (h : a + c + 1 ≤ b + d + 1) :
   gcongr x ^ 2 * ?_ + 5
   linarith
 
-example {x y z : ℝ} (h : 2 ≤ z) : z * |x + y| ≤ z * (|x| + |y|) := by gcongr; apply abs_add
+example {x y z : ℝ} (h : 2 ≤ z) : z * |x + y| ≤ z * (|x| + |y|) := by gcongr; apply abs_add_le
 
-example (A B C : ℝ) : |A + B| + C ≤ |A| + |B| + C := by gcongr; apply abs_add
-example (A B C : ℝ) : |A + B| + C ≤ |A| + |B| + C := by gcongr ?_ + _; apply abs_add
-example (A B C : ℝ) : |A + B| + C ≤ |A| + |B| + C := by gcongr ?_ + (A : ℝ); apply abs_add
+example (A B C : ℝ) : |A + B| + C ≤ |A| + |B| + C := by gcongr; apply abs_add_le
+example (A B C : ℝ) : |A + B| + C ≤ |A| + |B| + C := by gcongr ?_ + _; apply abs_add_le
+example (A B C : ℝ) : |A + B| + C ≤ |A| + |B| + C := by gcongr ?_ + (A : ℝ); apply abs_add_le
 
 example {n i : ℕ} (hi : i ∈ range n) : 2 ^ i ≤ 2 ^ n := by
   gcongr
