@@ -130,6 +130,9 @@ theorem isSquare_iff {q : ℚ} : IsSquare q ↔ IsSquare q.num ∧ IsSquare q.de
     refine ⟨nr / dr, ?_⟩
     rw [div_mul_div_comm, ← Int.cast_mul, ← Nat.cast_mul, ← hnr, ← hdr, num_div_den]
 
+instance : DecidablePred (IsSquare : ℚ → Prop) :=
+  fun q => decidable_of_iff (IsSquare q.num ∧ IsSquare q.den) Rat.isSquare_iff.symm
+
 @[norm_cast, simp]
 theorem isSquare_natCast_iff {n : ℕ} : IsSquare (n : ℚ) ↔ IsSquare n := by
   simp_rw [isSquare_iff, num_natCast, den_natCast, IsSquare.one, and_true, Int.isSquare_natCast_iff]
