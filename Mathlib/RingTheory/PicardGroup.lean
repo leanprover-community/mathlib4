@@ -233,13 +233,14 @@ the Picard group. -/
 theorem free_iff_linearEquiv : Free R M ↔ Nonempty (M ≃ₗ[R] R) := by
   refine ⟨fun _ ↦ ?_, fun ⟨e⟩ ↦ .of_equiv e.symm⟩
   nontriviality R
+  have e := (Free.chooseBasis R M).repr
   have := card_eq_of_linearEquiv R <|
     (finsuppTensorFinsupp' .. ≪≫ₗ linearEquivFunOnFinite R R _).symm ≪≫ₗ TensorProduct.congr
-      (linearEquivFunOnFinite R R _ ≪≫ₗ llift R R R _ ≪≫ₗ (Free.repr R M).dualMap)
-      (Free.repr R M).symm ≪≫ₗ linearEquiv R M ≪≫ₗ (.symm <| .funUnique Unit R R)
+      (linearEquivFunOnFinite R R _ ≪≫ₗ llift R R R _ ≪≫ₗ e.dualMap)
+      e.symm ≪≫ₗ linearEquiv R M ≪≫ₗ (.symm <| .funUnique Unit R R)
   have : Unique (Free.ChooseBasisIndex R M) :=
     (Fintype.card_eq_one_iff_nonempty_unique.mp (by simpa using this)).some
-  exact ⟨Free.repr R M ≪≫ₗ LinearEquiv.finsuppUnique R R _⟩
+  exact ⟨e ≪≫ₗ LinearEquiv.finsuppUnique R R _⟩
 
 /- TODO: The ≤ direction holds for arbitrary invertible modules over any commutative **ring** by
 considering the localization at a prime (which is free of rank 1) using the strong rank condition.
