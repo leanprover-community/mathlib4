@@ -79,6 +79,9 @@ lemma mk_singleton_self (x : R) [(Ideal.span {x}).IsTwoSided] : mk (Ideal.span {
 
 variable (I)
 
+theorem out_sub (x : R) : (Ideal.Quotient.mk I x).out - x ∈ I := by
+  rw [← Ideal.Quotient.eq, Ideal.Quotient.mk_out]
+
 instance noZeroDivisors [hI : I.IsPrime] : NoZeroDivisors (R ⧸ I) where
     eq_zero_or_eq_zero_of_mul_eq_zero {a b} := Quotient.inductionOn₂' a b fun {_ _} hab =>
       (hI.mem_or_mem (eq_zero_iff_mem.1 hab)).elim (Or.inl ∘ eq_zero_iff_mem.2)
