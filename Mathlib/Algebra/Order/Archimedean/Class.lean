@@ -245,7 +245,6 @@ theorem mk_lt_mk : mk a < mk b ↔ ∀ n, |b|ₘ ^ n < |a|ₘ := .rfl
 which is also the largest class. -/
 @[to_additive /-- 0 is in its own class (see `ArchimedeanClass.mk_eq_top_iff`),
 which is also the largest class. -/]
-noncomputable
 instance : OrderTop (MulArchimedeanClass M) where
   top := mk 1
   le_top A := by
