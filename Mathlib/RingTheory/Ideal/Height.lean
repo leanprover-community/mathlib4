@@ -250,7 +250,7 @@ lemma Ideal.height_le_iff_covBy {p : Ideal R} {n : ℕ} [p.IsPrime] [IsNoetheria
       (H _ hx hxp.1 (fun I hI e ↦ hxp.2 (show Subtype.mk x hx < ⟨I, hI⟩ from e)))
 
 /-- Use `RingEquiv.height_comap` instead, which does not assume `IsPrime`. -/
-lemma RingEquiv.height_comap_of_isPrime {S : Type*} [CommRing S] (e : R ≃+* S)
+private lemma RingEquiv.height_comap_of_isPrime {S : Type*} [CommRing S] (e : R ≃+* S)
     (p : Ideal S) [p.IsPrime] : (p.comap e).height = p.height := by
   rw [height_eq_primeHeight, height_eq_primeHeight, primeHeight, primeHeight,
     ← Order.height_orderIso (PrimeSpectrum.comapEquiv e.symm) ⟨p, ‹_›⟩]
