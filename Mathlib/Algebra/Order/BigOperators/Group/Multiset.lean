@@ -5,10 +5,10 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
 import Mathlib.Algebra.Order.BigOperators.Group.List
-import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Data.List.MinMax
 import Mathlib.Data.Multiset.Fold
+import Mathlib.Algebra.Order.Group.Unbundled.Abs
 
 /-!
 # Big operators on a multiset in ordered groups
