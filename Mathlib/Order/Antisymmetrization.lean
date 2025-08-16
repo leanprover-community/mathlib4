@@ -84,6 +84,19 @@ theorem antisymmRel_iff_eq [IsRefl α r] [IsAntisymm α r] : AntisymmRel r a b �
 
 alias ⟨AntisymmRel.eq, _⟩ := antisymmRel_iff_eq
 
+namespace Mathlib.Tactic.GCongr
+
+lemma AntisymmRel.left (h : AntisymmRel r a b) : r a b := h.1
+lemma AntisymmRel.right (h : AntisymmRel r a b) : r b a := h.2
+
+@[gcongr_forward] def exactAntisymmRelLeft : ForwardExt where
+  eval h goal := do goal.assignIfDefEq (← Lean.Meta.mkAppM ``AntisymmRel.left #[h])
+
+@[gcongr_forward] def exactAntisymmRelRight : ForwardExt where
+  eval h goal := do goal.assignIfDefEq (← Lean.Meta.mkAppM ``AntisymmRel.right #[h])
+
+end Mathlib.Tactic.GCongr
+
 end Relation
 
 section LE
