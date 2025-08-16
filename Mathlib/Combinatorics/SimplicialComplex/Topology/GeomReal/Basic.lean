@@ -219,5 +219,3 @@ lemma function_ext {X : SimplicialComplex U} {Y : Type*}
     _   = g p := by rw [hp]
 
 end GeomReal
-
-#lint
