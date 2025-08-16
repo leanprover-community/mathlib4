@@ -79,13 +79,13 @@ namespace LeftPreLieRing
 variable {R : Type u} [CommRing R]
 variable {L : Type v} [LeftPreLieRing L]
 
-@[simp]
 theorem assoc_symm (x y z : L) :
     associator x y z = associator y x z := LeftPreLieRing.assoc_symm' x y z
 
 /-- Every left pre-Lie ring is a right pre-Lie ring with the opposite multiplication -/
 instance : RightPreLieRing Lᵐᵒᵖ where
-  assoc_symm' x y z := by simp
+  assoc_symm' x y z := by
+    simp [assoc_symm]
 end LeftPreLieRing
 
 namespace LeftPreLieAlgebra
@@ -99,13 +99,13 @@ namespace RightPreLieRing
 variable {R : Type u} [CommRing R]
 variable {L : Type v} [RightPreLieRing L]
 
-@[simp]
 theorem assoc_symm (x y z : L) :
     associator x y z = associator x z y := RightPreLieRing.assoc_symm' x y z
 
 /-- Every left pre-Lie ring is a right pre-Lie ring with the opposite multiplication -/
 instance : LeftPreLieRing Lᵐᵒᵖ where
-  assoc_symm' x y z := by simp
+  assoc_symm' x y z := by
+    simp [assoc_symm]
 end RightPreLieRing
 
 namespace RightPreLieAlgebra
