@@ -34,4 +34,15 @@ def eisensteinSeries_MF {k : ℤ} {N : ℕ+} (hk : 3 ≤ k) (a : Fin 2 → ZMod 
   holo' := eisensteinSeries_SIF_MDifferentiable hk a
   bdd_at_infty' := isBoundedAtImInfty_eisensteinSeries_SIF a hk
 
+/-- The trivial congruence condition at level 1. -/
+def standardCongruenceCondition : Fin 2 → ZMod ((1 : ℕ+) : ℕ) := 0
+
+/-- Notation for the `standardcongruencecondition`. -/
+scoped notation "𝟙" => standardCongruenceCondition
+
+/-- Normalised Eisenstein series of level 1 and weight `k`,
+here they need `1/2` since we sum over coprime pairs. -/
+noncomputable def E {k : ℕ} (hk : 3 ≤ k) : ModularForm Γ(1) k :=
+  (1/2 : ℂ) • eisensteinSeries_MF (by omega) 𝟙
+
 end ModularForm
