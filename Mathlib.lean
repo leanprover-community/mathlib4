@@ -1163,6 +1163,7 @@ import Mathlib.Algebra.Vertex.VertexOperator
 import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.AlgebraicGeometry.AffineSpace
 import Mathlib.AlgebraicGeometry.AffineTransitionLimit
+import Mathlib.AlgebraicGeometry.Cover.Directed
 import Mathlib.AlgebraicGeometry.Cover.MorphismProperty
 import Mathlib.AlgebraicGeometry.Cover.Open
 import Mathlib.AlgebraicGeometry.Cover.Over
