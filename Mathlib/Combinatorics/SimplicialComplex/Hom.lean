@@ -97,18 +97,18 @@ omit [DecidableEq U] in
 
 /-- The induced map on faces: given a face `s` of `K`, take its `Finset.image`
 under the vertex function to obtain a face of `L`. -/
-@[simps] def image_face (φ : Hom K L) (s : Face K) : Face L :=
+@[simps] def image_face (φ : Hom K L) (s : K.faces) : L.faces :=
   ⟨s.1.image φ.toFun, by simpa using φ.map_faces s.property⟩
 
 /-- The induced face map of the identity morphism is the identity on faces. -/
-@[simp] lemma image_face_id (s : K.Face) :
+@[simp] lemma image_face_id (s : K.faces) :
     (Hom.id K).image_face s = s := by
   ext v; simp [image_face, SimplicialComplex.Hom.id]
 
 omit [DecidableEq U] in
 /-- Compatibility of induced face maps with composition:
 mapping a face along `f ∘ g` equals first mapping along `g` then along `f`. -/
-@[simp] lemma image_face_comp (f : Hom L M) (g : Hom K L) (s : K.Face) :
+@[simp] lemma image_face_comp (f : Hom L M) (g : Hom K L) (s : K.faces) :
     (Hom.comp f g).image_face s = f.image_face (g.image_face s) := by
   ext v
   simp [Hom.image_face, Hom.comp, Function.comp, Finset.image_image]
