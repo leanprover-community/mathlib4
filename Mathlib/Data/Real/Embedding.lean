@@ -3,14 +3,13 @@ Copyright (c) 2025 Weiyi Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Weiyi Wang
 -/
-
 import Mathlib.Data.Real.Archimedean
-import Mathlib.Data.Real.Basic
+import Mathlib.Data.Real.CompleteField
 import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
 import Mathlib.Algebra.Order.Hom.Monoid
+import Mathlib.Algebra.Order.Hom.Ring
 import Mathlib.Algebra.Order.Module.OrderedSMul
-import Mathlib.Tactic.Qify
 
 /-!
 # Embedding of archimedean groups into reals
@@ -22,6 +21,8 @@ This file provides embedding of any archimedean groups into reals.
   `1` element. `1` is preserved by the map.
 * `Archimedean.exists_orderAddMonoidHom_real_injective` states there exists an injective `M →+o ℝ`
   for any archimedean group `M` without specifying the `1` element in `M`.
+* `Archimedean.embedRealOrderRingHom` upgrades `Archimedean.embedReal` to a `M →+*o ℝ` when
+  `M` is an archimedean ring.
 -/
 
 
@@ -241,5 +242,221 @@ theorem exists_orderAddMonoidHom_real_injective :
     have : ZeroLEOneClass M := ⟨abs_nonneg a⟩
     have : NeZero (1 : M) := ⟨abs_ne_zero.mpr ha⟩
     exact ⟨embedReal M, embedReal_injective M⟩
+
+/-! ### promote to OrderRingHom for Archimedean ring -/
+
+variable {M : Type*} [AddCommGroup M] [LinearOrder M] [One M]
+
+/-- A version of `ratLt` restricted to positive numbers. -/
+abbrev posRatLt (x : M) : Set ℚ := {r | 0 < r ∧ r.num • 1 < r.den • x}
+
+/-- A version of `ratLt'` restricted to positive numbers. -/
+abbrev posRatLt' (x : M) : Set ℝ := (Rat.castHom ℝ) '' (posRatLt x)
+
+theorem posRatLt_subset_ratLt (x : M) : posRatLt x ⊆ ratLt x := by simp
+
+theorem pos_of_mem_posRatLt' {x : M} {r : ℝ} (hr : r ∈ posRatLt' x) : 0 < r := by
+  rw [Set.mem_image] at hr
+  obtain ⟨x, hx, rfl⟩ := hr
+  simpa using hx.1
+
+theorem mem_posRatLt'_iff (x : M) (y : ℝ) : y ∈ posRatLt' x ↔ 0 < y ∧ y ∈ ratLt' x := by
+  unfold posRatLt' posRatLt ratLt'
+  rw [Set.setOf_and, Set.image_inter (by simpa using Rat.cast_injective), Set.mem_inter_iff]
+  aesop
+
+variable [IsOrderedAddMonoid M]
+
+theorem mkRat_mem_posRatLt {num : ℤ} {den : ℕ} (hden : den ≠ 0) (x : M) :
+    mkRat num den ∈ posRatLt x ↔ 0 < num ∧ num • 1 < den • x := by
+  rw [← mkRat_mem_ratLt hden, ← Rat.mkRat_pos_iff _ hden]
+  rfl
+
+variable [Archimedean M]
+
+theorem posRatLt_nonempty {x : M} (hx : 0 < x) : (posRatLt x).Nonempty := by
+  obtain ⟨n, hn⟩ := Archimedean.arch 1 hx
+  use Rat.mk' 1 (n + 1) (by simp) (by simp)
+  refine ⟨Rat.num_pos.mp (by simp), ?_⟩
+  simpa using hn.trans_lt <| (nsmul_lt_nsmul_iff_left hx).mpr (by simp)
+
+theorem posRatLt'_nonempty {x : M} (hx : 0 < x) :
+    (posRatLt' x).Nonempty := by
+  rw [Set.image_nonempty]
+  exact posRatLt_nonempty hx
+
+variable [ZeroLEOneClass M] [NeZero (1 : M)]
+
+theorem posRatLt_bddAbove (x : M) : BddAbove (posRatLt x) :=
+  (ratLt_bddAbove x).mono (posRatLt_subset_ratLt x)
+
+theorem posRatLt'_bddAbove (x : M) : BddAbove (posRatLt' x) :=
+  Monotone.map_bddAbove Rat.cast_mono <| posRatLt_bddAbove _
+
+theorem sup_posRatLt'_pos {x : M} (hx : 0 < x) :
+    0 < sSup (posRatLt' x) := by
+  obtain ⟨a, ha⟩ := posRatLt'_nonempty hx
+  apply lt_csSup_of_lt (posRatLt'_bddAbove _) ha
+  rw [Set.mem_image] at ha
+  obtain ⟨b, hb, rfl⟩ := ha
+  simpa using hb.1
+
+variable {M : Type*} [Ring M] [LinearOrder M] [IsStrictOrderedRing M]
+
+theorem mem_posRatLt_mul (x y : M) {u v : ℚ} (hu : u ∈ posRatLt x) (hv : v ∈ posRatLt y) :
+    u * v ∈ posRatLt (x * y) := by
+  obtain ⟨hu0, hu⟩ := hu
+  obtain ⟨hv0, hv⟩ := hv
+  refine ⟨mul_pos hu0 hv0, ?_⟩
+  have hgcd : 0 < (u.num * v.num).natAbs.gcd (u.den * v.den) := by simp [u.den_pos, v.den_pos]
+  apply (smul_lt_smul_iff_of_pos_left hgcd).mp
+  rw [zsmul_one, nsmul_eq_mul, smul_smul]
+  norm_cast
+  rw [mul_comm _ (u * v).num, mul_comm _ (u * v).den]
+  rw [← Rat.den_mul_den_eq_den_mul_gcd, ← Rat.num_mul_num_eq_num_mul_gcd]
+  rw [mul_smul_mul_comm u.den v.den x y]
+  push_cast
+  exact mul_lt_mul (by simpa using hu) (by simpa using hv.le)
+    (by simpa using hv0) (lt_trans (by simpa using hu0) hu).le
+
+variable [Archimedean M]
+
+open Pointwise in
+theorem posRatLt_mul (x : M) {y : M} (hy : 0 < y) :
+    posRatLt (x * y) = posRatLt x * posRatLt y := by
+  ext a
+  rw [Set.mem_mul]
+  constructor
+  · /- we'd like to find u ∈ posRatLt x and v ∈ posRatLt y such that u * v = a ∈ posRatLt (x * y)
+       This can be accomplished by giving a large enough denomitor to the largest possible
+       numerator to u. Here we take
+       k = ⌈(a.den • y + 1) / (a.den • (x * y) - a.num)⌉
+       u = ⌊k • x - 1⌋ / k
+       v = a / u
+    -/
+    intro ⟨ha0, ha⟩
+    obtain ⟨k, hk⟩ := Archimedean.arch (a.den • y + 1) (sub_pos.mpr ha)
+    have hk0 : 0 < k := by
+      contrapose! hk
+      rw [show k = 0 by simpa using hk]
+      simpa using add_pos (mul_pos (by simpa using a.den_pos) hy) (by simp)
+    rw [smul_sub, smul_smul, le_sub_iff_add_le', ← add_assoc] at hk
+    obtain ⟨m, ⟨hm1, hm2⟩, _⟩ := existsUnique_add_zsmul_mem_Ico zero_lt_one 0 (k • x - 1)
+    have hm1 : k • x - 1 ≤ m := by simpa using hm1
+    have hm0 : 0 < m := by
+      suffices 0 < k • x - 1 by simpa using lt_of_lt_of_le this hm1
+      apply sub_pos_of_lt
+      refine lt_of_mul_lt_mul_of_nonneg_right ?_
+        (show 0 ≤ a.den • y from smul_nonneg (by simp) hy.le)
+      rw [← mul_smul_mul_comm]
+      refine lt_of_lt_of_le ?_ hk
+      trans k • a.num + a.den • y
+      · simpa using mul_pos (by simpa using hk0) (by simpa using ha0)
+      · simp
+    refine ⟨mkRat m k, ?_, mkRat (a.num * k) (a.den * m.toNat) , ?_, ?_⟩
+    · rw [mkRat_mem_posRatLt (ne_of_gt hk0) x]
+      exact ⟨hm0, by simpa using hm2⟩
+    · rw [mkRat_mem_posRatLt (ne_of_gt (mul_pos a.den_pos (by simpa using hm0))) y]
+      constructor
+      · exact mul_pos (by simpa using ha0) (by simpa using hk0)
+      · refine lt_of_lt_of_le (?_ : _ < (a.den * (k • x - 1)) * y) ?_
+        · rw [mul_sub_one, sub_mul, lt_sub_iff_add_lt]
+          rw [show a.den * k • x = a.den • k • x from (nsmul_eq_mul _ _).symm]
+          rw [smul_smul, mul_comm a.den k, mul_comm a.num k, smul_mul_assoc]
+          exact lt_of_lt_of_le (by simp) hk
+        · suffices a.den * (k • x - 1) * y ≤ a.den * m.toNat * y by simpa using this
+          refine mul_le_mul_of_nonneg_right ?_ hy.le
+          refine mul_le_mul_of_nonneg_left ?_ (by simp)
+          apply hm1.trans_eq
+          suffices m = m.toNat by norm_cast
+          exact (Int.toNat_of_nonneg hm0.le).symm
+    · rw [Rat.mkRat_mul_mkRat, mul_comm a.num, mul_comm a.den, ← mul_assoc, ← mul_assoc, mul_comm m]
+      rw [show k * m = (k * m.toNat : ℕ) by simp [hm0.le]]
+      rw [Rat.mkRat_mul_left (ne_of_gt (mul_pos hk0 (by simpa using hm0)))]
+      simp
+  · intro ⟨u, hu, v, hv, huv⟩
+    rw [← huv]
+    apply mem_posRatLt_mul _ _ hu hv
+
+open Pointwise in
+theorem posRatLt'_mul (x : M) {y : M} (hy : 0 < y) :
+    posRatLt' (x * y) = posRatLt' x * posRatLt' y := by
+  simp_rw [posRatLt', posRatLt_mul x hy, Set.image_mul]
+
+theorem sup_ratLt_eq_sup_posRatLt {x : M} (hx : 0 < x) :
+    sSup (ratLt' x) = sSup (posRatLt' x) := by
+  apply eq_of_forall_ge_iff
+  intro y
+  rw [csSup_le_iff (posRatLt'_bddAbove x) (posRatLt'_nonempty hx)]
+  rw [csSup_le_iff (ratLt'_bddAbove x) (ratLt'_nonempty x)]
+  simp_rw [mem_posRatLt'_iff]
+  constructor
+  · intro h b ⟨hb0, hb⟩
+    exact h b hb
+  · intro h b hb
+    obtain hb0 | hb0 := lt_or_ge 0 b
+    · exact h b ⟨hb0, hb⟩
+    · obtain ⟨c, hc⟩ := (posRatLt'_nonempty hx)
+      rw [mem_posRatLt'_iff] at hc
+      exact le_trans (le_trans hb0 hc.1.le) (h c hc)
+
+theorem embedReal_mul_of_nonneg {x y : M} (hx : 0 < x) (hy : 0 < y) :
+    embedReal M (x * y) = embedReal M x * embedReal M y := by
+  simp_rw [embedReal_apply, embedRealFun]
+  rw [sup_ratLt_eq_sup_posRatLt hx, sup_ratLt_eq_sup_posRatLt hy]
+  rw [sup_ratLt_eq_sup_posRatLt (mul_pos hx hy)]
+  refine eq_of_forall_ge_iff fun c => ?_
+  open Pointwise in
+  have h : posRatLt' x * posRatLt' y = Set.image2 (· * ·) (posRatLt' x) (posRatLt' y) := by rfl
+  rw [csSup_le_iff (posRatLt'_bddAbove _) (posRatLt'_nonempty (mul_pos hx hy))]
+  rw [posRatLt'_mul x hy, h, Set.forall_mem_image2]
+  rw [← le_div_iff₀ (sup_posRatLt'_pos hy)]
+  rw [csSup_le_iff (posRatLt'_bddAbove _) (posRatLt'_nonempty hx)]
+  conv in ∀ x' ∈ posRatLt' x, x' ≤ c / sSup (posRatLt' y) =>
+    intro x' hx'
+    rw [le_div_iff₀ (sup_posRatLt'_pos hy), ← le_div_iff₀' (pos_of_mem_posRatLt' hx')]
+    rw [csSup_le_iff (posRatLt'_bddAbove _) (posRatLt'_nonempty hy)]
+    intro y' hy'
+    rw [le_div_iff₀' (pos_of_mem_posRatLt' hx')]
+
+theorem embedReal_mul (x y : M) : embedReal M (x * y) = embedReal M x * embedReal M y := by
+  obtain hx | rfl | hx := lt_trichotomy 0 x
+  · obtain hy | rfl | hy := lt_trichotomy 0 y
+    · exact embedReal_mul_of_nonneg hx hy
+    · simp
+    · rw [show y = - -y by simp]
+      rw [mul_neg, map_neg, map_neg, mul_neg _ (embedReal M (-y))]
+      exact congrArg Neg.neg <| embedReal_mul_of_nonneg hx (by simpa using hy)
+  · simp
+  · rw [show x = - -x by simp]
+    obtain hy | rfl | hy := lt_trichotomy 0 y
+    · rw [neg_mul, map_neg, map_neg, neg_mul _ (embedReal M y)]
+      exact congrArg Neg.neg <| embedReal_mul_of_nonneg (by simpa using hx) hy
+    · simp
+    · rw [show y = - -y by simp]
+      rw [neg_mul_neg, map_neg _ (-x), map_neg _ (-y), neg_mul_neg (embedReal M (-x))]
+      exact embedReal_mul_of_nonneg (by simpa using hx) (by simpa using hy)
+
+variable (M) in
+/-- `embedReal` as an `OrderRingHom`. -/
+noncomputable
+def embedRealOrderRingHom : M →+*o ℝ where
+  __ := embedReal M
+  map_one' := embedReal_one
+  map_mul' := embedReal_mul
+
+variable (M) in
+theorem embedRealOrderRingHom_eq_embedReal : embedRealOrderRingHom M = embedReal M := rfl
+
+variable (M) in
+theorem embedRealOrderRingHom_injective : Function.Injective (embedRealOrderRingHom M) := by
+  simpa [embedRealOrderRingHom_eq_embedReal] using embedReal_injective M
+
+/-- For a field, the `embedRealOrderRingHom` we have constructed is the same as
+`LinearOrderedField.inducedOrderRingHom`. -/
+theorem embedRealOrderRingHom_eq_inducedOrderRingHom (M : Type*)
+    [Field M] [LinearOrder M] [IsStrictOrderedRing M] [Archimedean M] :
+    embedRealOrderRingHom M = LinearOrderedField.inducedOrderRingHom M ℝ :=
+  Subsingleton.allEq _ _
 
 end Archimedean
