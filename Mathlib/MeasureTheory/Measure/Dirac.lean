@@ -149,7 +149,7 @@ lemma exists_sum_smul_dirac [Countable α] (μ : Measure α) :
   rw [tsum_eq_single ⟨points ⟨measurableAtom x, by simp [measurableAtoms]⟩, by simp⟩]
   · rw [indicator_of_mem]
     · simp only [Pi.one_apply, mul_one]
-      congr
+      congr 1
       refine (measurableAtom_eq_of_mem ?_).symm
       convert h_points_mem _
       simp
