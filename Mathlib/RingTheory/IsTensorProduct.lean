@@ -124,40 +124,41 @@ lemma of_equiv (e : M₁ ⊗[R] M₂ ≃ₗ[R] M) (he : ∀ x y, e (x ⊗ₜ y) 
     simp [he]
   simpa [IsTensorProduct, this] using e.bijective
 
-theorem map_comp {P₁ P₂ P : Type*} [AddCommMonoid P₁] [AddCommMonoid P₂]
-    [AddCommMonoid P] [Module R P₁] [Module R P₂] [Module R P] {p : P₁ →ₗ[R] P₂ →ₗ[R] P}
-    (hf : IsTensorProduct f) (hg : IsTensorProduct g) (hp : IsTensorProduct p)
-    (i₁ : N₁ →ₗ[R] P₁) (j₁ : M₁ →ₗ[R] N₁) (i₂ : N₂ →ₗ[R] P₂) (j₂ : M₂ →ₗ[R] N₂) :
-    hf.map hp (i₁ ∘ₗ j₁) (i₂ ∘ₗ j₂) = hg.map hp i₁ i₂ ∘ₗ hf.map hg j₁ j₂ :=
+section map
+
+variable {P₁ P₂ P : Type*} [AddCommMonoid P₁] [AddCommMonoid P₂]
+  [AddCommMonoid P] [Module R P₁] [Module R P₂] [Module R P] {p : P₁ →ₗ[R] P₂ →ₗ[R] P}
+  (hf : IsTensorProduct f) (hg : IsTensorProduct g) (hp : IsTensorProduct p)
+  (i₁ : N₁ →ₗ[R] P₁) (j₁ : M₁ →ₗ[R] N₁) (i₂ : N₂ →ₗ[R] P₂) (j₂ : M₂ →ₗ[R] N₂)
+
+theorem map_comp : hf.map hp (i₁ ∘ₗ j₁) (i₂ ∘ₗ j₂) = hg.map hp i₁ i₂ ∘ₗ hf.map hg j₁ j₂ :=
   LinearMap.ext <| fun x ↦ hf.inductionOn x (by simp) (by simp) (fun _ _ h₁ h₂ ↦ by simp [h₁, h₂])
 
-theorem map_map {P₁ P₂ P : Type*} [AddCommMonoid P₁] [AddCommMonoid P₂]
-    [AddCommMonoid P] [Module R P₁] [Module R P₂] [Module R P] {p : P₁ →ₗ[R] P₂ →ₗ[R] P}
-    (hf : IsTensorProduct f) (hg : IsTensorProduct g) (hp : IsTensorProduct p)
-    (i₁ : N₁ →ₗ[R] P₁) (j₁ : M₁ →ₗ[R] N₁) (i₂ : N₂ →ₗ[R] P₂) (j₂ : M₂ →ₗ[R] N₂) (x : M) :
+theorem map_map (x : M) :
     hg.map hp i₁ i₂ ((hf.map hg j₁ j₂) x) = hf.map hp (i₁ ∘ₗ j₁) (i₂ ∘ₗ j₂) x :=
   DFunLike.congr_fun (hf.map_comp hg hp i₁ j₁ i₂ j₂).symm x
 
 @[simp]
-theorem map_id (hf : IsTensorProduct f) :
+theorem map_id :
     hf.map hf (LinearMap.id : M₁ →ₗ[R] M₁) (LinearMap.id : M₂ →ₗ[R] M₂) = LinearMap.id :=
   LinearMap.ext <| fun x ↦ hf.inductionOn x (by simp) (by simp) (fun _ _ h₁ h₂ ↦ by simp [h₁, h₂])
 
 @[simp]
-protected theorem map_one (hf : IsTensorProduct f) :
-    hf.map hf (1 : M₁ →ₗ[R] M₁) (1 : M₂ →ₗ[R] M₂) = 1 :=
+protected theorem map_one : hf.map hf (1 : M₁ →ₗ[R] M₁) (1 : M₂ →ₗ[R] M₂) = 1 :=
   hf.map_id
 
-protected theorem map_mul (hf : IsTensorProduct f) (i₁ i₂ : M₁ →ₗ[R] M₁) (j₁ j₂ : M₂ →ₗ[R] M₂) :
+protected theorem map_mul (i₁ i₂ : M₁ →ₗ[R] M₁) (j₁ j₂ : M₂ →ₗ[R] M₂) :
     hf.map hf (i₁ * i₂) (j₁ * j₂) = hf.map hf i₁ j₁ * hf.map hf i₂ j₂ :=
   hf.map_comp hf hf i₁ i₂ j₁ j₂
 
-protected theorem map_pow (hf : IsTensorProduct f) (i : M₁ →ₗ[R] M₁) (j : M₂ →ₗ[R] M₂) (n : ℕ) :
+protected theorem map_pow (i : M₁ →ₗ[R] M₁) (j : M₂ →ₗ[R] M₂) (n : ℕ) :
     hf.map hf i j ^ n = hf.map hf (i ^ n) (j ^ n) := by
   induction n with
   | zero => simp
   | succ n ih => simp only [pow_succ, ih, hf.map_mul]
 
+end map
+/-
 section lTensor
 
 variable {g : M₁ →ₗ[R] N₂ →ₗ[R] N} (hf : IsTensorProduct f) (hg : IsTensorProduct g)
@@ -293,7 +294,7 @@ theorem rTensor_comp_map {P Q : Type*} [AddCommMonoid P] [Module R P] [AddCommMo
     (hp : IsTensorProduct p) (j : P →ₗ[R] N₁) (i₁ : M₁ →ₗ[R] P) (i₂ : M₂ →ₗ[R] N₂) :
     hp.rTensor hg j ∘ₗ hf.map hp i₁ i₂ = hf.map hg (j ∘ₗ i₁) i₂ := by
   simp [rTensor, ← map_comp]
-
+ -/
 end IsTensorProduct
 
 end IsTensorProduct
