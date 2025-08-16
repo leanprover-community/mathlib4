@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Finset.Prod
+import Mathlib.Data.Set.Finite.Lattice
 import Mathlib.Order.Hom.WithTopBot
 import Mathlib.Order.Interval.Set.UnorderedInterval
 
@@ -1279,6 +1280,26 @@ instance [Preorder α] [LocallyFiniteOrderTop α] : Finite { x : α // y ≤ x }
 
 instance [Preorder α] [LocallyFiniteOrderTop α] : Finite { x : α // y < x } := by
   simpa only [coe_Ioi] using (Finset.Ioi y).finite_toSet
+
+/-- A nonempty `LocallyFiniteOrderBot` with a directed order has a bottom element.
+  This is not an instance because the chosen `⊥` has bad definitional properties. -/
+noncomputable def LocallyFiniteOrderBot.orderBot (α : Type*) [Nonempty α] [Preorder α]
+    [LocallyFiniteOrderBot α] [IsDirected α (· ≥ ·)] : OrderBot α where
+  bot := Classical.choose (Set.finite_Iic (Classical.arbitrary α)).bddBelow
+  bot_le a := by
+    obtain (hb : ∀ _, _) := Classical.choose_spec (Set.finite_Iic (Classical.arbitrary α)).bddBelow
+    obtain ⟨c, hc, hca⟩ := exists_le_le (Classical.arbitrary α) a
+    exact (hb _ hc).trans hca
+
+/-- A nonempty `LocallyFiniteOrderTop` with a directed order has a top element.
+  This is not an instance because the chosen `⊤` has bad definitional properties. -/
+noncomputable def LocallyFiniteOrderTop.orderTop (α : Type*) [Nonempty α] [Preorder α]
+    [LocallyFiniteOrderTop α] [IsDirected α (· ≤ ·)] : OrderTop α where
+  top := Classical.choose (Set.finite_Ici (Classical.arbitrary α)).bddAbove
+  le_top a := by
+    obtain (hb : ∀ _, _) := Classical.choose_spec (Set.finite_Ici (Classical.arbitrary α)).bddAbove
+    obtain ⟨c, hc, hca⟩ := exists_ge_ge (Classical.arbitrary α) a
+    exact hca.trans <| hb _ hc
 
 namespace Set
 variable {α : Type*} [Preorder α]
