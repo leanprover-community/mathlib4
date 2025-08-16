@@ -98,8 +98,6 @@ theorem SupIndep.pairwiseDisjoint (hs : s.SupIndep f) : (s : Set ι).PairwiseDis
   fun _ ha _ hb hab =>
     sup_singleton.subst <| hs (singleton_subset_iff.2 hb) ha <| notMem_singleton.2 hab
 
-@[deprecated (since := "2025-01-17")] alias sup_indep.pairwise_disjoint := SupIndep.pairwiseDisjoint
-
 theorem SupIndep.le_sup_iff (hs : s.SupIndep f) (hts : t ⊆ s) (hi : i ∈ s) (hf : ∀ i, f i ≠ ⊥) :
     f i ≤ t.sup f ↔ i ∈ t := by
   refine ⟨fun h => ?_, le_sup⟩

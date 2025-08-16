@@ -314,6 +314,11 @@ theorem measurable_fun_prod {α β : Type*} [MeasurableSpace α] [MeasurableSpac
   intros _ _ Hu _ Hv Heq
   simp_rw [← Heq, Measure.prod_prod, Heval Hu Hv]
 
+lemma apply_iUnion_le {μ : FiniteMeasure Ω} {f : ℕ → Set Ω}
+    (hf : Summable fun n ↦ μ (f n)) :
+    μ (⋃ n, f n) ≤ ∑' n, μ (f n) := by
+  simpa [← ENNReal.coe_le_coe, ENNReal.coe_tsum hf] using MeasureTheory.measure_iUnion_le f
+
 variable [TopologicalSpace Ω]
 
 /-- Two finite Borel measures are equal if the integrals of all non-negative bounded continuous

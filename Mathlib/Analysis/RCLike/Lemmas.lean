@@ -86,8 +86,6 @@ theorem conjCLE_norm : ‖(@conjCLE K _ : K →L[ℝ] K)‖ = 1 :=
 
 @[simp, rclike_simps]
 theorem ofRealCLM_norm : ‖(ofRealCLM : ℝ →L[ℝ] K)‖ = 1 :=
-  -- Porting note: the following timed out
-  -- LinearIsometry.norm_toContinuousLinearMap ofRealLI
   LinearIsometry.norm_toContinuousLinearMap _
 
 end RCLike
