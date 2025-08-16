@@ -16,6 +16,10 @@ theorem exists_k_base_eq_p_pow_k_of_prime_p_pow_eq_base_pow
   rw [m_eq, pow_mul'] at h
   use k, pow_left_injective hn h.symm
 
+theorem eq_of_factorization_eq' {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0)
+    (h : a.factorization = b.factorization) : a = b := by
+  exact eq_of_factorization_eq ha hb (congrFun (congrArg DFunLike.coe h))
+
 theorem exists_eq_pow_of_exponent_coprime_of_pow_eq {a b m n : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) (hmn : m.Coprime n) (h : a ^ m = b ^ n) :
     ∃ c, a = c ^ n ∧ b = c ^ m := by
   have := congrArg factorization h
@@ -26,6 +30,9 @@ theorem exists_eq_pow_of_exponent_coprime_of_pow_eq {a b m n : ℕ} (ha : a ≠ 
   use c
   constructor
   · --unfold c c_factoriztion
+    suffices a.factorization = (c ^ n).factorization by
+      refine eq_of_factorization_eq' ha ?_ this
+      sorry
     suffices a.factorization = n • c_factoriztion by
       have eq := congrArg (Finsupp.prod . (. ^ .)) this
       simp at eq
@@ -34,8 +41,6 @@ theorem exists_eq_pow_of_exponent_coprime_of_pow_eq {a b m n : ℕ} (ha : a ≠ 
         exact factorization_prod_pow_eq_self ha
       rw [← this] at eq
       convert eq
-      have : (n • c_factoriztion).prod (. ^ .) = ((c_factoriztion).prod (. ^ .)) ^ n := by
-        sorry
       --exact eq
       sorry
     unfold c_factoriztion
@@ -45,12 +50,6 @@ theorem exists_eq_pow_of_exponent_coprime_of_pow_eq {a b m n : ℕ} (ha : a ≠ 
       sorry
     sorry
   · sorry
-
-#eval 0 ^ 0
-#synth SMul ℕ (ℕ →₀ ℕ)
-#synth HSMul ℕ (ℕ →₀ ℕ) (ℕ →₀ ℕ)
-#check HMul
-#synth HMul ℕ (ℕ →₀ ℕ) (ℕ →₀ ℕ)
 
 theorem exists_eq_pow_of_pow_eq {a b m n : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) (hmn : m ≠ 0 ∨ n ≠ 0) (h : a ^ m = b ^ n) :
     let g := gcd m n; ∃ c, a = c ^ (n / g) ∧ b = c ^ (m / g) := by
@@ -77,7 +76,6 @@ end Nat
 #check factorization
 #check UniqueFactorizationMonoid.factors
 #check UniqueFactorizationMonoid
-
 section UniqueFactorizationMonoid
 
 end UniqueFactorizationMonoid
