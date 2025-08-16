@@ -100,8 +100,8 @@ for `ℝ≥0∞` (the motivating example behind this definition), this is not tr
 class ContinuousENorm (E : Type*) [TopologicalSpace E] extends ENorm E where
   continuous_enorm : Continuous enorm
 
-/-- A e-seminormed monoid is an additive monoid endowed with a continuous enorm.
-Note that we only ask for the enorm to be positive definite:
+/-- An e-seminormed monoid is an additive monoid endowed with a continuous enorm.
+Note that we do not ask for the enorm to be positive definite:
 non-trivial elements may have enorm zero. -/
 class ESeminormedAddMonoid (E : Type*) [TopologicalSpace E]
     extends ContinuousENorm E, AddMonoid E where
