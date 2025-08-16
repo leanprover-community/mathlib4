@@ -171,6 +171,12 @@ theorem prod_congr {f : α →₀ M} {g1 g2 : α → M → N} (h : ∀ x ∈ f.s
     f.prod g1 = f.prod g2 :=
   Finset.prod_congr rfl h
 
+/-- A weakening of `Finsupp.prod_congr` that's suitable for use by `congr!`. -/
+@[to_additive (attr := congr)
+/-- A weakening of `Finsupp.sum_congr` that's suitable for use by `congr!`. -/]
+lemma prod_congr' {f : α →₀ M} {g₁ g₂ : α → M → N} (h : ∀ x ∈ f.support, ∀ m, g₁ x m = g₂ x m) :
+    f.prod g₁ = f.prod g₂ := prod_congr fun x hx ↦ h x hx _
+
 @[to_additive]
 theorem prod_eq_single {f : α →₀ M} (a : α) {g : α → M → N}
     (h₀ : ∀ b, f b ≠ 0 → b ≠ a → g b (f b) = 1) (h₁ : f a = 0 → g a 0 = 1) :
