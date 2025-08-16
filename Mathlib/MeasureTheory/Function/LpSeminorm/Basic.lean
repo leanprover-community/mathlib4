@@ -1193,8 +1193,10 @@ theorem eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul {f : α → F} {g : α →
   exact h
 
 -- TODO: eventually, deprecate and remove the nnnorm version
-theorem eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul' {f : α → ε} {g : α → ε'} {c : ℝ≥0}
-    (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) {p : ℝ} (hp : 0 < p) :
+theorem eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul'
+    {β : Type*} [TopologicalSpace β] [ENormedAddMonoid β] [SMul β ℝ≥0∞] [ENormSMulClass β ℝ≥0∞]
+    {f : α → ε} {g : α → ε'} {c : β}
+    (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c • ‖g x‖ₑ) {p : ℝ} (hp : 0 < p) :
     eLpNorm' f p μ ≤ c • eLpNorm' g p μ := by
   simp_rw [eLpNorm'_eq_lintegral_enorm]
   rw [← ENNReal.rpow_le_rpow_iff hp, ENNReal.smul_def, smul_eq_mul,
@@ -1395,9 +1397,10 @@ end IsBoundedSMul
 
 section ENormSMulClass
 
-variable {𝕜 : Type*} [NormedRing 𝕜]
-  {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε] [SMul 𝕜 ε] [ENormSMulClass 𝕜 ε]
-  {c : 𝕜} {f : α → ε}
+variable {β ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
+  [TopologicalSpace β] [ENormedAddMonoid β] [SMul β ε] [ENormSMulClass β ε]
+  {𝕜 : Type*} [NormedRing 𝕜] [SMul 𝕜 ε] [ENormSMulClass 𝕜 ε]
+  {c : β} {f : α → ε}
 
 theorem eLpNorm'_const_smul_le' (hq : 0 < q) : eLpNorm' (c • f) q μ ≤ ‖c‖ₑ * eLpNorm' f q μ :=
   eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul'
@@ -1406,14 +1409,15 @@ theorem eLpNorm'_const_smul_le' (hq : 0 < q) : eLpNorm' (c • f) q μ ≤ ‖c�
 theorem eLpNormEssSup_const_smul_le' : eLpNormEssSup (c • f) μ ≤ ‖c‖ₑ * eLpNormEssSup f μ :=
   eLpNormEssSup_le_nnreal_smul_eLpNormEssSup_of_ae_le_mul'
     (Eventually.of_forall fun _ => by simp [enorm_smul])
-
+#exit
 theorem eLpNorm_const_smul_le' : eLpNorm (c • f) p μ ≤ ‖c‖ₑ * eLpNorm f p μ :=
   eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul'
     (Eventually.of_forall fun _ => le_of_eq (enorm_smul ..)) _
 
 theorem MemLp.const_smul' [ContinuousConstSMul 𝕜 ε] (hf : MemLp f p μ) (c : 𝕜) :
     MemLp (c • f) p μ :=
-  ⟨hf.1.const_smul c, eLpNorm_const_smul_le'.trans_lt (ENNReal.mul_lt_top ENNReal.coe_lt_top hf.2)⟩
+  ⟨AEStronglyMeasurable.const_smul hf.1 c,
+    eLpNorm_const_smul_le'.trans_lt (ENNReal.mul_lt_top ENNReal.coe_lt_top hf.2)⟩
 
 theorem MemLp.const_mul' {f : α → 𝕜} (hf : MemLp f p μ) (c : 𝕜) : MemLp (fun x => c * f x) p μ :=
   hf.const_smul c
@@ -1457,6 +1461,47 @@ lemma eLpNorm_nsmul [NormedSpace ℝ F] (n : ℕ) (f : α → F) :
   simpa [Nat.cast_smul_eq_nsmul] using eLpNorm_const_smul (n : ℝ) f ..
 
 end NormedSpace
+
+section ENormSMulClass
+
+variable {β : Type*} {𝕜 : Type*} [NormedDivisionRing 𝕜] {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
+  [TopologicalSpace β] [ENormedAddMonoid β] [SMul β ε] [ENormSMulClass β ε] [SMul 𝕜 ε] [ENormSMulClass 𝕜 ε]
+
+theorem eLpNorm'_const_smul' {f : α → ε} (c : β) (hq_pos : 0 < q) :
+    eLpNorm' (c • f) q μ = ‖c‖ₑ * eLpNorm' f q μ := by
+  obtain rfl | hc := eq_or_ne c 0
+  · simp [eLpNorm'_eq_lintegral_enorm, hq_pos]
+    sorry -- missing: scalar multiplication with 0 is zero
+  refine le_antisymm (eLpNorm'_const_smul_le' hq_pos) <| ENNReal.mul_le_of_le_div' ?_
+  have : eLpNorm' (c⁻¹ • c • f) q μ = eLpNorm' f q μ := by
+    apply eLpNorm'_congr_ae
+    apply Eventually.of_forall fun x ↦ ?_
+    simp only [Pi.smul_apply]
+    sorry -- missing assumption on scalar multiplication!
+  simpa [this, enorm_inv, hc, ENNReal.div_eq_inv_mul]
+    using eLpNorm'_const_smul_le' (c := c⁻¹) (f := c • f) hq_pos (μ := μ)
+#exit
+theorem eLpNormEssSup_const_smul' (c : 𝕜) (f : α → ε) :
+    eLpNormEssSup (c • f) μ = ‖c‖ₑ * eLpNormEssSup f μ := by
+  simp_rw [eLpNormEssSup_eq_essSup_enorm, Pi.smul_apply, enorm_smul,
+    ENNReal.essSup_const_mul]
+
+theorem eLpNorm_const_smul' (c : 𝕜) (f : α → ε) (p : ℝ≥0∞) (μ : Measure α) :
+    eLpNorm (c • f) p μ = ‖c‖ₑ * eLpNorm f p μ := by
+  obtain rfl | hc := eq_or_ne c 0
+  · simp
+    sorry -- missing: scalar mult. with 0 is zero
+  refine le_antisymm eLpNorm_const_smul_le' <| ENNReal.mul_le_of_le_div' ?_
+  have aux := eLpNorm_const_smul_le' (c := c⁻¹) (f := c • f) (μ := μ) (p := p)
+  have : eLpNorm (c⁻¹ • c • f) p μ = eLpNorm f p μ := sorry -- same as above
+  rw [this] at aux
+  simpa [enorm_inv, hc, ENNReal.div_eq_inv_mul] using aux
+
+lemma eLpNorm_nsmul' [NormedSpace ℝ F] (n : ℕ) (f : α → F) :
+    eLpNorm (n • f) p μ = n * eLpNorm f p μ := by
+  simpa [Nat.cast_smul_eq_nsmul] using eLpNorm_const_smul (n : ℝ) f ..
+
+end ENormSMulClass
 
 theorem le_eLpNorm_of_bddBelow (hp : p ≠ 0) (hp' : p ≠ ∞) {f : α → F} (C : ℝ≥0) {s : Set α}
     (hs : MeasurableSet s) (hf : ∀ᵐ x ∂μ, x ∈ s → C ≤ ‖f x‖₊) :
