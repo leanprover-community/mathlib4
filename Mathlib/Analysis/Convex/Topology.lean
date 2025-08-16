@@ -24,6 +24,7 @@ We prove the following facts:
 -/
 
 assert_not_exists Norm
+assert_not_imported Mathlib.SetTheory.Cardinal.Defs
 
 open Metric Bornology Set Pointwise Convex
 

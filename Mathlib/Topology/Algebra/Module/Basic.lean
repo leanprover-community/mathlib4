@@ -19,6 +19,7 @@ We use the class `ContinuousSMul` for topological (semi) modules and topological
 -/
 
 assert_not_exists TrivialStar
+assert_not_imported Mathlib.SetTheory.Cardinal.Defs
 
 open LinearMap (ker range)
 open Topology Filter Pointwise

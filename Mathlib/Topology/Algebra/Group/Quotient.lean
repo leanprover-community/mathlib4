@@ -15,6 +15,8 @@ In this file we define topology on `G ⧸ N`, where `N` is a subgroup of `G`,
 and prove basic properties of this topology.
 -/
 
+assert_not_imported Mathlib.SetTheory.Cardinal.Defs
+
 open Topology
 open scoped Pointwise
 

@@ -24,6 +24,8 @@ We prove the following facts:
   is bounded.
 -/
 
+assert_not_imported Mathlib.SetTheory.Cardinal.Defs
+
 variable {E : Type*}
 
 open Metric Set
