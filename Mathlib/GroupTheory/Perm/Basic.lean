@@ -30,8 +30,10 @@ variable {α : Type u} {β : Type v}
 
 namespace Perm
 
-@[simp] lemma image_inv (f : Perm α) (s : Set α) : ↑f⁻¹ '' s = f ⁻¹' s := f⁻¹.image_eq_preimage _
+@[deprecated image_symm (since := "2025-08-16")]
+lemma image_inv (f : Perm α) (s : Set α) : ↑f⁻¹ '' s = f ⁻¹' s := f⁻¹.image_eq_preimage _
 
+@[deprecated oreimage_symm (since := "2025-08-16")]
 @[simp] lemma preimage_inv (f : Perm α) (s : Set α) : ↑f⁻¹ ⁻¹' s = f '' s :=
   (f.image_eq_preimage _).symm
 
