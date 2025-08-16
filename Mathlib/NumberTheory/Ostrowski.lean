@@ -267,7 +267,7 @@ Every unbounded absolute value on `ℚ` is equivalent to the standard absolute v
 unique real place of `ℚ`. -/
 def real : AbsoluteValue ℚ ℝ where
   toFun x := |x|
-  map_mul' x y := by simpa using abs_mul (x : ℝ) (y : ℝ)
+  map_mul' x y := by simp
   nonneg' x := by simp
   eq_zero' x := by simp
   add_le' x y := by simpa using abs_add_le (x : ℝ) (y : ℝ)
