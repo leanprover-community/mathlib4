@@ -33,7 +33,7 @@ assert_not_exists TrivialStar
 universe u u' v w
 
 variable {l m n o : Type*} {m' : o → Type*} {n' : o → Type*}
-variable {R : Type*} {S : Type*} {α : Type v} {β : Type w} {γ : Type*}
+variable {R : Type*} {S : Type*} {T : Type*} {α : Type v} {β : Type w} {γ : Type*}
 
 namespace Matrix
 
@@ -428,40 +428,48 @@ end AddEquiv
 
 namespace LinearMap
 
-variable [Semiring R] [AddCommMonoid α] [AddCommMonoid β] [AddCommMonoid γ]
-variable [Module R α] [Module R β] [Module R γ]
+variable [Semiring R] [Semiring S] [Semiring T]
+variable [AddCommMonoid α] [AddCommMonoid β] [AddCommMonoid γ]
+variable [Module R α] [Module S β] [Module T γ]
+variable {σᵣₛ : R →+* S} {σₛₜ : S →+* T} {σᵣₜ : R →+* T} [RingHomCompTriple σᵣₛ σₛₜ σᵣₜ]
 
 /-- The `LinearMap` between spaces of matrices induced by a `LinearMap` between their
 coefficients. This is `Matrix.map` as a `LinearMap`. -/
 @[simps]
-def mapMatrix (f : α →ₗ[R] β) : Matrix m n α →ₗ[R] Matrix m n β where
+def mapMatrix (f : α →ₛₗ[σᵣₛ] β) : Matrix m n α →ₛₗ[σᵣₛ] Matrix m n β where
   toFun M := M.map f
   map_add' := Matrix.map_add f f.map_add
-  map_smul' r := Matrix.map_smul f r (f.map_smul r)
+  map_smul' r := Matrix.map_smulₛₗ f _ r (f.map_smulₛₗ r)
 
 @[simp]
 theorem mapMatrix_id : LinearMap.id.mapMatrix = (LinearMap.id : Matrix m n α →ₗ[R] _) :=
   rfl
 
 @[simp]
-theorem mapMatrix_comp (f : β →ₗ[R] γ) (g : α →ₗ[R] β) :
-    f.mapMatrix.comp g.mapMatrix = ((f.comp g).mapMatrix : Matrix m n α →ₗ[R] _) :=
+theorem mapMatrix_comp (f : β →ₛₗ[σₛₜ] γ) (g : α →ₛₗ[σᵣₛ] β) :
+    f.mapMatrix.comp g.mapMatrix = ((f.comp g).mapMatrix : Matrix m n α →ₛₗ[_] _) :=
   rfl
 
-@[simp] lemma entryLinearMap_comp_mapMatrix (f : α →ₗ[R] β) (i : m) (j : n) :
-    entryLinearMap R _ i j ∘ₗ f.mapMatrix = f ∘ₗ entryLinearMap R _ i j := rfl
+@[simp] lemma entryLinearMap_comp_mapMatrix (f : α →ₛₗ[σᵣₛ] β) (i : m) (j : n) :
+    (entryLinearMap S _ i j).comp f.mapMatrix = f.comp (entryLinearMap R _ i j) := rfl
 
 end LinearMap
 
 namespace LinearEquiv
 
-variable [Semiring R] [AddCommMonoid α] [AddCommMonoid β] [AddCommMonoid γ]
-variable [Module R α] [Module R β] [Module R γ]
+variable [Semiring R] [Semiring S] [Semiring T]
+variable [AddCommMonoid α] [AddCommMonoid β] [AddCommMonoid γ]
+variable [Module R α] [Module S β] [Module T γ]
+variable {σᵣₛ : R →+* S} {σₛₜ : S →+* T} {σᵣₜ : R →+* T} [RingHomCompTriple σᵣₛ σₛₜ σᵣₜ]
+variable {σₛᵣ : S →+* R} {σₜₛ : T →+* S} {σₜᵣ : T →+* R} [RingHomCompTriple σₜₛ σₛᵣ σₜᵣ]
+variable [RingHomInvPair σᵣₛ σₛᵣ] [RingHomInvPair σₛᵣ σᵣₛ]
+variable [RingHomInvPair σₛₜ σₜₛ] [RingHomInvPair σₜₛ σₛₜ]
+variable [RingHomInvPair σᵣₜ σₜᵣ] [RingHomInvPair σₜᵣ σᵣₜ]
 
 /-- The `LinearEquiv` between spaces of matrices induced by a `LinearEquiv` between their
 coefficients. This is `Matrix.map` as a `LinearEquiv`. -/
 @[simps apply]
-def mapMatrix (f : α ≃ₗ[R] β) : Matrix m n α ≃ₗ[R] Matrix m n β :=
+def mapMatrix (f : α ≃ₛₗ[σᵣₛ] β) : Matrix m n α ≃ₛₗ[σᵣₛ] Matrix m n β :=
   { f.toEquiv.mapMatrix,
     f.toLinearMap.mapMatrix with
     toFun := fun M => M.map f
@@ -472,22 +480,22 @@ theorem mapMatrix_refl : (LinearEquiv.refl R α).mapMatrix = LinearEquiv.refl R 
   rfl
 
 @[simp]
-theorem mapMatrix_symm (f : α ≃ₗ[R] β) :
-    f.mapMatrix.symm = (f.symm.mapMatrix : Matrix m n β ≃ₗ[R] _) :=
+theorem mapMatrix_symm (f : α ≃ₛₗ[σᵣₛ] β) :
+    f.mapMatrix.symm = (f.symm.mapMatrix : Matrix m n β ≃ₛₗ[_] _) :=
   rfl
 
 @[simp]
-theorem mapMatrix_trans (f : α ≃ₗ[R] β) (g : β ≃ₗ[R] γ) :
-    f.mapMatrix.trans g.mapMatrix = ((f.trans g).mapMatrix : Matrix m n α ≃ₗ[R] _) :=
+theorem mapMatrix_trans (f : α ≃ₛₗ[σᵣₛ] β) (g : β ≃ₛₗ[σₛₜ] γ) :
+    f.mapMatrix.trans g.mapMatrix = ((f.trans g).mapMatrix : Matrix m n α ≃ₛₗ[_] _) :=
   rfl
 
-@[simp] lemma mapMatrix_toLinearMap (f : α ≃ₗ[R] β) :
-    (f.mapMatrix : _ ≃ₗ[R] Matrix m n β).toLinearMap = f.toLinearMap.mapMatrix := by
+@[simp] lemma mapMatrix_toLinearMap (f : α ≃ₛₗ[σᵣₛ] β) :
+    (f.mapMatrix : _ ≃ₛₗ[_] Matrix m n β).toLinearMap = f.toLinearMap.mapMatrix := by
   rfl
 
-lemma entryLinearMap_comp_mapMatrix (f : α ≃ₗ[R] β) (i : m) (j : n) :
-    entryLinearMap R _ i j ∘ₗ f.mapMatrix.toLinearMap =
-      f.toLinearMap ∘ₗ entryLinearMap R _ i j := by
+lemma entryLinearMap_comp_mapMatrix (f : α ≃ₛₗ[σᵣₛ] β) (i : m) (j : n) :
+    (entryLinearMap S _ i j).comp f.mapMatrix.toLinearMap =
+      f.toLinearMap.comp (entryLinearMap R _ i j) := by
   simp only [mapMatrix_toLinearMap, LinearMap.entryLinearMap_comp_mapMatrix]
 
 end LinearEquiv
