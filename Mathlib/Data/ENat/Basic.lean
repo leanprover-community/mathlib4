@@ -95,6 +95,13 @@ lemma pow_ne_top_iff {n : ℕ} : a ^ n ≠ ⊤ ↔ a ≠ ⊤ ∨ n = 0 := WithTo
 
 lemma eq_top_of_pow (n : ℕ) (ha : a ^ n = ⊤) : a = ⊤ := WithTop.eq_top_of_pow n ha
 
+@[simp]
+theorem add_eq_top {x y : ℕ∞} : x + y = ⊤ ↔ x = ⊤ ∨ y = ⊤ :=
+  WithTop.add_eq_top
+
+theorem add_ne_top {x y : ℕ∞} : x + y ≠ ⊤ ↔ x ≠ ⊤ ∧ y ≠ ⊤ :=
+  by simp
+
 /-- Convert a `ℕ∞` to a `ℕ` using a proof that it is not infinite. -/
 def lift (x : ℕ∞) (h : x < ⊤) : ℕ := WithTop.untop x (WithTop.lt_top_iff_ne_top.mp h)
 
