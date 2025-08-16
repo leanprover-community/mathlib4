@@ -99,10 +99,10 @@ theorem ofScalars_smul (x : 𝕜) : ofScalars E (x • c) = x • ofScalars E c 
 theorem ofScalars_comp_neg_id :
     (ofScalars E c).compContinuousLinearMap (-ContinuousLinearMap.id _ _) =
     (ofScalars E (fun k ↦ (-1) ^ k * c k)) := by
-  ext n v
-  have : ((-ContinuousLinearMap.id 𝕜 E : _) : E → E) = Neg.neg := by ext; simp
-  simp [ofScalars, this, ← List.map_ofFn, List.prod_map_neg]
-  rcases n.even_or_odd with (h | h) <;> simp [h.neg_one_pow]
+  ext n
+  rcases n.even_or_odd with (h | h) <;>
+  simp [ofScalars, show ((-ContinuousLinearMap.id 𝕜 E : _) : E → E) = Neg.neg by rfl,
+    ← List.map_ofFn, h.neg_one_pow]
 
 theorem ofScalars_comp_neg (f : E →L[𝕜] E) :
     (ofScalars E c).compContinuousLinearMap (-f) =

@@ -44,13 +44,11 @@ theorem binomialSeries_eq_ordinaryHypergeometricSeries {𝕂 : Type u} [Field �
     (ordinaryHypergeometricSeries 𝔸 (-a) b b).compContinuousLinearMap (-(.id _ _)) := by
   simp only [binomialSeries, ordinaryHypergeometricSeries,
     FormalMultilinearSeries.ofScalars_comp_neg_id]
-  ext
-  congr
-  ext n
-  simp only [ordinaryHypergeometricCoefficient]
-  rw [mul_inv_cancel_right₀ (by simp [ascPochhammer_eval_eq_zero_iff]; grind)]
+  congr! with n
+  rw [ordinaryHypergeometricCoefficient,
+    mul_inv_cancel_right₀ (by simp [ascPochhammer_eval_eq_zero_iff]; grind)]
   simp only [Ring.choose_eq_smul, Polynomial.descPochhammer_smeval_eq_ascPochhammer,
-    Polynomial.ascPochhammer_smeval_cast, Polynomial.ascPochhammer_smeval_eq_eval, smul_eq_mul,
+    Polynomial.ascPochhammer_smeval_cast, Polynomial.ascPochhammer_smeval_eq_eval,
     ascPochhammer_eval_neg_eq_descPochhammer, descPochhammer_eval_eq_ascPochhammer]
   ring_nf
   simp
