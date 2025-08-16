@@ -103,11 +103,7 @@ satisfying the sheaf condition.
 -/
 nonrec def Sheaf : Type max u v w :=
   Sheaf (Opens.grothendieckTopology X) C
-
--- The following instance should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-instance SheafCat : Category (Sheaf C X) :=
-  show Category (CategoryTheory.Sheaf (Opens.grothendieckTopology X) C) from inferInstance
+deriving Category
 
 variable {C X}
 

@@ -198,7 +198,7 @@ def continuousLinearMapToWeakDual : StrongDual 𝕜 E →L[𝕜] WeakDual 𝕜 E
 /-- The weak-star topology is coarser than the dual-norm topology. -/
 theorem dual_norm_topology_le_weak_dual_topology :
     (UniformSpace.toTopologicalSpace : TopologicalSpace (StrongDual 𝕜 E)) ≤
-      (WeakDual.instTopologicalSpace : TopologicalSpace (WeakDual 𝕜 E)) := by
+      (instTopologicalSpaceWeakDual .. : TopologicalSpace (WeakDual 𝕜 E)) := by
   convert (@toWeakDual_continuous _ _ _ _ (by assumption)).le_induced
   exact induced_id.symm
 

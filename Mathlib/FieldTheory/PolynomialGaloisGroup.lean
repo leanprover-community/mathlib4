@@ -50,22 +50,9 @@ variable {F : Type*} [Field F] (p q : F[X]) (E : Type*) [Field E] [Algebra F E]
 /-- The Galois group of a polynomial. -/
 def Gal :=
   p.SplittingField ≃ₐ[F] p.SplittingField
--- The `Group, Fintype` instances should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
+deriving Group, Fintype, EquivLike, AlgEquivClass
 
 namespace Gal
-
-instance instGroup : Group (Gal p) :=
-  inferInstanceAs (Group (p.SplittingField ≃ₐ[F] p.SplittingField))
-
-instance instFintype : Fintype (Gal p) :=
-  inferInstanceAs (Fintype (p.SplittingField ≃ₐ[F] p.SplittingField))
-
-instance : EquivLike p.Gal p.SplittingField p.SplittingField :=
-  inferInstanceAs (EquivLike (p.SplittingField ≃ₐ[F] p.SplittingField) _ _)
-
-instance : AlgEquivClass p.Gal F p.SplittingField p.SplittingField :=
-  inferInstanceAs (AlgEquivClass (p.SplittingField ≃ₐ[F] p.SplittingField) F _ _)
 
 instance applyMulSemiringAction : MulSemiringAction p.Gal p.SplittingField :=
   AlgEquiv.applyMulSemiringAction

@@ -38,25 +38,17 @@ assert_not_exists Field
 
 deriving instance Zero, CommSemiring, Nontrivial,
   LinearOrder, Bot, Sub,
-  LinearOrderedAddCommMonoidWithTop
+  LinearOrderedAddCommMonoidWithTop,
+  IsOrderedRing, CanonicallyOrderedAdd,
+  OrderBot, OrderTop, OrderedSub, SuccOrder,
+  WellFoundedLT,
+  CharZero
   for ENat
--- The `CanonicallyOrderedAdd, OrderBot, OrderTop, OrderedSub, SuccOrder, WellFoundedLT, CharZero`
--- instances should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
 
 -- In `Mathlib.Data.Nat.PartENat` proofs timed out when we included `deriving AddCommMonoidWithOne`,
 -- and it seems to work without.
 
 namespace ENat
-
-instance : IsOrderedRing ℕ∞ := WithTop.instIsOrderedRing
-instance : CanonicallyOrderedAdd ℕ∞ := WithTop.canonicallyOrderedAdd
-instance : OrderBot ℕ∞ := WithTop.orderBot
-instance : OrderTop ℕ∞ := WithTop.orderTop
-instance : OrderedSub ℕ∞ := inferInstanceAs (OrderedSub (WithTop ℕ))
-instance : SuccOrder ℕ∞ := inferInstanceAs (SuccOrder (WithTop ℕ))
-instance : WellFoundedLT ℕ∞ := inferInstanceAs (WellFoundedLT (WithTop ℕ))
-instance : CharZero ℕ∞ := inferInstanceAs (CharZero (WithTop ℕ))
 
 variable {a b c m n : ℕ∞}
 
