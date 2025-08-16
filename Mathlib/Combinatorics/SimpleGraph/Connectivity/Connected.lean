@@ -515,11 +515,7 @@ lemma reachable_of_mem_supp {G : SimpleGraph V} (C : G.ConnectedComponent) {u v 
   exact ConnectedComponent.exact (hv ▸ hu)
 
 lemma mem_supp_of_adj_mem_supp {G : SimpleGraph V} (C : G.ConnectedComponent) {u v : V}
-    (hu : u ∈ C.supp) (hadj : G.Adj u v) : v ∈ C.supp := by
-  have hC : G.connectedComponentMk u = G.connectedComponentMk v :=
-    connectedComponentMk_eq_of_adj hadj
-  rw [hu] at hC
-  exact hC.symm
+    (hu : u ∈ C.supp) (hadj : G.Adj u v) : v ∈ C.supp := (mem_supp_congr_adj C hadj).mp hu
 
 /--
 Given a connected component `C` of a simple graph `G`, produce the induced graph on `C`.
