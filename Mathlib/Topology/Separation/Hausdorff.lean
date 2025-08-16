@@ -667,7 +667,7 @@ theorem IsQuotientMap.of_surjective_continuous [CompactSpace X] [T2Space Y] {f :
     (hsurj : Surjective f) (hcont : Continuous f) : IsQuotientMap f :=
   hcont.isClosedMap.isQuotientMap hcont hsurj
 
-theorem isPreirreducible_iff_forall_subset_mem_closure_singleton [R1Space X] {S : Set X} :
+theorem isPreirreducible_iff_forall_mem_subset_closure_singleton [R1Space X] {S : Set X} :
     IsPreirreducible S ↔ ∀ x ∈ S, S ⊆ closure {x} := by
   constructor
   · intro h x hx y hy
