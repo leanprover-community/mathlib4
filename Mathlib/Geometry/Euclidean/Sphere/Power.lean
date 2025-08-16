@@ -5,6 +5,7 @@ Authors: Manuel Candales, Benjamin Davidson
 -/
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
 import Mathlib.Geometry.Euclidean.Sphere.Basic
+import Mathlib.Geometry.Euclidean.Sphere.Tangent
 
 /-!
 # Power of a point (intersecting chords and secants)
@@ -16,6 +17,9 @@ secants) in spheres in real inner product spaces and Euclidean affine spaces.
 
 * `mul_dist_eq_mul_dist_of_cospherical_of_angle_eq_pi`: Intersecting Chords Theorem (Freek No. 55).
 * `mul_dist_eq_mul_dist_of_cospherical_of_angle_eq_zero`: Intersecting Secants Theorem.
+* `Sphere.power`: The power of a point with respect to a sphere.
+* `Sphere.mul_dist_eq_abs_power`: The product of distances equals the absolute value of power.
+* `Sphere.dist_sq_eq_mul_dist_of_tangent_and_secant`: Tangent-Secant Theorem.
 -/
 
 
@@ -72,7 +76,7 @@ This section develops some results on spheres in Euclidean affine spaces.
 -/
 
 
-open InnerProductGeometry
+open InnerProductGeometry EuclideanGeometry
 
 variable {P : Type*} [MetricSpace P] [NormedAddTorsor V P]
 
@@ -121,5 +125,107 @@ theorem mul_dist_eq_mul_dist_of_cospherical_of_angle_eq_zero {a b c d p : P}
   refine mul_dist_eq_mul_dist_of_cospherical h ⟨k₁, ?_, hab₁⟩ ⟨k₂, ?_, hcd₁⟩ <;> by_contra hnot <;>
     simp_all only [one_smul]
   exacts [hab (vsub_left_cancel hab₁).symm, hcd (vsub_left_cancel hcd₁).symm]
+
+namespace Sphere
+
+/-- The power of a point with respect to a sphere. For a point and a sphere,
+this is defined as the square of the distance from the point to the center
+minus the square of the radius. This value is positive if the point is outside
+the sphere, negative if inside, and zero if on the sphere. -/
+def power (s : Sphere P) (p : P) : ℝ :=
+  dist p s.center ^ 2 - s.radius ^ 2
+
+/-- A point lies on the sphere if and only if its power with respect to
+the sphere is zero. -/
+theorem power_eq_zero_iff_mem_sphere {s : Sphere P} {p : P} (hr : 0 ≤ s.radius) :
+    s.power p = 0 ↔ p ∈ s := by
+  rw [power, mem_sphere, sub_eq_zero, pow_left_inj₀ dist_nonneg hr two_ne_zero]
+
+/-- The power of a point is positive if and only if the point lies outside the sphere. -/
+theorem power_pos_iff_radius_lt_dist_center {s : Sphere P} {p : P} (hr : 0 ≤ s.radius) :
+    0 < s.power p ↔ s.radius < dist p s.center := by
+  rw [power, sub_pos, (pow_left_strictMonoOn₀ two_ne_zero).lt_iff_lt hr dist_nonneg]
+
+/-- The power of a point is negative if and only if the point lies inside the sphere. -/
+theorem power_neg_iff_dist_center_lt_radius {s : Sphere P} {p : P} (hr : 0 ≤ s.radius) :
+  s.power p < 0 ↔ dist p s.center < s.radius := by
+  rw [power, sub_neg, (pow_left_strictMonoOn₀ two_ne_zero).lt_iff_lt dist_nonneg hr]
+
+/-- For any point, the product of distances to two intersection
+points on a line through the point equals the absolute value of the power of the point. -/
+theorem mul_dist_eq_abs_power {s : Sphere P} {p a b : P}
+    (hp : ∃ k : ℝ, k ≠ 1 ∧ b -ᵥ p = k • (a -ᵥ p))
+    (ha : a ∈ s) (hb : b ∈ s) :
+    dist p a * dist p b = |s.power p| := by
+  have hq : dist a s.center = dist b s.center := by
+    rw [mem_sphere.mp ha, mem_sphere.mp hb]
+  rw [dist_comm p a, dist_comm p b, mul_dist_eq_abs_sub_sq_dist hp hq,
+    mem_sphere.mp hb, power, abs_sub_comm]
+
+/-- For a point outside the sphere, the product of distances to two intersection
+points on a line through the point equals the power of the point. -/
+theorem mul_dist_eq_power_of_radius_lt_dist_center {s : Sphere P} {p a b : P}
+    (hr : 0 ≤ s.radius)
+    (hp : ∃ k : ℝ, k ≠ 1 ∧ b -ᵥ p = k • (a -ᵥ p))
+    (ha : a ∈ s) (hb : b ∈ s)
+    (hp_outside : s.radius < dist p s.center) :
+    dist p a * dist p b = s.power p := by
+  rw [mul_dist_eq_abs_power hp ha hb,
+    abs_of_pos <| (power_pos_iff_radius_lt_dist_center hr).mpr hp_outside]
+
+/-- For a point inside the sphere, the product of distances to two intersection
+points on a line through the point equals the negative of the power of the point. -/
+theorem mul_dist_eq_neg_power_of_dist_center_lt_radius {s : Sphere P} {p a b : P}
+    (hr : 0 ≤ s.radius)
+    (hp : ∃ k : ℝ, k ≠ 1 ∧ b -ᵥ p = k • (a -ᵥ p))
+    (ha : a ∈ s) (hb : b ∈ s)
+    (hp_inside : dist p s.center < s.radius) :
+    dist p a * dist p b = -s.power p := by
+  rw [mul_dist_eq_abs_power hp ha hb,
+    abs_of_neg <| (power_neg_iff_dist_center_lt_radius hr).mpr hp_inside]
+
+/-- For a point on the sphere, the product of distances to two other intersection
+points on a line through the point is zero. -/
+theorem mul_dist_eq_zero_of_mem_sphere {s : Sphere P} {p a b : P}
+    (hp : ∃ k : ℝ, k ≠ 1 ∧ b -ᵥ p = k • (a -ᵥ p))
+    (ha : a ∈ s) (hb : b ∈ s)
+    (hp_on : p ∈ s) :
+    dist p a * dist p b = 0 := by
+  have hq : dist a s.center = dist b s.center := by
+    rw [mem_sphere.mp ha, mem_sphere.mp hb]
+  rw [dist_comm p a, dist_comm p b, mul_dist_eq_abs_sub_sq_dist hp hq,
+      mem_sphere.mp hb, mem_sphere.mp hp_on, sub_self, abs_zero]
+
+
+/-- **Tangent-Secant Theorem**. The square of the tangent length equals
+    the product of secant segment lengths. -/
+theorem dist_sq_eq_mul_dist_of_tangent_and_secant {a b t p : P} {s : Sphere P}
+    (ha : a ∈ s) (hb : b ∈ s) (ht : t ∈ s) (hpt : p ≠ t)
+    (h_secant : ∃ k : ℝ, k ≠ 1 ∧ b -ᵥ p = k • (a -ᵥ p))
+    (h_tangent : s.IsTangentAt t (line[ℝ, p, t])) :
+    dist t p ^ 2 = dist a p * dist b p := by
+  have hp_outside : s.radius < dist p s.center := by
+    by_contra h; push_neg at h
+    obtain h_lt | h_eq := lt_or_eq_of_le h
+    · exact Sphere.IsTangent.notMem_of_dist_lt h_tangent.isTangent (by rwa [dist_comm])
+        (mem_affineSpan ℝ (Set.mem_insert p {t}))
+    · exact hpt (h_tangent.mem_and_mem_iff_eq.mp
+        ⟨by rw [mem_sphere, h_eq], mem_affineSpan ℝ (Set.mem_insert p {t})⟩)
+  rw [eq_comm, ← dist_comm p a, ← dist_comm p b,
+    Sphere.mul_dist_eq_abs_power h_secant ha hb,
+    abs_of_pos ((Sphere.power_pos_iff_radius_lt_dist_center
+        (Sphere.radius_nonneg_of_mem ha)).mpr hp_outside),
+    Sphere.power, ← mem_sphere.mp ht, dist_eq_norm_vsub, dist_eq_norm_vsub]
+  have h_orthogonal : ⟪t -ᵥ p, t -ᵥ s.center⟫ = 0 := by
+    rw [← neg_vsub_eq_vsub_rev, inner_neg_left, neg_eq_zero]
+    exact Sphere.mem_orthRadius_iff_inner_left.mp
+      (h_tangent.le_orthRadius (left_mem_affineSpan_pair ℝ p t))
+  rw [← vsub_add_vsub_cancel p t s.center, pow_two, pow_two, pow_two,
+    norm_add_sq_eq_norm_sq_add_norm_sq_real]
+  · ring_nf
+    rw [← neg_vsub_eq_vsub_rev, norm_neg, ← dist_eq_norm_vsub]
+  · rwa [← neg_vsub_eq_vsub_rev, inner_neg_left, neg_eq_zero]
+
+end Sphere
 
 end EuclideanGeometry
