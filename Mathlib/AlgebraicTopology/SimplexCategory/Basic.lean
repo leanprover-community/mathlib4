@@ -26,10 +26,17 @@ open Simplicial CategoryTheory Limits
 
 namespace SimplexCategory
 
+instance {a b : SimplexCategory} : Finite (a ⟶ b) :=
+  Finite.of_injective (fun f ↦ f.toOrderHom.toFun)
+    (fun _ _ _ ↦ by aesop)
+
 instance {n m : ℕ} : DecidableEq (⦋n⦌ ⟶ ⦋m⦌) := fun a b =>
   decidable_of_iff (a.toOrderHom = b.toOrderHom) SimplexCategory.Hom.ext_iff.symm
 
 section Init
+
+lemma congr_toOrderHom_apply {a b : SimplexCategory} {f g : a ⟶ b} (h : f = g)
+    (x : Fin (a.len + 1)) : f.toOrderHom x = g.toOrderHom x := by rw [h]
 
 /-- The constant morphism from ⦋0⦌. -/
 def const (x y : SimplexCategory) (i : Fin (y.len + 1)) : x ⟶ y :=
