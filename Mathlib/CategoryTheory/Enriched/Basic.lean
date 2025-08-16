@@ -329,7 +329,6 @@ variable {W : Type v'} [Category.{w'} W] [MonoidalCategory W]
   {D : Type u₂} [EnrichedCategory W D]
   {E : Type u₃} [EnrichedCategory W E]
 
-
 /-- An enriched functor induces an honest functor of the underlying categories,
 by mapping the `(𝟙_ W)`-shaped morphisms.
 -/
@@ -433,6 +432,7 @@ attribute [reassoc] GradedNatTrans.naturality
 /-- A natural transformation between two enriched functors is a `𝟙_ V`-graded natural
 transformation. -/
 structure EnrichedNatTrans (F G : EnrichedFunctor V C D) where
+  /-- The underlying natural transformation of an enriched transformation. -/
   (out : F.forget ⟶ G.forget)
 
 namespace EnrichedFunctor
