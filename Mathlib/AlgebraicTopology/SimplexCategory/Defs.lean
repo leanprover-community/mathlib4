@@ -194,6 +194,11 @@ scoped macro_rules
   | `(⦋$m:term, $p:term⦌$n:subscript) =>
     `((⟨SimplexCategory.mk $m, $p⟩ : SimplexCategory.Truncated $n))
 
+/-- A recursor for the truncated simplex category. -/
+protected def rec {n : ℕ} {F : SimplexCategory.Truncated n → Sort*}
+    (h : ∀ m : Fin (n + 1), F ⦋m⦌ₙ) : ∀ X, F X :=
+  fun n => h ⟨n.obj.len, Nat.le_iff_lt_add_one.mp n.property⟩
+
 /-- Make a morphism in `Truncated n` from a morphism in `SimplexCategory`. This
 is equivalent to `@id (⦋a⦌ₙ ⟶ ⦋b⦌ₙ) f`. -/
 abbrev Hom.tr {n : ℕ} {a b : SimplexCategory} (f : a ⟶ b)
