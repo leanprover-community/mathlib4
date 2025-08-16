@@ -5,6 +5,11 @@ Authors: Violeta Hernández Palacios
 -/
 import Mathlib.Data.Nat.Bitwise
 import Mathlib.SetTheory.Ordinal.Family
+import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.Nimber.Basic` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 # Nimbers
