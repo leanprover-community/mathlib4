@@ -6,7 +6,7 @@ Authors: Alex Kontorovich, Heather Macbeth, Marc Masdeu
 import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
-import Mathlib.Topology.Instances.Matrix
+import Mathlib.Topology.Instances.Matrix.Basic
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 import Mathlib.Topology.Instances.ZMultiples
 
