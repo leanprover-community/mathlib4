@@ -194,17 +194,15 @@ theorem signBijAux_injOn {n : ℕ} {f : Perm (Fin n)} :
 theorem signBijAux_surj {n : ℕ} {f : Perm (Fin n)} :
     ∀ a ∈ finPairsLT n, ∃ b ∈ finPairsLT n, signBijAux f b = a :=
   fun ⟨a₁, a₂⟩ ha =>
-    if hxa : f⁻¹ a₂ < f⁻¹ a₁ then
-      ⟨⟨f⁻¹ a₁, f⁻¹ a₂⟩, mem_finPairsLT.2 hxa, by
-        dsimp [signBijAux]
-        rw [apply_inv_self, apply_inv_self, if_pos (mem_finPairsLT.1 ha)]⟩
+    if hxa : f.symm a₂ < f.symm a₁ then
+      ⟨⟨f.symm a₁, f.symm a₂⟩, mem_finPairsLT.2 hxa, by
+       simp [signBijAux, if_pos (mem_finPairsLT.1 ha)]⟩
     else
-      ⟨⟨f⁻¹ a₂, f⁻¹ a₁⟩,
+      ⟨⟨f.symm a₂, f.symm a₁⟩,
         mem_finPairsLT.2 <|
           (le_of_not_gt hxa).lt_of_ne fun h => by
             simp [mem_finPairsLT, f⁻¹.injective h] at ha, by
-              dsimp [signBijAux]
-              rw [apply_inv_self, apply_inv_self, if_neg (mem_finPairsLT.1 ha).le.not_gt]⟩
+              simp [signBijAux, if_neg (mem_finPairsLT.1 ha).le.not_gt]⟩
 
 theorem signBijAux_mem {n : ℕ} {f : Perm (Fin n)} :
     ∀ a : Σ _ : Fin n, Fin n, a ∈ finPairsLT n → signBijAux f a ∈ finPairsLT n :=
@@ -218,12 +216,10 @@ theorem signBijAux_mem {n : ℕ} {f : Perm (Fin n)} :
 @[simp]
 theorem signAux_inv {n : ℕ} (f : Perm (Fin n)) : signAux f⁻¹ = signAux f :=
   prod_nbij (signBijAux f⁻¹) signBijAux_mem signBijAux_injOn signBijAux_surj fun ⟨a, b⟩ hab ↦
-    if h : f⁻¹ b < f⁻¹ a then by
-      simp_all [signBijAux, if_neg h.not_ge, apply_inv_self, apply_inv_self,
-        if_neg (mem_finPairsLT.1 hab).not_ge]
+    if h : f.symm b < f.symm a then by
+      simp_all [signBijAux, (mem_finPairsLT.1 hab).not_ge]
     else by
-      simp_all [signBijAux, dif_neg h, apply_inv_self, apply_inv_self,
-        if_pos (mem_finPairsLT.1 hab).le]
+      simp_all [signBijAux, dif_neg h, (mem_finPairsLT.1 hab).le]
 
 theorem signAux_mul {n : ℕ} (f g : Perm (Fin n)) : signAux (f * g) = signAux f * signAux g := by
   rw [← signAux_inv g]

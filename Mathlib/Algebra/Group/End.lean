@@ -115,6 +115,8 @@ theorem mul_def (f g : Perm α) : f * g = g.trans f :=
 theorem inv_def (f : Perm α) : f⁻¹ = f.symm :=
   rfl
 
+@[simp] lemma coe_inv (f : Perm α) : ⇑f⁻¹ = ⇑f.symm := rfl
+
 @[simp, norm_cast] lemma coe_one : ⇑(1 : Perm α) = id := rfl
 
 @[simp, norm_cast] lemma coe_mul (f g : Perm α) : ⇑(f * g) = f ∘ g := rfl
