@@ -494,29 +494,30 @@ def nonPrincipals :=
   { I : Ideal R | ¬I.IsPrincipal }
 
 @[deprecated "See Ideal.nonPrincipals." (since := "2025-08-16")]
-theorem nonPrincipals_def {I : Ideal R} : I ∈ nonPrincipals R ↔ ¬I.IsPrincipal :=
+theorem nonPrincipals_def {I : Ideal R} : I ∈ { I : Ideal R | ¬I.IsPrincipal } ↔ ¬I.IsPrincipal :=
   Iff.rfl
 
 variable {R}
 
 @[deprecated "See Ideal.nonPrincipals." (since := "2025-08-16")]
-theorem nonPrincipals_eq_empty_iff : nonPrincipals R = ∅ ↔ IsPrincipalIdealRing R := by
-  simp [Set.eq_empty_iff_forall_notMem, isPrincipalIdealRing_iff, nonPrincipals_def]
+theorem nonPrincipals_eq_empty_iff :
+    { I : Ideal R | ¬I.IsPrincipal } = ∅ ↔ IsPrincipalIdealRing R := by
+  simp [Set.eq_empty_iff_forall_notMem, isPrincipalIdealRing_iff]
 
 /-- Any chain in the set of non-principal ideals has an upper bound which is non-principal.
 (Namely, the union of the chain is such an upper bound.)
 -/
 @[deprecated "Use Ideal.exists_maximal_not_principal instead." (since := "2025-08-16")]
-theorem nonPrincipals_zorn (c : Set (Ideal R)) (hs : c ⊆ nonPrincipals R)
+theorem nonPrincipals_zorn (c : Set (Ideal R)) (hs : c ⊆ { I : Ideal R | ¬I.IsPrincipal })
     (hchain : IsChain (· ≤ ·) c) {K : Ideal R} (hKmem : K ∈ c) :
-    ∃ I ∈ nonPrincipals R, ∀ J ∈ c, J ≤ I := by
+    ∃ I ∈ { I : Ideal R | ¬I.IsPrincipal }, ∀ J ∈ c, J ≤ I := by
   refine ⟨sSup c, ?_, fun J hJ => le_sSup hJ⟩
   rintro ⟨x, hx⟩
   have hxmem : x ∈ sSup c := hx.symm ▸ Submodule.mem_span_singleton_self x
   obtain ⟨J, hJc, hxJ⟩ := (Submodule.mem_sSup_of_directed ⟨K, hKmem⟩ hchain.directedOn).1 hxmem
   have hsSupJ : sSup c = J := le_antisymm (by simp [hx, Ideal.span_le, hxJ]) (le_sSup hJc)
   specialize hs hJc
-  rw [← hsSupJ, hx, nonPrincipals_def] at hs
+  rw [← hsSupJ, hx] at hs
   exact hs ⟨⟨x, rfl⟩⟩
 
 end PrincipalOfPrime
