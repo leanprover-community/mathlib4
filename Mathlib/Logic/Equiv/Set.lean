@@ -47,6 +47,12 @@ theorem range_eq_univ {α : Type*} {β : Type*} (e : α ≃ β) :
 protected theorem image_eq_preimage {α β} (e : α ≃ β) (s : Set α) : e '' s = e.symm ⁻¹' s :=
   Set.ext fun _ => mem_image_iff_of_inverse e.left_inv e.right_inv
 
+protected lemma image_symm {α β} (e : α ≃ β) (s : Set β) : e.symm '' s = e ⁻¹' s :=
+  e.symm.image_eq_preimage _
+
+protected lemma preimage_symm {α β} (e : α ≃ β) (s : Set α) : e.symm ⁻¹' s = e '' s :=
+  (e.image_eq_preimage _).symm
+
 @[simp 1001]
 theorem _root_.Set.mem_image_equiv {α β} {S : Set α} {f : α ≃ β} {x : β} :
     x ∈ f '' S ↔ f.symm x ∈ S :=
