@@ -1136,6 +1136,9 @@ lemma ext_support {u v} {p q : G.Walk u v} (h : p.support = q.support) :
       have : (p.copy h rfl).support = q.support := by simpa
       simp [← ih this]
 
+lemma support_injective {u v : V} : (support (G := G) (u := u) (v := v)).Injective :=
+  fun _ _ ↦ ext_support
+
 lemma ext_getVert_le_length {u v} {p q : G.Walk u v} (hl : p.length = q.length)
     (h : ∀ k ≤ p.length, p.getVert k = q.getVert k) :
     p = q := by

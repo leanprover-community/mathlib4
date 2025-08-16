@@ -258,7 +258,7 @@ def AccPt (x : X) (F : Filter X) : Prop :=
   NeBot (𝓝[≠] x ⊓ F)
 
 /-- A set `s` is compact if for every nontrivial filter `f` that contains `s`,
-    there exists `a ∈ s` such that every set of `f` meets every neighborhood of `a`. -/
+there exists `a ∈ s` such that every set of `f` meets every neighborhood of `a`. -/
 def IsCompact (s : Set X) :=
   ∀ ⦃f⦄ [NeBot f], f ≤ 𝓟 s → ∃ x ∈ s, ClusterPt x f
 
@@ -293,7 +293,7 @@ See also `WeaklyLocallyCompactSpace`, a typeclass that only assumes
 that each point has a compact neighborhood. -/
 class LocallyCompactSpace (X : Type*) [TopologicalSpace X] : Prop where
   /-- In a locally compact space,
-    every neighbourhood of every point contains a compact neighbourhood of that same point. -/
+  every neighbourhood of every point contains a compact neighbourhood of that same point. -/
   local_compact_nhds : ∀ (x : X), ∀ n ∈ 𝓝 x, ∃ s ∈ 𝓝 x, s ⊆ n ∧ IsCompact s
 
 /-- We say that `X` and `Y` are a locally compact pair of topological spaces,
