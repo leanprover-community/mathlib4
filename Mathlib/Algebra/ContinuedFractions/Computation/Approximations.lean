@@ -8,7 +8,6 @@ import Mathlib.Algebra.ContinuedFractions.Computation.CorrectnessTerminating
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Data.Nat.Fib.Basic
 import Mathlib.Tactic.Monotonicity
-import Mathlib.Tactic.GCongr
 
 /-!
 # Approximations for Continued Fraction Computations (`GenContFract.of`)

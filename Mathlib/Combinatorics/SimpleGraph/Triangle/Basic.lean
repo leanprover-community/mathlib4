@@ -8,7 +8,6 @@ import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Combinatorics.SimpleGraph.Clique
 import Mathlib.Data.Finset.Sym
-import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.Positivity
 
 /-!
