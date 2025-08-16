@@ -20,6 +20,7 @@ import Batteries.Tactic.Lint -- useful to lint this file and for DiscrTree.eleme
 import Batteries.Tactic.Trans
 import Mathlib.Tactic.Eqns -- just to copy the attribute
 import Mathlib.Tactic.Simps.Basic
+import Lean.Meta.Tactic.TryThis
 
 /-!
 # The `@[to_additive]` attribute.
@@ -101,7 +102,7 @@ syntax toAdditiveOption := "(" toAdditiveAttrOption <|> toAdditiveReorderOption 
 syntax toAdditiveNameHint := (ppSpace (&"existing" <|> &"self"))?
 /-- Remaining arguments of `to_additive`. -/
 syntax toAdditiveRest :=
-  toAdditiveNameHint (ppSpace toAdditiveOption)* (ppSpace ident)? (ppSpace str)?
+  toAdditiveNameHint (ppSpace toAdditiveOption)* (ppSpace ident)? (ppSpace (str <|> docComment))?
 
 /-- The attribute `to_additive` can be used to automatically transport theorems
 and definitions (but not inductive types and structures) from a multiplicative
@@ -128,7 +129,7 @@ has a doc string, a doc string for the additive version should be passed explici
 
 ```
 /-- Multiplication is commutative -/
-@[to_additive "Addition is commutative"]
+@[to_additive /-- Addition is commutative -/]
 theorem mul_comm' {α} [CommSemigroup α] (x y : α) : x * y = y * x := CommSemigroup.mul_comm
 ```
 
@@ -562,8 +563,16 @@ is tested, instead of the first argument.
 It will also reorder arguments of certain functions, using `reorderFn`:
 e.g. `g x₁ x₂ x₃ ... xₙ` becomes `g x₂ x₁ x₃ ... xₙ` if `reorderFn g = some [1]`.
 -/
-def applyReplacementFun (e : Expr) : MetaM Expr :=
-  return aux (← getEnv) (← getBoolOption `trace.to_additive_detail) e
+def applyReplacementFun (e : Expr) : MetaM Expr := do
+  let e' := aux (← getEnv) (← getBoolOption `trace.to_additive_detail) e
+  -- Make sure any new reserved names in the expr are realized; this needs to be done outside of
+  -- `aux` as it is monadic.
+  e'.forEach fun
+    | .const n .. => do
+      if !(← hasConst (skipRealize := false) n) && isReservedName (← getEnv) n then
+        executeReservedNameAction n
+    | _ => pure ()
+  return e'
 where /-- Implementation of `applyReplacementFun`. -/
   aux (env : Environment) (trace : Bool) : Expr → Expr :=
   let reorderFn : Name → List (List ℕ) := fun nm ↦ (reorderAttr.find? env nm |>.getD [])
@@ -1205,6 +1214,8 @@ def proceedFields (src tgt : Name) : CoreM Unit := do
         return ctors.toArray.map (.mkSimple ·.lastComponentAsString)
     | _ => pure #[]
 
+open Tactic.TryThis in
+open private addSuggestionCore in addSuggestion in
 /-- Elaboration of the configuration options for `to_additive`. -/
 def elabToAdditive : Syntax → CoreM Config
   | `(attr| to_additive%$tk $[?%$trace]? $existing?
@@ -1238,10 +1249,33 @@ def elabToAdditive : Syntax → CoreM Config
         as there is only one declaration for the attributes.\n\
         Instead, you can write the attributes in the usual way."
     trace[to_additive_detail] "attributes: {attrs}; reorder arguments: {reorder}"
+    let doc ← doc.mapM fun
+      | `(str|$doc:str) => open Linter in do
+        -- Deprecate `str` docstring syntax (since := "2025-08-12")
+        if getLinterValue linter.deprecated (← getLinterOptions) then
+          logWarningAt doc <| .tagged ``Linter.deprecatedAttr
+            m!"String syntax for `to_additive` docstrings is deprecated: Use \
+              docstring syntax instead (e.g. `@[to_additive /-- example -/]`)"
+          addSuggestionCore doc
+            (header := "Update deprecated syntax to:\n")
+            (codeActionPrefix? := "Update to: ")
+            (isInline := true)
+            #[{
+              suggestion := "/-- " ++ doc.getString.trim ++ " -/"
+            }]
+        return doc.getString
+      | `(docComment|$doc:docComment) => do
+        -- TODO: rely on `addDocString`s call to `validateDocComment` after removing `str` support
+        validateDocComment doc
+        /- Note: the following replicates the behavior of `addDocString`. However, this means that
+        trailing whitespace might appear in docstrings added via `docComment` syntax when compared
+        to those added via `str` syntax. See this [Zulip thread](https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/Why.20do.20docstrings.20include.20trailing.20whitespace.3F/with/533553356). -/
+        return (← getDocStringText doc).removeLeadingSpaces
+      | _ => throwUnsupportedSyntax
     return {
       trace := trace.isSome
       tgt := match tgt with | some tgt => tgt.getId | none => Name.anonymous
-      doc := doc.bind (·.raw.isStrLit?)
+      doc
       allowAutoName := false
       attrs, reorder, existing, self
       ref := (tgt.map (·.raw)).getD tk }
