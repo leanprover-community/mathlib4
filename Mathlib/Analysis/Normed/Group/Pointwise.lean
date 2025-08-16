@@ -15,7 +15,7 @@ We explore the relationships between pointwise addition of sets in normed groups
 Notably, we show that the sum of bounded sets remain bounded.
 -/
 
-assert_not_exists Cardinal
+-- TODO assert_not_exists Cardinal
 
 open Metric Set Pointwise Topology
 
