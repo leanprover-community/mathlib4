@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 
+import Mathlib.Analysis.CStarAlgebra.Matrix
 import Mathlib.Data.Matrix.PEquiv
 import Mathlib.Data.Set.Card
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
@@ -59,5 +60,39 @@ theorem trace_permutation [AddCommMonoidWithOne R] :
     trace (σ.permMatrix R) = (Function.fixedPoints σ).ncard := by
   delta trace
   simp [toPEquiv_apply, ← Set.ncard_coe_finset, Function.fixedPoints, Function.IsFixedPt]
+
+lemma permMatrix_mulVec {v : n → R} [CommRing R] :
+    σ.permMatrix R *ᵥ v = v ∘ σ := by
+  ext j
+  simp [mulVec_eq_sum, Pi.single, Function.update, Equiv.eq_symm_apply]
+
+lemma vecMul_permMatrix {v : n → R} [CommRing R] :
+    v ᵥ* σ.permMatrix R = v ∘ σ.symm := by
+  ext j
+  simp [vecMul_eq_sum, Pi.single, Function.update, ← Equiv.symm_apply_eq]
+
+open scoped Matrix.Norms.L2Operator
+
+variable {𝕜 : Type*} [RCLike 𝕜]
+
+/--
+The l2-operator norm of a permutation matrix is bounded above by 1.
+See `Matrix.permMatrix_l2_opNorm_eq` for the equality statement assuming the matrix is nonempty.
+-/
+theorem permMatrix_l2_opNorm_le : ‖σ.permMatrix 𝕜‖ ≤ 1 :=
+  ContinuousLinearMap.opNorm_le_bound _ (by simp) <| by
+    simp [EuclideanSpace.norm_eq, toEuclideanLin_apply, permMatrix_mulVec,
+      σ.sum_comp _ (fun i ↦ ‖_‖ ^ 2)]
+
+/--
+The l2-operator norm of a nonempty permutation matrix is equal to 1.
+Note that this is not true for the empty case, since the empty matrix has l2-operator norm 0.
+See `Matrix.permMatrix_l2_opNorm_le` for the inequality version of the empty case.
+-/
+theorem permMatrix_l2_opNorm_eq [Nonempty n] : ‖σ.permMatrix 𝕜‖ = 1 :=
+  le_antisymm (permMatrix_l2_opNorm_le σ) <| by
+    inhabit n
+    simpa [EuclideanSpace.norm_eq, permMatrix_mulVec, ← Equiv.eq_symm_apply, apply_ite] using
+      (σ.permMatrix 𝕜).l2_opNorm_mulVec (WithLp.toLp _ (Pi.single default 1))
 
 end Matrix
