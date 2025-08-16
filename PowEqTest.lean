@@ -46,10 +46,9 @@ theorem exists_eq_pow_of_exponent_coprime_of_pow_eq {a b m n : ℕ} (ha : a ≠ 
       intro p p_mem
       --simp [c_factorization] at p_mem
       have : p ∈ a.factorization.support := by
-        convert p_mem using 1
-        unfold c_factorization
-        refine Eq.symm (Finsupp.support_mapRange_of_injective (Nat.zero_div n) a.factorization ?_)
-        sorry
+        have : c_factorization.support ⊆ a.factorization.support := by
+          exact Finsupp.support_mapRange
+        exact this p_mem
       exact prime_of_mem_primeFactors this
     unfold c_factorization
     have : n • Finsupp.mapRange (fun x => x / n) (by simp) a.factorization =
