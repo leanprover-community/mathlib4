@@ -187,8 +187,8 @@ theorem exists_nontrivial_weightSpace_of_lieIdeal [LieModule.IsTriangularizable 
         _ =  χ₀ (π₁ x) • v  + (c • e (π₂ x)) • v        := by rw [hv' (π₁ x), this]
         _ = _ := by simp [add_smul]
     calc ⁅hA.symm.projection x, v⁆
-        = e (π₂ x) • ↑(c • ⟨v, hv⟩ : W)   := by rw [IsCompl.projection_apply,
-          ← he, smul_lie, ← hvc.apply_eq_smul]; rfl
+        = e (π₂ x) • ↑(c • ⟨v, hv⟩ : W)   := by
+          rw [IsCompl.projection_apply, ← he, smul_lie, ← hvc.apply_eq_smul]; rfl
       _ = (c • e (π₂ x)) • v              := by rw [smul_assoc, smul_comm]; rfl
   · simpa [ne_eq, LieSubmodule.mk_eq_zero] using hvc.right
 
