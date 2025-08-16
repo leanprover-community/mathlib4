@@ -608,10 +608,9 @@ theorem sup_multiset_prod_eq_top {s : Multiset (Ideal R)} (h : ∀ p ∈ s, I �
     (by simp only [one_eq_top, le_top, sup_of_le_right]) h
 
 theorem sup_iInf_eq_top {s : Finset ι} {J : ι → Ideal R} (h : ∀ i, i ∈ s → I ⊔ J i = ⊤) :
-    (I ⊔ ⨅ i ∈ s, J i) = ⊤ :=
-  eq_top_iff.mpr <|
-    le_of_eq_of_le (sup_prod_eq_top h).symm <|
-      sup_le_sup_left (le_of_le_of_eq prod_le_inf <| Finset.inf_eq_iInf _ _) _
+    (I ⊔ ⨅ i ∈ s, J i) = ⊤ := by
+  rw [eq_top_iff, ← sup_prod_eq_top h, ← Finset.inf_eq_iInf]
+  grw [prod_le_inf]
 
 theorem prod_sup_eq_top {s : Finset ι} {J : ι → Ideal R} (h : ∀ i, i ∈ s → J i ⊔ I = ⊤) :
     (∏ i ∈ s, J i) ⊔ I = ⊤ := by rw [sup_comm, sup_prod_eq_top]; intro i hi; rw [sup_comm, h i hi]
