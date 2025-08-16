@@ -48,19 +48,28 @@ lemma associator_op {L : Type v} (x y z : Lᵐᵒᵖ) [NonUnitalNonAssocRing L] 
   simp only [associator_apply, ← unop_mul, ← unop_sub, op_unop, neg_sub]
 end NonUnitalNonAssocRing
 
+/-- `LeftPreLieRing`s are `NonUnitalNonAssocRing`s such that the `associator` is symmetric in the
+first two variables. -/
 @[ext]
 class LeftPreLieRing (L : Type v) : Type (v + 1) extends NonUnitalNonAssocRing L where
   assoc_symm' (x y z : L) : associator x y z = associator y x z
 
+/-- `LeftPreLieRing`s are `NonUnitalNonAssocRing`s such that the `associator` is symmetric in the
+last two variables. -/
 @[ext]
 class RightPreLieRing (L : Type v) : Type (v + 1) extends NonUnitalNonAssocRing L where
   assoc_symm' (x y z : L) : associator x y z = associator x z y
 
 section algebras
 variable (R : Type u) [CommRing R]
+/-- A `LeftPreLieAlgebra` is a `LeftPreLieRing` with an action of a `CommRing` satisfying
+`r • x * y = r • (x * y)` and ` x * (r • y) = r • (x * y)`. -/
 @[ext]
 class LeftPreLieAlgebra (L : Type v) [LeftPreLieRing L] : Type (max u v) extends
   Module R L, IsScalarTower R L L, SMulCommClass R L L
+
+/-- A `RightPreLieAlgebra` is a `RightPreLieRing` with an action of a `CommRing` satisfying
+`r • x * y = r • (x * y)` and ` x * (r • y) = r • (x * y)`. -/
 @[ext]
 class RightPreLieAlgebra (L : Type v) [RightPreLieRing L] : Type (max u v) extends
   Module R L, IsScalarTower R L L, SMulCommClass R L L
