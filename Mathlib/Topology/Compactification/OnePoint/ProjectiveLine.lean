@@ -87,15 +87,14 @@ lemma smul_infty_def (g : GL (Fin 2) K) :
       simpa [det_fin_two, Prod.mk_eq_zero.mp h] using g.det_ne_zero)) := by
   simp [Equiv.smul_def, mulVec_eq_sum, Units.smul_def]
 
-@[simp]
 lemma smul_infty_eq_ite (g : GL (Fin 2) K) :
-    (g • ∞ : OnePoint K) = if g 1 0 = 0 then ∞ else g 0 0 / g 1 0 := by
+    g • (∞ : OnePoint K) = if g 1 0 = 0 then ∞ else g 0 0 / g 1 0 := by
   by_cases h : g 1 0 = 0 <;>
   simp [h, div_eq_inv_mul, smul_infty_def]
 
 lemma smul_infty_eq_iff (g : GL (Fin 2) K) :
     g • (∞ : OnePoint K) = ∞ ↔ g 1 0 = 0 := by
-  simp
+  simp [smul_infty_eq_ite]
 
 lemma smul_some_eq_ite (g : GL (Fin 2) K) (k : K) :
     g • (k : OnePoint K) =
