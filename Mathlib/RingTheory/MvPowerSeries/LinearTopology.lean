@@ -48,7 +48,7 @@ open Set SetLike Filter
 /-- The underlying family for the basis of ideals in a multivariate power series ring. -/
 def basis (σ : Type*) (R : Type*) [Ring R] (Jd : TwoSidedIdeal R × (σ →₀ ℕ)) :
     TwoSidedIdeal (MvPowerSeries σ R) :=
-  TwoSidedIdeal.mk' {f | ∀ e ≤ Jd.2, coeff R e f ∈ Jd.1}
+  TwoSidedIdeal.mk' {f | ∀ e ≤ Jd.2, coeff e f ∈ Jd.1}
     (by simp [coeff_zero])
     (fun hf hg e he ↦ by rw [map_add]; exact add_mem (hf e he) (hg e he))
     (fun {f} hf e he ↦ by simp only [map_neg, neg_mem, hf e he])
@@ -68,9 +68,9 @@ def basis (σ : Type*) (R : Type*) [Ring R] (Jd : TwoSidedIdeal R × (σ →₀ 
 variable {σ : Type*} {R : Type*} [Ring R]
 
 /-- A power series `f` belongs to the twosided ideal `basis σ R ⟨J, d⟩`
-if and only if `coeff R e f ∈ J` for all `e ≤ d`. -/
+if and only if `coeff e f ∈ J` for all `e ≤ d`. -/
 theorem mem_basis_iff {f : MvPowerSeries σ R} {Jd : TwoSidedIdeal R × (σ →₀ ℕ)} :
-    f ∈ basis σ R Jd ↔ ∀ e ≤ Jd.2, coeff R e f ∈ Jd.1 := by
+    f ∈ basis σ R Jd ↔ ∀ e ≤ Jd.2, coeff e f ∈ Jd.1 := by
   simp [basis]
 
 /-- If `J ≤ K` and `e ≤ d`, then we have the inclusion of twosided ideals
@@ -88,17 +88,17 @@ theorem basis_le_iff {J K : TwoSidedIdeal R} {d e : σ →₀ ℕ} (hK : K ≠ �
     intro h
     constructor
     · intro x hx
-      have (d' : _) : coeff R d' (C σ R x) ∈ J := by
+      have (d' : _) : coeff d' (C (σ := σ) x) ∈ J := by
         rw [coeff_C]; split_ifs <;> [exact hx; exact J.zero_mem]
-      simpa using h (C σ R x) (fun _ _ ↦ this _) _ (zero_le _)
+      simpa using h (C x) (fun _ _ ↦ this _) _ (zero_le _)
     · by_contra h'
       apply hK
       rw [eq_top_iff]
       intro x _
-      have (d') (hd'_le : d' ≤ d) : coeff R d' (monomial R e x) ∈ J := by
+      have (d') (hd'_le : d' ≤ d) : coeff d' (monomial e x) ∈ J := by
         rw [coeff_monomial]
         split_ifs with hd' <;> [exact (h' (hd' ▸ hd'_le)).elim; exact J.zero_mem]
-      simpa using h (monomial R e x) this _ le_rfl
+      simpa using h (monomial e x) this _ le_rfl
   · rintro ⟨hJK, hed⟩
     exact basis_le hJK hed
 
@@ -139,7 +139,7 @@ instance [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R] :
 
 theorem isTopologicallyNilpotent_of_constantCoeff
     {R : Type*} [CommRing R] [TopologicalSpace R] [IsLinearTopology R R]
-    {f} (hf : IsTopologicallyNilpotent (constantCoeff σ R f)) :
+    {f : MvPowerSeries σ R} (hf : IsTopologicallyNilpotent (constantCoeff f)) :
     IsTopologicallyNilpotent f := by
   simp_rw [IsTopologicallyNilpotent, tendsto_iff_coeff_tendsto, coeff_zero,
     IsLinearTopology.hasBasis_ideal.tendsto_right_iff]
@@ -157,11 +157,11 @@ iff its constant coefficient is topologically nilpotent.
 
 See also `MvPowerSeries.WithPiTopology.isTopologicallyNilpotent_iff_constantCoeff_isNilpotent`. -/
 theorem isTopologicallyNilpotent_iff_constantCoeff
-    {R : Type*} [CommRing R] [TopologicalSpace R] [IsLinearTopology R R] (f) :
+    {R : Type*} [CommRing R] [TopologicalSpace R] [IsLinearTopology R R] (f : MvPowerSeries σ R) :
     Tendsto (fun n : ℕ => f ^ n) atTop (nhds 0) ↔
-      IsTopologicallyNilpotent (constantCoeff σ R f) := by
+      IsTopologicallyNilpotent (constantCoeff f) := by
   refine ⟨fun H ↦ ?_, isTopologicallyNilpotent_of_constantCoeff⟩
-  replace H : Tendsto (fun n ↦ constantCoeff σ R (f ^ n)) atTop (nhds 0) :=
+  replace H : Tendsto (fun n ↦ constantCoeff (f ^ n)) atTop (nhds 0) :=
     continuous_constantCoeff R |>.tendsto' 0 0 constantCoeff_zero |>.comp H
   simpa only [map_pow] using H
 
