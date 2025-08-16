@@ -116,12 +116,12 @@ theorem sameCycle_apply_right : SameCycle f x (f y) ↔ SameCycle f x y := by
   rw [sameCycle_comm, sameCycle_apply_left, sameCycle_comm]
 
 @[simp]
-theorem sameCycle_inv_apply_left : SameCycle f (f⁻¹ x) y ↔ SameCycle f x y := by
-  rw [← sameCycle_apply_left, apply_inv_self]
+theorem sameCycle_symm_apply_left : SameCycle f (f.symm x) y ↔ SameCycle f x y := by
+  rw [← sameCycle_apply_left, apply_symm_apply]
 
 @[simp]
-theorem sameCycle_inv_apply_right : SameCycle f x (f⁻¹ y) ↔ SameCycle f x y := by
-  rw [← sameCycle_apply_right, apply_inv_self]
+theorem sameCycle_symm_apply_right : SameCycle f x (f.symm y) ↔ SameCycle f x y := by
+  rw [← sameCycle_apply_right, apply_symm_apply]
 
 @[simp]
 theorem sameCycle_zpow_left {n : ℤ} : SameCycle f ((f ^ n) x) y ↔ SameCycle f x y :=
@@ -143,9 +143,9 @@ alias ⟨SameCycle.of_apply_left, SameCycle.apply_left⟩ := sameCycle_apply_lef
 
 alias ⟨SameCycle.of_apply_right, SameCycle.apply_right⟩ := sameCycle_apply_right
 
-alias ⟨SameCycle.of_inv_apply_left, SameCycle.inv_apply_left⟩ := sameCycle_inv_apply_left
+alias ⟨SameCycle.of_symm_apply_left, SameCycle.symm_apply_left⟩ := sameCycle_symm_apply_left
 
-alias ⟨SameCycle.of_inv_apply_right, SameCycle.inv_apply_right⟩ := sameCycle_inv_apply_right
+alias ⟨SameCycle.of_symm_apply_right, SameCycle.symm_apply_right⟩ := sameCycle_symm_apply_right
 
 alias ⟨SameCycle.of_pow_left, SameCycle.pow_left⟩ := sameCycle_pow_left
 
