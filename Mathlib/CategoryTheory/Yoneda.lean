@@ -910,7 +910,7 @@ variable {D : Type u₂} [Category.{v₂} D] (F : C ⥤ D)
 when `F : C ⥤ D` and `X : C`. -/
 def uliftYonedaMap (X : C) :
     uliftYoneda.{max w v₂}.obj X ⟶ F.op ⋙ uliftYoneda.{max w v₁}.obj (F.obj X) where
-  app _  f := ULift.up (F.map (ULift.down f))
+  app _ f := ULift.up (F.map (ULift.down f))
 
 @[simp]
 lemma uliftYonedaMap_app_apply {Y : C} {X : Cᵒᵖ} (f : X.unop ⟶ Y) :
