@@ -87,9 +87,7 @@ theorem Groupoid.reverse_eq_inv (f : X ⟶ Y) : Quiver.reverse f = Groupoid.inv 
   rfl
 
 instance functorMapReverse {D : Type*} [Groupoid D] (F : C ⥤ D) : F.toPrefunctor.MapReverse where
-  map_reverse' f := by
-    simp only [Quiver.reverse, Quiver.HasReverse.reverse', Groupoid.inv_eq_inv,
-      Functor.map_inv]
+  map_reverse' f := by simp
 
 variable (X Y)
 
@@ -97,7 +95,7 @@ variable (X Y)
 @[simps!]
 def Groupoid.isoEquivHom : (X ≅ Y) ≃ (X ⟶ Y) where
   toFun := Iso.hom
-  invFun f := ⟨f, Groupoid.inv f, (by simp), (by simp)⟩
+  invFun f := ⟨f, Groupoid.inv f, by simp, by simp⟩
 
 variable (C)
 
