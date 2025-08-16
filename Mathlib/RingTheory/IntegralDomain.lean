@@ -55,7 +55,7 @@ def Fintype.groupWithZeroOfCancel (M : Type*) [CancelMonoidWithZero M] [Decidabl
     inv_zero := by simp }
 
 theorem exists_eq_pow_of_mul_eq_pow_of_coprime {R : Type*} [CommSemiring R] [IsDomain R]
-    [GCDMonoid R] [Subsingleton Rˣ] {a b c : R} {n : ℕ} (cp : IsCoprime a b) (h : a * b = c ^ n) :
+    [GCDMonoid R] [IsSharpMonoid R] {a b c : R} {n : ℕ} (cp : IsCoprime a b) (h : a * b = c ^ n) :
     ∃ d : R, a = d ^ n := by
   refine exists_eq_pow_of_mul_eq_pow (isUnit_of_dvd_one ?_) h
   obtain ⟨x, y, hxy⟩ := cp
@@ -66,7 +66,7 @@ theorem exists_eq_pow_of_mul_eq_pow_of_coprime {R : Type*} [CommSemiring R] [IsD
 
 nonrec
 theorem Finset.exists_eq_pow_of_mul_eq_pow_of_coprime {ι R : Type*} [CommSemiring R] [IsDomain R]
-    [GCDMonoid R] [Subsingleton Rˣ] {n : ℕ} {c : R} {s : Finset ι} {f : ι → R}
+    [GCDMonoid R] [IsSharpMonoid R] {n : ℕ} {c : R} {s : Finset ι} {f : ι → R}
     (h : ∀ i ∈ s, ∀ j ∈ s, i ≠ j → IsCoprime (f i) (f j))
     (hprod : ∏ i ∈ s, f i = c ^ n) : ∀ i ∈ s, ∃ d : R, f i = d ^ n := by
   classical
