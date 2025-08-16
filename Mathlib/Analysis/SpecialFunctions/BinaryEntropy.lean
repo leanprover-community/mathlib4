@@ -98,7 +98,7 @@ lemma binEntropy_neg_of_neg (hp : p < 0) : binEntropy p < 0 := by
   by_cases hp' : p < -1
   · have : log p < log (1 - p) := by
       rw [← log_neg_eq_log]
-      exact log_lt_log (Left.neg_pos_iff.mpr hp) (by linarith)
+      exact log_lt_log (Left.neg_pos_iff.mpr hp) (by simp)
     nlinarith [log_pos_of_lt_neg_one hp']
   · have : -p * log p ≤ 0 := by
       wlog h : -1 < p

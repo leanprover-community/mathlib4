@@ -364,7 +364,7 @@ theorem hasSum_L_function_mod_four_eval_three :
       Polynomial.bernoulli_three_eval_one_quarter]
     norm_num [Nat.factorial]; field_simp; ring
   · rw [mem_Icc]; constructor
-    · linarith
+    · simp
     · linarith
 
 end Examples
