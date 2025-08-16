@@ -112,8 +112,12 @@ variable (α E F G : Type*) [MeasurableSpace α]
   [NormedAddCommGroup F] [NormedSpace ℝ F]
   [NormedAddCommGroup G] [NormedSpace ℝ G] [CompleteSpace G]
 
+/-- The structure containing a continuous linear pairing and a vector measure,
+enabling the dot notation `VectorMeasureWithParing.integral`. -/
 structure VectorMeasureWithPairing where
+  /-- A continuous linear pairing from `E` `F` into a Banach space `G`. -/
   pairing : E →L[ℝ] F →L[ℝ] G
+  /-- An `F`-valued vector measure. -/
   vectorMeasure : VectorMeasure α F
 
 end
