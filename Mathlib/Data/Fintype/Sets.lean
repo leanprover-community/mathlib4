@@ -294,25 +294,6 @@ lemma coe_finsetOrderIsoSet : ⇑finsetOrderIsoSet = ((↑) : Finset α → Set 
 
 end Fintype
 
-lemma Finset.exists_image_eq_and_injOn_of_surjOn [DecidableEq β] {f : α → β}
-    (s : Set α) (t : Finset β) (hfs : s.SurjOn f t) :
-    ∃ (u : Finset α), u.image f = t ∧ Set.InjOn f u ∧ (u : Set _) ⊆ s := by
-  classical
-  have hm : (s ∩ f ⁻¹' t).MapsTo f (t : Set β) :=
-    .mono_left (Set.mapsTo_preimage _ _) Set.inter_subset_right
-  have : Function.Surjective (hm.restrict f _ _) := by
-    refine (Set.MapsTo.restrict_surjective_iff _).mpr fun x hx ↦ ?_
-    obtain ⟨a, hmem, rfl⟩ := hfs hx
-    use a, ⟨hmem, hx⟩
-  obtain ⟨u, hu⟩ := Finset.exists_image_eq_and_injOn_of_surjective this .univ
-  refine ⟨Finset.image Subtype.val u, ?_, ?_, ?_⟩
-  · rw [Finset.image_image, ← Set.MapsTo.restrict_commutes, ← Finset.image_image, hu.1]
-    simp
-  · rw [coe_image]
-    rintro x ⟨x, hx, rfl⟩ y ⟨y, hy, rfl⟩ hxy
-    exact Subtype.ext_iff.mp <| hu.2 hx hy (by ext; simpa)
-  · exact subset_trans (by simpa only [coe_image] using Subtype.coe_image_subset _ _) (by simp)
-
 theorem mem_image_univ_iff_mem_range {α β : Type*} [Fintype α] [DecidableEq β] {f : α → β}
     {b : β} : b ∈ univ.image f ↔ b ∈ Set.range f := by simp
 

@@ -643,14 +643,6 @@ theorem range_sdiff_zero {n : ℕ} : range (n + 1) \ {0} = (range n).image Nat.s
   rw [range_succ, image_insert, ← hk, insert_sdiff_of_notMem]
   simp
 
-lemma exists_image_eq_and_injOn_of_surjective [DecidableEq β] {f : α → β} (hf : f.Surjective)
-    (t : Finset β) : ∃ (s : Finset α), s.image f = t ∧ Set.InjOn f s := by
-  classical
-  refine ⟨t.image (f.surjInv hf), by simp [Finset.image_image], ?_⟩
-  rw [coe_image]
-  rintro - ⟨x, -, rfl⟩ - ⟨y, -, rfl⟩ hxy
-  rw [show x = y by simpa [surjInv_eq] using hxy]
-
 end Finset
 
 theorem Multiset.toFinset_map [DecidableEq α] [DecidableEq β] (f : α → β) (m : Multiset α) :
