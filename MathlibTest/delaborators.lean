@@ -296,3 +296,16 @@ set_option pp.fieldNotation false in
 #guard_msgs in
 #check x.2
 end prod
+
+section
+set_option pp.mdata true
+
+/-- info: no_index @& .(ℕ) : Type -/
+#guard_msgs in
+#check no_index @& .(Nat)
+
+/-- info: 1 : no_implicit_lambda_type% ℕ -/
+#guard_msgs in
+#check (no_implicit_lambda% 1 : _)
+
+end
