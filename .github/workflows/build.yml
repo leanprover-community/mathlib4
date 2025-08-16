@@ -81,7 +81,7 @@ jobs:
 
       - name: Setup timezone
         # This is needed so we can use Lean's date library to lint deprecated attributes
-        uses: szenius/set-timezone@v2.0
+        uses: szenius/set-timezone@1f9716b0f7120e344f0c62bb7b1ee98819aefd42 # v2.0
 
       # The Hoskinson runners may not have jq installed, so do that now.
       - name: 'Setup jq'
