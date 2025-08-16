@@ -617,11 +617,11 @@ variable {R S M N : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S] [Flat
 theorem IsSMulRegular.of_flat_of_isBaseChange {f : M →ₗ[R] N} (hf : IsBaseChange S f) {x : R}
     (reg : IsSMulRegular M x) : IsSMulRegular N (algebraMap R S x) := by
   have h := hf.lTensor_injective_of_flat hf ((LinearMap.lsmul R M) x) reg
-  have eq : hf.lTensor hf ((LinearMap.lsmul R M) x) = (LinearMap.lsmul S N) (algebraMap R S x) := by
+  have eq : hf.map hf .id ((LinearMap.lsmul R M) x) = (LinearMap.lsmul S N) (algebraMap R S x) := by
     ext y
     refine IsTensorProduct.inductionOn hf y (by simp) ?_ (fun _ _ ha hb ↦ by simp [ha, hb])
     intro s m
-    rw [hf.lTensor_eq hf]
+    rw [hf.map_eq hf]
     simpa using smul_comm x s (f m)
   rwa [eq] at h
 
