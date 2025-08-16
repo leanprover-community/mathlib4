@@ -65,7 +65,7 @@ instance categoryOfElements (F : C ⥤ Type w) : Category.{v} F.Elements where
 @[simps]
 def NatTrans.mapElements {F G : C ⥤ Type w} (φ : F ⟶ G) : F.Elements ⥤ G.Elements where
   obj := fun ⟨X, x⟩ ↦ ⟨_, φ.app X x⟩
-  map {p q} := fun ⟨f, h⟩ ↦ ⟨f, by have hb := congrFun (φ.naturality f) p.2; aesop_cat⟩
+  map {p q} := fun ⟨f, h⟩ ↦ ⟨f, by have hb := congrFun (φ.naturality f) p.2; cat_disch⟩
 
 /-- The functor mapping functors `C ⥤ Type w` to their category of elements -/
 @[simps]
@@ -139,7 +139,7 @@ instance : (π F).Faithful where
 
 instance : (π F).ReflectsIsomorphisms where
   reflects {X Y} f h := ⟨⟨⟨inv ((π F).map f),
-    by rw [← map_snd f, ← FunctorToTypes.map_comp_apply]; simp⟩, by aesop_cat⟩⟩
+    by rw [← map_snd f, ← FunctorToTypes.map_comp_apply]; simp⟩, by cat_disch⟩⟩
 
 /-- A natural transformation between functors induces a functor between the categories of elements.
 -/

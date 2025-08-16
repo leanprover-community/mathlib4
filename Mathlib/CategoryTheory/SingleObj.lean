@@ -93,7 +93,7 @@ abbrev star : SingleObj M :=
   Quiver.SingleObj.star M
 
 /-- The endomorphisms monoid of the only object in `SingleObj M` is equivalent to the original
-     monoid M. -/
+monoid `M`. -/
 def toEnd : M ≃* End (SingleObj.star M) :=
   { Equiv.refl M with map_mul' := fun _ _ => rfl }
 
@@ -115,8 +115,8 @@ def mapHom : (M →* N) ≃ SingleObj M ⥤ SingleObj N where
     { toFun := fun x => f.map ((toEnd M) x)
       map_one' := f.map_id _
       map_mul' := fun x y => f.map_comp y x }
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
 theorem mapHom_id : mapHom M M (MonoidHom.id M) = 𝟭 _ :=
   rfl
