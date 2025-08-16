@@ -189,8 +189,6 @@ def hsum (s : SummableFamily Γ R α) : HahnSeries Γ R where
 theorem coeff_hsum {s : SummableFamily Γ R α} {g : Γ} : s.hsum.coeff g = ∑ᶠ i, (s i).coeff g :=
   rfl
 
-@[deprecated (since := "2025-01-31")] alias hsum_coeff := coeff_hsum
-
 @[simp]
 theorem hsum_zero : (0 : SummableFamily Γ R α).hsum = 0 := by
   ext
@@ -214,14 +212,9 @@ theorem coeff_hsum_eq_sum_of_subset {s : SummableFamily Γ R α} {g : Γ} {t : F
   simp only [coeff_hsum, finsum_eq_sum _ (s.finite_co_support _)]
   exact sum_subset (Set.Finite.toFinset_subset.mpr h) (by simp)
 
-@[deprecated (since := "2025-01-31")] alias hsum_coeff_eq_sum_of_subset :=
-  coeff_hsum_eq_sum_of_subset
-
 theorem coeff_hsum_eq_sum {s : SummableFamily Γ R α} {g : Γ} :
     s.hsum.coeff g = ∑ i ∈ (s.coeff g).support, (s i).coeff g := by
   simp only [coeff_hsum, finsum_eq_sum _ (s.finite_co_support _), coeff_support]
-
-@[deprecated (since := "2025-01-31")] alias hsum_coeff_eq_sum := coeff_hsum_eq_sum
 
 /-- The summable family made of a single Hahn series. -/
 @[simps]
@@ -532,8 +525,6 @@ theorem coeff_hsum_mul (s : SummableFamily Γ R α) (t : SummableFamily Γ R β)
       t.isPWO_iUnion_support g, (s.hsum.coeff gh.1) * (t.hsum.coeff gh.2) := by
   simp_rw [← smul_eq_mul, mul_eq_smul]
   exact coeff_smul s t g
-
-@[deprecated (since := "2025-01-31")] alias mul_coeff := coeff_hsum_mul
 
 theorem hsum_mul (s : SummableFamily Γ R α) (t : SummableFamily Γ R β) :
     (mul s t).hsum = s.hsum * t.hsum := by
