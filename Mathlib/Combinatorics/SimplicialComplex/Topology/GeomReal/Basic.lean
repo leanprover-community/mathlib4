@@ -77,9 +77,7 @@ omit [DecidableEq U] in
 Two points in the geometric realisation are equal as soon as their weight
 functions coincide. In particular, the supporting face then also agrees since
 `v ∈ p.face ↔ p.weight v ≠ 0`. -/
-lemma ext_weight
-    {U : Type _} [DecidableEq U]
-    {X : SimplicialComplex U} {p q : GeomReal X}
+lemma ext_weight {X : SimplicialComplex U} {p q : GeomReal X}
     (hweight : p.weight = q.weight) : p = q := by
   have hface : p.face = q.face := by
     ext v
@@ -221,3 +219,5 @@ lemma function_ext {X : SimplicialComplex U} {Y : Type*}
     _   = g p := by rw [hp]
 
 end GeomReal
+
+#lint
