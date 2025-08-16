@@ -23,7 +23,7 @@ syntax (name := cfcTac) "cfc_tac" : tactic
 macro_rules
   | `(tactic| cfc_tac) => `(tactic|
          try (first |
-              assumption |
+              grind |
               infer_instance |
               aesop (rule_sets := [$(Lean.mkIdent `CStarAlgebra):ident])))
 
