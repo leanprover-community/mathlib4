@@ -258,10 +258,9 @@ variable (M) in
 theorem mk_one : mk 1 = (⊤ : MulArchimedeanClass M) := rfl
 
 @[to_additive (attr := simp)]
-theorem mk_eq_top_iff : mk a = ⊤ ↔ a = 1 := by
-  constructor
-  · simp [← mk_one, mk_eq_mk]
-  · simp_all
+theorem mk_eq_top_iff : mk a = ⊤ ↔ a = 1 where
+  mp := by simp [← mk_one, mk_eq_mk]
+  mpr := by simp_all
 
 @[to_additive (attr := simp)]
 theorem top_eq_mk_iff : ⊤ = mk a ↔ a = 1 := by
