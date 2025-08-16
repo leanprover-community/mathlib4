@@ -385,19 +385,9 @@ variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 variable [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
 
 lemma range_rankOne (x : E) {y : F} (hy : y ≠ 0) :
-    LinearMap.range (rankOne 𝕜 x y) = 𝕜 ∙ x := by
-  ext z
-  apply Iff.intro
-  · intro hz
-    obtain ⟨w, hw⟩ := LinearMap.mem_range.mp hz
-    rw [rankOne_apply] at hw
-    rw [Submodule.mem_span_singleton]
-    use inner 𝕜 y w
-  · intro hz
-    obtain ⟨c, hc⟩ := Submodule.mem_span_singleton.mp hz
-    rw [LinearMap.mem_range]
-    use (c / inner 𝕜 y y) • y
-    rw [rankOne_apply, inner_smul_right, ← hc, div_mul_cancel₀ c (inner_self_ne_zero.mpr hy)]
+    LinearMap.range (rankOne 𝕜 x y) = 𝕜 ∙ x :=
+  range_smulRight_apply (map_eq_zero_iff _
+    (InnerProductSpace.toDualMap 𝕜 F).injective |>.not.mpr hy) _
 
 lemma rank_range_rankOne {x : E} {y : F} (hx : x ≠ 0) (hy : y ≠ 0) :
     Module.rank 𝕜 (LinearMap.range (rankOne 𝕜 x y)) = 1 := by
