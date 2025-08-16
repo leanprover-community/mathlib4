@@ -1136,12 +1136,9 @@ def ofMulEquivOfDom {k : P ≃* M} (H : T.map k.toMonoidHom = S) : LocalizationM
       let ⟨v, hv⟩ := k.surjective x.1
       let ⟨w, hw⟩ := k.surjective x.2
       ⟨(v, ⟨w, H' ▸ show k w ∈ S from hw.symm ▸ x.2.2⟩), by
-        simp_rw [MonoidHom.comp_apply, MulEquiv.toMonoidHom_eq_coe, MonoidHom.coe_coe, hv, hw]
-        dsimp
-        rw [hx]⟩)
+        simp_rw [MonoidHom.comp_apply, MulEquiv.coe_toMonoidHom, hv, hw, hx]⟩)
     fun x y ↦ by
-      rw [MonoidHom.comp_apply, MonoidHom.comp_apply, MulEquiv.toMonoidHom_eq_coe,
-        MonoidHom.coe_coe, toMonoidHom_apply, toMonoidHom_apply, f.eq_iff_exists]
+      rw [MonoidHom.comp_apply, MonoidHom.comp_apply, MulEquiv.coe_toMonoidHom, f.eq_iff_exists]
       rintro ⟨c, hc⟩
       let ⟨d, hd⟩ := k.surjective c
       refine ⟨⟨d, H' ▸ show k d ∈ S from hd.symm ▸ c.2⟩, ?_⟩

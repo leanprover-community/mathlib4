@@ -69,19 +69,6 @@ structure Equiv (α : Sort*) (β : Sort _) where
 @[inherit_doc]
 infixl:25 " ≃ " => Equiv
 
-/-- Turn an element of a type `F` satisfying `EquivLike F α β` into an actual
-`Equiv`. This is declared as the default coercion from `F` to `α ≃ β`. -/
-@[coe]
-def EquivLike.toEquiv {F} [EquivLike F α β] (f : F) : α ≃ β where
-  toFun := f
-  invFun := EquivLike.inv f
-  left_inv := EquivLike.left_inv f
-  right_inv := EquivLike.right_inv f
-
-/-- Any type satisfying `EquivLike` can be cast into `Equiv` via `EquivLike.toEquiv`. -/
-instance {F} [EquivLike F α β] : CoeTC F (α ≃ β) :=
-  ⟨EquivLike.toEquiv⟩
-
 /-- `Perm α` is the type of bijections from `α` to itself. -/
 abbrev Equiv.Perm (α : Sort*) :=
   Equiv α α
@@ -102,9 +89,30 @@ def instFunLike : FunLike (α ≃ β) α β where
   coe := Equiv.toFun
   coe_injective' := DFunLike.coe_injective
 
-@[simp, norm_cast]
-lemma _root_.EquivLike.coe_coe {F} [EquivLike F α β] (e : F) :
-    ((e : α ≃ β) : α → β) = e := rfl
+/-- Inverse of an equivalence `e : α ≃ β`. -/
+@[symm]
+protected def symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun, e.right_inv, e.left_inv⟩
+
+/-- See Note [custom simps projection] -/
+def Simps.symm_apply (e : α ≃ β) : β → α := e.symm
+
+initialize_simps_projections Equiv (toFun → apply, invFun → symm_apply)
+
+section EquivLike
+variable {F : Type*} [EquivLike F α β]
+
+/-- Turn an element of a type `F` satisfying `EquivLike F α β` into an actual `Equiv`. -/
+@[simps]
+def ofClass (f : F) : α ≃ β where
+  toFun := f
+  invFun := EquivLike.inv f
+  left_inv := EquivLike.left_inv f
+  right_inv := EquivLike.right_inv f
+
+@[simp] lemma coe_ofClass (e : F) : ⇑(ofClass e) = e := rfl
+@[simp] lemma coe_symm_ofClass (e : F) : ⇑(ofClass e).symm = EquivLike.inv e := rfl
+
+end EquivLike
 
 @[simp, grind =] theorem coe_fn_mk (f : α → β) (g l r) : (Equiv.mk f g l r : α → β) = f :=
   rfl
@@ -136,15 +144,6 @@ protected theorem Perm.congr_fun {f g : Equiv.Perm α} (h : f = g) (x : α) : f 
 @[refl] protected def refl (α : Sort*) : α ≃ α := ⟨id, id, fun _ => rfl, fun _ => rfl⟩
 
 instance inhabited' : Inhabited (α ≃ α) := ⟨Equiv.refl α⟩
-
-/-- Inverse of an equivalence `e : α ≃ β`. -/
-@[symm]
-protected def symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun, e.right_inv, e.left_inv⟩
-
-/-- See Note [custom simps projection] -/
-def Simps.symm_apply (e : α ≃ β) : β → α := e.symm
-
-initialize_simps_projections Equiv (toFun → apply, invFun → symm_apply)
 
 /-- Restatement of `Equiv.left_inv` in terms of `Function.LeftInverse`. -/
 theorem left_inv' (e : α ≃ β) : Function.LeftInverse e.symm e := e.left_inv
@@ -244,21 +243,21 @@ theorem Perm.coe_subsingleton {α : Type*} [Subsingleton α] (e : Perm α) : (e 
 
 @[simp] theorem self_comp_symm (e : α ≃ β) : e ∘ e.symm = id := funext e.apply_symm_apply
 
-@[simp] lemma _root_.EquivLike.apply_coe_symm_apply {F} [EquivLike F α β] (e : F) (x : β) :
-    e ((e : α ≃ β).symm x) = x :=
-  (e : α ≃ β).apply_symm_apply x
+@[simp] lemma apply_ofClass_symm_apply {F} [EquivLike F α β] (e : F) (x : β) :
+    e ((.ofClass e : α ≃ β).symm x) = x :=
+  (.ofClass e : α ≃ β).apply_symm_apply x
 
-@[simp] lemma _root_.EquivLike.coe_symm_apply_apply {F} [EquivLike F α β] (e : F) (x : α) :
-    (e : α ≃ β).symm (e x) = x :=
-  (e : α ≃ β).symm_apply_apply x
+@[simp] lemma ofClass_symm_apply_apply {F} [EquivLike F α β] (e : F) (x : α) :
+    (.ofClass e : α ≃ β).symm (e x) = x :=
+  (.ofClass e : α ≃ β).symm_apply_apply x
 
-@[simp] lemma _root_.EquivLike.coe_symm_comp_self {F} [EquivLike F α β] (e : F) :
-    (e : α ≃ β).symm ∘ e = id :=
-  (e : α ≃ β).symm_comp_self
+@[simp] lemma ofClass_symm_comp_self {F} [EquivLike F α β] (e : F) :
+    (.ofClass e : α ≃ β).symm ∘ e = id :=
+  (.ofClass e : α ≃ β).symm_comp_self
 
-@[simp] lemma _root_.EquivLike.self_comp_coe_symm {F} [EquivLike F α β] (e : F) :
-    e ∘ (e : α ≃ β).symm = id :=
-  (e : α ≃ β).self_comp_symm
+@[simp] lemma self_comp_ofClass_symm {F} [EquivLike F α β] (e : F) :
+    e ∘ (.ofClass e : α ≃ β).symm = id :=
+  (.ofClass e : α ≃ β).self_comp_symm
 
 @[simp] theorem symm_trans_apply (f : α ≃ β) (g : β ≃ γ) (a : γ) :
     (f.trans g).symm a = f.symm (g.symm a) := rfl
