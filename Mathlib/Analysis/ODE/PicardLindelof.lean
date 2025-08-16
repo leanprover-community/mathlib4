@@ -488,6 +488,95 @@ lemma hasDerivWithinAt_picard_Icc
   · rw [uIcc_of_le (not_lt.mp h)]
     exact Icc_subset_Icc ht₀.1 ht.2
 
+/-- Converse of `hasDerivWithinAt_picard_Icc`: if `f` is the derivative along `α`, then `α`
+satisfies the integral equation. -/
+lemma picard_eq_of_hasDerivAt {t : ℝ}
+    (hf : ContinuousOn (uncurry f) ((uIcc t₀ t) ×ˢ u))
+    (hα : ∀ t' ∈ uIcc t₀ t, HasDerivWithinAt α (f t' (α t')) (uIcc t₀ t) t')
+    (hmap : MapsTo α (uIcc t₀ t) u) : -- need `Icc` for `uIcc_subset_Icc`
+    picard f t₀ (α t₀) α t = α t := by
+  rw [← add_sub_cancel (α t₀) (α t), picard_apply,
+    integral_eq_sub_of_hasDeriv_right (HasDerivWithinAt.continuousOn hα) _
+      (continuousOn_comp hf (HasDerivWithinAt.continuousOn hα) hmap |>.intervalIntegrable)]
+  intro t' ht'
+  apply HasDerivAt.hasDerivWithinAt
+  exact hα t' (Ioo_subset_Icc_self ht') |>.hasDerivAt <| Icc_mem_nhds ht'.1 ht'.2
+
+/-- If the time-dependent vector field `f` is $C^n$ and the curve `α` is continuous, then
+`interate f t₀ x₀ α` is also $C^n$. This version works for `n : ℕ`. -/
+lemma contDiffOn_nat_picard_Icc
+    (ht₀ : t₀ ∈ Icc tmin tmax) {n : ℕ}
+    (hf : ContDiffOn ℝ n (uncurry f) ((Icc tmin tmax) ×ˢ u))
+    (hα : ContinuousOn α (Icc tmin tmax))
+    (hmem : ∀ t ∈ Icc tmin tmax, α t ∈ u) (x₀ : E)
+    (heqon : ∀ t ∈ Icc tmin tmax, α t = picard f t₀ x₀ α t) :
+    ContDiffOn ℝ n (picard f t₀ x₀ α) (Icc tmin tmax) := by
+  by_cases hlt : tmin < tmax
+  · have (t) (ht : t ∈ Icc tmin tmax) :=
+      hasDerivWithinAt_picard_Icc ht₀ hf.continuousOn hα hmem x₀ ht
+    induction n with
+    | zero =>
+      simp only [Nat.cast_zero, contDiffOn_zero] at *
+      exact HasDerivWithinAt.continuousOn this
+    | succ n hn =>
+      simp only [Nat.cast_add, Nat.cast_one] at *
+      rw [contDiffOn_succ_iff_derivWithin <| uniqueDiffOn_Icc hlt]
+      refine ⟨fun t ht ↦ HasDerivWithinAt.differentiableWithinAt (this t ht), by simp, ?_⟩
+      have hα' : ContDiffOn ℝ n α (Icc tmin tmax) := ContDiffOn.congr (hn hf.of_succ) heqon
+      apply contDiffOn_comp hf.of_succ hα' hmem |>.congr
+      intro t ht
+      exact HasDerivWithinAt.derivWithin (this t ht) <| (uniqueDiffOn_Icc hlt).uniqueDiffWithinAt ht
+  · rw [(subsingleton_Icc_of_ge (not_lt.mp hlt)).eq_singleton_of_mem ht₀]
+    intro t ht
+    rw [eq_of_mem_singleton ht]
+    exact contDiffWithinAt_singleton
+
+/-- If the time-dependent vector field `f` is $C^n$ and the curve `α` is continuous, then
+`interate f t₀ x₀ α` is also $C^n$. This version works for `n : ℕ∞`. -/
+lemma contDiffOn_enat_picard_Icc
+    (ht₀ : t₀ ∈ Icc tmin tmax) {n : ℕ∞}
+    (hf : ContDiffOn ℝ n (uncurry f) ((Icc tmin tmax) ×ˢ u))
+    (hα : ContinuousOn α (Icc tmin tmax))
+    (hmem : ∀ t ∈ Icc tmin tmax, α t ∈ u) (x₀ : E)
+    (heqon : ∀ t ∈ Icc tmin tmax, α t = picard f t₀ x₀ α t) :
+    ContDiffOn ℝ n (picard f t₀ x₀ α) (Icc tmin tmax) := by
+  induction n with
+  | top =>
+    rw [contDiffOn_infty] at *
+    exact fun k ↦ contDiffOn_nat_picard_Icc ht₀ (hf k) hα hmem x₀ heqon
+  | coe n =>
+    simp only [WithTop.coe_natCast] at *
+    exact contDiffOn_nat_picard_Icc ht₀ hf hα hmem x₀ heqon
+
+/-- Solutions to ODEs defined by $C^n$ vector fields are also $C^n$. -/
+theorem contDiffOn_enat_Icc_of_hasDerivWithinAt {n : ℕ∞}
+    (hf : ContDiffOn ℝ n (uncurry f) ((Icc tmin tmax) ×ˢ u))
+    (hα : ∀ t ∈ Icc tmin tmax, HasDerivWithinAt α (f t (α t)) (Icc tmin tmax) t)
+    (hmem : MapsTo α (Icc tmin tmax) u) :
+    ContDiffOn ℝ n α (Icc tmin tmax) := by
+  by_cases hlt : tmin < tmax
+  · set t₀ := (tmin + tmax) / 2 with h
+    have ht₀ : t₀ ∈ Icc tmin tmax := ⟨by linarith, by linarith⟩
+    have : ∀ t ∈ Icc tmin tmax, α t = picard f t₀ (α t₀) α t := by
+      intro t ht
+      have : uIcc t₀ t ⊆ Icc tmin tmax := uIcc_subset_Icc ht₀ ht
+      rw [picard_eq_of_hasDerivAt (hf.continuousOn.mono (prod_subset_prod_left this))
+        (fun t' ht' ↦ hα t' (this ht') |>.mono this) (hmem.mono_left this)]
+    exact contDiffOn_enat_picard_Icc ht₀ hf (HasDerivWithinAt.continuousOn hα) hmem (α t₀) this
+      |>.congr this
+  · rw [not_lt, le_iff_lt_or_eq] at hlt -- missing lemma?
+    cases hlt with
+    | inl h =>
+      intro _ ht
+      rw [Icc_eq_empty (not_le.mpr h)] at ht
+      exfalso
+      exact notMem_empty _ ht
+    | inr h =>
+      rw [h, Icc_self]
+      intro _ ht
+      rw [eq_of_mem_singleton ht]
+      exact contDiffWithinAt_singleton
+
 end
 
 end ODE
@@ -644,8 +733,7 @@ theorem exists_forall_mem_closedBall_eq_hasDerivWithinAt_continuousOn
   obtain ⟨α, hα1, L', hα2⟩ := hf.exists_forall_mem_closedBall_eq_hasDerivWithinAt_lipschitzOnWith
   refine ⟨uncurry α, hα1, ?_⟩
   apply continuousOn_prod_of_continuousOn_lipschitzOnWith _ L' _ hα2
-  intro x hx t ht
-  exact (hα1 x hx).2 t ht |>.continuousWithinAt
+  exact fun x hx ↦ HasDerivWithinAt.continuousOn (hα1 x hx).2
 
 /-- **Picard-Lindelöf (Cauchy-Lipschitz) theorem**, differential form. This version shows the
 existence of a local flow. -/
