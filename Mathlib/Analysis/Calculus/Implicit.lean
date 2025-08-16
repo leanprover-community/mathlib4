@@ -539,7 +539,7 @@ theorem image_implicitFunOfProdDomain {f : E₁ × E₂ → F} {x₁ : E₁} {x�
   have hψ := dfx.tendsto_implicitFunOfProdDomain
   set ψ := dfx.implicitFunOfProdDomain
   suffices ∀ᶠ u in 𝓝 x₁, f (u, ψ u) = f (x₁, x₂) ↔ ψ u = ψ u by simpa
-  apply hψ.eventually_image_of_prod (r := fun u v => f (u, v) = f (x₁, x₂) ↔ ψ u = v)
+  apply Eventually.image_of_prod (r := fun u v => f (u, v) = f (x₁, x₂) ↔ ψ u = v) hψ
   rw [← nhds_prod_eq]
   exact dfx.image_eq_iff_implicitFunOfProdDomain
 

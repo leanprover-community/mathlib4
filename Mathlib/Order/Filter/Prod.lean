@@ -187,12 +187,16 @@ lemma Frequently.of_curry {la : Filter α} {lb : Filter β} {p : α × β → Pr
     (h : ∃ᶠ x in la, ∃ᶠ y in lb, p (x, y)) : ∃ᶠ xy in la ×ˢ lb, p xy :=
   h.uncurry
 
+theorem Eventually.image_of_prod {y : α → β} {r : α → β → Prop}
+    (hy : Tendsto y f g) (hr : ∀ᶠ p in f ×ˢ g, r p.1 p.2) : ∀ᶠ x in f, r x (y x) := by
+  have ⟨p, hp, q, hq, hr⟩ := eventually_prod_iff.mp hr
+  filter_upwards [hp, hy.eventually hq] with _ hp hq using hr hp hq
+
 /-- A fact that is eventually true about all pairs `l ×ˢ l` is eventually true about
 all diagonal pairs `(i, i)` -/
 theorem Eventually.diag_of_prod {p : α × α → Prop} (h : ∀ᶠ i in f ×ˢ f, p i) :
-    ∀ᶠ i in f, p (i, i) := by
-  obtain ⟨t, ht, s, hs, hst⟩ := eventually_prod_iff.1 h
-  apply (ht.and hs).mono fun x hx => hst hx.1 hx.2
+    ∀ᶠ i in f, p (i, i) :=
+  h.image_of_prod (r := p.curry) tendsto_id
 
 theorem Eventually.diag_of_prod_left {f : Filter α} {g : Filter γ} {p : (α × α) × γ → Prop} :
     (∀ᶠ x in (f ×ˢ f) ×ˢ g, p x) → ∀ᶠ x : α × γ in f ×ˢ g, p ((x.1, x.1), x.2) := by
@@ -342,11 +346,6 @@ theorem Tendsto.prodMap {δ : Type*} {f : α → γ} {g : β → δ} {a : Filter
 
 @[deprecated (since := "2025-03-10")]
 alias Tendsto.prod_map := Tendsto.prodMap
-
-theorem Tendsto.eventually_image_of_prod {ψ : α → β} {r : α → β → Prop}
-    (hψ : Tendsto ψ f g) (hr : ∀ᶠ p in f ×ˢ g, r p.1 p.2) : ∀ᶠ x in f, r x (ψ x) := by
-  suffices ∀ᶠ p in map (Prod.map id ψ) (f ×ˢ f), r p.1 p.2 from this.diag_of_prod
-  exact hr.filter_mono (prod_map_right ψ f f ▸ prod_mono_right f hψ)
 
 protected theorem map_prod (m : α × β → γ) (f : Filter α) (g : Filter β) :
     map m (f ×ˢ g) = (f.map fun a b => m (a, b)).seq g := by
