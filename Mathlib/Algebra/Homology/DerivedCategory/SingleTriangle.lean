@@ -64,10 +64,7 @@ noncomputable def singleTriangleIso :
   refine Triangle.isoMk _ _ (e.app S.X₁) (e.app S.X₂) (e.app S.X₃) ?_ ?_ ?_
   · cat_disch
   · cat_disch
-  · dsimp [singleδ, e]
-    rw [Category.assoc, Category.assoc, ← Functor.map_comp, SingleFunctors.inv_hom_id_hom_app]
-    erw [Functor.map_id]
-    rw [comp_id]
+  · simp [singleδ, e, ← Functor.map_comp, CochainComplex.singleFunctors]
 
 /-- The distinguished triangle in the derived category of `C` given by a
 short exact short complex in `C`. -/
