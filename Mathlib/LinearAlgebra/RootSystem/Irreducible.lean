@@ -170,7 +170,7 @@ lemma exists_form_eq_form_and_form_ne_zero (B : P.InvariantForm) (i j : ι) :
   obtain ⟨g, rfl⟩ := mem_orbit_iff.mp hv
   simp only [P.weylGroup_apply_root, SetLike.mem_coe, LinearMap.mem_ker]
   apply contra
-  simp [← Subgroup.smul_def g]
+  simp
 
 lemma span_root_image_eq_top_of_forall_orthogonal (s : Set ι)
     (hne : s.Nonempty) (h : ∀ j, P.root j ∉ span R (P.root '' s) → ∀ i ∈ s, P.IsOrthogonal j i) :
