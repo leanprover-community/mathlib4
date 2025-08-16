@@ -279,7 +279,7 @@ def stabilizerHom : MulAction.stabilizer G P →* ((B ⧸ P) ≃ₐ[A ⧸ p] (B 
 
 instance (p : Ideal R) (P : Ideal A) [P.IsPrime] [P.LiesOver p] :
     (P.map (Ideal.Quotient.mk <| p.map (algebraMap R A))).IsPrime := by
-  apply Ideal.map_quotientMk_isPrime_of_isPrime
+  apply Ideal.isPrime_map_quotientMk_of_isPrime
   rw [Ideal.map_le_iff_le_comap, Ideal.LiesOver.over (p := p) (P := P)]
 
 end Quotient

@@ -178,7 +178,7 @@ lemma Ideal.map_sup_mem_minimalPrimes_of_map_quotientMk_mem_minimalPrimes
       exact Ideal.LiesOver.over
     have h2 : P.map (Ideal.Quotient.mk (p.map (algebraMap R S))) ≤
         q.map (Ideal.Quotient.mk (p.map (algebraMap R S))) :=
-      hK.2 ⟨Ideal.map_quotientMk_isPrime_of_isPrime h1, Ideal.map_mono hleq.2⟩
+      hK.2 ⟨Ideal.isPrime_map_quotientMk_of_isPrime h1, Ideal.map_mono hleq.2⟩
         (Ideal.map_mono hqle)
     simpa [h1] using Ideal.comap_mono (f := Ideal.Quotient.mk (p.map (algebraMap R S))) h2
 
