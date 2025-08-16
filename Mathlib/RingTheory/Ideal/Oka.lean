@@ -42,14 +42,15 @@ variable {P : Ideal R → Prop}
 /-- If an ideal is maximal for not satisfying an oka predicate then it is prime. -/
 @[stacks 05KE]
 theorem isPrime_of_maximal_not_isOka (hP : IsOka P) {I : Ideal R}
-    (hI : Maximal (¬P ·) I) : I.IsPrime := by
-  by_contra h
-  have I_ne_top : I ≠ ⊤ := fun hI' ↦ hI.prop (hI' ▸ hP.top)
-  obtain ⟨a, ha, b, hb, hab⟩ := (not_isPrime_iff.1 h).resolve_left I_ne_top
-  have h₁ : P (I ⊔ span {a}) := of_not_not <| hI.not_prop_of_gt (Submodule.lt_sup_iff_notMem.2 ha)
-  have h₂ : P (I.colon (span {a})) := of_not_not <| hI.not_prop_of_gt <| lt_of_le_of_ne le_colon
-    (fun H ↦ hb <| H ▸ mem_colon_singleton.2 (mul_comm a b ▸ hab))
-  exact hI.prop (hP.oka h₁ h₂)
+    (hI : Maximal (¬P ·) I) : I.IsPrime where
+  ne_top' hI' := hI.prop (hI' ▸ hP.top)
+  mem_or_mem' := by
+    by_contra!
+    obtain ⟨a, b, hab, ha, hb⟩ := this
+    have h₁ : P (I ⊔ span {a}) := of_not_not <| hI.not_prop_of_gt (Submodule.lt_sup_iff_notMem.2 ha)
+    have h₂ : P (I.colon (span {a})) := of_not_not <| hI.not_prop_of_gt <| lt_of_le_of_ne le_colon
+      (fun H ↦ hb <| H ▸ mem_colon_singleton.2 (mul_comm a b ▸ hab))
+    exact hI.prop (hP.oka h₁ h₂)
 
 /-- If all prime ideals of a ring satisfy an oka predicate, then all its ideals also satisfy the
 predicate. `hmax` is generaly obtained using Zorn's lemma. -/
