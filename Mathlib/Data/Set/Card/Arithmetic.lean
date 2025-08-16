@@ -143,36 +143,26 @@ lemma encard_finset_biUnion_le (t : Finset ι) (s : ι → Set α) :
 
 lemma Finite.ncard_biUnion_le {t : Set ι} (ht : t.Finite) (s : ι → Set α) :
     (⋃ i ∈ t, s i).ncard ≤ ∑ᶠ i ∈ t, (s i).ncard := by
-  have := Set.ncard_finset_biUnion_le ht.toFinset s
-  rw [← Finset.set_biUnion_coe, ht.coe_toFinset, ← finsum_mem_eq_finite_toFinset_sum] at this
-  exact this
+  simpa [← finsum_mem_eq_finite_toFinset_sum] using Set.ncard_finset_biUnion_le ht.toFinset s
 
 lemma Finite.encard_biUnion_le {t : Set ι} (ht : t.Finite) (s : ι → Set α) :
     (⋃ i ∈ t, s i).encard ≤ ∑ᶠ i ∈ t, (s i).encard := by
-  have := Set.encard_finset_biUnion_le ht.toFinset s
-  rw [← Finset.set_biUnion_coe, ht.coe_toFinset, ← finsum_mem_eq_finite_toFinset_sum] at this
-  exact this
+  simpa [← finsum_mem_eq_finite_toFinset_sum] using Set.encard_finset_biUnion_le ht.toFinset s
 
 lemma ncard_iUnion_le_of_fintype [Fintype ι] (s : ι → Set α) :
     (⋃ i, s i).ncard ≤ ∑ i, (s i).ncard := by
-  have := Set.ncard_finset_biUnion_le .univ s
-  simp at this; exact this
+  simpa using Set.ncard_finset_biUnion_le .univ s
 
 lemma encard_iUnion_le_of_fintype [Fintype ι] (s : ι → Set α) :
     (⋃ i, s i).encard ≤ ∑ i, (s i).encard := by
-  have := Set.encard_finset_biUnion_le .univ s
-  simp at this; exact this
+  simpa using Set.encard_finset_biUnion_le .univ s
 
 lemma ncard_iUnion_le_of_finite [Finite ι] (s : ι → Set α) :
     (⋃ i, s i).ncard ≤ ∑ᶠ i, (s i).ncard := by
-  have := Fintype.ofFinite ι
-  rw [finsum_eq_sum_of_fintype]
-  exact Set.ncard_iUnion_le_of_fintype s
+  simpa using Finite.ncard_biUnion_le finite_univ s
 
 lemma encard_iUnion_le_of_finite [Finite ι] (s : ι → Set α) :
     (⋃ i, s i).encard ≤ ∑ᶠ i, (s i).encard := by
-  have := Fintype.ofFinite ι
-  rw [finsum_eq_sum_of_fintype]
-  exact encard_iUnion_le_of_fintype s
+  simpa using Finite.encard_biUnion_le finite_univ s
 
 end Set
