@@ -247,6 +247,9 @@ theorem add_eq_one_iff : I + J = 1 ↔ ∃ i ∈ I, ∃ j ∈ J, i + j = 1 := by
 theorem mul_mem_mul {r s} (hr : r ∈ I) (hs : s ∈ J) : r * s ∈ I * J :=
   Submodule.smul_mem_smul hr hs
 
+theorem pow_bot {n : ℕ} (hn : n ≠ 0) :
+    (⊥ : Ideal R) ^ n = ⊥ := Submodule.bot_pow hn
+
 theorem pow_mem_pow {x : R} (hx : x ∈ I) (n : ℕ) : x ^ n ∈ I ^ n :=
   Submodule.pow_mem_pow _ hx _
 
@@ -903,6 +906,15 @@ instance : IdemCommSemiring (Ideal R) :=
 variable (R) in
 theorem top_pow (n : ℕ) : (⊤ ^ n : Ideal R) = ⊤ :=
   Nat.recOn n one_eq_top fun n ih => by rw [pow_succ, ih, top_mul]
+
+@[simp]
+theorem pow_eq_top_iff {n : ℕ} :
+    I ^ n = ⊤ ↔ I = ⊤ ∨ n = 0 := by
+  refine ⟨fun h ↦ or_iff_not_imp_right.mpr
+      fun hn ↦ (eq_top_iff_one _).mpr <| pow_le_self hn <| (eq_top_iff_one _).mp h, ?_⟩
+  rintro (h | h)
+  · rw [h, top_pow]
+  · rw [h, pow_zero, one_eq_top]
 
 theorem natCast_eq_top {n : ℕ} (hn : n ≠ 0) : (n : Ideal R) = ⊤ :=
   natCast_eq_one hn |>.trans one_eq_top

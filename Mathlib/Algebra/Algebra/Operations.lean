@@ -311,6 +311,13 @@ protected theorem pow_one : M ^ 1 = M := by
 protected theorem pow_succ' {n : ℕ} (h : n ≠ 0) : M ^ (n + 1) = M * M ^ n := by
   rw [add_comm, M.pow_add h, Submodule.pow_one]
 
+@[simp]
+theorem bot_pow {n : ℕ} (hn : n ≠ 0) : (⊥ : Submodule R A) ^ n = ⊥ := by
+  have : 1 ≤ n := by exact Nat.one_le_iff_ne_zero.mpr hn
+  induction n, this using Nat.le_induction with
+  | base => rw [Submodule.pow_one]
+  | succ n hmn h => rw [Submodule.pow_succ, h (Nat.ne_zero_of_lt hmn), bot_mul]
+
 theorem pow_toAddSubmonoid {n : ℕ} (h : n ≠ 0) : (M ^ n).toAddSubmonoid = M.toAddSubmonoid ^ n := by
   induction n with
   | zero => exact (h rfl).elim

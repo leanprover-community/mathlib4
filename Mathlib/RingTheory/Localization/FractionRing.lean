@@ -546,9 +546,39 @@ noncomputable def algEquiv (K : Type*) [CommRing K] [Algebra A K] [IsFractionRin
     FractionRing A ≃ₐ[A] K :=
   Localization.algEquiv (nonZeroDivisors A) K
 
+omit [IsDomain A] in
+theorem algEquiv_mk (K : Type*) [CommRing K] [Algebra A K] [IsFractionRing A K] (x : A)
+    (y : nonZeroDivisors A) :
+    algEquiv A K (Localization.mk x y) = IsLocalization.mk' K x y := by
+  rw [Localization.mk_eq_mk'_apply]
+  exact Localization.algEquiv_mk' _ _
+
+omit [IsDomain A] in
+theorem algEquiv_symm_mk' (K : Type*) [CommRing K] [Algebra A K] [IsFractionRing A K]
+    (x : A) (y : nonZeroDivisors A) :
+    (algEquiv A K).symm (IsLocalization.mk' K x y ) = Localization.mk x y := by
+  rw [Localization.mk_eq_mk'_apply]
+  exact Localization.algEquiv_symm_mk' _ _
+
 instance [Algebra R A] [FaithfulSMul R A] : FaithfulSMul R (FractionRing A) := by
   rw [faithfulSMul_iff_algebraMap_injective, IsScalarTower.algebraMap_eq R A]
   exact (FaithfulSMul.algebraMap_injective A (FractionRing A)).comp
     (FaithfulSMul.algebraMap_injective R A)
+
+section IsScalarTower
+
+attribute [local instance] liftAlgebra
+
+instance (B C : Type*) [CommRing B] [IsDomain B] [CommRing C] [IsDomain C] [Algebra A B]
+    [Algebra A C] [Algebra B C] [NoZeroSMulDivisors A B] [NoZeroSMulDivisors A C]
+    [NoZeroSMulDivisors B C] [IsScalarTower A B C] :
+    IsScalarTower (FractionRing A) (FractionRing B) (FractionRing C) where
+  smul_assoc a b c := a.ind fun ⟨a₁, a₂⟩ ↦ by
+    have : NoZeroSMulDivisors A (FractionRing C) := NoZeroSMulDivisors.instOfFaithfulSMul
+    rw [← smul_right_inj (nonZeroDivisors.coe_ne_zero a₂)]
+    simp_rw [← smul_assoc, Localization.smul_mk, smul_eq_mul, Localization.mk_eq_mk',
+      IsLocalization.mk'_mul_cancel_left, algebraMap_smul, smul_assoc]
+
+end IsScalarTower
 
 end FractionRing

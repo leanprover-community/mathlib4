@@ -258,6 +258,22 @@ theorem pow_dvd_pow_iff [IsDomain R] [IsIntegrallyClosed R]
   refine ⟨k, IsFractionRing.injective R K ?_⟩
   rw [map_mul, hk, mul_div_cancel₀ _ ha]
 
+@[simp]
+theorem _root_.Associated.pow_iff [IsDomain R] [IsIntegrallyClosed R] {n : ℕ} (hn : n ≠ 0)
+    {a b : R} :
+    Associated (a ^ n) (b ^ n) ↔ Associated a b := by
+  refine ⟨fun h ↦ dvd_dvd_iff_associated.mp ?_, fun h ↦ Associated.pow_pow h⟩
+  rwa [← dvd_dvd_iff_associated, pow_dvd_pow_iff hn, pow_dvd_pow_iff hn] at h
+
+instance [IsDomain R] [IsIntegrallyClosed R] [IsPrincipalIdealRing R] :
+    IsMulTorsionFree (Ideal R) := by
+  refine IsMulTorsionFree.mk fun n hn I J h ↦ ?_
+  obtain ⟨x, rfl⟩ := IsPrincipalIdealRing.principal I
+  obtain ⟨y, rfl⟩ := IsPrincipalIdealRing.principal J
+  simp_rw [Ideal.submodule_span_eq, Ideal.span_singleton_pow,
+    Ideal.span_singleton_eq_span_singleton] at h ⊢
+  exact (Associated.pow_iff hn).mp h
+
 variable (R)
 
 /-- This is almost a duplicate of `IsIntegrallyClosedIn.integralClosure_eq_bot`,
