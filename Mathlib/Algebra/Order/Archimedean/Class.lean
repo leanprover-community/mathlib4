@@ -195,7 +195,7 @@ theorem lift_mk {α : Type*} (f : M → α) (h : ∀ a b, mk a = mk b → f a = 
   exact Quotient.lift_mk f (fun _ _ h' ↦ h _ _ <| mk_eq_mk.mpr h') a
 
 /-- Lift a `M → M → α` function to `MulArchimedeanClass M → MulArchimedeanClass M → α`. -/
-@[to_additive "Lift a `M → M → α` function to `ArchimedeanClass M → ArchimedeanClass M → α`."]
+@[to_additive /-- Lift a `M → M → α` function to `ArchimedeanClass M → ArchimedeanClass M → α`. -/]
 def lift₂ {α : Type*} (f : M → M → α)
     (h : ∀ a₁ b₁ a₂ b₂, mk a₁ = mk b₁ → mk a₂ = mk b₂ → f a₁ a₂ = f b₁ b₂) :
     MulArchimedeanClass M → MulArchimedeanClass M → α :=
