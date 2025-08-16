@@ -25,7 +25,7 @@ In this file we define a notion of finiteness that is common in commutative alge
 
 -/
 
-assert_not_exists Basis Ideal.radical Matrix Subalgebra
+assert_not_exists Module.Basis Ideal.radical Matrix Subalgebra
 
 open Function (Surjective)
 open Finsupp
@@ -153,6 +153,11 @@ variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
 def Finite (f : A →+* B) : Prop :=
   letI : Algebra A B := f.toAlgebra
   Module.Finite A B
+
+@[simp]
+lemma finite_algebraMap [Algebra A B] :
+    (algebraMap A B).Finite ↔ Module.Finite A B := by
+  rw [RingHom.Finite, toAlgebra_algebraMap]
 
 end RingHom
 
