@@ -313,32 +313,3 @@ instance [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ
 /- This instance should not be necessary, but Lean has difficulties to find it in product
 situations if we do not declare it explicitly. -/
 instance Real.measureSpace : MeasureSpace ℝ := by infer_instance
-
-/-! # Miscellaneous instances for `EuclideanSpace`
-
-In combination with `measureSpaceOfInnerProductSpace`, these put a `MeasureSpace` structure
-on `EuclideanSpace`. -/
-
-
-namespace EuclideanSpace
-
-variable (ι)
-
--- TODO: do we want these instances for `PiLp` too?
-instance : MeasurableSpace (EuclideanSpace ℝ ι) := MeasurableSpace.pi
-
-instance [Finite ι] : BorelSpace (EuclideanSpace ℝ ι) := Pi.borelSpace
-
-/-- `WithLp.equiv` as a `MeasurableEquiv`. -/
-@[simps toEquiv]
-protected def measurableEquiv : EuclideanSpace ℝ ι ≃ᵐ (ι → ℝ) where
-  toEquiv := WithLp.equiv _ _
-  measurable_toFun := measurable_id
-  measurable_invFun := measurable_id
-
-theorem coe_measurableEquiv : ⇑(EuclideanSpace.measurableEquiv ι) = WithLp.ofLp := rfl
-
-theorem coe_measurableEquiv_symm :
-    ⇑(EuclideanSpace.measurableEquiv ι).symm = WithLp.toLp _ := rfl
-
-end EuclideanSpace

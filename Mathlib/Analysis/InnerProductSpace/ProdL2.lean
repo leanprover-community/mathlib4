@@ -61,15 +61,15 @@ def prod (v : OrthonormalBasis ι₁ 𝕜 E) (w : OrthonormalBasis ι₂ 𝕜 F)
     · unfold Pairwise
       simp only [ne_eq, Basis.map_apply, Basis.prod_apply, LinearMap.coe_inl,
         OrthonormalBasis.coe_toBasis, LinearMap.coe_inr, WithLp.linearEquiv_symm_apply,
-        WithLp.prod_inner_apply, WithLp.ofLp_toLp, Sum.forall, Sum.elim_inl,
-        Function.comp_apply, inner_zero_right, add_zero, Sum.elim_inr, zero_add, Sum.inl.injEq,
-        reduceCtorEq, not_false_eq_true, inner_zero_left, imp_self, implies_true, and_true,
-        Sum.inr.injEq, true_and]
+        WithLp.prod_inner_apply, Sum.forall, Sum.elim_inl, Function.comp_apply, inner_zero_right,
+        add_zero, Sum.elim_inr, zero_add, Sum.inl.injEq, reduceCtorEq, not_false_eq_true,
+        inner_zero_left, imp_self, implies_true, and_true, Sum.inr.injEq, true_and]
       exact ⟨v.orthonormal.2, w.orthonormal.2⟩)
 
 @[simp] theorem prod_apply (v : OrthonormalBasis ι₁ 𝕜 E) (w : OrthonormalBasis ι₂ 𝕜 F) :
     ∀ i : ι₁ ⊕ ι₂, v.prod w i =
-      Sum.elim ((LinearMap.inl 𝕜 E F) ∘ v) ((LinearMap.inr 𝕜 E F) ∘ w) i := by
+      Sum.elim ((WithLp.toLp 2) ∘ (LinearMap.inl 𝕜 E F) ∘ v)
+        ((WithLp.toLp 2) ∘ (LinearMap.inr 𝕜 E F) ∘ w) i := by
   rw [Sum.forall]
   unfold OrthonormalBasis.prod
   aesop
