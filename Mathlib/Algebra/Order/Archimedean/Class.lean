@@ -163,7 +163,8 @@ namespace MulArchimedeanClass
 def mk (a : M) : MulArchimedeanClass M := toAntisymmetrization _ (MulArchimedeanOrder.of a)
 
 /-- An induction principle for `MulArchimedeanClass`. -/
-@[to_additive (attr := elab_as_elim) /-- An induction principle for `ArchimedeanClass` -/]
+@[to_additive (attr := elab_as_elim, induction_eliminator)
+/-- An induction principle for `ArchimedeanClass` -/]
 theorem ind {motive : MulArchimedeanClass M → Prop} (mk : ∀ a, motive (.mk a)) : ∀ x, motive x :=
   Antisymmetrization.ind _ mk
 
@@ -192,6 +193,20 @@ theorem lift_mk {α : Type*} (f : M → α) (h : ∀ a b, mk a = mk b → f a = 
     (a : M) : lift f h (mk a) = f a := by
   unfold lift
   exact Quotient.lift_mk f (fun _ _ h' ↦ h _ _ <| mk_eq_mk.mpr h') a
+
+/-- Lift a `M → M → α` function to `MulArchimedeanClass M → MulArchimedeanClass M → α`. -/
+@[to_additive /-- Lift a `M → M → α` function to `ArchimedeanClass M → ArchimedeanClass M → α`. -/]
+def lift₂ {α : Type*} (f : M → M → α)
+    (h : ∀ a₁ b₁ a₂ b₂, mk a₁ = mk b₁ → mk a₂ = mk b₂ → f a₁ a₂ = f b₁ b₂) :
+    MulArchimedeanClass M → MulArchimedeanClass M → α :=
+  Quotient.lift₂ f fun _ _ _ _ h₁ h₂ ↦ h _ _ _ _ (mk_eq_mk.mpr h₁) (mk_eq_mk.mpr h₂)
+
+@[to_additive (attr := simp)]
+theorem lift₂_mk {α : Type*} (f : M → M → α)
+    (h : ∀ a₁ b₁ a₂ b₂, mk a₁ = mk b₁ → mk a₂ = mk b₂ → f a₁ a₂ = f b₁ b₂)
+    (a b : M) : lift₂ f h (mk a) (mk b) = f a b := by
+  unfold lift₂
+  exact Quotient.lift₂_mk f (fun _ _ _ _ h₁ h₂ ↦ h _ _ _ _ (mk_eq_mk.mpr h₁) (mk_eq_mk.mpr h₂)) a b
 
 /-- Choose a representative element from a given archimedean class. -/
 @[to_additive /-- Choose a representative element from a given archimedean class. -/]
@@ -245,12 +260,12 @@ theorem mk_one : mk 1 = (⊤ : MulArchimedeanClass M) := rfl
 @[to_additive (attr := simp)]
 theorem mk_eq_top_iff : mk a = ⊤ ↔ a = 1 := by
   constructor
-  · intro h
-    obtain ⟨_, _, hm⟩ := mk_eq_mk.mp h
-    simpa using hm
-  · intro h
-    rw [h]
-    simp
+  · simp [← mk_one, mk_eq_mk]
+  · simp_all
+
+@[to_additive (attr := simp)]
+theorem top_eq_mk_iff : ⊤ = mk a ↔ a = 1 := by
+  rw [eq_comm, mk_eq_top_iff]
 
 variable (M) in
 @[to_additive (attr := simp)]
