@@ -226,7 +226,7 @@ lemma unique_nonDegenerate₃ (x : X _⦋n⦌) {m : ℕ}
     rintro y₁ y₂ h
     by_contra! h'
     suffices y₂ ≤ y₁ by simp [show y₁ = y₂ by omega] at h'
-    simpa only [hα₁, hα₁] using f₁.toOrderHom.monotone h'.le
+    simpa only [hα₁] using f₁.toOrderHom.monotone h'.le
   exact ⟨{ section_ := SimplexCategory.Hom.mk ⟨α, hα₂⟩, id := by ext : 3; apply hα₁ },
     by simp [α]⟩
 
