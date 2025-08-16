@@ -133,8 +133,9 @@ private lemma lie_e_f_same_aux (k : ι) (hki : k ≠ i) (hki' : k ≠ P.reflecti
 /-- Lemma 3.4 from [Geck](Geck2017). -/
 lemma lie_e_f_same :
     ⁅e i, f i⁆ = h i := by
-  letI _i := P.indexNeg
-  have _i : NoZeroSMulDivisors ℤ M := have := P.reflexive_left; .int_of_charZero R M
+  letI := P.indexNeg
+  have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
+  have : NoZeroSMulDivisors ℤ M := .int_of_charZero R M
   classical
   ext (k | k) (l | l)
   · simp [e, f, h]

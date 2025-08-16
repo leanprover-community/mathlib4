@@ -41,8 +41,9 @@ private lemma isNilpotent_e_aux {j : ι} (n : ℕ) (h : letI _i := P.indexNeg; j
     (e i ^ n).col (.inr j) = 0 ∨
       ∃ (k : ι) (x : ℕ), P.root k = P.root j + n • P.root i ∧
         (e i ^ n).col (.inr j) = x • Pi.single (.inr k) 1 := by
-  have _i : NoZeroSMulDivisors ℤ M := by have := P.reflexive_left; exact .int_of_charZero R M
-  letI _i := P.indexNeg
+  have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
+  have : NoZeroSMulDivisors ℤ M := .int_of_charZero R M
+  letI := P.indexNeg
   have aux (n : ℕ) : (e i ^ (n + 1)).col (.inr j) = (e i).mulVec ((e i ^ n).col (.inr j)) := by
     rw [pow_succ', ← Matrix.mulVec_single_one, ← Matrix.mulVec_mulVec]; simp
   induction n with
@@ -86,8 +87,9 @@ private lemma isNilpotent_e_aux {j : ι} (n : ℕ) (h : letI _i := P.indexNeg; j
 lemma isNilpotent_e :
     IsNilpotent (e i) := by
   classical
-  have _i : NoZeroSMulDivisors ℤ M := by have := P.reflexive_left; exact .int_of_charZero R M
-  letI _i := P.indexNeg
+  have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
+  have : NoZeroSMulDivisors ℤ M := .int_of_charZero R M
+  letI := P.indexNeg
   rw [Matrix.isNilpotent_iff_forall_col]
   have case_inl (j : b.support) : (e i ^ 2).col (Sum.inl j) = 0 := by
     ext (k | k)

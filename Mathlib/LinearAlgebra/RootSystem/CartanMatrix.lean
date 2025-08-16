@@ -108,7 +108,8 @@ variable [IsDomain R]
 
 lemma cartanMatrix_apply_eq_zero_iff_symm {i j : b.support} :
     b.cartanMatrix i j = 0 ↔ b.cartanMatrix j i = 0 := by
-  have _i := P.reflexive_left
+  have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
+  have : Module.IsReflexive R N := .of_isPerfPair P.flip.toLinearMap
   simp only [cartanMatrix_apply_eq_zero_iff_pairing, P.pairing_eq_zero_iff]
 
 variable [Finite ι]
@@ -120,8 +121,8 @@ lemma cartanMatrix_le_zero_of_ne
 
 lemma cartanMatrix_mem_of_ne {i j : b.support} (hij : i ≠ j) :
     b.cartanMatrix i j ∈ ({-3, -2, -1, 0} : Set ℤ) := by
-  have := P.reflexive_left
-  have := P.reflexive_right
+  have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
+  have : Module.IsReflexive R N := .of_isPerfPair P.flip.toLinearMap
   simp only [cartanMatrix, cartanMatrixIn_def]
   have h₁ := P.pairingIn_pairingIn_mem_set_of_isCrystallographic i j
   have h₂ : P.pairingIn ℤ i j ≤ 0 := b.cartanMatrix_le_zero_of_ne i j hij
