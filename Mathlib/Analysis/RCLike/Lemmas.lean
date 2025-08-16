@@ -60,8 +60,8 @@ variable [NormedAddCommGroup E] [NormedSpace K E]
 This is not an instance because it would cause a search for `FiniteDimensional ?x E` before
 `RCLike ?x`. -/
 theorem proper_rclike [FiniteDimensional K E] : ProperSpace E := by
-  letI : NormedSpace ℝ E := RestrictScalars.normedSpace ℝ K E
-  letI : FiniteDimensional ℝ E := FiniteDimensional.trans ℝ K E
+  have : NormedSpace ℝ E := RestrictScalars.normedSpace ℝ K E
+  have : FiniteDimensional ℝ E := FiniteDimensional.trans ℝ K E
   infer_instance
 
 variable {E}
