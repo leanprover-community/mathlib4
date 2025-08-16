@@ -107,7 +107,7 @@ instance : IsOrderedAddMonoid (ArchimedeanClass R) where
 noncomputable instance : LinearOrderedAddCommMonoidWithTop (ArchimedeanClass R) where
   top_add' x := by induction x with | mk x => rw [← mk_zero, ← mk_mul, zero_mul]
 
-variable (M) in
+variable (R) in
 /-- `ArchimedeanClass.mk` defines an `AddValuation` on the ring `R`. -/
 noncomputable def addValuation : AddValuation R (ArchimedeanClass R) := AddValuation.of mk
   rfl rfl min_le_mk_add mk_mul
