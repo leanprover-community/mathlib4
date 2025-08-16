@@ -51,11 +51,14 @@ theorem exists_eq_pow_of_exponent_coprime_of_pow_eq {a b m n : ℕ} (ha : a ≠ 
         exact this p_mem
       exact prime_of_mem_primeFactors this
     unfold c_factorization
-    have : n • Finsupp.mapRange (fun x => x / n) (by simp) a.factorization =
-        Finsupp.mapRange (fun x => x / n * n) (by simp) a.factorization := by
-      --apply?
+    --ext --refine Finsupp.ext ?_
+    refine Finsupp.ext_iff'.mpr ?_
+    constructor
+    . simp
       sorry
-    sorry
+    . intro p
+      simp
+      sorry
   · sorry
 
 theorem exists_eq_pow_of_pow_eq {a b m n : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) (hmn : m ≠ 0 ∨ n ≠ 0) (h : a ^ m = b ^ n) :
