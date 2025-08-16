@@ -183,12 +183,12 @@ section
 open unique_nonDegenerate
 
 /-!
-The following lemmas `unique_nonDegenerate₁`, `unique_nonDegenerate₂` and
-`unique_nonDegenerate₃` assert the uniqueness of the decomposition
+The following lemmas `unique_nonDegenerate_dim`, `unique_nonDegenerate_simplex` and
+`unique_nonDegenerate_map` assert the uniqueness of the decomposition
 obtained in the lemma `exists_nonDegenerate`.
 -/
 
-lemma unique_nonDegenerate₁ (x : X _⦋n⦌) {m₁ m₂ : ℕ}
+lemma unique_nonDegenerate_dim (x : X _⦋n⦌) {m₁ m₂ : ℕ}
     (f₁ : ⦋n⦌ ⟶ ⦋m₁⦌) [Epi f₁] (y₁ : X.nonDegenerate m₁) (hy₁ : x = X.map f₁.op y₁)
     (f₂ : ⦋n⦌ ⟶ ⦋m₂⦌) [Epi f₂] (y₂ : X.nonDegenerate m₂) (hy₂ : x = X.map f₂.op y₂) :
     m₁ = m₂ := by
@@ -196,7 +196,7 @@ lemma unique_nonDegenerate₁ (x : X _⦋n⦌) {m₁ m₂ : ℕ}
   obtain ⟨⟨hf₂⟩⟩ := isSplitEpi_of_epi f₂
   exact le_antisymm (le hf₁ hy₁ hy₂) (le hf₂ hy₂ hy₁)
 
-lemma unique_nonDegenerate₂ (x : X _⦋n⦌) {m : ℕ}
+lemma unique_nonDegenerate_simplex (x : X _⦋n⦌) {m : ℕ}
     (f₁ : ⦋n⦌ ⟶ ⦋m⦌) [Epi f₁] (y₁ : X.nonDegenerate m) (hy₁ : x = X.map f₁.op y₁)
     (f₂ : ⦋n⦌ ⟶ ⦋m⦌) (y₂ : X.nonDegenerate m) (hy₂ : x = X.map f₂.op y₂) :
     y₁ = y₂ := by
@@ -204,7 +204,7 @@ lemma unique_nonDegenerate₂ (x : X _⦋n⦌) {m : ℕ}
   ext
   simpa [g_eq_id hy₁ hy₂ hf₁] using (map_g_op_y₂ hf₁ hy₁ hy₂).symm
 
-lemma unique_nonDegenerate₃ (x : X _⦋n⦌) {m : ℕ}
+lemma unique_nonDegenerate_map (x : X _⦋n⦌) {m : ℕ}
     (f₁ : ⦋n⦌ ⟶ ⦋m⦌) [Epi f₁] (y₁ : X.nonDegenerate m) (hy₁ : x = X.map f₁.op y₁)
     (f₂ : ⦋n⦌ ⟶ ⦋m⦌) (y₂ : X.nonDegenerate m) (hy₂ : x = X.map f₂.op y₂) :
     f₁ = f₂ := by
