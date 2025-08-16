@@ -21,23 +21,27 @@ theorem exists_eq_pow_of_exponent_coprime_of_pow_eq {a b m n : ℕ} (ha : a ≠ 
   have := congrArg factorization h
   rw [factorization_pow, factorization_pow] at this
   let c_factoriztion := a.factorization.mapRange (. / n) (Nat.zero_div n)
+  --let factoriztion_prod (factorization : ℕ →₀ ℕ) := factorization.prod (. ^ .)
   let c := c_factoriztion.prod (. ^ .)
   use c
   constructor
-  · suffices a.factorization = n • c_factoriztion by
-      --unfold HMul.hMul Lean.Grind.NatModule.nsmul at this
-      unfold HSMul.hSMul at this
-      dsimp [instHSMul] at this
-      dsimp [SMul.smul] at this
+  · --unfold c c_factoriztion
+    suffices a.factorization = n • c_factoriztion by
+      have eq := congrArg (Finsupp.prod . (. ^ .)) this
+      simp at eq
+      have : a = a.factorization.prod (. ^ .) := by
+        symm
+        exact factorization_prod_pow_eq_self ha
+      rw [← this] at eq
+      convert eq
+      have : (n • c_factoriztion).prod (. ^ .) = ((c_factoriztion).prod (. ^ .)) ^ n := by
+        sorry
+      --exact eq
       sorry
-    have : a = a.factorization.prod (. ^ .) := by
-      symm
-      exact factorization_prod_pow_eq_self ha
-    conv_lhs => rw [this]
     unfold c_factoriztion
     have : n • Finsupp.mapRange (fun x => x / n) (by simp) a.factorization =
         Finsupp.mapRange (fun x => x / n * n) (by simp) a.factorization := by
-      apply?
+      --apply?
       sorry
     sorry
   · sorry
