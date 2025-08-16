@@ -773,6 +773,7 @@ import Mathlib.Algebra.Notation.Support
 import Mathlib.Algebra.Opposites
 import Mathlib.Algebra.Order.AbsoluteValue.Basic
 import Mathlib.Algebra.Order.AbsoluteValue.Euclidean
+import Mathlib.Algebra.Order.AddGroup.PartialSups
 import Mathlib.Algebra.Order.AddGroupWithTop
 import Mathlib.Algebra.Order.AddTorsor
 import Mathlib.Algebra.Order.Algebra
@@ -962,6 +963,7 @@ import Mathlib.Algebra.Order.Sub.Prod
 import Mathlib.Algebra.Order.Sub.Unbundled.Basic
 import Mathlib.Algebra.Order.Sub.Unbundled.Hom
 import Mathlib.Algebra.Order.Sub.WithTop
+import Mathlib.Algebra.Order.SuccOrder.PartialSups
 import Mathlib.Algebra.Order.SuccPred
 import Mathlib.Algebra.Order.SuccPred.TypeTags
 import Mathlib.Algebra.Order.SuccPred.WithBot
@@ -3621,6 +3623,8 @@ import Mathlib.Deprecated.RingHom
 import Mathlib.Dynamics.BirkhoffSum.Average
 import Mathlib.Dynamics.BirkhoffSum.Basic
 import Mathlib.Dynamics.BirkhoffSum.NormedSpace
+import Mathlib.Dynamics.BirkhoffSum.Pointwise
+import Mathlib.Dynamics.BirkhoffSum.QuasiMeasurePreserving
 import Mathlib.Dynamics.Circle.RotationNumber.TranslationNumber
 import Mathlib.Dynamics.Ergodic.Action.Basic
 import Mathlib.Dynamics.Ergodic.Action.OfMinimal
