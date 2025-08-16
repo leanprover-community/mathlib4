@@ -26,7 +26,7 @@ In the above, the pairing function is primitive recursive by definition.
 This deviates from the textbook definition of primitive recursive functions,
 which instead work with *`n`-ary* functions. We formalize the textbook
 definition in `Nat.Primrec'`. `Nat.Primrec'.prim_iff` then proves it is
-equivalent to our chosen formulation. For more discussionn of this and
+equivalent to our chosen formulation. For more discussion of this and
 other design choices in this formalization, see [carneiro2019].
 
 ## Main definitions
@@ -964,9 +964,18 @@ theorem listFilterMap {f : α → List β} {g : α → β → Option σ}
   (list_flatMap hf (comp₂ optionToList hg)).of_eq
     fun _ ↦ Eq.symm <| List.filterMap_eq_flatMap_toList _ _
 
+variable {p : α → Prop} [DecidablePred p]
+
 theorem list_length : Primrec (@List.length α) :=
   (list_foldr (@Primrec.id (List α) _) (const 0) <| to₂ <| (succ.comp <| snd.comp snd).to₂).of_eq
     fun l => by dsimp; induction l <;> simp [*]
+
+/-- Filtering a list for elements that satisfy a decidable predicate is primitive recursive. -/
+theorem listFilter (hf : PrimrecPred p) : Primrec fun L ↦ List.filter (p ·) L := by
+  rw [← List.filterMap_eq_filter]
+  apply listFilterMap .id
+  simp only [Primrec₂, Option.guard, decide_eq_true_eq]
+  exact ite (hf.comp snd) (option_some_iff.mpr snd) (const none)
 
 theorem list_findIdx {f : α → List β} {p : α → β → Bool}
     (hf : Primrec f) (hp : Primrec₂ p) : Primrec fun a => (f a).findIdx (p a) :=
@@ -1078,6 +1087,89 @@ theorem nat_omega_rec (f : α → β → σ) {m : α → β → ℕ}
 
 end Primrec
 
+namespace PrimrecPred
+
+open List Primrec
+
+variable {α β : Type*} {p : α → Prop} [DecidablePred p] {L : List α} {b : β}
+
+variable [Primcodable α] [Primcodable β]
+
+/-- Checking if any element of a list satisfies a decidable predicate is primitive recursive. -/
+theorem exists_mem_list (hf : PrimrecPred p) : PrimrecPred fun L : List α ↦ ∃ a ∈ L, p a :=
+  .of_eq (.not <| PrimrecRel.comp .eq (list_length.comp <| listFilter hf) (const 0)) <| by simp
+
+/-- Checking if every element of a list satisfies a decidable predicate is primitive recursive. -/
+theorem forall_mem_list (hf : PrimrecPred p) : PrimrecPred fun L : List α ↦ ∀ a ∈ L, p a :=
+  .of_eq (PrimrecRel.comp .eq (list_length.comp <| listFilter hf) (list_length)) <| by simp
+
+variable {p : ℕ → Prop} [DecidablePred p]
+
+/-- Bounded existential quantifiers are primitive recursive. -/
+theorem exists_lt (hf : PrimrecPred p) : PrimrecPred fun n ↦ ∃ x < n, p x :=
+  of_eq (hf.exists_mem_list.comp list_range) (by simp)
+
+/-- Bounded universal quantifiers are primitive recursive. -/
+theorem forall_lt (hf : PrimrecPred p) : PrimrecPred fun n ↦ ∀ x < n, p x :=
+  of_eq (hf.forall_mem_list.comp list_range) (by simp)
+
+/-- A helper lemma for proofs about bounded quantifiers on decidable relations. -/
+theorem listFilter_listRange {R : ℕ → ℕ → Prop} (s : ℕ) [DecidableRel R] (hf : PrimrecRel R) :
+    Primrec fun n ↦ (range s).filter (fun y ↦ R y n) := by
+  simp only [← filterMap_eq_filter]
+  refine listFilterMap (.const (range s)) ?_
+  refine ite (PrimrecRel.comp .eq ?_ (const true)) (option_some_iff.mpr snd) (.const Option.none)
+  exact hf.comp snd fst
+
+end PrimrecPred
+
+namespace PrimrecRel
+
+open Primrec List PrimrecPred
+
+variable {α β : Type*} {R : α → β → Prop} [DecidableRel R] {L : List α} {b : β}
+
+variable [Primcodable α] [Primcodable β]
+
+protected theorem not (hf : PrimrecRel R) : PrimrecRel fun a b ↦ ¬ R a b := PrimrecPred.not hf
+
+/-- If `R a b` is decidable, then given `L : List α` and `b : β`, it is primitive recurisve
+to filter `L` for elements `a` with `R a b` -/
+theorem listFilter (hf : PrimrecRel R) :
+    Primrec₂ fun (L : List α) b ↦ L.filter (fun a ↦ R a b) := by
+  simp only [← List.filterMap_eq_filter]
+  refine listFilterMap fst (Primrec.ite ?_ ?_ (Primrec.const Option.none))
+  · exact PrimrecRel.comp .eq (hf.comp snd (snd.comp fst)) (.const true)
+  · exact (option_some).comp snd
+
+/-- If `R a b` is decidable, then given `L : List α` and `b : β`, `g L b ↔ ∃ a L, R a b`
+is a primitive recursive relation. -/
+theorem exists_mem_list (hf : PrimrecRel R) : PrimrecRel fun (L : List α) b ↦ ∃ a ∈ L, R a b := by
+  have h (L) (b) : (List.filter (R · b) L).length ≠ 0 ↔ ∃ a ∈ L, R a b := by simp
+  refine .of_eq (.not ?_) h
+  exact .comp .eq (list_length.comp hf.listFilter) (const 0)
+
+/-- If `R a b` is decidable, then given `L : List α` and `b : β`, `g L b ↔ ∀ a L, R a b`
+is a primitive recursive relation. -/
+theorem forall_mem_list (hf : PrimrecRel R) : PrimrecRel fun (L : List α) b ↦ ∀ a ∈ L, R a b := by
+  have h (L) (b) : (List.filter (R · b) L).length = L.length ↔ ∀ a ∈ L, R a b := by simp
+  apply PrimrecRel.of_eq ?_ h
+  exact (.comp .eq (list_length.comp <| PrimrecRel.listFilter hf) (.comp list_length fst))
+
+variable {R : ℕ → ℕ → Prop} [DecidableRel R]
+
+/-- If `R a b` is decidable, then for any fixed `n` and `y`, `g n y ↔ ∃ x < n, R x y` is a
+primitive recursive relation. -/
+theorem exists_lt (hf : PrimrecRel R) : PrimrecRel fun n y ↦ ∃ x < n, R x y :=
+  (hf.exists_mem_list.comp (list_range.comp fst) snd).of_eq (by simp)
+
+/-- If `R a b` is decidable, then for any fixed `n` and `y`, `g n y ↔ ∀ x < n, R x y` is a
+primitive recursive relation. -/
+theorem forall_lt (hf : PrimrecRel R) : PrimrecRel fun n y ↦ ∀ x < n, R x y :=
+  (hf.forall_mem_list.comp (list_range.comp fst) snd).of_eq (by simp)
+
+end PrimrecRel
+
 namespace Primcodable
 
 variable {α : Type*} [Primcodable α]
@@ -1102,7 +1194,6 @@ instance vector {n} : Primcodable (List.Vector α n) :=
 
 instance finArrow {n} : Primcodable (Fin n → α) :=
   ofEquiv _ (Equiv.vectorEquivFin _ _).symm
-
 
 section ULower
 
@@ -1425,3 +1516,5 @@ end Nat.Primrec'
 
 theorem Primrec.nat_sqrt : Primrec Nat.sqrt :=
   Nat.Primrec'.prim_iff₁.1 Nat.Primrec'.sqrt
+
+set_option linter.style.longFile 1700
