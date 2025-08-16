@@ -3,6 +3,10 @@ import Archive.Examples.Eisenstein
 import Archive.Examples.IfNormalization.Result
 import Archive.Examples.IfNormalization.Statement
 import Archive.Examples.IfNormalization.WithoutAesop
+import Archive.Examples.Local.Laurent
+import Archive.Examples.Local.NumberField
+import Archive.Examples.Local.Padic
+import Archive.Examples.Local.Witt
 import Archive.Examples.MersennePrimes
 import Archive.Examples.PropEncodable
 import Archive.Hairer
