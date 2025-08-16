@@ -223,6 +223,9 @@ instance (priority := 100) CommSemiring.toCommMonoidWithZero [CommSemiring α] :
     CommMonoidWithZero α :=
   { inferInstanceAs (CommMonoid α), inferInstanceAs (CommSemiring α) with }
 
+instance (priority := 100) NonUnitalCommSemiring.toNonUnitalNonAssocCommSemiring
+    [NonUnitalCommSemiring α] : NonUnitalNonAssocCommSemiring α where
+
 section CommSemiring
 
 variable [CommSemiring α]
