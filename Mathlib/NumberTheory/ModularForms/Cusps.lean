@@ -8,6 +8,7 @@ import Mathlib.Analysis.RCLike.Basic
 import Mathlib.GroupTheory.Commensurable
 import Mathlib.RingTheory.Localization.NumDen
 import Mathlib.Topology.Compactification.OnePoint.ProjectiveLine
+import Mathlib.NumberTheory.ModularForms.ArithmeticSubgroups
 
 /-!
 # Cusps
@@ -107,22 +108,12 @@ lemma isCusp_SL2Z_iff' {c : OnePoint ℝ} :
     refine ⟨mapGL ℚ γ • ∞, ?_⟩
     rw [← Rat.coe_castHom, OnePoint.map_smul, OnePoint.map_infty, γ.map_mapGL (by rfl)]
 
-/-- The cusps of a finite-index subgroup `SL(2, ℤ)` are the same as those of `SL(2, ℤ)` itself. -/
-lemma isCusp_SL2Z_subgroup_iff {c : OnePoint ℝ} (Γ : Subgroup SL(2, ℤ)) [Γ.FiniteIndex] :
-    IsCusp c (Γ.map (mapGL ℝ)) ↔ IsCusp c (mapGL (R := ℤ) ℝ).range := by
-  apply isCusp_finiteIndex_iff (Subgroup.map_le_range _ _)
-  simpa [MonoidHom.range_eq_map, ← Subgroup.relindex_comap, Subgroup.comap_map_eq_self_of_injective
-    Matrix.SpecialLinearGroup.mapGL_injective] using Subgroup.FiniteIndex.index_ne_zero
+/-- The cusps of any arithmetic subgroup are the same as those of `SL(2, ℤ)`. -/
+lemma IsArith.isCusp_iff_isCusp_SL2Z (Γ : Subgroup (GL (Fin 2) ℝ)) [IsArith Γ] {c : OnePoint ℝ} :
+    IsCusp c Γ ↔ IsCusp c (mapGL (R := ℤ) ℝ).range :=
+  IsArith.is_comm.isCusp_iff
 
 end IsCusp
-
-section IsArith
-
-/-- A subgroup of `GL(2, ℝ)` is arithmetic if it is commensurable with the image of `SL(2, ℤ)`. -/
-class IsArith (Γ : Subgroup (GL (Fin 2) ℝ)) : Prop where
-  is_comm : Commensurable Γ (mapGL ℝ : SL(2, ℤ) →* GL (Fin 2) ℝ).range
-
-end IsArith
 
 section CuspOrbits
 
@@ -136,31 +127,30 @@ def cusps_subMulAction (Γ : Subgroup (GL (Fin 2) ℝ)) : SubMulAction Γ (OnePo
 def CuspOrbits (Γ : Subgroup (GL (Fin 2) ℝ)) :=
   MulAction.orbitRel.Quotient Γ (cusps_subMulAction Γ)
 
-noncomputable example (g : SL(2, ℤ)) : CuspOrbits (mapGL (R := ℤ) ℝ).range :=
-  ⟦⟨mapGL ℝ g • ∞, isCusp_SL2Z_iff.mpr ⟨mapGL ℚ  g • ∞, by
-    rw [← Rat.coe_castHom, OnePoint.map_smul, OnePoint.map_infty, map_mapGL _ (by rfl)]⟩⟩⟧
+/-- Surjection from `SL(2, ℤ) / (Γ ⊓ SL(2, ℤ))` to cusps of `Γ`. Mostly useful for showing that
+`CuspOrbits Γ` is finite for arithmetic subgroups. -/
+noncomputable def cosetToCuspOrbit
+    (Γ : Subgroup <| GL (Fin 2) ℝ) [IsArith Γ] : SL(2, ℤ) ⧸ (Γ.comap <| mapGL ℝ) → CuspOrbits Γ :=
+  Quotient.lift
+    (fun g ↦ ⟦⟨mapGL ℝ g⁻¹ • ∞,
+      (IsArith.isCusp_iff_isCusp_SL2Z Γ).mpr <| isCusp_SL2Z_iff.mpr ⟨mapGL ℚ g⁻¹ • ∞, by
+        rw [← Rat.coe_castHom, OnePoint.map_smul, OnePoint.map_infty, map_mapGL _ (by rfl)]⟩⟩⟧)
+    (fun a b hab ↦ by
+      rw [← Quotient.eq_iff_equiv, Quotient.eq, QuotientGroup.leftRel_apply] at hab
+      refine Quotient.eq.mpr ⟨⟨_, hab⟩, ?_⟩
+      simp [-smul_infty_eq_ite, MulAction.mul_smul])
 
--- /-- Surjection from `SL(2, ℤ) / Γ` to cusps of `Γ`. Mostly useful for showing that `Cusp Γ` is
--- finite for finite-index subgroups. -/
--- noncomputable def cosetToCusp
---     (Γ : Subgroup SL(2, ℤ)) : SL(2, ℤ) ⧸ Γ → CuspOrbits (Γ.map <| mapGL ℝ) :=
---   Quotient.lift fun g ↦ ⟦⟨mapGL ℝ g • ∞,
---     isCusp_SL2Z_iff.mpr ⟨mapGL ℚ g • ∞, by
---       rw [← Rat.coe_castHom, OnePoint.map_smul, OnePoint.map_infty, map_mapGL _ (by rfl)]⟩⟩⟧
---     sorry
+lemma surjective_cosetToCuspOrbit (Γ : Subgroup <| GL (Fin 2) ℝ) [IsArith Γ] :
+    (cosetToCuspOrbit Γ).Surjective := by
+  rintro ⟨c, (hc : IsCusp c _)⟩
+  rw [IsArith.isCusp_iff_isCusp_SL2Z, isCusp_SL2Z_iff'] at hc
+  obtain ⟨γ, rfl⟩ := hc
+  use ⟦γ⁻¹⟧
+  simp only [cosetToCuspOrbit, Quotient.lift_mk, inv_inv]
+  rfl
 
--- lemma cosetToCusp_apply (Γ : Subgroup SL(2, ℤ)) (g : SL(2, ℤ)) :
---     cosetToCusp Γ ⟦g⟧ = ⟦mapGL ℚ g⁻¹ • ∞⟧ :=
---   rfl
-
--- lemma surjective_cosetToCusp (Γ : Subgroup SL(2, ℤ)) : (cosetToCusp Γ).Surjective := by
---   rintro ⟨c⟩
---   obtain ⟨g, rfl⟩ := c.exists_mem_SL2 ℤ
---   use ⟦g⁻¹⟧
---   rw [cosetToCusp_apply, inv_inv, Quotient.mk]
-
--- /-- A finite-index subgroup has finitely many cusps. -/
--- instance instFiniteOfFiniteIndex (Γ : Subgroup SL(2, ℤ)) [Γ.FiniteIndex] : Finite (Cusp Γ) :=
---   .of_surjective _ (surjective_cosetToCusp Γ)
+/-- An arithmetic subgroup has finitely many cusps. -/
+instance (Γ : Subgroup (GL (Fin 2) ℝ)) [IsArith Γ] : Finite (CuspOrbits Γ) :=
+  .of_surjective _ (surjective_cosetToCuspOrbit Γ)
 
 end CuspOrbits

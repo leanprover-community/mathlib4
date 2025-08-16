@@ -603,29 +603,28 @@ end translate
 section SL2Z
 
 open ModularForm CuspForm
--- TODO: typeclass for arithmetic subgroups?
 
-variable {k F} {Γ : Subgroup (SL(2, ℤ))} [Γ.FiniteIndex] [FunLike F ℍ ℂ]
+variable {k F} {Γ : Subgroup (GL (Fin 2) ℝ)} [IsArith Γ] [FunLike F ℍ ℂ]
 
-lemma ModularFormClass.bdd_at_infty_slash [ModularFormClass F (Γ.map <| mapGL ℝ) k]
+lemma ModularFormClass.bdd_at_infty_slash [ModularFormClass F Γ k]
     (f : F) (g : SL(2, ℤ)) : IsBoundedAtImInfty (f ∣[k] g) := by
   rw [← OnePoint.isBoundedAt_infty, SL_slash, OnePoint.IsBoundedAt.slash]
   apply bdd_at_cusps f
-  rw [isCusp_SL2Z_subgroup_iff, isCusp_SL2Z_iff']
+  rw [IsArith.isCusp_iff_isCusp_SL2Z, isCusp_SL2Z_iff']
   exact ⟨g, by simp⟩
 
-lemma ModularFormClass.bdd_at_infty [ModularFormClass F (Γ.map <| mapGL ℝ) k]
+lemma ModularFormClass.bdd_at_infty [ModularFormClass F Γ k]
     (f : F) : IsBoundedAtImInfty f := by
   simpa using ModularFormClass.bdd_at_infty_slash f 1
 
-lemma CuspFormClass.zero_at_infty_slash [CuspFormClass F (Γ.map <| mapGL ℝ) k]
+lemma CuspFormClass.zero_at_infty_slash [CuspFormClass F Γ k]
     (f : F) (g : SL(2, ℤ)) : IsZeroAtImInfty (f ∣[k] g) := by
   rw [← OnePoint.isZeroAt_infty, SL_slash, OnePoint.IsZeroAt.slash]
   apply zero_at_cusps f
-  rw [isCusp_SL2Z_subgroup_iff, isCusp_SL2Z_iff']
+  rw [IsArith.isCusp_iff_isCusp_SL2Z, isCusp_SL2Z_iff']
   exact ⟨g, by simp⟩
 
-lemma CuspFormClass.zero_at_infty [CuspFormClass F (Γ.map <| mapGL ℝ) k]
+lemma CuspFormClass.zero_at_infty [CuspFormClass F Γ k]
     (f : F) : IsZeroAtImInfty f := by
   simpa using CuspFormClass.zero_at_infty_slash f 1
 
