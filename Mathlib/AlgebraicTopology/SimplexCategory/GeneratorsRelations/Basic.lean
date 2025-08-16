@@ -66,6 +66,7 @@ inductive homRel : HomRel (Paths FreeSimplexQuiver)
 
 end FreeSimplexQuiver
 
+set_option linter.style.indentation false in -- TODO: disable on deriving indentation
 /-- SimplexCategory is the category presented by generators and relation by the simplicial
 identities. -/
 def SimplexCategoryGenRel := Quotient FreeSimplexQuiver.homRel

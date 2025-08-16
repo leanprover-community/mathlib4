@@ -41,6 +41,7 @@ inductive graphRel : ℕ → Type
   | adj : graphRel 2
   deriving DecidableEq
 
+set_option linter.style.indentation false in -- TODO: disable on deriving indentation
 /-- The language consisting of a single relation representing adjacency. -/
 protected def graph : Language := ⟨fun _ => Empty, graphRel⟩
   deriving IsRelational
