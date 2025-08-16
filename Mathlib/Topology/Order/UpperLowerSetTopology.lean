@@ -3,6 +3,7 @@ Copyright (c) 2023 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
+import Mathlib.Logic.Lemmas
 import Mathlib.Topology.AlexandrovDiscrete
 import Mathlib.Topology.ContinuousMap.Basic
 import Mathlib.Topology.Order.LowerUpperTopology
@@ -45,7 +46,7 @@ with the original topology. See `Topology.Specialization`.
 upper set topology, lower set topology, preorder, Alexandrov
 -/
 
-open Set TopologicalSpace
+open Set TopologicalSpace Filter
 
 variable {α β γ : Type*}
 
@@ -252,7 +253,27 @@ interval (-∞,a].
 lemma specializes_iff_le {a b : α} : a ⤳ b ↔ b ≤ a := by
   simp only [specializes_iff_closure_subset, closure_singleton, Iic_subset_Iic]
 
+lemma nhdsKer_eq_upperClosure (s : Set α) : nhdsKer s = ↑(upperClosure s) := by
+  ext; simp [mem_nhdsKer_iff_specializes, specializes_iff_le]
+
+@[simp] lemma nhdsKer_singleton (a : α) : nhdsKer {a} = Ici a := by
+  rw [nhdsKer_eq_upperClosure, upperClosure_singleton, UpperSet.coe_Ici]
+
+lemma nhds_eq_principal_Ici (a : α) : 𝓝 a = 𝓟 (Ici a) := by
+  rw [← principal_nhdsKer_singleton, nhdsKer_singleton]
+
+lemma nhdsSet_eq_principal_upperClosure (s : Set α) : 𝓝ˢ s = 𝓟 ↑(upperClosure s) := by
+  rw [← principal_nhdsKer, nhdsKer_eq_upperClosure]
+
 end Preorder
+
+protected lemma _root_.Topology.isUpperSet_iff_nhds {α : Type*} [TopologicalSpace α] [Preorder α] :
+    Topology.IsUpperSet α ↔ (∀ a : α, 𝓝 a = 𝓟 (Ici a)) where
+  mp _ a := nhds_eq_principal_Ici a
+  mpr hα := by constructor; simp [TopologicalSpace.ext_iff_nhds, hα, nhds_eq_principal_Ici]
+
+instance : Topology.IsUpperSet Prop := by
+  simp [Topology.isUpperSet_iff_nhds, Prop.forall]
 
 section maps
 
@@ -325,7 +346,27 @@ interval (-∞,a].
   rw [closure_eq_upperClosure, upperClosure_singleton]
   rfl
 
+lemma specializes_iff_le {a b : α} : a ⤳ b ↔ a ≤ b := by
+  simp only [specializes_iff_closure_subset, closure_singleton, Ici_subset_Ici]
+
+lemma nhdsKer_eq_lowerClosure (s : Set α) : nhdsKer s = ↑(lowerClosure s) := by
+  ext; simp [mem_nhdsKer_iff_specializes, specializes_iff_le]
+
+@[simp] lemma nhdsKer_singleton (a : α) : nhdsKer {a} = Iic a := by
+  rw [nhdsKer_eq_lowerClosure, lowerClosure_singleton, LowerSet.coe_Iic]
+
+lemma nhds_eq_principal_Iic (a : α) : 𝓝 a = 𝓟 (Iic a) := by
+  rw [← principal_nhdsKer_singleton, nhdsKer_singleton]
+
+lemma nhdsSet_eq_principal_lowerClosure (s : Set α) : 𝓝ˢ s = 𝓟 ↑(lowerClosure s) := by
+  rw [← principal_nhdsKer, nhdsKer_eq_lowerClosure]
+
 end Preorder
+
+protected lemma _root_.Topology.isLowerSet_iff_nhds {α : Type*} [TopologicalSpace α] [Preorder α] :
+    Topology.IsLowerSet α ↔ (∀ a : α, 𝓝 a = 𝓟 (Iic a)) where
+  mp _ a := nhds_eq_principal_Iic a
+  mpr hα := by constructor; simp [TopologicalSpace.ext_iff_nhds, hα, nhds_eq_principal_Iic]
 
 section maps
 
