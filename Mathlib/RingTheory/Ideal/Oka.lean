@@ -12,10 +12,10 @@ This file introduces the notion of oka predicates and standard results about the
 
 ## Main results
 
-- `Ideal.isPrime_of_maximal_not_isOka`: if an ideal is maximal for not satisfying an oka predicate
-  then it is prime.
-- `IsOka.forall_of_forall_prime`: if all prime ideals of a ring satisfy an oka predicate, then all
-  its ideals also satisfy the predicate.
+- `Ideal.IsOka.isPrime_of_maximal_not_isOka`: if an ideal is maximal for not satisfying an oka
+  predicate then it is prime.
+- `Ideal.IsOka.forall_of_forall_prime`: if all prime ideals of a ring satisfy an oka predicate,
+  then all its ideals also satisfy the predicate.
 
 ## References
 
@@ -53,11 +53,16 @@ theorem isPrime_of_maximal_not_isOka (hP : IsOka P) {I : Ideal R}
 
 /-- If all prime ideals of a ring satisfy an oka predicate, then all its ideals also satisfy the
 predicate. `hmax` is generaly obtained using Zorn's lemma. -/
-theorem forall_of_forall_prime_isOka (hP : IsOka P)
+theorem forall_of_forall_prime (hP : IsOka P)
     (hmax : (∃ I, ¬P I) → ∃ I, Maximal (¬P ·) I) (hprime : ∀ I, I.IsPrime → P I) : ∀ I, P I := by
   by_contra!
   obtain ⟨I, hI⟩ := hmax this
   exact hI.prop <| hprime I (hP.isPrime_of_maximal_not_isOka hI)
+
+@[deprecated forall_of_forall_prime (since := "2025-08-16")]
+theorem forall_of_forall_prime_isOka (hP : IsOka P)
+    (hmax : (∃ I, ¬P I) → ∃ I, Maximal (¬P ·) I) (hprime : ∀ I, I.IsPrime → P I) : ∀ I, P I :=
+  forall_of_forall_prime hP hmax hprime
 
 end IsOka
 
