@@ -30,14 +30,8 @@ prime, irreducible, integers, normalization monoid, gcd monoid, greatest common 
 namespace Int
 
 
-@[deprecated "use `isCoprime_iff_gcd_eq_one.symm` instead" (since := "2025-01-23")]
-theorem gcd_eq_one_iff_coprime {a b : ℤ} : Int.gcd a b = 1 ↔ IsCoprime a b :=
-  isCoprime_iff_gcd_eq_one.symm
-
 theorem isCoprime_iff_nat_coprime {a b : ℤ} : IsCoprime a b ↔ Nat.Coprime a.natAbs b.natAbs := by
   rw [isCoprime_iff_gcd_eq_one, Nat.coprime_iff_gcd_eq_one, gcd_eq_natAbs]
-
-@[deprecated (since := "2025-01-23")] alias coprime_iff_nat_coprime := isCoprime_iff_nat_coprime
 
 /-- If `gcd a (m * n) ≠ 1`, then `gcd a m ≠ 1` or `gcd a n ≠ 1`. -/
 theorem gcd_ne_one_iff_gcd_mul_right_ne_one {a : ℤ} {m n : ℕ} :
@@ -59,8 +53,6 @@ theorem sq_of_gcd_eq_one {a b c : ℤ} (h : Int.gcd a b = 1) (heq : a * b = c ^ 
 theorem sq_of_isCoprime {a b c : ℤ} (h : IsCoprime a b) (heq : a * b = c ^ 2) :
     ∃ a0 : ℤ, a = a0 ^ 2 ∨ a = -a0 ^ 2 :=
   sq_of_gcd_eq_one (isCoprime_iff_gcd_eq_one.mp h) heq
-
-@[deprecated (since := "2025-01-23")] alias sq_of_coprime := sq_of_isCoprime
 
 theorem natAbs_euclideanDomain_gcd (a b : ℤ) :
     Int.natAbs (EuclideanDomain.gcd a b) = Int.gcd a b := by

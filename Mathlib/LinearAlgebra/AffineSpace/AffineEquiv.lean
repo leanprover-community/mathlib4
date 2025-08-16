@@ -494,16 +494,10 @@ theorem pointReflection_fixed_iff_of_injective_two_nsmul {x y : P₁}
     (h : Injective (2 • · : V₁ → V₁)) : pointReflection k x y = y ↔ y = x :=
   Equiv.pointReflection_fixed_iff_of_injective_two_nsmul h
 
-@[deprecated (since := "2024-11-18")] alias pointReflection_fixed_iff_of_injective_bit0 :=
-pointReflection_fixed_iff_of_injective_two_nsmul
-
 theorem injective_pointReflection_left_of_injective_two_nsmul
     (h : Injective (2 • · : V₁ → V₁)) (y : P₁) :
     Injective fun x : P₁ => pointReflection k x y :=
   Equiv.injective_pointReflection_left_of_injective_two_nsmul h y
-
-@[deprecated (since := "2024-11-18")] alias injective_pointReflection_left_of_injective_bit0 :=
-injective_pointReflection_left_of_injective_two_nsmul
 
 theorem injective_pointReflection_left_of_module [Invertible (2 : k)] :
     ∀ y, Injective fun x : P₁ => pointReflection k x y :=

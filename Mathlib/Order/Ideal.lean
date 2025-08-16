@@ -145,7 +145,7 @@ theorem mem_of_mem_of_le {x : P} {I J : Ideal P} : x ∈ I → I ≤ J → x ∈
   @Set.mem_of_mem_of_subset P x I J
 
 /-- A proper ideal is one that is not the whole set.
-    Note that the whole set might not be an ideal. -/
+Note that the whole set might not be an ideal. -/
 @[mk_iff]
 class IsProper (I : Ideal P) : Prop where
   /-- This ideal is not the whole set. -/
@@ -483,9 +483,6 @@ structure Cofinal (P) [Preorder P] where
   carrier : Set P
   /-- The `Cofinal` contains arbitrarily large elements. -/
   isCofinal : IsCofinal carrier
-
-@[deprecated Cofinal.isCofinal (since := "2024-12-02")]
-alias Cofinal.mem_gt := Cofinal.isCofinal
 
 namespace Cofinal
 

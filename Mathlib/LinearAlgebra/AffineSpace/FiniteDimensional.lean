@@ -5,6 +5,7 @@ Authors: Joseph Myers
 -/
 import Mathlib.FieldTheory.Finiteness
 import Mathlib.LinearAlgebra.AffineSpace.Basis
+import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
 import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 
 /-!

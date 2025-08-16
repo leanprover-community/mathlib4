@@ -27,7 +27,7 @@ in a categorical sense is a colimit.
 
 ## TODO
 * refactor `DirectedSystem` and the construction of colimits in `Type`
-by using `Functor.ColimitType`.
+  by using `Functor.ColimitType`.
 * add a similar API for limits in `Type`?
 
 -/
@@ -137,6 +137,17 @@ lemma descColimitType_ιColimitType_apply (c : F.CoconeTypes) (j : J) (x : F.obj
 namespace CoconeTypes
 
 variable {F} (c : CoconeTypes.{w₁} F)
+
+lemma descColimitType_surjective_iff :
+    Function.Surjective (F.descColimitType c) ↔
+      ∀ (z : c.pt), ∃ (i : J) (x : F.obj i), c.ι i x = z := by
+  constructor
+  · intro h z
+    obtain ⟨⟨i, x⟩, rfl⟩ := h z
+    exact ⟨i, x, rfl⟩
+  · intro h z
+    obtain ⟨i, x, rfl⟩ := h z
+    exact ⟨F.ιColimitType i x, rfl⟩
 
 /-- Given `F : J ⥤ Type w₀` and `c : F.CoconeTypes`, this is the property
 that `c` is a colimit. It is defined by saying the canonical map
