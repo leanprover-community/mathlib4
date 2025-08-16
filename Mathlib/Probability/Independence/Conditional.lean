@@ -647,10 +647,6 @@ theorem condIndepFun_iff_condExp_inter_preimage_eq_mul {mβ : MeasurableSpace β
   · rintro ⟨s, hs, rfl⟩ ⟨t, ht, rfl⟩
     exact h s t hs ht
 
-@[deprecated (since := "2025-01-21")]
-alias condIndepFun_iff_condexp_inter_preimage_eq_mul :=
-  condIndepFun_iff_condExp_inter_preimage_eq_mul
-
 theorem iCondIndepFun_iff_condExp_inter_preimage_eq_mul {β : ι → Type*}
     (m : ∀ x, MeasurableSpace (β x)) (f : ∀ i, Ω → β i) (hf : ∀ i, Measurable (f i)) :
     iCondIndepFun m' hm' f μ ↔
@@ -672,10 +668,6 @@ theorem iCondIndepFun_iff_condExp_inter_preimage_eq_mul {β : ι → Type*}
         rw [(h_sets i hi).choose_spec.2.symm]
         simp only [g, dif_pos hi]
       convert h with i hi i hi <;> exact hg i hi
-
-@[deprecated (since := "2025-01-21")]
-alias iCondIndepFun_iff_condexp_inter_preimage_eq_mul :=
-  iCondIndepFun_iff_condExp_inter_preimage_eq_mul
 
 theorem condIndepFun_iff_condIndepSet_preimage {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     (hf : Measurable f) (hg : Measurable g) :
