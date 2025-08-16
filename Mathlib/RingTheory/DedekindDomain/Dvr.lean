@@ -172,12 +172,3 @@ instance IsDedekindDomainDvr.isIntegrallyClosed [h : IsDedekindDomainDvr A] :
 /-- If an integral domain is Noetherian, and the localization at every nonzero prime is
 a discrete valuation ring, then it is a Dedekind domain. -/
 instance IsDedekindDomainDvr.isDedekindDomain [IsDedekindDomainDvr A] : IsDedekindDomain A where
-
-open Ideal in
-/--
-The monoid of ideals of an Dedekind domain is torsion-free.
--/
-instance [IsDedekindDomain A] : IsMulTorsionFree (Ideal A) := by
-  refine IsMulTorsionFree.mk fun n hn I J h ↦ eq_of_localization_maximal fun p _ ↦ ?_
-  have hyp := congr_arg (mapHom (algebraMap A (Localization.AtPrime p))) h
-  rwa [map_pow, mapHom_apply, map_pow, mapHom_apply, pow_left_inj hn] at hyp
