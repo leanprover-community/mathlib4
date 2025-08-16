@@ -20,22 +20,22 @@ and subsingleton instance arguments such as `Decidable` or `Fintype`.
 
 The implementation strategy is the following:
 
-1. The pattern is elaborated twice, once with each hole replaced by the LHS
-   and again with each hole replaced by the RHS. We do not force the hole to
-   have any particular type while elaborating, but if the hole has a type
-   with an obvious LHS or RHS, then we propagate this information outward.
-   We use `Mathlib.Tactic.TermCongr.cHole` with metadata for these replacements
-   to hold onto the hole itself.
-2. Once the pattern has been elaborated twice,
-   we unify them against the respective LHS and RHS of the target type
-   if the target has a type with an obvious LHS and RHS.
-   This can fill in some metavariables and help typeclass inference make progress.
-3. Then we simultaneously walk along the elaborated LHS and RHS expressions
-   to generate a congruence.
-   When we reach `cHole`s, we make sure they elaborated in a compatible way.
-   Each `Expr` type has some logic to come up with a suitable congruence.
-   For applications we use a version of `Lean.Meta.mkHCongrWithArity` that tries
-   to fill in some of the equality proofs using subsingleton lemmas.
+1.  The pattern is elaborated twice, once with each hole replaced by the LHS
+    and again with each hole replaced by the RHS. We do not force the hole to
+    have any particular type while elaborating, but if the hole has a type
+    with an obvious LHS or RHS, then we propagate this information outward.
+    We use `Mathlib.Tactic.TermCongr.cHole` with metadata for these replacements
+    to hold onto the hole itself.
+2.  Once the pattern has been elaborated twice,
+    we unify them against the respective LHS and RHS of the target type
+    if the target has a type with an obvious LHS and RHS.
+    This can fill in some metavariables and help typeclass inference make progress.
+3.  Then we simultaneously walk along the elaborated LHS and RHS expressions
+    to generate a congruence.
+    When we reach `cHole`s, we make sure they elaborated in a compatible way.
+    Each `Expr` type has some logic to come up with a suitable congruence.
+    For applications we use a version of `Lean.Meta.mkHCongrWithArity` that tries
+    to fill in some of the equality proofs using subsingleton lemmas.
 
 The point of elaborating the expression twice is that we let the elaborator handle
 activities like synthesizing instances, etc., specialized to LHS or RHS, without trying
@@ -255,11 +255,10 @@ which can happen for user-supplied congruence holes.
 
 This complexity is to support two features:
 
-1. The user is free to supply Iff, Eq, and HEq lemmas in congruence holes,
-   and we're able to transform them into whatever is appropriate for a
-   given congruence lemma.
-2. If the congruence hole is a metavariable, then we can specialize that
-   hole to an Iff, Eq, or HEq depending on what's necessary at that site. -/
+1.  The user is free to supply Iff, Eq, and HEq lemmas in congruence holes,
+    and we're able to transform them into whatever is appropriate for a given congruence lemma.
+2.  If the congruence hole is a metavariable, then we can specialize that
+    hole to an Iff, Eq, or HEq depending on what's necessary at that site. -/
 structure CongrResult where
   /-- The left-hand side of the congruence result. -/
   lhs : Expr
