@@ -52,6 +52,12 @@ lemma image_eq_preimage_symm (e : α ≃ β) (s : Set α) : e '' s = e.symm ⁻�
 @[deprecated (since := "2025-11-05")]
 protected alias image_eq_preimage := image_eq_preimage_symm
 
+protected lemma image_symm {α β} (e : α ≃ β) (s : Set β) : e.symm '' s = e ⁻¹' s :=
+  e.symm.image_eq_preimage _
+
+protected lemma preimage_symm {α β} (e : α ≃ β) (s : Set α) : e.symm ⁻¹' s = e '' s :=
+  (e.image_eq_preimage _).symm
+
 @[simp 1001]
 theorem _root_.Set.mem_image_equiv {α β} {S : Set α} {f : α ≃ β} {x : β} :
     x ∈ f '' S ↔ f.symm x ∈ S :=
