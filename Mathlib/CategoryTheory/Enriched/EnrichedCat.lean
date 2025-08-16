@@ -44,21 +44,21 @@ def of (C : Type u) [EnrichedCategory.{w} V C] : EnrichedCat.{w, v, u} V :=
 
 open EnrichedCategory ForgetEnrichment
 
-variable {C D E E' : EnrichedCat.{w, v, u} V}
+variable {V} {C D E E' : EnrichedCat.{w, v, u} V}
 
 /-- Whisker a `V`-enriched natural transformation on the left. -/
 @[simps!]
 def whiskerLeft
-    (F : EnrichedFunctor V C D) {G H : EnrichedFunctor V D E} (α : G.forget ⟶ H.forget) :
-    (F.comp V G).forget ⟶ (F.comp V H).forget :=
-  (F.forgetComp G).hom ≫ F.forget.whiskerLeft α ≫ (F.forgetComp H).inv
+    (F : EnrichedFunctor V C D) {G H : EnrichedFunctor V D E} (α : G ⟶ H) :
+    (F.comp V G) ⟶ (F.comp V H) :=
+  ⟨(F.forgetComp G).hom ≫ F.forget.whiskerLeft α.out ≫ (F.forgetComp H).inv⟩
 
 /-- Whisker a `V`-enriched natural transformation on the right. -/
 @[simps!]
 def whiskerRight
-    {F G : EnrichedFunctor V C D} (α : F.forget ⟶ G.forget) (H : EnrichedFunctor V D E) :
-    (F.comp V H).forget ⟶ (G.comp V H).forget :=
-  (F.forgetComp H).hom ≫ Functor.whiskerRight α H.forget ≫ (G.forgetComp H).inv
+    {F G : EnrichedFunctor V C D} (α : F ⟶ G) (H : EnrichedFunctor V D E) :
+    (F.comp V H) ⟶ (G.comp V H) :=
+  ⟨(F.forgetComp H).hom ≫ Functor.whiskerRight α.out H.forget ≫ (G.forgetComp H).inv⟩
 
 /-- Composing the `V`-enriched identity functor with any functor is isomorphic to that functor. -/
 @[simps!]
@@ -88,60 +88,33 @@ def associator (F : EnrichedFunctor V C D) (G : EnrichedFunctor V D E)
 
 lemma comp_whiskerRight {F G H : EnrichedFunctor V C D} (α : F ⟶ G)
     (β : G ⟶ H) (I : EnrichedFunctor V D E) :
-    whiskerRight V (α ≫ β) I = whiskerRight V α I ≫ whiskerRight V β I := by
-  refine EnrichedFunctor.hom_ext fun X => ?_
-  simp only [EnrichedFunctor.forget, EnrichedFunctor.comp_obj, EnrichedFunctor.comp_map,
-    whiskerRight_app, to_of, NatTrans.comp_app, homTo_comp, Category.assoc,
-    EnrichedFunctor.map_comp, Category.comp_id]
+    whiskerRight ⟨α.out ≫ β.out⟩ I = whiskerRight α I ≫ whiskerRight β I := by
+  ext X
+  simp only [whiskerRight_out_app, NatTrans.comp_app, EnrichedFunctor.category_comp_out,
+    EnrichedFunctor.forget, EnrichedFunctor.comp_obj, EnrichedFunctor.comp_map]
   simp [← ForgetEnrichment.homOf_comp]
+
+lemma whisker_exchange {F G : EnrichedFunctor V C D} {H I : EnrichedFunctor V D E}
+    (α : F ⟶ G) (β : H ⟶ I) :
+    whiskerLeft F β ≫ whiskerRight α I = whiskerRight α H ≫ whiskerLeft G β := by
+  ext X
+  simp only [EnrichedFunctor.forget_obj, EnrichedFunctor.comp_obj,
+    EnrichedFunctor.category_comp_out, NatTrans.comp_app, whiskerLeft_out_app,
+    whiskerRight_out_app]
+  exact (β.out.naturality (α.out.app (ForgetEnrichment.of V X))).symm
 
 /-- The bicategory structure on `EnrichedCat V` for a monoidal category `V`. -/
 instance bicategory : Bicategory (EnrichedCat.{w, v, u} V) where
   Hom C D := EnrichedFunctor V C D
   id C := EnrichedFunctor.id V C
   comp F G := EnrichedFunctor.comp V F G
-  whiskerLeft F G H α := whiskerLeft V F α
-  whiskerRight α H := whiskerRight V α H
-  associator F G H := associator V F G H
-  leftUnitor F := leftUnitor V F
-  rightUnitor F := rightUnitor V F
-  pentagon F G H I := by
-    refine EnrichedFunctor.hom_ext fun X => ?_
-    simp [EnrichedFunctor.forget]
-  triangle F G := by
-    refine EnrichedFunctor.hom_ext fun X => ?_
-    simp [EnrichedFunctor.forget]
-  whiskerLeft_id F G := by
-    refine EnrichedFunctor.hom_ext fun X => ?_
-    simp [EnrichedFunctor.forget]
-  id_whiskerLeft α := by
-    refine EnrichedFunctor.hom_ext fun X => ?_
-    simp [EnrichedFunctor.forget]
-  comp_whiskerLeft F G H I α := by
-    refine EnrichedFunctor.hom_ext fun X => ?_
-    simp [EnrichedFunctor.forget]
-  id_whiskerRight F G := by
-    refine EnrichedFunctor.hom_ext fun X => ?_
-    simp [EnrichedFunctor.forget]
-  comp_whiskerRight := comp_whiskerRight V
-  whiskerRight_id α := by
-    refine EnrichedFunctor.hom_ext fun X => ?_
-    simp [EnrichedFunctor.forget]
-  whiskerLeft_comp F G H I α β := by
-    refine EnrichedFunctor.hom_ext fun X => ?_
-    simp [EnrichedFunctor.forget]
-  whiskerRight_comp α F G := by
-    refine EnrichedFunctor.hom_ext fun X => ?_
-    simp [EnrichedFunctor.forget]
-  whisker_assoc F G H α J := by
-    refine EnrichedFunctor.hom_ext fun X => ?_
-    simp [EnrichedFunctor.forget]
-  whisker_exchange {_} {_} {_} {F} {G} {H} {J} α β := by
-    refine EnrichedFunctor.hom_ext fun X => ?_
-    simp only [EnrichedFunctor.forget, EnrichedFunctor.comp_obj, EnrichedFunctor.comp_map,
-      EnrichedFunctor.category_comp, NatTrans.comp_app, whiskerRight_app, to_of, Category.comp_id,
-      whiskerLeft_app]
-    exact (β.naturality (α.app (ForgetEnrichment.of V X))).symm
+  whiskerLeft F G H := whiskerLeft F
+  whiskerRight := whiskerRight
+  associator := associator
+  leftUnitor := leftUnitor
+  rightUnitor := rightUnitor
+  comp_whiskerRight := comp_whiskerRight
+  whisker_exchange := whisker_exchange
 
 end EnrichedCat
 

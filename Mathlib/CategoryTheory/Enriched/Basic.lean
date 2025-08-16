@@ -333,6 +333,7 @@ variable {W : Type v'} [Category.{w'} W] [MonoidalCategory W]
 /-- An enriched functor induces an honest functor of the underlying categories,
 by mapping the `(𝟙_ W)`-shaped morphisms.
 -/
+@[simps]
 def forget (F : EnrichedFunctor W C D) :
     ForgetEnrichment W C ⥤ ForgetEnrichment W D where
   obj X := ForgetEnrichment.of W (F.obj (ForgetEnrichment.to W X))
@@ -359,29 +360,6 @@ variable (W) (C) in
 @[simps!]
 def forgetId : (EnrichedFunctor.id W C).forget ≅ Functor.id _ :=
   NatIso.ofComponents (fun _ => Iso.refl _) (fun f => by simp [forget])
-
-/-- Enriched functors form a category with the morphisms between functors `F` and `G` being the
-natural transformations `F.forget ⟶ G.forget`. -/
-@[simps]
-instance category : Category (EnrichedFunctor W C D) where
-  Hom F G := F.forget ⟶ G.forget
-  id F := 𝟙 _
-  comp F G := F ≫ G
-
-/-- To construct an isomorphism between enriched functors `F` and `G`, it suffices to construct
-a natural isomorphism between `F.forget` and `G.forget`. -/
-@[simps]
-def isoMk {F G : EnrichedFunctor W C D} (h : F.forget ≅ G.forget) : F ≅ G where
-  hom := h.hom
-  inv := h.inv
-  hom_inv_id := h.hom_inv_id
-  inv_hom_id := h.inv_hom_id
-
-lemma hom_ext {F G : EnrichedFunctor W C D} {α β : F ⟶ G}
-    (h : ∀ X : C, α.app X = β.app X) : α = β := by
-  apply NatTrans.ext
-  funext
-  apply h
 
 end
 
@@ -454,62 +432,36 @@ attribute [reassoc] GradedNatTrans.naturality
 
 /-- A natural transformation between two enriched functors is a `𝟙_ V`-graded natural
 transformation. -/
-abbrev EnrichedNatTrans (F G : EnrichedFunctor V C D) := GradedNatTrans Center.tensorUnit F G
+structure EnrichedNatTrans (F G : EnrichedFunctor V C D) where
+  (out : F.forget ⟶ G.forget)
 
-namespace EnrichedNatTrans
+namespace EnrichedFunctor
 
-open EnrichedCategory
-
-variable (F : EnrichedFunctor V C D)
-
-/-- The identity natural transformation on an enriched functor. -/
+/-- Enriched functors form a category with the morphisms between functors `F` and `G` being
+enriched natural transformations, i.e. natural transformations `F.forget ⟶ G.forget`. -/
 @[simps]
-def id : EnrichedNatTrans F F where
-  app X := eId V (F.obj X)
-  naturality X Y := by
-    rw [tensorHom_def, tensorHom_def']
-    simp
+instance category : Category (EnrichedFunctor V C D) where
+  Hom F G := EnrichedNatTrans F G
+  id F := ⟨𝟙 _⟩
+  comp F G := ⟨F.out ≫ G.out⟩
 
-variable {F} {G H : EnrichedFunctor V C D}
+@[ext]
+lemma hom_ext {F G : EnrichedFunctor V C D} {α β : F ⟶ G}
+    (h : ∀ X : C, α.out.app X = β.out.app X) : α = β := by
+  rcases α with ⟨α⟩
+  rcases β with ⟨β⟩
+  congr
+  ext
+  apply h
 
-/-- The naturality condition of an enriched natural transformation from `F` to `G` as an equality
-of morphisms `Hom X Y ⟶ Hom (F.obj X) (G.obj Y)` for `X, Y : C`. -/
-@[reassoc]
-theorem naturality (α : EnrichedNatTrans F G) (X Y : C) :
-    (ρ_ _).inv ≫ (F.map X Y ⊗ₘ α.app Y) ≫ eComp V _ _ _ =
-    (λ_ _).inv ≫ (α.app X ⊗ₘ G.map X Y) ≫ eComp V _ _ _ := by
-  have := GradedNatTrans.naturality α X Y
-  simp only [Center.tensorUnit_fst, Center.tensorUnit_snd_β, Iso.trans_hom, Iso.symm_hom,
-    Category.assoc] at this
-  rwa [Iso.eq_inv_comp]
-
-/-- The composition of enriched natural transformations. -/
+/-- To construct an isomorphism between enriched functors `F` and `G`, it suffices to construct
+a natural isomorphism between `F.forget` and `G.forget`. -/
 @[simps]
-def comp (α : EnrichedNatTrans F G) (β : EnrichedNatTrans G H) : EnrichedNatTrans F H where
-  app X := (ρ_ (𝟙_ V)).inv ≫ (α.app X ⊗ₘ β.app X) ≫ eComp _ _ _ _
-  naturality X Y := by
-    rw [tensorHom_def, whiskerLeft_comp, whiskerLeft_comp, Category.assoc, Category.assoc,
-      Category.assoc, ← e_assoc, tensorHom_def, whiskerLeft_comp, Category.assoc,
-      associator_inv_naturality_right_assoc, associator_inv_naturality_middle_assoc,
-      whisker_exchange_assoc _ (β.app Y)]
-    simp only [Center.tensorUnit_fst]
-    rw [whiskerLeft_rightUnitor_inv, Category.assoc, Iso.hom_inv_id_assoc,
-      ← rightUnitor_inv_naturality_assoc (X := (F.obj X ⟶[V] F.obj Y) ⊗ 𝟙_ V),
-      ← rightUnitor_inv_naturality_assoc (X := (F.obj X ⟶[V] F.obj Y) ⊗ (F.obj Y ⟶[V] G.obj Y)),
-      ← tensorHom_def_assoc, GradedNatTrans.naturality_assoc α]
-    simp only [Center.tensorUnit_fst]
-    rw [rightUnitor_inv_naturality_assoc, rightUnitor_inv_naturality_assoc,
-      rightUnitor_tensor_inv, tensorHom_def', Category.assoc, comp_whiskerRight, Category.assoc,
-      ← associator_inv_naturality_middle_assoc, ← associator_inv_naturality_left_assoc,
-      ← whisker_exchange_assoc, ← associator_inv_naturality_right_assoc,
-      ← whisker_exchange_assoc, e_assoc, ← whisker_exchange_assoc,
-      ← whiskerLeft_comp_assoc, ← whiskerLeft_comp_assoc, ← whiskerLeft_comp_assoc, Category.assoc,
-      Category.assoc, ← tensorHom_def_assoc, β.naturality, ← tensorHom_def'_assoc,
-      tensorHom_def, whiskerLeft_comp, whiskerLeft_comp, Category.assoc, Category.assoc,
-      Category.assoc, ← e_assoc, ← whisker_exchange_assoc, ← tensorHom_def_assoc]
-    monoidal
+def isoMk {F G : EnrichedFunctor V C D} (h : F.forget ≅ G.forget) : F ≅ G where
+  hom := ⟨h.hom⟩
+  inv := ⟨h.inv⟩
 
-end EnrichedNatTrans
+end EnrichedFunctor
 
 variable [BraidedCategory V]
 
