@@ -477,8 +477,11 @@
   "Mathlib.CategoryTheory.Preadditive.Basic": ["Mathlib.Algebra.Module.End"],
   "Mathlib.CategoryTheory.Monoidal.Rigid.Basic":
   ["Mathlib.Tactic.CategoryTheory.Monoidal.Basic"],
+  "Mathlib.CategoryTheory.Monoidal.Mon_":
+  ["Mathlib.CategoryTheory.Monoidal.Attr"],
   "Mathlib.CategoryTheory.Monoidal.Braided.Basic":
   ["Mathlib.Tactic.CategoryTheory.Monoidal.Basic"],
+  "Mathlib.CategoryTheory.Monoidal.Attr": ["Lean.LabelAttribute"],
   "Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits":
   ["Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback",
    "Mathlib.CategoryTheory.Limits.Shapes.Pullbacks"],
