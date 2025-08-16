@@ -29,6 +29,8 @@ import Mathlib.Topology.MetricSpace.HausdorffDistance
 
 -/
 
+assert_not_exists Cardinal
+
 noncomputable section
 open NNReal ENNReal Topology Set Filter Bornology
 
