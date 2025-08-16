@@ -904,8 +904,9 @@ lemma exists_card_eq [Infinite α] : ∀ n : ℕ, ∃ s : Finset α, s.card = n
     obtain ⟨a, ha⟩ := s.exists_notMem
     exact ⟨insert a s, card_insert_of_notMem ha⟩
 
+/-- `Finset` version of `Set.exists_injOn_image_eq_of_surjOn`. -/
 lemma exists_injOn_image_eq_of_surjOn [DecidableEq β] {f : α → β} (s : Set α) (t : Finset β)
-    (hfs : s.SurjOn f t) : ∃ (u : Finset α), Set.InjOn f u ∧ (u : Set _) ⊆ s ∧ u.image f = t := by
+    (hfs : s.SurjOn f t) : ∃ (u : Finset α), Set.InjOn f u ∧ ↑u ⊆ s ∧ u.image f = t := by
   obtain ⟨u, hf, hus, himg⟩ := s.exists_injOn_image_eq_of_surjOn hfs
   refine ⟨(Finite.of_finite_image (by simp [himg]) hf).toFinset, by simpa, by simpa, ?_⟩
   simpa [← Finset.coe_inj]
