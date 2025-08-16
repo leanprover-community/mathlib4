@@ -243,11 +243,11 @@ protected def mulMap :=
 theorem val_mulMap_tmul (a : A) (b : B) : (H.mulMap (a ⊗ₜ[R] b) : S) = a.1 * b.1 := rfl
 
 /--
-If `A` and `B` are subalgebras in a commutative algebra `S` over `R`, and if they are
-linearly disjoint and such that `A ⊔ B = S`, then there is the natural isomorphism
+If `A` and `B` are linearly disjoint subalgebras in a commutative algebra `S` over `R`
+such that `A ⊔ B = S`, then this is the natural isomorphism
 `A ⊗[R] B ≃ₐ[A] S` induced by multiplication in `S`.
 -/
-noncomputable def mulMapLeft (H' : A ⊔ B = ⊤) :
+noncomputable def mulMapLeftOfSupEqTop (H' : A ⊔ B = ⊤) :
     A ⊗[R] B ≃ₐ[A] S :=
   (AlgEquiv.ofInjective (Algebra.TensorProduct.productLeftAlgHom
     (Algebra.ofId A S) B.val) H.injective).trans ((Subalgebra.equivOfEq _ _ (by
@@ -256,22 +256,22 @@ noncomputable def mulMapLeft (H' : A ⊔ B = ⊤) :
       exact mulMap_range A B)).trans Subalgebra.topEquiv)
 
 @[simp]
-theorem mulMapLeft_tmul (H' : A ⊔ B = ⊤) (a : A) (b : B) :
-    H.mulMapLeft H' (a ⊗ₜ[R] b) = (a : S) * (b : S) := rfl
+theorem mulMapLeftOfSupEqTop_tmul (H' : A ⊔ B = ⊤) (a : A) (b : B) :
+    H.mulMapLeftOfSupEqTop H' (a ⊗ₜ[R] b) = (a : S) * (b : S) := rfl
 
 /--
-If `A` and `B` are subalgebras in a commutative algebra `S` over `R`, and if they are
-linearly disjoint and such that `A ⊔ B = S`, then any `R`-basis of `B` is also an `A`-basis of `S`.
+If `A` and `B` are linearly disjoint subalgebras in a commutative algebra `S` over `R`
+such that `A ⊔ B = S`, then any `R`-basis of `B` is also an `A`-basis of `S`.
 -/
 noncomputable def basisOfBasisRight (H' : A ⊔ B = ⊤) {ι : Type*} (b : Basis ι R B) :
     Basis ι A S :=
-  (b.baseChange A).map (H.mulMapLeft H').toLinearEquiv
+  (b.baseChange A).map (H.mulMapLeftOfSupEqTop H').toLinearEquiv
 
 @[simp]
 theorem algebraMap_basisOfBasisRight_apply (H' : A ⊔ B = ⊤) {ι : Type*} (b : Basis ι R B) (i : ι) :
     H.basisOfBasisRight H' b i = algebraMap B S (b i) := by
   simp only [basisOfBasisRight, Basis.map_apply, Basis.baseChange_apply,
-    AlgEquiv.toLinearEquiv_apply, mulMapLeft_tmul, OneMemClass.coe_one, one_mul]
+    AlgEquiv.toLinearEquiv_apply, mulMapLeftOfSupEqTop_tmul, OneMemClass.coe_one, one_mul]
   rfl
 
 theorem algebraMap_basisOfBasisRight_repr_apply (H' : A ⊔ B = ⊤) {ι : Type*} (b : Basis ι R B)
@@ -279,7 +279,8 @@ theorem algebraMap_basisOfBasisRight_repr_apply (H' : A ⊔ B = ⊤) {ι : Type*
     algebraMap A S ((H.basisOfBasisRight H' b).repr x i) = algebraMap R S (b.repr x i) := by
   simp only [basisOfBasisRight, Basis.map_repr, LinearEquiv.trans_apply,
     AlgEquiv.coe_symm_toLinearEquiv]
-  have : (H.mulMapLeft H').symm x = 1 ⊗ₜ[R] x := (H.mulMapLeft H').symm_apply_eq.mpr (by simp)
+  have : (H.mulMapLeftOfSupEqTop H').symm x = 1 ⊗ₜ[R] x :=
+    (H.mulMapLeftOfSupEqTop H').symm_apply_eq.mpr (by simp)
   simp [this, Algebra.algebraMap_eq_smul_one]
 
 theorem leftMulMatrix_basisOfBasisRight_algebraMap (H' : A ⊔ B = ⊤) {ι : Type*} [Fintype ι]
@@ -298,7 +299,7 @@ linearly disjoint and such that `A ⊔ B = S`, then any `R`-basis of `A` is also
 -/
 noncomputable def basisOfBasisLeft (H' : A ⊔ B = ⊤) {ι : Type*} (b : Basis ι R A) :
     Basis ι B S :=
-  (b.baseChange B).map (H.symm.mulMapLeft (by rwa [sup_comm])).toLinearEquiv
+  (b.baseChange B).map (H.symm.mulMapLeftOfSupEqTop (by rwa [sup_comm])).toLinearEquiv
 
 @[simp]
 theorem basisOfBasisLeft_apply (H' : A ⊔ B = ⊤) {ι : Type*} (b : Basis ι R A) (i : ι) :
