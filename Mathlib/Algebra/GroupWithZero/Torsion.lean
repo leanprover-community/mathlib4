@@ -13,7 +13,7 @@ We prove that if `M` is an `UniqueFactorizationMonoid` that can be equipped with
 `NormalizationMonoid` structure and such that `Mˣ` is torsion-free, then `M` is torsion-free.
 
 Note. You need to import that file to get that the monoid of ideals of a Dedekind domain is
-torsion-free. 
+torsion-free.
 -/
 
 variable {M : Type*} [CancelCommMonoidWithZero M]
