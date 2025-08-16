@@ -90,7 +90,7 @@ alias ⟨SameCycle.of_inv, SameCycle.inv⟩ := sameCycle_inv
 
 @[simp]
 theorem sameCycle_conj : SameCycle (g * f * g⁻¹) x y ↔ SameCycle f (g⁻¹ x) (g⁻¹ y) :=
-  exists_congr fun i => by simp [conj_zpow, eq_inv_iff_eq]
+  exists_congr fun i => by simp [conj_zpow, eq_symm_apply]
 
 theorem SameCycle.conj : SameCycle f x y → SameCycle (g * f * g⁻¹) (g x) (g y) := by
   simp [sameCycle_conj]
@@ -250,7 +250,7 @@ theorem isCycle_inv : IsCycle f⁻¹ ↔ IsCycle f :=
 
 theorem IsCycle.conj : IsCycle f → IsCycle (g * f * g⁻¹) := by
   rintro ⟨x, hx, h⟩
-  refine ⟨g x, by simp [coe_mul, inv_apply_self, hx], fun y hy => ?_⟩
+  refine ⟨g x, by simp [coe_mul, hx], fun y hy => ?_⟩
   rw [← apply_inv_self g y]
   exact (h <| eq_inv_iff_eq.not.2 hy).conj
 
@@ -779,12 +779,12 @@ theorem IsCycleOn.zpow_apply_eq {s : Finset α} (hf : f.IsCycleOn s) (ha : a ∈
 theorem IsCycleOn.pow_apply_eq_pow_apply {s : Finset α} (hf : f.IsCycleOn s) (ha : a ∈ s)
     {m n : ℕ} : (f ^ m) a = (f ^ n) a ↔ m ≡ n [MOD #s] := by
   rw [Nat.modEq_iff_dvd, ← hf.zpow_apply_eq ha]
-  simp [sub_eq_neg_add, zpow_add, eq_inv_iff_eq, eq_comm]
+  simp [sub_eq_neg_add, zpow_add, eq_symm_apply, eq_comm]
 
 theorem IsCycleOn.zpow_apply_eq_zpow_apply {s : Finset α} (hf : f.IsCycleOn s) (ha : a ∈ s)
     {m n : ℤ} : (f ^ m) a = (f ^ n) a ↔ m ≡ n [ZMOD #s] := by
   rw [Int.modEq_iff_dvd, ← hf.zpow_apply_eq ha]
-  simp [sub_eq_neg_add, zpow_add, eq_inv_iff_eq, eq_comm]
+  simp [sub_eq_neg_add, zpow_add, eq_symm_apply, eq_comm]
 
 theorem IsCycleOn.pow_card_apply {s : Finset α} (hf : f.IsCycleOn s) (ha : a ∈ s) :
     (f ^ #s) a = a :=
