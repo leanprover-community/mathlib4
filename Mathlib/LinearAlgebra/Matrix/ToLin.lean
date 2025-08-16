@@ -84,7 +84,7 @@ variable [SMulCommClass S R A] [SMulCommClass S A A] [IsScalarTower R A A]
 
 variable (R S)
 
-/-- `Matrix.vecMul` is a bilinear map.
+/-- `Matrix.vecMul` as a bilinear map.
 
 When `A` is non-commutative, this can be instantiated as `vecMulBilin A Aᵐᵒᵖ` -/
 def Matrix.vecMulBilin [Fintype m] : (m → A) →ₗ[R] Matrix m n A →ₗ[S] (n → A) where
@@ -101,7 +101,7 @@ theorem Matrix.vecMulBilin_apply [Fintype m] (v : m → A) (M : Matrix m n A) :
 
 example {A} [Semiring A] [Fintype m] := (vecMulBilin A Aᵐᵒᵖ : _ →ₗ[_] Matrix m n A →ₗ[_] _)
 
-/-- `Matrix.mulVec` is a bilinear map.
+/-- `Matrix.mulVec` as a bilinear map.
 
 When `A` is non-commutative, this can be instantiated as `mulVecBilin A Aᵐᵒᵖ` -/
 def Matrix.mulVecBilin [Fintype n] : Matrix m n A →ₗ[R] (n → A) →ₗ[S] (m → A) where
@@ -273,7 +273,7 @@ section mulVec
 variable {R : Type*} [CommSemiring R]
 variable {k l m n : Type*}
 
-/-- `Matrix.mulVec M` is a linear map.
+/-- `Matrix.mulVec M` as a linear map.
 
 Note this is a special case of `Matrix.mulVecBilin`. -/
 abbrev Matrix.mulVecLin [Fintype n] (M : Matrix m n R) : (n → R) →ₗ[R] m → R := mulVecBilin R R M
