@@ -96,8 +96,7 @@ def coeffEquiv : R[M] ≃ (M →₀ R) where
   right_inv _ := rfl
 
 @[simp] lemma coeff_inj : x.coeff = y.coeff ↔ x = y := coeffEquiv.injective.eq_iff
-@[simp] lemma ofCoeff_inj {x y : M →₀ R} : ofCoeff x = ofCoeff y ↔ x = y :=
-  coeffEquiv.symm.injective.eq_iff
+lemma ofCoeff_inj {x y : M →₀ R} : ofCoeff x = ofCoeff y ↔ x = y := coeffEquiv.symm.injective.eq_iff
 
 @[ext] alias ⟨ext, _⟩ := coeff_inj
 
@@ -246,13 +245,15 @@ end One
 section Mul
 variable [Mul M]
 
+/-- The multiplication in a monoid algebra. We make it irreducible so that Lean doesn't unfold
+it trying to unify two things that are different. -/
 @[irreducible] def mul' (x y : R[M]) : R[M] :=
   x.coeff.sum fun m₁ r₁ ↦ y.coeff.sum fun m₂ r₂ ↦ single (m₁ * m₂) (r₁ * r₂)
 
 /-- The product of `x y : R[M]` is the finitely supported function whose value at `m` is the sum of
 `x m₁ * y m₂` over all pairs `m₁, m₂` such that `m₁ * m₂ = m`.
 (Think of the group ring of a group.) -/
-instance instMul : Mul R[M] := ⟨MonoidAlgebra.mul'⟩
+instance instMul : Mul R[M] where mul := mul'
 
 lemma mul_def (x y : R[M]) :
     x * y = x.coeff.sum fun m₁ r₁ ↦ y.coeff.sum fun m₂ r₂ ↦ single (m₁ * m₂) (r₁ * r₂) := by
@@ -744,13 +745,15 @@ end Zero
 section Add
 variable [Add M]
 
+/-- The multiplication in a monoid algebra. We make it irreducible so that Lean doesn't unfold
+it trying to unify two things that are different. -/
 @[irreducible] def mul' (x y : R[M]) : R[M] :=
   x.coeff.sum fun m₁ r₁ ↦ y.coeff.sum fun m₂ r₂ ↦ single (m₁ + m₂) (r₁ * r₂)
 
 /-- The product of `x y : R[M]` is the finitely supported function whose value at `m` is the sum of
 `x m₁ * y m₂` over all pairs `m₁, m₂` such that `m₁ + m₂ = m`.
 (Think of the group ring of a group.) -/
-instance instMul : Mul R[M] := ⟨AddMonoidAlgebra.mul'⟩
+instance instMul : Mul R[M] where mul := mul'
 
 lemma mul_def (x y : R[M]) :
     x * y = x.coeff.sum fun m₁ r₁ ↦ y.coeff.sum fun m₂ r₂ ↦ single (m₁ + m₂) (r₁ * r₂) := by
