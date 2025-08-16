@@ -111,6 +111,16 @@ theorem alternatingGroup.index_eq_two [Nontrivial α] :
 theorem alternatingGroup.index_eq_one [Subsingleton α] : (alternatingGroup α).index = 1 := by
   rw [Subgroup.index_eq_one]; apply Subsingleton.elim
 
+/-- The group isomorphism between `alternatingGroup`s induced by the given `Equiv`. -/
+@[simps ! apply_coe]
+def Equiv.altCongrMulEquiv {β : Type*} [Fintype β] [DecidableEq β] (e : α ≃ β) :
+    ↥(alternatingGroup α) ≃* ↥(alternatingGroup β) :=
+  e.permCongrMulEquiv.subgroupMap (alternatingGroup α) |>.trans <|
+    MulEquiv.subgroupCongr <| by
+      ext1 p
+      simp [e.permCongr.symm.surjective.exists,
+        show sign (e.permCongr.symm p) = sign p by simp, - permCongr_symm]
+
 theorem two_mul_nat_card_alternatingGroup [Nontrivial α] :
     2 * Nat.card (alternatingGroup α) = Nat.card (Perm α) := by
   simp only [← alternatingGroup.index_eq_two (α := α), index_mul_card]
