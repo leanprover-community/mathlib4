@@ -116,6 +116,14 @@ lemma isCusp_SL2Z_subgroup_iff {c : OnePoint ℝ} (Γ : Subgroup SL(2, ℤ)) [Γ
 
 end IsCusp
 
+section IsArith
+
+/-- A subgroup of `GL(2, ℝ)` is arithmetic if it is commensurable with the image of `SL(2, ℤ)`. -/
+class IsArith (Γ : Subgroup (GL (Fin 2) ℝ)) : Prop where
+  is_comm : Commensurable Γ (mapGL ℝ : SL(2, ℤ) →* GL (Fin 2) ℝ).range
+
+end IsArith
+
 section CuspOrbits
 
 /-- The action of `Γ` on its own cusps. -/

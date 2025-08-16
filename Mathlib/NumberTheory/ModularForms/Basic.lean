@@ -401,21 +401,20 @@ theorem zero_apply (z : ℍ) : (0 : CuspForm Γ k) z = 0 :=
   rfl
 
 section
+-- scalar multiplication by real types (no assumption on `Γ`)
 
 variable {α : Type*} [SMul α ℝ] [SMul α ℂ] [IsScalarTower α ℝ ℂ]
 
 local instance : IsScalarTower α ℂ ℂ where
   smul_assoc a y z := by simpa using smul_assoc (a • (1 : ℝ)) y z
 
-instance instSMul : SMul α (CuspForm Γ k) :=
-  ⟨fun c f =>
-    { toSlashInvariantForm := c • f.1
-      holo' := by simpa using f.holo'.const_smul (c • (1 : ℂ))
-      zero_at_cusps' hc g hg := by
-        simp_rw [IsZeroAtImInfty, Filter.ZeroAtFilter, SlashInvariantForm.toFun_eq_coe,
-          SlashInvariantForm.coe_smul, toSlashInvariantForm_coe,
-          (show c • ⇑f = ((c • (1 : ℂ)) • ⇑f) by rw [smul_assoc, one_smul]), smul_slash]
-        exact (f.zero_at_cusps' hc g hg).smul _ }⟩
+instance instSMul : SMul α (CuspForm Γ k) where smul c f :=
+  { toSlashInvariantForm := c • f.1
+    holo' := by simpa using f.holo'.const_smul (c • (1 : ℂ))
+    zero_at_cusps' hc g hg := by
+      simp_rw [IsZeroAtImInfty, Filter.ZeroAtFilter, SlashInvariantForm.toFun_eq_coe,
+        SlashInvariantForm.coe_smul, toSlashInvariantForm_coe, ← smul_one_smul ℂ c ⇑f, smul_slash]
+      exact (f.zero_at_cusps' hc g hg).smul _ }
 
 @[simp]
 theorem coe_smul (f : CuspForm Γ k) (n : α) : ⇑(n • f) = n • ⇑f :=
@@ -423,6 +422,30 @@ theorem coe_smul (f : CuspForm Γ k) (n : α) : ⇑(n • f) = n • ⇑f :=
 
 @[simp]
 theorem smul_apply (f : CuspForm Γ k) (n : α) {z : ℍ} : (n • f) z = n • f z :=
+  rfl
+
+end
+
+section
+-- scalar multiplication by complex types (assuming `IsGLPos Γ`)
+
+variable {α : Type*} [SMul α ℂ] [IsScalarTower α ℂ ℂ] [IsGLPos Γ]
+
+instance IsGLPos.instSMul : SMul α (CuspForm Γ k) where smul c f :=
+  { toSlashInvariantForm := c • f.1
+    holo' := by simpa using f.holo'.const_smul (c • (1 : ℂ))
+    zero_at_cusps' hc g hg := by
+      simp_rw [IsZeroAtImInfty, Filter.ZeroAtFilter, SlashInvariantForm.toFun_eq_coe,
+        SlashInvariantForm.IsGLPos.coe_smul, toSlashInvariantForm_coe, ← smul_one_smul ℂ c ⇑f,
+        smul_slash]
+      exact (f.zero_at_cusps' hc g hg).smul _ }
+
+@[simp]
+theorem IsGLPos.coe_smul (f : CuspForm Γ k) (n : α) : ⇑(n • f) = n • ⇑f :=
+  rfl
+
+@[simp]
+theorem IsGLPos.smul_apply (f : CuspForm Γ k) (n : α) {z : ℍ} : (n • f) z = n • f z :=
   rfl
 
 end
@@ -465,8 +488,8 @@ def coeHom : CuspForm Γ k →+ ℍ → ℂ where
 instance : Module ℝ (CuspForm Γ k) :=
   Function.Injective.module ℝ coeHom DFunLike.coe_injective fun _ _ => rfl
 
--- instance [IsGLPos Γ] : Module ℝ (CuspForm Γ k) :=
---   Function.Injective.module ℂ coeHom DFunLike.coe_injective fun _ _ => rfl
+instance [IsGLPos Γ] : Module ℂ (CuspForm Γ k) :=
+  Function.Injective.module ℂ coeHom DFunLike.coe_injective fun _ _ => rfl
 
 instance : Inhabited (CuspForm Γ k) :=
   ⟨0⟩
