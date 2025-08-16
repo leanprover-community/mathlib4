@@ -168,6 +168,10 @@ theorem IsIdempotentElem.isPositive_iff_isSymmetric {T : E →ₗ[𝕜] E} (hT :
   rw [← hT.eq, Module.End.mul_apply, h]
   exact inner_self_nonneg
 
+theorem IsPositive.of_isSymmetricProjection {p : E →ₗ[𝕜] E} (hp : p.IsSymmetricProjection) :
+    p.IsPositive :=
+  hp.isIdempotentElem.isPositive_iff_isSymmetric.mpr hp.isSymmetric
+
 end LinearMap
 
 namespace ContinuousLinearMap
