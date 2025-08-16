@@ -5,6 +5,8 @@ Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
 
 import Mathlib.Analysis.InnerProductSpace.Continuous
+import Mathlib.LinearAlgebra.Dimension.Finrank
+import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 
 /-!
 # Linear maps on inner product spaces
@@ -306,3 +308,92 @@ theorem ContinuousLinearMap.reApplyInnerSelf_smul (T : E →L[𝕜] E) (x : E) {
     Algebra.smul_def (‖c‖ ^ 2) ⟪T x, x⟫, algebraMap_eq_ofReal]
 
 end ReApplyInnerSelf_Seminormed
+
+namespace InnerProductSpace
+open ContinuousLinearMap
+variable {𝕜 E F : Type*} [RCLike 𝕜]
+
+section
+
+variable [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable [SeminormedAddCommGroup F] [InnerProductSpace 𝕜 F]
+
+variable (𝕜) in
+/-- A rank-one operator on an inner product space is given by `x ↦ y ↦ z ↦ ⟪y, z⟫ • x`. -/
+noncomputable def rankOne : E →L[𝕜] F →L⋆[𝕜] F →L[𝕜] E :=
+  LinearMap.mkContinuous₂
+  ({toFun := fun x =>
+    { toFun := fun y => (lsmul 𝕜 𝕜).flip x ∘L innerSL 𝕜 y
+      map_add' := fun _ _ => by rw [map_add, comp_add]
+      map_smul' := fun _ _ => by rw [map_smulₛₗ, comp_smulₛₗ]; rfl }
+    map_add' := fun _ _ => by ext; simp
+    map_smul' := fun _ _ => by ext; simp })
+  1 (fun x y => le_of_eq <| one_mul ‖x‖ ▸ mul_comm ‖x‖ ‖y‖ ▸
+    innerSL_apply_norm 𝕜 y ▸ norm_smulRight_apply (innerSL 𝕜 y) x)
+
+lemma rankOne_def (x : E) (y : F) :
+    rankOne 𝕜 x y = (lsmul 𝕜 𝕜).flip x ∘L innerSL 𝕜 y :=
+  rfl
+
+lemma rankOne_def' (x : E) (y : F) :
+    rankOne 𝕜 x y = (innerSL 𝕜 y).smulRight x :=
+  rfl
+
+theorem norm_rankOne (x : E) (y : F) :
+    ‖rankOne 𝕜 x y‖ = ‖x‖ * ‖y‖ :=
+  mul_comm ‖x‖ ‖y‖ ▸ innerSL_apply_norm 𝕜 y ▸ norm_smulRight_apply _ x
+
+@[simp]
+lemma rankOne_apply (x : E) (y z : F) :
+    rankOne 𝕜 x y z = inner 𝕜 y z • x :=
+  rfl
+
+lemma comp_rankOne {G : Type*} [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
+    (x : E) (y : F) (f : E →L[𝕜] G) :
+    f ∘L rankOne 𝕜 x y = rankOne 𝕜 (f x) y := by
+  simp_rw [rankOne_def, ← comp_assoc, comp_lsmul_flip_apply]
+
+end
+
+section
+
+variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [SeminormedAddCommGroup F] [InnerProductSpace 𝕜 F]
+
+lemma inner_left_rankOne_apply (x : E) (y z : F) (w : E) :
+    inner 𝕜 (rankOne 𝕜 x y z) w = inner 𝕜 z y * inner 𝕜 x w := by
+  simp [inner_smul_left, inner_conj_symm]
+
+lemma inner_right_rankOne_apply (x y : E) (z w : F) :
+    inner 𝕜 x (rankOne 𝕜 y z w) = inner 𝕜 x y * inner 𝕜 z w := by
+  simp [inner_smul_right, mul_comm]
+
+lemma rankOne_comp_rankOne {G : Type*} [SeminormedAddCommGroup G] [InnerProductSpace 𝕜 G]
+    (x : E) (y z : F) (w : G) :
+    rankOne 𝕜 x y ∘L rankOne 𝕜 z w = inner 𝕜 y z • rankOne 𝕜 x w := by
+  simp [comp_rankOne]
+
+lemma isIdempotentElem_rankOne_self {x : E} (h : ‖x‖ = 1) :
+    IsIdempotentElem (rankOne 𝕜 x x) := by
+  simp [IsIdempotentElem, mul_def, rankOne_comp_rankOne, inner_self_eq_norm_sq_to_K, h]
+
+end
+
+section
+
+variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
+
+lemma range_rankOne (x : E) {y : F} (hy : y ≠ 0) :
+    LinearMap.range (rankOne 𝕜 x y) = 𝕜 ∙ x :=
+  range_smulRight_apply (map_eq_zero_iff _
+    (InnerProductSpace.toDualMap 𝕜 F).injective |>.not.mpr hy) _
+
+lemma rank_range_rankOne {x : E} {y : F} (hx : x ≠ 0) (hy : y ≠ 0) :
+    Module.rank 𝕜 (LinearMap.range (rankOne 𝕜 x y)) = 1 := by
+  rw [range_rankOne x hy, Module.rank_eq_one_iff_finrank_eq_one]
+  exact finrank_span_singleton hx
+
+end
+
+end InnerProductSpace
