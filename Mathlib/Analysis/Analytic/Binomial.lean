@@ -42,18 +42,18 @@ theorem binomialSeries_eq_ordinaryHypergeometricSeries {𝕂 : Type u} [Field �
     (h : ∀ (k : ℕ), (k : 𝕂) ≠ -b) :
     binomialSeries 𝔸 a =
     (ordinaryHypergeometricSeries 𝔸 (-a) b b).compContinuousLinearMap (-(.id _ _)) := by
-  simp only [binomialSeries, ordinaryHypergeometricSeries]
-  ext n v
-  simp only [FormalMultilinearSeries.ofScalars, ContinuousMultilinearMap.smul_apply,
-    ContinuousMultilinearMap.mkPiAlgebraFin_apply,
-    FormalMultilinearSeries.compContinuousLinearMap_apply, ordinaryHypergeometricCoefficient]
+  simp only [binomialSeries, ordinaryHypergeometricSeries,
+    FormalMultilinearSeries.ofScalars_comp_neg_id]
+  ext
+  congr
+  ext n
+  simp only [ordinaryHypergeometricCoefficient]
   rw [mul_inv_cancel_right₀ (by simp [ascPochhammer_eval_eq_zero_iff]; grind)]
-  have : ((-ContinuousLinearMap.id 𝕂 𝔸 : _) : 𝔸 → 𝔸) = Neg.neg := by ext; simp
   simp only [Ring.choose_eq_smul, Polynomial.descPochhammer_smeval_eq_ascPochhammer,
     Polynomial.ascPochhammer_smeval_cast, Polynomial.ascPochhammer_smeval_eq_eval, smul_eq_mul,
-    ascPochhammer_eval_neg_eq_descPochhammer, descPochhammer_eval_eq_ascPochhammer, this, ←
-    List.map_ofFn, List.prod_map_neg (List.ofFn v), List.length_ofFn]
-  rcases n.even_or_odd with (h | h) <;> simp [h.neg_one_pow]
+    ascPochhammer_eval_neg_eq_descPochhammer, descPochhammer_eval_eq_ascPochhammer]
+  ring_nf
+  simp
 
 /-- The radius of convergence of `binomialSeries 𝔸 a` is `⊤` for natural `a`. -/
 theorem binomialSeries_radius_eq_top_of_nat {𝕂 : Type v} [RCLike 𝕂] {𝔸 : Type u}
