@@ -242,7 +242,7 @@ instance (priority := 100) R1Space.quasiSober [R1Space α] : QuasiSober α where
     apply subset_antisymm
     · rw [← hs.closure_eq]
       exact closure_mono (singleton_subset_iff.mpr hx)
-    · exact isPreirreducible_iff_forall_subset_closure_singleton.mp h.isPreirreducible x hx
+    · exact isPreirreducible_iff_forall_mem_subset_closure_singleton.mp h.isPreirreducible x hx
 
 end Sober
 
