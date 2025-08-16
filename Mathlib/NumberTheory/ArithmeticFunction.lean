@@ -575,7 +575,7 @@ theorem map_prod_of_subset_primeFactors [CommMonoidWithZero R] {f : ArithmeticFu
   map_prod_of_prime h_mult t fun _ a => prime_of_mem_primeFactors (ht a)
 
 theorem prod_primeFactors [CommMonoidWithZero R] {f : ArithmeticFunction R}
-    (h_mult : ArithmeticFunction.IsMultiplicative f) {l : ℕ} (hl : Squarefree l) :
+    (h_mult : f.IsMultiplicative) {l : ℕ} (hl : Squarefree l) :
     ∏ a ∈ l.primeFactors, f a = f l := by
   rw [← h_mult.map_prod_of_subset_primeFactors l _ Finset.Subset.rfl,
     prod_primeFactors_of_squarefree hl]
