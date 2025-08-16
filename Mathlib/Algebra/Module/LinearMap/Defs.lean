@@ -106,6 +106,12 @@ class SemilinearMapClass (F : Type*) {R S : outParam Type*} [Semiring R] [Semiri
     [Module R M] [Module S M₂] [FunLike F M M₂] : Prop
     extends AddHomClass F M M₂, MulActionSemiHomClass F σ M M₂
 
+-- Applying these projections in type class synthesis exposes Lean to multiple ways
+-- to crawl the algebraic hierarchy when searching for a `SemilinearMapClass` instance.
+-- We should should make this one of the last choices to avoid unnecessary work.
+attribute [instance 10] SemilinearMapClass.toAddHomClass
+  SemilinearMapClass.toMulActionSemiHomClass
+
 end
 
 -- `map_smulₛₗ` should be `@[simp]` but doesn't fire due to https://github.com/leanprover/lean4/pull/3701.
