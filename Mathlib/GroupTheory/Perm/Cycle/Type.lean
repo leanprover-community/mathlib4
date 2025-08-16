@@ -229,12 +229,7 @@ theorem cycleType_le_of_mem_cycleFactorsFinset {f g : Perm α} (hf : f ∈ g.cyc
   simpa only [Finset.singleton_val, singleton_le, Finset.mem_val] using hf
 
 theorem Disjoint.cycleType_mul {f g : Perm α} (h : f.Disjoint g) :
-    (f * g).cycleType = f.cycleType + g.cycleType := by
-  simp only [Perm.cycleType]
-  rw [h.cycleFactorsFinset_mul_eq_union]
-  simp only [Finset.union_val, Function.comp_apply]
-  rw [← Multiset.add_eq_union_iff_disjoint.mpr _, Multiset.map_add]
-  simp only [Finset.disjoint_val, Disjoint.disjoint_cycleFactorsFinset h]
+    (f * g).cycleType = f.cycleType + g.cycleType := cycleType h
 
 theorem Disjoint.cycleType_noncommProd {ι : Type*} {k : ι → Perm α} {s : Finset ι}
     (hs : Set.Pairwise s fun i j ↦ Disjoint (k i) (k j))
