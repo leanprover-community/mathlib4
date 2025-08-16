@@ -124,7 +124,8 @@ variable [P.IsReduced] [P.IsIrreducible]
 include hi hj hij h₁ h₂ h₃
 
 lemma chainBotCoeff_mul_chainTopCoeff.isNotG2 : P.IsNotG2 := by
-  have _i : NoZeroSMulDivisors ℤ M := have _i := P.reflexive_left; .int_of_charZero R M
+  have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
+  have : NoZeroSMulDivisors ℤ M := .int_of_charZero R M
   rw [← P.not_isG2_iff_isNotG2]
   intro contra
   obtain ⟨n, h₃⟩ := h₃
