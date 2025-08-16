@@ -170,96 +170,44 @@ section CompactDVR
 
 open Valued
 
+open WithZeroTopology in
 lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X := K) 𝒪[K]) :
     Nonempty (LocallyFiniteOrder (MonoidHom.mrange (Valued.v : Valuation K Γ₀))ˣ):= by
   -- TODO: generalize to `Valuation.Integer`, which will require showing that `IsCompact`
   -- pulls back across `TopologicalSpace.induced` from a `LocallyCompactSpace`.
-  constructor
-  refine LocallyFiniteOrder.ofFiniteIcc ?_
-  -- We only need to show that we can construct a finite set for some set between
-  -- a non-zero `z : Γ₀` and 1, because we can scale/invert this set to cover the whole group.
-  suffices ∀ z : (MonoidHom.mrange (Valued.v : Valuation K Γ₀))ˣ, (Set.Icc z 1).Finite by
-    rintro x y
-    rcases lt_trichotomy y x with hxy | rfl | hxy
-    · rw [Set.Icc_eq_empty_of_lt]
-      · exact Set.finite_empty
-      · simp [hxy]
-    · simp
-    wlog h : x ≤ 1 generalizing x y
-    · push_neg at h
-      specialize this y⁻¹ x⁻¹ (inv_lt_inv' hxy) (inv_le_one_of_one_le (h.trans hxy).le)
-      refine (this.inv).subset ?_
-      rw [Set.inv_Icc]
-      intro
-      simp +contextual
-    generalize_proofs _ _ _ _ hxu hyu
-    rcases le_total y 1 with hy | hy
-    · exact (this x).subset (Set.Icc_subset_Icc_right hy)
-    · have H : (Set.Icc y⁻¹ 1).Finite := this _
-      refine ((this x).union H.inv).subset (le_of_eq ?_)
-      rw [Set.inv_Icc, inv_one, Set.Icc_union_Icc_eq_Icc] <;>
-      simp [h, hy]
-  -- We can construct a family of spheres at every single element of the valuation ring
-  -- outside of a closed ball, which will cover.
-  -- Since we are in a compact space, this cover has a finite subcover.
-  -- First, we need to pick a threshold element with a nontrivial valuation less than 1,
-  -- which will form -- the inner closed ball of the cover, which we need to cover 0.
-  intro z
-  obtain ⟨a, ha⟩ := z.val.prop
-  rcases lt_or_ge 1 z with hz1 | hz1
-  · rw [Set.Icc_eq_empty_of_lt]
-    · exact Set.finite_empty
-    · simp [hz1]
-  have z0' : 0 < (z : MonoidHom.mrange (Valued.v : Valuation K Γ₀)) := by simp
-  have z0 : 0 < ((z : MonoidHom.mrange (Valued.v : Valuation K Γ₀)) : Γ₀) :=
-    Subtype.coe_lt_coe.mpr z0'
-  have a0 : 0 < v a := by simp [ha, z0]
-  -- Construct our cover, which has an inner closed ball, and spheres for each element
-  -- outside of the closed ball. These are all open sets by the nonarchimedean property.
-  let U : K → Set K := fun y ↦ if v (y : K) ≤ z
-    then {w | v (w : K) ≤ z}
-    else {w | v (w : K) = v (y : K)}
-  have := hc.elim_finite_subcover U
-  specialize this ?_ ?_
-  · intro w
-    simp only [U]
-    split_ifs with hw
-    · exact Valued.isOpen_closedball _ z0.ne'
-    · refine Valued.isOpen_sphere _ ?_
-      push_neg at hw
-      refine (hw.trans' ?_).ne'
-      simp [z0]
-  · intro w
-    simp only [integer, SetLike.mem_coe, Valuation.mem_integer_iff, Set.mem_iUnion, U]
-    intro hw
-    use if v w ≤ z then a else w
-    split_ifs <;>
-    simp_all
-  -- For each element of the valuation ring that is bigger than our threshold element above,
-  -- there must be something in the cover that has the precise valuation of the element,
-  -- because it must be outside the inner closed ball, and thus is covered by some sphere.
-  obtain ⟨t, ht⟩ := this
-  classical
-  refine (t.finite_toSet.dependent_image ?_).subset ?_
-  · refine fun i hi ↦ if hi' : v i ≤ z then z else Units.mk0 ⟨(v i), by simp⟩ ?_
-    push_neg at hi'
-    exact Subtype.coe_injective.ne_iff.mp (hi'.trans' z0).ne'
-  · intro i
-    simp only [Set.mem_Icc, Finset.mem_coe, exists_prop, Set.mem_setOf_eq, and_imp]
-    -- we get the `c` from the cover that covers our arbitrary `i` with its set
-    obtain ⟨c, hc⟩ := i.val.prop
-    intro hzi hi1
-    have hj := ht (hc.trans_le hi1)
-    simp only [Set.mem_iUnion, exists_prop, U] at hj
-    obtain ⟨j, hj, hj'⟩ := hj
-    use j, hj
-    -- and this `c` is either less than or greater than (or equal to) the threshold element
-    split_ifs at hj' with hcj
-    · simp only [Set.mem_setOf_eq, hc, Subtype.coe_le_coe, Units.val_le_val] at hj'
-      simp [hcj, le_antisymm hj' hzi]
-    · simp only [Set.mem_setOf_eq] at hj'
-      rw [dif_neg hcj]
-      simp [← hj', hc]
+  -- specify the topology again to increase priority to override subtype topology
+  let : TopologicalSpace (MonoidHom.mrange (Valued.v : Valuation K Γ₀)) := topologicalSpace
+  let v' : Valuation K (MonoidHom.mrange (Valued.v : Valuation K Γ₀)) :=
+   -- can't use mrangeRestrict directly, no CommGroupWithZero on MonoidHom mranges
+  { __ := v.toMonoidWithZeroHom.mrangeRestrict
+    map_zero' := by simp [Subtype.ext_iff]
+    map_add_le_max' := by simp [← Subtype.coe_le_coe] }
+  have : @Continuous _ _ _ topologicalSpace v' := by
+    rw [continuous_iff_continuousAt]
+    intro x
+    rcases GroupWithZero.eq_zero_or_unit x with (rfl | ⟨x, rfl⟩)
+    · rw [ContinuousAt, map_zero, WithZeroTopology.tendsto_zero]
+      rintro ⟨-, y, rfl⟩ hy
+      rw [Filter.Eventually, Valued.mem_nhds_zero]
+      use Units.mk0 (v y) (by simpa [Subtype.ext_iff] using hy)
+      simp [v', ← Subtype.coe_lt_coe]
+    · have v_ne : v' x ≠ 0 := by simp [v', Subtype.ext_iff]
+      rw [ContinuousAt, WithZeroTopology.tendsto_of_ne_zero v_ne]
+      simp [v', Subtype.ext_iff]
+      apply Valued.loc_const
+      simp
+  rw [← locallyCompactSpace_iff_locallyFiniteOrder_units]
+  refine locallyCompactSpace_of_compact_Iic one_ne_zero ?_
+  convert hc.image_of_continuousOn this.continuousOn
+  ext ⟨-, x, rfl⟩
+  simp only [Set.mem_Iic, ← Subtype.coe_le_coe, OneMemClass.coe_one, Lean.Elab.WF.paramLet,
+    OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, Valuation.coe_mk, MonoidWithZeroHom.coe_mk,
+    ZeroHom.coe_mk, Set.mem_image, SetLike.mem_coe, Valuation.mem_integer_iff, Subtype.ext_iff,
+    MonoidHom.coe_mrangeRestrict, MonoidHom.coe_mk, ZeroHom.toFun_eq_coe,
+    MonoidWithZeroHom.toZeroHom_coe, Valuation.toMonoidWithZeroHom_coe_eq_coe, OneHom.coe_mk, v']
+  -- ideally, grind should solve this directly, but using it gives deterministic heartbeat timeout
+  constructor <;>
+  grind
 
 lemma mulArchimedean_mrange_of_isCompact_integer (hc : IsCompact (X := K) 𝒪[K]) :
     MulArchimedean (MonoidHom.mrange (Valued.v : Valuation K Γ₀)) := by
