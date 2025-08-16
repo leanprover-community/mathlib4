@@ -11,6 +11,7 @@ import Mathlib.Algebra.Ring.CharZero
 import Mathlib.Data.Nat.Cast.Order.Ring
 import Mathlib.Data.Nat.PrimeFin
 import Mathlib.Data.Nat.SuccPred
+import Mathlib.Data.PNat.Defs
 import Mathlib.Order.Interval.Finset.Nat
 
 /-!
@@ -743,3 +744,27 @@ lemma mul_mem_zero_one_two_three_four_iff {a b : ℤ} (h₀ : a = 0 ↔ b = 0) :
   aesop
 
 end Int
+
+section pnat
+
+/-- The map from `Nat.divisorsAntidiagonal n` to `ℕ+ × ℕ+` given by sending `n = a * b`
+to `(a , b)`. -/
+def divisorsAntidiagonalFactors (n : ℕ+) : Nat.divisorsAntidiagonal n → ℕ+ × ℕ+ :=
+    fun x ↦
+   ⟨⟨x.1.1, Nat.pos_of_mem_divisors (Nat.fst_mem_divisors_of_mem_antidiagonal x.2)⟩,
+    (⟨x.1.2, Nat.pos_of_mem_divisors (Nat.snd_mem_divisors_of_mem_antidiagonal x.2)⟩ : ℕ+),
+    Nat.pos_of_mem_divisors (Nat.snd_mem_divisors_of_mem_antidiagonal x.2)⟩
+
+/-- The equivalence from the union over `n` of `Nat.divisorsAntidiagonal n` to `ℕ+ × ℕ+`
+given by sending `n = a * b` to `(a , b)`. -/
+def sigmaAntidiagonalEquivProd : (Σ n : ℕ+, Nat.divisorsAntidiagonal n) ≃ ℕ+ × ℕ+ where
+  toFun x := divisorsAntidiagonalFactors x.1 x.2
+  invFun x :=
+    ⟨⟨x.1.val * x.2.val, mul_pos x.1.2 x.2.2⟩, ⟨x.1, x.2⟩, by simp [Nat.mem_divisorsAntidiagonal]⟩
+  left_inv := by
+    rintro ⟨n, ⟨k, l⟩, h⟩
+    rw [Nat.mem_divisorsAntidiagonal] at h
+    ext <;> simp [divisorsAntidiagonalFactors, ← PNat.coe_injective.eq_iff, h.1]
+  right_inv _ := rfl
+
+end pnat
