@@ -213,7 +213,7 @@ nonrec lemma Ideal.height_le_spanRank_toENat_of_mem_minimal_primes
       refine hspan.trans <| radical_mono ?_
       rw [← Set.union_singleton, span_union]
 
-lemma Ideal.height_le_card_of_mem_minimalPrimes {p : Ideal R} {s : Finset R}
+lemma Ideal.height_le_card_of_mem_minimalPrimes_span {p : Ideal R} {s : Finset R}
     (hI : p ∈ (Ideal.span s).minimalPrimes) :
     p.height ≤ s.card := by
   trans (Cardinal.toENat (Submodule.spanRank (Ideal.span (s : Set R))))
@@ -323,14 +323,15 @@ lemma Ideal.height_le_height_add_of_liesOver [IsNoetherianRing S] (p : Ideal R) 
     rw [SetLike.mem_coe, Ideal.mem_quotient_iff_mem] at hx
     use y, hx
     rw [Ideal.map_le_iff_le_comap, Ideal.LiesOver.over (p := p) (P := P)]
-  obtain ⟨o, himgo, hcardo, ho⟩ := s'.exists_image_eq_and_card_le_of_surjOn (P : Set S) this
+  obtain ⟨o, himgo, hcardo, ho⟩ := s'.exists_image_eq_and_injOn_of_surjOn (P : Set S) this
   let t : Finset S := Finset.image (algebraMap R S) s ∪ o
   suffices h : P.height ≤ t.card by
     rw [← heq, ← heq']
     apply le_trans h
     norm_cast
-    exact le_trans (Finset.card_union_le _ _) (add_le_add Finset.card_image_le hcardo)
-  refine Ideal.height_le_card_of_mem_minimalPrimes ?_
+    refine le_trans (Finset.card_union_le _ _) (add_le_add Finset.card_image_le ?_)
+    rw [← himgo, Finset.card_image_of_injOn hcardo]
+  refine Ideal.height_le_card_of_mem_minimalPrimes_span ?_
   have : Ideal.span t = Ideal.map (algebraMap R S) (.span s) ⊔ .span o := by
     simp [t, Ideal.span_union, Ideal.map_span]
   refine this ▸ map_sup_mem_minimalPrimes_of_map_quotientMk_mem_minimalPrimes hp (span_le.mpr ho) ?_
