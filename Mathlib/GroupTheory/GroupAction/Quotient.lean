@@ -24,7 +24,7 @@ This file proves properties of group actions which use the quotient group constr
 as well as their analogues for additive groups.
 -/
 
-assert_not_imported Mathlib.SetTheory.Cardinal.Defs
+assert_not_exists Cardinal
 
 universe u v w
 

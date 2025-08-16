@@ -24,7 +24,7 @@ We prove the following facts:
   is bounded.
 -/
 
--- TODO assert_not_imported Mathlib.SetTheory.Cardinal.Defs
+-- TODO assert_not_exists Cardinal
 
 variable {E : Type*}
 
