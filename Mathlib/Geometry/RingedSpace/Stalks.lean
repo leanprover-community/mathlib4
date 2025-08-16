@@ -28,7 +28,7 @@ variable {C : Type u} [Category.{v} C] [HasColimits C]
 -- Porting note: no tidy tactic
 -- attribute [local tidy] tactic.auto_cases_opens
 -- this could be replaced by
--- attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Opens
+attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Opens
 -- but it doesn't appear to be needed here.
 
 open TopCat.Presheaf
@@ -197,8 +197,7 @@ theorem stalkSpecializes_stalkMap {X Y : PresheafedSpace.{_, _, v} C}
     whiskerRight_app, NatTrans.id_app, colimit.ι_pre, assoc,
     colimit.pre_desc, colimit.map_desc, colimit.ι_desc, Cocones.precompose_obj_ι,
     Cocone.whisker_ι, NatTrans.comp_app]
-  erw [X.presheaf.map_id, id_comp]
-  rfl
+  tauto
 
 end stalkMap
 

@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.Sites.Coverage
 /-!
 # 0-hypercovers
 
-Given a coverage `J` on a category `C`, we define the tyoe
+Given a coverage `J` on a category `C`, we define the type
 of `0`-hypercovers of an object `S : C`. They consists of a covering family
 of morphisms `X i ⟶ S` indexed by a type `I₀` such that the induced presieve is in `J`.
 
