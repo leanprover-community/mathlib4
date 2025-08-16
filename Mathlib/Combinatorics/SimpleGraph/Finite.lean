@@ -131,6 +131,19 @@ theorem card_edgeFinset_le_card_choose_two : #G.edgeFinset ≤ (Fintype.card V).
 
 end EdgeFinset
 
+namespace Iso
+
+variable {G} {W : Type*} {G' : SimpleGraph W} (f : G ≃g G')
+
+include f in
+theorem card_edgeFinset_eq [Fintype G.edgeSet] [Fintype G'.edgeSet] :
+    #G.edgeFinset = #G'.edgeFinset := by
+  apply Finset.card_eq_of_equiv
+  simp only [Set.mem_toFinset]
+  exact f.mapEdgeSet
+
+end Iso
+
 section FiniteAt
 
 /-!
@@ -528,5 +541,21 @@ theorem degree_induce_support (v : G.support) :
   degree_induce_of_support_subset subset_rfl v
 
 end Support
+
+section Map
+
+variable [Fintype V] {W : Type*} [Fintype W] [DecidableEq W]
+
+theorem edgeFinset_map_eq_map (f : V ↪ W) (G : SimpleGraph V) [DecidableRel G.Adj] :
+    (G.map f).edgeFinset = G.edgeFinset.map f.sym2Map := by
+  rw [Finset.map_eq_image, ← Set.toFinset_image, Set.toFinset_inj]
+  exact G.edgeSet_map_eq_image f
+
+theorem card_edgeFinset_map (f : V ↪ W) (G : SimpleGraph V) [DecidableRel G.Adj] :
+    #(G.map f).edgeFinset = #G.edgeFinset := by
+  rw [edgeFinset_map_eq_map]
+  exact G.edgeFinset.card_map f.sym2Map
+
+end Map
 
 end SimpleGraph
