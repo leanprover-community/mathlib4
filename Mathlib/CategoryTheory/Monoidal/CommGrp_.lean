@@ -13,7 +13,7 @@ import Mathlib.CategoryTheory.Monoidal.CommMon_
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
 open CategoryTheory Category Limits MonoidalCategory CartesianMonoidalCategory Mon_ Grp_ CommMon_
-open Mon_Class
+open MonObj
 
 variable (C : Type u₁) [Category.{v₁} C] [CartesianMonoidalCategory.{v₁} C] [BraidedCategory C]
 

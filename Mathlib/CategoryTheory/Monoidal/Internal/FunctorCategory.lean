@@ -29,7 +29,7 @@ if the appropriate framework was available.
 
 universe v₁ v₂ u₁ u₂
 
-open CategoryTheory MonoidalCategory Mon_Class Comon_Class
+open CategoryTheory MonoidalCategory MonObj ComonObj
 
 namespace CategoryTheory.Monoidal
 
@@ -42,7 +42,7 @@ variable {C D}
 
 /-- A monoid object in a functor category sends any object to a monoid object. -/
 @[simps]
-def functorObjObj (A : C ⥤ D) [Mon_Class A] (X : C) : Mon_ D where
+def functorObjObj (A : C ⥤ D) [MonObj A] (X : C) : Mon_ D where
   X := A.obj X
   mon :=
   { one := η[A].app X
@@ -53,7 +53,7 @@ def functorObjObj (A : C ⥤ D) [Mon_Class A] (X : C) : Mon_ D where
 
 /-- A monoid object in a functor category induces a functor to the category of monoid objects. -/
 @[simps]
-def functorObj (A : C ⥤ D) [Mon_Class A] : C ⥤ Mon_ D where
+def functorObj (A : C ⥤ D) [MonObj A] : C ⥤ Mon_ D where
   obj := functorObjObj A
   map f :=
     { hom := A.map f
@@ -131,7 +131,7 @@ variable {C D}
 
 /-- A comonoid object in a functor category sends any object to a comonoid object. -/
 @[simps]
-def functorObjObj (A : C ⥤ D) [Comon_Class A] (X : C) : Comon_ D where
+def functorObjObj (A : C ⥤ D) [ComonObj A] (X : C) : Comon_ D where
   X := A.obj X
   comon :=
   { counit := ε[A].app X
@@ -144,7 +144,7 @@ def functorObjObj (A : C ⥤ D) [Comon_Class A] (X : C) : Comon_ D where
 A comonoid object in a functor category induces a functor to the category of comonoid objects.
 -/
 @[simps]
-def functorObj (A : (C ⥤ D)) [Comon_Class A] : C ⥤ Comon_ D where
+def functorObj (A : (C ⥤ D)) [ComonObj A] : C ⥤ Comon_ D where
   obj := functorObjObj A
   map f :=
     { hom := A.map f

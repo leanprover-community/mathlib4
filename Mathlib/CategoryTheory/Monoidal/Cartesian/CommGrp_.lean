@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp_
 
 assert_not_exists Field
 
-open CategoryTheory MonoidalCategory Limits Opposite CartesianMonoidalCategory Mon_Class
+open CategoryTheory MonoidalCategory Limits Opposite CartesianMonoidalCategory MonObj
 
 universe w v u
 variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C] [BraidedCategory C] {X : C}
