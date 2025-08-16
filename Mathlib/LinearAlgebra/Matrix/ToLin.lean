@@ -273,6 +273,26 @@ lemma Matrix.linearIndependent_cols_of_isUnit {R : Type*} [CommRing R] [Fintype 
 
 end mulVec
 
+section vecMulVec
+variable {m n R S A : Type*}
+variable [Semiring R] [Semiring S] [NonUnitalSemiring A] [Module R A] [Module S A]
+variable [SMulCommClass S R A] [SMulCommClass S A A] [IsScalarTower R A A]
+
+variable (R S) in
+/-- `vecMulVec` as a bilinear map.
+
+When `A` is noncommutative, `R` and `S` can be instantiated as `vecMulVecLinear A Aᵐᵒᵖ`. -/
+@[simps]
+def vecMulVecBilin : (m → A) →ₗ[R] (n → A) →ₗ[S] Matrix m n A where
+  toFun x :=
+    { toFun y := vecMulVec x y
+      map_add' _ _ := vecMulVec_add _ _ _
+      map_smul' _ _ := vecMulVec_smul _ _ _ }
+  map_add' _ _ := LinearMap.ext fun _ => add_vecMulVec _ _ _
+  map_smul' _ _ := LinearMap.ext fun _ => smul_vecMulVec _ _ _
+
+end vecMulVec
+
 section ToMatrix'
 
 variable {R : Type*} [CommSemiring R]
@@ -502,7 +522,7 @@ def LinearMap.toMatrix : (M₁ →ₗ[R] M₂) ≃ₗ[R] Matrix m n R :=
 
 /-- `LinearMap.toMatrix'` is a particular case of `LinearMap.toMatrix`, for the standard basis
 `Pi.basisFun R n`. -/
-theorem LinearMap.toMatrix_eq_toMatrix' :
+@[simp] theorem LinearMap.toMatrix_eq_toMatrix' :
     LinearMap.toMatrix (Pi.basisFun R n) (Pi.basisFun R n) = LinearMap.toMatrix' :=
   rfl
 
