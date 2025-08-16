@@ -176,10 +176,12 @@ theorem sup_idem (a : α) : a ⊔ a = a := by simp
 
 instance : Std.IdempotentOp (α := α) (· ⊔ ·) := ⟨sup_idem⟩
 
+@[grind =]
 theorem sup_comm (a b : α) : a ⊔ b = b ⊔ a := by apply le_antisymm <;> simp
 
 instance : Std.Commutative (α := α) (· ⊔ ·) := ⟨sup_comm⟩
 
+@[grind _=_]
 theorem sup_assoc (a b c : α) : a ⊔ b ⊔ c = a ⊔ (b ⊔ c) :=
   eq_of_forall_ge_iff fun x => by simp only [sup_le_iff]; rw [and_assoc]
 
@@ -364,10 +366,12 @@ theorem inf_idem (a : α) : a ⊓ a = a := by simp
 
 instance : Std.IdempotentOp (α := α) (· ⊓ ·) := ⟨inf_idem⟩
 
+@[grind _=_]
 theorem inf_comm (a b : α) : a ⊓ b = b ⊓ a := @sup_comm αᵒᵈ _ _ _
 
 instance : Std.Commutative (α := α) (· ⊓ ·) := ⟨inf_comm⟩
 
+@[grind _=_]
 theorem inf_assoc (a b c : α) : a ⊓ b ⊓ c = a ⊓ (b ⊓ c) := @sup_assoc αᵒᵈ _ _ _ _
 
 instance : Std.Associative (α := α) (· ⊓ ·) := ⟨inf_assoc⟩
