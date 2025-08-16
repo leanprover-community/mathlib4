@@ -145,7 +145,7 @@ define a `C^n` manifold with model space `H`, and model vector space `E`.
 
 We require that, when the field is `ℝ` or `ℂ`, the range is `ℝ`-convex, as this is what is needed
 to do calculus and covers the standard examples of manifolds with boundary. Over other fields,
-we require that the range is `univ`, as there is no relevant notion of manifold of boundary there.
+we require that the range is `univ`, as there is no relevant notion of manifold with boundary there.
 -/
 @[ext]
 structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
@@ -162,8 +162,8 @@ structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Ty
       Convex ℝ (range toPartialEquiv)
     else range toPartialEquiv = univ
   nonempty_interior' : (interior (range toPartialEquiv)).Nonempty
-  continuous_toFun : Continuous toFun := by continuity
-  continuous_invFun : Continuous invFun := by continuity
+  continuous_toFun : Continuous toFun := by fun_prop
+  continuous_invFun : Continuous invFun := by fun_prop
 
 lemma ModelWithCorners.range_eq_target {𝕜 E H : Type*} [NontriviallyNormedField 𝕜]
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) :
@@ -174,7 +174,7 @@ lemma ModelWithCorners.range_eq_target {𝕜 E H : Type*} [NontriviallyNormedFie
 def ModelWithCorners.of_target_univ (𝕜 : Type*) [NontriviallyNormedField 𝕜]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
     (φ : PartialEquiv H E) (hsource : φ.source = univ) (htarget : φ.target = univ)
-    (hcont : Continuous φ) (hcont_inv : Continuous φ.symm) : ModelWithCorners 𝕜 E H where
+    (hcont : Continuous φ) (hcont_inv : Continuous φ.invFun) : ModelWithCorners 𝕜 E H where
   toPartialEquiv := φ
   source_eq := hsource
   convex_range' := by
@@ -250,7 +250,7 @@ theorem mk_symm (e : PartialEquiv H E) (a b c d d') :
     (ModelWithCorners.mk e a b c d d' : ModelWithCorners 𝕜 E H).symm = e.symm :=
   rfl
 
-@[continuity]
+@[fun_prop]
 protected theorem continuous : Continuous I :=
   I.continuous_toFun
 
@@ -260,7 +260,7 @@ protected theorem continuousAt {x} : ContinuousAt I x :=
 protected theorem continuousWithinAt {s x} : ContinuousWithinAt I s x :=
   I.continuousAt.continuousWithinAt
 
-@[continuity]
+@[fun_prop]
 theorem continuous_symm : Continuous I.symm :=
   I.continuous_invFun
 
@@ -305,7 +305,7 @@ lemma _root_.Convex.convex_isRCLikeNormedField [NormedSpace ℝ E] [h : IsRCLike
 def of_convex_range
     {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [TopologicalSpace H]
     (φ : PartialEquiv H E) (hsource : φ.source = univ) (htarget : Convex ℝ φ.target)
-    (hcont : Continuous φ) (hcont_inv : Continuous φ.symm) (hint : (interior φ.target).Nonempty) :
+    (hcont : Continuous φ) (hcont_inv : Continuous φ.invFun) (hint : (interior φ.target).Nonempty) :
     ModelWithCorners ℝ E H where
   toPartialEquiv := φ
   source_eq := hsource
