@@ -484,9 +484,6 @@ def mkInductiveAux₂ :
       one comm_one succ n
     ⟨(P.xNextIso rfl).hom ≫ I.1, I.2.1 ≫ (Q.xPrevIso rfl).inv, by simpa using I.2.2⟩
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11647): during the port we marked these lemmas
--- with `@[eqns]` to emulate the old Lean 3 behaviour.
-
 @[simp] theorem mkInductiveAux₂_zero :
     mkInductiveAux₂ e zero comm_zero one comm_one succ 0 =
       ⟨0, zero ≫ (Q.xPrevIso rfl).inv, by simpa using comm_zero⟩ :=
@@ -611,9 +608,6 @@ def mkCoinductiveAux₂ :
   | n + 1 =>
     let I := mkCoinductiveAux₁ e zero one comm_one succ n
     ⟨I.1 ≫ (Q.xPrevIso rfl).inv, (P.xNextIso rfl).hom ≫ I.2.1, by simpa using I.2.2⟩
-
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11647): during the port we marked these lemmas with `@[eqns]`
--- to emulate the old Lean 3 behaviour.
 
 @[simp] theorem mkCoinductiveAux₂_zero :
     mkCoinductiveAux₂ e zero comm_zero one comm_one succ 0 =
