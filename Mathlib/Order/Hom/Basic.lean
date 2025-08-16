@@ -1221,3 +1221,19 @@ lemma denselyOrdered_iff_of_strictAnti {X Y F : Type*} [LinearOrder X] [Preorder
     rw [hf.le_iff_ge]
 
 end DenselyOrdered
+
+/-- `Fin (n + 1)` is order equivalent to `Fin n` with a bottom element. -/
+def WithBot.orderIsoFin (n : ℕ) : WithBot (Fin n) ≃o Fin (n + 1) where
+  toFun x := x.recBotCoe 0 Fin.succ
+  invFun := Fin.cases ⊥ WithBot.some
+  left_inv x := by cases x <;> rfl
+  right_inv x := by cases x using Fin.cases <;> rfl
+  map_rel_iff' {x y} := by cases x <;> cases y <;> simp [Fin.le_def]
+
+/-- `Fin (n + 1)` is order equivalent to `Fin n` with a top element. -/
+def WithTop.orderIsoFin (n : ℕ) : WithTop (Fin n) ≃o Fin (n + 1) where
+  toFun x := x.recTopCoe (Fin.last n) Fin.castSucc
+  invFun := Fin.lastCases ⊤ WithTop.some
+  left_inv x := by cases x <;> simp
+  right_inv x := by cases x using Fin.lastCases <;> simp
+  map_rel_iff' {x y} := by cases x <;> cases y <;> simp [Fin.le_def]
