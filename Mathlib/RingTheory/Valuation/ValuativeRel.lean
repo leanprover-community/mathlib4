@@ -787,6 +787,13 @@ lemma mapValueGroupWithZero_valuation (a : A) :
     mapValueGroupWithZero A B (valuation _ a) = valuation _ (algebraMap _ _ a) := by
   simp [valuation]
 
+lemma mapValueGroupWithZero_strictMono :
+    StrictMono (mapValueGroupWithZero A B) := by
+  intro x y
+  induction x using ValueGroupWithZero.ind
+  induction y using ValueGroupWithZero.ind
+  simp [← map_mul, rel_iff_rel]
+
 end ValuativeExtension
 
 namespace ValuativeRel
