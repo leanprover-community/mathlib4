@@ -85,10 +85,6 @@ theorem IsStableUnderBaseChange.pullback_fst_appTop
     CommRingCat.hom_comp, hP'.cancel_right_isIso]
   exact hP.pushout_inl hP' _ _ H
 
-@[deprecated (since := "2024-11-23")]
-alias IsStableUnderBaseChange.pullback_fst_app_top :=
-IsStableUnderBaseChange.pullback_fst_appTop
-
 end RingHom
 
 namespace AlgebraicGeometry
@@ -286,8 +282,6 @@ theorem appTop (H : P f) [IsAffine X] [IsAffine Y] : Q f.appTop.hom := by
   rw [Scheme.Hom.appTop, Scheme.Hom.app_eq_appLE]
   exact appLE P f H ⟨_, isAffineOpen_top _⟩ ⟨_, isAffineOpen_top _⟩ _
 
-@[deprecated (since := "2024-11-23")] alias app_top := appTop
-
 include Q in
 theorem comp_of_isOpenImmersion [IsOpenImmersion f] (H : P g) :
     P (f ≫ g) := by
@@ -354,7 +348,7 @@ theorem of_iSup_eq_top [IsAffine Y] {ι : Type*}
     (U : ι → X.affineOpens) (hU : ⨆ i, (U i : Opens X) = ⊤)
     (H : ∀ i, Q (f.appLE ⊤ (U i).1 le_top).hom) :
     P f := by
-  have (i) : IsAffine ((X.openCoverOfISupEqTop _ hU).obj i) := (U i).2
+  have (i : _) : IsAffine ((X.openCoverOfISupEqTop _ hU).obj i) := (U i).2
   refine of_source_openCover (X.openCoverOfISupEqTop _ hU) fun i ↦ ?_
   simpa [Scheme.Hom.app_eq_appLE] using (f.appLE_congr _ rfl (by simp) (fun f => Q f.hom)).mp (H i)
 
@@ -407,7 +401,7 @@ lemma isLocal_ringHomProperty_of_isLocalAtSource_of_isLocalAtTarget
       (CommRingCat.ofHom f) i.1)).mpr (H i)
   · intro R S T _ _ _ _ r _ f hf
     have := AlgebraicGeometry.IsOpenImmersion.of_isLocalization (S := T) r
-    show P (Spec.map (CommRingCat.ofHom f ≫ CommRingCat.ofHom (algebraMap _ _)))
+    change P (Spec.map (CommRingCat.ofHom f ≫ CommRingCat.ofHom (algebraMap _ _)))
     rw [Spec.map_comp]
     exact IsLocalAtSource.comp hf ..
 
@@ -421,7 +415,7 @@ lemma of_isLocalAtSource_of_isLocalAtTarget [IsLocalAtTarget P] [IsLocalAtSource
     let Q := affineLocally (fun f ↦ P (Spec.map (CommRingCat.ofHom f)))
     have : HasRingHomProperty Q (fun f ↦ P (Spec.map (CommRingCat.ofHom f))) :=
       ⟨isLocal_ringHomProperty_of_isLocalAtSource_of_isLocalAtTarget P, rfl⟩
-    show P = Q
+    change P = Q
     ext X Y f
     wlog hY : ∃ R, Y = Spec R generalizing X Y
     · rw [IsLocalAtTarget.iff_of_openCover (P := P) Y.affineCover,

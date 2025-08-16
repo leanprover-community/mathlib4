@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
 import Mathlib.Data.Sum.Order
+import Mathlib.Order.Hom.Lex
 import Mathlib.Order.RelIso.Set
 import Mathlib.Order.UpperLower.Basic
 import Mathlib.Order.WellFounded
@@ -42,8 +43,9 @@ These notations belong to the `InitialSeg` locale.
 
 /-! ### Initial segment embeddings -/
 
-variable {α : Type*} {β : Type*} {γ : Type*} {r : α → α → Prop} {s : β → β → Prop}
-  {t : γ → γ → Prop}
+universe u
+
+variable {α β γ : Type*} {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop}
 
 open Function
 
@@ -122,9 +124,6 @@ theorem exists_eq_iff_rel (f : r ≼i s) {a : α} {b : β} : s b (f a) ↔ ∃ a
 @[simps!]
 def _root_.RelIso.toInitialSeg (f : r ≃r s) : r ≼i s :=
   ⟨f, by simp⟩
-
-@[deprecated (since := "2024-10-22")]
-alias ofIso := RelIso.toInitialSeg
 
 /-- The identity function shows that `≼i` is reflexive -/
 @[refl]
@@ -459,13 +458,12 @@ protected theorem acc [IsTrans β s] (f : r ≺i s) (a : α) : Acc r a ↔ Acc s
 
 end PrincipalSeg
 
-theorem wellFounded_iff_principalSeg.{u} {β : Type u} {s : β → β → Prop} [IsTrans β s] :
+theorem wellFounded_iff_principalSeg {β : Type u} {s : β → β → Prop} [IsTrans β s] :
     WellFounded s ↔ ∀ (α : Type u) (r : α → α → Prop) (_ : r ≺i s), WellFounded r :=
   ⟨fun wf _ _ f => RelHomClass.wellFounded f.toRelEmbedding wf, fun h =>
     wellFounded_iff_wellFounded_subrel.mpr fun b => h _ _ (PrincipalSeg.ofElement s b)⟩
 
 /-! ### Properties of initial and principal segments -/
-
 
 namespace InitialSeg
 
@@ -493,6 +491,16 @@ theorem transPrincipal_apply [IsWellOrder β s] [IsTrans γ t] (f : r ≼i s) (g
   · rw [PrincipalSeg.trans_apply, f.eq_principalSeg]
   · rw [PrincipalSeg.relIsoTrans_apply, f.eq_relIso]
 
+/-- An initial segment can be extended to an isomorphism by joining a second well order to the
+domain. -/
+theorem exists_sum_relIso {β : Type u} {s : β → β → Prop} [IsWellOrder β s] (f : r ≼i s) :
+    ∃ (γ : Type u) (t : γ → γ → Prop), IsWellOrder γ t ∧ Nonempty (Sum.Lex r t ≃r s) := by
+  classical
+  obtain f | f := f.principalSumRelIso
+  · exact ⟨_, _, inferInstance,
+      ⟨(RelIso.sumLexCongr f.subrelIso.symm (.refl _)).trans <| .sumLexComplLeft ..⟩⟩
+  · exact ⟨PEmpty, nofun, inferInstance, ⟨(RelIso.sumLexEmpty r _).trans f⟩⟩
+
 end InitialSeg
 
 /-- The function in `collapse`. -/
@@ -504,7 +512,7 @@ private noncomputable def collapseF [IsWellOrder β s] (f : r ↪r s) : Π a, { 
 
 private theorem collapseF_lt [IsWellOrder β s] (f : r ↪r s) {a : α} :
     ∀ {a'}, r a' a → s (collapseF f a') (collapseF f a) := by
-  show _ ∈ { b | ∀ a', r a' a → s (collapseF f a') b }
+  change _ ∈ { b | ∀ a', r a' a → s (collapseF f a') b }
   rw [collapseF, IsWellFounded.fix_eq]
   dsimp only
   exact WellFounded.min_mem _ _ _

@@ -43,7 +43,7 @@ theorem isIntegral_ofLocalizationSpan :
     OfLocalizationSpan (RingHom.IsIntegral ·) := by
   introv R hs H r
   letI := f.toAlgebra
-  show r ∈ (integralClosure R S).toSubmodule
+  change r ∈ (integralClosure R S).toSubmodule
   apply Submodule.mem_of_span_eq_top_of_smul_pow_mem _ s hs
   rintro ⟨t, ht⟩
   letI := (Localization.awayMap f t).toAlgebra

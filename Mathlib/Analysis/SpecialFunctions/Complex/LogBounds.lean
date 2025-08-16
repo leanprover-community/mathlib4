@@ -200,7 +200,7 @@ lemma norm_log_one_add_le {z : ℂ} (hz : ‖z‖ < 1) :
   exact norm_add_le_of_le (Complex.norm_log_one_add_sub_self_le hz) le_rfl
 
 /-- For `‖z‖ ≤ 1/2`, the complex logarithm is bounded by `(3/2) * ‖z‖`. -/
-lemma norm_log_one_add_half_le_self {z : ℂ} (hz : ‖z‖ ≤ 1/2) : ‖log (1 + z)‖ ≤ (3/2) * ‖z‖ := by
+lemma norm_log_one_add_half_le_self {z : ℂ} (hz : ‖z‖ ≤ 1 / 2) : ‖log (1 + z)‖ ≤ (3/2) * ‖z‖ := by
   apply le_trans (norm_log_one_add_le (lt_of_le_of_lt hz one_half_lt_one))
   have hz3 : (1 - ‖z‖)⁻¹ ≤ 2 := by
     rw [inv_eq_one_div, div_le_iff₀]
@@ -372,6 +372,16 @@ lemma tendsto_mul_log_one_add_of_tendsto {g : ℝ → ℝ} {t : ℝ}
   filter_upwards [hg0.eventually_const_le (show (-1 : ℝ) < 0 by norm_num)] with x hg1
   rw [Complex.ofReal_log (by linarith), Complex.ofReal_add, Complex.ofReal_one]
 
+theorem tendsto_mul_log_one_add_div_atTop (t : ℝ) :
+    Tendsto (fun x => x * log (1 + t / x)) atTop (𝓝 t) :=
+  tendsto_mul_log_one_add_of_tendsto <|
+    tendsto_const_nhds.congr' <|
+      (EventuallyEq.div_mul_cancel_atTop tendsto_id).symm.trans <|
+        .of_eq <| funext fun _ => mul_comm _ _
+
+@[deprecated (since := "2025-05-22")]
+alias tendsto_mul_log_one_plus_div_atTop := tendsto_mul_log_one_add_div_atTop
+
 /-- The limit of `(1 + g x) ^ x` as `(x : ℝ) → ∞` is `exp t`,
 where `t : ℝ` is the limit of `x * g x`. -/
 lemma tendsto_one_add_rpow_exp_of_tendsto {g : ℝ → ℝ} {t : ℝ}
@@ -393,6 +403,9 @@ lemma tendsto_one_add_div_rpow_exp (t : ℝ) :
   filter_upwards [eventually_ne_atTop 0] with x hx0
   exact mul_div_cancel₀ t (mod_cast hx0)
 
+@[deprecated (since := "2025-05-22")]
+alias tendsto_one_plus_div_rpow_exp := tendsto_one_add_div_rpow_exp
+
 /-- The limit of `n * log (1 + g n)` as `(n : ℝ) → ∞` is `t`,
 where `t : ℝ` is the limit of `n * g n`. -/
 lemma tendsto_nat_mul_log_one_add_of_tendsto {g : ℕ → ℝ} {t : ℝ}
@@ -413,6 +426,9 @@ lemma tendsto_one_add_pow_exp_of_tendsto {g : ℕ → ℝ} {t : ℝ}
 lemma tendsto_one_add_div_pow_exp (t : ℝ) :
     Tendsto (fun n : ℕ ↦ (1 + t / n) ^ n) atTop (𝓝 (exp t)) :=
   tendsto_one_add_div_rpow_exp t |>.comp tendsto_natCast_atTop_atTop |>.congr (by simp)
+
+@[deprecated (since := "2025-05-22")]
+alias tendsto_one_plus_div_pow_exp := tendsto_one_add_div_pow_exp
 
 end Real
 
