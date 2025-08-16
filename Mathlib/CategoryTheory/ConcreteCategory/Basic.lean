@@ -112,7 +112,7 @@ abbrev HasForget.instFunLike {X Y : C} : FunLike (X ⟶ Y) X Y where
 attribute [local instance] HasForget.instFunLike
 
 /-- In any concrete category, we can test equality of morphisms by pointwise evaluations. -/
-@[ext low] -- Porting note: lowered priority
+@[ext low]
 theorem ConcreteCategory.hom_ext {X Y : C} (f g : X ⟶ Y) (w : ∀ x : X, f x = g x) : f = g := by
   apply (forget C).map_injective
   dsimp [forget]

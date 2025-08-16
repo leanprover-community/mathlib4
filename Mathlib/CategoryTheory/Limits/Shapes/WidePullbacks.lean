@@ -35,7 +35,6 @@ variable (J : Type w)
 /-- A wide pullback shape for any type `J` can be written simply as `Option J`. -/
 def WidePullbackShape := Option J
 
--- Porting note: strangely this could be synthesized
 instance : Inhabited (WidePullbackShape J) where
   default := none
 

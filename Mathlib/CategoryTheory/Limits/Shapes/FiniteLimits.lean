@@ -146,7 +146,7 @@ end
 
 instance : FinCategory WalkingParallelPair where
   fintypeObj := fintypeWalkingParallelPair
-  fintypeHom := instFintypeWalkingParallelPairHom -- Porting note: could not be inferred
+  fintypeHom := instFintypeWalkingParallelPairHom
 
 /-- Equalizers are finite limits, so if `C` has all finite limits, it also has all equalizers -/
 example [HasFiniteLimits C] : HasEqualizers C := by infer_instance
@@ -185,8 +185,8 @@ end WidePullbackShape
 
 namespace WidePushoutShape
 
-instance fintypeObj [Fintype J] : Fintype (WidePushoutShape J) := by
-  rw [WidePushoutShape]; infer_instance
+instance fintypeObj [Fintype J] : Fintype (WidePushoutShape J) :=
+  inferInstanceAs <| Fintype (Option _)
 
 instance fintypeHom (j j' : WidePushoutShape J) : Fintype (j ⟶ j') where
   elems := by
