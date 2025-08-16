@@ -48,14 +48,10 @@ Pattern a → b
   or_iff_left_iff_imp
 · p ∧ (p → q) ↔ p
   and_iff_left_iff_imp
-· spred(p → p → q)
-  Std.Do.SPred.imp_nil
 · p ∨ (p → q) ↔ p → q
   or_iff_right_iff_imp
 · (p → q) ∧ p ↔ p
   and_iff_right_iff_imp
-· p ⊢ₛ p → q
-  Std.Do.SPred.entails_nil
 · ¬p
   ⊢ ¬(p → q)
   imp_iff_not
@@ -66,8 +62,6 @@ Pattern a → b
 Pattern ∀ (p : P), Q p
 · p → p → p → q
   forall_self_imp
-· spred(∀ a, p → q)
-  Std.Do.SPred.forall_nil
 · ¬∃ x, ¬(p → q)
   Classical.not_exists_not
 · True
