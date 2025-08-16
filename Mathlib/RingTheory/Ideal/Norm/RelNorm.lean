@@ -189,11 +189,6 @@ theorem spanNorm_le_comap (I : Ideal S) :
   | add _ _ _ _ hx hy => exact Submodule.add_mem _ hx hy
   | smul _ _ _ hx => exact Submodule.smul_mem _ _ hx
 
-theorem bot_of_liesOver_bot (P : Ideal S) [h : P.LiesOver (⊥ : Ideal R)] :
-    P = ⊥ := by
-  rw [liesOver_iff, under_def, eq_comm, eq_bot_iff] at h
-  exact spanNorm_eq_bot_iff.mp <| eq_bot_iff.mpr <| (spanNorm_le_comap R P).trans h
-
 variable [IsDedekindDomain R] [IsDedekindDomain S]
 
 /-- Multiplicativity of `Ideal.spanNorm`. simp-normal form is `map_mul (Ideal.relNorm R)`. -/
