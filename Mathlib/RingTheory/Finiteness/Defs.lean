@@ -154,6 +154,11 @@ def Finite (f : A →+* B) : Prop :=
   letI : Algebra A B := f.toAlgebra
   Module.Finite A B
 
+@[simp]
+lemma finite_algebraMap [Algebra A B] :
+    (algebraMap A B).Finite ↔ Module.Finite A B := by
+  rw [RingHom.Finite, toAlgebra_algebraMap]
+
 end RingHom
 
 namespace AlgHom
