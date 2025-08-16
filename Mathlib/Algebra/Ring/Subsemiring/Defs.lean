@@ -107,9 +107,7 @@ instance (priority := 75) toSemiring {R} [Semiring R] [SetLike S R] [Subsemiring
 @[simp, norm_cast]
 theorem coe_pow {R} [Monoid R] [SetLike S R] [SubmonoidClass S R] (x : s) (n : ℕ) :
     ((x ^ n : s) : R) = (x : R) ^ n := by
-  induction n with
-  | zero => simp
-  | succ n ih => simp [pow_succ, ih]
+  trivial
 
 /-- A subsemiring of a `CommSemiring` is a `CommSemiring`. -/
 instance toCommSemiring {R} [CommSemiring R] [SetLike S R] [SubsemiringClass S R] :
@@ -313,9 +311,7 @@ instance toSemiring {R} [Semiring R] (s : Subsemiring R) : Semiring s :=
 @[simp, norm_cast]
 theorem coe_pow {R} [Semiring R] (s : Subsemiring R) (x : s) (n : ℕ) :
     ((x ^ n : s) : R) = (x : R) ^ n := by
-  induction n with
-  | zero => simp
-  | succ n ih => simp [pow_succ, ih]
+  trivial
 
 /-- A subsemiring of a `CommSemiring` is a `CommSemiring`. -/
 instance toCommSemiring {R} [CommSemiring R] (s : Subsemiring R) : CommSemiring s :=
