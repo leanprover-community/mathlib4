@@ -6,16 +6,11 @@ Authors: Johan Commelin
 import Mathlib.Algebra.Order.Ring.Idempotent
 import Mathlib.Order.Heyting.Hom
 import Mathlib.RingTheory.Finiteness.Ideal
-import Mathlib.RingTheory.Ideal.MinimalPrime.Localization
 import Mathlib.RingTheory.Ideal.GoingUp
+import Mathlib.RingTheory.Ideal.MinimalPrime.Localization
 import Mathlib.RingTheory.KrullDimension.Basic
-import Mathlib.RingTheory.LocalRing.ResidueField.Defs
-import Mathlib.RingTheory.LocalRing.RingHom.Basic
 import Mathlib.RingTheory.Localization.Algebra
-import Mathlib.RingTheory.Localization.Away.Basic
-import Mathlib.RingTheory.Localization.Ideal
 import Mathlib.RingTheory.Spectrum.Maximal.Localization
-import Mathlib.Tactic.StacksAttribute
 import Mathlib.Topology.Constructible
 import Mathlib.Topology.KrullDimension
 import Mathlib.Topology.Spectral.Basic
@@ -1369,3 +1364,13 @@ lemma isIdempotentElemEquivClopens_symm_sup (s₁ s₂ : Clopens (PrimeSpectrum 
 end PrimeSpectrum
 
 end Idempotent
+
+variable {R S} in
+theorem IsLocalHom.of_specComap_surjective [CommSemiring R] [CommSemiring S] (f : R →+* S)
+    (hf : Function.Surjective f.specComap) : IsLocalHom f where
+  map_nonunit x hfx := by
+    by_contra hx
+    obtain ⟨p, hp, _⟩ := exists_max_ideal_of_mem_nonunits hx
+    obtain ⟨⟨q, hqp⟩, hq⟩ := hf ⟨p, hp.isPrime⟩
+    simp only [PrimeSpectrum.mk.injEq] at hq
+    exact hqp.ne_top (q.eq_top_of_isUnit_mem (q.mem_comap.mp (by rwa [hq])) hfx)
