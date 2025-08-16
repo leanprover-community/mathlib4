@@ -201,14 +201,17 @@ variable {α F : Type*} [MeasurableSpace α]
   [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
   (μ : VectorMeasure α F)
 
+/-- For an `F`-valued vector measure `μ`, `μ.withPairing` is a structure `VectorMeasureWithPairing`
+where `pairing` is just the `ℝ`-multiplication, so that `μ.withPairing.integral` is the
+`F`-valued integral of `μ`. -/
 def withPairing : VectorMeasureWithPairing α ℝ F F where
   pairing := scalarSMulCLM F
   vectorMeasure := μ
 
-/-- The `F`-valued integral with respect to an `F`-valued vector measure, defined as the pairing
-integral where the pairing is `scalarSMulCLM`. -/
-noncomputable def integral (f : α →₁[μ.variation.ennrealToMeasure] ℝ) : F :=
-    μ.withPairing.integral f
+/-- The `F`-valued integral with respect to an `F`-valued vector measure as a continuous linear map,
+defined as the pairing integral where the pairing is `scalarSMulCLM`. -/
+noncomputable def integral : (α →₁[μ.variation.ennrealToMeasure] ℝ) →L[ℝ] F :=
+    μ.withPairing.integral
 
 end VectorMeasure
 
