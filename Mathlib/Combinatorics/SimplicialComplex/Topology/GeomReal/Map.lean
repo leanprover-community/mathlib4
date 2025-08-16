@@ -80,7 +80,6 @@ noncomputable def map_nat_trans (φ : Hom X Y) :
 /-- The induced continuous map on geometric realisations `|φ| : |X| ⟶ |Y|`
 constructed via colimit functoriality for the face diagrams. -/
 noncomputable def map (φ : Hom X Y)
-  [HasColimit (delta X)]
   [HasColimit (delta Y)]
   [HasColimit (φ.face_functor ⋙ delta Y)] :
   of (GeomReal X) ⟶ of (GeomReal Y) := by

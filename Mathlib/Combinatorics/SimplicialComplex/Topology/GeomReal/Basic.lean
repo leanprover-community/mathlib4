@@ -72,6 +72,7 @@ instance {X} : CoeFun (GeomReal (U := U) X) (fun _ ↦ U → ℝ) :=
 
 namespace GeomReal
 
+omit [DecidableEq U] in
 /-- **Extensionality by weights for points**
 Two points in the geometric realisation are equal as soon as their weight
 functions coincide. In particular, the supporting face then also agrees since
