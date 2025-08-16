@@ -244,6 +244,27 @@ lemma subtype_Ioi_eq_Ioc (x : I) : Subtype.val⁻¹' (Ioi ↑x) = Ioc x 1 := by
   rw [preimage_subtype_val_Ioi]
   exact Ioc_top.symm
 
+/-- For monotone functions `f : α → I → ℝ`, the set of pairs `e : α × I`
+such that `a < sSup {x | f e.1 x < e.2}` equals the union over all rationals `q ∈ I`
+with `q > a` of the sets `{e | f e.1 q < e.2}`. -/
+lemma sSup_eq_iUnion_rat {α : Type*} {f : α → I → ℝ} (hf : ∀ a, Monotone (f a)) (a : I) :
+    {e : α × I | a < sSup {x | f e.1 x < e.2}} =
+    ⋃ (q : {q : ℚ // (q : ℝ) ∈ I ∧ (q : ℝ) > a}), {e | f e.1 ⟨q.1, q.2.1⟩ < e.2} := by
+  ext e
+  constructor
+  · intro (he : a < sSup {x | f e.1 x < e.2})
+    rw [Set.mem_iUnion]
+    rw [lt_sSup_iff] at he
+    obtain ⟨y, y_mem, (hy : a.1 < y.1)⟩ := he
+    obtain ⟨q, hqa, hqy⟩ := exists_rat_btwn hy
+    have q_in_I : (q : ℝ) ∈ I := ⟨a.2.1.trans hqa.le, hqy.le.trans y.2.2⟩
+    refine ⟨⟨q, q_in_I, hqa⟩, ?_⟩
+    exact lt_of_lt_of_le' y_mem (hf e.1 hqy.le)
+  · intro he
+    simp_all only [lt_sSup_iff, Set.mem_iUnion]
+    obtain ⟨q, hq⟩ := he
+    exact ⟨⟨q.1, q.2.1⟩, hq, q.2.2⟩
+
 end unitInterval
 
 section partition
