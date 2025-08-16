@@ -49,13 +49,6 @@ noncomputable def nim (o : Ordinal.{u}) : PGame.{u} :=
 termination_by o
 decreasing_by all_goals exact ((enumIsoToType o).symm x).prop
 
-@[deprecated "you can use `rw [nim]` directly" (since := "2025-01-23")]
-theorem nim_def (o : Ordinal) : nim o =
-    ⟨o.toType, o.toType,
-      fun x => nim ((enumIsoToType o).symm x).val,
-      fun x => nim ((enumIsoToType o).symm x).val⟩ := by
-  rw [nim]
-
 theorem leftMoves_nim (o : Ordinal) : (nim o).LeftMoves = o.toType := by rw [nim]; rfl
 theorem rightMoves_nim (o : Ordinal) : (nim o).RightMoves = o.toType := by rw [nim]; rfl
 
@@ -91,9 +84,6 @@ theorem toRightMovesNim_symm_lt {o : Ordinal} (i : (nim o).RightMoves) :
 theorem moveLeft_nim {o : Ordinal} (i) : (nim o).moveLeft i = nim (toLeftMovesNim.symm i).val :=
   (congr_heq (moveLeft_nim_heq o).symm (cast_heq _ i)).symm
 
-@[deprecated moveLeft_nim (since := "2024-10-30")]
-alias moveLeft_nim' := moveLeft_nim
-
 theorem moveLeft_toLeftMovesNim {o : Ordinal} (i) :
     (nim o).moveLeft (toLeftMovesNim i) = nim i := by
   simp
@@ -101,9 +91,6 @@ theorem moveLeft_toLeftMovesNim {o : Ordinal} (i) :
 @[simp]
 theorem moveRight_nim {o : Ordinal} (i) : (nim o).moveRight i = nim (toRightMovesNim.symm i).val :=
   (congr_heq (moveRight_nim_heq o).symm (cast_heq _ i)).symm
-
-@[deprecated moveRight_nim (since := "2024-10-30")]
-alias moveRight_nim' := moveRight_nim
 
 theorem moveRight_toRightMovesNim {o : Ordinal} (i) :
     (nim o).moveRight (toRightMovesNim i) = nim i := by

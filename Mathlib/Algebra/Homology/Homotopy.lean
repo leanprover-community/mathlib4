@@ -118,8 +118,8 @@ which are zero unless `c.Rel j i`, satisfying the homotopy condition.
 @[ext]
 structure Homotopy (f g : C ⟶ D) where
   hom : ∀ i j, C.X i ⟶ D.X j
-  zero : ∀ i j, ¬c.Rel j i → hom i j = 0 := by aesop_cat
-  comm : ∀ i, f.f i = dNext i hom + prevD i hom + g.f i := by aesop_cat
+  zero : ∀ i j, ¬c.Rel j i → hom i j = 0 := by cat_disch
+  comm : ∀ i, f.f i = dNext i hom + prevD i hom + g.f i := by cat_disch
 
 variable {f g}
 
@@ -136,8 +136,8 @@ def equivSubZero : Homotopy f g ≃ Homotopy (f - g) 0 where
     { hom := fun i j => h.hom i j
       zero := fun _ _ w => h.zero _ _ w
       comm := fun i => by simpa [sub_eq_iff_eq_add] using h.comm i }
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
 /-- Equal chain maps are homotopic. -/
 @[simps]
@@ -677,9 +677,15 @@ Note that this contains data;
 arguably it might be more useful for many applications if we truncated it to a Prop.
 -/
 structure HomotopyEquiv (C D : HomologicalComplex V c) where
+  /-- The forward chain map -/
   hom : C ⟶ D
+  /-- The backward chain map -/
   inv : D ⟶ C
+  /-- A homotopy showing that composing the forward and backward maps is homotopic to the identity
+  on C -/
   homotopyHomInvId : Homotopy (hom ≫ inv) (𝟙 C)
+  /-- A homotopy showing that composing the backward and forward maps is homotopic to the identity
+  on D -/
   homotopyInvHomId : Homotopy (inv ≫ hom) (𝟙 D)
 
 variable (V c) in

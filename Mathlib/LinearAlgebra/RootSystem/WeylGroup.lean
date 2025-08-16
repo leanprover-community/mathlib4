@@ -107,7 +107,7 @@ lemma range_weylGroup_weightHom :
     induction hw using Subgroup.closure_induction'' with
     | one =>
       change ((Equiv.weightHom P).restrict P.weylGroup) 1 ∈ _
-      simpa only [map_one] using Subgroup.one_mem _
+      simp only [map_one, one_mem]
     | mem w' hw' =>
       obtain ⟨i, rfl⟩ := hw'
       simp only [MonoidHom.restrict_apply, Equiv.weightHom_apply, Equiv.reflection_weightEquiv]
@@ -133,7 +133,7 @@ lemma range_weylGroup_coweightHom :
     induction hw using Subgroup.closure_induction'' with
     | one =>
       change ((Equiv.coweightHom P).restrict P.weylGroup) 1 ∈ _
-      simpa only [map_one] using Subgroup.one_mem _
+      simp only [map_one, one_mem]
     | mem w' hw' =>
       obtain ⟨i, rfl⟩ := hw'
       simp only [MonoidHom.restrict_apply, Equiv.coweightHom_apply, Equiv.reflection_coweightEquiv]
@@ -161,7 +161,7 @@ lemma range_weylGroupToPerm :
     induction hw using Subgroup.closure_induction'' with
     | one =>
       change ((Equiv.indexHom P).restrict P.weylGroup) 1 ∈ _
-      simpa only [map_one] using Subgroup.one_mem _
+      simp only [map_one, one_mem]
     | mem w' hw' =>
       obtain ⟨i, rfl⟩ := hw'
       simp only [MonoidHom.restrict_apply, Equiv.indexHom_apply, Equiv.reflection_indexEquiv]
