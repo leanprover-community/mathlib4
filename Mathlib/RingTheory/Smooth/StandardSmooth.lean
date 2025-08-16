@@ -526,7 +526,7 @@ noncomputable def localizationAway : SubmersivePresentation R S Unit Unit where
   __ := PreSubmersivePresentation.localizationAway S r
   jacobian_isUnit := by
     rw [localizationAway_jacobian]
-    apply IsLocalization.map_units' (⟨r, 1, by simp⟩ : Submonoid.powers r)
+    exact IsLocalization.map_units _ (⟨r, 1, by simp⟩ : Submonoid.powers r)
 
 end Localization
 
