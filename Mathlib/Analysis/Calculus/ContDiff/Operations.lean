@@ -272,9 +272,9 @@ variable {i : ℕ}
 -- prove it from `ContinuousLinearEquiv.iteratedFDerivWithin_comp_left`
 theorem iteratedFDerivWithin_neg_apply {f : E → F} (hu : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
     iteratedFDerivWithin 𝕜 i (-f) s x = -iteratedFDerivWithin 𝕜 i f s x := by
-  induction' i with i hi generalizing x
-  · ext; simp
-  · ext h
+  induction i generalizing x with ext h
+  | zero => simp
+  | succ i hi =>
     calc
       iteratedFDerivWithin 𝕜 (i + 1) (-f) s x h =
           fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 i (-f) s) s x (h 0) (Fin.tail h) :=
@@ -326,11 +326,12 @@ theorem ContDiffWithinAt.sum {ι : Type*} {f : ι → E → F} {s : Finset ι} {
     (h : ∀ i ∈ s, ContDiffWithinAt 𝕜 n (fun x => f i x) t x) :
     ContDiffWithinAt 𝕜 n (fun x => ∑ i ∈ s, f i x) t x := by
   classical
-    induction' s using Finset.induction_on with i s is IH
-    · simp [contDiffWithinAt_const]
-    · simp only [is, Finset.sum_insert, not_false_iff]
-      exact (h _ (Finset.mem_insert_self i s)).add
-        (IH fun j hj => h _ (Finset.mem_insert_of_mem hj))
+  induction s using Finset.induction_on with
+  | empty => simp [contDiffWithinAt_const]
+  | insert i s is IH =>
+    simp only [is, Finset.sum_insert, not_false_iff]
+    exact (h _ (Finset.mem_insert_self i s)).add
+      (IH fun j hj => h _ (Finset.mem_insert_of_mem hj))
 
 @[fun_prop]
 theorem ContDiffAt.sum {ι : Type*} {f : ι → E → F} {s : Finset ι} {x : E}
@@ -805,10 +806,12 @@ theorem PartialHomeomorph.contDiffAt_symm [CompleteSpace E] (f : PartialHomeomor
     exact f.analyticAt_symm ha hf.analyticAt hf₀'.fderiv
   | (n : ℕ∞) =>
     -- We prove this by induction on `n`
-    induction' n using ENat.nat_induction with n IH Itop
-    · apply contDiffAt_zero.2
+    induction n using ENat.nat_induction with
+    | h0 =>
+      apply contDiffAt_zero.2
       exact ⟨f.target, IsOpen.mem_nhds f.open_target ha, f.continuousOn_invFun⟩
-    · obtain ⟨f', ⟨u, hu, hff'⟩, hf'⟩ := contDiffAt_succ_iff_hasFDerivAt.mp hf
+    | hsuc n IH =>
+      obtain ⟨f', ⟨u, hu, hff'⟩, hf'⟩ := contDiffAt_succ_iff_hasFDerivAt.mp hf
       apply contDiffAt_succ_iff_hasFDerivAt.2
       -- For showing `n.succ` times continuous differentiability (the main inductive step), it
       -- suffices to produce the derivative and show that it is `n` times continuously
@@ -844,9 +847,7 @@ theorem PartialHomeomorph.contDiffAt_symm [CompleteSpace E] (f : PartialHomeomor
           norm_cast
           exact Nat.le_succ n
         exact (h_deriv₁.comp _ hf').comp _ h_deriv₂
-    · refine contDiffAt_infty.mpr ?_
-      intro n
-      exact Itop n (contDiffAt_infty.mp hf n)
+    | htop Itop => exact contDiffAt_infty.mpr fun n ↦ Itop n (contDiffAt_infty.mp hf n)
 
 /-- If `f` is an `n` times continuously differentiable homeomorphism,
 and if the derivative of `f` at each point is a continuous linear equivalence,
