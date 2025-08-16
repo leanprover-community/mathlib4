@@ -22,6 +22,7 @@ theorem eq_of_factorization_eq' {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0)
 
 theorem exists_eq_pow_of_exponent_coprime_of_pow_eq {a b m n : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) (hmn : m.Coprime n) (h : a ^ m = b ^ n) :
     ∃ c, a = c ^ n ∧ b = c ^ m := by
+  -- TODO consider renaming this, or moving this if it's only used once
   have := congrArg factorization h
   rw [factorization_pow, factorization_pow] at this
   let c_factorization := a.factorization.mapRange (. / n) (Nat.zero_div n)
@@ -51,14 +52,16 @@ theorem exists_eq_pow_of_exponent_coprime_of_pow_eq {a b m n : ℕ} (ha : a ≠ 
         exact this p_mem
       exact prime_of_mem_primeFactors this
     unfold c_factorization
-    --ext --refine Finsupp.ext ?_
-    refine Finsupp.ext_iff'.mpr ?_
-    constructor
-    . simp
-      sorry
-    . intro p
-      simp
-      sorry
+    ext p
+    simp
+    suffices n ∣ a.factorization p by
+      exact (Nat.mul_div_cancel' this).symm
+    have := congrFun (congrArg DFunLike.coe this) p
+    simp at this
+    have dvd : n ∣ m * a.factorization p :=
+      Dvd.intro (b.factorization p) this.symm
+    have coprime := hmn.symm
+    exact coprime.dvd_of_dvd_mul_left dvd
   · sorry
 
 theorem exists_eq_pow_of_pow_eq {a b m n : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) (hmn : m ≠ 0 ∨ n ≠ 0) (h : a ^ m = b ^ n) :
