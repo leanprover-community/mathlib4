@@ -60,7 +60,7 @@ theorem toMultiset_sum_single (s : Finset ι) (n : ℕ) :
 
 @[simp]
 theorem card_toMultiset (f : α →₀ ℕ) : Multiset.card (toMultiset f) = f.sum fun _ => id := by
-  simp [toMultiset_apply, Function.id_def]
+  simp [toMultiset_apply]
 
 theorem toMultiset_map (f : α →₀ ℕ) (g : α → β) :
     f.toMultiset.map g = toMultiset (f.mapDomain g) := by
@@ -239,7 +239,7 @@ finitely-supported maps `α →₀ ℕ` with total mass `n`.
 See also `Sym.equivNatSumOfFintype` when `α` is finite. -/
 def equivNatSum :
     Sym α n ≃ {P : α →₀ ℕ // P.sum (fun _ ↦ id) = n} :=
-  Multiset.toFinsupp.toEquiv.subtypeEquiv <| by simp
+  Multiset.toFinsupp.toEquiv.subtypeEquiv <| by simp [Finsupp.sum]
 
 @[simp] lemma coe_equivNatSum_apply_apply (s : Sym α n) (a : α) :
     (equivNatSum α n s : α →₀ ℕ) a = (s : Multiset α).count a :=
