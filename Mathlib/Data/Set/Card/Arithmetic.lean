@@ -52,14 +52,14 @@ theorem Finset.apply_sup_le_sum [SemilatticeSup α] [OrderBot α]
     {s : ι → α} (t : Finset ι) :
     f (t.sup s) ≤ ∑ i ∈ t, f (s i) := by
   classical
-  refine t.induction_on (by simp [zero]) fun i t it h ↦ ?_
+  refine t.induction_on zero.le fun i t it h ↦ ?_
   simpa only [sup_insert, Finset.sum_insert it] using ih.trans (by gcongr)
 
 theorem Finset.apply_union_le_sum [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β]
     {f : Set α → β} (zero : f ∅ = 0) (ih : ∀ {s t}, f (s ∪ t) ≤ f s + f t)
     {s : ι → Set α} (t : Finset ι) :
     f (⋃ i ∈ t, s i) ≤ ∑ i ∈ t, f (s i) :=
-  Finset.sup_set_eq_biUnion t s ▸ t.apply_sup_le_sum (zero) (by simpa)
+  Finset.sup_set_eq_biUnion t s ▸ t.apply_sup_le_sum zero (by simpa)
 
 namespace Set
 
