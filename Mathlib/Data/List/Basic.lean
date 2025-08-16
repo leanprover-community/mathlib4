@@ -303,10 +303,8 @@ theorem getLast_append_singleton {a : α} (l : List α) :
   simp
 
 theorem getLast_append_of_right_ne_nil (l₁ l₂ : List α) (h : l₂ ≠ []) :
-    getLast (l₁ ++ l₂) (append_ne_nil_of_right_ne_nil l₁ h) = getLast l₂ h := by
-  induction l₁ with
-  | nil => simp
-  | cons _ _ ih => simp only [cons_append]; rw [List.getLast_cons]; exact ih
+    getLast (l₁ ++ l₂) (append_ne_nil_of_right_ne_nil l₁ h) = getLast l₂ h :=
+  getLast_append_of_ne_nil (append_ne_nil_of_right_ne_nil l₁ h) h
 
 @[deprecated (since := "2025-02-06")]
 alias getLast_append' := getLast_append_of_right_ne_nil
