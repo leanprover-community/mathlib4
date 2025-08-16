@@ -270,7 +270,9 @@ lemma _root_.InnerProductSpace.isSelfAdjoint_rankOne_self (x : E) :
   adjoint_rankOne x x
 
 omit [CompleteSpace E] in
-lemma _root_.InnerProductSpace.rankOne_comp (x : E) (y : F) (f : F →L[𝕜] F) :
+lemma _root_.InnerProductSpace.rankOne_comp {G : Type*}
+    [NormedAddCommGroup G] [InnerProductSpace 𝕜 G] [CompleteSpace G]
+    (x : E) (y : F) (f : G →L[𝕜] F) :
     rankOne 𝕜 x y ∘L f = rankOne 𝕜 x (adjoint f y) := by
   simp_rw [rankOne_def, comp_assoc, innerSL_apply_comp]
 

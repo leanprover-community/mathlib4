@@ -328,11 +328,8 @@ noncomputable def rankOne : E →L[𝕜] F →L⋆[𝕜] F →L[𝕜] E :=
       map_smul' := fun _ _ => by rw [map_smulₛₗ, comp_smulₛₗ]; rfl }
     map_add' := fun _ _ => by ext; simp
     map_smul' := fun _ _ => by ext; simp })
-  1 (fun x y => calc _ ≤ _ := opNorm_comp_le _ _
-      _ ≤ ‖x‖ * ‖y‖ := mul_le_mul (opNorm_le_bound _ (norm_nonneg x)
-          (by simp [norm_smul, mul_comm]))
-        (innerSL_apply_norm 𝕜 y ▸ le_refl _) (norm_nonneg _) (norm_nonneg _)
-      _ = _ := by rw [one_mul])
+  1 (fun x y => le_of_eq <| one_mul ‖x‖ ▸ mul_comm ‖x‖ ‖y‖ ▸
+    innerSL_apply_norm 𝕜 y ▸ norm_smulRight_apply (innerSL 𝕜 y) x)
 
 lemma rankOne_def (x : E) (y : F) :
     rankOne 𝕜 x y = (lsmul 𝕜 𝕜).flip x ∘L innerSL 𝕜 y :=
@@ -342,12 +339,17 @@ lemma rankOne_def' (x : E) (y : F) :
     rankOne 𝕜 x y = (innerSL 𝕜 y).smulRight x :=
   rfl
 
+theorem norm_rankOne (x : E) (y : F) :
+    ‖rankOne 𝕜 x y‖ = ‖x‖ * ‖y‖ :=
+  mul_comm ‖x‖ ‖y‖ ▸ innerSL_apply_norm 𝕜 y ▸ norm_smulRight_apply _ x
+
 @[simp]
 lemma rankOne_apply (x : E) (y z : F) :
     rankOne 𝕜 x y z = inner 𝕜 y z • x :=
   rfl
 
-lemma comp_rankOne (x : E) (y : F) (f : E →L[𝕜] E) :
+lemma comp_rankOne {G : Type*} [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
+    (x : E) (y : F) (f : E →L[𝕜] G) :
     f ∘L rankOne 𝕜 x y = rankOne 𝕜 (f x) y := by
   simp_rw [rankOne_def, ← comp_assoc, comp_lsmul_flip_apply]
 
@@ -366,11 +368,10 @@ lemma inner_right_rankOne_apply (x y : E) (z w : F) :
     inner 𝕜 x (rankOne 𝕜 y z w) = inner 𝕜 x y * inner 𝕜 z w := by
   simp [inner_smul_right, mul_comm]
 
-lemma rankOne_comp_rankOne (x : E) (y z : F) (w : E) :
+lemma rankOne_comp_rankOne {G : Type*} [SeminormedAddCommGroup G] [InnerProductSpace 𝕜 G]
+    (x : E) (y z : F) (w : G) :
     rankOne 𝕜 x y ∘L rankOne 𝕜 z w = inner 𝕜 y z • rankOne 𝕜 x w := by
-  ext v
-  simp only [comp_apply, rankOne_apply, map_smul, ContinuousLinearMap.smul_apply]
-  rw [smul_algebra_smul_comm]
+  simp [comp_rankOne]
 
 lemma isIdempotentElem_rankOne_self {x : E} (h : ‖x‖ = 1) :
     IsIdempotentElem (rankOne 𝕜 x x) := by
