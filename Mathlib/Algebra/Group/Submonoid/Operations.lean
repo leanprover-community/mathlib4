@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzza
 Amelia Livingston, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Action.Faithful
-import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.Submonoid.Basic
 import Mathlib.Algebra.Group.Submonoid.MulAction
@@ -1011,17 +1010,6 @@ noncomputable def unitsTypeEquivIsUnitSubmonoid [Monoid M] : Mˣ ≃* IsUnit.sub
 end Submonoid
 
 end Units
-
-open AddSubmonoid Set
-
-namespace Nat
-
-@[simp] lemma addSubmonoid_closure_one : closure ({1} : Set ℕ) = ⊤ := by
-  refine (eq_top_iff' _).2 <| Nat.rec (zero_mem _) ?_
-  simp_rw [Nat.succ_eq_add_one]
-  exact fun n hn ↦ AddSubmonoid.add_mem _ hn <| subset_closure <| Set.mem_singleton _
-
-end Nat
 
 namespace Submonoid
 
