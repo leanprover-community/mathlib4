@@ -255,7 +255,7 @@ expression match.
 
 If it succeeds generating a matcher, returns
 1. a list of keys that should be used for the `delab` attribute
-   when defining the elaborator
+  when defining the elaborator
 2. a `Term` that represents a `Matcher` for the given expression `e`. -/
 partial def exprToMatcher (boundFVars : Std.HashMap FVarId Name)
     (localFVars : Std.HashMap FVarId Term) (e : Expr) :
