@@ -12,6 +12,7 @@ import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
 import Mathlib.LinearAlgebra.Dual.Lemmas
 import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Topology.Algebra.Module.StrongTopology
+import Mathlib.Order.Closure
 
 /-!
 
@@ -102,6 +103,11 @@ weak topology. -/
 noncomputable def leftDualEquiv (hl : B.SeparatingLeft) : E ≃ₗ[𝕜] StrongDual 𝕜 (WeakBilin B.flip) :=
   rightDualEquiv _ (LinearMap.flip_separatingRight.mpr hl)
 
+lemma polar_gc_closureOperator_of_separatingLeft_empty (h : SeparatingLeft B) :
+    B.polar_gc.closureOperator (∅ : Set E) = {0} := by
+  simp only [GaloisConnection.closureOperator_apply, Function.comp_apply, polar_empty,
+    OrderDual.ofDual_toDual, (B.flip.polar_univ h)]
+
 variable [Module ℝ E]
 variable [IsScalarTower ℝ 𝕜 E]
 
@@ -159,5 +165,12 @@ theorem flip_polar_polar_eq {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E}
         (RCLike.re_le_norm ((B x) f₀)) (hc f₀ hg₃))
   · exact closedAbsConvexHull_min (subset_bipolar B s) (polar_AbsConvex _) (polar_isClosed B.flip _)
 
+/-
+When `s` is empty, `closedAbsConvexHull (E := WeakBilin B) 𝕜 s` is the empty set, but
+`B.polar_gc.closureOperator s` equals `{0}` when `B` is left separating.
+-/
+lemma polar_gc_closureOperator_nonempty {s : Set E} [Nonempty s] :
+    B.polar_gc.closureOperator s = closedAbsConvexHull (E := WeakBilin B) 𝕜 s := by
+  simp [flip_polar_polar_eq]
 
 end LinearMap
