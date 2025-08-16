@@ -18,7 +18,7 @@ principal ideal domain (PID) is an integral domain which is a principal ideal ri
 
 The definition of `IsPrincipalIdealRing` can be found in `Mathlib/RingTheory/Ideal/Span.lean`.
 
-# Main definitions
+## Main definitions
 
 Note that for principal ideal domains, one should use
 `[IsDomain R] [IsPrincipalIdealRing R]`. There is no explicit definition of a PID.
@@ -28,7 +28,7 @@ Theorems about PID's are in the `PrincipalIdealRing` namespace.
 - `generator`: a generator of a principal ideal (or more generally submodule)
 - `to_uniqueFactorizationMonoid`: a PID is a unique factorization domain
 
-# Main results
+## Main results
 
 - `Ideal.IsPrime.to_maximal_ideal`: a non-zero prime ideal in a PID is maximal.
 - `EuclideanDomain.to_principal_ideal_domain` : a Euclidean domain is a PID.
@@ -489,20 +489,24 @@ open Set Ideal
 variable (R) [CommRing R]
 
 /-- `nonPrincipals R` is the set of all ideals of `R` that are not principal ideals. -/
+@[deprecated "Write { I : Ideal R | ¬I.IsPrincipal } explicitely instead." (since := "2025-08-16")]
 def nonPrincipals :=
   { I : Ideal R | ¬I.IsPrincipal }
 
+@[deprecated "See Ideal.nonPrincipals." (since := "2025-08-16")]
 theorem nonPrincipals_def {I : Ideal R} : I ∈ nonPrincipals R ↔ ¬I.IsPrincipal :=
   Iff.rfl
 
 variable {R}
 
+@[deprecated "See Ideal.nonPrincipals." (since := "2025-08-16")]
 theorem nonPrincipals_eq_empty_iff : nonPrincipals R = ∅ ↔ IsPrincipalIdealRing R := by
   simp [Set.eq_empty_iff_forall_notMem, isPrincipalIdealRing_iff, nonPrincipals_def]
 
 /-- Any chain in the set of non-principal ideals has an upper bound which is non-principal.
 (Namely, the union of the chain is such an upper bound.)
 -/
+@[deprecated "Use Ideal.exists_maximal_not_principal instead." (since := "2025-08-16")]
 theorem nonPrincipals_zorn (c : Set (Ideal R)) (hs : c ⊆ nonPrincipals R)
     (hchain : IsChain (· ≤ ·) c) {K : Ideal R} (hKmem : K ∈ c) :
     ∃ I ∈ nonPrincipals R, ∀ J ∈ c, J ≤ I := by
