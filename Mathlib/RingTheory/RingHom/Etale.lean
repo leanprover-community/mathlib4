@@ -30,9 +30,7 @@ lemma Etale.toAlgebra {f : R →+* S} (hf : Etale f) :
 variable {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S)
 
 lemma etale_algebraMap [Algebra R S] : (algebraMap R S).Etale ↔ Algebra.Etale R S := by
-  simp only [RingHom.Etale]
-  congr!
-  exact Algebra.algebra_ext _ _ fun _ ↦ rfl
+  rw [RingHom.Etale, toAlgebra_algebraMap]
 
 lemma etale_iff_formallyUnramified_and_smooth : f.Etale ↔ f.FormallyUnramified ∧ f.Smooth := by
   algebraize [f]

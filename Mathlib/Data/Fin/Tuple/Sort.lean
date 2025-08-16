@@ -117,9 +117,7 @@ theorem lt_card_le_iff_apply_le_of_monotone [Preorder α] [DecidableLE α]
     apply hw.ne'
     have he := Fintype.card_congr <| Equiv.sumCompl <| q'
     have h4 := (Fintype.card_congr (@Equiv.subtypeSubtypeEquivSubtype _ p q (h1 _)))
-    have h_le : Fintype.card { i // f i ≤ a } ≤ m := by
-      conv_rhs => rw [← Fintype.card_fin m]
-      exact Fintype.card_subtype_le _
+    have h_le : Fintype.card { i // f i ≤ a } ≤ m := by omega
     rwa [Fintype.card_sum, h4, Fintype.card_fin_lt_of_le h_le, add_eq_left] at he
   intro _ h
   contrapose! h

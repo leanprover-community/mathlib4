@@ -228,10 +228,6 @@ protected lemma AEMeasurable.enorm {f : β → ε} {μ : Measure β} (hf : AEMea
     AEMeasurable (‖f ·‖ₑ) μ :=
   measurable_enorm.comp_aemeasurable hf
 
-@[deprecated (since := "2025-01-21")] alias measurable_ennnorm := measurable_enorm
-@[deprecated (since := "2025-01-21")] alias Measurable.ennnorm := Measurable.enorm
-@[deprecated (since := "2025-01-21")] alias AEMeasurable.ennnorm := AEMeasurable.enorm
-
 end ContinuousENorm
 
 section NormedAddCommGroup

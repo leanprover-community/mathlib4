@@ -77,6 +77,8 @@ to learn about it as well!
   and suggests `lake exe graph` commands to visualize the largest "rectangles" of unused imports.
 
 **CI workflow**
+- `lake-build-with-retry.sh`
+  Runs `lake build` on a target until `lake build --no-build` succeeds. Used in the main build workflows.
 - `mk_all.lean`
   run via `lake exe mk_all`, regenerates the import-only files
   `Mathlib.lean`, `Mathlib/Tactic.lean`, `Archive.lean` and `Counterexamples.lean`
@@ -92,6 +94,9 @@ to learn about it as well!
   `*-pr-testing-NNNN` branch.
 - `update_nolints_CI.sh`
   Update the `nolints.json` file to remove unneeded entries. Automatically run once a week.
+- `assign_reviewers.py` is used to automatically assign a reviewer to each stale github PR on the review queue.
+  This script downloads a .json file with proposed assignments and makes the
+  corresponding github API calls.
 - `bench_summary.lean`
   Convert data retrieved from the speed center into a shorter, more accessible format,
   and post a comment with this summary on github.
