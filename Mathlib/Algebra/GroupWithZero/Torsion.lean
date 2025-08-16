@@ -29,7 +29,7 @@ theorem IsMulTorsionFree.mk' (ih : ∀ x ≠ 0, ∀ y ≠ 0, ∀ n ≠ 0, (x ^ n
 
 variable [UniqueFactorizationMonoid M] [NormalizationMonoid M] [IsMulTorsionFree Mˣ]
 
-open UniqueFactorizationMonoid
+namespace UniqueFactorizationMonoid
 
 instance : IsMulTorsionFree M := by
   refine .mk' fun x hx y hy n hn hxy ↦ ?_
@@ -41,3 +41,5 @@ instance : IsMulTorsionFree M := by
   rw [← hu, mul_pow, eq_comm, IsLeftRegular.mul_left_eq_self_iff hx, ← Units.val_pow_eq_pow_val,
     Units.val_eq_one, IsMulTorsionFree.pow_eq_one_iff hn] at hxy
   rwa [hxy, Units.val_one, mul_one] at hu
+
+end UniqueFactorizationMonoid
