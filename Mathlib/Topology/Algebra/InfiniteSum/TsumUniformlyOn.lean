@@ -72,11 +72,11 @@ theorem derivWithin_tsum {f : ι → E → F} (hs : IsOpen s) {x : E} (hx : x �
     derivWithin (fun z ↦ ∑' n , f n z) s x = ∑' n, derivWithin (f n) s x := by
   apply HasDerivWithinAt.derivWithin ?_ (hs.uniqueDiffWithinAt hx)
   apply HasDerivAt.hasDerivWithinAt
-  apply hasDerivAt_of_tendstoLocallyUniformlyOn hs _ _ (fun y hy ↦(hf y hy).hasSum ) hx
+  apply hasDerivAt_of_tendstoLocallyUniformlyOn hs _ _ (fun y hy ↦ (hf y hy).hasSum) hx
     (f' := fun n : Finset ι ↦ fun a ↦ ∑ i ∈ n, derivWithin (fun z ↦ f i z) s a)
   · obtain ⟨g, hg⟩ := h
     apply (hasSumLocallyUniformlyOn_iff_tendstoLocallyUniformlyOn.mp hg).congr_right
-    exact fun _ hb ↦ Eq.symm (hg.tsum_eqOn hb)
+    exact fun _ hb ↦ (hg.tsum_eqOn hb).symm
   · filter_upwards with t r hr using HasDerivAt.fun_sum
       (fun q hq ↦ ((hf2 q r hr).differentiableWithinAt.hasDerivWithinAt.hasDerivAt)
       (hs.mem_nhds hr))

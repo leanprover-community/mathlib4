@@ -54,8 +54,7 @@ namespace Basis
 @[ext]
 protected theorem ext ⦃q₁ q₂ : Basis A c₁ c₂ c₃⦄ (hi : q₁.i = q₂.i)
     (hj : q₁.j = q₂.j) : q₁ = q₂ := by
-  cases q₁; rename_i q₁_i_mul_j _
-  cases q₂; grind
+  cases q₁; cases q₂; grind
 
 variable (R) in
 /-- There is a natural quaternionic basis for the `QuaternionAlgebra`. -/

@@ -676,10 +676,10 @@ lemma indepFun_prod (mX : Measurable X) (mY : Measurable Y) :
     IndepFun (fun ω ↦ X ω.1) (fun ω ↦ Y ω.2) (μ.prod ν) := by
   refine indepFun_iff_map_prod_eq_prod_map_map (by fun_prop) (by fun_prop) |>.2 ?_
   convert Measure.map_prod_map μ ν mX mY |>.symm
-  · change Measure.map (X ∘ _) _ = _
-    rw [← Measure.map_map mX measurable_fst, Measure.map_fst_prod, measure_univ, one_smul]
-  · change Measure.map (Y ∘ _) _ = _
-    rw [← Measure.map_map mY measurable_snd, Measure.map_snd_prod, measure_univ, one_smul]
+  · rw [← Function.comp_def, ← Measure.map_map mX measurable_fst, Measure.map_fst_prod,
+      measure_univ, one_smul]
+  · rw [← Function.comp_def, ← Measure.map_map mY measurable_snd, Measure.map_snd_prod,
+      measure_univ, one_smul]
 
 /-- Given random variables `X : Ω → 𝓧` and `Y : Ω' → 𝓨`, they are independent when viewed as random
 variables defined on the product space `Ω × Ω'`. -/
@@ -712,8 +712,8 @@ lemma iIndepFun_pi (mX : ∀ i, AEMeasurable (X i) (μ i)) :
   rw [Measure.pi_map_pi mX]
   congr
   ext i : 1
-  rw [← (measurePreserving_eval μ i).map_eq, AEMeasurable.map_map_of_aemeasurable]
-  · rfl
+  rw [← (measurePreserving_eval μ i).map_eq, AEMeasurable.map_map_of_aemeasurable,
+    Function.comp_def]
   · rw [(measurePreserving_eval μ i).map_eq]
     exact mX i
   · exact (measurable_pi_apply i).aemeasurable

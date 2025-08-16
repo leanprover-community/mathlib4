@@ -97,7 +97,7 @@ theorem padicValNat_eq_maxPowDiv : @padicValNat = @maxPowDiv := by
   by_cases h : 1 < p ∧ 0 < n
   · rw [padicValNat_def' h.1.ne' h.2.ne', maxPowDiv_eq_multiplicity h.1 h.2.ne']
     exact Nat.finiteMultiplicity_iff.2 ⟨h.1.ne', h.2⟩
-  · simp only [not_and_or,not_gt_eq,Nat.le_zero] at h
+  · simp only [not_and_or, not_gt_eq, Nat.le_zero] at h
     apply h.elim
     · intro h
       interval_cases p
@@ -119,7 +119,7 @@ namespace padicValInt
 variable {p : ℕ}
 
 theorem of_ne_one_ne_zero {z : ℤ} (hp : p ≠ 1) (hz : z ≠ 0) :
-    padicValInt p z = multiplicity (p : ℤ) z:= by
+    padicValInt p z = multiplicity (p : ℤ) z := by
   rw [padicValInt, padicValNat_def' hp (Int.natAbs_ne_zero.mpr hz)]
   apply Int.multiplicity_natAbs
 
