@@ -1533,6 +1533,7 @@ import Mathlib.Analysis.Complex.ReImTopology
 import Mathlib.Analysis.Complex.RealDeriv
 import Mathlib.Analysis.Complex.RemovableSingularity
 import Mathlib.Analysis.Complex.Schwarz
+import Mathlib.Analysis.Complex.SummableUniformlyOn
 import Mathlib.Analysis.Complex.TaylorSeries
 import Mathlib.Analysis.Complex.Tietze
 import Mathlib.Analysis.Complex.UnitDisc.Basic
@@ -4729,6 +4730,7 @@ import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Defs
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.IsBoundedAtImInfty
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.MDifferentiable
+import Mathlib.NumberTheory.ModularForms.EisensteinSeries.QExpansion
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.UniformConvergence
 import Mathlib.NumberTheory.ModularForms.Identities
