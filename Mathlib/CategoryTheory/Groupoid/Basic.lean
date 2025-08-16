@@ -19,7 +19,7 @@ variable (C : Type*) [Groupoid C]
 section Thin
 
 theorem isThin_iff : Quiver.IsThin C ↔ ∀ c : C, Subsingleton (c ⟶ c) := by
-  refine ⟨fun h c => h c c, fun h c d => Subsingleton.intro fun f g => ?_⟩
+  refine ⟨fun h c => h.1 c c, fun h => ⟨fun c d => Subsingleton.intro fun f g => ?_⟩⟩
   haveI := h d
   calc
     f = f ≫ inv g ≫ g := by simp only [inv_eq_inv, IsIso.inv_hom_id, Category.comp_id]
