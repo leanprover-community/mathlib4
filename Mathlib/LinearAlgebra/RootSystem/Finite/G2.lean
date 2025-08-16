@@ -174,7 +174,7 @@ To see that this lemma fails for `𝔤₂`, let `α` (short) and `β` (long) be 
 `α` and `α + β` provide a counterexample. -/
 lemma chainBotCoeff_if_one_zero [P.IsNotG2] (h : P.root i + P.root j ∈ range P.root) :
     P.chainBotCoeff i j = if P.pairingIn ℤ i j = 0 then 1 else 0 := by
-  have _i := P.reflexive_left
+  have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
   have aux₁ := P.linearIndependent_of_add_mem_range_root' h
   have aux₂ := P.chainBotCoeff_add_chainTopCoeff_le_two i j
   have aux₃ : 1 ≤ P.chainTopCoeff i j := P.one_le_chainTopCoeff_of_root_add_mem h
