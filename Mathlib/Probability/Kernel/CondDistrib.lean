@@ -222,8 +222,6 @@ theorem condDistrib_ae_eq_condExp (hX : Measurable X) (hY : Measurable Y) (hs : 
       measureReal_def]
   · exact (measurable_condDistrib hs).ennreal_toReal.aestronglyMeasurable
 
-@[deprecated (since := "2025-01-21")] alias condDistrib_ae_eq_condexp := condDistrib_ae_eq_condExp
-
 /-- The conditional expectation of a function `f` of the product `(X, Y)` is almost everywhere equal
 to the integral of `y ↦ f(X, y)` against the `condDistrib` kernel. -/
 theorem condExp_prod_ae_eq_integral_condDistrib' [NormedSpace ℝ F] [CompleteSpace F]

@@ -307,11 +307,7 @@ variable (K)
 
 theorem convexBodySumFun_continuous :
     Continuous (convexBodySumFun : mixedSpace K → ℝ) := by
-  refine continuous_finset_sum Finset.univ fun w ↦ ?_
-  obtain hw | hw := isReal_or_isComplex w
-  all_goals
-  · simp only [normAtPlace_apply_of_isReal, normAtPlace_apply_of_isComplex, hw]
-    fun_prop
+  fun_prop
 
 /-- The convex body equal to the set of points `x : mixedSpace K` such that
   `∑ w real, ‖x w‖ + 2 * ∑ w complex, ‖x w‖ ≤ B`. -/
@@ -411,8 +407,8 @@ theorem convexBodySum_volume :
           ← Finset.sum_neg_distrib, exp_add, exp_sum, ← integral_prod_mul, volume_eq_prod]
       _ = (∫ x : ℝ, exp (-|x|)) ^ nrRealPlaces K *
               (∫ x : ℂ, Real.exp (-2 * ‖x‖)) ^ nrComplexPlaces K := by
-        rw [integral_fintype_prod_volume_eq_pow _ (fun x => exp (-‖x‖)),
-          integral_fintype_prod_volume_eq_pow _ (fun x => exp (-2 * ‖x‖))]
+        rw [integral_fintype_prod_volume_eq_pow (fun x => exp (-‖x‖)),
+          integral_fintype_prod_volume_eq_pow (fun x => exp (-2 * ‖x‖))]
         simp_rw [norm_eq_abs]
       _ = (2 * Gamma (1 / 1 + 1)) ^ nrRealPlaces K *
               (π * (2 : ℝ) ^ (-(2 : ℝ) / 1) * Gamma (2 / 1 + 1)) ^ nrComplexPlaces K := by

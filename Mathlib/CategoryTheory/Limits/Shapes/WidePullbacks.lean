@@ -138,6 +138,7 @@ def equivalenceOfEquiv (J' : Type w') (h : J ≃ J') :
   unitIso := NatIso.ofComponents (fun j => by cases j <;> exact eqToIso (by simp))
   counitIso := NatIso.ofComponents (fun j => by cases j <;> exact eqToIso (by simp))
 
+attribute [local instance] uliftCategory in
 /-- Lifting universe and morphism levels preserves wide pullback diagrams. -/
 def uliftEquivalence :
     ULiftHom.{w'} (ULift.{w'} (WidePullbackShape J)) ≌ WidePullbackShape (ULift J) :=
@@ -240,6 +241,7 @@ def equivalenceOfEquiv (J' : Type w') (h : J ≃ J') : WidePushoutShape J ≌ Wi
   unitIso := NatIso.ofComponents (fun j => by cases j <;> exact eqToIso (by simp))
   counitIso := NatIso.ofComponents (fun j => by cases j <;> exact eqToIso (by simp))
 
+attribute [local instance] uliftCategory in
 /-- Lifting universe and morphism levels preserves wide pushout diagrams. -/
 def uliftEquivalence :
     ULiftHom.{w'} (ULift.{w'} (WidePushoutShape J)) ≌ WidePushoutShape (ULift J) :=
@@ -324,9 +326,7 @@ theorem eq_lift_of_comp_eq (g : X ⟶ widePullback _ _ arrows) :
 
 theorem hom_eq_lift (g : X ⟶ widePullback _ _ arrows) :
     g = lift (g ≫ base arrows) (fun j => g ≫ π arrows j) (by simp) := by
-  apply eq_lift_of_comp_eq
-  · simp
-  · rfl  -- Porting note: quite a few missing refl's in cat_disch now
+  aesop
 
 @[ext 1100]
 theorem hom_ext (g1 g2 : X ⟶ widePullback _ _ arrows) : (∀ j : J,
