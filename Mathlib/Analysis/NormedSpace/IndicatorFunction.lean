@@ -18,9 +18,10 @@ indicator, norm
 
 open Set
 
-section ENormedAddMonoid
+section ESeminormedAddMonoid
 
-variable {α ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε] {s t : Set α} (f : α → ε) (a : α)
+variable {α ε : Type*} [TopologicalSpace ε] [ESeminormedAddMonoid ε]
+  {s t : Set α} (f : α → ε) (a : α)
 
 lemma enorm_indicator_eq_indicator_enorm :
     ‖indicator s f a‖ₑ = indicator s (fun a => ‖f a‖ₑ) a :=
@@ -38,7 +39,7 @@ theorem enorm_indicator_le_enorm_self : ‖indicator s f a‖ₑ ≤ ‖f a‖�
   rw [enorm_indicator_eq_indicator_enorm]
   apply indicator_enorm_le_enorm_self
 
-end ENormedAddMonoid
+end ESeminormedAddMonoid
 
 section SeminormedAddGroup
 
