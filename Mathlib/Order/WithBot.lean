@@ -988,7 +988,7 @@ section WithBotWithTop
 
 lemma WithBot.eq_top_iff_forall_ge [Preorder α] [Nonempty α] [NoTopOrder α]
     {x : WithBot (WithTop α)} : x = ⊤ ↔ ∀ a : α, a ≤ x := by
-  refine ⟨by aesop, fun H ↦ ?_⟩
+  refine ⟨by simp_all, fun H ↦ ?_⟩
   induction x
   · simp at H
   · simpa [WithTop.eq_top_iff_forall_ge] using H

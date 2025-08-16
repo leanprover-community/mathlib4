@@ -112,7 +112,7 @@ theorem tendsto_mul_add_inv_atTop_nhds_zero (a c : ℝ) (ha : a ≠ 0) :
 theorem Filter.EventuallyEq.div_mul_cancel {α G : Type*} [GroupWithZero G] {f g : α → G}
     {l : Filter α} (hg : Tendsto g l (𝓟 {0}ᶜ)) : (fun x ↦ f x / g x * g x) =ᶠ[l] fun x ↦ f x := by
   filter_upwards [hg.le_comap <| preimage_mem_comap (m := g) (mem_principal_self {0}ᶜ)] with x hx
-  aesop
+  simp_all
 
 /-- If `g` tends to `∞`, then eventually for all `x` we have `(f x / g x) * g x = f x`. -/
 theorem Filter.EventuallyEq.div_mul_cancel_atTop {α K : Type*}

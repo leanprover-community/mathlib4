@@ -110,7 +110,7 @@ noncomputable def limitCone : Cone F where
 @[ext]
 lemma limitCone_pt_ext {x y : (limitCone F).pt}
     (w : (equivShrink F.sections).symm x = (equivShrink F.sections).symm y) : x = y := by
-  aesop
+  simp_all
 
 /-- (internal implementation) the fact that the proposed limit cone is the limit -/
 @[simps]

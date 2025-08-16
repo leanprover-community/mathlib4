@@ -102,7 +102,7 @@ lemma mk_eq_mk_iff {X Y X' Y' : T} (f : X ⟶ Y) (f' : X' ⟶ Y') :
 lemma ext {f g : Arrow T}
     (h₁ : f.left = g.left) (h₂ : f.right = g.right)
     (h₃ : f.hom = eqToHom h₁ ≫ g.hom ≫ eqToHom h₂.symm) : f = g :=
-  (mk_eq_mk_iff _ _).2 (by aesop)
+  (mk_eq_mk_iff _ _).2 (by simp_all)
 
 @[simp]
 lemma arrow_mk_comp_eqToHom {X Y Y' : T} (f : X ⟶ Y) (h : Y = Y') :

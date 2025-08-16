@@ -242,7 +242,7 @@ lemma eventually_log_b_mul_pos : ∀ᶠ (n : ℕ) in atTop, ∀ i, 0 < log (b i 
     | inr hn => -- R.n₀ ≤ n
       rw [R.h_rec n hn]
       have := R.g_nonneg
-      refine add_pos_of_pos_of_nonneg (Finset.sum_pos ?sum_elems univ_nonempty) (by aesop)
+      refine add_pos_of_pos_of_nonneg (Finset.sum_pos ?sum_elems univ_nonempty) (by simp_all)
       exact fun i _ => mul_pos (R.a_pos i) <| h_ind _ (R.r_lt_n i _ hn)
 
 @[aesop safe apply]
@@ -439,13 +439,13 @@ lemma isEquivalent_smoothingFn_sub_self (i : α) :
   calc (fun (n : ℕ) => 1 / log (b i * n) - 1 / log n)
         =ᶠ[atTop] fun (n : ℕ) => (log n - log (b i * n)) / (log (b i * n) * log n) := by
             filter_upwards [eventually_gt_atTop 1, R.eventually_log_b_mul_pos] with n hn hn'
-            have h_log_pos : 0 < log n := Real.log_pos <| by aesop
+            have h_log_pos : 0 < log n := Real.log_pos <| by simp_all
             simp only [one_div]
             rw [inv_sub_inv (by have := hn' i; positivity) (by aesop)]
       _ =ᶠ[atTop] (fun (n : ℕ) ↦ (log n - log (b i) - log n) / ((log (b i) + log n) * log n)) := by
             filter_upwards [eventually_ne_atTop 0] with n hn
             have : 0 < b i := R.b_pos i
-            rw [log_mul (by positivity) (by aesop), sub_add_eq_sub_sub]
+            rw [log_mul (by positivity) (by simp_all), sub_add_eq_sub_sub]
       _ = (fun (n : ℕ) => -log (b i) / ((log (b i) + log n) * log n)) := by ext; congr; ring
       _ ~[atTop] (fun (n : ℕ) => -log (b i) / (log n * log n)) := by
             refine IsEquivalent.div (IsEquivalent.refl) <| IsEquivalent.mul ?_ (IsEquivalent.refl)
