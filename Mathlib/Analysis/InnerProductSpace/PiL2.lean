@@ -571,6 +571,23 @@ theorem _root_.Module.Basis.coe_toOrthonormalBasis (v : Basis ι 𝕜 E) (hv : O
       classical rw [OrthonormalBasis.coe_toBasis]
     _ = (v : ι → E) := by simp
 
+section Singleton
+variable {ι 𝕜 E : Type*} [Unique ι] [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+
+variable (ι 𝕜) in
+/-- `OrthonormalBasis.singleton ι 𝕜` is the basis sending the unique element of `ι` to `1 : 𝕜`. -/
+protected noncomputable def singleton : OrthonormalBasis ι 𝕜 𝕜 :=
+  (Basis.singleton ι 𝕜).toOrthonormalBasis (by simp [orthonormal_iff_ite, Unique.eq_default])
+
+@[simp]
+theorem singleton_apply (i) : OrthonormalBasis.singleton ι 𝕜 i = 1 := Basis.singleton_apply _ _ _
+
+@[simp]
+theorem singleton_repr (x i) : (OrthonormalBasis.singleton ι 𝕜).repr x i = x :=
+  Basis.singleton_repr _ _ _ _
+
+end Singleton
+
 /-- `Pi.orthonormalBasis (B : ∀ i, OrthonormalBasis (ι i) 𝕜 (E i))` is the
 `Σ i, ι i`-indexed orthonormal basis on `Π i, E i` given by `B i` on each component. -/
 protected def _root_.Pi.orthonormalBasis {η : Type*} [Fintype η] {ι : η → Type*}
