@@ -243,6 +243,10 @@ theorem toSubring_inj {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R
 instance : Inhabited S :=
   ⟨(0 : S.toSubsemiring)⟩
 
+@[nontriviality]
+lemma mem_of_subsingleton [Subsingleton A] {a : A} : a ∈ S := by
+  simp [Subsingleton.elim a 0]
+
 section
 
 /-! `Subalgebra`s inherit structure from their `Subsemiring` / `Semiring` coercions. -/
