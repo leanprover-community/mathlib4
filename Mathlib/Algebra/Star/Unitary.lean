@@ -191,7 +191,7 @@ lemma smul_mem (r : unitary R) {a : A} (ha : a ∈ unitary A) :
 instance : SMul (unitary R) (unitary A) where
   smul r a := ⟨r • a, smul_mem r a.prop⟩
 
-@[simp]
+@[simp, norm_cast]
 lemma coe_smul (r : unitary R) (a : unitary A) : ↑(r • a) = r • (a : A) := rfl
 
 instance : MulAction (unitary R) (unitary A) where
