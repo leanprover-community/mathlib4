@@ -84,7 +84,7 @@ in a nerve can be recovered from the underlying ReflPrefunctor. -/
 def toNerve₂.mk.app (n : SimplexCategory.Truncated 2) :
     X.obj (op n) ⟶ (nerveFunctor₂.obj (Cat.of C)).obj (op n) := by
   obtain ⟨n, hn⟩ := n
-  induction' n using SimplexCategory.rec with n
+  induction n using SimplexCategory.rec with | _ n
   match n with
   | 0 => exact fun x => .mk₀ (F.obj x)
   | 1 => exact fun f => .mk₁ (F.map ⟨f, rfl, rfl⟩)
@@ -297,7 +297,7 @@ theorem toNerve₂.ext (F G : X ⟶ nerveFunctor₂.obj (Cat.of C))
   have eq₁ (x : X _⦋1⦌₂) : F.app (op ⦋1⦌₂) x = G.app (op ⦋1⦌₂) x :=
     congr((($hyp).map ⟨x, rfl, rfl⟩).1)
   ext ⟨⟨n, hn⟩⟩ x
-  induction' n using SimplexCategory.rec with n
+  induction n using SimplexCategory.rec with | _ n
   match n with
   | 0 => apply eq₀
   | 1 => apply eq₁

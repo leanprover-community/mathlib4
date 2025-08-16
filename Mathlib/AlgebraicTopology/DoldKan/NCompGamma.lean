@@ -36,7 +36,7 @@ variable {C : Type*} [Category C] [Preadditive C]
 theorem PInfty_comp_map_mono_eq_zero (X : SimplicialObject C) {n : ℕ} {Δ' : SimplexCategory}
     (i : Δ' ⟶ ⦋n⦌) [hi : Mono i] (h₁ : Δ'.len ≠ n) (h₂ : ¬Isδ₀ i) :
     PInfty.f n ≫ X.map i.op = 0 := by
-  induction' Δ' using SimplexCategory.rec with m
+  induction Δ' using SimplexCategory.rec with | _ m
   obtain ⟨k, hk⟩ := Nat.exists_eq_add_of_lt (len_lt_of_mono i fun h => by
         rw [← h] at h₁
         exact h₁ rfl)
@@ -78,8 +78,8 @@ theorem Γ₀_obj_termwise_mapMono_comp_PInfty (X : SimplicialObject C) {Δ Δ' 
     (i : Δ ⟶ Δ') [Mono i] :
     Γ₀.Obj.Termwise.mapMono (AlternatingFaceMapComplex.obj X) i ≫ PInfty.f Δ.len =
       PInfty.f Δ'.len ≫ X.map i.op := by
-  induction' Δ using SimplexCategory.rec with n
-  induction' Δ' using SimplexCategory.rec with n'
+  induction Δ using SimplexCategory.rec with | _ n
+  induction Δ' using SimplexCategory.rec with | _ n'
   dsimp
   -- We start with the case `i` is an identity
   by_cases h : n = n'
