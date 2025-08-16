@@ -3,6 +3,8 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison, Adam Topaz
 -/
+import Mathlib.CategoryTheory.Category.Preorder
+import Mathlib.CategoryTheory.ComposableArrows
 import Mathlib.CategoryTheory.Opposites
 import Mathlib.Order.Fin.Basic
 import Mathlib.Util.Superscript
@@ -146,6 +148,25 @@ lemma comp_toOrderHom {a b c : SimplexCategory} (f : a ⟶ b) (g : b ⟶ c) :
 theorem Hom.ext {a b : SimplexCategory} (f g : a ⟶ b) :
     f.toOrderHom = g.toOrderHom → f = g :=
   Hom.ext' _ _
+
+/-- Homs in `SimplexCategory` are equivalent to order-preserving functions of finite linear
+orders. -/
+def homEquivOrderHom {a b : SimplexCategory} :
+    (a ⟶ b) ≃ (Fin (a.len + 1) →o Fin (b.len + 1)) where
+  toFun := Hom.toOrderHom
+  invFun := Hom.mk
+
+/-- Homs in `SimplexCategory` are equivalent to functors between finite linear orders. -/
+def homEquivFunctor {a b : SimplexCategory} :
+    (a ⟶ b) ≃ (Fin (a.len + 1) ⥤ Fin (b.len + 1)) :=
+  SimplexCategory.homEquivOrderHom.trans OrderHom.equivFunctor
+
+/-- Homs in `SimplexCategory` are equivalent to functors between finite linear orders, with
+codomain lifted to a higher universe. -/
+def homEquivFunctorULiftRight {a b : SimplexCategory} :
+    (a ⟶ b) ≃ (Fin (a.len + 1) ⥤ ULiftFin (b.len + 1)) :=
+  SimplexCategory.homEquivOrderHom.trans OrderHom.equivFunctor
+    |>.trans ULiftHomULiftCategory.equivCongrLeft
 
 /-- The truncated simplex category. -/
 def Truncated (n : ℕ) :=

@@ -57,6 +57,11 @@ def nerveEquiv (C : Type u) [Category.{v} C] : nerve C _⦋0⦌ ≃ C where
 
 namespace nerve
 
+/-- Nerves of finite non-empty ordinals are representable functors. -/
+def RepresentableBySimplex (n : ℕ) : (nerve (Fin (n + 1))).RepresentableBy ⦋n⦌ where
+  homEquiv := SimplexCategory.homEquivFunctor
+  homEquiv_comp {_ _} _ _ := rfl
+
 variable {C : Type*} [Category C] {n : ℕ}
 
 lemma δ₀_eq {x : nerve C _⦋n + 1⦌} : (nerve C).δ (0 : Fin (n + 2)) x = x.δ₀ := rfl
