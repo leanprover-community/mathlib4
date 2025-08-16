@@ -2871,6 +2871,7 @@ import Mathlib.Combinatorics.SimpleGraph.UniversalVerts
 import Mathlib.Combinatorics.SimpleGraph.Walk
 import Mathlib.Combinatorics.SimplicialComplex.Basic
 import Mathlib.Combinatorics.SimplicialComplex.Category
+import Mathlib.Combinatorics.SimplicialComplex.FacePoset
 import Mathlib.Combinatorics.SimplicialComplex.Hom
 import Mathlib.Combinatorics.Young.SemistandardTableau
 import Mathlib.Combinatorics.Young.YoungDiagram
