@@ -584,33 +584,26 @@ end Nontrivial
 namespace IsTensorProduct
 
 variable {R M N P : Type*} [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
-  [Module R M] [Module R N] [Module R P]
+  [Module R M] [Module R N] [Module R P] {M₁ M₂ N₁ N₂ : Type*} [AddCommMonoid M₁] [AddCommMonoid M₂]
+  [Module R M₁] [Module R M₂] [AddCommMonoid N₁] [AddCommMonoid N₂] [Module R N₁] [Module R N₂]
+  {f : M₁ →ₗ[R] M₂ →ₗ[R] M} {g : N₁ →ₗ[R] N₂ →ₗ[R] N}
+  (hf : IsTensorProduct f) (hg : IsTensorProduct g) (i₁ : M₁ →ₗ[R] N₁) (i₂ : M₂ →ₗ[R] N₂)
 
-theorem lTensor_injective_of_flat [Module.Flat R M] {MN MP : Type*} [AddCommMonoid MN]
-    [AddCommMonoid MP] [Module R MN] [Module R MP] {f : M →ₗ[R] N →ₗ[R] MN} {g : M →ₗ[R] P →ₗ[R] MP}
-    (hf : IsTensorProduct f) (hg : IsTensorProduct g) (i : N →ₗ[R] P)
-    (hi : Function.Injective i) : Function.Injective (hf.lTensor hg i) := by
-  have h : hf.lTensor hg i = hg.equiv ∘ ((i.lTensor M) ∘ hf.equiv.symm) :=
+/-- Tensor product of injective maps are injective under some flatness conditions.
+  Also see `IsTensorProduct.map_injective_of_flat'` for different flatness conditions. -/
+theorem map_injective_of_flat (h₁ : Function.Injective i₁) (h₂ : Function.Injective i₂)
+    [Module.Flat R M₂] [Module.Flat R N₁] : Function.Injective (hf.map hg i₁ i₂) := by
+  have h : hf.map hg i₁ i₂ = hg.equiv ∘ (((TensorProduct.map i₁ i₂)) ∘ hf.equiv.symm) :=
     funext fun x ↦ hf.inductionOn x (by simp) (by simp) (fun _ _ hx hy ↦ by simp [hx, hy])
-  simpa [h] using Module.Flat.lTensor_preserves_injective_linearMap i hi
+  simpa [h] using map_injective_of_flat_flat i₁ i₂ h₁ h₂
 
-theorem rTensor_injective_of_flat [Module.Flat R M] {NM PM : Type*} [AddCommMonoid NM]
-    [AddCommMonoid PM] [Module R NM] [Module R PM] {f : N →ₗ[R] M →ₗ[R] NM} {g : P →ₗ[R] M →ₗ[R] PM}
-    (hf : IsTensorProduct f) (hg : IsTensorProduct g) (i : N →ₗ[R] P)
-    (hi : Function.Injective i) : Function.Injective (hf.rTensor hg i) := by
-  have h : hf.rTensor hg i = hg.equiv ∘ ((i.rTensor M) ∘ hf.equiv.symm) :=
+/-- Tensor product of injective maps are injective under some flatness conditions.
+  Also see `IsTensorProduct.map_injective_of_flat` for different flatness conditions. -/
+theorem map_injective_of_flat' (h₁ : Function.Injective i₁) (h₂ : Function.Injective i₂)
+    [Module.Flat R M₁] [Module.Flat R N₂] : Function.Injective (hf.map hg i₁ i₂) := by
+  have h : hf.map hg i₁ i₂ = hg.equiv ∘ (((TensorProduct.map i₁ i₂)) ∘ hf.equiv.symm) :=
     funext fun x ↦ hf.inductionOn x (by simp) (by simp) (fun _ _ hx hy ↦ by simp [hx, hy])
-  simpa [h] using Module.Flat.rTensor_preserves_injective_linearMap i hi
-
-theorem map_injective_of_flat {M₁ M₂ N₁ N₂ : Type*} [AddCommMonoid M₁] [AddCommMonoid M₂]
-    [Module R M₁] [Module R M₂] [AddCommMonoid N₁] [AddCommMonoid N₂] [Module R N₁] [Module R N₂]
-    [Module.Flat R N₁] [Module.Flat R M₂] {f : M₁ →ₗ[R] M₂ →ₗ[R] M} {g : N₁ →ₗ[R] N₂ →ₗ[R] N}
-    (hf : IsTensorProduct f) (hg : IsTensorProduct g) (i₁ : M₁ →ₗ[R] N₁) (i₂ : M₂ →ₗ[R] N₂)
-    (h₁ : Function.Injective i₁) (h₂ : Function.Injective i₂) :
-    Function.Injective (hf.map hg i₁ i₂) := by
-  have h := TensorProduct.isTensorProduct R N₁ M₂
-  rw [← hf.lTensor_comp_rTensor hg h]
-  exact (h.lTensor_injective_of_flat hg i₂ h₂).comp (hf.rTensor_injective_of_flat h i₁ h₁)
+  simpa [h] using map_injective_of_flat_flat' i₁ i₂ h₁ h₂
 
 end IsTensorProduct
 
