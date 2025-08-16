@@ -124,8 +124,8 @@ theorem fold_disjiUnion {ι : Type*} {s : Finset ι} {t : ι → Finset α} {b :
     (s.disjiUnion t h).fold op (s.fold op b₀ b) f = s.fold op b₀ fun i => (t i).fold op (b i) f :=
   (congr_arg _ <| Multiset.map_bind _ _ _).trans (Multiset.fold_bind _ _ _ _ _)
 
-private lemma pairwiseDisjoint_filter {f : α → Finset β} (h : (↑s : Set α).PairwiseDisjoint f)
-    (p : β → Prop) [DecidablePred p] : (s : Set α).PairwiseDisjoint fun a ↦ (f a).filter p :=
+lemma pairwiseDisjoint_filter {f : α → Finset β} (h : Set.PairwiseDisjoint ↑s f)
+    (p : β → Prop) [DecidablePred p] : Set.PairwiseDisjoint ↑s fun a ↦ (f a).filter p :=
   fun _ h₁ _ h₂ hne ↦ Finset.disjoint_filter_filter (h h₁ h₂ hne)
 
 theorem filter_disjiUnion (s : Finset α) (f : α → Finset β) (h) (p : β → Prop) [DecidablePred p] :
