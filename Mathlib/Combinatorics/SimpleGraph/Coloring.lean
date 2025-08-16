@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Clique
+import Mathlib.Combinatorics.SimpleGraph.Copy
 import Mathlib.Data.ENat.Lattice
 import Mathlib.Data.Nat.Lattice
 import Mathlib.Data.Setoid.Partition
@@ -141,6 +142,27 @@ theorem isEmpty_of_colorable_zero (h : G.Colorable 0) : IsEmpty V := by
 lemma colorable_zero_iff : G.Colorable 0 ↔ IsEmpty V :=
   ⟨G.isEmpty_of_colorable_zero, fun _ ↦ G.colorable_of_isEmpty 0⟩
 
+/-- If `G` is `n`-colorable, then mapping the vertices of `G` produces an `n`-colorable simple
+graph. -/
+theorem Colorable.map {β : Type*} (f : V ↪ β) [NeZero n] {G : SimpleGraph V} (hc : G.Colorable n) :
+    (G.map f).Colorable n := by
+  classical use fun b ↦ if h : ∃ v, f v = b then hc.some h.choose else default
+  intro b₁ b₂ hadj'
+  obtain ⟨v₁, v₂, hadj, hv₁, hv₂⟩ := (G.map_adj _ b₁ b₂).mp hadj'
+  have hb₁ : ∃ v, f v = b₁ := ⟨v₁, hv₁⟩
+  have hb₁_choose : hb₁.choose = v₁ := by
+    apply f.injective
+    rw [hv₁]
+    exact hb₁.choose_spec
+  have hb₂ : ∃ v, f v = b₂ := ⟨v₂, hv₂⟩
+  have hb₂_choose : hb₂.choose = v₂ := by
+    apply f.injective
+    rw [hv₂]
+    exact hb₂.choose_spec
+  have hne := hc.some.valid hadj
+  rw [← hb₁_choose, ← hb₂_choose] at hne
+  simpa [hb₁, hb₂, hb₁_choose, hb₂_choose] using hc.some.valid hadj
+
 /-- The "tautological" coloring of a graph, using the vertices of the graph as colors. -/
 def selfColoring : G.Coloring V := Coloring.mk id fun {_ _} => G.ne_of_adj
 
@@ -267,6 +289,13 @@ theorem chromaticNumber_le_iff_colorable {n : ℕ} : G.chromaticNumber ≤ n ↔
   have := Nat.sInf_mem (⟨m, hm⟩ : {n' | G.Colorable n'}.Nonempty)
   rw [Set.mem_setOf_eq] at this
   exact this.mono h
+
+/-- If the chromatic number of `G` is `n + 1`, then `G` is colorable in no fewer than `n + 1`
+colors. -/
+theorem chromaticNumber_eq_iff_colorable_not_colorable :
+    G.chromaticNumber = n + 1 ↔ G.Colorable (n + 1) ∧ ¬G.Colorable n := by
+  rw [eq_iff_le_not_lt, not_lt, ENat.add_one_le_iff (ENat.coe_ne_top n), ← not_le,
+    chromaticNumber_le_iff_colorable, ← Nat.cast_add_one, chromaticNumber_le_iff_colorable]
 
 theorem colorable_chromaticNumber {m : ℕ} (hc : G.Colorable m) :
     G.Colorable (ENat.toNat G.chromaticNumber) := by
@@ -495,4 +524,12 @@ theorem colorable_of_cliqueFree (f : ∀ (i : ι), V i)
   exact hc.mono this
 
 end completeMultipartiteGraph
+
+/-- If `H` is not `n`-colorable and `G` is `n`-colorable, then `G` is `H.Free`. -/
+theorem free_of_colorable {W : Type*} {H : SimpleGraph W}
+    (nhc : ¬H.Colorable n) (hc : G.Colorable n) : H.Free G := by
+  contrapose! nhc with hc'
+  rw [not_not] at hc'
+  exact ⟨hc.some.comp hc'.some.toHom⟩
+
 end SimpleGraph
