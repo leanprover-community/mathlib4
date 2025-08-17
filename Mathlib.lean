@@ -348,7 +348,6 @@ import Mathlib.Algebra.Group.EvenFunction
 import Mathlib.Algebra.Group.Ext
 import Mathlib.Algebra.Group.Fin.Basic
 import Mathlib.Algebra.Group.Fin.Tuple
-import Mathlib.Algebra.Group.FiniteSupport
 import Mathlib.Algebra.Group.Finsupp
 import Mathlib.Algebra.Group.ForwardDiff
 import Mathlib.Algebra.Group.Graph
@@ -729,8 +728,11 @@ import Mathlib.Algebra.MonoidAlgebra.Degree
 import Mathlib.Algebra.MonoidAlgebra.Division
 import Mathlib.Algebra.MonoidAlgebra.Grading
 import Mathlib.Algebra.MonoidAlgebra.Ideal
+import Mathlib.Algebra.MonoidAlgebra.Lift
 import Mathlib.Algebra.MonoidAlgebra.MapDomain
+import Mathlib.Algebra.MonoidAlgebra.Module
 import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
+import Mathlib.Algebra.MonoidAlgebra.Opposite
 import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Algebra.MonoidAlgebra.ToDirectSum
 import Mathlib.Algebra.MvPolynomial.Basic
@@ -761,6 +763,8 @@ import Mathlib.Algebra.NoZeroSMulDivisors.Pi
 import Mathlib.Algebra.NoZeroSMulDivisors.Prod
 import Mathlib.Algebra.Notation
 import Mathlib.Algebra.Notation.Defs
+import Mathlib.Algebra.Notation.FiniteSupport
+import Mathlib.Algebra.Notation.Indicator
 import Mathlib.Algebra.Notation.Lemmas
 import Mathlib.Algebra.Notation.Pi.Basic
 import Mathlib.Algebra.Notation.Pi.Defs
@@ -1285,6 +1289,7 @@ import Mathlib.AlgebraicTopology.ModelCategory.Cylinder
 import Mathlib.AlgebraicTopology.ModelCategory.Instances
 import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
 import Mathlib.AlgebraicTopology.ModelCategory.JoyalTrick
+import Mathlib.AlgebraicTopology.ModelCategory.LeftHomotopy
 import Mathlib.AlgebraicTopology.ModelCategory.PathObject
 import Mathlib.AlgebraicTopology.MooreComplex
 import Mathlib.AlgebraicTopology.Quasicategory.Basic
@@ -1331,6 +1336,7 @@ import Mathlib.Analysis.Analytic.CPolynomialDef
 import Mathlib.Analysis.Analytic.ChangeOrigin
 import Mathlib.Analysis.Analytic.Composition
 import Mathlib.Analysis.Analytic.Constructions
+import Mathlib.Analysis.Analytic.ConvergenceRadius
 import Mathlib.Analysis.Analytic.Inverse
 import Mathlib.Analysis.Analytic.IsolatedZeros
 import Mathlib.Analysis.Analytic.IteratedFDeriv
@@ -1643,6 +1649,7 @@ import Mathlib.Analysis.InnerProductSpace.Orthonormal
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Analysis.InnerProductSpace.Positive
 import Mathlib.Analysis.InnerProductSpace.ProdL2
+import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Analysis.InnerProductSpace.Projection.Basic
 import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
 import Mathlib.Analysis.InnerProductSpace.Projection.Minimal
@@ -1767,6 +1774,7 @@ import Mathlib.Analysis.Normed.Order.Hom.Ultra
 import Mathlib.Analysis.Normed.Order.Lattice
 import Mathlib.Analysis.Normed.Order.UpperLower
 import Mathlib.Analysis.Normed.Ring.Basic
+import Mathlib.Analysis.Normed.Ring.Finite
 import Mathlib.Analysis.Normed.Ring.InfiniteSum
 import Mathlib.Analysis.Normed.Ring.Lemmas
 import Mathlib.Analysis.Normed.Ring.Ultra
@@ -2484,7 +2492,8 @@ import Mathlib.CategoryTheory.Monoidal.Internal.Module
 import Mathlib.CategoryTheory.Monoidal.Internal.Types.Basic
 import Mathlib.CategoryTheory.Monoidal.Internal.Types.CommGrp_
 import Mathlib.CategoryTheory.Monoidal.Internal.Types.Grp_
-import Mathlib.CategoryTheory.Monoidal.Limits
+import Mathlib.CategoryTheory.Monoidal.Limits.Basic
+import Mathlib.CategoryTheory.Monoidal.Limits.Preserves
 import Mathlib.CategoryTheory.Monoidal.Linear
 import Mathlib.CategoryTheory.Monoidal.Mod_
 import Mathlib.CategoryTheory.Monoidal.Mon_
@@ -3954,6 +3963,7 @@ import Mathlib.InformationTheory.Hamming
 import Mathlib.InformationTheory.KullbackLeibler.Basic
 import Mathlib.InformationTheory.KullbackLeibler.KLFun
 import Mathlib.Init
+import Mathlib.Lean.ContextInfo
 import Mathlib.Lean.CoreM
 import Mathlib.Lean.Elab.Tactic.Basic
 import Mathlib.Lean.Elab.Term
@@ -5073,6 +5083,7 @@ import Mathlib.Order.SupClosed
 import Mathlib.Order.SupIndep
 import Mathlib.Order.SymmDiff
 import Mathlib.Order.Synonym
+import Mathlib.Order.TeichmullerTukey
 import Mathlib.Order.TransfiniteIteration
 import Mathlib.Order.TypeTags
 import Mathlib.Order.ULift
@@ -5558,6 +5569,7 @@ import Mathlib.RingTheory.OrzechProperty
 import Mathlib.RingTheory.Perfection
 import Mathlib.RingTheory.Perfectoid.Untilt
 import Mathlib.RingTheory.PiTensorProduct
+import Mathlib.RingTheory.PicardGroup
 import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.RingTheory.Polynomial.Bernstein
 import Mathlib.RingTheory.Polynomial.Chebyshev
@@ -5627,6 +5639,7 @@ import Mathlib.RingTheory.Regular.Depth
 import Mathlib.RingTheory.Regular.IsSMulRegular
 import Mathlib.RingTheory.Regular.RegularSequence
 import Mathlib.RingTheory.RingHom.Etale
+import Mathlib.RingTheory.RingHom.FaithfullyFlat
 import Mathlib.RingTheory.RingHom.Finite
 import Mathlib.RingTheory.RingHom.FinitePresentation
 import Mathlib.RingTheory.RingHom.FiniteType
@@ -5727,6 +5740,7 @@ import Mathlib.RingTheory.Valuation.AlgebraInstances
 import Mathlib.RingTheory.Valuation.Archimedean
 import Mathlib.RingTheory.Valuation.Basic
 import Mathlib.RingTheory.Valuation.Discrete.Basic
+import Mathlib.RingTheory.Valuation.DiscreteValuativeRel
 import Mathlib.RingTheory.Valuation.ExtendToLocalization
 import Mathlib.RingTheory.Valuation.Extension
 import Mathlib.RingTheory.Valuation.Integers
@@ -5916,6 +5930,7 @@ import Mathlib.Tactic.FBinop
 import Mathlib.Tactic.FailIfNoProgress
 import Mathlib.Tactic.FastInstance
 import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.FieldSimp.Discharger
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Find
 import Mathlib.Tactic.FindSyntax
@@ -6093,6 +6108,8 @@ import Mathlib.Tactic.SudoSetOption
 import Mathlib.Tactic.SuppressCompilation
 import Mathlib.Tactic.SwapVar
 import Mathlib.Tactic.TFAE
+import Mathlib.Tactic.TacticAnalysis
+import Mathlib.Tactic.TacticAnalysis.Declarations
 import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.TautoSet
 import Mathlib.Tactic.TermCongr
@@ -6695,6 +6712,7 @@ import Mathlib.Util.AssertExists
 import Mathlib.Util.AssertExistsExt
 import Mathlib.Util.AssertNoSorry
 import Mathlib.Util.AtomM
+import Mathlib.Util.AtomM.Recurse
 import Mathlib.Util.CompileInductive
 import Mathlib.Util.CountHeartbeats
 import Mathlib.Util.Delaborators
