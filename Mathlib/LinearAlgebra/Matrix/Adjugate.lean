@@ -6,7 +6,6 @@ Authors: Anne Baanen
 import Mathlib.Algebra.Regular.Basic
 import Mathlib.LinearAlgebra.Matrix.MvPolynomial
 import Mathlib.LinearAlgebra.Matrix.Polynomial
-import Mathlib.RingTheory.Polynomial.Basic
 
 /-!
 # Cramer's rule and adjugate matrices
@@ -276,7 +275,7 @@ if the determinant is not a unit. A sufficient (but still not necessary) conditi
 divides `b`. -/
 @[simp]
 theorem mulVec_cramer (A : Matrix n n α) (b : n → α) : A *ᵥ cramer A b = A.det • b := by
-  rw [cramer_eq_adjugate_mulVec, mulVec_mulVec, mul_adjugate, smul_mulVec_assoc, one_mulVec]
+  rw [cramer_eq_adjugate_mulVec, mulVec_mulVec, mul_adjugate, smul_mulVec, one_mulVec]
 
 theorem adjugate_subsingleton [Subsingleton n] (A : Matrix n n α) : adjugate A = 1 := by
   ext i j

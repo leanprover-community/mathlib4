@@ -342,7 +342,7 @@ one gets a groupoid. `Pregroupoid` bundles the properties needed for this constr
 groupoid of smooth functions with smooth inverses as an application. -/
 structure Pregroupoid (H : Type*) [TopologicalSpace H] where
   /-- Property describing membership in this groupoid: the pregroupoid "contains"
-    all functions `H → H` having the pregroupoid property on some `s : Set H` -/
+  all functions `H → H` having the pregroupoid property on some `s : Set H` -/
   property : (H → H) → Set H → Prop
   /-- The pregroupoid property is stable under composition -/
   comp : ∀ {f g u v}, property f u → property g v →
@@ -646,9 +646,6 @@ theorem ChartedSpace.secondCountable_of_sigmaCompact [SecondCountableTopology H]
   obtain ⟨s, hsc, hsU⟩ : ∃ s, Set.Countable s ∧ ⋃ (x) (_ : x ∈ s), (chartAt H x).source = univ :=
     countable_cover_nhds_of_sigmaCompact fun x : M ↦ chart_source_mem_nhds H x
   exact ChartedSpace.secondCountable_of_countable_cover H hsU hsc
-
-@[deprecated (since := "2024-11-13")] alias
-ChartedSpace.secondCountable_of_sigma_compact := ChartedSpace.secondCountable_of_sigmaCompact
 
 /-- If a topological space admits an atlas with locally compact charts, then the space itself
 is locally compact. -/
@@ -1293,9 +1290,8 @@ lemma chart_eq {s : Opens M} (hs : Nonempty s) {e : PartialHomeomorph s H} (he :
 every chart of `t` is the restriction of some chart on `H`. -/
 -- XXX: can I unify this with `chart_eq`?
 lemma chart_eq' {t : Opens H} (ht : Nonempty t) {e' : PartialHomeomorph t H}
-    (he' : e' ∈ atlas H t) : ∃ x : t, e' = (chartAt H ↑x).subtypeRestr ht := by
-  rcases he' with ⟨xset, ⟨x, hx⟩, he'⟩
-  exact ⟨x, mem_singleton_iff.mp (by convert he')⟩
+    (he' : e' ∈ atlas H t) : ∃ x : t, e' = (chartAt H ↑x).subtypeRestr ht :=
+  chart_eq ht he'
 
 /-- If a groupoid `G` is `ClosedUnderRestriction`, then an open subset of a space which is
 `HasGroupoid G` is naturally `HasGroupoid G`. -/
