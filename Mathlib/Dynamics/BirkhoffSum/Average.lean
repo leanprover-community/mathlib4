@@ -95,10 +95,6 @@ lemma birkhoffAverage_sub {f : α → α} {g g' : α → M} :
   funext _ x
   simp [birkhoffAverage, birkhoffSum, smul_sub]
 
-end AddCommGroup
-
-variable {α M : Type*} (R : Type*) [DivisionRing R] [AddCommGroup M] [Module R M]
-
 /-- Birkhoff average is "almost invariant" under `f`:
 the difference between `birkhoffAverage R f g n (f x)` and `birkhoffAverage R f g n x`
 is equal to `(n : R)⁻¹ • (g (f^[n] x) - g x)`. -/
@@ -114,3 +110,5 @@ theorem birkhoffAverage_of_comp_eq [CharZero R] {f : α → α} {g : α → M} (
   funext x
   suffices (n : R)⁻¹ • n • g x = g x by simpa [birkhoffAverage, birkhoffSum_of_comp_eq h]
   rw [← Nat.cast_smul_eq_nsmul (R := R), ← mul_smul, inv_mul_cancel₀ (by norm_cast), one_smul]
+
+end AddCommGroup
