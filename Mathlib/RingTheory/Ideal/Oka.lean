@@ -8,13 +8,13 @@ import Mathlib.RingTheory.Ideal.Colon
 /-!
 # Oka predicates
 
-This file introduces the notion of oka predicates and standard results about them.
+This file introduces the notion of Oka predicates and standard results about them.
 
 ## Main results
 
-- `Ideal.IsOka.isPrime_of_maximal_not_isOka`: if an ideal is maximal for not satisfying an oka
-  predicate then it is prime.
-- `Ideal.IsOka.forall_of_forall_prime`: if all prime ideals of a ring satisfy an oka predicate,
+- `Ideal.IsOka.isPrime_of_maximal_not`: if an ideal is maximal for not satisfying an Oka predicate,
+  then it is prime.
+- `Ideal.IsOka.forall_of_forall_prime`: if all prime ideals of a ring satisfy an Oka predicate,
   then all its ideals also satisfy the predicate.
 
 ## References
@@ -39,9 +39,9 @@ namespace IsOka
 
 variable {P : Ideal R → Prop}
 
-/-- If an ideal is maximal for not satisfying an oka predicate then it is prime. -/
+/-- If an ideal is maximal for not satisfying an Oka predicate then it is prime. -/
 @[stacks 05KE]
-theorem isPrime_of_maximal_not_isOka (hP : IsOka P) {I : Ideal R}
+theorem isPrime_of_maximal_not (hP : IsOka P) {I : Ideal R}
     (hI : Maximal (¬P ·) I) : I.IsPrime where
   ne_top' hI' := hI.prop (hI' ▸ hP.top)
   mem_or_mem' := by
@@ -52,13 +52,13 @@ theorem isPrime_of_maximal_not_isOka (hP : IsOka P) {I : Ideal R}
       (fun H ↦ hb <| H ▸ mem_colon_singleton.2 (mul_comm a b ▸ hab))
     exact hI.prop (hP.oka h₁ h₂)
 
-/-- If all prime ideals of a ring satisfy an oka predicate, then all its ideals also satisfy the
+/-- If all prime ideals of a ring satisfy an Oka predicate, then all its ideals also satisfy the
 predicate. `hmax` is generaly obtained using Zorn's lemma. -/
 theorem forall_of_forall_prime (hP : IsOka P)
     (hmax : (∃ I, ¬P I) → ∃ I, Maximal (¬P ·) I) (hprime : ∀ I, I.IsPrime → P I) : ∀ I, P I := by
   by_contra!
   obtain ⟨I, hI⟩ := hmax this
-  exact hI.prop <| hprime I (hP.isPrime_of_maximal_not_isOka hI)
+  exact hI.prop <| hprime I (hP.isPrime_of_maximal_not hI)
 
 end IsOka
 
