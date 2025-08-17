@@ -177,3 +177,22 @@ lemma Nat.Primes.prodNatEquiv_symm_apply {n : ℕ} (hn : IsPrimePow n) :
     prodNatEquiv.symm ⟨n, hn⟩ =
       (⟨n.minFac, minFac_prime hn.ne_one⟩, n.factorization n.minFac - 1) :=
   rfl
+
+theorem m_eq_a_factorization_p_of_prime_p_of_p_pow_eq_pow
+    {p a m n : ℕ} (hp : p.Prime) (h : p ^ m = a ^ n) : m = n * a.factorization p := by
+  have := congrArg Nat.factorization h
+  rw [Nat.Prime.factorization_pow hp, Nat.factorization_pow] at this
+  have := congrFun (congrArg DFunLike.coe this) p
+  simp at this
+  exact this
+
+theorem exponent_dvd_of_prime_pow_eq_pow
+    {p a m n : ℕ} (hp : p.Prime) (h : p ^ m = a ^ n) : n ∣ m := by
+  exact Dvd.intro (a.factorization p) (m_eq_a_factorization_p_of_prime_p_of_p_pow_eq_pow hp h).symm
+
+theorem exists_k_base_eq_p_pow_k_of_prime_p_pow_eq_base_pow
+    {p a m n : ℕ} (hp : p.Prime) (hn : n ≠ 0) (h : p ^ m = a ^ n) : ∃ k, a = p ^ k := by
+  rcases exponent_dvd_of_prime_pow_eq_pow hp h with ⟨k, m_eq⟩
+  rw [m_eq, pow_mul'] at h
+  use k
+  exact Nat.pow_left_injective hn h.symm
