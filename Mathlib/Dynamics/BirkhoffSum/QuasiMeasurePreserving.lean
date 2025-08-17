@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Oliver Butterley. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Oliver Butterley
+Authors: Oliver Butterley, Lua Viana Reis
 -/
 import Mathlib.Dynamics.BirkhoffSum.Average
 import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
