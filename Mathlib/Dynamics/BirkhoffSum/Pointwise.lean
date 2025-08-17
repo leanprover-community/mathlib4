@@ -329,20 +329,20 @@ lemma ae_tendsTo_birkhoffAverage_sub_condExp_nonneg {ε : ℝ} (hε : 0 < ε)
     exact condexpψ_const.mono fun x hx ↦ by simp [hx, hε]
   -- Transfer the result on `ψ` to the required result on `φ`.
   refine limsup_nonpos.mono fun x hx => ?_
-  suffices ∀ (n : ℕ), 0 < n →
+  suffices ∀ (n : ℕ), n ≠ 0 →
       birkhoffAverage ℝ f ψ n x = birkhoffAverage ℝ f φ n x - (μ[φ|invariants f] x + ε) by
     simp only [tendsto_iInf, gt_iff_lt, tendsto_principal, Set.mem_Iio, eventually_atTop,
       ge_iff_le] at hx ⊢
     intro r hr
     obtain ⟨n, hn⟩ := hx r hr
     refine ⟨n + 1, fun k hk ↦ ?_⟩
-    rw [← this k (Nat.zero_lt_of_lt hk)]
+    rw [← this k (Nat.ne_zero_of_lt hk)]
     exact hn k (Nat.le_of_succ_le hk)
   intro n hn
   have : μ[φ|invariants f] ∘ f = μ[φ|invariants f] :=
     comp_eq_of_measurable_invariants stronglyMeasurable_condExp.measurable
-  simp [ψ, birkhoffAverage_sub, birkhoffAverage_add, birkhoffAverage_of_invariant ℝ
-    (show _ = fun _ ↦ ε from rfl) hn, birkhoffAverage_of_invariant ℝ this hn]
+  simp [ψ, birkhoffAverage_sub, birkhoffAverage_add, birkhoffAverage_of_comp_eq
+    (show _ = fun _ ↦ ε from rfl) hn, birkhoffAverage_of_comp_eq this hn]
 
 /-- Same as the main result `ae_tendsTo_birkhoffAverage_condExp` but assuming `Measurable φ`. -/
 private lemma ae_tendsTo_birkhoffAverage_condExp_aux
