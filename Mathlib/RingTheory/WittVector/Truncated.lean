@@ -302,7 +302,7 @@ theorem coeff_truncate (x : 𝕎 R) (i : Fin n) : (truncate n x).coeff i = x.coe
 variable (n)
 
 theorem mem_ker_truncate (x : 𝕎 R) :
-    x ∈ RingHom.ker (truncate (p := p) n) ↔ ∀ i < n, x.coeff i = 0 := by
+    x ∈ RingHom.ker (truncate (p := p) n (R := R)) ↔ ∀ i < n, x.coeff i = 0 := by
   simp only [RingHom.mem_ker, truncate, RingHom.coe_mk, TruncatedWittVector.ext_iff,
     coeff_zero]
   exact Fin.forall_iff
@@ -328,7 +328,7 @@ variable [Fact p.Prime]
 a truncated Witt vector of length `n`, for `n ≤ m`.
 -/
 def truncate {m : ℕ} (hm : n ≤ m) : TruncatedWittVector p m R →+* TruncatedWittVector p n R :=
-  RingHom.liftOfRightInverse (WittVector.truncate m) out truncateFun_out
+  RingHom.liftOfRightInverse (WittVector.truncate m) out (truncateFun_out ·)
     ⟨WittVector.truncate n, by
       intro x
       simp only [WittVector.mem_ker_truncate]

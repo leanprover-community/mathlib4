@@ -406,6 +406,7 @@ def transContinuousLinearEquiv : ModelWithCorners 𝕜 E' H where
       letI := h.rclike
       letI := NormedSpace.restrictScalars ℝ 𝕜 E
       letI := NormedSpace.restrictScalars ℝ 𝕜 E'
+      have : LinearMap.CompatibleSMul E E' ℝ 𝕜 := LinearMap.IsScalarTower.compatibleSMul
       let eR : E →L[ℝ] E' := ContinuousLinearMap.restrictScalars ℝ (e : E →L[𝕜] E')
       change Convex ℝ (⇑eR '' range ↑I)
       apply I.convex_range.linear_image

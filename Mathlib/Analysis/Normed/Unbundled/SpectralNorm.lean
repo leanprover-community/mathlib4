@@ -638,7 +638,7 @@ theorem isNonarchimedean_spectralNorm : IsNonarchimedean (spectralNorm K L) := b
   rw [hxy, ← spectralNorm.eq_of_normalClosure (gx + gy) hxy,
     ← spectralNorm.eq_of_normalClosure gx (IntermediateField.AdjoinPair.algebraMap_gen₁ K x y),
     ← spectralNorm.eq_of_normalClosure gy (IntermediateField.AdjoinPair.algebraMap_gen₂ K x y),
-    _root_.map_add]
+    RingHom.map_add]
   apply isNonarchimedean_spectralNorm_of_finiteDimensional_normal
 
 variable (K L) in

@@ -416,7 +416,7 @@ theorem subsingleton_iff : Subsingleton (Pic R) ↔
     ∀ (M : Type u) [AddCommGroup M] [Module R M], Module.Invertible R M → Free R M :=
   .trans ⟨fun _ M _ _ _ ↦ Subsingleton.elim ..,
       fun h ↦ ⟨fun M N ↦ by rw [← mk_eq_self (M := M), ← mk_eq_self (M := N), h, h]⟩⟩ <|
-    forall₄_congr fun _ _ _ _ ↦ mk_eq_one_iff.trans Invertible.free_iff_linearEquiv.symm
+    forall₄_congr fun _ _ _ _ ↦ mk_eq_one_iff.trans <| .symm Invertible.free_iff_linearEquiv
 
 instance [Subsingleton (Pic R)] : Free R M :=
   have := subsingleton_iff.mp ‹_› (Finite.repr R M) inferInstance

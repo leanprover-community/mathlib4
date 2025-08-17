@@ -964,7 +964,8 @@ def pullbackConeOfLeft : PullbackCone f g := by
     rw [← IsIso.eq_inv_comp] at this
     rw [this]
     dsimp
-    infer_instance
+    apply (config := { allowSynthFailures := true }) RingHom.isLocalHom_comp
+    apply RingHom.isLocalHom_comp
   · exact LocallyRingedSpace.Hom.ext'
         (PresheafedSpace.IsOpenImmersion.pullback_cone_of_left_condition _ _)
 
