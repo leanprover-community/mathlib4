@@ -101,8 +101,8 @@ theorem eq_of_factorization_eq {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0)
     (by simpa only [List.perm_iff_count, primeFactorsList_count_eq] using h)
 
 theorem eq_of_factorization_eq' {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0)
-    (h : a.factorization = b.factorization) : a = b := by
-  exact eq_of_factorization_eq ha hb (congrFun (congrArg DFunLike.coe h))
+    (h : a.factorization = b.factorization) : a = b :=
+  eq_of_factorization_eq ha hb (congrFun (congrArg DFunLike.coe h))
 
 
 /-- Every nonzero natural number has a unique prime factorization -/
