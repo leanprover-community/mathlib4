@@ -5,6 +5,7 @@ Authors: Anatole Dedecker
 -/
 import Mathlib.Analysis.InnerProductSpace.Adjoint
 import Mathlib.Analysis.InnerProductSpace.Spectrum
+import Mathlib.LinearAlgebra.Matrix.PosDef
 
 /-!
 # Positive operators
@@ -167,6 +168,24 @@ theorem IsIdempotentElem.isPositive_iff_isSymmetric {T : E →ₗ[𝕜] E} (hT :
   refine ⟨fun h => h.isSymmetric, fun h => ⟨h, fun x => ?_⟩⟩
   rw [← hT.eq, Module.End.mul_apply, h]
   exact inner_self_nonneg
+
+section Matrix
+variable {n : Type*} [Fintype n] [DecidableEq n]
+
+open scoped ComplexOrder
+
+/-- `A.toEuclideanLin` is positive if and only if `A` is positive semi-definite. -/
+theorem _root_.Matrix.toEuclideanLin_isPositive_iff {A : Matrix n n 𝕜} :
+    A.toEuclideanLin.IsPositive ↔ A.PosSemidef := by
+  simp_rw [LinearMap.IsPositive, ← Matrix.isHermitian_iff_isSymmetric,
+    inner_re_symm, EuclideanSpace.inner_eq_star_dotProduct,
+    Matrix.piLp_ofLp_toEuclideanLin, Matrix.toLin'_apply,
+    dotProduct_comm (A.mulVec _), Matrix.PosSemidef, and_congr_right_iff]
+  intro hA
+  simp_rw [RCLike.nonneg_iff (K := 𝕜), hA.im_star_dotProduct_mulVec_self, and_true]
+  rfl
+
+end Matrix
 
 end LinearMap
 
