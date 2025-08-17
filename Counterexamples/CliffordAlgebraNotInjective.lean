@@ -8,7 +8,6 @@ import Mathlib.Algebra.CharP.Quotient
 import Mathlib.LinearAlgebra.CliffordAlgebra.Contraction
 import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.RingTheory.MvPolynomial.Ideal
-import Mathlib.Tactic.Ring.NamePolyVars
 
 /-! # `algebraMap R (CliffordAlgebra Q)` is not always injective.
 
