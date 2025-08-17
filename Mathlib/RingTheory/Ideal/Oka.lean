@@ -60,11 +60,6 @@ theorem forall_of_forall_prime (hP : IsOka P)
   obtain ⟨I, hI⟩ := hmax this
   exact hI.prop <| hprime I (hP.isPrime_of_maximal_not_isOka hI)
 
-@[deprecated forall_of_forall_prime (since := "2025-08-16")]
-theorem forall_of_forall_prime_isOka (hP : IsOka P)
-    (hmax : (∃ I, ¬P I) → ∃ I, Maximal (¬P ·) I) (hprime : ∀ I, I.IsPrime → P I) : ∀ I, P I :=
-  forall_of_forall_prime hP hmax hprime
-
 end IsOka
 
 end Ideal
