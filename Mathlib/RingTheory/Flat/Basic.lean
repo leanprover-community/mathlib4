@@ -638,7 +638,7 @@ theorem IsSMulRegular.of_flat_of_isBaseChange {f : M →ₗ[R] N} (hf : IsBaseCh
     intro s m
     rw [hf.map_eq hf]
     simpa using smul_comm x s (f m)
-  have h := hf.lTensor_injective_of_flat hf ((LinearMap.lsmul R M) x) reg
+  have h := hf.map_id_injective_of_flat_left hf ((LinearMap.lsmul R M) x) reg
   rwa [eq] at h
 
 theorem IsSMulRegular.of_flat {x : R} (reg : IsSMulRegular R x) :
