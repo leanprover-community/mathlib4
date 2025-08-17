@@ -59,7 +59,7 @@ instance : Module (Matrix n n R)ᵐᵒᵖ (n → R) where
   smul_zero _ := zero_vecMul _
   smul_add _ := add_vecMul _
 
-@[simp] lemma op_smul_eq_mulVec (A : (Matrix n n R)ᵐᵒᵖ) (v : n → R) : A • v = v ᵥ* A.unop := rfl
+@[simp] lemma op_smul_eq_vecMul (A : (Matrix n n R)ᵐᵒᵖ) (v : n → R) : A • v = v ᵥ* A.unop := rfl
 
 instance [DistribSMul S R] [IsScalarTower S R R] : SMulCommClass (Matrix n n R)ᵐᵒᵖ S (n → R) where
   smul_comm A s v := smul_vecMul s v A.unop
