@@ -61,7 +61,7 @@ def extended (I : FractionalIdeal M K) : FractionalIdeal N L where
 local notation "map_f" => (IsLocalization.map (S := K) L f hf)
 
 lemma mem_extended_iff (x : L) : (x ∈ I.extended L hf) ↔ x ∈ span B (map_f '' I) := by
-  constructor <;> { intro hx; simpa }
+  tauto
 
 @[simp]
 lemma coe_extended_eq_span : I.extended L hf = span B (map_f '' I) := by
