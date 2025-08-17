@@ -69,6 +69,9 @@ theorem updateBasis_const_real (ms : ℝ) (ex : BasisExtension []) :
     rw [updateBasis_const]
 
 @[PreMS_const]
+theorem BasisExtension.nil_getBasis : BasisExtension.nil.getBasis = [] := rfl
+
+@[PreMS_const]
 theorem log_const (x : PreMS []) (logBasis : LogBasis []) : (PreMS.log logBasis x) =
     Real.log x := rfl
 
@@ -328,7 +331,7 @@ simproc elimDestruct (Stream'.Seq.destruct _) := fun e => do
     | ~q(PreMS.monomial _ $n) =>
       -- dbg_trace f!"monomial {← ppExpr n}"
       -- dbg_trace f!"reduced {← ppExpr (← withTransparency .all $ reduce n)}"
-      match (← getNatValue? (← withTransparency .all $ reduce n)).get! with
+      match (← getNatValue? (← withTransparency .all <| reduce n)).get! with
       | 0 => simpWith q(@monomial_zero_destruct $basis_hd $basis_tl)
       | m + 1 => simpWith q(@monomial_succ_destruct $basis_hd $basis_tl $m)
     | ~q(PreMS.neg $arg) => simpWith q(neg_destruct $arg)

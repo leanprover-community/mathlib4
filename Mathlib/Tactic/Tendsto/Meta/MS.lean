@@ -163,7 +163,8 @@ def rpow (x : MS) (a : Q(ℝ)) (h_trimmed : Q(PreMS.Trimmed $x.val))
   h_basis := x.h_basis
   h_logBasis := x.h_logBasis
 
-def updateBasis (ms : MS) (ex : Q(BasisExtension $ms.basis)) (logBasis : Q(LogBasis (BasisExtension.getBasis $ex)))
+def updateBasis (ms : MS) (ex : Q(BasisExtension $ms.basis))
+    (logBasis : Q(LogBasis (BasisExtension.getBasis $ex)))
     (h_basis : Q(WellFormedBasis (BasisExtension.getBasis $ex)))
     (h_logBasis : Q(LogBasis.WellFormed $logBasis)) : MetaM MS := do
   let basis ← reduceBasis q(BasisExtension.getBasis $ex)
@@ -187,7 +188,7 @@ def insertLastLog (ms : MS) : MetaM MS := do
   haveI : $basis =Q $ms.basis ++ [Real.log ∘ $last] := ⟨⟩
   let logBasis := q(LogBasis.insertLastLog (basis_hd := $basis_hd) (basis_tl := $basis_tl)
     $ms.logBasis)
-  let h_basis : Q(WellFormedBasis $basis) := q(insertLastLog_WellOrdered $ms.h_basis)
+  let h_basis : Q(WellFormedBasis $basis) := q(insertLastLog_WellFormedBasis $ms.h_basis)
   let ms' : MS := {
     basis := basis
     val := q(PreMS.extendBasisEnd (Real.log ∘ $last) $ms.val)

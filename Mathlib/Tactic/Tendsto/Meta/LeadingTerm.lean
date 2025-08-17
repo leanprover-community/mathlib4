@@ -23,13 +23,13 @@ partial def getLeadingTerm {basis : Q(Basis)} (ms : Q(PreMS $basis)) : MetaM Q(T
   | ~q(List.cons $basis_hd $basis_tl) =>
     match ms with
     | ~q(PreMS.nil) =>
-      throwError "Unexpected ms = nil in getLeadingTerm"
+      return q(⟨0, List.replicate (List.length ($basis_hd :: $basis_tl)) 0⟩)
+      -- throwError "Unexpected ms = nil in getLeadingTerm"
     | ~q(PreMS.cons ($exp, $coef) $tl) =>
       match ← getLeadingTerm coef with
       | ~q(⟨$coef_coef, $coef_exps⟩) =>
         return q(⟨$coef_coef, $exp :: $coef_exps⟩)
       | _ =>
-        dbg_trace "Unexpected pre in getLeadingTerm"
         return q(⟨Term.coef (PreMS.leadingTerm $coef), $exp :: Term.exps (PreMS.leadingTerm $coef)⟩)
     | _ =>
       -- throwError f!"Unexpected ms in getLeadingTerm: {← ppExpr ms}"
@@ -74,5 +74,7 @@ partial def getFirstIs (x : Q(List ℝ)) : TacticM (FirstIsResult x) := do
       | .zero h_tl => return .zero q(Term.AllZero_of_tail $h_hd $h_tl)
       | .pos h_tl => return .pos q(Term.FirstIsPos_of_tail $h_hd $h_tl)
       | .neg h_tl => return .neg q(Term.FirstIsNeg_of_tail $h_hd $h_tl)
+  | ~q(List.replicate $n 0) => return .zero q(Term.AllZero_of_replicate)
+  | _ => panic! "Unexpected list in getFirstIs"
 
 end TendstoTactic

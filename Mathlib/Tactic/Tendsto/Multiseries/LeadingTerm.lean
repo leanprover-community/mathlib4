@@ -11,6 +11,8 @@ Here we find the limit of series by reducing the problem to computing limits for
 term.
 -/
 
+set_option linter.style.longLine false
+
 open Filter Asymptotics Topology
 
 namespace TendstoTactic
@@ -25,7 +27,7 @@ def leadingTerm {basis : Basis} (ms : PreMS basis) : Term :=
   | [] => ⟨ms, []⟩
   | List.cons _ _ =>
     match head ms with
-    | none => ⟨0, List.range basis.length |>.map fun _ => 0⟩
+    | none => ⟨0, List.replicate basis.length 0⟩
     | some (exp, coef) =>
       let pre := coef.leadingTerm
       ⟨pre.coef, exp :: pre.exps⟩
@@ -250,6 +252,109 @@ theorem eventually_ne_zero_of_not_zero {basis : Basis} {ms : PreMS basis} {f : �
   constructor
   · linarith
   · exact h_leadingTerm
+
+theorem compare_of_leadingTerms {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    {ms1 ms2 : PreMS (basis_hd :: basis_tl)} {f1 f2 : ℝ → ℝ}
+    (h_wo1 : ms1.WellOrdered) (h_wo2 : ms2.WellOrdered)
+    (h_approx1 : ms1.Approximates f1) (h_approx2 : ms2.Approximates f2)
+    (h_trimmed1 : ms1.Trimmed) (h_trimmed2 : ms2.Trimmed)
+    (h_basis : WellFormedBasis (basis_hd :: basis_tl))
+    (h2 : ms2 ≠ .nil)
+    (h_lt : ms1.leadingTerm < ms2.leadingTerm) :
+    f1 =o[atTop] f2 := by
+  apply Asymptotics.IsEquivalent.trans_isLittleO
+    (IsEquivalent_leadingTerm h_wo1 h_approx1 h_trimmed1 h_basis)
+  apply Asymptotics.IsLittleO.trans_isEquivalent _
+    (IsEquivalent_leadingTerm h_wo2 h_approx2 h_trimmed2 h_basis).symm
+  rw [Term.lt_iff] at h_lt
+  cases' ms1 with exp1 coef1 tl1
+  · convert Asymptotics.isLittleO_zero _ _ using 1
+    ext t
+    rw [Term.zero_coef_toFun]
+    · simp
+    unfold leadingTerm
+    simp
+  cases' ms2 with exp2 coef2 tl2
+  · contradiction
+  have _ : IsAsymm ℝ (· < ·) := inferInstance
+  obtain ⟨h_coef_wo1, h_comp1, h_tl_wo1⟩ := WellOrdered_cons h_wo1
+  obtain ⟨h_coef_wo2, h_comp2, h_tl_wo2⟩ := WellOrdered_cons h_wo2
+  obtain ⟨fC1, h_coef1, _, h_tl1⟩ := Approximates_cons h_approx1
+  obtain ⟨fC2, h_coef2, _, h_tl2⟩ := Approximates_cons h_approx2
+  obtain ⟨h_coef_trimmed1, h_coef_ne_zero1⟩ := Trimmed_cons h_trimmed1
+  obtain ⟨h_coef_trimmed2, h_coef_ne_zero2⟩ := Trimmed_cons h_trimmed2
+  clear h2
+  unfold leadingTerm at h_lt
+  simp at h_lt
+  simp [LT.lt] at h_lt
+  cases h_lt with
+  | cons h =>
+    unfold leadingTerm
+    simp
+    unfold Term.toFun
+    simp
+    conv => lhs; ext x; rw [Term.fold_eq_mul, mul_comm _ (basis_hd x ^ exp1), mul_assoc, mul_comm]
+    conv => rhs; ext x; rw [Term.fold_eq_mul, mul_comm _ (basis_hd x ^ exp1), mul_assoc, mul_comm]
+    apply Asymptotics.IsLittleO.mul_isBigO
+    swap
+    · apply isBigO_refl
+    convert_to (Term.toFun ⟨coef1.leadingTerm.coef, coef1.leadingTerm.exps⟩ basis_tl) =o[atTop]
+        Term.toFun ⟨coef2.leadingTerm.coef, coef2.leadingTerm.exps⟩ basis_tl
+    · unfold Term.toFun
+      ext x
+      conv => rhs; rw [Term.fold_eq_mul]
+    · unfold Term.toFun
+      ext x
+      conv => rhs; rw [Term.fold_eq_mul]
+    cases' basis_tl with basis_tl_hd basis_tl_tl
+    · cases h
+    apply Asymptotics.IsEquivalent.trans_isLittleO
+      (IsEquivalent_leadingTerm h_coef_wo1 h_coef1 h_coef_trimmed1 h_basis.tail).symm
+    apply Asymptotics.IsLittleO.trans_isEquivalent _
+      (IsEquivalent_leadingTerm h_coef_wo2 h_coef2 h_coef_trimmed2 h_basis.tail)
+    apply compare_of_leadingTerms h_coef_wo1 h_coef_wo2 h_coef1 h_coef2 h_coef_trimmed1
+      h_coef_trimmed2 h_basis.tail h_coef_ne_zero2
+    simp [LT.lt]
+    constructor
+    · right
+      exact h
+    constructor
+    · intro h'
+      rw [h'] at h
+      apply asymm h h
+    · apply asymm h
+  | rel h =>
+    change exp1 < exp2 at h
+    apply Asymptotics.isLittleO_of_tendsto'
+    · refine (Term.toFun_ne_zero (t := leadingTerm (basis := basis_hd :: basis_tl) (Seq.cons (exp2, coef2) tl2)) h_basis ?_).mono ?_
+      · intro h'
+        apply zero_of_leadingTerm_zero_coef h_trimmed2 at h'
+        simp [zero] at h'
+      intro x h1 h2
+      contradiction
+    simp_rw [div_eq_mul_inv]
+    apply Filter.Tendsto.congr' (f₁ := fun x ↦
+      (leadingTerm (basis := basis_hd :: basis_tl) (Seq.cons (exp1, coef1) tl1)).toFun (basis_hd :: basis_tl) x *
+        ((leadingTerm (basis := basis_hd :: basis_tl) (Seq.cons (exp2, coef2) tl2)).inv.toFun (basis_hd :: basis_tl) x))
+    · apply ((leadingTerm (basis := basis_hd :: basis_tl) (Seq.cons (exp2, coef2) tl2)).inv_toFun h_basis).mono
+      intro x hx
+      simp at hx ⊢
+      left
+      rw [hx]
+    apply Filter.Tendsto.congr' (f₁ :=
+        ((leadingTerm (basis := basis_hd :: basis_tl) (Seq.cons (exp1, coef1) tl1)).mul
+        (leadingTerm (basis := basis_hd :: basis_tl) (Seq.cons (exp2, coef2) tl2)).inv).toFun (basis_hd :: basis_tl))
+    · refine (Term.mul_toFun
+        (t1 := leadingTerm (basis := basis_hd :: basis_tl) (Seq.cons (exp1, coef1) tl1))
+        (t2 := (leadingTerm (basis := basis_hd :: basis_tl) (Seq.cons (exp2, coef2) tl2)).inv)
+        h_basis
+        ?_).mono ?_
+      · rw [leadingTerm_length, Term.inv_length, leadingTerm_length]
+      intro x hx
+      simpa using hx
+    apply Term.tendsto_zero _ _ _ h_basis
+    · simp [leadingTerm_length]
+    · simpa
 
 --------------------------------
 

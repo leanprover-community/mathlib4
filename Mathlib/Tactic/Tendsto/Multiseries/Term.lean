@@ -30,7 +30,7 @@ namespace Term
 `t.coef * basis[0]^t.exps[0] * basis[1]^t.exps[1] * ...`. It is always assumed that
 `t.exps.length = basis.length`, but some theorems below do not require this assumption. -/
 noncomputable def toFun (t : Term) (basis : Basis) : ℝ → ℝ :=
-  fun x => t.exps.zip basis |>.foldl (init := t.coef) fun acc (exp, f) =>
+  fun x ↦ t.exps.zip basis |>.foldl (init := t.coef) fun acc (exp, f) =>
     acc * (f x)^exp
 
 /-- Auxillary lemma stating that in the `List.fold` used in `toFun` definition we can pull `t.coef`
@@ -63,13 +63,33 @@ theorem neg_coef_toFun {t : Term} {basis : Basis} :
   rw [fold_eq_mul (coef := t.coef), fold_eq_mul (coef := -t.coef)]
   simp
 
+/-- Multiplication of monomials. -/
+noncomputable def mul (t1 t2 : Term) : Term :=
+  ⟨t1.coef * t2.coef, t1.exps.zip t2.exps |>.map fun (exp1, exp2) => exp1 + exp2⟩
+
 /-- Inversion operation for monomials. -/
 noncomputable def inv (t : Term) : Term :=
   ⟨t.coef⁻¹, t.exps.map fun exp => -exp⟩
 
+theorem mul_length (t1 t2 : Term) (h : t1.exps.length = t2.exps.length) :
+    (mul t1 t2).exps.length = t1.exps.length := by
+  simp [mul, h]
+
 /-- Inversion keeps length of `exps` the same. -/
 theorem inv_length {t : Term} : t.inv.exps.length = t.exps.length := by
   simp [inv]
+
+theorem mul_toFun {t1 t2 : Term} {basis : Basis} (h_basis : WellFormedBasis basis)
+    (h_length : t1.exps.length = t2.exps.length) :
+    (mul t1 t2).toFun basis =ᶠ[atTop] fun x ↦ t1.toFun basis x * t2.toFun basis x := by
+  unfold toFun
+  simp [mul]
+  induction' h : t1.exps with hd1 tl1 ih generalizing t2 basis
+  · simp
+    symm at h_length
+    simp [h] at h_length
+    simp [h_length]
+  · sorry
 
 theorem inv_toFun {t : Term} {basis : Basis} (h_basis : WellFormedBasis basis) :
     (fun x ↦ (t.toFun basis x)⁻¹) =ᶠ[atTop] fun x ↦ t.inv.toFun basis x := by
@@ -140,6 +160,19 @@ theorem toFun_pos {t : Term} {basis : Basis}
     · intro hd h_hd
       apply hx'
       simp; right; assumption
+
+theorem toFun_ne_zero {t : Term} {basis : Basis} (h_basis : WellFormedBasis basis)
+    (h_coef : t.coef ≠ 0) :
+    ∀ᶠ x in atTop, t.toFun basis x ≠ 0 := by
+  rcases lt_or_gt_of_ne h_coef with h_coef | h_coef
+  · rw [neg_coef_toFun]
+    apply (toFun_pos (t := mk (-t.coef) t.exps) h_basis (by simpa)).mono
+    intro x hx
+    simp
+    linarith
+  · apply (toFun_pos h_basis h_coef).mono
+    intro x hx
+    linarith
 
 /-- Expresses `log t.toFun` as some `List.fold`. -/
 theorem toFun_log {t : Term} {basis : Basis}
@@ -432,6 +465,11 @@ theorem FirstIsNeg_of_tail {hd : ℝ} {tl : List ℝ} (h_hd : hd = 0) (h_tl : Fi
   simp [FirstIsNeg]
   tauto
 
+theorem AllZero_of_replicate {n : ℕ} : AllZero (List.replicate n 0) := by
+  cases n with
+  | zero => simp [AllZero]
+  | succ n => simpa [AllZero] using AllZero_of_replicate
+
 theorem not_FirstIsPos_of_AllZero {x : List ℝ} (h : AllZero x) : ¬ FirstIsPos x := by
   cases x with
   | nil => simp [FirstIsPos]
@@ -539,6 +577,38 @@ theorem tendsto_bot_of_FirstIsPos {coef : ℝ} {exps : List ℝ} {basis : Basis}
           h_exps.right
 
 -------------------------------
+
+-- def compare (t1 t2 : List ℝ) : Prop :=
+--   match t1, t2 with
+--   | [], _ => True
+--   | _ :: _, [] => False
+--   | e1 :: tl1, e2 :: tl2 =>
+--     e1 < e2 ∨ (e1 = e2 ∧ compare tl1 tl2)
+
+-- theorem compare_refl (t : List ℝ) : compare t t := by
+--   cases t <;> simp [compare, compare_refl]
+
+-- theorem compare_trans (t1 t2 t3 : List ℝ) (h12 : compare t1 t2) (h23 : compare t2 t3) :
+--     compare t1 t3 := by
+--   cases' t1 with e1 t1 <;> cases' t2 with e2 t2 <;> cases' t3 with e3 t3 <;>
+--     simp [compare] at h12 h23 ⊢
+--   rcases h12 with (h12 | h12) <;> rcases h23 with (h23 | h23) <;> (try left; linarith)
+--   right
+--   constructor
+--   · linarith
+--   apply compare_trans _ _ _ h12.right h23.right
+
+instance : Preorder Term where
+  le t1 t2 := t1.exps ≤ t2.exps
+  le_refl t := by simp
+  le_trans t1 t2 t3 h12 h23 := by
+    simp_all
+    apply le_trans h12 h23
+
+theorem le_iff (t1 t2 : Term) : t1 ≤ t2 ↔ t1.exps ≤ t2.exps := by rfl
+
+theorem lt_iff (t1 t2 : Term) : t1 < t2 ↔ t1.exps < t2.exps := by
+  sorry
 
 -- TODO
 theorem tail_fun_IsLittleO_head {t : Term} {basis_hd : ℝ → ℝ} {basis_tl : Basis}

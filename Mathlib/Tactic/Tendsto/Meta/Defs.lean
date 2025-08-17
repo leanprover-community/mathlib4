@@ -46,15 +46,28 @@ end PreMS
 
 open Lean Elab Meta Qq
 
-mutual
+partial def computeLength (b : Q(Basis)) : MetaM Nat := do
+  match b with
+  | ~q(List.nil) => return 0
+  | ~q(List.cons $basis_hd $basis_tl) => return 1 + (← computeLength basis_tl)
+  | _ => panic! s!"computeLength: unexpected basis: {← ppExpr b}"
 
-  partial def reduceAppend (left right : Q(Basis)) : MetaM Q(Basis) := do
-    match left with
-    | ~q(List.nil), _ => return right
-    | ~q(List.cons $left_hd $left_tl) =>
-      let tl ← reduceAppend left_tl right
-      return q(List.cons $left_hd $tl)
-    | _ => panic! s!"Unexpected left in reduceAppend: {← ppExpr left}"
+def replicate {α : Q(Type)} (n : Nat) (x : Q($α)) : MetaM Q(List $α) := do
+  match n with
+  | 0 => return q(List.nil)
+  | n + 1 =>
+    let tl ← replicate n x
+    return q(List.cons $x $tl)
+
+partial def reduceAppend {α : Q(Type)} (left right : Q(List $α)) : MetaM Q(List $α) := do
+  match left with
+  | ~q(List.nil), _ => return right
+  | ~q(List.cons $left_hd $left_tl) =>
+    let tl ← reduceAppend left_tl right
+    return q(List.cons $left_hd $tl)
+  | _ => panic! s!"Unexpected left in reduceAppend: {← ppExpr left}"
+
+mutual
 
   partial def reduceBasisExtension {basis : Q(Basis)} (ex : Q(BasisExtension $basis)) :
       MetaM Q(Basis) := do
@@ -81,8 +94,13 @@ mutual
     | ~q($left ++ $right) =>
       let left' ← reduceBasis left
       let right' ← reduceBasis right
-      return ← reduceAppend left' right'
+      return ← reduceAppend (α := q(ℝ → ℝ)) left' right'
 
 end
+
+-- partial def reduceLogBasis {basis : Q(Basis)} (logBasis : Q(LogBasis $basis)) :
+--     MetaM Q(LogBasis $basis) := do
+--   let ~q(List.cons $basis_hd $basis_tl) := basis | return logBasis
+--   match logBasis with
 
 end TendstoTactic
