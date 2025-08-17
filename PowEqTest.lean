@@ -22,7 +22,11 @@ theorem eq_of_factorization_eq' {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0)
 
 theorem exists_eq_pow_of_exponent_coprime_of_pow_eq {a b m n : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) (hmn : m.Coprime n) (h : a ^ m = b ^ n) :
     ∃ c, a = c ^ n ∧ b = c ^ m := by
-  -- TODO consider renaming this, or moving this if it's only used once
+  by_cases hn : n = 0
+  · simp [hn] at h hmn
+    simp [hmn] at h
+    use b
+    simp [h, hn, hmn]
   have factorization_pow_eq := congrArg factorization h
   rw [factorization_pow, factorization_pow] at factorization_pow_eq
   let c_factorization := a.factorization.mapRange (. / n) (Nat.zero_div n)
@@ -71,17 +75,12 @@ theorem exists_eq_pow_of_exponent_coprime_of_pow_eq {a b m n : ℕ} (ha : a ≠ 
     rcases mul_factorization_p_eq_and_n_dvd_a_factorization_p p with
       ⟨mul_factorization_p_eq, n_dvd_afp⟩
     rcases n_dvd_afp with ⟨k, afp_eq⟩
-    have n_nz : n ≠ 0 := by
-      sorry
     have n_pos : 0 < n := by
-      sorry
+      exact zero_lt_of_ne_zero hn
     have : a.factorization p / n = k := by
-      --rw [afp_eq]
-      --exact (Nat.eq_div_of_mul_eq_right n_nz afp_eq.symm).symm
       exact Nat.div_eq_of_eq_mul_right n_pos afp_eq
     rw [this]
     rw [afp_eq, Nat.mul_left_comm m n k] at mul_factorization_p_eq
-    --exact (Nat.mul_right_inj n_nz).mp factorization_pow_p_eq.symm
     exact Nat.mul_left_cancel n_pos mul_factorization_p_eq.symm
 
 theorem exists_eq_pow_of_pow_eq {a b m n : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) (hmn : m ≠ 0 ∨ n ≠ 0) (h : a ^ m = b ^ n) :
