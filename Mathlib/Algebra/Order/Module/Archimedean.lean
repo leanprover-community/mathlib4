@@ -23,6 +23,25 @@ variable {M : Type*} [AddCommGroup M] [LinearOrder M] [IsOrderedAddMonoid M]
 variable (K : Type*) [Ring K] [LinearOrder K] [IsOrderedRing K] [Archimedean K]
 variable [Module K M] [PosSMulMono K M]
 
+variable {K} in
+theorem mk_smul (a : M) {k : K} (h : k ≠ 0) : mk (k • a) = mk a := by
+  have : Nontrivial K := nontrivial_iff.mpr ⟨k, 0, h⟩
+  obtain ⟨m, hm⟩ := Archimedean.arch 1 (show 0 < |k| by simpa using h)
+  obtain ⟨n, hn⟩ := Archimedean.arch |k| (show 0 < 1 by simp)
+  simp_rw [mk_eq_mk, abs_smul]
+  refine ⟨⟨m, ?_⟩, ⟨n, ?_⟩⟩
+  · rw [← smul_assoc]
+    exact le_smul_of_one_le_left (by simp) hm
+  · have : n • |a| = (n • (1 : K)) • |a| := by rw [smul_assoc, one_smul]
+    rw [this]
+    exact smul_le_smul_of_nonneg_right hn (by simp)
+
+variable {K} in
+theorem mk_le_mk_smul (a : M) (k : K) : mk a ≤ mk (k • a) := by
+  obtain rfl | h := eq_or_ne k 0
+  · simp
+  · rw [mk_smul a h]
+
 /-- Given a `s : UpperSet` of `ArchimedeanClass M` for a linearly ordered module `M` with
 Archimedean scaler, all elements belong to these classes form a submodule, with the exception for
 `s = ⊤` where the set would be empty. For `s = ⊤`, we assign the junk value `⊥`.
@@ -36,15 +55,8 @@ def submodule (s : UpperSet (ArchimedeanClass M)) : Submodule K M where
     · aesop
     change a ∈ addSubgroup s → k • a ∈ addSubgroup s
     simp_rw [mem_addSubgroup_iff hs]
-    intro ha
-    obtain _ | _ := subsingleton_or_nontrivial K
-    · rw [Subsingleton.eq_zero k]
-      simpa using (IsUpperSet.top_mem s.upper).mpr <| UpperSet.coe_nonempty.mpr hs
-    obtain ⟨n, hn⟩ := Archimedean.arch |k| (show 0 < 1 by simp)
-    refine s.upper (mk_le_mk.mpr ⟨n, ?_⟩) ha
-    have : n • |a| = (n • (1 : K)) • |a| := by rw [smul_assoc, one_smul]
-    rw [this, abs_smul]
-    exact smul_le_smul_of_nonneg_right hn (by simp)
+    refine fun h ↦ s.upper ?_ h
+    apply mk_le_mk_smul
 
 /-- An open ball defined by `ArchimedeanClass.submodule` of `UpperSet.Ioi c`.
 For `c = ⊤`, we assign the junk value `⊥`.
