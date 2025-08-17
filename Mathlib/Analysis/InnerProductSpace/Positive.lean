@@ -177,12 +177,11 @@ open scoped ComplexOrder
 /-- `A.toEuclideanLin` is positive if and only if `A` is positive semi-definite. -/
 theorem _root_.Matrix.isPositive_toEuclideanLin_iff {A : Matrix n n 𝕜} :
     A.toEuclideanLin.IsPositive ↔ A.PosSemidef := by
-  simp_rw [LinearMap.IsPositive, ← Matrix.isHermitian_iff_isSymmetric,
-    inner_re_symm, EuclideanSpace.inner_eq_star_dotProduct,
-    Matrix.piLp_ofLp_toEuclideanLin, Matrix.toLin'_apply,
-    dotProduct_comm (A.mulVec _), Matrix.PosSemidef, and_congr_right_iff]
+  simp_rw [LinearMap.IsPositive, ← Matrix.isHermitian_iff_isSymmetric, inner_re_symm,
+    EuclideanSpace.inner_eq_star_dotProduct, Matrix.piLp_ofLp_toEuclideanLin, Matrix.toLin'_apply,
+    dotProduct_comm (A.mulVec _), Matrix.PosSemidef, and_congr_right_iff, RCLike.nonneg_iff (K:=𝕜)]
   intro hA
-  simp_rw [RCLike.nonneg_iff (K := 𝕜), hA.im_star_dotProduct_mulVec_self, and_true]
+  simp_rw [hA.im_star_dotProduct_mulVec_self, and_true]
   rfl
 
 end Matrix
