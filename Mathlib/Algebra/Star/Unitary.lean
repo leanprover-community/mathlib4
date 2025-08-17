@@ -140,16 +140,14 @@ alias ⟨_, _root_.IsUnit.mem_unitary_of_mul_star_self⟩ := IsUnit.mem_unitary_
 /-- For unitary `U` in a star-monoid `R`, `x * U = y * U` if and only if `x = y`
 for all `x` and `y` in `R`. -/
 protected theorem mul_left_inj {x y : R} (U : unitary R) :
-    x * U = y * U ↔ x = y := by
-  refine ⟨fun h => ?_, fun h => h ▸ rfl⟩
-  simpa [mul_assoc] using congr($h * star U)
+    x * U = y * U ↔ x = y :=
+  unitary.val_toUnits_apply U ▸ Units.mul_left_inj _
 
 /-- For unitary `U` in a star-monoid `R`, `U * x = U * y` if and only if `x = y`
 for all `x` and `y` in `R`. -/
 protected theorem mul_right_inj {x y : R} (U : unitary R) :
-    U * x = U * y ↔ x = y := by
-  refine ⟨fun h => ?_, fun h => h ▸ rfl⟩
-  simpa [← mul_assoc] using congr(star U * $h)
+    U * x = U * y ↔ x = y :=
+  unitary.val_toUnits_apply U ▸ Units.mul_right_inj _
 
 lemma mul_inv_mem_iff {G : Type*} [Group G] [StarMul G] (a b : G) :
     a * b⁻¹ ∈ unitary G ↔ star a * a = star b * b := by
