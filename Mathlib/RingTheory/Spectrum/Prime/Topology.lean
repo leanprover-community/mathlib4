@@ -1364,13 +1364,3 @@ lemma isIdempotentElemEquivClopens_symm_sup (s₁ s₂ : Clopens (PrimeSpectrum 
 end PrimeSpectrum
 
 end Idempotent
-
-variable {R S} in
-theorem IsLocalHom.of_specComap_surjective [CommSemiring R] [CommSemiring S] (f : R →+* S)
-    (hf : Function.Surjective f.specComap) : IsLocalHom f where
-  map_nonunit x hfx := by
-    by_contra hx
-    obtain ⟨p, hp, _⟩ := exists_max_ideal_of_mem_nonunits hx
-    obtain ⟨⟨q, hqp⟩, hq⟩ := hf ⟨p, hp.isPrime⟩
-    simp only [PrimeSpectrum.mk.injEq] at hq
-    exact hqp.ne_top (q.eq_top_of_isUnit_mem (q.mem_comap.mp (by rwa [hq])) hfx)
