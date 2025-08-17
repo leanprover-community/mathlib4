@@ -590,14 +590,12 @@ and the category of matrices over that ring considered as a single-object catego
 def equivalenceSingleObj : Mat R ≌ Mat_ (SingleObj Rᵐᵒᵖ) :=
   (equivalenceSingleObjInverse R).asEquivalence.symm
 
--- Porting note: added as this was not found automatically
 instance (X Y : Mat R) : AddCommGroup (X ⟶ Y) := by
   change AddCommGroup (Matrix X Y R)
   infer_instance
 
 variable {R}
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): added to ease automation
 @[simp]
 theorem add_apply {M N : Mat R} (f g : M ⟶ N) (i j) : (f + g) i j = f i j + g i j :=
   rfl

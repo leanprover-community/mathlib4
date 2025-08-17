@@ -62,14 +62,13 @@ The proof concludes because characteristic polynomials are independent of the ch
 
 -/
 
+open Module MvPolynomial
 open scoped Matrix
 
 namespace Matrix
 
 variable {m n o R S : Type*}
 variable [Fintype n] [Fintype o] [CommSemiring R] [CommSemiring S]
-
-open MvPolynomial
 
 /-- Let `M` be an `(m × n)`-matrix over `R`.
 Then `Matrix.toMvPolynomial M` is the family (indexed by `i : m`)
@@ -118,8 +117,7 @@ lemma toMvPolynomial_one [DecidableEq n] : (1 : Matrix n n R).toMvPolynomial = X
   · simp only [one_apply_eq, ← C_mul_X_eq_monomial, C_1, one_mul]
   · rintro j - hj
     simp only [one_apply_ne hj.symm, map_zero]
-  · intro h
-    exact (h (Finset.mem_univ _)).elim
+  · grind
 
 lemma toMvPolynomial_add (M N : Matrix m n R) :
     (M + N).toMvPolynomial = M.toMvPolynomial + N.toMvPolynomial := by
@@ -129,7 +127,7 @@ lemma toMvPolynomial_add (M N : Matrix m n R) :
 lemma toMvPolynomial_mul (M : Matrix m n R) (N : Matrix n o R) (i : m) :
     (M * N).toMvPolynomial i = bind₁ N.toMvPolynomial (M.toMvPolynomial i) := by
   simp only [toMvPolynomial, mul_apply, map_sum, Finset.sum_comm (γ := o), bind₁, aeval,
-    AlgHom.coe_mk, coe_eval₂Hom, eval₂_monomial, algebraMap_apply, Algebra.id.map_eq_id,
+    AlgHom.coe_mk, coe_eval₂Hom, eval₂_monomial, algebraMap_apply, Algebra.algebraMap_self,
     RingHom.id_apply, C_apply, pow_zero, Finsupp.prod_single_index, pow_one, Finset.mul_sum,
     monomial_mul, zero_add]
 
@@ -264,8 +262,7 @@ lemma polyCharpolyAux_baseChange (A : Type*) [CommRing A] [Algebra R A] :
       · rw [this, if_pos rfl, X]
       · rintro kl - H
         rw [this, if_neg H, map_zero]
-      · intro h
-        exact (h (Finset.mem_univ _)).elim
+      · grind
     intro kl
     rw [toMatrix_apply, tensorProduct, TensorProduct.AlgebraTensorModule.lift_apply,
       basis_apply, TensorProduct.lift.tmul, coe_restrictScalars]

@@ -170,10 +170,7 @@ variable [Nonempty ι]
 lemma mulIndicator_iInter_apply (h1 : (⊥ : M) = 1) (s : ι → Set α) (f : α → M) (x : α) :
     mulIndicator (⋂ i, s i) f x = ⨅ i, mulIndicator (s i) f x := by
   by_cases hx : x ∈ ⋂ i, s i
-  · rw [mulIndicator_of_mem hx]
-    rw [mem_iInter] at hx
-    refine le_antisymm ?_ (by simp only [mulIndicator_of_mem (hx _), ciInf_const, le_refl])
-    exact le_iInf (fun j ↦ by simp only [mulIndicator_of_mem (hx j), le_refl])
+  · simp_all
   · rw [mulIndicator_of_notMem hx]
     simp only [mem_iInter, not_forall] at hx
     rcases hx with ⟨j, hj⟩
