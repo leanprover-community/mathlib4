@@ -191,7 +191,6 @@ theorem sqrt_le_sqrt (h : x ≤ y) : √x ≤ √y := by
   rw [Real.sqrt, Real.sqrt, NNReal.coe_le_coe, NNReal.sqrt_le_sqrt]
   exact toNNReal_le_toNNReal h
 
-@[mono]
 theorem sqrt_monotone : Monotone Real.sqrt :=
   fun _ _ ↦ sqrt_le_sqrt
 
