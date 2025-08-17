@@ -30,7 +30,7 @@ variable [CommMonoid α] [TopologicalSpace α]
 variable {f g : β → α} {a b : α}
 
 /-- Constant one function has product `1` -/
-@[to_additive "Constant zero function has sum `0`"]
+@[to_additive /-- Constant zero function has sum `0` -/]
 theorem hasProd_one : HasProd (fun _ ↦ 1 : β → α) 1 := by simp [HasProd, tendsto_const_nhds]
 
 @[to_additive]
@@ -47,15 +47,15 @@ theorem multipliable_empty [IsEmpty β] : Multipliable f :=
 
 /-- See `multipliable_congr_cofinite` for a version allowing the functions to
 disagree on a finite set. -/
-@[to_additive "See `summable_congr_cofinite` for a version allowing the functions to
-disagree on a finite set."]
+@[to_additive /-- See `summable_congr_cofinite` for a version allowing the functions to
+disagree on a finite set. -/]
 theorem multipliable_congr (hfg : ∀ b, f b = g b) : Multipliable f ↔ Multipliable g :=
   iff_of_eq (congr_arg Multipliable <| funext hfg)
 
 /-- See `Multipliable.congr_cofinite` for a version allowing the functions to
 disagree on a finite set. -/
-@[to_additive "See `Summable.congr_cofinite` for a version allowing the functions to
-disagree on a finite set."]
+@[to_additive /-- See `Summable.congr_cofinite` for a version allowing the functions to
+disagree on a finite set. -/]
 theorem Multipliable.congr (hf : Multipliable f) (hfg : ∀ b, f b = g b) : Multipliable g :=
   (multipliable_congr hfg).mp hf
 
@@ -197,8 +197,6 @@ protected theorem Topology.IsInducing.hasProd_iff [CommMonoid γ] [TopologicalSp
   simp_rw [HasProd, comp_apply, ← map_prod]
   exact hg.tendsto_nhds_iff.symm
 
-@[deprecated (since := "2024-10-28")] alias Inducing.hasProd_iff := IsInducing.hasProd_iff
-
 @[to_additive]
 protected theorem Multipliable.map [CommMonoid γ] [TopologicalSpace γ] (hf : Multipliable f) {G}
     [FunLike G α γ] [MonoidHomClass G α γ] (g : G) (hg : Continuous g) : Multipliable (g ∘ f) :=
@@ -234,12 +232,8 @@ lemma Topology.IsInducing.multipliable_iff_tprod_comp_mem_range [CommMonoid γ] 
     simp_rw [comp_apply, ← ha] at this
     exact (hg.hasProd_iff f a).mp this
 
-@[deprecated (since := "2024-10-28")]
-alias Inducing.multipliable_iff_tprod_comp_mem_range :=
-  IsInducing.multipliable_iff_tprod_comp_mem_range
-
 /-- "A special case of `Multipliable.map_iff_of_leftInverse` for convenience" -/
-@[to_additive "A special case of `Summable.map_iff_of_leftInverse` for convenience"]
+@[to_additive /-- A special case of `Summable.map_iff_of_leftInverse` for convenience -/]
 protected theorem Multipliable.map_iff_of_equiv [CommMonoid γ] [TopologicalSpace γ] {G}
     [EquivLike G α γ] [MulEquivClass G α γ] (g : G) (hg : Continuous g)
     (hg' : Continuous (EquivLike.inv g : γ → α)) : Multipliable (g ∘ f) ↔ Multipliable f :=
@@ -323,9 +317,9 @@ theorem Multipliable.compl_add {s : Set β} (hs : Multipliable (f ∘ (↑) : (s
 /-- Version of `HasProd.update` for `CommMonoid` rather than `CommGroup`.
 Rather than showing that `f.update` has a specific product in terms of `HasProd`,
 it gives a relationship between the products of `f` and `f.update` given that both exist. -/
-@[to_additive "Version of `HasSum.update` for `AddCommMonoid` rather than `AddCommGroup`.
+@[to_additive /-- Version of `HasSum.update` for `AddCommMonoid` rather than `AddCommGroup`.
 Rather than showing that `f.update` has a specific sum in terms of `HasSum`,
-it gives a relationship between the sums of `f` and `f.update` given that both exist."]
+it gives a relationship between the sums of `f` and `f.update` given that both exist. -/]
 theorem HasProd.update' {α β : Type*} [TopologicalSpace α] [CommMonoid α] [T2Space α]
     [ContinuousMul α] [DecidableEq β] {f : β → α} {a a' : α} (hf : HasProd f a) (b : β) (x : α)
     (hf' : HasProd (update f b x) a') : a * x = a' * f b := by
@@ -341,9 +335,9 @@ theorem HasProd.update' {α β : Type*} [TopologicalSpace α] [CommMonoid α] [T
 /-- Version of `hasProd_ite_div_hasProd` for `CommMonoid` rather than `CommGroup`.
 Rather than showing that the `ite` expression has a specific product in terms of `HasProd`, it gives
 a relationship between the products of `f` and `ite (n = b) 0 (f n)` given that both exist. -/
-@[to_additive "Version of `hasSum_ite_sub_hasSum` for `AddCommMonoid` rather than `AddCommGroup`.
+@[to_additive /-- Version of `hasSum_ite_sub_hasSum` for `AddCommMonoid` rather than `AddCommGroup`.
 Rather than showing that the `ite` expression has a specific sum in terms of `HasSum`,
-it gives a relationship between the sums of `f` and `ite (n = b) 0 (f n)` given that both exist."]
+it gives a relationship between the sums of `f` and `ite (n = b) 0 (f n)` given that both exist. -/]
 theorem eq_mul_of_hasProd_ite {α β : Type*} [TopologicalSpace α] [CommMonoid α] [T2Space α]
     [ContinuousMul α] [DecidableEq β] {f : β → α} {a : α} (hf : HasProd f a) (b : β) (a' : α)
     (hf' : HasProd (fun n ↦ ite (n = b) 1 (f n)) a') : a = a' * f b := by
@@ -495,8 +489,8 @@ theorem tprod_range {g : γ → β} (f : β → α) (hg : Injective g) :
 
 /-- If `f b = 1` for all `b ∈ t`, then the product of `f a` with `a ∈ s` is the same as the
 product of `f a` with `a ∈ s ∖ t`. -/
-@[to_additive "If `f b = 0` for all `b ∈ t`, then the sum of `f a` with `a ∈ s` is the same as the
-sum of `f a` with `a ∈ s ∖ t`."]
+@[to_additive /-- If `f b = 0` for all `b ∈ t`, then the sum of `f a` with `a ∈ s` is the same as
+the sum of `f a` with `a ∈ s ∖ t`. -/]
 lemma tprod_setElem_eq_tprod_setElem_diff {f : β → α} (s t : Set β)
     (hf₀ : ∀ b ∈ t, f b = 1) :
     ∏' a : s, f a = ∏' a : (s \ t : Set β), f a :=
@@ -505,8 +499,8 @@ lemma tprod_setElem_eq_tprod_setElem_diff {f : β → α} (s t : Set β)
 
 /-- If `f b = 1`, then the product of `f a` with `a ∈ s` is the same as the product of `f a` for
 `a ∈ s ∖ {b}`. -/
-@[to_additive "If `f b = 0`, then the sum of `f a` with `a ∈ s` is the same as the sum of `f a`
-for `a ∈ s ∖ {b}`."]
+@[to_additive /-- If `f b = 0`, then the sum of `f a` with `a ∈ s` is the same as the sum of `f a`
+for `a ∈ s ∖ {b}`. -/]
 lemma tprod_eq_tprod_diff_singleton {f : β → α} (s : Set β) {b : β} (hf₀ : f b = 1) :
     ∏' a : s, f a = ∏' a : (s \ {b} : Set β), f a :=
   tprod_setElem_eq_tprod_setElem_diff s {b} fun _ ha ↦ ha ▸ hf₀
@@ -581,8 +575,8 @@ protected theorem Multipliable.tprod_finsetProd {f : γ → β → α} {s : Fins
 
 /-- Version of `tprod_eq_mul_tprod_ite` for `CommMonoid` rather than `CommGroup`.
 Requires a different convergence assumption involving `Function.update`. -/
-@[to_additive "Version of `tsum_eq_add_tsum_ite` for `AddCommMonoid` rather than `AddCommGroup`.
-Requires a different convergence assumption involving `Function.update`."]
+@[to_additive /-- Version of `tsum_eq_add_tsum_ite` for `AddCommMonoid` rather than `AddCommGroup`.
+Requires a different convergence assumption involving `Function.update`. -/]
 protected theorem Multipliable.tprod_eq_mul_tprod_ite' [DecidableEq β] {f : β → α} (b : β)
     (hf : Multipliable (update f b 1)) :
     ∏' x, f x = f b * ∏' x, ite (x = b) 1 (f x) :=
@@ -595,7 +589,7 @@ protected theorem Multipliable.tprod_eq_mul_tprod_ite' [DecidableEq β] {f : β 
       congr
       exact tprod_eq_mulSingle b fun b' hb' ↦ if_neg hb'
     _ = f b * ∏' x, ite (x = b) 1 (f x) := by
-      simp only [update, eq_self_iff_true, if_true, eq_rec_constant, dite_eq_ite]
+      simp only [update, if_true, eq_rec_constant, dite_eq_ite]
 
 @[deprecated (since := "2025-04-12")] alias tsum_eq_add_tsum_ite' :=
   Summable.tsum_eq_add_tsum_ite'

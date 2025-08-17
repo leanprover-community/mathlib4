@@ -5,7 +5,7 @@ Authors: Martin Dvorak, Vladimir Kolmogorov, Ivan Sergeev, Bhavik Mehta
 -/
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.Data.Matrix.ColumnRowPartitioned
-import Mathlib.Data.Sign
+import Mathlib.Data.Sign.Basic
 
 /-!
 # Totally unimodular matrices
@@ -119,7 +119,7 @@ lemma IsTotallyUnimodular.fromRows_unitlike [DecidableEq n] {A : Matrix m n R} {
     · have hAB := det_succ_row ((fromRows A B).submatrix f g) i
       simp only [submatrix_apply, hfi, fromRows_apply_inr] at hAB
       obtain ⟨j', s, hj'⟩ := hB j
-      · simp only [hj', Function.update_apply] at hAB
+      · simp only [hj'] at hAB
         by_cases hj'' : ∃ x, g x = j'
         · obtain ⟨x, rfl⟩ := hj''
           rw [Fintype.sum_eq_single x fun y hxy => ?_, Pi.single_eq_same] at hAB
@@ -163,16 +163,10 @@ lemma fromCols_one_isTotallyUnimodular_iff [DecidableEq m] (A : Matrix m n R) :
   rw [←transpose_isTotallyUnimodular_iff, transpose_fromCols, transpose_one,
     fromRows_one_isTotallyUnimodular_iff, transpose_isTotallyUnimodular_iff]
 
-@[deprecated (since := "2024-12-11")]
-alias fromColumns_one_isTotallyUnimodular_iff := fromCols_one_isTotallyUnimodular_iff
-
 lemma one_fromCols_isTotallyUnimodular_iff [DecidableEq m] (A : Matrix m n R) :
     (fromCols (1 : Matrix m m R) A).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
   rw [←transpose_isTotallyUnimodular_iff, transpose_fromCols, transpose_one,
     one_fromRows_isTotallyUnimodular_iff, transpose_isTotallyUnimodular_iff]
-
-@[deprecated (since := "2024-12-11")]
-alias one_fromColumns_isTotallyUnimodular_iff := one_fromCols_isTotallyUnimodular_iff
 
 alias ⟨_, IsTotallyUnimodular.fromRows_one⟩ := fromRows_one_isTotallyUnimodular_iff
 alias ⟨_, IsTotallyUnimodular.one_fromRows⟩ := one_fromRows_isTotallyUnimodular_iff
@@ -188,18 +182,9 @@ lemma fromRows_replicateRow0_isTotallyUnimodular_iff (A : Matrix m n R) :
   ext x
   simp [Pi.single_apply]
 
-@[deprecated (since := "2024-12-11")]
-alias fromRows_row0_isTotallyUnimodular_iff := fromRows_replicateRow0_isTotallyUnimodular_iff
-
 lemma fromCols_replicateCol0_isTotallyUnimodular_iff (A : Matrix m n R) :
     (fromCols A (replicateCol n' 0)).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
   rw [← transpose_isTotallyUnimodular_iff, transpose_fromCols, transpose_replicateCol,
     fromRows_replicateRow0_isTotallyUnimodular_iff, transpose_isTotallyUnimodular_iff]
-
-@[deprecated (since := "2024-12-11")]
-alias fromColumns_col0_isTotallyUnimodular_iff := fromCols_replicateCol0_isTotallyUnimodular_iff
-
-@[deprecated (since := "2024-12-11")]
-alias fromCols_col0_isTotallyUnimodular_iff := fromCols_replicateCol0_isTotallyUnimodular_iff
 
 end Matrix

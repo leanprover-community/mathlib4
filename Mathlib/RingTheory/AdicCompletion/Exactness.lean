@@ -70,7 +70,7 @@ theorem map_surjective (hf : Function.Surjective f) : Function.Surjective (map I
   let a := mapPreimage hf b
   refine ⟨AdicCompletion.mk I M (AdicCauchySequence.mk I M (fun n ↦ (a n : M)) ?_), ?_⟩
   · refine fun n ↦ SModEq.symm ?_
-    simp only [SModEq.symm, SModEq, mapPreimage, Submodule.Quotient.mk_sub,
+    simp only [SModEq, mapPreimage, Submodule.Quotient.mk_sub,
       sub_eq_self, Submodule.Quotient.mk_eq_zero, SetLike.coe_mem, a]
   · exact _root_.AdicCompletion.ext fun n ↦ congrArg _ ((a n).property)
 

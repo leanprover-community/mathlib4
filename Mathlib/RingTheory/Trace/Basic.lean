@@ -6,6 +6,7 @@ Authors: Anne Baanen
 import Mathlib.FieldTheory.Galois.Basic
 import Mathlib.FieldTheory.Minpoly.MinpolyDiv
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+import Mathlib.FieldTheory.PurelyInseparable.Basic
 import Mathlib.LinearAlgebra.Determinant
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Minpoly
 import Mathlib.LinearAlgebra.Vandermonde
@@ -181,7 +182,7 @@ lemma Algebra.trace_eq_of_ringEquiv {A B C : Type*} [CommRing A] [CommRing B] [C
     letI : IsScalarTower A B C := IsScalarTower.of_algebraMap_eq' he.symm
     rw [Algebra.trace_eq_matrix_trace b,
       Algebra.trace_eq_matrix_trace (b.mapCoeffs e.symm (by simp [Algebra.smul_def, ← he]))]
-    show e.toAddMonoidHom _ = _
+    change e.toAddMonoidHom _ = _
     rw [AddMonoidHom.map_trace]
     congr
     ext i j
@@ -270,9 +271,63 @@ theorem trace_eq_sum_automorphisms (x : L) [FiniteDimensional K L] [IsGalois K L
     simp only [algebraMap_eq_smul_one, smul_one_smul]
   · intro σ
     simp only [Normal.algHomEquivAut, AlgHom.restrictNormal', Equiv.coe_fn_mk,
-      AlgEquiv.coe_ofBijective, AlgHom.restrictNormal_commutes, id.map_eq_id, RingHom.id_apply]
+      AlgEquiv.coe_ofBijective, AlgHom.restrictNormal_commutes, algebraMap_self, RingHom.id_apply]
 
 end EqSumEmbeddings
+
+section NotIsSeparable
+
+lemma Algebra.trace_eq_zero_of_not_isSeparable (H : ¬ Algebra.IsSeparable K L) :
+    trace K L = 0 := by
+  obtain ⟨p, hp⟩ := ExpChar.exists K
+  have := expChar_ne_zero K p
+  ext x
+  by_cases h₀ : FiniteDimensional K L; swap
+  · rw [trace_eq_zero_of_not_exists_basis]
+    rintro ⟨s, ⟨b⟩⟩
+    exact h₀ (Module.Finite.of_basis b)
+  by_cases hx : IsSeparable K x
+  · lift x to separableClosure K L using hx
+    rw [← IntermediateField.algebraMap_apply, ← trace_trace (S := separableClosure K L),
+      trace_algebraMap]
+    obtain ⟨n, hn⟩ := IsPurelyInseparable.finrank_eq_pow (separableClosure K L) L p
+    cases n with
+    | zero =>
+      rw [pow_zero, IntermediateField.finrank_eq_one_iff_eq_top, separableClosure.eq_top_iff] at hn
+      cases H hn
+    | succ n =>
+      cases hp with
+      | zero =>
+        rw [one_pow, IntermediateField.finrank_eq_one_iff_eq_top, separableClosure.eq_top_iff] at hn
+        cases H hn
+      | prime hprime =>
+        rw [hn, pow_succ', MulAction.mul_smul, LinearMap.map_smul_of_tower, nsmul_eq_mul,
+          CharP.cast_eq_zero, zero_mul, LinearMap.zero_apply]
+  · rw [trace_eq_finrank_mul_minpoly_nextCoeff]
+    obtain ⟨g, hg₁, m, hg₂⟩ :=
+      (minpoly.irreducible (IsIntegral.isIntegral (R := K) x)).hasSeparableContraction p
+    cases m with
+    | zero =>
+      obtain rfl : g = minpoly K x := by simpa using hg₂
+      cases hx hg₁
+    | succ n =>
+      rw [nextCoeff, if_neg, ← hg₂, coeff_expand (by positivity),
+        if_neg, neg_zero, mul_zero, LinearMap.zero_apply]
+      · rw [natDegree_expand]
+        intro h
+        have := Nat.dvd_sub (dvd_mul_left (p ^ (n + 1)) g.natDegree) h
+        rw [tsub_tsub_cancel_of_le, Nat.dvd_one] at this
+        · obtain rfl : g = minpoly K x := by simpa [this] using hg₂
+          cases hx hg₁
+        · rw [Nat.one_le_iff_ne_zero]
+          have : g.natDegree ≠ 0 := fun e ↦ by
+            have := congr(natDegree $hg₂)
+            rw [natDegree_expand, e, zero_mul] at this
+            exact (minpoly.natDegree_pos (IsIntegral.isIntegral x)).ne this
+          positivity
+      · exact (minpoly.natDegree_pos (IsIntegral.isIntegral x)).ne'
+
+end NotIsSeparable
 
 section DetNeZero
 
@@ -312,7 +367,7 @@ theorem traceMatrix_of_matrix_vecMul [Fintype κ] (b : κ → B) (P : Matrix κ 
   congr; ext y
   rw [map_apply, traceForm_apply, mul_comm (b y), ← smul_def]
   simp only [id.smul_eq_mul, RingHom.id_apply, map_apply, transpose_apply, LinearMap.map_smulₛₗ,
-    traceForm_apply, Algebra.smul_mul_assoc]
+    Algebra.smul_mul_assoc]
   rw [mul_comm (b x), ← smul_def]
   ring_nf
   rw [mul_assoc]
@@ -452,14 +507,17 @@ theorem traceForm_nondegenerate [FiniteDimensional K L] [Algebra.IsSeparable K L
   BilinForm.nondegenerate_of_det_ne_zero (traceForm K L) _
     (det_traceForm_ne_zero (Module.finBasis K L))
 
+@[stacks 0BIL]
+theorem traceForm_nondegenerate_tfae [FiniteDimensional K L] :
+    [Algebra.IsSeparable K L, Algebra.trace K L ≠ 0, (traceForm K L).Nondegenerate].TFAE := by
+  tfae_have 1 → 3 := fun _ ↦ traceForm_nondegenerate K L
+  tfae_have 3 → 2 := fun H₁ H₂ ↦ H₁.ne_zero (by ext; simp [H₂])
+  tfae_have 2 → 1 := not_imp_comm.mp Algebra.trace_eq_zero_of_not_isSeparable
+  tfae_finish
+
 theorem Algebra.trace_ne_zero [FiniteDimensional K L] [Algebra.IsSeparable K L] :
-    Algebra.trace K L ≠ 0 := by
-  intro e
-  let pb : PowerBasis K L := Field.powerBasisOfFiniteOfSeparable _ _
-  apply det_traceMatrix_ne_zero' pb
-  rw [show traceMatrix K pb.basis = 0 by ext; simp [e], Matrix.det_zero]
-  rw [← pb.finrank, ← Fin.pos_iff_nonempty]
-  exact finrank_pos
+    Algebra.trace K L ≠ 0 :=
+  ((traceForm_nondegenerate_tfae K L).out 0 1).mp ‹_›
 
 theorem Algebra.trace_surjective [FiniteDimensional K L] [Algebra.IsSeparable K L] :
     Function.Surjective (Algebra.trace K L) := by
@@ -486,8 +544,8 @@ lemma traceForm_dualBasis_powerBasis_eq [FiniteDimensional K L] [Algebra.IsSepar
   apply (algebraMap K (AlgebraicClosure K)).injective
   have := congr_arg (coeff · i) (sum_smul_minpolyDiv_eq_X_pow (AlgebraicClosure K)
     pb.adjoin_gen_eq_top (r := j) (pb.finrank.symm ▸ j.prop))
-  simp only [AlgEquiv.toAlgHom_eq_coe, Polynomial.map_smul, map_div₀,
-    map_pow, RingHom.coe_coe, AlgHom.coe_coe, finset_sum_coeff, coeff_smul, coeff_map, smul_eq_mul,
+  simp only [Polynomial.map_smul, map_div₀,
+    map_pow, RingHom.coe_coe, finset_sum_coeff, coeff_smul, coeff_map, smul_eq_mul,
     coeff_X_pow, ← Fin.ext_iff, @eq_comm _ i] at this
   rw [PowerBasis.coe_basis]
   simp only [MonoidWithZeroHom.map_ite_one_zero, traceForm_apply]

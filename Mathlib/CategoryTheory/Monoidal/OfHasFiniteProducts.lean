@@ -78,7 +78,7 @@ theorem tensorObj (X Y : C) : X ⊗ Y = (X ⨯ Y) :=
   rfl
 
 @[simp]
-theorem tensorHom {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : f ⊗ g = Limits.prod.map f g :=
+theorem tensorHom {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : f ⊗ₘ g = Limits.prod.map f g :=
   rfl
 
 @[simp]
@@ -192,7 +192,7 @@ theorem tensorObj (X Y : C) : X ⊗ Y = (X ⨿ Y) :=
   rfl
 
 @[simp]
-theorem tensorHom {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : f ⊗ g = Limits.coprod.map f g :=
+theorem tensorHom {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : f ⊗ₘ g = Limits.coprod.map f g :=
   rfl
 
 @[simp]
@@ -265,11 +265,11 @@ variable {D : Type*} [Category D] (F : C ⥤ D)
 
 attribute [local simp] associator_hom_fst
 instance : F.OplaxMonoidal where
-  η' := terminalComparison F
-  δ' X Y := prodComparison F X Y
-  δ'_natural_left _ _ := by simp [prodComparison_natural]
-  δ'_natural_right _ _ := by simp [prodComparison_natural]
-  oplax_associativity' _ _ _ := by
+  η := terminalComparison F
+  δ X Y := prodComparison F X Y
+  δ_natural_left _ _ := by simp [prodComparison_natural]
+  δ_natural_right _ _ := by simp [prodComparison_natural]
+  oplax_associativity _ _ _ := by
     dsimp
     ext
     · dsimp
@@ -287,8 +287,8 @@ instance : F.OplaxMonoidal where
         Functor.map_comp]
       erw [associator_hom_snd_snd, associator_hom_snd_snd]
       simp
-  oplax_left_unitality' _ := by ext; simp [← Functor.map_comp]
-  oplax_right_unitality' _ := by ext; simp [← Functor.map_comp]
+  oplax_left_unitality _ := by ext; simp [← Functor.map_comp]
+  oplax_right_unitality _ := by ext; simp [← Functor.map_comp]
 
 open Functor.OplaxMonoidal
 

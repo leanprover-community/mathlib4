@@ -55,11 +55,11 @@ and that the topology for a general `𝓕` is indeed the expected inductive limi
   inductive limit / final topology associated to the natural maps
   `Πʳ i, [R i, A i]_[𝓟 S] → Πʳ i, [R i, A i]_[𝓕]`, where `𝓕 ≤ 𝓟 S`.
 * `RestrictedProduct.continuous_dom`: a map from `Πʳ i, [R i, A i]_[𝓕]` is continuous
-*if and only if* its restriction to each `Πʳ i, [R i, A i]_[𝓟 s]` (with `𝓕 ≤ 𝓟 s`) is continuous.
-* `RestrictedProduct.continuous_dom_prod_left`: assume that each `A i` is an **open** subset of
-`R i`. Then, for any topological space `Y`, a map from `Y × Πʳ i, [R i, A i]` is continuous
-*if and only if* its restriction to each `Y × Πʳ i, [R i, A i]_[𝓟 S]` (with `S` cofinite)
-is continuous.
+  *if and only if* its restriction to each `Πʳ i, [R i, A i]_[𝓟 s]` (with `𝓕 ≤ 𝓟 s`) is continuous.
+  * `RestrictedProduct.continuous_dom_prod_left`: assume that each `A i` is an **open** subset of
+  `R i`. Then, for any topological space `Y`, a map from `Y × Πʳ i, [R i, A i]` is continuous
+  *if and only if* its restriction to each `Y × Πʳ i, [R i, A i]_[𝓟 S]` (with `S` cofinite)
+  is continuous.
 
 * `RestrictedProduct.isTopologicalGroup`: if each `R i` is a topological group and each `A i` is an
   open subgroup of `R i`, then `Πʳ i, [R i, A i]` is a topological group.
@@ -233,8 +233,6 @@ def homeoTop : (Π i, A i) ≃ₜ (Πʳ i, [R i, A i]_[⊤]) where
   continuous_toFun := continuous_rng_of_top.mpr <| continuous_pi fun i ↦
     continuous_subtype_val.comp <| continuous_apply i
   continuous_invFun := continuous_pi fun i ↦ continuous_induced_rng.mpr <| continuous_eval i
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- The obvious bijection between `Πʳ i, [R i, A i]_[⊥]` and `Π i, R i` is a homeomorphism. -/
 def homeoBot : (Π i, R i) ≃ₜ (Πʳ i, [R i, A i]_[⊥]) where
@@ -242,8 +240,6 @@ def homeoBot : (Π i, R i) ≃ₜ (Πʳ i, [R i, A i]_[⊥]) where
   invFun f i := f i
   continuous_toFun := continuous_rng_of_bot.mpr <| continuous_pi fun i ↦ continuous_apply i
   continuous_invFun := continuous_pi continuous_eval
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- Assume that `S` is a subset of `ι` with finite complement, that each `R i` is weakly locally
 compact, and that `A i` is *compact* for all `i ∈ S`. Then the restricted product
@@ -497,7 +493,7 @@ theorem continuous_dom_pi {n : Type*} [Fintype n] {X : Type*}
   have hS : cofinite ≤ 𝓟 S := by
     rw [le_principal_iff]
     change ∀ᶠ i in cofinite, ∀ j : n, x j i ∈ C j i
-    simp [- eventually_cofinite]
+    simp [-eventually_cofinite]
   let x' (j : n) : Πʳ i : ι, [A j i, C j i]_[𝓟 S] := .mk (fun i ↦ x j i) (fun i hi ↦ hi _)
   have hxx' : Pi.map (fun j ↦ inclusion _ _ hS) x' = x := rfl
   simp_rw [← hxx', nhds_pi, Pi.map_apply, nhds_eq_map_inclusion (hCopen _), ← map_piMap_pi_finite,
@@ -613,9 +609,9 @@ instance isTopologicalRing [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)]
 Assume also that all but finitely many `A i`s are compact.
 Then the restricted product `Πʳ i, [R i, A i]` is a locally compact group. -/
 @[to_additive
-"Assume that each `R i` is a locally compact additive group with `A i` an open subgroup.
+/-- Assume that each `R i` is a locally compact additive group with `A i` an open subgroup.
 Assume also that all but finitely many `A i`s are compact.
-Then the restricted product `Πʳ i, [R i, A i]` is a locally compact additive group."]
+Then the restricted product `Πʳ i, [R i, A i]` is a locally compact additive group. -/]
 theorem locallyCompactSpace_of_group [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)]
     [∀ i, IsTopologicalGroup (R i)] [∀ i, LocallyCompactSpace (R i)]
     (hBcompact : ∀ᶠ i in cofinite, IsCompact (B i : Set (R i))) :
@@ -650,7 +646,8 @@ variable (f : ι₂ → ι₁) (hf : Tendsto f 𝓕₂ 𝓕₁)
 
 variable (φ : ∀ j, R₁ (f j) → R₂ j) (hφ : ∀ᶠ j in 𝓕₂, MapsTo (φ j) (A₁ (f j)) (A₂ j))
 
-theorem map_continuous (φ_cont : ∀ j, Continuous (φ j)) : Continuous (map R₁ R₂ f hf φ hφ) := by
+theorem mapAlong_continuous (φ_cont : ∀ j, Continuous (φ j)) :
+    Continuous (mapAlong R₁ R₂ f hf φ hφ) := by
   rw [continuous_dom]
   intro S hS
   set T := f ⁻¹' S ∩ {j | MapsTo (φ j) (A₁ (f j)) (A₂ j)}
@@ -659,8 +656,8 @@ theorem map_continuous (φ_cont : ∀ j, Continuous (φ j)) : Continuous (map R�
     exact inter_mem (hf hS) hφ
   have hf' : Tendsto f (𝓟 T) (𝓟 S) := by aesop
   have hφ' : ∀ᶠ j in 𝓟 T, MapsTo (φ j) (A₁ (f j)) (A₂ j) := by aesop
-  have key : map R₁ R₂ f hf φ hφ ∘ inclusion R₁ A₁ hS =
-      inclusion R₂ A₂ hT ∘ map R₁ R₂ f hf' φ hφ' := rfl
+  have key : mapAlong R₁ R₂ f hf φ hφ ∘ inclusion R₁ A₁ hS =
+      inclusion R₂ A₂ hT ∘ mapAlong R₁ R₂ f hf' φ hφ' := rfl
   rw [key]
   exact continuous_inclusion _ |>.comp <|
     continuous_rng_of_principal.mpr <|

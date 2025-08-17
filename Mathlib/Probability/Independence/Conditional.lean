@@ -175,7 +175,7 @@ lemma iCondIndepSets_iff (π : ι → Set (Set Ω)) (hπ : ∀ i s (_hs : s ∈ 
   · refine ((stronglyMeasurable_condExpKernel ?_).ae_eq_trim_iff hm' ?_).mpr ?_
     · exact .biInter (Finset.countable_toSet _) (fun i hi ↦ hπ i _ (hf i hi))
     · refine Measurable.stronglyMeasurable ?_
-      exact Finset.measurable_prod s (fun i hi ↦ measurable_condExpKernel (hπ i _ (hf i hi)))
+      exact Finset.measurable_fun_prod s (fun i hi ↦ measurable_condExpKernel (hπ i _ (hf i hi)))
     filter_upwards [h_eq s f hf, h_inter_eq s f hf, h] with ω h_eq h_inter_eq h
     have h_ne_top : condExpKernel μ m' ω (⋂ i ∈ s, f i) ≠ ∞ :=
       (measure_ne_top (condExpKernel μ m' ω) _)
@@ -221,10 +221,7 @@ lemma iCondIndepSets_singleton_iff (s : ι → Set Ω) (hπ : ∀ i, MeasurableS
     refine ⟨fun h S ↦ h S (fun i _ ↦ rfl), fun h S f hf ↦ ?_⟩
     filter_upwards [h S] with a ha
     refine Eq.trans ?_ (ha.trans ?_)
-    · congr
-      apply congr_arg₂
-      · exact Set.iInter₂_congr hf
-      · rfl
+    · grind
     · simp_rw [Finset.prod_apply]
       refine Finset.prod_congr rfl (fun i hi ↦ ?_)
       rw [hf i hi]
@@ -261,7 +258,7 @@ end
 section CondIndep
 
 lemma condIndep_iff_condIndepSets (m' m₁ m₂ : MeasurableSpace Ω) {mΩ : MeasurableSpace Ω}
-    [StandardBorelSpace Ω] (hm' : m' ≤ mΩ) (μ : Measure Ω ) [IsFiniteMeasure μ] :
+    [StandardBorelSpace Ω] (hm' : m' ≤ mΩ) (μ : Measure Ω) [IsFiniteMeasure μ] :
     CondIndep m' m₁ m₂ hm' μ
       ↔ CondIndepSets m' hm' {s | MeasurableSet[m₁] s} {s | MeasurableSet[m₂] s} μ := by
   simp only [CondIndep, CondIndepSets, Kernel.Indep]
@@ -650,10 +647,6 @@ theorem condIndepFun_iff_condExp_inter_preimage_eq_mul {mβ : MeasurableSpace β
   · rintro ⟨s, hs, rfl⟩ ⟨t, ht, rfl⟩
     exact h s t hs ht
 
-@[deprecated (since := "2025-01-21")]
-alias condIndepFun_iff_condexp_inter_preimage_eq_mul :=
-  condIndepFun_iff_condExp_inter_preimage_eq_mul
-
 theorem iCondIndepFun_iff_condExp_inter_preimage_eq_mul {β : ι → Type*}
     (m : ∀ x, MeasurableSpace (β x)) (f : ∀ i, Ω → β i) (hf : ∀ i, Measurable (f i)) :
     iCondIndepFun m' hm' f μ ↔
@@ -675,10 +668,6 @@ theorem iCondIndepFun_iff_condExp_inter_preimage_eq_mul {β : ι → Type*}
         rw [(h_sets i hi).choose_spec.2.symm]
         simp only [g, dif_pos hi]
       convert h with i hi i hi <;> exact hg i hi
-
-@[deprecated (since := "2025-01-21")]
-alias iCondIndepFun_iff_condexp_inter_preimage_eq_mul :=
-  iCondIndepFun_iff_condExp_inter_preimage_eq_mul
 
 theorem condIndepFun_iff_condIndepSet_preimage {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     (hf : Measurable f) (hg : Measurable g) :

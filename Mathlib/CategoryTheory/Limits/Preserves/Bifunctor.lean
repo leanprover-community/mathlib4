@@ -17,13 +17,11 @@ the hypothesis that the curried functor `F : C₁ × C₂ ⥤ C` preserves limit
 $\lim_{(j_1,j_2)} G(K_1(j_1), K_2(j_2)) \simeq G(\lim K_1, \lim K_2)$
 out of this typeclass.
 
-We show (see `CategoryTheory.Limits.PreservesColimit₂.of_preservesColimits_in_each_variable`)
-that if `G` preserves colimits in each variable, then `G` `PreservesColimit₂`.
 -/
 
 namespace CategoryTheory
 
-open Category Limits
+open Category Limits Functor
 
 variable {J₁ J₂ : Type*} [Category J₁] [Category J₂]
   {C₁ C₂ C : Type*} [Category C₁] [Category C₂] [Category C]
@@ -59,7 +57,7 @@ def Functor.mapCone₂ (G : C₁ ⥤ C₂ ⥤ C) {K₁ : J₁ ⥤ C₁} {K₂ : 
         rintro ⟨j₁, j₂⟩ ⟨k₁, k₂⟩ ⟨f₁, f₂⟩
         dsimp
         simp only [assoc, id_comp, NatTrans.naturality_assoc,
-          ← Functor.map_comp, NatTrans.naturality, const_obj_map, const_obj_obj,
+          ← Functor.map_comp,
           ← NatTrans.comp_app_assoc, c₁.w, c₂.w] }
 
 namespace Limits
@@ -121,8 +119,6 @@ instance [HasLimit K₁] [HasLimit K₂] [PreservesLimit₂ K₁ K₂ G] :
 
 namespace PreservesColimit₂
 
-section
-
 variable [PreservesColimit₂ K₁ K₂ G]
 
 /-- Given a `PreservesColimit₂` instance, extract the isomorphism between
@@ -131,7 +127,7 @@ a colimit of `uncurry.obj (whiskeringLeft₂ C|>.obj K₁|>.obj K₂|>.obj G)` a
 noncomputable def isoObjCoconePointsOfIsColimit
     {c₁ : Cocone K₁} (hc₁ : IsColimit c₁)
     {c₂ : Cocone K₂} (hc₂ : IsColimit c₂)
-    {c₃ : Cocone <| uncurry.obj (whiskeringLeft₂ C|>.obj K₁|>.obj K₂|>.obj G)}
+    {c₃ : Cocone <| uncurry.obj (whiskeringLeft₂ C |>.obj K₁ |>.obj K₂ |>.obj G)}
     (hc₃ : IsColimit c₃) :
     (G.obj c₁.pt).obj c₂.pt ≅ c₃.pt :=
   IsColimit.coconePointUniqueUpToIso (isColimitOfPreserves₂ G hc₁ hc₂) hc₃
@@ -140,7 +136,7 @@ section
 
 variable {c₁ : Cocone K₁} (hc₁ : IsColimit c₁)
   {c₂ : Cocone K₂} (hc₂ : IsColimit c₂)
-  {c₃ : Cocone <| uncurry.obj (whiskeringLeft₂ C|>.obj K₁|>.obj K₂|>.obj G)}
+  {c₃ : Cocone <| uncurry.obj (whiskeringLeft₂ C |>.obj K₁ |>.obj K₂ |>.obj G)}
   (hc₃ : IsColimit c₃)
 
 /-- Characterize the inverse direction of the isomorphism
@@ -151,7 +147,7 @@ lemma ι_comp_isoObjConePointsOfIsColimit_inv (j : J₁ × J₂) :
       (isoObjCoconePointsOfIsColimit G hc₁ hc₂ hc₃).inv =
     (G.map <| c₁.ι.app j.1).app (K₂.obj j.2) ≫ (G.obj c₁.pt).map (c₂.ι.app j.2) := by
   dsimp [isoObjCoconePointsOfIsColimit, Functor.mapCocone₂]
-  aesop_cat
+  cat_disch
 
 /-- Characterize the forward direction of the isomorphism
 `PreservesColimit₂.isoObjCoconePointsOfIsColimit` w.r.t the canonical maps to the colimit. -/
@@ -164,6 +160,8 @@ lemma map_ι_comp_isoObjConePointsOfIsColimit_hom (j : J₁ × J₂) :
   simp
 
 end
+
+section
 
 variable (K₁ K₂) [HasColimit K₁] [HasColimit K₂]
 
@@ -216,21 +214,21 @@ instance of_preservesColimits_in_each_variable
         (Iso.refl _)
         (fun j₁ => by
           dsimp [E₀, Q₀]
-          simp only [id_comp, comp_id, E₀, Q₀]
+          simp only [id_comp, comp_id]
           let s : Cocone (whiskeringLeft₂ C |>.obj K₁ |>.obj K₂ |>.obj G |>.obj j₁) := ?_
           change (P j₁).desc s = _
           symm
           apply (P j₁).hom_ext
           intro j₂
           haveI := (P j₁).fac s j₂
-          simp only [NatTrans.id_app, NatTrans.comp_app, Functor.mapCocone_pt,
-            Functor.const_obj_obj, Functor.mapCocone_ι_app, Q₀, E₀, s] at this
-          simp only [NatTrans.id_app, NatTrans.comp_app, Functor.mapCocone_pt,
-            Functor.const_obj_obj, Functor.mapCocone_ι_app, NatTrans.naturality, this, Q₀, s, E₀])
+          simp only [Functor.mapCocone_pt,
+            Functor.const_obj_obj, Functor.mapCocone_ι_app, Q₀, s] at this
+          simp only [Functor.mapCocone_pt,
+            Functor.const_obj_obj, Functor.mapCocone_ι_app, NatTrans.naturality, this, Q₀, s])
     ⟨IsColimit.ofCoconeUncurry P <| IsColimit.precomposeHomEquiv E₀ _ <|
       IsColimit.ofIsoColimit (isColimitOfPreserves _ hc₁) E₁.symm⟩
 
-theorem of_preservesColimit₂_flip [PreservesColimit₂ K₁ K₂ G] : PreservesColimit₂ K₂ K₁ G.flip where
+theorem of_preservesColimit₂_flip : PreservesColimit₂ K₂ K₁ G.flip where
   nonempty_isColimit_mapCocone₂ {c₁} hc₁ {c₂} hc₂ := by
     constructor
     let E₀ : uncurry.obj (whiskeringLeft₂ C|>.obj K₂|>.obj K₁|>.obj G.flip) ≅
@@ -249,8 +247,6 @@ end PreservesColimit₂
 
 namespace PreservesLimit₂
 
-section
-
 variable [PreservesLimit₂ K₁ K₂ G]
 
 /-- Given a `PreservesLimit₂` instance, extract the isomorphism between
@@ -259,7 +255,7 @@ a limit of `uncurry.obj (whiskeringLeft₂ C|>.obj K₁|>.obj K₂|>.obj G)` and
 noncomputable def isoObjConePointsOfIsLimit
     {c₁ : Cone K₁} (hc₁ : IsLimit c₁)
     {c₂ : Cone K₂} (hc₂ : IsLimit c₂)
-    {c₃ : Cone <| uncurry.obj (whiskeringLeft₂ C|>.obj K₁|>.obj K₂|>.obj G)}
+    {c₃ : Cone <| uncurry.obj (whiskeringLeft₂ C |>.obj K₁ |>.obj K₂ |>.obj G)}
     (hc₃ : IsLimit c₃) :
     (G.obj c₁.pt).obj c₂.pt ≅ c₃.pt :=
   IsLimit.conePointUniqueUpToIso (isLimitOfPreserves₂ G hc₁ hc₂) hc₃
@@ -268,7 +264,7 @@ section
 
 variable {c₁ : Cone K₁} (hc₁ : IsLimit c₁)
   {c₂ : Cone K₂} (hc₂ : IsLimit c₂)
-  {c₃ : Cone <| uncurry.obj (whiskeringLeft₂ C|>.obj K₁|>.obj K₂|>.obj G)}
+  {c₃ : Cone <| uncurry.obj (whiskeringLeft₂ C |>.obj K₁ |>.obj K₂ |>.obj G)}
   (hc₃ : IsLimit c₃)
 
 /-- Characterize the forward direction of the isomorphism
@@ -278,7 +274,7 @@ lemma isoObjConePointsOfIsLimit_hom_comp_π (j : J₁ × J₂) :
     (isoObjConePointsOfIsLimit G hc₁ hc₂ hc₃).hom ≫ c₃.π.app j =
     (G.map <| c₁.π.app j.1).app c₂.pt ≫ (G.obj <| K₁.obj j.1).map (c₂.π.app j.2) := by
   dsimp [isoObjConePointsOfIsLimit, Functor.mapCocone₂]
-  aesop_cat
+  cat_disch
 
 /-- Characterize the inverse direction of the isomorphism
 `PreservesLimit₂.isoObjConePointsOfIsLimit` w.r.t the canonical maps to the limit. -/
@@ -291,6 +287,8 @@ lemma isoObjConePointsOfIsColimit_inv_comp_map_π (j : J₁ × J₂) :
   simp
 
 end
+
+section
 
 variable (K₁) (K₂) [HasLimit K₁] [HasLimit K₂]
 
@@ -343,21 +341,21 @@ instance of_preservesLimits_in_each_variable
         (Iso.refl _)
         (fun j₁ => by
           dsimp [E₀, Q₀]
-          simp only [id_comp, comp_id, E₀, Q₀]
+          simp only [id_comp, comp_id]
           let s : Cone (whiskeringLeft₂ C |>.obj K₁ |>.obj K₂ |>.obj G |>.obj j₁) := ?_
           change (P j₁).lift s = _
           symm
           apply (P j₁).hom_ext
           intro j₂
           haveI := (P j₁).fac s j₂
-          simp only [whiskeringLeft₂_obj_obj_obj_obj_obj, NatTrans.id_app, NatTrans.comp_app,
-            Functor.mapCone_pt, Functor.mapCone_π_app, s, Q₀, E₀] at this
-          simp only [whiskeringLeft₂_obj_obj_obj_obj_obj, NatTrans.id_app, NatTrans.comp_app,
-            Functor.mapCone_pt, Functor.mapCone_π_app, this, Q₀, s, E₀])
+          simp only [whiskeringLeft₂_obj_obj_obj_obj_obj,
+            Functor.mapCone_pt, Functor.mapCone_π_app, s, Q₀] at this
+          simp only [whiskeringLeft₂_obj_obj_obj_obj_obj,
+            Functor.mapCone_pt, Functor.mapCone_π_app, this, Q₀, s])
     ⟨IsLimit.ofConeOfConeUncurry P <| IsLimit.postcomposeHomEquiv E₀ _ <|
       IsLimit.ofIsoLimit (isLimitOfPreserves _ hc₁) E₁.symm⟩
 
-theorem of_preservesLimit₂_flip [PreservesLimit₂ K₁ K₂ G] : PreservesLimit₂ K₂ K₁ G.flip where
+theorem of_preservesLimit₂_flip : PreservesLimit₂ K₂ K₁ G.flip where
   nonempty_isLimit_mapCone₂ {c₁} hc₁ {c₂} hc₂ := by
     constructor
     let E₀ : uncurry.obj (whiskeringLeft₂ C|>.obj K₂|>.obj K₁|>.obj G.flip) ≅

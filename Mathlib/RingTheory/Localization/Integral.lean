@@ -48,7 +48,7 @@ noncomputable def coeffIntegerNormalization (p : S[X]) (i : ℕ) : R :=
 
 theorem coeffIntegerNormalization_of_coeff_zero (p : S[X]) (i : ℕ) (h : coeff p i = 0) :
     coeffIntegerNormalization M p i = 0 := by
-  simp only [coeffIntegerNormalization, h, mem_support_iff, eq_self_iff_true, not_true, Ne,
+  simp only [coeffIntegerNormalization, h, mem_support_iff, not_true, Ne,
     dif_neg, not_false_iff]
 
 @[deprecated (since := "2025-05-23")]
@@ -361,28 +361,8 @@ theorem isAlgebraic_iff' [Field K] [IsDomain R] [Algebra R K] [Algebra S K]
     obtain ⟨a : S, b, ha, rfl⟩ := div_surjective (A := S) x
     obtain ⟨f, hf₁, hf₂⟩ := h b
     rw [div_eq_mul_inv]
-    refine IsIntegral.mul ?_ ?_
-    · rw [← isAlgebraic_iff_isIntegral]
-      refine .extendScalars
-        (FaithfulSMul.algebraMap_injective R (FractionRing R)) ?_
-      exact .algebraMap (h a)
-    · rw [← isAlgebraic_iff_isIntegral]
-      use (f.map (algebraMap R (FractionRing R))).reverse
-      constructor
-      · rwa [Ne, Polynomial.reverse_eq_zero, ← Polynomial.degree_eq_bot,
-          Polynomial.degree_map_eq_of_injective
-            (FaithfulSMul.algebraMap_injective R (FractionRing R)),
-          Polynomial.degree_eq_bot]
-      · have : Invertible (algebraMap S K b) :=
-          IsUnit.invertible
-            (isUnit_of_mem_nonZeroDivisors
-              (mem_nonZeroDivisors_iff_ne_zero.2 fun h =>
-                nonZeroDivisors.ne_zero ha
-                  ((injective_iff_map_eq_zero (algebraMap S K)).1
-                    (FaithfulSMul.algebraMap_injective _ _) b h)))
-        rw [Polynomial.aeval_def, ← invOf_eq_inv, Polynomial.eval₂_reverse_eq_zero_iff,
-          Polynomial.eval₂_map, ← IsScalarTower.algebraMap_eq, ← Polynomial.aeval_def,
-          Polynomial.aeval_algebraMap_apply, hf₂, RingHom.map_zero]
+    refine .mul ?_ (.inv ?_) <;> exact isAlgebraic_iff_isIntegral.mp <|
+      (h _).algebraMap.extendScalars (FaithfulSMul.algebraMap_injective R _)
   · intro h x
     obtain ⟨f, hf₁, hf₂⟩ := h (algebraMap S K x)
     use f, hf₁
@@ -447,7 +427,7 @@ lemma isAlgebraic_of_isFractionRing {R S} (K L) [CommRing R] [CommRing S] [Field
   · apply IsIntegral.tower_top (R := R)
     apply IsIntegral.map (IsScalarTower.toAlgHom R S L)
     exact Algebra.IsIntegral.isIntegral x
-  · show IsIntegral _ _
+  · change IsIntegral _ _
     rw [← isAlgebraic_iff_isIntegral, ← IsAlgebraic.invOf_iff, isAlgebraic_iff_isIntegral]
     apply IsIntegral.tower_top (R := R)
     apply IsIntegral.map (IsScalarTower.toAlgHom R S L)

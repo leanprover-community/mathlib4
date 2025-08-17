@@ -3,12 +3,13 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+import Mathlib.Algebra.Regular.Basic
 import Mathlib.Data.Fintype.Prod
 import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
 import Mathlib.RingTheory.OreLocalization.Ring
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.Ring
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Localizations of commutative rings
@@ -174,11 +175,16 @@ abbrev toLocalizationMap : Submonoid.LocalizationMap M S :=
   (toLocalizationWithZeroMap M S).toLocalizationMap
 
 @[simp]
-theorem toLocalizationMap_toMap : (toLocalizationMap M S).toMap = (algebraMap R S : R →*₀ S) :=
-  rfl
+lemma toLocalizationMap_toMonoidHom :
+    (toLocalizationMap M S).toMonoidHom = (algebraMap R S : R →*₀ S) := rfl
 
-theorem toLocalizationMap_toMap_apply (x) : (toLocalizationMap M S).toMap x = algebraMap R S x :=
-  rfl
+@[deprecated (since := "2025-08-13")] alias toLocalizationMap_toMap := toLocalizationMap_toMonoidHom
+
+@[simp] lemma coe_toLocalizationMap : ⇑(toLocalizationMap M S) = algebraMap R S := rfl
+
+@[deprecated (since := "2025-08-13")] alias toLocalizationMap_toMap_apply := coe_toLocalizationMap
+
+lemma toLocalizationMap_apply (x) : toLocalizationMap M S x = algebraMap R S x := rfl
 
 theorem surj₂ : ∀ z w : S, ∃ z' w' : R, ∃ d : M,
     (z * algebraMap R S d = algebraMap R S z') ∧ (w * algebraMap R S d = algebraMap R S w') :=
@@ -489,7 +495,7 @@ noncomputable def lift {g : R →+* P} (hg : ∀ y : M, IsUnit (g y)) : S →+* 
         mul_add, mul_comm, eq_comm, lift_spec_mul_add, add_comm, mul_comm, mul_assoc, mul_comm,
         mul_assoc, lift_spec_mul_add]
       simp_rw [← mul_assoc]
-      show g _ * g _ * g _ + g _ * g _ * g _ = g _ * g _ * g _
+      change g _ * g _ * g _ + g _ * g _ * g _ = g _ * g _ * g _
       simp_rw [← map_mul g, ← map_add g]
       apply eq_of_eq (S := S) hg
       simp only [sec_spec', toLocalizationMap_sec, map_add, map_mul]
@@ -774,6 +780,7 @@ variable (M)
 
 theorem nonZeroDivisors_le_comap [IsLocalization M S] :
     nonZeroDivisors R ≤ (nonZeroDivisors S).comap (algebraMap R S) := by
+  simp_rw [← nonZeroDivisorsRight_eq_nonZeroDivisors]
   rintro a ha b (e : b * algebraMap R S a = 0)
   obtain ⟨x, s, rfl⟩ := mk'_surjective M b
   rw [← @mk'_one R _ M, ← mk'_mul, ← (algebraMap R S).map_zero, ← @mk'_one R _ M,
@@ -799,7 +806,7 @@ section
 
 instance instUniqueLocalization [Subsingleton R] : Unique (Localization M) where
   uniq a := by
-    with_unfolding_all show a = mk 1 1
+    with_unfolding_all change a = mk 1 1
     exact Localization.induction_on a fun _ => by
       congr <;> apply Subsingleton.elim
 
@@ -845,7 +852,7 @@ end
 theorem toLocalizationMap_eq_monoidOf : toLocalizationMap M (Localization M) = monoidOf M :=
   rfl
 
-theorem monoidOf_eq_algebraMap (x) : (monoidOf M).toMap x = algebraMap R (Localization M) x :=
+theorem monoidOf_eq_algebraMap (x) : monoidOf M x = algebraMap R (Localization M) x :=
   rfl
 
 theorem mk_one_eq_algebraMap (x) : mk x 1 = algebraMap R (Localization M) x :=
@@ -909,7 +916,7 @@ theorem to_map_eq_zero_iff {x : R} (hM : M ≤ nonZeroDivisors R) : algebraMap R
   constructor <;> intro h
   · obtain ⟨c, hc⟩ := (eq_iff_exists M S).mp h
     rw [mul_zero, mul_comm] at hc
-    exact hM c.2 x hc
+    exact (hM c.2).2 x hc
   · rw [h]
 
 protected theorem injective (hM : M ≤ nonZeroDivisors R) : Injective (algebraMap R S) := by

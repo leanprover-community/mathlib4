@@ -3,8 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Notation.Pi
+import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Data.Set.Lattice
 import Mathlib.Order.Filter.Defs
 
@@ -329,7 +328,7 @@ theorem monotone_principal : Monotone (𝓟 : Set α → Filter α) := fun _ _ =
 @[simp] theorem join_principal_eq_sSup {s : Set (Filter α)} : join (𝓟 s) = sSup s := rfl
 
 @[simp] theorem principal_univ : 𝓟 (univ : Set α) = ⊤ :=
-  top_unique <| by simp only [le_principal_iff, mem_top, eq_self_iff_true]
+  top_unique <| by simp only [le_principal_iff, mem_top]
 
 @[simp]
 theorem principal_empty : 𝓟 (∅ : Set α) = ⊥ :=
@@ -467,7 +466,7 @@ instance : DistribLattice (Filter α) :=
   { Filter.instCompleteLatticeFilter with
     le_sup_inf := by
       intro x y z s
-      simp only [and_assoc, mem_inf_iff, mem_sup, exists_prop, exists_imp, and_imp]
+      simp only [and_assoc, mem_inf_iff, mem_sup, exists_imp, and_imp]
       rintro hs t₁ ht₁ t₂ ht₂ rfl
       exact
         ⟨t₁, x.sets_of_superset hs inter_subset_left, ht₁, t₂,
@@ -622,6 +621,11 @@ theorem Eventually.mono {p q : α → Prop} {f : Filter α} (hp : ∀ᶠ x in f,
     (hq : ∀ x, p x → q x) : ∀ᶠ x in f, q x :=
   hp.mp (Eventually.of_forall hq)
 
+@[gcongr]
+theorem GCongr.eventually_mono {p q : α → Prop} {f : Filter α} (h : ∀ x, p x → q x) :
+    (∀ᶠ x in f, p x) → ∀ᶠ x in f, q x :=
+  (·.mono h)
+
 theorem forall_eventually_of_eventually_forall {f : Filter α} {p : α → β → Prop}
     (h : ∀ᶠ x in f, ∀ y, p x y) : ∀ y, ∀ᶠ x in f, p x y :=
   fun y => h.mono fun _ h => h y
@@ -722,6 +726,11 @@ theorem Frequently.filter_mono {p : α → Prop} {f g : Filter α} (h : ∃ᶠ x
 theorem Frequently.mono {p q : α → Prop} {f : Filter α} (h : ∃ᶠ x in f, p x)
     (hpq : ∀ x, p x → q x) : ∃ᶠ x in f, q x :=
   h.mp (Eventually.of_forall hpq)
+
+@[gcongr]
+theorem GCongr.frequently_mono {p q : α → Prop} {f : Filter α} (h : ∀ x, p x → q x) :
+    (∃ᶠ x in f, p x) → ∃ᶠ x in f, q x :=
+  (·.mono h)
 
 theorem Frequently.and_eventually {p q : α → Prop} {f : Filter α} (hp : ∃ᶠ x in f, p x)
     (hq : ∀ᶠ x in f, q x) : ∃ᶠ x in f, p x ∧ q x := by
@@ -953,25 +962,52 @@ theorem EventuallyEq.comp₂ {δ} {f f' : α → β} {g g' : α → γ} {l} (Hf 
 
 @[to_additive]
 theorem EventuallyEq.mul [Mul β] {f f' g g' : α → β} {l : Filter α} (h : f =ᶠ[l] g)
-    (h' : f' =ᶠ[l] g') : (fun x => f x * f' x) =ᶠ[l] fun x => g x * g' x :=
+    (h' : f' =ᶠ[l] g') : f * f' =ᶠ[l] g * g' :=
   h.comp₂ (· * ·) h'
+
+@[to_additive]
+theorem EventuallyEq.fun_mul [Mul β] {f f' g g' : α → β} {l : Filter α} (h : f =ᶠ[l] g)
+    (h' : f' =ᶠ[l] g') : (fun x => f x * f' x) =ᶠ[l] fun x => g x * g' x :=
+  h.mul h'
+
+@[to_additive]
+lemma EventuallyEq.mul_left [Mul β] {f₁ f₂ f₃ : α → β} (h : f₁ =ᶠ[l] f₂) :
+    f₃ * f₁ =ᶠ[l] f₃ * f₂ := EventuallyEq.mul (by rfl) h
+
+@[to_additive]
+lemma EventuallyEq.mul_right [Mul β] {f₁ f₂ f₃ : α → β} (h : f₁ =ᶠ[l] f₂) :
+    f₁ * f₃ =ᶠ[l] f₂ * f₃ := EventuallyEq.mul h (by rfl)
 
 @[to_additive const_smul]
 theorem EventuallyEq.pow_const {γ} [Pow β γ] {f g : α → β} {l : Filter α} (h : f =ᶠ[l] g) (c : γ) :
-    (fun x => f x ^ c) =ᶠ[l] fun x => g x ^ c :=
+    f ^ c =ᶠ[l] g ^ c :=
   h.fun_comp (· ^ c)
 
+@[to_additive fun_const_smul]
+theorem EventuallyEq.fun_pow_const {γ} [Pow β γ] {f g : α → β} {l : Filter α} (h : f =ᶠ[l] g)
+    (c : γ) : (fun x => f x ^ c) =ᶠ[l] fun x => g x ^ c :=
+  h.pow_const c
+
+attribute [to_additive] EventuallyEq.const_smul EventuallyEq.fun_const_smul
+
 @[to_additive]
-theorem EventuallyEq.inv [Inv β] {f g : α → β} {l : Filter α} (h : f =ᶠ[l] g) :
-    (fun x => (f x)⁻¹) =ᶠ[l] fun x => (g x)⁻¹ :=
+theorem EventuallyEq.inv [Inv β] {f g : α → β} {l : Filter α} (h : f =ᶠ[l] g) : f⁻¹ =ᶠ[l] g⁻¹ :=
   h.fun_comp Inv.inv
 
 @[to_additive]
+theorem EventuallyEq.fun_inv [Inv β] {f g : α → β} {l : Filter α} (h : f =ᶠ[l] g) :
+    (fun x => (f x)⁻¹) =ᶠ[l] fun x => (g x)⁻¹ :=
+  h.inv
+
+@[to_additive]
 theorem EventuallyEq.div [Div β] {f f' g g' : α → β} {l : Filter α} (h : f =ᶠ[l] g)
-    (h' : f' =ᶠ[l] g') : (fun x => f x / f' x) =ᶠ[l] fun x => g x / g' x :=
+    (h' : f' =ᶠ[l] g') :  f / f' =ᶠ[l] g / g' :=
   h.comp₂ (· / ·) h'
 
-attribute [to_additive] EventuallyEq.const_smul
+@[to_additive]
+theorem EventuallyEq.fun_div [Div β] {f f' g g' : α → β} {l : Filter α} (h : f =ᶠ[l] g)
+    (h' : f' =ᶠ[l] g') : (fun x => f x / f' x) =ᶠ[l] fun x => g x / g' x :=
+  h.div h'
 
 @[to_additive]
 theorem EventuallyEq.smul {𝕜} [SMul 𝕜 β] {l : Filter α} {f f' : α → 𝕜} {g g' : α → β}
@@ -979,11 +1015,11 @@ theorem EventuallyEq.smul {𝕜} [SMul 𝕜 β] {l : Filter α} {f f' : α → �
   hf.comp₂ (· • ·) hg
 
 theorem EventuallyEq.sup [Max β] {l : Filter α} {f f' g g' : α → β} (hf : f =ᶠ[l] f')
-    (hg : g =ᶠ[l] g') : (fun x => f x ⊔ g x) =ᶠ[l] fun x => f' x ⊔ g' x :=
+    (hg : g =ᶠ[l] g') : f ⊔ g =ᶠ[l] f' ⊔ g' :=
   hf.comp₂ (· ⊔ ·) hg
 
 theorem EventuallyEq.inf [Min β] {l : Filter α} {f f' g g' : α → β} (hf : f =ᶠ[l] f')
-    (hg : g =ᶠ[l] g') : (fun x => f x ⊓ g x) =ᶠ[l] fun x => f' x ⊓ g' x :=
+    (hg : g =ᶠ[l] g') : f ⊓ g =ᶠ[l] f' ⊓ g' :=
   hf.comp₂ (· ⊓ ·) hg
 
 theorem EventuallyEq.preimage {l : Filter α} {f g : α → β} (h : f =ᶠ[l] g) (s : Set β) :
@@ -1105,9 +1141,11 @@ theorem eventuallyLE_antisymm_iff [PartialOrder β] {l : Filter α} {f g : α �
     f =ᶠ[l] g ↔ f ≤ᶠ[l] g ∧ g ≤ᶠ[l] f := by
   simp only [EventuallyEq, EventuallyLE, le_antisymm_iff, eventually_and]
 
-theorem EventuallyLE.le_iff_eq [PartialOrder β] {l : Filter α} {f g : α → β} (h : f ≤ᶠ[l] g) :
+theorem EventuallyLE.ge_iff_eq' [PartialOrder β] {l : Filter α} {f g : α → β} (h : f ≤ᶠ[l] g) :
     g ≤ᶠ[l] f ↔ g =ᶠ[l] f :=
   ⟨fun h' => h'.antisymm h, EventuallyEq.le⟩
+
+@[deprecated (since := "2025-07-10")] alias EventuallyLE.le_iff_eq := EventuallyLE.ge_iff_eq'
 
 theorem Eventually.ne_of_lt [Preorder β] {l : Filter α} {f g : α → β} (h : ∀ᶠ x in l, f x < g x) :
     ∀ᶠ x in l, f x ≠ g x :=
