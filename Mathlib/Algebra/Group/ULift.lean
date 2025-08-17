@@ -75,7 +75,7 @@ theorem pow_down [Pow α β] (a : ULift.{w} α) (b : β) : (a ^ b).down = a.down
 
 /-- The multiplicative equivalence between `ULift α` and `α`.
 -/
-@[to_additive "The additive equivalence between `ULift α` and `α`."]
+@[to_additive /-- The additive equivalence between `ULift α` and `α`. -/]
 def _root_.MulEquiv.ulift [Mul α] : ULift α ≃* α :=
   { Equiv.ulift with map_mul' := fun _ _ => rfl }
 

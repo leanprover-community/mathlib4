@@ -70,12 +70,12 @@ lemma sup'_pow [LinearOrder M] [Monoid M] [MulLeftMono M] [MulRightMono M] (s : 
 section Group
 variable [Group G] [LinearOrder G]
 
-@[to_additive "Also see `Finset.sup'_add'` that works for canonically ordered monoids."]
+@[to_additive /-- Also see `Finset.sup'_add'` that works for canonically ordered monoids. -/]
 lemma sup'_mul [MulRightMono G] (s : Finset ι) (f : ι → G) (a : G) (hs) :
     s.sup' hs f * a = s.sup' hs fun i ↦ f i * a := map_finset_sup' (OrderIso.mulRight a) hs f
 
 set_option linter.docPrime false in
-@[to_additive "Also see `Finset.add_sup''` that works for canonically ordered monoids."]
+@[to_additive /-- Also see `Finset.add_sup''` that works for canonically ordered monoids. -/]
 lemma mul_sup' [MulLeftMono G] (s : Finset ι) (f : ι → G) (a : G) (hs) :
     a * s.sup' hs f = s.sup' hs fun i ↦ a * f i := map_finset_sup' (OrderIso.mulLeft a) hs f
 

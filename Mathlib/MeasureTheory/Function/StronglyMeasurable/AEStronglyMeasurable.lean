@@ -481,8 +481,6 @@ protected theorem enorm {β : Type*} [TopologicalSpace β] [ContinuousENorm β] 
     (hf : AEStronglyMeasurable f μ) : AEMeasurable (‖f ·‖ₑ) μ :=
   (continuous_enorm.comp_aestronglyMeasurable hf).aemeasurable
 
-@[deprecated (since := "2025-01-20")] alias ennnorm := AEStronglyMeasurable.enorm
-
 /-- Given a.e. strongly measurable functions `f` and `g`, `edist f g` is measurable.
 
 Note that this lemma proves a.e. measurability, **not** a.e. strong measurability.
