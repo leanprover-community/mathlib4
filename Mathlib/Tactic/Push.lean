@@ -300,7 +300,17 @@ which will print the `push_neg` form of `e`.
 
 `#push_neg` understands local variables, so you can use them to introduce parameters.
 -/
-macro (name := pushNeg) tk:"#push_neg " e:term : command => `(command| #conv%$tk push_neg => $e)
+macro (name := pushNegCommand) tk:"#push_neg " e:term : command =>
+  `(command| #conv%$tk push_neg => $e)
+
+/--
+The syntax is `#push head e`, where `head` is a constant and `e` is an expression,
+which will print the `push head` form of `e`.
+
+`#push` understands local variables, so you can use them to introduce parameters.
+-/
+macro (name := pushCommand) tk:"#push " head:ident e:term : command =>
+  `(command| #conv%$tk push $head:ident => $e)
 
 end Conv
 
