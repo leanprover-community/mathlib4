@@ -31,6 +31,8 @@ attribute [push ← low] ne_eq
 
 @[push] theorem not_iff : ¬(p ↔ q) ↔ (p ∧ ¬q) ∨ (¬p ∧ q) :=
   _root_.not_iff.trans <| iff_iff_and_or_not_and_not.trans <| by rw [not_not, or_comm]
+@[push] theorem not_exists : (¬ ∃ x, s x) ↔ (∀ x, binderNameHint x s <| ¬ s x) :=
+  _root_.not_exists
 
 
 attribute [push]
@@ -43,11 +45,9 @@ attribute [push]
 -- @[push high] theorem Nat.not_nonneg_iff_eq_zero (n : Nat) : ¬0 < n ↔ n = 0 :=
 --   Nat.not_lt.trans Nat.le_zero
 
-
 theorem not_and_eq : (¬ (p ∧ q)) = (p → ¬ q) := propext not_and
 theorem not_and_or_eq : (¬ (p ∧ q)) = (¬ p ∨ ¬ q) := propext not_and_or
 theorem not_forall_eq : (¬ ∀ x, s x) = (∃ x, ¬ s x) := propext not_forall
-theorem not_exists_eq : (¬ ∃ x, s x) = (∀ x, ¬ s x) := propext not_exists
 
 /-- Make `push_neg` use `not_and_or` rather than the default `not_and`. -/
 register_option push_neg.use_distrib : Bool :=
@@ -61,35 +61,25 @@ open Lean Meta Elab.Tactic Parser.Tactic
 `pushNegBuiltin` is a simproc for pushing `¬` in a way that can't be done
 using the `@[push]` attribute.
 - `¬(p ∧ q)` turns into `p → ¬q` or `¬a ∨ ¬q`, depending on the option `push_neg.use_distrib`.
-- `¬∃ a, p` turns into `∀ a, ¬p`, where the binder name `a` is preserved.
 - `¬∀ a, p` turns into `∃ a, ¬p`, where the binder name `a` is preserved.
 -/
 private def pushNegBuiltin : Simp.Simproc := fun e => do
   let e := (← instantiateMVars e).cleanupAnnotations
-  match e.getAppFnArgs with
-  | (``And, #[p, q]) =>
+  match e with
+  | .app (.app (.const ``And _) p) q =>
     if ← getBoolOption `push_neg.use_distrib then
-      return mkSimpStep (mkOr (mkNot p) (mkNot q)) (← mkAppM ``not_and_or_eq #[p, q])
+      return mkSimpStep (mkOr (mkNot p) (mkNot q)) (mkApp2 (.const ``not_and_or_eq []) p q)
     else
-      return mkSimpStep (.forallE `_ p (mkNot q) default) (← mkAppM ``not_and_eq #[p, q])
-  | (``Exists, #[_, .lam n typ bo bi]) =>
-    return mkSimpStep (.forallE n typ (mkNot bo) bi) (← mkAppM ``not_exists_eq #[.lam n typ bo bi])
+      return mkSimpStep (.forallE `_ p (mkNot q) .default) (mkApp2 (.const ``not_and_eq []) p q)
+  | .forallE name ty body binfo =>
+    let body' : Expr := .lam name ty (mkNot body) binfo
+    let body'' : Expr := .lam name ty body binfo
+    return mkSimpStep (← mkAppM ``Exists #[body']) (← mkAppM ``not_forall_eq #[body''])
   | _ =>
-    pushNegForall e
+    return Simp.Step.continue
 where
   mkSimpStep (e : Expr) (pf : Expr) : Simp.Step :=
     Simp.Step.continue (some { expr := e, proof? := some pf })
-  /--
-  Pushes a negation into a forall binder.
-  This function is separate because this speeds up compilation.
-  -/
-  pushNegForall : Simp.Simproc := fun e => do
-    if let .forallE name ty body binfo := e then
-      let body' : Expr := .lam name ty (mkNot body) binfo
-      let body'' : Expr := .lam name ty body binfo
-      return mkSimpStep (← mkAppM ``Exists #[body']) (← mkAppM ``not_forall_eq #[body''])
-    else
-      return Simp.Step.continue
 
 /-- The type for a constant to be pushed by `push`. -/
 inductive Head where
@@ -156,7 +146,7 @@ def pushCore (head : Head) (tgt : Expr) (disch? : Option Simp.Discharge) : MetaM
 
 /-- Execute main loop of `push` at the main goal. -/
 def pushTarget (head : Head) (discharge? : Option Simp.Discharge) :
-    TacticM Unit := do
+    TacticM Unit := withMainContext do
   let mvarId ← getMainGoal
   let tgt ← instantiateMVars (← mvarId.getType)
   let mvarIdNew ← applySimpResultToTarget mvarId tgt (← pushCore head tgt discharge?)
@@ -165,7 +155,7 @@ def pushTarget (head : Head) (discharge? : Option Simp.Discharge) :
 
 /-- Execute main loop of `push` at a local hypothesis. -/
 def pushLocalDecl (head : Head) (discharge? : Option Simp.Discharge) (fvarId : FVarId) :
-    TacticM Unit := do
+    TacticM Unit := withMainContext do
   let ldecl ← fvarId.getDecl
   if ldecl.isAuxDecl then return
   let tgt ← instantiateMVars ldecl.type
@@ -178,22 +168,19 @@ def pushLocalDecl (head : Head) (discharge? : Option Simp.Discharge) (fvarId : F
 open private Lean.Elab.Tactic.mkDischargeWrapper in mkSimpContext
 
 /--
-Push a given constant inside of an expression.
-For instance, `push (disch := positivity) Real.log` could turn
-`log (a * b ^ 2)` into `log a + 2 * log b`.
+`push` pushes the given constant away from the root of the expression. For example
+- `push · ∈ ·` rewrites `x ∈ {y} ∪ zᶜ` into `x = y ∨ ¬ x ∈ z`
+- `push (disch := positivity) Real.log` rewrites `log (a * b ^ 2)` into `log a + 2 * log b`.
+- `push ¬·` is the same as `push_neg` or `push Not`, and it rewrites
+  `¬∀ ε > 0, ∃ δ > 0, δ < ε` into `∃ ε > 0, ∀ δ > 0, ε ≤ δ`.
+
+In addition to constants, `push` can be used to push `∀` and `fun` binders:
+- `push ∀ _, ·` rewrites `∀ a, p a ∧ q a` into `(∀ a, p a) ∧ (∀ a, q a)`.
+- `push fun _ ↦ ·` rewrites  `fun x => f x + g x` into `f + g`
 
 The `push` tactic can be extended using the `@[push]` attribute.
 
-See also `push_neg`, which is a macro for `push Not`.
-
-In addition to constants, `push` can be used to push `∀` and `fun` binders:
-- `push ∀ _, _` can turn `∀ a, p a ∧ q a` into `(∀ a, p a) ∧ (∀ a, q a)`.
-- `push fun _ ↦ _` can turn `fun x => f x + g x` into `(fun x => f x) + (fun x => g x)`
-(or into `f + g`).
-
-One can use this tactic at the goal using `push`,
-at every hypothesis and the goal using `push at *` or at selected hypotheses and the goal
-using say `push at h h' ⊢`, as usual.
+To push a constant at a hypothesis, use the `push ... at h` or `push ... at *` syntax.
 -/
 syntax (name := push) "push " (discharger)? (colGt term) (location)? : tactic
 
@@ -209,7 +196,7 @@ def elabHead (stx : Syntax) : TermElabM Expr := withRef stx do
   Term.elabTerm stx none
 
 @[tactic push, inherit_doc push]
-def elabPush : Tactic := fun stx => withMainContext do
+def elabPush : Tactic := fun stx => do
   let dischargeWrapper ← Lean.Elab.Tactic.mkDischargeWrapper stx[1]
   let head ← Head.ofExpr (← elabHead stx[2])
   let loc := expandOptLocation stx[3]
