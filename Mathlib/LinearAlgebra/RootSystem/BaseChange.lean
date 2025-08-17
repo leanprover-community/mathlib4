@@ -73,8 +73,7 @@ def restrictScalars' :
       (LinearMap.range (Algebra.linearMap K L)) (range P.root) (range P.coroot)
       (LinearMap.restrictScalarsₗ K L _ _ _ ∘ₗ P.toLinearMap.restrictScalars K)
       (by rintro - ⟨i, rfl⟩ - ⟨j, rfl⟩; exact hP i j) _ _ x.property y.property
-  isPerfPair_toLinearMap :=
-    LinearMap.restrictScalars.isPerfPair_of_field P.toLinearMap _ _
+  isPerfPair_toLinearMap := .restrictScalars_of_field P.toLinearMap _ _
     (injective_subtype _) (injective_subtype _) (by simpa using IsBalanced.isPerfectCompl) _
   root := ⟨fun i ↦ ⟨_, subset_span (mem_range_self i)⟩, fun i j h ↦ by simpa using h⟩
   coroot := ⟨fun i ↦ ⟨_, subset_span (mem_range_self i)⟩, fun i j h ↦ by simpa using h⟩
