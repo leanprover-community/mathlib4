@@ -87,7 +87,7 @@ quotient group `G/H`.)
 -/
 def upperCentralSeriesStep : Subgroup G where
   carrier := { x : G | ∀ y : G, x * y * x⁻¹ * y⁻¹ ∈ H }
-  one_mem' y := by simp [Subgroup.one_mem]
+  one_mem' y := by simp
   mul_mem' {a b} ha hb y := by
     convert Subgroup.mul_mem _ (ha (b * y * b⁻¹)) (hb y) using 1
     group
@@ -120,14 +120,26 @@ variable (G)
 
 /-- An auxiliary type-theoretic definition defining both the upper central series of
 a group, and a proof that it is normal, all in one go. -/
-def upperCentralSeriesAux : ℕ → Σ'H : Subgroup G, Normal H
+def upperCentralSeriesAux : ℕ → Σ' H : Subgroup G, Normal H
   | 0 => ⟨⊥, inferInstance⟩
   | n + 1 =>
     let un := upperCentralSeriesAux n
     let _un_normal := un.2
     ⟨upperCentralSeriesStep un.1, inferInstance⟩
 
-/-- `upperCentralSeries G n` is the `n`th term in the upper central series of `G`. -/
+/-- `upperCentralSeries G n` is the `n`th term in the upper central series of `G`.
+
+This is the increasing chain of subgroups of `G` that starts with the trivial subgroup `⊥` of `G`
+and then continues defining `upperCentralSeries G (n + 1)` to be all the elements of `G`
+that, modulo `upperCentralSeries G n`, belong to the center of the quotient
+`G ⧸ upperCentralSeries G n`.
+
+In particular, the identities
+* `upperCentralSeries G 0 = ⊥` (`upperCentralSeries_zero`);
+* `upperCentralSeries G 1 = center G` (`upperCentralSeries_one`);
+
+hold.
+-/
 def upperCentralSeries (n : ℕ) : Subgroup G :=
   (upperCentralSeriesAux G n).1
 
@@ -140,8 +152,8 @@ theorem upperCentralSeries_zero : upperCentralSeries G 0 = ⊥ := rfl
 @[simp]
 theorem upperCentralSeries_one : upperCentralSeries G 1 = center G := by
   ext
-  simp only [upperCentralSeries, upperCentralSeriesAux, upperCentralSeriesStep,
-    Subgroup.mem_center_iff, mem_mk, mem_bot, Set.mem_setOf_eq]
+  simp only [upperCentralSeries, upperCentralSeriesAux, upperCentralSeriesStep, mem_bot, mem_mk,
+    Submonoid.mem_mk, Subsemigroup.mem_mk, Set.mem_setOf_eq, mem_center_iff]
   exact forall_congr' fun y => by rw [mul_inv_eq_one, mul_inv_eq_iff_eq_mul, eq_comm]
 
 variable {G}
@@ -252,9 +264,6 @@ theorem is_descending_rev_series_of_is_ascending {H : ℕ → Subgroup G} {n : �
     convert hx using 1
     rw [tsub_add_eq_add_tsub (Nat.succ_le_of_lt hm), Nat.succ_eq_add_one, Nat.add_sub_add_right]
 
-@[deprecated (since := "2024-12-25")]
-alias is_decending_rev_series_of_is_ascending := is_descending_rev_series_of_is_ascending
-
 theorem is_ascending_rev_series_of_is_descending {H : ℕ → Subgroup G} {n : ℕ} (hn : H n = ⊥)
     (hdesc : IsDescendingCentralSeries H) : IsAscendingCentralSeries fun m : ℕ => H (n - m) := by
   obtain ⟨h0, hH⟩ := hdesc
@@ -316,7 +325,7 @@ instance lowerCentralSeries_normal (n : ℕ) : Normal (lowerCentralSeries G n) :
 
 theorem lowerCentralSeries_antitone : Antitone (lowerCentralSeries G) := by
   refine antitone_nat_of_succ_le fun n x hx => ?_
-  simp only [mem_lowerCentralSeries_succ_iff, exists_prop, mem_top, exists_true_left,
+  simp only [mem_lowerCentralSeries_succ_iff, mem_top,
     true_and] at hx
   refine
     closure_induction ?_ (Subgroup.one_mem _) (fun _ _ _ _ ↦ mul_mem) (fun _ _ ↦ inv_mem) hx
@@ -457,7 +466,7 @@ instance Subgroup.isNilpotent (H : Subgroup G) [hG : IsNilpotent G] : IsNilpoten
   rcases hG with ⟨n, hG⟩
   use n
   have := lowerCentralSeries_map_subtype_le H n
-  simp only [hG, SetLike.le_def, mem_map, forall_apply_eq_imp_iff₂, exists_imp] at this
+  simp only [hG, SetLike.le_def, mem_map, exists_imp] at this
   exact eq_bot_iff.mpr fun x hx => Subtype.ext (this x ⟨hx, rfl⟩)
 
 /-- The nilpotency class of a subgroup is less or equal to the nilpotency class of the group -/
@@ -467,7 +476,7 @@ theorem Subgroup.nilpotencyClass_le (H : Subgroup G) [hG : IsNilpotent G] :
   classical apply Nat.find_mono
   intro n hG
   have := lowerCentralSeries_map_subtype_le H n
-  simp only [hG, SetLike.le_def, mem_map, forall_apply_eq_imp_iff₂, exists_imp] at this
+  simp only [hG, SetLike.le_def, mem_map, exists_imp] at this
   exact eq_bot_iff.mpr fun x hx => Subtype.ext (this x ⟨hx, rfl⟩)
 
 instance (priority := 100) Group.isNilpotent_of_subsingleton [Subsingleton G] : IsNilpotent G :=

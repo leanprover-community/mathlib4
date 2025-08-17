@@ -119,27 +119,22 @@ theorem filter_subset (s : Finset α) : s.filter p ⊆ s :=
 
 variable {p}
 
-@[simp]
+@[simp, grind =]
 theorem mem_filter {s : Finset α} {a : α} : a ∈ s.filter p ↔ a ∈ s ∧ p a :=
   Multiset.mem_filter
 
 theorem mem_of_mem_filter {s : Finset α} (x : α) (h : x ∈ s.filter p) : x ∈ s :=
   Multiset.mem_of_mem_filter h
 
-theorem filter_ssubset {s : Finset α} : s.filter p ⊂ s ↔ ∃ x ∈ s, ¬p x :=
-  ⟨fun h =>
-    let ⟨x, hs, hp⟩ := Set.exists_of_ssubset h
-    ⟨x, hs, mt (fun hp => mem_filter.2 ⟨hs, hp⟩) hp⟩,
-    fun ⟨_, hs, hp⟩ => ⟨s.filter_subset _, fun h => hp (mem_filter.1 (h hs)).2⟩⟩
+theorem filter_ssubset {s : Finset α} : s.filter p ⊂ s ↔ ∃ x ∈ s, ¬p x := by grind
 
 variable (p)
 
-theorem filter_filter (s : Finset α) : (s.filter p).filter q = s.filter fun a => p a ∧ q a :=
-  ext fun a => by
-    simp only [mem_filter, and_assoc, Bool.decide_and, Bool.decide_coe, Bool.and_eq_true]
+theorem filter_filter (s : Finset α) : (s.filter p).filter q = s.filter fun a => p a ∧ q a := by
+  grind
 
 theorem filter_comm (s : Finset α) : (s.filter p).filter q = (s.filter q).filter p := by
-  simp_rw [filter_filter, and_comm]
+  grind
 
 -- We can replace an application of filter where the decidability is inferred in "the wrong way".
 theorem filter_congr_decidable (s : Finset α) (p : α → Prop) (h : DecidablePred p)

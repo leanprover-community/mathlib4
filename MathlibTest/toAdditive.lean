@@ -203,7 +203,7 @@ def myFin (_ : ℕ) := ℕ
 instance : One (myFin n) := ⟨(1 : ℕ)⟩
 
 @[to_additive bar]
-def myFin.foo : myFin (n+1) := 1
+def myFin.foo : myFin (n + 1) := 1
 
 /-- We can pattern-match with `1`, which creates a term with a pure nat literal.
 See https://github.com/leanprover-community/mathlib4/pull/2046 -/
@@ -318,7 +318,7 @@ def reorderMulThree {α : Type _} [Mul α] (x y z : α) : α := x * y * z
 /--
 error: the permutation
 [[2, 3, 50]]
-provided by the reorder config option is too large, the type
+provided by the `(reorder := ...)` option is out of bounds, the type
   {α : Type u_1} → [Mul α] → α → α → α → α
 has only 5 arguments
 -/
@@ -326,12 +326,36 @@ has only 5 arguments
 @[to_additive (reorder := 3 4 51)]
 def reorderMulThree' {α : Type _} [Mul α] (x y z : α) : α := x * y * z
 
+/-! Test `(reorder := ...)` when the proof needs to be eta-expanded. -/
+@[to_additive (reorder := 3 4 5)]
+alias reorderMulThree_alias := reorderMulThree
+
+@[to_additive (reorder := 3 4 2)]
+alias reorderMulThree_alias' := reorderMulThree
+
+@[to_additive (reorder := 3 4 5)]
+def reorderMulThree_alias'' {α : Type _} [Mul α] (x y : α) : α → α := reorderMulThree x y
+
+/--
+error: invalid cycle `04`, a cycle must have at least 2 elements.
+`(reorder := ...)` uses cycle notation to specify a permutation.
+For example `(reorder := 1 2, 5 6)` swaps the first two arguments with each other and the fifth and the sixth argument and `(reorder := 3 4 5)` will move the fifth argument before the third argument.
+-/
+#guard_msgs in
+@[to_additive (reorder := 04)]
+example : True := trivial
+
+/-- error: invalid position `00`, positions are counted starting from 1. -/
+#guard_msgs in
+@[to_additive (reorder := 100 200, 2 00)]
+example : True := trivial
+
 example {α : Type _} [Add α] (x y z : α) : reorderAddThree z x y = x + y + z := rfl
 
 
 def Ones : ℕ → Q(Nat)
   | 0     => q(1)
-  | (n+1) => q($(Ones n) + $(Ones n))
+  | (n + 1) => q($(Ones n) + $(Ones n))
 
 
 -- This test just exists to see if this finishes in finite time. It should take <100ms.
@@ -437,7 +461,8 @@ run_cmd do
 warning: The source declaration one_eq_one was given the simp-attribute(s) simp, reduce_mod_char before calling @[to_additive].
 The preferred method is to use something like `@[to_additive (attr := simp, reduce_mod_char)]`
 to apply the attribute to both one_eq_one and the target declaration zero_eq_zero.
-note: this linter can be disabled with `set_option linter.existingAttributeWarning false`
+
+Note: This linter can be disabled with `set_option linter.existingAttributeWarning false`
 -/
 #guard_msgs in
 @[simp, reduce_mod_char, to_additive]
@@ -450,8 +475,9 @@ lemma one_eq_one' {α : Type*} [One α] : (1 : α) = 1 := rfl
 
 /--
 error: to_additive: the generated additivised name equals the original name 'foo', meaning that no part of the name was additivised.
-Check that your declaration name is correct (if your declaration is an instance, try naming it)
-or provide an additivised name using the '@[to_additive my_add_name]' syntax.
+If this is intentional, use the `@[to_additive self]` syntax.
+Otherwise, check that your declaration name is correct (if your declaration is an instance, try naming it)
+or provide an additivised name using the `@[to_additive my_add_name]` syntax.
 ---
 warning: declaration uses 'sorry'
 -/
@@ -479,3 +505,93 @@ but 'Eq.trans' has type
 #guard_msgs in
 @[to_additive existing Eq.trans]
 lemma one_eq_one''' {α : Type*} [One α] : (1 : α) = 1 := rfl
+
+/-!
+Test that @[to_additive] can reorder arguments of raw kernel projections.
+-/
+open Lean in
+elab "unfold%" e:term : term => do
+  let e ← Elab.Term.elabTerm e none
+  Meta.unfoldDefinition e
+
+@[to_additive]
+def myPow {α β : Type} [i : Pow α β] (a : α) := unfold% i.1 a
+
+/--
+info: def myPow : {α β : Type} → [i : Pow α β] → α → β → α :=
+fun {α β} [i : Pow α β] a => i.1 a
+-/
+#guard_msgs in
+#print myPow
+/--
+info: def myNSMul : {α β : Type} → [i : SMul β α] → α → β → α :=
+fun {α β} [SMul β α] a a_1 => SMul.smul a_1 a
+-/
+#guard_msgs in
+#print myNSMul
+
+@[to_additive]
+def myMul {α : Type} [i : Mul α] (a : α) := unfold% i.1 a
+
+/--
+info: def myMul : {α : Type} → [i : Mul α] → α → α → α :=
+fun {α} [i : Mul α] a => i.1 a
+-/
+#guard_msgs in
+#print myMul
+/--
+info: def myAdd : {α : Type} → [i : Add α] → α → α → α :=
+fun {α} [Add α] a => Add.add a
+-/
+#guard_msgs in
+#print myAdd
+
+/-! Test that the `existingAttributeWarning` linter doesn't fire for `to_additive self`. -/
+@[simp, to_additive self]
+theorem test1 : 5 = 5 := rfl
+
+/-! Test that we can't write `to_additive self (attr := ..)`. -/
+
+/--
+error: invalid `(attr := ...)` after `self`, as there is only one declaration for the attributes.
+Instead, you can write the attributes in the usual way.
+-/
+#guard_msgs in
+@[to_additive self (attr := simp)]
+theorem test2 : 5 = 5 := rfl
+
+/-! Previously, An application that isn't a constant, such as `(no_index Add) α`, would be seen as
+multiplicative, hence `α` would be set as the `to_additive_relevant_arg`. -/
+
+@[to_additive]
+def fooMul {α β : Type} (_ : (no_index Add) α) [Mul β] (x y : β) : β := x * y
+
+@[to_additive] -- this would not translate `fooMul`
+def barMul {β : Type} [Mul β] (x y : β) : β := fooMul instAddNat x y
+
+/-! Test that additive docstrings work -/
+
+@[to_additive /-- (via `docComment` syntax) I am an additive docstring! -/]
+theorem mulTrivial : True := trivial
+
+/-- info: (via `docComment` syntax) I am an additive docstring! -/
+#guard_msgs in
+run_cmd
+  let some doc  ← findDocString? (← getEnv) ``addTrivial
+    | throwError "no `docComment` docstring found"
+  logInfo doc
+
+/--
+warning: String syntax for `to_additive` docstrings is deprecated:
+Use docstring syntax instead (e.g. `@[to_additive /-- example -/]`)
+-/
+#guard_msgs in
+@[to_additive "(via `str` syntax) I am an additive docstring!"]
+theorem mulTrivial' : True := trivial
+
+/-- info: (via `str` syntax) I am an additive docstring! -/
+#guard_msgs in
+run_cmd
+  let some doc ← findDocString? (← getEnv) ``addTrivial'
+    | throwError "no `str` docstring found"
+  logInfo doc

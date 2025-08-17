@@ -83,7 +83,7 @@ lemma Ideal.primeHeight_add_one_le_of_lt {I J : Ideal R} [I.IsPrime] [J.IsPrime]
 
 @[simp]
 theorem Ideal.height_top : (⊤ : Ideal R).height = ⊤ := by
-  simp [height, minimalPrimes_top, iInf₂_eq_top]
+  simp [height, minimalPrimes_top]
 
 @[gcongr]
 lemma Ideal.primeHeight_strict_mono {I J : Ideal R} [I.IsPrime] [J.IsPrime]
@@ -169,6 +169,11 @@ lemma Ideal.primeHeight_eq_zero_iff {I : Ideal R} [I.IsPrime] :
   · rintro ⟨hI, hI'⟩ b hb
     exact hI' (y := b.asIdeal) b.isPrime hb
 
+/-- In a trivial commutative ring, the height of any ideal is `∞`. -/
+@[simp, nontriviality]
+lemma Ideal.height_of_subsingleton [Subsingleton R] : I.height = ⊤ := by
+  rw [Subsingleton.elim I ⊤, Ideal.height_top]
+
 theorem Ideal.isMaximal_of_primeHeight_eq_ringKrullDim {I : Ideal R} [I.IsPrime]
     [FiniteRingKrullDim R] (e : I.primeHeight = ringKrullDim R) : I.IsMaximal := by
   have h : I ≠ ⊤ := by
@@ -179,7 +184,7 @@ theorem Ideal.isMaximal_of_primeHeight_eq_ringKrullDim {I : Ideal R} [I.IsPrime]
   rcases lt_or_eq_of_le hM' with (hM' | hM')
   · have h1 := Ideal.primeHeight_strict_mono hM'
     have h2 := e ▸ M.primeHeight_le_ringKrullDim
-    simp [WithBot.coe_le_coe, ← not_lt, h1] at h2
+    simp [← not_lt, h1] at h2
   · exact hM' ▸ hM
 
 /-- The prime height of the maximal ideal equals the Krull dimension in a local ring -/

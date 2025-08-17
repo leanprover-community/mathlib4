@@ -300,10 +300,10 @@ instance (priority := 100) GroupWithZero.toDivisionMonoid : DivisionMonoid G₀ 
 -- see Note [lower instance priority]
 instance (priority := 10) GroupWithZero.toCancelMonoidWithZero : CancelMonoidWithZero G₀ :=
   { (‹_› : GroupWithZero G₀) with
-    mul_left_cancel_of_ne_zero := @fun x y z hx h => by
-      rw [← inv_mul_cancel_left₀ hx y, h, inv_mul_cancel_left₀ hx z],
-    mul_right_cancel_of_ne_zero := @fun x y z hy h => by
-      rw [← mul_inv_cancel_right₀ hy x, h, mul_inv_cancel_right₀ hy z] }
+    mul_left_cancel_of_ne_zero := @fun x hx y z h => by
+      dsimp only at h; rw [← inv_mul_cancel_left₀ hx y, h, inv_mul_cancel_left₀ hx z],
+    mul_right_cancel_of_ne_zero := @fun x hx y z h => by
+      dsimp only at h; rw [← mul_inv_cancel_right₀ hx y, h, mul_inv_cancel_right₀ hx z] }
 
 end GroupWithZero
 
@@ -432,7 +432,7 @@ lemma zpow_add' {m n : ℤ} (h : a ≠ 0 ∨ m + n ≠ 0 ∨ m = 0 ∧ n = 0) :
   · simp [hn]
   by_cases ha : a = 0
   · subst a
-    simp only [false_or, eq_self_iff_true, not_true, Ne, hm, hn, false_and, or_false] at h
+    simp only [false_or, not_true, Ne, hm, hn, false_and, or_false] at h
     rw [zero_zpow _ h, zero_zpow _ hm, zero_mul]
   · exact zpow_add₀ ha m n
 

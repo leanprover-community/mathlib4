@@ -93,7 +93,7 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
       rcases exists_smooth_tsupport_subset (hs.mem_nhds hx) with ⟨f, hf⟩
       let g : ι := ⟨f, (subset_tsupport f).trans hf.1, hf.2.1, hf.2.2.1, hf.2.2.2.1⟩
       have : x ∈ support (g : E → ℝ) := by
-        simp only [g, hf.2.2.2.2, Subtype.coe_mk, mem_support, Ne, one_ne_zero,
+        simp only [g, hf.2.2.2.2, mem_support, Ne, one_ne_zero,
           not_false_iff]
       exact mem_iUnion_of_mem _ this
     simp_rw [← this]
@@ -103,7 +103,7 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
   obtain ⟨g0, hg⟩ : ∃ g0 : ℕ → ι, T = range g0 := by
     apply Countable.exists_eq_range T_count
     rcases eq_empty_or_nonempty T with (rfl | hT)
-    · simp only [ι, iUnion_false, iUnion_empty] at hT
+    · simp only [ι] at hT
       simp only [← hT, mem_empty_iff_false, iUnion_of_empty, iUnion_empty, Set.not_nonempty_empty]
           at h's
     · exact hT
@@ -113,10 +113,7 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
     rw [← hT] at hx
     obtain ⟨i, iT, hi⟩ : ∃ i ∈ T, x ∈ support (i : E → ℝ) := by
       simpa only [mem_iUnion, exists_prop] using hx
-    rw [hg, mem_range] at iT
-    rcases iT with ⟨n, hn⟩
-    rw [← hn] at hi
-    exact ⟨n, hi⟩
+    grind
   have g_smooth : ∀ n, ContDiff ℝ ∞ (g n) := fun n => (g0 n).2.2.2.1
   have g_comp_supp : ∀ n, HasCompactSupport (g n) := fun n => (g0 n).2.2.1
   have g_nonneg : ∀ n x, 0 ≤ g n x := fun n x => ((g0 n).2.2.2.2 (mem_range_self x)).1
@@ -176,7 +173,7 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
       contDiff_tsum_of_eventually (fun n => (g_smooth n).const_smul (r n))
         (fun k _ => (NNReal.hasSum_coe.2 δc).summable) ?_
     intro i _
-    simp only [Nat.cofinite_eq_atTop, Pi.smul_apply, Algebra.id.smul_eq_mul,
+    simp only [Nat.cofinite_eq_atTop,
       Filter.eventually_atTop]
     exact ⟨i, fun n hn x => hr _ _ hn _⟩
   · rintro - ⟨y, rfl⟩
@@ -326,9 +323,9 @@ def y (D : ℝ) : E → ℝ :=
 theorem y_neg (D : ℝ) (x : E) : y D (-x) = y D x := by
   apply convolution_neg_of_neg_eq
   · filter_upwards with x
-    simp only [w_def, Real.rpow_natCast, mul_inv_rev, smul_neg, u_neg, smul_eq_mul, forall_const]
+    simp only [w_def, mul_inv_rev, smul_neg, u_neg, smul_eq_mul]
   · filter_upwards with x
-    simp only [φ, indicator, mem_closedBall, dist_zero_right, norm_neg, forall_const]
+    simp only [φ, indicator, mem_closedBall, dist_zero_right, norm_neg]
 
 theorem y_eq_one_of_mem_closedBall {D : ℝ} {x : E} (Dpos : 0 < D)
     (hx : x ∈ closedBall (0 : E) (1 - D)) : y D x = 1 := by
@@ -379,8 +376,7 @@ theorem y_le_one {D : ℝ} (x : E) (Dpos : 0 < D) : y D x ≤ 1 := by
       (locallyIntegrable_const (1 : ℝ)) x).integrable
     exact continuous_const.mul ((u_continuous E).comp (continuous_id.const_smul _))
   have B : (w D ⋆[lsmul ℝ ℝ, μ] fun _ => (1 : ℝ)) x = 1 := by
-    simp only [convolution, ContinuousLinearMap.map_smul, mul_inv_rev, coe_smul', mul_one,
-      lsmul_apply, Algebra.id.smul_eq_mul, integral_const_mul, w_integral E Dpos, Pi.smul_apply]
+    simp only [convolution, mul_one, lsmul_apply, Algebra.id.smul_eq_mul, w_integral E Dpos]
   exact A.trans (le_of_eq B)
 
 theorem y_pos_of_mem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (D_lt_one : D < 1)
@@ -417,7 +413,7 @@ theorem y_pos_of_mem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (D_lt_one : D < 1)
         rw [← mem_closedBall_iff_norm']
         apply closedBall_subset_closedBall' _ (ball_subset_closedBall hy)
         rw [← one_smul ℝ x, dist_eq_norm, hz, ← sub_smul, one_smul, norm_smul, ID]
-        simp only [B.ne', div_le_iff₀ B, field_simps]
+        simp only [div_le_iff₀ B, field_simps]
         nlinarith only [hx, D_lt_one]
     apply lt_of_lt_of_le _ (measure_mono C)
     apply measure_ball_pos
@@ -503,7 +499,7 @@ instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
         · rintro ⟨R, x⟩ ⟨hR : 1 < R, _⟩
           have A : 0 < (R - 1) / (R + 1) := by apply div_pos <;> linarith
           have B : (R - 1) / (R + 1) < 1 := by apply (div_lt_one _).2 <;> linarith
-          simp only [mem_preimage, prodMk_mem_set_prod_eq, mem_Ioo, mem_univ, and_true, A, B]
+          simp only [prodMk_mem_set_prod_eq, mem_Ioo, mem_univ, and_true, A, B]
       eq_one := fun R hR x hx => by
         have A : 0 < R + 1 := by linarith
         simp only [hR, if_true]

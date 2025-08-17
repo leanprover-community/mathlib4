@@ -22,7 +22,7 @@ Also the Yoneda lemma, `yonedaLemma : (yoneda_pairing C) ≅ (yoneda_evaluation 
 
 namespace CategoryTheory
 
-open Opposite
+open Opposite Functor
 
 universe v v₁ v₂ u₁ u₂
 
@@ -628,7 +628,7 @@ lemma isIso_of_yoneda_map_bijective {X Y : C} (f : X ⟶ Y)
     (hf : ∀ (T : C), Function.Bijective (fun (x : T ⟶ X) => x ≫ f)) :
     IsIso f := by
   obtain ⟨g, hg : g ≫ f = 𝟙 Y⟩ := (hf Y).2 (𝟙 Y)
-  exact ⟨g, (hf _).1 (by aesop_cat), hg⟩
+  exact ⟨g, (hf _).1 (by cat_disch), hg⟩
 
 lemma isIso_iff_yoneda_map_bijective {X Y : C} (f : X ⟶ Y) :
     IsIso f ↔ (∀ (T : C), Function.Bijective (fun (x : T ⟶ X) => x ≫ f)) := by
@@ -899,8 +899,8 @@ def homNatIsoMaxRight {D : Type u₂} [Category.{max v₁ v₂} D] {F : C ⥤ D}
 @[simps!]
 def compYonedaCompWhiskeringLeft {D : Type u₂} [Category.{v₂} D] {F : C ⥤ D}
     (hF : F.FullyFaithful) : F ⋙ yoneda ⋙ (whiskeringLeft _ _ _).obj F.op ⋙
-      (CategoryTheory.whiskeringRight _ _ _).obj uliftFunctor.{v₁} ≅
-      yoneda ⋙ (CategoryTheory.whiskeringRight _ _ _).obj uliftFunctor.{v₂} :=
+      (Functor.whiskeringRight _ _ _).obj uliftFunctor.{v₁} ≅
+      yoneda ⋙ (Functor.whiskeringRight _ _ _).obj uliftFunctor.{v₂} :=
   NatIso.ofComponents (fun X => hF.homNatIso _)
     (fun f => by ext; exact Equiv.ulift.injective (hF.map_injective (by simp)))
 
@@ -908,7 +908,7 @@ def compYonedaCompWhiskeringLeft {D : Type u₂} [Category.{v₂} D] {F : C ⥤ 
 @[simps!]
 def compYonedaCompWhiskeringLeftMaxRight {D : Type u₂} [Category.{max v₁ v₂} D] {F : C ⥤ D}
     (hF : F.FullyFaithful) : F ⋙ yoneda ⋙ (whiskeringLeft _ _ _).obj F.op ≅
-      yoneda ⋙ (CategoryTheory.whiskeringRight _ _ _).obj uliftFunctor.{v₂} :=
+      yoneda ⋙ (Functor.whiskeringRight _ _ _).obj uliftFunctor.{v₂} :=
   NatIso.ofComponents (fun X => hF.homNatIsoMaxRight _)
     (fun f => by ext; exact Equiv.ulift.injective (hF.map_injective (by simp)))
 

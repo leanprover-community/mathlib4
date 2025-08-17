@@ -20,7 +20,11 @@ assert_not_exists TwoSidedIdeal
 
 open CategoryTheory Category Limits Pretriangulated Preadditive
 
-variable {C : Type*} [Category C] [Preadditive C]
+-- Explicit universe annotations were used in this file to improve perfomance #12737
+
+universe v
+
+variable {C : Type*} [Category.{v} C] [Preadditive C]
 
 namespace CochainComplex
 
@@ -158,7 +162,7 @@ noncomputable def triangleOfDegreewiseSplitRotateRotateIso :
   Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (mappingConeHomOfDegreewiseSplitIso S σ).symm
     (by dsimp; simp only [comp_id, id_comp])
     (by dsimp; simp only [neg_comp, shift_f_comp_mappingConeHomOfDegreewiseSplitIso_inv,
-      shiftFunctor_obj_X', neg_neg, id_comp])
+      neg_neg, id_comp])
     (by dsimp; simp only [CategoryTheory.Functor.map_id, comp_id,
       mappingConeHomOfDegreewiseSplitIso_inv_comp_triangle_mor₃])
 

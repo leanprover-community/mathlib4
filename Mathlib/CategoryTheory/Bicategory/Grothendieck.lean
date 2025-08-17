@@ -154,7 +154,7 @@ def map (α : F ⟶ G) : ∫ F ⥤ ∫ G where
     · dsimp
     · dsimp
       rw [StrongTrans.naturality_comp_hom_app]
-      simp only [map_comp, toOplax_toPrelaxFunctor, Cat.comp_obj, Strict.associator_eqToIso,
+      simp only [map_comp, Cat.comp_obj, Strict.associator_eqToIso,
         eqToIso_refl, Iso.refl_hom, Cat.id_app, Iso.refl_inv, id_comp, assoc, comp_id]
       slice_lhs 2 4 => simp only [← Functor.map_comp, Iso.inv_hom_id_app, Cat.comp_obj, comp_id]
       simp [← Functor.comp_map]
@@ -172,7 +172,7 @@ variable (F)
 
 /-- The natural isomorphism witnessing the pseudo-unity constraint of `Grothendieck.map`. -/
 def mapIdIso : map (𝟙 F) ≅ 𝟭 (∫ F) :=
-  NatIso.ofComponents (fun _ ↦ eqToIso (by aesop_cat))
+  NatIso.ofComponents (fun _ ↦ eqToIso (by cat_disch))
 
 lemma map_id_eq : map (𝟙 F) = 𝟭 (∫ F) :=
   Functor.ext_of_iso (mapIdIso F) (fun x ↦ by simp [map]) (fun x ↦ by simp [mapIdIso])
@@ -181,7 +181,7 @@ end
 
 /-- The natural isomorphism witnessing the pseudo-functoriality of `Grothendieck.map`. -/
 def mapCompIso (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) ≅ map α ⋙ map β :=
-  NatIso.ofComponents (fun _ ↦ eqToIso (by aesop_cat)) (fun f ↦ by
+  NatIso.ofComponents (fun _ ↦ eqToIso (by cat_disch)) (fun f ↦ by
     dsimp
     simp only [comp_id, id_comp]
     ext <;> simp)

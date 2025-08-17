@@ -76,7 +76,7 @@ lemma term_def (f : ℕ → ℂ) (s : ℂ) (n : ℕ) :
 
 /-- An alternate spelling of `term_def` for the case `f 0 = 0`. -/
 lemma term_def₀ {f : ℕ → ℂ} (hf : f 0 = 0) (s : ℂ) (n : ℕ) :
-    LSeries.term f s n = f n * (n : ℂ) ^ (- s) := by
+    LSeries.term f s n = f n * (n : ℂ) ^ (-s) := by
   rw [LSeries.term]
   split_ifs with h <;> simp [h, hf, cpow_neg, div_eq_inv_mul, mul_comm]
 
@@ -105,7 +105,7 @@ lemma term_congr {f g : ℕ → ℂ} (h : ∀ {n}, n ≠ 0 → f n = g n) (s : �
 
 lemma pow_mul_term_eq (f : ℕ → ℂ) (s : ℂ) (n : ℕ) :
     (n + 1) ^ s * term f s (n + 1) = f (n + 1) := by
-  simp [term, natCast_add_one_cpow_ne_zero n _, mul_comm (f _), mul_div_assoc']
+  simp [term, natCast_add_one_cpow_ne_zero n _, mul_div_assoc']
 
 lemma norm_term_eq (f : ℕ → ℂ) (s : ℂ) (n : ℕ) :
     ‖term f s n‖ = if n = 0 then 0 else ‖f n‖ / n ^ s.re := by

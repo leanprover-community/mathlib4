@@ -161,7 +161,7 @@ theorem lt_to_nat {m n : PosNum} : (m : ℕ) < n ↔ m < n :=
   show (m : ℕ) < n ↔ cmp m n = Ordering.lt from
     match cmp m n, cmp_to_nat m n with
     | Ordering.lt, h => by simp only at h; simp [h]
-    | Ordering.eq, h => by simp only at h; simp [h, lt_irrefl]
+    | Ordering.eq, h => by simp only at h; simp [h]
     | Ordering.gt, h => by simp [not_lt_of_gt h]
 
 @[norm_cast]
@@ -280,7 +280,7 @@ theorem lt_to_nat {m n : Num} : (m : ℕ) < n ↔ m < n :=
   show (m : ℕ) < n ↔ cmp m n = Ordering.lt from
     match cmp m n, cmp_to_nat m n with
     | Ordering.lt, h => by simp only at h; simp [h]
-    | Ordering.eq, h => by simp only at h; simp [h, lt_irrefl]
+    | Ordering.eq, h => by simp only at h; simp [h]
     | Ordering.gt, h => by simp [not_lt_of_gt h]
 
 @[norm_cast]
@@ -480,13 +480,13 @@ theorem dvd_to_nat {m n : PosNum} : (m : ℕ) ∣ n ↔ m ∣ n :=
 theorem size_to_nat : ∀ n, (size n : ℕ) = Nat.size n
   | 1 => Nat.size_one.symm
   | bit0 n => by
-      rw [size, succ_to_nat, size_to_nat n, cast_bit0, ← two_mul]
-      erw [@Nat.size_bit false n]
+      rw [size, succ_to_nat, size_to_nat n, cast_bit0, ← two_mul, ← Nat.bit_false_apply,
+        Nat.size_bit]
       have := to_nat_pos n
       dsimp [Nat.bit]; omega
   | bit1 n => by
-      rw [size, succ_to_nat, size_to_nat n, cast_bit1, ← two_mul]
-      erw [@Nat.size_bit true n]
+      rw [size, succ_to_nat, size_to_nat n, cast_bit1, ← two_mul, ← Nat.bit_true_apply,
+        Nat.size_bit]
       dsimp [Nat.bit]; omega
 
 theorem size_eq_natSize : ∀ n, (size n : ℕ) = natSize n
@@ -796,7 +796,7 @@ theorem castNum_eq_bitwise {f : Num → Num → Num} {g : Bool → Bool → Bool
 @[simp, norm_cast]
 theorem castNum_or : ∀ m n : Num, ↑(m ||| n) = (↑m ||| ↑n : ℕ) := by
   apply castNum_eq_bitwise fun x y => pos (PosNum.lor x y) <;>
-   (try rintro (_ | _)) <;> (try rintro (_ | _)) <;> intros <;> rfl
+    (try rintro (_ | _)) <;> (try rintro (_ | _)) <;> intros <;> rfl
 
 @[simp, norm_cast]
 theorem castNum_and : ∀ m n : Num, ↑(m &&& n) = (↑m &&& ↑n : ℕ) := by
@@ -818,8 +818,8 @@ theorem castNum_shiftLeft (m : Num) (n : Nat) : ↑(m <<< n) = (m : ℕ) <<< (n 
   simp only [cast_pos]
   induction' n with n IH
   · rfl
-  simp [PosNum.shiftl_succ_eq_bit0_shiftl, Nat.shiftLeft_succ, IH, pow_succ, ← mul_assoc, mul_comm,
-        -shiftl_eq_shiftLeft, -PosNum.shiftl_eq_shiftLeft, shiftl, mul_two]
+  simp [PosNum.shiftl_succ_eq_bit0_shiftl, Nat.shiftLeft_succ, IH, mul_comm,
+        -shiftl_eq_shiftLeft, -PosNum.shiftl_eq_shiftLeft, mul_two]
 
 @[simp, norm_cast]
 theorem castNum_shiftRight (m : Num) (n : Nat) : ↑(m >>> n) = (m : ℕ) >>> (n : ℕ) := by

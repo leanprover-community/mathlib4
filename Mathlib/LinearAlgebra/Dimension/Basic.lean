@@ -146,7 +146,7 @@ theorem lift_rank_eq_of_equiv_equiv (i : R → R') (j : M ≃+ M')
     lift.{v'} (Module.rank R M) = lift.{v} (Module.rank R' M') :=
   (lift_rank_le_of_surjective_injective i j hi.2 j.injective hc).antisymm <|
     lift_rank_le_of_injective_injectiveₛ i j.symm hi.1
-      j.symm.injective fun _ _ ↦ j.symm_apply_eq.2 <| by erw [hc, j.apply_symm_apply]
+      j.symm.injective fun _ _ ↦ j.symm_apply_eq.2 <| by simp_all
 end
 
 section
@@ -229,7 +229,7 @@ theorem lift_rank_le_of_surjective_injective
   refine _root_.lift_rank_le_of_surjective_injective i j hi hj fun r _ ↦ ?_
   have := congr($hc r)
   simp only [RingHom.coe_comp, comp_apply] at this
-  simp only [smul_def, AddMonoidHom.coe_coe, map_mul, ZeroHom.coe_coe, this]
+  simp only [smul_def, AddMonoidHom.coe_coe, map_mul, this]
 
 /-- If `S / R` and `S' / R'` are algebras, `i : R ≃+* R'` and `j : S ≃+* S'` are
 ring isomorphisms, such that `R → R' → S'` and `R → S → S'` commute,
@@ -240,7 +240,7 @@ theorem lift_rank_eq_of_equiv_equiv (i : R ≃+* R') (j : S ≃+* S')
   refine _root_.lift_rank_eq_of_equiv_equiv i j i.bijective fun r _ ↦ ?_
   have := congr($hc r)
   simp only [RingEquiv.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe, comp_apply] at this
-  simp only [smul_def, RingEquiv.coe_toAddEquiv, map_mul, ZeroHom.coe_coe, this]
+  simp only [smul_def, RingEquiv.coe_toAddEquiv, map_mul, this]
 
 variable {S' : Type v} [Semiring S'] [Algebra R' S']
 
@@ -375,9 +375,6 @@ lemma rank_le_of_isSMulRegular {S : Type*} [CommSemiring S] [Algebra S R] [Modul
     Module.rank R L ≤ Module.rank R L' :=
   ((Algebra.lsmul S R M s).restrict h).rank_le_of_injective <|
     fun _ _ h ↦ by simpa using hr (Subtype.ext_iff.mp h)
-
-@[deprecated (since := "2024-11-21")]
-alias rank_le_of_smul_regular := rank_le_of_isSMulRegular
 
 variable (R R' M) in
 lemma Module.rank_top_le_rank_of_isScalarTower [Module R' M]
