@@ -306,6 +306,12 @@ theorem symm_apply_apply (e : R ≃+* S) : ∀ x, e.symm (e x) = x :=
 theorem image_eq_preimage (e : R ≃+* S) (s : Set R) : e '' s = e.symm ⁻¹' s :=
   e.toEquiv.image_eq_preimage s
 
+theorem symm_apply_eq (e : R ≃+* S) {x : S} {y : R} :
+    e.symm x = y ↔ x = e y := Equiv.symm_apply_eq _
+
+theorem eq_symm_apply (e : R ≃+* S) {x : S} {y : R} :
+    y = e.symm x ↔ e y = x := Equiv.eq_symm_apply _
+
 end symm
 
 section simps
@@ -445,6 +451,18 @@ theorem ofBijective_apply [NonUnitalRingHomClass F R S] (f : F) (hf : Function.B
     (x : R) : ofBijective f hf x = f x :=
   rfl
 
+@[simp]
+lemma ofBijective_symm_comp (f : R →ₙ+* S) (hf : Function.Bijective f) :
+    ((RingEquiv.ofBijective f hf).symm : _ →ₙ+* _).comp f = NonUnitalRingHom.id R := by
+  ext
+  exact (RingEquiv.ofBijective f hf).injective <| RingEquiv.apply_symm_apply ..
+
+@[simp]
+lemma comp_ofBijective_symm (f : R →ₙ+* S) (hf : Function.Bijective f) :
+    f.comp ((RingEquiv.ofBijective f hf).symm : _ →ₙ+* _) = NonUnitalRingHom.id S := by
+  ext
+  exact (RingEquiv.ofBijective f hf).symm.injective <| RingEquiv.apply_symm_apply ..
+
 /-- Product of a singleton family of (non-unital non-associative semi)rings is isomorphic
 to the only member of this family. -/
 @[simps! -fullyApplied]
@@ -518,6 +536,17 @@ def piEquivPiSubtypeProd {ι : Type*} (p : ι → Prop) [DecidablePred p] (Y : �
     [∀ i, NonUnitalNonAssocSemiring (Y i)] :
     ((i : ι) → Y i) ≃+* ((i : { x : ι // p x }) → Y i) × ((i : { x : ι // ¬p x }) → Y i) where
   toEquiv := Equiv.piEquivPiSubtypeProd p Y
+  map_mul' _ _ := rfl
+  map_add' _ _ := rfl
+
+/-- The opposite of a direct product is isomorphic to the direct product of the opposites
+as rings. -/
+def piMulOpposite {ι : Type*} (S : ι → Type*) [∀ i, NonUnitalNonAssocSemiring (S i)] :
+    (Π i, S i)ᵐᵒᵖ ≃+* Π i, (S i)ᵐᵒᵖ where
+  toFun f i := .op (f.unop i)
+  invFun f := .op fun i ↦ (f i).unop
+  left_inv _ := rfl
+  right_inv _ := rfl
   map_mul' _ _ := rfl
   map_add' _ _ := rfl
 

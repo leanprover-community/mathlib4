@@ -118,6 +118,9 @@ theorem length_eq_two {l : List α} : l.length = 2 ↔ ∃ a b, l = [a, b] :=
 theorem length_eq_three {l : List α} : l.length = 3 ↔ ∃ a b c, l = [a, b, c] :=
   ⟨fun _ => let [a, b, c] := l; ⟨a, b, c, rfl⟩, fun ⟨_, _, _, e⟩ => e ▸ rfl⟩
 
+theorem length_eq_four {l : List α} : l.length = 4 ↔ ∃ a b c d, l = [a, b, c, d] :=
+  ⟨fun _ => let [a, b, c, d] := l; ⟨a, b, c, d, rfl⟩, fun ⟨_, _, _, _, e⟩ => e ▸ rfl⟩
+
 /-! ### set-theoretic notation of lists -/
 
 instance instSingletonList : Singleton α (List α) := ⟨fun x => [x]⟩
@@ -393,8 +396,8 @@ theorem mem_getLast?_append_of_mem_getLast? {l₁ l₂ : List α} {x : α} (h : 
 @[simp]
 theorem head!_nil [Inhabited α] : ([] : List α).head! = default := rfl
 
-@[simp] theorem head_cons_tail (x : List α) (h : x ≠ []) : x.head h :: x.tail = x := by
-  cases x <;> simp at h ⊢
+@[deprecated cons_head_tail (since := "2025-08-15")]
+theorem head_cons_tail (x : List α) (h : x ≠ []) : x.head h :: x.tail = x := by simp
 
 theorem head_eq_getElem_zero {l : List α} (hl : l ≠ []) :
     l.head hl = l[0]'(length_pos_iff.2 hl) :=
