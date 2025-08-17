@@ -174,14 +174,16 @@ theorem chain'_singleton (a : α) : Chain' R [a] :=
   Chain.nil
 
 @[simp]
-theorem chain'_cons {x y l} : Chain' R (x :: y :: l) ↔ R x y ∧ Chain' R (y :: l) :=
+theorem chain'_cons_cons {x y l} : Chain' R (x :: y :: l) ↔ R x y ∧ Chain' R (y :: l) :=
   chain_cons
+
+@[deprecated (since := "2025-08-12")] alias chain'_cons := chain'_cons_cons
 
 theorem chain'_isInfix : ∀ l : List α, Chain' (fun x y => [x, y] <:+: l) l
   | [] => chain'_nil
   | [_] => chain'_singleton _
   | a :: b :: l =>
-    chain'_cons.2
+    chain'_cons_cons.2
       ⟨⟨[], l, by simp⟩, (chain'_isInfix (b :: l)).imp fun _ _ h => h.trans ⟨[a], [], by simp⟩⟩
 
 theorem chain'_split {a : α} :
@@ -192,7 +194,7 @@ theorem chain'_split {a : α} :
 @[simp]
 theorem chain'_append_cons_cons {b c : α} {l₁ l₂ : List α} :
     Chain' R (l₁ ++ b :: c :: l₂) ↔ Chain' R (l₁ ++ [b]) ∧ R b c ∧ Chain' R (c :: l₂) := by
-  rw [chain'_split, chain'_cons]
+  rw [chain'_split, chain'_cons_cons]
 
 theorem chain'_iff_forall_rel_of_append_cons_cons {l : List α} :
     Chain' R l ↔ ∀ ⦃a b l₁ l₂⦄, l = l₁ ++ a :: b :: l₂ → R a b := by
@@ -203,7 +205,7 @@ theorem chain'_iff_forall_rel_of_append_cons_cons {l : List α} :
     match tail with
     | nil => exact fun _ ↦ chain'_singleton head
     | cons head' tail =>
-      refine fun h ↦ chain'_cons.mpr ⟨h (nil_append _).symm, ih fun ⦃a b l₁ l₂⦄ eq => ?_⟩
+      refine fun h ↦ chain'_cons_cons.mpr ⟨h (nil_append _).symm, ih fun ⦃a b l₁ l₂⦄ eq => ?_⟩
       apply h
       rw [eq, cons_append]
 
@@ -231,13 +233,15 @@ protected theorem Chain'.sublist [IsTrans α R] (hl : l₂.Chain' R) (h : l₁ <
   rw [chain'_iff_pairwise] at hl ⊢
   exact hl.sublist h
 
-theorem Chain'.cons {x y l} (h₁ : R x y) (h₂ : Chain' R (y :: l)) : Chain' R (x :: y :: l) :=
-  chain'_cons.2 ⟨h₁, h₂⟩
+theorem Chain'.cons_cons {x y l} (h₁ : R x y) (h₂ : Chain' R (y :: l)) : Chain' R (x :: y :: l) :=
+  chain'_cons_cons.2 ⟨h₁, h₂⟩
+
+@[deprecated (since := "2025-08-12")] alias Chain'.cons := Chain'.cons_cons
 
 theorem Chain'.tail : ∀ {l}, Chain' R l → Chain' R l.tail
   | [], _ => trivial
   | [_], _ => trivial
-  | _ :: _ :: _, h => (chain'_cons.mp h).right
+  | _ :: _ :: _, h => (chain'_cons_cons.mp h).right
 
 theorem Chain'.rel_head {x y l} (h : Chain' R (x :: y :: l)) : R x y :=
   rel_of_chain_cons h
@@ -248,7 +252,7 @@ theorem Chain'.rel_head? {x l} (h : Chain' R (x :: l)) ⦃y⦄ (hy : y ∈ head?
 
 theorem Chain'.cons' {x} : ∀ {l : List α}, Chain' R l → (∀ y ∈ l.head?, R x y) → Chain' R (x :: l)
   | [], _, _ => chain'_singleton x
-  | _ :: _, hl, H => hl.cons <| H _ rfl
+  | _ :: _, hl, H => hl.cons_cons <| H _ rfl
 
 lemma Chain'.cons_of_ne_nil {x : α} {l : List α} (l_ne_nil : l ≠ [])
     (hl : Chain' R l) (h : R x (l.head l_ne_nil)) : Chain' R (x :: l) := by
@@ -265,7 +269,8 @@ theorem chain'_append :
   | [], l => by simp
   | [a], l => by simp [chain'_cons', and_comm]
   | a :: b :: l₁, l₂ => by
-    rw [cons_append, cons_append, chain'_cons, chain'_cons, ← cons_append, chain'_append, and_assoc]
+    rw [cons_append, cons_append, chain'_cons_cons, chain'_cons_cons, ← cons_append, chain'_append,
+      and_assoc]
     simp
 
 theorem Chain'.append (h₁ : Chain' R l₁) (h₂ : Chain' R l₂)
@@ -298,7 +303,7 @@ theorem Chain'.take (h : Chain' R l) (n : ℕ) : Chain' R (take n l) :=
   h.prefix (take_prefix _ _)
 
 theorem chain'_pair {x y} : Chain' R [x, y] ↔ R x y := by
-  simp only [chain'_singleton, chain'_cons, and_true]
+  simp only [chain'_singleton, chain'_cons_cons, and_true]
 
 theorem Chain'.imp_head {x y} (h : ∀ {z}, R x z → R y z) {l} (hl : Chain' R (x :: l)) :
     Chain' R (y :: l) :=
@@ -308,7 +313,7 @@ theorem chain'_reverse : ∀ {l}, Chain' R (reverse l) ↔ Chain' (flip R) l
   | [] => Iff.rfl
   | [a] => by simp only [chain'_singleton, reverse_singleton]
   | a :: b :: l => by
-    rw [chain'_cons, reverse_cons, reverse_cons, append_assoc, cons_append, nil_append,
+    rw [chain'_cons_cons, reverse_cons, reverse_cons, append_assoc, cons_append, nil_append,
       chain'_split, ← reverse_cons, @chain'_reverse (b :: l), and_comm, chain'_pair, flip]
 
 theorem chain'_iff_get {R} : ∀ {l : List α}, Chain' R l ↔
@@ -317,7 +322,7 @@ theorem chain'_iff_get {R} : ∀ {l : List α}, Chain' R l ↔
   | [] => iff_of_true (by simp) (fun _ h => by simp at h)
   | [a] => iff_of_true (by simp) (fun _ h => by simp at h)
   | a :: b :: t => by
-    rw [← and_forall_add_one, chain'_cons, chain'_iff_get]
+    rw [← and_forall_add_one, chain'_cons_cons, chain'_iff_get]
     simp
 
 /-- If `l₁ l₂` and `l₃` are lists and `l₁ ++ l₂` and `l₂ ++ l₃` both satisfy
@@ -334,7 +339,7 @@ lemma chain'_flatten : ∀ {L : List (List α)}, [] ∉ L →
 | [l], _ => by simp [flatten]
 | (l₁ :: l₂ :: L), hL => by
     rw [mem_cons, not_or, ← Ne] at hL
-    rw [flatten, chain'_append, chain'_flatten hL.2, forall_mem_cons, chain'_cons]
+    rw [flatten, chain'_append, chain'_flatten hL.2, forall_mem_cons, chain'_cons_cons]
     rw [mem_cons, not_or, ← Ne] at hL
     simp only [forall_mem_cons, and_assoc, flatten, head?_append_of_ne_nil _ hL.2.1.symm]
     exact Iff.rfl.and (Iff.rfl.and <| Iff.rfl.and and_comm)
@@ -435,13 +440,13 @@ theorem Chain'.cons_of_le [LinearOrder α] {a : α} {as m : List α}
   cases m with
   | nil => simp only [List.chain'_singleton]
   | cons b bs =>
-    apply hm.cons
+    apply hm.cons_cons
     cases as with
     | nil =>
       simp only [le_iff_lt_or_eq, reduceCtorEq, or_false] at hmas
       exact (List.not_lt_nil _ hmas).elim
     | cons a' as =>
-      rw [List.chain'_cons] at ha
+      rw [List.chain'_cons_cons] at ha
       refine lt_of_le_of_lt ?_ ha.1
       rw [le_iff_lt_or_eq] at hmas
       rcases hmas with hmas | hmas
@@ -516,7 +521,7 @@ theorem Acc.list_chain' {l : List.chains r} (acc : ∀ a ∈ l.val.head?, Acc r 
       rcases l with - | ⟨b, l⟩
       · apply Acc.intro; rintro ⟨_⟩ ⟨_⟩
       /- l' is accessible by induction hypothesis -/
-      · apply ih b (List.chain'_cons.1 hl).1
+      · apply ih b (List.chain'_cons_cons.1 hl).1
     /- make l' a free variable and induct on l' -/
     revert hl
     rw [(by rfl : l = l'.1)]
