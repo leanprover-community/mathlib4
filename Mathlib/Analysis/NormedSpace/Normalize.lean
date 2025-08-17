@@ -23,7 +23,9 @@ variable [NormedSpace 𝕜 V]
 
 /-- The normalized vector from a given vector. `normalize 0 = 0`, otherwise it is
 the corresponding unit length vector. -/
-noncomputable def normalize (x : V) : V := (‖x‖⁻¹ : 𝕜) • x
+noncomputable def NormedSpace.normalize (x : V) : V := (‖x‖⁻¹ : 𝕜) • x
+
+open NormedSpace
 
 @[simp]
 theorem normalize_zero_eq_zero : normalize 𝕜 (0 : V) = 0 := by
@@ -57,6 +59,8 @@ end RCLike
 variable {V : Type*}
 variable [NormedAddCommGroup V]
 variable [NormedSpace ℝ V]
+
+open NormedSpace
 
 theorem normalize_smul_of_pos {r : ℝ} (hr : 0 < r) (x : V) :
     normalize ℝ (r • x) = normalize ℝ x := by
