@@ -942,7 +942,6 @@ import Mathlib.Algebra.Order.Sub.Prod
 import Mathlib.Algebra.Order.Sub.Unbundled.Basic
 import Mathlib.Algebra.Order.Sub.Unbundled.Hom
 import Mathlib.Algebra.Order.Sub.WithTop
-import Mathlib.Algebra.Order.SuccOrder.PartialSups
 import Mathlib.Algebra.Order.SuccPred
 import Mathlib.Algebra.Order.SuccPred.PartialSups
 import Mathlib.Algebra.Order.SuccPred.TypeTags
