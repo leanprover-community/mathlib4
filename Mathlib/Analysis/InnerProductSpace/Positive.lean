@@ -175,7 +175,7 @@ variable {n : Type*} [Fintype n] [DecidableEq n]
 open scoped ComplexOrder
 
 /-- `A.toEuclideanLin` is positive if and only if `A` is positive semi-definite. -/
-theorem _root_.Matrix.toEuclideanLin_isPositive_iff {A : Matrix n n 𝕜} :
+theorem _root_.Matrix.isPositive_toEuclideanLin_iff {A : Matrix n n 𝕜} :
     A.toEuclideanLin.IsPositive ↔ A.PosSemidef := by
   simp_rw [LinearMap.IsPositive, ← Matrix.isHermitian_iff_isSymmetric,
     inner_re_symm, EuclideanSpace.inner_eq_star_dotProduct,
