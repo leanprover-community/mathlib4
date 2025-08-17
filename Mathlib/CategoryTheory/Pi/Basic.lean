@@ -200,10 +200,7 @@ end EqToHom
 -- how `Functor.pi` commutes with `Pi.eval` and `Pi.comap`.
 @[simp]
 theorem pi'_eval (f : ∀ i, A ⥤ C i) (i : I) : pi' f ⋙ Pi.eval C i = f i := by
-  apply Functor.ext
-  · simp
-  · intro _
-    rfl
+  tauto
 
 /-- Two functors to a product category are equal iff they agree on every coordinate. -/
 theorem pi_ext (f f' : A ⥤ ∀ i, C i) (h : ∀ i, f ⋙ (Pi.eval C i) = f' ⋙ (Pi.eval C i)) :

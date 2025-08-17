@@ -216,9 +216,7 @@ def mapId (Y : T) : map (𝟙 Y) ≅ 𝟭 _ := eqToIso (mapId_eq Y)
 /-- Mapping by `f` and then forgetting is the same as forgetting. -/
 theorem mapForget_eq {X Y : T} (f : X ⟶ Y) :
     (map f) ⋙ (forget Y) = (forget X) := by
-  fapply Functor.ext
-  · simp [Over, Over.map]
-  · simp
+  tauto
 
 /-- The natural isomorphism arising from `mapForget_eq`. -/
 def mapForget {X Y : T} (f : X ⟶ Y) :
@@ -626,9 +624,7 @@ def mapId (Y : T) : map (𝟙 Y) ≅ 𝟭 _ := eqToIso (mapId_eq Y)
 /-- Mapping by `f` and then forgetting is the same as forgetting. -/
 theorem mapForget_eq {X Y : T} (f : X ⟶ Y) :
     (map f) ⋙ (forget X) = (forget Y) := by
-  fapply Functor.ext
-  · dsimp [Under, Under.map]; intro x; exact rfl
-  · simp
+  tauto
 
 /-- The natural isomorphism arising from `mapForget_eq`. -/
 def mapForget {X Y : T} (f : X ⟶ Y) :
