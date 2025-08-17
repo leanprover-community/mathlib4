@@ -51,27 +51,26 @@ theorem exists_eq_pow_of_exponent_coprime_of_pow_eq {a b m n : ℕ} (ha : a ≠ 
         exact Finsupp.support_mapRange
       exact this p_mem
     exact prime_of_mem_primeFactors this
-
+  have mul_factorization_p_eq_and_n_dvd_a_factorization_p p : m * a.factorization p = n * b.factorization p ∧ n ∣ a.factorization p := by
+    have := congrFun (congrArg DFunLike.coe factorization_pow_eq) p
+    simp at this
+    have dvd : n ∣ m * a.factorization p :=
+      Dvd.intro (b.factorization p) this.symm
+    have coprime := hmn.symm
+    exact ⟨this, coprime.dvd_of_dvd_mul_left dvd⟩
   constructor
   · apply factorization_eq_n_smul_c_factorization_of_eq_c_pow_n a ha n
     ext p
     simp [c_factorization]
     suffices n ∣ a.factorization p by
       exact (Nat.mul_div_cancel' this).symm
-    have := congrFun (congrArg DFunLike.coe factorization_pow_eq) p
-    simp at this
-    have dvd : n ∣ m * a.factorization p :=
-      Dvd.intro (b.factorization p) this.symm
-    have coprime := hmn.symm
-    exact coprime.dvd_of_dvd_mul_left dvd
+    exact (mul_factorization_p_eq_and_n_dvd_a_factorization_p p).2
   · apply factorization_eq_n_smul_c_factorization_of_eq_c_pow_n b hb m
     ext p
     simp [c_factorization]
-    have factorization_pow_p_eq := congrFun (congrArg DFunLike.coe factorization_pow_eq) p
-    simp at factorization_pow_p_eq
-    have : n ∣ a.factorization p :=
-      sorry
-    rcases this with ⟨k, afp_eq⟩
+    rcases mul_factorization_p_eq_and_n_dvd_a_factorization_p p with
+      ⟨mul_factorization_p_eq, n_dvd_afp⟩
+    rcases n_dvd_afp with ⟨k, afp_eq⟩
     have n_nz : n ≠ 0 := by
       sorry
     have n_pos : 0 < n := by
@@ -81,10 +80,9 @@ theorem exists_eq_pow_of_exponent_coprime_of_pow_eq {a b m n : ℕ} (ha : a ≠ 
       --exact (Nat.eq_div_of_mul_eq_right n_nz afp_eq.symm).symm
       exact Nat.div_eq_of_eq_mul_right n_pos afp_eq
     rw [this]
-    rw [afp_eq] at factorization_pow_p_eq
-    rw [show m * (n * k) = n * (m * k) by ring] at factorization_pow_p_eq
+    rw [afp_eq, Nat.mul_left_comm m n k] at mul_factorization_p_eq
     --exact (Nat.mul_right_inj n_nz).mp factorization_pow_p_eq.symm
-    exact Nat.mul_left_cancel n_pos factorization_pow_p_eq.symm
+    exact Nat.mul_left_cancel n_pos mul_factorization_p_eq.symm
 
 theorem exists_eq_pow_of_pow_eq {a b m n : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) (hmn : m ≠ 0 ∨ n ≠ 0) (h : a ^ m = b ^ n) :
     let g := gcd m n; ∃ c, a = c ^ (n / g) ∧ b = c ^ (m / g) := by
