@@ -165,7 +165,7 @@ Let `R ⊆ S ⊆ T` be a tower of rings. Let `Sₚ` and `Tₚ` denote the locali
 the prime ideal `p` of `R`. Then `Tₚ` is a `Sₚ`-algebra.
 This cannot be an instance since it creates a diamond when `S = T`.
 -/
-noncomputable def Localization.AtPrime.algebra_localization_localization :
+noncomputable abbrev Localization.AtPrime.algebra_localization_localization :
     Algebra Sₚ Tₚ := localizationAlgebra P' T
 
 attribute [local instance] Localization.AtPrime.algebra_localization_localization
