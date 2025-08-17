@@ -97,7 +97,6 @@ theorem GradedAlgebra.lift_ι_eq (i' : ZMod 2) (x' : evenOdd Q i') :
       · rw [Nat.succ_eq_add_one, add_comm, Nat.cast_add, Nat.cast_one]
       rfl
   | zero =>
-    let : NonAssocSemiring (⨁ i : ZMod 2, evenOdd Q i) := Semiring.toNonAssocSemiring
     rw [map_zero]
     apply Eq.symm
     apply DFinsupp.single_eq_zero.mpr; rfl

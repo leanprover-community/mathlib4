@@ -185,8 +185,6 @@ theorem induction {C : CliffordAlgebra Q → Prop}
       mul_mem' := @mul
       add_mem' := @add
       algebraMap_mem' := algebraMap }
-  let _ : AddCommMonoid s := Semiring.toNonAssocSemiring.toAddCommMonoidWithOne.toAddCommMonoid
-  let _ : Mul s := Semiring.toNonAssocSemiring.toNonUnitalNonAssocSemiring.toDistrib.toMul
   let of : { f : M →ₗ[R] s // ∀ m, f m * f m = _root_.algebraMap _ _ (Q m) } :=
     ⟨(CliffordAlgebra.ι Q).codRestrict (Subalgebra.toSubmodule s) ι,
       fun m => Subtype.eq <| ι_sq_scalar Q m⟩
