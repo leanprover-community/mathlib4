@@ -87,8 +87,8 @@ theorem birkhoffAverage_apply_sub_birkhoffAverage {α M : Type*} (R : Type*) [Di
 
 /-- If a function `g` is invariant under a function `f` (i.e., `g ∘ f = g`), then the Birkhoff
 average of `g` over `f` for `n` iterations is equal to `g`. Requires that `0 < n`. -/
-theorem birkhoffAverage_of_invariant {α M : Type*} (R : Type*) [DivisionRing R] [AddCommMonoid M]
-    [Module R M] [CharZero R] {f : α → α} {g : α → M} (h : g ∘ f = g) {n : ℕ} (hn : 0 < n) :
+theorem birkhoffAverage_of_comp_eq {α M : Type*} (R : Type*) [DivisionRing R] [AddCommMonoid M]
+    [Module R M] [CharZero R] {f : α → α} {g : α → M} (h : g ∘ f = g) {n : ℕ} (hn : n ≠ 0) :
     birkhoffAverage R f g n = g := by
   funext x
   suffices (n : R)⁻¹ • n • g x = g x by simpa [birkhoffAverage, birkhoffSum_of_comp_eq h]
