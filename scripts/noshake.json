@@ -123,6 +123,7 @@
   "Mathlib.Tactic.Linarith.Lemmas",
   "Mathlib.Tactic.LinearCombination",
   "Mathlib.Tactic.Linter",
+  "Mathlib.Tactic.Linter.DeprecatedModule",
   "Mathlib.Tactic.Linter.Header",
   "Mathlib.Tactic.Measurability",
   "Mathlib.Tactic.MinImports",
