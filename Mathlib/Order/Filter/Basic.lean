@@ -1014,6 +1014,13 @@ theorem EventuallyEq.smul {𝕜} [SMul 𝕜 β] {l : Filter α} {f f' : α → �
     (hf : f =ᶠ[l] f') (hg : g =ᶠ[l] g') : (fun x => f x • g x) =ᶠ[l] fun x => f' x • g' x :=
   hf.comp₂ (· • ·) hg
 
+protected theorem EventuallyEq.fun_star {R : Type*} [Star R] {f g : α → R}
+    {l : Filter α} (h : f =ᶠ[l] g) : (fun x ↦ star (f x)) =ᶠ[l] fun x ↦ star (g x) :=
+  h.fun_comp Star.star
+
+protected theorem EventuallyEq.star {R : Type*} [Star R]
+    {f g : α → R} {l : Filter α} (h : f =ᶠ[l] g) : star f =ᶠ[l] star g := h.fun_comp Star.star
+
 theorem EventuallyEq.sup [Max β] {l : Filter α} {f f' g g' : α → β} (hf : f =ᶠ[l] f')
     (hg : g =ᶠ[l] g') : f ⊔ g =ᶠ[l] f' ⊔ g' :=
   hf.comp₂ (· ⊔ ·) hg
