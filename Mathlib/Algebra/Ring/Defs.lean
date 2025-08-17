@@ -228,6 +228,9 @@ class CommSemiring (α : Type u)
   extends Semiring α, NonUnitalCommSemiring α, NonAssocCommSemiring α, CommMonoidWithZero α
 
 -- see Note [lower instance priority]
+attribute [instance 100] NonUnitalCommSemiring.toNonUnitalNonAssocCommSemiring
+attribute [instance 100] NonAssocCommSemiring.toNonAssocSemiring
+attribute [instance 100] NonAssocCommSemiring.toNonUnitalNonAssocCommSemiring
 attribute [instance 100] CommSemiring.toNonUnitalCommSemiring
 attribute [instance 100] CommSemiring.toNonAssocCommSemiring
 
@@ -370,6 +373,9 @@ class CommRing (α : Type u) extends Ring α, CommSemiring α, NonUnitalCommRing
 
 -- see Note [lower instance priority]
 attribute [instance 100] NonUnitalCommRing.toNonUnitalCommSemiring
+attribute [instance 100] NonAssocCommRing.toNonAssocRing
+attribute [instance 100] NonAssocCommRing.toNonUnitalNonAssocCommRing
+attribute [instance 100] NonAssocCommRing.toNonAssocCommSemiring
 attribute [instance 100] CommRing.toCommSemiring
 attribute [instance 100] CommRing.toNonUnitalCommRing
 attribute [instance 100] CommRing.toNonAssocCommRing
