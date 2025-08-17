@@ -43,8 +43,6 @@ lemma toUnitHom_eq_char' {a : ZMod n} (ha : IsUnit a) : χ a = χ.toUnitHom ha.u
 
 lemma toUnitHom_inj (ψ : DirichletCharacter R n) : toUnitHom χ = toUnitHom ψ ↔ χ = ψ := by simp
 
-@[deprecated (since := "2024-12-29")] alias toUnitHom_eq_iff := toUnitHom_inj
-
 lemma eval_modulus_sub (x : ZMod n) : χ (n - x) = χ (-x) := by simp
 
 /-!
