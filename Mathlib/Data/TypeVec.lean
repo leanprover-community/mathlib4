@@ -572,8 +572,7 @@ end Liftp'
 
 @[simp]
 theorem dropFun_diag {α} : dropFun (@prod.diag (n + 1) α) = prod.diag := by
-  ext i : 2
-  induction i <;> simp [dropFun, *] <;> rfl
+  tauto
 
 @[simp]
 theorem dropFun_subtypeVal {α} (p : α ⟹ «repeat» (n + 1) Prop) :
@@ -588,20 +587,17 @@ theorem lastFun_subtypeVal {α} (p : α ⟹ «repeat» (n + 1) Prop) :
 @[simp]
 theorem dropFun_toSubtype {α} (p : α ⟹ «repeat» (n + 1) Prop) :
     dropFun (toSubtype p) = toSubtype _ := by
-  ext i
-  induction i <;> simp [dropFun, *] <;> rfl
+  tauto
 
 @[simp]
 theorem lastFun_toSubtype {α} (p : α ⟹ «repeat» (n + 1) Prop) :
     lastFun (toSubtype p) = _root_.id := by
-  ext i : 2
-  induction i; simp [*]; rfl
+  tauto
 
 @[simp]
 theorem dropFun_of_subtype {α} (p : α ⟹ «repeat» (n + 1) Prop) :
     dropFun (ofSubtype p) = ofSubtype _ := by
-  ext i : 2
-  induction i <;> simp [dropFun, *] <;> rfl
+  tauto
 
 @[simp]
 theorem lastFun_of_subtype {α} (p : α ⟹ «repeat» (n + 1) Prop) :
@@ -617,14 +613,12 @@ attribute [simp] drop_append1'
 @[simp]
 theorem dropFun_prod {α α' β β' : TypeVec (n + 1)} (f : α ⟹ β) (f' : α' ⟹ β') :
     dropFun (f ⊗' f') = (dropFun f ⊗' dropFun f') := by
-  ext i : 2
-  induction i <;> simp [dropFun, *] <;> rfl
+  tauto
 
 @[simp]
 theorem lastFun_prod {α α' β β' : TypeVec (n + 1)} (f : α ⟹ β) (f' : α' ⟹ β') :
     lastFun (f ⊗' f') = Prod.map (lastFun f) (lastFun f') := by
-  ext i : 1
-  induction i; simp [lastFun, *]; rfl
+  tauto
 
 @[simp]
 theorem dropFun_from_append1_drop_last {α : TypeVec (n + 1)} :
