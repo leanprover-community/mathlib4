@@ -49,7 +49,7 @@ This files introduces:
 metric space, Hausdorff distance
 -/
 
--- TODO assert_not_exists Cardinal
+assert_not_exists Cardinal
 
 noncomputable section
 
