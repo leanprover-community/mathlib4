@@ -24,6 +24,22 @@ example : ∃ n : ℕ, p ∨ q ∧ n = 1 := by
   guard_target =ₛ p ∨ q ∧ True
   exact test_sorry
 
+example : (p ∨ q) ∧ (p ∨ r) := by
+  pull · ∨ ·
+  guard_target =ₛ p ∨ q ∧ r
+  exact test_sorry
+
+-- `exists_or` and `forall_and` cannot be used by `pull` when `∃`/`∀` is only on one side
+example : p ∧ (q ∨ ∀ n : ℕ, n = 1) := by
+  pull ∀ n, ·
+  guard_target =ₐ p ∧ ∀ n, q ∨ n = 1
+  exact test_sorry
+
+example : p ∨ q ∧ ∃ n : ℕ, n = 1 := by
+  pull ∃ n, ·
+  guard_target =ₐ p ∨ ∃ n, q ∧ n = 1
+  exact test_sorry
+
 -- the following examples still need more tagging to work
 
 -- example (a b c : Real) (ha : 0 < a) (hc : 0 < c) :

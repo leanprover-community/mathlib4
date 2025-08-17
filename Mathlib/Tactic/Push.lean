@@ -32,7 +32,7 @@ attribute [push ←] ne_eq
 @[push] theorem not_exists : (¬ ∃ x, s x) ↔ (∀ x, binderNameHint x s <| ¬ s x) :=
   _root_.not_exists
 
-
+-- TODO: lemmas for pushing `∃` have not yet been tagged using `binderNameHint`
 attribute [push]
   forall_const forall_and forall_or_left forall_or_right forall_eq forall_eq' forall_self_imp
   exists_const exists_or exists_and_left exists_and_right exists_eq exists_eq'
@@ -116,6 +116,7 @@ end ElabHead
 
 section push
 
+-- TODO: preserve binder names in `push ∀ _, ·` in the same way as in `push_neg`.
 /--
 `pushNegBuiltin` is a simproc for pushing `¬` in a way that can't be done
 using the `@[push]` attribute.
@@ -200,9 +201,6 @@ section pull
 open Simp in
 /-- Try to rewrite using a pull lemma. -/
 def pullStep (head : Head) : Simp.Simproc := fun e => do
-  let some e_head := Head.ofExpr? (← whnf e) | return Simp.Step.continue
-  unless e_head == head do
-    return Simp.Step.continue
   let thms := pullExt.getState (← getEnv)
   -- We can't use `Simp.rewrite?` here, because we need to only allow rewriting with theorems
   -- that pull the correct head.
@@ -222,8 +220,8 @@ def pullCore (head : Head) (tgt : Expr) (disch? : Option Simp.Discharge) : MetaM
       (simpTheorems := #[])
       (congrTheorems := ← getSimpCongrTheorems)
   let methods := match disch? with
-    | none => { pre := pullStep head }
-    | some disch => { pre := pullStep head, discharge? := disch, wellBehavedDischarge := false }
+    | none => { post := pullStep head }
+    | some disch => { post := pullStep head, discharge? := disch, wellBehavedDischarge := false }
   (·.1) <$> Simp.main tgt ctx (methods := methods)
 
 /-- Execute main loop of `pull` at the main goal. -/
@@ -417,7 +415,7 @@ def elabPushTree : Elab.Command.CommandElab := fun stx => do
       logInfo m! "DiscrTree branch for {key}:{indentD (format trie)}"
       logged := true
   unless logged do
-    logInfo m! "There are no `push` theorems for {head.toString}"
+    logInfo m! "There are no `push` theorems for `{head.toString}`"
 
 end DiscrTree
 

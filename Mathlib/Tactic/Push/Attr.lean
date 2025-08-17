@@ -26,8 +26,10 @@ deriving Inhabited, BEq
 /-- Converts a `Head` to a string. -/
 def Head.toString : Head → String
   | .name const => const.toString
-  | .lambda => "fun _ => ·"
-  | .forall => "∀ _, ·"
+  | .lambda => "fun"
+  | .forall => "Forall"
+
+instance : ToString Head := ⟨Head.toString⟩
 
 /-- Returns the head of an expression. -/
 def Head.ofExpr? (e : Expr) : Option Head :=
