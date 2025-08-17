@@ -178,6 +178,8 @@ lemma Nat.Primes.prodNatEquiv_symm_apply {n : ℕ} (hn : IsPrimePow n) :
       (⟨n.minFac, minFac_prime hn.ne_one⟩, n.factorization n.minFac - 1) :=
   rfl
 
+namespace Nat
+
 section PrimePowEqPow
 variable {p a m n : ℕ} (hp : p.Prime) (hn : n ≠ 0) (h : p ^ m = a ^ n)
 include hp h
@@ -202,3 +204,5 @@ theorem exists_k_base_eq_p_pow_k_of_prime_p_pow_eq_base_pow : ∃ k, a = p ^ k :
   exact Nat.pow_left_injective hn h.symm
 
 end PrimePowEqPow
+
+end Nat
