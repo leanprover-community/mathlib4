@@ -1026,10 +1026,9 @@ def ExProd.evalInv {a : Q($α)} (czα : Option Q(CharZero $α)) (va : ExProd sα
     let ⟨_b₃, vb₃, pb₃⟩ ← va₃.evalInv czα
     let ⟨c, vc, (pc : Q($_b₃ * ($_b₁ ^ $_a₂ * Nat.rawCast 1) = $c))⟩ ←
       evalMulProd sα vb₃ (vb₁.toProd va₂)
-    have eq : ($sα).toNonAssocCommSemiring.toNonAssocSemiring =Q ($dsα).toNonAssocSemiring := ⟨⟩
     have : ($sα).toNonAssocCommSemiring.toNonUnitalNonAssocCommSemiring.toNonUnitalNonAssocSemiring
       =Q ($dsα).toNonAssocSemiring.toNonUnitalNonAssocSemiring := ⟨⟩
-    pure ⟨c, vc, (q(inv_mul $pb₁ $pb₃ ($this ▸ $eq ▸ $pc)) : Expr)⟩
+    pure ⟨c, vc, (q(inv_mul $pb₁ $pb₃ ($this ▸ $pc)) : Expr)⟩
 
 /-- Inverts a polynomial `va` to get a normalized result polynomial.
 
