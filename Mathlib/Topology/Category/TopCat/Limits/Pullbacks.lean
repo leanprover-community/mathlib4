@@ -110,9 +110,7 @@ theorem pullbackIsoProdSubtype_hom_apply {f : X ⟶ Z} {g : Y ⟶ Z}
     (pullbackIsoProdSubtype f g).hom x =
       ⟨⟨pullback.fst f g x, pullback.snd f g x⟩, by
         simpa using CategoryTheory.congr_fun pullback.condition x⟩ := by
-  apply Subtype.ext; apply Prod.ext
-  exacts [ConcreteCategory.congr_hom (pullbackIsoProdSubtype_hom_fst f g) x,
-    ConcreteCategory.congr_hom (pullbackIsoProdSubtype_hom_snd f g) x]
+  tauto
 
 theorem pullback_topology {X Y Z : TopCat.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) :
     (pullback f g).str =
