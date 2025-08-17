@@ -85,6 +85,9 @@ For example:
 
 @[push] theorem not_iff (p q : Prop) : ¬(p ↔ q) ↔ (p ∧ ¬q) ∨ (¬p ∧ q)
 ```
+
+If the pushed constant appears on the other side, then the reverse direction of the lemma is
+added as a `pull` lemma.
 -/
 syntax (name := pushAttr) "push" (" ←" <|> " <-")? (ppSpace prio)? : attr
 

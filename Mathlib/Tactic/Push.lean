@@ -55,30 +55,6 @@ register_option push_neg.use_distrib : Bool :=
 
 open Lean Meta Elab.Tactic Parser.Tactic
 
-/--
-`pushNegBuiltin` is a simproc for pushing `¬` in a way that can't be done
-using the `@[push]` attribute.
-- `¬(p ∧ q)` turns into `p → ¬q` or `¬a ∨ ¬q`, depending on the option `push_neg.use_distrib`.
-- `¬∀ a, p` turns into `∃ a, ¬p`, where the binder name `a` is preserved.
--/
-private def pushNegBuiltin : Simp.Simproc := fun e => do
-  let e := (← instantiateMVars e).cleanupAnnotations
-  match e with
-  | .app (.app (.const ``And _) p) q =>
-    if ← getBoolOption `push_neg.use_distrib then
-      return mkSimpStep (mkOr (mkNot p) (mkNot q)) (mkApp2 (.const ``not_and_or_eq []) p q)
-    else
-      return mkSimpStep (.forallE `_ p (mkNot q) .default) (mkApp2 (.const ``not_and_eq []) p q)
-  | .forallE name ty body binfo =>
-    let body' : Expr := .lam name ty (mkNot body) binfo
-    let body'' : Expr := .lam name ty body binfo
-    return mkSimpStep (← mkAppM ``Exists #[body']) (← mkAppM ``not_forall_eq #[body''])
-  | _ =>
-    return Simp.Step.continue
-where
-  mkSimpStep (e : Expr) (pf : Expr) : Simp.Step :=
-    Simp.Step.continue (some { expr := e, proof? := some pf })
-
 section ElabHead
 open Elab Term
 
@@ -138,10 +114,41 @@ def elabHead (term : Term) : TermElabM Head := withRef term do
 
 end ElabHead
 
+section push
 
-/-- Push at the top level of the current expression. -/
+/--
+`pushNegBuiltin` is a simproc for pushing `¬` in a way that can't be done
+using the `@[push]` attribute.
+- `¬(p ∧ q)` turns into `p → ¬q` or `¬a ∨ ¬q`, depending on the option `push_neg.use_distrib`.
+- `¬∀ a, p` turns into `∃ a, ¬p`, where the binder name `a` is preserved.
+-/
+private def pushNegBuiltin : Simp.Simproc := fun e => do
+  let e := (← instantiateMVars e).cleanupAnnotations
+  match e with
+  | .app (.app (.const ``And _) p) q =>
+    if ← getBoolOption `push_neg.use_distrib then
+      return mkSimpStep (mkOr (mkNot p) (mkNot q)) (mkApp2 (.const ``not_and_or_eq []) p q)
+    else
+      return mkSimpStep (.forallE `_ p (mkNot q) .default) (mkApp2 (.const ``not_and_eq []) p q)
+  | .forallE name ty body binfo =>
+    let body' : Expr := .lam name ty (mkNot body) binfo
+    let body'' : Expr := .lam name ty body binfo
+    return mkSimpStep (← mkAppM ``Exists #[body']) (← mkAppM ``not_forall_eq #[body''])
+  | _ =>
+    return Simp.Step.continue
+where
+  mkSimpStep (e : Expr) (pf : Expr) : Simp.Step :=
+    Simp.Step.continue (some { expr := e, proof? := some pf })
+
+/-- The `simp` configuration used in `push`. -/
+def pushSimpConfig : Simp.Config where
+  zeta := false
+  proj := false
+  congrConsts := false -- this is a workaround, and can hopefully be removed
+
+/-- Try to rewrite using a push lemma. -/
 def pushStep (head : Head) : Simp.Simproc := fun e => do
-  let e_whnf ← whnfR e
+  let e_whnf ← whnf e
   let some e_head := Head.ofExpr? e_whnf | return Simp.Step.continue
   unless e_head == head do
     return Simp.Step.continue
@@ -155,18 +162,6 @@ def pushStep (head : Head) : Simp.Simproc := fun e => do
   else
     return Simp.Step.continue
 
-/--
-A simproc variant of `push_neg` that can be used as `simp [↓pushNeg]`.
-Note that you should write `↓pushNeg` instead of `pushNeg`, so that negations are pushed greedily.
--/
-simproc_decl _root_.pushNeg (Not _) := pushStep (.name ``Not)
-
-/-- The `simp` configuration used in `push`. -/
-def pushSimpConfig : Simp.Config where
-  zeta := false
-  proj := false
-  congrConsts := false -- this is a workaround, and can hopefully be removed
-
 /-- Common entry point to the implementation of `push`. -/
 def pushCore (head : Head) (tgt : Expr) (disch? : Option Simp.Discharge) : MetaM Simp.Result := do
   let ctx : Simp.Context ← Simp.mkContext pushSimpConfig
@@ -178,29 +173,96 @@ def pushCore (head : Head) (tgt : Expr) (disch? : Option Simp.Discharge) : MetaM
   (·.1) <$> Simp.main tgt ctx (methods := methods)
 
 /-- Execute main loop of `push` at the main goal. -/
-def pushTarget (head : Head) (discharge? : Option Simp.Discharge) :
+def pushTarget (head : Head) (disch? : Option Simp.Discharge) :
     TacticM Unit := withMainContext do
   let mvarId ← getMainGoal
   let tgt ← instantiateMVars (← mvarId.getType)
-  let mvarIdNew ← applySimpResultToTarget mvarId tgt (← pushCore head tgt discharge?)
+  let mvarIdNew ← applySimpResultToTarget mvarId tgt (← pushCore head tgt disch?)
   if mvarIdNew == mvarId then throwError "push made no progress"
   replaceMainGoal [mvarIdNew]
 
 /-- Execute main loop of `push` at a local hypothesis. -/
-def pushLocalDecl (head : Head) (discharge? : Option Simp.Discharge) (fvarId : FVarId) :
+def pushLocalDecl (head : Head) (disch? : Option Simp.Discharge) (fvarId : FVarId) :
     TacticM Unit := withMainContext do
   let ldecl ← fvarId.getDecl
   if ldecl.isAuxDecl then return
   let tgt ← instantiateMVars ldecl.type
   let mvarId ← getMainGoal
-  let result ← pushCore head tgt discharge?
+  let result ← pushCore head tgt disch?
   let some (_, mvarIdNew) ← applySimpResultToLocalDecl mvarId fvarId result False | failure
   if mvarIdNew == mvarId then throwError "push made no progress"
   replaceMainGoal [mvarIdNew]
 
+end push
+
+section pull
+
+open Simp in
+/-- Try to rewrite using a pull lemma. -/
+def pullStep (head : Head) : Simp.Simproc := fun e => do
+  let some e_head := Head.ofExpr? (← whnf e) | return Simp.Step.continue
+  unless e_head == head do
+    return Simp.Step.continue
+  let thms := pullExt.getState (← getEnv)
+  -- We can't use `Simp.rewrite?` here, because we need to only allow rewriting with theorems
+  -- that pull the correct head.
+  let candidates ← withSimpIndexConfig <| thms.getMatchWithExtra e
+  if candidates.isEmpty then
+    return Simp.Step.continue
+  let candidates := candidates.insertionSort fun e₁ e₂ => e₁.1.1.priority > e₂.1.1.priority
+  for ((thm, thm_head), numExtraArgs) in candidates do
+    if thm_head == head then
+      if let some result ← tryTheoremWithExtraArgs? e thm numExtraArgs then
+        return Simp.Step.continue result
+  return Simp.Step.continue
+
+/-- Common entry point to the implementation of `pull`. -/
+def pullCore (head : Head) (tgt : Expr) (disch? : Option Simp.Discharge) : MetaM Simp.Result := do
+  let ctx : Simp.Context ← Simp.mkContext pushSimpConfig
+      (simpTheorems := #[])
+      (congrTheorems := ← getSimpCongrTheorems)
+  let methods := match disch? with
+    | none => { pre := pullStep head }
+    | some disch => { pre := pullStep head, discharge? := disch, wellBehavedDischarge := false }
+  (·.1) <$> Simp.main tgt ctx (methods := methods)
+
+/-- Execute main loop of `pull` at the main goal. -/
+def pullTarget (head : Head) (discharge? : Option Simp.Discharge) :
+    TacticM Unit := withMainContext do
+  let mvarId ← getMainGoal
+  let tgt ← instantiateMVars (← mvarId.getType)
+  let mvarIdNew ← applySimpResultToTarget mvarId tgt (← pullCore head tgt discharge?)
+  if mvarIdNew == mvarId then throwError "pull made no progress"
+  replaceMainGoal [mvarIdNew]
+
+/-- Execute main loop of `pull` at a local hypothesis. -/
+def pullLocalDecl (head : Head) (discharge? : Option Simp.Discharge) (fvarId : FVarId) :
+    TacticM Unit := withMainContext do
+  let ldecl ← fvarId.getDecl
+  if ldecl.isAuxDecl then return
+  let tgt ← instantiateMVars ldecl.type
+  let mvarId ← getMainGoal
+  let result ← pullCore head tgt discharge?
+  let some (_, mvarIdNew) ← applySimpResultToLocalDecl mvarId fvarId result False | failure
+  if mvarIdNew == mvarId then throwError "pull made no progress"
+  replaceMainGoal [mvarIdNew]
+
+end pull
+
+/-- Elaborate the `(disch := ...)` syntax. -/
+def elabOptDisch (optDischargeSyntax : Syntax) : TacticM (Option Simp.Discharge) := do
+  if optDischargeSyntax.isNone then
+    return none
+  else
+    let (_, d) ← tacticToDischarge optDischargeSyntax[0][3]
+    return d
+
+def throwNoProgress (tactic : Name) (head : Head) : TacticM Unit :=
+  throwError m!"tactic `{tactic}` made no progress using `{head.toString}`"
+
 /--
 `push` pushes the given constant away from the root of the expression. For example
-- `push · ∈ ·` rewrites `x ∈ {y} ∪ zᶜ` into `x = y ∨ ¬ x ∈ z`
+- `push · ∈ ·` rewrites `x ∈ {y} ∪ zᶜ` into `x = y ∨ ¬ x ∈ z`.
 - `push (disch := positivity) Real.log` rewrites `log (a * b ^ 2)` into `log a + 2 * log b`.
 - `push ¬·` is the same as `push_neg` or `push Not`, and it rewrites
   `¬∀ ε > 0, ∃ δ > 0, δ < ε` into `∃ ε > 0, ∀ δ > 0, ε ≤ δ`.
@@ -215,18 +277,17 @@ To push a constant at a hypothesis, use the `push ... at h` or `push ... at *` s
 -/
 syntax (name := push) "push " (discharger)? (colGt term) (location)? : tactic
 
-open private Lean.Elab.Tactic.mkDischargeWrapper in mkSimpContext
-
 @[tactic push, inherit_doc push]
 def elabPush : Tactic := fun stx => do
-  let dischargeWrapper ← Lean.Elab.Tactic.mkDischargeWrapper stx[1]
+  let disch? ← elabOptDisch stx[1]
   let head ← elabHead ⟨stx[2]⟩
-  let loc := expandOptLocation stx[3]
-  dischargeWrapper.with fun discharge? => do
-    withLocation loc
-      (pushLocalDecl head discharge?)
-      (pushTarget head discharge?)
-      (fun _ ↦ logInfo m!"`push` couldn't find a {head.toString} to push")
+  let goal ← getMainGoal
+  withLocation (expandOptLocation stx[3])
+    (pushLocalDecl head disch?)
+    (pushTarget head disch?)
+    (fun _ ↦ throwNoProgress `push head)
+  if (← getMainGoal) == goal then
+    throwNoProgress `push head
 
 /--
 Push negations into the conclusion or a hypothesis.
@@ -255,6 +316,37 @@ using say `push_neg at h h' ⊢`, as usual.
 -/
 macro (name := push_neg) "push_neg" loc:(location)? : tactic => `(tactic| push Not $[$loc]?)
 
+/--
+A simproc variant of `push_neg` that can be used as `simp [↓pushNeg]`.
+It is better to write `↓pushNeg` instead of `pushNeg` because it is faster.
+-/
+simproc_decl _root_.pushNeg (Not _) := pushStep (.name ``Not)
+
+/--
+`pull` is the inverse tactic to `pull`.
+It pulls the given constant towards the root of the expression. For example
+- `pull · ∈ ·` rewrites `x ∈ y ∨ ¬ x ∈ z` into `x ∈ y ∪ zᶜ`.
+- `pull (disch := positivity) Real.log` rewrites `log a + 2 * log b` into `log (a * b ^ 2)`.
+
+A lemma is considdered a `pull` lemma if its reverse direction is a `push` lemma
+in which the pushed constant is present in the result.
+For example, `not_or : ¬ (p ∨ q) ↔ ¬ p ∧ ¬ q` is a `pull` lemma for negation,
+but `not_not : ¬ ¬ p ↔ p` is not a `pull` lemma.
+-/
+syntax (name := pull) "pull " (discharger)? (colGt term) (location)? : tactic
+
+@[tactic pull, inherit_doc pull]
+def elabPull : Tactic := fun stx => do
+  let disch? ← elabOptDisch stx[1]
+  let head ← elabHead ⟨stx[2]⟩
+  let goal ← getMainGoal
+  withLocation (expandOptLocation stx[3])
+    (pullLocalDecl head disch?)
+    (pullTarget head disch?)
+    (fun _ ↦ throwNoProgress `pull head)
+  if (← getMainGoal) == goal then
+    throwNoProgress `pull head
+
 section Conv
 
 @[inherit_doc push]
@@ -265,10 +357,9 @@ macro "push_neg" : conv => `(conv| push Not)
 
 /-- Execute `push` as a conv tactic. -/
 @[tactic pushConv] def elabPushConv : Tactic := fun stx ↦ withMainContext do
-  let dischargeWrapper ← Lean.Elab.Tactic.mkDischargeWrapper stx[1]
+  let disch? ← elabOptDisch stx[1]
   let head ← elabHead ⟨stx[2]⟩
-  dischargeWrapper.with fun discharge? => do
-    Conv.applySimpResult (← pushCore head (← instantiateMVars (← Conv.getLhs)) discharge?)
+  Conv.applySimpResult (← pushCore head (← instantiateMVars (← Conv.getLhs)) disch?)
 
 /--
 The syntax is `#push_neg e`, where `e` is an expression,
@@ -288,12 +379,30 @@ which will print the `push head` form of `e`.
 macro (name := pushCommand) tk:"#push " head:ident e:term : command =>
   `(command| #conv%$tk push $head:ident => $e)
 
+@[inherit_doc pull]
+syntax (name := pullConv) "pull " (discharger)? (colGt term) : conv
+
+/-- Execute `pull` as a conv tactic. -/
+@[tactic pullConv] def elabPullConv : Tactic := fun stx ↦ withMainContext do
+  let disch? ← elabOptDisch stx[1]
+  let head ← elabHead ⟨stx[2]⟩
+  Conv.applySimpResult (← pullCore head (← instantiateMVars (← Conv.getLhs)) disch?)
+
+/--
+The syntax is `#pull head e`, where `head` is a constant and `e` is an expression,
+which will print the `pull head` form of `e`.
+
+`#pull` understands local variables, so you can use them to introduce parameters.
+-/
+macro (name := pullCommand) tk:"#pull " head:ident e:term : command =>
+  `(command| #conv%$tk pull $head:ident => $e)
+
 end Conv
 
 section DiscrTree
 
 /--
-`#push_discr_tree` is a command to see what `push` lemmas are in the environment for pushing
+`#push_discr_tree` is a command to see what `@[push]` lemmas are in the environment for pushing
 a given constant. This can be helpful when you are constructing a set of `push` lemmas.
 -/
 syntax (name := pushTree) "#push_discr_tree " (colGt term) : command
