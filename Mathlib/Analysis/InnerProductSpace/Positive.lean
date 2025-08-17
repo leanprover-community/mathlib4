@@ -258,9 +258,9 @@ theorem IsPositive.conj_adjoint {T : E →L[𝕜] E} (hT : T.IsPositive) (S : E 
   rw [reApplyInnerSelf, comp_apply, ← adjoint_inner_right]
   exact hT.re_inner_nonneg_left _
 
-theorem IsPositive.comp_adjoint (S : E →L[𝕜] F) :
+theorem isPositive_self_comp_adjoint (S : E →L[𝕜] F) :
     (S ∘L S†).IsPositive := by
-  simpa using IsPositive.conj_adjoint isPositive_one S
+  simpa using isPositive_one.conj_adjoint S
 
 @[aesop safe apply]
 theorem IsPositive.adjoint_conj {T : E →L[𝕜] E} (hT : T.IsPositive) (S : F →L[𝕜] E) :
@@ -268,9 +268,9 @@ theorem IsPositive.adjoint_conj {T : E →L[𝕜] E} (hT : T.IsPositive) (S : F 
   convert hT.conj_adjoint (S†)
   rw [adjoint_adjoint]
 
-theorem IsPositive.adjoint_comp (S : E →L[𝕜] F) :
+theorem isPositive_adjoint_comp_self (S : E →L[𝕜] F) :
     (S† ∘L S).IsPositive := by
-  simpa using IsPositive.adjoint_conj isPositive_one S
+  simpa using isPositive_one.adjoint_conj S
 
 section LinearMap
 
@@ -286,9 +286,9 @@ theorem _root_.LinearMap.IsPositive.conj_adjoint {T : E →ₗ[𝕜] E}
   simpa [← isPositive_toContinuousLinearMap_iff] using
     ((T.isPositive_toContinuousLinearMap_iff.mpr hT).conj_adjoint S.toContinuousLinearMap)
 
-theorem _root_.LinearMap.IsPositive.comp_adjoint (S : E →ₗ[𝕜] F) :
+theorem _root_.LinearMap.isPositive_self_comp_adjoint (S : E →ₗ[𝕜] F) :
     (S ∘ₗ S.adjoint).IsPositive := by
-  simpa using LinearMap.IsPositive.conj_adjoint LinearMap.isPositive_one S
+  simpa using LinearMap.isPositive_one.conj_adjoint S
 
 @[aesop safe apply]
 theorem _root_.LinearMap.IsPositive.adjoint_conj {T : E →ₗ[𝕜] E}
@@ -296,9 +296,9 @@ theorem _root_.LinearMap.IsPositive.adjoint_conj {T : E →ₗ[𝕜] E}
   convert hT.conj_adjoint S.adjoint
   rw [LinearMap.adjoint_adjoint]
 
-theorem _root_.LinearMap.IsPositive.adjoint_comp (S : E →ₗ[𝕜] F) :
+theorem _root_.LinearMap.isPositive_adjoint_comp_self (S : E →ₗ[𝕜] F) :
     (S.adjoint ∘ₗ S).IsPositive := by
-  simpa using LinearMap.IsPositive.adjoint_conj LinearMap.isPositive_one S
+  simpa using LinearMap.isPositive_one.adjoint_conj S
 
 end LinearMap
 
