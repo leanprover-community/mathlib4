@@ -19,15 +19,17 @@ instance [CompleteSpace E] [Zero E] : QuasiCompleteSpace 𝕜 E where
     intro s ⟨hs₁, hs₂⟩
     exact IsClosed.isComplete hs₂
 
+variable {E}
+
 /- TVS III.8 for complete spaces -/
-theorem isCompact_closure_of_totallyBounded' [CompleteSpace E]
+theorem isCompact_closure_of_totallyBounded [CompleteSpace E]
     {s : Set E} (ht : TotallyBounded s) : IsCompact (closure s) :=
   isCompact_of_totallyBounded_isClosed (TotallyBounded.closure ht) isClosed_closure
 
 end QuasiCompleteSpace
 
-#check isCompact_closedAbsConvexHull_of_totallyBounded
-theorem isCompact_closedAbsConvexHull_of_totallyBounded' {α : Type*} [UniformSpace α]
+
+theorem isCompact_closedAbsConvexHull_of_totallyBounded {α : Type*} [UniformSpace α]
     [AddCommGroup α] [Module ℝ α] [IsUniformAddGroup α] [ContinuousSMul ℝ α] [CompleteSpace α]
     [LocallyConvexSpace ℝ α] {s : Set α}
     (ht : TotallyBounded s) : IsCompact (closedAbsConvexHull ℝ s) := by
