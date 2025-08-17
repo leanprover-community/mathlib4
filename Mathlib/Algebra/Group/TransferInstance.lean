@@ -26,7 +26,7 @@ namespace Equiv
 variable {M α β : Type*} (e : α ≃ β)
 
 /-- Transfer `One` across an `Equiv` -/
-@[to_additive "Transfer `Zero` across an `Equiv`"]
+@[to_additive /-- Transfer `Zero` across an `Equiv` -/]
 protected abbrev one [One β] : One α where one := e.symm 1
 
 @[to_additive]
@@ -35,7 +35,7 @@ lemma one_def [One β] :
     1 = e.symm 1 := rfl
 
 /-- Transfer `Mul` across an `Equiv` -/
-@[to_additive "Transfer `Add` across an `Equiv`"]
+@[to_additive /-- Transfer `Add` across an `Equiv` -/]
 protected abbrev mul [Mul β] : Mul α where mul x y := e.symm (e x * e y)
 
 @[to_additive]
@@ -44,7 +44,7 @@ lemma mul_def [Mul β] (x y : α) :
     x * y = e.symm (e x * e y) := rfl
 
 /-- Transfer `Div` across an `Equiv` -/
-@[to_additive "Transfer `Sub` across an `Equiv`"]
+@[to_additive /-- Transfer `Sub` across an `Equiv` -/]
 protected abbrev div [Div β] : Div α :=
   ⟨fun x y => e.symm (e x / e y)⟩
 
@@ -56,7 +56,7 @@ lemma div_def [Div β] (x y : α) :
 -- Porting note: this should be called `inv`,
 -- but we already have an `Equiv.inv` (which perhaps should move to `Perm.inv`?)
 /-- Transfer `Inv` across an `Equiv` -/
-@[to_additive "Transfer `Neg` across an `Equiv`"]
+@[to_additive /-- Transfer `Neg` across an `Equiv` -/]
 protected abbrev Inv [Inv β] : Inv α where inv x := e.symm (e x)⁻¹
 
 @[to_additive]
@@ -66,7 +66,7 @@ lemma inv_def [Inv β] (x : α) :
 
 variable (M) in
 /-- Transfer `SMul` across an `Equiv` -/
-@[to_additive "Transfer `VAdd` across an `Equiv`"]
+@[to_additive /-- Transfer `VAdd` across an `Equiv` -/]
 protected abbrev smul [SMul M β] : SMul M α where smul r x := e.symm (r • e x)
 
 @[to_additive]
@@ -87,9 +87,9 @@ lemma pow_def [Pow β M] (n : M) (x : α) :
 /-- An equivalence `e : α ≃ β` gives a multiplicative equivalence `α ≃* β` where
 the multiplicative structure on `α` is the one obtained by transporting a multiplicative structure
 on `β` back along `e`. -/
-@[to_additive "An equivalence `e : α ≃ β` gives an additive equivalence `α ≃+ β` where
+@[to_additive /-- An equivalence `e : α ≃ β` gives an additive equivalence `α ≃+ β` where
 the additive structure on `α` is the one obtained by transporting an additive structure
-on `β` back along `e`."]
+on `β` back along `e`. -/]
 def mulEquiv (e : α ≃ β) [Mul β] :
     let _ := Equiv.mul e
     α ≃* β := by
@@ -109,26 +109,47 @@ lemma mulEquiv_symm_apply (e : α ≃ β) [Mul β] (b : β) :
     (mulEquiv e).symm b = e.symm b := rfl
 
 /-- Transfer `Semigroup` across an `Equiv` -/
-@[to_additive "Transfer `add_semigroup` across an `Equiv`"]
+@[to_additive /-- Transfer `add_semigroup` across an `Equiv` -/]
 protected abbrev semigroup [Semigroup β] : Semigroup α := by
   let mul := e.mul
   apply e.injective.semigroup _; intros; exact e.apply_symm_apply _
 
 /-- Transfer `CommSemigroup` across an `Equiv` -/
-@[to_additive "Transfer `AddCommSemigroup` across an `Equiv`"]
+@[to_additive /-- Transfer `AddCommSemigroup` across an `Equiv` -/]
 protected abbrev commSemigroup [CommSemigroup β] : CommSemigroup α := by
   let mul := e.mul
   apply e.injective.commSemigroup _; intros; exact e.apply_symm_apply _
 
+/-- Transfer `IsLeftCancelMul` across an `Equiv` -/
+@[to_additive /-- Transfer `IsLeftCancelAdd` across an `Equiv` -/]
+protected lemma isLeftCancelMul [Mul β] [IsLeftCancelMul β] :
+    letI := e.mul
+    IsLeftCancelMul α := by
+  letI := e.mul; exact e.injective.isLeftCancelMul _ fun _ _ ↦ e.apply_symm_apply _
+
+/-- Transfer `IsRightCancelMul` across an `Equiv` -/
+@[to_additive /-- Transfer `IsRightCancelAdd` across an `Equiv` -/]
+protected lemma isRightCancelMul [Mul β] [IsRightCancelMul β] :
+    letI := e.mul
+    IsRightCancelMul α := by
+  letI := e.mul; exact e.injective.isRightCancelMul _ fun _ _ ↦ e.apply_symm_apply _
+
+/-- Transfer `IsCancelMul` across an `Equiv` -/
+@[to_additive /-- Transfer `IsCancelAdd` across an `Equiv` -/]
+protected lemma isCancelMul [Mul β] [IsCancelMul β] :
+    letI := e.mul
+    IsCancelMul α := by
+  letI := e.mul; exact e.injective.isCancelMul _ fun _ _ ↦ e.apply_symm_apply _
+
 /-- Transfer `MulOneClass` across an `Equiv` -/
-@[to_additive "Transfer `AddZeroClass` across an `Equiv`"]
+@[to_additive /-- Transfer `AddZeroClass` across an `Equiv` -/]
 protected abbrev mulOneClass [MulOneClass β] : MulOneClass α := by
   let one := e.one
   let mul := e.mul
   apply e.injective.mulOneClass _ <;> intros <;> exact e.apply_symm_apply _
 
 /-- Transfer `Monoid` across an `Equiv` -/
-@[to_additive "Transfer `AddMonoid` across an `Equiv`"]
+@[to_additive /-- Transfer `AddMonoid` across an `Equiv` -/]
 protected abbrev monoid [Monoid β] : Monoid α := by
   let one := e.one
   let mul := e.mul
@@ -136,7 +157,7 @@ protected abbrev monoid [Monoid β] : Monoid α := by
   apply e.injective.monoid _ <;> intros <;> exact e.apply_symm_apply _
 
 /-- Transfer `CommMonoid` across an `Equiv` -/
-@[to_additive "Transfer `AddCommMonoid` across an `Equiv`"]
+@[to_additive /-- Transfer `AddCommMonoid` across an `Equiv` -/]
 protected abbrev commMonoid [CommMonoid β] : CommMonoid α := by
   let one := e.one
   let mul := e.mul
@@ -144,7 +165,7 @@ protected abbrev commMonoid [CommMonoid β] : CommMonoid α := by
   apply e.injective.commMonoid _ <;> intros <;> exact e.apply_symm_apply _
 
 /-- Transfer `Group` across an `Equiv` -/
-@[to_additive "Transfer `AddGroup` across an `Equiv`"]
+@[to_additive /-- Transfer `AddGroup` across an `Equiv` -/]
 protected abbrev group [Group β] : Group α := by
   let one := e.one
   let mul := e.mul
@@ -155,7 +176,7 @@ protected abbrev group [Group β] : Group α := by
   apply e.injective.group _ <;> intros <;> exact e.apply_symm_apply _
 
 /-- Transfer `CommGroup` across an `Equiv` -/
-@[to_additive "Transfer `AddCommGroup` across an `Equiv`"]
+@[to_additive /-- Transfer `AddCommGroup` across an `Equiv` -/]
 protected abbrev commGroup [CommGroup β] : CommGroup α := by
   let one := e.one
   let mul := e.mul
@@ -167,7 +188,7 @@ protected abbrev commGroup [CommGroup β] : CommGroup α := by
 
 variable (M) [Monoid M] in
 /-- Transfer `MulAction` across an `Equiv` -/
-@[to_additive "Transfer `AddAction` across an `Equiv`"]
+@[to_additive /-- Transfer `AddAction` across an `Equiv` -/]
 protected abbrev mulAction (e : α ≃ β) [MulAction M β] : MulAction M α where
   __ := e.smul M
   one_smul := by simp [smul_def]
@@ -179,7 +200,7 @@ namespace Finite
 
 /-- Any finite group in universe `u` is equivalent to some finite group in universe `v`. -/
 @[to_additive
-"Any finite group in universe `u` is equivalent to some finite group in universe `v`."]
+/-- Any finite group in universe `u` is equivalent to some finite group in universe `v`. -/]
 lemma exists_type_univ_nonempty_mulEquiv.{u, v} (G : Type u) [Group G] [Finite G] :
     ∃ (G' : Type v) (_ : Group G') (_ : Fintype G'), Nonempty (G ≃* G') := by
   obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin G

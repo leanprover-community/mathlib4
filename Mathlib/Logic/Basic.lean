@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
 import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.Basic
 import Batteries.Logic
 import Batteries.Tactic.Trans
@@ -100,8 +101,6 @@ abbrev Function.swap₂ {ι₁ ι₂ : Sort*} {κ₁ : ι₁ → Sort*} {κ₂ :
     (i₂ j₂ i₁ j₁) : φ i₁ j₁ i₂ j₂ := f i₁ j₁ i₂ j₂
 
 end Miscellany
-
-open Function
 
 /-!
 ### Declarations about propositional connectives
@@ -213,29 +212,35 @@ lemma Iff.ne_right {α β : Sort*} {a b : α} {c d : β} : (a ≠ b ↔ c = d) �
 
 /-! ### Declarations about `Xor'` -/
 
+#adaptation_note
+/--
+2025-07-31. Upstream `Xor` has been renamed to `XorOp`.
+Anytime after v4.23.0-rc1 lands it should be okay to remove the deprecation, and then rename this.
+-/
 /-- `Xor' a b` is the exclusive-or of propositions. -/
 def Xor' (a b : Prop) := (a ∧ ¬b) ∨ (b ∧ ¬a)
 
+@[grind =] theorem xor_def {a b : Prop} : Xor' a b ↔ (a ∧ ¬b) ∨ (b ∧ ¬a) := Iff.rfl
+
 instance [Decidable a] [Decidable b] : Decidable (Xor' a b) := inferInstanceAs (Decidable (Or ..))
 
-@[simp] theorem xor_true : Xor' True = Not := by
-  simp +unfoldPartialApp [Xor']
+@[simp] theorem xor_true : Xor' True = Not := by grind
 
-@[simp] theorem xor_false : Xor' False = id := by ext; simp [Xor']
+@[simp] theorem xor_false : Xor' False = id := by grind
 
-theorem xor_comm (a b : Prop) : Xor' a b = Xor' b a := by simp [Xor', or_comm]
+theorem xor_comm (a b : Prop) : Xor' a b = Xor' b a := by grind
 
 instance : Std.Commutative Xor' := ⟨xor_comm⟩
 
-@[simp] theorem xor_self (a : Prop) : Xor' a a = False := by simp [Xor']
+@[simp] theorem xor_self (a : Prop) : Xor' a a = False := by grind
 
-@[simp] theorem xor_not_left : Xor' (¬a) b ↔ (a ↔ b) := by by_cases a <;> simp [*]
+@[simp] theorem xor_not_left : Xor' (¬a) b ↔ (a ↔ b) := by grind
 
-@[simp] theorem xor_not_right : Xor' a (¬b) ↔ (a ↔ b) := by by_cases a <;> simp [*]
+@[simp] theorem xor_not_right : Xor' a (¬b) ↔ (a ↔ b) := by grind
 
-theorem xor_not_not : Xor' (¬a) (¬b) ↔ Xor' a b := by simp [Xor', or_comm, and_comm]
+theorem xor_not_not : Xor' (¬a) (¬b) ↔ Xor' a b := by grind
 
-protected theorem Xor'.or (h : Xor' a b) : a ∨ b := h.imp And.left And.left
+protected theorem Xor'.or (h : Xor' a b) : a ∨ b := by grind
 
 /-! ### Declarations about `and` -/
 
@@ -336,13 +341,13 @@ theorem and_iff_not_or_not : a ∧ b ↔ ¬(¬a ∨ ¬b) :=
 @[simp] theorem not_xor (P Q : Prop) : ¬Xor' P Q ↔ (P ↔ Q) := by
   simp only [not_and, Xor', not_or, not_not, ← iff_iff_implies_and_implies]
 
-theorem xor_iff_not_iff (P Q : Prop) : Xor' P Q ↔ ¬ (P ↔ Q) := (not_xor P Q).not_right
+theorem xor_iff_not_iff (P Q : Prop) : Xor' P Q ↔ ¬(P ↔ Q) := (not_xor P Q).not_right
 
 theorem xor_iff_iff_not : Xor' a b ↔ (a ↔ ¬b) := by simp only [← @xor_not_right a, not_not]
 
 theorem xor_iff_not_iff' : Xor' a b ↔ (¬a ↔ b) := by simp only [← @xor_not_left _ b, not_not]
 
-theorem xor_iff_or_and_not_and (a b : Prop) : Xor' a b ↔ (a ∨ b) ∧ (¬ (a ∧ b)) := by
+theorem xor_iff_or_and_not_and (a b : Prop) : Xor' a b ↔ (a ∨ b) ∧ (¬(a ∧ b)) := by
   rw [Xor', or_and_right, not_and_or, and_or_left, and_not_self_iff, false_or,
     and_or_left, and_not_self_iff, or_false]
 
@@ -515,10 +520,10 @@ theorem not_forall_not : (¬∀ x, ¬p x) ↔ ∃ x, p x :=
 
 export Classical (not_exists_not)
 
-lemma forall_or_exists_not (P : α → Prop) : (∀ a, P a) ∨ ∃ a, ¬ P a := by
+lemma forall_or_exists_not (P : α → Prop) : (∀ a, P a) ∨ ∃ a, ¬P a := by
   rw [← not_forall]; exact em _
 
-lemma exists_or_forall_not (P : α → Prop) : (∃ a, P a) ∨ ∀ a, ¬ P a := by
+lemma exists_or_forall_not (P : α → Prop) : (∃ a, P a) ∨ ∀ a, ¬P a := by
   rw [← not_exists]; exact em _
 
 theorem forall_imp_iff_exists_imp {α : Sort*} {p : α → Prop} {b : Prop} [ha : Nonempty α] :
@@ -635,6 +640,15 @@ protected theorem Decidable.forall_or_right {q} {p : α → Prop} [Decidable q] 
 
 theorem forall_or_right {q} {p : α → Prop} : (∀ x, p x ∨ q) ↔ (∀ x, p x) ∨ q :=
   open scoped Classical in Decidable.forall_or_right
+
+@[simp]
+theorem forall_and_index {p q : Prop} {r : p ∧ q → Prop} :
+    (∀ h : p ∧ q, r h) ↔ ∀ (hp : p) (hq : q), r ⟨hp, hq⟩ :=
+  ⟨fun h hp hq ↦ h ⟨hp, hq⟩, fun h h1 ↦ h h1.1 h1.2⟩
+
+theorem forall_and_index' {p q : Prop} {r : p → q → Prop} :
+    (∀ (hp : p) (hq : q), r hp hq) ↔ ∀ h : p ∧ q, r h.1 h.2 :=
+  (forall_and_index (r := fun h => r h.1 h.2)).symm
 
 theorem Exists.fst {b : Prop} {p : b → Prop} : Exists p → b
   | ⟨h, _⟩ => h
@@ -930,7 +944,7 @@ end
 
 variable {P Q}
 
-theorem ite_prop_iff_or : (if P then Q else R) ↔ (P ∧ Q ∨ ¬ P ∧ R) := by
+theorem ite_prop_iff_or : (if P then Q else R) ↔ (P ∧ Q ∨ ¬P ∧ R) := by
   by_cases p : P <;> simp [p]
 
 theorem dite_prop_iff_or {Q : P → Prop} {R : ¬P → Prop} :
@@ -938,7 +952,7 @@ theorem dite_prop_iff_or {Q : P → Prop} {R : ¬P → Prop} :
   by_cases h : P <;> simp [h, exists_prop_of_false, exists_prop_of_true]
 
 -- TODO make this a simp lemma in a future PR
-theorem ite_prop_iff_and : (if P then Q else R) ↔ ((P → Q) ∧ (¬ P → R)) := by
+theorem ite_prop_iff_and : (if P then Q else R) ↔ ((P → Q) ∧ (¬P → R)) := by
   by_cases p : P <;> simp [p]
 
 theorem dite_prop_iff_and {Q : P → Prop} {R : ¬P → Prop} :

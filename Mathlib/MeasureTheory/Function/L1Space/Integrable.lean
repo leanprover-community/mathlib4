@@ -218,7 +218,7 @@ lemma integrable_norm_rpow_iff {f : α → β} {p : ℝ≥0∞}
 theorem Integrable.mono_measure {f : α → ε} (h : Integrable f ν) (hμ : μ ≤ ν) : Integrable f μ :=
   ⟨h.aestronglyMeasurable.mono_measure hμ, h.hasFiniteIntegral.mono_measure hμ⟩
 
-theorem Integrable.of_measure_le_smul {ε} [TopologicalSpace ε] [ENormedAddMonoid ε]
+theorem Integrable.of_measure_le_smul {ε} [TopologicalSpace ε] [ESeminormedAddMonoid ε]
     {μ' : Measure α} {c : ℝ≥0∞} (hc : c ≠ ∞) (hμ'_le : μ' ≤ c • μ)
     {f : α → ε} (hf : Integrable f μ) : Integrable f μ' := by
   rw [← memLp_one_iff_integrable] at hf ⊢
@@ -276,7 +276,7 @@ theorem integrable_finset_sum_measure [PseudoMetrizableSpace ε]
 
 section
 
-variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
+variable {ε : Type*} [TopologicalSpace ε] [ESeminormedAddMonoid ε]
 
 @[fun_prop]
 theorem Integrable.smul_measure {f : α → ε} (h : Integrable f μ) {c : ℝ≥0∞} (hc : c ≠ ∞) :
@@ -363,9 +363,9 @@ theorem lintegral_edist_lt_top {f g : α → β} (hf : Integrable f μ) (hg : In
       simp_rw [Pi.zero_apply, ← hasFiniteIntegral_iff_edist]
       exact ⟨hf.hasFiniteIntegral, hg.hasFiniteIntegral⟩)
 
-section ENormedAddMonoid
+section ESeminormedAddMonoid
 
-variable {ε' : Type*} [TopologicalSpace ε'] [ENormedAddMonoid ε']
+variable {ε' : Type*} [TopologicalSpace ε'] [ESeminormedAddMonoid ε']
 
 variable (α ε') in
 @[simp]
@@ -395,11 +395,11 @@ lemma Integrable.of_subsingleton_codomain [Subsingleton ε'] {f : α → ε'} :
     Integrable f μ :=
   integrable_zero _ _ _ |>.congr <| .of_forall fun _ ↦ Subsingleton.elim _ _
 
-end ENormedAddMonoid
+end ESeminormedAddMonoid
 
-section ENormedAddCommMonoid
+section ESeminormedAddCommMonoid
 
-variable {ε' : Type*} [TopologicalSpace ε'] [ENormedAddCommMonoid ε'] [ContinuousAdd ε']
+variable {ε' : Type*} [TopologicalSpace ε'] [ESeminormedAddCommMonoid ε'] [ContinuousAdd ε']
 
 @[fun_prop]
 theorem integrable_finset_sum' {ι} (s : Finset ι) {f : ι → α → ε'}
@@ -412,7 +412,7 @@ theorem integrable_finset_sum {ι} (s : Finset ι) {f : ι → α → ε'}
     (hf : ∀ i ∈ s, Integrable (f i) μ) : Integrable (fun a => ∑ i ∈ s, f i a) μ := by
   simpa only [← Finset.sum_apply] using integrable_finset_sum' s hf
 
-end ENormedAddCommMonoid
+end ESeminormedAddCommMonoid
 
 /-- If `f` is integrable, then so is `-f`.
 See `Integrable.neg'` for the same statement, but formulated with `x ↦ - f x` instead of `-f`. -/
@@ -763,11 +763,7 @@ lemma integrable_count_iff :
   · refine ⟨f '' univ, ?_, ae_of_all _ fun a ↦ ⟨a, ⟨mem_univ _, rfl⟩⟩⟩
     suffices f '' univ ⊆ (f '' f.support) ∪ {0} from
       (((hs'.image f).union (countable_singleton 0)).mono this).isSeparable
-    intro g hg
-    rcases eq_or_ne g 0 with rfl | hg'
-    · exact Or.inr (mem_singleton _)
-    · obtain ⟨x, -, rfl⟩ := (mem_image ..).mp hg
-      exact Or.inl ⟨x, hg', rfl⟩
+    grind [Function.mem_support]
 
 end count
 
@@ -951,6 +947,7 @@ end PosPart
 section IsBoundedSMul
 
 variable {𝕜 : Type*}
+  {ε : Type*} [TopologicalSpace ε] [ESeminormedAddMonoid ε]
 
 @[fun_prop]
 theorem Integrable.smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β] [IsBoundedSMul 𝕜 β] (c : 𝕜)
@@ -961,6 +958,17 @@ theorem Integrable.smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β] [IsBou
 theorem Integrable.fun_smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β] [IsBoundedSMul 𝕜 β] (c : 𝕜)
     {f : α → β} (hf : Integrable f μ) : Integrable (fun x ↦ c • f x) μ :=
   hf.smul c
+
+@[fun_prop]
+theorem Integrable.smul_enorm
+    [NormedAddCommGroup 𝕜] [SMul 𝕜 ε] [ContinuousConstSMul 𝕜 ε] [ENormSMulClass 𝕜 ε] (c : 𝕜)
+    {f : α → ε} (hf : Integrable f μ) : Integrable (c • f) μ := by
+  constructor <;> fun_prop
+
+theorem Integrable.fun_smul_enorm
+    [NormedAddCommGroup 𝕜] [SMul 𝕜 ε] [ContinuousConstSMul 𝕜 ε] [ENormSMulClass 𝕜 ε] (c : 𝕜)
+    {f : α → ε} (hf : Integrable f μ) : Integrable (fun x ↦ c • f x) μ :=
+  hf.smul_enorm c
 
 theorem _root_.IsUnit.integrable_smul_iff [NormedRing 𝕜] [MulActionWithZero 𝕜 β]
     [IsBoundedSMul 𝕜 β] {c : 𝕜} (hc : IsUnit c) (f : α → β) :
