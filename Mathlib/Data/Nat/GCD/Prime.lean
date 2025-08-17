@@ -1,5 +1,20 @@
+/-
+Copyright (c) 2025 Yongshun Ye. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yongshun Ye
+-/
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.Prime.Defs
+
+/-!
+# Lemmas related to `Nat.Prime`
+
+Some simple lemmas in the module related to `Nat.Prime` that's separated from the others
+as they depend on `import Mathlib.Data.Nat.Prime.Defs`.
+
+Currently there are only theorems about a prime number dividing an LCM `p ∣ lcm a b` in this file.
+More theorems related to prime number could be added in the future.
+-/
 
 namespace Nat
 
