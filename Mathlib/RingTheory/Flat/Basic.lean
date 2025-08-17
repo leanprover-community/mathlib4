@@ -597,7 +597,7 @@ theorem map_id_injective_of_flat_left [Module.Flat R M] {MN MP : Type*} [AddComm
     funext fun x ↦ hf.inductionOn x (by simp) (by simp) (fun _ _ hx hy ↦ by simp [hx, hy])
   simpa [h] using Module.Flat.lTensor_preserves_injective_linearMap i hi
 
-theorem rTensor_injective_of_flat [Module.Flat R M] {NM PM : Type*} [AddCommMonoid NM]
+theorem map_id_injective_of_flat_right [Module.Flat R M] {NM PM : Type*} [AddCommMonoid NM]
     [AddCommMonoid PM] [Module R NM] [Module R PM] {f : N →ₗ[R] M →ₗ[R] NM} {g : P →ₗ[R] M →ₗ[R] PM}
     (hf : IsTensorProduct f) (hg : IsTensorProduct g) (i : N →ₗ[R] P)
     (hi : Function.Injective i) : Function.Injective (hf.map hg i LinearMap.id) := by
