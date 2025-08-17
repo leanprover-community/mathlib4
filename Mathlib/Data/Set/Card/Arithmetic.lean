@@ -61,6 +61,18 @@ theorem Finset.apply_union_le_sum [AddCommMonoid β] [PartialOrder β] [IsOrdere
     f (⋃ i ∈ t, s i) ≤ ∑ i ∈ t, f (s i) :=
   Finset.sup_set_eq_biUnion t s ▸ t.apply_sup_le_sum zero (by simpa)
 
+namespace Finset
+
+lemma set_ncard_biUnion_le (t : Finset ι) (s : ι → Set α) :
+    (⋃ i ∈ t, s i).ncard ≤ ∑ i ∈ t, (s i).ncard :=
+  t.apply_union_le_sum (by simp) (Set.ncard_union_le _ _)
+
+lemma eset_ncard_biUnion_le (t : Finset ι) (s : ι → Set α) :
+    (⋃ i ∈ t, s i).encard ≤ ∑ i ∈ t, (s i).encard :=
+  t.apply_union_le_sum (by simp) (Set.encard_union_le _ _)
+
+end Finset
+
 namespace Set
 
 variable {s : Set α}
@@ -133,36 +145,28 @@ lemma encard_iUnion_of_finite [Finite ι] {s : ι → Set α} (hs : Pairwise (Di
   rw [← finsum_mem_univ, ← finite_univ.encard_biUnion (fun a _ b _ hab ↦ hs hab)]
   simp
 
-lemma ncard_finset_biUnion_le (t : Finset ι) (s : ι → Set α) :
-    (⋃ i ∈ t, s i).ncard ≤ ∑ i ∈ t, (s i).ncard :=
-  t.apply_union_le_sum (by simp) (Set.ncard_union_le _ _)
-
-lemma encard_finset_biUnion_le (t : Finset ι) (s : ι → Set α) :
-    (⋃ i ∈ t, s i).encard ≤ ∑ i ∈ t, (s i).encard :=
-  t.apply_union_le_sum (by simp) (Set.encard_union_le _ _)
-
 lemma Finite.ncard_biUnion_le {t : Set ι} (ht : t.Finite) (s : ι → Set α) :
     (⋃ i ∈ t, s i).ncard ≤ ∑ᶠ i ∈ t, (s i).ncard := by
-  simpa [← finsum_mem_eq_finite_toFinset_sum] using Set.ncard_finset_biUnion_le ht.toFinset s
+  simpa [← finsum_mem_eq_finite_toFinset_sum] using ht.toFinset.set_ncard_biUnion_le s
 
 lemma Finite.encard_biUnion_le {t : Set ι} (ht : t.Finite) (s : ι → Set α) :
     (⋃ i ∈ t, s i).encard ≤ ∑ᶠ i ∈ t, (s i).encard := by
-  simpa [← finsum_mem_eq_finite_toFinset_sum] using Set.encard_finset_biUnion_le ht.toFinset s
+  simpa [← finsum_mem_eq_finite_toFinset_sum] using ht.toFinset.eset_ncard_biUnion_le s
 
 lemma ncard_iUnion_le_of_fintype [Fintype ι] (s : ι → Set α) :
     (⋃ i, s i).ncard ≤ ∑ i, (s i).ncard := by
-  simpa using Set.ncard_finset_biUnion_le .univ s
+  simpa using Finset.univ.set_ncard_biUnion_le s
 
 lemma encard_iUnion_le_of_fintype [Fintype ι] (s : ι → Set α) :
     (⋃ i, s i).encard ≤ ∑ i, (s i).encard := by
-  simpa using Set.encard_finset_biUnion_le .univ s
+  simpa using Finset.univ.eset_ncard_biUnion_le s
 
 lemma ncard_iUnion_le_of_finite [Finite ι] (s : ι → Set α) :
     (⋃ i, s i).ncard ≤ ∑ᶠ i, (s i).ncard := by
-  simpa using Finite.ncard_biUnion_le finite_univ s
+  simpa using finite_univ.ncard_biUnion_le s
 
 lemma encard_iUnion_le_of_finite [Finite ι] (s : ι → Set α) :
     (⋃ i, s i).encard ≤ ∑ᶠ i, (s i).encard := by
-  simpa using Finite.encard_biUnion_le finite_univ s
+  simpa using finite_univ.encard_biUnion_le s
 
 end Set
