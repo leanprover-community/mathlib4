@@ -127,7 +127,7 @@ private lemma restrictScalars_surjective_aux
   simpa using LinearMap.congr_fun hm n
 
 /-- Restricting a perfect pairing to a subring of the scalars results in a perfect pairing. -/
-instance restrictScalars.instIsPerfPair (hi : Injective i) (hj : Injective j)
+lemma IsPerfPair.restrictScalars (hi : Injective i) (hj : Injective j)
     (hM : span R (LinearMap.range i : Set M) = ⊤) (hN : span R (LinearMap.range j : Set N) = ⊤)
     (h₁ : ∀ g : Module.Dual S N', ∃ m,
       (p.toPerfPair (i m)).restrictScalars S ∘ₗ j = Algebra.linearMap S R ∘ₗ g)
@@ -143,7 +143,7 @@ instance restrictScalars.instIsPerfPair (hi : Injective i) (hj : Injective j)
 
 set_option linter.deprecated false in
 /-- Restriction of scalars for a perfect pairing taking values in a subring. -/
-@[deprecated restrictScalars.instIsPerfPair (since := "2025-05-28")]
+@[deprecated IsPerfPair.restrictScalars (since := "2025-05-28")]
 def _root_.PerfectPairing.restrictScalars
     (hi : Injective i) (hj : Injective j)
     (hM : span R (LinearMap.range i : Set M) = ⊤)
@@ -248,7 +248,7 @@ private lemma restrictScalars_field_aux
 include hi hj in
 /-- Simultaneously restrict both the domains and scalars of a perfect pairing with coefficients in a
 field. -/
-lemma restrictScalars.isPerfPair_of_field
+lemma IsPerfPair.restrictScalars_of_field
     (hij : p.IsPerfectCompl (span L <| LinearMap.range i) (span L <| LinearMap.range j))
     (hp : ∀ m n, p (i m) (j n) ∈ (algebraMap K L).range) :
     (LinearMap.restrictScalarsRange₂ i j (Algebra.linearMap K L)
@@ -281,3 +281,4 @@ omit [p.IsPerfPair] in
 end Field
 
 end LinearMap
+

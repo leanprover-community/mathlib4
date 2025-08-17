@@ -119,11 +119,11 @@ namespace RootPairing
 variable {ι R M N}
 variable (P : RootPairing ι R M N) (i j : ι)
 
-@[deprecated "Now a syntactic equality" (since := "2025-07-05")]
+@[deprecated "Now a syntactic equality" (since := "2025-07-05"), nolint synTaut]
 lemma toLinearMap_eq_toPerfectPairing (x : M) (y : N) :
     P.toLinearMap x y = P.toLinearMap x y := rfl
 
-@[deprecated (since := "2025-04-20")]
+@[deprecated (since := "2025-04-20"), nolint synTaut]
 alias toLin_toPerfectPairing := toLinearMap_eq_toPerfectPairing
 
 /-- If we interchange the roles of `M` and `N`, we still have a root pairing. -/
@@ -420,7 +420,7 @@ lemma toPerfPair_conj_reflection :
 
 @[simp]
 lemma toPerfPair_flip_conj_coreflection :
-    P.flip.toPerfPair.conj (P.coreflection i) = (P.reflection i).toLinearMap.dualMap :=
+    P.toLinearMap.flip.toPerfPair.conj (P.coreflection i) = (P.reflection i).toLinearMap.dualMap :=
   P.flip.toPerfPair_conj_reflection i
 
 @[simp]
@@ -599,7 +599,8 @@ alias _root_.RootSystem.reflection_perm_eq_reflection_perm_iff :=
 
 @[simp] lemma toPerfPair_comp_root : P.toPerfPair ∘ P.root = P.root' := rfl
 
-@[simp] lemma toPerfPair_flip_comp_coroot : P.flip.toPerfPair ∘ P.coroot = P.coroot' := rfl
+@[simp] lemma toPerfPair_flip_comp_coroot :
+    P.toLinearMap.flip.toPerfPair ∘ P.coroot = P.coroot' := rfl
 
 /-- The Coxeter Weight of a pair gives the weight of an edge in a Coxeter diagram, when it is
 finite.  It is `4 cos² θ`, where `θ` describes the dihedral angle between hyperplanes. -/
