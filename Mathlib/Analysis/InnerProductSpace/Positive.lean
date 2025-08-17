@@ -336,6 +336,18 @@ theorem _root_.LinearMap.isPositive_adjoint_conj_iff {T : E →ₗ[𝕜] E} (S :
     ← ContinuousLinearMap.isPositive_adjoint_conj_iff S]
   exact Iff.rfl
 
+omit [FiniteDimensional 𝕜 E] in
+open scoped ComplexOrder in
+/-- `A.toMatrix` is positive semi-definite if and only if `A` is positive. -/
+theorem _root_.LinearMap.toMatrix_posSemidef_iff {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {A : E →ₗ[𝕜] E} (b : OrthonormalBasis ι 𝕜 E) :
+    (A.toMatrix b.toBasis b.toBasis).PosSemidef ↔ A.IsPositive := by
+  have := FiniteDimensional.of_fintype_basis b.toBasis
+  rw [← Matrix.toEuclideanLin_isPositive_iff, (by exact Matrix.toLin'_toMatrix' _ :
+    (A.toMatrix b.toBasis b.toBasis).toEuclideanLin =
+      b.repr.toLinearMap ∘ₗ A ∘ₗ b.repr.symm.toLinearMap),
+    ← LinearIsometryEquiv.toLinearEquiv_adjoint_eq_symm, LinearMap.isPositive_conj_adjoint_iff]
+
 end LinearMap
 
 theorem IsPositive.conj_starProjection (U : Submodule 𝕜 E) {T : E →L[𝕜] E} (hT : T.IsPositive)
