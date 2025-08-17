@@ -93,7 +93,3 @@ theorem exists_eq_pow_of_pow_eq {a b m n : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) (h
   exact exists_eq_pow_of_exponent_coprime_of_pow_eq ha hb coprime pow_eq
 
 end Nat
-
-section UniqueFactorizationMonoid
-
-end UniqueFactorizationMonoid
