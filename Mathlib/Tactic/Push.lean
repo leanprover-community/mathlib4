@@ -21,7 +21,9 @@ namespace Mathlib.Tactic.Push
 universe u
 variable (p q : Prop) {α : Sort u} (s : α → Prop)
 
--- Note: the lemma `Classical.not_imp` is attempted before `not_forall_eq`
+-- Note: we want `Classical.not_imp` to be attempted before the more general `not_forall_eq`.
+-- This happens because `not_forall_eq` isn't a `push` lemma,
+-- but instead is handled manually by the `pushNegBuiltin`.
 attribute [push] not_not not_or Classical.not_imp
 
 -- We may want to rewrite `¬n = 0` into `0 < n` for `n : ℕ`, so `ne_eq` is marked with low priority.
@@ -30,8 +32,6 @@ attribute [push ← low] ne_eq
 @[push] theorem not_iff : ¬(p ↔ q) ↔ (p ∧ ¬q) ∨ (¬p ∧ q) :=
   _root_.not_iff.trans <| iff_iff_and_or_not_and_not.trans <| by rw [not_not, or_comm]
 
-/-
-TODO:
 
 attribute [push]
   forall_const forall_and forall_or_left forall_or_right forall_eq forall_eq' forall_self_imp
@@ -39,9 +39,10 @@ attribute [push]
   and_or_left and_or_right and_true true_and and_false false_and
   or_and_left or_and_right or_true true_or or_false false_or
 
-@[push high] theorem Nat.not_nonneg_iff_eq_zero (n : Nat) : ¬0 < n ↔ n = 0 :=
-  Nat.not_lt.trans Nat.le_zero
--/
+-- TODO(Jovan): Decide if we want this lemma, and if so, fix the proofs that break as a result
+-- @[push high] theorem Nat.not_nonneg_iff_eq_zero (n : Nat) : ¬0 < n ↔ n = 0 :=
+--   Nat.not_lt.trans Nat.le_zero
+
 
 theorem not_and_eq : (¬ (p ∧ q)) = (p → ¬ q) := propext not_and
 theorem not_and_or_eq : (¬ (p ∧ q)) = (¬ p ∨ ¬ q) := propext not_and_or
@@ -57,7 +58,8 @@ register_option push_neg.use_distrib : Bool :=
 open Lean Meta Elab.Tactic Parser.Tactic
 
 /--
-`pushNegBuiltin` is a simproc to do some rewriting that can't be done by just tagging lemmas.
+`pushNegBuiltin` is a simproc for pushing `¬` in a way that can't be done
+using the `@[push]` attribute.
 - `¬(p ∧ q)` turns into `p → ¬q` or `¬a ∨ ¬q`, depending on the option `push_neg.use_distrib`.
 - `¬∃ a, p` turns into `∀ a, ¬p`, where the binder name `a` is preserved.
 - `¬∀ a, p` turns into `∃ a, ¬p`, where the binder name `a` is preserved.
@@ -137,13 +139,13 @@ Note that you should write `↓pushNeg` instead of `pushNeg`, so that negations 
 simproc_decl _root_.pushNeg (Not _) := pushStep (.name ``Not)
 
 /-- The `simp` configuration used in `push`. -/
-def PushSimpConfig : Simp.Config where
+def pushSimpConfig : Simp.Config where
   zeta := false
   proj := false
 
 /-- Common entry point to the implementation of `push`. -/
 def pushCore (head : Head) (tgt : Expr) (disch? : Option Simp.Discharge) : MetaM Simp.Result := do
-  let ctx : Simp.Context ← Simp.mkContext PushSimpConfig
+  let ctx : Simp.Context ← Simp.mkContext pushSimpConfig
       (simpTheorems := #[])
       (congrTheorems := ← getSimpCongrTheorems)
   let methods := match disch? with
@@ -152,7 +154,7 @@ def pushCore (head : Head) (tgt : Expr) (disch? : Option Simp.Discharge) : MetaM
   (·.1) <$> Simp.main tgt ctx (methods := methods)
 
 /-- Execute main loop of `push` at the main goal. -/
-def pushNegTarget (head : Head) (discharge? : Option Simp.Discharge) :
+def pushTarget (head : Head) (discharge? : Option Simp.Discharge) :
     TacticM Unit := do
   let mvarId ← getMainGoal
   let tgt ← instantiateMVars (← mvarId.getType)
@@ -161,7 +163,7 @@ def pushNegTarget (head : Head) (discharge? : Option Simp.Discharge) :
   replaceMainGoal [mvarIdNew]
 
 /-- Execute main loop of `push` at a local hypothesis. -/
-def pushNegLocalDecl (head : Head) (discharge? : Option Simp.Discharge) (fvarId : FVarId) :
+def pushLocalDecl (head : Head) (discharge? : Option Simp.Discharge) (fvarId : FVarId) :
     TacticM Unit := do
   let ldecl ← fvarId.getDecl
   if ldecl.isAuxDecl then return
@@ -188,9 +190,9 @@ In addition to constants, `push` can be used to push `∀` and `fun` binders:
 - `push fun _ ↦ _` can turn `fun x => f x + g x` into `(fun x => f x) + (fun x => g x)`
 (or into `f + g`).
 
-One can use this tactic at the goal using `push_neg`,
-at every hypothesis and the goal using `push_neg at *` or at selected hypotheses and the goal
-using say `push_neg at h h' ⊢`, as usual.
+One can use this tactic at the goal using `push`,
+at every hypothesis and the goal using `push at *` or at selected hypotheses and the goal
+using say `push at h h' ⊢`, as usual.
 -/
 syntax (name := push) "push " (discharger)? (colGt term) (location)? : tactic
 
@@ -212,8 +214,8 @@ def elabPush : Tactic := fun stx => withMainContext do
   let loc := expandOptLocation stx[3]
   dischargeWrapper.with fun discharge? => do
     withLocation loc
-      (pushNegLocalDecl head discharge?)
-      (pushNegTarget head discharge?)
+      (pushLocalDecl head discharge?)
+      (pushTarget head discharge?)
       (fun _ ↦ logInfo "push_neg couldn't find a negation to push")
 
 /--

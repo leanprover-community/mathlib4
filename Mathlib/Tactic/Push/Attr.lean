@@ -31,7 +31,7 @@ For example:
 @[push] theorem not_iff (p q : Prop) : ¬(p ↔ q) ↔ (p ∧ ¬q) ∨ (¬p ∧ q)
 ```
 -/
-syntax (name := pushAttr) "push" ("← " <|> "<- ")? (ppSpace prio)? : attr
+syntax (name := pushAttr) "push" (" ←" <|> " <-")? (ppSpace prio)? : attr
 
 initialize registerBuiltinAttribute {
   name := `pushAttr
