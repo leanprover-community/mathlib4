@@ -94,9 +94,6 @@ theorem exists_eq_pow_of_pow_eq {a b m n : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) (h
 
 end Nat
 
-#check factorization
-#check UniqueFactorizationMonoid.factors
-#check UniqueFactorizationMonoid
 section UniqueFactorizationMonoid
 
 end UniqueFactorizationMonoid
