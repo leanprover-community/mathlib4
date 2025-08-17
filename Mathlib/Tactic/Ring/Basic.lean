@@ -903,8 +903,8 @@ def evalPow {a : Q($α)} {b : Q(ℕ)} (va : ExSum sα a) (vb : ExSum sℕ b) :
 structure Cache {α : Q(Type u)} (sα : Q(CommSemiring $α)) where
   /-- A ring instance on `α`, if available. -/
   rα : Option Q(Ring $α)
-  /-- A division ring instance on `α`, if available. -/
-  dα : Option Q(DivisionRing $α)
+  /-- A division semiring instance on `α`, if available. -/
+  dsα : Option Q(DivisionSemiring $α)
   /-- A characteristic zero ring instance on `α`, if available. -/
   czα : Option Q(CharZero $α)
 
@@ -912,7 +912,7 @@ structure Cache {α : Q(Type u)} (sα : Q(CommSemiring $α)) where
 def mkCache {α : Q(Type u)} (sα : Q(CommSemiring $α)) : MetaM (Cache sα) :=
   return {
     rα := (← trySynthInstanceQ q(Ring $α)).toOption
-    dα := (← trySynthInstanceQ q(DivisionRing $α)).toOption
+    dsα := (← trySynthInstanceQ q(DivisionSemiring $α)).toOption
     czα := (← trySynthInstanceQ q(CharZero $α)).toOption }
 
 theorem cast_pos {n : ℕ} : IsNat (a : R) n → a = n.rawCast + 0
@@ -979,14 +979,14 @@ def evalAtom (e : Q($α)) : AtomM (Result (ExSum sα) e) := do
   | none => (q(atom_pf $e) : Expr)
   | some (p : Q($e = $a')) => (q(atom_pf' $p) : Expr)⟩
 
-theorem inv_mul {R} [DivisionRing R] {a₁ a₂ a₃ b₁ b₃ c}
+theorem inv_mul {R} [DivisionSemiring R] {a₁ a₂ a₃ b₁ b₃ c}
     (_ : (a₁⁻¹ : R) = b₁) (_ : (a₃⁻¹ : R) = b₃)
     (_ : b₃ * (b₁ ^ a₂ * (nat_lit 1).rawCast) = c) :
     (a₁ ^ a₂ * a₃ : R)⁻¹ = c := by subst_vars; simp
 
-nonrec theorem inv_zero {R} [DivisionRing R] : (0 : R)⁻¹ = 0 := inv_zero
+nonrec theorem inv_zero {R} [DivisionSemiring R] : (0 : R)⁻¹ = 0 := inv_zero
 
-theorem inv_single {R} [DivisionRing R] {a b : R}
+theorem inv_single {R} [DivisionSemiring R] {a b : R}
     (_ : (a : R)⁻¹ = b) : (a + 0)⁻¹ = b + 0 := by simp [*]
 theorem inv_add {a₁ a₂ : ℕ} (_ : ((a₁ : ℕ) : R) = b₁) (_ : ((a₂ : ℕ) : R) = b₂) :
     ((a₁ + a₂ : ℕ) : R) = b₁ + b₂ := by
@@ -994,7 +994,7 @@ theorem inv_add {a₁ a₂ : ℕ} (_ : ((a₁ : ℕ) : R) = b₁) (_ : ((a₂ : 
 
 section
 
-variable (dα : Q(DivisionRing $α))
+variable (dsα : Q(DivisionSemiring $α))
 
 /-- Applies `⁻¹` to a polynomial to get an atom. -/
 def evalInvAtom (a : Q($α)) : AtomM (Result (ExBase sα) q($a⁻¹)) := do
@@ -1013,22 +1013,23 @@ def ExProd.evalInv {a : Q($α)} (czα : Option Q(CharZero $α)) (va : ExProd sα
   | .const c hc =>
     let ra := Result.ofRawRat c a hc
     match ← (Lean.observing? <|
-      NormNum.evalInv.core q($a⁻¹) a ra q(DivisionRing.toDivisionSemiring) czα :) with
+      NormNum.evalInv.core q($a⁻¹) a ra dsα czα :) with
     | some rc =>
       let ⟨zc, hc⟩ := rc.toRatNZ.get!
       let ⟨c, pc⟩ := rc.toRawEq
       pure ⟨c, .const zc hc, pc⟩
     | none =>
-      let ⟨_, vc, pc⟩ ← evalInvAtom sα dα a
+      let ⟨_, vc, pc⟩ ← evalInvAtom sα dsα a
       pure ⟨_, vc.toProd (ExProd.mkNat sℕ 1).2, q(toProd_pf $pc)⟩
   | .mul (x := a₁) (e := _a₂) _va₁ va₂ va₃ => do
-    let ⟨_b₁, vb₁, pb₁⟩ ← evalInvAtom sα dα a₁
+    let ⟨_b₁, vb₁, pb₁⟩ ← evalInvAtom sα dsα a₁
     let ⟨_b₃, vb₃, pb₃⟩ ← va₃.evalInv czα
     let ⟨c, vc, (pc : Q($_b₃ * ($_b₁ ^ $_a₂ * Nat.rawCast 1) = $c))⟩ ←
       evalMulProd sα vb₃ (vb₁.toProd va₂)
-    have eq : ($dα).toNonAssocRing.toNonUnitalNonAssocSemiring =Q
-      ($sα).toNonAssocCommSemiring.toNonUnitalNonAssocCommSemiring.toNonUnitalNonAssocSemiring := ⟨⟩
-    pure ⟨c, vc, (q(inv_mul $pb₁ $pb₃ ($eq ▸ $pc)) : Expr)⟩
+    have eq : ($sα).toNonAssocCommSemiring.toNonAssocSemiring =Q ($dsα).toNonAssocSemiring := ⟨⟩
+    have : ($sα).toNonAssocCommSemiring.toNonUnitalNonAssocCommSemiring.toNonUnitalNonAssocSemiring
+      =Q ($dsα).toNonAssocSemiring.toNonUnitalNonAssocSemiring := ⟨⟩
+    pure ⟨c, vc, (q(inv_mul $pb₁ $pb₃ ($this ▸ $eq ▸ $pc)) : Expr)⟩
 
 /-- Inverts a polynomial `va` to get a normalized result polynomial.
 
@@ -1040,27 +1041,27 @@ def ExSum.evalInv {a : Q($α)} (czα : Option Q(CharZero $α)) (va : ExSum sα a
   match va with
   | ExSum.zero => pure ⟨_, .zero, (q(inv_zero (R := $α)) : Expr)⟩
   | ExSum.add va ExSum.zero => do
-    let ⟨_, vb, pb⟩ ← va.evalInv sα dα czα
+    let ⟨_, vb, pb⟩ ← va.evalInv sα dsα czα
     pure ⟨_, vb.toSum, (q(inv_single $pb) : Expr)⟩
   | va => do
-    let ⟨_, vb, pb⟩ ← evalInvAtom sα dα a
+    let ⟨_, vb, pb⟩ ← evalInvAtom sα dsα a
     pure ⟨_, vb.toProd (ExProd.mkNat sℕ 1).2 |>.toSum, q(atom_pf' $pb)⟩
 
 end
 
-theorem div_pf {R} [DivisionRing R] {a b c d : R} (_ : b⁻¹ = c) (_ : a * c = d) : a / b = d := by
+theorem div_pf {R} [DivisionSemiring R] {a b c d : R}
+    (_ : b⁻¹ = c) (_ : a * c = d) : a / b = d := by
   subst_vars; simp [div_eq_mul_inv]
 
 /-- Divides two polynomials `va, vb` to get a normalized result polynomial.
 
 * `a / b = a * b⁻¹`
 -/
-def evalDiv {a b : Q($α)} (rα : Q(DivisionRing $α)) (czα : Option Q(CharZero $α)) (va : ExSum sα a)
-    (vb : ExSum sα b) : AtomM (Result (ExSum sα) q($a / $b)) := do
+def evalDiv {a b : Q($α)} (rα : Q(DivisionSemiring $α)) (czα : Option Q(CharZero $α))
+    (va : ExSum sα a) (vb : ExSum sα b) : AtomM (Result (ExSum sα) q($a / $b)) := do
   let ⟨_c, vc, pc⟩ ← vb.evalInv sα rα czα
   let ⟨d, vd, (pd : Q($a * $_c = $d))⟩ ← evalMul sα va vc
-  have eq : ($rα).toNonAssocRing.toNonUnitalNonAssocSemiring =Q
-    ($sα).toNonAssocCommSemiring.toNonUnitalNonAssocCommSemiring.toNonUnitalNonAssocSemiring := ⟨⟩
+  have eq : ($rα).toNonAssocSemiring =Q ($sα).toNonAssocCommSemiring.toNonAssocSemiring := ⟨⟩
   pure ⟨d, vd, q(div_pf $pc ($eq ▸ $pd))⟩
 
 theorem add_congr (_ : a = a') (_ : b = b') (_ : a' + b' = c) : (a + b : R) = c := by
@@ -1082,14 +1083,14 @@ theorem neg_congr {R} [Ring R] {a a' b : R} (_ : a = a')
 theorem sub_congr {R} [Ring R] {a a' b b' c : R} (_ : a = a') (_ : b = b')
     (_ : a' - b' = c) : (a - b : R) = c := by subst_vars; rfl
 
-theorem inv_congr {R} [DivisionRing R] {a a' b : R} (_ : a = a')
+theorem inv_congr {R} [DivisionSemiring R] {a a' b : R} (_ : a = a')
     (_ : a'⁻¹ = b) : (a⁻¹ : R) = b := by subst_vars; rfl
 
-theorem div_congr {R} [DivisionRing R] {a a' b b' c : R} (_ : a = a') (_ : b = b')
+theorem div_congr {R} [DivisionSemiring R] {a a' b b' c : R} (_ : a = a') (_ : b = b')
     (_ : a' / b' = c) : (a / b : R) = c := by subst_vars; rfl
 
 /-- A precomputed `Cache` for `ℕ`. -/
-def Cache.nat : Cache sℕ := { rα := none, dα := none, czα := some q(inferInstance) }
+def Cache.nat : Cache sℕ := { rα := none, dsα := none, czα := some q(inferInstance) }
 
 /-- Checks whether `e` would be processed by `eval` as a ring expression,
 or otherwise if it is an atom or something simplifiable via `norm_num`.
@@ -1109,7 +1110,7 @@ def isAtomOrDerivable {u} {α : Q(Type u)} (sα : Q(CommSemiring $α))
       pure <| some (evalCast sα (← derive e))
     catch _ => pure (some none)
   let .const n _ := (← withReducible <| whnf e).getAppFn | els
-  match n, c.rα, c.dα with
+  match n, c.rα, c.dsα with
   | ``HAdd.hAdd, _, _ | ``Add.add, _, _
   | ``HMul.hMul, _, _ | ``Mul.mul, _, _
   | ``HSMul.hSMul, _, _
@@ -1130,7 +1131,7 @@ partial def eval {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
     try evalCast sα (← derive e)
     catch _ => evalAtom sα e
   let .const n _ := (← withReducible <| whnf e).getAppFn | els
-  match n, c.rα, c.dα with
+  match n, c.rα, c.dsα with
   | ``HAdd.hAdd, _, _ | ``Add.add, _, _ => match e with
     | ~q($a + $b) =>
       let ⟨_, va, pa⟩ ← eval sα c a
@@ -1172,17 +1173,17 @@ partial def eval {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
       let ⟨c, vc, p⟩ ← evalSub sα rα va vb
       pure ⟨c, vc, q(sub_congr $pa $pb $p)⟩
     | _ => els
-  | ``Inv.inv, _, some dα => match e with
+  | ``Inv.inv, _, some dsα => match e with
     | ~q($a⁻¹) =>
       let ⟨_, va, pa⟩ ← eval sα c a
-      let ⟨b, vb, p⟩ ← va.evalInv sα dα c.czα
+      let ⟨b, vb, p⟩ ← va.evalInv sα dsα c.czα
       pure ⟨b, vb, q(inv_congr $pa $p)⟩
     | _ => els
-  | ``HDiv.hDiv, _, some dα | ``Div.div, _, some dα => match e with
+  | ``HDiv.hDiv, _, some dsα | ``Div.div, _, some dsα => match e with
     | ~q($a / $b) => do
       let ⟨_, va, pa⟩ ← eval sα c a
       let ⟨_, vb, pb⟩ ← eval sα c b
-      let ⟨c, vc, p⟩ ← evalDiv sα dα c.czα va vb
+      let ⟨c, vc, p⟩ ← evalDiv sα dsα c.czα va vb
       pure ⟨c, vc, q(div_congr $pa $pb $p)⟩
     | _ => els
   | _, _, _ => els
