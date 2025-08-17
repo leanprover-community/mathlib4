@@ -96,7 +96,7 @@ universe r s u v
 
 variable {R : Type r} {S : Type s} {A F : Type u} {B K : Type v}
 
-name_poly_vars X, Y, Z over R
+name_poly_vars R[X,Y,Z]
 
 namespace WeierstrassCurve
 
@@ -233,9 +233,9 @@ variable (W') in
 /-- The polynomial `W(X, Y, Z) := Y² + a₁XYZ + a₃YZ³ - (X³ + a₂X²Z² + a₄XZ⁴ + a₆Z⁶)` associated to a
 Weierstrass curve `W` over a ring `R` in Jacobian coordinates.
 
-This is represented as a term of type `MvPolynomial (Fin 3) R`, where `X`, `Y`, and `Z`
+This is represented as a term of type `R[X,Y,Z]`, where `X`, `Y`, and `Z`
 represent `X`, `Y`, and `Z` respectively. -/
-noncomputable def polynomial : MvPolynomial (Fin 3) R :=
+noncomputable def polynomial : R[X,Y,Z] :=
   Y ^ 2 + C W'.a₁ * X * Y * Z + C W'.a₃ * Y * Z ^ 3
     - (X ^ 3 + C W'.a₂ * X ^ 2 * Z ^ 2 + C W'.a₄ * X * Z ^ 4 + C W'.a₆ * Z ^ 6)
 
@@ -294,7 +294,7 @@ lemma equation_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
 variable (W') in
 /-- The partial derivative `W_X(X, Y, Z)` with respect to `X` of the polynomial `W(X, Y, Z)`
 associated to a Weierstrass curve `W` in Jacobian coordinates. -/
-noncomputable def polynomialX : MvPolynomial (Fin 3) R :=
+noncomputable def polynomialX : R[X,Y,Z] :=
   pderiv x W'.polynomial
 
 lemma polynomialX_eq : W'.polynomialX =
@@ -318,7 +318,7 @@ lemma eval_polynomialX_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
 variable (W') in
 /-- The partial derivative `W_Y(X, Y, Z)` with respect to `Y` of the polynomial `W(X, Y, Z)`
 associated to a Weierstrass curve `W` in Jacobian coordinates. -/
-noncomputable def polynomialY : MvPolynomial (Fin 3) R :=
+noncomputable def polynomialY : R[X,Y,Z] :=
   pderiv y W'.polynomial
 
 lemma polynomialY_eq : W'.polynomialY = C 2 * Y + C W'.a₁ * X * Z + C W'.a₃ * Z ^ 3 := by
@@ -340,7 +340,7 @@ lemma eval_polynomialY_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
 variable (W') in
 /-- The partial derivative `W_Z(X, Y, Z)` with respect to `Z` of the polynomial `W(X, Y, Z)`
 associated to a Weierstrass curve `W` in Jacobian coordinates. -/
-noncomputable def polynomialZ : MvPolynomial (Fin 3) R :=
+noncomputable def polynomialZ : R[X,Y,Z] :=
   pderiv z W'.polynomial
 
 lemma polynomialZ_eq : W'.polynomialZ = C W'.a₁ * X * Y + C (3 * W'.a₃) * Y * Z ^ 2 -
