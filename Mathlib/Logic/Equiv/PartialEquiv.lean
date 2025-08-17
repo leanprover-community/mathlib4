@@ -603,7 +603,7 @@ theorem trans_apply {x : α} : (e.trans e') x = e' (e x) :=
   rfl
 
 theorem trans_symm_eq_symm_trans_symm : (e.trans e').symm = e'.symm.trans e.symm := by
-  cases e; cases e'; rfl
+  tauto
 
 @[simp, mfld_simps]
 theorem trans_source : (e.trans e').source = e.source ∩ e ⁻¹' e'.source :=
