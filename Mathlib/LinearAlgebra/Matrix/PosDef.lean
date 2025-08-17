@@ -334,9 +334,10 @@ lemma posSemidef_iff_eq_conjTranspose_mul_self {A : Matrix n n 𝕜} :
 @[deprecated (since := "2025-05-07")]
 alias posSemidef_iff_eq_transpose_mul_self := posSemidef_iff_eq_conjTranspose_mul_self
 
+/-- A Hermitian matrix is positive semi-definite if and only if its eigenvalues are non-negative. -/
 lemma IsHermitian.posSemidef_iff_eigenvalues_nonneg [DecidableEq n] {A : Matrix n n 𝕜}
     (hA : IsHermitian A) : PosSemidef A ↔ 0 ≤ hA.eigenvalues := by
-  refine ⟨fun h i => h.eigenvalues_nonneg i, fun h => ?_⟩
+  refine ⟨fun h => h.eigenvalues_nonneg, fun h => ?_⟩
   rw [hA.spectral_theorem]
   refine (posSemidef_diagonal_iff.mpr ?_).mul_mul_conjTranspose_same _
   simpa using h
@@ -520,6 +521,7 @@ lemma eigenvalues_pos [DecidableEq n] {A : Matrix n n 𝕜}
   simp only [hA.1.eigenvalues_eq]
   exact hA.re_dotProduct_pos <| hA.1.eigenvectorBasis.orthonormal.ne_zero i
 
+/-- A Hermitian matrix is positive-definite if and only if its eigenvalues are positive. -/
 lemma _root_.Matrix.IsHermitian.posDef_iff_eigenvalues_pos [DecidableEq n] {A : Matrix n n 𝕜}
     (hA : A.IsHermitian) : A.PosDef ↔ ∀ i, 0 < hA.eigenvalues i := by
   refine ⟨fun h => h.eigenvalues_pos, fun h => ?_⟩
