@@ -81,7 +81,7 @@ theorem exists_eq_pow_of_pow_eq {a b m n : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) (h
     rcases hmn with hm | hn
     · exact gcd_div_gcd_div_gcd_of_pos_left (zero_lt_of_ne_zero hm)
     · exact gcd_div_gcd_div_gcd_of_pos_right (zero_lt_of_ne_zero hn)
-  have eq : a ^ m' = b ^ n' := by
+  have pow_eq : a ^ m' = b ^ n' := by
     conv_lhs at h => rw [show m = m' * g from (Nat.div_mul_cancel (gcd_dvd_left m n)).symm]
     conv_rhs at h => rw [show n = n' * g from (Nat.div_mul_cancel (gcd_dvd_right m n)).symm]
     rw [pow_mul, pow_mul] at h
@@ -90,7 +90,7 @@ theorem exists_eq_pow_of_pow_eq {a b m n : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) (h
       · exact gcd_ne_zero_left hm
       · exact gcd_ne_zero_right hn
     exact pow_left_injective this h
-  exact exists_eq_pow_of_exponent_coprime_of_pow_eq ha hb coprime eq
+  exact exists_eq_pow_of_exponent_coprime_of_pow_eq ha hb coprime pow_eq
 
 end Nat
 
