@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2020 Ilmārs Cīrulis. All rights reserved.
+Copyright (c) 2025 Ilmārs Cīrulis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ilmārs Cīrulis, Alex Meiburg
 -/
@@ -32,7 +32,7 @@ theorem normalize_zero_eq_zero : normalize 𝕜 (0 : V) = 0 := by
   simp [normalize]
 
 @[simp]
-theorem norm_smul_normalized (x : V) : (‖x‖ : 𝕜) • normalize 𝕜 x = x := by
+theorem norm_smul_normalize (x : V) : (‖x‖ : 𝕜) • normalize 𝕜 x = x := by
   by_cases hx : x = 0
   all_goals simp [normalize, hx]
 
