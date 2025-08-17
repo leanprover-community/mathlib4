@@ -6,11 +6,11 @@ Authors: Adam Topaz, Kenny Lau
 import Lean
 
 /-!
-The command `#name_poly_vars` names variables in any combination of `Polynomial`, `MvPolynomial`,
+The command `name_poly_vars` names variables in any combination of `Polynomial`, `MvPolynomial`,
 `RatFunc`, `PowerSeries`, `MvPowerSeries`, and `LaurentSeries`, where the `Mv` is restricted to
 `Fin n`.
 
-The notation introduced by `#name_poly_vars` is local.
+The notation introduced by `name_poly_vars` is local.
 
 Usage:
 
@@ -25,11 +25,11 @@ name_poly_vars R[[X,Y]][t]⸨a⸩(u)
 
 For the edge case of `MvPolynomial (Fin 1) R`, use the syntax `R[u,]` with a trailing comma.
 
-To register new polynomial-like functors, use the command `#register_poly_vars`:
+To register new polynomial-like functors, use the command `register_poly_vars`:
 
 ```lean
-#register_poly_vars "[" X "]" Polynomial Polynomial.C Polynomial.X
-#register_poly_vars "[" X, ... "]" MvPolynomial MvPolynomial.C MvPolynomial.X
+register_poly_vars "[" X "]" Polynomial Polynomial.C Polynomial.X
+register_poly_vars "[" X, ... "]" MvPolynomial MvPolynomial.C MvPolynomial.X
 ```
 
 The registration is global and should only be done once for each functor.
@@ -121,11 +121,11 @@ register_poly_vars "[[" X, ... "]]" MvPowerSeries (MvPowerSeries.C _ _) MvPowerS
 ```
 -/
 syntax (name := register)
-  "#register_poly_vars " str var_decl str term_decl term_decl term_decl : command
+  "register_poly_vars " str var_decl str term_decl term_decl term_decl : command
 
 @[command_elab register]
 def registerElab : CommandElab := fun stx ↦ do
-  let `(command|#register_poly_vars $opening:str $mv?:var_decl $closing:str
+  let `(command|register_poly_vars $opening:str $mv?:var_decl $closing:str
       $type:term_decl $c:term_decl $x:term_decl) := stx
     | throwError m!"Unrecognised syntax: {stx}"
   have opening := opening.getString
@@ -194,7 +194,7 @@ def parseDeclared (stx : TSyntax `polyesque_declared) : String :=
   | .node _ _ #[.atom _ str] => str
   | _ => ""
 
-syntax (name := declare) "#name_poly_vars " polyesque : command
+syntax (name := declare) "name_poly_vars " polyesque : command
 
 abbrev Declared := Std.HashMap String Term
 
@@ -225,16 +225,16 @@ def _root_.Lean.TSyntax.parsePolyesqueFull (p : Polyesque) :
 
 @[command_elab declare]
 def elabDeclarePolyVars : CommandElab := fun stx => do
-  let `(command|#name_poly_vars $p:polyesque) := stx
+  let `(command|name_poly_vars $p:polyesque) := stx
     | throwError m!"Wrong command syntax: {stx}"
   let (headStr, bodyStr, type, terms) ← liftCoreM p.parsePolyesqueFull
   have raw := headStr ++ bodyStr
-  trace[name_poly_vars] m!"Declaring polynomial-like notation: {raw}"
-  trace[name_poly_vars] m!"Result: {type}"
-  trace[name_poly_vars] m!"Terms:"
+  trace[«name_poly_vars»] m!"Declaring polynomial-like notation: {raw}"
+  trace[«name_poly_vars»] m!"Result: {type}"
+  trace[«name_poly_vars»] m!"Terms:"
   for (i, t) in terms do
     elabCommand <| ← `(command| local notation $(quote s!"{i.getId}"):str => ($t : $type))
-    trace[name_poly_vars] m!"  {i.getId} : {t}"
+    trace[«name_poly_vars»] m!"  {i.getId} : {t}"
   elabCommand <| ← `(command| local syntax $(quote bodyStr):str : polyesque_declared)
   declaredExt.add (raw, type) .local
 
@@ -247,8 +247,8 @@ def polyesqueElab : Term.TermElab := fun stx e => do
     | throwError m!"Undeclared polynomial-like notation: {raw}"
   -- let .some type := (declaredExt.getState (← getEnv)).get? (head.rawTermDecl ++ body.getString)
   --   | throwError m!"Undeclared polynomial-like notation: {raw}"
-  trace[name_poly_vars] m!"Retrieving polynomial-like notation: {raw}"
-  trace[name_poly_vars] m!"Result: {type}"
+  trace[«name_poly_vars»] m!"Retrieving polynomial-like notation: {raw}"
+  trace[«name_poly_vars»] m!"Result: {type}"
   Term.elabTerm type e
 
 end Mathlib.Tactic.NamePolyVars

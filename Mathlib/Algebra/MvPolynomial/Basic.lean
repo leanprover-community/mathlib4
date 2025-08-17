@@ -13,6 +13,7 @@ import Mathlib.Algebra.Regular.Pow
 import Mathlib.Data.Finsupp.Antidiagonal
 import Mathlib.Data.Finsupp.Order
 import Mathlib.Order.SymmDiff
+import Mathlib.Tactic.Ring.NamePolyVars
 
 /-!
 # Multivariate polynomials
@@ -174,6 +175,8 @@ theorem algebraMap_apply [Algebra R S₁] (r : R) :
 /-- `X n` is the degree `1` monomial $X_n$. -/
 def X (n : σ) : MvPolynomial σ R :=
   monomial (Finsupp.single n 1) 1
+
+register_poly_vars "[" X, ... "]" MvPolynomial MvPolynomial.C MvPolynomial.X
 
 theorem monomial_left_injective {r : R} (hr : r ≠ 0) :
     Function.Injective fun s : σ →₀ ℕ => monomial s r :=
