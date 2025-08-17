@@ -264,6 +264,23 @@ theorem IsPositive.adjoint_conj {T : E →L[𝕜] E} (hT : T.IsPositive) (S : F 
   convert hT.conj_adjoint (S†)
   rw [adjoint_adjoint]
 
+theorem isPositive_conj_adjoint_iff {T : E →L[𝕜] E} (S : E ≃ₗᵢ[𝕜] F) :
+    IsPositive (S.toContinuousLinearEquiv.toContinuousLinearMap ∘L T
+    ∘L S.toContinuousLinearEquiv.toContinuousLinearMap †)
+    ↔ IsPositive T := by
+  simp_rw [IsPositive, isSelfAdjoint_conj_adjoint_iff, and_congr_right_iff,
+    reApplyInnerSelf_apply, comp_apply, ← adjoint_inner_right
+    S.toContinuousLinearEquiv.toContinuousLinearMap,
+    LinearIsometryEquiv.toContinuousLinearEquiv_adjoint_eq_symm]
+  exact fun _ => ⟨fun h x => by simpa using h (S x), fun h x => h _⟩
+
+theorem isPositive_adjoint_conj_iff {T : E →L[𝕜] E} (S : F ≃ₗᵢ[𝕜] E) :
+    IsPositive (S.toContinuousLinearEquiv.toContinuousLinearMap † ∘L T
+    ∘L S.toContinuousLinearEquiv.toContinuousLinearMap)
+    ↔ IsPositive T := by
+  have := isPositive_conj_adjoint_iff (T := T) S.symm
+  rwa [← LinearIsometryEquiv.toContinuousLinearEquiv_adjoint_eq_symm, adjoint_adjoint] at this
+
 section LinearMap
 
 omit [CompleteSpace E] [CompleteSpace F]
@@ -283,6 +300,22 @@ theorem _root_.LinearMap.IsPositive.adjoint_conj {T : E →ₗ[𝕜] E}
     (hT : T.IsPositive) (S : F →ₗ[𝕜] E) : (S.adjoint ∘ₗ T ∘ₗ S).IsPositive := by
   convert hT.conj_adjoint S.adjoint
   rw [LinearMap.adjoint_adjoint]
+
+theorem _root_.LinearMap.isPositive_conj_adjoint_iff {T : E →ₗ[𝕜] E} (S : E ≃ₗᵢ[𝕜] F) :
+    (S.toLinearMap ∘ₗ T ∘ₗ S.toLinearMap.adjoint).IsPositive ↔ T.IsPositive := by
+  have := FiniteDimensional.complete 𝕜 E
+  have := FiniteDimensional.complete 𝕜 F
+  simp only [← isPositive_toContinuousLinearMap_iff,
+    ← ContinuousLinearMap.isPositive_conj_adjoint_iff S]
+  exact Iff.rfl
+
+theorem _root_.LinearMap.isPositive_adjoint_conj_iff {T : E →ₗ[𝕜] E} (S : F ≃ₗᵢ[𝕜] E) :
+    (S.toLinearMap.adjoint ∘ₗ T ∘ₗ S.toLinearMap).IsPositive ↔ T.IsPositive := by
+  have := FiniteDimensional.complete 𝕜 E
+  have := FiniteDimensional.complete 𝕜 F
+  simp only [← isPositive_toContinuousLinearMap_iff,
+    ← ContinuousLinearMap.isPositive_adjoint_conj_iff S]
+  exact Iff.rfl
 
 end LinearMap
 
