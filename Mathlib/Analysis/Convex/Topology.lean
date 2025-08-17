@@ -23,7 +23,7 @@ We prove the following facts:
 * `Set.Finite.isClosed_convexHull` : convex hull of a finite set is closed.
 -/
 
-assert_not_exists Norm
+assert_not_exists Cardinal Norm
 
 open Metric Bornology Set Pointwise Convex
 
