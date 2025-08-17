@@ -180,7 +180,6 @@ theorem card_edgeFinset_deleteIncidenceSet_le_extremalNumber
   rw [← card_edgeFinset_induce_compl_singleton, ← @card_unique ({v} : Set V), ← card_compl_set]
   apply card_edgeFinset_le_extremalNumber
   contrapose! h
-  rw [not_free] at h ⊢
   exact h.trans ⟨Copy.induce G {v}ᶜ⟩
 
 end ExtremalNumber

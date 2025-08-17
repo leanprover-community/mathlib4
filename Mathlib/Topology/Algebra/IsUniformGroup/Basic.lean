@@ -220,7 +220,7 @@ instance Subgroup.isClosed_of_discrete [T2Space G] {H : Subgroup G} [DiscreteTop
   apply isClosed_of_spaced_out this
   intro h h_in h' h'_in
   contrapose!
-  simp only [Set.mem_preimage, not_not]
+  simp only [Set.mem_preimage]
   rintro (hyp : h' / h ∈ V)
   have : h' / h ∈ ({1} : Set G) := VH ▸ Set.mem_inter hyp (H.div_mem h'_in h_in)
   exact (eq_of_div_eq_one this).symm
