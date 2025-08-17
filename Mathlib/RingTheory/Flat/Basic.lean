@@ -589,7 +589,7 @@ variable {R M N P : Type*} [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] 
   {f : M₁ →ₗ[R] M₂ →ₗ[R] M} {g : N₁ →ₗ[R] N₂ →ₗ[R] N}
   (hf : IsTensorProduct f) (hg : IsTensorProduct g) (i₁ : M₁ →ₗ[R] N₁) (i₂ : M₂ →ₗ[R] N₂)
 
-theorem lTensor_injective_of_flat [Module.Flat R M] {MN MP : Type*} [AddCommMonoid MN]
+theorem map_id_injective_of_flat_left [Module.Flat R M] {MN MP : Type*} [AddCommMonoid MN]
     [AddCommMonoid MP] [Module R MN] [Module R MP] {f : M →ₗ[R] N →ₗ[R] MN} {g : M →ₗ[R] P →ₗ[R] MP}
     (hf : IsTensorProduct f) (hg : IsTensorProduct g) (i : N →ₗ[R] P)
     (hi : Function.Injective i) : Function.Injective (hf.map hg LinearMap.id i) := by
