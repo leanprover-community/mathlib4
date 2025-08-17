@@ -201,7 +201,7 @@ def isoOfIsAffine [IsAffine S] :
           Category.comp_id]
         ext : 1
         apply ringHom_ext'
-        · change _ = (CommRingCat.ofHom C ≫ _).hom
+        · change _ = (CommRingCat.ofHom (C (R := Γ(S, ⊤))) ≫ _).hom
           rw [CommRingCat.hom_comp, RingHom.comp_assoc, CommRingCat.hom_ofHom, eval₂Hom_comp_C,
             ← CommRingCat.hom_comp, ← CommRingCat.hom_ext_iff,
             ← cancel_mono (Scheme.ΓSpecIso _).hom]
