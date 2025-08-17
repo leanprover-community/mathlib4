@@ -312,8 +312,7 @@ This lemma is the `cons` version of `scanl_get`.
 -/
 @[simp]
 theorem scanl_cons (x : α) : scanl f b (x ::ᵥ v) = b ::ᵥ scanl f (f b x) v := by
-  simp only [scanl, toList_cons, List.scanl]; dsimp
-  simp only [cons]
+  tauto
 
 /-- The underlying `List` of a `Vector` after a `scanl` is the `List.scanl`
 of the underlying `List` of the original `Vector`.
