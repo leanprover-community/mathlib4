@@ -111,9 +111,6 @@ theorem squarefree_iff_emultiplicity_le_one [CommMonoid R] (r : R) :
   rw [← one_add_one_eq_two]
   exact Order.add_one_le_iff_of_not_isMax (by simp)
 
-@[deprecated (since := "2024-11-30")]
-alias multiplicity.squarefree_iff_emultiplicity_le_one := squarefree_iff_emultiplicity_le_one
-
 section Irreducible
 
 variable [CommMonoidWithZero R] [WfDvdMonoid R]

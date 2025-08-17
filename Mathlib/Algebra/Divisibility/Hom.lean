@@ -23,6 +23,7 @@ attribute [local simp] mul_assoc mul_comm mul_left_comm
 
 variable {M N : Type*}
 
+@[gcongr]
 theorem map_dvd [Semigroup M] [Semigroup N] {F : Type*} [FunLike F M N] [MulHomClass F M N]
     (f : F) {a b} : a ∣ b → f a ∣ f b
   | ⟨c, h⟩ => ⟨f c, h.symm ▸ map_mul f a c⟩

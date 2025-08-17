@@ -56,7 +56,7 @@ variable [Monoid M] (S : Submonoid M)
 
 /-- `S.leftInv` is the submonoid containing all the left inverses of `S`. -/
 @[to_additive
-      "`S.leftNeg` is the additive submonoid containing all the left additive inverses of `S`."]
+/-- `S.leftNeg` is the additive submonoid containing all the left additive inverses of `S`. -/]
 def leftInv : Submonoid M where
   carrier := { x : M | ∃ y : S, x * y = 1 }
   one_mem' := ⟨1, mul_one 1⟩
@@ -86,8 +86,8 @@ theorem leftInv_leftInv_eq (hS : S ≤ IsUnit.submonoid M) : S.leftInv.leftInv =
 /-- The function from `S.leftInv` to `S` sending an element to its right inverse in `S`.
 This is a `MonoidHom` when `M` is commutative. -/
 @[to_additive
-      "The function from `S.leftAdd` to `S` sending an element to its right additive
-inverse in `S`. This is an `AddMonoidHom` when `M` is commutative."]
+/-- The function from `S.leftAdd` to `S` sending an element to its right additive
+inverse in `S`. This is an `AddMonoidHom` when `M` is commutative. -/]
 noncomputable def fromLeftInv : S.leftInv → S := fun x ↦ x.prop.choose
 
 @[to_additive (attr := simp)]
@@ -118,9 +118,8 @@ theorem fromLeftInv_eq_iff (a : S.leftInv) (b : M) :
   rw [← IsUnit.mul_right_inj (leftInv_le_isUnit _ a.prop), S.mul_fromLeftInv, eq_comm]
 
 /-- The `MonoidHom` from `S.leftInv` to `S` sending an element to its right inverse in `S`. -/
-@[to_additive (attr := simps)
-    "The `AddMonoidHom` from `S.leftNeg` to `S` sending an element to its
-    right additive inverse in `S`."]
+@[to_additive (attr := simps) /-- The `AddMonoidHom` from `S.leftNeg` to `S` sending an element to
+its right additive inverse in  `S`. -/]
 noncomputable def fromCommLeftInv : S.leftInv →* S where
   toFun := S.fromLeftInv
   map_one' := S.fromLeftInv_one
@@ -132,8 +131,8 @@ noncomputable def fromCommLeftInv : S.leftInv →* S where
 variable (hS : S ≤ IsUnit.submonoid M)
 
 /-- The submonoid of pointwise inverse of `S` is `MulEquiv` to `S`. -/
-@[to_additive (attr := simps apply) "The additive submonoid of pointwise additive inverse of `S` is
-`AddEquiv` to `S`."]
+@[to_additive (attr := simps apply) /-- The additive submonoid of pointwise additive inverse of `S`
+is `AddEquiv` to `S`. -/]
 noncomputable def leftInvEquiv : S.leftInv ≃* S :=
   { S.fromCommLeftInv with
     invFun := fun x ↦ ⟨↑(hS x.2).unit⁻¹, x, by simp⟩
