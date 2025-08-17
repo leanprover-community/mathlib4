@@ -332,7 +332,7 @@ lemma IsParabolic.smul_eq_self_iff {g : GL (Fin 2) K} (hg : g.IsParabolic) [NeZe
   rcases hg with ⟨hg, hdisc⟩
   rw [disc, trace_fin_two, det_fin_two] at hdisc
   cases c with
-  | infty => by_cases h : g 1 0 = 0 <;> simp [parabolicFixedPoint, h]
+  | infty => by_cases h : g 1 0 = 0 <;> simp [parabolicFixedPoint, smul_infty_eq_ite, h]
   | coe c =>
     suffices g 1 0 * c ^ 2 + (g 1 1 - g 0 0) * c - g 0 1 = 0 ↔ c = g.parabolicFixedPoint by
       simpa [← fixpointPolynomial_aeval_eq_zero_iff, fixpointPolynomial]

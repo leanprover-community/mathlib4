@@ -33,7 +33,7 @@ lemma exists_mem_SL2 (A : Type*) [CommRing A] [IsDomain A] [Algebra A K] [IsFrac
   | infty => exact ⟨1, by simp⟩
   | coe q =>
     obtain ⟨g, hg0, hg1⟩ := (IsFractionRing.num_den_reduced A q).isCoprime.exists_SL2_col 0
-    exact ⟨g, by simp [hg0, hg1]⟩
+    exact ⟨g, by simp [hg0, hg1, smul_infty_eq_ite]⟩
 
 end OnePoint
 
@@ -91,7 +91,7 @@ lemma isCusp_SL2Z_iff {c : OnePoint ℝ} :
       refine ⟨fun ⟨a, ha⟩ ↦ zero_ne_one' ℝ (by simpa [ModularGroup.T] using congr_fun₂ ha 0 1), ?_⟩
       simp [disc, trace_fin_two, det_fin_two, ModularGroup.T]
       norm_num
-    · simp [-smul_infty_eq_ite, ← Rat.coe_castHom, OnePoint.map_smul, MulAction.mul_smul,
+    · simp [← Rat.coe_castHom, OnePoint.map_smul, MulAction.mul_smul,
         a.map_mapGL (by rfl : _ = Rat.castHom ℝ),
         smul_infty_eq_self_iff.mpr (show mapGL ℝ ModularGroup.T 1 0 = 0 by simp [ModularGroup.T])]
 
@@ -138,7 +138,7 @@ noncomputable def cosetToCuspOrbit
     (fun a b hab ↦ by
       rw [← Quotient.eq_iff_equiv, Quotient.eq, QuotientGroup.leftRel_apply] at hab
       refine Quotient.eq.mpr ⟨⟨_, hab⟩, ?_⟩
-      simp [-smul_infty_eq_ite, MulAction.mul_smul])
+      simp [MulAction.mul_smul])
 
 lemma surjective_cosetToCuspOrbit (Γ : Subgroup <| GL (Fin 2) ℝ) [IsArith Γ] :
     (cosetToCuspOrbit Γ).Surjective := by

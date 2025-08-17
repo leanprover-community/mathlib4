@@ -57,12 +57,12 @@ variable {c f k} {g : GL (Fin 2) ℝ}
 lemma IsBoundedAt.slash :
     IsBoundedAt c (f ∣[k] g) k ↔ IsBoundedAt (g • c) f k := by
   rw [IsBoundedAt, IsBoundedAt, (Equiv.mulLeft g).forall_congr_left]
-  simp [-smul_infty_eq_ite, MulAction.mul_smul, inv_smul_eq_iff, ← SlashAction.slash_mul]
+  simp [MulAction.mul_smul, inv_smul_eq_iff, ← SlashAction.slash_mul]
 
 lemma IsZeroAt.slash :
     IsZeroAt c (f ∣[k] g) k ↔ IsZeroAt (g • c) f k := by
   rw [IsZeroAt, IsZeroAt, (Equiv.mulLeft g).forall_congr_left]
-  simp [-smul_infty_eq_ite, MulAction.mul_smul, inv_smul_eq_iff, ← SlashAction.slash_mul]
+  simp [MulAction.mul_smul, inv_smul_eq_iff, ← SlashAction.slash_mul]
 
 lemma IsBoundedAt.add {f' : ℍ → ℂ} (hf : IsBoundedAt c f k) (hf' : IsBoundedAt c f' k) :
     IsBoundedAt c (f + f') k :=
